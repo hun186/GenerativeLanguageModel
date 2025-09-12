@@ -1,13 +1,13 @@
 import getpass
 import sqlite3
 import pyodbc
-from sql_utils.export_utils import export_sql_to_excel
-from sql_utils.common import build_sql_connection_string
-from sql_utils.schema_manager import detect_all_table_names
-from sql_utils.schema_manager import table_exists
+from ..sql_utils.export_utils import export_sql_to_excel
+from ..sql_utils.common import build_sql_connection_string
+from ..sql_utils.schema_manager import detect_all_table_names
+from ..sql_utils.schema_manager import table_exists
 from utils.selector import MultiOptionSelector
 from utils.utilities_path import is_sqlite_path
-from config_ui.interactive_config_loader import load_sql_config_interactively
+from ..config_ui.interactive_config_loader import load_sql_config_interactively
 
 def handle_sql_to_excel_mode(ctx, get_param, table_sector = True):
     print("📤 SQL 匯出 Excel 模式")

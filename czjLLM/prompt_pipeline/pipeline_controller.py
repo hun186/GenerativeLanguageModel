@@ -1,15 +1,13 @@
 # pipeline_controller.py
-#from prompt_pipeline.llm_caller import LLMCaller
-from prompt_pipeline.result_handler import PromptResultHandler
-#from prompt_pipeline.retry_manager import PromptRetryManager
-from prompt_pipeline.prompt_generator import generate_prompt
-from prompt_pipeline.llm_caller import CallLLMAPI
-from prompt_pipeline.debug_snapshot import build_debug_snapshot
+from czjLLM.prompt_pipeline.result_handler import PromptResultHandler
+from czjLLM.prompt_pipeline.prompt_generator import generate_prompt
+from czjLLM.prompt_pipeline.llm_caller import CallLLMAPI
+from czjLLM.prompt_pipeline.debug_snapshot import build_debug_snapshot
 
-from utilities.atomic_io import atomic_write_json, robust_json_read
-from job_manager.job_config import LLMJobConfig
-from job_manager.end_point_manager import get_available_end_points
-from job_manager.end_point_manager import select_model
+from czjLLM.utilities.atomic_io import atomic_write_json, robust_json_read
+from czjLLM.job_manager.job_config import LLMJobConfig
+from czjLLM.job_manager.end_point_manager import get_available_end_points
+from czjLLM.job_manager.end_point_manager import select_model
 #from job_manager.win_gui import try_start_gui  # 為避免循環，可移到檔頭
 import os
 from colorama import Fore, Style
@@ -27,10 +25,10 @@ import shutil
 from copy import deepcopy
 
 
-from utilities.combine_utils import combine_api_finished_item
-from utilities.combine_utils import combine_json_return
-from utilities.logging_utils import CostLog
-from utilities.logging_utils import log_error
+from czjLLM.utilities.combine_utils import combine_api_finished_item
+from czjLLM.utilities.combine_utils import combine_json_return
+from czjLLM.utilities.logging_utils import CostLog
+from czjLLM.utilities.logging_utils import log_error
 from utils.utilities_path import OSWALK
 from utils.utilities_path import getPathFromFN
 from utils.utilities_path import DirReplace
@@ -40,14 +38,14 @@ from utils.utilities import flattenList
 from utils.utilities import tlog
 from utils.MP_utils import multicoreJob
 
-from infrastructure.ollama_lb import select_idle_ollama_url,release_url_load
+from czjLLM.infrastructure.ollama_lb import select_idle_ollama_url,release_url_load
 
-from sql_utils.common import quote_column
-from sql_utils.writer import flatten_row_based_json_array_to_subtable
-from sql_utils.row_utils import upsert_single_value
-from row_processors.flatten_utils import extract_json_list_for_flatten
-from utilities.path_utils import get_combined_result_path
-from job_manager.console_ui import  tlog_warn
+from czjLLM.sql_utils.common import quote_column
+from czjLLM.sql_utils.writer import flatten_row_based_json_array_to_subtable
+from czjLLM.sql_utils.row_utils import upsert_single_value
+from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
+from czjLLM.utilities.path_utils import get_combined_result_path
+from czjLLM.job_manager.console_ui import  tlog_warn
 
 def _canon_path(p: str) -> str:
     # 轉絕對路徑 + 正規化分隔 + Windows 大小寫無關

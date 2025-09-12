@@ -4,13 +4,13 @@ from colorama import Fore, Style
 from utils.selector import OptionSelector
 #from cli_tools.cli_utils import print_cli_usage_hint
 from utils.utilities_path import is_sqlite_path
-from sql_utils.common import build_sql_connection_string
-from sql_utils.column_utils import reset_output_col_with_backup
-from sql_mode.config.config_loader import load_sql_cfg, InteractivePolicy, NonInteractivePolicy
-from sql_mode.adapters.sqlite_adapter import SQLiteAdapter
-from sql_mode.adapters.mssql_adapter import MSSQLAdapter
-from sql_mode.schema.schema_ops import ensure_main_schema, ensure_flatten_schema
-from sql_mode.schema.common_flatten_policy import ensure_common_flatten_policy
+from czjLLM.sql_utils.common import build_sql_connection_string
+from czjLLM.sql_utils.column_utils import reset_output_col_with_backup
+from czjLLM.sql_mode.config.config_loader import load_sql_cfg, InteractivePolicy, NonInteractivePolicy
+from czjLLM.sql_mode.adapters.sqlite_adapter import SQLiteAdapter
+from czjLLM.sql_mode.adapters.mssql_adapter import MSSQLAdapter
+from czjLLM.sql_mode.schema.schema_ops import ensure_main_schema, ensure_flatten_schema
+from czjLLM.sql_mode.schema.common_flatten_policy import ensure_common_flatten_policy
 
 def resolve_connection(ctx, get_param, args):
     policy = NonInteractivePolicy(args) if args.config else InteractivePolicy()

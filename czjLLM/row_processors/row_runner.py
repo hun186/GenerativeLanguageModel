@@ -1,7 +1,7 @@
-from utilities.file_utils import save_text_as_temp_file
-from utilities.logging_utils import log_error
-from utilities.path_utils import get_combined_result_path
-from handlers.handle_txt_file import handle_single_input_file
+from czjLLM.utilities.file_utils import save_text_as_temp_file
+from czjLLM.utilities.logging_utils import log_error
+from czjLLM.utilities.path_utils import get_combined_result_path
+from czjLLM.handlers.handle_txt_file import handle_single_input_file
 import os
 from colorama import Fore
 

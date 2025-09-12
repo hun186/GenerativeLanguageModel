@@ -6,7 +6,7 @@ import time
 #from utils.utilities import is_connected
 from utils.utilities import tlog
 
-from prompt_pipeline.prompt_generator import should_disable_think
+from czjLLM.prompt_pipeline.prompt_generator import should_disable_think
 
 '''
 class LLMCaller:

@@ -3,10 +3,10 @@ import shutil
 from tqdm import tqdm
 from colorama import Fore, Style#, Back
 
-from prompt_pipeline.prompt_generator import process_file_to_prompt
-from prompt_pipeline.pipeline_controller import process_prompt_and_merge
-from job_manager.job_config import showTemplate
-from cli_tools.cli_utils import print_cli_usage_hint
+from czjLLM.prompt_pipeline.prompt_generator import process_file_to_prompt
+from czjLLM.prompt_pipeline.pipeline_controller import process_prompt_and_merge
+from czjLLM.job_manager.job_config import showTemplate
+from czjLLM.cli_tools.cli_utils import print_cli_usage_hint
 from utils.utilities import countdown_pause
 from utils.utilities import tlog
 from utils.utilities_path import OSWALK

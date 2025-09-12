@@ -1,4 +1,4 @@
-from prompt_pipeline.pipeline_controller import ItemsRegistry, meter_path_init, meter_init
+from czjLLM.prompt_pipeline.pipeline_controller import ItemsRegistry, meter_path_init, meter_init
 
 def init_meter(ctx):
     registry = ItemsRegistry()

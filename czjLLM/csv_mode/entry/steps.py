@@ -4,8 +4,8 @@ import pandas as pd
 from typing import Iterable, List, Tuple
 from colorama import Fore, Style
 from utils.selector import OptionSelector
-from job_manager.console_ui import tlog_warn
-from utilities.excel_utils import backup_table_file  # 直接沿用你的備份工具
+from czjLLM.job_manager.console_ui import tlog_warn
+from czjLLM.utilities.excel_utils import backup_table_file  # 直接沿用你的備份工具
 
 # ---------- 1) 路徑 ----------
 def resolve_file(ctx, get_param, args):

@@ -1,7 +1,7 @@
 import json
-from sql_utils.schema_manager import ensure_subtable_exists
-from sql_utils.column_utils import ensure_sql_columns_exist
-from job_manager.console_ui import tlog_warn
+from czjLLM.sql_utils.schema_manager import ensure_subtable_exists
+from czjLLM.sql_utils.column_utils import ensure_sql_columns_exist
+from czjLLM.job_manager.console_ui import tlog_warn
 
 def auto_setup_subtable_if_needed(ctx, cursor, is_sqlite=False):
     if not hasattr(ctx, "subtable_name") or not ctx.subtable_name:

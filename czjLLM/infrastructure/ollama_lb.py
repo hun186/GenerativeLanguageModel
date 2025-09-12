@@ -1,6 +1,6 @@
 import os, time, json, random, tempfile
 from datetime import datetime, timezone
-from utilities.atomic_io import atomic_write_json
+from czjLLM.utilities.atomic_io import atomic_write_json
 
 # ==== 參數可按需調整 ====
 LEASE_SECS = 300           # 單次派工的租約秒數，超時會自動釋放（防 crash 不釋放）

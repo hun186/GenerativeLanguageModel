@@ -1,6 +1,6 @@
 import threading, time
-from job_manager.win_gui import try_start_gui, make_gui_sink
-from job_manager.console_ui import setup_console_ui, add_log_sink
+from czjLLM.job_manager.win_gui import try_start_gui, make_gui_sink
+from czjLLM.job_manager.console_ui import setup_console_ui, add_log_sink
 from ..utils.term_lock import TQDM_LOCK
 
 def prepare_ui(ctx, total_rows: int):

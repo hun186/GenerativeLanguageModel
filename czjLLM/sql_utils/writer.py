@@ -2,10 +2,10 @@ import json
 import pyodbc
 import sqlite3
 import pyodbc
-from sql_utils.common import quote_column
+from czjLLM.sql_utils.common import quote_column
 
-from sql_utils.common import safe_sql_value
-from sql_utils.column_utils import ensure_sql_columns_exist
+from czjLLM.sql_utils.common import safe_sql_value
+from czjLLM.sql_utils.column_utils import ensure_sql_columns_exist
 
 from typing import List, Dict, Any, Union, Optional
 

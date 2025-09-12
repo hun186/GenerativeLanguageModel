@@ -4,10 +4,10 @@ import pandas as pd
 import numpy as np
 import json
 from pandas.api.types import is_string_dtype, is_object_dtype
-from utilities.excel_utils import read_dataframe, write_dataframe
-from utilities.excel_utils import write_dataframe_sheet
-from job_manager.console_ui import tlog, tlog_warn
-from excel_mode.schema.subtable_ops import ensure_excel_subtable_config
+from czjLLM.utilities.excel_utils import read_dataframe, write_dataframe
+from czjLLM.utilities.excel_utils import write_dataframe_sheet
+from czjLLM.job_manager.console_ui import tlog, tlog_warn
+from czjLLM.excel_mode.schema.subtable_ops import ensure_excel_subtable_config
 
 class ExcelSink:
     """

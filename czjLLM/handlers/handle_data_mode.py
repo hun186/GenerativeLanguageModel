@@ -4,15 +4,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Dict, Any
 
-from cli_tools.cli_utils import print_cli_usage_hint
-from sql_mode.runtime.orchestrator import run_pipeline
-from sql_mode.runtime.sinks.sql_sink import SqlSink
-from sql_mode.runtime.sinks.excel_sink import ExcelSink
-from tabular_mode.runtime.sinks.csv_sink import CSVSink
-#from tabular_mode.runtime.sinks.csv_sink import CSVSink  # 你的 CSVSink
+from ..cli_tools.cli_utils import print_cli_usage_hint
+from ..sql_mode.runtime.orchestrator import run_pipeline
+from ..sql_mode.runtime.sinks.sql_sink import SqlSink
+from ..sql_mode.runtime.sinks.excel_sink import ExcelSink
+from ..tabular_mode.runtime.sinks.csv_sink import CSVSink
+#from czjLLM.tabular_mode.runtime.sinks.csv_sink import CSVSink  # 你的 CSVSink
 
 # ---------- SQL 版 steps（沿用你現有的） ----------
-from sql_mode.entry.steps import (
+from ..sql_mode.entry.steps import (
     resolve_connection,                     # (ctx, get_param, args) -> (adapter, is_sqlite, sql_cfg)
     choose_columns_and_io_cols,             # (ctx, get_param, adapter, sql_cfg, args) -> columns
     configure_flatten_options as cfg_sql,   # (ctx, get_param, args) -> None
@@ -23,7 +23,7 @@ from sql_mode.entry.steps import (
 
 # ---------- Table 共用 steps（Excel/CSV 同構） ----------
 #from tabular.steps import (
-from tabular_mode.entry.steps import (
+from ..tabular_mode.entry.steps import (
     resolve_tabular_paths,          # (ctx, get_param, args) -> (input_path, output_path)
     choose_columns_common,          # (ctx, input_path, get_param, args) -> columns
     configure_flatten_common,       # (ctx, get_param, args) -> None

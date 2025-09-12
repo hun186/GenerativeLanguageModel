@@ -8,19 +8,25 @@ PGMSubDir = Path(set_working_dir_to("TopicClassification"))
 
 ##########################################################################
 import pprint
-
+import os
 from utils.selector import OptionSelector
 
-from job_manager.job_config import initialize_config
-from job_manager.job_config import load_config_from_file
-from cli_tools.cli_utils import parse_args
+from czjLLM.job_manager.job_config import initialize_config
+from czjLLM.job_manager.job_config import load_config_from_file
+from czjLLM.cli_tools.cli_utils import parse_args
 
-from handlers.handle_txt_file import handle_txt_mode
+from czjLLM.handlers.handle_txt_file import handle_txt_mode
 #from sql_mode.entry.handle_tabular import handle_tabular_mode
-from handlers.handle_data_mode import handle_data_mode
-from handlers.handle_sql_to_excel import handle_sql_to_excel_mode
+from czjLLM.handlers.handle_data_mode import handle_data_mode
+from czjLLM.handlers.handle_sql_to_excel import handle_sql_to_excel_mode
     
 if __name__ == '__main__':
+
+    #print("PGMSubDir b4",PGMSubDir)
+    #if not PGMSubDir.endswith("czjLLM"):
+    #    PGMSubDir = os.path.join(PGMSubDir,"czjLLM")
+    #print("PGMSubDir af",PGMSubDir)
+    PGMSubDir = PGMSubDir/"czjLLM"
     args = parse_args()
     file_config = {}
 

@@ -2,8 +2,8 @@
 import time
 from typing import Iterable, Tuple, Any, Optional
 
-from job_manager.console_ui import tlog_warn
-from prompt_pipeline.pipeline_controller import producer_backpressure_wait
+from czjLLM.job_manager.console_ui import tlog_warn
+from czjLLM.prompt_pipeline.pipeline_controller import producer_backpressure_wait
 from .workers import outstanding_now
 from .scheduler import schedule_one_row
 

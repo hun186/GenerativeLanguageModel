@@ -1,7 +1,7 @@
 import json
 import pyodbc
 import sqlite3
-from czjLLM_utils import quote_column
+from czjLLM.czjLLM_utils import quote_column
 
 
 def flatten_json_result(json_str: str, allowed_keys: set[str]) -> list[dict]:

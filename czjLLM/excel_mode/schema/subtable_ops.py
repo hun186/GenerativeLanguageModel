@@ -1,6 +1,6 @@
 # excel_mode/schema/subtable_ops.py
 from pathlib import Path
-from job_manager.console_ui import tlog_warn
+from czjLLM.job_manager.console_ui import tlog_warn
 
 INVALID_SHEET_CHARS = set(':\\/?!*[]')  # Excel 不允許的字元
 

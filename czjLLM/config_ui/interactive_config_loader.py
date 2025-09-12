@@ -3,7 +3,7 @@ import pprint
 #from utils.utilities_path import is_sqlite_path
 from pathlib import Path
 
-from job_manager.job_config import load_sql_config_from_file
+from czjLLM.job_manager.job_config import load_sql_config_from_file
 from utils.selector import OptionSelector
 
 def load_sql_config_interactively(PGMSubDir, get_param, ctx):

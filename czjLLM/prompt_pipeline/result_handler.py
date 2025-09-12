@@ -1,6 +1,6 @@
 import json
 import re
-from utilities.combine_utils import combine_json_return
+from czjLLM.utilities.combine_utils import combine_json_return
 
 class PromptResultHandler:
     def __init__(self, task, include_think=False):

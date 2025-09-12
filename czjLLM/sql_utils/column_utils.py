@@ -3,8 +3,8 @@ import sqlite3
 from datetime import datetime
 from colorama import Fore, Style#, Back
 
-from sql_utils.common import quote_column
-from sql_utils.schema_manager import table_exists
+from czjLLM.sql_utils.common import quote_column
+from czjLLM.sql_utils.schema_manager import table_exists
 
 def get_existing_columns(cursor, table_name: str, is_sqlite: bool) -> list[str]:
     if is_sqlite:

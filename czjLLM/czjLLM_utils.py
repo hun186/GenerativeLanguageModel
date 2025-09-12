@@ -26,9 +26,9 @@ import argparse
 
 try:
     from czjLLM_utils_key import api_key
-    import taskConfig
-    from taskConfig import taskSetting
-    from taskConfig import *
+    import czjLLM.taskConfig
+    from czjLLM.taskConfig import taskSetting
+    from czjLLM.taskConfig import *
 except:
     from GenerativeLanguageModel.czjLLM.czjLLM_utils_key import api_key
     from GenerativeLanguageModel.czjLLM import taskConfig
@@ -37,7 +37,7 @@ except:
 #print("taskConfig in L32",taskSetting)
 #from utils.utilities import MKDIR
 
-from sql_utils.common import quote_column
+from czjLLM.sql_utils.common import quote_column
 
 
 from utils.utilities import countdown_pause

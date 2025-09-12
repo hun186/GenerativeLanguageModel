@@ -1,4 +1,4 @@
-from sql_utils.common import quote_column
+from czjLLM.sql_utils.common import quote_column
 
 def upsert_single_value(ctx, cursor, pk, result, is_sqlite, update_time=None):
     if is_sqlite:

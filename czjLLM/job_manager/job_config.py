@@ -10,7 +10,7 @@ import math
 import shutil
 import subprocess
 
-from utilities.path_utils import llm_channel_dir
+from czjLLM.utilities.path_utils import llm_channel_dir
 
 
 from utils.selector import OptionSelector

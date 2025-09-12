@@ -1,11 +1,11 @@
 # sql_mode/scheduler.py
 import os
 from typing import Any
-from prompt_pipeline.pipeline_controller import find_item_dir_for, meter_update
-from utilities.file_utils import save_text_as_temp_file
+from czjLLM.prompt_pipeline.pipeline_controller import find_item_dir_for, meter_update
+from czjLLM.utilities.file_utils import save_text_as_temp_file
 from utils.utilities_path import getMFNFromFN, OSWALK
-from job_manager.console_ui import tlog
-from handlers.handle_txt_file import handle_single_input_file  # 延用現有函式
+from czjLLM.job_manager.console_ui import tlog
+from czjLLM.handlers.handle_txt_file import handle_single_input_file  # 延用現有函式
 
 def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
     """切片 -> 建 TODO -> 登錄 registry 與 meter。"""   

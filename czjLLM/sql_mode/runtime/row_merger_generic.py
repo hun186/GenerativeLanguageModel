@@ -3,14 +3,14 @@ import os, time, json
 from datetime import datetime
 from typing import Iterable, Tuple, Any, Optional, List, Dict
 
+from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from utils.utilities_path import OSWALK, DirReplace, MKDIR, getPathFromFN
-from job_manager.console_ui import tlog, tlog_warn
 from utils.utilities_path import safe_move
 
-from prompt_pipeline.pipeline_controller import (
+from czjLLM.prompt_pipeline.pipeline_controller import (
     combine_api_finished_item, get_combined_result_path, row_is_ready, meter_update
 )
-from row_processors.flatten_utils import extract_json_list_for_flatten
+from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
 
 '''
 def _extract_json_list(result_text: str, allowed_fields: Optional[List[str]]) -> List[Dict[str, Any]]:

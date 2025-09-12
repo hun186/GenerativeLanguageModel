@@ -1,7 +1,7 @@
 import json
 import pyodbc
 import sqlite3
-from sql_utils.common import quote_column
+from czjLLM.sql_utils.common import quote_column
 
 def table_exists(cursor, table_name: str, is_sqlite: bool) -> bool:
     if is_sqlite:

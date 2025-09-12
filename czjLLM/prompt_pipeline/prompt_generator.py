@@ -1,14 +1,14 @@
 import os
 from colorama import Fore#, Back, Style
-from taskConfig import taskSetting
+from czjLLM.taskConfig import taskSetting
 #from czjLLM_utils import generate_prompt
 
 import inspect
 
-from tokenizer_utils import TokenizerWrapper
-from job_manager.job_config import LLMJobConfig
-from job_manager.job_config import getTextClass
-from job_manager.job_config import getKeyConsiderations
+from czjLLM.tokenizer_utils import TokenizerWrapper
+from czjLLM.job_manager.job_config import LLMJobConfig
+from czjLLM.job_manager.job_config import getTextClass
+from czjLLM.job_manager.job_config import getKeyConsiderations
 
 from utils.utilities import countdown_pause
 from utils.utilities_path import MKDIR

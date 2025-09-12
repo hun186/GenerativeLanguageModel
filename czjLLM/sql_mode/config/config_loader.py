@@ -1,5 +1,5 @@
 # sql_mode/config_loader.py
-from config_ui.interactive_config_loader import load_sql_config_interactively
+from czjLLM.config_ui.interactive_config_loader import load_sql_config_interactively
 
 class InputPolicy:
     """預留策略型 API；此步先不啟用。"""

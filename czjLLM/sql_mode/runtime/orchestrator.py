@@ -6,7 +6,7 @@ import tqdm
 from typing import Iterable, Tuple, Any
 
 import multiprocessing as mp
-from job_manager.console_ui import tlog, tlog_ok
+from czjLLM.job_manager.console_ui import tlog, tlog_ok
 
 from .runtime_ui import prepare_ui, start_bar_refresher
 from ..metrics.metering import init_meter

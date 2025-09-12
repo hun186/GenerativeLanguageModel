@@ -1,7 +1,7 @@
 # sql_mode/workers.py
 import threading, time
-from prompt_pipeline.pipeline_controller import llm_stream_consumer,meter_read
-from job_manager.console_ui import tlog, tlog_warn
+from czjLLM.prompt_pipeline.pipeline_controller import llm_stream_consumer,meter_read
+from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from ..utils.term_lock import TQDM_LOCK
 
 from .row_merger_generic import row_merger_watchdog_generic

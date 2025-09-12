@@ -2,11 +2,11 @@
 from typing import Any, Optional, List, Dict
 import sqlite3, pyodbc
 
-from prompt_pipeline.pipeline_controller import (
+from czjLLM.prompt_pipeline.pipeline_controller import (
     flatten_row_based_json_array_to_subtable,
     quote_column,
 )
-from sql_utils.row_utils import upsert_single_value
+from czjLLM.sql_utils.row_utils import upsert_single_value
 
 from ...schema.schema_ops import ensure_flatten_schema as ensure_flatten_schema_op
 

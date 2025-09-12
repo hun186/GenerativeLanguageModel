@@ -2,9 +2,9 @@
 from typing import List, Tuple
 
 # 仍沿用你既有工具；此步先包裝，不更動內部行為
-from sql_utils.column_utils import ensure_sql_columns_exist  # 仍可保留以後用
-from sql_utils.column_utils import reset_output_col_with_backup
-from row_processors.flatten_utils import auto_setup_subtable_if_needed
+from czjLLM.sql_utils.column_utils import ensure_sql_columns_exist  # 仍可保留以後用
+from czjLLM.sql_utils.column_utils import reset_output_col_with_backup
+from czjLLM.row_processors.flatten_utils import auto_setup_subtable_if_needed
 
 def ensure_main_schema(ctx, adapter, columns_in_src: List[str], cfg: dict):
     """

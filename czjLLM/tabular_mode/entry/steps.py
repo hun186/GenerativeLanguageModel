@@ -8,17 +8,17 @@ import pandas as pd
 from utils.selector import OptionSelector
 from utils.utilities_path import OSWALK, smart_detect_path, MKDIR
 #from cli_tools.cli_utils import print_cli_usage_hint  # 若要在這層顯示提示可用
-from job_manager.console_ui import tlog, tlog_warn
+from ...job_manager.console_ui import tlog, tlog_warn
 
 # 你現有的工具（同 excel 版）
-from utilities.excel_utils import (
+from ...utilities.excel_utils import (
     read_dataframe, write_dataframe, backup_table_file, write_dataframe_sheet
 )
-from excel_mode.schema.subtable_ops import ensure_excel_subtable_config
+from ...excel_mode.schema.subtable_ops import ensure_excel_subtable_config
 
 # 直接沿用 SQL 那份互動式展平問答
 #from sql_mode.entry.steps import configure_flatten_options as configure_flatten_common
-from sql_mode.entry.steps import configure_flatten_options as _configure_flatten_sql
+from ...sql_mode.entry.steps import configure_flatten_options as _configure_flatten_sql
 
 
 # ---------------------------
