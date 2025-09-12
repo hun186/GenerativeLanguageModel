@@ -82,10 +82,11 @@ jobs:
         run: pytest -q -m "not integration" --maxfail=1 --disable-warnings
 
       - name: Run integration tests (self-hosted only)
-        if: ${{ secrets.DB_CONN_STR != '' }}
+        if: ${{ env.RUN_INTEGRATION == '1' }}
         shell: pwsh
+        run: pytest -q -m "integration" --maxfail=1 --disable-warnings
         env:
+          RUN_INTEGRATION: ${{ secrets.DB_CONN_STR != '' && '1' || '0' }}
           DB_CONN_STR: ${{ secrets.DB_CONN_STR }}
           LLM_BASE_URLS: ${{ secrets.LLM_BASE_URLS }}
           API_KEY: ${{ secrets.PRIVATE_API_KEY }}
-        run: pytest -q -m "integration" --maxfail=1 --disable-warnings
