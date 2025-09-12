@@ -1,0 +1,25 @@
+allowed_output_fields:
+- inputName
+- formalName
+- functionalDomain
+- administrativeLevel
+- parentUnit
+- administrativeDivision
+- organizationType
+- keyFunctions
+- affiliatedNationOrRegion
+- locatedCountryOrRegion
+- affNationLangs
+- description
+channel: excel_source
+flatten_json_output: true
+input_col: Text
+mode: sql
+model_spec: qwen3:32b-ctx-4k-premises-q4
+output_col: TR
+record_update_time: true
+save_raw_output_when_flatten: true
+save_raw_input_when_flatten: true
+sql_config_file: GenerativeLanguageModel/czjLLM/config_sql/akconfig_local_file_test.py
+task: Organization Profile Analyzer to json format
+#task: MDT Term Extraction to json format

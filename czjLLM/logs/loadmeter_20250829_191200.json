@@ -1,0 +1,1 @@
+{"session_id": "20250829_191200", "created_at": "2025-08-29T19:12:00", "thresholds": {"low": 16, "high": 40}, "workers": {"n_process": 4}, "queue": {"pending": 0, "running": 0, "completed": 0}, "rows": {}, "consumer": {"alive": false}}
