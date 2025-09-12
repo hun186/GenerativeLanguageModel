@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import Optional, List
 from pandas.api.types import is_string_dtype, is_object_dtype
 from czjLLM.job_manager.console_ui import tlog, tlog_warn
-from utilities.excel_utils import read_dataframe, write_dataframe
-from excel_mode.schema.subtable_ops import ensure_excel_subtable_config
+from czjLLM.utilities.excel_utils import read_dataframe, write_dataframe
+from czjLLM.excel_mode.schema.subtable_ops import ensure_excel_subtable_config
 
 class CSVSink:
     """
