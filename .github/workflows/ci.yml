@@ -4,14 +4,12 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
+    branches: [ main, develop ]
   workflow_dispatch:
 
-# 避免同分支重疊跑
 concurrency:
-  group: ci-${{ github.ref }}
+  group: "ci-${{ github.ref }}"
   cancel-in-progress: true
-
-# ...前略（on/concurrency 與兩個 jobs 保持不變）
 
 jobs:
   unit-linux:
@@ -23,7 +21,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: ${{ matrix.python-version }} }
+        with:
+          python-version: ${{ matrix.python-version }}
       - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
@@ -42,12 +41,14 @@ jobs:
     runs-on: [ self-hosted, Windows, X64 ]
     steps:
       - uses: actions/checkout@v4
-        with: { clean: true }
+        with:
+          clean: true
       - uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
+        with:
+          python-version: "3.11"
       - uses: actions/cache@v4
         with:
-          path: ~\AppData\Local\pip\Cache
+          path: '~\AppData\Local\pip\Cache'
           key: pip-${{ runner.os }}-311-${{ hashFiles('**/requirements*.txt') }}
       - name: Install deps
         shell: pwsh
