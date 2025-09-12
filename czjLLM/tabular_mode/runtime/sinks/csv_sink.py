@@ -4,7 +4,7 @@ import pandas as pd
 from pathlib import Path
 from typing import Optional, List
 from pandas.api.types import is_string_dtype, is_object_dtype
-from job_manager.job_manager.console_ui import tlog, tlog_warn
+from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from utilities.excel_utils import read_dataframe, write_dataframe
 from excel_mode.schema.subtable_ops import ensure_excel_subtable_config
 
