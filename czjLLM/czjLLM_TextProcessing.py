@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from utilities.path_utils import init_project_root
+from czjLLM.utilities.path_utils import init_project_root
 project_root = init_project_root()
 from PackageImport import set_working_dir_to, PackageImporter
 PackageImporter.proc()
