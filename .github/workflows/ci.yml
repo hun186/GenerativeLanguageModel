@@ -4,11 +4,10 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]
   workflow_dispatch:
 
 concurrency:
-  group: "ci-${{ github.ref }}"
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -17,17 +16,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.9", "3.10", "3.11", "3.12" ]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: ${{ matrix.python-version }} }
 
-      # ✅ 無論有沒有 requirements.txt，都裝 pytest
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
       - name: Install test tools
         run: python -m pip install -U pip setuptools wheel pytest
 
-      - uses: actions/cache@v4
+      - name: Cache pip
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: pip-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}
@@ -44,19 +46,23 @@ jobs:
         run: pytest -q -m "not integration" --maxfail=1 --disable-warnings
 
   windows-selfhosted:
-    runs-on: [ self-hosted, Windows, X64 ]
+    runs-on: [self-hosted, Windows, X64]
     steps:
       - uses: actions/checkout@v4
-        with: { clean: true }
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
+        with:
+          clean: true
 
-      # ✅ Windows 也先裝 pytest
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Install test tools
         shell: pwsh
         run: python -m pip install -U pip setuptools wheel pytest
 
-      - uses: actions/cache@v4
+      - name: Cache pip
+        uses: actions/cache@v4
         with:
           path: ~\AppData\Local\pip\Cache
           key: pip-${{ runner.os }}-311-${{ hashFiles('**/requirements*.txt') }}
@@ -69,19 +75,17 @@ jobs:
 
       - name: Set PYTHONPATH (repo root)
         shell: pwsh
-        run: echo "PYTHONPATH=$PWD" >> $env:GITHUB_ENV
+        run: Add-Content -Path $env:GITHUB_ENV -Value "PYTHONPATH=$PWD"
 
       - name: Run unit tests (Windows)
         shell: pwsh
         run: pytest -q -m "not integration" --maxfail=1 --disable-warnings
 
       - name: Run integration tests (self-hosted only)
-        if: ${{ env.RUN_INTEGRATION == '1' }}
+        if: ${{ secrets.DB_CONN_STR != '' }}
         shell: pwsh
-        run: pytest -q -m "integration" --maxfail=1 --disable-warnings
         env:
-          RUN_INTEGRATION: ${{ secrets.DB_CONN_STR != '' && '1' || '0' }}
           DB_CONN_STR: ${{ secrets.DB_CONN_STR }}
           LLM_BASE_URLS: ${{ secrets.LLM_BASE_URLS }}
           API_KEY: ${{ secrets.PRIVATE_API_KEY }}
-
+        run: pytest -q -m "integration" --maxfail=1 --disable-warnings
