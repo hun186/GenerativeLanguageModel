@@ -58,7 +58,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install test tools
-        shell: pwsh
+        shell: powershell
         run: python -m pip install -U pip setuptools wheel pytest
 
       - name: Cache pip
@@ -68,22 +68,22 @@ jobs:
           key: pip-${{ runner.os }}-311-${{ hashFiles('**/requirements*.txt') }}
 
       - name: Install deps
-        shell: pwsh
+        shell: powershell
         run: |
           if (Test-Path requirements.txt) { pip install -r requirements.txt }
           if (Test-Path requirements-dev.txt) { pip install -r requirements-dev.txt }
 
       - name: Set PYTHONPATH (repo root)
-        shell: pwsh
+        shell: powershell
         run: Add-Content -Path $env:GITHUB_ENV -Value "PYTHONPATH=$PWD"
 
       - name: Run unit tests (Windows)
-        shell: pwsh
+        shell: powershell
         run: pytest -q -m "not integration" --maxfail=1 --disable-warnings
 
       - name: Run integration tests (self-hosted only)
         if: ${{ env.RUN_INTEGRATION == '1' }}
-        shell: pwsh
+        shell: powershell
         run: pytest -q -m "integration" --maxfail=1 --disable-warnings
         env:
           RUN_INTEGRATION: ${{ secrets.DB_CONN_STR != '' && '1' || '0' }}
