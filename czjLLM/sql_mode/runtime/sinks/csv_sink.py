@@ -3,7 +3,7 @@ from typing import List, Optional
 import os, json
 import pandas as pd
 from pandas.api.types import is_string_dtype, is_object_dtype
-from job_manager.console_ui import tlog, tlog_warn
+from czjLLM.job_manager.console_ui import tlog, tlog_warn
 
 def _ensure_text_col(df: pd.DataFrame, col: str):
     if col not in df.columns:
