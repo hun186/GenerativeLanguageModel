@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+  workflow_dispatch:
+
+# 避免同分支重疊跑
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# ...前略（on/concurrency 與兩個 jobs 保持不變）
+
+jobs:
+  unit-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.9", "3.10", "3.11", "3.12" ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: ${{ matrix.python-version }} }
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}
+      - name: Install deps
+        run: |
+          python -m pip install -U pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+      - name: Set PYTHONPATH (repo root)
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+      - name: Run unit tests (exclude integration)
+        run: pytest -q -m "not integration" --maxfail=1 --disable-warnings
+
+  windows-selfhosted:
+    runs-on: [ self-hosted, Windows, X64 ]
+    steps:
+      - uses: actions/checkout@v4
+        with: { clean: true }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - uses: actions/cache@v4
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: pip-${{ runner.os }}-311-${{ hashFiles('**/requirements*.txt') }}
+      - name: Install deps
+        shell: pwsh
+        run: |
+          python -m pip install -U pip
+          if (Test-Path requirements.txt) { pip install -r requirements.txt }
+          if (Test-Path requirements-dev.txt) { pip install -r requirements-dev.txt }
+      - name: Set PYTHONPATH (repo root)
+        shell: pwsh
+        run: echo "PYTHONPATH=$PWD" >> $env:GITHUB_ENV
+      - name: Run unit tests (Windows)
+        shell: pwsh
+        run: pytest -q -m "not integration" --maxfail=1 --disable-warnings
+      - name: Run integration tests (self-hosted only)
+        if: ${{ secrets.DB_CONN_STR != '' }}
+        shell: pwsh
+        run: pytest -q -m "integration" --maxfail=1 --disable-warnings
+        env:
+          DB_CONN_STR: ${{ secrets.DB_CONN_STR }}
+          LLM_BASE_URLS: ${{ secrets.LLM_BASE_URLS }}
+          API_KEY: ${{ secrets.PRIVATE_API_KEY }}

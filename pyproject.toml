@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "czjllm"
+version = "0.1.0"
+requires-python = ">=3.8"
+dependencies = [
+  "pandas>=2.0",
+  "openpyxl>=3.1",
+  "colorama",
+  # 其餘依賴…
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py38"]
+
+[tool.ruff]
+line-length = 100
+select = ["E","F","I","UP","B"]
+ignore = ["E501"]
+exclude = ["dist", "build"]
+
+[tool.mypy]
+python_version = "3.8"
+ignore_missing_imports = true
+strict_optional = false
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+addopts = "-q --maxfail=1 --disable-warnings"
+markers = [
+  "integration: slow/integration tests",
+  "windows_only: tests requiring Windows path semantics",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["czjLLM"]
+
+[tool.coverage.report]
+fail_under = 70
