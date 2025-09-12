@@ -21,19 +21,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
+        with: { python-version: ${{ matrix.python-version }} }
+
+      # ✅ 無論有沒有 requirements.txt，都裝 pytest
+      - name: Install test tools
+        run: python -m pip install -U pip setuptools wheel pytest
+
       - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: pip-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}
+
       - name: Install deps
         run: |
-          python -m pip install -U pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+
       - name: Set PYTHONPATH (repo root)
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
       - name: Run unit tests (exclude integration)
         run: pytest -q -m "not integration" --maxfail=1 --disable-warnings
 
@@ -41,34 +47,39 @@ jobs:
     runs-on: [ self-hosted, Windows, X64 ]
     steps:
       - uses: actions/checkout@v4
-        with:
-          clean: true
+        with: { clean: true }
       - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+        with: { python-version: "3.11" }
+
+      # ✅ Windows 也先裝 pytest
+      - name: Install test tools
+        shell: pwsh
+        run: python -m pip install -U pip setuptools wheel pytest
+
       - uses: actions/cache@v4
         with:
-          path: '~\AppData\Local\pip\Cache'
+          path: ~\AppData\Local\pip\Cache
           key: pip-${{ runner.os }}-311-${{ hashFiles('**/requirements*.txt') }}
+
       - name: Install deps
         shell: pwsh
         run: |
-          python -m pip install -U pip
           if (Test-Path requirements.txt) { pip install -r requirements.txt }
           if (Test-Path requirements-dev.txt) { pip install -r requirements-dev.txt }
+
       - name: Set PYTHONPATH (repo root)
         shell: pwsh
         run: echo "PYTHONPATH=$PWD" >> $env:GITHUB_ENV
+
       - name: Run unit tests (Windows)
         shell: pwsh
         run: pytest -q -m "not integration" --maxfail=1 --disable-warnings
+
       - name: Run integration tests (self-hosted only)
-        # 不直接引用 secrets；改用環境變數開關
         if: ${{ env.RUN_INTEGRATION == '1' }}
         shell: pwsh
         run: pytest -q -m "integration" --maxfail=1 --disable-warnings
         env:
-          # 有設定 DB_CONN_STR 才跑整合測試；沒有就設成 '0' -> if 會跳過
           RUN_INTEGRATION: ${{ secrets.DB_CONN_STR != '' && '1' || '0' }}
           DB_CONN_STR: ${{ secrets.DB_CONN_STR }}
           LLM_BASE_URLS: ${{ secrets.LLM_BASE_URLS }}
