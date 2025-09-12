@@ -1,0 +1,80 @@
+# Python / 虛擬環境
+.venv//
+env/
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# 日誌與快取
+logs/
+*.log
+**/cache/
+
+# LLM 工作池／備份／產出（巨檔）
+WorkPool_*/
+LLMSourcePool/
+LLMSourcePool_Finished/
+LLMSourcePool_origin_backup/
+**/Prompt/**/Success/
+**/*_backup_*.xlsx
+*.xlsx~*
+*.tmp
+czjLLM_backup*/
+
+# 大型資料與模型
+models/
+artifacts/
+data/
+*.bin
+*.pt
+*.onnx
+
+# 內網配置/密鑰
+*.env
+.env.*
+configs/*-secret.yaml
+czjllm.local.yaml
+modelConfig_pri.py
+
+alpaca_webui/
+alpaca-lora-main/
+ChatGPT_Test/
+czjLLM/招標通信類
+czjLLM/風險分析
+czjLLM/說明書_not_using
+czjLLM/論文翻譯測試
+czjLLM_backup/
+czjLLM_NoSen/
+LLM應用/
+loras/
+models/
+ollama/
+Prompt/
+Prompt_lora/
+RAG/
+SRep/
+static/
+Summary/
+test_pdf/
+TreeGUI/
+TTS/
+教學影片/
+摘要微調SOP/
+摘要標註/
+
+CMD_Alpaca_server.txt
+GenerativeSummary.py
+GenerativeSummary.txt
+GenerativeSummaryAPI.py
+phi_test.py
+
+selfRAG_test.py
+TWLlamaGPTQ.py
+vicuna_test.py
+安裝可調用gpu的chatglm-cpp安裝指令.txt
+使用 PEFT 的 LoRA（Windows10（不使用 WSL2），使用 bitsandbytes==0.37.0） - Qiita.pdf
+摘要標註整合PBI.pbix
+摘要標註整合PBI_BI_0723Ver.pbix
