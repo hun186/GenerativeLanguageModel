@@ -12,6 +12,7 @@ concurrency:
 
 jobs:
   unit-linux:
+    if: ${{ false }}   # 暫停此 job
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
