@@ -70,6 +70,8 @@ jobs:
 
       - name: Install deps
         shell: powershell
+        env:
+          PYTHONNOUSERSITE: 1 #忽略使用者層 site-packages
         run: |
           if (Test-Path requirements.txt) { pip install -r requirements.txt }
           if (Test-Path requirements-dev.txt) { pip install -r requirements-dev.txt }
