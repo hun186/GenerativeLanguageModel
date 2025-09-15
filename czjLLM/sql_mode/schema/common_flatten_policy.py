@@ -1,4 +1,5 @@
 # schema/common_flatten_policy.py
+from ...job_manager.console_ui import tlog,tlog_warn
 def ensure_common_flatten_policy(ctx):
     """
     決定是否把『原始輸入欄位』額外寫入子表，並設定 ctx.subtable_input_col。
@@ -18,9 +19,9 @@ def ensure_common_flatten_policy(ctx):
     if not isinstance(input_col, str) or not input_col.strip():
         # 沒有可用的輸入欄位名 → 關閉
         try:
-            from job_manager.console_ui import tlog_warn
             tlog_warn("⚠️ save_raw_input_when_flatten=True，但未提供 input_col，略過原始輸入欄位。")
-        except Exception:
+        except Exception as ex:
+            print("When run ensure_common_flatten_policy, the following error occurs:\n{ex}")
             pass
         ctx.save_raw_input_when_flatten = False
         ctx.subtable_input_col = None
@@ -31,10 +32,9 @@ def ensure_common_flatten_policy(ctx):
         ctx.save_raw_input_when_flatten = False
         ctx.subtable_input_col = None
         try:
-            from job_manager.console_ui import tlog
             tlog("ℹ️ 子表主鍵與輸入欄相同；已自動關閉 raw input 複寫（PK 即為原始輸入）。")
-        except Exception:
-            pass
+        except Exception as ex:
+            print("When run ensure_common_flatten_policy, the following error occurs:\n{ex}")
         return False
 
     ctx.subtable_input_col = input_col

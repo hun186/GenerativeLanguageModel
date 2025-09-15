@@ -114,6 +114,7 @@ def _table_build_iter(ctx, env):
     return build_pending_iter_tabular(ctx, env["input_path"], env["output_path"], env["fmt"])
 
 def _table_sink(ctx, env):
+    print(f"returning the table sink for {ctx}")
     if env["fmt"] == "excel":
         return ExcelSink(ctx, 
                          input_path=env["input_path"], output_path=env["output_path"],
@@ -123,6 +124,7 @@ def _table_sink(ctx, env):
                          flush_main_every=10, flush_sub_every=10)
     else:
         return CSVSink(ctx, main_csv=env["output_path"])
+
 
 def _table_err(ctx, env):
     return f"{Path(env['output_path']).stem}_{ctx.output_col}_{env['fmt']}_error_log.txt"
