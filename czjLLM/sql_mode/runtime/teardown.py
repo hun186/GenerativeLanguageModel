@@ -1,4 +1,5 @@
 # sql_mode/runtime/teardown.py
+from ...job_manager.console_ui import remove_log_sink
 def shutdown(
     ctx,
     gui,
@@ -61,7 +62,6 @@ def shutdown(
     # 6) 移除 GUI sink、關 GUI、還原 console
     try:
         # 延遲 import，避免上層循環匯入
-        from job_manager.console_ui import remove_log_sink
         if gui_sink:
             remove_log_sink(gui_sink)
     except Exception:

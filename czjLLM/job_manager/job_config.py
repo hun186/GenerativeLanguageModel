@@ -31,6 +31,7 @@ def load_config_from_file(PGMSubDir="", config_path=""):
     ]
 
     for path in paths_to_try:
+        #print("paths_to_try",path)
         if os.path.isfile(path):
             with open(path, "r", encoding="utf-8") as f:
                 return yaml.safe_load(f)
@@ -115,6 +116,7 @@ def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None,
     ctx.mode = mode
     if ctx.mode in ["sql_to_excel"]:
         return ctx
+    #print("modelSetting",modelSetting)
     ctx.model_spec_name = model_spec_name or set_model_spec()
     ctx.model_spec = modelSetting.get(ctx.model_spec_name)
     if ctx.model_spec is None:

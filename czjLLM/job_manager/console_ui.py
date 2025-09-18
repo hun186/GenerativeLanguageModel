@@ -5,7 +5,7 @@ from threading import RLock, Thread
 from tqdm import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
 from colorama import Fore, Style
-
+from datetime import datetime, timedelta
 from typing import Callable, List
 import re
 
@@ -61,41 +61,6 @@ except NameError:
         def apply(self, line: str): return line
     _CONSOLE_FILTERS = _NoopFilter()
 
-
-'''
-def _emit(level: str, line: str, *, stream, color=""):
-    if line is None:
-        return
-    line = line.rstrip("\r\n")
-    if not line.strip():
-        return
-    # 過濾/縮寫（若有安裝 _CONSOLE_FILTERS）
-    try:
-        line2 = _CONSOLE_FILTERS.apply(line)
-        if line2 is None or line2 == "":
-            return
-        line = line2
-    except NameError:
-        pass
-
-    # 1) 主控台輸出（tqdm-safe）
-    tqdm.write((color or "") + line + Style.RESET_ALL, file=stream)
-
-    # 2) 廣播到所有 sinks（無 ANSI、純文字）
-    msg_plain = _strip_ansi(line)
-    with _SINK_LOCK:
-        for sink in list(_SINKS):
-            try:
-                sink(level, msg_plain)
-            except Exception:
-                # 單一 sink 出錯不影響其他
-                pass
-
-def tlog(msg: str):      _emit("INFO",  str(msg), stream=_REAL_STDOUT, color=Fore.CYAN)
-def tlog_ok(msg: str):   _emit("OK",    str(msg), stream=_REAL_STDOUT, color=Fore.GREEN)
-def tlog_warn(msg: str): _emit("WARN",  str(msg), stream=_REAL_STDOUT, color=Fore.YELLOW)
-def tlog_err(msg: str):  _emit("ERROR", str(msg), stream=_REAL_STDERR, color=Fore.RED)
-'''
 # ---- 把 print 重導到 tqdm.write（可選，但很實用）----
 _REAL_STDOUT = sys.__stdout__
 _REAL_STDERR = sys.__stderr__
@@ -155,17 +120,14 @@ class _StdToTqdm(io.TextIOBase):
     def seekable(self): return False
 
 # ---- 建立兩條「相鄰」的進度條 + 安全輸出 ----
+# ---- 建立兩條「相鄰」的進度條 + 安全輸出 ----
 def setup_console_ui(total_rows: int, ncols: int = 90):
-    """
-    回傳 (p_sched, p_done, restore_fn)
-    - p_sched：排程(切片/入佇列)
-    - p_done ：完成(合併+寫回)
-    - restore_fn：收尾時還原 stdout/stderr/logging
-    """
     import time, threading
+    from threading import RLock
+    from tqdm import tqdm
 
-    # 讓 {postfix} 不帶任何前綴，避免出現 " | ," 這類重複符號
-    bar_fmt = "{l_bar}{bar} | {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]{postfix}"
+    #bar_fmt = "{l_bar}{bar} | {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]{postfix}"
+    bar_fmt = "{l_bar}{bar} | {n_fmt}/{total_fmt} [{elapsed}, {rate_fmt}]{postfix}"
 
     p_sched = tqdm(total=total_rows,
                    desc=Fore.LIGHTYELLOW_EX + "排程進度(切片/入佇列)" + Style.RESET_ALL,
@@ -177,68 +139,94 @@ def setup_console_ui(total_rows: int, ncols: int = 90):
                   position=1, leave=True, ncols=ncols, colour="yellow",
                   bar_format=bar_fmt, unit="列", mininterval=0.1)
 
-    # --- ETA 背景更新：指數平滑降抖動 ---
     _ALPHA = 0.30
     eta_stop = threading.Event()
 
-    def _make_state(pbar):
-        now = time.time()
-        return {"t0": now, "last_t": now, "last_n": pbar.n, "rate_ema": 0.0}
+    # ★ 共享鎖：保護「讀寫 pbar 屬性」與「刷新」免於競態
+    _bars_lock = RLock()  # tqdm.set_lock 只保護其內部 print，這把鎖保護你的邏輯
 
+    # ★ 安全刷新：變更 total 後一定要觸發重繪
+    def _safe_refresh(pbar):
+        try:
+            pbar.update(0)
+            pbar.refresh()
+        except Exception:
+            pass
+
+    def _make_state(pbar):
+        now_mono = time.perf_counter()
+        return {
+            "last_t_mono": now_mono,
+            "last_n": pbar.n or 0,
+            "tpu_ema": -1.0,
+            "last_eta_str": "",
+        }
+
+    def _step(state, pbar, _ALPHA=0.30):
+        now_mono = time.perf_counter()
+        dn = pbar.n - state["last_n"]
+        if dn > 0:
+            dt = max(1e-9, now_mono - state["last_t_mono"])
+            inst_tpu = dt / max(1, dn)
+            tpu_ema = state["tpu_ema"]
+            state["tpu_ema"] = inst_tpu if tpu_ema <= 0 else (1 - _ALPHA) * tpu_ema + _ALPHA * inst_tpu
+            state["last_t_mono"] = now_mono
+            state["last_n"] = pbar.n
+    
+        tpu = state["tpu_ema"]
+        if pbar.total and tpu > 0:
+            remain_sec = max(0.0, (pbar.total - pbar.n) * tpu)
+            eta_dt = datetime.now().astimezone() + timedelta(seconds=remain_sec)
+            eta_str = eta_dt.strftime("%H:%M:%S")
+            state["last_eta_str"] = eta_str
+            pbar.set_postfix_str(f" ETA {eta_str}", refresh=(dn > 0))
+        else:
+            pbar.set_postfix_str(f" ETA {state['last_eta_str']}", refresh=False)
+
+    # ★ 別漏這兩行（你上一版貼的程式碼裡看不到）
     st_sched = _make_state(p_sched)
     st_done  = _make_state(p_done)
-
-    def _step(state, pbar):
-        now = time.time()
-        dt = max(1e-6, now - state["last_t"])
-        dn = max(0, pbar.n - state["last_n"])
-        inst_rate = dn / dt if dn > 0 else 0.0
-        if inst_rate > 0:
-            if state["rate_ema"] <= 0:
-                state["rate_ema"] = inst_rate
-            else:
-                state["rate_ema"] = (1 - _ALPHA) * state["rate_ema"] + _ALPHA * inst_rate
-        state["last_t"] = now
-        state["last_n"] = pbar.n
-
-        rate = state["rate_ema"]
-        if (pbar.total and rate > 0):
-            remain = max(0.0, (pbar.total - pbar.n) / rate)
-            eta_ts = now + remain
-            eta_str = time.strftime("%H:%M:%S", time.localtime(eta_ts))
-            # 只顯示 ETA（速率已在 {rate_fmt}）
-            pbar.set_postfix_str(f" ETA {eta_str}", refresh=False)
-        else:
-            pbar.set_postfix_str("", refresh=False)
 
     def _eta_loop():
         while not eta_stop.is_set():
             try:
-                _step(st_sched, p_sched)
-                _step(st_done,  p_done)
-            except Exception:
-                pass
-            time.sleep(0.5)  # 每 0.5 秒更新一次
+                # ★ 背景讀/寫 pbar（含 postfix）時加鎖，避免與 set_total 競態
+                with _bars_lock:
+                    _step(st_sched, p_sched)
+                    _step(st_done,  p_done)
+            except Exception as e:
+                # 不要吞錯，至少留一行可診斷
+                tqdm.write(f"[ETA] {type(e).__name__}: {e}")
+            time.sleep(0.5)
 
     eta_th = threading.Thread(target=_eta_loop, name="tqdm-eta", daemon=True)
     eta_th.start()
 
-    # 把 print/logging 安全導向 tqdm（輸出寫到原生 stream，避免遞迴）
+    # ★ 提供一個對外 API：在切片總數改變時呼叫它
+    def set_total(which: str, new_total: int):
+        """
+        which: 'sched' | 'done' | 'both'
+        new_total: 新的總列數（不可小於當前進度 n）
+        """
+        with _bars_lock:
+            targets = []
+            if which in ('sched', 'both'): targets.append(p_sched)
+            if which in ('done',  'both'): targets.append(p_done)
+            for bar in targets:
+                bar.total = max(int(new_total), int(bar.n))  # 防止 n > total
+                _safe_refresh(bar)
+
+    # 安全導向 stdout/stderr 與 logging（維持你原本的做法）
     stdout_bak, stderr_bak = sys.stdout, sys.stderr
     sys.stdout = _StdToTqdm(_REAL_STDOUT, level="INFO")
     sys.stderr = _StdToTqdm(_REAL_STDERR, level="AUTO")
-
-    log_ctx = logging_redirect_tqdm()
-    log_ctx.__enter__()
+    log_ctx = logging_redirect_tqdm(); log_ctx.__enter__()
 
     def restore():
-        # 停止 ETA 背景執行緒
         try:
-            eta_stop.set()
-            eta_th.join(timeout=1.0)
+            eta_stop.set(); eta_th.join(timeout=1.0)
         except Exception:
             pass
-        # flush 並還原 logging / streams
         try:
             sys.stdout.flush(); sys.stderr.flush()
         except Exception:
@@ -253,7 +241,9 @@ def setup_console_ui(total_rows: int, ncols: int = 90):
         except Exception:
             pass
 
-    return p_sched, p_done, restore
+    # ★ 多回傳一個 set_total，方便外部在實際總數變動時同步兩條 bar
+    return p_sched, p_done, restore, set_total
+
 
 
 def setup_console_ui_OLD(total_rows: int, ncols: int = 90):

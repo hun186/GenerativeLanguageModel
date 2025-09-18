@@ -61,6 +61,9 @@ Summary/
 test_pdf/
 TreeGUI/
 TTS/
+utils/**/*.pdf
+utils/**/*.txt
+utils/**/*.xlsx
 教學影片/
 摘要微調SOP/
 摘要標註/

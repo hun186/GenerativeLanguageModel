@@ -35,37 +35,3 @@ def ensure_excel_subtable_config(ctx, output_path: str):
         for bad in r'[]:*?/\\':
             safe = safe.replace(bad, "_")
         ctx.subtable_name = safe[:31]  # Excel sheet 名最長 31 chars
-
-'''
-    # 3) 原始輸入欄位寫入規則
-    save_raw_input = bool(getattr(ctx, "save_raw_input_when_flatten", False))
-    input_col = getattr(ctx, "input_col", None)
-
-    if not save_raw_input:
-        # 明確指定不寫入原始輸入欄
-        ctx.subtable_input_col = None
-        return
-
-    # 要寫 raw input，但沒提供 input_col → 關閉並提示
-    if not input_col or not str(input_col).strip():
-        tlog_warn("⚠️ save_raw_input_when_flatten=True，但未提供 input_col，略過原始輸入欄位。")
-        ctx.save_raw_input_when_flatten = False
-        ctx.subtable_input_col = None
-        return
-
-    # ★ 關鍵：若主鍵 == 輸入欄，則不重複寫 raw input 到子表
-    if getattr(ctx, "primary_key", None) == input_col:
-        # 這種情況下 PK 本身就是原始輸入，不需要重複存
-        ctx.save_raw_input_when_flatten = False
-        ctx.subtable_input_col = None
-        # 可選的資訊訊息（不要就移除）
-        try:
-            from job_manager.console_ui import tlog
-            tlog("ℹ️ 子表主鍵與輸入欄相同；已自動關閉 raw input 複寫（PK 即為原始輸入）。")
-        except Exception:
-            pass
-        return
-
-    # 正常情況：指定要寫入子表的原始輸入欄位名
-    ctx.subtable_input_col = input_col
-'''

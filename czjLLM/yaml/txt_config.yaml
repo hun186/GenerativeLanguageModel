@@ -1,0 +1,6 @@
+channel: test_Classification
+llm_source_backup_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/test_Classification
+llm_source_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool/test_Classification
+mode: txt
+model_spec: qwen3:32b-ctx-32k-premises-q4
+task: MDT Term Extraction to json format

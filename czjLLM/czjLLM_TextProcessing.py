@@ -1,15 +1,14 @@
-from pathlib import Path
+from utils_manager.utils_sync import prepare_env
 
-from czjLLM.utilities.path_utils import init_project_root
-project_root = init_project_root()
-from PackageImport import set_working_dir_to, PackageImporter
-PackageImporter.proc()
-PGMSubDir = Path(set_working_dir_to("TopicClassification"))
+
+
+#from PythonModule import utils
+
 
 ##########################################################################
 import pprint
 import os
-from utils.selector import OptionSelector
+#from utils.selector import OptionSelector
 
 from czjLLM.job_manager.job_config import initialize_config
 from czjLLM.job_manager.job_config import load_config_from_file
@@ -26,10 +25,29 @@ if __name__ == '__main__':
     #if not PGMSubDir.endswith("czjLLM"):
     #    PGMSubDir = os.path.join(PGMSubDir,"czjLLM")
     #print("PGMSubDir af",PGMSubDir)
-    PGMSubDir = PGMSubDir/"czjLLM"
+    #PGMSubDir = PGMSubDir/"czjLLM"
     args = parse_args()
     file_config = {}
 
+
+    ctx_paths, PGMSubDir, utils_dir, cfg_path = prepare_env(
+        root_name="TopicClassification",
+        app_name="GenerativeLanguageModel",
+        markers=("PackageImport.py",),
+        source_subdir="PythonModule",        # = D:\shared\TopicClassification\PythonModule
+        target_subdir="lib/PythonModule",
+        include_ext={".py"},
+        delete_extraneous=True,
+        allow_missing=False,
+        #prefer_pgm_subdir="app",             # ✅ 讓 PGMSubDir 指向 GenerativeLanguageModel
+        prefer_pgm_subdir="caller",
+        config_arg=args.config,              # 會自動嘗試 CWD、App 根、Caller、Project 根
+    )
+
+    # 有些地方要字串
+    PGMSubDir = str(PGMSubDir)
+    from PythonModule import utils
+    from utils.selector import OptionSelector
     # 嘗試讀取設定檔
     if args.config:
         file_config = load_config_from_file(PGMSubDir=PGMSubDir, config_path=args.config)
@@ -52,6 +70,11 @@ if __name__ == '__main__':
             question="請選擇處理模式：",
             default="txt"
         ).proc()
+
+
+
+
+
 
     # 初始化任務參數
     ctx = initialize_config(

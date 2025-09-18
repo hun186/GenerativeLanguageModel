@@ -3,11 +3,13 @@ import os
 import pandas as pd
 import numpy as np
 import json
+import math
 from pandas.api.types import is_string_dtype, is_object_dtype
-from czjLLM.utilities.excel_utils import read_dataframe, write_dataframe
-from czjLLM.utilities.excel_utils import write_dataframe_sheet
-from czjLLM.job_manager.console_ui import tlog, tlog_warn
-from czjLLM.excel_mode.schema.subtable_ops import ensure_excel_subtable_config
+from ....utilities.excel_utils import read_dataframe, write_dataframe
+from ....utilities.excel_utils import write_dataframe_sheet
+from ....job_manager.console_ui import tlog, tlog_warn
+from ....excel_mode.schema.subtable_ops import ensure_excel_subtable_config
+from ....job_manager.console_ui import tlog, tlog_warn
 
 class ExcelSink:
     """
@@ -152,7 +154,7 @@ class ExcelSink:
         # 結束前，如果還有緩存，顯示提示
         if self._dirty_main or self._dirty_sub:
             try:
-                from job_manager.console_ui import tlog
+
                 tlog("📦 Pipeline 結束，開始將緩存資料全部落盤…")
             except Exception:
                 print("📦 Pipeline 結束，開始將緩存資料全部落盤…")
@@ -193,8 +195,7 @@ class ExcelSink:
         - 若找到多列：僅第一次遇到該鍵時警告，並說明會寫入所有同鍵列
         - 若找到一列：在 debug 模式下印出命中索引
         """
-        import math
-        from job_manager.console_ui import tlog, tlog_warn
+
     
         pk_col = getattr(self.ctx, "primary_key", None)
         if not pk_col or pk_col not in self.df.columns:
@@ -271,7 +272,6 @@ class ExcelSink:
             if self._main_since >= self.flush_main_every:
                 self._flush_main()
         except Exception as ex:
-            from job_manager.console_ui import tlog_warn
             tlog_warn(f"⚠️ ExcelSink.write_main 失敗（pk={pk}）：{ex}")
 
     # ---- flatten (subtable) ----
