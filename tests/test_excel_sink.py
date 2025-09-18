@@ -6,9 +6,12 @@ from czjLLM.sql_mode.runtime.sinks.excel_sink import ExcelSink
 def test_excel_sink_preserve_other_sheets(tmp_path):
     xlsx = tmp_path / "out.xlsx"
     # 先建立含 two sheets
-    with pd.ExcelWriter(xlsx, engine="openpyxl") as w:
-        pd.DataFrame({"A":[1]}).to_excel(w, index=False, sheet_name="Sheet1")
-        pd.DataFrame({"B":[2]}).to_excel(w, index=False, sheet_name="KeepMe")
+    #with pd.ExcelWriter(xlsx, engine="openpyxl") as w:
+        #pd.DataFrame({"A":[1]}).to_excel(w, index=False, sheet_name="Sheet1")
+        #pd.DataFrame({"B":[2]}).to_excel(w, index=False, sheet_name="KeepMe")
+    with pd.ExcelWriter(xlsx, engine="openpyxl", mode="a", if_sheet_exists="replace") as w:
+        df = pd.DataFrame({"Text":["x"], "OPA":[""], "row_id":[0]})
+        df.to_excel(w, index=False, sheet_name="Sheet1")
 
     class Ctx: pass
     ctx = Ctx()
