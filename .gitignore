@@ -38,6 +38,7 @@ data/
 configs/*-secret.yaml
 czjllm.local.yaml
 modelConfig_pri.py
+czjLLM_utils_key.py
 
 alpaca_webui/
 alpaca-lora-main/
@@ -52,9 +53,11 @@ LLM應用/
 loras/
 models/
 ollama/
+ollama MOD file/
 Prompt/
 Prompt_lora/
 RAG/
+RAG_chunks*/
 SRep/
 static/
 Summary/
