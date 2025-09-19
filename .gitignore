@@ -42,6 +42,7 @@ modelConfig_pri.py
 alpaca_webui/
 alpaca-lora-main/
 ChatGPT_Test/
+czjLLM/RAG_chunks*/
 czjLLM/招標通信類
 czjLLM/風險分析
 czjLLM/說明書_not_using
@@ -79,5 +80,5 @@ TWLlamaGPTQ.py
 vicuna_test.py
 安裝可調用gpu的chatglm-cpp安裝指令.txt
 使用 PEFT 的 LoRA（Windows10（不使用 WSL2），使用 bitsandbytes==0.37.0） - Qiita.pdf
-摘要標註整合PBI.pbix
+摘要標註整合PBI*.pbix
 摘要標註整合PBI_BI_0723Ver.pbix
