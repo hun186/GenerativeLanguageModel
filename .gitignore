@@ -81,3 +81,4 @@ vicuna_test.py
 安裝可調用gpu的chatglm-cpp安裝指令.txt
 使用 PEFT 的 LoRA（Windows10（不使用 WSL2），使用 bitsandbytes==0.37.0） - Qiita.pdf
 摘要標註整合PBI*.pbix
+
