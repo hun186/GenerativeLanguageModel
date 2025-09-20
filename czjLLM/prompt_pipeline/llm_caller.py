@@ -101,10 +101,10 @@ def CallLLMAPI(content,
     if model in ["deepseek-chat","deepseek-coder"]:
         n_prompt_cache_hit_tks = response.usage.prompt_cache_hit_tokens
         n_prompt_cache_miss_tks = response.usage.prompt_cache_miss_tokens    
-        unit_price_prompt = 0.14*33/10**6
-        unit_price_prompt_cache_hit = unit_price_prompt/10
+        unit_price_prompt = 4*33/10**6
+        unit_price_prompt_cache_hit = unit_price_prompt/8
         unit_price_prompt_cache_miss = unit_price_prompt
-        unit_price_completion = 0.28*33/10**6
+        unit_price_completion = 12*33/10**6
         cost = n_prompt_cache_hit_tks*unit_price_prompt_cache_hit+n_prompt_cache_miss_tks*unit_price_prompt_cache_miss+n_completion_tks*unit_price_completion
     else:
         n_prompt_cache_hit_tks = 0

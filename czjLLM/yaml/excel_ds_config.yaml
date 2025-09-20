@@ -1,0 +1,10 @@
+channel: excel_source
+input_col: 內容
+llm_source_backup_dir: D:/VirtualBoxVMs/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/excel_source
+llm_source_dir: D:/VirtualBoxVMs/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source
+mode: table
+model_spec: deepseek-v3-num-16k-max_token-8k-cloud
+output_col: ENG
+primary_key: 標題
+record_update_time: true
+task: Translation-toEN

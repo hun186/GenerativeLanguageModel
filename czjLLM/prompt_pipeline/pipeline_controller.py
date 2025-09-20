@@ -886,7 +886,7 @@ def process_prompt_and_merge(ctx, file_path):
         if len(OSWALK(TodoSubDir)) == 0:
             combine_api_finished_item(item, ctx)
         else:
-            print(f"{item} 尚有 {len(OSWALK(TodoSubDir))} 未處理")
+            print(f"{item} 尚有 {len(OSWALK(TodoSubDir))} 個段落未處理")
 
 
 def call_llm_api(itemList, ctx, allow_to_retry=True,PGMSubDir=""):

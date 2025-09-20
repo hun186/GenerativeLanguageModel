@@ -2,10 +2,13 @@ import os
 from czjLLM.taskConfig import taskSetting
 #from DatasetConverter.sampleHandler import tokenization_wrap
 from utils.utilities import tlog
+from utils.utilities_path import fileNameNormalizer
+from transformers import AutoTokenizer
 
 class TokenizerWrapper:
     def __init__(self, model_name: str, task: str,
-                 base_path="GenerativeLanguageModel/czjLLM/tokenizers",
+                 #base_path="GenerativeLanguageModel/czjLLM/tokenizers",
+                 base_path="czjLLM/tokenizers",
                  max_tokens: int = None):
         self.model_name = model_name.lower()
         self.task = task
@@ -75,7 +78,7 @@ def tokenization_wrap(
             }
         return res
     if not os.path.isdir(modelDir):
-        print("WARNING! The input modelDir {modelDir} for tokenization_wrap does not exist, use xlm-roberta-base instead")
+        print(f"WARNING! The input modelDir {modelDir} for tokenization_wrap does not exist, use xlm-roberta-base instead")
         modelDir = "xlm-roberta-base"
     
     #context = "This is a book.這是一本書。那是一枝筆"
