@@ -50,7 +50,7 @@ def generate_prompt(content="",
     else:
         print(f'Allowed Task are {taskSetting.keys()}, not inclusive of the input task {task}')
         raise Exception
-    print("prompt",prompt)
+    #print("prompt",prompt)
     # ✅ 在此統一處理 no_think 的後綴
     return prompt + "\n/no_think" if not think_mode else prompt
 
