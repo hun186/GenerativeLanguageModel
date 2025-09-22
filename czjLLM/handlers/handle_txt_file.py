@@ -26,7 +26,7 @@ def handle_single_input_file(file: str, ctx=LLMJobConfig(), adjust: bool = True,
 
     # A. 切片並產生 prompt
     process_file_to_prompt(file, ctx, adjust=adjust)
-
+    #print("file name in handle_single_input_file",file)
     # 只在第一個檔案顯示範本＋倒數
     if not getattr(ctx, "shown_template", False):
         showTemplate(task=ctx.task)

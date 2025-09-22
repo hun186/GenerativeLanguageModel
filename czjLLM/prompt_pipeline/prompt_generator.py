@@ -174,6 +174,7 @@ def process_file_to_prompt(file_path, ctx, adjust=True):
     ctx.n_cut = len(chunks["ctxCut"])
 
     for idx, CTXPiece in enumerate(chunks["ctxCut"]):
+        #print("process_chunk_to_generate_prompt for i,CTXPiece",idx,CTXPiece)
         process_chunk_to_generate_prompt(idx, CTXPiece, ctx)
         
 def process_chunk_to_generate_prompt(idx: int, ctx_piece: str, ctx: LLMJobConfig):
@@ -192,6 +193,7 @@ def process_chunk_to_generate_prompt(idx: int, ctx_piece: str, ctx: LLMJobConfig
     todo_fn = os.path.join(prompt_output_dir, f"{idx:0{pad_len}d}.txt")
     #print("os.path.dirname(todo_fn)",os.path.dirname(todo_fn))
     os.makedirs(os.path.dirname(todo_fn), exist_ok=True)
+    #print("todo_fn",todo_fn)
     try:
         with open(todo_fn, 'wt', encoding='utf-8') as fp:
             #print(f"Writting prompt: {prompt} to {todo_fn}")

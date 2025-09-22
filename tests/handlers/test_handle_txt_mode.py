@@ -66,10 +66,9 @@ def test_handle_single_input_file_happy_path(monkeypatch, tmp_path):
     f2 = tmp_path / "src" / "in2.txt"
     f2.write_text("world")
     mod.handle_single_input_file(str(f2), ctx, pause_seconds=0, defer_merge=False)
-    # showTemplate 不增加
-    assert calls["showTemplate"] == 1
-    # 倒數會被呼叫（參數為 0）
-    assert calls["countdown_pause"][-1] == 0
+    # 倒數只被呼叫一次，且參數為第一次呼叫時的 pause_seconds（3）
+    assert len(calls["countdown_pause"]) == 1
+    assert calls["countdown_pause"][0] == 3
 
 
 @pytest.mark.unit

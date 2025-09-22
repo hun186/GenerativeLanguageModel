@@ -867,7 +867,11 @@ def row_merger_watchdog(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
 
 def process_prompt_and_merge(ctx, file_path):
     # 取得該檔案產生的 prompt 所在目錄
+    print("file name in process_prompt_and_merge",file_path)
     prompt_items = []
+    
+    #ctx.prompt_dir = ctx.prompt_dir or "./"
+    print("ctx.prompt_dir process_prompt_and_merge",ctx.prompt_dir)
     for file in OSWALK(ctx.prompt_dir):
         path_list = getPathFromFN(file).split("/")
         if path_list[-1] in ["TODO", "Success"]:
@@ -875,7 +879,7 @@ def process_prompt_and_merge(ctx, file_path):
             if ctx.main_file_name in parent_dir:
                 prompt_items.append(parent_dir)
     prompt_items = list(set(prompt_items))
-
+    #print("prompt_items",prompt_items)
     # 呼叫 LLM API（可以開平行化）
     call_llm_api(prompt_items, ctx, allow_to_retry=True)
     call_llm_api(prompt_items, ctx, allow_to_retry=False)

@@ -65,7 +65,7 @@ class LLMJobConfig:
         self.textClass = ""
         self.exclusiveTextClass = ""
         self.keyConsiderations = ""
-        self.model_spec_name = ""
+        self.model_spec_name = "deepseek-v3-num-16k-max_token-8k-cloud"
         self.model_spec = {}
         self.prompt_dir = ""
         self.llm_source_dir = ""
