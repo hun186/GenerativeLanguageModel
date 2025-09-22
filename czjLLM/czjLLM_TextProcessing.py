@@ -1,13 +1,9 @@
 from utils_manager.utils_sync import prepare_env
 
 
-
-#from PythonModule import utils
-
-
 ##########################################################################
 import pprint
-import os
+#import os
 #from utils.selector import OptionSelector
 
 from czjLLM.job_manager.job_config import initialize_config
@@ -46,7 +42,7 @@ if __name__ == '__main__':
 
     # 有些地方要字串
     PGMSubDir = str(PGMSubDir)
-    from PythonModule import utils
+    #from PythonModule import utils
     from utils.selector import OptionSelector
     # 嘗試讀取設定檔
     if args.config:
