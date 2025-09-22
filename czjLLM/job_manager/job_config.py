@@ -60,7 +60,7 @@ class LLMJobConfig:
     def __init__(self):
         self.PGMSubDir = ""
         self.mode = ""
-        self.task = ""
+        self.task = "Summary-toTWZH"
         #self.textclass_tuple = None
         self.textClass = ""
         self.exclusiveTextClass = ""
