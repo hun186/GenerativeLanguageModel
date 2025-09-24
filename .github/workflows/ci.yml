@@ -109,7 +109,7 @@ jobs:
   
       - name: Run integration tests (self-hosted only)
         # 這裡改成用 env.* 判斷（且避免在 pull_request 事件跑）
-        if: ${{ github.event_name != 'pull_request' && env.LLM_BASE_URL != '' && env.LLM_MODEL_NAME != '' && env.LLM_API_KEY != '' }}
+        #if: ${{ github.event_name != 'pull_request' && env.LLM_BASE_URL != '' && env.LLM_MODEL_NAME != '' && env.LLM_API_KEY != '' }}
         shell: powershell
         env:
           # 測試程式用 os.getenv(...) 讀這些
