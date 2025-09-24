@@ -1,0 +1,6 @@
+ollama run deepseek-v2.5
+
+Save it as a file (e.g. Modelfile)
+ollama create choose-a-model-name -f <location of the file e.g. ./Modelfile>'
+ollama run choose-a-model-name
+Start using the model!

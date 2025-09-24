@@ -1,0 +1,2 @@
+FROM deepseek-v2.5
+PARAMETER num_ctx 9000
