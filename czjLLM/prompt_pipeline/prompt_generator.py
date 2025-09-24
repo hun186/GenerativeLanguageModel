@@ -170,9 +170,11 @@ def process_file_to_prompt(file_path, ctx, adjust=True):
     chunks = tokenizer.tokenize(text=content, adjust=adjust, max_tokens=ctx.max_tokens)
 
     ctx.current_file = file_path
+    if ctx.llm_source_dir == "":
+        ctx.llm_source_dir = os.path.dirname(ctx.current_file)
     ctx.main_file_name = MainFileName
     ctx.n_cut = len(chunks["ctxCut"])
-
+    #print("ctx in process_file_to_prompt",ctx)
     for idx, CTXPiece in enumerate(chunks["ctxCut"]):
         #print("process_chunk_to_generate_prompt for i,CTXPiece",idx,CTXPiece)
         process_chunk_to_generate_prompt(idx, CTXPiece, ctx)
@@ -181,10 +183,14 @@ def process_chunk_to_generate_prompt(idx: int, ctx_piece: str, ctx: LLMJobConfig
     if not ctx_piece.strip():
         print(f"⚠️ 第 {idx} 段內容為空，跳過。")
         return
-    #print("ctx",ctx)
+    #print("ctx in process_chunk_to_generate_prompt",ctx)
     generator = PromptGenerator(ctx)
-    prompt = generator.build(content=ctx_piece)   
+    prompt = generator.build(content=ctx_piece)
+    #print("ctx.current_file",ctx.current_file)
+    #print("ctx.llm_source_dir",ctx.llm_source_dir)
+    #print("ctx.prompt_dir",ctx.prompt_dir)
     prompt_output_dir = DirReplace(FilePath=ctx.current_file, SrcDir=ctx.llm_source_dir, DesDir=ctx.prompt_dir)
+    #print("prompt_output_dir",prompt_output_dir)
     prompt_output_dir = os.path.join(getPathFromFN(prompt_output_dir), ctx.main_file_name, "TODO")
     prompt_output_dir = clean_path_end_chars(prompt_output_dir)
     MKDIR(prompt_output_dir)

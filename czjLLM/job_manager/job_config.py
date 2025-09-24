@@ -65,9 +65,10 @@ class LLMJobConfig:
         self.textClass = ""
         self.exclusiveTextClass = ""
         self.keyConsiderations = ""
-        self.model_spec_name = "deepseek-v3-num-16k-max_token-8k-cloud"
+        #self.model_spec_name = "deepseek-v3-num-16k-max_token-8k-cloud"
+        self.model_spec_name = "gpt-oss:latest-ctx-32k-premises-MXFP4"
         self.model_spec = {}
-        self.prompt_dir = ""
+        self.prompt_dir = "Prompt"
         self.llm_source_dir = ""
         self.llm_source_backup_dir = ""
         self.llm_source_finished_dir = ""

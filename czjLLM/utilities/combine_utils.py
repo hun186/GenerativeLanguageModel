@@ -258,4 +258,5 @@ def combine_api_finished_item(item, ctx):
     if ctx.debug == False:
         if os.path.isdir(item):
             shutil.rmtree(item)
+    return CombBackFN
     

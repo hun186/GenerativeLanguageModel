@@ -25,6 +25,7 @@ def handle_single_input_file(file: str, ctx=LLMJobConfig(), adjust: bool = True,
     print(f"處理檔案：{file}")
 
     # A. 切片並產生 prompt
+    #print("ctx in handle_single_input_file",ctx)
     process_file_to_prompt(file, ctx, adjust=adjust)
     #print("file name in handle_single_input_file",file)
     # 只在第一個檔案顯示範本＋倒數
@@ -37,10 +38,11 @@ def handle_single_input_file(file: str, ctx=LLMJobConfig(), adjust: bool = True,
         return  # Streaming 模式下，合併交給消費者
 
     # 舊行為：單檔就地完成
-    process_prompt_and_merge(ctx, file)
+    CombBackFN = process_prompt_and_merge(ctx, file)
     des = DirReplace(file, ctx.llm_source_dir, ctx.llm_source_backup_dir)
     MKDIR(getPathFromFN(des))
     shutil.move(file, des)
+    return CombBackFN
 
 def handle_txt_mode(ctx, args): 
     # CLI 教學提示（如果來自互動模式）

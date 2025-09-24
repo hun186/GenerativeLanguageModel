@@ -867,11 +867,11 @@ def row_merger_watchdog(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
 
 def process_prompt_and_merge(ctx, file_path):
     # 取得該檔案產生的 prompt 所在目錄
-    print("file name in process_prompt_and_merge",file_path)
+    #print("file name in process_prompt_and_merge",file_path)
     prompt_items = []
     
     #ctx.prompt_dir = ctx.prompt_dir or "./"
-    print("ctx.prompt_dir process_prompt_and_merge",ctx.prompt_dir)
+    #print("ctx.prompt_dir process_prompt_and_merge",ctx.prompt_dir)
     for file in OSWALK(ctx.prompt_dir):
         path_list = getPathFromFN(file).split("/")
         if path_list[-1] in ["TODO", "Success"]:
@@ -888,9 +888,11 @@ def process_prompt_and_merge(ctx, file_path):
     for item in prompt_items:
         TodoSubDir = os.path.join(item, "TODO")
         if len(OSWALK(TodoSubDir)) == 0:
-            combine_api_finished_item(item, ctx)
+            CombBackFN = combine_api_finished_item(item, ctx)
         else:
             print(f"{item} 尚有 {len(OSWALK(TodoSubDir))} 個段落未處理")
+            CombBackFN = ""
+    return CombBackFN
 
 
 def call_llm_api(itemList, ctx, allow_to_retry=True,PGMSubDir=""):
