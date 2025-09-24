@@ -70,8 +70,9 @@ def CallLLMAPI(content,
     if NoThinkProcess and should_disable_think(model_lower):
         if not content.strip().endswith("/no_think"):
             content = content.rstrip() + "\n/no_think"
-            
+    print("Start to build client")
     client = OpenAI(api_key=api_key, base_url=base_url)
+    print("Success to build client")
     response = client.chat.completions.create(
         model=model,
         messages=[
@@ -82,7 +83,7 @@ def CallLLMAPI(content,
         stream=False,
         temperature=temperature
     )
-
+    print("Success to get response")
     # 計算請求處理時間
     end_time = time.time()
     elapsed_time = end_time - start_time  # 經過的時間（秒）
@@ -121,13 +122,4 @@ def CallLLMAPI(content,
         f"消耗費用為新臺幣: {cost:.3f} 元\n"
         )
     print(MES)
-    #print("~" * 50)
-    #print(f"使用模型為 {model}，端口：{base_url}")
-    #print(f"輸入 token 數: {n_prompt_tks}，輸出 token 數: {n_completion_tks}")
-    #print(f"總共處理的 token 數: {total_tokens}")
-    #print(f"耗時: {elapsed_time:.2f} 秒")
-    #print(f"每秒處理 token 數: {tokens_per_second:.2f} tokens/sec")
-    #print(f"消耗費用為新臺幣: {cost:.3f} 元")
-
-    # 返回 response 和費用
     return response, cost
