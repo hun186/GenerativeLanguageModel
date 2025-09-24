@@ -31,11 +31,13 @@ strict_optional = false
 [tool.pytest.ini_options]
 minversion = "7.0"
 testpaths = ["tests"]
-addopts = "-q --maxfail=1 --disable-warnings"
+#addopts = "-q --maxfail=1 --disable-warnings"
+addopts = "-q --maxfail=1"
 markers = [
   "integration: slow/integration tests",
   "windows_only: tests requiring Windows path semantics",
 ]
+env_files = ["LLM_API.env"]
 
 [tool.coverage.run]
 branch = true
@@ -43,3 +45,6 @@ source = ["czjLLM"]
 
 [tool.coverage.report]
 fail_under = 70
+
+[project.optional-dependencies]
+test = ["pytest>=7.4", "pytest-dotenv>=0.5.2"]
