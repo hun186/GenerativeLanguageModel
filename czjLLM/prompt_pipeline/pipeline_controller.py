@@ -1,14 +1,4 @@
 # pipeline_controller.py
-from czjLLM.prompt_pipeline.result_handler import PromptResultHandler
-from czjLLM.prompt_pipeline.prompt_generator import generate_prompt
-from czjLLM.prompt_pipeline.llm_caller import CallLLMAPI
-from czjLLM.prompt_pipeline.debug_snapshot import build_debug_snapshot
-
-from czjLLM.utilities.atomic_io import atomic_write_json, robust_json_read
-from czjLLM.job_manager.job_config import LLMJobConfig
-from czjLLM.job_manager.end_point_manager import get_available_end_points
-from czjLLM.job_manager.end_point_manager import select_model
-#from job_manager.win_gui import try_start_gui  # 為避免循環，可移到檔頭
 import os
 from colorama import Fore, Style
 from tqdm import tqdm
@@ -23,7 +13,19 @@ import sqlite3
 import pyodbc
 import shutil
 from copy import deepcopy
+from dataclasses import dataclass
+from pathlib import Path
 
+from czjLLM.prompt_pipeline.result_handler import PromptResultHandler
+from czjLLM.prompt_pipeline.prompt_generator import generate_prompt
+from czjLLM.prompt_pipeline.llm_caller import CallLLMAPI
+from czjLLM.prompt_pipeline.debug_snapshot import build_debug_snapshot
+
+from czjLLM.utilities.atomic_io import atomic_write_json, robust_json_read
+from czjLLM.job_manager.job_config import LLMJobConfig
+from czjLLM.job_manager.end_point_manager import get_available_end_points
+from czjLLM.job_manager.end_point_manager import select_model
+#from job_manager.win_gui import try_start_gui  # 為避免循環，可移到檔頭
 
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
@@ -862,10 +864,68 @@ def row_merger_watchdog(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
 
 
 
+@dataclass
+class MergeOps:
+    list_paths: callable = None        # (root: str) -> list[str]
+    get_parent: callable = None        # (fn: str) -> str
+    call_llm: callable = None          # (items: list[str], ctx, allow_to_retry: bool) -> None
+    combine: callable = None           # (item_dir: str, ctx) -> str
+    join: callable = os.path.join
+
+    def __post_init__(self):
+        # 預設掛載你專案裡的真實實作
+        from czjLLM.prompt_pipeline.pipeline_controller import (
+            OSWALK, getPathFromFN, call_llm_api, combine_api_finished_item
+        )
+        self.list_paths = self.list_paths or OSWALK
+        self.get_parent = self.get_parent or getPathFromFN
+        self.call_llm  = self.call_llm  or call_llm_api
+        self.combine   = self.combine   or combine_api_finished_item
+
+
+def process_prompt_and_merge(ctx, file_path: str, ops: MergeOps | None = None) -> str:
+    """
+    掃描 ctx.prompt_dir 找出含 main_file_name 的 TODO/Success 目錄父層，呼叫 LLM，完成則合併。
+    回傳最後一次成功合併的檔名（若有多個 item，依序覆寫），若皆未完成則回傳空字串。
+    """
+    ops = ops or MergeOps()
+
+    prompt_items: list[str] = []
+    main_name = getattr(ctx, "main_file_name", Path(file_path).stem)
+
+    # 1) 掃出目標 item 目錄
+    for fn in ops.list_paths(ctx.prompt_dir):
+        parent_dir = Path(ops.get_parent(fn))
+        if parent_dir.name in {"TODO", "Success"}:
+            item_dir = str(parent_dir.parent)  # 父層（目錄名包含 main_file_name）
+            if main_name in item_dir:
+                prompt_items.append(item_dir)
+
+    # 去重＋排序，讓測試穩定
+    prompt_items = sorted(set(prompt_items))
+
+    if not prompt_items:
+        # 沒東西可處理：建議回傳空字串或擲例外，依你原本語意
+        return ""
+
+    # 2) 呼叫 LLM（兩輪：允許重試 / 不允許重試）
+    ops.call_llm(prompt_items, ctx, allow_to_retry=True)
+    ops.call_llm(prompt_items, ctx, allow_to_retry=False)
+
+    # 3) 合併已完成者；若尚有 TODO，僅列印提示
+    comb_back_fn = ""
+    for item in prompt_items:
+        todo_dir = ops.join(item, "TODO")
+        if len(ops.list_paths(todo_dir)) == 0:
+            comb_back_fn = ops.combine(item, ctx)
+        else:
+            print(f"{item} 尚有 {len(ops.list_paths(todo_dir))} 個段落未處理")
+    return comb_back_fn
 
 
 
-def process_prompt_and_merge(ctx, file_path):
+
+def process_prompt_and_merge_OLD(ctx, file_path):
     # 取得該檔案產生的 prompt 所在目錄
     #print("file name in process_prompt_and_merge",file_path)
     prompt_items = []

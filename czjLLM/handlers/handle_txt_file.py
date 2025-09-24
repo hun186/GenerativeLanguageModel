@@ -2,6 +2,7 @@ import os
 import shutil
 from tqdm import tqdm
 from colorama import Fore, Style#, Back
+from typing import Callable
 
 from czjLLM.prompt_pipeline.prompt_generator import process_file_to_prompt
 from czjLLM.prompt_pipeline.pipeline_controller import process_prompt_and_merge
@@ -20,10 +21,18 @@ from utils.utilities_path import remove_empty_dirs
 #from colorama import Fore, Style
 #tlog = lambda s: tqdm.write(Fore.CYAN + s + Style.RESET_ALL)
 
-def handle_single_input_file(file: str, ctx=LLMJobConfig(), adjust: bool = True, pause_seconds: int = 0, defer_merge: bool = False):
-    print("=" * 50)
-    print(f"處理檔案：{file}")
+# 定義一個介面：負責「依 ctx+file 處理並回傳輸出檔路徑」
+LLMRunner = Callable[[LLMJobConfig, str], str]
 
+def handle_single_input_file(
+    file: str,
+    ctx: LLMJobConfig | None = None,
+    adjust: bool = True,
+    pause_seconds: int = 0,
+    defer_merge: bool = False,
+    run_merge: LLMRunner | None = None,   # ← 改成 None
+):
+    ctx = ctx or LLMJobConfig()
     # A. 切片並產生 prompt
     #print("ctx in handle_single_input_file",ctx)
     process_file_to_prompt(file, ctx, adjust=adjust)
@@ -37,8 +46,14 @@ def handle_single_input_file(file: str, ctx=LLMJobConfig(), adjust: bool = True,
     if defer_merge:
         return  # Streaming 模式下，合併交給消費者
 
+    # **在執行時**才決定用哪個 run_merge（此時 monkeypatch 已生效）
+    if run_merge is None:
+        # 注意：這裡用模組層的名稱查找，會取到被 monkeypatch 後的版本
+        run_merge = process_prompt_and_merge
+        
     # 舊行為：單檔就地完成
-    CombBackFN = process_prompt_and_merge(ctx, file)
+    #CombBackFN = process_prompt_and_merge(ctx, file)
+    CombBackFN = run_merge(ctx, file)
     des = DirReplace(file, ctx.llm_source_dir, ctx.llm_source_backup_dir)
     MKDIR(getPathFromFN(des))
     shutil.move(file, des)
