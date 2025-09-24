@@ -6,6 +6,7 @@ import pytest
 from czjLLM.handlers import handle_txt_file as mod
 from czjLLM.job_manager.job_config import LLMJobConfig
 
+
 @pytest.mark.integration
 def test_handle_single_input_file_integration(tmp_path, monkeypatch):
     base_url = os.getenv("LLM_BASE_URL")

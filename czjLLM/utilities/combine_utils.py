@@ -1,3 +1,5 @@
+from __future__ import annotations
+from pathlib import Path
 
 import os
 import json
@@ -207,7 +209,65 @@ def combine_json_return(json_content,NoNestedList=True,dictListForced=True):
     return json_content_res,error_mes
 
 
-def combine_api_finished_item(item, ctx):
+def combine_api_finished_item(item: str, ctx) -> str:
+    print(f"{item} is finished calling API, start to combine returned result.")
+    item_p = Path(item)
+    suc_dir = item_p / "Success"
+
+    chunks: list[str] = []
+    for fp in sorted(OSWALK(str(suc_dir))):
+        p = Path(fp)
+        text = p.read_text(encoding="utf-8")
+        if OpenCC("s2twp").convert(text.lstrip()).startswith("無主題相關內容"):
+            continue
+
+        try:
+            obj = json.loads(text)
+            if isinstance(obj, dict):
+                obj = [obj]
+            elif not isinstance(obj, list):
+                raise ValueError("不支援的 JSON 結構")
+            chunks.append(json.dumps(obj, ensure_ascii=False, indent=2) + "\n")
+        except Exception as e:
+            if "to json format" in str(getattr(ctx, "task", "")).lower():
+                print(f"❌ 解析 JSON 失敗（跳過格式補正）：{p}，錯誤：{e}")
+            chunks.append(text if text.endswith("\n") else text + "\n")
+
+    combined_text = "".join(chunks)
+
+    # === 安全地決定輸出目錄（不要出現前導斜線） ===
+    # 優先 llm_source_finished_dir，其次 llm_source_dir；都沒有就用 item 的上層
+    base_out = (
+        Path(getattr(ctx, "llm_source_finished_dir", "")) or
+        Path(getattr(ctx, "llm_source_dir", "")) or
+        item_p.parent
+    )
+    base_out.mkdir(parents=True, exist_ok=True)
+
+    main_name = getattr(ctx, "main_file_name", item_p.name)
+    task_name = str(getattr(ctx, "task", "result")).replace(os.sep, "_")
+    out_path = base_out / f"{main_name}_{task_name}.txt"
+
+    # JSON 合併修補（如有指定 to json format）
+    if "to json format" in str(getattr(ctx, "task", "")).lower():
+        fixed, err = combine_json_return(combined_text, dictListForced=True)
+        combined_text = fixed
+        if err:
+            logs_dir = Path(getattr(ctx, "PGMSubDir", "")) / "logs"
+            logs_dir.mkdir(parents=True, exist_ok=True)
+            MPlogger(str(logs_dir), logFile="FailToCombineJsonResult.log").logW(
+                MES=f"When combining {out_path} json format, the following error occurs:\n{err}\n"
+            )
+
+    out_path.write_text(combined_text, encoding="utf-8")
+
+    if not getattr(ctx, "debug", False) and item_p.is_dir():
+        shutil.rmtree(item_p)
+
+    print("CombBackFN", out_path)
+    return str(out_path)
+
+def combine_api_finished_item_OLD(item, ctx):
     print(f"{item} is finished calling API, start to combine returned result.")
     SucSubdir = os.path.join(item,"Success")
     combined_text = ""
