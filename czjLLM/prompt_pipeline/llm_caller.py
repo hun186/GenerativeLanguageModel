@@ -71,6 +71,7 @@ def CallLLMAPI(content,
         if not content.strip().endswith("/no_think"):
             content = content.rstrip() + "\n/no_think"
     print("Start to build client")
+    print("base_url",base_url)
     client = OpenAI(api_key=api_key, base_url=base_url)
     print("Success to build client")
     response = client.chat.completions.create(
