@@ -100,11 +100,17 @@ jobs:
         run: pytest -vv -m "not integration" --maxfail=3 --disable-warnings
 
       - name: Run integration tests (self-hosted only)
-        if: ${{ env.RUN_INTEGRATION == '1' }}
+        if: ${{ github.event_name != 'pull_request'
+                && secrets.LLM_BASE_URL != ''
+                && secrets.LLM_MODEL_NAME != ''
+                && secrets.LLM_API_KEY != '' }}
         shell: powershell
-        run: pytest -q -vv -m "integration" --maxfail=1 --disable-warnings
         env:
-          RUN_INTEGRATION: ${{ secrets.DB_CONN_STR != '' && '1' || '0' }}
-          DB_CONN_STR: ${{ secrets.DB_CONN_STR }}
-          LLM_BASE_URLS: ${{ secrets.LLM_BASE_URLS }}
-          API_KEY: ${{ secrets.PRIVATE_API_KEY }}
+          # 你的測試會用 os.getenv(...) 讀這些
+          LLM_BASE_URL:  ${{ secrets.LLM_BASE_URL }}
+          LLM_MODEL_NAME: ${{ secrets.LLM_MODEL_NAME }}
+          LLM_API_KEY:   ${{ secrets.LLM_API_KEY }}
+          # 若整合測試也要 DB，保留；否則可以移除
+          DB_CONN_STR:   ${{ secrets.DB_CONN_STR }}
+        run: pytest -vv -m integration --maxfail=1 --disable-warnings
+

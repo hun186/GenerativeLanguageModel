@@ -36,6 +36,7 @@ addopts = "-q --maxfail=1"
 markers = [
   "integration: slow/integration tests",
   "windows_only: tests requiring Windows path semantics",
+  "unit: fast unit tests",
 ]
 env_files = ["LLM_API.env"]
 
