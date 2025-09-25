@@ -7,6 +7,7 @@ import time
 from utils.utilities import tlog
 
 from czjLLM.prompt_pipeline.prompt_generator import should_disable_think
+from czjLLM.prompt_pipeline.clients import build_openai_like_client
 
 '''
 class LLMCaller:
@@ -70,9 +71,19 @@ def CallLLMAPI(content,
     if NoThinkProcess and should_disable_think(model_lower):
         if not content.strip().endswith("/no_think"):
             content = content.rstrip() + "\n/no_think"
+    
+    # ★ 關鍵：用工廠建立 client（不會把 proxies 丟進不接受的 ctor）
     print("Start to build client in CallLLMAPI")
-    print("base_url",base_url)
-    client = OpenAI(api_key=api_key, base_url=base_url)
+    print("base_url", base_url)
+    #client = OpenAI(api_key=api_key, base_url=base_url)
+    client = build_openai_like_client({
+        "base_url": base_url,
+        "api_key": api_key,
+        # "proxies": model_spec.get("proxies")  # 如需代理再開，否則先省略
+        "timeout": model_spec.get("timeout", 60),
+    })
+    print("Success to build client")
+    
     print("Success to build client")
     response = client.chat.completions.create(
         model=model,

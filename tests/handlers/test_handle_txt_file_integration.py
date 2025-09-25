@@ -52,7 +52,7 @@ def test_handle_single_input_file_integration(tmp_path, monkeypatch):
     ctx.prompt_dir = str(tmp_path / "prompts")
     ctx.main_file_name = src.stem
     ctx.PGMSubDir = str(tmp_path)  # ← 重要，給 logs 定位
-    print("ctx in test_handle_txt_file_integration",ctx)
+    #print("ctx in test_handle_txt_file_integration",ctx)
     out_fn = mod.handle_single_input_file(str(src), ctx=ctx)
 
     # 5) 斷言
