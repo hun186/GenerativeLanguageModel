@@ -24,6 +24,7 @@ def build_openai_like_client(model_spec: dict):
     if hasattr(openai, "OpenAI"):
         http_client = httpx.Client(proxies=proxies, timeout=timeout) if proxies else None
         # 不把 proxies 丟給 OpenAI，改由 http_client 承接
+        print("Using http_client")
         return openai.OpenAI(base_url=base_url, api_key=api_key, http_client=http_client, timeout=timeout)
 
     # 某些相容庫暴露的是 Client 類；用簽名濾掉不支援的參數
@@ -32,6 +33,7 @@ def build_openai_like_client(model_spec: dict):
         params = dict(base_url=base_url, api_key=api_key, timeout=timeout, proxies=proxies)
         sig = inspect.signature(ctor.__init__)
         safe = {k: v for k, v in params.items() if k in sig.parameters and v is not None}
+        print("Using openai.Client")
         return ctor(**safe)
 
     # 最後退路：openai 0.x
