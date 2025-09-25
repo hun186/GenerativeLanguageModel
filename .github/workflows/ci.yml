@@ -79,6 +79,7 @@ jobs:
   
       - name: Cache pip
         uses: actions/cache@v4
+        if: ${{ false }}  # 自架機器本地磁碟就有 pip cache，通常不需要再上傳 GitHub Cache（反而慢）。用條件關掉
         with:
           path: ~\AppData\Local\pip\Cache
           key: pip-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}
