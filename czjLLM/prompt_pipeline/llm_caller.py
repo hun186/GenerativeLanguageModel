@@ -84,7 +84,6 @@ def CallLLMAPI(content,
     })
     print("Success to build client")
     
-    print("Success to build client")
     response = client.chat.completions.create(
         model=model,
         messages=[
