@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import httpx
 
+#Unused
 def build_openai_like_client(model_spec: dict):
     """
     建立 OpenAI 風格 client 的穩健工廠：

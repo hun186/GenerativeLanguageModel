@@ -72,16 +72,9 @@ def CallLLMAPI(content,
         if not content.strip().endswith("/no_think"):
             content = content.rstrip() + "\n/no_think"
     
-    # ★ 關鍵：用工廠建立 client（不會把 proxies 丟進不接受的 ctor）
     print("Start to build client in CallLLMAPI wtih build_openai_like_client")
     print("base_url", base_url)
     client = OpenAI(api_key=api_key, base_url=base_url)
-    #client = build_openai_like_client({
-    #    "base_url": base_url,
-    #    "api_key": api_key,
-        # "proxies": model_spec.get("proxies")  # 如需代理再開，否則先省略
-    #    "timeout": model_spec.get("timeout", 60),
-    #})
     print("Success to build client")
     
     response = client.chat.completions.create(
