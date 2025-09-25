@@ -9,8 +9,9 @@ from czjLLM.job_manager.job_config import LLMJobConfig
 @pytest.mark.unit
 def test_handle_single_input_file_unit(tmp_path, monkeypatch):
     # ── 1) 建立輸入檔 ─────────────────────────────────────
+    sample_text = "This is a test"
     src = tmp_path / "sample.txt"
-    src.write_text("This is a test", encoding="utf-8")
+    src.write_text(sample_text, encoding="utf-8")
 
     # ── 2) 準備 ctx（不會連網） ──────────────────────────
     ctx = LLMJobConfig()
@@ -59,7 +60,6 @@ def test_handle_single_input_file_unit(tmp_path, monkeypatch):
     assert out_path.is_file(), "輸出檔案不存在。"
     content = out_path.read_text(encoding="utf-8")
     assert "測試" in content, "輸出內容未包含『測試』。"
-
     assert calls["process_file_to_prompt"] == 1, "切片流程應被呼叫一次。"
     assert calls["showTemplate"] == 1, "第一次應顯示樣板。"
     assert calls["countdown_pause"] == [3], "應按照參數倒數 3 秒（已被 no-op）。"
