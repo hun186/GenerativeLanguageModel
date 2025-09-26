@@ -19,6 +19,7 @@ config_files = [
     ("taskConfig_ANKInt", "taskSetting_ANKInt"),
     ("taskConfig_pri", "taskSetting_pri"),
     ("taskConfig_ANKIso", "taskSetting_ANKIso"),
+    ("taskSetting_NewsReduce", "taskSetting_NewsReduce"),
 ]
 
 for module_name, setting_name in config_files:

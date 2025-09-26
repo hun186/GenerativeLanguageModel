@@ -72,10 +72,10 @@ def CallLLMAPI(content,
         if not content.strip().endswith("/no_think"):
             content = content.rstrip() + "\n/no_think"
     
-    print("Start to build client in CallLLMAPI wtih build_openai_like_client")
-    print("base_url", base_url)
+    #print("Start to build client in CallLLMAPI wtih build_openai_like_client")
+    #print("base_url", base_url)
     client = OpenAI(api_key=api_key, base_url=base_url)
-    print("Success to build client")
+    #print("Success to build client")
     
     response = client.chat.completions.create(
         model=model,
@@ -87,7 +87,7 @@ def CallLLMAPI(content,
         stream=False,
         temperature=temperature
     )
-    print("Success to get response")
+    #print("Success to get response")
     # 計算請求處理時間
     end_time = time.time()
     elapsed_time = end_time - start_time  # 經過的時間（秒）
