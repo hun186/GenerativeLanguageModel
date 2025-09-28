@@ -47,7 +47,8 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             for item_dir, meta in list(items_map.items()):
                 pk = meta["pk"]
                 temp_txt = meta["temp_txt"]
-
+                comb_back_fn = meta["CombBackFN"]
+                
                 if not row_is_ready(item_dir):
                     continue
 
@@ -64,14 +65,21 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 except Exception as e:
                     tlog_warn(f"ℹ️ 合併提示（pk={pk}）：{e}")
 
-                CombBackFN = get_combined_result_path(temp_txt, ctx)
-                if not os.path.isfile(CombBackFN):
+                #CombBackFN = get_combined_result_path(temp_txt, ctx)
+                #print("CombBackFN from get_combined_result_path",CombBackFN)
+                #if not os.path.isfile(CombBackFN):
+                #    continue
+
+                #try:
+                #    with open(CombBackFN, "r", encoding="utf-8") as fp:
+                #        result_text = fp.read()
+                print("comb_back_fn in row_merger",comb_back_fn)
+                if not os.path.isfile(comb_back_fn):
                     continue
-
+            
                 try:
-                    with open(CombBackFN, "r", encoding="utf-8") as fp:
+                    with open(comb_back_fn, "r", encoding="utf-8") as fp:
                         result_text = fp.read()
-
                     update_time = (datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                    if ctx.record_update_time else None)
 
@@ -143,6 +151,11 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     progressed = True
                 except Exception as e:
                     tlog_warn(f"Row Merger 寫回失敗 pk={pk}: {e}")
+                    #with open("ERROR.txt","at") as f:
+                    #    f.write(e)
+                    #print("sleep 10 secs to debug")
+                    #time.sleep(10)
+                    raise Exception
 
             if not progressed:
                 time.sleep(scan_interval)

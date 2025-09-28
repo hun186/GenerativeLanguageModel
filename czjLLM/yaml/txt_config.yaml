@@ -1,6 +1,6 @@
 channel: test_Classification
-llm_source_backup_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/test_Classification
-llm_source_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool/test_Classification
+llm_source_backup_dir: D:/VirtualBoxVMs/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/test_Classification
+llm_source_dir: D:/VirtualBoxVMs/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/test_Classification
 mode: txt
-model_spec: qwen3:32b-ctx-32k-premises-q4
-task: MDT Term Extraction to json format
+model_spec: deepseek-v3-num-16k-max_token-8k-cloud
+task: Summary-toTWZH

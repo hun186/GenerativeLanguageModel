@@ -238,13 +238,17 @@ def combine_api_finished_item(item: str, ctx) -> str:
     # === 安全地決定輸出目錄（不要出現前導斜線） ===
     # 優先 llm_source_finished_dir，其次 llm_source_dir；都沒有就用 item 的上層
     base_out = (
+        Path(getattr(ctx, "temp_txt_finished_dir", "")) or
         Path(getattr(ctx, "llm_source_finished_dir", "")) or
         Path(getattr(ctx, "llm_source_dir", "")) or
         item_p.parent
     )
     base_out.mkdir(parents=True, exist_ok=True)
-
-    main_name = getattr(ctx, "main_file_name", item_p.name)
+    print("ctx.main_file_name",getattr(ctx, "main_file_name",""))
+    print("item_p.name",item_p.name)
+    #main_name = getattr(ctx, "main_file_name", item_p.name)
+    main_name = item_p.name
+    print("main_name",main_name)
     task_name = str(getattr(ctx, "task", "result")).replace(os.sep, "_")
     out_path = base_out / f"{main_name}_{task_name}.txt"
 

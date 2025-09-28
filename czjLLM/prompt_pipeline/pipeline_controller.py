@@ -179,10 +179,16 @@ class ItemsRegistry:
         self.lock = threading.Lock()
         self._items = {}  # item_dir -> {"pk":..., "temp_txt":...}
 
-    def add(self, item_dir, pk, temp_txt):
+    #def add(self, item_dir, pk, temp_txt):
+    #   with self.lock:
+    #        self._items[item_dir] = {"pk": pk, "temp_txt": temp_txt}
+    def add(self, item_dir, pk, temp_txt, comb_back_fn):
         with self.lock:
-            self._items[item_dir] = {"pk": pk, "temp_txt": temp_txt}
-
+            self._items[item_dir] = {
+                "pk": pk,
+                "temp_txt": temp_txt,
+                "CombBackFN": comb_back_fn
+            }
     def list_items(self):
         with self.lock:
             return dict(self._items)

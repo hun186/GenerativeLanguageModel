@@ -31,8 +31,10 @@ def get_combined_result_path(temp_txt_path: str, ctx) -> str:
     from utils.utilities_path import DirReplace
     result_path = DirReplace(
         FilePath=temp_txt_path,
-        SrcDir=ctx.llm_source_dir,
-        DesDir=ctx.llm_source_finished_dir
+        #SrcDir=ctx.llm_source_dir,
+        #DesDir=ctx.llm_source_finished_dir
+        SrcDir=ctx.temp_txt_dir,
+        DesDir=ctx.temp_txt_finished_dir
     )
     result_path = os.path.splitext(result_path)[0] + f"_{ctx.task}.txt"
     return result_path
