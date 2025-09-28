@@ -159,7 +159,7 @@ def handle_data_mode(ctx, get_param, args):
         backend.configure_flatten(ctx, get_param, args)
         backend.ensure_schemas(ctx, env, cols)
         backend.maybe_reset_output(ctx, env, cols, args)
-
+        #print("ctx in handle_data_mode",ctx)
         if not args.config:
             print_cli_usage_hint(ctx)
         ctx.error_log_path = backend.error_log_name(ctx, env)

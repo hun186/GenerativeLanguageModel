@@ -6,12 +6,15 @@ from czjLLM.utilities.file_utils import save_text_as_temp_file
 from utils.utilities_path import getMFNFromFN, OSWALK
 from czjLLM.job_manager.console_ui import tlog
 from czjLLM.handlers.handle_txt_file import handle_single_input_file  # 延用現有函式
+from czjLLM.prompt_pipeline.pipeline_controller import get_combined_result_path
 
 def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
     """切片 -> 建 TODO -> 登錄 registry 與 meter。"""   
-
+    ctx.temp_txt_dir = os.path.join(ctx.llm_source_dir,"cache")
+    ctx.temp_txt_finished_dir = os.path.join(ctx.llm_source_finished_dir,"cache")
     temp_txt_path = save_text_as_temp_file(
-        text=text, base_dir=os.path.join(ctx.llm_source_dir,"cache"), index=idx)
+        #text=text, base_dir=os.path.join(ctx.llm_source_dir,"cache"), index=idx)
+        text=text, base_dir=ctx.temp_txt_dir, index=idx)
     handle_single_input_file(
         temp_txt_path, ctx, adjust=True,
         pause_seconds=(10 if idx == 0 else 0),
@@ -22,8 +25,10 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
     item_dir = find_item_dir_for(ctx, main_file_name)
     todo_dir = os.path.join(item_dir, "TODO")
     total_chunks = len(OSWALK(todo_dir))
-    registry.add(item_dir, pk, temp_txt_path)
-
+    #registry.add(item_dir, pk, temp_txt_path)
+    comb_back_fn = get_combined_result_path(temp_txt_path, ctx)
+    registry.add(item_dir, pk, temp_txt_path, comb_back_fn)
+    print("comb_back_fn in schedule_one_row for ",pk, comb_back_fn)
     def _on_add_row(d):
         d["rows"].setdefault(pk, {
             "item_dir": item_dir,
