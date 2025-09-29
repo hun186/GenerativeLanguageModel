@@ -62,6 +62,7 @@ if __name__ == '__main__':
             options={"txt": "處理 llm_source_dir 下所有 .txt 檔",
                      "table": "讀取 Excel/CSV 並對某欄進行分析",
                      "sql": "逐筆處理遠端 SQL 資料庫並即時更新",
+                     "es": "從 Elasticsearch 抓取資料並分析",       # 新增選項
                      "sql_to_excel": "將 SQL 資料表內容匯出為 Excel"},
             question="請選擇處理模式：",
             default="txt"
@@ -86,9 +87,10 @@ if __name__ == '__main__':
         handle_txt_mode(ctx, args)
 
     # 表格模式 / Tabular 模式
-    elif mode in ["table","sql"]:
+    elif mode in ["table","sql","es"]:
         #handle_tabular_mode(ctx=ctx, get_param=get_param, args=args)
         handle_data_mode(ctx=ctx, get_param=get_param, args=args)
+        
         
     elif mode == "sql_to_excel":
         handle_sql_to_excel_mode(ctx=ctx, get_param=get_param,table_sector = args.config is None)

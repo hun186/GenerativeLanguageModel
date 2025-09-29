@@ -54,7 +54,24 @@ def load_sql_config_from_file(config_path: str) -> dict:
 
     else:
         raise ValueError(f"❌ 不支援的設定檔副檔名：{ext}")
-        
+
+def load_es_config_from_file(config_path: str) -> dict:
+    """
+    與 load_sql_config_from_file 相同，只是命名區分 ES
+    """
+    ext = os.path.splitext(config_path)[1].lower()
+    if ext == ".py":
+        spec = importlib.util.spec_from_file_location("es_config", config_path)
+        config_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(config_module)
+        return {k: getattr(config_module, k) for k in dir(config_module) if not k.startswith("__")}
+
+    elif ext in [".yaml", ".yml"]:
+        with open(config_path, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f)
+
+    else:
+        raise ValueError(f"❌ 不支援的設定檔副檔名：{ext}")
     
 class LLMJobConfig:
     def __init__(self):

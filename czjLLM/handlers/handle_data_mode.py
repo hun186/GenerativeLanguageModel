@@ -9,6 +9,7 @@ from ..sql_mode.runtime.orchestrator import run_pipeline
 from ..sql_mode.runtime.sinks.sql_sink import SqlSink
 from ..sql_mode.runtime.sinks.excel_sink import ExcelSink
 from ..tabular_mode.runtime.sinks.csv_sink import CSVSink
+from ..es_mode.runtime.sinks.es_sink import ESSink
 #from czjLLM.tabular_mode.runtime.sinks.csv_sink import CSVSink  # 你的 CSVSink
 
 # ---------- SQL 版 steps（沿用你現有的） ----------
@@ -32,6 +33,16 @@ from ..tabular_mode.entry.steps import (
     build_pending_iter_tabular,     # (ctx, input_path, output_path, fmt) -> iterator
 )
 
+# ---------- ES 版 steps ----------
+from ..es_mode.entry.steps_es import (  # 假設你有類似 SQL 的 steps 模組
+    resolve_es_connection,           # ctx, get_param, args -> es_client, index
+    choose_columns_es,               # ctx, get_param, es_client, index, args -> columns
+    configure_flatten_es as cfg_es,  # ctx, get_param, args -> None
+    ensure_schemas_es as ensure_es,  # ctx, es_client, columns, index
+    maybe_reset_output_es as reset_es,# ctx, es_client, index, columns, args
+    build_pending_iter_es as build_es_iter,  # es_client, ctx
+)
+
 @dataclass(frozen=True)
 class Backend:
     name: str
@@ -44,6 +55,7 @@ class Backend:
     make_sink: Callable[[Any, Dict[str, Any]], Any]
     error_log_name: Callable[[Any, Dict[str, Any]], str]
     connection_ctx_key: str = "connection_ctx"
+
 
 # ---------- SQL Backend ----------
 def _sql_resolve(ctx, get_param, args):
@@ -141,11 +153,65 @@ TABLE_BACKEND = Backend(
     error_log_name=_table_err,
 )
 
+# ---------- ES Backend ----------
+def _es_resolve(ctx, get_param, args):
+    es_client, index, es_cfg = resolve_es_connection(ctx, get_param, args)
+    return {
+        "es_client": es_client,
+        "index": index,  # 改成 "index" 與其他函式一致
+		"es_cfg":es_cfg
+    }
+
+def _es_choose_old(ctx, env, get_param, args):
+    return choose_columns_es(ctx, get_param, env["es_client"], env["index"], args)
+
+def _es_choose(ctx, env, get_param, args):
+    return choose_columns_es(ctx, env, get_param, args)
+
+def _es_ensure(ctx, env, columns):
+    ensure_es(ctx, env["es_client"], columns, env["index"])
+
+def _es_reset(ctx, env, columns, args):
+    reset_es(ctx, env["es_client"], env["index"], columns, args)
+
+def _es_build_iter(ctx, env):
+    return build_es_iter(env["es_client"], ctx)
+
+def _es_sink(ctx, env):
+    # ESSink 會自動從 ctx 讀取 ctx.output_col（若沒有設定會預設 'LLM_result'）
+    return ESSink(ctx, es_client=env["es_client"], index=env["index"])
+
+def _es_err(ctx, env):
+    return f"{env['index']}_{ctx.output_col}_error_log.txt"
+
+ES_BACKEND = Backend(
+    name="es",
+    resolve=_es_resolve,
+    choose_columns=_es_choose,
+    configure_flatten=cfg_es,
+    ensure_schemas=_es_ensure,
+    maybe_reset_output=_es_reset,
+    build_pending_iter=_es_build_iter,
+    make_sink=_es_sink,
+    error_log_name=_es_err,
+)
+
 # ---------- 後端選擇 ----------
+#def _select_backend(ctx, get_param) -> Backend:
+#    mode = getattr(ctx, "mode", "").lower()
+#    return SQL_BACKEND if mode == "sql" else TABLE_BACKEND
+
 def _select_backend(ctx, get_param) -> Backend:
     mode = getattr(ctx, "mode", "").lower()
-    return SQL_BACKEND if mode == "sql" else TABLE_BACKEND
-
+    if mode == "sql":
+        return SQL_BACKEND
+    elif mode in ["table", "csv", "excel"]:
+        return TABLE_BACKEND
+    elif mode == "es":
+        return ES_BACKEND
+    else:
+        raise ValueError(f"未知的 backend mode: {mode}")
+        
 # ---------- 單一入口 ----------
 def handle_data_mode(ctx, get_param, args):
     backend = _select_backend(ctx, get_param)
@@ -166,6 +232,7 @@ def handle_data_mode(ctx, get_param, args):
 
         pending_iter = backend.build_pending_iter(ctx, env)
         sink = backend.make_sink(ctx, env)
+        #print("sink in handle_data_mode",sink)
         run_pipeline(ctx, pending_iter, is_sqlite=env.get("is_sqlite", False), sink=sink)
 
     if enter_cm:

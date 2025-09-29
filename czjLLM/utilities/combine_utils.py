@@ -216,8 +216,10 @@ def combine_api_finished_item(item: str, ctx) -> str:
 
     chunks: list[str] = []
     for fp in sorted(OSWALK(str(suc_dir))):
+        print("fp adding in combine_utils",fp)
         p = Path(fp)
         text = p.read_text(encoding="utf-8")
+        print("text",text)
         if OpenCC("s2twp").convert(text.lstrip()).startswith("無主題相關內容"):
             continue
 
@@ -232,9 +234,9 @@ def combine_api_finished_item(item: str, ctx) -> str:
             if "to json format" in str(getattr(ctx, "task", "")).lower():
                 print(f"❌ 解析 JSON 失敗（跳過格式補正）：{p}，錯誤：{e}")
             chunks.append(text if text.endswith("\n") else text + "\n")
-
+    print("chunks",chunks)
     combined_text = "".join(chunks)
-
+    print("combined_text",combined_text)
     # === 安全地決定輸出目錄（不要出現前導斜線） ===
     # 優先 llm_source_finished_dir，其次 llm_source_dir；都沒有就用 item 的上層
     base_out = (
@@ -244,11 +246,11 @@ def combine_api_finished_item(item: str, ctx) -> str:
         item_p.parent
     )
     base_out.mkdir(parents=True, exist_ok=True)
-    print("ctx.main_file_name",getattr(ctx, "main_file_name",""))
-    print("item_p.name",item_p.name)
+    #print("ctx.main_file_name",getattr(ctx, "main_file_name",""))
+    #print("item_p.name",item_p.name)
     #main_name = getattr(ctx, "main_file_name", item_p.name)
     main_name = item_p.name
-    print("main_name",main_name)
+    #print("main_name",main_name)
     task_name = str(getattr(ctx, "task", "result")).replace(os.sep, "_")
     out_path = base_out / f"{main_name}_{task_name}.txt"
 

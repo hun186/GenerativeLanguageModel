@@ -1,4 +1,4 @@
-# akconfig.py
+# czjLLM/config_sql/akconfig.py
 
 # 服务器信息
 server = '192.168.0.135'

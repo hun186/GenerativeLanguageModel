@@ -1,4 +1,4 @@
-# sql_mode/config_loader.py
+# czjLLM/sql_mode/config_loader.py
 from czjLLM.config_ui.interactive_config_loader import load_sql_config_interactively
 
 class InputPolicy:
