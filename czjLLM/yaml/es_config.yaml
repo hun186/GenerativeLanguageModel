@@ -1,0 +1,10 @@
+channel: unspecified_channel
+input_col: rawInfo.content
+llm_source_backup_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/unspecified_channel
+llm_source_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/unspecified_channel
+es_config_file: czjLLM/config_es/akconfig_es_test.py
+mode: es
+model_spec: qwen3:32b-ctx-32k-premises-q4
+output_col: llm_result
+primary_key: _id
+task: News-FacetTop10-Map-to json format

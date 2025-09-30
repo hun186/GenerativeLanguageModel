@@ -154,7 +154,7 @@ TABLE_BACKEND = Backend(
 )
 
 # ---------- ES Backend ----------
-def _es_resolve(ctx, get_param, args):
+def _es_resolve_old(ctx, get_param, args):
     es_client, index, es_cfg = resolve_es_connection(ctx, get_param, args)
     return {
         "es_client": es_client,
@@ -162,27 +162,59 @@ def _es_resolve(ctx, get_param, args):
 		"es_cfg":es_cfg
     }
 
+def _es_resolve(ctx, get_param, args):
+    adapter, es_cfg = resolve_es_connection(ctx, get_param, args)
+    return {"adapter": adapter, "es_cfg": es_cfg, "connection_ctx": adapter}
+
 def _es_choose_old(ctx, env, get_param, args):
-    return choose_columns_es(ctx, get_param, env["es_client"], env["index"], args)
+    # 與 SQL 對齊：把 adapter 丟進去
+    return choose_columns_es(ctx, get_param, env["adapter"], args)
 
 def _es_choose(ctx, env, get_param, args):
     return choose_columns_es(ctx, env, get_param, args)
 
 def _es_ensure(ctx, env, columns):
-    ensure_es(ctx, env["es_client"], columns, env["index"])
+    ensure_es(ctx, env["adapter"], columns, None)
 
 def _es_reset(ctx, env, columns, args):
-    reset_es(ctx, env["es_client"], env["index"], columns, args)
+    reset_es(ctx, env["adapter"], columns, args)
 
 def _es_build_iter(ctx, env):
+    return build_es_iter(env["adapter"], ctx)
+
+
+def _es_choose_old(ctx, env, get_param, args):
+    return choose_columns_es(ctx, env, get_param, args)
+
+def _es_ensure_old(ctx, env, columns):
+    ensure_es(ctx, env["es_client"], columns, env["index"])
+
+def _es_reset_old(ctx, env, columns, args):
+    reset_es(ctx, env["es_client"], env["index"], columns, args)
+
+def _es_build_iter_old(ctx, env):
     return build_es_iter(env["es_client"], ctx)
 
-def _es_sink(ctx, env):
+def _es_sink_old(ctx, env):
     # ESSink 會自動從 ctx 讀取 ctx.output_col（若沒有設定會預設 'LLM_result'）
     return ESSink(ctx, es_client=env["es_client"], index=env["index"])
 
-def _es_err(ctx, env):
+def _es_sink(ctx, env):
+    # 你的 ESSink 若需要 es_client/index，可從 adapter.es / adapter.cfg 取
+    # 也可讓 ESSink 直接吃 adapter，統一介面
+    return ESSink(
+        ctx,
+        es_client=env["adapter"].es,
+        index=env["adapter"].cfg["tgt_index"],
+        output_col=ctx.output_col  # 若 ESSink 需要
+    )
+
+def _es_err_old(ctx, env):
     return f"{env['index']}_{ctx.output_col}_error_log.txt"
+
+def _es_err(ctx, env):
+    index = env["adapter"].cfg["tgt_index"] or env["adapter"].cfg["src_index"]
+    return f"{index}_{ctx.output_col}_error_log.txt"
 
 ES_BACKEND = Backend(
     name="es",

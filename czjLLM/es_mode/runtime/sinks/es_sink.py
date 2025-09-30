@@ -3,6 +3,7 @@ from typing import Any, Optional, List, Dict
 from elasticsearch import Elasticsearch, helpers
 import datetime
 import json
+import atexit
 
 # 與其他 sink 保持一致的 logging helper（如果找不到模組會 fallback 到 print）
 try:
@@ -34,6 +35,10 @@ class ESSink:
 
         self._buffer: List[Dict[str, Any]] = []
         self._debug = bool(getattr(self.ctx, "debug_es_sink", False))
+        # ✅ 內部快取：實際生效的欄位（可能是 output_col 或 output_col+"_json"）
+        self._effective_output_col = None
+        
+        atexit.register(self.flush_all)  # 程式結束時保底 flush
 
     # -------- lifecycle --------
     def open(self):
@@ -65,20 +70,39 @@ class ESSink:
         except Exception:
             return None
 
-    def _prepare_update_doc(self, payload: Any, save_raw_input: bool = False, input_col: Optional[str] = None, input_value: Any = None):
-        """
-        準備要放入 ES doc 的內容（永遠放在 self.output_col）
-        payload 可以是字串(LLM 結果) 或 list(dict) (flatten 結果)
-        """
-        doc = {self.output_col: payload}
+    def _maybe_parse_json(self, payload):
+        if isinstance(payload, str):
+            s = payload.strip()
+            if s and s[0] in "{[":
+                try:
+                    return json.loads(s)
+                except Exception:
+                    pass
+        return payload
+    
+    def _normalize_payload_for_es(self, payload):
+        # 空字串 → None；空陣列/空物件 → None（避免 exists 為真卻是「空結果」）
+        if payload is None:
+            return None
+        if isinstance(payload, str):
+            return payload if payload.strip() != "" else None
+        if isinstance(payload, (list, dict)):
+            return payload if len(payload) > 0 else None
+        return payload
+    
+    def _prepare_update_doc(self, payload, save_raw_input=False, input_col=None, input_value=None):
+        payload = self._maybe_parse_json(payload)
+        payload = self._normalize_payload_for_es(payload)
+        if payload is None:
+            # 不寫空結果，交給上層決定是否略過這筆
+            return {}
+        doc = { self.output_col: payload }
         if getattr(self.ctx, "record_update_time", False):
-            # 若 caller 傳了 update_time 字串則不覆蓋；否則加上現在時間
-            now = datetime.datetime.utcnow().isoformat()
-            doc.setdefault("update_time", now)
+            doc.setdefault("update_time", datetime.datetime.utcnow().isoformat())
         if save_raw_input and input_col:
-            # 將原始輸入也一起存入（使用 input_col 的路徑字串）
             doc[input_col] = input_value
         return doc
+
 
     # -------- 主介面（與 SqlSink/ExcelSink 相同的方法） --------
     def fetch_input(self, pk):
@@ -92,7 +116,42 @@ class ESSink:
         except Exception:
             return None
 
+    '''
+    def _prepare_update_doc(self, payload: Any, save_raw_input: bool = False,
+                            input_col: Optional[str] = None, input_value: Any = None):
+        # ✅ 在這裡（或 write_main）統一先嘗試轉成 JSON 物件
+        payload = self._maybe_parse_json(payload)
+        doc = {self.output_col: payload}
+        if getattr(self.ctx, "record_update_time", False):
+            now = datetime.datetime.utcnow().isoformat()
+            doc.setdefault("update_time", now)
+        if save_raw_input and input_col:
+            doc[input_col] = input_value
+        return doc
+    '''
     def write_main(self, pk, result_text: Any, update_time: Optional[str] = None):
+        if pk is None:
+            tlog_warn("⚠️ ESSink.write_main: pk 為 None，略過寫入。")
+            return
+
+        # 這裡也可先轉，但因 _prepare_update_doc 也會處理，兩處擇一即可
+        payload = result_text  # or: self._maybe_parse_json(result_text)
+        #print("payload in es_sink",payload)
+        if update_time:
+            doc = self._prepare_update_doc(payload)
+            doc["update_time"] = update_time
+        else:
+            doc = self._prepare_update_doc(payload)
+        #print("doc in es_sink",doc)
+        if not doc:   # 空 dict → 表示不該寫
+            return
+        self._buffer.append({"_id": pk, "doc": doc})
+        if self._debug:
+            tlog(f"[ESSink] buffer size = {len(self._buffer)} (flush_every={self.flush_every})")
+        if len(self._buffer) >= self.flush_every:
+            self._flush()
+            
+    def write_main_old(self, pk, result_text: Any, update_time: Optional[str] = None):
         """
         寫回 single result：只更新 output_col（不覆蓋其它欄位）
         pk -> ES document _id
@@ -139,6 +198,51 @@ class ESSink:
     def _flush(self):
         if not self._buffer:
             return
+        actions = (
+            {
+                "_op_type": "update",
+                "_index": self.index,
+                "_id": item["_id"],
+                "doc": item["doc"],
+                "doc_as_upsert": True,
+            }
+            for item in self._buffer
+        )
+        try:
+            '''
+            ok, errors = helpers.bulk(
+                self.es,
+                actions,
+                raise_on_error=False,   # 不丟例外，但我們自己印錯誤
+                stats_only=False,
+                request_timeout=120,
+            )
+            '''
+            success, errors = helpers.bulk(self.es, actions, raise_on_error=False)
+            if getattr(self.ctx, "es_refresh_after_flush", True):  # ← 開發期預設 True
+                self.es.indices.refresh(index=self.index)
+            if self._debug:
+                print(f"💾 ESSink: flush {len(actions)} actions (successes: {success}) to index {self.index}")
+            # ✅ 可視化結果
+            if errors:
+                print(f"❌ bulk 有錯（僅示範前 3 筆）：{errors[:3]}")
+            else:
+                print(f"💾 bulk 成功筆數：{success}")
+    
+            # ✅ 讓後續立刻查得到（避免你以為沒寫）
+            try:
+                self.es.indices.refresh(index=self.index)
+            except Exception as _:
+                pass
+        except Exception as ex:
+            print(f"⚠️ ESSink._flush 例外：{ex}")
+        finally:
+            self._buffer.clear()
+            
+            
+    def _flush_old(self):
+        if not self._buffer:
+            return
         actions = []
         for item in self._buffer:
             _id = item.get("_id")
@@ -151,6 +255,7 @@ class ESSink:
                 "doc_as_upsert": True,
             }
             actions.append(action)
+        print("actions",actions)
         try:
             success, _ = helpers.bulk(self.es, actions, raise_on_error=False)
             if self._debug:
