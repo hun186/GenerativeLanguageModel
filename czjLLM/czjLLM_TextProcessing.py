@@ -1,4 +1,17 @@
 from utils_manager.utils_sync import prepare_env
+prepare_env(
+    root_name="TopicClassification",
+    app_name="GenerativeLanguageModel",
+    markers=("PackageImport.py",),
+    source_subdir="PythonModule",        # = D:\shared\TopicClassification\PythonModule
+    target_subdir="lib/PythonModule",
+    include_ext={".py"},
+    delete_extraneous=True,
+    allow_missing=False,
+    #prefer_pgm_subdir="app",             # ✅ 讓 PGMSubDir 指向 GenerativeLanguageModel
+    prefer_pgm_subdir="caller",
+    #config_arg=args.config,              # 會自動嘗試 CWD、App 根、Caller、Project 根
+)
 
 
 ##########################################################################

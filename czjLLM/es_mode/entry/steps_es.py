@@ -12,6 +12,8 @@ from czjLLM.es_mode.runtime.sinks.es_sink import ESSink
 
 from czjLLM.es_mode.adapters.elasticsearch_adapter import ElasticsearchAdapter
 
+from utils.ES_utils import get_es_client, apply_es_mapping
+
 # ---------- Resolve 連線 ----------
 def resolve_es_connection_old(ctx, get_param, args):
     """
@@ -234,17 +236,60 @@ def configure_flatten_es(ctx, get_param, args):
     ctx.flatten_json = getattr(args, "flatten_json", None) or False
 
 
-# ---------- schema 檢查 ----------
-def ensure_schemas_es_old(ctx, es_client, columns, index):
-    """
-    在 ES 模式中 schema 概念比較弱，
-    這裡可以確認 index 是否存在，若不存在可報錯或建立
-    """
-    if not es_client.indices.exists(index=index):
-        raise ValueError(f"Index {index} 不存在")
-
 # ---- 確保 schema（mapping）對齊 SQL ensure_schemas ----
-def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns: List[Tuple[str, str]], index_name_hint=None):
+def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns, index_name_hint=None):
+    """
+    先確保 src/tgt index 存在；再依設定：
+      - 若有 es_apply_mapping + mapping_file：整包 put_mapping（新增欄位）
+      - 否則最小化保障：只確保 output_col 存在且型別正確（NESTED/OBJECT 擇一）
+    """
+    # 1) 確保 index 存在
+    adapter.ensure_table(adapter.cfg["src_index"])
+    adapter.ensure_table(adapter.cfg["tgt_index"])
+
+    tgt_index = adapter.cfg["tgt_index"]
+    # 你想要的欄位名（只看 ctx.output_col）
+    out_field = getattr(ctx, "output_col", "llm_result")
+    # 建議預設為 NESTED（你的 LLM 輸出是陣列）
+    desired_type = getattr(ctx, "es_output_type", "NESTED").upper()  # "NESTED" or "OBJECT"
+
+    # 2) 若設定檔要求整包 mapping，就先走這條
+    es_apply_mapping = adapter.cfg.get("es_apply_mapping", False)
+    mapping_file = adapter.cfg.get("mapping_file")
+    if es_apply_mapping and mapping_file:
+        try:
+            adapter.apply_mapping_file(tgt_index, mapping_file)
+            print(f"✅ 已套用 mapping 檔到 index='{tgt_index}'：{mapping_file}")
+        except Exception as ex:
+            print(f"⚠️ 套用 mapping 檔失敗（將退回最小化策略）：{ex}")
+
+    # 3) 最小化保障：只管 output_col 的型別
+    #    - 若欄位不存在：put_mapping 建立
+    #    - 若已存在但型別不符：僅告警，不強改
+    try:
+        exists_node = adapter.get_field_mapping(tgt_index, out_field)
+        if exists_node is None:
+            # 欄位不存在 → 依 desired_type 建出最小 mapping
+            if desired_type == "NESTED":
+                body = {"properties": {out_field: {"type": "nested"}}}
+            else:
+                # OBJECT 適合單一物件（或你想寬鬆一些）
+                body = {"properties": {out_field: {"type": "object"}}}
+            adapter.es.indices.put_mapping(index=tgt_index, body=body)  # type: ignore
+            print(f"✅ 已在 index='{tgt_index}' 新增欄位 '{out_field}'（type={desired_type}）")
+        else:
+            # 欄位已存在 → 檢查型別
+            cur_type = exists_node.get("type", "object")  # object/nested/text/…；無 type 視為 object
+            ok = (desired_type == "NESTED" and cur_type == "nested") or \
+                 (desired_type == "OBJECT" and cur_type in ["object", None])
+            if not ok:
+                print(f"⚠️ 欄位 '{out_field}' 已存在但型別為 {cur_type}，與期望 {desired_type} 不符。"
+                      f"ES 不允許變更型別，請改用另一個 output_col（如 '{out_field}_json'）或清空重建 index。")
+    except Exception as ex:
+        print(f"⚠️ 確認/建立 output_col 映射時發生例外：{ex}")
+        
+# ---- 確保 schema（mapping）對齊 SQL ensure_schemas ----
+def ensure_schemas_es_old(ctx, adapter: ElasticsearchAdapter, columns: List[Tuple[str, str]], index_name_hint=None):
     adapter.ensure_table(adapter.cfg["src_index"])
     adapter.ensure_table(adapter.cfg["tgt_index"])
 
@@ -256,12 +301,6 @@ def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns: List[Tuple[st
     adapter.ensure_columns(adapter.cfg["tgt_index"], [(out_field, desired_type)])
 
 
-def ensure_schemas_es_old(ctx, adapter: ElasticsearchAdapter, columns: List[Tuple[str, str]], index_name_hint=None):
-    # 單/雙 index 都可以處理：來源通常不動；確保目標 index 存在且有 output 欄位
-    adapter.ensure_table(adapter.cfg["src_index"])
-    adapter.ensure_table(adapter.cfg["tgt_index"])
-    # 只在目標 index 補 output 欄位 mapping（較合理）
-    adapter.ensure_columns(adapter.cfg["tgt_index"], columns)
     
 
 # ---------- reset output ----------

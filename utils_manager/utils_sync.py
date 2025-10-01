@@ -270,6 +270,7 @@ def prepare_env(
     回傳：(ctx_paths, PGMSubDir, utils_dir, config_path)
     - 來源不存在時不報錯，僅記錄 SkipSync 並繼續。（部署友善）
     """
+    print("prepare_env",prepare_env)
     ctx_paths = init_path_context(root_name=root_name, app_name=app_name, markers=markers)
 
     project_root = ctx_paths.project_root

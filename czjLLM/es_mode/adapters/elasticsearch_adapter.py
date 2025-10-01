@@ -80,6 +80,37 @@ class ElasticsearchAdapter:
             finally:
                 self.es = None
 
+    # 取得 index 的 mapping（快取可自行加）
+    def get_index_mapping(self, index: str) -> dict:
+        assert self.es is not None
+        return self.es.indices.get_mapping(index=index).get(index, {}).get("mappings", {})
+
+    # 依 dot.path 取得欄位定義（回傳該層 properties 的節點）
+    def get_field_mapping(self, index: str, field_path: str):
+        m = self.get_index_mapping(index)
+        props = m.get("properties", {})
+        node = props
+        for part in field_path.split("."):
+            if "properties" in node and part in node["properties"]:
+                node = node["properties"][part]
+            else:
+                return None
+        return node
+
+    # 讀 YAML/JSON 檔並套用 put_mapping（只會新增，不會改已存在型別）
+    def apply_mapping_file(self, index: str, path: str):
+        import os, json
+        from pathlib import Path
+        ext = Path(path).suffix.lower()
+        with open(path, "r", encoding="utf-8") as f:
+            if ext in [".yml", ".yaml"]:
+                import yaml
+                body = yaml.safe_load(f)
+            else:
+                body = json.load(f)
+        assert self.es is not None
+        self.es.indices.put_mapping(index=index, body=body)
+        
     # --- 與 SQL 介面對齊的「保留」方法（ES 版本） ---------------------------
     def list_columns(self, index: str) -> List[str]:
         """回傳 index 的 mapping 欄位名（僅作對齊用途）。"""
