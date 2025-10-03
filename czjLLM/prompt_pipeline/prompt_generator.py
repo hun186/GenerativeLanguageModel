@@ -1,14 +1,14 @@
 import os
 from colorama import Fore#, Back, Style
-from czjLLM.taskConfig import taskSetting
+from ..taskConfig import taskSetting
 #from czjLLM_utils import generate_prompt
 
 import inspect
 
-from czjLLM.tokenizer_utils import TokenizerWrapper
-from czjLLM.job_manager.job_config import LLMJobConfig
-from czjLLM.job_manager.job_config import getTextClass
-from czjLLM.job_manager.job_config import getKeyConsiderations
+from ..tokenizer_utils import TokenizerWrapper
+from ..job_manager.job_config import LLMJobConfig
+from ..job_manager.job_config import getTextClass
+from ..job_manager.job_config import getKeyConsiderations
 
 from utils.utilities import countdown_pause
 from utils.utilities_path import MKDIR
@@ -20,9 +20,12 @@ from utils.utilities_path import clean_path_end_chars
 def generate_prompt(content="",
                     keyConsiderations="",
                     MainFileName="",task = "",
-                    think_mode = False):
+                    think_mode = True):
+    if task and task not in taskSetting.keys():
+        print(f"taskSetting沒有任務{task}的設定。taskSetting任務有{taskSetting.keys()}")
     template_function = taskSetting[task]["template"]
     source_code = inspect.getsource(template_function)
+    
     if content == "":
         print("WARNING! The input content for generate_prompt is empty, check if it is normal.")
     #if task in ["PDF OPT","PDF OPT-Instruction First"]:
@@ -56,70 +59,6 @@ def generate_prompt(content="",
 
 # 建立 module-level 記憶
 _input_memory = {}
-
-class PromptGenerator_old:
-    def __init__(self, task: str, main_file_name: str = "", key_considerations: str = "",
-                 think_mode: bool = False, text_class: str = "", exclusive_class: str = ""):
-        self.task = task
-        self.main_file_name = main_file_name
-        self.key_considerations = key_considerations
-        self.think_mode = think_mode
-        self.text_class = text_class
-        self.exclusive_class = exclusive_class
-
-    def _get_key_considerations(self):
-        if not self.key_considerations:
-            if "keyConsiderations" not in _input_memory:
-                _input_memory["keyConsiderations"] = input("請輸入風險關注指標：").strip()
-                print(f"{Fore.LIGHTYELLOW_EX}輸入的風險關注指標為: {_input_memory['keyConsiderations']}{Fore.RESET}")
-            self.key_considerations = _input_memory["keyConsiderations"]
-        return self.key_considerations
-
-    def _get_text_class(self, exclusive: bool = False):
-        if not self.text_class:
-            if "textClass" not in _input_memory:
-                _input_memory["textClass"] = input("請輸入抽取目標類別：").strip()
-                print(f"{Fore.LIGHTYELLOW_EX}輸入的類別為: {_input_memory['textClass']}{Fore.RESET}")
-            self.text_class = _input_memory["textClass"]
-
-        if exclusive:
-            if not self.exclusive_class:
-                if "exclusiveTextClass" not in _input_memory:
-                    _input_memory["exclusiveTextClass"] = input("請輸入抽取目標排除類別：").strip()
-                    print(f"{Fore.LIGHTYELLOW_EX}輸入的排除類別為: {_input_memory['exclusiveTextClass']}{Fore.RESET}")
-                self.exclusive_class = _input_memory["exclusiveTextClass"]
-
-        return self.text_class, self.exclusive_class if exclusive else None
-
-    def build(self, content: str) -> str:
-        if not content.strip():
-            print("⚠️ generate_prompt: content 為空，請確認是否為預期行為。")
-
-        template_function = taskSetting[self.task]["template"]
-        source_code = inspect.getsource(template_function)
-
-        if "主檔名" in source_code:
-            print(f"{Fore.LIGHTYELLOW_EX}輸入主檔名「{self.main_file_name}」至 template_function。{Fore.RESET}")
-            prompt = template_function(MainFileName=self.main_file_name, content=content)
-
-        elif any(x in source_code for x in ["風險關注指標", "風險等級與說明"]):
-            key = self._get_key_considerations()
-            print(f"{Fore.LIGHTYELLOW_EX}輸入風險關注指標「{key}」至 template_function。{Fore.RESET}")
-            prompt = template_function(keyConsiderations=key, content=content)
-
-        elif self.task in ["CLASS EXT", "CLASS Diff EXT"]:
-            if self.task == "CLASS Diff EXT":
-                text_class, exclusive_class = self._get_text_class(exclusive=True)
-                prompt = template_function(
-                    textClass=text_class, exclusiveTextClass=exclusive_class, content=content)
-            else:
-                text_class, _ = self._get_text_class(exclusive=False)
-                prompt = template_function(textClass=text_class, content=content)
-
-        else:
-            prompt = template_function(content=content)
-
-        return prompt + "\n/no_think" if not self.think_mode else prompt
 
 class PromptGenerator:
     def __init__(self, ctx):

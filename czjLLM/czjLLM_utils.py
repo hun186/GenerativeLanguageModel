@@ -137,7 +137,7 @@ def CallLLMAPI_test():
     """
     print("start to run test for CallLLMAPI.")
     On_Premises=False
-    response,cost = CallLLMAPI(content,On_Premises=On_Premises)
+    response,cost = CallLLMAPI(content)#,On_Premises=On_Premises)
     print(response)
     print("="*50)
     print(response.choices[0].message.content)

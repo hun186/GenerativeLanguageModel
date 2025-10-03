@@ -87,12 +87,14 @@ def resolve_es_connection(ctx, get_param, args):
         "input_col": es_cfg.get("input_col"),
         "output_col": es_cfg.get("output_col"),
         "reset_output": es_cfg.get("reset_output", None),
-        "reset_confirm_code": es_cfg.get("reset_confirm_code", None)
+        "reset_confirm_code": es_cfg.get("reset_confirm_code", None),
+        "es_apply_mapping": es_cfg.get("es_apply_mapping", None),
+        "mapping_file": es_cfg.get("mapping_file", None)
     }
     
     # 直接用 dict comprehension 過濾掉 None，保持乾淨
     adapter_cfg = {k: v for k, v in adapter_cfg.items() if v is not None}
-    #print("adapter_cfg in ",adapter_cfg)
+    #print("adapter_cfg in resolve_es_connection",adapter_cfg)
     adapter = ElasticsearchAdapter(adapter_cfg).connect()
 
     # 4. 回傳
@@ -256,6 +258,8 @@ def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns, index_name_hi
     # 2) 若設定檔要求整包 mapping，就先走這條
     es_apply_mapping = adapter.cfg.get("es_apply_mapping", False)
     mapping_file = adapter.cfg.get("mapping_file")
+    print("es_apply_mapping in ensure_schemas_es",es_apply_mapping)
+    print("mapping_file in ensure_schemas_es",mapping_file)
     if es_apply_mapping and mapping_file:
         try:
             adapter.apply_mapping_file(tgt_index, mapping_file)

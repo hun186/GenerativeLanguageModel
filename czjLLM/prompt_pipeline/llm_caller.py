@@ -48,7 +48,7 @@ def CallLLMAPI(content,
                api_key="",
                base_url="https://api.deepseek.com",
                model="deepseek-chat",
-               max_tokens=4096,
+               max_tokens=8192,
                temperature=1,
                #On_Premises=False,
                NoThinkProcess=True
@@ -68,10 +68,13 @@ def CallLLMAPI(content,
     
     # 根據模型與 NoThinkProcess 判斷是否附加 /no_think
     model_lower = model.lower() if isinstance(model, str) else ""
-    if NoThinkProcess and should_disable_think(model_lower):
+    #print("content[-100:] b4",content)
+    if NoThinkProcess and should_disable_think(model_lower) and "qwen" in model_lower:
         if not content.strip().endswith("/no_think"):
             content = content.rstrip() + "\n/no_think"
-    
+    #print("model_lower",model_lower)
+    #print("should_disable_think(model_lower)",should_disable_think(model_lower))
+    #print("content[-100:] af",content)
     #print("Start to build client in CallLLMAPI wtih build_openai_like_client")
     #print("base_url", base_url)
     client = OpenAI(api_key=api_key, base_url=base_url)

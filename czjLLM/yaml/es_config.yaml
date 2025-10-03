@@ -12,4 +12,4 @@ task: InfoExtraction-MultiDim-SQLFriendly-to json format
 
 # 自動套用 mapping（僅新增欄位，不會改既有型別）
 es_apply_mapping: True
-mapping_file: config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
+mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml

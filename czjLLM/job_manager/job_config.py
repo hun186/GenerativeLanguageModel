@@ -21,8 +21,9 @@ from utils.utilities_path import getSubdirectory
 from GenerativeLanguageModel.czjLLM.taskConfig import taskSetting
 from GenerativeLanguageModel.czjLLM.modelConfig import modelSetting
 
-DEFAULT_MODEL = 'qwen3:32b-ctx-32k-premises-q4'
+#DEFAULT_MODEL = 'qwen3:32b-ctx-32k-premises-q4'
 #DEFAULT_MODEL = 'gpt-oss:latest-ctx-32k-premises-MXFP4'
+DEFAULT_MODEL = 'gpt-oss:120b-ctx-32k-premises-MXFP4'
 
 def load_config_from_file(PGMSubDir="", config_path=""):
     paths_to_try = [
@@ -108,7 +109,8 @@ class LLMJobConfig:
         self.removeFinPromptFile = True
         self.mp_for_all_call = True
         #self.no_think = True
-        self.think_mode = False
+        #self.think_mode = False
+        self.think_mode = True
         self.current_file = None
         self.main_file_name = None
         self.n_cut = 0

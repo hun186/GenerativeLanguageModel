@@ -238,7 +238,7 @@ class ElasticsearchAdapter:
         print("DEBUG single-index pending query:", json.dumps(body, ensure_ascii=False))
         
         for hit in _run_scan(body):
-            print("hit",hit)
+            #print("hit",hit)
             src = hit.get("_source", {}) or {}
             pk_val = hit.get("_id") if pk == "_id" else _dot_get(src, pk)
             if pk_val is None:

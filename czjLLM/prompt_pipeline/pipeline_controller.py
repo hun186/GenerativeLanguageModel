@@ -1005,9 +1005,9 @@ class PromptAPIPipeline:
                  content="",
                  promptFile="",OutputSaveFN="",
                  removeFinPromptFile=False,
-                 max_tokens=4096,
+                 max_tokens=8192,
                  #On_Premises=False,
-                 allow_to_retry=False,
+                 allow_to_retry=True,
                  model_spec: dict | None = None, #避免可變預設
                  #model_spec = dict(),
                  include_think = False,
@@ -1069,11 +1069,27 @@ class PromptAPIPipeline:
             self.model_spec["base_url"] = base_url  # 更新 model_spec 的 base_url
             #print(f"已分配 base_url: {base_url} 進行處理")  # 顯示選擇的 base_url
             #print("Start to run CallLLMAPI in PromptAPIPipeline")
+            #print("self.model_spec in PromptAPIPipeline",self.model_spec)
+            if "api_key" not in self.model_spec:
+                self.model_spec["api_key"]=("ThisIsFakeKey")
             response,cost = CallLLMAPI(
                 self.content,max_tokens=self.max_tokens,
                 #On_Premises=self.On_Premises,
                 model_spec=self.model_spec)
             #print("Finished CallLLMAPI in PromptAPIPipeline")
+
+            
+            if response.usage.completion_tokens >= self.max_tokens:
+                log_dir = "logs"
+                os.makedirs(log_dir, exist_ok=True)
+                log_file = os.path.join(log_dir, "Completion_tokens.txt")
+                MES = (
+                    f"⚠️ Warning! Completion tokens reached {response.usage.completion_tokens} "
+                    f"(max {max_tokens}) for content: {content[:200]}..."
+                )
+                print(MES)
+                with open(log_file, "a", encoding="utf-8") as fp:
+                    fp.write(MES + "\n")
             retMES = response.choices[0].message.content
             #print("retMES in pipeline b4",retMES)
             #清除前面<think>的思考內容
@@ -1130,6 +1146,7 @@ class PromptAPIPipeline:
                 response = None
                 cost = 0
             print(f"When run PromptAPIPipeline, the following error occurs:\n {ex}")
+            print(f"self.model_spec:{self.model_spec}")
             #countdown_pause(30)
         return response,cost,DTBJobs_Retry
 

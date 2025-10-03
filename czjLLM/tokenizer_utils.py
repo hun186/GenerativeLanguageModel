@@ -1,5 +1,6 @@
 import os
-from czjLLM.taskConfig import taskSetting
+#from czjLLM.taskConfig import taskSetting
+from .taskConfig import taskSetting
 #from DatasetConverter.sampleHandler import tokenization_wrap
 from utils.utilities import tlog
 from utils.utilities_path import fileNameNormalizer

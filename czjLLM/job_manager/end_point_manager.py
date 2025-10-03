@@ -107,7 +107,9 @@ def select_model(model_spec, config_file=DEFAULT_END_POINT_CONFIG_FILE):
     根據 model_spec 和設定檔選擇模型，並確保選擇的 base_url 是可用的。
     如果 model_spec 中沒有 base_url，則使用 get_available_end_points 自動選擇端點。
     """
-    candidates = ["qwen3:32b-ctx-32k-premises-q4", "gpt-oss:latest-ctx-32k-premises-MXFP4", "qwen3:30b-a3b-32k", "qwen2.5-32k"]
+    #candidates = ["gpt-oss:120b-ctx-32k-premises-MXFP4","gpt-oss:latest-ctx-32k-premises-MXFP4","qwen3:30b-a3b-ctx-32k-premises-q4","qwen3:32b-ctx-32k-premises-q4"]
+    candidates = ["gpt-oss:120b-32k","gpt-oss:latest-32k","qwen3:30b-a3b-32k","qwen3:32b-32k"]
+    #candidates = ["qwen3:32b-32k"]
     
     # 如果 model_spec 中沒有 base_url，則使用 get_available_end_points 函數選擇可用端點
     if "base_url" not in model_spec or not model_spec["base_url"]:

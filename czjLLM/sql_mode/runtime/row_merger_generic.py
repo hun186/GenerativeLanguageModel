@@ -73,7 +73,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 #try:
                 #    with open(CombBackFN, "r", encoding="utf-8") as fp:
                 #        result_text = fp.read()
-                print("comb_back_fn in row_merger",comb_back_fn)
+                #print("comb_back_fn in row_merger",comb_back_fn)
                 if not os.path.isfile(comb_back_fn):
                     continue
             

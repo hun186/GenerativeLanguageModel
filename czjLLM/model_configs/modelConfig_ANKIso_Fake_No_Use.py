@@ -1,24 +1,15 @@
+#model_configs/modelConfig_ANKIso_Fake.py
 common_base_urls = [
-    "http://192.168.0.134:11435/v1",
-    "http://192.168.0.134:11436/v1"
+    "http://192.168.0.111:11435/v1",
+    "http://192.168.0.111:11436/v1"
 ]
 common_api_key = (
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
-    "eyJpZCI6IjIyYzIzYWVkLWM4YzktNGZhYS1hNGRkLTg1NGNlZDg0YTE3ZCJ9."
-    "zP5xKqCemX2J3GFra03jMYPngipCbCUfFfIUyO96JOQ"
+    "ThisFakeKey"
 )
 
-modelSetting_ANKInt = {}
+modelSetting_ANKIso_Fake = {}
 
 models = [
-    ("deepseek-v3", [4, 8, 16], {}),
-    ("qwen2.5", [4, 8, 16, 32, 64, 128], {
-        16: {"nProcess": 4},
-        32: {"nProcess": 4},
-    }),
-    ("qwq", [4, 8, 16, 32, 64], {
-        32: {"nProcess": 4},
-    }),
     ("qwen3:32b", [4, 8, 16, 32, 64, 128], {
         16: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
         32: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
@@ -45,9 +36,9 @@ for model_prefix, context_lengths_k, extras in models:
         base_urls = common_base_urls.copy()
 
         # 確保包含兩個 IP
-        if "http://192.168.0.134:11435/v1" in base_urls and \
-           "http://192.168.0.134:11436/v1" not in base_urls:
-            base_urls.append("http://192.168.0.134:11436/v1")
+        if "http://192.168.0.111:11435/v1" in base_urls and \
+           "http://192.168.0.111:11436/v1" not in base_urls:
+            base_urls.append("http://192.168.0.111:11436/v1")
 
         setting = {
             "model_name": f"{model_prefix}-{context_k}k",
@@ -58,4 +49,5 @@ for model_prefix, context_lengths_k, extras in models:
             **extras.get(context_k, {})  # 合併額外設定（若有）
         }
 
-        modelSetting_ANKInt[key] = setting
+        modelSetting_ANKIso_Fake[key] = setting
+#print("modelSetting_ANKInt.keys()",modelSetting_ANKInt.keys())

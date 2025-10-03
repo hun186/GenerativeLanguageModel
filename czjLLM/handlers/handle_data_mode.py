@@ -182,23 +182,6 @@ def _es_reset(ctx, env, columns, args):
 def _es_build_iter(ctx, env):
     return build_es_iter(env["adapter"], ctx)
 
-
-def _es_choose_old(ctx, env, get_param, args):
-    return choose_columns_es(ctx, env, get_param, args)
-
-def _es_ensure_old(ctx, env, columns):
-    ensure_es(ctx, env["es_client"], columns, env["index"])
-
-def _es_reset_old(ctx, env, columns, args):
-    reset_es(ctx, env["es_client"], env["index"], columns, args)
-
-def _es_build_iter_old(ctx, env):
-    return build_es_iter(env["es_client"], ctx)
-
-def _es_sink_old(ctx, env):
-    # ESSink 會自動從 ctx 讀取 ctx.output_col（若沒有設定會預設 'LLM_result'）
-    return ESSink(ctx, es_client=env["es_client"], index=env["index"])
-
 def _es_sink(ctx, env):
     # 你的 ESSink 若需要 es_client/index，可從 adapter.es / adapter.cfg 取
     # 也可讓 ESSink 直接吃 adapter，統一介面
