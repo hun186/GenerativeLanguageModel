@@ -1060,7 +1060,15 @@ class PromptAPIPipeline:
 
     def proc(self, ):
         print("="*50)
-        print("Calling LLM API for promptFile",self.promptFile)
+        if self.promptFile == "":
+            #print(f"Calling LLM API for promptFile: {self.promptFile}")
+            print(f"No promptFile is input, run for content: {self.content[:200]}...")
+            if len(self.content)>300:
+                 print(f"{self.content[-100:]}")
+            #print(f"No promptFile is input, run for content: {self.content}")
+        else:
+            print(f"Calling LLM API for promptFile: {self.promptFile}")
+        print("allow_to_retry is ",self.allow_to_retry)
         DTBJobs_Retry = []
         try:
             # 在這裡選擇負載最輕的 base_url
@@ -1085,7 +1093,7 @@ class PromptAPIPipeline:
                 log_file = os.path.join(log_dir, "Completion_tokens.txt")
                 MES = (
                     f"⚠️ Warning! Completion tokens reached {response.usage.completion_tokens} "
-                    f"(max {max_tokens}) for content: {content[:200]}..."
+                    f"(max {self.max_tokens}) for content: {self.content[:200]}..."
                 )
                 print(MES)
                 with open(log_file, "a", encoding="utf-8") as fp:
@@ -1114,6 +1122,7 @@ class PromptAPIPipeline:
             
             # 如果預設輸出為json，進行輸出成功性驗證，如果不通過，則將輸入分割為兩段後，
             # 生成新的PromptFile，再試一次。
+            
             if self.allow_to_retry == True:
                 if "to json" in self.task.lower():
                     DTBJobs_Retry,retMES = self.handle_json_output(retMES)
