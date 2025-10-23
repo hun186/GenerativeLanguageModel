@@ -1,7 +1,9 @@
 from openai import OpenAI
+from openai import APIConnectionError, APITimeoutError, RateLimitError, APIError
 import requests
 import random
 import time
+import httpx
 
 #from utils.utilities import is_connected
 from utils.utilities import tlog
@@ -64,32 +66,63 @@ def CallLLMAPI(content,
 
     # 記錄開始時間
     start_time = time.time()
-    #print("model_spec in CallLLMAPI",model_spec)
+    #print("*********************model_spec in CallLLMAPI",model_spec)
     
     # 根據模型與 NoThinkProcess 判斷是否附加 /no_think
     model_lower = model.lower() if isinstance(model, str) else ""
-    #print("content[-100:] b4",content)
+    #print("*********************content[-100:] b4",content[-100:])
     if NoThinkProcess and should_disable_think(model_lower) and "qwen" in model_lower:
         if not content.strip().endswith("/no_think"):
             content = content.rstrip() + "\n/no_think"
     #print("model_lower",model_lower)
     #print("should_disable_think(model_lower)",should_disable_think(model_lower))
     #print("content[-100:] af",content)
-    #print("Start to build client in CallLLMAPI wtih build_openai_like_client")
+    #print("*********************Start to build client in CallLLMAPI wtih build_openai_like_client")
     #print("base_url", base_url)
-    client = OpenAI(api_key=api_key, base_url=base_url)
-    #print("Success to build client")
+    #client = OpenAI(
+        #api_key=api_key,
+        #base_url=base_url,
+        # 明確逾時，避免卡死（秒）
+        #timeout={"connect": 180, "read": 180, "write": 180, "pool": 10},
+    #)
     
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant"},
-            {"role": "user", "content": content},
-        ],
-        max_tokens=max_tokens,
-        stream=False,
-        temperature=temperature
+    HTTP_LIMITS = httpx.Limits(
+        max_connections=64,          # 總連線上限
+        max_keepalive_connections=32 # keep-alive 連線上限
     )
+    HTTP_TIMEOUT = httpx.Timeout(connect=10.0, read=240.0, write=240.0, pool=120.0)
+    
+    http_client = httpx.Client(
+        timeout=HTTP_TIMEOUT,
+        limits=HTTP_LIMITS,
+        proxies=None,        # 避免被系統 Proxy 影響 192.168.*
+        trust_env=False
+    )
+    
+    client = OpenAI(
+        api_key=api_key or "EMPTY",
+        base_url=base_url.rstrip("/"),
+        http_client=http_client,     # ← 使用共用 http_client
+    )
+    #print("*********************finished client OpenAI")
+    #print("*********************start to run client.chat.completions.create")
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant"},
+                {"role": "user", "content": content},
+            ],
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+    except (APITimeoutError, APIConnectionError) as e:
+        # 交由上游重試機制處理（不要吞掉，要讓 pipeline 能 requeue）
+        raise RuntimeError(f"LLM_CALL_TIMEOUT_OR_CONN: {e}") from e
+    except (RateLimitError, APIError) as ex:
+        # 這類屬可重試或可恢復的錯誤，也往上丟，別卡住
+        raise
+    #print("*********************FINISH running client.chat.completions.create")
     #print("Success to get response")
     # 計算請求處理時間
     end_time = time.time()

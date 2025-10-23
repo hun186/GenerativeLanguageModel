@@ -219,6 +219,7 @@ class ElasticsearchAdapter:
     
     def _scan_single_index_pending(self, index: str, pk: str, input_col: str, output_col: str, fetch_size: int):
         assert self.es is not None
+        filters = self._build_pending_filters()
         
         def _run_scan(query_body):
             return helpers.scan(self.es, index=index, query=query_body, size=fetch_size, preserve_order=False)
@@ -226,11 +227,13 @@ class ElasticsearchAdapter:
         # ✅ 只有兩個條件：
         # 1) 有輸入(input_col)
         # 2) 沒有輸出(output_col)
+        
         body = {
             "query": {
                 "bool": {
                     "must":     [{"exists": {"field": input_col}}],
                     "must_not": [{"exists": {"field": output_col}}],
+                    "filter":   filters
                 }
             },
             "_source": [input_col, pk] if pk != "_id" else [input_col],
@@ -262,8 +265,17 @@ class ElasticsearchAdapter:
     # ------------------------ 內部：雙 Index -------------------------------
     def _scan_dual_index_pending(self, src_index, tgt_index, pk, input_col, output_col, fetch_size):
         assert self.es is not None
-        src_query = {"query": {"exists": {"field": input_col}}, "_source": [input_col]}
-    
+        #src_query = {"query": {"exists": {"field": input_col}}, "_source": [input_col]}
+        filters = self._build_pending_filters()
+        src_query = {
+            "query": {
+                "bool": {
+                    "must":   [{"exists": {"field": input_col}}],
+                    "filter": filters
+                }
+            },
+            "_source": [input_col]
+        }    
         batch_ids, batch_docs = [], {}
     
         def _is_non_empty(v) -> bool:
@@ -305,7 +317,25 @@ class ElasticsearchAdapter:
     
         for item in flush_batch():
             yield item
+            
+    def _build_pending_filters(self) -> list:
+        """
+        從 cfg 組 pending 過濾條件：
+        - cfg["pending_filters"] 可是 list（原生 ES 子句）或 dict（會轉成 term）
+        - cfg["only_selected"] 為 True 時，自動加 {"term":{"selectedMessage": True}}
+        """
+        #print("****************self.cfg for es adapter",self.cfg)
+        filters = []
+        pf = self.cfg.get("pending_filters")
+        if isinstance(pf, dict):
+            for k, v in pf.items():
+                filters.append({"term": {k: v}})
+        elif isinstance(pf, (list, tuple)):
+            filters.extend(pf)
 
+        if self.cfg.get("only_selected", False):
+            filters.append({"term": {"selectedMessage": True}})
+        return filters
 
     # ✅ 新增：支援 with 语法
     def __enter__(self):

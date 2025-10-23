@@ -119,8 +119,38 @@ class LLMJobConfig:
         self.load_low_watermark = 8
         self.load_high_watermark = 20
         self.per_round_limit = 128
-        
     def __repr__(self):
+        return "no show temp"
+    def __repr__pending(self):
+        import io, datetime, pathlib, json
+        def safe(o):
+            if o is Ellipsis:
+                return "..."
+            if isinstance(o, (str, int, float, bool)) or o is None:
+                return o
+            if isinstance(o, pathlib.Path):
+                return str(o)
+            if isinstance(o, (list, tuple, set)):
+                return [safe(x) for x in o]
+            if isinstance(o, dict):
+                return {str(safe(k)): safe(v) for k, v in o.items()}
+            if isinstance(o, (datetime.date, datetime.datetime)):
+                return o.isoformat()
+            if isinstance(o, io.IOBase):
+                # 避免把整個 file handle 丟進 JSON
+                name = getattr(o, "name", "")
+                return f"<{o.__class__.__name__} {name}>"
+            return repr(o)
+    
+        # 避免把私有屬性（如我們新增的 debug handle 等）也丟進去
+        safe_dict = {k: safe(v) for k, v in self.__dict__.items() if not k.startswith("_")}
+        try:
+            return json.dumps(safe_dict, indent=2, ensure_ascii=False)
+        except Exception:
+            # 萬一還是失敗，就輸出最小必要資訊
+            minimal = {k: safe_dict.get(k) for k in ("PGMSubDir","mode","task","model_spec_name","model_spec","n_process")}
+            return json.dumps(minimal, indent=2, ensure_ascii=False)
+    def __repr__old(self):
         def safe(obj):
             if isinstance(obj, Path):
                 return str(obj)
@@ -128,6 +158,7 @@ class LLMJobConfig:
     
         safe_dict = {k: safe(v) for k, v in self.__dict__.items()}
         return json.dumps(safe_dict, indent=2, ensure_ascii=False)
+    
 
 def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None, task_name=None):
     ctx = LLMJobConfig()
@@ -168,6 +199,19 @@ def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None,
     ctx.llm_source_finished_dir = llm_channel_dir(Path(PGMSubDir), ctx.channel, "_Finished")
     ctx.no_think = "qwen3" in ctx.model_spec_name
 
+    def _sanitize(v):
+        if v is Ellipsis:
+            return None
+        if isinstance(v, dict):
+            return {k: _sanitize(x) for k, x in v.items()}
+        if isinstance(v, (list, tuple, set)):
+            return [ _sanitize(x) for x in v ]
+        return v
+    
+    # 把 ctx 的屬性做一層清洗
+    for k, v in list(ctx.__dict__.items()):
+        ctx.__dict__[k] = _sanitize(v)
+        
     return ctx
 
 def init_task_context(ctx):

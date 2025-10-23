@@ -11,6 +11,7 @@ from czjLLM.prompt_pipeline.pipeline_controller import (
     combine_api_finished_item, get_combined_result_path, row_is_ready, meter_update
 )
 from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
+from czjLLM.prompt_pipeline.pipeline_controller import meter_update  # 檔頭若尚未 import
 
 '''
 def _extract_json_list(result_text: str, allowed_fields: Optional[List[str]]) -> List[Dict[str, Any]]:
@@ -148,6 +149,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                         tlog_warn(f"⚠️ 備份原始 txt 失敗（pk={pk}）：{ex}")
 
                     tlog(f"✅ 逐列合併並寫回完成：{pk}")
+                    meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({"last_progress_ts": time.time()}))
                     progressed = True
                 except Exception as e:
                     tlog_warn(f"Row Merger 寫回失敗 pk={pk}: {e}")

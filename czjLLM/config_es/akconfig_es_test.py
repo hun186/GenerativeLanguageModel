@@ -15,3 +15,24 @@ reset_output = False          # True 或 False，控制是否重設欄位，如�
 reset_confirm_code = "12345"  # 自動跳過驗證碼用，建議搭配 reset_output= True 一起使用
 es_apply_mapping = True
 mapping_file = "czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml"
+
+# 只挑選 selectedMessage==true
+only_selected = False
+
+# （可選）更多條件，使用原生 ES DSL 子句
+# 會與 only_selected 以 AND 併入 bool.filter
+pending_filters = [
+    # 例：高價值
+    # {"term": {"ai.classLabels.highValue": True}},
+    # 例：語言 zh（注意用 .keyword）
+    # {"term": {"rawInfo.langCode.keyword": "zh"}},
+    # 例：日期區間
+    # {"range": {"importDT": {"gte": "2025-10-01T00:00:00Z"}}},
+    # 例：nested 欄位（multidim_event_json.Event.location = 台北）
+    # {
+    #   "nested": {
+    #     "path": "multidim_event_json.Event",
+    #     "query": { "term": { "multidim_event_json.Event.location": "台北" } }
+    #   }
+    # },
+]

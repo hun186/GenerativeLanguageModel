@@ -62,9 +62,16 @@ def resolve_es_connection(ctx, get_param, args):
     es_cfg = load_es_cfg(ctx, get_param, args, policy)
     #print("es_cfg in resolve_es_connection",es_cfg)
     # 2. 取得連線參數（若設定檔沒有，就互動詢問）
-    es_host = (es_cfg.get("es_host")
-               or input("🔹 請輸入 ES host（預設 http://localhost:9200）：").strip()
-               or "http://localhost:9200")
+    #es_host = (es_cfg.get("es_host")
+    #           or input("🔹 請輸入 ES host（預設 http://localhost:9200）：").strip()
+    #           or "http://localhost:9200")
+    hosts = es_cfg.get("hosts")
+    if not hosts:
+        es_host = (es_cfg.get("es_host")
+                   or input("ES host（預設 http://localhost:9200）：").strip()
+                   or "http://localhost:9200")
+        hosts = [es_host]
+        
     es_user = es_cfg.get("es_user") if "es_user" in es_cfg else \
               (input("🔹 請輸入 ES user（留空表示無帳號）：").strip() or None)
     es_pass = es_cfg.get("es_pass") if "es_pass" in es_cfg else \
@@ -76,8 +83,10 @@ def resolve_es_connection(ctx, get_param, args):
     tgt_index = es_cfg.get("es_tgt_index", src_index)
 
     # 3. 建立 ElasticsearchAdapter（內部會自己建 client）
+
     adapter_cfg = {
-        "es_host": es_host,
+        #"es_host": hosts,
+        "hosts": hosts,
         "http_auth": (es_user, es_pass) if es_user else None,
         "timeout": es_cfg.get("timeout", 60),
         "src_index": src_index,
@@ -89,12 +98,25 @@ def resolve_es_connection(ctx, get_param, args):
         "reset_output": es_cfg.get("reset_output", None),
         "reset_confirm_code": es_cfg.get("reset_confirm_code", None),
         "es_apply_mapping": es_cfg.get("es_apply_mapping", None),
-        "mapping_file": es_cfg.get("mapping_file", None)
+        "mapping_file": es_cfg.get("mapping_file", None),
+        "only_selected": es_cfg.get("only_selected", None),
+        "pending_filters": es_cfg.get("pending_filters", None),
     }
     
     # 直接用 dict comprehension 過濾掉 None，保持乾淨
     adapter_cfg = {k: v for k, v in adapter_cfg.items() if v is not None}
     #print("adapter_cfg in resolve_es_connection",adapter_cfg)
+    # 預設只挑 selectedMessage==true；可改用 config/CLI 覆寫
+    #adapter_cfg["only_selected"] = True
+    # 也可直接提供進階 filters（list 形式），此行可先不開：
+    # adapter_cfg["pending_filters"] = [{"term": {"selectedMessage": True}}]
+    # adapter_cfg["pending_filters"] = [
+    #     {"term": {"selectedMessage": True}},
+    #     {"term": {"ai.classLabels.highValue": True}},   # boolean → 直接 term
+    #     {"term": {"rawInfo.langCode.keyword": "zh-TW"}},
+    #     {"range": {"importDT": {"gte": "2025-10-01T00:00:00Z"}}}
+    # ]
+    
     adapter = ElasticsearchAdapter(adapter_cfg).connect()
 
     # 4. 回傳

@@ -4,9 +4,11 @@ import threading, queue
 import queue as pyqueue
 import tqdm
 from typing import Iterable, Tuple, Any
+import os, time, faulthandler, sys
 
 import multiprocessing as mp
 from czjLLM.job_manager.console_ui import tlog, tlog_ok
+from czjLLM.prompt_pipeline.pipeline_controller import meter_read  # 讀進度計量檔
 
 from .runtime_ui import prepare_ui, start_bar_refresher
 from ..metrics.metering import init_meter
@@ -95,20 +97,59 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     done_q = queue.Queue()
     merger_done = threading.Event()
 
-    # ★★★ 新增：啟動 MP 日誌 listener，並把 Queue 放到 ctx，供子程序 initializer 使用
-    if not DETAIL_CONSUMER_INFO:
-        #mp_log_q, mp_listener_stop, mp_listener = _start_mp_log_listener()
-        mp_log_q, mp_listener_stop, mp_listener = start_mp_log_listener() #may fail
-        ctx.mp_log_q = mp_log_q
-    
-    
-    # 5) 啟動 workers
-    #sink = make_sink(ctx, is_sqlite)
+    # === 監控初始化（faulthandler + 停滯偵測）===
+    try:
+        log_dir = getattr(ctx, "log_dir", os.getcwd())
+        os.makedirs(log_dir, exist_ok=True)
+        stacks_path = os.path.join(log_dir, "stacks.log")
+        # 保持檔案 handle 不被 GC（避免後續寫不到）
+        ctx._faulthandler_fp = open(stacks_path, "w", buffering=1, encoding="utf-8")
+        faulthandler.enable(file=ctx._faulthandler_fp)
+    except Exception as _e:
+        # 不中斷主流程
+        pass
 
-    stop_event, consumer, merger = start_workers(
-        #ctx, registry, meter_fn, is_sqlite, done_q
-        ctx, registry, meter_fn, is_sqlite, done_q, sink=sink
-        )
+    def _stall_watchdog(meter_path: str, stop_ev: threading.Event, interval: float = 60.0, stall_secs: float = 600.0):
+        """
+        每 60s 檢查 queue(pending+running) 是否有變化；若連續 600s 沒變，告警並輸出 stack。
+        """
+        last_sum = None
+        last_change_ts = time.time()
+        while not stop_ev.is_set():
+            try:
+                m = meter_read(meter_path)
+                q = m.get("queue", {})
+                s = int(q.get("pending", 0)) + int(q.get("running", 0))
+                if (last_sum is None) or (s != last_sum):
+                    last_sum = s
+                    last_change_ts = time.time()
+                else:
+                    if (time.time() - last_change_ts) >= stall_secs:
+                        try:
+                            msg = f"[watchdog] 進度 {int(stall_secs)} 秒無前進（outstanding={s}），正在傾印 thread dump 至 stacks.log"
+                            print(msg)
+                        except Exception:
+                            pass
+                        try:
+                            # 立即傾印一次（定點偵錯）；dump_traceback_later 可選擇性加
+                            faulthandler.dump_traceback(file=getattr(ctx, "_faulthandler_fp", None) or sys.stderr)
+                        except Exception:
+                            pass
+                        # 重設計時避免洗版
+                        last_change_ts = time.time()
+            except Exception:
+                # 讀不到檔或其他短暫錯誤 → 下輪再試
+                pass
+            time.sleep(interval)
+
+    # 於 worker 啟動後建立 watchdog
+    stop_event, consumer, merger = start_workers(ctx, registry, meter_fn, is_sqlite, done_q, sink=sink)
+
+    try:
+        th_watchdog = threading.Thread(target=_stall_watchdog, args=(meter_fn, stop_event), daemon=True)
+        th_watchdog.start()
+    except Exception:
+        pass
 
     # 6) 進度 drain（以 merger_done 控制退出）
     gui_handle = getattr(ctx, "gui_handle", None)

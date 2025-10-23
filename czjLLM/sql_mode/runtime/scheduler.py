@@ -1,5 +1,6 @@
 # sql_mode/scheduler.py
 import os
+import time
 from typing import Any
 from czjLLM.prompt_pipeline.pipeline_controller import find_item_dir_for, meter_update
 from czjLLM.utilities.file_utils import save_text_as_temp_file
@@ -39,5 +40,7 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
         d["queue"]["pending"] += total_chunks
 
     meter_update(meter_fn, _on_add_row)
+    meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({"last_progress_ts": time.time()}))
+    
     tlog(f"[sched] pk={pk} added, chunks={total_chunks}, dir={os.path.basename(item_dir)}")
     return total_chunks
