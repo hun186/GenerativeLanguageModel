@@ -2,9 +2,11 @@
 from typing import Any, Optional, List, Dict
 from elasticsearch import Elasticsearch, helpers
 import datetime
+from datetime import timezone
 import re
 import json
 import atexit
+import time
 
 # 與其他 sink 保持一致的 logging helper（如果找不到模組會 fallback 到 print）
 try:
@@ -13,6 +15,10 @@ except Exception:
     def tlog(msg): print(msg)
     def tlog_warn(msg): print(msg)
 
+def _now_iso_utc() -> str:
+    # 例：'2025-10-22T13:37:43Z'（無微秒，最穩）
+    return datetime.datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")       
+        
 class ESSink:
     """
     Elasticsearch Sink —— 與 SqlSink/ExcelSink 介面相容
@@ -25,21 +31,30 @@ class ESSink:
     def __init__(self, ctx, es_client: Elasticsearch, index: str,
                  output_col: Optional[str] = None,
                  flush_every: Optional[int] = None,
-                 flatten_json: bool = False):
+                 flatten_json: bool = False,
+                 ):
         self.ctx = ctx
         self.es: Elasticsearch = es_client
         self.index = index
         # 若沒有顯式提供 output_col，從 ctx 取得；若還沒，預設 'LLM_result'
         self.output_col = output_col or getattr(ctx, "output_col", "LLM_result")
-        self.flush_every = int(flush_every or getattr(ctx, "es_flush_every", 100))
+        # ✅ 建議：把預設筆數拉到 1000（你現在設 5 太頻繁）
+        self.flush_every = int(flush_every or getattr(ctx, "es_flush_every", 1000))
         self.flatten_json = bool(flatten_json or getattr(ctx, "flatten_json", False))
 
+        # ✅ 新增：容量 & 時間門檻（可被 ctx 覆寫）
+        self.flush_bytes = int(getattr(ctx, "es_flush_bytes", 8_000_000))  # ≈ 8MB
+        self.flush_secs  = float(getattr(ctx, "es_flush_secs",  2.0))      # 至多等 2 秒
+
         self._buffer: List[Dict[str, Any]] = []
+        self._buffer_bytes = 0                    # ✅ 累積近似大小
+        self._last_flush_ts = datetime.datetime.now().timestamp()
         self._debug = bool(getattr(self.ctx, "debug_es_sink", False))
         # ✅ 內部快取：實際生效的欄位（可能是 output_col 或 output_col+"_json"）
         self._effective_output_col = None
         
         atexit.register(self.flush_all)  # 程式結束時保底 flush
+        #print("ctx in ESSink",self.ctx)
 
     # -------- lifecycle --------
     def open(self):
@@ -259,12 +274,25 @@ class ESSink:
             # 出錯就原樣返回，避免中斷
             return payload
         
+ 
     def _prepare_update_doc(self, payload: Any, save_raw_input: bool = False,
                             input_col: Optional[str] = None, input_value: Any = None):
-        # 只包裝，不做解析/正規化
         doc = {self.output_col: payload}
+    
         if getattr(self.ctx, "record_update_time", False):
-            doc.setdefault("update_time", datetime.datetime.utcnow().isoformat())
+            ts = _now_iso_utc()
+            doc["update_time_ai"] = ts  # 根層
+    
+            # ✅（可選）也寫到 output_col 內層
+            # 記得對應的 mapping 若要查 nested 內的時間，需在 multidim_event_json.properties.update_time_ai 定義成 date。
+            if getattr(self.ctx, "update_time_inside_output", False):
+                if isinstance(payload, dict):
+                    payload.setdefault("update_time_ai", ts)
+                elif isinstance(payload, list):
+                    for it in payload:
+                        if isinstance(it, dict):
+                            it.setdefault("update_time_ai", ts)
+    
         if save_raw_input and input_col:
             doc[input_col] = input_value
         return doc
@@ -296,6 +324,24 @@ class ESSink:
             doc[input_col] = input_value
         return doc
     '''
+    
+    
+    def _estimate_size(self, item: Dict[str, Any]) -> int:
+        """粗估單筆 action 的 JSON 大小（bytes）。"""
+        try:
+            return len(json.dumps(item, ensure_ascii=False))
+        except Exception:
+            return 0
+    
+    def _maybe_flush(self):
+        now = time.time()
+        if (len(self._buffer) >= self.flush_every or
+            self._buffer_bytes >= self.flush_bytes or
+            (now - self._last_flush_ts) >= self.flush_secs):
+            self._flush()
+            self._last_flush_ts = now
+            self._buffer_bytes = 0
+            
     def write_main(self, pk, result_text: Any, update_time: Optional[str] = None):
         if pk is None:
             tlog_warn("⚠️ ESSink.write_main: pk 為 None，略過寫入。")
@@ -318,14 +364,13 @@ class ESSink:
             return
     
         doc = self._prepare_update_doc(payload)
-        if update_time:
-            doc["update_time"] = update_time
-    
-        self._buffer.append({"_id": pk, "doc": doc})
+        item = {"_id": pk, "doc": doc}
+        self._buffer.append(item)
+        self._buffer_bytes += self._estimate_size(item)
+
         if self._debug:
-            tlog(f"[ESSink] buffer size = {len(self._buffer)} (flush_every={self.flush_every})")
-        if len(self._buffer) >= self.flush_every:
-            self._flush()
+            tlog(f"[ESSink] buffer size={len(self._buffer)}, bytes~={self._buffer_bytes} (limits: {self.flush_every} / {self.flush_bytes}B)")
+        self._maybe_flush()
 
     def write_flatten(self, pk, json_array: List[Dict], save_raw_input: bool, input_col: Optional[str], input_value):
         """
@@ -337,9 +382,10 @@ class ESSink:
             return
         payload = json_array or []
         doc = self._prepare_update_doc(payload, save_raw_input=save_raw_input, input_col=input_col, input_value=input_value)
-        self._buffer.append({"_id": pk, "doc": doc})
-        if len(self._buffer) >= self.flush_every:
-            self._flush()
+        item = {"_id": pk, "doc": doc}
+        self._buffer.append(item)
+        self._buffer_bytes += self._estimate_size(item)
+        self._maybe_flush()
 
     def ensure_flatten_schema(self, allowed_fields=None):
         # ES 不需為 nested JSON 做額外 schema 建立；保持與 SqlSink API 相容
@@ -349,7 +395,8 @@ class ESSink:
     def _flush(self):
         if not self._buffer:
             return
-        actions = (
+    
+        actions_gen = (
             {
                 "_op_type": "update",
                 "_index": self.index,
@@ -359,32 +406,28 @@ class ESSink:
             }
             for item in self._buffer
         )
+    
         try:
-            '''
-            ok, errors = helpers.bulk(
-                self.es,
-                actions,
-                raise_on_error=False,   # 不丟例外，但我們自己印錯誤
-                stats_only=False,
-                request_timeout=120,
-            )
-            '''
-            success, errors = helpers.bulk(self.es, actions, raise_on_error=False)
-            if getattr(self.ctx, "es_refresh_after_flush", True):  # ← 開發期預設 True
-                self.es.indices.refresh(index=self.index)
+            # ✅ 只有在 debug 下才轉 list（避免平時多一份記憶體拷貝）
+            actions = list(actions_gen) if self._debug else actions_gen
             if self._debug:
-                print(f"💾 ESSink: flush {len(actions)} actions (successes: {success}) to index {self.index}")
-            # ✅ 可視化結果
+                tlog(f"[ESSink] flushing {len(actions)} actions to index {self.index}")
+    
+            success, errors = helpers.bulk(self.es, actions, raise_on_error=False, request_timeout=120)
+    
+            # ✅ 建議：正式環境關閉這個 refresh（把 ctx.es_refresh_after_flush 設 False）
+            if getattr(self.ctx, "es_refresh_after_flush", False):
+                self.es.indices.refresh(index=self.index)
+    
             if errors:
                 print(f"❌ bulk 有錯（僅示範前 3 筆）：{errors[:3]}")
             else:
                 print(f"💾 bulk 成功筆數：{success}")
     
-            # ✅ 讓後續立刻查得到（避免你以為沒寫）
-            try:
-                self.es.indices.refresh(index=self.index)
-            except Exception as _:
-                pass
+            # 二擇一即可，不必再呼叫一次 refresh
+            # try: self.es.indices.refresh(index=self.index)
+            # except Exception: pass
+    
         except Exception as ex:
             print(f"⚠️ ESSink._flush 例外：{ex}")
         finally:

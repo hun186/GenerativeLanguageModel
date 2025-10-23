@@ -229,6 +229,7 @@ def _select_backend(ctx, get_param) -> Backend:
         
 # ---------- 單一入口 ----------
 def handle_data_mode(ctx, get_param, args):
+    #print("ctx in handle_data_mode",ctx)
     backend = _select_backend(ctx, get_param)
 
     env = backend.resolve(ctx, get_param, args)

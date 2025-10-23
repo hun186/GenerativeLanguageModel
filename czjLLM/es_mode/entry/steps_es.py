@@ -157,6 +157,10 @@ def choose_columns_es(ctx, env, get_param, args):
         if ok != "yes":
             output_col = input("🔁 請重新輸入輸出欄位名稱：").strip() or f"{input_col}_result"
 
+    ctx.record_update_time = get_param("record_update_time")
+    if ctx.record_update_time is None:
+        ctx.record_update_time = (input("⏱️ 要不要寫 update_time？(Y/n)：").strip().lower() != "n")
+        
     # ---------- 回灌到 ctx ----------
     # 若你仍有 ctx.es_index，可在 resolve 時塞；此處不直接使用 index，改由 adapter.cfg 管理
     ctx.primary_key = primary_key
@@ -258,8 +262,8 @@ def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns, index_name_hi
     # 2) 若設定檔要求整包 mapping，就先走這條
     es_apply_mapping = adapter.cfg.get("es_apply_mapping", False)
     mapping_file = adapter.cfg.get("mapping_file")
-    print("es_apply_mapping in ensure_schemas_es",es_apply_mapping)
-    print("mapping_file in ensure_schemas_es",mapping_file)
+    #print("es_apply_mapping in ensure_schemas_es",es_apply_mapping)
+    #print("mapping_file in ensure_schemas_es",mapping_file)
     if es_apply_mapping and mapping_file:
         try:
             adapter.apply_mapping_file(tgt_index, mapping_file)

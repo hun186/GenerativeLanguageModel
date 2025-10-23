@@ -69,6 +69,7 @@ def load_es_config_from_file(config_path: str) -> dict:
 
     elif ext in [".yaml", ".yml"]:
         with open(config_path, "r", encoding="utf-8") as f:
+            #print("load es config res",yaml.safe_load(f))
             return yaml.safe_load(f)
 
     else:

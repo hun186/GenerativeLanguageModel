@@ -4,12 +4,12 @@ llm_source_backup_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czj
 llm_source_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/unspecified_channel
 es_config_file: czjLLM/config_es/akconfig_es_test.py
 mode: es
-model_spec: gpt-oss:120b-ctx-16k-premises-MXFP4
+model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
 output_col: multidim_event_json
 primary_key: _id
 #task: News-FacetTop10-Map-to json format
 task: InfoExtraction-MultiDim-SQLFriendly-to json format
-
+record_update_time: true
 # 自動套用 mapping（僅新增欄位，不會改既有型別）
 es_apply_mapping: True
 mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml

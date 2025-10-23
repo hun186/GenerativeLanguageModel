@@ -94,7 +94,7 @@ if __name__ == '__main__':
         model_spec_name=get_param("model_spec"),
         task_name=get_param("task")
     )
-    print("ctx in main",ctx)
+    #print("ctx in main",ctx)
     # txt 模式：處理所有 .txt
     if mode == "txt":
         handle_txt_mode(ctx, args)

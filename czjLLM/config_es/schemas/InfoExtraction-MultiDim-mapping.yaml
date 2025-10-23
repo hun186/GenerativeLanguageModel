@@ -103,3 +103,8 @@ properties:
           impact:           { type: integer }
           credibility:      { type: integer }
           importance_score: { type: integer }
+          
+      update_time_ai:
+        type: date
+        format: strict_date_optional_time||epoch_millis
+        ignore_malformed: true
