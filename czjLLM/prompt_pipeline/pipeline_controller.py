@@ -15,6 +15,7 @@ import shutil
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
+import faulthandler
 
 from czjLLM.prompt_pipeline.result_handler import PromptResultHandler
 from czjLLM.prompt_pipeline.prompt_generator import generate_prompt
@@ -718,6 +719,86 @@ def _merge_and_write_single_row(ctx, pk, st, cursor, is_sqlite=False):
     print(f"✅ 合併並寫入完成：{pk}")
 '''
 
+def _es_heartbeat_loop(adapter, interval_sec=60):
+    while True:
+        try:
+            ok = bool(getattr(adapter, "es", None)) and adapter.es.ping(request_timeout=3)
+            if not ok:
+                print("[watchdog] ES ping 失敗", flush=True)
+        except Exception as e:
+            print(f"[watchdog] ES ping 例外: {e}", flush=True)
+        time.sleep(interval_sec)
+
+def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60, stacks_path="stacks.log"):
+    # 行緩衝，避免 Windows 下鎖太久
+    stacks_file = open(stacks_path, "a", buffering=1, encoding="utf-8")
+    try:
+        faulthandler.enable()
+    except Exception:
+        pass
+
+    while True:
+        try:
+            last = getattr(ctx, "last_progress_ts", None)
+            if last is not None:
+                idle = time.time() - last
+                if idle > idle_threshold_sec:
+                    print("[watchdog] 進度 10 分鐘無前進，疑似停滯，請檢查 stacks.log 與 ES", flush=True)
+                    try:
+                        faulthandler.dump_traceback(file=stacks_file)
+                    except Exception as e:
+                        print(f"[watchdog] dump 例外: {e}", flush=True)
+                    # 補一個 ES 心跳
+                    try:
+                        ok = bool(getattr(adapter, "es", None)) and adapter.es.ping(request_timeout=3)
+                        if not ok:
+                            print("[watchdog] ES ping 失敗（stall）", flush=True)
+                    except Exception as e:
+                        print(f"[watchdog] ES ping 例外（stall）: {e}", flush=True)
+        except Exception as e:
+            print(f"[watchdog] 自身例外: {e}", flush=True)
+        time.sleep(interval_sec)
+
+def start_watchdogs(ctx, adapter=None, *, 
+                    ping_interval_sec=60, 
+                    stall_idle_threshold_sec=600, 
+                    stall_interval_sec=60, 
+                    stacks_path=None):
+    """
+    從 controller 啟動所有 watchdog。
+    - ctx: 需要 last_progress_ts（orchestrator 每前進一次要更新）
+    - adapter: ES 時傳入 ElasticsearchAdapter；其他 backend 可傳 None
+    """
+    # 避免重複啟動
+    if getattr(ctx, "_watchdogs_started", False):
+        return
+    setattr(ctx, "_watchdogs_started", True)
+
+    if getattr(ctx, "last_progress_ts", None) is None:
+        ctx.last_progress_ts = time.time()
+
+    if stacks_path is None:
+        stacks_path = os.path.join(getattr(ctx, "work_dir", "."), "stacks.log")
+
+    # 進度停滯偵測（所有 backend 都適用）
+    threading.Thread(
+        target=_stall_watchdog,
+        args=(ctx, adapter),
+        kwargs=dict(idle_threshold_sec=stall_idle_threshold_sec,
+                    interval_sec=stall_interval_sec,
+                    stacks_path=stacks_path),
+        daemon=True
+    ).start()
+
+    # ES 心跳（只有 ES 時才開）
+    if adapter is not None and getattr(adapter, "es", None) is not None:
+        threading.Thread(
+            target=_es_heartbeat_loop,
+            args=(adapter,),
+            kwargs=dict(interval_sec=ping_interval_sec),
+            daemon=True
+        ).start()
+        
 # [ADD] －－－－ Row Merger Watchdog：只要 TODO 清空就立刻合併寫回 －－－－
 def row_is_ready(item_dir: str) -> bool:
     todo_dir = os.path.join(item_dir, "TODO")

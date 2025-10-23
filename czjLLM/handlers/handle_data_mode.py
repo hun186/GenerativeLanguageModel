@@ -10,6 +10,7 @@ from ..sql_mode.runtime.sinks.sql_sink import SqlSink
 from ..sql_mode.runtime.sinks.excel_sink import ExcelSink
 from ..tabular_mode.runtime.sinks.csv_sink import CSVSink
 from ..es_mode.runtime.sinks.es_sink import ESSink
+from ..prompt_pipeline.pipeline_controller import start_watchdogs
 #from czjLLM.tabular_mode.runtime.sinks.csv_sink import CSVSink  # 你的 CSVSink
 
 # ---------- SQL 版 steps（沿用你現有的） ----------
@@ -246,6 +247,19 @@ def handle_data_mode(ctx, get_param, args):
             print_cli_usage_hint(ctx)
         ctx.error_log_path = backend.error_log_name(ctx, env)
 
+        # ✅ 啟動 watchdog（ES 傳 adapter；其他 backend 傳 None）
+        if backend.name == "es":
+            start_watchdogs(
+                ctx,
+                env.get("adapter"),  # 這裡是 ElasticsearchAdapter
+                ping_interval_sec=60,
+                stall_idle_threshold_sec=600,
+                stall_interval_sec=60,
+                stacks_path=None,  # 走預設：work_dir/stacks.log
+            )
+        else:
+            start_watchdogs(ctx, None)  # 只有進度停滯偵測
+            
         pending_iter = backend.build_pending_iter(ctx, env)
         sink = backend.make_sink(ctx, env)
         #print("sink in handle_data_mode",sink)

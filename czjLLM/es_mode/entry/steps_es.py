@@ -2,7 +2,7 @@
 from typing import Any, Dict, List, Tuple
 from pathlib import Path
 import importlib.util
-
+import queue, threading
 from elasticsearch import Elasticsearch
 
 from utils.selector import OptionSelector
@@ -101,6 +101,12 @@ def resolve_es_connection(ctx, get_param, args):
         "mapping_file": es_cfg.get("mapping_file", None),
         "only_selected": es_cfg.get("only_selected", None),
         "pending_filters": es_cfg.get("pending_filters", None),
+        "es_request_timeout": es_cfg.get("es_request_timeout", 60),
+        "es_scroll_keepalive": es_cfg.get("es_scroll_keepalive", "2m"),
+        "es_max_retries": es_cfg.get("es_max_retries", 3),
+        "es_retry_on_timeout": es_cfg.get("es_retry_on_timeout", True),
+        "es_prefetch_buffer": es_cfg.get("es_prefetch_buffer", 1000),
+        "es_prefetch_first_timeout": es_cfg.get("es_prefetch_first_timeout", 20)
     }
     
     # 直接用 dict comprehension 過濾掉 None，保持乾淨
@@ -412,14 +418,159 @@ def maybe_reset_output_es(ctx, adapter: ElasticsearchAdapter, columns, args):
     # 給點可見的回饋
     updated = resp.get("updated", 0)
     print(f"🧼 reset_output: index={tgt_index}, removed_fields={fields_to_remove}, updated_docs={updated}")
-    
+
+def prefetch_iter_OLD(
+    src_iter,
+    maxsize=1000,
+    first_batch_timeout=20,     # ✅ 等不到第一筆就回退
+    heartbeat=30,               # ✅ 之後每隔 N 秒印一次心跳
+    sentinel=object(),
+    on_error=None,
+    fallback_on_timeout=True    # ✅ 允許回退
+):
+    import queue, threading
+    q = queue.Queue(maxsize=maxsize)
+    stop = sentinel
+
+    def _producer():
+        try:
+            for item in src_iter:
+                q.put(item)  # 若消費變慢會在這裡背壓，OK
+        except Exception as e:
+            if on_error:
+                on_error(e)
+        finally:
+            # 無論成功/失敗，投遞終止記號
+            try:
+                q.put(stop)
+            except Exception:
+                pass
+
+    t = threading.Thread(target=_producer, daemon=True)
+    t.start()
+
+    # --- 第一次取資料：有上限等待 ---
+    try:
+        item = q.get(timeout=first_batch_timeout)
+    except queue.Empty:
+        if fallback_on_timeout:
+            print(f"[prefetch] 首批 > {first_batch_timeout}s 未到，回退為直通 iterator（不預取）")
+            # 直接把原本的 src_iter 交回去（行為與改前相同）
+            for x in src_iter:
+                yield x
+            return
+        else:
+            # 不回退就持續等，期間印心跳
+            while True:
+                try:
+                    item = q.get(timeout=heartbeat)
+                    break
+                except queue.Empty:
+                    print(f"[prefetch] 仍在等首批… thread_alive={t.is_alive()}")
+
+    if item is stop:
+        return
+    yield item
+
+    # --- 後續批次：帶心跳 ---
+    while True:
+        try:
+            item = q.get(timeout=heartbeat)
+        except queue.Empty:
+            print(f"[prefetch] 等待下一批… thread_alive={t.is_alive()}")
+            continue
+        if item is stop:
+            break
+        yield item
+
+def prefetch_iter(
+    src_iter,
+    maxsize=1000,
+    first_batch_timeout=20,      # 首批等待上限(秒)，>0 才會啟用
+    heartbeat=30,                # 後續每隔 N 秒沒拿到資料就吐心跳
+    sentinel=None,               # 終止記號；None 表示內部自建
+    on_error=None,               # 背景取件出錯時的回呼
+    fallback_on_timeout=True,    # 首批逾時是否回退直通
+    name="ES-prefetch",          # 執行緒命名，方便 dump 追
+    verbose=False                # 結束時印統計
+):
+    if sentinel is None:
+        sentinel = object()
+
+    q = queue.Queue(maxsize=maxsize)
+    stats = {"produced": 0, "consumed": 0}
+    cancelled = threading.Event()  # 用來在回退時通知 producer 停止
+
+    def _producer():
+        try:
+            for item in src_iter:
+                if cancelled.is_set():
+                    break
+                q.put(item)  # 允許背壓
+                stats["produced"] += 1
+        except Exception as e:
+            if on_error:
+                on_error(e)
+        finally:
+            try:
+                q.put(sentinel)
+            except Exception:
+                pass
+
+    t = threading.Thread(target=_producer, daemon=True, name=name)
+    t.start()
+
+    # --- 首批等待 ---
+    try:
+        if first_batch_timeout and first_batch_timeout > 0:
+            try:
+                item = q.get(timeout=first_batch_timeout)
+            except queue.Empty:
+                print(f"[prefetch] 首批 > {first_batch_timeout}s 未到", flush=True)
+                if fallback_on_timeout:
+                    print("[prefetch] 回退為直通 iterator（不預取）", flush=True)
+                    cancelled.set()  # 通知背景 producer 停下
+                    for x in src_iter:     # 直通：直接把原始 iterator 交回
+                        yield x
+                    return
+                else:
+                    # 不回退就持續等，期間印心跳
+                    while True:
+                        try:
+                            item = q.get(timeout=heartbeat or 30)
+                            break
+                        except queue.Empty:
+                            print(f"[prefetch] 仍在等首批… thread_alive={t.is_alive()}", flush=True)
+        else:
+            item = q.get()
+    except KeyboardInterrupt:
+        cancelled.set()
+        return
+
+    # --- 消費迴圈（帶心跳）---
+    while True:
+        if item is sentinel:
+            if verbose:
+                print(f"[prefetch] 結束 produced={stats['produced']} "
+                      f"consumed={stats['consumed']}", flush=True)
+            break
+
+        stats["consumed"] += 1
+        yield item
+
+        if heartbeat and heartbeat > 0:
+            try:
+                item = q.get(timeout=heartbeat)
+            except queue.Empty:
+                print(f"[prefetch] 等下一批… qsize={q.qsize()} "
+                      f"prod={stats['produced']} cons={stats['consumed']} "
+                      f"thread_alive={t.is_alive()}", flush=True)
+                continue
+        else:
+            item = q.get()
 # ---------- 建立 iterator ----------
-def build_pending_iter_es(adapter: ElasticsearchAdapter, ctx):
-    """
-    與 SQL 版一致回傳 Iterable[(pk, input_text)]。
-    內部邏輯由 adapter.select_pending_rows 負責（單/雙 index 自動處理）。
-    """
-    return adapter.select_pending_rows(
+def build_pending_iter_es(adapter, ctx):
+    base = adapter.select_pending_rows(
         src_table=adapter.cfg["src_index"],
         tgt_table=adapter.cfg["tgt_index"],
         pk=adapter.cfg["id_col"],
@@ -429,6 +580,82 @@ def build_pending_iter_es(adapter: ElasticsearchAdapter, ctx):
         fetch_size=getattr(ctx, "fetch_size", 500),
     )
 
+    cfg = getattr(adapter, "cfg", {})
+    buf       = int(cfg.get("es_prefetch_buffer",      getattr(ctx, "es_prefetch_buffer", 1000)))
+    first_to  = int(cfg.get("es_prefetch_first_timeout", 20))
+    hb        = int(cfg.get("es_prefetch_heartbeat",     30))
+    fallback  = bool(cfg.get("es_prefetch_fallback",     True))
+    verbose   = bool(cfg.get("es_prefetch_verbose",      False))
+
+    if buf <= 0:
+        print("[prefetch] 關閉（es_prefetch_buffer<=0）→ 直通模式", flush=True)
+        return base
+
+    return prefetch_iter(
+        base,
+        maxsize=buf,
+        first_batch_timeout=first_to,
+        heartbeat=hb,
+        fallback_on_timeout=fallback,
+        on_error=lambda e: print(f"[prefetch] ES 取件錯誤：{e}", flush=True),
+        verbose=verbose
+    )
+def build_pending_iter_es_OLD(adapter: ElasticsearchAdapter, ctx):
+    base = adapter.select_pending_rows(
+        src_table=adapter.cfg["src_index"],
+        tgt_table=adapter.cfg["tgt_index"],
+        pk=adapter.cfg["id_col"],
+        input_col=adapter.cfg["input_col"],
+        output_col=adapter.cfg["output_col"],
+        record_update_time=getattr(ctx, "record_update_time", False),
+        fetch_size=getattr(ctx, "fetch_size", 500),
+    )
+    buf = int(getattr(adapter, "cfg", {}).get("es_prefetch_buffer",
+              getattr(ctx, "es_prefetch_buffer", 1000)))
+    if buf <= 0:
+        # ✅ 設定成 0 可完全關閉預取（安全開關）
+        print("[prefetch] 已關閉（es_prefetch_buffer<=0），改用直通模式")
+        return base
+
+    first_to = int(adapter.cfg.get("es_prefetch_first_timeout", 20))
+    return prefetch_iter(
+        base,
+        maxsize=buf,
+        first_batch_timeout=first_to,
+        on_error=lambda e: print(f"[prefetch] ES 取件錯誤：{e}")
+    )
+
+def build_pending_iter_es(adapter, ctx):
+    base = adapter.select_pending_rows(
+        src_table=adapter.cfg["src_index"],
+        tgt_table=adapter.cfg["tgt_index"],
+        pk=adapter.cfg["id_col"],
+        input_col=adapter.cfg["input_col"],
+        output_col=adapter.cfg["output_col"],
+        record_update_time=getattr(ctx, "record_update_time", False),
+        fetch_size=getattr(ctx, "fetch_size", 500),
+    )
+
+    cfg = getattr(adapter, "cfg", {})
+    buf       = int(cfg.get("es_prefetch_buffer",      getattr(ctx, "es_prefetch_buffer", 1000)))
+    first_to  = int(cfg.get("es_prefetch_first_timeout", 20))
+    hb        = int(cfg.get("es_prefetch_heartbeat",     30))
+    fallback  = bool(cfg.get("es_prefetch_fallback",     True))
+    verbose   = bool(cfg.get("es_prefetch_verbose",      False))
+
+    if buf <= 0:
+        print("[prefetch] 關閉（es_prefetch_buffer<=0）→ 直通模式", flush=True)
+        return base
+
+    return prefetch_iter(
+        base,
+        maxsize=buf,
+        first_batch_timeout=first_to,
+        heartbeat=hb,
+        fallback_on_timeout=fallback,
+        on_error=lambda e: print(f"[prefetch] ES 取件錯誤：{e}", flush=True),
+        verbose=verbose
+    )
 def build_pending_iter_es_old(es_client, ctx):
     """
     建立一個 iterator，逐筆拉出 ES 文件，取 input_col 送進 pipeline

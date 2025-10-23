@@ -68,6 +68,8 @@ class ElasticsearchAdapter:
             hosts=self.cfg.get("hosts", ["http://localhost:9200"]),
             http_auth=self.cfg.get("http_auth"),
             timeout=self.cfg.get("timeout", 60),
+            max_retries=self.cfg.get("es_max_retries", 3),     # ✅
+            retry_on_timeout=self.cfg.get("es_retry_on_timeout", True),  # ✅
         )
         # 簡單健康檢查
         self.es.info()
@@ -221,9 +223,20 @@ class ElasticsearchAdapter:
         assert self.es is not None
         filters = self._build_pending_filters()
         
+        rt = self.cfg.get("es_request_timeout", 60)
+        keepalive = self.cfg.get("es_scroll_keepalive", "2m")
+    
         def _run_scan(query_body):
-            return helpers.scan(self.es, index=index, query=query_body, size=fetch_size, preserve_order=False)
-        
+            return helpers.scan(
+                self.es,
+                index=index,
+                query=query_body,
+                size=fetch_size,
+                scroll=keepalive,           # ✅ 明確 keepalive
+                request_timeout=rt,         # ✅ 有時限
+                preserve_order=False,
+                clear_scroll=True,
+            )
         # ✅ 只有兩個條件：
         # 1) 有輸入(input_col)
         # 2) 沒有輸出(output_col)
@@ -249,7 +262,7 @@ class ElasticsearchAdapter:
                 
             # ✅ 二次確認：若文件此時已經有 output_col，就跳過（處理 NRT 或先前批次剛寫入的狀況）
             try:
-                full = self.es.get(index=index, id=pk_val)
+                full = self.es.get(index=index, id=pk_val, request_timeout=rt)
                 if _dot_get(full.get("_source", {}) or {}, output_col) is not None:
                     # 可視需要加個 debug log
                     # print(f"[skip-NRT] {pk_val} 已具備 {output_col}，略過")
@@ -275,7 +288,9 @@ class ElasticsearchAdapter:
                 }
             },
             "_source": [input_col]
-        }    
+        }
+        rt = self.cfg.get("es_request_timeout", 60)
+        keepalive = self.cfg.get("es_scroll_keepalive", "2m")
         batch_ids, batch_docs = [], {}
     
         def _is_non_empty(v) -> bool:
@@ -287,7 +302,8 @@ class ElasticsearchAdapter:
         def flush_batch():
             if not batch_ids:
                 return []
-            docs = self.es.mget(index=tgt_index, body={"ids": batch_ids})
+            #docs = self.es.mget(index=tgt_index, body={"ids": batch_ids})
+            docs = self.es.mget(index=tgt_index, body={"ids": batch_ids}, request_timeout=rt)
             present = set()
             for d in docs.get("docs", []):
                 if not d.get("found"): 
@@ -300,7 +316,10 @@ class ElasticsearchAdapter:
                 if _id not in present:
                     yield (_id, batch_docs[_id])
     
-        for hit in helpers.scan(self.es, index=src_index, query=src_query, size=fetch_size):
+        #for hit in helpers.scan(self.es, index=src_index, query=src_query, size=fetch_size):
+        for hit in helpers.scan(self.es, index=src_index, query=src_query,
+                                size=fetch_size, scroll=keepalive, request_timeout=rt,
+                                preserve_order=False, clear_scroll=True):
             src = hit.get("_source", {}) or {}
             _id = hit.get("_id") if pk == "_id" else _dot_get(src, pk)
             if _id is None: 

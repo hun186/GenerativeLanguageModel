@@ -36,3 +36,11 @@ pending_filters = [
     #   }
     # },
 ]
+
+#es_request_timeout = 60          # 每次 ES 請求最大等待秒數（scan/mget/get）
+#es_scroll_keepalive = "2m"       # scroll 的 keepalive
+#es_max_retries = 3               # timeout/瞬斷時重試次數
+#es_retry_on_timeout = True       # 逾時自動重試
+
+es_prefetch_buffer = 1000           # 0 = 關閉預取
+es_prefetch_first_timeout = 8      # 首批最大等待秒數
