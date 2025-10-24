@@ -2,6 +2,7 @@
 from typing import Any, Dict, List, Tuple
 from pathlib import Path
 import importlib.util
+import time
 import queue, threading
 from elasticsearch import Elasticsearch
 
@@ -483,6 +484,8 @@ def prefetch_iter_OLD(
             break
         yield item
 
+
+        
 def prefetch_iter(
     src_iter,
     maxsize=1000,
@@ -568,6 +571,13 @@ def prefetch_iter(
                 continue
         else:
             item = q.get()
+def _tap_progress(it, ctx):
+    for x in it:
+        try:
+            ctx.last_progress_ts = time.time()
+        except Exception:
+            pass
+        yield x
 # ---------- 建立 iterator ----------
 def build_pending_iter_es(adapter, ctx):
     base = adapter.select_pending_rows(
@@ -581,25 +591,30 @@ def build_pending_iter_es(adapter, ctx):
     )
 
     cfg = getattr(adapter, "cfg", {})
-    buf       = int(cfg.get("es_prefetch_buffer",      getattr(ctx, "es_prefetch_buffer", 1000)))
-    first_to  = int(cfg.get("es_prefetch_first_timeout", 20))
-    hb        = int(cfg.get("es_prefetch_heartbeat",     30))
-    fallback  = bool(cfg.get("es_prefetch_fallback",     True))
-    verbose   = bool(cfg.get("es_prefetch_verbose",      False))
+    buf      = int(cfg.get("es_prefetch_buffer",        getattr(ctx, "es_prefetch_buffer", 1000)))
+    first_to = int(cfg.get("es_prefetch_first_timeout", 20))
+    hb       = int(cfg.get("es_prefetch_heartbeat",     30))
+    fallback = bool(cfg.get("es_prefetch_fallback",     True))
+    verbose  = bool(cfg.get("es_prefetch_verbose",      False))
 
     if buf <= 0:
         print("[prefetch] 關閉（es_prefetch_buffer<=0）→ 直通模式", flush=True)
-        return base
+        # ✅ 直通模式也要 bump 進度
+        return _tap_progress(base, ctx)
 
-    return prefetch_iter(
-        base,
-        maxsize=buf,
-        first_batch_timeout=first_to,
-        heartbeat=hb,
-        fallback_on_timeout=fallback,
-        on_error=lambda e: print(f"[prefetch] ES 取件錯誤：{e}", flush=True),
-        verbose=verbose
+    return _tap_progress(
+        prefetch_iter(
+            base,
+            maxsize=buf,
+            first_batch_timeout=first_to,
+            heartbeat=hb,
+            fallback_on_timeout=fallback,
+            on_error=lambda e: print(f"[prefetch] ES 取件錯誤：{e}", flush=True),
+            verbose=verbose
+        ),
+        ctx
     )
+
 def build_pending_iter_es_OLD(adapter: ElasticsearchAdapter, ctx):
     base = adapter.select_pending_rows(
         src_table=adapter.cfg["src_index"],
@@ -625,37 +640,6 @@ def build_pending_iter_es_OLD(adapter: ElasticsearchAdapter, ctx):
         on_error=lambda e: print(f"[prefetch] ES 取件錯誤：{e}")
     )
 
-def build_pending_iter_es(adapter, ctx):
-    base = adapter.select_pending_rows(
-        src_table=adapter.cfg["src_index"],
-        tgt_table=adapter.cfg["tgt_index"],
-        pk=adapter.cfg["id_col"],
-        input_col=adapter.cfg["input_col"],
-        output_col=adapter.cfg["output_col"],
-        record_update_time=getattr(ctx, "record_update_time", False),
-        fetch_size=getattr(ctx, "fetch_size", 500),
-    )
-
-    cfg = getattr(adapter, "cfg", {})
-    buf       = int(cfg.get("es_prefetch_buffer",      getattr(ctx, "es_prefetch_buffer", 1000)))
-    first_to  = int(cfg.get("es_prefetch_first_timeout", 20))
-    hb        = int(cfg.get("es_prefetch_heartbeat",     30))
-    fallback  = bool(cfg.get("es_prefetch_fallback",     True))
-    verbose   = bool(cfg.get("es_prefetch_verbose",      False))
-
-    if buf <= 0:
-        print("[prefetch] 關閉（es_prefetch_buffer<=0）→ 直通模式", flush=True)
-        return base
-
-    return prefetch_iter(
-        base,
-        maxsize=buf,
-        first_batch_timeout=first_to,
-        heartbeat=hb,
-        fallback_on_timeout=fallback,
-        on_error=lambda e: print(f"[prefetch] ES 取件錯誤：{e}", flush=True),
-        verbose=verbose
-    )
 def build_pending_iter_es_old(es_client, ctx):
     """
     建立一個 iterator，逐筆拉出 ES 文件，取 input_col 送進 pipeline

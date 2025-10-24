@@ -54,6 +54,12 @@ def _canon_path(p: str) -> str:
     # 轉絕對路徑 + 正規化分隔 + Windows 大小寫無關
     return os.path.normcase(os.path.normpath(os.path.abspath(p)))
 
+def _bump(ctx):
+    try:
+        ctx.last_progress_ts = time.time()
+    except Exception:
+        pass
+    
 '''
 class PromptPipelineController:
     def __init__(self, task, prompt_file, output_file, model_spec, content=""):
@@ -461,6 +467,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
             n_sched = len(prompt_files)
             try:
                 meter_update(meter_fn, lambda d: _meter_on_dispatch(d, items_map, count_by_item_sched, n_sched))
+                _bump(ctx)  # ✅ 有派工作就算進展
             except Exception as ex:
                 tlog_warn(f"⚠️ meter_on_dispatch 失敗：{ex}")
 
@@ -511,6 +518,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
                     meter_fn,
                     lambda d: _meter_on_finish_batch(d, items_map, count_by_item_done, n_done)
                 )
+                _bump(ctx)  # ✅ 有完成也戳
             except Exception as ex:
                 tlog_warn(f"⚠️ meter_on_finish_batch 失敗：{ex}")
                 meter_after = None
@@ -906,6 +914,7 @@ def row_merger_watchdog(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
                             )
 
                     conn.commit()  # ✅ 用 conn.commit() 確保落地
+                    _bump(ctx)  # ✅ 寫回成功也算前進
                     tlog(f"✅ 逐列合併並寫入完成：{pk}")
 
                     # 從 registry 移除，不再重複處理
@@ -1133,6 +1142,7 @@ class PromptAPIPipeline:
         self.model_spec["base_url"] = [self.model_spec["base_url"]] if isinstance(
             self.model_spec.get("base_url"), str) else self.model_spec["base_url"]
         #print("model_spec af ck",model_spec)
+        
 
         
     def show(self,):
@@ -1155,6 +1165,7 @@ class PromptAPIPipeline:
             # 在這裡選擇負載最輕的 base_url
             #print("inputing base url in pipeline_controller",self.model_spec["base_url"])
             base_url = select_idle_ollama_url(self.model_spec["base_url"],PGMSubDir=self.PGMSubDir)
+            
             self.model_spec["base_url"] = base_url  # 更新 model_spec 的 base_url
             #print(f"已分配 base_url: {base_url} 進行處理")  # 顯示選擇的 base_url
             #print("Start to run CallLLMAPI in PromptAPIPipeline")

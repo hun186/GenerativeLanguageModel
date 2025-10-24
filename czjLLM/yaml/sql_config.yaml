@@ -17,7 +17,8 @@ input_col: UserChiName
 llm_source_backup_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/sql_cache
 llm_source_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool/sql_cache
 mode: sql
-model_spec: qwen3:32b-ctx-32k-premises-q4
+#model_spec: qwen3:32b-ctx-32k-premises-q4
+model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
 output_col: OPA
 primary_key: Auto
 record_update_time: true
