@@ -159,7 +159,26 @@ class LLMJobConfig:
         safe_dict = {k: safe(v) for k, v in self.__dict__.items()}
         return json.dumps(safe_dict, indent=2, ensure_ascii=False)
     
+class CtxOverlay:
+    """Row-scoped 覆寫視圖：只記錄 overrides，其餘屬性回退到 base ctx。"""
+    __slots__ = ("_base", "_ov")
+    def __init__(self, base, **overrides):
+        object.__setattr__(self, "_base", base)
+        object.__setattr__(self, "_ov", dict(overrides))
 
+    def __getattr__(self, key):
+        ov = object.__getattribute__(self, "_ov")
+        if key in ov:
+            return ov[key]
+        base = object.__getattribute__(self, "_base")
+        return getattr(base, key)
+
+    def __setattr__(self, key, value):
+        if key in ("_base", "_ov"):
+            object.__setattr__(self, key, value)
+        else:
+            self._ov[key] = value
+            
 def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None, task_name=None):
     ctx = LLMJobConfig()
 

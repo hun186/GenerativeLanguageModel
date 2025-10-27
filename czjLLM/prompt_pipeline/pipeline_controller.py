@@ -299,6 +299,32 @@ def meter_read(meter_fn):
         delay=0.05
     )
 
+#'''
+def meter_update(meter_fn: str, mutator):
+    lock = _lock_path(meter_fn)
+    fd = _acquire_file_lock(lock)  # 逾時則回傳 None
+    try:
+        if fd is None:
+            # 策略1：短暫睡一下重試；或策略2：直接放棄這次更新
+            # 這裡示範重試一次（你也可以 while 重試多次）
+            time.sleep(0.05)
+            fd = _acquire_file_lock(lock)
+            if fd is None:
+                # 放棄這次更新，避免破壞其他程序的鎖
+                return meter_read(meter_fn)
+
+        d = meter_read(meter_fn)
+        if not isinstance(d, dict):
+            d = {"rows": {}, "queue": {"pending": 0, "running": 0}}
+        mutator(d)
+        atomic_write_json(meter_fn, d)
+        return d
+    finally:
+        if fd is not None:             # ✅ 只有真的持鎖才釋放/刪鎖
+            _release_file_lock(fd, lock)
+
+#'''
+'''
 def meter_update(meter_fn: str, mutator):
     """
     讀→mutate→原子寫回。用 lock file 保護寫入（Windows 友善）。
@@ -313,9 +339,12 @@ def meter_update(meter_fn: str, mutator):
         mutator(d)
         atomic_write_json(meter_fn, d)
         return d
+    except Exception as ex:
+        print(f"print run meter_update, error {ex}")
     finally:
         _release_file_lock(fd, lock)
-        
+'''
+
 '''
 def meter_update(meter_fn, updater):
     """
@@ -369,14 +398,17 @@ def _acquire_file_lock(lock_path: str, timeout: float = 10.0, stale: float = 120
             time.sleep(0.03)
 
 def _release_file_lock(fd, lock_path: str):
+    if fd is None:
+        return
     try:
-        if fd is not None:
-            os.close(fd)
-        os.remove(lock_path)
-    except FileNotFoundError:
-        pass
-    except OSError:
-        pass
+        os.close(fd)
+    finally:
+        try:
+            os.remove(lock_path)
+        except FileNotFoundError:
+            pass
+        except OSError:
+            pass
     
 def find_item_dir_for(ctx, main_file_name: str) -> str:
     """
@@ -498,7 +530,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
                     DTBJobs=DTBJobs,
                     nProcess=ctx.n_process,
                     ShuffleJobs=False,
-                    log_queue=getattr(ctx, "mp_log_q", None)
+                    #log_queue=getattr(ctx, "mp_log_q", None)
                 ).run()
             except Exception as ex:
                 # 子程序拋出例外：不要把整輪打掉；讓下輪重試
@@ -507,9 +539,26 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
 
             # ---- 2.5) 以「實際完成」回報（檔案是否仍存在於 TODO）
             # 規則：成功 → 會移除 TODO/建立 Success；失敗 → TODO 留存（或重建），下輪再吃
+            '''
             done_prompt_files = [pf for pf, _ in batch if not os.path.exists(pf)]
             n_done = len(done_prompt_files)
             count_by_item_done = Counter(item for pf, item in batch if not os.path.exists(pf))
+            '''
+            def _success_path(pf: str) -> str:
+                return pf.replace("TODO", "Success")
+            
+            done_prompt_files = []
+            for pf, _ in batch:
+                ok = False
+                if os.path.exists(_success_path(pf)):   # 成功寫回
+                    ok = True
+                elif not os.path.exists(pf):            # 原 TODO 已被替換/刪除（例如切分重試）
+                    ok = True
+                if ok:
+                    done_prompt_files.append(pf)
+            
+            n_done = len(done_prompt_files)
+            count_by_item_done = Counter(item for pf, item in batch if pf in done_prompt_files)
             finished_n += n_done
 
             # ---- 3) 更新 meter：running -= n_done, completed += n_done, rows[pk].done += 每列完成量
@@ -1208,9 +1257,9 @@ class PromptAPIPipeline:
             #print("retMES af",retMES)
             # 移除成功呼叫結束之Todo Prompt檔案。
             #print("retMES af2",retMES)
-            print("-"*50)
-            if self.removeFinPromptFile == True and self.promptFile != "":
-                os.remove(self.promptFile)
+            #print("-"*50)
+            #if self.removeFinPromptFile == True and self.promptFile != "":
+            #    os.remove(self.promptFile)
             
             # 如果預設輸出為json，進行輸出成功性驗證，如果不通過，則將輸入分割為兩段後，
             # 生成新的PromptFile，再試一次。
@@ -1235,12 +1284,14 @@ class PromptAPIPipeline:
                     fp.flush()
                     os.fsync(fp.fileno())  # 確保落地
                 os.replace(tmp_fn, self.OutputSaveFN)  # ✅ 原子替換
+                
+                if self.removeFinPromptFile and self.promptFile:
+                    os.remove(self.promptFile)         # ✅ 再刪 TODO
                     
 
             #將處理過的文字訊息回填response物件
             response.choices[0].message.content = retMES
-            # 任務完成後釋放負載
-            release_url_load(base_url,PGMSubDir=self.PGMSubDir)
+            
             
         except Exception as ex:
             if not "response" in locals():
@@ -1249,6 +1300,29 @@ class PromptAPIPipeline:
             print(f"When run PromptAPIPipeline, the following error occurs:\n {ex}")
             print(f"self.model_spec:{self.model_spec}")
             #countdown_pause(30)
+            
+        finally:
+            try:
+                # 任務完成後釋放負載
+                release_url_load(base_url, PGMSubDir=self.PGMSubDir)
+            except Exception:
+                pass
+        # ---- 返還前：診斷是否可被 pickl e（只做一次即可）----
+        try:
+            import pickle
+            ret_tuple = (response, cost, DTBJobs_Retry)
+            data = pickle.dumps(ret_tuple, protocol=pickle.HIGHEST_PROTOCOL)
+            print(f"[diag] worker return picklable, size={len(data)} bytes")
+        except Exception as e:
+            # 這裡若進來，就 100% 證明「回傳值不可 pickl e」
+            print(f"[diag] worker return NOT picklable: {type(e).__name__}: {e}")
+            # 再列一下各成員的型別，方便你知道是誰作怪
+            try:
+                print(f"[diag] response type={type(response)}, cost type={type(cost)}, DTBJobs_Retry type={type(DTBJobs_Retry)}")
+                if DTBJobs_Retry:
+                    print(f"[diag] DTBJobs_Retry[0] type={type(DTBJobs_Retry[0])}")
+            except Exception:
+                pass
         return response,cost,DTBJobs_Retry
 
     def handle_json_output(self, retMES):
@@ -1337,7 +1411,11 @@ class PromptAPIPipeline:
                 fp.write(prompt)
         
         # 移除原始 prompt 檔案
-        #os.remove(self.promptFile)
+        # 生成新 prompt 後，移除舊 TODO（很重要！讓 consumer 能判定這筆已完成／釋放 running）
+        try:
+            os.remove(self.promptFile)
+        except Exception as e:
+            print(f"warn: failed to remove original prompt {self.promptFile}: {e}")
         
         print(f"Generated new prompt files: {new_prompt_file_0}, {new_prompt_file_1}")
         # 創建新的 PromptAPIPipeline 工作物件

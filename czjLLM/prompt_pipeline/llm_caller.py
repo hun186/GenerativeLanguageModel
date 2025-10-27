@@ -11,6 +11,7 @@ from utils.utilities import tlog
 from czjLLM.prompt_pipeline.prompt_generator import should_disable_think
 from czjLLM.prompt_pipeline.clients import build_openai_like_client
 
+
 '''
 class LLMCaller:
     def __init__(self, model_spec: dict, on_premises=False, max_tokens=4096):

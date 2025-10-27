@@ -79,7 +79,7 @@ taskSetting_Enrichment = {
         "InputCutLen": 600,
         "template": lambda content, MainFileName=None: (
             "請針對下列輸入任務文本進行完整多維度事件分析與資訊萃取，"
-            "並輸出 SQL-friendly JSON 結構，不要有額外說明或前置詞。\n\n"
+            "並輸出 SQL-friendly JSON 結構，不要有額外說明或前置詞。\n"
             f"{MULTIDIM_EXTRACTION_Rule}"
             + (f"主檔名為「{removeStrSuffix(MainFileName,'_tika')}」，可用於輔助分析article_title。\n"
                if USE_MAINFILE_HINT and MainFileName else "")

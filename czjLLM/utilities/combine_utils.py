@@ -239,12 +239,30 @@ def combine_api_finished_item(item: str, ctx) -> str:
     #print("combined_text",combined_text)
     # === 安全地決定輸出目錄（不要出現前導斜線） ===
     # 優先 llm_source_finished_dir，其次 llm_source_dir；都沒有就用 item 的上層
+    #'''
     base_out = (
         Path(getattr(ctx, "temp_txt_finished_dir", "")) or
         Path(getattr(ctx, "llm_source_finished_dir", "")) or
         Path(getattr(ctx, "llm_source_dir", "")) or
         item_p.parent
     )
+    #'''
+    
+    '''
+    def _p(s):
+        # 僅在 s 是非空字串時回傳 Path，否則回傳 None 讓 or 繼續 fallback
+        return Path(s) if isinstance(s, str) and s.strip() else None
+    
+    # 優先：每列覆寫用的 temp_txt_finished_dir
+    base_out = (
+        _p(getattr(ctx, "temp_txt_finished_dir", None))
+        or (_p(getattr(ctx, "llm_source_finished_dir", None)) / "cache"
+            if _p(getattr(ctx, "llm_source_finished_dir", None)) else None)
+        or (_p(getattr(ctx, "llm_source_dir", None)) / "cache"
+            if _p(getattr(ctx, "llm_source_dir", None)) else None)
+        or item_p.parent
+    )
+    '''
     base_out.mkdir(parents=True, exist_ok=True)
     #print("ctx.main_file_name",getattr(ctx, "main_file_name",""))
     #print("item_p.name",item_p.name)

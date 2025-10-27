@@ -1,13 +1,8 @@
-channel: excel_source
-input_col: UserChiName
-llm_source_backup_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/excel_source
-llm_source_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source
-mode: sql
-model_spec: qwen3:32b-ctx-32k-premises-q4
-output_col: UserChiName_result
-primary_key: Auto
-record_update_time: true
-sql_config_file: GenerativeLanguageModel/czjLLM/config_sql/akconfig_test.py
-table_name: UserAcc
-target_table: UserAcc_LLM_result
-task: Tender Information to json format
+channel: test long
+llm_source_backup_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/test
+  long
+llm_source_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/test
+  long
+mode: txt
+model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+task: MDT Term Extraction to json format
