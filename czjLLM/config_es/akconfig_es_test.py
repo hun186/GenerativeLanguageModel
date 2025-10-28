@@ -1,6 +1,7 @@
 #akconfig_es_test.py
 # Elasticsearch 設定
-es_host = 'http://localhost:9200'
+#es_host = 'http://localhost:9200'
+es_host = 'http://192.168.0.228:9200'
 es_index = 'news_test'
 es_user = ''
 es_pass = ''

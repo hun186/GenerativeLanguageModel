@@ -79,7 +79,28 @@ class SqlSink:
         )
         # 同樣每批後 commit
         self.conn.commit()
+    # ▶ 新增：顯式 flush，close() 前一定再保險一次
+    def flush(self):
+        try:
+            if self.conn:
+                self.conn.commit()
+        except Exception:
+            pass
 
+    def close(self):
+        try:
+            self.flush()
+        except Exception:
+            pass
+        try:
+            if self.cursor: self.cursor.close()
+        except Exception:
+            pass
+        try:
+            if self.conn: self.conn.close()
+        except Exception:
+            pass
+    '''
     def close(self):
         try: 
             if self.cursor: self.cursor.close()
@@ -87,3 +108,4 @@ class SqlSink:
         try: 
             if self.conn: self.conn.close()
         except: pass
+    '''

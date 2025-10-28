@@ -12,7 +12,8 @@ import re
 # 讓 tqdm 多緒安全
 tqdm.set_lock(RLock())
 
-
+# 記錄主執行緒 id：僅主執行緒能用 tqdm.write，其他執行緒改走原生 stream
+_MAIN_TID = threading.get_ident()
 
 
 # 1) 移除真正的 ANSI/OSC/單字元 ESC
@@ -318,6 +319,7 @@ def remove_log_sink(sink):
         if sink in _SINKS: _SINKS.remove(sink)
 
 def _emit(level: str, line: str, *, stream):
+    '''
     if line is None: return
     line = line.rstrip("\n")
     if not line.strip(): return
@@ -346,7 +348,48 @@ def _emit(level: str, line: str, *, stream):
                 sink(level, plain)
             except Exception:
                 pass
+    '''
+    if line is None: return
+    line = line.rstrip("\n")
+    if not line.strip(): return
 
+    # 過濾器（若你有 _CONSOLE_FILTERS）
+    try:
+        line2 = _CONSOLE_FILTERS.apply(line)
+        if not line2: return
+        line = line2
+    except NameError:
+        pass
+
+    # 準備輸出內容（彩色）
+    color = _LEVEL_COLOR.get(level, "")
+    out = f"{color}{line}{Style.RESET_ALL}"
+
+    # 僅主執行緒使用 tqdm.write，其餘執行緒改用原生 stream，避免 tqdm 內鎖互卡
+    try:
+        if threading.get_ident() == _MAIN_TID:
+            tqdm.write(out, file=stream)
+        else:
+            stream.write(out + "\n")
+            stream.flush()
+    except Exception:
+        # 最後防線，別讓寫出錯又阻塞
+        try:
+            _REAL_STDERR.write(out + "\n")
+            _REAL_STDERR.flush()
+        except Exception:
+            pass
+
+    # 廣播到 sinks（去除控制碼）
+    plain = _sanitize_terminal(line).strip()
+    if not plain:
+        return
+    with _SINK_LOCK:
+        for sink in list(_SINKS):
+            try:
+                sink(level, plain)
+            except Exception:
+                pass
 def tlog(msg):      _emit("INFO",  str(msg), stream=_REAL_STDOUT)
 def tlog_ok(msg):   _emit("OK",    str(msg), stream=_REAL_STDOUT)
 def tlog_warn(msg): _emit("WARN",  str(msg), stream=_REAL_STDOUT)

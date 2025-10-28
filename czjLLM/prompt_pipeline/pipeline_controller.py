@@ -9,6 +9,8 @@ import time
 import threading, queue
 from collections import defaultdict, Counter
 from datetime import datetime
+import multiprocessing
+import time as _time
 import sqlite3
 import pyodbc
 import shutil
@@ -208,7 +210,7 @@ class ItemsRegistry:
         with self.lock:
             self._items.pop(item_dir, None)
 
-
+'''
 class ItemsRegistry_new_fail:
     """
     執行緒安全的逐列註冊表。
@@ -254,7 +256,7 @@ class ItemsRegistry_new_fail:
     def __len__(self):
         with self._lock:
             return len(self._items)
-        
+'''     
 def meter_path_init(ctx):
     """
     建議：檔名含 session 起始時間避免不同程序互蓋。
@@ -271,6 +273,49 @@ def meter_path_init(ctx):
     atomic_write_json(fn, init)
     return fn
 
+
+# ── 供 watchdog 觀察的最小狀態（不鎖，僅追蹤心跳/派工時間）
+#
+CONSUMER_STATE = {
+    "last_dispatch_ts": 0.0,   # 上次成功取回結果或派工的時間（monotonic）
+    "pool_alive": False,       # 是否有活著的 worker（粗略）
+}
+
+def run_round(jobs, n_proc: int):
+    """
+    最小保險絲：根據 n_proc 與 jobs 數量決定單工或多程序。
+    - 單工：同步逐一跑（避免進入死池時整批卡住）
+    - 多工：交由 multicoreJob，但用 try/except 保護；失敗時回傳空結果讓上層下一輪重試
+    """
+    use_mp = (n_proc > 1) and (len(jobs) > 1)
+    CONSUMER_STATE["pool_alive"] = False
+
+    if not use_mp:
+        out = []
+        for j in jobs:
+            try:
+                out.append(j.proc())
+                CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
+            except Exception as ex:
+                tlog_warn(f"[single] worker error: {ex}")
+        return out
+
+    # 多程序路徑：仍沿用現有 multicoreJob（最小入侵）
+    try:
+        CONSUMER_STATE["pool_alive"] = True
+        res = multicoreJob(DTBJobs=jobs, nProcess=n_proc, ShuffleJobs=False).run()
+        CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
+        return res
+    except Exception as e:
+        tlog_warn(f"[mp] Pool error: {e}; will retry next round")
+        return []
+    finally:
+        # 粗略偵測仍有無存活的 child（可能因平臺差異不準，但足夠觸發保險絲邏輯）
+        try:
+            CONSUMER_STATE["pool_alive"] = any(p.is_alive() for p in multiprocessing.active_children())
+        except Exception:
+            CONSUMER_STATE["pool_alive"] = False
+            
 
 def meter_init(meter_fn, ctx, low=None, high=None):
     low  = low  if low  is not None else getattr(ctx, "n_process", 4) * 2
@@ -299,7 +344,6 @@ def meter_read(meter_fn):
         delay=0.05
     )
 
-#'''
 def meter_update(meter_fn: str, mutator):
     lock = _lock_path(meter_fn)
     fd = _acquire_file_lock(lock)  # 逾時則回傳 None
@@ -322,56 +366,6 @@ def meter_update(meter_fn: str, mutator):
     finally:
         if fd is not None:             # ✅ 只有真的持鎖才釋放/刪鎖
             _release_file_lock(fd, lock)
-
-#'''
-'''
-def meter_update(meter_fn: str, mutator):
-    """
-    讀→mutate→原子寫回。用 lock file 保護寫入（Windows 友善）。
-    mutator: Callable(dict) -> None，原地修改字典。
-    """
-    lock = _lock_path(meter_fn)
-    fd = _acquire_file_lock(lock)
-    try:
-        d = meter_read(meter_fn)
-        if not isinstance(d, dict):
-            d = {"rows": {}, "queue": {"pending": 0, "running": 0}}
-        mutator(d)
-        atomic_write_json(meter_fn, d)
-        return d
-    except Exception as ex:
-        print(f"print run meter_update, error {ex}")
-    finally:
-        _release_file_lock(fd, lock)
-'''
-
-'''
-def meter_update(meter_fn, updater):
-    """
-    原子更新：讀→改→寫（單程序多執行緒安全；跨程序並行風險較低，如需嚴格鎖可自行加入檔案鎖）
-    """
-    for _ in range(5):
-        try:
-            data = meter_read(meter_fn)
-            updater(data)
-            _meter_write_atomic(meter_fn, data)
-            return data
-        except Exception:
-            time.sleep(0.05)
-    # 最後一次嘗試
-    data = meter_read(meter_fn)
-    updater(data)
-    _meter_write_atomic(meter_fn, data)
-    return data
-'''
-
-'''
-def _meter_write_atomic(meter_fn, data):
-    tmp = meter_fn + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as fp:
-        json.dump(data, fp, ensure_ascii=False)
-    os.replace(tmp, meter_fn)
-'''
 
 # —— 跨緒簡易鎖（lock file），避免多緒同時寫入 —— #
 def _lock_path(meter_fn: str) -> str:
@@ -524,7 +518,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
             if dispatched_n == 0:
                 time.sleep(0.2)
                 continue
-
+            '''
             try:
                 MPresult = multicoreJob(
                     DTBJobs=DTBJobs,
@@ -536,7 +530,14 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
                 # 子程序拋出例外：不要把整輪打掉；讓下輪重試
                 tlog_warn(f"❌ multicoreJob.run() 例外：{ex}")
                 MPresult = []
-
+            '''
+            try:
+                MPresult = run_round(DTBJobs, ctx.n_process)
+            except Exception as ex:
+                # 不讓整輪報廢；下一輪再吃
+                tlog_warn(f"❌ run_round 例外：{ex}")
+                MPresult = []
+                
             # ---- 2.5) 以「實際完成」回報（檔案是否仍存在於 TODO）
             # 規則：成功 → 會移除 TODO/建立 Success；失敗 → TODO 留存（或重建），下輪再吃
             '''
@@ -786,7 +787,7 @@ def _es_heartbeat_loop(adapter, interval_sec=60):
             print(f"[watchdog] ES ping 例外: {e}", flush=True)
         time.sleep(interval_sec)
 
-def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60, stacks_path="stacks.log"):
+def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60, stacks_path="stacks.log",meter_fn=None, restart_cb=None):
     # 行緩衝，避免 Windows 下鎖太久
     stacks_file = open(stacks_path, "a", buffering=1, encoding="utf-8")
     try:
@@ -812,6 +813,24 @@ def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60, stack
                             print("[watchdog] ES ping 失敗（stall）", flush=True)
                     except Exception as e:
                         print(f"[watchdog] ES ping 例外（stall）: {e}", flush=True)
+            # ── 追加：若 queue 仍有 pending 但沒有 running，且長時間沒有派工 → 嘗試重啟
+            try:
+                from czjLLM.prompt_pipeline.pipeline_controller import meter_read, CONSUMER_STATE
+                m = meter_read(meter_fn) if meter_fn else {}
+                q = m.get("queue", {})
+                pending = int(q.get("pending", 0) or 0)
+                running = int(q.get("running", 0) or 0)
+                long_no_dispatch = (time.monotonic() - CONSUMER_STATE.get("last_dispatch_ts", 0.0) > 120.0)
+                if pending > 0 and running == 0 and long_no_dispatch:
+                    print("🧯 [watchdog] stall detected: pending>0, running=0, long_no_dispatch>120s", flush=True)
+                    if callable(restart_cb):
+                        try:
+                            restart_cb()  # 封裝 terminate/join + 重建 consumer thread/pool + 續派工
+                            print("🔄 [watchdog] restart_cb invoked", flush=True)
+                        except Exception as re:
+                            print(f"⚠️ [watchdog] restart_cb error: {re}", flush=True)
+            except Exception as _:
+                pass
         except Exception as e:
             print(f"[watchdog] 自身例外: {e}", flush=True)
         time.sleep(interval_sec)
@@ -820,7 +839,9 @@ def start_watchdogs(ctx, adapter=None, *,
                     ping_interval_sec=60, 
                     stall_idle_threshold_sec=600, 
                     stall_interval_sec=60, 
-                    stacks_path=None):
+                    stacks_path=None,
+                    meter_fn=None,
+                    restart_cb=None):
     """
     從 controller 啟動所有 watchdog。
     - ctx: 需要 last_progress_ts（orchestrator 每前進一次要更新）
@@ -843,7 +864,9 @@ def start_watchdogs(ctx, adapter=None, *,
         args=(ctx, adapter),
         kwargs=dict(idle_threshold_sec=stall_idle_threshold_sec,
                     interval_sec=stall_interval_sec,
-                    stacks_path=stacks_path),
+                    stacks_path=stacks_path,
+                    meter_fn=meter_fn,
+                    restart_cb=restart_cb),
         daemon=True
     ).start()
 
@@ -1018,10 +1041,6 @@ class MergeOps:
     join: callable = os.path.join
 
     def __post_init__(self):
-        # 預設掛載你專案裡的真實實作
-        from czjLLM.prompt_pipeline.pipeline_controller import (
-            OSWALK, getPathFromFN, call_llm_api, combine_api_finished_item
-        )
         self.list_paths = self.list_paths or OSWALK
         self.get_parent = self.get_parent or getPathFromFN
         self.call_llm  = self.call_llm  or call_llm_api
@@ -1113,7 +1132,7 @@ def call_llm_api(itemList, ctx, allow_to_retry=True,PGMSubDir=""):
             max_tokens=ctx.max_tokens,
             #On_Premises=ctx.on_premises,
             allow_to_retry=allow_to_retry,
-            model_spec=ctx.model_spec,
+            model_spec=model_spec,
             PGMSubDir=ctx.PGMSubDir,
         ) for promptFile in OSWALK(TodoSubDir)]
 
@@ -1330,6 +1349,7 @@ class PromptAPIPipeline:
         嘗試用json.loads驗證回傳訊息json正確性，
         回傳值為空清單或重跑任務物件清單跟修正後訊息。
         '''
+        retMES_rep = None
         try:
             #print("raise Exception to debug json output")
             #raise Exception
@@ -1360,7 +1380,8 @@ class PromptAPIPipeline:
             except Exception as ex_json:
                 print("ex_json",ex_json)
                 print("Fail to repair with LLM.")
-                print("retMES_rep",retMES_rep)
+                if retMES_rep is not None:
+                    print("retMES_rep", retMES_rep)
                 MainFileName,input_text,keyConsiderations = self.extract_MainFileName_and_input_text()
                 if input_text:
                     DTBJobs_Retry = self.split_and_generate_new_prompts(

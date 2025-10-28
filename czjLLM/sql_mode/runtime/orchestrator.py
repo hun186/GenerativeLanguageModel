@@ -7,8 +7,9 @@ from typing import Iterable, Tuple, Any
 import os, time, faulthandler, sys
 
 import multiprocessing as mp
-from czjLLM.job_manager.console_ui import tlog, tlog_ok
+from czjLLM.job_manager.console_ui import tlog, tlog_ok, tlog_warn
 from czjLLM.prompt_pipeline.pipeline_controller import meter_read  # 讀進度計量檔
+from czjLLM.prompt_pipeline.pipeline_controller import CONSUMER_STATE  # [ADD] 觀察 last_dispatch_ts
 
 from .runtime_ui import prepare_ui, start_bar_refresher
 from ..metrics.metering import init_meter
@@ -92,6 +93,16 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     
     # 3) 計量器就緒
     registry, meter_fn, low, high = init_meter(ctx)
+    '''
+    mp_log_q = mp_listener_stop = mp_listener = None
+    if not DETAIL_CONSUMER_INFO:
+        mp_log_q, mp_listener_stop, mp_listener = _start_mp_log_listener()
+        #（可選）讓 workers 可以把子程序輸出丟進來
+        try:
+            ctx.mp_log_q = mp_log_q
+        except Exception:
+            pass
+    '''
 
     # 4) 佇列與旗標
     done_q = queue.Queue()
@@ -109,47 +120,82 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         # 不中斷主流程
         pass
 
-    def _stall_watchdog(meter_path: str, stop_ev: threading.Event, interval: float = 60.0, stall_secs: float = 600.0):
+    def _stall_watchdog(
+        meter_path: str,
+        stop_ev: threading.Event,
+        interval: float = 60.0,
+        stall_secs: float = 600.0,
+        restart_cb=None,
+    ):
         """
-        每 60s 檢查 queue(pending+running) 是否有變化；若連續 600s 沒變，告警並輸出 stack。
+        每 interval 秒檢查一次：
+          1) 若 outstanding（pending+running）連續 stall_secs 都沒變 → 傾印 stacks（診斷用）
+          2) 若 pending>0 且 running==0 並且距離上次派工/回傳結果 >120 秒 → 觸發重啟（restart_cb）
         """
         last_sum = None
         last_change_ts = time.time()
+    
         while not stop_ev.is_set():
             try:
                 m = meter_read(meter_path)
                 q = m.get("queue", {})
-                s = int(q.get("pending", 0)) + int(q.get("running", 0))
-                if (last_sum is None) or (s != last_sum):
-                    last_sum = s
+                pending = int(q.get("pending", 0) or 0)
+                running = int(q.get("running", 0) or 0)
+                outstanding = pending + running
+    
+                # (A) 進度是否卡住很久（總量不變）
+                if (last_sum is None) or (outstanding != last_sum):
+                    last_sum = outstanding
                     last_change_ts = time.time()
-                else:
-                    if (time.time() - last_change_ts) >= stall_secs:
+                elif (time.time() - last_change_ts) >= stall_secs:
+                    try:
+                        msg = f"[watchdog] 進度 {int(stall_secs)} 秒無前進（outstanding={outstanding}），正在傾印 thread dump 至 stacks.log"
+                        print(msg)
+                    except Exception:
+                        pass
+                    try:
+                        faulthandler.dump_traceback(file=getattr(sys.modules[__name__], "ctx", None) and getattr(sys.modules[__name__].ctx, "_faulthandler_fp", None) or sys.stderr)
+                    except Exception:
+                        pass
+                    last_change_ts = time.time()  # 重設避免洗版
+    
+                # (B) pool/consumer 疑似卡死：有待處理、卻沒有在跑，而且很久沒派工/回傳
+                long_no_dispatch = (time.monotonic() - float(CONSUMER_STATE.get("last_dispatch_ts", 0.0))) > 120.0
+                if (pending > 0) and (running == 0) and long_no_dispatch:
+                    tlog_warn("🧯 [watchdog] 檢測到 pending>0 且 running==0，且 120s 無派工/結果 → 嘗試重啟 consumer")
+                    if callable(restart_cb):
                         try:
-                            msg = f"[watchdog] 進度 {int(stall_secs)} 秒無前進（outstanding={s}），正在傾印 thread dump 至 stacks.log"
-                            print(msg)
-                        except Exception:
-                            pass
+                            restart_cb()
+                            tlog_warn("🔄 [watchdog] 已呼叫 restart_cb()")
+                            # 重置基準，給新一輪一些緩衝時間
+                            last_sum = None
+                            last_change_ts = time.time()
+                        except Exception as re:
+                            tlog_warn(f"⚠️ restart_cb 失敗：{re}")
+                            
+                stale_run = (running > 0) and ((time.monotonic() - float(CONSUMER_STATE.get("last_dispatch_ts", 0.0))) > 300.0)
+                if stale_run:
+                    tlog_warn("🧯 [watchdog] running>0 且 300s 無派工/回傳 → 嘗試重啟 consumer")
+                    if callable(restart_cb):
                         try:
-                            # 立即傾印一次（定點偵錯）；dump_traceback_later 可選擇性加
-                            faulthandler.dump_traceback(file=getattr(ctx, "_faulthandler_fp", None) or sys.stderr)
-                        except Exception:
-                            pass
-                        # 重設計時避免洗版
-                        last_change_ts = time.time()
+                            restart_cb()
+                            tlog_warn("🔄 [watchdog] 已針對 running>0 case 重新啟動 consumer")
+                            last_sum = None
+                            last_change_ts = time.time()
+                        except Exception as re:
+                            tlog_warn(f"⚠️ restart_cb 失敗：{re}")
+    
             except Exception:
-                # 讀不到檔或其他短暫錯誤 → 下輪再試
                 pass
             time.sleep(interval)
-
     # 於 worker 啟動後建立 watchdog
     stop_event, consumer, merger = start_workers(ctx, registry, meter_fn, is_sqlite, done_q, sink=sink)
 
-    try:
-        th_watchdog = threading.Thread(target=_stall_watchdog, args=(meter_fn, stop_event), daemon=True)
-        th_watchdog.start()
-    except Exception:
-        pass
+    #try:
+    #    th_watchdog = threading.Thread(target=_stall_watchdog, args=(meter_fn, stop_event), daemon=True)
+    #    th_watchdog.start()
+    #except Exception:
+    #    pass
 
     # 6) 進度 drain（以 merger_done 控制退出）
     gui_handle = getattr(ctx, "gui_handle", None)
@@ -162,6 +208,51 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     drain.start()
     tlog(f"[drain] started={drain.is_alive()}")
 
+    # [ADD] 可重啟的包裝：關閉舊 consumer/merger/drain + 換一顆新的 stop_event 再啟動
+    def _try_restart_consumer_pool():
+        nonlocal stop_event, consumer, merger, drain
+    
+        tlog_warn("🛑 正在關閉舊 consumer/merger/drain ...")
+        try:
+            stop_event.set()
+        except Exception:
+            pass
+    
+        # 給一點時間讓舊執行緒收尾
+        for th, name in [(consumer, "consumer"), (merger, "merger"), (drain, "drain")]:
+            try:
+                if th and th.is_alive():
+                    th.join(timeout=5.0)
+            except Exception:
+                pass
+    
+        # 建立新的 stop_event 與 workers
+        tlog_warn("🚀 重建新的 worker 與事件 ...")
+        stop_event, consumer, merger = start_workers(ctx, registry, meter_fn, is_sqlite, done_q, sink=sink)
+    
+        # 重啟 drain（沿用同一個 done_q / p_done）
+        try:
+            drain = threading.Thread(
+                target=progress_drain,
+                args=(stop_event, done_q, p_done, getattr(ctx, "gui_handle", None)),
+                kwargs={"close_event": merger_done},
+                daemon=True
+            )
+            drain.start()
+            tlog_warn(f"[drain] restarted={drain.is_alive()}")
+        except Exception as de:
+            tlog_warn(f"⚠️ 重啟 drain 失敗：{de}")
+    try:
+        th_watchdog = threading.Thread(
+            target=_stall_watchdog,
+            args=(meter_fn, stop_event),
+            kwargs=dict(interval=60.0, stall_secs=600.0, restart_cb=_try_restart_consumer_pool),
+            daemon=True
+        )
+        th_watchdog.start()
+    except Exception:
+        pass
+    
     # 7) 防雜訊：條形圖自動 refresh
     refresher, bar_refresh_stop = start_bar_refresher(p_sched, p_done, interval=0.15)
 
@@ -194,7 +285,8 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         refresher=refresher,
         bar_refresh_stop=bar_refresh_stop,
     )
-    if not DETAIL_CONSUMER_INFO:
-        _stop_mp_log_listener(mp_log_q, mp_listener_stop, mp_listener)
+    
+    #if not DETAIL_CONSUMER_INFO and mp_log_q is not None:
+    #    _stop_mp_log_listener(mp_log_q, mp_listener_stop, mp_listener)
     
     tlog_ok("🎉 資料處理完成！")

@@ -1,8 +1,13 @@
 # sql_mode/scheduler.py
 import os
 import time
+import sys
 from typing import Any
 from copy import deepcopy
+import faulthandler
+import threading
+from utils.utilities_path import safe_move, MKDIR, getPathFromFN
+
 from czjLLM.prompt_pipeline.pipeline_controller import find_item_dir_for, meter_update
 from czjLLM.utilities.file_utils import save_text_as_temp_file
 from utils.utilities_path import getMFNFromFN, OSWALK
@@ -30,13 +35,31 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
     )
 
     # 讓模板/切片在 row_ctx 上跑（不會動到共享 ctx）
-    handle_single_input_file(
-        temp_txt_path, row_ctx,
-        adjust=True,
-        pause_seconds=(10 if idx == 0 else 0),
-        defer_merge=True
+    try:
+        faulthandler.dump_traceback(file=getattr(ctx, "_faulthandler_fp", None) or sys.stderr)
+    except Exception:
+        pass
+    slice_timeout = float(getattr(ctx, "slice_timeout_sec", 180.0))
+    ok, why = _run_with_timeout(
+        lambda: handle_single_input_file(
+            temp_txt_path, row_ctx, adjust=True,
+            pause_seconds=(10 if idx == 0 else 0),
+            defer_merge=True
+        ),
+        timeout_sec=slice_timeout
     )
-
+    if not ok and why == "timeout":
+        try:
+            faulthandler.dump_traceback(file=getattr(ctx, "_faulthandler_fp", None) or sys.stderr)
+        except Exception:
+            pass
+    if not ok:
+        tlog_warn(f"⏳ 切片超時/失敗：pk={pk}, file={os.path.basename(temp_txt_path)}, reason={why}")
+        # 移到隔離區，避免之後殘留檔案干擾
+        quarantine_dir = os.path.join(ctx.llm_source_dir, "quarantine", "slice_failed")
+        MKDIR(quarantine_dir)
+        safe_move(temp_txt_path, os.path.join(quarantine_dir, os.path.basename(temp_txt_path)))
+        return 0
     # 確認這列的 TODO 真的有產出，避免 consumer 找不到而卡住
     item_dir = None
     todo_dir = None
@@ -170,3 +193,25 @@ def schedule_one_row_OLD(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
     
     tlog(f"[sched] pk={pk} added, chunks={total_chunks}, dir={os.path.basename(item_dir)}")
     return total_chunks
+
+def _run_with_timeout(fn, timeout_sec: float) -> tuple[bool, str | None]:
+    """
+    在 thread 執行 fn，timeout 後回傳 (False, "timeout")；否則 (True, None)。
+    注意：thread 無法強殺，逾時只「放棄等待」，讓主流程繼續。
+    """
+    err = {"msg": None}
+    def _target():
+        try:
+            fn()
+        except Exception as e:
+            err["msg"] = str(e)
+
+    th = threading.Thread(target=_target, daemon=True)
+    th.start()
+    th.join(timeout=timeout_sec)
+    if th.is_alive():
+        return (False, "timeout")
+    if err["msg"]:
+        return (False, err["msg"])
+    return (True, None)
+

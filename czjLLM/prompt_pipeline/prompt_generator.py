@@ -1,5 +1,7 @@
+#prompt_pipeline/prompt_generator.py
 import os
 from colorama import Fore#, Back, Style
+from typing import Optional
 from ..taskConfig import taskSetting
 #from czjLLM_utils import generate_prompt
 
@@ -16,6 +18,73 @@ from utils.utilities_path import getPathFromFN
 from utils.utilities_path import getMFNFromFN
 from utils.utilities_path import DirReplace
 from utils.utilities_path import clean_path_end_chars
+
+# =========================
+# /no_think 統一判斷與附加
+# =========================
+
+NO_THINK_SUFFIX = "/no_think"
+
+# 只在此維護支援清單；外部程式碼只呼叫 should_disable_think()。
+# 包含常見別名，順序由新到舊、精到泛，避免過度匹配。
+_NO_THINK_MODELS = (
+    "qwen3", "qwen-3",            # Qwen3 系列
+    "qwen2.5", "qwen-2.5",        # Qwen2.5 系列
+    "qwen2", "qwen-2",            # Qwen2 系列
+    "qwen",                       # 泛匹配（最後）
+)
+
+def should_disable_think(model_name: str) -> bool:
+    """
+    回傳該模型是否建議自動附加 /no_think。
+    目前針對 Qwen 家族（含 Qwen3 / Qwen2.5 / Qwen2 / Qwen）。
+    """
+    if not model_name:
+        return False
+    m = model_name.lower()
+    return any(tag in m for tag in _NO_THINK_MODELS)
+
+def _has_no_think_suffix(s: str, suffix: str = NO_THINK_SUFFIX) -> bool:
+    """
+    僅檢查「最後一行（忽略末尾空白行）」是否已以 suffix 結尾，
+    避免重複附加。
+    """
+    if not s:
+        return False
+    last = next((ln for ln in reversed(s.rstrip().splitlines()) if ln.strip()), "")
+    return last.rstrip().endswith(suffix)
+
+def append_no_think_if_applicable(
+    content: str,
+    model_name: str,
+    *,
+    enabled: bool = True,
+    override_suffix: Optional[str] = None,
+    suffix: str = NO_THINK_SUFFIX,
+) -> str:
+    """
+    依模型能力與設定決定是否附加 /no_think：
+
+    - enabled=False：完全不處理（永不附加）。
+    - override_suffix=None：依 should_disable_think(model_name) 自動判斷。
+    - override_suffix=""（空字串）：明確「不要」附加（即使是 Qwen* 也不加）。
+    - override_suffix="/no_think"：明確「強制」附加（若未重複才附）。
+    """
+    if not enabled:
+        return content
+
+    # 強制覆寫：空字串=不要；指定 suffix=強制附加（若未附加過）
+    if override_suffix == "":
+        return content
+    if override_suffix == suffix:
+        return content if _has_no_think_suffix(content, suffix) else (content.rstrip() + "\n" + suffix)
+
+    # 自動判斷：只在 should_disable_think=True 時附加
+    if not should_disable_think(model_name):
+        return content
+    return content if _has_no_think_suffix(content, suffix) else (content.rstrip() + "\n" + suffix)
+
+
 
 def generate_prompt(content="",
                     keyConsiderations="",
@@ -57,14 +126,18 @@ def generate_prompt(content="",
     # ✅ 在此統一處理 no_think 的後綴
     return prompt + "\n/no_think" if not think_mode else prompt
 
-# 建立 module-level 記憶
+# 建立 module-level 記憶（若你後續要做跨段聚合可沿用）
 _input_memory = {}
 
 class PromptGenerator:
-    def __init__(self, ctx):
+    """
+    建議使用的產生器：集中管理 /no_think 判斷（依 model 與 think_mode）。
+    - ctx.model_spec_name：模型名稱（如 "qwen3-32b-instruct"）
+    - ctx.think_mode：True = 允許思考模式；False = 希望禁思考（若模型支援）
+    """
+    def __init__(self, ctx: LLMJobConfig):
         self.ctx = ctx
-        #print("self.ctx",self.ctx)
-        
+
     def build(self, content: str) -> str:
         if not content.strip():
             print("⚠️ generate_prompt: content 為空，請確認是否為預期行為。")
@@ -90,15 +163,24 @@ class PromptGenerator:
 
         elif task == "CLASS Diff EXT":
             print(f"{Fore.LIGHTYELLOW_EX}目標類別為: {self.ctx.textClass}，排除類別為: {self.ctx.exclusiveTextClass}{Fore.RESET}")
-            prompt = template_function(textClass=self.ctx.textClass,
-                                       exclusiveTextClass=self.ctx.exclusiveTextClass,
-                                       content=content)
+            prompt = template_function(
+                textClass=self.ctx.textClass,
+                exclusiveTextClass=self.ctx.exclusiveTextClass,
+                content=content,
+            )
 
         # 其他一般任務
         else:
             prompt = template_function(content=content)
 
-        return prompt + "\n/no_think" if not self.ctx.think_mode else prompt
+        # 新行為：依模型與 think_mode 決定是否附加 /no_think
+        # enabled = not think_mode（希望禁思考才啟用附加邏輯）
+        return append_no_think_if_applicable(
+            prompt,
+            getattr(self.ctx, "model_spec_name", "") or "",
+            enabled=(not self.ctx.think_mode),
+        )
+
 
 def process_file_to_prompt(file_path, ctx, adjust=True):
     print(f"Start to run process_file_to_prompt for {file_path}")
@@ -147,5 +229,5 @@ def process_chunk_to_generate_prompt(idx: int, ctx_piece: str, ctx: LLMJobConfig
     except Exception as e:
         print(f"❌ 寫入 {todo_fn} 失敗：{e}")
 
-def should_disable_think(model_name: str) -> bool:
-    return any(kw in model_name for kw in ["qwen3"])
+#def should_disable_think(model_name: str) -> bool:
+#    return any(kw in model_name for kw in ["qwen3"])
