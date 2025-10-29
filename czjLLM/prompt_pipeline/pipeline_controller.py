@@ -1,5 +1,6 @@
 # pipeline_controller.py
 import os
+import errno
 from colorama import Fore, Style
 from tqdm import tqdm
 import re
@@ -403,7 +404,26 @@ def _release_file_lock(fd, lock_path: str):
             pass
         except OSError:
             pass
-    
+
+def safe_unlink(path: str, retries: int = 5, delay: float = 0.1) -> None:
+    for i in range(retries):
+        try:
+            os.unlink(path)
+            return
+        except FileNotFoundError:
+            # 已被其他 worker 刪掉 → 當成功處理
+            return
+        except PermissionError:
+            # Windows 偶發鎖檔 → 稍等再試
+            time.sleep(delay)
+        except OSError as e:
+            # 例如跨掛載點暫態 I/O，僅對「暫態型」再試一次
+            if e.errno in (errno.EBUSY, errno.ETXTBSY):
+                time.sleep(delay)
+            else:
+                # 非暫態就直接忽略（不阻塞主流程）
+                return
+            
 def find_item_dir_for(ctx, main_file_name: str) -> str:
     """
     從 ctx.prompt_dir 掃描出對應的 item 目錄（父級，底下有 TODO/Success）。
@@ -421,7 +441,7 @@ def find_item_dir_for(ctx, main_file_name: str) -> str:
     return uniq[0]
 
 # [ADD] －－－－ Streaming Consumer：批次消化 TODO 檔 －－－－
-
+'''
 def pick_next_prompts(item_dirs, per_round_limit=128):
     """
     從多個 item_dir 挑選下一批 TODO prompt 檔（跨列混合），上限 per_round_limit。
@@ -437,9 +457,71 @@ def pick_next_prompts(item_dirs, per_round_limit=128):
             if len(batch) >= per_round_limit:
                 return batch
     return batch
+'''
+def pick_and_claim_next_prompts(item_dirs, per_round_limit=128):
+    """
+    從各 item_dir 的 TODO 中挑選檔案，並立即以 os.replace() 更名為 RUNNING/xxx.txt。
+    回傳 [(pf_running, item_dir), ...]，其中 pf_running 位於 RUNNING 目錄。
+    """
+    claimed = []
+    for item_dir in item_dirs:
+        todo = Path(item_dir) / "TODO"
+        run  = Path(item_dir) / "RUNNING"
+        if not todo.is_dir():
+            continue
+        run.mkdir(parents=True, exist_ok=True)
 
+        # 排序讓行為穩定
+        for src in sorted(OSWALK(str(todo))):
+            src_p = Path(src)
+            dst_p = run / src_p.name
+            try:
+                # 同一檔案系統才是原子；務必確保三個目錄在同一磁碟/掛載點
+                os.replace(str(src_p), str(dst_p))
+            except FileNotFoundError:
+                # 已被其他 worker 抢先
+                continue
+            except PermissionError:
+                # 偶發鎖檔（Windows/防毒）→ 略過
+                continue
+            except OSError:
+                # 其它 I/O 異常 → 略過
+                continue
 
-   
+            claimed.append((str(dst_p), str(item_dir)))
+            if len(claimed) >= per_round_limit:
+                return claimed
+    return claimed
+
+def _to_success(pf_running: str) -> str:
+    p = Path(pf_running)
+    assert p.parent.name == "RUNNING"
+    suc = p.parent.parent / "Success"
+    suc.mkdir(parents=True, exist_ok=True)
+    return str(suc / p.name)
+
+def recover_running_to_todo(item_dirs):
+    """
+    僅在流程「啟動前」呼叫一次：
+    將前次異常留下的 RUNNING/* 移回 TODO/*，讓它們能被重新排程。
+    """
+    for item_dir in item_dirs:
+        run  = Path(item_dir) / "RUNNING"
+        todo = Path(item_dir) / "TODO"
+        if not run.is_dir():
+            continue
+        todo.mkdir(parents=True, exist_ok=True)
+        for p in run.iterdir():
+            if p.is_file():
+                try:
+                    os.replace(str(p), str(todo / p.name))  # 原子搬移
+                except FileNotFoundError:
+                    # 另一個程序可能已處理，略過即可
+                    pass
+                except PermissionError:
+                    # 偶發網路磁碟忙碌，可視需要加上短暫重試
+                    pass
+                
 def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event: threading.Event,
                         is_sqlite=False, per_round_limit=128):
     """
@@ -452,21 +534,11 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
     import os as _os
     _os.environ.setdefault("TQDM_DISABLE", "1")
     _os.environ.setdefault("DISABLE_INNER_TQDM", "1")
-    '''
-    # 單 thread DB 連線
-    if getattr(ctx, "is_sqlite", is_sqlite):
-        conn = sqlite3.connect(ctx.sqlite_path)
-        cur = conn.cursor()
-        cur.execute("PRAGMA journal_mode=WAL;")
-        cur.execute("PRAGMA synchronous=NORMAL;")
-        cur.close()
-    else:
-        conn = pyodbc.connect(ctx.sql_connection_string)
-    cursor = conn.cursor()
-    '''
+
     try:
         tlog(f"[consumer] using meter: {meter_fn}")  # 診斷：應與 orchestrator 印出的路徑一致
         print("meter_fn in llm_stream_consumer",meter_fn)
+        #did_recover = False  # ← 新增：只復原一次
         while True:
             round_start = time.time()
             dispatched_n = 0
@@ -474,13 +546,20 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
 
             items_map = registry.list_items()
             item_dirs = list(items_map.keys())
-
-            batch = pick_next_prompts(item_dirs, per_round_limit=per_round_limit)
+            
+            # ★ 啟動後第一次迴圈：復原 RUNNING → TODO
+            #if not did_recover:
+            #    recover_running_to_todo(item_dirs)
+            #    did_recover = True
+                
+            #batch = pick_next_prompts(item_dirs, per_round_limit=per_round_limit)
+            batch = pick_and_claim_next_prompts(item_dirs, per_round_limit=per_round_limit)
 
             if not batch:
                 # 若無可派發任務：producer 已宣告結束且再檢一次仍空 → 收尾
                 if stop_event.is_set():
-                    if not pick_next_prompts(item_dirs, per_round_limit=1):
+                    #if not pick_next_prompts(item_dirs, per_round_limit=1):
+                    if not pick_and_claim_next_prompts(item_dirs, per_round_limit=1):
                         break
                 time.sleep(0.1)
                 continue
@@ -501,11 +580,13 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
             DTBJobs = []
             #print("in pipeline_controller, ctx.model_spec",ctx.model_spec)
             for pf, item_dir in batch:
+                out_fn = _to_success(pf)  # RUNNING → Success（用兄弟目錄推導，別用字串 replace）
                 job_spec = deepcopy(ctx.model_spec)  # ★ 每個 job 拿各自副本
                 DTBJobs.append(PromptAPIPipeline(
                     task=ctx.task,
                     promptFile=pf,
-                    OutputSaveFN=pf.replace("TODO", "Success"),
+                    #OutputSaveFN=pf.replace("TODO", "Success"),
+                    OutputSaveFN=out_fn,
                     removeFinPromptFile=getattr(ctx, "removeFinPromptFile", True),
                     max_tokens=ctx.max_tokens,
                     allow_to_retry=True,
@@ -518,19 +599,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
             if dispatched_n == 0:
                 time.sleep(0.2)
                 continue
-            '''
-            try:
-                MPresult = multicoreJob(
-                    DTBJobs=DTBJobs,
-                    nProcess=ctx.n_process,
-                    ShuffleJobs=False,
-                    #log_queue=getattr(ctx, "mp_log_q", None)
-                ).run()
-            except Exception as ex:
-                # 子程序拋出例外：不要把整輪打掉；讓下輪重試
-                tlog_warn(f"❌ multicoreJob.run() 例外：{ex}")
-                MPresult = []
-            '''
+
             try:
                 MPresult = run_round(DTBJobs, ctx.n_process)
             except Exception as ex:
@@ -1298,14 +1367,20 @@ class PromptAPIPipeline:
             if self.OutputSaveFN != "" and DTBJobs_Retry == []:
                 MKDIR(os.path.dirname(self.OutputSaveFN))
                 tmp_fn = self.OutputSaveFN + ".tmp"
+                #print(f"Start to run os.sync for tmp_fn {tmp_fn}")
                 with open(tmp_fn, mode='wt', encoding='utf-8') as fp:
                     fp.write(retMES)
                     fp.flush()
                     os.fsync(fp.fileno())  # 確保落地
+                #print(f"Finished running os.sync for tmp_fn {tmp_fn}")
+                #print(f"Start to run os.replace for tmp_fn {tmp_fn}")
                 os.replace(tmp_fn, self.OutputSaveFN)  # ✅ 原子替換
-                
+                #print(f"Finished running os.replace for tmp_fn {tmp_fn}")
                 if self.removeFinPromptFile and self.promptFile:
-                    os.remove(self.promptFile)         # ✅ 再刪 TODO
+                    #print(f"Start to run os.remove for self.promptFile {self.promptFile}")
+                    #os.remove(self.promptFile)         # ✅ 再刪 TODO
+                    safe_unlink(self.promptFile)  # 刪 RUNNING/xxx.txt
+                    #print(f"Finished running os.remove for self.promptFile {self.promptFile}")
                     
 
             #將處理過的文字訊息回填response物件

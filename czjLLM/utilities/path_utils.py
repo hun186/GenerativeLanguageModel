@@ -35,9 +35,9 @@ def get_combined_result_path(temp_txt_path: str, ctx) -> str:
     2) fallback 會用 llm_source_finished_dir\cache，最後才 LLMSourcePool -> LLMSourcePool_Finished
     3) sanitize task 名稱 + MKDIR 目標資料夾
     """
-    print("[gcrp] temp_txt_path=", temp_txt_path)
-    print("[gcrp] ctx.temp_txt_dir=", getattr(ctx,"temp_txt_dir", None))
-    print("[gcrp] ctx.temp_txt_finished_dir=", getattr(ctx,"temp_txt_finished_dir", None))
+    #print("[gcrp] temp_txt_path=", temp_txt_path)
+    #print("[gcrp] ctx.temp_txt_dir=", getattr(ctx,"temp_txt_dir", None))
+    #print("[gcrp] ctx.temp_txt_finished_dir=", getattr(ctx,"temp_txt_finished_dir", None))
     main = getMFNFromFN(temp_txt_path)
     task = str(getattr(ctx, "task", "result"))
     safe_task = re.sub(r'[\\/:*?"<>|]+', "_", task).strip() or "result"

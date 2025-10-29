@@ -10,9 +10,16 @@ import multiprocessing as mp
 from czjLLM.job_manager.console_ui import tlog, tlog_ok, tlog_warn
 from czjLLM.prompt_pipeline.pipeline_controller import meter_read  # 讀進度計量檔
 from czjLLM.prompt_pipeline.pipeline_controller import CONSUMER_STATE  # [ADD] 觀察 last_dispatch_ts
+from czjLLM.prompt_pipeline.pipeline_controller import recover_running_to_todo  # ★ 新增：啟動時復原 RUNNING → TODO
 
 from .runtime_ui import prepare_ui, start_bar_refresher
 from ..metrics.metering import init_meter
+from czjLLM.prompt_pipeline.pipeline_controller import meter_read
+try:
+    from ..metrics.metering import outstanding_now as _outstanding_now
+except Exception:
+    _outstanding_now = None
+
 from .mp_logs import start_mp_log_listener, stop_mp_log_listener
 from .workers import start_workers, progress_drain
 from .teardown import shutdown
@@ -21,6 +28,9 @@ from .producer import produce_rows
 from .sinks.sql_sink import SqlSink
 from .sinks.excel_sink import ExcelSink
 
+
+
+    
 DETAIL_CONSUMER_INFO = True
 
 def make_sink(ctx, is_sqlite):
@@ -80,6 +90,19 @@ def _stop_mp_log_listener(q, stop_ev, th):
     except Exception:
         pass
 
+def _get_outstanding(meter_fn: str) -> int:
+    if callable(_outstanding_now):
+        try:
+            return int(_outstanding_now(meter_fn))
+        except Exception:
+            pass
+    try:
+        m = meter_read(meter_fn)
+        q = m.get("queue", {}) or {}
+        return int(q.get("pending", 0) or 0) + int(q.get("running", 0) or 0)
+    except Exception:
+        return 0
+    
 # ===========================
 # 對外主函式：run_pipeline（精簡後）
 # ===========================
@@ -103,7 +126,15 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         except Exception:
             pass
     '''
-
+    # 3.5) ★ 一次性復原 RUNNING → TODO（在啟動 consumer 前做）
+    try:
+        items_map = registry.list_items()
+        item_dirs = list(items_map.keys())
+        recover_running_to_todo(item_dirs)
+        tlog("♻️ 已復原上次殘留的 RUNNING 檔案至 TODO。")
+    except Exception as ex:
+        tlog_warn(f"recover_running_to_todo 失敗：{ex}")
+        
     # 4) 佇列與旗標
     done_q = queue.Queue()
     merger_done = threading.Event()
@@ -256,22 +287,56 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     # 7) 防雜訊：條形圖自動 refresh
     refresher, bar_refresh_stop = start_bar_refresher(p_sched, p_done, interval=0.15)
 
-    # 8) 主回圈：排程所有列
-    produce_rows(
-        ctx=ctx,
-        rows_for_count=rows_for_count,
-        registry=registry,
-        meter_fn=meter_fn,
-        low=low,
-        stop_event=stop_event,
-        consumer=consumer,
-        p_sched=p_sched,
-        gui=gui,
-        p_done=p_done,   # ← 可選；要在空字串時補完成條就傳入
-    )
+    # 8) 主回圈：排程所有列（改成執行緒，主線程負責收尾條件）
+    producer_done_flag = threading.Event()
 
-    # 9) 收尾清理
+    def _producer_main():
+        try:
+            produce_rows(
+                ctx=ctx,
+                rows_for_count=rows_for_count,
+                registry=registry,
+                meter_fn=meter_fn,
+                low=low,
+                stop_event=stop_event,
+                consumer=consumer,
+                p_sched=p_sched,
+                gui=gui,
+                p_done=p_done,   # 空字串時補完成條
+            )
+        finally:
+            producer_done_flag.set()
 
+    prod_th = threading.Thread(target=_producer_main, daemon=True, name="producer-thread")
+    prod_th.start()
+
+    # 8.5) 完成條件守門：A+B+C+D 皆為 True 才能進入收尾
+    total_rows = len(rows_for_count)
+    last_report = 0.0
+
+    def _registry_empty() -> bool:
+        try:
+            return len(registry.list_items() or {}) == 0
+        except Exception:
+            return False
+
+    while True:
+        A = producer_done_flag.is_set()                         # 產生端已跑完
+        B = (_get_outstanding(meter_fn) <= 0)                  # 無未完成（pending+running）
+        C = _registry_empty()                                  # registry 清空
+        D = (getattr(p_done, "n", 0) >= int(total_rows or 0))  # 完成條達到總列數（含空字串補點）
+
+        now = time.time()
+        if (now - last_report) > 5.0:
+            tlog(f"[watch] prod_done={A}, out={_get_outstanding(meter_fn)}, "
+                 f"reg_empty={C}, done={getattr(p_done, 'n', 0)}/{total_rows}")
+            last_report = now
+
+        if A and B and C and D:
+            break
+        time.sleep(0.2)
+
+    # 9) 收尾清理（四條件皆真才宣布完成）
     shutdown(
         ctx,
         gui=gui,
@@ -285,8 +350,5 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         refresher=refresher,
         bar_refresh_stop=bar_refresh_stop,
     )
-    
-    #if not DETAIL_CONSUMER_INFO and mp_log_q is not None:
-    #    _stop_mp_log_listener(mp_log_q, mp_listener_stop, mp_listener)
-    
+
     tlog_ok("🎉 資料處理完成！")

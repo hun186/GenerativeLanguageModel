@@ -4,6 +4,8 @@ from datetime import datetime
 from typing import Iterable, Tuple, Any, Optional, List, Dict
 
 from czjLLM.job_manager.console_ui import tlog, tlog_warn
+from czjLLM.utilities.combine_utils import merge_dict_slices
+from czjLLM.utilities.combine_utils import merge_dict_slices_audited
 from utils.utilities_path import OSWALK, DirReplace, MKDIR, getPathFromFN
 from utils.utilities_path import safe_move
 
@@ -138,9 +140,35 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     with open(comb_back_fn, "r", encoding="utf-8") as fp:
                         result_text = fp.read()
 
+                    payload = None
+                    try:
+                        data = json.loads(result_text)
+                        # ★ 當結果是一串「各切片的 dict」
+                        if isinstance(data, list) and all(isinstance(x, dict) for x in data):
+                            
+                            payload, report = merge_dict_slices_audited(
+                                data,
+                                conflict_policy=getattr(ctx, "merge_conflict_policy", "prefer_left"),
+                                dedup_lists=bool(getattr(ctx, "merge_dedup_lists", False)),
+                                audit=True,
+                                #logger=tlog_warn if getattr(ctx, "merge_log_changes", True) else None,
+                                logger=tlog,   # 或 logger=print / logger=tlog / logger=tlog_warn
+                                max_log=int(getattr(ctx, "merge_max_log", 10)),
+                            )
+                            if len(str(payload)) - len(str(data)) >10:
+                                print(f"found json list file, run _merge_slice_dicts, original data {data}")
+                                print(f"returned payload: {payload}")
+                            # 如需把合併報告存到 ES 旁欄位，可在這裡寫入 ctx/meter，或放進 sink.write_flatten 的子表                           
+                        else:
+                            print("No found json list file, direct written")
+                            payload = data
+                    except Exception:
+                        payload = result_text  # 不是 JSON 就原樣寫
+                        
                     update_time = (datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                    if ctx.record_update_time else None)
-                    sink.write_main(pk, result_text, update_time)
+                    #sink.write_main(pk, result_text, update_time)
+                    sink.write_main(pk, payload, update_time)
 
                     if getattr(ctx, "flatten_json_output", False):
                         raw_fields = getattr(ctx, "allowed_output_fields", None)

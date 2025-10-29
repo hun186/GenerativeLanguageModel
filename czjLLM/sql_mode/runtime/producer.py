@@ -2,13 +2,113 @@
 import time
 from typing import Iterable, Tuple, Any, Optional
 
-from czjLLM.job_manager.console_ui import tlog_warn
+from czjLLM.job_manager.console_ui import tlog_warn,tlog
 from czjLLM.prompt_pipeline.pipeline_controller import producer_backpressure_wait
 from .workers import outstanding_now
 from .scheduler import schedule_one_row
 
 
 def produce_rows(
+    ctx,
+    rows_for_count: Iterable[Tuple[Any, str]],
+    registry,
+    meter_fn: str,
+    low: int,
+    stop_event,
+    consumer,
+    p_sched,
+    gui=None,
+    p_done: Optional[object] = None,   # 若傳入，遇到空字串時幫忙把完成條 +1
+):
+    """
+    逐列排程，處理背壓，並在收尾時等待所有外送工作完成。
+    回傳實際成功排程的列數。
+    """
+    scheduled = 0
+    seen = 0
+    try:
+        total_rows = len(rows_for_count)  # 若是 list 可取得，generator 會丟 TypeError
+    except TypeError:
+        total_rows = None
+
+    if total_rows is not None:
+        tlog(f"[producer] will iterate {total_rows} rows")
+
+    for idx, (pk, text) in enumerate(rows_for_count):
+        seen += 1
+
+        if stop_event.is_set():
+            tlog_warn("produce_rows: stop_event set，提前結束排程。")
+            break
+
+        if not text:
+            try: p_sched.update(1)
+            except Exception: pass
+            if gui:
+                try: gui.inc_sched(1)
+                except Exception: pass
+            if p_done is not None:
+                try: p_done.update(1)
+                except Exception: pass
+                if gui:
+                    try: gui.inc_done(1)
+                    except Exception: pass
+            continue
+
+        producer_backpressure_wait(
+            ctx=ctx, low=low, meter_fn=meter_fn, stop_event=stop_event,
+            consumer_thread=consumer, registry=registry,
+            soft_timeout=getattr(ctx, "bp_soft_timeout", 30.0),
+            hard_timeout=getattr(ctx, "bp_hard_timeout", 120.0),
+            sleep_step=0.05,
+        )
+
+        try:
+            schedule_one_row(ctx, registry, meter_fn, idx, pk, text)
+        except Exception as e:
+            tlog_warn(f"[producer] schedule_one_row 失敗 pk={pk}: {e!r}")
+            continue
+
+        scheduled += 1
+
+        try: p_sched.update(1)
+        except Exception: pass
+        if gui:
+            try: gui.inc_sched(1)
+            except Exception: pass
+
+        while not stop_event.is_set() and outstanding_now(meter_fn) > low:
+            time.sleep(0.05)
+
+    # ===== 收尾等待 =====
+    soft = getattr(ctx, "producer_drain_soft", 30.0)
+    hard = getattr(ctx, "producer_drain_hard", 600.0)
+    start = time.time()
+    last_out = None
+
+    while True:
+        out = outstanding_now(meter_fn)
+        if out <= 0:
+            break
+        now = time.time()
+        if last_out != out and (now - start) > soft:
+            tlog_warn(f"[producer] 等待 outstanding 歸零中… outstanding={out}")
+            last_out = out
+        if (now - start) > hard:
+            tlog_warn(f"[producer] drain 超時，仍有 outstanding={out}；強制返回")
+            break
+        time.sleep(0.1)
+
+    tlog(f"[producer] 已送出 {scheduled} 列，outstanding={outstanding_now(meter_fn)}")
+
+    # ★ 事後健檢：未被 stop_event 中斷、卻未遍歷完 rows_for_count → 明確告警
+    if (total_rows is not None) and (seen < total_rows) and (not stop_event.is_set()):
+        tlog_warn(f"⚠️ producer 迴圈提前結束：僅處理 {seen}/{total_rows} 列；已成功排程 {scheduled} 列。"
+                  " 請檢查是否有早退條件（return/break/row_limit/backpressure）、或外部執行緒誤設 stop_event。")
+
+    return scheduled
+
+def produce_rows_OLD_1029(
     ctx,
     rows_for_count: Iterable[Tuple[Any, str]],
     registry,
