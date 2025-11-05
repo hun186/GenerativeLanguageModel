@@ -4,6 +4,21 @@ from colorama import Fore, Style#, Back
 from pathlib import Path
 import yaml
 
+MERGE_KEYS = [
+    "merge_conflict_policy",
+    "merge_dedup_lists",
+    "merge_log_changes",
+    "merge_max_log",
+    "merge_log_to_file",
+    "merge_log_file",
+]
+
+def _is_meaningful_value(v):
+    """
+    僅排除 None；保留 False/0/空字串/空清單（視需求可再調整）。
+    若你想去掉空字串 ""，可改成：return (v is not None) and (not (isinstance(v, str) and v.strip() == ""))
+    """
+    return v is not None
 
 def parse_args():
     parser = argparse.ArgumentParser(description="LLM 任務處理工具 CLI")
@@ -17,7 +32,7 @@ def parse_args():
 
 def print_cli_usage_hint(ctx):
     print("ctx in hint begining",ctx)
-    cli_config_example = {
+    cfg = {
         "mode": getattr(ctx, "mode", None),
         "task": getattr(ctx, "task", None),
         "model_spec": getattr(ctx, "model_spec_name", None),
@@ -47,9 +62,25 @@ def print_cli_usage_hint(ctx):
         "table_name": getattr(ctx, "sql_table", None),
         "target_table": getattr(ctx, "target_table", None),
         "primary_key": getattr(ctx, "primary_key", None),
+        # 合併設定：總開關永遠保留（即便 False）
+        "merge_slices": getattr(ctx, "merge_slices", False),
+
+        # 細項先暫存，稍後依 merge_slices 判斷是否剔除
+        "merge_conflict_policy": getattr(ctx, "merge_conflict_policy", None),
+        "merge_dedup_lists": getattr(ctx, "merge_dedup_lists", None),
+        "merge_log_changes": getattr(ctx, "merge_log_changes", None),
+        "merge_max_log": getattr(ctx, "merge_max_log", None),
+        "merge_log_to_file": getattr(ctx, "merge_log_to_file", None),
+        "merge_log_file": getattr(ctx, "merge_log_file", None),
     }
-    cli_config_example = {
-        k:v for k,v in cli_config_example.items() if v}
+    # 1) 只過濾 None（不要把 False/0 移除）
+    cfg = {k: v for k, v in cfg.items() if _is_meaningful_value(v)}
+
+    # 2) 若 merge_slices=False → 移除其他 merge_* 細項
+    if not cfg.get("merge_slices", False):
+        for k in MERGE_KEYS:
+            cfg.pop(k, None)
+            
     # 需要正規化的路徑鍵
     PATH_KEYS = [
         "input_excel_file",
@@ -63,11 +94,11 @@ def print_cli_usage_hint(ctx):
     ]
 
     for p in PATH_KEYS:
-        if (val := cli_config_example.get(p)):
-            cli_config_example[p] = str(val).replace("\\", "/")
+        if (val := cfg.get(p)):
+            cfg[p] = str(val).replace("\\", "/")
 
     yaml_lines = ["# ✅ 建議設定檔 YAML 範例："]
-    for k, v in cli_config_example.items():
+    for k, v in cfg.items():
         if v is not None:
             yaml_lines.append(f"{k}: {v}")
     content = "\n".join(yaml_lines)
@@ -90,8 +121,8 @@ def print_cli_usage_hint(ctx):
         # 確保資料夾存在
         os.makedirs(os.path.dirname(save_filename), exist_ok=True)
 
-        payload = {k: v for k, v in cli_config_example.items() if v is not None}
-        with open(save_filename, "w", encoding="utf-8") as f:
+        payload = {k: v for k, v in cfg.items() if v is not None}
+        with open(save_filename, "wt", encoding="utf-8") as f:
             yaml.dump(payload, f, allow_unicode=True)
         
         print(f"\n✅ 設定檔已儲存至：{save_filename}")

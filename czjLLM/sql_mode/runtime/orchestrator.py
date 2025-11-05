@@ -11,10 +11,11 @@ from czjLLM.job_manager.console_ui import tlog, tlog_ok, tlog_warn
 from czjLLM.prompt_pipeline.pipeline_controller import meter_read  # 讀進度計量檔
 from czjLLM.prompt_pipeline.pipeline_controller import CONSUMER_STATE  # [ADD] 觀察 last_dispatch_ts
 from czjLLM.prompt_pipeline.pipeline_controller import recover_running_to_todo  # ★ 新增：啟動時復原 RUNNING → TODO
+from czjLLM.prompt_pipeline.pipeline_controller import start_watchdogs
+from czjLLM.utilities.combine_utils import run_merge_for
 
 from .runtime_ui import prepare_ui, start_bar_refresher
 from ..metrics.metering import init_meter
-from czjLLM.prompt_pipeline.pipeline_controller import meter_read
 try:
     from ..metrics.metering import outstanding_now as _outstanding_now
 except Exception:
@@ -22,6 +23,8 @@ except Exception:
 
 from .mp_logs import start_mp_log_listener, stop_mp_log_listener
 from .workers import start_workers, progress_drain
+from .workers import consumer_restart_cb
+
 from .teardown import shutdown
 from .producer import produce_rows
 
@@ -102,7 +105,31 @@ def _get_outstanding(meter_fn: str) -> int:
         return int(q.get("pending", 0) or 0) + int(q.get("running", 0) or 0)
     except Exception:
         return 0
-    
+
+def _is_reg_drained(reg) -> bool:
+    """寬鬆定義：無 pending、無 running 視為 drained。沒有 stats() 則退回 empty()。"""
+    try:
+        st = reg.stats()  # 期待 {'pending':..,'running':..,'finished':..,'dispatched':..}
+        return st.get('pending', 0) == 0 and st.get('running', 0) == 0
+    except Exception:
+        return bool(getattr(reg, 'empty', lambda: True)())
+
+
+def _dir_file_count(p: str) -> int:
+    try:
+        c = 0
+        for _, _, files in os.walk(p):
+            c += len(files)
+        return c
+    except Exception:
+        return 0
+
+def _can_combine(d: str) -> bool:
+    todo_cnt    = _dir_file_count(os.path.join(d, "TODO"))
+    run_cnt     = _dir_file_count(os.path.join(d, "RUNNING"))
+    success_cnt = _dir_file_count(os.path.join(d, "Success"))
+    return success_cnt > 0 and todo_cnt == 0 and run_cnt == 0
+
 # ===========================
 # 對外主函式：run_pipeline（精簡後）
 # ===========================
@@ -221,7 +248,17 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
             time.sleep(interval)
     # 於 worker 啟動後建立 watchdog
     stop_event, consumer, merger = start_workers(ctx, registry, meter_fn, is_sqlite, done_q, sink=sink)
-
+    producer_stop_event = threading.Event()  # 🔸 producer 專屬
+    start_watchdogs(
+        ctx,
+        adapter=getattr(ctx, "_es_adapter", None),
+        ping_interval_sec=60,
+        stall_idle_threshold_sec=600,
+        stall_interval_sec=60,
+        stacks_path=None,
+        meter_fn=meter_fn,
+        restart_cb=lambda: consumer_restart_cb(ctx),  # 只發訊號，不要重建 thread
+    )
     #try:
     #    th_watchdog = threading.Thread(target=_stall_watchdog, args=(meter_fn, stop_event), daemon=True)
     #    th_watchdog.start()
@@ -238,7 +275,9 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     )
     drain.start()
     tlog(f"[drain] started={drain.is_alive()}")
-
+    merged_jobs = set()   # 已合併
+    seen_job_dirs = set() # 曾出現過（後備用）
+    '''
     # [ADD] 可重啟的包裝：關閉舊 consumer/merger/drain + 換一顆新的 stop_event 再啟動
     def _try_restart_consumer_pool():
         nonlocal stop_event, consumer, merger, drain
@@ -260,6 +299,18 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         # 建立新的 stop_event 與 workers
         tlog_warn("🚀 重建新的 worker 與事件 ...")
         stop_event, consumer, merger = start_workers(ctx, registry, meter_fn, is_sqlite, done_q, sink=sink)
+
+        # ★★★ 這裡啟 watchdog（此時 meter_fn 與 _consumer_restart_ev 都已就緒）
+        start_watchdogs(
+            ctx,
+            adapter=getattr(ctx, "_es_adapter", None),  # ES 才會有，不是 ES 就是 None
+            ping_interval_sec=60,
+            stall_idle_threshold_sec=600,
+            stall_interval_sec=60,
+            stacks_path=None,            # 預設 work_dir/stacks.log
+            meter_fn=meter_fn,           # 讓 watchdog 能讀 queue.pending/running 與 CONSUMER_STATE
+            restart_cb=lambda: consumer_restart_cb(ctx),  # ★ 只觸發 consumer 熱重啟
+        )
     
         # 重啟 drain（沿用同一個 done_q / p_done）
         try:
@@ -273,6 +324,7 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
             tlog_warn(f"[drain] restarted={drain.is_alive()}")
         except Exception as de:
             tlog_warn(f"⚠️ 重啟 drain 失敗：{de}")
+    
     try:
         th_watchdog = threading.Thread(
             target=_stall_watchdog,
@@ -283,7 +335,7 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         th_watchdog.start()
     except Exception:
         pass
-    
+    '''
     # 7) 防雜訊：條形圖自動 refresh
     refresher, bar_refresh_stop = start_bar_refresher(p_sched, p_done, interval=0.15)
 
@@ -298,7 +350,8 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                 registry=registry,
                 meter_fn=meter_fn,
                 low=low,
-                stop_event=stop_event,
+                #stop_event=stop_event,
+                stop_event=producer_stop_event,
                 consumer=consumer,
                 p_sched=p_sched,
                 gui=gui,
@@ -309,7 +362,9 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
 
     prod_th = threading.Thread(target=_producer_main, daemon=True, name="producer-thread")
     prod_th.start()
-
+    # ---- 合併設定：優先 ctx.merge_slices，其次 ctx.cfg['merge_slices']，預設 True ----
+    _cfg = getattr(ctx, "cfg", {}) or {}
+    MERGE_SLICES = bool(getattr(ctx, "merge_slices", _cfg.get("merge_slices", True)))
     # 8.5) 完成條件守門：A+B+C+D 皆為 True 才能進入收尾
     total_rows = len(rows_for_count)
     last_report = 0.0
@@ -321,19 +376,79 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
             return False
 
     while True:
-        A = producer_done_flag.is_set()                         # 產生端已跑完
-        B = (_get_outstanding(meter_fn) <= 0)                  # 無未完成（pending+running）
-        C = _registry_empty()                                  # registry 清空
+        out_now = _get_outstanding(meter_fn)
+        A = producer_done_flag.is_set()          # 產生端已跑完
+        B = (out_now <= 0)                      # 無未完成（pending+running）
+        C = False                               # 先別急著用舊的 registry 清空判斷，下面會放寬
         D = (getattr(p_done, "n", 0) >= int(total_rows or 0))  # 完成條達到總列數（含空字串補點）
 
+        # 以「寬鬆」規則判斷 registry 狀態（drained = 無 pending & 無 running）
+        reg_drained = _is_reg_drained(registry)
+
+        # 讀取（若有）全域統計：finished/dispatched/running
+        try:
+            st = registry.stats()
+            finished   = st.get('finished', 0)
+            dispatched = st.get('dispatched', 0)
+            running    = st.get('running', 0)
+        except Exception:
+            finished = dispatched = 0
+            running  = 0
+
+        # 累積所有看過的 job_dir，避免 registry 被清空後找不到要合併的目錄
+        try:
+            cur_items = registry.list_items() or {}
+            for _d in cur_items.keys():
+                seen_job_dirs.add(_d)
+        except Exception:
+            pass
+
+        # 放寬的「可觸發合併」條件
+        should_merge = A and B and (reg_drained or (finished >= dispatched and running == 0))
+
+        # 觸發合併（可能有多個 job_dir，就逐一處理）
+        if should_merge and MERGE_SLICES:
+            try:
+                if hasattr(registry, 'compact'):
+                    registry.compact()
+            except Exception:
+                pass
+        
+            try:
+                items_map = registry.list_items() or {}
+                job_dirs = list(items_map.keys())
+            except Exception:
+                job_dirs = []
+        
+            # 目前 + 曾看過 的候選
+            candidates = (set(job_dirs) | seen_job_dirs) - merged_jobs
+        
+            for job_dir in sorted(candidates):
+                if not _can_combine(job_dir):
+                    continue
+                try:
+                    merged_ok = run_merge_for(ctx, job_dir)  # 內部會呼叫 combine_api_finished_item（建議 debug=True、不刪資料夾）
+                    if merged_ok is not False:
+                        merged_jobs.add(job_dir)
+                        tlog(f"🧩 已合併切片：{job_dir}")
+                except Exception as e:
+                    tlog_warn(f"合併失敗（{job_dir}）：{e}")
+
+        # 更新 C（若 registry 真的乾淨，就當作清空）
+        C = reg_drained
+
+        # 報表（每 5 秒）
         now = time.time()
         if (now - last_report) > 5.0:
-            tlog(f"[watch] prod_done={A}, out={_get_outstanding(meter_fn)}, "
-                 f"reg_empty={C}, done={getattr(p_done, 'n', 0)}/{total_rows}")
+            tlog(f"[watch] prod_done={A}, out={out_now}, reg_empty={C}, done={getattr(p_done, 'n', 0)}/{total_rows}")
             last_report = now
 
-        if A and B and C and D:
+        # 放寬退出條件：registry 清空 或（finished ≥ dispatched 且 running == 0）皆可作為 C 的後備
+        exit_ok = A and B and D and (C or (finished >= dispatched and running == 0))
+
+        if exit_ok:
             break
+
         time.sleep(0.2)
 
     # 9) 收尾清理（四條件皆真才宣布完成）

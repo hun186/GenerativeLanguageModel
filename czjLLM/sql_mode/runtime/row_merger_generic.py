@@ -6,6 +6,7 @@ from typing import Iterable, Tuple, Any, Optional, List, Dict
 from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from czjLLM.utilities.combine_utils import merge_dict_slices
 from czjLLM.utilities.combine_utils import merge_dict_slices_audited
+from czjLLM.utilities.combine_utils import should_merge_slices
 from utils.utilities_path import OSWALK, DirReplace, MKDIR, getPathFromFN
 from utils.utilities_path import safe_move
 
@@ -38,6 +39,27 @@ def _extract_json_list(result_text: str, allowed_fields: Optional[List[str]]) ->
     except Exception:
         return []
 '''
+
+def _counts(item_dir):
+    todo = os.path.join(item_dir, "TODO")
+    runn = os.path.join(item_dir, "RUNNING")
+    succ = os.path.join(item_dir, "Success")
+    return len(OSWALK(todo)), len(OSWALK(runn)), len(OSWALK(succ))
+
+def _all_slices_done(item_dir, meta=None):
+    t, r, s = _counts(item_dir)
+    # 若能從 meta 帶入期望切片數（例如 produce_rows 時存的 chunks），再加一道保險
+    expected = None
+    try:
+        expected = int(meta.get("chunks") or meta.get("slice_count") or 0) or None
+    except Exception:
+        expected = None
+    # 全部完成的嚴格條件
+    cond = (t == 0) and (r == 0) and (s > 0)
+    if expected is not None:
+        cond = cond and (s >= expected)
+    return cond
+
 
 def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 scan_interval=0.5, done_q=None):
@@ -94,6 +116,8 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             alt = None  # 讓後面還能用
     
         # 3) 最後才嘗試合併：用「預期輸出資料夾」覆寫 per-row finished 目錄後再合併
+        if not _all_slices_done(item_dir, meta):
+            return None
         succ_dir = os.path.join(item_dir, "Success")
         if len(OSWALK(succ_dir)) > 0:
             try:
@@ -125,11 +149,15 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             for item_dir, meta in list(items_map.items()):
                 pk = meta["pk"]; temp_txt = meta["temp_txt"]
 
-                if not row_is_ready(item_dir):
-                    _log_state_once(item_dir)
-                    continue
+                #if not row_is_ready(item_dir):
+                #    _log_state_once(item_dir)
+                #    continue
 
+                #_log_state_once(item_dir)
+                # 只記錄狀態，但「沒全部完成」就跳過
                 _log_state_once(item_dir)
+                if not _all_slices_done(item_dir, meta):
+                    continue
 
                 # ← 這裡不再一律呼叫 combine_api_finished_item，改用解析策略
                 comb_back_fn = _resolve_combined_path(item_dir, meta, ctx, temp_txt)
@@ -143,25 +171,37 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     payload = None
                     try:
                         data = json.loads(result_text)
-                        # ★ 當結果是一串「各切片的 dict」
-                        if isinstance(data, list) and all(isinstance(x, dict) for x in data):
-                            
+                        # 預設：不啟用 → 直接沿用原資料
+                        payload = data
+                    
+                        # 啟用且「是 list[dict]」才做合併
+                        #print(f"for comb_back_fn {comb_back_fn}, ctx is {ctx}")
+                        #print(f"for comb_back_fn {comb_back_fn}, should_merge_slices(ctx) is {should_merge_slices(ctx)}")
+                        if should_merge_slices(ctx) and isinstance(data, list) and all(isinstance(x, dict) for x in data):
+                            #print(f"running merge_dict_slices_audited, for comb_back_fn {comb_back_fn}")
                             payload, report = merge_dict_slices_audited(
                                 data,
                                 conflict_policy=getattr(ctx, "merge_conflict_policy", "prefer_left"),
                                 dedup_lists=bool(getattr(ctx, "merge_dedup_lists", False)),
                                 audit=True,
-                                #logger=tlog_warn if getattr(ctx, "merge_log_changes", True) else None,
-                                logger=tlog,   # 或 logger=print / logger=tlog / logger=tlog_warn
+                                logger=(tlog if getattr(ctx, "merge_log_changes", True) else None),
                                 max_log=int(getattr(ctx, "merge_max_log", 10)),
                             )
-                            if len(str(payload)) - len(str(data)) >10:
-                                print(f"found json list file, run _merge_slice_dicts, original data {data}")
-                                print(f"returned payload: {payload}")
-                            # 如需把合併報告存到 ES 旁欄位，可在這裡寫入 ctx/meter，或放進 sink.write_flatten 的子表                           
-                        else:
-                            print("No found json list file, direct written")
-                            payload = data
+                    
+                            # （可選）若要偵測「合併確實帶來改變」才落檔紀錄：
+                            if getattr(ctx, "merge_log_to_file", False) and report.get("changed"):
+                                try:
+                                    log_fn = getattr(ctx, "merge_log_file", "merge_dict_slices_audited.log")
+                                    with open(log_fn, "at", encoding="utf-8") as fp:
+                                        fp.write(f"[{datetime.now().isoformat(timespec='seconds')}] pk={pk} counts={report.get('counts')}\n")
+                                        for s in report.get("samples", []):
+                                            fp.write(f"  {s['action']} @{s['path']} → {s['chosen']} | L={s['left_short']} | R={s['right_short']}\n")
+                                except Exception as _:
+                                    pass
+                    
+                    except Exception:
+                        # 非 JSON：用原字串
+                        payload = result_text
                     except Exception:
                         payload = result_text  # 不是 JSON 就原樣寫
                         

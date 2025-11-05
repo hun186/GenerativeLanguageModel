@@ -1,0 +1,15 @@
+channel: unspecified_channel
+input_col: rawInfo.content
+llm_source_backup_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/unspecified_channel
+llm_source_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/unspecified_channel
+merge_conflict_policy: prefer_left
+merge_dedup_lists: true
+merge_log_changes: true
+merge_log_file: merge_dict_slices_audited.log
+merge_max_log: 10
+mode: es
+model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+output_col: multidim_event_json
+primary_key: uuid
+record_update_time: true
+task: QA

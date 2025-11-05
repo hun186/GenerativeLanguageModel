@@ -92,6 +92,7 @@ if __name__ == '__main__':
         mode=mode,
         channel=get_param("channel"),
         model_spec_name=get_param("model_spec"),
+        merge_slices=get_param("merge_slices"),
         task_name=get_param("task")
     )
     #print("ctx in main",ctx)

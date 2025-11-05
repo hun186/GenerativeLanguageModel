@@ -24,7 +24,6 @@ from czjLLM.prompt_pipeline.result_handler import PromptResultHandler
 from czjLLM.prompt_pipeline.prompt_generator import generate_prompt
 from czjLLM.prompt_pipeline.llm_caller import CallLLMAPI
 from czjLLM.prompt_pipeline.debug_snapshot import build_debug_snapshot
-
 from czjLLM.utilities.atomic_io import atomic_write_json, robust_json_read
 from czjLLM.job_manager.job_config import LLMJobConfig
 from czjLLM.job_manager.end_point_manager import get_available_end_points
@@ -522,7 +521,9 @@ def recover_running_to_todo(item_dirs):
                     # 偶發網路磁碟忙碌，可視需要加上短暫重試
                     pass
                 
-def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event: threading.Event,
+def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
+                        stop_event: threading.Event,
+                        restart_event: threading.Event,   # ★ 新增
                         is_sqlite=False, per_round_limit=128):
     """
     連續從所有 item_dir 的 TODO 中抓取 prompt 檔，以小批次呼叫 LLM。
@@ -540,9 +541,42 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
         print("meter_fn in llm_stream_consumer",meter_fn)
         #did_recover = False  # ← 新增：只復原一次
         while True:
+            # 🔸 A. 若收到了「重啟」信號 → 做一次 RUNNING→TODO 的復原，然後清掉事件
+            if restart_event is not None and restart_event.is_set():
+                try:
+                    items_map = registry.list_items()
+                    item_dirs = list(items_map.keys())
+                    recover_running_to_todo(item_dirs)   # 你的舊工具函式，或實作將 RUNNING 檔移回 TODO
+                    meter_update(meter_fn, lambda d: d.setdefault("consumer", {}).update({"last_dispatch_ts": time.time()}))
+                    tlog_warn("[consumer] restart_event 收到 → 已復原 RUNNING→TODO，繼續派工")
+                except Exception as ex:
+                    tlog_warn(f"[consumer] restart 恢復失敗：{ex}")
+                finally:
+                    restart_event.clear()
+                    
             round_start = time.time()
             dispatched_n = 0
             finished_n   = 0
+            
+            '''
+            # ★ 熱重啟：僅重置 consumer 狀態，不動 stop_event
+            if restart_event.is_set():
+                tlog_warn("[consumer] 收到重啟訊號 → 重置狀態（必要時還原 RUNNING → TODO）")
+                restart_event.clear()
+                try:
+                    # 若你有這個函式，這裡做一次還原；沒有就略過
+                    if not did_recover:
+                        item_dirs_for_recover = list(registry.list_items().keys())
+                        try:
+                            recover_running_to_todo(item_dirs_for_recover)
+                        except Exception:
+                            pass
+                        did_recover = True
+                except Exception as _:
+                    pass
+                time.sleep(0.5)  # 小讓步，避免緊黏檔案系統
+                continue
+            '''
 
             items_map = registry.list_items()
             item_dirs = list(items_map.keys())
@@ -551,7 +585,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
             #if not did_recover:
             #    recover_running_to_todo(item_dirs)
             #    did_recover = True
-                
+            # 🔸 B. 這裡用「可鎖定切片」的 pick（你已經在用）
             #batch = pick_next_prompts(item_dirs, per_round_limit=per_round_limit)
             batch = pick_and_claim_next_prompts(item_dirs, per_round_limit=per_round_limit)
 
@@ -576,6 +610,12 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
             except Exception as ex:
                 tlog_warn(f"⚠️ meter_on_dispatch 失敗：{ex}")
 
+            # ★★ 派工心跳：讓 watchdog 能知道「最近有派工」
+            try:
+                CONSUMER_STATE["last_dispatch_ts"] = time.monotonic()
+            except Exception:
+                pass
+                
             # ---- 2) 建立 Jobs 並執行（multicore）
             DTBJobs = []
             #print("in pipeline_controller, ctx.model_spec",ctx.model_spec)
@@ -675,6 +715,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
             meter_update(meter_fn, lambda d: d.setdefault("consumer", {}).update({"alive": False}))
         except Exception:
             pass
+        '''
         try:
             cursor.close()
         except Exception:
@@ -683,6 +724,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
             conn.close()
         except Exception:
             pass
+        '''
             
 def llm_stream_consumer_OLD(ctx, registry: ItemsRegistry, meter_fn: str, stop_event: threading.Event,
                         is_sqlite=False, per_round_limit=128):
@@ -947,13 +989,15 @@ def start_watchdogs(ctx, adapter=None, *,
             kwargs=dict(interval_sec=ping_interval_sec),
             daemon=True
         ).start()
-        
+
+
+
 # [ADD] －－－－ Row Merger Watchdog：只要 TODO 清空就立刻合併寫回 －－－－
 def row_is_ready(item_dir: str) -> bool:
     todo_dir = os.path.join(item_dir, "TODO")
     # TODO 目錄不存在或為空，都視為可合併
     return (not os.path.isdir(todo_dir)) or (len(OSWALK(todo_dir)) == 0)
-
+'''
 def row_merger_watchdog(ctx, registry: ItemsRegistry, meter_fn: str, stop_event: threading.Event,
                         is_sqlite=False, scan_interval=0.2, done_q=None):
     """
@@ -1095,7 +1139,7 @@ def row_merger_watchdog(ctx, registry: ItemsRegistry, meter_fn: str, stop_event:
     finally:
         cursor.close()
         conn.close()
-
+'''
 
 
 
@@ -1146,16 +1190,71 @@ def process_prompt_and_merge(ctx, file_path: str, ops: MergeOps | None = None) -
     ops.call_llm(prompt_items, ctx, allow_to_retry=False)
 
     # 3) 合併已完成者；若尚有 TODO，僅列印提示
+    produced: list[tuple[str, str]] = []
+    print("ctx.llm_source_dir",ctx.llm_source_dir)
+    print("ctx before comb_back_fn",ctx.llm_source_finished_dir)
     comb_back_fn = ""
+    #'''
     for item in prompt_items:
         todo_dir = ops.join(item, "TODO")
         if len(ops.list_paths(todo_dir)) == 0:
             comb_back_fn = ops.combine(item, ctx)
         else:
             print(f"{item} 尚有 {len(ops.list_paths(todo_dir))} 個段落未處理")
+    
     return comb_back_fn
+    #'''
+    '''
+    for item in prompt_items:
+        todo_dir = ops.join(item, "TODO")
+        if len(ops.list_paths(todo_dir)) == 0:
+            out = ops.combine(item, ctx)  # 可能回傳純檔名
+            if out:
+                produced.append((item, out))
+        else:
+            print(f"{item} 尚有 {len(ops.list_paths(todo_dir))} 個段落未處理")
 
+    if not produced:
+        return ""
 
+    # 4) 取最後一個合併檔；把相對路徑補成絕對
+    last_item, comb_back_fn = produced[-1]
+
+    # 若只回傳檔名或相對路徑，視為位於 item 目錄底下
+    comb_abs = Path(comb_back_fn)
+    if not comb_abs.is_absolute():
+        comb_abs = Path(last_item) / comb_back_fn
+    comb_abs = comb_abs.resolve()
+
+    # 5) 決定 _Finished 鏡射目的地
+    finished_root = getattr(ctx, "llm_source_finished_dir", None)
+    if not finished_root:
+        # 保底：用 llm_source_dir 的尾段 + "_Finished"
+        base = Path(getattr(ctx, "llm_source_dir", "") or ".")
+        finished_root = str(base.with_name(base.name + "_Finished"))
+
+    # 來源 txt 檔所在資料夾 → 鏡射到 Finished 根
+    src_dir = os.path.dirname(os.path.abspath(file_path))
+    dest_dir = DirReplace(src_dir, ctx.llm_source_dir, finished_root)
+    MKDIR(dest_dir)
+
+    dest_path = os.path.join(dest_dir, os.path.basename(str(comb_abs)))
+
+    # 6) 如果合併檔確實存在且目的地不同，就搬過去
+    try:
+        if os.path.isfile(str(comb_abs)):
+            src_norm = os.path.normcase(os.path.abspath(str(comb_abs)))
+            dst_norm = os.path.normcase(os.path.abspath(dest_path))
+            if src_norm != dst_norm:
+                safe_move(str(comb_abs), dest_path)
+        # 若檔案已在目的地或某些實作直接寫在 Finished，直接回傳目的路徑
+    except Exception as e:
+        # 不讓流程中斷，至少回傳原位置
+        print(f"[combine/move] 無法搬移合併檔：{e}")
+        return str(comb_abs)
+
+    return os.path.abspath(dest_path)
+    '''
 
 
 def process_prompt_and_merge_OLD(ctx, file_path):
@@ -1391,7 +1490,7 @@ class PromptAPIPipeline:
             if not "response" in locals():
                 response = None
                 cost = 0
-            print(f"When run PromptAPIPipeline, the following error occurs:\n {ex}")
+            print(f"When run PromptAPIPipeline, the following error occurs for promptFile {self.promptFile}:\n {ex}")
             print(f"self.model_spec:{self.model_spec}")
             #countdown_pause(30)
             
@@ -1636,6 +1735,18 @@ def producer_backpressure_wait(ctx: LLMJobConfig,
                 tlog_warn("⚠️ 背壓等待中偵測到消費者緒已終止，略過等待並繼續補貨。")
             except Exception:
                 print("⚠️ 背壓等待中偵測到消費者緒已終止，略過等待並繼續補貨。")
+            # 只送一次（可選）
+            if not getattr(ctx, "_restart_sent", False):
+                setattr(ctx, "_restart_sent", True)
+                from czjLLM.sql_mode.runtime.workers import consumer_restart_cb
+                try:
+                    consumer_restart_cb(ctx)
+                except NameError:
+                    try: tlog_warn("[restart_cb] 未找到 consumer_restart_cb，請確認已匯入。")
+                    except Exception: print("[restart_cb] 未找到 consumer_restart_cb，請確認已匯入。")
+                except Exception as e:
+                    try: tlog_warn(f"[restart_cb] 送出重啟信號時發生例外：{e}")
+                    except Exception: print(f"[restart_cb] 送出重啟信號時發生例外：{e}")
             return
 
         # 讀取 outstanding（容錯）

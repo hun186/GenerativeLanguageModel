@@ -4,6 +4,7 @@ from typing import Iterable, Tuple, Any, Optional
 
 from czjLLM.job_manager.console_ui import tlog_warn,tlog
 from czjLLM.prompt_pipeline.pipeline_controller import producer_backpressure_wait
+from czjLLM.prompt_pipeline.pipeline_controller import meter_update
 from .workers import outstanding_now
 from .scheduler import schedule_one_row
 
@@ -39,6 +40,14 @@ def produce_rows(
 
         if stop_event.is_set():
             tlog_warn("produce_rows: stop_event set，提前結束排程。")
+            # ★新增：提前結束也要回報目前游標；不要把 prod_done 設 True
+            try:
+                meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
+                    "cursor": seen, "enq": scheduled, "producer_alive": False,
+                    "last_progress_ts": time.time(), "prod_done": False
+                }))
+            except Exception:
+                pass
             break
 
         if not text:
@@ -53,6 +62,14 @@ def produce_rows(
                 if gui:
                     try: gui.inc_done(1)
                     except Exception: pass
+            # ★新增：空列也更新游標，避免 watchdog 判定「長時間無進度」
+            try:
+                meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
+                    "cursor": seen, "enq": scheduled, "producer_alive": True,
+                    "last_progress_ts": time.time()
+                }))
+            except Exception:
+                pass
             continue
 
         producer_backpressure_wait(
@@ -65,11 +82,20 @@ def produce_rows(
 
         try:
             schedule_one_row(ctx, registry, meter_fn, idx, pk, text)
+            scheduled += 1
+            # ★新增：每送一列即回報游標/送件數
+            try:
+                meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
+                    "cursor": seen, "enq": scheduled, "producer_alive": True,
+                    "last_progress_ts": time.time()
+                }))
+            except Exception:
+                pass
         except Exception as e:
             tlog_warn(f"[producer] schedule_one_row 失敗 pk={pk}: {e!r}")
             continue
 
-        scheduled += 1
+        
 
         try: p_sched.update(1)
         except Exception: pass
@@ -102,9 +128,26 @@ def produce_rows(
     tlog(f"[producer] 已送出 {scheduled} 列，outstanding={outstanding_now(meter_fn)}")
 
     # ★ 事後健檢：未被 stop_event 中斷、卻未遍歷完 rows_for_count → 明確告警
-    if (total_rows is not None) and (seen < total_rows) and (not stop_event.is_set()):
-        tlog_warn(f"⚠️ producer 迴圈提前結束：僅處理 {seen}/{total_rows} 列；已成功排程 {scheduled} 列。"
-                  " 請檢查是否有早退條件（return/break/row_limit/backpressure）、或外部執行緒誤設 stop_event。")
+    #if (total_rows is not None) and (seen < total_rows) and (not stop_event.is_set()):
+    #    tlog_warn(f"⚠️ producer 迴圈提前結束：僅處理 {seen}/{total_rows} 列；已成功排程 {scheduled} 列。"
+    #              " 請檢查是否有早退條件（return/break/row_limit/backpressure）、或外部執行緒誤設 stop_event。")
+    # ★新增：只有「真的跑完整個 rows_for_count」且未被 stop_event 打斷才標 prod_done=True
+    if (total_rows is None) or (seen >= total_rows and not stop_event.is_set()):
+        try:
+            meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
+                "cursor": seen, "enq": scheduled, "producer_alive": False,
+                "last_progress_ts": time.time(), "prod_done": True
+            }))
+        except Exception:
+            pass
+    else:
+        try:
+            meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
+                "cursor": seen, "enq": scheduled, "producer_alive": False,
+                "last_progress_ts": time.time(), "prod_done": False
+            }))
+        except Exception:
+            pass
 
     return scheduled
 

@@ -236,6 +236,11 @@ def handle_data_mode(ctx, get_param, args):
     env = backend.resolve(ctx, get_param, args)
     cm = env.get(backend.connection_ctx_key)
     enter_cm = (cm is not None)
+    # ★ 將 ES adapter 放進 ctx（讓 run_pipeline 取用）
+    if backend.name == "es":
+        ctx._es_adapter = env.get("adapter")
+    else:
+        ctx._es_adapter = None
 
     def _run():
         cols = backend.choose_columns(ctx, env, get_param, args)
@@ -246,7 +251,7 @@ def handle_data_mode(ctx, get_param, args):
         if not args.config:
             print_cli_usage_hint(ctx)
         ctx.error_log_path = backend.error_log_name(ctx, env)
-
+        '''
         # ✅ 啟動 watchdog（ES 傳 adapter；其他 backend 傳 None）
         if backend.name == "es":
             start_watchdogs(
@@ -259,7 +264,7 @@ def handle_data_mode(ctx, get_param, args):
             )
         else:
             start_watchdogs(ctx, None)  # 只有進度停滯偵測
-            
+        '''  
         pending_iter = backend.build_pending_iter(ctx, env)
         sink = backend.make_sink(ctx, env)
         #print("sink in handle_data_mode",sink)

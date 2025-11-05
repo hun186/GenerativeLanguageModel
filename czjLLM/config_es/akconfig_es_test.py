@@ -38,6 +38,10 @@ pending_filters = [
     # },
 ]
 
+#pending_filters = [
+#    {"ids": {"values": ["894349c7b5e001a2b153fdd35c64ed97e7df97df"]}}
+#]
+
 #es_request_timeout = 60          # 每次 ES 請求最大等待秒數（scan/mget/get）
 #es_scroll_keepalive = "2m"       # scroll 的 keepalive
 #es_max_retries = 3               # timeout/瞬斷時重試次數

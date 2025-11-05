@@ -1,8 +1,23 @@
+allowed_output_fields: []
 channel: test long
+exclusiveTextClass: ''
+flatten_json_output: false
+input_col: ''
+keyConsiderations: ''
 llm_source_backup_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/test
   long
 llm_source_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/test
   long
+merge_conflict_policy: prefer_left
+merge_dedup_lists: true
+merge_log_changes: true
+merge_log_file: merge_dict_slices_audited.log
+merge_log_to_file: false
+merge_max_log: 10
+merge_slices: true
 mode: txt
 model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
-task: MDT Term Extraction to json format
+output_col: ''
+sql_config_file: ''
+task: InfoExtraction-MultiDim-SQLFriendly-to json format
+textClass: ''

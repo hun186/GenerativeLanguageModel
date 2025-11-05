@@ -25,6 +25,7 @@ from GenerativeLanguageModel.czjLLM.modelConfig import modelSetting
 #DEFAULT_MODEL = 'gpt-oss:latest-ctx-32k-premises-MXFP4'
 DEFAULT_MODEL = 'gpt-oss:120b-ctx-32k-premises-MXFP4'
 
+
 def load_config_from_file(PGMSubDir="", config_path=""):
     paths_to_try = [
         config_path,
@@ -87,6 +88,7 @@ class LLMJobConfig:
         #self.model_spec_name = "deepseek-v3-num-16k-max_token-8k-cloud"
         self.model_spec_name = "gpt-oss:latest-ctx-32k-premises-MXFP4"
         self.model_spec = {}
+        self.merge_slices = False
         self.prompt_dir = "Prompt"
         self.llm_source_dir = ""
         self.llm_source_backup_dir = ""
@@ -179,7 +181,7 @@ class CtxOverlay:
         else:
             self._ov[key] = value
             
-def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None, task_name=None):
+def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None, merge_slices=False,task_name=None):
     ctx = LLMJobConfig()
 
     ctx.PGMSubDir=PGMSubDir
@@ -190,6 +192,13 @@ def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None,
     #print("modelSetting",modelSetting)
     ctx.model_spec_name = model_spec_name or set_model_spec()
     ctx.model_spec = modelSetting.get(ctx.model_spec_name)
+    ensure_merge_defaults(ctx)
+
+    if merge_slices is None:
+        # 僅呼叫讓它修改 ctx，別把回傳值塞進 merge_slices
+        set_merge_spec(ctx)
+    else:
+        ctx.merge_slices = bool(merge_slices)
     if ctx.model_spec is None:
         raise ValueError(f"❌ 找不到模型設定: {ctx.model_spec_name}")
 
@@ -283,6 +292,91 @@ def set_model_spec():
     ).proc()
     return model_spec
 
+def ensure_merge_defaults(ctx):
+    """
+    設定（僅當未設置時）預設值：預設不合併。
+    """
+    ctx.merge_slices = bool(getattr(ctx, "merge_slices", False))
+
+    ctx.merge_conflict_policy = str(getattr(ctx, "merge_conflict_policy", "prefer_left"))
+    ctx.merge_dedup_lists = bool(getattr(ctx, "merge_dedup_lists", True))
+    ctx.merge_log_changes = bool(getattr(ctx, "merge_log_changes", True))
+    ctx.merge_max_log = int(getattr(ctx, "merge_max_log", 10))
+    ctx.merge_log_to_file = bool(getattr(ctx, "merge_log_to_file", False))
+    ctx.merge_log_file = str(getattr(ctx, "merge_log_file", "merge_dict_slices_audited.log"))
+    return ctx
+
+def set_merge_spec(ctx):
+    """
+    互動式詢問：是否啟用切片合併 ->（若啟用）選擇衝突策略與去重、是否記錄變更。
+    預設不合併。
+    """
+    ensure_merge_defaults(ctx)
+
+    print("=" * 50)
+    yn = OptionSelector(
+        options={
+            "off": "不合併（預設）—保留每個切片各自結果",
+            "on":  "合併為單一結構（可選策略與列表去重）",
+        },
+        question=f"{Fore.LIGHTYELLOW_EX}是否啟用『切片合併』？{Fore.RESET}",
+        default=("on" if ctx.merge_slices else "off"),
+    ).proc()
+
+    ctx.merge_slices = (yn == "on")
+
+    if not ctx.merge_slices:
+        print("切片合併：關閉（將直接寫回 list[dict] 結果）")
+        return ctx
+    #ensure_merge_defaults(ctx)
+    # 衝突策略
+    policy = OptionSelector(
+        options={
+            "prefer_left":  "遇到同鍵衝突：保留左側（較早切片）",
+            "prefer_right": "遇到同鍵衝突：保留右側（較晚切片）",
+        },
+        question=f"{Fore.LIGHTYELLOW_EX}選擇合併『衝突策略』：{Fore.RESET}",
+        default=ctx.merge_conflict_policy,
+    ).proc()
+    ctx.merge_conflict_policy = policy
+
+    # 列表去重
+    dedup = OptionSelector(
+        options={
+            "true":  "列表合併時去重（建議）",
+            "false": "列表合併時不去重",
+        },
+        question=f"{Fore.LIGHTYELLOW_EX}列表去重設定：{Fore.RESET}",
+        default=("true" if ctx.merge_dedup_lists else "false"),
+    ).proc()
+    ctx.merge_dedup_lists = (dedup == "true")
+
+    # 是否顯示變更摘要（stdout）
+    logchg = OptionSelector(
+        options={
+            "true":  "顯示變更摘要（列出少量樣本）",
+            "false": "不顯示變更摘要",
+        },
+        question=f"{Fore.LIGHTYELLOW_EX}是否顯示合併『變更摘要』？{Fore.RESET}",
+        default=("true" if ctx.merge_log_changes else "false"),
+    ).proc()
+    ctx.merge_log_changes = (logchg == "true")
+
+    # 是否寫檔（可選）
+    logfile = OptionSelector(
+        options={
+            "off": "不寫檔（僅 stdout）",
+            "on":  f"寫入檔案：{ctx.merge_log_file}",
+        },
+        question=f"{Fore.LIGHTYELLOW_EX}是否將變更摘要寫入檔案？{Fore.RESET}",
+        default=("on" if ctx.merge_log_to_file else "off"),
+    ).proc()
+    ctx.merge_log_to_file = (logfile == "on")
+
+    print(f"切片合併：啟用，策略={ctx.merge_conflict_policy}，列表去重={ctx.merge_dedup_lists}，"
+         f"變更摘要={'on' if ctx.merge_log_changes else 'off'}，落檔={'on' if ctx.merge_log_to_file else 'off'}")
+    return ctx.merge_slices
+    
 def set_channel(LLMSourceDirROOT):
     if not os.path.isdir(LLMSourceDirROOT):
         MKDIR(LLMSourceDirROOT)
