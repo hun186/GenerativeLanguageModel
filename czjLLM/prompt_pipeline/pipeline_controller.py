@@ -906,6 +906,10 @@ def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60, stack
     except Exception:
         pass
 
+
+    # ← 你可在這裡調整上限大小
+    MAX_STACKS_BYTES = 20 * 1024 * 1024  # 20MB
+    
     while True:
         try:
             last = getattr(ctx, "last_progress_ts", None)
@@ -913,6 +917,19 @@ def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60, stack
                 idle = time.time() - last
                 if idle > idle_threshold_sec:
                     print("[watchdog] 進度 10 分鐘無前進，疑似停滯，請檢查 stacks.log 與 ES", flush=True)
+                                      
+                    # === NEW: 檔案大小檢查；超過上限就用 w 重新開檔（截斷重建） ===
+                    try:
+                        if os.path.exists(stacks_path) and os.path.getsize(stacks_path) > MAX_STACKS_BYTES:
+                            try:
+                                stacks_file.close()
+                            except Exception:
+                                pass
+                            stacks_file = open(stacks_path, "w", buffering=1, encoding="utf-8")
+                            print(f"[watchdog] stacks.log 超過上限，已截斷重建（上限 {MAX_STACKS_BYTES} bytes）", flush=True)
+                    except Exception as e:
+                        print(f"[watchdog] 檔案大小檢查失敗：{e}", flush=True)
+                        
                     try:
                         faulthandler.dump_traceback(file=stacks_file)
                     except Exception as e:

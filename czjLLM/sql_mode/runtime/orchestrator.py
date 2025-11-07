@@ -124,6 +124,42 @@ def _dir_file_count(p: str) -> int:
     except Exception:
         return 0
 
+# ====== 新增：讀計量檔與掃描 FS 的輔助 ======
+
+def _read_meter_counts(meter_fn: str) -> dict:
+    """從計量檔讀 queue 計數，安全容錯。"""
+    try:
+        m = meter_read(meter_fn)
+        q = m.get("queue", {}) or {}
+        return {
+            "pending":   int(q.get("pending",   0) or 0),
+            "running":   int(q.get("running",   0) or 0),
+            "completed": int(q.get("completed", 0) or 0),
+        }
+    except Exception:
+        return {"pending": 0, "running": 0, "completed": 0}
+
+
+def _fs_totals(job_dirs: Iterable[str]) -> dict:
+    """彙總所有 job_dir 的 TODO/RUNNING/Success 檔案數。"""
+    totals = {"TODO": 0, "RUNNING": 0, "Success": 0}
+    for d in job_dirs:
+        totals["TODO"]    += _dir_file_count(os.path.join(d, "TODO"))
+        totals["RUNNING"] += _dir_file_count(os.path.join(d, "RUNNING"))
+        totals["Success"] += _dir_file_count(os.path.join(d, "Success"))
+    return totals
+
+
+def _fs_running_top(job_dirs: Iterable[str], top_n: int = 5) -> list[tuple[str, int]]:
+    """回傳 RUNNING 檔案數最多的前 N 個 item 目錄（[(dir, running_count), ...]）。"""
+    ranks = []
+    for d in job_dirs:
+        cnt = _dir_file_count(os.path.join(d, "RUNNING"))
+        if cnt > 0:
+            ranks.append((d, cnt))
+    ranks.sort(key=lambda x: x[1], reverse=True)
+    return ranks[:top_n]
+    
 def _can_combine(d: str) -> bool:
     todo_cnt    = _dir_file_count(os.path.join(d, "TODO"))
     run_cnt     = _dir_file_count(os.path.join(d, "RUNNING"))
@@ -161,6 +197,11 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         tlog("♻️ 已復原上次殘留的 RUNNING 檔案至 TODO。")
     except Exception as ex:
         tlog_warn(f"recover_running_to_todo 失敗：{ex}")
+    try:
+        fs0 = _fs_totals(item_dirs)
+        tlog(f"📦 初始檔案狀態 fs(TODO/RUN/Succ)={fs0.get('TODO',0)}/{fs0.get('RUNNING',0)}/{fs0.get('Success',0)}")
+    except Exception:
+        pass
         
     # 4) 佇列與旗標
     done_q = queue.Queue()
@@ -178,6 +219,7 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         # 不中斷主流程
         pass
 
+    '''
     def _stall_watchdog(
         meter_path: str,
         stop_ev: threading.Event,
@@ -246,6 +288,7 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
             except Exception:
                 pass
             time.sleep(interval)
+    '''
     # 於 worker 啟動後建立 watchdog
     stop_event, consumer, merger = start_workers(ctx, registry, meter_fn, is_sqlite, done_q, sink=sink)
     producer_stop_event = threading.Event()  # 🔸 producer 專屬
@@ -259,11 +302,6 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         meter_fn=meter_fn,
         restart_cb=lambda: consumer_restart_cb(ctx),  # 只發訊號，不要重建 thread
     )
-    #try:
-    #    th_watchdog = threading.Thread(target=_stall_watchdog, args=(meter_fn, stop_event), daemon=True)
-    #    th_watchdog.start()
-    #except Exception:
-    #    pass
 
     # 6) 進度 drain（以 merger_done 控制退出）
     gui_handle = getattr(ctx, "gui_handle", None)
@@ -277,65 +315,7 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     tlog(f"[drain] started={drain.is_alive()}")
     merged_jobs = set()   # 已合併
     seen_job_dirs = set() # 曾出現過（後備用）
-    '''
-    # [ADD] 可重啟的包裝：關閉舊 consumer/merger/drain + 換一顆新的 stop_event 再啟動
-    def _try_restart_consumer_pool():
-        nonlocal stop_event, consumer, merger, drain
-    
-        tlog_warn("🛑 正在關閉舊 consumer/merger/drain ...")
-        try:
-            stop_event.set()
-        except Exception:
-            pass
-    
-        # 給一點時間讓舊執行緒收尾
-        for th, name in [(consumer, "consumer"), (merger, "merger"), (drain, "drain")]:
-            try:
-                if th and th.is_alive():
-                    th.join(timeout=5.0)
-            except Exception:
-                pass
-    
-        # 建立新的 stop_event 與 workers
-        tlog_warn("🚀 重建新的 worker 與事件 ...")
-        stop_event, consumer, merger = start_workers(ctx, registry, meter_fn, is_sqlite, done_q, sink=sink)
 
-        # ★★★ 這裡啟 watchdog（此時 meter_fn 與 _consumer_restart_ev 都已就緒）
-        start_watchdogs(
-            ctx,
-            adapter=getattr(ctx, "_es_adapter", None),  # ES 才會有，不是 ES 就是 None
-            ping_interval_sec=60,
-            stall_idle_threshold_sec=600,
-            stall_interval_sec=60,
-            stacks_path=None,            # 預設 work_dir/stacks.log
-            meter_fn=meter_fn,           # 讓 watchdog 能讀 queue.pending/running 與 CONSUMER_STATE
-            restart_cb=lambda: consumer_restart_cb(ctx),  # ★ 只觸發 consumer 熱重啟
-        )
-    
-        # 重啟 drain（沿用同一個 done_q / p_done）
-        try:
-            drain = threading.Thread(
-                target=progress_drain,
-                args=(stop_event, done_q, p_done, getattr(ctx, "gui_handle", None)),
-                kwargs={"close_event": merger_done},
-                daemon=True
-            )
-            drain.start()
-            tlog_warn(f"[drain] restarted={drain.is_alive()}")
-        except Exception as de:
-            tlog_warn(f"⚠️ 重啟 drain 失敗：{de}")
-    
-    try:
-        th_watchdog = threading.Thread(
-            target=_stall_watchdog,
-            args=(meter_fn, stop_event),
-            kwargs=dict(interval=60.0, stall_secs=600.0, restart_cb=_try_restart_consumer_pool),
-            daemon=True
-        )
-        th_watchdog.start()
-    except Exception:
-        pass
-    '''
     # 7) 防雜訊：條形圖自動 refresh
     refresher, bar_refresh_stop = start_bar_refresher(p_sched, p_done, interval=0.15)
 
@@ -436,13 +416,55 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
 
         # 更新 C（若 registry 真的乾淨，就當作清空）
         C = reg_drained
-
+        '''
         # 報表（每 5 秒）
         now = time.time()
         if (now - last_report) > 5.0:
             tlog(f"[watch] prod_done={A}, out={out_now}, reg_empty={C}, done={getattr(p_done, 'n', 0)}/{total_rows}")
             last_report = now
-
+        '''
+        # 報表（每 5 秒）
+        now = time.time()
+        if (now - last_report) > 5.0:
+            # 取得目前可觀察的 job_dir：當前 registry + 曾看過
+            try:
+                items_map = registry.list_items() or {}
+                job_dirs_now = set(items_map.keys()) | seen_job_dirs
+            except Exception:
+                job_dirs_now = set(seen_job_dirs)
+        
+            # 計量檔（queue）與檔案系統（目錄檔數）雙軌度量
+            q_counts = _read_meter_counts(meter_fn)                 # {'pending','running','completed'}
+            fs_counts = _fs_totals(job_dirs_now)                    # {'TODO','RUNNING','Success'}
+        
+            # 主行：把重點塞在一行，直覺可視
+            tlog(
+                "[watch] prod_done=%s | "
+                "queue(pend/run/comp)=%d/%d/%d | "
+                "fs(TODO/RUN/Succ)=%d/%d/%d | "
+                "reg_empty=%s | "
+                "done=%d/%d"
+                % (
+                    A,
+                    q_counts["pending"], q_counts["running"], q_counts["completed"],
+                    fs_counts["TODO"], fs_counts["RUNNING"], fs_counts["Success"],
+                    C,
+                    getattr(p_done, "n", 0), int(total_rows or 0),
+                )
+            )
+        
+            # 加值：每 30 秒列出 RUNNING 檔最多的前幾個目錄，幫助快速定位熱點
+            if int(now) % 30 < 5:
+                hot = _fs_running_top(job_dirs_now, top_n=5)
+                if hot:
+                    # 精簡輸出：每個目錄取尾段名 + 數量
+                    brief = []
+                    for d, cnt in hot:
+                        name = os.path.basename(os.path.normpath(d))
+                        brief.append(f"{name}:{cnt}")
+                    tlog("  ↳ RUNNING top: " + ", ".join(brief))
+        
+            last_report = now
         # 放寬退出條件：registry 清空 或（finished ≥ dispatched 且 running == 0）皆可作為 C 的後備
         exit_ok = A and B and D and (C or (finished >= dispatched and running == 0))
 

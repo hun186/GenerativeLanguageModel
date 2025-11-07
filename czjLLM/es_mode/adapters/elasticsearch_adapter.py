@@ -19,6 +19,18 @@ def _dot_get(d, path):
         if cur is None:
             return None
     return cur
+
+def _extract_by_path(src: dict, path: str):
+    """a.b.c 取值，缺任一層回 None。"""
+    try:
+        cur = src
+        for k in path.split("."):
+            if cur is None:
+                return None
+            cur = cur.get(k)
+        return cur
+    except Exception:
+        return None
     
 class ElasticsearchAdapter:
     """
@@ -59,7 +71,19 @@ class ElasticsearchAdapter:
     def __init__(self, cfg: Dict[str, Any]):
         self.cfg = cfg
         self.es: Optional[Elasticsearch] = None
+    #'''
+    # ✅ 支援 with 語法
+    def __enter__(self):
+        if self.es is None:
+            self.connect()
+        return self
 
+    def __exit__(self, exc_type, exc, tb):
+        try:
+            self.close()
+        finally:
+            return False  # 不吞掉例外
+    #'''  
     # --- 連線生命週期 ------------------------------------------------------
     def connect(self):
         if Elasticsearch is None:
@@ -189,6 +213,7 @@ class ElasticsearchAdapter:
             self.es.indices.put_mapping(index=index, body={"properties": to_add})
 
     # --- ES 版本的 pending 擷取 --------------------------------------------
+    '''
     def select_pending_rows(
         self,
         *,
@@ -336,7 +361,220 @@ class ElasticsearchAdapter:
     
         for item in flush_batch():
             yield item
-            
+    '''
+    
+    def select_pending_rows(
+        self,
+        *,
+        src_table: str,
+        tgt_table: str,
+        pk: str,
+        input_col: str,
+        output_col: str,
+        record_update_time: bool,
+        fetch_size: int = 500,
+    ):
+        """以 helpers.scan 串流完整待處理集合（有 input、無有效 output）。"""
+        assert self.es is not None
+    
+        if src_table == tgt_table:
+            # 單一 index：同文件包含 input/output
+            for item in self._scan_single_index_pending(src_table, pk, input_col, output_col, fetch_size):
+                yield item
+        else:
+            # 來源/結果分離：src 提 id + input，tgt 用 mget 檢是否已有 output
+            for item in self._scan_dual_index_pending(src_table, tgt_table, pk, input_col, output_col, fetch_size):
+                yield item
+    '''
+    def _scan_single_index_pending(self, index: str, pk: str, input_col: str, output_col: str, fetch_size: int):
+        """
+        用 scan 走完全集合；「待處理」定義更嚴謹：
+          - output 不存在  或
+          - output 為空字串/空物件/空陣列
+        避免只跑到少量就結束。
+        """
+        assert self.es is not None
+        filters = self._build_pending_filters()
+        rt = int(self.cfg.get("es_request_timeout", 60))
+        keepalive = self.cfg.get("es_scroll_keepalive", "2m")
+    
+        # 盡量用 exists + term("")；再補一個 script 覆蓋空陣列/空物件的情況
+        should_pending = [
+            {"bool": {"must_not": [{"exists": {"field": output_col}}]}},
+            {"term": {f"{output_col}.keyword": ""}},  # 若有 keyword 子欄位可命中空字串
+            {"script": {
+                "script": {
+                    "lang": "painless",
+                    "source": """
+                        def v = params._source;
+                        for (def k : params.f.split('\\.')) {
+                          if (v == null) return true;   // 當不存在 → 視為待處理（應被上方 exists 擋到）
+                          v = v[k];
+                        }
+                        if (v == null) return true;
+                        if (v instanceof String) return v.trim().length() == 0;
+                        if (v instanceof List)   return v.isEmpty();
+                        if (v instanceof Map)    return v.isEmpty();
+                        return false;  // 其他型別視為已有值
+                    """,
+                    "params": {"f": output_col}
+                }
+            }}
+        ]
+    
+        body = {
+            "query": {
+                "bool": {
+                    "must":     [{"exists": {"field": input_col}}],
+                    "should":   should_pending,
+                    "minimum_should_match": 1,
+                    "filter":   filters
+                }
+            },
+            "_source": [input_col, pk] if pk != "_id" else [input_col],
+            "track_total_hits": True
+        }
+        print("DEBUG single-index pending query:", json.dumps(body, ensure_ascii=False))
+    
+        scan_iter = helpers.scan(
+            client=self.es,
+            index=index,
+            query=body,
+            size=int(fetch_size or 500),
+            preserve_order=False,
+            scroll=keepalive,
+            request_timeout=rt,
+            clear_scroll=True
+        )
+    
+        for hit in scan_iter:
+            src = hit.get("_source", {}) or {}
+            pk_val = hit.get("_id") if pk == "_id" else _extract_by_path(src, pk)
+            if pk_val is None:
+                continue
+            text = _extract_by_path(src, input_col)
+            if text is None or str(text).strip() == "":
+                continue
+            # ❶ 這裡不再多做 self.es.get() 二次確認，避免 pk!=_id 時誤查與額外開銷
+            yield (pk_val, str(text))
+    '''
+    def _scan_single_index_pending(self, index: str, pk: str, input_col: str, output_col: str, fetch_size: int):
+        assert self.es is not None
+        filters = self._build_pending_filters()
+    
+        rt = self.cfg.get("es_request_timeout", 60)
+        keepalive = self.cfg.get("es_scroll_keepalive", "2m")
+    
+        def _run_scan(query_body):
+            return helpers.scan(
+                self.es,
+                index=index,
+                query=query_body,
+                size=fetch_size,
+                scroll=keepalive,
+                request_timeout=rt,
+                preserve_order=False,
+                clear_scroll=True,
+            )
+    
+        # ✅ 僅用「有輸入、沒有輸出」判斷為待處理；對 nested/ object 都成立
+        body = {
+            "query": {
+                "bool": {
+                    "must":     [ {"exists": {"field": input_col}} ],
+                    "must_not": [ {"exists": {"field": output_col}} ],
+                    "filter":   filters
+                }
+            },
+            "_source": [input_col, pk] if pk != "_id" else [input_col],
+            "track_total_hits": True
+        }
+        print("DEBUG single-index pending query:", json.dumps(body, ensure_ascii=False))
+    
+        for hit in _run_scan(body):
+            src = hit.get("_source", {}) or {}
+            pk_val = hit.get("_id") if pk == "_id" else _dot_get(src, pk)
+            if pk_val is None:
+                continue
+    
+            # ⚠️ 二次 get() 去確認 NRT 的段落拿掉，避免當 pk != _id 時誤判/額外往返
+            text = _dot_get(src, input_col)
+            if text is None or str(text).strip() == "":
+                continue
+    
+            yield (pk_val, str(text))
+    def _scan_dual_index_pending(self, src_index: str, tgt_index: str, pk: str, input_col: str, output_col: str, fetch_size: int):
+        """
+        src 用 scan 串流所有有 input 的文件；每批用 mget 檢查 tgt 是否已有「非空」output。
+        """
+        assert self.es is not None
+        filters = self._build_pending_filters()
+        rt = int(self.cfg.get("es_request_timeout", 60))
+        keepalive = self.cfg.get("es_scroll_keepalive", "2m")
+    
+        def _is_non_empty(v) -> bool:
+            if v is None: return False
+            if isinstance(v, str): return v.strip() != ""
+            if isinstance(v, (list, dict)): return len(v) > 0
+            return True
+    
+        src_query = {
+            "query": {"bool": {"must": [{"exists": {"field": input_col}}], "filter": filters}},
+            "_source": [input_col, pk] if pk != "_id" else [input_col],
+            "track_total_hits": True
+        }
+    
+        batch_ids, batch_docs = [], {}
+    
+        scan_iter = helpers.scan(
+            client=self.es,
+            index=src_index,
+            query=src_query,
+            size=int(fetch_size or 500),
+            preserve_order=False,
+            scroll=keepalive,
+            request_timeout=rt,
+            clear_scroll=True
+        )
+    
+        for hit in scan_iter:
+            src = hit.get("_source", {}) or {}
+            _id = hit.get("_id") if pk == "_id" else _extract_by_path(src, pk)
+            if _id is None:
+                continue
+            text = _extract_by_path(src, input_col)
+            if text is None or str(text).strip() == "":
+                continue
+            batch_ids.append(_id)
+            batch_docs[_id] = str(text)
+            if len(batch_ids) >= int(fetch_size or 500):
+                # 批次檢查 tgt 是否已有非空 output
+                docs = self.es.mget(index=tgt_index, body={"ids": batch_ids}, request_timeout=rt)
+                present = set()
+                for d in docs.get("docs", []):
+                    if not d.get("found"): 
+                        continue
+                    val = _extract_by_path(d.get("_source", {}) or {}, output_col)
+                    if _is_non_empty(val):
+                        present.add(d.get("_id"))
+                for _id in batch_ids:
+                    if _id not in present:
+                        yield (_id, batch_docs[_id])
+                batch_ids.clear(); batch_docs.clear()
+    
+        if batch_ids:
+            docs = self.es.mget(index=tgt_index, body={"ids": batch_ids}, request_timeout=rt)
+            present = set()
+            for d in docs.get("docs", []):
+                if not d.get("found"):
+                    continue
+                val = _extract_by_path(d.get("_source", {}) or {}, output_col)
+                if _is_non_empty(val):
+                    present.add(d.get("_id"))
+            for _id in batch_ids:
+                if _id not in present:
+                    yield (_id, batch_docs[_id])
+                
     def _build_pending_filters(self) -> list:
         """
         從 cfg 組 pending 過濾條件：
