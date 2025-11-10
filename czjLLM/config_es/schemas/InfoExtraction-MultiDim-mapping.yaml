@@ -108,3 +108,15 @@ properties:
         type: date
         format: strict_date_optional_time||epoch_millis
         ignore_malformed: true
+        
+  multidim_event_json_meta:
+    type: object           # 需要 nested 再改
+    properties:
+      processed_at:   { type: date }
+      model_tag:      { type: keyword }
+      pipeline_hash:  { type: keyword }
+      #model_spec:     { type: keyword }
+      source:         { type: keyword }
+      channel:        { type: keyword }
+      task:           { type: keyword }
+      force_reason:   { type: keyword }

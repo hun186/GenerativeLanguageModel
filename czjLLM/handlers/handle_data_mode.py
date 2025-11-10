@@ -184,6 +184,53 @@ def _es_build_iter(ctx, env):
     return build_es_iter(env["adapter"], ctx)
 
 def _es_sink(ctx, env):
+    adapter = env["adapter"]
+    cfg = adapter.cfg
+    rr = (cfg.get("rerun", {}) or {})
+
+    # --- 萃取較短的 model_tag（保留你的智慧取法） ---
+    def _short_tag_from_spec(spec: str) -> str:
+        if not spec:
+            return ""
+        s = str(spec)
+        for sep in ["premises", "MXFP", "@", "#"]:
+            if sep in s:
+                s = s.split(sep, 1)[0].rstrip("-_")
+        # 例：gpt-oss:latest-ctx-32k-premises-MXFP4 -> gpt-oss:latest-ctx-32k
+        return s
+
+    # 1) 先用 rerun.model_tag，其次 ctx.model_tag，再次從 ctx.model_spec 推短標
+    model_tag = rr.get("model_tag") \
+        or getattr(ctx, "model_tag", None) \
+        or (_short_tag_from_spec(getattr(ctx, "model_spec", "")) or None)
+
+    # 2) pipeline_hash 維持以 rerun 為準（若無可再考慮自動推）
+    pipeline_hash = rr.get("pipeline_hash")
+
+    # 3) meta_field 預設為 output_col + "_meta"
+    meta_field = rr.get("meta_field") or (getattr(ctx, "output_col", "LLM_result") + "_meta")
+
+    # 4) 初始 meta_base（其餘欄位交由 ESSink._build_meta() 自動補齊）
+    meta_base = {
+        "model_tag":     model_tag,                          # ← 你的智慧取法保留
+        "pipeline_hash": pipeline_hash,
+        #"model_spec":    getattr(ctx, "model_spec", None),   # 完整模型名便於稽核
+        "channel":       getattr(ctx, "channel", None),
+        "source":        getattr(ctx, "source", None),
+        "task":          getattr(ctx, "task", None),
+        # "force_reason" 讓 _build_meta() 依 rerun 條件自動組合
+    }
+
+    return ESSink(
+        ctx,
+        es_client=adapter.es,
+        index=cfg["tgt_index"],
+        output_col=ctx.output_col,
+        meta_field=meta_field,
+        meta_base=meta_base
+    )
+    
+def _es_sink_old(ctx, env):
     # 你的 ESSink 若需要 es_client/index，可從 adapter.es / adapter.cfg 取
     # 也可讓 ESSink 直接吃 adapter，統一介面
     return ESSink(

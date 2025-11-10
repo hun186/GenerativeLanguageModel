@@ -9,11 +9,13 @@ from elasticsearch import Elasticsearch
 from utils.selector import OptionSelector
 
 from czjLLM.es_mode.config.config_loader_es import load_es_cfg, InteractivePolicy, NonInteractivePolicy
-from czjLLM.es_mode.runtime.sinks.es_sink import ESSink
+#from czjLLM.es_mode.runtime.sinks.es_sink import ESSink
 
 from czjLLM.es_mode.adapters.elasticsearch_adapter import ElasticsearchAdapter
 
 from utils.ES_utils import get_es_client, apply_es_mapping
+
+_SENTINEL = object()
 
 # ---------- Resolve 連線 ----------
 def resolve_es_connection_old(ctx, get_param, args):
@@ -107,7 +109,11 @@ def resolve_es_connection(ctx, get_param, args):
         "es_max_retries": es_cfg.get("es_max_retries", 3),
         "es_retry_on_timeout": es_cfg.get("es_retry_on_timeout", True),
         "es_prefetch_buffer": es_cfg.get("es_prefetch_buffer", 1000),
-        "es_prefetch_first_timeout": es_cfg.get("es_prefetch_first_timeout", 20)
+        "es_prefetch_first_timeout": es_cfg.get("es_prefetch_first_timeout", 20),
+        # －－－－ 新增這三項：讓 Adapter 知道怎麼判斷需重跑 －－－－
+        "rerun": es_cfg.get("rerun", {}),                         # ★ 必傳
+        "fallback_date_field": es_cfg.get("fallback_date_field", "update_time_ai"),  # ★ 必傳
+        "pk_keyword_suffix": es_cfg.get("pk_keyword_suffix", ".keyword"),            # 建議傳
     }
     
     # 直接用 dict comprehension 過濾掉 None，保持乾淨
@@ -123,7 +129,8 @@ def resolve_es_connection(ctx, get_param, args):
     #     {"term": {"rawInfo.langCode.keyword": "zh-TW"}},
     #     {"range": {"importDT": {"gte": "2025-10-01T00:00:00Z"}}}
     # ]
-    
+    # （建議）同步 ctx.primary_key，避免後續 select_pending_rows 用到舊值
+    setattr(ctx, "primary_key", adapter_cfg["id_col"])
     adapter = ElasticsearchAdapter(adapter_cfg).connect()
 
     # 4. 回傳
@@ -273,58 +280,72 @@ def configure_flatten_es(ctx, get_param, args):
 
 # ---- 確保 schema（mapping）對齊 SQL ensure_schemas ----
 def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns, index_name_hint=None):
-    """
-    先確保 src/tgt index 存在；再依設定：
-      - 若有 es_apply_mapping + mapping_file：整包 put_mapping（新增欄位）
-      - 否則最小化保障：只確保 output_col 存在且型別正確（NESTED/OBJECT 擇一）
-    """
     # 1) 確保 index 存在
     adapter.ensure_table(adapter.cfg["src_index"])
     adapter.ensure_table(adapter.cfg["tgt_index"])
 
-    tgt_index = adapter.cfg["tgt_index"]
-    # 你想要的欄位名（只看 ctx.output_col）
-    out_field = getattr(ctx, "output_col", "llm_result")
-    # 建議預設為 NESTED（你的 LLM 輸出是陣列）
-    desired_type = getattr(ctx, "es_output_type", "NESTED").upper()  # "NESTED" or "OBJECT"
+    tgt_index  = adapter.cfg["tgt_index"]
+    out_field  = getattr(ctx, "output_col", "llm_result")                 # 主要輸出欄位
+    out_type   = getattr(ctx, "es_output_type", "NESTED").upper()         # "NESTED"/"OBJECT"
 
-    # 2) 若設定檔要求整包 mapping，就先走這條
+    # 2) 若指定 mapping 檔，先交由 YAML 套用（只新增，不變更既有型別）
     es_apply_mapping = adapter.cfg.get("es_apply_mapping", False)
-    mapping_file = adapter.cfg.get("mapping_file")
-    #print("es_apply_mapping in ensure_schemas_es",es_apply_mapping)
-    #print("mapping_file in ensure_schemas_es",mapping_file)
+    mapping_file     = adapter.cfg.get("mapping_file")
     if es_apply_mapping and mapping_file:
         try:
             adapter.apply_mapping_file(tgt_index, mapping_file)
-            print(f"✅ 已套用 mapping 檔到 index='{tgt_index}'：{mapping_file}")
         except Exception as ex:
             print(f"⚠️ 套用 mapping 檔失敗（將退回最小化策略）：{ex}")
 
-    # 3) 最小化保障：只管 output_col 的型別
-    #    - 若欄位不存在：put_mapping 建立
-    #    - 若已存在但型別不符：僅告警，不強改
+    # 3) output 欄位（最小化備援）：不存在才建 type
     try:
-        exists_node = adapter.get_field_mapping(tgt_index, out_field)
-        if exists_node is None:
-            # 欄位不存在 → 依 desired_type 建出最小 mapping
-            if desired_type == "NESTED":
-                body = {"properties": {out_field: {"type": "nested"}}}
-            else:
-                # OBJECT 適合單一物件（或你想寬鬆一些）
-                body = {"properties": {out_field: {"type": "object"}}}
+        node = adapter.get_field_mapping(tgt_index, out_field)
+        if node is None:
+            body = {"properties": {out_field: {"type": "nested"}}} \
+                   if out_type == "NESTED" else \
+                   {"properties": {out_field: {"type": "object"}}}
             adapter.es.indices.put_mapping(index=tgt_index, body=body)  # type: ignore
-            print(f"✅ 已在 index='{tgt_index}' 新增欄位 '{out_field}'（type={desired_type}）")
+            print(f"✅ 已在 index='{tgt_index}' 新增欄位 '{out_field}'（type={out_type}）")
         else:
-            # 欄位已存在 → 檢查型別
-            cur_type = exists_node.get("type", "object")  # object/nested/text/…；無 type 視為 object
-            ok = (desired_type == "NESTED" and cur_type == "nested") or \
-                 (desired_type == "OBJECT" and cur_type in ["object", None])
+            cur = node.get("type", "object")
+            ok  = (out_type == "NESTED" and cur == "nested") or (out_type == "OBJECT" and cur in ["object", None])
             if not ok:
-                print(f"⚠️ 欄位 '{out_field}' 已存在但型別為 {cur_type}，與期望 {desired_type} 不符。"
-                      f"ES 不允許變更型別，請改用另一個 output_col（如 '{out_field}_json'）或清空重建 index。")
+                print(f"⚠️ 欄位 '{out_field}' 型別為 {cur}，與期望 {out_type} 不符；請改用另一 output_col 或重建索引。")
     except Exception as ex:
-        print(f"⚠️ 確認/建立 output_col 映射時發生例外：{ex}")
-        
+        print(f"⚠️ 確認/建立 output 欄位映射時發生例外：{ex}")
+    # 4) meta 欄位（最小化備援）：不存在才建；存在則僅檢查型別，不改動
+    try:
+        rr = (adapter.cfg or {}).get("rerun") or {}
+        out_field  = getattr(ctx, "output_col", "llm_result")
+        meta_field = rr.get("meta_field") or getattr(ctx, "meta_field", None) or f"{out_field}_meta"
+        meta_type  = getattr(ctx, "es_meta_type", "OBJECT").upper()  # "OBJECT" / "NESTED"
+    
+        meta_node = adapter.get_field_mapping(tgt_index, meta_field)
+        if meta_node is None:
+            node = {"type": "nested"} if meta_type == "NESTED" else {"type": "object"}
+            # 🔽 一次放進常用子欄位（僅在「不存在」時建立）
+            node["properties"] = {
+                "processed_at":  {"type": "date"},    # ISO8601 (e.g. 2025-11-10T08:00:00Z)
+                "model_tag":     {"type": "keyword"},
+                "pipeline_hash": {"type": "keyword"},
+                #"model_spec":    {"type": "keyword"},
+                "source":        {"type": "keyword"}, # 自定：資料來源/任務來源
+                "channel":       {"type": "keyword"}, # 自定：任務 channel
+                "task":          {"type": "keyword"}, # 自定：任務名稱
+                "force_reason":  {"type": "keyword"}, # 自定：為何強制重跑
+            }
+            body = {"properties": {meta_field: node}}
+            adapter.es.indices.put_mapping(index=tgt_index, body=body)  # type: ignore
+            print(f"✅ 已在 index='{tgt_index}' 新增欄位 '{meta_field}'（type={node['type']}，含預設子欄位）")
+        else:
+            cur = meta_node.get("type", "object")
+            want_nested = (meta_type == "NESTED")
+            ok = (want_nested and cur == "nested") or (not want_nested and cur in ["object", None])
+            if not ok:
+                print(f"⚠️ meta 欄位 '{meta_field}' 型別為 {cur}，與期望 {meta_type} 不符；建議調整 YAML 或重建索引。")
+    except Exception as ex:
+        print(f"⚠️ 確認/建立 meta 欄位映射時發生例外：{ex}")
+    
 # ---- 確保 schema（mapping）對齊 SQL ensure_schemas ----
 def ensure_schemas_es_old(ctx, adapter: ElasticsearchAdapter, columns: List[Tuple[str, str]], index_name_hint=None):
     adapter.ensure_table(adapter.cfg["src_index"])
@@ -420,73 +441,83 @@ def maybe_reset_output_es(ctx, adapter: ElasticsearchAdapter, columns, args):
     updated = resp.get("updated", 0)
     print(f"🧼 reset_output: index={tgt_index}, removed_fields={fields_to_remove}, updated_docs={updated}")
 
-def prefetch_iter_OLD(
+def prefetch_iter(
     src_iter,
     maxsize=1000,
-    first_batch_timeout=20,     # ✅ 等不到第一筆就回退
-    heartbeat=30,               # ✅ 之後每隔 N 秒印一次心跳
-    sentinel=object(),
+    first_batch_timeout=20,
+    heartbeat=30,
+    sentinel=None,
     on_error=None,
-    fallback_on_timeout=True    # ✅ 允許回退
+    # ✅ 一律關閉回退直通，避免雙重消費
+    fallback_on_timeout=False,
+    name="ES-prefetch",
+    verbose=False
 ):
-    import queue, threading
+    if sentinel is None:
+        sentinel = object()
+
     q = queue.Queue(maxsize=maxsize)
-    stop = sentinel
+    stats = {"produced": 0, "consumed": 0}
+    cancelled = threading.Event()
 
     def _producer():
         try:
             for item in src_iter:
-                q.put(item)  # 若消費變慢會在這裡背壓，OK
+                if cancelled.is_set():
+                    break
+                q.put(item)
+                stats["produced"] += 1
         except Exception as e:
             if on_error:
                 on_error(e)
         finally:
-            # 無論成功/失敗，投遞終止記號
             try:
-                q.put(stop)
+                q.put(sentinel)
             except Exception:
                 pass
 
-    t = threading.Thread(target=_producer, daemon=True)
+    t = threading.Thread(target=_producer, daemon=True, name=name)
     t.start()
 
-    # --- 第一次取資料：有上限等待 ---
+    # --- 首批等待 ---
     try:
-        item = q.get(timeout=first_batch_timeout)
-    except queue.Empty:
-        if fallback_on_timeout:
-            print(f"[prefetch] 首批 > {first_batch_timeout}s 未到，回退為直通 iterator（不預取）")
-            # 直接把原本的 src_iter 交回去（行為與改前相同）
-            for x in src_iter:
-                yield x
-            return
-        else:
-            # 不回退就持續等，期間印心跳
+        if first_batch_timeout and first_batch_timeout > 0:
             while True:
                 try:
-                    item = q.get(timeout=heartbeat)
+                    item = q.get(timeout=first_batch_timeout)
                     break
                 except queue.Empty:
-                    print(f"[prefetch] 仍在等首批… thread_alive={t.is_alive()}")
-
-    if item is stop:
+                    # ✅ 不回退直通，只印心跳、繼續等
+                    print(f"[prefetch] 首批 > {first_batch_timeout}s 未到… thread_alive={t.is_alive()}", flush=True)
+        else:
+            item = q.get()
+    except KeyboardInterrupt:
+        cancelled.set()
         return
-    yield item
 
-    # --- 後續批次：帶心跳 ---
+    # --- 消費迴圈 ---
     while True:
-        try:
-            item = q.get(timeout=heartbeat)
-        except queue.Empty:
-            print(f"[prefetch] 等待下一批… thread_alive={t.is_alive()}")
-            continue
-        if item is stop:
+        if item is sentinel:
+            if verbose:
+                print(f"[prefetch] 結束 produced={stats['produced']} consumed={stats['consumed']}", flush=True)
             break
+
+        stats["consumed"] += 1
         yield item
+
+        if heartbeat and heartbeat > 0:
+            try:
+                item = q.get(timeout=heartbeat)
+            except queue.Empty:
+                print(f"[prefetch] 等下一批… qsize={q.qsize()} prod={stats['produced']} "
+                      f"cons={stats['consumed']} thread_alive={t.is_alive()}", flush=True)
+                continue
+        else:
+            item = q.get()
 
 
         
-def prefetch_iter(
+def prefetch_iter_old(
     src_iter,
     maxsize=1000,
     first_batch_timeout=20,      # 首批等待上限(秒)，>0 才會啟用
@@ -615,58 +646,4 @@ def build_pending_iter_es(adapter, ctx):
         ctx
     )
 
-def build_pending_iter_es_OLD(adapter: ElasticsearchAdapter, ctx):
-    base = adapter.select_pending_rows(
-        src_table=adapter.cfg["src_index"],
-        tgt_table=adapter.cfg["tgt_index"],
-        pk=adapter.cfg["id_col"],
-        input_col=adapter.cfg["input_col"],
-        output_col=adapter.cfg["output_col"],
-        record_update_time=getattr(ctx, "record_update_time", False),
-        fetch_size=getattr(ctx, "fetch_size", 500),
-    )
-    buf = int(getattr(adapter, "cfg", {}).get("es_prefetch_buffer",
-              getattr(ctx, "es_prefetch_buffer", 1000)))
-    if buf <= 0:
-        # ✅ 設定成 0 可完全關閉預取（安全開關）
-        print("[prefetch] 已關閉（es_prefetch_buffer<=0），改用直通模式")
-        return base
-
-    first_to = int(adapter.cfg.get("es_prefetch_first_timeout", 20))
-    return prefetch_iter(
-        base,
-        maxsize=buf,
-        first_batch_timeout=first_to,
-        on_error=lambda e: print(f"[prefetch] ES 取件錯誤：{e}")
-    )
-
-def build_pending_iter_es_old(es_client, ctx):
-    """
-    建立一個 iterator，逐筆拉出 ES 文件，取 input_col 送進 pipeline
-    產出 (pk, input) tuple，兼容 SQL pipeline
-    """
-    index = ctx.es_index
-    input_col = ctx.input_col
-
-    def extract_value(doc: dict, path: str):
-        keys = path.split(".")
-        val = doc["_source"]
-        for k in keys:
-            val = val.get(k, None)
-            if val is None:
-                break
-        return val
-
-    resp = es_client.search(index=index, scroll="2m", size=1000, body={"query": {"match_all": {}}})
-    sid = resp["_scroll_id"]
-    hits = resp["hits"]["hits"]
-
-    while hits:
-        for h in hits:
-            pk = h["_id"]
-            input_value = extract_value(h, input_col)
-            yield pk, input_value  # 產出 tuple，兼容 pipeline
-        resp = es_client.scroll(scroll_id=sid, scroll="2m")
-        sid = resp["_scroll_id"]
-        hits = resp["hits"]["hits"]
 

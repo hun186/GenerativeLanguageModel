@@ -18,7 +18,11 @@ except Exception:
 def _now_iso_utc() -> str:
     # 例：'2025-10-22T13:37:43Z'（無微秒，最穩）
     return datetime.datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")       
-        
+
+def _meta_field_from_cfg(cfg: dict, output_col: str) -> str:
+    rr = (cfg.get("rerun") or {})
+    return rr.get("meta_field") or f"{output_col}_meta"
+    
 class ESSink:
     """
     Elasticsearch Sink —— 與 SqlSink/ExcelSink 介面相容
@@ -32,7 +36,9 @@ class ESSink:
                  output_col: Optional[str] = None,
                  flush_every: Optional[int] = None,
                  flatten_json: bool = False,
-                 ):
+                 *,
+                 meta_field: Optional[str] = None,
+                 meta_base: Optional[dict] = None):
         self.ctx = ctx
         self.es: Elasticsearch = es_client
         self.index = index
@@ -51,7 +57,11 @@ class ESSink:
         self._last_flush_ts = datetime.datetime.now().timestamp()
         self._debug = bool(getattr(self.ctx, "debug_es_sink", False))
         # ✅ 內部快取：實際生效的欄位（可能是 output_col 或 output_col+"_json"）
-        self._effective_output_col = None
+        #self._effective_output_col = None
+        
+        # ✅ meta_field 預設為 f"{output_col}_meta"
+        self.meta_field: Optional[str] = meta_field or f"{self.output_col}_meta"
+        self.meta_base: Dict[str, Any] = dict(meta_base or {})
         
         atexit.register(self.flush_all)  # 程式結束時保底 flush
         #print("ctx in ESSink",self.ctx)
@@ -203,6 +213,48 @@ class ESSink:
         cur[path[-1]] = value
     
     # ---- 取代你舊的 _normalize_event_payload（不覆蓋 time/date）----
+    
+    def _build_meta(self) -> Optional[dict]:
+        if not self.meta_field:
+            return None
+    
+        rr = (getattr(self.ctx, "_es_adapter", None).cfg.get("rerun", {}) 
+              if getattr(self.ctx, "_es_adapter", None) else {})
+    
+        meta = dict(self.meta_base or {})
+        # 固定欄位
+        meta["processed_at"]  = _now_iso_utc()
+        meta["output_field"]  = self.output_col
+    
+        # 來自任務/環境
+        if getattr(self.ctx, "task", None):
+            meta.setdefault("task", self.ctx.task)
+        #if getattr(self.ctx, "model_spec", None):
+        #    meta.setdefault("model_spec", self.ctx.model_spec)
+        if getattr(self.ctx, "channel", None):
+            meta.setdefault("channel", self.ctx.channel)
+        if getattr(self.ctx, "source", None):
+            meta.setdefault("source", self.ctx.source)
+    
+        # 來自 rerun 設定
+        if rr.get("model_tag"):
+            meta.setdefault("model_tag", rr.get("model_tag"))
+        if rr.get("pipeline_hash"):
+            meta.setdefault("pipeline_hash", rr.get("pipeline_hash"))
+    
+        # 自動推導 force_reason（若有強制條件）
+        if "force_reason" not in meta:
+            reason = []
+            if rr.get("force_since"):       reason.append("force_since")
+            if rr.get("stale_after_days"):  reason.append("stale_after_days")
+            if rr.get("force_if_missing_meta"): reason.append("missing_meta")
+            if rr.get("model_tag"):         reason.append("model_tag_mismatch")
+            if rr.get("pipeline_hash"):     reason.append("pipeline_hash_mismatch")
+            if reason:
+                meta["force_reason"] = ",".join(reason)
+        return {k: v for k, v in meta.items() if v is not None}
+        #return meta
+        
     def _normalize_event_payload_v2(self, payload: any):
         """
         只處理我們的多維事件結構（list[dict]），
@@ -292,7 +344,12 @@ class ESSink:
                     for it in payload:
                         if isinstance(it, dict):
                             it.setdefault("update_time_ai", ts)
-    
+        # ⬇️ 新增：同步寫入 meta
+        if self.meta_field:
+            meta = self._build_meta()
+            if meta:
+                doc[self.meta_field] = meta
+
         if save_raw_input and input_col:
             doc[input_col] = input_value
         return doc

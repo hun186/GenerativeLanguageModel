@@ -8,7 +8,8 @@ es_pass = ''
 
 # 可選欄位
 #id_col = '_source.uuid'
-id_col = 'uuid'
+#id_col = 'uuid'
+id_col = '_id'
 input_col = 'rawInfo.content'
 output_col = 'multidim_event_json'
 
@@ -49,3 +50,15 @@ pending_filters = [
 
 es_prefetch_buffer = 1000           # 0 = 關閉預取
 es_prefetch_first_timeout = 8      # 首批最大等待秒數
+
+
+rerun = {
+    "enable": True,                       # 關閉就完全不影響現有流程
+    #"model_tag": "gpt-oss:20b",  # 本輪使用的模型/管線標記
+    #"meta_field": "multidim_event_json_meta",  # 建議：文件層級的結果中繼欄位（見下）
+    "force_since": "2025-11-01T00:00:00Z",     # 可選：重跑 update_time_ai < 此時間的文件
+    #"stale_after_days": 90,               # 可選：結果逾期視為需要重跑
+    "force_if_missing_meta": True,        # 有 output，但 meta 遺失 → 也當需重跑
+    "pipeline_hash": "v3.2.1",            # 可選：管線版本比對（不同即需重跑）
+    "fallback_date_field": "update_time_ai",
+}
