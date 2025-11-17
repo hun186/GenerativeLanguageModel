@@ -291,6 +291,10 @@ class ElasticsearchAdapter:
     
         if to_add:
             self.es.indices.put_mapping(index=index, body={"properties": to_add})
+    def _resolve_meta_field(self, output_col: str) -> Optional[str]:
+        rr = (self.cfg or {}).get("rerun") or {}
+        mf = rr.get("meta_field")
+        return mf or (f"{output_col}_meta" if output_col else None)
     def _bulk_check_present_nonempty(
         self, *, tgt_index: str, pk: str, ids: List[str],
         output_col: str, request_timeout: int,
@@ -426,7 +430,8 @@ class ElasticsearchAdapter:
             return None
         #print("rr in _needs_rerun_clause",rr)
         #print("-"*50)
-        meta      = rr.get("meta_field") or f"{output_col}_meta"  # e.g. "multidim_event_json_meta"
+        #meta      = rr.get("meta_field") or f"{output_col}_meta"  # e.g. "multidim_event_json_meta"
+        meta      = self._resolve_meta_field(output_col)  # ← 統一來源
         #print("meta",meta)
         tag       = rr.get("model_tag")
         pipe      = rr.get("pipeline_hash")
@@ -507,16 +512,15 @@ class ElasticsearchAdapter:
         return {"bool": {"should": should, "minimum_should_match": 1}}
     
     def _is_fresh_output(self, src: dict, output_col: str) -> bool:
-        """單一處定義：輸出存在且“新鮮”。"""
         val = _extract_by_path(src, output_col)
         if not _is_non_empty_deep(val):
             return False
     
         rr = (self.cfg or {}).get("rerun") or {}
         if not rr.get("enable"):
-            return True  # 只要有值就當新鮮
+            return True
     
-        meta_field = rr.get("meta_field")           # e.g., "multidim_event_json_meta"
+        meta_field = self._resolve_meta_field(output_col)  # ← 關鍵
         tag        = rr.get("model_tag")
         pipe       = rr.get("pipeline_hash")
         since      = rr.get("force_since")
@@ -525,10 +529,10 @@ class ElasticsearchAdapter:
     
         meta = _extract_by_path(src, meta_field) if meta_field else None
     
+        # 有 output 但缺 meta → 不新鮮（需重跑）
         if force_if_missing_meta and meta_field and meta is None:
             return False
     
-        # model_tag / pipeline_hash 比對
         if tag and meta and _extract_by_path(meta, "model_tag") != tag:
             return False
         if pipe and meta and _extract_by_path(meta, "pipeline_hash") != pipe:
@@ -630,7 +634,8 @@ class ElasticsearchAdapter:
                          or self.cfg.get("fallback_date_field") \
                          or "update_time_ai"
         # 先安全取得 meta_field（可能為 None）
-        mf = (self.cfg.get("rerun") or {}).get("meta_field")
+        #mf = (self.cfg.get("rerun") or {}).get("meta_field")
+        mf = self._resolve_meta_field(output_col)  # ← 改這行
         
         # 組 _source 欄位清單：必帶 input/output；有 mf 再加；pk 不是 _id 也要加
         src_fields = [input_col, output_col]
