@@ -2,7 +2,8 @@ channel: unspecified_channel
 input_col: rawInfo.content
 llm_source_backup_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/unspecified_channel
 llm_source_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/unspecified_channel
-es_config_file: czjLLM/config_es/akconfig_es_test.py
+#es_config_file: czjLLM/config_es/akconfig_es_test.py
+es_config_file: czjLLM/config_es/akconfig_es_test_133.py
 mode: es
 model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
 #model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4

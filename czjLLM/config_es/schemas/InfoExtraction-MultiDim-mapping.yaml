@@ -9,6 +9,11 @@ properties:
       unique_key:
         type: keyword
 
+      article_date_iso:
+        type: date
+        format: yyyy-MM-dd
+        ignore_malformed: true
+        
       article_title:
         type: text
         fields:
@@ -93,8 +98,13 @@ properties:
       evidence_snippets:
         type: nested
         properties:
-          text:      { type: text }
-          source_id: { type: keyword }
+          text:          { type: text }
+          source_id:     { type: keyword }
+          char_start:    { type: integer }
+          char_end:      { type: integer }
+          paragraph_id:  { type: keyword }
+          sentence_index:{ type: integer }
+          confidence:    { type: integer }
 
       importance:
         properties:

@@ -104,6 +104,65 @@ class ElasticsearchAdapter:
     def connect(self):
         if Elasticsearch is None:
             raise ImportError("elasticsearch 客戶端未安裝，請先 pip install 'elasticsearch<8'（對 ES 7.x）")
+    
+        # ---- 1) 相容兩種設定命名：hosts/http_auth 或 es_host/es_user/es_pass ----
+        hosts = self.cfg.get("hosts")
+        if not hosts:
+            es_host = self.cfg.get("es_host") or "http://localhost:9200"
+            hosts = [es_host] if isinstance(es_host, str) else es_host
+    
+        http_auth = self.cfg.get("http_auth")
+        if http_auth is None:
+            u = self.cfg.get("es_user")
+            p = self.cfg.get("es_pass")
+            if u is not None and p is not None:
+                http_auth = (u, p)
+    
+        timeout = self.cfg.get("timeout", self.cfg.get("es_timeout", 60))
+    
+        # ---- 2) TLS/HTTPS 相關參數 ----
+        # ✅ 只要 hosts 裡是 https:// 就會走 TLS；但自簽憑證需要 ca_certs 或關閉驗證
+        ca_certs = self.cfg.get("es_ca_certs") or self.cfg.get("ca_certs")
+        verify_certs = self.cfg.get("es_verify_certs", True)
+        ssl_assert_hostname = self.cfg.get("es_ssl_assert_hostname", False)
+    
+        # elasticsearch 7.x client 參數名：verify_certs / ca_certs / ssl_assert_hostname
+        # 但不同小版本可能略有差異，所以做保守處理：只有在需要時才傳
+        es_kwargs = dict(
+            hosts=hosts,
+            http_auth=http_auth,
+            timeout=timeout,
+            max_retries=self.cfg.get("es_max_retries", 3),
+            retry_on_timeout=self.cfg.get("es_retry_on_timeout", True),
+        )
+    
+        # 只有 https 才塞 TLS 參數（避免 http 也帶參數造成困擾）
+        any_https = any(str(h).lower().startswith("https://") for h in (hosts or []))
+        if any_https:
+            # 1) 驗證開啟：建議一定給 CA
+            if verify_certs:
+                if not ca_certs:
+                    raise ValueError(
+                        "目前是 https 連線且 verify_certs=True，但未提供 es_ca_certs。"
+                        "請在 cfg 加 es_ca_certs 指向 http_ca.crt，或暫時設 es_verify_certs=False。"
+                    )
+                es_kwargs["ca_certs"] = ca_certs
+                es_kwargs["verify_certs"] = True
+                es_kwargs["ssl_assert_hostname"] = ssl_assert_hostname
+            else:
+                # 2) 救急：關閉驗證（不推薦長期使用）
+                es_kwargs["verify_certs"] = False
+                es_kwargs["ssl_show_warn"] = self.cfg.get("es_ssl_show_warn", False)
+    
+        self.es = Elasticsearch(**es_kwargs)
+    
+        # 簡單健康檢查
+        self.es.info()
+        return self
+
+    def connect_1219(self):
+        if Elasticsearch is None:
+            raise ImportError("elasticsearch 客戶端未安裝，請先 pip install 'elasticsearch<8'（對 ES 7.x）")
         self.es = Elasticsearch(
             hosts=self.cfg.get("hosts", ["http://localhost:9200"]),
             http_auth=self.cfg.get("http_auth"),

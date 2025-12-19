@@ -69,6 +69,8 @@ def resolve_es_connection(ctx, get_param, args):
     #           or input("🔹 請輸入 ES host（預設 http://localhost:9200）：").strip()
     #           or "http://localhost:9200")
     hosts = es_cfg.get("hosts")
+    ca = es_cfg.get("es_ca_certs", "")
+    
     if not hosts:
         es_host = (es_cfg.get("es_host")
                    or input("ES host（預設 http://localhost:9200）：").strip()
@@ -79,6 +81,7 @@ def resolve_es_connection(ctx, get_param, args):
               (input("🔹 請輸入 ES user（留空表示無帳號）：").strip() or None)
     es_pass = es_cfg.get("es_pass") if "es_pass" in es_cfg else \
               (input("🔹 請輸入 ES password（留空表示無密碼）：").strip() or None)
+    
     es_index = es_cfg.get("es_index") or input("🔹 請輸入 ES index：").strip()
 
     # 若沒有設定 tgt_index，預設與 src_index 相同（單一 index 模式）
@@ -91,6 +94,11 @@ def resolve_es_connection(ctx, get_param, args):
         #"es_host": hosts,
         "hosts": hosts,
         "http_auth": (es_user, es_pass) if es_user else None,
+        # ✅ TLS 相關：把 es_cfg 的值「帶進 adapter」
+        "es_ca_certs": ca,  # ★關鍵：不帶這個就會噴你看到的錯
+        "es_verify_certs": es_cfg.get("es_verify_certs", True),
+        "es_ssl_assert_hostname": es_cfg.get("es_ssl_assert_hostname", False),
+        
         "timeout": es_cfg.get("timeout", 60),
         "src_index": src_index,
         "tgt_index": tgt_index,
