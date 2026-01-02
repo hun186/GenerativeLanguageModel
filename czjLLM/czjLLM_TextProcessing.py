@@ -1,3 +1,4 @@
+#python -m czjLLM.czjLLM_TextProcessing --config yaml/es_config_satmeta.yaml
 from utils_manager.utils_sync import prepare_env
 prepare_env(
     root_name="TopicClassification",
