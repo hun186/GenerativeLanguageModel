@@ -1,6 +1,6 @@
 #model_configs/modelConfig_ANKInt.py
 common_base_urls = [
-    "http://192.168.0.134:11435/v1",
+    #"http://192.168.0.134:11435/v1",  #為了控出一個給ollma持續使用，可mark，以便代理人開發期間運用。
     "http://192.168.0.134:11436/v1"
 ]
 common_api_key = (

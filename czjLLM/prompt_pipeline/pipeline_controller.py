@@ -61,123 +61,7 @@ def _bump(ctx):
         ctx.last_progress_ts = time.time()
     except Exception:
         pass
-    
-'''
-class PromptPipelineController:
-    def __init__(self, task, prompt_file, output_file, model_spec, content=""):
-        self.task = task
-        self.prompt_file = prompt_file
-        #self.MainFileName = os.path.splitext(os.path.basename(self.prompt_file))[0]
-        self.output_file = output_file
-        self.model_spec = model_spec
-        self.content = content or open(prompt_file, 'rt', encoding='utf-8').read()
-
-    def run(self):
-        #generator = PromptGenerator(
-        #    task=self.task,
-        #    MainFileName=self.MainFileName)
-        #prompt = generator.build(self.content)
-
-        llm = LLMCaller(model_spec=self.model_spec)
-        response = llm.call(self.content,model_spec=self.model_spec)
-
-        handler = PromptResultHandler(task=self.task)
-        output = handler.clean_output(response.choices[0].message.content)
-
-        if self.output_file:
-            os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
-            with open(self.output_file, 'w', encoding='utf-8') as f:
-                f.write(output)
-
-        return output
-
-class PromptPipelineControllerWrapper:
-    def __init__(self, task, promptFile, OutputSaveFN, removeFinPromptFile,
-                 max_tokens, #On_Premises, 
-                 allow_to_retry, model_spec):
-        self.task = task
-        self.promptFile = promptFile
         
-        self.OutputSaveFN = OutputSaveFN
-        self.removeFinPromptFile = removeFinPromptFile
-        self.max_tokens = max_tokens
-        #self.On_Premises = On_Premises
-        self.allow_to_retry = allow_to_retry
-        self.model_spec = model_spec
-
-        # 🔧 修正 base_url 為 list 的情況
-        if isinstance(self.model_spec.get("base_url"), list):
-            import random
-            self.model_spec["base_url"] = random.choice(self.model_spec["base_url"])
-            
-        with open(promptFile, 'r', encoding='utf-8') as f:
-            self.content = f.read()
-
-        self.controller = PromptPipelineController(
-            task=task,
-            prompt_file=promptFile,
-            output_file=OutputSaveFN,
-            model_spec=model_spec,
-            content=self.content
-        )
-        #self.MainFileName = os.path.splitext(os.path.basename(promptFile))[0]
-    def proc(self):
-        try:
-            raw_text = self.controller.run()
-            cost = 0
-            retry_jobs = []
-
-            # 處理與驗證結果
-            result_handler = PromptResultHandler(task=self.task)
-            cleaned_text = result_handler.clean_output(raw_text)
-
-            if "to json" in self.task.lower() and self.allow_to_retry:
-                valid, fixed_text = result_handler.validate_json(cleaned_text)
-                if not valid:
-                    print(f"⚠️ JSON 格式錯誤，將對 {self.promptFile} 進行切割重試")
-                    retry_jobs = self.retry_with_split_input()
-                    return "", cost, retry_jobs
-                else:
-                    cleaned_text = fixed_text
-
-            # 寫入結果
-            if self.OutputSaveFN and not retry_jobs:
-                os.makedirs(os.path.dirname(self.OutputSaveFN), exist_ok=True)
-                with open(self.OutputSaveFN, 'w', encoding='utf-8') as f:
-                    f.write(cleaned_text)
-
-            if self.removeFinPromptFile:
-                os.remove(self.promptFile)
-
-            return cleaned_text, cost, retry_jobs
-
-        except Exception as e:
-            print(f"❌ PromptPipelineControllerWrapper 錯誤：{e}")
-            return None, 0, []
-
-    def retry_with_split_input(self):
-        # 從內容擷取輸入文字
-        import re
-        input_text = ""
-        for pattern in [r"(?<=☆輸入文本：).*", r"(?<=☆下列為輸入任務文本：).*"]:
-            m = re.search(pattern, self.content, re.DOTALL)
-            if m:
-                input_text = m.group().strip()
-                break
-
-        if not input_text:
-            print("⚠️ 無法擷取原始輸入文本，放棄重試。")
-            return []
-
-        retry_mgr = PromptRetryManager(
-            task=self.task,
-            promptFile=self.promptFile,
-            max_tokens=self.max_tokens,
-            #on_premises=self.On_Premises,
-            model_spec=self.model_spec
-        )
-        return retry_mgr.retry_split(input_text)
-'''
 # [ADD] －－－－ Global Load Meter / Registry －－－－
 
 class ItemsRegistry:
@@ -210,53 +94,6 @@ class ItemsRegistry:
         with self.lock:
             self._items.pop(item_dir, None)
 
-'''
-class ItemsRegistry_new_fail:
-    """
-    執行緒安全的逐列註冊表。
-    key 一律使用「正規化後的 item_dir」，避免相對/絕對、分隔符、大小寫造成不一致。
-    """
-    def __init__(self):
-        self._lock = threading.RLock()
-        # key = canon_item_dir
-        # value = {"pk":..., "temp_txt":..., "item_dir": canon_item_dir, "item_dir_raw": 原始字串}
-        self._items = {}
-
-    def add(self, item_dir: str, pk, temp_txt: str):
-        k = _canon_path(item_dir)
-        meta = {
-            "pk": pk,
-            "temp_txt": temp_txt,
-            "item_dir": k,
-            "item_dir_raw": item_dir,
-        }
-        print("meta in ItemsRegistry",meta)
-        with self._lock:
-            self._items[k] = meta
-
-    def list_items(self) -> dict:
-        with self._lock:
-            # 回傳淺拷貝，避免呼叫端誤改內部狀態
-            return dict(self._items)
-
-    def get(self, item_dir: str):
-        k = _canon_path(item_dir)
-        with self._lock:
-            return self._items.get(k)
-
-    def remove(self, item_dir: str):
-        k = _canon_path(item_dir)
-        with self._lock:
-            self._items.pop(k, None)
-
-    def clear(self):
-        with self._lock:
-            self._items.clear()
-
-    def __len__(self):
-        with self._lock:
-            return len(self._items)
-'''     
 def meter_path_init(ctx):
     """
     建議：檔名含 session 起始時間避免不同程序互蓋。
@@ -499,6 +336,38 @@ def _to_success(pf_running: str) -> str:
     suc.mkdir(parents=True, exist_ok=True)
     return str(suc / p.name)
 
+def _to_todo(pf_running: str) -> str:
+    p = Path(pf_running)
+    # pf 必須是 .../RUNNING/xxx.txt
+    if p.parent.name != "RUNNING":
+        # 保守：不是 RUNNING 就照原路徑回傳
+        return pf_running
+    todo_dir = p.parent.parent / "TODO"
+    todo_dir.mkdir(parents=True, exist_ok=True)
+    return str(todo_dir / p.name)
+
+def _running_to_todo(pf_running: str) -> str:
+    p = Path(pf_running)
+    if p.parent.name == "RUNNING":
+        todo_dir = p.parent.parent / "TODO"
+        todo_dir.mkdir(parents=True, exist_ok=True)
+        return str(todo_dir / p.name)
+    return pf_running
+
+def _ensure_in_todo(pf_any: str) -> str:
+    """
+    不管輸入在 TODO/RUNNING/Success，回傳「對應 TODO 的路徑」。
+    主要給 split 產新檔名用。
+    """
+    p = Path(pf_any)
+    parent = p.parent.name
+    if parent in ("RUNNING", "Success", "TODO"):
+        todo_dir = p.parent.parent / "TODO"
+        todo_dir.mkdir(parents=True, exist_ok=True)
+        return str(todo_dir / p.name)
+    # 不在隊列結構下，就原樣回傳
+    return pf_any
+    
 def recover_running_to_todo(item_dirs):
     """
     僅在流程「啟動前」呼叫一次：
@@ -654,8 +523,10 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             n_done = len(done_prompt_files)
             count_by_item_done = Counter(item for pf, item in batch if not os.path.exists(pf))
             '''
+            '''#0112
             def _success_path(pf: str) -> str:
                 return pf.replace("TODO", "Success")
+                
             
             done_prompt_files = []
             for pf, _ in batch:
@@ -670,13 +541,57 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             n_done = len(done_prompt_files)
             count_by_item_done = Counter(item for pf, item in batch if pf in done_prompt_files)
             finished_n += n_done
+            '''#0112
+            done = []
+            requeued = []
+            still_running = []
+            
+            for pf, item in batch:
+                # pf 是 RUNNING/xxx.txt
+                suc = _to_success(pf)   # RUNNING -> Success/xxx.txt
+                todo = _to_todo(pf)     # RUNNING -> TODO/xxx.txt
+            
+                if os.path.exists(suc):
+                    # ✅ 成功：Success 存在
+                    done.append((pf, item))
+                elif os.path.exists(pf):
+                    # ✅ 仍在 RUNNING：表示這輪可能還沒寫完/或 job 卡住
+                    still_running.append((pf, item))
+                elif os.path.exists(todo):
+                    # ✅ 退回 TODO（例如 retry/split 或 exception 退回）：要把 pending 加回來
+                    requeued.append((pf, item))
+                else:
+                    # 檔案消失：避免 running 永遠扣不回，保守視為 done
+                    done.append((pf, item))
+            
+            n_done = len(done)
+            n_requeued = len(requeued)
+            
+            count_by_item_done = Counter(item for _, item in done)
+            count_by_item_requeued = Counter(item for _, item in requeued)
+            
+            finished_n += n_done
 
             # ---- 3) 更新 meter：running -= n_done, completed += n_done, rows[pk].done += 每列完成量
             try:
+                '''#0112
                 meter_after = meter_update(
                     meter_fn,
                     lambda d: _meter_on_finish_batch(d, items_map, count_by_item_done, n_done)
                 )
+                '''#0112
+                meter_after = meter_update(
+                    meter_fn,
+                    lambda d: _meter_on_finish_batch_v2(
+                        d,
+                        items_map,
+                        count_by_item_done=count_by_item_done,
+                        n_done=n_done,
+                        count_by_item_requeued=count_by_item_requeued,
+                        n_requeued=n_requeued,
+                    )
+                )
+
                 _bump(ctx)  # ✅ 有完成也戳
             except Exception as ex:
                 tlog_warn(f"⚠️ meter_on_finish_batch 失敗：{ex}")
@@ -850,6 +765,28 @@ def _meter_on_finish_batch(d, items_map, count_by_item, total_n):
             row["status"] = "ready_to_merge"
     return d
 
+def _meter_on_finish_batch_v2(d, items_map,
+                             count_by_item_done, n_done,
+                             count_by_item_requeued, n_requeued):
+    q = d.setdefault("queue", {})
+    q["running"] = max(0, int(q.get("running", 0)) - (n_done + n_requeued))
+    q["completed"] = int(q.get("completed", 0)) + n_done
+    q["pending"] = int(q.get("pending", 0)) + n_requeued
+
+    rows = d.setdefault("rows", {})
+
+    # ✅ completed per item（只算 done）
+    for item_dir, cnt in count_by_item_done.items():
+        row = rows.setdefault(item_dir, {})
+        row["done"] = int(row.get("done", 0)) + int(cnt)
+
+    # ✅ requeued per item（可選：記錄一下）
+    if n_requeued:
+        cons = d.setdefault("consumer", {})
+        cons["last_requeued"] = int(n_requeued)
+        cons["last_requeued_ts"] = time.time()
+
+    return d
 
 '''
 def _merge_and_write_single_row(ctx, pk, st, cursor, is_sqlite=False):
@@ -1326,9 +1263,16 @@ def call_llm_api(itemList, ctx, allow_to_retry=True,PGMSubDir=""):
         for item in itemList:
             DTBJobs.extend(create_jobs(item,ctx.model_spec))
         MPresult = multicoreJob(DTBJobs=DTBJobs, nProcess=ctx.n_process, ShuffleJobs=False).run()
+        #if MPresult:
+        #    responseList, costList, DTBJobs_Retry = zip(*MPresult)
+        #    CostLog(PGMSubDir = PGMSubDir, costList=costList, mode="AllArt")
         if MPresult:
-            responseList, costList, DTBJobs_Retry = zip(*MPresult)
-            CostLog(PGMSubDir = PGMSubDir, costList=costList, mode="AllArt")
+            # MPresult 每個元素都是 dict
+            outputs = [r.get("output", "") for r in MPresult]
+            costList = [float(r.get("cost", 0) or 0) for r in MPresult]
+            # 你現在 queue 模式其實不需要 retry jobs 物件了
+            DTBJobs_Retry = []
+            CostLog(PGMSubDir=PGMSubDir, costList=costList, mode="AllArt")
     else:
         for item in tqdm(itemList, desc="LLM API呼叫之文章物件數完成度", ascii=False, ncols=75):
             DTBJobs = create_jobs(item,ctx.model_spec)
@@ -1389,12 +1333,13 @@ class PromptAPIPipeline:
         self.model_spec = spec
         self.PGMSubDir = PGMSubDir
         #print("model_spec b4",model_spec)
+        '''#0112
         if not all(key in self.model_spec for key in ["base_url", "model_name"]):
             self.model_spec = select_model(self.model_spec)
-            #print("model_spec af select",model_spec)
         self.model_spec["base_url"] = [self.model_spec["base_url"]] if isinstance(
             self.model_spec.get("base_url"), str) else self.model_spec["base_url"]
-        #print("model_spec af ck",model_spec)
+        '''#0112
+
         
 
         
@@ -1402,7 +1347,131 @@ class PromptAPIPipeline:
         print("輸入prompt檔案",self.promptFile)
         print("輸出儲存檔案",self.OutputSaveFN)
 
-    def proc(self, ):
+    def proc(self):
+        print("="*50)
+    
+        # ====== 先初始化：避免例外時 retMES/cost 未定義 ======
+        retMES = ""
+        cost = 0
+        err = ""
+        ok = False
+        base_url = None
+        DTBJobs_Retry = []
+    
+        if self.promptFile == "":
+            print(f"No promptFile is input, run for content: {self.content[:200]}...")
+            if len(self.content) > 300:
+                print(f"{self.content[-100:]}")
+        else:
+            print(f"Calling LLM API for promptFile: {self.promptFile}")
+        print("allow_to_retry is ", self.allow_to_retry)
+    
+        try:
+            # 1) 選 base_url
+            base_url = select_idle_ollama_url(self.model_spec["base_url"], PGMSubDir=self.PGMSubDir)
+            self.model_spec["base_url"] = base_url
+    
+            if "api_key" not in self.model_spec:
+                self.model_spec["api_key"] = "ThisIsFakeKey"
+    
+            # 2) 呼叫 LLM
+            response, cost = CallLLMAPI(
+                self.content,
+                max_tokens=self.max_tokens,
+                model_spec=self.model_spec
+            )
+    
+            # 3) token 警告
+            if response.usage.completion_tokens >= self.max_tokens:
+                log_dir = "logs"
+                os.makedirs(log_dir, exist_ok=True)
+                log_file = os.path.join(log_dir, "Completion_tokens.txt")
+                MES = (
+                    f"⚠️ Warning! Completion tokens reached {response.usage.completion_tokens} "
+                    f"(max {self.max_tokens}) for content: {self.content[:200]}..."
+                )
+                print(MES)
+                with open(log_file, "a", encoding="utf-8") as fp:
+                    fp.write(MES + "\n")
+    
+            # 4) 取出結果並清理
+            retMES = response.choices[0].message.content
+    
+            if self.include_think == False:
+                retMES = re.sub(r'<think>.*?</think>', '', retMES, flags=re.DOTALL)
+    
+            if retMES.replace(" ", "").replace("\n", "") == "<EMPTY>":
+                retMES = ""
+    
+            if "to json" in self.task.lower():
+                retMES = retMES.replace('```json', '').replace('```', '').strip()
+    
+            # 5) JSON 驗證與重試任務
+            if self.allow_to_retry and "to json" in self.task.lower():
+                DTBJobs_Retry, retMES = self.handle_json_output(retMES)
+    
+            # 6) 落地 Success（只有沒有 retry 且有內容才寫）
+            if self.OutputSaveFN != "" and DTBJobs_Retry == [] and retMES != "":
+                MKDIR(os.path.dirname(self.OutputSaveFN))
+                tmp_fn = self.OutputSaveFN + ".tmp"
+                with open(tmp_fn, mode='wt', encoding='utf-8') as fp:
+                    fp.write(retMES)
+                    fp.flush()
+                    os.fsync(fp.fileno())
+                os.replace(tmp_fn, self.OutputSaveFN)
+    
+                if self.removeFinPromptFile and self.promptFile:
+                    safe_unlink(self.promptFile)
+    
+            # 7) 成功旗標
+            ok = bool(retMES)
+            err = ""
+    
+            # 你如果後面還會用 response 物件可留著；但回傳不要回傳它
+            response.choices[0].message.content = retMES
+    
+        except Exception as ex:
+            # ====== 這裡就是你問的「例外時回」 ======
+            retMES = ""
+            ok = False
+            err = str(ex)
+            if not cost:
+                cost = 0
+    
+            print(f"When run PromptAPIPipeline, the following error occurs for promptFile {self.promptFile}:\n {ex}")
+            print(f"self.model_spec:{self.model_spec}")
+    
+        finally:
+            try:
+                if base_url:
+                    release_url_load(base_url, PGMSubDir=self.PGMSubDir)
+            except Exception:
+                pass
+    
+        # ====== 診斷：改成檢查 dict 可 pickle ======
+        ret_dict = {
+            "promptFile": self.promptFile,
+            "outputSaveFN": self.OutputSaveFN,
+            "output": retMES,
+            "cost": float(cost or 0),
+            "ok": ok,
+            "error": err,
+        }
+    
+        try:
+            import pickle
+            data = pickle.dumps(ret_dict, protocol=pickle.HIGHEST_PROTOCOL)
+            print(f"[diag] worker return picklable, size={len(data)} bytes")
+        except Exception as e:
+            print(f"[diag] worker return NOT picklable: {type(e).__name__}: {e}")
+            try:
+                print(f"[diag] ret_dict keys={list(ret_dict.keys())}")
+            except Exception:
+                pass
+    
+        return ret_dict
+        
+    def proc_0112(self, ):
         print("="*50)
         if self.promptFile == "":
             #print(f"Calling LLM API for promptFile: {self.promptFile}")
@@ -1480,7 +1549,8 @@ class PromptAPIPipeline:
                 with open(self.OutputSaveFN,mode='wt',encoding='utf-8') as fp:
                     fp.write(retMES)
             '''
-            if self.OutputSaveFN != "" and DTBJobs_Retry == []:
+            #if self.OutputSaveFN != "" and DTBJobs_Retry == []:
+            if self.OutputSaveFN != "" and DTBJobs_Retry == [] and retMES != "":
                 MKDIR(os.path.dirname(self.OutputSaveFN))
                 tmp_fn = self.OutputSaveFN + ".tmp"
                 #print(f"Start to run os.sync for tmp_fn {tmp_fn}")
@@ -1518,6 +1588,7 @@ class PromptAPIPipeline:
             except Exception:
                 pass
         # ---- 返還前：診斷是否可被 pickl e（只做一次即可）----
+        '''#0112
         try:
             import pickle
             ret_tuple = (response, cost, DTBJobs_Retry)
@@ -1533,7 +1604,32 @@ class PromptAPIPipeline:
                     print(f"[diag] DTBJobs_Retry[0] type={type(DTBJobs_Retry[0])}")
             except Exception:
                 pass
-        return response,cost,DTBJobs_Retry
+        '''#0112        
+                
+
+        try:
+            import pickle
+            ret = {
+                "promptFile": self.promptFile,
+                "output": retMES,
+                "cost": float(cost or 0),
+                "ok": bool(retMES),
+                "error": ""
+            }
+            pickle.dumps(ret, protocol=pickle.HIGHEST_PROTOCOL)
+        except Exception as e:
+            print(f"[diag] return NOT picklable: {type(e).__name__}: {e}")
+            
+            #return response, cost, DTBJobs_Retry
+            # ✅ 回傳可序列化資料
+            return {
+                "promptFile": self.promptFile,
+                "outputSaveFN": self.OutputSaveFN,
+                "output": retMES,
+                "cost": float(cost or 0),
+                "ok": bool(retMES),          # 有產出就算成功
+                "error": ""                  # 失敗時放錯誤訊息
+            }
 
     def handle_json_output(self, retMES):
         '''
@@ -1546,7 +1642,7 @@ class PromptAPIPipeline:
             #raise Exception
             json.loads(retMES)
             return [],retMES
-        except:
+        except json.JSONDecodeError:
             #如果json格式驗證失敗，那麼切割後再產生新的Job重試。
             print("json format verification failed.")
             print("retMES:",retMES)
@@ -1575,6 +1671,19 @@ class PromptAPIPipeline:
                     print("retMES_rep", retMES_rep)
                 MainFileName,input_text,keyConsiderations = self.extract_MainFileName_and_input_text()
                 if input_text:
+                    # ✅ 改成：只產生新 TODO prompt 檔，不回傳 job 物件
+                    self.split_and_generate_new_prompts(
+                        input_text=input_text,
+                        keyConsiderations=keyConsiderations,
+                        MainFileName=MainFileName
+                    )
+                    # ✅ 回傳空清單 + 空字串：告訴上層「這次不要產出結果檔」
+                    return [], ""
+                else:
+                    print("未於prompt中截獲非空的原始輸入任務文本，不生成再次嘗試的新prompt。")
+                    return [], ""
+                '''#0112
+                if input_text:
                     DTBJobs_Retry = self.split_and_generate_new_prompts(
                         input_text=input_text,keyConsiderations=keyConsiderations,
                         MainFileName=MainFileName)
@@ -1582,6 +1691,7 @@ class PromptAPIPipeline:
                     DTBJobs_Retry = []
                     print("未於prompt中截獲非空的原始輸入任務文本，不生成再次嘗試的新prompt。")
                 return DTBJobs_Retry,""
+                '''#0112
 
     def extract_MainFileName_and_input_text(self):
         input_text = None
@@ -1599,8 +1709,52 @@ class PromptAPIPipeline:
         m3 = re.search(r'風險關注指標為「([^」]+)」', self.content)
         keyConsiderations = m3.group(1) if m3 else None
         return MainFileName, input_text, keyConsiderations
+        
+    def split_and_generate_new_prompts(self, input_text, MainFileName="", keyConsiderations=""):
+        half_length = len(input_text) // 2
+        first_half = input_text[:half_length]
+        second_half = input_text[half_length:]
     
-    def split_and_generate_new_prompts(self, input_text,MainFileName="",keyConsiderations=""):
+        # ✅ 1) 不要用 RUNNING 當 base_name；先取得「TODO 對應路徑」當基準
+        todo_pf = _ensure_in_todo(self.promptFile)  # 例如 .../TODO/xxx.txt
+        p = Path(todo_pf)
+        todo_dir = p.parent
+        stem = p.stem  # xxx
+        new_prompt_file_0 = str(todo_dir / f"{stem}-0.txt")
+        new_prompt_file_1 = str(todo_dir / f"{stem}-1.txt")
+    
+        print("start to generate new prompt.")
+        print("self.task", self.task)
+        print("MainFileName", MainFileName)
+    
+        prompt_0 = generate_prompt(
+            content=first_half, keyConsiderations=keyConsiderations,
+            task=self.task, MainFileName=MainFileName
+        )
+        prompt_1 = generate_prompt(
+            content=second_half, keyConsiderations=keyConsiderations,
+            task=self.task, MainFileName=MainFileName
+        )
+    
+        # ✅ 2) 新檔直接寫入 TODO，下一輪 consumer 才會 pick 到
+        for prompt, fn in [(prompt_0, new_prompt_file_0), (prompt_1, new_prompt_file_1)]:
+            with open(fn, "wt", encoding="utf-8") as fp:
+                fp.write(prompt)
+    
+        # ✅ 3) 刪掉「目前這筆」的 prompt 檔：它現在通常在 RUNNING
+        # 目的：讓 consumer 能判定這筆已釋放（你後面會把它當 requeued）
+        try:
+            safe_unlink(self.promptFile)  # 你已有的安全刪除
+        except Exception as e:
+            print(f"warn: failed to remove original prompt {self.promptFile}: {e}")
+    
+        print(f"Generated new TODO prompt files: {new_prompt_file_0}, {new_prompt_file_1}")
+    
+        # ✅ 4) 在「檔案隊列」模式下，其實不需要回傳 DTBJobs_Retry 物件
+        # 讓 consumer 下一輪從 TODO 讀檔即可
+        return []
+        
+    def split_and_generate_new_prompts_0112(self, input_text,MainFileName="",keyConsiderations=""):
         half_length = len(input_text) // 2
         first_half = input_text[:half_length]
         second_half = input_text[half_length:]
@@ -1670,6 +1824,7 @@ def json_format_caller(content,
         MainFileName=MainFileName
     )
     #print("Running PromptAPIPipeline for json_format_caller")
+    '''#0112
     response, cost, _ = PromptAPIPipeline(
         content=prompt,
         task=task,
@@ -1683,6 +1838,19 @@ def json_format_caller(content,
     if response is None:
         return None
     return combine_json_return(response.choices[0].message.content)[0]
+    '''#0112
+    ret = PromptAPIPipeline(
+        content=prompt,
+        task=task,
+        removeFinPromptFile=True,
+        max_tokens=max_tokens,
+        model_spec=model_spec
+    ).proc()
+    
+    if not ret or not ret.get("ok"):
+        return None
+    
+    return combine_json_return(ret.get("output", ""))[0]
 
 
 
