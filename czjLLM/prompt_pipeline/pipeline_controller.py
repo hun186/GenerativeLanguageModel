@@ -1,55 +1,56 @@
 # pipeline_controller.py
 import os
 import errno
-from colorama import Fore, Style
+#from colorama import Fore, Style
 from tqdm import tqdm
 import re
-import random
+#import random
 import json
 import time
-import threading, queue
-from collections import defaultdict, Counter
+import threading
+#import queue
+from collections import Counter
 from datetime import datetime
 import multiprocessing
 import time as _time
-import sqlite3
-import pyodbc
-import shutil
+#import sqlite3
+#import pyodbc
+#import shutil
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 import faulthandler
 
-from czjLLM.prompt_pipeline.result_handler import PromptResultHandler
+#from czjLLM.prompt_pipeline.result_handler import PromptResultHandler
 from czjLLM.prompt_pipeline.prompt_generator import generate_prompt
 from czjLLM.prompt_pipeline.llm_caller import CallLLMAPI
 from czjLLM.prompt_pipeline.debug_snapshot import build_debug_snapshot
 from czjLLM.utilities.atomic_io import atomic_write_json, robust_json_read
 from czjLLM.job_manager.job_config import LLMJobConfig
-from czjLLM.job_manager.end_point_manager import get_available_end_points
+#from czjLLM.job_manager.end_point_manager import get_available_end_points
 from czjLLM.job_manager.end_point_manager import select_model
 #from job_manager.win_gui import try_start_gui  # 為避免循環，可移到檔頭
 
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.logging_utils import CostLog
-from czjLLM.utilities.logging_utils import log_error
+#from czjLLM.utilities.logging_utils import log_error
 from utils.utilities_path import OSWALK
 from utils.utilities_path import getPathFromFN
-from utils.utilities_path import DirReplace
+#from utils.utilities_path import DirReplace
 from utils.utilities_path import MKDIR
-from utils.utilities_path import safe_move
+#from utils.utilities_path import safe_move
 from utils.utilities import flattenList
 from utils.utilities import tlog
 from utils.MP_utils import multicoreJob
 
 from czjLLM.infrastructure.ollama_lb import select_idle_ollama_url,release_url_load
 
-from czjLLM.sql_utils.common import quote_column
-from czjLLM.sql_utils.writer import flatten_row_based_json_array_to_subtable
-from czjLLM.sql_utils.row_utils import upsert_single_value
-from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
-from czjLLM.utilities.path_utils import get_combined_result_path
+#from czjLLM.sql_utils.common import quote_column
+#from czjLLM.sql_utils.writer import flatten_row_based_json_array_to_subtable
+#from czjLLM.sql_utils.row_utils import upsert_single_value
+#from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
+#from czjLLM.utilities.path_utils import get_combined_result_path
 from czjLLM.job_manager.console_ui import  tlog_warn
 
 def _canon_path(p: str) -> str:
@@ -514,7 +515,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             except Exception as ex:
                 # 不讓整輪報廢；下一輪再吃
                 tlog_warn(f"❌ run_round 例外：{ex}")
-                MPresult = []
+                #MPresult = []
                 
             # ---- 2.5) 以「實際完成」回報（檔案是否仍存在於 TODO）
             # 規則：成功 → 會移除 TODO/建立 Success；失敗 → TODO 留存（或重建），下輪再吃
@@ -595,13 +596,14 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                 _bump(ctx)  # ✅ 有完成也戳
             except Exception as ex:
                 tlog_warn(f"⚠️ meter_on_finish_batch 失敗：{ex}")
-                meter_after = None
+                #meter_after = None
 
             # ---- 4) 心跳：告訴外界 consumer 還活著
             try:
                 meter_update(meter_fn, lambda d: d.setdefault("consumer", {}).update({
                     "alive": True, "last_round_ts": time.time()
                 }))
+                _bump(ctx)  # ✅ consumer 每輪都算活著
             except Exception:
                 pass
 
@@ -630,117 +632,6 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             meter_update(meter_fn, lambda d: d.setdefault("consumer", {}).update({"alive": False}))
         except Exception:
             pass
-        '''
-        try:
-            cursor.close()
-        except Exception:
-            pass
-        try:
-            conn.close()
-        except Exception:
-            pass
-        '''
-            
-def llm_stream_consumer_OLD(ctx, registry: ItemsRegistry, meter_fn: str, stop_event: threading.Event,
-                        is_sqlite=False, per_round_limit=128):
-    """
-    持續從所有 item_dir 的 TODO 中抓取 prompt 檔，以小批次方式呼叫 LLM。
-    － 每小批：pending->running->completed；按列累計 done，done==total 時合併寫回。
-    － 無 TODO 且 stop_event 設定後結束。
-    """
-    # 單 Thread 中開 DB 連線，避免多執行緒/程序共用
-    if getattr(ctx, "is_sqlite", is_sqlite):
-        conn = sqlite3.connect(ctx.sqlite_path)
-        cur = conn.cursor()
-        cur.execute("PRAGMA journal_mode=WAL;")
-        cur.execute("PRAGMA synchronous=NORMAL;")
-        cur.close()
-    else:
-        conn = pyodbc.connect(ctx.sql_connection_string)
-    cursor = conn.cursor()
-
-    try:
-        while True:
-            round_start = time.time()
-            dispatched_n = 0
-            finished_n   = 0
-            items_map = registry.list_items()
-            item_dirs = list(items_map.keys())
-
-            batch = pick_next_prompts(item_dirs, per_round_limit=per_round_limit)
-
-            if not batch:
-                # 沒事可做：若 producer 已結束且無 TODO，退出
-                if stop_event.is_set():
-                    # 再檢查一次是否真的都空了
-                    if not pick_next_prompts(item_dirs, per_round_limit=1):
-                        break
-                time.sleep(0.1)
-                continue
-
-            prompt_files = [pf for pf, _ in batch]
-            # 統計每個列（item_dir 對應 pk）的批次量
-            count_by_item = Counter(item for _, item in batch)
-
-            # ---- 1) 更新 meter：pending -= n, running += n
-            total_n = len(prompt_files)
-            meter_update(meter_fn, lambda d: _meter_on_dispatch(d, items_map, count_by_item, total_n))
-
-            # ---- 2) 建立 Job 並執行（multicore）
-            DTBJobs = []
-            for pf, item_dir in batch:
-                DTBJobs.append(PromptAPIPipeline(
-                    task=ctx.task,
-                    promptFile=pf,
-                    OutputSaveFN=pf.replace("TODO", "Success"),
-                    removeFinPromptFile=getattr(ctx, "removeFinPromptFile", True),
-                    max_tokens=ctx.max_tokens,
-                    allow_to_retry=True,
-                    model_spec=ctx.model_spec,
-                    PGMSubDir=ctx.PGMSubDir,
-                ))
-            # 記錄「派發數」
-            dispatched_n += len(DTBJobs)
-            if dispatched_n == 0:
-                time.sleep(0.2)
-                continue
-            
-            MPresult = multicoreJob(DTBJobs=DTBJobs, nProcess=ctx.n_process, ShuffleJobs=False,log_queue=getattr(ctx,"mp_log_q", None)).run()
-            # 記錄「完成數」── 一般等於 MPresult 長度
-            if MPresult:
-                finished_n += len(MPresult)
-            # 失敗/重試的 prompt，會在 Pipeline 內生成新 TODO 檔，之後回合再吃
-
-            # ---- 3) 更新 meter：running -= n, completed += n, rows[pk].done += 每列批次量
-            meter_after = meter_update(meter_fn, lambda d: _meter_on_finish_batch(d, items_map, count_by_item, total_n))
-            '''
-            # ---- 4) 對「完成的列」合併與寫回
-            done_pks = [pk for pk, st in meter_after["rows"].items() if st.get("status") == "ready_to_merge"]
-            for pk in done_pks:
-                st = meter_after["rows"][pk]
-                _merge_and_write_single_row(ctx, pk, st, cursor, is_sqlite=is_sqlite)
-                # 設為 merged
-                meter_update(meter_fn, lambda d, _pk=pk: d["rows"][_pk].update({"status": "merged"}))
-                # 備份原始 txt
-                des = DirReplace(st["temp_txt"], ctx.llm_source_dir, ctx.llm_source_backup_dir)
-                MKDIR(getPathFromFN(des))
-                shutil.move(st["temp_txt"], des)
-                # 從註冊器移除
-                registry.remove(st["item_dir"])
-            '''
-            took = time.time() - round_start
-            try:
-                m = meter_read(meter_fn)
-                q = m.get("queue", {})
-                tlog(
-                    f"🧵 consumer round: +dispatched={dispatched_n}, finished={finished_n}, "
-                    f"pending={q.get('pending',0)}, running={q.get('running',0)}, took={took:.2f}s"
-                )
-            except Exception:
-                pass
-    finally:
-        cursor.close()
-        conn.close()
 
 
 def _meter_on_dispatch(d, items_map, count_by_item, total_n):
@@ -777,7 +668,9 @@ def _meter_on_finish_batch_v2(d, items_map,
 
     # ✅ completed per item（只算 done）
     for item_dir, cnt in count_by_item_done.items():
-        row = rows.setdefault(item_dir, {})
+        #row = rows.setdefault(item_dir, {})
+        pk = items_map.get(item_dir, {}).get("pk", item_dir)  # 保底
+        row = rows.setdefault(pk, {})
         row["done"] = int(row.get("done", 0)) + int(cnt)
 
     # ✅ requeued per item（可選：記錄一下）
@@ -788,42 +681,6 @@ def _meter_on_finish_batch_v2(d, items_map,
 
     return d
 
-'''
-def _merge_and_write_single_row(ctx, pk, st, cursor, is_sqlite=False):
-    item_dir = st["item_dir"]
-    temp_txt = st["temp_txt"]
-    # TODO 清空才合併（保險）
-    todo_dir = os.path.join(item_dir, "TODO")
-    if len(OSWALK(todo_dir)) == 0:
-        combine_api_finished_item(item_dir, ctx)
-
-    CombBackFN = get_combined_result_path(temp_txt, ctx)
-    if not os.path.isfile(CombBackFN):
-        raise FileNotFoundError(f"找不到輸出檔案：{CombBackFN}")
-
-    with open(CombBackFN, "r", encoding="utf-8") as fp:
-        result_text = fp.read()
-
-    update_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S") if ctx.record_update_time else None
-    upsert_single_value(ctx, cursor, pk, result_text,
-                        is_sqlite=is_sqlite, update_time=update_time)
-
-    if ctx.flatten_json_output:
-        result_list = extract_json_list_for_flatten(result_text, ctx.allowed_output_fields)
-        if result_list and ctx.subtable_name and ctx.allowed_output_fields:
-            flatten_row_based_json_array_to_subtable(
-                cursor=cursor,
-                sub_table_name=ctx.subtable_name,
-                pk_value=pk,
-                json_array=result_list,
-                key_col=ctx.primary_key,
-                input_col=ctx.input_col,
-                seq_col="seq",
-                is_sqlite=is_sqlite
-            )
-    cursor.connection.commit()
-    print(f"✅ 合併並寫入完成：{pk}")
-'''
 
 def _es_heartbeat_loop(adapter, interval_sec=60):
     while True:
@@ -835,7 +692,111 @@ def _es_heartbeat_loop(adapter, interval_sec=60):
             print(f"[watchdog] ES ping 例外: {e}", flush=True)
         time.sleep(interval_sec)
 
-def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60, stacks_path="stacks.log",meter_fn=None, restart_cb=None):
+def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60,
+                    stacks_path="stacks.log", meter_fn=None, restart_cb=None):
+    stacks_file = open(stacks_path, "a", buffering=1, encoding="utf-8")
+    try:
+        faulthandler.enable()
+    except Exception:
+        pass
+
+    MAX_STACKS_BYTES = 20 * 1024 * 1024  # 20MB
+
+    while True:
+        try:
+            now = time.time()
+
+            # --- 1) 讀 meter consumer 心跳 ---
+            m = {}
+            q = {}
+            consumer = {}
+            try:
+                m = meter_read(meter_fn) if meter_fn else {}
+                q = m.get("queue", {}) if isinstance(m, dict) else {}
+                consumer = m.get("consumer", {}) if isinstance(m, dict) else {}
+            except Exception:
+                m, q, consumer = {}, {}, {}
+
+            pending = int(q.get("pending", 0) or 0)
+            running = int(q.get("running", 0) or 0)
+
+            # --- 2) 組合多個「最近活動時間」 ---
+            last_doc = getattr(ctx, "last_progress_ts", None)  # 文件級
+            last_round = consumer.get("last_round_ts", None)   # 切片批次級
+            last_dispatch_mono = CONSUMER_STATE.get("last_dispatch_ts", 0.0)
+
+            # monotonic -> wall time 保守換算：用 now - (monotonic差) 當近似
+            # 目的只是比較「多久以前」是否活著，不求精準時戳
+            if last_dispatch_mono:
+                last_dispatch = now - max(0.0, (time.monotonic() - last_dispatch_mono))
+            else:
+                last_dispatch = None
+
+            # 取最大（最新）的活動時間
+            candidates = [t for t in [last_doc, last_round, last_dispatch] if isinstance(t, (int, float)) and t > 0]
+            last_any = max(candidates) if candidates else None
+
+            # --- 3) 決策：只要 running>0 或最近有 round/dispatch，就不要誤判停滯 ---
+            if last_any is not None:
+                idle = now - last_any
+            else:
+                idle = 0
+
+            # ✅ 關鍵：如果還有 running，而且 consumer 最近仍有 round/dispatch，視為正常
+            alive_hint = False
+            if running > 0:
+                # 只要 2 分鐘內有 round 或 dispatch 就當活著（你可調）
+                if (last_round and now - float(last_round) < 120) or (last_dispatch and now - float(last_dispatch) < 120):
+                    alive_hint = True
+
+            if (idle > idle_threshold_sec) and (not alive_hint):
+                print("[watchdog] 10 分鐘無進度訊號（doc/round/dispatch），疑似停滯，請檢查 stacks.log 與 ES", flush=True)
+
+                # stacks.log size rotate
+                try:
+                    if os.path.exists(stacks_path) and os.path.getsize(stacks_path) > MAX_STACKS_BYTES:
+                        try:
+                            stacks_file.close()
+                        except Exception:
+                            pass
+                        stacks_file = open(stacks_path, "w", buffering=1, encoding="utf-8")
+                        print(f"[watchdog] stacks.log 超過上限，已截斷重建（上限 {MAX_STACKS_BYTES} bytes）", flush=True)
+                except Exception as e:
+                    print(f"[watchdog] 檔案大小檢查失敗：{e}", flush=True)
+
+                try:
+                    faulthandler.dump_traceback(file=stacks_file)
+                except Exception as e:
+                    print(f"[watchdog] dump 例外: {e}", flush=True)
+
+                # ES ping
+                try:
+                    ok = bool(getattr(adapter, "es", None)) and adapter.es.ping(request_timeout=3)
+                    if not ok:
+                        print("[watchdog] ES ping 失敗（stall）", flush=True)
+                except Exception as e:
+                    print(f"[watchdog] ES ping 例外（stall）: {e}", flush=True)
+
+            # --- 4) 你原本的 restart 條件保留，但建議再加一個：running>0 就不要重啟 ---
+            try:
+                long_no_dispatch = (time.monotonic() - CONSUMER_STATE.get("last_dispatch_ts", 0.0) > 120.0)
+                if pending > 0 and running == 0 and long_no_dispatch:
+                    print("🧯 [watchdog] stall detected: pending>0, running=0, long_no_dispatch>120s", flush=True)
+                    if callable(restart_cb):
+                        try:
+                            restart_cb()
+                            print("🔄 [watchdog] restart_cb invoked", flush=True)
+                        except Exception as re:
+                            print(f"⚠️ [watchdog] restart_cb error: {re}", flush=True)
+            except Exception:
+                pass
+
+        except Exception as e:
+            print(f"[watchdog] 自身例外: {e}", flush=True)
+
+        time.sleep(interval_sec)
+
+def _stall_watchdog_0119(ctx, adapter, idle_threshold_sec=600, interval_sec=60, stacks_path="stacks.log",meter_fn=None, restart_cb=None):
     # 行緩衝，避免 Windows 下鎖太久
     stacks_file = open(stacks_path, "a", buffering=1, encoding="utf-8")
     try:
@@ -894,7 +855,7 @@ def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60, stack
                             print("🔄 [watchdog] restart_cb invoked", flush=True)
                         except Exception as re:
                             print(f"⚠️ [watchdog] restart_cb error: {re}", flush=True)
-            except Exception as _:
+            except Exception:
                 pass
         except Exception as e:
             print(f"[watchdog] 自身例外: {e}", flush=True)
@@ -951,153 +912,6 @@ def row_is_ready(item_dir: str) -> bool:
     todo_dir = os.path.join(item_dir, "TODO")
     # TODO 目錄不存在或為空，都視為可合併
     return (not os.path.isdir(todo_dir)) or (len(OSWALK(todo_dir)) == 0)
-'''
-def row_merger_watchdog(ctx, registry: ItemsRegistry, meter_fn: str, stop_event: threading.Event,
-                        is_sqlite=False, scan_interval=0.2, done_q=None):
-    """
-    週期性掃描所有 item_dir：
-    - 若 TODO 清空 → combine → upsert → commit → 備份原始 txt
-    - 不依賴『done/total』計數，純看檔案狀態，確保「有 Success 就能寫回」
-    """
-    # Writer 專用連線
-    if getattr(ctx, "is_sqlite", is_sqlite):
-        conn = sqlite3.connect(ctx.sqlite_path, timeout=60)
-        cur = conn.cursor()
-        cur.execute("PRAGMA journal_mode=WAL;")
-        cur.execute("PRAGMA synchronous=NORMAL;")
-        cur.close()
-    else:
-        conn = pyodbc.connect(ctx.sql_connection_string)
-    cursor = conn.cursor()
-
-    try:
-        while True:
-            items_map = registry.list_items()
-            #print("items_map in row_merger_watchdog",items_map)
-            if not items_map and stop_event.is_set():
-                # 沒待合併的列且主流程告知可收尾 → 結束
-                break
-
-            progressed = False
-            for item_dir, meta in list(items_map.items()):
-                pk = meta["pk"]
-                temp_txt = meta["temp_txt"]
-
-                if not row_is_ready(item_dir):
-                    continue  # TODO 尚未清空
-
-                # 嘗試合併（idempotent）
-                try:
-                    
-                    todo_dir = os.path.join(item_dir, "TODO")
-                    succ_dir = os.path.join(item_dir, "Success")
-                    try:
-                        tlog(f"🧩 merge check: {os.path.basename(item_dir)} "
-                             f"TODO={len(OSWALK(todo_dir))}, Success={len(OSWALK(succ_dir))}")
-                    except Exception:
-                        pass
-                    
-                    combine_api_finished_item(item_dir, ctx)
-                except Exception as e:
-                    # 有些情況合併結果已存在，或 Success 尚未完全落地；下次再試
-                    print(f"ℹ️ 合併提示（pk={pk}）：{e}")
-
-                # 讀合併檔
-                CombBackFN = get_combined_result_path(temp_txt, ctx)
-                if not os.path.isfile(CombBackFN):
-                    # 合併檔尚未產出（可能剛好 race），下輪再掃
-                    continue
-
-                try:
-                    with open(CombBackFN, "r", encoding="utf-8") as fp:
-                        result_text = fp.read()
-
-                    update_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S") if ctx.record_update_time else None
-                    upsert_single_value(ctx, cursor, pk, result_text,
-                                        is_sqlite=is_sqlite, update_time=update_time)
-
-                    if ctx.flatten_json_output:
-                        result_list = extract_json_list_for_flatten(result_text, ctx.allowed_output_fields)
-                        if result_list and ctx.subtable_name and ctx.allowed_output_fields:
-                            save_input = bool(getattr(ctx, "save_raw_input_when_flatten", False))
-                            input_col_value = None
-                    
-                            if save_input:
-                                # 從主表撈回原始輸入文字（用主鍵比對）
-                                try:
-                                    fetch_sql = (
-                                        f"SELECT {quote_column(ctx.input_col)} "
-                                        f"FROM {quote_column(ctx.sql_table)} "
-                                        f"WHERE {quote_column(ctx.primary_key)} = ?"
-                                    )
-                                    cursor.execute(fetch_sql, (pk,))
-                                    r = cursor.fetchone()
-                                    input_col_value = r[0] if r else None
-                                except Exception as ex:
-                                    tlog_warn(f"⚠️ 無法撈回原始輸入（pk={pk}）：{ex}")
-                                    # 改為不寫入原始輸入
-                                    save_input = False
-                                    input_col_value = None
-                            
-                            flatten_row_based_json_array_to_subtable(
-                                cursor=cursor,
-                                sub_table_name=ctx.subtable_name,
-                                pk_value=pk,
-                                json_array=result_list,
-                                key_col=ctx.primary_key,
-                                seq_col="seq",
-                                save_raw_input=save_input, # ✅ 開關
-                                input_col=ctx.input_col, #子表欄位名，僅在 save_input=True 時生效/建立
-                                input_col_value=input_col_value,# ✅ 值（可為 None）
-                                is_sqlite=is_sqlite,
-                            )
-
-                    conn.commit()  # ✅ 用 conn.commit() 確保落地
-                    _bump(ctx)  # ✅ 寫回成功也算前進
-                    tlog(f"✅ 逐列合併並寫入完成：{pk}")
-
-                    # 從 registry 移除，不再重複處理
-                    registry.remove(item_dir)
-                    
-                    #tlog("[watchdog] done_q +1")
-                    # ✅ 告訴進度條：完成了一列（交由 drain thread 統一更新 Console/GUI）
-                    if done_q is not None:
-                        try:
-                            # 送「1」代表完成一列；你的 drain 端只看數量，內容不重要
-                            done_q.put_nowait(1)
-                        except Exception:
-                            pass
-                        
-                    # 備份原始 txt（非關鍵，失敗不影響完成進度）
-                    try:
-                        des = DirReplace(temp_txt, ctx.llm_source_dir, ctx.llm_source_backup_dir)
-                        MKDIR(getPathFromFN(des))
-                        safe_move(temp_txt, des)
-                    except Exception as ex:
-                        tlog_warn(f"⚠️ 備份原始 txt 失敗（pk={pk}）：{ex}")
-
-                        
-                    # 更新負載檔狀態（若有）
-                    try:
-                        meter_update(meter_fn, lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update({"status": "merged"}))
-                    except Exception:
-                        pass
-
-                    progressed = True
-                except Exception as e:
-                    log_error(-1, f"Row Merger 寫回失敗 pk={pk}: {e}", ctx.error_log_path)
-                    # 寫回失敗不移除，下一輪重試
-
-            if not progressed:
-                time.sleep(scan_interval)
-    finally:
-        cursor.close()
-        conn.close()
-'''
-
-
-
-
 
 @dataclass
 class MergeOps:
@@ -1268,7 +1082,7 @@ def call_llm_api(itemList, ctx, allow_to_retry=True,PGMSubDir=""):
         #    CostLog(PGMSubDir = PGMSubDir, costList=costList, mode="AllArt")
         if MPresult:
             # MPresult 每個元素都是 dict
-            outputs = [r.get("output", "") for r in MPresult]
+            #outputs = [r.get("output", "") for r in MPresult]
             costList = [float(r.get("cost", 0) or 0) for r in MPresult]
             # 你現在 queue 模式其實不需要 retry jobs 物件了
             DTBJobs_Retry = []

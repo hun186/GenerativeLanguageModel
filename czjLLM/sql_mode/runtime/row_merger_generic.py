@@ -11,8 +11,9 @@ from utils.utilities_path import OSWALK, DirReplace, MKDIR, getPathFromFN
 from utils.utilities_path import safe_move
 
 from czjLLM.prompt_pipeline.pipeline_controller import (
-    combine_api_finished_item, get_combined_result_path, row_is_ready, meter_update
+    combine_api_finished_item, row_is_ready, meter_update
 )
+from czjLLM.utilities.path_utils import get_combined_result_path
 from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
 #from czjLLM.prompt_pipeline.pipeline_controller import meter_update  # 檔頭若尚未 import
 

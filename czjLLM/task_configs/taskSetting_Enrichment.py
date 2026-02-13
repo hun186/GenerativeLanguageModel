@@ -165,7 +165,7 @@ Event_Timeline 中的 `date_iso` 與 `date_precision` 亦遵守相同邏輯。
 
 1. 來源與形式  
    - 每一筆 evidence_snippets.text 必須直接從輸入原文中逐字擷取（verbatim），禁止任何形式的改寫或摘要。  
-   - 每個事件最多擷取 3 段證據片段。  
+   - 每個事件最多擷取 30 段證據片段。  
 
 2. 長度限制  
    - 單一片段最長不超過 280 個字，以避免內容過長。  
@@ -299,6 +299,8 @@ Event_Timeline 中的 `date_iso` 與 `date_precision` 亦遵守相同邏輯。
     "importance_score": 84
   }
 }]
+
+-極重要：注意如果輸入文本是羅列了非結構化的查詢綜整結果的文件，那麼每一個條目都屬於檢索綜整式AI代理人可能會用到的項目，應該將所有條目都萃取至evidence_snippets中，避免遺漏任何一條，每一個原文的條目抽成一個證據片段，以利檢索。
 """
 
 USE_MAINFILE_HINT = False  # True 就會加那一行，False 就隱藏

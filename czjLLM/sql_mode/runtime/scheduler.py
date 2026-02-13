@@ -14,7 +14,8 @@ from utils.utilities_path import getMFNFromFN, OSWALK
 from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from czjLLM.job_manager.job_config import CtxOverlay
 from czjLLM.handlers.handle_txt_file import handle_single_input_file  # 延用現有函式
-from czjLLM.prompt_pipeline.pipeline_controller import get_combined_result_path
+#from czjLLM.prompt_pipeline.pipeline_controller import get_combined_result_path
+from czjLLM.utilities.path_utils import get_combined_result_path
 
 def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
     """切片 -> 建 TODO -> 登錄 registry 與 meter（使用 per-row ctx overlay，避免 deepcopy/Queue 錯誤）"""
