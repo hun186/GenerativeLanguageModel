@@ -47,7 +47,54 @@ def split_json_arrays(raw: str) -> list[str]:
 
     return arrays
 
+def split_json_arrays_safe(raw: str) -> list[str]:
+    """
+    將 raw 字串中的多個 JSON 陣列（支援跨行、巢狀物件）正確分割成獨立區塊。
 
+    避免使用正則處理嵌套結構，改用括號平衡方式切分。
+    """
+    arrays = []
+    buf = []
+    level = 0
+    in_str = False
+    esc = False
+    started = False
+
+    for ch in raw:
+        if not started:
+            if ch == '[':
+                started = True
+                level = 1
+                buf = ['[']
+            continue
+
+        buf.append(ch)
+
+        if esc:
+            esc = False
+            continue
+
+        if in_str:
+            if ch == '\\':
+                esc = True
+            elif ch == '"':
+                in_str = False
+            continue
+
+        # not in string
+        if ch == '"':
+            in_str = True
+        elif ch == '[':
+            level += 1
+        elif ch == ']':
+            level -= 1
+            if level == 0:
+                arrays.append(''.join(buf).strip())
+                buf = []
+                started = False
+
+    return arrays
+    
 def robust_merge_json_lists(raw: str) -> str:
     """
     清理並合併多個 JSON 陣列字串，並在解析失敗時自動嘗試修復格式錯誤的段落。
