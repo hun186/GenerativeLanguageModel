@@ -11,6 +11,7 @@ CONFIG_TARGETS = {
     "taskConfig_ANKIso": "taskSetting_ANKIso",
     "taskSetting_Enrichment": "taskSetting_Enrichment",
     "taskSetting_NewsReduce": "taskSetting_NewsReduce",
+    "taskSetting_MenuAnalysis": "taskSetting_MenuAnalysis",
 }
 
 # 取得 czjLLM 當前套件名稱（相對匯入時會是 'czjLLM'）

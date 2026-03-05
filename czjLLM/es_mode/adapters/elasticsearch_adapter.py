@@ -1,12 +1,14 @@
-#es_mode/adapters/es_adapter.py
+#es_mode/adapters/elasticsearch_adapter.py
 
-from typing import Any, Dict, Iterable, List, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional
 import json
+import re
+from datetime import datetime
 
 try:
     # 官方 7.x 客戶端
     from elasticsearch import Elasticsearch, helpers  # type: ignore
-except Exception as e:  # pragma: no cover
+except Exception:  # pragma: no cover
     Elasticsearch = None  # type: ignore
     helpers = None  # type: ignore
 
@@ -31,7 +33,81 @@ def _extract_by_path(src: dict, path: str):
         return cur
     except Exception:
         return None
-    
+
+def _deep_collect_by_path(cur: Any, path: str) -> List[Any]:
+    """
+    支援 dict/list 混合結構的深層取值。
+    例如 path='multidim_event_json.Event_Timeline.date_iso'
+    可穿透 nested/list，回傳所有命中的值（list）。
+    """
+    parts = path.split(".") if isinstance(path, str) else list(path)
+
+    def _walk(node: Any, idx: int) -> List[Any]:
+        if idx >= len(parts):
+            return [node]
+
+        # 若目前是 list，不消耗 path segment，對每個元素繼續走
+        if isinstance(node, list):
+            out = []
+            for item in node:
+                out.extend(_walk(item, idx))
+            return out
+
+        # 若目前是 dict，消耗一層 path
+        if isinstance(node, dict):
+            key = parts[idx]
+            if key not in node:
+                return []
+            return _walk(node.get(key), idx + 1)
+
+        return []
+
+    return _walk(cur, 0)
+
+def _flatten_list(values: List[Any]) -> List[Any]:
+    out = []
+    for v in values:
+        if isinstance(v, list):
+            out.extend(_flatten_list(v))
+        else:
+            out.append(v)
+    return out
+
+def _is_valid_date_string(v: Any, fmt: str = "yyyy-MM-dd") -> bool:
+    if v is None:
+        return False
+
+    # ES date 欄位如果在 _source 中可能是字串；也可能有人寫成 list
+    if isinstance(v, (list, tuple)):
+        if not v:
+            return False
+        v = v[0]
+
+    s = str(v).strip()
+    if s == "":
+        return False
+
+    if fmt == "yyyy-MM-dd":
+        # 先驗格式，再驗日期合法性（避免 2025-13-99）
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
+            return False
+        try:
+            datetime.strptime(s, "%Y-%m-%d")
+            return True
+        except Exception:
+            return False
+
+    # 可擴充其他格式
+    if fmt in ("iso8601", "strict_date_optional_time"):
+        try:
+            datetime.fromisoformat(s.replace("Z", "+00:00"))
+            return True
+        except Exception:
+            return False
+
+    # 未知格式：保守當成非空即合法（你也可以改成 False）
+    return True
+
 def _is_non_empty_deep(v) -> bool:
     if v is None: return False
     if isinstance(v, str): return v.strip() != ""
@@ -350,10 +426,12 @@ class ElasticsearchAdapter:
     
         if to_add:
             self.es.indices.put_mapping(index=index, body={"properties": to_add})
+            
     def _resolve_meta_field(self, output_col: str) -> Optional[str]:
         rr = (self.cfg or {}).get("rerun") or {}
         mf = rr.get("meta_field")
         return mf or (f"{output_col}_meta" if output_col else None)
+    
     def _bulk_check_present_nonempty(
         self, *, tgt_index: str, pk: str, ids: List[str],
         output_col: str, request_timeout: int,
@@ -380,7 +458,7 @@ class ElasticsearchAdapter:
                 if not d.get("found"):
                     continue
                 src = d.get("_source", {}) or {}
-                val = _extract_by_path(src, output_col)
+                #val = _extract_by_path(src, output_col)
                 #if _is_non_empty_deep(val):
                 if self._is_fresh_output(src, output_col):
                     # ✅ 放入 present 前也標準化，避免 _id 型態不一
@@ -396,90 +474,39 @@ class ElasticsearchAdapter:
             has_keyword = False
     
         term_field = pk_keyword if has_keyword else pk
-    
+
+        rr = (self.cfg or {}).get("rerun") or {}
+        mf = self._resolve_meta_field(output_col)
+        fallback_date = rr.get("fallback_date_field") or self.cfg.get("fallback_date_field") or "update_time_ai"
+
+        src_fields = [pk, output_col]
+        if mf:
+            src_fields.append(mf)
+        if fallback_date:
+            src_fields.append(fallback_date)
+        # 去重
+        src_fields = list(dict.fromkeys(src_fields))
+        
         batch = 1000
         for i in range(0, len(ids_norm), batch):
             chunk = ids_norm[i:i+batch]          # ✅ 已是標準化後的字串
             q = {
                 "query": {"terms": {term_field: chunk}},
-                "_source": [pk, output_col],
+                #"_source": [pk, output_col],
+                "_source": src_fields,
                 "size": len(chunk)
             }
             res = self.es.search(index=tgt_index, body=q, request_timeout=request_timeout)
             for hit in res.get("hits", {}).get("hits", []):
                 src = hit.get("_source", {}) or {}
-                val = _extract_by_path(src, output_col)
-                if _is_non_empty_deep(val):
+                #val = _extract_by_path(src, output_col)
+                #if _is_non_empty_deep(val):
+                #    key_val = _extract_by_path(src, pk)
+                if self._is_fresh_output(src, output_col):
                     key_val = _extract_by_path(src, pk)
                     key_val = _norm_scalar(key_val)     # ✅ 放入前標準化
                     if key_val is not None:
                         present.add(key_val)
-        return present
-    def _bulk_check_present_nonempty_old(
-        self,
-        *,
-        tgt_index: str,
-        pk: str,
-        ids: List[str],
-        output_col: str,
-        request_timeout: int,
-    ) -> set:
-        """
-        回傳：在 tgt_index 中，主鍵 pk 落在 ids 範圍，且 output_col『為非空』的那批 pk 值集合。
-        """
-        assert self.es is not None
-        present = set()
-        if not ids:
-            return present
-    
-        def _is_non_empty(v) -> bool:
-            if v is None: return False
-            if isinstance(v, str): return v.strip() != ""
-            if isinstance(v, (list, dict)): return len(v) > 0
-            return True
-    
-        if pk == "_id":
-            # 直接用 mget
-            docs = self.es.mget(index=tgt_index, body={"ids": ids}, request_timeout=request_timeout)
-            for d in docs.get("docs", []):
-                if not d.get("found"):
-                    continue
-                src = d.get("_source", {}) or {}
-                val = _extract_by_path(src, output_col)
-                if _is_non_empty(val):
-                    present.add(d.get("_id"))
-            return present
-    
-        # pk 不是 _id：用 search terms 查詢
-        # 優先用 pk.keyword；若沒有，就用 pk 本身
-        pk_keyword = pk + self.cfg.get("pk_keyword_suffix", ".keyword")
-        # 試一次 mapping 決定用哪個欄位
-        try:
-            m = self.get_field_mapping(tgt_index, pk)
-            has_keyword = isinstance(m, dict) and "fields" in m and "keyword" in m["fields"]
-        except Exception:
-            has_keyword = False
-    
-        term_field = pk_keyword if has_keyword else pk
-    
-        # 大批 terms 可能過長，做分批
-        batch = 1000
-        for i in range(0, len(ids), batch):
-            chunk = ids[i:i+batch]
-            q = {
-                "query": {"terms": {term_field: chunk}},
-                "_source": [pk, output_col],
-                "size": len(chunk)
-            }
-            res = self.es.search(index=tgt_index, body=q, request_timeout=request_timeout)
-            for hit in res.get("hits", {}).get("hits", []):
-                src = hit.get("_source", {}) or {}
-                val = _extract_by_path(src, output_col)
-                if _is_non_empty(val):
-                    # 取出 pk 值（注意是 pk 欄位，不是 _id）
-                    key_val = _extract_by_path(src, pk)
-                    if key_val is not None:
-                        present.add(str(key_val))
         return present
 
     
@@ -569,12 +596,95 @@ class ElasticsearchAdapter:
         if not should:
             return None
         return {"bool": {"should": should, "minimum_should_match": 1}}
+
+    def _get_required_output_checks(self, output_col: str) -> List[Dict[str, Any]]:
+        """
+        從 cfg/rerun 讀取必要輸出欄位檢查設定。
+        支援：
+          - 字串寫法: "Event_Timeline.date_iso"
+          - dict 寫法: {"path": "...", "validator": "date", ...}
+        預設 path 視為相對於 output_col。
+        """
+        rr = (self.cfg or {}).get("rerun") or {}
+        raw_checks = rr.get("required_output_checks") or self.cfg.get("required_output_checks") or []
+        if not raw_checks:
+            return []
+
+        out = []
+        for item in raw_checks:
+            if isinstance(item, str):
+                item = {"path": item}
+
+            if not isinstance(item, dict):
+                continue
+
+            path = (item.get("path") or "").strip()
+            if not path:
+                continue
+
+            relative = item.get("relative_to_output", True)
+
+            # 支援 absolute path；若不是 absolute，就自動補 output_col 前綴
+            if relative and output_col and not (path == output_col or path.startswith(output_col + ".")):
+                full_path = f"{output_col}.{path}"
+            else:
+                full_path = path
+
+            cfg_item = dict(item)
+            cfg_item["full_path"] = full_path
+            out.append(cfg_item)
+
+        return out
+
+    def _validate_required_output_checks(self, src: dict, output_col: str) -> bool:
+        """
+        檢查 output_col 內是否滿足必要 key 條件。
+        規則預設：每個 check 至少找到 1 個合法值（min_valid_count=1）。
+        """
+        checks = self._get_required_output_checks(output_col)
+        if not checks:
+            return True
+
+        for ck in checks:
+            full_path = ck["full_path"]
+            validator = (ck.get("validator") or "non_empty").lower()
+            fmt = ck.get("format")
+            min_valid_count = int(ck.get("min_valid_count", 1))
+
+            raw_vals = _deep_collect_by_path(src, full_path)
+            vals = _flatten_list(raw_vals)
+
+            valid_count = 0
+            for v in vals:
+                if validator == "date":
+                    if _is_valid_date_string(v, fmt or "yyyy-MM-dd"):
+                        valid_count += 1
+                else:
+                    # 預設 non_empty
+                    if _is_non_empty_deep(v):
+                        valid_count += 1
+
+                if valid_count >= min_valid_count:
+                    break
+
+            if valid_count < min_valid_count:
+                # debug 可選
+                print(f"[DEBUG] required_output_check failed: path={full_path}, "
+                      f"validator={validator}, format={fmt}, found_valid={valid_count}, "
+                      f"min_valid_count={min_valid_count}")
+                return False
+
+        return True
     
     def _is_fresh_output(self, src: dict, output_col: str) -> bool:
         val = _extract_by_path(src, output_col)
         if not _is_non_empty_deep(val):
             return False
-    
+
+        # ✅ 新增：必要欄位/格式檢查（不通過就視為不新鮮，需重跑）
+        if not self._validate_required_output_checks(src, output_col):
+            return False
+        
         rr = (self.cfg or {}).get("rerun") or {}
         if not rr.get("enable"):
             return True
@@ -617,7 +727,6 @@ class ElasticsearchAdapter:
         # force_since：結果若早於此時間 → 視為不新鮮（需重跑）
         if since:
             try:
-                from datetime import datetime
                 since_dt = datetime.fromisoformat(since.replace("Z","+00:00"))
                 dt = _extract_by_path(meta, "processed_at") if meta else _extract_by_path(src, "update_time_ai")
                 dt = datetime.fromisoformat(str(dt).replace("Z","+00:00"))
@@ -652,7 +761,38 @@ class ElasticsearchAdapter:
             # 來源/結果分離：src 提 id + input，tgt 用 mget 檢是否已有 output
             for item in self._scan_dual_index_pending(src_table, tgt_table, pk, input_col, output_col, fetch_size):
                 yield item
-
+    def _yield_pending_from_batch(
+        self,
+        *,
+        tgt_index: str,
+        pk: str,
+        batch_ids: List[str],
+        batch_docs: Dict[str, str],
+        output_col: str,
+        request_timeout: int,
+    ):
+        """
+        檢查 batch_ids 在 tgt_index 是否已有『新鮮 output』，
+        沒有的就 yield 出來。函式內不重新建立 batch，直接清空傳入容器。
+        """
+        if not batch_ids:
+            return
+    
+        present = self._bulk_check_present_nonempty(
+            tgt_index=tgt_index,
+            pk=pk,
+            ids=batch_ids,
+            output_col=output_col,
+            request_timeout=request_timeout,
+        )
+    
+        for _id in batch_ids:
+            if _id not in present:
+                yield (_id, batch_docs[_id])
+    
+        batch_ids.clear()
+        batch_docs.clear()
+        
     def _scan_single_index_pending(self, index, pk, input_col, output_col, fetch_size):
         assert self.es is not None
         filters = self._build_pending_filters()
@@ -660,32 +800,6 @@ class ElasticsearchAdapter:
         keepalive = self.cfg.get("es_scroll_keepalive", "2m")
         
         needs_rerun = self._needs_rerun_clause(index, output_col)
-        '''
-        body = {
-            "query": {"bool": {
-                "must":   [{"exists": {"field": input_col}}],
-                "filter": filters
-            }},
-            "_source": [input_col, output_col] + ([pk] if pk != "_id" else []),
-            "track_total_hits": True
-        }
-        '''
-        '''
-        body = {
-            "query": {"bool": {
-                "must":   [{"exists": {"field": input_col}}],
-                "filter": filters,
-                "should": [
-                    {"bool": {"must_not": [{"exists": {"field": output_col}}]}},  # 沒輸出
-                    *([needs_rerun] if needs_rerun else [])
-                ],
-                "minimum_should_match": 1
-            }},
-            "_source": [input_col, output_col, self.cfg.get("rerun", {}).get("meta_field", "")] 
-                       + ([pk] if pk != "_id" else []),
-            "track_total_hits": True
-        }
-        '''
         
         # ★ 取得備援日期欄位（你在 cfg 或 rerun 內放的）
         rr = (self.cfg or {}).get("rerun") or {}
@@ -780,64 +894,7 @@ class ElasticsearchAdapter:
                 continue
     
             yield (str(pk_val), str(text))
-    '''
-    def _scan_single_index_pending_1110_2(self, index: str, pk: str, input_col: str, output_col: str, fetch_size: int):
-        assert self.es is not None
-        filters = self._build_pending_filters()
-    
-        rt = int(self.cfg.get("es_request_timeout", 60))
-        keepalive = self.cfg.get("es_scroll_keepalive", "2m")
 
-        body = {
-            "query": {
-                "bool": {
-                    "must": [
-                        {"exists": {"field": input_col}}
-                    ],
-                    "must_not": [
-                        {
-                            "nested": {
-                                "path": output_col,          # "multidim_event_json"
-                                "query": {"match_all": {}}
-                            }
-                        }
-                    ],
-                    "filter": filters
-                }
-            },
-            "_source": [input_col, pk] if pk != "_id" else [input_col],
-            "track_total_hits": True
-        }
-        print("DEBUG single-index pending query:", json.dumps(body, ensure_ascii=False))
-    
-        scan_iter = helpers.scan(
-            client=self.es,
-            index=index,
-            query=body,
-            size=int(fetch_size or 500),
-            preserve_order=False,
-            scroll=keepalive,
-            request_timeout=rt,
-            clear_scroll=True
-        )
-    
-        for hit in scan_iter:
-            src = hit.get("_source", {}) or {}
-            pk_val = hit.get("_id") if pk == "_id" else _extract_by_path(src, pk)
-            # ✅ 若欄位是 list，取第一個
-            if isinstance(pk_val, list):
-                pk_val = pk_val[0] if pk_val else None
-            if pk_val is None:
-                continue
-    
-            text = _extract_by_path(src, input_col)
-            if isinstance(text, list):
-                text = text[0] if text else None
-            if text is None or str(text).strip() == "":
-                continue
-    
-            yield (str(pk_val), str(text))
-    '''
     def _scan_dual_index_pending(self, src_index: str, tgt_index: str, pk: str, input_col: str, output_col: str, fetch_size: int):
         """
         src 用 scan 串流所有有 input 的文件；每批用 mget/search 檢查 tgt 是否已有「非空」output。
@@ -847,6 +904,7 @@ class ElasticsearchAdapter:
         filters = self._build_pending_filters()
         rt = int(self.cfg.get("es_request_timeout", 60))
         keepalive = self.cfg.get("es_scroll_keepalive", "2m")
+        batch_limit = int(fetch_size or 500)
     
         src_query = {
             "query": {"bool": {"must": [{"exists": {"field": input_col}}], "filter": filters}},
@@ -867,46 +925,7 @@ class ElasticsearchAdapter:
     
         batch_ids: List[str] = []
         batch_docs: Dict[str, str] = {}
-        '''
-        for hit in scan_iter:
-            src = hit.get("_source", {}) or {}
-            key_val = hit.get("_id") if pk == "_id" else _extract_by_path(src, pk)
-            if key_val is None:
-                continue
-            text = _extract_by_path(src, input_col)
-            if text is None or str(text).strip() == "":
-                continue
-    
-            key_val = str(key_val)
-            batch_ids.append(key_val)
-            batch_docs[key_val] = str(text)
-    
-            if len(batch_ids) >= int(fetch_size or 500):
-                present = self._bulk_check_present_nonempty(
-                    tgt_index=tgt_index,
-                    pk=pk,
-                    ids=batch_ids,
-                    output_col=output_col,
-                    request_timeout=rt,
-                )
-                for _id in batch_ids:
-                    if _id not in present:
-                        yield (_id, batch_docs[_id])
-                batch_ids.clear()
-                batch_docs.clear()
-    
-        if batch_ids:
-            present = self._bulk_check_present_nonempty(
-                tgt_index=tgt_index,
-                pk=pk,
-                ids=batch_ids,
-                output_col=output_col,
-                request_timeout=rt,
-            )
-            for _id in batch_ids:
-                if _id not in present:
-                    yield (_id, batch_docs[_id])
-        '''
+
         for hit in scan_iter:
             src = hit.get("_source", {}) or {}
         
@@ -924,89 +943,26 @@ class ElasticsearchAdapter:
             batch_ids.append(key_val)               # ✅ 已是標準化後的字串
             batch_docs[key_val] = str(text)
         
-            if len(batch_ids) >= int(fetch_size or 500):
-                present = self._bulk_check_present_nonempty(
-                    tgt_index=tgt_index, pk=pk, ids=batch_ids,
-                    output_col=output_col, request_timeout=rt,
+            if len(batch_ids) >= batch_limit:
+                yield from self._yield_pending_from_batch(
+                    tgt_index=tgt_index,
+                    pk=pk,
+                    batch_ids=batch_ids,
+                    batch_docs=batch_docs,
+                    output_col=output_col,
+                    request_timeout=rt,
                 )
-                for _id in batch_ids:
-                    if _id not in present:
-                        yield (_id, batch_docs[_id])
-                batch_ids.clear()
-                batch_docs.clear()
-    '''
-    def _scan_dual_index_pending_1110(self, src_index: str, tgt_index: str, pk: str, input_col: str, output_col: str, fetch_size: int):
-        """
-        src 用 scan 串流所有有 input 的文件；每批用 mget 檢查 tgt 是否已有「非空」output。
-        """
-        assert self.es is not None
-        filters = self._build_pending_filters()
-        rt = int(self.cfg.get("es_request_timeout", 60))
-        keepalive = self.cfg.get("es_scroll_keepalive", "2m")
-    
-        def _is_non_empty(v) -> bool:
-            if v is None: return False
-            if isinstance(v, str): return v.strip() != ""
-            if isinstance(v, (list, dict)): return len(v) > 0
-            return True
-    
-        src_query = {
-            "query": {"bool": {"must": [{"exists": {"field": input_col}}], "filter": filters}},
-            "_source": [input_col, pk] if pk != "_id" else [input_col],
-            "track_total_hits": True
-        }
-    
-        batch_ids, batch_docs = [], {}
-    
-        scan_iter = helpers.scan(
-            client=self.es,
-            index=src_index,
-            query=src_query,
-            size=int(fetch_size or 500),
-            preserve_order=False,
-            scroll=keepalive,
+                
+        # 最後殘批也用同一個函式
+        yield from self._yield_pending_from_batch(
+            tgt_index=tgt_index,
+            pk=pk,
+            batch_ids=batch_ids,
+            batch_docs=batch_docs,
+            output_col=output_col,
             request_timeout=rt,
-            clear_scroll=True
         )
-    
-        for hit in scan_iter:
-            src = hit.get("_source", {}) or {}
-            _id = hit.get("_id") if pk == "_id" else _extract_by_path(src, pk)
-            if _id is None:
-                continue
-            text = _extract_by_path(src, input_col)
-            if text is None or str(text).strip() == "":
-                continue
-            batch_ids.append(_id)
-            batch_docs[_id] = str(text)
-            if len(batch_ids) >= int(fetch_size or 500):
-                # 批次檢查 tgt 是否已有非空 output
-                docs = self.es.mget(index=tgt_index, body={"ids": batch_ids}, request_timeout=rt)
-                present = set()
-                for d in docs.get("docs", []):
-                    if not d.get("found"): 
-                        continue
-                    val = _extract_by_path(d.get("_source", {}) or {}, output_col)
-                    if _is_non_empty(val):
-                        present.add(d.get("_id"))
-                for _id in batch_ids:
-                    if _id not in present:
-                        yield (_id, batch_docs[_id])
-                batch_ids.clear(); batch_docs.clear()
-    
-        if batch_ids:
-            docs = self.es.mget(index=tgt_index, body={"ids": batch_ids}, request_timeout=rt)
-            present = set()
-            for d in docs.get("docs", []):
-                if not d.get("found"):
-                    continue
-                val = _extract_by_path(d.get("_source", {}) or {}, output_col)
-                if _is_non_empty(val):
-                    present.add(d.get("_id"))
-            for _id in batch_ids:
-                if _id not in present:
-                    yield (_id, batch_docs[_id])
-    '''
+
     def _build_pending_filters(self) -> list:
         """
         從 cfg 組 pending 過濾條件：
@@ -1027,14 +983,14 @@ class ElasticsearchAdapter:
         return filters
 
     # ✅ 新增：支援 with 语法
-    def __enter__(self):
-        # 已 connect() 的情況直接回傳 self；若尚未 connect，也可在這裡防呆
-        if self.es is None:
-            self.connect()
-        return self
+    #def __enter__(self):
+    #    # 已 connect() 的情況直接回傳 self；若尚未 connect，也可在這裡防呆
+    #    if self.es is None:
+    #        self.connect()
+    #    return self
 
-    def __exit__(self, exc_type, exc, tb):
-        self.close()
+    #def __exit__(self, exc_type, exc, tb):
+    #    self.close()
 
 # ----------------------------- 小工具 ---------------------------------------
 
