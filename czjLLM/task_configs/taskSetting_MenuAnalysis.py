@@ -9,6 +9,7 @@ MENU_ANALYSIS_Rule = """
 - 必須成功產出：
   dishes 長度 >= 1、ingredients 長度 >= 1、且每一筆 dish.ingredients 長度 >= 1（qty 允許為 null，但 ingredient_id 不可缺）。
 - 禁止出現「省略/略/omitted/for brevity/...」等字樣。
+- ingredients[*].id 必須統一使用中文名風格：ing_ + normalize_zh(食材名)；禁止輸出英文式 ingredient id。（如 ing_soy_sauce、ing_chicken_thigh、ing_broccoli）。
 
 ────────────────────────────────────────
 一、核心目標（重要）：把「單日總量」轉成「每人份量」
@@ -64,13 +65,22 @@ MENU_ANALYSIS_Rule = """
 - 芥花油 / 沙拉油 → 食用油
 - 棒腿 / 去骨雞腿丁3*3 → 雞腿肉
 
+【ingredients id 風格統一規則】
+- 食材 id 一律使用中文名風格：id = "ing_" + normalize_zh(食材名標準名)
+- 若食材先經 alias_map 正規化，則必須以「正規化後名稱」生成或比對 id
+- 例如：
+  - 醬油 → ing_醬油
+  - 雞腿肉 → ing_雞腿肉
+  - 冷凍玉米粒（alias 後為 玉米粒）→ ing_玉米粒
+- 禁止輸出英文式 ingredient id（如 ing_soy_sauce、ing_chicken_thigh、ing_bokchoy）
+
 【常用 ingredients id（對到就沿用）】
-- 洋蔥 ing_onion；蒜頭 ing_garlic；薑 ing_ginger；青蔥 ing_scallion
-- 醬油 ing_soy_sauce；蠔油 ing_oyster_sauce；香油 ing_sesame_oil；食用油 ing_cooking_oil；鹽 ing_salt；糖 ing_sugar；味噌 ing_miso；高湯 ing_chicken_stock
-- 高麗菜 ing_cabbage；青江菜 ing_bokchoy；菠菜 ing_spinach；花椰菜 ing_broccoli；茄子 ing_eggplant；番茄 ing_tomato；玉米粒 ing_corn；香菇 ing_shiitake；鴻喜菇 ing_mushroom
-- 雞蛋 ing_egg；板豆腐 ing_tofu
-- 雞腿肉 ing_chicken_thigh；雞胸肉 ing_chicken_breast；豬梅花 ing_pork_shoulder；五花肉 ing_pork_belly；牛肉片 ing_beef_slice；吳郭魚片 ing_fish_tilapia；鮭魚 ing_fish_salmon；蝦仁 ing_shrimp
-- 蘋果 ing_apple；香蕉 ing_banana；柳丁 ing_orange
+- 洋蔥 ing_洋蔥；蒜頭 ing_蒜頭；薑 ing_薑；青蔥 ing_青蔥
+- 醬油 ing_醬油；蠔油 ing_蠔油；香油 ing_香油；食用油 ing_食用油；鹽 ing_鹽；糖 ing_糖；味噌 ing_味噌；高湯 ing_高湯
+- 高麗菜 ing_高麗菜；青江菜 ing_青江菜；菠菜 ing_菠菜；花椰菜 ing_花椰菜；茄子 ing_茄子；番茄 ing_番茄；玉米粒 ing_玉米粒；香菇 ing_香菇；鴻喜菇 ing_鴻喜菇
+- 雞蛋 ing_雞蛋；板豆腐 ing_板豆腐
+- 雞腿肉 ing_雞腿肉；雞胸肉 ing_雞胸肉；豬梅花 ing_豬梅花；五花肉 ing_五花肉；牛肉片 ing_牛肉片；吳郭魚片 ing_吳郭魚片；鮭魚 ing_鮭魚；蝦仁 ing_蝦仁
+- 蘋果 ing_蘋果；香蕉 ing_香蕉；柳丁 ing_柳丁
 - 若遇到未列出者（如 油菜、豆芽菜、臭豆腐、鴨血、紅蘿蔔 等）：視為新食材，用 deterministic id 生成
 
 【deterministic id（避免平行切片撞號）】
@@ -200,7 +210,11 @@ parse_profile 範例（格式示意，內容依本次輸入可調整）：
   "dish_line_rules":{"A_two_text_fields_before_number":"new_dish","B_one_text_field_before_number":"continue_ingredient","reset_on":["section_header","合計","總計"]},
   "special_sections":{"青菜 水果":"each_row_is_dish_self_ingredient","雜貨":"no_dishes_only_ingredients_prices","週三麵食":"no_dishes_only_ingredients_prices"},
   "unit_conversions_used":["kg->g:1000","L->ml:1000","tbsp->ml:15","tsp->ml:5","斤->g:600"],
-  "id_policy":{"ingredient_unknown":"ing_{normalize_zh(name)}","dish_unknown":"dish_{role}_{normalize_zh(name)}"},
+  "id_policy":{
+  "ingredient_style":"ing_{normalize_zh(ingredient_name_zh)}",
+  "ingredient_unknown":"ing_{normalize_zh(name)}",
+  "dish_unknown":"dish_{role}_{normalize_zh(name)}"
+  },
   "limits":["qty 以每人份量輸出；若缺 people_est 或單位不明則 qty 可能為 null","prices 依單價與單位推得；若缺日期則 price_date=null"]
 }
 
