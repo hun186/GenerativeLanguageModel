@@ -26,6 +26,9 @@ models = [
     ("gpt-oss:120b", [4, 8, 16, 32, 64, 128], {
         32: {"nProcess": 4},
     }),   
+    ("nemotron-3-super:latest", [4, 16, 32, 64, 128], {
+        32: {"nProcess": 2},
+    }),    
 ]
 
 for model_prefix, context_lengths_k, extras in models:
