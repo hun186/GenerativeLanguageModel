@@ -1,4 +1,4 @@
-# Codex Execution Plan: Pipeline Upgrade (Step-by-Step)
+# Codex Execution Plan: Pipeline Upgrade (Repo-Aligned Version)
 
 ## 🎯 Goal
 
@@ -22,24 +22,55 @@ While:
 4. Each task must be independently testable
 5. Follow task order and dependencies strictly
 6. Preserve backward compatibility at every step
+7. Reuse existing `prompt_pipeline/` logic
+8. Follow existing naming conventions in repo
 
 ---
 
-# 🧱 Phase 1 — Pipeline Skeleton (Foundation)
+# 🏗️ Architecture Rule (Two-Layer)
 
-## Task 1.1 — Create PipelineContext
+## Layer 1 — prompt_pipeline (existing)
 
-**Depends on:** None
+Responsible for:
+
+* prompt generation
+* LLM calling
+* retry
+* result handling
+
+## Layer 2 — pipeline (new)
+
+Responsible for:
+
+* workflow orchestration
+* stage execution order
+* context passing
+* merge strategy selection
+
+---
+
+# ❌ DO NOT CREATE
+
+* agent/
+* stages/（use steps instead）
+* registry/
+* abstract framework-style modules
+
+---
+
+# 🧱 Phase 1 — Pipeline Foundation
+
+## Task 1.1 — Create Pipeline Context
 
 Create:
 
-```
-agent/pipeline/context.py
+```text
+pipeline/pipeline_context.py
 ```
 
 Implement:
 
-* PipelineContext dataclass
+* PipelineContext class
 
 Fields:
 
@@ -51,451 +82,324 @@ Fields:
 * extraction_results
 * merged_result
 
-✅ Done when:
-
-* context object can be created without breaking existing code
-
 ---
 
-## Task 1.2 — Create StageResult type
-
-**Depends on:** 1.1
+## Task 1.2 — Create Pipeline Types
 
 Create:
 
-```
-agent/pipeline/types.py
+```text
+pipeline/pipeline_types.py
 ```
 
 Define:
 
-```
-{
-  stage_name,
-  success,
-  data,
-  debug,
-  errors
+```python
+PipelineResult = {
+  "stage_name": str,
+  "success": bool,
+  "data": dict,
+  "debug": dict,
+  "errors": list
 }
 ```
 
-✅ Done when:
-
-* all new stages return this format
-
 ---
 
-## Task 1.3 — Create Orchestrator (minimal)
-
-**Depends on:** 1.1, 1.2
+## Task 1.3 — Create Pipeline Controller
 
 Create:
 
+```text
+pipeline/pipeline_controller.py
 ```
-agent/pipeline/orchestrator.py
-```
+
+IMPORTANT:
+
+* naming aligned with existing `pipeline_controller.py`
+* DO NOT create "orchestrator"
 
 Implement:
 
-* run(pipeline_name, raw_text)
-
-Support:
-
-* sequential execution
-* shared context
-
-✅ Done when:
-
-* can run dummy pipeline with 2 mock stages
+```python
+run_pipeline(pipeline_name, text, metadata=None)
+```
 
 ---
 
-## Task 1.4 — Create Pipeline Registry
-
-**Depends on:** 1.3
+## Task 1.4 — Create Pipeline Config
 
 Create:
 
-```
-agent/pipeline/registry.py
+```text
+pipeline/pipeline_config.py
 ```
 
 Define:
 
-```
-PIPELINES = {
-  "test_pipeline": ["stage_a", "stage_b"]
+```python
+PIPELINE_CONFIG = {
+  "doc_type_aware_extraction": [
+    "chunk_summary",
+    "doc_type_classification",
+    "extraction_multidim",
+    "merge_multidim"
+  ]
 }
 ```
 
-✅ Done when:
+---
 
-* orchestrator reads pipeline from registry
+## Task 1.5 — Create Pipeline Utils
+
+Create:
+
+```text
+pipeline/pipeline_utils.py
+```
+
+Used for:
+
+* shared helpers
+* context updates
+* stage execution helpers
 
 ---
 
-# 🧠 Phase 2 — DocType Classification (Stage 1)
+# 🧠 Phase 2 — DocType Classification
 
-## Task 2.1 — Add DocType task setting
+## Task 2.1 — Add task setting
 
-**Depends on:** None
+Modify:
 
-Add new task:
+```text
+task_configs/
+```
+
+Add:
 
 ```
 DocType-Classification
 ```
 
-Output JSON:
+---
 
+## Task 2.2 — Build doctype helper
+
+Add to:
+
+```text
+pipeline/pipeline_utils.py
 ```
-doc_type
-doc_type_confidence
-secondary_type
-has_primary_event
-routing_reason
-```
-
-✅ Done when:
-
-* can classify text independently
 
 ---
 
-## Task 2.2 — Build doctype input helper
-
-**Depends on:** 2.1
+## Task 2.3 — Create classification step
 
 Create:
 
+```text
+pipeline/steps/doc_type_classification.py
 ```
-build_doctype_input()
-```
-
-Include:
-
-* title
-* head paragraphs
-* tail paragraphs
-* chunk summaries
-
-✅ Done when:
-
-* classifier input is structured (not raw full text)
 
 ---
 
-## Task 2.3 — Implement classification stage
+# 📦 Phase 3 — Chunk Summary
 
-**Depends on:** 1.3, 2.1, 2.2
+## Task 3.1 — Create chunk summary step
 
 Create:
 
+```text
+pipeline/steps/chunk_summary.py
 ```
-agent/tasks/doc_type_classification.py
-```
-
-Logic:
-
-* build input
-* run classification
-* write to context.doc_type_result
-
-✅ Done when:
-
-* pipeline can output doc_type
 
 ---
 
-# 📦 Phase 3 — Chunk Summary (Support Stage)
+## Task 3.2 — Add chunk execution
 
-## Task 3.1 — Create chunk_summary stage
+Modify:
 
-**Depends on:** 1.3
+```text
+pipeline/pipeline_controller.py
+```
+
+---
+
+# 🧩 Phase 4 — Prompt Refactor
+
+## Task 4.1 — Base prompt
 
 Create:
 
+```text
+prompt_pipeline/prompts/base/
 ```
-agent/tasks/chunk_summary.py
-```
-
-Each chunk outputs:
-
-* summary
-* rough role (optional)
-
-✅ Done when:
-
-* context.chunk_summaries exists
 
 ---
 
-## Task 3.2 — Add chunk-level execution support
-
-**Depends on:** 3.1
-
-Update orchestrator:
-
-* support level = chunk | document
-
-✅ Done when:
-
-* chunk_summary runs per chunk
-* doc_type runs once per document
-
----
-
-# 🧩 Phase 4 — Prompt Refactor (Base + Overlay)
-
-## Task 4.1 — Extract base prompt
-
-**Depends on:** None
+## Task 4.2 — Overlay prompts
 
 Create:
 
+```text
+prompt_pipeline/prompts/overlays/
 ```
-prompts/base/multidim_base_prompt.py
-```
-
-Move:
-
-* shared rules only
 
 ---
 
-## Task 4.2 — Create overlay prompts
-
-**Depends on:** 4.1
-
-Create overlays:
-
-* event
-* interview
-* profile
-* issue
-* report
-* legal
-* mixed
-
----
-
-## Task 4.3 — Create prompt builder
-
-**Depends on:** 4.2
+## Task 4.3 — Prompt builder
 
 Create:
 
+```text
+prompt_pipeline/prompt_builder.py
 ```
-build_multidim_prompt()
-```
-
-Inject:
-
-* doc_type
-* confidence
-* overlay
-* content
-
-✅ Done when:
-
-* prompt differs based on doc_type
 
 ---
 
-# ⚙️ Phase 5 — Type-aware Extraction
+# ⚙️ Phase 5 — Extraction
 
-## Task 5.1 — Wrap existing extraction
-
-**Depends on:** 4.3
+## Task 5.1 — Create extraction step
 
 Create:
 
-```
-agent/tasks/extraction_multidim.py
+```text
+pipeline/steps/extraction_multidim.py
 ```
 
-Logic:
+IMPORTANT:
 
-* read doc_type
-* build prompt
-* call original extraction
+* must call existing extraction logic
 
 ---
 
-## Task 5.2 — Inject doc-level context into chunks
+## Task 5.2 — Inject doc_type
 
-**Depends on:** 5.1
+Ensure:
 
-Ensure each chunk gets:
-
-* same doc_type
-* same guidance
-
-✅ Done when:
-
-* chunk outputs become more consistent
+* all chunks use same doc_type
 
 ---
 
-# 🔀 Phase 6 — Merger Refactor (Critical)
+# 🔀 Phase 6 — Merge Refactor
 
-## Task 6.1 — Create BaseMergeStrategy
-
-**Depends on:** None
+## Task 6.1 — Base strategy
 
 Create:
 
-```
-agent/merger/strategies/base_strategy.py
+```text
+pipeline/merge/base_strategy.py
 ```
 
 ---
 
-## Task 6.2 — Implement strategies
-
-**Depends on:** 6.1
+## Task 6.2 — Strategies
 
 Create:
 
-* event
-* interview
-* profile
-* issue
-* report
-* legal
-* mixed
+```text
+pipeline/merge/
+```
+
+Files:
+
+* event_strategy.py
+* interview_strategy.py
+* profile_strategy.py
+* issue_strategy.py
+* report_strategy.py
+* legal_strategy.py
+* mixed_strategy.py
 
 ---
 
-## Task 6.3 — Create strategy dispatcher
-
-**Depends on:** 6.2
-
-```
-get_merge_strategy(doc_type)
-```
-
----
-
-## Task 6.4 — Integrate merger stage
-
-**Depends on:** 6.3
+## Task 6.3 — Merge selector
 
 Create:
 
-```
-merge_multidim stage
-```
-
-✅ Done when:
-
-* different doc_type → different merge behavior
-
----
-
-# 🔗 Phase 7 — First Real Pipeline
-
-## Task 7.1 — Register pipeline
-
-**Depends on:** All above
-
-```
-doc_type_aware_extraction = [
-  chunk_summary,
-  doc_type_classification,
-  extraction_multidim,
-  merge_multidim
-]
+```text
+pipeline/merge/merge_selector.py
 ```
 
 ---
 
-## Task 7.2 — Add run_pipeline API
+## Task 6.4 — Merge step
 
-**Depends on:** 7.1
+Create:
+
+```text
+pipeline/steps/merge_multidim.py
+```
+
+---
+
+# 🔗 Phase 7 — First Pipeline
+
+Update:
+
+```text
+pipeline/pipeline_config.py
+```
+
+---
+
+## Task 7.2 — Expose API
 
 Expose:
 
-```
-run_pipeline(name, text)
+```python
+run_pipeline()
 ```
 
 Keep:
 
+```python
+run_extraction()
 ```
-run_extraction()   ← unchanged
-```
+
+unchanged
 
 ---
 
-# 🚀 Phase 8 — Extensibility (Future-proof)
+# 🚀 Phase 8 — Future Extension
 
-## Task 8.1 — Add translation node
+Add under:
 
-## Task 8.2 — Add summarization node
-
----
-
-## Task 8.3 — Create second pipeline
-
+```text
+pipeline/steps/
 ```
-translate_then_summarize
-```
+
+* translation.py
+* summarization.py
 
 ---
 
 # 🧪 Phase 9 — Testing
 
-## Task 9.1 — Prepare test dataset
+## MUST integrate with:
 
-* event
-* interview
-* profile
-* issue
-* report
-* legal
+* sql_mode
+* handlers
+* row_processors
 
 ---
 
-## Task 9.2 — Validate improvements
+# ⚠️ FINAL RULE
 
-Check:
-
-* no fake events
-* no timeline pollution
-* stable subject/action/object
+> Follow existing naming style over theoretical architecture naming.
 
 ---
 
-## Task 9.3 — Validate compatibility
-
-Ensure:
-
-* schema unchanged
-* ES queries still work
-* agent works
-
----
-
-# ✅ Final Success Criteria
+# ✅ Success Criteria
 
 * pipeline runs end-to-end
-* doc_type affects extraction
-* merger adapts per type
 * no schema break
+* no duplicate systems
+* naming consistent with repo
 
 ---
 
 # 🧾 Summary
 
-Execute tasks in order.
-
-DO NOT skip dependencies.
-
-First milestone:
-
-> ✅ doc_type_aware_extraction pipeline works end-to-end
-
-Then expand.
-
----
+> Extend, don't reinvent. Match naming, don't introduce frameworks.

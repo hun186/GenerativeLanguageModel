@@ -2,134 +2,196 @@
 
 ## System Evolution
 
-This project is evolving from a:
+This project evolves from:
 
-> **Single-stage LLM extraction system**
+> **Single-stage LLM task execution**
 
-into a:
+into:
 
-> **Composable Multi-Stage LLM Pipeline Platform**
+> **Composable Multi-Stage LLM Pipeline System**
 
 ---
 
-## 🧠 Core Idea
+# 🧠 Core Idea
 
-Instead of:
+From:
 
 ```
 Task → LLM → Output
 ```
 
-We move to:
+To:
 
 ```
 Input
-→ Stage A
-→ Stage B
-→ Stage C
-→ Output
+→ Multi-Stage Pipeline
+→ Output (format depends on task)
 ```
-
-Each stage is:
-
-* Reusable
-* Independent
-* Composable
 
 ---
 
-## 🔩 Key Components
+# 🧱 Architecture (Critical)
 
-### 1. Node (Stage)
+## Two-Layer Design (VERY IMPORTANT)
 
-A reusable unit of computation:
+### Layer 1 — `prompt_pipeline/`
+
+Responsible for:
+
+* prompt construction
+* LLM calls
+* retry / fallback
+* result parsing
+
+👉 This layer already exists and MUST NOT be rewritten
+
+---
+
+### Layer 2 — `pipeline/`
+
+Responsible for:
+
+* workflow orchestration
+* stage sequencing
+* context passing
+* merge strategies
+* pipeline configuration
+
+👉 This is the NEW layer added on top
+
+---
+
+## 🔥 Key Rule
+
+> pipeline orchestrates
+> prompt_pipeline executes
+
+---
+
+# 🔩 Key Concepts
+
+## 1. Stage (Node)
+
+A reusable processing unit.
 
 Examples:
 
-* DocType Classification
-* Translation
-* Summarization
-* Extraction
-* Merger
-
-Each node defines:
-
-* Input schema
-* Output schema
-* Prompt
-* Execution type (chunk / document)
+* chunk_summary
+* doc_type_classification
+* extraction_multidim
+* merge_multidim
 
 ---
 
-### 2. Pipeline
+## 2. Pipeline
 
-An ordered sequence of nodes.
+An ordered sequence of stages.
 
 Example:
 
 ```
-DocType Classification
-→ Extraction
-→ Merger
+chunk_summary
+→ doc_type_classification
+→ extraction_multidim
+→ merge_multidim
 ```
 
 ---
 
-### 3. Orchestrator
+## 3. Pipeline Controller
 
 Responsible for:
 
-* Running pipelines
-* Passing data between stages
-* Managing chunk-level vs document-level execution
-* Supporting future routing logic
+* executing pipeline
+* passing context
+* handling stage order
+* managing chunk vs document level
 
 ---
 
-## 🧱 Execution Model
+## 4. PipelineContext
 
-### Chunk-Level Stages
+Shared object passed across stages.
 
-* Operate per chunk
-* Parallelizable
+Stores:
+
+* raw_text
+* chunks
+* doc_type_result
+* extraction_results
+* merged_result
+
+---
+
+# 🧱 Execution Model
+
+## Chunk-Level Stages
+
+* run per chunk
+* parallelizable
 
 Examples:
 
-* Chunk Summary
-* Local Extraction
+* chunk_summary
+* extraction
 
 ---
 
-### Document-Level Stages
+## Document-Level Stages
 
-* Operate on global context
+* run once per document
 
 Examples:
 
-* DocType Classification
-* Final Merger
+* doc_type_classification
+* merge
 
 ---
 
-## 🧪 First Implemented Pipeline
+# 📦 Pipeline Output Interface
 
-### doc_type_aware_extraction
+All pipelines return a unified structure:
+
+```python
+{
+  output_type,
+  task_name,
+  success,
+  data,
+  metadata,
+  errors
+}
+```
+
+---
+
+## Important
+
+* `data` preserves original output format
+* NOT all pipelines return JSON
+* system must support multiple output types
+
+---
+
+# 🧪 First Pipeline
+
+## doc_type_aware_extraction
 
 ```
 Raw Text
 → Chunking
-→ Chunk Summaries
+→ Chunk Summary
 → DocType Classification
 → Type-aware Extraction
 → Type-aware Merger
-→ Final Output
+→ Output
 ```
 
 ---
 
-## 🧩 Why DocType Matters
+# 🧠 Why DocType Matters
 
-Different document types require different extraction strategies:
+Different document types require different strategies:
 
 | Type      | Behavior            |
 | --------- | ------------------- |
@@ -140,27 +202,9 @@ Different document types require different extraction strategies:
 | report    | structured findings |
 | legal     | rules / agreements  |
 
-Without classification, extraction becomes unstable.
-
 ---
 
-## 🧠 Design Constraints
-
-### MUST keep:
-
-* Fixed JSON schema
-* Agent compatibility
-* Elasticsearch compatibility
-
-### MUST NOT:
-
-* Introduce multiple schemas
-* Break existing queries
-* Fragment data structure
-
----
-
-## 🔄 Prompt Architecture
+# 🔄 Prompt Architecture
 
 Move from:
 
@@ -168,45 +212,49 @@ Move from:
 One giant prompt
 ```
 
-to:
+To:
 
 ```
 Base Prompt
 + Type Overlay
 ```
 
+👉 Implemented inside `prompt_pipeline/`
+
 ---
 
-## 🔀 Merger Strategy
+# 🔀 Merge Strategy
 
-Different doc_types require different merging logic:
+Different doc_types use different merging logic.
 
-* Event → select single core event
-* Interview → preserve interview context
-* Profile → avoid fake timelines
-* Issue → avoid fake event construction
+Examples:
+
+* Event → select core event
+* Interview → preserve conversation
+* Profile → avoid fake timeline
+* Issue → avoid forced event
 * Report → reduce noise
 * Legal → keep structure minimal
 
 ---
 
-## 🔮 Future Extensions
+# 🔮 Future Extensions
 
-This architecture enables:
+This architecture supports:
 
-### Translation Pipeline
+## Translation Pipeline
 
 ```
 Language Detection → Translation → Summary
 ```
 
-### Knowledge Preparation
+## Knowledge Preparation
 
 ```
 Chunk Summary → Global Summary → Entity Extraction
 ```
 
-### Retrieval Optimization
+## Retrieval Optimization
 
 ```
 Extraction → Canonicalization → Index Formatting
@@ -214,29 +262,43 @@ Extraction → Canonicalization → Index Formatting
 
 ---
 
-## 📍 Full Specification
+# ⚠️ Design Constraints
 
-Detailed implementation spec:
+## MUST KEEP
+
+* existing JSON schema (for extraction)
+* agent compatibility
+* ES compatibility
+* prompt_pipeline intact
+
+---
+
+## MUST NOT
+
+* rewrite prompt_pipeline
+* introduce multiple incompatible schemas
+* mix orchestration into LLM layer
+
+---
+
+# 📍 Full Specification
+
+Detailed implementation:
 
 👉 `docs/architecture/pipeline_architecture_upgrade.md`
 
 ---
 
-## 🧾 Summary
+# 🧾 Summary
 
 This is not a rewrite.
 
 This is:
 
-> **A controlled evolution from a single-task system into a modular LLM pipeline platform.**
-
-Key benefits:
-
-* Better extraction quality
-* More flexible workflows
-* Future-proof architecture
-* Reusable components
+> **An orchestration layer added on top of an existing LLM system**
 
 ---
 
-## End
+## Final Principle
+
+> Add a brain, not replace the body

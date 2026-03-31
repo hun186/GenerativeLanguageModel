@@ -1,45 +1,159 @@
 # AGENTS.md
 
-## Purpose
+## 🎯 Goal
 
-This repository is an LLM-based analysis system that currently uses task settings plus parallel chunk processing to produce fixed-schema structured outputs.
+Refactor this repository into a:
 
-The current upgrade goal is:
+> **Composable Multi-Stage LLM Pipeline System**
 
-> Evolve the system into a **composable multi-stage LLM pipeline**
-> while preserving backward compatibility.
+While STRICTLY:
 
-Codex must treat this repository as an **incremental refactor project**, not a rewrite.
-
----
-
-## Primary references
-
-Before making architecture changes, read these files first:
-
-1. `ARCHITECTURE.md`
-2. `docs/architecture/pipeline_architecture_upgrade.md`
-3. `docs/implementation/codex_task_breakdown.md`
-
-If implementation details conflict with intuition, prefer the architecture and task breakdown docs.
+* preserving existing behavior
+* preserving output schema
+* NOT breaking prompt_pipeline execution layer
+* using minimal invasive changes
 
 ---
 
-## Repository priorities
+## 🚨 Critical Constraints (MUST FOLLOW)
 
-When changing this project, prioritize the following in order:
+### 1. DO NOT break existing system
 
-1. **Do not break existing fixed JSON output schema**
-2. **Do not break existing ES / agent query compatibility**
-3. **Prefer wrapper / extension / overlay over destructive rewrite**
-4. **Keep changes incremental and testable**
-5. **Preserve current extraction functionality while adding pipeline capability**
+* Existing extraction must still work
+* Existing JSON schema must NOT change
+* Existing prompt_pipeline must remain intact
 
 ---
 
-## High-level architecture direction
+### 2. DO NOT move LLM logic into pipeline/
 
-The repository is moving from:
+LLM-related code MUST stay in:
 
-```text
-Task Setting → Input Text → LLM → JSON Output
+prompt_pipeline/
+
+pipeline/ is ONLY for:
+
+* orchestration
+* context passing
+* stage coordination
+
+---
+
+### 3. Prefer ADDITION over MODIFY
+
+Good:
+
+* wrap existing functions
+* add new modules
+* extend behavior
+
+Bad:
+
+* rewrite core logic
+* delete old code
+
+---
+
+### 4. Pipeline is OUTER LAYER
+
+Correct structure:
+
+pipeline/
+→ controls flow
+
+prompt_pipeline/
+→ executes LLM
+
+---
+
+### 5. All stages must be independently testable
+
+Each step must:
+
+* accept input
+* return structured result
+* not depend on hidden global state
+
+---
+
+## 🧱 Architecture Rules
+
+### Layer Separation
+
+| Layer           | Responsibility         |
+| --------------- | ---------------------- |
+| prompt_pipeline | prompt + LLM execution |
+| pipeline        | workflow orchestration |
+
+---
+
+### PipelineContext is REQUIRED
+
+All stages must read/write via:
+
+PipelineContext
+
+---
+
+### Output MUST be wrapped
+
+Final output MUST follow:
+
+PipelineOutput format
+
+BUT:
+
+* `data` MUST preserve original format
+* DO NOT change existing JSON schema
+
+---
+
+## ⚙️ Implementation Strategy
+
+### Step Order (STRICT)
+
+1. PipelineContext
+2. pipeline_controller
+3. chunk_summary
+4. doc_type_classification
+5. prompt overlay
+6. extraction wrapper
+7. merge strategy
+8. full pipeline
+
+DO NOT skip steps.
+
+---
+
+## ❌ Forbidden
+
+* ❌ rewriting prompt_pipeline
+* ❌ duplicating extraction logic
+* ❌ creating multiple incompatible schemas
+* ❌ mixing orchestration into LLM layer
+
+---
+
+## ✅ Success Criteria
+
+* pipeline runs end-to-end
+* doc_type affects extraction
+* merger changes behavior
+* old system still works
+* output schema unchanged
+
+---
+
+## 🧠 Mental Model
+
+Think:
+
+> "Add a brain on top, not replace the body"
+
+---
+
+## 📌 Final Rule
+
+When unsure:
+
+> KEEP OLD SYSTEM WORKING FIRST

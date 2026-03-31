@@ -1,6 +1,6 @@
 #model_configs/modelConfig_ANKInt.py
 common_base_urls = [
-    "http://192.168.0.134:11435/v1",  #為了控出一個給ollma持續使用，可mark，以便代理人開發期間運用。
+    #"http://192.168.0.134:11435/v1",  #為了控出一個給ollma持續使用，可mark，以便代理人開發期間運用。
     "http://192.168.0.134:11436/v1"
 ]
 common_api_key = (
@@ -28,7 +28,10 @@ models = [
     }),   
     ("nemotron-3-super:latest", [4, 16, 32, 64, 128], {
         32: {"nProcess": 2},
-    }),    
+    }), 
+    ("nemotron-3-nano:30b", [4, 16, 32, 64, 128], {
+        32: {"nProcess": 2},
+    }),
 ]
 
 for model_prefix, context_lengths_k, extras in models:
@@ -41,9 +44,9 @@ for model_prefix, context_lengths_k, extras in models:
         base_urls = common_base_urls.copy()
 
         # 確保包含兩個 IP
-        if "http://192.168.0.134:11435/v1" in base_urls and \
-           "http://192.168.0.134:11436/v1" not in base_urls:
-            base_urls.append("http://192.168.0.134:11436/v1")
+        #if "http://192.168.0.134:11435/v1" in base_urls and \
+        #   "http://192.168.0.134:11436/v1" not in base_urls:
+        #    base_urls.append("http://192.168.0.134:11436/v1")
 
         setting = {
             "model_name": f"{model_prefix}-{context_k}k",

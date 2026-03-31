@@ -1,149 +1,120 @@
-# LLM Multi-Dimensional Analysis System
-
-## Architecture
-- `ARCHITECTURE.md`
-- `docs/architecture/pipeline_architecture_upgrade.md`
-
-## Codex execution plan
-- `AGENTS.md`
-- `docs/implementation/codex_task_breakdown.md`
+# LLM Pipeline Upgrade
 
 ## Overview
 
-This project provides a **multi-dimensional information extraction system powered by LLMs**, designed to process long-form text and produce structured, SQL-friendly JSON outputs.
+This project upgrades an existing LLM-based analysis system into a:
 
-Key capabilities:
+> **Composable Multi-Stage Pipeline Architecture**
 
-* Long document processing (chunking + parallel analysis)
-* Multi-dimensional structured extraction
-* Evidence-based outputs
-* Designed for downstream retrieval and agent workflows
+WITHOUT breaking:
 
----
-
-## 🚀 Current Capabilities
-
-* Fixed-schema JSON extraction (`multidim_event_json`)
-* Parallel chunk processing for long documents
-* Evidence-backed extraction (no hallucination-first design)
-* Compatible with Elasticsearch / Kibana workflows
+* existing prompt execution logic
+* existing output schema
+* existing downstream usage
 
 ---
 
-## 🔄 Ongoing Upgrade (Important)
+## 🧠 Core Idea
 
-This system is currently being upgraded to a:
+Old:
 
-> **Composable Multi-Stage LLM Pipeline Architecture**
+Task → LLM → Output
 
-This upgrade introduces:
+New:
 
-* Document-level intelligence (doc_type classification)
-* Multi-stage processing (classification → extraction → merge)
-* Reusable pipeline stages (translation, summary, extraction, etc.)
-* Better handling of non-event texts (interview / profile / issue / report / legal)
-
-👉 Full design spec:
-**`docs/architecture/pipeline_architecture_upgrade.md`**
+Input
+→ Pipeline (multi-stage)
+→ Output (same format)
 
 ---
 
-## 🧠 Why This Upgrade?
+## 🧱 Architecture
 
-Previously, all texts were processed using a single extraction strategy.
+### Layer 1 — prompt_pipeline/
 
-This caused issues such as:
+Handles:
 
-* Interviews being forced into event format
-* Profiles turning into fake timelines
-* Reports polluting event structures
-* Issue analysis being misinterpreted as single events
+* prompt construction
+* LLM calls
+* retry / fallback
+* result parsing
 
-The new architecture solves this via:
+### Layer 2 — pipeline/
 
-* Document-level classification
-* Type-aware extraction
-* Type-aware merging
+Handles:
+
+* workflow orchestration
+* stage sequencing
+* context passing
+* merge strategy
 
 ---
 
-## 🧩 Example Pipeline
+## 🔄 First Pipeline
 
-### doc_type-aware extraction
+### doc_type_aware_extraction
 
 ```
-Raw Text
-→ Chunking
-→ Chunk Summaries
+Text
+→ Chunk Summary
 → DocType Classification
-→ Type-aware Extraction
-→ Type-aware Merger
-→ Final JSON
+→ Extraction (type-aware)
+→ Merge (type-aware)
+→ JSON Output
 ```
 
 ---
 
-## 🧱 Project Structure (Simplified)
+## 📦 Output
+
+Pipeline returns:
 
 ```
-project-root/
-  agent/
-    pipeline/
-    tasks/
-    prompts/
-    merger/
-  docs/
-    architecture/
+{
+  output_type,
+  task_name,
+  success,
+  data,
+  metadata,
+  errors
+}
 ```
 
----
+BUT:
 
-## ⚙️ Usage (Current)
-
-```python
-result = run_extraction(task="InfoExtraction-MultiDim", text=input_text)
-```
+* `data` keeps original format
+* no schema breaking
 
 ---
 
-## ⚙️ Usage (Future Pipeline)
+## 🚀 Why This Matters
 
-```python
-result = run_pipeline(
-    pipeline="doc_type_aware_extraction",
-    text=input_text
-)
-```
+This enables:
 
----
-
-## 📚 Documentation
-
-* Architecture: `docs/architecture/pipeline_architecture_upgrade.md`
-* (Future) Pipelines: `docs/pipelines/`
-* (Future) Tasks: `docs/tasks/`
+* better extraction accuracy
+* document-type awareness
+* extensibility (translation, summary, etc.)
+* reusable pipeline system
 
 ---
 
-## 🧭 Design Principles
+## 🛠 Future Extensions
 
-* Fixed output schema (agent-compatible)
-* Evidence-first extraction
-* Conservative inference (avoid hallucination)
-* Modular, composable pipeline design
-
----
-
-## 🔧 Status
-
-* [x] Core extraction system
-* [x] Parallel processing
-* [ ] DocType classification (in progress)
-* [ ] Pipeline orchestrator (in progress)
-* [ ] Type-aware merger (in progress)
+* translation pipeline
+* summarization pipeline
+* knowledge preprocessing
+* multi-task chaining
 
 ---
 
-## 🧾 License
+## ⚠️ Important
 
-Internal / Project-specific
+This project is:
+
+> **an extension layer, NOT a rewrite**
+
+---
+
+## 🧩 Key Principle
+
+> "Composable, not destructive"
