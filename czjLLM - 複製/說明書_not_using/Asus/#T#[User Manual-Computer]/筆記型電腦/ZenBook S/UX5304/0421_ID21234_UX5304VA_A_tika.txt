@@ -1,0 +1,1560 @@
+
+ID21234
+Edisi Pertama / Februari 2023
+Panduan Pengguna Elektronik
+2 Panduan Pengguna Elektronik PC Notebook
+INFORMASI HAK CIPTA
+Dilarang memperbanyak, mengirim, merekam, menyimpan sebagian atau keseluruhan panduan ini, 
+termasuk produk dan perangkat lunak yang dijelaskan di dalamnya dalam sistem pengambilan, atau 
+menerjemahkannya ke dalam bahasa apapun dalam bentuk dan cara apapun, tanpa izin tertulis ASUSTeK 
+COMPUTER INC. (“ASUS”), kecuali dokumentasi yang disimpan oleh pembeli untuk tujuan pengarsipan.
+PANDUAN INI DISEDIAKAN OLEH ASUS “SEBAGAIMANA ADANYA”, TANPA JAMINAN APAPUN, BAIK 
+SECARA TERSURAT MAUPUN TERSIRAT, TERMASUK NAMUN TIDAK TERBATAS PADA JAMINAN TERSIRAT 
+ATAU KETENTUAN ATAS KELAYAKAN UNTUK DIPERDAGANGKAN MAUPUN KESESUAIAN UNTUK TUJUAN 
+TERTENTU. DALAM KONDISI APAPUN, ASUS, DIREKTUR, STAF, KARYAWAN, ATAU AGENNYA TIDAK 
+BERTANGGUNG JAWAB ATAS KERUSAKAN TIDAK LANGSUNG, KHUSUS, INSIDENTAL, ATAU KONSEKUENSIAL 
+(TERMASUK KERUSAKAN AKIBAT KERUGIAN, KEGAGALAN BISNIS, ATAU KEHILANGAN MANFAAT ATAU DATA 
+DAN LAIN-LAIN), MESKIPUN ASUS TELAH DIPERINGATKAN TENTANG KEMUNGKINAN ADANYA KERUSAKAN 
+TERSEBUT AKIBAT DARI CACAT ATAU KESALAHAN PANDUAN ATAU PRODUK INI.
+Nama produk dan nama perusahaan yang tercantum dalam panduan ini mungkin merupakan atau 
+mungkin bukan merupakan merek dagang terdaftar maupun hak cipta dari masing-masing perusahaan, 
+dan hanya digunakan sebagai keterangan atau penjelasan dan demi kepentingan pemiliknya, tanpa 
+bermaksud melakukan pelanggaran.
+SPESIFIKASI DAN INFORMASI YANG TERCANTUM DALAM PANDUAN INI HANYA SEBAGAI PETUNJUK DAN 
+REFERENSI, DAN DAPAT BERUBAH SEWAKTU-WAKTU TANPA PEMBERITAHUAN SEBELUMNYA, DAN TIDAK 
+DAPAT DIANGGAP SEBAGAI JAMINAN YANG DIBERIKAN ASUS. ASUS MENYATAKAN TIDAK BERKEWAJIBAN 
+ATAU BERTANGGUNG JAWAB ATAS KESALAHAN ATAU KEKURANGAN APAPUN YANG TERDAPAT DALAM 
+PANDUAN INI, TERMASUK PRODUK DAN PERANGKAT LUNAK YANG DIJELASKAN DI DALAMNYA.
+Hak Cipta © 2023 ASUSTeK COMPUTER INC. Semua Hak Dilindungi Undang-Undang.
+BATASAN KEWAJIBAN
+Kondisi yang dapat terjadi karena kecacatan komponen atau kewajiban ASUS lainnya, Anda berhak meminta 
+ganti rugi dari ASUS. Pada setiap kondisi tersebut, tanpa mengabaikan dasar hak Anda untuk mengklaim 
+kerugian dari ASUS, maka tanggung jawab ASUS tidak lebih dari kerugian untuk cedera diri (termasuk 
+kematian) dan kerugian terhadap properti pribadi berwujud maupun tidak berwujud; atau kerugian aktual 
+dan langsung lainnya akibat dari kelalaian maupun kegagalan menjalankan kewajiban hukum berdasarkan 
+Pernyataan Jaminan ini, hingga sebesar harga kontrak yang tercantum untuk setiap produk.
+ASUS hanya akan bertanggung jawab atas maupun mengganti kerugian, kerusakan, atau klaim Anda atas 
+dasar kontrak, wanprestasi, atau pelanggaran yang sesuai dengan Pernyataan Jaminan ini.
+Pembatasan ini juga berlaku untuk penyedia beserta peritel ASUS. Ini adalah tanggung jawab bersama yang 
+maksimum bagi ASUS, penyedia, dan peritelnya.
+DALAM KONDISI APAPUN, ASUS TIDAK BERTANGGUNG JAWAB ATAS: (1) KLAIM PIHAK KETIGA TERHADAP 
+ANDA ATAS KERUSAKAN; (2) KERUGIAN, ATAU KERUSAKAN, ARSIP MAUPUN DATA; ATAU (3) KERUSAKAN 
+KHUSUS, INSIDENTAL, MAUPUN TIDAK LANGSUNG, ATAU ATAS KERUSAKAN YANG BERDAMPAK PADA 
+KEUANGAN (TERMASUK HILANGNYA LABA ATAU TABUNGAN), MESKIPUN ASUS, PENYEDIANYA MAUPUN 
+PERITEL ANDA TELAH DIBERITAHUKAN TENTANG KEMUNGKINAN TERSEBUT.
+LAYANAN DAN DUKUNGAN
+Kunjung situs web multibahasa kami di https://www.asus.com/id/support/.
+MyASUS menawarkan berbagai macam fitur dukungan yang meliputi pemecahan masalah, optimalisasi 
+performa produk, integrasi perangkat lunak ASUS, dan membantu Anda menata desktop pribadi dan 
+menambah ruang penyimpanan. Untuk detial selengkapnya, silakan kunjungi 
+https://www.asus.com/id/support/FAQ/1038301/.
+https://www.asus.com/id/support/
+https://www.asus.com/id/support/FAQ/1038301/
+Panduan Pengguna Elektronik PC Notebook 3
+Batasan Kewajiban
+Tentang panduan pengguna ini ..........................................................................7
+Konvensi yang digunakan dalam panduan pengguna ini .............................. 8
+Ikon ...................................................................................................................................... 8
+Tipografi ............................................................................................................................. 8
+Tindakan Pengamanan ............................................................................................9
+Menggunakan PC Notebook ...................................................................................... 9
+Memelihara PC Notebook ........................................................................................... 10
+Pembuangan yang tepat ............................................................................................. 11
+Informasi keamanan baterai ....................................................................................... 12
+Bab 1: Konfigurasi Perangkat Keras
+Mengenal PC Notebook ..........................................................................................16
+Tampilan Depan .............................................................................................................. 16
+Tampilan Bawah .............................................................................................................. 21
+Tampilan Kanan ............................................................................................................... 23
+Tampilan Kiri ..................................................................................................................... 24
+Bab 2: Panduan penggunaan PC Notebook
+Tahap persiapan .........................................................................................................28
+Mengisi daya PC Notebook ......................................................................................... 28
+Angkat untuk membuka panel tampilan .............................................................. 30
+Tekan tombol daya......................................................................................................... 30
+Panduan penggunaan bidang sentuh ...............................................................31
+Panduan penggunaan keyboard .........................................................................38
+HotKeys .............................................................................................................................. 38
+Tombol fungsi .................................................................................................................. 39
+Tombol Windows ............................................................................................................ 39
+4 Panduan Pengguna Elektronik PC Notebook
+Bab 3: Bekerja dengan Windows
+Memulai untuk pertama kali .................................................................................42
+Menu Mulai ..................................................................................................................43
+Aplikasi Windows .......................................................................................................45
+Bekerja dengan aplikasi Windows ............................................................................ 46
+Menyesuaikan aplikasi Windows .............................................................................. 46
+Tampilan Tugas ...........................................................................................................48
+Widgets .........................................................................................................................49
+Fitur Pelekatan ............................................................................................................51
+Hotspot Pelekatan .......................................................................................................... 51
+Pusat Tindakan ...........................................................................................................53
+MyASUS Splendid ......................................................................................................55
+Mengatur tampilan OLED .......................................................................................57
+Mengatur Mode Gelap ................................................................................................. 57
+Menonaktifkan tampilan saat tidak digunakan................................................... 59
+Menyesuaikan kecerahan tampilan ......................................................................... 61
+Menyembunyikan taskbar secara otomatis .......................................................... 63
+Mengatur Dark Mode (Mode Gelap) di Microsoft Office .................................. 65
+Pintasan keyboard lainnya .....................................................................................66
+Menyambungkan ke jaringan nirkabel .............................................................68
+Wi-Fi ..................................................................................................................................... 68
+Bluetooth ........................................................................................................................... 69
+Mode Pesawat .................................................................................................................. 70
+Mematikan PC Notebook Anda ............................................................................71
+Mengalihkan PC Notebook ke mode tidur .......................................................72
+Panduan Pengguna Elektronik PC Notebook 5
+Bab 4: Power-On Self Test (POST)
+Power-On Self Test (POST) ......................................................................................74
+Menggunakan POST untuk mengakses BIOS dan Troubleshoot 
+(Pemecahan Masalah) ................................................................................................... 74
+BIOS ................................................................................................................................74
+Mengakses BIOS .............................................................................................................. 74
+Memulihkan sistem...................................................................................................75
+Melakukan opsi pemulihan ........................................................................................ 76
+Tips dan Tanya Jawab
+Tips bermanfaat untuk PC Notebook .................................................................80
+Tanya Jawab Perangkat Keras ...............................................................................82
+Tanya Jawab Perangkat Lunak ..............................................................................85
+Lampiran
+Pernyataan FCC (Federal Communications Commission) ............................... 88
+Informasi Pemaparan RF FCC ..................................................................................... 89
+Catatan Keselamatan UL .............................................................................................. 90
+Persyaratan Keamanan Daya ...................................................................................... 91
+Informasi tentang TV Tuner ........................................................................................ 91
+Informasi tentang Produk Macrovision Corporation ......................................... 91
+Mencegah Kerusakan Pendengaran ........................................................................ 91
+Informasi Lapisan............................................................................................................ 91
+6 Panduan Pengguna Elektronik PC Notebook
+Peringatan tentang Lithium di Nordik (untuk baterai lithium-ion) .............. 92
+Pernyataan Kepatuhan terhadap Peraturan Lingkungan untuk Produk .... 93
+EU REACH dan Pasal 33 ................................................................................................. 93
+EU RoHS.............................................................................................................................. 93
+Daur Ulang ASUS/Layanan Ambil Kembali ........................................................... 94
+Arahan Ecodesign ........................................................................................................... 94
+Produk yang Memenuhi Persyaratan ENERGY STAR .......................................... 95
+Produk-Produk yang Terdaftar EPEAT...................................................................... 95
+Lisensi Font Teks BIOS ................................................................................................... 96
+Pernyataan Kesesuaian UE yang Disederhanakan ............................................. 97
+Pemberitahuan Jaringan Wi-Fi ................................................................................... 97
+Panduan Pengguna Elektronik PC Notebook 7
+Tentang panduan pengguna ini
+Panduan ini memberikan informasi mengenai fitur perangkat keras dan 
+perangkat lunak dari PC Notebook Anda, yang disusun menurut urutan 
+bab berikut ini:
+Bab 1: Konfigurasi Perangkat Keras
+Bab ini merinci komponen perangkat keras pada PC Notebook Anda.
+Bab 2: Panduan penggunaan PC Notebook
+Bab ini menyajikan cara penggunaan berbagai komponen 
+berbeda dari PC Notebook Anda.
+Bab 3: Bekerja dengan Windows
+Bab ini menyediakan ikhtisar mengenai cara menggunakan 
+Windows pada PC Notebook Anda.
+Bab 4: Power-On Self Test (POST)
+Bab ini menyajikan cara penggunaan POST untuk mengubah 
+pengaturan pada PC Notebook Anda.
+Tips dan Tanya Jawab
+Bagian ini berisi beberapa tips yang direkomendasikan, Tanya Jawab 
+perangkat keras dan perangkat lunak yang dapat digunakan untuk 
+memelihara dan memperbaiki masalah umum PC Notebook. 
+Lampiran
+Bagian ini menyediakan pemberitahuan dan pernyataan 
+keselamatan untuk PC Notebook Anda.
+8 Panduan Pengguna Elektronik PC Notebook
+Konvensi yang digunakan dalam panduan 
+pengguna ini
+Untuk menegaskan informasi penting pada panduan pengguna ini, 
+pesan akan ditampilkan sebagai berikut:
+PENTING! Pesan ini mengandung informasi vital yang harus diikuti untuk 
+menyelesaikan tugas. 
+CATATAN: Pesan ini mengandung informasi tambahan dan tips yang 
+dapat membantu Anda menyelesaikan tugas.
+PERINGATAN! Pesan ini mengandung informasi penting yang harus 
+diikuti untuk menjaga Anda tetap aman saat menjalankan tugas tertentu 
+dan mencegah kerusakan data dan komponen PC Notebook Anda. 
+Ikon
+Ikon di bawah ini menunjukkan perangkat yang dapat digunakan untuk 
+menyelesaikan serangkaian tugas atau prosedur pada PC Notebook Anda.
+Tipografi
+Cetak Tebal = Menunjukkan menu atau item yang harus dipilih.
+Cetak Miring = Ini menunjukkaan bagian yang dapat Anda lihat 
+dalam panduan ini.
+= Gunakan panel sentuh.
+= Gunakan keypad.
+Panduan Pengguna Elektronik PC Notebook 9
+Tindakan Pengamanan
+Menggunakan PC Notebook
+PC Notebook ini hanya boleh digunakan di lingkungan 
+dengan suhu ruang antara 5°C (41°F) hingga 35°C (95°F).
+Lihat label arus di bagian bawah PC Notebook dan 
+pastikan adaptor daya Anda sesuai dengan arus 
+tersebut.
+PC Notebook Anda dapat menjadi hangat hingga panas 
+sewaktu digunakan atau saat mengisi baterai. Jangan 
+letakkan PC Notebook di pangkuan Anda atau di dekat 
+bagian tubuh manapun untuk mencegah kcedera 
+akibat panas. Saat menggunakan PC Notebook, jangan 
+letakkan di atas permukaan yang dapat menghalangi 
+ventilasi.
+Jangan gunakan kabel daya, aksesori, dan periferal lain 
+yang rusak bersama PC Notebook Anda.
+Sewaktu dihidupkan, pastikan Anda tidak membawa 
+atau menutupi PC Notebook Anda dengan bahan yang 
+dapat mengurangi sirkulasi udara.
+Jangan letakkan PC Notebook Anda pada permukaan 
+yang miring atau tidak stabil. 
+Anda dapat membawa PC Notebook melalui mesin sinar 
+x bandara (digunakan untuk barang yang diletakkan 
+pada ban berjalan), namun jangan dekatkan dengan 
+detektor dan tongkat magnet.
+Tanyakan kepada maskapai penerbangan Anda 
+untuk mengetahui layanan penerbangan terkait yang 
+dapat digunakan dan batasan yang harus diikuti bila 
+menggunakan PC Notebook saat penerbangan.
+10 Panduan Pengguna Elektronik PC Notebook
+Memelihara PC Notebook
+Lepaskan sambungan daya AC dan keluarkan 
+unit baterai (jika ada) sebelum membersihkan PC 
+Notebook Anda. Gunakan spons selulosa bersih 
+atau kain simlir yang dilembapkan dengan air 
+atau larutan deterjen non-abrasif berkonsentrasi 
+rendah. Bersihkan sisa kelembaban di PC Notebook 
+Anda menggunakan kain kering. Jangan sampai 
+ada cairan yang masuk ke sasis atau celah keyboard 
+agar tidak terjadi korsleting atau korosi.
+Jangan gunakan larutan yang kuat seperti alkohol, 
+thinner, bensin, atau bahan kimia lain di atau di 
+dekat PC Notebook.
+Jangan letakkan benda di atas PC Notebook Anda.
+Jangan letakkan PC Notebook di dekat medan 
+magnet atau listrik yang kuat.
+Jangan gunakan atau letakkan PC Notebook 
+Anda di dekat cairan, hujan, atau lembab. Jangan 
+gunakan modem saat terjadi badai petir.
+Jangan letakkan PC Notebook Anda di lingkungan 
+yang berdebu.
+Panduan Pengguna Elektronik PC Notebook 11
+Pembuangan yang tepat
+Buang pc notebook ini ke dalam sampah umum. 
+Produk ini dirancang agar komponennya dapat 
+digunakan kembali dengan layak dan didaur ulang. 
+Simbol tempat sampah disilang menunjukkan 
+bahwa produk ini (listrik, peralatan listrik, dan 
+baterai sel koin yang mengandung merkuri) tidak 
+boleh dibuang di tempat sampah umum. Untuk 
+membuang produk elektronik, patuhi peraturan 
+yang berlaku di kota anda.
+Buang baterai ke dalam sampah umum. Simbol 
+tempat sampah disilang menunjukkan bahwa 
+baterai ini tidak boleh dibuang di tempat sampah 
+umum.
+Jangan gunakan PC Notebook Anda di dekat gas 
+yang bocor.
+Jangan letakkan peralatan elektronik di dekat 
+PC Notebook Anda untuk menghindari adanya 
+inteferensi gelombang elektromagnetik ke panel 
+layar.
+Jangan gunakan PC Notebook ini untuk 
+menambang mata uang kripto (menghabiskan 
+banyak listrik dan memakan waktu untuk 
+mendapatkan mata uang virtual yang dapat 
+dikonversi) dan/atau aktivitas terkait.
+12 Panduan Pengguna Elektronik PC Notebook
+Perlindungan baterai
+• Sering mengisi daya baterai di bawah tegangan tinggi bisa 
+memperpendek masa pakai baterai. Untuk melindungi baterai, 
+setelah baterai terisi daya penuh, sistem mungkin berhenti 
+mengisi daya ketika daya baterai antara 90% dan 100%.
+CATATAN: Kadar baterai mulai mengisi daya biasanya diatur antara 90% 
+dan 99%. Nilai sebenarnya mungkin berbeda bergantung model.
+• Pengisian daya atau penyimpanan baterai di suhu ruang tinggi 
+bisa menimbulkan kerusakan permanen terhadap kapasitas 
+daya baterai dan mempercepat masa pakai baterai. Jika suhu 
+baterai terlalu tinggi, sistem bisa mengurangi kapasitas pengisi 
+daya baterai atau bahkan menghentikan pengisian daya untuk 
+melindungi baterai.
+• Kapasitas daya baterai bisa turun bahkan ketika daya perangkat 
+Anda dimatikan atau diputus sambungan dari daya AC. Hal ini 
+ajar karena sistem masih menarik sedikit daya dari baterai.
+Informasi keamanan baterai
+Panduan Pengguna Elektronik PC Notebook 13
+Perawatan baterai standar
+• Jika Anda tidak sedang menggunakan perangkat dalam jangka 
+waktu yang lama, pastikan untuk mengisi daya baterai hingga 
+50% kemudian matikan perangkat dan putus sambungan 
+adaptor daya AC. Isi ulang daya baterai hingga 50% setiap tiga 
+bulan untuk menghindari kelebihan pengurasan daya dan 
+mencegah kerusakan pada baterai.
+• Hindari mengisi daya baterai pada tegangan tinggi untuk jangka 
+waktu lama untuk memperpanjang masa pakai baterai. Jika Anda 
+terus menerus menggunakan daya AC untuk perangkat Anda, 
+pastikan untuk menguras daya baterai hingga 50% sekurang-
+kurangnya sekali setiap dua minggu. Anda juga dapat menyetel 
+pengaturan dari Pengisian Daya Kesehatan Baterai di MyASUS 
+untuk memperpanjang masa pakai baterai.
+• Direkomendasikan untuk menyimpan baterai Anda pada suhu 
+5°C (41°F) dan 35°C (95°F) dengan daya baterai pada 50%. Anda 
+juga dapat menyetel pengaturan dari Pengisian Daya Kesehatan 
+Baterai di MyASUS untuk memperpanjang masa pakai baterai.
+• Jangan biarkan baterai Anda berada di lingkungan yang lembap. 
+Paparan terhadap lingkungan yang lembap bisa menambah 
+kecepatan pengurasan berlebihan terhadap baterai. Lingkungan 
+suhu rendah bisa merusak bahan kimia yang ada di dalam baterai, 
+sedangkan suhu tinggi atau panas berlebih bisa menimbulkan 
+risiko ledakan.
+• Jangan letakkan perangkat atau paket baterai Anda di dekat 
+radiator, api unggun, perapian, pemanas, atau sumber panas 
+dengan suhu yang melebihi 60°C (140°F). Lingkungan sekitar 
+suhu tinggi bisa menimbulkan ledakan atau kebocoran yang bisa 
+menyebabkan terjadinya kebakaran.
+14 Panduan Pengguna Elektronik PC Notebook
+Panduan Pengguna Elektronik PC Notebook 15
+Bab 1: 
+Konfigurasi Perangkat Keras
+16 Panduan Pengguna Elektronik PC Notebook
+Mengenal PC Notebook
+Tampilan Depan
+CATATAN: Tata letak keyboard mungkin berbeda-beda menurut wilayah 
+atau negara. Tampilan Notebook juga dapat berbeda-beda, tergantung 
+model PC Notebook.
+Panduan Pengguna Elektronik PC Notebook 17
+Mikrofon array
+Mikrofon array menghadirkan fungsi penghilang gaung, 
+peredam bising, dan pembentuk gelombang suara untuk 
+pengenalan suara dan perekaman audio yang lebih baik.
+Kamera
+Kamera internal memungkinkan Anda mengambil gambar atau 
+merekam video menggunakan PC Notebook.
+Kamera IR
+Kamera internal memungkinkan Anda mengambil gambar atau 
+merekam video menggunakan PC Notebook. Kamera IR juga 
+mendukung Windows Hello.
+CATATAN: LED IR merah akan berkedip saat berproses sementara 
+data dibaca sebelum Anda masuk dengan pengenalan wajah 
+Windows Hello.
+Indikator kamera
+Indikator kamera akan menyala saat kamera internal digunakan.
+18 Panduan Pengguna Elektronik PC Notebook
+Panel layar
+Panel layar definisi tinggi ini dilengkapi fitur penayangan terbaik 
+untuk foto, video, dan file multimedia lainnya di PC Notebook 
+Anda.
+Sangkalan: Tampilan gambar statis atau kontras tinggi yang 
+lama bisa menimbulkan persistensi atau pembakaran gambar 
+di monitor OLED. ASUS Notebook PC dengan monitor OLED 
+(pada model tertentu) meminimalisir potensi pembakaran 
+dengan mengatur Mode Gelap pada Windows sebagai default 
+dan mempersingkat waktu nonaktif sebelum layar dimatikan. 
+Direkomendasikan untuk mengaktifkan screensaver latar 
+belakang gelap beranimasi dan menghindari pengaturan monitor 
+OLED ke kecerahan maksimum untuk memperpanjang usia pakai 
+monitor OLED.
+CATATAN: Untuk detail selengkapnya, lihat bagian Mengatur 
+monitor OLED dalam panduan pengguna ini.
+Indikator matinya mikrofon
+Indikator menyala ketika mikrofon dimatikan.
+Keyboard
+Keyboard menyediakan tombol QWERTY lengkap dengan 
+kedalaman yang nyaman untuk mengetik seperti pada desktop. 
+Dengan keyboard ini, Anda juga dapat menggunakan tombol 
+fungsi, mengakses Windows dengan cepat, dan mengontrol 
+fungsi multimedia lainnya.
+CATATAN: Tata letak keyboard berbeda-beda menurut model 
+atau kawasan.
+Panduan Pengguna Elektronik PC Notebook 19
+Indikator huruf besar
+Indikator ini akan menyala bila fungsi huruf besar diaktifkan. 
+Penggunaan huruf besar memungkinkan Anda mengetik huruf 
+besar (misalnya A, B, C) menggunakan keyboard PC Notebook.
+Bidang sentuh
+Bidang sentuh memungkinkan penggunaan banyak gerakan 
+untuk menavigasi pada layar, sehingga pengalaman pengguna 
+lebih intuitif. Bidang sentuh juga menyerupai fungsi mouse 
+biasa.
+CATATAN: Untuk selengkapnya, lihat bagian Menggunakan 
+bidang sentuh dalam panduan pengguna ini.
+Sensor cahaya sekitar
+Sensor cahaya sekitar mendeteksi kapasitas cahaya sekitar 
+di lingkungan Anda. Sensor ini memungkinkan sistem 
+menyesuaikan kecerahan layar secara otomatis, tergantung pada 
+kondisi cahaya sekitar.
+Sensor cahaya RGB
+Sensor cahaya RGB akan secara otomatis menyesuaikan suhu 
+warna panel monitor Anda sesuai dengan tingkat cahaya sekitar.
+20 Panduan Pengguna Elektronik PC Notebook
+Indikator kamera mati
+Indikator menyala ketika kamera dimatikan.
+Tombol daya
+Tekan tombol daya untuk menghidupkan atau mematikan PC 
+Notebook. Anda juga dapat menggunakan tombol daya untuk 
+mengaktifkan atau menonaktifkan mode tidur atau hibernasi 
+pada PC Notebook.
+Jika PC Notebook tidak merespons, tekan terus tombol daya 
+selama sepuluh (10) detik hingga PC Notebook mati.
+Panduan Pengguna Elektronik PC Notebook 21
+Tampilan Bawah
+CATATAN: Tampilan bawah mungkin berbeda-beda, bergantung model.
+PERINGATAN! PC Notebook Anda dapat menjadi hangat hingga panas 
+sewaktu digunakan atau saat mengisi baterai. Jangan letakkan PC 
+Notebook di pangkuan Anda atau di dekat bagian tubuh manapun untuk 
+mencegah kcedera akibat panas. Saat menggunakan PC Notebook, 
+jangan letakkan di atas permukaan yang dapat menghalangi ventilasi.
+PENTING! 
+• Usia baterai berbeda-beda sesuai penggunaan dan spesifikasi untuk 
+PC Notebook ini. Unit baterai tidak boleh dibongkar.
+• Untuk memastikan kompatibilitas dan keandalan maksimum, 
+beli komponen dari peritel resmi. Hubungi pusat layanan ASUS 
+atau peritel resmi untuk layanan produk atau bantuan tentang 
+pembongkaran atau perakitan produk.
+22 Panduan Pengguna Elektronik PC Notebook
+Ventilasi udara
+Ventilasi udara memungkinkan udara sejuk masuk dan udara 
+hangat keluar dari PC Notebook.
+PERINGATAN! Pastikan kertas, buku, pakaian, kabel, atau benda 
+lain tidak menghalangi ventilasi udara agar notebook tidak terlalu 
+panas.
+Speaker audio
+Speaker audio internal memungkinkan Anda mendengar audio 
+langsung dari PC Notebook. Fitur audio dikontrol oleh perangkat 
+lunak.
+Panduan Pengguna Elektronik PC Notebook 23
+Indikator daya
+Indikator daya akan menyala bila PC Notebook dihidupkan dan 
+berkedip perlahan bila PC Notebook dalam mode tidur.
+Soket Headphone/Headset/Mikrofon
+Port ini memungkinkan Anda menyambungkan speaker atau 
+headphone yang diperkuat. Anda juga dapat menggunakan port 
+ini untuk menyambungkan headset atau mikrofon eksternal.
+Port USB 3.2 Gen 2
+Port USB 3.2 (Universal Serial Bus 3.2) Gen 2 memungkinkan 
+kecepatan transfer hingga 10 Gbit/detik dan kompatibel dengan 
+USB 2.0.
+Tampilan Kanan
+24 Panduan Pengguna Elektronik PC Notebook
+Tampilan Kiri
+Port Output HDMI
+Port in memungkinkan Anda mengirimkan sinyal audio dan 
+video dari PC Notebook ke perangkat yang kompatibel dengan 
+HDMI menggunakan kabel HDMI.
+Thunderbolt™ 4/Port kombo Pengiriman Daya
+Port Thunderbolt™ 4 cocok dengan standar USB Type-C®, 
+dan memberikan kecepatan transfer hingga 40 Gbit/s untuk 
+perangkat Thunderbolt™ 4. Hubungkan PC Notebook Anda 
+dengan tampilan eksternal DisplayPort, VGA, DVI, atau HDMI 
+dan rasakan pengalaman fitur tampilan beresolusi tinggi 
+melalui teknologi Intel® Thunderbolt™. Masukkan adaptor daya 
+yang digabungkan ke port ini untuk mengisi daya baterai dan 
+memberikan daya ke PC Notebook Anda.
+CATATAN: Kecepatan transfer port ini mungkin berbeda-beda 
+menurut model.
+PENTING! Mengisi daya PC Notebook hingga penuh mungkin 
+membutuhkan waktu lebih lama menggunakan sumber daya 
+tegangan rendah.
+Panduan Pengguna Elektronik PC Notebook 25
+Indikator pengisian daya baterai dua warna
+LED dua warna memberikan indikator visual tentang status 
+pengisian daya baterai. Untuk selengkapnya, lihat tabel berikut:
+Warna Status
+Menyala Hijau PC Notebook tersambung ke 
+sumber daya, dan daya baterai 
+antara 95% dan 100%.
+Menyala Oranye PC Notebook tersambung ke 
+sumber daya, mengisi daya 
+baterainya, dan daya baterai 
+kurang dari 95%.
+Berkedip Oranye PC Notebook menggunakan 
+mode baterai dan daya baterai 
+kurang dari 10%.
+Lampu mati PC Notebook menggunakan 
+mode baterai dan daya baterai 
+adalah antara 10% hingga 
+100%.
+26 Panduan Pengguna Elektronik PC Notebook
+Panduan Pengguna Elektronik PC Notebook 27
+Bab 2:
+Panduan penggunaan PC 
+Notebook
+28 Panduan Pengguna Elektronik PC Notebook
+PENTING!
+Informasi adaptor daya:
+• Tegangan input: 100-240Vac
+• Frekuensi input: 50-60Hz
+• Tingkat arus output: 3,25A (65W)
+• Tingkat tegangan output: 20V
+Lakukan pengisian daya pada PC Notebook Anda 
+selama 3 jam sebelum menggunakan mode baterai 
+untuk pertama kali.
+CATATAN: Adaptor daya memiliki berbagai tampilan, tergantung model 
+dan wilayah Anda.
+Tahap persiapan
+Mengisi daya PC Notebook
+A. Sambungkan kabel listrik AC ke adaptor AC/DC.
+B. Sambungkan konektor daya DC ke port input daya (DC) PC 
+Notebook.
+C. Colokkan adaptor daya AC ke sumber daya 100V~240V.
+Panduan Pengguna Elektronik PC Notebook 29
+PENTING!
+• Baca label tingkat input/output yang ada pada PC Notebook Anda 
+dan pastikan sudah sesuai dengan informasi tingkat input/output 
+pada adaptor daya. Beberapa model PC Notebook dapat memiliki 
+lebih dari satu tingkat arus output berdasarkan SKU yang ada.
+• Sebelum menghidupkan untuk pertama kali, pastikan PC 
+Notebook Anda sudah tersambung ke adaptor daya. Pastikan 
+untuk selau mencolokkan kabel daya ke stopkontak dinding tanpa 
+menggunakan kabel ekstensi apa pun. Demi keselamatan Anda, 
+sambungkan perangkat ini hanya ke stopkontak listrik yang telah 
+diarde (grounding) dengan benar.
+• Stopkontak yang digunakan harus mudah diakses dan dekat dengan 
+PC Notebook Anda.
+• Untuk memutus sambungan PC Notebook dari catu daya utamanya, 
+cabut PC Notebook dari stopkontak.
+PERINGATAN!
+Baca tindakan pencegahan berikut agar baterai PC Notebook Anda tidak 
+mengalami kerusakan:
+• Hanya teknisi resmi ASUS yang diperbolehkan untuk melepas baterai 
+di dalam perangkat (hanya untuk perangkat dengan baterai tanam).
+• Baterai yang digunakan pada perangkat ini dapat menimbulkan 
+risiko terjadinya kebakaran atau luka bakar akibat bahan kimia jika 
+dilepas atau dibongkar.
+• Patuhi label peringatan untuk keselamatan pribadi Anda.
+• Terdapat risiko terjadinya ledakan jika baterai diganti dengan tipe 
+yang tidak sesuai.
+• Jangan membakar baterai yang sudah tidak digunakan.
+• Jangan pernah mencoba untuk memutus sambungan arus listrik 
+baterai PC Notebook secara tiba-tiba.
+• Jangan pernah mencoba untuk membongkar dan merakit kembali 
+baterai (hanya untuk perangkat dengan baterai tanam).
+• Hentikan penggunaan baterai jika terdapat kebocoran daya.
+• Jika sudah tidak digunakan lagi, baterai dan semua komponennya 
+harus didaur ulang atau dibuang dengan prosedur yang tepat.
+• Simpan baterai dan komponen kecil lainnya di tempat yang jauh dari 
+jangkauan anak-anak.
+30 Panduan Pengguna Elektronik PC Notebook
+Angkat untuk membuka panel tampilan
+Tekan tombol daya
+Panduan Pengguna Elektronik PC Notebook 31
+Panduan penggunaan bidang sentuh
+Menggerakkan penunjuk
+Anda dapat mengetuk di seluruh bagian bidang sentuh untuk 
+mengaktifkan penunjuknya, lalu geser jari Anda pada bidang sentuh 
+untuk menggerakkan penunjuk pada layar.
+Geser secara horizontal
+Geser secara vertikal
+Geser secara diagonal
+32 Panduan Pengguna Elektronik PC Notebook
+Gerakan satu jari
+Ketuk 1-kali/2-kali
+• Ketuk 1-kali aplikasi untuk memilihnya.
+• Ketuk 2-kali aplikasi untuk meluncurkannya.
+Seret dan letakkan
+Ketuk 2-kali item, kemudian geser jari yang digunakan untuk mengetuk 
+tanpa mengangkatnya dari bidang sentuh. Untuk meletakkan item 
+tersebut ke lokasi barunya, angkat jari Anda dari bidang sentuh.
+Panduan Pengguna Elektronik PC Notebook 33
+Klik kiri Klik kanan
+• Ketuk 1-kali aplikasi untuk 
+memilihnya.
+• Ketuk 2-kali aplikasi untuk 
+meluncurkannya.
+Klik tombol ini untuk membuka 
+menu klik kanan.
+CATATAN: Area di dalam garis putus-putus menunjukkan lokasi tombol 
+klik kiri mouse dan tombol klik kanan mouse pada bidang sentuh.
+Gerakan dua jari
+Ketuk
+Ketuk dengan dua jari pada bidang sentuh untuk mengaktifkan fungsi 
+klik kanan.
+34 Panduan Pengguna Elektronik PC Notebook
+Menggulirkan dengan dua jari 
+(ke atas/bawah)
+Menggulirkan dengan dua jari 
+(ke kiri/kanan)
+Geser dengan dua jari untuk 
+menggulir ke atas atau ke bawah.
+Geser dengan dua jari untuk 
+menggulir ke kiri atau ke kanan.
+Memperkecil tampilan Memperbesar tampilan
+Satukan kedua jari Anda di 
+bidang sentuh.
+Rentangkan kedua jari Anda di 
+bidang sentuh.
+Panduan Pengguna Elektronik PC Notebook 35
+Seret dan letakkan
+Pilih sebuah item, lalu tekan terus tombol klik kiri. Geser dengan jari 
+lainnya pada bidang sentuh untuk menyeret item, lalu angkat jari Anda 
+dari tombol untuk meletakkan item.
+Gerakan tiga jari
+Ketuk
+Ketuk dengan tiga jari pada bidang sentuh untuk meluncurkan fungsi 
+yang Anda pilih di Settings (Pengaturan).
+36 Panduan Pengguna Elektronik PC Notebook
+Geser cepat ke kiri/kanan
+Saat Anda membuka lebih dari satu aplikasi, geser cepat dengan tiga 
+jari ke kiri atau kanan untuk beralih dari satu aplikasi ke aplikasi lain.
+Geser cepat ke atas Geser cepat ke bawah
+Geser cepat ke atas untuk melihat 
+gambaran umum semua aplikasi 
+yang saat ini terbuka.
+Geser cepat ke bawah untuk 
+menampilkan desktop.
+Panduan Pengguna Elektronik PC Notebook 37
+Gerakan empat jari
+Ketuk
+Ketuk dengan empat jari pada bidang sentuh untuk meluncurkan 
+fungsi yang Anda pilih di Settings (Pengaturan).
+38 Panduan Pengguna Elektronik PC Notebook
+Panduan penggunaan keyboard
+Mengaktifkan atau menonaktifkan speaker
+Mengecilkan volume speaker
+Menaikkan volume speaker
+Mengurangi kecerahan tampilan
+Meningkatkan kecerahan tampilan
+Mengaktifkan atau menonaktifkan bidang sentuh
+Menyesuaikan kecerahan untuk keyboard bercahaya latar
+Mengalihkan mode tampilan
+CATATAN: Pastikan tampilan kedua sudah tersambung 
+ke PC Notebook Anda.
+HotKeys
+HotKeys pada keyboard PC Notebook Anda dapat memicu perintah 
+berikut ini:
+Panduan Pengguna Elektronik PC Notebook 39
+Tombol Windows
+Terdapat dua tombol Windows khusus pada keyboard PC Notebook 
+Anda yang digunakan seperti di bawah ini:
+Meluncurkan Start menu (Menu Mulai)
+ atau Menampilkan menu drop-down
+Tombol fungsi
+Tekan untuk mengaktifkan atau menonaktifkan fitur 
+tombol fungsi. Ketika fitur tombol fungsi diaktifkan, Anda juga dapat 
+mengakses HotKeys dengan menekan terus bersamaan dengan 
+tombol-tombol di baris paling atas.
+Mengaktifkan atau menonaktifkan mikrofon
+Mengaktifkan atau menonaktifkan kamera
+Mengaktifkan alat penangkap layar
+Meluncurkan MyASUS
+40 Panduan Pengguna Elektronik PC Notebook
+Panduan Pengguna Elektronik PC Notebook 41
+Bab 3:
+Bekerja dengan Windows
+42 Panduan Pengguna Elektronik PC Notebook
+Memulai untuk pertama kali
+Ketika memulai PC Notebook untuk pertama kalinya, serangkaian layar 
+akan muncul untuk memandu Anda dalam mengonfigurasi sistem 
+operasi Windows Anda.
+Untuk memulai menggunakan PC Notebook Anda pada pertama 
+kalinya:
+1. Tekan tombol daya pada PC Notebook Anda. Tunggu beberapa 
+detik, sampai layar penyetelan muncul.
+2. Dari layar penyetelan, pilih wilayah dan bahasa yang akan 
+digunakan di PC Notebook Anda.
+3. Baca License Agreement (Perjanjian Lisensi) dengan saksama. 
+Pilih Accept (Terima).
+4. Ikuti petunjuk yang ada di layar untuk mengonfigurasi item dasar 
+berikut ini:
+• Personalisasi
+• Menjadi online
+• Pengaturan
+• Akun Anda
+5. Setelah mengonfigurasi item dasar, Windows akan melanjutkan 
+untuk menginstal aplikasi dan pengaturan pilihan Anda. Pastikan 
+PC Notebook Anda tetap menyala selama proses penyetelan.
+6. Setelah selesai, Desktop akan muncul.
+CATATAN: Tangkapan layar dalam bab ini hanya sebagai referensi.
+Panduan Pengguna Elektronik PC Notebook 43
+Menu Mulai
+Menu Mulai adalah gateway utama ke program, aplikasi Windows, 
+folder, dan pengaturan PC Notebook Anda.
+Anda dapat menggunakan Menu Mulai untuk melakukan aktivitas 
+umum berikut:
+• Memulai program atau aplikasi Windows
+• Membuka program atau aplikasi Windows yang umum digunakan
+• Menyesuaikan pengaturan PC Notebook
+• Mendapatkan bantuan dengan sistem operasi Windows
+• Mematikan PC Notebook Anda
+• Keluar dari Windows atau beralih ke akun pengguna lain
+Mengubah pengaturan akun, kunci, 
+atau keluar dari akun Anda
+Meluncurkan Start menu 
+(Menu Mulai)
+Meluncurkan Tampilan Tugas
+Mematikan, menghidupkan 
+ulang, atau mengalihkan PC 
+Notebook ke mode Tidur
+Meluncurkan 
+aplikasi dari taskbar
+Meluncurkan aplikasi dari Menu Mulai
+Meluncurkan Pencarian
+Meluncurkan Widgets
+44 Panduan Pengguna Elektronik PC Notebook
+Meluncurkan Menu Mulai
+Atur posisi penunjuk mouse Anda pada ikon Mulai 
+di desktop Anda, lalu klik ikon tersebut.
+Tekan tombol logo Windows pada keyboard 
+Anda.
+Membuka program dari Menu Mulai
+Salah satu penggunaan Menu Mulai yang paling umum adalah 
+membuka program yang terinstal pada PC Notebook Anda.
+Atur posisi penunjuk mouse Anda pada program yang 
+ingin dibuka, lalu klik untuk meluncurkannya.
+Gunakan tombol panah untuk menelusuri melalui 
+program. Tekan untuk meluncurkannya.
+CATATAN: Pilih All apps (Semua aplikasi) untuk menampilkan daftar 
+lengkap dari program dan folder di PC Notebook Anda sesuai urutan 
+abjad.
+Panduan Pengguna Elektronik PC Notebook 45
+Aplikasi Windows
+Aplikasi-aplikasi ini adalah aplikasi yang disematkan pada Menu Mulai 
+dan ditampilkan dalam format ubin untuk akses mudah.
+CATATAN: Beberapa aplikasi Windows mengharuskan Anda untuk masuk 
+ke akun Microsoft Anda terlebih dahulu, sebelum dapat diluncurkan 
+sepenuhnya.
+46 Panduan Pengguna Elektronik PC Notebook
+Bekerja dengan aplikasi Windows
+Menyesuaikan aplikasi Windows
+Anda dapat memindahkan, melepas sematan, atau menyematkan 
+aplikasi ke taskbar dari Start menu (Menu Mulai) melalui langkah-
+langkah berikut:
+Meluncurkan aplikasi Windows dari Menu Mulai
+Atur posisi penunjuk mouse Anda pada aplikasi yang 
+ingin dibuka, lalu klik untuk meluncurkannya.
+Gunakan tombol panah untuk menelusuri melalui 
+aplikasi. Tekan untuk meluncurkan sebuah 
+aplikasi.
+Memindahkan aplikasi
+Atur posisi penunjuk mouse Anda pada aplikasi, lalu 
+seret dan letakkan aplikasi ke lokasi baru.
+Melepas sematan aplikasi
+Atur posisi penunjuk mouse Anda pada aplikasi, klik 
+kanan pada aplikasi tersebut, lalu klik Unpin from Start 
+(Lepas sematan dari Mulai).
+Gunakan tombol panah untuk menavigasi ke aplikasi 
+terkait. 
+Tekan atau (pada model tertentu), 
+lalu pilih Unpin from Start (Lepas sematan dari Mulai).
+Panduan Pengguna Elektronik PC Notebook 47
+Menyematkan aplikasi ke taskbar
+Atur posisi penunjuk mouse Anda pada aplikasi, klik 
+kanan pada aplikasi tersebut, lalu klik Pin to taskbar 
+(Sematkan ke taskbar).
+Gunakan tombol panah untuk menavigasi ke aplikasi 
+terkait. 
+Tekan atau (pada model tertentu), 
+lalu pilih Pin to taskbar (Sematkan ke taskbar).
+Menyematkan lebih banyak aplikasi ke Start menu (Menu 
+Mulai)
+Dari All apps (Semua aplikasi), atur posisi penunjuk 
+mouse Anda pada aplikasi yang ingin Anda sematkan ke 
+Start menu (Menu Mulai), klik kanan aplikasi tersebut, 
+lalu klik Pin to Start (Sematkan ke Mulai).
+Dari All apps (Semua aplikasi), tekan atau 
+ (pada model tertentu) pada aplikasi yang 
+ingin Anda sematkan ke Start menu (Menu Mulai), lalu 
+pilih Pin to Start (Sematkan ke Mulai).
+48 Panduan Pengguna Elektronik PC Notebook
+Tampilan Tugas
+Beralih dengan cepat dari satu ke aplikasi dan program lain yang dibuka 
+dengan menggunakan fitur Task view (Tampilan Tugas). Selain itu, Task 
+view (Tampilan Tugas) juga dapat Anda gunakan untuk beralih antar 
+desktop.
+Meluncurkan Tampilan Tugas
+Atur posisi penunjuk mouse Anda pada ikon di 
+taskbar, lalu klik ikon tersebut.
+Tekan pada keyboard Anda.
+Panduan Pengguna Elektronik PC Notebook 49
+Widgets
+Anda dapat meluncurkan Widgets untuk akses cepat ke info penting.
+Meluncurkan Widgets
+Atur posisi penunjuk mouse Anda pada ikon di 
+taskbar, lalu klik ikon tersebut.
+Tekan pada keyboard Anda.
+50 Panduan Pengguna Elektronik PC Notebook
+Menyesuaikan Widgets
+Klik/Ketuk ikon , lalu pilih Manage interests (Kelola 
+minat) untuk mengubah konten yang muncul di 
+Widgets.
+Panduan Pengguna Elektronik PC Notebook 51
+Fitur Pelekatan
+Fitur Pelekatan menampilkan aplikasi secara berdampingan, sehingga 
+Anda dapat bekerja atau beralih antar aplikasi.
+Hotspot Pelekatan
+Anda dapat menyeret dan meletakkan aplikasi ke hotspot berikut ini 
+untuk melekatkan aplikasi ke tempatnya.
+52 Panduan Pengguna Elektronik PC Notebook
+Menggunakan Pelekatan
+1. Luncurkan aplikasi yang ingin Anda lekatkan.
+2. Seret bilah judul aplikasi Anda dan letakkan 
+aplikasi ke tepi layar untuk melekatkan.
+3. Luncurkan aplikasi lain dan ulangi langkah 
+sebelumnya untuk melekatkan aplikasi lain.
+1. Luncurkan aplikasi yang ingin Anda lekatkan.
+2. Tekan terus tombol , lalu gunakan tombol 
+panah untuk melekatkan aplikasi.
+3. Luncurkan aplikasi lain dan ulangi langkah 
+sebelumnya untuk melekatkan aplikasi lain.
+Panduan Pengguna Elektronik PC Notebook 53
+Pusat Tindakan
+Pusat Tindakan mengonsolidasikan pemberitahuan dari aplikasi dan 
+menyajikan satu tempat untuk berinteraksi dengan pemberitahuan 
+tersebut. Fitur ini juga memiliki bagian Quick Actions (Tindakan Cepat) 
+yang sangat berguna.
+Launching Meluncurkan Tindakan Cepat
+Atur posisi penunjuk mouse Anda pada ikon status di 
+taskbar, lalu klik ikon tersebut.
+Tekan pada keyboard Anda.
+54 Panduan Pengguna Elektronik PC Notebook
+Meluncurkan Pemberitahuan
+Atur posisi penunjuk mouse Anda pada tanggal dan 
+waktu di taskbar, lalu klik ikon tersebut.
+Tekan pada keyboard Anda.
+Panduan Pengguna Elektronik PC Notebook 55
+MyASUS Splendid
+MyASUS Splendid memastikan bahwa semua panel tampilan ASUS 
+menampilkan warna yang identik dan akurat. Selain Mode Normal, 
+Anda dapat memilih Mode Tajam, Mode Perawatan Mata, atau Manual 
+Mode (Mode Manual) untuk menyesuaikan pengaturan tampilan.
+• Normal Mode (Mode Normal): Melalui koreksi suhu Gamma 
+dan Warna, output gambar dari panel diperbesar semaksimal 
+mungkin sebagaimana yang dapat dilihat secara alami oleh mata 
+Anda. Untuk model dengan panel OLED, mode ini sesuai dengan 
+Sertifikasi Cahaya Biru Rendah TÜV.
+• Vivid Mode (Mode Tajam): Mode ini memungkinkan Anda untuk 
+menyesuaikan saturasi gambar, sehingga gambar menjadi lebih 
+jelas dan hidup.
+• Manual Mode (Mode Normal): Mode ini memungkinkan Anda 
+untuk menyesuaikan nilai suhu warna sesuai yang Anda inginkan, 
+mulai dari -50 hingga +50.
+• Eye Care Mode (Mode Perawatan Mata): Mode ini akan 
+mengurangi emisi cahaya biru hingga 30%, sehingga 
+meningkatkan perlindungan untuk mata Anda.
+ Level 1-5: Semakin tinggi levelnya, maka emisi cahaya biru akan 
+semakin berkurang. Untuk model dengan panel LCD, Level 
+5 adalah pengaturan yang dioptimalkan, dan sesuai dengan 
+Sertifikasi Cahaya Biru Rendah TÜV.
+CATATAN: Aktifkan HDR dari Settings (Pengaturan) > System (Sistem) 
+> Display (Tampilan) untuk pengalaman menonton yang lebih baik 
+dengan panel OLED Anda (pada model tertentu), dan sesuai dengan 
+Sertifikasi Bebas Kedip TÜV.
+56 Panduan Pengguna Elektronik PC Notebook
+Silakan lihat tips berikut untuk menyelesaikan masalah ketegangan 
+mata:
+• Luangkan waktu sejenak, jauh dari layar jika bekerja selama 
+berjam-jam. Kami menyarankan untuk beristirahat sejenak 
+(setidaknya 5 menit) setelah sekitar 1 jam terus menerus bekerja 
+di depan komputer. Istirahat pendek dan lebih sering akan lebih 
+efektif daripada istirahat panjang.
+• Untuk meminimalkan ketegangan mata dan kekeringan mata, 
+istirahatkan mata Anda secara berkala dengan memusatkan 
+perhatian pada objek yang jauh.
+• Ulangi latihan berikut untuk mengurangi ketegangan mata:
+(1) Melihat ke atas dan ke bawah berulang kali
+(2) Memutar mata secara perlahan
+(3) Menggerakkan mata secara diagonal
+ Jika mata masih terasa tegang, harap konsultasikan ke dokter.
+• Cahaya biru berenergi tinggi dapat menyebabkan ketegangan 
+mata dan AMD (Age-Related Macular Degeneration/Degenerasi 
+Makula Akibat Usia). Filter cahaya biru akan mengurangi 30% 
+(maks.) cahaya biru berbahaya untuk menghindari CVS (Computer 
+Vision Syndrome/Sindrom Penglihatan Komputer).
+Panduan Pengguna Elektronik PC Notebook 57
+Mengatur tampilan OLED
+Untuk memastikan hasil maksimal dari tampilan OLED Anda (pada 
+model tertentu), kami menyarankan penggunaan beberapa pengaturan. 
+Pengaturan ini akan membantu Anda mengoptimalkan pengalaman 
+visual, memaksimalkan masa pakai baterai, dan memperpanjang masa 
+pakai PC Notebook ASUS Anda.
+Mengatur Mode Gelap
+Dark Mode (Mode Gelap) aktif sebagai pengaturan default. Untuk 
+memeriksa atau menyesuaikan pengaturan, lakukan langkah-langkah 
+berikut:
+1. Luncurkan Start menu (Menu Mulai).
+2. Klik/Ketuk Settings (Pengaturan) dan pilih Personalization 
+(Personalisasi).
+58 Panduan Pengguna Elektronik PC Notebook
+3. Pilih tab Colors (Warna) untuk melihat opsi yang ada.
+Panduan Pengguna Elektronik PC Notebook 59
+Menonaktifkan tampilan saat tidak digunakan
+Pastikan untuk mengatur tampilan Anda agar mati secara otomatis saat 
+tidak digunakan. Untuk memeriksa atau menyesuaikan pengaturan, 
+lakukan langkah-langkah berikut:
+1. Luncurkan Menu Mulai.
+2. Klik/Ketuk Settings (Pengaturan) dan pilih System (Sistem).
+60 Panduan Pengguna Elektronik PC Notebook
+3. Pilih tab Power & battery (Daya & baterai) untuk melihat opsi 
+yang ada.
+Panduan Pengguna Elektronik PC Notebook 61
+Menyesuaikan kecerahan tampilan
+Kami menyarankan untuk mengaktifkan screensaver (pengaman layar) 
+latar belakang dengan animasi gelap dan menghindari pengaturan 
+layar OLED Anda pada kecerahan maksimal untuk memperpanjang 
+masa pakai layar OLED Anda. Untuk memeriksa atau menyesuaikan 
+pengaturan, lakukan langkah-langkah berikut:
+1. Luncurkan Start menu (Menu Mulai).
+2. Klik/Ketuk Settings (Pengaturan) dan pilih Personalization 
+(Personalisasi).
+62 Panduan Pengguna Elektronik PC Notebook
+3. Pilih tab Lock screen (Layar penguncian), kemudian pilih 
+Screen saver (Pengaman layar) untuk melihat opsi yang ada.
+Panduan Pengguna Elektronik PC Notebook 63
+Menyembunyikan taskbar secara otomatis
+Untuk menghindari tampilan taskbar pada layar OLED Anda dalam 
+waktu lama, pastikan Anda telah melakukan pengaturan untuk 
+menyembunyikan taskbar secara otomatis. Untuk menyesuaikan 
+pengaturan, lakukan langkah-langkah berikut:
+1. Luncurkan Menu Mulai.
+2. Klik/Ketuk Settings (Pengaturan) dan pilih Personalization 
+(Personalisasi).
+64 Panduan Pengguna Elektronik PC Notebook
+3. Pilih tab Taskbar, kemudian aktifkan Automatically hide the 
+taskbar (Sembunyikan taskbar secara otomatis).
+Panduan Pengguna Elektronik PC Notebook 65
+1. Luncurkan aplikasi Microsoft Office, kemudian klik/ketuk File > 
+Account (Akun).
+2. Pilih Dark Gray (Abu-abu Gelap) di bawah Office Theme (Tema 
+Office). Tema yang dipilih akan diterapkan ke semua aplikasi 
+Microsoft.
+Mengatur Dark Mode (Mode Gelap) di Microsoft 
+Office
+66 Panduan Pengguna Elektronik PC Notebook
+Pintasan keyboard lainnya
+Dengan menggunakan pintasan keyboard berikut, Anda dapat 
+meluncurkan aplikasi dan menavigasi Windows dengan lebih mudah.
+Meluncurkan Start menu (Menu Mulai)
+Meluncurkan Action Center (Pusat Tindakan)
+Meluncurkan desktop
+Meluncurkan File Explorer (Penjelajah File)
+Meluncurkan Settings (Pengaturan)
+Meluncurkan panel Connect (Sambungkan)
+Mengaktifkan Layar penguncian
+Memperkecil semua jendela aplikasi yang sedang 
+aktif
+Panduan Pengguna Elektronik PC Notebook 67
+Meluncurkan Search (Pencarian)
+Meluncurkan panel Project (Proyek)
+Meluncurkan jendela Run (Eksekusi)
+Membuka Accessibility (Aksesibilitas)
+Membuka menu konteks pada tombol Mulai
+Meluncurkan ikon kaca pembesar dan 
+memperbesar layar Anda
+Memperkecil layar Anda
+68 Panduan Pengguna Elektronik PC Notebook
+Menyambungkan ke jaringan nirkabel
+Wi-Fi
+Koneksi Wi-Fi PC Notebook digunakan untuk mengakses email, 
+menjelajahi Internet, dan membagikan aplikasi melalui situs jejaring 
+sosial.
+PENTING! Airplane mode (Mode Pesawat) akan menonaktifkan fitur 
+ini. Pastikan Airplane mode (Mode Pesawat) dimatikan sebelum 
+mengaktifkan koneksi Wi-Fi PC Notebook Anda.
+Menyambungkan Wi-Fi
+Ikuti langkah-langkah berikut untuk menyambungkan PC Notebook ke 
+jaringan Wi-Fi:
+1. Luncurkan Action Center (Pusat Tindakan) dari 
+taskbar.
+2. Klik/Ketuk ikon Wi-Fi untuk mengaktifkan Wi-Fi.
+3. Pilih titik akses dari daftar koneksi Wi-Fi yang ada.
+4. Pilih Connect (Sambungkan) untuk memulai 
+koneksi jaringan.
+CATATAN: Wantian mungkin akan muncul yang meminta 
+Anda memasukkan kunci keamanan untuk mengaktifkan 
+koneksi Wi-Fi.
+Panduan Pengguna Elektronik PC Notebook 69
+1. Luncurkan Settings (Pengaturan) dari Menu Mulai.
+2. Pilih Bluetooth & devices (Bluetooth & 
+perangkat) > Add device (Tambahkan 
+perangkat) untuk menemukan perangkat yang 
+mengaktifkan Bluetooth.
+3. Pilih perangkat dari daftar untuk memasangkan PC 
+Notebook dengan perangkat tersebut.
+CATATAN: Untuk beberapa perangkat, wantian mungkin 
+akan muncul yang meminta kode sandi untuk PC 
+Notebook.
+Bluetooth
+Gunakan Bluetooth untuk memfasilitasi transfer data secara nirkabel 
+dengan perangkat lainnya yang mengaktifkan Bluetooth.
+PENTING! Airplane mode (Mode Pesawat) akan menonaktifkan fitur 
+ini. Pastikan Airplane mode (Mode Pesawat) dimatikan sebelum 
+mengaktifkan koneksi Bluetooth PC Notebook Anda.
+Memasangkan perangkat lainnya yang mengaktifkan 
+Bluetooth
+Anda harus memasangkan PC Notebook dengan perangkat lainnya 
+yang mengaktifkan Bluetooth untuk memungkinkan transfer data. Ikuti 
+langkah-langkah berikut untuk menyambungkan perangkat:
+70 Panduan Pengguna Elektronik PC Notebook
+Mode Pesawat
+Airplane mode (Mode Pesawat) akan menonaktifkan komunikasi 
+nirkabel, sehingga Anda dapat menggunakan PC Notebook dengan 
+aman saat dalam penerbangan.
+CATATAN: Hubungi penyedia maskapai penerbangan Anda untuk 
+mempelajari tentang layanan dalam penerbangan terkait yang dapat 
+digunakan dan batasan yang harus diikuti saat menggunakan PC 
+Notebook dalam penerbangan.
+Mengaktifkan/Menonaktifkan Mode Pesawat
+1. Luncurkan Action Center (Pusat Tindakan) dari 
+taskbar.
+2. Klik/Ketuk ikon Airplane mode (Mode Pesawat) 
+untuk mengaktifkan atau menonaktifkan 
+Airplane mode (Mode Pesawat).
+Panduan Pengguna Elektronik PC Notebook 71
+Mematikan PC Notebook Anda
+Anda dapat mematikan PC Notebook dengan melakukan salah satu 
+prosedur berikut:
+• Luncurkan Start menu (Menu Mulai), lalu pilih 
+> Shut down (Matikan) untuk prosedur umum 
+mematikan PC Notebook.
+• Dari layar masuk, pilih > Shut down (Matikan).
+• Tekan untuk meluncurkan Shut 
+Down Windows (Perintah Mematikan Windows). 
+Pilih Shut down (Matikan) dari daftar drop-
+down, lalu pilih OK (Oke).
+• Jika PC Notebook tidak merespons, tekan terus 
+tombol daya selama sepuluh (10) detik hingga 
+PC Notebook mati.
+72 Panduan Pengguna Elektronik PC Notebook
+Mengalihkan PC Notebook ke mode tidur
+Untuk mengalihkan PC Notebook ke mode Sleep (Tidur):
+• Luncurkan Menu Mulai, lalu pilih > Sleep 
+(Tidur) untuk mengalihkan PC Notebook ke 
+mode Sleep (Tidur).
+• Dari layar masuk, pilih > Sleep (Tidur).
+Tekan untuk meluncurkan Shut Down 
+Windows (Perintah Mematikan Windows). Pilih Sleep 
+(Tidur) dari daftar drop-down, lalu pilih OK (Oke).
+CATATAN: Anda juga dapat mengalihkan PC Notebook ke mode Tidur 
+dengan menekan tombol daya satu kali.
+Panduan Pengguna Elektronik PC Notebook 73
+Bab 4:
+Power-On Self Test (POST)
+74 Panduan Pengguna Elektronik PC Notebook
+Power-On Self Test (POST)
+POST (Power-On Self-Test) adalah serangkaian pengujian diagnostik 
+yang dikendalikan perangkat lunak dan berjalan saat Anda 
+menghidupkan atau menghidupkan ulang PC Notebook. Perangkat 
+lunak yang mengendalikan POST akan diinstal sebagai bagian 
+permanen dari arsitektur PC Notebook.
+Menggunakan POST untuk mengakses BIOS dan 
+Troubleshoot (Pemecahan Masalah)
+Selama POST, Anda dapat mengakses pengaturan BIOS atau 
+menjalankan opsi pemecahan masalah dengan tombol fungsi PC 
+Notebook. Anda dapat merujuk ke informasi berikut ini untuk detail 
+selengkapnya.
+BIOS
+BIOS (Basic Input and Output System) menyimpan pengaturan 
+perangkat keras sistem yang diperlukan untuk memulai sistem di PC 
+Notebook.
+Pengaturan BIOS default berlaku untuk sebagian besar kondisi PC 
+Notebook Anda. Jangan mengubah pengaturan BIOS default kecuali 
+dalam keadaan berikut:
+• Pesan kesalahan muncul di layar selama boot sistem dan 
+meminta Anda untuk menjalankan BIOS Setup (Penyetelan BIOS).
+• Anda telah menginstal komponen sistem baru yang memerlukan 
+pengaturan atau pembaruan BIOS lebih lanjut.
+PERINGATAN! Penggunaan pengaturan BIOS yang tidak tepat dapat 
+menyebabkan sistem menjadi tidak stabil atau kegagalan boot. Kami 
+sangat menyarankan Anda untuk mengubah pengaturan BIOS hanya 
+dengan bantuan petugas servis terlatih.
+Mengakses BIOS
+Nyalakan ulang PC Notebook Anda kemudian tekan selama 
+proses POST.
+Panduan Pengguna Elektronik PC Notebook 75
+Memulihkan sistem
+Penggunaan opsi pemulihan di PC Notebook memungkinkan Anda 
+untuk memulihkan sistem ke kondisi semula atau sekadar menyegarkan 
+pengaturannya untuk membantu meningkatkan performa.
+PENTING!
+• Lakukan pencadangan pada semua file data Anda sebelum 
+melakukan segala opsi pemulihan di PC Notebook.
+• Catat pengaturan penting yang disesuaikan seperti pengaturan 
+jaringan, nama pengguna, dan kata sandi untuk menghindari 
+kehilangan data.
+• Pastikan PC Notebook Anda terhubung ke sumber listrik sebelum 
+mengatur ulang sistem.
+Windows memungkinkan Anda untuk melakukan salah satu opsi 
+pemulihan berikut:
+• Keep my files (Simpan file saya) - Opsi ini memungkinkan 
+Anda untuk menyegarkan PC Notebook tanpa memengaruhi file 
+pribadi (foto, musik, video, dan dokumen).
+ Dengan menggunakan opsi ini, Anda dapat memulihkan PC 
+Notebook ke pengaturan default dan menghapus aplikasi lain 
+(tidak termasuk default) yang diinstal.
+• Remove everything (Hapus semua) - Opsi ini mengatur ulang 
+PC Notebook ke pengaturan pabriknya. Anda harus melakukan 
+pencadangan data sebelum melakukan opsi ini.
+76 Panduan Pengguna Elektronik PC Notebook
+• Advanced startup (Pemulaian tingkat lanjut) - Dengan 
+menggunakan opsi ini, Anda dapat melakukan opsi pemulihan 
+tingkat lanjut lainnya di PC Notebook seperti:
+- Menggunakan drive USB, koneksi jaringan, atau DVD 
+pemulihan Windows untuk memulai PC Notebook.
+- Menggunakan Troubleshoot (Pemecahan Masalah) untuk 
+mengaktifkan salah satu opsi pemulihan lanjutan berikut: 
+Perbaikan Pemulaian, Mencopot Pembaruan, Pengaturan 
+Pemulaian, Pengaturan Firmware UEFI, Command Prompt, 
+Pemulihan Sistem, dan Pemulihan Gambar Sistem.
+Melakukan opsi pemulihan
+Lihat langkah-langkah berikut jika Anda ingin mengakses dan 
+menggunakan salah satu opsi pemulihan yang ada untuk PC Notebook 
+Anda.
+1. Luncurkan Settings (Pengaturan) dan pilih System (Sistem) > 
+Recovery (Pemulihan).
+Panduan Pengguna Elektronik PC Notebook 77
+2. Pilih opsi pemulihan yang ingin Anda lakukan.
+78 Panduan Pengguna Elektronik PC Notebook
+Panduan Pengguna Elektronik PC Notebook 79
+Tips dan Tanya Jawab
+80 Panduan Pengguna Elektronik PC Notebook
+Tips bermanfaat untuk PC Notebook
+Untuk membantu mengoptimalkan penggunaan PC Notebook, pelihara 
+performa sistem, lalu pastikan semua data disimpan secara aman, 
+berikut ini adalah beberapa tips bermanfaat yang dapat Anda ikuti:
+• Perbarui Windows secara berkala untuk memastikan bahwa 
+aplikasi Anda memiliki pengaturan keamanan terkini.
+• Perbarui MyASUS untuk memastikan bahwa Anda mempunyai 
+pengaturan terbaru untuk aplikasi eksklusif, driver, dan utilitas 
+ASUS.
+• Gunakan perangkat lunak anti-virus untuk melindungi data serta 
+menyimpan pembaruan ini.
+• Hindari menggunakan penonaktifan manual untuk 
+menonaktifkan PC Notebook, kecuali sangat diperlukan.
+• Selalu cadangkan data dan pastikan Anda menyimpan cadangan 
+data tersebut di drive penyimpanan eksternal.
+• Jika Anda tidak sedang menggunakan PC Notebook dalam 
+jangka waktu yang lama, pastikan untuk mengisi daya baterai 
+hingga 50% kemudian matikan PC Notebook Anda dan putus 
+sambungan adaptor daya AC.
+• Jika Anda terus menerus menggunakan daya AC untuk PC 
+Notebook Anda, atur Pengisian Daya Kesehatan Baterai ke mode 
+Seimbang di MyASUS.
+Panduan Pengguna Elektronik PC Notebook 81
+• Putuskan sambungan semua perangkat eksternal, lalu pastikan 
+Anda menyiapkan item berikut ini sebelum mengatur ulang PC 
+Notebook:
+- Kunci produk untuk sistem operasi dan aplikasi terinstal 
+lainnya
+- Data cadangan
+- ID dan sandi login
+- Informasi sambungan Internet
+• Kunjungi situs dukungan kami dan lihat beberapa pertanyaan 
+yang paling serig diajukan di https://www.asus.com/id/support.
+https://www.asus.com/id/support
+82 Panduan Pengguna Elektronik PC Notebook
+Tanya Jawab Perangkat Keras
+1. Titik hitam, atau terkadang berwarna, muncul di layar bila 
+saya mengaktifkan PC Notebook. Apa yang harus dilakukan?
+Meskipun titik ini biasa muncul di layar, titik tidak akan 
+memengaruhi sistem. Jika hal serupa kembali terjadi dan pada 
+akhirnya memengaruhi performa sistem, hubungi pusat layanan 
+ASUS resmi.
+2. Warna dan kecerahan panel layar tidak rata. Bagaimana cara 
+memperbaikinya?
+Warna dan kecerahan panel layar mungkin dipengaruhi oleh 
+sudut dan posisi PC Notebook saat ini. Warna dan kecerahan 
+PC Notebook dapat berbeda sesuai model. Anda dapat 
+menggunakan tombol fungsi atau pengaturan layar pada sistem 
+operasi untuk menyesuaikan tampilan panel layar.
+3. Bagaimana cara memaksimalkan masa pakai baterai PC 
+Notebook?
+Anda dapat mencoba melakukan salah satu dari saran berikut ini:
+• Gunakan tombol fungsi untuk menyesuaikan kecerahan 
+layar.
+• Jika Anda tidak menggunakan sambungan Wi-Fi, alihkan 
+sistem ke Airplane mode (Mode Penerbangan).
+• Putus sambungan perangkat USB yang tidak digunakan.
+• Tutup aplikasi yang tidak digunakan, khususnya aplikasi 
+yang menggunakan banyak memori sistem.
+Panduan Pengguna Elektronik PC Notebook 83
+4. Indikator pengisian daya baterai tidak menyala. Mengapa?
+• Periksa apakah adaptor daya atau unit baterai dipasang 
+dengan benar. Anda juga dapat memutuskan sambungan 
+adaptor daya atau unit baterai, menunggu beberapa menit, 
+lalu menyambungkannya kembali ke stopkontak dan PC 
+Notebook.
+• Jika masalah masih berlanjut, hubungi pusat layanan ASUS 
+setempat untuk mendapatkan bantuan.
+5. Mengapa panel sentuh saya tidak berfungsi?
+Tekan untuk mengaktifkan panel sentuh.
+6. Mengapa saya tidak dapat mendengar suara dari speaker 
+audio PC Notebook bila file audio dan video diputar?
+Anda dapat mencoba melakukan salah satu dari saran berikut ini:
+• Tekan untuk memperbesar volume suara speaker.
+• Periksa apakah suara speaker dinonaktifkan.
+• Periksa apakah jack headphone tersambung ke PC 
+Notebook, lalu putuskan sambungannya.
+84 Panduan Pengguna Elektronik PC Notebook
+7. Apa yang harus dilakukan jika adaptor daya PC Notebook 
+hilang dan baterai tidak berfungsi?
+Hubungi pusat layanan ASUS setempat untuk mendapatkan 
+bantuan.
+8. PC Notebook tidak dapat melakukan penekanan tombol 
+dengan benar karena kursor selalu bergerak. Apa yang harus 
+dilakukan?
+Pastikan panel sentuh tidak disentuh atau ditekan secara tidak 
+sengaja saat Anda mengetik dengan keyboard. Anda juga dapat 
+menonaktifkan panel sentuh dengan menekan .
+Panduan Pengguna Elektronik PC Notebook 85
+Tanya Jawab Perangkat Lunak
+1. Bila PC Notebook diaktifkan, lampu indikator daya akan 
+menyala, namun indikator aktivitas drive tidak. Apa yang 
+harus dilakukan untuk memperbaikinya?
+Anda dapat mencoba melakukan salah satu dari saran berikut ini:
+• Matikan PC Notebook secara paksa dengan menekan 
+tombol daya selama minimal sepuluh (10) detik. Periksa 
+apakah adaptor daya dan unit baterai telah dimasukkan 
+dengan benar, lalu aktifkan PC Notebook.
+• Jika masalah masih berlanjut, hubungi pusat layanan ASUS 
+setempat untuk mendapatkan bantuan.
+2. Apa yang harus dilakukan bila pesan berikut ini ditampilkan 
+di layar: “Remove disks or other media. Press any key to 
+restart.”? (Keluarkan disk atau media lainnya. Tekan tombol 
+apa pun untuk melakukan pengaktifan ulang.)”?
+Anda dapat mencoba melakukan salah satu dari saran berikut ini:
+• Lepas semua perangkat USB yang tersambung, lalu aktifkan 
+ulang PC Notebook.
+• Keluarkan disk optik yang terdapat dalam drive optik, lalu 
+lakukan pengaktifan ulang.
+• Jika masalah masih terjadi, PC Notebook Anda mungkin 
+mengalami masalah penyimpanan memori. Hubungi pusat 
+layanan ASUS setempat untuk mendapatkan bantuan.
+86 Panduan Pengguna Elektronik PC Notebook
+3. PC Notebook melakukan boot lebih lambat dari biasanya dan 
+sistem operasi mengalami keterlambatan. Bagaimana cara 
+memperbaikinya?
+Hapus aplikasi yang terakhir diinstal atau yang tidak tercakup 
+dalam paket sistem operasi, lalu aktifkan ulang sistem.
+4. PC Notebook tidak menjalankan boot up. Bagaimana cara 
+memperbaikinya?
+Anda dapat mencoba melakukan salah satu dari saran berikut ini:
+• Lepas semua perangkat yang tersambung ke PC Notebook, 
+lalu aktifkan ulang sistem.
+• Jika masalah masih berlanjut, hubungi pusat layanan ASUS 
+setempat untuk mendapatkan bantuan.
+5. Mengapa PC Notebook tidak dapat diaktifkan dari mode 
+tidur atau hibernasi?
+• Anda harus menekan tombol daya untuk kembali ke kondisi 
+awal.
+• Sistem mungkin telah menggunakan daya baterai 
+sepenuhnya. Sambungkan adaptor daya ke PC Notebook, 
+sambungkan ke stopkontak, lalu tekan tombol daya.
+Jika Anda menemui masalah lain, silakan kunjungi 
+https://www.asus.com/id/support/FAQ/1045091/ untuk pemecahan 
+masalah.
+https://www.asus.com/id/support/FAQ/1045091/
+Panduan Pengguna Elektronik PC Notebook 87
+Lampiran
+88 Panduan Pengguna Elektronik PC Notebook
+Pernyataan FCC (Federal Communications 
+Commission)
+Perangkat ini telah mematuhi Peraturan FCC Pasal 15. Pengoperasian harus 
+mengalami dua kondisi berikut:
+• Perangkat ini tidak menimbulkan interferensi berbahaya.
+• Perangkat ini akan menerima semua interferensi yang ditangkap, termasuk 
+interferensi yang dapat mengakibatkan pengoperasian yang tidak 
+diinginkan.
+Peralatan ini telah diuji coba dan dinyatakan sesuai dengan standar perangkat 
+digital kelas B, berdasarkan Peraturan FCC (Federal Communications Commission) 
+Pasal 15. Batasan tersebut dirancang untuk memberikan perlindungan memadai 
+terhadap interferensi berbahaya pada pemasangan di rumah. Peralatan ini 
+menghasilkan, menggunakan, dan dapat memancarkan radiasi energi frekuensi 
+radio. Jika tidak dipasang dan digunakan berdasarkan petunjuknya, dapat 
+menimbulkan interferensi berbahaya pada komunikasi radio. Namun, tidak ada 
+jaminan bahwa interferensi tersebut tidak akan terjadi pada pemasangan tertentu. 
+Jika peralatan ini mengakibatkan interferensi berbahaya pada penerimaan 
+gelombang radio dan televisi (yang dapat diketahui dengan cara mematikan dan 
+menghidupkan peralatan), pengguna disarankan untuk mencoba mengatasi 
+interferensi tersebut melalui satu atau beberapa cara sebagai berikut:
+• Ubah arah atau posisi antena penerima.
+• Tambah jarak antara peralatan dan unit penerima.
+• Sambungkan peralatan ke stopkontak di sirkuit berbeda dari yang 
+digunakan unit penerima.
+• Untuk mendapatkan bantuan, hubungi dealer atau teknisi radio/TV yang 
+berpengalaman.
+PERINGATAN! Penggunaan kabel daya dengan jenis berpelindung diperlukan untuk 
+mematuhi standar emisi FCC dan mencegah interferensi ke unit penerima televisi dan 
+radio terdekat. Penting bahwa Anda hanya menggunakan kabel daya yang disediakan. 
+Gunakan hanya kabel berpelindung untuk menyambungkan perangkat I/O ke 
+peralatan ini. Segala bentuk perubahan atau modifikasi yang tidak disetujui secara 
+tertulis oleh pihak yang bertanggung jawab atas kepatuhan dapat membatalkan 
+kewenangan Anda untuk mengoperasikan peralatan ini.
+Panduan Pengguna Elektronik PC Notebook 89
+(Dicetak ulang dari Code of Federal Regulations #47, part 15.193, 1993. 
+Washington DC: Kantor Federal Register, National Archives and Records 
+Administration, U.S. Government Printing Office.)
+Informasi Pemaparan RF FCC
+Perangkat ini memenuhi persyaratan pemerintah tentang paparan gelombang 
+radio. Perangkat ini dirancang dan diproduksi untuk tidak melampaui batas 
+emisi paparan energi frekuensi radio (RF) yang ditetapkan oleh FCC (Federal 
+Communications Commission) Pemerintah AS. Standar pemaparan yang 
+diterapkan untuk unit pengukuran dikenal sebagai SAR (Tingkat Penyerapan 
+Spesifik). Batas SAR yang ditetapkan oleh FCC adalah 1,6 W/kg. Pengujian SAR 
+dilakukan menggunakan posisi pengoperasian standar yang disetujui FCC dengan 
+pemancaran EUT pada tingkat daya tertentu di berbagai saluran. FCC telah 
+memberikan Pengesahan Peralatan untuk perangkat ini dengan semua laporan 
+tingkat SAR yang dievaluasi berdasarkan kepatuhan dengan panduan pemaparan 
+RF FCC. Informasi tentang SAR untuk perangkat ini telah tersimpan di FCC dan 
+dapat ditemukan pada bagian Display Grant di www.fcc.gov/oet/ea/fccid.
+http://www.fcc.gov/oet/ea/fccid
+90 Panduan Pengguna Elektronik PC Notebook
+Catatan Keselamatan UL
+Diperlukan untuk UL 1459 yang mencakup peralatan telekomunikasi (telepon) 
+yang ditujukan untuk tersambung secara listrik ke jaringan telekomunikasi yang 
+memiliki tegangan operasi yang diarde dan tidak melampaui 200 V peak, 300 
+V peak-to-peak, dan 105 Vrms, serta terpasang atau digunakan berdasarkan 
+National Electrical Code (NFPA 70).
+Bila menggunakan modem PC Notebook, tindakan pengamanan dasar harus 
+selalu diikuti untuk mengurangi risiko kebakaran, sengatan listrik, dan cedera diri, 
+termasuk yang berikut:
+• JANGAN gunakan PC Notebook di dekat air, misalnya di dekat kamar 
+mandi, wastafel, tempat cuci piring, mesin cuci, di lantai yang basah, atau 
+di dekat kolam renang.
+• JANGAN gunakan PC Notebook selama badai petir. Bahaya dapat terjadi 
+akibat sengatan listrik dari petir.
+• JANGAN gunakan PC Notebook di ruangan yang mengalami kebocoran 
+gas.
+Diharuskan untuk UL 1642 yang mencakup baterai utama (tidak dapat diisi ulang) 
+dan sekunder (isi ulang) untuk digunakan sebagai catu daya pada produk ini. 
+Baterai tersebut mengandung lithium logam maupun campuran lithium, atau 
+lithium ion, dan mungkin mengandung satu sel elektrokimia, dua sel atau lebih 
+yang tersambung secara seri, paralel, atau keduanya, yang mengonversi energi 
+kimia menjadi energi listrik melalui reaksi kimia yang tidak dapat dibalik atau 
+dapat dibalik.
+• JANGAN buang unit baterai PC Notebook dalam api karena dapat meledak. 
+Periksa aturan setempat untuk kemungkinan petunjuk pembuangan 
+khusus agar dapat mengurangi risiko cedera diri karena kebakaran atau 
+ledakan.
+• JANGAN gunakan adaptor daya atau baterai dari perangkat lain untuk 
+mengurangi risiko cedera diri karena kebakaran atau ledakan. Gunakan 
+hanya adaptor daya bersertifikasi UL atau baterai yang diberikan oleh 
+produsen maupun peritel resmi.
+Panduan Pengguna Elektronik PC Notebook 91
+Persyaratan Keamanan Daya
+Produk dengan tingkat arus listrik hingga 6 A dan berat lebih dari 3 kg harus 
+menggunakan kabel daya yang disetujui, yakni lebih besar atau sama seperti: 
+H05VV-F, 3G, 0,75 mm2 atau H05VV-F, 2G, 0,75 mm2.
+Informasi tentang TV Tuner
+Catatan untuk Penginstal Sistem CATV—Sistem distribusi kabel harus diarde 
+(dibumikan) berdasarkan ANSI/NFPA 70, National Electrical Code (NEC), terutama 
+Bab 820.93, Pengardean Pelindung Konduktif Luar untuk Kabel Koaksial – 
+pemasangan harus menghubungkan kabel koaksial layar ke bumi pada pintu 
+masuk bangunan.
+Informasi tentang Produk Macrovision 
+Corporation
+Produk ini berisi teknologi yang dilindungi hak cipta yang dilindungi oleh metode 
+yang terdapat pada beberapa paten Amerika Serikat tertentu dan hak atas 
+kekayaan intelektual lainnya yang dimiliki oleh Macrovision Corporation beserta 
+pemilik hak lainnya. Penggunaan teknologi yang dilindungi hak cipta ini harus 
+disahkan oleh Macrovision Corporation, dan ditujukan hanya untuk penggunaan 
+di rumah dan penggunaan terbatas lainnya, kecuali jika disahkan oleh Macrovision 
+Corporation. Dilarang melakukan rekayasa balik atau pembongkaran.
+Mencegah Kerusakan Pendengaran
+Untuk mencegah kemungkinan kerusakan pendengaran, jangan 
+dengar pada tingkat volume suara tinggi dalam waktu lama.
+Informasi Lapisan
+PENTING! Untuk mencegah aliran listrik dan menjaga keamanan listrik, pelapis 
+digunakan untuk menginsulasi bodi Notebook PC, kecuali di sisi adanya port IO.
+92 Panduan Pengguna Elektronik PC Notebook
+Peringatan tentang Lithium di Nordik (untuk 
+baterai lithium-ion)
+CAUTION! Danger of explosion if battery is incorrectly replaced. Replace only with 
+the same or equivalent type recommended by the manufacturer. Dispose of used 
+batteries according to the manufacturer’s instructions. (English)
+ATTENZIONE! Rischio di esplosione della batteria se sostituita in modo errato. 
+Sostituire la batteria con un una di tipo uguale o equivalente consigliata dalla 
+fabbrica. Non disperdere le batterie nell’ambiente. (Italiano)
+VORSICHT! Explosionsgefahr bei unsachgemäßen Austausch der Batterie. Ersatz 
+nur durch denselben oder einem vom Hersteller empfohlenem ähnlichen Typ. 
+Entsorgung gebrauchter Batterien nach Angaben des Herstellers. (Deutsch)
+ADVARSELI! Lithiumbatteri - Eksplosionsfare ved fejlagtig håndtering. Udskiftning 
+må kun ske med batteri af samme fabrikat og type. Levér det brugte batteri 
+tilbage til leverandøren. (Dansk)
+VARNING! Explosionsfara vid felaktigt batteribyte. Använd samma batterityp eller 
+en ekvivalent typ som rekommenderas av apparattillverkaren. Kassera använt 
+batteri enligt fabrikantens instruktion. (Svenska)
+VAROITUS! Paristo voi räjähtää, jos se on virheellisesti asennettu. Vaihda paristo 
+ainoastaan laitevalmistajan sousittelemaan tyyppiin. Hävitä käytetty paristo 
+valmistagan ohjeiden mukaisesti. (Suomi)
+ATTENTION! Danger d’explosion si la batterie n’est pas correctement remplacée. 
+Remplacer uniquement avec une batterie de type semblable ou équivalent, 
+recommandée par le fabricant. Jeter les batteries usagées conformément aux 
+instructions du fabricant. (Français)
+ADVARSEL! Eksplosjonsfare ved feilaktig skifte av batteri. Benytt samme 
+batteritype eller en tilsvarende type anbefalt av apparatfabrikanten. Brukte 
+batterier kasseres i henhold til fabrikantens instruksjoner. (Norsk)
+(日本語)
+ВНИМАНИЕ! При замене аккумулятора на аккумулятор иного типа возможно 
+его возгорание. Утилизируйте аккумулятор в соответствии с инструкциями 
+производителя. (Pyccкий)
+Panduan Pengguna Elektronik PC Notebook 93
+EU REACH dan Pasal 33
+Sesuai kerangka kerja peraturan REACH (Pendaftaran, Evaluasi, Otorisasi, dan 
+Pembatasan Bahan Kimia), kami mencantumkan kandungan zat kimia pada 
+produk kami di situs web ASUS REACH di http://csr.asus.com/english/REACH.htm.
+Pernyataan Kepatuhan terhadap Peraturan 
+Lingkungan untuk Produk
+ASUS mematuhi konsep rancang hijau untuk merancang dan memproduksi 
+produk serta memastikan setiap tahapan siklus masa pakai produk ASUS telah 
+sesuai dengan peraturan lingkungan hidup global. ASUS juga mengungkapkan 
+informasi yang relevan sesuai dengan persyaratan peraturan.
+Untuk pengungkapan informasi berdasarkan persyaratan peraturan ASUS, lihat 
+http://csr.asus.com/Compliance.htm.
+EU RoHS
+Produk ini mematuhi Arahan EU RoHS. Untuk lebih rinci, lihat 
+http://csr.asus.com/english/article.aspx?id=35.
+http://csr.asus.com/english/REACH.htm
+http://csr.asus.com/Compliance.htm
+http://csr.asus.com/english/article.aspx?id=35.
+94 Panduan Pengguna Elektronik PC Notebook
+Arahan Ecodesign
+Uni Eropa mengumumkan suatu kerangka untuk pengaturan ketentuan 
+ecodesign untuk produk-produk yang berkaitan dengan energi (2009/125/EC). 
+Berbagai Tindakan Penerapan Khusus ditujukan untuk meningkatkan kinerja 
+lingkungan produk tertentu atau berbagai jenis produk. ASUS menyediakan 
+informasi produk di situs CSR. Informasi lebih lanjut bisa ditemukan di 
+https://csr.asus.com/english/article.aspx?id=1555.
+Daur Ulang ASUS/Layanan Ambil Kembali
+Program daur ulang dan ambil kembali dari ASUS timbul dari komitmen 
+terhadap standar tertinggi terhadap perlindungan lingkungan hidup. Kami akan 
+memberikan solusi kepada Anda agar dapat bertanggung jawab untuk mendaur 
+ulang produk, baterai, atau komponen lainnya, serta materi pengemasan.
+Untuk informasi rinci tentang daur ulang di berbagai wilayah, kunjungi 
+http://csr.asus.com/english/Takeback.htm.
+https://csr.asus.com/english/article.aspx?id=1555.
+http://csr.asus.com/english/Takeback.htm
+Panduan Pengguna Elektronik PC Notebook 95
+Produk yang Memenuhi Persyaratan ENERGY 
+STAR
+ENERGY STAR adalah sebuah program gabungan antara Lembaga 
+Perlindungan Lingkungan A.S. dan Departemen Energi A.S. 
+untuk membantu kita semua menghemat uang dan melindungi 
+lingkungan melalui produk-produk dan praktik-praktik hemat 
+energi.
+Semua produk ASUS yang memiliki logo ENERGY STAR memenuhi persyaratan 
+standar ENERGY STAR, dan secara default fitur pengelolaan daya diaktifkan. 
+Monitor akan secara otomatis diatur ke tidur dalam 10 menit tidak ada aktivitas 
+pengguna; komputer akan secara otomatis diatur ke tidur dalam 30 menit tidak 
+ada aktivitas pengguna. Untuk mengaktifkan komputer, klik mouse, tekan tombol 
+apa pun pada keyboard, atau tekan tombol daya. 
+Silakan kunjungi http://www.energystar.gov/powermanagement untuk informasi 
+rinci mengenai pengelolaan daya dan manfaatnya bagi lingkungan. Selain itu, 
+silakan kunjungi http://www.energystar.gov untuk informasi rinci mengenai 
+program gabungan ENERGY STAR.
+CATATAN: Energy Star TIDAK didukung di sistem operasi berbasis FreeDOS dan Linux.
+Produk-Produk yang Terdaftar EPEAT
+Penyampaian publik untuk informasi lingkungan penting untuk produk-produk 
+yang terdaftar ASUS EPEAT (Electronic Product Environmental Assessment 
+Tool) tersedia di https://csr.asus.com/english/article.aspx?id=41. Informasi 
+selengkapnya mengenai program EPEAT dan panduan pembelian bisa ditemukan 
+di www.epeat.net.
+http://www.energystar.gov/powermanagement
+http://www.energystar.gov
+https://csr.asus.com/english/article.aspx?id=41.
+www.epeat.net
+96 Panduan Pengguna Elektronik PC Notebook
+Lisensi Font Teks BIOS
+Hak Cipta © 2023 The Android Open Source Project
+Dilisensikan di bawah Lisensi Apache, Versi 2.0 (“Lisensi”); Anda tidak boleh 
+menggunakan file ini kecuali kalau mematuhi Lisensi. Anda bisa mendapatkan 
+salinan Lisensi di http://www.apache.org/licenses/LICENSE-2.0.
+Kecuali dipersyaratkan oleh undang-undang yang berlaku atau disetujui secara 
+tertulis, perangkat lunak didistribusikan berdasarkan Lisensi yang didistribusikan 
+atas DASAR “SEBAGAIMANA ADANYA”, TANPA JAMINAN ATAU SYARAT APA PUN, 
+baik secara tersurat maupun tersirat.
+Lihat Lisensi untuk izin dan batasan pengaturan bahasa khusus di bawah Lisensi.
+http://www.apache.org/licenses/LICENSE-2.0
+Panduan Pengguna Elektronik PC Notebook 97
+Pernyataan Kesesuaian UE yang Disederhanakan
+ASUSTeK Computer Inc. dengan ini menyatakan bahwa perangkat ini memenuhi 
+persyaratan utama dan ketentuan relevan lainnya yang terdapat pada Petunjuk 
+2014/53/EU. Teks lengkap pernyataan kesesuaian UE tersedia di: 
+https://www.asus.com/support/.
+WiFi yang Beroperasi pada 5150-5350 MHz akan terbatas untuk penggunaan 
+dalam ruangan di negara yang tercantum dalam tabel:
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK(NI)
+Pemberitahuan Jaringan Wi-Fi
+PENTING! Kartu jaringan Wi-Fi 6E tersedia pada model tertentu. Konektivitas 
+gelombang Wi-Fi 6E mungkin bervariasi tergantung pada regulasi dan sertifikasi di 
+setiap negara/kawasan.
+98 Panduan Pengguna Elektronik PC Notebook
+ Tentang panduan pengguna ini
+ Konvensi yang digunakan dalam panduan pengguna ini
+ Ikon
+ Tipografi
+ Tindakan Pengamanan
+ Menggunakan PC Notebook
+ Memelihara PC Notebook
+ Pembuangan yang tepat
+ Informasi keamanan baterai
+ Bab 1: Konfigurasi Perangkat Keras
+ Mengenal PC Notebook
+ Tampilan Depan
+ Tampilan Bawah
+ Tampilan Kanan
+ Tampilan Kiri
+ Bab 2: Panduan penggunaan PC Notebook
+ Tahap persiapan
+ Mengisi daya PC Notebook
+ Angkat untuk membuka panel tampilan
+ Tekan tombol daya
+ Panduan penggunaan bidang sentuh
+ Panduan penggunaan keyboard
+ HotKeys
+ Tombol fungsi
+ Tombol Windows
+ Bab 3: Bekerja dengan Windows
+ Memulai untuk pertama kali
+ Menu Mulai
+ Aplikasi Windows
+ Bekerja dengan aplikasi Windows
+ Menyesuaikan aplikasi Windows
+ Tampilan Tugas
+ Widgets
+ Fitur Pelekatan
+ Hotspot Pelekatan
+ Pusat Tindakan
+ MyASUS Splendid
+ Mengatur tampilan OLED
+ Mengatur Mode Gelap
+ Menonaktifkan tampilan saat tidak digunakan
+ Menyesuaikan kecerahan tampilan
+ Menyembunyikan taskbar secara otomatis
+ Mengatur Dark Mode (Mode Gelap) di Microsoft Office
+ Pintasan keyboard lainnya
+ Menyambungkan ke jaringan nirkabel
+ Wi-Fi
+ Bluetooth
+ Mode Pesawat
+ Mematikan PC Notebook Anda
+ Mengalihkan PC Notebook ke mode tidur
+ Bab 4: Power-On Self Test (POST)
+ Power-On Self Test (POST)
+ Menggunakan POST untuk mengakses BIOS dan Troubleshoot (Pemecahan Masalah)
+ BIOS
+ Mengakses BIOS
+ Memulihkan sistem
+ Melakukan opsi pemulihan
+ Tips dan Tanya Jawab
+ Tips bermanfaat untuk PC Notebook
+ Tanya Jawab Perangkat Keras
+ Tanya Jawab Perangkat Lunak
+ Lampiran
+ Pernyataan FCC (Federal Communications Commission)
+ Informasi Pemaparan RF FCC
+ Catatan Keselamatan UL
+ Persyaratan Keamanan Daya
+ Informasi tentang TV Tuner
+ Informasi tentang Produk Macrovision Corporation
+ Mencegah Kerusakan Pendengaran
+ Informasi Lapisan
+ Peringatan tentang Lithium di Nordik (untuk baterai lithium-ion)
+ Pernyataan Kepatuhan terhadap Peraturan Lingkungan untuk Produk
+ EU REACH dan Pasal 33
+ EU RoHS
+ Daur Ulang ASUS/Layanan Ambil Kembali
+ Arahan Ecodesign
+ Produk yang Memenuhi Persyaratan ENERGY STAR
+ Produk-Produk yang Terdaftar EPEAT
+ Lisensi Font Teks BIOS
+ Pernyataan Kesesuaian UE yang Disederhanakan
+ Pemberitahuan Jaringan Wi-Fi

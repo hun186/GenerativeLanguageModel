@@ -1,0 +1,1726 @@
+
+Elektronisk håndbok
+NW19489
+Første utgave / Juli 2022
+2 Elektronisk håndbok for bærbare PC
+Opphavsrettinformasjon
+Ingen deler av denne manualen, inkludert produkter og programvare som beskrives i den, kan 
+reproduseres, overføres, skrives av, lagres i et gjenopprettingssystem, eller oversettes til et annet 
+språk i enhver form eller på enhver måte, bortsett fra dokumentasjon oppbevart av kjøperen for 
+sikkerhetskopiformål, uten særlig skriftlig tillatelse av ASUSteK COMPUTER INC. ("ASUS").
+ASUS ANBRINGER DENNE MANUALEN SOM DEN FREMGÅR UTEN GARANTI AV NOE SLAG, HELLER IKKE 
+UTRYKKELIG ELLER INDIREKTE, INKLUDERT MEN IKKE BEGRENSET TIL DEM INDIREKTE GARANTIER ELLER 
+FORHOLD AV OMSETTELIGHET ELLER DUGELIGHET FOR ET SPESIELT FORMÅL. I INGEN TILFELLER SKAL 
+ASUS, DETS LEDERE, OFFISERER, ANSATTE ELLER AGENTER HOLDES ANSVARLIGE FOR ENHVER INDIREKTE, 
+SPESIELLE, TILFELDIGE ELLER KONSEKVENTE SKADE (INKLUDERT SKADER FRA TAP AV FORTJENESTE, TAP 
+AV FORRETNING, TAP AV BRUK ELLER DATA, DRIFTSFORSTYRRELSE I BEDRIFTEN OG LIGNENDE), SELV OM 
+ASUS HAR BLITT UNDERRETTET OM MULIGHETENE FOR SLIKE SKADER OPPSTÅTT FRA ENHVER DEFEKT 
+ELLER FEIL I DENNE MANUALEN ELLER PRODUKTET.
+Produkter og bedriftsnavn som dukker opp i denne manualen er muligens registrerte varemerker eller 
+opphavsrett av deres respektive firmaer og brukes kun for identifisering eller forklaring og til eierens 
+fordel, uten hensikt til å krenke.
+SPESIFIKASJONER OG INFORMASJON SOM FINNES I DENNE MANUALEN ER UTFORMET KUN FOR 
+INFORMASJONSBRUK OG KAN ENDRES TIL ENHVER TID UTEN BESKJED OG BØR IKKE TOLKES SOM EN 
+FORPLIKTELSE AV ASUS. ASUS TAR INGEN ANSVAR FOR FEIL ELLER UNØYAKTIGHETER SOM KAN BEFINNE 
+SEG I DENNE MANUALEN, INKLUDERT FOR PRODUKTER OG PROGRAMVARE SOM BESKRIVES I DEN.
+Copyright © 2022 ASUSTeK COMPUTER INC. Ettertrykk forbudt.
+Ansvarsbegrensning
+Forhold kan dukke opp hvor grunnet en feil fra ASUS sin side eller annet ansvar fra dem du kan ha rett 
+på å få dekket skader fra ASUS. I hvert slikt tilfelle, uavhengig av grunnen til at du har rett på å få dekket 
+skader fra ASUS, er ASUS ikke ansvarlig for noe mer enn kroppsskader (inkludert død) og skader på 
+eiendom og personlige eiendeler; eller andre faktiske og direkte skader resultert fra utelatelse eller feil 
+av utføring av rettsplikter under denne Garantierklæringen, opp til gjeldende overtakelseskurs for hvert 
+produkt.
+ASUS vil kun være ansvarlige for eller erstatte deg for tap, skader eller krav basert i kontrakt, forvoldt 
+skade eller krenkelser under denne Garantierklæringen.
+Denne begrensningen gjelder også for ASUS leverandører og forhandlere. Det er maksimum for hva 
+ASUS, dets leverandører og din forhandler er ansvarlig for kollektivt.
+UNDER INGEN OMSTENDIGHETER ER ASUS ANSVARLIG FOR NOE AV FØLGENDE: (1) TREDJEMANNS KRAV 
+MOT DEG FOR SKADER; (2) TAP AV, ELLER SKADE PÅFØRT, DINE ARKIVER ELLER DATA; ELLER (3) SPESIELLE, 
+TILFELDIGE ELLER INDIREKTE SKADER ELLER FOR ENHVER ØKONOMISK FØLGENDE SKADE (INKLUDERT 
+TAP AV FORTJENESTE ELLER OPPSPARTE MIDLER), SELV OM ASUS, DETS LEVERANDØRER ELLER DIN 
+FORHANDLER ER INFORMERT OM MULIGHETEN. 
+Service og support
+Besøk vårt flerspråklige nettsted på https://www.asus.com/support/.
+MyASUS tilbyr en rekke støttefunksjoner, inkludert feilsøking, optimalisering av produktytelsen og 
+ASUS-programvareintegrasjon, og hjelper deg med å organisere det personlige skrivebordet og øke 
+lagringsplassen. Nærmere informasjon får du på https://www.asus.com/support/FAQ/1038301/.
+Elektronisk håndbok for bærbare PC 3
+Innhold
+Om denne håndboken ............................................................................................7
+Begreper brukt i denne håndboken ........................................................................ 8
+Ikoner .................................................................................................................................. 8
+Skrifttyper .......................................................................................................................... 8
+Sikkerhetshensyn ......................................................................................................9
+Bruke den bærbare PC-en ........................................................................................... 9
+Ta vare på den bærbare PC-en ................................................................................... 10
+Riktig deponering ........................................................................................................... 11
+Informasjon om batterisikkerhet .............................................................................. 12
+Kapittel 1: Maskinvareoppsett
+Bli kjent med den bærbare PC-en din ................................................................16
+Sett forfra ........................................................................................................................... 16
+Sett ovenfra ...................................................................................................................... 22
+Sett nedenfra.................................................................................................................... 23
+Sett fra høyre .................................................................................................................... 25
+Sett fra venstre ................................................................................................................. 28
+Kapittel 2: Bruke den bærbare PC-en
+Kom i gang ...................................................................................................................30
+Lade den bærbare PC-en ............................................................................................. 30
+Løft for å åpne skjermpanelet .................................................................................... 32
+Trykk på av/på-knappen .............................................................................................. 32
+Bevegelser for berøringsskjermpanel og styreplate .....................................33
+Bruk av bevegelser på berøringsskjermpanelet .................................................. 33
+Bruk av styreplaten ........................................................................................................ 35
+Bruk av numerisk tastatur ........................................................................................... 42
+Bruk av tastaturet.......................................................................................................43
+Hurtigtaster ...................................................................................................................... 43
+Funksjonstaster ............................................................................................................... 44
+Windows-taster ............................................................................................................... 44
+Rotere skjermen ........................................................................................................45
+4 Elektronisk håndbok for bærbare PC
+Kapittel 3: Arbeid med Windows
+Starter for første gang ..............................................................................................48
+Start menu (startmenyen) ......................................................................................49
+Windows-apper ..........................................................................................................51
+Arbeid med Windows-apper ...................................................................................... 52
+Tilpasning av Windows-apper .................................................................................... 52
+Task view (oppgavevisning) ...................................................................................55
+Widgets .........................................................................................................................56
+Snap-funksjon .............................................................................................................58
+Snap-hotspots ................................................................................................................. 58
+Action Center (handlingssenter) ..........................................................................60
+MyASUS Splendid ......................................................................................................62
+Innstilling av OLED-skjermen ................................................................................64
+Innstilling av Dark Mode (mørk modus) ................................................................. 64
+Utkobling av skjermen når den ikke er i bruk ...................................................... 66
+Justering av lysstyrke for skjermen .......................................................................... 68
+Skjul oppgavelinjen automatisk ................................................................................ 70
+Innstilling av Dark Mode i Microsoft Office ........................................................... 72
+Andre hurtigtaster .....................................................................................................73
+Koble til trådløse nettverk ......................................................................................75
+Wi-Fi ..................................................................................................................................... 75
+Bluetooth ........................................................................................................................... 76
+Airplane Mode (flymodus)........................................................................................... 77
+Slå av den bærbare PC-en ......................................................................................78
+Sette den bærbare PC-en i hvilemodus .............................................................79
+Elektronisk håndbok for bærbare PC 5
+Kapittel 4: Selvtest ved påslåing (POST)
+Selvtest ved påslåing (POST) .................................................................................82
+Bruk av POST for tilgang til BIOS og feilsøking .................................................... 82
+BIOS ................................................................................................................................82
+Tilgang til BIOS ................................................................................................................ 82
+Gjenoppretting av systemet ..................................................................................83
+Utføring av gjenopprettingsalternativ.................................................................... 84
+Tips og ofte stilte spørsmål (OSS)
+Nyttige tips for den bærbare PC-en ....................................................................88
+Vanlige spørsmål om maskinvare ........................................................................90
+Vanlige spørsmål om programvare .....................................................................93
+Tillegg
+Samsvarserklæring for internt modem................................................................... 96
+Oversikt .............................................................................................................................. 96
+Erklæring om nettverkskompatibilitet.................................................................... 97
+Utstyr som ikke er taleutstyr ....................................................................................... 97
+Kunngjøring om interferens fra Federal Communications Commission .... 100
+FCC-forsiktighetserklæring om eksponering for radiofrekvens (RF)............ 101
+RF-eksponeringsinformasjon (SAR) ......................................................................... 101
+6 Elektronisk håndbok for bærbare PC
+Merknader om UL-sikkerhet ....................................................................................... 102
+Krav til strømforsyning ................................................................................................. 103
+TV-merknader .................................................................................................................. 103
+Produktmerknad for Macrovision Corporation ................................................... 103
+Forebygging av hørselstap.......................................................................................... 103
+Merknad om belegg ...................................................................................................... 103
+Nordiske forsiktighetsregler for litium (litium-ion-batterier) .......................... 104
+CTR 21-godkjenning (for bærbar PC med innebygd modem) ....................... 105
+Samsvarserklæring for produktmiljøregulering .................................................. 107
+EU REACH og artikkel 33 .............................................................................................. 107
+EU RoHS.............................................................................................................................. 107
+Resirkulerings-/returordninger for ASUS ............................................................... 108
+Økodesign-direktivet .................................................................................................... 108
+Produkt i samsvar med ENERGY STAR ..................................................................... 109
+EPEAT-registrerte produkter ....................................................................................... 109
+Lisens for BIOS-tekstskrifter ........................................................................................ 110
+Forenklet EU-samsvarserklæring .............................................................................. 111
+Wi-Fi-nettverksmelding ................................................................................................ 112
+RF-eksponeringsinformasjon (SAR) ......................................................................... 112
+Elektronisk håndbok for bærbare PC 7
+Om denne håndboken
+Denne håndboken inneholder informasjon om maskinvare- og 
+programvarefunksjonene til den bærbare PC-en, inndelt i følgende 
+kapitler:
+Kapittel 1: Maskinvareoppsett
+Dette kapitlet forklarer maskinvarekomponentene til den 
+bærbare PC-en.
+Kapittel 2: Bruke den bærbare PC-en
+Dette kapitlet viser deg hvordan du bruker de forskjellige delene 
+til den bærbare PC-en.
+Kapittel 3: Arbeid med Windows
+Dette kapitlet gir en oversikt over bruk av Windows på den 
+bærbare PC-en.
+Kapittel 4: Selvtest ved påslåing (POST)
+Dette kapitlet viser deg hvordan du bruker POST til å endre 
+innstillingene til den bærbare PC-en.
+Tips og ofte stilte spørsmål (OSS)
+Dette avsnittet inneholder noen anbefalte tips, maskinvare-
+OSS og programvare-OSS du kan lese for å vedlikeholde og løse 
+problemer med den bærbare PC-en. 
+Tillegg
+Denne delen inneholder merknader og sikkerhetserklæringer for 
+den bærbare PC-en.
+8 Elektronisk håndbok for bærbare PC
+Begreper brukt i denne håndboken
+For å utheve viktig informasjon i denne håndboken, presenteres noe 
+tekst på denne måten:
+VIKTIG! Denne meldingen inneholder vitale instruksjoner som må følges 
+for å fullføre en oppgave. 
+MERK: Denne meldingen inneholder tilleggsinformasjon og tips som kan 
+hjelpe deg med å fullføre oppgaver.
+ADVARSEL! Denne meldingen inneholder viktig informasjon som må 
+følges når du utfører visse oppgaver av sikkerhetsgrunner, slik at du ikke 
+skader din bærbare PC og komponentene i den. 
+Ikoner
+Ikonene nedenfor viser hvilken enhet som kan brukes for å fullføre 
+oppgaver eller prosedyrer på din bærbare PC.
+Skrifttyper
+Fet = Dette indikerer en meny eller et element som skal velges.
+Kursiv = Dette viser til avsnitt som du kan lese i denne 
+bruksanvisningen.
+= Bruk berøringsskjermen.
+= Bruk styreplaten.
+= Bruk tastaturet.
+Elektronisk håndbok for bærbare PC 9
+Sikkerhetshensyn
+Bruke den bærbare PC-en
+Denne bærbare PC-en bør kun brukes i miljøer med 
+temperaturer mellom 5°C (41°F) og 35°C (95°F).
+Referer til klassifiseringsmerkelappen på bunnen av 
+Bærbare PC’en og sørg for at strømadapteren din 
+samsvarer med klassifiseringen.
+Den bærbare PC-en kan bli varm til svært varm ved 
+bruk eller mens batteripakken lades. Den bærbare 
+PC-en må ikke plasseres i fanget ditt eller andre 
+deler av kroppen for å forhindre skade fra varme. 
+Når du arbeider med den bærbare PC-en, må du 
+ikke plassere den på overflater som kan blokkere 
+ventilene.
+Ikke bruk skadete strømledninger, tilbehør eller 
+andre ytre utstyrsenheter.
+Mens den er slått på, sørg for at du ikke bærer 
+eller dekker til den bærbare PC-en med noen 
+gjenstander som kan redusere luftsirkulasjon.
+Ikke plasser den bærbare PC-en på ujevne eller 
+ustabile overflater. 
+Du kan sende den bærbare PC-en gjennom 
+røntgenmaskiner (brukes på gjenstander som er 
+plassert på transportbånd), men ikke utsett den for 
+magnetiske detektorer og lesere.
+Kontakt flyselskapet ditt for informasjon om 
+relaterte tjenester ombord som kan brukes og 
+restriksjoner som må følges når du bruker den 
+bærbare PC-en ombord.
+10 Elektronisk håndbok for bærbare PC
+Ta vare på den bærbare PC-en
+Koble fra vekselstrømmen og ta ut batteripakken 
+(hvis gjeldende) før rengjøring av den bærbare 
+PC-en. Bruk en ren cellulosesvamp eller semsket 
+pusseskinn fuktet med varmt vann eller en 
+løsning med lav konsentrasjon av ikke-skurende 
+vaskemiddel. Fjern overflødig fuktighet fra 
+den bærbare PC-en med en tørr klut. Sørg for 
+at ikke væske kommer inn i kabinettet eller 
+tastaturmellomrommet for å forhindre kortslutning 
+eller korrosjon.
+Ikke bruk kraftige løsemidler som alkohol, tynner, 
+benzen eller andre kjemikalier på eller nær den 
+bærbare PC-en.
+Ikke plasser gjenstander oppå den bærbare PC-en.
+Ikke utsett den bærbare PC-en for sterke magnetiske 
+eller elektriske felter.
+Ikke bruk i nærheten av eller utsett den bærbare PC-
+en for væsker, regn eller fuktighet. 
+Ikke utsett den bærbare PC-en din for støvete miljø.
+Elektronisk håndbok for bærbare PC 11
+Riktig deponering
+IKKE kast Bærbare PC’en i kommunalt avfall. Dette 
+produktet er designet for å muliggjøre korrekt 
+ombruk av deler samt gjenvinning. Symbolet kryss 
+over en søppelkasse med hjul indikerer at produktet 
+(elektrisk, elektronisk utstyr og kvikksølvholdige 
+knappecellebatterier) ikke skal kastes sammen med 
+husholdningsavfall. Sjekk lokale reguleringer for 
+bortkasting av elektroniske produkter.
+IKKE kast batteriet sammen med vanlig 
+husholdningsavfall. Symbolet med en utkrysset 
+søppelkasse betyr at batteriet ikke bør kastes 
+sammen med vanlig husholdningsavfall. 
+Ikke bruk den bærbare PC-en din nær gasslekkasjer.
+Ikke plasser aktive elektroniske enheter nær den 
+bærbare PC-en for å unngå elektromagnetisk 
+bølgeforstyrrelse på skjermpanelet.
+Ikke bruk denne bærbare PC-en til å generere 
+kryptovaluta (det krever enorme mengder strøm 
+og tid til å få konvertibel virtuell valuta) og/eller 
+relaterte aktiviteter.
+12 Elektronisk håndbok for bærbare PC
+Batteribeskyttelse
+• Hvis du lader batteriet ofte under høy spenning, kan det forkorte 
+levetiden. For å beskytte batteriet kan systemet stoppe lading når 
+det er ladet opp til mellom 90 % og 100 %.
+MERK: Den første batteriladekapasiteten er vanligvis satt til 90 % til 99 %. 
+Den faktiske verdien varierer avhengig av modell.
+• Hvis et batteri lades eller oppbevares i høye 
+omgivelsestemperaturer, kan det føre til permanent skade på 
+batterikapasiteten og forkorte batterilevetiden. Hvis batteriet er 
+for varmt, kan systemet redusere ladekapasiteten til batteriet eller 
+til og med stoppe ladingen for å beskytte batteriet.
+• Batterikapasiteten kan falle selv når enheten er slått av og koblet 
+fra strømmen. Dette er normalt, da systemet fremdeles trekker litt 
+strøm fra batteriet.
+Informasjon om batterisikkerhet
+Elektronisk håndbok for bærbare PC 13
+Standard batteripleie
+• Hvis du ikke bruker enhet over lengre tid, må du sørge for å 
+lade batteriet opp til 50 %. Så slår du av enheten og kobler fra 
+strømadapteren. Lad opp batteristrømmen til 50 % hver tredje 
+måned for å unngå overutladning og forhindre skade på batteriet.
+• Unngå å lade batteriet med høy spenning over lengre tid for å 
+forlenge levetiden til batteriet. Hvis du statig vekk har enheten 
+koblet til strøm, må du sørge for å lade ut batteriet til 50 % minst 
+en gang annenhver uke. Du kan også justere innstillingene fra 
+Batterihelselading i MyASUS for å forlenge batterilevetiden.
+• Batteriet bør oppbevares ved temperaturer mellom 5 °C (41 °F) 
+og 35 °C (95 °F) med batteristrøm på 50 %. Du kan også justere 
+innstillingene fra Batterihelselading i MyASUS for å forlenge 
+batterilevetiden.
+• Ikke la batteriet ligge i fuktige omgivelser. Eksponering for fuktige 
+omgivelser kan øke overutladingsforholdet til batteriet. Miljøer 
+med lav temperatur kan skade kjemikaliene inne i batteriet, mens 
+høy temperatur eller overoppheting kan føre til eksplosjonsfare.
+• Ikke plasser enheten eller batteripakken i nærheten av radiatorer, 
+peiser, ovner, varmeovner eller andre varmekilder med 
+temperaturer over 60 °C (140 °F). Omgivelser der temperaturen er 
+høy, kan føre til eksplosjon eller lekkasje som kan forårsake brann.
+14 Elektronisk håndbok for bærbare PC
+Elektronisk håndbok for bærbare PC 15
+Kapittel 1: 
+Maskinvareoppsett
+16 Elektronisk håndbok for bærbare PC
+Bli kjent med den bærbare PC-en din
+Sett forfra
+MERK: Tastaturoppsettet kan variere avhengig av region eller land. 
+Utseendet til den bærbare PC-en kan også variere avhengig av modell.
+Elektronisk håndbok for bærbare PC 17
+Mikrofonrekke
+Mikrofonrekken har funksjoner som opphever ekko, 
+undertrykker støy og benytter stråleforming for å gjenkjenne 
+stemmer og ta opp lyd med bedre kvalitet.
+Kameraindikator
+Kameraindikatoren lyser når det innebygde kameraet er i bruk.
+Kamera
+Du kan ta bilder eller spille inn videoer ved hjelp av det 
+innebygde kameraet på den bærbare PC-en.
+IR-kamera
+Du kan ta bilder eller spille inn videoer ved hjelp av det 
+innebygde kameraet på den bærbare PC-en. IR-kameraet støtter 
+også Windows Hello.
+MERK: Den røde LED-lampen for IR blinker mens data leses, før 
+du logger på med Windows Hello-ansiktsgjenkjenning.
+18 Elektronisk håndbok for bærbare PC
+360º-justerbar berøringsskjerm
+Den bærbare PC-en har en berøringsskjerm som kan dreies helt 
+rundt i 360º. Denne funksjonen forvandler enheten fra en bærbar 
+PC til en nettbrett-PC med berøringsskjerm på et øyeblikk.
+Denne berøringsskjermen med høy oppløsning passer utmerket 
+til å vise bilder, videoer og andre multimediafiler på den bærbare 
+PC-en. Du kan også betjene den med berøringsbevegelser.
+Ansvarsfraskrivelse: Gvus det vuses statiske bilder eller bilder 
+med høy kontrast over lengre tid, kan det føre til vedvarende eller 
+innbrente bilder på OLED-skjermen. ASUS bærbar PC med OLED-
+skjerm (på utvalgte modeller) minimerer sjansen for innbrenning 
+ved å stille mørk modus i Windows 10 som standard og forkorte 
+inaktiv tid før skjermen slås av. Det anbefales at man bruker en 
+animert skjermsparer med mørk bakgrunn og unngår å stille 
+OLED-skjermen til maksimal lysstyrke for å forlenge levetiden til 
+OLED-skjermen.
+MERK:
+• Nærmere informasjon finner du i avsnittet Stille inn OLED-
+skjermen i denne håndboken.
+• Du finner flere detaljer om å gjøre den bærbare PC-en om til 
+et nettbrett i delen Rotere skjermen i denne håndboken.
+Elektronisk håndbok for bærbare PC 19
+Mikrofon av-indikator
+Denne indikatoren lyser når mikrofonen er slått av.
+Tastatur
+Tastaturet har QWERTY-taster i full størrelse med komfortabel 
+tastedybde for skriving. Du kan også bruke funksjonstastene, 
+få rask tilgang til Windows og kontrollere andre 
+multimediafunksjoner.
+MERK: Tastaturoppsettet varierer avhengig av modell eller 
+område.
+Caps Lock-indikator
+Denne indikatoren lyser når Caps Lock-funksjonen er aktivert. Du 
+kan bruke Caps Lock til å skrive inn store bokstaver (som A, B, C) 
+med tastaturet på den bærbare PC-en.
+20 Elektronisk håndbok for bærbare PC
+Styreplate/talltastatur 
+Dette lar deg veksle mellom styreplate og talltastatur.
+Styreplaten tillater bruk av flere samtidige bevegelser for å 
+navigere på skjermen, slik at du får en intuitiv brukeropplevelse. 
+Den kan også simulere funksjonene til en vanlig mus.
+MERK: Du kan se mer informasjon i delen Bruke styreplaten i 
+denne håndboken.
+Talltastaturet kan brukes til å angi tall.
+VIKTIG! Vær oppmerksom på at alle versjoner av det numeriske 
+tastaturet bare støttes av det nyeste Microsoft Windows-
+operativsystemet.
+MERK: Nærmere informasjon finner du i delen Bruke talltastaturet 
+i denne håndboken.
+Sensor for omgivelseslys
+Sensoren for omgivelseslys registrerer hvor mye omgivelseslys 
+du har rundt deg. Systemet justerer lysstyrken på skjermen 
+automatisk avhengig av lysforholdene.
+RGB-lyssensor
+RGB-lyssensoren justerer automatisk fargetemperaturen til 
+skjermpanelet i henhold til omgivelseslyset.
+Elektronisk håndbok for bærbare PC 21
+ToF-sensor
+ToF-sensoren vil automatisk vekke og logge deg på den 
+bærbare PC-en med Windows Hello når den oppdager at du er 
+i nærheten. Den bærbare PC-en går i moderne ventemodus når 
+du går bort.
+Kamera av-indikator
+Denne indikatoren lyser når kameraet er slått av.
+Av/på-knapp
+Trykk på av/på-knappen for å slå den bærbare PC-en på eller av. 
+Du kan også bruke av/på-knappen til å sette den bærbare PC-
+en i hvile- eller dvalemodus, samt aktivere den fra hvile- eller 
+dvalemodus.
+Dersom den bærbare PC-en ikke svarer, holder du inne av/på-
+knappen i minst ti (10) sekunder til den bærbare PC-en slås av.
+Fingeravtrykksensor 
+Denne innebygde fingeravtrykksensoren leser fingeravtrykket 
+ditt og bruker det til biometrisk autentisering når man logger på 
+den bærbare PC-en.
+22 Elektronisk håndbok for bærbare PC
+Sett ovenfra
+Mikrofonrekke
+Mikrofonrekken har funksjoner som opphever ekko, undertrykker 
+støy og benytter stråleforming for å gjenkjenne stemmer og ta 
+opp lyd med bedre kvalitet.
+Elektronisk håndbok for bærbare PC 23
+Sett nedenfra
+MERK: Undersiden kan se forskjellig ut avhengig av modell.
+ADVARSEL! Den bærbare PC-en kan bli varm til svært varm ved bruk eller 
+mens batteripakken lades. Den bærbare PC-en må ikke plasseres i fanget 
+ditt eller andre deler av kroppen for å forhindre skade fra varme. Når du 
+arbeider med den bærbare PC-en, må du ikke plassere den på overflater 
+som kan blokkere ventilene.
+VIKTIG! 
+• Batteritiden varierer etter bruk og etter spesifikasjonene for denne 
+bærbare PC-en. Batteripakken kan ikke demonteres.
+• Kjøp komponenter fra godkjente forhandlere for å sikre maksimal 
+kompatibilitet og pålitelighet. Ta kontakt med et ASUS-servicesenter 
+eller godkjent forhandler når du trenger produktservice eller hjelp til 
+å demontere eller montere produktet på riktig måte.
+24 Elektronisk håndbok for bærbare PC
+Luftventiler
+Luftventilene slipper kjølig luft inn og varm luft ut av den 
+bærbare PC-en.
+ADVARSEL! Sørg for at papir, bøker, klær, kabler eller andre 
+gjenstander ikke blokkerer luftventilene, slik at du unngår 
+overoppheting.
+Høyttalere
+De innebygde høyttalerne gir deg lyd rett fra den bærbare PC-
+en. Lydfunksjonene kontrolleres av programvaren.
+Elektronisk håndbok for bærbare PC 25
+Sett fra høyre
+Statusindikatorer
+Statusindikatorene hjelper deg med å identifisere 
+maskinvarestatusen til den bærbare PC-en.
+ Batteriindikator med to farger
+ LED-lampen med to farger gir en visuell indikasjon 
+på batteriets ladestatus. Se følgende tabell for 
+detaljer:
+26 Elektronisk håndbok for bærbare PC
+ 
+Farge Status
+Uavbrutt hvitt Den bærbare PC-en er koblet til 
+en strømkilde, og batterinivået 
+er mellom 95 og 100 %.
+Uavbrutt oransje Den bærbare PC-en er koblet til 
+en strømkilde, batteriet lades og 
+batterinivået er under 95 %.
+Blinker oransje Den bærbare PC-en går på 
+batteristrøm, og batterinivået er 
+mindre enn 10 %.
+Lys slukket Den bærbare PC-en går på 
+batteristrøm, og batterinivået er 
+mellom 10 og 100 %.
+ Av/på-indikator
+ Av/på-indikatoren lyser når den bærbare PC-en er 
+slått på, og blinker sakte når den bærbare PC-en er i 
+hvilemodus.
+MicroSD-kortspor
+Denne innebygde minnekortleseren støtter kortformatet 
+microSD.
+Elektronisk håndbok for bærbare PC 27
+Thunderbolt™ 4- / Power Delivery-kombinasjonsport
+Thunderbolt™ 4-porten er kompatibel med USB Type-C®-
+standarder og gir en overføringshastighet på opptil 40 Gbit/s for 
+Thunderbolt™ 4-enheter. Koble den bærbare PC-en til en ekstern 
+skjerm med DisplayPort, VGA, DVI eller HDMI for å oppleve 
+høyoppløslige visningsfunksjoner med Intel® Thunderbolt™-
+teknologi. Sett den medfølgende strømadapteren inn i denne 
+porten for å lade batteripakken og gi strøm til den bærbare PC-
+en.
+MERK: Overføringshastigheten til denne porten kan variere 
+avhengig av modellen.
+ADVARSEL! Adapteren kan bli svært varm når den er i bruk. Ikke 
+dekk til adapteren, og hold den unna kroppen din mens den er 
+koblet til en strømkilde.
+VIKTIG!
+• Det kan ta lengre tid å lade den bærbare PC-en med en 
+lavspent strømkilde.
+• For å forhindre skade må du kun bruke strømkilder 
+klassifisert med 20 V/3,25 A til å lade den bærbare PC-en 
+med USB Power Delivery-kombiporten. Hvis du vil ha mer 
+informasjon, kan du kontakte et ASUS-servicesenter.
+Kontakt for hodetelefon/hodesett/mikrofon
+Denne porten lar deg koble til høyttalere med forsterker eller 
+hodetelefoner. Du kan også koble til et eksternt hodesett eller en 
+ekstern mikrofon via denne porten.
+28 Elektronisk håndbok for bærbare PC
+Sett fra venstre
+Kombiport for USB 3.2 Gen 2 Type-C® / DisplayPort / 
+strømuttaksport 
+USB 3.2 Gen 2 Type-C®-porten (universal seriebuss 3.2) tilbyr en 
+overføringshastighet på opptil 10 Gbit/s og er bakoverkompatibel 
+med USB 2.0. Bruk en USB Type-C®-adapter til å koble den bærbare 
+PC-en til en ekstern skjerm. Koble til en strømkilde på 20 V / 3,25 A 
+for å lade batteripakken og gi strøm til den bærbare PC-en.
+MERK: Overføringshastigheten til denne porten kan variere 
+avhengig av modellen.
+VIKTIG!
+• Det kan ta lengre tid å lade den bærbare PC-en med en 
+lavspent strømkilde.
+• For å forhindre skade må du kun bruke strømkilder klassifisert 
+med 20 V /3,25 A til å lade den bærbare PC-en med USB Power 
+Delivery-kombiporten. Hvis du vil ha mer informasjon, kan du 
+kontakte et ASUS-servicesenter.
+Elektronisk håndbok for bærbare PC 29
+Kapittel 2:
+Bruke den bærbare PC-en
+30 Elektronisk håndbok for bærbare PC
+VIKTIG!
+Informasjon om strømadapter:
+• Inngangsspenning: 100–240 Vac
+• Inngangsfrekvens: 50–60 Hz
+• Kapasitet utgangsstrøm: 3,25 A (65 W)
+• Kapasitet utgangsspenning: 20 V
+Lad den bærbare PC-en i 3 timer før du bruker den i 
+batterimodus for første gang.
+MERK: Strømadapteren kan variere i utseende avhengig av modell og 
+region.
+Kom i gang
+Lade den bærbare PC-en
+A. Koble AC-strømledningen til AC/DC-adapteren.
+B. Koble likestrømskontakten til inngangsporten på den bærbare 
+PC-en.
+C. Koble AC-strømadapteren til en 100–240 V-strømkilde.
+Elektronisk håndbok for bærbare PC 31
+VIKTIG!
+• Finn kapasitetsetiketten for inngang/utgang på den bærbare PC-en, 
+og kontroller at den samsvarer med informasjonen om inngangs-/
+utgangskapasitet på strømadapteren. Noen bærbare PC-modeller 
+kan ha flere kapasiteter for utgangsstrøm basert på tilgjengelig SKU.
+• Kontroller at den bærbare PC-en er koblet til strømadapteren før 
+du slår den på for første gang. Plugg alltid strømledningen inn i en 
+veggkontakt uten bruk av skjøteledninger. For din egen sikkerhet må 
+du bare koble denne enheten til en jordet stikkontakt.
+• Stikkontakten må være lett tilgjengelig og i nærheten av den 
+bærbare PC-en.
+• Hvis du vil koble den bærbare PC-en fra hovedstrømforsyningen, 
+kobler du den bærbare PC-en fra stikkontakten.
+ADVARSEL!
+Les følgende forholdsregler for batteriet i den bærbare PC-en:
+• Kun ASUS-autoriserte teknikere skal fjerne batteriet inne i enheten 
+(dette gjelder bare for batteri som ikke kan fjernes).
+• Batteriet som brukes i denne enheten, kan utgjøre en fare for brann 
+eller kjemisk forbrenning hvis den fjernes eller demonteres.
+• Følg varseletikettene for din personlige sikkerhet.
+• Eksplosjonsfare hvis batteriet byttes ut med feil type.
+• Ikke kast den i ild.
+• Prøv aldri å kortslutte batteriet i den bærbare PC-en.
+• Prøv aldri å demontere batteriet og sette det sammen igjen 
+(bare for batteri som ikke kan fjernes).
+• Avslutt bruken hvis det oppdages lekkasje.
+• Batteriet og dets komponenter må resirkuleres eller kastes på riktig 
+måte.
+• Oppbevar batteriet og andre små komponenter utilgjengelig for 
+barn.
+32 Elektronisk håndbok for bærbare PC
+Løft for å åpne skjermpanelet
+Trykk på av/på-knappen
+Elektronisk håndbok for bærbare PC 33
+Bruk av bevegelser på berøringsskjermpanelet
+Bevegelsene lar deg starte programmer og få tilgang til innstillingene 
+på den bærbare PC-en. Funksjonene kan aktiveres ved å bruke 
+håndbevegelsene på den bærbare PC-ens berøringsskjermpanel.
+Bevegelser for berøringsskjermpanel og 
+styreplate
+Bevegelser lar deg starte programmer og få tilgang til innstillingene 
+på din bærbare PC. Se følgende illustrasjoner når du bruker 
+håndbevegelser på berøringsskjermpanelet og styreplaten.
+Trykk/dobbeltrykk Trykk og hold
+• Trykk på en app for å velge 
+den.
+• Dobbeltrykk på en app for å 
+starte den.
+Trykk og hold inne for å åpne 
+høyreklikkmenyen.
+MERK: Følgende skjermbilder er kun for referanse. 
+Berøringsskjermpanelets utseende kan variere avhengig av modell.
+34 Elektronisk håndbok for bærbare PC
+Zoom inn Zoom ut
+Før to fingre fra hverandre på 
+berøringsskjermpanelet.
+Før to fingre sammen på 
+berøringsskjermpanelet.
+Fingerbevegelse Dra
+Beveg fingeren for å rulle opp 
+og ned og beveg fingeren for å 
+panorere skjermen mot venstre 
+eller høyre.
+• Dra for å opprette en 
+valgboks rundt flere 
+elementer.
+• Dra og slipp et element for 
+å flytte det til et nytt sted.
+Elektronisk håndbok for bærbare PC 35
+Bruk av styreplaten
+Bevegelse av pekeren
+Du kan trykke hvor som helst på styreplaten for å aktivere pekeren, 
+og deretter skyve fingeren på styreflaten for å bevege pekeren på 
+skjermen.
+Skyv horisontalt
+Skyv vertikalt
+Skyv diagonalt
+36 Elektronisk håndbok for bærbare PC
+Bevegelser med én finger
+Trykk/dobbeltrykk
+• Trykk på en app for å velge den.
+• Dobbeltrykk på en app for å starte den.
+Dra og slipp
+Dobbeltrykk på et element, og skyv deretter den samme fingeren uten 
+å løfte den fra styreplaten. For å slippe elementet på det nye stedet må 
+du løfte fingeren fra styreplaten.
+Elektronisk håndbok for bærbare PC 37
+Venstreklikk Høyreklikk
+• Klikk på en app for å velge 
+den.
+• Dobbelklikk på en app for å 
+starte den.
+Klikk på denne knappen for å åpne 
+høyreklikkmenyen.
+MERK: Områdene innenfor den stiplede linjen representerer 
+plasseringene av venstre museknapp og høyre museknapp på 
+styreflaten.
+Bevegelser med to fingre
+Trykk
+Trykk med to fingre på styreplaten for å simulere høyreklikkfunksjonen.
+38 Elektronisk håndbok for bærbare PC
+Rulling med to fingre (opp/ned) Rulling med to fingre (venstre/
+høyre)
+Skyv to fingre for å rulle opp eller 
+ned.
+Skyv to fingre for å rulle mot 
+venstre eller høyre.
+Zoom ut Zoom inn
+Før de to fingrene sammen på 
+styreplaten.
+Før de to fingrene fra hverandre på 
+styreplaten.
+Elektronisk håndbok for bærbare PC 39
+Dra og slipp
+Velg et element, trykk og hold inn den venstre knappen. Bruk den 
+andre fingeren til å skyve på styreplaten for å dra elementet, og løft 
+fingeren av knappen for å slippe elementet.
+Bevegelser med tre fingre
+Trykk
+Trykk med tre fingre på styreplaten for å starte funksjonen du valgte i 
+Innstillinger.
+40 Elektronisk håndbok for bærbare PC
+Sveip mot venstre / sveip mot høyre
+Hvis du har åpnet flere apper, sveiper du med tre fingre mot venstre 
+eller høyre for å veksle mellom disse appene.
+Sveip opp Sveip ned
+Sveip opp for å se en oversikt over 
+alle appene som er åpne.
+Sveip ned for å vise skrivebordet.
+Elektronisk håndbok for bærbare PC 41
+Bevegelser med fire fingre
+Trykk
+Trykk med fire fingre på styreplaten for å starte funksjonen du valgte i 
+Innstillinger.
+42 Elektronisk håndbok for bærbare PC
+Bruk av numerisk tastatur 
+VIKTIG! Vær oppmerksom på at alle versjoner av det numeriske tastaturet 
+bare støttes av det nyeste Microsoft Windows-operativsystemet.
+MERK: For å bruke %- og =-funksjonen, sett inndataspråket til engelsk.
+• Trykk inn og hold i ett sekund for å veksle 
+mellom det numeriske tastaturet eller styreplaten.
+• Trykk på for å justere lysstyrken for det 
+numeriske tastaturet.
+• Trykk inn og hold , og skyv deretter hvor som 
+helst på det numeriske tastaturet for å starte 
+Windows Calculator.
+Elektronisk håndbok for bærbare PC 43
+Bruk av tastaturet
+Slår høyttaleren på eller av
+Reduserer høyttalervolumet
+Øker høyttalervolumet
+Reduserer lysstyrken for skjermen
+Øker lysstyrken for skjermen
+Aktiverer eller deaktiverer styreplaten
+Juster lysstyrken for det bakgrunnsbelyste tastaturet
+Skifter visningsmodus
+MERK: Kontroller at den andre skjermen er koblet til den 
+bærbare PC-en.
+Hurtigtaster
+Hurtigtastene på den bærbare PC-en din kan utløse følgende 
+kommandoer:
+44 Elektronisk håndbok for bærbare PC
+* På utvalgte modeller
+Windows-taster
+Det finnes to spesielle Windows-taster på tastaturet for den bærbare 
+PC-en som brukes som vist under:
+Launching the Start menu (start av startmenyen)
+Viser rullegardinmenyen*
+Funksjonstaster
+Trykk på for å aktivere eller deaktivere funksjonstastene. 
+Når funksjonstastene er aktivert, kan du også bruke hurtigtaster ved å 
+holde inne og bruke tastene på den øverste raden.
+Slår mikrofonen på eller av
+Slår kameraet på eller av
+Aktiverer skjermopptaksverktøy
+Starter MyASUS
+Elektronisk håndbok for bærbare PC 45
+Rotere skjermen 
+Skjermen på den bærbare PC-en kan justeres opp til 360 grader. Du kan 
+justere skjermpanelet som vist nedenfor.
+Kan justeres i 360 grader
+Bærbar PC-modus
+MERK: Illustrasjonene er kun til referanse.
+46 Elektronisk håndbok for bærbare PC
+Stativmodus
+Teltmodus
+nettbrettmodus
+MERK: Hvis du roterer skjermen til stativ-, telt- eller nettbrettmodus, vil 
+tastaturet og styreflaten deaktiveres.
+Elektronisk håndbok for bærbare PC 47
+Kapittel 3:
+Arbeid med Windows
+48 Elektronisk håndbok for bærbare PC
+Starter for første gang
+Når du starter den bærbare PC-en for første gang, vises det en 
+rekke skjermbilder som veileder deg i konfigureringen av Windows-
+operativsystemet.
+Slik starter du den bærbare PC-en for første gang:
+1. Trykk på av/på-knappen på den bærbare PC-en. Vent noen 
+minutter til oppsettskjermen vises.
+2. Fra oppsettskjermen velger du region og et språk som skal brukes 
+på den bærbare PC-en.
+3. Les lisensavtalen nøye. Velg Accept (godta).
+4. Følg instruksjonene på skjermen for å konfigurere følgende 
+basiselementer:
+• Personalize (tilpass)
+• Get online (gå online)
+• Settings (innstillinger)
+• Your account (din konto)
+5. Etter konfigurering av basiselementene fortsetter Windows med 
+å installere appene og foretrukne innstillinger. Forsikre deg om at 
+den bærbare PC-en er slått på under oppsettsprosessen.
+6. Når oppsettsprosessen er fullført, vises skrivebordet.
+MERK: Skjermbildene i dette kapitlet er kun for referanse.
+Elektronisk håndbok for bærbare PC 49
+Start menu (startmenyen)
+Start menu (startmenyen) er hovedporten til programmene, Windows-
+appene, mapper og innstillinger på den bærbare PC-en.
+Du kan bruke startmenyen til å utføre disse vanlige aktivitetene:
+• starte programmer eller Windows-apper
+• åpne vanlige programmer eller Windows-apper
+• justere innstillinger for den bærbare PC-en
+• få hjelp med Windows-operativsystemet
+• slå av den bærbare PC-en
+• logg av Windows eller veksle til en annen brukerkonto
+Endre kontoinnstillinger, lås eller 
+logg ut av kontoen din
+Åpne Start menu (startmenyen)
+Start Task view (oppgavevisning)
+Shut down (avslutt), Restart (start 
+på nytt) eller sett den bærbare PC-
+en i Sleep (hvilemodus)
+Start en app fra oppgavelinjen
+Start en app fra Start menu (startmenyen)
+Åpne Search (søk)
+Start Widgets
+50 Elektronisk håndbok for bærbare PC
+Start av Start menu (startmenyen)
+Trykk på startsymbolet på skrivebordet.
+Plasser musepekeren over startsymbolet på 
+skrivebordet, og klikk på det.
+Trykk på Windows-logotasten på tastaturet.
+Åpne programmer fra Start menu (startmenyen)
+Et av de vanligste bruksområdene av startmenyen er å åpne 
+programmer som er installert på den bærbare PC-en.
+Trykk på programmet for å starte den.
+Plasser musepekeren over programmet og klikk for å 
+starte den.
+Bruk piltastene til å bla gjennom programmene. Trykk 
+på for å starte den.
+MERK: Velg Alle apper for å vise en fullstendig liste over programmer og 
+mapper på den bærbare PC-en i alfabetisk rekkefølge.
+Elektronisk håndbok for bærbare PC 51
+Windows-apper
+Dette er apper som er festet til startmenyen og vises i ruteformat for 
+enkel tilgang.
+MERK: Noen Windows-apper krever at du logger deg på Microsoft-
+kontoen din før de starter helt.
+52 Elektronisk håndbok for bærbare PC
+Arbeid med Windows-apper
+Tilpasning av Windows-apper
+Du kan flytte, løsne eller feste apper til oppgavelinjen fra startmenyen 
+ved å følge disse trinnene:
+Starte Windows-apper fra startmenyen
+Trykk på appen for å starte den.
+Plasser musepekeren over appen og klikk for å starte 
+den.
+Bruk piltastene til å bla gjennom appene. Trykk på 
+ for å starte en app.
+Flytting av apper
+Trykk og hold appen og dra og slipp den til et nytt sted.
+Plasser musepekeren over appen, og dra og slipp appen 
+til et nytt sted.
+Elektronisk håndbok for bærbare PC 53
+Løsning av apper
+Trykk og hold appen, og trykk deretter på Unpin from 
+Start (løsne fra start).
+Plasser musepekeren over appen og høyreklikk på den, 
+og klikk deretter på Unpin from Start (løsne fra start).
+Bruk piltastene til å navigere til appen. 
+Trykk på eller (på utvalgte modeller) 
+og velg deretter Unpin from Start (løsne fra start).
+54 Elektronisk håndbok for bærbare PC
+Festing av flere apper til startmenyen
+Fra All apps (Alle apper) må du trykke og holde appen 
+du ønsker å legge til startmenyen, og deretter trykker du 
+på Pin to Start (fest til start).
+Fra All apps (Alle apper) plasserer du musepekeren 
+over appen du vil legge til i startmenyen, høyreklikker 
+på den og klikker deretter på Pin to Start (fest til start).
+Fra All apps (Alle apper) trykker du på eller 
+ (på utvalgte modeller) på appen du vil 
+legge til i startmenyen, og velger deretter Pin to Start 
+(fest til start).
+Festing av apper til oppgavelinjen
+Trykk og hold appen, og trykk deretter på Pin to taskbar 
+(fest til oppgavelinjen).
+Plasser musepekeren over appen og høyreklikk på 
+den, og klikk deretter på Pin to taskbar (fest til 
+oppgavelinjen).
+Bruk piltastene til å navigere til appen. 
+Trykk på eller (på utvalgte modeller) 
+og velg deretter Pin to taskbar (fest til oppgavelinjen).
+Elektronisk håndbok for bærbare PC 55
+Task view (oppgavevisning)
+Veksle raskt mellom åpne apper og programmer ved hjelp av 
+funksjonen Task view (oppgavevisning). Du kan også bruke Task view 
+(oppgavevisning) for å veksle mellom skrivebord.
+Åpne Task view (oppgavevisning)
+Trykk på -symbolet på oppgavelinjen.
+Plasser musepekeren over -symbolet i oppgavelinjen 
+og klikk på det.
+Trykk på på tastaturet.
+56 Elektronisk håndbok for bærbare PC
+Widgets
+Du kan åpne Widgets for rask tilgang til viktig informasjon.
+Åpning av Widgets
+Trykk på -symbolet på oppgavelinjen.
+Plasser musepekeren over -symbolet i oppgavelinjen 
+og klikk på det.
+Trykk på på tastaturet.
+Elektronisk håndbok for bærbare PC 57
+Tilpasning av widgets
+eller
+Klikk/trykk på -symbolet og velg deretter Manage 
+interests (administrer interesser) for å endre innholdet 
+som vises i widgets.
+58 Elektronisk håndbok for bærbare PC
+Snap-funksjon
+Snap-funksjonen viser apper ved siden av hverandre slik at du kan 
+jobbe eller veksle mellom apper.
+Snap-hotspots
+Du kan dra og slippe apper til hotspots for å snappe dem på plass.
+Elektronisk håndbok for bærbare PC 59
+Bruk av snap
+eller
+1. Åpne appen du vil snappe.
+2. Dra tittellinjen for appen og slipp appen på kanten 
+av skjermen for å snappe den.
+3. Åpne en annen app og gjenta trinnene over for å 
+snappe en annen app.
+1. Åpne appen du vil snappe.
+2. Trykk inn og hold -tasten, og bruk deretter 
+piltastene til å snappe appen.
+3. Åpne en annen app og gjenta trinnene over for å 
+snappe en annen app.
+60 Elektronisk håndbok for bærbare PC
+Action Center (handlingssenter)
+Action Center (handlingssenter) konsoliderer varsler fra apper og 
+presenterer et enkelt sted hvor du kan samhandle med dem. Den har 
+også en veldig nyttig hurtighandlingsdel.
+Start av Quick Actions (hurtighandlinger)
+Trykk på statussymbolene på oppgavelinjen.
+Plasser musepekeren over statussymbolene på 
+oppgavelinjen, og klikk på den.
+Trykk på på tastaturet.
+Elektronisk håndbok for bærbare PC 61
+Åpning av varsler
+Trykk på dato og klokkeslett på oppgavelinjen.
+Plasser musepekeren over datoen og klokkeslettet på 
+oppgavelinjen, og klikk på den.
+Trykk på på tastaturet.
+62 Elektronisk håndbok for bærbare PC
+MyASUS Splendid
+MyASUS Splendid sikrer at alle ASUS-skjermpaneler viser identiske 
+og nøyaktige farger. Du kan velge Vivid (levende), Eye Care (øyepleie) 
+eller Manual Mode (manuell modus) i tillegg til Normal Mode (normal 
+modus) for å justere skjerminnstillingene.
+• Normal Mode (normal modus): Med korrigering av gamma- 
+og fargetemperatur er bildeutmatingen fra panelet så nært 
+som mulig til det øyet naturlig kan se. For modell med OLED-
+panel er denne modusen kompatibel med TÜV Low Blue Light 
+Certification.
+• Vivid Mode (livaktig modus): Denne modusen lar deg justere 
+metningen i bildet slik at det blir mer livaktig.
+• Manual Mode (manuell modus): Denne modusen lar deg 
+justere fargetemperaturverdien etter dine personlige behov, fra 
+-50 til +50.
+• Eye Care Mode (modus for øyepleie): Denne modusen 
+reduserer utslipp av blått lys med opptil 30 % og bidrar til å 
+beskytte øynene dine.
+ Nivå 1–5: Jo høyere nivå, desto mer reduseres utslippet av 
+blått lys. For modell med LCD-panel er nivå 5 den optimale 
+innstillingen som oppfyller TÜV Low Blue LightCertification.
+MERK: Aktiver HDR fra Settings (innstillinger) > System > Display 
+(skjerm) for en bedre skjermopplevelse med OLED-panelet ditt (på 
+utvalgte modeller), og oppfyller sertifiseringen TÜV Flicker Free.
+Elektronisk håndbok for bærbare PC 63
+Se følgende tips for å lindre belastning på øynene:
+• Ta en pause fra skjermen hvis du arbeider i mange timer. Det 
+anbefales å ta korte pauser (minst 5 minutter) etter rundt 1 time 
+kontinuerlig arbeid på datamaskinen. Å ta korte og hyppige 
+pauser er mer effektivt enn én lang pause.
+• For å minimere belastningen på og tørrhet i øynene må du med 
+jevne mellomrom hvile øynene ved å fokusere på objekter som er 
+langt unna.
+• Gjenta følgende øvelser for å redusere belastningen på øynene:
+(1) Se opp og ned gjentatte ganger
+(2) Rull sakte med øynene
+(3) Beveg øynene diagonalt
+ Rådfør deg med lege hvis belastningen på øynene vedvarer.
+• Blått lys med høy energi kan føre til belastning på øynene og 
+AMD (aldersrelatert makuladegenerasjon). Filter for blått lys 
+reduserer skadelig blått lys med 30 % (maks.) for å unngå CVS 
+(datasynsyndrom).
+64 Elektronisk håndbok for bærbare PC
+Innstilling av OLED-skjermen
+For å få mest mulig ut av OLED-skjermen (på utvalgte modeller) finnes 
+det flere innstillinger som anbefales av oss. Disse innstillingene bidrar 
+til å optimere den visuelle opplevelsen, maksimere batterilevetiden og 
+forlenge levetiden til din bærbare PC fra ASUS.
+Innstilling av Dark Mode (mørk modus)
+Dark Mode er aktivert som standard. Slik kontrollerer eller justerer du 
+innstillingene:
+1. Åpne Start menu (startmenyen).
+2. Klikk/trykk på Settings (innstillinger) og velg Personalization 
+(Tilpasning).
+Elektronisk håndbok for bærbare PC 65
+3. Velg Colors (farger)-fanen for å vise alternativene.
+66 Elektronisk håndbok for bærbare PC
+Utkobling av skjermen når den ikke er i bruk
+Sørg for at skjermen slås av automatisk når den ikke er i bruk. Slik 
+kontrollerer eller justerer du innstillingene:
+1. Åpne Start menu (startmenyen).
+2. Klikk/trykk på Settings (innstillinger) og velg System.
+Elektronisk håndbok for bærbare PC 67
+3. Velg fanen Power & battery (strøm og batteri) for å vise 
+alternativene.
+68 Elektronisk håndbok for bærbare PC
+Justering av lysstyrke for skjermen
+Det anbefales å aktivere en animert skjermsparer for mørk bakgrunn 
+og unngå å sette OLED-skjermen på maksimal lydstyrke for å forlenge 
+OLED-skjermens levetid. Slik kontrollerer eller justerer du innstillingene:
+1. Åpne Start menu (startmenyen).
+2. Klikk/trykk på Settings (innstillinger) og velg Personalization 
+(Tilpasning).
+Elektronisk håndbok for bærbare PC 69
+3. Velg fanen Lock screen (lås skjerm) og velg deretter Screen 
+saver (skjermsparer) for å vise alternativene.
+70 Elektronisk håndbok for bærbare PC
+Skjul oppgavelinjen automatisk
+For å unngå å vise oppgavelinjen på OLED-skjermen over lengre tid 
+må du sørge for at oppgavelinjen skjules automatisk. Slik justerer du 
+innstillingene:
+1. Åpne Start menu (startmenyen).
+2. Klikk/trykk på Settings (innstillinger) og velg Personalization 
+(Tilpasning).
+Elektronisk håndbok for bærbare PC 71
+3. Velg fanen Taskbar (oppgavelinje) og aktiver deretter 
+Automatically hide the taskbar (skjul oppgavelinjen 
+automatisk).
+72 Elektronisk håndbok for bærbare PC
+1. Start et Microsoft Office-program og klikk/trykk deretter på File 
+(fil) > Account (konto).
+2. Velg Dark Gray (mørkgrå) under Office Theme (kontortema). 
+Temaet vil bli brukt for alle Microsoft-programmer.
+Innstilling av Dark Mode i Microsoft Office
+Elektronisk håndbok for bærbare PC 73
+Andre hurtigtaster
+Ved hjelp av tastaturet kan du også bruke følgende snarveier for å 
+hjelpe deg med å starte programmer og navigere i Windows.
+Åpner Start menu (startmenyen)
+Åpner Action Center (handlingssenter)
+Åpner skrivebordet
+Åpner File Explorer (filutforsker)
+Åpner Settings (innstillinger)
+Åpner panelet Connect (koble til)
+Aktiverer låseskjermen
+Minimerer alle aktive vinduer
+74 Elektronisk håndbok for bærbare PC
+Åpner Search (søk)
+Åpner Project (prosjekt)-panelet
+Åpner Run (kjør)-vinduet
+Åpner Accessibility (tilgjengelighet)
+Åpner kontekstmenyen for startknappen
+Åpner forstørrelsessymbolet og zoomer inn 
+på skjermen
+Zoomer ut skjermen
+Elektronisk håndbok for bærbare PC 75
+Koble til trådløse nettverk
+Wi-Fi
+Få tilgang til e-post, surf på internett og del programmer via sosiale 
+nettverk ved hjelp av Wi-Fi-forbindelsen for den bærbare PC-en.
+VIKTIG! Airplane mode (flymodus) deaktiverer denne funksjonen. 
+Sørg for at Airplane Mode (flymodus) er slått av før du aktiverer Wi-Fi-
+tilkoblingen til din bærbare PC.
+Kobler til Wi-Fi
+Koble den bærbare PC-en til et Wi-Fi-nettverk ved hjelp av følgende 
+trinn:
+eller
+1. Åpne Action Center (handlingssenter) fra 
+oppgavelinjen.
+2. Klikk/trykk på Wi-Fi-symbolet for å aktivere Wi-Fi.
+3. Velg et tilgangspunkt fra listen over tilgjengelige 
+Wi-Fi-tilkoblinger.
+4. Velg Connect (koble til) for å starte 
+nettverkstilkoblingen.
+MERK: Du kan bli bedt om å skrive inn en sikkerhetskode 
+for å aktivere Wi-Fi-tilkoblingen.
+76 Elektronisk håndbok for bærbare PC
+eller
+1. Åpne Settings (innstillinger) fra startmenyen.
+2. Velg Bluetooth & devices (Bluetooth og enheter) 
+> Add device (legg til enhet) for å søke etter 
+Bluetooth-kompatible enheter.
+3. Velg en enhet fra listen for å pare den bærbare PC-
+en med enheten.
+MERK: For noen Bluetooth-kompatible enheter kan du bli 
+bedt om å taste inn passordet for den bærbare PC-en.
+Bluetooth
+Bruk Bluetooth for å forenkle trådløse dataoverføringer med andre 
+Bluetooth-aktiverte enheter.
+VIKTIG! Airplane mode (flymodus) deaktiverer denne funksjonen. Sørg 
+for at Airplane Mode (flymodus) er slått av før du aktiverer Bluetooth-
+tilkoblingen for din bærbare PC.
+Paring med andre Bluetooth-aktiverte enheter
+Du må pare den bærbare PC-en med andre Bluetooth-aktiverte enheter 
+for å aktivere dataoverføringer. Koble til enhetene ved hjelp av følgende 
+trinn:
+Elektronisk håndbok for bærbare PC 77
+Airplane Mode (flymodus)
+Airplane Mode (flymodus) deaktiverer trådløs kommunikasjon slik at du 
+kan bruke den bærbare PC-en din trygt mens du flyr.
+MERK: Kontakt flyselskapet for å lære om relaterte flytjenester som kan 
+brukes og restriksjoner som må følges når du bruker den bærbare PC-en 
+under flyging.
+Slå Airplane mode (flymodus) på/av
+eller
+1. Åpne Action Center (handlingssenter) fra 
+oppgavelinjen.
+2. Klikk/trykk på Airplane mode (flymodus)-
+symbolet for å aktivere eller deaktivere flymodus.
+78 Elektronisk håndbok for bærbare PC
+Slå av den bærbare PC-en
+Du kan slå av den bærbare PC-en ved å utføre en av følgende 
+prosedyrer:
+eller
+• Åpne startmenyen og velg deretter > Shut 
+down (avslutt) for å gjennomføre en normal 
+avslutting.
+• Velg fra innloggingsskjermen > Shut down 
+(avslutt).
+• Trykk på for å starte Avslutt 
+Windows (Avslutt Windows). Velg Shut down 
+(avslutt) fra rullegardinlisten og velg deretter 
+OK.
+• Dersom den bærbare PC-en ikke svarer, trykker 
+du inn av/på-knappen i minst fire (10) sekunder 
+til den bærbare PC-en slås av.
+Elektronisk håndbok for bærbare PC 79
+Sette den bærbare PC-en i hvilemodus
+Slik setter du den bærbare PC-en i hvilemodus:
+eller
+• Åpne startmenyen og velg deretter > Sleep 
+(hvilemodus) for å sette den bærbare PC-en i 
+hvilemodus.
+• Fra innloggingsskjermen velger du > Sleep 
+(hvilemodus).
+Trykk på for å starte Avslutt Windows 
+(Avslutt Windows). Velg Sleep (hvilemodus) fra 
+rullegardinlisten og velg deretter OK.
+MERK: Du kan også sette den bærbare PC-en i hvilemodus ved å trykke 
+på av/på-knappen én gang.
+80 Elektronisk håndbok for bærbare PC
+Elektronisk håndbok for bærbare PC 81
+Kapittel 4:
+Selvtest ved påslåing (POST)
+82 Elektronisk håndbok for bærbare PC
+Selvtest ved påslåing (POST)
+POST (Power-On Self-Test) er en serie med programvarestyrte 
+diagnostiske tester som kjøres når du slår på den bærbare PC-en eller 
+starter den på nytt. Programvaren som styrer POST er installert som en 
+permanent del av den bærbare PC-ens arkitektur.
+Bruk av POST for tilgang til BIOS og feilsøking
+Under POST kan du få tilgang til BIOS-innstillingene eller kjøre 
+feilsøkingsalternativer ved hjelp av funksjonstastene på den bærbare 
+PC-en. Se følgende informasjon for flere detaljer.
+BIOS
+BIOS (Basic Input and Output System) lagrer de 
+systemmaskinvareinnstillingene som er nødvendige for oppstart av 
+systemet på den bærbare PC-en.
+Standard BIOS-innstillinger gjelder for de fleste betingelser på din 
+bærbare PC. Ikke endre standardinnstillingene for BIOS bortsett fra 
+under følgende omstendigheter:
+• En feilmelding vises på skjermen under systemoppstart og ber 
+deg om å kjøre BIOS-oppsettet.
+• Du har installert en ny systemkomponent som krever ytterligere 
+BIOS-innstillinger eller oppdateringer.
+ADVARSEL! Bruk av feil BIOS-innstillinger kan føre til ustabilt system 
+eller oppstartsfeil. Vi anbefaler på det sterkeste at du bare endrer BIOS-
+innstillingene med hjelp fra kvalifisert servicepersonell.
+Tilgang til BIOS
+Start den bærbare PC-en på nytt, og trykk deretter på under 
+POST.
+Elektronisk håndbok for bærbare PC 83
+Gjenoppretting av systemet
+Ved å bruke gjenopprettingsalternativer på din bærbare PC kan du 
+gjenopprette systemet til opprinnelig tilstand eller bare oppdatere 
+innstillingene for å forbedre ytelsen.
+VIKTIG!
+• Ta sikkerhetskopi av alle datafiler før du gjør gjennomfører et 
+gjenopprettingsalternativ på den bærbare PC-en.
+• Noter viktige tilpassede innstillinger som f.eks. nettverksinnstillinger, 
+brukernavn og passord for å unngå tap av data.
+• Kontroller at den bærbare PC-en er koblet til en strømkilde før du 
+tilbakestiller systemet.
+Windows lar deg gjennomføre ett av følgende alternativer for 
+gjenoppretting:
+• Keep my files (behold filene mine) – Med dette alternativet kan 
+du oppdatere den bærbare PC-en uten at det påvirker personlige 
+filer (bilder, musikk, videoer, dokumenter).
+ Ved å bruke dette alternativet kan du gjenopprette den bærbare 
+PC-en til standardinnstillingene og slette andre installerte apper.
+• Remove everything (fjern alt) – Dette alternativet 
+tilbakestiller den bærbare PC-en til fabrikkinnstillingene. Du 
+må sikkerhetskopiere dataene dine før du gjennomfører dette 
+alternativet.
+84 Elektronisk håndbok for bærbare PC
+• Advanced startup (avansert oppstart) – Ved å bruke 
+dette alternativet kan du utføre andre avanserte 
+gjenopprettingsalternativer på din bærbare PC, for eksempel:
+– Bruk av en USB-stasjon, nettverkstilkobling eller Windows 
+gjenopprettings-DVD for å starte den bærbare PC-en.
+– Ved hjelp av Troubleshoot (feilsøk) for å aktivere 
+noen av disse avanserte gjenopprettingsalternativene: 
+Oppstartsreparasjon, Avinstaller oppdateringer, 
+Oppstartsinnstillinger, UEFI-fastvareinnstillinger, 
+Kommandoforespørsel, Gjenoppretting av systemet og 
+Gjenoppretting av systembilde.
+Utføring av gjenopprettingsalternativ
+Se trinnene under hvis du vil ha tilgang til og bruke noen av de 
+tilgjengelige gjenopprettingsalternativene for din bærbare PC.
+1. Åpne Settings (innstillinger) og velg System > Recovery 
+(gjenoppretting).
+Elektronisk håndbok for bærbare PC 85
+2. Velg gjenopprettingsalternativet du vil utføre.
+86 Elektronisk håndbok for bærbare PC
+Elektronisk håndbok for bærbare PC 87
+Tips og ofte stilte spørsmål 
+(OSS)
+88 Elektronisk håndbok for bærbare PC
+Nyttige tips for den bærbare PC-en
+Her er noen nyttige tips som du kan følge for å få mest mulig nytte av 
+den bærbare PC-en, opprettholde systemets ytelse og sørge for at alle 
+data er sikret:
+• Oppdater Windows med jevne mellomrom for å sikre at 
+programmene har de nyeste sikkerhetsinnstillingene.
+• Oppdater MyASUS for å sikre at du har de nyeste innstillingene 
+for ASUS-eksklusive programmer, drivere og verktøy.
+• Bruk antivirusprogramvare for å beskytte dataene dine, og hold 
+også denne oppdatert.
+• Med mindre absolutt nødvendig, bør du avstå fra å bruke 
+tvungen avslutting når du slår av den bærbare PC-en.
+• Ta alltid sikkerhetskopi av dataene dine, og bruk en ekstern 
+lagringsenhet til dette.
+• Hvis du ikke bruker den bærbare PC-en over lengre tid, må du 
+sørge for å lade batteriet opp til 50 %. Så slår du av den bærbare 
+PC-en og kobler fra strømadapteren.
+• Hvis du stadig vekk har den bærbare PC-en koblet til strøm, bør 
+du sette Batterihelselading til Balansert modus i MyASUS.
+Elektronisk håndbok for bærbare PC 89
+• Koble fra alle eksterne enheter, og sørg for at du har følgende før 
+du tilbakestiller den bærbare PC-en:
+– produktnøkkel for operativsystemet og andre installerte 
+programmer
+– sikkerhetskopi
+– påloggings-ID og passord
+– tilkoblingsinformasjon for Internett
+• Besøk støttesiden vår for feilsøking, og se noen av de vanligste 
+spørsmålene på https://www.asus.com/support.
+90 Elektronisk håndbok for bærbare PC
+Vanlige spørsmål om maskinvare
+1. En svart, eller noen ganger farget, prikk vises på skjermen 
+når jeg slår på den bærbare PC-en. Hva bør jeg gjøre?
+Slike prikker kan vises på skjermen, men de påvirker ikke 
+systemet. Hvis dette fortsetter og du merker en nedgang i 
+systemytelsen, kan du kontakte et autorisert ASUS-servicesenter.
+2. Skjermen min har ujevn fargegjengivelse og lysstyrke. 
+Hvordan kan jeg løse dette?
+Fargegjengivelsen og lysstyrken på skjermen kan påvirkes av 
+synsvinkelen og plasseringen av den bærbare PC-en. Lysstyrken 
+og fargetonen på den bærbare PC-en kan også variere etter 
+modell. Du kan bruke funksjonstastene eller skjerminnstillingene 
+i operativsystemet til å justere utseendet på skjermpanelet.
+3. Hvordan kan jeg maksimere PC-ens batterilevetid?
+Du kan prøve deg frem med følgende forslag:
+• Bruk funksjonstastene til å justere lysstyrken på skjermen.
+• Hvis du ikke bruker Wi-Fi-tilkobling, kan du sette systemet i 
+Flymodus.
+• Koble fra ubrukte USB-enheter.
+• Lukk ubrukte programmer, særlig de som bruker for mye 
+systemminne.
+Elektronisk håndbok for bærbare PC 91
+4. Batteriladingsindikatoren lyser ikke. Hva er galt?
+• Kontroller at strømadapteren eller batteripakken er 
+riktig festet. Du kan også koble fra strømadapteren eller 
+batteripakken, vente i et minutt, og koble dem til igjen til 
+strømuttaket og den bærbare PC-en.
+• Hvis problemet vedvarer, kan du kontakte nærmeste ASUS-
+servicesenteret for å få hjelp.
+5. Hvorfor fungerer ikke pekeplaten?
+Trykk på for å aktivere pekeplaten.
+6. Hvorfor hører jeg ikke lyd fra høyttalerne på den bærbare PC-
+en når jeg spiller av lyd- og videofiler?
+Du kan prøve deg frem med følgende forslag:
+• Trykk på for å skru opp høyttalervolumet.
+• Sjekk om høyttalerne er slått av.
+• Kontroller om en hodetelefonkontakt er koblet til den 
+bærbare PC-en, og ta den i så fall ut.
+92 Elektronisk håndbok for bærbare PC
+8. Den bærbare PC-en registrerer ikke tastetrykk riktig fordi 
+markøren beveger seg ukontrollert. Hva bør jeg gjøre?
+Kontroller at ingenting tilfeldigvis berører eller trykker på 
+pekeplaten mens du skriver på tastaturet. Du kan også deaktivere 
+pekeplaten ved å trykke på .
+7. Hva skal jeg gjøre hvis strømadapteren til PC-en forsvinner 
+eller batteriet slutter å fungere?
+Kontakt nærmeste ASUS-servicesenter for å få hjelp.
+Elektronisk håndbok for bærbare PC 93
+Vanlige spørsmål om programvare
+1. Når jeg slår på den bærbare PC-en, lyser strømindikatoren, 
+men ingenting vises på skjermen. Hva kan jeg gjøre for å 
+fikse dette?
+Du kan prøve deg frem med følgende forslag:
+• Tving den bærbare PC-en til å slås av ved å trykke på 
+av/på-knappen i minst ti (10) sekunder. Kontroller at 
+strømadapteren og batteripakken er satt inn riktig, og slå 
+deretter på den bærbare PC-en.
+• Hvis problemet vedvarer, kan du kontakte nærmeste ASUS-
+servicesenteret for å få hjelp.
+2. Hva skal jeg gjøre når skjermen viser denne meldingen: 
+«Fjern disker eller andre medier. Trykk på en tast for å starte 
+på nytt.»
+Du kan prøve deg frem med følgende forslag:
+• Fjern alle tilkoblede USB-enheter, og start den bærbare PC-
+en på nytt.
+• Fjern eventuelt optiske plater fra den optiske stasjonen, og 
+start på nytt.
+• Hvis problemet vedvarer, kan det være et problem med 
+lagringsenheten på den bærbare PC-en. Kontakt nærmeste 
+ASUS-servicesenter for å få hjelp.
+94 Elektronisk håndbok for bærbare PC
+3. Den bærbare PC-en starter langsommere enn vanlig, og 
+operativsystemet er tregt. Hvordan kan jeg løse dette?
+Avinstaller alle programmer du nylig har installert, eller de 
+som ikke fulgte med i operativsystempakken, og start deretter 
+systemet på nytt.
+4. Den bærbare PC-en starter ikke. Hvordan kan jeg løse dette?
+Du kan prøve deg frem med følgende forslag:
+• Koble alle tilkoblede enheter fra den bærbare PC-en, og 
+start deretter systemet på nytt.
+• Hvis problemet vedvarer, kan du kontakte nærmeste ASUS-
+servicesenteret for å få hjelp.
+5. Hvorfor våkner ikke den bærbare PC-en opp fra hvilemodus?
+• Du må trykke på av/på-knappen for å fortsette der du slapp.
+• Det kan hende at batteriet er utladet. Koble strømadapteren 
+til den bærbare PC-en og til et strømuttak, og trykk deretter 
+på av/på-knappen.
+Elektronisk håndbok for bærbare PC 95
+Tillegg
+96 Elektronisk håndbok for bærbare PC
+Samsvarserklæring for internt modem
+Den bærbare PC-en med intern modemmodell er i samsvar med JATE (Japan), 
+FCC (USA, Canada, Korea, Taiwan) og CTR21. Det interne modemet er godkjent i 
+samsvar med rådsbeslutning 98/482/EF for pan-europeisk enkeltterminaltilkobling 
+til det offentlige telenettet (PSTN). Imidlertid kan forskjeller mellom de enkelte 
+lands telenett føre til at godkjenningen i seg selv ikke gir en uforbeholden garanti 
+for vellykket drift på alle PSTN-nettverkets termineringspunkter. Skulle det oppstå 
+problemer, bør du i første omgang kontakte utstyrsleverandøren.
+Oversikt
+Den 4. august 1998 ble Det europeiske råds beslutning angående CTR 21 publisert 
+i Det europeiske råds offisielle journal. CTR 21 gjelder for alt terminalutstyr uten 
+støtte for taletelefoni og med DTMF-oppringing beregnet på tilkobling til det 
+analoge PSTN-nettverket (det offentlige telenettet).
+CTR 21 (Common Technical Regulation – Felles teknisk forskrift) for kravene 
+til tilbehør som kobles til det analoge offentlige telefonnettets terminalutstyr 
+(unntatt terminalutstyr med støtte for taletelefoni i grunngitte tilfeller) der 
+nettverksadressering, hvis levert, bruker dobbelttonet multifrekvenssignal.
+Elektronisk håndbok for bærbare PC 97
+Erklæring om nettverkskompatibilitet
+Erklæring gjort av produsenten til teknisk kontrollorgan og forhandleren: «Denne 
+erklæringen vil indikere nettverk som utstyret er konstruert for å fungere i, og alle 
+underrettede nettverk som utstyret kan ha samkjøringsvanskeligheter med.»
+Erklæring gjort av produsenten til brukeren: «Denne erklæringen vil indikere 
+nettverk som utstyret er konstruert for å fungere i, og alle underrettede nettverk 
+som utstyret kan ha samkjøringsvanskeligheter med. Produsenten skal også 
+tilknytte en erklæring for å gjøre det tydelig der nettverkskompatibilitet er 
+avhengig av fysiske og programsvitsjede innstillinger. Erklæringen skal også råde 
+brukeren til å kontakte forhandleren dersom han eller hun ønsker å bruke utstyret 
+på et annet nettverk.»
+Frem til nå har kontrollorganet (Notified Body) i CETECOM utstedt flere 
+paneuropeiske godkjennelser med bruk av CTR 21. Resultatet er Europas første 
+modemer som ikke krever godkjenning etter regulativene i de enkelte europeisk 
+land.
+Utstyr som ikke er taleutstyr
+Telefonsvarere og høyttalertelefoner kan være kvalifisert, sammen med modemer, 
+faksmaskiner, automatisk oppringingsutstyr og alarmsystemer. Unntatt er utstyr 
+der ende-til-ende-talekvaliteten kontrolleres av forskrifter (for eksempel håndsett-
+telefoner og i enkelte land også trådløse telefoner).
+98 Elektronisk håndbok for bærbare PC
+Denne tabellen viser de landene som for tiden bruker 
+CTR21 standarden.
+Land Brukt Mer testing
+Østerrike1 Ja Nei
+Belgia Ja Nei
+Tsjekkia Nei Ikke relevant
+Danmark1 Ja Ja
+Finland Ja Nei
+Frankrike Ja Nei
+Tyskland Ja Nei
+Hellas Ja Nei
+Ungarn Nei Ikke relevant
+Island Ja Nei
+Irland Ja Nei
+Italia Ikke avgjort Ikke avgjort
+Israel Nei Nei
+Liechtenstein Ja Nei
+Luxemburg Ja Nei
+Nederland1 Ja Ja
+Norge Ja Nei
+Polen Nei Ikke relevant
+Portugal Nei Ikke relevant
+Spania Nei Ikke relevant
+Sverige Ja Nei
+Sveits Ja Nei
+Storbritannia Ja Nei
+Elektronisk håndbok for bærbare PC 99
+Denne informasjonen ble kopiert fra CETECOM og formidles uten 
+erstatningsansvar. Du kan finne en oppdatert versjon av denne tabellen her: 
+http://www.cetecom.de/technologies/ctr_21.html.
+1 Nasjonale krav gjelder kun dersom utstyret kan bruke pulssignalering 
+(produsenter kan angi i bruksanvisningen at utstyret bare er ment å støtte DTMF-
+signalering, noe som vil gjøre ytterligere testing overflødig).
+I Nederland kreves ytterligere testing for utstyr med serietilkobling og anrops-ID.
+100 Elektronisk håndbok for bærbare PC
+• Koble utstyret til et uttak på en annen krets enn den mottakeren er koblet 
+til.
+• Spør forhandleren eller en erfaren radio-/TV-tekniker om hjelp.
+ADVARSEL! Bruk av en strømledning av skjermet type er påkrevd for å overholde FCC-
+utslippsgrensene og for å forhindre interferens mot radio- og fjernsynsmottakere i 
+nærheten. Det er viktig at kun den medfølgende strømledningen brukes. Bruk kun 
+skjermede kabler til å koble I/U-enheter til dette utstyret. Du advares herved om at 
+endringer eller modifiseringer som ikke er uttrykkelig godkjent av parten som er 
+ansvarlig for samsvar, kan ugyldiggjøre din myndighet til å håndtere utstyret.
+(Gjengitt fra Code of Federal Regulations #47, part 15.193, 1993. Washington DC: 
+Office of the Federal Register, National Archives and Records Administration, U.S. 
+Government Printing Office.)
+Kunngjøring om interferens fra Federal 
+Communications Commission
+Denne enheten overholder FCC-bestemmelsenes del 15. Bruken er underlagt 
+følgende to betingelser:
+• Denne enheten kan ikke forårsake skadelig interferens.
+• Denne enheten må godta all mottatt interferens, inkludert interferens som 
+kan forårsake uønsket drift.
+Dette utstyret er testet og funnet å overholde grenseverdiene for digitalt utstyr 
+i klasse B, og overholder FCC-bestemmelsenes del 15. Disse grensene er satt 
+for å gi rimelig beskyttelse mot skadelig interferens i en boliginstallasjon. Dette 
+utstyret genererer, bruker og kan sende ut energi i form av radiofrekvenser. 
+Hvis det ikke installeres og brukes i henhold til bruksanvisningen, kan det gi 
+skadelige forstyrrelser på annen radiokommunikasjon. Det er imidlertid ingen 
+garanti for at interferens ikke vil oppstå i en bestemt installasjon. Dersom dette 
+utstyret skulle forårsake skadelig interferens for radio- eller fjernsynsmottak, noe 
+som kan undersøkes ved å skru utstyret av og på, bes brukeren forsøke å hindre 
+interferensen ved hjelp av ett eller flere av følgende tiltak:
+• Endre retning på eller flytt mottakerantennen.
+• Øk avstanden mellom utstyret og mottakeren.
+Elektronisk håndbok for bærbare PC 101
+FCC-forsiktighetserklæring om eksponering for 
+radiofrekvens (RF)
+ADVARSEL! Enhver endring eller modifikasjon som ikke er uttrykkelig godkjent av 
+parten som er ansvarlig for samsvar, kan ugyldiggjøre brukerens myndighet til å bruke 
+dette utstyret. 
+Dette utstyret overholder FCCs grenser for stråling pålagt for et ukontrollert 
+miljø. For å overholde FCC-kravene for RF-eksponering må du unngå direkte 
+kontakt med senderantennen under sending. Sluttbrukere må følge de spesifikke 
+driftsinstruksjonene for å oppnå tilfredsstillende RF-eksponeringssamsvar.
+RF-eksponeringsinformasjon (SAR)
+Denne enheten oppfyller myndighetenes krav til eksponering for radiobølger. 
+Denne enheten er designet og produsert for å ikke overskride grensene for 
+eksponering for radiofrekvensenergi (RF), fastsatt av USAs regjeringsorgan Federal 
+Communications Commission.
+Eksponeringsstandarden for trådløse enheter benytter en måleenhet kjent som 
+den spesifikke absorpsjonsraten, eller SAR. SAR-grensen fastsatt av FCC, er 1,6 
+W/kg. SAR-tester utføres ved hjelp av standard driftsposisjoner godkjent av FCC, 
+med en enhet som sender på det høyeste sertifiserte effektnivået i alle testede 
+frekvensbånd.
+102 Elektronisk håndbok for bærbare PC
+Merknader om UL-sikkerhet
+Kreves i henhold til UL 1459, som dekker telekommunikasjonsutstyr (telefon) 
+beregnet for elektrisk tilkobling til et telekommunikasjonsnettverk med 
+driftsspenning til jord som ikke overstiger 200 V topp, 300 V topp-til-topp og 
+105 V rms og installeres eller brukes i henhold til National Electrical Code (NFPA 
+70).
+Når du bruker modemet i den bærbare PC-en, må du alltid følge de 
+grunnleggende sikkerhetsreglene for å redusere risikoen for brann, elektrisk støt 
+og skade på personer, inkludert følgende:
+• IKKE bruk den bærbare PC-en i nærheten av vann, for eksempel nær et 
+badekar, servant, kjøkkenvask eller klesvaskekar, i en våt kjeller eller i 
+nærheten av et svømmebasseng.
+• IKKE bruk den bærbare PC-en i tordenvær. Det er alltid en aldri så liten 
+risiko for elektrisk støt fra lyn.
+• IKKE bruk den bærbare PC-en i nærheten av en gasslekkasje.
+Kreves i henhold til UL 1642, som dekker primære (ikke-oppladbare) og 
+sekundære (oppladbare) litium-batterier brukt som strømkilder i produkter. Disse 
+batteriene inneholder metallisk litium, en litium-legering eller et litium-ion, og kan 
+bestå av en enkelt elektrokjemisk celle eller to eller flere celler som er seriekoblet, 
+parallellkoblet eller begge, og som konverterer kjemisk energi til elektrisk energi 
+gjennom en irreversibel eller reversibel kjemisk reaksjon.
+• IKKE kast batteripakken fra den bærbare PC-en på et bål, da den 
+kan eksplodere. Konsulter lokale regler for eventuelle spesielle 
+avhendingsinstruksjoner for å redusere risikoen for personskade som følge 
+av brann eller eksplosjon.
+• IKKE bruk strømadaptere eller batterier fra andre enheter, da dette kan øke 
+risikoen for personskade som følge av brann eller eksplosjon. Bruk kun UL-
+godkjente strømadaptere eller batterier som leveres av produsenten eller 
+autoriserte forhandlere.
+Elektronisk håndbok for bærbare PC 103
+Krav til strømforsyning
+Elektriske produkter med strømforbruk på opptil 6 A, og som veier mer enn 3 kg, 
+må bruke godkjente strømledninger større enn eller lik: H05VV-F, 3G, 0,75 mm2 
+eller H05VV-F, 2G, 0,75 mm2.
+TV-merknader
+Merknad til montøren av CATV-systemet – kabeldistribusjonssystemet bør jordes i 
+samsvar med ANSI/NFPA 70, National Electrical Code (NEC), spesielt avsnitt 820,93, 
+om jording av ytre ledende skjold på en koaksialkabel – monteringen bør omfatte 
+festing av skjoldet på koaksialkabelen til jord ved inngangen.
+Produktmerknad for Macrovision Corporation
+Dette produktet inneholder teknologi for opphavsrettsbeskyttelse som 
+er beskyttet av metodekravene i enkelte amerikanske patenter og andre 
+åndsverksrettigheter som eies av Macrovision Corporation og andre 
+rettighetshavere. Bruk av denne teknologien for opphavsrettsbeskyttelse må 
+godkjennes av Macrovision Corporation, og er kun ment for hjemmebruk og 
+annen begrenset visning, hvis ikke annet er godkjent av Macrovision Corporation. 
+Omvendt utvikling (reverse engineering) eller demontering er forbudt.
+Forebygging av hørselstap
+For å unngå mulig hørselsskade bør du ikke lytte på musikk med 
+høyt volumnivå over lange perioder.
+Merknad om belegg
+VIKTIG! For å gi elektrisk isolasjon og opprettholde elektrisk sikkerhet brukes et 
+belegg for å isolere enheten, bortsett fra i områdene der I/U-portene er plassert.
+104 Elektronisk håndbok for bærbare PC
+Nordiske forsiktighetsregler for litium (litium-
+ion-batterier)
+CAUTION! Danger of explosion if battery is incorrectly replaced. Replace only with 
+the same or equivalent type recommended by the manufacturer. Dispose of used 
+batteries according to the manufacturer’s instructions. (English)
+ATTENZIONE! Rischio di esplosione della batteria se sostituita in modo errato. 
+Sostituire la batteria con un una di tipo uguale o equivalente consigliata dalla 
+fabbrica. Non disperdere le batterie nell’ambiente. (Italiano)
+VORSICHT! Explosionsgefahr bei unsachgemäßen Austausch der Batterie. Ersatz 
+nur durch denselben oder einem vom Hersteller empfohlenem ähnlichen Typ. 
+Entsorgung gebrauchter Batterien nach Angaben des Herstellers. (Deutsch)
+ADVARSELI! Lithiumbatteri - Eksplosionsfare ved fejlagtig håndtering. Udskiftning 
+må kun ske med batteri af samme fabrikat og type. Levér det brugte batteri 
+tilbage til leverandøren. (Dansk)
+VARNING! Explosionsfara vid felaktigt batteribyte. Använd samma batterityp eller 
+en ekvivalent typ som rekommenderas av apparattillverkaren. Kassera använt 
+batteri enligt fabrikantens instruktion. (Svenska)
+VAROITUS! Paristo voi räjähtää, jos se on virheellisesti asennettu. Vaihda paristo 
+ainoastaan laitevalmistajan sousittelemaan tyyppiin. Hävitä käytetty paristo 
+valmistagan ohjeiden mukaisesti. (Suomi)
+ATTENTION! Danger d’explosion si la batterie n’est pas correctement remplacée. 
+Remplacer uniquement avec une batterie de type semblable ou équivalent, 
+recommandée par le fabricant. Jeter les batteries usagées conformément aux 
+instructions du fabricant. (Français)
+ADVARSEL! Eksplosjonsfare ved feilaktig skifte av batteri. Benytt samme 
+batteritype eller en tilsvarende type anbefalt av apparatfabrikanten. Brukte 
+batterier kasseres i henhold til fabrikantens instruksjoner. (Norsk)
+(日本語)
+ВНИМАНИЕ! При замене аккумулятора на аккумулятор иного типа возможно 
+его возгорание. Утилизируйте аккумулятор в соответствии с инструкциями 
+производителя. (Pyccкий)
+Elektronisk håndbok for bærbare PC 105
+CTR 21-godkjenning (for bærbar PC med 
+innebygd modem)
+Dansk
+Nederlands
+English
+Suomi
+Français
+106 Elektronisk håndbok for bærbare PC
+Deutsch
+Ελληνικά
+Italiano
+Português
+Español
+Svenska
+Elektronisk håndbok for bærbare PC 107
+EU REACH og artikkel 33
+I overensstemmelse med REACH-reguleringsrammeverket (Registration, 
+Evaluation, Authorisation, and Restriction of Chemicals) har vi offentliggjort de 
+kjemiske stoffene i våre produkter på ASUS REACH-websiden på 
+http://csr.asus.com/english/REACH.htm.
+Samsvarserklæring for produktmiljøregulering
+ASUS følger det grønne designkonseptet under design og produksjon av våre 
+produkter, og passer på at hvert nivå i livssyklusen til ASUS-produktet er i tråd med 
+globale miljøforskrifter. I tillegg offentliggjør ASUS den relevante informasjonen i 
+samsvar med kravene i forskriftene.
+Se http://csr.asus.com/Compliance.htm for offentliggjort informasjon i samsvar 
+med kravene i forskriftene ASUS overholder.
+EU RoHS
+Dette produktet samsvarer med EUs RoHS-direktiv. Du finner mer informasjon på 
+http://csr.asus.com/english/article.aspx?id=35.
+108 Elektronisk håndbok for bærbare PC
+Resirkulerings-/returordninger for ASUS
+Resirkulerings-/returordninger for ASUS har bakgrunn i vår forpliktelse til de 
+høyeste standarder for å beskytte miljøet. Vi tror på løsninger som gjør det mulig 
+å resirkulere både produktene, batteriene, andre komponenter og til og med 
+emballasjematerialet.
+Gå til http://csr.asus.com/support/takeback.htm for å få detaljert informasjon om 
+resirkulering i ulike regioner.
+Økodesign-direktivet
+Den europeiske union har kunngjort et rammeverk for fastsetting av krav til 
+økodesign for energirelaterte produkter (2009/125/EF). Spesifikke tiltak for 
+gjennomgøring er rettet mot å forbedre den miljømessige ytelsen til bestemte 
+produkter eller på tvers av flere produkttyper. ASUS oppgir produktinformasjon på 
+sitt CSR-nettsted. Du finner mer informasjon på 
+https://csr.asus.com/english/article.aspx?id=1555.
+Elektronisk håndbok for bærbare PC 109
+Produkt i samsvar med ENERGY STAR
+ENERGY STAR er et felles program for USAs Environmental 
+Protection Agency og U.S. Department of Energy, som hjelper 
+oss alle med å spare penger og beskytte miljøet gjennom 
+energieffektive produkter og arbeidspraksiser.
+Alle ASUS produkter med ENERGY STAR-logoen er i samsvar med ENERGY STAR-
+standarden, og strømsparingsfunksjonen er aktivert som standard. Skjermen går 
+automatisk i hvilemodus innen 10 minutter uten brukeraktivitet; datamaskinen 
+går automatisk i hvilemodus innen 30 minutter uten brukeraktivitet. Du kan vekke 
+datamaskinen ved å klikke på musen, trykke på en av tastene på tastaturet eller på 
+av/på-knappen. 
+Gå til http://www.energystar.gov/powermanagement for å få detaljert informasjon 
+om strømstyring og fordelene for miljøet. I tillegg kan du gå til 
+http://www.energystar.gov for å få detaljert informasjon om det felles ENERGY 
+STAR-programmet.
+MERK: Energy Star støttes IKKE på FreeDOS- og Linux-baserte operativsystemer.
+EPEAT-registrerte produkter
+Viktig miljøinformasjon for ASUS EPEAT-registrerte produkter (Electronic Product 
+Environmental Assessment Tool) er offentliggjort på 
+https://csr.asus.com/english/article.aspx?id=41. Du finner mer informasjon om 
+EPEAT-programmet og kjøpsveiledning på www.epeat.net.
+110 Elektronisk håndbok for bærbare PC
+Lisens for BIOS-tekstskrifter
+Copyright © 2022 Android Open Source Project
+Lisensiert under Apache-lisensen, versjon 2.0 («Lisensen»). Du kan ikke bruke 
+denne filen unntatt i samsvar med Lisensen. Du kan hente denne lisensen på 
+http://www.apache.org/licenses/LICENSE-2.0.
+Med mindre det er påkrevd av gjeldende lov, eller avtalt skriftlig, distribueres 
+programvare som er distribuert under lisensen under en «SOM DEN ER»-BASIS, 
+UTEN GARANTIER ELLER BETINGELSER AV NOEN SLAG, enten uttrykk eller 
+underforstått.
+Se Lisensen for den spesifikke ordlyden som styrer tillatelser og begrensninger 
+under Lisensen.
+Elektronisk håndbok for bærbare PC 111
+Forenklet EU-samsvarserklæring
+ASUSTek Computer Inc. erklærer herved at denne enheten samsvarer med 
+hovedkravene og andre relevante bestemmelser i direktivet 2014/53/EU. Den 
+fullstendige EU-samsvarserklæringen er tilgjengelig på 
+https://www.asus.com/support/.
+Wi-Fi-bruk i båndområdet 5150–5350 Mhz skal begrenses til innendørs bruk i 
+landene oppført i tabellen nedenfor:
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK(NI)
+a. Lavstrøms innendørs (LPI) Wi-Fi 6E-enheter: 
+Enheten er begrenset til kun innendørs bruk når den brukes i 
+frekvensområdet 5945 til 6425 MHz i Belgia (BE), Bulgaria (BG), Kypros (CY), 
+Tsjekkia (CZ), Estland (EE), Frankrike (FR), Island (IS), Irland (IE), Litauen (LT), 
+Tyskland (DE), Nederland (NL) og Spania (ES).
+b. Veldig lavstrøms (VLP) Wi-Fi 6E-enheter (bærbare enheter): 
+Enheten får ikke brukes på ubemannede flysystemer (UAS) når den brukes i 
+frekvensområdet 5945 til 6425 MHz i Belgia (BE), Bulgaria (BG), Kypros (CY), 
+Tsjekkia (CZ), Estland (EE), Frankrike (FR), Island (IS), Irland (IE), Litauen (LT), 
+Tyskland (DE), Nederland (NL) og Spania (ES).
+112 Elektronisk håndbok for bærbare PC
+RF-eksponeringsinformasjon (SAR)
+Denne enheten oppfyller EU-kravene (2014/53/EU) til begrensning av 
+allmennhetens eksponering for elektromagnetiske felt av helsevernmessige 
+årsaker.
+Begrensningene er en del av omfattende anbefalinger for beskyttelse av 
+allmennheten. Disse anbefalingene er utviklet og kontrollert av uavhengige 
+vitenskapelige organisasjoner gjennom regelmessig og grundig evaluering av 
+vitenskapelige studier. Måleenheten for Det europeiske råds anbefalte grense 
+for mobilenheter er «Spesifikk absorpsjonsrate» (SAR), og SAR-grensen er 2,0 
+W/kg i gjennomsnitt over 10 gram kroppsvev. Den oppfyller kravene til den 
+internasjonale kommisjonen for beskyttelse mot ikke-ioniserende stråling 
+(International Commission on Non-Ionizing Radiation Protection – ICNIRP).
+Enheten er testet og oppfyller ICNIRPs retningslinjer for eksponering og de 
+europeiske standardene EN 50566 og EN 62209-2. SAR måles med enheten 
+i direkte kontakt med kroppen mens den sender på høyeste sertifiserte 
+utgangseffektnivå i alle frekvensbånd på mobilenheten.
+For å samsvare med de europeiske grensene for RF-eksponering må en 
+minimumsavstand på 1 cm opprettholdes mellom brukerens kropp og enheten, 
+inkludert antennen, når den bæres på kroppen.
+Wi-Fi-nettverksmelding
+VIKTIG! Wi-Fi 6E-nettverkskort er tilgjengelig på utvalgte modeller. Tilkoblingen til 
+Wi-Fi 6E-båndet kan variere i henhold til regulering og sertifisering i gjeldende land/
+region.
+ Om denne håndboken
+ Begreper brukt i denne håndboken
+ Ikoner
+ Skrifttyper
+ Sikkerhetshensyn
+ Bruke den bærbare PC-en
+ Ta vare på den bærbare PC-en
+ Riktig deponering
+ Informasjon om batterisikkerhet
+ Kapittel 1: 
+Maskinvareoppsett
+ Bli kjent med den bærbare PC-en din
+ Sett forfra
+ Sett ovenfra
+ Sett nedenfra
+ Sett fra høyre
+ Sett fra venstre
+ Kapittel 2:
+ Bruke den bærbare PC-en
+ Kom i gang
+ Lade den bærbare PC-en
+ Løft for å åpne skjermpanelet
+ Trykk på av/på-knappen
+ Bevegelser for berøringsskjermpanel og styreplate
+ Bruk av bevegelser på berøringsskjermpanelet
+ Bruk av styreplaten
+ Bruk av numerisk tastatur 
+ Bruk av tastaturet
+ Hurtigtaster
+ Funksjonstaster
+ Windows-taster
+ Rotere skjermen 
+ Kapittel 3:
+ Arbeid med Windows
+ Starter for første gang
+ Start menu (startmenyen)
+ Windows-apper
+ Arbeid med Windows-apper
+ Tilpasning av Windows-apper
+ Task view (oppgavevisning)
+ Widgets
+ Snap-funksjon
+ Snap-hotspots
+ Action Center (handlingssenter)
+ MyASUS Splendid
+ Innstilling av OLED-skjermen
+ Innstilling av Dark Mode (mørk modus)
+ Utkobling av skjermen når den ikke er i bruk
+ Justering av lysstyrke for skjermen
+ Skjul oppgavelinjen automatisk
+ Innstilling av Dark Mode i Microsoft Office
+ Andre hurtigtaster
+ Koble til trådløse nettverk
+ Wi-Fi
+ Bluetooth
+ Airplane Mode (flymodus)
+ Slå av den bærbare PC-en
+ Sette den bærbare PC-en i hvilemodus
+ Kapittel 4:
+ Selvtest ved påslåing (POST)
+ Selvtest ved påslåing (POST)
+ Bruk av POST for tilgang til BIOS og feilsøking
+ BIOS
+ Tilgang til BIOS
+ Gjenoppretting av systemet
+ Utføring av gjenopprettingsalternativ
+ Tips og ofte stilte spørsmål (OSS)
+ Nyttige tips for den bærbare PC-en
+ Vanlige spørsmål om maskinvare
+ Vanlige spørsmål om programvare
+ Tillegg
+ Samsvarserklæring for internt modem
+ Oversikt
+ Erklæring om nettverkskompatibilitet
+ Utstyr som ikke er taleutstyr
+ Kunngjøring om interferens fra Federal Communications Commission
+ FCC-forsiktighetserklæring om eksponering for radiofrekvens (RF)
+ RF-eksponeringsinformasjon (SAR)
+ Merknader om UL-sikkerhet
+ Krav til strømforsyning
+ TV-merknader
+ Produktmerknad for Macrovision Corporation
+ Forebygging av hørselstap
+ Merknad om belegg
+ Nordiske forsiktighetsregler for litium (litium-ion-batterier)
+ CTR 21-godkjenning (for bærbar PC med innebygd modem)
+ Samsvarserklæring for produktmiljøregulering
+ EU REACH og artikkel 33
+ EU RoHS
+ Resirkulerings-/returordninger for ASUS
+ Økodesign-direktivet
+ Produkt i samsvar med ENERGY STAR
+ EPEAT-registrerte produkter
+ Lisens for BIOS-tekstskrifter
+ Forenklet EU-samsvarserklæring
+ Wi-Fi-nettverksmelding
+ RF-eksponeringsinformasjon (SAR)

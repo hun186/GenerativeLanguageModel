@@ -1,0 +1,1719 @@
+
+AI2302AI2302
+Brukerveiledning
+2
+NW21835
+July 2023
+Første utgave
+Vedlikehold og sikkerhet
+Retningslinjer
+Vær forsiktig i trafikken. Vi anbefaler på det sterkeste at du aldri bruker enheten når du kjører 
+bil eller annet kjøretøy.
+Enheten må bare brukes i omgivelser hvor temperaturen er mellom 0°C (32°F) og 35°C (95°F).
+Slå av enheten i avgrensede områder der bruken av mobile enheter er forbudt. Følg alltid 
+regler og forskrifter når du er i avgrensede områder, for eksempel i fly, kino, på sykehus 
+eller i nærheten av medisinsk utstyr, i nærheten av gasser eller drivstoff, byggeplasser, 
+sprengningsområder og andre områder.
+Bruk bare strømadaptere og kabler som er godkjent av ASUS for bruk med denne enheten. Se 
+etiketten på undersiden av enheten, og sørg for at strømforsyningen er i samsvar med denne 
+klassifiseringen.
+Skadede strømledninger, tilleggsutstyr og annet periferiutstyr skal ikke brukes med enheten.
+Hold enheten tørr. Enheten skal ikke utsettes for eller brukes i nærheten av væsker, regn eller 
+fuktighet. 
+Du kan sende enheten gjennom røntgenmaskiner (for eksempel i sikkerhetskontrollen på 
+flyplasser), men du bør ikke utsette enheten for magnetiske detektorer.
+Skjermen på enheten er laget av glass. Dersom glasset blir knust, må du slutte å bruke enheten 
+og ikke røre de knuste glassdelene. Du bør umiddelbart sende enheten til reparasjon hos 
+kvalifisert ASUS-servicepersonell.
+Du må ikke lytte med en høy lydstyrke over lengre tid for å forhindre mulig hørselsskade.
+Koble fra strømadapteren før du rengjør enheten. Bruk bare en ren svamp eller pusseklut når 
+du rengjør skjermen på enheten.
+Send enheten til reparasjon kun hos kvalifisert ASUS-servicepersonell.
+3
+Riktig deponering
+Fare for eksplosjon hvis batteriet erstattes med en feil type. Kast brukte batterier i henhold til 
+instruksjonene.
+IKKE kast batteriet sammen med vanlig husholdningsavfall. Symbolet med en utkrysset 
+søppelkasse betyr at batteriet ikke bør kastes sammen med vanlig husholdningsavfall.
+ASUS-nettbrett skal IKKE kastes sammen med vanlig kommunalt avfall. Dette produktet er 
+designet for å muliggjøre korrekt ombruk av deler samt gjenvinning. Symbolet kryss over en 
+søppelkasse med hjul indikerer at produktet (elektrisk, elektronisk utstyr og kvikksølvholdige 
+knappecellebatterier) ikke skal kastes sammen med husholdningsavfall. Sjekk lokale 
+reguleringer for bortkasting av elektroniske produkter.
+IKKE kast ASUS-nettbrett i et ildsted. IKKE kortslutt kontaktene. IKKE demonter ASUS-nettbrett.
+Forum for ZenTalk-fans 
+(http://www.asus.com/zentalk/global_forward.php)
+MERKNADER: 
+• For mer juridisk og e-merkingsinformasjon kan du sjekke på enheten via Settings (Innstillinger) 
+> System > Regulatory labels (Regulatoriske etiketter) og Settings (Innstillinger) > System > 
+About Phone (Om telefonen) > Legal Informasjon (Juridisk informasjon).
+• Appbeskrivelsene som vises i denne håndboken er kun til referanseformål. De kan avvike noe fra 
+det du ser på enheten din..
+4
+Innhold
+1 Grunnleggende
+Velkommen! ............................................................................................................................................ 7
+Gjør klar ASUS Phone! .......................................................................................................................... 8
+Førstegangsbruk ..................................................................................................................................16
+Instruksjoner for navigasjonsbevegelser ....................................................................................17
+Bruke berøringsskjermen .................................................................................................................18
+2 Det er ingen plass som hjemme
+Zen Hjem-funksjoner .................................................................................................21
+Hjem-skjermen .....................................................................................................................................21
+Hurtiginnstillinger ...............................................................................................................................22
+Varslinger ...............................................................................................................................................23
+Kantverktøy ...........................................................................................................................................24
+Tilpasse startskjermen ...............................................................................................25
+Bakgrunnsbilder...................................................................................................................................26
+Widgeter ................................................................................................................................................27
+Redigere Hjem-skjermen ..................................................................................................................27
+Sette opp dato og klokkeslett.........................................................................................................28
+Sette opp ringetone og varsellyder ..............................................................................................28
+3 Jobb hardt, spill hardere
+Chrome ........................................................................................................................29
+Starte Chrome.......................................................................................................................................29
+Dele en side ...........................................................................................................................................30
+Lagre sider som bokmerker .............................................................................................................30
+Tømme nettleserdata .........................................................................................................................30
+Gmail ............................................................................................................................31
+Google Kalender ........................................................................................................32
+Opprette hendelser ............................................................................................................................32
+Redigere eller fjerne hendelser ......................................................................................................32
+Opprette påminnelser .......................................................................................................................33
+Redigere eller fjerne påminnelser .................................................................................................33
+Filbehandling ..............................................................................................................34
+ASUS telefonklone ......................................................................................................35
+4 Holde kontakten
+Ring i stil ......................................................................................................................36
+Dobbelt SIM-kortfunksjonen ..........................................................................................................36
+Ringe ........................................................................................................................................................38
+Ringe favorittkontakter .....................................................................................................................40
+Motta innkommende anrop ............................................................................................................40
+Andre alternativer for anrop ............................................................................................................41
+Ta opp anrop .........................................................................................................................................42
+Håndtere kontakter ....................................................................................................43
+Innstillinger for kontakter .................................................................................................................43
+5
+Sette opp profilen din ........................................................................................................................43
+Legge til kontakter ..............................................................................................................................44
+Markere favorittkontakter ................................................................................................................45
+Sosiale nettverk med kontakter .....................................................................................................46
+Send meldinger og mer ..............................................................................................47
+Melding ...................................................................................................................................................47
+5 Moro og underholdning
+Bruke hodesett............................................................................................................48
+Koble til lydkontakt .............................................................................................................................48
+YT Music .......................................................................................................................49
+6 Dine dyrebare øyeblikk
+Fang hvert eneste øyeblikk ........................................................................................50
+Starte Kamera-appen .........................................................................................................................50
+Bildesteder .............................................................................................................................................51
+Avanserte kamerafunksjoner ..........................................................................................................51
+Tidsforkortelse ......................................................................................................................................52
+Bruke Galleriet ............................................................................................................53
+Se bildelokalitet ...................................................................................................................................53
+Redigere et bilde .................................................................................................................................53
+Dele filer fra galleriet ..........................................................................................................................53
+Slette filer fra galleriet ........................................................................................................................54
+7 Holde deg tilkoblet
+Mobilt nettverk ...........................................................................................................55
+Aktivere mobilt nettverk ...................................................................................................................55
+Wi-Fi .............................................................................................................................55
+Aktivere Wi-Fi ........................................................................................................................................55
+Koble til et Wi-Fi-nettverk .................................................................................................................56
+Deaktivere Wi-Fi ...................................................................................................................................56
+Bluetooth® ...................................................................................................................56
+Aktivere Bluetooth® ...........................................................................................................................56
+Pare ASUS-nettbrettet med en Bluetooth®-enhet ...................................................................57
+Oppheve paring mellom ASUS-nettbrettet og Bluetooth®-enheten ...............................57
+Internettdeling ...........................................................................................................58
+Wi-Fi-tilgangspunkt ............................................................................................................................58
+USB-deling ............................................................................................................................................59
+Bluetooth Tethering (Internettdeling via Bluetooth) .............................................................59
+8 Reiseapper
+Vær ...............................................................................................................................60
+Starte Vær-appen .................................................................................................................................60
+Startskjerm for vær .............................................................................................................................61
+Klokke ..........................................................................................................................62
+Alarmklokke ..........................................................................................................................................62
+Verdensklokke ......................................................................................................................................63
+Stoppeklokke ........................................................................................................................................63
+6
+Nedtelling ...............................................................................................................................................64
+9 Zen overalt
+Spesielle Zen-verktøy .................................................................................................65
+Kalkulator ...............................................................................................................................................65
+Lydopptaker ..........................................................................................................................................66
+Mobil-behandling .......................................................................................................68
+10 Vedlikeholde Zen
+Holde enheten oppdatert ..........................................................................................69
+Oppdatere systemet ...........................................................................................................................69
+Lagring ....................................................................................................................................................69
+Sikkerhetskopiering og tilbakestilling .........................................................................................69
+Tilbakestill ..............................................................................................................................................69
+Sikre ASUS-nettbrettet...............................................................................................70
+Låse opp skjermen ..............................................................................................................................70
+Fingeravtrykk-ID-sensor ............................................................................................73
+Starte ASUS Phone for første gang ...............................................................................................73
+Sette opp fingeravtrykk-ID fra Innstillinger ...............................................................................74
+Lås opp med ansikt ....................................................................................................75
+Sette opp opplåsing med ansikt fra Innstillinger ...................................................................75
+Sette opp identiteten til ASUS-nettbrettet ..............................................................78
+Tillegg 
+7Kapittel 1: Grunnleggende
+Velkommen!
+Oppdag den instinktive enkelheten til ASUS Zen UI!
+ASUS Zen UI er et sjarmerende og intuitivt grensesnitt eksklusivt for ASUS-nettbrett. Det har 
+spesielle apper som er integrert i eller med andre apper, som er tilpasset dine individuelle behov og 
+som gjør livet ditt enklere samtidig som du har det gøy med ASUS-nettbrettet.
+Kamera
+Med PixelMaster-teknologi kan du fange dyrebare øyeblikk i livlige bilder og videoer med 
+høy kvalitet.
+Meldinger
+Meldinger er en intuitiv og herlig app som lar deg sende/motta SMS/MMS-meldinger, 
+gruppemeldinger og bilde- eller lydmeldinger. Du kan legge til emojier eller klistremerker 
+i meldingene dine, dele posisjonen din, arkivere meldingene dine og enkelt blokkere 
+SMS-sendere. Du kan også ta bilder eller spille inn videoer og enkelt dele disse filene.
+Filbehandling
+Du kan bruke filbehandling til å enkelt finne og behandle data på internlageret til ASUS-
+nettbrettets og tilkoblede eksterne lagringsenheter.
+MERK: Tilgjengeligheten av ASUS Zen UI-apper varierer avhengig av hvor du er og modellen til ASUS-
+nettbrettet. Sveip opp på startskjermen for å sjekke appene som er tilgjengelige på ASUS-telefonen.
+1 Grunnleggende
+1Grunnleggende
+8 Kapittel 1: Grunnleggende
+Gjør klar ASUS Phone!
+Deler og funksjoner
+Plukk opp enheten og få den klar til bruk på et øyeblikk.
+VIKTIG!
+• Vi anbefaler at du ikke bruker en skjermbeskytter, da disse kan forstyrre nærhetssensoren. Hvis du vil bruke en 
+skjermbeskytter, må du sørge for at den ikke blokkerer nærhetssensoren.
+• Pass på at enheten, spesielt berøringsskjermen, er tørr til enhver tid. Vann eller andre væsker kan føre til at 
+berøringsskjermen svikter.
+ADVARSEL!
+• For å unngå problemer med nettverkstilkobling og batteri:
+ • IKKE legg et metallisk klistremerke på antenneområdet.
+ • IKKE bruk metallisk beskyttende ramme/deksel på ASUS Phone.
+ • IKKE dekk til antennen med hendene eller andre gjenstander mens du bruker funksjoner som å 
+ringe eller mobildata.
+• Vi anbefaler at du bruker ASUS-kompatible skjermbeskyttere. Bruk av ikke-ASUS-kompatible 
+skjermbeskyttere kan føre til feil på ASUS-telefonens sensor.
+Mottake
+Berøringsskjerm
+Strømknapp og 
+Fingeravtrykk-
+sensor
+Volumknapp
+Nano-SIM-kortspor
+Kamera bak Kamerablits
+Mikrofon
+Høyttaler
+USB Type-C-port
+Mikrofon
+Utløserhull
+Hodesettjakk
+Fremre kamera Lyssensor og nærhetssensor NFC-registrerings-område
+Trådløst ladeområde
+9Kapittel 1: Grunnleggende
+FORSIKTIG! 
+• Ikke bruk skarpe verktøy eller løsemiddel på enheten for å unngå å få riper på den.
+• Bruk kun standard Nano SIM kort på ASUS Telefonen. 
+MERKNADER: 
+• Nano SIM kortsporene støtter nettverksbåndene GSM/GPRS/ EDGE, WCDMA/HSPA+/DC-HSPA+, 
+FDD-LTE, TD-LTE, TD-LTE, og 5G NR Sub-6. Begge Nano SIM-kortene kan koble til VoLTE-4G-tjenesten. 
+Men kun ett kan koble til 5G NR Sub-6-datatjenester om gangen.
+• Faktisk nettverk og frekvensbånd som brukes avhenger av nettverket som finnes i ditt område. 
+Kontakt teleoperatøren hvis støtte for 5G NR Sub-6 og VoLTE 4G-samtaletjeneste er tilgjengelig der 
+du er.
+3. Skyv skuffen forsiktig inn igjen til den er ordentlig lukket.
+Sette inn et nano SIM kort
+Begge Nano SIM-kortsporene støtter nettverksbåndene GSM/GPRS/EDGE, WCDMA/HSPA/DC-HSPA, 
+FDD-LTE, TD-LTE og 5G NR Sub-6.
+FORSIKTIG! Vær ekstra forsiktig når du håndterer nano-SIM-kort. ASUS er ikke ansvarlig for tap av data 
+eller skade på nano-SIM-kort.
+Slik setter du inn et nano SIM kort:
+1. Skyv den medfølgende utløserpinnen inn i hullet på kortsporet for å løse ut skuffen ut.
+2. Sett Nano SIM kort inn i kortsporene.
+Nano-SIM1
+Nano-SIM2
+10 Kapittel 1: Grunnleggende
+Ta ut et nano-SIM-kort
+FORSIKTIG! Vær ekstra forsiktig når du håndterer nano-SIM-kort. ASUS er ikke ansvarlig for tap av data 
+eller skade på nano-SIM-kort.
+Slik tar du ut et Nano-SIM-kort:
+1. Skyv den medfølgende utløserpinnen inn i hullet på kortsporet for å løse ut skuffen ut.
+2. Sett Nano SIM kort inn i kortsporene.
+3. Skyv skuffen forsiktig inn igjen til den er ordentlig lukket.
+Nano-SIM1
+Nano-SIM2
+11Kapittel 1: Grunnleggende
+Lade ASUS Phone
+ASUS Phone er delvis ladet når det leveres, men du må lade det helt opp før du bruker det for første 
+gang. Les følgende viktige merknader og advarsler før du lader enheten.
+ VIKTIG!
+• Trekk av beskyttelsesfilmen på strømadapteren og USB kabelen og USB Type-C-kabelen før du 
+bruker dem med enheten.
+• Sørg for at du kobler strømadapteren til en kompatibel stikkontakt. Du kan koble strømadapteren til 
+en kompatibel 100–240 V-uttak. 
+• Utgangsspenningen til strømadapteren for denne enheten er +5V-10V 3A, 30W..
+• Når du bruker ASUS Phone når den er plugget inn i en stikkontakt, må stikkontakten være lett 
+tilgjengelig i nærheten av enheten.
+• For å spare strøm bør du trekke strømadapteren ut av stikkontakten når den ikke er i bruk.
+• Ikke plasser tunge gjenstander oppå ASUS Phone.
+FORSIKTIG! 
+• Under lading kan ASUS Phone bli varm. Dette er normalt, men hvis enheten blir uvanlig varm, kobler du 
+USB Type-C kabelen fra enheten og sender enheten, inkludert strømadapter og kabel, til kvalifisert ASUS-
+servicepersonell.
+• For å forhindre skade på ASUS Phone strømadapteren eller USB Type-C kabelen. Sørg for at USB Type-C 
+kabelen, strømadapter, og enheten er riktig tilkoblet før lading.
+Slik lader du en ASUS Phone:
+1. Sett USB-koblingen inn i strømadapterens USB-kontakt.
+2. Koble den andre enden av USB kabelen til ASUS Phone. 
+3. Sett strømadapteren inn i en stikkontakt.
+1
+2
+3
+12 Kapittel 1: Grunnleggende
+VIKTIG!
+• Når du bruker ASUS Phone når den er plugget inn i et strømuttak, må den jordede stikkontakten 
+være i nærheten av enheten og lett tilgjengelig.
+• Når du lader ASUS Phone gjennom datamaskinen, må du sørge for at du plugger USB Type-C 
+kabelen inn i datamaskinens USB-port.
+• Du bør ikke lade ASUS Phone i et miljø der temparaturen overstiger er over 35 °C (95 °F).
+• IKKE lad ASUS-telefonen under vann eller når USB-kontakten er våt.
+• Lad ASUS Phone i åtte (8) timer før du bruker det med batteriet for første gang.
+• Statusen for batteriladning indikeres med følgende ikoner:
+ 
+Lav Lader ikke Lader Full
+MERKNADER:
+• Av sikkerhetshensyn må du KUN bruke den medfølgende strømadapteren og kabelen for å unngå 
+skade på enheten og forebygge risikoen for personskade.
+• Av sikkerhetshensyn må du KUN bruke den medfølgende strømadapteren og kabelen for å lade 
+ASUS-telefonen.
+4. Når den er fullt oppladet, kobler du USB-kabelen fra ASUS Phone før du kobler strømadapteren 
+fra stikkontakten.
+MERKNADER: 
+• Du kan bruke enheten mens den lader, men det kan ta lengre tid å lade enheten opp.
+• Det kan ta lengre tid å lade enheten opp via en USB-port på en datamaskin.
+• Hvis datamaskinen ikke gir nok strøm for lading via USB-porten, bør du lade ASUS Phone ved å 
+koble strømadapteren til en stikkontakt i stedet.
+13Kapittel 1: Grunnleggende
+Lad ASUS-telefonen trådløst
+Du kan kjøpe en Qi-sertifisert trådløs lader for å lade ASUS-telefonen trådløst.
+Hvis du bruker ASUS-telefonen under lading, kan ladingen reduseres eller til og med stoppe 
+for å beskytte batteriet. Bruk av enkelte apper under lading kan stoppe ladingen eller påvirke 
+ladefunksjonaliteten. 
+Når du lader trådløst, må du sørge for å fjerne alle deksler, etuier eller telefontilbehør og passe på 
+følgende:
+• Ikke plasser ledende materialer som metalldeler og magneter mellom ASUS-telefonen og 
+laderen for å unngå brannskader.
+• Ikke plasser kredittkort, transportkort eller nøkkelkort (RFID) på laderen for å forhindre at de blir 
+avmagnetisert eller skadet.
+FORSIKTIG! Hvis ASUS-telefonen plasseres feil på den trådløse laderen, kan ladetiden bli betydelig 
+forlenget. 
+Følg trinnene nedenfor for å lade ASUS-telefonen din med en trådløs lader:
+1. Plasser ASUS-telefonen på den trådløse laderen i henhold til instruksjonene for laderen.
+MERK: De trådløse ladespolene på baksiden av ASUS-telefonen må være i kontakt med laderen.
+2. Når ladingen starter, ikonet for trådløs lading vises på skjermen.
+3. Når ladingen er fullført, tar du ASUS-telefonen vekk fra stativet/puten for trådløs lading.
+FORSIKTIG! Hvis forholdsreglene ikke følges, kan det hende at enheten ikke lades opp ordentlig eller 
+overopphetes.
+14 Kapittel 1: Grunnleggende
+Bruke NFC
+Du kan bruke NFC i følgende tre scenarier:
+Lesemodus: Telefonen kan lese informasjon fra et kontaktløst kort, en NFC-brikke eller andre NFC-
+enheter.
+Trykk NFC-området på telefonen mot det kontaktløse kortet, NFC-brikken eller NFC-enheten.
+Kortemuleringsmodus: Telefonen kan brukes som et kontaktløst kort.
+Trykk NFC-området på telefonen mot NFC-området på NFC-leseren.
+Person-til-person-modus: Overfører bilder, kontakter eller andre data mellom telefonen og en 
+NFC-kompatibel smarttelefon.
+Trykk NFC-områdene til smarttelefonene helt sammen.
+15Kapittel 1: Grunnleggende
+Slå ASUS Phone av eller på
+Slå på enheten
+For å slå på enheten trykker og holder du inne strømknappen i tre sekunder til den vibrerer og 
+starter opp.
+Slå av enheten
+Slik slår du av enheten: 
+Trykk og hold inne strømknappen, vent på meldingen, trykk Power off (Slå av).
+Dvalemodus
+Du kan sette enheten i dvalemodus ved å trykke på strømknappen én gang slik at skjermen slår seg 
+av.
+Strømknapp
+MERK: Når systemet er nede, kan du trykke og holde nede Lydstyrke ned-knappen + Strømknappen 
+samtidig i 8 sekunder for å starte telefonen på nytt. Hvis dette ikke virker, kan du prøve igjen ved å 
+trykke og holde nede knappene igjen i 12 sekunder.
+16 Kapittel 1: Grunnleggende
+Førstegangsbruk
+Når du slår på ASUS-nettbrettet første gang, hjelper installasjonsveiviseren deg gjennom 
+installasjonsprosessen. Følg instruksjonene på skjermen for å velge språk, konfigurere 
+mobilnettverket, Wi-Fi, sikkerhetsfunksjoner og synkronisingskontoer.
+Bruk en Google- eller ASUS-konto til å sette opp enheten. Hvis du ikke har en Google-konto eller en 
+ASUS konto, kan du lage en.
+Google-konto
+Med en Google-konto kan du bruke alle disse funksjonene på Android-operativsystemet:
+• Organiser og se all informasjonen din fra hvor som helst.
+• Automatisk sikkerhetskopier alle dine data.
+• Bruk Googles tjenester enkelt fra hvor som helst.
+ASUS-konto
+Hvis du har en ASUS-konto, kan du dra nytte av følgende fordeler:
+• Personlig tilpasset ASUS-service med kundestøtte og garantiutvidelse for registrerte produkter.
+• Motta de siste oppdateringene til enheten og fastvaren.
+Tips for å spare batteri
+Batteriet er livskraften til ASUS-nettbrettet. Her er noen tips for å spare batteriet, slik at du kan 
+bruke ASUS-nettbrettet lenger.
+ – Lukk alle apper som kjører men som ikke er i bruk.
+ – Når enheten ikke er i bruk, kan du trykke på strømknappen for å sette den i dvalemodus.
+ – Reduser lysstyrken på skjermen.
+ – Hold høyttalervolumet til et lavt nivå.
+ – Deaktiver Wi-Fi-funksjonen.
+ – Deaktiver Bluetooth-funksjonen.
+ – Deaktiver funksjonen for å automatisk rotere skjermen.
+ – Deaktiver alle auto-synkroniseringsfunksjoner på enheten.
+17Kapittel 1: Grunnleggende
+Instruksjoner for navigasjonsbevegelser
+Når du starter for første gang, bør du du lese Instruction of Navigation Gestures (Instruksjoner 
+for navigasjonsbevegelser). Klikk Done (Ferdig) for å lukke instruksjonene.
+MERK: Du kan velge mellom Gesture navigation (Bevegelsesnavigering) eller Navigation bar 
+(Navigasjonslinje) når som helst fra Settings (Innstillinger) > Display (Skjerm) > System navigation.
+(Systemnavigasjon).
+18 Kapittel 1: Grunnleggende
+Bruke berøringsskjermen
+Bruk disse bevegelsene på berøringsskjermen til å starte apper, få tilgang til enkelte innstillinger og 
+navigere ASUS-nettbrettet.
+Starte apper eller velge elementer
+Du starter en app ved å bare trykke på den.
+Flytte eller slette elementer
+Gjør ett av følgende:
+• Hvis du vil flytte en app eller widget, trykker og holder du den, så drar du den til det stedet du 
+vil den skal være.
+• For å slette en app, trykker og holder du den, så trykker du Uninstall (Avinstaller).
+• Fjern en widget ved å trykke og holde den og dra den til Remove (Fjern) på toppen av 
+skjermen.
+19Kapittel 1: Grunnleggende
+Flytte gjennom sider eller skjermer
+Gjør ett av følgende:
+• Sveip fingeren til venstre eller til høyre for å veksle mellom vinduer, eller for å åpne Google Søk.
+• Rull fingeren opp eller ned for å gå gjennom nettsider eller lister med elementer.
+Zoome inn
+Spre to fingre fra hverandre på berøringspanelet for å zoome inn et bilde i Photos (Bilder) eller 
+Maps (Kart) eller for å zoome inn på en nettside.
+20 Kapittel 1: Grunnleggende
+Zoome ut
+Før to fingre sammen på berøringspanelet for å zoome ut fra bilde i Photos (Bilder) eller Maps (Kart) 
+eller for å zoome ut fra en nettside.
+MERK: Det kan være umulig å zoome inn/ut på visse nettsider som er spesialdesignet for 
+mobilskjermer.
+21
+2 Det er ingen plass som hjemme
+2Det er ingen plass som hjemme
+Zen Hjem-funksjoner
+Hjem-skjermen
+Få påminnelser om viktige hendelser, app- og systemoppdateringer, værmeldinger og tekstmeldinger fra folk 
+du bryr deg om, direkte fra Hjem-skjermen. 
+Sveip ned dette området for å vise Systemvarslinger
+Sveip ned dette området for å vise Hurtiginnstillinger
+Trykk for å åpne en app
+Trykk for å åpne siden for Google Search (Google-søk)
+Trykk for å åpne Voice Search (Talesøk)
+Sveip opp for å åpne All Apps (Alle apper)-skjermen
+Trykk for å åpne Clock (Klokke)
+Trykk for å åpne Weather (Vær)
+22 Kapittel 2: Det er ingen plass som hjemme
+Hurtiginnstillinger
+Hurtiginnstillinger-varslingspanelet gir deg tilgang til de trådløse funksjonene og innstillingene for 
+ASUS-nettbrettet med ett trykk. Hver av disse funksjonene er representert med en knapp. 
+Sveip ned to ganger fra toppen av skjermen for å åpne Hurtiginnstillinger-panelet.
+MERK: Et lyst ikon viser at funksjonen er aktivert, og en grå knapp viser at funksjonen er deaktivert. 
+Legge til knapper 
+Slik legger du til knapper på ASUS-hurtiginnstillingspanelet:
+1. Åpne Hurtiginnstillinger, og velg .
+2. Sveip opp Hold and drag to rearrange tiles (Hold og dra for å flytte rundt på fliser). 
+3. Under Hold and drag to add tiles (Hold og dra for å legge til fliser) trykker og drar du et ikon 
+opp for å legge det til Hurtiginnstillinger-panelet. 
+4. Trykk for å gå tilbake og vise det gjeldende Hurtiginnstillinger-panelet.
+Fjerne funksjoner 
+Slik fjerner du eksisterende funksjoner fra Hurtiginnstillinger-panelet:
+1. Åpne Hurtiginnstillinger, og velg .
+2. Trykk og dra et ikon under Hold and drag to rearrange tiles (Hold og dra for å flytte rundt på 
+fliser) for å fjerne det fra Hurtiginnstillinger-panelet.
+• Trykk eller sveip opp for å bytte til Systemvarslingspanelet
+• Skyv til venstre eller høyre for å se flere ikoner
+Skyv til venstre eller høyre for å justere skjermens lysstyrke
+Trykk for å åpne Innstillinger
+Trykk for å velge / velge bort elementer som skal vises i Hurtiginnstillinger
+Trykk for å slå av, starte ASUS-telefonen på nytt, ta et skjermbilde eller 
+bruke nødfunksjonen
+23Kapittel 2: Det er ingen plass som hjemme
+Varslinger 
+Fra Varslinger kan du se de nyeste oppdateringene og systemendringene som er gjort på ASUS-
+telefonen. De fleste av disse endringene er data- og systemrelaterte. 
+Sveip ned fra toppen av skjermen for å åpne varslingspanelet.
+Trykk på denne for å slette alle varslingene
+• Sveip til venstre eller høyre for å angi, feste, stille alarm til eller fjerne 
+varslingen fra listen
+• Trykk på varslingen for å se detaljer
+Trykk for å administrere varsler
+24 Kapittel 2: Det er ingen plass som hjemme
+Kantverktøy
+På kanverktøyet kan du raskt utføre systemsnarveier og åpne en app i et flytende vindu.
+For å åpne sidefeltet skyver du det innover fra kanten.
+Skyv for 
+å åpne 
+sidefeltet.
+Trykk for å åpne 
+Innstillinger
+25Kapittel 2: Det er ingen plass som hjemme
+Tilpasse startskjermen
+Legg til din egen personlighet på Hjem-skjermen. Velg et pent bilde som bakgrunnsbilde, og legg til widgeter 
+slik at du kan se informasjon raskt. Du kan også legge til flere sider. Da kan du legge til og raskt få tilgang til 
+eller se gjennom flere apper eller widgeter på Hjem-skjermen.
+Slik starter du Administrer Hjem-skjermen, trykk og hold på et tomt område på Hjem-skjermen.
+26 Kapittel 2: Det er ingen plass som hjemme
+Bakgrunnsbilder
+La apper, ikoner og andre Zen elementer ligge på et nydelig bakgrunnsbilde. Du kan laste ned 
+ikonpakker og bakgrunnsbilder fra Internett. Du kan også velge en animert bakgrunn for å livne 
+opp skjermen.
+Bruke bakgrunnsbilde
+Slik bruker du bakgrunnsbilde:
+1. Trykk og hold på et tomt område på Hjem-skjermen, og velg Wallpaper (Bakgrunnsbilde) & 
+style (stil).
+2. Trykk Change wallpaper (Endre bakgrunn) og velg for å sette bakgrunnsbilde til Lock Screen 
+(Låseskjerm) eller Home screen (Startskjermen).
+3. Velg et bakgrunnsbilde, og trykk Apply (Bruk).
+MERK: Du kan også sette opp bakgrunnsbildet fra Settings (Innstillinger) > Wallpaper (Bakgrunnsbilde) & style 
+(stil).
+Trykk for å velge et bilde fra Galleri
+Sveip venstre eller høyre der du vil bruke bakgrunnsbildet
+Trykk for å beskjære bakgrunnsbildet 
+27Kapittel 2: Det er ingen plass som hjemme
+Widgeter 
+Du kan plassere widgeter (små dynamiske apper) på Hjem-skjermen. Widgeter gir deg rask oversikt 
+over værmeldinger, kalenderhendelser, batteristatus og mer.
+Legge til widgeter
+Slik legger du til en widget:
+1. Trykk og hold på et tomt område på Hjem-skjermen, og velg Widgets (Widgeter).
+2. Fra widgeter, trykk et element og hold widgeten du vil legge til og drar den til et tomt område 
+på Hjem-skjermen.
+Slik fjerner du en widget
+Fra Hjem-skjermen trykker og holder du en widget, og drar den til Fjern på toppen av skjermen.
+Preferanser
+Du kan redigere hjem-skjermen, bruke AppLock og skjule apper.
+1. Trykk og hold på et tomt område på Hjem-skjermen, og velg Preferanser.
+2. Trykk en funksjon for å redigere Preferanser.
+Redigere Hjem-skjermen
+Du kan velge en rulleeffekt, endre fargen på ikonetiketten, velge mappetema og angi 
+standardskjermen.
+1. Trykk og hold på et tomt område på Hjem-skjermen, og velg Rediger Hjem-skjerm.
+2. Trykk en funksjon for å redigere Hjem-skjermen.
+28 Kapittel 2: Det er ingen plass som hjemme
+Sette opp dato og klokkeslett
+Som standard blir dato og klokkeslett som vises på startskjermen automatisk synkronisert med 
+mobilleverandørens innstillinger.
+Slik endrer du innstillinger for dato og klokkeslett:
+1. Åpne Innstillinger-skjermen på én av følgende måter:
+ • Start Hurtiginnstillinger, og trykk 
+ • Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger).
+2. Bla nedover på Innstillinger-skjermen, og velg System > Date & time (Dato og klokkeslett).
+3. Skyv av Set time automatically (Still inn tid automatisk) og Set time zone automatically 
+(Still inn tidssone automatisk).
+4. Trykk Date (Dato) og Time (Klokkeslett) for å justere dato og klokkeslett.
+5. Trykk Time Zone (Tidssone) for å velge tidssone.
+6. Du kan velge å bruke 24-timersformat hvis du foretrekker dette.
+MERK: Se også Clock (Klokke).
+Sette opp ringetone og varsellyder
+Sett opp lyden for telefonringetone og varslinger for tekstmeldinger, e-post og hendelser. Du kan 
+også velge å aktivere eller deaktivere tastetoner, berøringslyder og skjermlåslyd, eller du kan velge 
+at ASUS-nettbrettet skal vibrere når du trykker på skjermen.
+Slik setter du opp lydinnstillingene:
+1. Åpne Innstillinger-skjermen på én av følgende måter:
+ • Start Hurtiginnstillinger, og trykk . 
+ • Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger).
+2. Velg Sound & Vibration (Lyd og vibrasjon), og opp sett inn dine foretrukne lydinnstillinger.
+MERK: Trykk volumtasten og trykk > på en hvilken som helst skjerm for å åpne menyen 
+Sound & vibration (Lyd og vibrasjon).
+29
+Chrome
+Chrome for Android lar deg få den samme raske, sikre og stabile Internett-opplevelsen som på 
+Chrome for datamaskin. Logg på Google-kontoen din for å synkronisere faner, bokmerker og 
+nettleserhistorikk på tvers av alle enhetene dine. Hvis du ikke har en Google-konto, kan du 
+opprette en.
+MERK: Du finner mer informasjon om hvordan du oppretter en Google-konto under Gmail.
+VIKTIG! Sørg for at ASUS-nettbrettet er koblet til Wi-Fi eller mobilt nettverk før du prøver å surfe på nettet eller 
+bruke Internett på en annen måte. Du finner mer informasjon under Holde deg tilkoblet.
+Starte Chrome
+Gå til startskjermen, og gjør ett av følgende for å starte Chrome:
+• Trykk .
+• Sveip opp fra Hjem-skjermen, og trykk Chrome.
+Jobb hardt, spill hardere 3
+3 Jobb hardt, spill hardere
+30 Kapittel 3: Jobb hardt, spill hardere
+Dele en side
+Del interessante sider fra ASUS-nettbrettet med andre via en e-postkonto, nettskylagringskonto, 
+Bluetooth eller andre apper på ASUS-nettbrettet.
+1. Start Chrome.
+2. Når du har funnet en nettside, trykker du > Share... (Del …).
+3. Trykk for å velge en måte å dele siden på.
+Lagre sider som bokmerker
+Lagre favorittsider eller nettsteder som bokmerker slik at du kan gå tilbake og bla gjennom dem på 
+nytt.
+Slik lagrer du en side som bokmerke:
+Fra siden trykker du > . Hvis du vil se favorittsidene dine, trykker du > Bookmarks 
+(Bokmerker), så kan du velge siden du vil vise eller få tilgang til.
+Tømme nettleserdata
+Tøm nettleserens buffer for å slette midlertidige Internettfiler, nettsteder og informasjonskapsler 
+som er midlertidig lagret på ASUS-nettbrettet. Dette bidrar til å forbedre lasteytelsen til nettleseren.
+1. Start nettleseren.
+2. Velg > Innstillinger > Privacy and security (Personvern og sikkerhet) > Clear Browsing 
+Data (Tømme nettleserdata).
+3. Velg nettleserdata som du vil slette.
+4. Når du er ferdig, trykker du Clear data (Tømme data).
+31Kapittel 3: Jobb hardt, spill hardere
+Gmail
+Bruk Gmail til å sette opp Google-kontoen din for å komme inn i Google-relaterte tjenester og 
+apper samt motta, sende, og bla gjennom e-post rett fra ASUS Phone. Du kan også sette opp andre 
+e-postkontoer som Yahoo eller jobb-e-postkontoen din via Gmail. 
+VIKTIG! ASUS Phone må være tilkoblet Wi-Fi eller mobilt nettverk for å kunne legge til en e-postkonto 
+eller sende og motta e-post fra kontoer du har lagt til. Du finner mer informasjon under Holde deg 
+tilkoblet.
+Slik setter du opp Google-kontoen din:
+1. Gå til startskjermen, og gjør ett av følgende for å starte Gmail:
+ • Trykk Google > Gmail.
+ • Sveip opp fra Hjem-skjermen, og trykk Gmail.
+2. Trykk GOT IT (Greit) og så Add an email address (Legg til en e-postadresse).
+3. Velg Google.
+4. Angi din e-postadresse. Hvis du vil opprette en ny Google-konto, trykker du Create account 
+(Opprett konto).
+5. Følg de neste trinnene for å logge på Google-kontoen.
+MERK: Hvis du vil sette opp jobb-e-postkontoen på ASUS Phone, må du be om e-postinnstillingene fra 
+nettverksadministratoren.
+32 Kapittel 3: Jobb hardt, spill hardere
+Google Kalender 
+Gjør tidsplanen levende og hold orden på alle viktige hendelser eller påminnelser. Hendelser som 
+du oppretter eller redigerer vil automatisk synkroniseres med Google Kalender når du har logget 
+på.
+Opprette hendelser
+Slik oppretter du en hendelse:
+1. Gå til startskjermen, og gjør ett av følgende for å starte Gmail:
+ • Trykk Google > Calendar (Kalender).
+ • Sveip opp fra Hjem-skjermen, og trykk Calendar (Kalender).
+2. Trykk og deretter Event (Hendelse).
+3. Angi hendelsesnavn, og velg dato og klokkeslett for hendelsen. Du kan også sette hendelsen 
+som en heldags eller regelmessig hendelse.
+• Heldagshendelse: Flytt glidebryteren ved All day (Hele dagen)-feltet til høyre.
+• Regelmessig hendelse: Trykk More options (Flere valg) > , og velg hvor ofte du vil at 
+hendelsen skal gjentas.
+4. Hvis du vil angi en tidssone, trykker More options (Flere valg) > og angir landet som du vil 
+se tidssoner til.
+5. I feltet Add location (Legg til sted) kan du angi lokale eller plassering for hendelsen.
+6. Trykk , så kan du velge eller angi klokkeslett eller dag for å få en varsling eller påminnelse om 
+hendelsen.
+7. I feltet Invite people (Inviter folk) kan du skrive inn e-postadressene til gjester du vil invitere til 
+hendelsen.
+8. Du kan også legge til kommentarer eller vedlegg i feltene Add note (Legge til notat) eller Add 
+attachment (Legg til vedlegg).
+9. Når du er ferdig, trykker du Save (Lagre).
+Redigere eller fjerne hendelser
+Slik gjør du for å redigere eller fjerne en hendelse:
+1. Gå til startskjermen, og trykk Google > Calendar (Kalender).
+2. Trykk hendelsen du vil redigere eller slette.
+3. Hvis du vil redigere hendelsen, trykker du og gjør de nødvendige endringene. Hvis du vil 
+fjerne hendelsen, trykker du > Delete (Slett) og så Delete (Slett) for å bekrefte slettingen.
+33Kapittel 3: Jobb hardt, spill hardere
+Opprette påminnelser
+Slik oppretter du en påminnelse:
+1. Gå til startskjermen, og trykkl Google > Calendar (Kalender).
+2. Trykk og deretter Reminder (Påminnelse).
+3. Angi navn på påminnelsen.
+4. Angi dato og klokkeslett for påminnelsen. Du kan også sette påminnelsen som en heldags eller 
+regelmessig påminnelse.
+• Heldags påminnelse: Flytt glidebryteren ved All day (Hele dagen)-feltet til høyre.
+• Regelmessig påminnelse: Trykk , og velg hvor ofte du vil at påminnelsen skal gjentas.
+5. Når du er ferdig, trykker du Save (Lagre).
+Redigere eller fjerne påminnelser
+Slik gjør du for å redigere eller fjerne en påminnelse:
+1. Trykk Google > Calendar (Kalender).
+2. Trykk påminnelsen du vil redigere eller slette.
+3. Hvis du vil redigere påminnelsen, trykker du og gjør de nødvendige endringene. Hvis du vil 
+fjerne påminnelsen, trykker du > Delete (Slett) og så Delete (Slett) for å bekrefte slettingen.
+34 Kapittel 3: Jobb hardt, spill hardere
+Filbehandling
+Du kan bruke filbehandling til å enkelt finne og behandle data på internlageret til nettbrettets og tilkoblede 
+eksterne lagringsenheter.
+Sveip opp fra Hjem-skjermen, og trykk File Manager (Filbehandling) for å starte Filbehandling.
+VIKTIG! Før du kan få tilgang til filer som er lagret på nettverket og nettskylagringen, må du sjekke 
+at Wi-Fi eller mobilnettverk er aktivert på ASUS Phone. Du finner mer informasjon under Holde deg 
+tilkoblet.
+Trykk for å vise filene i kategorien
+Viser bruk av intern lagring
+Trykk for å søke etter en fil
+Trykk for å få tilgang til intern, nettverks- og 
+nettskylagring
+Trykk for å redigere kategoriene og konfigurere innstillinger
+35Kapittel 3: Jobb hardt, spill hardere
+ASUS telefonklone
+Du kan trådløst overføre data, som kontakter, anropslogger og bilder, fra den gamle mobilenheten 
+din til ASUS-telefonen.
+Slik bruker du ASUS telefonklone:
+1. Sveip opp fra Hjem-skjermen, og trykk Telefonklone.
+2. Trykk Get Started (Kom i gang) og følg instruksjonene på skjermen for å fullføre 
+dataoverføringsprosessen.
+36
+Holde kontakten
+4 Holde kontakten
+4
+Ring i stil
+Dobbelt SIM-kortfunksjonen
+Dobbelt SIM-kortfunksjonen på ASUS Phone lar deg administrere innstillingene for de installerte Nano SIM-
+kortene. Med denne funksjonen kan du aktivere/deaktivere Nano SIM-kort, eller velge hvilket som skal være 
+standard.
+Gi nye navn til Nano SIM-kortene
+Endre navnene på Nano SIM-kortene på ASUS Phone slik at du kan skille mellom dem enkelt. 
+Hvis du vil endre navn på Nano SIM-kortene trykker du SIM1 eller SIM2 og skriver inn nye navn for Nano 
+SIM-kortene.
+MERK: Hvis SIM-kortene har ulike mobiltjenesteleverandører, foreslår vi at du bruker navnene på leverandørene 
+som SIM-navn. Hvis begge SIM-kortene har samme mobiltjenesteleverandør, foreslår vi at du bruker mobilnumrene 
+som navn for SIM-kortene.
+37Kapittel 4: Holde kontakten
+Velge et standard SIM-kort
+Velg et SIM-kort som foretrukket SIM-kort for taleanrop, SMS-meldinger og datatjenester. 
+SIM-kort for taleanrop
+Når du skal ringe, bruker ASUS Phone automatisk standard SIM-kort for å ringe.
+Hvis du vil tilordne et SIM-kort for taleanrop, trykker du Voice call (Taleanrop) og velger SIM-kortet du vil 
+bruke.
+VIKTIG! Dette valget brukes bare når du ringer fra kontaktlisten.
+SIM-kort for SMS-meldinger
+Hvis du vil tilordne et SIM-kort for SMS-meldinger, klikker du på SMS messages (SMS-meldinger) 
+så velger du SIM1 eller SIM2.
+SIM-kort for datatjeneste
+Hvis du vil tilordne et SIM-kort for datatjenester, trykker du Data service network (Datatjenestenettverk) og 
+velger SIM1 eller SIM2.
+38 Kapittel 4: Holde kontakten
+Ringe
+Du kan ringe på mange måter med ASUS-nettbrettet. Ring venner fra kontaktlisten, bruk 
+smartringing for å ringe raskt, eller angi et kortnummer for å ringe kontakter du ringer ofte.
+MERK: Organisere kontaktene dine i Kontakter-appen. Du finner mer informasjon under Behandle 
+kontakter.
+Starte Telefon-appen
+Fra startskjermen gjør du ett av følgende for å starte Telefon-appen:
+• Trykk .
+• Sveip opp fra Hjem-skjermen, og trykk Telefon.
+Ringe til et telefonnummer
+Bruk Telefon-appen til å ringe et telefonnummer direkte.
+1. På startskjermen velger du , og trykker på talltastene.
+2. Du kan velge mellom å ringe med SIM1 eller SIM2.
+MERK: Etikettene til ringeknappene kan variere avhengig av innstillingene du har stilt inn for mikro-
+SIM-kortene. Du finner mer informasjon under Dobbelt SIM-kortfunksjonen.
+Ringe et internnummer
+Når du skal ringe et internnummer, kan du gjøre et av følgende for å hoppe over sentralbordet.
+Be om bekreftelse av et internnummer
+Du kan sette inn en bekreftelsesmelding for internnummeret når du har tastet inn 
+hovednummeret.
+1. Tast inn hovednummeret fra Telefon-appen.
+2. Trykk og hold inne # til et semikolon (;) vises for å sette inn en bekreftelsesmelding.
+3. Skriv inn lokalnummeret.
+4. Du kan velge mellom å ringe med SIM1 eller SIM2.
+5. Når du blir spurt, trykker du Yes (Ja) for å bekrefte internnummeret.
+6. Trykk for å avslutte anropet.
+39Kapittel 4: Holde kontakten
+Automatisk ringe et internnummer
+Du kan sette inn en kort eller lang pause etter hovednummeret, så ringes internnummeret 
+automatisk.
+1. Tast inn hovednummeret fra Telefon-appen.
+2. Trykk og hold * til et komma (,) vises for å sette inn en pause.
+3. Angi internnummeret. 
+4. Du kan velge mellom å ringe med SIM1 eller SIM2.
+5. Trykk for å avslutte anropet.
+Smartoppringing for kontaktene dine
+Når du skriver inn de første tallene eller bokstavene i kontaktens navn, går Smartoppringing 
+gjennom kontaktlisten og anropsloggene og gir deg mulige treff. Du kan se om kontakten du 
+prøver å nå er på listen over mulige treff, og så kan du ringe med én gang.
+1. Start Telefon-appen, og tast inn nummeret eller navnet på kontakten. 
+2. Se i listen over mulige treff, og trykk på kontakten du vil ringe til. Hvis kontakten ikke er i listen, 
+skriver du inn hele nummeret eller navnet på kontakten.
+3. Du kan velge mellom å ringe med SIM1 eller SIM2.
+MERK: Etikettene til ringeknappene kan variere avhengig av innstillingene du har stilt inn for SIM-
+kortene. Du finner mer informasjon under Dobbelt SIM-kortfunksjonen.
+Ringe fra Kontakter-appen
+Bruk Kontakter-appen til å ringe fra kontaktlisten.
+1. Start Kontakter-appen.
+2. Trykk på navnet til kontakten, og velg nummeret du vil ringe.
+3. Hvis du har satt inn to SIM-kort, trykker du på SIM-kortet du vil ringe fra.
+4. Trykk for å avslutte anropet.
+40 Kapittel 4: Holde kontakten
+Ringe favorittkontakter
+Når du legger til en kontakt i Favoritter-listen, kan du raskt ringe kontakten fra Kontakter-appen.
+1. Start Kontakter- eller Telefon-appen.
+2. Trykk Groups (Grupper) > Favorites (Favoritter) for å vise favorittlisten, og trykk på 
+favorittkontakten du vil ringe.
+3. Trykk for å avslutte anropet.
+Motta innkommende anrop
+Berøringsskjermen på ASUS-nettbrettet lyser opp når det er et innkommende anrop. Hvordan 
+innkommende anrop vises varierer også avhengig av statusen til ASUS-nettbrettet.
+Besvare anrop
+Hvis enheten er låst, drar du til for å besvare eller for å avvise anropet.
+Administrere anropslogger
+Fra anropsloggene kan du ringe tilbake ubesvarte anrop, lagre anrop til kontaktlisten, sperre 
+numre, eller ringe tilbake til nylige numre eller kontakter. 
+Lagre anropsnummer i Kontakter
+Du kan legge til et anropsnummer fra anropsloggene til kontaktlisten.
+1. Fra Telefon-appen trykker du Recents (Nylige) for å vise anropsloggen.
+2. Trykk ved siden av nummeret som du vil legge til i kontaktlisten.
+3. Trykk øverst til høyre på skjermen, og trykk deretter på Add to contacts (Legg til i 
+kontakter).
+4. Trykk Create new contact (Opprett ny kontakt) for å legge til en ny oppføring i kontaktlisten. 
+ Trykk Add to existing contact (Legg til eksisterende kontakt), velg en kontakt, velg om du 
+vil overskrive kontaktens nummer med det nye eller legge til en ny oppføring, og trykk deretter.
+41Kapittel 4: Holde kontakten
+Repetere det siste oppringte nummeret
+Slik repeterer du det siste oppringte nummeret:
+1. Fra Telefon-appen trykker du Recents (Nylige) for å vise anropsloggen.
+2. Trykk det sist ringte nummeret for å ringe nummeret på nytt.
+3. Hvis det er to SIM-kort installert, trykker du på SIM-kortet du vil ringe opp igjen fra.
+3. Trykk for å avslutte anropet.
+Andre alternativer for anrop
+Under et aktivt anrop, og trykker på et av anropsalternativene for når et anrop pågår.
+Kontakter
+Åpner Kontakter-appen.
+Telefonkonferanse
+Når du har abonnert på en telefonkonferansetjeneste med mobiloperatøren, kan du 
+trykke på dette ikonet for å legge til én eller flere kontakter i anropet.
+MERK: Antall deltakere i telefonkonferansen avhenger av telefonkonferanseabonnementet. 
+Du kan få mer informasjon om denne tjenesten fra mobiloperatøren.
+Opptak
+Tar opp et aktivt anrop.
+VIKTIG! I henhold til loven i de fleste områder må du først be om tillatelse fra den andre 
+personen eller personene i den andre enden før du tar opp et anrop.
+MERK: Nærmere informasjon finner du i delen Ta opp anrop.
+Høyttalertelefon
+Skrur høyttalertelefonen av eller på.
+Mikrofon
+Slår mikrofonen for det aktive anropet på eller av. Når mikrofonen er slått av eller i dempemodus, 
+kan du høre den som ringer, men den andre personen kan ikke høre deg.
+Sett anrop på vent
+Setter et aktivt anrop på vent.
+Tastatur
+Åpner tastaturet.
+42 Kapittel 4: Holde kontakten
+Ta opp anrop
+ASUS-nettbrettet kan spille inn et anrop for fremtidig referanse eller informasjon.
+1. Ringe en kontakt eller slå et nummer. 
+2. Trykk for å avslutte anropet. 
+VIKTIG! Før du tar opp et anrop, må du be om tillatelse fra den andre parten eller de andre partene.
+3. Trykk for å stoppe opptaket. Ikonet vises på varslingssystemlinjen.
+4. Sveip ned øverst i venstre hjørne av skjermen, og trykk på meldingen Call recording saved 
+(Anropsopptak lagret) for å se anropet som er spilt inn.
+43Kapittel 4: Holde kontakten
+Håndtere kontakter
+Organiser kontaktene dine og hold kontakten med dem enkelt via anrop, tekstmeldinger, e-post 
+eller sosiale nettverk. Grupper kontaktene dine som Favoritter for å raskt komme i kontakt med 
+dem, eller grupper dem som VIP-er å få beskjed om eventuelle kommende hendelser, tapte anrop 
+og uleste meldinger.
+Du kan også synkronisere kontaktene dine med en konto for e-post eller sosialt nettverk, koble 
+sammen kontaktinformasjon for enkel tilgang på ett sted eller filtrere kontaktene du vil holde 
+kontakten med.
+Du starter Kontakter-appen ved å sveip opp fra Hjem-skjermen, og trykk Contacts (Kontakter).
+Innstillinger for kontakter
+Velg hvordan du vil vise kontaktene dine i innstillingene for Kontakter. Visningsalternativene 
+omfatter det å kun vise de kontaktene som har telefonnumre, sortere listen etter fornavn/etternavn 
+og å vise fornavn/etternavn først. Når du vil sette opp innstillingene for Kontakter, trykker du > 
+Innstillinger i Kontakter-appen. 
+Sette opp profilen din
+Gjør ASUS-nettbrettet til ditt eget ved å sette opp profilinformasjon.
+1. Start Kontakter-appen, og trykk Set up my profile (Sett opp min profil) eller Me (Meg).
+MERK: Me vises når du har satt opp Google-kontoen din på ASUS-nettbrettet.
+2. Fyll inn din informasjon som mobil- eller hjemmenummer. Hvis du vil legge til annen 
+informasjon, velger du Add another field (Legg til et annet felt).
+3. Når du har skrevet inn informasjonen, trykker du . 
+44 Kapittel 4: Holde kontakten
+Legge til kontakter
+Legg til kontakter fra kontoen til enheten, jobben, Google eller andre e-postkontoer, og fyll inn i 
+mer viktig kontaktinformasjon som kontaktnummer, e-postadresser, spesielle hendelser for VIP-er 
+og mer.
+1. Start Kontakter-appen, og trykk .
+2. Velg Device (Enhet).
+MERKNADER:
+• Du kan også lagre kontakten på SIM-kortet eller en e-postkonto.
+• Hvis du ikke har en e-postkonto, kan du trykke Legg til ny konto og lage en.
+3. Fyll ut nødvendig informasjon som navn, mobil- eller fasttelefonnummer og e-postadresse.
+4. Hvis du vil legge til annen kontaktinformasjon, trykk Add another field (Legg til et nytt felt).
+5. Når du har skrevet inn all informasjonen, trykker du .
+Legge til et internnummer på et kontaktnummer
+Du kan legge til internnummeret på kontaktnummeret for å hoppe over sentralbordet når du 
+ringer.
+1. På kontaktinformasjonsskjermen kan du skrive inn kontaktens hovednummer og internnummer 
+på en av følgende måter:
+ • Sett inn et komma (,) etter hovednummeret, og angi kontaktens internnummer. Det er 
+en kort pause før nummeret ringes opp automatisk. Du kan forlenge pausen ved å trykke 
+Pause for å sette inn ett til komma. 
+ • Sett inn et semikolon (;) etter hovednummer, og angi kontaktens internnummer. Når du 
+da ringer kontaktnummeret, vil du bli bedt om å bekrefte internnummeret. Trykk Yes (Ja) 
+når bekreftelsesmeldingen vises.
+2. Når du har skrevet inn all informasjonen, trykker du .
+45Kapittel 4: Holde kontakten
+Tilpasse kontaktens profil
+Rediger kontaktens informasjon, legg til et bilde, velg en ringetone eller ta et bilde for kontaktens 
+profil.
+1. Start Kontakter-appen, og velg kontakten som har informasjonen eller profilen du vil redigere 
+eller tilpasse.
+2. Gjør endringene på kontaktens profilside.
+Markere favorittkontakter
+Sett dine ofte brukte kontakter som favoritter for å kunne ringe dem raskt fra Telefon-appen.
+1. Sveip opp fra Hjem-skjermen, og trykk Contacts (Kontakter).
+2. Velg kontakten du vil sette som favoritt.
+3. Trykk . Kontakten legges til i favorittlisten i Contacts (Kontakter)-appen.
+MERKNADER: 
+• Trykk for å se favorittlisten, sveip opp fra Hjem-skjermen, og trykk Contacts (Kontakter) > Groups 
+(Grupper) > Favorites (Favoritter).
+• Nærmere informasjon finner du i avsnittet Ringe favorittkontaktene dine.
+Trykk for å redigere kontaktens informasjon
+Trykk for å legge til på favorittlisten
+Innstillinger
+46 Kapittel 4: Holde kontakten
+Administrere sperrelisten
+Sperre numre
+Lag en liste over sperrede numre for å unngå uønskede anrop eller meldinger. Sperrede anrop og 
+meldinger lagres i sperrelistearkivet.
+1. Sveip opp fra Hjem-skjermen, og trykk Phone (Telefon), og velg > Settings (Innstillinger) > 
+Blocked numbers (Sperrede numre).
+2. Trykk Add a number (Legg til et nummer), og skriv deretter inn nummeret du vil blokkere. Når 
+du er ferdig trykker du Block (Sperr).
+Oppheve sperring av numre
+Du kan fjerne et sperret nummer fra listen og motta anrop eller meldinger fra nummeret igjen.
+1. Sveip opp fra Hjem-skjermen, og trykk Phone (Telefon), og velg > Settings (Innstillinger) > 
+Blocked numbers (Sperrede numre).
+2. Trykk × ved siden av nummeret du vil fjerne sperringen av, og trykk Unblock (Opphev 
+sperring).
+Sosiale nettverk med kontakter
+Hvis du integrerer de sosiale nettverkskontoene med kontaktene, blir det enklere å se deres profiler, 
+nyheter og sosiale nyhetsstrømmer. Hold deg oppdatert med aktivitetene til kontaktene dine i 
+sanntid.
+VIKTIG! Før du kan integrere sosiale nettverkskontoer til kontaktene dine, må du logge inn på den 
+sosiale nettverkskontoen og synkronisere innstillingene.
+Synkronisere den sosiale nettverkskontoen
+Synkroniser dine sosiale nettverkskontoer for å legge til de sosiale nettverkskontoene til 
+kontaktene dine på ASUS-nettbrettet.
+1. Åpne Innstillinger-skjermen på én av følgende måter:
+ • Start Hurtiginnstillinger, og trykk . 
+ • Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger).
+2. Fra Innstillinger-skjermen trykker du på den sosiale nettverkskontoen under Passwords & 
+accounts (Passord og kontoer)-delen.
+3. Kryss av ved Automatically sync data (Synkroniser data automatisk) for å synkronisere de 
+sosiale nettverkskontoene med kontaktene dine.
+4. Start Kontakter-appen for å se kontaktlisten. Trykk kontakten, så ser du hvilket sosialt nettverk 
+kontakten er fra.
+47Kapittel 4: Holde kontakten
+Send meldinger og mer
+Melding
+Melding er en intuitiv og herlig app som lar deg sende/motta SMS/MMS-meldinger, 
+gruppemeldinger og bilde- eller lydmeldinger. Du kan legge til emojier eller klistremerker i 
+meldingene dine, dele posisjonen din, arkivere meldingene dine og enkelt blokkere SMS-sendere. 
+Du kan også ta bilder eller spille inn videoer og enkelt dele disse filene.
+Sende meldinger
+1. Trykk på Hjem-skjermen.
+2. Trykk Start chat (Start samtale), og velg kontakten du vil sende en melding til.
+3. Velg SIM-kontoen du vil sende meldingen fra.
+4. Begynn å skrive meldingen i meldingsfeltet.
+5. Når du er ferdig, trykker du for å sende meldingen.
+Svare på meldinger
+1. Trykk meldingsvarselet fra startskjermen eller låseskjermen.
+2. Velg SIM-kontoen du vil sende svaret fra.
+3. Begynn å skrive svaret i meldingsfeltet.
+4. Når du er ferdig, trykker du for å sende svaret.
+48
+Moro og underholdning 5
+5 Moro og underholdning
+Bruke hodesett
+Ha friheten til å gjøre andre ting mens du er i et anrop eller lytter til favorittmusikken din, ved hjelp 
+av et hodesett.
+Koble til lydkontakt
+Sett 3,5 mm-hodesettkontakten til lydporten på enheten.
+ADVARSEL! Hvis du lytter til høy lyd over lange perioder, kan det skade hørselen din.
+MERKNADER:
+• Vi anbefaler at du kun bruker kompatible hodesett.
+• Hvis du trekker ut lydkontakten mens du lytter til musikk, stopper musikken automatisk.
+• Hvis du trekker ut lydkontakten mens du ser på en video, stopper videoen automatisk.
+49Kapittel 5: Moro og underholdning
+YT Music
+Med YT Music kan du streame musikk, lage spillelister og høre på radio. Du kan også abonnere på 
+YT Music for ubegrenset og reklamefri tilgang til millioner av musikkfiler som du kan legge til ditt 
+eget musikkbibliotek.
+Sette opp YT Music
+Logg på Google- eller Gmail-kontoen din for å bruke YT Music. Når du har logget på kontoen, blir 
+alle musikkfiler på ASUS Phone, inkludert de som er lastestopp eller kjøpt fra YT Music, lagt til i 
+biblioteket. 
+Slik setter du opp YT Music:
+1. Gå til startskjermen, og trykkl Google > YT Music.
+2. Trykk SIGN IN (LOGG PÅ) > Add account (Legg til konto).
+3. Følg de påfølgende instruksjonene for å logge på kontoen.
+MERK: YT Music-abonnement er kun tilgjengelig i enkelte land eller regioner. 
+50
+Dine dyrebare øyeblikk 6
+Fang hvert eneste øyeblikk
+Starte Kamera-appen
+Ta bilder og spill inn videoer ved hjelp av Kamera-appen på ASUS-nettbrettet. Se noen av trinnene 
+nedenfor for å åpne Kamera-appen.
+Fra låseskjermen
+Sveip opp for å starte kamera-appen.
+Fra Hjem-skjermen
+Trykk .
+6 Dine dyrebare øyeblikk
+51Kapittel 6: Dine dyrebare øyeblikk
+Hjemskjerm for kamera
+ASUS-nettbrettet har et kamera med funksjoner for automatisk scenesporing og bildestabilisering. 
+Den har også en videostabiliseringsfunksjon som bidrar til å hindre skjelving under videoopptak. 
+Trykk på ikonene for å begynne å bruke kameraet og utforske bilde- og videofunksjonene på ASUS-
+nettbrettet.
+Bildesteder
+Aktiver stedsmerking ved å følge disse trinnene: 
+1. Slå på stedstilgang fra Settings (Innstillinger) > Location (Sted), og skyv Use location (Bruk 
+sted) til på.
+2. Sørg for at du har delt plassering med Google Maps . 
+3. Gå til startskjermen til Kamera-appen, trykk > aktiver Location services 
+(Stedstjenester), og ta bildet.
+Avanserte kamerafunksjoner
+Finn nye måter å ta bilder eller videoer på, og gjøre øyeblikkene du fanger ekstra spesielle med de 
+avanserte kamerafunksjonene på ASUS-telefonen.
+VIKTIG! Bruk innstillingene før du tar bilder. Tilgjengelige funksjoner kan variere fra modell til modell.
+Sveip ned eller trykk for flere innstillingsalternativer
+Se galleriet
+• Lukkerknapp
+• Sveip opp for å sette en nedtelling før du tar bilder
+Sveip til venstre/høyre for å bruke avanserte kamerainnstillinger
+Trykk for å bruke Google Lens
+Trykk for å bytte mellom fremre og bakre kamera
+Trykk for å veksle mellom normalmodus og vidvinkelmodus 
+Trykk for å velge en blitsfunksjon
+Aktiver eller deaktiver skjønnhetsfunksjonen
+Trykk for å velge en skjermmodus
+Trykk for å bytte mellom normalmodus og 2,0x optisk zoom
+Nattbilder
+52 Kapittel 6: Dine dyrebare øyeblikk
+Saktefilm
+Saktefilm-funksjonen lar deg ta opp videoer for avspilling i saktefilm.
+Ta videoer i saktefilm
+1. Gå til startskjermen til Kamera-appen, sveip til høyre, og trykk SLO-MO.
+2. Trykk lukkerknappen for å begynne å ta videoer i saktefilm.
+Tidsforkortelse
+ASUS-nettbrettet har en funksjon for tidsforkortelse, som tar stillbilder som kan settes sammen for 
+tidsforkortet avspilling. Resultatet ser ut som en veldig lang video som spoles raskt fremover.
+Ta bilder med funksjonen Alle smiler
+1. Fra kameraets startskjerm, sveip til høyre for TIME LAPSE (TIDSFORKORTELSE).
+2. Trykk lukkerknappen og velg tidsforkortelsesintervall.
+3. Trykk lukkerknappen for å begynne å ta videoer med tidsforkortelse.
+Panorama
+Ta bilder fra flere vinkler ved hjelp av Panorama. Bilder tatt med et vidvinkelperspektiv blir 
+automatisk sydd sammen med denne funksjonen.
+Ta panoramabilder
+1. Fra kameraets startskjerm, sveip til venstre til PANO.
+2. Hold telefonen stødig og trykk lukkerknappen for å starte automatisk panorama.
+Natt
+Ta lyse bilder selv på natten eller i situasjoner med dårlig lys ved å bruke nattfunksjonen på ASUS-
+nettbrettet.
+MERK: Hold hendene i ro mens før og mens ASUS-nettbrettet tar bildet for å forhindre at resultatet blir 
+uklart.
+Ta nattbilder
+1. Fra kameraets startskjerm, sveip til venstre til MORE (MER) > NIGHT (NATT).
+2. Trykk lukkerknappen for å begynne å ta nattbilder.
+53Kapittel 6: Dine dyrebare øyeblikk
+Bruke Galleriet
+Se bilder og filmer på ASUS-nettbrett med Galleri-appen. 
+Med denne appen kan du også redigere, dele eller slette bilde- og videofiler lagret i ASUS-
+nettbrett-brettet. Bruk Galleri til å vise bildene i en bildevisning eller trykk for å velge ønsket bilde- 
+eller videofil. 
+For å starte Galleri, sveip opp fra Hjem-skjermen, og trykk Galleri.
+Se bildelokalitet
+Aktiver lokalitetstilgang på ASUS-nettbrettet, og få lokalitetsdetaljer på bildene dine. Informasjon 
+om bildenes lokalitet inkluderer området hvor bildene er tatt, samt et kart over stedet via Google 
+Maps eller Baidu (kun i Kina).
+Slik kan du se detaljene for et bilde:
+1. Slå på stedstilgang fra Settings (Innstillinger) > Location (Sted), og skyv Use location (Bruk 
+sted) til på.
+2. Sørg for at du har delt lokaliteten din med Google Maps eller Baidu.
+3. Start Galleri-appen, og velg bildet du vil se detaljene til.
+4. Trykk på bildet, og trykk Details (Detaljer).
+Redigere et bilde
+Galleriet har også sine egne bilderedigeringsverktøy som du kan bruke til å forbedre bilder lagret 
+på ASUS-nettbrettet.
+1. Gjør ett av følgende:
+ • Fra Gallery (Galleri) > Photos (Bilder) trykker du på bildet du vil redigere. 
+ • Fra Gallery (Galleri) > Albums (Album) trykker du på mappen hvor filene ligger. Når du har 
+åpnet mappen, trykker du på bildet du vil redigere.
+2. Trykk Edit (Rediger) for å åpne bilderedigeringsverktøylinjen.
+3. Trykk på et av ikonene på redigeringsverktøylinjen for å bruke endringene på bildet.
+Dele filer fra galleriet
+1. Gjør ett av følgende:
+ • Fra Gallery (Galleri) > Photos (Bilder) trykker du > Select (Velg) for å aktivere valg av fil. 
+ • Fra Gallery (Galleri) > Albums (Album) trykker du på mappen der filene du vil dele
+ • finnes. Når du har åpnet mappen, trykker du > Select (Velg) for å aktivere valg av fil.
+3. Trykk på filene du vil dele. En hake vises over bildene du har valgt.
+4. Trykk og velg fra listen hvor du vil dele bildene.
+54 Kapittel 6: Dine dyrebare øyeblikk
+Slette filer fra galleriet
+1. Gjør ett av følgende:
+ • Fra Gallery (Galleri) > Photos (Bilder) trykker du > Select (Velg) for å aktivere valg av fil. 
+ • Fra Gallery (Galleri) > Albums (Album) trykk på mappen hvor filene du vil slette ligger. Når 
+du har åpnet mappen, trykker du > Select (Velg) for å aktivere valg av fil.
+2. Trykk på filene du vil slette. En hake vises over bildene du har valgt.
+3. Trykk .
+55
+Holde deg tilkoblet
+Mobilt nettverk
+Når det ikke er et tilgjengelig Wi-Fi-nettverk som du kan koble til, kan du aktivere datatilgang for 
+det mobile nettverket for å koble til Internett.
+Aktivere mobilt nettverk
+1. Åpne Innstillinger-skjermen på én av følgende måter:
+ • Start Hurtiginnstillinger, og trykk . 
+ • Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger).
+2. Trykk Network & Internet (Nettverk og Internett) > Internet (Internett) > SIM1 eller SIM2.
+3. Skyv Mobile data (Mobildata) på, og konfigurer de andre innstillingene for mobilt nettverk om 
+nødvendig.
+MERKNADER:
+• Hvis du får tilgang til Internett via mobilt nettverk, vil ekstra kostnader påløpe avhengig av 
+dataabonnement.
+• Du kan få mer informasjon om avgifter/gebyrer og innstillinger for mobilt nettverk ved å ta kontakt 
+med mobiloperatøren.
+7
+7 Holde deg tilkoblet
+Wi-Fi
+Wi-Fi-teknologien på ASUS-nettbrettet kobler deg opp mot den trådløse verden. Oppdater 
+kontoene dine på sosiale medier, surf på Internett eller utveksle data og meldinger trådløst med 
+ASUS-nettbrettet.
+Aktivere Wi-Fi
+1. Åpne Innstillinger-skjermen på én av følgende måter:
+ • Start Hurtiginnstillinger, og trykk > Network & Internet (Nettverk og Internett) > 
+Internet (Internett). 
+ • Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger) > Network & Internet 
+(Nettverk og Internett) > Internet (Internett).
+2. Skyv Wi-Fi-bryteren til høyre for å slå på Wi-Fi.
+MERK: Du kan også aktivere Wi-Fi fra Hurtiginnstillinger-skjermen. Se delen Hurtiginnstillinger for å se 
+hvordan du åpner Hurtiginnstillinger-skjermen.
+56 Kapittel 7: Holde deg tilkoblet
+Koble til et Wi-Fi-nettverk
+1. Åpne Innstillinger-skjermen, og trykk Network & Internet (Nettverk og Internett) > Internet 
+(Internett) > Wi-Fi for å vise alle oppdagede Wi-Fi-nettverk.
+2. Trykk på et nettverksnavn for å koble til det. Hvis du kobler deg til et sikret nettverk, kan du bli 
+bedt om å taste inn et passord eller legitimere deg på en annen måte.
+MERKNADER:
+• ASUS-nettbrettet kobler seg automatisk til nettverk som du tidligere har koblet deg til.
+• Slå av Wi-Fi-funksjonen for å spare batteriet.
+Deaktivere Wi-Fi
+Slik deaktiverer du Wi-Fi:
+1. Gjør ett av følgende:
+ • Start Hurtiginnstillinger, og trykk > Network & Internet (Nettverk og Internett) > 
+Internet (Internett). 
+ • Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger) > Network & Internet 
+(Nettverk og Internett) > Internet (Internett).
+2. Skyv Wi-Fi-bryteren mot venstre for å slå av Wi-Fi.
+MERK: Du kan også deaktivere Wi-Fi fra Hurtiginnstillinger-skjermen. Se delen Hurtiginnstillinger for å 
+se hvordan du åpner Hurtiginnstillinger-skjermen.
+Bluetooth® 
+Bruk Bluetooth-funksjonen på ASUS-nettbrettet til å sende eller motta filer og streame 
+multimediefiler med andre smartenheter over korte avstander. Du kan bruke Bluetooth til å dele 
+mediefiler med smartenhetene til vennene dine, sende data for å skrive ut med en Bluetooth-
+skriver, eller spille musikk via en Bluetooth-høyttaler.
+Aktivere Bluetooth® 
+1. Gjør ett av følgende:
+ • Start Hurtiginnstillinger, og trykk > Connected devices (Tilkoblede enheter). 
+ • Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger) > Connected devices 
+(Tilkoblede enheter).
+2. Trykk Pair new device (Par ny enhet) eller Connection preferences (Tilkoblingsinnstillinger).
+3. Skyv Bluetooth-bryteren til høyre for å slå på Bluetooth.
+MERK: Du kan også aktivere Bluetooth fra Hurtiginnstillinger-skjermen. Se delen Hurtiginnstillinger 
+for å se hvordan du åpner Hurtiginnstillinger-skjermen.
+57Kapittel 7: Holde deg tilkoblet
+Pare ASUS-nettbrettet med en Bluetooth®-enhet
+Når du skal bruke Bluetooth-funksjonen på ASUS-nettbrettet, må du pare den med en Bluetooth-
+enhet. ASUS-nettbrettet lagrer automatisk paringen til Bluetooth-enheter du kobler til.
+1. På Innstillingsskjermen kan du trykke Connected devices (Tilkoblede enheter) > Connection 
+preferences (Tilkoblingsinnstillinger) > Bluetooth for å vise alle tilgjengelige enheter.
+VIKTIG!
+• Hvis enheten du vil pare med ikke er i listen, må du sørge for at enheten har Bluetooth-funksjonen 
+aktivert og at den er synlig.
+• Se brukerhåndboken som fulgte med enheten for å finne ut hvordan du aktiverer Bluetooth og 
+setter den i synlig modus.
+2. Trykk > Refresh (Oppdater) for å skanne etter flere Bluetooth-enheter.
+3. Trykk på Bluetooth-enheten som du vil koble til fra listen over tilgjengelige enheter. 
+4. Sørg for at den samme passnøkkelen vises på begge enhetene, og trykk Pair (Par). 
+MERK: Slå av Bluetooth-funksjonen for å spare batteriet.
+Oppheve paring mellom ASUS-nettbrettet og Bluetooth®-enheten
+1. På Innstillingsskjermen kan du trykke Connected devices (Tilkoblede enheter) > Connection 
+preferences (Tilkoblingsinnstillinger) > Bluetooth for å vise alle tilgjengelige og parede 
+enheter.
+2. Se i listen over parede enheter, trykk for Bluetooth-enheten du vil fjerne paringen fra, og 
+trykk Forget (Glem).
+58 Kapittel 7: Holde deg tilkoblet
+Internettdeling
+Når en Wi-Fi-tjeneste ikke er tilgjengelig, kan du bruke ASUS-nettbrettet som et modem eller gjøre 
+det om til et Wi-Fi-tilgangspunkt for å få tilgang til Internett fra bærbare maskiner, nettbrett og 
+andre mobile enheter.
+VIKTIG! De fleste mobiltjenesteleverandører krever at du har et dataabonnement for å kunne bruke 
+Internettdeling. Ta kontakt med mobiloperatøren for å finne ut mer om dataabonnementet.
+MERKNADER:
+• Internettdeling kan være tregere enn en vanlig Wi-Fi- eller mobilforbindelse.
+• Kun et begrenset antall mobile enheter kan kobles til ASUS-nettbrettet for å få tilgang til Internett.
+• Slå av funksjonen for Internettdeling når du ikke bruker det for å spare batteristrøm.
+Wi-Fi-tilgangspunkt
+Gjør ASUS-nettbrettet om til et Wi-Fi-tilgangspunkt for å dele Internettforbindelsen med andre 
+enheter.
+1. Gjør ett av følgende:
+ • Start Hurtiginnstillinger, og trykk > Network & Internet (Nettverk og Internett). 
+ • Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger) > Network & Internet 
+(Nettverk og Internett).
+2. Trykk Hotspot & tethering (Tilgangspunkt og internettdeling), og skyv på Wi-Fi hotspot (Wi-
+Fi-tilgangspunkt).
+3. Trykk Wi-Fi hotspot (Wi-Fi-tilgangspunkt) > Hotspot name (Tilgangspunktnavn) for 
+å tilordne et unikt SSID eller nettverksnavn, og trykk Hotspot password (Passord for 
+tilgangspunkt) for å tildele et sterkt passord på 8 tegn til Wi-Fi-tilgangspunktet. Når du er ferdig, 
+trykker du OK.
+4. Koble andre enheter til ASUS-nettbrettets tilgangspunkt på samme måte som du kobler til et Wi-
+Fi-nettverk.
+59Kapittel 7: Holde deg tilkoblet
+Bluetooth Tethering (Internettdeling via Bluetooth)
+Aktiver Bluetooth-deling på ASUS-telefonen for å dele Internett-tilkoblingen dens med andre 
+enheter.
+1. Aktiver Bluetooth på ASUS-nettbrettet og den andre enheten.
+2. Parkoble enhetene.
+MERK: Du finner mer informasjon under Pare ASUS-nettbrettet med en Bluetooth®-enhet.
+3. Åpne innstillingsskjermen, og trykk på Network & Internet (Nettverk og Internett) > Hotspot 
+& Tethering (Tilgangspunkt og internettdeling) og kryss av ved Bluetooth tethering 
+(Internettdeling via Bluetooth) til ON (På). 
+USB-deling 
+Aktiver USB-deling på ASUS-telefonen for å dele Internett-tilkoblingen dens med andre enheter. 
+1. Koble ASUS-telefonen til en annen enhet med en USB-kabel. 
+2. Gå til Innstillinger-skjermen, trykk Network & Internet (Nettverk og Internett) > Hotspot & 
+Tethering (Tilgangspunkt og internettdeling), og skyv USB tethering (USB-deling) til ON 
+(PÅ) for å aktivere internettdeling.
+60
+Starte Vær-appen
+Fra startskjermbildet kan gjør ett av følgende for å starte Vær-appen:
+• Trykk værikonet.
+• Sveip opp på startskjermen, og trykk Weather (Vær).
+Reiseapper 8
+8 Reiseapper
+Vær
+Få værvarsler rett fra ASUS-nettbrettet med hjelp av vær-appen. I vær-appen kan du også se 
+informasjon om været rundt om i verden. 
+61Kapittel 8: Reiseapper
+Startskjerm for vær
+Sett opp dette for å få væroppdateringer om stedet du befinner deg samt andre deler av verden. 
+Trykk for å redigere listen over steder
+Trykk for å oppdatere værinfo, legg til en by i listen over 
+steder, eller konfigurere værinnstillinger
+Sveip opp for å se annen værinformasjon. 
+Sveip til venstre eller høyre for å se værinformasjon for 
+andre byer i plasseringslisten.
+62 Kapittel 8: Reiseapper
+Klokke
+Tilpass tidssoneinnstillingene for ASUS-nettbrettet, still inn alarmer, og bruk ASUS-nettbrettet som 
+en stoppeklokke ved hjelp av klokkeappen.
+Starte klokken
+Du kan starte klokken på følgende måter:
+ • Sveip opp fra Hjem-skjermen, og trykk Klokke.
+ • Trykk på den digitale klokken på hjem-skjermen på ASUS-nettbrettet.
+Alarmklokke
+Trykk Alarmklokke for å stille inn alarmklokken på ASUS-nettbrettet.
+Trykk på denne for å angi en ny alarmtid.
+Trykk på denne for å få tilgang til innstillingene for alarmklokken
+Skyv for å slå alarmen på/av
+63Kapittel 8: Reiseapper
+Stoppeklokke
+Trykk Stoppeklokke for å bruke ASUS-nettbrettet som en stoppeklokke.
+Trykk på denne knappen for å starte stoppeklokkefunksjonen.
+Verdensklokke
+Trykk Verdensklokke for å stille inn verdensklokken på ASUS-nettbrettet.
+Trykk denne for å legge til en by på verdensklokken.
+Trykk denne for å redigere byene på verdensklokken
+64 Kapittel 8: Reiseapper
+Nedtelling
+Du kan lage flere instanser for nedtelling på ASUS-nettbrettet. Følg trinnene nedenfor for å gjøre 
+dette:
+Stille inn nedtelling
+Trykk Nedtelling for å stille inn nedtelling på ASUS-nettbrettet.
+Trykk denne knappen for å starte nedtellingen.
+Trykk her for å stille inn en ny nedtelling
+Trykk dette for å slette tidtakere eller få tilgang til innstillingene
+65
+Spesielle Zen-verktøy
+Zen overalt 9
+9 Zen overalt
+Kalkulator
+Gjør beregninger på ASUS-telefonen ved å aktivere Kalkulator-appen.
+Starte kalkulatoren
+Du kan starte kalkulatoren på følgende måter:
+ • Sveip opp fra Hjem-skjermen, og trykk Calculator (Kalkulator).
+ • Åpner du hurtiginnstillingspanelet, så ser du kalkulatorikonet på listen. Trykk denne for å 
+begynne med beregninger.
+Kalkulatorskjerm
+Trykk her for å starte 
+kalkulatoren
+66 Kapittel 9 Zen overalt
+Lydopptaker
+Spill lydfiler ved hjelp ASUS-nettbrettet ved å aktivere Lydopptaker-appen. 
+Starte Lydopptaker
+For å starte lydopptakeren, sveip opp fra Hjem-skjermen, og trykk Opptak.
+Trykk på denne for å begynne å ta opp lyd.
+Trykk på denne for å tilpasse innstillingene til lydopptakeren.
+Trykk på denne for å vise listen over lagrede lydopptaksfiler.
+67Kapittel 9: Zen overalt
+Midlertidig stoppe et opptak
+Under et opptak som er midlertidig stoppet kan du velge å fortsette, slette eller lagre opptaket.
+Trykk for å fortsette opptaket
+Trykk for å lagre opptaket
+Trykk for å slette opptaket
+Opptaksliste
+Fra opptakslisten kan du spille av, endre navn, dele eller slette et lagret lydopptak. 
+Du kan se opptakslisten ved å trykke fra hovedskjermen til Lydopptaker.
+Trykk for å spille av det valgte opptaket eller sette det på pause
+Trykk og hold et element for å dele, gi nytt navn, slette eller vise 
+informasjonen om det valgte opptaket
+68 Kapittel 9 Zen overalt
+Mobil-behandling
+ASUS Mobil-behandling har et integrert grensesnitt for flere apper som er laget for å optimalisere 
+ytelsen til enheten, administrere telefonens strømog lagringsbruk. 
+For å starte Mobilbehandling sveiper du opp på Hjem-skjermen og trykker Settings (Innstillinger) 
+> Advanced (Avansert) > Mobile Manager (Mobilbehandling).
+Trykk denne for å vise mobildatabruk, sette en månedlig grense 
+for bruk av mobildata og kontrollere apper slik at de kun får 
+tilgang til Internett over Wi-Fi, over mobilnett, begge deler eller 
+verken eller
+Lukk ubrukte prosesser som kjører i bakgrunnen for å 
+frigjøre mer systemminne.
+Trykk denne for å kjøre en personvern- og sikkerhetsskanning 
+for å hindre at apper bruker farlige tillatelser og starter 
+automatisk.
+Trykk denne for å avinstallere de valgte ubrukte appene for å 
+frigjøre litt lagringsplass.
+69Kapittel 10: Vedlikeholde Zen
+Vedlikeholde Zen 10
+10 Vedlikeholde Zen
+Holde enheten oppdatert
+Hold ASUS-nettbrettet oppdatert med Android-systemoppdateringer og oppgraderte apper og 
+funksjoner.
+Oppdatere systemet
+1. Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger). 
+2. Gå til Innstillinger-skjermen, skyv ned for å vise andre elementer, og trykk deretter System > 
+Systemoppdateringer for å se etter systemoppdateringer. 
+3. Trykk på Systemoppdateringer-skjermen for å konfigurere automatisk nedlasting av 
+systemoppdateringer.
+Lagring
+Du kan lagre data, apper eller filer på ASUS-telefonen (intern lagring) eller på nettbasert lagring. 
+Du trenger en Internett-tilkobling for å laste opp eller ned filer på en online lagringsplass. Bruk den 
+medfølgende USB-kabelen til å kopiere filer mellom datamaskinen og ASUS-nettbrettet.
+Sikkerhetskopiering og tilbakestilling
+Sikkerhetskopier data, Wi-Fi-passord og andre innstillinger til Googles servere med ASUS-
+nettbrettet. Slik gjør du dette:
+1. Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger) > System > Backup 
+(Sikkerhetskopier).
+2. Vinduet for sikkerhetskopiering har disse funksjonene:
+• Sikkerhetskopier til Google Disk: Denne funksjonen sikkerhetskopierer data, Wi-Fi-
+passord og andre innstillinger til Google Disk når den er aktivert. 
+Tilbakestill
+Tilbakestill nettverksinnstillinger og appinnstillinger, eller tilbakestill fabrikkinnstillinger. 
+1. Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger) > System > Reset options 
+(Tilbakestille alternativer).
+2. Vinduet for tilbakestilling har disse funksjonene:
+ • Reset Wi-Fi, mobile & Bluetooth (Tilbakestille Wi-Fi, mobil og Bluetooth): Denne 
+funksjonen gjenoppretter Wi-Fi-passord og andre nettverksinnstillinger.
+ • Erase all settings (Slett alle innstillinger): Sletter alle innstillinger på telefonen.
+ • Erase all data(factory reset) (slette alle data (fabrikktilbakestilling)): Sletter alle data 
+på telefonen.
+70 Kapittel 10: Vedlikeholde Zen
+Sikre ASUS-nettbrettet
+Som standard vises låseskjermen når du slår på enheten og når du vekker den opp fra dvalemodus. 
+Fra låseskjermen kan du gå videre til enhetens Android®-system ved å sveipe på berøringsskjermen.
+Enheten låseskjermen kan også tilpasses for å styre tilgang til dataene og appene på mobilen.
+Låse opp skjermen
+ASUS-nettbrettet tilbyr ulike sikre alternativer for å låse opp skjermen når den er låst.
+1. Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger) > Security & lock screen 
+(Sikkerhet og låseskjerm).
+2. Trykk Screen lock (Skjermlås) og velg et alternativ for å låse opp ASUS-nettbrettet.
+MERKNADER:
+• Se delen Metoder for å låse opp skjermen for mer informasjon.
+• Hvis du vil deaktivere metoden du har valgt for å låse opp skjermen, trykker du Ingen på skjermen 
+der du velger metode.
+Metoder for å låse opp skjermen
+ASUS-nettbrettet støtter disse metodene for å låse skjermen.
+Sveipe
+Sveip opp for å låse opp ASUS Phone.
+71Kapittel 10: Vedlikeholde Zen
+VIKTIG! Sørg for at du husker mønsteret som du opprettet for å låse opp enheten.
+Personlig kode
+Tast inn minst fire tall for å angi en PIN-kode.
+VIKTIG! Sørg for at ikke glemmer PIN-kode som du opprettet for å låse opp enheten.
+Mønster
+Skyv fingeren over prikkene og lag et mønster. 
+72 Kapittel 10: Vedlikeholde Zen
+VIKTIG! Sørg for at ikke glemmer passordet som du opprettet for å låse opp enheten.
+Passord
+Tast inn minst fire tegn for å opprette et passord.
+73Kapittel 10: Vedlikeholde Zen
+Fingeravtrykk-ID-sensor
+Fingeravtrykk-ID-sensoren hindrer at andre bruker ASUS Phone uten din tillatelse. Du kan bruke 
+fingeravtrykk til å låse opp enheten og få tilgang til telefonsamtaler og data. Når du setter opp 
+fingeravtrykk-ID, må du også sette opp skjermlås for oppstart av enheten.
+Starte ASUS Phone for første gang
+Slik setter du opp fingeravtrykk-ID når du bruker ASUS Phone for første gang:
+1. Sørg for at fingeravtrykkidentifikasjonsmodulen og fingeren er rene og tørre.
+2. Følg instruksjonene på skjermen for å komme fra velkomstsiden til siden Protect your phone 
+(Beskytt telefonen din), og merk av ved Set up fingerprint (Sett opp fingeravtrykk).
+3. Klikk Continue (Fortsett) for å velge en skjermlåsmetode, følg instruksjonene på siden Locate 
+finger print skanner (Finn fingeravtrykkleser), og klikk Next (Neste).
+4. Finn fingeravtrykkleseren på høyre siden av enheten, juster fingeren, og prøv å dekke til med 
+ulike områder av fingeren flere ganger til fingeravtrykket er registrert.
+5. Klikk Next (Neste) for å fullføre oppsettet.
+74 Kapittel 10: Vedlikeholde Zen
+Sette opp fingeravtrykk-ID fra Innstillinger
+Slik setter du opp din fingeravtrykk-ID fra Settings (Innstillinger):
+1. Sørg for at fingeravtrykkleseren og fingeren er rene og tørre.
+2. Åpne Innstillinger-skjermen på én av følgende måter:
+ • Start Hurtiginnstillinger, og trykk . 
+ • Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger).
+3. Bla nedover på innstillingsskjermen, og velg Security & lock screen (Sikkerhet og låseskjerm) 
+> Fingerprint (Fingeravtrykk). 
+4. Lås opp telefonen din hvis den er sikret. Hvis ikke følger du instruksjonene for å konfigurere 
+reservemetode for skjermlåsen.
+5. Trykk Add fingerprint (Legg til fingeravtrykk)-siden.
+6. Gjentatte sted-og-løfte fingeren på fingeravtrykkleseren til fingeravtrykket er registrert.
+7. Klikk Done (Ferdig) for å fullføre oppsettet.
+75Kapittel 10: Vedlikeholde Zen
+Lås opp med ansikt 
+Opplåsing med ansikt hindrer at andre bruker ASUS-telefonen uten din tillatelse. Du kan lyse opp 
+skjermen på ASUS-telefonen og se på den for å låse opp enheten og gå til Hjem-skjermen på 
+telefonen på ett sekund. Når du setter opp opplåsing med ansikt, må du også sette opp skjermlås 
+for oppstart av enheten. 
+Sette opp opplåsing med ansikt fra Innstillinger 
+Slik setter du opp opplåsing med ansikt fra Settings (Innstillinger):
+1. Åpne Innstillinger-skjermen på én av følgende måter:
+ • Start Hurtiginnstillinger, og trykk .
+ • Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger).
+2. Bla nedover på Innstillinger-skjermen, og velg Security & lock screen (Sikkerhet og 
+låseskjerm) > Face recognition (Ansiktsgjenkjenning).
+3. Trykk Continue (Fortsett). 
+76 Kapittel 10: Vedlikeholde Zen
+5. Trykk Next (Neste), og følg instruksjonene for å registrere ansiktet.
+4. Følg instruksjonene for å konfigurere reservemetode for skjermlåsen.
+77Kapittel 10: Vedlikeholde Zen
+6. Velg hvordan du vil vise varslene på låseskjermbildet, og trykk deretter Done (Ferdig).
+MERKNADER: 
+• Du må vise munnen, nesen og åpne øynene når du låser opp med ansiktet. 
+• Hvis du bruker solbriller, eller det er utilstrekkelig lys, vil det føre til at opplåsing med ansikt 
+mislykkes.
+7. Når du er ferdig, trykker du Turn On (Slå på) for å aktivere ansiktsgjenkjenning for å låse opp 
+telefonen.
+78 Kapittel 10: Vedlikeholde Zen
+Sette opp identiteten til ASUS-nettbrettet
+Du bør kjenne identiteten til ASUS-telefonen, blant annet serienummer, IMEI-nummer 
+(International Mobile Equipment Identity), eller modellnummer. 
+Dette er viktig om du skulle miste ASUS-nettbrettet; du kan da ta kontakt med mobiloperatøren og 
+gi informasjonen slik at ASUS-nettbrettet kan svartelistes og uautorisert bruk kan forhindres.
+Slik ser du identiteten til ASUS-nettbrettet:
+1. Sveip opp fra Hjem-skjermen, og trykk Settings (Innstillinger).
+2. På skjermbildet med innstillinger skyver du ned for å vise andre elementer, og trykker System 
+> About phone (Om telefonen). Om-skjermen viser enhetsnavn, status, nødinformasjon, 
+operativsystemversjon, maskinvare- og pASUSramvareinformasjon for ASUS-telefonen.
+3. Du kan se serienummeret, SIM-status og IMEI for ASUS-telefonen ved å trykke Status.
+79
+Tillegg
+Tillegg 
+Sikkerhetsinformasjon
+FORSIKTIG! Bruk av kontroller eller justeringer eller utførelse av andre prosedyrer enn de som er 
+beskrevet her, kan føre til at det avgis farlig stråling.
+ASUS Phone-vedlikehold
+• Bruk ASUS Phone-enheten i et miljø med omgivelsestemperatur mellom 0 °C (32 °F) og 
+35 °C (95 °F).
+• Bruk en rengjøringsklut med vann til å rengjøre overflaten av telefonen. Ikke bruk alkohol, 
+organiske løsemidler, vaskemidler eller en høytrykkssprøyte for å unngå skade.
+• Plutselige endringer i temperaturen kan føre til kondens eller dugg på linsen. Hvis dette skjer, 
+legger du telefonen i romtemperatur eller i et tørt miljø og venter til fuktigheten har tørket bort 
+før bruk. I kalde områder kan du forhindre kondens ved å oppbevare telefonen på et varmere 
+sted, for eksempel en innerlomme.
+Batteriet
+ADVARSEL! Hvis du demonterer batteriet selv, vil gjøre garantien gjøres ugyldig og alvorlig skade kan 
+oppstå.
+ASUS-telefonen er utstyrt med et høykvalitets ikke-avtakbart Li-polymer-batteri. Følg 
+vedlikeholdsanvisningene for å oppnå lengre batterilevetid.
+• Ikke fjern det ikke-avtakbare li-polymer-batteriet, da dette vil gjøre garantien ugyldig.
+• Unngå lading i ekstremt høye eller lave temperaturer. Batteriet har sin optimale ytelse i en 
+omgivelsestemperatur på +5 °C til +35 °C.
+• Batteriet må ikke fjernes og erstattes med et batteri som ikke er godkjent.
+• Bruk kun ASUS-batteri. Dersom et annet batteri brukes, kan det føre til personskade eller skade 
+på enheten.
+• Batteriet må ikke fjernes og legges i vann eller annen væske.
+• Prøv aldri å åpne batteriet. Det inneholder stoffer som kan være skadelige hvis de svelges eller 
+kommer i kontakt med ubeskyttet hud.
+• Batteriet må ikke fjernes og kortsluttes, fordi det kan overopphete og forårsake brann. Hold det 
+borte fra smykker og andre metallgjenstander.
+• Batteriet må ikke fjernes og kastes til brenning. Det kan eksplodere og slippe ut skadelige stoffer 
+i omgivelsene.
+• Batteriet må ikke fjernes og kastes sammen med husholdningsavfall. Ta det med til et 
+oppsamlingssted for risikoavfall.
+• Unngå å berøre batteriterminalene.
+80
+• Ikke ta fra hverandre, bøy, trykk eller lag hull på batteriet, da det kan føre til brann eller 
+brannskader.
+FORSIKTIG:
+• Fare for eksplosjon hvis batteriet erstattes med en feil type.
+• Kast brukte batterier i henhold til anvisningene.
+Laderen
+• Bruk bare laderen som fulgte med ASUS Phone-enheten.
+• Trekk aldri i laderledningen for å koble den fra strømnettet – trekk i selve laderen.
+Forsiktig
+ASUS Phone-enheten har meget høy kvalitet. Før bruk må du lese alle instruksjoner og markeringer 
+på (1) adapteren.
+• Ikke bruk ASUS Phone-enheten i ekstreme omgivelser med høy temperatur eller høy fuktighet. 
+ASUS Phone-enheten har sin optimale ytelse i en omgivelse-stemperatur mellom 
+0°C (32 °F) og 35 °C (95 °F).
+• Ikke demonter ASUS Phone-enheten eller dens tilbehør. Hvis service eller reparasjon er påkrevd, 
+må du returnere enheten til et autorisert servicesenter. Hvis enheten blir demontert, er det fare 
+for elektrisk støt eller brann.
+• Ikke kortslutt batteriterminalene med metallgjenstander.
+Operatørtilgang med et verktøy
+Hvis det er nødvendig med et VERKTØY for å få tilgang til et OPERATØRTILGANGSOMRÅDE, må 
+enten alle andre lukkede områder i nærheten som inneholder en fare, være utilgjengelig for 
+OPERATØREN ved hjelp av det samme VERKTØYET, eller slike lukkede områder skal være markert 
+slik at OPERATØREN unngår å gå inn.
+81
+Samsvar med EUs radioutstyrsderektiv
+Forenklet EU-samsvarserklæring
+ASUS COMPUTER GmbH erklærer herved at radioutstyret ASUS_AI2302 er i samsvar med direktiv 
+2014/53/EU. Fullstendig tekst for EU-samsvarserklæringen finnes på https://www.asus.com/
+support/. (Søk etter AI2302)
+RF-utgangstabell
+Elementer Tabell over maksimal utgangseffekt for radiofrekvens
+GSM
+GSM 900 Burst (880~915 ; 925~960 MHz) 34.5 (dBm)
+GSM 1800 Burst (1710~1785 ; 1805~1880 MHz) 31.5 (dBm)
+WCDMA
+WCDMA Band I (1920-1980 ; 2110~2170 MHz) 25.0 (dBm)
+WCDMA Band V (824~849 ; 869~894 MHz) 25.0 (dBm)
+WCDMA Band VIII (880~915 ; 925~960 MHz) 25.0 (dBm)
+LTE
+LTE Band 1 (1920-1980 ; 2110~2170 MHz) 24.5 (dBm)
+LTE Band 3 (1710~1785 ; 1805~1880 MHz) 24.5 (dBm)
+LTE Band 5 (824~849 ; 869~894 MHz) 24.5 (dBm)
+LTE Band 7 (2500-2570 ; 2620-2690 MHz) 24.5 (dBm)
+LTE Band 8 (880~915 ; 925~960 MHz) 24.5 (dBm)
+LTE Band 20 (832~862 ; 791~821 MHz) 24.5 (dBm)
+LTE Band 28 (703~748 ; 758~803 MHz) 24.5 (dBm)
+LTE Band 34 (2010~2025 MHz) 24.5 (dBm)
+LTE Band 38 (2570~2620 MHz) 24.5 (dBm)
+LTE Band 40 (2300~2400 MHz) 24.5 (dBm)
+LTE Band 41 (2496~2690 MHz) 24.5 (dBm)
+LTE Band 42 (3400~3600 MHz) 24.5 (dBm)
+FR1
+NR n1 (1920~1980 ; 2110~2170 MHz) 24.5 (dBm)
+NR n3 (1710~1785 ; 1805~1880 MHz) 24.5 (dBm)
+NR n5 (824~849 ; 869~894 MHz) 24.5 (dBm)
+NR n7 (2500~2570 ; 2620~2690 MHz) 24.5 (dBm)
+NR n8 (880~915 ; 925~960 MHz) 24.5 (dBm)
+NR n20 (832~862 ; 791~821 MHz) 24.5 (dBm)
+NR n28 (703~748 ; 758~803 MHz) 24.5 (dBm)
+NR n38 (2570~2620 MHz) 24.5 (dBm)
+NR n41 (2496~2690 MHz) 24.5 (dBm)
+NR n77 (3300~4200 MHz) 24.5 (dBm)
+NR n78 (3300~3800 MHz) 24.5 (dBm)
+NR n78 (3300~3800 MHz) 24.5 (dBm)
+WLAN
+WLAN 2.4GHz (2412~2472 MHz) 17.0 (dBm)
+WLAN 5GHz (5150~5850 MHz) 20.5 (dBm)
+WLAN 6GHz (5945~6425 MHz) 18.5 (dBm)
+Bluetooth
+Bluetooth BR/EDR (2402~2480 MHz) 20.0 (dBm)
+Bluetooth -LE (2402~2480 MHz) 9.0 (dBm)
+NFC 13.553~13.567 MHz -16.99 dBuA/m @10m
+82
+MERK: Disse tabellene for RF-utgangseffekt er kun for EU-land, EØS-statene, EFTA-statene og Tyrkia.
+Frekvensområdet og RF-utgangseffekten kan avvike fra land utenfor EU.
+* ASUS Telefon 5G NR Sub-6/4G LTE-båndkompatibiliteten varierer avhengig av region. Sjekk 
+kompatibilitet hos dine lokale operatør.
+Wi-Fi-området 5150–5350 MHz skal begrenses til innendørs bruk for landene som er oppført i 
+tabellen:
+MERKNADER: 
+• For lavstrøms innendørs (LPI) Wi-Fi 6E-enheter er effektgrensen for LPI Wi-Fi 6E 23 dBm:
+ Enheten er begrenset til kun innendørs bruk når den brukes i frekvensområdet 5945 til 6425 MHz i 
+AT, BE, BG, CZ, DK, EE, FR, DE, IS, IE, IT, EL, ES, CY, LV, LI, LT, LU, HU, MT, NL, NO, PL, PT, RO, SI, SK, TR, FI, 
+SE, CH, HR og UK(NI).
+• For veldig lavstrøms (VLP) Wi-Fi 6E-enheter (bærbare enheter) er effektgrensen for LPI Wi-Fi 6E 
+14 dBm:
+ Enheten får ikke brukes på ubemannede flysystemer (UAS) når den brukes i frekvensområdet 5945 
+til 6425 MHz i AT, BE, BG, CZ, DK, EE, FR, DE, IS, IE, IT, EL, ES, CY, LV, LI, LT, LU, HU, MT, NL, NO, PL, PT, 
+RO, SI, SK, TR, FI, SE, CH, HR og UK(NI).
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH UK (NI) HR
+Informasjon om RF-eksponering
+Dette ASUS produktet er testet og oppfyller gjeldende europeiske SAR-grenser. SAR-grensen er 2,0 
+W/kg i land der maksimale SAR-verdier for denne enheten er som følger:
+• Hode: 1.575 W/Kg @10g
+• Kropp: 1.42W/Kg @10g
+Når denne enheten holdes eller bæres på kroppen, må du enten bruke et godkjent tilbehør, for 
+eksempel et hylster, eller på annen måte holde en avstand på 0.5 cm fra kroppen for å sikre samsvar 
+med krav til RF-eksponering. 
+CE-merking
+83
+Bruke GPS (Global Positioning System) på ASUS Phone
+Bruk av GPS-posisjoneringsfunksjonen på ASUS Phone:
+• Sørg for at enheten er koblet til Internett før du bruker Google Maps eller andre apper som 
+bruker GPS.
+• Første gang du skal bruke en GPS-aktivert app på enheten, bør du være utendørs for å få best 
+dekning.
+• Når sitter i et kjøretøy og bruker en GPS-aktivert app på enheten, kan metalldeler i bilvinduet og 
+andre elektroniske enheter påvirke GPS-ytelsen. 
+Lindre anstrengelse av øynene
+For å lindre anstrengelsen av øynene:
+• Ta hyppige pauser når du bruker ASUS-telefonen (minst 10 minutter pause hver halvtime).
+• Fokuser regelmessig på gjenstander som er langt vekke for å slappe av øynene.
+• Gjør øyeøvelser ofte, slik som:
+ (1) Se opp og ned uten å bevege hodet
+ (2) Beveg øynene fra venstre til høyre uten å bevege hodet
+ (3) Rull øynene sakte
+ (4) Flytt øynene diagonalt
+ADVARSEL: Hold skjermen på ASUS-telefonen borte fra spedbarn og småbarn yngre enn 2 år. Barn fra 2 
+år og oppover skal ikke se mer enn en time på skjerm hver dag.
+Sertifisering for lavt blått lys
+ASUS-telefonen reduserer mengden blått lys som kommer fra skjermen, noe 
+som gir en mer behagelig titteopplevelse. 
+Som standard er lysstyrken på skjermen satt til maksimum, og telefonen er i 
+samsvar med sertifiseringen TÜV Rheinland Low Blue Light.
+Forebygging av hørselstap 
+For å forhindre mulig hørselsskade må du ikke lytte på høye lydnivåer i lengre perioder.
+ 
+For Frankrike overholder hodetelefonene/øretelefonene for denne enheten kravet til lydtrykksnivå 
+som er stipulert i gjeldende EN 50332-1: 2013 og/eller EN50332-2: 2013-standarden ifølge krav i 
+den franske artikkel L.5232-1. 
+84
+ASUS-resirkulering/tilbakeleveringstjenester
+ASUSs resirkulering og returpASUSrammer er et resultat av vårt engasjement til de høyeste 
+standardene for miljøvern. Vi tror på å levere løsninger til deg slik at du kan ansvarlig resirkulere 
+våre produkter, batterier, andre komponenter samt emballasjen. Gå til http://csr.asus.com/english/
+Takeback.htm for detaljert resirkuleringsinformasjon på forskjellige regioner.
+Melding om belegg
+VIKTIG! Elektrisk isolasjon og brukersikkerhet er oppnådd ved påføring av et belegg som isolerer 
+enheten med unntak av områdene for inn- og utdatakontakter.
+Grønt ASUS-varsel
+ASUS jobber for å skape miljøvennlige produkter og pakninger for å ivareta forbrukerens helse og 
+samtidig redusere påvirkningen på miljøet. Reduksjonen av antallet sider i bruksanvisningen er en 
+del av vårt arbeid med å redusere karbonutslipp.
+Du kan lese mer om bruk og annen relevant informasjon i bruksanvisningen som følger med ASUS-
+nettbrettet eller ved å besøke ASUS-støttesiden på https://support.asus.com/.
+Modells: ASUS_AI2302
+Produsent: ASUSTeK Computer Inc.
+Adresse: 1F., No.15, Lide RD., Beitou Dist., Taipei City 112
+Autorisert representant I Europa: ASUS Computer GmbH
+Adresse: HARKORT STR. 21-23, 40880 RATINGEN, GERMANY
+Authorized representative in United Kingdom: ASUSTEK (UK) LIMITED
+Address, City: 
+1st Floor, Sackville House, 143-149 Fenchurch Street, London, EC3M 6BL England
+Country: 
+United Kingdom
+ 1 Grunnleggende
+ Velkommen!
+ Gjør klar ASUS Phone!
+ Førstegangsbruk
+ Instruksjoner for navigasjonsbevegelser
+ Bruke berøringsskjermen
+ 2 Det er ingen plass som hjemme
+ Zen Hjem-funksjoner
+ Hjem-skjermen
+ Hurtiginnstillinger
+ Varslinger 
+ Kantverktøy
+ Tilpasse startskjermen
+ Bakgrunnsbilder
+ widgeter 
+ Redigere Hjem-skjermen
+ Sette opp dato og klokkeslett
+ Sette opp ringetone og varsellyder
+ 3 Jobb hardt, spill hardere
+ Chrome
+ Starte Chrome
+ Dele en side
+ Lagre sider som bokmerker
+ Tømme nettleserdata
+ Gmail
+ Google Kalender 
+ Opprette hendelser
+ Redigere eller fjerne hendelser
+ Opprette påminnelser
+ Redigere eller fjerne påminnelser
+ Filbehandling
+ ASUS telefonklone
+ 4 Holde kontakten
+ Ring i stil
+ Dobbelt SIM-kortfunksjonen
+ Ringe
+ Ringe favorittkontakter
+ Motta innkommende anrop
+ Andre alternativer for anrop
+ Ta opp anrop
+ Håndtere kontakter
+ Innstillinger for kontakter
+ Sette opp profilen din
+ Legge til kontakter
+ Markere favorittkontakter
+ Sosiale nettverk med kontakter
+ Send meldinger og mer
+ Melding
+ 5 Moro og underholdning
+ Bruke hodesett
+ Koble til lydkontakt
+ YT Music
+ 6 Dine dyrebare øyeblikk
+ Fang hvert eneste øyeblikk
+ Starte Kamera-appen
+ Bildesteder
+ Avanserte kamerafunksjoner
+ Tidsforkortelse
+ Bruke Galleriet
+ Se bildelokalitet
+ Redigere et bilde
+ Dele filer fra galleriet
+ Slette filer fra galleriet
+ 7 Holde deg tilkoblet
+ Mobilt nettverk
+ Aktivere mobilt nettverk
+ Wi-Fi
+ Aktivere Wi-Fi
+ Koble til et Wi-Fi-nettverk
+ Deaktivere Wi-Fi
+ Bluetooth® 
+ Aktivere Bluetooth® 
+ Pare ASUS-nettbrettet med en Bluetooth®-enhet
+ Oppheve paring mellom ASUS-nettbrettet og Bluetooth®-enheten
+ Internettdeling
+ Wi-Fi-tilgangspunkt
+ USB-deling 
+ Bluetooth Tethering (Internettdeling via Bluetooth)
+ 8 Reiseapper
+ Vær
+ Starte Vær-appen
+ Startskjerm for vær
+ Klokke
+ Alarmklokke
+ Verdensklokke
+ Stoppeklokke
+ Nedtelling
+ 9 Zen overalt
+ Spesielle Zen-verktøy
+ Kalkulator
+ Lydopptaker
+ Mobil-behandling
+ 10 Vedlikeholde Zen
+ Holde enheten oppdatert
+ Oppdatere systemet
+ Lagring
+ Sikkerhetskopiering og tilbakestilling
+ Tilbakestill
+ Sikre ASUS-nettbrettet
+ Låse opp skjermen
+ Fingeravtrykk-ID-sensor
+ Starte ASUS Phone for første gang
+ Sette opp fingeravtrykk-ID fra Innstillinger
+ Lås opp med ansikt 
+ Sette opp opplåsing med ansikt fra Innstillinger 
+ Sette opp identiteten til ASUS-nettbrettet
+ Tillegg 

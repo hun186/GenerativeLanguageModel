@@ -1,0 +1,1868 @@
+
+AI2302AI2302
+Használati útmutató
+2
+Gondozás és biztonság
+Irányelvek
+A közlekedésbiztonság elsődleges. Nyomatékosan javasoljuk, hogy ne használja 
+eszközét vezetés, vagy bármilyen gépjármű üzemeltetése közben.
+Az eszköz kizárólag 0°C (32°F) és 35°C (95°F) közötti hőmérsékleten használandó.
+Kapcsolja ki az eszközt, ahol a mobileszközök használata tilos. Mindig tartsa be a 
+szabályokat, ha korlátozott területen, pl. repülőgépen, filmszínházban, kórházban 
+vagy orvosi berendezés közelében, gáz vagy üzemanyag közelében, építési 
+területen, robbantási vagy egyéb területen tartózkodik.
+Kizárólag az ASUS által a készülékhez mellékelt és jóváhagyott hálózati adaptert 
+és kábeleket használja. Tekintse meg a eszköz alján lévő besorolási címkét és 
+győződjön meg arról, hogy a hálózati adapter megfelel a kategóriának.
+Ne használjon sérült tápkábelt, tartozékot vagy más perifériát az eszközzel.
+Tartsa szárazon az eszközt. Ne tegye ki az eszközt folyadéknak, esőnek vagy 
+nedvességnek, illetve ne használja azok közelében. 
+Az eszközt átbocsáthatja röntgenberendezéseken (pl. a repülőtéri biztonság 
+érdekében futószalagon használt gépek), azonban ne tegye ki kézi és egyéb 
+mágneses detektoroknak.
+Az eszköz kijelzője üvegből készült. Ha az üveg eltörik, ne használja tovább az 
+eszközt, és ne érintse meg a törött üveget. Azonal küldje el az eszközt javításra az 
+ASUS által jóváhagyott szervizbe.
+A halláskárosodás megelőzése érdekében ne hallgasson felvételeket hosszú ideig 
+nagy hangerő mellett.
+Az eszköz tisztítása előtt húzza ki a hálózati tápkábelt. Kizárólag tiszta cellulózból 
+készült szivacsot vagy szarvasbőrt használjon a kijelző tisztításához.
+Az eszközt kizárólag az ASUS által jóváhagyott szervizbe küldje javításra.
+HUG21835
+Július 2023
+Első kiadás
+3
+Megfelelő selejtezés
+A nem megfelelő akkumulátor használata robbanásveszélyes. Az elhasznált 
+elemektől az utasításokat betartva szabaduljon meg.
+NE helyezze el az akkumulátort a háztartási hulladékkal együtt. Az áthúzott kerekes 
+szeméttárolót ábrázoló jelzés azt jelenti, hogy az akkumulátort tilos a háztartási 
+hulladékkal elhelyezni.
+NE helyezze el az ASUS telefonhoz készüléket a háztartási hulladékkal együtt. 
+A terméket úgy terveztük meg, hogy lehetővé tegye az alkatrészek és anyagok 
+megfelelő újrahasznosítását. Az áthúzott kerekes szeméttárolót ábrázoló jelzéssel 
+ellátott terméket (elektromos és elektronikus berendezések és higanytartalmú 
+gombelemek) nem szabad háztartási szemétként kezelni. Az elektronikus termékek 
+elhelyezését illetően tájékozódjon a helyi hatóságoknál.
+NE dobja a ASUS telefonhoz készüléket tűzbe. NE zárja rövidre az érintkezőket. NE 
+szerelje szét a ASUS telefonhoz készüléket.
+ZenTalk Rajongói Fórum 
+(http://www.asus.com/zentalk/global_forward.php)
+MEGJEGYZÉSEK: 
+• További jogi és elektromos címkézési információért ellenőrizze az eszközön a Settings (Beállítás) 
+> System (Rendszer) > Regulatory labels (Szabályozási címkék) és Settings (Beállítások) 
+> System (Rendszer) > About phone (A telefonról) > Legal information (Jogi információk) 
+pontokat.
+• Az alkalmazások leírásai az útmutatóban kizárólag hivatkozási célokat szolgálnak, és előfordulhat, 
+hogy nem pontosan egyeznek meg azzal, ami az eszközön látható.
+4
+1 Alapvető tudnivalók
+Üdvözöljük! .............................................................................................................................................. 7
+Készítse elő az ASUS Phone készüléket! ........................................................................................ 8
+Használatba vétel ................................................................................................................................16
+A navigációs gesztusok utasításai .................................................................................................17
+Az érintőképernyő használata ........................................................................................................18
+2 Sehol se olyan jó, mint otthon
+A Zen Home jellemzői .................................................................................................21
+Kezdőképernyő ....................................................................................................................................21
+Gyorsbeállítások...................................................................................................................................22
+Értesítések ..............................................................................................................................................23
+Éleszköz ...................................................................................................................................................24
+A Kezdőlap testreszabása ..........................................................................................25
+Háttérképek ...........................................................................................................................................26
+Widgetek ................................................................................................................................................27
+Preferenciák ...........................................................................................................................................27
+Dátum és idő beállítása .....................................................................................................................28
+Csengőhang és értesítési hangok beállítása .............................................................................28
+3 Dolgozz keményen, játssz még keményebben
+Chrome ........................................................................................................................29
+A Chrome indítása ...............................................................................................................................29
+Oldal megosztása ................................................................................................................................30
+Oldalak megjelölése könyvjelzővel...............................................................................................30
+A böngészési előzmények törlése ................................................................................................30
+Gmail ............................................................................................................................31
+Google Calendar .........................................................................................................32
+Események létrehozása ....................................................................................................................32
+Események szerkesztése vagy eltávolítása ...............................................................................32
+Emlékeztető létrehozása ..................................................................................................................33
+Emlékeztetők szerkesztése vagy eltávolítása ...........................................................................33
+Fájlkezelő ....................................................................................................................34
+ASUS Phone Clone ......................................................................................................35
+4 Kapcsolatban lenni
+Telefonálás stílusosan ................................................................................................36
+Kettős SIM szolgáltatás ......................................................................................................................36
+Hívások indítása ...................................................................................................................................38
+A kedvenc partnerek hívása ............................................................................................................40
+Hívások fogadása.................................................................................................................................40
+További híváslehetőségek ................................................................................................................41
+Hívások rögzítése ................................................................................................................................42
+Kapcsolatok kezelése .................................................................................................43
+Partnerbeállítások ...............................................................................................................................43
+Tartalomjegyzék
+5
+Profil beállítása .....................................................................................................................................43
+Partnerek hozzáadása ........................................................................................................................44
+A kedvenc partnerek megjelölése .................................................................................................45
+A tiltólista kezelése .............................................................................................................................46
+Üzenet küldése és egyebek .......................................................................................47
+Üzenetek .................................................................................................................................................47
+5 Móka és szórakozás
+Headset használata ....................................................................................................48
+Audió aljzat csatlakoztatása ............................................................................................................48
+YT Music .......................................................................................................................49
+6 Megismételhetetlen pillanatok
+Pillanatok rögzítése ....................................................................................................50
+A Kamera alkalmazás indítása ........................................................................................................50
+Képek helye ...........................................................................................................................................51
+Speciális kamerafunkciók .................................................................................................................51
+Gyorsított felvétel ................................................................................................................................52
+A Galéria használata ...................................................................................................53
+A fotó helyének megtekintése ........................................................................................................53
+Kép szerkesztése ..................................................................................................................................53
+Fájlok megosztása a galériából ......................................................................................................54
+Fájlok törlése a galériából .................................................................................................................54
+7 Kapcsolatban maradni
+Mobilhálózat ...............................................................................................................55
+A mobilhálózat engedélyezése ......................................................................................................55
+Wi-Fi .............................................................................................................................55
+Wi-Fi engedélyezése ...........................................................................................................................55
+Kapcsolódás Wi-Fi hálózathoz ........................................................................................................56
+A Wi-Fi letiltása .....................................................................................................................................56
+Bluetooth® ...................................................................................................................56
+A Bluetooth® engedélyezése ...........................................................................................................56
+Az ASUS telefonhoz párosítása Bluetooth®-eszközzel ...........................................................57
+Az ASUS telefonhoz párosításának megszüntetése a Bluetooth®-eszközzel .................57
+Kapcsolat-megosztás .................................................................................................58
+Wi-Fi Hotspot ........................................................................................................................................58
+USB alapú internetmegosztás .........................................................................................................59
+Bluetooth kapcsolat-megosztás ....................................................................................................59
+8 Utazási alkalmazások
+Időjárás ........................................................................................................................60
+A Időjárás alkalmazás indítása ........................................................................................................60
+Weather kezdőlap ...............................................................................................................................61
+Óra ...............................................................................................................................62
+Ébresztőóra ............................................................................................................................................62
+Világóra ...................................................................................................................................................63
+Stopperóra .............................................................................................................................................63
+6
+Időzítő ......................................................................................................................................................64
+9 Zen mindenhol
+Különleges Zen eszközök ...........................................................................................65
+Számológép...........................................................................................................................................65
+Hangrögzítő...........................................................................................................................................66
+Mobile Manager ..........................................................................................................68
+10 A Zen karbantartása
+Az eszköz naprakészen tartása ..................................................................................69
+A rendszer frissítése ............................................................................................................................69
+Tárhely .....................................................................................................................................................69
+Biztonsági mentés és alaphelyzet .................................................................................................69
+Visszaállítás alaphelyzetbe ...............................................................................................................69
+Az ASUS telefonhoz biztonságba helyezése ............................................................70
+A kijelző kioldása .................................................................................................................................70
+Ujjlenyomat-érzékelő ................................................................................................73
+Az ASUS Phone üzembe helyezése ..............................................................................................73
+Ujjlenyomat-azonosító létrehozása a Settings (Beállítások) képernyőn ........................74
+Kioldás arccal ..............................................................................................................75
+Az arccal történő kioldás beállítása a Settings (Beállítások) használatával ...................75
+Az ASUS telefonhoz azonosítása ...............................................................................78
+Függelékek
+71 fejezet: Alapvető tudnivalók
+Alapvető tudnivalók 1
+1 Alapvető tudnivalók
+Üdvözöljük!
+Fedezze fel a ASUS Zen UI magától értetődő egyszerűségét!
+Az ASUS Zen UI egy tetszetős, magától értetődő felület, amelyet kizárólag ASUS telefonokhoz 
+fejlesztettek ki. Speciális alkalmazásokat kínál, amelyek más alkalmazásokban vagy azokhoz 
+kapcsolódóan működnek, hogy megfeleljenek egyedi igényeinek és életét könnyebbé tegyék 
+amellett, hogy lehetővé teszik a szórakozást ASUS Phone készülékével.
+Kamera
+PixelMaster technológia segítségével rögzítheti a megismételhetetlen pillanatokat élénk 
+és minőségi fotókban és videókban.
+Üzenetek
+A Üzenetek egy intuitív, elbűvölő alkalmazás, amely SMS/MMS-üzenetek, valamint 
+csoportos szöveges üzenetek, fotók vagy hangüzenetek küldését/fogadását teszi 
+lehetővé. Az üzenetekhez hangulatjleket vagy matricákat csatolhat, megoszthatja 
+tartózkodási helyét, archiválhatja üzeneteit, és egyszerűen letilthatja az SMS-küldőket. 
+Fényképeket és videókat is készíthet a fájlok egyszerű megosztásához. 
+Fájlkezelő
+A Fájlkezelő használatával könnyedén megtalálhatja és rendezheti az ASUS telefonhoz 
+belső tárolóeszközén, illetve a csatlakoztatott külső tárolóeszközökön található adatait.
+MEGJEGYZÉS: Az ASUS Zen UI alkalmazások elérhetősége térségenként és ASUS Phone típusonként 
+eltérő. Húzza felfelé az ujját a kezdőképernyő alsó szélétől az ASUS Phone készüléken elérhető 
+alkalmazások megtekintéséhez.
+8 1 fejezet: Alapvető tudnivalók
+Készítse elő az ASUS Phone készüléket!
+Alkatrészek és jellemzők
+Vegye elő eszközét és tegye üzemkésszé pillanatok alatt.
+FIGYELEM! 
+• A hálózati kapcsolattal és akkumulátorral kapcsolatos problémák elkerülése érdekében:
+ • NE helyezzen fémes matricát az antenna területe fölé. 
+ • NE használjon fémből készült védőkeretet/burkolatot az ASUS Phone készüléken.
+ • NE takarja le az antenna területét kézzel vagy egyéb tárggyal, amikor a készülék fuunkcióit 
+használja, pl. telefonhívás és a mobil adatkapcsolat használata. 
+• ASUS-kompatibilis kijelzővédő használata ajánlott. A nem ASUS-kompatibilis kijelzővédő használata 
+az ASUS Phone érzékelőjének hibás működését idézheti elő.
+FONTOS!
+• Képernyővédő használatát nem ajánljuk, mert zavarhatja a közelségérzékelő működését. Ha 
+képernyővédőt kíván használni, győződjön meg arról, hogy nincs a közelségérzékelő útjában. 
+• Az eszközt, különösképpen az érintőképernyőjét, mindig tartsa szárazon. A víz és egyéb folyadékok 
+az érintőképernyő hibás működését eredményezhetik. 
+Vevő
+Érintőképernyő
+Főkapcsoló gomb & 
+Ujjlenyomat-olvasó
+Hangerő gomb
+Nano SIM-kártyanyílás
+Hátsó kamera Vaku
+Mikrofon
+Hangszóró
+„C” típusú USB-port
+Mikrofon
+Kiadónyílás
+Audió aljzat
+Első kamera Közelítésérzékelő és fényérzékelő
+Vezeték nélküli töltési terület
+NFC-érzékelési terület
+91 fejezet: Alapvető tudnivalók
+Nano SIM-kártya behelyezése
+A Nano SIM kártyanyílások támogatják a GSM/GPRS/EDGE, WCDMA/HSPA+/DC-HSPA+, FDD-LTE, 
+TD-LTE, és 5G NR Sub-6 hálózati sávok használatát. 
+FIGYELEM! A Nano SIM-kártya használatakor legyen rendkívül óvatos. Az ASUS nem vállal felelősséget 
+a Nano SIM-kártyán lévő adatok elvesztéséért, illetve károsodásáért.
+Nano SIM-kártya behelyezéséhez:
+1. Illessze a mellékelt tálcakiadó tűt a kártyanyíláson lévő lyukba a tálca kiadásához.
+2. Helyezze be a Nano SIM-kártyákat a kártyanyílásokba.
+3. Finoman tolja vissza a tálcát, hogy szorosan vissza legyen zárva.
+MEGJEGYZÉSEK:
+• A Nano SIM kártyanyílások támogatják a GSM/GPRS/EDGE, WCDMA/HSPA+/DC-HSPA+, FDD-LTE, TD-
+LTE, és 5G NR Sub-6 hálózati sávok használatát.Mindkét Nano SIM-kártya képes csatlakozni a VoLTE 4G 
+hívásszolgáltatáshoz, viszont egyszerre csak az egyik tud csatlakozni az 5G NR Sub-6 adatszolgáltatáshoz. 
+• A hálózati és frekvencia sávszélesség használata függ az Ön zónájában a hálózati lefedettségtől. Vegye 
+fel a kapcsolatot a távközlési szolgáltatóval ha az Ön zónájában elérhető a 5G NR Sub-6 támogatás és a 
+VoLTE 4G hívásszolgáltatás.
+VIGYÁZAT!
+• Ne használjon éles eszközöket vagy oldószereket a készüléken az esetleges karcolások elkerülése 
+érdekében.
+• Az ASUS Phone készülékben kizárólag szabványos Nano SIM-kártya használható.
+Nano-SIM1
+Nano-SIM2
+10 1 fejezet: Alapvető tudnivalók
+Nano SIM -kártya eltávolítása
+FIGYELEM! A SIM-kártya kezelésekor legyen rendkívül óvatos. Az ASUS nem felelős semmilyen 
+adatvesztésért vagy sérülésért, ami a nano SIM-kártyán bekövetkezik.
+Nano SIM-kártya eltávolítása:
+1. Illessze a mellékelt tálcakiadó tűt a kártyanyíláson lévő lyukba a tálca kiadásához.
+2. Távolítsa el a nano SIM kártyá(ka)t a kártyanyílás(ok)ból.
+3. Finoman tolja vissza a tálcát, hogy szorosan vissza legyen zárva.
+Nano-SIM1
+Nano-SIM2
+111 fejezet: Alapvető tudnivalók
+Az ASUS telefonhoz feltöltése
+Az ASUS telefonhozet részben feltöltve szállítják, de teljesen fel kell töltenie a használatba vételhez. 
+Olvassa el az alábbi utasításokat és óvintézkedéseket az eszköz feltöltése előtt.
+FONTOS!
+• Válassza le a védőfóliát a tápfeszültség-adapterről és USB Type-C-kábelről, mielőtt az eszközzel 
+használná.
+• Győződjön meg arról, hogy a tápfeszültség-adaptert kompatibilis hálózati csatlakozóaljzatba dugja. 
+A tápfeszültség-adaptert bármilyen kompatibilis 100–240 V-os csatlakozóaljzatba dughatja. 
+• Az ezköz kimeneti feszültsége +5V-10V 3A, 30W.
+• Amikor az ASUS telefonhoz készüléket hálózati áramforrásról használja, a földelt aljzatnak a készülék 
+közelében és könnyen elérhetőnek kell lennie.
+• Hogy takarékoskodjon az elektromos árammal, húzza ki a tápfeszültség adaptert a 
+csatlakozóaljzatból, amikor nem használja.
+• Ne tegyen tárgyakat az ASUS telefonhoz tetejére.
+VIGYÁZAT! 
+• Töltés közben az ASUS telefonhoz felmelegedhet. Ez nem meghibásodás jele, azonban ha eszköze 
+rendellenesen forróvá válik, válassza le a USB Type-C-kábelt eszközéről, majd küldje az eszközt a 
+tápfeszültség-adapterrel és kábellel együtt egy hivatalos ASUS szervizbe.
+• Annak érdekében, hogy megelőzze az ASUS telefonhoz, a tápfeszültség-adapter, vagy a USB Type-C-
+kábel sérülését, győződjön meg arról, hogy a USB Type-C-kábel, a tápfeszültség-adapter és eszköze 
+megfelelően csatlakoznak, mielőtt megkezdené a töltést.
+Az ASUS telefonhoz feltöltéséhez:
+1. Csatlakoztassa a USB-kábelt a tápfeszültség adapterhez.
+2. Dugja a USB-csatlakozót az ASUS telefonhoz készülékbe.
+3. Dugja a tápfeszültség adaptert egy földelt konnektorba.
+1
+2
+3
+12 1 fejezet: Alapvető tudnivalók
+FONTOS!
+• Amikor az ASUS Phone készüléket konnektorhoz csatlakoztatva használja, a földelt aljzatnak a 
+készülék közelében és könnyen elérhetőnek kell lennie. 
+• Amikor az ASUS Phone készüléket számítógépről tölti fel, ügyeljen arra, hogy a USB Type-C-kábel a 
+számítógép USB portjához csatlakozzon.
+• Kerülje az ASUS Phone készülék feltöltését olyan környezetben, ahol hőmérséklet meghaladja a 35°C 
+(95°F) értéket.
+• Töltse az ASUS telefonhoz készüléket nyolc (8) órán át, mielőtt akkumulátorról táplálva használatba 
+venné.
+• Az akkumulátortöltés állapotát az alábbi ikonok jelzik:
+ 
+Alacsony Nem tölt Töltés Teljesen feltöltött
+MEGJEGYZÉSEK:
+• Biztonsági okokból KIZÁRÓLAG a tartozékként kapott tápegységet és tápkábelt használja, mivel így 
+megakadályozhatja a készülék meghibásodását, és elkerülheti a személyi sérülés kockázatát.
+• Biztonsági okokból KIZÁRÓLAG a tartozékként kapott tápegységet és tápkábelt használja az ASUS 
+Phone töltéséhez.
+4. Ha teljesen feltöltődött, előbb válassza le az USB-kábelt az ASUS telefonhozről, majd húzza ki a 
+tápfeszültség-adaptert a hálózati csatlakozóaljzatból.
+MEGJEGYZÉSEK: 
+• Eszközét töltés közben is használhatja, azonban ilyenkor tovább tarthat az eszköz teljes feltöltése.
+• A számítógép USB-csatlakozóján történő feltöltés hosszabb időt vehet igénybe.
+• Ha a számítógép nem szolgáltat elegendő energiát az USB-aljzaton keresztüli töltéshez, az ASUS 
+telefonhoz töltéséhez inkább a hálózati csatlakozóaljzathoz csatlakoztatott tápfeszültség-adaptert 
+használja.
+131 fejezet: Alapvető tudnivalók
+Az ASUS-telefon vezeték nélküli töltése
+Vásárolhat Qi-tanúsítvánnyal rendelkező vezeték nélküli töltőt, amellyel vezeték nélkül töltheti 
+ASUS Phone készülékét.
+Ha töltés közben használja ASUS Phone készülékét, a töltés lassulhat vagy akár le is állhat az 
+akkumulátor védelme érdekében. Bizonyos alkalmazások használata töltés közben leállíthatja a 
+töltést, vagy befolyásolhatja a töltési funkciókat. 
+Vezeték nélküli töltés során mindenképpen távolítson el minden burkolatot, tokot vagy bármilyen 
+telefonos kiegészítőt, és vegye figyelembe a következőket:
+• Az égési sérülések elkerülése érdekében ne helyezzen semmilyen vezető anyagot, például 
+fémalkatrészeket és mágneseket az ASUS Phone és a töltő közé.
+• Ne helyezzen bankkártyákat, közlekedési kártyákat vagy kulcskártyákat (RFID) a töltőre, hogy 
+elkerülje azok lemágneseződését vagy sérülését.
+VIGYÁZAT! Ha az ASUS Phone készüléket helytelenül helyezi a vezeték nélküli töltőre, a töltési idő 
+jelentősen meghosszabbodhat.
+Kérjük, kövesse az alábbi lépéseket ASUS Phone készülékének vezeték nélküli töltővel 
+történő töltéséhez:
+1. Helyezze ASUS Phone készülékét a vezeték nélküli töltőre a töltő utasításainak megfelelően.
+MEGJEGYZÉS: Az ASUS Phone hátulján lévő vezeték nélküli töltőtekercseknek érintkezniük kell a 
+töltővel.
+2. Amikor a töltés megkezdődik, a kijelzőn megjelenik a vezeték nélküli töltés ikonja.
+3. Amikor a töltés befejeződött, vegye le az ASUS Phone készüléket a vezeték nélküli 
+töltőállványról/alátétről.
+VIGYÁZAT! Az óvintézkedések be nem tartása esetén előfordulhat, hogy a készülék nem töltődik fel 
+megfelelően, vagy túlhevülhet.
+14 1 fejezet: Alapvető tudnivalók
+Az NFC használata
+Az NFC-t háromféleképpen használhatja:
+Reader mode (Olvasó mód): A telefon az információt beolvassa az érintés nélküli kártyáról, NFC-
+címkéről, illetve más NFC-eszközökről.
+Helyezze a telefon NFC területét az érintés nélküli kártyára, NFC-címkére, illetve NFC-eszközre.
+Card Emulation mode (Kártyaemuláció mód): A telefont érintés nélküli kártya módjára lehet 
+használni.
+Helyezze a telefon NFC területét az NFC-olvasó NFC területére.
+Peer-to-Peer mode (Peer-to-Peer mód): A fotókat, kontaktokat és egyéb adatokat áttöltheti a 
+telefon és másik NFC-képes okostelefon között.
+Közelítse mindkét okostelefon NFC területét szorosan egymáshoz úgy, hogy ne legyen köztük hely.
+151 fejezet: Alapvető tudnivalók
+Az ASUS telefonhoz be- vagy kikapcsolása
+Az eszköz bekapcsolása
+Az eszköz bekapcsolásához nyomja meg és tartsa lenyomva a főkapcsoló gombot, amíg az eszköz 
+el nem indul.
+Az eszköz kikapcsolása
+Az eszköz kikapcsolásához: 
+Nyomja le és tartsa lenyomva a főkapcsoló gombot, majd a felszólításra érintse meg a Power off 
+(Kikapcsolás) gombot.
+Alvó mód
+Az eszköz alvó módba helyezéséhez nyomja meg egyszer a főkapcsoló gombot, amíg a kijelző ki 
+nem kapcsol.
+Főkapcsoló gomb
+MEGJEGYZÉS: Amikor a rendszere nem működik, nyomja meg és tartsa lenyomva a Hangerő le + 
+Tápellátás gombot egyszerre 8 másodpercig hogy újraindítsa a telefont. Ha ez nem működik, próbálja 
+meg újra megnyomni és tartani a gombokat 12 másodpercig.
+16 1 fejezet: Alapvető tudnivalók
+Használatba vétel
+Amikor első alkalommal kapcsolja be az ASUS telefonhozet, a Telepítő varázsló végigvezeti Önt a 
+telepítési folyamaton. Kövesse a képernyőn megjelenő utasításokat a kívánt nyelv kiválasztásához, 
+a mobilhálózat, a Wi-Fi és a biztonsági funkciók beállításához, illetve a fiókok szinkronizálásához.
+Használja Google- vagy ASUS-fiókját az eszköz telepítéséhez. Amennyiben még nem rendelkezik 
+Google- vagy ASUS-fiókkal, hozzon létre egyet.
+Google-fiók
+Google-fiók használatával teljes mértékben kihasználhatja a következő Android OS 
+szolgáltatásokat:
+• Szervezze és tekintse meg információit, bárhol is tartózkodik.
+• Automatikusan készítsen biztonsági másolatot az összes adatáról.
+• Kényelmesen igénybe veheti a Google-szolgáltatásokat, bárhol is tartózkodik.
+ASUS-fiók
+ASUS-fiók segítségével a következőket veheti igénybe:
+• Személyre szabott ASUS támogatás és garancia-kiterjesztési szolgáltatás igénybe vétele 
+regisztrált termékekhez.
+• A legújabb eszköz- és firmware-frissítések fogadása.
+Tanácsok az akkumulátor hosszabb működési ideje érdekében
+Az akkumulátor töltése létfontosságú az ASUS telefonhoz működése szempontjából. Íme, néhány 
+tanács az akkumulátor hosszabb működési ideje érdekében, amelyek segítenek gazdálkodni az 
+ASUS telefonhoz akkumulátorával.
+ – Zárja be a használaton kívüli alkalmazásokat, amelyek még futnak.
+ – Ha nem használja, nyomja meg a főkapcsoló gombot, hogy az eszközt alvó módba 
+helyezze.
+ – Csökkentse a kijelző fényerejét.
+ – Tartsa a hangszóró hangerejét alacsony szinten.
+ – Tiltsa le a Wi-Fi funkciót.
+ – Tiltsa le a Bluetooth funkciót.
+ – Tiltsa le a kijelző automatikus elforgatása funkciót.
+ – Tiltsa le az összes automata szinkronizálás funkciót az eszközön.
+171 fejezet: Alapvető tudnivalók
+A navigációs gesztusok utasításai
+Az első indítás során olvassa el a Instruction of Navigation Gestures (Navigációs gesztusok 
+utasításait), majd kattintson a Done (Kész) gombra az utasítások bezárásához.
+MEGJEGYZÉS: A Gesture navigation (Gesztusnavigáció) vagy a Navigation bar (Navigációs sáv) 
+közül bármikor választhat a Settings (Beállítások) > Display (Megjelenítés) > System navigation 
+(Rendszernavigáció) menüpont alatt.
+18 1 fejezet: Alapvető tudnivalók
+Az érintőképernyő használata
+Használja ezeket a mozdulatokat az érintőképernyőn alkalmazások indításához, egyes beállítások 
+eléréséhez és az ASUS telefonhoz készüléken történő navigáláshoz.
+Alkalmazások indítása
+Alkalmazás indításához egyszerűen érintse meg.
+Elemek áthelyezése vagy törlése
+Tegye a következők valamelyikét:
+• Alkalmazás vagy minialkalmazás áthelyezéséhez érintse meg és tartsa, majd húzza az új helyre.
+• Egy alkalmazás törléséhez érintse meg és tartsa úgy, majd érintse meg az Uninstall (Eltávolítás) 
+lehetőséget.
+• Egy widget eltávolításához érintse meg és tartsa lenyomva, majd húzza a képernyő tetején lévő 
+Remove (Eltávolítás) elemre.
+191 fejezet: Alapvető tudnivalók
+Oldalak vagy képernyők közötti lépkedés
+Tegye a következők valamelyikét:
+• Csúsztassa az ujját balra vagy jobbra az képernyők váltásához, vagy a Google kereső 
+megnyitásához.
+• Görgesse felfelé vagy lefelé az ujját weboldalak vagy elemlisták tallózásához.
+Nagyítás
+Csúsztassa szét a két ujját az érintőpanelen a Photos (Fotók) vagy Maps (Térképek) mappában lévő 
+kép, illetve weboldal nagyításához.
+20 1 fejezet: Alapvető tudnivalók
+MEGJEGYZÉS: Előfordulhat, hogy nem tud nagyítani/kicsinyíteni egyes weboldalakat, mert ezeket 
+kifejezetten úgy tervezhették, hogy illeszkedjenek mobileszköze kijelzőjéhez.
+Kicsinyítés
+Húzza össze a két ujját az érintőpanelen a Photos (Fotók) vagy Maps (Térképek) mappában lévő 
+kép, illetve weboldal kicsinyítéséhez.
+2 fejezet: Sehol se olyan jó, mint otthon 21
+Sehol se olyan jó, mint otthon 2
+2 Sehol se olyan jó, mint otthon
+A Zen Home jellemzői
+Kezdőképernyő
+A Kezdőképernyőn emlékeztetőket kaphat a fontos eseményekről, az alkalmazás- és 
+rendszerfrissítésekről, valamint megnézheti az időjárás-előrejelzést és a valóban fontos 
+személyektől kapott szöveges üzeneteket. 
+Húzza lefelé ezt a területet a System notifications 
+(Rendszerértesítések) megjelenítéséhez
+Húzza kétszer lefelé ezt a területet a Quick settings 
+(Gyorsbeállítások) megjelenítéséhez
+Érintse meg a Voice Search (Hangkeresés) megnyitásához
+Érintse meg a Google Search (Google-keresés) oldal megnyitásához
+Érintse meg egy alkalmazás megnyitásához
+Húzza felfelé az ujját az All Apps (Minden alkalmazás) képernyő 
+megnyitásához
+Érintse meg a Clock (Óra) megnyitásához
+Érintse meg a Weather (Időjárás) megnyitásához
+22 2 fejezet: Sehol se olyan jó, mint otthon
+Gyorsbeállítások
+A Gyorsbeállítások Értesítési panel az ASUS telefonhoz egyes vezeték nélküli szolgáltatásainak és 
+beállításainak egyérintéses elérését teszi lehetővé. Minden szolgáltatásnak külön gombja van. 
+A Gyorsbeállítások panel indításához két ujjal húzza le az ASUS telefonhoz kijelzőjének felső részét.
+MEGJEGYZÉS: Egy fényes ikon azt jelzi, hogy a funkció engedélyezve van, a szürke ikon pedig azt jelzi, 
+hogy a funkció le van tiltva.
+Húzza balra vagy jobbra a kijelző fényerejének beállításához
+Érintse meg a Beállítások menü megnyitásához
+Érintse meg a Gyorsbeállítások menü tételeinek kijelöléséhez/
+kijelölésének megszüntetéséhez
+Funkciók hozzáadása 
+Ha funkciókat szeretne hozzáadni a Gyorsbeállítások panelen keresztül, tegye a következőket:
+1. Indítsa el a Gyorsbeállítások menüt, majd érintse meg a(z) elemet.
+2. Húzza felfelé az ujját a Hold and drag to rearrange tiles (Tartsa és húzza a csempék 
+átrendezéséhez) felett.
+3. Ha a Hold and drag to add tiles (Húzza és dobja mozaikok hozzáadásához) részben 
+megérint egy ikont, majd felfelé húzza, hozzáadhatja azt a Gyorsbeállítások panelhez. 
+4. A ikon megérintésével visszatérhet és megtekintheti az aktuális Gyorsbeállítások panelt. 
+Funkciók eltávolítása 
+Ha funkciókat szeretne eltávolítani a Gyorsbeállítások panelről, tegye a következőket:
+1. Indítsa el a Gyorsbeállítások menüt, majd érintse meg a(z) elemet.
+2. Ha megérint egy ikont a Hold and drag to rearrange tiles (Tartsa és húzza a csempék 
+átrendezéséhez) részben, majd elhúzza, azzal eltávolíthatja a Gyorsbeállítások panelről.
+Érintse meg a kikapcsoláshoz, az ASUS Phone újraindításához, 
+képernyőkép mentéséhez vagy a sürgősségi funkciók használatához
+• Érintse meg ezeket a gombokat a funkciók engedélyezéséhez 
+vagy letiltásához
+• Húzza el balra vagy jobbra további ikonok megtekintéséhez
+2 fejezet: Sehol se olyan jó, mint otthon 23
+Érintse meg ezt az összes felsorolt értesítés törléséhez
+Értesítések
+Az értesítésekben megtekintheti az ASUS Phone készüléken elvégzett legutóbbi frissítéseket és 
+rendszermódosításokat. A módosítások többsége az adatokkal és a rendszerrel kapcsolatos. 
+Az Értesítések panel elindításához húzza lefelé az ujját a képernyő tetejétől.
+• Húzza el az értesítést balra vagy jobbra további lehetőségek 
+megtekintéséhez
+• Érintse meg az értesítést a részletei megtekintéséhez
+Érintse meg az értesítések kezeléséhez
+24 2 fejezet: Sehol se olyan jó, mint otthon
+Éleszköz
+Az éleszköz eszköz lehetővé teszi a rendszer parancsikonjainak gyors végrehajtását és alkalmazások 
+megnyitását egy lebegő ablakban.
+Az oldalsáv megnyitásához csúsztassa befelé a szélétől.
+Csúsztassa el 
+az oldalsáv 
+megnyitásához
+Érintse meg 
+a Beállítások 
+menü 
+megnyitásához
+2 fejezet: Sehol se olyan jó, mint otthon 25
+A Kezdőlap testreszabása
+Tegye személyreszabottá Kezdőképernyőjét. Válasszon ki egy stílusos elrendezést háttérképként, és 
+állítson be widgeteket a fontos információk gyors áttekintéséhez. További oldalakat is hozzáadhat a 
+Kedőlaphoz, hogy még több alkalmazást és minialkalmazást is elérhessen, illetve áttekinthessen.
+A Manage Home (Kezdőlap kezelése) képernyő indításához, erintsen meg egy üres területet a 
+kezdőlapon, és tartsa megérintve. 
+26 2 fejezet: Sehol se olyan jó, mint otthon
+Háttérkép alkalmazása
+Háttérkép alkalmazásához: 
+1. Érintse meg és tartsa az ujját a Kezdőlap képernyő üres területén, majd válassza a Wallpaper & 
+style (Háttérkép & stílus) elemet.
+2. Érintse meg a Change wallpaper (Háttérkép módosítása) elemet, majd jelölje ki a háttérkép 
+Lock screen (Zárolási) és Home screen (Kezdőlap).
+3. Válasszon ki egy háttérképet, majd érintse meg az Apply (Alkalmaz) gombot.
+MEGJEGYZÉS: A háttérkép beállításait Settings (Beállítások) > Wallpaper & style (Háttérkép & 
+stílus).
+Háttérképek
+Az alkalmazásai, ikonjai és egyéb Zen-elemei jól mutatnak egy tetszetős háttérképen. A 
+háttérképhez áttetsző háttérszínt is adhat a jobb olvashatóság és élesség érdekében. Animált 
+háttérkép használatával pedig életre kel a képernyő.
+Érintse meg a Galériában lévő egyik kép kiválasztásához
+Húzza jobbra vagy balra, kiválaszthatja, hogy hol szeretné 
+megjeleníteni a háttérképet
+Érintse meg a háttérkép vágásához 
+2 fejezet: Sehol se olyan jó, mint otthon 27
+Widgetek
+Kisméretű, dinamikus alkalmazásokat, úgynevezett widgeteket helyezhet a Kezdőlapra. A widgetek 
+az időjárás-előrejelzés, naptáresemények, akkumulátorállapot és egyebek gyors áttekintését teszik 
+lehetővé.
+Widgetek hozzáadása 
+wideget hozzáadásához:
+1. Érintse meg és tartsa az ujját a Kezdőképernyő üres területén, majd válassza a Widgets 
+(Widgetek) elemet.
+2. A widgetek képernyőn, érintse meg és tartsa az ujját a hozzáadni kívánt minialkalmazáson, majd 
+húzza a Kezdőképernyő üres területére.
+Widget eltávolításához:
+A Kezdőképernyőn érintse meg és tartsa az ujját a widget, majd húzza a képernyő felső részén lévő 
+Remove (Eltávolítás) részre.
+Preferenciák
+Szerkesztheti a kezdőképernyőt, használhatja az AppLock funkciót és elrejtheti az alkalmazásokat.
+1. Érintse meg és tartsa az ujját a Kezdőlap képernyő üres területén, majd válassza a Preferenciák.
+2. Érintse meg a szerkeszteni kívánt jellemzőt elemet a Preferenciák.
+A Kezdőlap szerkesztése
+Kiválaszthat egy görgetési hatást, megváltoztathatja az ikoncímke színét, kiválaszthatja a mappa 
+témáját és beállíthatja az alapértelmezett képernyőt.
+1. Érintse meg és tartsa az ujját a Kezdőlap képernyő üres területén, majd válassza a A Kezdőlap 
+szerkesztése.
+2. Érintse meg a szerkeszteni kívánt jellemzőt elemet a Kezdőlapon.
+28 2 fejezet: Sehol se olyan jó, mint otthon
+Dátum és idő beállítása
+A Kedzőlapon megjelenített dátum és idő alapértelmezésképpen automatikusan szinkronizálódik, 
+amikor az internethez kapcsolódik.
+A dátum- és az időbeállítások megváltoztatásához:
+1. Indítsa el a Beállítások képernyőt az alábbiak bármelyikének végrehajtásával:
+ • Indítsa el a Gyorsbeállítások menüt, majd érintse meg a(z) elemet.
+ • Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) pontot.
+2. Görgessen lefelé a Settings (Beállítások) képernyőre, majd válassza ki a System (Rendszer) > 
+Date & time (Dátum és idő) elemet.
+3. Húzza a Set time automatically (Idő automatikus beállítása) és az Set time zone 
+automatically (Időzóna automatikus beállítása) kapcsolót kikapcsolt helyzetbe.
+4. Érintse meg a Date (Dátum) és Time (Idő) gombokat a dátum és idő állításához.
+5. Érintse meg a Time Zone (Időzóna) lehetőséget, hogy kiválassza az időzónát..
+6. Igény szerint használhat 24 órás formátumot.
+MEGJEGYZÉS: Lásd még: Óra.
+Csengőhang és értesítési hangok beállítása
+Beállíthatja a telefon csengőhangját, illetve a szöveges üzenetek, e-mailek és események értesítési 
+hangjait. A tárcsázó billentyűzet érintési hangjait, az érintési hangokat, a képernyő lezárási hangját 
+engedélyezheti, illetve letilthatja, valamint beállíthatja, hogy az ASUS Phone érintésre rezegjen-e.
+Hangbeállítások elvégzése:
+1. Indítsa el a Beállítások képernyőt az alábbiak bármelyikének végrehajtásával:
+ • Indítsa el a Gyorsbeállítások menüt, majd érintse meg a(z) elemet.
+ • Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) pontot.
+2. Válassza ki a Sound & vibration (Hang és rezgés) lehetőséget, majd adja meg a kívánt 
+hangbeállításokat.
+MEGJEGYZÉS: Nyomja meg a hangerőgombot, és érintse meg a > elemet bármelyik képernyőn 
+a Sound & vibration (Hang és rezgés) menü megnyitásához.
+3 fejezet: Dolgozz keményen, játssz még keményebben 29
+Dolgozz keményen, játssz még 
+keményebben 3
+3 Dolgozz keményen, játssz még 
+keményebben
+Chrome
+A Chrome for Android lehetővé teszi ugyanazt a gyors, biztonságos és stabil webböngészést, 
+mint a Chrome asztali verziója esetében. Jelentkezzen be Google-fiókjába, hogy a lapfüleket, 
+könyvjelzőket és böngészési előzményeket az összes eszközén szinkronizálhassa. Ha nem 
+rendelkezik Google-fiókkal, regisztráljon egyet.
+MEGJEGYZÉS: A Google-fiók létrehozásának részleteit lásd Gmail.
+FONTOS! Mielőtt szörfölni kezdene a neten vagy más tevékenységet végezne, győződjön meg arról, 
+hogy az ASUS Phone csatlakozik Wi-Fi vagy mobilhálózathoz. A részleteket lásd: Kapcsolatban 
+maradni.
+A Chrome indítása
+A Kezdőlapon tegye az alábbiak bármelyikét a Chrome indításához:
+• Érintse meg a elemet.
+• Görgessen felfele a kezdőképernyőn, majd érintse meg a Chrome elemet. 
+30 3 fejezet: Dolgozz keményen, játssz még keményebben
+Oldal megosztása
+Megoszthatja az Ön számára érdekes oldalakat másokkal ASUS telefonhoz készülékéről e-mail 
+fiókon, felhő-tárhelyen, Bluetooth-kapcsolaton és egyéb ASUS telefonhoz alkalmazásokon 
+keresztül.
+1. Indítsa el a böngészőprogramot.
+2. Egy weboldalon érintse meg a > Share... (megosztása...) elemet.
+3. Az oldal megosztásának módjához érintse meg.
+Oldalak megjelölése könyvjelzővel
+Jelölje meg kedvenc oldalait vagy weblapjait könyvjelzővel, hogy később újra böngészhessen 
+rajtuk.
+Oldal könyvjelzővel való megjelöléséhez:
+Az oldalon tartózkodva érintse meg a > . Kedvenc oldalainak megtekintéséhez érintse meg 
+a > Bookmarks (Könyvjelzők) elemet, majd jelölje ki a megtekinteni vagy elérni kívánt oldalt.
+A böngészési előzmények törlése 
+A Chrome böngésző btöltésének gyorsítása érdekében törölje az ASUS Phone készüléken 
+ideiglenesen tárolt böngészési adatokat. A böngészési adatok magukban foglalják a böngészési 
+előzményket, a gyorsítótárat, sütiket/weboldal-adatokat, mentett jelszavakat és automatikus 
+kitöltési adatokat.
+1. Indítsa el a böngészőpeogramot.
+2. Érintse meg a > Settings (Beállítások) > Privacy and security (Magánszféra és Biztonsági) 
+> Clear browsing data (Böngészési adatok törlése) elemet.
+3. Jelölje ki a törölni kívánt böngészési adatokat. 
+4. Ha végzett, kattintson a Clear data (Adatok törlése) elemre.
+3 fejezet: Dolgozz keményen, játssz még keményebben 31
+Gmail
+Használja a Gmail alkalmazást Google-fiók beállításához, hogy Google-lal kapcsolatos 
+szolgáltatásokat és alkalmazásokat használhasson, illetve e-maileket fogadhasson, küldhessen 
+és tallózhasson közvetlenül ASUS Phone készülékén. A Gmail-en keresztül egyéb e-mail-fiókot is 
+beállíthat, pl. a Yahoo, illetve a munkahelyi e-mail-fiókját. 
+FONTOS! ASUS telefonhoz készülékének Wi-Fi vagy mobilhálózathoz kell csatlakoznia e-mail fiók 
+hozzáadásához, illetve üzenetek küldéséhez és fogadásához a hozzáadott fiókok használatával. A 
+részleteket lásd: Kapcsolatban maradni.
+Google-fiók beállításához: 
+1. A Kezdőlapon tegye az alábbiak bármelyikét a Gmail indításához: 
+• Érintse meg a Google > Gmail elemet.
+• Görgessen felfele a kezdőképernyőn, majd érintse meg a Gmail elemet. 
+2. Érintse meg a GOT IT (MEGÉRTETTEM) majd az Add an email address (E-mail cím 
+hozzáadása) pontot.
+3. Jelölje ki a Google elemet.
+4. Adja meg e-mail címet. Új Google-fiók létrehozásához érintse meg az Create account (új fiók 
+létrehozása) elemet. 
+5. Kövesse a soron következő lépéseket Google-fiókjába történő bejelentkezéshez.
+MEGJEGYZÉS: Ha munkahelyi fiókot kíván beállítani ASUS telefonhoz készülékén, érdeklődjön a 
+hálózati rendszergazdánál az e-mail beállításokkal kapcsolatban.
+32 3 fejezet: Dolgozz keményen, játssz még keményebben
+Google Calendar
+Szervezze meg életét és tartsa nyilván az összes fontos eseményt és emlékeztetőt. Az Ön által 
+létrehozott vagy szerkesztett események automatikusan szinkronizálódnak mindazokkal a Google 
+Calendar verziókkal, amelyekre bejelentkezett. 
+Események létrehozása 
+Esemény létrehozásához: 
+1. A Kezdőlapon tegye az alábbiak bármelyikét a Calendar (Naptár) indításához: 
+• Érintse meg a Google > Calendar (Naptár) elemet.
+• Görgessen felfele a kezdőképernyőn, majd érintse meg a Calendar (Naptár) elemet. 
+2. Érintse meg a , majd az Event (Esemény) elemet.
+3. Adja meg az esemény nevét, majd válassza ki az esemény dátumát és időpontját. Az eseményt 
+egész naposként vagy ismétlődőként állíthatja be. 
+• Egész napos esemény: Az All day (Egész napos) mezőben húzza el jobbra a csúszkát.
+• Ismétlődő esemény: Érintse meg a More options (További lehetőségek) > , elemet, 
+majd adja meg, milyen gyakran szeretné, hogy ismétlődjön az esemény.
+4. Az időzóna beállításához érintse meg a More options (További lehetőségek) > , elemet, 
+majd adja meg az országot, amelynek az időzónáját meg kívánja jeleníteni. 
+5. Az Add location (Helyzszín hozzáadása) mezőben adja meg az esemény helyszínét.
+6. Érintse meg a , elemet, majd kiválaszthatja, illetve beállíthatja, hogy mely időpontban vagy 
+napon szeretne értesítőt vagy emlékeztetőt kapni az eseményről.
+7. Az Invite people (Személyek meghívása) mezőben adja meg az esemény vendégeinek e-mail 
+címét. 
+8. Megjegyzést vagy mellékletet is hozzáfűzhet az Add note (Jegyzet hozzáadása) vagy Add 
+attachment (Melléklet hozzáadása) mezőben. 
+9. Ha végzett, érintse meg a Save (Mentés) elemet. 
+Események szerkesztése vagy eltávolítása 
+Esemény szerkesztéséhez vagy eltávolításához: 
+1. A Kezdőlapon érintse meg a Google > Calendar (Naptár) elemet.
+2. Érintse meg a törlendő vagy szerkesztendő eseményt. 
+3. Az esemény szerkesztéséhez érintse meg a elemet, majd végezze el a szükséges 
+módosításokat. Az esemény eltávolításához érintse meg a > Delete (Törlés) elemet , majd az 
+Delete (Törlés) gombot a törlés megerősítéséhez.
+3 fejezet: Dolgozz keményen, játssz még keményebben 33
+Emlékeztető létrehozása 
+Emlékeztető létrehozásához: 
+1. A Kezdőlapon érintse meg a Google > Calendar (Naptár) elemet.
+2. Érintse meg a elemet, majd a Reminder (Emlékeztető) elemet.
+3. Adjon nevet az emlékeztetőnek. 
+4. Állítsa be az emlékeztető dátumát és a időpontját. Az emlékeztetőt egész napos vagy ismétlődő 
+jellegűre állíthatja. 
+• Egész napos emlékeztető: Az All day (Egész napos) mezőben húzza el jobbra a csúszkát.
+• Ismétlődő emlékeztető: Érintse meg a elemet, majd válassza ki, milyen gyakran 
+szeretné, hogy ismétlődjön az emlékeztető.
+5. Ha végzett, érintse meg a Save (Mentés) elemet.
+Emlékeztetők szerkesztése vagy eltávolítása 
+Emlékeztető szerkesztéséhez vagy eltávolításához:
+1. Érintse meg a Google > Calendar (Naptár) elemet. 
+2. Érintse meg a törlendő vagy szerkesztendő emlékeztetőt. 
+3. Az emlékeztető szerkesztéséhez érintse meg a elemet, majd végezze el a szükséges 
+módosításokat. Az emlékeztető eltávolításához érintse meg a > Delete (Törlés) elemet , majd 
+az Delete (Törlés) gombot a törlés megerősítéséhez.
+34 3 fejezet: Dolgozz keményen, játssz még keményebben
+Fájlkezelő
+A Fájlkezelő használatával könnyedén megtalálhatja és rendezheti az ASUS telefonhoz belső 
+tárolóeszközén, illetve a csatlakoztatott külső tárolóeszközökön található adatait.
+A File Manager, görgessen felfele a kezdőképernyőn, majd érintse meg a File Manager (Fájlkezelő) 
+elemet.
+FONTOS! Mielőtt hozzáférne a hálózaton vagy a felhőben mentett fájlokhoz, győződjön meg 
+arról, hogy a Wi-Fi vagy mobilhálózat engedélyezett ASUS Phone készülékén. A részleteket lásd: 
+Kapcsolatban maradni.
+Érintse meg a fájlok kategória szerinti megjelenítéséhez
+Érintse meg a fájl megkereséséhez
+Érintse meg a belső, hálózati és felhő tárhelyek eléréséhez
+Megjeleníti a belső tárhely kihasználtságát
+Érintse meg, hogy szerkessze a kategóriák és konfiguráció 
+beállításokat
+3 fejezet: Dolgozz keményen, játssz még keményebben 35
+ASUS Phone Clone
+Vezeték nélkül vigye át az adatokat, úgy mint kapcsolatok, hívásnapló vagy fotók a régi mobil 
+eszközéről az ASUS telefonjára.
+Az ASUS Phone Clone használatához:
+1. Görgessen felfele a kezdőképernyőn, majd érintse meg a Phone Clone lehetőséget.
+2. Érintse meg a Get Started (Kezdés) lehetőséget, majd kövesse az útmutatásokat, hogy 
+befejezze az adatátviteli folyamatot.
+36 4 fejezet: Kapcsolatban lenni
+Kapcsolatban lenni 4
+4 Kapcsolatban lenni
+Telefonálás stílusosan
+Kettős SIM szolgáltatás
+Az ASUS Phone kettős SIM szolgáltatása lehetővé teszi a behelyezett Nano SIM-kártyák 
+beállításainak kezelését. Ez a szolgáltatás lehetővé teszi a Nano SIM-kártyák engedélyezését/
+letiltását, a SIM-ek elnevezését, illetve valamelyik beállítását mint elsődleges szolgáltatói hálózat.
+A Nano SIM-kártyák átnevezése
+Módosítsa a ASUS Phone készülékbe helyezett Nano SIM-kártyák nevét, hogy könnyebben 
+azonosíthassa azokat. 
+A Nano SIM-kártyák nevének módosításához érintse meg a SIM1 vagy SIM2 elemet, majd 
+billentyűzze be a Nano SIM-kártyák nevét.
+MEGJEGYZÉS: Ha a SIM-kártyák eltérő mobilszolgáltatóhoz tartoznak, javasoljuk, hogy e 
+szolgáltatók nevét használja a SIM-kártyák elnevezéséhez. Ha mindkét SIM-kártya ugyanahhoz a 
+mobilszolgáltatóhoz tartozik, javasoljuk, hogy a mobilszámokat használja a SIM-kártyák elnevezéséhez.
+4 fejezet: Kapcsolatban lenni 37
+Előnyben részesített SIM-kártya kijelölése
+Állítsa be az egyik SIM-kártyát elsődleges SIM-kártyaként a hanghívásokhoz, SMS-üzenetekhez és 
+adatszolgáltatásokhoz. 
+SIM-kártya beszédhíváshoz
+Amikor hívást kezdeményez, az ASUS Phone automatikusan az elsődleges SIM-kártyát használja a 
+hívás kapcsolásához.
+Ahhoz, hogy egy SIM-kártyát beszédhívásokhoz jelölhessen ki, érintse meg a Voice call 
+(Beszédhívás) elemet, majd a SIM-kártyát, amelyet használni kíván.
+FONTOS! Ezt a szolgáltatást akkor használhatja, ha a partnerlistáról kíván hívást indítani.
+SIM-kártya SMS-üzenetekhez
+Ha hozzá szeretné rendelni az egyik SIM-kártyát az SMS-üzenetekhez, érintse meg az SMS 
+messages (SMS-üzenetek) opciót, majd válassza ki a SIM1 vagy a SIM2 lehetőséget.
+SIM-kártya adatszolgáltatáshoz
+TAhhoz, hogy egy SIM-kártyát adatszolgáltatáshoz jelölhessen ki, érintse meg a Data service 
+network (Adathálózat) elemet, majd válasszon a SIM1 vagy SIM2 lehetőségek közül.
+38 4 fejezet: Kapcsolatban lenni
+Hívások indítása
+Az ASUS telefonhoz többféle módot kínál hívás indításához. Ismerősök hívása partnerlistáról, 
+intelligens tárcsázás a hívás gyors indításához, illetve gyorshívó szám megadása a gyakran hívott 
+partnerek hívásához.
+MEGJEGYZÉS: A partnereket a Contacts (Partnerek) alkalmazásban rendezheti. Részletek: Partnerek 
+kezelése.
+A Phone (Telefon) alkalmazás indítása
+A Kezdőlapon tegye az alábbiak bármelyikét a Phone (Telefon) alkalmazás indításához:
+• Érintse meg a(z) elemet.
+• Görgessen felfele a kezdőképernyőn, majd érintse meg a Phone (Telefon) elemet.
+Telefonszám tárcsázása
+Használja a Phone (Telefon) alkalmazást telefonszám közvetlen tárcsázásához.
+1. A Kezdőlapon érintse meg az elemet, majd érintse meg a számbillentyűket.
+2. Válassza a SIM1 vagy SIM2 hívógombot a szám hívásához.
+MEGJEGYZÉS: A hívógombok címkéi eltérhetnek a Nano SIM-kártyákon vég zett beállítások 
+függvényében. A részleteket illetően lásd: Kettős SIM szolgáltatás.
+Telefonmellékszám tárcsázása
+Ha telefonmellékszámot kell tárcsáznia, a hangutasítások mellőzése érdekében a következő lépések 
+bármelyikét megteheti.
+Telefonmellékszám megerősítő üzenete
+Megerősítő üzenetet illeszthet be mellékszám tárcsázására vonatkozóan, miután tárcsázta az 
+elsődleges számot.
+1. A Phone (Telefon) alkalmazásban adja meg az elsődleges számot.
+2. Megerősítő parancssor beillesztéséhez érintse meg és tartsa a # gombot, amíg megjelenik egy 
+pontosvessző (;).
+3. Adja meg a mellékszámot. 
+4. Válassza a SIM1 vagy SIM2 hívógombot a híváshoz.
+5. Kérésre, a mellékszám megerősítéséhez érintse meg a Yes (Igen) elemet.
+6. Érintse meg a elemet a hívás befejezéséhez.
+4 fejezet: Kapcsolatban lenni 39
+Telefonmellékszám automatikus tárcsázása
+Az elsődleges szám tárcsázása után rövid vagy hosszú szünetet illeszthet, ami után automatikusan 
+megtörténik a mellékszám tárcsázása.
+1. A Phone (Telefon) alkalmazásban adja meg az elsődleges számot.
+2. Szünet beillesztéséhez érintse meg és tartsa a * gombot, amíg megjelenik egy vessző (,).
+3. Adja meg a mellékszámot. 
+4. Válassza a SIM1 vagy SIM2 hívógombot a hívás indításához.
+5. Érintse meg a(z) gombot a hívás befejezéséhez.
+Partnerek intelligens tárcsázása
+A telefonszám első számjegyeinek vagy a partner nevének első néhány betűjének megadása után 
+a Smart Dial (Intelligens tárcsázás) végigszűri a partnerlistát, illetve hívásnaplókat, és megadja a 
+lehetséges találatokat. Ellenőrizheti, hogy az elérni kívánt partner szerepel-e az esetleges találatok 
+listáján, majd ezt követően gyorsan indíthatja a hívást.
+1. Indítsa el a Phone (Telefon) alkalmazást, majd adja meg a partner nevét vagy telefonszámát. 
+2. Az esetleges találatok listáján érintse meg a hívandó partner nevét. Ha a partner nem szerepel a 
+listán, adja meg a partner teljes telefonszámát vagy nevét.
+3. Válassza a SIM1 vagy SIM2 hívógombot a híváshoz.
+MEGJEGYZÉS: A hívógombok címkéi eltérhetnek a Nano SIM-kártyákon végzett beállítások 
+függvényében. A részleteket illetően lásd még: Kettős SIM szolgáltatás.
+Hívás a Partnerek alkalmazásból
+Használja a Partnerek alkalmazást hívás indításához a partnerlistáról.
+1. Indítsa el a Partnerek alkalmazást.
+2. Érintse meg a partner nevét, majd a telefonszámot, amelyet tárcsázni kíván.
+3. Ha két SIM-kártya van behelyezve, érintse meg azt a SIM-kártyát, amelyről a hívást indítani 
+kívánja.
+4. Érintse meg a(z) gombot a hívás befejezéséhez.
+40 4 fejezet: Kapcsolatban lenni
+A kedvenc partnerek hívása
+Ha partnert vesz fel a Kedvencek listára, gyorsan felhívhatja a partnert a Contacts (Kapcsolatok) 
+alkalmazásból.
+1. Indítsa el a Contacts (Kapcsolatok) alkalmazást.
+2. Érintse meg Groups (Csoportok) > Favorites (Kedvencek) elemet a Kedvencek lista 
+megjelenítéséhez, majd érintse meg a hívandó kedvenc partnert.
+3. Érintse meg a(z) gombot a hívás befejezéséhez.
+Hívások fogadása
+Az ASUS telefonhoz érintőképernyője bejövő híváskor világít. A bejövő híváskor megjelenő jelzés 
+szintén eltér az ASUS telefonhoz állapotától függően.
+Hívások fogadása
+Csúsztassa ide hogy válaszoljon vagy ide hogy elutasítson egy hívást.
+A hívásnaplók kezelése
+A hívásnaplókból visszahívhatja a nem fogadott hívásokat, mentheti a számokat partnerlistájába, 
+blokkolhat egyes hívókat, illetve újratárcsázhatja a nemrég hívott számot vagy partnert. 
+Hívások mentése a partnerek közé
+A hívásnaplóban szereplő hívást felveheti a partnerlistára.
+1. A Phone (Telefon) alkalmazásban érintse meg a(z) Recents (Legutóbbiak) elemet, hogy 
+megjelenítse a hívásnaplókat.
+2. Érintse meg a kijelzőt a partnerlistához hozzáadni kívánt telefonszám mellett. 
+3. Érintse meg a képernyő jobb felső sarkában, majd érintse meg Add to contacts (Hozzáadás 
+a kapcsolatokhoz).
+4. Érintse meg a Create new contact (Új partner létrehozása) elemet, ha új bejegyzést szeretne 
+hozzáadni a partnerlistához. 
+ Érintse meg az Add to an existing contact (Hozzáadás meglévő partnerhez) lehetőséget, 
+jelöljön ki egy partnert, válassza ki, hogy felül szeretné-e írni a partner számát az új számmal, 
+vagy új bejegyzést szeretne-e hozzáadni, majd érintse meg a ikont.
+4 fejezet: Kapcsolatban lenni 41
+A legutóbbi szám újratárcsázása
+A legutóbbi szám újratárcsázásához:
+1. A Phone (Telefon) alkalmazásban érintse meg a(z) Recents (Legutóbbiak) elemet, hogy 
+megjelenítse a hívásnaplókat.
+2. A szám újrahívásához érintse meg az utoljára hívott számot.
+3. Amennyiben két SIM kártya van telepítve, érintse meg a SIM kártyát, amelyikről újra akarja hívni 
+a számot.
+4. Érintse meg a(z) gombot a hívás befejezéséhez.
+További híváslehetőségek
+Aktív hívás mellett érintse majd a hívás közben lehetséges hívásopciók bármelyikét.
+Kapcsolatok
+Megnyitja a Contacts (Kapcsolatok) alkalmazást.
+Konferenciahívás
+Ha konferenciahívás szolgáltatásra van előfizetése mobilszolgáltatójánál, ez az ikon 
+lehetővé teszi, hogy partnert vagy partnereket adjon hozzá aktív hívás mellett.
+MEGJEGYZÉS: A konferenciahívás résztvevőinek száma a konferenciahívás-előfizetésétől 
+függ. A szolgáltatással kapcsolatban forduljon a mobilszolgáltatójához.
+Rögzítés
+Rogzíti az aktív hívást.
+FONTOS! Aktív hívás rögzítése előtt a helyi törvények többsége előírja, hogy a másik féltől 
+vagy felektől ehhez engedélyt kell kérnie.
+MEGJEGYZÉS: További információkért tekintse meg a Hívások rögzítése című részt.
+Kihangosítás
+Be- vagy kikapcsolja a kihangosítást.
+Mikrofon
+Be- vagy kikapcsolja a mikrofont aktív hívásnál. Ha a mikrofon ki van kapcsolva vagy 
+némítva van, Ön hallhatja a hívó személyt, de a hívó fél nem hallhatja Önt.
+Hívás várakoztatása
+Aktív hívás várakoztatásba helyezése.
+Billentyűzet
+Előhozza a billentyűzetet.
+42 4 fejezet: Kapcsolatban lenni
+Hívások rögzítése
+Az ASUS telefonhoz lehetővé teszi a beszélgetés rögzítését a jövőbeni hivatkozáshoz vagy 
+tájékoztatáshoz.
+1. Hívjon fel egy partnert vagy tárcsázzon egy számot. 
+2. Érintse meg a(z) gombot a hívás rögzítéséhez. 
+FONTOS! A hívás rögzítése előtt ne felejtsen el engedélyt kérni a másik féltől vagy felektől.
+3. A rögzítés megállításához érintse meg a(z) gombot. Ez az ikon jelenik meg a 
+rendszersávon.
+4. Húzza le a képernyő bal felső sarkát, majd érintse meg a Call recording saved (Rögzített hívás) 
+értesítést a rögzített hívás megtekintéséhez.
+4 fejezet: Kapcsolatban lenni 43
+Kapcsolatok kezelése
+Rendszerezze partnereit és tartsa velük egyszerűen a kapcsolatot hívásokon, SMS-üzeneteken, 
+e-maileken és közösségi oldalakon keresztül. Csoportosítsa partnereit Kedvencekként, hogy 
+gyorsan kapcsolatba léphessen velük, illetve VIP-ként, hogy értesítéseket kaphasson a közelgő 
+eseményekről, nem fogadott hívásokról, vagy nem olvasott üzenetekről.
+Szinkronizálhatja partnereit e-mail- vagy közösségi oldalbeli fiókjaival, társíthatja a partnerek 
+információit az egy helyen történő egyszerű eléréshez, illetve kiszűrheti azon partnereit, akikkel 
+kapcsolatban kíván maradni.
+A Contacts (Partnerek), görgessen felfele a kezdőképernyőn, majd érintse meg a Contacts 
+(Partnerek) elemet.
+Partnerbeállítások
+Válassza ki a Partnerbeállítások közül, hogyan kívánja megjeleníteni a partnereket. Az ilyen 
+megjelenítési lehetőségek között szerepel a csak telefonnal rendelkező partnerek megjelenítése, a 
+lista rendezése utónév/vezetéknév szerint, illetve a partnernevek megtekintése utónév/vezetéknév 
+sorrendben. A Partnerbeállítások elvégzéséhez érintse meg a > Settings (Beállítások) elemet a 
+Partnerek alkalmazásban. 
+Profil beállítása
+ASUS telefonhoz készülékét igazán személyessé teheti saját profilinformációk beállításával.
+1. Indítsa el a Partnerek alkalmazást, majd érintse meg a Set up my profile (Saját profil 
+beállítása) vagy Me elemet. 
+MEGJEGYZÉS: Me jelenik meg, ha beállította Google-fiókját ASUS telefonhoz eszközén.
+2. Töltse ki adatait, pl. mobil- vagy otthoni számát. További információ hozzáadásához érintse meg 
+az Add another field (Másik mező hozzáadása) elemet.
+3. Ha kitöltötte a szükséges információkat, érintse meg a elemet. 
+44 4 fejezet: Kapcsolatban lenni
+Partnerek hozzáadása
+Adjon partnereket eszközéhez, pl. üzleti, Google- vagy egyéb e-mail fiókokat, majd töltse ki a 
+fontosabb partnerinformációkat, mint pl. értesítési számok, e-mail címek, különleges események 
+VIP-személyek esetében stb.
+1. Indítsa el a Partnerek alkalmazást, majd érintse meg a(z) elemet.
+2. Jelölje ki a Device (Eszköz) elemet. 
+MEGJEGYZÉSEK:
+• Partnert SIM-kártyájára vagy e-mail fiókba is tud menteni.
+• Ha nem rendelkezik e-mail fiókkal, érintse meg az Add account (Új fiók hozzáadása) elemet, majd 
+hozzon létre egyet.
+3. Adja meg a szükséges információkat, például a nevet, mobiltelefonszámot vagy otthoni 
+telefonszámot, illetve az e-mail címet.
+4. További elérhetőségi információ hozzáadásához érintse meg az Add another field (Másik mező 
+hozzáadása) elemet.
+5. Ha kitöltötte a szükséges információkat, érintse meg a elemet.
+Mellékszám hozzáadása partnerszámhoz
+Egy partner mellékszámát hozzáadhatja, hogy hívás közben mellőzhesse a hangutasításokat.
+1. A partner információs képernyőjén adja meg a partner elsődleges számát és mellékét az alábbi 
+két módszer egyikének alkalmazásával:
+ • Illesszen veszőt (,) az elsődleges szám után, majd adja meg a partner mellékszámát. 
+Rövid szünet után történik meg a mellékszám automatikus tárcsázása. A szünet 
+meghosszabbításához érintse meg a Pause (Szünet) elemet további vessző 
+beillesztéséhez. 
+ • Illesszen pontosveszőt (;) az elsődleges szám után, majd adja meg a partner mellékszámát. 
+A partner számának tárcsázásakor meg kell erősítenie a mellékszámot. Érintse meg a Yes 
+(Igen) gombot a megerősítő üzenetben.
+2. Ha kitöltötte a szükséges információkat, érintse meg a elemet.
+4 fejezet: Kapcsolatban lenni 45
+A kedvenc partnerek megjelölése
+Állítsa be gyakran hívott partnereit kedvencként, hogy gyorsan tudja őket hívni a Phone (Telefon) 
+alkalmazásból.
+1. Görgessen felfele a kezdőképernyőn, majd érintse meg a Contacts (Partnerek) elemet.
+2. Válassza ki azt a partnert, akit kedvencként kíván megjelölni.
+3. Érintse meg a elemet. Megtörténik a partner hozzáadása a Kedvenclistához a Contacts 
+(Partnerek) alkalmazásban. 
+MEGJEGYZÉSEK: 
+• A Favorites (Kedvencek) lista megjelenítéséhez görgessen felfele a kezdőképernyőn, majd érintse 
+meg a Contacts (Kapcsolatok) > Groups (Csoportok) > Favorites (Kedvencek).
+• További információkért forduljon a Kedvenc partnerek hívása című részhez.
+Partner profiljának testreszabása
+Szerkessze meg a partner információit, adjon hozzá fotót, állítson be csengőhangot, vagy készítsen 
+fényképet a partner profilképéhez.
+1. Indítsa el a Partnerek alkalmazást, majd válassza ki azt a partnert, akinek a profilját szerkeszteni 
+vagy testreszabni akarja.
+2. Végezze el a módosításokat a partner profiloldalán.
+Ha megérinti, hozzáadhatja a kedvencek listájához
+Érintse meg a partner információinak szerkesztéséhez
+Beállítások
+46 4 fejezet: Kapcsolatban lenni
+A tiltólista kezelése
+Számok letiltása
+A nem kívánt hívások vagy üzenetek fogadásának elkerülése érdekében Létrehozhatja a blokkolt 
+partnerek vagy telefonszámok listáját. A blokkolt hívások és üzenetek a Block List (Tiltólista) 
+archívumba kerülnek.
+1. Görgessen felfele a kezdőképernyőn, majd érintse meg a Phone (Telefon) elemet, majd érintse 
+meg a > Settings (Beállítások) > Blocked numbers (Tiltott számok) elemet.
+2. Szám blokkolásához érintse meg a Add a number (Szám hozzáadása) elemet, majd 
+billentyűzze be a blokkolni kívánt telefonszámot. Amikor elkészült, érintse meg az Block (Tiltás) 
+gombot.
+Számok letiltásának feloldása
+Igény szerint eltávolíthatja a letiltott számokat a listáról, és ismét fogadhat hívásokat vagy 
+üzeneteket az adott számról.
+1. Görgessen felfele a kezdőképernyőn, majd érintse meg a Phone (Telefon) elemet, majd érintse 
+meg a > Settings (Beállítások) > Blocked numbers (Tiltott számok) elemet.
+2. Érintse meg az × jelet a feloldani kívánt szám mellett, majd érintse meg a Unblock (Feloldás) 
+gombot.
+Közösségi hálózatépítés a partnerekkel
+A partnerek közösségi hálózati fiókjainak integrálása egyszerűbbé teszi a profiljaik, híreik és 
+közösségi hírfolyamaik megtekintését. Valós időben naprakész információt kaphat partnereinek 
+tevékenységéről.
+FONTOS! A partnerek közösségi hálózati fiókjainak integrálása előtt be kell jelentkeznie saját közösségi 
+hálózati fiókjába és szinkronizálnia kell a beállításait.
+Közösségi hálózati fiókjának szinkronizálása
+Szinkronizálja közösségi hálózati fiókját, hogy hozzáadhassa partnereinek közösségi hálózati fiókjait 
+ASUS telefonhoz készülékéhez.
+1. Indítsa el a Settings (Beállítások) képernyőt az alábbi műveletek bármelyikével:
+ • Indítsa el a Gyorsbeállítások menüt, majd érintse meg a(z) elemet.
+ • Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) pontot.
+2. A Settings (Beállítások) képernyőn érintse meg közösségi hálózati fiókját az Passwords & 
+accounts (Jelszavak és fiókok) rész alatt.
+3. Jelölje meg a Automatically sync data (Adatok automatikus szinkronizálása) jelölőnégyzetet 
+partnerei közösségi hálózati fiókjainak szinkronizálásához.
+4. Indítsa el a Contacts (Partnerek) alkalmazást a partnerlista megtekintéséhez. Érintse meg a 
+partnert. Ezután megtekintheti, hogy az adott partner melyik közösségi oldalról származik.
+4 fejezet: Kapcsolatban lenni 47
+Üzenet küldése és egyebek
+Üzenetek
+A Üzenetek egy intuitív, elbűvölő alkalmazás, amely SMS/MMS-üzenetek, valamint csoportos 
+szöveges üzenetek, fotók vagy hangüzenetek küldését/fogadását teszi lehetővé. Az üzenetekhez 
+hangulatjleket vagy matricákat csatolhat, megoszthatja tartózkodási helyét, archiválhatja üzeneteit, 
+és egyszerűen letilthatja az SMS-küldőket. Fényképeket és videókat is készíthet a fájlok egyszerű 
+megosztásához. 
+Üzenetek küldése
+1. A kezdőlapon érintse meg a következőt .
+2. Érintse meg Start chat (Csevegés indítása), majd válassza azt a kapcsolatot akinek üzenetet 
+akar küldeni.
+3. Válassza ki a SIM fiókot ahonnan az üzenetet küldeni fogja.
+4. Írja meg az üzenetet az üzenetmezőben. 
+5. Amikor elkészült érintse meg hogy elküldje az üzenetet.
+Üzenetek megválaszolása
+1. Érintse meg üzenet-értesítését a Kezdőlapon vagy Zárolt képernyőn.
+2. Válassza ki a SIM fiókot ahonnan a választ küldeni fogja.
+3. Írja meg az üzenetet az üzenetmezőben. 
+4. Amikor elkészült érintse meg hogy elküldje a választ.
+48 5 fejezet: Móka és szórakozás
+Móka és szórakozás 5
+5 Móka és szórakozás
+Headset használata
+Szabadon végezheti teendőit hívás közben vagy kedvenc zenéjét hallgathatja headset 
+használatával.
+Audió aljzat csatlakoztatása
+Csatlakoztassa a 3,5 mm-es headset jack-dugót az eszköz audió aljzatához.
+FIGYELEM! A nagy hangerőn, hosszú ideig történő zenehallgatás halláskárosodást okozhat.
+MEGJEGYZÉSEK:
+• Ajánljuk kompatibilis fejhallgatók használatát.
+• Az audió jack zenehallgatás közbeni kihúzása automatikusan szünetelteti az éppen lejátszott zenét.
+• Az audió jack videó nézése közbeni kihúzása automatikusan szünetelteti a videolejátszást.
+5 fejezet: Móka és szórakozás 49
+YT Music
+A YT Music segítségével letöltheti kedvenc zenéinek adatfolyamát, lejátszási listákat hozhat létre, 
+illetve rádiót hallgathat. Előfizethet ezenkívül a YT Music szolgáltatásra milliónyi zenei fájl korlátlan 
+és hirdetésmentes elérése érdekében, amelyket aztán saját zenetárához adhat. 
+A YT Music beállítása 
+Jelentkezzen be Google- vagy Gmail-fiókjába a YT Music használatához. Amint bejelentkezett a 
+fiókjába, az ASUS Phone készüléken lévő összes zenei fájl, a feltöltöttekkel és a Google Play oldalról 
+vásároltakkal együtt, a saját zenetárába kerül. 
+A YT Music beállításához: 
+1. A Kezdőlapon érintse meg a Google > YT Music elemet. 
+2. Érintse meg a SIGN IN (BEJELENTKEZÉS) > Add account (Fiók hozzáadása) lehetőséget.
+3. Kövesse a soron következő lépéseket a fiókjába történő bejelentkezéshez. 
+MEGJEGYZÉSEK: A YT Music-előfizetés csak egyes országokban vagy térségekben érhető el. 
+50 6 fejezet: Megismételhetetlen pillanatok
+Megismételhetetlen pillanatok 6
+6 Megismételhetetlen pillanatok
+Pillanatok rögzítése
+A Kamera alkalmazás indítása
+Képeket és videókat rögzíthet az ASUS telefonhoz Kamera alkalmazásával. A Kamera alkalmazás 
+megnyitását illetően kövesse az alábbi lépéseket.
+A zárolt képernyőről
+Húzza a elemet felfele a kamera alkalmazás indításához.
+A kezdőlapról
+Érintse meg a elemet.
+6 fejezet: Megismételhetetlen pillanatok 51
+Kamera kezdőlap
+Az ASUS telefonhoz készülék kamerája automatikus jelenetészleléssel és automata 
+képstabilizátorral rendelkezik. Videóstabilizálás funkcióval is rendelkezik, amely segít megszüntetni 
+a rázkódást videó rögzítése közben. 
+Érintse meg az ikonokat a kamera használatának megkezdéséhez és fedezze fel az ASUS telefonja 
+kép és videófunkcióit.
+Galéria megtekintése
+Húzza el az ujját jobbra/balra a speciális kamerabeállítások használatához
+Engedélyezze vagy tiltsa le a Szépítés funkciót
+Érintse meg a Google Lens használatához
+Képek helye
+A helyszíncímkézési funkció bekapcsolásához végezze el az alábbi lépéseket:
+1. Kapcsolja be a helymeghatározáshoz való hozzáférést a Settings (Beállítások) > Location 
+(Helymeghatározás) lehetőségnél csúsztassa bekapcsolt állapotba a Use location 
+(Helymeghatározás használata) funkciót.
+2. Győződjön meg arról, hogy a tartózkodási helyét megosztotta a Google Térképpel.
+3. A Camera (Kamera) alkalmazás főképernyőjén érintse meg a > és aktiválja a Location 
+services (Helymeghatározó szolgáltatások) funkciót, mielőtt elkészítené a fotót.
+Speciális kamerafunkciók
+Felfedezheti a kép- és videórögzítés új módszereit és különleges pillanatokat rögzíthet az ASUS 
+telefonhoz speciális kamerafunkcióival.
+FONTOS! Alkalmazza a beállításokat, mielőtt képeket készítene. A rendelkezésre álló szolgáltatások 
+típusonként eltérhetnek.
+Érintse meg a képernyőmód kiválasztásához
+• Zárkioldó gomb
+• Húzza felfele, hogy visszaszámlálást állítson be fénykép készítése előtt
+Érintse meg, hogy az első és hátsó kamera között váltson
+Érintse meg egy vakufunkció kiválasztásához
+További beállítási lehetőségekhez húzza le vagy érintse meg
+Érintse meg, hogy a Normál mód és Szélesszög között váltson
+Érintse meg, hogy a Normál mód és 2,0x-es optikai zoom között váltson
+Éjszakai felvételek
+52 6 fejezet: Megismételhetetlen pillanatok
+Lassítás 
+A videolassítási funkció lehetővé teszi, hogy lassított formában lejátszható videókat készítsen. 
+Lassított videofelvételek készítése 
+1. A Camera (Kamera) alkalmazás kezdőlapján csúsztassa jobbra az ujját, majd érintse meg a Slow 
+motion (Lassítás) lehetőséget. 
+2. Érintse meg a zárkioldó gombot a lassított videók rögzítésének elindításához.
+Gyorsított felvétel
+Az ASUS telefonhoz gyorsított felvétel funkciója lehetővé teszi, hogy állóképeket rögzítsen az 
+automatikus lassított felvételhez. Az események gyorsítva jelennek meg, holott csak igen nagy 
+időközökkel rögzítették azokat.
+Lassított videófelvételek rögzítése
+1. A Camera (Kamera) alkalmazás főképernyőjén húzza el az ujját jobbra, majd érintse meg a TIME 
+LAPSE (GYORSÍTOTT FELVÉTEL) elemet.
+2. Érintse meg a zárkioldó gombot, majd válassza ki a gyorsított felvétel időintervallumát.
+3. Érintse meg a zárkioldó gombot a gyorsított felvételek rögzítésének elindításához.
+Panoráma
+A Panorama funkció segítségével különböző szögekből rögzíthet képeket. A funkció automatikusan 
+elvégzi a nagy látószögben rögzített képek összefűzését.
+Panorámaképek rögzítése
+1. A Camera (Kamera) alkalmazás főképernyőjén húzza el az ujját balra, majd érintse meg a PANO 
+elemet.
+2. Tartsa a telefont rögzítve és érintse meg a kioldó gombot az automatikus panoráma 
+elindításához.
+Éjszaka
+Még éjszaka vagy gyenge megvilágítás mellett is megfelelően exponált fotókat készíthet az ASUS 
+telefonhoz Night (Éjszaka) funkció használatával.
+MEGJEGYZÉS: Tartsa stabilan a kezét az ASUS telefonhoz rögzítésének indítása előtt és a rögzítés 
+közben, nehogy elmosódott legyen az eredmény.
+Éjszakai képek rögzítése
+1. A Camera (Kamera) alkalmazás főképernyőjén húzza el az ujját balra, majd érintse meg a MORE 
+(TOVÁBB) > NIGHT (ÉJSZAKA) elemet.
+2. Érintse meg a zárkioldó gombot az éjszakai fényképek készítéséhez.
+6 fejezet: Megismételhetetlen pillanatok 53
+A Galéria használata
+A Gallery alkalmazás képek, illetve videók lejátszását teszi lehetővé az ASUS telefonhoz készüléken. 
+Ez az alkalmazás lehetővé teszi továbbá az ASUS telefonhoz készüléken tárolt kép- és videofájlok 
+szerkesztését, megosztását és törlését. A Gallery alkalmazásban a képeket diavetítés formában 
+megjelenítheti, illetve a kívánt képeket és videókat egyesével is kiválaszthatja azok megérintésével. 
+A Galéria görgessen felfele a kezdőképernyőn, majd érintse meg a Gallery (Galéria) elemet.
+A fotó helyének megtekintése
+Engedélyezze a tartózkodási hely elérését ASUS telefonhoz készülékén, majd töltse le a 
+helyszínadatokat fotóira. A fotók helyszínadatai magukban foglalják a fotók készítésének helyét, 
+illetve a helyszín térképét a Google Map vagy Baidu (csak Kína) jóvoltából.
+Egy fotó részleteinek megtekintéséhez:
+1. Kapcsolja be a helymeghatározáshoz való hozzáférést a Settings (Beállítások) > Location 
+(Helymeghatározás) lehetőségnél csúsztassa bekapcsolt állapotba a Use location 
+(Helymeghatározás használata) funkciót.
+2. Győződjön meg arról, hogy megosztotta tartózkodási helyét a Google Map vagy Baidu 
+szolgáltatással.
+3. Indítsa el a Galéria alkalmazást, majd válassza ki azt a fotót, amelynek részleteit meg kívánja 
+tekinteni.
+4. Érintse meg a fotót, majd a(z) Details (Részletek) elemet.
+Kép szerkesztése
+A Galéria saját képszerkesztő eszközökkel is rendelkezik, amelyeket az ASUS telefonhozen mentett 
+képek javítására lehet használni.
+1. Tegye az alábbiak egyikét:
+ • A Gallery (Galéria) > Photos (Fotók) képernyőn érintse meg a szerkeszteni kívánt képet. 
+ • A Gallery (Galéria) > Albums (Albumok) képernyőn érintse meg a mappát, amelyben a 
+fájlok vannak. Miután megnyitotta a mappát, érintse meg a szerkeszteni kívánt képet.
+2. Érintse meg a(z) Edit (Szerkesztés) elemet a képszerkesztő eszköztár megnyitásához.
+3. Érintse meg valamelyik ikont a képszerkesztő eszköztárban, hogy alkalmazza a képen végzett 
+módosításokat.
+54 6 fejezet: Megismételhetetlen pillanatok
+Fájlok megosztása a galériából
+1. Tegye az alábbiak egyikét:
+ • A Gallery (Galéria) > Photos (Fotók) képernyőn érintse meg az jelet > Select 
+(Kiválaszt), hogy aktiválja a fájl kiválasztását. 
+ • A Gallery (Galéria) > Albums (Albumok) képernyőn érintse meg a mappát ahol a 
+megosztani kívánt fájlok vannak. A mappa megnyitása után érintse meg a jelet > 
+Select (Kiválaszt), hogy aktiválja a fájl kiválasztását.
+2. Érintse meg a megosztani kívánt fájlokat. A kijelölt kép fölött megjelenik egy pipajel.
+3. Érintse meg a(z) elemet, majd válasszon a képmegosztási célok listájáról.
+Fájlok törlése a galériából
+1. Tegye az alábbiak egyikét:
+ • A Gallery (Galéria) > Photos (Fotók) képernyőn érintse meg az jelet > Select 
+(Kiválaszt), hogy aktiválja a fájl kiválasztását. 
+ • A Gallery (Galéria) > Albums (Albumok) képernyőn érintse meg a mappát ahol a 
+törölni kívánt fájlok vannak. A mappa megnyitása után érintse meg a jelet > Select 
+(Kiválaszt), hogy aktiválja a fájl kiválasztását.
+2. Érintse meg a törölni kívánt fájlokat. A kijelölt kép fölött megjelenik egy pipajel.
+3. Érintse meg a(z) elemet.
+7 fejezet: Kapcsolatban maradni 55
+Kapcsolatban maradni 7
+7 Kapcsolatban maradni
+Mobilhálózat
+Amennyiben nincs elérhető Wi-Fi hálózat, amelyhez kapcsolódhat, engedélyezheti a mobilhálózat 
+adatelérését internetkapcsolat létesítése céljából.
+A mobilhálózat engedélyezése
+1. A Settings (Beállítások) képernyő megnyitásához hajtsa végre az alábbiak valamelyikét:
+ • Indítsa el a Gyorsbeállítások menüt, majd érintse meg a(z) elemet.
+ • Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) pontot.
+2. Érintse meg a Network & internet (Hálózat és internet) > Internet > SIM1 vagy SIM2 elemet.
+3. Csúsztassa a Mobile data (Mobilhálózati adatok) lehetőséget ON (Be) helyzetbe, majd szükség 
+esetén konfigurálja a többi mobilhálózat-beállítást.
+MEGJEGYZÉSEK:
+• Ha az internethez mobilhálózat útján csatlakozik, előfizetésétől függően további díjakat 
+számíthatnak fel.
+• További információkért a mobilhálózati tarifákkal/díjakkal kapcsolatban vegye fel a kapcsolatot 
+mobilszolgáltatójával.
+Wi-Fi
+Az ASUS telefonhoz Wi-Fi technológiája lehetővé teszi a kapcsolódást a vezeték nélküli világhoz. 
+Frissítheti közösségi média-fiókjait, böngészhet az interneten, vagy adatokat és üzeneteket 
+cserélhet ki vezeték nélkül az ASUS telefonhoz készülékén.
+Wi-Fi engedélyezése
+1. Indítsa el a Beállítások képernyőt az alábbiak bármelyikének végrehajtásával:
+ • Indítsa el a Gyorsbeállítások menüt, majd érintse meg a(z) > Network & internet 
+(Hálózat és internet) > Internet elemet.
+ • Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) > 
+Network & internet (Hálózat és internet) > Internet elemet. 
+2. Csúsztassa a Wi-Fi kapcsolót jobbra a Wi-Fi bekapcsolásához.
+MEGJEGYZÉS: A Wi-Fi funkciót a Gyorsbeállítások képernyőn is engedélyezheti. Lásd a 
+Gyorsbeállítások részt a Gyorsbeállítások indítását illetően.
+56 7 fejezet: Kapcsolatban maradni
+Kapcsolódás Wi-Fi hálózathoz
+1. A Beállítások képernyőn érintse meg a Network & internet (Hálózat és internet) > Internet > 
+Wi-Fi elemet az összes észlelt Wi-Fi hálózat megjelenítéséhez.
+2. Érintsen meg egy hálózatnevet, hogy hozzá kapcsolódjon. Védett hálózat esetén jelszó vagy 
+egyéb azonosító adatok megadására lehet szükség.
+MEGJEGYZÉSEK:
+• Az ASUS telefonhoz automatikusan újracsatlakozik a korábban csatlakozott hálózathoz.
+• Kapcsolja ki a Wi-Fi funkciót, hogy takarékoskodjon az akkumulátorral.
+A Wi-Fi letiltása
+A Wi-Fi letiltásához:
+1. Tegye az alábbiak egyikét:
+ • Indítsa el a Gyorsbeállítások menüt, majd érintse meg a(z) > Network & internet 
+(Hálózat és internet) > Internet elemet.
+ • Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) > 
+Network & internet (Hálózat és internet) > Internet elemet. 
+2. Csúsztassa a Wi-Fi kapcsolót balra a Wi-Fi kikapcsolásához.
+MEGJEGYZÉS: A Wi-Fi funkciót a Gyorsbeállítások képernyőn is letilthatja. Lásd a Gyorsbeállítások 
+részt a Gyorsbeállítások indítását illetően.
+Bluetooth®
+Használja az ASUS telefonhoz Bluetooth funkcióját fájlok küldéséhez és fogadásához, illetve 
+multimédia fájlok adatfolyamainak továbbításához egyéb okos eszközök viszonylatában rövid 
+távolságban. A Bluetooth funkció segítségével megoszthatja a médiafájlokat ismerősei okos 
+eszközein, adatokat küldhet nyomtatásra Bluetooth-nyomtatóra, illetve zenei fájlokat játszhat le 
+Bluetooth-hangszórón.
+A Bluetooth® engedélyezése
+1. Tegye az alábbiak egyikét:
+ • Indítsa el a Gyorsbeállítások menüt, majd érintse meg a(z) > Connected devices 
+(Csatlakoztatott készülékek) elemet.
+ • Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) > 
+Connected devices (Csatlakoztatott készülékek) elemet. 
+2. Érintse meg Pair new device (Új eszköz párosítása) vagy Connection preferences 
+(Csatlakozási preferenciák) pontot.
+3. Csúsztassa a Bluetooth kapcsolót jobbra a Bluetooth-funkció bekapcsolásához.
+MEGJEGYZÉS: A Bluetooth funkciót a Gyorsbeállítások képernyőn is engedélyezheti. Lásd a 
+Gyorsbeállítások részt a Gyorsbeállítások indítását illetően.
+7 fejezet: Kapcsolatban maradni 57
+Az ASUS telefonhoz párosítása Bluetooth®-eszközzel
+Hogy az ASUS telefonhoz Bluetooth funkcióját teljesen kihasználhassa, párosítania kell egy másik 
+Bluetooth-eszközzel. Az ASUS telefonhoz automatikusan menti a Bluetooth-eszköz párosítási 
+adatait.
+Az ASUS telefonhoz Bluetooth-eszközzel történő párosításához:
+1. A Beállítások képernyőn érintse meg a Connected devices (Csatlakoztatott készülékek) > 
+Connection preferences (Csatlakozási beállítások) > Bluetooth elemet az összes elérhető 
+eszköz megjelenítéséhez.
+FONTOS!
+• Ha a párosítani kívánt eszköz nem szerepel a listán, győződjön meg arról, hogy a Bluetooth-
+szolgáltatás be van kapcsolva rajta és látható állapotban van.
+• A Bluetooth funkció engedélyezésének és láthatóvá tételének módját illetően lásd az eszköz 
+használati útmutatóját.
+2. Érintse meg a > Refresh (Frissítés) elemet további Bluetooth-eszközök kereséséhez.
+3. Az elérhető eszközök listáján érintse meg azon Bluetooth-eszközt, amelyet párosítani kíván. 
+4. Győződjön meg arról, hogy ugyanaz a hozzáférési kulcs látható mindkét eszközön, majd érintse 
+meg a Pair (Párosítás) elemet. 
+MEGJEGYZÉS: Kapcsolja ki a Bluetooth-funkciót, hogy takarékoskodjon az akkumulátorral.
+Az ASUS telefonhoz párosításának megszüntetése a Bluetooth®-
+eszközzel
+1. A Beállítások képernyőn érintse meg a Connected devices (Csatlakoztatott készülékek) > 
+Connection preferences (Csatlakozási beállítások) > Bluetooth elemet az összes párosított 
+eszköz megjelenítéséhez.
+2. A párosított eszközök listáján érintse meg azon Bluetooth-eszköz ikonját, amelynek 
+párosítását meg kívánja szüntetni, majd érintse meg az Forget (Törlése) elemet.
+58 7 fejezet: Kapcsolatban maradni
+Kapcsolat-megosztás
+Ha a Wi-Fi szolgáltatás nem érhető el, ASUS telefonhoz készülékét modemként használhatja, vagy 
+Wi-Fi hotspottá alakíthatja, hogy laptop, telefonhoz vagy egyéb mobileszközén internetkapcsolatot 
+létesíthessen.
+FONTOS! A mobilszolgáltatók többsége adatelőfizetéshez kötheti az internet-megosztás funkció 
+használatát. Az adatszolgáltatás elérhetőségével kapcsolatban forduljon mobilszolgáltatójához.
+MEGJEGYZÉSEK:
+• A kapcsolat-megosztással megvalósuló internetelérés sebessége lassabb lehet a normál Wi-Fi vagy 
+mobilkapcsolatnál.
+• Csak korlátozott számú mobileszköz használhatja ASUS telefonhoz készüléke megosztott-kapcsolatát.
+• Kapcsolja ki a kapcsolat-megosztást, ha nem használja, mert így takarékoskodhat az akkumulátorral.
+Wi-Fi Hotspot
+ASUS Phone készülékét Wi-Fi Hotspottá alakíthatja, így megoszthatja az internetkapcsolatot más 
+eszközökkel.
+1. Tegye az alábbiak egyikét:
+ • Indítsa el a Gyorsbeállítások menüt, majd érintse meg a(z) > Network & internet 
+(Hálózat és internet) elemet.
+ • Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) > 
+Network & internet (Hálózat és internet) elemet. 
+2. Érintse meg a Hotspot & tethering (Hotspot és megosztás) pontot, majd csúsztassa a Wi-Fi 
+hotspot (Wi-Fi hotspot) lehetőséget bekapcsolt állapotba.
+3. Érintse meg a Wi-Fi hotspot (Wi-Fi hotspot) > Hotspot name (Hotspot neve) pontot, hogy 
+egyedi SSID-t vagy hálózatnevet rendeljen hozzá és érintse meg a Hotspot password (Hotspot 
+jelszó) pontot, hogy erős, 8 karakterből álló jelszót rendeljen a Wi-Fi hotspothoz. Amikor 
+elkészült, érintse meg az OK gombot.
+4 . Ugyanúgy kapcsolódjon más eszközökkel az ASUS telefonhoz hotspot kapcsolatához, mint 
+ahogy Wi-Fi hálózathoz kapcsolódna.
+7 fejezet: Kapcsolatban maradni 59
+Bluetooth kapcsolat-megosztás
+Ha engedélyezi a Bluetooth alapú internetmegosztást az ASUS Telefonon, akkor megoszthatja a 
+készülék internetkapcsolatát más készülékekkel.
+1. Engedélyezze a Bluetooth funkciót ASUS telefonhoz készülékén és a másik eszközön.
+2. Párosítsa mindkét eszközt.
+MEGJEGYZÉS: A részleteket lásd: ASUS telefonhoz párosítása Bluetooth®-eszközzel.
+3. A Settings (Beállítások) képernyőn érintse meg a Network & internet (Hálózat és internet) 
+> Hotspot & Tethering (Hotspot és internetmegosztás) elemet, majd húzza a Bluetooth 
+tethering (Bluetooth kapcsolat-megosztás) elemet ON (BE) helyzetbe.
+USB alapú internetmegosztás
+Ha engedélyezi az USB alapú internetmegosztást az ASUS Telefonon, akkor megoszthatja a 
+készülék internetkapcsolatát más készülékekkel. 
+1. Csatlakoztassa az ASUS Telefont egy másik készülékhez egy USB-kábelen keresztül. 
+2. A Settings (Beállítások) képernyőn érintse meg a Network & internet (Hálózat és internet) > 
+Hotspot & Tethering (Hotspot és internetmegosztás) lehetőséget, majd csúsztassa az USB 
+tethering (USB alapú internetmegosztás) beállítást ON (BE) helyzetbe az internetmegosztás 
+engedélyezéséhez.
+60 8 fejezet: Utazási alkalmazások
+Utazási alkalmazások 8
+8 Utazási alkalmazások
+Időjárás
+Az időjárás alkalmazás segítségével közvetlenül kaphat előrejelzéseket ASUS telefonhoz 
+készülékéről. A Weather alkalmazás segítségével a világ minden részén ellenőrizheti az időjárást. 
+A Időjárás alkalmazás indítása
+A kezdőképernyőn, az Időjárás alkalmazás indításához az alábbiak közül valamelyik műveletet kell 
+végrehajtania:
+• Érintse meg az időjárása ikont.
+• Görgessen felfele a Kezdőlapon, majd érintse meg az Weather (Időjárás) elemet.
+8 fejezet: Utazási alkalmazások 61
+Weather kezdőlap
+Állítsa be és töltse le a helyszínére és a világ más részeire vonatkozó időjárás-jelentéseket. 
+Érintse meg a helylista szerkesztéséhez
+Érintse meg az időjárás információ frissítéséhez, adjon 
+hozzá várost a helylistához vagy konfigurálja az időjárás 
+beállításait
+Húzza felfelé további időjárás-információk 
+megtekintéséhez
+Húzza balra vagy jobbra a kijelzőt, hogy megtekinthesse 
+a helyszínlitán szereplő egyéb városok időjárását
+62 8 fejezet: Utazási alkalmazások
+Óra
+Testreszabhatja az ASUS telefonhoz időzóna beállításait, ébresztőt állíthat be, és az ASUS 
+telefonhozet stopperóraként használhatja a Clock (Óra) alkalmazás segítségével.
+Az Óra indítása
+A Clock (Óra) alkalmazást az alábbi lehetőségekkel indíthatja el:
+• Görgessen felfele a kezdőképernyőn, majd érintse meg a Clock (Óra) elemet.
+• Az ASUS telefonhoz kezdőlapján a digitális óra megérintésével.
+Ébresztőóra
+Érintse meg a(z) Alarms (Ébresztőóra) elemet az ASUS telefonhoz világóra beállításainak eléréséhez.
+Érintse meg ezt az ébresztőóra funkció beállításainak eléréséhez
+Érintse meg új ébresztési időpont beállításához
+Csúsztassa el az ébresztő ki/bekapcsolásához
+8 fejezet: Utazási alkalmazások 63
+Világóra
+Érintse meg a(z) World Clock (Világóra) s elemet az ASUS telefonhoz világóra beállításainak 
+eléréséhez.
+Érintse meg ezt egy új város hozzáadásához a világóra térképen
+Stopperóra
+Érintse meg a(z) Stopwatch (Stopperóra) elemet az ASUS telefonhoz stopperóraként történő 
+használatához.
+Érintse meg ezt a gombot a stopperóra indításához
+Érintse meg ezt a világórán megjelölt városok listájának megtekintéséhez.
+64 8 fejezet: Utazási alkalmazások
+Időzítő
+Több időzítő-opciót állíthat be az ASUS telefonhoz számára. Ehhez kövesse az alábbi lépéseket:
+Az időzítő beállítása
+Érintse meg a(z) Timer (Időzítő) elemet az ASUS telefonhoz időzítő funkciójának eléréséhez.
+Érintse meg ezt a gombot az időzítő indításához
+Érintse meg ezt a gombot a stopperóra indításához
+Érintse meg ezt az időzítők törléséhez, illetve a beállítások 
+eléréséhez
+9 fejezet: Zen mindenhol 65
+Zen mindenhol 9
+9 Zen mindenhol
+Különleges Zen eszközök
+Számológép
+A Calculator (Számológép) alkalmazás engedélyezése után számításokat végezhet az ASUS 
+telefonján.
+A számológép elindítása
+Indítsa el a Calculator (Számológép) alkalmazást az alábbi két lehetőség egyikének használatával:
+ • Görgessen felfele a kezdőképernyőn, majd érintse meg a Calculator (Számológép) 
+elemet.
+ • Nyissa meg a Gyorsbeállítás panelt, a Calculator (Számológép) ikon látható a listában. 
+Érintse meg hogy elkezdje a számolást.
+Számológép képernyő
+Érintse meg ezt 
+a számológép 
+indításához
+66 9 fejezet: Zen mindenhol
+Érintse meg a mentett hangfájlok listájának megtekintéséhez
+Hangrögzítő
+Hangfájlokat rögzíthet az ASUS telefonhoz segítségével, ha engedélyezi a Hangrögzítő alkalmazást. 
+A Hangrögzítő indítása
+A Hangrögzítő indításához görgessen felfele a kezdőképernyőn, majd érintse meg a Recorder 
+(Felvevő) elemet.
+Érintse meg a hangfelvétel indításához
+Érintse meg a Hangrögzítő beállításainak testreszabásához
+9 fejezet: Zen mindenhol 67
+Rögzítés szüneteltetése
+Szüneteltetett rögzítés közben választhat a felvétel folytatása, törlése vagy mentése közül.
+Érintse meg a felvétel folytatásához
+Érintse meg a felvétel mentéséhez
+Érintse meg a felvétel törléséhez
+Rögzítési lista
+A Rögzítési listán lehetősége van a mentett hangfájl lejátszására, átnevezésére, megosztására vagy 
+törlésére. 
+A rögzítési lista megtekintéséhez érintse meg a elemet a Sound Recorder (Hangrögzítő) 
+főképernyőjén.
+Érintse meg a kijelölt felvétel lejátszásához/
+szüneteltetéséhez
+Érintse meg és tartsa az ujját egy tételen a kijelölt felvétel 
+megosztásához, átnevezéséhez, törléséhez vagy adatainak 
+megjelenítéséhez
+68 9 fejezet: Zen mindenhol
+Mobile Manager
+Az Mobile Manager integrált kezelőfelületet biztosít több alkalmazás számára, amelyeket arra 
+terveztek, hogy optimalizálják az eszköz teljesítményét, kezeljék a telefon energiafelhasználását és 
+a tárhely-kihasználtságot. 
+Az Mobile Manager alkalmazás indításához görgessen felfele a kezdőképernyőn, majd érintse meg 
+a Settings (Beállítások) > Advanced (Speciális) > Mobile Manager elemet.
+Ha megérinti, beállíthatja a mobiladat-forgalmat, beállíthatja 
+a mobiladat-forgalom havi korlátját, és megadhatja, hogy az 
+alkalmazások hogyan érhetik el az internetet. A következő 
+lehetőségek közül választhat: csak Wi-Fi-kapcsolaton, csak 
+mobilhálózaton, mindkettőn keresztül vagy egyiken keresztül sem 
+Érintse meg az adatvédelmi és biztonsági vizsgálat elindításához, 
+amellyel megakadályozhatja, hogy az alkalmazások veszélyes 
+engedélyeket használjanak és automatikusan elinduljanak
+Érintse meg a kiválasztott, használaton kívül alkalmazások 
+törléséhez, amivel helyet szabadíthat fel
+Bezárja a háttérben futó, használaton kívüli folyamatokat, hogy 
+több rendszermemória álljon rendelkezésre
+10 fejezet: A Zen karbantartása 69
+A Zen karbantartása 10
+10 A Zen karbantartása
+Az eszköz naprakészen tartása
+Az ASUS telefonhozet tartsa naprakészen az Android rendszerfrissítések, továbbfejlesztett 
+alkalmazások és szolgáltatások követésével.
+A rendszer frissítése
+1. Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) pontot.
+2. A Settings (Beállítások) képernyőn csúsztassa lefelé az ujját az egyéb elemek megjelenítéséhez, 
+majd érintse meg a System (Rendszer) > System updates (Rendszerfrissítések) lehetőséget a 
+rendszerfrissítések kereséséhez. 
+3. Érintse meg a ikont a System updates (Rendszerfrissítések) képernyőn a rendszerfrissítések 
+automatikus letöltésének beállításához. 
+Tárhely
+Adatokat, alkalmazásokat és fájlokat tátolhat az ASUS telefonhoz készüléken (belső tárhely), 
+külső tárhelyen, vagy online tárhelyen. Internetkapcsolat szükséges a fájlok átviteléhez az 
+online tárhelyre, illetve az onnan történő letöltésükhöz. Használja a mellékelt USB-kábelt a fájlok 
+áttöltéséhez az ASUS telefonhoz és a számítógép között.
+Biztonsági mentés és alaphelyzet
+Elvégezheti az adatok, Wi-Fi jelszavak és egyéb beállítások biztonsági mentését a Google-
+szerverekre az ASUS telefonhoz segítségével. Ehhez a következőket kell tennie:
+1. Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) > System 
+(Rendszer) > Backup (Biztonsági mentés) elemet.
+2. A Backup & reset (Biztonsági mentés és alaphelyzet) ablakban a következőket teheti:
+• Back up to Google Drive (Biztonsági mentés a Google Drive-ba): Ha engedélyezi ezt 
+a funkciót, a rendszer biztonsági másolatot készít az adatairól, Wi-Fi-jelszavairól és egyéb 
+beállításairól a Google Drive-ba.
+Visszaállítás alaphelyzetbe
+Visszaállíthatja a hálózati beállításokat és alkalmazásbeállításokat alaphelyzetbe, vagy 
+visszaállíthatja a gyári alapbeállításokat.
+1. Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) > System 
+(Rendszer) > Reset options (Beállítások visszaállítása).
+2. A Reset (Alaphelyzet) ablakban az alábbiakra van lehetősége:
+ • Reset Wi-Fi, mobile & Bluetooth (Wi-Fi, mobilhálózat és Bluetooth visszaállítása): Ezzel 
+a funkcióval visszaállíthatja alaphelyzetbe a Wi-Fi-jelszavakat és egyéb hálózati beállításokat.
+ • Erase all settings (Összes beállítás törlése): A telefonon lévő összes beállítást törli.
+ • Erase all data (factory reset) (Minden adat törlése - gyári alapállapot): Az összes 
+adatot törölheti a telefonról.
+70 10 fejezet: A Zen karbantartása
+Az ASUS telefonhoz biztonságba helyezése
+A zárolt képernyő alapértelmezéskééppen megjelenik, miután bekapcsolja eszközét és amikor az 
+felébred alvó módból. A zárolt képernyőről kiindulva, az érintőpanelt elhúzva beléphet az eszköz 
+Android® rendszerébe.
+Az eszköz zárolt képernyője testre is szabható a mobiladatok és alkalmazások hozzáférésének 
+szabályozásához.
+A kijelző kioldása
+Ha a kijelző lezárt állapotban van, kioldhatja az ASUS telefonhoz által kínált biztonsági kioldás 
+funkciók segítségével.
+1. Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) > Security & 
+lock screen (Biztonsági és zárolási képernyő) elemet. 
+2. Érintse meg a Screen lock (Képernyő zárolása) elemet, majd válasszon egy lehetőséget az 
+ASUS telefonhoz kioldásához.
+MEGJEGYZÉSEK:
+• További információkért tekintse meg a Unlock screen options (Kijelző kioldása opciók) című részt.
+• A beálíltott kijelző kioldása opció kikapcsolásához érintse meg a None (Nincs) elemet a Choose 
+screen lock (Kijezőzár választása) képernyőn.
+Kijelző kioldása opciók
+Válasszon ezen opciók közül az ASUS telefonhoz lezárásához.
+Húzás
+Húzza felfelé az ASUS telefonhoz kioldásához.
+10 fejezet: A Zen karbantartása 71
+PIN
+Legalább négy számot billentyűzzön be a PIN beállításához.
+FONTOS! Ne felejtse el a PIN-kódot, amelyet az eszköz kioldásához hozott létre.
+Minta
+Csúsztassa az ujját a pontok mentén és hozzon létre egy mintát. 
+FONTOS! Ne felejtse el a mintát, amelyet az eszköz kioldásához hozott létre.
+72 10 fejezet: A Zen karbantartása
+Password (Jelszó)
+Legalább négy karaktert adjon meg a jelszó beállításához.
+FONTOS! Ne felejtse el a jelszót, amelyet az eszköz kioldásához hozott létre.
+10 fejezet: A Zen karbantartása 73
+Ujjlenyomat-érzékelő 
+Az ujjlenyomat-érzékelő megakadályozza, hogy illetéktelenek használják ASUS telefonját. 
+Ujjlenyomata segítségével kioldhatja eszközét, hozzáférhet a telefonkönyvhöz és adatokhoz. Az 
+ujjlenyomat-azonosító beállításakor be kell állítania a kijelzőzárolás módját is az eszköz indításához. 
+Az ASUS Phone üzembe helyezése 
+Az ujjlenyomat-azonosító beállításához, amikor első ízben használja az ASUS Phone készüléket: 
+1. Ellenőrizze, hogy az ujjelnyomat-azonosító modul és az ujja tiszta és száraz. 
+2. Az Üdvözlő oldalon kövesse a kijelzőn megjelenő utasításokat a Protect your phone 
+(Készüléke védelmében) oldalra történő ugráshoz, majd jelölje be a Set up fingerprint 
+(Ujjlenyomat beállítása) elem jelölőnégyzetét.
+3. Kattintson a Continue (Folytatás) elemre a kijelzőzárolás módjának kiválasztásához, majd 
+kövesse az utasításokat, hogy a Locate finger print scanner (Ujjlenyomat-olvasó helye) 
+oldalra lépjen, majd kattintson a Next (Következő) elemre.
+4. Keresse meg az ujjlenyomat-olvasót a készülék jobb oldalon, tegye rá az ujját, majd nyomja rá a 
+leolvasóra az ujja különböző területeit, amíg a készülék rögzíti az ujjlenyomatát.
+5. Kattintson a Next (Következő) gombra a beállítás elvégzéséhez.
+74 10 fejezet: A Zen karbantartása
+Ujjlenyomat-azonosító létrehozása a Settings (Beállítások) képernyőn 
+Ujjlenyomat-azonosító létrehozásásához a Settings (Beállítások) képernyőn: 
+1. Ellenőrizze, hogy az ujjelnyomat-olvasó és az ujja tiszta és száraz. 
+2. Indítsa el a Settings (Beállítások) képernyőt az alábbiak bármelyikének végrehajtásával: 
+ • Indítsa el a Gyorsbeállítások menüt, majd érintse meg a elemet. 
+ • Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) pontot.
+3. Görgessen lefelé a Settings (Beállítások) képernyőre, és válassza ki a Security & lock screen 
+(Biztonsági és zárolási képernyő) > Fingerprint (Ujjlenyomat) elemet.
+6. Többször helyezze el ujját az ujjlenyomat-olvasón, majd emelje fel onnan, amíg megtörténik 
+ujjlenyomatának rögzítése. 
+7. Kattintson a Done (Kész) a beállítás elvégzéséhez.
+4. Oldja fel a telefonját, ha a készülék le van zárva. Ellenkező esetben kövesse az utasításokat a 
+biztonsági mentéskor látható képernyő lezárási módszerének beállításához.
+5. Érintse meg az Add fingerprint (Ujjlenyomat hozzáadása) oldalt.
+10 fejezet: A Zen karbantartása 75
+Kioldás arccal
+Az arccal történő kioldás megakadályozza, hogy mások az Ön engedélye nélkül használják ASUS 
+telefonját. Ha bekapcsolja az ASUS Phone kijelzőjét, és ránéz a kijelzőre, azzal egyetlen másodperc 
+alatt kioldhatja az eszközt, és megnyithatja a telefon kezdőképernyőjét. Az arccal történő kioldás 
+beállításakor a képernyőzárolási módszert is be kell állítania az eszköz elindításához. 
+Az arccal történő kioldás beállítása a Settings (Beállítások) használatával 
+Ha az arccal történő kioldást a Settings (Beállítások) használatával szeretné beállítani, tegye a 
+következőket:
+1. Indítsa el a Settings (Beállítások) képernyőt az alábbiak bármelyikének végrehajtásával: 
+ • Indítsa el a Gyorsbeállítások menüt, majd érintse meg a elemet. 
+ • Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) pontot.
+2. Görgessen lefelé a Settings (Beállítások) képernyőn, és jelölje ki a Security & lock screen 
+(Biztonsági és zárolási képernyő) > Face recognition (Arcfelismerés) lehetőséget.
+3. Érintse meg a Continue (Folytatás) gombot.
+76 10 fejezet: A Zen karbantartása
+5. Érintse meg a Next (Tovább) gombot, és kövesse az utasításokat az arca regisztrálásához.
+4. Kövese az utasításokat a biztonsági mentéskor látható képernyő lezárási módszerének 
+beállításához.
+10 fejezet: A Zen karbantartása 77
+6. Válassza ki, hogyan szeretné megjeleníteni az értesítéseket a zárolt képernyőn, majd érintse meg 
+a Done (Kész) gombot.
+MEGJEGYZÉSEK: 
+• Az arccal történő kioldás közben ügyeljen arra, hogy a szája, az orra és a nyitott szemei láthatók legyenek. 
+• Napszemüveg viselése vagy gyenge fényviszonyok esetén az arccal történő kioldás sikertelen lesz.
+7. Miután végzett, érintse meg a Turn On (Bekapcsolás) lehetőséget, ha azt szeretné, hogy az 
+arcfelismerés engedélyezve legyen a telefon feloldásához.
+78 10 fejezet: A Zen karbantartása
+Az ASUS telefonhoz azonosítása
+Ismerje meg ASUS telefonhoz készülékének azonosító adatait, mint pl. sorozatszám, IMEI 
+(International Mobile Equipment Identity) szám és típusszám. 
+Ez fontos, mert ha elveszítené ASUS telefonhoz készülékét, kapcsolatba léphet a 
+mobilszolgáltatóval és átadhatja ezeket az információkat az ASUS telefonhoz feketelistára 
+tételéhez.
+Az ASUS telefonhoz azonosító adatainak megjelenítéséhez:
+1. Görgessen felfele a kezdőképernyőn, majd érintse meg a Settings (Beállítások) elemet. 
+2. Húzza le a Beállítások képernyőt további elemek megjelenítéséhez, majd érintse meg az System 
+(Rendszer) > About phone (A telefon névjegye) elemet. Az Névjegy képernyő megjeleníti 
+az ASUS telefonhoz eszköznév, állapotát, jogi információit, operációs rendszer verzióját, illetve 
+hardver- és szoftverinformációit.
+3. A ASUS telefon sorozatszáma, SIM állapota és IMEI száma megtekintéséhez érintse meg az 
+Status (Állapot) gombot.
+79
+Függelékek
+Függelékek 
+Biztonsági információ
+VIGYÁZAT! Ha olyan vezérlőket vagy beállításokat használ, illetve olyan műveleteket végez, amelyek 
+eltérnek az itt megadottaktól, azzal veszélyes sugárzásnak teheti ki magát.
+A ASUS Phone gondozása
+• A ASUS Phone eszközt 0 °C (32 °F) és 35 °C (95 °F) közötti hőmérsékleten használja.
+• Törölje át a telefon felületét egy nedves tisztítókendővel. A sérülések elkerülése érdekében ne 
+használjon alkoholt, szerves oldószereket, mosószert vagy nagynyomású permetezőt.
+• A hirtelen hőmérséklet-változások páralecsapódást vagy párásodást okozhatnak a lencsén. Ha 
+ez előfordul, helyezze a telefont szobahőmérsékletre vagy száraz környezetbe, és használat előtt 
+várja meg, amíg megszárad. Hideg területeken, ha a telefont melegebb helyen, például egy 
+belső zsebben tartja, megelőzheti a páralecsapódást.
+Az akkumulátor
+FIGYELEM! Az akkunulátor szétszerelése érvényteleníti a garanciát és súlyos sérülést okozhat. 
+Az ASUS Phone eszköze nagyteljesítményű, beépített Li-polimer akkumulátorral van felszerelve. 
+Tartsa be a karbantartási irányelveket a hosszabb akkumulátor élettartam érdekében.
+• Ne távolítsa el a beépített Li-polimer akkumulátort, mert ezzel érvénytelenné válik a garancia.
+• Kerülje a feltöltést túl magas vagy túl alacsony hőmérséklet mellett. Az akkumulátor optimális 
+teljesítményét +5 °C és +35 °C közötti hőmérsékleten nyújtja.
+• Az akkumulátort soha ne cserélje ki jóvá nem hagyott típussal.
+• Kizárólag ASUS márkájú akkumulátort használjon Ha más típusú akkumulátort használ, fizikai 
+sérülés / kár következhet be, és a készülék megsérülhet.
+• Az akkumulátort soha ne mártsa vízbe vagy egyéb folyadékba.
+• Soha ne kísérelje meg felnyitni az akkumulátor burkolatát, mivel olyan anyagokat tartalmaz, 
+amelyek lenyelve vagy bőrrel érintkezve ártalmasak lehetnek.
+• Soha ne zárja rövidre az akkumulátort, mivel túlmelegedhet és tüzet okozhat. Tartsa távol 
+ékszerektől és fémtárgyaktól.
+• Ne dobja tűzbe az elhasznált akkumulátort. Felrobbanhat és ártalmas anyagokat bocsáthat ki a 
+környezetbe.
+80
+• Soha ne dobja az elhasznált akkumulátort a háztartási szemétbe. Vigye veszélyes anyagok 
+begyűjtésére szakosodott helyre.
+• Ne érintse meg az akkumulátor érintkezőit.
+• A tűz és az égési sérülések elkerülése érdekében ne szerelje szét, ne hajlítsa meg, ne törje össze 
+és ne lyukassza ki az akkumulátort.
+MEGJEGYZÉSEK:
+• A nem megfelelő akkumulátor használata robbanásveszélyes.
+• Az elhasznált akkumulátortól az előírásoknak megfelelően szabaduljon meg.
+A töltő
+• Csak a ASUS Phone-hoz mellékelt töltőt szabad használni.
+• Soha ne a töltő kábelét húzza, amikor az aljzatról választja le. Mindig magát a töltőt húzza.
+Vigyázat
+Az Ön ASUS Phone készüléke kiváló minőségű eszköz. Üzemeltetés előtt kérjük, olvassa el az összes 
+kezelési utasítást és elővigyázatossági feliratot a (1) tápfeszültség adapteren.
+• Ne használja a ASUS Phone-ot szélsőséges környezetben, ahol rendkívül magas a hőmérséklet 
+és a páratartalom. A ASUS Phone az optimális teljesítményt 0 °C (32 °F) és 35 °C (95 °F) közötti 
+hőmérsékleten nyújtja.
+• Ne szerelje szét a ASUS Phone-ot vagy tartozékait. Ha szervizre vagy javításra van szükség, 
+vigye vissza a készüléket a hivatalos márkaszervizbe. A készülék szétszerelése esetén fennáll az 
+áramütés és tűz veszélye.
+• Soha ne zárja rövidre az akkumulátor érintkezőit fémtárgyakkal.
+Szolgáltatói hozzáférés szerszámmal
+Ha SZERSZÁM szükséges a SZOLGÁLTATÓ ÁLTAL HOZZÁFÉRHETŐ TERÜLET hozzáféréséhez, a 
+veszélyforrást tartalmazó területen belül elhelyezkedő összes egyéb rekesz ne legyen hozzáférhető 
+a SZOLGÁLTATÓ által ugyanazon SZERSZÁM használatával, vagy az ilyen rekeszeket úgy kell 
+megjelölni, hogy tiltsák a SZOLGÁLTATÓ általi hozzáférést.
+81
+Megfelelés a rádióberendezésekre vonatkozó EU-irányelv rendelkezéseinek
+Egyszerűsített EU-megfelelőségi nyilatkozat
+Az ASUS COMPUTER GmbH vállalat ezennel kijelenti, hogy az ASUS_AI2302 rádióberendezés 
+megfelel a 2014/53/EU irányelv előírásainak. Az EU-megfelelőségi nyilatkozat teljes szövege a 
+következő címen érhető el: https://www.asus.com/support/. (keresse a AI2302 jelölést)
+Rádiófrekvenciás teljesítményt bemutató táblázat
+Tételek Maximális rádiófrekvenciás teljesítményt bemutató táblázat
+GSM
+GSM 900 Burst (880~915 ; 925~960 MHz) 34.5 (dBm)
+GSM 1800 Burst (1710~1785 ; 1805~1880 MHz) 31.5 (dBm)
+WCDMA
+WCDMA Band I (1920-1980 ; 2110~2170 MHz) 25.0 (dBm)
+WCDMA Band V (824~849 ; 869~894 MHz) 25.0 (dBm)
+WCDMA Band VIII (880~915 ; 925~960 MHz) 25.0 (dBm)
+LTE
+LTE Band 1 (1920-1980 ; 2110~2170 MHz) 24.5 (dBm)
+LTE Band 3 (1710~1785 ; 1805~1880 MHz) 24.5 (dBm)
+LTE Band 5 (824~849 ; 869~894 MHz) 24.5 (dBm)
+LTE Band 7 (2500-2570 ; 2620-2690 MHz) 24.5 (dBm)
+LTE Band 8 (880~915 ; 925~960 MHz) 24.5 (dBm)
+LTE Band 20 (832~862 ; 791~821 MHz) 24.5 (dBm)
+LTE Band 28 (703~748 ; 758~803 MHz) 24.5 (dBm)
+LTE Band 34 (2010~2025 MHz) 24.5 (dBm)
+LTE Band 38 (2570~2620 MHz) 24.5 (dBm)
+LTE Band 40 (2300~2400 MHz) 24.5 (dBm)
+LTE Band 41 (2496~2690 MHz) 24.5 (dBm)
+LTE Band 42 (3400~3600 MHz) 24.5 (dBm)
+FR1
+NR n1 (1920~1980 ; 2110~2170 MHz) 24.5 (dBm)
+NR n3 (1710~1785 ; 1805~1880 MHz) 24.5 (dBm)
+NR n5 (824~849 ; 869~894 MHz) 24.5 (dBm)
+NR n7 (2500~2570 ; 2620~2690 MHz) 24.5 (dBm)
+NR n8 (880~915 ; 925~960 MHz) 24.5 (dBm)
+NR n20 (832~862 ; 791~821 MHz) 24.5 (dBm)
+NR n28 (703~748 ; 758~803 MHz) 24.5 (dBm)
+NR n38 (2570~2620 MHz) 24.5 (dBm)
+NR n41 (2496~2690 MHz) 24.5 (dBm)
+NR n77 (3300~4200 MHz) 24.5 (dBm)
+NR n78 (3300~3800 MHz) 24.5 (dBm)
+NR n78 (3300~3800 MHz) 24.5 (dBm)
+WLAN
+WLAN 2.4GHz (2412~2472 MHz) 17.0 (dBm)
+WLAN 5GHz (5150~5850 MHz) 20.5 (dBm)
+WLAN 6GHz (5945~6425 MHz) 18.5 (dBm)
+Bluetooth
+Bluetooth BR/EDR (2402~2480 MHz) 20.0 (dBm)
+Bluetooth -LE (2402~2480 MHz) 9.0 (dBm)
+NFC 13.553~13.567 MHz -16.99 dBuA/m @10m
+82
+MEGJEGYZÉS: Ez a rádiófrekvenciás teljesítményt tartalmazó táblázat kizárólag az Európai Unió 
+tagállamai, az Európai Gazdasági Térség államai, az Európai Szabadkereskedelmi Társulás és Törökország 
+számára szól. A frekvenciatartomány és a rádiófrekvenciás teljesítmény a többi, nem európai uniós 
+ország esetében eltérő lehet.
+Az 5150-5350 MHz-es sávban működő Wi-Fi-t beltéri használatra kell korlátozni az alábbi 
+táblázatban felsorolt országokban:
+* Az ASUS telefon 5G NR Sub-6 /4G LTE sávjának kompatibilitása régiónként eltérő. Kérjük, 
+érdeklődjön a helyi szolgáltatóknál a kompatibilitást illetően.
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH UK (NI) HR
+MEGJEGYZÉSEK:
+• Az alacsony fogyasztású beltéri (Low Power Indoor - LPI) Wi-Fi 6E eszközök esetében az LPI Wi-Fi 6E 
+teljesítményhatár 23 dBm:
+ A készülék csak beltéri használatra korlátozódik, ha az 5945-6425 MHz-es frekvenciatartományban 
+működik AT, BE, BG, CZ, DK, EE, FR, DE, IS, IE, IT, EL, ES, CY, LV, LI, LT, LU, HU, MT, NL, NO, PL, PT, RO, SI, 
+SK, TR, FI, SE, CH, HR és UK(NI).
+• A nagyon alacsony fogyasztású (Very low power - VLP) Wi-Fi 6E eszközök (hordozható eszközök) 
+esetében az LPI Wi-Fi 6E teljesítményhatár 14 dBm:
+ A készülék nem használható pilóta nélküli légi járműveken (UAS) az 5945-6425 MHz-es 
+frekvenciatartományban AT, BE, BG, CZ, DK, EE, FR, DE, IS, IE, IT, EL, ES, CY, LV, LI, LT, LU, HU, MT, NL, 
+NO, PL, PT, RO, SI, SK, TR, FI, SE, CH, HR és UK(NI).
+CE-jelölés
+Rádiófrekvenciás hatással kapcsolatos tudnivalók
+Ezt az ASUS terméket megvizsgálták, amelynek során megállapították, hogy megfelel a vonatkozó 
+európai SAR-határértékeknek. A SAR-határérték 2,0 W/kg azokban az országokban, amelyekben a 
+készülékre vonatkozó maximális SAR-értékek a következők:
+• fej: 1,575 W/Kg @10g
+• test: 1,42 W/Kg @10g
+Ha hordozza az eszközt, vagy használat közben a testén viseli, használjon jóváhagyással ellátott 
+tartozékot, például egy tokot, vagy tartson valamilyen más módon 0,5 cm távolságot az eszköz és a 
+teste között, hogy megfeleljen a rádiófrekvenciás hatással kapcsolatos követelmények előírásainak. 
+Alacsony kék fény bizonyítvány
+A ASUS telefon csökkenti a képernyő által sugárzott kék fényt, sokkal 
+kényelmesebb nézési tapasztalatot nyújtva. 
+Alapértelmezetten a képernyő fényere Maximálisra van állítva és a telefon 
+megfelel a TÜV Rheinland Alacsony kék fény bizonyítványnak.
+83
+GPS (Globális helymeghatározó rendszer) használata az ASUS Phone 
+készüléken
+A GPS helymeghatározó szolgáltatás használatához az ASUS Phone készüléken:
+Győződjön meg arról, hogy az eszköz csatlakozik az internethez, ha a Google-térképet vagy 
+bármilyen GPS-képes alkalmazást kíván használni.
+Amikor először használ GPS-képes alkalmazást eszközén, a szabadban tartózkodjon, hogy a legjobb 
+helymeghatározási adatokat foghassa be.
+Ha gépjárműben használ GPS-képes alkalmazást, a gépkocsi szélvédőjének fémtartalmú része és az 
+egyéb elektronikus eszközök befolyásolhatják a GPS teljesítményét. 
+Halláskárosodás megelőzése
+A halláskárosodás megelőzése érdekében ne hallgasson felvételeket hosszú ideig nagy hangerő mellett.
+Franciaországban az eszközhöz tartozó fejhallgató/fülhallgatók megfelelnek az alkalmazandó EN 
+50332-1: 2013 és/vagy EN50332-2: 2013 szabványban szereplő hangnyomás-előírással, a Francia 
+L.5232-1 törvénycikk értelmében.
+ 
+Szemfáradtság elkerüléséhez
+A szemfáradtság elkerüléséhez:
+• Tartson gyakori szünetet amikor a ASUS telefont használja (legalább egy 10 perces szünetet 
+minden fél órában).
+• Rendszeresen összpontosítson távoli tárgyakra, hogy pihentesse a szemét.
+• Végezzen gyakran szemgyakoraltokat, beleértve:
+ (1) Nézzen fel és le anélkül, hogy mozdítaná a fejét
+ (2) Mozdítsa a szemét jobbról balra, anélkül, hogy mozdítaná a fejét
+ (3) Lassan forgassa a szemét
+ (4) Mozgassa átlósan a szemét
+FIGYELEM: Tartsa a ASUS telefon képernyőjét távol csecsemőktől és 2 évnél kisebb gyerekektől. A 2 
+éves és nagyobb gyerekek legfennebb napi egy órár nézzék a képernyőt.
+84
+Bevonattal kapcsolatos figyelmeztetés
+FONTOS! Az elektromos biztonság és a szigetelés fenntartása érdekében bevonatot vittek fel, hogy 
+szigeteljék az ASUS telefonhoz vázát, az oldalak kivételével, ahol az IO portok találhatók. 
+Zöld ASUS felhívás
+Az ASUS elkötelezett a környezetbarát termékek/csomagolások létrehozása iránt annak érdekében, 
+hogy a környezetterhelés minimálisra csökkentése mellett a fogyasztók egészségét is védje. A 
+kézikönyv oldalszámának csökkentése a széndioxid-kibocsátás csökkentését hivatott elérni.
+A részletes használati utasítást és a kapcsolódó információkat megtekintheti az ASUS telefonhoz 
+felhasználói útmutatójában, vagy látogassa meg az ASUS Támogató oldalát itt: 
+https://www.asus.com/support.
+ASUS újrahasznosítási/viszavételi szolgáltatások
+Az ASUS újrahasznosítási és visszavételi politikája a környezetvédelem iránti elkötelezettségünk 
+eredménye. Olyan megoldásokban hiszünk, amelyek révén ügyfeleink felelősségteljesen 
+újrahasznosíthatják termékeinket, akkumulátorainkat, egyéb részegységeinket és csomagoló 
+anyagokat. A különböző térségekben érvényes, részletes újrahasznosítási információkért 
+látogasson el a http://csr.asus.com/english/Takeback.htm weboldalra.
+Gyártó: ASUSTeK Computer Inc.
+Cím: 1F., No.15, Lide RD., Beitou Dist., Taipei City 112
+Hivatalos képviselő Európában: ASUS Computer GmbH
+Cím: HARKORT STR. 21-23, 40880 RATINGEN, GERMANY
+Típusnév: ASUS_AI2302
+Authorized representative in United Kingdom: ASUSTEK (UK) LIMITED
+Address, City: 
+1st Floor, Sackville House, 143-149 Fenchurch Street, London, EC3M 6BL England
+Country: 
+United Kingdom
+ 1 Alapvető tudnivalók
+ Üdvözöljük!
+ Készítse elő az ASUS Phone készüléket!
+ Használatba vétel
+ A navigációs gesztusok utasításai
+ Az érintőképernyő használata
+ 2 Sehol se olyan jó, mint otthon
+ A Zen Home jellemzői
+ Kezdőképernyő
+ Gyorsbeállítások
+ Értesítések
+ Éleszköz
+ A Kezdőlap testreszabása
+ Háttérképek
+ widgetek
+ Preferenciák
+ Dátum és idő beállítása
+ Csengőhang és értesítési hangok beállítása
+ 3 Dolgozz keményen, játssz még keményebben
+ Chrome
+ A Chrome indítása
+ Oldal megosztása
+ Oldalak megjelölése könyvjelzővel
+ A böngészési előzmények törlése 
+ Gmail
+ Google Calendar
+ Események létrehozása 
+ Események szerkesztése vagy eltávolítása 
+ Emlékeztető létrehozása 
+ Emlékeztetők szerkesztése vagy eltávolítása 
+ Fájlkezelő
+ ASUS Phone Clone
+ 4 Kapcsolatban lenni
+ Telefonálás stílusosan
+ Kettős SIM szolgáltatás
+ Hívások indítása
+ A kedvenc partnerek hívása
+ Hívások fogadása
+ További híváslehetőségek
+ Hívások rögzítése
+ Kapcsolatok kezelése
+ Partnerbeállítások
+ Profil beállítása
+ Partnerek hozzáadása
+ A kedvenc partnerek megjelölése
+ A tiltólista kezelése
+ Üzenet küldése és egyebek
+ Üzenetek
+ 5 Móka és szórakozás
+ Headset használata
+ Audió aljzat csatlakoztatása
+ YT Music
+ 6 Megismételhetetlen pillanatok
+ Pillanatok rögzítése
+ A Kamera alkalmazás indítása
+ Képek helye
+ Speciális kamerafunkciók
+ Gyorsított felvétel
+ A Galéria használata
+ A fotó helyének megtekintése
+ Kép szerkesztése
+ Fájlok megosztása a galériából
+ Fájlok törlése a galériából
+ 7 Kapcsolatban maradni
+ Mobilhálózat
+ A mobilhálózat engedélyezése
+ Wi-Fi
+ Wi-Fi engedélyezése
+ Kapcsolódás Wi-Fi hálózathoz
+ A Wi-Fi letiltása
+ Bluetooth®
+ A Bluetooth® engedélyezése
+ Az ASUS telefonhoz párosítása Bluetooth®-eszközzel
+ Az ASUS telefonhoz párosításának megszüntetése a Bluetooth®-eszközzel
+ Kapcsolat-megosztás
+ Wi-Fi Hotspot
+ USB alapú internetmegosztás
+ Bluetooth kapcsolat-megosztás
+ 8 Utazási alkalmazások
+ Időjárás
+ A Időjárás alkalmazás indítása
+ Weather kezdőlap
+ Óra
+ Ébresztőóra
+ Világóra
+ Stopperóra
+ Időzítő
+ 9 Zen mindenhol
+ Különleges Zen eszközök
+ Számológép
+ Hangrögzítő
+ Mobile Manager
+ 10 A Zen karbantartása
+ Az eszköz naprakészen tartása
+ A rendszer frissítése
+ Tárhely
+ Biztonsági mentés és alaphelyzet
+ Visszaállítás alaphelyzetbe
+ Az ASUS telefonhoz biztonságba helyezése
+ A kijelző kioldása
+ Ujjlenyomat-érzékelő 
+ Az ASUS Phone üzembe helyezése 
+ Ujjlenyomat-azonosító létrehozása a Settings (Beállítások) képernyőn 
+ Kioldás arccal
+ Az arccal történő kioldás beállítása a Settings (Beállítások) használatával 
+ Az ASUS telefonhoz azonosítása
+ Függelékek 

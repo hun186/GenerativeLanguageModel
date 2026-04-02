@@ -1,0 +1,7 @@
+channel: excel_source
+input_col: UserChiName
+mode: sql
+model_spec: qwen3:32b-ctx-4k-premises-q4
+output_col: FE3
+sql_config_file: GenerativeLanguageModel\czjLLM\config_sql\akconfig_test.py
+task: Translation-toEN

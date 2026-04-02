@@ -1,0 +1,25 @@
+channel: unspecified_channel
+input_col: rawInfo.content
+llm_source_backup_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/unspecified_channel
+llm_source_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/unspecified_channel
+es_config_file: czjLLM/config_es/akconfig_es_test_srp_133.py
+mode: es
+model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
+#model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+output_col: multidim_event_json
+primary_key: _id
+#task: News-FacetTop10-Map-to json format
+task: InfoExtraction-MultiDim-SQLFriendly-to json format
+record_update_time: true
+# 自動套用 mapping（僅新增欄位，不會改既有型別）
+#es_apply_mapping: True
+#mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
+
+merge_slices: true
+
+#merge_conflict_policy: prefer_left  # or prefer_right
+#merge_dedup_lists: true               # 合併 list 時是否去重
+merge_log_changes: true               # 合併有變化才印 log
+merge_max_log: 10                     # 最多列出幾筆差異樣本
+merge_log_to_file: true              # 是否落檔
+merge_log_file: merge_dict_slices_audited.log

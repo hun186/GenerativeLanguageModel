@@ -1,0 +1,1897 @@
+
+PL19489
+Wydanie pierwsze / Lipiec 2022
+Podręcznik elektroniczny
+2 Podręcznik elektroniczny do notebooka
+INFORMACJE O PRAWACH AUTORSKICH
+Żadnej z części tego podręcznika, włącznie z opisami produktów i oprogramowania, nie można powielać, 
+transmitować, przetwarzać, przechowywać w systemie odzyskiwania danych lub tłumaczyć na żadne 
+języki, w jakiejkolwiek formie lub w jakikolwiek sposób, bez wyraźnego pisemnego pozwolenia ASUSTeK 
+COMPUTER, INC. (“ASUS”).
+ASUS UDOSTĘPNIA TEN PODRĘCZNIK W STANIE “JAKI JEST”, BEZ UDZIELANIA JAKICHKOLWIEK 
+GWARANCJI, ZARÓWNO WYRAŹNYCH JAK I DOMNIEMANYCH, WŁĄCZNIE, ALE NIE TYLKO Z 
+DOMNIEMANYMI GWARANCJAMI LUB WARUNKAMI PRZYDATNOŚCI HANDLOWEJ LUB DOPASOWANIA 
+DO OKREŚLONEGO CELU. W ŻADNYM PRZYPADKU FIRMA ASUS, JEJ DYREKTORZY, KIEROWNICY, 
+PRACOWNICY LUB AGENCI NIE BĘDĄ ODPOWIADAĆ ZA JAKIEKOLWIEK NIEBEZPOŚREDNIE, SPECJALNE, 
+PRZYPADKOWE LUB KONSEKWENTNE SZKODY (WŁĄCZNIE Z UTRATĄ ZYSKÓW, TRANSAKCJI 
+BIZNESOWYCH, UTRATĄ MOŻLIWOŚCI KORZYSTANIA LUB UTRACENIEM DANYCH, PRZERWAMI W 
+PROWADZENIU DZIAŁANOŚCI ITP.) NAWET, JEŚLI FIRMA ASUS UPRZEDZAŁA O MOŻLIWOŚCI ZAISTNIENIA 
+TAKICH SZKÓD, W WYNIKU JAKICHKOLWIEK DEFEKTÓW LUB BŁĘDÓW W NINIEJSZYM PODRĘCZNIKU LUB 
+PRODUKCIE.
+Produkty i nazwy firm pojawiające się w tym podręczniku mogą, ale nie muszą być zastrzeżonymi 
+znakami towarowymi lub prawami autorskimi ich odpowiednich właścicieli i używane są wyłącznie w 
+celu identyfikacji lub wyjaśnienia z korzyścią dla ich właścicieli i bez naruszania ich praw.
+SPECYFIKACJE I INFORMACJE ZNAJDUJĄCE SIĘ W TYM PODRĘCZNIKU, SŁUŻĄ WYŁĄCZNIE CELOM 
+INFORMACYJNYM I MOGĄ ZOSTAĆ ZMIENIONE W DOWOLNYM CZASIE, BEZ POWIADOMIENIA, DLATEGO 
+TEŻ, NIE MOGĄ BYĆ INTERPRETOWANE JAKO WIĄŻĄCE FIRMĘ ASUS DO ODPOWIEDZIALNOŚCI.ASUS 
+NIE ODPOWIADA ZA JAKIEKOLWIEK BŁĘDY I NIEDOKŁADNOŚCI, KTÓRE MOGĄ WYSTĄPIĆ W TYM 
+PODRĘCZNIKU, WŁĄCZNIE Z OPISANYMI W NIM PRODUKTAMI I OPROGRAMOWANIEM.
+Copyright © 2022 ASUSTeK COMPUTER INC. Wszelkie prawa zastrzeżone.
+OGRANICZENIE ODPOWIEDZIALNOŚCI
+W przypadku wystąpienia określonych okoliczności, za które odpowiedzialność ponosi ASUS, a w wyniku 
+których wystąpiły szkody, właściciel będzie uprawniony do uzyskania od firmy ASUS odszkodowania.W 
+każdym takim przypadku niezależnie od podstawy roszczenia od firmy ASUS, odpowiada ona jedynie 
+za uszkodzenia ciała (włącznie ze śmiercią), szkody nieruchomości i rzeczywiste szkody osobiste; lub za 
+wszelkie inne, rzeczywiste i bezpośrednie szkody, wynikające z pominięcia lub niewykonania czynności 
+prawnych wynikających z tego oświadczenia gwarancji, do kwoty określonej w umowie kupna dla 
+każdego produktu.
+ASUS odpowiada lub udziela rekompensaty wyłącznie za stratę, szkody lub roszczenia w oparciu o 
+umowę, odpowiedzialność za szkodę lub naruszenie praw wynikających z niniejszego oświadczenia 
+gwarancyjnego.
+To ograniczenie stosuje się także do dostawców i sprzedawców ASUS. Jest to maksymalny pułap 
+zbiorowej odpowiedzialności firmy ASUS, jej dostawców i sprzedawców.
+BEZ WZGLĘDU NA OKOLICZNOŚCI FIRMA ASUS NIE ODPOWIADA ZA: (1) ROSZCZENIA STRON TRZECICH 
+OD UŻYTKOWNIKA DOTYCZĄCE SZKÓD; (2) UTRATĘ LUB USZKODZENIE NAGRAŃ LUB DANYCH; ALBO (3) 
+SPECJALNE, PRZYPADKOWE LUB NIEBEZPOŚREDNIE SZKODY LUB ZA EKONOMICZNE KONSEKWENCJE 
+SZKÓD (WŁĄCZNIE Z UTRATĄ ZYSKÓW LUB OSZCZĘDNOŚCI), NAWET JEŚLI FIRMA ASUS, JEJ DOSTAWCY 
+LUB SPRZEDAWCY ZOSTANĄ POINFORMOWANI O ICH ODPOWIEDZIALNOŚCI.
+SERWIS I POMOC TECHNICZNA
+Odwiedź naszą wielojęzyczną witrynę internetową pod adresem 
+https://www.asus.com/pl/support/.
+Aplikacja MyASUS oferuje różne funkcje pomocy technicznej, takie jak rozwiązywanie problemów, 
+optymalizacja wydajności produktów i integracja oprogramowania ASUS, a także pomaga w organizacji 
+komputera osobistego i zwiększeniu przestrzeni dyskowej. Szczegółowe informacje można znaleźć na 
+stronie https://www.asus.com/pl/support/FAQ/1038301/.
+ODPOWIEDZIALNOŚCI.ASUS
+Podręcznik elektroniczny do notebooka 3
+Spis treści
+Informacje dotyczące tego Podręcznika ...........................................................7
+Konwencje stosowane w niniejszym Podręczniku ............................................. 8
+Ikony .................................................................................................................................... 8
+Typografia.......................................................................................................................... 8
+Zasady bezpieczeństwa ..........................................................................................9
+Używanie notebooka .................................................................................................... 9
+Pielęgnacja notebooka ................................................................................................. 10
+Właściwa utylizacja urządzenia ................................................................................. 11
+Informacje dotyczące bezpiecznego użytkowania baterii .............................. 12
+Rozdział 1: Konfiguracja sprzętu
+Poznajemy notebooka .............................................................................................16
+Widok z przodu ............................................................................................................... 16
+Widok z góry ..................................................................................................................... 22
+Widok z dołu ..................................................................................................................... 23
+Widok z prawej strony ................................................................................................... 25
+Widok z lewej strony ...................................................................................................... 28
+Rozdział 2: Korzystanie z notebooka
+Rozpoczęcie pracy .....................................................................................................30
+Ładowanie notebooka .................................................................................................. 30
+Podnieś, aby otworzyć panel wyświetlacza .......................................................... 32
+Naciśnij przycisk zasilania ............................................................................................ 32
+Gesty dla panelu ekranu dotykowego i touchpada ......................................33
+Korzystanie z gestów dla panelu dotykowego .................................................... 33
+Korzystanie z touchpada ............................................................................................. 35
+Korzystanie z klawiatury numerycznej ................................................................... 42
+Korzystanie z klawiatury .........................................................................................43
+Klawisze dostępu ............................................................................................................ 43
+Klawisze funkcji ............................................................................................................... 44
+Klawisze Windows .......................................................................................................... 44
+Obracanie panelu wyświetlacza ...........................................................................45
+4 Podręcznik elektroniczny do notebooka
+Rozdział 3: Praca z Windows
+Rozpoczęcie pracy .....................................................................................................48
+Menu Start ....................................................................................................................49
+Aplikacje Windows ....................................................................................................51
+Praca z aplikacjami Windows...................................................................................... 52
+Dostosowywanie aplikacji Windows ....................................................................... 52
+Widok zadań ................................................................................................................55
+Widżety ..........................................................................................................................56
+Funkcja Snap ...............................................................................................................58
+Funkcja Snap dla hotspotów ...................................................................................... 58
+Centrum akcji ..............................................................................................................60
+MyASUS Splendid ......................................................................................................62
+Ustawianie wyświetlacza OLED ............................................................................64
+Ustawianie trybu ciemnego ....................................................................................... 64
+Wyłączanie wyświetlacza, gdy nie jest używany ................................................. 66
+Regulacja jasności wyświetlacza ............................................................................... 68
+Automatyczne ukrywanie paska zadań ................................................................. 70
+Ustawianie trybu ciemnego w Microsoft Office .................................................. 72
+Inne skróty klawiaturowe .......................................................................................73
+Łączenie z sieciami bezprzewodowymi ............................................................75
+Wi-Fi ..................................................................................................................................... 75
+Bluetooth ........................................................................................................................... 76
+Tryb samolotowy ............................................................................................................ 77
+Wyłączanie notebooka ............................................................................................78
+Przełączanie notebooka w tryb uśpienia ..........................................................79
+Podręcznik elektroniczny do notebooka 5
+Rozdział 4: Autotest po włączeniu zasilania (POST)
+Autotest po włączeniu zasilania (POST) ............................................................82
+Korzystanie z testu POST w celu uzyskania dostępu do systemu BIOS 
+i rozwiązania problemów ............................................................................................ 82
+BIOS ................................................................................................................................82
+Dostęp do systemu BIOS .............................................................................................. 83
+Przywracanie systemu .............................................................................................83
+Opcje wykonywania kopii zapasowej ..................................................................... 84
+Porady i często zadawane pytania
+Przydatne porady dotyczące notebooka ..........................................................88
+Często zadawane pytania dotyczące sprzętu..................................................90
+Często zadawane pytania dotyczące oprogramowania ..............................93
+Załączniki
+Zgodność modemu wewnętrznego ........................................................................ 96
+Informacje podstawowe .............................................................................................. 96
+Deklaracja zgodności sieci .......................................................................................... 97
+Wyposażenie niegłosowe ............................................................................................ 97
+Deklaracja Federal Communications Commission (Federalnej 
+Komisji Łączności) w sprawie zakłóceń .................................................................. 100
+Oświadczenie FCC o przestrodze przed narażeniem na 
+promieniowanie radiowe (RF) .................................................................................... 101
+Informacje o narażeniu na promieniowanie radiowe (SAR) ............................ 101
+Notyfikacje bezpieczeństwa UL ................................................................................ 102
+Wymagania dotyczące bezpieczeństwa zasilania .............................................. 103
+Powiadomienia w sprawie telewizji ......................................................................... 103
+6 Podręcznik elektroniczny do notebooka
+Powiadomienie dotyczące produktów Macrovision Corporation ................ 103
+Zapobieganie utracie słuchu ...................................................................................... 103
+Powiadomienie o powłoce.......................................................................................... 103
+Ostrzeżenia dotyczące baterii litowo-jonowych dla krajów 
+skandynawskich .............................................................................................................. 104
+Aprobata CTR 21 (dla notebooka z wbudowanym modemem) ................... 105
+Deklaracja zgodności dotycząca przepisów w zakresie ochrony 
+środowiska ........................................................................................................................ 107
+Rozporządzenie UE REACH i Artykuł 33.................................................................. 107
+UE RoHS.............................................................................................................................. 107
+Usługi recyklingu/Odbioru firmy ASUS .................................................................. 108
+Dyrektywa w sprawie ekoprojektu ........................................................................... 108
+Produkt zakwalifikowany do programu ENERGY STAR ..................................... 109
+Produkty zarejestrowane w programie EPEAT ..................................................... 109
+Licencja na czcionki tekstu w systemie BIOS ........................................................ 110
+Uproszczona deklaracja zgodności UE ................................................................... 111
+Uwaga dotycząca sieci Wi-Fi ....................................................................................... 111
+Informacje o narażeniu na promieniowanie radiowe (SAR) ............................ 112
+Podręcznik elektroniczny do notebooka 7
+Informacje dotyczące tego Podręcznika
+W tym Podręczniku są zawarte informacje na temat funkcji sprzętowych 
+i programowych notebooka, które zostały pogrupowane tematycznie w 
+następujące rozdziały:
+Rozdział 1: Konfiguracja sprzętu
+W tym rozdziale opisane są szczegółowo podzespoły sprzętowe 
+notebooka.
+Rozdział 2: Korzystanie z notebooka
+W tym rozdziale opisany jest sposób użytkowania różnych części 
+notebooka.
+Rozdział 3: Praca z Windows
+W tym rozdziale omówiona jest obsługa systemu Windows 
+zainstalowanego w notebooku.
+Rozdział 4: Autotest po włączeniu zasilania (POST)
+W tym rozdziale opisany jest sposób używania funkcji POST w 
+celu zmiany ustawień notebooka.
+Porady i często zadawane pytania
+W części tej znajdują się porady oraz często zadawane pytania 
+dotyczące sprzętu i oprogramowania, z którymi warto jest 
+się zapoznać w związku z czynnościami konserwacyjnymi 
+notebooka, jak i w celu rozwiązania typowych problemów.
+Załączniki
+W tym rozdziale zawarte są informacje prawne i oświadczenia o 
+bezpieczeństwie notebooka.
+8 Podręcznik elektroniczny do notebooka
+Konwencje stosowane w niniejszym Podręczniku
+W celu wyróżnienia kluczowych informacji zawartych w tym 
+Podręczniku komunikaty prezentowane są w następujący sposób:
+WAŻNE! Ten komunikat zawiera istotne informacje, do których należy się 
+zastosować, aby dokończyć zadanie. 
+UWAGA: Ten komunikat zawiera dodatkowe ważne informacje i 
+wskazówki, pomocne w dokończeniu zadań.
+OSTRZEŻENIE! Ten komunikat zawiera ważne informacje, do których 
+należy się zastosować, aby zachować bezpieczeństwo podczas 
+wykonywania niektórych zadań i zapobiec uszkodzeniu danych i 
+komponentów notebooka. 
+Ikony
+Ikony poniżej wskazują, które urządzenie można zastosować do 
+wykonania serii zadań lub procedur w komputerze.
+Typografia
+Wytłuszczenie = Oznacza menu lub element, który należy wybrać.
+Pochylenie = Wskazuje sekcje w tym podręczniku, do których 
+można się odnieść.
+= Użyj panelu ekranu dotykowego.
+= Użyj touchpada.
+= Użyj klawiatury.
+Podręcznik elektroniczny do notebooka 9
+Zasady bezpieczeństwa
+Używanie notebooka
+Ten komputer może być używany wyłącznie w 
+miejscach, gdzie temperatura otoczenia mieści się 
+pomiędzy 5 °C (41 °F) a 35 °C (95 °F).
+Sprawdź etykietę wartości znamionowych w dolnej 
+części komputera i upewnij się, że adapter zasilania 
+może zapewnić wymagane zasilanie.
+Podczas używania lub ładowania zestawu baterii 
+notebook może się nagrzewać. Nie należy 
+umieszczać notebooka na kolanach ani w pobliżu 
+dowolnej części ciała, aby zapobiec obrażeniom 
+ciała spowodowanym działaniem ciepła. Podczas 
+używania notebooka nie należy ustawiać go na 
+powierzchni, która mogłaby zasłonić otwory 
+wentylacyjne.
+Nie należy używać z komputerem uszkodzonych 
+przewodów zasilających, akcesoriów i innych 
+urządzeń peryferyjnych.
+Nie należy przenosić notebooka lub przykrywać 
+go żadnym materiałem, które może ograniczyć 
+cyrkulację powietrza, gdy urządzenie jest włączone.
+Nie należy umieszczać notebooka na nierównej lub 
+niestabilnej powierzchni. 
+Możliwe jest poddawanie notebooka prześwietleniu 
+na lotnisku (poprzez umieszczanie przedmiotów 
+na taśmociągu), jednak nie należy go wystawiać na 
+działanie wykrywaczy magnetycznych i bramek.
+Należy skontaktować się z właściwymi liniami 
+lotniczymi, aby dowiedzieć się o odpowiednich 
+usługach, które mogą być używane podczas lotu, a 
+także ograniczeniach, do których należy się stosować 
+podczas używania notebooka w trakcie lotu.
+10 Podręcznik elektroniczny do notebooka
+Pielęgnacja notebooka
+Przed czyszczeniem notebooka należy odłączyć 
+przewód zasilający i wyjąć zestaw baterii (jeżeli 
+jest na wyposażeniu). Należy użyć czystej gąbki 
+celulozowej lub szmatki z irchy zwilżonej w 
+ciepłej wodzie lub roztworze o niskim stężeniu 
+nieściernego detergentu. Nadmiar wilgoci 
+występujący na notebooku należy usunąć przy 
+użyciu suchej szmatki. Aby uniknąć zwarcia lub 
+korozji, należy uważać, aby do obudowy ani w 
+szczeliny klawiatury nie dostał się żaden płyn.
+Na powierzchni notebooka ani w jego pobliżu nie 
+należy używać silnych rozpuszczalników, takich 
+jak alkohol, rozcieńczalniki, benzen lub inne środki 
+chemiczne.
+Na notebooku nie należy umieszczać żadnych 
+przedmiotów.
+Nie wolno wystawiać notebooka na działanie 
+silnego pola magnetycznego lub elektrycznego.
+Nie wolno używać notebooka w miejscach, gdzie 
+w pobliżu znajdują się płyny, pada deszcz lub 
+występuje wilgoć, bądź wystawiać urządzenia na 
+działanie tych niekorzystnych warunków. 
+Nie wolno wystawiać notebooka na działanie 
+zakurzonego środowiska.
+Podręcznik elektroniczny do notebooka 11
+Właściwa utylizacja urządzenia
+NIE NALEŻY wyrzucać komputera do śmieci. Produkt 
+ten został opracowany w taki sposób, aby umożliwić 
+właściwe ponowne wykorzystanie części i jego 
+utylizację. Symbol przekreślonego kosza na kółkach 
+wskazuje, że dany produkt (sprzęt elektryczny, 
+elektroniczny oraz akumulatory z zawartością 
+rtęci) nie mogą być wyrzucane wraz z odpadami 
+domowymi. Należy sprawdzić lokalne przepisy 
+dotyczące usuwania produktów elektronicznych. 
+NIE NALEŻY wyrzucać baterii do śmieci miejskich. 
+Symbol przekreślonego kosza na kółkach oznacza, 
+że baterii nie należy umieszczać razem ze śmieciami 
+miejskimi.
+Nie wolno używać notebooka w pobliżu miejsc 
+narażonych na wyciek gazu.
+Aby uniknąć zakłóceń działania wyświetlacza 
+spowodowanych falami elektromagnetycznymi, nie 
+należy umieszczać w pobliżu notebooka żadnych 
+włączonych urządzeń elektronicznych.
+Nie używać tego notebooka do wydobywania 
+kryptowalut (proces ten wymaga ogromnej ilości 
+energii elektrycznej i czasu w celu uzyskania 
+wymienialnej wirtualnej waluty) i/lub powiązanych 
+czynności.
+12 Podręcznik elektroniczny do notebooka
+Ochrona baterii
+• Częste ładowanie baterii przy wysokim napięciu może skrócić 
+okres jej żywotności. Aby chronić baterię, gdy zostanie ona w 
+pełni naładowana, system może zaprzestać jej ładowania przy 
+poziomie między 90% a 100%.
+UWAGA: Pojemność baterii inicjująca ładowanie jest zwykle ustawiona na 
+poziomie od 90% do 99%. Rzeczywista wartość zależy od modelu.
+• Ładowanie lub przechowywanie baterii w wysokich 
+temperaturach otoczenia może skutkować trwałym defektem 
+pojemności ładowania i znacznie skrócić okres żywotności 
+baterii. W razie zbyt wysokiej temperatury baterii system 
+może zmniejszyć jej pojemność ładowania, a nawet zatrzymać 
+ładowanie, aby chronić baterię.
+• Pojemność ładowania baterii może ulec zmniejszeniu nawet 
+wtedy, gdy urządzenie jest wyłączone i odłączone od zasilacza. 
+Jest to normalne zjawisko, ponieważ w takiej sytuacji system 
+nadal pobiera niewielką ilość energii z baterii.
+Informacje dotyczące bezpiecznego użytkowania 
+baterii
+Podręcznik elektroniczny do notebooka 13
+Standardowe dbanie o baterię
+• Jeśli urządzenie nie będzie używane przez dłuższy czas, należy 
+naładować jego baterię do poziomu 50%, a następnie wyłączyć 
+urządzenie i odłączyć zasilacz. Co trzy miesiące należy naładować 
+baterię do poziomu 50%, aby uniknąć nadmiernego rozładowania 
+i zapobiec uszkodzeniu baterii.
+• Nie należy ładować baterii przy wysokim napięciu przez dłuższy 
+czas, aby uniknąć skrócenia okresu jej żywotności. Jeśli z 
+urządzeniem stale używany jest zasilacz, należy co najmniej raz 
+na dwa tygodnie rozładować baterię do poziomu 50%. W celu 
+wydłużenia okresu żywotności baterii można także dostosować 
+ustawienia pozycji Battery Health Charging (Bezpieczne 
+ładowanie baterii) w aplikacji MyASUS.
+• Zalecane jest przechowywanie baterii w temperaturze od 5 °C 
+(41 °F) do 35 °C (95 °F) przy poziomie naładowania wynoszącym 
+50%. W celu wydłużenia okresu żywotności baterii można 
+także dostosować ustawienia pozycji Battery Health Charging 
+(Bezpieczne ładowanie baterii) w aplikacji MyASUS.
+• Baterii nie należy zostawiać w wilgotnych miejscach. Wystawienie 
+na działanie wilgotności może zwiększyć szybkość nadmiernego 
+rozładowywania się baterii. Niskie temperatury otoczenia mogą 
+przyczynić się do uszkodzenia substancji chemicznych wewnątrz 
+baterii, a wysokie temperatury lub przegrzanie mogą być 
+przyczyną wybuchu.
+• Urządzenia ani zestawu baterii nie wolno umieszczać w pobliżu 
+kaloryferów, kominków, pieców, grzejników ani innych źródeł 
+ciepła o temperaturze przekraczającej 60 °C (140 °F). Wysoka 
+temperatura otoczenia może być przyczyną wybuchu lub 
+wycieku prowadzącego do pożaru.
+14 Podręcznik elektroniczny do notebooka
+Podręcznik elektroniczny do notebooka 15
+Rozdział 1: 
+Konfiguracja sprzętu
+16 Podręcznik elektroniczny do notebooka
+Poznajemy notebooka
+Widok z przodu
+UWAGA: Układ klawiatury zależy od regionu i kraju. Wygląd notebooka 
+może się także różnić w zależności od modelu urządzenia.
+Podręcznik elektroniczny do notebooka 17
+Zestaw mikrofonów
+Zestaw mikrofonów daje lepszą jakość rozpoznawania głosu i 
+nagrywania dźwięku dzięki funkcjom usuwania echa, tłumienia 
+hałasu i formowania wiązki.
+Wskaźnik pracy kamery
+Wskaźnik pracy kamery świeci, gdy używana jest wbudowana 
+kamera.
+Kamera
+Wbudowana kamera umożliwia wykonywanie zdjęć i nagrywanie 
+wideo przy użyciu notebooka.
+Kamera na podczerwień
+Wbudowana kamera umożliwia wykonywanie zdjęć i nagrywanie 
+wideo przy użyciu notebooka. Kamera na podczerwień 
+obsługuje także funkcję Windows Hello.
+UWAGA: Zanim nastąpi zalogowanie przy użyciu funkcji Windows 
+Hello, czerwona dioda LED podczerwieni będzie migać podczas 
+odczytywania danych.
+18 Podręcznik elektroniczny do notebooka
+Panel ekranu dotykowego z 360-stopniową regulacją
+Panel ekranu dotykowego notebooka można obracać w pełnym 
+zakresie 360°. Funkcja ta umożliwia szybkie przekształcenie 
+urządzenia z notebooka w komputer typu tablet obsługiwany za 
+pomocą gestów dotykowych.
+Panel ekranu dotykowego o wysokiej rozdzielczości zapewnia 
+doskonałe parametry oglądania zdjęć, filmów i innych plików 
+multimedialnych na notebooku. Umożliwia on także dotykową 
+obsługę notebooka.
+Zastrzeżenie: Długotrwałe wyświetlanie obrazów nieruchomych 
+lub o wysokim kontraście może być przyczyną utrwalenia lub 
+wypalenia obrazu na wyświetlaczu OLED. W notebookach ASUS 
+z wyświetlaczem OLED (w wybranych modelach) możliwość 
+wypalenia obrazu jest minimalizowana poprzez domyślne 
+ustawienie trybu ciemnego w systemie Windows 10 oraz 
+skrócenie czasu bezczynności przed wyłączeniem ekranu. W celu 
+wydłużenia okresu żywotności wyświetlacza OLED zalecane jest 
+włączenie animowanego wygaszacza ekranu o ciemnym tle oraz 
+nieustawianie maksymalnej jasności wyświetlacza OLED.
+UWAGA: 
+• W celu uzyskania szczegółowych informacji należy przejść do 
+części Konfiguracja wyświetlacza OLED w tym podręczniku.
+• Szczegółowe informacje na temat przekształcania 
+notebooka w tablet można znaleźć w sekcji Obracanie panelu 
+wyświetlacza w tym podręczniku.
+Podręcznik elektroniczny do notebooka 19
+Wskaźnik wyłączenia mikrofonu 
+Ten wskaźnik świeci się, gdy mikrofon jest wyłączony.
+Klawiatura
+Klawiatura ma pełnowymiarowe klawisze w układzie QWERTY 
+z wygodnym skokiem klawisza. Umożliwia ona także używanie 
+przycisków funkcyjnych oraz zapewnia szybki dostęp do funkcji 
+systemu Windows i funkcji obsługi multimediów.
+UWAGA: Układ klawiatury zależy od modelu i regionu.
+Wskaźnik funkcji wielkich liter
+Ten wskaźnik świeci, gdy aktywna jest funkcja wielkich liter. 
+Funkcja wielkich liter umożliwia pisanie samymi wielkimi literami 
+(np. A, B, C) na klawiaturze notebooka.
+20 Podręcznik elektroniczny do notebooka
+Panel dotykowy/NumberPad
+Umożliwia przełączanie pomiędzy panel dotykowy i 
+NumberPadem.
+Panel dotykowy umożliwia nawigowanie po ekranie za 
+pomocą gestów wielodotykowych, zapewniając w ten sposób 
+maksymalnie intuicyjną obsługę. Panel obsługuje też funkcje 
+standardowej myszy.
+UWAGA: Szczegółowe informacje można znaleźć w sekcji 
+Używanie panelu dotykowego w tym podręczniku.
+NumberPad umożliwia wprowadzanie liczb.
+WAŻNE! Należy pamiętać, że wszystkie wersje klawiatury 
+numerycznej są obsługiwane tylko w najnowszym systemie 
+operacyjnym Microsoft Windows.
+UWAGA: W celu uzyskania dalszych informacji, sprawdź część 
+Używanie NumberPada w tym podręczniku.
+Czujnik światła otoczenia
+Czujnik światła otoczenia wykrywa natężenie światła 
+w otoczeniu. Umożliwia to systemowi automatyczne 
+dopasowywanie jasności wyświetlacza do aktualnego 
+oświetlenia.
+Czujnik oświetlenia RGB
+Czujnik oświetlenia RGB zapewnia automatyczne 
+dostosowywanie temperatury kolorów ekranu w zależności od 
+poziomu światła w otoczeniu.
+Podręcznik elektroniczny do notebooka 21
+Czujnik ToF
+Czujnik ToF zapewnia automatyczne wznawianie działania i 
+logowanie do notebooka za pomocą funkcji Windows Hello po 
+wykryciu w pobliżu obecności użytkownika. Gdy użytkownik 
+odejdzie od notebooka, komputer zostanie przełączony do 
+nowoczesnego trybu gotowości.
+Wskaźnik wyłączenia kamery
+Ten wskaźnik świeci się, gdy kamera jest wyłączona.
+Przycisk zasilania
+Naciśnij przycisk zasilania w celu włączenia lub wyłączenia 
+notebooka. Przycisku zasilania można też używać do 
+przełączania notebooka w tryb uśpienia lub hibernacji oraz 
+wybudzania go z trybu uśpienia lub hibernacji.
+Jeśli notebook przestanie reagować, naciśnij przycisk zasilania 
+i przytrzymaj go przez co najmniej dziesięć (10) sekund, aż 
+notebook się wyłączy.
+Czytnik linii papilarnych
+Wbudowany czytnik linii papilarnych umożliwia skanowanie linii 
+papilarnych i używanie ich do uwierzytelniania biometrycznego 
+podczas logowania się do systemu notebooka.
+22 Podręcznik elektroniczny do notebooka
+Widok z góry
+Zestaw mikrofonów
+Zestaw mikrofonów daje lepszą jakość rozpoznawania głosu i 
+nagrywania dźwięku dzięki funkcjom usuwania echa, tłumienia 
+hałasu i formowania wiązki.
+Podręcznik elektroniczny do notebooka 23
+Widok z dołu
+UWAGA: Widok z dołu może różnić się wyglądem zależnie od modelu.
+OSTRZEŻENIE! Podczas używania lub ładowania zestawu baterii 
+notebook może się nagrzewać. Nie należy umieszczać notebooka na 
+kolanach ani w pobliżu dowolnej części ciała, aby zapobiec obrażeniom 
+ciała spowodowanym działaniem ciepła. Podczas używania notebooka 
+nie należy ustawiać go na powierzchni, która mogłaby zasłonić otwory 
+wentylacyjne.
+WAŻNE! 
+• Czas pracy przy zasilaniu z akumulatora zależy od sposobu używania 
+i parametrów technicznych konkretnego modelu notebooka. 
+Akumulatora nie można demontować.
+• W celu zapewnienia maksymalnej zgodności i niezawodności 
+komponenty należy kupować u autoryzowanych sprzedawców. 
+Należy skontaktować się z centrum serwisowym firmy ASUS lub 
+autoryzowanym sprzedawcą w celu wykonania serwisu produktu 
+albo uzyskania pomocy w zakresie jego prawidłowego demontażu 
+lub montażu.
+24 Podręcznik elektroniczny do notebooka
+Otwory wentylacyjne
+Otwory wentylacyjne służą do doprowadzania zimnego 
+powietrza do notebooka i odprowadzania gorącego powietrza.
+OSTRZEŻENIE! Aby nie doszło do przegrzania się urządzenia, 
+otwory wentylacyjne nie mogą być zasłonięte papierem, 
+książkami, ubraniami, kablami ani innymi przedmiotami.
+Głośniki
+Wbudowane głośniki umożliwiają słuchanie dźwięku 
+bezpośrednio z notebooka. Funkcje audio są sterowane 
+programowo.
+Podręcznik elektroniczny do notebooka 25
+Widok z prawej strony
+Wskaźniki stanu
+Wskaźniki stanu ułatwiają identyfikację aktualnego stanu sprzętu 
+notebooka.
+ Dwukolorowy wskaźnik ładowania akumulatora
+ Dwukolorowa kontrolka LED pokazuje stan 
+ładowania akumulatora. W poniższej tabeli podano 
+znaczenie kolorów:
+26 Podręcznik elektroniczny do notebooka
+Kolor Stan
+Biały, ciągły Notebook jest podłączony 
+do źródła zasilania, a poziom 
+naładowania akumulatora 
+wynosi od 95% do 100%.
+Pomarańczowy, 
+ciągły
+Notebook jest podłączony do 
+źródła zasilania, trwa ładowanie 
+akumulatora, a poziom 
+naładowania akumulatora 
+wynosi mniej niż 95%.
+Pomarańczowy, 
+migający
+Notebook jest zasilany z 
+akumulatora, a poziom 
+naładowania akumulatora 
+wynosi poniżej 10%.
+Wskaźnik 
+wyłączony
+Notebook jest zasilany z 
+akumulatora, a poziom 
+naładowania akumulatora 
+wynosi od 10% do 100%.
+ Wskaźnik zasilania
+ Wskaźnik zasilania świeci, gdy notebook jest 
+włączony, a miga powoli, gdy notebook jest w trybie 
+uśpienia.
+Gniazdo kart microSD
+To gniazdo wbudowanego czytnika kart pamięci obsługuje karty 
+w formacie microSD.
+Podręcznik elektroniczny do notebooka 27
+Port combo Thunderbolt™ 4/Power Delivery
+Port Thunderbolt™ 4 jest zgodny ze standardami USB Type-C® i 
+zapewnia szybkość transferu danych do 40 Gbit/s dla urządzeń 
+zgodnych z Thunderbolt™ 4. Podłącz notebooka do gniazda 
+DisplayPort, VGA, DVI albo HDMI zewnętrznego wyświetlacza i 
+korzystaj z funkcji wysokiej rozdzielczości, poprzez technologię 
+Intel® Thunderbolt™. Włóż do tego portu dostarczony zasilacz w 
+celu naładowania akumulatora i zasilania notebooka.
+UWAGA: Szybkość transferu dla tego portu może się różnić w 
+zależności od modelu.
+OSTRZEŻENIE! Podczas pracy zasilacz może się nagrzewać. 
+Gdy zasilacz jest podłączony do źródła zasilania, nie należy go 
+zakrywać ani dotykać przez dłuższy czas.
+WAŻNE!
+• Całkowite ładowanie notebooka PC przez niskonapięciowe 
+źródło zasilania może potrwać dłużej.
+• Aby zapobiec wszelkim uszkodzeniom, do ładowania 
+notebooka przez port combo USB Power Delivery 
+należy używać wyłącznie źródeł zasilania o wartościach 
+znamionowych 20 V/3,25 A. Aby uzyskać więcej informacji, 
+należy skontaktować się z centrum serwisowym firmy ASUS.
+Gniazdo słuchawek/Zestawu słuchawkowego/Mikrofonu
+To gniazdo to służy do podłączania głośników ze wzmacniaczem 
+lub słuchawek. Można do niego również podłączyć zestaw 
+słuchawkowy lub mikrofon zewnętrzny.
+28 Podręcznik elektroniczny do notebooka
+Widok z lewej strony
+Port combo USB 3.2 Gen 2 Type-C®/DisplayPort/ 
+Power Delivery
+Port USB 3.2 Gen 2 Type-C® umożliwia transfer danych z 
+szybkością do 10 Gb/s i jest wstecznie zgodny ze standardem 
+USB 2.0. Aby podłączyć notebook do ekranu zewnętrznego, 
+należy użyć adaptera USB Type-C®. W celu naładowania zestawu 
+baterii i zapewnienia zasilania notebooka należy podłączyć 
+zasilacz o wartościach znamionowych 20 V/3,25 A.
+UWAGA: Szybkość transferu dla tego portu może się różnić w 
+zależności od modelu.
+WAŻNE!
+• Całkowite ładowanie notebooka PC przez niskonapięciowe 
+źródło zasilania może potrwać dłużej.
+• Aby zapobiec wszelkim uszkodzeniom, do ładowania 
+notebooka przez port combo USB Power Delivery 
+należy używać wyłącznie źródeł zasilania o wartościach 
+znamionowych 20 V/3,25 A. Aby uzyskać więcej informacji, 
+należy skontaktować się z centrum serwisowym firmy ASUS.
+Podręcznik elektroniczny do notebooka 29
+Rozdział 2: 
+Korzystanie z notebooka
+30 Podręcznik elektroniczny do notebooka
+WAŻNE!
+Informacje o zasilaczu:
+• Napięcie wejściowe: 100-240 VAC
+• Częstotliwość wejściowa: 50-60 Hz
+• Znamionowy prąd wyjściowy: 3,25 A (65 W)
+• Znamionowe napięcie wyjściowe: 20 V
+Ładuj notebook przez 3 godziny przed pierwszym 
+użyciem w trybie bateryjnym.
+UWAGA: Wygląd zasilacza może się różnić w zależności od modelu i 
+regionu.
+Rozpoczęcie pracy
+Ładowanie notebooka
+A. Podłącz przewód zasilający AC do zasilacza AC/DC.
+B. Podłącz złącze zasilania DC do portu wejściowego zasilania (DC) 
+notebooka.
+C. Podłącz zasilacz AC do gniazdka 100 V~240 V.
+Podręcznik elektroniczny do notebooka 31
+WAŻNE!
+• Zlokalizuj etykietę ze znamionową mocą wejścia/wyjścia na 
+notebooku i upewnij się, że odpowiada ona informacjom dotyczącym 
+znamionowego wejścia/wyjścia na zasilaczu. Niektóre modele 
+notebooków mogą mieć różne znamionowe prądy wyjściowe w 
+zależności od dostępnej jednostki SKU.
+• Upewnij się, że notebook jest podłączony do zasilacza przed 
+włączeniem go po raz pierwszy. Zawsze podłączaj przewód zasilający 
+do gniazdka ściennego bez używania przedłużaczy. Dla własnego 
+bezpieczeństwa podłączaj urządzenie wyłącznie do prawidłowo 
+uziemionego gniazdka elektrycznego.
+• Gniazdko musi być łatwo dostępne i znajdować się w pobliżu 
+notebooka.
+• Aby odłączyć notebook od głównego źródła zasilania, należy 
+odłączyć notebook od gniazda zasilania.
+OSTRZEŻENIE!
+Przeczytaj następujące środki ostrożności dotyczące baterii notebooka:
+• Tylko autoryzowani przez firmę ASUS technicy powinni wyjmować 
+baterię z urządzenia (tylko w przypadku baterii niewymiennej).
+• Bateria używana w tym urządzeniu może stwarzać ryzyko pożaru lub 
+poparzenia chemicznego, jeśli zostanie wyjęta lub rozmontowana.
+• Dla własnego bezpieczeństwa postępuj zgodnie z etykietami 
+ostrzegawczymi.
+• Ryzyko wybuchu w przypadku wymiany baterii na baterię 
+niewłaściwego typu.
+• Nie wrzucaj jej do ognia.
+• Nigdy nie próbuj powodować zwarcia baterii notebooka.
+• Nigdy nie próbuj demontować i ponownie montować baterii 
+(tylko w przypadku baterii niewymiennej).
+• W przypadku wykrycia wycieku należy przerwać użytkowanie.
+• Baterię i jej elementy należy poddać recyklingowi lub odpowiednio 
+zutylizować.
+• Baterię i inne małe elementy należy trzymać z dala od dzieci.
+32 Podręcznik elektroniczny do notebooka
+Podnieś, aby otworzyć panel wyświetlacza
+Naciśnij przycisk zasilania
+Podręcznik elektroniczny do notebooka 33
+Korzystanie z gestów dla panelu dotykowego
+Gesty umożliwiają uruchamianie programów i dostęp do ustawień 
+notebooka. Funkcje można aktywować za pomocą gestów 
+wykonywanych ręką na panelu ekranu dotykowego notebooka.
+Gesty dla panelu ekranu dotykowego i 
+touchpada
+Gesty umożliwiają uruchamianie programów i dostęp do ustawień 
+notebooka. Zapoznaj się z poniższymi ilustracjami dotyczącymi 
+wykonywania gestów dłońmi na panelu ekranu dotykowego i 
+touchpadzie.
+UWAGA: Poniższe zrzuty ekranu są wyłącznie poglądowe. Wygląd panelu 
+ekranu dotykowego może się różnić w zależności od modelu.
+Dotknięcie/Dwukrotne 
+dotknięcie
+Naciśnij i przytrzymaj
+• Dotknij aplikacji, aby ją 
+wybrać.
+• Dwukrotnie dotknij 
+aplikacji, aby ją uruchomić.
+Naciśnij i przytrzymaj, aby 
+otworzyć menu prawego 
+przycisku myszy.
+34 Podręcznik elektroniczny do notebooka
+Powiększanie Pomniejszanie
+Rozsuń dwa palce na panelu 
+ekranu dotykowego.
+Zsuń dwa palce na panelu 
+ekranu dotykowego.
+Przesuwanie palcem Przeciąganie
+Przesuń palcem, aby przewijać 
+w górę lub w dół, a także aby 
+przesunąć ekran w lewo lub w 
+prawo.
+• Przeciągnij, aby utworzyć 
+pole wyboru wokół wielu 
+elementów.
+• Przeciągnij i upuść 
+element, aby przenieść go 
+w nowe miejsce.
+Podręcznik elektroniczny do notebooka 35
+Korzystanie z touchpada
+Przesuwanie wskaźnika
+Możesz dotknąć dowolnego miejsca na touchpadzie, aby aktywować 
+jego wskaźnik, a następnie przesuń palcem po touchpadzie, aby 
+przesunąć wskaźnik na ekranie.
+Przesuń w poziomie
+Przesuń w pionie
+Przesuń po przekątnej
+36 Podręcznik elektroniczny do notebooka
+Gesty jednym palcem
+Dotknięcie/Dwukrotne dotknięcie
+• Dotknij aplikacji, aby ją wybrać.
+• Dwukrotnie dotknij aplikacji, aby ją uruchomić.
+Przeciągnij i upuść
+Dwukrotnie dotknij element, a następnie przesuń palcem, nie 
+odrywając go od touchpada. Aby upuścić element w nowe miejsce, 
+unieś palec z touchpada.
+Podręcznik elektroniczny do notebooka 37
+Lewy przycisk myszy Prawy przycisk myszy
+• Kliknij aplikację, aby ją 
+wybrać.
+• Kliknij dwukrotnie aplikację, 
+aby ją uruchomić.
+Kliknij ten przycisk, aby otworzyć 
+menu prawego przycisku myszy.
+UWAGA: Obszary wewnątrz wykropkowanej linii reprezentują położenie 
+lewego i prawego przycisku myszy na touchpadzie.
+Gesty dwoma palcami
+Dotknięcie
+Dotknij touchpada dwoma palcami, aby użyć go jako funkcji kliknięcia 
+prawym przyciskiem myszy.
+38 Podręcznik elektroniczny do notebooka
+Przewijanie dwoma palcami 
+(w górę/w dół)
+Przewijanie dwoma palcami 
+(w lewo/w prawo)
+Przesuń dwoma palcami, aby 
+przewinąć w górę lub w dół.
+Przesuń dwoma palcami, aby 
+przewinąć w lewo lub w prawo.
+Pomniejszanie Powiększanie
+Zsuń dwa palce na touchpadzie. Rozsuń dwa palce na touchpadzie.
+Podręcznik elektroniczny do notebooka 39
+Przeciągnij i upuść
+Wybierz element, a następnie naciśnij i przytrzymaj lewy przycisk. 
+Drugim palcem przesuń po touchpadzie, aby przeciągnąć element, a 
+następnie unieś palec z przycisku, aby upuścić element.
+Gesty trzema palcami
+Dotknięcie
+Dotknij touchpada trzema palcami, aby uruchomić funkcję wybraną w 
+Ustawieniach.
+40 Podręcznik elektroniczny do notebooka
+Przesuń w lewo/Przesuń w prawo
+Jeśli otworzyłeś wiele aplikacji, przesuń trzy palce w lewo lub w prawo, 
+aby przełączać się między tymi aplikacjami.
+Przesuń w górę Przesuń w dół
+Przesuń w górę, aby zobaczyć 
+przegląd wszystkich aktualnie 
+otwartych aplikacji.
+Przesuń w dół, aby wyświetlić 
+pulpit.
+Podręcznik elektroniczny do notebooka 41
+Gesty czterema palcami
+Dotknięcie
+Dotknij touchpada czterema palcami, aby uruchomić funkcję wybraną 
+w Ustawieniach.
+42 Podręcznik elektroniczny do notebooka
+Korzystanie z klawiatury numerycznej
+WAŻNE! Należy pamiętać, że wszystkie wersje klawiatury numerycznej 
+są obsługiwane tylko w najnowszym systemie operacyjnym Microsoft 
+Windows.
+UWAGA: Aby użyć funkcji % oraz =, ustaw język wprowadzania na 
+angielski.
+• Naciśnij i przytrzymaj przez sekundę, aby 
+przełączać się między klawiszami numerycznymi 
+lub touchpadem.
+• Dotknij , aby dostosować jasność klawiatury 
+numerycznej.
+• Naciśnij i przytrzymaj , a następnie przesuń w 
+dowolnym miejscu na klawiaturze numerycznej, 
+aby uruchomić Kalkulator Windows.
+Podręcznik elektroniczny do notebooka 43
+Korzystanie z klawiatury
+Włącza lub wyłącza głośnik
+Zmniejsza głośność głośnika
+Zwiększa głośność głośnika
+Zmniejsza jasność wyświetlacza
+Zwiększa jasność wyświetlacza
+Włącza lub wyłącza touchpad
+Dostosowuje jasność podświetlanej klawiatury
+Przełącza tryb wyświetlania
+UWAGA: Upewnij się, że drugi wyświetlacz jest 
+podłączony do notebooka.
+Klawisze dostępu
+Klawisze dostępu na klawiaturze notebooka mogą aktywować 
+następujące polecenia:
+44 Podręcznik elektroniczny do notebooka
+Klawisze Windows
+Na klawiaturze notebooka znajdują się dwa specjalne klawisze 
+Windows, które są używane w następujący sposób:
+Uruchamia menu Start
+Wyświetla rozwijane menu*
+* W wybranych modelach
+Klawisze funkcji
+Naciśnij , aby włączyć lub wyłączyć klawisze funkcji. Gdy 
+klawisze funkcji są włączone, można też uzyskać dostęp do klawiszy 
+dostępu, przytrzymując w połączeniu z klawiszami w górnym 
+wierszu.
+Włącza lub wyłącza mikrofon
+Włącza lub wyłącza kamerę
+Aktywuje narzędzie do przechwytywania ekranu
+Uruchamia MyASUS
+Podręcznik elektroniczny do notebooka 45
+Obracanie panelu wyświetlacza
+Panel wyświetlacza notebooka można regulować w zakresie 360 stopni. 
+Sposób regulacji przedstawiono na poniższym rysunku.
+Tryb notebooka
+Regulacja o 360 stopni
+UWAGA: Ilustracje mają wyłącznie charakter informacyjny.
+46 Podręcznik elektroniczny do notebooka
+Tryb namiotu
+Tryb podstawy
+Tryb tabletu
+UWAGA: Obrócenie ekranu do trybu Stand (Podstawka), Tent (Namiot) i 
+Tablet powoduje wyłączenie klawiatury i touchpada.
+Podręcznik elektroniczny do notebooka 47
+Rozdział 3: 
+Praca z Windows
+48 Podręcznik elektroniczny do notebooka
+Rozpoczęcie pracy
+Przy pierwszym uruchomieniu notebooka pojawia się seria ekranów, 
+które prowadzą użytkownika przez konfigurację systemu operacyjnego 
+Windows.
+Aby uruchomić notebook po raz pierwszy:
+1. Naciśnij przycisk zasilania w celu włączenia lub wyłączenia 
+notebooka. Poczekaj kilka minut, aż pojawi się ekran konfiguracji.
+2. Na ekranie konfiguracji wybierz swój region i język, który ma być 
+używany w notebooku.
+3. Uważnie przeczytaj „Umowę licencyjną”. Wybierz Accept.
+4. Postępuj zgodnie z instrukcjami wyświetlanymi na ekranie, aby 
+skonfigurować następujące podstawowe elementy:
+• Personalizacja
+• Połączenie z Internetem
+• Ustawienia
+• Twoje konto
+5. Po skonfigurowaniu podstawowych elementów system Windows 
+przystąpi do instalowania aplikacji i preferowanych ustawień. 
+Upewnij się, że notebook jest podłączony do zasilania podczas 
+procesu konfiguracji.
+6. Po zakończeniu procesu instalacji pojawi się pulpit.
+UWAGA: Zrzuty ekranu przedstawione w tym rozdziale są wyłącznie 
+poglądowe.
+Podręcznik elektroniczny do notebooka 49
+Menu Start
+Menu Start to „brama główna” do programów, aplikacji notebooka, 
+folderów i ustawień systemu Windows.
+Możesz użyć menu Start, aby wykonać następujące czynności:
+• Uruchom programy lub aplikacje Windows
+• Otwórz najczęściej używane programy lub aplikacje Windows
+• Dostosuj ustawienia notebooka
+• Uzyskaj pomoc dotyczącą systemu operacyjnego Windows
+• Wyłącz notebook
+• Wyloguj się z systemu Windows lub przełącz się na inne konto 
+użytkownika
+Zmień ustawienia konta, zablokuj 
+lub wyloguj się ze swojego konta
+Uruchom menu Start
+Uruchom widok zadań
+Wyłącz, uruchom ponownie 
+notebook lub przełącz go w 
+tryb uśpienia
+Uruchom aplikację z 
+paska zadań
+Uruchom aplikację z menu Start
+Uruchom wyszukiwanie
+Uruchom widżety
+50 Podręcznik elektroniczny do notebooka
+Uruchamianie menu Start
+Dotknij ikony Start na pulpicie.
+Najedź wskaźnikiem myszy na ikonę Start na 
+pulpicie, a następnie kliknij ją.
+Naciśnij klawisz z logo Windows na klawiaturze.
+Otwieranie programów z menu Start
+Jednym z najczęstszych zastosowań menu Start jest otwieranie 
+programów zainstalowanych w notebooku.
+Dotknij programu, aby go uruchomić.
+Najedź wskaźnikiem myszy na program, a następnie 
+kliknij, aby go uruchomić.
+Użyj klawiszy strzałek, aby przeglądać programy. 
+Naciśnij , aby go uruchomić.
+UWAGA: Wybierz All apps (Wszystkie aplikacje), aby wyświetlić pełną 
+listę programów i folderów notebooka w kolejności alfabetycznej.
+Podręcznik elektroniczny do notebooka 51
+Aplikacje Windows
+Są to aplikacje przypięte do menu Start i wyświetlane w formacie 
+kafelkowym dla łatwego dostępu.
+UWAGA: Niektóre aplikacje systemu Windows wymagają zalogowania się 
+na konto Microsoft, zanim zostaną w pełni uruchomione.
+52 Podręcznik elektroniczny do notebooka
+Praca z aplikacjami Windows
+Dostosowywanie aplikacji Windows
+Możesz przenosić, odpinać lub przypinać aplikacje do paska zadań z 
+menu Start, wykonując następujące czynności:
+Uruchamianie aplikacji Windows z menu Start
+Dotknij aplikacji, aby ją uruchomić.
+Najedź wskaźnikiem myszy na aplikację, a następnie 
+kliknij, aby ją uruchomić.
+Użyj klawiszy strzałek, aby przeglądać aplikacje. Naciśnij 
+, aby uruchomić aplikację.
+Przenoszenie aplikacji
+Naciśnij i przytrzymaj aplikację, a następnie przeciągnij 
+ją i upuść w nowej lokalizacji.
+Najedź wskaźnikiem myszy na aplikację, a następnie 
+przeciągnij i upuść aplikację w nowej lokalizacji.
+Podręcznik elektroniczny do notebooka 53
+Odpinanie aplikacji
+Naciśnij i przytrzymaj aplikację, a następnie dotknij 
+Unpin from Start (Odepnij z menu Start).
+Najedź wskaźnikiem myszy na aplikację i kliknij ją 
+prawym przyciskiem myszy, a następnie kliknij Unpin 
+from Start (Odepnij z menu Start).
+Użyj klawiszy strzałek, aby przejść do aplikacji. 
+Naciśnij lub (w wybranych 
+modelach), a następnie wybierz Unpin from Start 
+(Odepnij z menu Start).
+54 Podręcznik elektroniczny do notebooka
+Przypinanie większej liczby aplikacji do menu Start
+W menu All apps (Wszystkie aplikacje) naciśnij i 
+przytrzymaj aplikację, którą chcesz dodać do menu Start, 
+a następnie dotknij Pin to Start (Przypnij do menu 
+Start).
+W menu All apps (Wszystkie aplikacje) najedź 
+wskaźnikiem myszy na aplikację, którą chcesz dodać 
+do menu Start i kliknij ją prawym przyciskiem myszy, a 
+następnie kliknij Pin to Start (Przypnij do menu Start).
+W menu All apps (Wszystkie aplikacje) naciśnij 
+lub (w wybranych modelach) w aplikacji, 
+którą chcesz dodać do menu Start, a następnie wybierz 
+Pin to Start (Przypnij do menu Start).
+Przypinanie aplikacji do paska zadań
+Naciśnij i przytrzymaj aplikację, a następnie dotknij Pin 
+to taskbar (Przypnij do paska zadań).
+Najedź wskaźnikiem myszy na aplikację i kliknij ją 
+prawym przyciskiem myszy, a następnie kliknij Pin to 
+taskbar (Przypnij do paska zadań).
+Użyj klawiszy strzałek, aby przejść do aplikacji. 
+Naciśnij lub (w wybranych 
+modelach), a następnie wybierz Pin to taskbar (Przypnij 
+do paska zadań).
+Podręcznik elektroniczny do notebooka 55
+Widok zadań
+Za pomocą funkcji „Widok zadań” możesz szybko przełączać się 
+pomiędzy otwartymi aplikacjami i programami. Za pomocą widoku 
+zadań możesz też przełączać się pomiędzy pulpitami.
+Uruchamianie widoku zadań
+Dotknij ikony na pasku zadań.
+Najedź wskaźnikiem myszy na ikonę na pasku 
+zadań i kliknij ją.
+Naciśnij na klawiaturze.
+56 Podręcznik elektroniczny do notebooka
+Widżety
+Możesz uruchomić widżety, aby uzyskać szybki dostęp do ważnych 
+informacji.
+Uruchamianie widżetów
+Dotknij ikony na pasku zadań.
+Najedź wskaźnikiem myszy na ikonę na pasku 
+zadań i kliknij ją.
+Naciśnij na klawiaturze.
+Podręcznik elektroniczny do notebooka 57
+Dostosowywanie widżetów
+lub
+Kliknij/Dotknij ikonę , a następnie wybierz Manage 
+interests (Zarządzaj zainteresowaniami), aby zmienić 
+zawartość wyświetlaną w widżetach.
+58 Podręcznik elektroniczny do notebooka
+Funkcja Snap
+Funkcja Snap wyświetla aplikacje obok siebie, umożliwiając pracę lub 
+przełączanie się między aplikacjami.
+Funkcja Snap dla hotspotów
+Możesz przeciągać i upuszczać aplikacje do tych hotspotów, aby 
+umieścić je na swoim miejscu.
+Podręcznik elektroniczny do notebooka 59
+Korzystanie z funkcji Snap
+lub
+1. Uruchom aplikację, którą chcesz przeciągnąć.
+2. Przeciągnij pasek tytułu aplikacji i upuść aplikację 
+na krawędź ekranu, aby ją przeciągnąć.
+3. Uruchom inną aplikację i powtórz powyższe kroki, 
+aby przeciągnąć kolejną aplikację.
+1. Uruchom aplikację, którą chcesz przeciągnąć.
+2. Naciśnij i przytrzymaj klawisz , a następnie 
+użyj klawiszy strzałek, aby przeciągnąć aplikację.
+3. Uruchom inną aplikację i powtórz powyższe kroki, 
+aby przeciągnąć kolejną aplikację.
+60 Podręcznik elektroniczny do notebooka
+Centrum akcji
+W centrum akcji gromadzone są powiadomienia z aplikacji. Jest to 
+jedyne miejsce, w którym można wchodzić z nimi w interakcję. Oferuje 
+ono również bardzo przydatną sekcję „Szybkie akcje”.
+Uruchamianie „szybkich akcji”
+Dotknij ikony stanu na pasku zadań.
+Najedź wskaźnikiem myszy na ikonę stanu na pasku 
+zadań i kliknij ją.
+Naciśnij na klawiaturze.
+Podręcznik elektroniczny do notebooka 61
+Aktywacja powiadomień
+Dotknij daty i godziny na pasku zadań.
+Najedź wskaźnikiem myszy na datę i godzinę na pasku 
+zadań i kliknij ją.
+Naciśnij na klawiaturze.
+62 Podręcznik elektroniczny do notebooka
+MyASUS Splendid
+MyASUS Splendid gwarantuje, że wszystkie panele wyświetlaczy 
+ASUS będą identycznie i dokładnie wyświetlać kolory. Oprócz trybu 
+zwykłego (Normal Mode) możesz wybrać opcję Vivid (Żywe kolory), Eye 
+Care (Ochrona oczu) lub Manual Mode (Tryb ręczny), aby dostosować 
+ustawienia wyświetlacza.
+• Normal Mode (Normal Mode): Dzięki korekcji gamma i 
+temperatury barwowej obraz wyjściowy z panelu jest jak 
+najbliższy temu, co zwykle widzą Twoje oczy. W przypadku 
+modelu z panelem OLED ten tryb jest zgodny z certyfikatem TÜV 
+Low Blue Light.
+• Vivid Mode (Żywe kolory): Ten tryb umożliwia dostosowanie 
+nasycenia, dzięki czemu obraz staje się żywszy i bardziej 
+intensywny.
+• Manual Mode(Tryb ręczny): Ten tryb umożliwia dostosowanie 
+wartości temperatury barwowej do własnych potrzeb w zakresie 
+od -50 do +50.
+• Eye Care Mode (Ochrona oczu): Ten tryb zmniejsza emisję 
+niebieskiego światła nawet o 30%, aby chronić Twoje oczy.
+ Poziom 1-5: Im wyższy poziom, tym bardziej redukowana jest 
+emisja światła niebieskiego. W przypadku modelu z panelem 
+LCD optymalnym ustawieniem jest poziom 5, który jest zgodny z 
+certyfikatem TÜV Low Blue Light.
+UWAGA: Włącz HDR w menu Settings (Ustawienia) > System > Display 
+(Wyświetlacz) dla lepszych wrażeń podczas oglądania na panelu OLED (w 
+wybranych modelach), który jest zgodny z certyfikatem TÜV Flicker Free.
+Podręcznik elektroniczny do notebooka 63
+Zapoznaj się z poniższymi wskazówkami, aby ograniczyć zmęczenie 
+oczu:
+• Jeśli pracujesz przez wiele godzin, odsuń się na chwilę od 
+wyświetlacza. Zaleca się robienie krótkich przerw (co najmniej 
+5 minut) po około 1 godzinie ciągłej pracy przy komputerze. 
+Robienie krótkich i częstych przerw jest bardziej efektywne niż 
+dłuższe przerwy.
+• Aby zminimalizować zmęczenie i suchość oczu, od czasu do czasu 
+odpoczywaj, skupiając wzrok na oddalonych obiektach.
+• Powtórz następujące ćwiczenia, aby zmniejszyć zmęczenie oczu:
+(1) Kilkakrotnie spójrz w górę i w dół
+(2) Powoli przewróć oczami
+(3) Poruszaj oczami po przekątnej
+ Jeśli zmęczenie oczu utrzymuje się, skonsultuj się z lekarzem.
+• Niebieskie światło o wysokiej energii może prowadzić do 
+zmęczenia oczu i AMD (zwyrodnienie plamki żółtej związane z 
+wiekiem). Filtr światła niebieskiego redukuje o 30% (maks.) emisję 
+szkodliwego niebieskiego światła, aby uniknąć CVS (syndromu 
+widzenia komputerowego).
+64 Podręcznik elektroniczny do notebooka
+Ustawianie wyświetlacza OLED
+Aby w pełni wykorzystać możliwości wyświetlacza OLED (w wybranych 
+modelach), zalecamy zmianę kilku ustawień. Ustawienia te pomagają 
+zoptymalizować wrażenia wizualne, zmaksymalizować żywotność 
+baterii i wydłużyć żywotność notebooka ASUS.
+Ustawianie trybu ciemnego
+Tryb ciemny jest domyślnie włączony. Aby sprawdzić lub dostosować 
+ustawienia:
+1. Uruchom menu Start.
+2. Kliknij/Dotknij Settings (Ustawienia) i wybierz Personalization 
+(Personalizacja).
+Podręcznik elektroniczny do notebooka 65
+3. Wybierz Colors (Kolory), aby wyświetlić dostępne opcje.
+66 Podręcznik elektroniczny do notebooka
+Wyłączanie wyświetlacza, gdy nie jest używany
+Pamiętaj, aby ustawić wyświetlacz tak, aby wyłączał się automatycznie, 
+gdy nie jest używany. Aby sprawdzić lub dostosować ustawienia:
+1. Uruchom menu Start.
+2. Kliknij/Dotknij Settings (Ustawienia) i wybierz System.
+Podręcznik elektroniczny do notebooka 67
+3. Wybierz Power & battery (Zasilanie i bateria), aby wyświetlić 
+dostępne opcje.
+68 Podręcznik elektroniczny do notebooka
+Regulacja jasności wyświetlacza
+Zaleca się włączenie animowanego wygaszacza ekranu z ciemnym tłem 
+i unikanie ustawiania maksymalnej jasności wyświetlacza OLED, aby 
+wydłużyć żywotność wyświetlacza OLED. Aby sprawdzić lub dostosować 
+ustawienia:
+1. Uruchom menu Start.
+2. Kliknij/Dotknij Settings (Ustawienia) i wybierz Personalization 
+(Personalizacja).
+Podręcznik elektroniczny do notebooka 69
+3. Wybierz zakładkę Lock screen (Ekran blokady), a następnie 
+wybierz Screen saver (Wygaszacz ekranu), aby wyświetlić 
+dostępne opcje.
+70 Podręcznik elektroniczny do notebooka
+Automatyczne ukrywanie paska zadań
+Aby uniknąć wyświetlania paska zadań na wyświetlaczu OLED przez 
+dłuższy czas, upewnij się, że pasek zadań jest automatycznie ukrywany. 
+Aby dostosować ustawienia:
+1. Uruchom menu Start.
+2. Kliknij/Dotknij Settings (Ustawienia) i wybierz Personalization 
+(Personalizacja).
+Podręcznik elektroniczny do notebooka 71
+3. Wybierz Taskbar (pasek zadań), a następnie włącz 
+Automatically hide the taskbar (Automatycznie ukryj pasek 
+zadań).
+72 Podręcznik elektroniczny do notebooka
+1. Uruchom aplikację Microsoft Office, a następnie kliknij/dotknij 
+File (Plik) > Account (Konto).
+2. Wybierz Dark Gray (Ciemny szary) pod Office Theme (Motyw 
+biurowy). Motyw zostanie zastosowany do wszystkich aplikacji 
+firmy Microsoft.
+Ustawianie trybu ciemnego w Microsoft Office
+Podręcznik elektroniczny do notebooka 73
+Inne skróty klawiaturowe
+Za pomocą klawiatury można również używać następujących skrótów 
+ułatwiających uruchamianie aplikacji i nawigację w systemie Windows.
+Uruchamia Start menu (Menu Start)
+Uruchamia Action Center (Centrum akcji)
+Uruchamia pulpit
+Uruchamia File Explorer (Przeglądarkę plików)
+Uruchamia Settings (Ustawienia)
+Uruchamia panel Connect (Połączenia)
+Aktywuje ekran blokady
+Minimalizuje wszystkie aktualnie aktywne okna
+74 Podręcznik elektroniczny do notebooka
+Uruchamia funkcję Search (Szukaj)
+Uruchamia panel Project (Projekt)
+Otwiera okno Run (Uruchom)
+Otwiera Accessibility (Ułatwienia dostępu)
+Otwiera menu kontekstowe przycisku Start
+Uruchamia ikonę lupy i powiększa ekran
+Pomniejsza ekran
+Podręcznik elektroniczny do notebooka 75
+Łączenie z sieciami bezprzewodowymi
+Wi-Fi
+Uzyskaj dostęp do poczty e-mail, surfuj po Internecie i udostępniaj 
+aplikacje za pośrednictwem portali społecznościowych przy użyciu sieci 
+Wi-Fi notebooka.
+WAŻNE! Airplane mode (Tryb samolotowy) wyłącza tę funkcję. Upewnij 
+się, że Airplane mode (Tryb samolotowy) zostanie wyłączony przed 
+włączeniem sieci Wi-Fi w notebooku.
+Podłączanie do sieci Wi-Fi
+Podłącz notebook do sieci Wi-Fi, wykonując następujące czynności:
+lub
+1. Uruchom Action Center (Centrum akcji) na pasku 
+zadań.
+2. Kliknij/Dotknij ikonę Wi-Fi, aby włączyć Wi-Fi.
+3. Wybierz punkt dostępu z listy dostępnych sieci Wi-Fi.
+4. Wybierz Connect (Połącz), aby nawiązać połączenie 
+sieciowe.
+UWAGA: Możesz zostać poproszony o wprowadzenie 
+klucza bezpieczeństwa, aby nawiązać połączenie z siecią 
+Wi-Fi.
+76 Podręcznik elektroniczny do notebooka
+lub
+1. Uruchom Settings (Ustawienia) w menu Start.
+2. Wybierz Bluetooth & devices (Bluetooth i 
+urządzenia) > Add device (Dodaj urządzenie), 
+aby wyszukać urządzenia obsługujące technologię 
+Bluetooth.
+3. Wybierz urządzenie z listy, aby sparować notebook 
+z urządzeniem.
+UWAGA: W przypadku niektórych urządzeń obsługujących 
+technologię Bluetooth może wyświetlić się prośba o 
+wprowadzenie hasła do notebooka.
+Bluetooth
+Skorzystaj z technologii Bluetooth, aby ułatwić bezprzewodowy transfer 
+danych z innymi urządzeniami obsługującymi technologię Bluetooth.
+WAŻNE! Airplane mode (Tryb samolotowy) wyłącza tę funkcję. Upewnij 
+się, że Airplane mode (Tryb samolotowy) zostanie wyłączony przed 
+włączeniem Bluetooth w notebooku.
+Parowanie z innymi urządzeniami obsługującymi 
+technologię Bluetooth
+Aby umożliwić transfer danych, konieczne jest sparowanie notebooka 
+z innymi urządzeniami obsługującymi technologię Bluetooth. Połącz 
+swoje urządzenia, wykonując następujące czynności:
+Podręcznik elektroniczny do notebooka 77
+Tryb samolotowy
+Tryb samolotowy wyłącza komunikację bezprzewodową, umożliwiając 
+bezpieczne korzystanie z notebooka podczas lotu.
+UWAGA: Skontaktuj się z wybranymi liniami lotniczymi, aby dowiedzieć 
+się o powiązanych usługach pokładowych, z których można korzystać 
+podczas lotu oraz o ograniczeniach, których należy przestrzegać podczas 
+korzystania z notebooka podczas lotu.
+Włączanie/Wyłączanie trybu samolotowego
+lub
+1. Uruchom Action Center (Centrum akcji) na 
+pasku zadań.
+2. Kliknij/Dotknij ikonę Airplane mode (Tryb 
+samolotowy), aby włączyć lub wyłączyć tryb 
+samolotowy.
+78 Podręcznik elektroniczny do notebooka
+Wyłączanie notebooka
+Notebook można wyłączyć, wykonując jedną z następujących procedur:
+lub
+• Uruchom menu Start, a następnie wybierz > 
+Shut down (Zamknij), aby normalnie wyłączyć 
+notebook.
+• Na ekranie logowania wybierz > Shut down 
+(Zamknij).
+• Naciśnij , aby rozpocząć zamykanie 
+systemu Windows. Wybierz opcję Shut down 
+(Zamknij) z rozwijanej listy, a następnie wybierz 
+OK.
+• Jeśli notebook nie będzie reagować, naciśnij 
+przycisk zasilania i przytrzymaj go przez co 
+najmniej dziesięć (10) sekund, aż się wyłączy.
+Podręcznik elektroniczny do notebooka 79
+Przełączanie notebooka w tryb uśpienia
+Aby przełączyć notebook w tryb uśpienia:
+lub
+• Uruchom menu Start, a następnie wybierz > 
+Sleep (Uśpij), aby przełączyć notebook w tryb 
+uśpienia.
+• Na ekranie logowania wybierz > Sleep (Uśpij).
+Naciśnij , aby rozpocząć zamykanie 
+systemu Windows. Wybierz opcję Sleep (Uśpij) z 
+rozwijanej listy, a następnie wybierz OK.
+UWAGA: Można także przełączyć notebook w tryb uśpienia, naciskając 
+jednokrotnie przycisk zasilania.
+80 Podręcznik elektroniczny do notebooka
+Podręcznik elektroniczny do notebooka 81
+Rozdział 4: 
+Autotest po włączeniu zasilania 
+(POST)
+82 Podręcznik elektroniczny do notebooka
+Autotest po włączeniu zasilania (POST)
+Autotest po włączeniu zasilania (Power-On Self-Test – POST) to seria 
+kontrolowanych programowo testów diagnostycznych, które są 
+uruchamiane po włączeniu lub ponownym uruchomieniu notebooka. 
+Oprogramowanie sterujące testem POST jest zainstalowane jako stała 
+część architektury notebooka.
+Korzystanie z testu POST w celu uzyskania 
+dostępu do systemu BIOS i rozwiązania 
+problemów
+Podczas testu POST można uzyskać dostęp do ustawień BIOS lub 
+uruchomić opcje rozwiązywania problemów za pomocą klawiszy 
+funkcyjnych notebooka. Więcej szczegółowych informacji znajduje się 
+poniżej.
+BIOS
+BIOS (Basic Input and Output System) zapisuje ustawienia sprzętowe 
+systemu, które są potrzebne do jego uruchomienia w notebooku.
+Domyślne ustawienia BIOS dotyczą większości warunków działania 
+notebooka. Nie zmieniaj domyślnych ustawień BIOS, z wyjątkiem 
+następujących sytuacji:
+• Podczas uruchamiania systemu na ekranie pojawia się komunikat 
+o błędzie z prośbą o uruchomienie konfiguracji systemu BIOS.
+• Zainstalowano nowy składnik systemu, który wymaga dalszych 
+ustawień lub aktualizacji systemu BIOS.
+OSTRZEŻENIE! Wprowadzanie niewłaściwych ustawień BIOS może 
+spowodować niestabilność systemu lub awarię uruchamiania. Zalecamy, 
+aby ustawienia BIOS były zmieniane tylko z pomocą przeszkolonego 
+personelu serwisowego.
+Podręcznik elektroniczny do notebooka 83
+Dostęp do systemu BIOS
+Uruchom ponownie notebook, a następnie naciśnij podczas 
+testu POST.
+Przywracanie systemu
+Korzystanie z opcji odzyskiwania w notebooku umożliwia przywrócenie 
+systemu do jego pierwotnego stanu lub po prostu odświeżenie jego 
+ustawień w celu poprawy wydajności.
+WAŻNE!
+• Wykonaj kopię zapasową wszystkich plików danych przed 
+wykonaniem jakiejkolwiek opcji odzyskiwania danych w notebooku.
+• Zapisz ważne niestandardowe ustawienia, takie jak np. ustawienia 
+sieciowe, nazwy użytkowników i hasła, aby uniknąć utraty danych.
+• Upewnij się, że notebook jest podłączony do źródła zasilania przed 
+zresetowaniem systemu.
+System Windows oferuje następujące opcje odzyskiwania:
+• Keep my files (Zachowaj moje pliki) – Ta opcja umożliwia 
+odświeżenie systemu notebooka bez wpływu na osobiste pliki 
+(zdjęcia, muzyka, wideo, dokumenty).
+ Za pomocą tej opcji można przywrócić domyślne ustawienia 
+notebooka i usunąć inne zainstalowane aplikacje.
+• Remove everything (Usuń wszystko) – Ta opcja resetuje 
+notebook do jego ustawień fabrycznych. Przed wybraniem tej 
+opcji musisz wykonać kopię zapasową swoich danych.
+84 Podręcznik elektroniczny do notebooka
+• Advanced startup (Uruchamianie zaawansowane) – Użycie 
+tej opcji umożliwia wykonanie innych zaawansowanych opcji 
+odzyskiwania danych w notebooku, takich jak:
+- Użycie dysku USB, połączenia sieciowego lub dysku DVD 
+służącego do przywracania systemu Windows w celu 
+uruchomienia notebooka.
+- Skorzystanie z opcji Troubleshoot (Rozwiązywania 
+problemów)aby uruchomić dowolną z zaawansowanych 
+opcji odzyskiwania: Naprawa podczas uruchamiania, 
+Odinstalowywanie aktualizacji, Ustawienia uruchamiania, 
+Ustawienia oprogramowania układowego UEFI, Wiersz 
+polecenia, Przywracanie systemu i Odzyskiwanie obrazu 
+systemu.
+Opcje wykonywania kopii zapasowej
+Zapoznaj się z poniższymi krokami, jeśli chcesz uzyskać dostęp i 
+skorzystać z dowolnej dostępnej opcji wykonywania kopii zapasowej 
+notebooka.
+1. Uruchom Settings (Ustawienia) i wybierz System > Recovery 
+(Kopia zapasowa).
+Podręcznik elektroniczny do notebooka 85
+2. Wybierz odpowiednią opcję wykonywania kopii zapasowej.
+86 Podręcznik elektroniczny do notebooka
+Podręcznik elektroniczny do notebooka 87
+Porady i często zadawane 
+pytania
+88 Podręcznik elektroniczny do notebooka
+Przydatne porady dotyczące notebooka
+Poniżej przedstawiono kilka przydatnych porad, których przestrzeganie 
+umożliwi maksymalne wykorzystanie możliwości notebooka, 
+utrzymanie wydajności jego systemu oraz zapewni bezpieczeństwo 
+wszystkich przechowywanych danych:
+• System Windows należy okresowo aktualizować w 
+celu zapewnienia najnowszych ustawień zabezpieczeń 
+zainstalowanych aplikacji.
+• Aplikację MyASUS należy aktualizować, aby móc korzystać z 
+najnowszych ustawień wyłącznych aplikacji, sterowników i 
+programów narzędziowych firmy ASUS.
+• Należy używać oprogramowania antywirusowego w celu ochrony 
+danych; oprogramowanie to należy okresowo aktualizować.
+• Poza sytuacjami, w których jest to absolutnie konieczne, należy 
+unikać wyłączania notebooka poprzez wymuszenie zamknięcia 
+jego systemu.
+• Należy zawsze wykonywać kopie zapasowe danych, które warto 
+jest zapisywać na zewnętrznym dysku pamięci masowej.
+• Jeśli notebook nie będzie używany przez dłuższy czas, należy 
+naładować jego baterię do poziomu 50%, a następnie wyłączyć 
+komputer i odłączyć zasilacz.
+• Jeśli z notebookiem stale używany jest zasilacz, należy w aplikacji 
+MyASUS ustawić dla pozycji Battery Health Charging (Bezpieczne 
+ładowanie baterii) opcję Balanced mode (Tryb zrównoważony).
+Podręcznik elektroniczny do notebooka 89
+• Przed zresetowaniem notebooka należy odłączyć wszystkie 
+urządzenia zewnętrzne oraz upewnić się, że wszystkie poniższe 
+pozycje są dostępne:
+- Klucz produktu dla systemu operacyjnego i innych 
+zainstalowanych aplikacji
+- Kopia zapasowa danych
+- Identyfikator i hasło logowania
+- Informacje dotyczące połączenia z Internetem
+• Rozwiązania problemów i często zadawane pytania można 
+znaleźć w witrynie pomocy technicznej pod adresem 
+https://www.asus.com/pl/support.
+90 Podręcznik elektroniczny do notebooka
+Często zadawane pytania dotyczące sprzętu
+1. Po włączeniu notebooka na ekranie pojawia się czarny, a 
+czasem kolorowy punkt. Co należy zrobić?
+Pomimo tego, że punkty te pojawiają się zwykle na ekranie 
+notebooka, nie mają one wpływu na działanie systemu. Jeśli 
+problem ten będzie się utrzymywał i zacznie wpływać na 
+wydajność systemu, należy skontaktować się z autoryzowanym 
+centrum serwisowym firmy ASUS.
+2. Kolor i jasność ekranu notebooka są niejednolite. Jak można 
+to naprawić?
+Na kolor i jasność ekranu może mieć wpływ kąt i aktualne 
+położenie notebooka. Jasność i odcienie kolorów notebooka 
+mogą się także różnić w zależności od modelu. Wygląd ekranu 
+można dostosować za pomocą klawiszy funkcyjnych lub ustawień 
+ekranu w systemie operacyjnym.
+3. Jak zmaksymalizować żywotność baterii notebooka?
+Można zastosować się do dowolnej z poniższych sugestii:
+• Dostosuj jasność ekranu za pomocą klawiszy funkcyjnych.
+• Jeśli nie korzystasz z połączenia Wi-Fi, przełącz system do 
+trybu Airplane mode (Tryb samolotowy).
+• Odłącz nieużywane urządzenia USB.
+• Zamknij nieużywane aplikacje, zwłaszcza te, które zużywają 
+zbyt wiele pamięci systemowej.
+Podręcznik elektroniczny do notebooka 91
+4. Nie świeci się wskaźnik LED baterii. Na czym polega problem?
+• Sprawdź, czy zasilacz lub zestaw baterii są prawidłowo 
+podłączone. Można także odłączyć zasilacz lub zestaw 
+baterii, odczekać minutę, a następnie podłączyć je 
+ponownie do gniazda elektrycznego i notebooka.
+• Jeśli problem będzie się utrzymywał, skontaktuj się z 
+lokalnym centrum serwisowym firmy ASUS w celu uzyskania 
+pomocy.
+5. Dlaczego touchpad nie działa?
+Naciśnij w celu uaktywnienia touchpada.
+6. Dlaczego podczas odtwarzania plików audio lub wideo nie 
+słychać dźwięku z głośników notebooka?
+Można zastosować się do dowolnej z poniższych sugestii:
+• Naciśnij w celu zwiększenia głośności głośnika.
+• Sprawdź, czy nie ustawiono wyciszenia głośników.
+• Sprawdź, czy do gniazda słuchawkowego notebooka nie 
+podłączono słuchawek, a jeśli tak, to odłącz je.
+92 Podręcznik elektroniczny do notebooka
+7. Co należy zrobić w przypadku zgubienia zasilacza notebooka 
+lub gdy bateria przestała działać?
+Skontaktuj się z lokalnym centrum serwisowym firmy ASUS w 
+celu uzyskania pomocy.
+8. Notebook nie realizuje prawidłowo naciśnięć klawiszy ze 
+względu na stale poruszający się kursor. Co należy zrobić?
+Upewnij się, że podczas pisania na klawiaturze nic przypadkowo 
+nie dotyka ani nie naciska touchpada. Możesz także wyłączyć 
+touchpad, naciskając .
+Podręcznik elektroniczny do notebooka 93
+Często zadawane pytania dotyczące 
+oprogramowania
+1. Po włączeniu notebooka wskaźnik zasilania podświetla się, 
+ale nic nie pojawia się na ekranie. Co należy zrobić, aby to 
+naprawić?
+Można zastosować się do dowolnej z poniższych sugestii:
+• Wymuś wyłączenie notebooka, naciskając przycisk zasilania 
+i przytrzymując go przez co najmniej dziesięć (10) sekund. 
+Sprawdź, czy zasilacz i zestaw baterii są prawidłowo 
+podłączone, a następnie włącz notebook.
+• Jeśli problem będzie się utrzymywał, skontaktuj się z 
+lokalnym centrum serwisowym firmy ASUS w celu uzyskania 
+pomocy.
+2. Co należy zrobić, gdy na ekranie widoczny jest następujący 
+komunikat: „Remove disks or other media. Press any key to 
+restart. (Usuń dyski lub inny nośnik. Naciśnij jakiś klawisz, 
+aby zrestartować.)”?
+Można zastosować się do dowolnej z poniższych sugestii:
+• Odłącz wszystkie podłączone urządzenia USB, a następnie 
+uruchom ponownie notebook.
+• Wyjmij dysk optyczny pozostawiony w stacji dysków 
+optycznych, a następnie uruchom ponownie notebook.
+• Jeśli problem będzie się utrzymywał, może to oznaczać, że 
+w notebooku wystąpił problem z pamięcią. Skontaktuj się z 
+lokalnym centrum serwisowym firmy ASUS w celu uzyskania 
+pomocy.
+94 Podręcznik elektroniczny do notebooka
+3. Notebook uruchamia się wolniej niż zwykle, a system 
+operacyjny działa z opóźnieniem. Jak można to naprawić?
+Usuń ostatnio zainstalowane aplikacje lub te, które nie były 
+dołączone do pakietu systemu operacyjnego, a następnie 
+uruchom ponownie system.
+4. Notebook nie uruchamia się. Jak można to naprawić?
+Można zastosować się do dowolnej z poniższych sugestii:
+• Odłącz od notebooka wszystkie podłączone do niego 
+urządzenia, a następnie uruchom ponownie system.
+• Jeśli problem będzie się utrzymywał, skontaktuj się z 
+lokalnym centrum serwisowym firmy ASUS w celu uzyskania 
+pomocy.
+5. Dlaczego nie można przywrócić działania notebooka z trybu 
+uśpienia?
+• W celu przywrócenia ostatniego stanu działania należy 
+nacisnąć przycisk zasilania.
+• W wyniku działania systemu bateria mogła ulec całkowitemu 
+rozładowaniu. Podłącz zasilacz do notebooka i do gniazda 
+elektrycznego, a następnie naciśnij przycisk zasilania.
+Podręcznik elektroniczny do notebooka 95
+Załączniki
+96 Podręcznik elektroniczny do notebooka
+Zgodność modemu wewnętrznego
+Notebook z modemem wewnętrznym jest zgodny z przepisami JATE (Japonia), 
+FCC (USA, Kanada, Korea, Tajwan) i CTR21. Modem wewnętrzny został 
+zatwierdzony zgodnie z decyzją Rady 98/482/WE dla ogólnoeuropejskiego 
+połączenia pojedynczego terminala z publiczną komutowaną siecią telefoniczną 
+(PSTN). Jednak ze względu na różnice pomiędzy poszczególnymi sieciami 
+PSTN udostępnianymi w różnych krajach, samo zatwierdzenie nie zapewnia 
+bezwarunkowo prawidłowego działania w każdym punkcie końcowym sieci 
+PSTN. W przypadku problemów należy w pierwszej kolejności skontaktować się z 
+dostawcą sprzętu.
+Informacje podstawowe
+W dniu 4 sierpnia 1998 r. decyzja Rady Europejskiej dotycząca CTR 21 została 
+opublikowana w Dzienniku Urzędowym WE. CTR 21 dotyczy wszystkich 
+niegłosowych urządzeń końcowych z wybieraniem DTMF, które mają być 
+podłączone do analogowej sieci PSTN (Public Switched Telephone Network, 
+publicznej komutowanej sieci telefonicznej).
+CTR 21 (Common Technical Regulation, Wspólne rozporządzenie techniczne) w 
+odniesieniu do wymagań przyłączeniowych stawianym urządzeniom końcowym 
+podłączanym do analogowych publicznych komutowanych sieci telefonicznych (z 
+wyłączeniem urządzeń końcowych wspomagających w określonych przypadkach 
+usługi telefonii głosowej), w których adresowanie sieci, jeżeli jest zapewnione, 
+odbywa się za pomocą dwutonowej sygnalizacji wieloczęstotliwościowej.
+Podręcznik elektroniczny do notebooka 97
+Deklaracja zgodności sieci
+Deklaracja, która ma zostać złożona przez producenta do jednostki notyfikowanej i 
+sprzedawcy: „Niniejsza deklaracja określa sieci, z którymi urządzenia współdziałają 
+zgodnie ze swoim przeznaczeniem, oraz sieci notyfikowane, we współpracy z 
+którymi urządzenia mogą mieć problemy”.
+Deklaracja, która ma zostać złożona użytkownikowi przez producenta: „Deklaracja 
+ta wskaże sieci, z którymi urządzenia są przeznaczone do pracy, a także wszelkie 
+sieci notyfikowane, we współpracy z którymi urządzenia mogą mieć problemy. 
+Producent załącza także oświadczenie wyjaśniające zależność zgodności sieciowej 
+od ustawień sprzętowych i programowych. Powiadamia użytkownika, że właściwe 
+jest skontaktowanie się ze sprzedawcą, jeśli urządzenia mają być używane w innej 
+sieci”.
+Do tej pory jednostka notyfikowana CETECOM wydała kilka ogólnoeuropejskich 
+zatwierdzeń z zastosowaniem CTR 21. Wynikiem są pierwsze w Europie 
+modemy, które nie wymagają aprobat regulacyjnych w poszczególnych krajach 
+europejskich.
+Wyposażenie niegłosowe
+Kwalifikować mogą się zarówno automatyczne sekretarki i telefony 
+głośnomówiące, jak i modemy, faksy, automatyczne dialery i systemy alarmowe. 
+Wyłącza się sprzęt, w którym jakość mowy pomiędzy terminalami kontrolowana 
+jest przez przepisy (np. telefony komórkowe, a w niektórych krajach również 
+telefony bezprzewodowe).
+98 Podręcznik elektroniczny do notebooka
+Poniższa tabela przedstawia kraje objęte obecnie normą 
+CTR21.
+Kraj Zastosowanie Więcej badań
+Austria1 Tak Nie
+Belgia Tak Nie
+Czechy Nie Nie dotyczy
+Dania1 Tak Tak
+Finlandia Tak Nie
+Francja Tak Nie
+Niemcy Tak Nie
+Grecja Tak Nie
+Węgry Nie Nie dotyczy
+Islandia Tak Nie
+Irlandia Tak Nie
+Włochy Badania w toku Badania w toku
+Izrael Nie Nie
+Liechtenstein Tak Nie
+Luksemburg Tak Nie
+Holandia1 Tak Tak
+Norwegia Tak Nie
+Polska Nie Nie dotyczy
+Portugalia Nie Nie dotyczy
+Hiszpania Nie Nie dotyczy
+Szwecja Tak Nie
+Szwajcaria Tak Nie
+Zjednoczone Królestwo Tak Nie
+Podręcznik elektroniczny do notebooka 99
+Informacje te zostały skopiowane z CETECOM i są dostarczane bez ponoszenia 
+odpowiedzialności. Aktualizacje dla tej tabeli można znaleźć na stronie 
+http://www.cetecom.de/technologies/ctr_21.html.
+1 Wymogi krajowe będą miały zastosowanie tylko wtedy, gdy urządzenie może 
+korzystać z wybierania impulsowego (producenci mogą stwierdzić w instrukcji 
+obsługi, że urządzenie jest przeznaczone wyłącznie do obsługi sygnalizacji DTMF, 
+co sprawiłoby, że dodatkowe badania byłyby zbędne).
+W Holandii wymagane są dodatkowe badania urządzeń do łączenia szeregowego 
+i identyfikacji rozmówcy.
+http://www.cetecom.de/technologies/ctr_21.html
+100 Podręcznik elektroniczny do notebooka
+Deklaracja Federal Communications Commission 
+(Federalnej Komisji Łączności) w sprawie 
+zakłóceń
+Urządzenie to jest zgodne z przepisami FCC, część 15. Działanie podlega 
+następującym dwóm warunkom:
+• Urządzenie to nie może powodować szkodliwych zakłóceń.
+• Urządzenie to musi akceptować wszelkie odbierane zakłócenia, w tym 
+zakłócenia, które mogą powodować niepożądane działanie.
+Niniejsze urządzenie zostało przetestowane i uznane za zgodne z ograniczeniami 
+dla urządzeń cyfrowych klasy B, zgodnie z częścią 15 przepisów Federal 
+Communications Commission (Federalnej Komisji Łączności). Ograniczenia te 
+mają na celu zapewnienie rozsądnej ochrony przed szkodliwymi zakłóceniami 
+w instalacjach domowych. Urządzenie to generuje, wykorzystuje i może 
+wypromieniowywać energię o częstotliwości radiowej, a jeśli nie będzie 
+zainstalowane i użytkowane zgodnie z instrukcjami, może powodować szkodliwe 
+zakłócenia w komunikacji radiowej. Nie ma jednak gwarancji, że zakłócenia nie 
+wystąpią w danej instalacji. Jeśli urządzenie to powoduje szkodliwe zakłócenia w 
+odbiorze radiowym lub telewizyjnym, co można potwierdzić poprzez wyłączenie 
+i włączenie urządzenia, zachęca się użytkownika do próby skorygowania zakłóceń 
+za pomocą jednego lub kilku z poniższych środków:
+• Zmiana położenia lub lokalizacji anteny odbiorczej.
+• Zwiększenie odległości pomiędzy urządzeniem a odbiornikiem.
+• Podłączenie urządzenia do gniazda w innym obwodzie niż ten, do którego 
+podłączony jest odbiornik.
+• Skonsultowanie się ze sprzedawcą lub doświadczonym technikiem 
+radiowo-telewizyjnym w celu uzyskania pomocy.
+OSTRZEŻENIE! Zastosowanie ekranowanego przewodu zasilającego jest konieczne, 
+aby spełnić limity emisji FCC i zapobiec zakłóceniom w pobliskim odbiorze radiowym 
+i telewizyjnym. Istotne jest, aby używać wyłącznie dostarczonego przewodu 
+zasilającego. Do podłączenia urządzeń We/Wy do tego urządzenia należy używać 
+wyłącznie ekranowanych przewodów. Ostrzega się, że zmiany lub modyfikacje, 
+które nie zostały wyraźnie zatwierdzone przez stronę odpowiedzialną za zgodność z 
+przepisami, mogą unieważnić uprawnienia użytkownika do obsługi urządzenia.
+Podręcznik elektroniczny do notebooka 101
+Oświadczenie FCC o przestrodze przed 
+narażeniem na promieniowanie radiowe (RF)
+OSTRZEŻENIE! Wszelkie zmiany lub modyfikacje, które nie zostały wyraźnie 
+zatwierdzone przez stronę odpowiedzialną za zgodność z przepisami, mogą 
+unieważnić uprawnienia użytkownika do obsługi tego urządzenia. 
+Niniejsze urządzenie jest zgodne z wartościami granicznymi ekspozycji na 
+promieniowanie określonymi przez FCC dla niekontrolowanego środowiska. Aby 
+zachować zgodność z przepisami FCC dotyczącymi zgodności z wymaganiami 
+dotyczącymi narażenia na promieniowanie radiowe, podczas nadawania należy 
+unikać bezpośredniego kontaktu z anteną nadawczą. Użytkownicy końcowi muszą 
+postępować zgodnie ze szczegółowymi instrukcjami obsługi w celu zapewnienia 
+zgodności z przepisami dotyczącymi narażenia na promieniowanie radiowe.
+Informacje o narażeniu na promieniowanie 
+radiowe (SAR)
+Urządzenie to spełnia rządowe wymagania dotyczące narażenia na działanie fal 
+radiowych. Zostało ono zaprojektowane i wyprodukowane w taki sposób, aby nie 
+przekraczało limitów emisji w związku z ekspozycją na energię o częstotliwości 
+radiowej (RF) określonych przez Federal Communications Commission (Federalną 
+Komisję Łączności) rządu USA.
+Standard ekspozycji dla urządzeń bezprzewodowych wykorzystuje jednostkę 
+miary znaną jako szybkość pochłaniania właściwego energii (SAR). Limit SAR 
+ustalony przez FCC wynosi 1,6 W/kg. Badania SAR przeprowadzane są przy 
+użyciu standardowych pozycji pracy akceptowanych przez FCC przy urządzeniu 
+nadającym na najwyższym certyfikowanym poziomie mocy we wszystkich 
+badanych pasmach częstotliwości.
+(Przedruk z Kodeksu Przepisów Federalnych nr 47, część 15.193, 1993. Washington 
+DC: Office of the Federal Register, National Archives and Records Administration, 
+U.S. Government Printing Office.)
+102 Podręcznik elektroniczny do notebooka
+Notyfikacje bezpieczeństwa UL
+Wymagane w przypadku UL 1459 obejmującej sprzęt telekomunikacyjny 
+(telefoniczny) przeznaczony do podłączenia elektrycznego do sieci 
+telekomunikacyjnej o napięciu roboczym do masy nieprzekraczającym 200 V 
+szczytowo, 300 V międzyszczytowo i 105 V rms, i zainstalowanego lub używanego 
+zgodnie z Krajowym kodeksem elektrycznym (National Electrical Code lub NFPA 
+70).
+Podczas korzystania z modemu notebooka należy zawsze przestrzegać 
+podstawowych środków ostrożności, aby zmniejszyć ryzyko pożaru, porażenia 
+prądem elektrycznym i obrażeń osób, w tym:
+• NIE NALEŻY używać notebooka w pobliżu wody, na przykład w pobliżu 
+wanny, umywalki, zlewu kuchennego lub pralni, w wilgotnej piwnicy lub w 
+pobliżu basenu.
+• NIE NALEŻY używać notebooka podczas burzy z wyładowaniami 
+elektrycznymi. Może wystąpić ryzyko porażenia prądem elektrycznym 
+spowodowane uderzeniem pioruna.
+• NIE NALEŻY używać notebooka w pobliżu miejsca wycieku gazu.
+Wymagane w przypadku UL 1642 obejmującej baterie litowe pierwotne 
+(nieładowalne) i wtórne (ładowalne) do stosowania jako źródło zasilania w 
+produktach. Baterie te zawierają metaliczny lit, stop litu lub jony litu i mogą 
+składać się z pojedynczego ogniwa elektrochemicznego lub dwóch lub więcej 
+ogniw połączonych szeregowo, równolegle lub w obu konfiguracjach, które 
+przekształcają energię chemiczną w energię elektryczną w wyniku nieodwracalnej 
+lub odwracalnej reakcji chemicznej.
+• NIE NALEŻY wrzucać akumulatora notebooka do ognia, ponieważ może 
+on eksplodować. Aby zmniejszyć ryzyko obrażeń osób w wyniku pożaru 
+lub wybuchu, należy zapoznać się z lokalnymi przepisami w celu uzyskania 
+specjalnych instrukcji dotyczących utylizacji.
+• NIE NALEŻY używać zasilaczy lub akumulatorów dołączonych do innych 
+urządzeń w celu zmniejszenia ryzyka obrażeń osób w wyniku pożaru lub 
+wybuchu. Należy używać wyłącznie zasilaczy objętych certyfikatem UL 
+lub akumulatorów dostarczonych przez producenta albo autoryzowanych 
+sprzedawców.
+Podręcznik elektroniczny do notebooka 103
+Wymagania dotyczące bezpieczeństwa zasilania
+Produkty o obciążalności prądem elektrycznym do 6 A i masie powyżej 3 kg muszą 
+być wyposażone w zatwierdzone przewody zasilające większe lub równe: H05VV-F, 
+3G, 0,75 mm2 lub H05VV-F, 2G, 0,75 mm2.
+Powiadomienia w sprawie telewizji
+Uwaga dla instalatora systemu telewizji kablowej — system rozdzielczy 
+przewodów powinien być uziemiony zgodnie z ANSI/NFPA 70, Krajowym 
+kodeksem elektrycznym (NEC), w szczególności z sekcją 820.93 „Uziemienie 
+zewnętrznego ekranu przewodzącego kabla koncentrycznego” — instalacja 
+powinna obejmować związanie ekranu kabla koncentrycznego z uziemieniem 
+przy wejściu do budynku.
+Powiadomienie dotyczące produktów 
+Macrovision Corporation
+Ten produkt zawiera technologię ochrony praw autorskich, która jest chroniona 
+zastrzeżeniami metodycznymi niektórych patentów USA oraz innymi prawami 
+własności intelektualnej należącymi do Macrovision Corporation oraz innych 
+właścicieli praw. Korzystanie z tej technologii ochrony praw autorskich musi 
+być autoryzowane przez firmę Macrovision Corporation i jest przeznaczone 
+wyłącznie do użytku domowego oraz innych ograniczonych zastosowań, chyba 
+że Macrovision Corporation udzieli innej autoryzacji. Przeprowadzanie inżynierii 
+odwrotnej lub demontażu jest zabronione.
+Zapobieganie utracie słuchu
+Aby zapobiec możliwym uszkodzeniom słuchu, nie należy słuchać 
+przez dłuższy czas przy wysokim poziomie głośności.
+Powiadomienie o powłoce
+WAŻNE! W celu zapewnienia izolacji elektrycznej i utrzymania bezpieczeństwa 
+elektrycznego urządzenie jest izolowane za pomocą powłoki, z wyjątkiem obszarów, 
+w których znajdują się porty Wy/Wy.
+104 Podręcznik elektroniczny do notebooka
+Ostrzeżenia dotyczące baterii litowo-jonowych 
+dla krajów skandynawskich
+CAUTION! Danger of explosion if battery is incorrectly replaced. Replace only with 
+the same or equivalent type recommended by the manufacturer. Dispose of used 
+batteries according to the manufacturer’s instructions. (English)
+ATTENZIONE! Rischio di esplosione della batteria se sostituita in modo errato. 
+Sostituire la batteria con un una di tipo uguale o equivalente consigliata dalla 
+fabbrica. Non disperdere le batterie nell’ambiente. (Italiano)
+VORSICHT! Explosionsgefahr bei unsachgemäßen Austausch der Batterie. Ersatz 
+nur durch denselben oder einem vom Hersteller empfohlenem ähnlichen Typ. 
+Entsorgung gebrauchter Batterien nach Angaben des Herstellers. (Deutsch)
+ADVARSELI! Lithiumbatteri - Eksplosionsfare ved fejlagtig håndtering. Udskiftning 
+må kun ske med batteri af samme fabrikat og type. Levér det brugte batteri 
+tilbage til leverandøren. (Dansk)
+VARNING! Explosionsfara vid felaktigt batteribyte. Använd samma batterityp eller 
+en ekvivalent typ som rekommenderas av apparattillverkaren. Kassera använt 
+batteri enligt fabrikantens instruktion. (Svenska)
+VAROITUS! Paristo voi räjähtää, jos se on virheellisesti asennettu. Vaihda paristo 
+ainoastaan laitevalmistajan sousittelemaan tyyppiin. Hävitä käytetty paristo 
+valmistagan ohjeiden mukaisesti. (Suomi)
+ATTENTION! Danger d’explosion si la batterie n’est pas correctement remplacée. 
+Remplacer uniquement avec une batterie de type semblable ou équivalent, 
+recommandée par le fabricant. Jeter les batteries usagées conformément aux 
+instructions du fabricant. (Français)
+ADVARSEL! Eksplosjonsfare ved feilaktig skifte av batteri. Benytt samme 
+batteritype eller en tilsvarende type anbefalt av apparatfabrikanten. Brukte 
+batterier kasseres i henhold til fabrikantens instruksjoner. (Norsk)
+(日本語)
+ВНИМАНИЕ! При замене аккумулятора на аккумулятор иного типа возможно 
+его возгорание. Утилизируйте аккумулятор в соответствии с инструкциями 
+производителя. (Pyccкий)
+Podręcznik elektroniczny do notebooka 105
+Aprobata CTR 21 (dla notebooka z wbudowanym 
+modemem)
+Dansk
+Nederlands
+English
+Suomi
+Français
+106 Podręcznik elektroniczny do notebooka
+Deutsch
+Ελληνικά
+Italiano
+Português
+Español
+Svenska
+Podręcznik elektroniczny do notebooka 107
+Deklaracja zgodności dotycząca przepisów w 
+zakresie ochrony środowiska
+Firma ASUS opracowuje i produkuje swoje produkty zgodnie z koncepcją 
+ekologicznego projektowania i dba o to, aby każdy etap cyklu życia produktu 
+firmy ASUS był zgodny z globalnymi przepisami dotyczącymi ochrony środowiska. 
+Ponadto firma ASUS ujawnia konieczne informacje w oparciu o wymogi 
+regulacyjne.
+Aby uzyskać informacje na temat ujawniania informacji w oparciu o wymagania 
+regulacyjne, z jakimi firma ASUS zachowuje zgodność, należy zapoznać się z 
+informacjami dostępnymi na stronie http://csr.asus.com/Compliance.htm.
+Rozporządzenie UE REACH i Artykuł 33
+Zgodnie z systemem regulacji REACH (Rejestracja, ocena, autoryzacja i 
+ograniczenie chemikaliów) na stronie sieci Web ASUS REACH, pod adresem 
+http://csr.asus.com/english/REACH.htm, publikujemy informacje o substancjach 
+chemicznych znajdujących się w naszych produktach.
+UE RoHS
+Produkt ten jest zgodny z dyrektywą UE RoHS. Szczegółowe informacje można 
+znaleźć na stronie http://csr.asus.com/english/article.aspx?id=35.
+http://csr.asus.com/Compliance.htm
+http://csr.asus.com/english/REACH.htm
+http://csr.asus.com/english/article.aspx?id=35.
+108 Podręcznik elektroniczny do notebooka
+Usługi recyklingu/Odbioru firmy ASUS
+Programy recyklingu i odbioru firmy ASUS wynikają z naszego zaangażowania 
+w przestrzeganie najwyższych standardów ochrony środowiska. Wierzymy w 
+dostarczanie rozwiązań, które umożliwią odpowiedzialny recykling naszych 
+produktów, akumulatorów i innych komponentów, jak również opakowań.
+Szczegółowe informacje na temat recyklingu w różnych regionach można znaleźć 
+na stronie http://csr.asus.com/english/Takeback.htm. 
+Dyrektywa w sprawie ekoprojektu
+Unia Europejska ustanowiła ogólne zasady ustalania wymogów dotyczących 
+ekoprojektu dla produktów związanych z energią (2009/125/WE). Szczegółowe 
+środki wykonawcze mają na celu poprawę w zakresie oddziaływania na 
+środowisko poszczególnych produktów lub różnych ich rodzajów. Firma ASUS 
+udostępnia informacje o produktach w witrynie CSR. Więcej informacji można 
+znaleźć na stronie https://csr.asus.com/english/article.aspx?id=1555.
+http://csr.asus.com/english/Takeback.htm
+https://csr.asus.com/english/article.aspx?id=1555.
+Podręcznik elektroniczny do notebooka 109
+Produkt zakwalifikowany do programu ENERGY 
+STAR
+ENERGY STAR to wspólny program amerykańskiej Environmental 
+Protection Agency (Agencji Ochrony Środowiska) i Department 
+of Energy (Departamentu Energii), który pomaga nam 
+wszystkim oszczędzać pieniądze i chronić środowisko poprzez 
+energooszczędne produkty i praktyki.
+Wszystkie produkty firmy ASUS z logo ENERGY STAR są zgodne z normą ENERGY 
+STAR, a funkcja zarządzania energią jest domyślnie włączona. Tryb uśpienia 
+zostanie uaktywniony automatycznie, jeśli monitor nie będzie używany w czasie 
+10 minut, a komputer w czasie 30 minut. Aby wybudzić komputer z tego stanu, 
+należy kliknąć myszką albo nacisnąć dowolny klawisz na klawiaturze lub przycisk 
+zasilania. 
+Szczegółowe informacje na temat zarządzania energią i korzyści dla 
+środowiska naturalnego można znaleźć na stronie http://www.energystar.gov/
+powermanagement. Ponadto szczegółowe informacje na temat wspólnego 
+programu ENERGY STAR można znaleźć na stronie http://www.energystar.gov.
+UWAGA: Norma Energy Star NIE jest obsługiwana w systemach operacyjnych opartych 
+o FreeDOS i w systemie Linux.
+Produkty zarejestrowane w programie EPEAT
+Kluczowe informacje z zakresu ochrony środowiska dotyczące produktów 
+zarejestrowanych w programie ASUS EPEAT (narzędzie do oceny środowiskowej 
+produktów elektronicznych) są podane do wiadomości publicznej na stronie 
+https://csr.asus.com/english/article.aspx?id=41. Dalsze informacje o programie 
+EPEAT oraz wskazówki dotyczące zakupu można znaleźć w witrynie 
+www.epeat.net.
+https://csr.asus.com/english/article.aspx?id=41.
+www.epeat.net
+110 Podręcznik elektroniczny do notebooka
+Licencja na czcionki tekstu w systemie BIOS
+Copyright © 2022 The Android Open Source Project
+Na licencji Apache License, wersja 2.0 („Licencja”); z pliku można korzystać 
+wyłącznie zgodnie z Licencją. Kopię Licencji można uzyskać pod adresem 
+http://www.apache.org/licenses/LICENSE-2.0.
+O ile nie jest to wymagane przez obowiązujące prawo lub nie zostało 
+uzgodnione na piśmie, oprogramowanie rozpowszechniane w ramach Licencji 
+jest rozpowszechniane na ZASADZIE „TAKIE JAKIE JEST”, BEZ JAKICHKOLWIEK 
+GWARANCJI LUB WARUNKÓW, wyraźnych lub dorozumianych.
+Należy zapoznać się z Licencją w celu uzyskania informacji o określonych 
+uprawnieniach i ograniczeniach dotyczących języka w ramach Licencji.
+Podręcznik elektroniczny do notebooka 111
+Uproszczona deklaracja zgodności UE
+Firma ASUSTek Computer Inc. niniejszym oświadcza, że urządzenie to jest zgodne 
+z zasadniczymi wymogami i innymi właściwymi przepisami dyrektywy 2014/53/UE. 
+Pełny tekst deklaracji zgodności UE jest dostępny na stronie 
+https://www.asus.com/support/.
+Karta WiFi pracująca w paśmie 5150–5350 MHz jest ograniczona do użytku 
+wewnątrz pomieszczeń w krajach wymienionych w poniższej tabeli:
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK(NI)
+a. Urządzenia Wi-Fi 6E o niskim poziomie mocy w pomieszczeniach (LPI): 
+W Belgii (BE), Bułgarii (BG), Cyprze (CY), Czechach (CZ), Estonii (EE), Francji (FR), 
+Islandii (IS), Irlandii (IE), Litwie (LT), Niemczech (DE), Holandii (NL) i Hiszpanii 
+(ES) działanie urządzenia w zakresie częstotliwości od 5945 do 6425 MHz jest 
+ograniczone do użytku wewnątrz pomieszczeń.
+b. Urządzenia Wi-Fi 6E o bardzo niskim poziomie mocy (VLP) (urządzenia 
+przenośne): 
+W Belgii (BE), Bułgarii (BG), Cyprze (CY), Czechach (CZ), Estonii (EE), Francji (FR), 
+Islandii (IS), Irlandii (IE), Litwie (LT), Niemczech (DE), Holandii (NL) i Hiszpanii (ES) 
+urządzenie działające w zakresie częstotliwości od 5945 do 6425 MHz nie może 
+być używane w bezzałogowych systemach latających (UAS).
+Uwaga dotycząca sieci Wi-Fi
+WAŻNE! Karta sieciowa Wi-Fi 6E jest dostępna w wybranych modelach. Łączność 
+pasma Wi-Fi 6E zależy od regulacji i certyfikatów obowiązujących w danym kraju/
+regionie.
+https://www.asus.com/support
+112 Podręcznik elektroniczny do notebooka
+Informacje o narażeniu na promieniowanie 
+radiowe (SAR)
+Urządzenie to spełnia wymagania UE (2014/53/UE) w zakresie ograniczenia 
+narażenia ogółu społeczeństwa na pola elektromagnetyczne w drodze ochrony 
+zdrowia.
+Limity te stanowią część obszernych zaleceń dotyczących ochrony ogółu 
+społeczeństwa. Zalecenia te zostały opracowane i sprawdzone przez niezależne 
+organizacje naukowe w drodze regularnych i dokładnych ocen badań naukowych. 
+Jednostką miary dla urządzeń przenośnych zalecaną przez Radę Europejską jest 
+„szybkość pochłaniania właściwego energii” (SAR), a limit SAR wynosi 2,0 
+W/kg uśredniony dla 10 gramów tkanki ciała. Spełnia on wymogi International 
+Commission on Non-Ionizing Radiation Protection (ICNIRP, Międzynarodowa 
+Komisja ds. Ochrony przed Promieniowaniem Niejonizującym).
+Urządzenie to zostało przetestowane i spełnia wytyczne ICNIRP dotyczące 
+narażenia oraz norm europejskich EN 50566 i EN 62209-2. Współczynnik SAR 
+mierzony jest za pomocą urządzenia, które jest bezpośrednio połączone z ciałem 
+i transmituje na najwyższym certyfikowanym poziomie mocy wyjściowej we 
+wszystkich pasmach częstotliwości urządzenia przenośnego.
+Aby spełnić wymagania dotyczące narażenia na promieniowanie radiowe w 
+Europie, należy zachować minimalną odległość 1 cm między ciałem użytkownika 
+a urządzeniem, w tym anteną podczas eksploatacji w sytuacji noszenia urządzenia 
+na ciele.
+ Informacje dotyczące tego Podręcznika
+ Konwencje stosowane w niniejszym Podręczniku
+ Ikony
+ Typografia
+ Zasady bezpieczeństwa
+ Używanie notebooka
+ Pielęgnacja notebooka
+ Właściwa utylizacja urządzenia
+ Informacje dotyczące bezpiecznego użytkowania baterii
+ Rozdział 1: Konfiguracja sprzętu
+ Poznajemy notebooka
+ Widok z przodu
+ Widok z góry
+ Widok z dołu
+ Widok z prawej strony
+ Widok z lewej strony
+ Rozdział 2: Korzystanie z notebooka
+ Rozpoczęcie pracy
+ Ładowanie notebooka
+ Podnieś, aby otworzyć panel wyświetlacza
+ Naciśnij przycisk zasilania
+ Gesty dla panelu ekranu dotykowego i touchpada
+ Korzystanie z gestów dla panelu dotykowego
+ Korzystanie z touchpada
+ Korzystanie z klawiatury numerycznej
+ Korzystanie z klawiatury
+ Klawisze dostępu
+ Klawisze funkcji
+ Klawisze Windows
+ Obracanie panelu wyświetlacza
+ Rozdział 3: Praca z Windows
+ Rozpoczęcie pracy
+ Menu Start
+ Aplikacje Windows
+ Praca z aplikacjami Windows
+ Dostosowywanie aplikacji Windows
+ Widok zadań
+ Widżety
+ Funkcja Snap
+ Funkcja Snap dla hotspotów
+ Centrum akcji
+ MyASUS Splendid
+ Ustawianie wyświetlacza OLED
+ Ustawianie trybu ciemnego
+ Wyłączanie wyświetlacza, gdy nie jest używany
+ Regulacja jasności wyświetlacza
+ Automatyczne ukrywanie paska zadań
+ Ustawianie trybu ciemnego w Microsoft Office
+ Inne skróty klawiaturowe
+ Łączenie z sieciami bezprzewodowymi
+ Wi-Fi
+ Bluetooth
+ Tryb samolotowy
+ Wyłączanie notebooka
+ Przełączanie notebooka w tryb uśpienia
+ Rozdział 4: Autotest po włączeniu zasilania (POST)
+ Autotest po włączeniu zasilania (POST)
+ Korzystanie z testu POST w celu uzyskania dostępu do systemu BIOS i rozwiązania problemów
+ BIOS
+ Dostęp do systemu BIOS
+ Przywracanie systemu
+ Opcje wykonywania kopii zapasowej
+ Porady i często zadawane pytania
+ Przydatne porady dotyczące notebooka
+ Często zadawane pytania dotyczące sprzętu
+ Często zadawane pytania dotyczące oprogramowania
+ Załączniki
+ Zgodność modemu wewnętrznego
+ Informacje podstawowe
+ Deklaracja zgodności sieci
+ Wyposażenie niegłosowe
+ Deklaracja Federal Communications Commission (Federalnej Komisji Łączności) w sprawie zakłóceń
+ Oświadczenie FCC o przestrodze przed narażeniem na promieniowanie radiowe (RF)
+ Informacje o narażeniu na promieniowanie radiowe (SAR)
+ Notyfikacje bezpieczeństwa UL
+ Wymagania dotyczące bezpieczeństwa zasilania
+ Powiadomienia w sprawie telewizji
+ Powiadomienie dotyczące produktów Macrovision Corporation
+ Zapobieganie utracie słuchu
+ Powiadomienie o powłoce
+ Ostrzeżenia dotyczące baterii litowo-jonowych dla krajów skandynawskich
+ Aprobata CTR 21 (dla notebooka z wbudowanym modemem)
+ Deklaracja zgodności dotycząca przepisów w zakresie ochrony środowiska
+ Rozporządzenie UE REACH i Artykuł 33
+ UE RoHS
+ Usługi recyklingu/Odbioru firmy ASUS
+ Dyrektywa w sprawie ekoprojektu
+ Produkt zakwalifikowany do programu ENERGY STAR
+ Produkty zarejestrowane w programie EPEAT
+ Licencja na czcionki tekstu w systemie BIOS
+ Uproszczona deklaracja zgodności UE
+ Uwaga dotycząca sieci Wi-Fi
+ Informacje o narażeniu na promieniowanie radiowe (SAR)
