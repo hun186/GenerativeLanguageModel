@@ -11,6 +11,7 @@ class DummyCtx:
     prompt_dir: str
     main_file_name: str
     task: str = "demo-task"
+    stages: list[dict[str, str]] | None = None
 
 class FakeOps(pc.MergeOps):
     def __init__(self, mapping: dict[str, list[str]]):
@@ -28,6 +29,8 @@ class FakeOps(pc.MergeOps):
         )
         self.calls = {"call_llm": []}
         self._combine_return = None  # 測試可指定回傳
+        self.calls["combine"] = []
+        self.calls["combine_task"] = []
 
     def _fake_list_paths(self, root: str) -> list[str]:
         return self._mapping.get(root, [])
@@ -37,9 +40,11 @@ class FakeOps(pc.MergeOps):
 
     def _fake_call_llm(self, items, ctx, allow_to_retry: bool):
         # 記錄呼叫行為，避免真的連網
-        self.calls["call_llm"].append((tuple(items), allow_to_retry))
+        self.calls["call_llm"].append((tuple(items), allow_to_retry, getattr(ctx, "task", None)))
 
     def _fake_combine(self, item_dir: str, ctx) -> str:
+        self.calls["combine"].append(item_dir)
+        self.calls["combine_task"].append(getattr(ctx, "task", None))
         # 直接回傳一個假路徑；也可以寫檔到 tmp_path
         return self._combine_return or str(Path(item_dir) / "combined.out.txt")
 
@@ -66,8 +71,8 @@ def test_merge_happy_path_no_todo(tmp_path):
     out = pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
 
     # 斷言：call_llm 被呼叫兩次（允許重試 / 不允許）
-    assert ops.calls["call_llm"] == [(((str(root / f"{main}")),), True),
-                                     (((str(root / f"{main}")),), False)]
+    assert ops.calls["call_llm"] == [(((str(root / f"{main}")),), True, "demo-task"),
+                                     (((str(root / f"{main}")),), False, "demo-task")]
 
     # 斷言：合併輸出路徑
     assert out.endswith("combined.out.txt")
@@ -95,3 +100,134 @@ def test_merge_with_todo_remaining(tmp_path, capsys):
     # 可檢查訊息
     stdout = capsys.readouterr().out
     assert "尚有 1 個段落未處理" in stdout
+
+@pytest.mark.unit
+def test_merge_returns_empty_when_no_prompt_items(tmp_path):
+    root = tmp_path / "root"
+    main = "in3"
+
+    # prompt_dir 下有檔案，但都不在 TODO/Success 目錄
+    mapping = {
+        str(root): [str(root / main / "Other" / "x.txt")],
+    }
+    ops = FakeOps(mapping)
+    ctx = DummyCtx(prompt_dir=str(root), main_file_name=main)
+
+    out = pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    assert out == ""
+    assert ops.calls["call_llm"] == []
+    assert ops.calls["combine"] == []
+
+@pytest.mark.unit
+def test_merge_deduplicates_and_sorts_prompt_items(tmp_path):
+    root = tmp_path / "root"
+    main = "topic"
+    item_a = root / f"{main}_a"
+    item_b = root / f"{main}_b"
+
+    mapping = {
+        # 故意放重複與亂序，驗證 sorted(set(...)) 的穩定輸出
+        str(root): [
+            str(item_b / "TODO" / "1.txt"),
+            str(item_a / "TODO" / "2.txt"),
+            str(item_b / "Success" / "3.txt"),
+        ],
+        str(item_a / "TODO"): [],
+        str(item_b / "TODO"): [],
+    }
+    ops = FakeOps(mapping)
+    ctx = DummyCtx(prompt_dir=str(root), main_file_name=main)
+
+    out = pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    expected_items = (str(item_a), str(item_b))
+    assert ops.calls["call_llm"] == [(expected_items, True, "demo-task"), (expected_items, False, "demo-task")]
+    assert ops.calls["combine"] == [str(item_a), str(item_b)]
+    assert out == str(item_b / "combined.out.txt")
+
+@pytest.mark.unit
+def test_merge_keeps_last_non_empty_combine_result(tmp_path):
+    root = tmp_path / "root"
+    main = "in4"
+    item_a = root / f"{main}_a"
+    item_b = root / f"{main}_b"
+
+    mapping = {
+        str(root): [
+            str(item_a / "TODO" / "1.txt"),
+            str(item_b / "TODO" / "2.txt"),
+        ],
+        str(item_a / "TODO"): [],
+        str(item_b / "TODO"): [],
+    }
+    ops = FakeOps(mapping)
+    combine_outputs = ["", str(item_b / "merged-final.txt")]
+
+    def combine_seq(item_dir: str, ctx):
+        ops.calls["combine"].append(item_dir)
+        return combine_outputs.pop(0)
+
+    ops.combine = combine_seq
+    ctx = DummyCtx(prompt_dir=str(root), main_file_name=main)
+
+    out = pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    assert out == str(item_b / "merged-final.txt")
+    assert ops.calls["combine"] == [str(item_a), str(item_b)]
+
+
+@pytest.mark.unit
+def test_collect_prompt_items_filters_and_sorts(tmp_path):
+    root = tmp_path / "root"
+    main = "abc"
+    mapping = {
+        str(root): [
+            str(root / "zzz" / "TODO" / "a.txt"),         # main 不匹配，應排除
+            str(root / f"{main}_2" / "Success" / "b.txt"),
+            str(root / f"{main}_1" / "TODO" / "c.txt"),
+            str(root / f"{main}_2" / "TODO" / "d.txt"),   # duplicate item
+        ]
+    }
+    ops = FakeOps(mapping)
+
+    items = pc._collect_prompt_items(str(root), main, ops)
+    assert items == [str(root / f"{main}_1"), str(root / f"{main}_2")]
+
+
+@pytest.mark.unit
+def test_multistage_process_runs_stage_tasks_and_combines(tmp_path):
+    root = tmp_path / "root"
+    main = "mstage"
+    item_a = root / f"{main}_a"
+    item_b = root / f"{main}_b"
+    mapping = {
+        str(root): [
+            str(item_a / "TODO" / "1.txt"),
+            str(item_b / "TODO" / "2.txt"),
+        ],
+        str(item_a / "TODO"): [],
+        str(item_b / "TODO"): [],
+    }
+    ops = FakeOps(mapping)
+    ctx = DummyCtx(
+        prompt_dir=str(root),
+        main_file_name=main,
+        task="legacy-task",
+        stages=[
+            {"name": "extract", "task": "抽取"},
+            {"name": "classify", "task": "分類"},
+        ],
+    )
+
+    out = pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    # 2 chunks x 2 stages x retry/no-retry = 8 次
+    assert len(ops.calls["call_llm"]) == 8
+    called_tasks = [c[2] for c in ops.calls["call_llm"]]
+    assert called_tasks.count("抽取") == 4
+    assert called_tasks.count("分類") == 4
+    assert ops.calls["combine"] == [str(item_a), str(item_b)]
+    assert ops.calls["combine_task"] == ["分類", "分類"]
+    assert ctx.task == "legacy-task"
+    assert out == str(item_b / "combined.out.txt")

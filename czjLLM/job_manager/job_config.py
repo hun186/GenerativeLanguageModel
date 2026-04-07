@@ -193,12 +193,6 @@ def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None,
     ctx.model_spec_name = model_spec_name or set_model_spec()
     ctx.model_spec = modelSetting.get(ctx.model_spec_name)
     ensure_merge_defaults(ctx)
-
-    if merge_slices is None:
-        # 僅呼叫讓它修改 ctx，別把回傳值塞進 merge_slices
-        set_merge_spec(ctx)
-    else:
-        ctx.merge_slices = bool(merge_slices)
     if ctx.model_spec is None:
         raise ValueError(f"❌ 找不到模型設定: {ctx.model_spec_name}")
 
@@ -210,6 +204,22 @@ def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None,
     
     # 任務
     ctx.task = task_name or set_task(ctx)
+    # 讓多階段 orchestrator 可直接取用既有任務字典
+    ctx.taskSetting = taskSetting
+
+    def _task_is_json_like(task: str) -> bool:
+        task_l = str(task or "").lower()
+        return ("json" in task_l) or ("dict" in task_l) or ("結構化" in task_l)
+
+    if merge_slices is None:
+        if _task_is_json_like(ctx.task):
+            # 僅 JSON/結構化任務才詢問切片合併設定
+            set_merge_spec(ctx)
+        else:
+            ctx.merge_slices = False
+            print("切片合併：略過（目前任務非 JSON/字典輸出導向）")
+    else:
+        ctx.merge_slices = bool(merge_slices)
 
     # 頻道（txt 模式才有）
     if ctx.mode == "txt":
