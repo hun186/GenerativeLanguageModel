@@ -18,6 +18,7 @@ import time as _time
 import shutil
 from copy import deepcopy
 from dataclasses import dataclass
+from collections.abc import Mapping
 from pathlib import Path
 import faulthandler
 
@@ -1082,9 +1083,23 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 os.remove(fp)
         _copy_txts(src_dir, todo_dir)
 
+    def _stage_task_debug_text(stage_task) -> str:
+        """優先顯示 template 原文；若無法取得則回退為精簡規格。"""
+        preview = task_template_preview(stage_task)
+        if isinstance(stage_task, Mapping):
+            if preview.strip() == str(stage_task).strip():
+                compact = {}
+                for k in ("CT_name", "InputCutLen"):
+                    if k in stage_task:
+                        compact[k] = stage_task.get(k)
+                if "template" in stage_task:
+                    compact["template"] = "<callable>" if callable(stage_task.get("template")) else "<unavailable>"
+                return str(compact or {"task": "<mapping>"})
+        return preview
+
     def runner(job, _ctx):
         if job.stage_name not in shown_stage_tasks:
-            print(f"[stage:{job.stage_name}] 📝 使用任務：\n{task_template_preview(job.stage_task)}")
+            print(f"[stage:{job.stage_name}] 📝 使用任務：\n{_stage_task_debug_text(job.stage_task)}")
             shown_stage_tasks.add(job.stage_name)
         print(f"[stage:{job.stage_name}] ▶ 開始處理輸入單位(input_unit): {Path(job.chunk_id).name}")
         _prepare_todo_for_stage(job.chunk_id, job.stage_name)
@@ -1127,7 +1142,15 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     old_task = getattr(ctx, "task", "")
     try:
         if stage_defs:
-            ctx.task = stage_defs[-1].task
+            final_task = stage_defs[-1].task
+            if isinstance(final_task, Mapping):
+                ctx.task = (
+                    str(final_task.get("CT_name", "")).strip()
+                    or str(stage_defs[-1].task_key).strip()
+                    or stage_defs[-1].name
+                )
+            else:
+                ctx.task = final_task
         for item in prompt_items:
             todo_files = ops.list_paths(ops.join(item, "TODO"))
             if not todo_files:

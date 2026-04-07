@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from collections.abc import Mapping
 from typing import Any
 from czjLLM.prompt_pipeline.stage_config import normalize_human_stage_spec
 
@@ -10,7 +11,7 @@ class StageDefinition:
     """單一階段定義。"""
 
     name: str
-    task: str
+    task: Any
     task_key: str = ""
     input_from: str = "original"   # original | previous | <stage_name>
     persist_output: str = "final"  # final | always | never
@@ -73,7 +74,7 @@ class StageDispatchJob:
 
     chunk_id: str
     stage_name: str
-    stage_task: str
+    stage_task: Any
     input_from: str = "original"
 
 
@@ -84,7 +85,8 @@ def _as_stage_definition(item: Any, index: int) -> StageDefinition:
         name = f"stage_{index + 1}"
         return StageDefinition(name=name, task=item)
     if isinstance(item, dict):
-        task = str(item.get("task", "")).strip()
+        raw_task = item.get("task", "")
+        task = raw_task if isinstance(raw_task, Mapping) else str(raw_task).strip()
         task_key = str(item.get("task_key", "")).strip()
         name = str(item.get("name", "")).strip() or f"stage_{index + 1}"
         input_from = str(item.get("input_from", "original")).strip() or "original"

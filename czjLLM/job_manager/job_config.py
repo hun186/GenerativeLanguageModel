@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 from colorama import Fore#, Back, Style
 import inspect
+from collections.abc import Mapping
 import importlib.util
 import yaml
 import math
@@ -553,17 +554,25 @@ def task_template_preview(task_or_spec) -> str:
     if isinstance(task_or_spec, str):
         task_name = task_or_spec
         spec = taskSetting.get(task_or_spec)
-    elif isinstance(task_or_spec, dict):
+    elif isinstance(task_or_spec, Mapping):
         spec = task_or_spec
         task_name = str(spec.get("CT_name", "")).strip()
-    if not isinstance(spec, dict):
+    if not isinstance(spec, Mapping):
         return str(task_or_spec)
 
     tpl = spec.get("template")
     if not callable(tpl):
         return str(spec)
 
-    source = inspect.getsource(tpl)
+    try:
+        source = inspect.getsource(tpl)
+    except Exception:
+        compact = {}
+        for key in ("CT_name", "InputCutLen"):
+            if key in spec:
+                compact[key] = spec.get(key)
+        compact["template"] = "<callable>"
+        return str(compact)
     varDic = globals().copy()
     for var in varDic.keys():
         if "_Rule" in var:
