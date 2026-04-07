@@ -505,7 +505,7 @@ taskSetting_ANKInt = {
         "template":lambda MainFileName,content:(
             f"下方輸入任務文本為網路爬蟲或pdf掃瞄得到的文本切片，請進行下列清整：\n"
             f"{PDF_OPT_Rule}\n"
-            "主檔名為「{MainFileName}」，"
+            f"主檔名為「{MainFileName}」，"
             "☆下列為輸入任務文本：\n"
             f"{content}"
             )

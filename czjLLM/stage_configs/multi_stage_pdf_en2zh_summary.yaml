@@ -1,0 +1,23 @@
+defaults:
+  input_from: original
+  persist_output: never
+  max_attempts: 2
+
+stages:
+  # Stage 1: PDF 抽取文本清整（指令在前）
+  - name: pdf_opt
+    task_key: "PDF OPT-Instruction First"
+    input_from: original
+    persist_output: always
+
+  # Stage 2: 英文翻繁中（用原文可避免前一階段過度改寫影響翻譯）
+  - name: en_to_zh
+    task_key: "Translation-toTWZH"
+    input_from: original
+    persist_output: always
+
+  # Stage 3: 中文摘要（接續 stage2 產出）
+  - name: summarize
+    task_key: "Summary-toTWZH"
+    input_from: previous
+    persist_output: final

@@ -69,6 +69,31 @@ if __name__ == '__main__':
     def get_param(key, default=None):
         return file_config.get(key, default)
 
+    def infer_multistage_task_hint(stage_cfg):
+        """
+        多階段模式下，若未提供 task，嘗試從第一個 stage 推導一個相容舊流程的 task 名稱，
+        避免 initialize_config 進入互動式 set_task。
+        """
+        stages = None
+        if isinstance(stage_cfg, dict):
+            stages = stage_cfg.get("stages")
+        elif isinstance(stage_cfg, list):
+            stages = stage_cfg
+        if not stages:
+            return None
+        first = stages[0]
+        if isinstance(first, dict):
+            task_key = str(first.get("task_key", "")).strip()
+            if task_key:
+                return task_key
+            task = str(first.get("task", "")).strip()
+            if task.startswith("@taskSetting:"):
+                return task.split(":", 1)[1].strip()
+            return task or None
+        if isinstance(first, str):
+            return first
+        return None
+
     # 模式選擇
     mode = get_param("mode")
     if not mode:
@@ -87,15 +112,41 @@ if __name__ == '__main__':
 
 
 
+    # 先預讀 stage 設定（若有）以便在未提供 task 時推導相容值
+    stage_cfg_inline = get_param("stages")
+    stage_cfg_file = get_param("stage_config_file")
+    stage_cfg_preview = None
+    if stage_cfg_file:
+        stage_cfg_preview = load_config_from_file(PGMSubDir=PGMSubDir, config_path=stage_cfg_file)
+    elif stage_cfg_inline:
+        stage_cfg_preview = stage_cfg_inline
+    task_hint = infer_multistage_task_hint(stage_cfg_preview)
+
+    merge_slices_cfg = get_param("merge_slices")
+    if merge_slices_cfg is None and stage_cfg_preview:
+        # 多階段預設不走互動式「切片合併」詢問，避免非 JSON 任務誤導。
+        merge_slices_cfg = False
+
     # 初始化任務參數
     ctx = initialize_config(
         PGMSubDir=PGMSubDir,
         mode=mode,
         channel=get_param("channel"),
         model_spec_name=get_param("model_spec"),
-        merge_slices=get_param("merge_slices"),
-        task_name=get_param("task")
+        merge_slices=merge_slices_cfg,
+        task_name=get_param("task") or task_hint
     )
+    # 多階段設定（可直接放在主 YAML 的 stages，或獨立 stage_config_file）
+    stage_cfg_inline = get_param("stages")
+    stage_cfg_file = get_param("stage_config_file")
+    if stage_cfg_file:
+        stage_cfg = stage_cfg_preview if stage_cfg_preview is not None else load_config_from_file(PGMSubDir=PGMSubDir, config_path=stage_cfg_file)
+        if isinstance(stage_cfg, dict):
+            ctx.stages = stage_cfg.get("stages", stage_cfg)
+        elif isinstance(stage_cfg, list):
+            ctx.stages = stage_cfg
+    elif stage_cfg_inline:
+        ctx.stages = stage_cfg_inline
     #print("ctx in main",ctx)
     # txt 模式：處理所有 .txt
     if mode == "txt":

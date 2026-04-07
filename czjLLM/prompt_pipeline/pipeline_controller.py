@@ -15,7 +15,7 @@ import multiprocessing
 import time as _time
 #import sqlite3
 #import pyodbc
-#import shutil
+import shutil
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
@@ -25,6 +25,17 @@ import faulthandler
 from czjLLM.prompt_pipeline.prompt_generator import generate_prompt
 from czjLLM.prompt_pipeline.llm_caller import CallLLMAPI
 from czjLLM.prompt_pipeline.debug_snapshot import build_debug_snapshot
+from czjLLM.prompt_pipeline.stage_runtime import (
+    ChunkStageRuntime,
+)
+from czjLLM.prompt_pipeline.stage_orchestrator import (
+    execute_stage_round as _execute_stage_round,
+    init_chunk_stage_runtime as _init_chunk_stage_runtime,
+    plan_chunk_stage_dispatch as _plan_chunk_stage_dispatch,
+    resolve_pipeline_stages as _resolve_pipeline_stages,
+    run_stage_pipeline as _run_stage_pipeline,
+    update_chunk_stage_runtime as _update_chunk_stage_runtime,
+)
 from czjLLM.utilities.atomic_io import atomic_write_json, robust_json_read
 from czjLLM.job_manager.job_config import LLMJobConfig
 #from czjLLM.job_manager.end_point_manager import get_available_end_points
@@ -928,26 +939,205 @@ class MergeOps:
         self.combine   = self.combine   or combine_api_finished_item
 
 
+def resolve_pipeline_stages(ctx):
+    """
+    將舊版 ctx.task 與新版 ctx.stages / ctx.task_config.stages 統一成 stages。
+    """
+    return _resolve_pipeline_stages(ctx)
+
+
+def init_chunk_stage_runtime(ctx, chunk_ids: list[str]) -> dict[str, ChunkStageRuntime]:
+    """
+    初始化「切片 x 階段」狀態，用於後續階段監控/派工。
+    """
+    return _init_chunk_stage_runtime(ctx, chunk_ids)
+
+
+def plan_chunk_stage_dispatch(ctx, runtime: dict[str, ChunkStageRuntime]):
+    """根據 ctx 階段定義與 runtime 產生下一批可派工工作。"""
+    return _plan_chunk_stage_dispatch(ctx, runtime)
+
+
+def update_chunk_stage_runtime(runtime: dict[str, ChunkStageRuntime], results: list[dict]):
+    """把 worker 執行結果回填到階段 runtime。"""
+    _update_chunk_stage_runtime(runtime, results)
+
+
+def execute_stage_round(ctx, runtime: dict[str, ChunkStageRuntime], runner):
+    """
+    執行一輪「階段派工 -> 執行 -> 回填」。
+    runner 介面:
+      runner(job, ctx) -> {"ok": bool, "error": "..."} 或 bool
+    回傳輪次摘要，供監控/UI 顯示。
+    """
+    return _execute_stage_round(ctx, runtime, runner).as_dict()
+
+
+def run_stage_pipeline(ctx, runtime: dict[str, ChunkStageRuntime], runner, max_rounds: int = 20):
+    """
+    連續執行多輪 stage round，直到：
+    - 全部 chunk 完成
+    - 本輪沒有可派工工作
+    - 達到 max_rounds
+    回傳包含各輪摘要的執行報告。
+    """
+    return _run_stage_pipeline(ctx, runtime, runner, max_rounds=max_rounds)
+
+
+def _collect_prompt_items(prompt_dir: str, main_name: str, ops: MergeOps) -> list[str]:
+    """
+    從 prompt_dir 掃描出屬於 main_name 的 item 目錄（TODO/Success 的父層）。
+    """
+    prompt_items: list[str] = []
+    for fn in ops.list_paths(prompt_dir):
+        parent_dir = Path(ops.get_parent(fn))
+        if parent_dir.name in {"TODO", "Success"}:
+            item_dir = str(parent_dir.parent)
+            if main_name in item_dir:
+                prompt_items.append(item_dir)
+    return sorted(set(prompt_items))
+
+
+def _call_llm_with_task_override(ops: MergeOps, items: list[str], ctx, allow_to_retry: bool, task_override: str):
+    """
+    相容舊介面：
+    - 新版 call_llm 可吃 task_override 參數
+    - 舊版沒有此參數時，暫時覆寫 ctx.task 後呼叫
+    """
+    try:
+        return ops.call_llm(items, ctx, allow_to_retry=allow_to_retry, task_override=task_override)
+    except TypeError:
+        old_task = getattr(ctx, "task", "")
+        try:
+            ctx.task = task_override
+            return ops.call_llm(items, ctx, allow_to_retry=allow_to_retry)
+        finally:
+            ctx.task = old_task
+
+
+def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | None = None, max_rounds: int = 20) -> str:
+    """
+    多階段版本：
+    - 以 stage_runtime 的 chunk x stage 狀態驅動派工
+    - 每個 chunk/階段執行兩輪 LLM（retry / non-retry）
+    - 每個 chunk 所有階段完成後再進行 combine
+    """
+    ops = ops or MergeOps()
+    main_name = getattr(ctx, "main_file_name", Path(file_path).stem)
+    prompt_items = _collect_prompt_items(ctx.prompt_dir, main_name, ops)
+    if not prompt_items:
+        return ""
+
+    runtime = init_chunk_stage_runtime(ctx, prompt_items)
+    stage_defs = resolve_pipeline_stages(ctx)
+    stage_map = {s.name: s for s in stage_defs}
+    print("=" * 50)
+    print("🔁 多階段流程啟動：")
+    print(f"  - chunks: {len(prompt_items)}")
+    print(f"  - stages: {[s.name for s in stage_defs]}")
+    print("=" * 50)
+
+    def _snapshot_dir(item: str, name: str) -> str:
+        return os.path.join(item, "_stage_outputs", name)
+
+    def _copy_txts(src_dir: str, dst_dir: str):
+        MKDIR(dst_dir)
+        for fp in ops.list_paths(src_dir):
+            if fp.lower().endswith(".txt") and os.path.isfile(fp):
+                shutil.copy2(fp, os.path.join(dst_dir, os.path.basename(fp)))
+
+    # 先保存 original（第一次切片後的 TODO 內容）
+    for item in prompt_items:
+        _copy_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
+
+    def _prepare_todo_for_stage(item: str, stage_name: str):
+        stage_def = stage_map[stage_name]
+        todo_dir = ops.join(item, "TODO")
+        if ops.list_paths(todo_dir):
+            return  # 已有 TODO，不覆蓋
+
+        if stage_def.input_from == "original":
+            src_dir = _snapshot_dir(item, "original")
+        elif stage_def.input_from == "previous":
+            idx = [s.name for s in stage_defs].index(stage_name)
+            prev_name = stage_defs[idx - 1].name if idx > 0 else "original"
+            src_dir = _snapshot_dir(item, prev_name)
+        else:
+            src_dir = _snapshot_dir(item, stage_def.input_from)
+
+        if not os.path.isdir(src_dir):
+            return
+        MKDIR(todo_dir)
+        for fp in ops.list_paths(todo_dir):
+            if os.path.isfile(fp):
+                os.remove(fp)
+        _copy_txts(src_dir, todo_dir)
+
+    def runner(job, _ctx):
+        print(f"[stage:{job.stage_name}] ▶ 開始處理 chunk: {Path(job.chunk_id).name}")
+        _prepare_todo_for_stage(job.chunk_id, job.stage_name)
+        _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=True, task_override=job.stage_task)
+        _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=False, task_override=job.stage_task)
+        # 保存本階段 Success 作為後續 stage 可引用輸入
+        _copy_txts(ops.join(job.chunk_id, "Success"), _snapshot_dir(job.chunk_id, job.stage_name))
+        todo_files = ops.list_paths(ops.join(job.chunk_id, "TODO"))
+        if todo_files:
+            return {"ok": False, "error": f"todo_remaining:{len(todo_files)}"}
+        print(f"[stage:{job.stage_name}] ✅ 完成 chunk: {Path(job.chunk_id).name}")
+        return {"ok": True}
+
+    run_stage_pipeline(ctx, runtime, runner, max_rounds=max_rounds)
+
+    # 聚合每個 stage 的輸出，保留「全切片視角」的存檔，便於 stage-by-stage 追蹤。
+    stage_merge_base = (
+        getattr(ctx, "temp_txt_finished_dir", "")
+        or getattr(ctx, "llm_source_finished_dir", "")
+        or ctx.prompt_dir
+    )
+    stage_merge_root = ops.join(stage_merge_base, "_stage_merges", main_name)
+    MKDIR(stage_merge_root)
+    for stage in stage_defs:
+        merged_parts: list[str] = []
+        for item in sorted(prompt_items):
+            src_dir = _snapshot_dir(item, stage.name)
+            if not os.path.isdir(src_dir):
+                continue
+            for fp in sorted(ops.list_paths(src_dir)):
+                if fp.lower().endswith(".txt") and os.path.isfile(fp):
+                    with open(fp, "r", encoding="utf-8") as f:
+                        merged_parts.append(f.read())
+        stage_merged_fn = ops.join(stage_merge_root, f"{stage.name}.txt")
+        with open(stage_merged_fn, "w", encoding="utf-8") as f:
+            f.write("\n".join(merged_parts))
+        print(f"[stage:{stage.name}] 🧩 合併完成，輸出：{stage_merged_fn}（pieces={len(merged_parts)}）")
+
+    comb_back_fn = ""
+    for item in prompt_items:
+        todo_files = ops.list_paths(ops.join(item, "TODO"))
+        if not todo_files:
+            combine_out = ops.combine(item, ctx)
+            if combine_out:
+                comb_back_fn = combine_out
+        else:
+            print(f"{item} 尚有 {len(todo_files)} 個段落未處理")
+    return comb_back_fn
+
+
 def process_prompt_and_merge(ctx, file_path: str, ops: MergeOps | None = None) -> str:
     """
     掃描 ctx.prompt_dir 找出含 main_file_name 的 TODO/Success 目錄父層，呼叫 LLM，完成則合併。
     回傳最後一次成功合併的檔名（若有多個 item，依序覆寫），若皆未完成則回傳空字串。
     """
     ops = ops or MergeOps()
+    try:
+        stages = resolve_pipeline_stages(ctx)
+    except Exception:
+        stages = []
+    if len(stages) > 1:
+        return process_prompt_and_merge_multistage(ctx, file_path=file_path, ops=ops)
 
-    prompt_items: list[str] = []
     main_name = getattr(ctx, "main_file_name", Path(file_path).stem)
-
-    # 1) 掃出目標 item 目錄
-    for fn in ops.list_paths(ctx.prompt_dir):
-        parent_dir = Path(ops.get_parent(fn))
-        if parent_dir.name in {"TODO", "Success"}:
-            item_dir = str(parent_dir.parent)  # 父層（目錄名包含 main_file_name）
-            if main_name in item_dir:
-                prompt_items.append(item_dir)
-
-    # 去重＋排序，讓測試穩定
-    prompt_items = sorted(set(prompt_items))
+    prompt_items = _collect_prompt_items(ctx.prompt_dir, main_name, ops)
 
     if not prompt_items:
         # 沒東西可處理：建議回傳空字串或擲例外，依你原本語意
@@ -958,71 +1148,18 @@ def process_prompt_and_merge(ctx, file_path: str, ops: MergeOps | None = None) -
     ops.call_llm(prompt_items, ctx, allow_to_retry=False)
 
     # 3) 合併已完成者；若尚有 TODO，僅列印提示
-    produced: list[tuple[str, str]] = []
-    print("ctx.llm_source_dir",ctx.llm_source_dir)
-    print("ctx before comb_back_fn",ctx.llm_source_finished_dir)
     comb_back_fn = ""
-    #'''
     for item in prompt_items:
         todo_dir = ops.join(item, "TODO")
-        if len(ops.list_paths(todo_dir)) == 0:
-            comb_back_fn = ops.combine(item, ctx)
+        todo_files = ops.list_paths(todo_dir)
+        if not todo_files:
+            combine_out = ops.combine(item, ctx)
+            if combine_out:
+                comb_back_fn = combine_out
         else:
-            print(f"{item} 尚有 {len(ops.list_paths(todo_dir))} 個段落未處理")
-    
+            print(f"{item} 尚有 {len(todo_files)} 個段落未處理")
+
     return comb_back_fn
-    #'''
-    '''
-    for item in prompt_items:
-        todo_dir = ops.join(item, "TODO")
-        if len(ops.list_paths(todo_dir)) == 0:
-            out = ops.combine(item, ctx)  # 可能回傳純檔名
-            if out:
-                produced.append((item, out))
-        else:
-            print(f"{item} 尚有 {len(ops.list_paths(todo_dir))} 個段落未處理")
-
-    if not produced:
-        return ""
-
-    # 4) 取最後一個合併檔；把相對路徑補成絕對
-    last_item, comb_back_fn = produced[-1]
-
-    # 若只回傳檔名或相對路徑，視為位於 item 目錄底下
-    comb_abs = Path(comb_back_fn)
-    if not comb_abs.is_absolute():
-        comb_abs = Path(last_item) / comb_back_fn
-    comb_abs = comb_abs.resolve()
-
-    # 5) 決定 _Finished 鏡射目的地
-    finished_root = getattr(ctx, "llm_source_finished_dir", None)
-    if not finished_root:
-        # 保底：用 llm_source_dir 的尾段 + "_Finished"
-        base = Path(getattr(ctx, "llm_source_dir", "") or ".")
-        finished_root = str(base.with_name(base.name + "_Finished"))
-
-    # 來源 txt 檔所在資料夾 → 鏡射到 Finished 根
-    src_dir = os.path.dirname(os.path.abspath(file_path))
-    dest_dir = DirReplace(src_dir, ctx.llm_source_dir, finished_root)
-    MKDIR(dest_dir)
-
-    dest_path = os.path.join(dest_dir, os.path.basename(str(comb_abs)))
-
-    # 6) 如果合併檔確實存在且目的地不同，就搬過去
-    try:
-        if os.path.isfile(str(comb_abs)):
-            src_norm = os.path.normcase(os.path.abspath(str(comb_abs)))
-            dst_norm = os.path.normcase(os.path.abspath(dest_path))
-            if src_norm != dst_norm:
-                safe_move(str(comb_abs), dest_path)
-        # 若檔案已在目的地或某些實作直接寫在 Finished，直接回傳目的路徑
-    except Exception as e:
-        # 不讓流程中斷，至少回傳原位置
-        print(f"[combine/move] 無法搬移合併檔：{e}")
-        return str(comb_abs)
-
-    return os.path.abspath(dest_path)
-    '''
 
 
 def process_prompt_and_merge_OLD(ctx, file_path):
@@ -1055,13 +1192,13 @@ def process_prompt_and_merge_OLD(ctx, file_path):
     return CombBackFN
 
 
-def call_llm_api(itemList, ctx, allow_to_retry=True,PGMSubDir=""):
+def call_llm_api(itemList, ctx, allow_to_retry=True, PGMSubDir="", task_override: str | None = None):
     ArtCost = dict()
     DTBJobs_Retry = []
     def create_jobs(item,model_spec):
         TodoSubDir = os.path.join(item, "TODO")
         return [PromptAPIPipeline(
-            task=ctx.task,
+            task=task_override if task_override is not None else ctx.task,
             promptFile=promptFile,
             OutputSaveFN=promptFile.replace("TODO", "Success"),
             removeFinPromptFile=ctx.removeFinPromptFile,
