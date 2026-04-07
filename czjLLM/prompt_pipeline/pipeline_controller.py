@@ -1031,6 +1031,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     runtime = init_chunk_stage_runtime(ctx, prompt_items)
     stage_defs = resolve_pipeline_stages(ctx)
     stage_map = {s.name: s for s in stage_defs}
+    shown_stage_tasks: set[str] = set()
     print("=" * 50)
     print("🔁 多階段流程啟動：")
     print(f"  - chunks: {len(prompt_items)}")
@@ -1074,7 +1075,10 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         _copy_txts(src_dir, todo_dir)
 
     def runner(job, _ctx):
-        print(f"[stage:{job.stage_name}] ▶ 開始處理 chunk: {Path(job.chunk_id).name}")
+        if job.stage_name not in shown_stage_tasks:
+            print(f"[stage:{job.stage_name}] 📝 使用任務：{job.stage_task}")
+            shown_stage_tasks.add(job.stage_name)
+        print(f"[stage:{job.stage_name}] ▶ 開始處理文章分段(segment): {Path(job.chunk_id).name}")
         _prepare_todo_for_stage(job.chunk_id, job.stage_name)
         _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=True, task_override=job.stage_task)
         _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=False, task_override=job.stage_task)
@@ -1083,7 +1087,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         todo_files = ops.list_paths(ops.join(job.chunk_id, "TODO"))
         if todo_files:
             return {"ok": False, "error": f"todo_remaining:{len(todo_files)}"}
-        print(f"[stage:{job.stage_name}] ✅ 完成 chunk: {Path(job.chunk_id).name}")
+        print(f"[stage:{job.stage_name}] ✅ 完成文章分段(segment): {Path(job.chunk_id).name}")
         return {"ok": True}
 
     run_stage_pipeline(ctx, runtime, runner, max_rounds=max_rounds)
@@ -1112,14 +1116,20 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"[stage:{stage.name}] 🧩 合併完成，輸出：{stage_merged_fn}（pieces={len(merged_parts)}）")
 
     comb_back_fn = ""
-    for item in prompt_items:
-        todo_files = ops.list_paths(ops.join(item, "TODO"))
-        if not todo_files:
-            combine_out = ops.combine(item, ctx)
-            if combine_out:
-                comb_back_fn = combine_out
-        else:
-            print(f"{item} 尚有 {len(todo_files)} 個段落未處理")
+    old_task = getattr(ctx, "task", "")
+    try:
+        if stage_defs:
+            ctx.task = stage_defs[-1].task
+        for item in prompt_items:
+            todo_files = ops.list_paths(ops.join(item, "TODO"))
+            if not todo_files:
+                combine_out = ops.combine(item, ctx)
+                if combine_out:
+                    comb_back_fn = combine_out
+            else:
+                print(f"{item} 尚有 {len(todo_files)} 個段落未處理")
+    finally:
+        ctx.task = old_task
     return comb_back_fn
 
 

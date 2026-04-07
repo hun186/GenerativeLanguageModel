@@ -30,6 +30,7 @@ class FakeOps(pc.MergeOps):
         self.calls = {"call_llm": []}
         self._combine_return = None  # 測試可指定回傳
         self.calls["combine"] = []
+        self.calls["combine_task"] = []
 
     def _fake_list_paths(self, root: str) -> list[str]:
         return self._mapping.get(root, [])
@@ -43,6 +44,7 @@ class FakeOps(pc.MergeOps):
 
     def _fake_combine(self, item_dir: str, ctx) -> str:
         self.calls["combine"].append(item_dir)
+        self.calls["combine_task"].append(getattr(ctx, "task", None))
         # 直接回傳一個假路徑；也可以寫檔到 tmp_path
         return self._combine_return or str(Path(item_dir) / "combined.out.txt")
 
@@ -226,4 +228,6 @@ def test_multistage_process_runs_stage_tasks_and_combines(tmp_path):
     assert called_tasks.count("抽取") == 4
     assert called_tasks.count("分類") == 4
     assert ops.calls["combine"] == [str(item_a), str(item_b)]
+    assert ops.calls["combine_task"] == ["分類", "分類"]
+    assert ctx.task == "legacy-task"
     assert out == str(item_b / "combined.out.txt")
