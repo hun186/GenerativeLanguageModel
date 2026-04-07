@@ -252,9 +252,16 @@ def test_multistage_final_combine_uses_safe_task_name_when_stage_task_is_mapping
             {"name": "summarize", "task": {"CT_name": "以繁體中文摘要", "template": lambda content: content}},
         ],
     )
+    ctx.taskSetting = {
+        "extract": "抽取",
+        "summarize": {"CT_name": "以繁體中文摘要", "template": lambda content: content},
+    }
 
     out = pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
 
+    called_tasks = [c[2] for c in ops.calls["call_llm"]]
+    assert called_tasks.count("抽取") == 2
+    assert called_tasks.count("summarize") == 2
     # 最終 combine 階段的 ctx.task 需是安全文字，而非 mapping repr
     assert ops.calls["combine_task"] == ["以繁體中文摘要"]
     assert ctx.task == "legacy-task"

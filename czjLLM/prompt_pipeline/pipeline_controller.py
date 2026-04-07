@@ -999,18 +999,38 @@ def _collect_prompt_items(prompt_dir: str, main_name: str, ops: MergeOps) -> lis
     return sorted(set(prompt_items))
 
 
-def _call_llm_with_task_override(ops: MergeOps, items: list[str], ctx, allow_to_retry: bool, task_override: str):
+def _call_llm_with_task_override(ops: MergeOps, items: list[str], ctx, allow_to_retry: bool, task_override):
     """
     相容舊介面：
     - 新版 call_llm 可吃 task_override 參數
     - 舊版沒有此參數時，暫時覆寫 ctx.task 後呼叫
     """
+    effective_task = task_override
+    if isinstance(task_override, Mapping):
+        # worker job 需要可 pickle 的純文字 task；mapping(dict 含 lambda) 會在 MP 序列化時失敗
+        task_setting = getattr(ctx, "taskSetting", None)
+        if isinstance(task_setting, Mapping):
+            for k, v in task_setting.items():
+                if v is task_override:
+                    effective_task = str(k)
+                    break
+            else:
+                ct_name = str(task_override.get("CT_name", "")).strip()
+                for k, v in task_setting.items():
+                    if isinstance(v, Mapping) and str(v.get("CT_name", "")).strip() == ct_name and ct_name:
+                        effective_task = str(k)
+                        break
+                else:
+                    effective_task = ct_name or str(task_override)
+        else:
+            effective_task = str(task_override.get("CT_name", "")).strip() or str(task_override)
+
     try:
-        return ops.call_llm(items, ctx, allow_to_retry=allow_to_retry, task_override=task_override)
+        return ops.call_llm(items, ctx, allow_to_retry=allow_to_retry, task_override=effective_task)
     except TypeError:
         old_task = getattr(ctx, "task", "")
         try:
-            ctx.task = task_override
+            ctx.task = effective_task
             return ops.call_llm(items, ctx, allow_to_retry=allow_to_retry)
         finally:
             ctx.task = old_task
@@ -1097,7 +1117,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 return str(compact or {"task": "<mapping>"})
         return preview
 
-    def runner(job, _ctx):
+    def runner(job, _ctx, _input_text=None):
         if job.stage_name not in shown_stage_tasks:
             print(f"[stage:{job.stage_name}] 📝 使用任務：\n{_stage_task_debug_text(job.stage_task)}")
             shown_stage_tasks.add(job.stage_name)
