@@ -1,0 +1,15 @@
+allowed_output_fields: []
+channel: 明細
+exclusiveTextClass: ''
+flatten_json_output: false
+input_col: ''
+keyConsiderations: ''
+llm_source_backup_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/明細
+llm_source_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/明細
+merge_slices: false
+mode: txt
+model_spec: gpt-oss:120b-ctx-128k-premises-MXFP4
+output_col: ''
+sql_config_file: ''
+task: Menu Analysis-to json format
+textClass: ''

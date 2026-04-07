@@ -1,0 +1,1809 @@
+
+F19489
+Première Édition / Juin 2022
+Manuel électronique
+2 Manuel électronique pour ordinateur portable
+Aucun extrait de ce manuel, incluant les produits et logiciels qui y sont décrits, ne peut être reproduit, transmis, 
+transcrit, stocké dans un système de restitution, ou traduit dans quelque langue que ce soit sous quelque forme ou 
+quelque moyen que ce soit, à l'exception de la documentation conservée par l'acheteur dans un but de sauvegarde, 
+sans la permission écrite expresse de ASUSTeK COMPUTER INC. ("ASUS").
+ASUS fournit ce manuel "en l'état" sans garantie d'aucune sorte, explicite ou implicite, y compris, mais non limité 
+aux garanties implicites ou aux conditions de commerciabilité ou d'adéquation à un but particulier. En aucun cas 
+ASUS, ses directeurs, ses cadres, ses employés ou ses agents ne peuvent être tenus responsables des dégâts indirects, 
+spéciaux, accidentels ou consécutifs (y compris les dégâts pour manque à gagner, pertes de profits, perte de 
+jouissance ou de données, interruption professionnelle ou assimilé), même si ASUS a été prévenu de la possibilité de 
+tels dégâts découlant de tout défaut ou erreur dans le présent manuel ou produit.
+Les noms des produits et des sociétés qui apparaissent dans le présent manuel peuvent être, ou non, des marques 
+commerciales déposées, ou sujets à copyrights pour leurs sociétés respectives, et ne sont utilisés qu'à des fins 
+d'identification ou d'explication, et au seul bénéfice des propriétaires, sans volonté d'infraction.
+Les spécifications et les informations contenues dans ce manuel sont fournies à titre indicatif seulement et sont 
+sujettes à des modifications sans préavis, et ne doivent pas être interprétées comme un engagement de la part 
+d'ASUS. ASUS n'est en aucun cas responsable d'éventuelles erreurs ou inexactitudes présentes dans ce manuel, y 
+compris les produits et les logiciels qui y sont décrits.
+Copyright © 2022 ASUSTeK COMPUTER INC. Tous droits réservés.
+INFORMATIONS SUR LES DROITS D'AUTEUR
+CLAUSE DE RESPONSABILITÉ LIMITÉE
+Des dommages peuvent survenir suite à un défaut sur une pièce fabriquée par ASUS ou un tiers. Vous avez le droit à 
+des dommages et intérêts auprès d'ASUS. Dans un tel cas, indépendamment de la base sur laquelle vous avez droit de 
+revendiquer les dommages et intérêts auprès d'ASUS, ASUS ne peut être responsable de plus que des dommages et 
+intérêts pour les dommages corporels (y compris la mort) et les dégâts aux biens immobiliers et aux biens personnels 
+tangibles ; ou les autres dommages et intérêts réels et directs résultant de l'omission ou de la défaillance d'exécuter 
+ses devoirs légaux au titre de la présente Déclaration de Garantie, jusqu'au prix forfaitaire officiel de chaque produit.
+ASUS n'est responsable et ne peut vous indemniser qu'au titre des pertes, des dégâts ou revendications basés sur le 
+contrat, des préjudices ou des infractions à cette Déclaration de Garantie.
+Cette limite s'applique aussi aux fournisseurs d'ASUS et à ses revendeurs. Il s'agit du maximum auquel ASUS, ses 
+fournisseurs, et votre revendeur, sont collectivement responsables.
+En aucune circonstance ASUS n'est responsable pour ce qui suit : (1) les revendications de tiers contre vous pour des 
+dommages et intérêts ; (2) les pertes, ou dégâts, à vos enregistrements de données ; ou (3) les dommages et intérêts 
+spéciaux, fortuits, ou indirects ou pour n'importe quels dommages et intérêts économiques consécutifs (incluant les 
+pertes de profits ou d'économies), et ce même si ASUS, ses fournisseurs ou votre revendeur sont informés d'une telle 
+possibilité.
+SERVICE ET ASSISTANCE
+Visitez notre site multilingue d'assistance en ligne sur https://www.asus.com/fr/support/.
+MyASUS offre une variété de fonctions de support telles que le dépannage, l'optimisation de la performance des 
+produits et l'intégration des logiciels ASUS, tout en vous aidant à organiser votre bureau personnel et augmenter 
+l'espace de stockage. Pour plus de détails, consultez le site https://www.asus.com/fr/support/FAQ/1038301/.
+Manuel électronique pour ordinateur portable 3
+Table des matières
+À propos de ce manuel .................................................................................................7
+Messages ...................................................................................................................................8
+Icônes .........................................................................................................................................8
+Typographie .............................................................................................................................8
+Précautions relatives à la sécurité .............................................................................9
+Utilisation de l'ordinateur portable ................................................................................9
+Entretien de votre ordinateur portable ........................................................................10
+Mise au rebut ...........................................................................................................................11
+Informations de sécurité concernant la batterie ......................................................12
+Chapitre 1 : Configuration du matériel
+Présentation de l'ordinateur portable .................................................................... 16
+Vue avant ..................................................................................................................................16
+Vue de dessus..........................................................................................................................22
+Vue de dessous .......................................................................................................................23
+Côté droit ..................................................................................................................................25
+Côté gauche .............................................................................................................................28
+Chapitre 2 : Utilisation de l'ordinateur portable
+Prise en main .....................................................................................................................30
+Chargez la batterie de l'ordinateur portable ..............................................................30
+Soulevez le panneau d'affichage ....................................................................................32
+Appuyez sur le bouton d'alimentation .........................................................................32
+Fonctionnalités multi-gestes de l'écran et du pavé tactiles ........................... 33
+Fonctionnalités multi-gestes de l'écran tactile ..........................................................33
+Fonctionnalités multi-gestes du pavé tactile .............................................................35
+Utilisation du pavé numérique ........................................................................................42
+Utiliser le clavier ...............................................................................................................43
+Touches de raccourcis ..........................................................................................................43
+Touches de fonction .............................................................................................................44
+Touches Windows® ................................................................................................................44
+Faire tourner l'écran d'affichage ................................................................................45
+4 Manuel électronique pour ordinateur portable
+Chapitre 3 : Utiliser Windows®
+Démarrer pour la première fois .................................................................................48
+Menu Démarrer ................................................................................................................49
+Applications Windows® .................................................................................................51
+Utiliser les applications Windows® .................................................................................52
+Personnaliser les applications Windows® ....................................................................52
+Vue des tâches ..................................................................................................................55
+Widgets ................................................................................................................................56
+Fonctionnalité Snap .......................................................................................................58
+Aligner des zones cliquables.............................................................................................58
+Centre d'action .................................................................................................................60
+MyASUS Splendid ...........................................................................................................62
+Configurer l'écran OLED ...............................................................................................64
+Configurer le thème sombre.............................................................................................64
+Éteindre l'écran lorsqu'il n'est pas utilisé......................................................................66
+Réglage de la luminosité de l'écran ...............................................................................68
+Masquer automatiquement la barre des tâches ......................................................70
+Configurer le thème sombre dans Microsoft Office ................................................72
+Raccourcis clavier ............................................................................................................73
+Connexion sans fil ...........................................................................................................75
+Wi-Fi.............................................................................................................................................75
+Bluetooth ..................................................................................................................................76
+Mode Avion ..............................................................................................................................77
+Éteindre l'ordinateur portable ....................................................................................78
+Basculer l'ordinateur portable en mode veille .................................................... 79
+Manuel électronique pour ordinateur portable 5
+Chapitre 4 : Le POST (Power-on Self-test)
+Le POST (Power-on Self-test) ......................................................................................82
+Dépannage et accès BIOS lors de l'exécution du POST .........................................82
+BIOS .......................................................................................................................................82
+Accès rapide au BIOS ............................................................................................................82
+Restaurer le système ......................................................................................................83
+Utiliser une option de restauration ................................................................................84
+Conseils et FAQ
+Conseils d'utilisation ......................................................................................................88
+FAQ matérielle ..................................................................................................................90
+FAQ logicielle .....................................................................................................................93
+Annexes
+Vue générale ............................................................................................................................96
+Déclaration de compatibilité au réseau .......................................................................96
+Équipements non-vocaux .................................................................................................96
+Conformité du modem interne .......................................................................................98
+Précautions d’emploi de l’appareil .................................................................................98
+Déclaration de conformité d'Innovation, Sciences et Développement 
+économique du Canada (ISED) ........................................................................................99
+Informations concernant l’exposition aux fréquences radio (RF) ......................100
+Avertissements de sécurité UL ........................................................................................101
+Exigence de sécurité électrique .......................................................................................102
+Notice TV ...................................................................................................................................102
+Note relative aux produits de Macrovision Corporation .......................................102
+Bruit et prévention de perte auditive ............................................................................102
+6 Manuel électronique pour ordinateur portable
+Avis relatif au réseau Wi-Fi ..................................................................................................102
+Mise en garde (pour batteries Lithium-Ion) ...............................................................103
+Directives concernant l'exposition aux fréquences radio .....................................104
+Mise en garde ..........................................................................................................................105
+Agrément CTR 21 (pour les ordinateurs portables avec modem intégré) .....106
+Déclaration de conformité aux normes environnementales ..............................108
+UE REACH et Article 33 ........................................................................................................108
+UE RoHS .....................................................................................................................................108
+Affichage - Conformité réglementaire ..........................................................................108
+Notice relative au revêtement de l'appareil ................................................................109
+Services de reprise et de recyclage ................................................................................109
+Recyclage de batteries rechargeables pour l'Amérique du Nord ......................109
+Directive Ecodesign ..............................................................................................................110
+Produits homologués EPEAT.............................................................................................110
+Avis concernant les batteries remplaçables ...............................................................110
+Licence des polices de texte du BIOS ............................................................................110
+Déclaration simplifiée de conformité de l'UE .............................................................111
+Manuel électronique pour ordinateur portable 7
+À propos de ce manuel
+Ce manuel offre une vue d'ensemble des caractéristiques logicielles et 
+matérielles de votre ordinateur portable, et est constitué des chapitres 
+suivants :
+Chapitre 1 : Configuration du matériel
+Ce chapitre détaille les composants matériels de votre ordinateur 
+portable.
+Chapitre 2 : Utilisation de l'ordinateur portable
+Ce chapitre offre des informations sur l'utilisation de votre ordinateur 
+portable.
+Chapitre 3 : Utiliser Windows®
+Ce chapitre fournit une vue d'ensemble des diverses fonctionnalités du 
+système d'exploitation Windows®.
+Chapitre 4 : Le POST (Power-on Self-test)
+Ce chapitre détaille l'utilisation du POST pour modifier les paramètres 
+de votre ordinateur portable.
+Conseils et FAQ
+Cette section offre des astuces d'emploi ainsi qu'une FAQ vous 
+permettant de dépanner les problèmes matériels et logiciels les plus 
+communs pouvant survenir lors de l'utilisation de votre ordinateur 
+portable.
+Annexes
+Cette section inclut un certain nombre de notices relatives à la sécurité.
+8 Manuel électronique pour ordinateur portable
+Messages
+Pour mettre en valeur les informations essentielles offertes par ce guide, les 
+messages sont présentés de la manière qui suit :
+IMPORTANT ! Ce message contient des informations essentielles devant être 
+suivies pour compléter une tâche.
+REMARQUE : Ce message contient des informations et des astuces 
+additionnelles pouvant vous aider à compléter certaines tâches.
+AVERTISSEMENT ! Ce message contient des informations importantes devant 
+être suivies pour garantir votre sécurité lors de l'exécution de certaines tâches et 
+ne pas endommager les données de l'ordinateur portable et ses composants.
+Typographie
+Gras = Fait référence à un menu ou un élément devant être sélectionné.
+Italique = Indique les sections de ce manuel auxquelles vous pouvez vous 
+référer.
+= Utiliser l'écran tactile.
+= Utiliser le pavé tactile.
+= Utiliser le clavier.
+Icônes
+Les icônes ci-dessous indiquent le type de dispositif à utiliser pour compléter 
+une série de tâches ou de procédures sur votre ordinateur portable.
+Manuel électronique pour ordinateur portable 9
+Précautions relatives à la sécurité
+Cet ordinateur portable doit être utilisé dans un 
+environnement dont la température ambiante est 
+comprise entre 5°C (41°F) et 35°C (95°F).
+Référez-vous à l'étiquette située au dessous de 
+l'ordinateur portable pour vérifier que votre adaptateur 
+secteur répond aux exigences de voltage.
+Votre ordinateur portable peut atteindre une température 
+élevée lors de son utilisation ou du chargement de la 
+batterie. Ne laissez pas l'ordinateur portable allumé sur vos 
+genoux ou toute autre partie du corps afin d'éviter toute 
+blessure provoquée par la chaleur. Lors de l'utilisation de 
+l'ordinateur portable, veillez à ne pas le placer sur une 
+surface pouvant bloquer les fentes d'aération.
+N'utilisez pas de cordons d'alimentation, d'accessoires 
+ou d'autres périphériques endommagés avec votre 
+ordinateur portable.
+Si l'ordinateur portable est allumé, ne le transportez pas 
+ou ne le recouvrez pas d'un matériau ne permettant pas 
+une circulation de l'air optimale.
+Ne placez pas l'ordinateur portable sur une surface 
+inégale ou instable.
+Vous pouvez faire passer votre ordinateur portable dans 
+les détecteurs à rayons X (utilisés pour les éléments 
+placés sur le tapis roulant) des aéroports. Cependant, il 
+est recommandé de ne pas faire passer votre ordinateur 
+portable via les portiques de détection magnétique, ni 
+de l'exposer aux détecteurs portables.
+Consultez votre compagnie aérienne pour obtenir plus 
+d'informations sur les services pouvant être utilisés 
+ainsi que les restrictions concernant l'utilisation d'un 
+ordinateur portable lors d'un vol aérien.
+Utilisation de l'ordinateur portable
+10 Manuel électronique pour ordinateur portable
+Entretien de votre ordinateur portable
+Débranchez l'adaptateur secteur et retirez la batterie 
+(si applicable) avant de nettoyer l'ordinateur portable. 
+Utilisez une éponge en cellulose ou un chiffon doux 
+en peau de chamois humidifié avec de l'eau tiède ou 
+une solution détergente non abrasive. Nettoyez les 
+zones d'humidité restantes à l'aide d'un chiffon sec. 
+Prenez soin de ne laisser aucun liquide pénétrer par les 
+interstices du châssis ou du clavier afin d'éviter les court-
+circuits et la corrosion.
+N'utilisez pas de solvants puissants tels que l'alcool, les 
+diluants, le benzène ou autres produits chimiques sur 
+ou à proximité de la surface de l'ordinateur portable.
+Ne placez pas d'objets sur l'ordinateur portable.
+N'exposez pas l'ordinateur portable à des champs 
+magnétiques ou électriques puissants.
+N'exposez pas l'ordinateur portable à la pluie ou à 
+l'humidité, tenez-le à distance des liquides.
+N'exposez pas l'ordinateur portable à un environnement 
+poussiéreux.
+Manuel électronique pour ordinateur portable 11
+Mise au rebut
+Ne jetez pas ce produit avec les déchets ménagers. Ce 
+produit a été conçu pour permettre une réutilisation 
+et un recyclage appropriés des pièces. Le symbole 
+représentant une benne barrée d'une croix indique 
+que le produit (équipement électrique, électronique et 
+batterie contenant du mercure) ne doit pas être jeté avec 
+les déchets ménagers. Consultez les réglementations 
+locales pour la mise au rebut des produits électroniques.
+Ne jetez pas la batterie avec les déchets ménagers. Le 
+symbole représentant une benne barrée d'une croix 
+indique que la batterie ne doit pas être jetée avec les 
+déchets ménagers.
+N'utilisez pas l'ordinateur portable durant une fuite de 
+gaz.
+Ne placez aucun appareil électronique près de votre 
+ordinateur portable afin d'éviter toute interférence 
+électromagnétique avec l'écran.
+N'utilisez pas cet ordinateur portable pour le minage de 
+crypto-monnaie (consommation très élevée d'électricité 
+et de temps pour l'obtention de monnaie virtuelle) et/
+ou des activités similaires.
+12 Manuel électronique pour ordinateur portable
+Protection de la batterie
+• Charger fréquemment la batterie sous haute tension peut réduire sa 
+durée de vie. Afin de protéger la batterie, le système peut stopper la 
+charge lorsque le niveau de batterie se situe entre 90% et 100%.
+REMARQUE : La capacité de charge initiale de la batterie se situe généralement 
+entre 90% et 99%. La valeur réelle peut varier selon les modèles.
+• Charger ou entreposer la batterie dans un lieu à température ambiante 
+élevée peut endommager de façon permanente la capacité de la 
+batterie et réduire rapidement sa durée de vie. Si la température de la 
+batterie est trop élevée, le système peut réduire la capacité de charge 
+de la batterie ou même arrêter la charge afin de protéger la batterie.
+• Le niveau de batterie peut baisser même lorsque l'appareil est éteint 
+et déconnecté de la prise secteur. Il s'agit d'un phénomène normal 
+car le système consomme toujours une petite quantité d'énergie de la 
+batterie.
+Informations de sécurité concernant la batterie
+Manuel électronique pour ordinateur portable 13
+Entretien standard de la batterie
+• Si vous n'utilisez pas votre appareil pendant une longue période, 
+assurez-vous de charger la batterie à 50%, puis éteignez votre appareil 
+et débranchez l'adaptateur secteur. Rechargez la batterie à 50% tous 
+les trois mois afin d'empêcher la décharge excessive et éviter de 
+l'endommager.
+• Évitez de charger la batterie sous haute tension pendant une 
+période prolongée afin de prolonger sa durée de vie. Si vous utilisez 
+l'adaptateur secteur en permanence, assurez-vous de décharger 
+la batterie à 50% au moins une fois toutes les deux semaines. Vous 
+pouvez également modifier les réglages dans la section Battery Health 
+Charging de MyASUS afin de prolonger la durée de vie de la batterie.
+• Il est recommandé d'entreposer la batterie à une température 
+comprise entre 5°C (41°F) et 35°C (95°F), avec un niveau de charge 
+d'au moins 50%. Vous pouvez également modifier les réglages dans la 
+section Battery Health Charging de MyASUS afin de prolonger la durée 
+de vie de la batterie.
+• N'entreposez pas la batterie dans des environnements humides. 
+L'exposition à des environnements humides peut augmenter le taux 
+de décharge excessive de la batterie. Les basses températures peuvent 
+endommager les éléments chimiques contenus dans la batterie, alors 
+que les hautes températures ou la surchauffe peuvent générer un 
+risque d'explosion.
+• Ne placez pas votre appareil ou la batterie près d'un radiateur, une 
+cheminée, un four, un chauffage ou toute autre source de chaleur 
+avec une température supérieure à 60°C (140°F). Un environnement 
+très chaud peut entraîner une explosion ou une fuite capables de 
+déclencher un incendie.
+14 Manuel électronique pour ordinateur portable
+Manuel électronique pour ordinateur portable 15
+Chapitre 1 :
+Configuration du matériel
+16 Manuel électronique pour ordinateur portable
+Présentation de l'ordinateur portable
+Vue avant
+REMARQUE : La disposition du clavier peut varier en fonction du pays ou 
+de la région d'achat. La vue en plan peut également varier selon le modèle 
+d'ordinateur portable.
+Manuel électronique pour ordinateur portable 17
+Jeu de microphones
+Le jeu de microphones possède une fonctionnalité d'atténuation 
+des échos, de suppression des nuisances sonores ambiantes et de 
+Beamforming offrant une meilleure reconnaissance vocale ainsi 
+qu'une plus grande qualité d'enregistrement audio.
+Témoin de la caméra
+Ce voyant lumineux s'allume lorsque vous utilisez la caméra.
+Caméra
+Utilisez cette caméra intégrée pour prendre des photos et enregistrer 
+des vidéos avec votre ordinateur portable.
+Caméra infrarouge
+Utilisez cette caméra intégrée pour prendre des photos et enregistrer 
+des vidéos avec votre ordinateur portable. Cette caméra infrarouge 
+prend également en charge la fonctionnalité Windows Hello.
+REMARQUE : Le voyant lumineux rouge infrarouge clignote lorsque 
+des données sont en cours de lecture avant la connexion avec 
+Windows Hello via la reconnaissance faciale.
+18 Manuel électronique pour ordinateur portable
+Écran tactile (avec angle réglable à 360º)
+L'angle d'inclinaison de l'écran tactile de votre ordinateur portable 
+peut être réglé jusqu'à 360º. Cette fonctionnalité vous permet de 
+transformer rapidement votre ordinateur en tablette tactile.
+Cet ordinateur portable est doté d'un écran tactile haute définition 
+offrant une qualité d'affichage excellente pour le visionnage de 
+photos, de vidéos et de tout autre contenu multimédia stocké sur 
+votre ordinateur portable. L'écran tactile vous permet d'utiliser des 
+commandes tactiles sur l'ordinateur.
+Avertissement : L'affichage prolongé d'images statiques ou à 
+contraste élevé peut engendrer une rémanence d'image ou brûlure 
+d'écran sur la dalle OLED. L'ordinateur portable ASUS avec écran OLED 
+(sur une sélection de modèles) minimise le potentiel de brûlure d'écran 
+en activant le thème sombre de Windows® par défaut et en réduisant 
+le délai d'inactivité avant extinction de l'écran. Il est recommandé 
+d'utiliser un écran de veille animé à fond sombre et d'éviter de régler 
+la luminosité de votre écran OLED au maximum afin de prolonger sa 
+durée de vie.
+REMARQUE :
+• Pour plus de détails, consultez la section Configurer l'écran OLED 
+de ce manuel.
+• Pour plus de détails, consultez la section Faire tourner l'écran 
+d'affichage de ce manuel.
+Manuel électronique pour ordinateur portable 19
+Indicateur de microphone éteint
+Ce voyant lumineux s'allume lorsque le microphone est désactivé.
+Clavier
+Le clavier est doté de touches de grande largeur disposant d'une 
+amplitude confortable pour la saisie. Il est aussi doté de touches de 
+fonction offrant un accès rapide à certaines fonctionnalités Windows® 
+ainsi que le contrôle d'applications de lecture multimédia.
+REMARQUE : La disposition du clavier peut varier en fonction du 
+modèle ou de la région d'achat.
+Témoin de verrouillage des majuscules
+Ce voyant lumineux s'allume lorsque le verrouillage des majuscules 
+[Verr. Maj.] est activé. Le verrouillage des majuscules permet à 
+certaines lettres d'être saisies en majuscule (ex : A, B, C).
+20 Manuel électronique pour ordinateur portable
+Pavé tactile / Pavé numérique
+Permet de basculer entre le pavé tactile et le pavé numérique.
+Le pavé tactile offre une interface intuitive permettant d'utiliser des 
+fonctions multi-gestes pour naviguer à l'écran. Il simule aussi les 
+fonctions d'une souris traditionnelle.
+REMARQUE : Pour plus de détails, consultez la section Fonctionnalités 
+multi-gestes du pavé tactile de ce manuel.
+Le pavé numérique permet la saisie de chiffres.
+IMPORTANT ! Veuillez noter que toutes les versions du pavé 
+numérique sont prises en charge uniquement sous la version la plus 
+récente de Windows.
+REMARQUE : Pour plus de détails, consultez la section Utilisation du 
+pavé numérique de ce manuel.
+Capteur de luminosité ambiante
+Ce capteur détecte la luminosité ambiante afin de régler 
+automatiquement la luminosité de l'écran. Il permet au système 
+d'ajuster automatiquement la luminosité de l'écran selon la luminosité 
+ambiante.
+Capteur de luminosité RVB
+Le capteur de luminosité RVB ajustera automatiquement la 
+température de couleur de votre écran en fonction de luminosité de 
+l'environnement.
+Manuel électronique pour ordinateur portable 21
+Capteur de proximité ToF
+Le capteur de proximité ToF réveillera automatiquement votre 
+ordinateur portable et vous connectera grâce à Windows Hello après 
+avoir détecté votre présence. Votre ordinateur portable entrera en 
+veille moderne lorsque vous n'êtes plus à proximité.
+Indicateur de caméra éteinte
+Ce voyant lumineux s'allume lorsque la caméra est désactivée.
+Bouton d'alimentation
+Ce bouton d'alimentation permet d'allumer ou d'éteindre votre 
+ordinateur portable. Vous pouvez aussi l'utiliser pour basculer ou 
+sortir l'ordinateur portable du mode veille / veille prolongée.
+Si votre ordinateur portable ne répond pas ou se bloque, maintenez le 
+bouton d'alimentation enfoncé pendant au moins dix (10) secondes 
+pour le forcer à s'éteindre.
+Lecteur d'empreintes digitales
+Ce lecteur vous permet d'utiliser vos empreintes digitales comme 
+méthode d'authentification lors de l'accès à votre ordinateur portable.
+22 Manuel électronique pour ordinateur portable
+Vue de dessus
+Jeu de microphones
+Le jeu de microphones possède une fonctionnalité d'atténuation 
+des échos, de suppression des nuisances sonores ambiantes et de 
+Beamforming offrant une meilleure reconnaissance vocale ainsi 
+qu'une plus grande qualité d'enregistrement audio.
+Manuel électronique pour ordinateur portable 23
+Vue de dessous
+REMARQUE : L'apparence de la face inférieure peut varier en fonction du 
+modèle.
+AVERTISSEMENT ! Votre ordinateur portable peut atteindre une température 
+élevée lors de son utilisation ou du chargement de la batterie. Ne laissez pas 
+l'ordinateur portable allumé sur vos genoux ou toute autre partie du corps 
+afin d'éviter toute blessure provoquée par la chaleur. Lors de l'utilisation de 
+l'ordinateur portable, veillez à ne pas le placer sur une surface pouvant bloquer 
+les fentes d'aération.
+IMPORTANT !
+• L'autonomie de la batterie varie en fonction du type d'utilisation et des 
+caractéristiques de l'ordinateur portable. La batterie ne doit pas être 
+démontée.
+• Achetez des composants auprès d'un revendeur agréé pour garantir une 
+fiabilité et une compatibilité optimales. Contactez un service client ASUS 
+ou un revendeur agréé pour obtenir un service ou une assistance sur le 
+démontage ou l'assemblage approprié du produit.
+24 Manuel électronique pour ordinateur portable
+Fentes d'aération
+Les fentes d'aération permettent à l'air frais de refroidir l'ordinateur 
+portable et d'expulser l'excès de chaleur.
+AVERTISSEMENT ! Assurez-vous qu'aucun papier, livre, tissu, câble 
+ou autre ne bloque les fentes d'aération afin d'éviter tout risque de 
+surchauffe.
+Haut-parleurs
+Les haut-parleurs intégrés vous permettent de profiter du son sans 
+recourir à des connexions supplémentaires. Toutes les fonctions audio 
+sont pilotées par logiciel.
+Manuel électronique pour ordinateur portable 25
+Côté droit
+Témoins d'état
+Ces voyants lumineux vous aident à identifier l'état matériel actuel de 
+votre ordinateur portable.
+ Témoin de charge de la batterie (bicolore)
+ Ce voyant lumineux bicolore offre un indicateur visuel de 
+l'état de charge de la batterie. Référez-vous au tableau 
+suivant pour plus de détails :
+26 Manuel électronique pour ordinateur portable
+Couleur État
+Blanc fixe L'ordinateur portable est relié à 
+une source d'alimentation et le 
+niveau de charge de la batterie est 
+compris entre 95 % et 100 %.
+Orange fixe L'ordinateur portable est relié à une 
+source d'alimentation, recharge sa 
+batterie, et le niveau de charge de 
+la batterie est inférieur à 95 %.
+Orange clignotant L'ordinateur portable fonctionne 
+sur batterie et le niveau de charge 
+de la batterie est inférieur à 10 %.
+Éteint L'ordinateur portable fonctionne 
+sur batterie et le niveau de charge 
+de la batterie est compris entre 
+10 % et 100 %.
+ Témoin d'alimentation
+ Ce voyant lumineux s'allume lorsque l'ordinateur 
+portable est allumé et clignote lentement lorsque celui-ci 
+est en mode veille.
+Fente pour carte microSD
+Le lecteur de cartes mémoire intégré prend en charge les cartes 
+mémoire au format microSD.
+Manuel électronique pour ordinateur portable 27
+Port combiné Thunderbolt™ 4 / Power Delivery
+Le port Thunderbolt™ 4 est compatible avec les normes USB 
+Type-C® et offre un taux de transfert allant jusqu'à 40 Gb/s pour les 
+appareils Thunderbolt™ 4. Connectez votre ordinateur portable à 
+un écran externe DisplayPort, VGA, DVI ou HDMI et bénéficiez de 
+fonctions d'affichage haute résolution grâce à la technologie Intel® 
+Thunderbolt™. Insérez l'adaptateur secteur dans cette prise pour 
+alimenter l'ordinateur portable et recharger sa batterie.
+REMARQUE : Le taux de transfert de données de ce port peut varier en 
+fonction du modèle.
+AVERTISSEMENT ! L'adaptateur peut atteindre une température élevée 
+lors de l'utilisation. Ne couvrez pas l'adaptateur et tenez-le éloigné de 
+vous lorsque celui-ci est branché à une source d'alimentation.
+IMPORTANT !
+• Le temps de rechargement de l'ordinateur portable peut être plus 
+long lorsque celui-ci est relié à une source d'alimentation basse 
+tension.
+• Pour éviter tout dommage, n'utilisez que des sources 
+d'alimentation de 20V/3,25A pour charger votre ordinateur 
+portable avec le port combiné USB Power Delivery. Pour plus 
+d'informations, consultez le service après-vente d'ASUS.
+Prise casque / microphone
+Cette prise est utilisée pour connecter la sortie audio de l'ordinateur 
+portable à des haut-parleurs équipés d'un amplificateur ou un casque. 
+Vous pouvez aussi utiliser cette prise pour connecter un microphone 
+à l'ordinateur portable.
+28 Manuel électronique pour ordinateur portable
+Côté gauche
+Port combiné USB 3.2 Gen 2 Type-C® / DisplayPort / Power 
+Delivery
+Le port USB 3.2 Gen 2 Type-C® offre des taux de transfert de données 
+allant jusqu'à 10 Gb/s et est rétro-compatible avec la norme USB 2.0. 
+Ce port permet de connecter l'ordinateur portable à un périphérique 
+d'affichage externe à l'aide d'un adaptateur USB Type-C®. Connectez 
+une source d'alimentation 20V/3,25A à cette prise pour alimenter 
+l'ordinateur portable et recharger sa batterie.
+REMARQUE : Le taux de transfert de données de ce port peut varier en 
+fonction du modèle.
+IMPORTANT !
+• Le temps de rechargement de l'ordinateur portable peut être plus 
+long lorsque celui-ci est relié à une source d'alimentation basse 
+tension.
+• Pour éviter tout dommage, n'utilisez que des sources 
+d'alimentation de 20V/3,25A pour charger votre ordinateur 
+portable avec le port combiné USB Power Delivery. Pour plus 
+d'informations, consultez le service après-vente d'ASUS.
+Manuel électronique pour ordinateur portable 29
+Chapitre 2 :
+Utilisation de l'ordinateur 
+portable
+30 Manuel électronique pour ordinateur portable
+IMPORTANT !
+Informations relatives à l'adaptateur secteur :
+• Tension d'entrée : 100-240Vca
+• Fréquence d'entrée : 50-60Hz
+• Courant de sortie nominal : 3,25A (65W)
+• Tension de sortie nominale : 20V
+Prise en main
+Chargez la batterie de l'ordinateur portable pendant 
+3 heures avant de l'utiliser pour la première fois.
+REMARQUE : L'apparence de l'adaptateur secteur peut varier en fonction du 
+modèle et du pays ou de la région d'achat.
+Chargez la batterie de l'ordinateur portable
+A. Connectez le cordon d'alimentation à l'adaptateur secteur.
+B. Reliez l'adaptateur secteur à la prise d'alimentation (CC) de l'ordinateur 
+portable.
+C. Branchez l'adaptateur secteur sur une prise électrique fournissant un 
+courant compris entre 100V et 240V.
+Manuel électronique pour ordinateur portable 31
+IMPORTANT !
+• Repérez l'étiquette énergétique de votre ordinateur portable pour vérifier 
+que les informations y figurant correspondent à celles apparaissant sur 
+l'adaptateur secteur. Certains modèles d'ordinateurs portables peuvent 
+disposer de multiples tensions de sortie en fonction de leur unité de 
+gestion des stocks.
+• Assurez-vous que l'ordinateur portable est connecté à son adaptateur 
+secteur avant de l'allumer pour la première fois. Branchez toujours le 
+câble d'alimentation à une prise murale sans utiliser de rallonge. Pour 
+votre sécurité, branchez uniquement cet appareil sur une prise électrique 
+correctement reliée à la terre.
+• Si vous utilisez l'ordinateur portable en fonctionnement sur secteur, la 
+prise électrique doit se trouver à proximité et être aisément accessible.
+• Pour déconnecter votre ordinateur portable de sa source d'alimentation, 
+débranchez l'adaptateur secteur de la prise électrique.
+AVERTISSEMENT !
+Lisez attentivement les notices suivantes concernant la batterie de votre 
+ordinateur portable :
+• Seul un technicien ASUS est autorisé à retirer et manipuler la batterie 
+(uniquement pour la batterie non amovible).
+• La batterie de l'appareil peut présenter un risque d'incendie ou de brûlure 
+si celle-ci est retirée ou désassemblée.
+• Lisez et suivez les indications de toutes les étiquettes d'avertissement pour 
+éviter d'éventuelles blessures.
+• Risque d'explosion si la batterie n'est pas correctement remplacée.
+• Ne jetez pas la batterie au feu.
+• Ne tentez jamais de court-circuiter la batterie de l'ordinateur portable.
+• Ne tentez jamais de désassembler ou de ré-assembler la batterie 
+(uniquement pour la batterie non amovible).
+• Cessez d'utiliser l'appareil si la batterie fuit.
+• La batterie et ses composants doivent être recyclés ou jetés de façon 
+appropriée.
+• Gardez la batterie et ses composants hors de portée des enfants.
+32 Manuel électronique pour ordinateur portable
+Soulevez le panneau d'affichage
+Appuyez sur le bouton d'alimentation
+Manuel électronique pour ordinateur portable 33
+Fonctionnalités multi-gestes de l'écran tactile
+La fonctionnalité multi-gestes vous permet d'exécuter des programmes et 
+d'accéder aux paramètres de votre ordinateur. Les différentes fonctionnalités 
+peuvent être activées à l'aide de fonctions gestuelles effectuées sur l'écran 
+tactile.
+Fonctionnalités multi-gestes de 
+l'écran et du pavé tactiles
+La fonctionnalité multi-gestes vous permet d'exécuter des programmes et 
+d'accéder aux paramètres de votre ordinateur. Les différentes fonctionnalités 
+peuvent être activées à l'aide de fonctions gestuelles effectuées sur l'écran ou 
+le pavé tactiles.
+Clic/Double-clic Appuyer et maintenir enfoncé
+• Appuyez sur une application 
+pour la sélectionner.
+• Appuyez deux fois sur une 
+application pour l'ouvrir.
+Appuyez et maintenez votre doigt 
+pour ouvrir le menu clic droit.
+REMARQUE : Les captures d'écran de cette section sont données à titre indicatif 
+uniquement. Le contenu apparaissant à l'écran peut varier en fonction du 
+modèle utilisé.
+34 Manuel électronique pour ordinateur portable
+Zoom avant Zoom arrière
+Éloignez deux doigts sur l'écran 
+tactile pour effectuer un zoom avant.
+Rapprochez deux doigts sur l'écran 
+tactile pour effectuer un zoom 
+arrière.
+Glissé du doigt Faire glisser
+Faites glisser votre doigt sur la surface 
+de l'écran tactile pour naviguer sur 
+l'écran tactile.
+• Faites glisser pour créer une 
+zone de sélection autour de 
+plusieurs éléments.
+• Faites glisser et déposez 
+un élément pour le 
+déplacer vers son nouvel 
+emplacement.
+Manuel électronique pour ordinateur portable 35
+Fonctionnalités multi-gestes du pavé tactile
+Déplacer le pointeur
+Vous pouvez appuyer n'importe où sur le pavé tactile pour activer son 
+pointeur. Faites ensuite glisser votre doigt sur le pavé tactile pour déplacer le 
+pointeur à l'écran.
+Glissement horizontal
+Glissement vertical
+Glissement diagonal 
+36 Manuel électronique pour ordinateur portable
+Fonctionnalités gestuelles à un doigt
+Clic/Double-clic
+• Appuyez sur une application pour la sélectionner.
+• Appuyez deux fois sur une application pour l'ouvrir.
+Glissé-déplacé
+Appuyez deux fois sur un élément et maintenez votre doigt sur le pavé 
+tactile en le faisant glisser jusqu'à l'endroit voulu. Désengagez votre doigt du 
+pavé tactile pour placer l'objet à l'endroit voulu.
+Manuel électronique pour ordinateur portable 37
+Clic gauche Clic droit
+• Cliquez sur une application 
+pour la sélectionner.
+• Double-cliquez sur une 
+application pour l'ouvrir. 
+Cliquez sur ce bouton pour ouvrir le 
+menu clic droit.
+REMARQUE : Les zones démarquées par des pointillés représentent les 
+emplacements d'interaction des boutons droite et gauche du pavé tactile.
+Fonctionnalités gestuelles à deux doigts
+Frappé
+Appuyez rapidement sur le pavé tactile avec deux doigts pour simuler un clic 
+droit de souris.
+38 Manuel électronique pour ordinateur portable
+Défilement à deux doigts (haut/
+bas) 
+Défilement à deux doigts (gauche/
+droite)
+Faites glisser deux doigts vers le 
+haut ou le bas pour faire défiler une 
+page ou un document dans la même 
+direction.
+Faites glisser deux doigts vers la 
+gauche ou la droite pour faire défiler 
+une page ou un document dans la 
+même direction.
+Zoom arrière Zoom avant
+Rapprochez deux doigts sur le pavé 
+tactile pour effectuer un zoom 
+arrière.
+Éloignez deux doigts sur le pavé 
+tactile pour effectuer un zoom avant.
+Manuel électronique pour ordinateur portable 39
+Glissé-déplacé
+Sélectionnez un élément puis maintenez le bouton de clic gauche. Faites 
+glisser un autre doigt pour glisser-déplacer l'objet vers l'emplacement voulu.
+Fonctionnalités gestuelles à trois doigts
+Frappé
+Appuyez rapidement sur le pavé tactile avec trois doigts pour lancer la 
+fonction que vous avez sélectionnée dans Paramètres.
+40 Manuel électronique pour ordinateur portable
+Glissez vers la gauche/droite
+Si plusieurs applications sont ouvertes, faites glisser trois doigts vers la 
+gauche ou la droite pour basculer d'une application à l'autre.
+Défilement à trois doigts (haut) Défilement à trois doigts (bas)
+Faites glisser trois doigts vers le haut 
+pour visualiser toutes les applications 
+actuellement ouvertes.
+Faites glisser trois doigts vers le bas 
+pour afficher le Bureau.
+Manuel électronique pour ordinateur portable 41
+Fonctionnalités gestuelles à quatre doigts
+Frappé
+Appuyez rapidement sur le pavé tactile avec quatre doigts pour lancer la 
+fonction que vous avez sélectionnée dans Paramètres.
+42 Manuel électronique pour ordinateur portable
+Utilisation du pavé numérique
+IMPORTANT ! Veuillez noter que toutes les versions du pavé numérique sont 
+prises en charge uniquement sous la version la plus récente de Windows.
+REMARQUE : Pour utiliser les fonctions % et =, configurez la langue de saisie sur 
+anglais.
+• Appuyez sur et maintenez la touche pendant une 
+seconde pour passer du pavé numérique au pavé 
+tactile.
+• Appuyez sur pour ajuster la luminosité du pavé 
+numérique.
+• Pressez et maintenez puis faites glisser votre doigt 
+n'importe où sur le pavé numérique pour lancer la 
+calculatrice Windows.
+Manuel électronique pour ordinateur portable 43
+Utiliser le clavier
+Active ou désactive les haut-parleurs
+Baisse le volume des haut-parleurs
+Augmente le volume des haut-parleurs
+Réduit la luminosité de l'écran
+Augmente la luminosité de l'écran
+Active ou désactive le pavé tactile
+Règle le rétroéclairage du clavier
+Active (si disponible) le périphérique d'affichage secondaire
+REMARQUE : Assurez-vous qu'un écran secondaire est 
+connecté à l'ordinateur portable.
+Touches de raccourcis
+Les touches de raccourcis situées sur le clavier de votre ordinateur portable 
+servent à activer les commandes suivantes :
+44 Manuel électronique pour ordinateur portable
+Touches de fonction
+Appuyez sur pour activer ou désactiver les touches de fonction. 
+Lorsque les touches de fonction sont activées, vous pouvez accéder aux 
+raccourcis en appuyant sur la touche combinée aux touches de la 
+rangée supérieure du clavier.
+Active ou désactive le microphone
+Active ou désactive la webcam
+Active l'outil de capture d'écran
+Lance MyASUS
+Touches Windows®
+Votre ordinateur portable est doté de deux touches Windows® spéciales :
+Ouvre le menu Démarrer
+Ouvre le menu déroulant*
+* sur une sélection de modèles
+Manuel électronique pour ordinateur portable 45
+Faire tourner l'écran d'affichage
+L'écran d'affichage de votre ordinateur portable est réglable jusqu'à 360 
+degrés. Vous pouvez régler l'écran d'affichage comme indiqué ci-dessous.
+Mode ordinateur portable
+Réglable à 360 degrés
+REMARQUE : Les illustrations fournies sont données à titre indicatif 
+uniquement.
+46 Manuel électronique pour ordinateur portable
+Mode tente
+Mode support
+Mode tablette
+REMARQUE : Tourner l'écran en mode support, tente ou tablette désactive le 
+clavier et le pavé tactile.
+Manuel électronique pour ordinateur portable 47
+Chapitre 3 :
+Utiliser Windows®
+48 Manuel électronique pour ordinateur portable
+Démarrer pour la première fois
+Lors du premier démarrage de votre ordinateur portable, une série d'écrans 
+apparaît pour vous guider dans les différentes étapes de configuration des 
+paramètres de base du système d'exploitation Windows®.
+Premier démarrage :
+1. Appuyez sur le bouton de mise en route de votre ordinateur portable. 
+Patientez quelques minutes le temps que l'écran de configuration 
+apparaisse.
+2. Depuis l'écran de configuration, sélectionnez votre région et une 
+langue à utiliser sur votre ordinateur portable.
+3. Lisez attentivement le contrat de licence. Sélectionnez Accepter.
+4. Suivez les instructions apparaissant à l'écran pour configurer les 
+options suivantes :
+• Personnaliser
+• Sans fil
+• Paramètres
+• Votre compte
+5. Une fois terminé, Windows® lance l'installation des applications et de 
+vos paramètres personnalisés. N'éteignez pas votre ordinateur portable 
+lors de l'exécution de cette étape.
+6. Une fois le processus de configuration terminé, l'écran d'accueil 
+apparaît.
+REMARQUE : Les captures d'écran de ce chapitre sont fournies à titre indicatif 
+uniquement.
+Manuel électronique pour ordinateur portable 49
+Menu Démarrer
+Le menu Démarrer est la passerelle principale vers les programmes, les 
+applications Windows®, les dossiers et les paramètres de votre ordinateur 
+portable.
+Vous pouvez utiliser le menu Démarrer pour effectuer ces activités courantes :
+• Démarrer des programmes ou des applications Windows®
+• Ouvrir les programmes ou les applications Windows® couramment utilisés
+• Régler les paramètres de l'ordinateur portable
+• Obtenir de l'aide concernant le système d'exploitation Windows®
+• Éteindre votre ordinateur portable
+• Vous déconnecter de Windows® ou changer de compte utilisateur
+Modifier les paramètres du compte, 
+verrouiller ou vous déconnecter 
+Ouvrir le menu Démarrer
+Lancer la Vue des tâches
+Arrêter, redémarrer ou 
+mettre votre ordinateur 
+portable en veille
+Ouvrir une application 
+depuis la barre des tâches
+Ouvrir une application depuis le 
+menu Démarrer
+Lancer la Recherche
+Ouvrir les widgets
+50 Manuel électronique pour ordinateur portable
+Ouvrir le menu Démarrer
+Appuyez sur le bouton Démarrer de votre bureau.
+Placez le curseur de votre souris sur le bouton Démarrer 
+de votre bureau puis cliquez dessus.
+Appuyez sur la touche avec le logo Windows® sur votre 
+clavier.
+Ouvrir les programmes depuis le menu Démarrer
+L'une des utilisations les plus courantes du menu Démarrer est d'ouvrir les 
+programmes installés sur votre ordinateur portable.
+Appuyez sur le programme pour l'ouvrir.
+Positionnez le pointeur de votre souris sur le programme 
+puis cliquez pour l'ouvrir.
+Utilisez les touches directionnelles pour naviguer parmi les 
+programmes. Appuyez sur pour l'ouvrir.
+REMARQUE : Sélectionnez Toutes les applications pour afficher la liste 
+complète des programmes et des dossiers sur votre ordinateur portable par 
+ordre alphabétique.
+Manuel électronique pour ordinateur portable 51
+Applications Windows®
+Ces applications sont épinglées au menu Démarrer sous forme de tuiles pour 
+un accès rapide et intuitif.
+REMARQUE : Certaines applications Windows® nécessitent la connexion à un 
+compte Microsoft avant de pouvoir être utilisées.
+52 Manuel électronique pour ordinateur portable
+Utiliser les applications Windows®
+Personnaliser les applications Windows®
+Vous pouvez déplacer, détacher ou épingler des applications à la barre des 
+tâches depuis le menu Démarrer en suivant les étapes suivantes :
+Ouvrir les applications Windows® depuis le menu Démarrer
+Appuyez sur l'application pour l'ouvrir.
+Positionnez le pointeur de votre souris sur l'application, puis 
+cliquez pour l'ouvrir.
+Utilisez les touches directionnelles pour parcourir la liste 
+des applications. Appuyez sur pour ouvrir une 
+application.
+Déplacer une application
+Maintenez votre doigt sur l'application, puis faites-la glisser 
+et déposez-la sur un nouvel emplacement.
+Positionnez le pointeur de votre souris sur l'application, 
+puis faites glisser et déposez l'application sur un nouvel 
+emplacement.
+Manuel électronique pour ordinateur portable 53
+Détacher une application
+Maintenez votre doigt sur l'application, puis appuyez 
+Détacher du menu Démarrer.
+Positionnez le pointeur de votre souris sur l'application et 
+faites un clic droit dessus, puis cliquez sur Détacher de 
+Démarrer.
+Utilisez les touches directionnelles pour naviguer vers 
+l'application. 
+Appuyez sur ou (sur une sélection de 
+modèles), puis sélectionnez Détacher de Démarrer.
+54 Manuel électronique pour ordinateur portable
+Épingler plus d'applications au menu Démarrer
+Depuis Toutes les applications, maintenez votre doigt sur 
+l'application que vous souhaitez ajouter au menu Démarrer, 
+puis appuyez sur Épingler à Démarrer.
+Depuis Toutes les applications, positionnez le pointeur de 
+votre souris sur l'application que vous souhaitez ajouter au 
+menu Démarrer et faites un clic droit dessus, puis appuyez 
+sur Épingler à Démarrer.
+Depuis Toutes les applications, appuyez sur ou 
+ (sur une sélection de modèles) sur l'application 
+que vous souhaitez ajouter au menu Démarrer, puis 
+sélectionnez Épingler à Démarrer.
+Épingler des applications à la barre des tâches
+Maintenez votre doigt sur l'application, puis appuyez sur 
+Épingler à la barre des tâches.
+Positionnez le pointeur de votre souris sur l'application et 
+faites un clic droit dessus, puis cliquez sur Épingler à la barre 
+des tâches.
+Utilisez les touches directionnelles pour naviguer vers 
+l'application. 
+Appuyez sur ou (sur une sélection de 
+modèles), puis sélectionnez Épingler à la barre des tâches.
+Manuel électronique pour ordinateur portable 55
+Vue des tâches
+Basculez rapidement entre les applications et les programmes ouverts à l'aide 
+de la fonction Vue des tâches, vous pouvez également utiliser la Vue des 
+tâches pour basculer entre les Bureaux.
+Ouvrir la Vue des tâches
+Appuyez sur l'icône de la barre des tâches.
+Positionnez le pointeur de votre souris sur l'icône dans la 
+barre des tâches et cliquez dessus.
+Appuyez sur sur votre clavier.
+56 Manuel électronique pour ordinateur portable
+Widgets
+Vous pouvez lancer des widgets pour un accès rapide aux informations 
+importantes.
+Ouvrir les widgets
+Appuyez sur l'icône de la barre des tâches.
+Positionnez le pointeur de votre souris sur l'icône dans la 
+barre des tâches et cliquez dessus.
+Appuyez sur sur votre clavier.
+Manuel électronique pour ordinateur portable 57
+Personnaliser les widgets
+ou
+Cliquez/Appuyez sur l'icône , puis sélectionnez Gérer 
+les intérêts pour modifier le contenu qui s'affiche dans les 
+widgets.
+58 Manuel électronique pour ordinateur portable
+Fonctionnalité Snap
+La fonctionnalité Snap affiche les applications côte à côte, vous permettant 
+de travailler ou de basculer entre les applications.
+Aligner des zones cliquables
+Vous pouvez faire glisser et déplacer des applications vers ces zones 
+cliquables pour les aligner en place.
+Manuel électronique pour ordinateur portable 59
+Activer la fonctionnalité Snap
+ou
+1. Ouvrez l'application que vous souhaitez aligner.
+2. Faites glisser la barre de titre de votre application 
+et déposez l'application sur la bordure de l'écran à 
+aligner.
+3. Ouvrez une autre application et répétez les étapes ci-
+dessus pour aligner une autre application.
+1. Ouvrez l'application que vous souhaitez aligner.
+2. Maintenez la touche enfoncée, puis utilisez les 
+touches directionnelles pour aligner l'application.
+3. Ouvrez une autre application et répétez les étapes ci-
+dessus pour aligner une autre application.
+60 Manuel électronique pour ordinateur portable
+Centre d'action
+Le centre d'action regroupe les notifications provenant des applications 
+et présente un seul endroit où vous pouvez interagir avec elles. Il dispose 
+également d'une section Actions rapides très utile.
+Ouvrir les Actions rapides
+Appuyez sur les icônes d'état de la barre des tâches.
+Placez le curseur de votre souris sur les icônes d'état de la 
+barre des tâches et cliquez dessus.
+Appuyez sur sur votre clavier.
+Manuel électronique pour ordinateur portable 61
+Ouvrir les Notifications
+Appuyez sur la date et l'heure dans la barre des tâches.
+Placez le curseur de votre souris sur la date et l'heure dans la 
+barre des tâches et cliquez dessus.
+Appuyez sur sur votre clavier.
+62 Manuel électronique pour ordinateur portable
+MyASUS Splendid
+MyASUS Splendid s'assure que tous les écrans ASUS affichent une 
+colorimétrie précise et identique. Outre le mode Normal, vous pouvez 
+sélectionnez le mode Vif, Protection des yeux ou Manuel afin d'ajuster les 
+paramètres d'affichage.
+• Mode Normal : Grâce à la correction de gamma et de la température 
+des couleurs, l'image émise par le panneau d'affichage est aussi proche 
+que possible de ce que votre œil peut naturellement voir. Pour les 
+modèles avec écran OLED, ce mode est conforme à la certification Low 
+Blue Light de l'organisme de contrôle TÜV.
+• Mode Vif : Ce mode vous permet d'ajuster la saturation de l'image, la 
+rendant ainsi plus vive et plus riche.
+• Mode Manuel : Ce mode vous permet d'ajuster la température de 
+couleur selon vos besoins, dans un intervalle de -50 à +50.
+• Mode Protection des yeux : Ce mode permet jusqu'à 30% de 
+réduction d'émission de lumière bleue, protégeant ainsi vos yeux.
+ Niveau 1-5 : Plus le niveau est élevé, plus l'émission de lumière bleue 
+est réduite. Pour les modèles avec écran LCD, le niveau 5 est le réglage 
+optimal et est conforme à la certification Low Blue Light de l'organisme 
+de contrôle TÜV.
+REMARQUE : Activez la fonction HDR dans Paramètres > Système > Affichage 
+pour une meilleure expérience visuelle avec votre écran OLED (sur certains 
+modèles), qui est conforme avec la certification Flicker Free (sans scintillement) 
+de l'organisme de contrôle TÜV.
+Manuel électronique pour ordinateur portable 63
+Veuillez suivre les conseils suivants afin de réduire la fatigue oculaire :
+• Prenez quelques instants à l'écart de l'écran si vous avez travaillé 
+pendant plusieurs heures. Il est recommandé de faire de courtes 
+pauses (au moins 5 minutes) après environ 1 heure de travail continu 
+sur ordinateur. Les pauses courtes et répétées sont plus efficaces 
+qu'une seule pause longue.
+• Pour minimiser la fatigue et la sécheresse oculaire, reposez 
+régulièrement vos yeux en vous focalisant sur un objet éloigné.
+• Répétez les exercices suivants pour réduire la fatigue oculaire :
+(1) Regardez vers le haut et le bas de façon répétée
+(2) Faites rouler vos yeux
+(3) Déplacez votre regard en diagonale
+ Si la fatigue oculaire persiste, veuillez consulter un médecin.
+• La lumière bleue à forte intensité peut générer une fatigue oculaire et 
+amener à une DMLA (dégénérescence maculaire liée à l'âge). Le filtre à 
+lumière bleue réduit de 30% (max.) l'émission de lumière bleue nocive 
+afin d'éviter la survenue d'un SVI (syndrome de vision informatique).
+64 Manuel électronique pour ordinateur portable
+Configurer l'écran OLED
+Pour profiter pleinement de votre écran OLED (sur une sélection de modèles), 
+nous vous recommandons certains réglages. Ces réglages permettent 
+d'optimiser l'expérience visuelle, maximiser l'autonomie de la batterie et 
+prolonger la durée de vie de votre ordinateur portable ASUS.
+Configurer le thème sombre
+Le thème sombre est activé par défaut. Pour vérifier ou modifier les réglages :
+1. Ouvrez le menu Démarrer.
+2. Cliquez/Appuyez sur Paramètres et sélectionnez Personnalisation.
+Manuel électronique pour ordinateur portable 65
+3. Sélectionnez l'onglet Couleurs pour afficher les options.
+66 Manuel électronique pour ordinateur portable
+Éteindre l'écran lorsqu'il n'est pas utilisé
+Assurez-vous de configurer l'extinction automatique de l'écran lorsque qu'il 
+n'est pas utilisé. Pour vérifier ou modifier les réglages :
+1. Ouvrez le menu Démarrer.
+2. Cliquez/Appuyez sur Paramètres et sélectionnez Système.
+Manuel électronique pour ordinateur portable 67
+3. Sélectionnez l'onglet Alimentation et batterie pour afficher les 
+options.
+68 Manuel électronique pour ordinateur portable
+Réglage de la luminosité de l'écran
+Il est recommandé d'utiliser un écran de veille animé à fond sombre et d'éviter 
+de régler la luminosité de votre écran OLED au maximum afin de prolonger sa 
+durée de vie. Pour vérifier ou modifier les réglages :
+1. Ouvrez le menu Démarrer.
+2. Cliquez/Appuyez sur Paramètres et sélectionnez Personnalisation.
+Manuel électronique pour ordinateur portable 69
+3. Sélectionnez l'onglet Écran de verrouillage, puis sélectionnez Écran 
+de veille pour afficher les options.
+70 Manuel électronique pour ordinateur portable
+Masquer automatiquement la barre des tâches
+Afin d'éviter d'afficher constamment la barre des tâches sur votre écran OLED, 
+assurez-vous de choisir de la masquer automatiquement. Pour modifier les 
+réglages :
+1. Ouvrez le menu Démarrer.
+2. Cliquez/Appuyez sur Paramètres et sélectionnez Personnalisation.
+Manuel électronique pour ordinateur portable 71
+3. Sélectionnez l'onglet Barre des tâches puis activez Masquer 
+automatiquement la barre des tâches.
+72 Manuel électronique pour ordinateur portable
+1. Lancez une application de la suite Microsoft Office, puis cliquez/
+appuyez sur Fichier > Compte.
+2. Sélectionnez Gris foncé sous Thème Office. Le thème sera appliqué à 
+toutes les applications de la suite Microsoft Office.
+Configurer le thème sombre dans Microsoft Office
+Manuel électronique pour ordinateur portable 73
+Raccourcis clavier
+L'utilisation de raccourcis clavier permet de faciliter l'accès aux applications et 
+la navigation sous Windows®.
+Ouvre le menu Démarrer
+Ouvre le centre d'action
+Bascule vers le Bureau 
+Ouvre le panneau de recherche de fichiers
+Ouvre le panneau des paramètres de l'ordinateur
+Ouvre le panneau de connexion
+Active l'écran de verrouillage
+Réduit la taille de toutes les fenêtres actives
+74 Manuel électronique pour ordinateur portable
+Ouvre le volet Rechercher
+Affiche le volet Projeter 
+Ouvre la fenêtre d'exécution de commandes
+Ouvre Accessibilité
+Ouvre le menu contextuel du bouton Démarrer
+Effectue un zoom avant sur l'écran
+Effectue un zoom arrière sur l'écran
+Manuel électronique pour ordinateur portable 75
+Connexion sans fil
+Wi-Fi
+Consultez vos e-mails, surfez sur Internet et partagez des applications sur 
+vos réseaux sociaux par le biais de la connexion Wi-Fi de votre ordinateur 
+portable.
+IMPORTANT ! Mode Avion désactive cette fonctionnalité. Assurez-vous que le 
+mode Avion est désactivé avant d'activer la connexion Wi-Fi de votre ordinateur 
+portable.
+Activer la connexion Wi-Fi
+Suivez les instructions suivantes pour activer la connexion Wi-Fi de votre 
+ordinateur portable :
+ou
+1. Ouvrez le Centre d'action depuis la barre des tâches.
+2. Cliquez/Appuyez sur l'icône Wi-Fi pour activer le Wi-Fi.
+3. Sélectionnez un point d'accès dans la liste des réseaux 
+Wi-Fi disponibles.
+4. Cliquez sur Connexion pour tenter d'établir une 
+connexion.
+REMARQUE : Il se peut qu'il vous soit demandé d'entrer une 
+clé de sécurité avant de pouvoir établir une connexion au 
+réseau Wi-Fi.
+76 Manuel électronique pour ordinateur portable
+ou
+1. Ouvrez les Paramètres depuis le menu Démarrer.
+2. Sélectionnez Bluetooth et appareils > Ajouter un 
+appareil pour rechercher des appareils compatibles 
+Bluetooth.
+3. Sélectionnez un appareil dans la liste pour l'appairer à 
+votre ordinateur portable.
+REMARQUE : Certains appareils Bluetooth requièrent la saisie 
+du code apparaissant sur votre ordinateur portable.
+Bluetooth
+Utilisez la technologie Bluetooth pour faciliter le transfert de données entre 
+votre ordinateur portable et d'autres appareils dotés d'une connectivité 
+Bluetooth.
+IMPORTANT ! Mode Avion désactive cette fonctionnalité. Assurez-vous que 
+le mode Avion est désactivé avant d'activer la connexion Bluetooth de votre 
+ordinateur portable.
+Associer l'ordinateur portable avec un appareil Bluetooth
+Vous devez associer l'ordinateur portable avec votre appareil Bluetooth avant 
+de pouvoir transférer des données. Pour ce faire, suivez les étapes suivantes :
+Manuel électronique pour ordinateur portable 77
+Mode Avion
+Le mode Avion désactive toute forme de connectivité sans fil et vous permet 
+d'utiliser votre ordinateur portable en toute sécurité à bord d'un avion.
+REMARQUE : Consultez votre compagnie aérienne pour obtenir plus 
+d'informations sur les services pouvant être utilisés ainsi que les restrictions 
+concernant l'utilisation d'un ordinateur portable lors d'un vol aérien.
+Activer/Désactiver le mode Avion
+ou
+1. Ouvrez le Centre d'action depuis la barre des tâches.
+2. Cliquez/Appuyez sur l'icône Mode avion pour activer 
+ou désactiver le mode Avion.
+78 Manuel électronique pour ordinateur portable
+Éteindre l'ordinateur portable
+Utilisez l'une de ces méthodes pour éteindre votre ordinateur portable :
+ou
+• Ouvrez le menu Démarrer, puis sélectionnez > 
+Arrêter pour effectuer un arrêt normal.
+• Depuis l'écran de connexion, sélectionnez > 
+Arrêter.
+• Vous pouvez aussi arrêter l'ordinateur portable en 
+appuyant sur . Sélectionnez Arrêter dans 
+la liste déroulante puis cliquez sur OK.
+• Si l'ordinateur portable ne répond pas ou s'il se 
+bloque, maintenez le bouton d'alimentation enfoncé 
+pendant au moins dix (10) secondes pour forcer 
+l'ordinateur portable à s'éteindre.
+Manuel électronique pour ordinateur portable 79
+Basculer l'ordinateur portable en mode veille
+Pour basculer l'ordinateur portable en mode veille :
+ou
+• Ouvrez le menu Démarrer, puis sélectionnez > 
+Veille pour mettre votre ordinateur portable en 
+veille.
+• Depuis l'écran de connexion, sélectionnez > Veille.
+Vous pouvez aussi arrêter l'ordinateur portable en appuyant 
+sur . Sélectionnez Veille dans la liste déroulante 
+puis cliquez sur OK.
+REMARQUE : Vous pouvez également mettre l'ordinateur portable en mode 
+veille en appuyant brièvement sur le bouton d'alimentation.
+80 Manuel électronique pour ordinateur portable
+Manuel électronique pour ordinateur portable 81
+Chapitre 4 :
+Le POST (Power-on Self-test)
+82 Manuel électronique pour ordinateur portable
+Le POST (Power-on Self-test)
+Le POST (Power-on Self-test) est une série de tests de diagnostic exécutés à 
+chaque démarrage de l'ordinateur portable. Le programme qui contrôle le 
+POST fait partie intégrante de l'architecture du portable.
+Dépannage et accès BIOS lors de l'exécution du POST
+Lors du POST, vous pouvez accéder à l'interface de configuration du BIOS ou 
+exécuter certaines options de dépannage par le biais des touches de fonction 
+de votre ordinateur portable. Consultez les informations suivantes pour plus 
+de détails.
+BIOS
+Le BIOS (Basic Input and Output System) stocke divers paramètres matériels 
+nécessaires au démarrage du système de l'ordinateur portable.
+Les réglages par défaut du BIOS conviennent à la plupart des utilisations de 
+l'ordinateur portable. Il est recommandé de ne pas modifier les paramètres 
+par défaut du BIOS sauf dans les cas suivants :
+• Un message d'erreur apparaît au démarrage du système et requiert 
+l'accès au BIOS.
+• Un composant installé nécessite un réglage spécifique ou une mise à 
+jour du BIOS.
+AVERTISSEMENT ! Une mauvaise utilisation du BIOS peut entraîner une 
+instabilité du système ou un échec de démarrage. Il est fortement recommandé 
+de ne modifier les paramètres du BIOS qu'avec l'aide d'un technicien qualifié.
+Accès rapide au BIOS
+Redémarrez l'ordinateur portable, puis appuyez sur la touche du 
+clavier lors de l'exécution du POST.
+Manuel électronique pour ordinateur portable 83
+Restaurer le système
+Utilisez les options de récupération de votre ordinateur portable pour 
+restaurer le système d'exploitation dans sa configuration d'usine ou 
+simplement actualiser ses paramètres afin d'aider à améliorer les 
+performances.
+IMPORTANT !
+• Effectuez une copie de sauvegarde de vos données avant d'utiliser cette 
+fonctionnalité.
+• Prenez note des paramètres importants tels que ceux dédiés au réseau, 
+aux noms d'utilisateur et mots de passe pour éviter de perdre vos données.
+• Assurez-vous que votre ordinateur portable est alimenté en courant par le 
+biais de son adaptateur secteur avant de l'actualiser.
+Windows® offre plusieurs options de récupération :
+• Conserver mes fichiers - Cette option réinitialise votre ordinateur 
+portable tout en conservant vos fichiers (photos, musique, vidéos, 
+documents).
+ Avec cette option, vous pouvez réinitialiser les paramètres par défaut 
+de votre ordinateur portable et supprimer les applications installées.
+• Tout supprimer et réinstaller Windows® - Cette option restaure la 
+configuration d'usine de votre ordinateur portable. Veillez à effectuer 
+une copie de sauvegarde de vos données importantes avant d'utiliser 
+cette option.
+84 Manuel électronique pour ordinateur portable
+• Démarrage avancé - Cette option permet d'avoir accès à d'autres 
+options de restauration avancées sur votre ordinateur portable, telles 
+que :
+- L'utilisation d'un support de stockage USB, d'une connexion 
+réseau ou d'un DVD de restauration Windows®.
+- L'utilisation de l'option de Dépannage vous permet d'utiliser l'un 
+des outils suivants : Outil de redémarrage système, Désinstaller 
+des mises à jour, Changer les paramètres du microprogramme 
+UEFI, Invite de commande, Restauration du système et 
+Récupération de l'image système.
+Utiliser une option de restauration
+Suivez les instructions suivantes pour avoir accès aux différentes méthodes 
+de récupération disponibles sous Windows®.
+1. Ouvrez les Paramètres et sélectionnez Système > Récupération.
+Manuel électronique pour ordinateur portable 85
+2. Sélectionnez l'option de récupération que vous souhaitez exécuter.
+86 Manuel électronique pour ordinateur portable
+Manuel électronique pour ordinateur portable 87
+Conseils et FAQ
+88 Manuel électronique pour ordinateur portable
+Conseils d'utilisation
+Pour vous permettre de profiter pleinement de votre ordinateur portable, 
+maximiser ses performances et garantir la sûreté de toutes les données, 
+prenez note des conseils suivants :
+• Mettez régulièrement à jour Windows® pour garantir un niveau de 
+sécurité optimal pour votre appareil.
+• Mettez à jour MyASUS pour vous assurer de disposer des paramètres 
+les plus récents pour les applications, pilotes et utilitaires exclusifs 
+ASUS.
+• Utilisez et maintenez à jour un logiciel anti-virus permettant de 
+protéger vos données et vos appareils.
+• Évitez de forcer l'ordinateur portable à s'arrêter sauf si cela est 
+absolument nécessaire.
+• Faites régulièrement une copie de sauvegarde de vos données sur un 
+périphérique de stockage externe.
+• Si vous n'utilisez pas votre ordinateur portable pendant une longue 
+période, assurez-vous de charger la batterie à 50%, puis éteignez votre 
+ordinateur portable et débranchez l'adaptateur secteur.
+• Si vous utilisez l'adaptateur secteur en permanence, configurez le 
+mode de Battery Health Charging sur "Équilibré" dans MyASUS.
+Manuel électronique pour ordinateur portable 89
+• Avant de réinitialiser votre ordinateur portable, débranchez tous 
+les périphériques connectés et assurez-vous d'avoir les éléments ci-
+dessous à portée de main :
+- La clé de produit de votre système d'exploitation et d'autres 
+applications
+- Une copie de sauvegarde de vos données
+- Votre identifiant et mot de passe de connexion
+- Les informations relatives à votre connexion internet
+• Visitez notre site d'assistance pour effectuer un dépannage et consulter 
+la FAQ sur https://www.asus.com/support.
+90 Manuel électronique pour ordinateur portable
+FAQ matérielle
+1. Un point noir ou coloré apparaît lorsque j'allume l'ordinateur 
+portable. Que dois-je faire ?
+Ces points apparaissant sur l'écran n'affectent pas les performances 
+de votre appareil. Si toutefois l'incident persiste, et affecte de manière 
+conséquente les performances de votre appareil, contactez un service 
+client certifié par ASUS.
+2. La qualité d'affichage des couleurs et/ou de la luminosité de 
+l'écran est inégale. Comment résoudre ce problème ?
+Les couleurs et la luminosité de votre écran peuvent être affectées par 
+l'angle et la position actuelle de l'ordinateur portable. Ces attributs 
+peuvent aussi varier d'un modèle d'ordinateur portable à l'autre. 
+Utilisez les touches de fonction ou les paramètres d'affichage du 
+système d'exploitation pour régler l'apparence de l'écran.
+3. Comment maximiser la durée de vie de la batterie ?
+Essayez une ou plusieurs des suggestions suivantes :
+• Utilisez les touches de fonction pour modifier la luminosité de 
+l'écran.
+• Si vous n'utilisez pas de connexion Wi-Fi, activez le mode Avion.
+• Débranchez les appareils USB non utilisés.
+• Fermez les applications non utilisées, tout spécialement celles 
+gourmandes en mémoire vive.
+Manuel électronique pour ordinateur portable 91
+4. Le voyant lumineux de la batterie ne s'allume pas. Quel est le 
+problème ?
+• Vérifiez que l'adaptateur secteur et la batterie sont correctement 
+connectés. Vous pouvez aussi essayer de déconnecter, patienter 
+environ une minute, puis reconnecter ces deux éléments.
+• Si le problème persiste, contactez le service client ASUS le plus 
+proche.
+5. Pourquoi le pavé tactile ne fonctionne-t-il pas ?
+Appuyez sur pour activer le pavé tactile.
+6. Pourquoi les haut-parleurs n'émettent-ils aucun son lors de la 
+lecture d'un fichier audio ou vidéo ?
+Essayez une ou plusieurs des suggestions suivantes :
+• Appuyez sur pour augmenter le volume.
+• Vérifiez que le son n'a pas été désactivé.
+• Vérifiez qu'un casque audio n'est pas connecté.
+92 Manuel électronique pour ordinateur portable
+7. Que faire si j'ai égaré l'adaptateur secteur ou si la batterie ne 
+fonctionne plus ?
+Contactez le service après-vente ASUS le plus proche pour obtenir une 
+assistance technique.
+8. Je ne parviens pas à taper du texte correctement car le curseur 
+n'arrête pas de se déplacer à l'écran. Que dois-je faire ?
+Vérifiez que rien n'entre en contact avec le pavé tactile lors de la saisie 
+de texte au clavier. Vous pouvez aussi désactiver le pavé tactile en 
+appuyant sur .
+Manuel électronique pour ordinateur portable 93
+FAQ logicielle
+1. Lors de la mise en route de l'ordinateur portable, le voyant 
+d'alimentation s'allume mais pas celui dédié au disque dur. De 
+plus, le système d'exploitation ne démarre pas. Que faire pour 
+corriger ce problème ?
+Essayez une ou plusieurs des suggestions suivantes :
+• Forcez l'ordinateur portable à s'arrêter en appuyant au moins 
+dix (10) secondes sur le bouton d'alimentation. Vérifiez que 
+l'adaptateur secteur et la batterie sont correctement connectés à 
+l'ordinateur portable.
+• Si le problème persiste, contactez le service client ASUS le plus 
+proche.
+2. Que faire lorsque le message suivant apparaît à l'écran : “Retirez 
+les disques. Pressez une touche pour redémarrer.”?
+Essayez une ou plusieurs des suggestions suivantes :
+• Débranchez tous les périphériques connectés et redémarrez 
+l'ordinateur portable.
+• Retirez le disque placé dans le lecteur optique et redémarrez 
+l'appareil.
+• Si le problème persiste, votre ordinateur portable peut posséder 
+un problème de stockage de la mémoire. Contactez le service 
+après-vente ASUS le plus proche pour obtenir une assistance 
+technique.
+94 Manuel électronique pour ordinateur portable
+3. Le délai de démarrage de l'ordinateur portable et du système 
+d'exploitation sont plus lents que d'ordinaire. Comment résoudre 
+ce problème ?
+Supprimez les applications récemment installées ou non incluses avec 
+le système d'exploitation, puis redémarrez l'appareil.
+4. L'ordinateur portable ne démarre pas. Comment résoudre ce 
+problème ?
+Essayez une ou plusieurs des suggestions suivantes :
+• Débranchez tous les périphériques connectés et redémarrez 
+l'ordinateur portable.
+• Si le problème persiste, contactez le service client ASUS le plus 
+proche.
+5. Pourquoi l'ordinateur portable ne parvient pas à sortir du mode 
+veille / veille prolongée ?
+• Appuyez sur le bouton d'alimentation pour sortir l'appareil du 
+mode veille.
+• Il se peut que la batterie de l'appareil soit vide. Branchez 
+l'adaptateur secteur puis appuyez sur le bouton d'alimentation.
+Manuel électronique pour ordinateur portable 95
+Annexes
+96 Manuel électronique pour ordinateur portable
+Vue générale
+Le 4 août 1998 la Décision du Conseil Européen sur le CTR21 a été publiée au Journal 
+Officiel des Communautés Européennes. Le CTR 21 s'applique à tous les équipements 
+de terminaux non vocaux avec impulsion DTMF qui sont amenés à se connecter au PSTN 
+analogique (réseau téléphonique public commuté). 
+CTR 21 (Common Technical Regulation) : Exigences de raccordement pour la connexion 
+aux réseaux téléphoniques publics communautés (RTCP) analogiques des terminaux (à 
+l'exception de ceux qui prennent en charge la téléphonie vocale dans les cas justifiés) 
+pour lesquels l'adressage de réseau éventuel est assuré par signalisation multifréquences 
+bibande (DTMF).
+Déclaration de compatibilité au réseau
+Déclaration qui doit être faite par le fabricant à l'organisme désigné et au vendeur : 
+“Cette déclaration indiquera les réseaux avec lesquels l'équipement est conçu pour 
+fonctionner et tout réseau notifié avec lequel l'équipement peut avoir des difficultés 
+d'interopérabilité.”
+Déclaration qui doit être faite par le fabricant à l'utilisateur : “Cette déclaration indiquera 
+les réseaux avec lesquels l'équipement est conçu pour fonctionner et tout réseau notifié 
+avec lequel l'équipement peut avoir des difficultés d'interopérabilité. Le fabricant doit 
+également joindre une déclaration qui établit clairement où la compatibilité au réseau 
+est dépendante des paramétrages physiques ou logiciels. Il conseillera également à 
+l'utilisateur de contacter le vendeur s'il désire utiliser l'équipement sur un autre réseau.”
+À ce jour, l'organisme désigné CETECOM a délivré plusieurs approbations pan-
+européennes sur la base du CTR 21. Comme résultat les premiers modems en Europe qui 
+ne nécessitent pas une approbation réglementaire de chaque État membre.
+Équipements non-vocaux 
+Les répondeurs téléphoniques et interphones sont éligibles ainsi que les modems, 
+télécopieurs, automates et systèmes d'alarme. Équipements pour lesquels la qualité 
+point à point de la communication est contrôlée par régulations (ex. téléphones 
+portables, et dans certains pays les téléphones sans fil) sont exclus.
+Manuel électronique pour ordinateur portable 97
+Ce tableau indique les pays où s'applique le standard CTR21.
+Pays Application Tests supplémentaires
+Autriche1 Oui Non
+Belgique Oui Non
+République Tchèque Non Non applicable
+Danemark1 Oui Oui
+Finlande Oui Non
+France Oui Non
+Allemagne Oui Non
+Grèce Oui Non
+Hongrie Non Non applicable
+Islande Oui Non
+Irlande Oui Non
+Italie En cours En cours
+Israël Non Non
+Lichtenstein Oui Non
+Luxembourg Oui Non
+Pays-Bas1 Oui Oui
+Norvège Oui Non
+Pologne Non Non applicable
+Portugal Non Non applicable
+Espagne Non Non applicable
+Suède Oui Non
+Suisse Oui Non
+Royaume-Uni Oui Non
+98 Manuel électronique pour ordinateur portable
+Ces informations ont été reprises du CETECOM et sont données sans engagement. Pour 
+la mise à jour de ce tableau, vous pouvez consulter le site : 
+http://www.cetecom.de/technologies/ctr_21.html
+(1) Les exigences nationales ne s'appliquent que si l'équipement peut utiliser la tonalité 
+par impulsion (les fabricants peuvent alors déclarer dans leur manuel que l'équipement 
+n'est conçu que pour le support DTMF, ce qui rendrait tout test supplémentaire superflu).
+Au Pays-Bas, des test supplémentaires sont exigés pour les connexions en série et 
+l'identification des appelants.
+Conformité du modem interne
+L’ordinateur portable avec modem interne est conforme aux normes JATE (Japon), FCC 
+(US, Canada, Corée, Taiwan), et CTR21. Le modem interne a été approuvé conformément 
+à la Décision du Conseil 98/482/CE comme terminal de connexion pan-européen unique 
+compatible au réseau PSTN (public switched telephone network/réseau téléphonique 
+public commuté). Toutefois, à cause des différences entre les PSTN de certains pays, 
+l’approbation ne constitue pas, par elle-même, une assurance inconditionnelle du bon 
+fonctionnement sur tous les points du réseau PSTN. En cas de problème, vous devez 
+contacter en premier lieu votre fournisseur.
+Précautions d’emploi de l’appareil
+a. N’utilisez pas le produit ou soyez particulièrement vigilant quant à votre sécurité 
+lors de l’utilisation de cet appareil dans certains lieux (les avions, les aéroports, les 
+hôpitaux, les stations-service et les garages professionnels). 
+b. Évitez d’utiliser cet appareil à proximité de dispositifs médicaux implantés lors 
+d’un appel téléphonique. Si vous portez un implant électronique (stimulateurs 
+cardiaques, pompes à insuline, neurostimulateurs…), veuillez impérativement 
+respecter une distance minimale de 15 centimètres entre cet appareil et l’implant 
+pour réduire les risques d’interférence. 
+c. Utilisez cet appareil dans de bonnes conditions de réception pour minimiser 
+le niveau de rayonnement. Ce n’est pas toujours le cas dans certaines zones ou 
+situations, notamment les parkings souterrains, les ascenseurs, en train ou en 
+voiture ou tout simplement dans un secteur mal couvert par le réseau. 
+d. Tenez cet appareil à distance du ventre des femmes enceintes et du bas-ventre 
+des adolescents.
+Manuel électronique pour ordinateur portable 99
+Déclaration de conformité d'Innovation, Sciences et 
+Développement économique du Canada (ISED)
+Le présent appareil est conforme aux CNR d'Innovation, Sciences et Développement 
+économique du Canada applicables aux appareils radio exempts de licence. L’exploitation 
+est autorisée aux deux conditions suivantes: (1) l’appareil ne doit pas produire de 
+brouillage, et (2) l’utilisateur de l’appareil doit accepter tout brouillage radioélectrique 
+subi, même si le brouillage est susceptible d’en compromettre le fonctionnement.
+La bande 5150–5250 MHz est réservée uniquement pour une utilisation à l’intérieur 
+afin de réduire les risques de brouillage préjudiciable aux systèmes de satellites mobiles 
+utilisant les mêmes canaux.
+CAN ICES-003(B)/NMB-003(B)
+100 Manuel électronique pour ordinateur portable
+Attention: exposition au rayonnement radiofréquence 
+1. Pour se conformer aux exigences de conformité RF canadienne l'exposition, cet 
+appareil et son antenne ne doivent pas être co-localisés ou fonctionner en conjonction 
+avec une autre antenne ou transmetteur.
+2. Pour se conformer aux exigences de conformité CNR 102 RF exposition, une distance 
+de séparation d’au moins 20 cm doit être maintenue entre l’antenne de cet appareil et 
+toutes les personnes.
+Informations concernant l’exposition aux fréquences 
+radio (RF)
+La puissance de sortie émise par cet appareil sans fil est inférieure à la limite d’exposition 
+aux fréquences radio d’Industrie Canada (IC). Utilisez l’appareil sans fil de façon à 
+minimiser les contacts humains lors d’un fonctionnement normal.
+Cet appareil a été évalué et démontré conforme aux limites de DAS (Débit d’absorption 
+spécifique) d’IC lorsqu’il est utilisé dans des conditions d’exposition à des appareils 
+portables.
+Manuel électronique pour ordinateur portable 101
+Avertissements de sécurité UL 
+Requis pour la norme UL 1459 couvrant les équipements de communication (téléphone) 
+conçus pour être connectés de manière électrique à un réseau de télécommunication 
+ayant un voltage de fonctionnement à la terre n'excédant pas 200V en crête, 300V de 
+crête à crête et 105V rms, et installés ou utilisés en conformité avec les normes du NEC 
+(National Electrical Code) (NFPA 70).
+Lors de l'utilisation du modem de cet ordinateur portable, les précautions de sécurité 
+générales doivent être respectées pour réduire les risques de départ d'incendie, de choc 
+électrique et de blessures aux personnes, y compris ce qui suit :
+• N'utilisez pas l'ordinateur portable à proximité d'une source d'eau, par exemple 
+près d'une baignoire, d'un évier ou d'un bac à linge, dans un sous-sol humide ou 
+près d'une piscine. 
+• N'utilisez pas l'ordinateur portable lors d'un orage. Il peut y avoir un risque de 
+choc électrique provoqué par la foudre.
+• N'utilisez pas l'ordinateur portable à proximité d'une fuite de gaz.
+Requis pour la norme UL 1642 couvrant les batteries primaires (non rechargeables) 
+et secondaires (rechargeables) utilisées comme source d'alimentation. Ces batteries 
+contiennent du lithium métal, un alliage à base de lithium ou lithium-ion et sont 
+constituées d'une seule cellule électrochimique ou de deux cellules supplémentaires 
+connectées en série, en parallèle ou les deux, qui convertissent l'énergie chimique en 
+énergie électrique par une réaction chimique réversible ou irréversible. 
+• Ne jetez pas la batterie de l'ordinateur portable au feu car elle pourrait exploser. 
+Vérifiez vos réglementations locales en matière de recyclage de batteries afin de 
+réduire les risques de blessures aux personnes provoquées par un feu ou une 
+explosion.
+• N'utilisez pas d'adaptateurs électriques ni de batteries provenant d'autres 
+appareils afin de réduire les risques de blessures aux personnes provoquées 
+par un feu ou une explosion. Utilisez uniquement des adaptateurs de courant 
+certifiés UL ou des batteries fournis par le fabricant ou un revendeur agréé.
+102 Manuel électronique pour ordinateur portable
+Exigence de sécurité électrique
+Les produits utilisant des courants électriques nominaux pouvant atteindre 6 A et pesant 
+plus de 3 Kg doivent utiliser des cordons d'alimentation supérieurs ou équivalents à : 
+H05VV-F, 3G, 0.75 mm2 ou H05VV-F, 2G, 0.75 mm2 .
+Notice TV
+Note aux installateurs de système CATV—Le système de câblage doit être mis à la terre, 
+conformément à la norme AINSI/NFPA 70, le code national d'électricité américain (NEC), 
+en particulier la section 820.93, "Grounding of Outer Conductive Shield of a Coaxial 
+Cable" (Mise à la terre du blindage conducteur externe d'un câble coaxial) – l'installation 
+doit inclure une liaison de mise à la terre du câble coaxial à l'entrée du bâtiment.
+Note relative aux produits de Macrovision 
+Corporation
+Ce produit comprend une technologie de protection de copyright protégée par certains 
+brevets déposés aux U.S.A. et autres propriétés intellectuelles appartenant à Macrovision 
+Corporation et à d'autres. L'utilisation de cette technologie est soumise à autorisation par 
+Macrovision Corporation, et n'est destinée qu'à un usage familial ou autres usages limités 
+de même sorte, à moins d'une autorisation délivrée par Macrovision Corporation. Rétro 
+ingénierie et démontage sont interdits.
+Bruit et prévention de perte auditive
+Pour éviter d'éventuels troubles auditifs, n'utilisez pas cet appareil à plein 
+volume pendant de longues périodes.
+Avis relatif au réseau Wi-Fi
+IMPORTANT ! La carte réseau Wi-Fi 6E est disponible sur une sélection de modèles. La 
+connectivité de la bande Wi-Fi 6E peut varier en fonction de la réglementation et de la 
+certification de chaque pays/région.
+Manuel électronique pour ordinateur portable 103
+Mise en garde (pour batteries Lithium-Ion) 
+ATTENTION ! Danger of explosion if battery is incorrectly replaced. Replace only with the 
+same or equivalent type recommended by the manufacturer. Dispose of used batteries 
+according to the manufacturer’s instructions. (Anglais)
+ATTENZIONE! Rischio di esplosione della batteria se sostituita in modo errato. Sostituire 
+la batteria con un una di tipo uguale o equivalente consigliata dalla fabbrica. Non 
+disperdere le batterie nell’ambiente. (Italien)
+VORSICHT! Explosionsgefahr bei unsachgemäßen Austausch der Batterie. Ersatz nur 
+durch denselben oder einem vom Hersteller empfohlenem ähnlichen Typ. Entsorgung 
+gebrauchter Batterien nach Angaben des Herstellers. (Allemand)
+ADVARSELI! Lithiumbatteri - Eksplosionsfare ved fejlagtig håndtering. Udskiftning må 
+kun ske med batteri af samme fabrikat og type. Levér det brugte batteri tilbage til 
+leverandøren. (Danois)
+VARNING! Explosionsfara vid felaktigt batteribyte. Använd samma batterityp eller en 
+ekvivalent typ som rekommenderas av apparattillverkaren. Kassera använt batteri enligt 
+fabrikantens instruktion. (Suédois)
+VAROITUS! Paristo voi räjähtää, jos se on virheellisesti asennettu. Vaihda paristo 
+ainoastaan laitevalmistajan sousittelemaan tyyppiin. Hävitä käytetty paristo valmistagan 
+ohjeiden mukaisesti. (Finnois)
+ATTENTION! Danger d’explosion si la batterie n’est pas correctement remplacée. 
+Remplacer uniquement avec une batterie de type semblable ou équivalent, 
+recommandée par le fabricant. Jeter les batteries usagées conformément aux 
+instructions du fabricant. (Français)
+ADVARSEL! Eksplosjonsfare ved feilaktig skifte av batteri. Benytt samme batteritype eller 
+en tilsvarende type anbefalt av apparatfabrikanten. Brukte batterier kasseres i henhold til 
+fabrikantens instruksjoner. (Norvégien)
+(Japonais)
+ВНИМАНИЕ! При замене аккумулятора на аккумулятор иного типа возможно 
+его возгорание. Утилизируйте аккумулятор в соответствии с инструкциями 
+производителя. (Russe)
+104 Manuel électronique pour ordinateur portable
+Directives concernant l'exposition aux fréquences 
+radio
+Cet appareil est conforme aux exigences (2014/53/UE) établies par le Conseil Européen 
+en matière d'exposition du public aux champs électromagnétiques.
+Ces limites font partie d'un ensemble d'exigences et établissent des niveaux de 
+radiofréquence autorisés pour le public. Elles ont été mises au point par des groupes 
+d'experts indépendants sur le fondement d'évaluations scientifiques régulières et 
+détaillées. La norme d'exposition pour les appareils mobiles est déterminée par une 
+unité de mesure appelée Débit d'Absorption Spécifique ou “DAS” (en anglais : “Specific 
+Absorption Rate" ou "SAR"). La limite de DAS fixée par le Conseil de l'Union Européenne 
+est de 2,0 W/Kg en moyenne pour 10 g de tissus humains. Ces exigences sont également 
+conformes aux normes établies par l'organisme ICNIRP (Commission internationale pour 
+la protection contre les rayonnements non ionisants).
+Pour l'utilisation sur le corps, cet appareil a été testé et répond aux recommandations 
+d'exposition de la ICNIRP et a été inclus dans les normes européennes EN 50566 et EN 
+62209-2 pour une utilisation avec des accessoires. Les tests pour déterminer les niveaux 
+de DAS ont été réalisés en contact direct avec le corps et avec les appareils mobiles 
+émettant à leur niveau de puissance maximale pour toutes les bandes de fréquence.
+Une distance de séparation minimale de 1 cm doit être maintenue entre le corps de 
+l'utilisateur et l'appareil, y compris l'antenne, pendant le fonctionnement porté sur 
+le corps pour respecter les exigences relatives à l'exposition aux fréquences radio en 
+Europe.
+Manuel électronique pour ordinateur portable 105
+Mise en garde
+(i) les dispositifs fonctionnant dans la bande 5150-5250 MHz sont réservés uniquement 
+à une utilisation en intérieur afin de réduire les risques d’interférence préjudiciables aux 
+systèmes de satellites mobiles utilisant les mêmes canaux;
+(ii) pour les dispositifs avec antenne(s) détachable(s), le gain d’antenne maximal autorisé 
+pour les dispositifs des bandes 5250-5350 MHz et 5470-5725 MHz doit être tel que 
+l’équipement respecte encore la limite P.I.R.E ;
+(iii) pour les dispositifs avec antenne(s) détachable(s), le gain d’antenne maximal autorisé 
+pour les dispositifs dans la bande 5725-5850 MHz doit être tel que l’équipement soit 
+toujours conforme à la limite P.I.R.E, le cas échéant; et
+(iv) De plus, les utilisateurs devraient aussi être avisés que les utilisateurs de radars de 
+haute puissance sont désignés utilisateurs principaux (c.-à-d., qu’ils ont la priorité) pour 
+les bandes 5250-5350 MHz et 5650-5850 MHz et que ces radars pourraient créer des 
+interférences et/ou des dommages aux dispositifs LAN-EL.
+106 Manuel électronique pour ordinateur portable
+Agrément CTR 21 (pour les ordinateurs portables 
+avec modem intégré)
+Danois
+Néerlandais
+Anglais
+Finnois
+Français
+Manuel électronique pour ordinateur portable 107
+Allemand
+Grec
+Italien
+Portugais
+Espagnol
+Suédois
+108 Manuel électronique pour ordinateur portable
+UE REACH et Article 33
+En accord avec le cadre réglementaire REACH (Enregistrement, Evaluation, Autorisation, 
+et Restriction des produits chimiques), nous publions la liste des substances chimiques 
+contenues dans nos produits sur le site ASUS REACH : 
+https://csr.asus.com/english/REACH.htm.
+Déclaration de conformité aux normes 
+environnementales
+ASUS développe une conception écologique pour tous ses produits et s'assure que des 
+standards élevés en terme de protection de l'environnement sont respectés tout au long 
+du processus de fabrication. De plus, ASUS met à votre disposition des informations sur 
+les différentes normes de respect de l'environnement.
+Consultez le site http://csr.asus.com/Compliance.htm pour plus d'informations sur les 
+normes auxquelles les produits ASUS sont conformes :.
+UE RoHS
+Cet appareil est conforme à la directive UE RoHS. Pour plus de détails, consultez : 
+http://csr.asus.com/english/article.aspx?id=35.
+Affichage - Conformité réglementaire
+Les couleurs PANTONE® générées peuvent ne pas 
+correspondre aux normes identifiées par PANTONE. 
+Consultez les publications PANTONE actuelles pour 
+connaître la couleur exacte. PANTONE® et les autres 
+marques commerciales Pantone sont la propriété de 
+Pantone LLC. © Pantone LLC, 2022
+Manuel électronique pour ordinateur portable 109
+Services de reprise et de recyclage
+Les programmes de recyclage et de reprise d'ASUS découlent de nos exigences en 
+terme de standards élevés de respect de l'environnement. Nous souhaitons apporter à 
+nos clients des solutions permettant de recycler de manière responsable nos produits, 
+batteries et autres composants ainsi que nos emballages. 
+Veuillez consulter le site http://csr.asus.com/english/Takeback.htm pour plus de détails 
+sur les conditions de recyclage en vigueur dans votre pays.
+Recyclage de batteries rechargeables pour 
+l'Amérique du Nord
+Pour les clients résidant aux États-Unis et au Canada, vous pouvez 
+appeler le numéro 1-800-822-8837 (gratuit) pour obtenir plus 
+d'informations sur le recyclage de la batterie rechargeable de votre 
+produit ASUS.
+Notice relative au revêtement de l'appareil
+IMPORTANT ! Pour maintenir le niveau de sécurité électrique et fournir une meilleure 
+isolation, un revêtement a été appliqué pour isoler le châssis de cet appareil. Veuillez toutefois 
+noter que les zones de l'appareil où se trouvent les différentes interfaces de connexion ne 
+disposent pas de ce revêtement spécial.
+110 Manuel électronique pour ordinateur portable
+Avis concernant les batteries remplaçables
+• La batterie de l’appareil peut présenter un risque d’incendie ou de brûlure si 
+celle-ci est retirée ou désassemblée.
+• La batterie et ses composants doivent être recyclés ou jetés de façon appropriée.
+Directive Ecodesign
+L'Union Européenne a publié un cadre d'application des exigences ecodesign pour les 
+produits liés à l'énergie (2009/125/EC). La mise en place spécifique de mesures vise 
+à l'amélioration de la performance environnementale de produits spécifiques ou de 
+multiples types de produits. ASUS fournit les informations du produit sur le site CSR 
+(Corporate Social Responsability). Des informations supplémentaires sont disponibles à : 
+https://csr.asus.com/english/article.aspx?id=1555.
+Produits homologués EPEAT
+La diffusion publique des informations environnementales essentielles pour les produits 
+ASUS homologués EPEAT (Electronic Product Environmental Assessment Tool) est 
+disponible à https://csr.asus.com/english/article.aspx?id=41. Plus d'informations sur le 
+programme EPEAT et des conseils d'achat peuvent être trouvés à www.epeat.net.
+Licence des polices de texte du BIOS
+Copyright © 2022 Android Open Source Project
+Sous Licence Apache, Version 2.0 (la “Licence”) ; ce fichier ne peut être utilisé que si son 
+utilisation est en conformité avec la présente Licence. Vous pouvez obtenir une copie de 
+la Licence sur http://www.apache.org/licenses/LICENSE-2.0.
+Sauf si la loi l'exige ou si accepté préalablement par écrit, les logiciels distribués sous 
+la Licence sont distribués “TELS QUELS”, SANS AUCUNES GARANTIES OU CONDITIONS 
+QUELCONQUES, explicites ou implicites.
+Consultez la Licence pour les termes spécifiques gouvernant les limitations et les 
+autorisations de la Licence.
+Manuel électronique pour ordinateur portable 111
+Déclaration simplifiée de conformité de l'UE
+ASUSTeK COMPUTER INC. déclare par la présente que cet appareil est conforme aux 
+critères essentiels et autres clauses pertinentes de la directive 2014/53/UE. La déclaration 
+de conformité de l'UE peut être téléchargée à partir du site internet suivant : 
+https://www.asus.com/support/.
+Dans la plage de fréquence 5150-5350 MHz, le Wi-Fi est restreint à une utilisation en 
+intérieur dans les pays listés dans le tableau ci-dessous :
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK(NI)
+a. Pour les appareils Wi-Fi 6E LPI (Low Power Indoor) : 
+L'appareil est limité à une utilisation en intérieur uniquement lorsqu'il fonctionne dans 
+la plage de fréquences 5945-6425MHz en Belgique (BE), Bulgarie (BG), Chypre (CY), 
+République tchèque (CZ), Estonie (EE), France (FR), Islande (IS), Irlande (IE), Lituanie (LT), 
+Allemagne (DE), Pays-Bas (NL), Espagne (ES).
+b. Pour les appareils portables Wi-Fi 6E VLP (Very Low Power) : 
+L'appareil n'est pas autorisé à être utilisé sur des systèmes d'aéronefs sans pilote (UAS) 
+lorsqu'il fonctionne dans la plage de fréquences 5945-6425MHz en Belgique (BE), en 
+Bulgarie (BG), Chypre (CY), République tchèque (CZ), Estonie (EE), France (FR), Islande 
+(IS), Irlande (IE), Lituanie (LT), Allemagne (DE), Pays-Bas (NL), Espagne (ES).
+112 Manuel électronique pour ordinateur portable
+Manuel électronique pour ordinateur portable 113
+Fabricant ASUSTek COMPUTER INC.
+Adresse 1F, No. 15, Lide Rd., Beitou, Taipei 112, Taïwan
+Représentant légal en Europe ASUS COMPUTER GmbH
+Adresse Harkortstrasse 21-23, 40880 Ratingen, Allemagne
+Représentant légal au Royaume-Uni ASUSTEK (UK) LIMITED
+Adresse 1st Floor, Sackville House, 143-149 Fenchurch Street, 
+London, EC3M 6BL, England
+Représentant légal aux États-Unis ASUS Computer International
+Adresse 48720 Kato Rd., Fremont, CA 94538
+ À propos de ce manuel
+ Messages
+ Icônes
+ Typographie
+ Précautions relatives à la sécurité
+ Utilisation de l'ordinateur portable
+ Entretien de votre ordinateur portable
+ Mise au rebut
+ Informations de sécurité concernant la batterie
+ Chapitre 1 : Configuration du matériel
+ Présentation de l'ordinateur portable
+ Vue avant
+ Vue de dessus
+ Vue de dessous
+ Côté droit
+ Côté gauche
+ Chapitre 2 : Utilisation de l'ordinateur portable
+ Prise en main
+ Chargez la batterie de l'ordinateur portable
+ Soulevez le panneau d'affichage
+ Appuyez sur le bouton d'alimentation
+ Fonctionnalités multi-gestes de l'écran et du pavé tactiles
+ Fonctionnalités multi-gestes de l'écran tactile
+ Fonctionnalités multi-gestes du pavé tactile
+ Utilisation du pavé numérique
+ Utiliser le clavier
+ Touches de raccourcis
+ Touches de fonction
+ Touches Windows®
+ Faire tourner l'écran d'affichage
+ Chapitre 3 : Utiliser Windows®
+ Démarrer pour la première fois
+ Menu Démarrer
+ Applications Windows®
+ Utiliser les applications Windows®
+ Personnaliser les applications Windows®
+ Vue des tâches
+ Widgets
+ Fonctionnalité Snap
+ Aligner des zones cliquables
+ Centre d'action
+ MyASUS Splendid
+ Configurer l'écran OLED
+ Configurer le thème sombre
+ Éteindre l'écran lorsqu'il n'est pas utilisé
+ Réglage de la luminosité de l'écran
+ Masquer automatiquement la barre des tâches
+ Configurer le thème sombre dans Microsoft Office
+ Raccourcis clavier
+ Connexion sans fil
+ Wi-Fi
+ Bluetooth
+ Mode Avion
+ Éteindre l'ordinateur portable
+ Basculer l'ordinateur portable en mode veille
+ Chapitre 4 : Le POST (Power-on Self-test)
+ Le POST (Power-on Self-test)
+ Dépannage et accès BIOS lors de l'exécution du POST
+ BIOS
+ Accès rapide au BIOS
+ Restaurer le système
+ Utiliser une option de restauration
+ Conseils et FAQ
+ Conseils d'utilisation
+ FAQ matérielle
+ FAQ logicielle
+ Annexes
+ Vue générale
+ Déclaration de compatibilité au réseau
+ Équipements non-vocaux 
+ Conformité du modem interne
+ Précautions d’emploi de l’appareil
+ Déclaration de conformité d'Innovation, Sciences et Développement économique du Canada (ISED)
+ Informations concernant l’exposition aux fréquences radio (RF)
+ Avertissements de sécurité UL 
+ Exigence de sécurité électrique
+ Notice TV
+ Note relative aux produits de Macrovision Corporation
+ Bruit et prévention de perte auditive
+ Avis relatif au réseau Wi-Fi
+ Mise en garde (pour batteries Lithium-Ion) 
+ Directives concernant l'exposition aux fréquences radio
+ Mise en garde
+ Agrément CTR 21 (pour les ordinateurs portables avec modem intégré)
+ Déclaration de conformité aux normes environnementales
+ UE REACH et Article 33
+ UE RoHS
+ Affichage - Conformité réglementaire
+ Notice relative au revêtement de l'appareil
+ Services de reprise et de recyclage
+ Recyclage de batteries rechargeables pour l'Amérique du Nord
+ Directive Ecodesign
+ Produits homologués EPEAT
+ Avis concernant les batteries remplaçables
+ Licence des polices de texte du BIOS
+ Déclaration simplifiée de conformité de l'UE

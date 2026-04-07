@@ -1,0 +1,1546 @@
+
+LT21234
+Pirmasis leidimas / Vasaris 2023
+Elektroninis vadovas 
+2 Nešiojamojo kompiuterio elektroninis vadovas
+AUTORIŲ TEISIŲ INFORMACIJA
+Jokia šio vadovo dalis, įskaitant joje aprašomus gaminius ir programas, negali būti dauginama, 
+perduodama, kopijuojama, įtraukiama į paieškos sistemas ar verčiama į kitas kalbas bet kokia forma ir 
+bet kokiomis priemonėmis, išskyrus dokumentaciją, kurią laiko vartotojas kaip atsarginę, be specialaus 
+raštiško ASUSTeK Computer Inc. (“ASUS”) leidimo.
+ASUS PATEIKIA ŠĮ VADOVĄ “KAIP TOKĮ” BE JOKIOS GARANTIJOS, TIEK TIKSLIAI SUFORMULUOTOS AR 
+NUMANOMOS, ĮSKAITANT, TAČIAU NEAPSIRIBOJANT NUMANOMOMIS GARANTIJOMIS AR KOMERCINIO 
+PANAUDOJIMO SĄLYGOMIS BEI PRITAIKYMU SPECIALIEMS TIKSLAMS. ASUS KOMPANIJOS VADOVAI, 
+TARNAUTOJAI, DARBUOTOJAI AR ATSTOVAI NIEKADA NĖRA ATSAKINGI UŽ BET KOKIĄ NETIESIOGINĘ, 
+SPECIALIĄ, ATSITIKTINĘ AR DĖL TAM TIKRŲ PRIEŽASČIŲ SUSIDARIUSIĄ ŽALĄ (ĮSKAITANT PELNO 
+PRARADIMO NUOSTOLĮ, SANDORIO NUOSTOLĮ, NAUDOJIMO AR DUOMENŲ PRARADIMO NUOSTOLĮ, 
+VERSLO NUTRŪKIMĄ IR PAN) NET JEI ASUS IR BUVO PRANEŠTA APIE TOKIŲ NUOSTOLIŲ, ATSIRANDANČIŲ 
+DĖL BET KOKIŲ ŠIO VADOVO AR GAMINIO TRŪKUMŲ AR KLAIDŲ, GALIMYBĘ.
+Šiame vadove minimi gaminiai ir kompanijų pavadinimai gali būti arba nebūti registruotais prekių 
+ženklais ar jų atitinkamų kompanijų autorių teisėmis, ir yra naudojami tik kaip pagalba turėtojui 
+atpažinimo ar paaiškinimo tikslams, be jokios pažeidimo intencijos. 
+ŠIAME VADOVE NURODYTI TECHNINIAI DUOMENYS IR INFORMACIJA YRA SKIRTI TIK INFORMACINIAMS 
+TIKSLAMS, IR GALI BŪTI KEIČIAMI BET KOKIU METU BE IŠANKSTINIO PRANEŠIMO, IR NETURI BŪTI 
+TRAKTUOJAMI KAIP ASUS ĮSIPAREIGOJIMAS. ASUS NEAPSIIMA JOKIOS ATSAKOMYBĖS DĖL BET KOKIŲ 
+KLAIDŲ AR NETIKSLUMŲ, GALĖJUSIŲ ATSIRASTI ŠIAME VADOVE, ĮSKAITANT INFORMACIJĄ APIE JAME 
+APRAŠOMUS GAMINIUS IR PROGRAMINĘ ĮRANGĄ.
+Autoriaus teisės © 2023 ASUSTeK Computer Inc. Visos teisės saugomos.
+ATSAKOMYBĖS APRIBOJIMAS
+Gali būti tokių aplinkybių, kai dėl ASUS kaltės ar kitų įsipareigojimų, jus turite teisę reikalauti ASUS 
+padengti nuostolius. Kiekvienu tokiu atveju, nepaisant pagrindo, kuriuo vadovaudamiesi jūs turite 
+teisę reikalauti iš ASUS padengti nuostolius, ASUS yra atsakingas ne daugiau nei dėl žalos, atsiradusios 
+įvykus kūno sužalojimui (įskaitant mirtį), įvykus nekilnojamojo turto ir kilnojamojo asmeninio turto 
+sugadinimui; arba dėl kitos faktinės ir tiesioginės žalos, atsiradusios dėl teisinių prievolių nevykdymo ar 
+neveikimo pagal šį garantinį lapą, kiek tai apima kiekvieno gaminio nurodytą sutartinę kainą.
+ASUS bus atsakingas tik už arba atlygins tik tuos nuostolius, žalą ar pretenzijas, kurios yra apibrėžtos 
+sutartyje, civilinės teisės pažeidimų kodekse arba įstatyme pagal šį garantinį lapą. 
+Šis apribojimas taip pat taikomas ASUS tiekėjams ir prekybos atstovams. Tai daugiausia už ką ASUS, jo 
+tiekėjai ir prekybos atstovai yra visi kartu atsakingi.
+ESANT BET KOKIOMS APLINKYBĖMS ASUS NEATSAKO UŽ: (1) TREČIŲJŲ ŠALIŲ PRETENZIJAS DĖL JŪSŲ 
+PADARYTOS ŽALOS; (2) JŪSŲ DUOMENŲ AR ĮRAŠŲ PRARADIMO AR SUGADINIMO; ARBA (3) SPECIALIŲ, 
+ATSITIKTINIŲ AR NETIESIOGINIŲ NUOSTOLIŲ ARBA KITŲ SU TUO SUSIJUSIŲ EKONOMINIŲ NUOSTOLIŲ 
+(ĮSKAITANT PELNO IR SANTAUPŲ PRARADIMĄ), NET JEI ASUS, JO TIEKĖJAI AR PREKYBOS ATSTOVAI YRA 
+INFORMUOTI APIE TOKIŲ NUOSTOLIŲ GALIMYBĘ. 
+APTARNAVIMAS IR PALAIKYMAS
+Apsilankykite mūsų daugiakalbėje interneto svetainėje adresu https://www.asus.com/support/.
+„MyASUS“ siūlo įvairias palaikymo funkcijas, įskaitant trikčių šalinimą, produktų našumo optimizavimą, 
+„ASUS“ programinės įrangos integravimą, ir padeda sutvarkyti asmeninį darbalaukį bei padidinti 
+saugojimo vietą. Daugiau informacijos rasite tinklalapyje https://www.asus.com/support/FAQ/1038301/.
+Nešiojamojo kompiuterio elektroninis vadovas 3
+Turinio lentelė
+Apie šį vadovą .............................................................................................................7
+Šiame vadove naudotos konvencijos ...................................................................... 8
+Piktogramos...................................................................................................................... 8
+Šriftai ................................................................................................................................... 8
+Saugos priemonės .....................................................................................................9
+Nešiojamojo kompiuterio naudojimas ................................................................... 9
+Nešiojamojo kompiuterio priežiūra ......................................................................... 10
+Tinkamas išmetimas ...................................................................................................... 11
+Svarbi baterijos saugos informacija ......................................................................... 12
+1 skyrius: Aparatinės įrangos sąranka
+Pažintis su nešiojamuoju kompiuteriu ...............................................................16
+Vaizdas iš priekio ............................................................................................................. 16
+Vaizdas iš apačios ........................................................................................................... 21
+Vaizdas iš dešiniosios pusės ........................................................................................ 23
+Vaizdas iš kairiosios pusės ........................................................................................... 24
+2 skyrius: Jūsų knyginio kompiuterio naudojimas
+Nuo ko pradėti ............................................................................................................28
+Jūsų knyginio kompiuterio įkrovimas ..................................................................... 28
+Pakelkite, kad atidarytumėte ekraną ....................................................................... 30
+Paspauskite maitinimo mygtuką .............................................................................. 30
+Jutiklinio pulto naudojimas ...................................................................................31
+Žymiklio perkėlimas ...................................................................................................... 31
+Klaviatūros naudojimas ...........................................................................................38
+Spartieji klavišai ............................................................................................................... 38
+Funkciniai klavišai ........................................................................................................... 39
+„Windows“ klavišai ......................................................................................................... 39
+4 Nešiojamojo kompiuterio elektroninis vadovas
+3 skyrius: Darbas naudojant „Windows“
+Pirmasis įjungimas .....................................................................................................42
+Pradžios meniu ...........................................................................................................43
+„Windows“ programėlės ..........................................................................................45
+Darbas su „Windows“ programėlėmis ..................................................................... 46
+„Windows“ programėlių tinkinimas ......................................................................... 46
+Užduočių rodinys .......................................................................................................48
+Valdikliai ........................................................................................................................49
+Įtraukimo į ekraną funkcija .....................................................................................51
+Įtraukimo į ekraną aktyviosios sritys ........................................................................ 51
+Veiksmų centras .........................................................................................................53
+„MyASUS Splendid“ ..................................................................................................55
+OLED ekrano nustatymas .......................................................................................57
+Tamsaus režimo nustatymas ...................................................................................... 57
+Ekrano išjungimas, kai jis nenaudojamas .............................................................. 59
+Ekrano ryškumo koregavimas .................................................................................... 61
+Automatinis užduočių juostos slėpimas ................................................................ 63
+„Microsoft Office“ tamsaus režimo nustatymas .................................................. 65
+Kiti spartieji klaviatūros klavišai ............................................................................66
+Prisijungimas prie belaidžių tinklų ......................................................................68
+„Wi-Fi“ .................................................................................................................................. 68
+„Bluetooth“ ....................................................................................................................... 69
+Skrydžio režimas ............................................................................................................. 70
+Knyginio kompiuterio išjungimas........................................................................71
+Knyginio kompiuterio miego režimo nustatymas .........................................72
+Nešiojamojo kompiuterio elektroninis vadovas 5
+4 skyrius: Įjungimo savitikra (POST)
+Įjungimo savitikra (POST) .......................................................................................74
+POST naudojimas siekiant užsitikrinti prieigą prie BIOS ir trikčių 
+šalinimo .............................................................................................................................. 74
+BIOS ................................................................................................................................74
+Prieiga prie BIOS .............................................................................................................. 74
+Sistemos atkūrimas ...................................................................................................75
+Atkūrimo parinkties vykdymas .................................................................................. 76
+Patarimai ir DUK
+Naudingi patarimai, kaip naudoti nešiojamąjį kompiuterį.........................80
+DUK apie aparatinę įrangą .....................................................................................82
+DUK apie programinę įrangą .................................................................................85
+Priedai
+Federalinės komunikacijų komisijos (FCC) pareiškimas ................................... 88
+Federalinės ryšių agentūros (angl. FCC) informacija dėl RD poveikio ......... 89
+UL saugos pranešimai ................................................................................................... 90
+Maitinimo saugos reikalavimas ................................................................................. 91
+Įspėjimai dėl TV imtuvo ................................................................................................ 91
+„Macrovision“ korporacijos įspėjimas apie gaminį ............................................. 91
+Saugojimasis nuo žalos klausai ................................................................................. 91
+Įspėjimas dėl dangos ..................................................................................................... 91
+Įspėjimas dėl ličio naudojimo Šiaurės šalims 
+(ličio jonų akumuliatoriams) ....................................................................................... 92
+Gaminio atitikties deklaracija dėl aplinkos apsaugos reglamento ............... 93
+6 Nešiojamojo kompiuterio elektroninis vadovas
+ES REACH ir 33 straipsnis .............................................................................................. 93
+EU RoHS.............................................................................................................................. 93
+ASUS gaminių perdirbimas / Atliekų grąžinimo paslaugos ............................ 94
+Ekodizaino direktyva ..................................................................................................... 94
+ENERGY STAR atitinkantis gaminys .......................................................................... 95
+EPEAT užregistruoti gaminiai ..................................................................................... 95
+BIOS teksto šriftų licencija ........................................................................................... 96
+Supaprastinta ES atitikties deklaracija .................................................................... 97
+Įspėjimas dėl „Wi-Fi“ tinklo........................................................................................... 98
+Nešiojamojo kompiuterio elektroninis vadovas 7
+Apie šį vadovą
+Šiame vadove pateikta informacija apie šio nešiojamojo kompiuterio 
+aparatinę įrangą ir programinės įrangos savybes, suskirstyta į šiuos 
+skyrius:
+1 skyrius: Aparatinės įrangos sąranka
+Šiame skyriuje išdėstytos nešiojamojo kompiuterio aparatinės 
+įrangos sudedamosios dalys.
+2 skyrius: Jūsų knyginio kompiuterio naudojimas
+Šiame skyriuje nurodyta, kaip naudoti skirtingas nešiojamojo 
+kompiuterio dalis.
+3 skyrius: Darbas naudojant „Windows“
+Šiame skyriuje pateikiama nešiojamajame kompiuteryje įdiegtos 
+ „Windows“ operacinės sistemos naudojimo apžvalga.
+4 skyrius: Įjungimo savitikra (POST)
+Šiame skyriuje nurodyta, kaip naudoti POST, norint pakeisti 
+nešiojamojo kompiuterio nuostatas.
+Patarimai ir DUK
+Šiame skyriuje pateikiamos rekomendacijos, dažnai užduodami 
+klausimai apie programinę-aparatinę įrangą ir programas. Pateikta 
+informacija galite naudotis tvarkydami ir šalindami įprastus 
+nesklandumus, iškylančius dirbant nešiojamuoju kompiuteriu.
+Priedai
+Šiame skyriuje pateiktos pastabos ir saugos reikalavimai, taikytini 
+šiam nešiojamajam kompiuteriui.
+8 Nešiojamojo kompiuterio elektroninis vadovas
+Šiame vadove naudotos konvencijos
+Siekiant pabrėžti pagrindinę šiame vadove išdėstytą informaciją, tam 
+tikras tekstas pateiktas taip:
+SVARBI INFORMACIJA! Šiame pranešime yra itin svarbi informacija, 
+būtina norint atlikti užduotį. 
+PASTABA: Šiame pranešime yra papildomos informacijos ir patarimų, 
+kurie gali būti naudingi norint atlikti užduotį.
+ĮSPĖJIMAS! Šiame pranešime yra svarbios informacijos, kurios reikia jūsų 
+saugumui užtikrinti, kai atliekate tam tikras užduotis, taip pat nešiojamojo 
+kompiuterio duomenims ir komponentams apsaugoti. 
+Piktogramos
+Toliau pateiktos piktogramos nurodo, kuo galima naudotis norint 
+užbaigti nešiojamojo kompiuterio užduočių serijas ar procedūras.
+Šriftai
+Pusjuodis = Taip nurodomas meniu arba elementas, kurį reikia 
+pasirinkti.
+Kursyvas = Šiame puslapyje nurodyti šio vadovo skyriai.
+= Naudokite jutiklinį pultą.
+= Naudokite klaviatūrą.
+Nešiojamojo kompiuterio elektroninis vadovas 9
+Saugos priemonės
+Nešiojamojo kompiuterio naudojimas
+Šis nešiojamasis kompiuteris gali būti naudojamas 
+tik temperatūroje nuo 5°C (41°F) iki 35°C (95°F).
+Susipažinkite su informacija ant nominaliosios 
+galios lipduko, esančio ant kompiuterio apačios, 
+ir įsitikinkite, kad maitinimo adapteris atitinka 
+nurodytas galios vertes.
+Naudojant nešiojamąjį kompiuterį arba kraunant 
+jo akumuliatoriaus bloką, kompiuteris gali įšilti ar 
+net įkaisti. Nelaikykite nešiojamojo kompiuterio 
+savo sterblėje arba šalia bet kurios kitos savo kūno 
+dalies, kad neapsidegintumėte nuo kompiuterio 
+skleidžiamos šilumos. Dirbdami su nešiojamuoju 
+kompiuteriu, nedėkite jo ant tokių paviršių, kurie 
+galėtų užblokuoti ventiliacijos angas.
+NENAUDOKITE pažeistų maitinimo kabelių, priedų 
+ar kitų išorinių įrenginių.
+Įjungto nešiojamojo kompiuterio nenešiokite 
+uždengę daiktais, kurie gali pabloginti oro 
+cirkuliavimą.
+Nešiojamojo kompiuterio nedėkite ant nelygaus 
+arba nestabilaus darbo paviršiaus. 
+Šį nešiojamąjį kompiuterį galima tikrinti rentgeno 
+aparatais (jais peršviečiami ant konvejerio juostų 
+padėti daiktai), bet negalima tikrinti magnetiniais 
+detektoriais ir lazdelėmis.
+Susisiekite su oro linijomis ir sužinokite daugiau 
+apie susijusias siūlomas paslaugas per skrydį ir 
+apribojimus, kurių būtina laikytis nešiojamuoju 
+kompiuteriu naudojantis skrydžio metu.
+10 Nešiojamojo kompiuterio elektroninis vadovas
+Nešiojamojo kompiuterio priežiūra
+Prieš pradėdami valyti, atjunkite nešiojamąjį 
+kompiuterį nuo elektros tinklo ir išimkite 
+akumuliatoriaus bloką (jeigu taikytina). Naudokite 
+švarią celiuliozės kempinę arba zomšinę šluostę, 
+sudrėkintą šiltu vandeniu arba nedidelės 
+koncentracijos nešveičiamojo valiklio tirpalu. Skysčio 
+perteklių nuo nešiojamojo kompiuterio paviršiaus 
+nušluostykite sausu skudurėliu. Būkite atsargūs, kad 
+į korpusą ar klaviatūros tarpus nepatektų skysčių, 
+kad išvengtumėte trumpojo jungimo ar korozijos.
+Nenaudokite stiprių tirpiklių, pavyzdžiui, alkoholio, 
+skiediklių, benzolo ar kitų cheminių medžiagų šalia 
+nešiojamojo kompiuterio arba jam valyti.
+Nedėkite ant nešiojamojo kompiuterio jokių daiktų.
+Saugokite nešiojamąjį kompiuterį nuo stiprių 
+magnetinių arba elektros laukų.
+Saugokite nešiojamąjį kompiuterį nuo skysčių, 
+lietaus arba drėgmės poveikio. 
+Saugokite nešiojamąjį kompiuterį nuo dulkių 
+poveikio.
+Nešiojamojo kompiuterio elektroninis vadovas 11
+Tinkamas išmetimas
+NEMESKITE sugadinto nešiojamo kompiuterio lauk 
+kartu su buitinėmis atliekomis. Šis gaminys buvo 
+sukurtas su galimybe dar kartą tinkamai panaudoti 
+ir perdirbti jo dalis. Perbrauktos šiukšlių dėžės su 
+ratais simbolis informuoja, kad gaminys (elektros, 
+elektronikos įrenginys ir savo sudėtyje gyvsidabrio 
+turintys sagos formos elementai) neturėtų 
+būti išmetamas kartu su buitinėmis atliekomis. 
+Elektronikos produktų utilizacijos klausimais 
+skaiptykite vietinius reglamentus.
+NEMESKITE baterijos lauk kartu su buitinėmis 
+atliekomis. Perbrauktos šiukšlių dėžės su ratais 
+simbolis informuoja, kad baterija neturėtų būti 
+išmetama kartu su buitinėmis atliekomis.
+Nenaudokite nešiojamojo kompiuterio esant dujų 
+nuotėkiui.
+Nelaikykite veikiančių elektroninių prietaisų šalia 
+nešiojamojo kompiuterio, kad išvengtumėte 
+elektromagnetinių bangų trukdžių ekrano plokštėje.
+Nenaudokite šio knyginio kompiuterio 
+kriptovaliutoms įsigyti (konvertuojamajai virtualiajai 
+valiutai įsigyti suvartojama daug elektros energijos 
+ir laiko) ir (arba) susijusiai veiklai.
+12 Nešiojamojo kompiuterio elektroninis vadovas
+Baterijos apsauga
+• Dažnai įkraunant bateriją esant aukštai įtampai, gali sutrumpėti 
+jos eksploatavimo laikas. Siekiant apsaugoti bateriją, vos tik ji bus 
+pilnai įkrauta, baterijos energijai pasiekus nuo 90 % iki 100 %, 
+sistema gali daugiau nebekrauti.
+PASTABA: Paprastai nustatomas 90–99 % lygis, kurį pasiekus baterija vėl 
+pradedama krauti. Faktinė vertė gali skirtis, atsižvelgiant į modelį.
+• Įkraunant arba saugojant bateriją aukštos temperatūros aplinkoje, 
+baterijos talpa gali negrįžtamai sumažėti ir greitai sutrumpėti jos 
+eksploatavimo laikas. Jei baterijos temperatūra yra per aukšta, 
+sistema gali sumažinti jos įkrovimo pajėgumą arba net sustabdyti 
+įkrovimą, kad apsaugotų bateriją.
+• Baterijos energija gali mažėti, net kai jūsų prietaisas yra išjungtas 
+ir atjungtas nuo kintamosios elektros srovės tinklo. Tai yra 
+normalu, nes sistema vis tiek naudoja nedidelį baterijos energijos 
+kiekį.
+Svarbi baterijos saugos informacija
+Nešiojamojo kompiuterio elektroninis vadovas 13
+Standartinė baterijos priežiūra
+• Jei prietaiso ilgą laiką nenaudosite, būtinai įkraukite bateriją iki 50 
+%, tada išjunkite prietaisą ir atjunkite kintamosios srovės adapterį. 
+Kas tris mėnesius įkraukite bateriją iki 50 %, kad išvengtumėte per 
+didelio išsikrovimo ir baterija nesugestų.
+• Norėdami pailginti baterijos eksploatavimo laiką, venkite ilgai 
+krauti bateriją esant aukštai įtampai. Jei savo prietaisui nuolat 
+naudojate kintamosios srovės energiją, įsitikinkite, kad bent 
+kartą per dvi savaites baterija išsenka iki 50 %. Taip pat galite 
+keisti „MyASUS“ palaikomojo baterijos įkrovimo nuostatas, kad 
+pailgintumėte baterijos eksploatavimo laiką.
+• Bateriją rekomenduojama laikyti 5 °C (41 °F) ir 35 °C (95 °F) 
+temperatūros aplinkoje, įkrovus bateriją iki 50 %. Taip pat galite 
+keisti „MyASUS“ palaikomojo baterijos įkrovimo nuostatas, kad 
+pailgintumėte baterijos eksploatavimo laiką.
+• Nepalikite baterijos drėgnoje aplinkoje. Drėgnoje aplinkoje 
+baterija gali greičiau išsekti. Žemos temperatūros aplinka gali 
+sugadinti baterijos viduje esančias chemines medžiagas, o dėl 
+aukštos temperatūros ar perkaitimo gali kilti sprogimo pavojus.
+• Nedėkite savo prietaiso ar baterijos prie radiatorių, židinių, 
+krosnių, šildytuvų ar kitų šilumos šaltinių, kurių temperatūra viršija 
+60 °C (140 °F). Aukštos temperatūros aplinkoje gali kilti sprogimas 
+arba gali ištekėti baterijos medžiagos ir sukelti gaisrą.
+14 Nešiojamojo kompiuterio elektroninis vadovas
+Nešiojamojo kompiuterio elektroninis vadovas 15
+1 skyrius: 
+Aparatinės įrangos sąranka
+16 Nešiojamojo kompiuterio elektroninis vadovas
+Pažintis su nešiojamuoju kompiuteriu
+Vaizdas iš priekio
+PASTABA: klaviatūros išdėstymas gali skirtis priklausomai nuo regiono 
+arba šalies. Nešiojamojo kompiuterio vaizdas taip pat gali skirtis 
+priklausomai nuo kompiuterio modelio.
+Nešiojamojo kompiuterio elektroninis vadovas 17
+Masyvo mikrofonai
+Masyvo mikrofonai atlieka aido nutraukimo, triukšmo slopinimo 
+ir spindulio formavimo funkcijas, kad būtų geriau atpažįstamas 
+balsas ir kokybiškiau įrašomas garsas.
+Kamera
+Nešiojamajame kompiuteryje integruotąja kamera galima 
+fotografuoti ir įrašyti vaizdo įrašus.
+Infraraudonųjų spindulių kamera
+Nešiojamajame kompiuteryje integruotąja kamera galima 
+fotografuoti ir įrašyti vaizdo įrašus. Ši infraraudonųjų spindulių 
+kamera taip pat palaiko „Windows Hello“.
+PASTABA: Vykstant duomenų nuskaitymui prieš prisijungimą 
+naudojant „Windows Hello“ veido atpažinimo funkciją, mirksi 
+raudonas infraraudonųjų spindulių šviesos diodas.
+Kameros indikatorius
+Kameros indikatorius rodo, kada naudojama integruotoji 
+kamera.
+18 Nešiojamojo kompiuterio elektroninis vadovas
+Rodymo skydelis
+Šis didelės raiškos rodymo skydelis užtikrina puikią nuotraukų, 
+vaizdo įrašų ir kitų daugialypės terpės failų peržiūrą 
+nešiojamajame kompiuteryje.
+Atsakomybės atsisakymas Ilgai rodant statinius arba didelio 
+kontrasto vaizdus, vaizdas OLED ekrane gali išlikti arba išdegti. 
+„ASUS“ nešiojamasis kompiuteris su OLED ekranu (tam tikruose 
+modeliuose) sumažina vaizdo išdegimo galimybę, nustačius 
+„Windows“ numatytąjį tamsųjį režimą ir sutrumpinus ekrano 
+išjungimo laiką. Rekomenduojama įjungti animacinę tamsaus 
+ekrano fono užsklandą ir nenustatyti maksimalios OLED ekrano 
+šviesumo nuostatos, kad pailgėtų OLED ekrano naudojimo laikas.
+PASTABA. Daugiau informacijos rasite šio vadovo skyriuje OLED 
+ekrano naudojimas.
+Išjungto mikrofono indikatorius
+Ši kontrolinė lemputė užsidega išjungtus mikrofoną.
+Klaviatūra
+Klaviatūra turi įprasto dydžio QWERTY klavišus, kurių 
+nuspaudimo gylis yra pakankamas, kad būtų patogu rinkti tekstą. 
+Joje taip pat yra funkcinių klavišų, kurie užtikrina greitą prieigą 
+prie „Windows“ ir kitų daugialypės terpės funkcijų valdiklių.
+PASTABA: klaviatūros išdėstymas priklauso nuo modelio arba 
+regiono.
+Nešiojamojo kompiuterio elektroninis vadovas 19
+Didžiųjų raidžių klavišo indikatorius
+Šis indikatorius užsidega įjungus didžiųjų raidžių funkciją. 
+Naudodami didžiųjų raidžių klavišą, nešiojamojo kompiuterio 
+klaviatūra galite spausdinti didžiąsias raides (pavyzdžiui A, B, C).
+Jutiklinis pultas
+Jutiklinis pultas suteikia galimybę naršyti ekrane naudojant 
+įvairias liečiamąsias komandas ir užtikrina intuityvią vartotojo 
+patirtį. Jis taip pat imituoja įprastos kompiuterio pelės funkcijas.
+PASTABA: daugiau informacijos rasite šio vadovo skyriuje 
+Jutiklinio pulto naudojimas.
+Aplinkos šviesos jutiklis
+Aplinkos šviesos jutiklis nustato, kaip ryškiai apšviesta aplinka. 
+Tai leidžia sistemai automatiškai sureguliuoti ekrano ryškumą 
+pagal aplinkos apšvietimo sąlygas.
+RGB šviesos jutiklis
+RGB šviesos jutiklis automatiškai sureguliuos ekrano plokštės 
+spalvų temperatūrą pagal aplinkos apšvietimą.
+20 Nešiojamojo kompiuterio elektroninis vadovas
+Išjungtos kameros kontrolinė lemputė
+Ši kontrolinė lemputė užsidega išjungtus kamerą.
+Maitinimo mygtukas
+Paspauskite maitinimo mygtuką, jeigu norite įjungti arba išjungti 
+nešiojamąjį kompiuterį. Maitinimo mygtuką taip pat galite 
+naudoti, jei norite įjungti nešiojamąjį kompiuterį, suaktyvinti 
+jo miego arba užmigdymo režimą ar pažadinti nešiojamąjį 
+kompiuterį iš miego arba išjungimo įrašius režimo.
+Jeigu nešiojamasis kompiuteris nereaguoja, paspauskite 
+maitinimo mygtuką ir palaikykite jį nuspaudę bent dešimt (10) 
+sekundžių, kol nešiojamasis kompiuteris išsijungs.
+Nešiojamojo kompiuterio elektroninis vadovas 21
+Vaizdas iš apačios
+PASTABA: apatinės pusės išvaizda gali skirtis priklausomai nuo modelio.
+ĮSPĖJIMAS! Naudojant nešiojamąjį kompiuterį arba kraunant jo 
+akumuliatoriaus bloką, kompiuteris gali įšilti ar net įkaisti. Nelaikykite 
+nešiojamojo kompiuterio savo sterblėje arba šalia bet kurios kitos savo 
+kūno dalies, kad neapsidegintumėte nuo kompiuterio skleidžiamos 
+šilumos. Dirbdami su nešiojamuoju kompiuteriu, nedėkite jo ant tokių 
+paviršių, kurie galėtų užblokuoti ventiliacijos angas.
+SVARBI INFORMACIJA! 
+• Akumuliatoriaus veikimo laikas skiriasi priklausomai nuo nešiojamojo 
+kompiuterio specifikacijų. Akumuliatoriaus bloko ardyti negalima.
+• Įsigykite komponentus iš įgaliotų mažmeninkų, kad užtikrintumėte 
+maksimalų suderinamumą ir patikimumą. Pasikonsultuokite su 
+ASUS techninės priežiūros centru arba įgaliotais mažmenininkais dėl 
+gaminių aptarnavimo ar pagalbos tinkamai išrenkant ar surenkant 
+gaminį.
+22 Nešiojamojo kompiuterio elektroninis vadovas
+Ventiliacijos angos
+Per ventiliacijos angas į nešiojamąjį kompiuterį patenka vėsus 
+oras ir išeina šiltas oras.
+ĮSPĖJIMAS! Pasirūpinkite, kad ventiliacijos angų neužstotų 
+popierius, knygos, drabužiai, kabeliai ar kiti daiktai, nes 
+kompiuteris gali perkaisti.
+Garsiakalbiai
+Integruotieji garsiakalbiai suteikia galimybę girdėti garsą tiesiai iš 
+nešiojamojo kompiuterio. Garso funkcijos valdomos programine 
+įranga.
+Nešiojamojo kompiuterio elektroninis vadovas 23
+Vaizdas iš dešiniosios pusės
+Maitinimo indikatorius
+Įjungus nešiojamąjį kompiuterį, užsidega maitinimo indikatorius; 
+kai nešiojamasis kompiuteris veikia miego režimu, indikatorius 
+lėtai mirksi.
+Ausinės, ausinių ir mikrofono lizdas
+Šis prievadas skirtas garsiakalbiams su stiprintuvu arba ausinėms 
+prijungti. Šį prievadą taip pat galite naudoti ausinėms arba 
+išoriniam mikrofonui prijungti.
+2 kartos USB 3.2 prievadas
+2 kartos USB 3.2 (universaliosios jungties 3.2) prievadas užtikrina 
+iki 10 Gbit/s duomenų perdavimo spartą ir yra suderinamas su 
+senesne USB 2.0 versija.
+24 Nešiojamojo kompiuterio elektroninis vadovas
+HDMI išvesties prievadas
+Šis prievadas leidžia siųsti garso ir vaizdo signalus iš nešiojamojo 
+kompiuterio į HDMI sąsają palaikantį įrenginį, prijungtą HDMI 
+kabeliu.
+„Thunderbolt™“ 4 / „Power Delivery“ kombinuotasis 
+prievadas
+„Thunderbolt™ 4“ prievadas suderinamas su „USB Type-C®“ 
+standartais ir užtikrina didesnę „Thunderbolt™ 4“ įrenginių 
+spartą – iki 40 Gbit/s. Prijunkite prie nešiojamojo kompiuterio 
+„DisplayPort“, VGA, DVI arba HDMI išorinį ekraną ir naudokitės 
+didelės raiškos ekrano funkcijomis pasitelkdami „Intel® 
+Thunderbolt™“ technologiją. Įkiškite pateiktą maitinimo adapterį 
+į šį prievadą, kad būtų kraunamas akumuliatoriaus blokas ir 
+nešiojamajam kompiuteriui būtų tiekiama energija.
+PASTABA: šio prievado duomenų perdavimo sparta gali skirtis 
+priklausomai nuo modelio.
+SVARBI INFORMACIJA! Gali šiek tiek užtrukti, kol jūsų 
+nešiojamasis kompiuteris bus pilnai įkrautas, jei jis prijungtas prie 
+žemos įtampos elektros tinklo.
+Vaizdas iš kairiosios pusės
+Nešiojamojo kompiuterio elektroninis vadovas 25
+Dvispalvis akumuliatoriaus krovimo indikatorius
+Šis dvispalvis šviesos diodas rodo akumuliatoriaus įkrovos 
+būseną. Išsamiau žr. šioje lentelėje:
+Spalva Būsena
+Šviečia baltai Nešiojamasis kompiuteris 
+prijungtas prie maitinimo 
+šaltinio, akumuliatoriaus įkrova 
+95–100 %.
+Šviečia oranžine 
+spalva
+Nešiojamasis kompiuteris 
+prijungtas prie maitinimo 
+šaltinio, akumuliatorius 
+kraunamas, įkrova mažesnė nei 
+95 %.
+Mirksi oranžine 
+spalva
+Nešiojamasis kompiuteris 
+veikia akumuliatoriaus režimu, 
+akumuliatoriaus įkrova mažesnė 
+nei 10 %.
+Nešviečia Nešiojamasis kompiuteris 
+veikia akumuliatoriaus režimu, 
+akumuliatoriaus įkrova 
+10–100 %.
+26 Nešiojamojo kompiuterio elektroninis vadovas
+Nešiojamojo kompiuterio elektroninis vadovas 27
+2 skyrius:
+Jūsų knyginio kompiuterio 
+naudojimas
+28 Nešiojamojo kompiuterio elektroninis vadovas
+Nuo ko pradėti
+Prieš pirmą kartą naudodami knyginį kompiuterį 
+akumuliatoriaus režimu, jį įkraukite 3 valandas.
+PASTABA: Maitinimo adapterio išvaizda gali skirtis atsižvelgiant į modelį 
+ir jūsų regioną.
+Jūsų knyginio kompiuterio įkrovimas
+A. Kintamosios srovės maitinimo laidą prijunkite prie kintamosios 
+srovės / nuolatinės srovės adapterio.
+B. Nuolatinės srovės maitinimo jungtį sujunkite su jūsų knyginio 
+kompiuterio maitinimo (nuolatinės srovės) įvesties prievadu.
+C. Kintamosios srovės maitinimo adapterį įkiškite į 100 V~240 V 
+maitinimo šaltinį.
+SVARBI INFORMACIJA!
+Maitinimo adapterio informacija.
+• Įėjimo įtampa: 100–240 Vac
+• Įėjimo dažnis: 50–60 Hz
+• Nominali išėjimo srovė: 3,25 A (65 W)
+• Nominali išėjimo įtampa: 20 V
+Nešiojamojo kompiuterio elektroninis vadovas 29
+SVARBI INFORMACIJA!
+• Susiraskite jūsų knyginio kompiuterio įėjimo / išėjimo vardinės 
+galios etiketę ir užtikrinkite, kad joje pateikta informacija atitiktų 
+jūsų maitinimo adapteryje nurodytą įėjimo / išėjimo vardinės 
+galios informaciją. Kai kuriems knyginiams kompiuteriams gali būti 
+nustatytos skirtingos vardinės išėjimo srovės vertės atsižvelgiant į 
+prieinamą SKU.
+• Prieš pirmą kartą įjungdami savo knyginį kompiuterį pasirūpinkite, 
+kad jis būtų sujungtas su maitinimo adapteriu. Kišdami maitinimo 
+laidą į sieninį lizdą niekada nenaudokite jokių ilginamųjų laidų. Kad 
+būtų užtikrinamas jūsų saugumas, šį prietaisą sujukite tik su tinkamai 
+įžemintu kištukiniu elektros lizdu.
+• Kištukinis lizdas turi būti lengvai prieinamas ir greta jūsų knyginio 
+kompiuterio.
+• Norėdami savo knyginį kompiuterį atjungti nuo jo pagrindinio 
+maitinimo šaltinio ištraukite savo knyginį kompiuterį iš kištukinio 
+lizdo.
+ĮSPĖJIMAS!
+Susipažinkite su jūsų knyginio kompiuterio akumuliatoriui taikomomis 
+apsaugos priemonėmis.
+• Akumuliatorius iš prietaiso leidžiama išimti tik ASUS įgaliotiems 
+technikams (tik tuo atveju, jeigu tai nuolatinai įstatytas 
+akumuliatorius).
+• Išėmus arba išardžius šiame prietaise naudojamą akumuliatorių, gali 
+kilti gaisro arba cheminio nudegimo pavojus.
+• Atsižvelkite į jūsų asmeniniam saugumui skirtas įspėjamąsias 
+etiketes.
+• Pakeitus akumuliatorių netinkamos rūšies akumuliatoriumi, kyla 
+sprogimo pavojus.
+• Neišmeskite į ugnį.
+• Knyginio kompiuterio akumuliatorių draudžiama įjungti naudojant 
+trumpąjį sujungimą.
+• Draudžiama išmontuoti arba sumontuoti akumuliatorių 
+(tik tuo atveju, jeigu tai nuolatinai įstatytas akumuliatorius).
+• Nustačius nuotėkį, nutraukite naudojimą.
+• Akumuliatorius ir jo komponentai turi būti tinkamai perdirbti arba 
+pašalinti.
+• Akumuliatorių ir kitus smulkius komponentus laikykite atokiai nuo 
+vaikų.
+30 Nešiojamojo kompiuterio elektroninis vadovas
+Pakelkite, kad atidarytumėte ekraną
+Paspauskite maitinimo mygtuką
+Nešiojamojo kompiuterio elektroninis vadovas 31
+Jutiklinio pulto naudojimas
+Žymiklio perkėlimas
+Galite bakstelėti bet kurioje jutiklinio pulto vietoje, kad aktyvintumėte 
+jo žymiklį, tada stumtelėję pirštu ant jutiklinio pulto perkelkite žymiklį 
+ekrane.
+Stumtelėti horizontaliai
+Stumtelėti vertikaliai
+Stumtelėti įstrižai
+32 Nešiojamojo kompiuterio elektroninis vadovas
+Gestai vienu pirštu
+Bakstelėjimas / bakstelėjimas dukart
+• Bakstelėkite programėlę, kad ją pasirinktumėte.
+• Dukart bakstelėkite programėlę, kad ją paleistumėte.
+Nuvilkimas
+Dukart bakstelėkite elementą, tada stumtelėkite tuo pačiu pirštu 
+nenukeldami jo nuo jutiklinio pulto. Norėdami numesti elementą į 
+naują vietą, pakelkite pirštą nuo jutiklinio pulto.
+Nešiojamojo kompiuterio elektroninis vadovas 33
+Spustelėjimas kairiuoju pelės 
+klavišu
+Spustelėjimas dešiniuoju pelės 
+klavišu
+• Spustelėkite programėlę, 
+kad ją pasirinktumėte.
+• Dukart spustelėkite 
+programėlę, kad ją 
+paleistumėte.
+Spustelėkite šį mygtuką, kad 
+atidarytumėte dešiniojo pelės 
+klavišo meniu.
+PASTABA: Zonos taškinės linijos viduje rodo kairiojo pelės mygtuko ir 
+dešiniojo pelės mygtuko padėtis jutikliniame pulte.
+Gestai dviem pirštais
+Bakstelėjimas
+Jutikliniame pulte bakstelėkite dviem pirštais, kad imituotumėte 
+spustelėjimo dešiniuoju pelės klavišu funkciją.
+34 Nešiojamojo kompiuterio elektroninis vadovas
+Slinkimas dviem pirštais 
+(aukštyn / žemyn)
+Slinkimas dviem pirštais (kairėn / 
+dešinėn)
+Norėdami slinkti aukštyn arba 
+žemyn, stumtelėkite dviem 
+pirštais.
+Norėdami slinkti į kairę arba į 
+dešinę, stumtelėkite dviem pirštais.
+Nutolinimas Priartinimas
+Ant jutiklinio pulto suglauskite du 
+pirštus.
+Ant jutiklinio pulto praskėskite du 
+pirštus.
+Nešiojamojo kompiuterio elektroninis vadovas 35
+Nuvilkimas
+Pasirinkite elementą, tada paspauskite ir laikykite kairįjį mygtuką. Kitą 
+pirštą stumkite jutikliniu pultu, kad vilktumėte elementą. Tam, kad 
+elementą numestumėte, pakelkite pirštą nuo mygtuko.
+Gestai trimis pirštais
+Bakstelėjimas
+Jutikliniame pulte bakstelėkite trimis pirštais, kad aktyvintumėte 
+funkciją, kurią pasirinkote parametruose.
+36 Nešiojamojo kompiuterio elektroninis vadovas
+Perbraukimas kairėn / perbraukimas dešinėn
+Jeigu esate atidarę kelias programėles, perbraukite trimis pirštais kairėn 
+arba dešinėn, kad perjungtumėte šias programėles.
+Perbraukimas aukštyn Perbraukimas žemyn
+Perbraukite aukštyn, kad 
+matytumėte visų šiuo metu 
+atidarytų programėlių apžvalgą.
+Perbraukite žemyn, kad būtų 
+rodomas darbalaukis.
+Nešiojamojo kompiuterio elektroninis vadovas 37
+Gestai keturiais pirštais
+Bakstelėjimas
+Jutikliniame pulte bakstelėkite keturiais pirštais, kad paleistumėte 
+funkciją, kurią pasirinkote parametruose.
+38 Nešiojamojo kompiuterio elektroninis vadovas
+Klaviatūros naudojimas
+Įjungti arba išjungti garsiakalbį
+Sumažinti garsiakalbio garsumą
+Padidinti garsiakalbio garsumą
+Sumažinti ekrano ryškumą
+Padidinti ekrano ryškumą
+Įjungti arba išjungti jutiklinį pultą
+Reguliuoti klaviatūros apšvietimo ryškumą
+Perjungti rodymo režimą
+PASTABA: Užtikrinkite, kad prie jūsų knyginio 
+kompiuterio prijungtas antrasis ekranas.
+Spartieji klavišai
+Sparčiaisiais klavišais jūsų knyginio kompiuterio klaviatūroje galima 
+suaktyvinti toliau pateiktas komandas.
+Nešiojamojo kompiuterio elektroninis vadovas 39
+„Windows“ klavišai
+Jūsų knyginio kompiuterio klaviatūroje yra du specialūs „Windows“ 
+klavišai, kurie naudojami taip, kaip nurodyta toliau.
+Funkciniai klavišai
+Paspauskite , norėdami įjungti arba išjungti funkcinių 
+klavišų funkciją. Kai funkcinių klavišų funkcija įjungta, taip pat galite 
+naudotis sparčiaisiais klavišais, laikydami paspaudę kartu su 
+viršutinės eilės klavišais.
+Įjungti arba išjungti mikrofoną
+Įjungti arba išjungti fotoaparatą
+Aktyvinti ekrano vaizdo įrašymo priemonę.
+Paleisti „MyASUS“
+Atverti pradžios meniu
+ arba Rodyti išplečiamąjį meniu
+40 Nešiojamojo kompiuterio elektroninis vadovas
+Nešiojamojo kompiuterio elektroninis vadovas 41
+3 skyrius:
+Darbas naudojant „Windows“
+42 Nešiojamojo kompiuterio elektroninis vadovas
+Pirmasis įjungimas
+Pirmą kartą įjungus jūsų knyginį kompiuterį atveriama keliolika ekranų, 
+kuriais vadovaudamiesi galėsite konfigūruoti „Windows“ operacinę 
+sistemą:
+Norėdami pirmą kartą įjungti savo knyginį kompiuterį:
+1. Paspauskite savo knyginio kompiuterio maitinimo mygtuką. 
+Palaukite kelias minutes, kol pasirodys sąrankos ekranas.
+2. Sąrankos ekrane pasirinkite regioną ir kalbą, kurią naudosite 
+knyginiame kompiuteryje.
+3. Atidžiai perskaitykite Licencijos sutartį. Pasirinkite Priimti.
+4. Vykdykite ekrane pateikiamus nurodymus, kad 
+sukonfigūruotumėte toliau pateiktus pagrindinius elementus.
+• Suasmeninti
+• Prisijungti
+• Parametrai
+• Jūsų paskyra
+5. Sukonfigūravus pagrindinius elementus, „Windows“ įdiegia 
+programėles ir pageidaujamus parametrus. Įsitikinkite, kad 
+vykstant sąrankos procesui knyginis kompiuteris yra įjungtas.
+6. Pasibaigus sąrankos procesui atveriamas darbalaukis.
+PASTABA: Šiame skyriuje pateiktos ekrano kopijos yra tik orientacinės.
+Nešiojamojo kompiuterio elektroninis vadovas 43
+Pradžios meniu
+Pradžios meniu – tai pagrindinis knyginio kompiuterio programų, 
+„Windows“ programėlių, aplankų ir parametrų tinklų sietuvas.
+Naudodami pradžios meniu galite atlikti toliau pateiktus bendrus 
+veiksmus.
+• Paleisti programas arba „Windows“ programėles
+• Atverti dažniausiai naudojamas programas arba „Windows“ 
+programėles
+• Koreguoti knyginio kompiuterio parametrus
+• Gauti pagalbos, susijusios su „Windows“ operacine sistema
+• Išjungti knyginį kompiuterį
+• Atsijungti nuo „Windows“ arba perjungti kitą vartotojo paskyrą
+Paskyros parametrų keitimas, užrakinimas 
+arba atsijungimas nuo paskyros
+Pradžios meniu paleidimas
+Užduočių rodinio paleidimas
+Knyginio kompiuterio išjungimas, 
+jo paleidimas iš naujo arba miego 
+režimo įjungimas
+Programėlės paleidimas naudojant 
+užduočių juostą
+Programėlės paleidimas naudojant 
+pradžios meniu
+Paieškos paleidimas
+Valdiklių paleidimas
+44 Nešiojamojo kompiuterio elektroninis vadovas
+Pradžios meniu paleidimas
+Užveskite pelės žymiklį ant darbalaukyje esančios 
+piktogramos „Pradėti“ ir ją spustelėkite.
+Paspauskite klaviatūros „Windows“ logotipo klavišą 
+.
+Programų atidarymas naudojant pradžios meniu
+Vienas iš dažniausių pradžios meniu naudojimo būdų – tai knyginiame 
+kompiuteryje įdiegtų programų atidarymas.
+Nustatykite pelės žymiklį virš programos ir spustelėkite, 
+kad ją paleistumėte.
+Naudokite rodyklių klavišus, kad naršytumėte 
+programas. Paspauskite , kad ją paleistumėte.
+PASTABA: Pasirinkite Visos programėlės, kad būtų rodomas visas 
+knyginio kompiuterio programų ir aplankų sąrašas abėcėlės tvarka.
+Nešiojamojo kompiuterio elektroninis vadovas 45
+„Windows“ programėlės
+Šios programėlės prisegtos pradžios meniu ir rodomos išklotinės 
+formatu, kad jas būtų lengva pasiekti.
+PASTABA: Norint visiškai paleisti kai kurias „Windows“ programėles, reikia 
+prisijungti prie „Microsoft“ paskyros.
+46 Nešiojamojo kompiuterio elektroninis vadovas
+Darbas su „Windows“ programėlėmis
+„Windows“ programėlių tinkinimas
+Naudodami pradžios meniu galite perkelti, atsegti arba prisegti 
+programėles užduočių juostoje atlikdami toliau pateiktus veiksmus.
+„Windows“ programėlių paleidimas naudojant pradžios 
+meniu
+Nustatykite pelės žymiklį virš programėlės ir 
+spustelėkite, kad ją paleistumėte.
+Naudokite rodyklių klavišus, kad naršytumėte 
+programėles. Paspauskite , kad paleistumėte 
+programėlę.
+Programėlių perkėlimas
+Nustatykite pelės žymiklį virš programėlės, tada vilkite ir 
+numeskite programėlę naujoje vietoje.
+Programėlių atsegimas
+Nustatykite pelės žymiklį virš programėlės, spustelėkite 
+ją dešiniuoju pelės mygtuku, tada spustelėkite Atsegti 
+nuo pradžios meniu.
+Naudokite rodyklių klavišus, kad naršytumėte 
+programėlėje. 
+Paspauskite arba (tik tam tikruose 
+modeliuose), tada pasirinkite Atsegti nuo pradžios 
+meniu.
+Nešiojamojo kompiuterio elektroninis vadovas 47
+Programėlių prisegimas užduočių juostoje
+Nustatykite pelės žymeklį virš programėlės ir spustelėkite 
+ją dešiniuoju pelės mygtuku, tada spustelėkite Prisegti 
+užduočių juostoje.
+Naudokite rodyklių klavišus, kad naršytumėte 
+programėlėje. 
+Paspauskite arba (tik tam tikruose 
+modeliuose), tada pasirinkite Prisegti užduočių 
+juostoje.
+Kelių programėlių prisegimas pradžios meniu
+Dalyje Visos programėlės perkelkite pelės žymiklį 
+ant programėlės, kurią norite įtraukti į pradžios 
+meniu, spustelėkite ją dešiniuoju pelės mygtuku, tada 
+spustelėkite Prisegti prie pradžios meniu.
+Dalyje Visos programėlės paspauskite arba 
+ (tik tam tikruose modeliuose) ant 
+programėlės, kurią norite įtraukti į pradžios meniu, tada 
+pasirinkite Prisegti prie pradžios meniu.
+48 Nešiojamojo kompiuterio elektroninis vadovas
+Užduočių rodinys
+Greitai perjunkite atvertas programėles ir programas naudodami 
+užduočių rodinio funkciją. Užduočių rodinį taip pat galite naudoti 
+darbalaukiams perjungti.
+Užduočių rodinio paleidimas
+Užduočių juostoje užveskite pelės žymiklį ant 
+piktogramos ir ją spustelėkite.
+Paspauskite klaviatūros klavišą.
+Nešiojamojo kompiuterio elektroninis vadovas 49
+Valdikliai
+Galite paleisti valdiklius, kad galėtumėte greitai pasiekti svarbią 
+informaciją.
+Valdiklių paleidimas
+Užduočių juostoje užveskite pelės žymiklį ant 
+piktogramos ir ją spustelėkite.
+Paspauskite klaviatūros klavišą.
+50 Nešiojamojo kompiuterio elektroninis vadovas
+Valdiklių tinkinimas
+Spustelėkite / bakstelėkite piktogramą, tada 
+pasirinkite Tvarkyti pomėgius, kad pakeistumėte turinį, 
+rodomą valdikliuose.
+Nešiojamojo kompiuterio elektroninis vadovas 51
+Įtraukimo į ekraną funkcija
+Naudojant įtraukimo į ekraną funkciją programėlės rodomas viena šalia 
+kitos, todėl galite dirbti arba perjungti vieną programėlę į kitą.
+Įtraukimo į ekraną aktyviosios sritys
+Galite vilkti ir numesti programėles aktyviosiose srityse, kad 
+užfiksuotumėte programėlių vietą.
+52 Nešiojamojo kompiuterio elektroninis vadovas
+Įtraukimo į ekraną naudojimas
+1. Paleiskite programėlę, kurią norite įtraukti į ekraną.
+2. Vilkite programėlės pavadinimo juostą ir 
+numeskite programėlę ekrano krašte, kad 
+užfiksuotumėte.
+3. Paleiskite kitą programėlę ir pakartokite anksčiau 
+nurodytus veiksmus, kad užfiksuotumėte kitą 
+programėlę.
+1. Paleiskite programėlę, kurią norite įtraukti į ekraną.
+2. Paspauskite ir laikykite klavišą, tuomet 
+naudokite rodyklių klavišus, kad programėlę 
+užfiksuotumėte.
+3. Paleiskite kitą programėlę ir pakartokite anksčiau 
+nurodytus veiksmus, kad užfiksuotumėte kitą 
+programėlę.
+Nešiojamojo kompiuterio elektroninis vadovas 53
+Veiksmų centras
+Veiksmų centre sujungiami programėlių pranešimai ir pateikiama vieną 
+vieta, kurioje galite atlikti jų sąveiką. Čia taip pat yra tikrai naudingas 
+sparčiųjų veiksmų skyrius:
+Sparčiųjų veiksmų paleidimas
+Užduočių juostoje užveskite pelės žymiklį ant būsenos 
+piktogramų ir ant jų paspauskite.
+Paspauskite klaviatūros klavišą.
+54 Nešiojamojo kompiuterio elektroninis vadovas
+Pranešimų paleidimas
+Užduočių juostoje užveskite pelės žymiklį ant datos ir 
+laiko ir paspauskite.
+Paspauskite klaviatūros klavišą.
+Nešiojamojo kompiuterio elektroninis vadovas 55
+„MyASUS Splendid“
+„MyASUS Splendid“ užtikrina, kad visuose ASUS ekrano skydeliuose 
+bus rodomos vienodos ir tikslios spalvos. Norėdami koreguoti ekrano 
+parametrus, galite pasirinkti „Vivid“ (ryškus), „Eye Care“ (akių priežiūra) 
+arba „Manual Mode“ (rankinis režimas) šalia „Normal Mode“ (įprastas 
+režimas).
+• Įprastas režimas. Naudojant gama ir spalvų temperatūros 
+korekciją, skydelyje rodomas vaizdas kiek įmanoma yra artimesnis 
+tam, ką įprastai gali matyti jūsų akis. Modelyje su OLED skydeliu 
+šis režimas atitinka „TÜV Low Blue Light Certification“.
+• Ryškus režimas. Šiuo režimu galite reguliuoti vaizdo sodrumą, 
+kad jis būtų gyvesnis ir gyvybingesnis.
+• Rankinis režimas. Šis režimas leidžia pritaikyti spalvų 
+temperatūros vertę jūsų asmeniniams poreikiams – nuo -50 iki 
++50.
+• Akių priežiūros režimas. Šis režimas sumažina mėlynos šviesos 
+skleidimą iki 30 proc. ir padeda apsaugoti akis.
+ 1–5 lygiai. Kuo aukštesnis lygis, tuo labiau sumažėja mėlynos 
+šviesos skleidimas. Modelyje su LCD skydeliu optimizuotas 
+parametras yra 5 lygis – jis atitinka TÜV silpnos mėlynos šviesos 
+sertifikatą.
+PASTABA: Parametrai > Sistema > Ekranas Įjunkite HDR, kad geriau 
+matytumėte OLED skydelį (tik tam tikruose modeliuose) – jis atitinka „TÜV 
+Flicker Free Certification“.
+56 Nešiojamojo kompiuterio elektroninis vadovas
+Norėdami sumažinti akių įtempimą vadovaukitės šiais patarimais:
+• Jei dirbate daug valandų, trumpam atitraukite akis nuo ekrano. 
+Po maždaug 1 valandos nepertraukiamo darbo prie kompiuterio 
+patariama daryti trumpas pertraukėles (ne trumpesnes kaip 5 
+minučių). Trumpos ir dažnos pertraukos yra veiksmingesnės nei 
+ilgos.
+• Norėdami sumažinti akių įtempimą ir sausumą, periodiškai 
+ilsėkitės, sutelkdami dėmesį į toli esančius objektus.
+• Kad sumažintumėte akių įtempimą, kartokite šiuos pratimus:
+1) pakartotinai žiūrėkite aukštyn ir žemyn
+2) lėtai sukite akis
+3) judinkite akis įstrižai
+ Jei akių įtempimas išlieka, kreipkitės į gydytoją.
+• Didelės energijos mėlyna šviesa gali sukelti akių įtempimą ir AMD 
+(su amžiumi susijusią geltonosios dėmės degeneraciją). Mėlynos 
+šviesos filtras sumažina 30 proc. (didž.) žalingos mėlynos šviesos, 
+kad būtų išvengta CVS (kompiuterinio matymo sindromo).
+Nešiojamojo kompiuterio elektroninis vadovas 57
+OLED ekrano nustatymas
+Kad galėtumėte kiek įmanoma veiksmingiau išnaudoti OLED ekraną 
+(tik tam tikruose modeliuose), rekomenduojame kelis parametrus. Šie 
+parametrai padeda optimizuoti vaizdo kokybę, kiek įmanoma pailgina 
+akumuliatoriaus naudojimo trukmę ir ASUS knyginio kompiuterio 
+naudojimo trukmę.
+Tamsaus režimo nustatymas
+Pagal numatytuosius nustatymus tamsus režimas yra įjungtas. Norėdami 
+patikrinti arba koreguoti parametrus:
+1. Paleiskite pradžios meniu.
+2. Spustelėkite / bakstelėkite Parametrai ir pasirinkite 
+Personalizavimas.
+58 Nešiojamojo kompiuterio elektroninis vadovas
+3. Pasirinkite skirtuką Spalvos, kad peržiūrėtumėte parinktis.
+Nešiojamojo kompiuterio elektroninis vadovas 59
+Ekrano išjungimas, kai jis nenaudojamas
+Būtinai nustatykite, kad nenaudojamas ekranas automatiškai išsijungtų. 
+Norėdami patikrinti arba koreguoti parametrus:
+1. Paleiskite pradžios meniu.
+2. Spustelėkite / bakstelėkite Parametrai ir pasirinkite Sistema.
+60 Nešiojamojo kompiuterio elektroninis vadovas
+3. Pasirinkite skirtuką Maitinimas ir akumuliatorius, kad 
+peržiūrėtumėte parinktis.
+Nešiojamojo kompiuterio elektroninis vadovas 61
+Ekrano ryškumo koregavimas
+Rekomenduojama įjungti animuotą tamsaus fono ekrano užsklandą ir 
+vengti nustatyti maksimalų OLED ekrano ryškumą, kad OLED ekrano 
+naudojimo trukmė būtų ilgesnė. Norėdami patikrinti arba koreguoti 
+parametrus:
+1. Paleiskite pradžios meniu.
+2. Spustelėkite / bakstelėkite Parametrai ir pasirinkite 
+Personalizavimas.
+62 Nešiojamojo kompiuterio elektroninis vadovas
+3. Pasirinkite skirtuką Užrakto ekranas, tada pasirinkite Ekrano 
+užsklanda, kad peržiūrėtumėte parinktis.
+Nešiojamojo kompiuterio elektroninis vadovas 63
+Automatinis užduočių juostos slėpimas
+Norėdami, kad užduočių juosta nebūtų rodoma OLED ekrane ilgą laiką, 
+užtikrinkite, kad ji slepiama automatiškai. Parametrų koregavimas.
+1. Paleiskite pradžios meniu.
+2. Spustelėkite / bakstelėkite Parametrai ir pasirinkite 
+Personalizavimas.
+64 Nešiojamojo kompiuterio elektroninis vadovas
+3. Pasirinkite užduočių juostos skirtuką ir įjunkite Automatiškai 
+slėpti užduočių juostą.
+Nešiojamojo kompiuterio elektroninis vadovas 65
+1. Paleiskite „Microsoft Office“ programą, tada spustelėkite / 
+bakstelėkite Failas > Paskyra.
+2. Dalyje „Office“ tema pasirinkite Tamsiai pilka. Tema bus taikoma 
+visoms „Microsoft“ programoms.
+„Microsoft Office“ tamsaus režimo nustatymas
+66 Nešiojamojo kompiuterio elektroninis vadovas
+Kiti spartieji klaviatūros klavišai
+Naudodami klaviatūrą taip pat galite naudoti toliau nurodytus 
+sparčiuosius klavišus, kad lengviau paleistumėte programas ir 
+naršytumėte „Windows“.
+Paleisti Pradžios meniu
+Paleisti Veiksmų centrą
+Paleisti darbalaukį
+Paleisti Failų naršyklę
+Paleisti Parametrus
+Paleisti skydelį Prijungti
+Aktyvinti užrakto ekraną
+Sumažinti visus šiuo metu aktyvius langus
+Nešiojamojo kompiuterio elektroninis vadovas 67
+Paleisti Paiešką
+Paleisti skydelį Projektas
+Atidaryti langą Vykdyti
+Atidaryti Pritaikymą neįgaliesiems
+Atidaryti pradžios mygtuko kontekstinį 
+meniu
+Paleisti didintuvo piktogramą ir priartinti 
+ekraną
+Nutolinti ekraną
+68 Nešiojamojo kompiuterio elektroninis vadovas
+Prisijungimas prie belaidžių tinklų
+„Wi-Fi“
+Užsitikrinkite prieigą prie el. laiškų, naršykite internete ir bendrinkite 
+programas socialinių tinklų svetainėse naudodami knyginio kompiuterio 
+belaidžio tinklo ryšį.
+SVARBI INFORMACIJA! Skrydžio režimas išjungia šią funkciją. Prieš 
+įjungdami knyginio kompiuterio „Wi-Fi“ ryšį įsitikinkite, kad Skrydžio 
+režimas išjungtas.
+Prisijungimas prie „Wi-Fi“
+Prijunkite knyginį kompiuterį prie „Wi-Fi“ tinklo atlikdami šiuos veiksmus:
+1. Užduočių juostoje paleiskite Veiksmų centrą.
+2. Spustelėkite / bakstelėkite Wi-Fi piktogramą, kad 
+įjungtumėte „Wi-Fi“.
+3. Galimų „Wi-Fi“ ryšių sąraše pasirinkite prieigos tašką.
+4. Norėdami užmegzti tinklo ryšį, pasirinkite 
+Prisijungti.
+PASTABA: Galite būti paraginti įvesti saugos raktą, kad 
+aktyvintumėte „Wi-Fi“ ryšį.
+Nešiojamojo kompiuterio elektroninis vadovas 69
+1. Pradžios meniu atverkite Parametrai.
+2. Norėdami ieškoti prietaisų, kuriuose įjungtas 
+„Bluetooth“ pasirinkite Bluetooth ir prietaisai > 
+Pridėti prietaisą.
+3. Sąraše pasirinkite prietaisą, kurį norite susieti su 
+knyginiu kompiuteriu.
+PASTABA: Kai kuriuose prietaisuose, kuriuose įgalintas 
+„Bluetooth“, gali būti prašoma įvesti knyginio kompiuterio 
+slaptąjį kodą.
+„Bluetooth“
+Naudokite „Bluetooth“, kad palengvintumėte belaidį duomenų 
+perdavimą kitais prietaisais, kuriuose įjungtas „Bluetooth“.
+SVARBI INFORMACIJA! Skrydžio režimas išjungia šią funkciją. Prieš 
+įjungdami knyginio kompiuterio „Bluetooth“ ryšį įsitikinkite, kad Skrydžio 
+režimas išjungtas.
+Susiejimas su kitais prietaisais, kuriuose įjungtas 
+„Bluetooth“
+Norėdami įgalinti duomenų perdavimą, turite susieti knyginį kompiuterį 
+su kitais prietaisais, kuriuose įjungtas „Bluetooth“ ryšys. Prijunkite 
+prietaisus atlikdami toliau pateiktus veiksmus.
+70 Nešiojamojo kompiuterio elektroninis vadovas
+Skrydžio režimas
+Skrydžio režimas išjungia belaidį ryšį, todėl skrisdami galėsite saugiai 
+naudotis savo knyginiu kompiuteriu.
+PASTABA: Susisiekite su savo oro linijų paslaugų teikėju, kad 
+sužinotumėte apie susijusias skrydžio metu teikiamas paslaugas, kuriomis 
+galima naudotis, ir apribojimus, kurių reikia laikytis naudojant knyginį 
+kompiuterį skrydžio metu.
+Skrydžio režimo įjungimas / išjungimas
+1. Užduočių juostoje paleiskite Veiksmų centrą.
+2. Spustelėkite / bakstelėkite piktogramą Skrydžio 
+režimas, kad įjungtumėte arba išjungtumėte 
+skrydžio režimą.
+Nešiojamojo kompiuterio elektroninis vadovas 71
+Knyginio kompiuterio išjungimas
+Knyginį kompiuterį galite išjungti atlikdami vieną iš toliau pateiktų 
+veiksmų.
+• Paleiskite pradžios meniu, tada pasirinkite > 
+Išjungti , kad atliktumėte įprastą išjungimą.
+• Prisijungimo ekrane pasirinkite > Išjungti.
+• Paspauskite , kad paleistumėte 
+„Windows“ išjungimą. Išplečiamajame sąraše 
+pasirinkite Išjungti, tada pasirinkite GERAI.
+• Jeigu knyginis kompiuteris nereaguoja, 
+nuspauskite maitinimo mygtuką ir palaikykite 
+jį nuspaudę bent dešimt (10) sekundžių, kol 
+knyginis kompiuteris išsijungs.
+72 Nešiojamojo kompiuterio elektroninis vadovas
+Knyginio kompiuterio miego režimo 
+nustatymas
+Norėdami įjungti knyginio kompiuterio miego režimą:
+• Paleiskite pradžios meniu, tuomet pasirinkite 
+ > Miego režimas, kad įjungtumėte knyginio 
+kompiuterio miego režimą.
+• Prisijungimo ekrane pasirinkite > Miego 
+režimas.
+Paspauskite , kad paleistumėte „Windows“ 
+išjungimą. Išskleidžiamajame sąraše pasirinkite Miego 
+režimas, tada pasirinkite GERAI.
+PASTABA: Knyginio kompiuterio miego režimą taip pat galite įjungti 
+paspaudę maitinimo mygtuką.
+Nešiojamojo kompiuterio elektroninis vadovas 73
+4 skyrius:
+Įjungimo savitikra (POST)
+74 Nešiojamojo kompiuterio elektroninis vadovas
+Įjungimo savitikra (POST)
+POST (įjungimo savitikra) – tai programinės įrangos valdomų 
+diagnostinių testų serija, kuri vykdoma, kai įjungiate arba iš naujo 
+paleidžiate knyginį kompiuterį. POST kontroliuojanti programinė įranga 
+įdiegiama kaip nuolatinė knyginio kompiuterio architektūros dalis.
+POST naudojimas siekiant užsitikrinti prieigą 
+prie BIOS ir trikčių šalinimo
+Taikydami POST galite užsitikrinti prieigą prie BIOS parametrų arba 
+paleisti trikčių šalinimo parinktis naudodami knyginio kompiuterio 
+funkcinius klavišus. Daugiau informacijos pateikta toliau.
+BIOS
+BIOS (pagrindinė įvesties ir išvesties sistema) laikomi sistemos 
+aparatinės įrangos parametrai, būtini knyginio kompiuterio sistemos 
+paleidimui.
+Numatytieji BIOS parametrai taikomi daugumai knyginio kompiuterio 
+sąlygų. Nekeiskite numatytųjų BIOS parametrų, išskyrus esant toliau 
+pateiktoms aplinkybėms.
+• Paleidžiant sistemą ekrane rodomas klaidos pranešimas, kuriame 
+prašoma paleisti BIOS sąranką.
+• Įdiegėte naują sistemos komponentą, kuriam reikia papildomų 
+BIOS parametrų ar atnaujinimų.
+ĮSPĖJIMAS! Naudojant netinkamus BIOS parametrus, sistema gali tapti 
+nestabili arba gali nepavykti įkrova. Primygtinai rekomenduojame BIOS 
+parametrus keisti tik padedant kvalifikuotiems techninės priežiūros 
+darbuotojams.
+Prieiga prie BIOS
+Iš naujo paleiskite knyginį kompiuterį, tada paspauskite 
+taikant POST.
+Nešiojamojo kompiuterio elektroninis vadovas 75
+Sistemos atkūrimas
+Naudodamiesi knyginio kompiuterio atkūrimo parinktimis galite atkurti 
+pradinę sistemos būseną arba tiesiog atnaujinti jos parametrus, kad 
+pagerintumėte našumą.
+SVARBI INFORMACIJA!
+• Sukurkite visų duomenų failų atsargines kopijas prieš atlikdami bet 
+kokią atkūrimo parinktį knyginiame kompiuteryje.
+• Užsirašykite svarbius tinkintus parametrus, pvz., tinklo parametrus, 
+naudotojų vardus ir slaptažodžius, kad neprarastumėte duomenų.
+• Prieš iš naujo nustatydami sistemą įsitikinkite, kad knyginis 
+kompiuteris prijungtas prie maitinimo šaltinio.
+„Windows“ leidžia atlikti bet kurią iš toliau pateiktų atkūrimo parinkčių.
+• Išsaugoti mano failus – ši parinktis leidžia atnaujinti knyginį 
+kompiuterį nedarant įtakos asmeniniams failams (nuotraukoms, 
+muzikai, vaizdo įrašams, dokumentams).
+ Naudodami šią parinktį, galite atkurti knyginio kompiuterio 
+numatytuosius parametrus ir ištrinti kitas įdiegtas programėles.
+• Pašalinti viską – ši parinktis atkuria knyginio kompiuterio 
+gamyklinius parametrus. Prieš taikydami šią parinktį, turite sukurti 
+atsarginę duomenų kopiją.
+76 Nešiojamojo kompiuterio elektroninis vadovas
+• Išplėstinė paleistis – naudodami šią parinktį galite atlikti kitas 
+išplėstinio atkūrimo parinktis knyginiame kompiuteryje, pvz.:
+- Naudodamiesi USB įrenginiu, tinklo ryšiu arba „Windows“ 
+atkūrimo DVD, paleiskite knyginį kompiuterį.
+- Trikčių diagnostikos naudojimas norint įjungti bet kurią 
+iš šių išplėstinių atkūrimo parinkčių: paleisties atkūrimas, 
+pašalinti naujinimus, paleisties parametrai, UEFI įrangos 
+parametrai, komandinė eilutė, sistemos atkūrimas ir 
+sistemos vaizdų atkūrimas.
+Atkūrimo parinkties vykdymas
+Jei norite pasiekti ir naudoti bet kurią iš galimų knyginio kompiuterio 
+atkūrimo parinkčių, žr. toliau nurodytus veiksmus.
+1. Paleiskite Parametrai ir pasirinkite Sistema > Atkūrimas.
+Nešiojamojo kompiuterio elektroninis vadovas 77
+2. Pasirinkite norimą atlikti atkūrimo parinktį.
+78 Nešiojamojo kompiuterio elektroninis vadovas
+Nešiojamojo kompiuterio elektroninis vadovas 79
+Patarimai ir DUK
+80 Nešiojamojo kompiuterio elektroninis vadovas
+Naudingi patarimai, kaip naudoti 
+nešiojamąjį kompiuterį
+Kad galėtumėte geriau išnaudoti nešiojamąjį kompiuterį, prižiūrėti 
+jo sistemos veikimą ir užtikrinti, kad visi jūsų duomenys būtų laikomi 
+saugiai, toliau pateikiame naudingų patarimų:
+• Reguliariai atnaujinkite „Windows“ ir užtikrinkite, kad jūsų 
+programose naudojamos naujausios saugumo nuostatos;
+• Atnaujinkite „MyASUS“, kad turėtumėte naujausias išskirtinių 
+„ASUS“ programėlių nuostatas, tvarkykles ir priemones.
+• Naudokite antivirusinę programinę įrangą, kad apsaugotumėte 
+duomenis, ir nuolat ją naujinkite;
+• Neišjunginėkite nešiojamojo kompiuterio priverstinai, nebent 
+nėra kitos galimybės;
+• Visada darykite atsargines duomenų kopijas ir naudokite išorinę 
+atmintinę atsarginėms duomenų kopijoms laikyti;
+• Jei nešiojamojo kompiuterio ilgą laiką nenaudosite, būtinai 
+įkraukite bateriją iki 50 %, tada išjunkite nešiojamąjį kompiuterį ir 
+atjunkite kintamosios srovės adapterį.
+• Jei nešiojamame kompiuteryje nuolat naudojate kintamosios 
+srovės maitinimą, atidarykite „MyASUS“ ir nustatykite nuostatos 
+„Battery Health Charging“ (Palaikomasis baterijos įkrovimas) 
+režimą „Balanced“ (Subalansuotas).
+Nešiojamojo kompiuterio elektroninis vadovas 81
+• Prieš nešiojamąjį kompiuterį nustatydami iš naujo, atjunkite 
+išorinius įrenginius ir įsitikinkite, kad turite:
+- Gaminio operacinių sistemų ir kitų įdiegtų programų raktą;
+- Atsarginę duomenų kopiją;
+- Prisijungimo ID ir slaptažodį;
+- Prisijungimo prie interneto informaciją.
+• Apsilankykite mūsų svetainės trikčių šalinimo skiltyje ir 
+perskaitykite dažniausiai užduodamus klausimus 
+https://www.asus.com/support.
+82 Nešiojamojo kompiuterio elektroninis vadovas
+DUK apie aparatinę įrangą
+1. Kai įjungiu nešiojamąjį kompiuterį, ekrane pasirodo juodas 
+arba spalvotas taškas. Ką daryti?
+Nors šie taškai paprastai pasirodo ekrane, sistemai poveikio jie 
+neturi. Jei šis reiškinys kartojasi ir turi įtakos sistemos veikimui, 
+kreipkitės į įgaliotąjį ASUS paslaugų centrą.
+2. Rodymo skydelio spalva ir ryškumas nevienodi. Kaip juos 
+sureguliuoti?
+Rodymo skydelio spalvai ir ryškumui įtakos gali turėti dabartinė 
+nešiojamojo kompiuterio padėtis ir ekrano atlenkimo kampas. 
+Nešiojamojo kompiuterio ryškumas ir spalva taip pat gali 
+priklausyti nuo modelio. Galite naudoti funkcinius mygtukus arba 
+operacinės sistemos ekrano nuostatas rodymo skydelio išvaizdai 
+reguliuoti.
+3. Kaip galėčiau pailginti nešiojamojo kompiuterio 
+akumuliatoriaus tarnavimo laiką?
+Galite naudoti bet kurį iš šių patarimų:
+• funkciniais mygtukais reguliuokite ekrano ryškumą;
+• jei nenaudojate „Wi-Fi“ jungties, įjunkite sistemos Skrydžio 
+režimą;
+• atjunkite nenaudojamus USB įrenginius;
+• išjunkite nenaudojamas, ypač daug atminties užimančias 
+programas.
+Nešiojamojo kompiuterio elektroninis vadovas 83
+4. Nedega akumuliatoriaus krovimo indikacinė lemputė. Kas 
+negerai?
+• Patikrinkite, ar gerai prijungtas maitinimo adapteris arba 
+įdėtas akumuliatoriaus blokas. Galite atjungti maitinimo 
+adapterį arba akumuliatoriaus bloką, palaukti minutę, 
+paskui vėl prijungti juos prie maitinimo lizdo ir nešiojamojo 
+kompiuterio.
+• Jei problema liko, pagalbos kreipkitės į vietinį ASUS 
+aptarnavimo centrą.
+5. Kodėl neveikia jutiklinis pultas?
+Paspauskite , kad įjungtumėte jutiklinį pultą.
+6. Kai leidžiu garso ir vaizdo failus, kodėl negirdžiu garso iš 
+nešiojamojo kompiuterio garsiakalbių?
+Galite naudoti bet kurį iš šių patarimų:
+• paspauskite , kad padidintumėte garsiakalbio 
+garsumą;
+• patikrinkite, ar garsiakalbiai nebuvo pritildyti;
+• patikrinkite, ar prie nešiojamojo kompiuterio neprijungtas 
+ausinių kištukas, ir jį ištraukite.
+84 Nešiojamojo kompiuterio elektroninis vadovas
+7. Ką daryti, jei pamesčiau nešiojamojo kompiuterio maitinimo 
+adapterį arba akumuliatorius nustotų veikti?
+Pagalbos kreipkitės į vietinį ASUS paslaugų centrą.
+8. Negaliu tinkamai paspausti nešiojamojo kompiuterio 
+mygtukų, nes žymeklis visą laiką juda. Ką daryti?
+Patikrinkite, ar, rašant klaviatūra, kas nors atsitiktinai nespaudžia 
+ar neliečia jutiklinio pulto. Taip pat, jutiklinį pultą galima išjungti 
+paspaudžiant .
+Nešiojamojo kompiuterio elektroninis vadovas 85
+DUK apie programinę įrangą
+1. Kai įjungiu nešiojamąjį kompiuterį, maitinimo indikatorius 
+užsidega, tačiau ekranas nieko nerodo. Kaip pašalinti šį 
+nesklandumą?
+Galite naudoti bet kurį iš šių patarimų:
+• Priverstinai išjunkite nešiojamąjį kompiuterį spausdami 
+maitinimo mygtuką bent dešimt (10) sekundžių. Patikrinkite, 
+ar maitinimo adapteris ir akumuliatoriaus blokas tinkamai 
+prijungti, po to įjunkite nešiojamąjį kompiuterį;
+• Jei problema liko, pagalbos kreipkitės į vietinį ASUS 
+aptarnavimo centrą.
+2. Ką daryti, kai ekrane rodomas šis pranešimas: „Remove disks 
+or other media. Press any key to restart. (Išimkite diskus 
+arba kitą laikmeną. Paspauskite bet kurį mygtuką, kad 
+paleistumėte iš naujo.)“?
+Galite naudoti bet kurį iš šių patarimų:
+• Atjunkite visus USB įrenginius, paskui nešiojamąjį 
+kompiuterį paleiskite iš naujo;
+• išimkite optiniame diskų įrenginyje paliktus optinius diskus, 
+paskui paleiskite iš naujo;
+• Jei problema liko, nešiojamasis kompiuteris gali turėti 
+atminties saugyklos problemą. Pagalbos kreipkitės į vietinį 
+ASUS paslaugų centrą.
+86 Nešiojamojo kompiuterio elektroninis vadovas
+3. Nešiojamasis kompiuteris paleidžiamas lėčiau nei visada, o 
+operacinė sistema delsia. Kaip tai pataisyti?
+Ištrinkite neseniai įdiegtas arba į operacinės sistemos paketą 
+neįtrauktas programas, paskui sistemą paleiskite iš naujo.
+4. Nešiojamasis kompiuteris nepasileidžia. Kaip tai pataisyti?
+Galite naudoti bet kurį iš šių patarimų:
+• Atjunkite visus prie nešiojamojo kompiuterio prijungtus 
+įrenginius, paskui sistemą paleiskite iš naujo;
+• Jei problema liko, pagalbos kreipkitės į vietinį asus 
+aptarnavimo centrą.
+5. Kodėl nešiojamasis kompiuteris neatsibunda iš miego 
+režimo?
+• Reikia paspausti maitinimo mygtuką, kad būtų tęsiama 
+paskutinė darbinė būsena.
+• Gali būti, kad sistema visiškai išnaudojo akumuliatoriaus 
+galią. Prijunkite maitinimo adapterį prie nešiojamojo 
+kompiuterio ir elektros tinklo, paskui paspauskite maitinimo 
+mygtuką.
+Jei turite kitų problemų, apsilankykite interneto svetainėje 
+https://www.asus.com/support/FAQ/1045091/ , kur rasite informacijos 
+apie trikčių šalinimą.
+Nešiojamojo kompiuterio elektroninis vadovas 87
+Priedai
+88 Nešiojamojo kompiuterio elektroninis vadovas
+Federalinės komunikacijų komisijos (FCC) 
+pareiškimas
+Šis įrenginys atitinka FCC taisyklių 15 dalį. Veikimas priklauso nuo šių dviejų sąlygų:
+• šis įrenginys negali sukelti kenksmingų trikdžių;
+• šis įrenginys turi priimti bet kokius gaunamus trikdžius, tame tarpe ir 
+galinčius sukelti nepageidaujamą veikimą.
+Ši įranga buvo patikrinta ir nustatyta, kad ji atitinka B klasės skaitmeniniams 
+įrenginiams taikomus apribojimus pagal Federalinės komunikacijų komisijos 
+(FCC) taisyklių 15 dalį. Šie apribojimai sukurti siekiant užtikrinti protingą apsaugą 
+nuo kenksmingų trikdžių gyvenamųjų patalpų įrenginiuose. Ši įranga generuoja, 
+naudoja ir gali spinduliuoti radijo dažnių energiją, todėl, jei ji sumontuota ir 
+naudojama ne pagal šį naudojimo vadovą, gali sukelti radijo ryšiui kenksmingų 
+trikdžių. Tačiau negalime garantuoti, kad trikdžių nepasitaikys priklausomai nuo 
+konkretaus įrenginio. Jei ši įranga trikdo radijo ar televizijos signalų gavimą, tai 
+nustatysite įjungdami ir išjungdami įrangą, rekomenduojame pašalinti trikdį vienu 
+iš toliau išvardintų būdų:
+• perorientuokite imtuvo anteną arba pakeiskite jos buvimo vietą;
+• padidinkite atstumą tarp įrangos ir imtuvo;
+• įjunkite įrangą į grandinės lizdą, į kurį nėra įjungtas imtuvas;
+• paprašykite atstovo arba patyrusio radijo / televizijos techniko pagalbos.
+ĮSPĖJIMAS! Remiantis FCC spinduliuotės ribų reikalavimais bei siekiant išvengti 
+šalia esančių radijo ar televizijos signalų trikdžių reikalaujama naudoti ekranuotus 
+maitinimo kabelius. Būtina naudoti tik tiekiamą maitinimo kabelį. Naudokite tik 
+ekranuotus kabelius prie šios įrangos jungdami įvesties / išvesties įrenginius. Įspėjame, 
+kad dėl keitimų ar modifikacijų, kurių aiškiai nepatvirtino šalys, atsakingos už atitiktį, 
+gali būti panaikinta teisė dirbti su įranga.
+(Atspausdinta iš Federalinių reglamentų kodekso #47, 15.193 d., 1993. Vašingtonas 
+DC: Federalinio registro biuras, Nacionaliniai archyvai ir Registrų administracija, 
+JAV Valstybinė leidykla.)
+Nešiojamojo kompiuterio elektroninis vadovas 89
+Federalinės ryšių agentūros (angl. FCC) 
+informacija dėl RD poveikio
+Įrenginys atitinka vyriausybės reikalavimus dėl radijo bangų poveikio. Šis 
+įrenginys sukonstruotas ir pagamintas taip, kad neviršytų leistinų radijo dažnių 
+(RF) energijos ribų, kurias nustatė Federalinė ryšių agentūra prie JAV vyriausybės. 
+Poveikio standartas išreiškiamas matavimo vienetu, vadinamu specifine sugerties 
+sparta arba SAR (Specific Absorption Rate – angl.), FCC nustatyta SAR riba yra 1,6 
+W/kg. SAR tikrinimas atliekamas pasirinkus įprastas veikimo padėtis, patvirtintas 
+FCC, EUT siunčiant specifiniu energijos lygiu įvairiais kanalais. Šiam įrenginiui FCC 
+suteikė Įrangos naudojimo įgaliojimą, kuriame nurodyti visi įvertinti SAR lygiai, 
+atitinkantys FCC RF poveikio nuostatas. Šiame įrenginyje SAR informacija yra FCC 
+faile ir gali būti randama „Display Grant“ skyriuje adresu www.fcc.gov/oet/ea/fccid.
+90 Nešiojamojo kompiuterio elektroninis vadovas
+UL saugos pranešimai
+Reikalaujama, kad į UL 1459 aprėptį patenkančių telekomunikacijų (telefoninių) 
+mechanizmų, kurie bus elektriškai jungiami prie telekomunikacijų tinklo, darbinė 
+įtampa su įžeminimu neviršytų 200 V piko, 300 V nuo piko iki piko amplitudės ir 
+105 Vrms, ir būtų montuojami ar naudojami pagal Nacionalinį elektros kodeksą 
+(NFPA 70).
+Naudojant nešiojamojo kompiuterio modemą, visada būtina vadovautis 
+pagrindiniais saugos reikalavimais siekiant sumažinti gaisro, elektros smūgio ir 
+žalos žmonėms riziką, įskaitant:
+• NENAUDOKITE nešiojamojo kompiuterio prie vandens, pvz., šalia vonios, 
+vandens rezervuaro, virtuvinės kriauklės arba užmerktų skalbinių, 
+drėgname rūsyje ar šalia plaukimo baseino;
+• NENAUDOKITE nešiojamojo kompiuterio griaustinio metu. Dėl žaibavimo 
+atsiranda nuotolinio elektros smūgio rizika;
+• NENAUDOKITE nešiojamojo kompiuterio, jei patalpoje įvyko dujų nuotėkis.
+Reikalavimai UL 1642, apimantys pirminius (be pakartotinio įkrovimo) ir antrinius 
+(su pakartotiniu įkrovimu) ličio akumuliatorius, dėl panaudojimo kaip gaminių 
+maitinimo šaltinių. Šių akumuliatorių sudėtyje yra metalo ličio arba ličio lydinio, 
+arba ličio jonų, ir jie gali būti sudaryti iš vieno elektrocheminio elemento arba 
+dviejų ar daugiau nuosekliai, paraleliai, arba abiem būdais sujungtų elementų, 
+kurie paverčia cheminę energiją į elektros energiją dėka negrįžtamosios ar 
+grįžtamosios cheminės reakcijos.
+• NEDEGINKITE nešiojamojo kompiuterio akumuliatoriaus bloko, norėdami jį 
+utilizuoti, nes jis gali sprogti. Patikrinkite vietinius reglamentus dėl galimų 
+specialiųjų utilizavimo nuostatų, siekdami sumažinti žalos žmogui riziką dėl 
+gaisro ar sprogimo.
+• NENAUDOKITE kitų įrenginių maitinimo adapterių ar baterijų, siekdami 
+sumažinti žalos žmogui riziką dėl gaisro ar sprogimo. Naudokite tik UL 
+sertifikuotus maitinimo adapterius ar akumuliatorius, tiekiamus gamintojo 
+ar įgalioto pardavėjo.
+Nešiojamojo kompiuterio elektroninis vadovas 91
+Maitinimo saugos reikalavimas
+Gaminiai, kurių sunaudojama elektros srovė siekia iki 6A ir kurie sveria daugiau nei 
+3 kg, privalo turėti patvirtintus maitinimo kabelius, aukštesnės kategorijos arba 
+lygius šiems: H05VV-F, 3G, 0,75 mm2 arba H05VV-F, 2G, 0,75 mm2.
+Įspėjimai dėl TV imtuvo
+Pastaba CATV sistemos montuotojui – kabelių paskirstymo sistema turi būti 
+įžeminta remiantis ANSI/NFPA 70, Nacionaliniu elektros kodeksu (NEC), ypač 
+skyriumi 820.93, „Koaksialinio kabelio išorinio laidumo ekrano įžeminimas“. 
+Instaliacija turi apimti koaksialinio kabelio skydo prijungimą prie pastato įėjimo 
+įžeminimo.
+„Macrovision“ korporacijos įspėjimas apie 
+gaminį
+Šiame gaminyje yra autorių teisių ginama technologija, saugoma JAV patentų ir 
+kitų intelektinės nuosavybės teisių, valdomų „Macrovision“ korporacijos ir kitų šių 
+teisių savininkų. Šios autorių teisių ginamos technologijos gali būti naudojamos tik 
+leidus „Macrovision“, jos yra skirtos tik namų naudojimui arba tik kitiems ribotiems 
+peržiūros tikslams, nebent būtų gautas „Macrovision“ leidimas naudoti kitaip. 
+Draudžiamas reversinis keitimas arba išardymas.
+Saugojimasis nuo žalos klausai
+Norėdami apsisaugoti nuo žalos klausai, ilgai nesiklausykite garsių 
+įrašų.
+Įspėjimas dėl dangos
+SVARBI INFORMACIJA! Siekiant suteikti elektros izoliaciją ir užtikrinti elektrinį 
+saugumą, įrenginys padengtas izoliuojančia danga, išskyrus šonus, kuriuose yra įėjimo 
+/ išėjimo prievadai.
+92 Nešiojamojo kompiuterio elektroninis vadovas
+Įspėjimas dėl ličio naudojimo Šiaurės šalims 
+(ličio jonų akumuliatoriams)
+CAUTION! Danger of explosion if battery is incorrectly replaced. Replace only with 
+the same or equivalent type recommended by the manufacturer. Dispose of used 
+batteries according to the manufacturer’s instructions. (English)
+ATTENZIONE! Rischio di esplosione della batteria se sostituita in modo errato. 
+Sostituire la batteria con un una di tipo uguale o equivalente consigliata dalla 
+fabbrica. Non disperdere le batterie nell’ambiente. (Italiano)
+VORSICHT! Explosionsgefahr bei unsachgemäßen Austausch der Batterie. Ersatz 
+nur durch denselben oder einem vom Hersteller empfohlenem ähnlichen Typ. 
+Entsorgung gebrauchter Batterien nach Angaben des Herstellers. (Deutsch)
+ADVARSELI! Lithiumbatteri - Eksplosionsfare ved fejlagtig håndtering. Udskiftning 
+må kun ske med batteri af samme fabrikat og type. Levér det brugte batteri 
+tilbage til leverandøren. (Dansk)
+VARNING! Explosionsfara vid felaktigt batteribyte. Använd samma batterityp eller 
+en ekvivalent typ som rekommenderas av apparattillverkaren. Kassera använt 
+batteri enligt fabrikantens instruktion. (Svenska)
+VAROITUS! Paristo voi räjähtää, jos se on virheellisesti asennettu. Vaihda paristo 
+ainoastaan laitevalmistajan sousittelemaan tyyppiin. Hävitä käytetty paristo 
+valmistagan ohjeiden mukaisesti. (Suomi)
+ATTENTION! Danger d’explosion si la batterie n’est pas correctement remplacée. 
+Remplacer uniquement avec une batterie de type semblable ou équivalent, 
+recommandée par le fabricant. Jeter les batteries usagées conformément aux 
+instructions du fabricant. (Français)
+ADVARSEL! Eksplosjonsfare ved feilaktig skifte av batteri. Benytt samme 
+batteritype eller en tilsvarende type anbefalt av apparatfabrikanten. Brukte 
+batterier kasseres i henhold til fabrikantens instruksjoner. (Norsk)
+(日本語)
+ВНИМАНИЕ! При замене аккумулятора на аккумулятор иного типа возможно 
+его возгорание. Утилизируйте аккумулятор в соответствии с инструкциями 
+производителя. (Pyccкий)
+Nešiojamojo kompiuterio elektroninis vadovas 93
+Gaminio atitikties deklaracija dėl aplinkos 
+apsaugos reglamento
+Kurdama ir gamindama mūsų gaminius, bendrovė ASUS laikosi ekologinio 
+projektavimo principų ir užtikrina, kad kiekvienas ASUS gaminio eksploatavimo 
+etapas atitinka pasaulinius aplinkos apsaugos reikalavimus. Be to, laikydamasi 
+reglamentų reikalavimų, ASUS atskleidžia atitinkamą informaciją.
+Apsilankę svetainėje adresu http://csr.asus.com/Compliance.htm, rasite 
+informaciją, kurią ASUS atskleidžia pagal reglamentų, kuriais ji vadovaujasi, 
+reikalavimus.
+ES REACH ir 33 straipsnis
+Pagal REACH (cheminių medžiagų registracijos, įvertinimo, autorizacijos ir 
+apribojimų) reglamento teisinę bazę, mūsų gaminių sudėtyje esančios medžiagos 
+nurodytos ASUS REACH svetainėje, adresu 
+http://csr.asus.com/english/REACH.htm.
+EU RoHS
+Šis gaminys atitinka ES RoHS Direktyvos reikalavimus. Daugiau informacijos žr. 
+http://csr.asus.com/english/article.aspx?id=35.
+94 Nešiojamojo kompiuterio elektroninis vadovas
+ASUS gaminių perdirbimas / Atliekų grąžinimo 
+paslaugos
+ASUS perdirbimo ir atliekų grąžinimo programos vykdomos dėl mūsų 
+įsipareigojimo laikytis aukščiausių aplinkos apsaugos standartų. Manome, jog 
+suteikiame jums galimybę atsakingai perdirbti mūsų gaminius, akumuliatorius, 
+kitus komponentus, taip pat pakavimo medžiagas.
+Išsamesnės informacijos apie perdirbimą įvairiuose regionuose rasite apsilankę 
+svetainėje adresu http://csr.asus.com/english/Takeback.htm.
+Ekodizaino direktyva
+Europos Sąjunga paskelbė nustatanti ekologinio projektavimo reikalavimų su 
+energija susijusiems gaminiams nustatymo sistemą (2009/125/EB). Konkrečiomis 
+įgyvendinimo priemonėmis siekiama gerinti konkrečių produktų arba kelių 
+gaminių rūšių aplinkosaugos veiksmingumą. ASUS pateikia informaciją apie 
+gaminį CSR svetainėje. Daugiau informacijos rasite 
+https://csr.asus.com/english/article.aspx?id=1555.
+Nešiojamojo kompiuterio elektroninis vadovas 95
+ENERGY STAR atitinkantis gaminys
+ENERGY STAR yra bendroji JAV aplinkosaugos agentūros ir JAV 
+Energetikos departamento programa, padedanti mums visiems 
+taupyti pinigus ir saugoti aplinką naudojant efektyviausiai energiją 
+taupančius gaminius ir energijos taupymo būdus.
+Visi ENERGY STAR logotipu pažymėti ASUS gaminiai atitinka standartą ENERGY 
+STAR ir pagal numatytąją nuostatą energijos valdymo funkcija jau yra įjungta. 
+Monitorius automatiškai užmigdomas, jei naudotojas 10 minučių neatlieka jokių 
+veiksmų ir juo nesinaudoja; kompiuteris automatiškai užmigdomas, jei naudotojas 
+30 minučių neatlieka jokių veiksmų ir juo nesinaudoja. Norėdami pažadinti 
+kompiuterį, spustelėkite pelės klavišą, paspauskite bet kokį klaviatūros mygtuką 
+arba maitinimo mygtuką. 
+Išsamios informacijos apie energijos valdymo funkciją ir jos aplinkai teikiamą 
+naudą rasite tinklalapyje http://www.energystar.gov/powermanagement. Taip pat 
+apsilankykite adresu http://www.energystar.gov, kur rasite išsamios informacijos 
+apie bendrąją programą ENERGY STAR.
+PASTABA: „Energy Star“ NEVEIKIA sistemose, kuriose naudojamos „FreeDOS“ ir „Linux“ 
+operacinės sistemos.
+EPEAT užregistruoti gaminiai
+Viešai paskelbtą pagrindinę aplinkosaugos informaciją apie ASUS EPEAT 
+(Elektronikos prekių poveikio aplinkai vertinimo priemonės) programoje 
+užregistruotus gaminius rasite https://csr.asus.com/english/article.aspx?id=41. 
+Daugiau informacijos apie EPEAT programą ir pirkimo gaires rasite www.epeat.net.
+96 Nešiojamojo kompiuterio elektroninis vadovas
+BIOS teksto šriftų licencija
+Autorių teisės © 2023 m. „Android“ atvirojo kodo projektas
+Licencijuota pagal „Apache“ licencijos 2.0 versiją (toliau – „Licenciją“); šį failą 
+naudoti draudžiama, išskyrus tuos atvejus, kai tai daroma pagal licenciją. Licencijos 
+kopiją rasite adresu http://www.apache.org/licenses/LICENSE-2.0.
+Išskyrus tuos atvejus, kai reikalaujama pagal galiojančius įstatymus arba 
+susitariama raštu, pagal Licenciją platinama programinė įranga yra platinama 
+„TOKIA, KOKIA YRA“, BE JOKIŲ GARANTIJŲ AR SĄLYGŲ, nei tiesioginių, nei 
+numanomų.
+Reglamentuojančių leidimų ir apribojimų konkrečia kalba ieškokite licencijoje.
+Nešiojamojo kompiuterio elektroninis vadovas 97
+Supaprastinta ES atitikties deklaracija
+Šiame dokumente bendrovė „ASUSTek Computer Inc.“ pareiškia, kad šis įrenginys 
+atitinka pagrindinius reikalavimus ir kitas susijusias Direktyvos 2014/53/ES 
+nuostatas. Visą ES atitikties deklaracijos tekstą rasite adresu 
+https://www.asus.com/support/.
+Toliau nurodytose šalyse „WiFi“ ryšiu, veikiančiu 5150–5350 MHz dažnio juostoje, 
+galima naudotis tik patalpose:
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK(NI)
+a. Mažos galios, patalpose naudojami (angl. Low Power Indoor – LPI) „Wi-Fi“ 
+6E įrenginiai: 
+Šį įrenginį galima naudoti tik patalpoje, kai jis veikia 5 945–6 425 MHz 
+dažnių diapazone Belgijoje (BE), Bulgarijoje (BG), Kipre (CY), Čekijoje (CZ), 
+Estijoje (EE), Prancūzijoje (FR), Islandijoje (IS), Airijoje (IE), Lietuvoje (LT), 
+Vokietijoje (DE), Nyderlanduose (NL), Ispanijoje (ES).
+b. Labai mažos, patalpose naudojami (angl. Very Low Power – VLP) „Wi-Fi“ 6E 
+įrenginiai (nešiojamieji įrenginiai): 
+Šio įrenginio neleidžiama naudoti bepiločių orlaivių sistemose (UAS), kai 
+jis veikia 5 945–6 425 MHz dažnių diapazone Belgijoje (BE), Bulgarijoje 
+(BG), Kipre (CY), Čekijoje (CZ), Estijoje (EE), Prancūzijoje (FR), Islandijoje (IS), 
+Airijoje (IE), Lietuvoje (LT), Vokietijoje (DE), Nyderlanduose (NL), Ispanijoje 
+(ES).
+98 Nešiojamojo kompiuterio elektroninis vadovas
+Įspėjimas dėl „Wi-Fi“ tinklo
+SVARBU! „Wi-Fi 6E“ tinklo kortelė yra tam tikruose modeliuose. Galimybės prisijungti 
+prie „Wi-Fi 6E“ tinklo gali skirtis, atsižvelgiant į kiekvienos šalies (regiono) reguliavimą ir 
+sertifikavimą.
+ Apie šį vadovą
+ Šiame vadove naudotos konvencijos
+ Piktogramos
+ Šriftai
+ Saugos priemonės
+ Nešiojamojo kompiuterio naudojimas
+ Nešiojamojo kompiuterio priežiūra
+ Tinkamas išmetimas
+ Svarbi baterijos saugos informacija
+ 1 skyrius: 
+Aparatinės įrangos sąranka
+ Pažintis su nešiojamuoju kompiuteriu
+ Vaizdas iš priekio
+ Vaizdas iš apačios
+ Vaizdas iš dešiniosios pusės
+ Vaizdas iš kairiosios pusės
+ 2 skyrius:
+ Jūsų knyginio kompiuterio naudojimas
+ Nuo ko pradėti
+ Jūsų knyginio kompiuterio įkrovimas
+ Pakelkite, kad atidarytumėte ekraną
+ Paspauskite maitinimo mygtuką
+ Jutiklinio pulto naudojimas
+ Žymiklio perkėlimas
+ Klaviatūros naudojimas
+ Spartieji klavišai
+ Funkciniai klavišai
+ „Windows“ klavišai
+ 3 skyrius:
+ Darbas naudojant „Windows“
+ Pirmasis įjungimas
+ Pradžios meniu
+ „Windows“ programėlės
+ Darbas su „Windows“ programėlėmis
+ „Windows“ programėlių tinkinimas
+ Užduočių rodinys
+ Valdikliai
+ Įtraukimo į ekraną funkcija
+ Įtraukimo į ekraną aktyviosios sritys
+ Veiksmų centras
+ „MyASUS Splendid“
+ OLED ekrano nustatymas
+ Tamsaus režimo nustatymas
+ Ekrano išjungimas, kai jis nenaudojamas
+ Ekrano ryškumo koregavimas
+ Automatinis užduočių juostos slėpimas
+ „Microsoft Office“ tamsaus režimo nustatymas
+ Kiti spartieji klaviatūros klavišai
+ Prisijungimas prie belaidžių tinklų
+ „Wi-Fi“
+ „Bluetooth“
+ Skrydžio režimas
+ Knyginio kompiuterio išjungimas
+ Knyginio kompiuterio miego režimo nustatymas
+ 4 skyrius:
+ Įjungimo savitikra (POST)
+ Įjungimo savitikra (POST)
+ POST naudojimas siekiant užsitikrinti prieigą prie BIOS ir trikčių šalinimo
+ BIOS
+ Prieiga prie BIOS
+ Sistemos atkūrimas
+ Atkūrimo parinkties vykdymas
+ Patarimai ir DUK
+ Naudingi patarimai, kaip naudoti nešiojamąjį kompiuterį
+ DUK apie aparatinę įrangą
+ DUK apie programinę įrangą
+ Priedai
+ Federalinės komunikacijų komisijos (FCC) pareiškimas
+ Federalinės ryšių agentūros (angl. FCC) informacija dėl RD poveikio
+ UL saugos pranešimai
+ Maitinimo saugos reikalavimas
+ Įspėjimai dėl TV imtuvo
+ „Macrovision“ korporacijos įspėjimas apie gaminį
+ Saugojimasis nuo žalos klausai
+ Įspėjimas dėl dangos
+ Įspėjimas dėl ličio naudojimo Šiaurės šalims 
+(ličio jonų akumuliatoriams)
+ Gaminio atitikties deklaracija dėl aplinkos apsaugos reglamento
+ ES REACH ir 33 straipsnis
+ EU RoHS
+ ASUS gaminių perdirbimas / Atliekų grąžinimo paslaugos
+ Ekodizaino direktyva
+ ENERGY STAR atitinkantis gaminys
+ EPEAT užregistruoti gaminiai
+ BIOS teksto šriftų licencija
+ Supaprastinta ES atitikties deklaracija
+ Įspėjimas dėl „Wi-Fi“ tinklo

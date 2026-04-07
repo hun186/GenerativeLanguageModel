@@ -1,0 +1,1499 @@
+
+C620A/C422A/C622A/
+C423A/C623A/C424A/
+C624A/C624B/C624W/ 
+C627A-reeks 
+LCD-monitor
+Gebruikershandleiding
+ii
+Eerste editie 
+Juni 2015
+Copyright © 2015 ASUSTeK COMPUTER INC. Alle rechten voorbehouden.
+Geen enkel deel van deze handleiding, met inbegrip van de producten en de software die hierin is 
+beschreven, mag zonder de uitdrukkelijke schriftelijke toestemming van ASUSTeK COMPUTER INC. 
+worden gereproduceerd, verzonden, getranscribeerd, opgeslagen in een retrievalsysteem of in enige taal 
+worden vertaald in enige vorm of door enig middel, behalve documentatie die door de koper wordt gebruikt 
+voor back-updoeleinden. (“ASUS”).
+De productgarantie of service zal niet worden verleend als: (1) het product is gerepareerd of gewijzigd, 
+tenzij een dergelijke reparatie of wijziging schriftelijk is goedgekeurd door ASUS; of (2) het serienummer 
+van het product vervormd is of ontbreekt.
+ASUS BIEDT DEZE HANDLEIDING “ZOALS ZE IS” ZONDER ENIGE GARANTIES, HETZIJ 
+UITDRUKKELIJK OF IMPLICIET, MET INBEGRIP VAN, MAAR NIET BEPERKT TOT DE IMPLICIETE 
+GARANTIES OF VOORWAARDEN VOOR VERKOOPBAARHEID OF GESCHIKTHEID VOOR 
+EEN BEPAALD DOEL. IN GEEN GEVAL ZAL ASUS, HAAR DIRECTEURS, FUNCTIONARISSEN, 
+WERKNEMERS OF AGENTEN AANSPRAKELIJK ZIJN VOOR ENIGE INDIRECTE, SPECIALE, 
+INCIDENTELE OF GEVOLGSCHADE (INCLUSIEF SCHADE DOOR WINSTDERVING, VERLIES 
+VAN HANDEL, VERLIES VAN GEBRUIK OF GEGEVENS, ONDERBREKING VAN HANDEL EN 
+DERGELIJKE), ZELFS ALS ASUS OP DE HOOGTE WERD GEBRACHT VAN DE MOGELIJKHEID VAN 
+DERGELIJKE SCHADE DIE VOORTVLOEIT UIT FOUTEN IN DEZE HANDLEIDING OF DEFECTEN AAN 
+HET PRODUCT.
+DE SPECIFICATIES EN INFORMATIE DIE IN DEZE HANDLEIDING ZIJN OPGENOMEN, ZIJN 
+UITSLUITEND INFORMATIEF BEDOELD EN OP ELK OGENBLIK EN ZONDER KENNISGEVING 
+ONDERHEVIG AAN WIJZIGINGEN. ZE MOGEN NIET WORDEN BESCHOUWD ALS EEN 
+VERBINTENIS DOOR ASUS. ASUS AANVAARDT GEEN VERANTWOORDELIJKHEID OF 
+AANSPRAKELIJKHEID VOOR FOUTEN OF ONNAUWKEURIGHEDEN DIE MOGELIJK IN DEZE 
+HANDLEIDING ZIJN VERMELD, INCLUSIEF DE PRODUCTEN EN SOFTWARE DIE ERIN ZIJN 
+BESCHREVEN.
+Producten en bedrijfsnamen die in deze handleiding zijn vermeld, zijn mogelijk geregistreerde 
+handelsmerken of auteursrechten van hun respectieve bedrijven en worden uitsluitend gebruikt voor 
+identificatie of toelichting en in het voordeel van de eigenaar, zonder de bedoeling te hebben een inbreuk 
+te plegen op hun rechten.
+iii
+Inhoud
+Inhoud ......................................................................................................... iii
+Mededelingen .............................................................................................. iv
+Veiligheidsinformatie ................................................................................ vii
+Onderhoud & reiniging ............................................................................. viii
+Takeback Services ...................................................................................... ix
+Hoofdstuk 1: Kennismaken met het product
+1.1 Welkom! ........................................................................................ 1-1
+1.2 Inhoud van de verpakking ........................................................... 1-1
+1.3 Kennismaken met de monitor ..................................................... 1-2
+1.3.1 Vooraanzicht ................................................................... 1-2
+1.3.2 Achterkant ....................................................................... 1-4
+1.3.3 QuickFit-functie ............................................................... 1-5
+Hoofdstuk 2: Installatie
+2.1 De arm/voet van de monitor monteren ...................................... 2-1
+2.2 De arm/voet loskoppelen (voor VESA-wandmontage) ............. 2-1
+2.3 De MiniPC-kit monteren/verwijderen 
+(C620A/C622A/C623A/C624A/C624B/C624W/C627A) ................ 2-3
+2.4 De monitor afstellen ..................................................................... 2-4
+2.5 De kabels aansluiten .................................................................... 2-5
+2.6 De monitor inschakelen ............................................................... 2-6
+Hoofdstuk 3: Algemene instructies
+3.1 OSD-menu ..................................................................................... 3-1
+3.1.1 Opnieuw configureren ..................................................... 3-1
+3.1.2 Kennismaken met de OSD-functies ................................ 3-2
+3.2 Overzicht van specificaties ....................................................... 3-10
+3.3 Problemen oplossen (veelgestelde vragen) ............................ 3-17
+3.4 Ondersteunde bedieningsmodi ................................................ 3-18
+iv
+Mededelingen
+FCC-verklaring (Federal Communications Commission)
+Dit apparaat voldoet aan Deel 15 van de FCC-regels.Het gebruik is onderhevig 
+aan de volgende twee voorwaarden:
+• Dit apparaat mag geen schadelijke storing veroorzaken en
+• Dit apparaat moet elke ontvangen storing aanvaarden, met inbegrip van 
+storing die ongewenste werking kan veroorzaken.
+Dit apparaat werd getest en voldoet aan de beperkingen voor een digitaal apparaat 
+van Klasse B, in overeenstemming met Deel 15 van de FCC-voorschriften.Deze 
+beperkingen zijn vastgesteld om een redelijke beveiliging te bieden tegen schadelijke 
+storingen in een installatie in een woning.Deze apparatuur genereert en gebruikt 
+radiofrequente energie en kan die energie uitstralen. Wordt hij niet geïnstalleerd 
+en gebruikt volgens de instructies van de fabrikant, dan kan dat schadelijke storing 
+veroorzaken in radio communicatie. Er is echter geen garantie dat er geen storing 
+zal optreden in een particuliere installatie.Als dit apparaat toch schadelijke storingen 
+veroorzaakt aan radio- of televisieontvangst, wat kan worden vastgesteld door 
+het apparaat in en uit te schakelen, moet de gebruiker deze storing proberen te 
+corrigeren door een of meer van de volgende maatregelen te nemen:
+• Wijzig de richting van de ontvangstantenne of verplaats de antenne.
+• Vergroot de afstand tussen de apparatuur en de ontvanger.
+• Sluit de apparatuur aan op een stopcontact in een andere groep dan die waar 
+de ontvanger op is aangesloten.
+• Raadpleeg de leverancier of een ervaren radio/televisietechnicus voor hulp.
+Het gebruik van afgeschermde kabels voor het aansluiten van de monitor op de 
+grafische kaart is verplicht om te voldoen aan de FCC-regels. Veranderingen 
+en wijzigingen in dit apparaat die niet uitdrukkelijk zijn toegestaan door de partij 
+die verantwoordelijk is voor de compliantie, kunnen tot gevolg hebben dat de 
+gebruiker niet meer bevoegd is de apparatuur te bedienen.
+Met ENERGY START compatibel product
+ENERGY STAR is een gemeenschappelijk programma van het U.S. 
+Environmental Protection Agency (Amerikaans agentschap voor 
+milieubescherming) en het U.S. Department of Energy (Amerikaans 
+ministerie van energie) dat ons allemaal helpt geld te sparen en het 
+milieu te beschermen door middel van efficiënte producten en praktijken.
+v
+Alle ASUS-producten met het ENERGY STAR-logo voldoen aan de ENERGY 
+STAR-standaard en de energiebeheerfunctie is standaard ingeschakeld. De 
+monitor en computer worden automatisch ingesteld om na 10 en 30 minuten 
+inactiviteit van de gebruiker naar de slaapstand te gaan. Om uw computer te 
+activeren, klikt u op de muis of op een willekeurige toets op het toetsenbord. 
+Bezoek http://www.energystar.gov/powermanagement voor gedetailleerde 
+informatie over energiebeheer en de voordelen ervan voor het milieu. Bezoek 
+daarnaast http://www.energystar.gov voor gedetailleerde informatie of het 
+gemeenschappelijke ENERGY STAR-programma.
+OPMERKING: Energy Star wordt NIET ondersteund op FreeDOS- en Linux-
+besturingssystemen.
+Verklaring van Canadees Ministerie voor Communicatie
+Dit digitale apparaat overschrijdt de limieten niet van Klasse B voor 
+zendruisemissies van digitale apparaten , zoals vastgesteld in de voorschriften met 
+betrekking tot radiostoring van het Canadese ministerie voor Communicatie.
+Dit digitale apparaat van Klasse B voldoet aan de Canadese ICES-003.
+This Class B digital apparatus meets all requirements of the Canadian 
+Interference - Causing Equipment Regulations.
+Cet appareil numérique de la classe B respecte toutes les exigences du 
+Réglement sur le matériel brouiller du Canada.
+vi
+A third-party certification according to ISO 14024
+Say hello
+to a more sustainable product
+IT products are associated with a wide range of sustainability risks 
+throughout their life cycle. Human rights violations are common in the 
+factories. Harmful substances are used both in products and their 
+manufacture. Products can often have a short lifespan because of poor 
+ergonomics, low quality and when they are not able to be repaired or 
+upgraded. 
+This product is a better choice. It meets all the criteria in TCO Certified, 
+the world’s most comprehensive sustainability certification for IT 
+products. Thank you for making a responsible product choice, that help 
+drive progress towards a more sustainable future!
+Criteria in TCO Certified have a life-cycle perspective and balance 
+environmental and social responsibility. Conformity is verified by 
+independent and approved verifiers that specialize in IT products, social 
+responsibility or other sustainability issues. Verification is done both 
+before and after the certificate is issued, covering the entire validity 
+period. The process also includes ensuring that corrective actions are 
+implemented in all cases of factory non-conformities. And last but not 
+least, to make sure that the certification and independent verification is 
+accurate, both TCO Certified and the verifiers are reviewed regularly.
+Want to know more?
+Read information about TCO Certified, full criteria documents, news and 
+updates at tcocertified.com. On the website you’ll also find our Product 
+Finder, which presents a complete, searchable listing of certified 
+products. 
+Toward sustainable IT products
+vii
+A third-party certification according to ISO 14024
+Say hello
+to a more sustainable product
+IT products are associated with a wide range of sustainability risks 
+throughout their life cycle. Human rights violations are common in the 
+factories. Harmful substances are used both in products and their 
+manufacture. Products can often have a short lifespan because of poor 
+ergonomics, low quality and when they are not able to be repaired or 
+upgraded. 
+This product is a better choice. It meets all the criteria in TCO Certified, 
+the world’s most comprehensive sustainability certification for IT 
+products. Thank you for making a responsible product choice, that help 
+drive progress towards a more sustainable future!
+Criteria in TCO Certified have a life-cycle perspective and balance 
+environmental and social responsibility. Conformity is verified by 
+independent and approved verifiers that specialize in IT products, social 
+responsibility or other sustainability issues. Verification is done both 
+before and after the certificate is issued, covering the entire validity 
+period. The process also includes ensuring that corrective actions are 
+implemented in all cases of factory non-conformities. And last but not 
+least, to make sure that the certification and independent verification is 
+accurate, both TCO Certified and the verifiers are reviewed regularly.
+Want to know more?
+Read information about TCO Certified, full criteria documents, news and 
+updates at tcocertified.com. On the website you’ll also find our Product 
+Finder, which presents a complete, searchable listing of certified 
+products. 
+Toward sustainable IT products
+Veiligheidsinformatie
+• Lees alle documentatie die bij de verpakking is geleverd aandachtig door 
+voordat u de monitor installeert.
+• Om het risico op brand of schokken te voorkomen, mag u de monitor nooit 
+blootstellen aan regen of vocht.
+• Probeer nooit de behuizing van de monitor te openen.De gevaarlijke hoge 
+spanning in de monitor kan ernstige lichamelijke letsels veroorzaken.
+• Als de voeding defect is, mag u niet proberen deze zelf te repareren.Neem 
+contact op met een bevoegde servicetechnicus of met uw verkoper.
+• Controleer of alle kabels correct zijn aangesloten en of de voedingskabels niet 
+beschadigd zijn voordat u het product gebruikt.Neem onmiddellijk contact op 
+met uw leverancier als u schade ontdekt.
+• De sleuven en openingen op de achterkant of de bovenkant van de behuizing 
+zijn bedoeld voor de ventilatie.Blokkeer deze sleuven niet.Plaats dit product 
+nooit in de buurt van of op een radiator of een warmtebron, tenzij de geschikte 
+ventilatie is voorzien.
+• De monitor mag alleen worden gebruikt met het type stroombron dat op het 
+label is aangegeven.Als u niet zeker bent van het stroomtype in uw huis, kunt 
+u contact opnemen met uw leverancier of uw lokale elektriciteitsmaatschappij.
+• Gebruik de juiste voedingsstekker die voldoet aan uw lokale 
+elektriciteitsstandaard.
+• Zorg dat u geen contactdozen en verlengkabels overbelast.Een overbelasting 
+kan brand of elektrische schokken veroorzaken.
+• Vermijd stof, vochtigheid en extreme temperaturen.Plaats de monitor niet 
+op een plaats waar deze nat kan worden.Plaats de monitor op een stabiel 
+oppervlak.
+• Koppel het apparaat los tijdens een onweer of als u het gedurende langere 
+tijd niet zult gebruiken.Dit zal de monitor beschermen tegen schade door 
+stroompieken.
+• Steek nooit objecten in de sleuven van de monitorbehuizing of mors geen 
+vloeistof op de behuizing.
+• Voor een bevredigende werking, mag u de monitor alleen gebruiken met 
+UL-gecertificeerde computers die over de correct geconfigureerde contactdoos 
+beschikken met een markering 100-240V AC.
+• Als u technische problemen met de monitor ondervindt, moet u contact 
+opnemen met een bevoegde servicetechnicus of uw verkoper.
+Dit symbool of de vuilnisbak met een kruis er doorheen, geeft aan dat het 
+product (elektrische en elektronische apparatuur en knoopcelbatterijen met 
+kwik) niet bij het huishoudelijk afval terecht mogen komen.Neem contact op met 
+de gemeente voor het verwijderen van elektronische artikelen.
+viii
+Onderhoud & reiniging
+• Wij raden u aan de kabels en de voedingskabels los te koppelen voordat u de 
+monitor optilt of verplaatst.Volg de correcte tilmethode wanneer u de monitor 
+plaatst.Wanneer u de monitor optilt of draagt, neemt u de randen van de 
+monitor vast.Til het scherm niet op bij de voet of de kabel.
+• Reinigen.Schakel uw monitor uit en koppel de voedingskabel los.Reinig het 
+oppervlak van de monitor met een vezelvrije, niet schurende doek.Verwijder 
+lastige vlekken met een doek die met een zacht schoonmaakmiddel is 
+bevochtigd.
+• Vermijd het gebruik van een reinigingsmiddel dat alcohol of aceton bevat.
+Gebruik een reinigingsmiddel voor gebruik met de monitor.Sproei nooit 
+rechtstreeks schoonmaakmiddel op het scherm, omdat dit in de monitor kan 
+lekken en een elektrische schok veroorzaken.
+De volgende symptomen zijn normaal voor de monitor:
+• De helderheid van het scherm kan lichte variaties vertonen, afhankelijk van het 
+bureaubladthema dat u gebruikt.
+• Als dezelfde afbeelding urenlang wordt weergegeven, kan na het wisselen 
+van de afbeelding een nabeeld van de vorige afbeelding achterblijven.Het 
+scherm zal zichzelf langzaam herstellen; u kunt het scherm ook een paar uur 
+uitschakelen.
+• Als het scherm zwart wordt of gaat knipperen, of niet meer werkt, moet u 
+contact opnemen met uw leverancier of service-centrum om dit te herstellen.
+Repareer het scherm nooit zelf!
+Conventies die in deze handleiding worden gebruikt
+WAARSCHUWING: Informatie om lichamelijke letsels te voorkomen 
+wanneer u een taak probeert uit te voeren.
+LET OP: Informatie om schade aan de onderdelen te voorkomen 
+wanneer u een taak probeert uit te voeren.
+BELANGRIJK: Instructies die u MOET volgen om een taak te voltooien.
+OPMERKING: Tips en extra informatie om u te helpen bij het voltooien 
+van uw taak.
+ix
+Hier vindt u meer informatie
+Raadpleeg de volgende bronnen voor extra informatie en voor product- en 
+software-updates.
+1. ASUS-websites
+De wereldwijde ASUS-websites bieden bijgewerkte informatie over hardware- 
+en softwareproducten van ASUS. Raadpleeg http://www.asus.com
+2. Optionele documentatie
+Uw productverpakking kan optionele documentatie, zoals een garantiekaart, 
+bevatten die door uw leverancier werd toegevoegd. Deze documenten 
+maken geen deel uit van het standaardpakket.
+Takeback Services
+ASUS recycling and takeback programs come from our commitment to the highest 
+standards for protecting our environment. We believe in providing solutions for 
+our customers to be able to responsibly recycle our products, batteries and other 
+components as well as the packaging materials. 
+Please go to http://csr.asus.com/english/Takeback.htm for detail recycling 
+information in different region.
+x
+1-1ASUS C-reeks Lcd-monitor
+1.1 Welkom!
+Hartelijk dank voor uw aankoop van de ASUS® lcd-monitor!
+De nieuwste breedbeeld lcd-monitor van ASUS biedt een breder, helderder en 
+messcherp beeldscherm, aangevuld met talrijke functies die uw kijkervaring 
+verbeteren.
+Al deze functies maken van de monitor een onvergelijkelijk product dat u optimaal 
+gebruiksgemak en een fantastische visuele ervaring biedt.
+1.2 Inhoud van de verpakking
+Controleer de verpakking op de volgende onderdelen:
+ LCD-monitor
+ Voet van de monitor
+ Snelle startgids
+ Garantiekaart
+ Netsnoer
+ DVI-kabel (voor bepaalde modellen)
+ HDMI-kabel (voor bepaalde modellen)
+ DisplayPort-kabel (voor bepaalde modellen)
+ DisplayPort-kabel (Mini-DP naar DP) (voor bepaalde modellen)
+ VGA-kabel (voor bepaalde modellen)
+ Usb-kabel (voor bepaalde modellen)
+ Audiokabel (voor bepaalde modellen)
+ MiniPC-kit (voor bepaalde modellen)
+Als een van de bovenstaande items beschadigd is of ontbreekt, neem dan 
+onmiddellijk contact op met uw leverancier.
+ 
+1-2 Hoofdstuk 1: Kennismaken met het product
+1.3 Kennismaken met de monitor
+1.3.1 Vooraanzicht
+C422A/C423A/C424A 
+Menu
+Close
+Quick Fit
+Brightness
+Blue Light Filter
+Menu
+Close
+Quick Fit
+Brightness
+Blue Light Filter
+C620A/C622A/C623A/C624A/C624B/
+C624W/C627A
+7
+123456
+1. Voedingsknop/voedingsindicator
+• Schakelt de monitor in of uit.
+• In de onderstaande tabel vindt u de omschrijving van de kleuren van de 
+voedingsindicator.
+Status Beschrijving
+Wit AAN
+Geel Stand-bymodus
+UIT UIT
+2. Menuknop:
+• Druk op deze knop om het osd-menu te openen als de osd niet is 
+geactiveerd.
+• Opent het OSD-menu.
+• Schakelt de functie Toetsvergrendeling in of uit door 5 seconden ingedrukt 
+te houden.
+3. De knop Sluiten: 
+• Druk op deze knop om het osd-menu te openen als de osd niet is 
+geactiveerd.
+• Sluit het osd-menu af.
+1-3ASUS C-reeks Lcd-monitor
+4. QuickFit-knop:
+• Druk op deze knop om het osd-menu te openen als de osd niet is 
+geactiveerd.
+• Dit is een sneltoets om de QuickFit-functie te activeren die is voorzien 
+voor de uitlijning.
+• De functie QuickFit bevat pagina’s met algemene rasterpatronen, 
+papierformaten en fotoformaten. (Raadpleeg 1.3.3 QuickFit-functie). 
+5. Snelkoppeling 
+• Druk op deze knop om het osd-menu te openen als de osd niet is 
+geactiveerd.
+• Standaard: Sneltoets voor de helderheid
+• Om de sneltoetsfunctie te wijzigen, gaat u naar het menu 
+Snelkoppeling > Snelkoppeling 1.
+6. Snelkoppeling 
+• Druk op deze knop om het osd-menu te openen als de osd niet is 
+geactiveerd.
+• Standaard: Sneltoets blauwlichtfilter
+• Om de sneltoetsfunctie te wijzigen, gaat u naar het menu 
+Snelkoppeling > Snelkoppeling 2.
+7. Mensen-sensor (alleen voor C623AQR):
+• Detecteert de aanwezigheid van personen voor het beeldscherm. 
+Het beeldscherm activeert automatisch de stand-by-modus als meer 
+dan 60 seconde lang geen beweging voor het beeldscherm wordt 
+gedetecteerd. Het beeldscherm wordt automatisch weer ingeschakeld 
+zodra de gebruiker terugkeert en dit wordt gedetecteerd. De 
+standaardinstelling van is “Uit”. De gebruiker kan deze functie activeren 
+via de osd-instellingen.
+1-4 Hoofdstuk 1: Kennismaken met het product
+1.3.2 Achterkant
+C422AQ/C423AQ/
+C424AQ
+C422AQE/C423AQE/
+C424AQE
+C620AQE/C622AQE/
+C623AQE/C624AQE
+1 2 3 4 5 6 7 8
+10
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8
+C422AQH
+10
+1 2 3 4 57 8 11 6 9
+C422AQHE
+1 2 3 4 57 8 11 6
+C620AQ/C622AQ/
+C623AQ/C623AQR/
+C624AQ/C624BQ
+10
+1 2 3 4 5 6 7 8 9
+C627AQ
+10
+1 2 3 45 7 8 911 1012
+C624WQ
+10
+1 2 3 47 8 11 6 9 10
+C622AQH/C623AQH/
+C624AQH/C624BQH
+10
+1 2 3 4 57 8 11 6 9
+1. Gleuf voor Kensingtonslot.
+2. Netschakelaar. Druk op de netschakelaar om in en uit te schakelen.
+3. Netaansluiting. Hierop sluit u het netsnoer aan.
+1-5ASUS C-reeks Lcd-monitor
+4. DisplayPort-ingang. Deze poort is voor het aansluiten van een DisplayPort-
+compatibel apparaat.
+5. DVI-poort. Deze 24-pins poort is voor een DVI-D digitale signaalverbinding 
+met een pc (personal computer).
+6. VGA-poort. Deze 15-pins poort is voor een VGA-verbinding met een pc.
+7. Audio-inpoort. Deze poort verbindt een audiobron van een pc via de 
+bijgesloten audiokabel. 
+8. Aansluiting oortelefoon. Deze poort is uitsluitend beschikbaar als een 
+HDMI/DisplayPort-kabel is aangesloten.
+9. USB 2.0-upstreamaansluiting. Deze aansluiting dient voor een USB-
+upstream-kabel. De verbinding maakt het gebruik van de USB-aansluitingen 
+op de monitor mogelijk.
+10. USB 2.0-downstreamaansluitingen. Deze aansluitingen zijn bedoeld 
+voor verbinding met USB-apparaten zoals USB-toetsenbord/muis, USB-
+flashstation enzovoort.
+11. HDMI-poort. Deze poort is voor het aansluiten van een HDMI-compatibel 
+apparaat.
+12. Mini DisplayPort-ingang. Deze poort is voor het aansluiten van een Mini 
+DisplayPort-compatibel apparaat.
+1.3.3 QuickFit-functie
+De QuickFit-functie bevat drie soorten patronen: (1) Roosterpatronen 
+(2) Papiergrootte (3) Fotogrootte. Activeer de patronen met de QuickFit-toets. 
+Druk op de knoppen om een gewenst patroon te kiezen, zoals dit op het scherm 
+wordt aangegeven.
+Enkele van de volgende patronen zijn wellicht niet beschikbaar. Zie de 
+daadwerkelijke patronen op het beeldscherm.
+1. Roosterpatronen
+Met de Roosterpatronen kunnen gebruiken diverse content efficiënt ordenen en 
+vergelijken, zoals spreadscheets en fotobewerkingen. 
+Uitlijningsraster 1 Uitlijningsraster 2
+Alignment Grid 1 Alignment Grid 2
+1-6 Hoofdstuk 1: Kennismaken met het product
+2. Papierformaat
+QuickFit biedt talrijke vaak gebruikte standaard papierformaten waarmee 
+gebruikers hun documenten op ware grootte kunnen weergeven op het scherm.
+A4 B5
+A4 B5
+Brief
+Letter
+3. Fotogrootte
+De verschillende gotogrootten die worden getoond in de QuickFit-functie maken 
+het voor fotografen en andere gerbuikers mogelijk om de foto's in de ware grootte 
+op het scherm te bekeijken en te bewerken.
+Foto 4x6, 3x5, 2x2 Foto 8x10, 5x7
+3x5 2x24x6 5x78x10
+2-1ASUS C-reeks Lcd-monitor
+ 
+2.1 De arm/voet van de monitor monteren
+Zo monteert u de voet van de monitor:
+1. Leg de voorkant van de monitor plat op tafel.
+2. Monteer de voet aan de arm en let op dat het uitsteeksel op de arm in de 
+groef van de voet past.
+3. Maak de voet aan de arm vast door de meegeleverde schroef aan te draaien.
+We adviseren u een zachte doek op tafel te leggen om schade aan de monitor 
+te vermijden.
+C422A/C423A/C424A
+C620A/C622A/C623A/C624A/C624B/C624W/C627A
+2.2 De arm/voet loskoppelen 
+(voor VESA-wandmontage)
+De verwijderbare arm/voet van deze monitor is special voor VESA-wandmontage 
+ontworpen.
+De arm/voet demonteren:
+2-2 Hoofdstuk 2: Installatie
+C422A/C423A/C424A
+1. Leg de voorkant van de monitor plat op tafel.
+2. Verwijder de rubbers uit de vier schroefgaten. (Figuur 1)
+3. Verwijder de voet (Figuur 2).
+4. Verwijder met een schroevendraaier de schroef op het scharnier (Figuur 3) 
+en verwijder vervolgens het scharnier.
+1
+2
+(Figuur 1) (Figuur 2)
+1
+2
+(Figuur 3)
+C620A/C622A/C623A/C624A/C624B/C624W/C627A
+1. Leg de voorkant van de monitor plat op tafel.
+2. Druk op de ontgrendelingsknop en maak vervolgens de arm/voet los van de 
+monitor (Figuur 2).
+2
+1
+(Figuur 1) (Figuur 2)
+2-3ASUS C-reeks Lcd-monitor
+We adviseren u een zachte doek op tafel te leggen om schade aan de monitor 
+te vermijden.
+• De VESA-wandmontageset (100 x 100 mm) moet afzonderlijk worden 
+aangeschaft.
+• Gebruik alleen de wandmontagehaak met UL-classificatie met een minimaal 
+gewicht/minimale belasting van 22,7kg (schroefgrootte: M4 x 10 mm)
+2.3 De MiniPC-kit monteren/verwijderen 
+(C620A/C622A/C623A/C624A/
+C624B/C624W/C627A)
+De MiniPC-kit monteren
+2
+1
+De MiniPC-kit verwijderen
+2
+1
+2-4 Hoofdstuk 2: Installatie
+2.4 De monitor afstellen
+• Voor optimale weergave raden we aan dat u recht naar de monitor kijkt en de 
+monitor vervolgens instelt onder de hoek die voor u het meest comfortabel is.
+• Houd de voet vast om te voorkomen dat de monitor valt terwijl u de hoek 
+wijzigt.
+• C422A/C423A/C424A: De aanbevolen aanpassingshoek is +20˚ tot -5˚.
+• C620A/C622A/C623A/C624A/C624B/C624W: U kunt dehoek van de monitor 
+instellen van +35˚ tot -5˚ en hijdraait 90˚ naar links en rechts. U kunt ook de 
+hoogte van de monitor instellen binnen +/- 130 mm.
+• C627A: U kunt dehoek van de monitor instellen van +35˚ tot -5˚ en hijdraait 
+90˚ naar links en rechts. U kunt ook de hoogte van de monitor instellen binnen 
++/- 150 mm.
+90° 
+0° 
+90° 
+C4-reeks
+-5° ~ +20°
+C6-reeks
+-5° ~ +35°
+C6-reeks
+-90° ~ +90°
+C6-reeks
+150mm
+130mm
+(alleen voor C627A)
+(Kantelen)
+(Swivel) (Hoogte-instelling)
+(Kantelen)
+De monitor draaien (C620A/C622A/C623A/C624A/C624B/C624W/C627A)
+1. Til de monitor in de hoogste stand.
+2. Kantel de monitor tot de maximale hoek.
+3. Draai de monitor rechtsom/linksom tot de gewenste hoek.
+2-5ASUS C-reeks Lcd-monitor
+Het is normaal dat de monitor een beetje trilt terwijl u de hoek instelt.
+2.5 De kabels aansluiten
+Sluit de kabels aan volgens de onderstaande instructies:
+• De voedingskabel aansluiten: sluit het ene uiteinde van de voedingskabel 
+stevig aan op de netingang en het andere uiteinde op een stopcontact.
+• De VGA/DVI/DisplayPort/HDMI/Mini DisplayPort-kabel aansluiten: 
+a. Sluit het ene uiteinde van de VGA/DVI/DisplayPort/HDMI/Mini 
+DisplayPort-kabel aan op de VGA/DVI/DisplayPort/HDMI/Mini 
+DisplayPort-aansluiting van de monitor.
+b. Sluit het andere uiteinde van de VGA/DVI/DisplayPort/HDMI/
+Mini DisplayPort-kabel aan op de VGA/DVI/DisplayPort/HDMI/Mini 
+DisplayPort-aansluiting van de computer.
+c. Draai de twee schroeven vast om de VGA/DVI-stekker te bevestigen.
+2-6 Hoofdstuk 2: Installatie
+• De audiokabel aansluiten: steek het ene uiteinde van de audiokabel in de 
+Audio-inpoort van de monitor en steek het andere uiteinde in de audio-uitpoort 
+van de computer.
+• Gebruik van de oortelefoon: sluit het uiteinde met de stekker aan op de 
+oortelefooningang van de monitor als u gebruik maakt van een hdmi- of 
+DisplayPort-signaal.
+• De USB 2.0-aansluitingen gebruiken: pak de bijgesloten USB 2.0-kabel 
+en steek het kleine uiteinde (type B) van de USB-upstreamkabel in de 
+USB-upstreamaansluiting van de monitor en het grote uiteinde (type A) in 
+de USB 2.0-aansluiting van de computer. Zorg dat het nieuwste Windows 7/
+Windows 8 besturingssysteem op de computer is geïnstalleerd. Dat maakt het 
+gebruik van USB-aansluitingen op de monitor mogelijk.
+• De USB 3.0-aansluitingen gebruiken: pak de bijgesloten USB 3.0-kabel 
+en steek het kleine uiteinde (type B) van de USB-upstreamkabel in de 
+USB-upstreamaansluiting van de monitor en het grote uiteinde (type A) in 
+de USB 3.0-aansluiting van de computer. Zorg dat het nieuwste Windows 7/
+Windows 8.1/ Windows 10 besturingssysteem op de computer is geïnstalleerd. 
+Dat maakt het gebruik van USB-aansluitingen op de monitor mogelijk.
+Nadat deze kabels zijn aangesloten, kunt u het gewenste signaal selecteren 
+onder Ingangsselectie in het OSD-menu.
+2.6 De monitor inschakelen
+Druk op de aan/uit-knop . Zie pagina 1-2 voor de locatie van de aan/uitknop. De 
+voedingsindicator licht wit op om aan te geven dat de monitor AAN is.
+3-1ASUS C-reeks Lcd-monitor
+3.1 OSD-menu
+3.1.1 Opnieuw configureren
+Landschap
+Standaard
+Theater
+Nacht 
+sRGB
+Leesmodus
+Modus Donkere Kamer
+Splendid
+ASUS C622A
+Standaard VGA 1920 x 1080 @ 60Hz
+1. Druk op een willekeurige knop (behalve de aan/uitknop) om het osd-menu te 
+openen.
+2. Druk op de Menuknop om het osd-menu te activeren.
+3. Druk op de knoppen om door de functies te navigeren, zoals dit op het 
+scherm wordt aangegeven. Markeer de gewenste functie en druk op om 
+deze te activeren. Als de geselecteerde functie een submenu bevat, drukt 
+u op en nogmaals op om door de submenufuncties te navigeren. 
+Markeer de gewenste submenufunctie en druk op om deze te activeren. 
+4. Druk op en om de instellingen van de geselecteerde functie te 
+wijzigen.
+5. Druk op herhaaldelijk op of totdat het osd-menu verschijnt. Herhaal 
+stappen 1-4 om andere functies te wijzigen.
+ 
+3-2 Hoofdstuk 3: OSD-menu
+3.1.2 Kennismaken met de OSD-functies
+1. Splendid
+Deze functie bevat 7-8 subfuncties die u naar eigen inzicht kunt selecteren. 
+Elke modus bevat de optie Reset zodat u de instelling kunt behouden of 
+terugkeren naar de vooraf ingestelde modus.
+Landschap
+Standaard
+Theater
+Nacht 
+sRGB
+Leesmodus
+Modus Donkere Kamer
+Splendid
+ASUS C622A
+Standaard VGA 1920 x 1080 @ 60Hz
+Landschap
+Standaard
+Theater
+Spel 
+Nacht 
+sRGB
+Leesmodus
+Modus Donkere Kamer
+Splendid
+ASUS C627A
+Standaard DisplayPort 2560 x 1440 @ 60Hz
+• Landschap: De beste keuze voor de weergave van landschapsfoto’s met 
+SplendidPlus Video Enhancement.
+• Standaard: Beste keus voor het bewerken van documentenmet 
+SplendidPlus Video Enhancement.
+Standaardmodus voldoet aan de vereisten van Energy Star®.
+• Theater: De beste keuze voor films met de SplendidPlus Video 
+Enhancement.
+• Spel (alleen voor C624W/C627A): De beste keuze voor games met 
+SplendidPlus Video Enhancement.
+3-3ASUS C-reeks Lcd-monitor
+• Nacht: De beste keuze voor films of spelen met donkere scenes met de 
+SplendidPlus Video Enhancement.
+• sRGB: de beste keus voor het bekijken van foto’s en grafische beelden 
+van de computer.
+• Leesmodus: De beste keuze voor het lezen van boeken.
+• Modus Donkere Kamer: Dit is de beste keuze voor een omgeving met 
+een zwakke verlichting.
+• In de Standaardmodus kunnen de volgende functies niet door de 
+gebruiker worden geconfigureerd: Kleurverzadiging, Huidskleur, Scherpte, 
+ASCR.
+• In de sRGB-modus kunnen de volgende functies niet door de gebruiker 
+worden geconfigureerd: Helderheid, Contrast, Kleurverzadiging, Kleur, 
+Huidskleur, Scherpte, ASCR.
+• In de Leesmodus kunnen de volgende functies niet door de gebruiker 
+worden geconfigureerd: Contrast, Kleurverzadiging, Kleur, Huidskleur, 
+Scherpte, ASCR.
+2. Blauwlichtfilter
+Met deze functie past u het niveau van het blauwlichtfilter aan.
+Niveau 0
+Niveau 1
+Niveau 2
+Niveau 3
+Niveau 4
+Blauwlichtfilter
+ASUS C622A
+Standaard VGA 1920 x 1080 @ 60Hz
+• Niveau 0: Geen wijziging.
+• Niveau 1~4: Hoe hoger het niveau, hoe minder blauw licht wordt 
+verstrooid. 
+Als het Blauwlichtfilter is geactiveerd, wordt de standaardinstelling van 
+Standaardmodus automatisch geïmporteerd. De Helderheidfunctie kan 
+tussen Niveau 1 en Niveau 3 door de gebruiker worden aangepast. 
+Niveau 4 is de geoptimaliseerde instelling. Deze voldoet aan het 
+certificaat Weinig blauw licht van de TÜV. De Helderheidfunctie kan niet 
+door de gebruiker worden aangepast.
+3-4 Hoofdstuk 3: OSD-menu
+Zie het volgende om oogvermoeidheid te verminderen:
+• Neem regelmatig pauze als u het beeldscherm gedurende meerdere 
+uren gebruikt. Neem een korte pauze (minstens 5 minuten) na elk uur 
+onafgebroken werken aan de computer. Diverse korte en regelmatige 
+pauzes zijn effectiever dan één lange pauze.
+• Om droge ogen en vermoeide ogen tegen te gaan, kunt u uw ogen af en 
+toe rust gunnen door op voorwerpen in de verte te focussen.
+• Met oogoefeningen kunt oogvermoeidheid verminderen. Herhaal 
+regelmatig deze oefeningen. Als oogvermoeidheid aanhoudt, neemt u 
+contact op met een arts. Oogoefeningen: (1) Kijk herhaaldelijk omhoog en 
+omlaag (2) Draai langzaam met uw ogen (3) Beweeg uw ogen diagonaal.
+• Zeer intensief blauw licht kan leiden tot oogvermoeidheid en LMD 
+(leeftijdsgebonden maculadegeneratie). Een blauwlichtfilter vermindert 
+schadelijk blauw licht met 70% (maximaal) en droge ogen door 
+computergebruik.
+3. Kleur
+Stel in dit menu een gewenste kleurinstelling in.
+Helderheid
+Contrast
+Kleurverzadiging
+Kleur 
+Huidskleur 
+Kleur
+ASUS C622A
+Standaard VGA 1920 x 1080 @ 60Hz
+• Helderheid: Het instelbereik ligt tussen 0 en 100. 
+• Contrast: Het instelbereik ligt tussen 0 en 100. 
+• Kleurverzadiging: Het instelbereik ligt tussen 0 en 100.
+• Kleur: Bevat 4 standen te weten Koel, Normaal, Warm, en Gebruiker.
+• Huidskleur: Bevat de drie kleurstanden: Roodachtig, Natuurlijk en 
+Geelachtig. 
+3-5ASUS C-reeks Lcd-monitor
+4. Beeldinst
+Stel de beeldinstelling in.
+Scherpte
+Trace Free
+Beeldaspect aanpassen
+VividPixel
+ASCR
+Posit ie
+Scherpstel len
+Autom afstemmen 
+Beeldinst
+ASUS C622A
+Standaard VGA 1920 x 1080 @ 60Hz
+• Scherpte: het instelbereik ligt tussen 0 en 100.
+• Trace Free: past de responstijd van de monitor aan.
+• Beeldaspect aanpassen: pas de beeldverhouding aan naar Volledig 
+scherm, 4:3, 1:1 (optie) of OverScan (optie).
+4:3 is alleen beschikbaar als de invoerbron de verhouding 4:3 heeft. OverScan 
+is alleen beschikbaar voor de HDMI-invoerbron of een typische timing.
+• VividPixel: verbetert de omtreklijn van de weergegeven afbeelding en 
+genereert afbeeldingen van hoge kwaliteit op het scherm.
+• ASCR: schakelt de functie ASCR (ASUS Smart Contrast Ratio) in/uit.
+• Positie (Alleen beschikbaar voor VGA-ingang): adjgebruikt de 
+horizontale positie (H-Position) en de verticale positie (V-Position) van 
+het beeld.Het instelbereik ligt tussen 0 en 100.
+• Scherpstellen (Alleen beschikbaar voor VGA-ingang): vermindert 
+horizontale en verticale ruis van het beeld door (fase) en (klok) 
+gescheiden aan te passen.Het instelbereik ligt tussen 0 en 100.
+• Fase past de fase aan van het pixelkloksignaal.Wanneer een fase 
+verkeerd is ingesteld, zal het scherm horizontale storingen vertonen.
+• Klok (pixelfrequentie) beheert het aantal pixels dat door één horizontale 
+haal wordt gescand.Als de frequentie onjuist is, vertoont het scherm 
+verticale strepen en zijn de afbeeldingen van het beeld onjuist.
+• Autom afstemmen: past automatisch de afbeelding aan naar de 
+geoptimaliseerde positie, klok en fase (alleen voor VGA-modus).
+3-6 Hoofdstuk 3: OSD-menu
+5. Geluid
+U kunt Volume, Dempen en Bron aanpassen vanaf dit menu.
+Volume
+Dempen
+Bron 
+Geluid
+ASUS C622A
+Standaard VGA 1920 x 1080 @ 60Hz
+• Volume: het afstelbereik gaat van 0 tot 100.
+• Dempen: schakelt het monitorgeluid tussen aan en uit.
+• Bron: bepaalt van welke bron het monitorgeluid komt.
+6. Ingangsselectie
+Met deze functie kunt u de gewenste invoerbron selecteren.
+VGA
+DVI
+HDMI
+DisplayPort 
+Ingangsselectie
+ASUS C622A
+Standaard VGA 1920 x 1080 @ 60Hz
+DVI
+HDMI
+DisplayPort
+Mini DisplayPort 
+Ingangsselectie
+ASUS C627A
+Standaard DisplayPort 2560 x 1440 @ 60Hz
+3-7ASUS C-reeks Lcd-monitor
+7. Systeem-instelling 
+Hiermee kunt u het systeem aanpassen.
+Splendid Demo Mode
+ECO Mode
+USB opladen
+OSD-instel l ing
+Taal
+Toetsvergrendel ing
+Informat ie
+Meer 
+Systeem-instelling
+ASUS C622A
+Standaard VGA 1920 x 1080 @ 60Hz
+• Splendid Demo Mode: Deelt het scherm in tweeën voor vergelijking van 
+de Splendid-standen (alleen voor landschaps).
+• ECO Mode: vermindert het stroomverbruik.
+• USB opladen (alleen voor C422AQ/C422AQH/C423AQ/C424AQ/
+C620AQ/C622AQ/C622AQH/C623AQ/C623AQH/C623AQR/C624AQ/
+C624BQ/C624AQH/C624BQH/C627AQ): 
+* Met “Aan” kunnen de usb-downstreampoorten 5 V/500 mA 
+uitvoeren als het beeldscherm is ingeschakeld of op stand-by 
+staat.
+* Met “Uit” kunnen de usb-downstreampoorten uitsluitend 
+5 V/500 mA uitvoeren als het beeldscherm is ingeschakeld.
+• USB opladen (alleen voor C624WQ): 
+* Met “Aan” kunnen de USB-downstreampoorten een 5V/2A- 
+of 5V/900mA-uitgang genereren wanneer de monitor is 
+ingeschakeld of in stand-bymodus is. De onderstaande tabel toont 
+of de USB-downstreampoorten kunnen worden gebruikt voor het 
+opladen van een extern apparaat in verschillende situaties. 
+Downstreampoort Monitorstatus
+Wanneer de 
+upstreampoort is 
+aangesloten op de pc...
+Wanneer de 
+upstreampoort NIET is 
+aangesloten op de pc...
+-poort 
+Aan Staat opladen toe Staat opladen toe
+Stand-by Staat opladen toe Staat opladen toe
+-poort
+Aan Staat opladen toe Staat opladen niet toe
+Stand-by Staat opladen toe Staat opladen niet toe
+3-8 Hoofdstuk 3: OSD-menu
+* Met “Uit” kunnen de USB-downstreampoorten alleen een 
+5V/2A- of 5V/900mA-uitgang genereren wanneer de monitor 
+is ingeschakeld. De onderstaande tabel toont of de USB-
+downstreampoorten kunnen worden gebruikt voor het opladen 
+van een extern apparaat in verschillende situaties. 
+Downstreampoort Monitorstatus
+Wanneer de 
+upstreampoort is 
+aangesloten op de pc...
+Wanneer de 
+upstreampoort NIET is 
+aangesloten op de pc...
+-poort 
+Aan Staat opladen toe Staat opladen toe
+Stand-by Staat opladen niet toe Staat opladen niet toe
+-poort
+Aan Staat opladen toe Staat opladen niet toe
+Stand-by Staat opladen niet toe Staat opladen niet toe
+• OSD-instelling:
+* Past de OSD-timeout aan van 10 tot 120 seconden.
+* Schakelt de functie DDC/CI in of uit.
+* Past de OSD-achtergrond aan van gedekt naar transparant.
+• Taal: u kunt kiezen uit 21 talen, waaronder: Engels, Frans, Duits, 
+Italiaans, Spaans, Nederlands, Portugees, Russisch, Tsjechisch, 
+Kroatisch, Pools, Roemeens, Hongaars, Turks, Vereenvoudigd Chinees, 
+Traditioneel Chinees, Japans, Koreaans, Thais, Indonesisch, Perzisch.
+• Toetsvergrendeling: hiermee worden alle functietoetsen uitgeschakeld. 
+Houd de tweede knop van rechts langer dan vijf seconden ingedrukt om 
+de toetsvergrendelingsfunctie te annuleren.
+• Automatische brondetectie (alleen voor C624WQ/C627AQ): schakelt 
+de functie automatische brondetectie in of uit.
+• Informatie: toont de monitorinformatie.
+• Voedingsindicator: schakelt de voedingsindicator in of uit.
+• Human Sensor (alleen voor C623AQR): schakelt de functie Human 
+Sensor in of uit en wijzigt de gevoeligheid ervan. Het effectieve bereik is 
+van 50 tot 70 cm. De standaardinstelling is Uit.
+* Laag: Het bereik van de sensor is ongeveer 50 cm.
+* Gemiddeld: Het bereik van de sensor is ongeveer 60 cm.
+* Hoog: Het bereik van de sensor is ongeveer 70 cm.
+• Het detectiebereik kan eventueel licht afwijken als de gebruiker zeer 
+donkere kleding draagt of kleding met felle kleuren. Stel de gevoeligheid in 
+op Hoog als u zwarte of zeer donkere kleding draagt.
+• Plaats geen voorwerpen te dicht bij de Human Sensor om storing te 
+vermijden.
+• Slot voedingsknop: Activeert of deactiveert de aan/uittoets.
+• Reset alles: Met “Ja” herstelt u de standaardinstelling.
+3-9ASUS C-reeks Lcd-monitor
+8. Snelkoppeling
+Stelt de functies in voor de toetsen Snelkoppeling 1 en 2.
+Snelkoppel ing 1
+Snelkoppel ing 2
+ 
+Snelkoppeling
+ASUS C622A
+Standaard VGA 1920 x 1080 @ 60Hz
+• Snelkoppeling 1/Snelkoppeling 2: kiest een functie voor de toetsen 
+Snelkoppeling 1 en 2.
+Wanneer een bepaalde functie is geselecteerd of geactiveerd, wordt uw 
+sneltoets mogelijk niet ondersteund. Beschikbare functies voor sneltoets: 
+Blauwlichtfilter, Splendid, Helderheid, Autom afstemmen, Contrast, Kleur, 
+Volume.
+3-10 Hoofdstuk 3: OSD-menu
+3.2 Overzicht van specificaties
+C422A/C423A/C424A
+Schermtype TFT LCD
+Schermgrootte C422AQ/C422AQE/C422AQH/C422AQHE: 
+21,5" (16:9, 54,6 cm) breedscherm 
+C423AQ/C423AQE: 23" (16:9, 58,4 cm) breedscherm 
+C424AQ/C424AQE: 23,8" (16:9, 60,5 cm) breedscherm
+Max. resolutie C422AQ/C422AQE/C422AQH/C422AQHE: 
+1920 x 1080 
+C423AQ/C423AQE: 1920 x 1080 
+C424AQ/C424AQE: 1920 x 1080
+Pixelgrootte C422AQ/C422AQE/C422AQH/C422AQHE: 0,248 mm x 
+0,248 mm 
+C423AQ/C423AQE: 0,2652 mm x 0,2652 mm 
+C424AQ/C424AQE: 0,2745 mm x 0,2745 mm
+Helderheid (standaard) 250 cd/m2
+Contrastverhouding 
+(standaard)
+1000:1
+Contrastverhouding (Max.) 100.000.000:1 (met ASCR aan)
+Beeldhoek (H/V) CR >10 178˚/178˚
+Weergavekleuren 16,7 M
+Reactietijd < 5 ms 
+SplendidPlus Video 
+Enhancement
+Ja
+SplendidPlus-selectie 7 vooraf ingestelde videomodi
+Auto-instelling Ja
+Keuze van 
+kleurtemperatuur
+4 kleurtemperaturen
+Analoge ingang D-sub
+Digitale ingang DVI-D met HDCP, DisplayPort v1.2, HDMI (alleen voor 
+C422AQH/C422AQHE)
+Aansluiting voor 
+oortelefoon
+Ja
+Audio-ingang Ja
+Luidspreker (geïntegreerd) 2 W x 2 Stereo, RMS
+USB 2.0-aansluiting Upstream x 1, downstream x 2 (alleen voor C422AQ/
+C423AQ/C424AQ)
+USB 3.0-aansluiting Upstream x 1, downstream x 2 (alleen voor C422AH)
+Kleuren Zwart
+Voedings-led Wit (aan) / Geel (Stand-by)
+Kantelen +20˚ ~ -5˚
+Draaien Nee
+Ronddraaien Nee
+Hoogte-instelling Nee
+Kensingtonslot Ja
+Netspanning Wisselspanning: 100 ~ 240 V
+3-11ASUS C-reeks Lcd-monitor
+Opgenomen vermogen C422AQ/C422AQE/C422AQH/C422AQHE: 
+Ingeschakeld: < 21,09 W** (standaard), Standby: < 0,5 
+W (standaard), Uitgeschakeld: 0 W (Uitschakelen) 
+C423AQ/C423AQE: Ingeschakeld: < 22 W** (standaard), 
+Standby: < 0,5 W (standaard), Uitgeschakeld: 0 W 
+(Uitschakelen) 
+C424AQ/C424AQE: Ingeschakeld: < 22,97 W** 
+(standaard), Standby: < 0,5 W (standaard), 
+Uitgeschakeld: 0 W (Uitschakelen)
+Temperatuur (actief) 0˚C ~ 40˚C
+Temperatuur (Niet in 
+bedrijf)
+-20˚C ~ +60˚C
+Afmetingen (B x H x D) met 
+standaard
+C422AQ/C422AQE/C422AQH/C422AQHE: 514 x 383 x 
+195 mm (machine), 576 x 442 x 120 mm (verpakking) 
+C423AQ/C423AQE: 548 x 403 x 195 mm (machine), 
+617 x 119 x 462 mm (verpakking) 
+C424AQ/C424AQE: 562 x 406 x 195 mm (machine), 
+632 x 127 x 465 mm (verpakking) 
+Gewicht (ongeveer) C422AQ/C422AQE/C422AQH/C422AQHE: 3,8 kg 
+(netto); 5,3 kg (bruto) 
+C423AQ/C423AQE: 4,3 kg (netto); 5,7 kg (bruto) 
+C424AQ/C424AQE: 4,3 kg (netto); 5,9 kg (bruto)
+Meerdere talen 21 talen (Engels, Frans, Duits, Italiaans, Spaans, 
+Nederlands, Portugees, Russisch, Tsjechisch, Kroatisch, 
+Pools, Roemeens, Hongaars, Turks, Vereenvoudigd 
+Chinees, Traditioneel Chinees, Japans, Koreaans, Thais, 
+Indonesisch, Perzisch)
+Toebehoren Netsnoer, DVI-kabel (optie), DisplayPort-kabel, 
+VGA-kabel, Audiokabel, USB-kabel (alleen voor 
+C422AQ/C422AQH/C423AQ/C424AQ), Snelle startgids, 
+Garantiekaart
+Compliantie en normen UL/cUL, CB, CE, ErP, FCC, ISO9241-307, RCM, VCCI, 
+RoHS, Windows 7 & 8 WHQL, Energy Star®, Flicker 
+Free, Low blue Light, TUV-GS, TUV-Ergo, CU, PSE, 
+WEEE, EMC DoC, UkrSEPRO, MEPS, NFPA99
+* Specificaties kunnen zonder voorafgaand bericht worden gewijzigd.
+**meet een schermhelderheid van 200 nits zonder verbonden audio/USB/kaartlezer.
+3-12 Hoofdstuk 3: OSD-menu
+C620A/C622A/C623A/C624A/C624B/C624W
+Schermtype TFT LCD
+Schermgrootte C620AQ/C620AQE: 19,45" (16:10, 49,4 cm) 
+breedscherm 
+C622AQ/C622AQE/C622AQH: 21,5" (16:9, 54,6 cm) 
+breedscherm 
+C623AQ/C623AQE/C623AQR/C623AQH: 23" (16:9, 
+58,4 cm) breedscherm 
+C624AQ/C624AQE/C624AQH: 23,8" (16:9, 60,5 cm) 
+breedscherm 
+C624BQ/C624BQH/C624WQ: 24" (16:10, 61,13 cm) 
+breedscherm
+Max. resolutie C620AQ/C620AQE: 1440 x 900 
+C622AQ/C622AQE/C622AQH: 1920 x 1080 
+C623AQ/C623AQE/C623AQR/C623AQH: 1920 x 1080 
+C624AQ/C624AQE/C624AQH: 1920 x 1080 
+C624BQ/C624BQH/C624WQ: 1920 x 1200
+Pixelgrootte C620AQ/C620AQE: 0,2907 mm x 0,2915 mm 
+C622AQ/C622AQE/C622AQH: 0,248 mm x 0,248 mm 
+C623AQ/C623AQE/C623AQR/C623AQH: 0,2652 mm x 
+0,2652 mm 
+C624AQ/C624AQE/C624AQH: 0,2745 mm x 0,2745 mm 
+C624BQ/C624BQH/C624WQ: 0,270 mm x 0,270 mm
+Helderheid (standaard) C620AQ/C620AQE/C622AQ/C622AQE/C622AQH/
+C623AQ/C623AQE/C623AQR/C623AQH/C624AQ/
+C624AQE/C624AQH/C624BQ: 250 cd/m2
+C624BQH/C624WQ: 300 cd/m2
+Contrastverhouding 
+(standaard)
+1000:1
+Contrastverhouding (Max.) 100.000.000:1 (met ASCR aan)
+Beeldhoek (H/V) CR >10 178˚/178˚
+Weergavekleuren 16,7 M
+Reactietijd < 5 ms 
+SplendidPlus Video 
+Enhancement
+Ja
+SplendidPlus-selectie 7 - 8 vooraf ingestelde videomodi
+Auto-instelling Ja
+Keuze van 
+kleurtemperatuur
+4 kleurtemperaturen
+Analoge ingang D-sub
+Digitale ingang DVI-D met HDCP, DisplayPort v1.2, HDMI (alleen voor 
+C622AQH/C623AQH/C624AQH/C624BQH/C624WQ)
+Aansluiting voor 
+oortelefoon
+Ja
+Audio-ingang Ja
+Luidspreker (geïntegreerd) 2 W x 2 Stereo, RMS
+USB 2.0-aansluiting C620AQ/C622AQ/C623AQ/C623AQR/C624AQ/
+C624BQ: Upstream x 1, downstream x 2
+3-13ASUS C-reeks Lcd-monitor
+USB 3.0-aansluiting C622AQH/C623AQH/C624AQH/C624BQH: 
+Upstream x 1, downstream x 2 
+C624WQ: Upstream x 1, downstream x 4
+Kleuren Zwart
+Voedings-led Wit (aan) / Geel (Stand-by)
+Kantelen +35˚ ~ -5˚
+Draaien +90˚ ~ -90˚
+Ronddraaien +90˚ ~ -90˚
+Hoogte-instelling 130 mm
+Kensingtonslot Ja
+Netspanning Wisselspanning: 100 ~ 240 V
+Opgenomen vermogen C620AQ/C620AQE: Ingeschakeld: < 15,74 W** 
+(standaard), Standby: < 0,5 W (standaard), 
+Uitgeschakeld: 0 W (Uitschakelen) 
+C622AQ/C622AQE/C622AQH: Ingeschakeld: < 
+21,09 W** (standaard), Standby: < 0,5 W (standaard), 
+Uitgeschakeld: 0 W (Uitschakelen) 
+C623AQ/C623AQE/C623AQR/C623AQH: Ingeschakeld: 
+< 22 W** (standaard), Standby: < 0,5 W (standaard), 
+Uitgeschakeld: 0 W (Uitschakelen) 
+C624AQ/C624AQE/C624AQH: Ingeschakeld: < 
+22,97 W** (standaard), Standby: < 0,5 W (standaard), 
+Uitgeschakeld: 0 W (Uitschakelen) 
+C624BQ/C624BQH: Ingeschakeld: < 25,4 W** 
+(standaard), Standby: < 0,5 W (standaard), 
+Uitgeschakeld: 0 W (Uitschakelen) 
+C624WQ: Ingeschakeld: < 13,3 W** (standaard), 
+Standby: < 0,22 W (standaard), Uitgeschakeld: 0 W 
+(Uitschakelen)
+Temperatuur (actief) 0˚C ~ 40˚C
+Temperatuur (Niet in 
+bedrijf)
+-20˚C ~ +60˚C
+Afmetingen (B x H x D) met 
+standaard
+C620AQ/C620AQE: 459 x 477 x 211 mm (hoogste), 
+459 x 347 x 211 mm (laagste), 621 x 173 x 382 mm 
+(verpakking) 
+C622AQ/C622AQE/C622AQH: 514 x 477 x 211 mm 
+(hoogste), 514 x 347 x 211 mm (laagste), 643 x 378 x 
+190 mm (verpakking) 
+C623AQ/C623AQE/C623AQR/C623AQH: 584 x 490 x 
+211 mm (hoogste), 548 x 360 x 211 mm (laagste), 
+652 x 173 x 403 mm (verpakking) 
+C624AQ/C624AQE/C624AQH: 562 x 492 x 211 mm 
+(hoogste), 562 x 362 x 211 mm (laagste), 660 x 180 x 
+420 mm (verpakking) 
+C624BQ/C624BQH: 561 x 511 x 211 mm (hoogste), 
+561 x 381 x 211 mm (laagste), 662 x 179 x 454 mm 
+(verpakking) 
+C624WQ: 533 x 505 x 211 mm (hoogste), 533 x 375 x 
+211 mm (laagste), 649 x 192 x 474 mm (verpakking)
+3-14 Hoofdstuk 3: OSD-menu
+Gewicht (ongeveer) C620AQ/C620AQE: 4,8 kg (netto); 6,4 kg (bruto) 
+C622AQ/C622AQE/C622AQH: 5,7 kg (netto); 7,2 kg 
+(bruto) 
+C623AQ/C623AQE/C623AQR/C623AQH: 5,7 kg (netto); 
+7,3 kg (bruto) 
+C624AQ/C624AQE/C624AQH: 5,8 kg (netto); 7,9 kg 
+(bruto) 
+C624BQ/C624BQH: 6,2 kg (netto); 8,2 kg (bruto) 
+C624WQ: 6,1 kg (netto); 3,9 kg (zonder standaard); 8,3 
+kg (bruto)
+Meerdere talen 21 talen (Engels, Frans, Duits, Italiaans, Spaans, 
+Nederlands, Portugees, Russisch, Tsjechisch, Kroatisch, 
+Pools, Roemeens, Hongaars, Turks, Vereenvoudigd 
+Chinees, Traditioneel Chinees, Japans, Koreaans, Thais, 
+Indonesisch, Perzisch)
+Toebehoren Netsnoer, DVI-kabel (optie), HDMI-kabel (optie), 
+DisplayPort-kabel (optie), VGA-kabel (optie), Audiokabel 
+(optie), USB-kabel (alleen voor C620AQ/C622AQ/
+C623AQ/C623AQR/C624AQ/C624BQ/C624WQ), Snelle 
+startgids, Garantiekaart, MiniPC-kit (optie)
+Compliantie en normen UL/cUL, CB, CE, ErP, FCC, ISO9241-307, RCM, VCCI, 
+RoHS, Windows 7 & 8 & 10 WHQL, Energy Star®, 
+Flicker Free, Low blue Light, TUV-GS, TUV-Ergo, CU, 
+PSE, WEEE, EMC DoC, UkrSEPRO, MEPS, BSMI, 
+NFPA99
+Alleen voor C624WQ: CCC, CEL, PC Recycle, J-MOSS, 
+KC, KCC, e-Standby, TCO 8.0, ICE-3
+* Specificaties kunnen zonder voorafgaand bericht worden gewijzigd.
+**meet een schermhelderheid van 200 nits zonder verbonden audio/USB/kaartlezer.
+3-15ASUS C-reeks Lcd-monitor
+C627A
+Schermtype TFT LCD
+Schermgrootte 27" (16:9, 68,47 cm) breedscherm
+Max. resolutie 2560 x 1440
+Pixelgrootte 0,2331 mm x 0,2331 mm
+Helderheid (standaard) 350 cd/m2
+Contrastverhouding 
+(standaard)
+1000:1
+Contrastverhouding (Max.) 100.000.000:1 (met ASCR aan)
+Beeldhoek (H/V) CR >10 178˚/178˚
+Weergavekleuren 16,7 M
+Reactietijd < 5 ms
+SplendidPlus Video Enhancement Ja
+SplendidPlus-selectie 8 vooraf ingestelde videomodi
+Auto-instelling Ja
+Keuze kleurtemperatuur 4 kleurtemperaturen
+Analoge ingang Nee
+Digitale ingang DVI-D met HDCP, DisplayPort v1.2, HDMI, mini 
+DisplayPort
+Koptelefoonaansluiting Ja
+Audio-ingang Ja
+Luidspreker (ingebouwd) 2 W x 2 Stereo, RMS
+USB 3.0-aansluiting Upstream x 1, downstream x 4
+Kleuren Zwart
+Voedings-led Wit (aan)/Geel (Stand-by)
+Kantelen +35˚~ -5˚
+Draaien +90˚~ -90˚
+Swivel +90˚~ -90˚
+Hoogte-instelling 150 mm
+Kensington slot Ja
+Netspanning Wisselspanning: 100 ~ 240 V
+Opgenomen vermogen Ingeschakeld: < 75 W** (standaard), Standby: < 0,5 
+W (standaard), Uitgeschakeld: 0 W (Uitschakelen)
+Temperatuur (actief) 0˚C~40˚C
+Temperatuur (Niet in bedrijf) -20˚C~+60˚C
+Afmeting (B x H x D) zonder 
+standaard
+615 x 372 x 51 mm
+Afmetingen (B x H x D) met 
+standaard
+615 x 532 x 226 mm (hoogste), 
+615 x 382 x 226 mm (laagste), 
+735 x 216 x 464 mm (verpakking)
+Gewicht (ongeveer) 7,7 kg (netto); 5 kg (zonder standaard); 10,8 kg 
+(bruto)
+3-16 Hoofdstuk 3: OSD-menu
+Meerdere talen 21 talen (Engels, Frans, Duits, Italiaans, Spaans, 
+Nederlands, Portugees, Russisch, Tsjechisch, 
+Kroatisch, Pools, Roemeens, Hongaars, Turks, 
+Vereenvoudigd Chinees, Traditioneel Chinees, 
+Japans, Koreaans, Thais, Indonesisch, Perzisch)
+Toebehoren Netsnoer, DVI-kabel (optie), HDMI-kabel, DisplayPort-
+kabel, DisplayPort-kabel (Mini-DP naar DP) 
+(optie), Audiokabel, USB-kabel, Snelle startgids, 
+Garantiekaart
+Compliantie en normen UL/cUL, FCC, ICES-3, CB, CE, ErP, WEEE, TUV-GS, 
+TUV-Ergo, ISO 9241-307, UkrSEPRO, CU, CCC, 
+CEL, BSMI, RCM, MEPS, VCCI, PSE, PC Recycle, 
+J-MOSS, KC, KCC, e-Standby, Energy Star®, RoHs, 
+Windows 7/8.1/10 WHQL, Flicker Free, Low Blue 
+Light, NFPA99
+*Specificaties kunnen zonder voorafgaand bericht worden gewijzigd.
+**meet een schermhelderheid van 200 nits zonder verbonden audio/USB/kaartlezer.
+3-17ASUS C-reeks Lcd-monitor
+3.3 Problemen oplossen (veelgestelde 
+vragen)
+Probleem Mogelijke oplossing
+De voedings-led brandt niet • Druk op de knop om te controleren of de 
+monitor is ingeschakeld.
+• Controleer of de voedingskabel correct is 
+aangesloten op de monitor en het stopcontact.
+• Controleer of de netschakelaar aanstaat.
+De voedings-led brandt oranje en er 
+is geen beeld op het scherm
+• Controleer of de monitor en de computer zijn 
+ingeschakeld.
+• Controleer of de signaalkabel correct is 
+aangesloten op de monitor en de computer.
+• Inspecteer de signaalkabel en controleer of er 
+geen pins zijn verbogen.
+• Sluit de computer aan op een andere 
+beschikbare monitor om te controleren of de 
+computer correct werkt.
+Het beeld op het scherm is te helder 
+of te donker
+• Pas de instellingen voor het Contrast en de 
+Helderheid aan via het OSD.
+Het beeld op het scherm is niet 
+correct gecentreerd of heeft niet het 
+correcte formaat
+• Pas de instellingen voor de horizontale en 
+verticale positie aan via het OSD.
+Het beeld op het scherm stuitert of er 
+is een golvend patroon zichtbaar in 
+het beeld
+• Controleer of de signaalkabel correct is 
+aangesloten op de monitor en de computer.
+• Verplaats elektrische apparaten die elektrische 
+storingen kunnen veroorzaken.
+Het beeld op het scherm vertoont 
+afwijkende kleuren (het wit ziet er niet 
+wit uit)
+• Inspecteer de signaalkabel en controleer of er 
+geen pins zijn verbogen.
+• Voer een reset uit via het OSD.
+• Pas de RGB-kleurinstellingen aan of selecteer 
+de kleurtemperatuur via het OSD.
+Het beeld op het scherm is wazig • Pas de instellingen voor de Fase en de Klok aan 
+via het OSD.
+Er is geen geluid of het geluid is zwak • Controleer of de HDMI/DisplayPort-kabel correct 
+is aangesloten op de monitor en de computer.
+• Pas de volume-instellingen van uw monitor en 
+uw HDMI/DisplayPort-apparaat aan.
+• Controleer of het stuurprogramma van de 
+geluidskaart van uw computer correct is 
+geïnstalleerd en geactiveerd.
+3-18 Hoofdstuk 3: OSD-menu
+3.4 Ondersteunde bedieningsmodi
+C620A
+Resolutie frequentie Horizontale 
+frequentie (KHz)
+Verticale frequentie 
+(Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 48,08(P) 72,12(P) 50,00
+800x600 46,86(P) 75,00(P) 49,50
+832X624 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1360x768 47,712(P) 59,79(P) 85,5
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+* “P” / “N” staat voor de “positieve” / “negatieve” polariteit van binnenkomende H-sync/V-sync 
+(invoertiming).
+Als het beeldscherm in de videomodus functioneert (d.w.z. geen data weergeeft), worden de 
+volgende high-definition modi ondersteund naast standaard-definition video.
+Voorin-
+stelling
+Timingnaam Pixelformaat Horizontale 
+frequentie 
+(kHz)
+Verticale 
+frequentie 
+(Hz)
+Pixelsnelheid 
+(MHz)
+Osd-
+weergave
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+3-19ASUS C-reeks Lcd-monitor
+C422A/C622A/C423A/C623A/C424A/C624A
+Resolutie frequentie Horizontale 
+frequentie (KHz)
+Verticale frequentie 
+(Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 48,08(P) 72,12(P) 50,00
+800x600 46,86(P) 75,00(P) 49,50
+832X624 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(N) 108
+1280x1024 79,98(P) 75,02(N) 135
+1360x768 47,712(P) 59,79(P) 85,5
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(P) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+* “P” / “N” staat voor de “positieve” / “negatieve” polariteit van binnenkomende H-sync/V-sync 
+(invoertiming).
+3-20 Hoofdstuk 3: OSD-menu
+Als het beeldscherm in de videomodus functioneert (d.w.z. geen data weergeeft), worden de 
+volgende high-definition modi ondersteund naast standaard-definition video.
+Voorin-
+stelling
+Timingnaam Pixelformaat Horizontale 
+frequentie 
+(kHz)
+Verticale 
+frequentie 
+(Hz)
+Pixelsnelheid 
+(MHz)
+Osd-
+weergave
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+C624B
+Resolutie frequentie Horizontale 
+frequentie (KHz)
+Verticale 
+frequentie (Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+800x600 35,16(P) 56,25(P) 36
+800x600 37,88(P) 60,32(P) 40
+1024x768 48,36(N) 60,00(N) 65
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(P) 108
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(N) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+1920x1200 
+(Verminderde onderdrukking) 74,038(P) 59,95(N) 154
+* “P” / “N” staat voor de “positieve” / “negatieve” polariteit van binnenkomende H-sync/V-sync 
+(invoertiming). 
+* Modi die niet in de tabel worden weergegeven, worden mogelijk niet ondersteund. Voor een 
+optimale resolutie raden wij u aan een modus te selecteren die in de bovenstaande tabel is 
+weergegeven.
+* Deze monitor ondersteunt full HD (480p, 576p, 720p, 1080i/p) videomateriaal van game consoles, 
+DVD-spelers en andere video-apparaten via HDMI.
+Als het beeldscherm in de videomodus functioneert (d.w.z. geen data weergeeft), worden de 
+volgende high-definition modi ondersteund naast standaard-definition video.
+Voorin-
+stelling
+Timingnaam Pixelformaat Horizontale 
+frequentie 
+(kHz)
+Verticale 
+frequentie 
+(Hz)
+Pixelsnelheid 
+(MHz)
+Osd-
+weergave
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+3-21ASUS C-reeks Lcd-monitor
+C627A
+Resolutie frequentie Horizontale 
+frequentie (KHz)
+Verticale 
+frequentie (Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 46,86(P) 75,00(P) 49,50
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(N) 108
+1280x1024 79,98(P) 75,02(N) 135
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(P) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+1920x1200 
+(Verminderde onderdrukking) 74,038(P) 59,95(N) 154
+1920x1200 74,556(N) 59,885(P) 193,25
+2048x1152 
+(Verminderde onderdrukking) 70,99(P) 59,9(N) 156,75
+2560x1080 66,636(P) 59,978(N) 181,25
+2560x1440 88,787(P) 59,951(N) 241,5
+* “P” / “N” staat voor de “positieve” / “negatieve” polariteit van binnenkomende H-sync/V-sync 
+(invoertiming).
+Als het beeldscherm in de videomodus functioneert (d.w.z. geen data weergeeft), worden de 
+volgende high-definition modi ondersteund naast standaard-definition video.
+3-22 Hoofdstuk 3: OSD-menu
+Voorin-
+stelling
+Timingnaam Pixelformaat Horizontale 
+frequentie 
+(kHz)
+Verticale 
+frequentie 
+(Hz)
+Pixelsnelheid 
+(MHz)
+Osd-
+weergave
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+C624W
+Resolutie frequentie Horizontale 
+frequentie (KHz)
+Verticale frequentie 
+(Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480* 37,87(N) 72,82(N) 31,5
+640x480* 37,5(N) 75,00(N) 31,5
+720x400* 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36
+800x600 37,88(P) 60,32(P) 40
+800x600* 46,86(P) 75,00(P) 49,5
+832X624* 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65
+1024x768 56,476(N) 70,069(N) 75
+1024x768* 60,02(N) 75,00(N) 78,75
+1152x864* 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(P) 108
+1280x1024* 79,98(P) 75,02(P) 135
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(N) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+3-23ASUS C-reeks Lcd-monitor
+1920x1200 
+(Verminderde 
+onderdrukking)
+74,038(P) 59,95(N) 154
+Timingnaam Pixelformaat Horizontale 
+frequentie (kHz)
+Verticale 
+frequentie (Hz)
+Pixelsnelheid 
+(MHz)
+480p 720 x 480 31,469 60 27
+720p60 1280 x 720 45 60 74,25
+576p 720 x 576 31,25 50 27
+720p50 1280 x 720 37,5 50 74,25
+1080p60 1920 x 1080 67,5 60 148,5
+1080p50 1920 x 1080 56,25 50 148,5
+* Deze timing wordt niet ondersteund wanneer u de OverScan-functie gebruikt. 
+ Inhoud
+ Mededelingen
+ Veiligheidsinformatie
+ Onderhoud & reiniging
+ Takeback Services
+ Hoofdstuk 1: Kennismaken met het product
+ 1.1 Welkom!
+ 1.2 Inhoud van de verpakking
+ 1.3 Kennismaken met de monitor
+ 1.3.1 Vooraanzicht
+ 1.3.2 Achterkant
+ 1.3.3 QuickFit-functie
+ Hoofdstuk 2: Installatie
+ 2.1 De arm/voet van de monitor monteren
+ 2.2 De arm/voet loskoppelen (voor VESA-wandmontage)
+ 2.3 De MiniPC-kit monteren/verwijderen (C620A/C622A/C623A/C624A/C624B/C624C/C627A)
+ 2.4 De monitor afstellen
+ 2.5 De kabels aansluiten
+ 2.6 De monitor inschakelen
+ Hoofdstuk 3: Algemene instructies
+ 3.1 OSD-menu
+ 3.1.1 Opnieuw configureren
+ 3.1.2 Kennismaken met de OSD-functies
+ 3.2 Overzicht van specificaties
+ 3.3 Problemen oplossen (veelgestelde vragen)
+ 3.4 Ondersteunde bedieningsmodi

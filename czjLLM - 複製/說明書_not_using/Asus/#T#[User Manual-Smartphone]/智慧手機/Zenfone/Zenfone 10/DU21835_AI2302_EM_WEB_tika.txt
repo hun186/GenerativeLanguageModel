@@ -1,0 +1,1861 @@
+
+AI2302AI2302
+Gebruikershandleiding
+2
+Zorg en veiligheid
+Richtlijnen
+Veiligheid op de weg is topprioriteit. Wij raden u sterk af het apparaat te gebruiken 
+tijdens het besturen of het bedienen van enig type voertuig.
+Dit apparaat mag alleen worden gebruikt in omgevingen met een 
+omgevingstemperatuur tussen 0°C (32°F) en 35°C (95°F).
+Schakel het apparaat uit in begrensde gebieden waar het gebruik van mobiele 
+apparaten verboden is. Leef altijd regels en voorschriften na binnen deze begrensde 
+gebieden, zoals een vliegtuig, bioscoop, ziekenhuis of in de buurt van medische 
+apparatuur, gas of benzine, op bouwwerven, op plaatsen waar explosiegevaar 
+bestaat en andere gebieden.
+Gebruik alleen wisselstroomadapters en kabels die door ASUS zijn goedgekeurd 
+voor gebruik met dit apparaat. Raadpleeg het vermogenslabel op de onderkant 
+van uw apparaat en zorg ervoor dat uw voedingsadapter overeenstemt met dit 
+vermogen.
+Gebruik geen beschadigde voedingskabels, accessoires en andere randapparatuur 
+met uw apparaat.
+Houd uw apparaat droog. Stel uw apparaat niet bloot aan vloeistoffen, regen of 
+vocht. 
+U kunt uw apparaat door röntgenmachines voeren (zoals de machines die worden 
+gebruikt voor de transportbanden van de luchthavenbeveiliging), maar stel het niet 
+bloot aan magnetische detectoren en magneetpennen.
+Het scherm van het apparaat is van glas. Als het glas gebroken is, mag u het 
+apparaat niet langer gebruiken en mag u de gebroken glazen onderdelen niet 
+aanraken. Stuur het apparaat onmiddellijk voor reparatie naar een door ASUS 
+erkende onderhoudsdienst.
+Om mogelijke gehoorschade te voorkomen, mag u niet langdurig luisteren aan een 
+hoog volumeniveau.
+Koppel de netstroom los voordat u het apparaat reinigt. Gebruik alleen een 
+schone cellulose spons of een zeemleer wanneer u het scherm van uw apparaat 
+schoonmaakt.
+Stuur het apparaat alleen naar door ASUS erkend onderhoudspersoneel voor 
+reparaties.
+DU21835
+Juli 2023
+Eerste Editie
+3
+Goede verwijdering
+Ontploffingsgevaar als de batterij wordt vervangen door een onjuist type. Gooi lege 
+batterijen weg in overeenstemming met de instructies.
+Gooi de ASUS Phone NIET bij het huishoudelijk afval. Dit product is ontworpen om een 
+correct hergebruik van onderdelen en recycling mogelijk te maken. Het symbool met de 
+doorgekruiste vuilnisbak geef aan dat het artikel (elektrisch, elektronische apparatuur 
+en knoopbatterijen welke kwik bevatten) niet bij het gemeentelijk afval mogen worden 
+afgeleverd. Raadpleeg de lokale voorschriften voor het verwijderen van elektronische 
+producten.
+Gooi de batterij NIET bij het huishoudelijk afval. Het symbool met de doorgekruiste vuilnisbak 
+geeft aan dat de batterij niet met het huishoudelijk afval mag worden verwijderd.
+Gooi de ASUS Phone NIET in vuur. Veroorzaak GEEN kortsluiting in de contacten. Demonteer 
+de ASUS Phone NIET.
+ZenTalk-fanforum 
+(http://www.asus.com/zentalk/global_forward.php)
+OPMERKING: 
+• Voor meer wettelijke en e-labelinformatie, controleert u dit op uw apparaat in Settings 
+(Instellingen) > System (Systeem) > Regulatory labels (Regelgevende labels) en Settings 
+(Instellingen) > System (Systeem) > About Phone (Over Phone) > Legal Information (Wettelijke 
+informatie).
+• De app-omschrijvingen die in deze handleiding worden getoond, zijn alleen bedoeld als referentie, 
+en komen wellicht niet exact overeen met wat u op uw apparaat ziet.
+4
+1 Basisprincipes
+Welkom! .................................................................................................................................................... 7
+Uw ASUS Phone gebruiksklaar maken! ......................................................................................... 8
+Eerste gebruik .......................................................................................................................................16
+Instructie van navigatiebewegingen ...........................................................................................17
+Het aanraakscherm gebruiken .......................................................................................................18
+2 Nergens is het zo goed als thuis
+Zen beginschermfuncties ..........................................................................................21
+Beginscherm .........................................................................................................................................21
+Snelle instellingen ...............................................................................................................................22
+Meldingen ..............................................................................................................................................23
+Randgereedschap ...............................................................................................................................24
+Uw startscherm aanpassen ........................................................................................25
+Achtergronden .....................................................................................................................................26
+Widgets ...................................................................................................................................................27
+Voorkeuren ............................................................................................................................................27
+De datum en tijd instellen ................................................................................................................28
+Uw beltoon en waarschuwingsgeluiden instellen ..................................................................28
+3 Werk hard, speel harder
+Chrome ........................................................................................................................29
+Chrome starten ....................................................................................................................................29
+Een pagina delen .................................................................................................................................30
+Bladwijzers toevoegen aan pagina’s .............................................................................................30
+De surfgegevens wissen ...................................................................................................................30
+Gmail ............................................................................................................................31
+Google Agenda ...........................................................................................................32
+Gebeurtenissen maken .....................................................................................................................32
+Gebeurtenis bewerken of verwijderen ........................................................................................32
+Herinneringen maken ........................................................................................................................33
+Herinneringen bewerken of verwijderen ...................................................................................33
+Bestandsbeheer ..........................................................................................................34
+4 Contact houden
+Bel in stijl .....................................................................................................................36
+Dubbele SIM-functie ..........................................................................................................................36
+Bellen .......................................................................................................................................................38
+Uw favoriete contacten bellen .......................................................................................................40
+Oproepen ontvangen ........................................................................................................................40
+Overige belopties ................................................................................................................................41
+Gesprekken opnemen .......................................................................................................................42
+Contactpersonen beheren .........................................................................................43
+Contactinstellingen ............................................................................................................................43
+Uw profiel instellen .............................................................................................................................43
+Inhoudsopgave
+5
+Contactpersonen toevoegen ..........................................................................................................44
+Uw favoriete contacten markeren .................................................................................................45
+Uw blokkeerlijst beheren .................................................................................................................46
+Berichten versturen en meer .....................................................................................47
+Berichten ................................................................................................................................................47
+5 Plezier en amusement
+De headset gebruiken ................................................................................................48
+Een audiostekker aansluiten ...........................................................................................................48
+YT Muziek ....................................................................................................................49
+6 Uw dierbare momenten
+Momenten vastleggen ...............................................................................................50
+De app Camera starten .....................................................................................................................50
+Afbeeldingslocaties ............................................................................................................................51
+Geavanceerde camerafuncties .......................................................................................................51
+Tijdvertraging .......................................................................................................................................52
+De galerie gebruiken ..................................................................................................53
+De fotolocatie bekijken .....................................................................................................................53
+Een afbeelding bewerken ................................................................................................................53
+Bestanden van de galerie delen .....................................................................................................53
+Bestanden verwijderen uit de galerie. .........................................................................................54
+7 Verbonden blijven
+Mobiel netwerk ...........................................................................................................55
+Het mobiele netwerk inschakelen.................................................................................................55
+Wifi ...............................................................................................................................55
+Wifi inschakelen ...................................................................................................................................55
+Een verbinding maken met een Wifi-netwerk ..........................................................................56
+Wifi uitschakelen ..................................................................................................................................56
+Bluetooth® ...................................................................................................................56
+Bluetooth® inschakelen .....................................................................................................................56
+Uw ASUS Phone koppelen met een Bluetooth®-apparaat ...................................................57
+Het koppelen van uw ASUS Phone met een Bluetooth®-apparaat opheffen ...............57
+Tethering .....................................................................................................................58
+Wifi-hotspot ...........................................................................................................................................58
+USB Tethering .......................................................................................................................................59
+Bluetooth tethering ............................................................................................................................59
+8 Reisapps
+Weer .............................................................................................................................60
+De app Weer starten ...........................................................................................................................60
+Beginscherm Weer ..............................................................................................................................61
+Klok ..............................................................................................................................62
+Wekker .....................................................................................................................................................62
+Wereldklok .............................................................................................................................................63
+Stopwatch ..............................................................................................................................................63
+Timer ........................................................................................................................................................64
+6
+9 Zen Overal
+Speciale Zenhulpmiddelen ........................................................................................65
+Calculator ...............................................................................................................................................65
+Geluids-recorder ..................................................................................................................................66
+Mobile Manager ..........................................................................................................68
+10 Behoud uw Zen
+Uw apparaat up-to-date houden...............................................................................69
+Uw systeem bijwerken ......................................................................................................................69
+Opslagruimte ........................................................................................................................................69
+Back-up maken en opnieuw instellen ..........................................................................................69
+Reset (Opnieuw instellen) ................................................................................................................69
+Uw ASUS Phone beveiligen........................................................................................70
+Uw scherm ontgrendelen .................................................................................................................70
+Fingerprint ID sensor (Sensor vingerafdruk-id) .......................................................73
+Uw ASUS Phone voor de eerste keer opstarten .......................................................................73
+De vingerafdruk-id instellen vanaf Settings (Instellingen) ...................................................74
+Gezichtsontgrendeling ..............................................................................................75
+Gezichtsontgrendeling instellen vanaf Settings (Instellingen) ..........................................75
+De identiteit van uw ASUS Phone instellen ..............................................................78
+Bijlagen 
+Veiligheidsinformatie .................................................................................................79
+7Hoofdstuk 1: Basisprincipes
+1Basisprincipes
+1 Basisprincipes
+Welkom!
+Verken de intuïtieve eenvoud van ASUS Zen UI.
+ASUS Zen UI is een charmante en intuïtieve interface, exclusief ontworpen voor ASUS Phones. U 
+kunt gebruikmaken van speciale apps die in of bij andere apps zijn geïntegreerd zodat ze voldoen 
+aan uw unieke persoonlijke behoeften en ze uw leven vergemakkelijken terwijl u plezier beleeft 
+aan het gebruik van uw ASUS Phone.
+Camera
+Dankzij de PixelMaster-technologie kunt u die waardevolle momenten vastleggen in 
+levendige en foto’s en video’s van hoge kwaliteit.
+Berichten
+Met Berichten, een gebruiksvriendelijke en schitterende app, kunt u SMS-/MMS-
+berichten verzenden/ontvangen en groepsteksten, foto’s of audioberichten verzenden. 
+U kunt ook emoticons of stickers toevoegen aan uw berichten, uw locatie delen, uw 
+berichten activeren en gemakkelijk SMS-afzenders blokkeren. Het is ook mogelijk foto’s 
+te maken of video’s op te nemen en deze bestanden vervolgens gemakkelijk te delen.
+Bestandsbeheer
+Via Bestandsbeheer kunt u uw gegevens gemakkelijk zoeken en beheren in het interne 
+geheugen van uw ASUS Phone en de verbonden externe opslagapparaten.
+OPMERKING: De beschikbaarheid van de ASUS Zen UI-apps verschilt afhankelijk van de regio en het 
+ASUS Phonemodel. Veeg omhoog op het startscherm om de apps te bekijken die beschikbaar zijn op 
+uw ASUS Phone.
+8 Hoofdstuk 1: Basisprincipes
+Uw ASUS Phone gebruiksklaar maken!
+Onderdelen en functies
+Leer uw apparaat kennen en maak het in een handomdraai gebruiksklaar.
+WAARSCHUWING!
+• Om problemen met de netwerkverbinding en de batterij te vermijden:
+ • Plaats GEEN metaalhoudende sticker op het antennegebied.
+ • Gebruik GEEN metaalhoudende beschermende lijst/hoes op uw ASUS Phone.
+ • Dek het antennegebied NIET af met uw handen of andere objecten tijdens het gebruik 
+van bepaalde functies, zoals het plaatsen van gesprekken of het gebruiken van de mobiele 
+gegevensverbinding.
+• Wij raden u aan ASUS-compatibele schermbeschermers te gebruiken. Als u schermbeschermers 
+gebruikt die niet ASUS-compatibel zijn, kan de sensor van de ASUS Phone defect raken.
+BELANGRIJK!
+• Het is niet aanbevolen een schermbescherming te gebruiken, omdat dit de nabijheidssensor 
+kan verstoren. Als u een schermbescherming wilt gebruiken, moet u ervoor zorgen dat u de 
+nabijheidssensor niet blokkeert.
+• Houd het apparaat, vooral het aanraakscherm, altijd droog. Als water of andere vloeistoffen in 
+aanraking komen met het scherm, kan het aanraakscherm schade oplopen.
+Ontvanger
+Aanraakscherm
+Voedings-toets & 
+Vingerafdruksensor
+Volumetoets
+Nano SIM -kaartsleuf
+Camera achter Flitser
+Microfoon
+Luidspreker
+USB Type-C poort
+Microfoon
+Uitwerpopening
+Audioaansluiting
+Camera voor Nabijheidssensor & lichtsensor NFC-detectie gebied
+Draadloos oplaadgebied
+9Hoofdstuk 1: Basisprincipes
+Een Nano SIM -kaart installeren
+ Beide Nano SIM-kaartsleuven ondersteunen GSM/GPRS/EDGE, WCDMA/HSPA+/DC-HSPA+, FDD-
+LTE, TD-LTE en 5G NR Sub-6 netwerkbanden.
+VOORZICHTIG! Wees extra voorzichtig wanneer u omgaat met een Nano-SIM-kaart. ASUS is niet 
+verantwoordelijk voor gegevensverlies of schade aan uw Nano-SIM-kaarten.
+Een Nano SIM -kaart installeren:
+1. Duw de meegeleverde uitwerp-pen in de opening op de kaartsleuf om de lade uit te werpen.
+2. Stop de Nano SIM -kaart(en) in de kaartsleuf of kaartsleuven.
+VOORZICHTIG!
+• Gebruik geen scherpe gereedschappen of oplosmiddelen op uw apparaat om krassen erop te 
+voorkomen.
+• Gebruik alleen een standaard Nano-SIM-kaart op uw ASUS Phone. 
+OPMERKINGEN:
+• De Nano SIM-kaartsleuven ondersteunen de GSM/GPRS/EDGE, WCDMA/HSPA+/DC-HSPA+, FDD-LTE, 
+TD-LTE, en 5G NR Sub-6 netwerkbanden. Beide Nano SIM-kaarten kunnen verbinding met de VoLTE 
+4G belservice. Er kan echter slechts één per keer verbinden met de 5G NR Sub-6-gegevensservice.
+• Het actuele netwerk- en frequentiebandgebruik is afhankelijk van de netwerkimplementatie in uw 
+gebied. Neem contact op met uw telecomaanbieder als 5G NR Sub-6-ondersteuning en de VoLTE 
+4G-belservice beschikbaar zijn in uw gebied.
+3. Duw de lade voorzichtig terug naar binnen tot deze stevig is gesloten.
+Nano-SIM1
+Nano-SIM2
+10 Hoofdstuk 1: Basisprincipes
+Een Nano-SIM-kaart verwijderen
+VOORZICHTIG! Wees extra voorzichtig wanneer u omgaat met een Nano-SIM-kaart. ASUS is niet 
+verantwoordelijk voor gegevensverlies of schade aan uw Nano-SIM-kaarten.
+Een Nano-SIM-kaart verwijderen:
+1. Duw de meegeleverde uitwerp-pen in de opening op de kaartsleuf om de lade uit te werpen.
+2. Verwijder de nano SIM-kaart(en) uit de kaartsleuf (sleuven).
+3. Duw de lade voorzichtig terug naar binnen tot deze stevig is gesloten.
+Nano-SIM1
+Nano-SIM2
+11Hoofdstuk 1: Basisprincipes
+Uw ASUS Phone opladen
+Uw ASUS Phone is bij de levering gedeeltelijk opgeladen. Laad het apparaat volledig op voordat u 
+het voor de eerste keer gebruikt. Lees de volgende belangrijke opmerkingen en waarschuwingen 
+voordat u uw apparaat oplaadt.
+ BELANGRIJK!
+• Pel de beschermende film van de wisselstroomadapter en het USB Type-C kabel voordat u ze 
+gebruikt met uw apparaat.
+• Zorg dat u de wisselstroomadapter aansluit op een compatibel stopcontact. U kunt de 
+wisselstroomadapter aansluiten op elk compatibel 100~240 V stopcontact.
+• De uitgangsspanning van de wisselstroomadapter voor dit apparaat is +5V-10V 3A, 30W.
+• Wanneer u de ASUS Phone gebruikt terwijl deze is aangesloten op een stopcontact, moet het 
+stopcontact zich in de buurt van uw apparaat bevinden en gemakkelijk toegankelijk zijn.
+• Om elektriciteit te sparen, koppelt u de wisselstroomadapter los van het stopcontact wanneer het 
+niet in gebruik is.
+• Plaats geen zware objecten bovenop uw ASUS Phone.
+VOORZICHTIG! 
+• Tijdens het opladen kan uw ASUS Phone warm worden. Dit is normaal, maar als uw apparaat 
+abnormaal warm wordt, moet u de USB-Type-C-kabel loskoppelen van uw apparaat en het apparaat, 
+inclusief de wisselstroomadapter en kabel naar door ASUS erkend onderhoudspersoneel sturen.
+• Schade aan uw ASUS Phone, wisselstroomadapter of USB-Type-C-kabel vermijden. Controleer of de 
+USB-Type-C-kabel, wisselstroomadapter en uw apparaat goed zijn aangesloten voordat u het opladen 
+start.
+Uw ASUS Phone opladen:
+1. Sluit de USB-kabel aan op de voedingsadapter.
+2. Sluit de USB-kabel aan op uw ASUS Phone.
+3. Stop de wisselstroomadapter in een geaard stopcontact.
+1
+2
+3
+12 Hoofdstuk 1: Basisprincipes
+BELANGRIJK!
+• Wanneer u de ASUS Phone gebruikt terwijl deze is aangesloten op een stopcontact, moet het 
+geaarde stopcontact zich in de buurt van het toestel bevinden en gemakkelijk toegankelijk zijn.
+• Wanneer u uw ASUS Phone oplaadt via de computer, moet u ervoor zorgen dat u de USB-Type-C-
+kabel aansluit op de USB - poort van de computer.
+• Vermijd het opladen van de ASUS Phone in een omgeving waar de temperatuur hoger is dan 35°C.
+• Laad uw ASUS Phone gedurende acht (8) uur op voordat u het toestel de eerste keer in de 
+batterijmodus gebruikt.
+• De status van de batterijlading wordt aangegeven met de volgende pictogrammen:
+ Laag Niet bezig met laden Bezig met laden 
+   
+OPMERKINGEN:
+• Voor veiligheidsdoeleinden mag u ALLEEN de meegeleverde voedingsadapter en -kabel gebruiken 
+om schade aan uw apparaat te voorkomen en het risico op letsels te voorkomen.
+• Voor veiligheidsdoeleinden mag u ALLEEN de meegeleverde voedingsadapter en -kabel gebruiken 
+voor het opladen van uw ASUS Phone.
+4. Wanneer het apparaat volledig is opgeladen, koppelt u de USB-kabel eerst los van uw ASUS 
+Phone voordat u de wisselstroomadapter loskoppelt van het stopcontact.
+OPMERKINGEN: 
+• U kunt uw apparaat gebruiken tijdens het opladen, maar het kan langer duren om het apparaat 
+volledig op te laden.
+• Het opladen van het apparaat kan langer duren als u oplaadt via de USB-poort van een computer.
+• Als uw computer onvoldoende vermogen biedt voor het opladen via de USB-poort, laadt u de ASUS 
+Phone op met de wisselstroomadapter die op een stopcontact is aangesloten.
+13Hoofdstuk 1: Basisprincipes
+Laad uw ASUS Phone draadloos op
+U kunt een QI-gecertificeerde draadloze lader aanschaffen voor het draadloos opladen van uw 
+ASUS Phone.
+Als u uw ASUS Phone gebruikt tijdens het opladen, kan het opladen vertragen of zelfs stoppen om 
+de batterij te beschermen. Het gebruik van bepaalde apps tijdens het opladen, kan het opladen 
+stoppen of de functionaliteit van het opladen beïnvloeden. 
+Wanneer u draadloos oplaadt, moet u ervoor zorgen dat u alle afdekkingen, hoezen of 
+telefoonaccessoires verwijdert en moet u zich bewust zijn van het volgende:
+• Plaats geen geleidende materialen, zoals metalen onderdelen en magneten, tussen uw ASUS 
+Phone en de lader om brandwonden te voorkomen.
+• Plaats geen creditcards, vervoerskaarten of sleutelkaarten (RFID) op de lader om te voorkomen 
+dat ze worden gedemagnetiseerd of beschadigd.
+VOORZICHTIG! Als uw ASUS Phone op de verkeerde manier op de draadloze lader wordt geplaatste, 
+kan de laadduur aanzienlijk worden verlengd.
+Volg de onderstaande stappen om uw ASUS Phone op te laden met een draadloze lader.
+1. Plaats uw ASUS Phone op de draadloze lader in overeenstemming met de instructies voor de 
+lader.
+OPMERKING: De draadloze laadspoelen op de achterkant van de ASUS Phone moet in contact zijn met 
+de lader.
+2. Wanneer het opladen start, verschijnt het pictogram voor draadloos opladen op het scherm.
+3. Wanneer het opladen is voltooid, verwijdert u uw ASUS Phone van de draadloze laadstandaard/
+pad.
+VOORZICHTIG! Als de voorzorgsmaatregelen niet worden gevolgd, kan het apparaat niet correct 
+opladen of kan het oververhitten.
+14 Hoofdstuk 1: Basisprincipes
+NFC gebruiken
+U kunt NFC gebruik in de volgende drie scenario’s:
+Lezermodus: Uw telefoon leest informatie van een contactloze kaart, een NFC-label of andere 
+NFC-apparaten.
+Plaats het NFC-gebied van uw telefoon op de contactloze kaart, NFC-tag of NFC-apparaat.
+Kaartemulatiemodus: Uw telefoon kan worden gebruikt als een contactloze kaart.
+Plaats het NFC-gebied van uw telefoon op het NFC-gebied van de NFC-lezer.
+Peer-to-peer-modus: Draai foto’s, contacten of andere gegevens over tussen uw telefoon en een 
+smartphone met NFC-ondersteuning.
+Breng de NFC-gebieden van beide smartphones samen, zonder ruimte ertussen.
+15Hoofdstuk 1: Basisprincipes
+Uw ASUS Phone in- of uitschakelen
+Uw apparaat inschakelen
+Om uw apparaat in te schakelen, houdt u de voedingsknop ingedrukt tot het apparaat trilt en 
+opstart.
+Uw apparaat uitschakelen
+Uw apparaat uitschakelen:
+Houd de voedingsknop ingedrukt, tik op Power off (Uitschakelen) wanneer u dat wordt gevraagd.
+Slaapstand
+Om uw apparaat in de slaapstand te plaatsen, drukt u eenmaal op de voedingsknop tot het scherm 
+uitschakelt.
+Voedingstoets
+OPMERKING: Wanneer uw systeem is uitgeschakeld, houdt u de toets Volume lager + Voedingsknop 
+tegelijkertijd 8 seconden ingedrukt om uw telefoon opnieuw te starten. Als dat niet werkt, probeert u 
+het opnieuw door de sleutels opnieuw gedurende 12 seconden ingedrukt te houden.
+16 Hoofdstuk 1: Basisprincipes
+Eerste gebruik
+Wanneer u de ASUS Phone voor de eerste keer inschakelt, zal de Installatiewizard u begeleiden 
+door het installatieproces. Volg de instructies op het scherm om uw taal te selecteren, uw mobiel 
+netwerk, wifi- en beveiligingsfuncties in te stellen en accounts te synchroniseren.
+Gebruik uw Google- of ASUS-account om uw apparaat in te stellen. Als u nog geen Google- of 
+ASUS-account hebt, kunt u er nu een maken.
+Google-account
+Met een Google-account kunt u de functies van dit Android-besturingssysteem optimaal 
+gebruiken:
+• Alle informatie ordenen en weergeven vanaf elke locatie.
+• Automatisch back-ups maken van al uw gegevens.
+• Google-services handig gebruiken vanaf elke locatie.
+ASUS-account
+Als u een ASUS-account hebt, kunt u genieten van de volgende voordelen:
+• Gepersonaliseerde ASUS-ondersteuningsservice en garantieverlenging voor geregistreerde 
+producten.
+• Ontvang de nieuwste apparaat- en firmware-updates.
+Tips voor het sparen van batterijvermogen
+De batterijlading is de levenslijn van uw ASUS Phone. Hier zijn enkele tips waarmee u het 
+batterijvermogen van uw ASUS Phone kunt sparen.
+ – Sluit alle geopende apps die niet in gebruik zijn.
+ – Als u het apparaat niet gebruikt, drukt u op de voedingsknop om het apparaat in de 
+slaapstand te zetten.
+ – Verlaag de helderheid van het scherm.
+ – Houd het luidsprekervolume op een laag niveau.
+ – Schakel de wifi-functie uit.
+ – Schakel de Bluetooth-functie uit.
+ – Schakel de functie voor het automatisch draaien van het scherm uit.
+ – Schakel alle functies voor de automatische synchronisatie op uw apparaat uit.
+17Hoofdstuk 1: Basisprincipes
+Instructie van navigatiebewegingen
+Wanneer u voor de eerste start, lees dan de Instructie voor navigatiebewegingen en klik op Gereed 
+om de instructies te sluiten.
+OPMERKING: U kunt op elk ogenblik kiezen tussen Bewegingsnavigatie en Navigatiebalk onder 
+Instellingen > Display > Systeemnavigatie.
+18 Hoofdstuk 1: Basisprincipes
+Het aanraakscherm gebruiken
+Gebruik deze gebaren op het aanraakscherm voor het starten van apps, openen van enkele 
+instellingen en navigeren door uw ASUS Phone.
+Apps starten of items selecteren
+Voor het starten van een app tikt u er gewoon op.
+Items verplaatsen of verwijderen
+Voer een van de volgende bewerkingen uit:
+• Voor het verplaatsen van een app of widget, tikt u en houdt u het aangeraakt en sleept u het 
+vervolgens naar de gewenste locatie.
+• Om een app te verwijderen, tikt en houdt Uninstall (Verwijderen) vast.
+• Om een widget te verwijderen, tikt u erop om deze te slepen naar Remove (Verwijderen) 
+bovenaan op het scherm.
+19Hoofdstuk 1: Basisprincipes
+Door pagina’s of schermen lopen
+Voer een van de volgende bewerkingen uit:
+• Veeg met uw vinger naar links of rechts om over te schakelen tussen schermen of om Google 
+Zoeken te openen.
+• Scroll met uw vinger omhoog of omlaag door webpages of lijst met items.
+Inzoomen
+Spreid uw twee vingers open op het aanraakscherm om in te zoomen op een afbeelding in Photos 
+(Foto’s) of Maps (Kaarten) of om in te zoomen op een webpagina.
+20 Hoofdstuk 1: Basisprincipes
+Uitzoomen
+Breng uw twee vingers samen op het aanraakscherm om uit te zoomen op een afbeelding in 
+Photos (Foto’s) of Maps (Kaarten) of om uit te zoomen op een webpagina.
+OPMERKING: Het is mogelijk dat u niet kunt in- of uitzoomen op bepaald webpagina's omdat deze 
+pagina's mogelijk specifiek zijn ontworpen om te passen op het scherm van uw mobiel apparaat.
+Hoofdstuk 2: Nergens is het zo goed als thuis 21
+2
+2 Nergens is het zo goed als thuis
+Nergens is het zo goed als thuis
+Zen beginschermfuncties
+Beginscherm
+Ontvang herinneringen aan belangrijke gebeurtenissen, app- en systeemupdates, 
+weersvoorspellingen en tekstberichten van mensen die belangrijk zijn voor u, direct vanaf uw 
+beginscherm. 
+Veeg dit gebied omlaag om Systeemmeldingen weer te 
+Veeg dit gebied omlaag om Snelle instellingen weer te geven
+Tik om een app te openen
+Tik om de pagina Google Search (Google zoeken) te openen
+Tik om Voice Search (Spraak zoeken) te openen
+Veeg omhoog om het scherm All Apps (Alle 
+apps) te openen
+Tik om Clock (Klok) te openen
+Tik om Weather (Weer) -te openen
+22 Hoofdstuk 2: Nergens is het zo goed als thuis
+Snelle instellingen
+Het meldingspaneel van Snelle instellingen biedt toegang met één tik tot enkele draadloze 
+functies en instellingen van uw ASUS Phone. Al deze functies worden voorgesteld door een knop. 
+Om het paneel Quick settings (Snelle instellingen) veegt u twee keer omlaag vanaf de bovenkant 
+van uw scherm.
+OPMERKING: Een helder pictogram geeft aan dat de functie momenteel is ingeschakeld. 
+Functies toevoegen
+Functies toevoegen vanaf het paneel Snelle instellingen:
+1. Start Snelle instellingen en tik op .
+2. Veeg omhoog Hold and drag to rearrange tiles (Vasthouden en slepen om titels opnieuw te 
+ordenen).
+3. Tik onder Hold and drag to add tiles (Vasthouden en slepen om titels toe te voegen) op een 
+pictogram en sleep het omhoog om het toe te voegen aan het paneel Quick Settings (Snelle 
+instellingen).
+4. Tik op om terug te keren en het huidige paneel Quick settings (Snelle instellingen) weer te 
+geven.
+Functies verwijderen
+Bestaande functies verwijderen vanaf het paneel Quick Settings (Snelle instellingen):
+1. Start Snelle instellingen en tik op .
+2. Tik op een pictogram onder Hold and drag to rearrange tiles (Vasthouden en slepen om 
+titels opnieuw te ordenen) en sleep het om het te verwijderen uit het paneel Quick Settings 
+(Snelle instellingen).
+Schuif naar links of rechts om de helderheid van 
+het scherm aan te passen
+Tik om Settings (Instellingen) te openen
+Tik om items in of uit te schakelen voor 
+weergave in Quick settings (Snelle instellingen)
+Tik om uit te schakelen, uw ASUS Phone opnieuw op te 
+starten, een schermopname te maken of de noodfunctie 
+te gebruiken
+• Tik op deze knoppen om hun functies in of uit te schakelen
+• Schuif naar links of rechts om meer pictogrammen weer te geven
+Hoofdstuk 2: Nergens is het zo goed als thuis 23
+Meldingen
+Via Meldingen ziet u de nieuwste uitgevoerde updates en systeemwijzigingen die zijn gemaakt op 
+uw ASUS Phone. De meeste van deze wijzigingen hebben betrekking op gegevens en het systeem. 
+Om het paneel Meldingen te starten, veegt u omlaag vanaf de bovenkant van uw scherm.
+Tik hierop om alle weergegeven meldingen te verwijderen
+• Veeg de melding naar links naar rechts voor meer opties
+• Tik op de melding om de details ervan weer te geven
+Tik om de meldingen te beheren
+24 Hoofdstuk 2: Nergens is het zo goed als thuis
+Randgereedschap
+Met het randgereedschap kunt u snel snelkoppelingen van het systeem uitvoeren en een app 
+openen in een zwevend venster.
+Om de zijbalk te openen, schuift u deze naar binnen vanaf de rand.
+Schuif deze om 
+de zijbalk te 
+openen
+Tik om Settings 
+(Instellingen) te 
+openen
+Hoofdstuk 2: Nergens is het zo goed als thuis 25
+Uw startscherm aanpassen
+Zet uw persoonlijke stempel op uw startscherm. Selecteer een aantrekkelijk design als uw 
+achtergrondafbeelding en voeg widgets toe voor een snelle controle van belangrijke informatie. 
+U kunt ook meer pagina’s toevoegen zodat u meer apps of widgets kunt toevoegen en snel kunt 
+openen of controleren op uw beginscherm.
+Het scherm Manage Home (Startscherm beheren), tik en houd de vinger op een leeg gebied op uw 
+startscherm.
+26 Hoofdstuk 2: Nergens is het zo goed als thuis
+Achtergronden
+Plaats uw apps, pictogrammen en andere elementen op een aantrekkelijk ontworpen achtergrond. 
+U kunt een doorzichtige achtergrondkleur toevoegen aan uw achtergrond voor een betere 
+leesbaarheid en helderheid. U kunt ook een geanimeerde achtergrond selecteren om uw scherm 
+tot leven te brengen.
+Achtergrondafbeelding toepassen
+Achtergrondafbeeldingen toepassen:
+1. Tik en houd de vinger op een leeg gebied op uw startscherm en selecteer Wallpaper & style 
+(Achtergrondafbeeldingen & stijl).
+2. Tik op achtergrondafbeeldingen en selecteer dit om de achtergrondafbeelding in te stellen op 
+Lock screen (scherm voor vergrendelen) of Home screen (Startscherm).
+3. Selecteer een achtergrondafbeelding en tik dan op Apply (Toepassen).
+OPMERKING: U kunt uw achtergrondinstellingen ook configureren via Settings (Instellingen) > 
+Wallpaper & style (Achtergrondafbeeldingen).
+Veeg naar rechts of links om te selecteren waar u de 
+achtergrondafbeelding wilt aanpassen
+Tik om een afbeelding uit de Galerie te selecteren
+Tik om de achtergrondafbeelding bij te snijden
+Hoofdstuk 2: Nergens is het zo goed als thuis 27
+Uw startscherm bewerken
+U kunt een scrolleffect selecteren, de kleur van het pictogramlabel wijzigen, het mapthema 
+selecteren en het standaardscherm instellen.
+1. Tik en houd de vinger op een leeg gebied op uw startscherm en selecteer Edit Home screen 
+(Startscherm bewerken).
+2. Tik op een functie voor het bewerken van uw startscherm.
+Widgets
+U kunt widgets, kleine dynamische apps, op uw startscherm plaatsen. Widgets bieden u snelle 
+weergaven van de weersvoorspelling, informatie over agendagebeurtenissen, de batterijstatus en 
+andere zaken.
+Widgets toevoegen
+Een widget toevoegen:
+1. Tik en houd een leeg gebied op uw beginscherm vast en selecteer Widgets.
+2. Selecteer een item om de widget(s) weer te geven, tik op een item en houd de widget die u wilt 
+toevoegen en sleep deze naar een leeg gebied op het beginscherm.
+Een snelkoppeling naar een app verwijderen
+Tik en houd een widget vast op het beginscherm en sleep deze naar Remove (Verwijderen) 
+bovenaan op uw scherm.
+Voorkeuren
+U kunt uw startscherm bewerken, AppLock gebruiken en apps verbergen.
+1. Tik en houd de vinger op een leeg gebied op uw startscherm en selecteer Preferences 
+(Voorkeuren).
+2. Tik op een functie voor het bewerken van uw preferences (voorkeuren).
+28 Hoofdstuk 2: Nergens is het zo goed als thuis
+De datum en tijd instellen
+De datum en tijd die op uw startscherm worden weergegeven, worden standaard automatisch 
+gesynchroniseerd met de instellingen van uw mobiele provider.
+De datum- en tijdsinstellingen wijzigen:
+1. Open het scherm Instellingen door één van de volgende bewerkingen uit te voeren:
+ • Start Snelle instellingen en tik dan op . 
+ • Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen).
+2. Schuif omlaag in het scherm System (Systeem) > Date & time (Datum en tijd).
+3. Schuif Set time automatically (Tijd automatisch instellen) en Set time zone automatically 
+(Tijdzone automatisch instellen) naar Uit.
+4. Tik op Date (Datum) en Time (Tijd) om de datum en tijd aan te passen.
+5. Tik op Time Zone (Tijdzone) om de tijdzone te selecteren.
+6. Als u dat wenst kunt u ook kiezen voor het gebruik van de 24-uurs notatie.
+OPMERKING: Zie ook Klok.
+Uw beltoon en waarschuwingsgeluiden instellen
+Stel het geluid in voor de beltoon van uw telefoon, meldingen zoals tekstberichten, e-mails 
+en gebeurteniswaarschuwingen. U kunt ook kiezen om de aanraaktonen van het toetsenblok, 
+aanraakgeluiden of het geluid van de schermvergendeling in of uit te schakelen of u kunt kiezen 
+om de ASUS Phone te laten trillen wanneer u erop tikt.
+De geluidsinstellingen configureren:
+1. Open het scherm Instellingen door één van de volgende bewerkingen uit te voeren:
+ • Start Snelle instellingen en tik dan op . 
+ • Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen).
+2. Selecteer Sound & Vibration (Geluid & trilling) en geef de geluidsinstellingen van uw voorkeur 
+op.
+OPMERKING: Druk op de volumetoets en tik op > op een willekeurig scherm om het menu 
+Sound & Vibration (Geluid & trilling) te openen.
+Hoofdstuk 3: Werk hard, speel harder 29
+3
+Chrome
+Met Chrome voor Android` kunt u genieten van dezelfde snelle, veilige en stabiele ervaring bij het 
+surfen op het net als bij de bureaubladversie van Chrome. Meld aan bij uw Google-account om 
+tabbladen, bladwijzers en de zoekgeschiedenis te synchroniseren op al uw apparaten. Als u geen 
+Google account hebt, registreert u er een.
+OPMERKING: Voor details over het maken van een Google-account, zie Gmail.
+BELANGRIJK! Voordat u gaat surfen op Internet of met Internet verwante activiteiten uitvoert, moet u 
+controleren of uw ASUS Phone verbonden is met een wifi- of mobiel netwerk. Zie Verbonden blijven 
+voor meer informatie.
+Chrome starten
+Voer een van de volgende bewerkingen uit vanaf uw thuisscherm om Chrome te starten:
+• Tik op .
+• Veeg omhoog op uw startscherm en tik dan op Chrome.
+Werk hard, speel harder
+3 Werk hard, speel harder
+30 Hoofdstuk 3: Werk hard, speel harder
+Een pagina delen
+Deel interessante pagina’s vanaf u ASUS Phone met anderen via een e-mailaccount, cloud-
+opslagaccount, Bluetooth of andere apps van de ASUS Phone.
+1. Start de Chrome.
+2. Tik vanaf een webpagina op > Share...(Delen...).
+3. Tik om een manier te selecteren voor het delen van de pagina.
+Bladwijzers toevoegen aan pagina’s
+Geef uw favoriete pagina’s of websites een bladwijzer zodat u kunt terugkeren en ze opnieuw kunt 
+bezoeken.
+Een bladwijzer maken voor een pagina:
+Tik vanaf de pagina op > . Om uw favoriete pagina’s weer te geven, tikt u op > Bookmarks 
+(Bladwijzers) en selecteert u de pagina die u wit weergeven of openen.
+De surfgegevens wissen
+Wis de surfgegevens die tijdelijk worden opgeslagen in uw ASUS Phone om de laadprestaties 
+van uw Chrome-browser te verbeteren. De surfgegevens omvatten de surfgeschiedenis, het 
+cachegeheugen, cookies/sitegegevens, opgeslagen wachtwoorden en automatisch ingevulde 
+gegevens.
+1. Start de browser.
+2. Tik op > Instellingen > Privacy en beveiliging > De surfgegevens wissen.
+3. Selecteer de surfgegevens die u wilt verwijderen.
+4. Klik op Clear data (Gegevens wissen) wanneer u klaar bent.
+Hoofdstuk 3: Werk hard, speel harder 31
+Gmail
+Gebruik Gmail voor het instellen van uw Google-account om naar de met Google verwante 
+diensten en apps te gaan en voor het ontvangen, verzenden en zoeken van e-mails, direct vanaf 
+uw ASUS Phone. U kunt ook andere e-mailaccounts instellen, zoals Yahoo of uw e-mailaccount voor 
+uw werk via Gmail. 
+BELANGRIJK! Uw ASUS Phone moet verbonden zijn met een wifi- of mobiel netwerk zodat u een 
+e-mailaccount kunt toevoegen of e-mails kunt verzenden en ontvangen van toegevoegde accounts. Zie 
+Verbonden blijven voor meer details.
+Uw Google-account instellen:
+1. Voer een van de volgende bewerkingen uit vanaf uw thuisscherm om Gmail te starten:
+• Tik op Google > Gmail.
+• Veeg omhoog op uw startscherm en tik dan op Gmail.
+2. Tik op GOT IT (IK BEGRIJP HET) en dan op Add an email address (Een e-mailadres 
+toevoegen).
+3. Selecteer Google.
+4. Voer uw e-mailadres in. Om een nieuwe Google-account te maken, tikt u op Create account 
+(Maak account).
+5. Volg de onderstaande stappen om aan te melden bij uw Google-account.
+OPMERKING: Als u uw werkaccount wilt instellen op uw ASUS Phone, dient u de e-mailinstellingen te 
+vragen aan uw netwerkbeheerder.
+32 Hoofdstuk 3: Werk hard, speel harder
+Google Agenda
+Breng uw planning tot leven en houd al uw belangrijke gebeurtenissen of herinneringen bij. 
+Gebeurtenissen die u maakt of bewerkt zullen automatisch synchroniseren met alle versies van 
+Google Agenda waarop u hebt aangemeld.
+Gebeurtenissen maken
+Een gebeurtenis maken:
+1. Voer een van de volgende bewerkingen uit vanaf uw thuisscherm om Gmail te starten:
+• Tik op Google > Calendar (Agenda).
+• Veeg omhoog op uw startscherm en tik dan op Calendar (Agenda).
+2. Tik op en tik dan op Event (Gebeurtenis).
+3. Voer de naam in van uw gebeurtenis en selecteer de datum en tijd voor de gebeurtenis. U kunt 
+de gebeurtenis instellen als een gebeurtenis voor een volledige dag of als een terugkerende 
+gebeurtenis.
+• Gebeurtenis voor een volledige dag: beweeg de schuifregelaar naar rechts in het veld All-
+day (Hele dag).
+• Terugkerende gebeurtenis: Tik op More options (Meer opties) > en selecteer dan hoe 
+vaak de gebeurtenis moet terugkeren of moet worden herhaald.
+4. Om de tijdzone in te stellen, tikt u op More options (Meer opties) > en voert u het land in 
+waarvan u de tijdzone wilt weergeven.
+5. Voer de plaats of locatie van de gebeurtenis in via het veld Add location (Locatie toevoegen).
+6. Tik op . Daarna kunt u de tijd of dag selecteren of instellen voor het ontvangen van een 
+melding of herinnering voor de gebeurtenis.
+7. Voer in het veld Invite people (Mensen uitnodigen) de e-mailadressen in van uw gasten voor 
+de gebeurtenis.
+8. U kunt ook een notitie of bijlage toevoegen vanaf het veld Add note (Notitie toevoegen) of 
+Add attachment (Bijlage toevoegen).
+9. Zodra u klaar bent, tikt u op Save (Opslaan).
+Gebeurtenis bewerken of verwijderen
+Een gebeurtenis bewerken of verwijderen:
+1. Tik vanaf het startscherm op Google > Calendar (Agenda).
+2. Tik op de gebeurtenis die u wilt bewerken of verwijderen.
+3. Om de gebeurtenis te bewerken, tikt u op en brengt u de nodige wijzigingen aan. Tom de 
+gebeurtenis te verwijderen, tikt u op > Verwijderen en tikt u vervolgens op Verwijderen om 
+het verwijderen te bevestigen.
+Hoofdstuk 3: Werk hard, speel harder 33
+Herinneringen maken
+Een herinnering maken:
+1. Tik vanaf het startscherm op Google > Calendar (Agenda).
+2. Tik op en tik dan op Reminder (Herinnering).
+3. Voer de naam in van uw herinnering.
+4. Stel de datum en tijd in voor de herinnering. U kunt de herinnering instellen als een herinnering 
+voor een volledige dag of als een terugkerende gebeurtenis.
+• Herinnering voor gebeurtenis volledige dag: beweeg de schuifregelaar naar rechts in het 
+veld All day (Hele dag).
+• Herinnering terugkerende gebeurtenis: Tik op en selecteer dan hoe vaak de 
+herinnering moet terugkeren of moet worden herhaald.
+5. Zodra u klaar bent, tikt u op Save (Opslaan).
+Herinneringen bewerken of verwijderen
+Een herinnering bewerken of verwijderen:
+1. Tik op Google > Calendar (Agenda).
+2. Tik op de herinnering die u wilt bewerken of verwijderen.
+3. Om de herinnering te bewerken, tikt u op en brengt u de nodige wijzigingen aan. Om 
+de herinnering te verwijderen, tikt u op > Delete (Verwijderen). Tik vervolgens op Delete 
+(Verwijderen) om het verwijderen te bevestigen.
+34 Hoofdstuk 3: Werk hard, speel harder
+Bestandsbeheer
+Via Bestandsbeheer kunt u uw gegevens gemakkelijk zoeken en beheren in het interne geheugen 
+van uw ASUS Phone en de verbonden externe opslagapparaten.
+Om File Manager (Bestandsbeheer) te starten, veeg omhoog op uw startscherm en tik dan op File 
+Manager (Bestandsbeheer).
+BELANGRIJK! Voordat u bestanden opent die op de netwerk- en cloudopslag zijn opgeslagen, 
+controleert u of het wifi- of mobiele netwerk is ingeschakeld op uw ASUS Phone. Zie Verbonden 
+blijven voor details.
+Tik om de bestanden weer te geven onder de 
+categorie
+Toont het gebruik van de interne opslag
+Tik om een bestand te zoeken
+Tik om toegang te krijgen tot de interne, 
+netwerk- en cloudopslag
+Tik om de categorieën te bewerken en de instellingen te 
+configureren
+Hoofdstuk 3: Werk hard, speel harder 35
+ASUS-telefoonkloon
+Draag uw gegevens, zoals contacten, oproeplogboeken of foto’s, draadloos over van uw oud 
+mobiel apparaat naar uw ASUS Phone.
+ASUS-telefoonkloon gebruiken:
+1. Veeg omhoog op uw startscherm en tik dan op Phone Clone (Telefoonkloon Gebruiken).
+2. Tik op Get Started (Aan de slag) en volg dan de instructies op het scherm om de 
+gegevensoverdracht te voltooien.
+36 Hoofdstuk 4: Contact houden
+4Contact houden
+4 Contact houden
+Bel in stijl
+Dubbele SIM-functie
+De dubbele SIM-functie van uw ASUS Phone biedt u de mogelijkheid instellingen van de 
+geïnstalleerde Nano SIM-kaarten te beheren. Met deze functie kunt u de Nano SIM-kaarten in- en 
+uitschakelen, SIM-namen toewijzen of één ervan instellen als voorkeursnetwerk.
+De namen van uw Nano SIM-kaarten hernoemen
+Wijzig de namen van uw Nano SIM-kaarten op uw ASUS Phone zodat u ze gemakkelijk kunt 
+identificeren. 
+Om de namen van uw Nano-SIM-kaarten te wijzigen, tikt u op SIM1 of SIM2 en voert u de namen 
+in voor uw Nano-SIM-kaarten.
+OPMERKING: Als uw SIM's verschillende mobiele serviceproviders hebben, raden wij u aan de namen 
+van deze providers te gebruiken voor uw SIM-namen. Als beide SIM's dezelfde mobiele serviceprovider 
+hebben, raden wij u aan de mobiele nummers te gebruiken voor uw SIM-namen.
+Hoofdstuk 4: Contact houden 37
+Een SIM-kaart van uw voorkeur toewijzen
+Wijs een SIM-kaart toe als uw verkozen SIM voor spraakoproepen, SMS-berichten en dataservices. 
+SIM-kaart voor spraakoproepen
+Wanneer u een nummer kiest, gebruikt uw ASUS Phone automatisch de SIM-kaart van uw voorkeur 
+om de verbinding voor het gesprek tot stand te brengen.
+Om een SIM-kaart voor spraakoproepen toe te wijzen, tikt u op Spraakoproep en tikt u op de SIM 
+die u wilt gebruiken.
+BELANGRIJK! U kunt deze functie alleen gebruiken als u belt vanaf uw lijst met contactpersonen.
+SIM-kaart voor SMS-berichten
+Voor het toewijzen van een SIM-kaart voor SMS-berichten, tikt u op SMS-berichten en selecteer 
+vervolgens uit SIM1 of SIM2.
+SIM-kaart voor gegevensservice
+Om een SIM-kaart toe te wijzen voor de gegevensservice, tikt u op Gegevensservicenetwerk en 
+selecteert u vervolgens SIM1 of SIM2.
+38 Hoofdstuk 4: Contact houden
+Bellen
+Uw ASUS Phone biedt u talrijke manieren om een gesprek te voeren. Bel uw vrienden van uw 
+contactenlijst, gebruik slim kiezen om snel een nummer te bellen of voer een snelkeuzetoets in om 
+een vaak gebeld contact te bellen.
+OPMERKING: Orden uw contacten in de app Personen. Zie Contactpersonen beheren voor details.
+De app Telefoon starten
+Voer één van de volgende bewerkingen uit vanaf uw startscherm om de app Telefoon te starten:
+• Tik op .
+• Veeg omhoog op uw startscherm en tik dan op Phone (Telefoon).
+Een telefoonnummer kiezen
+Gebruik de app Telefoon om direct een telefoonnummer te kiezen.
+1. Tik vanaf uw startscherm op en tik dan op de cijfertoetsen.
+2. Selecteer de beltoets SIM1 of SIM2 om het nummer te kiezen.
+OPMERKING: De labels van de beltoetsen kunnen verschillen afhankelijk van de instelling die u hebt 
+opgegeven voor uw micro-SIM-kaarten. Zie Dubbele SIM-functie voor meer details.
+Een toestelnummer kiezen
+Als u een toestelnummer moet bellen, kunt u een van deze stappen uitvoeren om de 
+spraakopdrachten over te slaan.
+Vragen naar de bevestiging van een toestelnummer
+U kunt een bevestigingsvraag voor het toestelnummer invoegen na het kiezen van het 
+hoofdnummer.
+1. Voer het hoofdnummer in vanaf de app Telefoon.
+2. Om een bevestigingsvraag in te voegen, tikt en houdt u # vast tot een puntkomma (;) verschijnt.
+3. Voer het toestelnummer in.
+4. Selecteer de beltoets SIM1 of SIM2 om het gesprek te voeren.
+5. Wanneer u dit wordt gevraagd, tikt u op Yes (Ja) om te bevestigen.
+6. Tik op om het gesprek te beëindigen.
+Hoofdstuk 4: Contact houden 39
+Automatisch een toestelnummer kiezen
+U kunt een korte of lange pauze invoegen na het kiezen van het hoofdnummer. Daarna wordt het 
+toestelnummer automatisch gekozen.
+1. Voer het hoofdnummer in vanaf de app Telefoon.
+2. Om een pauze in te voegen, tikt en houdt u * vast tot een komma (,) verschijnt.
+3. Voer het toestelnummer in.
+4. Selecteer de beltoets SIM1 of SIM2 om het nummer te kiezen.
+5. Tik om het gesprek te beëindigen.
+Slim kiezen van uw contacten
+Wanneer u de eerste cijfers van de naam van uw contact invoert, Intelligent kiezen uw 
+contactenlijst of gesprekslogboeken en krijgt u mogelijke treffers voorgesteld. U kunt controleren 
+of het contact dat u probeert te bereiken op de lijst van mogelijke treffers staat en vervolgens snel 
+dat nummer kiezen.
+1. Start de app Telefoon en voer het nummer of de naam van het contact in. 
+2. Tik in de lijst van mogelijke treffers op het contact dat u wilt bellen. Als het contact niet in de lijst 
+staat, voert u het volledige nummer of de volledige naam van het contact in.
+3. Selecteer de beltoets SIM1 of SIM2 om het gesprek te voeren.
+OPMERKING: de labels van de beltoetsen kunnen verschillen afhankelijk van de instelling die u hebt 
+opgegeven op uw SIM-kaarten. Zie ook dubbele SIM-functie voor meer details.
+Bellen vanaf de app Personen
+Gebruik de app Personen om een nummer uit uw contactenlijst te bellen.
+1. Start de app Personen.
+2. Tik op de naam van het contact en tik dan op het nummer dat u wilt kiezen.
+3. Als er twee SIM-kaarten zijn geïnstalleerd, tikt u op de SIM-kaart waarvan u wilt bellen.
+4. Tik om het gesprek te beëindigen.
+40 Hoofdstuk 4: Contact houden
+Uw favoriete contacten bellen
+Als u een contact toevoegt aan uw Favorietenlijst, kunt u snel dit contact bellen vanaf de app 
+Contacten.
+1. Start de app Contacten.
+2. Tik op Groups (Groepen) > Favorites (Favorieten) om uw Favorietenlijst weer te geven en tik 
+dan op uw favoriet contact dat u wilt bellen.
+3. Tik om het gesprek te beëindigen.
+Oproepen ontvangen
+Het aanraakscherm van uw ASUS Phone licht op wanneer er een oproep binnenkomt. De weergave 
+van de binnenkomende oproep verschilt ook, afhankelijk van de status van uw ASUS Phone.
+Oproepen beantwoorden
+Sleept u naar om te antwoorden of naar om de oproep te weigeren.
+Uw gesprekslogboeken beheren
+Vanaf uw gesprekslogboeken kunt u gemiste oproepen terugbellen, oproepen opslaan in uw lijst 
+met contacten, bellers blokkeren of een recent gebeld nummer of contact opnieuw bellen. 
+Gesprekken opslaan onder Contacten
+U kunt een oproep van uw gesprekslogboeken toevoegen aan uw contactenlijst.
+1. Tik vanaf de app Telefoon op Recents (Recent) om uw gesprekslogboeken weer te geven.
+2. Tik naast het nummer dat u wilt toevoegen aan uw contactenlijst. 
+3. Tik op in de rechterbovenhoek van uw scherm en tik dan op Add to contacts (Toevoegen 
+aan contacten).
+4. Tik op Nieuw contact maken om een nieuw contact toe te voegen aan uw contactenlijst. 
+ Tik op Add to an existing contact (Toevoegen aan een bestaand contact), selecteer een 
+contact, kies of u het nummer van het contact wilt overschrijven met het nieuwe of als u een 
+nieuw gegeven wilt toevoegen en tik dan op .
+Hoofdstuk 4: Contact houden 41
+Overige belopties
+Druk tijdens een actief gesprek tik vervolgens op één van de mogelijke belopties die beschikbaar 
+zijn wanneer een gesprek bezig is.
+Contacten
+Opent het programma Contactpersonen.
+Telefonische vergadering
+Als u een abonnement hebt op een service voor vergaderingsgesprekken met uw 
+mobiele serviceprovider, kunt u via dit pictogram een contact of contacten toevoegen 
+aan een actief gesprek.
+OPMERKING: Het aantal deelnemers in het vergaderingsgesprek is afhankelijk van uw 
+abonnement voor vergaderingsgesprekken. U kunt bij uw mobiele serviceprovider advies 
+vragen over deze service.
+Opnemen
+Neemt een actief gesprek op.
+BELANGRIJK! De meeste lokale wetten bepalen dat u toestemming van de andere persoon 
+of personen aan de andere lijn moet vragen voordat u een actief gesprek kunt opnemen.
+OPMERKING: Raadpleeg het gedeelte Gesprekken opnemen voor meer informatie.
+Luidsprekertelefoon
+Schakelt de luidsprekertelefoon in of uit.
+Microfoon
+Schakelt de microfoon in of uit voor het actieve gesprek. Wanneer de microfoon uit of in 
+gedempte modus is, kunt u de beller horen, maar de beller kan u niet horen.
+Gesprek aanhouden
+Plaatst een actief gesprek in de wacht.
+Toetsenblok
+Opent het toetsenblok.
+Uw laatst gekozen nummer opnieuw bellen
+Om uw laatst gekozen nummer opnieuw te bellen:
+1. Tik vanaf de app Telefoon op Recents (Recent) om uw gesprekslogboeken weer te geven.
+2. Tik op uw laatst gekozen nummer om het nummer opnieuw te kiezen.
+3. Als er twee SIM-kaarten zijn geïnstalleerd, tikt u op de SIM-kaart waarvan u het nummer 
+opnieuw wilt kiezen.
+4. Tik om het gesprek te beëindigen.
+42 Hoofdstuk 4: Contact houden
+Gesprekken opnemen
+Met uw ASUS Phone kunt u een conversatie opnemen als toekomstige referentie of informatie.
+1. Bel een contact of kies een nummer. 
+2. Tik op om het gesprek op te nemen.
+BELANGRIJK! Voordat u een gesprek opneemt, moet u hiervoor toestemming vragen van de andere 
+partij(en).
+3. Tik op om de opname te stoppen. Dit ipictogram verschijnt in de balk met 
+systeemmeldingen.
+4. Veeg omlaag vanaf de linkerbovenhoek van het scherm en tik dan op de melding Call recording 
+saved (Gespreksopname opgeslagen) om de opgenomen conversatie weer te geven.
+Hoofdstuk 4: Contact houden 43
+Contactpersonen beheren
+Organiseer uw contacten en blijf gemakkelijk in contact met hen via gesprekken, sms-berichten, 
+e-mails of sociale netwerken. Groepeer uw contacten als Favorieten om snel in contact te 
+komen met hen, of groepeer ze als VIP’s om op de hoogte te worden gebracht van komende 
+gebeurtenissen, gemiste oproepen of ongelezen berichten.
+U kunt uw contacten ook synchroniseren met uw e-mail- of sociale netwerkaccounts, informatie 
+van contacten koppelen voor gemakkelijke toegang op één locatie of de contacten waarmee u 
+contact wilt houden filteren.
+Om de app Contacts (Contacten) te starten, veeg omhoog op uw startscherm en tik dan op 
+Contacts (Contacten).
+Contactinstellingen
+Selecteer hoe u uw contacten wilt weergeven via de Contactinstellingen. Dergelijke 
+weergaveopties omvatten het weergeven van alleen contacten met telefoon, sorteerlijsten op 
+voor-/achternaam of het weergeven van contactnamen met voor-/achternaam eerst. Om uw 
+contactinstellingen te configureren, tikt u op > Settings (Instellingen) vanaf de app Personen. 
+Uw profiel instellen
+Geef uw ASUS Phone echt uw eigen accent en voer uw profielinformatie in.
+1. Start de app Personen en tik dan op Set up my profile (Mijn profiel instellen) of Me (Ik).
+OPMERKING: Me (Ik) verschijnt wanneer u uw Google-account hebt ingesteld op uw ASUS Phone.
+2. Vul uw informatie in, zoals uw mobiel of thuisnummer. Om andere informatie toe te voegen, tikt 
+u op Add another field (Nog een veld toevoegen).
+3. Als u klaar bent met het invoeren van uw informatie, tikt u op . 
+44 Hoofdstuk 4: Contact houden
+Contactpersonen toevoegen
+Voeg contacten toe aan uw apparaat-, bedrijfs-, Google- of andere e-mailaccounts en vul 
+meer belangrijke contactgegevens in, zoals nummers van contacten, e-mailadressen, speciale 
+gebeurtenissen voor VIP’s en meer.
+1. Start de app Personen en tik dan op .
+2. Selecteer Device (Apparaat).
+OPMERKINGEN: 
+• U kunt het contact ook opslaan op uw SIM-kaart of een e-mailaccount.
+• Als u geen e-mailaccount hebt, tikt u op Add account (Nieuw account toevoegen) en maakt u een 
+nieuwe account.
+3. Vul de benodigde informatie in, zoals de naam, het mobiele of thuistelefoonnummer en het 
+e-mailadres.
+4. Als u andere contactgegevens wilt toevoegen, tikt u op Add another field(Nog een veld 
+toevoegen).
+5. Als u klaar bent met het invoeren van de informatie, tikt u op .
+Een toestelnummer toevoegen aan een contactnummer
+U kunt het toestelnummer van een contact toevoegen om de spraakberichten over te slaan als u 
+een nummer kiest.
+1. Voer in het informatiescherm van het contact, het hoofdnummer en toestelnummer van het 
+contact in op een van deze beide manieren:
+ • Voeg een komma (,) in na het hoofdnummer en voer dan het toestelnummer van het 
+contact in. Er zal een korte pauze zijn voordat het toestelnummer automatisch wordt 
+gekozen. Om de pauze te verlengen, tikt u op Pause (Pauze) om nog een komma in te 
+voegen. 
+ • Voeg een puntkomma (;) in na het hoofdnummer en voer dan het toestelnummer van het 
+contact in. Als u het nummer van het contact kiest, wordt u gevraagd het toestelnummer 
+te bevestigen. Tik op Yes (Ja) op het bevestigingsbericht.
+2. Als u klaar bent met het invoeren van de informatie, tikt u op .
+Hoofdstuk 4: Contact houden 45
+Het profiel van uw contact aanpassen
+Bewerk de gegevens van uw contact, voeg een foto toe, stel een beltoon in of maak een foto als 
+voorblad voor het profiel van uw contact.
+1. Start de app Personen en selecteer dan het contact van wie u het profiel wilt bewerken of 
+aanpassen.
+2. Breng de wijzigingen aan vanaf de profielpagina van uw contact.
+Uw favoriete contacten markeren
+Stel uw vaak gebelde contacten in als uw favorieten zodat u ze snel kunt bellen vanaf de Phone-
+app (Telefoon).
+1. Veeg omhoog op uw startscherm en tik dan op Contacts (Contacten).
+2. Selecteer het contact dat u als favoriet wilt markeren.
+3. Tik op . Het contact wordt toegevoegd aan uw lijst van favorieten in de Contacts (Contacten) 
+app. 
+OPMERKINGEN: 
+• Om uw Favorietenlijst weer te geven, veeg omhoog op uw startscherm en tik dan op Contacts 
+(Contacten) > Groups (Groepen) > Favorites (Favorieten).
+• Raadpleeg het gedeelte Uw favoriete contacten bellen voor meer informatie.
+Instellingen
+Tikken om toe te voegen aan de favorietenlijst
+Tik om de gegevens van het contact te bewerken
+46 Hoofdstuk 4: Contact houden
+Uw blokkeerlijst beheren
+Nummers blokkeren
+Maak uw lijst van geblokkeerde nummers om te voorkomen dat u ongewenste oproepen of 
+berichten ontvangt. Uw geblokkeerde gesprekken en berichten worden opgeslagen naar het 
+archief van de blokkeerlijst.
+1. Veeg omhoog op uw startscherm en tik dan op Phone (Telefoon) en tik dan op > Settings 
+(Instellingen) > Blocked numbers (Geblokkeerde nummers).
+2. Tik op Add a number (Een nummer toevoegen) en voer dan het nummer in dat u wilt 
+blokkeren. Tik op Blocked (Blokkeren) wanneer u klaar bent.
+Nummers deblokkeren
+U kunt een geblokkeerd nummer verwijderen uit de lijst en opnieuw oproepen of berichten van 
+het nummer ontvangen.
+1. Veeg omhoog op uw startscherm en tik dan op Phone (Telefoon) en tik dan op > Settings 
+(Instellingen) > Blocked numbers (Geblokkeerde nummers).
+2. Tik op × naast het nummer dat u wilt deblokkeren en tik vervolgens op Unblocked 
+(Deblokkeren).
+Sociaal netwerken met uw contacten
+Het integreren van de sociale netwerkaccounts van uw contacten maakt het voor u gemakkelijker 
+hun profielen, nieuws en sociale feeds weer te geven. Blijf in real time op de hoogte van de 
+activiteiten van uw contacten.
+BELANGRIJK! Voordat u sociale netwerkaccounts van uw contacten kunt integreren, moet u zich 
+aanmelden bij uw sociale netwerkaccount en de instellingen ervan synchroniseren.
+Uw sociale netwerkaccount synchroniseren
+Synchroniseer uw sociale netwerkaccount om de sociale netwerkaccounts van uw contacten toe te 
+voegen aan uw ASUS Phone.
+1. Open het scherm Instellingen door één van de volgende bewerkingen uit te voeren:
+ • Start Snelle instellingen en tik dan op . 
+ • Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen).
+2. Tik in het scherm Instellingen op uw sociale netwerkaccount onder de sectie Passwords & 
+accounts (Wachtwoorden & accounts).
+3. Schuif Automatically sync data (Gegevens automatisch synchroniseren) naar ON (AAN) om 
+de sociale netwerkaccounts van uw contacten te synchroniseren.
+4. Start de app Contacts (Contacten) om de lijst met uw contactpersonen te zien. Tik op de 
+contactpersoon en u ziet van welk sociaal netwerk de contactpersoon afkomstig is.
+Hoofdstuk 4: Contact houden 47
+Berichten versturen en meer
+Berichten
+Met Berichten, een gebruiksvriendelijke en schitterende app, kunt u SMS-/MMS-berichten 
+verzenden/ontvangen en groepsteksten, foto’s of audioberichten verzenden. U kunt ook emoticons 
+of stickers toevoegen aan uw berichten, uw locatie delen, uw berichten activeren en gemakkelijk 
+SMS-afzenders blokkeren. Het is ook mogelijk foto’s te maken of video’s op te nemen en deze 
+bestanden vervolgens gemakkelijk te delen.
+Berichten verzenden
+1. Tik vanaf het beginscherm op .
+2. Tik op Start chat (Chat starten) en selecteer dan het contact naar wie u een bericht wilt 
+verzenden.
+3. Selecteer de SIM-account waarvan u het bericht zult verzenden.
+4. Start met het samenstellen van uw bericht in het berichtenveld.
+5. Wanneer u klaar bent, tikt u op om uw bericht te verzenden.
+Berichten beantwoorden
+1. Tik op uw berichtwaarschuwing vanaf het startscherm of het vergrendelingsscherm.
+2. Selecteer de SIM-account waarvan u het antwoord zult verzenden.
+3. Start met het samenstellen van uw antwoord in het berichtenveld.
+4. Wanneer u klaar bent, tikt u op om uw antwoord te verzenden.
+48 Hoofdstuk 5: Plezier en amusement
+5Plezier en amusement
+5 Plezier en amusement
+De headset gebruiken
+Wanneer u een headset gebruikt, kunt u genieten van de vrijheid om andere dingen te doen terwijl 
+u een gesprek voert of uw favoriete muziek beluistert.
+Een audiostekker aansluiten
+Stop de 3,5 mm headsetaansluiting in de audiopoort van uw apparaat.
+WAARSCHUWING! Langdurig luisteren met een hoog volume kan uw gehoor beschadigen.
+OPMERKINGEN:
+• Wij raden u sterk aan alleen compatibele headsets te gebruiken.
+• Als u de audiostekker loskoppelt terwijl u muziek beluistert, wordt de afgespeelde muziek 
+automatisch gepauzeerd.
+• Als u de audiostekker loskoppelt tijdens het bekijken van een video, wordt de videoweergave 
+automatisch gepauzeerd.
+Hoofdstuk 5: Plezier en amusement 49
+YT Muziek
+Met YT Muziek kunt u uw favoriete muziek streamen, afspeellijsten maken of luisteren naar de 
+radio. U kunt zich ook abonneren op YT Muziek voor een onbeperkte en advertentievrije toegang 
+tot miljoenen muziekbestanden die u kunt toevoegen aan uw eigen muziekbibliotheek.
+YT Muziek instellen
+Meld aan bij uw Google- of Gmail-account om YT Muziek te kunnen gebruiken. Zodra u bent 
+aangemeld bij uw account, worden alle muziekbestanden op uw ASUS Phone, inclusief de 
+geüploade en aangeschafte bestanden, toegevoegd aan uw bibliotheek. 
+YT Muziek instellen:
+1. Tik vanaf het startscherm op Google > YT Music (YT Muziek).
+2. Tik op SIGN IN (AANMELDEN) > Add account (Account toevoegen).
+3. Volg de onderstaande instructies om aan te melden bij uw account.
+OPMERKINGEN: Het abonnement voor YT Muziek is slechts in bepaalde landen of regio's beschikbaar. 
+50 Hoofdstuk 6: Uw dierbare momenten
+6Uw dierbare momenten
+Momenten vastleggen
+De app Camera starten
+Maak foto’s en neem video’s op met de app Camera van de ASUS Phone. Raadpleeg de 
+onderstaande stappen om de app Camera te openen.
+Vanaf het vergrendelingsscherm
+Veeg omhoog om de camera-app te starten.
+Vanaf het beginscherm
+Tik op .
+6 Uw dierbare momenten
+Hoofdstuk 6: Uw dierbare momenten 51
+Beginscherm Camera
+De camera van uw ASUS Phone is uitgerust met een automatische scènedetectie en functie voor de 
+automatische beeldstabilisatie. De camera beschikt ook over een videostabilisatiefunctie die helpt 
+beverige beelden te voorkomen tijdens video-opname. 
+Tik op de pictogrammen om te starten met het gebruik van uw camera en om de videofuncties van 
+uw ASUS Phone. 
+Afbeeldingslocaties
+Om de functie voor het taggen van de locatie in te schakelen, raadpleegt u de volgende stappen:
+1. Zet de locatietoegang aan onder Settings (Instellingen) > Location (Locatie) en schuif Use 
+location (Locatie gebruiken) naar aan.
+2. Zorg dat u uw locatie op Google Maps hebt gedeeld.
+3. Tik vanaf het startscherm van de Camera-app op > en activeer Location services 
+(Locatieservices) voordat u de foto maakt.
+Geavanceerde camerafuncties
+Verken nieuwe manieren voor het vastleggen van beelden of video’s en leg extra speciale 
+momenten vast met de geavanceerde camerafuncties van uw ASUS Phone. 
+BELANGRIJK! Pas eerst de instellingen toe voordat u beelden vastlegt. De beschikbare functies kunnen 
+verschillen, afhankelijk van het model.
+Veeg omlaag of tik voor meer instelopties
+Gallery (Galerie) starten
+• Ontspanknop
+• Schuif omhoog om een aftelling in te stellen voordat u foto’s maakt
+Veeg naar links/rechts om geavanceerde camera-instellingen te 
+gebruiken
+Tik om de Google-lens te gebruiken
+Tik om te schakelen tussen de camera’s voor en achter
+Druk hierop om te schakelen tussen de modus Normal (Normaal), de 
+modus Wide Angle (Groothoek)
+Tik om een flashfunctie te selecteren
+De functie Beauty (Schoonheid) in- of uitschakelen
+Tik om een schermmodus te selecteren
+Raak aan om te schakelen tussen modus Normal (Normaal) en 2,0x 
+optische zoom te schakelen
+Nachtopname
+52 Hoofdstuk 6: Uw dierbare momenten
+Slow motion
+Met de videofunctie slow-motion kunt u video’s opnemen voor weergave in slow motion.
+Slow motion-video’s opnemen 
+1. Veeg vanaf het startscherm van de Camera-app naar rechts en tik dan op SLO-MO.
+2. Tik op de ontspanknop om slow motion-video’s te beginnen maken.
+Tijdvertraging
+Dankzij de videofunctie Time lapse (Tijdvertraging) van uw ASUS Phone kunt u stilstaande beelden 
+vastleggen voor automatische tijdvertragingsweergave. In dit geval lijken de gebeurtenissen snel 
+vooruit te bewegen, terwijl ze zich echter met lange tussenpozen hebben voorgedaan en zijn 
+opgenomen.
+Tijdvertragingsvideo’s opnemen
+1. Veeg vanaf het startscherm van de Camera-app naar rechts, veeg naar rechts voor TIME LAPSE 
+(TIJDVERTRAGING).
+2. Tik op de ontspanknop en selecteer dan het vertragingsinterval.
+3. Tik op de ontspanknop en start met het opnemen van time lapse-video’s.
+Panorama
+Leg beelden vanuit verschillende hoeken vast met Panorama. Beelden die zijn opgenomen 
+vanuit een groothoekperspectief worden met deze functie automatisch samengevoegd tot één 
+panoramafoto.
+Panoramafoto’s vastleggen
+1. Tik vanaf het beginscherm van de app Camera, veeg naar links naar PANO.
+2. Houd de telefoon stil en tik op de ontspanknop om automatisch panorama te starten.
+Nacht
+Neem goed verlichte foto’s, zelfs ‘s avonds of in lage belichtingsomstandigheden met de functie 
+Nacht op uw ASUS Phone.
+OPMERKING: Houd uw handen stil voor en nadat de ASUS Phone het beeld vastlegt, om wazige 
+resultaten te voorkomen.
+Nachtfoto’s maken
+1. Veeg op het startscherm van de Camera- naar links naar MORE (MEER) > NIGHT (NACHT).
+2. Tik op de ontspanknop om het vastleggen van nachtfoto’s te starten.
+Hoofdstuk 6: Uw dierbare momenten 53
+De galerie gebruiken
+Bekijk foto’s en speel video’s af op uw ASUS Phone met de app Galerij. Met deze app kunt u ook 
+foto- en videobestanden die in uw ASUS Phone zijn opgeslagen, bewerken, delen of verwijderen. 
+Vanaf Galerij kunt u foto’s weergeven in een diavoorstelling of kunt u tikken om het geselecteerde 
+foto- of videobestand weer te geven. 
+Om de galerie te starten, veeg omhoog op uw startscherm en tik dan op Gallery (Galerie).
+De fotolocatie bekijken
+Schakel de locatietoegang op uw ASUS Phone in en verkrijg de locatiegegevens op uw foto’s. De 
+locatiegegevens van uw foto bevatten het gebied waar de foto’s zijn gemaakt, evenals een kaart 
+van de locatie via Google Maps of Baidu (alleen in China).
+De gegevens van een foto weergeven:
+1. Zet de locatietoegang aan onder Settings (Instellingen) > Location (Locatie) en schuif Use 
+location (Locatie gebruiken) naar aan.
+2. Controleer of u uw locatie hebt gedeeld met Google Maps of Baidu.
+3. Start de Gallery-app en selecteer de foto waarvan u de details wilt weergeven.
+4. Tik op de foto en tik vervolgens op Details.
+Een afbeelding bewerken
+De galerie bevat ook zijn eigen gereedschappen voor beeldbewerking die u kunt gebruiken om de 
+beelden die op uw ASUS Phone zijn opgeslagen, te verbeteren.
+1. Doe een van het volgende:
+ • Tik vanaf het scherm Gallery (Galerie) > Photos (Foto’s) op het beeld dat u wilt bewerken. 
+ • Tik vanaf het scherm Gallery (Galerie) > Albums (Albums) op de map die de bestanden 
+bevat. Na het openen van de map tikt u op het beeld dat u wilt bewerken.
+2. Tik op Edit (Bewerken) om de werkbalk voor beeldbewerking te openen.
+3. Tik op een van de pictogrammen in de werkbalk voor beeldbewerking om de wijzigingen toe te 
+passen op het beeld.
+Bestanden van de galerie delen
+1. Doe een van het volgende:
+ • Tik vanaf het scherm Gallery (Galerie) > Photos (Foto’s) op > Select (Selecteren) om de 
+bestandsselectie te activeren. 
+ • Tik vanaf het scherm Gallery (Galerie) > Albums (Albums) op de map die de bestanden 
+bevat die u wilt delen. Na het openen van de map, tikt u op > Select (Selecteren) om 
+de bestandsselectie te activeren.
+2. Tik op de bestanden die u wilt delen. Er verschijnt een vinkje bovenaan in het beeld dat u 
+selecteert.
+3. Tik op en selecteer in de lijst waar u de beelden wilt delen.
+54 Hoofdstuk 6: Uw dierbare momenten
+Bestanden verwijderen uit de galerie.
+1. Doe een van het volgende:
+ • Tik vanaf het scherm Gallery (Galerie) > Photos (Foto’s) op > Select (Selecteren) om de 
+bestandsselectie te activeren. 
+ • Tik vanaf het scherm Gallery (Galerie) > Albums tik op de map die de bestanden bevat die 
+u wilt verwijderen. Na het openen van de map, tikt u op > Select (Selecteren) om de 
+bestandsselectie te activeren.
+2. Tik op de bestanden die u wilt verwijderen. Er verschijnt een vinkje bovenaan in het beeld dat u 
+selecteert.
+3. Tik op .
+Hoofdstuk 7: Verbonden blijven 55
+7Verbonden blijven
+Mobiel netwerk
+Wanneer er geen beschikbaar wifi-netwerk is waarmee u verbinding kunt maken, kunt u de 
+gegevenstoegang van uw mobiel netwerk inschakelen voor internetverbinding.
+Het mobiele netwerk inschakelen
+1. Open het scherm Instellingen door één van de volgende bewerkingen uit te voeren:
+ • Start Quick settings (Snelle instellingen) en tik dan op . 
+ • Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen).
+2. Tik op Network & internet > Internet, en tik dan op SIM1 of SIM2.
+3. Schuif Mobiel date (Mobiele gegevens) naar Aan en configureer de ander mobiele 
+netwerkinstellingen indien nodig.
+OPMERKINGEN:
+• Als u een internetverbinding hebt via uw mobiel netwerk, kunnen extra kosten worden 
+aangerekend, afhankelijk van uw gegevensplan.
+• Neem contact op met uw mobiele serviceprovider voor meer informatie over de kosten/bijdragen 
+en instellingen van uw mobiel netwerk.
+Wifi
+De wifi-technologie van uw ASUS Phone zorgt dat u verbonden bent met de draadloze wereld. Met 
+uw ASUS Phone kunt u uw sociale media-accounts bijwerken, surfen op internet of gegevens en 
+berichten draadloos uitwisselen.
+Wifi inschakelen
+1. Open het scherm Instellingen door één van de volgende bewerkingen uit te voeren:
+ • Start Snelle instellingen en tik dan op > Network & Internet (Netwerk & Internet) > 
+Internet. 
+ • Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen) > Network & 
+Internet (Netwerk & internet) > Internet.
+2. Schuif de wifi-schakelaar naar rechts om wifi in te schakelen.
+OPMERKING: U kunt wifi ook inschakelen via het scherm Snelle instellingen. Raadpleeg het hoofdstuk 
+Snelle instellingen voor informatie over het starten van het scherm Snelle instellingen.
+7 Verbonden blijven
+56 Hoofdstuk 7: Verbonden blijven
+Een verbinding maken met een Wifi-netwerk
+1. Tik op het scherm Instellingen op Network & Internet (Netwerk & internet) > Internet > Wi-Fi 
+om alle gedetecteerde wifi-netwerken weer te geven.
+2. Tik op een netwerknaam om een verbinding te maken met dit netwerk. Voor een beveiligd 
+netwerk kunt u worden gevraagd een wachtwoord of andere beveiligingsgegevens in te voeren.
+OPMERKINGEN:
+• Uw ASUS Phone maakt automatisch opnieuw verbinding met het netwerk waarmee u eerder 
+verbonden was.
+• Schakel de wifi-functie uit om te helpen batterijvermogen te sparen.
+Wifi uitschakelen
+Wifi uitschakelen:
+1. Doe een van het volgende:
+ • Start Snelle instellingen en tik dan op > Network & internet (Netwerk & internet) > 
+Internet. 
+ • Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen) > Network & 
+internet (Netwerk & internet) > Internet.
+2. Schuif de wifi-schakelaar naar links om wifi uit te schakelen.
+OPMERKING: U kunt wifi ook uitschakelen via het scherm Snelle instellingen. Raadpleeg het hoofdstuk 
+Snelle instellingen voor informatie over het starten van het scherm Snelle instellingen.
+Bluetooth®
+Gebruik de Bluetooth-functie van uw ASUS Phone om bestanden te verzenden of te ontvangen 
+en om multimediabestanden te streamen met andere slimme apparaten over korte afstanden. 
+Met Bluetooth kunt u uw mediabestanden delen met de smartphones van uw vrienden, gegevens 
+verzenden voor afdruk met een Bluetooth-printer of muziekbestanden afspelen via een Bluetooth-
+luidspreker.
+Bluetooth® inschakelen
+1. Doe een van het volgende:
+ • Start Snelle instellingen en tik dan op > Connected devices (Verbonden 
+apparaten).
+ • Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen) > Connected 
+devices (Verbonden apparaten).
+2. Tik op Pair new device (Nieuw apparaat koppelen) of Connection preferences 
+(Verbindingsvoorkeuren).
+3. Schuif de Bluetooth-schakelaar naar rechts om Bluetooth in te schakelen.
+OPMERKING: U kunt Bluetooth ook inschakelen via het scherm Snelle instellingen. Raadpleeg het 
+hoofdstuk Snelle instellingen voor informatie over het starten van het scherm Snelle instellingen.
+Hoofdstuk 7: Verbonden blijven 57
+Uw ASUS Phone koppelen met een Bluetooth®-apparaat
+Voordat u de Bluetooth-functies van uw ASUS Phone optimaal kunt gebruiken, moet u deze eerst 
+koppelen met het Bluetooth-apparaat. De ASUS Phone slaat automatisch de koppelingsverbinding 
+van het Bluetooth-apparaat op.
+1. Tik op het scherm Instellingen op Connected devices (Verbonden apparaten) > Connection 
+preferences (Verbindingsvoorkeuren) > Bluetooth om alle beschikbare apparaten weer te 
+geven.
+BELANGRIJK!
+• Als het apparaat dat u wilt koppelen niet in de lijst staat, moet u ervoor zorgen dat de Bluetooth-
+functie is ingeschakeld en dat het apparaat detecteerbaar is;
+• Raadpleeg de handleiding die bij uw apparaat is geleverd voor informatie over het inschakelen van 
+Bluetooth en het instellen van het apparaat naar detecteerbaar.
+2. Tik op > Refresh (Vernieuwen) om meer Bluetooth-apparaten te zoeken.
+3. In de lijst van beschikbare apparaten, tikt u op het Bluetooth-apparaat waarmee u wilt koppelen.
+4. Controleer of dezelfde wachtwoordsleutel wordt weergegeven op beide apparaten en tik dan 
+op Koppelen. 
+OPMERKING: Schakel de Bluetooth-functie uit om te helpen batterijvermogen te sparen.
+Het koppelen van uw ASUS Phone met een Bluetooth®-apparaat 
+opheffen
+1. Tik op het scherm Connected devices (Verbonden apparaten) > Connection preferences 
+(Verbindingsvoorkeuren) > Bluetooth om alle beschikbare en gekoppelde apparaten weer te 
+geven.
+2. Tik in de lijst van gekoppelde apparaten op van het Bluetooth-apparaat waarvan u de 
+koppeling wilt opheffen en tik vervolgens op Forget (Vergeten).
+58 Hoofdstuk 7: Verbonden blijven
+Tethering
+Wanneer er geen wifi-service beschikbaar is, kunt u uw ASUS Phone gebruiken als modem of 
+het instellen als een wifi-hotspot om internettoegang te krijgen op uw laptop, tablet en andere 
+mobiele apparaten.
+BELANGRIJK! De meeste mobiele serviceproviders kunnen een data-abonnement vereisen voor het 
+gebruik van de tetheringfunctie. Neem contact op met uw mobiele serviceprovider voor het kiezen van 
+dit data-abonnement.
+OPMERKINGEN:
+• Internettoegang via tethering kan trager zijn dan de standaard wifi- of mobiele verbinding.
+• Tethering met uw ASUS Phone voor internettoegang is slechts voor een beperkt aantal mobiele 
+apparaten mogelijk.
+• Schakel de tethering-functie uit als u deze niet gebruikt om batterijvermogen te sparen.
+Wifi-hotspot
+Maak van uw ASUS Phone een wifi-hotspot om de internetverbinding te delen met andere 
+apparaten.
+1. Doe een van het volgende:
+ • Start Snelle instellingen en tik dan op > Network & Internet (Netwerk & internet).
+ • Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen) > Network & 
+Internet (Netwerk & internet).
+2. Tik op Hotspot & tethering en schuif dan naar Wi-Fi hotspot.
+3. Tik op Wi-Fi hotspot (Wi-Fi hotspot) > Hotspot name (Hotspotnaam) om een unieke SSID of 
+netwerknaam toe te wijzen en tik op Hotspot password (Hotspot-wachtwoord) om een sterk 
+wachtwoord van 8 tekens toe te wijzen voor uw Wi-Fi-hotspot. Tik op OK wanneer u klaar bent.
+4. Verbind andere apparaten met de hotspotverbinding van uw ASUS Phone op dezelfde manier 
+als wanneer u verbindt met een wifi-netwerk.
+Hoofdstuk 7: Verbonden blijven 59
+Bluetooth tethering
+Schakel Bluetooth tethering in op uw ASUS Phone om de internetverbinding ervan te delen met 
+andere apparaten.
+1. Schakel Bluetooth in op uw ASUS Phone en op het andere apparaat.
+2. Koppel beide apparaten.
+OPMERKING: Zie Uw ASUS Phone koppelen met een Bluetooth®-apparaat voor details.
+3. Tik vanaf het scherm Instellingen op Network & Internet (Netwerk & internet) > Hotspot & 
+Tethering, Schuif dan Bluetooth tethering naar ON (AAN).
+USB Tethering
+Schakel USB tethering in op uw ASUS Phone en deel de internetverbinding ervan met andere 
+apparaten.
+1. Sluit uw ASUS Phone aan op een ander apparaat met een USB-kabel.
+2. Tik vanaf het scherm Settings (Instellingen) op Network & Internet (Netwerk & internet) > 
+Hotspot & Tethering. Schuif dan USB tethering naar ON (AAN) om tethering in te schakelen.
+60 Hoofdstuk 8: Reisapps
+8
+Weer
+Ontvang weerupdates in real time, direct vanaf uw ASUS Phone met de weerapp. Met de app 
+Weather kunt u ook andere weerdetails uit de hele wereld controleren.
+De app Weer starten
+Tik vanaf uw startscherm, doe een van de volgende bewerkingen om de Weer-app te starten:
+• Tik op het weerpictogram.
+• Veeg omhoog op uw startscherm en tik dan op Weather (Weer).
+Reisapps
+8 Reisapps
+Hoofdstuk 8: Reisapps 61
+Beginscherm Weer
+Stel de weerupdates voor uw huidige locatie en andere delen van de wereld in of haal ze op. 
+Tik om de locatielijst weer te geven
+Tik om de weersinfo te vernieuwen, voeg een plaats toe 
+aan de locatielijst, of de weerinstellingen te configureren
+Veeg omhoog om andere weerinformatie te zien. 
+Veeg naar links of rechts om weerinformatie van andere 
+plaatsen in uw locatielijst te zien
+62 Hoofdstuk 8: Reisapps
+Klok
+Pas de tijdzone-instellingen van uw ASUS Phone aan, stel een alarm in en gebruik uw ASUS Phone 
+als stopwatch met de app Klok.
+De klok starten
+Start de app Klok met een van de volgende opties:
+• Veeg omhoog op uw startscherm en tik dan op Clock (Klok).
+• Tik op het beginscherm van uw ASUS Phone op de digitale klokweergave.
+Wekker
+Tik op Alarms (Wekker) om de instellingen voor de wekker van uw ASUS Phone te openen.
+Tik hierop om de instellingen voor de wekkerfunctie te openen
+Schuif dit om het alarm in/uit te schakelen
+Tik hierop om een nieuwe alarmtijd in te stellen
+Hoofdstuk 8: Reisapps 63
+Stopwatch
+Tik op Stopwatch om uw ASUS Phone te gebruiken als een stopwatch.
+Wereldklok
+Tik op World Clock (Wereldklok) om de wereldklokinstellingen te openen vanaf uw ASUS Phone.
+Tik op deze knop om de stopwatchfunctie te starten
+Tik hierop om de plaatsen die op uw wereldklok zijn gemarkeerd, te 
+bewerken
+Tik hierop voor het toevoegen van een nieuwe plaats die u wilt markeren op de 
+kaart van uw wereldklok
+64 Hoofdstuk 8: Reisapps
+Timer
+U kunt meerdere timeropties instellen voor uw ASUS Phone. Volg hiervoor de onderstaande 
+stappen:
+De timer instellen
+Tik op Timer om de timerfunctie van uw ASUS Phone te openen.
+Tik op deze knop om de timer te starten
+Tik hierop om een nieuwe timer in te stellen
+Tik hierop om timers te verwijderen of open de instellingen
+Hoofdstuk 9: Zen Overal 65
+Speciale Zenhulpmiddelen
+9Zen Overal
+9 Zen Overal
+Calculator
+Maak berekeningen met uw ASUS Phone door de app Calculator in te schakelen.
+Calculator starten
+Start Calculator met een van de volgende opties:
+ • Veeg omhoog op uw startscherm en tik dan op Calculator.
+ • Open het paneel Quick settings (Snelle instellingen). Het pictogram voor Calculator is 
+daar zichtbaar in de lijst. Tik erop om aan te slag te gaan met uw berekeningen.
+Calculatorscherm
+Tik hierop om de calculator te starten
+66 Hoofdstuk 9: Zen Overal
+Geluids-recorder
+Neem audiobestanden op met uw ASUS Phone door de app Sound Recorder in te schakelen. 
+Geluids-recorder starten
+Om de geluidsopname te starten, veeg omhoog op uw startscherm en tik dan op Recorder.
+Tik hierop om de audio-opname te starten
+Tik hierop om de instellingen voor Sound Recorder aan te passen
+Tik hierop om de lijst weer te geven van opgeslagen audio-opnamebestanden
+Hoofdstuk 9: Zen Overal 67
+Een opname pauzeren
+Tijdens een gepauzeerde opname, kunt u kiezen om de opname te hervatten, te verwijderen of op te slaan.
+Opnamelijst
+Vanaf de opnamelijst kunt u een opgeslagen audio-opnamebestand afspelen, hernoemen, delen of 
+verwijderen. 
+Om uw opnamelijst weer te geven, tikt u op vanaf het hoofdscherm van Geluids-recorder.
+Tik om de opname te hervatten
+Tik om de opname op te slaan
+Tik om de opname te verwijderen
+Tik om uw geselecteerde opname af te spelen/te pauzeren
+Tik en houd een item vast om informatie over uw geselecteerde 
+opname te delen, hernoemen, verwijderen of weergeven
+68 Hoofdstuk 9: Zen Overal
+Mobile Manager
+Mobile Manager biedt een geïntegreerde interface voor meerdere apps die zijn ontworpen voor 
+het optimaliseren van de apparaatprestaties, het beheer van telefoonvermogen, en opslaggebruik. 
+Om Mobile Manager te starten, veegt u omhoog op uw startscherm en tikt u vervolgens op 
+Settings (Instellingen) > Advanced (Geavanceerd) > Mobile Manager (Mobiel beheer).
+Tik hierop om het mobiele gegevensgebruik te zien, een 
+maandelijkse limiet voor het gebruik van mobiele gegevens 
+in te stellen en apps te beheren om alleen via wifi, alleen 
+via een mobiel netwerk, via geen van beiden of via beide 
+internettoegang te krijgen
+Sluit ongebruikte processen die op de achtergrond worden 
+uitgevoerd voor het ophalen van meer systeemgeheugen
+Tik hierop om de privacy- en beveiligingsscan uit te voeren en om 
+te verhinderen dat apps gevaarlijke machtigingen gebruiken en 
+automatisch starten
+Tik hierop om de geselecteerde ongebruikte apps te verwijderen 
+om wat opslagruimte vrij te maken
+Hoofdstuk 10: Behoud uw Zen 69
+10Behoud uw Zen
+10 Behoud uw Zen
+Uw apparaat up-to-date houden
+Houd uw ASUS Phone in de lus van Android-systeemupdates en bijgewerkte apps en functies.
+Uw systeem bijwerken
+1. Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen).
+2. Schuif omlaag op het scherm Settings (Instellingen) om andere items weer te geven en tik 
+dan op System (Systeem) > System updates (Systeemupdates) om te controleren op 
+systeemupdates.
+3. Tik op om het scherm System updates (Systeemupdates) om hat automatisch downloaden 
+van systeemupdates in te stellen. 
+Opslagruimte
+U kunt gegevens, apps of bestanden opslaan op uw ASUS Phone (interne opslag) of op een 
+online opslag. U hebt een internetverbinding nodig voor het overdragen of downloaden van uw 
+bestanden naar een online opslagruimte. Gebruik de bijgeleverde USB-kabel voor het kopiëren van 
+bestanden tussen de computer en uw ASUS Phone.
+Back-up maken en opnieuw instellen
+Maak een back-up van gegevens, wifi-wachtwoorden en andere instellingen op Google-servers 
+met uw ASUS Phone. Ga hiervoor als volgt te werk:
+1. Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen) > System (Systeem) > 
+Backup.
+2. Vanaf het venster Backup kunt u het volgende:
+• Back up to Google Drive (Back-up maken naar Google Drive): Deze functie maakt een 
+back-up van uw gegevens, wifi-wachtwoorden en andere instellingen naar Google Drive 
+wanneer dit is ingeschakeld. 
+Reset (Opnieuw instellen)
+Stel de netwerkinstellingen en app-voorkeuren opnieuw in of stel de fabriekswaarden opnieuw.
+1. Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen) > System (Systeem) > 
+Reset options (Resetopties).
+2. Vanaf het Resetvenster kunt u het volgende:
+ • Reset Wi-Fi, mobile & Bluetooth (Wifi, mobiel & Bluetooth resetten): Deze functie 
+herstelt de wifi-wachtwoorden en andere netwerkinstellingen.
+ • Reset all settings (Alle instellingen resetten): Deze functie herstelt alle instellingen die 
+u hebt opgegeven op uw telefoon.
+ • Erase all data (factory reset) (Alle gegevens wissen (Standaardinstellingen): Wist alle 
+gegevens op de telefoon.
+70 Hoofdstuk 10: Behoud uw Zen
+Uw ASUS Phone beveiligen
+Het vergrendelingsscherm verschijnt standaard na het inschakelen op uw apparaat en wanneer 
+u uit de slaapmodus komt. Vanaf het vergrendelingsscherm kunt u doorgaan naar het Android-
+systeem van het apparaat door te vegen over uw aanraakscherm.
+Het vergrendelingsscherm van uw apparaat kan ook worden aangepast om toegang tot uw 
+mobiele gegevens en apps te regelen.
+Uw scherm ontgrendelen
+Wanneer het scherm is vergrendeld, kunt u het openen met de opties voor de 
+beveiligingsontgrendeling van de ASUS Phone.
+1. Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen) > Security & lock 
+screen (Beveiligings- en vergrendelingsscherm).
+2. Tik op Screen lock (Schermvergrendeling) en selecteer vervolgens een optie voor het 
+ontgrendelen van uw ASUS Phone.
+OPMERKINGEN:
+• Raadpleeg de sectie Opties van het ontgrendelingsscherm voor meer informatie.
+• Om de optie die u hebt ingesteld voor het ontgrendelen van het scherm te deactiveren, tikt u op 
+Geen op het scherm Schermvergrendeling kiezen.
+Opties van het ontgrendelingsscherm
+Kies uit deze opties om uw ASUS Phone te vergrendelen.
+Vegen
+Veeg omhoog om uw ASUS Phone te ontgrendelen.
+Hoofdstuk 10: Behoud uw Zen 71
+PIN
+Voer minstens vier cijfers in om een pincode in te stellen.
+BELANGRIJK! Zorg dat u de pincode onthoudt die u hebt gemaakt voor het ontgrendelen van uw 
+apparaat.
+Patroon
+Schuif uw vinger over de punten en maak een patroon.
+BELANGRIJK! Zorg dat u het patroon onthoudt dat u hebt gemaakt voor het ontgrendelen van uw 
+apparaat.
+72 Hoofdstuk 10: Behoud uw Zen
+Wachtwoord
+Voer minstens vier tekens in om een wachtwoord te maken.
+BELANGRIJK! Zorg dat u het wachtwoord onthoudt dat u hebt gemaakt voor het ontgrendelen van uw 
+apparaat.
+Hoofdstuk 10: Behoud uw Zen 73
+Fingerprint ID sensor (Sensor vingerafdruk-id)
+Fingerprint ID sensor (Sensor vingerafdruk-id) verhindert dat anderen uw ASUS Phone gebruiken 
+zonder uw toestemming. U kunt uw vingerafdruk gebruiken voor het ontgrendelen van uw 
+apparaat, toegang tot uw telefoongesprekken en gegevens. Wanneer u uw vingerafdruk-id instelt, 
+moet u ook de schermvergrendelingsmethode voor het opstarten van het apparaat instellen.
+Uw ASUS Phone voor de eerste keer opstarten
+Uw vingerafdruk-id instellen bij het eerste gebruik van uw ASUS Phone:
+1. Controleer of de module voor vingerafdrukidentificatie en uw vinger schoon en droog zijn.
+2. Volg vanaf de welkomstpagina de instructies op het scherm op de pagina Protect your phone 
+(Uw telefoon beschermen) en selecteer Set up fingerprint (Vingerafdruk instellen).
+3. Klik op Continue (Doorgaan) om een schermvergrendelingsmethode te kiezen, volg dan de 
+instructies op de pagina Locate fingerprint sensor (Vingerafdruksensor zoeken) en klik op 
+Next (Volgende).
+4. Zoek de vingerafdrukscanner op de rechterzijde van uw apparaat, stel uw vinger af en probeer 
+om verschillende gebieden van uw vinger herhaaldelijk af te dekken totdat uw vingerafdruk 
+wordt vastgelegd.
+5. Klik op Next (Volgende) om de instelling te voltooien.
+74 Hoofdstuk 10: Behoud uw Zen
+De vingerafdruk-id instellen vanaf Settings (Instellingen)
+Uw vingerafdruk-id instellen vanaf Settings (Instellingen):
+1. Controleer of de vingerafdrukscanner en uw vinger schoon en droog zijn.
+2. Start het scherm Settings (Instellingen) met een van de volgende acties:
+ • Start Quick settings (Snelle instellingen) en tik dan op . 
+ • Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen).
+3. Scroll omlaag op het scherm Settings (Instellingen) en selecteer Security & lock screen 
+(Beveiliging & vergrendelingsscherm) > Fingerprint (Vingerafdruk). 
+4. Ontgrendel uw telefoon als deze is vergrendeld. Als dat niet zo is, volgt u de instructies voor het 
+instellen van de reservemethode voor de schermvergrendeling.
+5. Tik op de pagina Add fingerprint (Vingerafdruk toevoegen).
+6. Plaats uw vinger herhaaldelijk op de scanner en til deze telkens opnieuw op tot uw vingerafdruk 
+wordt vastgelegd.
+7. Klik op Done (Gereed) om de instelling te voltooien.
+Hoofdstuk 10: Behoud uw Zen 75
+Gezichtsontgrendeling
+Face Unlock (Gezichtsontgrendeling) verhindert dat anderen probleemloos uw ASUS Phone 
+gebruiken zonder uw toestemming. U kunt het scherm van uw ASUS Phone verlichten 
+en ernaar kijken om uw apparaat te ontgrendelen en het startscherm van uw telefoon 
+in één seconde te openen. Wanneer u uw gezichtsontgrendeling instelt, moet u ook de 
+schermvergrendelingsmethode voor het opstarten van het apparaat instellen. 
+Gezichtsontgrendeling instellen vanaf Settings (Instellingen)
+Gezichtsontgrendeling instellen vanaf Settings (Instellingen):
+1. Start het scherm Settings (Instellingen) met een van de volgende acties:
+ • Start Quick settings (Snelle instellingen) en tik dan op . 
+ • Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen).
+2. Scroll omlaag op het scherm Settings (Instellingen) en selecteer Security & lock screen 
+(Beveiliging & vergrendelingsscherm) > Face recognition (Gezichtsherkenning).
+3. Tik op Continue (Doorgaan).
+76 Hoofdstuk 10: Behoud uw Zen
+5. Tik op Next (Volgende) en volg de instructies voor het registreren van uw gezicht.
+4. Volg de instructies voor het instellen van de reservemethode voor de schermvergrendeling.
+Hoofdstuk 10: Behoud uw Zen 77
+6. Selecteer hoe u uw meldingen wilt weergeven op het vergrendelingsscherm en tik dan op Done (Gereed).
+OPMERKINGEN:
+• Toon uw mond, neus en geopende ogen terwijl u de gezichtsontgrendelingsfunctie gebruikt. 
+• Wearing sunglasses or insufficient light will lead to failure of face unlock.
+7. Wanneer u klaar bent, tikt u op Turn On (Inschakelen) om de gezichtsherkenning in te 
+schakelen voor het ontgrendelen van uw telefoon.
+78 Hoofdstuk 10: Behoud uw Zen
+De identiteit van uw ASUS Phone instellen
+Zorg dat u de identiteit van de ASUS Phone kent, zoals het serienummer of het, IMEI-nummer 
+(International Mobile Equipment Identity = Identiteit internationale mobiele apparatuur), of het 
+modelnummer. 
+Dit is belangrijk, want als u uw ASUS Phone verliest, kunt u contact opnemen met uw mobiele 
+provider en de informatie opgeven om ongemachtigd gebruik van uw ASUS Phone te blokkeren 
+via een zwarte lijst.
+De identiteit van uw ASUS Phone weergeven:
+1. Veeg omhoog op uw startscherm en tik dan op Settings (Instellingen).
+2. Schuif in het scherm Instellingen omlaag om andere items weer te geven en tik dan op System 
+(Systeem) > About phone (Over de telefoon). Het telefoonscherm About (Info) toont de 
+apparaatnaam, de status, wettelijke informatie, versie van het besturingssysteem, hardware- en 
+software-informatie van uw ASUS Phone.
+3. Tik op Status om het serienummer, de SIM-status en de IMEI van uw ASUS Phone te zien.
+79
+Bijlagen
+Bijlagen 
+Veiligheidsinformatie
+OPGELET! Gebruik van andere bedieningselementen, aanpassingen of procedures dan diegene die in 
+deze handleiding zijn vermeld, kunnen blootstelling aan schadelijke straling tot gevolg hebben.
+Onderhoud ASUS Phone
+• Gebruik uw ASUS Phone-toestel in een omgeving met een omgevingstemperatuur tussen 0 °C 
+(32 °F) en 35 °C (95 °F).
+• Gebruik een reinigingsdoek met water om het oppervlak van de telefoon schoon te vegen. 
+Breng geen alcohol, organische oplosmiddelen, reinigingsmiddelen aan of gebruik geen 
+hogedrukspuit om schade te voorkomen.
+• Onvoorziene temperatuurschommelingen kunnen condensatie veroorzaken of de lens beslaan. 
+Plaats in dergelijke gevallen de telefoon in een ruimte op kamertemperatuur of in een droge 
+omgeving en wacht tot het vocht is opgedroogd voordat u de telefoon gebruikt. In koudere 
+omgevingen moet u de telefoon bewaren op een warmere plaats, zoals een binnenzak, om 
+condens te voorkomen.
+De batterij
+WAARSCHUWING: Als u de batterij zelf demonteert, wordt de garantie ongeldig en kan er ernstige 
+schade ontstaan.
+Uw ASUS Phone is uitgerust met een krachtige, niet-verwijderbare Li-ion-batterij.Leef de 
+onderhoudsrichtlijnen na voor een langer levensduur van de batterij.
+• Verwijder de niet-verwijderbare lithiumpolymeerbatterij niet omdat de garantie hierdoor komt 
+te vervallen.
+• Vermijd het opladen bij een extreem hoge of lage temperatuur. De batterij levert optimale 
+prestaties bij een omgevingstemperatuur van +5°C tot +35 °C.
+• Verwijder en vervang de batterij niet door een niet-goedgekeurde batterij.
+• Gebruik alleen een ASUS-batterij. Het gebruik van een andere batterij kan lichamelijke schade/
+letsel veroorzaken en uw apparaat beschadigen.
+• Verwijder en dompel de batterij nooit onder in water of een andere vloeistof.
+• Probeer nooit de batterij te openen omdat het bestanddelen bevat die schadelijk kunnen zijn 
+wanneer ze worden ingeslikt of in contact komen met onbeschermde huid.
+80
+• Verwijderd de batterij niet en voorkom kortsluiting aan de batterij omdat dit oververhitting en 
+brand kan veroorzaken. Houd de batterij uit de buurt van juwelen en andere metalen objecten.
+• Gooi de batterij niet in vuur na het verwijderen. Hierdoor kan de batterij ontploffen waardoor 
+stoffen die schadelijk zijn voor het milieu, kunnen vrijkomen.
+• Gooi de batterij na het verwijderen nooit weg bij uw gewoon huishoudafval. Breng het naar een 
+inzamelpunt voor gevaarlijke materialen.
+• Raak de contacten van de batterij niet aan.
+• Om brand of brandwonden te voorkomen, mag u de batterij niet demonteren, plooien, pletten 
+of doorprikken.
+OPMERKINGEN:
+• Explosiegevaar als de batterij wordt vervangen door een onjuist type.
+• Gooi de lege batterijen weg volgens de instructies.
+De lader
+• Gebruik alleen de lader die bij uw ASUS Phone-toestel is geleverd.
+• Trek nooit aan de kabel van de lader om deze uit het stopcontact te trekken, maar trek aan de 
+lader zelf.
+Waarschuwingen
+Uw ASUS Phone is een toestel met een hoge kwaliteit. Lees vóór het gebruik alle instructies en 
+waarschuwingsmarkeringen op de (1) wisselstroomadapter.
+• Gebruik het ASUS Phone-toestel niet in extreme omgevingsomstandigheden met een hoge 
+temperatuur of een hoge vochtigheidsgraad. Het ASUS Phone-toestel biedt optimale prestaties 
+in een omgevingstemperatuur tussen 0 °C (32 °F) en 35 °C (95 °F).
+• Demonteer het ASUS Phone-toestel of zijn accessoires niet. Als het toestel moet worden 
+onderhouden of gerepareerd, moet u het terugbrengen naar een erkend onderhoudscentrum. 
+Als het apparaat is gedemonteerd, kan dit leiden tot elektrische schok of brand.
+• Veroorzaak geen kortsluiting op de contacten van de batterij met metalen objecten.
+Operatortoegang met een gereedschap
+Als een GEREEDSCHAP nodig is om toegang te krijgen tot een OPERATORTOEGANGSGEBIED, 
+moeten alle overige compartimenten binnen dat gebied die gevaarlijk zijn ontoegankelijk zijn voor 
+de OPERATOR door middel van hetzelfde GEREEDSCHAP of moeten alle dergelijke compartimenten 
+worden gemarkeerd om de OPERATOR-toegang te vermijden.
+81
+Naleving Richtlijn voor Radioapparatuur van de EU
+Vereenvoudigde EU-verklaring van conformiteit
+ASUS COMPUTER GmbH verklaart hierbij de dat de radio-apparatuur [ASUS_AI2302] conform 
+Richtlijn 2014/53/EU is. De volledige tekst van de EU-verklaring van conformiteit is beschikbaar op: 
+https://www.asus.com/support. (Zoek AI2302)
+Tabel RF-uitgangen
+Items Maximale radiofrequentie Tabel uitgangsvermogen
+GSM
+GSM 900 Burst (880~915 ; 925~960 MHz) 34.5 (dBm)
+GSM 1800 Burst (1710~1785 ; 1805~1880 MHz) 31.5 (dBm)
+WCDMA
+WCDMA Band I (1920-1980 ; 2110~2170 MHz) 25.0 (dBm)
+WCDMA Band V (824~849 ; 869~894 MHz) 25.0 (dBm)
+WCDMA Band VIII (880~915 ; 925~960 MHz) 25.0 (dBm)
+LTE
+LTE Band 1 (1920-1980 ; 2110~2170 MHz) 24.5 (dBm)
+LTE Band 3 (1710~1785 ; 1805~1880 MHz) 24.5 (dBm)
+LTE Band 5 (824~849 ; 869~894 MHz) 24.5 (dBm)
+LTE Band 7 (2500-2570 ; 2620-2690 MHz) 24.5 (dBm)
+LTE Band 8 (880~915 ; 925~960 MHz) 24.5 (dBm)
+LTE Band 20 (832~862 ; 791~821 MHz) 24.5 (dBm)
+LTE Band 28 (703~748 ; 758~803 MHz) 24.5 (dBm)
+LTE Band 34 (2010~2025 MHz) 24.5 (dBm)
+LTE Band 38 (2570~2620 MHz) 24.5 (dBm)
+LTE Band 40 (2300~2400 MHz) 24.5 (dBm)
+LTE Band 41 (2496~2690 MHz) 24.5 (dBm)
+LTE Band 42 (3400~3600 MHz) 24.5 (dBm)
+FR1
+NR n1 (1920~1980 ; 2110~2170 MHz) 24.5 (dBm)
+NR n3 (1710~1785 ; 1805~1880 MHz) 24.5 (dBm)
+NR n5 (824~849 ; 869~894 MHz) 24.5 (dBm)
+NR n7 (2500~2570 ; 2620~2690 MHz) 24.5 (dBm)
+NR n8 (880~915 ; 925~960 MHz) 24.5 (dBm)
+NR n20 (832~862 ; 791~821 MHz) 24.5 (dBm)
+NR n28 (703~748 ; 758~803 MHz) 24.5 (dBm)
+NR n38 (2570~2620 MHz) 24.5 (dBm)
+NR n41 (2496~2690 MHz) 24.5 (dBm)
+NR n77 (3300~4200 MHz) 24.5 (dBm)
+NR n78 (3300~3800 MHz) 24.5 (dBm)
+NR n78 (3300~3800 MHz) 24.5 (dBm)
+WLAN
+WLAN 2.4GHz (2412~2472 MHz) 17.0 (dBm)
+WLAN 5GHz (5150~5850 MHz) 20.5 (dBm)
+WLAN 6GHz (5945~6425 MHz) 18.5 (dBm)
+Bluetooth
+Bluetooth BR/EDR (2402~2480 MHz) 20.0 (dBm)
+Bluetooth -LE (2402~2480 MHz) 9.0 (dBm)
+NFC 13.553~13.567 MHz -16.99 dBuA/m @10m
+82
+CE-markering
+Bij het meedragen van dit apparaat of het gebruiken bij het dragen op het lichaam, moet u een 
+goedgekeurde accessoire gebruiken, zoals een holster, of anderszins een afstand van 0,5 cm tot het 
+lichaam aanhouden om te zorgen voor naleving van RF-blootstellingsvereisten. 
+OPMERKING: Deze tabellen met RF-uitgangsvermogen zijn alleen voor EU-lidstaten, de EER-staten, de 
+EVA-staten en Turkije. Het frequentiebereik en het RF-uitgangsvermogen kan verschillen van andere 
+niet-EU-landen.
+* ASUS Phone 5G NR Sub-6/4G LTE bandcompatibiliteit verschilt afhankelijk van de regio. Controleer 
+de compatibiliteit bij uw lokale providers.
+Informatie RF-blootstelling
+Dit ASUS-product is getest en voldoet aan toepasselijke Europese SAR-limieten. De SAR-limiet is 2,0 
+W/kg in landen waar de maximale SAR-waarden voor dit apparaat als volgt zijn:
+• Kop: 1,575 W/Kg @10g
+• Toestel: 1,42 W/Kg @10g
+De WiFi op 5150-5350MHz zal beperkt zijn tot binnengebruik voor in de tabel vermelde landen:
+OPMERKINGEN:
+• Voor (LPI) Wi-Fi 6E-apparaten met laag vermogen voor binnen, is de LPI Wi-Fi 6E-vermogenslimiet 
+23 dBm:
+ Het apparaat is beperkt tot enkel binnengebruik bij bedienen in het frequentiebereik van 5945 tot 
+6425 MHz in AT, BE, BG, CZ, DK, EE, FR, DE, IS, IE, IT, EL, ES, CY, LV, LI, LT, LU, HU, MT, NL, NO, PL, PT, RO, 
+SI, SK, TR, FI, SE, CH, HR and UK(NI).
+• Voor (VLP) Wi-Fi 6E-apparaten met zeer laag vermogen (draagbare apparaten) is de LPI Wi-Fi 
+6E-vermogenslimiet 14 dBm:
+ Het apparaat mag niet worden gebruikt in onbemande luchtvaartsystemen (UAS) bij bedienen in 
+het frequentiebereik van 5945 tot 6425 MHz in AT, BE, BG, CZ, DK, EE, FR, DE, IS, IE, IT, EL, ES, CY, LV, 
+LI, LT, LU, HU, MT, NL, NO, PL, PT, RO, SI, SK, TR, FI, SE, CH, HR and UK(NI).
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH UK (NI) HR
+83
+GPS (Global Positioning System) gebruiken op uw ASUS Phone
+De GPS-positioneringsfunctie gebruiken op uw ASUS Phone:
+Controleer of uw apparaat met internet is verbonden voordat u Google Maps of apps met GPS-
+ondersteuning gebruikt.
+Voordat u een app met GPS-ondersteuning voor de eerste keer gebruikt op uw apparaat, moet u 
+zorgen dat u zich buiten bevindt voor de beste positioneringsgegevens.
+Wanneer u een app met GPS-ondersteuning op uw apparaat binnenin een voertuig gebruikt, 
+kunnen de metalen onderdelen van de autoruit en andere elektronische apparaten de GPS-
+prestaties beïnvloeden.
+Verlichting van oogbelasting 
+Om de belasting van de ogen te verlichten:
+• Neem frequente pauzes wanneer u uw ASUS Phone gebruikt (minstens 10 minuten pauze per 
+half uur).
+• Kijk regelmatig objecten in de verte om uw ogen te ontspannen.
+• Doe vaak oogoefeningen, inclusief:
+ (1) Kijk omhoog en omlaag zonder uw hoofd te bewegen
+ (2) Beweeg uw ogen van links naar rechts zonder uw hoofd te bewegen
+ (3) Rol langzaam met uw ogen
+ (4) Beweeg uw ogen diagonaal
+WAARSCHUWING: Houd het scherm van de ASUS Phone weg van kleine kinderen en peuters jonger 
+dan 2 jaar. Kinderen vanaf 2 jaar mogen niet meer dan een uur schermtijd per dag krijgen.
+Certificaat Laagblauwlicht
+ASUS Phone vermindert het blauw licht dat wordt uitgestraald door zijn scherm 
+en biedt u zo een kijkervaring met nog meer comfort. 
+De schermhelderheid is standaard ingesteld op Maximum en de telefoon 
+voldoet aan de certificering voor Laagblauwlicht van TÜV Rheinland.
+Preventie van gehoorverlies
+Om mogelijke gehoorschade te voorkomen, mag u niet langdurig luisteren aan een hoog 
+volumeniveau.
+84
+ 
+Voor Frankrijk voldoet de hoofdtelefoon/oortelefoon voor dit apparaat aan de vereisten voor het 
+geluidsdrukniveau zoals bepaald in de toepasselijke standaard EN 50332-1: 2013 en/of EN50332-2: 
+2013 zoals vereist door het Franse artikel L.5232-1.
+Opmerking coating
+BELANGRIJK! Om elektrische isolatie te bieden en elektrische veiligheid te behouden, wordt een 
+coating aangebracht om het apparaat te isoleren, met uitzondering van de locatie van de I/O-poorten.
+Kennisgeving green ASUS
+ASUS zet zich in om milieuvriendelijke producten en verpakkingen te maken om de gezondheid 
+van de consument te beschermen terwijl de impact op het milieu wordt geminimaliseerd. 
+De vermindering van het aantal pagina’s van de handleiding is in overeenstemming met de 
+vermindering van koolstofuitstoot.
+Voor de gedetailleerde gebruiksaanwijzing en verwante informatie, kunt u de handleiding 
+raadplegen die bij de ASUS Phone is geleverd of kunt u een bezoek brengen aan de 
+ondersteuningssite van ASUS op https://www.asus.com/support.
+ASUS-services van recycling/terugbrengen
+ASUS-programma’s van recycling/terugbrengen komen voort uit onze inzet voor de hoogste 
+normen met betrekking tot het beschermen van ons milieu. Wij geloven erin u oplossingen te 
+bieden om onze producten, batterijen, andere componenten alsook het verpakkingsmateriaal 
+verantwoordelijk te recyclen. Ga naar http://csr.asus.com/english/Takeback.htm voor 
+gedetailleerde informatie over recycling in verschillende regio’s.
+Fabrikant: ASUSTeK Computer Inc.
+Adres: 1F., No.15, Lide RD., Beitou Dist., Taipei City 112
+Erkende vertegenwoordiger in Europa: ASUS Computer GmbH
+Adres: HARKORT STR. 21-23, 40880 RATINGEN, GERMANY
+Modelnaam: ASUS_AI2302 
+Authorized representative in United Kingdom: ASUSTEK (UK) LIMITED
+Address, City: 
+1st Floor, Sackville House, 143-149 Fenchurch Street, London, EC3M 6BL England
+Country: 
+United Kingdom
+ 1 Basisprincipes
+ Welkom!
+ Uw ASUS Phone gebruiksklaar maken!
+ Eerste gebruik
+ Instructie van navigatiebewegingen
+ Het aanraakscherm gebruiken
+ 2 Nergens is het zo goed als thuis
+ Zen beginschermfuncties
+ Beginscherm
+ Snelle instellingen
+ Meldingen
+ Randgereedschap
+ Uw startscherm aanpassen
+ Achtergronden
+ Widgets
+ Voorkeuren
+ De datum en tijd instellen
+ Uw beltoon en waarschuwingsgeluiden instellen
+ 3 Werk hard, speel harder
+ Chrome
+ Chrome starten
+ Een pagina delen
+ Bladwijzers toevoegen aan pagina’s
+ De surfgegevens wissen
+ Gmail
+ Google Agenda
+ Gebeurtenissen maken
+ Gebeurtenis bewerken of verwijderen
+ Herinneringen maken
+ Herinneringen bewerken of verwijderen
+ Bestandsbeheer
+ 4 Contact houden
+ Bel in stijl
+ Dubbele SIM-functie
+ Bellen
+ Uw favoriete contacten bellen
+ Oproepen ontvangen
+ Overige belopties
+ Gesprekken opnemen
+ Contactpersonen beheren
+ Contactinstellingen
+ Uw profiel instellen
+ Contactpersonen toevoegen
+ Uw favoriete contacten markeren
+ Uw blokkeerlijst beheren
+ Berichten versturen en meer
+ Berichten
+ 5 Plezier en amusement
+ De headset gebruiken
+ Een audiostekker aansluiten
+ YT Muziek
+ 6 Uw dierbare momenten
+ Momenten vastleggen
+ De app Camera starten
+ Afbeeldingslocaties
+ Geavanceerde camerafuncties
+ Tijdvertraging
+ De galerie gebruiken
+ De fotolocatie bekijken
+ Een afbeelding bewerken
+ Bestanden van de galerie delen
+ Bestanden verwijderen uit de galerie.
+ 7 Verbonden blijven
+ Mobiel netwerk
+ Het mobiele netwerk inschakelen
+ Wifi
+ Wifi inschakelen
+ Een verbinding maken met een Wifi-netwerk
+ Wifi uitschakelen
+ Bluetooth®
+ Bluetooth® inschakelen
+ Uw ASUS Phone koppelen met een Bluetooth®-apparaat
+ Het koppelen van uw ASUS Phone met een Bluetooth®-apparaat opheffen
+ Tethering
+ Wifi-hotspot
+ USB Tethering
+ Bluetooth tethering
+ 8 Reisapps
+ Weer
+ De app Weer starten
+ Beginscherm Weer
+ Klok
+ Wekker
+ Wereldklok
+ Stopwatch
+ Timer
+ 9 Zen Overal
+ Speciale Zenhulpmiddelen
+ Calculator
+ Geluids-recorder
+ Mobile Manager
+ 10 Behoud uw Zen
+ Uw apparaat up-to-date houden
+ Uw systeem bijwerken
+ Opslagruimte
+ Back-up maken en opnieuw instellen
+ Reset (Opnieuw instellen)
+ Uw ASUS Phone beveiligen
+ Uw scherm ontgrendelen
+ Fingerprint ID sensor (Sensor vingerafdruk-id)
+ Uw ASUS Phone voor de eerste keer opstarten
+ De vingerafdruk-id instellen vanaf Settings (Instellingen)
+ Gezichtsontgrendeling
+ Gezichtsontgrendeling instellen vanaf Settings (Instellingen)
+ De identiteit van uw ASUS Phone instellen
+ Bijlagen 
+ Veiligheidsinformatie

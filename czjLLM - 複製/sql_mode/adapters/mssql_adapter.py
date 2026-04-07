@@ -1,0 +1,72 @@
+# sql_mode/db_mssql.py
+import pyodbc
+from typing import Iterable, List, Tuple, Any
+from .base_adapter import DBAdapter
+
+def Q(name: str) -> str:
+    return f'[{name}]'  # SQL Server 使用中括號
+
+class MSSQLAdapter(DBAdapter):
+    def __init__(self, cfg: dict):
+        """
+        需要 cfg["connection_string"]（請在呼叫前組好）
+        """
+        self.cfg = cfg
+        self.conn = None
+        self.cur = None
+
+    def connect(self):
+        self.conn = pyodbc.connect(self.cfg["connection_string"])
+        self.cur = self.conn.cursor()
+        return self
+
+    def close(self):
+        try:
+            if self.cur: self.cur.close()
+        finally:
+            if self.conn: self.conn.close()
+
+    def list_columns(self, table: str) -> List[str]:
+        self.cur.execute(f"SELECT TOP 1 * FROM {Q(table)}")
+        return [d[0] for d in self.cur.description]
+
+    def ensure_table(self, table: str, pk: str, pk_type: str = "NVARCHAR(255)"):
+        # 修正：無尾逗號
+        self.cur.execute(f"""
+        IF OBJECT_ID(N'{table}', N'U') IS NULL
+        BEGIN
+            CREATE TABLE {Q(table)} (
+                {Q(pk)} {pk_type} PRIMARY KEY
+            )
+        END
+        """)
+        self.conn.commit()
+
+    def ensure_columns(self, table: str, columns: List[Tuple[str, str]]):
+        exist = set(self.list_columns(table))
+        for col, ctype in columns:
+            if col not in exist:
+                self.cur.execute(f"ALTER TABLE {Q(table)} ADD {Q(col)} {ctype}")
+        self.conn.commit()
+
+    def select_pending_rows(self, *,
+                            src_table: str, tgt_table: str,
+                            pk: str, input_col: str, output_cols: List[str],
+                            record_update_time: bool,
+                            fetch_size: int = 500) -> Iterable[Tuple[Any, str]]:
+        out_col = output_cols[0]
+        sql = f"""
+        SELECT src.{Q(pk)}, src.{Q(input_col)}
+        FROM {Q(src_table)} AS src
+        LEFT JOIN {Q(tgt_table)} AS tgt
+          ON src.{Q(pk)} = tgt.{Q(pk)}
+        WHERE (tgt.{Q(out_col)} IS NULL OR LTRIM(RTRIM(tgt.{Q(out_col)})) = '')
+          AND (src.{Q(input_col)} IS NOT NULL AND LTRIM(RTRIM(src.{Q(input_col)})) <> '')
+        """
+        self.cur.execute(sql)
+        while True:
+            rows = self.cur.fetchmany(fetch_size)
+            if not rows:
+                break
+            for r in rows:
+                yield (r[0], "" if r[1] is None else str(r[1]))

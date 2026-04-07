@@ -1,0 +1,1047 @@
+
+DU20513
+Eerste editie
+november 2022
+E-handleiding
+2 E-handleiding LED-projector
+COPYRIGHT EN GARANTIE-INFORMATIE
+Geen enkel deel van deze handleiding, met inbegrip van de producten en de software die hierin is 
+beschreven, mag zonder de uitdrukkelijke schriftelijke toestemming van ASUSTeK COMPUTER INC. 
+(“ASUS”) worden gereproduceerd, verzonden, getranscribeerd, opgeslagen in een retrievalsysteem of 
+in enige taal worden vertaald in enige vorm of door enig middel, behalve documentatie die door de 
+koper wordt gebruikt voor back-updoeleinden.
+De productgarantie of service zal niet worden verleend als: (1) het product is gerepareerd of 
+gewijzigd, tenzij een dergelijke reparatie of wijziging schriftelijk is goedgekeurd door ASUS; of (2) het 
+serienummer van het product vervormd is of ontbreekt.
+ASUS BIEDT DEZE HANDLEIDING “ZOALS ZE IS” ZONDER ENIGE GARANTIES, HETZIJ UITDRUKKELIJK 
+OF IMPLICIET, MET INBEGRIP VAN, MAAR NIET BEPERKT TOT DE IMPLICIETE GARANTIES OF 
+VOORWAARDEN VOOR VERKOOPBAARHEID OF GESCHIKTHEID VOOR EEN BEPAALD DOEL. IN 
+GEEN GEVAL ZAL ASUS, HAAR DIRECTEURS, FUNCTIONARISSEN, WERKNEMERS OF AGENTEN 
+AANSPRAKELIJK ZIJN VOOR ENIGE INDIRECTE, SPECIALE, INCIDENTELE OF GEVOLGSCHADE 
+(INCLUSIEF SCHADE DOOR WINSTDERVING, VERLIES VAN HANDEL, VERLIES VAN GEBRUIK OF 
+GEGEVENS, ONDERBREKING VAN HANDEL EN DERGELIJKE), ZELFS ALS ASUS OP DE HOOGTE WERD 
+GEBRACHT VAN DE MOGELIJKHEID VAN DERGELIJKE SCHADE DIE VOORTVLOEIT UIT FOUTEN IN DEZE 
+HANDLEIDING OF DEFECTEN AAN HET PRODUCT.
+Producten en bedrijfsnamen die in deze handleiding zijn vermeld, zijn mogelijk geregistreerde 
+handelsmerken of auteursrechten van hun respectieve bedrijven en worden uitsluitend gebruikt 
+voor identificatie of toelichting en in het voordeel van de eigenaar, zonder de bedoeling te hebben 
+een inbreuk te plegen op hun rechten.
+DE SPECIFICATIES EN INFORMATIE DIE IN DEZE HANDLEIDING ZIJN OPGENOMEN, ZIJN UITSLUITEND 
+INFORMATIEF BEDOELD EN OP ELK OGENBLIK EN ZONDER KENNISGEVING ONDERHEVIG AAN 
+WIJZIGINGEN. ZE MOGEN NIET WORDEN BESCHOUWD ALS EEN VERBINTENIS DOOR ASUS. 
+ASUS AANVAARDT GEEN VERANTWOORDELIJKHEID OF AANSPRAKELIJKHEID VOOR FOUTEN OF 
+ONNAUWKEURIGHEDEN DIE MOGELIJK IN DEZE HANDLEIDING ZIJN VERMELD, INCLUSIEF DE 
+PRODUCTEN EN SOFTWARE DIE ERIN ZIJN BESCHREVEN.
+Copyright © 2022 ASUSTeK COMPUTER INC. Alle rechten voorbehouden.
+Beperkte aansprakelijkheid
+Er kunnen zich situaties voordoen door een fout van de kant van ASUS of door een andere 
+aansprakelijkheid. In deze gevallen hebt u het recht op schadevergoeding door ASUS. En elk van 
+dergelijke gevallen, ongeacht de basis waarop u gemachtigd bent schadevergoeding te eisen van 
+ASUS, zal ASUS maximaal aansprakelijk zijn voor schade door lichamelijk letsel (inclusief overlijden) 
+en schade aan vastgoed en activa of elke andere eigenlijke of directe schade die voortvloeit uit de 
+weglating of het niet naleven van wettelijke verplichtingen onder deze Garantieverklaring, tot de 
+aangegeven contractprijs van elk product. 
+ASUS zal alleen verantwoordelijke zijn voor schadevergoeding van uw verlies, schade of claim op 
+basis van het contract, onrechtmatig gebruik of inbreuk onder deze Garantieverklaring.
+Deze beperking is ook van toepassing op de leveranciers en wederverkopers van ASUS. Dit is het 
+maximale bereik waarvoor ASUS, haar leveranciers en uw wederverkoper gezamenlijk aansprakelijk zijn.
+IN GEEN GEVAL ZAL ASUS AANSPRAKELIJK ZIJN VOOR HET VOLGENDE: (1) CLAIMS VAN DERDEN 
+TEGENOVER U VOOR SCHADE; (2) VERLIES VAN OF SCHADE AAN UW RECORDS OF GEGEVENS OF 
+(3) SPECIALE, INCIDENTELE OF INDIRECTE SCHADE OF ENIGE ECONOMISCHE GEVOLGSCHADE 
+(INCLUSIEF WINSTDERVING OF VERLIES VAN OPBRENGSTEN), ZELFS ALS ASUS, HAAR LEVERANCIERS 
+OF UW WEDERVERKOPER OP DE HOOGTE WERD GEBRACHT VAN DE MOGELIJKHEID VAN DERGELIJKE 
+SCHADE.
+Service en ondersteuning
+Bezoek onze meertalige website op https://www.asus.com/support/
+E-handleiding LED-projector 3
+Inhoudsopgave
+Over deze handleiding ..................................................................................... 5
+In deze handleiding gebruikte conventies.............................................. 6
+Typografie ........................................................................................................... 6
+Meertalige versies ............................................................................................ 6
+Veiligheidsmaatregelen ................................................................................... 7
+Uw LED-projector gebruiken ....................................................................... 7
+Onderhoud en vervangen van onderdelen ............................................ 7
+Zorg dragen voor uw LED-projector ......................................................... 8
+Goede verwijdering ......................................................................................... 9
+Hoofdstuk 1: Uw LED-projector leren kennen
+Eigenschappen .................................................................................................12
+Bovenaanzicht .................................................................................................12
+Uitgebreide functies ......................................................................................15
+Flits .........................................................................................................................15
+SOS-modus ..........................................................................................................16
+Vooraanzicht ....................................................................................................17
+Achteraanzicht.................................................................................................18
+Zijaanzicht rechts............................................................................................20
+Onderaanzicht .................................................................................................21
+Hoofdstuk 2: Instelling 
+Uw LED-projector bedienen.........................................................................24
+De LED-projector aansluiten op de voedingsadapter ......................24
+Vereisten voor de voedingskabel ................................................................26
+De LED-projector aansluiten op uw apparaat ......................................27
+Druk op de voedingsknop ..........................................................................28
+Scherpstelling ..................................................................................................29
+Staande stand ..................................................................................................30
+Tabel met schermgrootten en projectieafstand ....................................31
+4 E-handleiding LED-projector
+Hoofdstuk 3: Het OSD-menu gebruiken
+De LED-projector voor de eerste keer gebruiken .................................34
+Het OSD-menu bedienen ..............................................................................35
+De Wi-Fi-dongle gebruiken 
+(alleen voor geselecteerde modellen) ......................................................36
+Draadloos spiegelen ......................................................................................37
+Streaming ..........................................................................................................39
+USB-aansluiting gebruiken ...........................................................................40
+Streaming ..........................................................................................................40
+Opties OSD-menu ............................................................................................41
+Volume .............................................................................................................41
+Ingang .............................................................................................................41
+Splendid .............................................................................................................41
+Helderheid ........................................................................................................41
+Contrast .............................................................................................................42
+Keystone ............................................................................................................42
+Projectiepositie................................................................................................42
+Setup (Instelling) .............................................................................................43
+Information (Informatie) ..............................................................................44
+Uw LED-projector uitschakelen ..................................................................45
+Bijlagen
+FCC-verklaring (Federal Communications Commission) ...................48
+Naleving en verklaring van wereldwijde milieuvoorschriften ........49
+ASUS-recycling/Diensten voor terugname.............................................49
+HDMI-connectiviteit ........................................................................................50
+Ondersteuning van PC-timings ...................................................................51
+Specificaties voor E1R LED-projector ........................................................53
+E-handleiding LED-projector 5
+Over deze handleiding
+Deze handleiding biedt informatie over de hardware- en 
+softwarefuncties van uw LED-projector, geordend in de volgende 
+hoofdstukken:
+Hoofdstuk 1: Uw LED-projector leren kennen
+Dit hoofdstuk geeft een gedetailleerde omschrijving van uw 
+LED-projector.
+Hoofdstuk 2: Instelling
+Dit hoofdstuk toont u hoe u uw LED-projector kunt installeren 
+en de onderdelen ervan kunt gebruiken voor het aansluiten op 
+invoerapparaten.
+Hoofdstuk 3: De LED-projector gebruiken
+Dit hoofdstuk beschrijft de functies van knoppen op het 
+bedieningspaneel van de LED-projector en de manier waarop 
+u ze moet gebruiken om de functies van uw LED-projector te 
+starten.
+Bijlagen
+Dit gedeelte omvat veiligheidsrichtlijnen voor uw LED-projector.
+6 E-handleiding LED-projector
+In deze handleiding gebruikte conventies
+Om belangrijke informatie in deze handleiding te markeren, worden 
+berichten als volgt voorgesteld:
+BELANGRIJK! Dit bericht bevat essentiële informatie die moet 
+worden opgevolgd om een taak te voltooien. 
+OPMERKING: dit bericht bevat aanvullende informatie en tips die 
+kunnen helpen bij het voltooien van taken.
+WAARSCHUWING! Dit bericht bevat belangrijke informatie die moet 
+worden gevolgd om uw veiligheid te bewaren tijdens het uitvoeren 
+van bepaalde taken en om schade te voorkomen aan de gegevens en 
+componenten van uw LED-projector. 
+Typografie
+Vet geeft een menu of een item aan dat moet worden 
+geselecteerd.
+Cursief geeft delen aan waarnaar u kunt verwijzen in deze 
+handleiding.
+Meertalige versies
+Download andere taalversies van deze E-handleiding via deze 
+website: https://www.asus.com/support/
+E-handleiding LED-projector 7
+Veiligheidsmaatregelen
+Uw LED-projector gebruiken
+• Raadpleeg de handleiding en houd rekening met de 
+veiligheidsinstructies voordat u uw LED-projector gebruikt.
+• Volg de opmerkingen en waarschuwingen die in de handleiding 
+zijn vermeld.
+• Plaats uw LED-projector niet op een oneffen of onstabiel 
+oppervlak.
+• Gebruik de LED-projector niet in een rokerige omgeving. Er 
+kunnen rookresten worden opgestapeld op kritieke onderdelen 
+en de LED-projector beschadigen of de prestaties negatief 
+beïnvloeden.
+• Gebruik geen beschadigde voedingskabels, accessoires of 
+andere randapparatuur met uw LED-projector.
+• Houd de plastic verpakking van de LED-projector buiten het 
+bereik van kinderen.
+• Zorg ervoor dat u de ventilatieopeningen van de LED-projector 
+niet blokkeert of plaats er niets dicht bij. Hierdoor kan er warmte 
+binnenin worden opgebouwd waardoor de beeldkwaliteit kan 
+verminderen en de projector kan beschadigd raken.
+• Controleer of de bedrijfsspanning van uw LED-projector 
+overeenkomt met de spanning van uw voedingsbron.
+Onderhoud en vervangen van onderdelen
+• U mag deze LED-projector niet zelf demonteren of proberen 
+te repareren. Neem contact op met uw lokaal ASUS-
+servicecentrum voor hulp.
+• Explosiegevaar als de batterij wordt vervangen door een onjuist 
+type. Gooi lege batterijen weg volgens de veiligheidsinstructies 
+en neem contact op met uw lokaal ASUS-servicecentrum voor 
+hulp. 
+• Wanneer u onderdelen vanuw LED-projector vervangt, moet u 
+de items aanschaffen zoals aanbevolen door ASUS en contact 
+opnemen uw lokaal servicecentrum voor hulp.
+8 E-handleiding LED-projector
+Zorg dragen voor uw LED-projector
+• Schakel de LED-projector uit en koppel deze los van het 
+stopcontact voordat u het apparaat schoonmaakt. 
+• Wanneer u de behuizing van de LED-projector schoonmaakt, 
+moet u gebruik maken van een schone zachte doek, bevochtigd 
+met water of een mengsel van water en een neutraal 
+schoonmaakproduct. Veeg het apparaat droog met een zachte 
+droge doek.
+• Controleer of de lens afgekoeld is voordat u deze reinigt. Veeg 
+de lens voorzichtig schoon met lensreinigingspapier. Raak de 
+lens niet aan met uw handen. 
+• Gebruik geen vloeibare of verstuivende schoonmaakproducten, 
+benzeen of thinners op uw LED-projector.
+• Gebruik deze LED-projector nooit meteen nadat u het apparaat 
+hebt verplaatst van een koude locatie. Wanneer de LED-
+projector aan een drastische temperatuurschommeling wordt 
+blootgesteld, kan er vochtcondensatie op de lens en de andere 
+interne onderdelen worden gevormd. Om dit te voorkomen, 
+is het aanbevolen het apparaat pas twee (2) uur nadat een 
+extreme of plotse temperatuurschommeling is opgetreden, te 
+gebruiken.
+• Gebruik GEEN spray met brandbare gassen om de lens te 
+reinigen. Dit kan leiden tot brand als gevolg van overmatige 
+hitte binnen de projector.
+• Reinig de lens NIET wanneer de projector bezig is met 
+opwarmen aangezien de oppervlaktelaag van de lens er 
+hierdoor af kan schilferen.
+• Gebruik GEEN hard object om de lens af te vegen of erop te 
+tikken. 
+E-handleiding LED-projector 9
+Gooi de LED-projector niet weg bij het huishoudelijk afval. 
+Dit product werd ontworpen om een hergebruik van de 
+onderdelen en het recyclen mogelijk te maken. Het symbool 
+met doorgekruiste afvalbak geeft aan dat het product 
+(elektrische, elektronische apparatuur en kwikhoudende 
+knoopcelbatterij) niet bij het huishoudelijk afval mag 
+worden weggegooid. Informeer naar de plaatselijke 
+voorschriften voor het verwijderen van elektronica.
+Gooi de batterij NIET bij het huisvuil. Het symbool met de 
+doorgestreepte afvalcontainer betekent dat de batterij niet 
+bij het huisvuil mag worden gegooid. 
+Goede verwijdering
+10 E-handleiding LED-projector
+E-handleiding LED-projector 11
+Hoofdstuk 1: Uw LED-projector 
+leren kennen
+12 E-handleiding LED-projector
+Eigenschappen
+Bovenaanzicht
+Bedieningspaneelknoppen
+Via de knoppen op het bedieningspaneel kunt u navigeren 
+door het OSD-menu. Deze knoppen komen individueel ook 
+overeen met een specifieke LED-projectorinstelling, zoals 
+hieronder aangeduid.
+Splendid/
+Afsluiten
+Links/Volume 
+lager Menu/OK Rechts/
+Volume hoger
+OPMERKING: Raadpleeg het hoofdstuk Hoofdstuk 3: Het OSD-menu 
+gebruiken in deze handleiding voor meer informatie over het gebruik 
+van de knoppen op het bedieningspaneel om de instellingen voor 
+uw LED-projector te openen.
+E-handleiding LED-projector 13
+Voedingsindicator en batterijstatusindicator
+Deze LED-indicator geeft de volgende scenario's aan voor uw 
+LED-projector:
+• Deze licht op wanneer de LED-projector is ingeschakeld.
+• Deze licht groen of rood op , afhankelijk van de status van 
+de batterijlading.
+Raadpleeg de volgende tabel voor details over de manier 
+waarop deze LED-indicator werkt als een batterijstatusindicator
+Kleur Status
+Stabiel groen De LED-projector is aangesloten op een 
+stroombron, werkt in batterijmodus en 
+het batterijvermogen is hoger dan 25% of 
+werkt in powerbank-modus.
+Stabiel rood De LED-projector werkt alleen op batterijen 
+en het batterijvermogen is minder dan 
+25%.
+Knipperend 
+oranje
+De temperatuur van de LED-projector is te 
+hoogt en zal de helderheid automatisch 
+verlagen. Als de temperatuur nog steeds 
+te hoog is, wordt de LED-projector 
+uitgeschakeld om oververhitting te 
+voorkomen.
+Knipperend 
+groen
+De LED-projector wordt momenteel 
+gebruikt als powerbank en is bezig met 
+opladen van uw mobiele apparaat. 
+14 E-handleiding LED-projector
+Indicator batterijvermogen
+Deze LED-indicator licht op wanneer de LED-projector wordt 
+aangesloten op een stroombron via de voedingsadapter.
+BELANGRIJK! Gebruik alleen de bijgeleverde voedingsadapter 
+om de accu op te laden en stroom te leveren aan LED-projector.
+E-handleiding LED-projector 15
+Uitgebreide functies
+Uw LED-projector heeft ook onafhankelijke functies die worden 
+gestart door op te drukken terwijl uw LED-projector in de 
+batterijmodus is.
+OPMERKING: 
+• Deze functies zijn niet beschikbaar wanneer uw LED-projector is 
+aangesloten op een HDMI-ingangsbron of via Wi-Fi-modus.
+• Om dit uit te schakelen of om te schakelen tussen het flitslicht en 
+de noodlampfunctie van uw LED-projector, drukt u gewoon op 
+ tot de verlichtingsfunctie van uw voorkeur is uitgeschakeld 
+of ingeschakeld.
+BELANGRIJK! Zorg ervoor dat uw LED-projector is opgeladen en 
+op batterijmodus kan werken voordat u deze functies inschakelt. De 
+gebruiksduur van de batterij verschilt afhankelijk van het gebruik.
+Flits
+De LED-projector knippert stabiel wit wanneer u deze functie 
+gebruikt.
+ 
+Knop Splendid/Afsluiten
+Om uw LED-projector te gebruiken als flitslicht :
+1. Koppel alle randapparatuur en de Wi-Fi-dongle van uw LED-
+projector los en druk vervolgens op de voedingsknop om de 
+projector in te schakelen.
+16 E-handleiding LED-projector
+SOS-modus
+De LED-projector toont een witte knipperende indicator wanneer u 
+deze functie gebruikt.
+ 
+Knop Splendid/Afsluiten
+Om uw LED-projector te gebruiken als flitslicht:
+1. Koppel alle randapparatuur en de Wi-Fi-dongle van uw LED-
+projector los en druk vervolgens op de voedingsknop om de 
+projector in te schakelen.
+2. Druk herhaaldelijk op tot het witte lampje op de LED-
+projector knippert.
+2. Druk herhaaldelijk op tot het witte lampje op de LED-
+projector constant oplicht.
+E-handleiding LED-projector 17
+Vooraanzicht
+Lens
+De lens projecteert video- of afbeeldingsbestanden op het 
+scherm vanaf uw invoerapparaat.
+WAARSCHUWING! 
+• Raak de lens niet aan met uw handen of een scherp object.
+• Kijk NIET direct in de lens.
+18 E-handleiding LED-projector
+Achteraanzicht
+Audio-uitgang
+Via de audio-uitgang kunt u uw LED-projector aansluiten op de 
+hoofdtelefoon.
+HDMI-poort
+Deze poort is voor de HDMI (High-Definition Multimedia 
+Interface)-aansluitingen. Deze poort biedt compliantie 
+met HDCP voor afspelen van HD DVD, Blu-ray en andere 
+beschermde inhoud.
+Uitgangsvermogen/Wi-F-dongle-poort
+Deze voedingsuitgang levert tot 5V/1A uitgangsspanning en 
+-vermogen. U kunt uw mobiel apparaat aansluiten op deze 
+poort om het opgeladen te houden terwijl u het gebruikt met 
+uw LED-projector.
+U kunt ook een Wi-Fi-dongle (meegeleverd met geselecteerde 
+modellen) plaatsen waarmee u inhoud kunt spiegelen of 
+streamen vanaf uw mobiele apparaat.
+OPMERKING: Voor meer details wordt verwezen naar het 
+hoofdstuk Wi-Fi-verbinding gebruiken in deze handleiding.
+E-handleiding LED-projector 19
+Gelijkstroomingang (DC)
+Sluit de bijgeleverde voedingsadapter aan op deze poort om 
+uw batterijdoos op te laden en uw LED-projector van stroom te 
+voorzien.
+BELANGRIJK! Gebruik alleen de bijgeleverde voedingsadapter 
+om de accu op te laden en stroom te leveren aan LED-projector.
+WAARSCHUWING! De adapter kan warm tot heet worden 
+tijdens het gebruik. Zorg ervoor dat u de adapter niet afdekt 
+en houd deze weg van uw lichaam terwijl de adapter is 
+aangesloten op een stroombron.
+Voedingsknop
+Houd deze voedingsknop lang ingedrukt om uw LED-
+projector in of uit te schakelen. Druk kort op deze knop om de 
+voedingsbankmodus in of uit te schakelen.
+20 E-handleiding LED-projector
+Zijaanzicht rechts
+Draaiknop Scherpstelling
+Met de scherpstelring kunt u de beeldfocus van uw LED-
+projector aanpassen.
+Ventilatieopeningen
+Dankzij de ventilatieopeningen kan er koele lucht in en warme 
+lucht uit de LED-projector stromen.
+WAARSCHUWING! Zorg ervoor dat de ventilatieopeningen niet 
+geblokkeerd worden door papier, boeken, kleding, kabels of 
+andere objecten, anders kan het apparaat oververhitten.
+E-handleiding LED-projector 21
+Statiefbevestiging
+Bevestig de LED-projector aan een tripod met een 1/4-20UNC-
+montageschroef met gebruik van deze socket.
+OPMERKING: Deze socket moet alleen worden gebruikt met 
+tripods met een hoogte van minder dan 1 meter.
+Onderaanzicht
+22 E-handleiding LED-projector
+E-handleiding LED-projector 23
+Hoofdstuk 2: 
+Instelling 
+24 E-handleiding LED-projector
+De LED-projector aansluiten op de 
+voedingsadapter
+A. Sluit het stroomsnoer aan op de wisselstroomadapter.
+B. Steek de wisselstroomadapter in een stroombron van 
+100V~240V.
+C. Sluit de gelijkstroomaansluiting aan op uw LED-projector.
+Uw LED-projector bedienen
+Deze draagbare LED-projector biedt u de plug&play-functie voor het 
+aansluiten van apparaten zodat u gemakkelijk multimediabestanden 
+kunt openen en audio direct van de ingebouwde SonicMaster-
+luidsprekers kunt beluisteren.
+Voor uw veiligheid en om de kwaliteit van dit toestel te behouden, 
+dient u de volgende stappen te volgen bij het bedienen van uw LED-
+projector.
+Laad de LED-projector op gedurende 5 uur voordat u deze 
+voor de eerste keer gebruikt in de batterijmodus.
+OPMERKING: De voedingsadapter kan er anders uitzien, afhankelijk 
+van model en regio.
+E-handleiding LED-projector 25
+WAARSCHUWING!
+• De batterijcapaciteit zal verschillen afhankelijk van de 
+omgevingstemperatuur, vochtigheid en LED-projectorgebruik.
+• De batterij die in het apparaat wordt gebruikt, kan een risico op brand 
+of chemische brandwonden betekenen als deze uit het apparaat 
+worden verwijderd of wordt gedemonteerd.
+• Volg de waarschuwingslabels voor uw persoonlijke veiligheid.
+• Explosiegevaar als de batterij wordt vervangen door een onjuist type.
+• Niet in vuur weggooien.
+• Probeer nooit de batterij van uw LED-projector te kortsluiten.
+• Probeer nooit de batterij te demonteren en opnieuw te monteren.
+• Stop het gebruik als er lekkage wordt vastgesteld.
+• De batterij en de componenten moeten op een juiste wijze worden 
+gerecycled of weggegooid.
+• Bewaar de batterij en andere kleine componenten buiten het bereik 
+van kinderen. 
+• Verwijderen van een batterij in vuur of een hete oven, of mechanisch 
+pletten of knippen van een batterij, wat kan leiden tot een explosie;
+• Een batterij achterlaten in een omgeving met een extreem hoge 
+temperatuur, wat kan leiden tot een explosie of lekkage van brandbare 
+vloeistof of gas;
+• Een batterij onderworpen aan extreem lage luchtdruk, wat kan leiden 
+tot een explosie of lekkage van brandbare vloeistof of gas.
+BELANGRIJK! 
+• Gebruik alleen de bijgeleverde voedingsadapter om de accu op te 
+laden en stroom te leveren aan de LED-projector.
+• Zorg ervoor dat uw LED-projector is aangesloten op de 
+voedingsadapter voordat u deze de eerste keer inschakelt. Steek het 
+stroomsnoer altijd in een stopcontact zonder een verlengsnoer te 
+gebruiken. Voor uw veiligheid moet u dit apparaat alleen aansluiten op 
+een juist geaard stopcontact.
+• Het stopcontact moet gemakkelijk toegankelijk zijn en in de buurt van 
+uw LED-projector liggen.
+• Om uw LED-projector los te koppelen van de netstroom, trekt u de 
+stekker van de LED-projector uit het stopcontact.
+26 E-handleiding LED-projector
+Vereisten voor de voedingskabel
+Gebruik de juiste wisselstroomstekker volgens uw huidige locatie.
+BELANGRIJK! Neem contact op met uw verkoper als de 
+wisselstroomkabel die bij uw LED-projector is geleverd, niet 
+overeenkomt met uw lokale voedingsbron.
+OPMERKING: Wij raden u sterk aan een videobron te gebruiken die 
+ook is uitgerust met een stekker met aarding om signaalstoringen 
+door spanningsschommelingen te voorkomen.
+voor Australië en het vasteland 
+van China
+Pro USA, Kanadu, 
+Japonsko a Tchaj-wan
+Pro kontinentální Evropu voor het V.K.
+E-handleiding LED-projector 27
+De LED-projector aansluiten op uw apparaat
+ Audio-uitgang HDMI
+ Voedingsuitgang (5V/1A)
+28 E-handleiding LED-projector
+Druk op de voedingsknop
+OPMERKING: De accu in uw LED-projector stopt met opladen terwijl 
+de LED-projector in gebruik is. Raadpleeg de batterij-indicator voor 
+de huidige laadstatus van uw LED projector. U kunt ook het hoofdstuk 
+Bovenaanzicht in deze handleiding lezen voor meer details.
+E-handleiding LED-projector 29
+Scherpstelling
+OPMERKING: Gebruik een stilstaand beeld wanneer u de weergave 
+op het scherm aanpast.
+Regel de beeldscherpstelling van de projectie op het scherm door 
+de scherpstelschijf omhoog of omlaag te verplaatsen.
+30 E-handleiding LED-projector
+Staande stand
+Uw LED-projector ondersteunt zowel liggende (standaard) als 
+staande stand. Voor het gebruik van de staande stand draait u de 
+projector naar een verticale stand, en het verticale beeld kan op 
+volledig scherm worden weergegeven zonder zwarte balken aan de 
+zijkanten.
+OPMERKING: Met uw LED-projector kunt u inhoud spiegelen of 
+streamen vanaf uw mobiele apparaat, raadpleeg het hoofdstuk Wi-Fi-
+verbinding gebruiken in deze handleiding voor meer details.
+E-handleiding LED-projector 31
+Tabel met schermgrootten en projectieafstand
+Stel de afstand van de LED-projector tot het scherm in volgens de 
+onderstaande tabel.
+Schermgrootte Projectieaf-
+stand (meter)Diagonaal Horizontaal Verticaal
+inch mm inch mm inch mm inch mm
+30 762 26,14 664 14,72 374 31,29 795
+40 1016 34,88 886 19,60 498 41,77 1061
+50 1270 43,58 1107 24,52 623 52,24 1327
+60 1524 52,28 1328 29,40 747 62,71 1593
+70 1778 61 1550 34,33 872 73,07 1856
+80 2032 69,72 1771 39,21 996 83,54 2122
+90 2286 78,42 1992 44,13 1121 94,05 2389
+100 2540 87,12 2213 49,05 1246 104,48 2654
+110 2794 95,86 2435 53,93 1370 114,96 2920
+120 3048 104,56 2656 58,85 1495 125,39 3185
+32 E-handleiding LED-projector
+E-handleiding LED-projector 33
+Hoofdstuk 3: 
+Het OSD-menu gebruiken
+34 E-handleiding LED-projector
+Raadpleeg de volgende stappen wanneer u uw LED-projector voor 
+de eerste keer gebruikt. 
+OPMERKING: Zorg dat uw LED-projector is aangesloten op de 
+voedingsadapter voordat u deze de eerste keer inschakelt. Wij raden 
+u sterk aan een geaard stopcontact te gebruiken wanneer u de LED-
+projector in de voedingsadaptermodus gebruikt.
+1. Configureer uw LED-projector en houd vervolgens de aan/uit-
+knop drie (3) seconden ingedrukt om het in te schakelen. 
+2. Druk op of op het bedieningspaneel van uw LED-
+projector om te bladeren door de beschikbare taalopties.
+ 
+De LED-projector voor de eerste keer 
+gebruiken
+Navigatieknoppen
+Knop Menu/OK
+E-handleiding LED-projector 35
+Het OSD-menu bedienen
+Uw LED-projector is een plug & play-apparaat dat ook een OSD-
+menu bevat met een reeks programma's en instellingen die uw 
+gebruik van de LED-projector kunnen optimaliseren. 
+Start het OSD-menu door op het bedieningspaneel van uw LED-
+projector op te drukken.
+3. Nadat u de taal van uw voorkeur hebt gekozen, drukt u op 
+om deze taal in te stellen voor gebruik op uw LED-projector.
+4. U kunt nu starten met het gebruik van uw LED-projector 
+om bestanden weer te geven vanaf uw invoerapparaat. Het 
+scherm NO SIGNAL (GEEN SIGNAAL) kan verschijnen als er 
+geen invoerapparaat is aangesloten of als het niet kan worden 
+gedetecteerd door de LED-projector.
+5. Druk op op het bedieningspaneel van uw LED-projector 
+om het OSD-menu te openen.
+Om te scrollen door de opties in het OSD-menu, drukt u op de 
+navigatieknoppen ( / ) op het bedieningspaneel van uw 
+LED-projector. Na afstellen van de instellingen drukt u op voor 
+het opslaan van de nieuwe instellingen, en druk op om terug te 
+keren naar het startscherm.
+OPMERKING: Voor meer details wordt verwezen naar het hoofdstuk 
+Opties OSD-menu in deze handleiding.
+36 E-handleiding LED-projector
+Met de optionele Wi-Fi-dongle kunt u het scherm van uw apparaat 
+projecteren of streamen van uw apparaat op uw LED-projector. Het 
+instelproces kan enigszins variëren tussen apparaten.
+Zorg ervoor dat u het volgende doet voordat u begint met scherm 
+spiegelen of media streamen vanaf uw apparaat:
+1. Plaats de Wi-Fi-dongle in de USB Type-A-poort van uw LED-
+projector.
+2. U zou automatisch naar draadloze projectiemodus moeten 
+worden geschakeld.
+OPMERKING: Als u niet automatisch wordt geschakeld naar 
+draadloze projectiemodus, kunt u het wijzigen via de OSD. Druk op 
+ en selecteer vervolgens > Spiegelen.
+3. Schakel Wi-Fi op uw apparaat in.
+De Wi-Fi-dongle gebruiken 
+(alleen voor geselecteerde modellen)
+E-handleiding LED-projector 37
+Vanaf Android-apparaten
+1. Tik op Slim spiegelen of Casten en verbind de SSID van uw 
+LED-projector als getoond op het projectiescherm.
+2. Begin met het projecteren van het scherm van uw mobiele 
+apparaat op de LED-projector.
+Draadloos spiegelen
+Vanaf iOS-apparaten
+1. Schakel Wi-Fi in en selecteer de SSID van uw LED-projector (als 
+getoond op het projectiescherm) uit de netwerklijst.
+2. Voer het wachtwoord van de projector in (als getoond op het 
+projectiescherm) om verbinding te maken.
+3. Tik op Scherm spiegelen en verbind de SSID van uw LED-
+projector als getoond op het projectiescherm.
+4. Begin met het projecteren van het scherm van uw mobiele 
+apparaat op de LED-projector.
+OPMERKING: 
+• De optienamen kunnen variëren afhankelijk van uw apparaat. 
+Raadpleeg voor meer informatie de met uw apparaat geleverde 
+handleiding. 
+• Zorg ervoor dat uw mobiele besturingssysteem up-to-date is 
+voordat u het proces van spiegelen of streamen start. 
+38 E-handleiding LED-projector
+Vanaf Windows-laptop
+1. Druk op de Windows-sneltoets ( of ) + K.
+2. Selecteer de SSID van uw LED-projector (als getoond op het 
+projectiescherm) uit de lijst met apparaten.
+3. Voer het wachtwoord van de projector in (als getoond op het 
+projectiescherm) om verbinding te maken en te beginnen met 
+spiegelen.
+Vanaf MacBook
+1. Selecteer de SSID van uw LED-projector (als getoond op het 
+projectiescherm) uit de Wi-Fi-lijst op uw MacBook.
+2. Voer het wachtwoord van de projector in (als getoond op het 
+projectiescherm) om verbinding te maken.
+3. Open uw browser en typ de URL (http://192.168.xxx.xxx) (als 
+getoond op het projectiescherm) in de adresbalk. U wordt 
+doorgestuurd naar een webpagina om uw LED-projector te 
+verbinden met het Wi-Fi-netwerk.
+OPMERKING: 
+• Zorg ervoor dat uw apparaat en LED-projector zijn verbonden 
+met hetzelfde Wi-Fi-netwerk voordat u verder gaat met de 
+volgende stap.
+• Om verbinding te maken met een ander Wi-Fi-netwerk, herhaalt 
+u stap 3 en selecteert u uw gewenste Wi-Fi-netwerk op de 
+webpagina.
+4. Open het Bedieningscentrum op uw Mac en selecteer Scherm 
+spiegelen. Selecteer uw LED-projector uit de lijst met apparaten 
+om te beginnen met spiegelen.
+Scan de QR-code om de instructievideo te bekijken:
+OPMERKING: Uw projector kan er anders uitzien dan 
+die in de video, maar de interface en de te volgen 
+stappen zijn dezelfde.
+E-handleiding LED-projector 39
+Scan de QR-code om de instructievideo te bekijken:
+Streaming
+Streaming vanaf YouTube- of Facebook-video
+Standaardinstellingen
+1. Schakel Wi-Fi in en selecteer de SSID van uw LED-projector (als 
+getoond op het projectiescherm) uit de netwerklijst.
+2. Voer het wachtwoord van de projector in (als getoond op het 
+projectiescherm) om verbinding te maken.
+3. Open uw browser en typ de URL (http://192.168.xxx.xxx) (als 
+getoond op het projectiescherm) in de adresbalk. U wordt 
+doorgestuurd naar een webpagina om uw LED-projector te 
+verbinden met het Wi-Fi-netwerk.
+OPMERKING: 
+• Zorg ervoor dat uw apparaat en LED-projector zijn verbonden 
+met hetzelfde Wi-Fi-netwerk voordat u verder gaat met de 
+volgende stap.
+• Om verbinding te maken met een ander Wi-Fi-netwerk, herhaalt 
+u stap 3 en selecteert u uw gewenste Wi-Fi-netwerk op de 
+webpagina.
+4. Open de YouTube- of Facebook-app en tik vervolgens op 
+de knop Casten op het videoscherm. Selecteer uw LED-
+projector om naar te streamen uit de lijst met apparaten.
+5. Selecteer na verbinding de video die u wilt bekijken en tik op 
+Afspelen. Het afspelen van uw inhoud op de projector wordt 
+gestart.
+OPMERKING: Uw projector kan er anders uitzien dan 
+die in de video, maar de interface en de te volgen 
+stappen zijn dezelfde.
+40 E-handleiding LED-projector
+Met de USB Type-A-poort kunt u het scherm van uw apparaat 
+projecteren of streamen van uw apparaat op uw LED-projector. Het 
+instelproces kan enigszins variëren tussen apparaten.
+Zorg ervoor dat de USB-kabel juist is geplaatst in uw LED-projector 
+voordat u begint met scherm spiegelen of streamen van media 
+vanaf uw apparaat.
+Streaming
+Vanaf een Anroid-telefoon
+1. Sluit het andere uiteinde van de USB-kabel aan op uw telefoon.
+2. Download en installeer MiraPlug op uw telefoon.
+3. Open MiraPlug en tik op Casten.
+Vanaf een iOS-telefoon
+1. Sluit het andere uiteinde van de USB-kabel aan op uw telefoon.
+2. Tik op Trust (Vertrouwen) wanneer u wordt gevraagd om te 
+bevestigen dat u uw LED-projector toegang wilt geven tot uw 
+telefoon.
+USB-aansluiting gebruiken
+E-handleiding LED-projector 41
+Opties OSD-menu
+U kunt de volgende pagina's raadplegen voor details over elke optie 
+van het OSD-menu.
+Volume
+Selecteer deze menuoptie om het volume aan te passen van het 
+audiobestand dat wordt afgespeeld op uw LED-projector. 
+U kunt het volume aanpassen op een schaal van 0 tot 10, en u kunt 
+ook of ingedrukt houden om het volume snel te dempen 
+of aan te passen naar het luidst.
+Ingang
+Selecteer deze menu-optie om de ingangsbron voor uw LED-
+projector te configureren:
+Splendid
+Selecteer deze menu-optie voor het activeren van verschillende 
+weergavemodi. U kunt deze menu-optie ook direct starten door op 
+ te drukken. 
+Beschikbare opties: Bright (Helder), Standard (Standaard), 
+Theater en ECO
+Helderheid
+Selecteer deze menuoptie om de helderheid van uw projectie op 
+het scherm aan te passen. U kunt de helderheid aanpassen op een 
+schaal van 0 tot 10, van donkerste naar helderste.
+42 E-handleiding LED-projector
+Contrast
+Selecteer deze menuoptie om de heldere en donkere gebieden 
+van uw projectie op het scherm aan te passen. U kunt het contrast 
+aanpassen op een schaal van 0 tot 10, van het laagst naar het hoogst 
+mogelijke contrast.
+Keystone
+Selecteer deze optie om de keystone van uw projectie op het 
+scherm aan te passen.
+OPMERKING: Als u de functie Automatische trapeziumcorrectie 
+wilt inschakelen na handmatige afstelling, gaat u naar Instelling en 
+schakel Automatische trapeziumcorrectie in.
+Projectiepositie
+Met deze optie kunt u de manier waarop uw projecties op het 
+Scherm zijn georiënteerd, wijzigen op basis van de huidige locatie 
+van uw LED-projector. 
+U kunt de stand van uw projectie wijzigen zodat deze overeenkomt 
+met de locatie waar uw LED-projector momenteel is geplaatst: Front 
+Table (Tafel voor) en Rear Table (Tafel achter).
+E-handleiding LED-projector 43
+Setup (Instelling)
+Selecteer deze menuoptie om de volgende instellingen van uw LED-
+projector te configureren:
+• LANGUAGE (TAAL) - met deze optie kunt u het OSD-menu van 
+de LED-projector instellen op andere talen.
+• Resetten - Met deze optie worden de standaardinstellingen van 
+uw LED-projector of Wi-Fi-netwerk hersteld. 
+• Automatische trapeziumcorrectie - Met deze optie kunt u de 
+automatische trapeziumcorrectie in- of uitschakelen.
+• Auto,atische plafonddetectie - Met deze optie kunt u de 
+automatische plafonddetectie in- of uitschakelen.
+• Automatisch inschakelen - Met deze functie kunt u de 
+functie Automatisch inschakelen in- of uitschakelen wanneer 
+uw LED-projector is verbonden met een HDMI-apparaat 
+en is aangesloten op een voeding met gebruik van de 
+voedingsadapter.
+• OSD-onderbreking - Met deze optie kunt u het aantal 
+seconden instellen voordat het OSD-menu verdwijnt van uw 
+projectiescherm.
+• Stroomonderbreking- Met deze optie kunt u Automatisch 
+(15 minuten) selecteren of het aantal minuten zonder HDMI-
+signaal instellen voordat uw LED-projector automatisch wordt 
+uitgeschakeld. 
+44 E-handleiding LED-projector
+Information (Informatie)
+Selecteer deze menuoptie om een overzicht van informatie over uw 
+LED-projector te zien.
+modelnaam Firmwareversie 
+LED-projector
+schermresolutie 
+invoerapparaat
+E-handleiding LED-projector 45
+Uw LED-projector uitschakelen
+1. Druk op de voedingsknop.
+2. Wanneer het volgende scherm verschijnt, drukt u opnieuw op 
+de voedingsknop om uw LED-projector volledig uit te schakelen. 
+Als u uw LED-projector onmiddellijk na uitschakelen weer moet 
+inschakelen, wacht dan tot het voedingsindicatielampje en de 
+batterijstatusindicator uit gaan. 
+46 E-handleiding LED-projector
+E-handleiding LED-projector 47
+Bijlagen
+48 E-handleiding LED-projector
+FCC-verklaring (Federal Communications 
+Commission)
+Verantwoordelijke partij: Asus Computer International
+Adres: 48720 Kato Rd., Fremont, CA 94538, VS
+Telefoon- / faxnr.: (510)739-3777 / (510)608-4555
+Naam product: LED-projector
+Model: E1R
+Dit apparaat werd getest en voldoet aan de beperkingen voor 
+een klasse B digitaal apparaat, in naleving van deel 15 van 
+de FCC-voorschriften. Deze limieten zijn vastgesteld om een 
+redelijke beveiliging te bieden tegen schadelijke storingen in 
+een thuis installatie. Dit apparaat genereert, gebruikt en straalt 
+radiofrequentie-energie uit en kan indien onjuist geïnstalleerd en 
+niet volgens de instructies gebruikt, schadelijke storing veroorzaken 
+in radiocommunicatie. Er is echter geen garantie dat er geen storing 
+zal optreden in een particuliere installatie. Indien dit apparaat toch 
+schadelijke storingen veroorzaakt aan radio- of televisieontvangst, 
+wat kan vastgesteld worden door het apparaat in en uit te schakelen, 
+moet de gebruiker deze storing proberen te corrigeren door een of 
+meer van de volgende maatregelen te nemen:
+• Wijzig de richting van de ontvangstantenne of verplaats de 
+antenne.
+• Vergroot de afstand tussen de apparatuur en de ontvanger.
+• Sluit het apparaat aan op een stopcontact op een ander circuit 
+dan dat waarop de ontvanger is aangesloten. 
+• Raadpleeg de leverancier of een ervaren radio/Tv-technicus 
+voor hulp.
+Dit apparaat voldoet aan Deel 15 van de FCC-voorschriften. Het 
+gebruik is onderhevig aan de volgende twee voorwaarden:
+1. Dit apparaat mag geen schadelijke storing veroorzaken.
+2. Dit apparaat moet elke ontvangen storing aanvaarden, met 
+inbegrip van storing die ongewenste werking kan veroorzaken.
+E-handleiding LED-projector 49
+Naleving en verklaring van wereldwijde 
+milieuvoorschriften 
+ASUS volgt het concept voor groen design om haar producten te 
+ontwerpen en te vervaardigen en zorgt ervoor dat elke fase van 
+de levenscyclus van ASUS-producten voldoet aan de wereldwijde 
+milieuvoorschriften. Daarnaast onthult ASUS de relevante informatie 
+op basis van de vereisten voor de voorschriften.
+Raadpleeg http://csr.asus.com/english/Compliance.htm voor de 
+bekendmaking van informatie op basis van de vereisten voor de 
+voorschriften waaraan ASUS voldoet:
+Verklaringen betreffende materiaal Japan JIS-C-0950 
+EU REACH SVHC
+Korea RoHS
+ASUS-recycling/Diensten voor terugname
+De recyling- en terugnameprogramma's van ASUS zijn voortgevloeid 
+uit onze inzet voor de hoogste standaarden voor milieubescherming. 
+Wij geloven erin u oplossingen te bieden om uw producten, 
+batterijen, andere componenten alsook het verpakkingsmateriaal 
+verantwoordelijk te recyclen. Ga naar http://csr.asus.com/english/
+Takeback.htm voor gedetailleerde informatie over recycling in 
+verschillende regio's.
+50 E-handleiding LED-projector
+Apparaten met 
+HDMI-poort • HDMI-naar-HDMI-kabel
+Apparaten met 
+micro-HDMI-
+poort
+• Micro HDMI-naar-HDMI-adapter
+• HDMI-naar-HDMI-kabel
+iOS-apparaten 
+met Lightning™-
+poort • Lightning™ digitale AV-adapter
+• HDMI-naar-HDMI-kabel
+Apparaten met 
+USB 3.2 Gen 2 
+Type-C®-poort • USB 3.2 Gen 2 Type-C® Digitale AV-
+adapter
+• HDMI-naar-HDMI-kabel
+HDMI-connectiviteit
+E-handleiding LED-projector 51
+Ondersteuning van PC-timings
+HDMI (PC)
+Modus Resolutie
+Vernieu-
+wingsfre-
+quentie 
+(Hz)
+H, frequentie 
+(kHz)
+Klok 
+(MHz)
+VGA 640x480 60,0 31,5 25,175 
+VGA 640x480 66,9 33,2 23,900
+720x480_60 720x480 60,0 29,7 23,700
+720x576_50 720x576 50,0 29,5 23,600
+832x624_75 832x624 74,9 25,4 23,100
+XGA 1024x768 60,0 48,3 65,000 
+XGA 1024x768 75,0 60,0 78,750
+XGA 1024x768 60,0 65,0 65,000 
+720p 1280x720 60,0 45,0 74,250
+720p 1280x720 50,0 36,8 50,000
+WXGA 1280x800 60,0 49,7 83,500
+SXGA 1280x1024 60,0 64,0 108,000 
+UXGA 1600x900 60,0 55,5 93,250
+SVGA 800x600 60,0 37,9 40,000 
+WXGA+ 1440x900 60,0 55,9 106,500
+WSXGA+ 1680x1050 60,0 65,3 146,250
+1080p 1920x1080 60,0 67,5 148,500
+PowerBook G4 1024x768 60,0 48,4 65,000 
+MAC13 640x480 66,7 35,0 30,240
+MAC16 832x624 74,5 49,7 57,280
+MAC19 1024x768 75,0 60,2 80,000 
+MAC21 1152x870 75,0 68,7 100,000
+MAC21 1152x864 60,0 53,3 65,600
+52 E-handleiding LED-projector
+HDMI (video)
+Timing Resolutie
+V-fre-
+quentie 
+(Hz)
+H, frequentie 
+(kHz)
+Dotklok 
+Frequency 
+(Fre-
+quentie) 
+(MHz)
+480i 720x480 
+(1440x480)16:9
+59,94 
+(29,97) 15,7 27,000 
+576i 720x576 
+(1440x576)16:9 50 (25) 15,6 27,000 
+480p 720x480 16:9 59,9 31,5 27,000 
+576p 720x576 16:9 50,0 31,3 27,000 
+720p 1280x720 60,0 45,0 74,250 
+720p 1280x720 50,0 37,5 74,250 
+1080i 1920x1080 60 (30) 33,8 74,250 
+1080i 1920x1080 50 (25) 28,1 74,250 
+1080p 1920x1080 23,97/24 27,0 74,250 
+1080p 1920x1080 60,0 67,5 145,500 
+1080p 1920x1080 50,0 56,3 145,500 
+1080p 1920x1080 25,0 28,1 74,250 
+1080p 1920x1080 30,0 33,8 74,250 
+Omezení 
+rozsahu 
+grafického 
+zdroje 
+monitoru
+Frekvence horizontálního 
+skenování: 15 k - 75 kHz
+Frekvence vertikálního 
+skenování: 24-60Hz
+Max, frekvence pixelů: 170 
+MHz (digitální)
+E-handleiding LED-projector 53
+Specificaties voor E1R LED-projector
+Beeld-
+scherm
+Beeldschermtechnologie 0,2” DLP®
+Lichtbron R/G/B LED
+Levensduur lichtbron 20,000 hrs 
+Ware resolutie 
+(oorspronkelijk)
+WVGA 854 x 480
+Lichtuitgang 200 LED Lumen
+Contrastverhouding 
+(standaard)
+500:1
+Kleurverzadiging (NTSC) 100%
+Schermkleuren 16,7 million colors
+Projecti-
+elens
+Throw-factor 1,2:1 (37,6 in. @ 1 m @ 
+16:9)
+Projectiebereik 0,5 m to 3,0 m
+Projectie-/schermgrootte 19 in. to 110 in.
+Projectieverschuiving 100%
+Zoomfactor Vast
+Videofunc-
+ties Beeldmodi
+Bright (Helder), 
+Standard (Standaard), 
+Theater, ECO
+Trapeziumcorrectie Verticaal ±40°
+Automatische 
+trapeziumcorrectie 
+Ja
+Plaatsing projector Tafel voor, Tafel achter
+Audiofunc-
+ties
+Ingebouwde 
+luidsprekers
+2W luidspreker 
+(ASUS SonicMaster-
+audiotechnologie)
+(vervolg op volgende pagina)
+54 E-handleiding LED-projector
+Signaal 
+Frequentie
+Digitaal signaal 
+Frequentie
+24,7 KHz(H) to 74,6 KHz(H) 
+/ 50 Hz(V) to 60 Hz(V)
+Lawaai Power On Mode ≤45W
+Standby Mode <0,5W
+Batterij Interne batterij 2850mAh (5V@1A)
+Levensduur batterij Maximaal 4 uur
+Lawaai
+Geluidsniveau
+30 dB (standaardmodus)
+28 dB (theatermodus)
+Ingang/ 
+Uitgang Pc-signaalingang HDMI 1.4b
+Audio-uitgang Oortelefoonuitgang
+USB 2.0-poort voor 
+stroomuitgang
+Ja (5V@1A)
+Mechanical 
+Design
+Kleuren van de behu-
+izing
+Zilver
+Statiefbevestiging Ja
+Knoppen op machine Ja
+Lensdop Nee
+Afmetingen
+Fysische afmetingen 
+108 mm x 84 mm x 29 
+ mm (L x B x H)
+Weight Net Weight (Esti.) 310 g
+(vervolg op volgende pagina)
+E-handleiding LED-projector 55
+Gebruikstemperatuur 0° C tot 35° C
+Bedrijfsvochtigheid 20% tot 90% 
+Accessoires Zachte beschermhoes, tas met 
+trekkoord, HDMI-kabel, snelstartgids, 
+garantiekaart
+Alleen voor geselecteerde modellen 
+dongle, stroomsnoer, USB-kabel, 
+Goedkeuringen 
+reglementeringen
+FCC / CE / CB / RCM / VCCI / IEC62471 / 
+CEC
+OPMERKING:
+• Specificaties zijn onderhevig aan wijzigingen zonder 
+voorafgaande kennisgeving.
+• Productbeschikbaarheid kan verschillen afhankelijk van de regio.
+• Alle vermelde merk- en productnamen zijn handelsmerken van 
+hun respectieve bedrijven.
+56 E-handleiding LED-projector
+ Over deze handleiding
+ In deze handleiding gebruikte conventies
+ Typografie
+ Meertalige versies
+ Veiligheidsmaatregelen
+ Uw LED-projector gebruiken
+ Onderhoud en vervangen van onderdelen
+ Zorg dragen voor uw LED-projector
+ Goede verwijdering
+ Hoofdstuk 1: Uw LED-projector leren kennen
+ Eigenschappen
+ Bovenaanzicht
+ Uitgebreide functies
+ Flits
+ SOS-modus
+ Vooraanzicht
+ Achteraanzicht
+ Zijaanzicht rechts
+ Onderaanzicht
+ Hoofdstuk 2: 
+Instelling 
+ Uw LED-projector bedienen
+ De LED-projector aansluiten op de voedingsadapter
+ Vereisten voor de voedingskabel
+ De LED-projector aansluiten op uw apparaat
+ Druk op de voedingsknop
+ Scherpstelling
+ Staande stand
+ Tabel met schermgrootten en projectieafstand
+ Hoofdstuk 3: 
+Het OSD-menu gebruiken
+ De LED-projector voor de eerste keer gebruiken
+ Het OSD-menu bedienen
+ De Wi-Fi-dongle gebruiken
+(alleen voor geselecteerde modellen)
+ Draadloos spiegelen
+ Streaming
+ USB-aansluiting gebruiken
+ Streaming
+ Opties OSD-menu
+ Volume
+ Ingang
+ Splendid
+ Helderheid
+ Contrast
+ Keystone
+ Projectiepositie
+ Setup (Instelling)
+ Information (Informatie)
+ Uw LED-projector uitschakelen
+ Bijlagen
+ FCC-verklaring (Federal Communications Commission)
+ Naleving en verklaring van wereldwijde milieuvoorschriften 
+ ASUS-recycling/Diensten voor terugname
+ HDMI-connectiviteit
+ Ondersteuning van PC-timings
+ Specificaties voor E1R LED-projector

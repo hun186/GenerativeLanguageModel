@@ -1,0 +1,2933 @@
+
+Felhasználói kézikönyv
+4G-AC53U
+Vezeték nélküli AC750 LTE modem router 
+2
+Copyright® 2018 ASUSTeK COMPUTER INC. Minden jog fenntartva!
+Az ASUSTeK COMPUTER INC. („ASUS”) előzetes írásos engedélye nélkül ennek 
+a kiadványnak, illetve a benne leírt termékeknek vagy szoftvernek, semmilyen 
+részletét nem szabad sokszorosítani, továbbítani, átírni, adatfeldolgozó 
+rendszerben tárolni, bármilyen nyelvre lefordítani, legyen az bármilyen 
+formában vagy eszközzel, kivéve a vásárlói dokumentációt tartalékmásolat 
+készítése céljából.
+A termékgarancia, illetve szolgáltatás nem kerül meghosszabbításra, ha: (1) a 
+terméket megjavítják, módosítják vagy átalakítják, kivéve ha az ilyen javítást, 
+módosítást vagy átalakítást az ASUS írásban jóváhagyta; vagy (2) a termék 
+sorozatszámát olvashatatlanná teszik vagy hiányzik.
+AZ ASUS A KÉZIKÖNYVET „ÖNMAGÁBAN” BOCSÁTJA RENDELKEZÉSRE, 
+BÁRMILYEN KIFEJEZETT VAGY BELEÉRTETT JÓTÁLLÁS NÉLKÜL, TARTALMAZVA, 
+DE NEM KORLÁTOZÓDVA PUSZTÁN AZ ELADHATÓSÁGBAN LÉVŐ JÓTÁLLÁSRA, 
+ILLETVE MEGHATÁROZOTT CÉLRA VALÓ ALKALMASSÁGRA. AZ ASUS, ILLETVE 
+ANNAK IGAZGATÓI, TISZTSÉGVISELŐI, ALKALMAZOTTAI VAGY MEGBÍZOTTAI 
+SEMMILYEN ESETBEN NEM TARTOZNAK FELELŐSSÉGGEL SEMMILYEN OLYAN 
+KÖZVETLEN, KÖZVETETT, ESETI, KÜLÖNLEGES VAGY KÖVETKEZMÉNYES 
+KÁRÉRT, SEM KÁRTÉRÍTÉSSEL AZ ELMARADT NYERESÉG, ELMARADT BEVÉTEL, 
+ADATVESZTÉS VAGY ÜZEMKIESÉS OKOZTA OLYAN KÁRÉRT, AMELY A JELEN 
+KÉZIKÖNY VAGY TERMÉK HIBÁJÁBÓL ERED, MÉG AKKOR IS, HA AZ ASUS-T 
+TÁJÉKOZTATTÁK ENNEK LEHETŐSÉGÉRŐL.
+A JELEN KÉZIKÖNYVBEN SZEREPLŐ MŰSZAKI ADATOK ÉS INFORMÁCIÓ 
+KIZÁRÓLAG TÁJÉKOZTATÓ CÉLÚ, ELŐZETES ÉRTESÍTÉS NÉLKÜL BÁRMIKOR 
+MEGVÁLTOZHATNAK ÉS NEM ÉRTELMEZHETŐK AZ ASUS ÁLTALI 
+KÖTELEZETTSÉGVÁLLALÁSKÉNT. AZ ASUS NEM VÁLLAL SEMMINEMŰ 
+FELELŐSSÉGET A KÉZIKÖNYVBEN ELŐFORDULÓ HIBÁKÉRT VAGY PONTATLAN 
+INFORMÁCIÓKÉRT, A BENNE LEÍRT TERMÉKEKET ÉS SZOFTVERT IS BELEÉRTVE.
+A jelen kézikönyvben szereplő termékek és cégnevek az adott cégeik bejegyzett 
+védjegyei vagy szerzői tulajdona lehetnek vagy sem, és használatuk kizárólag 
+azonosítás vagy magyarázat céljából történik a tulajdonos javára, mindennemű 
+jogsértés szándéka nélkül. 
+HUG14236
+Első kiadás
+Szeptember 2018
+3
+Tartalomjegyzék
+1 A vezeték nélküli router megismerése
+1.1 Üdvözöljük! .......................................................................................6
+1.2 A csomag tartalma .........................................................................6
+1.3 A vezeték nélküli router ................................................................7
+1.4 Az eszköz tulajdonságai ...............................................................9
+1.5 A router elhelyezése ................................................................... 10
+1.6 A router üzembe helyezése ...................................................... 11
+1.6.1 Készítse elő a beállításhoz szükséges 
+ követelményeket. ..................................................................11
+1.6.2 Állítsa be az LTE vezeték nélküli routert. .......................12
+2 A hardver üzembe helyezése
+2.1 Gyors internetbeállítás (QIS) automatikus észleléssel .... 14
+3 Az általános beállítások konfigurálása
+3.1 A Network Map használata ..................................................... 18
+3.1.1 A vezeték nélküli hálózati biztonság beállítása ..........19
+3.1.2 Rendszerállapot .....................................................................20
+3.1.3 A hálózati kliensek kezelése ..............................................21
+3.1.4 Az internet állapotának megtekintése ..........................23
+3.1.5 Az USB eszköz ellenőrzése .................................................24
+3.2 Vendéghálózat .............................................................................. 25
+3.3 A Traffic Manager (Forgalomkezelő) használata ............... 27
+3.3.1 QoS .............................................................................................27
+3.3.2 Forgalom ellenőrzése ..........................................................28
+3.4 Parental Controls (Szülői felügyelet) ..................................... 29
+3.5 Az USB-alkalmazás használata ................................................ 31
+3.5.1 Az AiDisk használata ............................................................31
+3.5.2 A médiaszolgáltatások és kiszolgálók használata .....34
+3.5.3 A Hálózati hely (Samba) megosztása / Felhőalapú 
+ tároló szolgáltatás használata ..........................................35
+4
+Tartalomjegyzék
+3.5.4 Az FTP megosztás szolgáltatás használata ..................37
+3.6 AiCloud 2.0 használata ............................................................... 39
+3.6.1 Felhőalapú tároló ..................................................................40
+3.6.2 Intelligens elérés ...................................................................41
+3.6.3 Smart Sync (Intelligens szinkronizálás) .........................42
+3.6.4 Szinkronizálási kiszolgáló ...................................................43
+3.6.5 Beállítások ................................................................................46
+4 A speciális beállítások konfigurálása
+4.1 Vezeték nélküli .............................................................................. 47
+4.1.1 Általános ...................................................................................47
+4.1.2 WPS ............................................................................................49
+4.1.3 WDS ............................................................................................51
+4.1.4 Vezeték nélküli MAC-szűrő ................................................53
+4.1.5 RADIUS beállítás ....................................................................54
+4.1.6 Professzionális ........................................................................55
+4.2 LAN .................................................................................................... 58
+4.2.1 LAN IP ........................................................................................58
+4.2.2 DHCP szerver ..........................................................................59
+4.2.3 Útvonal .....................................................................................61
+4.2.4 Kapcsolóvezérlés ...................................................................62
+4.3 WAN .................................................................................................. 63
+4.3.1 Kettős WAN ..............................................................................63
+4.3.2 Internetkapcsolat ..................................................................64
+4.3.3 IPv6 .............................................................................................74
+4.3.4 Portindító .................................................................................75
+4.3.5 Virtuális kiszolgáló/Porttovábbítás .................................77
+4.3.6 DMZ............................................................................................80
+4.3.7 DDNS .........................................................................................81
+4.3.8 NAT áthaladás ........................................................................82
+5
+Tartalomjegyzék
+4.4 IPv6 ................................................................................................... 83
+4.5 VPN-kiszolgáló .............................................................................. 84
+4.6 Tűzfal ................................................................................................ 85
+4.6.1 Általános ...................................................................................85
+4.6.2 URL-szűrő .................................................................................85
+4.6.3 Kulcsszószűrő .........................................................................86
+4.6.4 Hálózatiszolgáltatás-szűrő .................................................86
+4.7 Adminisztráció .............................................................................. 88
+4.7.1 Üzemmód ................................................................................88
+4.7.2 Rendszer ............................................................................................... 89
+4.7.3 A firmware frissítése .............................................................91
+4.7.4 Beállítások visszaállítása/mentése/feltöltése ..............92
+4.7.5 Visszajelzés ..............................................................................93
+4.8 Rendszernapló .............................................................................. 94
+4.9 Az Ethernet WAN mobil szélessáv támogatási listája ..... 95
+5 Segédprogramok
+5.1 Eszközfelderítés ............................................................................ 97
+5.2 Firmware helyreállítása .............................................................. 98
+6 Hibaelhárítás
+6.1 Alapvető hibaelhárítás .............................................................100
+6.2 Gyakran ismétlődő kérdések (GYIK) ...................................102
+Függelék
+MEGJEGYZÉSEK .......................................................................................111
+ASUS elérhetőségi adatok ...................................................................124
+Globális hálózati forróvonal információ .........................................125
+6
+1 A vezeték nélküli router 
+megismerése
+1.1 Üdvözöljük!
+Köszönjük, hogy ASUS 4G-AC53U vezeték nélküli LTE routert 
+választott!
+A hatékony és stílusos 4G-AC53U router 2,4 GHz-es és 5 GHz-
+es dupla sávot kínál az egyidejű, vezeték nélküli, HD minőségű 
+streameléshez, ezenkívül SMB-kiszolgálót, UPnP AV-kiszolgálót 
+és FTP-kiszolgálót biztosít a 24/7 folyamatos fájlmegosztáshoz, 
+akár 300 000 munkamenetet képes kezelni, és tartalmazza 
+az ASUS Green Network technológiát, amely akár 70%-os 
+energiamegtakarítást tesz lehetővé.
+1.2 A csomag tartalma
+MEGJEGYZÉSEK:
+• Ha bármelyik elem sérült vagy hiányzik, vegye fel a kapcsolatot az 
+ASUS-szal műszaki támogatás vagy kérdések ügyében, tekintse meg 
+az ASUS Support Hotline listát a kézikönyv végén.
+• Kérjük, őrizze meg az eredeti csomagolást arra az esetre, ha 
+garanciális szolgáltatás keretében javítás vagy csere céljából a 
+készüléket vissza kellene küldeni. 
+4G-AC53U vezeték nélküli 
+router
+Hálózati adapter
+Hálózati kábel (RJ-45) Gyors üzembe helyezési 
+útmutató
+2 x 3G/4G antenna
+7
+1.3 A vezeték nélküli router
+USB 2.0 LED 
+ Nem világít: Nincs áramforrás vagy fizikai kapcsolat.
+ Világít: Fizikai kapcsolat áll fenn az USB 2.0-s eszközökkel. 
+LAN LED
+ Ki: Nincs áramforrás vagy fizikai kapcsolat. 
+ Be: Fizikai kapcsolat áll fenn egy helyi hálózattal (LAN).
+5GHz Wi-Fi LED 
+ Ki: Nincs 5 GHz jel. 
+ Be: A vezeték nélküli rendszer használatra kész. 
+ Villog: Adatok sugárzása vagy fogadása vezeték nélküli kapcsolaton.
+2,4GHz Wi-Fi LED 
+ Ki: Nincs 2,4 GHz jel. 
+ Be: A vezeték nélküli rendszer használatra kész. 
+ Villog: Adatok sugárzása vagy fogadása vezeték nélküli kapcsolaton.
+8
+MEGJEGYZÉSEK:
+• Csak a csomagban mellékelt hálózati adaptert használja. Más 
+adapterek használata esetén megsérülhet az eszköz.
+• A router bekapcsolása előtt helyezze be a mini SIM/USIM-kártyát a 
+kártyanyílásba.
+Működésjelző LED 
+ Ki: Nincs áram. 
+ Be: Az eszköz használatra kész. 
+ Lassan villog: Mentés mód.
+ Gyors ütemben villog: A WPS feldolgozást végez. 
+3G/4G jelerősséget jelző LED 
+ 1 világító LED: Gyenge jel
+ 2 világító LED: Megfelelő jel
+ 3 világító LED: Erős jel
+ Lila fény a 3G kapcsolathoz, kék fény a 4G kapcsolathoz
+Leválasztható LTE-antennák
+Tápcsatlakozó (DC-IN) bemenet
+Csatlakoztassa a mellékelt hálózati (AC) adaptert ehhez a csatlakozóhoz, hogy 
+a routert áramforrásról működtesse.
+LAN (1~2) portok
+Csatlakoztasson hálózati kábelt e csatlakozókhoz a LAN kapcsolat 
+felépítéséhez. 
+WPS gomb
+Ez a gomb a WPS varázslót indítja el. 
+Alaphelyzet gomb
+Ez a gomb alaphelyzetbe állítja a rendszert vagy visszaállítja a gyári 
+alapértékeket.
+USB 2.0 csatlakozó
+USB 2.0-s eszközök, például USB-merevlemezek vagy USB flash-meghajtók 
+csatlakoztathatók ebbe a csatlakozóba.
+Mini SIM/USIM-kártya nyílása
+Helyezzen egy mini SIM/USIM-kártyát a nyílásba egy mobil szélessávú 
+internetkapcsolat létrehozásához. 
+9
+1.4 Az eszköz tulajdonságai
+Energiafogyasztás:
+• Bemenet: AC 100~240V / 50~60Hz, DC 12V/2A
+• Maximális energiafogyasztás: 18.4 W
+• Átlagos energiafogyasztás: 12.7 W 
+• Az átlagos energiafogyasztás szobahőmérsékleten 
+(23 °C-27 °C) lett meghatározva az alábbi terhelés mellett:
+ • Aktív mobil szélessávú kapcsolat
+ • A vezeték nélküli LAN aktív; a vezeték nélküli LAN-
+hálózathoz egyetlen eszköz sem csatlakozik
+ • Egyetlen hálózati eszköz csatlakozik egy LAN-porthoz; 
+nincs adatátvitel; a többi LAN-porthoz nem csatlakozik 
+hálózati eszköz
+Környezeti feltételek: 
+DC tápfeszültség 
+adapter
+Egyenfeszültségű (DC) kimenet: +12V legfeljebb 2A 
+áramerősség mellett
+Üzemi hőmérséklet 0~40oC Tárolás 0~70oC
+Üzemi páratartalom 10 ~ 90% Tárolás 10 ~ 90%
+10
+1.5 A router elhelyezése
+A vezeték nélküli router és a hálózati eszközök közötti 
+legjobb vezeték nélküli jelátvitel érdekében gondoskodjon a 
+következőkről: 
+• Helyezze a vezeték nélküli LTE routert ablak közelébe, hogy 
+a lehető legerősebb LTE jelet fogja az LTE bázisállomással 
+történő maximális feltöltési teljesítmény érdekében.
+• Az eszközt tartsa távol a fém akadályoktól és a közvetlen 
+napsütéstől.
+• Helyezze el a vezeték nélküli routert vízszintesen.
+• Ne telepítse a vezeték nélküli LTE routert poros vagy nedves 
+környezetbe.
+• Az eszközt tartsa távol 802.11g vagy csak 20 MHz-en 
+működő Wi-Fi eszközöktől, 2,4 GHz-es működő számítógépes 
+perifériáktól, Bluetooth eszközöktől, vezeték nélküli 
+telefonoktól, transzformátoroktól, nagyteljesítményű 
+motoroktól, fénycsövektől, mikrohullámú sütőktől, 
+hűtőszekrényektől és egyéb ipari berendezésektől a jel 
+akadályozásának elkerülése érdekében.
+• A firmware-t mindig a legújabb verzióra frissítse. Látogassa 
+meg az ASUS weboldalát a https://www.asus.com/
+Networking/4G-AC53U/HelpDesk_Download/ címen a 
+legfrissebb firmware-ért. 
+• Az optimális vezeték nélküli jelátvitel érdekében az alábbi 
+ábra szerint állítsa be a ket darab leválasztható antennát.
+https://www.asus.com/Networking/4G-AC53U/HelpDesk_Download/
+https://www.asus.com/Networking/4G-AC53U/HelpDesk_Download/
+11
+1.6 A router üzembe helyezése
+1.6.1 Készítse elő a beállításhoz szükséges 
+követelményeket.
+A vezeték nélküli hálózat beállításához az alábbi követelmények 
+kielégítése szükséges:
+• Mini SIM/USIM-kártya WCDMA- és LTE-előfizetéssel
+FONTOS! Győződjön meg arról, hogy a mini SIM/USIM-kártyához 
+WCDMA és LTE szolgáltatásokra szóló előfizetéssel rendelkezik. A 
+szolgáltatásokkal kapcsolatban forduljon a mobilszolgáltatójához.
+VIGYÁZAT! A routeren csak szabványos mini SIM-/USIM-kártyát 
+használjon az eszközhöz kapott SIM-adapterrel. Ha másfajta SIM-kártyát, 
+például micro vagy nano SIM-kártyát használ, a SIM-kártya beszorulhat 
+és kárt okozhat a routerben.
+• ADSL/kábelmodem internet-előfizetéssel
+• Ethernet RJ-45 (LAN) porttal (10/100/1000 Base-TX) rendelkező 
+számítógép vagy 2,4 GHz és 5 GHz 802.11 a/b/g/n/ac vezeték 
+nélküli csatolóval ellátott Wi-Fi-kompatibilis eszköz
+• Webböngésző mint például Explorer, Firefox, Safari vagy 
+Google Chrome
+12
+1.6.2 Állítsa be az LTE vezeték nélküli routert.
+a. Szerelje fel a két 3G/4G antennát.
+b. Helyezze be a mini SIM/USIM-kártyát az mini SIM/USIM-
+kártya nyílásába. Ha a mini SIM/USIM-kártya megfelelően 
+van behelyezve, az eszköz bekapcsolását követően a mobil 
+szélessávot jelző LED-fények kigyulladnak és elkezdenek lassú 
+ütemben villogni. 
+c. Csatlakoztassa a router hálózati adapterét a DC-IN-portba, 
+és csatlakoztassa a hálózati aljzathoz és várjon, amíg a 
+tápfeszültséget jelző LED világítani nem kezd. A router ezután 
+be van kapcsolva.
+d. Csatlakoztassa a számítógépét a router LAN-portjába az 
+eszközhöz kapott hálózati kábel segítségével.
+Wall Power Outlet
+Power c
+Laptop
+LAN
+d
+b
+a a
+13
+Ha manuálisan szeretne csatlakozni egy vezeték nélküli 
+hálózathoz, tegye a következőket
+MEGJEGYZÉS: Feltétlenül nyomja meg a routeren lévő Wi-Fi gombot.
+1. Engedélyezze a Wi-Fi funkciót a vezeték nélküli kliensen a 
+vezeték nélküli hálózatok automatikus kereséséhez.
+2. Jelölje ki az “ASUS_XX_2G” vagy “ASUS_XX_5G” nevű vezeték 
+nélküli hálózatot, amely az ASUS vezeték nélküli routerek 
+alapértelmezett vezeték nélküli hálózati neve (SSID-je). 
+MEGJEGYZÉS: Az XX a 2,4 GHz-es MAC-cím utolsó két számjegyét jelöli. 
+Ez a 4G-AC53U hátoldalán lévő címkén található.
+14
+2 A hardver üzembe helyezése
+2.1 Gyors internetbeállítás (QIS) 
+automatikus észleléssel
+A router QIS (Quick Internet Setup) segítségével történő 
+telepítéséhez:
+1. Kapcsolja be a routert. Ellenőrizze, hogy az alábbi LED-fények 
+világítanak:
+• LAN vagy Mobil szélessáv LED • 2,4 GHz Wi-Fi LED 
+• 5 GHz Wi-Fi LED 
+2. Indítsa el a böngészőprogramot, például Internet Explorer, 
+Firefox, Google Chrome, vagy Safari.
+MEGJEGYZÉS: Ha a QIS nem indul el automatikusan, billentyűzze be 
+a http://router.asus.com címet a böngészőprogram címsorába, majd 
+frissítse ismét a böngészőt.
+3. Jelentkezzen be a webes felhasználói felületen. A gyors 
+internetbeállítási oldal automatikusan elindul. A router webes 
+felhasználói felületén az alapértelmezett bejelentkezési 
+felhasználónév és jelszó az „admin”.
+15
+4. Rendeljen bejelentkezési nevet és jelszót a routerhez, majd 
+kattintson a Next (Tovább) gombra. Ezt a bejelentkezési 
+nevet és jelszót kell megadnia, hogy bejelentkezzen az 
+4G-AC53U eszközre a router beállításainak megtekintéséhez, 
+illetve módosításához. A későbbi használat céljából jegyezze 
+fel a routerhez szükséges bejelentkezési nevet és jelszót.
+5. Ha 3G/4G hálózat kapcsolódik, a vezeték nélküli router 
+Quick Internet Setup (QIS) szolgáltatása automatikusan 
+érzékeli és alkalmazza az APN-beállítást a vezeték nélküli 
+bázisállomáshoz történő csatlakozáshoz. Ha a QIS varázslónak 
+nem sikerül automatikusan alkalmaznia az APN-beállítást, 
+adja meg a beállítást manuálisan. 
+MEGJEGYZÉS: A PIN-kód szolgáltatónként eltérő lehet.
+16
+ A mobil szélessávú kapcsolat konfigurálása sikeresen 
+megtörtént.
+6. Térjen át a következő lépésre a vezeték nélkül LAN-beállítások 
+konfigurálásához.
+7. Jelölje ki a hálózat nevét (SSID) és biztonsági kulcsát a 2,4 GHz 
+vezeték nélküli kapcsolathoz. Kattintson az Apply (Alkalmaz) 
+gombra, ha végzett.
+17
+8. Megjelennek az internet és vezeték nélküli kapcsolat 
+beállításai. A folytatáshoz kattintson a Finish (Vége) gombra. 
+9. Miután a QIS funkción keresztül megadta a 3G/4G hálózati 
+beállításokat, az 3G/4G-jelerősség LED-fénye kigyullad, ami a 
+sikeres internetkapcsolat létrejöttét jelzi.
+18
+3 Az általános beállítások 
+konfigurálása
+3.1 A Network Map használata 
+A Network Map (Hálózattérkép) lehetővé teszi az 
+internetkapcsolat állapotának ellenőrzését, a hálózat biztonsági 
+beállításainak konfigurálását és hálózaton lévő kliensek kezelését.
+19
+3.1.1 A vezeték nélküli hálózati biztonság beállítása
+A hálózat rosszindulatú támadásokkal és engedély nélküli 
+eléréssel szembeni védelmének érdekében el kell végeznie a 
+biztonsági beállításait.
+A vezeték nélküli hálózati biztonság beállításához:
+1. A navigációs pultról menjen a General (Általános) > 
+Network Map (Hálózattérkép) elemhez.
+2. A Network Map (Hálózattérkép) képernyőn kattintson a 
+rendszerállapot ikonra. Megadhatja a vezeték nélküli 
+biztonsági beállításokat, például a vezeték nélküli nevet 
+(SSID), a hitelesítési módszert és a titkosítási beállításokat.
+2,4 GHz biztonsági beállítások 5GHz biztonsági beállítások
+20
+3. A Wireless name (SSID) (Vezeték nélküli hálózat neve 
+(SSID)) mezőbe billentyűzzön be egy egyedi nevet a vezeték 
+nélküli hálózat számára.
+4. Az Authentication Method (Hitelesítési mód) legördülő 
+listán válassza ki a vezeték nélküli hálózat hitelesítési módját. 
+ Ha a WPA-Personal vagy WPA-2 Personal lehetőséget 
+választja hitelesítési módként, billentyűzze be a WPA-PSK 
+kulcsot vagy biztonsági hozzáférési kulcsot.
+FONTOS! Az IEEE 802.11n/ac szabvány nem teszi lehetővé a High 
+Throughput with WEP (Nagy áteresztő-képesség WEP-pel) vagy a WPA-
+TKP használatát unicast rejtjelként. Ha ezeket a titkosítási módszereket 
+használja, az adatátviteli sebesség az IEEE 802.11g 54 Mbps kapcsolat 
+sebességére fog csökkenni.
+5. Kattintson az Apply (Alkalmaz) gombra, ha végzett.
+3.1.2 Rendszerállapot
+A rendszererőforrások megtekintéséhez és nyomon 
+követéséhez tegye a következőket:
+1. A navigációs pultról menjen a General (Általános)> Network 
+Map (Hálózattérkép) elemhez.
+2. A Network Map (Hálózattérkép) képernyőn kattintson a 
+rendszerállapot ikonra. Megtekintheti a processzor- és 
+memóriahasználatra vonatkozó információkat.
+21
+3.1.3 A hálózati kliensek kezelése
+A hálózati kliensek kezeléséhez tegye a következőket:
+1. A navigációs panelen navigáljon a General (Általános) > 
+Network Map (Hálózattérkép) lapra.
+2. A Network Map (Hálózattérkép) képernyőn jelölje ki a 
+kliensállapot ikonját a hálózati kliensre vonatkozó 
+információk megjelenítéséhez.
+22
+3. A Client status (Kliens állapota) táblázatban kattintson az 
+eszköz ikonjára az eszköz részletes profiljának 
+megtekintéséhez. Ha azt szeretné, hogy egy kliens ne tudjon 
+hozzáférni a hálózatához, jelölje ki a klienst, és kattintson a 
+blokkolás ikonra.
+23
+Mobil szélessáv Ethernet LAN mint WAN
+3.1.4 Az internet állapotának megtekintése
+Az internet állapotának megtekintéséhez és nyomon 
+követéséhez tegye a következőket:
+1. A navigációs panelen navigáljon a General (Általános) > 
+Network Map (Hálózattérkép) lapra.
+2. A Network Map (Hálózattérkép) képernyőn jelölje ki az 
+internet ikont az internetbeállítások megjelenítéséhez. 
+A Mobil szélessáv ikonját is kiválaszthatja a Mobil 
+szélessáv konfigurációjának megjelenítéséhez.
+3. Ha a hálózatán inaktiválni szeretné a WAN-kapcsolatot, 
+kattintson a Disable (Letiltás) gombra a Terminate WAN 
+Interface (WAN-csatlakozás leállítása) résznél.
+24
+3.1.5 Az USB eszköz ellenőrzése
+Az ASUS vezeték nélküli router két USB portot biztosít USB 
+eszközök vagy USB nyomtató csatlakoztatására a fájlok és nyomtató 
+megosztásának lehetővé tételére a hálózatban levő kliensekkel.
+Az USB eszköz ellenőrzéséhez:
+1. A navigációs pultról menjen a General (Általános)> Network 
+Map (Hálózattérkép) elemhez.
+2. A Network Map (Hálózattérkép) képernyőn, jelölje ki az 
+USB Disk Status (USB lemez állapota) ikont , hogy 
+megjelenítse az USB eszköz adatait.
+3. A Media Server (Médiakiszolgáló) mezőben kattintson a GO 
+(Ugrás) elemre, és állítson be egy iTunes- és DLNA-kiszolgálót 
+a médiafájlok helyi megosztásához.
+MEGJEGYZÉS: A vezeték nélküli router működik a legtöbb USB HDDs/
+Flash lemezekkel (legfeljebb 2 TB méretig) és a támogatja az írást/
+olvasást FAT16, FAT32, EXT2, EXT3 és NTFS fájlrendszerek esetében. 
+4. Az AiDisk Wizard (AiDisk-varázsló) mezőben kattintson 
+a GO (Ugrás) elemre, és állítson be egy FTP-kiszolgálót az 
+internetes fájlmegosztáshoz. 
+5. Ha ki szeretné adni az USB-lemezt az USB-csatlakozóból, 
+kattintson a Remove (Eltávolítás) gombra a Safely Remove 
+disk (Lemez biztonságos eltávolítása) mezőben. Az USB-
+lemez sikeres kiadása esetén az USB állapota Unmounted 
+(Leválasztva) lesz. 
+25
+3.2 Vendéghálózat
+A vendéghálózat lehetővé teszi, hogy ideiglenes látogatók az 
+internethez kapcsolódjanak külön SSID-k vagy hálózatok elérése 
+révén anélkül, hogy elérnék az Ön magánhálózatát.
+Vendéghálózat létrehozásához:
+1. A navigációs pultról menjen a General (Általános) > Guest 
+Network (Vendéghálózat) elemre.
+2. A Guest Network (Vendéghálózat) képernyőn válassza ki 
+a 2,4 GHz-es és 5 GHz-es frekvenciasávot a létrehozni kívánt 
+vendéghálózathoz. 
+3. Kattintson az Enable (Engedélyezés) gombra.
+4. Konfigurálja egy vendég beállításait az előugró képernyőn.
+5. Adjon nevet ideiglenes vezeték nélküli hálózatának a Network 
+Name (SSID) (Hálózatnév [SSID]) mezőben.
+6. Válasszon hitelesítési módszert.
+7. Ha WPA hitelesítési módot választott, válasszon WPA 
+titkosítást.
+8. Adja meg a Hozzáférési idő értékét vagy válassza a Limitless 
+(Korlátlan) lehetőséget.
+26
+11. Ha végzett, kattintson az Apply (Alkalmaz) gombra.
+9. Válassza ki a Disable (Letiltás) vagy Enable (Engedélyezés) 
+lehetőséget az Access Intranet (Intranet elérése) elemben.
+10. Válassza a No (Nem) vagy a Yes (Igen) lehetőséget a MAC 
+Filter (MAC-szűrő) elem mellett az adott vendéghálózathoz.
+27
+3.3 A Traffic Manager (Forgalomkezelő) 
+használata
+3.3.1 QoS
+Ez a szolgáltatás a fontosabb feladatok és alkalmazások számára 
+biztosít nagyobb sávszélességet.
+A QoS funkció engedélyezéséhez:
+1. A navigációs pultról lépjen a General (Általános) > Traffic 
+Manager (Forgalomkezelő) > QoS fülre. 
+2. Az Enable Smart QoS (Intelligens QoS engedélyezése) 
+panelen kattintson az ON (BE) gombra. 
+3. Töltse ki a feltöltési és letöltési sávszélesség mezőket.
+MEGJEGYZÉS: Érdeklődjön internetszolgáltatójánál a 
+sávszélesség információkat illetően. A http://speedtest.net oldalon 
+is egyszerűen ellenőrizheti sávszélességét. 
+4. Válassza ki a QoS típusát (Adaptív vagy Hagyományos) a 
+konfigurációhoz. 
+MEGJEGYZÉS: A QoS típusának leírása a QoS fülön olvasható 
+hivatkozásképpen.
+5. Kattintson az Apply (Alkalmaz) gombra.
+28
+3.3.2 Forgalom ellenőrzése
+A forgalomfigyelő funkció lehetővé teszi a hozzáférést a 
+sávszélesség-használathoz és az internet, vezetékes vagy vezeték 
+nélküli hálózatok sebességéhez. Lehetővé teszi a hálózati 
+forgalom valós idejű figyelését még nap szerint is. Lehetőség van 
+a legutóbbi 24 óra hálózati forgalmának megjelenítésére is.
+29
+3.4 Parental Controls (Szülői felügyelet)
+A Parental Controls (Szülői felügyelet) segítségével időkorlátot 
+lehet beállítani időkorlátot adott kliens hálózat-használatára.
+A Parental Controls (Szülői felügyelet) főoldalára lépéshez: 
+1. A navigációs pultról lépjen a General (Általános) > Parental 
+Controls (Szülői felügyelet).
+2. Az Enable Parental Controls (Szülői felügyelet 
+engedélyezése) panelen kattintson az ON (BE) gombra.
+MEGJEGYZÉS: Győződjön meg arról,. hogy a rendszeridő az NTP-
+szerverrel szinkronizálva van. 
+30
+3. A Client’s Name (Kliens neve) oszlopban jelölje ki vagy 
+billentyűzze be a kliens névét a lenyíló dobozból.
+MEGJEGYZÉS: Bebillentyűzheti a kliens MAC-címét is a Client MAC 
+Address (Kliens MAC-címe) oszlopba. Gondoskodjon arról, hogy a 
+kliensnév ne tartalmazzon különleges karaktereket vagy szóközöket, 
+mivel ezek a router rendellenes működését okozhatják. 
+4. Kattintson a gombra a klients profiljának hozzáadásához.
+5. Kattintson az Apply (Alkalmaz) gombra a beállítások 
+mentéséhez.
+31
+3.5 Az USB-alkalmazás használata
+Az USB-bővítés funkció AiDisk és a Médiaszolgáltatások és a 
+Kiszolgálók almenü.
+FONTOS! A kiszolgáló funkciók használatához be kell helyeznie egy 
+USB tárolóeszközt, mint például egy USB merevlemezt vagy USB 
+flash meghajtót az USB 2.0 portba a vezeték nélküli router hátsó 
+panelén. Győződjön meg arról, hogy az USB-tárolóeszköz formázása 
+és partícionálása megfelelően megtörtént. A fájlrendszer támogatási 
+táblázatáért forduljon az ASUS webhelyhez a http://event.asus.
+com/2009/networks/disksupport/ címen.
+3.5.1 Az AiDisk használata
+Az AiDisk lehetővé teszi a csatlakoztatott USB-lemezen tárolt 
+adatok megosztását az interneten. Az AiDisk szintén segít 
+beállítani az ASUS DDNS funkciót és egy FTP kiszolgálót. 
+Az AiDisk használata:
+1. A navigációs pultról menjen a General (Általános) > USB 
+application (USB-alkalmazás) elemhez, majd kattintson az 
+AiDisk ikonra.
+2. Az Welcome to AiDisk wizard (AiDisk varázsló 
+üdvözlőképernyőn) kattintson a Go (Ugrás) elemre.
+32
+4. Hozzon létre sajét tartoménynevet az ASUS DDNS 
+szolgáltatásaival, jelölje ki az I will use the service and 
+accept the Terms of service (Használom a szolgáltatást 
+és elfogadom a használat feltételeit) elemet, majd 
+billentyűzze be a tartománynevet. Ha végzett, kattintson a 
+Next (Tovább) elemre.
+3. Válassza ki a kliensekhez rendelendő jogosultságokat, 
+amelyek szerint elérhetik a megosztott adatokat.
+33
+5. Kattintson a Finish (Vége) gombra a beállítások 
+befejezéséhez.
+6. Indítson el egy böngészőprogramot vagy harmadik fél FTP 
+klienst, majd billentyűzze be az Ön által korábban létrehozott 
+ftp hivatkozást (ftp://<domain name>.asuscomm.com).
+Kiválaszthatja az ASUS DDNS beállítások kihagyása lehetőséget 
+is, majd kattinthat a Next (Következő) gombra a DDNS beállítás 
+kihagyásához.
+34
+3.5.2 A médiaszolgáltatások és kiszolgálók használata
+A Kiszolgálóközpont lehetővé teszi médiafájlok megosztását az 
+USB-lemezről egy Médiakiszolgáló könyvtár, Samba megosztási 
+szolgáltatás, vagy FTP megosztási szolgáltatás útján. Konfigurálhat 
+más beállításokat az USB-lemezhez a Kiszolgálóközpontban.
+Médiakiszolgáló használata
+A vezeték nélküli router lehetővé teszi, hogy a DLNA-támogatású 
+eszközök hozzáférjenek a multimédia fájlokhoz a vezeték nélküli 
+router hez csatlakoztatott USB-lemezről.
+MEGJEGYZÉS: A DLNA Médiakiszolgáló funkció használata előtt 
+csatlakoztassa az eszközét az 4G-AC53U hálózatához.
+A Médiakiszolgáló beállítási oldal elindításához menjen a General 
+(Általános) > USB application (USB-alkalmazás) > Media Services 
+and Servers (Médiaszolgáltatások és -szerverek) > Media Servers 
+(Médiaszerverek) fülre. A mezők leírásáért olvassa el a következőket:
+• iTunes kiszolgáló engedélyezése?: Válassza ki az ON/OFF (BE/KI) 
+lehetőséget az iTunes kiszolgáló engedélyezéséhez/letiltásához.
+• DLNA Médiakiszolgáló engedélyezése: Válassza ki az 
+ON/OFF (BE/KI) lehetőséget a DLNA Médiakiszolgáló 
+engedélyezéséhez/letiltásához.
+• Médiakiszolgáló állapota: Megjeleníti a médiakiszolgáló állapotát. 
+• Médiaszerver útvonal-beállítás: Válassza az All Disks 
+Shared (Minden lemez megosztva) vagy Manual Media 
+Server Path (Manuális médiaszerver útvonal) elemet.
+35
+3.5.3 A Hálózati hely (Samba) megosztása / Felhőalapú 
+tároló szolgáltatás használata
+A Hálózati hely (Samba) / Felhőalapú tároló megosztása 
+szolgáltatás lehetővé teszi a samba szolgáltatás fiókjának és 
+engedélyeinek beállítását.
+Samba megosztás használatához:
+1. A navigációs pultról menjen a General (Általános) > USB 
+application (USB-alkalmazás) > Media Services and Servers 
+(Médiaszolgáltatások és -szerverek) > Network Place (Samba) 
+Share (Hálózati hely (Szamba) megosztás) / Cloud Disk 
+(Felhőalapú tároló) fülre.
+MEGJEGYZÉS: Alapértelmezetten a Network Place (Samba) Share 
+(Hálózati hely (Samba) megosztás) engedélyezett.
+2. Egy fiók hozzáadásához, törléséhez vagy módosításához 
+kövesse az alábbi lépéseket.
+36
+Egy meglevő fiók törléséhez:
+a) Jelölje ki a törölni kívánt fiókot.
+b) Kattintson az elemre.
+c) Amikor felkérést kap, kattintson a Delete (Törlés) gombra a 
+fiók törlésének megerősítéséhez.
+Mappa hozzáadásához:
+a) Kattintson az elemre.
+b) Adja meg a mappanevet, és kattintson az Add (Hozzáadás) 
+gombra. A létrehozott mappa hozzáadódik a mappalistához.
+Új fiók létrehozásához:
+a) Új fiók hozzáadásához kattintson a(z) elemre.
+b) Az Account (Fiók) és Password (Jelszó) mezőkbe 
+billentyűzze be a hálózati kliens nevét és jelszavát. Írja 
+be újra a jelszót a megerősítéséhez. Kattintson az Add 
+(Hozzáadás) elemre, hogy hozzáadja a fiókot a listához.
+37
+3. A fájlmappa listán jelölje ki az adott fájlmappákhoz rendelni 
+kívánt elérési jogosultságokat: 
+• R/W: ezzel a lehetőséggel olvasási/írási jogosultságokat 
+rendelhet hozzá.
+• R: Jelölje ki ezt a lehetőséget csak olvasható hozzáférés 
+hozzárendeléséhez.
+• No: ezt a lehetőséget akkor válassza, ha nem kíván 
+megosztani egy adott fájlt/mappát.
+4. Kattintson az Apply (Alkalmaz) gombra a módosítások 
+alkalmazásához.
+3.5.4 Az FTP megosztás szolgáltatás használata
+Az FTP megosztás lehetővé teszi, hogy egy FTP kiszolgáló fájlokat 
+osszon meg USB-lemezről más eszközökre a helyi hálózaton vagy 
+az interneten keresztül.
+FONTOS!
+• Győződjön meg arról, hogy biztonságosan eltávolította az USB-lemezt. 
+Az USB lemez helytelen eltávolítása fájlhibákat eredményezhet. 
+• Az USB-lemez biztonságos eltávolításához olvassa el az USB-lemez 
+biztonságos eltávolítása szakaszt a 3.1.5 USB eszköz felügyelete 
+pont alatt.
+38
+FTP megosztási szolgáltatás használatához:
+MEGJEGYZÉS: Győződjön meg arról, hogy beállította az FTP 
+kiszolgálót az AiDisk segítségével. További részletekért olvassa el a 
+3.5.1 AiDisk használata szakaszt.
+1. A navigációs pultról kattintson a General (Általános) > 
+USB application (USB-alkalmazás) > Media Services and 
+Servers (Médiaszolgáltatások és -szerverek) > FTP Share 
+(FTP megosztás) fülre. 
+2. A fájlmappa listán jelölje ki az adott fájlmappákhoz rendelni 
+kívánt elérési jogosultságokat: 
+ • R/W: ezzel a lehetőséggel olvasási/írási jogosultságokat 
+rendelhet egy adott fájlmappához.
+ • W: ezzel a lehetőséggel csak írási jogosultságokat rendelhet 
+egy adott fájlmappához.
+ • R: ezzel a lehetőséggel csak olvasási jogosultságokat 
+rendelhet egy adott fájlmappához.
+ • No: ezt a lehetőséget akkor válassza, ha nem kíván 
+megosztani egy adott fájlmappát.
+3. Ha úgy kívánja, az Allow anonymous login (Névtelen 
+bejelentkezés engedélyezése) mezőt ON (BE) értékre 
+állíthatja.
+4. A Maximum number of concurrent connections (Egyidejű 
+kapcsolatok maximális száma) mezőbe billentyűzze be, 
+hány eszköz kapcsolódhat egyidejűleg az FTP megosztó 
+szerverhez.
+5. Kattintson az Apply (Alkalmaz) gombra a módosítások 
+alkalmazásához.
+6. Az FTP szerver eléréséhez billentyűzze be az 
+ftp://<gépnév>.asuscomm.com ftp hivatkozást, valamint 
+felhasználónevét és jelszavát a böngészőprogram vagy 
+harmadik fél FTP segédprogramjában.
+39
+3.6 AiCloud 2.0 használata
+Az AiCloud 2.0 egy felhőalapú szolgáltatási alkalmazás, amely 
+lehetővé teszi a fájljai mentését, szinkronizálását, megosztását és 
+elérését.
+Az AiCloud használatához:
+1. A Google Play Store boltból vagy az Apple Store boltból töltse 
+le és telepítse az ASUS AiCloud alkalmazást az intelligens 
+eszközére. 
+2. Csatlakoztassa az intelligens eszközét a hálózatához. Kövesse 
+az utasításokat az AiCloud beállítási folyamat befejezéséhez.
+40
+3.6.1 Felhőalapú tároló
+Felhőalapú tároló létrehozásához:
+1. Helyezzen be egy USB tárolóeszközt a vezeték nélküli 
+routerbe.
+2. Kapcsolja be a Cloud Disk (Felhőalapú tároló) szolgáltatást.
+3. Menjen a https://router.asus.com címre és adja meg a 
+router bejelentkezési fiókját és jelszavát. A jobb felhasználói 
+élmény érdekében javasoljuk a Google Chrome vagy Firefox 
+használatát.
+41
+4. Most elékezdheti elérni a felhőalapú tároló fájljait a 
+hálózathoz kapcsolódó eszközökön.
+MEGJEGYZÉS: A hálózathoz kapcsolódó eszközök elérésekor 
+manuálisan meg kell adnia az eszköz felhasználónevét és jelszavát, 
+amelyet az AiCloud biztonsági okból nem ment.
+3.6.2 Intelligens elérés
+A Smart Access (Intelligens elérés) funkció lehetővé teszi, 
+hogy könnyen hozzáférjen az otthoni hálózatához a router 
+tartománynevén keresztül.
+MEGJEGYZÉSEK: 
+• Az ASUS DDNS segítségével létrehozhat egy tartománynevet a router 
+számára. További részletekért olvassa el a 4.3.7 DDNS szakaszt.
+• Alapértelmezetten az AiCloud biztonságos HTTPS kapcsolatot nyújt. 
+A nagyon biztonságos felhőalapú tároló és az intelligens elérés 
+használatához billentyűzze be a https://[yourASUSDDNSname].
+asuscomm.com címet.
+42
+3.6.3 Smart Sync (Intelligens szinkronizálás)
+A Smart Sync (Intelligens szinkronizálás) használatához:
+1. Indítsa el az AiCloud alkalmazást, kattintson a AiCloud 2.0 
+> Smart Sync (Intelligens szinkronizálás) > Go (Ugrás) 
+elemre.
+2. Jelölje ki az ON (BE) lehetőséget a Smart Sync (Intelligens 
+szinkronizálás) engedélyezéséhez.
+3. Kattintson az Add new account (Új fiók hozzáadása) 
+lehetőségre. 
+4. Adja meg az ASUS WebStorage (webes tároló) fiókjának 
+jelszavát és válassza ki a könyvtárat, amelyet szinkronizálni 
+akar a webes tárolóval.
+5. Válasszon szinkronizálási szabályokat az intelligens szinkronizálási 
+feladathoz.
+• Synchronization (Szinkronizálás): A Synchronization 
+(Szinkronizálás) kiválasztása esetén két kiszolgáló között 
+szinkronizálhat egy mappát, így a mappát mindig ugyanazokkal a 
+fájlokkal tárolhatja.
+• Download to USB Disk (Letöltés USB-lemezre): A Download to 
+USB Disk (Letöltés USB-lemezre) kiválasztásakor a távoli fájlokat 
+áttöltheti az USB-lemezen lévő helyi mappába.
+• Upload to Cloud (Feltöltés felhőtárhelyre): Az Upload to Cloud 
+(Feltöltés felhőtárhelyre) kiválasztása esetén a helyi fájlokat 
+feltöltheti az ASUS WebStorage szolgáltatásban lévő távoli mappába.
+43
+3.6.4 Szinkronizálási kiszolgáló
+6. Kattintson az Apply (Alkalmaz) gombra a szinkronizálási 
+feladat hozzáadásához.
+44
+A szinkronizálási kiszolgáló használatához tegye a 
+következőket:
+1. A navigációs panelen kattintson az AiCloud 2.0 > Sync 
+Server (Szinkronizálási kiszolgáló) elemre.
+2. Adja meg a szinkronizálási kiszolgáló konfigurációját az 
+Invitation Generator (Meghívó-generátor) részben a Smart 
+Sync (Intelligens szinkronizálás) engedélyezéséhez.
+3. Küldje el ismerősének a szinkronizálási meghívót.
+4. A meghívó létrehozása után a Sync List (Szinkronizálási 
+lista) táblázatban ellenőrizheti a szinkronizálási feladatot.
+5. A Törlés gombra kattintva leállíthatja a feladatot, ha 
+többé nem szeretné a mappát a távoli szinkronizálási klienssel 
+szinkronizálni.
+45
+6. A szinkronizálási kiszolgáló tevékenységét úgy is ellenőrizheti, 
+ha a Check log (Napló ellenőrzése) gombra vagy a Log 
+(Napló) lapra kattint.
+46
+3.6.5 Beállítások
+Az AiCloud 2.0 lehetővé teszi, hogy megadjon egy hozzáférési 
+szabályt a jogosulatlan hozzáférések (pl. egy szótártámadás) 
+megakadályozása érdekében. Ha egy hoszt megpróbál hozzáférni 
+az AiCloudhoz, és a megadott időtartam során túllépi a sikertelen 
+bejelentkezési kísérletek megengedett maximális számát, az 
+AiCloud szolgáltatás automatikusan le lesz tiltva. 
+A Secure Socket Layer (SSL) egy protokoll, amely titkosított 
+kommunikációt tesz lehetővé a webkiszolgálók és webböngészők 
+között a biztonságos adattovábbításhoz, amely hozzáférési jelszót 
+is tartalmaz. Az AiCloud webes portáljához az alapértelmezett 
+443 porton lehet hozzáférni a https sémán keresztül. A biztosított 
+tartalom az alapértelmezett 8082 portot használja a http sémán 
+keresztül.
+47
+4 A speciális beállítások 
+konfigurálása
+4.1 Vezeték nélküli
+4.1.1 Általános
+A General (Általános) fül lehetővé teszi az alapvető vezeték nélküli 
+beállítások konfigurálását. 
+Az alapvető vezeték nélküli beállítások konfigurálásához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > Wireless (Vezeték nélküli) > General 
+(Általános) fülre.
+2. Válassza ki a 2,4 GHz vagy 5 GHz értéket frekvenciasávként a 
+vezeték nélküli hálózathoz.
+3. Az SSID mezőben, rendeljen hozzá egy legfeljebb 32 
+karaktert tartalmazó egyedi nevet az SSID-hez (Service Set 
+Identifier - Szolgáltatáskészlet azonosító) vagy hálózatnevet 
+a vezeték nélküli hálózat azonosításához. A Wi-Fi eszközök 
+a hozzárendelt SSID révén azonosíthatják a vezeték nélküli 
+hálózatot és kapcsolódhatnak ahhoz. Az információs 
+szalagcímen levő SSID-k frissülnek, ha új SSID-k kerültek 
+mentésre a beállításokhoz.
+48
+4. A Hide SSID (SSID elrejtése) mezőben válassza ki a Yes 
+(Igen) lehetőséget annak megelőzésére, hogy a vezeték 
+nélküli eszközök észlelhessék az ön SSID azonosítóját. Ha ez 
+a funkció engedélyezett, szüksége lehet az SSID manuális 
+megadására a vezeték nélküli eszközön a vezeték nélküli 
+hálózat eléréséhez. 
+5. A Wireless Mode (Vezeték nélküli mód) mezőben, jelölje ki 
+e vezeték nélküli módú opciók bármelyikét azoknak a vezeték 
+nélküli eszköztípusoknak a meghatározására, amelyek 
+kapcsolódhatnak a vezeték nélküli routerhez: 
+• Automatikus: Válassza ki az Auto (Automatikus) 
+lehetőséget annak engedélyezésére, hogy 802.11AC, 
+802.11n, 802.11g, és 802.11b eszközök kapcsolódjanak a 
+vezeték nélküli routerhez.
+• Örökölt: Válassza ki a Legacy (Örökölt) lehetőséget 
+annak engedélyezésére, hogy 802.11b/g/n eszközök 
+kapcsolódjanak a vezeték nélküli eszközhöz. Hardver, amely 
+natív módon támogatja a 802.11n szabványt, azonban csak 
+maximum 54 Mbps sebességgel üzemel. 
+• b/g Protection (b/g védelem): Ha bejelöli a b/g Protection 
+(b/g védelem) lehetőséget, a vezeték nélküli router 
+megvédi a 802.11n átviteli teljesítményt a 802.11g, 802.11b 
+kapcsolattal rendelkező örökölt eszközöktől.
+6. A Control Channel (Vezérlőcsatorna) mezőben válassza ki 
+a működési csatornát a vezeték nélküli routerhez. Jelölje ki az 
+Auto (Automatikus) lehetőséget annak engedélyezéséhez, 
+hogy a vezeték nélküli router automatikusan kiválassza azt a 
+csatornát, amelynek a legkisebb mennyiségű az interferenciája. 
+7. A Channel bandwidth (Csatorna-sávszélesség) mezőben 
+válasszon az alábbi csatorna-sávszélességek közül a 
+magasabb átviteli sebességekhez:
+• 20/40 MHz (alapértelmezett): Ha ezt a sávszélességet 
+választja, automatikusan az optimális sávszélesség lesz 
+kiválasztva a vezeték nélküli környezethez. Az 5 GHz-es 
+sávban az alapértelmezett 20/40/80 MHz van kiválasztva.
+• 80 MHz: Ha ezt a sávszélességet választja, maximalizálhatja 
+az 5 GHz-es rádió vezeték nélküli teljesítményét.
+• 40 MHz: Ha ezt a sávszélességet választja, maximalizálhatja 
+az 2,4 GHz-es rádió vezeték nélküli teljesítményét.
+• 20 MHz: Akkor válassza ezt a sávszélességet, ha a vezeték 
+nélküli kapcsolatban hibákat észlel. 
+49
+8. Ha a 20/40/80 MHz, 20/40 MHz, 40 MHz vagy 80 MHz van 
+kiválasztva, meghatározhat egy felső vagy alsó szomszédos 
+csatornát az Extension Channel (Bővítő csatorna) mezőben.
+9. Az Authentication Method (Hitelesítési módszer) mezőben 
+válasszon az alábbi hitelesítési módszerek közül:
+• Nyílt rendszer: Ez a beállítás nem nyújt biztonságot.
+• WPA2 személyi / WPA automatikus személyi: Ez a beállítás 
+erős biztonságot nyújt. Használhat WPA titkosítást (TKIP-vel) 
+vagy WPA2 titkosítást (AES-sel). Ha ezt a beállítást használja, 
+TKIP + AES titkosítást kell használnia, és meg kell adnia a 
+WPA jelszót (hálózati kulcsot).
+• WPA2 vállalati / WPA automatikus vállalati: Ez a beállítás 
+nagyon erős biztonságot nyújt. Ez integrált EAP kiszolgálóval 
+vagy egy külső RADIUS háttér-hitelesítő kiszolgálóval van.
+10. Ha végzett, kattintson az Apply (Alkalmaz) gombra.
+4.1.2 WPS
+A WPS (Wi-Fi Protected Setup) [Wi-Fi védett beállítás] egy vezeték 
+nélküli biztonsági szabvány, amely lehetővé teszi eszközök 
+könnyű csatlakoztatását egy vezeték nélküli hálózathoz. A WPS 
+funkciót a PIN kóddal vagy a WPS gombbal konfigurálhatja. 
+MEGJEGYZÉS: Győződjön meg arról, hogy az eszközök támogatják a 
+WPS funkciót.
+50
+WPS engedélyezéséhez a vezeték nélküli hálózaton:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > Wireless (Vezeték nélküli) > WPS fülre. 
+2. Az Enable WPS (WPS engedélyezése) mezőben helyezze át a 
+csúszkát az ON (BE) lehetőségre.
+3. A WPS egyidejűleg használja a 2,4 GHz-es és az 5 GHz-es rádiót.
+4. A vezeték nélküli párosításhoz az alábbi WPS-módszerek 
+bármelyikét használhatja:
+• PBC (nyomógombos konfigurálási) mód:
+ • Hardveres PBC a routeren: Nyomja meg a fizikai WPS gombot 
+a vezeték nélküli routeren, majd tartsa megnyomva a WPS 
+gombot a vezeték nélküli kliensen három (3) percig. 
+ • Szoftveres PBC a routeren: Válassza ki a <Push button> 
+(Nyomógomb) elemet a WPS Method (WPS-módszer) 
+mezőben, kattintson a Start elemre, majd tartsa megnyomva a 
+WPS gombot a vezeték nélküli kliensen három (3) percig. 
+• PIN-kódos mód:
+ • Párosítás a vezeték nélküli kliensről: Nyomja meg a WPS 
+gombot a vezeték nélküli routeren, majd végezze el a WPS-
+csatlakoztatási műveletsort PIN-kódos módban, és adja meg az 
+AP PIN Code (AP PIN-kód) értékét a klienseszközön.
+ • Párosítás a vezeték nélküli routerről: Nyomja meg a WPS 
+gombot a vezeték nélküli kliensen, majd végezze el a WPS-
+csatlakoztatási műveletsort PIN-kódos módban, és adja meg 
+a Client PIN Code (Kliens PIN-kód) értékét a WPS Method 
+(WPS-módszer) > Client PIN Code (Kliens PIN-kód) mezőben. 
+Ellenőrizze, hogy a PIN-kód helyes, majd kattintson a Start 
+elemre a vezeték nélküli klienssel történő párosításhoz.
+MEGJEGYZÉSEK: 
+• A WPS a hitelesítést a nyílt rendszerű (Open System) és a WPA2-Personal 
+hitelesítéssel támogatja. A WPS nem támogat olyan vezeték nélküli 
+hálózatot, amely megosztott kulcs alapú (Shared Key), WPA-Personal, WPA-
+Enterprise, WPA2-Enterprise és RADIUS hitelesítési módszert használ.
+• Ellenőrizze a vezeték nélküli eszközét vagy annak használati utasítását a 
+WPS gomb helyét illetően.
+• A WPS-folyamat során a vezeték nélküli router megkeresi a rendelkezésre 
+álló WPS-eszközöket. Ha a vezeték nélküli router nem talál WPS-eszközt, 
+akkor üresjárati módba kapcsol.
+• A router hálózati LED-jelzőfényei három percig gyors ütemben villognak, 
+amíg a WPS-beállítás be nem fejeződik.
+51
+4.1.3 WDS
+A híd vagy WDS (Wireless Distribution System) [Vezeték nélküli 
+elosztórendszer] lehetővé teszi, hogy az ASUS vezeték nélküli 
+router kizárólag egy másik vezeték nélküli hozzáférési ponthoz 
+kapcsolódjon, megakadályozva, hogy más vezeték nélküli 
+eszközök vagy állomások hozzáférjenek az ASUS vezeték nélküli 
+routerhez. Vezeték nélküli erősítőként is figyelembe lehet venni, 
+ahol az ASUS vezeték nélküli router egy másik hozzáférési ponttal 
+vagy más vezeték nélküli eszközökkel kommunikál. 
+A vezeték nélküli híd beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > Wireless (Vezeték nélküli) > WDS (Vezeték 
+nélküli elosztórendszer) fülre.
+52
+2. Válassza ki a frekvenciasávot a vezeték nélküli hídhoz.
+3. AP mód mezőben jelölje ki e lehetőségek valamelyikét:
+• Csak AP: Letiltja a Vezeték nélküli híd funkciót.
+• Csak WDS: Engedélyezi a Vezeték nélküli híd funkciót, 
+de megakadályozza, hogy más vezeték nélküli eszközök/
+állomások kapcsolódjanak a routerhez.
+• HYBRID: Engedélyezi a Vezeték nélküli híd funkciót, és 
+lehetővé teszi, hogy más vezeték nélküli eszközök/állomások 
+kapcsolódjanak a routerhez.
+4. A Connect to APs in list (Kapcsolódás a listában levő 
+hozzáférési pontokhoz) mezőben kattintson a Yes (Igen) 
+lehetőségre, ha egy, a Távoli hozzáférési pont listán listázott 
+hozzáférési ponthoz akar kapcsolódni.
+5. A Távoli hozzáférési pont listán billentyűzzön be egy 
+MAC-címet és kattintson az Add (Hozzáadás) gombra más 
+elérhető hozzáférési pontok MAC-címének beviteléhez.
+6. Kattintson az Apply (Alkalmaz) gombra.
+MEGJEGYZÉSEK: 
+• Hibrid módban az ASUS vezeték nélküli routerhez kapcsolódott 
+vezeték nélküli eszközök csak a Hozzáférési pont csatlakozási 
+sebességének csak a felét kapják. 
+• A listához hozzáadott minden hozzáférési pontnak ugyanazon a 
+vezérlőcsatornán és ugyanazon a rögzített csatorna-sávszélességen 
+kell lennie, mint az ASUS vezeték nélküli router. A vezérlőcsatornát 
+az Advanced Settings (Speciális beállítások) > Wireless (Vezeték 
+nélküli) > General (Általános) lapon módosíthatja.
+53
+4.1.4 Vezeték nélküli MAC-szűrő
+A vezeték nélküli MAC-szűrő ellenőrzést biztosít a vezeték nélküli 
+hálózaton egy megadott MAC- (Media Access Control) [Közeg-
+hozzáférési vezérlés] címre átvitt csomagok fölött.
+A vezeték nélküli MAC-szűrő beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > Wireless (Vezeték nélküli) > Wireless MAC 
+Filter (Vezeték nélküli MAC-szűrő) fülre.
+2. Jelölje be a Yes (Igen) lehetőséget az Enable Mac Filter 
+(Mac-szűrő engedélyezése) mezőben.
+3. A MAC Filter Mode (MAC-szűrő mód) legördülő 
+listában jelölje ki az Accept (Elfogadás) vagy a Reject 
+(Visszautasítás) lehetőséget.
+• Jelölje ki az Accept (Elfogadás) lehetőséget annak 
+engedélyezéséhez, hogy a MAC-szűrő listában levő eszközök 
+hozzáférjenek a vezeték nélküli hálózathoz.
+• Jelölje ki az Reject (Visszautasítás) lehetőséget annak 
+megakadályozásához, hogy a MAC-szűrő listában levő 
+eszközök hozzáférjenek a vezeték nélküli hálózathoz.
+4. A MAC-szűrő listán kattintson az Add (Hozzáadás) gombra 
+és billentyűzze be a vezeték nélküli eszköz MAC-címét.
+5. Kattintson az Apply (Alkalmaz) gombra.
+54
+4.1.5 RADIUS beállítás
+A RADIUS (Remote Authentication Dial In User Service) beállítás 
+egy külön biztonsági réteget nyújt, amikor a WPA-Enterprise, 
+WPA2-Enterprise, vagy Radius 802.1x típussal lehetőséget 
+választja hitelesítési módként.
+Vezeték nélküli RADIUS beállítások beállításához:
+1. Győződjön meg arról, hogy a vezeték nélküli router 
+hitelesítésének beállítása WPA-Enterprise vagy WPA2-
+Enterprise típussal.
+MEGJEGYZÉS: Olvassa el a 4.1.1 Általános szakaszt a vezeték nélküli 
+router hitelesítési módjának konfigurálásához.
+2. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > Wireless (Vezeték nélküli) > RADIUS Setting 
+(RADIUS beállítás) elemre.
+3. Válassza ki a frekvenciasávot.
+4. A Server IP Address (Kiszolgáló IP-címe) mezőben 
+billentyűzze be a RADIUS kiszolgálójának IP-címét.
+5. A Server Port (Szerver port) mezőbe billentyűzze be a 
+szerver portot
+6. A Connection Secret (Kapcsolat titkos) mezőben rendelje 
+hozzá a jelszót a RADIUS kiszolgáló eléréséhez.
+7. Kattintson az Apply (Alkalmaz) gombra.
+55
+4.1.6 Professzionális
+A Professzionális képernyő speciális konfigurációs beállításokat 
+nyújt. 
+MEGJEGYZÉS: Javasoljuk, hogy ezen az oldalon az alapértelmezett 
+értékeket használja. 
+Professzionális beállítások képernyőn a következőket 
+konfigurálhatja:
+• Frekvencia: Válassza ki a frekvenciasávot, amelyre a 
+professzionális beállítások alkalmazásra kerülnek.
+• Rádiózás engedélyezése: Jelölje ki a Yes (Igen) lehetőséget 
+a vezeték nélküli hálózat engedélyezéséhez. Jelölje ki a No 
+(Nem) lehetőséget a vezeték nélküli hálózat letiltásához.
+• Enable wireless scheduler (Vezeték nélküli ütemező 
+engedélyezése): Ha a Yes (Igen) lehetőséget választja, 
+engedélyezheti a vezeték nélküli hálózatot a következő 
+ütemezési szabályok szerint. Ha a No (Nem) lehetőséget 
+56
+választja, letilthatja az ütemezési szabályokat.
+• Hozzáférési pont elszigetelt beállítása: A Set AP isolated 
+(Hozzáférési pont elszigetelt beállítása) elem megakadályozza, 
+hogy a hálózaton levő vezeték nélküli eszközök 
+kommunikáljanak egymással. Ez a funkció akkor hasznos, ha sok 
+vendég gyakran kapcsolódik vagy hagyja el a hálózatot. Jelölje ki 
+a Yes (Igen) lehetőséget a funkció engedélyezéséhez vagy a No 
+(Nem) lehetőséget a letiltásához.
+• Roaming Assistant (Barangoló asszisztens): Ha a vezeték 
+nélküli környezetben több hozzáférési pont vagy vezeték 
+nélküli jelerősítő található az összes vezeték nélküli holtzóna 
+lefedéséhez. Ha az 1. hozzáférési pontnál csatlakoztatott 
+kliens egy megfelelő jelerősségű helyről egy gyenge 
+jelerősségű helyre kerül át, de a 2. hozzáférési pontról egy 
+másik jel érkezik. Ha nem szeretné, hogy a kliens kizárólag 
+az 1. hozzáférési pontot használja, engedélyezze a Roaming 
+Assistant (Barangoló asszisztens) funkciót, és állítson be egy 
+minimális RSSI-értéket küszöbértékként. Amikor a kapcsolat 
+minősége alacsonyabb a küszöbértéknél, az 1. hozzáférési 
+pont megszakítja a vezeték nélküli kliens kapcsolatát, hogy 
+a kliens újra tudja értékelni a vezeték nélküli környezetet, és 
+azt a hozzáférési pontot választhassa, amelynek optimális a 
+jelerőssége (pl. a 2. hozzáférési pontot).
+• Enable IGMP Snooping (IGMP Snooping engedélyezése): 
+Ha az IGMP snooping engedélyezve van, a rendszer csak 
+azokra a vezeték nélküli kliensekre továbbítja a multicast 
+forgalmat, amelyek az adott multicast csoport tagjai.
+• Csoportos adási sebesség (Mbps): Válassza ki a csoportos 
+adás átviteli sebességét vagy kattintson a Disable (Letiltás) 
+lehetőségre az egyidejű egyedi átvitel kikapcsolására.
+• Előtagtípus: Az előtagtípus meghatározza az idő hosszát, 
+amelyet a router CRC-ellenőrzésre (Cyclic Redundancy Check – 
+Ciklikus redundancia-ellenőrzés) fordított. A CRC egy módszer 
+az adatátvitel során fellépő hibák észlelésére. Válassza ki a Short 
+(Rövid) lehetőséget egy nagy hálózati forgalmú forgalmas 
+vezeték nélküli hálózat esetén. Válassza ki a Long (Hosszú) 
+lehetőséget, ha a vezeték nélküli hálózata régebbi vagy örökölt 
+vezeték nélküli eszközökből áll.
+57
+• RTS küszöb: Válasszon alacsonyabb értéket az RTS (Request to 
+Send – Igény jelküldés megkezdésére) küszöbre a vezeték nélküli 
+kommunikáció javítására nagy hálózati forgalmú és számos 
+vezeték nélküli eszközzel rendelkező forgalmas vagy zajos 
+vezeték nélküli hálózatban.
+• DTIM intervallum: A DTIM (Delivery Traffic Indication Message 
+– Szállítási forgalomjelző üzenet) intervallum vagy a Data Beacon 
+Rate (Adathibajelző üzenet ismétlődő küldésének sebessége) az 
+időintervallum, mielőtt egy jel elküldésre kerül egy alvó módban 
+levő vezeték nélküli eszközhöz, jelezve, hogy egy adatcsomag 
+vár szállításra. Az alapértelmezett érték három milliszekundum. 
+• Hibajelző üzenet ismétlődő küldési intervalluma: A Hibajelző 
+üzenet ismétlődő küldési intervalluma az idő egy DTIM és a 
+következő között. Az alapértelmezett érték 100 milliszekundum. 
+Instabil vezeték nélküli kapcsolat vagy barangoló eszközök 
+esetén csökkentse a hibajelző üzenet ismétlődő küldési 
+intervallumának értékét. 
+• Adásgyorsítás engedélyezése: Az Enable TX Bursting 
+(Adásgyorsítás engedélyezése) javítja az átviteli sebességet a 
+vezeték nélküli router és a 802.11g eszközök között.
+• Enable WMM APSD (WMM APSD engedélyezése): A 
+WMM APSD (Automatic Power Save Delivery) funkció az 
+örökölt energiatakarékos mód továbbfejlesztett változata. 
+Ha engedélyezi a WMM APSD funkciót, a vezeték nélküli 
+hozzáférési pont a rádióhasználat kezelésével megnöveli 
+az akkumulátorról működő vezeték nélküli kliensek (pl. 
+okostelefonok és laptopok) akkumulátorának élettartamát. 
+Az APSD automatikusan úgy módosul, hogy egy hosszabb 
+irányjelző intervallumot használjon, ha a forgalom nem 
+igényli a rövid csomag cserélési intervallumát.
+58
+4.2 LAN
+4.2.1 LAN IP
+A LAN IP képernyő lehetővé teszi a vezeték nélküli router LAN IP 
+beállításainak módosítását.
+MEGJEGYZÉS: A LAN IP-cím bármilyen módosítása tükröződik a DHCP 
+beállításokon.
+A LAN IP-beállítások módosításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > LAN > LAN IP fülre.
+2. Módosítsa az IP-címet és az Subnet Mask (Alhálózati 
+maszkot) értékét .
+3. Ha végzett, kattintson az Apply (Alkalmaz) gombra.
+59
+4.2.2 DHCP szerver
+A vezeték nélküli router DHCP segítségével, automatikusan osztja 
+ki az IP-címeket a hálózatán. Megadhatja a hálózati kliensek IP-
+címtartományát és lejárati idejét.
+A DHCP szerver beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > LAN > DHCP Server (DHCP szerver) fülre.
+2. Az Enable the DHCP Server? (A DHCP szerver 
+engedélyezése?) mezőben jelölje be a Yes (Igen) elem 
+jelölőnégyzetét.
+3. A Domain Name (Tartománynév) szövegmezőben adja meg 
+egy tartománynevet a vezeték nélküli router részére.
+4. Az IP Pool Starting Address (IP csoport kezdő címe) 
+mezőbe billentyűzze be a kezdő IP-címet.
+60
+5. Az IP Pool Ending Address (IP csoport záró címe) mezőbe 
+billentyűzze be a záró IP-címet.
+6. A Lease Time (Bérleti idő) mezőbe billentyűzze be azon időt, 
+aminek elteltével lejárnak az IP-címek és a vezeték nélküli 
+router új IP-címeket oszt ki a hálózaton lévő klienseknek.
+MEGJEGYZÉSEK:
+• Azt javasoljuk, hogy egy 192.168.1.xxx formátumú IP-címet 
+használjon egy IP-címtartomány megadása esetén (ahol az xxx 
+bármilyen, 2 és 254 közötti szám lehet).
+• A IP csoport kezdő címe nem lehet nagyobb, mint az IP csoport záró 
+címe.
+7. A DNS and Server Settings (DNS és kiszolgálóbeállítások) 
+szakaszban billentyűzze be a DNS kiszolgáló és a WINS 
+kiszolgáló IP-címét, ha szükséges.
+8. A vezeték nélküli router manuálisan is kioszthat IP-címeket a 
+hálózaton levő eszközöknek. Az Enable Manual Assignment 
+(Manuális kiosztás engedélyezése) mezőben válassza a 
+Yes (Igen) lehetőséget egy IP-cím kiosztására a hálózaton 
+levő speciális MAC-címekhez. Legfeljebb 32 MAC-cím adható 
+hozzá a DHCP listához manuális kiosztásra.
+61
+4.2.3 Útvonal
+Ha a hálózata egynél több vezeték nélküli routert használ, 
+konfigurálhat egy útválasztó táblát ugyanannak az 
+internerszolgáltatásnak a megosztására.
+MEGJEGYZÉS: Javasoljuk, hogy ne módosítsa az alapértelmezett 
+útvonalbeállításokat, hacsak nincsenek speciális ismeretei az útválasztó 
+táblákról. 
+A LAN útválasztó tábla konfigurálásához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > LAN > Route (Útvonal) fülre. 
+2. Az Enable static routes (Statikus útvonalak 
+engedélyezése) mezőben válassza a Yes (Igen) lehetőséget.
+3. A Static Route List (Statikus útvonallista) elemen adja meg 
+a hozzáférési pontok vagy csomópontok hálózati információit. 
+Kattintson az Add (Hozzáadás) vagy a Delete (Törlés) 
+ gombra egy eszköz hozzáadására vagy eltávolítására a 
+listán.
+4. Kattintson az Apply (Alkalmaz) gombra.
+62
+4.2.4 Kapcsolóvezérlés
+A Switch Control (Kapcsolóvezérlés) lapon a NAT-gyorsítást és a 
+Jumbo Frame beállítást konfigurálhatja a hálózati teljesítmény 
+javítása érdekében. Azt javasoljuk, hogy ne módosítsa az 
+alapértelmezett útvonalbeállításokat, hacsak nem rendelkezik az 
+ehhez szükséges speciális ismeretekkel. 
+63
+4.3 WAN
+4.3.1 Kettős WAN
+Az ASUS vezeték nélküli router kettős WAN-támogatást biztosít. 
+Ezzel az tartalékrendszer mód a másodlagos WAN-t tartalék 
+hálózati eléréshez használhatja. Ha az elsődleges WAN-csatlakozás 
+nem sikerül, akkor a másodlagos WAN automatikusan lehetővé 
+tesz egy új csatlakozást.
+1. Csatlakoztassa a számítógépét a router LAN-portjába az 
+eszközhöz kapott hálózati kábel segítségével.
+2. Az Kettős WAN engedélyezése panelen kattintson az ON 
+(BE) gombra.
+• Tartalékrendszer mód: Ezzel az üzemmóddal a másodlagos 
+WAN-t tartalék hálózati eléréshez használhatja.
+• Visszaállás engedélyezése: A négyzet bejelölésével 
+engedélyezheti, hogy az internetkapcsolat automatikusan 
+visszaváltson az elsődleges WAN-ra, ha az elsődleges WAN 
+elérhető.
+64
+4.3.2 Internetkapcsolat
+Az Internet Connection (Internetkapcsolat) képernyő lehetővé 
+teszi különféle WAN (nagy kiterjedésű hálózat) kapcsolattípusok 
+beállításainak konfigurálását. 
+65
+4.3.2.1 Mobil szélessáv
+A 4G-AC53U router egy beépített 3G/4G-modemmel rendelkezik, 
+amelynek segítségével mobil szélessávú kapcsolatot használhat az 
+internet-hozzáféréshez.
+A mobil szélessávú internet-hozzáférés beállításához tegye a 
+következőket:
+1. A navigációs panelen navigáljon az Advanced Settings 
+(Speciális beállítások) > WAN > Internet Connection 
+(Internetkapcsolat) laphoz, és válassza ki a Mobile 
+Broadband (Mobil szélessáv) elemet.
+2. Az Enable Mobile Broadband (Mobil szélessáv 
+engedélyezése) mezőben válassza az Enable 
+(Engedélyezés) elemet. 
+3. Ellenőrizze, hogy megfelelően helyezte-e be a SIM-kártyát, 
+majd végezze el a router mobilbeállításainak konfigurálását.
+4. Állítsa be a következőket:
+• Location (Hely): Válassza ki a 3G/4G szolgáltatója helyét a 
+legördülő listából.
+• ISP (Internetszolgáltató): Válassza ki az 
+internetszolgáltatóját (ISP) a legördülő listából.
+• APN (Access Point Name) service (APN szolgáltatás) 
+(opcionális): Részletes információkért forduljon a 3G/4G 
+szolgáltatóhoz.
+• Dial Number (Tárcsázandó szám): A 3G/4G-szolgáltató 
+hozzáférési száma.
+66
+• PIN code (PIN-kód): Adja meg a 3G/4G-szolgáltató PIN-
+kódját a csatlakozáshoz a SIM PIN Management (SIM PIN-kód 
+kezelése) beállításnál, ha SIM-kártya használata szükséges.
+MEGJEGYZÉSEK: 
+• Az alapértelmezett PIN-kód szolgáltatónként eltérő lehet.
+• Amikor első alkalommal álítja be vagy indítja újra a routert, a PIN-
+kódot meg kell adnia az alábbi két helyzet esetén: 
+ • Az Ön internetszolgáltatója alapértelmezésképpen engedélyezte a 
+PIN-kód ellenőrzést. 
+ • Ön alapértelmezésképpen engedélyezte a PIN-kód ellenőrzést a 
+router grafikus felületén vagy mobiltelefonján. 
+• Ha a PIN-kód ellenőrzés engedélyezett, látni fogja a SIM-zár állapot 
+ikont az állapot ikon területen.
+• Username / Password (Felhasználónév/Jelszó): Adja meg 
+a 3G/4G-hálózati szolgáltatótól kapott felhasználónevet és 
+jelszót.
+• Idle Time (Üresjárati idő): Adja meg, hogy mennyi idő után 
+(percben) lépjen a router alvó üzemmódba, ha nincs hálózati 
+tevékenység. 
+67
+Az internetkapcsolat konfigurálása
+A mobil szélessávú kapcsolat konfigurálásához tegye a 
+következőket: 
+1. A Network Type (Hálózat típusa) mezőben válassza ki a 
+megfelelő hálózatot:
+• Auto (Automatikus) (Alapértelmezett): Az Auto 
+(Automatikus) lehetőség kiválasztásával megengedheti a 
+vezeték nélküli routernek, hogy az automatikusan kiválassza 
+a rendelkezésre álló kapcsolatot biztosító csatornát a 4G, 3G 
+és 2G hálózatról. 
+• 3G/4G: A 3G/4G kiválasztásával megengedheti a vezeték 
+nélküli routernek, hogy az automatikusan csatlakozzon egy 
+3G vagy 4G hálózathoz. 
+• 4G only (Csak 4G): Jelölje ki ezt a lehetőséget, ha a vezeték 
+nélküli routerrel csak 4G hálózathoz szeretne kapcsolódni.
+• 3G only (Csak 3G): Jelölje ki ezt a lehetőséget, ha a vezeték 
+nélküli routerrel csak 3G hálózathoz szeretne kapcsolódni.
+• 2G only (Csak 2G): Jelölje ki ezt a lehetőséget, ha a vezeték 
+nélküli routerrel csak 2G hálózathoz szeretne kapcsolódni.
+2. Connection Type (Kapcsolat típusa): Ebben a mezőben a 
+kapcsolódási házirendeket lehet megadni. 
+3. PDP Type (PDP-típus): A vezeték nélküli router többféle 
+PDP-típust támogat: PPP, IPv4, IPv6 és IPv6 to IPv4.
+4. Roaming (Barangolás) : Ha egy másik országba utazik, 
+az eredeti SIM-kártyája segítségével hozzáférhet a helyi 
+hálózathoz, amennyiben az internetszolgáltatója az adott 
+országban roaming-szolgáltatást biztosít. Ha engedélyezi ezt 
+a funkciót, hozzáférhet a helyi hálózathoz.
+• Kattintson a Scan (Keresés) gombra az összes elérhető 
+mobilhálózat megjelenítéséhez. 
+• Válassza ki a rendelkezésre álló mobilhálózatot, és kattintson 
+az Apply (Alkalmaz) gombra a hálózathoz történő 
+csatlakozáshoz. 
+68
+MEGJEGYZÉSEK: 
+• Az LTE router képes észlelni az Ön internetszolgáltatóját a SIM-
+kártyán lévő IMSI információk alapján. Ha internetszolgáltatója 
+mobilhálózata nem található, kapcsolódjon másik internetszolgáltató 
+barangoló hálózatához.
+• A barangolásért további díjat számolhatnak fel. Lépjen kapcsolatba a 
+mobilszolgáltatóval a barangolás használatát illetően. 
+A forgalom korlátozása
+Az adathasználati beállítások konfigurálásához tegye a 
+következőket:
+1. Data usage (Adathasználat): Megjelenítheti az 
+adathasználatot. 
+2. Cycle Start Day (Ciklusindítás napja): válassza ki, hogy mely 
+napon kezdje halmozni az adatforgalmat. Az adatforgalom 
+mennyisége az egyes ciklusok végén alaphelyzebe áll.
+3. Data Usage Limit (Adathasználati korlát): Havi felső határ 
+állítható be internethasználathoz. Ha az adatforgalma eléri a 
+határértéket, az internet-hozzáférés blokkolva lesz.
+4. Data Usage Alert (Adathasználati figyelmeztetés): beállítja 
+azon internetes sávszélesség-használati értéket, amikor 
+figyelmeztetés történik. Ha internetes adatforgalma eléri a 
+határt, az internetelérés blokkolásra kerül.
+5. Send SMS notification (SMS értesítés küldése): 
+engedélyezze ezt a funkciót, hogy SMS értesítést kapjon, 
+amint az internethasználat határát eléri.
+69
+6. Mobile Phone Number (Mobiltelefon-szám): adja meg azt a 
+mobilszámot amelyen fogadni kívánja az SMS-értesítést.
+MEGJEGYZÉS: az SMS díja felszámolsára kerül mobilszámláján.
+7. Kattintson az Apply (Alkalmaz) gombra.
+A PIN-kód konfigurálása
+Ha a SIM-kártya egy PIN-kód megadását kéri az APN-kapcsolat 
+alkalmazása előtt, akkor adja meg a PIN-kódot.
+Ha a PIN-kód hitelesítése engedélyezve van, kattintson a Modify 
+(Módosítás) gombra a PIN-kód módosításához.
+70
+Mobilkapcsolat állapota 
+A mobil szélessávra vonatkozó információk megtekintéséhez 
+tegye a következőket:
+1. Kattintson a ikonra a részletes információk 
+megtekintéséhez.
+2. A Mobile Connection Status (Mobilkapcsolat állapota) 
+képernyő megjeleníti a mobil szélessávú kapcsolat állapotára 
+vonatkozó részletes információkat. 
+71
+4.3.2.2 Ethernet LAN mint WAN
+A WAN kapcsolatbeállítások konfigurálásához:
+1. A navigációs pultról menjen az Advanced Settings 
+(Speciális beállítások) > WAN > Internet Connection 
+(Internetkapcsolat) fülre.
+2. A WAN felületen válassza ki az Ethernet LAN-t.
+3. Konfigurálja a következő alábbi beállításokat. Ha végzett, 
+kattintson az Apply (Alkalmaz) gombra.
+• WAN kapcsolattípus: Válassza ki az internetszolgáltató 
+típusát. A választási lehetőségek Automatic IP (Automatikus 
+IP), PPPoE, PPTP, L2TP vagy Static IP (Statikus IP). 
+72
+Konzultáljon az internetszolgáltatóval, ha a router nem 
+képes érvényes IP-címet szerezni, vagy ha nem biztos a WAN 
+kapcsolattípusban.
+• WAN engedélyezése: Jelölje ki a Yes (Igen) lehetőséget a 
+router internetelérésének engedélyezéséhez. Jelölje ki a No 
+(Nem) lehetőséget az internetelérés letiltásához.
+• NAT engedélyezése: A NAT (Network Address Translation 
+– Hálózati címfordító) egy olyan rendszer, ahol egy nyilvános 
+IP-címet (WAN IP) használnak internetelérés nyújtására egy 
+helyi hálózatban személyes IP-címmel rendelkező hálózati 
+klienseknek. Az egyes hálózati kliensek személyes IP-címét egy 
+NAT táblába mentik, és ezt használják a bejövő adatcsomagok 
+útválasztására.
+• UPnP engedélyezése: Az UPnP (Universal Plug and Play - 
+Univerzális Plug and Play) lehetővé teszi több eszköz (mint 
+például routerek, televíziók, sztereó rendszerek, játékkonzolok 
+és mobiltelefon) vezérlését egy IP-alapú hálózat révén keresztül 
+központi vezérléssel vagy anélkül egy átjárón keresztül. Az 
+UPnP minden alaktényezőjű számítógépet csatlakoztat, 
+zökkenőmentes hálózatot biztosítva a távoli konfiguráláshoz 
+és adatátvitelhez. A UPnP használatával egy új hálózati eszköz 
+felfedezése automatikusan történik. A hálózathoz kapcsolódás 
+esetén az eszközök távolról konfigurálhatók, hogy támogassák 
+a P2P alkalmazásokat, az interaktív játékot, a videokonferenciát 
+és a web- vagy proxykiszolgálókat. A Porttovábbítástól eltérően, 
+amely a portbeállítások manuális konfigurálásával jár, az UPnP 
+automatikusan konfigurálja a routert, hogy fogadja a bejövő 
+kapcsolatokat és a kéréseket egy konkrét számítógéphez 
+irányítsa a hálózaton. 
+• Kapcsolódás DNS-kiszolgálóhoz: Lehetővé teszi, hogy 
+a router automatikusan kapja meg a DNS IP-címét az 
+internetszolgáltatótól. A DNS egy gazdaszámítógép az 
+interneten, amely az internetes neveket numerikus IP-címekké 
+fordítja le. 
+• Hitelesítés: Lehet, hogy ezt az elemet néhány 
+internetszolgáltató megadja. Ellenőrizze az 
+internetszolgáltatójával és szükség esetén töltse ki.
+• Állomásnév: Ez a mező lehetővé teszi, hogy állomásnevet 
+adjon a routernek. Ez rendszerint egy speciális követelmény az 
+internetszolgáltatótól. Ha az internetszolgáltató hozzárendelt 
+egy állomásnevet a számítógépéhez, itt adja meg az 
+állomásnevet.
+73
+• MAC-cím: A MAC (Media Access Control – Közeg-hozzáférési 
+vezérlés) cím egy egyedi azonosító a hálózati eszköz részére. 
+Némelyik internetszolgáltató monitorozza a szolgáltatásához 
+kapcsolódó hálózati eszközök MAC-címét, és visszautasít 
+minden ismeretlen eszközt, amely kapcsolódni próbál. Egy 
+nem regisztrált MAC-cím következtében fellépő kapcsolódási 
+problémák elkerüléséhez a következőket teheti:
+• Forduljon az internetszolgáltatóhoz és frissítse az 
+internetszolgáltató szolgáltatásához társított MAC-címet.
+• Klónozza vagy módosítsa az ASUS vezeték nélküli router 
+MAC-címét, hogy megegyezzen az internetszolgáltató által 
+felismert korábbi hálózati eszköz MAC-címével. 
+• DHCP lekérdezési frekvencia: Módosítja a DHCP felfedezési 
+intervallum-beállítást, hogy elkerülje a DHCP-szerver 
+túlterhelését.
+• First time delay (Első késleltetés): beállítja, hogy mennyi 
+idő múlva (másodpercben) kerüljön kiküldésre az első ping-
+csomag. 
+• Retry interval (Újrapróbálkozások intervalluma): 
+beállítja az egyes ping-csomagok közötti időtartamot 
+(másodpercben). 
+74
+4.3.3 IPv6
+Ez a vezeték nélküli router támogatja az IPv6 címzést, egy olyan 
+rendszert, amely több IP-címet támogat. Ez a szabvány még nem 
+érhető el széleskörűen. Forduljon az internetszolgáltatójához, 
+hogy az internetszolgáltatása támogatja-e az IPv6 szabványt. 
+IPv6 beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > IPv6 elemre.
+2. Válassza ki a kapcsolattípust. A konfigurációs beállítások 
+változnak a kiválasztott kapcsolattípustól függően.
+3. Adja meg az IPv6 LAN és DNS beállításokat.
+4. Kattintson az Apply (Alkalmaz) gombra.
+MEGJEGYZÉS: Forduljon az internetszolgáltatóhoz az 
+internetszolgáltatásra vonatkozó speciális IPv6 információkat illetően.
+• Failover Retry Count (Átterhelési újrapróbálkozások 
+száma): beállíthatja, hogy mennyi idő múlva (másodpercben) 
+kezdeményezzen a rendszer átterhelést vagy visszaterhelést, 
+miután lejárt a ping teszt számláló és nem érkezett válasz a 
+cél IP-címtől.
+• Felhasználói cél engedélyezése: Válassza a Yes (Igen) 
+lehetőséget, ha a pingelt tesztcsomag cél-IP-címét vagy 
+teljesen minősített tartománynevét (FQDN) manuálisan 
+szeretné definiálni. 
+75
+4.3.4 Portindító
+A porttartomány-indítás egy korlátozott időtartamra megnyit 
+egy előre meghatározott bejövő portot, amikor egy kliens a helyi 
+hálózaton kimenő kapcsolatot készít egy megadott porthoz. A 
+portindítást a következő forgatókönyvekben használják:
+• Egynél több helyi kliens igényel porttovábbítást ugyanazon 
+alkalmazás esetén különböző időben.
+• Egy alkalmazás speciális bejövő portokat igényel, amelyek 
+különböznek a kimeneti portoktól.
+A portindító beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > WAN > Port Trigger (Portindító) fülre.
+2. Az Enable Port Trigger (Portindító engedélyezése) 
+mezőben jelölje be a Yes (Igen) lehetőség jelölőnégyzetét. 
+76
+3. A Well-Known Applications (Ismert alkalmazások) 
+mezőben válassza ki a népszerű játékokat és webes 
+szolgáltatásokat hozzáadásra a portindító listához.
+4. A Trigger Port List (Indító port lista) táblázatba billentyűzze 
+be a következő információkat:
+• Leírás: Adjon egy rövid nevet vagy leírást a szolgáltatásnak.
+• Indító port: Adjon meg egy indító portot a bejövő port 
+megnyitásához.
+• Protokoll: Válassza ki a protokollt, TCP vagy UDP.
+• Bejövő port: Adjon meg egy bejövő portot az internetről 
+beérkező adatok fogadására.
+5. Kattintson az Add (Hozzáadás) gombra, hogy a listára 
+felvehesse a portindító információkat. Kattintson a Delete 
+(Törlés) gombra, hogy a listáról eltávolíthassa a portindító 
+információkat.
+6. Ha végzett, kattintson az Apply (Alkalmaz) gombra.
+MEGJEGYZÉSEK:
+• Egy IRC-kiszolgálóhoz történő kapcsolódáskor egy kliens számítógép 
+egy kimenő kapcsolatot hoz létre a 66660-7000 indító porttartomány 
+használatával. Az IRC-kiszolgáló a felhasználónév ellenőrzésével és 
+egy új kapcsolat létrehozásával reagál a kliens számítógéphez egy 
+bejövő port használatával.
+• Ha a portindító letiltott állapotban van, a router megszakítja a 
+kapcsolatot, mert nem képes meghatározni, hogy melyik számítógép 
+kér IRC-hozzáférést. Ha a portindító engedélyezett, a router kioszt 
+egy bejövő portot a beérkező adatok fogadására. Ez a bejövő port 
+bezárul, ha egy megadott időszak eltelt, mivel a router nem biztos 
+abban, hogy az alkalmazás mikor fejeződött be.
+• A portindítás csak egy kliensnek engedélyezi a hálózaton egy konkrét 
+szolgáltatás és egy meghatározott bejövő port egyidejű használatát.
+• Nem használhatja ugyanazt az alkalmazást ugyanabban az időben 
+egy port indítására egynél több számítógépen. A router csak 
+visszatovábbítja a portot az utolsó számítógéphez, hogy kérést/
+indítójelet küldjön a routernek.
+77
+4.3.5 Virtuális kiszolgáló/Porttovábbítás
+A porttovábbítás egy módszer a hálózati forgalomnak az internetről 
+egy megadott porthoz vagy egy megadott porttartománynak egy 
+eszközhöz vagy számos eszközhöz irányítására a helyi hálózaton. 
+A porttovábbítás beállítása a routeren lehetővé teszi, hogy a 
+hálózaton kívüli számítógépek hozzáférjenek a hálózatban egy 
+számítógép által nyújtott speciális szolgáltatáshoz.
+MEGJEGYZÉS: Amikor a porttovábbítás engedélyezett, az ASUS router 
+blokkolja az internetről beérkező kéretlen hálózati forgalmat és csak 
+válaszokat engedélyez a helyi hálózatból kimenő kérésektől. A hálózati 
+kliens nem fér hozzá közvetlenül az internethez, és fordítva.
+A porttovábbítás beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > WAN > Virtual Server / Port Forwarding 
+(Virtuális kiszolgáló / Porttovábbítás) fülre.
+2. Az Enable Port Forwarding (Porttovábbítás 
+engedélyezése) mezőben jelölje be a Yes (Igen) lehetőség 
+jelölőnégyzetét.
+78
+3. A Famous Server List (Híres szerverlista) mezőben válassza 
+ki, mely szolgáltatástípushoz kíván hozzáférni. 
+4. A Famous Game List (Híres játéklista) mezőben válassza ki, 
+mely népszerű játékhoz kíván hozzáférni. Ez az elem listázza 
+a népszerű online játékok megfelelő működéséhez szükséges 
+portokat. 
+5. A Port Forwarding List (Porttovábbítási lista) táblázatba 
+billentyűzze be a következő információkat:
+• Szolgáltatásnév: Adjon meg egy szolgáltatásnevet.
+• Porttartomány: Ha meg akar határozni egy porttartományt 
+az ugyanazon a hálózaton levő kliensek részére, adja meg 
+a szogáltatásnevet, a porttartományt (pl. 10200:10300), 
+a LAN IP-címet, a Helyi portot pedig hagyja üresen. A 
+porttartomány különféle formátumokat fogad el, mint 
+például a porttartományt (300:350), egyedi portokat 
+(566,789) vagy vegyeset (1015:1024,3021). 
+MEGJEGYZÉSEK:
+• Ha a hálózat tűzfala letiltott állapotban van és a HTTP-kiszolgáló 
+porttartományaként 80-as értéket ad meg a WAN beállításhoz, akkor 
+a http-kiszolgáló/webkiszolgáló lehet, hogy ütközni fog a router 
+webes felhasználói felületével.
+• Egy hálózat a portokat adatcserére használja, mindegyik porthoz 
+hozzárendelve egy portszámot és egy speciális feladatot. Például 
+a 80-as portot HTTP esetén használják. Egy speciális portot 
+egyszerre csak egy alkalmazás vagy szolgáltatás használhat. Ezért, 
+ha két számítógép kísérel meg egyszerre hozzáférni adatokhoz 
+ugyanazon a porton keresztül, az nem sikerül. Például, nem állíthat 
+be porttovábbítást a 100-as port esetén egyszerre két számítógép 
+részére.
+• Helyi IP: Billentyűzze be a kliens LAN IP-címét. 
+MEGJEGYZÉS: A helyi klienshez használjon statikus IP-címet, hogy a 
+porttovábbítás megfelelően működjön. Információkért olvassa el a 4.2 LAN 
+szakaszt.
+79
+• Helyi port: Adjon meg egy meghatározott portot a 
+továbbított csomagok fogadására. Hagyja ezt a mezőt 
+üresen, ha azt akarja, hogy a bejövő csomagok átirányításra 
+kerüljenek a meghatározott porttartományhoz.
+• Protokoll: Válassza ki a protokollt. Ha bizonytalan, válassza ki a 
+BOTH (MINDKETTŐ) lehetőséget.
+6. Kattintson az Add (Hozzáadás) gombra, hogy a listára 
+felvehesse a portindító információkat. Kattintson a Delete 
+(Törlés) gombra, hogy a listáról eltávolíthassa a portindító 
+információkat.
+7. Ha végzett, kattintson az Apply (Alkalmaz) gombra.
+Annak ellenőrzéséhez, hogy a porttovábbítás konfigurálás 
+sikerült-e:
+• Győződjön meg arról, hogy a kiszolgáló vagy az alkalmazás be 
+van állítva és működik.
+• Szüksége van egy olyan kliensre, amely a helyi hálózaton kívül 
+van, de rendelkezik interneteléréssel („internetes kliensnek” 
+nevezik). Ez a kliens nem kapcsolódhat az ASUS routerhez.
+• Az internetes kliensen használja a router WAN IP-címét a 
+kiszolgálóhoz való hozzáférésre. Ha a porttovábbítás sikeres volt, 
+hozzá kell férnie a fájlokhoz vagy alkalmazásokhoz.
+Különbségek a portindító és a porttovábbítás között: 
+• A portindítás még egy meghatározott LAN IP-cím beállítása 
+nélkül is működni fog. A statikus LAN IP-címet igénylő 
+porttovábbítástól eltérően a portindítás lehetővé teszi a 
+dinamikus porttovábbítást a router segítségével. Az előre 
+meghatározott porttartományok úgy vannak konfigurálva, hogy 
+egy korlátozott időszakra fogadják a bejövő kapcsolatokat. A 
+portindítás lehetővé teszi, hogy több számítógép futtasson 
+alkalmazásokat, amelyek rendszerint ugyanazoknak a portoknak 
+a manuális továbbítását igényelnék az egyes számítógépekhez a 
+hálózaton.
+• A portindítás biztonságosabb, mint a porttovábbítás, mivel 
+a bejövő portok nincsenek állandóan nyitva. Ezek csak akkor 
+vannak nyitva, amikor egy alkalmazás kimenő kapcsolatot hoz 
+létre az indító porton keresztül.
+80
+4.3.6 DMZ
+A virtuális DMZ egy klienst tesz ki az internetnek, lehetővé 
+téve, hogy ez a kliens kapja a helyi hálózathoz irányított összes 
+beérkező csomagot. 
+Az internetről beérkező forgalmat rendszerint csak akkor teszik félre és 
+irányítják egy meghatározott klienshez, ha a hálózaton porttovábbítás 
+vagy egy portindító került konfigurálásra. Egy DMZ konfigurációban 
+egy hálózati kliens kapja az összes beérkező csomagot. 
+DMZ beállítása egy hálózaton akkor hasznos, ha a bejövő portok 
+nyitva tartására van szükség vagy tartomány-, web- vagy e-mail 
+kiszolgálót akar üzemeltetni.
+FIGYELEM: Egy kliensen az összes port kinyitása az internet felé 
+sebezhetővé teszi a hálózatot a külső támadásokkal szemben. Legyen 
+tudatában a DMZ használatával járó biztonsági kockázatoknak.
+DMZ beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > WAN > DMZ fülre.
+2. Konfigurálja az alábbi beállítást. Ha végzett, kattintson az 
+Apply (Alkalmaz) gombra.
+• Kitett állomás IP-címe: Billentyűzze be annak a kliensnek 
+a LAN IP-címét, amely a DMZ szolgáltatást fogja nyújtani 
+és ki lesz téve az internetnek. Győződjön meg arról, hogy a 
+kliensnek statikus IP-címe van.
+DMZ eltávolításához:
+1. Törölje a kliens LAN IP-címét az IP Address of Exposed 
+Station (Kitett állomás IP-címe) szövegmezőből.
+2. Ha végzett, kattintson az Apply (Alkalmaz) gombra.
+81
+4.3.7 DDNS
+A DDNS (Dinamikus DNS) beállítása lehetővé teszi, hogy a hálózatán 
+kívülről hozzáférjen a routerhez a rendelkezésre bocsátott ASUS 
+DDNS szolgáltatáson vagy más DDNS szolgáltatáson keresztül.
+DDNS beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > WAN > DDNS fülre.
+2. Konfigurálja a következő alábbi beállításokat. Ha végzett, 
+kattintson az Apply (Alkalmaz) gombra.
+• Engedélyezze a DDNS klienst: Engedélyezze, hogy a DDNS a DNS 
+név útján férjen hozzá az ASUS routerhez a WAN IP-cím helyett.
+• Kiszolgáló és állomásnév: Válassza az ASUS DDNS vagy 
+egyéb DDNS lehetőséget. Ha ASUS DDNS kiszolgálót akar 
+használni, töltse ki az állomásnevet xxx.asuscomm.com 
+formátumban (xxx az állomásnév). 
+• Ha egy eltérő DDNS szolgáltatást akar használni, kattintson a 
+FREE TRIAL (INGYENES KIPRÓBÁLÁS) lehetőségre, és először 
+regisztráljon online. Töltse ki a Felhasználónév vagy E-mail 
+cím és a Jelszó vagy DDNS kulcs mezőket.
+• Helyettesítő karakter engedélyezése: Engedélyezze a 
+helyettesítő karaktert, ha a DDNS szolgáltatás igényel egyet.
+MEGJEGYZÉSEK: 
+A DDNS szolgáltatás ezen körülmények között nem működik:
+• Amikor a vezeték nélküli router személyes WAN IP-címet használ (192.168.
+x.x, 10.x.x.x, vagy 172.16.x.x), egy sárga szöveggel jelzettek szerint.
+• Lehet, hogy a router olyan hálózaton van, amely több NAT táblát használ.
+82
+4.3.8 NAT áthaladás
+A NAT áthaladás lehetővé teszi egy Virtuális magánhálózati (VPN) 
+kapcsolat számára az áthaladást a routeren a hálózati kliensekhez. 
+A PPTP áthaladás, az L2TP áthaladás, IPsec áthaladás és az RTSP 
+áthaladás alapértelmezetten engedélyezett.
+A NAT áthaladási beállítások engedélyezéséhez/letiltásához:
+1. Menjen az Advanced Settings (Speciális beállítások) > 
+WAN > NAT Passthrough (NAT áthaladás) fülre. Ha végzett, 
+kattintson az Apply (Alkalmaz) gombra.
+2. Válassza az Enable (Engedélyezés) vagy a Disable (Letiltás) 
+elemet, hogy a forgalom bizonyos része át tudjon haladni a 
+NAT-tűzfalon.
+3. Ha végzett, kattintson az Apply (Alkalmaz) gombra.
+83
+4.4 IPv6
+Ez a vezeték nélküli router támogatja az IPv6 címzést, egy olyan 
+rendszert, amely több IP-címet támogat. Ez a szabvány még nem 
+érhető el széleskörűen. Forduljon az internetszolgáltatójához, 
+hogy az internetszolgáltatása támogatja-e az IPv6 szabványt. 
+IPv6 beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > IPv6 elemre.
+2. Válassza ki a kapcsolattípust. A konfigurációs beállítások 
+változnak a kiválasztott kapcsolattípustól függően.
+3. Adja meg az IPv6 LAN és DNS beállításokat.
+4. Kattintson az Apply (Alkalmaz) gombra.
+MEGJEGYZÉS: Forduljon az internetszolgáltatóhoz az 
+internetszolgáltatásra vonatkozó speciális IPv6 információkat illetően.
+84
+4.5 VPN-kiszolgáló
+A VPN (Virtual Private Network – Virtuális magánhálózat) 
+biztonságos kommunikációt nyújt egy távoli számítógéphez vagy 
+távoli hálózathoz egy nyilvános hálózat, mint például az internet 
+használatával.
+MEGJEGYZÉS: Egy VPN-kapcsolat beállítása előtt szüksége lesz az 
+elérni próbált VPN-kiszolgáló IP-címére vagy tartománynevére.
+Egy VPN-kiszolgálóhoz való hozzáférés beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > VPN Server (VPN-kiszolgáló) elemre.
+2. Az Enable VPN Server (VPN szerver engedélyezése) 
+mezőben jelölje be a Yes (Igen) lehetőség jelölőnégyzetét.
+3. A VPN Details (VPN részletek) lenyíló listán válassza ki az 
+Advanced Settings (Speciális beállítások) lehetőséget, 
+ha speciális VPN beállításokat kíván konfigurálni, mint pl. 
+szórástámogatás, hitelesítés, MPPE titkosítás és a Kliens IP-
+címtartomány. 
+4. A Network Place (Samba) Support (Hálózati hely (Samba) 
+támogatása) mezőben jelölje ki a Yes (Igen) lehetőséget.
+5. Adja meg a felhasználónevet és a jelszót a VPN-kiszolgáló 
+eléréséhez. Kattintson a(z) gombra.
+6. Kattintson az Apply (Alkalmaz) gombra.
+85
+4.6 Tűzfal
+A vezeték nélküli router hardveres tűzfalként szolgálhat a 
+hálózathoz. 
+MEGJEGYZÉS: A Tűzfal funkció alapértelmezetten engedélyezett.
+4.6.1 Általános
+Az alapvető tűzfalbeállítások beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > Firewall (Tűzfal) > General (Általános) fülre.
+2. Az Enable Firewall (Tűzfal engedélyezése) mezőben 
+válassza ki a Yes (Igen) lehetőséget.
+3. Az Enable DoS protection (DoS védelem 
+engedélyezése) mezőben válassza ki a Yes (Igen) 
+lehetőséget a hálózat megvédésére a DoS (Denial of 
+Service – Szolgáltatásmegtagadási) támadásoktól, bár ez 
+befolyásolhatja a router teljesítményét. 
+4. Monitorozhatja is a LAN és WAN kapcsolat között cserélt 
+csomagokat. A Logged packets (Naplózott csomagok) típuson 
+válassza ki a Dropped (Eleresztett), Accepted (Elfogadott), 
+vagy Both (Mindkettő) lehetőséget.
+5. Kattintson az Apply (Alkalmaz) gombra.
+4.6.2 URL-szűrő
+Kulcsszavakat vagy webcímeket adhat meg adott URL-ek 
+elérésének megakadályozásához.
+MEGJEGYZÉS: Az URL-szűrő egy DNS lekérdezésen alapul. Ha egy 
+hálózati kliens már hozzáfért egy webhelyhez, mint például a http://
+www.abcxxx.com címhez, akkor a webhely nem kerül blokkolásra (a 
+rendszerben egy DNS gyorsítótár tárolja a korábban meglátogatott 
+webhelyeket). Ennek a problémának a feloldásához törölje a DNS 
+gyorsítótárat az URL-szűrő beállítása előtt.
+86
+Egy URL-szűrő beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > Firewall (Tűzfal) > URL Filter (URL-szűrő) fülre.
+2. Az Enable URL Filter (URL-szűrő engedélyezése) mezőben 
+válassza ki az Enabled (Engedélyezve) lehetőséget.
+3. Adjon meg egy URL-t és kattintson a(z) gombra.
+4. Kattintson az Apply (Alkalmaz) gombra.
+4.6.3 Kulcsszószűrő
+A kulcsszószűrő blokkolja a hozzáférést a meghatározott 
+kulcsszavakat tartalmazó weblapokhoz. Egy kulcsszószűrő 
+beállításához:
+1. A navigációs pultról menjen az Advanced Settings 
+(Speciális beállítások) > Firewall (Tűzfal) > Keyword Filter 
+(Kulcsszószűrő) fülre.
+2. Az Enable Keyword Filter (Kulcsszószűrő engedélyezése) 
+mezőben válassza ki az Enabled (Engedélyezve) lehetőséget.
+3. Adjon meg egy szót vagy kifejezést és kattintson az Add 
+(Hozzáadás) gombra.
+4. Kattintson az Apply (Alkalmaz) gombra.
+MEGJEGYZÉSEK:
+• A kulcsszószűrő egy DNS lekérdezésen alapul. Ha egy hálózati kliens 
+már hozzáfért egy webhelyhez, mint például a http://www.abcxxx.
+com címhez, akkor a webhely nem kerül blokkolásra (a rendszerben 
+egy DNS gyorsítótár tárolja a korábban meglátogatott webhelyeket). 
+Ennek a problémának a feloldásához törölje a DNS gyorsítótárat a 
+kulcsszószűrő beállítása előtt.
+• A HTTP tömörítés segítségével tömörített weblapok nem szűrhetők. A 
+HTTPS oldalak szintén nem blokkolhatók kulcsszószűrő használatával.
+4.6.4 Hálózatiszolgáltatás-szűrő
+A hálózatiszolgáltatás-szűrő blokkolja a LAN - WAN 
+csomagcseréket és korlátozza, hogy a hálózati kliensek 
+hozzáférjenek speciális webes szolgáltatásokhoz, mint amilyen a 
+Telnet vagy az FTP.
+87
+Egy hálózatiszolgáltatás-szűrő beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > Firewall (Tűzfal) > Network Service Filter 
+(Hálózatiszolgáltatás-szűrő) fülre.
+2. Az Enable Network Services Filter (Hálózatiszolgáltatás-
+szűrő engedélyezése) mezőben jelölje ki a Yes (Igen) 
+lehetőséget.
+3. Válassza ki a szűrőtábla típusát. A Black List (Feketelista) 
+blokkolja a meghatározott hálózati szolgáltatásokat. A White 
+List (Fehérlista) a hozzáférést csak a meghatározott hálózati 
+szolgáltatásokra korlátozza.
+4. Adja meg a napot és időt, amikor a szűrők aktívak. 
+5. Egy hálózati szolgáltatás szűrésének meghatározásához adja 
+meg a forrás IP, cél IP, porttartomány és protokoll értékeket. 
+Kattintson a(z) gombra.
+6. Kattintson az Apply (Alkalmaz) gombra.
+88
+4.7 Adminisztráció
+4.7.1 Üzemmód
+Az Operation Mode (Üzemmód) oldal lehetővé teszi a megfelelő 
+mód kijelölését a hálózat számára.
+Az üzemmód beállításához:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > Administration (Adminisztráció) > 
+Operation Mode (Üzemmód) fülre.
+2. Válassza ki ezen üzemmódok valamelyikét:
+• Vezeték nélküli router üzemmód (alapértelmezett): 
+Vezeték nélküli router üzemmódban a vezeték nélküli router 
+kapcsolódik az internethez és és internethozzáférést nyújt a 
+saját helyi hálózatán elérhető eszközöknek.
+• Hozzáférési pont üzemmód: Ebben az üzemmódban a 
+router egy új vezeték nélküli hálózatot hoz létre egy meglevő 
+hálózaton. 
+3. Kattintson az Apply (Alkalmaz) gombra.
+MEGJEGYZÉS: A router újraindul, amikor módosítja az üzemmódokat.
+89
+4.7.2 Rendszer
+A System (Rendszer) oldal lehetővé teszi a vezeték nélküli router 
+beállításainak konfigurálását.
+90
+A rendszerbeállítások beállítása:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > Administration (Adminisztráció) > System 
+(Rendszer) fülre.
+2. A következő beállításokat konfigurálhatja:
+• Router bejelentkezési jelszó módosítása: Egy új név és jelszó 
+megadásával módosíthatja a jelszót és a bejelentkezési nevet a 
+vezeték nélküli routerhez.
+• WPS gomb működése: A vezeték nélküli routeren lévő 
+fizikai WPS gomb segítségével a WPS-t lehet aktiválni.
+• Időzóna: Válassza ki az időzónát a hálózathoz.
+• NTP-kiszolgáló: A vezeték nélküli router hozzáférhet egy NTP 
+(Network time Protocol – Hálózati idő protokoll) kiszolgálóhoz az 
+idő szinkronizálása érdekében.
+• Auto Logout (Automatikus kijelentkezés): A rendszer az 
+üresjárati idő letelte után automatikusan kijelentkezteti az 
+adminisztrációs oldalról. Az automatikus kijelentkeztetés 
+letiltásához állítsa az értéket nullára (0).
+• Enable WAN down browser redirect notice (WAN-leállás 
+miatti átirányítás értesítésének engedélyezése): Ha a 
+WAN-kapcsolat leáll, a rendszer megjelenít egy képernyőt, 
+amely végigvezeti Önt a WAN-kapcsolat konfigurálásának 
+lépésein. Ha nem szeretné látni ezt az értesítést, válassza a 
+No (Nem) lehetőséget az értesítés kikapcsolásához.
+• Ütemező újraindításának engedélyezése: Kattintson a Yes 
+(Igen) gombra, ha bizonyos időközönként újra szeretné indítani a 
+vezeték nélküli routert.
+• Telnet engedélyezése: Kattintson a Yes (Igen) lehetőségre a 
+Telnet szolgáltatások engedélyezéséhez a hálózaton. Kattintson 
+a No (Nem) lehetőségre a Telnet letiltásához.
+• SSH engedélyezése: Kattintson a Yes (Igen) gombra, hogy a LAN 
+vagy a WAN számára engedélyezett legyen az SSH-hozzáférés. 
+Kattintson a No (Nem) lehetőségre az SSH-hozzáférés letiltásához.
+• Inaktivitás időtúllépése: Konfigurálhatja a Telnet/SSH inaktív 
+állapotának időtúllépését.
+• Hitelesítési módszer: A biztonságos router hozzáféréshez a 
+HTTP, HTTPS, vagy mindkét protokollt választhatja.
+• Webhozzáférés engedélyezése nagy kiterjedésű hálózatról: 
+Válassza ki a Yes (Igen) lehetőséget annak engedélyezésére, 
+hogy a hálózaton kívüli eszközök hozzáférjenek a vezeték nélküli 
+router grafikus felhasználói felületének beállításaihoz. Válassza ki 
+91
+4.7.3 A firmware frissítése
+MEGJEGYZÉS: Töltse le a legfrisseb firmware-verziót az ASUS weboldalról: 
+http://www.asus.com/Networking/4G-AC53U/HelpDesk_Download/
+A firmware frissítése:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > Administration (Adminisztráció) > Firmware 
+Upgrade (Belső vezérlőprogram frissítése) fülre.
+2. A New Firmware File (Új belső vezérlőprogram-fájl) 
+mezőben kattintson a Browse (Tallózás) lehetőségre a 
+letöltött fájl megkereséséhez.
+3. Kattintson az Upload (Feltöltés) gombra. 
+MEGJEGYZÉSEK: 
+• Amikor a frissítési folyamat befejeződött, várjon némi időt, hogy a 
+rendszer újraindulhasson. 
+• Ha a frissítés sikertelen, a vezeték nélküli router automatikusan 
+vészhelyzeti vagy meghibásodási módba lép és az előlapon lévő LED 
+kijelző lassan villog. A rendszer visszaállításához, olvassa el az 5.2 
+Belső vezérlőprogram visszaállítása szakaszt. 
+a No (Nem) lehetőséget a hozzáférés megakadályozásához.
+• Csak meghatározott IP engedélyezése: Kattintson a Yes (Igen) 
+lehetőségre, ha meg akarja adni azoknak az eszközöknek az IP-
+címeit, amelyek nagy kiterjedésű hálózatról hozzáférhetnek a 
+vezeték nélküli router grafikus felhasználói felületének beállításaihoz. 
+3. Kattintson az Apply (Alkalmaz) gombra.
+92
+4.7.4 Beállítások visszaállítása/mentése/feltöltése
+A beállítások visszaállítása/mentése/feltöltése:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > Administration (Adminisztráció) > Restore/
+Save/Upload Setting (Beállítás helyreállítása/mentése/
+feltöltése) fülre.
+2. Jelölje ki a végrehajtandó feladatot:
+• A gyári beállítások visszaállításához kattintson a Restore 
+(Visszaállítás) elemre, majd kattintson az OK gombra a 
+megerősítést kérő üzenetben.
+• Az aktuális rendszerbeállítások mentéséhez kattintson a Save 
+(Mentés) gombra, majd navigáljon ahhoz a mappához, ahova 
+a fájlt menteni kívánja, és kattintson a Save (Mentés) gombra.
+• Korábbi rendszerbeállítások visszaállításához kattintson a Browse 
+(Tallózás) gombra a visszaállítandó rendszerfájl megkeresése 
+érdekében, majd kattintson az Upload (Feltöltés) gombra.
+MEGJEGYZÉS: Ha problémák lépnek fel, töltse fel a legújabb belső 
+vezérlőprogram-verziót és konfigurálja az új beállításokat. Ne állítsa 
+vissza a routert az alapértelmezett beállításokra.
+93
+4.7.5 Visszajelzés
+A visszajelzés lapon problémákat diagnosztizálhat, és segítheti az 
+ASUS router által nyújtott felhasználói élmény továbbfejlesztését. 
+Töltse ki az űrlapot, és küldje el az ASUS támogatási csapata 
+számára.
+94
+4.8 Rendszernapló
+A Rendszernapló a regisztrált hálózati tevékenységeket 
+tartalmazza.
+MEGJEGYZÉS: A rendszernapló visszaáll, amikor a router újraindul vagy 
+áramtalanításra kerül.
+A rendszernapló megtekintéséhez:
+1. A navigációs pultról menjen az Advanced Settings (Speciális 
+beállítások) > System Log (Rendszernapló) elemre.
+2. A hálózati tevékenységeit e fülek bármelyikén megtekintheti:
+• General Log (Általános napló)
+• Wireless Log (Vezeték nélküli napló)
+• DHCP Leases (DHCP bérletek)
+• IPv6 (WAN- és LAN-hálózatra vonatkozó információk) 
+• Wireless Log (Vezeték nélküli napló)
+• Port Forwarding (Porttovábbítás)
+• Routing Table (Útválasztó tábla)
+• Kapcsolat 
+95
+4.9 Az Ethernet WAN mobil szélessáv 
+támogatási listája
+A vezeték nélküli router a vezetékes WAN-t és a mobil szélessávú 
+WAN-t támogatja átterhelési és visszaállási üzemmódban. 
+A mobil szélessávú WAN internet-hozzáférésként és WAN 
+tartalékmegoldásként is használatban van. A LAN, WAN, VPN és 
+tűzfal különböző funkciókat támogat. Tekintse meg az alábbi 
+összehasonlító táblázatot.
+LAN WAN-ként Mobil 
+szélessáv
+LAN
+IPTV Nincsenek Nincsenek
+Kapcsolóvezérlés >>NAT-
+gyorsítás (csak IPv4)
+V V
+Kapcsolóvezérlés 
+>>Jumbo Frame
+V V
+WAN
+IPv6 V V
+Port Trigger V V (2)
+Virtuális szerver / Port 
+továbbítás
+V V (2)
+DMZ V V (2)
+DDNS V V (2)
+NAT áthaladás V V (2)
+Forgalomkezelő
+QoS V V
+Tűzfal
+Általános V V 
+URL-szűrő V V 
+Kulcsszó szűrő V V 
+Hálózati szolgáltatás 
+szűrő
+V V 
+IPv6 tűzfal V Nincsenek
+Adminisztráció
+Rendszer 
+>>Webhozzáférés 
+engedélyezése a WAN-ról
+V V (2)
+96
+Alkalmazások
+AiCloud
+Hozzáférés WAN-ról
+V V (2)
+VPN-kiszolgáló V V (2)
+FTP-szerver V V (2)
+MEGJEGYZÉSEK: 
+V: A mobil WAN külön konfigurációval rendelkezik a konfigurációs 
+oldalon
+V (2): Az esetek többségében az internetszolgáltató egy privát IP-címet 
+jelöl ki a mobil szélessávhoz, amelynek következtében a WAN 
+szolgáltatáshoz nem lehet hozzáférni a WAN-ról.
+97
+5 Segédprogramok
+MEGJEGYZÉSEK: 
+• Töltse le és telepítse a vezeték nélküli router segédprogramjait az 
+ASUS weboldaláról: 
+ • Device Discovery v1.4.7.1 a következő oldalon http://dlcdnet.
+asus.com/pub/ASUS/LiveUpdate/Release/Wireless/Discovery.zip
+ • Firmware Restoration v1.9.0.4 a következő oldalon http://dlcdnet.
+asus.com/pub/ASUS/LiveUpdate/Release/Wireless/Rescue.zip
+ • Windows Printer Utility v1.0.5.5 a következő oldalon http://dlcdnet.
+asus.com/pub/ASUS/LiveUpdate/Release/Wireless/Printer.zip
+• A segédprogramok MAC OS operációs rendszeren nem 
+támogatottak.
+5.1 Eszközfelderítés
+A Device Discovery (Eszközfelderítés) az ASUS egyik WLAN 
+segéprogramja, amely érzékeli az ASUS vezeték nélküli routert és 
+lehetővé teszi a vezeték nélküli hálózati beállítások konfigurálását.
+A Device Discovery (Eszközfelderítés) futtatása:
+• A számítógép asztalán kattintson a Start > All Programs 
+(Minden program) > ASUS Utility (ASUS segédprogram) 
+> 4G-AC53U vezeték nélküli router > Device Discovery 
+(Eszközfelderítés) elemre.
+MEGJEGYZÉS: Ha a routert Access Point (Hozzáférési pont) módban 
+használja, a Device Discovery (Eszközfelderítés) funkciót kell használnia 
+a router IP-címének megkereséséhez. 
+98
+5.2 Firmware helyreállítása
+A Firmware Restoration (Firmware helyreállítása) olyan ASUS 
+vezeték nélküli routeren használható, amelyen a frissítés során 
+megsérült a firmware. Feltölti a megadott firmware-t. A folyamat 
+körülbelül 3-4 percet vesz igénybe.
+FONTOS: A Firmware Restoration (Firmware helyreállítása) 
+segédprogram futtatása előtt indítsa el a biztonsági módot. 
+MEGJEGYZÉS: Ez a funkció MAC OS operációs rendszeren nem 
+támogatott.
+A biztonsági mód indítása ás a Firmware Restoration 
+(Firmware helyreállítása) segédprogram használata:
+1. Húzza ki a vezeték nélküli routert az áramforrásból.
+2. Tartsa lenyomva a hátlapon lévő Reset (Alaphelyzet) gombot, 
+miközben visszadugja a vezeték nélküli router tápdugóját az 
+aljzatba. Engedje el a Reset (Alaphelyzet) gombot, amikor az 
+előlapon lévő Power (Táp) LED elkezd lassan villogni, ami azt 
+jelzi, hogy a vezeték nélküli router biztonsági módban van.
+99
+3. Állítson be egy statikus IP-címet a számítógépén és használja 
+a következőt a TCP/IP beállítások beállítására:
+ IP-cím: 192.168.1.x
+ Alhálózati maszk: 255.255.255.0
+4. A számítógép asztalán kattintson a Start > All Programs 
+(Minden program) > ASUS Utility 4G-AC53U Wireless 
+Router (ASUS segédprogram 4G-AC53U vezeték nélküli 
+router) > Firmware Restoration (Firmware helyreállítása) 
+elemre.
+5. Jelölje ki a firmware fájlt, majd kattintson az Upload 
+(Feltöltés) gombra. 
+MEGJEGYZÉS: Ez nem firmware-frissítő segédprogram, és nem 
+használható működő ASUS vezeték nélküli routeren. A firmware-
+frissítést általában a web-alapú felületen kell elvégezni. Lásd a 4. 
+fejezetet: A speciális beállítások konfigurálása a részletekért.
+100
+6 Hibaelhárítás
+Ez a fejezet megoldásokat nyújt azokra a problémákra, amelyekkel 
+szembesülhet a routerével. Ha olyan problémákkal szembesül, 
+amelyek ebben a fejezetben nincsenek említve, további 
+termékinformációkért és az ASUS Műszaki támogatás kapcsolati 
+adataiért látogassa meg az ASUS támogató webhelyét a következő 
+címen: http://support.asus.com/.
+6.1 Alapvető hibaelhárítás
+Ha problémái vannak a routerrel, próbálja meg ezeket az ebben a 
+szakaszban levő alapvető lépéseket, mielőtt további megoldásokat 
+keresne.
+Frissítse a belső vezérlőprogramot a legújabb verzióra.
+1. Indítsa el a webes grafikus felhasználói felületet. Menjen az 
+Advanced Settings (Speciális beállítások) > Administration 
+(Adminisztráció) > Firmware Upgrade (Belső vezérlőprogram 
+frissítése) fülre. Kattintson a Check (Ellenőrzés) gombra annak 
+ellenőrzéséhez, hogy rendelkezésre áll-e a legújabb belső 
+vezérlőprogram. 
+2. Ha a legújabb belső vezérlőprogram rendelkezésre áll, látogassa 
+meg az ASUS globális webhelyét a http://www.asus.com/
+Networking/4G-AC53U/HelpDesk_Download/ címen a 
+legújabb belső vezérlőprogram letöltéséhez. 
+3. A Firmware Upgrade (Belső vezérlőprogram frissítése) 
+oldalról kattintson a Browse (Tallózás) gombra a belső 
+vezérlőprogram-fájl megkereséséhez.
+4. Kattintson az Upload (Feltöltés) gombra a belső vezérlőprogram 
+frissítéséhez.
+Hálózat újraindítása a következő sorrendben:
+1. Kapcsolja ki a modemet.
+2. Húzza ki a modemet.
+3. Kapcsolja ki a routert és a számítógépeket.
+4. Dugja be a modemet.
+5. Kapcsolja be a modemet, és azután várjon 2 percig.
+6. Kapcsolja be a routert, és azután várjon 2 percig.
+7. Kapcsolja be a számítógépeket.
+101
+Ellenőrizze, hogy az Ethernet-kábelek megfelelően vannak-e 
+bedugva.
+• Amikor a routert a modemmel összekapcsoló Ethernet-kábel 
+megfelelően van bedugva, a WAN LED világít. 
+• Amikor a bekapcsolt számítógépét a routerrel összekötő 
+Ethernet-kábel megfelelően van bedugva, a megfelelő LAN 
+LED világít. 
+Ellenőrizze, hogy a vezeték nélküli beállítás a számítógépén 
+megegyezik-e a számítógépével.
+• Amikor a számítógépét vezeték nélkül csatlakoztatja a 
+routerhez, győződjön meg arról, hogy az SSID (a vezeték 
+nélküli hálózat neve), a titkosítási módszer és a jelszó 
+megfelelő.
+Ellenőrizze, hogy a hálózati beállításai megfelelőek-e. 
+• A hálózaton minden egyes kliensnek érvényes IP-címmel kell 
+rendelkeznie. Az ASUS azt javasolja, hogy a vezeték nélküli 
+router DHCP-kiszolgálóját használja IP-címek kiosztására a 
+hálózaton levő számítógépeknek.
+• Néhány kábelmodem-szolgáltató megköveteli a fiókon 
+kezdetben regisztrált számítógép MAC-címének használatát. 
+A MAC-címet megtekintheti a webes grafikus felhasználói 
+felületen, a Network Map (Hálózattérkép) > Clients 
+(Kliensek) oldalon, és az egérmutatót a Client Status (Kliens 
+állapota) funkcióban az eszköze fölött lebegtetve.
+102
+6.2 Gyakran ismétlődő kérdések (GYIK) 
+Webböngésző használatával nem tudok hozzáférni a router 
+grafikus felhasználói felületéhez
+• Ha a számítógépe vezetékes, ellenőrizze az Ethernet-kábel 
+csatlakozását és a LED állapotát az előző szakaszban leírtak 
+szerint.
+• Győződjön meg arról, hogy a megfelelő bejelentkezési 
+információt használja. Az alapértelmezett gyári bejelentkezési 
+név és jelszó „admin/admin”. Győződjön meg arról, hogy a 
+Caps Lock billentyű letiltott állapotban van, amikor megadja a 
+bejelentkezési információkat.
+• Törölje a sütiket és fájlokat a webböngészőben. Internet 
+Explorer 8 esetén kövesse 
+ezeket a lépéseket:
+ 1. Indítsa el az Internet 
+Explorer 8 programot, 
+majd kattintson a 
+Tools (Eszközök) 
+> Internet Options 
+(Internetbeállítások) 
+lehetőségre.
+ 2. A General (Általános) 
+fülön a Browsing history 
+(Böngészési előzmények) 
+alatt kattintson a Delete… 
+(Törlés...) gombra, 
+válassza ki a Temporary 
+Internet Files elemet és a Cookies (Sütik) elemet, majd 
+kattintson a Delete (Törlés) gombra. 
+MEGJEGYZÉSEK: 
+• A sütik és fájlok törlésére vonatkozó parancsok webböngészőtől 
+függően változnak.
+• Tiltsa le a proxykiszolgáló beállításokat, törölje a telefonos 
+kapcsolatot, és úgy végezze el a TCP/IP beállításokat, hogy az IP-
+címet automatikusan lekérje. További részletekért olvassa el a jelen 
+használati utasítás 1. fejezetét.
+• Győződjön meg arról, hogy CAT5e vagy CAT6 Ethernet-kábeleket 
+használ. 
+103
+A kliens nem tud vezeték nélküli kapcsolatot létesíteni a 
+routerrel.
+MEGJEGYZÉS: Ha problémái vannak az 5 GHz-es hálózathoz való 
+kapcsolódással, bizonyosodjon meg arról, hogy a vezeték nélküli 
+eszköze támogatja az 5 GHz-et vagy kétsávos képességekkel 
+rendelkezik.
+• Tartományon kívül:
+ • Próbálja meg közelebb helyezni a routert a vezeték nélküli 
+klienshez.
+ • Próbálja meg beállítani a router antennáit a legjobb irányba 
+az 1.4 A router pozícionálása szakaszban leírtak szerint. 
+• A DHCP-kiszolgáló letiltásra került: 
+ 1. Indítsa el a webes grafikus felhasználói felületet. Menjen 
+a General (Általános) > Network Map (Hálózattérkép) 
+> Clients (Kliensek) elemhez, és keresse meg az eszközt 
+amelyet csatlakoztatni akar a routerhez. 
+ 2. Ha nem tudja megtalálni az eszközt a hálózattérképen, 
+menjen az Advanced Settings (Speciális beállítások) 
+> LAN > DHCP Server DHCP-kiszolgáló, Basic Config 
+(Alapvető konfiguráció) listához, jelölje ki a Yes 
+(Igen) lehetőséget az Enable the DHCP Server (DHCP-
+kiszolgáló engedélyezése) elemen.
+• Az SSID elrejtésre került. Ha az eszköze képes megtalálni 
+más routerek SSID azonosítóit, de nem képes megtalálni a 
+saját routerének SSID azonosítóját, menjen az Advanced 
+Settings (Speciális beállítások) > Wireless (Vezeték 
+nélküli) > General (Általános) elemhez, jelölje ki a No (Nem) 
+lehetőséget a Hide SSID (SSID elrejtése) elemen, és válassza 
+ki az Auto (Automatikus) lehetőséget a Control Channel 
+(Vezérlőcsatorna) elemen. 
+• Ha vezeték nélküli LAN adaptert használ, ellenőrizze, hogy a 
+használatban levő vezeték nélküli csatorna megfelel-e az ön 
+országában/területén elérhető csatornáknak. Ha nem, állítsa be a 
+csatornát, a csatorna sávszélességét és a vezeték nélküli módot.
+• Ha még mindig nem tud vezeték nélkül kapcsolódni a 
+routerhez, visszaállíthatja a routert a gyári alapértelmezett 
+beállításokra. A router grafikus felhasználói felületén kattintson 
+az Administration (Adminisztráció) > Restore/Save/Upload 
+Setting (Beállítás helyreállítása/mentése/feltöltése) 
+lehetőségre, és kattintson a Restore (Helyreállítás) elemre.
+104
+Az internet nem érhető el 
+• Ellenőrizze, hogy a router képes-e kapcsolódni az 
+internetszolgáltató WAN IP-címéhez. Ehhez indítsa el a 
+webes grafikus felhasználói felületet és menjen a General 
+(Általános) > Network Map Í(Hálózattérkép) elemre, és 
+ellenőrizze az internet állapotát . 
+• Ha a router nem képes kapcsolódni az internetszolgáltató 
+WAN IP-címéhez, próbálja meg újraindítani a hálózatot a 
+Hálózat újraindítása a következő sorrendben szakaszban 
+az Alapvető hibaelhárítás alatt leírtak szerint. 
+• Az eszköz blokkolódott a Szülői felügyelet funkción keresztül. 
+Menjen a General (Általános) > Parental Control (Szülői 
+felügyelet) elemre, és nézze meg, hogy az eszköz a listában 
+van-e. Ha az eszköz felsorolásra került a Client Name 
+(Kliensnév) alatt, távolítsa el az eszközt a Delete (Törlés) 
+gomb használatával, vagy módosítsa a Time Management 
+(Időkezelési) beállításokat.
+• Ha még mindig nincs internetelérés, próbálja meg 
+újraindítani a számítógépét és ellenőrizze a hálózat IP-címét 
+és átjárócímét. 
+• Ellenőrizze az ADSL modem és a vezeték nélküli router 
+állapotjelzőit. Ha a WAN LED a vezeték nélküli routeren nem 
+világít, ellenőrizze, hogy minden kábel megfelelően van-e 
+bedugva.
+A mobil szélessávú internet nem érhető el.
+• Helyezzen be egy SIM-kártyát, amelyhez 
+internetszolgáltatásra szóló előfizetés tartozik, és ellenőrizze, 
+hogy a 3G/4G mobil szélessávot jelző LED-fény kigyullad. Ha 
+nem, győződjön meg arról, hogy a SIM-kártya megfelelően 
+van behelyezve.
+• Az APN-beállítás alkalmazása nem automatikusan történik. 
+Keresse meg az APN szolgáltatás beállítását, majd adja meg 
+az APN-beállításokat és a kapcsolódó egyéb beállításokat 
+manuálisan az Advanced Settings (Speciális beállítások) 
+> WAN > Internet Connection (Internetkapcsolat) lapon, 
+és jelölje ki a WAN Type (WAN típusa) lehetőséget a Mobile 
+broadband (Mobil szélessáv) részben.
+105
+• Az APN megfelelően van konfigurálva, és az internetkapcsolat 
+továbbra sem működik. Ellenőrizze, hogy: 
+ • a frekvenciasáv kompatibilis az internetszolgáltató 
+frekvenciasávjával 
+ • Vigye közelebb a vezeték nélküli routert az ablakhoz, hogy 
+a 3G/4G-jel erőssége megfelelő legyen.
+• A port trigger, a porttovábbítás, a DDNS vagy a DMZ 
+szolgáltatás nem működik. Az esetek többségében az 
+internetszolgáltató egy privát IP-címet jelöl ki a mobil 
+szélessávhoz. Ebben az esetben néhány szolgáltatás, például 
+az AiCloud, a WAN-ról történő webes hozzáférés és a WAN-
+ról elérhető szolgáltatások többsége nem fog működni. A 
+megoldásért forduljon az internetszolgáltatójához.
+Elfelejtette az SSID azonosítót (hálózatnevet) vagy a 
+hálózati jelszót
+• Állítson be egy új SSID azonosítót és titkosítást egy vezetékes 
+kapcsolaton keresztül (Ethernet-kábel). Indítsa el a webes 
+grafikus felhasználói felületet, menjen a Network Map 
+(Hálózattérkép) elemhez, kattintson a router ikonra, adjon 
+meg egy új SSID azonosítót és titkosítási kulcsot, majd 
+kattintson az Apply (Alkalmaz) gombra. 
+• Állítsa vissza a routert az alapértelmezett beállításokra. 
+Indítsa el a webes grafikus felhasználói felületet, menjen az 
+Administration (Adminisztráció) > Restore/Save/Upload 
+Setting (Beállítás helyreállítása/mentése/feltöltése) 
+lehetőségre, és kattintson a Restore (Helyreállítás) elemre. Az 
+alapértelmezett bejelentkezési fiók és jelszó egyaránt „admin”.
+106
+A rendszer visszaállítása az alapértelmezett értékekre?
+• Menjen az Administration (Adminisztráció) > Restore/
+Save/Upload Setting (Beállítás helyreállítása/
+mentése/feltöltése) lehetőségre, és kattintson a Restore 
+(Helyreállítás) elemre. 
+ Az alábbiak a gyári alapbeállítások: 
+ Felhasználónév: admin
+ Jelszó: admin 
+ DHCP engedélyezése: Igen (ha a WAN kábelt csatlakoztatták)
+ IP-cím: 192.168.1.1 
+ Tartománynév: (Üres)
+ Alhálózati maszk: 255. 255. 255.0 
+ DNS-kiszolgáló 1: 192.168.1.1 
+ DNS-kiszolgáló 2: (Üres)
+ SSID (2.4GHz): ASUS_XX_2G
+ SSID (5GHz): ASUS_XX_5G
+MEGJEGYZÉS: Az XX a 2,4 GHz-es MAC-cím utolsó két számjegyét jelöli. 
+Ez a 4G-AC53U hátoldalán lévő címkén található.
+A belső vezérlőprogram frissítése sikertelen. 
+Indítsa el a helyreállítási módot és futtassa a Belső vezérlőprogram 
+helyreállítása segédprogramot. Olvassa el az 5.2 Belső 
+vezérlőprogram helyreállítása szakaszt a Belső vezérlőprogram 
+helyreállítása segédprogram használatára vonatkozóan.
+107
+Nem lehet hozzáférni a webes grafikus felhasználói 
+felülethez
+A vezeték nélküli router konfigurálása előtt végezze el az ebben 
+a fejezetben szereplő lépéseket a gazdagép és hálózati kliensek 
+beállításához.
+A. Tiltsa le a proxy-szervert, ha engedélyezve van.
+Windows® 7
+1. Kattintson a Start > 
+Internet Explorer elemre 
+a böngészőprogram 
+indításához.
+2. Kattintson a Tools (Eszközök) 
+> Internet options 
+(Internetbeállítások) > 
+Connections (Kapcsolatok) 
+fül > LAN settings (Helyi 
+hálózati beállítások) elemre.
+3. A Local Area Network 
+(LAN) Settings (Helyi 
+hálózati [LAN] beállítások) 
+képernyőn szüntesse 
+meg a Use a proxy 
+server for your LAN 
+(Proxykiszolgáló 
+használata a helyi 
+hálózaton) jelölőnégyzet 
+bejelölését.
+4. Kattintson az OK gombra, 
+ha végzett.
+108
+MEGJEGYZÉS: A proxykiszolgáló letiltását illetően olvassa el a 
+böngésző súgóját. 
+MAC OS
+1. A Safari böngészőben 
+kattintson a Safari 
+> Preferences 
+(Beállítások) > 
+Advanced (Speciáis) 
+> Change Settings... 
+(Beállítások 
+módosítása…) elemre.
+2. A Network (Hálózat) 
+képernyőn szüntesse 
+meg az FTP Proxy és 
+Web Proxy (HTTP) 
+elemek bejelölését.
+3. Kattintson az Apply Now (Alkalmazás most) gombra, ha 
+végzett.
+B. Végezze el a TCP/IP beállításokat, hogy az IP-címet 
+automatikusan lekérje.
+Windows® 7
+1. Kattintson a Start > Control 
+Panel (Vezérlőpult) > 
+Network and Internet 
+(Hálózat és internet) > 
+Network and Sharing 
+Center (Hálózati és 
+megosztási központ) 
+> Manage network 
+connections (Hálózati 
+kapcsolatok kezelése) 
+elemre.
+2. Jelölje ki az Internet Protocol 
+Version 4 (TCP/IPv4) 
+(Internet protokoll 4-es 
+verzió (TCP/IPv4)) vagy az 
+Internet Protocol Version 6 (TCP/IPv6) (Internet protokoll 
+6-os verzió (TCP/IPv6)) elemet, majd kattintson a Properties 
+(Tulajdonságok) gombra. 
+109
+3. Az iPv4 IP beállítások 
+automatikus lekéréséhez 
+jelölje meg az Obtain an 
+IP address automatically 
+(IP-cím automatikus 
+kérése) jelölőnégyzetet. 
+ Az iPv6 IP beállítások 
+automatikus lekéréséhez 
+jelölje meg az Obtain 
+an IPv6 address 
+automatically (IPv6-cím 
+automatikus kérése) 
+jelölőnégyzetet. 
+4. Kattintson az OK gombra, 
+ha végzett.
+MAC OS
+1. Kattintson a képernyő 
+bal felső sarkában lévő 
+Apple ikonra.
+2. Kattintson a System 
+Preferences 
+(Rendszerbeállítások) 
+> Network (Hálózat) 
+> Configure... 
+(Konfigurálás…) 
+elemre.
+3. A TCP/IP fülön jelölje 
+meg a Using DHCP (DHCP használata) elemet a Configure 
+IPv4 (IPv4 konfigurálása) legördülő választéklistán.
+4. Kattintson az Apply Now (Alkalmazás most) gombra, ha 
+végzett.
+MEGJEGYZÉS: Tekintse meg operációs rendszere súgó és támogatás 
+szolgáltatását a számítógép TCP/IP beállításainak konfigurálását illetően.
+110
+MEGJEGYZÉS: a betárcsázós kapcsolat letiltását illetően tekintse meg 
+böngészője súgóját. 
+C. Tiltsa le a betárcsázós kapcsolatot, ha engedélyezve 
+van.
+Windows® 7
+1. Kattintson a Start > 
+Internet Explorer elemre a 
+böngészőprogram indításához.
+2. Kattintson a Tools (Eszközök) 
+> Internet options 
+(Internetbeállítások) > 
+Connections (Kapcsolatok) 
+fülre.
+3. Jelölje be a Never dial 
+a connection (Nincs 
+automatikus tárcsázás) 
+jelölőnégyzetet.
+4. Kattintson az OK gombra, ha 
+végzett.
+111
+Függelék
+MEGJEGYZÉSEK
+ASUS Recycling/Takeback Services
+ASUS recycling and takeback programs come from our 
+commitment to the highest standards for protecting our 
+environment. We believe in providing solutions for you to be able 
+to responsibly recycle our products, batteries, other components, 
+as well as the packaging materials. Please go to http://csr.asus.
+com/english/Takeback.htm for the detailed recycling information 
+in different regions.
+REACH
+Complying with the REACH (Registration, Evaluation, 
+Authorisation, and Restriction of Chemicals) regulatory 
+framework, we published the chemical substances in our products 
+at ASUS REACH website at
+http://csr.asus.com/english/index.aspx
+Federal Communications Commission Statement
+This device complies with Part 15 of the FCC Rules. Operation is 
+subject to the following two conditions: 
+• This device may not cause harmful interference.
+• This device must accept any interference received, including 
+interference that may cause undesired operation.
+This equipment has been tested and found to comply with the 
+limits for a class B digital device, pursuant to part 15 of the FCC 
+Rules. These limits are designed to provide reasonable protection 
+against harmful interference in a residential installation.
+112
+This equipment generates, uses and can radiate radio frequency 
+energy and, if not installed and used in accordance with 
+the instructions, may cause harmful interference to radio 
+communications. However, there is no guarantee that interference 
+will not occur in a particular installation. If this equipment does 
+cause harmful interference to radio or television reception, which 
+can be determined by turning the equipment off and on, the user 
+is encouraged to try to correct the interference by one or more of 
+the following measures:
+• Reorient or relocate the receiving antenna.
+• Increase the separation between the equipment and receiver.
+• Connect the equipment into an outlet on a circuit different 
+from that to which the receiver is connected.
+• Consult the dealer or an experienced radio/TV technician for 
+help.
+IMPORTANT! This device is going to be operated in 5.15~5.25GHz 
+frequency range, it is restricted in indoor environment only.
+WARNING!
+• Any changes or modifications not expressly approved by the party 
+responsible for compliance could void the user’s authority to operate 
+the equipment.
+• Users must not modify this device. Modifications by anyone other 
+than the party responsible for compliance with the rules of the 
+Federal Communications Commission (FCC) may void the authority 
+granted under FCC regulations to operate this device.
+ • For product available in the USA/Canada market, only channel 1~11 
+can be operated. Selection of other channels is not possible.
+113
+CE statement
+Egyszerűsített EU-megfelelőségi nyilatkozat
+Az ASUSTek Computer Inc. ezennel kijelenti, hogy ez a készülék 
+megfelel a 2014/53/EU irányelv alapvető követelményeinek 
+és egyéb vonatkozó rendelkezéseinek. Az EU-megfelelőségi 
+nyilatkozat teljes szövegét a következő weboldalon tekintheti 
+meg: https://www.asus.com/support/
+Ez a berendezés megfelel az Európai Unió rádiófrekvenciás 
+sugárzásra vonatkozó, ellenőrizetlen környezethez megállapított 
+határértékeinek. A készülék telepítésekor és használata során 
+legalább 20 cm távolságot kell hagyni a fűtőtest és a teste között.
+Minden működési üzemmód:
+2.4GHz: 802.11b, 802.11g, 802.11n(HT20), 802.11n(HT40)
+5GHz: 802.11a, 802.11n(HT20), 802.11n(HT40), 802.11ac(VHT20), 
+802.11ac(VHT40), 802.11ac(VHT80)
+Az alábbiakban megtekintheti az Európai Unióban érvényes 
+frekvenciát, üzemmódot és maximális átviteli teljesítményt:
+2412-2472MHz (802.11n HT40 13.5Mbps): 14.8 dBm
+5180-5240MHz (802.11n HT40 13.5Mbps): 16.87 dBm
+5260-5320MHz (802.11n HT40 13.5Mbps): 16.85 dBm
+5500-5700MHz (802.11a 6Mbps): 20.64 dBm
+WCDMA Band I: 21.94 dBm
+WCDMA Band VIII: 22.91 dBm
+LTE Band 1: 22.18 dBm
+LTE Band 3: 22.26 dBm
+LTE Band 7: 22.04 dBm
+LTE Band 8: 22.26 dBm
+LTE Band 20: 22.09 dBm
+LTE Band 38: 23.17 dBm
+114
+Az 5150 és 5350 MHz közötti frekvenciatartományban a készülék 
+beltéri használatra van korlátozva.
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH UK HR
+Safety Notices
+• A terméket 0˚C (32˚F) és 40˚C (104˚F) közötti hőmérsékleten 
+használja.
+• Tekintse meg a termék alján lévő minősítési címkét, és 
+ellenőrizze, hogy a hálózati adapter megfelel a minősítésnek.
+• NE tegye a számítógépet labilis, vagy egyenetlen felületre. A 
+sérült burkolatot javíttassa meg.
+• NE helyezzen és NE ejtsen tárgyakat a készülék tetejére, és ne 
+dugjon idegen tárgyakat a belsejébe.
+• NE tegye ki folyadéknak, esőnek vagy nedvességnek, vagy 
+használja azok közelében. NE használja a modemet villámlás 
+közben.
+• NE fedje be a készüléken lévő szellőzőnyílásokat, nehogy 
+túlmelegedjen a rendszer.
+• NE használjon sérült tápkábelt, kiegészítőt vagy más 
+perifériát.
+• Ha a tápegység elromlik, ne kísérelje meg saját maga 
+megjavítani. Forduljon szakemberhez vagy a termék 
+viszonteladójához.
+• Az áramütés elkerülése érdekében húzza ki a berendezés 
+tápkábelét a konnektorból, mielőtt áthelyezné a rendszert.
+CE Mark Warning
+This is a Class B product, in a domestic environment, this product 
+may cause radio interference, in which case the user may be 
+115
+required to take adequate measures.
+This equipment may be operated in AT, BE, CY, CZ, DK, EE, FI, FR, 
+DE, GR, HU, IE, IT, LU, MT, NL, PL, PT, SK, SL, ES, SE, GB, IS, LI, NO, CH, 
+BG, RO, RT.
+Radio Frequency (RF) Exposure Information
+This equipment complies with IC RSS-102 radiation exposure 
+limits set forth for an uncontrolled environment. This equipment 
+should be installed and operated with minimum distance 31 cm 
+between the radiator & your body.
+Cet équipement est conforme aux limites d’exposition aux 
+rayonnements IC établies pour un environnement non contrôlé. 
+Cet équipement doit être installé et utilisé avec un minimum de 
+31 cm de distance entre la source de rayonnement et votre corps.
+GNU General Public License
+Licensing information
+This product includes copyrighted third-party software licensed 
+under the terms of the GNU General Public License. Please see The 
+GNU General Public License for the exact terms and conditions of 
+this license. All future firmware updates will also be accompanied 
+with their respective source code. Please visit our web site for 
+updated information. Note that we do not offer direct support for 
+the distribution.
+GNU GENERAL PUBLIC LICENSE
+Version 2, June 1991
+Copyright (C) 1989, 1991 Free Software Foundation, Inc.
+59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+Everyone is permitted to copy and distribute verbatim copies of 
+this license document, but changing it is not allowed.
+Preamble
+The licenses for most software are designed to take away your 
+freedom to share and change it. By contrast, the GNU General 
+116
+Public License is intended to guarantee your freedom to share 
+and change free software--to make sure the software is free for all 
+its users. This General Public License applies to most of the Free 
+Software Foundation’s software and to any other program whose 
+authors commit to using it. (Some other Free Software Foundation 
+software is covered by the GNU Library General Public License 
+instead.) You can apply it to your programs, too.
+When we speak of free software, we are referring to freedom, not 
+price. Our General Public Licenses are designed to make sure that 
+you have the freedom to distribute copies of free software (and 
+charge for this service if you wish), that you receive source code or 
+can get it if you want it, that you can change the software or use 
+pieces of it in new free programs; and that you know you can do 
+these things.
+To protect your rights, we need to make restrictions that forbid 
+anyone to deny you these rights or to ask you to surrender the 
+rights. These restrictions translate to certain responsibilities for 
+you if you distribute copies of the software, or if you modify it.
+For example, if you distribute copies of such a program, whether 
+gratis or for a fee, you must give the recipients all the rights that 
+you have. You must make sure that they, too, receive or can get 
+the source code. And you must show them these terms so they 
+know their rights.
+We protect your rights with two steps: (1) copyright the software, 
+and (2) offer you this license which gives you legal permission to 
+copy, distribute and/or modify the software.
+Also, for each author’s protection and ours, we want to make 
+certain that everyone understands that there is no warranty for 
+this free software. If the software is modified by someone else and 
+passed on, we want its recipients to know that what they have is 
+not the original, so that any problems introduced by others will 
+not reflect on the original authors’ reputations.
+Finally, any free program is threatened constantly by software 
+117
+patents. We wish to avoid the danger that redistributors of a free 
+program will individually obtain patent licenses, in effect making 
+the program proprietary. To prevent this, we have made it clear 
+that any patent must be licensed for everyone’s free use or not 
+licensed at all.
+The precise terms and conditions for copying, distribution and 
+modification follow.
+Terms & conditions for copying, distribution, & modification
+0. This License applies to any program or other work which 
+contains a notice placed by the copyright holder saying it may 
+be distributed under the terms of this General Public License. 
+The “Program”, below, refers to any such program or work, and 
+a “work based on the Program” means either the Program or 
+any derivative work under copyright law: that is to say, a work 
+containing the Program or a portion of it, either verbatim or 
+with modifications and/or translated into another language. 
+(Hereinafter, translation is included without limitation in the 
+term “modification”.) Each licensee is addressed as “you”.
+ Activities other than copying, distribution and modification 
+are not covered by this License; they are outside its scope. The 
+act of running the Program is not restricted, and the output 
+from the Program is covered only if its contents constitute 
+a work based on the Program (independent of having been 
+made by running the Program). Whether that is true depends 
+on what the Program does.
+1. You may copy and distribute verbatim copies of the Program’s 
+source code as you receive it, in any medium, provided that 
+you conspicuously and appropriately publish on each copy 
+an appropriate copyright notice and disclaimer of warranty; 
+keep intact all the notices that refer to this License and to the 
+absence of any warranty; and give any other recipients of the 
+Program a copy of this License along with the Program.
+ You may charge a fee for the physical act of transferring a 
+copy, and you may at your option offer warranty protection in 
+exchange for a fee.
+2. You may modify your copy or copies of the Program or any 
+118
+ portion of it, thus forming a work based on the Program, and 
+copy and distribute such modifications or work under the 
+terms of Section 1 above, provided that you also meet all of 
+these conditions:
+ a) You must cause the modified files to carry prominent 
+notices stating that you changed the files and the date of any 
+change.
+ b) You must cause any work that you distribute or publish, 
+that in whole or in part contains or is derived from the 
+Program or any part thereof, to be licensed as a whole at no 
+charge to all third parties under the terms of this License.
+ c) If the modified program normally reads commands 
+interactively when run, you must cause it, when started 
+running for such interactive use in the most ordinary way, to 
+print or display an announcement including an appropriate 
+copyright notice and a notice that there is no warranty (or 
+else, saying that you provide a warranty) and that users may 
+redistribute the program under these conditions, and telling 
+the user how to view a copy of this License. (Exception: if the 
+Program itself is interactive but does not normally print such 
+an announcement, your work based on the Program is not 
+required to print an announcement.)
+ These requirements apply to the modified work as a whole. 
+If identifiable sections of that work are not derived from the 
+Program, and can be reasonably considered independent and 
+separate works in themselves, then this License, and its terms, 
+do not apply to those sections when you distribute them as 
+separate works. But when you distribute the same sections 
+as part of a whole which is a work based on the Program, the 
+distribution of the whole must be on the terms of this License, 
+whose permissions for other licensees extend to the entire 
+whole, and thus to each and every part regardless of who 
+wrote it.
+ Thus, it is not the intent of this section to claim rights or 
+contest your rights to work written entirely by you; rather, 
+the intent is to exercise the right to control the distribution of 
+derivative or collective works based on the Program.
+ In addition, mere aggregation of another work not based on 
+119
+the Program with the Program (or with a work based on the 
+Program) on a volume of a storage or distribution medium 
+does not bring the other work under the scope of this License.
+3. You may copy and distribute the Program (or a work based on 
+it, under Section 2) in object code or executable form under 
+the terms of Sections 1 and 2 above provided that you also do 
+one of the following:
+ a) Accompany it with the complete corresponding machine-
+readable source code, which must be distributed under the 
+terms of Sections 1 and 2 above on a medium customarily 
+used for software interchange; or,
+ b) Accompany it with a written offer, valid for at least three 
+years, to give any third party, for a charge no more than your 
+cost of physically performing source distribution, a complete 
+machine-readable copy of the corresponding source code, to 
+be distributed under the terms of Sections 1 and 2 above on a 
+medium customarily used for software interchange; or,
+c) Accompany it with the information you received as to 
+the offer to distribute corresponding source code. (This 
+alternative is allowed only for noncommercial distribution and 
+only if you received the program in object code or executable 
+form with such an offer, in accord with Subsection b above.)
+ The source code for a work means the preferred form of 
+the work for making modifications to it. For an executable 
+work, complete source code means all the source code for all 
+modules it contains, plus any associated interface definition 
+files, plus the scripts used to control compilation and 
+installation of the executable. However, as a special exception, 
+the source code distributed need not include anything that 
+is normally distributed (in either source or binary form) with 
+the major components (compiler, kernel, and so on) of the 
+operating system on which the executable runs, unless that 
+component itself accompanies the executable.
+ If distribution of executable or object code is made by 
+offering access to copy from a designated place, then offering 
+equivalent access to copy the source code from the same 
+place counts as distribution of the source code, even though 
+third parties are not compelled to copy the source along with 
+120
+ the object code.
+4. You may not copy, modify, sublicense, or distribute the 
+Program except as expressly provided under this License. Any 
+attempt otherwise to copy, modify, sublicense or distribute 
+the Program is void, and will automatically terminate your 
+rights under this License. However, parties who have received 
+copies, or rights, from you under this License will not have 
+their licenses terminated so long as such parties remain in full 
+compliance.
+5. You are not required to accept this License, since you have 
+not signed it. However, nothing else grants you permission to 
+modify or distribute the Program or its derivative works. These 
+actions are prohibited by law if you do not accept this License.
+ Therefore, by modifying or distributing the Program (or any 
+work based on the Program), you indicate your acceptance 
+of this License to do so, and all its terms and conditions for 
+copying, distributing or modifying the Program or works 
+based on it.
+6. Each time you redistribute the Program (or any work based 
+on the Program), the recipient automatically receives a license 
+from the original licensor to copy, distribute or modify the 
+Program subject to these terms and conditions. You may not 
+impose any further restrictions on the recipients’ exercise 
+of the rights granted herein. You are not responsible for 
+enforcing compliance by third parties to this License.
+7. If, as a consequence of a court judgment or allegation of 
+patent infringement or for any other reason (not limited to 
+patent issues), conditions are imposed on you (whether by 
+court order, agreement or otherwise) that contradict the 
+conditions of this License, they do not excuse you from the 
+conditions of this License. If you cannot distribute so as to 
+satisfy simultaneously your obligations under this License and 
+any other pertinent obligations, then as a consequence you 
+may not distribute the Program at all. For example, if a patent 
+license would not permit royalty-free redistribution of the 
+Program by all those who receive copies directly or indirectly 
+through you, then the only way you could satisfy both it and 
+this License would be to refrain entirely from distribution of 
+the Program.
+121
+ If any portion of this section is held invalid or unenforceable 
+under any particular circumstance, the balance of the section 
+is intended to apply and the section as a whole is intended to 
+apply in other circumstances.
+ It is not the purpose of this section to induce you to infringe 
+any patents or other property right claims or to contest 
+validity of any such claims; this section has the sole purpose 
+of protecting the integrity of the free software distribution 
+system, which is implemented by public license practices. 
+Many people have made generous contributions to the wide 
+range of software distributed through that system in reliance 
+on consistent application of that system; it is up to the author/
+donor to decide if he or she is willing to distribute software 
+through any other system and a licensee cannot impose that 
+choice.
+ This section is intended to make thoroughly clear what is 
+believed to be a consequence of the rest of this License.
+8. If the distribution and/or use of the Program is restricted 
+in certain countries either by patents or by copyrighted 
+interfaces, the original copyright holder who places the 
+Program under this License may add an explicit geographical 
+distribution limitation excluding those countries, so that 
+distribution is permitted only in or among countries not thus 
+excluded. In such case, this License incorporates the limitation 
+as if written in the body of this License.
+9. The Free Software Foundation may publish revised and/
+or new versions of the General Public License from time to 
+time. Such new versions will be similar in spirit to the present 
+version, but may differ in detail to address new problems or 
+concerns.
+ Each version is given a distinguishing version number. If the 
+Program specifies a version number of this License which 
+applies to it and “any later version”, you have the option of 
+following the terms and conditions either of that version or of 
+any later version published by the Free Software Foundation. 
+If the Program does not specify a version number of this 
+License, you may choose any version ever published by the 
+Free Software Foundation.
+122
+10. If you wish to incorporate parts of the Program into other free 
+programs whose distribution conditions are different, write to 
+the author to ask for permission.
+ For software which is copyrighted by the Free Software 
+Foundation, write to the Free Software Foundation; we 
+sometimes make exceptions for this. Our decision will be 
+guided by the two goals of preserving the free status of all 
+derivatives of our free software and of promoting the sharing 
+and reuse of software generally.
+NO WARRANTY
+11 BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, 
+THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT 
+PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE 
+STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR 
+OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT 
+WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, 
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR 
+PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND 
+PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE 
+PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL 
+NECESSARY SERVICING, REPAIR OR CORRECTION.
+12 IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR 
+AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR 
+ANY OTHER PARTY WHO MAY MODIFY AND/OR REDISTRIBUTE 
+THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR 
+DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL 
+OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE 
+OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT 
+LIMITED TO LOSS OF DATA OR DATA BEING RENDERED 
+INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD 
+PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH 
+ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER 
+PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH 
+DAMAGES.
+END OF TERMS AND CONDITIONS
+123
+AEEE Yönetmeliğine Uygundur.
+Authorised distributors in Turkey:
+BOGAZICI BIL GISAYAR SAN. VE TIC. A.S.
+Tel. No.: +90 212 3311000
+Address: AYAZAGA MAH. KEMERBURGAZ CAD. NO.10 
+AYAZAGA/ISTANBUL
+CIZGI Elektronik San. Tic. Ltd. Sti.
+Tel. No.: +90 212 3567070
+Address: CEMAL SURURI CD. HALIM MERIC IS MERKEZI 
+No: 15/C D:5-6 34394 MECIDIYEKOY/
+ISTANBUL
+KOYUNCU ELEKTRONiK BiLGi iSLEM SiST. SAN. VE DIS TIC. 
+A.S.
+Tel. No.: +90 216 5288888
+Address: EMEK MAH.ORDU CAD. NO:18, SARIGAZi, 
+SANCAKTEPE ISTANBUL
+ENDEKS BİLİŞİM SAN VE DIŞ TİC LTD ŞTİ
+Tel. No.: +90 216 523 35 70 (pbx)
+Address: Bulgurlu Mahallesi Alemdağ Caddesi No:56 / 
+B-1 34696 Üsküdar/ İSTANBUL
+124
+ASUS elérhetőségi adatok
+ASUSTeK COMPUTER INC. (Asia Pacific)
+Vállalat címe 15 Li-Te Road, Peitou, Taipei, Taiwan 11259
+Weboldal www.asus.com.tw
+Műszaki támogatás
+Általános (tel.) +886228943447
+Általános (fax) +886228907698
+Online támogatás support.asus.com
+ASUS COMPUTER INTERNATIONAL (Észak-Amerika)
+Vállalat címe 48720 Kato Rd., Fremont, CA 94538, USA
+Általános (tel.) +15107393777
+Fax +15106084555
+Weboldal usa.asus.com
+Online támogatás support.asus.com
+ASUS COMPUTER GmbH (Németország, Ausztria)
+Vállalat címe Harkort Str. 21-23, D-40880 Ratingen, Germany
+Fax +49-2102-959931
+Weboldal asus.com/de
+Online elérhetőség eu-rma.asus.com/sales
+Műszaki támogatás
+Általános +49-2102-5789555
+Általános (tel.) Németország 
+(System/Notebook/Eee/LCD) +49-2102-5789557
+Általános (tel.) Ausztria 
+(System/Notebook/Eee/LCD) +43-820-240513
+Fax +49-2102-959911
+Online támogatás support.asus.com
+125
+Globális hálózati forróvonal információ
+Region Country/ Area Hotline Number Service Hours
+Europe
+Cyprus 800-92491 09:00-13:00 ; 
+14:00-18:00 Mon-Fri
+France 0033-170949400 09:00-18:00 Mon-Fri
+Germany
+0049-1805010920
+09:00-18:00 Mon-Fri
+10:00-17:00 Mon-Fri
+0049-1805010923
+(component support)
+0049-2102959911 (Fax)
+Hungary 0036-15054561 09:00-17:30 Mon-Fri
+Italy 199-400089 09:00-13:00 ; 
+14:00-18:00 Mon-Fri
+Greece 00800-44142044 09:00-13:00 ; 
+14:00-18:00 Mon-Fri
+Austria 0043-820240513 09:00-18:00 Mon-Fri
+Netherlands/
+Luxembourg 0031-591570290 09:00-17:00 Mon-Fri
+Belgium 0032-78150231 09:00-17:00 Mon-Fri
+Norway 0047-2316-2682 09:00-18:00 Mon-Fri
+Sweden 0046-858769407 09:00-18:00 Mon-Fri
+Finland 00358-969379690 10:00-19:00 Mon-Fri
+Denmark 0045-38322943 09:00-18:00 Mon-Fri
+Poland 0048-225718040 08:30-17:30 Mon-Fri
+Spain 0034-902889688 09:00-18:00 Mon-Fri
+Portugal 00351-707500310 09:00-18:00 Mon-Fri
+Slovak Republic 00421-232162621 08:00-17:00 Mon-Fri
+Czech Republic 00420-596766888 08:00-17:00 Mon-Fri
+Switzerland-German 0041-848111010 09:00-18:00 Mon-Fri
+Switzerland-French 0041-848111014 09:00-18:00 Mon-Fri
+Switzerland-Italian 0041-848111012 09:00-18:00 Mon-Fri
+United Kingdom 0044-1442265548 09:00-17:00 Mon-Fri
+Ireland 0035-31890719918 09:00-17:00 Mon-Fri
+Russia and CIS 008-800-100-ASUS 09:00-18:00 Mon-Fri
+Ukraine 0038-0445457727 09:00-18:00 Mon-Fri
+126
+Globális hálózati forróvonal információ
+Region Country/ Area Hotline Numbers Service Hours
+Asia-Pacific
+Australia 1300-278788 09:00-18:00 Mon-Fri
+New Zealand 0800-278788 09:00-18:00 Mon-Fri
+Japan
+0800-1232787
+09:00-18:00 Mon-Fri
+09:00-17:00 Sat-Sun
+0081-570783886
+( Non-Toll Free )
+09:00-18:00 Mon-Fri
+09:00-17:00 Sat-Sun
+Korea 0082-215666868 09:30-17:00 Mon-Fri
+Thailand 0066-24011717 09:00-18:00 Mon-Fri
+1800-8525201
+Singapore 0065-64157917 11:00-19:00 Mon-Fri
+0065-67203835 11:00-19:00 Mon-Fri
+( Repair Status Only ) 11:00-13:00 Sat
+Malaysia 1300-88-3495 9:00-18:00 Mon-Fri
+Philippine 1800-18550163 09:00-18:00 Mon-Fri
+India
+1800-2090365
+09:00-18:00 Mon-Sat
+India(WL/NW) 09:00-21:00 Mon-Sun
+Indonesia 0062-2129495000 09:30-17:00 Mon-Fri
+500128 (Local Only) 9:30 – 12:00 Sat
+Vietnam 1900-555581 08:00-12:00 
+13:30-17:30 Mon-Sat
+Hong Kong 00852-35824770 10:00-19:00 Mon-Sat
+Taiwan 0800-093-456; 
+02-81439000
+9:00-12:00 Mon-Fri; 
+13:30-18:00 Mon-Fri
+Americas
+USA
+1-812-282-2787
+8:30-12:00 EST Mon-Fri
+Canada 9:00-18:00 EST Sat-Sun
+Mexico 001-8008367847 08:00-20:00 CST Mon-Fri
+08:00-15:00 CST Sat
+Brazil
+4003 0988 (Capital)
+0800 880 0988
+(demais localidades)
+9:00am-18:00 Mon-Fri
+127
+Globális hálózati forróvonal információ
+Gyártó: ASUSTeK Computer Inc.
+Általános 
+(tel.):
++886-2-2894-3447
+Vállalat 
+címe:
+4F, No. 150, LI-TE RD., PEITOU, 
+TAIPEI 112, TAIWAN
+A meghatalmazott 
+képviselője 
+Európában:
+ASUS Computer GmbH
+Vállalat 
+címe:
+HARKORT STR. 21-23, 40880 
+RATINGEN, GERMANY
+Region Country/ Area Hotline Numbers Service Hours
+Middle 
+East + 
+Africa
+Egypt 800-2787349 09:00-18:00 Sun-Thu
+Saudi Arabia 800-1212787 09:00-18:00 Sat-Wed
+UAE 00971-42958941 09:00-18:00 Sun-Thu
+Turkey 0090-2165243000 09:00-18:00 Mon-Fri
+South Africa 0861-278772 08:00-17:00 Mon-Fri
+Israel *6557/00972-39142800 08:00-17:00 Sun-Thu
+*9770/00972-35598555 08:30-17:30 Sun-Thu
+Balkan 
+Countries
+Romania 0040-213301786 09:00-18:30 Mon-Fri
+Bosnia 
+Herzegovina 00387-33773163 09:00-17:00 Mon-Fri
+Bulgaria 00359-70014411 09:30-18:30 Mon-Fri
+00359-29889170 09:30-18:00 Mon-Fri
+Croatia 00385-16401111 09:00-17:00 Mon-Fri
+Montenegro 00382-20608251 09:00-17:00 Mon-Fri
+Serbia 00381-112070677 09:00-17:00 Mon-Fri
+Slovenia 00368-59045400
+08:00-16:00 Mon-Fri
+00368-59045401
+Baltic 
+Countries
+Estonia 00372-6671796 09:00-18:00 Mon-Fri
+Latvia 00371-67408838 09:00-18:00 Mon-Fri
+Lithuania-
+Kaunas 00370-37329000 09:00-18:00 Mon-Fri
+Lithuania-Vilnius 00370-522101160 09:00-18:00 Mon-Fri
+MEGJEGYZÉSEK: 
+• Támogatási e-mail az Egyesült Királyság területén: network_
+support_uk@asus.com.
+• További információkért látogassa meg az ASUS támogatási 
+weboldalát a: https://www.asus.com/support/ címen.

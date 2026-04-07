@@ -1,0 +1,27 @@
+allowed_output_fields:
+- inputName
+- formalName
+- functionalDomain
+- administrativeLevel
+- parentUnit
+- administrativeDivision
+- organizationType
+- keyFunctions
+- affiliatedNationOrRegion
+- locatedCountryOrRegion
+- affNationLangs
+- description
+channel: excel_source
+flatten_json_output: true
+input_col: 內容
+input_excel_file: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/LLMInput.csv
+llm_source_backup_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/excel_source
+llm_source_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source
+mode: table
+model_spec: qwen3:32b-ctx-32k-premises-q4
+output_col: OPA
+output_excel_file: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/LLMInput_with_result.csv
+primary_key: 法規名稱
+record_update_time: true
+save_raw_input_when_flatten: true
+task: Organization Profile Analyzer to json format

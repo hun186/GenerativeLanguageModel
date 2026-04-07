@@ -1,0 +1,959 @@
+
+CZ20513
+První vydání
+Listopad 2022
+Uživatelská příručka
+2 LED projektor - Uživatelská příručka
+Informace o autorských právech
+Žádná část této příručky, včetně výrobků a softwaru v příručce popsaných, nesmí být reprodukována, 
+přenesena, přepsána, uložena v systému pro ukládání dat, ani přeložena do žádného jazyka v žádné podobě 
+a žádným způsobem, kromě dokumentace uložené kupujícím pro účel zálohování, bez písemného souhlasu 
+firmy. ASUSTeK COMPUTER INC. (“ASUS”).
+Záruka na produkt a služby nebude poskytnuta pokud: (1) produkt byl opraven, upraven nebo změněn jinak 
+než v souladu s písemným souhlasem ASUS anebo (2) pokud bylo znečitelněno nebo odstraněno výrobní 
+číslo.
+ASUS POSKYTUJE TUTO PŘÍRUČKU “TAK, JAK JE”, BEZ ZÁRUKY JAKÉHOKOLI DRUHU, AŤ VÝSLOVNÉ NEBO 
+VYPLÝVAJÍCÍ, VČETNĚ, ALE NIKOLI JEN, PŘEDPOKLÁDANÝCH ZÁRUK NEBO PODMÍNEK PRODEJNOSTI 
+A VHODNOSTI PRO URČITÝ ÚČEL. V ŽÁDNÉM PŘÍPADĚ NEBUDE FIRMA ASUS, JEJÍ ŘEDITELÉ, VEDOUCÍ 
+PRACOVNÍCI, ZAMĚSTNANCI ANI ZÁSTUPCI ODPOVÍDAT ZA ŽÁDNÉ NEPŘÍMÉ, ZVLÁŠTNÍ, NAHODILÉ 
+NEBO NÁSLEDNÉ ŠKODY (VČETNĚ ZA ZTRÁTU ZISKŮ, ZTRÁTU PODNIKATELSKÉ PŘÍLEŽITOSTI, ZTRÁTU 
+POUŽITELNOSTI ČI ZTRÁTU DAT, PŘERUŠENÍ PODNIKÁNÍ A PODOBNĚ), I KDYŽ BYLA FIRMA ASUS 
+UPOZORNĚNA NA MOŽNOST TAKOVÝCH ŠKOD ZPŮSOBENÝCH JAKOUKOLIV VADOU V TÉTO PŘÍRUČCE 
+NEBO VE VÝROBKU.
+Výrobky a názvy firem v této příručce mohou, ale nemusí být obchodními známkami nebo copyrighty 
+příslušných firem, a používají se zde pouze pro identifikaci a objasnění a ve prospěch jejich majitelů, bez 
+záměru poškodit cizí práva.
+TECHNICKÉ ÚDAJE A INFORMACE OBSAŽENÉ V TÉTO PŘÍRUČCE JSOU POSKYTNUTY JEN PRO INFORMACI, 
+MOHOU SE KDYKOLIV ZMĚNIT BEZ PŘEDCHOZÍHO UPOZORNĚNÍ, A NEMĚLY BY BÝT POVAŽOVÁNY ZA 
+ZÁVAZEK FIRMY ASUS. ASUS NEODPOVÍDÁ ZA ŽÁDNÉ CHYBY A NEPŘESNOSTI, KTERÉ SE MOHOU OBJEVIT V 
+TÉTO PŘÍRUČCE, VČETNĚ VÝROBKŮ A SOFTWARU V PŘÍRUČCE POPSANÝCH.
+Copyright © 2022 ASUSTeK COMPUTER INC. Všechna práva vyhrazena.
+Omezení odpovědnosti
+Mohou nastat takové okolnosti, že v důsledku selhání ze strany firmy ASUS nebo z jiné odpovědnosti 
+budete mít právo na náhradu škody od firmy ASUS. V každém takovém případě, bez ohledu na důvod, pro 
+který máte právo požadovat náhradu od firmy ASUS, nebude ASUS odpovídat za víc než za škody kvůli 
+zranění (včetně smrti) a poškození nemovitostí a hmotného osobního majetku; nebo jakékoliv skutečné 
+a přímé škody v důsledků opomenutí nebo neplnění zákonných povinností dle této záruky, až do výše 
+ceníkové smluvní ceny každého výrobku.
+Firma ASUS bude odpovědná nebo vás odškodní jen za ztrátu, škody nebo reklamace na základě této 
+smlouvy, přečinu nebo porušení cizích práv dle této záruky.
+Toto omezení se vztahuje i na dodavatele a prodejce firmy ASUS. To je maximum, za které jsou firma ASUS, 
+její dodavatelé a váš prodejce kolektivně odpovědní.
+ZA ŽÁDNÝCH OKOLNOSTÍ NEBUDE FIRMA ASUS ODPOVÍDAT ZA NÁSLEDUJÍCÍ: (1) NÁROKY/ŽALOBY 
+TŘETÍCH STRAN NA VÁS KVŮLI ZTRÁTÁM; (2) ZTRÁTU NEBO POŠKOZENÍ VAŠICH ZÁZNAMŮ NEBO DAT (3) 
+ZVLÁŠTNÍ, NAHODILÉ NEBO NEPŘÍMÉ ŠKODY NEBO JAKÉKOLIV EKONOMICKÉ NÁSLEDNÉ ŠKODY (VČETNĚ 
+ZTRÁTY ZISKU NEBO ÚSPOR), DOKONCE I KDYŽ BY ASUS BYL UPOZORNĚN NA MOŽNOST TAKOVÝCH ŠKOD.
+Servis a podpora
+Navštivte náš web podporující více jazyků https://www.asus.com/support/
+3LED projektor - Uživatelská příručka
+Obsah
+O této příručce .................................................................................................... 5
+Konvence použité v této příručce ............................................................... 6
+Typografie ........................................................................................................... 6
+Vícejazyčné verze ............................................................................................. 6
+Bezpečnostní zásady ......................................................................................... 7
+Používání LED projektoru .............................................................................. 7
+Servis a výměna součástí ............................................................................... 7
+Přenášení LED projektoru .............................................................................. 8
+Řádná likvidace ................................................................................................. 9
+Kapitola 1: Seznámení s LED projektorem
+Vlastnosti .............................................................................................................12
+Pohled shora.....................................................................................................12
+Rozšířené vlastnosti .......................................................................................15
+Svítilna ...................................................................................................................15
+Režim SOS ............................................................................................................16
+Pohled zpředu..................................................................................................17
+Pohled zezadu .................................................................................................18
+Pohled zprava ..................................................................................................20
+Pohled zdola .....................................................................................................21
+Kapitola 2: Instalace
+Používání LED projektoru ..............................................................................24
+Připojte LED projektor k napájecímu adaptéru. ..................................24
+Požadavky na síťový napájecí kabel ...........................................................26
+Připojte LED projektor k vašemu zařízení ..............................................27
+Stiskněte vypínač ............................................................................................28
+Úpravy zaostření .............................................................................................29
+Režim na výšku ................................................................................................30
+Tabulka velikostí promítací plochy a projekční vzdálenosti ..............31
+4 LED projektor - Uživatelská příručka
+Kapitola 3: Používání LED projektoru
+První použití LED projektoru ........................................................................34
+Ovládání nabídky na promítací ploše .......................................................35
+Používání adaptéru Wi-Fi dongle (pouze u vybraných modelů) .....36
+Bezdrátové zrcadlení .....................................................................................37
+Streamování .....................................................................................................39
+Používání připojení USB.................................................................................40
+Streamování .....................................................................................................40
+Položky nabídky na promítací ploše .........................................................41
+Volume (Hlasitost) ..........................................................................................41
+Vstup .............................................................................................................41
+Splendid .............................................................................................................41
+Brightness (Jas) ................................................................................................41
+Contrast (Kontrast) .........................................................................................42
+Keystone ............................................................................................................42
+Projector Position (Projekční poloha) ......................................................42
+Setup (Nastavení) ...........................................................................................43
+Information (Informace) ...............................................................................44
+Vypnutí LED projektoru .................................................................................45
+Přílohy
+Prohlášení Federální komise pro komunikaci ........................................48
+Splnění globálních ekologických předpisů a prohlášení ..................49
+Recyklace ASUS / Služby zpětného odběru............................................49
+Možnosti připojení HDMI ..............................................................................50
+Podporované frekvence PC ..........................................................................51
+Technické údaje pro E1R LED projektorů ................................................53
+5LED projektor - Uživatelská příručka
+O této příručce
+Tato příručka obsahuje informace o hardwaru a softwaru LED 
+projektoru, rozdělené do následujících kapitol:
+Kapitola 1: Seznámení s LED projektorem
+V této kapitole jsou podrobně popsány části LED projektoru.
+Kapitola 2: Instalace
+Tato kapitola obsahuje pokyny pro instalaci LED projektoru a 
+používání jeho součástí pro připojení vstupních zařízení.
+Kapitola 3: Používání LED projektoru
+V této kapitole jsou popsány vlastnosti tlačítek ovládacího panelu 
+LED a jak je používat ke spouštění funkcí LED projektoru 
+Přílohy
+Tato kapitola obsahuje bezpečnostní upozornění k LED 
+projektoru.
+6 LED projektor - Uživatelská příručka
+Konvence použité v této příručce
+Zprávy v této příručce zdůrazňují klíčové informace tímto způsobem:
+DŮLEŽITÉ! Tato zpráva uvádí zásadně důležité informace, které je 
+nutno při provádění úkolu respektovat. 
+POZNÁMKA: Tato zpráva uvádí doplňující informace a tipy, které 
+mohou pomoci při provádění úkolů.
+VAROVÁNÍ! Tato zpráva uvádí důležité informace pro bezpečnost 
+při provádění úkolů a předcházení poškození dat a součástek LED 
+projektoru. 
+Typografie
+Tučné označuje nabídku nebo položku, kterou je nutno vybrat.
+Ležaté označuje části, na které lze v této příručce odkazovat.
+Vícejazyčné verze
+Další jazykové verze této elektronické příručky jsou k dispozici ke 
+stažení na těchto webových stránkách: https://www.asus.com/
+support/
+7LED projektor - Uživatelská příručka
+Bezpečnostní zásady
+Používání LED projektoru
+• Před použitím tohoto LED projektoru si přečtěte příručku a 
+seznamte se s bezpečnostními pokyny.
+• Dodržujte poznámky a varování uvedená v uživatelské příručce.
+• Tento LED projektor neumísťujte na nerovný nebo nestabilní 
+povrch.
+• Tento LED projektor nepoužívejte v zakouřeném prostředí. Kouř 
+se může usazovat na velmi důležitých součástech tohoto LED 
+projektoru a způsobit poškození nebo snížení výkonu.
+• S tímto LED projektorem nepoužívejte poškozené napájecí 
+kabely, doplňky ani jiné periférie.
+• Plastové obaly tohoto LED projektoru uchovávejte mimo dosah 
+dětí.
+• Neblokujte větrací otvory LED projektoru a neumisťujte nic do 
+jejich blízkosti. V opačném případě se může uvnitř přístroje 
+nahromadit teplo, které může snížit kvalitu obrazu a poškodit 
+projektor.
+• Ověřte, zda se provozní napětí LED projektoru shoduje s 
+napětím zdroje napájení.
+Servis a výměna součástí
+• Nepokoušejte se tento LED projektor sami rozebírat nebo 
+opravovat. Požádejte o pomoc nejbližší servisní středisko ASUS.
+• V případě použití nesprávného typu baterie hrozí nebezpečí 
+výbuchu. Použité baterie zlikvidujte podle bezpečnostních 
+pokynů a požádejte o pomoc nejbližší servisní středisko ASUS. 
+• Při výměně součástí tohoto LED projektoru zakupte součásti 
+předepsané společností ASUS a požádejte o pomoc nejbližší 
+servisní středisko ASUS.
+8 LED projektor - Uživatelská příručka
+Přenášení LED projektoru
+• Před čištěním LED projektor vypněte a odpojte od elektrické 
+zásuvky. 
+• Skříň LED projektoru čistěte měkkým hadříkem navlhčeným 
+v čisté vodě nebo vodě s přísadou neutrálního čisticího 
+prostředku. Otřete dosucha měkkým hadříkem.
+• Před čištěním objektivu se přesvědčte, že je vychladlý. Lehce 
+otřete objektiv papírem pro čištění objektivů. Nedotýkejte se 
+objektivu rukama. 
+• K čištění tohoto LED projektoru nepoužívejte silné kapalné 
+čisticí prostředky ani spreje, benzín ani ředidlo.
+• Tento LED projektor zásadně nepoužívejte bezprostředně po 
+přemístění z chladného prostředí. Když je tento LED projektor 
+vystaven náhlé změně teplot, může se na objektivu a vnitřních 
+částech vytvořit kondenzace. Aby se tomu zabránilo, začněte 
+přístroj používat až dvě (2) hodiny po silné nebo náhlé změně 
+teploty.
+• Objektiv NEČISTĚTE sprejem, který obsahuje hořlavé plyny. 
+Mohlo by to způsobit požár v důsledku nadměrného tepla 
+uvnitř projektoru.
+• NEČISTĚTE objektiv, když se projektor zahřívá, protože by mohlo 
+dojít k odloupnutí povrchového filmu objektivu.
+• K otírání nebo oklepávání objektivu NEPOUŽÍVEJTE tvrdé 
+předměty. 
+9LED projektor - Uživatelská příručka
+Řádná likvidace
+Tento LED projektor nelikvidujte s komunálním odpadem. 
+Tento výrobek byl navržen tak, aby umožňoval opakované 
+používání součástí a recyklaci. Tento symbol přeškrtnuté 
+popelnice na kolečkách znamená, že výrobek (elektrická, 
+elektronická zařízení a knoflíkové baterie s obsahem rtuti) 
+by se neměl vyhazovat do komunálního odpadu. Ověřte si 
+lokální předpisy pro likvidaci elektronických výrobků.
+NEVHAZUJTE baterii do komunálního odpadu. Symbol 
+přeškrtnuté popelnice s kolečky ukazuje, že tato baterie 
+nesmí být likvidována společně s komunálním odpadem.
+10 LED projektor - Uživatelská příručka
+11LED projektor - Uživatelská příručka
+Kapitola 1: Seznámení 
+s LED projektorem
+12 LED projektor - Uživatelská příručka
+Vlastnosti
+Pohled shora
+Tlačítka na ovládací panelu
+Tlačítka na ovládacím panelu slouží k procházení nabídky na 
+promítací ploše. Jednotlivá tlačítka rovněž odpovídají konkrétním 
+nastavení LED projektoru, která jsou uvedena níže.
+Splendid/Exit 
+(Splendid/
+Konec)
+Vlevo/snížení 
+hlasitosti Nabídka/OK Vpravo/zvýšení 
+hlasitosti
+POZNÁMKA: Další informace o používání tlačítek na ovládacím 
+panelu pro přístup k nastavení tohoto LED projektoru viz část 
+Kapitola 3: Používání LED projektoru v této příručce.
+13LED projektor - Uživatelská příručka
+Indikátor napájení a indikátor stavu baterie
+Tento LED indikátor ukazuje následující stavy LED projektoru:
+• Svítí, když je zapnuto napájení LED projektoru.
+• Svítí červeně nebo zeleně podle stavu nabití baterie.
+Podrobnosti o fungování tohoto LED indikátoru jako indikátoru 
+stavu baterie viz následující tabulka:
+Barva Stav
+Svítí zeleně LED projektor je připojen ke zdroji napájení, je 
+napájen z baterie a stav baterie je více než 25 % 
+nebo běží v režimu nabíječky.
+Svítí červeně LED projektor je napájen z baterie a stav baterie 
+nepřesahuje 25 %.
+Bliká oranžově Teplota LED projektoru je příliš vysoká a 
+projektor automaticky sníží svůj jas. Pokud 
+bude teplota přesto příliš vysoká, LED projektor 
+se vypne, aby se zabránilo přehřátí.
+Bliká zeleně LED projektor se aktuálně používá jako 
+powerbanka a nabíjí vaše mobilní zařízení. 
+14 LED projektor - Uživatelská příručka
+Indikátor nabití baterie
+Tento LED indikátor svítí, když je LED projektor připojen ke zdroji 
+napájení pomocí svého napájecího adaptéru.
+DŮLEŽITÉ! K nabíjení baterie a napájení tohoto LED projektoru 
+používejte pouze dodaný napájecí adaptér.
+15LED projektor - Uživatelská příručka
+Rozšířené vlastnosti
+Tento LED projektor je rovněž vybaven samostatnými funkcemi, 
+které se spouští stisknutím tlačítka , když se LED projektor 
+nachází v režimu napájení z baterie.
+POZNÁMKA: 
+•  Tyto funkce nejsou dostupné, když je váš LED projektor připojen 
+ke zdroji vstupu HDMI nebo v režimu Wi-Fi.
+• Chcete-li vypnout nebo přepínat mezi funkcemi svítilny a 
+nouzového osvětlení LED projektoru, opakovaně stiskněte tlačítko 
+, dokud nebude deaktivována nebo aktivována požadovaná 
+funkce osvětlení.
+DŮLEŽITÉ! Před aktivací těchto funkcí zkontrolujte, zda je LED 
+projektor nabitý a zda může běžet v režimu napájení z baterie. 
+Životnost baterie se liší v závislosti na používání.
+Svítilna
+Při použití této funkce LED svítí bílým nepřerušovaným světlem.
+ 
+Tlačítko Splendid/Exit 
+(Splendid/Konec)
+Pokyny pro používání LED projektoru jako svítilny:
+1. Odpojte všechny periférie a adaptér Wi-Fi dongle od LED 
+projektoru a potom jej zapněte stisknutím vypínače.
+16 LED projektor - Uživatelská příručka
+Režim SOS
+Při použití této funkce LED bliká bílým světlem.
+ 
+Tlačítko Splendid/Exit 
+(Splendid/Konec)
+Pokyny pro používání LED projektoru jako svítilny:
+1. Odpojte všechny periférie a adaptér Wi-Fi dongle od LED 
+projektoru a potom jej zapněte stisknutím vypínače.
+2. Opakovaně stiskněte , dokud LED projektor nezačne blikat 
+bílým světlem.
+2. Opakovaně stiskněte , dokud LED projektor nezačne svítit 
+nepřerušovaným bílým světlem.
+17LED projektor - Uživatelská příručka
+Pohled zpředu
+Objektiv
+Objektiv promítá soubory s videem a obrázky ze vstupního zařízení na 
+promítací plochu.
+VAROVÁNÍ! 
+• Nedotýkejte se objektivu rukama ani žádným ostrým 
+předmětem.
+• NEDÍVEJTE se přímo do objektivu.
+18 LED projektor - Uživatelská příručka
+Pohled zezadu
+Port konektoru výstupu zvuku
+Port konektoru výstupu zvuku umožňuje připojit k LED projektoru 
+sluchátka.
+Port HDMI
+Tento port je určen pro konektory HDMI (High-Definition Multimedia 
+Interface). Tento port vyhovuje standardu HDCP pro přehrávání HD 
+DVD, Blu-ray a dalšího chráněného obsahu.
+Výstup napájení/port adaptéru Wi-Fi
+Tento port výstupu napájení disponuje výstupním napětím a 
+proudem 5V/1A. K tomuto portu můžete během používání LED 
+projektoru připojit vaše mobilní zařízení a nechat jej nabíjet.
+Můžete také připojit adaptér Wi-Fi dongle (přiložený k některým 
+modelům), který vám umožní zrcadlit nebo streamovat obsah z 
+vašeho mobilního zařízení.
+POZNÁMKA: Další podrobnosti naleznete v části Používání 
+adaptéru Wi-Fi dongle v této příručce.
+19LED projektor - Uživatelská příručka
+Port vstupu stejnosměrného (DC) napájení
+K tomuto portu připojte dodaný napájecí adaptér, aby bylo možné 
+nabíjet baterii a napájet LED projektor.
+DŮLEŽITÉ! K nabíjení baterie a napájení tohoto LED projektoru 
+používejte pouze dodaný napájecí adaptér.
+VAROVÁNÍ! Adaptér se během provozu může zahřívat. Adaptér 
+nezakrývejte a když je připojen k elektrické zásuvce, udržujte jej 
+v bezpečné vzdálenosti od těla.
+Vypínač
+Stisknutím a podržením tohoto tlačítka zapnete nebo vypnete LED 
+projektor. Krátkým stisknutím tohoto tlačítka zapnete nebo vypnete 
+režim nabíječky.
+20 LED projektor - Uživatelská příručka
+Zaostřovací kolečko
+Zaostřovací kroužek slouží k úpravě zaostření obrazu tohoto LED 
+projektoru.
+Větrací otvory
+Větrací otvory slouží pro přísun chladného a odvádění teplého 
+vzduchu z LED projektoru.
+VAROVÁNÍ! Neblokujte větrací otvory papíry, knihami, 
+oblečením, kabely a jinými předměty, aby se zabránilo 
+přehřívání.
+Pohled zprava
+21LED projektor - Uživatelská příručka
+Pohled zdola
+Závit pro připevnění stativu
+Pomocí tohoto závitu lze k LED projektoru připevnit stativ s 
+upevňovacím šroubem 1/4-20UNC.
+POZNÁMKA: Tento závit lze používat pouze se stativy, které 
+jsou nižší než 1 metr.
+22 LED projektor - Uživatelská příručka
+23LED projektor - Uživatelská příručka
+Kapitola 2: 
+Instalace
+24 LED projektor - Uživatelská příručka
+Používání LED projektoru
+K tomuto mobilnímu LED projektoru lze připojit a přehrávat zařízení 
+a snadno otevírat multimediální soubory a poslouchat zvuk přímo ze 
+zabudovaných SonicMaster reproduktorů.
+Aby byla zajištěna vaše bezpečnost a zachována kvalita tohoto 
+přístroje, při používání tohoto LED projektoru postupujte podle 
+následujících pokynů.
+Připojte LED projektor k napájecímu adaptéru.
+A. Připojte napájecí kabel k napájecímu adaptéru.
+B. Připojte napájecí adaptér do zásuvky 100 - 240 V.
+C. Připojte konektor stejnosměrného napájení k LED projektoru.
+POZNÁMKA: Vzhled napájecího adaptéru se může lišit v závislosti na 
+modelu a vašem regionu.
+Před prvním použitím v režimu napájení z baterie nechte LED 
+projektor nabíjet po dobu 5 hodin.
+25LED projektor - Uživatelská příručka
+VAROVÁNÍ!
+Přečtěte si následující zásady pro baterii LED projektoru.
+• Kapacita baterie se bude lišit podle okolní teploty, vlhkosti a 
+používání LED projektoru.
+• V případě vyjmutí nebo demontování může baterie použitá v tomto 
+přístroji představovat nebezpečí požáru nebo popálení chemickými 
+látkami.
+• Dodržujte varovné štítky pro vaši osobní bezpečnost.
+• V případě použití nesprávného typu baterie hrozí nebezpečí výbuchu.
+• Nevhazujte do ohně.
+• Nikdy nezkoušejte zkratovat baterii LED projektoru.
+• Nikdy nezkoušejte baterii rozebrat a sestavit.
+• V případě vytečení přestaňte používat.
+• Baterii a její součásti je nutno recyklovat nebo řádně zlikvidovat.
+• Uchovávejte baterii a ostatní malé součásti mimo dosah dětí. 
+• Baterii nevhazujte do ohně, neumísťujte do horké trouby, mechanicky 
+nedrťte ani nerozřezávejte – může dojít k výbuchu.
+• Nenechávejte baterii v prostředí s extrémně nízkou teplotou – může 
+dojít k výbuchu nebo k úniku hořlavé tekutiny nebo plynu.
+• Nevystavujte baterii velmi nízkému tlaku vzduchu – může dojít k 
+výbuchu nebo k úniku hořlavé tekutiny nebo plynu.
+DŮLEŽITÉ! 
+• K nabíjení baterie a napájení tohoto LED projektoru používejte pouze 
+dodaný napájecí adaptér.
+• Před prvním zapnutím LED projektoru zkontrolujte, zda je připojen 
+k adaptéru a ten k elektrické zásuvce. Napájecí kabel zapojujte vždy 
+přímo do elektrické zásuvky bez použití prodlužovacích kabelů. 
+Z bezpečnostních důvodů připojte toto zařízení pouze k řádně 
+uzemněné elektrické zásuvce.
+• Elektrická zásuvka musí být snadno přístupná a v blízkosti LED 
+projektoru.
+• Chcete-li odpojit LED projektor od hlavního zdroje napájení, odpojte 
+jej od elektrické zásuvky.
+26 LED projektor - Uživatelská příručka
+Požadavky na síťový napájecí kabel
+Použijte kabel se správnou síťovou zástrčkou odpovídající vaší zemi.
+DŮLEŽITÉ! Pokud síťový napájecí kabel dodaný s LED projektorem 
+nevyhovuje vaší elektrické zásuvce, obraťte se na prodejce.
+POZNÁMKA: Důrazně doporučujeme použít k připojení zobrazovače 
+také kabel s uzemněnou zástrčkou, aby se zabránilo rušení obrazu 
+způsobenému kolísáním napětí.
+Pro Austrálii a pevninskou Čínu Pro USA, Kanadu, 
+Japonsko a Tchaj-wan
+Pro kontinentální Evropu Pro Velkou Británii
+27LED projektor - Uživatelská příručka
+Připojte LED projektor k vašemu zařízení
+ Výstup zvuku HDMI
+ Výstup napájení (5V/1A)
+28 LED projektor - Uživatelská příručka
+Stiskněte vypínač
+POZNÁMKA: Když je LED projektor používán, zastaví se nabíjení 
+baterie uvnitř projektoru. Aktuální stav nabití LED projektoru ukazuje 
+indikátor baterie. Další podrobnosti viz též část Pohled shora této 
+příručky.
+29LED projektor - Uživatelská příručka
+Úpravy zaostření
+POZNÁMKA: Při upravování zobrazení používejte nehybný obraz.
+Upravte zaostření obrazu promítaného na plochu pohybem kroužku 
+ostření nahoru nebo dolů.
+30 LED projektor - Uživatelská příručka
+Režim na výšku
+Tento LED projektor podporuje režimy na šířku (standardní) i na 
+výšku. Chcete-li použít režim na výšku, otočte projektor do svislé 
+polohy; svislý obraz lze sledovat na celé ploše bez černých pruhů po 
+stranách.
+POZNÁMKA: Tento LED projektor umožňuje zrcadlit nebo vysílat 
+obsah z mobilního zařízení, další podrobnosti jsou uvedeny v části 
+Používání adaptéru Wi-Fi dongle v této příručce.
+31LED projektor - Uživatelská příručka
+Tabulka velikostí promítací plochy a projekční vzdálenosti
+Podle následující tabulky upravte vzdálenost LED projektoru od 
+promítací plochy.
+Velikost promítací plochy Projekční 
+vzdálenostÚhlopříčně Horizontálně Vertical
+palce mm palce mm palce mm palce mm
+30 762 26,14 664 14,72 374 31,29 795
+40 1016 34,88 886 19,60 498 41,77 1061
+50 1270 43,58 1107 24,52 623 52,24 1327
+60 1524 52,28 1328 29,40 747 62,71 1593
+70 1778 61 1550 34,33 872 73,07 1856
+80 2032 69,72 1771 39,21 996 83,54 2122
+90 2286 78,42 1992 44,13 1121 94,05 2389
+100 2540 87,12 2213 49,05 1246 104,48 2654
+110 2794 95,86 2435 53,93 1370 114,96 2920
+120 3048 104,56 2656 58,85 1495 125,39 3185
+32 LED projektor - Uživatelská příručka
+33LED projektor - Uživatelská příručka
+Kapitola 3: 
+Používání LED 
+projektoru
+34 LED projektor - Uživatelská příručka
+Při prvním použití tohoto LED projektoru postupujte podle 
+následujících pokynů. 
+POZNÁMKA: Před prvním zapnutím LED projektoru zkontrolujte, zda 
+je připojen k adaptéru a ten k elektrické zásuvce. Při používání LED 
+projektoru v režimu napájecího adaptéru důrazně doporučujeme 
+používat uzemněnou elektrickou zásuvku.
+1. Nainstalujte LED projektor a poté jej zapněte stisknutím a 
+podržením tlačítka napájení tři (3) sekundy. 
+2. Stisknutím nebo na ovládacím panelu LED projektoru 
+procházejte dostupné jazykové možnosti.
+ 
+Navigační tlačítka
+První použití LED projektoru
+Tlačítko Nabídka/OK
+35LED projektor - Uživatelská příručka
+Ovládání nabídky na promítací ploše
+Tento LED projektor stačí připojit a začít přehrávat a je rovněž vybaven 
+nabídkou na promítací ploše, která obsahuje soubor programů a 
+nastavení, se kterými lze LED projektor co nejvíce využívat. 
+Spusťte nabídku na promítací ploše stisknutím na ovládacím 
+panelu LED projektoru.
+3. Po výběru upřednostňovaného jazyka stisknutím nastavte 
+jazyk používaný v LED projektoru.
+4. Nyní můžete začít používat tento LED projektor k promítání 
+souborů z vašeho vstupního zařízení. Není-li připojeno žádné 
+zařízení nebo pokud LED projektor nemůže žádné zařízení 
+rozpoznat, může se zobrazit obrazovka NO SIGNAL (NENÍ 
+SIGNÁL).
+5. Stisknutím na ovládacím panelu LED projektoru spustíte 
+jeho nabídku na promítací ploše.
+Chcete-li procházet možnosti nabídky na promítací ploše, stiskněte 
+navigační tlačítka ( / ) na ovládacím panelu LED projektoru. 
+Po úpravě nastavení stisknutím uložte nová nastavení a 
+stisknutím se vraťte zpět na hlavní obrazovku.
+POZNÁMKA: Další podrobnosti najdete v části Položky nabídky na 
+promítací ploše v této příručce.
+36 LED projektor - Uživatelská příručka
+Používání adaptéru Wi-Fi dongle 
+(pouze u vybraných modelů)
+Volitelný adaptér Wi-Fi dongle vám umožňuje promítat obrazovku 
+vašeho zařízení nebo streamovat z vašeho zařízení do vašeho LED 
+projektoru. Proces nastavení se může mírně lišit podle zařízení.
+Před zahájením zrcadlení obrazovky nebo streamování médií ze 
+zařízení proveďte následující kroky:
+1. Připojte adaptér Wi-Fi k portu USB Type-A LED projektoru.
+2. Dojde k automatickému přepnutí do režimu bezdrátového 
+promítání.
+POZNÁMKA: Pokud nedojde k automatickému přepnutí do režimu 
+bezdrátového promítání, můžete jej změnit v nabídce OSD. Stiskněte 
+ a potom vyberte > Zrcadlení.
+3. Zapněte Wi-Fi ve vašem zařízení.
+37LED projektor - Uživatelská příručka
+Ze zařízení Android
+Bezdrátové zrcadlení
+Ze zařízení iOS
+1. Zapněte Wi-Fi a vyberte SSID svého LED projektoru (je zobrazen 
+na promítací ploše) ze seznamu sítí.
+2. Pro připojení zadejte heslo projektoru (je zobrazeno na 
+promítací ploše).
+3. Klepněte na položku Chytré zrcadlení a připojte se k 
+identifikátoru SSID LED projektoru, který je zobrazen na 
+projekční ploše.
+4. Začněte promítat obrazovku ze svého mobilního zařízení do 
+LED projektoru.
+POZNÁMKA: 
+• Názvy možností se mohou lišit v závislosti na zařízení. Další 
+informace naleznete v příručce dodané s vaším zařízením. 
+• Před zahájením procesu zrcadlení nebo streamování se ujistěte, že 
+je aktuální operační systém ve vašem mobilním zařízení. 
+1. Klepněte na položku Chytré zrcadlení nebo Vysílat a připojte 
+se k identifikátoru SSID LED projektoru, který je zobrazen na 
+projekční ploše.
+2. Začněte promítat obrazovku ze svého mobilního zařízení do 
+LED projektoru.
+38 LED projektor - Uživatelská příručka
+Z notebooku Windows
+1. Stiskněte klávesovou zkratku klávesa Windows ( nebo ) + K.
+2. Vyberte SSID svého LED projektoru (je zobrazen na projekční 
+ploše) ze seznamu zařízení.
+3. Pro připojení a spuštění zrcadlení zadejte heslo projektoru (je 
+zobrazeno na projekční ploše).
+Z MacBooku
+1. Vyberte SSID svého LED projektoru (je zobrazeno na promítací 
+ploše) ze seznamu Wi-Fi ve vašem MacBooku.
+2. Pro připojení zadejte heslo projektoru (je zobrazeno na 
+promítací ploše).
+3. Spusťte prohlížeč a do adresního řádku zadejte adresu URL 
+(http://192.168.xxx.xxx) (zobrazenou na projekční ploše). Budete 
+přesměrováni na webovou stránku, kde připojíte svůj LED 
+projektor k síti Wi-Fi.
+POZNÁMKA: 
+•  Než budete pokračovat k dalšímu kroku, ujistěte se, že jsou vaše 
+zařízení a LED projektor připojeny ke stejné síti Wi-Fi.
+• Chcete-li se připojit k jiné síti Wi-Fi, opakujte krok 3 a vyberte 
+požadovanou síť Wi-Fi na webové stránce.
+4. Otevřete Control Center na vašem zařízení Mac a vyberte 
+Screen Mirroring (Zrcadlení obrazovky). Ze seznamu zařízení 
+vyberte svůj LED projektor a spusťte zrcadlení.
+Naskenujte QR kód a podívejte se na instruktážní video:
+POZNÁMKA: Váš projektor se může mírně lišit od 
+projektoru ve videu, ale rozhraní a postup jsou stejné.
+39LED projektor - Uživatelská příručka
+Streamování
+Streamování videa ze služby YouTube nebo Facebooku
+Standardní nastavení
+1. Zapněte Wi-Fi a vyberte SSID svého LED projektoru (je zobrazen 
+na promítací ploše) ze seznamu sítí.
+2. Pro připojení zadejte heslo projektoru (je zobrazeno na 
+promítací ploše).
+3. Spusťte prohlížeč a do adresního řádku zadejte adresu URL 
+(http://192.168.xxx.xxx) (zobrazenou na projekční ploše). Budete 
+přesměrováni na webovou stránku, kde připojíte svůj LED 
+projektor k síti Wi-Fi.
+POZNÁMKA: 
+• Než budete pokračovat k dalšímu kroku, ujistěte se, že jsou vaše 
+zařízení a LED projektor připojeny ke stejné síti Wi-Fi.
+• Chcete-li se připojit k jiné síti Wi-Fi, opakujte krok 3 a vyberte 
+požadovanou síť Wi-Fi na webové stránce.
+4. Spusťte aplikaci YouTube nebo Facebook a potom klepněte 
+na tlačítko Cast (Vysílat) na obrazovce videa. Ze seznamu 
+zařízení vyberte svůj LED projektor, do kterého chcete 
+streamovat.
+5. Po připojení vyberte video, které chcete sledovat, a klepněte na 
+Play (Přehrát). Váš obsah se začne přehrávat z projektoru.
+Naskenujte QR kód a podívejte se na instruktážní video:
+POZNÁMKA: Váš projektor se může mírně lišit od 
+projektoru ve videu, ale rozhraní a postup jsou stejné.
+40 LED projektor - Uživatelská příručka
+Port USB Type-A umožňuje promítat obrazovku vašeho zařízení 
+nebo streamovat z vašeho zařízení do vašeho LED projektoru. Proces 
+nastavení se může mírně lišit podle zařízení.
+Než začnete zrcadli plochu nebo streamovat média z vašeho zařízení, 
+zkontrolujte, zda je správně připojen kabel USB k LED projektoru.
+Streamování
+Z telefonu se systémem Android
+1. Připojte druhý konec kabelu USB k vašemu telefonu.
+2. Stáhněte si a nainstalujte MiraPlug do vašeho telefonu.
+3. Otevřete aplikaci MiraPlug a klepněte na Cast (Vysílat).
+Z telefonu se systémem iOS
+1. Připojte druhý konec kabelu USB k vašemu telefonu.
+2. Když se zobrazí dotaz, zda chcete povolit přístup LED projektoru 
+k vašemu telefonu, klepněte na možnost Trust (Důvěřovat).
+Používání připojení USB
+41LED projektor - Uživatelská příručka
+Položky nabídky na promítací ploše
+Na následujících stránkách jsou uvedeny podrobnosti o jednotlivých 
+položkách nabídky na promítací ploše.
+Volume (Hlasitost)
+Výběrem této položky nabídky upravíte hlasitost zvukového souboru 
+přehrávaného v LED projektoru. 
+Můžete upravovat hlasitost v rozsahu 0 až 10. Rovněž můžete 
+stisknutím a podržením nebo rychle vypnout zvuk nebo 
+nastavit maximální hlasitost.
+Vstup
+Tato položka nabídky slouží ke konfigurování zdroje vstupu pro LED 
+projektor.
+Splendid
+Tato položka nabídky slouží k aktivování různých režimů zobrazení. 
+Tuto položku nabídky lze také spustit přímo stisknutím . 
+Dostupné možnosti: Bright (Jasný), Standard (Standardní), 
+Theater (Kino) a ECO (EKO)
+Brightness (Jas)
+Výběrem této položky nabídky upravíte jas promítaného obrazu. 
+Můžete upravovat jas v rozsahu 0 až 10, od nejtmavšího po 
+nejsvětlejší.
+42 LED projektor - Uživatelská příručka
+Keystone
+Výběrem této položky upravíte sbíhavost promítací plochy.
+POZNÁMKA: Chcete-li po ručním nastavení aktivovat funkci 
+automatické korekce lichoběžníkového zkreslení, přejděte na 
+Nastavení a zapněte Automatická korekce lichoběžníkového 
+zkreslení.
+Projector Position (Projekční poloha)
+Tato položka umožňuje měnit orientaci promítaného obrazu na 
+promítací ploše na základě aktuálního umístění LED projektoru. 
+Můžete měnit orientaci promítání tak, aby odpovídala aktuálnímu 
+umístění LED projektoru: Front Table (Stolek vpředu) a Rear Table 
+(Stolek vzadu).
+Contrast (Kontrast)
+Výběrem této položky nabídky upravíte světlé a tmavé části 
+promítaného obrazu. Můžete upravovat kontrast v rozsahu 0 až 10, 
+od nejnižšího po nejvyšší možný barevný kontrast.
+43LED projektor - Uživatelská příručka
+Setup (Nastavení)
+Tyto položka nabídky umožňuje konfigurovat následující nastavení 
+LED projektoru:
+• LANGUAGE (JAZYK) - tato položka umožňuje měnit jazyky 
+nabídky na promítací ploše LED projektoru.
+• Resetovat - Tato volba slouží k obnovení výchozích nastavení 
+LED projektoru nebo sítě Wi-Fi. 
+• Automatická korekce lichoběžníkového zkreslení - Tato 
+volba umožňuje zapnout neb vypnout automatickou korekci 
+lichoběžníkového zkreslení.
+• Automatická detekce stropu - Tato volba umožňuje zapnout 
+nebo vypnout automatickou detekci stropu.
+• Automatické zapnutí - Tato volba umožňuje zapnout nebo 
+vypnout funkci automatického zapnutí napájení, když je LED 
+projektor připojen k zařízení HDMI a připojen ke zdroji napájení 
+pomocí svého napájecího adaptéru.
+• Časový limit OSD - Tato volba umožňuje nastavit počet sekund, 
+po jejich uplynutí zmizí nabídka na promítací ploše.
+• Časový limit vypnutí - tato volba umožňuje vybrat možnost 
+Automaticky (15 minut) nebo nastavit počet minut bez signálu 
+HDMI, po jejichž uplynutí se LED projektor automaticky vypne. 
+44 LED projektor - Uživatelská příručka
+Information (Informace)
+Výběrem této položky nabídky zobrazíte přehled informací o LED 
+projektoru.
+název modelu verze firmwaru 
+LED projektoru
+rozlišení obrazu 
+vstupního zařízení
+45LED projektor - Uživatelská příručka
+Vypnutí LED projektoru
+1. Stiskněte vypínač.
+2. Když se zobrazí následující obrazovka, dalším stisknutím 
+vypínače LED projektor zcela vypnete. Pokud potřebujete LED 
+projektor bezprostředně po vypnutí znovu zapnout, počkejte, 
+dokud nezhasne kontrolka napájení a kontrolka stavu baterie. 
+46 LED projektor - Uživatelská příručka
+47LED projektor - Uživatelská příručka
+Přílohy
+48 LED projektor - Uživatelská příručka
+Toto zařízení bylo testováno a bylo zjištěno, že odpovídá omezením 
+pro digitální zařízení třídy B podle části 15 předpisů Federální 
+komise pro komunikaci (FCC). Tato omezení jsou stanovena tak, aby 
+poskytovala odpovídající ochranu před škodlivým rušením v případě, 
+že je zařízení používáno v obydlené oblasti. Toto zařízení generuje, 
+používá a může vyzařovat energii rádiových frekvencí a pokud není 
+nainstalováno a používáno v souladu s návodem k obsluze, může 
+způsobovat rušivou interferenci rádiových komunikací. Přesto však 
+není zaručeno, že k rušení na určitých místech nedojde. Pokud je 
+při vypnutí a zapnutí evidentní, že zařízení způsobuje nežádoucí 
+rušení příjmu rozhlasového nebo televizního vysílání, doporučujeme 
+uživateli, aby se pokusil toto rušení odstranit některým z 
+následujících opatření:
+• Přesměrovat nebo přemístit přijímací anténu.
+• Zvětšit vzdálenost mezi daným zařízením a přijímačem.
+• Připojit dané zařízení do zásuvky na jiném obvodu, než do 
+kterého je zapojen přijímač. 
+• Obrátit se s žádostí o pomoc na prodejce nebo radio/TV 
+technika.
+Toto zařízení je v souladu s pravidly FCC, část 15. Pro provoz musí 
+splňovat tyto dvě podmínky: 
+1. Zařízení nesmí být zdrojem škodlivého rušení. 
+2. Zařízení musí být schopno akceptovat jakékoli rušení, včetně 
+takového, které může způsobit nežádoucí činnost.
+Prohlášení Federální komise pro komunikaci
+Odpovědná strana: Asus Computer International
+Adresa: 48720 Kato Rd., Fremont, CA 94538, USA
+Telefonní/faxové číslo: (510)739-3777 / (510)608-4555
+Název produktu: LED projektor
+Model: E1R
+49LED projektor - Uživatelská příručka
+Splnění globálních ekologických předpisů a 
+prohlášení 
+Společnost ASUS se řídí principy ekologického návrhu a výroby 
+produktů a zajišťuje splnění globálních ekologických předpisů ve 
+všech fázích životního cyklu produktů ASUS. Společnost ASUS kromě 
+toho také zveřejňuje relevantní informace v souladu s požadavky 
+předpisů.
+Více se o povinně zveřejňovaných informacích dozvíte na http://csr.
+asus.com/english/Compliance.htm. ASUS plní tyto požadavky:
+Prohlášení o materiálech dle japonské normy JIS-C-0950
+Evropské předpisy REACH SVHC
+Korejské předpisy RoHS
+Recyklace ASUS / Služby zpětného odběru
+ASUS provozuje program recyklace a zpětného odběru založené na 
+naší snaze maximálně chránit životní prostředí. Věříme, že má smysl 
+nabízet řešení umožňující zodpovědnou recyklaci našich produktů, 
+baterií, dalších součástí a obalových materiálů. Podrobné informace 
+o recyklaci v různých regionech najdete na 
+http://csr.asus.com/english/Takeback.htm.
+50 LED projektor - Uživatelská příručka
+Zařízení s portem 
+HDMI • Kabel HDMI na HDMI
+Zařízení s portem 
+micro HDMI • Adaptér micro HDMI na HDMI
+• Kabel HDMI na HDMI
+Zařízení iOS s 
+portem Lightning™ • Adaptér Lightning™ Digital AV
+• Kabel HDMI na HDMI
+Zařízení s portem 
+USB 3.2 Gen 2 
+Type-C® • Digitální AV adaptér USB 3.2 Gen 2 
+Type-C®
+• Kabel HDMI na HDMI
+Možnosti připojení HDMI
+51LED projektor - Uživatelská příručka
+Podporované frekvence PC
+HDMI (PC)
+Režim Rozlišení
+Obnovovací 
+frekvence 
+(Hz)
+H-frekvence (kHz) Frekvence 
+(MHz)
+VGA 640x480 60,0 31,5 25,175 
+VGA 640x480 66,9 33,2 23,900
+720x480_60 720x480 60,0 29,7 23,700
+720x576_50 720x576 50,0 29,5 23,600
+832x624_75 832x624 74,9 25,4 23,100
+XGA 1024x768 60,0 48,3 65,000 
+XGA 1024x768 75,0 60,0 78,750
+XGA 1024x768 60,0 65,0 65,000 
+720p 1280x720 60,0 45,0 74,250
+720p 1280x720 50,0 36,8 50,000
+WXGA 1280x800 60,0 49,7 83,500
+SXGA 1280x1024 60,0 64,0 108,000 
+UXGA 1600x900 60,0 55,5 93,250
+SVGA 800x600 60,0 37,9 40,000 
+WXGA+ 1440x900 60,0 55,9 106,500
+WSXGA+ 1680x1050 60,0 65,3 146,250
+1080p 1920x1080 60,0 67,5 148,500
+PowerBook G4 1024x768 60,0 48,4 65,000 
+MAC13 640x480 66,7 35,0 30,240
+MAC16 832x624 74,5 49,7 57,280
+MAC19 1024x768 75,0 60,2 80,000 
+MAC21 1152x870 75,0 68,7 100,000
+MAC21 1152x864 60,0 53,3 65,600
+52 LED projektor - Uživatelská příručka
+HDMI (Video)
+Frekvence Rozlišení V-frekvence (Hz) H-frekvence (kHz)
+Frekvence obra-
+zových bodů 
+(MHz)
+480i 720x480 
+(1440x480)16:9 59,94 (29,97) 15,7 27,000 
+576i 720x576 
+(1440x576)16:9 50 (25) 15,6 27,000 
+480p 720x480 16:9 59,9 31,5 27,000 
+576p 720x576 16:9 50,0 31,3 27,000 
+720p 1280x720 60,0 45,0 74,250 
+720p 1280x720 50,0 37,5 74,250 
+1080i 1920x1080 60 (30) 33,8 74,250 
+1080i 1920x1080 50 (25) 28,1 74,250 
+1080p 1920x1080 23,97/24 27,0 74,250 
+1080p 1920x1080 60,0 67,5 145,500 
+1080p 1920x1080 50,0 56,3 145,500 
+1080p 1920x1080 25,0 28,1 74,250 
+1080p 1920x1080 30,0 33,8 74,250 
+Omezení 
+rozsahu 
+grafického 
+zdroje 
+monitoru
+Frekvence horizontálního 
+skenování: 15 k - 75 kHz
+Frekvence vertikálního 
+skenování: 24-60Hz
+Max, frekvence pixelů: 170 
+MHz (digitální)
+53LED projektor - Uživatelská příručka
+Technické údaje pro E1R LED projektorů
+Displej Zobrazovací technologie 0,2” DLP®
+Zdroj světla R/G/B LED
+Životnost světelného 
+zdroje
+20 000 hodin
+Skutečné rozlišení 
+(nativní)
+WVGA 854 x 480
+Světelný výstup 200 LED lumenů
+Kontrastní poměr 
+(typicky)
+500:1
+Sytost barev (NTSC) 100%
+Zobrazované barvy 16,7 M
+Promítací 
+objektiv
+Poměr dosvitu 1,2:1 (37,6 palců na 1 m 
+při 16:9)
+Projekční vzdálenost 0,5 ~ 3,0 m
+Velikost promítaného 
+obrazu/promítací plochy
+19 ~ 110 palců
+Posun projekce 100%
+Poměr zvětšení Pevný
+Funkce 
+videa Obrazové režimy
+Bright (Jasný), Standard 
+(Standardní), Theater 
+(Kino), ECO (EKO)
+Korekce 
+lichoběžníkového zkre-
+slení
+Svisle ± 40°
+Automatická korek-
+ce lichoběžníkového 
+zkreslení
+Ano
+Umístění projektoru Stolek vpředu, stolek 
+vzadu
+Funkce 
+zvuku
+Zabudované 
+reproduktory
+2W reproduktor (zvuková 
+technologie ASUS 
+SonicMaster)
+(pokračování na další straně)
+54 LED projektor - Uživatelská příručka
+Kmitočet 
+signálu
+Digitální signál 
+Frekvence
+24,7 kHz (H) až 74,6 kHz (H) / 
+50 Hz (V) až 60 Hz (V)
+Napájení Zapnutý režim ≤45W
+Pohotovostní režim <0,5W
+Baterie Vnitřní baterie 2 850 mAh (5 V při 1 A)
+Výdrž baterie Až 4 hodiny
+Hlučnost Akustický šum 30 dB (Standardní režim)
+28 dB (Režim Kino)
+Vstup / 
+výstup
+Vstup PC signálu HDMI 1.4b
+Výstup zvuku Výstup pro připojení sluchátek
+Port USB 2.0 pro výstup 
+napájení
+Ano (5V/1A)
+Fyzický 
+vzhled
+Barvy skříně Stříbrná
+Závit pro připevnění 
+stativu
+Ano
+Tlačítka na přístroji Ano 
+Kryt objektivu Ne
+Rozměry Fyzické rozměry 108 mm x 84 mm x 29 mm 
+(D x Š x V)
+Hmotnost Čistá hmotnost (odhad.) 310g
+(pokračování na další straně)
+55LED projektor - Uživatelská příručka
+Provozní teplota 0o C ~ 35o C
+Provozní vlhkost 20 ~ 90% 
+Příslušenství Měkké ochranné pouzdro, taška se šňůrkou 
+na zdrhnutí, kabel HDMI, stručná příručka, 
+záruční list
+Pouze u vybraných modelů 
+Adaptér dongle, napájecí kabel, kabel USB, 
+Regulatorní certifikáty FCC / CE / CB / RCM / VCCI / IEC62471 / CEC
+POZNÁMKA: 
+• Změny technických údajů bez předchozího upozornění vyhrazeny.
+• Dostupnost produktu se může lišit podle regionu.
+• Všechny uvedené značky a názvy produktů jsou obchodní známky 
+příslušných vlastníků.
+56 LED projektor - Uživatelská příručka
+ O této příručce
+ Konvence použité v této příručce
+ Typografie
+ Vícejazyčné verze
+ Bezpečnostní zásady
+ Používání LED projektoru
+ Servis a výměna součástí
+ Přenášení LED projektoru
+ Řádná likvidace
+ Kapitola 1: Seznámení s LED projektorem
+ Vlastnosti
+ Pohled shora
+ Rozšířené vlastnosti
+ Svítilna
+ Režim SOS
+ Pohled zpředu
+ Pohled zezadu
+ Pohled zprava
+ Pohled zdola
+ Kapitola 2: 
+Instalace
+ Používání LED projektoru
+ Připojte LED projektor k napájecímu adaptéru.
+ Požadavky na síťový napájecí kabel
+ Připojte LED projektor k vašemu zařízení
+ Stiskněte vypínač
+ Úpravy zaostření
+ Režim na výšku
+ Tabulka velikostí promítací plochy a projekční vzdálenosti
+ Kapitola 3: 
+Používání LED projektoru
+ První použití LED projektoru
+ Ovládání nabídky na promítací ploše
+ Používání adaptéru Wi-Fi dongle
+(pouze u vybraných modelů)
+ Bezdrátové zrcadlení
+ Streamování
+ Používání připojení USB
+ Streamování
+ Položky nabídky na promítací ploše
+ Volume (Hlasitost)
+ Vstup
+ Splendid
+ Brightness (Jas)
+ Contrast (Kontrast)
+ Keystone
+ Projector Position (Projekční poloha)
+ Setup (Nastavení)
+ Information (Informace)
+ Vypnutí LED projektoru
+ Přílohy
+ Prohlášení Federální komise pro komunikaci
+ Splnění globálních ekologických předpisů a prohlášení 
+ Recyklace ASUS / Služby zpětného odběru
+ Možnosti připojení HDMI
+ Podporované frekvence PC
+ Technické údaje pro E1R LED projektorů

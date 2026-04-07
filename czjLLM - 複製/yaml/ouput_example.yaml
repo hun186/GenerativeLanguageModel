@@ -1,0 +1,8 @@
+mode: excel
+task: Risk Indicator Extraction
+model_spec: qwen3:32b-ctx-4k-premises-q4
+channel: excel_source
+input_excel_file: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/LLMInput.xlsx
+input_col: 內容
+output_col: 風指
+keyConsiderations: 升等法規

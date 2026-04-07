@@ -1,0 +1,1478 @@
+
+ 
+Monitor LCD řady 
+C620A/C422A/C622A/
+C423A/C623A/C424A/
+C624A/C624B/C624W/ 
+C627A
+Uživatelská příručka
+ii
+První vydání 
+Červen 2015
+Copyright © 2015 ASUSTeK COMPUTER INC. Všechna práva vyhrazena.
+Žádná část této příručky, včetně produktů a softwaru popsané v ní, nesmí být reprodukována, přenášena, 
+přepisována, ukládána do systému pro opětovné zpřístupnění nebo překládána do jakéhokoli jazyka 
+v jakékoli formě nebo jakýmkoli způsobem, kromě dokumentace uchovávané zákazníkem pro účely 
+zálohování, bez výslovného předchozího písemného souhlasu společnosti ASUSTeK COMPUTER INC. 
+(„ASUS“).
+Záruka nebo servis produktu nebudou uplatněny, pokud: (1) došlo k opravě, úpravě nebo pozměnění 
+produktu, pokud takovou opravu, úpravu nebo pozměnění písemně neschválí společnost ASUS; nebo (2) 
+dojde k odstranění sériového čísla produktu nebo toto číslo chybí.
+SPOLEČNOST ASUS POSKYTUJE TUTO PŘÍRUČKU „TAK, JAK JE“ BEZ DALŠÍCH ZÁRUK 
+A PODMÍNEK, VÝSLOVNÝCH ČI PŘEDPOKLÁDANÝCH, VČETNĚ ALE BEZ OMEZENÍ 
+PŘEDPOKLÁDANÝCH ZÁRUK NEBO PODMÍNEK OBCHODOVATELNOSTI NEBO VHODNOSTI 
+PRO URČITÝ ÚČEL. ZA ŽÁDNÝCH OKOLNOSTÍ SPOLEČNOST ASUS, JEJÍ ŘEDITELÉ, ZÁSTUPCI, 
+ZAMĚSTNANCI NEBO JEDNATELÉ NEPONESOU ODPOVĚDNOST ZA NEPŘÍMÉ, ZVLÁŠTNÍ, 
+NÁHODNÉ NEBO NÁSLEDNÉ ŠKODY (VČETNĚ ŠKOD ZPŮSOBENÝCH ZTRÁTOU ZISKU, 
+OBCHODNÍCH ZTRÁT, ZTRÁTOU POUŽÍVÁNÍ NEBO DAT, PŘERUŠENÍM OBCHODNÍ ČINNOSTI 
+ATD.), BYLA SPOLEČNOST ASUS UPOZORNĚNA NA MOŽNOST TAKOVÝCH ŠKOD VYPLÝVAJÍCÍCH 
+ZE ZÁVADY NEBO CHYBY V TÉTO PŘÍRUČCE ČI PRODUKTU.
+SPECIFIKACE A INFORMACE OBSAŽENÉ V TÉTO PŘÍRUČCE JSOU URČENY POUZE PRO 
+INFORMACI A KDYKOLI BEZ OHLÁŠENÍ PODLÉHAJÍ ZMĚNĚ A NELZE JE VYKLÁDAT JAKO ZÁVAZEK 
+ZE STRANY SPOLEČNOSTI ASUS. SPOLEČNOST ASUS NEPŘIJÍMÁ ŽÁDNOU ODPOVĚDNOST ZA 
+JAKÉKOLI CHYBY NEBO NEPŘESNOSTI, KTERÉ SE MOHOU V TÉTO PŘÍRUČCE OBJEVIT, VČETNĚ 
+PRODUKTŮ A SOFTWARU ZDE POPSANÝCH.
+Názvy produktů a firem uvedených v této příručce mohou, ale nemusí být registrované ochranné 
+známky nebo autorská práva příslušných firem a používají se pouze pro identifikaci nebo vysvětlení a ku 
+prospěchu vlastníků bez záměru tato práva narušit.
+iii
+Obsah
+Obsah ......................................................................................................... iii
+Poznámky .................................................................................................... iv
+Bezpečnostní informace ........................................................................... vii
+Péče a údržba ............................................................................................ viii
+Takeback Services ...................................................................................... ix
+Kapitola 1: Úvod k výrobku
+1.1 Vítejte! ......................................................................................... 1-1
+1.2 Obsah balení ................................................................................. 1-1
+1.3 Úvod k monitoru ........................................................................... 1-2
+1.3.1 Čelní pohled .................................................................... 1-2
+1.3.2 Zadní pohled ................................................................... 1-4
+1.3.3 Funkce QuickFit .............................................................. 1-5
+Kapitola 2: Nastavování
+2.1 Montáž ramene/podstavce monitoru .......................................... 2-1
+2.2 Sejmutí ramene/podstavce (pro montáž na zeď VESA) ........... 2-1
+2.3 Připevnění/demontáž sady MiniPC 
+ (C620A/C622A/C623A/C624A/C624B/C624W/C627A) ................ 2-3
+2.4 Nastavení monitoru ...................................................................... 2-4
+2.5 Připojení kabelů ........................................................................... 2-5
+2.6 Zapínání monitoru ........................................................................ 2-6
+Kapitola 3: Obecné pokyny
+3.1 Nabídka OSD (On-Screen Display) ............................................ 3-1
+3.1.1 Změna konfigurace ......................................................... 3-1
+3.1.2 Úvod k funkci OSD .......................................................... 3-2
+3.2 Přehled technických parametrů ................................................ 3-10
+3.3 Odstraňování potíží (Časté otázky) .......................................... 3-17
+3.4 Podporované operační režimy .................................................. 3-18
+iv
+Poznámky
+Vyjádření Federální komise pro komunikace (FCC)
+Toto zařízení splňuje podmínky části 15 směrnic FCC. Provoz podléhá 
+následujícím dvěma podmínkám:
+• Zařízení nesmí způsobovat škodlivé rušení a
+• Zařízení musí přijmout jakékoli přijaté rušení, včetně rušení, které může 
+způsobit nežádoucí provoz.
+Toto zařízení bylo testováno a vyhovuje omezením digitálních zařízení 
+třídy B na základě části 15 směrnic FCC. Tyto mezní hodnoty jsou 
+určeny, aby zajišťovaly rozumnou ochranu před nežádoucím rušením 
+v bytové instalaci. Toto zařízení generuje, využívá a může vyzařovat 
+vysokofrekvenční energii a pokud není instalováno a používáno v souladu 
+s pokyny výrobce, může být zdrojem škodlivého rušení rádiových 
+komunikací. Není však zaručeno, že v určitých instalacích se rušení 
+neobjeví. Pokud toto zařízení způsobí nežádoucí rušení rádiového nebo 
+televizního příjmu, které lze zjistit zapnutím a vypnutím zařízení, uživatel 
+může zkusit opravit rušení použitím jednoho nebo několika z následujících 
+opatření:
+• Změňte orientaci nebo umístění antény pro příjem signálu.
+• Zvětšete vzdálenost mezi zařízením a přijímačem.
+• Připojte zařízení do jiného zásuvkového okruhu, než ke kterému je připojen 
+přijímač.
+• Požádejte o pomoc obchodního zástupce nebo zkušeného technika pro 
+rádiové/televizní přijímače.
+Pro zajištění shody s předpisy FCC je nutné používání stíněných kabelů pro 
+připojení monitoru ke grafické kartě. Změny nebo úpravy, které nejsou výslovně 
+schváleny subjektem odpovědným za to, že přístroj odpovídá výše uvedeným 
+podmínkám provozu, by mohly mít za následek, že uživatel nebude smět 
+zařízení provozovat.
+produkt vyhovující ENERGY STAR
+ENERGY STAR je společný program americké agentury pro 
+ochranu životního prostředí a amerického ministerstva energetiky, 
+který nám všem pomáhá šetřit peníze a chránit životní prostředí 
+prostřednictvím energeticky účinných produktů a postupů.
+v
+Všechny produkty ASUS s logem ENERGY STAR odpovídají standardu 
+ENERGY STAR a funkce správy napájení je ve výchozím nastavení povolena. 
+Monitor a počítač jsou automaticky nastaveny do režimu spánku po 10 a 30 
+minutách nečinnosti uživatele. Počítač probudíte kliknutím myši nebo stisknutím 
+libovolné klávesy na klávesnici. Jděte laskavě na stránky http://www.energystar.
+gov/powermanagement, kde najdete podrobné informace řízení spotřeby a 
+jeho přínosech pro životní prostředí. Kromě toho jděte na stránky http://www.
+energystar.gov, kde najdete podrobné informace o společném programu ENERGY 
+STAR joint program.
+POZNÁMKA: Program Energy Star není podporován programem FreeDOS a 
+operačními systémy na bázi Linux.
+Vyjádření kanadského ministerstva komunikací
+Toto digitální zařízení nepřekračuje limity třídy B pro vyzařování 
+rádiového rušení z digitálního zařízení stanovené nařízeními kanadského 
+ministerstva komunikací o rádiovém rušení.
+Toto digitální zařízení třídy B odpovídá kanadské normě ICES-003.
+This Class B digital apparatus meets all requirements of the Canadian 
+Interference - Causing Equipment Regulations.
+Cet appareil numérique de la classe B respecte toutes les exigences du 
+Réglement sur le matériel brouiller du Canada.
+vi
+A third-party certification according to ISO 14024
+Say hello
+to a more sustainable product
+IT products are associated with a wide range of sustainability risks 
+throughout their life cycle. Human rights violations are common in the 
+factories. Harmful substances are used both in products and their 
+manufacture. Products can often have a short lifespan because of poor 
+ergonomics, low quality and when they are not able to be repaired or 
+upgraded. 
+This product is a better choice. It meets all the criteria in TCO Certified, 
+the world’s most comprehensive sustainability certification for IT 
+products. Thank you for making a responsible product choice, that help 
+drive progress towards a more sustainable future!
+Criteria in TCO Certified have a life-cycle perspective and balance 
+environmental and social responsibility. Conformity is verified by 
+independent and approved verifiers that specialize in IT products, social 
+responsibility or other sustainability issues. Verification is done both 
+before and after the certificate is issued, covering the entire validity 
+period. The process also includes ensuring that corrective actions are 
+implemented in all cases of factory non-conformities. And last but not 
+least, to make sure that the certification and independent verification is 
+accurate, both TCO Certified and the verifiers are reviewed regularly.
+Want to know more?
+Read information about TCO Certified, full criteria documents, news and 
+updates at tcocertified.com. On the website you’ll also find our Product 
+Finder, which presents a complete, searchable listing of certified 
+products. 
+Toward sustainable IT products
+vii
+Bezpečnostní informace
+• Před instalací monitoru si pečlivě přečtěte veškerou dokumentaci dodanou v 
+balení. 
+• Monitor nikdy nevystavuje dešti ani vlhkosti, abyste předešli nebezpečí požáru 
+nebo úrazu elektrickým proudem.
+• Nikdy se nepokoušejte otevřít skříň monitoru. Nebezpečná vysoká napětí uvnitř 
+monitoru mohou způsobit vážné poranění. 
+• Pokud se rozbije napájení, nepokoušejte se to opravit sami. Obraťte se na 
+kvalifikovaného servisního technika nebo na váš maloobchod. 
+• Před používáním produktu se ujistěte, že všechny kabely jsou správně 
+připojené a že napájecí kabely nejsou poškozené. Pokud zjistíte nějakou 
+škodu, okamžitě se obraťte na prodejce. 
+• Výřezy a otvory na zadní a horní straně skříňky jsou určeny pro odvětrávání. 
+Tyto otvory neblokujte. Produkt nikdy neumísťujte do blízkosti radiátoru nebo 
+zdroje tepla ani na radiátor nebo zdroj tepla, pokud není zajištěno řádné 
+odvětrávání. 
+• Monitor by měl být napájen pouze z odpovídajícího typu napájecího zdroje 
+uvedeného na štítku. Pokud si nejste jisti, jaké napájení máte doma, obraťte se 
+prosím na svého prodejce nebo na místní elektrorozvodné závody. 
+• Používejte správnou zástrčku, která odpovídá místní normě napájení. 
+• Nepřetěžujte mnohonásobné zásuvky a prodlužovací kabely. Přetížení může 
+vést k požáru nebo úrazu elektrickým proudem.
+• Vyhýbejte se prachu a extrémním teplotám. Nedávejte monitor na místo, kde 
+by se mohl namočit. Umístěte monitor na stabilní povrch. 
+• Odpojte zařízení při bouřce nebo pokud je nebudete delší dobu používat. Tak 
+monitor ochráníte před poškozením v důsledku nárazových proudů. 
+• Do otvorů ve skříni monitoru nikdy nezasunujte žádné předměty a zabraňte 
+jejich polití kapalinami.
+• K zajištění uspokojivé funkce používejte monitor s počítači uvedenými v UL, 
+které mají řádně konfigurované konektory s vyznačením 100-240 V AC.
+• Pokud se u monitoru vyskytnou technické problémy, obraťte se na 
+kvalifikovaného servisního technika nebo svého prodejce. 
+• Změna ovládání hlasitosti a také ekvalizéru na jiné nastavení, než je středová 
+pozice, může zvýšit výstupní napětí sluchátek a potažmo úroveň tlaku zvuku.
+Tento symbol přeškrtnuté popelnice s kolečky označuje výrobek (elektrická 
+a elektronická zařízení a knoflíkové baterie obsahující rtuť), který se nesmí 
+vhazovat do komunálního odpadu. Informace o likvidaci elektronických výrobků 
+hledejte v místních předpisech.
+A third-party certification according to ISO 14024
+Say hello
+to a more sustainable product
+IT products are associated with a wide range of sustainability risks 
+throughout their life cycle. Human rights violations are common in the 
+factories. Harmful substances are used both in products and their 
+manufacture. Products can often have a short lifespan because of poor 
+ergonomics, low quality and when they are not able to be repaired or 
+upgraded. 
+This product is a better choice. It meets all the criteria in TCO Certified, 
+the world’s most comprehensive sustainability certification for IT 
+products. Thank you for making a responsible product choice, that help 
+drive progress towards a more sustainable future!
+Criteria in TCO Certified have a life-cycle perspective and balance 
+environmental and social responsibility. Conformity is verified by 
+independent and approved verifiers that specialize in IT products, social 
+responsibility or other sustainability issues. Verification is done both 
+before and after the certificate is issued, covering the entire validity 
+period. The process also includes ensuring that corrective actions are 
+implemented in all cases of factory non-conformities. And last but not 
+least, to make sure that the certification and independent verification is 
+accurate, both TCO Certified and the verifiers are reviewed regularly.
+Want to know more?
+Read information about TCO Certified, full criteria documents, news and 
+updates at tcocertified.com. On the website you’ll also find our Product 
+Finder, which presents a complete, searchable listing of certified 
+products. 
+Toward sustainable IT products
+viii
+Péče a údržba
+• Před zvedáním nebo přemísťováním monitoru raději odpojte kabely a napájecí 
+kabel. Při usazování monitoru používejte správný způsob zvedání. Při zvedání 
+nebo přenášení uchopte monitor za jeho okraje. Displej nezvedejte za 
+podstavec nebo kabel. 
+• Čištění. Vypněte monitor a odpojte napájecí kabel. Povrch monitoru čistěte 
+měkkým hadříkem, který nepouští vlas. Těžko odstranitelné skvrny lze odstranit 
+hadříkem navlhčeným v jemném čisticím prostředku. 
+• Nepoužívejte čisticí prostředky obsahující alkohol nebo aceton. Používejte 
+čisticí prostředek určený k čištění monitoru. Čisticí prostředek nikdy nestříkejte 
+přímo na obrazovku, protože může proniknout dovnitř a způsobit úraz 
+elektrickým proudem. 
+Následující příznaky jsou u monitoru běžné:
+• V závilosti na používaném vzorku na ploše se můžete setkat s trochu 
+nerovnoměrným jasem obrazovky. 
+• Pokud se po dobu řady hodin zobrazuje stejný obrázek, může na obrazovce 
+zůstat po přechodu na jiný obrázek přetrvávající vjem. Obrazovka se pomalu 
+obnoví nebo můžete na několik hodin vypnout vypínač napájení. 
+• Když obrazovka zčerná nebo bliká nebo už vůbec nefunguje, požádejte 
+prodejte nebo servisní středisko o opravu. Obrazovku neopravujte sami! 
+Konvence používané v tomto průvodci
+VAROVÁNÍ: Informace, které mají zabránit vašemu zranění, když se 
+snažíte provést úlohu. 
+UPOZORNĚNÍ: Informace, které mají zabránit poškození komponent, 
+když se snažíte provést úlohu. 
+DŮLEŽITÉ: Informace, které MUSÍTE dodržovat při provádění úlohy.
+POZNÁMKA: Tipy a další informace, které pomohou při provádění 
+úlohy.
+ix
+Kde najdete další informace
+Další informace a aktualizace týkající se produktu a software najdete v těchto 
+zdrojích.
+1. Internetové stránky ASUS
+Internetové stránky ASUS po celém světě poskytují aktualizované informace 
+o produktech v oblasti hardware a software značky ASUS. Podívejte se na 
+http://www.asus.com
+2. Další dokumentace
+Balení vašeho produktu může obsahovat další dokumentaci, kterou tam mohl 
+přidat váš prodejce. Tyto dokumenty nejsou součástí standardního balení.
+Takeback Services
+ASUS recycling and takeback programs come from our commitment to the highest 
+standards for protecting our environment. We believe in providing solutions for 
+our customers to be able to responsibly recycle our products, batteries and other 
+components as well as the packaging materials. 
+Please go to http://csr.asus.com/english/Takeback.htm for detail recycling 
+information in different region.
+x
+1-1Monitor LCD ASUS řady C 
+1.1 Vítejte! 
+Děkujeme za zakoupení monitoru LCD ASUS®!
+Nejnovější monitor LCD v širokoúhlém formátu od společnosti ASUS nabízí širší, 
+jasnější a křišťálově čistý displej a řadu funkcí, které umocňují váš zážitek z 
+prohlížení. 
+Díky těmto funkcím si můžete užívat komfort a mít skvělý vizuální zážitek, který 
+monitor přináší!
+1.2 Obsah balení
+Zkontrolujte, zda balení obsahuje následující položky:
+ Monitor LCD
+ Podstavec monitoru
+ Průvodce pro rychlé uvedení do provozu
+ Záruční list
+ Napájecí kabel
+ Kabel DVI (u vybraných modelů)
+ Kabel HDMI (u vybraných modelů)
+ Kabel DisplayPort (u vybraných modelů)
+ Kabel DisplayPort (Mini-DP – DP) (u vybraných modelů)
+ Kabel VGA (u vybraných modelů)
+ Kabel USB (u vybraných modelů)
+ Zvukový kabel (u vybraných modelů)
+ Sada MiniPC (u vybraných modelů)
+V případě, že je některá z výše uvedených položek poškozena nebo chybí, 
+obraťte se ihned na prodejce.
+1-2 Kapitola 1: Úvod k výrobku
+1.3 Úvod k monitoru
+1.3.1 Čelní pohled
+C422A/C423A/C424A 
+Menu
+Close
+Quick Fit
+Brightness
+Blue Light Filter
+Menu
+Close
+Quick Fit
+Brightness
+Blue Light Filter
+C620A/C622A/C623A/C624A/C624B/
+C624W/C627A
+7
+123456
+1. Tlačítko a indikátor napájení
+• Slouží k zapnutí a vypnutí monitoru.
+• Definici barvy indikátoru napájení ukazuje tabulka dole.
+Stav Popis
+Bílá Zapnuto
+Oranžový Pohotovostní režim
+Vypnuto Vypnuto
+2. Tlačítko menu:
+• Pro zobrazení menu OSD stiskněte toto tlačítko, když je OSD vypnuto.
+• Vstup do nabídky OSD.
+• Přepíná funkci zámku kláves mezi zapnout a vypnout dlouhým stisknutím 
+po dobu 5 sekund.
+3. Tlačítko zavřít: 
+• Pro zobrazení menu OSD stiskněte toto tlačítko, když je OSD vypnuto.
+• Ukončení nabídky OSD. 
+4. Tlačítko QuickFit:
+• Pro zobrazení menu OSD stiskněte toto tlačítko, když je OSD vypnuto.
+• Je to klávesová zkratka k aktivaci funkce QuickFit určené k provádění 
+úprav.
+• Funkce QuickFit obsahuje stránky běžných mřížek, formátů papíru a 
+velikostí fotografií. (Viz 1.3.3 Funkce QuickFit). 
+1-3Monitor LCD ASUS řady C 
+5. Zástupce 
+• Pro zobrazení menu OSD stiskněte toto tlačítko, když je OSD vypnuto.
+• Výchozí: Klávesová zkratka Jasu
+• Pro změnu funkce klávesové zkratky přejděte na nabídku Zástupce > 
+Zástupce 1.
+6. Zástupce 
+• Pro zobrazení menu OSD stiskněte toto tlačítko, když je OSD vypnuto.
+• Výchozí: Klávesová zkratka filtru modrého světla
+• Pro změnu funkce klávesové zkratky přejděte na nabídku Zástupce > 
+Zástupce 2.
+7. Snímač osob (pouze u modelu C623AQR):
+• Detekuje přítomnost uživatele před obrazovkou. Pokud před monitorem 
+není déle než 60 sekund detekován žádný pohybující se předmět, 
+přejde monitor automaticky do pohotovostního režimu. Když se uživatel 
+vrátí, napájení se automaticky znovu zapne napájení při detekování 
+přítomnosti uživatele. Výchozí nastavení snímače osob je „VYPNUTO“. 
+Uživatel může tuto funkci aktivovat nastaveními OSD.
+1-4 Kapitola 1: Úvod k výrobku
+1.3.2 Zadní pohled
+C422AQ/C423AQ/
+C424AQ
+C422AQE/C423AQE/
+C424AQE
+C620AQE/C622AQE/
+C623AQE/C624AQE
+1 2 3 4 5 6 7 8
+10
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8
+C422AQH
+10
+1 2 3 4 57 8 11 6 9
+C422AQHE
+1 2 3 4 57 8 11 6
+C620AQ/C622AQ/
+C623AQ/C623AQR/
+C624AQ/C624BQ
+10
+1 2 3 4 5 6 7 8 9
+C627AQ
+10
+1 2 3 45 7 8 911 1012
+C624WQ
+10
+1 2 3 47 8 11 6 9 10
+C622AQH/C623AQH/
+C624AQH/C624BQH
+10
+1 2 3 4 57 8 11 6 9
+1. Drážka pro zámek Kensington.
+2. Vypínač napájení. Stisknutím tohoto vypínače zapnete/vypnete napájení.
+3. Port AC-IN. Tento port slouží k připojení napájecího kabelu.
+1-5Monitor LCD ASUS řady C 
+4. Vstup DisplayPort. Tento port slouží k propojení se zařízením kompatibilním 
+s DisplayPort. 
+5. Port DVI. Tento 24-pinový port slouží k připojení PC (osobní počítač) 
+digitálního signálu DVI-D.
+6. Port VGA. Tento 15-pinový port slouží k připojení PC VGA.
+7. Port vstupu audio. Tento port připojuje PC zdroj audio pomocí dodávaného 
+zvukového kabelu.
+8. Konektor pro sluchátka. Tento port je dostupný pouze v případě, že je 
+zapojen kabel HDMI/DisplayPort.
+9. Výstupní port USB. Tento port slouží k propojení s kabelem USB pro 
+příchozí signál. Připojením se zapínají porty USB na monitoru.
+10. Vstupní porty USB. Tyto porty slouží k propojení se zařízením USB, jako 
+jsou klávesnice/myši USB, jednotky USB flash atd.
+11. Port HDMI. Tento port slouží k propojení se zařízením kompatibilním s HDMI.
+12. Vstup Mini DisplayPort. Tento port slouží k propojení se zařízením 
+kompatibilním s Mini DisplayPort.
+1.3.3 Funkce QuickFit
+Funkce QuickFit obsahuje tři druhy vzorků: (1) Mřížky (2) Formát papíru (3) Velikost 
+fotografie. Pro aktivaci těchto vzorků stiskněte tlačítko QuickFit. Požadovaný vzor 
+zvolte stisknutím tlačítek tak, jak je uvedeno na obrazovce.
+Některé z následujících vzorů nemusí být k dispozici. Podívejte se na aktuální 
+vzory uvedené na vašem monitoru.
+1. Mřížky
+Mřížky uživateli usnadňují účinné uspořádání a porovnávání různých obsahů, 
+například prohlížení tabulek a editaci fotografií.
+Zarovnávací mřížka 1 Zarovnávací mřížka 2
+Alignment Grid 1 Alignment Grid 2
+1-6 Kapitola 1: Úvod k výrobku
+2. Formát papíru
+QuickFit nabízí několik běžně používaných standardních formátů papíru, aby si 
+uživatelé mohli své dokumenty prohlížet na obrazovce ve skutečné velikosti.
+A4 B5
+A4 B5
+Letter
+Letter
+3. Velikost fotografie
+Různé skutečné velikosti fotografií zobrazované ve funkci QuickFit umožňují 
+fotografům a dalším uživatelům přesné zobrazení a úpravu fotografií ve skutečné 
+velikosti na obrazovce.
+Foto 4x6, 3x5, 2x2 Foto 8x10, 5x7
+3x5 2x24x6 5x78x10
+2-1Monitor LCD ASUS řady C
+2.1 Montáž ramene/podstavce monitoru
+Montáž podstavce monitoru:
+1. Položte monitor na stůl přední stranou dolů.
+2. Připevněte podstavec k rameni a ujistěte se, že kolík v rameni zapadne do 
+otvoru v podstavci.
+3. Připevněte podstavec k rameni pomocí dodaného šroubu.
+Doporučujeme přikrýt povrch stolu měkkou látkou, abyste zabránili poškození 
+monitoru.
+C422A/C423A/C424A
+C620A/C622A/C623A/C624A/C624B/C624W/C627A
+2.2 Sejmutí ramene/podstavce 
+ (pro montáž na zeď VESA)
+Odnímatelné rameno/podstavec tohoto monitoru je speciálně navrženo pro montáž 
+na zeď VESA.
+Pro sejmutí ramene/podstavce:
+2-2 Kapitola 2: Nastavování
+C422A/C423A/C424A
+1. Položte monitor na stůl přední stranou dolů.
+2. Vyjměte gumičky ve čtyřech otvorech pro šrouby. (Obrázek 1)
+3. Sejměte podstavec (Obrázek 2).
+4. Pomocí šroubováku odšroubujte šroub na závěsu (Obrázek 3), potom 
+demontujte závěs.
+1
+2
+(Obrázek 1) (Obrázek 2)
+1
+2
+(Obrázek 3)
+C620A/C622A/C623A/C624A/C624B/C624W/C627A
+1. Položte monitor na stůl přední stranou dolů.
+2. Stiskněte tlačítko pro uvolnění a potom oddělte rameno/podstavec od 
+monitoru (Obrázek 2).
+2
+1
+(Obrázek 1) (Obrázek 2)
+2-3Monitor LCD ASUS řady C
+Doporučujeme přikrýt povrch stolu měkkou látkou, abyste zabránili poškození 
+monitoru.
+• Montážní sada na zeď VESA (100 x 100 mm) se prodává samostatně.
+• Používejte pouze držák pro montáž na stěnu uvedený v UL s minimální 
+hmotností 22,7 kg (velikost šroubů: M4 x 10 mm).
+2.3 Připevnění/demontáž sady MiniPC 
+ (C620A/C622A/C623A/C624A/ 
+ C624B/C624W/C627A)
+Připevnění sady MiniPC
+2
+1
+Demontáž sady MiniPC
+2
+1
+2-4 Kapitola 2: Nastavování
+2.4 Nastavení monitoru
+• Pro optimální komfort při sledování doporučujeme dívat se na celou plochu 
+monitoru a potom upravit úhel tak, jak je to pro vás nejpohodlnější.
+• Při změně úhlu přidržte podstavec, abyste zabránili pádu monitoru.
+• C422A/C423A/C424A: Doporučený úhel nastavení je +20˚ až -5˚.
+• C620A/C622A/C623A/C624A/C624B/C624W: Úhel monitoru můžete nastavit 
+od +35˚ do -5˚ a to vám umožní náklon o 90˚ zleva nebo zprava. Také můžete 
+nastavit výšku monitoru v rozmezí +/- 130 mm.
+• C627A: Úhel monitoru můžete nastavit od +35˚ do -5˚ a to vám umožní náklon 
+o 90˚ zleva nebo zprava. Také můžete nastavit výšku monitoru v rozmezí 
++/- 150 mm.
+90° 
+0° 
+90° 
+Řady C4
+-5° ~ +20°
+Řady C6
+-5° ~ +35°
+Řady C6
+-90° ~ +90°
+Řady C6
+150mm
+130mm
+(pouze u modelu 
+C627A)
+ 
+Otočení monitoru (C620A/C622A/C623A/C624A/C624B/C624W/C627A)
+1. Vysuňte monitor do nejvyšší polohy.
+2. Nakloňte monitor v maximálním úhlu.
+3. Otočte monitor doprava/doleva v požadovaném úhlu.
+(Naklonění)
+(Otočení) (Nastavení výšky)
+(Naklonění)
+2-5Monitor LCD ASUS řady C
+Je běžné, že se monitor při nastavování úhlu pohledu nepatrně třese.
+2.5 Připojení kabelů
+Připojte kabely podle následujících pokynů:
+• Připojení napájecího kabelu: Jeden konec napájecího kabelu zapojte 
+bezpečně do konektoru vstupu napájení, druhý konec do elektrické zásuvky. 
+• Připojení kabelu VGA/DVI/DisplayPort/HDMI/Mini DisplayPort: 
+a. Jeden konec kabelu VGA/DVI/DisplayPort/HDMI/Mini DisplayPort 
+zapojte do konektoru VGA/DVI/DisplayPort/HDMI/Mini DisplayPort na 
+monitoru.
+b. Druhý konec kabelu VGA/DVI/DisplayPort/HDMI/Mini DisplayPort 
+zapojte do konektoru VGA/DVI/DisplayPort/HDMI/Mini DisplayPort v 
+počítači.
+c. Konektor VGA/DVI zajistěte utažením dvou šroubů.
+2-6 Kapitola 2: Nastavování
+• Připojení zvukového kabelu: Jeden konec zvukového kabelu zapojte do 
+vstupního portu Audio na monitoru, druhý konec zapojte do výstupního portu 
+Audio na počítači.
+• Používání sluchátek: Konec se zástrčkou zapojte do konektoru pro sluchátka 
+na monitoru, když je přenášen signál HDMI nebo DisplayPort.
+• Používání portů USB 2.0: Vezměte dodaný kabel USB 2.0 a zasuňte menší 
+konec (typ B) výstupního kabelu USB do výstupního portu USB monitoru, 
+a větší konec (typ A) do portu USB 2.0 ve svém počítači. Ujistěte se, že na 
+počítači máte nainstalován aktuální operační systém Windows 7/Windows 8. 
+Díky tomu bude moci port USB na monitoru pracovat.
+• Používání portů USB 3.0: Vezměte dodaný kabel USB 3.0 a zasuňte menší 
+konec (typ B) výstupního kabelu USB do výstupního portu USB monitoru, 
+a větší konec (typ A) do portu USB 3.0 ve svém počítači. Ujistěte se, že na 
+počítači máte nainstalován aktuální operační systém Windows 7/Windows 8.1/
+Windows 10. Díky tomu bude moci port USB na monitoru pracovat.
+Po připojení těchto kabelů si můžete zvolit požadovaný signál z 
+položky Výběru vstupu v nabídce OSD.
+2.6 Zapínání monitoru
+Stiskněte tlačítko napájení . Umístění tlačítka napájení viz strana 1–2. Indikátor 
+napájení se rozsvítí bíle, což znamená, že je monitor ZAPNUT.
+3-1Monitor LCD ASUS řady C 
+3.1 Nabídka OSD (On-Screen Display) 
+3.1.1 Změna konfigurace
+Režim Kraj ina
+Standardní režim
+Režim Divadlo
+Režim Noční záběr 
+Režim sRGB 
+Režim Čtení
+Režim Tmavá Místnost
+Splendid
+ASUS C622A
+Standardní režim VGA 1920 x 1080 @ 60Hz
+1. Stisknutím jakéhokoli tlačítka (kromě tlačítka napájení) zobrazíte nabídku 
+OSD.
+2. Pro otevření nabídky OSD stiskněte tlačítko Menu.
+3. Pro procházení funkcemi stiskněte tlačítka, jak je uvedeno na obrazovce. 
+Zvýrazněte požadovanou funkci a stiskněte pro její aktivaci. Pokud 
+má vybraná funkce podnabídku, znovu stiskněte a pro procházení 
+funkcemi podnabídky. Zvýrazněte požadovanou funkci podnabídky a 
+stiskněte pro její aktivaci. 
+4. Pro změnu nastavení vybrané funkce stiskněte a .
+5. Pro ukončení a uložení nabídky OSD opakovaně stiskněte nebo , dokud 
+nabídka OSD nezmizí. Pro úpravu dalších funkcí opakujte kroky 1–4.
+3-2 Kapitola 3: Nabídka OSD (On-Screen Display) 
+3.1.2 Úvod k funkci OSD
+1. Splendid
+Tato funkce obsahuje 7~8 podfunkcí, které můžete zvolit podle preference. U 
+každého režimu je volba Obnovit, což umožňuje zachovat nastavení nebo se 
+vrátit do výchozího režimu.
+Režim Kraj ina
+Standardní režim
+Režim Divadlo
+Režim Noční záběr 
+Režim sRGB 
+Režim Čtení
+Režim Tmavá Místnost
+Splendid
+ASUS C622A
+Standardní režim VGA 1920 x 1080 @ 60Hz
+Režim Kraj ina
+Standardní režim
+Režim Divadlo
+Režim Hra 
+Režim Noční záběr 
+Režim sRGB 
+Režim Čtení
+Režim Tmavá Místnost
+Splendid
+ASUS C627A
+Standardní režim DisplayPort 2560 x 1440 @ 60Hz
+• Režim Krajina: Nejlepší volba pro zobrazení fotografií krajiny se 
+SplendidPlus Video Enhancement.
+• Standardní režim: Nejlepší volba pro úpravu dokumentu se SplendidPlus 
+Video Enhancement.
+Standardní režim odpovídá požadavkům Energy Star®.
+• Režim Divadlo: Nejlepší volba pro filmy se SplendidPlus Video 
+Enhancement.
+• Režim Hra (pouze pro C624W/C627A): Nejlepší volba pro hraní her 
+SplendidPlus Video Enhancement.
+3-3Monitor LCD ASUS řady C 
+• Režim Noční záběr: Nejlepší volba pro hry nebo filmy s temnými 
+scénami se SplendidPlus Video Enhancement.
+• Režim sRGB: Nejlepší volba pro prohlížení fotografií a grafiky z počítače.
+• Režim Čtení: Toto je nejlepší volba pro čtení knih.
+• Režim Tmavá Místnost: Toto je nejlepší volba pro prostředí se slabým 
+okolním světlem.
+• Ve Standardním režimu nelze následující funkce uživatelsky konfigurovat: 
+Sytost, Pleťový tón s, Ostrost, ASCR.
+• Ve režimu sRGB nelze následující funkce uživatelsky konfigurovat: Jas, 
+Kontrast, Sytost, Teplota barev, Pleťový tón s, Ostrost, ASCR.
+• Ve Režimu Čtení nelze následující funkce uživatelsky konfigurovat: 
+Kontrast, Sytost, Teplota barev, Pleťový tón s, Ostrost, ASCR.
+2. Filtr Modrého Světla
+V této funkci můžeme upravovat úroveň filtru modrého světla.
+Úroveň 0
+Úroveň 1
+Úroveň 2
+Úroveň 3
+Úroveň 4
+Filtr Modrého Světla
+ASUS C622A
+Standardní režim VGA 1920 x 1080 @ 60Hz
+• Úroveň 0: Beze změny.
+• Úroveň 1~4: Čím vyšší úroveň, tím méně modrého světla je rozptýleno. 
+Při aktivaci Filtru Modrého Světla se automaticky naimportuje výchozí 
+nastavení Standardního režimu. Mezi Úrovní 1 a Úrovní 3 lze funkci 
+Jas uživatelsky konfigurovat. Úroveň 4 je optimalizované nastavení. Je 
+v souladu s certifikací TÜV pro slabé modré světlo. Funkci Jas nelze 
+uživatelsky konfigurovat.
+Pro snížení únavy očí viz následující:
+• Pokud uživatelé pracují u zobrazovacího zařízení dlouhou dobu, měli 
+by si dát pauzu. Doporučujeme dělat krátké přestávky (nejméně 5 
+minut) přibližně po 1 hodině nepřetržité práce u počítače. Krátké a časté 
+přestávky jsou efektivnější než jedna dlouhá pauza.
+3-4 Kapitola 3: Nabídka OSD (On-Screen Display) 
+• Pro minimalizování únavy očí a pocitu suchých očí by uživatelé měli 
+pravidelně nechat oči odpočinout tak, že se zaměří na vzdálené předměty.
+• Ke snížení únavy očí mohou přispět cviky na oči. Cviky často opakujte. 
+Pokud únava očí přetrvává, obraťte se na lékaře. Cviky na oči: (1) 
+Opakovaně se dívejte nahoru a dolů (2) Pomalu očima koulejte (3) 
+Pohybujte očima úhlopříčně.
+• Vysoce energetické modré světlo může vést k únavě očí a AMD (muskulární 
+degradace související s věkem). Filtr modrého světla sníží 70% (max.) 
+škodlivého modrého světla pro zamezení CVS (syndrom počítačového 
+vidění).
+3. Barva 
+V této nabídce nastavíte požadované nastavení barev. 
+Jas 
+Kontrast 
+Sytost 
+Teplota barev
+Pleťový tón s
+Barva
+ASUS C622A
+Standardní režim VGA 1920 x 1080 @ 60Hz
+• Jas: Rozsah nastavení je od 0 do 100.
+• Kontrast: Rozsah nastavení je od 0 do 100.
+• Sytost: Rozsah nastavení je od 0 do 100.
+• Teplota barev: Obsahuje 4 režimy, mimo jiné Studené, Normální, Teplé a 
+Uživatelský režim.
+• Pleťový tón s: Obsahuje tři barevné režimy, mimo jiné Do červena, 
+Přirozený a Do žluta.
+3-5Monitor LCD ASUS řady C 
+4. Obraz
+V této nabídce provedete obrazové nastavení.
+Ostrost 
+Trace Free
+Nastavení poměru stran
+VividPixel
+ASCR
+Pozice 
+Zaostření 
+AUTO nast.
+Obraz
+ASUS C622A
+Standardní režim VGA 1920 x 1080 @ 60Hz
+• Ostrost: Rozsah nastavení je od 0 do 100.
+• Trace Free: Upravuje dobu odezvy monitoru.
+• Nastavení poměru stran: Upravuje poměr stran na možnost Celá, 4:3, 
+1:1 (volitelný) nebo OverScan (volitelný).
+Možnost 4:3 je dostupná pouze v případě, že vstupní zdroj je ve formátu 
+4:3. Možnost OverScan je dostupný pouze u vstupního zdroje HDMI nebo u 
+typických načasování.
+• VividPixel: Vylepšuje obrysy zobrazovaného snímku a vytváří na 
+obrazovce vysoce kvalitní snímky.
+• ASCR: Zapíná/vypíná funkci ASCR (ASUS Smart Contrast Ratio).
+• Pozice (Dostupné pouze pro vstup VGA): Upravuje horizontální pozici 
+(H-pozice) a vertikální pozici (V-pozice) snímku. Rozsah nastavení je od 
+0 do 100.
+• Zaostření (Dostupné pouze pro vstup VGA): Redukuje šum 
+horizontální linie a šum vertikální linie snímku samostatným nastavením 
+(Fáze) a (Frekvence). Rozsah nastavení je od 0 do 100.
+• Fáze je nastavení fáze bodového kmitočtu. Při nesprávném nastavení 
+fáze jsou na obrazovce problémy s vodorovným zarovnáním.
+• Kmitočet (pixelová frekvence) řídí počet pixelů snímaných jedním 
+horizontálním rozkladem. Při nesprávném nastavení kmitočtu jsou v 
+obrazu svislé pruhy a obraz nemá správný poměr stran.
+• AUTO nast.: Automaticky nastavuje snímek do optimalizované pozice, 
+frekvence a fáze (pouze u režimu VGA).
+3-6 Kapitola 3: Nabídka OSD (On-Screen Display) 
+5. Zvuk
+Z této nabídky můžete nastavovat možnost Hlasitost, Ztlumit a Zdroj.
+Hlasi tost 
+Zt lumit 
+Zdroj 
+Zvuk 
+ASUS C622A
+Standardní režim VGA 1920 x 1080 @ 60Hz
+• Hlasitost: Rozsah nastavení je od 0 do 100.
+• Ztlumit: Zapíná a vypíná zvuk monitoru.
+• Zdroj: Rozhoduje, ze kterého zdroje vychází zvuk monitoru.
+6. Výběr Vstupu 
+V této funkci můžete vybrat požadovaný vstupní zdroj.
+VGA
+DVI
+HDMI
+DisplayPort 
+Výběr vstupu 
+ASUS C622A
+Standardní režim VGA 1920 x 1080 @ 60Hz
+DVI
+HDMI
+DisplayPort
+Mini DisplayPort 
+Výběr vstupu 
+ASUS C627A
+Standardní režim DisplayPort 2560 x 1440 @ 60Hz
+3-7Monitor LCD ASUS řady C 
+7. Nastavení systému
+Umožňuje nastavovat systém.
+Splendid Demo Mode
+ECO Mode
+Napájení USB
+Nastavení OSD
+Jazyk
+Zámek kláves
+Informace 
+Více 
+Nastavení systému
+ASUS C622A
+Standardní režim VGA 1920 x 1080 @ 60Hz
+• Splendid Demo Mode: Rozděluje obrazovku na dvě části pro srovnání 
+režimů Splendid. (Pouze Režim Krajina)
+• ECO Mode: Snižuje spotřebu elektřiny.
+• Napájení USB (pouze u modelů C422AQ/C422AQH/C423AQ/C424AQ/
+C620AQ/C622AQ/C622AQH/C623AQ/C623AQH/C623AQR/C624AQ/
+C624BQ/C624AQH/C624BQH/C627AQ): 
+* „ZAPNUTO“ umožňuje portům USB pro odchozí signál 
+generovat výstup 5 V/500 mA, když je monitor vypnut nebo je v 
+pohotovostním režimu.
+* „VYPNUTO“ umožňuje portům USB pro odchozí signál generovat 
+výstup 5 V/500 mA pouze v případě, že je monitor zapnut.
+• Napájení USB (pouze u modelů C624WQ): 
+* “ZAPNUTO” umožňuje USB downstream portům generovat výkon 
+5V/2A nebo 5V/900mA, pouze když je monitor zapnutý nebo v 
+pohotovostním režimu. Níže uvedená tabulka znázorňuje, zda 
+lze USB downstream porty použít k napájení externího zařízení v 
+různých situacích. 
+Downstream 
+port Stav monitoru
+Když je upstream 
+port připojen k 
+počítači...
+Když upstream port 
+NENÍ připojen k 
+počítači...
+Port 
+Zapnuto Umožňuje napájení Umožňuje napájení
+Pohotovostní 
+režim Umožňuje napájení Umožňuje napájení
+Port 
+Zapnuto Umožňuje napájení Neumožňuje napájení
+Pohotovostní 
+režim Umožňuje napájení Neumožňuje napájení
+3-8 Kapitola 3: Nabídka OSD (On-Screen Display) 
+* “VYPNUTO” umožňuje USB downstream portům generovat výkon 
+5V/2A nebo 5V/900mA, pouze když je monitor zapnutý. Níže 
+uvedená tabulka znázorňuje, zda lze USB downstream porty 
+použít k napájení externího zařízení v různých situacích. 
+Downstream 
+port
+Stav 
+monitoru
+Když je upstream port 
+připojen k počítači...
+Když upstream port 
+NENÍ připojen k 
+počítači...
+Port 
+Zapnuto Umožňuje napájení Umožňuje napájení
+Pohotovostní 
+režim Neumožňuje napájení Neumožňuje napájení
+Port 
+Zapnuto Umožňuje napájení Neumožňuje napájení
+Pohotovostní 
+režim Neumožňuje napájení Neumožňuje napájení
+• Nastavení OSD: 
+* Slouží k úpravám nastavení časového intervalu OSD od 10 do 
+120 sekund. 
+* Slouží k povolení nebo zakázání funkce DDC/CI.
+* Slouží k nastavení pozadí OSD od neprůhledného po průhledné.
+• Jazyk: Vybrat můžete z 21 jazyků, k nimž patří angličtina, francouzština, 
+němčina, italština, španělština, holandština, portugalština, ruština, 
+čeština, chorvatština, polština, rumunština, maďarština, turečtina, 
+zjednodušená čínština, tradiční čínština, japonština, korejština, thajština, 
+indonézština, perština. 
+• Zámek kláves: K zakázání všech funkčních kláves. Pro zrušení funkce 
+zámku kláves stiskněte asi na pět sekund druhé tlačítko zprava.
+• Autodetekce zdroje (pouze u modelu C624WQ/C627AQ): Povolí nebo 
+zakáže funkci automatické detekce zdroje.
+• Informace: Zobrazení informací o monitoru. 
+• Indikátor napájení: Vypíná/zapíná napájecí indikátor LED.
+• Snímač osob (pouze u modelu C623AQR): zapíná/vypíná funkci 
+snímače osob a upravuje citlivost. Účinný rozsah je od 50 do 70 cm. 
+Výchozí nastavení je VYPNUTO. 
+* Nízké: Vzdálenost snímače je asi 50 cm.
+* Střední: Vzdálenost snímače je asi 60 cm.
+* Vysoké: Vzdálenost snímače je asi 70 cm.
+• Detekční rozsah může být nepatrně odlišný, pokud má uživatel na sobě 
+oblečení tmavé nebo světlé barvy. Máte-li oblečení černé nebo jiné tmavé 
+barvy, nastavte citlivost na Vysoká.
+• Ke snímači osob nedávejte žádný předmět příliš blízko, abyste zabránili 
+rušení.
+3-9Monitor LCD ASUS řady C 
+• Zámek vypínače: Umožňuje povolení nebo zakázání vypínače.
+• Obnovit vše: Výběrem „Ano“ můžete obnovit výchozí nastavení.
+8. Zástupce
+Definuje funkce pro Zástupce tlačítek 1 a 2.
+Zástupce 1
+Zástupce 2
+ 
+Zástupce
+ASUS C622A
+Standardní režim VGA 1920 x 1080 @ 60Hz
+• Zástupce 1/Zástupce 2: Slouží k výběru funkce pro zástupce tlačítek 1 
+a 2.
+Je-li vybrána nebo aktivována určitá funkce, vaše klávesová zkratka ji 
+možná nepodporuje. Dostupné možnosti funkcí pro zástupce: Filtr Modrého 
+Světla, Splendid, Jas, AUTO nast., Kontrast, Teplota barev, Hlasitost.
+3-10 Kapitola 3: Nabídka OSD (On-Screen Display) 
+3.2 Přehled technických parametrů
+C422A/C423A/C424A
+Typ panelu TFT LCD
+Velikost panelu C422AQ/C422AQE/C422AQH/C422AQHE: 
+21,5" (16:9, 54,6 cm) široká obrazovka 
+C423AQ/C423AQE: 23" (16:9, 58,4 cm) široká 
+obrazovka 
+C424AQ/C424AQE: 23,8" (16:9, 60,5 cm) široká 
+obrazovka
+Maximální rozlišení C422AQ/C422AQE/C422AQH/C422AQHE: 
+1920 x 1080 
+C423AQ/C423AQE: 1920 x 1080 
+C424AQ/C424AQE: 1920 x 1080
+Rozteč pixelů C422AQ/C422AQE/C422AQH/C422AQHE: 
+0,248 mm x 0,248 mm 
+C423AQ/C423AQE: 0,2652 mm x 0,2652 mm 
+C424AQ/C424AQE: 0,2745 mm x 0,2745 mm
+Jas (typ.) 250 cd/m2
+Kontrastní poměr (typ.) 1000:1
+Kontrastní poměr (max.) 100.000.000:1 (se zap ASCR)
+Úhel sledování (H/V) CR > 10 178˚/178˚
+Barvy zobrazení 16,7 M
+Doba reakce < 5 ms
+SplendidPlus Video 
+Enhancement
+Ano
+Výběr SplendidPlus 7 přednastavených režimů video
+Autom. nastavení Ano
+Výběr teploty barev 4 teploty barev
+Analogový vstup D-sub
+Digitální vstup DVI-D s HDCP, DisplayPort v1.2, HDMI (pouze u 
+modelu C422AQH/C422AQHE)
+Konektor pro sluchátka Ano
+Zvukový vstup Ano
+Reproduktor (vestavěný) 2 W x 2 Stereo, RMS
+Port USB 2.0 Příchozí signál x 1, odchozí signál x 2 (pouze u 
+modelu C422AQ/C423AQ/C424AQ)
+Port USB 3.0 Příchozí signál x 1, odchozí signál x 2 (pouze u 
+modelu C422AQH)
+Barvy Černá
+LED napájení Bílá (zapnuto)/Oranžová (pohotovostní režim)
+Naklonění +20˚~ -5˚
+Natočení Ne
+Otočení Ne
+Nastavení výšky Ne
+Zámek Kensington Ano
+Vstupní střídavé napětí Síťové napětí: 100~240 V
+3-11Monitor LCD ASUS řady C 
+Příkon C422AQ/C422AQE/C422AQH/C422AQHE: Zapnuto: 
+< 21,09 W** (typ.), Pohotovostní režim: < 0,5 W (typ.), 
+Vypnuto: 
+0 W (Vypnuto) 
+C423AQ/C423AQE: Zapnuto: < 22 W** (typ.), 
+Pohotovostní režim: < 0,5 W (typ.), Vypnuto: 
+0 W (Vypnuto) 
+C424AQ/C424AQE: Zapnuto: < 22,97 W** (typ.), 
+Pohotovostní režim: < 0,5 W (typ.), Vypnuto: 
+0 W (Vypnuto)
+Teplota (provozní) 0˚C ~ 40˚C
+Teplota (neprovozní) -20˚C ~ +60˚C
+Rozměry (Š × V × H) se 
+stojanem
+C422AQ/C422AQE/C422AQH/C422AQHE: 
+514 x 383 x 195 mm (zařízení), 576 x 442 x 120 mm 
+(obal) 
+C423AQ/C423AQE: 548 x 403 x 195 mm (zařízení), 
+617 x 119 x 462 mm (obal) 
+C424AQ/C424AQE: 562 x 406 x 195 mm (zařízení), 
+632 x 127 x 465 mm (obal) 
+Hmotnost (odh.) C422AQ/C422AQE/C422AQH/C422AQHE: 
+3,8 kg (čistá); 5,3 kg (hrubá) 
+C423AQ/C423AQE: 4,3 kg (čistá); 5,7 kg (hrubá) 
+C424AQ/C424AQE: 4,3 kg (čistá); 5,9 kg (hrubá)
+V několika jazycích 21 jazyků (angličtina, francouzština, němčina, 
+italština, španělština, holandština, portugalština, 
+ruština, čeština, chorvatština, polština, rumunština, 
+maďarština, turečtina, zjednodušená čínština, 
+tradiční čínština, japonština, korejština, thajština, 
+indonézština, perština)
+Příslušenství Napájecí kabel, kabel DVI (volitelný), kabel 
+DisplayPort, kabel VGA, zvukový kabel, kabel USB 
+(pouze u modelu C422AQ/C422AQH/C423AQ/
+C424AQ), Průvodce pro rychlé uvedení do provozu, 
+záruční list
+Kompatibilita a normy UL/cUL, CB, CE, ErP, FCC, ISO9241-307, RCM, 
+VCCI, RoHS, Windows 7 & 8 WHQL, Energy Star®, 
+Flicker Free, Low blue Light, TUV-GS, TUV-Ergo, 
+CU, PSE, WEEE, EMC DoC, UkrSEPRO, MEPS, 
+NFPA99
+*Technické parametry se mohou změnit bez předchozího upozornění.
+**měření jasu obrazovky 200 nitů bez připojení zvuku/USB/čtečky karet.
+3-12 Kapitola 3: Nabídka OSD (On-Screen Display) 
+C620A/C622A/C623A/C624A/C624B/C624W
+Typ panelu TFT LCD
+Velikost panelu C620AQ/C620AQE: 19,45" (16:10, 49,4 cm) široká 
+obrazovka 
+C622AQ/C622AQE/C622AQH: 21,5" (16:9, 54,6 cm) 
+široká obrazovka
+C623AQ/C623AQE/C623AQR/C623AQH: 23" (16:9, 
+58,4 cm) široká obrazovka 
+C624AQ/C624AQE/C624AQH: 23,8" (16:9, 60,5 cm) 
+široká obrazovka 
+C624BQ/C624BQH/C624WQ: 24" (16:10, 61,13 cm) 
+široká obrazovka
+Maximální rozlišení C620AQ/C620AQE: 1440 x 900 
+C622AQ/C622AQE/C622AQH: 1920 x 1080 
+C623AQ/C623AQE/C623AQR/C623AQH: 1920 x 1080 
+C624AQ/C624AQE/C624AQH: 1920 x 1080 
+C624BQ/C624BQH/C624WQ: 1920 x 1200
+Rozteč pixelů C620AQ/C620AQE: 0,2907 mm x 0,2915 mm 
+C622AQ/C622AQE/C622AQH: 0,248 mm x 0,248 mm 
+C623AQ/C623AQE/C623AQR/C623AQH: 0,2652 mm x 
+0,2652 mm
+C624AQ/C624AQE/C624AQH: 0,2745 mm x 0,2745 mm 
+C624BQ/C624BQH/C624WQ: 0,270 mm x 0,270 mm
+Jas (typ.) C620AQ/C620AQE/C622AQ/C622AQE/C622AQH/
+C623AQ/C623AQE/C623AQR/C623AQH/C624AQ/
+C624AQE/C624AQH/C624BQ: 250 cd/m2
+C624BQH/C624WQ: 300 cd/m2
+Kontrastní poměr (typ.) 1000:1
+Kontrastní poměr (max.) 100.000.000:1 (se zap ASCR)
+Úhel sledování (H/V) CR > 10 178˚/178˚
+Barvy zobrazení 16,7 M
+Doba reakce < 5 ms
+SplendidPlus Video 
+Enhancement
+Ano
+Výběr SplendidPlus 7 - 8 přednastavených režimů video
+Autom. nastavení Ano
+Výběr teploty barev 4 teploty barev
+Analogový vstup D-sub
+Digitální vstup DVI-D s HDCP, DisplayPort v1.2, HDMI (pouze u 
+modelu C622AQH/C623AQH/C624AQH/C624BQH/
+C624WQ)
+Konektor pro sluchátka Ano
+Zvukový vstup Ano
+Reproduktor (vestavěný) 2 W x 2 Stereo, RMS
+Port USB 2.0 C620AQ/C622AQ/C623AQ/C623AQR/C624AQ/
+C624BQ: Příchozí signál x 1, Odchozí signál x 2 
+Port USB 3.0 C622AQH/C623AQH/C624AQH/C624BQH: 
+Příchozí signál x 1, Odchozí signál x 2 
+C624WQ: Příchozí signál x 1, Odchozí signál x 4
+Barvy Černá
+3-13Monitor LCD ASUS řady C 
+LED napájení Bílá (zapnuto)/Oranžová (pohotovostní režim)
+Naklonění +35˚~ -5˚
+Natočení +90˚~ -90˚
+Otočení +90˚~ -90˚
+Nastavení výšky 130 mm
+Zámek Kensington Ano
+Vstupní střídavé napětí Síťové napětí: 100~240 V
+Příkon C620AQ/C620AQE: Zapnuto: < 15,74 W** (typ.), 
+Pohotovostní režim: < 0,5 W (typ.), Vypnuto: 0 W 
+(Vypnuto) 
+C622AQ/C622AQE/C622AQH: Zapnuto: < 21,09 W** 
+(typ.), Pohotovostní režim: < 0,5 W (typ.), Vypnuto: 0 
+W (Vypnuto) 
+C623AQ/C623AQE/C623AQR/C623AQH: Zapnuto: 
+< 22 W** (typ.), Pohotovostní režim: < 0,5 W (typ.), 
+Vypnuto: 0 W (Vypnuto) 
+C624AQ/C624AQE/C624AQH: Zapnuto: < 22,97 W** 
+(typ.), Pohotovostní režim: < 0,5 W (typ.), Vypnuto: 0 
+W (Vypnuto) 
+C624BQ/C624BQH: Zapnuto: < 25,4 W** (typ.), 
+Pohotovostní režim: < 0,5 W (typ.), Vypnuto: 0 W 
+(Vypnuto) 
+C624WQ: Zapnuto: < 13,3 W** (typ.), Pohotovostní 
+režim: < 0,22 W (typ.), Vypnuto: 0 W (Vypnuto)
+Teplota (provozní) 0˚C ~ 40˚C
+Teplota (neprovozní) -20˚C ~ +60˚C
+Rozměry (Š × V × H) se 
+stojanem
+C620AQ/C620AQE: 459 x 477 x 211 mm (nejvyšší), 
+459 x 347 x 211 mm (nejnižší), 621 x 173 x 382 mm 
+(obal) 
+C622AQ/C622AQE/C622AQH: 514 x 477 x 211 mm 
+(nejvyšší), 514 x 347 x 211 mm (nejnižší), 643 x 378 x 
+190 mm (obal) 
+C623AQ/C623AQE/C623AQR/C623AQH: 548 x 490 
+x 211 mm (nejvyšší), 548 x 360 x 211 mm (nejnižší), 
+652 x 173 x 403 mm (obal) 
+C624AQ/C624AQE/C624AQH: 562 x 492 x 211 mm 
+(nejvyšší), 562 x 362 x 211 mm (nejnižší), 660 x 180 
+x 420 mm (obal) 
+C624BQ/C624BQH: 561 x 511 x 211 mm (nejvyšší), 
+561 x 381 x 211 mm (nejnižší), 662 x 179 x 454 mm 
+(obal) 
+C624WQ: 533 x 505 x 211 mm (nejvyšší), 533 x 375 x 
+211 mm (nejnižší), 649 x 192 x 474 mm (obal)
+3-14 Kapitola 3: Nabídka OSD (On-Screen Display) 
+Hmotnost (odh.) C620AQ/C620AQE: 4,8 kg (čistá); 6,4 kg (hrubá) 
+C622AQ/C622AQE/C622AQH: 5,7 kg (čistá); 7,2 kg 
+(hrubá) 
+C623AQ/C623AQE/C623AQR/C623AQH: 5,7 kg 
+(čistá); 7,3 kg (hrubá) 
+C624AQ/C624AQE/C624AQH: 5,8 kg (čistá); 7,9 kg 
+(hrubá) 
+C624BQ/C624BQH: 6,2 kg (čistá); 8,2 kg (hrubá) 
+C624WQ: 6,1 kg (čistá); 3,9 kg (bez stojanu); 8,3 kg 
+(hrubá)
+V několika jazycích 21 jazyků (angličtina, francouzština, němčina, 
+italština, španělština, holandština, portugalština, 
+ruština, čeština, chorvatština, polština, rumunština, 
+maďarština, turečtina, zjednodušená čínština, 
+tradiční čínština, japonština, korejština, thajština, 
+indonézština, perština)
+Příslušenství Napájecí kabel, kabel DVI (volitelný), kabel HDMI 
+(volitelný), kabel DisplayPort (volitelný), kabel 
+VGA (volitelný), zvukový kabel (volitelný), kabel 
+USB (pouze u modelu C620AQ/C622AQ/C623AQ/
+C623AQR/C624AQ/C624BQ/C624WQ), Průvodce pro 
+rychlé uvedení do provozu, záruční list, Sada MiniPC 
+(volitelný)
+Kompatibilita a normy UL/cUL, CB, CE, ErP, FCC, ISO9241-307, RCM, 
+VCCI, RoHS, Windows 7 & 8 & 10 WHQL, Energy 
+Star®, Flicker Free, Low blue Light, TUV-GS, TUV-
+Ergo, CU, PSE, WEEE, EMC DoC, UkrSEPRO, 
+MEPS, BSMI, NFPA99
+Pouze pro C624WQ: CCC, CEL, PC Recycle, 
+J-MOSS, KC, KCC, e-Standby, TCO 8.0, ICE-3
+*Technické parametry se mohou změnit bez předchozího upozornění.
+**měření jasu obrazovky 200 nitů bez připojení zvuku/USB/čtečky karet.
+3-15Monitor LCD ASUS řady C 
+C627A
+Typ panelu TFT LCD
+Velikost panelu 27" (16:9, 68,47 cm) široká obrazovka
+Maximální rozlišení 2560 x 1440
+Rozteč pixelů 0,2331 mm x 0,2331 mm
+Jas (typ.) 350 cd/m2
+Kontrastní poměr (typ.) 1000:1
+Kontrastní poměr (max.) 100.000.000:1 (se zap ASCR)
+Úhel sledování (H/V) CR > 10 178˚/178˚
+Barvy zobrazení 16,7 M
+Doba reakce < 5 ms
+SplendidPlus Video 
+Enhancement
+Ano
+Výběr SplendidPlus 8 přednastavených režimů video
+Autom. nastavení Ano
+Výběr teploty barev 4 teploty barev
+Analogový vstup Ne
+Digitální vstup DVI-D s HDCP, DisplayPort v1.2, HDMI, mini 
+DisplayPort
+Konektor pro sluchátka Ano
+Zvukový vstup Ano
+Reproduktor (vestavěný) 2 W x 2 Stereo, RMS
+Port USB 3.0 Příchozí signál x 1, odchozí signál x 4
+Barvy Černá
+LED napájení Bílá (zapnuto)/Oranžová (pohotovostní režim)
+Naklonění +35˚~ -5˚
+Natočení +90˚~ -90˚
+Otočení +90˚~ -90˚
+Nastavení výšky 150 mm
+Zámek Kensington Ano
+Vstupní střídavé napětí Síťové napětí: 100~240 V
+Příkon Zapnuto: < 75 W** (typ.), Pohotovostní režim: < 0,5 W 
+(typ.), Vypnuto: 0 W (Vypnuto)
+Teplota (provozní) 0˚C ~ 40˚C
+Teplota (neprovozní) -20˚C ~ +60˚C
+Rozměry (Š × V × H) bez 
+stojanu
+615 x 372 x 51 mm
+Rozměry (Š × V × H) se 
+stojanem
+615 x 532 x 226 mm (nejvyšší), 
+615 x 382 x 226 mm (nejnižší), 
+735 x 216 x 464 mm (obal)
+Hmotnost (odh.) 7,7 kg (čistá); 5 kg (Bez podstavce); 10,8 kg (hrubá)
+V několika jazycích 21 jazyků (angličtina, francouzština, němčina, 
+italština, španělština, holandština, portugalština, 
+ruština, čeština, chorvatština, polština, rumunština, 
+maďarština, turečtina, zjednodušená čínština, 
+tradiční čínština, japonština, korejština, thajština, 
+indonézština, perština)
+3-16 Kapitola 3: Nabídka OSD (On-Screen Display) 
+Příslušenství Napájecí kabel, kabel DVI (volitelný), kabel HDMI, 
+kabel DisplayPort, kabel DisplayPort (Mini-DP - DP) 
+(volitelný), zvukový kabel, kabel USB, Průvodce pro 
+rychlé uvedení do provozu, záruční list
+Kompatibilita a normy UL/cUL, FCC, ICES-3, CB, CE, ErP, WEEE, TUV-GS, 
+TUV-Ergo, ISO 9241-307, UkrSEPRO, CU, CCC, 
+CEL, BSMI, RCM, MEPS, VCCI, PSE, PC Recycle, 
+J-MOSS, KC, KCC, e-Standby, Energy Star®, RoHs, 
+Windows 7/8.1/10 WHQL, Flicker Free, Low Blue 
+Light, NFPA99
+*Technické parametry se mohou změnit bez předchozího upozornění.
+**měření jasu obrazovky 200 nitů bez připojení zvuku/USB/čtečky karet.
+3-17Monitor LCD ASUS řady C 
+3.3 Odstraňování potíží (Časté otázky)
+Problém Možné řešení
+Indikátor LED napájení není zapnut • Stiskněte tlačítko a zkontrolujte, zda je 
+monitor v režimu ZAPNUTO.
+• Zkontrolujte, zda je napájecí kabel řádně 
+zapojen do monitoru a elektrické zásuvky. 
+• Zkontrolujte, zda je vypínač napájení 
+ZAPNUTÝ.
+Indikátor napájení LED svítí žlutě a na 
+obrazovce není žádný obraz 
+• Zkontrolujte, zda je monitor a počítač v 
+režimu ZAPNUTO.
+• Ujistěte se, že kabel signálu je správně 
+zapojen do monitoru a počítače.
+• Zkontrolujte kabel signálu a ujistěte se, 
+že žádný kolík není ohnutý.
+• Propojte počítač s jiným dostupným 
+monitorem a zkontrolujte, zda počítač 
+funguje správně.
+Obraz je příliš světlý nebo tmavý • Upravte nastavení Kontrastu a Jasu 
+pomocí menu OSD.
+Obraz není ve středu nebo nemá správnou 
+velikost
+• Upravte nastavení H-pozice nebo 
+V-pozice pomocí menu OSD.
+Obraz se odráží nebo je v obrazu vzor vln • Ujistěte se, že kabel signálu je správně 
+zapojen do monitoru a počítače.
+• Přemístěte elektrická zařízení, která 
+mohou způsobovat elektrické rušení.
+Obraz má vady barev (bílá nevypadá jako 
+bílá)
+• Zkontrolujte kabel signálu a ujistěte se, 
+že žádný kolík není ohnutý. 
+• Proveďte Obnovit vše pomocí menu 
+OSD.
+• Upravte nastavení barev R/G/B nebo 
+vyberte Teplota barev pomocí menu 
+OSD.
+Obraz je rozmazaný nebo neostrý • Nastavte funkce Fáze a Frekvence 
+pomocí menu OSD.
+Bez zvuku nebo je zvuk slabý • Ujistěte se, že je kabel HDMI/DisplayPort 
+správně připojen k monitoru a počítači.
+• Upravte nastavení zvuku na monitoru i na 
+zařízení HDMI/DisplayPort. 
+• Ujistěte se, že ovladač zvukové karty 
+počítače je správně nainstalován a 
+aktivován.
+3-18 Kapitola 3: Nabídka OSD (On-Screen Display) 
+3.4 Podporované operační režimy
+C620A
+Frekvence rozlišení Horizontální 
+frekvence (kHz)
+Vertikální 
+frekvence (Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 48,08(P) 72,12(P) 50,00
+800x600 46,86(P) 75,00(P) 49,50
+832X624 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1360x768 47,712(P) 59,79(P) 85,5
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+* „P“ / „N“ znamená „kladná“ / „záporná“ polarita příchozího H-sync/V-sync (vstupní časování).
+Jestliže monitor pracuje v režimu video (tedy nezobrazuje data), musí být kromě videa ve 
+standardním rozlišení podporovány následující režimy vysokého rozlišení.
+Předvolba Název 
+časování
+Formát 
+pixelů
+Horizontální 
+frekvence 
+(kHz)
+Vertikální 
+frekvence 
+(Hz)
+Frekvence 
+pixelů (MHz)
+Displej OSD
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+3-19Monitor LCD ASUS řady C 
+C422A/C622A/C423A/C623A/C424A/C624A
+Frekvence rozlišení Horizontální 
+frekvence (kHz)
+Vertikální 
+frekvence (Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 48,08(P) 72,12(P) 50,00
+800x600 46,86(P) 75,00(P) 49,50
+832X624 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(N) 108
+1280x1024 79,98(P) 75,02(N) 135
+1360x768 47,712(P) 59,79(P) 85,5
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(P) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+* „P“ / „N“ znamená „kladná“ / „záporná“ polarita příchozího H-sync/V-sync (vstupní časování).
+3-20 Kapitola 3: Nabídka OSD (On-Screen Display) 
+Jestliže monitor pracuje v režimu video (tedy nezobrazuje data), musí být kromě videa ve 
+standardním rozlišení podporovány následující režimy vysokého rozlišení.
+Předvolba Název 
+časování
+Formát 
+pixelů
+Horizontální 
+frekvence 
+(kHz)
+Vertikální 
+frekvence 
+(Hz)
+Frekvence 
+pixelů (MHz)
+Displej OSD
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+C624B
+Frekvence 
+rozlišení
+Horizontální 
+frekvence (kHz)
+Vertikální 
+frekvence (Hz)
+Pixel 
+(MHz)
+640x480 31,47(N) 59,94(N) 25,18
+800x600 35,16(P) 56,25(P) 36
+800x600 37,88(P) 60,32(P) 40
+1024x768 48,36(N) 60,00(N) 65
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(P) 108
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(N) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+1920x1200 
+(Zmenšení 
+zatemňované oblasti)
+74,038(P) 59,95(N) 154
+* „P“ / „N“ znamená „kladná“ / „záporná“ polarita příchozího H-sync/V-sync (vstupní časování). 
+* Režimy, které nejsou uvedeny v tabulce, nemusí být podporovány. Pro optimální rozlišení 
+doporučujeme, abyste si vybrali některý z režimů uvedených v tabulce nahoře.
+* Tento monitor podporuje video obsah full HD (480p, 576p, 720p, 1080i/p) z herních konzolí, DVD 
+přehrávačů a dalších spotřebitelských videozařízení prostřednictvím HDMI.
+3-21Monitor LCD ASUS řady C 
+Jestliže monitor pracuje v režimu video (tedy nezobrazuje data), musí být kromě videa ve 
+standardním rozlišení podporovány následující režimy vysokého rozlišení.
+Předvolba Název 
+časování
+Formát 
+pixelů
+Horizontální 
+frekvence 
+(kHz)
+Vertikální 
+frekvence 
+(Hz)
+Frekvence 
+pixelů (MHz)
+Displej OSD
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+C627A
+Frekvence rozlišení Horizontální 
+frekvence (kHz)
+Vertikální 
+frekvence (Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 46,86(P) 75,00(P) 49,50
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(N) 108
+1280x1024 79,98(P) 75,02(N) 135
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(P) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+3-22 Kapitola 3: Nabídka OSD (On-Screen Display) 
+1920x1200 
+(Zmenšení 
+zatemňované 
+oblasti)
+74,038(P) 59,95(N) 154
+1920x1200 74,556(N) 59,885(P) 193,25
+2048x1152 
+(Zmenšení 
+zatemňované 
+oblasti)
+70,99(P) 59,9(N) 156,75
+2560x1080 66,636(P) 59,978(N) 181,25
+2560x1440 88,787(P) 59,951(N) 241,5
+* „P“ / „N“ znamená „kladná“ / „záporná“ polarita příchozího H-sync/V-sync (vstupní časování).
+Jestliže monitor pracuje v režimu video (tedy nezobrazuje data), musí být kromě videa ve 
+standardním rozlišení podporovány následující režimy vysokého rozlišení.
+Předvolba Název 
+časování
+Formát 
+pixelů
+Horizontální 
+frekvence 
+(kHz)
+Vertikální 
+frekvence 
+(Hz)
+Frekvence 
+pixelů (MHz)
+Displej OSD
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+C624W
+Frekvence rozlišení Horizontální 
+frekvence (kHz)
+Vertikální 
+frekvence (Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480* 37,87(N) 72,82(N) 31,5
+640x480* 37,5(N) 75,00(N) 31,5
+720x400* 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36
+800x600 37,88(P) 60,32(P) 40
+800x600* 46,86(P) 75,00(P) 49,5
+832X624* 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65
+1024x768 56,476(N) 70,069(N) 75
+3-23Monitor LCD ASUS řady C 
+1024x768* 60,02(N) 75,00(N) 78,75
+1152x864* 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(P) 108
+1280x1024* 79,98(P) 75,02(P) 135
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(N) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+1920x1200 
+(Zmenšení 
+zatemňované 
+oblasti)
+74,038(P) 59,95(N) 154
+Název 
+časování
+Formát pixelů Horizontální 
+frekvence (kHz)
+Vertikální 
+frekvence (Hz)
+Frekvence 
+pixelů (MHz)
+480p 720 x 480 31,469 60 27
+720p60 1280 x 720 45 60 74,25
+576p 720 x 576 31,25 50 27
+720p50 1280 x 720 37,5 50 74,25
+1080p60 1920 x 1080 67,5 60 148,5
+1080p50 1920 x 1080 56,25 50 148,5
+* Tato načasování nejsou při použití funkce OverScan podporována. 
+ Obsah
+ Poznámky
+ Bezpečnostní informace
+ Péče a údržba
+ Takeback Services
+ Kapitola 1: Úvod k výrobku
+ 1.1 Vítejte! 
+ 1.2 Obsah balení
+ 1.3 Úvod k monitoru
+ 1.3.1 Čelní pohled
+ 1.3.2 Zadní pohled
+ 1.3.3 Funkce QuickFit
+ Kapitola 2: Nastavování
+ 2.1 Montáž ramene/podstavce monitoru
+ 2.2 Sejmutí ramene/podstavce (pro montáž na zeď VESA)
+ 2.3 Připevnění/demontáž sady MiniPC (C620A/C622A/C623A/C624A/ C624B/C624C/C627A)
+ 2.4 Nastavení monitoru
+ 2.5 Připojení kabelů
+ 2.6 Zapínání monitoru
+ Kapitola 3: Obecné pokyny
+ 3.1 Nabídka OSD (On-Screen Display) 
+ 3.1.1 Změna konfigurace
+ 3.1.2 Úvod k funkci OSD
+ 3.2 Přehled technických parametrů
+ 3.3 Odstraňování potíží (Časté otázky)
+ 3.4 Podporované operační režimy
