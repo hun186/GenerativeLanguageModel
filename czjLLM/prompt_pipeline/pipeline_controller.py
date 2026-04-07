@@ -6,6 +6,7 @@ from tqdm import tqdm
 import re
 #import random
 import json
+import hashlib
 import time
 import threading
 #import queue
@@ -1143,17 +1144,92 @@ def _append_resume_log(ctx, message: str):
 def _print_resume_plan(policy: str, prompt_items: list[str], ops: MergeOps, ctx=None):
     print("=" * 50)
     print(f"♻️ 恢復策略：{policy}")
+    print("  - resume: 保留 Success，回收 RUNNING，並盡量跳過已完成切片（hash/mtime 比對）")
+    print("  - smart_reset: resume 行為 + 清除 stage 快照/暫存（不清 Success）")
+    print("  - full_restart: smart_reset 行為 + 清除 Success（全量重跑）")
     _append_resume_log(ctx, f"resume_policy={policy}, items={len(prompt_items)}")
     for item in prompt_items:
-        todo_n = _count_txt_files(ops.join(item, "TODO"), ops)
-        succ_n = _count_txt_files(ops.join(item, "Success"), ops)
-        running_n = _count_txt_files(ops.join(item, "RUNNING"), ops)
+        todo_n = len(_root_txt_files(ops.join(item, "TODO")))
+        succ_n = len(_root_txt_files(ops.join(item, "Success")))
+        running_n = len(_root_txt_files(ops.join(item, "RUNNING")))
         print(f"  - {Path(item).name}: TODO={todo_n}, Success={succ_n}, RUNNING={running_n}")
         _append_resume_log(
             ctx,
             f"item={Path(item).name} TODO={todo_n} Success={succ_n} RUNNING={running_n}",
         )
     print("=" * 50)
+
+
+def _drop_resumed_todo_by_success(item: str, ctx=None) -> int:
+    """
+    resume/smart_reset 模式下，避免已成功切片重跑：
+    - 只處理 root TODO/*.txt 與 root Success/*.txt
+    - 優先用 hash 比對（內容相同才刪），失敗時退回 mtime 規則
+    - mtime 規則：Success 檔案時間 >= TODO 檔案時間才視為「已完成」
+      （避免把上一階段殘留的 Success 過度誤判成當前階段完成）
+    """
+    todo_dir = Path(item) / "TODO"
+    succ_dir = Path(item) / "Success"
+    if (not todo_dir.is_dir()) or (not succ_dir.is_dir()):
+        return 0
+
+    succ_map = {p.name: p for p in _root_txt_files(str(succ_dir))}
+    dropped = 0
+
+    def _file_sha1(fp: Path) -> str:
+        h = hashlib.sha1()
+        with open(fp, "rb") as f:
+            for chunk in iter(lambda: f.read(1024 * 1024), b""):
+                h.update(chunk)
+        return h.hexdigest()
+
+    for todo_fp in _root_txt_files(str(todo_dir)):
+        succ_fp = succ_map.get(todo_fp.name)
+        if succ_fp is None:
+            continue
+        try:
+            same_hash = (_file_sha1(succ_fp) == _file_sha1(todo_fp))
+            if same_hash or (succ_fp.stat().st_mtime >= todo_fp.stat().st_mtime):
+                todo_fp.unlink()
+                dropped += 1
+        except FileNotFoundError:
+            continue
+    if dropped > 0:
+        print(f"[resume] {Path(item).name} 已跳過 {dropped} 個已完成 TODO 切片")
+        _append_resume_log(ctx, f"action=drop_todo_by_success item={Path(item).name} dropped={dropped}")
+    return dropped
+
+
+def _root_resume_counts(item: str) -> tuple[int, int, int]:
+    """回傳 root-level (TODO, Success, RUNNING) 的 txt 檔數。"""
+    todo_n = len(_root_txt_files(str(Path(item) / "TODO")))
+    succ_n = len(_root_txt_files(str(Path(item) / "Success")))
+    running_n = len(_root_txt_files(str(Path(item) / "RUNNING")))
+    return todo_n, succ_n, running_n
+
+
+def _log_resume_before_after(item: str, before: tuple[int, int, int], after: tuple[int, int, int], ctx=None):
+    """
+    寫入 resume 前後統計：
+    - before: 套用 resume policy 前
+    - after : 套用 resume policy 後
+    """
+    name = Path(item).name
+    b_todo, b_succ, b_run = before
+    a_todo, a_succ, a_run = after
+    print(
+        f"[resume] {name} before(T/S/R)={b_todo}/{b_succ}/{b_run} "
+        f"after={a_todo}/{a_succ}/{a_run} Δ={a_todo-b_todo}/{a_succ-b_succ}/{a_run-b_run}"
+    )
+    _append_resume_log(
+        ctx,
+        (
+            f"resume_delta item={name} "
+            f"before(TODO/Success/RUNNING)={b_todo}/{b_succ}/{b_run} "
+            f"after={a_todo}/{a_succ}/{a_run} "
+            f"delta={a_todo-b_todo}/{a_succ-b_succ}/{a_run-b_run}"
+        ),
+    )
 
 
 def _apply_resume_policy_multistage(policy: str, prompt_items: list[str], ops: MergeOps, ctx=None):
@@ -1168,6 +1244,7 @@ def _apply_resume_policy_multistage(policy: str, prompt_items: list[str], ops: M
     recover_running_to_todo(prompt_items)
     _append_resume_log(ctx, "action=recover_running_to_todo(multistage)")
     for item in prompt_items:
+        before_counts = _root_resume_counts(item)
         if policy in {"smart_reset", "full_restart"}:
             stage_outputs = ops.join(item, "_stage_outputs")
             if os.path.isdir(stage_outputs):
@@ -1176,20 +1253,29 @@ def _apply_resume_policy_multistage(policy: str, prompt_items: list[str], ops: M
         if policy == "full_restart":
             _clear_txt_files(ops.join(item, "Success"), ops)
             _append_resume_log(ctx, f"action=clear Success item={Path(item).name}")
+        else:
+            _drop_resumed_todo_by_success(item, ctx=ctx)
         if policy in {"smart_reset", "full_restart"}:
             for p in list(Path(item, "TODO").glob("*")):
                 if p.is_dir():
                     shutil.rmtree(p, ignore_errors=True)
                     _append_resume_log(ctx, f"action=clear stage_todo_dir item={Path(item).name} dir={p.name}")
+        after_counts = _root_resume_counts(item)
+        _log_resume_before_after(item, before_counts, after_counts, ctx=ctx)
 
 
 def _apply_resume_policy_single_stage(policy: str, prompt_items: list[str], ops: MergeOps, ctx=None):
     recover_running_to_todo(prompt_items)
     _append_resume_log(ctx, "action=recover_running_to_todo(single)")
-    if policy == "full_restart":
-        for item in prompt_items:
+    for item in prompt_items:
+        before_counts = _root_resume_counts(item)
+        if policy == "full_restart":
             _clear_txt_files(ops.join(item, "Success"), ops)
             _append_resume_log(ctx, f"action=clear Success item={Path(item).name}")
+        else:
+            _drop_resumed_todo_by_success(item, ctx=ctx)
+        after_counts = _root_resume_counts(item)
+        _log_resume_before_after(item, before_counts, after_counts, ctx=ctx)
 
 
 def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | None = None, max_rounds: int = 20) -> str:
@@ -1448,15 +1534,15 @@ def call_llm_api(itemList, ctx, allow_to_retry=True, PGMSubDir="", task_override
         TodoSubDir = os.path.join(item, "TODO")
         return [PromptAPIPipeline(
             task=task_override if task_override is not None else ctx.task,
-            promptFile=promptFile,
-            OutputSaveFN=promptFile.replace("TODO", "Success"),
+            promptFile=str(promptFile),
+            OutputSaveFN=str(promptFile).replace("TODO", "Success"),
             removeFinPromptFile=ctx.removeFinPromptFile,
             max_tokens=ctx.max_tokens,
             #On_Premises=ctx.on_premises,
             allow_to_retry=allow_to_retry,
             model_spec=model_spec,
             PGMSubDir=ctx.PGMSubDir,
-        ) for promptFile in OSWALK(TodoSubDir)]
+        ) for promptFile in _root_txt_files(TodoSubDir)]
 
     if ctx.mp_for_all_call:
         DTBJobs = []
