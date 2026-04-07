@@ -1102,6 +1102,11 @@ def _sanitize_stage_name(stage_name: str) -> str:
     return re.sub(r"[^0-9A-Za-z._-]+", "_", str(stage_name)).strip("_") or "stage"
 
 
+def _sanitize_file_component(text: str) -> str:
+    """將檔名片段標準化為可攜格式。"""
+    return re.sub(r"[^0-9A-Za-z._-]+", "-", str(text or "")).strip("-._") or "na"
+
+
 def _stage_todo_dir(item: str, stage_name: str) -> str:
     return os.path.join(item, "TODO", _sanitize_stage_name(stage_name))
 
@@ -1411,7 +1416,8 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     )
     stage_merge_root = ops.join(stage_merge_base, "_stage_merges", main_name)
     MKDIR(stage_merge_root)
-    for stage in stage_defs:
+    stage_manifest: list[dict] = []
+    for idx, stage in enumerate(stage_defs, start=1):
         merged_parts: list[str] = []
         for item in sorted(prompt_items):
             src_dir = _snapshot_dir(item, stage.name)
@@ -1421,24 +1427,62 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 if fp.lower().endswith(".txt") and os.path.isfile(fp):
                     with open(fp, "r", encoding="utf-8") as f:
                         merged_parts.append(f.read())
-        stage_merged_fn = ops.join(stage_merge_root, f"{stage.name}.txt")
+        safe_stage_name = _sanitize_file_component(stage.name)
+        safe_stage_key = _sanitize_file_component(getattr(stage, "task_key", ""))
+        stage_merged_name = f"{idx:02d}_{safe_stage_name}"
+        if safe_stage_key != "na":
+            stage_merged_name = f"{stage_merged_name}_{safe_stage_key}"
+        stage_merged_fn = ops.join(stage_merge_root, f"{stage_merged_name}.txt")
         with open(stage_merged_fn, "w", encoding="utf-8") as f:
             f.write("\n".join(merged_parts))
         print(f"[stage:{stage.name}] 🧩 合併完成，輸出：{stage_merged_fn}（pieces={len(merged_parts)}）")
+        stage_manifest.append(
+            {
+                "index": idx,
+                "name": stage.name,
+                "task_key": stage.task_key,
+                "input_from": stage.input_from,
+                "persist_output": stage.persist_output,
+                "merged_file": os.path.basename(stage_merged_fn),
+                "pieces": len(merged_parts),
+            }
+        )
+
+    manifest_path = ops.join(stage_merge_root, "manifest.json")
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "source": getattr(ctx, "main_file_name", main_name),
+                "generated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+                "stages": stage_manifest,
+            },
+            f,
+            ensure_ascii=False,
+            indent=2,
+        )
+    print(f"[multistage] 🗂️ 已輸出 stage 清單：{manifest_path}")
 
     comb_back_fn = ""
     old_task = getattr(ctx, "task", "")
     try:
         if stage_defs:
-            final_task = stage_defs[-1].task
-            if isinstance(final_task, Mapping):
-                ctx.task = (
-                    str(final_task.get("CT_name", "")).strip()
-                    or str(stage_defs[-1].task_key).strip()
-                    or stage_defs[-1].name
-                )
+            stage_task_chain: list[str] = []
+            for s in stage_defs:
+                key = str(getattr(s, "task_key", "")).strip() or str(getattr(s, "name", "")).strip()
+                if key:
+                    stage_task_chain.append(key)
+            if stage_task_chain:
+                ctx.task = "_".join(stage_task_chain)
             else:
-                ctx.task = final_task
+                final_task = stage_defs[-1].task
+                if isinstance(final_task, Mapping):
+                    ctx.task = (
+                        str(final_task.get("CT_name", "")).strip()
+                        or str(stage_defs[-1].task_key).strip()
+                        or stage_defs[-1].name
+                    )
+                else:
+                    ctx.task = final_task
         for item in prompt_items:
             todo_files = [str(x) for x in _root_txt_files(ops.join(item, "TODO"))]
             if not todo_files:
