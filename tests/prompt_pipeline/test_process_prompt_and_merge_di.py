@@ -231,3 +231,38 @@ def test_multistage_process_runs_stage_tasks_and_combines(tmp_path):
     assert ops.calls["combine_task"] == ["分類", "分類"]
     assert ctx.task == "legacy-task"
     assert out == str(item_b / "combined.out.txt")
+
+
+@pytest.mark.unit
+def test_multistage_final_combine_uses_safe_task_name_when_stage_task_is_mapping(tmp_path):
+    root = tmp_path / "root"
+    main = "mstage_map"
+    item = root / f"{main}_a"
+    mapping = {
+        str(root): [str(item / "TODO" / "1.txt")],
+        str(item / "TODO"): [],
+    }
+    ops = FakeOps(mapping)
+    ctx = DummyCtx(
+        prompt_dir=str(root),
+        main_file_name=main,
+        task="legacy-task",
+        stages=[
+            {"name": "extract", "task": "抽取"},
+            {"name": "summarize", "task": {"CT_name": "以繁體中文摘要", "template": lambda content: content}},
+        ],
+    )
+    ctx.taskSetting = {
+        "extract": "抽取",
+        "summarize": {"CT_name": "以繁體中文摘要", "template": lambda content: content},
+    }
+
+    out = pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    called_tasks = [c[2] for c in ops.calls["call_llm"]]
+    assert called_tasks.count("抽取") == 2
+    assert called_tasks.count("summarize") == 2
+    # 最終 combine 階段的 ctx.task 需是安全文字，而非 mapping repr
+    assert ops.calls["combine_task"] == ["以繁體中文摘要"]
+    assert ctx.task == "legacy-task"
+    assert out == str(item / "combined.out.txt")
