@@ -1085,7 +1085,6 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     stage_merge_base = (
         getattr(ctx, "temp_txt_finished_dir", "")
         or getattr(ctx, "llm_source_finished_dir", "")
-        or getattr(ctx, "llm_source_dir", "")
         or ctx.prompt_dir
     )
     stage_merge_root = ops.join(stage_merge_base, "_stage_merges", main_name)
