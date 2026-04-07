@@ -1,0 +1,15 @@
+# 啟動模式：txt
+mode: txt
+channel: multi_stage_test
+
+# 測試來源資料夾（你指定的目錄）
+llm_source_dir: czjLLM/LLMSourcePool/multi_stage_test
+llm_source_backup_dir: czjLLM/LLMSourcePool_origin_backup/multi_stage_test
+
+# 多階段設定檔
+stage_config_file: czjLLM/stage_configs/multi_stage_pdf_en2zh_summary.yaml
+
+# 多階段模式可不填 task（啟動時會自動從第一個 stage 推導）
+
+# 模型設定名稱（請依你環境可用模型調整）
+model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
