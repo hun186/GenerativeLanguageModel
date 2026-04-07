@@ -276,29 +276,47 @@ def combine_api_finished_item(item: str, ctx) -> str:
     item_p = Path(item)
     suc_dir = item_p / "Success"
 
-    chunks: list[str] = []
+    task_text = str(getattr(ctx, "task", "")).lower()
+    json_mode = ("json" in task_text) or ("to json format" in task_text)
+    text_chunks: list[str] = []
+    json_rows: list[dict] = []
+
     for fp in sorted(OSWALK(str(suc_dir))):
-        #print("fp adding in combine_utils",fp)
         p = Path(fp)
         text = p.read_text(encoding="utf-8")
-        #print("text",text)
         if OpenCC("s2twp").convert(text.lstrip()).startswith("無主題相關內容"):
             continue
 
-        try:
-            obj = json.loads(text)
-            if isinstance(obj, dict):
-                obj = [obj]
-            elif not isinstance(obj, list):
+        if json_mode:
+            try:
+                obj = json.loads(text)
+                if isinstance(obj, dict):
+                    json_rows.append(obj)
+                    continue
+                if isinstance(obj, list):
+                    json_rows.extend([x for x in obj if isinstance(x, dict)])
+                    continue
                 raise ValueError("不支援的 JSON 結構")
-            chunks.append(json.dumps(obj, ensure_ascii=False, indent=2) + "\n")
-        except Exception as e:
-            if "to json format" in str(getattr(ctx, "task", "")).lower():
-                print(f"❌ 解析 JSON 失敗（跳過格式補正）：{p}，錯誤：{e}")
-            chunks.append(text if text.endswith("\n") else text + "\n")
-    #print("chunks",chunks)
-    combined_text = "".join(chunks)
-    #print("combined_text",combined_text)
+            except Exception as e:
+                print(f"❌ 解析 JSON 失敗（將以純文字串接回退）：{p}，錯誤：{e}")
+        text_chunks.append(text if text.endswith("\n") else text + "\n")
+
+    if json_mode and json_rows:
+        if should_merge_slices(ctx):
+            merged_obj, _report = merge_dict_slices_audited(
+                json_rows,
+                conflict_policy=str(getattr(ctx, "merge_conflict_policy", "prefer_left")),
+                dedup_lists=bool(getattr(ctx, "merge_dedup_lists", True)),
+                audit=bool(getattr(ctx, "merge_log_changes", True)),
+                logger=print if bool(getattr(ctx, "merge_log_changes", True)) else None,
+                max_log=int(getattr(ctx, "merge_max_log", 10)),
+            )
+            combined_text = json.dumps(merged_obj, ensure_ascii=False, indent=2)
+        else:
+            combined_text = json.dumps(json_rows, ensure_ascii=False, indent=2)
+    else:
+        combined_text = "".join(text_chunks)
+
     # === 安全地決定輸出目錄（不要出現前導斜線） ===
     # 優先 llm_source_finished_dir，其次 llm_source_dir；都沒有就用 item 的上層
     #'''
@@ -363,8 +381,8 @@ def combine_api_finished_item(item: str, ctx) -> str:
     main_name = Path(item).name
     task_name = str(getattr(ctx, "task", "result")).replace(os.sep, "_")
     out_path = dest_dir / f"{main_name}_{task_name}.txt"
-    # JSON 合併修補（如有指定 to json format）
-    if "to json format" in str(getattr(ctx, "task", "")).lower():
+    # JSON 合併修補（如有指定 to json format，且目前仍為字串拼接型態）
+    if "to json format" in str(getattr(ctx, "task", "")).lower() and not (json_mode and json_rows):
         fixed, err = combine_json_return(combined_text, dictListForced=True)
         combined_text = fixed
         if err:
