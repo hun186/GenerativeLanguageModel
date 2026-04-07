@@ -196,6 +196,36 @@ def test_collect_prompt_items_filters_and_sorts(tmp_path):
 
 
 @pytest.mark.unit
+def test_collect_prompt_items_supports_todo_stage_subdirs(tmp_path):
+    root = tmp_path / "root"
+    main = "abc"
+    mapping = {
+        str(root): [
+            str(root / f"{main}_1" / "TODO" / "stage_a" / "c.txt"),
+            str(root / f"{main}_2" / "Success" / "stage_b" / "d.txt"),
+        ]
+    }
+    ops = FakeOps(mapping)
+
+    items = pc._collect_prompt_items(str(root), main, ops)
+    assert items == [str(root / f"{main}_1"), str(root / f"{main}_2")]
+
+
+@pytest.mark.unit
+def test_recover_running_to_todo_preserves_nested_subdirs(tmp_path):
+    item = tmp_path / "item_a"
+    run_nested = item / "RUNNING" / "stage_x"
+    todo_nested = item / "TODO" / "stage_x"
+    run_nested.mkdir(parents=True)
+    (run_nested / "1.txt").write_text("X", encoding="utf-8")
+
+    pc.recover_running_to_todo([str(item)])
+
+    assert (todo_nested / "1.txt").exists()
+    assert not (run_nested / "1.txt").exists()
+
+
+@pytest.mark.unit
 def test_multistage_process_runs_stage_tasks_and_combines(tmp_path):
     root = tmp_path / "root"
     main = "mstage"
@@ -266,3 +296,267 @@ def test_multistage_final_combine_uses_safe_task_name_when_stage_task_is_mapping
     assert ops.calls["combine_task"] == ["以繁體中文摘要"]
     assert ctx.task == "legacy-task"
     assert out == str(item / "combined.out.txt")
+
+
+@pytest.mark.unit
+def test_multistage_nonfirst_stage_todo_is_rendered_with_stage_template(tmp_path):
+    root = tmp_path / "root"
+    main = "stage_prompt"
+    item = root / f"{main}_a"
+    todo_dir = item / "TODO"
+    success_dir = item / "Success"
+    todo_dir.mkdir(parents=True)
+    success_dir.mkdir(parents=True)
+    (todo_dir / "1.txt").write_text("FIRST_STAGE_INPUT", encoding="utf-8")
+
+    records: list[tuple[str, str]] = []
+
+    def list_paths(path: str) -> list[str]:
+        p = Path(path)
+        if not p.exists():
+            return []
+        return [str(x) for x in sorted(p.rglob("*.txt"))]
+
+    def call_llm(items, _ctx, allow_to_retry: bool, task_override=None):
+        for item_dir in items:
+            todo = Path(item_dir) / "TODO"
+            succ = Path(item_dir) / "Success"
+            succ.mkdir(parents=True, exist_ok=True)
+            for pf in sorted(todo.glob("*.txt")):
+                text = pf.read_text(encoding="utf-8")
+                records.append((str(task_override), text))
+                (succ / pf.name).write_text(text, encoding="utf-8")
+                pf.unlink()
+
+    ops = pc.MergeOps(
+        list_paths=list_paths,
+        get_parent=lambda fn: str(Path(fn).parent),
+        call_llm=call_llm,
+        combine=lambda item_dir, _ctx: str(Path(item_dir) / "combined.out.txt"),
+        join=lambda *p: str(Path(*p)),
+    )
+    ctx = DummyCtx(
+        prompt_dir=str(root),
+        main_file_name=main,
+        task="legacy-task",
+        stages=[
+            {"name": "pdf_opt", "task": "PDF OPT-Instruction First", "input_from": "original"},
+            {"name": "en_to_zh", "task": {"CT_name": "Translation-toTWZH", "template": lambda content: f"TW::{content}"}, "input_from": "previous"},
+        ],
+    )
+
+    pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    stage2_records = [x for x in records if x[0] == "Translation-toTWZH"]
+    assert stage2_records
+    assert all(txt.startswith("TW::") for _, txt in stage2_records)
+
+
+@pytest.mark.unit
+def test_multistage_full_restart_clears_existing_success_files(tmp_path):
+    root = tmp_path / "root"
+    main = "restart_mode"
+    item = root / f"{main}_a"
+    todo_dir = item / "TODO"
+    success_dir = item / "Success"
+    todo_dir.mkdir(parents=True)
+    success_dir.mkdir(parents=True)
+    (todo_dir / "1.txt").write_text("P1", encoding="utf-8")
+    stale_success = success_dir / "stale.txt"
+    stale_success.write_text("OLD", encoding="utf-8")
+
+    def list_paths(path: str) -> list[str]:
+        p = Path(path)
+        if not p.exists():
+            return []
+        return [str(x) for x in sorted(p.rglob("*.txt"))]
+
+    def call_llm(items, _ctx, allow_to_retry: bool, task_override=None):
+        for item_dir in items:
+            todo = Path(item_dir) / "TODO"
+            succ = Path(item_dir) / "Success"
+            succ.mkdir(parents=True, exist_ok=True)
+            for pf in sorted(todo.glob("*.txt")):
+                (succ / pf.name).write_text(pf.read_text(encoding="utf-8"), encoding="utf-8")
+                pf.unlink()
+
+    ops = pc.MergeOps(
+        list_paths=list_paths,
+        get_parent=lambda fn: str(Path(fn).parent),
+        call_llm=call_llm,
+        combine=lambda item_dir, _ctx: str(Path(item_dir) / "combined.out.txt"),
+        join=lambda *p: str(Path(*p)),
+    )
+    ctx = DummyCtx(
+        prompt_dir=str(root),
+        main_file_name=main,
+        task="legacy-task",
+        stages=[
+            {"name": "s1", "task": "PDF OPT-Instruction First"},
+            {"name": "s2", "task": "Summary-toTWZH"},
+        ],
+    )
+    ctx.resume_policy = "full_restart"
+
+    pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    assert not stale_success.exists()
+
+
+@pytest.mark.unit
+def test_multistage_smart_reset_clears_stage_output_snapshots(tmp_path):
+    root = tmp_path / "root"
+    main = "smart_mode"
+    item = root / f"{main}_a"
+    todo_dir = item / "TODO"
+    success_dir = item / "Success"
+    stage_out = item / "_stage_outputs" / "old_stage"
+    todo_dir.mkdir(parents=True)
+    success_dir.mkdir(parents=True)
+    stage_out.mkdir(parents=True)
+    (todo_dir / "1.txt").write_text("P1", encoding="utf-8")
+    stale_snapshot = stage_out / "stale.txt"
+    stale_snapshot.write_text("OLD", encoding="utf-8")
+
+    def list_paths(path: str) -> list[str]:
+        p = Path(path)
+        if not p.exists():
+            return []
+        return [str(x) for x in sorted(p.rglob("*.txt"))]
+
+    def call_llm(items, _ctx, allow_to_retry: bool, task_override=None):
+        for item_dir in items:
+            todo = Path(item_dir) / "TODO"
+            succ = Path(item_dir) / "Success"
+            succ.mkdir(parents=True, exist_ok=True)
+            for pf in sorted(todo.glob("*.txt")):
+                (succ / pf.name).write_text(pf.read_text(encoding="utf-8"), encoding="utf-8")
+                pf.unlink()
+
+    ops = pc.MergeOps(
+        list_paths=list_paths,
+        get_parent=lambda fn: str(Path(fn).parent),
+        call_llm=call_llm,
+        combine=lambda item_dir, _ctx: str(Path(item_dir) / "combined.out.txt"),
+        join=lambda *p: str(Path(*p)),
+    )
+    ctx = DummyCtx(
+        prompt_dir=str(root),
+        main_file_name=main,
+        task="legacy-task",
+        stages=[
+            {"name": "s1", "task": "PDF OPT-Instruction First"},
+            {"name": "s2", "task": "Summary-toTWZH"},
+        ],
+    )
+    ctx.resume_policy = "smart_reset"
+
+    pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    assert not stale_snapshot.exists()
+
+
+@pytest.mark.unit
+def test_single_stage_full_restart_clears_existing_success_files(tmp_path):
+    root = tmp_path / "root"
+    main = "single_restart"
+    item = root / f"{main}_a"
+    todo_dir = item / "TODO"
+    success_dir = item / "Success"
+    todo_dir.mkdir(parents=True)
+    success_dir.mkdir(parents=True)
+    (todo_dir / "1.txt").write_text("P1", encoding="utf-8")
+    stale_success = success_dir / "stale.txt"
+    stale_success.write_text("OLD", encoding="utf-8")
+
+    def list_paths(path: str) -> list[str]:
+        p = Path(path)
+        if not p.exists():
+            return []
+        return [str(x) for x in sorted(p.rglob("*.txt"))]
+
+    def call_llm(items, _ctx, allow_to_retry: bool):
+        for item_dir in items:
+            todo = Path(item_dir) / "TODO"
+            succ = Path(item_dir) / "Success"
+            succ.mkdir(parents=True, exist_ok=True)
+            for pf in sorted(todo.glob("*.txt")):
+                (succ / pf.name).write_text(pf.read_text(encoding="utf-8"), encoding="utf-8")
+                pf.unlink()
+
+    ops = pc.MergeOps(
+        list_paths=list_paths,
+        get_parent=lambda fn: str(Path(fn).parent),
+        call_llm=call_llm,
+        combine=lambda item_dir, _ctx: str(Path(item_dir) / "combined.out.txt"),
+        join=lambda *p: str(Path(*p)),
+    )
+    ctx = DummyCtx(
+        prompt_dir=str(root),
+        main_file_name=main,
+        task="legacy-task",
+        stages=[{"name": "s1", "task": "PDF OPT-Instruction First"}],
+    )
+    ctx.resume_policy = "full_restart"
+
+    pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+    assert not stale_success.exists()
+    resume_log = root / "_resume_logs" / "resume_events.log"
+    assert resume_log.exists()
+    assert "resume_policy=full_restart" in resume_log.read_text(encoding="utf-8")
+
+
+@pytest.mark.unit
+def test_multistage_stage1_bootstrap_ignores_nested_stage_todo(tmp_path):
+    root = tmp_path / "root"
+    main = "bootstrap_guard"
+    item = root / f"{main}_a"
+    todo_dir = item / "TODO"
+    success_dir = item / "Success"
+    nested_old = todo_dir / "old_stage"
+    todo_dir.mkdir(parents=True)
+    success_dir.mkdir(parents=True)
+    nested_old.mkdir(parents=True)
+    (todo_dir / "1.txt").write_text("ROOT_PROMPT", encoding="utf-8")
+    (nested_old / "old.txt").write_text("STALE_NESTED", encoding="utf-8")
+
+    records: list[tuple[str, str]] = []
+
+    def list_paths(path: str) -> list[str]:
+        p = Path(path)
+        if not p.exists():
+            return []
+        return [str(x) for x in sorted(p.rglob("*.txt"))]
+
+    def call_llm(items, _ctx, allow_to_retry: bool, task_override=None):
+        for item_dir in items:
+            todo = Path(item_dir) / "TODO"
+            succ = Path(item_dir) / "Success"
+            succ.mkdir(parents=True, exist_ok=True)
+            for pf in sorted(todo.glob("*.txt")):
+                text = pf.read_text(encoding="utf-8")
+                records.append((str(task_override), text))
+                (succ / pf.name).write_text(text, encoding="utf-8")
+                pf.unlink()
+
+    ops = pc.MergeOps(
+        list_paths=list_paths,
+        get_parent=lambda fn: str(Path(fn).parent),
+        call_llm=call_llm,
+        combine=lambda item_dir, _ctx: str(Path(item_dir) / "combined.out.txt"),
+        join=lambda *p: str(Path(*p)),
+    )
+    ctx = DummyCtx(
+        prompt_dir=str(root),
+        main_file_name=main,
+        task="legacy-task",
+        stages=[
+            {"name": "pdf_opt", "task": "PDF OPT-Instruction First", "input_from": "original"},
+            {"name": "en_to_zh", "task": {"CT_name": "Translation-toTWZH", "template": lambda content: f"TW::{content}"}, "input_from": "previous"},
+        ],
+    )
+    pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    stage1_records = [x for x in records if x[0] == "PDF OPT-Instruction First"]
+    assert stage1_records
+    assert all("STALE_NESTED" not in txt for _, txt in stage1_records)
