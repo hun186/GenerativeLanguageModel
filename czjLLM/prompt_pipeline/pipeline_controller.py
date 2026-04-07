@@ -393,16 +393,20 @@ def recover_running_to_todo(item_dirs):
         if not run.is_dir():
             continue
         todo.mkdir(parents=True, exist_ok=True)
-        for p in run.iterdir():
-            if p.is_file():
-                try:
-                    os.replace(str(p), str(todo / p.name))  # 原子搬移
-                except FileNotFoundError:
-                    # 另一個程序可能已處理，略過即可
-                    pass
-                except PermissionError:
-                    # 偶發網路磁碟忙碌，可視需要加上短暫重試
-                    pass
+        for p in run.rglob("*"):
+            if not p.is_file():
+                continue
+            rel = p.relative_to(run)
+            dst = todo / rel
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                os.replace(str(p), str(dst))  # 原子搬移
+            except FileNotFoundError:
+                # 另一個程序可能已處理，略過即可
+                pass
+            except PermissionError:
+                # 偶發網路磁碟忙碌，可視需要加上短暫重試
+                pass
                 
 def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                         stop_event: threading.Event,
@@ -1117,6 +1121,13 @@ def _sync_stage_todo_to_root(item: str, stage_name: str, ops: MergeOps):
         shutil.copy2(src_fp, dst_fp)
 
 
+def _root_txt_files(dir_path: str) -> list[Path]:
+    p = Path(dir_path)
+    if not p.is_dir():
+        return []
+    return [x for x in sorted(p.glob("*.txt")) if x.is_file()]
+
+
 def _append_resume_log(ctx, message: str):
     prompt_dir = getattr(ctx, "prompt_dir", "") if ctx is not None else ""
     if not prompt_dir:
@@ -1206,10 +1217,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     shown_stage_tasks: set[str] = set()
     total_segments = 0
     for item in prompt_items:
-        total_segments += len([
-            fp for fp in ops.list_paths(ops.join(item, "TODO"))
-            if str(fp).lower().endswith(".txt")
-        ])
+        total_segments += len(_root_txt_files(ops.join(item, "TODO")))
 
     print("=" * 50)
     print("🔁 多階段流程啟動：")
@@ -1227,9 +1235,14 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             if fp.lower().endswith(".txt") and os.path.isfile(fp):
                 shutil.copy2(fp, os.path.join(dst_dir, os.path.basename(fp)))
 
+    def _copy_root_todo_txts(src_dir: str, dst_dir: str):
+        MKDIR(dst_dir)
+        for fp in _root_txt_files(src_dir):
+            shutil.copy2(str(fp), os.path.join(dst_dir, fp.name))
+
     # 先保存 original（第一次切片後的 TODO 內容）
     for item in prompt_items:
-        _copy_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
+        _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
 
     def _prepare_todo_for_stage(item: str, stage_name: str, stage_task):
         stage_def = stage_map[stage_name]
@@ -1238,13 +1251,12 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         if (
             stage_name == stage_defs[0].name
             and stage_def.input_from == "original"
-            and _count_txt_files(root_todo_dir, ops) > 0
+            and len(_root_txt_files(root_todo_dir)) > 0
         ):
             MKDIR(todo_dir)
             _clear_txt_files(todo_dir, ops)
-            for fp in sorted(ops.list_paths(root_todo_dir)):
-                if fp.lower().endswith(".txt") and os.path.isfile(fp):
-                    shutil.copy2(fp, os.path.join(todo_dir, os.path.basename(fp)))
+            for fp in _root_txt_files(root_todo_dir):
+                shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
             return  # 已有 TODO，不覆蓋
 
         if stage_def.input_from == "original":
@@ -1297,7 +1309,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=False, task_override=job.stage_task)
         # 保存本階段 Success 作為後續 stage 可引用輸入
         _copy_txts(ops.join(job.chunk_id, "Success"), _snapshot_dir(job.chunk_id, job.stage_name))
-        todo_files = ops.list_paths(ops.join(job.chunk_id, "TODO"))
+        todo_files = [str(x) for x in _root_txt_files(ops.join(job.chunk_id, "TODO"))]
         if todo_files:
             return {"ok": False, "error": f"todo_remaining:{len(todo_files)}"}
         print(f"[stage:{job.stage_name}] ✅ 完成輸入單位(input_unit): {Path(job.chunk_id).name}")
@@ -1342,7 +1354,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             else:
                 ctx.task = final_task
         for item in prompt_items:
-            todo_files = ops.list_paths(ops.join(item, "TODO"))
+            todo_files = [str(x) for x in _root_txt_files(ops.join(item, "TODO"))]
             if not todo_files:
                 combine_out = ops.combine(item, ctx)
                 if combine_out:
