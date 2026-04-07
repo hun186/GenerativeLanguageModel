@@ -10,10 +10,10 @@ stages:
     input_from: original
     persist_output: always
 
-  # Stage 2: 英文翻繁中（用原文可避免前一階段過度改寫影響翻譯）
+  # Stage 2: 英文翻繁中
   - name: en_to_zh
     task_key: "Translation-toTWZH"
-    input_from: original
+    input_from: previous
     persist_output: always
 
   # Stage 3: 中文摘要（接續 stage2 產出）
