@@ -1,0 +1,535 @@
+
+4-597-105-31(2)
+© 2016 Sony Corporation / Printed in ChinaDPT-RP1
+Digital Paper System
+Quick Start Guide
+Help Guide (online manual)
+This Quick Start Guide explains how to use the device 
+for the first time and gives safety precautions. For 
+further details, refer to the online Help Guide:
+http://www.sony.net/dpt-rp1/help
+Owner’s Record
+The model and serial number are located at the rear of the 
+device. Record the serial number in the space provided below. 
+Refer to these numbers whenever you contact your Sony dealer 
+regarding this product.
+Model No. DPT-RP1
+Serial No. 
+You are cautioned that any changes or modifications not 
+expressly approved in this manual could void your authority to 
+operate this equipment.
+Getting Started
+Checking the supplied items
+Check the following items are present.
+• Digital Paper device (1)
+• Stylus (1)
+• Replacement tips
+ – Felt (gray) (1)
+ – POM (black) (2)
+• Tip puller (1)
+• USB cable (1)
+• Quick Start Guide (this document) (1)
+• Warranty (1)
+Tip
+For approved accessories, refer to the following Digital Paper product page:
+https://www.sony.com/electronics/mobile-tablets
+Initial setup
+Set up the Digital Paper device (hereafter referred to as “the 
+device”) and your computer according to the instructions 
+displayed.
+1 Turn on the device.
+2 Set a stylus according to the instructions on the screen.
+3 Turn on the computer and connect to the Internet.
+4 Download Digital Paper App from the following site and 
+install on the computer.
+http://www.sony.net/dpapp 
+Digital Paper App is required to transfer documents (PDF 
+files).
+5 Start Digital Paper App and connect the supplied USB cable 
+to the micro USB connector of the device and the USB 
+connector of the computer.
+6 Set the computer according to the instructions displayed 
+by Digital Paper App.
+Documents can be transferred only between the device and 
+the computer.
+7 Update the app software if a software update is advised.
+Note
+Wi-Fi is used only for transferring documents between the device and the 
+computer. The device cannot display Internet content.
+Charging the device and stylus
+1 Turn on the computer.
+2 Connect the supplied USB cable to the micro USB connector 
+of the device or stylus and the USB connector of the 
+computer.
+Charge indicator
+Charge indicator
+Notes
+• Charge the device and stylus within the recommended temperature range of 
+5 °C to 35 °C (41 °F to 95 °F). If the room is too hot or cold, disconnect the USB 
+cable, adjust the room temperature accordingly, then reconnect the USB cable 
+to charge.
+• The device and stylus will not charge if your computer is turned off, enters sleep 
+mode, standby mode or hibernation mode.
+Tip
+The Charge indicator lights up in red while charging.
+Parts and controls
+Digital Paper device
+ Micro USB connector
+  (power) button
+ Charge indicator
+ RESET button
+ (N-Mark)
+ Magnet (for holding the 
+stylus)
+ (home) button
+ Touchscreen
+ Strap hole
+Stylus
+ Micro USB connector
+ Strap hole
+ Charge indicator
+ Part for holding to the 
+device
+ Highlight button
+ Eraser button
+Troubleshooting
+The following information will help you remedy problems if you 
+cannot operate the device.
+1 Charge the device and the stylus.
+2 Reset the device.
+Press the RESET button with a plastic toothpick, clip, etc.
+Press the  (power) button to restart the device.
+Notes
+• Content handwritten within documents, created notes, and settings may be 
+deleted when the device is reset.
+• Do not press the RESET button with a fragile object (pencil lead, etc.).
+How to use the system and the 
+support site
+For more detailed information on using the Digital Paper 
+System, see http://www.sony.com/digitalpapersupport
+If you cannot recover the device
+Consult the Sony Support Center and provide the following 
+information.
+• Model name (specified on the back panel)
+• Serial number (specified on the back panel)
+• Purchase date
+Replacing the stylus tip
+The stylus tip may wear out through use. It is recommended to 
+replace the tip when it becomes shorter than 1.5 mm (1/16 in). 
+Replacement tips and a tip puller are supplied with the device.
+Replace the tip when it becomes 
+shorter than 1.5 mm (1/16 in)
+1 Pinch the tip with the supplied tip puller, then pull it out 
+straight.
+Pinch the base of the tip firmly
+2 Check the orientation of the replacement tip, pinch it with 
+the tip puller, then push it straight into the stylus.
+3 Push the tip firmly with your finger.
+Notes
+• Keep out of reach of children, as the tip may be swallowed. In case the tip is 
+swallowed, please consult your doctor.
+• Pressing on the tip with excessive pressure will wear it out more quickly.
+Tips
+• Replace the stylus tip periodically to prevent damage to the device and 
+maintain consistent operation.
+• If the stylus tip is lost, contact the Sony Support Center.
+Important Information
+Safety
+Do not expose the battery to fire or heat.
+Do not disassemble the battery.
+It may cause electric shock. Do not remove the battery yourself. 
+For battery replacement, internal checking or repair, consult the 
+Sony Support Center.
+Do not charge the device near fire, heat, or leave it in hot 
+sunlight.
+Do not leave coins, keys, jewelry, etc., near the USB 
+connector or USB cable.
+Do not use the device while moving.
+Do not operate the device or watch the display while driving a 
+vehicle, riding a motor cycle, walking, etc.
+Do not use the device where it may distract you from 
+danger; for example at a railroad crossing, road, 
+construction site, etc.
+Be careful not to allow liquid or a foreign object to get into 
+the device, as doing so may cause electric shock or fire.
+If liquid or a foreign object gets into the device, consult the 
+Sony Support Center.
+Keep out of reach of children.
+The stylus or replacement tip may be accidentally swallowed. If 
+the battery is swallowed, consult a doctor immediately. It may 
+cause choking or damage the stomach.
+Never subject the device to high temperature.
+Never subject the device to extremes of light, high temperature 
+(more than 60 °C (140°F)), moisture or vibration.
+For example, if the device is left in a car parked in the sun, 
+excessive heat buildup may result in deformation of the device 
+casing, or other malfunction.
+Do not cover the device with a blanket when turned on.
+The device may overheat and deform or catch fire.
+If you feel discomfort while using the device, stop using it.
+Do not leave the device on an unstable surface.
+Do not leave the device on an unstable or sloping surface. Do 
+not stand the device upright, or turn it upside down. The device 
+may drop or be damaged.
+The device screen is delicate.
+If heavy weight or force is applied, the screen may be 
+damaged.
+Precautions
+Safety
+Handling the device
+• If the device causes interference to radio or television 
+reception, turn the device off and move it away from the radio 
+or television.
+• Refrain from using the device in an aircraft according to the 
+inflight announcements during taking off or landing.
+• When you put the device into a bag, make sure no objects 
+with sharp or hard edges come into direct contact with the 
+device.
+• Do not drop, or put any heavy object on top of the device or 
+apply a strong shock to the device. It may cause a 
+malfunction or damage.
+• Never subject the device to extremes of light, temperature, 
+moisture or vibration.
+• If part of the device that generates heat contacts your skin for 
+a prolonged period, you may suffer burn symptoms, such as 
+redness, swelling, even if the temperature is moderate. Avoid 
+prolonged contact, especially if you have sensitive skin.
+• Do not leave the device on an unstable surface.
+• Do not poke people with the supplied stylus.
+• Do not treat or use the supplied stylus roughly, such as 
+bending it, or scratching the touchscreen with it.
+• Use the supplied stylus only for touchscreen operations.
+• Do not use the stylus if it is damaged or deformed.
+• Do not subject the stylus to shock or vibration.
+• Do not apply any excessive pressure to the stylus tip and 
+stylus button during operation.
+• Do not keep the stylus tip pressed while the stylus is not in 
+use.
+• Do not leave the stylus on the touchscreen. It wastes battery 
+charge of the device and stylus.
+• If an object is placed on the touchscreen, it may cause a 
+malfunction. When not in use, leave the device in sleep mode, 
+or turn it off.
+• When using the device another country/region, it is your 
+responsibility to ensure that it is used in compliance with the 
+following specifications:
+ –AC voltage
+ –Wireless products regulations
+ –Other safety regulations or requirements
+• Be sure not to short-circuit the terminals of the device with 
+metallic objects.
+• Never leave the device exposed to high temperature, such as 
+in a car parked in the sun or under direct sunlight.
+• As the device uses magnets, it may affect medical equipment 
+such as a cardiac pacemaker, defibrillator, or programmable 
+shunt valve. Do not put the device close to medical 
+equipment or people using medical equipment. If you use 
+medical equipment and feel anxious, consult your doctor 
+before you use the device.
+Avoiding water and moisture
+• Note that condensation may form temporarily in cases such 
+as when the player is moved quickly from a low-temperature 
+environment to a high temperature environment or used in a 
+room that has a heater just turned on. Condensation creates a 
+phenomenon where moisture in the air adheres to surfaces 
+such as metal panels, etc., and then changes to liquid. If 
+condensation forms in the device, leave it turned off until the 
+condensation disappears. If you use the device with 
+condensation present, a malfunction may result.
+• The device is not waterproof. Remember to follow the 
+precautions below.
+ –Be careful not to drop the device into a sink or other 
+container filled with water.
+ –Do not use the device in humid locations or bad weather, 
+such as in the rain or snow.
+ –Do not get the device wet.
+If you touch the device with wet hands, or put it in a damp 
+article of clothing, the device may get wet and this may cause a 
+malfunction.
+Charging the device
+• Heat may build up in the device while charging, or if it is used 
+for an extended period of time.
+• Use the supplied USB cable only. Do not use any other USB 
+cable.
+• Never wrap the device in anything when it is being charged. 
+Heat build-up in the device may cause malfunction or 
+damage.
+• If the battery lasts only half the normal time even after being 
+fully charged, it may be reaching the end of its life.
+Cleaning the device
+• Clean the device with a soft cloth, such as a cleaning cloth for 
+eyeglasses. Make sure that there is no dust or dirt on the soft 
+cloth, as the device may be damaged.
+• Do not use any type of abrasive pad, scouring powder or 
+solvent, such as alcohol or benzene, as it may mar the finish 
+of the case.
+• Wipe the stylus with a dry cloth when it gets dirty. Tapping or 
+dragging on the touchscreen using a dirty stylus may damage 
+the surface.
+• Be sure to keep the device away from water or spills.
+Regulatory information
+This device displays the information below.
+• The Declaration of Conformity (DoC) logo and the FCC 
+Identifier (FCC ID) based on the FCC Rules
+• The VCCI mark based on RULES FOR VOLUNTARY CONTROL 
+MEASURES
+• The marks and registration numbers of the radio wave and 
+radio communication acts 
+You can display these marks or registration numbers. Press 
+the (home) button, then tap [Settings]  [Regulatory 
+Information].
+If you cannot display the marks or registration numbers due to 
+a malfunction, contact the Sony Support Center.
+End User License Agreement
+• You can display the End User License Agreement from the 
+[Settings]. 
+Press the (home) button, then tap [Settings]  [System 
+Information]  [End User License Agreement].
+Display
+• The display is made of plastic film to be thin and lightweight. 
+When the device is illuminated, distortion of the plastic film 
+may occur. This is not a malfunction.
+• Do not apply excessive pressure to the touchscreen. The color 
+or brightness may become uneven and may cause the device 
+to malfunction.
+• When using the device in a cold environment, the screen may 
+change at a slower speed. This is not a malfunction.
+Security
+You can lock the screen lock on the device. When the screen 
+lock is on, entering the lock password will be required when the 
+device is turned on or the device is woken from sleep mode.
+To set the lock password, press the (home) button, then tap 
+[Settings]  [Screen Lock]  [Screen Lock]  [Enable]. The lock 
+password should be between 4 to 20 alphanumeric characters 
+and symbols.
+ –Do not create a lock password that other people could easily 
+guess. Change your password periodically.
+ –Be sure to remember your lock password. If you forget your 
+lock password, contact the Sony Support Center. The device 
+may be unlocked. However, all documents stored on the 
+device will be deleted.
+ –When the device is woken from sleep mode, you can unlock 
+the screen lock with the FeliCa card, cellular phone that 
+supports FeliCa, smartphone and so on. For details, refer to 
+the Help Guide.
+Wi-Fi connectivity 
+• The Wireless LAN functionality has passed Wi-Fi certification 
+and complies with the interoperability specifications 
+established by WFA (Wi-Fi Alliance).
+Wireless feature
+• Turn off the wireless feature of the device when you are in a 
+location where radio communications are prohibited. You 
+must obtain permission from the appropriate authorities 
+before enabling the wireless feature in such places.
+• Turn off the wireless feature in health care facilities where any 
+regulations posted in such areas instruct you to do so. 
+Hospitals or health care facilities may be using equipment 
+that could be affected by radio frequency (RF) energy which is 
+generated by wireless communication.
+• Do not use your device near medical equipment without first 
+obtaining permission to do so.
+• General notes on using the Wi-Fi (Wireless LAN) function. 
+In some countries or regions, use of Wi-Fi products may be 
+restricted by the local regulations (e.g. limited number of 
+channels).
+Usage environment of NFC
+If the device is placed on a metal desk, it may not function 
+properly, such as failing to communicate with the FeliCa card or 
+devices that support FeliCa. In this case, keep a few centimeters 
+between the device and the metal desk.
+Applications on the device
+Disclaimer: In no event will SONY be liable for any financial 
+damage, or loss of profits, including claims made by third 
+parties, arising out of the use of the software supplied with this 
+device.
+Sony is not responsible for incomplete recording/downloading 
+or damaged data due to problems of the device or computer.
+• Copyright laws prohibit reproducing the software or the 
+manual accompanying it in whole or in part, or renting the 
+software without the permission of the copyright holder.
+• Due to continued efforts to improve quality, software 
+specifications may be changed without notice.
+• Operation of this device with software other than that 
+provided is not covered by the warranty.
+• Depending on the types of the text and characters, the text 
+shown on the device may not be displayed properly. This is 
+due to:
+ –The capacity of the device.
+ –The device is not functioning normally.
+ –Content information is written in a language or character 
+that is not supported by the device.
+• We do not guarantee all languages will be able to be 
+displayed properly on your device.
+• User-created characters and some special characters may not 
+be displayed.
+Touchscreen
+• Do not press the screen or screen frame strongly or rub the 
+screen. When operating the device, touch it softly.
+• You can use the stylus while resting your hands on the 
+touchscreen. When the stylus is near the touchscreen, the 
+finger operation is inactive.
+RECYCLING LITHIUM-ION BATTERIES
+Lithium-Ion batteries are recyclable.
+You can help preserve our environment by returning your used 
+rechargeable batteries to the collection and recycling location 
+nearest you.
+For more information regarding recycling of rechargeable 
+batteries, visit 
+www.sony.com/electronics/eco/environmental-management
+The device Disposal Reference
+The built-in rechargeable battery of the device is recyclable. Do 
+not remove the battery yourself; consult the Sony Support 
+Center.
+For customers in the USA
+FCC Compliance Statement
+NOTE:
+This equipment has been tested and found to comply with the 
+limits for a Class B digital device, pursuant to Part 15 of the FCC 
+Rules. These limits are designed to provide reasonable 
+protection against harmful interference in a residential 
+installation. This equipment generates, uses and can radiate 
+radio frequency energy and, if not installed and used in 
+accordance with the instructions, may cause harmful 
+interference to radio communications.
+However, there is no guarantee that interference will not occur 
+in a particular installation. If this equipment does cause harmful 
+interference to radio or television reception, which can be 
+determined by turning the equipment off and on, the user is 
+encouraged to try to correct the interference by one or more of 
+the following measures:
+• Reorient or relocate the receiving antenna.
+• Increase the separation between the equipment and receiver.
+• Connect the equipment into an outlet on a circuit different 
+from that to which the receiver is connected.
+• Consult the dealer or an experienced radio/TV technician for 
+help.
+This DPT-RP1 has been tested and meets the FCC RF exposure 
+guidelines when used with the Sony Corporation accessories 
+supplied or designated for this product. Use of other 
+accessories may not ensure compliance with FCC RF exposure 
+guidelines.
+If you have any questions about this product, you may call:
+Sony Customer Information Center
+1-800-222-SONY (7669) or
+http://www.sony.com/
+The number below is for the FCC related matters only.
+Regulatory Information
+Declaration of Conformity
+Trade Name: SONY
+Model No.: DPT-RP1
+Responsible Party: Sony Electronics Inc.
+Address: 16535 Via Esprillo, San Diego, CA92127 U.S.A.
+Telephone Number: 858-942-2230
+This device complies with Part 15 of the FCC Rules.
+Operation is subject to the following two conditions: (1) this 
+device may not cause harmful interference, and (2) this 
+device must accept any interference received, including 
+interference that may cause undesired operation.
+• In order to comply with FCC radio-frequency radiation 
+exposure guidelines for an uncontrolled exposure, this device 
+and its antenna must not be co-located or operating in 
+conjunction with any other antenna or transmitter.
+FCC Radiation Exposure Statement
+The available scientific evidence does not show that any health 
+problems are associated with using low power wireless devices. 
+There is no proof, however, that these low power wireless 
+devices are absolutely safe. Low power Wireless devices emit 
+low levels of radio frequency energy (RF) in the microwave 
+range while being used. Whereas high levels of RF can produce 
+health effects (by heating tissue), exposure of low-level RF that 
+does not produce heating effects causes no known adverse 
+health effects. Many studies of low-level RF exposures have not 
+found any biological effects. Some studies have suggested that 
+some biological effects might occur, but such findings have not 
+been confirmed by additional research. DPT-RP1 has been 
+tested and found to comply with FCC radiation exposure limits 
+set forth for an uncontrolled environment and meets the FCC 
+radio frequency (RF) Exposure Guidelines.
+No guarantee for data
+Sony is not responsible for damaged (or deleted) data due to 
+any problem with the device or computer.
+Backup
+Sony recommends that you make a backup of the contents of 
+the device in case of operation error or data corruption.
+Legal Notice
+Copyright laws prohibit copying the data of this product or the 
+contents of this manual (illustrations, related documents, etc.) 
+in whole or in part without the permission of the copyright 
+holder. Additionally, use of the data of this product or the 
+contents of this manual is not allowed without Sony’s 
+permission except for personal use.
+• Sony, the Sony logo are either trademarks or registered 
+trademarks of Sony Corporation.
+• Microsoft and Windows are trademarks or registered 
+trademarks of Microsoft Corporation in the United States and 
+/ or other countries.
+• Macintosh and Mac OS are trademarks of Apple Inc., 
+registered in the U.S. and other countries.
+• This DPT-RP1 contains Adobe Reader Mobile software under 
+license from Adobe Systems Incorporated, Copyright © 
+1995-2011 Adobe Systems Incorporated. All rights reserved. 
+Adobe and Reader are trademarks of Adobe Systems 
+Incorporated.
+• This product includes software developed by the OpenSSL 
+Project for use in the OpenSSL Toolkit. 
+(http://www. openssl.org/) Copyright © 1998-2011 
+The OpenSSL Project. All rights reserved.
+• Wi-Fi, the Wi-Fi CERTIFIED logo, WPA, WPA2 and Wi-Fi 
+Protected Setup are trademarks or registered trademarks of 
+Wi-Fi Alliance.
+• Foxit PDF SDK Copyright © 2013, Foxit Corporation www.
+foxitsoftware.com, All rights reserved.
+• Portions of this software are Copyright ©2005 
+The FreeType Project (www.freetype.org). All rights reserved.
+• This software is based in part on the work of the Independent 
+JPEG Group.
+• The N-Mark is a trademark or registered trademark of NFC 
+Forum, Inc. in the United States and in other countries.
+• FeliCa is a trademark of Sony Corporation.
+All other system names and product names appearing in this 
+document are the registered trademarks or trademarks of their 
+respective owners.
+Further, the trademark™ and registered trademark® symbols 
+are not indicated throughout this document.
+Specifications
+Model
+DPT-RP1
+Basic information
+Display 338 mm (13.3 in) diagonal 
+electrophoretic display
+1650 × 2200 pixel, 16-level 
+gray scale
+Touchscreen Projected capacitive 
+touchscreen capable of pen 
+input
+Internal memory capacity (for 
+data storage)/User available 
+capacity
+16 GB/Approx. 11 GB
+Interface Micro USB connector
+Power source
+Battery Built-in rechargeable battery
+Operating/Charging 
+temperature
+5 °C to 35 °C (41 °F to 95 °F)
+Dimensions/Mass
+Dimensions (w/h/d) Approx. 224 mm ×302.6 mm 
+× 5.9 mm (8 7/8 in × 12 in × 
+1/4 in)
+Mass (including battery) Approx. 349 g (12.3 oz)
+Stylus
+Battery Built-in rechargeable battery
+Operating/Charging 
+temperature
+5 °C to 35 °C (41 °F to 95 °F)
+Design and specifications are subject to change without notice.
+Supported File Types
+The following files can be transferred between the device and 
+the computer. However, depending on the file size and format, 
+it may not be possible to view some data. File extensions are 
+shown in parentheses below.
+Documents
+• PDF files (.pdf)*
+* Compliant with PDF 1.7 specifications. 
+The device does not support PDFs with extended features of Adobe extension 
+level 1-8.

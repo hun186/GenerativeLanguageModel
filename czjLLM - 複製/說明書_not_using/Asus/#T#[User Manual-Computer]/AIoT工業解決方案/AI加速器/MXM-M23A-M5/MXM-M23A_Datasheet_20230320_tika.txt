@@ -1,0 +1,38 @@
+
+PowerPoint 簡報
+Embedded MXM GPU Type A Modules with Intel® Arc™ A-series graphics
+Features
+• Intel® Arc™ A-series discrete GPU with up to 8 Xe-Cores
+• Standard MXM 3.1 Type A form factor (82mm x 70mm)
+• 4GB GDDR6 memory, 64-bit 
+• PCIe Gen4 x8 interface
+• Support up to 4 DisplayPort 4K@ 60Hz
+• Support OpenVINO, Intel® Deep Link
+• DirectX12 Ultimate, OpenGL 4.6, OpenCL 3.0, AV1, H.264/H.265 (HEVC)
+Specifications
+Model Name MXM-M23A-M7 MXM-M23A-M5
+Graphic Core 
+GPU Intel ArcTM A370M Intel ArcTM A350M 
+Memory 4GB GDDR6, 112GB/s, 64-bit
+GPGPU Computing 
+Xe-Cores 8 6
+Matrix Engines (XMX) 128 96
+Vector engines (XVE) 128 96
+Graphics Engine DX12 Ultimate, OpenGL 4.6, OpenCL 3.0, AV1, H.264/H.265 (HEVC)
+Display 
+Display Outputs
+4x DisplayPort 1.4/ 2.0*
+(Optional 4x HDMI 2.0/ 2.1*)**
+Interface MXM 3.1, PCIe 4.0 x8 support
+Mechanicals 
+Dimensions 82 (W) x 70 (D) x 6.2 (H) mm
+Form Factor Standard MXM 3.1 Type A 
+Environmental
+Operating Temp. Standard: 0°C to 55°C
+Storage Temp. -40°C to 85°C
+Power Consumption 35W - 50W TGP 25W - 35W TGP
+SW Support
+OS Support Windows 11, 10 64-bit, Ubuntu 22.04 LTS
+Mobile PCI Express Modules with Intel® Discrete GPUs
+*Depend on the design of MXM carrier
+**For optional HDMI support, please contact ASUS IoT

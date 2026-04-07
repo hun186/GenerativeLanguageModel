@@ -1,0 +1,1651 @@
+
+ 
+Monitor LCD Seria 
+C620A/C422A/C622A/
+C423A/C623A/
+C424A/C624A/C624B/
+C624W/C627A
+Ghidul utilizatorului
+ii
+Prima ediţie 
+Iunie 2015
+Drepturi de autor © 2015 ASUSTeK COMPUTER INC. Toate drepturile rezervate.
+Nicio parte din acest manual, inclusiv produsele sau software-urile descrise în acesta, nu 
+poate fi reprodusă, transmisă, transcrisă, stocată într-un sistem de recuperare sau tradusă 
+în orice limbă sau prin orice mijloace, cu excepţia documentaţiei păstrate de cumpărător în 
+scopuri de recuperare, fără permisiunea scrisă expresă a companiei ASUSTeK COMPUTER 
+INC. („ASUS”).
+Garanţia sau perioada de service a produsului nu va fi prelungită dacă: (1) produsul este 
+reparat, modificat sau alterat, numai în cazul în care o astfel de reparaţie, modificare sau 
+alterare este autorizată în scris de către ASUS; sau (2) numărul de serie al produsului este 
+şters sau lipseşte.
+ASUS FURNIZEAZĂ ACEST MANUAL „CA ATARE”, FĂRĂ NICIUN FEL DE GARANŢII, FIE ELE 
+EXPRESE SAU IMPLICITE, INCLUSIV DAR FĂRĂ A SE LIMITA LA GARANŢIILE IMPLICITE 
+SAU CONDIŢIILE DE COMERCIALIZARE SAU POTRIVIREA PENTRU UN ANUMIT SCOP. ASUS, 
+DIRECTORII, MEMBRII, ANGAJAŢII SAU AGENŢII SĂI NU VOR FI RESPONSABILI ÎN NICIUN 
+CAZ PENTRU ORICE DAUNE INDIRECTE, SPECIALE, ACCIDENTALE SAU CORELATE (INCLUSIV 
+DAUNE PENTRU PIERDERI DE PROFIT, PIERDERI DE AFACERI, PIERDERI DE UTILIZĂRI 
+SAU DATE, ÎNTRERUPERI DE ACTIVITATE ŞI ALTE DAUNE ASEMĂNĂTOARE), CHIAR DACĂ 
+COMPANIA ASUS A FOST INFORMATĂ DESPRE POSIBILITATEA UNOR ASTFEL DE DAUNE 
+REZULTATE ÎN URMA ORICĂRUI DEFECT SAU EROARE DIN ACEST MANUAL SAU PRODUS.
+SPECIFICAŢIILE ŞI INFORMAŢIILE CUPRINSE ÎN ACEST MANUAL SUNT FURNIZATE NUMAI 
+ÎN SCOP INFORMATIV, POT FI MODIFICATE ÎN ORICE MOMENT FĂRĂ NOTIFICARE ŞI NU 
+TREBUIE CONSIDERATE UN ANGAJAMENT AL COMPANIEI ASUS. COMPANIA ASUS NU ÎŞI 
+ASUMĂ RESPONSABILITATEA SAU RĂSPUNDEREA PENTRU ORICE ERORI SAU INADVERTENŢE 
+CARE POT SĂ APARĂ ÎN ACEST MANUAL, INCLUSIV ÎN PRODUSELE ŞI SOFTWARE-URILE 
+DESCRISE ÎN ACESTA.
+Numele produselor şi corporaţiilor care apar în acest manual pot fi mărci înregistrate sau 
+drepturi de autor ale companiilor respective sau nu şi sunt utilizate numai pentru identificare 
+sau explicare şi în beneficiul proprietarilor, fără intenţia de a încălca legea.
+iii
+Cuprins
+Cuprins ...............................................................................iii
+Notificări ............................................................................iv
+Informaţii privind siguranţa ..............................................vii
+Îngrijire şi curăţare ..........................................................viii
+Takeback Services ..............................................................ix
+Capitolul 1: Prezentare produs
+1.1 Bun venit! ............................................................ 1-1
+1.2 Conţinutul ambalajului .......................................... 1-1
+1.3 Prezentare monitor ................................................ 1-2
+1.3.1 Partea frontală ..............................................1-2
+1.3.2 Partea din spate ............................................1-4
+1.3.3 Funcţia QuickFit ............................................1-5
+Capitolul 2: Setare
+2.1 Asamblarea piciorului/bazei monitorului ............... 2-1
+2.2 Demontarea piciorului/bazei 
+ (pentru montare pe perete VESA) .......................... 2-1
+2.3 Montarea/demontarea kitului MiniPC 
+ (C620A/C622A/C623A/C624A/ ..................................
+ C624B/C624W/C627A).......................................... 2-3
+2.4 Reglarea monitorului ............................................. 2-4
+2.5 Conectarea cablurilor ............................................. 2-5
+2.6 Pornirea monitorului .............................................. 2-6
+Capitolul 3: Instrucţiuni generale
+3.1 Meniu OSD (On-Screen Display) ........................... 3-1
+3.1.1 Mod de reconfigurare ..................................... 3-1
+3.1.2 Prezentarea funcţiei OSD ................................ 3-2
+3.2 Prezentare specificaţii ......................................... 3-10
+3.3 Depanare (Întrebări frecvente) ........................... 3-17
+3.4 Moduri de operare suportate ............................... 3-18
+iv
+Notificări
+Declaraţia Comisiei federale de comunicaţii
+Acest dispozitiv respectă Secţiunea 15 din Regulamentul FCC. 
+Funcţionarea presupune următoarele două condiţii:
+• Acest dispozitiv nu provoacă interferenţe dăunătoare şi
+• Acest dispozitiv trebuie să accepte orice interferenţă primită, inclusiv 
+interferenţele care pot cauza o funcţionare nedorită.
+Acest echipament a fost testat şi s-a dovedit că respectă limitele 
+pentru un dispozitiv digital de Clasa B, conform Secţiunii 15 din 
+Regulamentul FCC. Aceste limite sunt destinate să furnizeze o 
+protecţie rezonabilă împotriva interferenţelor dăunătoare dintr-o 
+instalaţie rezidenţială. Acest echipament generază, utilizează şi 
+poate radia energie pe frecvenţe radio şi, în cazul în care nu este 
+instalat şi utilizat în conformitate cu instrucţiunile producătorului, 
+poate cauza interferenţe dăunătoare pentru comunicaţiile radio. 
+Cu toate acestea, nu există nicio garanţie că nu vor exista 
+interferenţe într-o anumită instalaţie. În cazul în care acest 
+echipament cauzează interferenţe dăunătoare pentru recepţia 
+radio sau a televiziunii, care poate fi determinată prin oprirea 
+şi pornirea echipamentului, utilizatorul este sfătuit să încerce 
+să corecteze interferenţa prin intermediul uneia sau mai multor 
+măsuri dintre următoarele:
+• Reorientarea sau mutarea antenei de recepţie.
+• Mărirea distanţei dintre echipament şi receptor.
+• Conectarea echipamentului la o priză dintr-un circuit diferit faţă de 
+acela la care este conectat receptorul.
+• Consultarea furnizorului sau a unui tehnician experimentat de radio/
+televiziune.
+Utilizarea cablurilor ecranate pentru conectarea monitorului la placa 
+video este necesară pentru asigurarea respectării regulamentului FCC. 
+Schimbările sau modificările acestei unităţi care nu au fost aprobate în 
+mod expres de către partea responsabilă cu conformitatea pot anula 
+autoritatea utilizatorului de a folosi acest echipament.
+Produs conform cu standardul ENERGY STAR
+ENERGY STAR este un program comun al Agenţiei pentru 
+Protecţia Mediului din SUA şi al Departamentului de Energie 
+din SUA, care ne ajută pe toţi să economisim bani şi să 
+protejăm mediul înconjurător prin produse şi practici 
+eficiente din punct de vedere energetic.
+v
+Toate produsele ASUS care poartă sigla ENERGY STAR respectă 
+standardul ENERGY STAR, iar funcţia de gestionare a energiei este 
+activată în mod implicit. Monitorul şi computerul sunt setate să intre 
+automat în modul de inactivitate după 10 şi 30 de minute de inactivitate 
+a utilizatorului. Pentru a reactiva computerul, faceţi clic pe mouse sau 
+apăsaţi orice tastă de pe tastatură. Vizitaţi 
+http://www.energystar.gov/powermanagement pentru informaţii 
+detaliate despre gestionarea energiei şi despre beneficiile acesteia 
+pentru mediu. De asemenea, vizitaţi http://www.energystar.gov pentru 
+informaţii detaliate despre programul comun ENERGY STAR.
+NOTĂ: Standardul Energy Star NU este acceptat pe sistemele de 
+operare bazate pe FreeDOS şi Linux.
+Declaraţia Departamentului de comunicaţii canadian
+Acest aparat digital nu depăşeşte limitele de Clasa B pentru 
+emisiile de zgomot radio ale unui aparat digital stabilite în 
+Regulamentul privind interferenţele radio al Departamentului de 
+comunicaţii canadian.
+Acest aparat digital de Clasa B respectă normele ICES-003 din 
+Canada.
+This Class B digital apparatus meets all requirements of the 
+Canadian Interference - Causing Equipment Regulations.
+Cet appareil numérique de la classe B respecte toutes les 
+exigences du Réglement sur le matériel brouiller du Canada.
+vi
+A third-party certification according to ISO 14024
+Say hello
+to a more sustainable product
+IT products are associated with a wide range of sustainability risks 
+throughout their life cycle. Human rights violations are common in the 
+factories. Harmful substances are used both in products and their 
+manufacture. Products can often have a short lifespan because of poor 
+ergonomics, low quality and when they are not able to be repaired or 
+upgraded. 
+This product is a better choice. It meets all the criteria in TCO Certified, 
+the world’s most comprehensive sustainability certification for IT 
+products. Thank you for making a responsible product choice, that help 
+drive progress towards a more sustainable future!
+Criteria in TCO Certified have a life-cycle perspective and balance 
+environmental and social responsibility. Conformity is verified by 
+independent and approved verifiers that specialize in IT products, social 
+responsibility or other sustainability issues. Verification is done both 
+before and after the certificate is issued, covering the entire validity 
+period. The process also includes ensuring that corrective actions are 
+implemented in all cases of factory non-conformities. And last but not 
+least, to make sure that the certification and independent verification is 
+accurate, both TCO Certified and the verifiers are reviewed regularly.
+Want to know more?
+Read information about TCO Certified, full criteria documents, news and 
+updates at tcocertified.com. On the website you’ll also find our Product 
+Finder, which presents a complete, searchable listing of certified 
+products. 
+Toward sustainable IT products
+vii
+Informaţii privind siguranţa
+• Înainte de configurarea monitorului, citiţi cu atenţie toate 
+documentele care v-au fost furnizate în pachet. 
+• Pentru prevenirea incendiilor sau a pericolelor electrice, nu expuneţi 
+niciodată monitorul la ploaie sau umezeală. 
+• Nu încercaţi niciodată să deschideţi carcasa monitorului. Tensiunile 
+ridicate periculoase din interiorul monitorului vă pot provoca 
+vătămări corporale grave. 
+• În cazul în care sursa de alimentare este defectă, nu încercaţi să o 
+reparaţi de unul singur. Contactaţi un tehnician de service autorizat 
+sau distribuitorul. 
+• Înainte de utilizarea produsului, asiguraţi-vă că toate cablurile 
+sunt conectate în mod corect şi că cablurile de alimentare nu sunt 
+deteriorate. În cazul în care constataţi deteriorări, contactaţi imediat 
+distribuitorul. 
+• Sloturile şi orificiile de pe partea din spate şi de sus a carcasei au 
+rolul de ventilare. Nu blocaţi aceste sloturi. Nu aşezaţi niciodată 
+acest produs lângă sau pe un radiator sau o sursă de căldură în cazul 
+în care acesta nu are o ventilaţie corespunzătoare. 
+• Monitorul trebuie utilizat numai cu tipul de sursă de alimentare 
+indicat pe etichetă. Dacă nu sunteţi siguri de tipul de sursă de 
+alimentare a locuinţei dumneavoastră, consultaţi distribuitorul sau 
+compania de electricitate locală. 
+• Folosiţi ştecherul de alimentare corespunzător, care respectă 
+standardele locale de electricitate. 
+• Nu supraîncărcaţi cablurile de alimentare multiplă şi prelungitoarele. 
+Supraîncărcarea poate cauza incendii sau şocuri electrice. 
+• Evitaţi praful, umiditatea şi temperaturile extreme. Nu aşezaţi 
+monitorul într-o zonă în care poate deveni umed. Aşezaţi monitorul 
+pe o suprafaţă stabilă. 
+• Deconectaţi unitatea în timpul unei furtuni sau dacă aceasta nu va 
+fi utilizată pentru o perioadă lungă de timp. Acest lucru va proteja 
+monitorul de daunele cauzate de căderile de tensiune. 
+• Nu împingeţi obiecte şi nu turnaţi niciodată lichide de niciun fel prin 
+sloturile carcasei monitorului.
+• Pentru asigurarea unei funcţionări satisfăcătoare, utilizaţi monitorul 
+numai cu computere din lista UL, care au prize configurate 
+corespunzător, marcate cu 100-240V AC. 
+• În cazul în care întâmpinaţi probleme tehnice cu monitorul, contactaţi 
+un tehnician de service autorizat sau distribuitorul. 
+• Reglarea controalelor de volum, precum şi egalizatorul altor setări 
+decât poziţia centrală pot mări tensiunea de ieşire audio/căşti şi, prin 
+urmare, nivelul de presiune al sunetului.
+Acest simbol cu un coş de gunoi mobil tăiat indică faptul că produsul 
+(echipament electric sau electronic, şi bateria cu celule care conţin 
+mercur) nu trebuie eliminte la un loc cu deşeurile municipale. Vă 
+rugăm să verificaţi reglementările locale pentru eliminarea produselor 
+electronice.
+A third-party certification according to ISO 14024
+Say hello
+to a more sustainable product
+IT products are associated with a wide range of sustainability risks 
+throughout their life cycle. Human rights violations are common in the 
+factories. Harmful substances are used both in products and their 
+manufacture. Products can often have a short lifespan because of poor 
+ergonomics, low quality and when they are not able to be repaired or 
+upgraded. 
+This product is a better choice. It meets all the criteria in TCO Certified, 
+the world’s most comprehensive sustainability certification for IT 
+products. Thank you for making a responsible product choice, that help 
+drive progress towards a more sustainable future!
+Criteria in TCO Certified have a life-cycle perspective and balance 
+environmental and social responsibility. Conformity is verified by 
+independent and approved verifiers that specialize in IT products, social 
+responsibility or other sustainability issues. Verification is done both 
+before and after the certificate is issued, covering the entire validity 
+period. The process also includes ensuring that corrective actions are 
+implemented in all cases of factory non-conformities. And last but not 
+least, to make sure that the certification and independent verification is 
+accurate, both TCO Certified and the verifiers are reviewed regularly.
+Want to know more?
+Read information about TCO Certified, full criteria documents, news and 
+updates at tcocertified.com. On the website you’ll also find our Product 
+Finder, which presents a complete, searchable listing of certified 
+products. 
+Toward sustainable IT products
+viii
+Îngrijire şi curăţare
+• Înainte de ridicarea şi repoziţionarea monitorului, este bine să 
+deconectaţi cablurile, inclusiv cablul de alimentare. Urmaţi tehnicile 
+de ridicare corect atunci când repoziţionaţi monitorul. Atunci când 
+ridicaţi sau transportaţi monitorul, prindeţi de marginile acestuia. Nu 
+ridicaţi monitorul de picior sau de cablu. 
+• Curăţare. Opriţi monitorul şi deconectaţi cablul de alimentare. 
+Curăţaţi suprafaţa monitorului cu o lavetă non-abrazivă, care nu lasă 
+scame. Petele persistente pot fi îndepărtate cu o lavetă umezită cu 
+dergent mediu. 
+• Evitaţi utilizarea unui detergent care conţine alcool sau acetonă. 
+Folosiţi un detergent destinat utilizării pentru monitoare. Nu 
+pulverizaţi niciodată detergent direct pe ecran, deoarece acesta se 
+poate scurge în interiorul monitorul şi poate provoca şocuri electrice. 
+Următoarele simptome ale monitorului sunt normale:
+• Este posibil să observaţi o strălucire uşor neuniformă pe ecran, în 
+funcţie de fundalul de desktop utilizat. 
+• Atunci când o singură imagine este afişată timp de mai multe ore, 
+după schimbarea acesteia poate să rămână un ecou al ecranului 
+precedent. Ecranul va reveni apoi uşor sau puteţi opri comutatorul de 
+alimentare pe durata acestor ore. 
+• Atunci când ecranul devine negru, clipeşte sau nu mai funcţionează, 
+contactaţi distribuitorul sau centrul de servicii pentru reparare. Nu 
+reparaţi ecranul de unul singur! 
+Simboluri utilizate în acest ghid
+ATENŢIE: Informaţie pentru prevenirea accidentărilor personale 
+atunci când încercaţi să rezolvaţi o sarcină. 
+AVERTISMENT: Informaţie pentru prevenirea daunelor 
+componentelor atunci când încercaţi să rezolvaţi o sarcină. 
+IMPORTANT: Informaţii pe care TREBUIE să le urmaţi pentru 
+rezolvarea unei sarcini.
+OBSERVAŢIE: Sfaturi şi informaţii suplimentare pentru a vă 
+ajuta să rezolvaţi o sarcină.
+ix
+Unde puteţi găsi mai multe informaţii
+Consultaţi următoarele surse pentru informaţii suplimentare şi pentru 
+actualizări despre produse şi software.
+1. Website-urile ASUS
+Website-urile ASUS din întreaga lume oferă informaţii actualizate 
+despre produsele hardware şi software ASUS. Consultaţi 
+http://www.asus.com.
+2. Documentaţie opţională
+Pachetul produsului dumneavoastră poate include documente 
+opţionale, adăugate de către distribuitorul dumneavoastră. Aceste 
+documente nu fac parte din pachetul standard.
+Takeback Services
+ASUS recycling and takeback programs come from our commitment 
+to the highest standards for protecting our environment. We believe in 
+providing solutions for our customers to be able to responsibly recycle 
+our products, batteries and other components as well as the packaging 
+materials. 
+Please go to http://csr.asus.com/english/Takeback.htm for detail 
+recycling information in different region.
+x
+1-1Monitor LCD ASUS Seria C 
+1.1 Bun venit! 
+Vă mulţumim că aţi achiziţionat monitorul LCD ASUS®!
+Cel mai nou monitor LCD cu ecran lat de la ASUS oferă un afişaj 
+mai mare, mai luminos şi mai clar, plus o serie de funcţii care vă 
+îmbunătăţesc experienţa de vizionare. 
+Cu aceste funcţii vă puteţi bucura de confortul şi exprienţa vizuală 
+încântătoare pe care v-o oferă monitorul!
+1.2 Conţinutul ambalajului
+Verificaţi dacă ambalajul dumneavoastră conţine următoarele elemente:
+ Monitor LCD
+ Bază monitor
+ Ghid rapid de utilizare
+ Garanţie
+ Cablu de alimentare
+ Cablu DVI (pentru anumite modele)
+ Cablu HDMI (pentru anumite modele)
+ Cablu DisplayPort (pentru anumite modele)
+ Cablu DisplayPort (de la Mini-DP la DP) (pentru anumite modele)
+ Cablu VGA (pentru anumite modele)
+ Cablu USB (pentru anumite modele)
+ Cablu audio (pentru anumite modele)
+ Kit MiniPC (pentru anumite modele)
+În cazul în care unul dintre elementele de mai sus este deteriorat sau 
+lipseşte, contactaţi imediat distribuitorul.
+1-2 Capitolul 1: Prezentare produs
+1.3 Prezentare monitor
+1.3.1 Partea frontală
+C422A/C423A/C424A 
+Menu
+Close
+Quick Fit
+Brightness
+Blue Light Filter
+Menu
+Close
+Quick Fit
+Brightness
+Blue Light Filter
+C620A/C622A/C623A/C624A/C624B/
+C624W/C627A
+7
+123456
+1. Buton de pornire/indicator de pornire
+• Porneşte/opreşte monitorul.
+• Descrierea culorilor indicatorului de pornire este prezentată în 
+tabelul de mai jos.
+Stare Descriere
+Alb Pornit
+Auriu Mod aşteptare
+Oprit Oprit
+2. Buton meniu:
+• Apăsaţi acest buton pentru a afişa meniul OSD, atunci când OSD 
+este oprit.
+• Intră în meniul OSD.
+• Activează şi dezactivează funcţia Blocare taste, la o apăsare 
+continuă de aproximativ 5 secunde.
+3. Buton închidere: 
+• Apăsaţi acest buton pentru a afişa meniul OSD, atunci când OSD 
+este oprit.
+• Iese din meniul OSD. 
+4. Butonul QuickFit:
+• Apăsaţi acest buton pentru a afişa meniul OSD, atunci când OSD 
+este oprit.
+• Aceasta este o tastă rapidă pentru activarea funcţiei QuickFit 
+proiectată special pentru aliniere.
+• Funcţia QuickFit conţine pagini cu modele grilă comune, 
+dimensiuni hârtie şi dimensiuni fotografie. (Vă rugăm să 
+consultaţi 1.3.3 Funcţia QuickFit). 
+1-3Monitor LCD ASUS Seria C 
+5. Scurtătură 
+• Apăsaţi acest buton pentru a afişa meniul OSD, atunci când OSD 
+este oprit.
+• Implicit: Tasta rapidă Strălucire
+• Pentru a schimba funcţia tastei rapide, accesaţi meniul Scurtătură 
+> Scurtătură 1.
+6. Scurtătură 
+• Apăsaţi acest buton pentru a afişa meniul OSD, atunci când OSD 
+este oprit.
+• Implicit: Tasta rapidă Filtru Lumină Albastră
+• Pentru a schimba funcţia tastei rapide, accesaţi meniul Scurtătură 
+> Scurtătură 2.
+7. Sezor uman (doar pentru C623AQR):
+• Detectează prezenţa utilizatorului în faţa monitorului. 
+Monitorul intră automat în modul de aşteptare atunci când nu 
+este detectat niciun obiect mobil în faţa monitorului timp de 
+mai mult de 60 de secunde. Atunci când utilizatorul revine, 
+monitorul se aprinde automat, în momentul în care detectează 
+prezenţa utilizatorului. Setarea implicită pentru Senzorul uman 
+este „Oprit”. Utilizatorul poate activa această funcţie prin 
+intermediul setărilor OSD.
+1-4 Capitolul 1: Prezentare produs
+1.3.2 Partea din spate
+C422AQ/C423AQ/
+C424AQ
+C422AQE/C423AQE/
+C424AQE
+C620AQE/C622AQE/
+C623AQE/C624AQE
+1 2 3 4 5 6 7 8
+10
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8
+C422AQH
+10
+1 2 3 4 57 8 11 6 9
+C422AQHE
+1 2 3 4 57 8 11 6
+C620AQ/C622AQ/
+C623AQ/C623AQR/
+C624AQ/C624BQ
+10
+1 2 3 4 5 6 7 8 9
+C627AQ
+10
+1 2 3 45 7 8 911 1012
+C624WQ
+10
+1 2 3 47 8 11 6 9 10
+C622AQH/C623AQH/
+C624AQH/C624BQH
+10
+1 2 3 4 57 8 11 6 9
+1. Slot de blocare Kensington.
+2. Comutator de alimentare. Apăsaţi comutatorul pentru a porni/
+opri alimentarea.
+3. Port AC-IN. La acest port se conectează cablul de alimentare.
+1-5Monitor LCD ASUS Seria C 
+4. DisplayPort in. Acest port este utilizat pentru conectarea unui 
+dispozitiv compatibil cu DisplayPort. 
+5. Port DVI. Acest port cu 24 de pini este utilizat pentru conectarea 
+unui PC (computer personal) printr-un semnal digital DVI-D.
+6. Port VGA. Acest port cu 15 pini este pentru conexiunea VGA a PC-
+ului.
+7. Port intrare audio. Acest port conectează sursa audio a PC-ului 
+prin cablul audio.
+8. Mufă jack pentru căşti. Acest port este disponibil numai atunci 
+când este conectat un cablu HDMI/DisplayPort.
+9. Port USB upstream. Acest port este utilizat pentru conectarea 
+unui cablu USB upstream. Conexiunea activează porturile USB de 
+pe monitor.
+10. Porturi USB downstream. Aceste porturi sunt utilizate cu 
+dispozitive USB, precum o tastatură/mouse USB, stick USB, etc.
+11. Port HDMI. Acest port este utilizat pentru conectarea unui 
+dispozitiv compatibil HDMI.
+12. Mini DisplayPort in. Acest port este utilizat pentru conectarea 
+unui dispozitiv compatibil cu Mini DisplayPort.
+1.3.3 Funcţia QuickFit
+Funcţia QuickFit conţine trei modele: (1) Modele grilă (2) Dimensiune 
+hârtie (3) Dimensiune fotografie. Pentru a activa modelele, apăsaţi 
+butonul QuickFit. Apăsaţi butoanele conform indicaţiilor de pe ecran, 
+pentru a naviga printre modele.
+Este posibil ca unele dintre următoarele modele să nu fie disponibile. 
+Vă rugăm consultaţi modelele reale afişate pe monitor.
+1. Modele grilă
+Modelele grilă îi ajută pe utilizatori să organizeze şi să compare mai 
+eficient diferite conţinuturi, precum vizualizarea unor foi de calcul şi 
+editarea de fotografii.
+Aliniere grilă 1 Aliniere grilă 2
+Alignment Grid 1 Alignment Grid 2
+1-6 Capitolul 1: Prezentare produs
+2. Dimensiune hârtie
+Funcţia QuickFit oferă mai multe dimensiuni de hârtie standard utilizate 
+în mod normal, iar utilizatorii îşi pot vizualiza documentele pe ecran la 
+dimensiunea reală.
+A4 B5
+A4 B5
+Scrisoare
+Letter
+3. Dimensiune fotografie
+Diferitele dimensiuni reale de fotografii afişate în cadrul funcţiei QuickFit 
+le oferă fotografilor şi altor utilizatori să vizualizeze şi să-şi editeze 
+fotografiile la dimesiunea reală pe ecran.
+Fotografie 4x6, 3x5, 2x2 Fotografie 8x10, 5x7
+3x5 2x24x6 5x78x10
+2-1Monitor LCD ASUS Seria C
+2.1 Asamblarea piciorului/bazei 
+monitorului
+Pentru asamblarea bazei monitorului:
+1. Aşezaţi partea frontală a monitorului pe o masă.
+2. Ataşaţi baza la picior, asigurându-vă că agăţătoarea de pe picior 
+pătrunde în canelura bazei.
+3. Fixaţi baza pe picior cu ajutorul şurubului.
+Vă recomandăm să acoperiţi suprafaţa mesei cu un material moale 
+pentru a preveni deteriorarea monitorului.
+C422A/C423A/C424A
+C620A/C622A/C623A/C624A/C624B/C624W/C627A
+2.2 Demontarea piciorului/bazei 
+ (pentru montare pe perete VESA)
+Piciorul/Baza demontabil(ă) a(l) acestui monitor este proiectat(ă) special 
+pentru montarea pe perete VESA.
+Pentru demontarea piciorului/bazei:
+2-2 Capitolul 2: Setare
+C422A/C423A/C424A
+1. Aşezaţi partea frontală a monitorului pe o masă.
+2. Îndepărtaţi gumele din cele patru găuri de şurub. (Figura 1)
+3. Îndepărtaţi baza (Figura 2).
+4. Folosiţi o şurubelniţă pentru a scoate şurubul din balama (Figura 3), 
+apoi îndepărtaţi balamaua.
+1
+2
+(Figura 1) (Figura 2)
+1
+2
+(Figura 3)
+C620A/C622A/C623A/C624A/C624B/C624W/C627A
+1. Aşezaţi partea frontală a monitorului pe o masă.
+2. Apăsaţi butonul de eliberare, apoi demontaţi piciorul/baza de pe 
+monitor (Figura 2).
+2
+1
+(Figura 1) (Figura 2)
+2-3Monitor LCD ASUS Seria C
+Vă recomandăm să acoperiţi suprafaţa mesei cu un material moale 
+pentru a preveni deteriorarea monitorului.
+• Kitul de montare pe perete VESA (100 x 100 mm) este 
+achiziţionat separat.
+• Folosiţi numai Suporturi pentru montaj pe perete din lista UL, cu 
+o greutate/sarcină minimă de 22,7 kg (dimensiune şuruburi: M4 
+x 10 mm)
+2.3 Montarea/demontarea kitului MiniPC 
+ (C620A/C622A/C623A/C624A/ 
+ C624B/C624W/C627A)
+Montarea kitului MiniPC
+2
+1
+Demontarea kitului MiniPC
+2
+1
+2-4 Capitolul 2: Setare
+2.4 Reglarea monitorului
+• Pentru o vizualizare optimă, vă recomandăm să priviţi direct spre 
+monitor şi apoi să reglaţi monitorul la unghiul care vă este cel mai 
+confortabil.
+• Ţineţi suportul pentru a preveni căderea monitorul în timpul 
+modificării unghiului.
+• C422A/C423A/C424A: Unghiul de reglare recomandat este cuprins în 
+intervalul +20˚ şi -5˚.
+• C620A/C622A/C623A/C624A/C624B/C624W: Puteţi regla unghiul 
+monitorului între +35˚ şi -5˚şi este permisă şi o reglare de 90˚ 
+a rotirii spre stânga sau spre dreapta. De asemenea, puteţi regla 
+înălţimea monitorului cu +/- 130 mm.
+• C627A: Puteţi regla unghiul monitorului între +35˚ şi -5˚şi este 
+permisă şi o reglare de 90˚ a rotirii spre stânga sau spre dreapta. De 
+asemenea, puteţi regla înălţimea monitorului cu +/- 150 mm.
+90° 
+0° 
+90° 
+Seria C4
+-5° ~ +20°
+Seria C6
+-5° ~ +35°
+Seria C6
+-90° ~ +90°
+Seria C6
+150mm
+130mm
+(doar pentru C627A)
+ 
+Pivotarea monitorului (C620A/C622A/C623A/C624A/C624B/
+C624W/C627A)
+1. Ridicaţi monitorul în poziţia cea mai înaltă.
+2. Înclinaţi monitorul la unghiul maxim.
+3. Pivotaţi monitorul în sensul acelor de ceasornic/invers avelor de 
+ceasornic, la unghiul dorit.
+(Înclinare)
+(Rotire) (Reglare înălţime)
+(Înclinare)
+2-5Monitor LCD ASUS Seria C
+Este normal ca monitorul să se clatine puţin atunci când reglaţi 
+unghiul de vizualizare.
+2.5 Conectarea cablurilor
+Conectaţi cablurile respectând următoarele instrucţiuni:
+• Pentru conectarea cablului de alimentare: Conectaţi un capăt al 
+cablului de alimentare la portul de intrare AC al monitorului şi celălalt 
+la o priză. 
+• Pentru conectarea cablului VGA/DVI/DisplayPort/HDMI/Mini 
+DisplayPort: 
+a. Conectaţi un capăt al cablului VGA/DVI/DisplayPort/HDMI/
+Mini DisplayPort la mufa VGA/DVI/DisplayPort/HDMI/Mini 
+DisplayPort a monitorului.
+b. Conectaţi celălalt capăt al cablului VGA/DVI/DisplayPort/HDMI/
+Mini DisplayPort la mufa VGA/DVI/DisplayPort/HDMI/Mini 
+DisplayPort a computerului dumneavoastră.
+c. Strângeţi cele două şuruburi, pentru a fixa conectorul VGA/
+DVI.
+2-6 Capitolul 2: Setare
+• Pentru conectarea cablului audio: Conectaţi un capăt al cablului 
+audio la mufa de intrare audio a monitorului, iar celălalt capăt la 
+mufa de ieşire audio a computerului.
+• Pentru utilizarea căştilor: Conectaţi mufa căştilor la mufa jack 
+pentru căşti a monitorului atunci când este utilizat un semnal HDMI 
+sau DisplayPort.
+• Pentru utilizarea porturilor USB 2.0: Luaţi cablul USB 2.0 
+furnizat şi conectaţi capătul mai mic (de tip B) al cablului USB 
+upstream la portul USB upstream al monitorului şi capătul mai 
+mare (de tip A) la portul USB 2.0 al computerului dumneavoastră. 
+Asiguraţi-vă că pe computerul dumneavoastră aveţi instalată cea mai 
+nouă versiune a sistemului de operare Windows 7/Windows 8. Acest 
+lucru va permite funcţionarea porturilor USB de pe monitor.
+• Pentru utilizarea porturilor USB 3.0: Luaţi cablul USB 3.0 
+furnizat şi conectaţi capătul mai mic (de tip B) al cablului USB 
+upstream la portul USB upstream al monitorului şi capătul mai 
+mare (de tip A) la portul USB 3.0 al computerului dumneavoastră. 
+Asiguraţi-vă că pe computerul dumneavoastră aveţi instalată cea 
+mai nouă versiune a sistemului de operare Windows 7/Windows 8.1/
+Windows 10. Acest lucru va permite funcţionarea porturilor USB de 
+pe monitor.
+Când aceste cabluri sunt conectate, puteţi selecta semnalul 
+dorit de la elementul Selectare introducere din meniul OSD.
+2.6 Pornirea monitorului
+Apăsaţi butonul de pornire . Consultaţi paginile 1-2 pentru locaţia 
+butonului de pornire. Indicatorul de pornire se va aprinde cu o lumină 
+de culoare albă, arătând că monitorul este PORNIT.
+3-1Monitor LCD ASUS Seria C 
+3.1 Meniu OSD (On-Screen Display) 
+3.1.1 Mod de reconfigurare
+Splendid
+Mod peisaj 
+Mod standard 
+Mod teatru
+Mod nocturn 
+Mod sRGB
+Mod Cit i re
+Mod Întunecat
+ASUS C622A
+Mod standard VGA 1920 x 1080 @ 60Hz
+1. Apăsaţi orice buton (cu excepţia butonului de pornire) pentru a 
+afişa meniul OSD.
+2. Apăsaţi butonul Meniu pentru a activa meniul OSD.
+3. Apăsaţi butoanele conform indicaţiilor de pe ecran, pentru a naviga 
+printre funcţii. Selectaţi funcţia dorită şi apăsaţi pentru a o 
+activa. În cazul în care funcţia selectată are un submeniu, apăsaţi 
+ şi din nou, pentru a naviga printre funcţiile submeniului. 
+Selectaţi funcţia dorită din submeniu şi apăsaţi pentru a o 
+activa. 
+4. Apăsaţi şi pentru a modifica setările funcţiei selectate.
+5. Pentru a ieşi şi salva meniul OSD, apăsaţi sau în mod repetat, 
+până când meniul OSD dispare. Pentru reglarea altor funcţii, repetaţi 
+paşii 1-4.
+3-2 Capitolul 3: Meniu OSD (On-Screen Display) 
+3.1.2 Prezentarea funcţiei OSD
+1. Splendid
+Această funcţie conţine 7~8 sub-funcţii pe care le puteţi selecta 
+pentru preferinţele dumneavoastră. Fiecare mod are opţiunea 
+Resetare, permiţându-vă să păstraţi setarea sau să reveniţi la 
+modul presetat.
+Splendid
+Mod peisaj 
+Mod standard 
+Mod teatru
+Mod nocturn 
+Mod sRGB
+Mod Cit i re
+Mod Întunecat
+ASUS C622A
+Mod standard VGA 1920 x 1080 @ 60Hz
+Mod peisaj 
+Mod standard 
+Mod teatru
+Mod joc 
+Mod nocturn 
+Mod sRGB
+Mod Cit i re
+Mod Întunecat
+Splendid
+ASUS C627A
+Mod standard DisplayPort 2560 x 1440 @ 60Hz
+• Mod peisaj: Alegerea ideală pentru afişarea imaginilor 
+cu peisaje, cu ajutorul tehnologiei de îmbunătăţire video 
+SplendidPlus.
+• Mod standard: Alegerea ideală pentru editarea documentelor, 
+cu ajutorul tehnologiei de îmbunătăţire video SplendidPlus.
+Modul Standard îndeplineşte cerinţele Energy Star®.
+• Mod teatru: Alegerea ideală pentru filme, cu ajutorul 
+tehnologiei de îmbunătăţire video SplendidPlus.
+3-3Monitor LCD ASUS Seria C 
+• Mod joc (doar pentru C624W/C627A): Alegerea ideală 
+pentru jocuri, cu ajutorul tehnologiei de îmbunătăţire video 
+SplendidPlus.
+• Mod nocturn: Alegerea ideală pentru scenele mai întunecate 
+din filme sau jocuri, cu ajutorul tehnologiei de îmbunătăţire 
+video SplendidPlus.
+• Mod sRGB: Alegerea ideală pentru vizualizarea de fotografii şi 
+elemente grafice de pe PC.
+• Mod Citire: Aceasta este alegerea ideală pentru cititul cărţilor.
+• Mod Întunecat: Aceasta este alegerea ideală pentru un mediu 
+cu lumină ambientală slabă.
+• În Modul standard, următoarele funcţii nu pot fi configurate de 
+către utilizator: Saturaţie, Ton strat, Claritate, ASCR.
+• În Modul sRGB, următoarele funcţii nu pot fi configurate de către 
+utilizator: Strălucire, Contrast, Saturaţie, Culoare temperatură, 
+Ton strat, Claritate, ASCR.
+• În Modul Citire, următoarele funcţii nu pot fi configurate de către 
+utilizator: Contrast, Saturaţie, Culoare temperatură, Ton strat, 
+Claritate, ASCR.
+2. Filtru Lumină Albastră
+În această funcţie puteţi regla nivelul filtrului de lumină albastră.
+Nivel 0
+Nivel 1
+Nivel 2
+Nivel 3
+Nivel 4
+Filtru Lumină Albastră
+ASUS C622A
+Mod standard VGA 1920 x 1080 @ 60Hz
+• Nivel 0: Nicio schimbare.
+• Nivel 1~4: Cu cât nivelul este mai mare, cu atât este 
+dispersată mai puţină lumină albastră. 
+Atunci când Filtrul Lumină Albastră este activat, setările implicite 
+pentru Modul standard vor fi importate în mod automat. Între 
+Nivelul 1 şi Nivelul 3, funcţia Strălucire poate fi configurată 
+de către utilizator. Nivelul 4 este setarea optimizată. Aceasta 
+respectă Certificarea TUV pentru emisia de lumină albastră. 
+Funcţia de Strălucire nu poate fi configurată de către utilizator.
+3-4 Capitolul 3: Meniu OSD (On-Screen Display) 
+Consultaţi recomandările de mai jos, pentru a atenua stresul asupra 
+ochilor:
+• Dacă se lucrează ore îndelungate, se recomandă ca utilizatorii 
+să-şi mai mute privirea de la ecran o anumită perioadă de 
+timp. După aproximativ 1 oră de lucru continuu la computer, 
+se recomandă să fie luate scurte pauze (cel puţin 5 minute). 
+Pauzele scurte şi frecvente sunt mai eficiente decât o singură 
+pauză mai lungă.
+• Pentru a reduce la minimum stresul asupra ochilor şi uscăciunea 
+ochilor, utilizatorii trebuie să-şi odihnească periodic ochii, 
+focalizând asupra unor obiecte aflate la distanţă mare.
+• Exerciţiile pentru ochi pot ajuta la reducerea stresului asupra 
+ochilor. Repetaţi des aceste exerciţii. Dacă stresul asupra ochilor 
+continuă, vă rugăm să consultaţi un medic. Exerciţii pentru ochi: 
+(1) Priviţi în sus şi în jos în mod repetat (2) Rotiţi încet ochii (3) 
+Deplasaţi ochii pe diagonală.
+• Lumina albastră de energie înaltă poate conduce la stres asupra 
+ochilor şi la apariţia AMD (Degenerare maculară legată de 
+vârstă). Filtrul de lumină albastră reduce 70% (max.) din lumina 
+albastră dăunătoare, pentru a evita apariţia CVS (Sindromul 
+privitului la computer).
+3. Culoare 
+Setaţi culoarea dorită din acest meniu. 
+Strălucire 
+Contrast 
+Saturaț ie 
+Culoare temperatură
+Ton strat 
+Culoare 
+ASUS C622A
+Mod standard VGA 1920 x 1080 @ 60Hz
+• Strălucire: Intervalul reglabil este între 0 şi 100.
+• Contrast: Intervalul reglabil este între 0 şi 100. 
+• Saturaţie: Intervalul reglabil este între 0 şi 100. 
+• Culoare temperatură: Conţine 4 moduri, şi anume Rece, 
+Normal, Cald şi Mod utilizator.
+• Ton strat: Conţine trei moduri de culoare, şi anume Roşiatic, 
+Natural şi Gălbui.
+3-5Monitor LCD ASUS Seria C 
+4. Imagine
+Configuraţi setările imaginii din acest meniu.
+Clar i tate 
+Trace Free
+Control aspect 
+Viv idPixel
+ASCR
+Poziț ie 
+Focal izare 
+AUTO reglare 
+Imagine 
+ASUS C622A
+Mod standard VGA 1920 x 1080 @ 60Hz
+• Claritate: Intervalul reglabil este între 0 şi 100.
+• Trace Free: Reglează timpul de răspuns al monitorului.
+• Control aspect: Reglează raportul de aspect la plin, 4:3, 1:1 
+(opţional) sau OverScan (opţional).
+4:3 este disponibil doar când sursa de intrare este în formatul 
+4:3. Funcţia OverScan este disponibilă doar pentru sursa de 
+intrare HDMI sau pentru anumite opţiuni de sincronizare tipice.
+• VividPixel: Intensifică conturul imaginii afişate şi generează pe 
+ecran imagini de înaltă calitate.
+• ASCR: Activează/Dezactivează funcţia ASCR (Raport contrast 
+inteligent ASUS).
+• Poziţie (disponibilă doar pentru intrarea VGA): Reglează 
+poziţia imaginii pe orizontală (Poziţie-O) şi pe verticală 
+(Poziţie-V). Intervalul reglabil este între 0 şi 100.
+• Focalizare (disponibilă doar pentru intrarea VGA): Reduce 
+zgomotul în liniile orizontale şi în cele verticale ale imaginii, 
+reglând separat (Faza) şi (Ceasul). Intervalul reglabil este între 
+0 şi 100.
+• Faza reglează faza semnalului ceasului pixelului. Dacă reglajul 
+fazei este greşit, ecranul va afişa anomalii pe orizontală.
+• Ceasul (frecvenţa pixelului) controlează numărul pixelilor 
+scanaţi la un singur baleiaj pe orizontală. Dacă frecvenţa este 
+incorectă, ecranul va afişa dungi verticale, iar imaginea nu va fi 
+proporţională.
+• Auto reglare: Reglează automat imaginea la valorile optime 
+pentru poziţie, ceas şi fază (doar pentru modul VGA).
+3-6 Capitolul 3: Meniu OSD (On-Screen Display) 
+5. Sunet
+Puteţi regla Volumul, selecta funcţia Mut şi Sursă din acest meniu.
+Volum 
+Mut 
+Sursă 
+Sunet 
+ASUS C622A
+Mod standard VGA 1920 x 1080 @ 60Hz
+• Volum: Intervalul reglabil este între 0 şi 100.
+• Mut: Activează sau dezactivează sunetul monitorului.
+• Sursă: Decide sursa din care vine sunetul monitorului.
+6. Selectare introducere 
+În această funcţie vă puteţi selecta sursa de intrare dorită.
+VGA
+DVI
+HDMI
+DisplayPort 
+Selectare introducere 
+DVI
+HDMI
+DisplayPort
+Mini DisplayPort 
+Selectare introducere 
+ASUS C627A
+Mod standard DisplayPort 2560 x 1440 @ 60Hz
+ASUS C622A
+Mod standard VGA 1920 x 1080 @ 60Hz
+3-7Monitor LCD ASUS Seria C 
+7. Configurare sistem
+Vă permite să configuraţi sistemul.
+Splendid Demo Mode
+ECO Mode
+Încărcare USB
+Conf igurare OSD 
+Limbă 
+Blocare taste
+Informaț i i 
+Mai mult
+Configurare sistem 
+ASUS C622A
+Mod standard VGA 1920 x 1080 @ 60Hz
+• Splendid Demo Mode: Împarte ecranul în două, pentru 
+compararea modurilor Splendid. (doar Modul peisaj)
+• ECO Mode: Reduce consumul de energie.
+• Încărcare USB (numai pentru C422AQ/C422AQH/
+C423AQ/C424AQ/C620AQ/C622AQ/C622AQH/C623AQ/
+C623AQH/C623AQR/C624AQ/C624BQ/C624AQH/
+C624BQH/C627AQ): 
+* Funcţia „Pornită” permite ca porturile USB downstream 
+să genereze o ieşire de 5V/500mA atunci când monitorul 
+este pornit sau în aşteptare.
+* Funcţia „Oprită” permite ca porturile USB downstream 
+să genereze o ieşire de 5V/500mA numai atunci când 
+monitorul este pornit.
+• Încărcare USB (numai pentru C624WQ): 
+* Opţiunea „Pornită” permite porturilor USB descendente să 
+genereze un curent de ieşire de 5 V/2 A sau de 5 V/900 
+mA când monitorul este pornit sau în modul standby. 
+Tabelul de mai jos arată dacă porturile USB descendente 
+pot fi utilizate pentru a încărca un dispozitiv extern în 
+diferite situaţii. 
+Port 
+descendent
+Stare 
+monitor
+Când portul 
+ascendent este 
+conectat la PC...
+Când portul 
+ascendent NU este 
+conectat la PC...
+Port 
+Pornită Permite încărcarea Permite încărcarea
+Standby Permite încărcarea Permite încărcarea
+Port 
+Pornită Permite încărcarea Nu permite 
+încărcarea
+Standby Permite încărcarea Nu permite 
+încărcarea
+3-8 Capitolul 3: Meniu OSD (On-Screen Display) 
+* Opţiunea „Oprită” permite porturilor USB descendente să 
+genereze un curent de ieşire de 5 V/2 A sau de 5 V/900 
+mA numai când monitorul este pornit. Tabelul de mai 
+jos arată dacă porturile USB descendente pot fi utilizate 
+pentru a încărca un dispozitiv extern în diferite situaţii. 
+Port 
+descendent
+Stare 
+monitor
+Când portul 
+ascendent este 
+conectat la PC...
+Când portul 
+ascendent NU este 
+conectat la PC...
+Port 
+Pornită Permite încărcarea Permite încărcarea
+Standby Nu permite 
+încărcarea
+Nu permite 
+încărcarea
+Port 
+Pornită Permite încărcarea Nu permite 
+încărcarea
+Standby Nu permite 
+încărcarea
+Nu permite 
+încărcarea
+• Configurare OSD: 
+* Reglează pauză OSD între 10 şi 120 de secunde. 
+* Activează sau dezactivează funcţia DDC/CI.
+* Reglează fundalul OSD de la opac la transparent.
+• Limbă: Pentru fiecare selecţie există 21 de limbi, inclusiv 
+engleză, franceză, germană, italiană, spaniolă, olandeză, 
+portugheză, rusă, cehă, croată, poloneză, română, maghiară, 
+turcă, chineză simplificată, chineză tradiţională, japoneză, 
+coreeană, thailandeză, indoneză, persană. 
+• Blocare taste: Pentru dezactivarea tuturor tastelor pentru 
+funcţii. Apăsaţi al doilea buton din dreapta, mai mult de cinci 
+secunde, pentru a anula funcţia blocării tastelor.
+• Detectare automată sursă (doar pentru C624WQ/
+C627AQ): Activează sau dezactivează funcţia de detectare 
+automată a sursei.
+• Informaţii: Afişează informaţiile despre monitor. 
+• Indicator alimentare: Porneşte/Opreşte indicatorul LED al 
+alimentării.
+• Senzor uman (doar pentru C623AQR): Activează/
+dezactivează funcţia de Senzor uman şi reglează sensibilitatea 
+acestuia. Distanţa eficientă este între 50 şi 70 de cm. Setarea 
+implicită este Oprit. 
+* Jos: Distanţa senzorului este în jur de 50 de cm.
+* Mediu: Distanţa senzorului este în jur de 60 de cm.
+* Înalt: Distanţa senzorului este în jur de 70 de cm.
+3-9Monitor LCD ASUS Seria C 
+• Intervalul de detectare poate fi puţin diferit în cazul în care 
+utilizatorul poartă articole de îmbrăcăminte închise sau deschise 
+la culoare. Setaţi sensibilitatea la Înalt atunci când purtaţi 
+articole de îmbrăcăminte negre sau închise la culoare.
+• Vă rugăm să nu aşezaţi niciun obiect prea aproape de Senzorul 
+uman, pentru a evita interferenţele.
+• Bloc. cu tasta de alim.: Activează sau dezactivează tasta de 
+alimentare.
+• Resetare totală: „Da” vă permite să restabiliţi setările 
+implicite.
+8. Scurtătură
+Defineşte funcţiile pentru butoanele Scurtătură 1 şi 2.
+Scurtătură 1
+Scurtătură 2
+ 
+Scurtătură 
+ASUS C622A
+Mod standard VGA 1920 x 1080 @ 60Hz
+• Scurtătură 1/Scurtătură 2: Selectează o funcţie pentru 
+butoanele Scurtătură 1 şi 2.
+Când o anumită funcţie este selectată sau activată, iar tasta 
+scurtăturii e posibil să nu o poată suporta. Opţiuni de funcţii 
+disponibile pentru scurtătură: Filtru Lumină Albastră, Splendid, 
+Strălucire, AUTO reglare, Contrast, Culoare temperatură, Volum.
+3-10 Capitolul 3: Meniu OSD (On-Screen Display) 
+3.2 Prezentare specificaţii
+C422A/C423A/C424A
+Tip panou TFT LCD
+Dimensiune panou C422AQ/C422AQE/C422AQH/C422AQHE: Ecran 
+lat de 21,5" (16:9, 54,6 cm) 
+C423AQ/C423AQE: Ecran lat de 23" (16:9, 58,4 
+cm) 
+C424AQ/C424AQE: Ecran lat de 23,8" (16:9, 
+60,5 cm)
+Rezoluţie maximă C422AQ/C422AQE/C422AQH/C422AQHE: 
+1920 x 1080 
+C423AQ/C423AQE: 1920 x 1080 
+C424AQ/C424AQE: 1920 x 1080
+Dimensiune pixeli C422AQ/C422AQE/C422AQH/C422AQHE: 
+0,248 mm x 0,248 mm 
+C423AQ/C423AQE: 0,2652 mm x 0,2652 mm 
+C424AQ/C424AQE: 0,2745 mm x 0,2745 mm
+Strălucire (tipică) 250 cd/m2
+Raport contrast (tipic) 1000:1
+Raport contrast (max.) 100.000.000:1 (cu ASCR activat)
+Unghi de vizualizare 
+(O/V) CR>10
+178˚/178˚
+Culori afişaj 16,7 M
+Timp de răspuns < 5 ms
+Îmbunătăţire video 
+SplendidPlus
+Da
+Selecţie SplendidPlus 7 moduri video presetate
+AUTO reglare Da
+S e l e c ţ i e c u l o a r e 
+temperatură
+4 culori de temperatură
+Intrare analogică D-sub
+Intrare digitală DVI-D cu HDCP, DisplayPort v1.2, HDMI (doar 
+pentru C422AQH/C422AQHE)
+Mufă jack pentru căşti Da
+Intrare audio Da
+Difuzor (încorporat) 2 W x 2 Stereo, RMS
+Port USB 2.0 Upstream x 1, Downstream x 2 (doar pentru 
+C422AQ/C423AQ/C424AQ)
+Port USB 3.0 Upstream x 1, Downstream x 2 (doar pentru 
+C422AQH)
+Culori Negru
+LED pornire Alb (Pornit)/Auriu (În aşteptare)
+Înclinare +20˚~ -5˚
+Pivotare Fără
+Rotire Fără
+Reglare înălţime Fără
+Blocare Kensington Da
+3-11Monitor LCD ASUS Seria C 
+Tensiune intrare AC AC: 100~240 V
+Consum energie C422AQ/C422AQE/C422AQH/C422AQHE: Pornit: 
+< 21,09 W** (tip.), În aşteptare: < 0,5 W 
+(tip.), Oprit: 0 W (Oprire) 
+C423AQ/C423AQE: Pornit: < 22 W** (tip.), În 
+aşteptare: < 0,5 W (tip.), Oprit: 0 W (Oprire) 
+C424AQ/C424AQE: Pornit: < 22,97 W** (tip.), 
+În aşteptare: < 0,5 W (tip.), Oprit: 0 W (Oprire)
+Temperatură (în timpul 
+funcţionării)
+0˚C~40˚C
+Temperatură (în modul 
+oprit)
+-20˚C~+60˚C
+Dimensiuni (L x Î x A) 
+cu suport
+C422AQ/C422AQE/C422AQH/C422AQHE: 514 
+x 383 x 195 mm (dispozitiv), 576 x 442 x 120 
+mm (ambalaj) 
+C423AQ/C423AQE: 548 x 403 x 195 mm 
+(dispozitiv), 617 x 119 x 462 mm (ambalaj) 
+C424AQ/C424AQE: 562 x 406 x 195 mm 
+(dispozitiv), 632 x 127 x 465 mm (ambalaj) 
+Greutate (estimativă) C422AQ/C422AQE/C422AQH/C422AQHE: 3,8 kg 
+(Net); 5,3 kg (Brut) 
+C423AQ/C423AQE: 4,3 kg (Net); 5,7 kg (Brut) 
+C424AQ/C424AQE: 4,3 kg (Net); 5,9 kg (Brut)
+Mai multe limbi 21 de limbi (engleză, franceză, germană, 
+italiană, spaniolă, olandeză, portugheză, rusă, 
+cehă, croată, poloneză, română, maghiară, 
+turcă, chineză simplificată, chineză tradiţională, 
+japoneză, coreeană, thailandeză, indoneză, 
+persană)
+Accesorii Cablu de alimentare, cablu DVI cable (opţional), 
+cablu DisplayPort, cablu VGA, cablu audio, cablu 
+USB (doar pentru C422AQ/C422AQH/C423AQ/
+C424AQ), ghid rapid de utilizare, garanţie
+Conformitate şi 
+standarde
+UL/cUL, CB, CE, ErP, FCC, ISO9241-307, RCM, 
+VCCI, RoHS, Windows 7 & 8 WHQL, Energy 
+Star®, Flicker Free, Low blue Light, TUV-
+GS, TUV-Ergo, CU, PSE, WEEE, EMC DoC, 
+UkrSEPRO, MEPS, NFPA99
+*Specificaţii pot fi schimbate fără notificare.
+**Măsurând strălucirea de 200 niţi a unui ecran, fără conexiune audio/USB/Cititor 
+card.
+3-12 Capitolul 3: Meniu OSD (On-Screen Display) 
+C620A/C622A/C623A/C624A/C624B/C624W
+Tip panou TFT LCD
+Dimensiune panou C620AQ/C620AQE: Ecran lat de 19,45" (16:10, 
+49,4 cm) 
+C622AQ/C622AQE/C622AQH: Ecran lat de 21,5" 
+(16:9, 54,6 cm)
+C623AQ/C623AQE/C623AQR/C623AQH: Ecran lat 
+de 23" (16:9, 58,4 cm) 
+C624AQ/C624AQE/C624AQH: Ecran lat de 23,8" 
+(16:9, 60,5 cm) 
+C624BQ/C624BQH/C624WQ: Ecran lat de 24" 
+(16:10, 61,13 cm)
+Rezoluţie maximă C620AQ/C620AQE: 1440 x 900 
+C622AQ/C622AQE/C922AQH: 1920 x 1080 
+C623AQ/C623AQE/C623AQR/C923AQH: 1920 x 
+1080 
+C624AQ/C624AQE/C624AQH: 1920 x 1080 
+C624BQ/C624BQH/C624WQ: 1920 x 1200
+Dimensiune pixeli C620AQ/C620AQE: 0,2907 mm x 0,2915 mm 
+C622AQ/C622AQE/C622AQH: 0,248 mm x 0,248 
+mm 
+C623AQ/C623AQE/C623AQR/C623AQH: 0,2652 mm x 
+0,2652 mm
+C624AQ/C624AQE/C624AQH: 0,2745 mm x 0,2745 
+mm 
+C624BQ/C624BQH/C624WQ: 0,270 mm x 0,270 
+mm
+Strălucire (tipică) C620AQ/C620AQE/C622AQ/C622AQE/C622AQH/
+C623AQ/C623AQE/C623AQR/C623AQH/C624AQ/
+C624AQE/C624AQH/C624BQ: 250 cd/m2
+C624BQH/C624WQ: 300 cd/m2
+Raport contrast (tipic) 1000:1
+Raport contrast (max.) 100.000.000:1 (cu ASCR activat)
+Unghi de vizualizare 
+(O/V) CR>10
+178˚/178˚
+Culori afişaj 16,7 M
+Timp de răspuns < 5 ms
+Îmbunătăţire video 
+SplendidPlus
+Da
+Selecţie SplendidPlus 7 - 8 moduri video presetate
+AUTO reglare Da
+S e l e c ţ i e c u l o a r e 
+temperatură
+4 culori de temperatură
+Intrare analogică D-sub
+Intrare digitală DVI-D cu HDCP, DisplayPort v1.2, HDMI (doar 
+pentru C622AQH/C623AQH/C624AQH/C624BQH/
+C624WQ)
+Mufă jack pentru căşti Da
+Intrare audio Da
+3-13Monitor LCD ASUS Seria C 
+Difuzor (încorporat) 2 W x 2 Stereo, RMS
+Port USB 2.0 C620AQ/C622AQ/C623AQ/C623AQR/C624AQ/
+C624BQ: Upstream x 1, Downstream x 2
+Port USB 3.0 C622AQH/C623AQH/C624AQH/C624BQH: 
+Upstream x 1, Downstream x 2 
+C624WQ: Upstream x 1, Downstream x 4
+Culori Negru
+LED pornire Alb (Pornit)/Auriu (În aşteptare)
+Înclinare +35˚~ -5˚
+Pivotare +90˚~ -90˚
+Rotire +90˚~ -90˚
+Reglare înălţime 130 mm
+Blocare Kensington Da
+Tensiune intrare AC AC: 100~240 V
+Consum energie C620AQ/C620AQE: Pornit: < 15,74 W** (tip.), În 
+aşteptare: < 0,5 W (tip.), Oprit: 0 W (Oprire) 
+C622AQ/C622AQE/C622AQH: Pornit: < 21,09 W** 
+(tip.), În aşteptare: < 0,5 W (tip.), Oprit: 0 W 
+(Oprire) 
+C623AQ/C623AQE/C623AQR/C623AQH: Pornit: < 
+22 W** (tip.), În aşteptare: < 0,5 W (tip.), Oprit: 
+0 W (Oprire) 
+C624AQ/C624AQE/C624AQH: Pornit: < 22,97 W** 
+(tip.), În aşteptare: < 0,5 W (tip.), Oprit: 0 W 
+(Oprire) 
+C624BQ/C624BQH: Pornit: < 25,4 W** (tip.), În 
+aşteptare: < 0,5 W (tip.), Oprit: 0 W (Oprire) 
+C624WQ: Pornit: < 13,3 W** (tip.), În aşteptare: 
+< 0,22 W (tip.), Oprit: 0 W (Oprire)
+Temperatură (în 
+timpul funcţionării)
+0˚C~40˚C
+Temperatură (în 
+modul oprit)
+-20˚C~+60˚C
+3-14 Capitolul 3: Meniu OSD (On-Screen Display) 
+Dimensiuni (L x Î x A) 
+cu suport
+C620AQ/C620AQE: 459 x 477 x 211 mm 
+(maximum), 459 x 347 x 211 mm (minimum), 621 
+x 173 x 382 mm (ambalaj) 
+C622AQ/C622AQE/C622AQH: 514 x 477 x 211 mm 
+(maximum), 514 x 347 x 211 mm (minimum), 643 
+x 378 x 190 mm (ambalaj) 
+C623AQ/C623AQE/C623AQR/C623AQH: 548 x 
+490 x 211 mm (maximum), 548 x 360 x 211 mm 
+(minimum), 652 x 173 x 403 mm (ambalaj) 
+C624AQ/C624AQE/C624AQH: 562 x 492 x 211 mm 
+(maximum), 562 x 362 x 211 mm (minimum), 660 
+x 180 x 420 mm (ambalaj) 
+C624BQ/C624BQH: 561 x 511 x 211 mm 
+(maximum), 561 x 381 x 211 mm (minimum), 662 
+x 179 x 454 mm (ambalaj) 
+C624WQ: 533 x 505 x 211 mm (maximum), 533 x 
+375 x 211 mm (minimum), 649 x 192 x 474 mm 
+(ambalaj) 
+Greutate (estimativă) C620AQ/C620AQE: 4,8 kg (Net); 6,4 kg (Brut) 
+C622AQ/C622AQE/C622AQH: 5,7 kg (Net); 7,2 kg 
+(Brut) 
+C623AQ/C623AQE/C623AQR/C623AQH: 5,7 kg 
+(Net); 7,3 kg (Brut) 
+C624AQ/C624AQE/C624AQH: 5,8 kg (Net); 7,9 kg 
+(Brut) 
+C624BQ/C624BQH: 6,2 kg (Net); 8,2 kg (Brut) 
+C624WQ: 6,1 kg (Net); 3,9 kg (fără suport); 8,3 
+kg (Brut)
+Mai multe limbi 21 de limbi (engleză, franceză, germană, italiană, 
+spaniolă, olandeză, portugheză, rusă, cehă, croată, 
+poloneză, română, maghiară, turcă, chineză 
+simplificată, chineză tradiţională, japoneză, 
+coreeană, thailandeză, indoneză, persană)
+Accesorii Cablu de alimentare, cablu DVI (opţional), cablu 
+HDMI (opţional), cablu DisplayPort (opţional), cablu 
+VGA (opţional), cablu audio (opţional), cablu USB 
+(doar pentru C620AQ/C622AQ/C623AQ/C623AQR/
+C624AQ/C624BQ/C624WQ), ghid rapid de utilizare, 
+garanţie, Kit MiniPC (opţional)
+Conformitate şi 
+standarde
+UL/cUL, CB, CE, ErP, FCC, ISO9241-307, RCM, VCCI, 
+RoHS, Windows 7 & 8 & 10 WHQL, Energy Star®, 
+Flicker Free, Low blue Light, TUV-GS, TUV-Ergo, 
+CU, PSE, WEEE, EMC DoC, UkrSEPRO, MEPS, 
+BSMI, NFPA99
+Numai pentru C624WQ: CCC, CEL, PC Recycle, 
+J-MOSS, KC, KCC, e-Standby, TCO 8.0, ICE-3
+*Specificaţii pot fi schimbate fără notificare.
+**Măsurând strălucirea de 200 niţi a unui ecran, fără conexiune audio/USB/Cititor 
+card.
+3-15Monitor LCD ASUS Seria C 
+C627A
+Tip panou TFT LCD
+Dimensiune panou Ecran lat de 27" (16:9, 68,47 cm)
+Rezoluţie maximă 2560 x 1440
+Dimensiune pixeli 0,2331 mm x 0,2331 mm
+Strălucire (tipică) 350 cd/m2
+Raport contrast (tipic) 1000:1
+Raport contrast (max.) 100.000.000:1 (cu ASCR activat)
+Unghi de vizualizare 
+(O/V) CR>10
+178˚/178˚
+Culori afişaj 16,7 M
+Timp de răspuns < 5 ms
+Îmbunătăţire video 
+SplendidPlus
+Da
+Selecţie SplendidPlus 8 moduri video presetate
+AUTO reglare Da
+S e l e c ţ i e c u l o a r e 
+temperatură
+4 culori de temperatură
+Intrare analogică Fără
+Intrare digitală DVI-D cu HDCP, DisplayPort v1.2, HDMI, mini 
+DisplayPort
+Mufă jack pentru căşti Da
+Intrare audio Da
+Difuzor (încorporat) 2 W x 2 Stereo, RMS
+Port USB 3.0 Upstream x 1, Downstream x 4
+Culori Negru
+LED pornire Alb (Pornit)/Auriu (În aşteptare)
+Înclinare +35˚~ -5˚
+Pivotare +90˚~ -90˚
+Rotire +90˚~ -90˚
+Reglare înălţime 150 mm
+Blocare Kensington Da
+Tensiune intrare AC AC: 100~240 V
+Consum energie Pornit: < 75 W** (tip.), În aşteptare: < 0,5 W 
+(tip.), Oprit: 0 W (Oprire)
+Temperatură (în timpul 
+funcţionării)
+0˚C~40˚C
+Temperatură (în modul 
+oprit)
+-20˚C~+60˚C
+Dimensiuni (L x Î x A) 
+fără suport
+615 x 372 x 51 mm
+Dimensiuni (L x Î x A) 
+cu suport
+615 x 532 x 226 mm (maximum), 
+615 x 382 x 226 mm (minimum), 
+735 x 216 x 464 mm (ambalaj)
+Greutate (estimativă) 7,7 kg (Net); 5 kg (fără suport); 10,8 kg (Brut)
+3-16 Capitolul 3: Meniu OSD (On-Screen Display) 
+Mai multe limbi 21 de limbi (engleză, franceză, germană, 
+italiană, spaniolă, olandeză, portugheză, rusă, 
+cehă, croată, poloneză, română, maghiară, 
+turcă, chineză simplificată, chineză tradiţională, 
+japoneză, coreeană, thailandeză, indoneză, 
+persană)
+Accesorii Cablu de alimentare, cablu DVI (opţional), 
+cablu HDMI, cablu DisplayPort, cablu 
+DisplayPort (de la Mini-DP la DP) (opţional), 
+cablu audio, cablu USB, ghid rapid de utilizare, 
+garanţie
+Conformitate şi standarde UL/cUL, FCC, ICES-3, CB, CE, ErP, WEEE, TUV-
+GS, TUV-Ergo, ISO 9241-307, UkrSEPRO, CU, 
+CCC, CEL, BSMI, RCM, MEPS, VCCI, PSE, PC 
+Recycle, J-MOSS, KC, KCC, e-Standby, Energy 
+Star®, RoHs, Windows 7/8.1/10 WHQL, Flicker 
+Free, Low Blue Light, NFPA99
+*Specificaţii pot fi schimbate fără notificare.
+**Măsurând strălucirea de 200 niţi a unui ecran, fără conexiune audio/USB/Cititor 
+card.
+3-17Monitor LCD ASUS Seria C 
+3.3 Depanare (Întrebări frecvente)
+Problemă Soluţie posibilă
+LED-ul de pornire nu este PORNIT • Apăsaţi butonul pentru a verifica 
+dacă monitorul este pe modul PORNIT.
+• Verificaţi dacă cablul de alimentare 
+este conectat în mod corespunzător la 
+monitor şi la priza de alimentare. 
+• Verificaţi dacă este PORNIT comutatorul 
+de alimentare.
+LED-ul de pornire este auriu şi 
+ecranul nu afişează nicio imagine 
+• Verificaţi dacă monitorul şi computerul 
+sunt pe modul PORNIT.
+• Asiguraţi-vă că cablul de semnal este 
+conectat în mod corespunzător la 
+monitor şi la computer.
+• Verificaţi cablul de semnal şi asiguraţi-
+vă că niciunul dintre pini nu este îndoit.
+• Conectaţi computerul la alt monitor 
+disponibil pentru a verifica dacă 
+computerul funcţionează în mod 
+corespunzător.
+Imaginea afişată este prea 
+luminoasă sau prea întunecată
+• Reglaţi setările pentru Contrast sau 
+Strălucire prin intermediul OSD.
+Imaginea afişată nu este centrată 
+sau dimensionată corespunzător
+• Reglaţi setările pentru Poziţia-O sau 
+Poziţia-V prin intermediul OSD.
+Imaginea afişată sacadează sau 
+pe aceasta se observă un model 
+de undă
+• Asiguraţi-vă că cablul de semnal este 
+conectat în mod corespunzător la 
+monitor şi la computer.
+• Mutaţi dispozitivele electrice care pot 
+cauza interferenţe electrice.
+Imaginea afişată are defecte de 
+culoare (albul nu arată alb)
+• Verificaţi cablul de semnal şi asiguraţi-
+vă că niciunul dintre pini nu este îndoit. 
+• Efectuaţi Resetarea totală prin 
+intermediul OSD.
+• Reglaţi setările culorilor R/G/B sau 
+selectaţi Culoare temperatură prin 
+intermediul OSD.
+Imaginea de pe ecran este 
+neclară sau deformată
+• Reglaţi setările pentru Fază şi Ceas prin 
+intermediul OSD.
+Nu există sunet sau este la un 
+volum mic
+• Verificaţi cablul HDMI/DisplayPort, 
+pentru a vă asigura că este conectat 
+în mod corespunzător la monitor şi la 
+computer.
+• Reglaţi setările volumului atât pentru 
+monitor, cât şi pentru dispozitivul 
+HDMI/DisplayPort. 
+• Asiguraţi-vă că driverul plăcii de 
+sunet a computerului este instalat 
+corespunzător şi activat.
+3-18 Capitolul 3: Meniu OSD (On-Screen Display) 
+3.4 Moduri de operare suportate
+C620A
+Frecvenţă 
+rezoluţie
+Frecvenţa pe 
+orizontală 
+(KHz)
+Frecvenţa pe 
+verticală (Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 48,08(P) 72,12(P) 50,00
+800x600 46,86(P) 75,00(P) 49,50
+832x624 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1360x768 47,712(P) 59,79(P) 85,5
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+* „P” şi „N” reprezintă polaritatea „Pozitivă” şi „Negativă” a semnalului H-sync/
+V-sync (intrare temporizare).
+Când monitorul funcţionează în modul video (adică nu afişează date), următoarele 
+moduri de înaltă definiţie vor fi suportate, pe lângă modul video cu definiţie standard.
+Presetare Denumire 
+temporizare
+Format 
+pixel
+Frecvenţa 
+pe 
+orizontală 
+(kHz)
+Frecvenţa 
+pe 
+verticală 
+(Hz)
+Frecvenţă 
+pixeli 
+(MHz)
+Afişaj OSD
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+3-19Monitor LCD ASUS Seria C 
+C422A/C622A/C423A/C623A/C424A/C624A
+Frecvenţă 
+rezoluţie
+Frecvenţa pe 
+orizontală 
+(KHz)
+Frecvenţa pe 
+verticală (Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 48,08(P) 72,12(P) 50,00
+800x600 46,86(P) 75,00(P) 49,50
+832x624 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(N) 108
+1280x1024 79,98(P) 75,02(N) 135
+1360x768 47,712(P) 59,79(P) 85,5
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(P) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+* „P” şi „N” reprezintă polaritatea „Pozitivă” şi „Negativă” a semnalului H-sync/
+V-sync (intrare temporizare).
+Când monitorul funcţionează în modul video (adică nu afişează date), următoarele 
+moduri de înaltă definiţie vor fi suportate, pe lângă modul video cu definiţie 
+standard.
+3-20 Capitolul 3: Meniu OSD (On-Screen Display) 
+Presetare Denumire 
+temporizare
+Format 
+pixel
+Frecvenţa 
+pe 
+orizontală 
+(kHz)
+Frecvenţa 
+pe 
+verticală 
+(Hz)
+Frecvenţă 
+pixeli 
+(MHz)
+Afişaj OSD
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+C624B
+Frecvenţă rezoluţie Frecvenţa pe 
+orizontală (KHz)
+Frecvenţa pe 
+verticală (Hz)
+Pixel 
+(MHz)
+640x480 31,47(N) 59,94(N) 25,18
+800x600 35,16(P) 56,25(P) 36
+800x600 37,88(P) 60,32(P) 40
+1024x768 48,36(N) 60,00(N) 65
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(P) 108
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(N) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+1920x1200 
+(reducere distorsiuni) 74,038(P) 59,95(N) 154
+* „P” şi „N” reprezintă polaritatea „Pozitivă” şi „Negativă” a semnalului H-sync/
+V-sync (intrare temporizare) 
+* Este posibil ca modurile care nu sunt listate în tabel să nu fie suportate. Pentru o 
+rezoluţie optimă, vă recomandăm să alegeţi un mod dintre cele listate în tabelul de 
+mai sus.
+* Acest monitor suportă conţinuturi video full HD (480p, 576p, 720p, 1080i/p) 
+pentru console de jocuri, DVD playere şi alte dispozitive video prin intermediul 
+conexiunii HDMI.
+Când monitorul funcţionează în modul video (adică nu afişează date), următoarele 
+moduri de înaltă definiţie vor fi suportate, pe lângă modul video cu definiţie 
+standard.
+Presetare Denumire 
+temporizare
+Format 
+pixel
+Frecvenţa 
+pe 
+orizontală 
+(kHz)
+Frecvenţa 
+pe 
+verticală 
+(Hz)
+Frecvenţă 
+pixeli 
+(MHz)
+Afişaj OSD
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+3-21Monitor LCD ASUS Seria C 
+C627A
+Frecvenţă 
+rezoluţie
+Frecvenţa pe 
+orizontală (KHz)
+Frecvenţa pe 
+verticală (Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 46,86(P) 75,00(P) 49,50
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(N) 108
+1280x1024 79,98(P) 75,02(N) 135
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(P) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+1920x1200 
+(reducere 
+distorsiuni)
+74,038(P) 59,95(N) 154
+1920x1200 74,556(N) 59,885(P) 193,25
+2048x1152 
+(reducere 
+distorsiuni)
+70,99(P) 59,9(N) 156,75
+2560x1080 66,636(P) 59,978(N) 181,25
+2560x1440 88,787(P) 59,951(N) 241,5
+* „P” şi „N” reprezintă polaritatea „Pozitivă” şi „Negativă” a semnalului H-sync/
+V-sync (intrare temporizare)
+Când monitorul funcţionează în modul video (adică nu afişează date), următoarele 
+moduri de înaltă definiţie vor fi suportate, pe lângă modul video cu definiţie 
+standard.
+3-22 Capitolul 3: Meniu OSD (On-Screen Display) 
+Presetare Denumire 
+temporizare
+Format pixel Frecvenţa 
+pe 
+orizontală 
+(kHz)
+Frecvenţa 
+pe 
+verticală 
+(Hz)
+Frecvenţă 
+pixeli 
+(MHz)
+Afişaj OSD
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+C624W
+Frecvenţă 
+rezoluţie
+Frecvenţa pe 
+orizontală 
+(KHz)
+Frecvenţa pe 
+verticală (Hz)
+Pixel (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480* 37,87(N) 72,82(N) 31,5
+640x480* 37,5(N) 75,00(N) 31,5
+720x400* 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36
+800x600 37,88(P) 60,32(P) 40
+800x600* 46,86(P) 75,00(P) 49,5
+832X624* 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65
+1024x768 56,476(N) 70,069(N) 75
+1024x768* 60,02(N) 75,00(N) 78,75
+1152x864* 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(P) 108
+1280x1024* 79,98(P) 75,02(P) 135
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(N) 60,00(P) 146,25
+3-23Monitor LCD ASUS Seria C 
+1920x1080 67,5(P) 60,00(P) 148,5
+1920x1200 
+(reducere 
+distorsiuni)
+74,038(P) 59,95(N) 154
+Denumire 
+temporizare
+Format pixel Frecvenţa pe 
+orizontală (kHz)
+Frecvenţa pe 
+verticală (Hz)
+Frecvenţă 
+pixeli 
+(MHz)
+480p 720 x 480 31,469 60 27
+720p60 1280 x 720 45 60 74,25
+576p 720 x 576 31,25 50 27
+720p50 1280 x 720 37,5 50 74,25
+1080p60 1920 x 1080 67,5 60 148,5
+1080p50 1920 x 1080 56,25 50 148,5
+* Aceste opţiuni de sincronizare nu sunt acceptate când se utilizează funcţia 
+OverScan. 
+ Cuprins
+ Notificări
+ Informaţii privind siguranţa
+ Îngrijire şi curăţare
+ Takeback Services
+ Capitolul 1: Prezentare produs
+ 1.1 Bun venit! 
+ 1.2 Conţinutul ambalajului
+ 1.3 Prezentare monitor
+ 1.3.1 Partea frontală
+ 1.3.2 Partea din spate
+ 1.3.3 Funcţia QuickFit
+ Capitolul 2: Setare
+ 2.1 Asamblarea piciorului/bazei monitorului
+ 2.2 Demontarea piciorului/bazei (pentru montare pe perete VESA)
+ 2.3 Montarea/demontarea kitului MiniPC (C620A/C622A/C623A/C624A/ C624B/C624C/C627A)
+ 2.4 Reglarea monitorului
+ 2.5 Conectarea cablurilor
+ 2.6 Pornirea monitorului
+ Capitolul 3: Instrucţiuni generale
+ 3.1 Meniu OSD (On-Screen Display) 
+ 3.1.1 Mod de reconfigurare
+ 3.1.2 Prezentarea funcţiei OSD
+ 3.2 Prezentare specificaţii
+ 3.3 Depanare (Întrebări frecvente)
+ 3.4 Moduri de operare suportate

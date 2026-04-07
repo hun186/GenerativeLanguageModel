@@ -1,0 +1,1925 @@
+
+AI2302AI2302
+Guía del usuario
+2
+S21835
+Julio de 2023
+Primera Edición
+Mantenimiento y seguridad
+Pautas
+La seguridad en la carretera es lo primero. Le recomendamos encarecidamente que 
+no haga uso del dispositivo cuando conduzca o utilice cualquier tipo de vehículo.
+Este dispositivo solamente se debe usar en entornos con temperaturas ambiente 
+comprendidas entre los 0 °C (32 °F) y los 35 °C (95 °F).
+Apague el dispositivo en áreas restringidas donde se prohíba el uso de dispositivos 
+móviles. Cumpla en todo momento las reglas y normativas cuando se encuentre 
+en áreas restringidas como, por ejemplo, en aviones, cines, hospitales o cerca de 
+equipos médicos, gas, combustible, obras, lugares con detonaciones y otras áreas.
+Este dispositivo solamente se debe utilizar con adaptadores y cables de 
+alimentación aprobados por ASUS. Consulte la etiqueta de especificaciones situada 
+en la parte inferior del dispositivo y asegúrese de que su adaptador de alimentación 
+cumple con los valores que en ella se indican.
+No use cables de alimentación, accesorios ni otros periféricos que estén dañados 
+con el dispositivo.
+Mantenga el dispositivo seco. No utilice el dispositivo cerca de líquidos, lluvia o 
+humedad ni lo exponga a dichos elementos. 
+Puede hacer pasar el dispositivo a través de máquinas de rayos X (como las que se 
+encuentran en las cintas transportadoras para la seguridad aeroportuaria), pero no 
+deberá exponerlo a detectores ni lectores magnéticos.
+La pantalla del dispositivo está fabricada con cristal. Si el cristal se rompe, deje 
+de utilizar el dispositivo y no toque las partes de cristal rotas. Envíe el dispositivo 
+inmediatamente a reparar al personal de servicio técnico cualificado de ASUS.
+Para que sus oídos no sufran daños, no mantenga el volumen a niveles elevados 
+durante períodos prolongados de tiempo.
+Desconecte el cable de alimentación de alimentación antes de limpiar el dispositivo. 
+Utilice solamente esponjas de celulosa o gamuzas cuando limpie la pantalla del 
+dispositivo.
+Envíe el dispositivo a reparar solamente al personal de servicio técnico cualificado 
+de ASUS.
+3
+Directrices para una eliminación adecuada del producto
+Existe riesgo de explosión si la batería se reemplaza por una de tipo incorrecto. 
+Deshágase de las baterías usadas conforme a las instrucciones.
+NO arroje la batería a la basura doméstica. El icono de la papelera indica que la 
+batería no debe arrojarse a la basura municipal.
+NO arroje su Teléfono ASUS a la basura doméstica.Este producto se ha diseñado para 
+permitir la reutilización adecuada y el reciclaje de sus componentes. El icono de la 
+papelera indica que el producto y sus componentes (eléctricos, electrónicos y pila 
+de botón) no deben ser arrojados a la basura municipal. Consulte la normativa local 
+aplicable para deshechos electrónicos.
+NO arroje su Teléfono ASUS al fuego. NO cortocircuite los contactos. NO desmonte 
+su Teléfono ASUS.
+Foro de fans de ZenTalk 
+(http://www.asus.com/zentalk/global_forward.php)
+NOTAS:
+• Para obtener más información legal y de etiquetado electrónico, compruébela en su dispositivo en 
+Settings (Configuración) > System (Sistema) > Regulatory labels (Etiquetas reguladoras) y Settings 
+(Configuración) > System (Sistema) > About Phone (Acerca del teléfono) > Legal Information 
+(Información legal).
+• Las descripciones de las aplicaciones mostradas en este manual solamente sirven de referencia y pueden no 
+coincidir exactamente con las que aparecen en el dispositivo.
+4
+1 Operaciones básicas 
+¡Bienvenido! ............................................................................................................................................. 7
+¡Prepare su Teléfono ASUS! ................................................................................................................ 8
+Primer uso ..............................................................................................................................................16
+Instrucciones de los gestos de navegación ...............................................................................17
+Utilizar la pantalla táctil .....................................................................................................................18
+2 Las ventajas de la pantalla Inicio 
+Funciones de la pantalla Inicio de su Zen .................................................................21
+Pantalla Inicio ........................................................................................................................................21
+Configuración rápida .........................................................................................................................22
+Notificaciones .......................................................................................................................................23
+Herramienta de borde .......................................................................................................................24
+Personalizar la pantalla Home (Inicio) ......................................................................25
+Fondos de pantalla .............................................................................................................................26
+Widgets ...................................................................................................................................................27
+Preferencias ...........................................................................................................................................27
+Configurar la fecha y hora ................................................................................................................28
+Configuración de los sonidos de tono de llamada y alerta ..................................................28
+3 Trabajar duro, jugar mejor 
+Chrome ........................................................................................................................29
+Iniciar Chrome ......................................................................................................................................29
+Compartir una página........................................................................................................................30
+Colocar marcadores en páginas .....................................................................................................30
+Borrar los datos de navegación ......................................................................................................30
+Gmail ............................................................................................................................31
+Google Calendar .........................................................................................................32
+Crear eventos .......................................................................................................................................32
+Editar o quitar eventos ......................................................................................................................32
+Crear recordatorios .............................................................................................................................33
+Editar o quitar recordatorios ..........................................................................................................33
+Administrador de archivos.........................................................................................34
+Clon del teléfono de ASUS .........................................................................................35
+4 Mantenerse en contacto 
+Estilo de entrada de llamada .....................................................................................36
+Función de SIM dual ...........................................................................................................................36
+Realizar llamadas .................................................................................................................................38
+Llamar a los contactos favoritos .....................................................................................................40
+Recibir llamadas ...................................................................................................................................40
+Otras opciones de llamada ..............................................................................................................41
+Grabar llamadas ...................................................................................................................................42
+Administrar contactos ................................................................................................43
+Configuración de contactos ............................................................................................................43
+Índice
+5
+Configurar el perfil .............................................................................................................................43
+Agregar contactos ...............................................................................................................................44
+Marcar sus contactos a favoritos ....................................................................................................45
+Redes sociales con contactos ..........................................................................................................46
+Enviar mensajes y más ...............................................................................................47
+Mensajes ................................................................................................................................................47
+5 Diversión y ocio 
+Utilizar auriculares .....................................................................................................48
+Enchufar el conector de audio ........................................................................................................48
+YT Music ......................................................................................................................49
+6 Sus preciados recuerdos 
+Inmortalizar momentos .............................................................................................50
+Iniciar la aplicación Cámara .............................................................................................................50
+Ubicaciones de imagen .....................................................................................................................51
+Funciones avanzadas de la cámara ...............................................................................................51
+Intervalo ..................................................................................................................................................52
+Utilizar la Galería ........................................................................................................53
+Ver la ubicación de las fotografías .................................................................................................53
+Editar una imagen ...............................................................................................................................53
+Compartir archivos desde la Galería .............................................................................................53
+Eliminar archivos de la Galería ........................................................................................................54
+7 Permanecer conectado 
+Red móvil .....................................................................................................................55
+Habilitar la red móvil ..........................................................................................................................55
+Wi-Fi .............................................................................................................................55
+Habilitar la funcionalidad Wi-Fi ......................................................................................................55
+Conectarse a una red Wi-Fi...............................................................................................................56
+Deshabilitar la funcionalidad Wi-Fi ...............................................................................................56
+Bluetooth® ...................................................................................................................56
+Habilitar la funcionalidad Bluetooth® ..........................................................................................56
+Asociar su Teléfono ASUS con un dispositivo Bluetooth® ....................................................57
+Anular la asociación de su Teléfono ASUS con el dispositivo Bluetooth® .......................57
+Anclaje a red ................................................................................................................58
+Zona con cobertura Wi-Fi .................................................................................................................58
+Anclaje a red USB ................................................................................................................................59
+Anclaje a red Bluetooth .....................................................................................................................59
+8 Aplicaciones de viaje 
+El tiempo .....................................................................................................................60
+Iniciar la aplicación Weather (El Tiempo) ....................................................................................60
+Pantalla de inicio del tiempo ...........................................................................................................61
+6
+Reloj .............................................................................................................................62
+Despertador ..........................................................................................................................................62
+Reloj internacional ..............................................................................................................................63
+Cronómetro ...........................................................................................................................................63
+Temporizador ........................................................................................................................................64
+9 Zen en cualquier lugar 
+Herramientas Zen especiales .....................................................................................65
+Calculadora ............................................................................................................................................65
+Grabadora de sonidos .......................................................................................................................66
+Mobile Manager .........................................................................................................68
+10 Mantener su Zen 
+Mantener el dispositivo actualizado .........................................................................69
+Actualizar el sistema ...........................................................................................................................69
+Almacenamiento .................................................................................................................................69
+Copia de seguridad y restablecimiento ......................................................................................69
+Restablecer ...........................................................................................................................................69
+Proteger su Teléfono ASUS ........................................................................................70
+La pantalla de bloqueo del dispositivo también se puede personalizar para regular el 
+acceso a los datos y aplicaciones móviles. .................................................................................70
+Desbloquear la pantalla ....................................................................................................................70
+Sensor de identificación de huellas dactilares ........................................................73
+Iniciar el teléfono ASUS por primera vez ....................................................................................73
+Definir la identificación de huella dactilar desde que la configuración ..........................74
+Desbloqueo facial ......................................................................................................75
+Configurar el desbloqueo facial desde la configuración .....................................................75
+Establecer la identidad de su Teléfono ASUS ...........................................................78
+Apéndices 
+7Capítulo 1: Operaciones básicas
+Operaciones básicas 1
+1 Operaciones básicas
+¡Bienvenido!
+¡Explore la simplicidad intuitiva de la interfaz de usuario de su ASUS ZenUI!
+La interfaz de usuario de su ASUS ZenUI es una interfaz bonita e intuitiva exclusiva para teléfono 
+ASUS. Proporciona aplicaciones especiales que se integran en o con otras aplicaciones para 
+satisfacer necesidades individuales únicas y facilitarle la vida, permitiéndole al mismo tiempo 
+divertirse con su teléfono ASUS.
+Cámara
+Con la tecnología PixelMaster, capture esos momentos inolvidables en fotografíass y 
+vídeos intensos y de alta calidad.
+Mensajes
+Mensajes, una aplicación intuitiva y agradable, le permite enviar y recibir mensajes 
+SMS y MMS, así como enviar textos, fotos o mensajes de audio grupales. Puede agregar 
+emojis adhesivos a sus mensajes, compartir su ubicación, archivar sus mensajes y 
+bloquear fácilmente remitentes de SMS. También puede hacer fotos y grabar vídeos y 
+compartir fácilmente estos archivos.
+Administrador de archivos
+Mediante la aplicación Administrador de archivos puede buscar y administrar fácilmente 
+sus datos en el almacenamiento interno de su Teléfono ASUS y en sus dispositivos de 
+almacenamiento externos conectados.
+NOTA: La disponibilidad de las aplicaciones del usuario de ASUS ZenUI varía en función de la región y el 
+modelo de dispositivo teléfono ASUS. Deslice hacia arriba la parte inferior de la pantalla Home (Inicio) 
+para comprobar las aplicaciones disponibles en su teléfono ASUS.
+8 Capítulo 1: Operaciones básicas
+¡Prepare su Teléfono ASUS!
+Componentes y características
+Agarre el dispositivo y póngalo en funcionamiento en un abrir y cerrar de ojos.
+¡ADVERTENCIA! 
+• Para evitar problemas de conexión de red y de batería:
+ • NO coloque ninguna pegatina metálica en el área de la antena. 
+ • NO utilice una funda o carcasa protectora metálica en su Teléfono ASUS. 
+ • NO cubra el área de la antena con sus manos u otros objetos mientras utiliza algunas funciones, como realizar 
+llamadas o utilizar la conexión de datos móvil.
+• Le recomendamos que utilice protectores de pantalla compatibles con ASUS. El uso de protectores de pantalla 
+compatibles con ASUS puede provocar un mal funcionamiento del sensor de su Teléfono ASUS.
+¡IMPORTANTE!
+• No es recomendable utilizar un protector de pantalla ya que puede afectar al sensor de proximidad. Si desea 
+utilizar un protector de pantalla, asegúrese de que no se bloquea el sensor de proximidad.
+• Mantenga el dispositivo, especialmente la pantalla táctil, seco en todo momento. El agua un otros 
+líquidos puede provocar averías en la pantalla táctil.
+Receptor
+Pantalla táctil
+Tecla de encendido 
+y Sensor de huellas 
+Tecla de volumen
+Ranura para tarjetas Nano-SIM
+Cámara posterior Flash
+Micrófono
+Altavoz
+Puerto USB tipo “C”
+Micrófono
+Orificio de expulsión
+Conector de audio
+Cámara frontal Sensor de proximidad y luz Área de detección de NFC
+Área de carga inalámbrica
+9Capítulo 1: Operaciones básicas
+Para instalar una tarjeta Nano-SIM:
+La ranura para tarjetas Nano-SIM es compatible con las bandas de GSM/GPRS/EDGE, WCDMA/HSPA+/
+DC-HSPA+, FDD-LTE, TD-LTE, y 5G NR Sub-6. 
+¡PRECAUCIÓN! Extreme las precauciones cuando manipule una tarjeta Nano-SIM. ASUS no asume 
+ninguna responsabilidad por ninguna pérdida de datos o daños producidos a las tarjetas Nano-SIM.
+Instalar una tarjeta Nano-SIM:
+1. Inserte un elemento puntiagudo en el orificio de la bandeja para tarjetas Nano-SIM para 
+expulsarla.
+2. Inserte las tarjetas Nano-SIM en las ranuras para tarjetas.
+3. Empuje suavemente la bandeja hacia atrás hasta que quede cerrada de forma segura.
+¡PRECAUCIÓN!
+• Para no arañar el dispositivo, no utilice herramientas afiladas ni disolventes en él. 
+• Utilice solamente una tarjeta Nano-SIM en el teléfono ASUS. 
+NOTAS:
+• La ranura para tarjetas Nano-SIM es compatible con las bandas de red GSM/GPRS/EDGE, WCDMA/
+HSPA+/DC-HSPA+, FDD-LTE, TD-LTE y 5G NR Sub-6. Ambas tarjetas Nano-SIM se pueden conectar al 
+servicio de llamadas VoLTE 4G. Pero solo una puede conectarse al servicio de datos 5G NR Sub-6 a la 
+vez.
+• El uso real de la red y la banda de frecuencia depende de la implementación de la red en su área. 
+Póngase en contacto con su operador de telecomunicaciones si la compatibilidad con 5G NR Sub-6 y 
+el servicio de llamadas de VoLTE 4G están disponibles en su área.
+Nano-SIM1
+Nano-SIM2
+10 Capítulo 1: Operaciones básicas
+Quitar una tarjeta Nano-SIM
+¡PRECAUCIÓN! Extreme las precauciones cuando manipule una tarjeta Nano-SIM. ASUS no asume 
+ninguna responsabilidad por ninguna pérdida de datos o daños producidos a las tarjetas Nano-SIM.
+Para quitar una tarjeta Nano-SIM:
+1. Inserte un elemento puntiagudo en el orificio de la bandeja para tarjetas Nano-SIM para 
+expulsarla.
+2. Quite las tarjetas nano-SIM de las ranuras para tarjetas.
+3. Empuje suavemente la bandeja hacia atrás hasta que quede cerrada de forma segura.
+Nano-SIM1
+Nano-SIM2
+11Capítulo 1: Operaciones básicas
+Carga de su Teléfono ASUS
+Su Teléfono ASUS se proporciona parcialmente cargada pero debe cargarla completamente antes 
+de utilizarlo por primera vez. Lea los siguientes avisos y precauciones importantes antes de cargar 
+el dispositivo.
+ ¡IMPORTANTE!
+• Quite la lámina protectora del adaptador de alimentación de corriente alterna y el cable USB tipo “C” 
+antes de utilizarlo con el dispositivo.
+• Asegúrese de enchufar el adaptador de alimentación de corriente alterna a una toma de corriente 
+compatible. Puede enchufar el adaptador de alimentación de corriente alterna a cualquier toma de 
+corriente de 100~240 V compatible. 
+• El voltaje de salida a través del cable USB es +5 V-10 V 3 A, 30 W.
+• Cuando utilice su Teléfono ASUS conectada a la red eléctrica, la toma de corriente deberá estar cerca 
+del dispositivo.
+• Para ahorrar energía, desenchufe el adaptador de alimentación de corriente alterna de la toma de 
+corriente eléctrica cuando no lo utilice.
+• No coloque ningún objeto pesado sobre su Teléfono ASUS.
+¡PRECAUCIÓN! 
+• Durante la carga, su Teléfono ASUS puede calentarse. Esto es algo normal. No obstante, si el 
+dispositivo alcanza una temperatura inusualmente elevada, desconecte el cable USB tipo “C” del 
+dispositivo y envíelo, junto con el cable y el adaptador de alimentación de corriente alterna, a un 
+centro de servicio técnico cualificado de ASUS.
+• Para evitar cualquier daño en su Teléfono ASUS, en el adaptador de corriente alterna o en el 
+cable USB tipo “C”, asegúrese de que el cable USB tipo “C”, el adaptador de corriente alterna y el 
+dispositivo están correctamente conectados antes de realizar la carga.
+Para cargar su Teléfono ASUS:
+1. Conecte el cable USB al adaptador de alimentación.
+2. Conecte el cable USB a su Teléfono ASUS.
+3. Enchufe el adaptador de alimentación a una toma de corriente eléctrica que disponga de toma 
+de tierra.
+1
+2
+3
+12 Capítulo 1: Operaciones básicas
+ ¡IMPORTANTE!
+• Cuando utilice su Teléfono ASUS mientras está enchufado a una toma de corriente eléctrica, la toma 
+de corriente con conexión a tierra debe estar cerca de la unidad y se debe poder acceder a ella 
+fácilmente.
+• Cuando cargue su Teléfono ASUS a través de su PC, asegúrese de enchufar el cable USB tipo “C” al 
+puerto USB de su PC.
+• Evite cargar su Teléfono ASUS en un entorno en el que la temperatura ambiente sea superior a 35 ºC 
+(95 ºF).
+• Cargue su Teléfono ASUS durante ocho horas antes de utilizarlo por primera vez en el modo de 
+batería.
+• El estado de carga de la batería se indica mediante los siguientes iconos:
+ Baja No cargando Cargando Carga completa
+   
+NOTAS:
+• Por motivos de seguridad, utilice SOLAMENTE el cable y el adaptador de alimentación incluidos 
+para no dañar el dispositivo y evitar el riesgo de lesiones.
+• Por motivos de seguridad, utilice SOLAMENTE el cable y el adaptador de alimentación incluidos 
+para cargar su Teléfono ASUS.
+4. Cuando el dispositivo esté completamente cargado, desconecte el cable USB de su Teléfono 
+ASUS antes de desenchufar el adaptador de alimentación de corriente alterna de la toma de 
+corriente eléctrica.
+NOTAS: 
+• Puede utilizar el dispositivo mientras lo carga, pero puede tardar más tiempo en cargarse 
+completamente.
+• La carga a través de un puerto USB de un equipo tardará más tiempo en completarse.
+• Si su ordenador no proporciona suficiente energía para realizar la carga a través del puerto USB, 
+cargue su Teléfono ASUS utilizando el adaptador de alimentación de corriente alterna enchufado a 
+una toma de corriente eléctrica.
+13Capítulo 1: Operaciones básicas
+Cargar el teléfono ASUS de forma inalámbrica
+Puede comprar un cargador inalámbrico con certificación Qi para cargar su teléfono ASUS de forma 
+inalámbrica.
+Si utiliza su teléfono ASUS durante la carga, esta puede ralentizarse o, incluso, detenerse para 
+proteger la batería. El uso de determinadas aplicaciones durante la carga puede detener esta o 
+afectar a la funcionalidad de dicha carga. 
+Al realizar la carga de forma inalámbrica, asegúrese de quitar cualquier cubierta, funda o accesorio 
+telefónico y tenga en cuenta lo siguiente:
+• Para evitar quemaduras, no coloque ningún material conductor, como piezas metálicas e 
+imanes, entre el teléfono ASUS y el cargador.
+• Para evitar la desmagnetización de tarjetas de crédito, tarjetas de transporte o tarjetas de acceso 
+(RFID), así como daños en ellas, no las coloque sobre el cargador.
+PRECAUCIÓN! Si el teléfono ASUS se coloca incorrectamente sobre el cargador inalámbrico, el tiempo 
+de carga puede extenderse considerablemente.
+Siga los pasos que se indican a continuación para cargar el teléfono ASUS con un cargador 
+inalámbrico:
+1. Coloque el teléfono ASUS sobre el cargador inalámbrico siguiendo las instrucciones de este.
+NOTA: Las bobinas de carga inalámbrica ubicadas en la parte posterior del teléfono ASUS deben estar 
+en contacto con el cargador.
+2. Cuando la carga se inicie, la luz de notificación se encenderá y el icono de carga inalámbrica 
+aparecerá en la pantalla.
+3. Cuando la carga se complete, retire el teléfono ASUS del soporte o de la plataforma de carga 
+inalámbrica.
+PRECAUCIÓN! Si no se tienen en cuenta las precauciones, es posible que el dispositivo no se cargue 
+correctamente o se sobrecaliente.
+14 Capítulo 1: Operaciones básicas
+Usar NFC
+Puede utilizar NFC en los tres escenarios siguientes:
+Modo Lector: El teléfono lee la información de una tarjeta sin contacto, una etiqueta NFC u otros 
+dispositivos NFC.
+Coloque el área NFC del teléfono en la tarjeta si contacto, en la etiqueta NFC o en el dispositivo 
+NFC.
+Modo Emulación de tarjeta: El teléfono se puede utilizar como una tarjeta sin contacto.
+Coloque el área NFC del teléfono en el área NFC del lector NFC.
+Modo par a par: Transfiere fotografías, contactos u otros datos entre el teléfono y un teléfono 
+inteligente NFC.
+Lleve las áreas NFC de ambos teléfonos inteligentes conjuntamente, sin ningún espacio entre ellas.
+15Capítulo 1: Operaciones básicas
+Encender o apagar su Teléfono ASUS
+Encender el dispositivo
+Para encender el dispositivo, presione sin soltar el botón de alimentación hasta que aquel vibre y se 
+inicie.
+Apagar el dispositivo
+Para apagar el dispositivo: 
+Mantenga presionado el botón de alimentación y, a continuación, cuando se le pregunte, pulse 
+Apagar.
+Modo de suspensión
+Para activar el modo de suspensión del dispositivo, presione el botón de alimentación hasta que la 
+pantalla se apague.
+Tecla de encendido
+NOTA: Cuando el sistema esté fuera de servicio, presione sin soltar los botones Bajar el volumen + 
+Alimentación simultáneamente durante 8 segundos para reiniciar el teléfono. Si esto no funciona, 
+pruebe lo mismo pero durante 12 segundos.
+16 Capítulo 1: Operaciones básicas
+Primer uso
+Cuando encienda su Teléfono ASUS por primera vez, el Asistente para la instalación le guiará 
+a través del proceso de instalación. Siga las instrucciones que aparecen en la pantalla para 
+seleccionar el idioma, configurar la red móvil, la conexión Wi-Fi y las características de seguridad y 
+sincronizar las cuentas.
+Utilice su cuenta de ASUS o Google para configurar el dispositivo. Si aún no dispone de una cuenta 
+de ASUS o Google, cree una.
+Cuenta de Google
+Utilizar una cuenta de Google le permite utilizar completamente estas funciones del sistema 
+operativo Android:
+• Organizar y ver toda la información desde cualquier lugar.
+• Hacer copias de seguridad automáticamente de todos sus datos.
+• Aprovechar al máximo los servicios de Google cómodamente desde cualquier lugar.
+Cuenta de ASUS
+Disponer de una cuenta de ASUS tiene las siguientes ventajas:
+• Servicio de soporte técnico personalizado de ASUS y una extensión de la garantía para 
+productos registrados.
+• Recibir las actualizaciones del dispositivo y del firmware más recientes.
+Sugerencias para ahorrar energía de la batería
+La carga de la batería es muy importante en su Teléfono ASUS. A continuación, se indican algunos 
+consejos para ahorrar energía de la batería de su Teléfono ASUS.
+ – Cierre todas las aplicaciones que se estén ejecutando y que no estén en uso.
+ – Cuando no utilice el dispositivo, presione el botón de alimentación para activar el modo de 
+suspensión en el mismo.
+ – Reduzca el brillo de la pantalla.
+ – Mantenga el volumen del altavoz en un nivel bajo.
+ – Deshabilite la función Wi-Fi.
+ – Deshabilite la función Bluetooth.
+ – Deshabilite la función de giro automático de la pantalla.
+ – Deshabilite todas las funciones de sincronización automática del dispositivo.
+17Capítulo 1: Operaciones básicas
+Instrucciones de los gestos de navegación
+Cuando comience por primera vez, lea las instrucciones de los gestos de navegación y haga clic 
+en Hecho para cerrar las instrucciones.
+NOTA: Puede seleccionar entre Navegación por gestos o Barra de navegación en cualquier 
+momento en Configuración > Pantalla > Navegación del sistema.
+18 Capítulo 1: Operaciones básicas
+Utilizar la pantalla táctil
+Utilice estos gestos en la pantalla táctil para iniciar aplicaciones, acceder a algunas configuraciones 
+y navegar por su Teléfono ASUS.
+Iniciar aplicaciones 
+Para iniciar una aplicación, simplemente pulse en ella.
+Mover o eliminar elementos 
+Realice cualquiera de las acciones siguientes:
+• Para mover una aplicación o widget, pulse sin soltar y arrástrelo a la ubicación donde desea que 
+esté.
+• Para eliminar una aplicación, manténgalo presionado y luego pulse Uninstall (Desinstalar).
+• Para eliminar un widget, tóquelo y manténgalo presionado. A continuación, arrástrelo a Remove 
+(Quitar), que se encuentra en la parte superior de su pantalla.
+19Capítulo 1: Operaciones básicas
+Recorrer páginas o pantallas 
+Realice cualquiera de las acciones siguientes: 
+• Deslice rápidamente el dedo hacia la izquierda o hacia la derecha para cambiar entre las 
+pantallas o para abrir Google Search de imágenes.
+• Desplace el dedo hacia arriba o hacia abajo para recorrer las páginas web o la lista de elementos. 
+Acercar
+Separe dos dedos en el panel táctil para ampliar una imagen en la Fotos o Mapas, o aplique zoom 
+en una página Web.
+20 Capítulo 1: Operaciones básicas
+Reducir
+Acerque dos dedos en el panel táctil para ampliar una imagen de la Fotos o Mapas, o para ampliar 
+una página Web.
+NOTA: Puede que no sea capaz de ampliar o reducir algunas páginas Web debido a que estas hayan 
+sido diseñadas específicamente para encajar en la pantalla del teléfono móvil.
+21Capítulo 2: Las ventajas de la pantalla Inicio
+Las ventajas de la pantalla Inicio 2
+2 Las ventajas de la pantalla Inicio
+Funciones de la pantalla Inicio de su Zen
+Pantalla Inicio
+Obtenga avisos de eventos importantes, actualizaciones de aplicaciones y del sistema, previsiones 
+meteorológicas y mensajes de texto de personas que realmente le importan, directamente desde 
+la pantalla Inicio. 
+Deslice rápidamente hacia abajo en este área para mostrar las 
+System notifications (Notificaciones del sistema)
+Deslice rápidamente hacia abajo en este área para mostrar la 
+Quick settings (Configuración rápida)
+Pulse para abrir una aplicación
+Pulsar para abrir la página Google Search (Búsqueda de Google)
+Pulsar para abrir Voice Search (Búsqueda por voz)
+Deslice hacia arriba para abrir la pantalla All 
+Apps (Todas las aplicaciones)
+Pulsar para abrir Clock (Reloj)
+Pulsar para abrir Weather (El tiempo)
+22 Capítulo 2: Las ventajas de la pantalla Inicio
+Configuración rápida
+El panel de notificaciones de Configuración rápida proporciona acceso con un solo toque a algunas 
+de las características inalámbricas y configuraciones de su Teléfono ASUS. Cada una de estas 
+características está representada por un botón. 
+Para iniciar el panel de configuración rápida, deslice rápidamente hacia abajo dos veces desde la 
+parte superior de la pantalla.
+NOTA: Un icono brillante indica que la característica está actualmente habilitada mientras que si el 
+icono es gris, significa que la característica está deshabilitada.
+Agregar funciones 
+Para agregar funciones desde el panel Quick Settings (Configuración rápida):
+1. Inicie Quick settings (Configuración rápida) y, a continuación, pulse .
+2. Deslice rápidamente hacia arriba Hold and drag to rearrange tiles (Mantener y arrastrar para 
+reorganizar iconos).
+3. En Hold and drag to add tiles (Mantener y arrastrar para agregar iconos), pulse y arrastre un 
+icono hacia arriba para agregarlo al panel Quick Settings (Configuración rápida). 
+4. Pulse para retroceder y ver el panel de notificaciones Quick Settings (Configuración rápida) 
+actual. 
+Quitar funciones
+Para quitar funciones existentes del panel Quick Settings (Configuración rápida):
+1. Inicie Quick settings (Configuración rápida) y, a continuación, pulse .
+2. Pulse y arrastre un icono debajo de Hold and drag to rearrange tiles (Mantener y arrastrar 
+para reorganizar iconos) para quitarlo del panel Quick Settings (Configuración rápida).
+Deslice hacia la izquierda o hacia la derecha 
+para ajustar el brillo de la pantalla
+Pulse para abrir Settings (Configuración)
+Pulsar para seleccionar elementos 
+o anular la selección de estos para 
+mostrarse en la configuración rápida
+Pulse para apagar, reiniciar su teléfono 
+ASUS, realizar una captura de pantalla 
+o usar la función de emergencia
+• Pulse estos botones para habilitar o deshabilitar sus funciones
+• Deslice hacia la izquierda o hacia la derecha para ver más iconos
+23Capítulo 2: Las ventajas de la pantalla Inicio
+Notificaciones
+En Notifications (Notificaciones), puede ver las actualizaciones más recientes realizadas y los 
+cambios del sistema aplicados en su Teléfono ASUS. La mayoría de estos cambios son datos e 
+información relacionada con el sistema. 
+Para iniciar el panel Notifications (Notificaciones), deslice rápidamente hacia abajo desde la parte 
+superior de la pantalla.
+Pulse aquí para eliminar todas las notificaciones de la lista
+• Deslice la notificación hacia la izquierda o hacia la derecha para ver 
+más opciones
+• Pulse en la notificación para ver sus detalles
+Tocar para administrar notificaciones
+24 Capítulo 2: Las ventajas de la pantalla Inicio
+Deslice para 
+abrir la barra 
+lateral
+Pulse para 
+abrir Settings 
+(Configuración)
+Herramienta de borde
+La herramienta de borde le permite ejecutar rápidamente accesos directos del sistema y abrir una 
+aplicación en una ventana flotante.
+Para abrir la barra lateral, deslícela hacia adentro desde el borde.
+25Capítulo 2: Las ventajas de la pantalla Inicio
+Personalizar la pantalla Home (Inicio)
+Refleje su propia personalidad en su pantalla Inicio. Seleccione un diseño atractivo como fondo de 
+pantalla y agregue widgets para una revisión rápida de la información importante. También puede 
+agregar más páginas de forma que pueda añadir y acceder o revisar rápidamente más aplicaciones 
+o widgets en su pantalla Inicio.
+Para iniciar la pantalla Manage Home (Administrar inicio), pulse sin soltar un área vacía de la 
+pantalla Home (Inicio).
+26 Capítulo 2: Las ventajas de la pantalla Inicio
+Fondos de pantalla
+Haga que sus aplicaciones, iconos y otros elementos de su Zen se coloquen en un fondo de 
+pantalla de diseño atractivo. Puede agregar un matiz de fondo translúcido al fondo de pantalla para 
+que el conjunto resulte ameno y claro. También puede seleccionar un fondo de pantalla animado 
+para que su pantalla cobre vida.
+Aplicar un fondo de pantalla 
+Para aplicar un fondo de pantalla: 
+1. Pulse sin soltar un área vacía de la pantalla Inicio y seleccione Wallpaper & style (Fondo de 
+pantalla & estilo).
+2. Pulse Change wallpaper (Cambiar fondo de pantalla) y seleccione si desea establecer el fondo 
+de pantalla en Lock screen (Pantalla de bloqueo) o Home screen (Pantalla inicio).
+3. Seleccione un fondo de pantalla y, a continuación, pulse Apply (Aplicar).
+NOTA: También puede definir la configuración del fondo de pantalla en Settings (Ajustes) > 
+Wallpaper (Fondo de pantalla) & style (estilo).
+Deslice hacia la derecha o hacia la izquierda para seleccionar dónde 
+desea aplicar el fondo de pantalla
+Pulsar para seleccionar una imagen de la Galería
+Pulsar para recortar el fondo de pantalla 
+27Capítulo 2: Las ventajas de la pantalla Inicio
+Widgets
+Puede poner widgets, que son pequeñas aplicaciones dinámicas, en su pantalla Home (Inicio). Los 
+widgets proporcionan vistas rápidas de previsiones meteorológicas, información de eventos de 
+calendario, estado de la batería, etc.
+Agregar widgets
+Para agregar un widget:
+1. Mantenga presionada un área vacía de la pantalla Inicio y seleccione Widgets (Widgets).
+2. En Widgets, pulse un elemento y mantenga presionado el widget que desea agregar y, a 
+continuación, arrástrelo a un área vacía en su pantalla Home (Inicio).
+Para quitar un widget
+Desde la pantalla Inicio, mantenga presionado un widget y, a continuación, arrástrelo a Remove 
+(Eliminar) en la parte superior de la pantalla.
+Editar la pantalla Home (Inicio) 
+Puede seleccionar un efecto de desplazamiento, cambiar el color de las etiquetas de icono, 
+seleccionar el tema de carpeta y establecer la pantalla predeterminada.
+1. Pulse sin soltar un área vacía de la pantalla Home (Inicio) y seleccione Editar la pantalla Home 
+(Inicio). 
+2. Pulse una función para editar la pantalla Home (Inicio).
+Preferencias
+Puede editar la pantalla Inicio, usar AppLock y ocultar aplicaciones.
+1. Pulse sin soltar un área vacía de la pantalla Home (Inicio) y seleccione Preferences 
+(Preferencias).
+2. Pulse una función para editar la preferences (preferencias).
+28 Capítulo 2: Las ventajas de la pantalla Inicio
+Configurar la fecha y hora
+De forma predeterminada, la fecha y hora mostradas en la pantalla Home (Inicio) se sincronizan 
+automáticamente con la configuración del proveedor móvil.
+Para cambiar la configuración de fecha y hora:
+1. Inicie la pantalla Settings (Configuración) llevando a cabo cualquiera de los procedimientos 
+siguientes:
+ • Inicie Quick settings (Configuración rápida) y, a continuación, pulse . 
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración). 
+2. Desplácese hacia abajo hasta la pantalla Settings (Configuración) y seleccione Sistema > Date & 
+time (Fecha y hora).
+3. Deslice la opción Set time automatically (Establecer hora automáticamente) y Set time zone 
+automatically (Establecer zona horaria) a la posición Off (Desactivado).
+4. Pulse Date (Fecha) y Time (Hora) para ajustar la fecha y la hora.
+5. Pulse Time Zone (Zona horaria) para seleccionar la zona horaria.
+6. Si lo prefiere, puede optar por el formato de 24 horas.
+NOTA: Consulte también Clock (Reloj).
+Configuración de los sonidos de tono de llamada y alerta
+Configure los sonidos para el tono de llamada del teléfono y las notificaciones como, por ejemplo, 
+alertas de mensajes de texto, correos electrónicos y eventos. También puede habilitar o deshabilitar 
+los tonos del panel táctil de marcación, el sonido de la pantalla de bloqueo o disponer de vibración 
+en su Teléfono ASUS cuando pulse en ella.
+Para definir la configuración del sistema:
+1. Inicie la pantalla Settings (Configuración) llevando a cabo cualquiera de los procedimientos 
+siguientes:
+ • Inicie Quick settings (Configuración rápida) y, a continuación, pulse . 
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración). 
+2. Seleccione Sound & Vibration (Sonido y vibración) y defina la configuración de sonido 
+preferida.
+NOTA: Presione la tecla de volumen y toque > en cualquier pantalla para abrir el menú Sound 
+& Vibration (Sonido y vibración).
+29Capítulo 3: Trabajar duro, jugar mejor
+Trabajar duro, jugar mejor 3
+3 Trabajar duro, jugar mejor
+Chrome
+Chrome para Android le permite disfrutar de la misma experiencia de navegación web rápida, segura 
+y estable que con la versión de Chrome de escritorio. Inicie sesión en sus cuentas de Google para 
+sincronizar fichas, marcadores y el historial de navegación en todos los dispositivos. Si no tiene una 
+cuenta de Google, regístrese para una.
+NOTA: Para obtener detalles sobre la creación de unas cuentas de Google, consulte Gmail.
+¡IMPORTANTE! Antes de llevar a cabo ninguna actividad de navegación por Internet o relacionada con 
+Internet, asegúrese de que su Teléfono ASUS está conectado a una red Wi-Fi o móvil. Para obtener más 
+detalles, consulte la sección Permanecer conectado.
+Iniciar Chrome
+Desde la pantalla Home (Inicio) lleve a cabo cualquiera de las siguientes acciones para iniciar Chrome:
+• Pulse .
+• Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Chrome.
+30 Capítulo 3: Trabajar duro, jugar mejor
+Compartir una página
+Compartir páginas interesantes desde su Teléfono ASUS con otros a través de una cuenta de correo 
+electrónico, una cuenta de almacenamiento en la nube, Bluetooth u otras aplicaciones Teléfono 
+ASUS.
+1. Inicie Chrome.
+2. Desde una página Web, pulse > Share... (Compartir...).
+3. Pulse para seleccionar una forma de compartir la página.
+Colocar marcadores en páginas
+Coloque un marcador en las páginas o sitios Web favoritos de forma que pueda volver a ellos y 
+examinarlos.
+Para poner un marcador en una página:
+En la página, pulse > . Para ver sus páginas favoritas, pulse > Bookmarks (Marcadores) y, a 
+continuación, seleccione la página que desee ver o a la que desee acceder.
+Borrar los datos de navegación
+Borre los datos de navegación que se almacenan temporalmente en su Teléfono ASUS para mejorar 
+el rendimiento de carga del explorador Chrome. Los datos de navegación incluyen el historial de 
+navegación, los datos de caché, cookies y el sitio, contraseñas guardadas y datos de autorrelleno.
+1. Iniciar el explorador.
+2. Pulse > Settings (Configuración) > Privacy and security (Privacidad y seguridad) > Clear 
+browsing data (Borrar datos de exploración).
+3. Seleccione los datos de exploración que desee eliminar. 
+4. Cuando termine, haga clic en Clear data (Borrar datos).
+31Capítulo 3: Trabajar duro, jugar mejor
+Gmail
+Utilice Gmail para configurar su cuenta de Google para entrar en los servicios y las aplicaciones 
+relacionados con Google, y para recibir, enviar y examinar correos electrónicos desde su Teléfono 
+ASUS. También puede configurar otras cuentas de correo electrónico como Yahoo o su cuenta de 
+correo electrónico del trabajo a través de Gmail.
+¡IMPORTANTE! Su Teléfono ASUS debe estar conectada a una red Wi-Fi o móvil para poder agregar 
+una cuenta de correo electrónico o enviar y recibir correos electrónicos desde cuentas agregadas. Para 
+obtener más detalles, consulte el capítulo Permanecer conectado.
+Para configurar su cuenta de Google:
+1. Desde la pantalla Home (Inicio), lleve a cabo cualquiera de las siguientes acciones para iniciar 
+Gmail:
+ • Pulse Google > Gmail.
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Gmail.
+2. Pulse GOT IT (ENTENDIDO) y, a continuación, Add an email address (Agregar una dirección 
+de correo electrónico).
+3. Seleccione Google. 
+4. Escriba su dirección de correo electrónico. Para crear una nueva cuenta de Google, pulse Create 
+account (Crear cuenta). 
+5. Siga los pasos que se indican a continuación para iniciar sesión en su cuenta de Google.
+NOTA: Si desea configurar su cuenta de trabajo en su Teléfono ASUS, pregunte por la configuración de 
+correo electrónico a su administrador de red.
+32 Capítulo 3: Trabajar duro, jugar mejor
+Google Calendar
+Dinamice su planificación y realice un seguimiento de todos sus eventos o recordatorios 
+importantes. Los eventos que cree o edite se sincronizarán automáticamente con todas las 
+versiones de Google Calendar en las que haya iniciado sesión.
+Crear eventos 
+Para crear un evento: 
+1. Desde la pantalla Home (Inicio), lleve a cabo cualquiera de las siguientes acciones para iniciar 
+Gmail:
+ • Pulse Google > Calendar (Calendario).
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Calendar 
+(Calendario).
+2. Pulse y, a continuación, pulse Event (Evento).
+3. Escriba el nombre del evento y seleccione la fecha y hora para el mismo. Puede establecer el 
+evento como un evento de todo el día o periódico.
+• Eventos de todo el día: En el campo All-day (Todo el día), mueva el control deslizante 
+hacia la derecha.
+• Evento periódico: Pulse More options (Más opciones) > y, a continuación, seleccione 
+la frecuencia con la que desea que el evento vuelva a ocurrir o se repita.
+4. Para establecer la zona horaria, pulse More options (Más opciones) > y, a continuación, 
+escriba el país cuya zona horaria desea mostrar.
+5. En el campo Add location (Agregar ubicación), escriba el lugar o la ubicación del evento.
+6. Pulse y, a continuación, seleccione o establezca la hora o día para obtener una notificación 
+o recordatorio sobre el evento.
+7. En el campo Invite people (Invitar a personas), escriba las direcciones de correcto electrónico 
+de sus invitados al evento.
+8. También puede agregar notas o datos adjuntos mediante el campo Add note (Agregar nota) o 
+Add attachment (Agregar datos adjuntos).
+9. Cuando termine, pulse Save (Guardar).
+Editar o quitar eventos
+Para editar o quitar un evento:
+1. En la pantalla Home (Inicio), pulse Google > Calendar (Calendario).
+2. Pulse el evento que desea editar o eliminar. 
+3. Para editar el evento, pulse y realice los cambios necesarios. Para quitar el evento, pulse > 
+Delete (Eliminar) y, a continuación, pulse Delete (Eliminar) para confirmar la eliminación.
+33Capítulo 3: Trabajar duro, jugar mejor
+Crear recordatorios
+Para crear un recordatorio: 
+1. En la pantalla Home (Inicio), pulse Google > Calendar (Calendario). 
+2. Pulse y, a continuación, pulse Reminder (Recordatorio).
+3. Escriba el nombre del recordatorio. 
+4. Establezca la fecha y hora para el recordatorio. Puede establecer el recordatorio como un 
+recordatorio de todo el día o periódico.
+• Recordatorio de todo el día: En el campo All-day (Todo el día), mueva el control deslizante 
+hacia la derecha.
+• Recordatorio periódico: Pulse y, a continuación, seleccione la frecuencia con la que 
+desea que el recordatorio vuelva a ocurrir o se repita.
+5. Cuando termine, pulse Save (Guardar). 
+Editar o quitar recordatorios 
+Para editar o quitar un recordatorio: 
+1. Pulse Google > Calendar (Calendario). 
+2. Pulse el recordatorio que desea editar o eliminar.
+3. Para editar el recordatorio, pulse y realice los cambios necesarios. Para quitar el 
+recordatorio, pulse > Delete (Eliminar) y, a continuación, pulse Delete (Eliminar) para 
+confirmar la eliminación.
+34 Capítulo 3: Trabajar duro, jugar mejor
+Administrador de archivos
+Mediante la aplicación Administrador de archivos puede buscar y administrar fácilmente sus datos 
+en el almacenamiento interno de su teléfono y en sus dispositivos de almacenamiento externos 
+conectados.
+Para iniciar File Manager (Administrador de archivos), deslice hacia arriba en la pantalla Home 
+(Inicio) y, a continuación, pulse File Manager (Administrador de archivos).
+¡IMPORTANTE! Antes de acceder a los archivos guardados en la red y en el almacenamiento en la 
+nube, asegúrese de que la red Wi-Fi o móvil está habilitada en su Teléfono ASUS. Para obtener detalles, 
+consulte la sección Permanecer conectado.
+Pulsar para mostrar los archivos bajo la 
+categoría 
+Muestra el uso del almacenamiento interno
+Pulsar para buscar un archivo 
+Pulsar para acceder al almacenamiento interno, 
+de red y en la nube
+Pulsar para editar las categorías y configurar los ajustes
+35Capítulo 3: Trabajar duro, jugar mejor
+Clon del teléfono de ASUS
+Transfiera sus datos de forma inalámbrica, como contactos, registros de llamadas o fotos, desde el 
+dispositivo móvil antiguo a su Teléfono ASUS.
+Para utilizar la función ASUS Phone Clone (Clon del teléfono de ASUS):
+1. Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Phone Clone (Clon del 
+teléfono).
+2. Pulse Get Started (Comenzar) y, a continuación, siga las instrucciones de la pantalla para 
+completar el proceso de transferencia de datos.
+36 Capítulo 4: Mantenerse en contacto
+Mantenerse en contacto 4
+4 Mantenerse en contacto
+Estilo de entrada de llamada
+Función de SIM dual
+La función de SIM de su Teléfono ASUS le permite administrar la configuración de las tarjetas Nano-
+SIM instaladas. Con esta función, puede habilitar y deshabilitar las tarjetas Nano-SIM, asignarles 
+nombre o establecer una de ellas como red preferida.
+Cambiar el nombre de las tarjetas Nano-SIM
+Cambie el nombre de las tarjetas Nano-SIM de su Teléfono ASUS para que pueda identificarlas 
+fácilmente. 
+Para cambiar los nombres de las tarjetas NanoSIM, pulse SIM1 o SIM2 y, a continuación, escriba los 
+nombres para las tarjetas Nano-SIM.
+NOTA: Si las tarjetas SIM tienen diferentes proveedores de servicio móvil, es recomendable utilizar los 
+nombres de dichos proveedores para los nombres de las tarjetas SIM. Si anbas tarjetas SIM tienen el 
+mismo proveedor de servicio móvil, es recomendable utilizar los números de móvil para los nombres de 
+SIM.
+37Capítulo 4: Mantenerse en contacto
+Asignar una tarjeta SIM predeterminada
+Asigne una tarjeta SIM como su tarjeta SIM preferida para llamadas, mensajes SMS y servicios de 
+datos. 
+Tarjeta SIM para llamadas de voz
+Cuando realice una llamada, su Teléfono ASUS utilizará automáticamente la tarjeta SIM preferida 
+para conectar dicha llamada.
+Para asignar una tarjeta SIM para llamadas de voz, pulse Voice call (Llamada de voz) y, a 
+continuación, pulse en la tarjeta SIM que desee utilizar.
+¡IMPORTANTE! Solamente puede utilizar esta función si realiza una llamada desde la lista de contactos.
+Tarjeta SIM para mensajes SMS
+Para asignar una tarjeta SIM para mensajes SMS, pulse SMS messages (Mensajes SMS) y, a 
+continuación, seleccione SIM1 o SIM2.
+Tarjeta SIM para servicio de datos
+Para asignar una tarjeta SIM para servicio de datos, pulse Data service network (Red de servicios 
+de datos) y, a continuación, seleccione SIM1 o SIM2.
+38 Capítulo 4: Mantenerse en contacto
+Realizar llamadas
+Su Teléfono ASUS ofrece numerosas formas de realizar una llamada. Llame a sus amigos desde la 
+lista de contactos, utilice la marcación inteligente para hacer una llamada rápidamente o escriba 
+un número de marcación rápida para llamar a los contactos con los que se comunica con más 
+frecuencia.
+NOTA: Organice de los contactos en la aplicación Contacts (Contactos). Para obtener detalles, consulte 
+Managing contacts (Administración de contactos).
+Iniciar la aplicación Phone (Teléfono)
+Desde la pantalla Home (Inicio) lleve a cabo cualquiera de las siguientes acciones para iniciar la 
+aplicación Phone (Teléfono):
+• Pulse .
+• Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Phone (Teléfono).
+Marcar un número de teléfono
+Utilice la aplicación Phone (Teléfono) para marcar directamente un número de teléfono.
+1. Desde la pantalla Home (Inicio) pulse y, a continuación, pulse los botones numéricos.
+2. Seleccione los botones de llamada SIM1 o SIM2 para marcar el número.
+NOTA: Las etiquetas de los botones de llamada pueden variar dependiendo de la configuración 
+realizada en las tarjetas SIM. Para obtener más detalles, consulte la Función de SIM dual.
+Marcar una extensión
+Cuando necesite llamar a una extensión, puede llevar a cabo cualquiera de los pasos siguientes 
+para omitir los mensajes de voz.
+Solicitar confirmación para una extensión
+Puede insertar un mensaje de confirmación para la extensión después de marcar el número.
+1. Desde la aplicación Teléfono escriba el número principal.
+2. Para insertar una solicitud de confirmación, pulse sin soltar # hasta que aparezca un punto y 
+coma (;).
+3. Escriba la extensión. 
+4. Seleccione los botones de llamada SIM1 o SIM2 para hacer la llamada.
+5. Cuando se le pida, pulse Yes (Sí) para confirmar la extensión.
+6. Pulse para finalizar la llamada.
+39Capítulo 4: Mantenerse en contacto
+Marcar automáticamente una extensión
+Puede insertar una pausa corta o larga después de marcar el número y, a continuación, la extensión 
+se marcará automáticamente.
+1. Desde la aplicación Teléfono escriba el número principal.
+2. Para insertar una pausa, pulse sin soltar * hasta que aparezca una coma (,).
+3. Escriba la extensión. 
+4. Seleccione los botones de llamada SIM1 o SIM2 para hacer la llamada.
+5. Pulse para terminar la llamada. 
+Marcar inteligentemente los contactos 
+A medida que inserta los primeros números o letras del nombre del contacto, la función Smart 
+Dial (Marcación inteligente) filtra la lista de contactos o los registros de llamadas y proporciona las 
+posibles coincidencias. Puede comprobar si el contacto con el que está intentando comunicarse se 
+encuentra en la lista de posibles coincidencias y, a continuación, realizar esa llamada rápidamente.
+1. Inicie la aplicación Phone (Teléfono) y, a continuación, introduzca el número o nombre del 
+contacto. 
+2. En la lista de posibles coincidencias, pulse el contacto al que desea llamar. Si el contacto no se 
+encuentra en la lista, escriba el número o nombre completo del mismo.
+3. Seleccione los botones de llamada SIM1 o SIM2 para hacer la llamada.
+NOTA: Las etiquetas de los botones de llamada pueden variar dependiendo de la configuración 
+realizada en las tarjetas Nano-SIM. Para obtener más detalles, consulte también la Función de SIM dual.
+Llamar desde la aplicación Contacts (Contactos)
+Utilice la aplicación Contacts (Contactos) para realizar una llamada desde la lista de contactos.
+1. Inicie la aplicación Contacts (Contactos).
+2. Pulse el nombre del contacto y, a continuación, pulse el número que desee marcar.
+3. Si hay dos tarjetas SIM instaladas, pulse la tarjeta SIM desde la que desea realizar la llamada.
+4. Pulse para terminar la llamada.
+40 Capítulo 4: Mantenerse en contacto
+Llamar a los contactos favoritos
+Cuando agregue un contacto la lista (Favoritos), puede llamar rápidamente al contacto desde la 
+aplicación Contacts (Contactos).
+1. Iniciar Contacts (Contactos) desde la aplicación Contacts (Contactos).
+2. Pulse Groups > Favorites (Favoritos) para mostrar la lista Favorites (Favoritos) y, a continuación, 
+pulse el contacto favorito a quien desea llamar.
+3. Pulse para terminar la llamada.
+Recibir llamadas
+La pantalla táctil de su Teléfono ASUS se ilumina cuando se recibe una llamada. La pantalla de la 
+llamada entrante también varía en función del estado de su Teléfono ASUS.
+Responder las llamadas
+Deslice hacia para responder o hacia para rechazar la llamada.
+Administrar el registro de llamadas
+En los registros de llamadas, puede devolver las llamadas perdidas, guardar llamadas en la lista de 
+contactos, bloquear al llamador o volver a marcar el número o contacto recientemente llamado. 
+Guardar llamadas en Contacts (Contactos)
+Puede agregar una llamada desde el registro de llamadas a la lista de contactos.
+1. Desde la aplicación Teléfono, pulse Recientes para mostrar los registros de llamadas.
+2. Pulse junto al número que desee agregar a la lista de contactos. 
+3. Pulse en la esquina superior derecha de la pantalla y, a continuación, pulse Add to contacts 
+(Agregar a contactos).
+4. Pulse Create new contact (Crear nuevo contacto) para agregar una nueva entrada a la lista de 
+contactos. 
+ Pulse Add to an existing contact (Agregar a un contacto o existente), seleccione un contacto, 
+elija si desea sobrescribir el número del contacto con este nuevo o agregar una nueva entrada y, 
+por último, pulse .
+41Capítulo 4: Mantenerse en contacto
+Volver a marcar el número al que se llamó por última vez
+Para volver a marcar el número al que se llamó por última vez:
+1. Desde la aplicación Teléfono, pulse Recientes para mostrar los registros de llamadas.
+2. Pulse el último número al que llamó para volver a marcar el número.
+3. Si hay dos tarjetas SIM instaladas, pulse la tarjeta SIM desde la que desea volver a marcar el 
+número.
+4. Pulse para terminar la llamada.
+Otras opciones de llamada
+Durante una llamada activa, pulse cualquiera de las opciones de llamada posibles para cuando hay 
+una llamada en curso.
+Contactos 
+Abre la aplicación Contacts (Contactos).
+Llamada de conferencia
+Si está suscrito a un servicio de llamadas de conferencia con su proveedor de servicio 
+móvil, este icono le permite agregar uno o varios contactos en una llamada activa.
+NOTA: El número de participantes en la llamada de conferencia depende de la suscripción 
+a este tipo de servicio. Puede solicitar información acerca de este servicio a su proveedor de 
+servicio móvil.
+Grabar
+Permite grabar una llamada activa.
+¡IMPORTANTE! Antes de grabar una llamada activa, la mayoría de las leyes locales exigen 
+solicitar permiso a las personas que se encuentran en la otra línea.
+NOTA: Para obtener más detalles, consulte la sección anterior Grabar llamadas.
+Teléfono con altavoz
+Permite activar o desactivar el altavoz.
+Micrófono
+Esta opción permite activar o desactivar el micrófono para la llamada activa. Cuando el 
+micrófono está desactivado o en el modo de silencio, puede escuchar al llamador, pero 
+este no le puede escuchar a usted.
+Retener llamada
+Permite poner una llamada activa en espera.
+Teclado numérico
+Abre el teclado numérico.
+42 Capítulo 4: Mantenerse en contacto
+Grabar llamadas
+Su Teléfono ASUS le permite grabar una conversación para referencia o información futuras.
+1. Llame a un contacto o marque un número. 
+2. Pulse para grabar la llamada. 
+¡IMPORTANTE! Antes de grabar una llamada, asegúrese de solicitar permiso a las otras partes 
+implicadas.
+3. Para detener la grabación, pulse . El icono aparecerá en la barra de notificaciones del 
+sistema.
+4. Deslice rápidamente hacia abajo la esquina superior izquierda de la pantalla y, a continuación, 
+pulse la notificación Call recording saved (Grabación de llamada guardada) para ver la 
+conversación grabada.
+43Capítulo 4: Mantenerse en contacto
+Administrar contactos
+Organice sus contactos y siga en comunicación con ellos fácilmente a través de llamadas, mensajes 
+SMS, correos electrónicos o redes sociales. Agrupe sus contactos como favoritos para comunicarse 
+con ellos rápidamente o agrúpelos como VIP para recibir notificaciones de cualquier evento 
+próximo, llamada pérdida o mensajes sin leer.
+También puede sincronizar sus contactos con sus cuentas de correo electrónico o de redes sociales, 
+vincular información de los contactos para acceso rápido en un lugar o filtrar los contactos que 
+desea para estar en comunicación con ellos.
+Para iniciar la aplicación Contacts (Contactos), deslice hacia arriba en la pantalla Home (Inicio) y, a 
+continuación, pulse Contacts (Contactos).
+Configuración de contactos
+Seleccione cómo le gustaría mostrar sus contactos desde la configuración de la aplicación Contacts 
+(Contactos). Tales opciones de visualización incluyen la visualización solamente de aquellos 
+contactos que tienen teléfonos, la ordenación de la lista por nombre y apellidos o la visualización 
+de los nombres de contacto como nombres y apellidos primero. Para definir la configuración de la 
+aplicación Contacts (Contactos), pulse > Settings (Configuración) en dicha aplicación. 
+Configurar el perfil 
+Haga que su Teléfono ASUS sea realmente suya y configure el perfil de la información.
+1. Inicie la aplicación Contacts (Contactos) y, a continuación, pulse Set up my profile (Configurar 
+mi perfil) o Me (Yo).
+NOTA: Me (Yo) aparece cuando ha configurado su cuenta de Google en su Teléfono ASUS.
+2. Rellene su información, como por ejemplo el número de teléfono móvil o particular. Para 
+agregar otra información, pulse Add another field (Agregar otro campo).
+3. Cuando haya completado su información, pulse .
+44 Capítulo 4: Mantenerse en contacto
+Agregar contactos
+Agregue contactos a su cuenta de dispositivo, empresarial, de Google o a cualquier otra cuenta 
+de correo electrónico y rellene la información de contacto más importante como, por ejemplo, 
+números de contacto, direcciones de correo electrónico, eventos especiales para VIP, etc.
+1. Inicie la aplicación Contacts (Contactos) y, a continuación, pulse .
+2. Seleccione Device (Dispositivo).
+NOTAS: 
+• También puede guardar el contacto en la tarjeta SIM o en una cuenta de correo electrónico.
+• Si no dispone de una cuenta de correo electrónico, pulse Add account (Añadir una cuenta) y, a 
+continuación, cree una.
+3. Rellene la información necesaria, como el nombre, el número de teléfono móvil o particular y la 
+dirección de correo electrónico. 
+4. Si desea agregar otra información de contacto, pulse Add another field (Agregar otro campo).
+5. Cuando haya completado la información, pulse .
+Agregar una extensión a un número de contacto
+Puede agregar una extensión a un contacto para omitir mensajes de voz cuando haga una llamada.
+1. En la pantalla de información de contacto, escriba el número principal y la extensión de dicho 
+contacto de una de las dos formas que se indican a continuación:
+ • Inserte una coma (,) después del número principal, a continuación, escriba la 
+extensión del contacto. Se producirá una pausa breve antes de marcarse la extensión 
+automáticamente. Para extender la pausa, pulse Pause (Pausar) para insertar otra coma. 
+ • Inserte un punto y coma (;) después del número principal, a continuación, escriba la 
+extensión del contacto. Cuando marque el número de contacto, se le pedirá que confirme 
+la extensión. Pulse Yes (Sí) en el mensaje de confirmación.
+2. Cuando haya completado la información, pulse .
+45Capítulo 4: Mantenerse en contacto
+Personalizar el perfil del contacto
+Edite la información de contacto, agregue una fotografía, establezca un tono de llamada o haga 
+una foto como portada para el perfil del contacto.
+1. Inicie la aplicación Contacts (Contactos) y, a continuación, seleccione el contacto cuya 
+información o perfil desee editar o personalizar.
+2. Haga los cambios en la página de perfil del contacto.
+Marcar sus contactos a favoritos
+Establezca los contactos a los que llama frecuentemente como favoritos para poder llamarlos 
+rápidamente desde la aplicación Phone (Teléfono).
+1. Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Contacts (Contactos).
+2. Seleccione el contacto que desee marcar como favorito.
+3. Pulse . El contacto se agregará la lista de favoritos en la aplicación Contacts (Contactos).
+NOTAS: 
+• Para ver la lista de favoritos, Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse 
+Contacts (Contactos) > Groups (Grupos) > Favorites (Favoritos).
+• Para obtener más detalles, consulte la sección Calling your favorite contacts (Llamar a sus 
+contactos favoritos).
+Configuración
+Pulsar para agregar a la lista de favoritos
+Pulsar para editar la información del contacto
+46 Capítulo 4: Mantenerse en contacto
+Administrar su lista de bloqueados
+Bloquear números
+Cree su lista de contactos o números bloqueados para evitar recibir cualquier llamada o mensaje 
+no deseado. Las llamadas y mensajes bloqueados se guardarán en el archivo Block List (Lista de 
+bloqueados).
+1. Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Phone (Teléfono) y 
+luego pulse > Settings (Configuración) > Blocked numbers (Números bloqueados).
+2. Toque Add a number (Agregar un número) y, a continuación, especifique el número que desea 
+bloquear. Cuando haya terminado, toque Block (Bloquear).
+Desbloquear números
+Puede quitar un número bloqueado de la lista y recibir llamadas o mensajes del número de nuevo.
+1. Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Phone (Teléfono) y 
+luego pulse > Settings (Configuración) > Blocked numbers (Números bloqueados).
+2. Toque × junto al número que desea desbloquear y, a continuación, toque Unblock 
+(Desbloquear).
+Redes sociales con contactos
+La integración de las cuentas de redes sociales de los contactos facilita la visualización de sus 
+perfiles, noticias y comentarios sociales. Permanezca actualizado con las actividades de los 
+contactos en tiempo real.
+¡IMPORTANTE! Antes de poder integrar cuentas de redes sociales de los contactos, necesita iniciar 
+sesión en la cuenta de red social y sincronizar su configuración.
+Sincronizar su cuenta de red social
+Sincronice su cuenta de red social para agregar cuentas de redes sociales de sus contactos a su 
+Teléfono ASUS.
+1. Inicie la pantalla Settings (Configuración) llevando a cabo cualquiera de los procedimientos 
+siguientes:
+ • Inicie Quick settings (Configuración rápida) y, a continuación, pulse . 
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración). 
+2. En la pantalla Settings (Configuración), pulse la cuenta de red social bajo la sección Passwords 
+& accounts (Contraseñas y cuentas).
+3. Pulse Automatically sync app data (Sincronizar datos automáticamente) para sincronizar las 
+cuentas de redes sociales de los contactos.
+4. Inicie la aplicación Contacts (Contactos) para ver su lista de contactos. Pulse el contacto y verá 
+de qué red social es.
+47Capítulo 4: Mantenerse en contacto
+Enviar mensajes y más 
+Mensajes 
+Mensajes, una aplicación intuitiva y agradable, le permite enviar y recibir mensajes SMS y MMS, 
+así como enviar textos, fotos o mensajes de audio grupales. Puede agregar emojis adhesivos a sus 
+mensajes, compartir su ubicación, archivar sus mensajes y bloquear fácilmente remitentes de SMS. 
+También puede hacer fotos y grabar vídeos y compartir fácilmente estos archivos.
+Enviar mensajes
+1. En la pantalla Home (Inicio), pulse .
+2. Pulse Start chat (Iniciar chat) y, a continuación, seleccione el contacto a quien desea enviar un 
+mensaje.
+3. Seleccione la cuenta SIM desde la que va a enviar el mensaje.
+4. Comience a redactar el mensaje en el campo de mensaje. 
+5. Cuando haya finalizado, pulse para enviar el mensaje.
+Responder a mensajes
+1. Pulse la alerta de mensaje en la pantalla Home (Inicio) o en la pantalla de bloqueo.
+2. Seleccione la cuenta SIM desde la que va a enviar la respuesta.
+3. Comience a redactar el mensaje en el campo de mensaje. 
+4. Cuando haya finalizado, pulse para enviar la respuesta.
+48 Capítulo 5: Diversión y ocio
+Diversión y ocio 5
+5 Diversión y ocio
+Utilizar auriculares
+Tenga libertad para hacer otras cosas mientras atiende una llamada o disfrute escuchando su 
+música favorita, todo ello gracias al uso de los auriculares.
+Enchufar el conector de audio
+Inserte el conector de 3,5 mm de los auriculares en el puerto de audio del dispositivo.
+¡ADVERTENCIA! Si escucha audio a un volumen elevado durante períodos prolongados de tiempo, sus 
+oídos pueden sufrir daños.
+NOTAS:
+• Recomendamos encarecidamente utilizar solamente auriculares compatibles.
+• Si desenchufa el conector de audio mientras escucha música la reproducción de ésta se pausará 
+automáticamente.
+• Si desenchufa el conector de audio mientras ve un vídeo, la reproducción de éste se pausará 
+automáticamente.
+49Capítulo 5: Diversión y ocio
+YT Music 
+Con YT Music, puede hacer streaming de su música favorita, crear listas de reproducción o escuchar 
+la radio. También puede suscribirse a YT Music para tener acceso ilimitado y sin publicidad a 
+millones de archivos de música que puede agregar a su propia biblioteca de música.
+Configurar su YT Music 
+Inicie sesión en su cuenta de Google o Gmail para poder usar YT Music. Cuando haya iniciado 
+sesión en su cuenta, todos los archivos de música de su Teléfono ASUS, incluidos los cargados o 
+comprados en YT se agregarán a la biblioteca. 
+Para configurar su YT Music: 
+1. En la pantalla Home (Inicio), pulse Google > YT Music. 
+2. Pulse SIGN IN (INICIAR SESIÓN) > Add account (Agregar cuenta).
+3. Siga las instrucciones que se indican a continuación para iniciar sesión en su cuenta. 
+NOTA: La suscripción a YT Music solamente está disponible en algunos países o regiones. 
+50 Capítulo 6: Sus preciados recuerdos
+Sus preciados recuerdos 6
+6 Sus preciados recuerdos
+Inmortalizar momentos
+Iniciar la aplicación Cámara
+Capture imágenes y grabe vídeos utilizando la aplicación Cámara de su Teléfono ASUS. Consulte 
+cualquiera de los pasos siguientes para abrir la aplicación Cámara. 
+Desde la pantalla de bloqueo
+Deslice hacia arriba para iniciar la aplicación de la cámara.
+Desde la página Inicio
+Pulse .
+51Capítulo 6: Sus preciados recuerdos
+Camera home screen
+La cámara de su Teléfono ASUS está equipada con una detección de escena automática y funciones 
+de estabilizador de imagen automática. También incluye una función de estabilización de vídeo 
+que ayuda a evitar la vibración durante la grabación de vídeo. 
+Pulse los iconos para comenzar a utilizar la cámara y explorar las funciones de imagen y vídeo de su 
+Teléfono ASUS.
+Ubicaciones de imagen
+Para habilitar la función de etiquetado de ubicación, consulte los pasos siguientes:
+1. Active el acceso a la ubicación desde Settings (Configuración) > Location (Ubicación) y 
+deslice la opción Use location (Usar ubicación) en la posición de activado.
+2. Asegúrese de que ha compartido su ubicación en Google Maps.
+3. En la pantalla de inicio de la aplicación Camera (Cámara), pulse > y active Location 
+services (Servicios de ubicación) antes de hacer la foto.
+Funciones avanzadas de la cámara
+Explore nuevas formas de capturar imágenes o vídeos e inmortalice momentos especiales 
+utilizando las funciones avanzadas de la cámara de su Teléfono ASUS.
+¡IMPORTANTE! Aplique la configuración antes de capturar imágenes.
+Deslice hacia abajo o pulse para ver más opciones de configuración
+Ver la galería
+• Botón Disparador
+• Deslice hacia arriba para establecer una cuenta atrás antes de hacer fotos
+Deslizar rápidamente hacia la derecha o hacia la izquierda para 
+utilizar la configuración avanzada de la cámara
+Pulsar para usar Google Lens
+Pulse para cambiar entre las cámaras delantera y trasera
+Pulse para cambiar entre el modo Normal, el modo Gran angular
+Pulse para seleccionar una función flash
+Habilitar o deshabilitar la función Beauty (Belleza)
+Pulse para seleccionar un modo de pantalla
+Pulse para cambiar entre el modo Normal y, el zoom óptico de 2,0x 
+Disparo nocturno
+52 Capítulo 6: Sus preciados recuerdos
+Movimiento lento 
+La función de vídeo Slow motion (Movimiento lento) permite grabar vídeos para reproducción con 
+movimiento lento. 
+Grabar vídeos con movimiento lento 
+1. En la pantalla principal de la aplicación Camera (Cámara), deslice rápidamente hacia la derecha 
+y, a continuación, pulse SLO-MO (Movimiento lento). 
+2. Pulse el botón del disparador para comenzar a capturar vídeos con la función de movimiento 
+lento.
+Intervalo
+La función de vídeo de Intervalo de su Teléfono ASUS permite capturar imágenes estáticas para 
+reproducir lapsos de tiempo. Así, los eventos parecen moverse de una manera más rápida aunque 
+realmente ocurrieron y se grabaron entre largos intervalos.
+Grabar vídeos con la función Intervalo
+1. En la pantalla principal de la aplicación Camera (Cámara), deslice rápidamente hacia la derecha 
+hacia TIME LAPSE (LAPSO DE TIEMPO).
+2. Pulse el botón del disparador y, a continuación, selección el intervalo de lapso de tiempo.
+3. Pulse el botón del disparador para comenzar a capturar vídeos con la función de lapso de tiempo.
+Panorámica
+Capture imágenes desde varios ángulos utilizando la opción Panorama. Las imágenes capturadas 
+desde una perspectiva de gran ángulo se unen automáticamente mediante esta función.
+Capturar fotografías panorámicas
+1. En la pantalla de inicio de la aplicación Camera (Cámara), deslice rápidamente hacia la izquierda 
+hacia PANO (PANORÁMICA).
+2. Mantenga el teléfono firme y pulse el botón del disparador para iniciar la panorámica automática.
+Oche
+Capture fotografías perfectamente iluminadas incluso de noche o en situaciones de poca 
+luminosidad utilizando la función Noche de su Teléfono ASUS.
+NOTA: Mantenga las manos firmes antes de que su Teléfono ASUS capture la imagen y durante la captura 
+de la misma para evitar imágenes borrosas.
+Capturar fotografías nocturnas
+1. En la pantalla de inicio de la aplicación Camera (Cámara), deslice rápidamente hacia la izquierda 
+hacia MORE (MÁS) > NIGHT (NOCHE).
+2. Pulse el botón del disparador para comenzar a capturar fotos nocturnas.
+53Capítulo 6: Sus preciados recuerdos
+Utilizar la Galería
+Vea imágenes y reproduzca vídeos en su Teléfono ASUS mediante la aplicación Galería. 
+Con esta aplicación también puede editar, compartir o eliminar archivos de imagen y vídeo 
+almacenados en su Teléfono ASUS. Desde Galería, puede mostrar imágenes en una presentación de 
+diapositivas o pulsar para ver el archivo de imagen o vídeo seleccionado. 
+Para iniciar la Galería, deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse 
+Gallery (Galería).
+Ver la ubicación de las fotografías
+Habilite el acceso a la ubicación en su Teléfono ASUS y obtenga detalles de la ubicación en sus 
+fotografías. Los detalles de ubicación de las fotografías incluyen el área en la que se han realizado 
+las fotografías, así como un mapa de la ubicación a través de Google Maps o Baidu (solo en China).
+Para ver los detalles de una fotografía:
+1. Active el acceso a la ubicación desde Settings (Configuración) > Location (Ubicación) y 
+coloque el conmutador de la opción Use location (Usar ubicación) en la posición de activado.
+2. Asegúrese de que ha compartido su ubicación en Google Maps o Baidu.
+3. Inicie la aplicación Gallery (Galería) y seleccione la fotografía cuyos detalles desea ver.
+4. Pulse la fotografía y, a continuación, pulse Detalles.
+Editar una imagen
+La Galería también cuenta con sus propias herramientas de edición de imágenes que puede utilizar 
+para mejorar las imágenes guardadas en su Teléfono ASUS.
+1. Realice una de las siguientes acciones:
+ • En la pantalla Gallery (Galería) > Photos (Fotos), pulse la imagen que desea ver. 
+ • En la pantalla Gallery (Galería) > Albums (Álbumes), pulse la carpeta en la que se 
+encuentren los archivos. Después de abrir la carpeta, pulse la imagen que desee editar.
+2. Pulse Editar para abrir la barra de herramientas de edición de imágenes.
+3. Pulse cualquiera de los iconos de la barra de herramientas de edición para aplicar los cambios a 
+la imagen.
+Compartir archivos desde la Galería
+1. Realice una de las siguientes acciones:
+ • En la pantalla Gallery (Galería) > Photos (Fotos), pulse > Select (Seleccionar) para 
+activar la selección de archivos. 
+ • En la pantalla Gallery (Galería) > Albums (Álbumes), pulse la carpeta en la que se 
+encuentren los archivos que desee compartir. Después de abrir la carpeta, pulse > 
+Select (Seleccionar) para activar la selección de archivos.
+2. Pulse los archivos que desee compartir. Aparecerá una marca de verificación en la parte superior 
+de la imagen que seleccione.
+3. Pulse y, a continuación, seleccione en la lista donde desee compartir las imágenes.
+54 Capítulo 6: Sus preciados recuerdos
+Eliminar archivos de la Galería
+1. Realice una de las siguientes acciones:
+ • En la pantalla Gallery (Galería) > Photos (Fotos), pulse > Select (Seleccionar) para 
+activar la selección de archivos. 
+ • En la pantalla Gallery (Galería) > Albums (Álbumes), pulse la carpeta en la que se 
+encuentren los archivos que desee eliminar. Después de abrir la carpeta, pulse > Select 
+(Seleccionar) para activar la selección de archivos.
+2. Pulse los archivos que desee eliminar. Aparecerá una marca de verificación en la parte superior 
+de la imagen que seleccione.
+3. Pulse .
+55Capítulo 7: Permanecer conectado
+Permanecer conectado 7
+7 Permanecer conectado
+Red móvil
+Cuando no haya una red Wi-Fi disponible a la que se pueda conectar, puede habilitar el acceso a los 
+datos desde la red móvil para conexión a Internet.
+Habilitar la red móvil
+1. Inicie la pantalla Settings (Configuración) llevando a cabo cualquiera de los procedimientos 
+siguientes:
+ • Inicie Quick settings (Configuración rápida) y, a continuación, pulse . 
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración). 
+2. Pulse Network & internet (Red e Internet) > Internet > SIM1 o SIM2.
+3. Deslice la opción Mobile data (Datos móviles) a la posición ON (ACTIVADO) y defina el resto de 
+configuraciones de red móvil si es necesario.
+NOTAS: 
+• Si accede a Internet a través de la red móvil, se aplicarán cargos adicionales dependiendo de su plan 
+de datos.
+• Para obtener más detalles acerca de los cargos y tarifas de red móvil y de la configuración, póngase 
+en contacto con su proveedor de servicio móvil.
+Wi-Fi
+La tecnología Wi-Fi de su Teléfono ASUS le mantiene conectado al mundo inalámbrico. Actualice 
+sus cuentas de redes sociales, navegue por Internet o intercambie datos y mensajes de forma 
+inalámbrica con su Teléfono ASUS.
+Habilitar la funcionalidad Wi-Fi
+1. Inicie la pantalla Settings (Configuración) llevando a cabo cualquiera de los procedimientos 
+siguientes:
+ • Inicie Quick settings (Configuración rápida) y, a continuación, pulse > Network & 
+internet (Red e Internet) > Internet. 
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración) > Network & internet (Red e Internet) > Internet. 
+2. Deslice el conmutador Wi-Fi hacia la derecha para activar la funcionalidad Wi-Fi.
+NOTA: También puede habilitar la funcionalidad Wi-Fi en la pantalla Configuración rápida. Consulte la 
+sección Configuración rápida sobre cómo iniciar la pantalla Configuración rápida.
+56 Capítulo 7: Permanecer conectado
+Conectarse a una red Wi-Fi
+1. En la pantalla Ajustes, pulse Network & internet (Red e Internet) > Internet > Wi-Fi para 
+mostrar todas las redes Wi-Fi disponibles.
+2. Pulse un nombre de red para conectarse a ella. Para una red segura, puede que se le pida que 
+escriba una contraseña u otras credenciales de seguridad.
+NOTAS:
+• Su Teléfono ASUS se vuelve a conectar automáticamente a la red a la que estaba conectado 
+previamente.
+• Desactive la función Wi-Fi para ahorrar energía de la batería.
+Deshabilitar la funcionalidad Wi-Fi
+Para deshabilitar la funcionalidad Wi-Fi:
+1. Realice una de las siguientes acciones:
+ • Inicie Quick settings (Configuración rápida) y, a continuación, pulse > Network & 
+internet (Red e Internet) > Internet. 
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración) > Network & internet (Red e Internet) > Internet. 
+2. Deslice el conmutador Wi-Fi hacia la izquierda para desactivar la funcionalidad Wi-Fi.
+NOTA: También puede deshabilitar la funcionalidad Wi-Fi en la pantalla Configuración rápida. Consulte 
+la sección Configuración rápida sobre cómo iniciar la pantalla Configuración rápida.
+Bluetooth®
+Utilice la funcionalidad Bluetooth de su Teléfono ASUS para enviar o recibir archivos y transmitir 
+archivos multimedia con otros dispositivos inteligentes en distancias cortas. Con la funcionalidad 
+Bluetooth, puede compartir sus archivos multimedia con los dispositivos inteligentes de sus 
+amigos, enviar datos para imprimir con una impresora Bluetooth o reproducir música con un 
+altavoz Bluetooth.
+Habilitar la funcionalidad Bluetooth®
+1. Realice una de las siguientes acciones:
+ • Inicie Quick settings (Configuración rápida) y, a continuación, pulse > Connected 
+devices (Dispositivos conectados). 
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración) > Connected devices (Dispositivos conectados). 
+2. Pulse Pair new device (Asociar nuevo dispositivo) o Connection preferences (Preferencias 
+de conexión).
+3. Deslice el conmutador Bluetooth hacia la derecha para activar la funcionalidad Bluetooth.
+NOTA: También puede habilitar la funcionalidad Bluetooth en la pantalla Configuración rápida. 
+Consulte la sección Configuración rápida sobre cómo iniciar la pantalla Configuración rápida.
+57Capítulo 7: Permanecer conectado
+Asociar su Teléfono ASUS con un dispositivo Bluetooth®
+Antes de utilizar la funcionalidad Bluetooth de su Teléfono ASUS, primero debe asociarla con el 
+dispositivo Bluetooth. Su Teléfono ASUS almacena automáticamente la conexión de asociación del 
+dispositivo Bluetooth.
+1. En la pantalla Ajustes, pulse Connected devices (Dispositivos conectados) > Connection 
+preferences (Preferencias de conexión) > Bluetooth para mostrar todos los dispositivos 
+disponibles.
+¡IMPORTANTE!
+• Si el dispositivo que desea asociar no se encuentra en la lista, asegúrese de habilitar su funcionalidad 
+Bluetooth y que se pueda detectar.
+• Consulte la guía del usuario incluida con el dispositivo para saber cómo habilitar su funcionalidad 
+Bluetooth y cómo establecerlo para que se pueda detectar.
+2. Pulse > Refresh (Actualizar) para escanear más dispositivos Bluetooth.
+3. En la lista de dispositivos disponibles, pulse el dispositivo Bluetooth con el que desea asociarse. 
+4. Asegúrese de que la clave de paso se muestra en ambos dispositivos y, a continuación, pulse 
+Pair (Asociar). 
+NOTA: Desactive la función Bluetooth para ahorrar energía de la batería.
+Anular la asociación de su Teléfono ASUS con el dispositivo Bluetooth®
+1. En la pantalla Ajustes, pulse Dispositivos conectados > Connection preferences (Preferencias 
+de conexión) > Bluetooth para mostrar todos los dispositivos disponibles y asociados.
+2. En la lista de dispositivos asociados, pulse en el dispositivo Bluetooth cuya asociación desee 
+anular y, a continuación, pulse Forget.
+58 Capítulo 7: Permanecer conectado
+Anclaje a red
+Cuando el servicio Wi-Fi no esté disponible, puede utilizar su Teléfono ASUS como un módem o 
+convertirla en una zona con cobertura Wi-Fi para obtener acceso a Internet en su equipo portátil, 
+tableta y otros dispositivos móviles.
+¡IMPORTANTE! La mayoría de los proveedores de servicio móvil pueden exigirle un plan de datos para 
+que pueda utilizar la función de anclaje a red. Póngase en contacto con el proveedor de servicio móvil 
+sobre la disponibilidad de este plan de datos.
+NOTAS:
+• El acceso a Internet a través del anclaje a red puede ser más lento que la conexión Wi-Fi o móvil 
+estándar.
+• Solamente un número limitado de dispositivos móviles pueden anclarse a su Teléfono ASUS para 
+acceso a Internet.
+• Desactive la función de anclaje a red cuando no la esté utilizando para ahorrar energía de la batería.
+Zona con cobertura Wi-Fi
+Convierta su Teléfono ASUS en una zona con cobertura Wi-Fi para compartir la conexión a Internet 
+con otros dispositivos.
+1. Realice una de las siguientes acciones:
+ • Inicie Quick settings (Configuración rápida) y, a continuación, pulse > Network & 
+internet (Red e Internet). 
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración) > Network & internet (Red e Internet). 
+2. Pulse Hotspot & tethering (Zona con cobertura Wi-Fi y anclaje a red) y, a continuación, vaya a 
+Wi-Fi hotspot (Zona con cobertura Wi-Fi).
+3. Pulse Wi-Fi hotspot (Zona con cobertura Wi-Fi) > Hotspot name (Nombre de la zona con 
+cobertura Wi-Fi) para asignar un SSID único o nombre de red y pulse Hotspot password 
+(Contraseña de la zona con cobertura Wi-Fi) para asignar una contraseña de 8 caracteres para 
+la zona con cobertura Wi-Fi. Cuando haya terminado, pulse OK (Aceptar).
+4. Conecte otros dispositivos a la conexión con zona con cobertura de su Teléfono ASUS de la 
+misma forma que se conecta a una red Wi-Fi.
+59Capítulo 7: Permanecer conectado
+Anclaje a red Bluetooth
+Habilite el anclaje a red Bluetooth en su Teléfono ASUS para compartir su conexión a Internet con 
+otros dispositivos.
+1. Habilite la funcionalidad Bluetooth en su Teléfono ASUS y en el otro dispositivo.
+2. Asocie ambos dispositivos.
+NOTA: Para obtener detalles, consulte la sección Asociar su Teléfono ASUS a un dispositivo 
+Bluetooth®.
+3. En la pantalla Settings (Configuración), pulse Network & internet (Red e Internet) > Hotspot 
+& Tethering (Zona con cobertura Wi-Fi y anclaje a red), a continuación, coloque la opción 
+Bluetooth tethering (Anclaje a red Bluetooth) en la posición ON (ACTIVADO). 
+Anclaje a red USB 
+Habilite el anclaje a red USB en su Teléfono ASUS y comparta su conexión a Internet con otros 
+dispositivos. 
+1. Conecte su Teléfono ASUS a otro dispositivo mediante un cable USB. 
+2. En la pantalla Settings (Configuración), pulse Network & internet (Red e Internet) > Hotspot & 
+Tethering (Zona con cobertura Wi-Fi y anclaje a red) y, a continuación, deslice USB tethering 
+(Anclaje a red) a la posición ON (ACTIVADO) para habilitar el anclaje a red.
+60 Capítulo 8: Aplicaciones de viaje
+Aplicaciones de viaje 8
+8 Aplicaciones de viaje
+El tiempo
+Obtenga actualizaciones sobre el tiempo al instante directamente desde su Teléfono ASUS 
+mediante la aplicación El tiempo. Mediante la aplicación El tiempo también puede consultar otros 
+detalles meteorológicos en todo el mundo. 
+Iniciar la aplicación Weather (El Tiempo)
+En la pantalla Home (Inicio), realice una de las siguientes acciones para iniciar la aplicación El 
+Tiempo:
+• Toque el icono de El Tiempo.
+• Deslice hacia arriba en la pantalla Inicio y, a continuación, toque Weather (El Tiempo).
+61Capítulo 8: Aplicaciones de viaje
+Pantalla de inicio del tiempo
+Configure y obtenga las actualizaciones meteorológicas de su ubicación actual así como de otras 
+partes del mundo. 
+Pulsar para editar la lista de indicaciones
+Pulsar para actualizar la información meteorológica, 
+editar una ciudad en la lista de ubicaciones o definir la 
+configuración meteorológica
+Deslice rápidamente hacia arriba para ver otra 
+información meteorológica 
+Deslice rápidamente hacia la izquierda o derecha para 
+ver la información meteorológica u otras ciudades en su 
+lista de ubicaciones
+62 Capítulo 8: Aplicaciones de viaje
+Reloj
+Personalice la configuración de la zona horaria de su Teléfono ASUS, establezca alarmas y utilice su 
+Teléfono ASUS como cronómetro mediante la aplicación Reloj.
+Iniciar el Reloj
+Inicie la aplicación Reloj mediante cualquiera de las siguientes opciones:
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Clock (Reloj).
+ • En la pantalla de inicio de su Teléfono ASUS, pulse el reloj digital.
+Despertador
+Pulse Despertador para acceder a la configuración del despertador de su Teléfono ASUS.
+Pulse aquí para acceder a la configuración de la función de despertador
+Deslizar para activar o desactivar la alarma
+Pulse aquí para establecer una nueva de alarma
+63Capítulo 8: Aplicaciones de viaje
+Cronómetro
+Pulse Cronómetro para utilizar su Teléfono ASUS como cronómetro.
+Reloj internacional
+Pulse Reloj internacional para acceder a la configuración del reloj internacional de su Teléfono 
+ASUS.
+Pulse aquí para editar las ciudades marcadas en su reloj internacional
+Pulse aquí para agregar una nueva ciudad que desee marcar en el 
+mapa del reloj internacional
+Pulse este botón para iniciar la función de cronómetro
+64 Capítulo 8: Aplicaciones de viaje
+Temporizador
+Puede establecer varias opciones de temporizador para su Teléfono ASUS. Para ello, siga los pasos 
+que se indican a continuación:
+Establecer el temporizador
+Pulse Temporizador para acceder a la función de temporizador de su Teléfono ASUS.
+Pulse este icono para poner en marcha el 
+temporizador
+Pulse este icono para establecer un nuevo 
+temporizador
+Tocar esto para eliminar temporizadores o acceder a la 
+configuración
+65Capítulo 9: Zen en cualquier lugar
+Zen en cualquier lugar 9
+9 Zen en cualquier lugar
+Herramientas Zen especiales
+Calculadora
+Realice los cálculos utilizando su teléfono ASUS habilitando la aplicación Calculator (Calculadora).
+Iniciar la aplicación Calculator (Calculadora)
+Inicie la aplicación Calculator (Calculadora) mediante una de las opciones siguientes:
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Calculator 
+(Calculadora).
+ • Abra el panel de configuración rápida; el icono Calculator (Calculadora) aparecerá en la 
+lista. Púlselo para iniciar sus operaciones de cálculo.
+Pantalla de la aplicación 
+Calculator (Calculadora)
+Pulse esto para iniciar la Calculadora
+66 Capítulo 9: Zen en cualquier lugar
+Grabadora de sonidos
+Grabe archivos de audio con su Teléfono ASUS habilitando la aplicación Grabadora de sonidos. 
+Iniciar Grabadora de sonidos
+Para iniciar Grabadora de sonidos, deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, 
+pulse Recorder (Grabadora).
+Pulse aquí para iniciar la grabación de audio
+Pulse aquí para realizar la configuración de Grabadora 
+de sonidos
+Pulse aquí para ver la lista de archivos de grabación de 
+audio guardados
+67Capítulo 9: Zen en cualquier lugar
+Pausar una grabación
+Cuando una grabación está en pausa, puede optar por reanudarla, eliminarla o guardarla.
+Lista de grabación
+En Recording List (Lista de grabación) puede realizar las siguientes operaciones en un archivo de 
+grabación de audio guardado: cambiar el nombre, compartir o eliminar. 
+Para ver la lista de grabación, pulse en la pantalla principal Sound Recorder (Grabadora de 
+sonidos).
+Pulsar para reanudar la grabación
+Pulsar para guardar la grabación
+Pulsar para eliminar la grabación
+Pulsar para reproducir o pausar la grabación seleccionada
+Pulse y mantenga presionado un elemento para 
+compartir, eliminar o mostrar la información de su 
+grabación seleccionada o cambiar el nombre de esta
+68 Capítulo 9: Zen en cualquier lugar
+Mobile Manager 
+Mobile Manager proporciona una interfaz integrada para varias aplicaciones que están diseñadas 
+para optimizar el rendimiento de los dispositivos, administrar la energía del teléfono y el uso del 
+almacenamiento.
+Para iniciar la aplicación Mobile Manager, deslice hacia arriba en la pantalla Home (Inicio) y, a 
+continuación, pulse Settings (Ajustes) > Advanced (Avanzado) > Mobile Manager.
+Pulse este icono para ver el uso de datos móviles, establecer un 
+límite mensual para dicho uso y controlar que las aplicaciones 
+accedan a Internet solamente a través de Wi-Fi, solamente a 
+través de redes móviles, que no accedan mediante ninguna de 
+esas formas o que accedan mediante ambas formas 
+Permite cerrar los procesos no utilizados que se están 
+ejecutando en segundo plano para recuperar más memoria del 
+sistema
+Pulsar aquí para ejecutar el examen de privacidad y seguridad 
+y evitar que las aplicaciones utilicen permisos peligrosos para 
+iniciarse automáticamente
+Pulsar este icono para desinstalar las aplicaciones no utilizadas 
+que haya seleccionado para liberar algo de almacenamiento
+69Capítulo 10: Mantener su Zen
+Mantener su Zen 10
+10 Mantener su Zen
+Mantener el dispositivo actualizado
+Mantenga su Teléfono ASUS al día con las actualizaciones del sistema Android y de aplicaciones y 
+funciones actualizadas.
+Actualizar el sistema
+1. Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración).
+2. En la pantalla Settings (Configuración), deslícese hacia abajo para mostrar otros elementos y, a 
+continuación, pulse System (Sistema) > System updates (Actualizaciones del sistema) para 
+buscar actualizaciones del sistema.
+3. Pulse en la pantalla System updates (Actualizaciones del sistema) para configurar la 
+descarga automática de las actualizaciones del sistema. 
+Almacenamiento
+Puede almacenar datos, aplicaciones o archivos en su Teléfono ASUS (almacenamiento interno), en 
+un almacenamiento externo o en un almacenamiento en línea. Necesita conexión a Internet para 
+transferir o descargar archivos a un almacenamiento en línea. Utilice el cable USB incluido para 
+copiar archivos entre el equipo y su Teléfono ASUS. 
+Copia de seguridad y restablecimiento
+Haga copias de seguridad de los datos, de las contraseñas Wi-Fi y de otra configuración en 
+servidores de Google mediante su Teléfono ASUS. Para ello:
+1. Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración) > System (Sistema) > Backup (Copia de seguridad).
+2. En la ventana Copia de seguridad, puede hacer uso de las siguientes opciones:
+ • Back up to Google Drive (Hacer copia de seguridad en Google Drive): Cuando esta 
+función está habilitada, permite hacer una copia de seguridad de sus datos, de las 
+contraseñas Wi-Fi y de otra configuración en Google Drive. 
+Restablecer 
+Restablezca la configuración de la red y las preferencias de las aplicaciones o los valores 
+predeterminados de fábrica. 
+1. Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración) > System (Sistema) > Reset options (Restablecer opciones).
+2. En la ventana Reset (Restablecer), puede:
+ • Reset Wi-Fi, mobile & Bluetooth (Restablecer Wi-Fi, móvil y Bluetooth): esta función 
+restaura las contraseñas Wi-Fi y otras configuraciones de red.
+ • Erase all settings (Borrar todas las configuraciones): Permite borrar todas las 
+configuraciones del teléfono.
+ • Erase all data (factory reset) (Borrar todos los datos (restablecimiento de fábrica)): 
+Permite borrar todos los datos del teléfono.
+70 Capítulo 10: Mantener su Zen
+Proteger su Teléfono ASUS
+De manera predeterminada, la pantalla de bloqueo aparece después de encender el dispositivo 
+y mientras lo reactiva para sacarlo del modo de suspensión. Desde la pantalla de bloqueo, puede 
+pasar al Android del deslizando el dedo en el panel de la pantalla táctil.
+La pantalla de bloqueo del dispositivo también se puede personalizar para regular el acceso a los 
+datos y aplicaciones móviles.
+Desbloquear la pantalla
+Cuando la pantalla esté bloqueada, puede abrirla con las opciones de desbloqueo de seguridad 
+que su Teléfono ASUS le ofrece.
+1. Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración) > Security & lock screen (Seguridad y pantalla de bloqueo).
+2. Pulse Screen lock (Bloqueo de pantalla) y seleccione una opción para desbloquear su Teléfono ASUS.
+NOTAS:
+• Consulte la sección Unlock screen options (Opciones de la pantalla de desbloqueo) para obtener 
+más información.
+• Para desactivar la opción de la pantalla de desbloqueo establecida, pulse None (Sin seguridad) en 
+la pantalla Elegir bloqueo de pantalla.
+Opciones de la pantalla de desbloqueo
+Elija entre estas opciones para bloquear su Teléfono ASUS.
+Deslizar rápidamente
+Deslice rápidamente hacia arriba para desbloquear su Teléfono ASUS.
+71Capítulo 10: Mantener su Zen
+PIN
+Escriba al menos cuatro números para establecer un código.
+¡IMPORTANTE! Asegúrese de recordar el PIN creado para desbloquear el dispositivo.
+Patrón
+Deslice el dedo sobre los puntos y cree un patrón. 
+¡IMPORTANTE! Asegúrese de recordar el patrón creado para desbloquear el dispositivo.
+72 Capítulo 10: Mantener su Zen
+Contraseña
+Escriba al menos cuatro caracteres para crear una contraseña.
+¡IMPORTANTE! Asegúrese de recordar la contraseña creada para desbloquear el dispositivo.
+73Capítulo 10: Mantener su Zen
+Sensor de identificación de huellas dactilares 
+El sensor de identificación de huellas dactilares evita que otras personas utilicen su teléfono ASUS 
+sin su permiso. Puede utilizar sus huellas dactilares para desbloquear el dispositivo y acceder a 
+las llamadas y datos del teléfono. Cuando configure su identificación de huella dactilar, también 
+necesitará configurar el método de bloqueo de la pantalla para el inicio del dispositivo.
+Iniciar el teléfono ASUS por primera vez
+Para configurar su identificación de huella dactilar cuando utilice su Teléfono ASUS por primera vez: 
+1. Asegúrese de que el módulo de identificación de huellas dactilares y su dedo están limpios y 
+secos.
+2. En la página Welcome (Bienvenida), siga las instrucciones de la pantalla hasta la página Protect 
+your phone (Proteger su teléfono) y seleccione Set up fingerprint (Configurar huella 
+dactilar).
+3. Haga clic en Continue (Continuar) para elegir un método de bloqueo de pantalla y, a 
+continuación, siga las instrucciones hasta la página Locate finger print scanner (Localizar el 
+escáner de impresión de dos) y haga clic en Next (Siguiente).
+4. Localice el escáner de huellas dactilares en lateral derecho del positivo, ajuste su dedo e intente 
+cubrir las diferentes áreas de su dedo repetidamente hasta que la huella dactilar se capture.
+5. Haga clic en Next (Siguiente) para completar la configuración.
+74 Capítulo 10: Mantener su Zen
+Definir la identificación de huella dactilar desde que la configuración
+Para definir la identificación de huella dactilar desde Settings (Configuración): 
+1. Asegúrese de que el escáner de huellas dactilares y su dedo está limpios y secos. 
+2. Inicie la pantalla Settings (Configuración) llevando a cabo cualquiera de los procedimientos 
+siguientes:
+ • Inicie Quick settings (Configuración rápida) y, a continuación, pulse . 
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración). 
+3. Desplácese hacia abajo por la pantalla Settings (Configuración) y seleccione Security & lock 
+screen (Seguridad y pantalla de bloqueo) > Fingerprint (Huella dactilar).
+4. Desbloquee el teléfono si está protegido. De lo contrario, siga las instrucciones para configurar el 
+método de bloqueo de la pantalla de respaldo.
+5. Pulse la página Add fingerprint (Agregar huella dactilar).
+6. Coloque y levante repetidamente el dedo en el escáner hasta que la huella dactilar se capture.
+7. Haga clic en Done (Hecho) para completar la configuración.
+75Capítulo 10: Mantener su Zen
+Desbloqueo facial 
+La función de desbloqueo facial evita que otras personas utilicen su Teléfono ASUS sin su permiso 
+sin esfuerzo. Puede iluminar la pantalla de Teléfono ASUS y mirar a ella para desbloquear el 
+dispositivo y acceder a la pantalla de inicio del teléfono en un segundo. Cuando configure la 
+función de desbloqueo facial, también necesitará configurar el método de bloqueo de la pantalla 
+para el inicio del dispositivo. 
+Configurar el desbloqueo facial desde la configuración 
+Para configurar el desbloqueo facial desde Settings (Configuración):
+1. Inicie la pantalla Settings (Configuración) llevando a cabo cualquiera de los procedimientos 
+siguientes:
+ • Inicie Quick settings (Configuración rápida) y, a continuación, pulse . 
+ • Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración). 
+2. Desplácese por la pantalla Settings (Configuración) y seleccione Security & lock screen 
+(Seguridad y pantalla de bloqueo) > Face recognition (Reconocimiento facial).
+3. Pulse Continue (Continuar).
+76 Capítulo 10: Mantener su Zen
+5. Pulse Next (Siguiente) y siga las instrucciones para registrar su rostro.
+4. Siga las instrucciones para establecer el método de bloqueo de la pantalla de respaldo.
+77Capítulo 10: Mantener su Zen
+6. Seleccione cómo desea mostrar las notificaciones en la pantalla de bloqueo y, a continuación, 
+pulse Done (Hecho).
+NOTAS: 
+• Muestre su boca, nariz y ojos abiertos mientras utiliza la función de desbloqueo facial. 
+• El uso de gafas de sol o una luz insuficiente provocará errores en el desbloqueo facial.
+7. Cuando termine, pulse Turn on (Activar) para habilitar el reconocimiento facial para 
+desbloquear el teléfono.
+78 Capítulo 10: Mantener su Zen
+Establecer la identidad de su Teléfono ASUS
+Conozca la identidad de su Teléfono ASUS, como por ejemplo el número de serie, el número 
+de identidad de equipo móvil internacional (IMEI International Mobile Equipment Identity) o el 
+número de modelo. 
+Esto es importante porque si, por ejemplo, pierde su Teléfono ASUS, puede ponerse contacto con 
+el proveedor móvil y proporcionar información para restringir el uso no autorizado de su Teléfono 
+ASUS.
+Para mostrar la identidad de su Teléfono ASUS:
+1. Deslice hacia arriba en la pantalla Home (Inicio) y, a continuación, pulse Settings 
+(Configuración).
+2. En la pantalla Settings (Configuración), desplácese hacia abajo para mostrar otros elementos y, a 
+continuación, pulse System (Sistema) > About phone (Acerca del teléfono). La pantalla About 
+(Acerca de) muestra el estado, la información legal, nombre del dispositivo, la versión de sistema 
+operativo, el hardware y la información de software de su Teléfono ASUS.
+3. Para ver el número de serie, el estado de la tarjeta SIM y el número IMEI de su teléfono ASUS, 
+pulse Status (Estado).
+79
+Apéndices
+Apéndices 
+Información de seguridad
+¡PRECAUCIÓN! Si utiliza controles o ajustes o realiza otros procedimientos distintos a los aquí 
+especificados, puede quedar expuesto a radiaciones peligrosas.
+Cuidado del Teléfono ASUS
+• Utilice su dispositivo Teléfono ASUS en entornos con una temperatura ambiente entre 
+0 °C (32 °F) y 35 °C (95 °F).
+• Use un paño de limpieza con agua para limpiar la superficie del teléfono. No aplique alcohol, 
+disolventes orgánicos, detergente ni utilice un rociador de alta presión para evitar daños.
+• Los cambios repentinos de temperatura pueden provocar condensación o empañamiento en la 
+lente. Si esto ocurre, coloque el teléfono a temperatura ambiente o en un entorno seco y espere 
+hasta que la humedad se haya secado antes de usarlo. En áreas frías, mantenga el teléfono en un 
+lugar más cálido, como un bolsillo interior, para evitar la condensación.
+La batería
+ADVERTENCIA: Si desmonta la batería usted mismo podría anular su garantía y causar daños graves.
+El teléfono ASUS está equipado con una batería de polímeros de litio de alto rendimiento no 
+extraíble. Siga las directrices de mantenimiento para gozar de una mayor duración.
+• No quite la batería de polímero de litio no desmontable ya que, si lo hace, anulará la garantía.
+• Evite cargarla a temperaturas extremadamente altas o bajas. La batería tiene un rendimiento 
+óptimo a una temperatura ambiental de +5 °C a +35 °C.
+• No quite ni cambie la batería por otra no homologada.
+• Utilice solamente una batería de ASUS. Si usa una batería diferente, se pueden producir lesiones 
+o daños físicos y el dispositivo puede resultar dañado.
+• No retire la batería ni la sumerja en agua o en cualquier otro líquido.
+• Nunca intente abrir la batería, pues contiene sustancias que podrían ser perjudiciales si se tragan 
+o si entran en contacto con la piel.
+• No retire la batería ni la cortocircuite, ya que se puede sobrecalentar y provocar un incendio. 
+Manténgala alejada de objetos metálicos.
+80
+• No retire la batería ni la arroje al fuego. Podría explotar y liberar sustancias perjudiciales para el 
+medioambiente.
+• No retire la batería ni la arroje a la basura. Llévela a un punto de recogida de material peligroso.
+• No toque los terminales de la batería.
+• Para evitar fuego o quemaduras, no desmonte, machaque, golpee ni perfore la batería.
+NOTAS:
+• Hay riesgo de explosión si la batería se reemplaza por otra de tipo incorrecto.
+• Deshágase de la batería usada conforme a las instrucciones.
+El cargador
+• Utilice solamente el cargador incluido con su dispositivo Teléfono ASUS.
+• Nunca tire del cable del cargador para liberarlo de la conexión a la red, tire del cargador.
+Precauciones
+Su dispositivo Teléfono ASUS es un equipo con piezas de alta calidad. Antes de su uso, lea todas las 
+instrucciones y marcas de precaución en (1) el adaptador AC.
+• No utilice el dispositivo Teléfono ASUS en un entorno extremo donde existan altas temperaturas 
+o alta humedad. El dispositivo Teléfono ASUS ofrece un rendimiento óptimo a una temperatura 
+ambiental entre 0 °C (32 °F) y 35 °C (95 °F).
+• No desmonte el dispositivo Teléfono ASUS o sus accesorios. Si necesita servicio o reparación, 
+devuelva la unidad a un centro de servicios autorizado. Si desmonta la unidad, existe el riesgo de 
+descarga eléctrica o fuego.
+• No cortocircuite los terminales de la batería con objetos metálicos.
+Acceso al operador con una herramienta
+Si necesita una herramienta para acceder a un ÁREA CON ACCESO AL OPERADOR, todos los 
+compartimientos dentro de esa área que conllevan peligro serán accesibles al OPERADOR con el 
+uso de la misma HERRAMIENTA o dichos compartimientos serán marcados indicando la prohibición 
+del acceso al OPERADOR.
+81
+Cumplimiento de la directiva para equipos de radio de la UE
+Declaración de conformidad simplificada para la UE
+Por la presente, ASUS COMPUTER GmbH declara que el equipo de radio ASUS_AI2302 cumple 
+la Directiva 2014/53/UE. En https://www.asus.com/support/ está disponible el texto completo de la 
+declaración de conformidad para la UE. (Buscar AI2302)
+Tabla de salida de radiofrecuencia
+Elementos Tabla de potencia de salida de radiofrecuencia máxima 
+GSM
+GSM 900 Burst (880~915 ; 925~960 MHz) 34.5 (dBm)
+GSM 1800 Burst (1710~1785 ; 1805~1880 MHz) 31.5 (dBm)
+WCDMA
+WCDMA Band I (1920-1980 ; 2110~2170 MHz) 25.0 (dBm)
+WCDMA Band V (824~849 ; 869~894 MHz) 25.0 (dBm)
+WCDMA Band VIII (880~915 ; 925~960 MHz) 25.0 (dBm)
+LTE
+LTE Band 1 (1920-1980 ; 2110~2170 MHz) 24.5 (dBm)
+LTE Band 3 (1710~1785 ; 1805~1880 MHz) 24.5 (dBm)
+LTE Band 5 (824~849 ; 869~894 MHz) 24.5 (dBm)
+LTE Band 7 (2500-2570 ; 2620-2690 MHz) 24.5 (dBm)
+LTE Band 8 (880~915 ; 925~960 MHz) 24.5 (dBm)
+LTE Band 20 (832~862 ; 791~821 MHz) 24.5 (dBm)
+LTE Band 28 (703~748 ; 758~803 MHz) 24.5 (dBm)
+LTE Band 34 (2010~2025 MHz) 24.5 (dBm)
+LTE Band 38 (2570~2620 MHz) 24.5 (dBm)
+LTE Band 40 (2300~2400 MHz) 24.5 (dBm)
+LTE Band 41 (2496~2690 MHz) 24.5 (dBm)
+LTE Band 42 (3400~3600 MHz) 24.5 (dBm)
+FR1
+NR n1 (1920~1980 ; 2110~2170 MHz) 24.5 (dBm)
+NR n3 (1710~1785 ; 1805~1880 MHz) 24.5 (dBm)
+NR n5 (824~849 ; 869~894 MHz) 24.5 (dBm)
+NR n7 (2500~2570 ; 2620~2690 MHz) 24.5 (dBm)
+NR n8 (880~915 ; 925~960 MHz) 24.5 (dBm)
+NR n20 (832~862 ; 791~821 MHz) 24.5 (dBm)
+NR n28 (703~748 ; 758~803 MHz) 24.5 (dBm)
+NR n38 (2570~2620 MHz) 24.5 (dBm)
+NR n41 (2496~2690 MHz) 24.5 (dBm)
+NR n77 (3300~4200 MHz) 24.5 (dBm)
+NR n78 (3300~3800 MHz) 24.5 (dBm)
+NR n78 (3300~3800 MHz) 24.5 (dBm)
+WLAN
+WLAN 2.4GHz (2412~2472 MHz) 17.0 (dBm)
+WLAN 5GHz (5150~5850 MHz) 20.5 (dBm)
+WLAN 6GHz (5945~6425 MHz) 18.5 (dBm)
+Bluetooth
+Bluetooth BR/EDR (2402~2480 MHz) 20.0 (dBm)
+Bluetooth -LE (2402~2480 MHz) 9.0 (dBm)
+NFC 13.553~13.567 MHz -16.99 dBuA/m @10m
+82
+NOTA: Esta tabla de potencia de salida de RF es solo para estados miembros de la UE, estados de EEA, 
+estados de EFTA y Turquía. El intervalo de frecuencias y la potencia de salida de RF puede variar en 
+función de los países no pertenecientes a la UE.
+La conexión WiFi con una frecuencia de funcionamiento de 5150-5350 MHz se restringirá al uso en 
+interiores para los países enumerados en la tabla:
+* La compatibilidad de la banda 5G NR Sub-6 /4G LTE del teléfono ASUS varía en función de la 
+región. Compruebe la compatibilidad con sus operadores locales.
+NOTAS: 
+• Para dispositivos Wi-Fi 6E para interiores de baja potencia (LPI), el límite de potencia Wi-Fi 6E LPI es 
+de 23 dBm:
+ El dispositivo está restringido al uso en interiores únicamente cuando funciona en el intervalo de 
+frecuencias de 5945 a 6425 MHz en AT, BE, BG, CZ, DK, EE, FR, DE, IS, IE, IT, EL, ES, CY, LV, LI, LT, LU, HU, 
+MT, NL, NO, PL, PT, RO, SI, SK, TR, FI, SE, CH, HR y UK(NI).
+• Para dispositivos Wi-Fi 6E de muy baja potencia (VLP) (dispositivos portátiles) el límite de potencia 
+Wi-Fi 6E LPI es de 14 dBm:
+ No está permitido usar el dispositivo en sistemas de aeronaves no tripuladas cuando funciona en el 
+intervalo de frecuencias de 5945 a 6425 MHz en AT, BE, BG, CZ, DK, EE, FR, DE, IS, IE, IT, EL, ES, CY, LV, 
+LI, LT, LU, HU, MT, NL, NO, PL, PT, RO, SI, SK, TR, FI, SE, CH, HR y UK(NI).
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH UK (NI) HR
+Marca CE
+Información sobre la exposición a la radiofrecuencia
+Este producto de ASUS ha sido probado y cumple los límites SAR europeos aplicables. El límite de 
+SAR es de 2,0 W/kg en países en los que los valores máximos de SAR para este dispositivo son los 
+siguientes
+• Cabeza: 1,575 W/Kg @10 g
+• Cuerpo: 1,42 W/Kg @10 g 
+Cuando transporte este dispositivo en el cuerpo o lo utilice mientras lo lleva en él, utilice un accesorio 
+aprobado como una cartuchera u otro accesorio cualquiera para mantener una distancia de 0,5 cm 
+del cuerpo para garantizar el cumplimiento de los requisitos de exposición a la radiofrecuencia.
+83
+Alivio de la fatiga ocular
+Para aliviar la fatiga visual:
+• Tome descansos frecuentes cuando utilice su teléfono ASUS (al menos un descanso de 10 
+minutos cada media hora).
+• Concéntrese regularmente en objetos distantes para relajar sus ojos.
+• Haga ejercicios para los ojos con frecuencia, incluidos:
+ (1) Mire hacia arriba y hacia abajo sin mover la cabeza
+ (2) Mueva los ojos de izquierda a derecha sin mover la cabeza
+ (3) Haga que sus ojos describan vueltas
+ (4) Mueva sus ojos en diagonal
+ADVERTENCIA: Mantenga la pantalla del teléfono ASUS lejos del alcance de bebés y niños pequeños 
+menores de 2 años. Los niños de 2 años o más no deben pasar más de una hora frente a la pantalla cada 
+día.
+Certificación de luz azul baja
+El teléfono ASUS reduce la luz azul emitida por su pantalla, ofreciéndole una 
+experiencia de visualización más cómoda. 
+De forma predeterminada, el brillo de la pantalla está establecido en su valor 
+máximo y el teléfono cumple la certificación de luz azul baja TÜV Rheinland.
+84
+Utilizar GPS (Global Positioning System, es decir, Sistema de posicionamiento 
+global) en su Teléfono ASUS
+Para utilizar la función de posicionamiento GPS en su Teléfono ASUS:
+Asegúrese de que el dispositivo está conectado a Internet antes de utilizar Google Maps o 
+cualquier aplicación GPS.
+La primera vez que utilice una aplicación GPS en el dispositivo, asegúrese de que se encuentra en 
+exteriores para obtener los mejores datos de posicionamiento.
+Cuando utilice una aplicación GPS en el dispositivo dentro de un vehículo, el componente metálico 
+de la ventana de dicho vehículo y otros dispositivos electrónicos podrían afectar al rendimiento del 
+GPS. 
+Aviso relacionado con el revestimiento
+¡IMPORTANTE! Para proporcionar aislamiento eléctrico y mantener la seguridad eléctrica, se aplica un 
+recubrimiento para aislar al dispositivo, excepto en las áreas en las que se encuentran los puertos de 
+E/S.
+Aviso Green ASUS
+ASUS dedica grandes esfuerzos a crear productos y embalajes inocuos para la salud de los 
+consumidores y con un impacto mínimo en el medioambiente. La reducción del número de 
+páginas de este manual reduce las emisiones de carbono.
+Para obtener el manual de usuario detallado e información relacionada, consulte el manual de 
+usuario incluido en su teléfono ASUS o visite el sitio de soporte técnico de ASUS en 
+https://www.asus.com/support.
+Prevención de la pérdida de audición
+Para evitar posibles daños a la audición, no escuche a niveles altos de volumen durante mucho 
+tiempo prolongado.
+En Francia, los auriculares/cascos para este dispositivo son compatibles con los requisitos de nivel 
+de presión de sonido establecidos en los estándares aplicables EN 50332-1: 2013 y/o EN50332-2: 
+2013 según lo requerido por el Artículo Francés L.5232-1.
+ 
+85
+Modelo name: ASUS_AI2302
+Fabricante: ASUSTeK Computer Inc.
+Dirección: 1F., No.15, Lide RD., Beitou Dist., Taipei City 112 
+Representante Autorizado en Europa: ASUS Computer GmbH
+Dirección: HARKORT STR. 21-23, 40880 RATINGEN, GERMANY
+Servicios de reciclaje y recuperación de ASUS
+Los programas de reciclaje y recuperación de productos de ASUS están totalmente comprometidos 
+con las normativas más exigentes relacionadas con la protección de nuestro medio ambiente. 
+Creemos en la oferta de soluciones para que usted sea capaz de reciclar responsablemente 
+nuestros productos, pilas y otros componentes así como los materiales de embalaje. Visite la página 
+Web http://csr.asus.com/english/Takeback.htm para obtener información de reciclaje detallada en 
+las diferentes regiones.
+Authorized representative in United Kingdom: ASUSTEK (UK) LIMITED
+Address, City: 
+1st Floor, Sackville House, 143-149 Fenchurch Street, London, EC3M 6BL England
+Country: 
+United Kingdom
+ 1 Operaciones básicas
+ ¡Bienvenido!
+ ¡Prepare su Teléfono ASUS!
+ Primer uso
+ Instrucciones de los gestos de navegación
+ Utilizar la pantalla táctil
+ 2 Las ventajas de la pantalla Inicio
+ Funciones de la pantalla Inicio de su Zen
+ Pantalla Inicio
+ Configuración rápida
+ Notificaciones
+ Herramienta de borde
+ Personalizar la pantalla Home (Inicio)
+ Fondos de pantalla
+ Widgets
+ Preferencias
+ Configurar la fecha y hora
+ Configuración de los sonidos de tono de llamada y alerta
+ 3 Trabajar duro, jugar mejor
+ Chrome
+ Iniciar Chrome
+ Compartir una página
+ Colocar marcadores en páginas
+ Borrar los datos de navegación
+ Gmail
+ Google Calendar
+ Crear eventos 
+ Editar o quitar eventos
+ Crear recordatorios
+ Editar o quitar recordatorios 
+ Administrador de archivos
+ Clon del teléfono de ASUS
+ 4 Mantenerse en contacto
+ Estilo de entrada de llamada
+ Función de SIM dual
+ Realizar llamadas
+ Llamar a los contactos favoritos
+ Recibir llamadas
+ Otras opciones de llamada
+ Grabar llamadas
+ Administrar contactos
+ Configuración de contactos
+ Configurar el perfil 
+ Agregar contactos
+ Marcar sus contactos a favoritos
+ Redes sociales con contactos
+ Enviar mensajes y más 
+ Mensajes 
+ 5 Diversión y ocio
+ Utilizar auriculares
+ Enchufar el conector de audio
+ YT Music 
+ 6 Sus preciados recuerdos
+ Inmortalizar momentos
+ Iniciar la aplicación Cámara
+ Ubicaciones de imagen
+ Funciones avanzadas de la cámara
+ Intervalo
+ Utilizar la Galería
+ Ver la ubicación de las fotografías
+ Editar una imagen
+ Compartir archivos desde la Galería
+ Eliminar archivos de la Galería
+ 7 Permanecer conectado
+ Red móvil
+ Habilitar la red móvil
+ Wi-Fi
+ Habilitar la funcionalidad Wi-Fi
+ Conectarse a una red Wi-Fi
+ Deshabilitar la funcionalidad Wi-Fi
+ Bluetooth®
+ Habilitar la funcionalidad Bluetooth®
+ Asociar su Teléfono ASUS con un dispositivo Bluetooth®
+ Anular la asociación de su Teléfono ASUS con el dispositivo Bluetooth®
+ Anclaje a red
+ Zona con cobertura Wi-Fi
+ Anclaje a red USB 
+ Anclaje a red Bluetooth
+ 8 Aplicaciones de viaje
+ El tiempo
+ Iniciar la aplicación Weather (El Tiempo)
+ Pantalla de inicio del tiempo
+ Reloj
+ Despertador
+ Reloj internacional
+ Cronómetro
+ Temporizador
+ 9 Zen en cualquier lugar
+ Herramientas Zen especiales
+ Calculadora
+ Grabadora de sonidos
+ Mobile Manager 
+ 10 Mantener su Zen
+ Mantener el dispositivo actualizado
+ Actualizar el sistema
+ Almacenamiento
+ Copia de seguridad y restablecimiento
+ Restablecer 
+ Proteger su Teléfono ASUS
+ La pantalla de bloqueo del dispositivo también se puede personalizar para regular el acceso a los datos y aplicaciones móviles.
+ Desbloquear la pantalla
+ Sensor de identificación de huellas dactilares 
+ Iniciar el teléfono ASUS por primera vez
+ Definir la identificación de huella dactilar desde que la configuración
+ Desbloqueo facial 
+ Configurar el desbloqueo facial desde la configuración 
+ Establecer la identidad de su Teléfono ASUS
+ Apéndices 

@@ -1,0 +1,1538 @@
+
+G21234
+Erste Ausgabe / Januar 2023
+E-Handbuch
+2 Notebook-PC E-Handbuch
+Kein Teil dieses Handbuchs, einschließlich der darin beschriebenen Produkte und Software, darf ohne ausdrückliche 
+schriftliche Genehmigung von ASUSTeK COMPUTER INC. (“ASUS”) mit jeglichen Mitteln in jeglicher Form reproduziert, 
+übertragen, transkribiert, in Wiederaufrufsystemen gespeichert oder in jegliche Sprache übersetzt werden, 
+abgesehen von vom Käufer als Sicherungskopie angelegter Dokumentation.
+ASUS BIETET DIESES HANDBUCH IN SEINER VORLIEGENDEN FORM AN, OHNE JEGLICHE GARANTIE, SEI SIE DIREKT 
+ODER INDIREKT, EINSCHLIESSLICH, ABER NICHT BESCHRÄNKT AUF INDIREKTE GARANTIEN ODER BEDINGUNGEN 
+BEZÜGLICH DER VERKÄUFLICHKEIT ODER EIGNUNG FÜR EINEN BESTIMMTEN ZWECK. IN KEINEM FALL IST ASUS, SEINE 
+DIREKTOREN, LEITENDEN ANGESTELLTEN, ANGESTELLTEN ODER AGENTEN HAFTBAR FÜR JEGLICHE INDIREKTEN, 
+SPEZIELLEN, ZUFÄLLIGEN ODER FOLGESCHÄDEN (EINSCHLIESSLICH SCHÄDEN AUFGRUND VON PROFITVERLUSTEN, 
+GESCHÄFTSVERLUSTEN, NUTZUNGS- ODER DATENVERLUSTEN, UNTERBRECHUNG VON GESCHÄFTSABLÄUFEN 
+ET CETERA), SELBST WENN ASUS VON DER MÖGLICHKEIT SOLCHER SCHÄDEN UNTERRICHTET WURDE, DIE VON 
+DEFEKTEN ODER FEHLERN IN DIESEM HANDBUCH ODER AN DIESEM PRODUKT HERRÜHREN.
+In diesem Handbuch erscheinende Produkte und Firmennamen könnten eingetragene Warenzeichen oder 
+Copyrights der betreffenden Firmen sein und dienen ausschließlich zur Identifikation oder Erklärung und zum Vorteil 
+des jeweiligen Eigentümers, ohne Rechtsverletzungen zu beabsichtigen.
+DIE TECHNISCHEN DATEN UND INFORMATIONEN IN DIESEM HANDBUCH SIND NUR ZU INFORMATIONSZWECKEN 
+GEDACHT, SIE KÖNNEN JEDERZEIT OHNE VORANKÜNDIGUNG GEÄNDERT WERDEN UND SOLLTEN NICHT ALS 
+VERPFLICHTUNG SEITENS ASUS ANGESEHEN WERDEN. ASUS ÜBERNIMMT KEINE VERANTWORTUNG ODER 
+HAFTUNG FÜR JEGLICHE FEHLER ODER UNGENAUIGKEITEN, DIE IN DIESEM HANDBUCH AUFTRETEN KÖNNTEN, 
+EINSCHLIESSLICH DER DARIN BESCHRIEBENEN PRODUKTE UND SOFTWARE.
+Copyright © 2023 ASUSTeK COMPUTER INC. Alle Rechte vorbehalten.
+URHEBERRECHTSINFORMATION
+HAFTUNGSAUSSCHLUSS
+Es können Sachverhalte auftreten, bei denen Sie aufgrund eines Fehlers seitens ASUS oder anderer Haftbarkeiten 
+berechtigt sind, Schadensersatz von ASUS zu fordern. In jedem einzelnen Fall, ungeachtet der Grundlage, anhand 
+derer Sie Schadensansprüche gegenüber ASUS geltend machen, haftet ASUS maximal nur mit dem vertraglich 
+festgesetzten Preis des jeweiligen Produktes bei Körperverletzungen (einschließlich Tod) und Schäden am 
+Grundeigentum und am Sachvermögen oder anderen tatsächlichen und direkten Schäden, die aufgrund von 
+Unterlassung oder fehlerhafter Verrichtung gesetzlicher Pflichten gemäß dieser Garantieerklärung erfolgen.
+ASUS ist nur verantwortlich für bzw. entschädigt Sie nur bei Verlust, Schäden oder Ansprüchen, die aufgrund eines 
+vertraglichen, zivilrechtlichen Bruchs dieser Garantieerklärung seitens ASUS entstehen.
+Diese Einschränkung betrifft auch Lieferanten und Weiterverkäufer von ASUS. Sie stellt das Höchstmaß dar, mit dem 
+ASUS, seine Lieferanten und Ihr Weiterverkäufer insgesamt verantwortlich sind.
+UNTER KEINEN UMSTÄNDEN HAFTET ASUS FÜR FOLGENDES: (1) SCHADENSANSPRÜCHE GEGEN SIE VON DRITTEN; (2) 
+VERLUST VON ODER SCHÄDEN AN AUFZEICHNUNGEN ODER DATEN; ODER (3) BESONDERE, SICH ERGEBENDE ODER 
+INDIREKTE SCHÄDEN ODER WIRTSCHAFTLICHE FOLGESCHÄDEN (EINSCHLIESSLICH VERLUST VON PROFITEN ODER 
+SPAREINLAGEN), AUCH WENN ASUS, SEINE LIEFERANTEN ODER IHR WEITERVERKÄUFER VON DIESER MÖGLICHKEIT IN 
+KENNTNIS GESETZT IST.
+SERVICE UND UNTERSTÜTZUNG
+Besuchen Sie unsere mehrsprachige Webseite unter https://www.asus.com/de/support.
+MyASUS bietet Ihnen eine Vielzahl von Support-Funktionen, einschließlich Fehlerbehebung, 
+Produktleistungsoptimierung sowie ASUS-Softwareintegration, und hilft Ihnen außerdem dabei, Ihren persönlichen 
+Desktop einzurichten und den Speicherplatz zu vergrößern. Weitere Informationen finden Sie unter: 
+https://www.asus.com/de/support/FAQ/1038301/.
+Notebook-PC E-Handbuch 3
+Inhaltsverzeichnis
+Über dieses Handbuch ..................................................................................................7
+Anmerkungen zu diesem Handbuch ............................................................................8
+Symbole .....................................................................................................................................8
+Typographie .............................................................................................................................8
+Sicherheitshinweise........................................................................................................9
+Verwendung Ihres Notebook-PCs ..................................................................................9
+Pflege Ihres Notebook-PCs ................................................................................................10
+Richtige Entsorgung .............................................................................................................11
+Akku-Sicherheitsinformationen ......................................................................................12
+Kapitel 1: Hardware-Einrichtung
+Kennenlernen Ihres Notebook-PCs..........................................................................16
+Frontseite ..................................................................................................................................16
+Unterseite .................................................................................................................................21
+Rechte Seite .............................................................................................................................23
+Linke Seite ................................................................................................................................24
+Kapitel 2: Ihr Notebook-PC im Einsatz
+Erste Schritte .....................................................................................................................28
+Laden Sie Ihren Notebook-PC auf ...................................................................................28
+Heben Sie das Display zum Öffnen an ..........................................................................30
+Drücken Sie die Ein-/Austaste ..........................................................................................30
+Touchpad verwenden ...................................................................................................31
+Tastatur verwenden........................................................................................................38
+Schnelltasten ...........................................................................................................................38
+Funktionstasten......................................................................................................................39
+Windows-Tasten .....................................................................................................................39
+4 Notebook-PC E-Handbuch
+Kapitel 3: Mit Windows arbeiten
+Erste Inbetriebnahme ....................................................................................................42
+Startmenü...........................................................................................................................43
+Windows® Apps ................................................................................................................45
+Mit Windows®-Apps arbeiten ...........................................................................................46
+Windows®-Apps anpassen .................................................................................................46
+Task view (Aufgabenansicht) ......................................................................................48
+Widgets ................................................................................................................................49
+Einrasten-Funktion..........................................................................................................51
+Einrasten-Hotspots ...............................................................................................................51
+Action Center (Info-Center) .........................................................................................53
+MyASUS Splendid ...........................................................................................................55
+Einstellen des OLED-Displays .....................................................................................57
+Einstellen des Dunkelmodus ............................................................................................57
+Ausschalten des Displays, wenn es nicht verwendet wird ...................................59
+Anpassen der Bildschirmhelligkeit .................................................................................61
+Automatisches Ausblenden der Taskleiste .................................................................63
+Einstellen des Dunkelmodus in Microsoft Office .....................................................65
+Andere Tastaturkürzel ....................................................................................................66
+Mit drahtlosen Netzwerken verbinden .................................................................. 68
+WLAN ..........................................................................................................................................68
+Bluetooth ..................................................................................................................................69
+Flugzeugmodus .....................................................................................................................70
+Notebook-PC ausschalten ...........................................................................................71
+Ihren Notebook-PC in den Ruhezustand versetzen .......................................... 72
+Kapitel 4: Power-On-Self-Test (POST)
+Der Power-On-Self-Test (POST) ..................................................................................74
+POST zum Zugriff auf BIOS und zur Problemlösung verwenden ......................74
+BIOS .......................................................................................................................................74
+BIOS aufrufen ..........................................................................................................................74
+Ihr System wiederherstellen .......................................................................................75
+Eine Wiederherstellungsoption ausführen .................................................................76
+Notebook-PC E-Handbuch 5
+Tipps und häufig gestellte Fragen
+Praktische Tipps zu Ihrem Notebook-PC ................................................................ 80
+Häufig gestellte Fragen zur Hardware .................................................................... 82
+Häufig gestellte Fragen zur Software ...................................................................... 85
+Anhang
+Aussagen zur FCC-Erklärung.............................................................................................88
+FCC-Informationen zur Hochfrequenz-Belastung ...................................................89
+UL-Sicherheitshinweise .......................................................................................................90
+Stromsicherheitsanforderungen .....................................................................................91
+TV-Tuner-Hinweis ..................................................................................................................91
+Macrovision Corporation-Produktanmerkung ..........................................................91
+Vermeidung von Hörverlust..............................................................................................91
+Beschichtungshinweis .........................................................................................................91
+6 Notebook-PC E-Handbuch
+Nordic-Vorsichtsmaßnahmen (für Lithium-Ionen-Akkus) ....................................92
+Erklärung zur Erfüllung der Umweltschutzbestimmungen 
+für das Produkt .......................................................................................................................93
+EU REACH und Artikel 33 ....................................................................................................93
+EU RoHS .....................................................................................................................................93
+ASUS Recycling/Rücknahmeservices ............................................................................94
+Ökodesign-Richtlinie ............................................................................................................94
+Für ENERGY STAR qualifiziertes Produkt ......................................................................95
+Für EPEAT gelistete Produkte ............................................................................................95
+Lizenz für BIOS-Schriftarten ..............................................................................................96
+Vereinfachte EU-Konformitätserklärung ......................................................................97
+Hinweis zum WLAN...............................................................................................................98
+Notebook-PC E-Handbuch 7
+Über dieses Handbuch
+Dieses Handbuch enthält Informationen zu den unterschiedlichen 
+Notebook-Komponenten und ihrer Benutzung. Im Folgenden finden Sie die 
+Hauptabschnitte dieses Handbuchs:
+Kapitel 1: Hardware-Einrichtung
+Hier erfahren Sie Details über die Hardware-Komponenten Ihres 
+Notebook-PCs.
+Kapitel 2: Ihr Notebook-PC im Einsatz
+Hier erfahren Sie, wie Sie den Notebook-PC verwenden können.
+Kapitel 3: Mit Windows arbeiten
+Dieses Kapitel bietet eine Übersicht über den Einsatz von Windows auf 
+Ihrem Notebook-PC.
+Kapitel 4: Power-On-Self-Test (POST)
+Hier erfahren Sie mehr über die Verwendung des POSTs, um die 
+Einstellungen Ihres Notebook-PCs zu ändern.
+Tipps und häufig gestellte Fragen
+Dieser Abschnitt enthält einige Tipps sowie häufig gestellte Fragen zu 
+Hardware und Software, an die Sie sich zur Wartung und zur Behebung 
+allgemeiner Probleme mit Ihrem Notebook-PC halten können.
+Anhang
+Hier finden Sie Hinweise und Sicherheitsanweisungen für Ihren 
+Notebook-PC.
+8 Notebook-PC E-Handbuch
+Anmerkungen zu diesem Handbuch
+Zum Hervorheben wichtiger Informationen sind manche Textabschnitte in 
+diesem Handbuch wie folgt gekennzeichnet:
+WICHTIG! Diese Meldung enthält wichtige Informationen, denen Sie folgen 
+müssen, um die Aufgabe fertigzustellen.
+HINWEIS: Diese Meldung enthält zusätzliche Informationen und Tipps, die 
+Ihnen bei der Fertigstellung einer Aufgabe helfen können.
+WARNUNG! Diese Nachricht enthält wichtige Informationen, denen Sie folgen 
+müssen, um Sie bei der Durchführung einer Aufgabe zu schützen und eine 
+Beschädigung des Notebook-PCs oder der Daten zu vermeiden.
+Typographie
+Fett = Diese Schriftart zeigt Ihnen ein Menü oder ein Element, welches 
+ausgewählt werden muss.
+KURSIV = Diese Schriftart zeigt an, dass Sie sich auf einen bestimmten 
+Abschnitt in diesem Handbuch beziehen können.
+= Touchpad verwenden.
+= Tastatur verwenden.
+Symbole
+Die nachfolgenden Symbole zeigen die Geräte an, die Sie für die 
+Fertigstellung einer Reihe von Aufgaben oder Handlungen auf Ihrem 
+Notebook-PC verwenden können.
+Notebook-PC E-Handbuch 9
+Sicherheitshinweise
+Dieser Notebook-PC darf nur in einer Umgebung mit 
+einer Temperatur zwischen 5 °C und 35 °C verwendet 
+werden.
+Prüfen Sie am Aufkleber an der Notebook-Unterseite, 
+ob Ihr Netzteil den Stromversorgungsanforderungen 
+entspricht.
+Ihr Notebook-PC kann während des Betriebes oder 
+während der Akku aufgeladen wird sehr heiß werden. 
+Benutzen Sie Ihren Notebook-PC nicht auf Ihrem Schoß 
+oder anderen Körperteilen, da es durch Hitzekontakt 
+zu Verletzungen kommen könnte. Stellen Sie das Gerät 
+NICHT auf Oberflächen, die die Belüftungsöffnungen 
+blockieren können.
+Benutzen Sie KEINE beschädigten Netzkabel, 
+Zubehörteile oder Peripheriegeräte.
+Bedecken Sie das eingeschaltete Notebook NICHT mit 
+Materialien, die die Luftzirkulation beeinträchtigen. 
+Stecken Sie es NICHT eingeschaltet in eine Tragetasche.
+Stellen Sie das Notebook NICHT auf schräge oder 
+instabile Arbeitsflächen.
+Sie können Ihren Notebook-PC durch Röntgengeräte 
+überprüfen lassen. Es ist jedoch ratsam, Ihren Notebook-
+PC keinen stationären oder tragbaren Metalldetektoren 
+auszusetzen.
+Die meisten Fluggesellschaften haben Einschränkungen 
+für die Benutzung elektronischer Geräte. Folgen 
+Sie für den Betrieb des Notebook-PCs an Bord den 
+Anweisungen des Flugpersonals.
+Verwendung Ihres Notebook-PCs
+10 Notebook-PC E-Handbuch
+Pflege Ihres Notebook-PCs
+Trennen Sie den Notebook-PC vor der Reinigung 
+vom Netzstrom und entnehmen Sie den/die Akku(s). 
+Verwenden Sie einen sauberen Schwamm oder ein 
+Fensterleder, das mit warmem Wasser oder mit einer 
+niedrig konzentrierten Lösung eines nicht scheuernden 
+Reinigungsmittels angefeuchtet ist. Entfernen Sie 
+zusätzliche Feuchtigkeit mit einem trockenen Tuch 
+von Ihrem Notebook-PC. Lassen Sie keine Flüssigkeiten 
+in das Gehäuse oder in die Tastenzwischenräume 
+der Tastatur eindringen, um einen Kurzschluss oder 
+Korrosion zu verhindern.
+Benutzen Sie in der Nähe oder auf der Oberfläche Ihres 
+Notebook-PCs KEINE starken Reinigungsmittel, z.B. 
+Alkohol, Benzin, Verdünner oder andere Chemikalien.
+Stellen Sie KEINE Gegenstände auf den Notebook-PC.
+Setzen Sie den Notebook-PC KEINEN starken 
+magnetischen oder elektrischen Feldern aus.
+Benutzen Sie den Notebook-PC NICHT in der Nähe von 
+Flüssigkeiten, Regen oder Feuchtigkeit.
+Setzen Sie den Notebook-PC KEINEN schmutzigen oder 
+staubigen Umgebungen aus.
+Notebook-PC E-Handbuch 11
+Richtige Entsorgung
+Entsorgen Sie den Notebook-PC NICHT im normalen 
+Hausmüll. Dieses Produkt wurde entwickelt, um 
+ordnungsgemäß wiederverwertet und entsorgt 
+werden zu können. Das Symbol der durchgestrichenen 
+Mülltonne zeigt an, dass das Produkt (elektrisches, 
+elektronisches Zubehör und quecksilberhaltige Akkus) 
+nicht im normalen Hausmüll entsorgt werden darf. 
+Erkundigen Sie sich bei Ihren lokalen Behörden über die 
+ordnungsgemäße Entsorgung elektronischer Produkte.
+Die Batterien NICHT im normalen Hausmüll entsorgen. 
+Das Symbol der durchgestrichenen Mülltonne zeigt an, 
+dass Batterien nicht im normalen Hausmüll entsorgt 
+werden dürfen.
+Benutzen Sie den Notebook-PC NICHT in der Nähe eines 
+Gaslecks.
+Platzieren Sie aktive elektronische Geräte nicht in der 
+Nähe Ihres Notebook-PCs, um elektromagnetische 
+Störungen auf dem Display zu vermeiden.
+Verwenden Sie diesen Notebook-PC nicht für die 
+Erzeugung von Kryptowährungen (Mining) oder 
+ähnliche Aktivitäten, die enorm viel Strom und Zeit 
+verbrauchen, um konvertierbare virtuelle Währungen zu 
+erhalten.
+12 Notebook-PC E-Handbuch
+Akkuschutz
+• Häufiges Aufladen des Akkus unter hoher Stromspannung kann die 
+Akkulebensdauer verkürzen. Um den Akku zu schützen, kann das 
+System, sobald der Akku vollständig aufgeladen ist, das Aufladen 
+beenden, wenn die Akkuleistung zwischen 90% und 100% beträgt.
+HINWEIS: Der Akkustand, ab dem der Ladevorgang des Akkus wieder 
+aufgenommen wird, liegt in der Regel zwischen 90% und 99%. Der tatsächliche 
+Wert kann je nach Modell variieren.
+• Das Aufladen oder Aufbewahren des Akkus bei hohen 
+Umgebungstemperaturen kann zu dauerhaften Schäden an der 
+Kapazität für die Akkuleistung führen und die Akkulebensdauer extrem 
+verkürzen. Wenn die Akkutemperatur zu hoch ist, kann das System die 
+Ladekapazität für die Akkuleistung reduzieren oder sogar das Aufladen 
+komplett beenden, um den Akku zu schützen.
+• Die Kapazität für die Akkuleistung kann auch dann sinken, wenn Ihr 
+Gerät ausgeschaltet und von der Stromversorgung getrennt ist. Dies ist 
+normal, da das System weiterhin eine kleine Menge Strom vom Akku 
+bezieht.
+Akku-Sicherheitsinformationen
+Notebook-PC E-Handbuch 13
+Standardwartung des Akkus
+• Falls Sie Ihr Gerät längere Zeit nicht nutzen, stellen Sie sicher, dass 
+Sie den Akku auf einen Stand von 50% aufladen, dann Ihr Gerät 
+ausschalten und das Netzteil trennen. Laden Sie den Akku alle drei 
+Monate wieder auf einen Stand von 50% auf, um eine übermäßige 
+Entladung zu vermeiden und Schäden am Akku zu verhindern.
+• Vermeiden Sie das Aufladen des Akkus unter hoher Stromspannung 
+über einen längeren Zeitraum, um die Akkulebensdauer zu verlängern. 
+Wenn Sie fortwährend das Netzteil mit Ihrem Gerät verwenden, 
+stellen Sie sicher, dass Sie den Akku mindestens einmal alle zwei 
+Wochen auf einen Stand von 50% entladen. Sie können auch die 
+Einstellungen von Battery Health Charging in MyASUS anpassen, um 
+die Akkulebensdauer zu verlängern.
+• Es wird empfohlen, den Akku bei Temperaturen zwischen 5 °C (41 °F) 
+und 35 °C (95 °F) mit einem Akkustand von 50% aufzubewahren. 
+Sie können auch die Einstellungen von Battery Health Charging in 
+MyASUS anpassen, um die Akkulebensdauer zu verlängern.
+• Lassen Sie den Akku nicht in feuchten Umgebungen. Der Kontakt mit 
+feuchten Umgebungen kann die übermäßige Entladung des Akkus 
+beschleunigen. Eine Umgebung mit niedrigen Temperaturen kann die 
+Chemikalien im Inneren des Akkus beeinträchtigen, während hohe 
+Temperaturen oder Überhitzung zu Explosionsgefahr führen können.
+• Stellen Sie Ihr Gerät oder den Akku nicht in der Nähe von Heizkörpern, 
+Kaminen, Öfen, Heizstrahlern oder anderen Wärmequellen mit einer 
+Temperatur von mehr als 60 °C (140 °F) auf. Eine Umgebung mit 
+hohen Temperaturen kann zu einer Explosion oder zum Austreten von 
+Flüssigkeit mit Brandfolge führen.
+14 Notebook-PC E-Handbuch
+Notebook-PC E-Handbuch 15
+Kapitel 1:
+Hardware-Einrichtung
+16 Notebook-PC E-Handbuch
+Kennenlernen Ihres Notebook-PCs
+Frontseite
+HINWEIS: Die Tastatur kann sich je nach Verkaufsregion oder Land 
+unterscheiden. Das Notebook kann je nach Modellausführung unterschiedlich 
+aussehen.
+Notebook-PC E-Handbuch 17
+Array-Mikrofon
+Das Array-Mikrofon besitzt eine Hintergrundgeräuschunterdrückung 
+und Aufnahmekegelfunktionen für bessere Spracherkennung und 
+Audio-Aufnahmen.
+Kamera
+Die integrierte Kamera ermöglicht Bild- und Videoaufnahmen mit 
+Ihrem Notebook-PC.
+Infrarotkamera
+Die integrierte Kamera ermöglicht Bild- und Videoaufnahmen mit 
+Ihrem Notebook-PC. Die IR-Kamera unterstützt auch Windows Hello.
+HINWEIS: Die rote Infrarot-LED blinkt, während die Daten gelesen 
+und verarbeitet werden, bevor Sie sich über die Windows Hello 
+Gesichtserkennung anmelden.
+Kameraanzeige
+Die Kameraanzeige leuchtet, wenn die integrierte Kamera verwendet 
+wird.
+18 Notebook-PC E-Handbuch
+Bildschirm
+Die hochauflösende Displayanzeige besitzt ausgezeichnete 
+Anzeigemerkmale für Fotos, Videos und andere Multimediadateien 
+auf Ihrem Notebook-PC.
+Haftungsausschluss: Eine längere Anzeige statischer oder 
+kontrastreicher Bilder kann zu Bildpersistenz oder zum Einbrennen 
+von Bildern auf OLED-Displays führen. ASUS Notebook-PCs mit OLED-
+Displays (bei bestimmten Modellen) minimieren das Einbrennpotenzial, 
+indem standardmäßig der Dunkelmodus in Windows festgelegt und 
+die Inaktivitätszeit verkürzt wird, bevor sich der Bildschirm ausschaltet. 
+Es wird empfohlen, animierte Bildschirmschoner mit dunklem 
+Hintergrund zu aktivieren. Vermeiden Sie außerdem, Ihr OLED-Display 
+auf die maximale Helligkeit einzustellen, um die Lebensdauer zu 
+verlängern.
+HINWEIS: Weitere Einzelheiten finden Sie im Abschnitt Einstellen des 
+OLED-Displays in dieser Anleitung.
+Mikrofon-aus-Anzeige
+Diese Anzeige leuchtet, wenn das Mikrofon ausgeschaltet ist.
+Tastatur
+Die Tastatur besitzt QWERTZ-Tasten in normaler Größe und mit einer 
+angenehmen Hubtiefe beim Tippen. Sie ermöglicht Ihnen auch 
+die Verwendung der Funktionstasten, einen schnellen Zugriff auf 
+Windows® und die Steuerung anderer Multimediafunktionen.
+HINWEIS: Das Tastaturlayout unterscheidet sich je nach Modell oder 
+Gebiet.
+Notebook-PC E-Handbuch 19
+Capital Lock-Anzeige (Großbuchstaben-Feststelltaste)
+Dieser Indikator leuchtet bei aktiver Großbuchstabenfunktion. Mit der 
+Großbuchstaben-Feststelltaste können Sie Großbuchstaben eingeben 
+(z. B. A, B, C), ohne dazu die Umschalttaste drücken zu müssen.
+Touchpad
+Mit dem Touchpad können Sie auf dem Bildschirm navigieren und 
+unterschiedlichste Gesten nutzen; so lässt sich Ihr neues Gerät recht 
+intuitiv bedienen. Reguläre Mausfunktionen stehen damit natürlich 
+auch zur Verfügung.
+HINWEIS: Weitere Einzelheiten finden Sie im Abschnitt Touchpad 
+verwenden in dieser Anleitung.
+Umgebungslichtsensor
+Der Umgebungslichtsensor erfasst die Menge des Lichts in Ihrer 
+Umgebung. Er ermöglicht dem System, die Helligkeit des Displays in 
+Abhängigkeit von den Umgebungslichtbedingungen automatisch 
+anzupassen.
+RGB-Lichtsensor
+Der RGB-Lichtsensor passt die Farbtemperatur Ihres Bildschirms 
+automatisch an die Umgebungslichtstärke an.
+20 Notebook-PC E-Handbuch
+Kamera-aus-Anzeige
+Diese Anzeige leuchtet, wenn die Kamera ausgeschaltet ist.
+Ein-/Austaste
+Mit dem Ein-/Ausschalter schalten Sie Ihren Notebook-PC ein oder 
+aus. Mit diesem Schalter können Sie Ihren Notebook-PC auch in 
+den Ruhezustand oder Tiefschlafmodus versetzen oder ihn wieder 
+aufwecken.
+Falls Ihr Notebook-PC nicht mehr reagiert, halten Sie die Ein-/Austaste 
+für mindestens zehn (10) Sekunden gedrückt, bis sich Ihr Notebook-
+PC abschaltet.
+Notebook-PC E-Handbuch 21
+Unterseite
+HINWEIS: Das Aussehen der Unterseite kann je nach Modell variieren.
+WARNUNG! Ihr Notebook-PC kann während des Betriebes oder während der 
+Akku aufgeladen wird sehr heiß werden. Benutzen Sie Ihren Notebook-PC 
+nicht auf Ihrem Schoß oder anderen Körperteilen, da es durch Hitzekontakt zu 
+Verletzungen kommen könnte. Stellen Sie das Gerät NICHT auf Oberflächen, die 
+die Belüftungsöffnungen blockieren können.
+WICHTIG!
+• Die Akku-Laufzeit ist vom Gebrauch und von den Spezifikationen des 
+jeweiligen Notebook-Modells abhängig. Der Akku kann nicht entnommen 
+werden.
+• Erwerben Sie Komponenten von autorisierten Händlern, um ein 
+Maximum an Kompatibilität und Zuverlässigkeit zu gewährleisten. 
+Kontaktieren Sie ein ASUS-Kundencenter oder einen autorisierten 
+Händler für Produktdienstleistungen oder Hilfe beim ordnungsgemäßen 
+Auseinandernehmen oder Zusammenbau des Produktes.
+22 Notebook-PC E-Handbuch
+Lüftungsöffnungen
+Die Lüftungsöffnungen lassen kühle Luft in den Notebook-PC hinein 
+und die warme Luft wieder heraus.
+WARNUNG! Achten Sie unbedingt darauf, dass die 
+Belüftungsöffnungen nicht durch Papier, Bücher, Kleidung, Kabel 
+oder andere Gegenstände blockiert werden; andernfalls kann es zu 
+Überhitzung kommen.
+Lautsprecher
+Mit den integrierten Lautsprechern können Sie Ton direkt vom 
+Notebook-PC ausgeben. Die Audiofunktionen sind softwaregesteuert.
+Notebook-PC E-Handbuch 23
+Rechte Seite
+Betriebsanzeige
+Die Betriebsanzeige leuchtet, wenn Ihr Notebook-PC eingeschaltet ist. 
+Sie blinkt, wenn sich das Gerät im Energiesparmodus befindet.
+Kopfhörer-/Headset-/Mikrofonbuchse
+Über diesen Anschluss können Sie Ihren Notebook-PC an aktive 
+Lautsprecher oder Kopfhörer anschließen. Zusätzlich können Sie hier 
+ein Headset oder ein externes Mikrofon anschließen.
+USB 3.2 (Gen2)-Anschluss
+Der USB 3.2 (Universal Serial Bus 3.2) (Gen2)-Anschluss bietet 
+Datenübertragungsraten bis zu 10 Gbit/s und ist abwärtskompatibel 
+mit USB 2.0.
+24 Notebook-PC E-Handbuch
+Linke Seite
+HDMI-Ausgang
+Über diesen Anschluss können Sie Audio- und Videosignale mithilfe 
+eines HDMI-Kabels von Ihrem Notebook-PC an ein HDMI-kompatibles 
+Gerät senden.
+Thunderbolt™ 4/Power Delivery-Kombianschluss
+Der Thunderbolt™ 4-Anschluss ist mit dem USB Typ-C-Standard 
+kompatibel und bietet Datenübertragungsraten bis zu 40 Gbit/s 
+für Thunderbolt™ 4-Geräte. Verbinden Sie Ihren Notebook-PC mit 
+einem externen DisplayPort-, VGA-, DVI- oder HDMI-Anzeigegerät, 
+und erleben Sie hochauflösende Bildschirminhalte über Intel 
+Thunderbolt™ Technologie. Verbinden Sie das mitgelieferte Netzteil 
+mit diesem Anschluss, um den Akku zu laden und Ihren Notebook-PC 
+mit Strom zu versorgen.
+HINWEIS: Die Übertragungsrate des Ports variiert je nach Modell.
+WICHTIG! Es kann bei Verwendung eines Netzteils mit niedrigem 
+Ausgangsstrom länger dauern, bis Ihr Notebook-PC vollständig 
+aufgeladen ist.
+Notebook-PC E-Handbuch 25
+Zweifarbige Akkuladungsanzeige
+Die zweifarbige LED zeigt den Ladestatus des Akkus optisch an. 
+Details hierzu sind in der folgenden Tabelle aufgeführt:
+Farbe Status
+Leuchtet weiß Der Notebook-PC ist an die 
+Stromversorgung angeschlossen 
+und die Akkuleistung liegt bei 95% 
+bis 100%.
+Leuchtet orange Der Notebook-PC ist an die 
+Stromversorgung angeschlossen, 
+der Akku wird geladen und die 
+Akkuleistung beträgt weniger als 
+95%.
+Orange blinkend Der Notebook-PC läuft im 
+Akkumodus und die Akkuleistung 
+beträgt weniger als 10%.
+Aus Der Notebook-PC läuft im 
+Akkumodus und die Akkuleistung 
+liegt bei 10% bis 100%.
+26 Notebook-PC E-Handbuch
+Notebook-PC E-Handbuch 27
+Kapitel 2:
+Verwendung Ihres Notebook-PCs
+28 Notebook-PC E-Handbuch
+WICHTIG!
+Informationen zum Netzteil:
+• Eingangsspannung: 100-240V Wechselspannung 
+• Eingangsfrequenz: 50-60Hz
+• Ausgangsstrom: 3,25A (65W)
+• Ausgangsnennspannung: 20V
+Laden Sie den Notebook-PC vor dem ersten Einsatz 
+3 Stunden lang auf.
+HINWEIS: Das Netzteil kann optisch je nach Modell und Region variieren.
+Erste Schritte
+A. Verbinden Sie das Netzkabel mit dem Netzteil.
+B. Schließen Sie den kleinen Netzteilstecker an den Stromanschluss (DC) 
+Ihres Notebook-PCs an.
+C. Verbinden Sie den Netzstecker des Netzteils mit einer Steckdose (100 – 
+240 V Wechselspannung).
+Laden Sie Ihren Notebook-PC auf
+Notebook-PC E-Handbuch 29
+WICHTIG!
+• Beachten Sie das Typenschild (Eingangs-/Ausgangsleistung) an Ihrem 
+Notebook-PC; stellen Sie sicher, dass die Angaben zu Eingangs-/
+Ausgangsleistung mit denen Ihres Netzteils übereinstimmen. Einige 
+Notebook-PC-Modelle weisen basierend auf der verfügbaren SKU mehrere 
+Angaben zum Ausgangsstrom auf.
+• Vergewissern Sie sich, dass Ihr Notebook-PC an das Netzteil angeschlossen 
+ist, bevor Sie ihn zum ersten Mal einschalten. Schließen Sie das Stromkabel 
+immer ohne Verlängerungskabel an eine Steckdose an. Schließen Sie 
+dieses Gerät zu Ihrer Sicherheit nur an eine ordnungsgemäß geerdete 
+Steckdose an.
+• Die Steckdose muss leicht zugänglich sein und sich in der Nähe Ihres 
+Notebook-PCs befinden.
+• Trennen Sie Ihren Notebook-PC vom Netzstrom, indem Sie den Netzstecker 
+aus der Steckdose ziehen.
+WARNUNG!
+Lesen Sie folgende Vorsichtsmaßnahmen zum Akku Ihres Notebook-PCs:
+• Der Akku darf ausschließlich von autorisierten ASUS-Technikern aus dem 
+Gerät entfernt werden (nur für fest verbauten Akku).
+• Der in diesem Gerät eingesetzte Akku kann bei falschem Entfernen oder 
+Demontieren zu Verbrennungen chemischer oder anderer Art führen.
+• Befolgen Sie zu Ihrer persönlichen Sicherheit die Warnetiketten.
+• Falls der Akku durch einen falschen Typ ersetzt wird, besteht 
+Explosionsgefahr.
+• Nicht durch Verbrennen entsorgen.
+• Versuchen Sie nicht, den Akku Ihres Notebook-PCs kurzzuschließen.
+• Versuchen Sie nicht, den Akku zu de-/montieren (nur für fest verbauten 
+Akku).
+• Unterbrechen Sie die Nutzung, falls der Akku ausläuft.
+• Der Akku und seine Komponenten müssen ordnungsgemäß recycelt oder 
+entsorgt werden.
+• Halten Sie Akku und andere kleine Teile von Kindern fern.
+30 Notebook-PC E-Handbuch
+Heben Sie das Display zum Öffnen an
+Drücken Sie die Ein-/Austaste
+Notebook-PC E-Handbuch 31
+Touchpad verwenden
+Zeiger bewegen
+Zur Aktivierung dieses Zeigers können Sie eine beliebige Stelle am Touchpad 
+antippen; wischen Sie mit Ihrem Finger dann zum Bewegen des Zeigers über 
+das Touchpad.
+Horizontal wischen
+Vertikal wischen
+Diagonal wischen
+32 Notebook-PC E-Handbuch
+Gesten mit einem Finger
+Tippen/Doppeltippen
+• Tippen Sie auf eine App, um sie auszuwählen.
+• Tippen Sie zum Starten zweimal auf eine App.
+Ziehen und ablegen
+Doppeltippen Sie auf ein Element, wischen Sie dann mit demselben Finger, 
+ohne den Finger vom Touchpad zu lösen. Legen Sie das Element an seinem 
+neuen Ort ab, indem Sie Ihren Finger vom Touchpad lösen.
+Notebook-PC E-Handbuch 33
+Linksklick Rechtsklick
+• Klicken Sie zur Auswahl auf 
+eine App.
+• Doppelklicken Sie zum Starten 
+auf eine App.
+Zum Öffnen des Rechtsklickmenüs 
+diese Schaltfläche anklicken.
+HINWEIS: Die Bereiche innerhalb der gepunkteten Linie repräsentieren die 
+Positionen der Linksklick- und Rechtsklicktaste am Touchpad.
+Gesten mit zwei Fingern
+Tippen Sie 
+Tippen Sie zum Simulieren eines Rechtsklicks mit beiden Fingern auf das 
+Touchpad.
+34 Notebook-PC E-Handbuch
+Blättern mit zwei Fingern 
+(aufwärts/abwärts)
+Blättern mit zwei Fingern 
+(links/rechts)
+Wischen Sie zum Auf-/
+Abwärtsblättern mit zwei Fingern.
+Wischen Sie zum Links-/Rechtsblättern 
+mit zwei Fingern.
+Verkleinern Vergrößern
+Führen Sie zwei Finger am Touchpad 
+zusammen.
+Spreizen Sie zwei Finger am Touchpad 
+auseinander.
+Notebook-PC E-Handbuch 35
+Ziehen und ablegen
+Wählen Sie ein Element, halten Sie dann die Linksklick-Taste gedrückt. 
+Wischen Sie mit Ihrem anderen Finger zum Ziehen des Elements über das 
+Touchpad. Nehmen Sie Ihren Finger zum Ablegen des Elements von der 
+Taste.
+Gesten mit drei Fingern
+Tippen Sie 
+Tippen Sie mit drei Fingern auf das Touchpad, um die Funktion zu starten, 
+die Sie in den Einstellungen ausgewählt haben.
+36 Notebook-PC E-Handbuch
+Nach links/rechts wischen
+Wenn Sie mehrere Apps geöffnet haben, streichen Sie mit drei Fingern nach 
+links oder rechts, um zwischen diesen Apps zu wechseln.
+Nach oben wischen Nach unten wischen
+Streichen Sie nach oben, um einen 
+Überblick über alle aktuell geöffneten 
+Apps zu haben.
+Streichen Sie nach unten, um den 
+Desktop anzuzeigen.
+Notebook-PC E-Handbuch 37
+Gesten mit vier Fingern
+Tippen Sie 
+Tippen Sie mit vier Fingern auf das Touchpad, um die Funktion zu starten, die 
+Sie in den Einstellungen ausgewählt haben.
+38 Notebook-PC E-Handbuch
+Tastatur verwenden
+Aktiviert oder deaktiviert den Lautsprecher
+Reduziert die Lautstärke des Lautsprechers
+Erhöht die Lautstärke des Lautsprechers
+Verringert die Bildschirmhelligkeit
+Erhöht die Bildschirmhelligkeit
+Aktiviert oder deaktiviert das Touchpad
+Passt die Helligkeit der Tastaturhintergrundbeleuchtung an
+Schaltet den Bildschirm-Modus um
+HINWEIS: Stellen Sie sicher, dass ein zweiter Bildschirm an 
+Ihren Notebook-PC angeschlossen ist.
+Schnelltasten
+Die Schnelltasten auf der Tastatur Ihres Notebook-PCs können folgende 
+Befehle auslösen:
+Notebook-PC E-Handbuch 39
+Funktionstasten
+Drücken Sie auf , um die Funktionstasten zu aktivieren oder zu 
+deaktivieren. Wenn die Funktionstasten aktiviert sind, können Sie auch auf die 
+Hotkeys zugreifen, indem Sie zusammen mit den Funktionstasten in 
+der obersten Reihe gedrückt halten.
+Schaltet das Mikrofon ein oder aus
+Schaltet die Kamera ein oder aus
+Aktiviert das Bildschirmfoto-Tool
+Startet MyASUS
+Windows-Tasten
+Es gibt zwei spezielle Windows®-Tasten an der Tastatur Ihres Notebook-PCs:
+Blendet das Startmenü ein
+ oder Zeigt das Drop-Down-Menü
+40 Notebook-PC E-Handbuch
+Notebook-PC E-Handbuch 41
+Kapitel 3: 
+Mit Windows arbeiten
+42 Notebook-PC E-Handbuch
+Erste Inbetriebnahme
+Wenn Sie Ihren Notebook-PC das erste Mal starten, erscheint eine Reihe von 
+Bildschirmen, die Sie durch die Konfiguration Ihres Windows-Betriebssystems 
+führen.
+So starten Sie Ihren Notebook-PC das erste Mal:
+1. Drücken Sie die Ein-/Austaste an Ihrem Notebook-PC. Warten Sie 
+einige Minuten, bis der Einrichtungsbildschirm erscheint.
+2. Wählen Sie am Einrichtungsbildschirm Ihre Region und die Sprache, 
+zur Nutzung an Ihrem Notebook-PC.
+3. Lesen Sie aufmerksam die Lizenzvereinbarung. Wählen Sie Accept 
+(Zustimmen) aus.
+4. Befolgen Sie die Bildschirmanweisungen zur Konfiguration folgender 
+grundlegender Einstellungen:
+• Personalisieren
+• Online gehen
+• Einstellungen
+• Ihr Konto
+5. Nach der Konfiguration der grundlegenden Elemente fährt Windows 
+fort, Ihre Apps und bevorzugten Einstellungen zu installieren. Stellen 
+Sie sicher, dass Ihr Notebook-PC während des Einrichtungsprozesses 
+angeschaltet bleibt.
+6. Sobald die Einrichtung abgeschlossen ist, erscheint der Desktop.
+HINWEIS: Die Bildschirmaufnahmen in diesem Kapitel dienen lediglich der 
+Veranschaulichung.
+Notebook-PC E-Handbuch 43
+Startmenü
+Das Startmenü ist das Haupttor zu den Programmen, Windows®-Apps, 
+Ordnern und Einstellungen Ihres Notebook-PCs.
+Sie können das Startmenü für folgende allgemeine Aktivitäten nutzen:
+• Programme oder Windows®-Apps starten
+• Häufig verwendete Programme oder Windows®-Apps öffnen
+• Notebook-PC-Einstellungen anpassen
+• Hilfe zum Windows-Betriebssystem erhalten
+• Notebook-PC ausschalten
+• Von Windows abmelden oder zu einem anderen Benutzerkonto 
+wechseln
+Kontoeinstellungen ändern, sperren 
+oder von Ihrem Konto abmelden
+Startmenü einblenden
+Task view (Aufgabenansicht) 
+einblenden
+Notebook-PC herunterfahren, 
+neu starten oder in den 
+Ruhezustand versetzen
+Eine App aus der Taskleiste 
+starten
+Eine App über das Startmenü starten
+Search (Suche) ausführen
+Widgets starten
+44 Notebook-PC E-Handbuch
+Startmenü einblenden
+Positionieren Sie Ihren Mauszeiger auf dem Startsymbol 
+in Ihrem Desktop und klicken Sie es an.
+Drücken Sie die Windows-Taste auf Ihrer Tastatur.
+Programme über das Startmenü öffnen
+Einer der Hauptnutzen des Startmenüs ist das Öffnen von auf Ihrem 
+Notebook-PC installierten Programmen.
+Positionieren Sie Ihren Mauszeiger auf dem Programm, 
+klicken Sie es zum Ausführen an.
+Durchsuchen Sie die Programme mit den Pfeiltasten. 
+Drücken Sie zum Ausführen .
+HINWEIS: Wählen Sie All apps (Alle Apps); daraufhin wird eine vollständige 
+Liste der Programme und Ordner auf Ihrem Notebook-PC in alphabetischer 
+Reihenfolge angezeigt.
+Notebook-PC E-Handbuch 45
+Windows® Apps
+Dies sind Apps, die an das Startmenü angeheftet sind; sie werden zum 
+einfachen Zugriff im Kachelformat angezeigt.
+HINWEIS: Bei einigen Windows®-Apps müssen Sie sich an Ihrem Microsoft-
+Konto anmelden, wenn Sie den vollen Funktionsumfang nutzen möchten.
+46 Notebook-PC E-Handbuch
+Mit Windows®-Apps arbeiten
+Windows®-Apps anpassen
+Sie können Apps anhand folgender Schritte verschieben, sie vom Startmenü 
+in der Taskleiste anheften oder davon lösen:
+Windows®-Apps über das Startmenü ausführen
+Positionieren Sie Ihren Mauszeiger auf der App, klicken Sie 
+sie zum Ausführen an.
+Durchsuchen Sie die Apps mit den Pfeiltasten. Drücken Sie 
+, um eine App zu starten.
+Apps verschieben
+Positionieren Sie Ihren Mauszeiger auf der App, ziehen Sie 
+die App dann an eine neue Position und legen Sie sie dort 
+ab.
+Apps lösen
+Positionieren Sie Ihren Mauszeiger auf der App und führen 
+Sie einen Rechtsklick durch, klicken Sie dann auf Unpin from 
+Start (Von „Start“ lösen).
+Navigieren Sie mit den Pfeiltasten zu der App. 
+Drücken Sie oder (bei bestimmten 
+Modellen), wählen Sie dann Unpin from Start (Von „Start“ 
+lösen).
+Notebook-PC E-Handbuch 47
+Apps an die Taskleiste anheften
+Positionieren Sie Ihren Mauszeiger auf der App und führen 
+Sie einen Rechtsklick durch, klicken Sie dann auf Pin to 
+taskbar (An Taskleiste anheften).
+Navigieren Sie mit den Pfeiltasten zu der App. 
+Drücken Sie oder (bei bestimmten 
+Modellen), wählen Sie dann Pin to taskbar (An Taskleiste 
+anheften).
+Weitere Apps im Startmenü anheften
+Positionieren Sie Ihren Mauszeiger unter All apps (Alle Apps) 
+auf der App, die Sie zum Startmenü hinzufügen möchten, 
+rechtsklicken Sie dann und klicken anschließend auf Pin to 
+Start (An „Start“ anheften).
+Drücken Sie unter All apps (Alle Apps) für die App 
+oder (bei bestimmten Modellen), die Sie zum 
+Startmenü hinzufügen möchten, wählen Sie dann Pin to 
+Start (An „Start“ anheften).
+48 Notebook-PC E-Handbuch
+Task view (Aufgabenansicht)
+Wechseln Sie mit der Funktion Task view (Aufgabenansicht) schnell zwischen 
+offenen Apps und Programmen; gleichzeitig können Sie damit zwischen 
+Desktops umschalten.
+Task view (Aufgabenansicht) einblenden
+Positionieren Sie Ihren Mauszeiger auf dem -Symbol in 
+der Taskleiste und tippen Sie es an.
+Drücken Sie an Ihrer Tastatur.
+Notebook-PC E-Handbuch 49
+Widgets
+Sie können Widgets für einen schnellen Zugriff auf wichtige Informationen 
+starten.
+Widgets starten
+Positionieren Sie Ihren Mauszeiger auf dem -Symbol in 
+der Taskleiste und tippen Sie es an.
+Drücken Sie an Ihrer Tastatur.
+50 Notebook-PC E-Handbuch
+Widgets anpassen
+Klicken/Tippen Sie auf das Symbol und wählen Sie dann 
+Manage interests (Interessen verwalten) aus, um die 
+Inhalte zu ändern, die in den Widgets angezeigt werden.
+Notebook-PC E-Handbuch 51
+Einrasten-Funktion
+Die Einrasten-Funktion zeigt Apps nebeneinander an; zum parallelen 
+Bearbeiten oder zum Umschalten zwischen Apps.
+Einrasten-Hotspots
+Sie können Apps zum Einrasten auf diese Hotspots ziehen und sie dort 
+ablegen.
+52 Notebook-PC E-Handbuch
+Einrasten verwenden
+1. Starten Sie die App, die Sie einrasten lassen möchten.
+2. Ziehen Sie die Titelleiste Ihrer App und legen Sie die 
+App zum Einrasten am Bildschirmrand ab.
+3. Starten Sie eine andere App und wiederholen Sie die 
+obigen Schritte, wenn Sie eine weitere App einrasten 
+lassen möchten.
+1. Starten Sie die App, die Sie einrasten lassen möchten.
+2. Halten Sie die -Taste gedrückt, benutzen Sie dann 
+die Pfeiltasten zum Einrasten der App.
+3. Starten Sie eine andere App und wiederholen Sie die 
+obigen Schritte, wenn Sie eine weitere App einrasten 
+lassen möchten.
+Notebook-PC E-Handbuch 53
+Action Center (Info-Center)
+Das Action Center (Info-Center) fasst Benachrichtigungen von Apps 
+zusammen und präsentiert einen einzigen Ort, an dem Sie darauf 
+eingehen können. Zudem gibt es einen wirklich praktischen Quick Actions 
+(Schnellaktionen)-Bereich.
+Quick Actions (Schnellaktionen) starten
+Positionieren Sie Ihren Mauszeiger auf den Statussymbolen 
+in der Taskleiste und klicken Sie sie an.
+Drücken Sie an Ihrer Tastatur.
+54 Notebook-PC E-Handbuch
+Benachrichtigungen starten
+Positionieren Sie Ihren Mauszeiger auf Datum und Uhrzeit in 
+der Taskleiste und klicken Sie sie an.
+Drücken Sie an Ihrer Tastatur.
+Notebook-PC E-Handbuch 55
+MyASUS Splendid
+Mit MyASUS Splendid stellen Sie sicher, dass alle ASUS-Displays identische 
+und getreue Farben anzeigen. Sie können neben dem Normalen Modus den 
+Vivid (Lebendig)-Modus, Eye Care (Augenschon)-Modus oder Manuellen 
+Modus auswählen, um die Bildschirmeinstellungen anzupassen.
+• Normaler Modus: Durch die Gamma- und Farbtemperaturkorrektur 
+reicht das vom Display angezeigte Bild so nah wie möglich an das 
+heran, was Ihr Auge als natürlich wahrnimmt. Für Modelle mit OLED-
+Bildschirm stimmt dieser Modus mit der TÜV-Zertifizierung für einen 
+niedrigen Blaulichtanteil überein.
+• Vivid (Lebendig)-Modus: Mit diesem Modus können Sie die 
+Farbsättigung des Bildes anpassen, so dass es lebendiger und 
+dynamischer wirkt.
+• Manueller Modus: Mit diesem Modus können Sie den 
+Farbtemperaturwert zwischen -50 und +50 an Ihre persönlichen 
+Bedürfnisse anpassen.
+• Eye Care (Augenschon)-Modus: Dieser Modus reduziert die Abgabe 
+von blauem Licht um bis zu 30% und schützt so Ihre Augen.
+ Stufen 1-5: Je höher die Stufe gewählt wird, desto mehr wird die 
+Abgabe von blauem Licht reduziert. Für Modelle mit LCD-Bildschirm 
+stellt Stufe 5 die optimale Einstellung dar und stimmt mit der TÜV-
+Zertifizierung für einen niedrigen Blaulichtanteil überein.
+HINWEIS: Aktivieren Sie über Settings (Einstellungen) > System > Display 
+(Anzeige) die Option HDR für ein besseres Seherlebnis mit Ihrem OLED-
+Bildschirm (bei bestimmten Modellen). Diese Option ist mit der TÜV-
+Zertifizierung für flimmerfreie Displays konform.
+56 Notebook-PC E-Handbuch
+Bitte halten Sie sich an die folgenden Hinweise, um die Belastung für die 
+Augen zu vermindern:
+• Gönnen Sie sich eine Pause von Ihrer Bildschirmarbeit, wenn Sie lange 
+Zeit am Computer gesessen haben. Es ist empfehlenswert, dass Sie 
+kurze Pausen machen (mindestens fünf Minuten), nachdem Sie etwa 
+eine Stunde ununterbrochen am Computer gearbeitet haben. Kurze 
+und häufige Pausen sind effektiver als eine lange Pause.
+• Um die Belastung und die Trockenheit der Augen zu verringern, ruhen 
+Sie Ihre Augen regelmäßig aus, indem Sie Gegenstände fixieren, die 
+weit entfernt sind.
+• Wiederholen Sie die folgenden Übungen, um die Belastung der Augen 
+zu reduzieren:
+(1) Schauen Sie immer wieder nach oben und unten
+(2) Rollen Sie langsam mit Ihren Augen
+(3) Bewegen Sie Ihre Augen diagonal
+ Falls die Augenbeschwerden anhalten, wenden Sie sich bitte an einen 
+Arzt.
+• Hochenergetisches Blaulicht kann zu Augenbeschwerden und 
+altersbedingter Makuladegeneration führen. Der Blaulichtfilter 
+verringert das schädliche blaue Licht um bis zu 30%, um eine 
+Beeinträchtigung des Sehvermögens durch Computerbildschirme zu 
+vermeiden.
+Notebook-PC E-Handbuch 57
+Einstellen des OLED-Displays
+Um das Beste aus Ihrem OLED-Display (bei bestimmten Modellen) 
+herauszuholen, empfehlen wir diverse Einstellungen. Diese Einstellungen 
+optimieren das visuelle Erlebnis, maximieren die Akkulaufzeit und verlängern 
+die Lebensdauer Ihres ASUS Notebook-PCs.
+Einstellen des Dunkelmodus
+Der Dunkelmodus ist standardmäßig aktiviert. So überprüfen oder passen Sie 
+die Einstellungen an:
+1. Startmenü einblenden.
+2. Klicken/tippen Sie auf Settings (Einstellungen) und wählen Sie 
+Personalization (Personalisierung).
+58 Notebook-PC E-Handbuch
+3. Wählen Sie das Colors (Farben)-Register aus, um die Optionen 
+anzuzeigen.
+Notebook-PC E-Handbuch 59
+Ausschalten des Displays, wenn es nicht verwendet 
+wird
+Achten Sie darauf, Ihr Display so einzustellen, dass es sich automatisch 
+ausschaltet, wenn es nicht verwendet wird. So überprüfen oder passen Sie die 
+Einstellungen an:
+1. Startmenü einblenden.
+2. Klicken/tippen Sie auf Settings (Einstellungen) und wählen Sie 
+System.
+60 Notebook-PC E-Handbuch
+3. Wählen Sie das Power & battery (Strom & Akku)-Register aus, um die 
+Optionen anzuzeigen.
+Notebook-PC E-Handbuch 61
+Anpassen der Bildschirmhelligkeit
+Es wird empfohlen, animierte Bildschirmschoner mit dunklem Hintergrund 
+zu aktivieren. Vermeiden Sie außerdem, Ihr OLED-Display auf die maximale 
+Helligkeit einzustellen, um die Lebensdauer zu verlängern. So überprüfen 
+oder passen Sie die Einstellungen an:
+1. Startmenü einblenden.
+2. Klicken/tippen Sie auf Settings (Einstellungen) und wählen Sie 
+Personalization (Personalisierung).
+62 Notebook-PC E-Handbuch
+3. Wählen Sie das Lock screen (Sperrbildschirm)-Register und dann 
+Screen saver (Bildschirmschoner) aus, um die Optionen anzuzeigen.
+Notebook-PC E-Handbuch 63
+Automatisches Ausblenden der Taskleiste
+Um zu vermeiden, dass die Taskleiste auf Ihrem OLED-Display über einen 
+längeren Zeitraum angezeigt wird, stellen Sie sicher, dass die Taskleiste 
+automatisch ausgeblendet wird. So passen Sie die Einstellungen an:
+1. Startmenü einblenden.
+2. Klicken/tippen Sie auf Settings (Einstellungen) und wählen Sie 
+Personalization (Personalisierung).
+64 Notebook-PC E-Handbuch
+3. Wählen Sie das Taskbar (Taskleiste)-Register aus und aktivieren Sie 
+dann Automatically hide the taskbar (Taskleiste automatisch 
+ausblenden).
+Notebook-PC E-Handbuch 65
+1. Starten Sie eine Microsoft Office-Anwendung und klicken/tippen Sie 
+dann auf File (Datei) > Account (Konto).
+2. Wählen Sie Dark Gray (Dunkelgrau) unter Office Theme (Office-
+Design). Das Design wird für alle Microsoft-Anwendungen 
+übernommen.
+Einstellen des Dunkelmodus in Microsoft Office
+66 Notebook-PC E-Handbuch
+Andere Tastaturkürzel
+Über Ihre Tastatur können Sie zudem folgende Tastenkombinationen zum 
+Starten von Anwendungen und zur Windows-Navigation nutzen.
+Blendet das Startmenü ein
+Blendet Action Center (Info-Center) ein
+Blendet den Desktop ein
+Startet den File Explorer (Datei-Explorer)
+Blendet die Einstellungen ein
+Blendet das Connect (Verbinden)-Fenster ein
+Aktiviert den Sperrbildschirm
+Minimiert alle aktuell aktiven Fenster
+Notebook-PC E-Handbuch 67
+Blendet die Suchfunktion ein
+Blendet das Projekt-Fenster ein
+Öffnet das Ausführen-Fenster
+Öffnet Accessibility (Zugänglichkeit)
+Öffnet das Kontextmenü der Start-Schaltfläche
+Blendet das Lupensymbol ein und vergrößert 
+Ihren Bildschirm
+Verkleinert Ihren Bildschirm
+68 Notebook-PC E-Handbuch
+Mit drahtlosen Netzwerken verbinden
+WLAN
+Verwenden Sie die WLAN-Verbindung Ihres Notebook-PCs, um E-Mails zu 
+schreiben, im Internet zu surfen und Anwendungen in sozialen Netzwerken 
+freizugeben.
+WICHTIG! Flugzeugmodus deaktiviert diese Funktion. Stellen Sie zur 
+Aktivierung der WLAN-Funktion Ihres Notebook-PCs sicher, dass der 
+Flugzeugmodus ausgeschaltet ist.
+WLAN-Verbindung
+Verbinden Sie Ihren Notebook-PC anhand folgender Schritte mit einem 
+WLAN:
+1. Starten Sie Action Center (Info-Center) über die 
+Taskleiste.
+2. Klicken/Tippen Sie auf das WLAN-Symbol, um das 
+WLAN zu aktivieren.
+3. Wählen Sie einen Zugriffspunkt aus der Liste 
+verfügbarer WLAN-Verbindungen.
+4. Wählen Sie zum Herstellen der Netzwerkverbindung 
+Connect (Verbinden).
+HINWEIS: Sie werden eventuell aufgefordert, einen 
+Sicherheitsschlüssel einzugeben, um diese WLAN-Verbindung 
+zu aktivieren.
+Notebook-PC E-Handbuch 69
+1. Öffnen Sie Settings (Einstellungen) aus dem 
+Startmenü.
+2. Wählen Sie Bluetooth & devices (Bluetooth & Geräte) 
+> Add Device (Gerät hinzufügen), um nach Bluetooth-
+fähigen Geräten zu suchen.
+3. Wählen Sie ein Gerät aus der Liste aus, um Ihren 
+Notebook-PC mit dem Gerät zu koppeln.
+HINWEIS: Bei einigen Bluetooth-fähigen Geräten werden Sie 
+möglicherweise aufgefordert, den Passcode Ihres Notebook-
+PCs einzugeben.
+Bluetooth
+Verwenden Sie Bluetooth zur Erleichterung von drahtlosen Datentransfers 
+mit anderen Bluetooth-fähigen Geräten.
+WICHTIG! Flugzeugmodus deaktiviert diese Funktion. Stellen Sie zur 
+Aktivierung der Bluetooth-Funktion Ihres Notebook-PCs sicher, dass der 
+Flugzeugmodus ausgeschaltet ist.
+Mit anderen Bluetooth-fähigen Geräten koppeln
+Zur Aktivierung von Datentransfers müssen Sie Ihren Notebook-PC mit 
+anderen Bluetooth-fähigen Geräten koppeln. Verbinden Sie Ihre Geräte 
+anhand der folgenden Schritte:
+70 Notebook-PC E-Handbuch
+Flugzeugmodus
+Der Flugzeugmodus deaktiviert die WLAN-Kommunikation, wodurch Sie 
+Ihren Notebook-PC während eines Flugs sicher verwenden können.
+HINWEIS: Die meisten Fluggesellschaften haben Einschränkungen für die 
+Benutzung elektronischer Geräte. Folgen Sie für den Betrieb des Notebook-PCs 
+an Bord den Anweisungen des Flugpersonals.
+Flugzeugmodus ein-/ausschalten
+1. Starten Sie Action Center (Info-Center) über die 
+Taskleiste.
+2. Klicken/Tippen Sie auf das Flugzeugmodus-Symbol, 
+um den Flugzeugmodus zu aktivieren oder zu 
+deaktivieren.
+Notebook-PC E-Handbuch 71
+Notebook-PC ausschalten
+Sie können Ihren Notebook-PC über eines der folgenden Verfahren 
+ausschalten:
+• Blenden Sie das Startmenü ein, wählen Sie dann zum 
+Durchführen einer normalen Abschaltung > Shut 
+down (Herunterfahren).
+• Im Anmeldefenster, tippen/klicken Sie auf > 
+Herunterfahren.
+• Drücken Sie zum Einblenden von Shut Down 
+Windows (Windows herunterfahren) 
+. Wählen Sie Herunterfahren aus der Auswahlliste 
+und anschließend OK.
+• Falls Ihr Notebook-PC nicht mehr reagiert, halten Sie 
+die Ein-/Austaste für mindestens zehn (10) Sekunden 
+gedrückt, bis sich Ihr Notebook-PC abschaltet.
+72 Notebook-PC E-Handbuch
+Ihren Notebook-PC in den Ruhezustand 
+versetzen
+Versetzen Sie Ihren Notebook-PC in den Ruhezustand:
+• Blenden Sie das Startmenü ein, versetzen Sie Ihren 
+Notebook-PC dann durch Auswahl von > Sleep 
+(Ruhezustand) in den Ruhezustand.
+• Wählen Sie am Anmeldungsbildschirm > Sleep 
+(Ruhezustand).
+Drücken Sie zum Einblenden von Shut Down Windows 
+(Windows herunterfahren) . Wählen Sie Sleep 
+(Ruhezustand) aus der Auswahlliste und anschließend OK.
+HINWEIS: Sie können Ihren Notebook-PC auch durch kurzes Drücken der Ein-/
+Austaste in den Ruhezustand versetzen.
+Notebook-PC E-Handbuch 73
+Kapitel 4:
+Power-On-Self-Test (POST)
+74 Notebook-PC E-Handbuch
+Der Power-On-Self-Test (POST)
+Der Power-On-Self-Test (POST) ist eine Reihe softwaregesteuerter 
+Diagnosetests, die beim Einschalten oder Neustarten Ihres Notebook-PCs 
+durchgeführt werden. Die Software, welche den POST steuert, ist als ein 
+permanenter Teil der Notebookarchitektur installiert.
+POST zum Zugriff auf BIOS und zur Problemlösung 
+verwenden
+Während des POST können Sie auf die BIOS-Einstellungen zugreifen oder 
+Problemlösungsoptionen mit Hilfe der Funktionstasten Ihres Notebook-
+PCs durchführen. Weitere Einzelheiten finden Sie in den nachfolgenden 
+Informationen.
+BIOS
+BIOS (Basic Input and Output System) speichert 
+Systemhardwareeinstellungen, die zum Systemstart des Notebook-PCs 
+benötigt werden.
+Die Standard-BIOS-Einstellungen eignen sich unter den meisten Bedingungen 
+für Ihren Notebook-PC. Ändern Sie die Standard-BIOS-Einstellungen nur unter 
+folgenden Umständen:
+• Eine Fehlermeldung erscheint während des Systemstarts am 
+Bildschirm und fordert Sie zur Ausführung des BIOS-Setups auf.
+• Sie haben eine neue Systemkomponente installiert, die weitere BIOS-
+Einstellungen oder Aktualisierungen erfordert.
+WARNUNG! Ungeeignete BIOS-Einstellungen können Instabilität und 
+Startfehler verursachen. Wir empfehlen Ihnen dringend, die BIOS-Einstellungen 
+nur unter Anleitung eines trainierten Servicemitarbeiters zu ändern.
+BIOS aufrufen
+Starten Sie Ihren Notebook-PC neu, drücken Sie dann während POST.
+Notebook-PC E-Handbuch 75
+Ihr System wiederherstellen
+Mit den Wiederherstellungsoptionen Ihres Notebook-PCs können Sie 
+das System auf seinen Originalzustand zurücksetzen oder einfach seine 
+Einstellungen zur Leistungssteigerung aktualisieren.
+WICHTIG!
+• Sichern Sie all Ihre Daten, bevor Sie eine Wiederherstellungsoption an 
+Ihrem Notebook-PC ausführen.
+• Notieren Sie wichtige angepasste Einstellungen, wie 
+Netzwerkeinstellungen, Benutzernamen und Kennwörter, zur Vermeidung 
+von Datenverlust.
+• Stellen Sie sicher, dass Ihr Notebook-PC an die Stromversorgung 
+angeschlossen ist, bevor Sie Ihr System zurücksetzen.
+Windows ermöglicht Ihnen die folgenden Wiederherstellungsoptionen:
+• Meine Dateien behalten - Diese Option ermöglicht Ihnen die 
+Aktualisierung Ihres Notebook-PCs ohne Auswirkungen auf 
+persönliche Dateien (Fotos, Musik, Videos, Dokumente).
+ Mit dieser Option können Sie Ihren Notebook-PC auf seine 
+Standardeinstellungen zurücksetzen und andere installierte Apps 
+löschen.
+• Alles entfernen - Diese Option setzt Ihren Notebook-PC auf 
+seine Werkseinstellungen zurück. Sie müssen Ihre Daten vor der 
+Durchführung dieser Option sichern.
+• Erweiterter Start - Mit dieser Option können Sie andere erweiterte 
+Wiederherstellungsoptionen auf Ihrem Notebook-PC ausführen, z. B.:
+- Verwenden Sie ein USB-Laufwerk, eine Netzwerkverbindung 
+oder die Windows-Wiederherstellungs-DVD zum Starten Ihres 
+Notebook-PCs.
+76 Notebook-PC E-Handbuch
+- Mit Troubleshoot (Problembehandlung) können Sie eine 
+dieser erweiterten Wiederherstellungsoptionen aktivieren: 
+Startup Repair (Systemstartreparatur), Uninstall Updates 
+(Updates deinstallieren), Startup Settings (Starteinstellungen), 
+UEFI Firmware Settings (UEFI-Firmwareeinstellungen), 
+Command Prompt (Eingabeaufforderung), System Restore 
+(Systemwiederherstellung) und System Image Recovery 
+(Systemabbild-Wiederherstellung).
+Eine Wiederherstellungsoption ausführen
+Beachten Sie die nachstehenden Schritte, wenn Sie auf eine der verfügbaren 
+Wiederherstellungsoptionen für Ihren Notebook-PC zugreifen und diese 
+nutzen möchten.
+1. Rufen Sie die Settings (Einstellungen) auf und wählen Sie System > 
+Recovery (Wiederherstellung).
+Notebook-PC E-Handbuch 77
+2. Wählen Sie die Wiederherstellungsoption aus, die Sie durchführen 
+möchten.
+78 Notebook-PC E-Handbuch
+Notebook-PC E-Handbuch 79
+Tipps und häufig gestellte 
+Fragen
+80 Notebook-PC E-Handbuch
+Praktische Tipps zu Ihrem Notebook-PC
+Es folgen einige praktische Tipps, mit denen Sie das Maximum aus Ihrem 
+Notebook-PC herausholen, seine Systemleistung erhalten und die Sicherheit 
+Ihrer Daten gewährleisten können:
+• Aktualisieren Sie Windows® regelmäßig, damit Ihre Applikationen stets 
+über die aktuellsten Sicherheitseinstellungen verfügen.
+• Aktualisieren Sie MyASUS, um sicherzustellen, dass Sie über die 
+neuesten Einstellungen für exklusive ASUS-Anwendungen, -Treiber 
+und -Dienstprogramme verfügen.
+• Verwenden Sie zum Schutz Ihrer Daten ein Antivirenprogramm; halten 
+Sie dieses ebenfalls auf dem neuesten Stand.
+• Erzwingen Sie die Abschaltung Ihres Notebook-PCs nur, wenn 
+unbedingt erforderlich.
+• Sichern Sie Ihre Daten regelmäßig und bewahren Sie Ihre 
+Datensicherung auf einem externen Speichergerät auf.
+• Falls Sie Ihren Notebook-PC längere Zeit nicht nutzen, stellen Sie sicher, 
+dass Sie den Akku auf einen Stand von 50% aufladen, dann Ihren 
+Notebook-PC ausschalten und das Netzteil trennen.
+• Wenn Sie fortwährend das Netzteil mit Ihrem Notebook-PC verwenden, 
+legen Sie die Battery Health Charging-Einstellung in MyASUS auf den 
+Ausgeglichenen Modus fest.
+Notebook-PC E-Handbuch 81
+• Trennen Sie alle externen Geräte; stellen Sie vor dem Zurücksetzen 
+Ihres Notebook-PCs sicher, dass Sie folgende Dinge haben:
+- Produktschlüssel für Ihr Betriebssystem und andere installierte 
+Applikationen
+- Sicherungsdaten
+- Anmeldekennung und Kennwort
+- Informationen zur Internetverbindung
+• Besuchen Sie unsere Support-Webseite zur Fehlerbehebung und 
+finden Sie einige der am häufigsten gestellten Fragen unter 
+https://www.asus.com/support.
+82 Notebook-PC E-Handbuch
+Häufig gestellte Fragen zur Hardware
+1. Ein schwarzer oder farbiger Punkt erscheint am Bildschirm, wenn 
+ich den Notebook-PC einschalte. Was soll ich tun?
+Auch wenn diese Punkte auf dem Bildschirm erscheinen, wirken sie 
+sich nicht auf Ihr System aus. Falls dies gehäuft auftritt und sich auf die 
+Systemleistung auswirkt, wenden Sie sich an ein autorisiertes ASUS-
+Kundencenter.
+2. Mein Anzeigepanel weist eine ungleichmäßige Farbe und 
+Helligkeit auf. Wie kann ich das beheben?
+Farbe und Helligkeit Ihres Anzeigepanels können durch den Winkel 
+und die aktuelle Position Ihres Notebook-PCs beeinträchtigt sein. 
+Zudem können Helligkeit und Farbton Ihres Notebook-PCs je nach 
+Modell variieren. Sie können das Aussehen Ihres Anzeigepanels 
+über die Funktionstasten bzw. die Anzeigeeinstellungen in Ihrem 
+Betriebssystem anpassen.
+3. Wie kann ich die Akkulaufzeit meines Notebook-PCs maximieren?
+Versuchen Sie es mit folgenden Empfehlungen:
+• Passen Sie die Anzeigehelligkeit über die Funktionstasten an.
+• Falls Sie keine WLAN-Verbindung nutzen, schalten Sie Ihr System 
+in den Airplane mode (Flugzeugmodus).
+• Trennen Sie nicht benötigte USB-Geräte.
+• Schließen Sie nicht verwendete Applikationen, insbesondere 
+solche, die viel Systemspeicher verbrauchen.
+Notebook-PC E-Handbuch 83
+4. Meine Akku-LED-Anzeige leuchtet nicht. Woran liegt das?
+• Prüfen Sie, ob Netzteil und Akku richtig angebracht sind. Sie 
+können Netzteil oder Akkupack auch trennen, eine Minute 
+warten und dann wieder an eine Steckdose und den Notebook-
+PC anschließen.
+• Falls das Problem weiterhin besteht, wenden Sie sich bitte an Ihr 
+örtliches ASUS-Kundencenter.
+5. Warum funktioniert mein Touchpad nicht?
+Drücken Sie , um Ihr Touchpad zu aktivieren.
+6. Wenn ich Audio- und Videodateien wiedergebe, höre ich keinen 
+Ton über die Lautsprecher meines Notebook-PCs?
+Versuchen Sie es mit folgenden Empfehlungen:
+• Drücken Sie zum Erhöhen der Lautsprecherlautstärke.
+• Prüfen Sie, ob Ihre Lautsprecher stumm geschaltet wurden.
+• Prüfen Sie, ob ein Kopfhörer an Ihren Notebook-PC 
+angeschlossen ist; entfernen Sie ihn.
+84 Notebook-PC E-Handbuch
+7. Was soll ich tun, falls ich das Netzteil meines Notebook-PCs 
+verliere oder der Akku versagt?
+Wenden Sie sich an Ihr örtliches ASUS-Kundencenter.
+8. Mein Notebook-PC reagiert nicht richtig auf Tastenanschläge, da 
+sich der Cursor kontinuierlich bewegt. Was soll ich tun?
+Stellen Sie sicher, dass nichts versehentlich Ihr Touchpad berührt oder 
+drückt, während Sie die Tastatur nutzen. Sie können Ihr Touchpad 
+durch Betätigung von auch deaktivieren.
+Notebook-PC E-Handbuch 85
+Häufig gestellte Fragen zur Software
+1. Wenn ich meinen Notebook-PC einschalte, leuchtet die 
+Betriebsanzeige, aber nichts passiert. Wie kann ich dieses Problem 
+beheben?
+Versuchen Sie es mit folgenden Empfehlungen:
+• Erzwingen Sie eine Abschaltung Ihres Notebook-PCs, indem 
+Sie die Ein-/Austaste mindestens zehn (10) Sekunden gedrückt 
+halten. Prüfen Sie, ob Netzteil und Akkupack richtig eingesteckt 
+sind; schalten Sie Ihren Notebook-PC dann ein.
+• Falls das Problem weiterhin besteht, wenden Sie sich bitte an Ihr 
+örtliches ASUS-Kundencenter.
+2. Was soll ich tun, wenn mein Bildschirm die Meldung „Remove 
+disks or other media. Press any key to restart. (Datenträger und 
+andere Medien entfernen. Mit beliebiger Taste neu starten.)“ 
+anzeigt?
+Versuchen Sie es mit folgenden Empfehlungen:
+• Entfernen Sie alle angeschlossenen USB-Geräte, starten Sie Ihren 
+Notebook-PC dann neu.
+• Entfernen Sie jegliche optischen Medien aus dem optischen 
+Laufwerk, führen Sie dann einen Neustart durch.
+• Falls das Problem weiterhin besteht, liegt möglicherweise ein 
+Speicherproblem bei Ihrem Notebook-PC vor. Wenden Sie sich 
+an Ihr örtliches ASUS-Kundencenter.
+86 Notebook-PC E-Handbuch
+3. Mein Notebook-PC fährt langsamer als gewohnt hoch und das 
+Betriebssystem reagiert verzögert. Wie kann ich das beheben?
+Löschen Sie Applikationen, die Sie kürzlich installiert haben bzw. die 
+nicht im Betriebssystempaket enthalten waren; starten Sie Ihr System 
+dann neu.
+4. Mein Notebook-PC fährt nicht hoch. Wie kann ich das beheben?
+Versuchen Sie es mit folgenden Empfehlungen:
+• Entfernen Sie alle an Ihrem Notebook-PC angeschlossenen 
+Geräte, starten Sie Ihr System dann neu.
+• Falls das Problem weiterhin besteht, wenden Sie sich bitte an Ihr 
+örtliches ASUS-Kundencenter.
+5. Warum kann ich meinen Notebook-PC nicht aus dem Ruhezustand 
+aufwecken?
+• Sie müssen zum Wiederherstellen Ihres letzten Betriebszustandes 
+die Ein-/Austaste drücken.
+• Möglicherweise hat Ihr System die Akkuleistung komplett 
+aufgebraucht. Schließen Sie das Netzteil an Ihren Notebook-PC 
+und eine Steckdose an; drücken Sie dann die Ein-/Austaste.
+Falls Sie weitere Probleme haben, besuchen Sie bitte 
+https://www.asus.com/de/support/FAQ/1045091/ zur Fehlerbehebung.
+Notebook-PC E-Handbuch 87
+Anhang
+88 Notebook-PC E-Handbuch
+Aussagen zur FCC-Erklärung
+Dieses Gerät entspricht Teil 15 der FCC-Vorschriften. Im Betrieb müssen die folgenden 
+beiden Bedingungen erfüllt werden: 
+• Dieses Gerät darf keine schädliche Störstrahlung abgeben, und .
+• Dieses Gerät muss für empfangene Störstrahlung unempfindlich sein, auch für 
+Störstrahlung, die unerwünschte Funktionen hervorrufen kann.
+Dieses Gerät wurde geprüft und entspricht den Grenzwerten für digitale Geräte der 
+Klasse B gemäß Teil 15 der FCC-Vorschriften. Diese Grenzwerte wurden für ausreichenden 
+Schutz gegen Radiofrequenzenergie in Wohngegenden aufgestellt. Dieses Gerät 
+erzeugt und verwendet Radiofrequenzenergie und kann diese ausstrahlen. Wenn es 
+nicht entsprechend der Bedienungsanleitung installiert und verwendet wird, kann es 
+Störungen von Funkübertragungen verursachen. Es kann nicht für alle Installationen 
+gewährleistet werden, dass keine Störungen auftreten. Falls dieses Gerät Störungen des 
+Rundfunk- oder Fernsehempfangs verursacht, was durch Ein- und Ausschalten des Geräts 
+ermittelt werden kann, sollten Sie folgende Maßnahmen ergreifen, um die Störungen zu 
+beheben:
+• Ändern Sie die Ausrichtung oder den Standort der Empfangsantenne.
+• Vergrößern Sie den Abstand zwischen dem Gerät und dem Empfänger.
+• Schließen Sie Gerät und Empfänger an unterschiedliche Netzspannungskreise 
+an.
+• Wenden Sie sich an den Fachhändler oder einen erfahrenen Radio-/ 
+Fernsehtechniker.
+WARNUNG! Um Übereinstimmung mit den FCC-Vorschriften zu den Emissionsgrenzwerten 
+zu gewährleisten und Störungen des Rundfunk- oder Fernsehempfangs zu verhindern, 
+müssen abgeschirmte Netzkabel verwendet werden. Die Verwendung des beigefügten 
+Netzkabels ist unerlässlich. Verwenden Sie nur abgeschirmte Kabel, um E/A-Geräte 
+anzuschließen. Änderungen oder Modifizierungen dieses Geräts, die nicht ausdrücklich von 
+der für Übereinstimmung verantwortlichen Partei genehmigt sind, können das Recht des 
+Benutzers, dieses Gerät zu betreiben, annullieren.
+(Nachdruck aus dem Code of Federal Regulations #47, Teil 15.193, 1993. Washington 
+DC: Office of the Federal Register, National Archives and Records Administration, U.S. 
+Government Printing Office.)
+Notebook-PC E-Handbuch 89
+FCC-Informationen zur Hochfrequenz-Belastung
+Dieses Gerät erfüllt die Anforderungen zur Funkwellenausstrahlung. Es wurde entwickelt 
+und hergestellt, um die Grenzwerte der Funkbelastung nicht zu überschreiten, die 
+durch die Federal Communications Commission der US-Regierung festgesetzt wurden. 
+Die Belastungsstandards basieren auf einer Maßeinheit, die Specific Absorption Rate, 
+oder SAR, genannt wird. Der von der FCC festgelegte SAR-Grenzwert beträgt 1,6 W/kg. 
+Tests für SAR wurden unter von der FCC akzeptierten Standard-Betriebseinstellungen 
+durchgeführt mit EUT-Übertragungen bei bestimmten Leistungspegeln auf 
+unterschiedlichen Kanälen. Die FCC hat für dieses Gerät die Geräteautorisation mit allen 
+übermittelten und in Übereinstimmung mit den Richtlinien ausgewerteten SAR-Pegeln 
+genehmigt. SAR-Informationen über dieses Gerät liegen der FCC vor und können unter 
+www.fcc.gov/oet/ea/fccid eingesehen werden.
+90 Notebook-PC E-Handbuch
+UL-Sicherheitshinweise
+Erforderlich für UL 1459 über Telekommunikations (Telefon)-Geräte, die für 
+eine elektrische Verbindung mit einem Telekommunikationsnetzwerk, dessen 
+Betriebsspannung zur Erde 200V Spitze, 300V Spitze-zu-Spitze und 105Vrms nicht 
+überschreitet, und für eine Installation und Verwendung entsprechend dem National 
+Electrical Code (NFPA 70) ausgelegt sind.
+Grundlegende Vorsichtsmaßnahmen, einschließlich der nachstehenden, müssen bei 
+Verwenden des Modems immer getroffen werden, um die Brandgefahr, elektrische 
+Schläge und Verletzungen zu vermeiden:
+• Verwenden Sie das Gerät nicht in unmittelbarer Nähe von Wasser, wie z.B. in der 
+Nähe von Badewannen, Waschbecken, Spülbecken oder Waschwannen, in einem 
+feuchten Keller oder in der Nähe eines Schwimmbeckens.
+• Verwenden Sie das Gerät nicht während eines Gewitters. Es besteht die Gefahr 
+eines elektrischen Schlags durch Blitz.
+• Verwenden Sie das Gerät nicht in der Nähe eines Gaslecks.
+Erforderlich für UL 1642 über primäre (nicht wiederaufladbare) und sekundäre 
+(wiederaufladbare) Lithium-Batterien, die als Stromquelle in Produkten verwendet 
+werden. Diese Batterien beinhalten Metall-Lithium, Lithiumlegierung oder Lithiumionen 
+und bestehen eventuell aus einer einzigen elektrochemischen Zelle oder zwei oder 
+mehreren seriell, parallel oder auf beide Weisen verbundene Zellen, die chemische 
+Energie durch eine nicht umkehrbare oder umkehrbare chemische Reaktion in 
+elektrische Energie umwandeln.
+• Werfen Sie den Akkupack nicht ins Feuer. Er könnte explodieren. Entsorgen Sie 
+den Akku entsprechend dem Gesetz vor Ort, um Verletzungen durch Brand oder 
+Explosion zu vermeiden.
+• Verwenden Sie nicht die Netzteile oder Akkus von anderen Geräten, um 
+Verletzungen durch Brand oder Explosion zu vermeiden. Verwenden Sie nur die 
+von UL genehmigten Netzteile oder Akkus, die vom Hersteller oder autorisierten 
+Händlern geliefert werden.
+Notebook-PC E-Handbuch 91
+Stromsicherheitsanforderungen
+Produkte mit einem elektrischen Strom von bis zu 6A und einem Gewicht über 3kg 
+müssen geprüfte Netzkabel benutzen. Diese müssen mindestens folgende Werte 
+aufweisen: H05VV-F, 3G, 0,75mm2 oder H05VV-F, 2G, 0,75 mm2 .
+TV-Tuner-Hinweis
+Hinweis für Kabel-TV-Installateure—Das Kabel-TV-System muss entsprechend den 
+örtlichen Bestimmungen geerdet sein – die Installation sollte die Verbindung der 
+Abschirmung mit dem Schutzleiter des Gebäudes am Eingang vorsehen.
+Macrovision Corporation-Produktanmerkung
+Dieses Produkt verfügt über Kopierschutztechnologie, die durch methodische 
+Anforderungen bestimmter U.S.A. .-Patente und anderer geistiger Eigentumsrechte 
+der Macrovision Corporation und anderer Parteien geschützt ist. Die Verwendung 
+dieser Kopierschutztechnologie muss von Macrovision Corporation genehmigt werden 
+und ist, wenn nicht anderweitig von der Macrovision Corporation genehmigt, nur für 
+private oder eingeschränkte Vorführungszwecke vorgesehen. Reverse-Engineering oder 
+Demontage ist verboten.
+Vermeidung von Hörverlust
+Setzen Sie sich zur Vermeidung von Hörschäden nicht über einen längeren 
+Zeitraum hohen Lautstärken aus.
+Beschichtungshinweis
+WICHTIG! Um die elektrische Isolation und die elektrische Sicherheit zu gewährleisten, ist das 
+Gehäuse mit einer Beschichtung zur Isolation versehen. Diese Beschichtung ist an den 
+E/A-Anschlüssen des Gerätes nicht vorhanden.
+92 Notebook-PC E-Handbuch
+Nordic-Vorsichtsmaßnahmen (für Lithium-Ionen-
+Akkus)
+CAUTION! Danger of explosion if battery is incorrectly replaced. Replace only with the 
+same or equivalent type recommended by the manufacturer. Dispose of used batteries 
+according to the manufacturer’s instructions. (Englisch)
+ATTENZIONE! Rischio di esplosione della batteria se sostituita in modo errato. Sostituire 
+la batteria con un una di tipo uguale o equivalente consigliata dalla fabbrica. Non 
+disperdere le batterie nell’ambiente. (Italienisch)
+VORSICHT! Explosionsgefahr bei unsachgemäßem Austausch der Batterie. Ersatz nur 
+durch denselben oder einen vom Hersteller empfohlenen ähnlichen Typ. Entsorgung 
+gebrauchter Batterien nach Angaben des Herstellers. (Deutsch)
+ADVARSELI! Lithiumbatteri - Eksplosionsfare ved fejlagtig håndtering. Udskiftning 
+må kun ske med batteri af samme fabrikat og type. Levér det brugte batteri tilbage til 
+leverandøren. (Dänisch)
+VARNING! Explosionsfara vid felaktigt batteribyte. Använd samma batterityp eller en 
+ekvivalent typ som rekommenderas av apparattillverkaren. Kassera använt batteri enligt 
+fabrikantens instruktion. (Schwedisch)
+VAROITUS! Paristo voi räjähtää, jos se on virheellisesti asennettu. Vaihda paristo 
+ainoastaan laitevalmistajan sousittelemaan tyyppiin. Hävitä käytetty paristo valmistagan 
+ohjeiden mukaisesti. (Finnisch)
+ATTENTION! Danger d’explosion si la batterie n’est pas correctement remplacée. 
+Remplacer uniquement avec une batterie de type semblable ou équivalent, 
+recommandée par le fabricant. Jeter les batteries usagées conformément aux 
+instructions du fabricant. (Französisch)
+ADVARSEL! Eksplosjonsfare ved feilaktig skifte av batteri. Benytt samme batteritype eller 
+en tilsvarende type anbefalt av apparatfabrikanten. Brukte batterier kasseres i henhold til 
+fabrikantens instruksjoner. (Norwegisch)
+(Japanisch)
+ВНИМАНИЕ! При замене аккумулятора на аккумулятор иного типа возможно 
+его возгорание. Утилизируйте аккумулятор в соответствии с инструкциями 
+производителя. (Russisch)
+Notebook-PC E-Handbuch 93
+EU REACH und Artikel 33
+Die rechtlichen Rahmenbedingungen für REACH (Registration, Evaluation, Authorisation, 
+and Restriction of Chemicals) erfüllend, veröffentlichen wir die chemischen Substanzen 
+in unseren Produkten auf unserer ASUS REACH-Webseite unter 
+http://csr.asus.com/english/REACH.htm.
+Erklärung zur Erfüllung der 
+Umweltschutzbestimmungen für das Produkt
+ASUS folgt dem Green-Design-Konzept, um unsere Produkte zu entwickeln und zu 
+produzieren und versichert, dass jede Stufe des ASUS-Produktkreislaufs die weltweiten 
+Umweltschutzbestimmungen erfüllt. Zusätzlich veröffentlicht ASUS die relevanten und 
+auf den Bestimmungsanforderungen basierenden Informationen.
+Bitte beziehen Sie sich auf http://csr.asus.com/Compliance.htm für rechtliche Hinweise 
+basierend auf den Bestimmungsanforderungen, die ASUS erfüllt.
+EU RoHS
+Dieses Produkt entspricht der EU RoHS-Richtlinie. Weitere Einzelheiten finden Sie unter 
+http://csr.asus.com/english/article.aspx?id=35.
+94 Notebook-PC E-Handbuch
+ASUS Recycling/Rücknahmeservices
+Das ASUS-Wiederverwertungs- und Rücknahmeprogramm basiert auf den 
+Bestrebungen, die höchsten Standards zum Schutz der Umwelt anzuwenden. Wir 
+glauben, dass die Bereitstellung einer Lösung für unsere Kunden die Möglichkeit schafft, 
+unsere Produkte, Batterien, andere Komponenten und ebenfalls das Verpackungsmaterial 
+verantwortungsbewußt der Wiederverwertung zuzuführen.
+Besuchen Sie bitte die Webseite http://csr.asus.com/english/Takeback.htm für Details zur 
+Wiederverwertung in verschiedenen Regionen.
+Ökodesign-Richtlinie
+Die Europäische Union veröffentlichte einen Ordnungsrahmen für die Festlegung 
+von Ökodesign-Anforderungen für energieverbrauchsrelevante Produkte (2009/125/
+EC). Spezielle Maßnahmen dienen der Umsetzung von Zielen zur Verbesserung der 
+Umweltschutzbilanz bestimmter Produkte oder mehrerer Produktarten. ASUS stellt 
+Produktinformationen auf der CSR-Webseite zur Verfügung. Weitere Informationen sind 
+zu finden unter https://csr.asus.com/english/article.aspx?id=1555.
+Notebook-PC E-Handbuch 95
+Für ENERGY STAR qualifiziertes Produkt
+ENERGY STAR ist ein gemeinsames Programm der US-
+Umweltschutzbehörde und der US-Energiebehörde, welches helfen soll, 
+Geld zu sparen und die Umwelt durch energieeffiziente Produkte und 
+Technologien zu schützen.
+Alle ASUS-Produkte mit dem ENERGY STAR-Logo erfüllen den ENERGY 
+STAR-Standard und die Energieverwaltungsfunktion ist standardmäßig aktiviert. Der 
+Monitor wird nach einer inaktiven Zeit von 10 Minuten automatisch in den Ruhezustand 
+versetzt; der Computer wird nach einer inaktiven Zeit von 30 Minuten automatisch in 
+den Ruhezustand versetzt. Um Ihren Computer wieder aufzuwecken, klicken Sie mit der 
+Maus oder drücken Sie eine beliebige Taste auf der Tastatur bzw. die Ein-/Austaste.
+Besuchen Sie bitte die Webseite http://www.energystar.gov/powermanagement für 
+ausgiebige Informationen über Energiemanagement und seinen Nutzen für die Umwelt. 
+Zusätzlich finden Sie auf der Webseite http://www.energystar.gov Informationen über 
+das gemeinsame ENERGY STAR-Programm.
+HINWEIS: ENERGY STAR wird von auf Freedos- und Linux-basierenden Produkten nicht 
+unterstützt.
+Für EPEAT gelistete Produkte
+Veröffentlichungen zu wichtigen Umweltinformationen für unter ASUS EPEAT (Electronic 
+Product Environmental Assessment Tool) registrierte Produkte finden Sie unter 
+https://csr.asus.com/english/article.aspx?id=41. Weitere Informationen zum EPEAT-
+Programm und Orientierung beim Kauf finden Sie unter www.epeat.net.
+96 Notebook-PC E-Handbuch
+Lizenz für BIOS-Schriftarten
+Copyright © 2023 The Android Open Source Project
+Unter der Apache Lizenz, Version 2.0 (die "Lizenz") lizenziert; Sie dürfen diese Datei nur 
+in Übereinstimmung mit der Lizenz verwenden. Eine Kopie der Lizenz können Sie unter 
+http://www.apache.org/licenses/LICENSE-2.0 beziehen.
+Sofern nicht durch geltendes Recht gefordert oder schriftlich vereinbart, gilt Software, die 
+unter der Lizenz verteilt wird, auf "AS IS" BASIS, OHNE GARANTIE ODER BEDINGUNGEN 
+irgendeiner Art, weder ausdrücklich noch konkludent.
+Schauen Sie in der Lizenz für die spezifischen Sprachrechte und Einschränkungen im 
+Rahmen der Lizenz.
+Notebook-PC E-Handbuch 97
+Vereinfachte EU-Konformitätserklärung
+ASUSTeK Computer Inc. erklärt hiermit, dass dieses Gerät mit den wesentlichen 
+Anforderungen und anderen relevanten Bestimmungen der Richtlinie 2014/53/EU 
+übereinstimmt. Der gesamte Text der EU-Konformitätserklärung ist verfügbar unter: 
+https://www.asus.com/support/.
+Der WLAN-Betrieb im Band von 5150-5350 MHz ist für die in der unteren Tabelle 
+aufgeführten Länder auf den Innenbereich beschränkt:
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK (NI)
+a. Low Power Indoor (LPI) Wi-Fi 6E-Geräte: Das Gerät ist auf den Innenbereich 
+beschränkt, wenn es im Frequenzbereich von 5945 MHz bis 6425 MHz in Belgien 
+(BE), Bulgarien (BG), Zypern (CY), der Tschechischen Republik (CZ), Estland 
+(EE), Frankreich (FR), Island (IS), Irland (IE), Litauen (LT), Deutschland (DE), den 
+Niederlanden (NL), Spanien (ES) betrieben wird.
+b. Very Low Power (VLP) Wi-Fi 6E-Geräte (tragbare Geräte): Das Gerät darf nicht 
+auf unbemannten Luftfahrzeugsystemen (UAS) verwendet werden, wenn es im 
+Frequenzbereich von 5945 MHz bis 6425 MHz in Belgien (BE), Bulgarien (BG), 
+Zypern (CY), der Tschechischen Republik (CZ), Estland (EE), Frankreich (FR), Island 
+(IS), Irland (IE), Litauen (LT), Deutschland (DE), den Niederlanden (NL), Spanien (ES) 
+betrieben wird.
+98 Notebook-PC E-Handbuch
+Hinweis zum WLAN
+WICHTIG! Die Wi-Fi 6E-Netzwerkkarte ist bei bestimmten Modellen verfügbar. Die 
+Verbindungsfähigkeit des Wi-Fi 6E-Bandes kann je nach Vorschriften und Zertifizierung eines 
+jeden Landes/Region variieren.
+ Über dieses Handbuch
+ Anmerkungen zu diesem Handbuch
+ Symbole
+ Typographie
+ Sicherheitshinweise
+ Verwendung Ihres Notebook-PCs
+ Pflege Ihres Notebook-PCs
+ Richtige Entsorgung
+ Akku-Sicherheitsinformationen
+ Kapitel 1: Hardware-Einrichtung
+ Kennenlernen Ihres Notebook-PCs
+ Frontseite
+ Unterseite
+ Rechte Seite
+ Linke Seite
+ Kapitel 2: Ihr Notebook-PC im Einsatz
+ Erste Schritte
+ Laden Sie Ihren Notebook-PC auf
+ Heben Sie das Display zum Öffnen an
+ Drücken Sie die Ein-/Austaste
+ Touchpad verwenden
+ Tastatur verwenden
+ Schnelltasten
+ Funktionstasten
+ Windows-Tasten
+ Kapitel 3: Mit Windows arbeiten
+ Erste Inbetriebnahme
+ Startmenü
+ Windows® Apps
+ Mit Windows®-Apps arbeiten
+ Windows®-Apps anpassen
+ Task view (Aufgabenansicht)
+ Widgets
+ Einrasten-Funktion
+ Einrasten-Hotspots
+ Action Center (Info-Center)
+ MyASUS Splendid
+ Einstellen des OLED-Displays
+ Einstellen des Dunkelmodus
+ Ausschalten des Displays, wenn es nicht verwendet wird
+ Anpassen der Bildschirmhelligkeit
+ Automatisches Ausblenden der Taskleiste
+ Einstellen des Dunkelmodus in Microsoft Office
+ Andere Tastaturkürzel
+ Mit drahtlosen Netzwerken verbinden
+ WLAN
+ Bluetooth
+ Flugzeugmodus
+ Notebook-PC ausschalten
+ Ihren Notebook-PC in den Ruhezustand versetzen
+ Kapitel 4: Power-On-Self-Test (POST)
+ Der Power-On-Self-Test (POST)
+ POST zum Zugriff auf BIOS und zur Problemlösung verwenden
+ BIOS
+ BIOS aufrufen
+ Ihr System wiederherstellen
+ Eine Wiederherstellungsoption ausführen
+ Tipps und häufig gestellte Fragen
+ Praktische Tipps zu Ihrem Notebook-PC
+ Häufig gestellte Fragen zur Hardware
+ Häufig gestellte Fragen zur Software
+ Anhang
+ Aussagen zur FCC-Erklärung
+ FCC-Informationen zur Hochfrequenz-Belastung
+ UL-Sicherheitshinweise
+ Stromsicherheitsanforderungen
+ TV-Tuner-Hinweis
+ Macrovision Corporation-Produktanmerkung
+ Vermeidung von Hörverlust
+ Beschichtungshinweis
+ Nordic-Vorsichtsmaßnahmen (für Lithium-Ionen-Akkus)
+ Erklärung zur Erfüllung der Umweltschutzbestimmungen für das Produkt
+ EU REACH und Artikel 33
+ EU RoHS
+ ASUS Recycling/Rücknahmeservices
+ Ökodesign-Richtlinie
+ Für ENERGY STAR qualifiziertes Produkt
+ Für EPEAT gelistete Produkte
+ Lizenz für BIOS-Schriftarten
+ Vereinfachte EU-Konformitätserklärung
+ Hinweis zum WLAN

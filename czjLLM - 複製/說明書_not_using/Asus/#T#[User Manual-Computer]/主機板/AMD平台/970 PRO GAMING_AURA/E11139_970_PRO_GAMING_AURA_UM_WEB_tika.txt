@@ -1,0 +1,3367 @@
+
+Mo
+th
+er
+bo
+ar
+d
+970 PRO GAMING/AURA
+ii
+E11139
+First Edition
+December 2015
+Copyright © 2015 ASUSTeK COMPUTER INC. All Rights Reserved.
+No part of this manual, including the products and software described in it, may be reproduced, 
+transmitted, transcribed, stored in a retrieval system, or translated into any language in any form or by any 
+means, except documentation kept by the purchaser for backup purposes, without the express written 
+permission of ASUSTeK COMPUTER INC. (“ASUS”).
+Product warranty or service will not be extended if: (1) the product is repaired, modified or altered, unless 
+such repair, modification of alteration is authorized in writing by ASUS; or (2) the serial number of the 
+product is defaced or missing.
+ASUS PROVIDES THIS MANUAL “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS 
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OR CONDITIONS OF 
+MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL ASUS, ITS 
+DIRECTORS, OFFICERS, EMPLOYEES OR AGENTS BE LIABLE FOR ANY INDIRECT, SPECIAL, 
+INCIDENTAL, OR CONSEQUENTIAL DAMAGES (INCLUDING DAMAGES FOR LOSS OF PROFITS, 
+LOSS OF BUSINESS, LOSS OF USE OR DATA, INTERRUPTION OF BUSINESS AND THE LIKE), 
+EVEN IF ASUS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES ARISING FROM ANY 
+DEFECT OR ERROR IN THIS MANUAL OR PRODUCT.
+SPECIFICATIONS AND INFORMATION CONTAINED IN THIS MANUAL ARE FURNISHED FOR 
+INFORMATIONAL USE ONLY, AND ARE SUBJECT TO CHANGE AT ANY TIME WITHOUT NOTICE, 
+AND SHOULD NOT BE CONSTRUED AS A COMMITMENT BY ASUS. ASUS ASSUMES NO 
+RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR INACCURACIES THAT MAY APPEAR IN THIS 
+MANUAL, INCLUDING THE PRODUCTS AND SOFTWARE DESCRIBED IN IT.
+Products and corporate names appearing in this manual may or may not be registered trademarks or 
+copyrights of their respective companies, and are used only for identification or explanation and to the 
+owners’ benefit, without intent to infringe.
+Offer to Provide Source Code of Certain Software
+This product contains copyrighted software that is licensed under the General Public License (“GPL”), 
+under the Lesser General Public License Version (“LGPL”) and/or other Free Open Source Software 
+Licenses. Such software in this product is distributed without any warranty to the extent permitted by the 
+applicable law. Copies of these licenses are included in this product.
+Where the applicable license entitles you to the source code of such software and/or other additional data, 
+you may obtain it for a period of three years after our last shipment of the product, either
+(1) for free by downloading it from http://www.asus.com/support/download
+or
+(2) for the cost of reproduction and shipment, which is dependent on the preferred carrier and the location 
+where you want to have it shipped to, by sending a request to:
+ASUSTeK Computer Inc.
+Legal Compliance Dept.
+15 Li Te Rd.,
+Beitou, Taipei 112
+Taiwan
+In your request please provide the name, model number and version, as stated in the About Box of the 
+product for which you wish to obtain the corresponding source code and your contact details so that we 
+can coordinate the terms and cost of shipment with you.
+The source code will be distributed WITHOUT ANY WARRANTY and licensed under the same license as 
+the corresponding binary/object code.
+This offer is valid to anyone in receipt of this information.
+ASUSTeK is eager to duly provide complete source code as required under various Free Open Source 
+Software licenses. If however you encounter any problems in obtaining the full corresponding source 
+code we would be much obliged if you give us a notification to the email address gpl@asus.com, stating 
+the product and describing the problem (please DO NOT send large attachments such as source code 
+archives, etc. to this email address).
+iii
+Contents
+Safety information ............................................................................................................. iv
+About this guide ................................................................................................................ iv
+Package contents ..............................................................................................................vi
+970 PRO GAMING/AURA specifications summary ........................................................vi
+Chapter 1: Product Introduction
+1.1 Before you proceed ..........................................................................................1-1
+1.2 Motherboard overview ......................................................................................1-1
+1.3 Central Processing Unit (CPU) ........................................................................1-5
+1.4 System memory ................................................................................................1-9
+1.5 Expansion slots ...............................................................................................1-12
+1.6 Jumpers ...........................................................................................................1-15
+1.7 Connectors ......................................................................................................1-17
+1.8 Onboard LEDs .................................................................................................1-26
+Chapter 2: BIOS Information
+2.1 Managing and updating your BIOS .................................................................2-1
+2.2 BIOS setup program .........................................................................................2-6
+2.3 My Favorites ....................................................................................................2-10
+2.4 Main menu .......................................................................................................2-11
+2.5 Ai Tweaker menu .............................................................................................2-13
+2.6 Advanced menu ..............................................................................................2-18
+2.7 Monitor menu ..................................................................................................2-24
+2.8 Boot menu .......................................................................................................2-28
+2.9 Tool menu ........................................................................................................2-33
+2.10 Exit menu .........................................................................................................2-34
+Appendices
+Notices ........................................................................................................................... A-1
+ASUS contact information ............................................................................................. A-5
+iv
+Safety information
+Electrical safety
+• To prevent electrical shock hazard, disconnect the power cable from the electrical outlet 
+before relocating the system.
+• When adding or removing devices to or from the system, ensure that the power cables 
+for the devices are unplugged before the signal cables are connected. If possible, 
+disconnect all power cables from the existing system before you add a device.
+• Before connecting or removing signal cables from the motherboard, ensure that all 
+power cables are unplugged.
+• Seek professional assistance before using an adapter or extension cord. These devices 
+could interrupt the grounding circuit.
+• Ensure that your power supply is set to the correct voltage in your area. If you are not 
+sure about the voltage of the electrical outlet you are using, contact your local power 
+company.
+• If the power supply is broken, do not try to fix it by yourself. Contact a qualified service 
+technician or your retailer.
+Operation safety
+• Before installing the motherboard and adding devices on it, carefully read all the manuals 
+that came with the package.
+• Before using the product, ensure all cables are correctly connected and the power 
+cables are not damaged. If you detect any damage, contact your dealer immediately.
+• To avoid short circuits, keep paper clips, screws, and staples away from connectors, 
+slots, sockets and circuitry.
+• Avoid dust, humidity, and temperature extremes. Do not place the product in any area 
+where it may become wet.
+• Place the product on a stable surface.
+• If you encounter technical problems with the product, contact a qualified service 
+technician or your retailer.
+About this guide
+This user guide contains the information you need when installing and configuring the 
+motherboard.
+How this guide is organized
+This guide contains the following parts:
+• Chapter 1: Product Introduction
+This chapter describes the features of the motherboard and the new technology it 
+supports.
+• Chapter 2: BIOS Information
+This chapter tells how to change system settings through the BIOS Setup menus. 
+Detailed descriptions of the BIOS parameters are also provided.
+v
+• Chapter 3: Software Support
+This chapter describes the contents of the support DVD that comes with the 
+motherboard package and the software.
+Where to find more information
+Refer to the following sources for additional information and for product and software 
+updates.
+1. ASUS websites
+The ASUS website provides updated information on ASUS hardware and software 
+products. Refer to the ASUS contact information.
+2. Optional documentation
+Your product package may include optional documentation, such as warranty flyers, 
+that may have been added by your dealer. These documents are not part of the 
+standard package.
+Conventions used in this guide
+To ensure that you perform certain tasks properly, take note of the following symbols used 
+throughout this manual.
+DANGER/WARNING: Information to prevent injury to yourself when trying to 
+complete a task.
+CAUTION: Information to prevent damage to the components when trying to 
+complete a task.
+IMPORTANT: Instructions that you MUST follow to complete a task.
+NOTE: Tips and additional information to help you complete a task.
+Typography
+Bold text Indicates a menu or an item to select.
+Italics Used to emphasize a word or a phrase.
+<Key> Keys enclosed in the less-than and greater-than sign 
+means that you must press the enclosed key.
+Example: <Enter> means that you must press the Enter or 
+Return key.
+<Key1> + <Key2> + <Key3> If you must press two or more keys simultaneously, the key 
+names are linked with a plus sign (+). 
+vi
+(continued on the next page)
+970 PRO GAMING/AURA specifications summary
+CPU
+AMD AM3+ FX™/Phenom™ II/Athlon™ II/Sempron™ 100 Series 
+Processors 
+Supports AM3+ 32 nm CPU
+Supports CPU up to 125 W
+AMD Cool ‘n’ Quiet™ Technology
+* Refer to www.asus.com for CPU support list.
+Chipset AMD® 970+SB950 Chipset
+Memory
+4 x DIMM, max. 32GB DDR3 2133(OC)*/1866/1600/1333/1066 MHz, non-
+ECC, un-buffered memory
+Dual-channel memory architecture
+* Refer to www.asus.com for the Memory QVL (Qualified Vendors Lists).
+* Due to OS limitation, when installing total memory of 4GB capacity or more, 
+Windows® 32-bit operation system may only recognize less than 3GB. Install 
+a 64-bit Windows® OS when you want to install 4GB or more memory on the 
+motherboard.
+* Due to CPU spec., AMD 100 series CPUs support up to DDR3 1066MHz. With 
+ASUS design, this motherboard can support up to DDR3 1333MHz.
+System Bus Up to 4.8 GT/s HyperTransport™ 3
+Multi-GPU support
+Supports NVIDIA® Quad-GPU SLI™ Technology 
+Supports AMD® Quad-GPU CrossFireX™ Technology
+Expansion slots
+2 x PCI Express 2.0 x16 slots (supports x16, x8/x8)
+2 x PCI Express 2.0 x1 slot
+2 x PCI slots 
+Package contents
+Check your motherboard package for the following items.
+Motherboard ASUS Gaming Motherboard - 970 PRO GAMING/AURA
+Cables
+2 x Serial ATA 6.0 Gb/s cables
+1 x SLI™ bridge
+Accessories
+1 x I/O Shield
+1 x cable label
+1 x pack of cable tie
+1 x M.2 Screw package
+Application DVD Support DVD
+Documentation User manual
+If any of the above items is damaged or missing, contact your retailer.
+vii
+970 PRO GAMING/AURA specifications summary
+Storage
+AMD SB950 controller:
+- 6 x SATA 6Gb/s port(s) (black) with Raid 0, 1, 5, 10 support
+- 1 x M.2 Socket 3 with M Key, type 2242/2260/2280 storage devices 
+support (PCIE 2.0 x4)
+LAN
+Intel I211 Gb LAN
+Anti-surge LANGuard
+GameFirst technology
+Audio
+SupremeFX 8-Channel High Definition Audio CODEC 
+- Supports: Jack-detection, Multi-streaming, Front Panel MIC Jack-
+retasking
+- High quality 115dB SNR stereo playback output 
+Audio Features :
+- SupremeFX Shielding™ Technology
+- Headphone AMP
+- Optical S/PDIF out port at back panel
+- Sonic Radar II
+USB
+ASMedia® USB 3.1 controller:
+- 2 x USB 3.1 ports (2 x Type-A at back panel)
+ASMedia® USB 3.0 controller:
+- 2 x USB 3.0 port(s) (2 at mid-board)
+AMD SB950 controller: 
+- 14 x USB 2.0 port(s) (8 at back panel, black, 6 at mid-board)
+Internal I/O 
+connectors
+1 x 19-pin USB 3.0/2.0 connector supports additional 2 USB 3.0/2.0 port
+3 x USB 2.0/1.1 connectors support additional 6 USB 2.0/1.1 ports
+1 x System panel header
+1 x Front panel audio connector (AAFP)
+6 x SATA 6.0 Gb/s connectors (Black)
+1 x M.2 Socket 3 for M Key, type 2242/2260/2280 devices
+1 x Water pump connector (4-pin)
+1 x CPU fan connector (4-pin)
+1 x CPU OPT fan connector (4-pin)
+3 x Chassis Fan connectors (4-pin)
+1 x COM connector
+1 x TPM header
+1 x 24-pin EATX Power connector
+1 x 8-pin EATX 12V Power connector
+1 x Slow Mode header
+1 x Safe Boot header
+1 x ReTry header
+1 x Clear CMOS jumper
+(continued on the next page)
+viii
+970 PRO GAMING/AURA specifications summary
+ASUS Gaming 
+Features
+Gamer’s Guardian
+- DIGI+ VRM
+- DRAM Overcurrent Protection
+- ESD Guards on LAN, Audio, KBMS and USB3.1/3.0/2.0 ports
+- Stainless Steel Back I/O
+- Q-Design (Q-Shield, Q-DIMM, Q-LED, Q-Slot)
+Performance Level Up
+- DIGI+ VRM
+- AI Suite 3
+- Fan Xpert 2
+- UEFI BIOS EZ Mode (O.C. Tuner, CrashFree BIOS 3, EZ Flash 2)
+- RAMCache - Speed your game loads
+- USB 3.1 Boost featuring speedy USB 3.1 transmission
+ASUS Exclusive Features
+- Disk Unlocker
+- Push Notice
+- AI Charger+
+- ASUS CPU-Z
+- Aura: RGB Lighting control
+Back panel I/O 
+ports
+1 x PS/2 keyboard/mouse combo port
+1 x optical SPDF out
+1 x LAN (RJ45) port
+2 x USB 3.1 ports (2 x Type-A, Red)
+8 x USB 2.0 ports
+8-channel audio I/O ports
+BIOS features
+64 Mb Flash ROM, UEFI BIOS, PnP, DMI2.0, WfM2.0, SM BIOS 2.7, ACPI 
+2.0a, Multi-language BIOS, ASUS EZ Flash 2, F12 PrintScreen, F3 Shortcut 
+Function and ASUS DRAM SPD (Serial Presence Detect) memory information
+Manageability WfM 2.0, DMI 2.0, WOL by PME, WOR by PME, PXE
+Support DVD
+Drivers
+ASUS utilities
+EZ Update
+Anti-virus software (OEM version)
+Operating 
+system support
+Windows® 10 (64-bit)
+Windows® 8.1 (64-bit)
+Windows® 7 (64-bit/32-bit)
+Form factor ATX Form Factor, 12”x 9.6” (30.5cm x 24.4cm)
+Specifications are subject to change without notice.
+ASUS 970 PRO GAMING/AURA 1-1
+Product Introduction
+Chapter 1: Product Introduction
+1
+1.1 Before you proceed
+Take note of the following precautions before you install motherboard components or change 
+any motherboard settings.
+• Unplug the power cord from the wall socket before touching any component.
+• Before handling components, use a grounded wrist strap or touch a safely grounded 
+object or a metal object, such as the power supply case, to avoid damaging them due 
+to static electricity.
+• Hold components by the edges to avoid touching the ICs on them.
+• Whenever you uninstall any component, place it on a grounded antistatic pad or in the 
+bag that came with the component.
+• Before you install or remove any component, ensure that the ATX power supply is 
+switched off or the power cord is detached from the power supply. Failure to do so 
+may cause severe damage to the motherboard, peripherals, or components.
+1.2 Motherboard overview
+Before you install the motherboard, study the configuration of your chassis to ensure that the 
+motherboard fits into it. 
+Ensure that you unplug the power cord before installing or removing the motherboard. 
+Failure to do so can cause you physical injury and damage motherboard components.
+1.2.1 Placement direction
+When installing the motherboard, ensure that you place it into the chassis in the correct 
+orientation. The edge with external ports goes to the rear part of the chassis as indicated in 
+the image below.
+1-2 Chapter 1: Product Introduction
+Place this 
+side towards 
+the rear of the 
+chassis
+1.2.2 Screw holes
+Place nine (9) screws into the holes indicated by circles to secure the motherboard to the 
+chassis.
+Do not overtighten the screws! Doing so can damage the motherboard.
+ASUS 970 PRO GAMING/AURA 1-3
+1.2.3 Motherboard layout
+1-4 Chapter 1: Product Introduction
+1.2.4 Layout contents
+Connectors/Jumpers/Slots/LED Page
+1. ATX power connectors (24-pin EATXPWR, 8-pin EATX12V) 1-19
+2. AMD AM3+ socket 1-5
+3. CPU, CPU optional, water pump, and chassis fan connectors (4-pin CPU_FAN, 4-pin 
+CPU_OPT, 4-pin w_PUMP, 4-pin CHA_FAN1-3)
+1-20
+4. DDR3 DIMM slots 1-9
+5. USB 3.0 connector (20-1 pin USB3_12) 1-22
+6. AMD SB950 Serial ATA 6.0Gb/s connector (SATA6G_1~6 [black]) 1-23
+7. M.2 (Socket 3) 1-25
+8. Standby Power LED (SB_PWR) 1-26
+9. System panel connector (20-5 pin PANEL) 1-24
+10. Overclocking Jack (8-1 pin OCJ) 1-16
+11. Clear RTC RAM (3-pin CLRTC) 1-19
+12. USB 2.0 connector (10-1 pin USB910, USB1112, USB1314) 1-22
+13. TPM connector (14-1 pin TPM) 1-21
+14. Serial port connector (10-1 pin COM) 1-20
+15. Front panel audio connector (10-1 pin AAFP) 1-21
+ASUS 970 PRO GAMING/AURA 1-5
+1.3 Central Processing Unit (CPU)
+This motherboard comes with an AMD AM3+ socket designed for AMD® FX™/Phenom™ II/
+Athlon™ II/Sempron™ 100 Series Processors.
+Unplug all power cables before installing the CPU.
+The AM3+ socket has a different pinout from the AM2+/AM2 socket. Ensure that you usd a 
+CPU designed for the AM3+ socket. The CPU fits in only one correct orientation. DO NOT 
+force the CPU into the socket to prevent bending the pins and damaging the CPU!
+1-6 Chapter 1: Product Introduction
+1.3.1 Installing the CPU
+ASUS 970 PRO GAMING/AURA 1-7
+1.3.2 CPU heatsink and fan assembly installation
+To install the CPU heatsink and fan assembly
+Apply the Thermal Interface Material 
+to the CPU heatsink and CPU 
+before you install the heatsink and 
+fan if necessary.
+1-8 Chapter 1: Product Introduction
+To uninstall the CPU heatsink and fan assembly
+ASUS 970 PRO GAMING/AURA 1-9
+1.4 System memory
+1.4.1 Overview
+This motherboard comes with four (4) Double Data Rate 3 (DDR3) Dual Inline Memory 
+Module (DIMM) sockets. A DDR3 module is notched differently from a DDR or DDR2 module. 
+DO NOT install a DDR or DDR2 memory module to the DDR3 slot.
+Recommended memory configurations
+To prevent system instability, either install DDR3L DIMMs or DDR3 DIMMs with voltage 
+lower than 1.5V.
+Channel Sockets
+Channel A DIMM_A1 & DIMM_A2
+Channel B DIMM_B1 & DIMM_B2
+1-10 Chapter 1: Product Introduction
+1.4.2 Memory configurations
+You may install 1GB, 2GB, 4GB, and 8GB unbuffered non-ECC DDR3 DIMMs into the DIMM 
+sockets.
+Visit the ASUS website at www.asus.com for the latest QVL.
+• You may install varying memory sizes in Channel A and Channel B. The system 
+maps the total size of the lower-sized channel for the dual-channel configuration. Any 
+excess memory from the higher-sized channel is then mapped for single-channel 
+operation.
+• Always install DIMMs with the same CAS latency. For optimal compatibility, we 
+recommend that you install memory modules of the same version or date code (D/C) 
+from the same vendor. Check with the retailer to get the correct memory modules. 
+• Due to the memory address limitation on 32-bit Windows® OS, when you install 4GB 
+or more memory on the motherboard, the actual usable memory for the OS can be 
+about 3GB or less. For effective use of memory, we recommend that you do any of the 
+following:
+- Use a maximum of 3GB system memory if you are using a 32-bit Windows® OS.
+ - Install a 64-bit Windows® OS if you want to install 4GB or more on the 
+motherboard.
+• This motherboard does not support DIMMs made up of 512 megabits (Mb) chips or 
+less.
+ASUS 970 PRO GAMING/AURA 1-11
+To remove a DIMM
+1.4.3 Installing a DIMM
+1-12 Chapter 1: Product Introduction
+1.5.1 Installing an expansion card
+To install an expansion card:
+1. Before installing the expansion card, read the documentation that came with it and 
+make the necessary hardware settings for the card.
+2. Remove the system unit cover (if your motherboard is already installed in a chassis).
+3. Remove the bracket opposite the slot that you intend to use. Keep the screw for later 
+use.
+4. Align the card connector with the slot and press firmly until the card is completely 
+seated on the slot.
+5. Secure the card to the chassis with the screw you removed earlier.
+6. Replace the system cover.
+1.5.2 Configuring an expansion card
+After installing the expansion card, configure it by adjusting the software settings.
+1. Turn on the system and change the necessary BIOS settings, if any. See Chapter 2 for 
+information on BIOS setup.
+2. Assign an IRQ to the card. 
+3. Install the software drivers for the expansion card.
+When using PCI cards on shared slots, ensure that the drivers support “Share IRQ” or that 
+the cards do not need IRQ assignments. Otherwise, conflicts will arise between the two PCI 
+groups, making the system unstable and the card inoperable.
+1.5 Expansion slots
+In the future, you may need to install expansion cards. The following sub-sections describe 
+the slots and the expansion cards that they support.
+Unplug the power cord before adding or removing expansion cards. Failure to do so may 
+cause you physical injury and damage motherboard components.
+ASUS 970 PRO GAMING/AURA 1-13
+1.5.3 PCI Express 2.0 slots
+Slot No. Expansion slot
+PCIe 2.0 x1_1 slot
+PCIe 2.0 x16/x8_1 slot
+PCI 1
+PCIe 2.0 x1_2 slot
+PCIe 2.0 x8_2 slot
+PCI 2
+1-14 Chapter 1: Product Introduction
+IRQ assignments for this motherboard
+A B C D E F G H
+PCIEX1_1 - - - - - - - shared
+PCIE_X16/X8_1 shared - - - - - - -
+PCI1 - - - - shared - - -
+PCIEX1_2 shared - - - - - - -
+PCIE_X8_2 - - - - shared - - -
+PCI2 - - - - - shared - -
+M.2 PCIE X4 SLOT - - - - shared - - -
+HD Audio shared - - - - - - -
+Intel LAN Controller - - shared - - - - -
+SATA Controller - - - shared - - - -
+USB 1.1 Controller 1 - - shared - - - - -
+USB 1.1 Controller 2 - - - - shared - - -
+USB 1.1 Controller 3 - - - - - - shared -
+USB 1.1 Controller 4 - - shared - - - - -
+USB 2.0 Controller 1 - shared - - - - - -
+USB 2.0 Controller 2 - - - - - shared - -
+USB 2.0 Controller 3 - - - - - - - shared
+Asmedia USB 3.1 Controller shared - - - - - - -
+Asmedia USB 3.0 Controller - shared - - - - - -
+• We recommend that you provide sufficient power when running CrossFireX™ mode. 
+• Connect a chassis fan to the motherboard connector labeled CHA_FAN1-3 when 
+using multiple graphics cards for better thermal environment. 
+VGA configuration
+PCI Express 2.0 operating mode
+PCIe 2.0 x16/x8_1 PCIe 2.0 x8_2
+Single VGA/PCIe card x16 (single VGA 
+recommended) N/A
+Dual VGA/PCIe card x8 x8
+ASUS 970 PRO GAMING/AURA 1-15
+1.6 Jumpers
+1. Clear RTC RAM (3-pin CLRTC)
+This jumper allows you to clear the Real Time Clock (RTC) RAM in CMOS. You can 
+clear the CMOS memory of date, time, and system setup parameters by erasing the 
+CMOS RTC RAM data. The onboard button cell battery powers the RAM data in 
+CMOS, which include system setup information such as system passwords.
+To erase the RTC RAM:
+1. Turn OFF the computer and unplug the power cord.
+2. Move the jumper cap from pins 1–2 (default) to pins 2–3. Keep the cap on pins 
+2–3 for about 5–10 seconds, then move the cap back to pins 1–2.
+3. Plug the power cord and turn ON the computer.
+4. Hold down the <Del> key during the boot process and enter BIOS setup to 
+reenter data.
+• If the steps above do not help, remove the onboard battery and short the two pins 
+again to clear the CMOS RTC RAM data. After clearing the CMOS, reinstall the 
+battery.
+• You do not need to clear the RTC when the system hangs due to overclocking. For 
+system failure due to overclocking, use the CPU Parameter Recall (C.P.R.) feature. 
+Shut down and reboot the system, then the BIOS automatically resets parameter 
+settings to default values.
+• Due to chipset behavior, AC power off is required to enable C.P.R. function. You must 
+turn off and on the power supply or unplug and plug the power cord before rebooting 
+the system.
+Except when clearing the RTC RAM, never remove the cap on CLRTC jumper default 
+position. Removing the cap will cause system boot failure!
+1-16 Chapter 1: Product Introduction
+2. Overclocking Jack (8-1 pin OCJ)
+These jumpers support the overclocking features ReTry, Safe Boot and Slow Mode.
+Short-circuit the corresponding pins with a metal object or jumper cap for about 5-10 
+seconds to use its function.
+• ReTry
+ReTry is used during the booting process where the Reset button is rendered useless. 
+It forces the system to reboot while retaining the same settings to be retried in quick 
+succession to achieve a successful POST.
+• Safe Boot
+Safe Boot is used to force the system to reboot into the BIOS safe mode. It temporarily 
+applies safe settings to the BIOS while retaining any overclocked settings allowing you 
+to modify the settings causing boot failure.
+• Slow Mode
+Slow Mode is employed during LN2 benching. Some processors have a small optimum 
+temperature range to run at their highest frequency. Temperatures that fall outside this 
+band may yield instability. For example, a processor may need to operate at -80°C 
+under load and only 75°C when idle to maintain stability at 5GHz.
+At lower frequencies, the CPU’s temperature tolerance increases. It will however 
+remain stable at lower frequencies at much colder or warmer temperatures. Once 
+it comes out of a heavy load while transitioning over to a light load, when the 
+temperature does not warm fast enough, it may crash. To overcome this, simply short 
+the 2-pins to decrease the processor frequency. Switching over to Slow-Mode during 
+critical moments when Temperature/Max Frequency alignment is off-sync can prevent 
+a lot of crashes, even when trying to boot into the OS at cold temperatures.
+ASUS 970 PRO GAMING/AURA 1-17
+1.7 Connectors
+1.7.1 Rear panel connectors
+Rear panel connectors
+1. PS/2 Keyboard/Mouse combo port 6. USB 2.0 ports 34
+2. Optical S/PDIF OUT port 7. USB 2.0 ports 12
+3. LAN (RJ-45) port* 8. USB 3.1 ports
+4. USB 2.0 ports 78 9. Audio I/O ports**
+5. USB 2.0 ports 56
+* and **: Refer to the tables on the next page for LAN port LEDs and audio port definitions.
+1-18 Chapter 1: Product Introduction
+LAN port
+Speed 
+LED
+Activity Link 
+LED
+*LAN port LED indications
+Activity/Link LED Speed LED
+Status Description Status Description
+Off No link OFF 10Mbps connection
+Orange Linked ORANGE 100Mbps connection
+Orange (Blinking) Data activity GREEN 1Gbps connection
+Orange (Blinking 
+then steady)
+Ready to wake up 
+from S5 mode
+• Due to USB 3.0 controller limitations, USB 3.0 devices can only be used under a 
+Windows® OS environment and after USB 3.0 driver installation.
+• The plugged USB 3.0 device may run on xHCI or EHCI mode, depending on the 
+operating system’s setting.
+• USB 3.0 devices can only be used for data storage.
+• We strongly recommend that you connect USB 3.0 devices to USB 3.0 ports for faster 
+and better performance from your USB 3.0 devices.
+** Audio 2, 4, 6, or 8-channel configuration
+Port
+Headset 
+2-channel
+4-channel 6-channel 8-channel
+Light Blue Line In Line In Line In Line In
+Lime Line Out Front Speaker Out Front Speaker Out Front Speaker Out
+Pink Mic In Mic In Mic In Mic In
+Orange – – Center/Subwoofer Center/Subwoofer
+Black – Rear Speaker Out Rear Speaker Out Rear Speaker Out
+Gray – – – Side Speaker Out
+ASUS 970 PRO GAMING/AURA 1-19
+1.7.2 Internal connectors
+• For a fully configured system, we recommend that you use a power supply unit 
+(PSU) that complies with ATX 12V specification 2.4 (or later version) and provides a 
+minimum power of 350W
+• We recommend that you use a PSU with higher power output when configuring a 
+system with more power-consuming devices or when you intend to install additional 
+devices. The system may become unstable or may not boot up if the power is 
+inadequate.
+1. ATX power connectors (24-pin EATXPWR, 8-pin EATX12V) 
+These connectors are for ATX power supply plugs. The power supply plugs are 
+designed to fit these connectors in only one orientation. Find the proper orientation and 
+push down firmly until the connectors completely fit.
+1-20 Chapter 1: Product Introduction
+2. CPU, CPU optional, Water pump, and chassis fan connectors (4-pin CPU_FAN, 
+4-pin CPU_OPT, 4-Pin W_PUMP, 4-pin CHA_FAN1-3) 
+Connect the fan cables to the fan connectors on the motherboard, ensuring that the 
+black wire of each cable matches the ground pin of the connector. 
+DO NOT forget to connect the fan cables to the fan connectors. Insufficient air flow inside 
+the system may damage the motherboard components. These are not jumpers! Do not 
+place jumper caps on the fan connectors! The CPU_FAN connector supports a CPU fan of 
+maximum 1A (12 W) fan power.
+3. Serial port connector (10-1 pin COM)
+This connector is for a serial (COM) port. Connect the serial port module cable to this 
+connector, then install the module to a slot opening at the back of the system chassis.
+The COM module is purchased separately.
+ASUS 970 PRO GAMING/AURA 1-21
+4. Front panel audio connector (10-1 pin AAFP)
+This connector is for a chassis-mounted front panel audio I/O module that supports 
+either HD Audio or legacy AC’97 audio standard. Connect one end of the front panel 
+audio I/O module cable to this connector. 
+• We recommend that you connect a high-definition front panel audio module to this 
+connector to avail of the motherboard’s high-definition audio capability.
+• If you want to connect a high-definition front panel audio module to this connector, set 
+the Front Panel Type item in the BIOS setup to [HD Audio]. If you want to connect an 
+AC’97 front panel audio module to this connector, set the item to [AC97]. By default, 
+this connector is set to [HD Audio]. 
+5. TPM connector (14-1 pin TPM) 
+This connector supports a Trusted Platform Module (TPM) system, which can securely 
+store keys, digital certificates, passwords, and data. A TPM system also helps enhance 
+network security, protects digital identities, and ensures platform integrity.
+The TPM module is purchased separately.
+1-22 Chapter 1: Product Introduction
+6. USB 2.0 connector (10-1 pin USB910, USB1112, USB1314)
+These connectors are for USB 2.0 ports. Connect the USB module cable to any of 
+these connectors, then install the module to a slot opening at the back of the system 
+chassis. These USB connectors comply with USB 2.0 specifications and supports up to 
+480Mbps connection speed.
+Never connect a 1394 cable to the USB connectors. Doing so will damage the 
+motherboard!
+The USB 2.0 module is purchased separately.
+7. USB 3.0 connector (20-1 pin USB3_12)
+These connectors allow you to connect a USB 3.0 module for additional USB 3.0 front 
+or rear panel ports. With an installed USB 3.0 module, you can enjoy all the benefits of 
+USB 3.0 including faster data transfer speeds of up to 5Gbps, faster charging time for 
+USB-chargeable devices, optimized power efficiency and backward compatibility with 
+USB 2.0.
+ASUS 970 PRO GAMING/AURA 1-23
+8. AMD SB950 Serial ATA 6.0Gb/s connectors (7-pin SATA6G_1~6 [black])
+These connectors connect to Serial ATA 6.0 Gb/s hard disk drives via Serial ATA 6.0 
+Gb/s signal cables.
+1-24 Chapter 1: Product Introduction
+9. System panel connector (20-5 pin PANEL)
+This connector supports several chassis-mounted functions.
+• System power LED (4-pin +PWR_LED-)
+This 4-pin connector is for the system power LED. Connect the chassis power LED 
+cable to this connector. The system power LED lights up when you turn on the system 
+power, and blinks when the system is in sleep mode.
+• Hard disk drive activity LED (2-pin +HDD_LED-)
+This 2-pin connector is for the HDD Activity LED. Connect the HDD Activity LED cable 
+to this connector. The HDD LED lights up or flashes when data is read from or written 
+to the HDD.
+• System warning speaker (4-pin SPEAKER)
+This 4-pin connector is for the chassis-mounted system warning speaker. The speaker 
+allows you to hear system beeps and warnings.
+• ATX power button/soft-off button (2-pin PWR_SW)
+This connector is for the system power button. Pressing the power button turns the 
+system on or puts the system in sleep or soft-off mode depending on the operating 
+system settings. Pressing the power switch for more than four seconds while the 
+system is ON turns the system OFF.
+• Reset button (2-pin RESET)
+This 2-pin connector is for the chassis-mounted reset button for system reboot without 
+turning off the system power.
+ASUS 970 PRO GAMING/AURA 1-25
+10. M.2 (Socket 3)
+The M.2 (Socket 3) with M Key supports type 2242 (22mm x 42mm), 2260 (22mm x 
+60mm), and 2280 (22mm x 80mm) PCIe interface storage devices.
+M.2 only supports data storage.
+1-26 Chapter 1: Product Introduction
+1. Standby Power LED (SB_PWR)
+The motherboard comes with a standby power LED that lights up to indicate that the 
+system is ON, in sleep mode, or in soft-off mode. This is a reminder that you should 
+shut down the system and unplug the power cable before removing or plugging in any 
+motherboard component. The illustration below shows the location of the onboard LED.
+2. Q LEDs (BOOT_DEVICE_LED; VGA_LED; DRAM_LED; CPU_LED)
+Q LEDs check key components (CPU, DRAM, VGA card, and booting devices) in 
+sequence during motherboard booting process. If an error is found, the corresponding 
+LED flashes until the problem is solved. This user-friendly design provides an intuitive 
+way to locate the root problem within seconds.
+1.8 Onboard LEDs
+ASUS 970 PRO GAMING/AURA 1-27
+3. M2 LED (M2_SSD_LED)
+This LED lights up to indicate that the installed M.2 (NGFF) card is being accessed.
+4. RGB LED
+The RGB LED lighting control provides several lighting schemes, which allow you 
+to customize your favorite LED effect. You can set your favorite LED effect to cast 
+a stunning multi-color glow across your build, change shades to indicate CPU 
+temperature, or pulsate in time to the beat of your music. 
+You can change the lighting schemes from the LED Control app named Aura.
+1-28 Chapter 1: Product Introduction
+ASUS 970 PRO GAMING/AURA 2-1
+2.1 Managing and updating your BIOS
+Save a copy of the original motherboard BIOS file to a USB flash disk in case you need 
+to restore the BIOS in the future. Copy the original motherboard BIOS using the ASUS 
+Update utility.
+BIOS Information 2
+2.1.1 EZ Update
+EZ Update is a utility that allows you to automatically update your motherboard’s softwares, 
+drivers and the BIOS version easily. With this utlity, you can also manually update the saved 
+BIOS and select a boot logo when the system goes into POST.
+To launch EZ Update, click EZ Update on the AI Suite 3 main menu bar.
+Click to automatically 
+update your 
+motherboard’s 
+driver, software and 
+firmware
+Click to find and 
+select the BIOS 
+from file
+Click to select a 
+boot logo 
+Click to update 
+the BIOS
+EZ Update requires an Internet connection either through a network or an ISP (Internet 
+Service Provider).
+Chapter 2: BIOS Information
+2-2 Chapter 2: BIOS Information
+2.1.2 ASUS EZ Flash 2 Utility
+The ASUS EZ Flash 2 feature allows you to update the BIOS without using an OS‑based 
+utility. Press <Enter> to launch the EZ Flash 2 screen.
+Before you start using this utility, download the latest BIOS file from the ASUS website at 
+www.asus.com.
+To update the BIOS using EZ Flash 2:
+1. Insert the USB flash disk that contains the latest BIOS file to the USB port.
+2. Enter the Advanced Mode of the BIOS setup program. Go to the Tool menu to select 
+ASUS EZ Flash Utility and press <Enter>.
+3. Press <Tab> to switch to the Drive field. 
+4. Press the Up/Down arrow keys to find the USB flash disk that contains the latest BIOS 
+then press <Enter>. 
+5. Press <Tab> to switch to the Folder Info field.
+6. Press the Up/Down arrow keys to find the BIOS file then press <Enter> to perform the 
+BIOS update process. Reboot the system when the update process is done.
+• This function supports USB flash disks formatted using FAT32 or FAT16 on a single 
+partition only.
+• Ensure to load the BIOS default settings to ensure system compatibility and stability. 
+Select the Load Optimized Defaults item under the Exit menu. 
+• DO NOT shut down or reset the system while updating the BIOS to prevent system 
+boot failure!
+ASUS 970 PRO GAMING/AURA 2‑3
+2.1.3 ASUS CrashFree BIOS 3 utility
+The ASUS CrashFree BIOS 3 is an auto recovery tool that allows you to restore the BIOS file 
+when it fails or gets corrupted during the updating process. You can restore a corrupted BIOS 
+file using the motherboard support DVD or a USB flash drive that contains the updated BIOS 
+file.
+• Before using this utility, rename the BIOS file in the removable device into 
+970PGMA.CAP.
+• The BIOS file in the support DVD may not be the latest version. Download the latest 
+BIOS file from the ASUS website at www.asus.com.
+Recovering the BIOS
+To recover the BIOS:
+1. Turn on the system.
+2. Insert the support DVD to the optical drive or the USB flash drive that contains the 
+BIOS file to the USB port.
+3. The utility automatically checks the devices for the BIOS file. When found, the utility 
+reads the BIOS file and enters ASUS EZ Flash 3 utility automatically.
+4. The system requires you to enter BIOS Setup to recover BIOS settings. To ensure 
+system compatibility and stability, we recommend that you press <F5> to load default 
+BIOS values.
+DO NOT shut down or reset the system while updating the BIOS! Doing so can cause 
+system boot failure!
+2.1.4 ASUS BIOS Updater
+ASUS BIOS Updater allows you to update the BIOS in DOS environment. 
+The screen captures used in this section are for reference only and may not be exactly the 
+same as actually shown on your computer screen.
+Before updating BIOS 
+• Prepare the motherboard support DVD and a USB flash drive.
+• Download the latest BIOS file and BIOS Updater from https://www.asus.com/support/ 
+and save them in your USB flash drive.
+NTFS is not supported under FreeDOS environment. Ensure that your USB flash drive is in 
+single partition and in FAT32/16 format.
+• Turn off the computer.
+• Ensure that your computer has a DVD optical drive.
+2-4 Chapter 2: BIOS Information
+Booting the system in DOS environment
+To boot the system in DOS:
+1. Insert the USB flash drive with the latest BIOS file and BIOS Updater to the USB port.
+2. Boot your computer then press <F8> to launch the select boot device screen.
+3. When the select boot device screen appears, insert the Support DVD into the optical 
+drive then select the optical drive as the boot device.
+Please select boot device:
+E1: ASUS DVD-E818A6T (4069MB)
+ USB DISK 2.0 (3824MB)
+UEFI: (FAT) USB DISK 2.0 (3824MB)
+Enter Setup
+ and  to move selection 
+ENTER to select boot device
+ESC to boot using defaults
+4. When the booting message appears, press <Enter> within five (5) seconds to enter 
+FreeDOS prompt.
+Welcome to FreeDOS (http://www.freedos.org)!
+C:/> d:
+D:/>
+5. On the FreeDOS prompt, type d: then press <Enter> to switch the disk from Drive C 
+(optical drive) to Drive D (USB flash drive).
+ISOLINUX 3.20 2006-08-26 Copyright (C) 1994-2005 H. Peter Anvin
+A Bootable DVD/CD is detected. Press ENTER to boot from the DVD/CD.
+If no key is pressed within 5 seconds, the system will boot next priority
+device automatically. boot:
+Updating the BIOS file
+To update the BIOS file:
+1. On the FreeDOS prompt, type bupdater /pc /g and press <Enter>.
+2. On the BIOS Updater screen, press <Tab> to switch from Files panel to Drives panel 
+then select D:. 
+D:/> bupdater /pc /g
+ASUS 970 PRO GAMING/AURA 2-5
+ASUSTeK BIOS Updater for DOS V1.30 [2015/01/01]
+Current ROM
+BOARD: 970 PRO GAMING/AURA
+VER: 0202 (H :00 B :00)
+DATE: 08/12/2015
+Update ROM
+BOARD: Unknown
+VER: Unknown
+DATE: Unknown
+PATH: C:\
+C:
+D:
+FORMAN~1 <DIR>
+970PGMA.CAP 8390656 2015-12-08 21:14:34
+Note
+[Enter] Select or Load [Tab] Switch [V] Drive Info
+[Up/Down/Home/End] Move [Esc] Exit
+Files panelDrives panel
+3. Press <Tab> to switch from Drives panel to Files panel then press <Up/Down or Home/
+End> keys to select the BIOS file and press <Enter>.
+4. After the BIOS Updater checks the selected BIOS file, select Yes to confirm the BIOS 
+update. 
+5. Select Yes then press <Enter>. When BIOS update is done, press <ESC> to exit BIOS 
+Updater. 
+6. Restart your computer.
+DO NOT shut down or reset the system while updating the BIOS to prevent system boot 
+failure.
+Ensure to load the BIOS default settings to ensure system compatibility and stability. Select 
+the Load Optimized Defaults item under the Exit BIOS menu. 
+Are you sure you want to update the BIOS?
+Yes No
+The BIOS Backup feature is not supported due to security regulations.
+2-6 Chapter 2: BIOS Information
+• The BIOS setup screens shown in this section are for reference purposes only, and 
+may not exactly match what you see on your screen. 
+• Visit the ASUS website at www.asus.com to download the latest BIOS file for this 
+motherboard.
+• If the system becomes unstable after changing any BIOS setting, load the default 
+settings to ensure system compatibility and stability. Select the Load Optimized 
+Defaults item under the Exit menu or press hotkey <F5>. 
+• If the system fails to boot after changing any BIOS setting, try to clear the CMOS and 
+reset the motherboard to the default value. See section 1.6 Jumpers for information 
+on how to erase the RTC RAM.
+2.2 BIOS setup program
+Use the BIOS Setup program to update the BIOS or configure its parameters. The BIOS 
+screens include navigation keys and brief online help to guide you in using the BIOS Setup 
+program.
+Entering BIOS Setup at startup
+To enter BIOS Setup at startup:
+• Press <Delete> or <F2> during the Power‑On Self Test (POST). If you do not press 
+<Delete> or <F2>, POST continues with its routines.
+Entering BIOS Setup after POST
+To enter BIOS Setup after POST:
+• Press <Ctrl>+<Alt>+<Del> simultaneously. 
+• Press the reset button on the system chassis. 
+• Press the power button to turn the system off then back on. Do this option only if you 
+failed to enter BIOS Setup using the first two options.
+Using the power button, reset button, or the <Ctrl>+<Alt>+<Del> keys to force reset from a 
+running operating system can cause damage to your data or system. We recommend you 
+always shut down the system properly from the operating system
+ASUS 970 PRO GAMING/AURA 2-7
+BIOS menu screen
+The BIOS setup program can be used under two modes: EZ Mode and Advanced Mode. 
+You can change modes from the Exit menu or from the Exit/Advanced Mode button in the EZ 
+Mode/Advanced Mode screen.
+• The boot device options vary depending on the devices you installed to the system.
+• The Boot Menu(F8) button is available only when the boot device is installed to the 
+system.
+EZ Mode
+By default, the EZ Mode screen appears when you enter the BIOS setup program. The EZ 
+Mode provides you an overview of the basic system information, and allows you to select 
+the display language, system performance mode and boot device priority. To access the 
+Advanced Mode, click Exit/Advanced Mode, then select Advanced Mode or press <F7> for 
+the advanced BIOS settings.
+The default screen for entering the BIOS setup program can be changed. 
+Selects the boot 
+device priority
+Displays the system 
+properties of the 
+selected mode
+Normal mode
+Selects the boot 
+device priority
+Loads 
+optimized 
+default 
+Displays the CPU/motherboard 
+temperature, CPU voltage output, 
+and CPU/chassis fan speed
+Selects the display language 
+of the BIOS setup program
+ASUS Optimal 
+mode
+Displays the 
+Advanced mode 
+menus
+Selects the 
+Advanced 
+mode functionsPower saving 
+mode
+Exits the BIOS setup program 
+without saving the changes, saves 
+the changes and resets the system, 
+or enters the Advanced Mode
+2‑8 Chapter 2: BIOS Information
+Menu bar
+The menu bar on top of the screen has the following main items:
+My Favorites For saving the frequently‑used system settings and configuration
+Main For changing the basic system configuration
+Ai Tweaker For changing the overclocking settings
+Advanced For changing the advanced system settings
+Monitor
+For displaying the system temperature, power status, and changing 
+the fan settings
+Boot For changing the system boot configuration
+Tool For configuring options for special functions
+Exit For selecting the exit options and loading default settings
+Advanced Mode
+The Advanced Mode provides advanced options for experienced end‑users to configure the 
+BIOS settings. The figure below shows an example of the Advanced Mode.
+To access the EZ Mode, click Exit, then select ASUS EZ Mode or press <F7>.
+Navigation keys
+General helpMenu bar
+Submenu item
+Configuration fieldsMenu itemsBack button
+Pop-up window Scroll bar
+Last modified 
+settings
+Quick note
+ASUS 970 PRO GAMING/AURA 2-9
+Menu items
+The highlighted item on the menu bar displays the specific items for that menu. For example, 
+selecting Main shows the Main menu items.
+The other items (Ai Tweaker, Advanced, Monitor, Boot, Tool, and Exit) on the menu bar have 
+their respective menu items.
+Back button
+This button appears when entering a submenu. Press <Esc> or use the USB mouse to click 
+this button to return to the previous menu screen.
+Submenu items
+A greater than sign (>) before each item on any menu screen means that the item has a 
+submenu. To display the submenu, select the item and press <Enter>.
+Pop-up window
+Select a menu item and press <Enter> to display a pop‑up window with the configuration 
+options for that item.
+Scroll bar
+A scroll bar appears on the right side of a menu screen when there are items that do not fit 
+on the screen. Press the Up/Down arrow keys or <Page Up> / <Page Down> keys to display 
+the other items on the screen.
+Navigation keys
+At the bottom right corner of the menu screen are the navigation keys for the BIOS setup 
+program. Use the navigation keys to select items in the menu and change the settings.
+General help
+At the top right corner of the menu screen is a brief description of the selected item.
+Configuration fields
+These fields show the values for the menu items. If an item is user‑configurable, you can 
+change the value of the field opposite the item. You cannot select an item that is not 
+user‑configurable.
+A configurable field is highlighted when selected. To change the value of a field, select it and 
+press <Enter> to display a list of options.
+Quick Note button
+This button allows you to enter notes of the activities that you have done in BIOS.
+Last Modified button
+This button shows the items that you last modified and saved in BIOS Setup.
+2-10 Chapter 2: BIOS Information
+Adding items to My Favorites
+To add frequently‑used BIOS items to My Favorites:
+1. Use the arrow keys to select an item that you want to add. When using a mouse, hover 
+the pointer to the item.
+2. Press <F4> on your keyboard or right‑click on your mouse to add the item to My 
+Favorites page.
+You cannot add the following items to My Favorites:
+• Items with submenu options
+• User‑configurable items such as language and boot device order
+• Configuration items such as Memory SPD Information, system time and date
+2.3 My Favorites
+MyFavorites is your personal space where you can easily save and access your favorite
+BIOS items.
+ASUS 970 PRO GAMING/AURA 2-11
+2.4 Main menu
+The Main menu screen appears when you enter the Advanced Mode of the BIOS Setup 
+program. The Main menu provides you an overview of the basic system information, and 
+allows you to set the system date, time, language, and security settings.
+System Language [English]
+Allows you to choose the BIOS language version from the options. Configuration options: 
+[English] [Español] [Русский] [한국어]
+System Date [Day xx/xx/xxxx]
+Allows you to set the system date.
+System Time [xx:xx:xx]
+Allows you to set the system time.
+Security
+The Security menu items allow you to change the system security settings.
+• If you have forgotten your BIOS password, erase the CMOS Real Time Clock (RTC) 
+RAM to clear the BIOS password. See section Jumpers for information on how to 
+erase the RTC RAM.
+• The Administrator or User Password items on top of the screen show the default 
+Not Installed. After you set a password, these items show Installed.
+2-12 Chapter 2: BIOS Information
+Administrator Password
+If you have set an administrator password, we recommend that you enter the administrator 
+password for accessing the system. Otherwise, you might be able to see or change only 
+selected fields in the BIOS setup program.
+To set an administrator password:
+1. Select the Administrator Password item and press <Enter>.
+2. From the Create New Password box, key in a password, then press <Enter>.
+3. Confirm the password when prompted.
+To change an administrator password:
+1. Select the Administrator Password item and press <Enter>.
+2. From the Enter Current Password box, key in the current password, then press 
+<Enter>.
+3. From the Create New Password box, key in a new password, then press <Enter>.
+4. Confirm the password when prompted.
+To clear the administrator password, follow the same steps as in changing an administrator 
+password, but press <Enter> when prompted to create/confirm the password. After you clear 
+the password, the Administrator Password item on top of the screen shows Not Installed.
+User Password
+If you have set a user password, you must enter the user password for accessing the system. 
+The User Password item on top of the screen shows the default Not Installed. After you set 
+a password, this item shows Installed.
+To set a user password:
+1. Select the User Password item and press <Enter>.
+2. From the Create New Password box, key in a password, then press <Enter>.
+3. Confirm the password when prompted.
+To change a user password:
+1. Select the User Password item and press <Enter>.
+2. From the Enter Current Password box, key in the current password, then press 
+<Enter>.
+3. From the Create New Password box, key in a new password, then press <Enter>.
+4. Confirm the password when prompted.
+To clear the user password, follow the same steps as in changing a user password, but press 
+<Enter> when prompted to create/confirm the password. After you clear the password, the 
+User Password item on top of the screen shows Not Installed.
+ASUS 970 PRO GAMING/AURA 2‑13
+2.5 Ai Tweaker menu
+The Ai Tweaker menu items allow you to configure overclocking‑related items. Scroll down 
+on the menu to display more items.
+Be cautious when changing the settings of the Ai Tweaker menu items. Incorrect field 
+values can cause the system to malfunction.
+The configuration options for this section vary depending on the CPU and DIMM model you 
+installed on the motherboard.
+Current CPU Speed : xxxxMHz
+Displays the current CPU speed.
+Target CPU Speed : xxxxMHz
+Displays the target CPU speed. 
+Current Memory Frequency : xxxxMHz
+Displays the current memory frequency.
+Current NB Frequency : xxxxMHz
+Displays the current NB frequency. 
+Current HT Link Speed : xxxxMHz
+Displays the current HT link speed.
+2-14 Chapter 2: BIOS Information
+Ai Overclock Tuner [Auto]
+Allows you to select the CPU overclocking options to achieve the desired CPU internal 
+frequency. Select any of these preset overclocking configuration options:
+[Auto] Loads the optimal settings for the system.
+[Manual] Allows you to individually set overclocking parameters.
+[D.O.C.P.] Allows you to select a DRAM O.C. profile, and the related parameters will 
+be adjusted automatically.
+CPU Ratio [Auto]
+Allows user can manually adjust the maximum non‑CPB mode CPU ratio. The value will be 
+limit to CPU base or factory setting. Use the <+> and <‑> keys to adjust the ratio. The valid 
+value ranges vary according to your CPU model.
+AMD Turbo CORE technology [Auto]
+Allows you to enable or disable AMD Turbo CORE technology.
+Configuration options: [Auto] [Disabled] [Enabled]
+Memory Frequency [Auto]
+Allows you to set the memory operating frequency.
+Configuration options: [Auto] DDR3‑800MHz] [DDR3‑1066MHz] [DDR3‑1333MHz] [DDR3‑
+1600MHz] [DDR3‑1866MHz] [DDR3‑2133MHz] [DDR3‑2400MHz]
+Selecting a very high memory frequency may cause the system to become unstable! If this 
+happens, revert to the default setting.
+CPU/NB Frequency [Auto]
+Allows you to set the ratio between the NB (in CPU) Clock and the CPU Bus Frequency.
+Configuration options: [Auto] [1400MHz] [1600MHz] [1800MHz] [2000MHz] [2200MHz] 
+[2400MHz] [2600MHz] [2800MHz] [3000MHz] [3200MHz]
+HT Link Speed [Auto]
+Allows you to select the HyperTransport link speed. 
+Configuration options: [Auto] [800MHz] [1000MHz] [1200MHz] [1400MHz] [1600MHz] 
+[1800MHz] [2000MHz] [2200MHz] [2400MHz]
+CPU Spread Spectrum [Auto]
+[Auto] Automatic configuration.
+[Disabled] Enhances the BCLK overclocking ability.
+[Enabled] Sets to [Enabled] for EMI control.
+PCIe Spread Spectrum [Auto]
+[Auto] Automatic configuration.
+[Disabled] Enhances the PCIE overclocking ability.
+[Enabled] Sets to [Enabled] for EMI control.
+ASUS 970 PRO GAMING/AURA 2-15
+EPU Power Saving Mode [Disabled]
+The ASUS EPU (Energy Processing Unit) sets the CPU in its minimum power consumption 
+settings. Enable this item to set lower CPU core/cache voltage and achieve the best energy 
+saving condition.
+Configuration options: [Disabled] [Enabled]
+The following item appears only when you set EPU Power Saving Mode to [Enabled].
+EPU Setting [Auto]
+This item allows you to set power saving mode. Configuration options: [Auto] [Light 
+Power Saving Mode] [Medium Power Saving Mode] [Max Power Saving Mode]
+OC Tuner [CANCEL]
+OC Tuner utility automatically overclocks the frequency and voltage of the CPU and DRAM. 
+Press <Enter> to start auto tuning. It takes around five minutes, and the system will reboot for 
+several times until auto tuning is completed.
+Configuration options: [OK] [Cancel]
+The configuration options for the following sub‑items vary depending on the CPU/DIMMs 
+you install on the motherboard.
+DRAM Timing Control
+The sub‑items in this menu allow you to set the DRAM timing control features. Use the 
+<+> and <‑> keys to adjust the value. To restore the default setting, type [auto] using the 
+keyboard and press <Enter>.
+Changing the values in this menu may cause the system to become unstable! If this 
+happens, revert to the default settings.
+DRAM Driving Control
+The sub‑items in this menu allow you to set the DRAM driving control features. Use the 
+<+> and <‑> keys to adjust the value. To restore the default setting, type [auto] using the 
+keyboard and press <Enter>.
+Changing the values in this menu may cause the system to become unstable! If this 
+happens, revert to the default settings.
+DIGI+ Power Control
+CPU Load-Line Calibration [Auto]
+Load‑line is defined by AMD VRM spec and affects CPU voltage. The CPU working 
+voltage will decrease proportionally to CPU loading. Higher value gets a higher voltage 
+and better overclocking performance, but increases the CPU and VRM thermal. This 
+item allows you to enable or disable the CPU Load‑Line Calibration function.
+Configuration options: [Auto] [Regular] [Medium] [High] [Ultra High] [Extreme]
+2-16 Chapter 2: BIOS Information
+CPU/NB Load-Line Calibration [Auto]
+This item allows you to enable or disable the CPU/NB Load‑Line Calibration function.
+Configuration options: [Auto] [Regular] [High] [Extreme]
+CPU Current Capability [Auto]
+This item provides a total power range for CPU overclocking. A higher value setting 
+provides higher power consumption delivery and extends the overclocking frequency 
+range simultaneously.
+Configuration options: [Auto] [100%] [110%] [120%] [130%] [140%]
+Configure higher values when overclocking or under a high CPU loading for extra power 
+support.
+CPU/NB Current Capability [Auto]
+This item provides wider total power range for overclocking. A higher value brings a 
+wider total power range and extends the overclocking frequency range simultaneously.
+Configuration options: [Auto] [100%] [110%] [120%] [130%]
+CPU Power Phase Control [Standard]
+Phase number is the number of working VRM phase. Increasing phase number under 
+heavy system loading to get more transient and better thermal performance. Reducing 
+phase number under light system loading to increase VRM efficiency.
+[Standard] Proceeds phase control depending on the CPU loading.
+[Optimized] Loads the ASUS optimized phase tuning profile.
+[Extreme] Proceeds the full phase mode.
+[Manual Adjustment] Allows manual adjustment.
+CPU Voltage Frequency [Auto]
+Switching frequency will affect the VRM transient response and component thermal. 
+Setting a higher frequency gets faster transient response.
+[Auto] Allows you to enable or disable the Spread Spectrum item.
+[Manual] Allows you to manually set the frequency with a 10k Hz interval.
+The following item appears only when you set CPU Voltage Frequency to [Auto].
+VRM Spread Spectrum [Disabled]
+This item allows you to enable the spread spectrum to enhance system stability.
+Configuration options: [Disabled] [Enabled]
+ASUS 970 PRO GAMING/AURA 2-17
+CPU & NB Voltage [Offset Mode]
+Allows you to set the CPU & NB Voltage Mode. Different sub‑items appear according to the 
+CPU & NB Voltage Mode item setting.
+Configuration options: [Offset Mode] [Manual Mode]
+The following items appear only when you set CPU & NB Voltage to [Offset Mode].
+Offset Mode Sign [+]
+This item allows you to set the offset mode sign.
+Configuration options: [+] [‑]
+CPU Offset Voltage [Auto]
+This item allows you to set the CPU Offset voltage. Use the <+> or <‑> to adjust the value. 
+The values range from 0.006250V to 0.700000V with an interval of 0.06250V.
+CPU/NB Offset Mode Sign [+]
+This item allows you to set the offset mode sign.
+Configuration options: [+] [‑]
+CPU/NB Offset Voltage [Auto]
+This item allows you to set the CPU/NB Offset voltage. Use the <+> or <‑> to adjust the 
+value. The values range from 0.006250V to 0.700000V with an interval of 0.06250V.
+The following item appears only when you set CPU Voltage Frequency to [Manual].
+VRM Fixed Frequency Mode [200]
+This item allows you to set a higher frequency for a quicker transient response speed. 
+Use the <+> or <‑> to adjust the value. The values range from 200 KHz to 400 KHz 
+with an interval of 10 KHz.
+CPU Power Duty Control [T.Probe]
+[T.Probe] Maintains the VRM thermal balance.
+[Extreme] Maintains the VRM current balance.
+CPU Power Response Control [Auto]
+Configuration options: [Auto] [Regular] [Medium] [Fast] [Ultra Fast]
+CPU/NB Power Response Control [Auto]
+Configuration options: [Auto] [Regular] [Medium] [Fast] [Ultra Fast]
+CPU Power Thermal Control [130]
+Higher temperature provides a wider CPU power thermal range and extends the 
+overclocking tolerance to enlarge the overclocking potential.
+Configuration options: [130] ‑ [151]
+2‑18 Chapter 2: BIOS Information
+The following items appear only when you set CPU & NB Voltage to [Manual Mode].
+CPU Manual Voltage [Auto]
+This item allows you to set a fixed CPU voltage. Use the <+> or <‑> to adjust the value. The 
+values range from 0.006250V to 2.075000V with an interval of 0.06250V.
+CPU/NB Manual Voltage [Auto]
+This item allows you to set a fixed CPU/NB voltage. Use the <+> or <‑> to adjust the value. 
+The values range from 0.500000V to 1.900000V with an interval of 0.06250V.
+CPU VDDA Voltage [Auto]
+Allows you to set the CPU VDDA voltage. Use the <+> or <‑> to adjust the value. The values 
+range from 2.200000V to 2.800000V with a 0.006250V interval.
+DRAM Voltage [Auto]
+Allows you to set the DRAM voltage. Use the <+> or <‑> to adjust the value. The values 
+range from 1.200000V to 2.200000V with a 0.006250V interval.
+NB Voltage [Auto]
+Allows you to set the Northbridge voltage. Use the <+> or <‑> to adjust the value. The values 
+range from 1.100000V to 1.250000V with a 0.006250V interval.
+NB HT Voltage [Auto]
+Allows you to set the Northbridge HyperTransport voltage. Use the <+> or <‑> to adjust the 
+value. The values range from 1.200000V to 1.400000V with a 0.006250V interval.
+2.6 Advanced menu
+The Advanced menu items allow you to change the settings for the CPU and other system 
+devices.
+Be cautious when changing the settings of the Advanced menu items. Incorrect field values 
+can cause the system to malfunction.
+ASUS 970 PRO GAMING/AURA 2-19
+2.6.2 SATA Configuration
+While entering Setup, the BIOS automatically detects the presence of SATA devices. The 
+SATA Port items show Not Present if no SATA device is installed to the corresponding SATA 
+port.
+SB SATA Configuration
+Allows you to set SATA options.
+OnChip SATA Channel [Enabled]
+Allows you to enable or disable serial ATA.
+Configuration options: [Enabled] [Disabled]
+The following items appear only when you set OnChip SATA Channel to [Enabled].
+2.6.1 CPU Configuration
+The items in this menu show the CPU‑related information that the BIOS automatically 
+detects.
+The items shown in submenu may be different due to the CPU you installed.
+Cool‘n’Quiet [Always Enabled]
+This item allows you to enable or disable the Cool ‘n’ Quiet function.
+Configuration options: [Disabled by CPU] [Always Enabled] [Always Disabled]
+C1E [Enabled]
+This item allows your system to utilize the AMD specific ACPI states to save power 
+consumption.
+Configuration options: [Disabled] [Enabled]
+SVM [Enabled]
+[Disabled] Disables this function.
+[Enabled] Enables the AMD Secure Virtual Machine mode.
+Core C6 State [Enabled]
+Enables or disables Core C6 state function.
+Configuration options: [Disabled] [Enabled]
+HPC Mode [Disabled]
+Allows you to disable or enable High Performance Computing Mode.
+Configuration options: [Disabled] [Enabled]
+Apm Master Mode [Auto]
+Enables or disables Application Power Management.
+Configuration options: [Auto] [Disabled] [Enabled]
+2-20 Chapter 2: BIOS Information
+SATA Port1 - Port4 [AHCI]
+[IDE] Set to [IDE] when you want to use the Serial ATA hard disk drives as 
+Parallel ATA physical storage devices.
+[AHCI] Set to [AHCI] when you want the SATA hard disk drives to use the 
+AHCI (Advanced Host Controller Interface). The AHCI allows the 
+onboard storage driver to enable advanced Serial ATA features that 
+increases storage performance on random workloads by allowing the 
+drive to internally optimize the order of commands.
+[RAID] Set to [RAID] when you want to create a RAID configuration from the 
+SATA hard disk drives.
+The following item appears only when you set SATA Port1 ‑ Port4 to [AHCI].
+SATA ESP on PORT1 ~ 4 [Disabled]
+Configuration options: [Enabled] [Disabled]
+The following item appears only when you set SATA Port1 ‑ Port4 to [RAID].
+Board SATA RAID ROM [Legacy ROM]
+This item allows you to select Board SATA RAID ROM. 
+Configuration options: [Disabled] [Legacy ROM] [UEFI DRIVER]
+SATA Port5 - Port6 [AHCI]
+Allows you to set the SATA port 5~6 mode.
+Configuration options: [AHCI] [IDE] [RAID]
+• When the SATA Port1–Port 4 and the SATA Port5–Port 6 items are set to [AHCI], 
+the information of the SATA connectors 1–6 can be seen only under the OS 
+environment or during POST.
+• The configuration options of SATA Port5 ‑ Port6 will vary according to the 
+configuration option of the SATA Port1 ‑ Port4.
+The following item appears only when you set SATA Port5 ‑ Port6 to [AHCI].
+SATA ESP on PORT5 ~ 6 [Disabled]
+Configuration options: [Enabled] [Disabled]
+S.M.A.R.T. Status Check [Enabled]
+[Disabled] Disables the S.M.A.R.T feature.
+[Enabled] Enables the S.M.A.R.T feature.
+ASUS 970 PRO GAMING/AURA 2-21
+2.6.4 CPU Core On/Off Function
+CPU Core Activation [Auto]
+This item lets user turn off cores except core 1, user can turn off 2nd, 3rd, 4th, 5th, etc core 
+manually. Configuration options: [Auto] [Manual]
+The following items appear only when you set CPU Core Activation to [Manual].
+3rd & 4th Core [Enabled]
+Configuration options: [Disabled] [Enabled]
+2.6.3 USB Configuration
+The items in this menu allow you to change the USB‑related features.
+The USB Devices item shows the auto‑detected values. If no USB device is detected, the 
+item shows None.
+Legacy USB Support [Enabled]
+[Disabled] The USB devices can be used only for the BIOS setup program.
+[Enabled] Enables the support for USB devices on legacy operating systems (OS).
+[Auto] Allows the system to detect the presence of USB devices at startup. If 
+detected, the USB controller legacy mode is enabled. If no USB device is 
+detected, the legacy USB support is disabled.
+The following item appears only when you set Legacy USB Support to [Auto] or 
+[Enabled].
+Legacy USB3.0 Support [Enabled]
+[Disabled] Disables the function.
+[Enabled] Enables the support for USB 3.0 devices on legacy operating systems 
+(OS).
+EHCI Hand-off [Disabled]
+[Disabled] Disables the function.
+[Enabled] Enables the support for operating systems without an EHCI hand‑off 
+feature.
+SB USB Configuration
+Options for SB USB Configuration.
+USB PORT 1 ~ 14 [Enabled]
+Configuration options: [Disabled] [Enabled]
+2-22 Chapter 2: BIOS Information
+5th & 6th Core [Enabled]
+Configuration options: [Disabled] [Enabled]
+7th & 8th Core [Enabled]
+Configuration options: [Disabled] [Enabled]
+2.6.5 Onboard Devices Configuration
+Asmedia USB 3.1 Controller [Enabled]
+[Disabled] Disables the controller.
+[Enabled] Enables the rear USB 3.1 controller.
+Asmedia USB 3.0 Controller [Enabled]
+[Disabled] Disables the controller.
+[Enabled] Enables the front USB 3.0 controller.
+Asmedia USB 3.0 Battery Charging Support [Disabled]
+[Disabled] Disables this function
+[Enabled] Enables the Asmedia USB 3.0 battery charging function.
+Intel LAN Controller [Enabled]
+[Disabled] Disables the controller.
+[Enabled] Enables the Intel LAN controller.
+The following item appears only when you set Intel LAN Controller to [Enabled].
+Lntel LAN PXE Option ROM [Disabled]
+This item allows you to enable or disable the Rom Help of the Realtek LAN controller.
+Configuration options: [Disabled] [Enabled]
+Serial Port Configuration
+The sub‑items in this menu allow you to set the serial port configuration.
+Serial Port [Enabled]
+Allows you to enable or disable the serial port (COM).
+Configuration options: [Disabled] [Enabled] 
+The following item appears only when you set Serial Port to [Enabled].
+Change Settings [IO=3F8h; IRQ=4]
+This item appears only when you set the previous item to [Enabled] and allows you to 
+select the Serial Port base address. 
+Configuration options: [IO=3F8h; IRQ=4] [IO=2F8h; IRQ=3] [IO=3E8h; IRQ=4] 
+[IO=2E8h; IRQ=3]
+ASUS 970 PRO GAMING/AURA 2‑23
+SB HD Azalia Configuration
+HD Azalia Configuration
+Allows you to change the HD Azalia configuration.
+[Disabled] Disables the device.
+[Enabled] Enables the High Definition Audio Azalia device.
+The following items appear only when you set HD Audio Azalia Device to [Enabled].
+Azalia Front Panel [HD]
+Allows you to set the Azalia front panel audio connector (AAFP) type to legacy AC’97 
+or high‑definition audio depending on the audio standard that the front panel audio 
+module supports.
+[AC97] Sets the front panel audio connector (AAFP) mode to legacy AC’97
+[HD] Sets the front panel audio connector (AAFP) mode to high definition 
+audio.
+SPDIF Out Type [SPDIF]
+[SPDIF] Sets to [SPDIF] for SPDIF audio output.
+[HDMI] Sets to [HDMI] for HDMI audio output.
+2.6.6 APM
+ErP Ready [Disabled]
+Allows the BIOS to switch off some power at S5 to get the system ready for ErP requirement. 
+When this item is set to [Enabled], all other PME options will be switched off.
+Configuration options: [Disabled] [Enabled]
+Restore AC Power Loss [Power Off]
+[Power Off] The system goes into off state after an AC power loss. 
+[Power On] The system goes into on state after an AC power loss.
+[Last State] The system goes into either off or on state, whatever the system state was 
+before the AC power loss.
+Power On By PME [Disabled]
+[Disabled] Disables the PME to wake up by PCI/PCIE devices.
+[Enabled] Allows you to turn on the system through a PCI/PCIE LAN or modem card. 
+This feature requires an ATX power supply that provides at least 1A on the 
++5VSB lead.
+Power On By Ring [Disabled]
+[Disabled] Disables Ring to generate a wake event.
+[Enabled] Enables Ring to generate a wake event.
+2-24 Chapter 2: BIOS Information
+Power On By RTC [Disabled]
+[Disabled] Disables RTC to generate a wake event.
+[Enabled] When set to [Enabled], the items RTC Alarm Date (Days) and Hour/Minute/
+Second will become user‑configurable with set values.
+2.6.7 Network Stack
+Network Stack [Disabled]
+This item allows user to disable or enable the UEFI network stack. 
+Configuration options: [Disabled] [Enabled]
+The following item appears only when you set Network Stack to [Enabled].
+Ipv4 PXE Support [Enabled]
+Configuration options: [Disabled] [Enabled] 
+Ipv6 PXE Support [Enabled]
+Configuration options: [Disabled] [Enabled] 
+2.6.8 NVMe Configuration
+You may view the NVMe controller and Drive information if an NVMe device is connected.
+2.7 Monitor menu
+The Monitor menu displays the system temperature/power status, and allows you to change 
+the fan settings. Scroll down on the menu to display more items.
+ASUS 970 PRO GAMING/AURA 2-25
+CPU Temperature / MB Temperature [xxx°C/xxx°F]
+The onboard hardware monitor automatically detects and displays the CPU and motherboard 
+temperatures. Select Ignore if you do not wish to display the detected temperatures.
+VCORE Voltage, 3.3V Voltage, 5V Voltage, 12V Voltage, VDDA2.5V Voltage
+The onboard hardware monitor automatically detects the voltage output through the onboard 
+voltage regulators. Select Ignore if you do not want to detect this item. 
+CPU Fan Speed, CPU Opt Fan Speed, Chassis Fan 1-3 Speed, and Water 
+Pump Speed [xxxx RPM] or [Ignore] / [N/A]
+The onboard hardware monitor automatically detects and displays the CPU and chassis fan 
+speeds in rotations per minute (RPM). If the fan is not connected to the motherboard, the field 
+shows N/A. Select Ignore if you do not wish to display the detected speed.
+CPU Q-Fan Control [PWM Mode]
+[Disabled] Disable the Q‑Fan control.
+[PWM Mode] Enable the CPU Q‑Fan control feature in PWM mode for 4‑pin CPU fan.
+[DC Mode] Enable the CPU Q‑Fan control feature in DC mode for 3‑pin CPU fan.
+The following items appear only when you set CPU Q‑Fan Control to [PWM Mode] or [DC 
+Mode].
+CPU_FAN Speed Low Limit [600 RPM]
+This item allows you to disable or set the CPU fan warning speed.
+Configuration options: [Ignore] [100 RPM] [200 RPM] [300 RPM] [400 RPM] [500 RPM] [600 
+RPM]
+CPU Fan Profile [Standard]
+This item allows you to set the appropriate performance level of the CPU fan.
+[Standard] Sets to [Standard] to make the CPU fan automatically adjust depending on 
+the CPU temperature.
+[Silent] Sets to [Silent] to minimize the fan speed for quiet CPU fan operation.
+[Turbo] Sets to [Turbo] to achieve maximum CPU fan speed.
+[Manual] Sets to [Manual] to assign detailed fan speed control parameters.
+The following items appear only when you set CPU Fan Profile to [Manual].
+CPU Upper Temperature [70]
+Use the <+> and <‑> keys to adjust the upper limit of the CPU temperature. The values 
+range from 20°C to 75°C. 
+2-26 Chapter 2: BIOS Information
+CPU Lower Temperature [20]
+Displays the lower limit of the CPU temperature.
+CPU Fan Max. Duty Cycle(%) [100]
+Use the <+> and <‑> keys to adjust the maximum CPU fan duty cycle. The values 
+range from 20% to 100%. When the CPU temperature reaches the upper limit, the 
+CPU fan will operate at the maximum duty cycle.
+CPU Fan Min. Duty Cycle(%) [30]
+Use the <+> and <‑> keys to adjust the minimum CPU fan duty cycle. The values 
+range from 0% to 100%. When the CPU temperature is under 40°C, the CPU fan will 
+operate at the minimum duty cycle.
+Chassis Q-Fan Control [Disabled]
+[Disabled] Disables the Chassis Q‑Fan control feature.
+[Enabled] Enables the Chassis Q‑Fan control feature.
+The following items appear only when you set Chassis Q‑Fan Control to [Enabled].
+Chassis Fan Speed Low Limit [600 RPM]
+This item allows you to disable or set the chassis fan warning speed. 
+Configuration options: [Ignore] [100 RPM] [200 RPM] [300 RPM] [400 RPM] [500 RPM] [600 
+RPM]
+Chassis Fan Profile [Standard]
+This item allows you to set the appropriate performance level of the chassis fan.
+[Standard] Sets to [Standard] to make the chassis fan automatically adjust depending 
+on the chassis temperature.
+[Silent] Sets to [Silent] to minimize the fan speed for quiet chassis fan operation.
+[Turbo] Sets to [Turbo] to achieve maximum chassis fan speed.
+[Manual] Sets to [Manual] to assign detailed fan speed control parameters.
+The following items appear only when you set Chassis Fan Profile to [Manual].
+Chassis Upper Temperature [70]
+Use the <+> and <‑> keys to adjust the upper limit of the chassis temperature. The 
+values range from 40°C to 90°C. 
+Chassis Lower Temperature [40]
+Displays the lower limit of the chassis temperature.
+Chassis Fan Max. Duty Cycle(%) [60]
+Use the <+> and <‑> keys to adjust the maximum chassis fan duty cycle. The values 
+range from 60% to 100%. When the chassis temperature reaches the upper limit, the 
+chassis fan will operate at the maximum duty cycle.
+ASUS 970 PRO GAMING/AURA 2-27
+Chassis Fan Min. Duty Cycle(%) [60]
+Use the <+> and <‑> keys to adjust the minimum chassis fan duty cycle. The values 
+range from 60% to 100%. When the chassis temperature is under 40°C, the chassis 
+fan will operate at the minimum duty cycle.
+Water Pump Control [Disabled]
+[Disabled] Disable the Water Pump control feature.
+[DC mode] Enable the Water Pump control in DC mode for 3‑pin chassis fan.
+[PWM mode] Enable the Water Pump control in PWM mode for 4‑pin chassis fan.
+The following items appear only when you set the Water Pump Control to [DC mode] or 
+[PWM mode].
+PUMP Fan Speed Low Limit [600 RPM]
+This item allows you to disable or set the water pump warning speed. 
+Configuration options: [Ignore] [100 RPM] [200 RPM] [300 RPM] [400 RPM] [500 RPM] [600 
+RPM]
+Water Pump Profile [Standard]
+This item allows you to set the appropriate performance level of the chassis fan.
+[Standard] Sets to [Standard] to make the chassis fan automatically adjust depending 
+on the chassis temperature.
+[Silent] Sets to [Silent] to minimize the fan speed for quiet chassis fan operation.
+[Turbo] Sets to [Turbo] to achieve maximum chassis fan speed.
+[Manual] Sets to [Manual] to assign detailed fan speed control parameters.
+The following items appear only when you set Water Pump Profile to [Manual].
+Water Pump Upper Temperature [70]
+Use the <+> and <‑> keys to adjust the upper limit of the chassis temperature. The 
+values range from 40°C to 90°C. 
+Water Pump Lower Temperature [40]
+Displays the lower limit of the chassis temperature.
+Water Pump Max. Duty Cycle(%) [60]
+Use the <+> and <‑> keys to adjust the maximum chassis fan duty cycle. The values 
+range from 60% to 100%. When the chassis temperature reaches the upper limit, the 
+chassis fan will operate at the maximum duty cycle.
+Water Pump Min. Duty Cycle(%) [60]
+Use the <+> and <‑> keys to adjust the minimum chassis fan duty cycle. The values 
+range from 60% to 100%. When the chassis temperature is under 40°C, the chassis 
+fan will operate at the minimum duty cycle.
+2‑28 Chapter 2: BIOS Information
+2.8 Boot menu
+The Boot menu items allow you to change the system boot options. Scroll down on the menu 
+to display more items.
+Fast Boot [Enabled]
+[Disabled] Allows your system to go back to its normal boot speed.
+[Enabled] Allows your system to accelerate the boot speed.
+The following items appear only when you set the Fast Boot to [Enabled].
+USB Support [Partial Initialization]
+[Disabled] All USB devices will not be available until OS boot up for a 
+fastest POST time.
+[Full Initialization] All USB devices will be available during POST. This process will 
+extend the POST time.
+[Partial Initialization] For a faster POST time, only the USB ports with keyboard and 
+mouse connections will be detected.
+ASUS 970 PRO GAMING/AURA 2-29
+PS/2 Keyboard and Mouse Support [Full Initialization]
+Select any of these settings when PS/2 keyboard and mouse are installed. These 
+settings only apply when Fast Boot is enabled.
+[Disabled] For the fastest POST time, all PS/2 devices will not be available 
+until your computer enters the operating system.
+[Auto] For a faster POST time, PS/2 devices will only be available when 
+the system boots up or rebooted when the PS/2 devices have not 
+been reconnected or changed. If you disconnect or change PS/2 
+devices before restarting the system, PS/2 devices will not be 
+available and BIOS setup program will not be accessible via PS/2 
+devices.
+[Full Initialization] For full system control, PS/2 devices will be available during POST 
+at any circumstances. This process will extend POST time.
+Network Stack Driver Support [Disabled]
+[Disabled] Select to skip the network stack driver from loading during POST.
+[Enabled] Select to load the network stack driver during POST.
+Next Boot after AC Power Loss [Normal Boot]
+[Normal Boot] Returns to normal boot on the next boot after AC power loss.
+[Fast Boot] Accelerates the boot speed on the next boot after AC power loss.
+Boot Logo Display [Auto]
+[Auto] Sets the boot logo to display during POST.
+[Full Screen] Sets the boot logo display in full screen during POST.
+[Disabled] Disables the boot logo display during POST.
+The following item appears only when you set the Boot Logo Display to [Auto] and [Full 
+Screen].
+Post Delay Time [3 sec]
+This item allows you to select a desired additional POST waiting time to easily enter 
+the BIOS Setup. You can only execute the POST delay time during normal boot. The 
+values range from 0 to 10 seconds.
+This feature only works when set under normal boot.
+The following items appear only when you set the Boot Logo Display to [Disabled].
+Post Report [5 sec]
+This item allows you to select a desired POST report waiting time.
+Configuration options: [1 sec] ‑ [10 sec] [Until Press ESC]
+2‑30 Chapter 2: BIOS Information
+INT19 Trap Response [Postponed]
+This item allows you to set the BIOS reaction on INT19 trapping by Option ROM.
+[Immediate] Execute the trap right away.
+[Postponed] Execute the trap during legacy boot.
+Bootup NumLock State [On]
+This item allows you to enable or disable power‑on state of the NumLock.
+Configuration options: [On] [Off]
+Wait For ‘F1’ If Error [Enabled]
+This item allows your system to wait for the <F1> key to be pressed when error occurs.
+Configuration options: [Disabled] [Enabled]
+Option ROM Messages [Force BIOS]
+Configuration options: [Force BIOS] [Keep Current]
+Setup Mode [EZ Mode]
+[Advanced Mode] This item allows you to go to Advanced Mode of the BIOS after POST.
+[EZ Mode] This item allows you to go to EZ Mode of the BIOS after POST.
+CSM (Compatibility Support Module)
+This item allows you to configure the CSM (Compatibility Support Module) items to fully 
+support the various VGA, bootable devices and add‑on devices for better compatibility.
+Launch CSM [Enabled]
+[Auto] The system automatically detects the bootable devices and the add‑
+on devices.
+[Enabled] For better compatibility, enable the CSM to fully support the non‑UEFI 
+driver add‑on devices or the Windows® UEFI mode.
+[Disabled] Disable the CSM to fully support the non‑UEFI driver add‑on devices 
+or the Windows® UEFI mode.
+The following items appear only when you set the Launch CSM to [Enabled].
+Boot Devices Control [UEFI and Legacy OPROM]
+This item allows you to select the type of devices that you want to boot. 
+Configuration options: [UEFI and Legacy OPROM] [Legacy OPROM only] 
+[UEFI only]
+Boot from Network Devices [Legacy OpROM first]
+This item allows you to select the type of network devices that you want to 
+launch. 
+Configuration options: [Legacy OpROM first] [UEFI driver first] [Ignore]
+Boot from Storage Devices [Legacy OpROM first]
+This item allows you to select the type of storage devices that you want to 
+launch. 
+Configuration options: [Both, Legacy OpROM first] [Both, UEFI first] 
+[Legacy OpROM first] [UEFI driver first] [Ignore]
+ASUS 970 PRO GAMING/AURA 2‑31
+Secure Boot
+This item allows you to configure the Windows® Secure Boot settings and manage its keys to 
+protect the system from unauthorized access and malwares during POST.
+OS Type [Windows UEFI mode]
+[Windows UEFI 
+Mode]
+This item allows you to select your installed operating system. 
+Execute the Microsoft® Secure Boot check. Only select 
+this option when booting on Windows® UEFI mode or other 
+Microsoft® Secure Boot compliant OS.
+[Other OS] Get the optimized function when booting on Windows® non-
+UEFI mode. Microsoft® Secure Boot only supports Windows® 
+UEFI mode.
+Key Management
+Clear Secure Boot keys
+This item allows you to clear all default Secure Boot keys.
+Save Secure Boot Keys
+This item allows you to save the PK (Platform Keys) to a USB storage device.
+PK Management
+Delete PK
+This item allows you to delete the PK from your system. Once the PK is deleted, all the 
+system’s Secure Boot keys will not be active.
+Configuration options: [Yes] [No]
+Load PK from File
+This item allows you to load the downloaded PK from a USB storage device.
+The PK file must be formatted as a UEFI variable structure with time‑based authenticated 
+variable.
+KEK Management
+Key‑exchange Key (KEK) refers to Microsoft® Secure Boot Key‑Enrollment Key (KEK).
+Delete the KEK
+Allows you to delete the KEK from your system.
+Configuration options: [Yes] [No]
+Boot from PCI-E/PCI Expansion Devices [Legacy OpROM first]
+This item allows you to select the type of PCI‑E/PCI expansion devices that 
+you want to launch. 
+Configuration options: [Legacy OpROM first] [UEFI driver first] 
+2‑32 Chapter 2: BIOS Information
+Load KEK from File
+Allows you to load the downloaded KEK from a USB storage device.
+Append KEK from File
+Allows you to load the additional KEK from a storage device for an additional db and 
+dbx loaded management. 
+The KEK file must be formatted as a UEFI variable structure with time‑based authenticated 
+variable. 
+DB Management
+Delete the db
+Allows you to delete the db file from your system.
+Configuration options: [Yes] [No]
+Load db from File
+Allows you to load the downloaded db from a USB storage device.
+Append db from File
+Allows you to load the additional db from a storage device so that more images can be 
+loaded securely. 
+The db file must be formatted as a UEFI variable structure with time‑based authenticated 
+variable.
+DBX Management
+Delete the dbx
+Allows you to delete the dbx file from your system.
+Load dbx from File
+Allows you to load the downloaded dbx from a USB storage device.
+Configuration options: [Yes] [No]
+Append dbx from File
+Allows you to load the additional dbx from a storage device so that more db’s images 
+cannot be loaded.
+The dbx file must be formatted as a UEFI variable structure with time‑based authenticated 
+variable.
+ASUS 970 PRO GAMING/AURA 2‑33
+ASUS EZ Flash 2 Utility
+Allows you to run ASUS EZ Flash 2. Press <Enter> to launch the ASUS EZ Flash 2 screen.
+For more details, see section ASUS EZ Flash 2.
+ASUS SPD Information
+DIMM Slot # [Slot 2] 
+Displays the Serial Presence Detect (SPD) information of the DIMM module installed 
+on the selected slot.
+Configuration options: [Slot 1] [Slot 2] [Slot 3] [Slot 4]
+ASUS O.C. Profile
+This item allows you to store or load multiple BIOS settings.
+The Setup Profile Status items show Not Installed if no profile is created.
+Save to Profile
+Allows you to save the current BIOS settings to the BIOS Flash, and create a profile. 
+Key in a profile number from one to eight, press <Enter>, and then select Yes.
+Load from Profile
+Allows you to load the previous BIOS settings saved in the BIOS Flash. Key in the 
+profile number that saved your CMOS settings, press <Enter>, and then select Yes.
+• DO NOT shut down or reset the system while updating the BIOS to prevent the 
+system boot failure!
+• We recommend that you update the BIOS file only coming from the same memory/
+CPU configuration and BIOS version.
+2.9 Tool menu
+The Tools menu items allow you to configure options for special functions. Select an item 
+then press <Enter> to display the submenu.
+2‑34 Chapter 2: BIOS Information
+2.10 Exit menu
+The Exit menu items allow you to load the optimal default values for the BIOS items, and 
+save or discard your changes to the BIOS items. You can access the EZ Mode from the Exit 
+menu.
+Load Optimized Defaults
+This option allows you to load the default values for each of the parameters on the Setup 
+menus. When you select this option or if you press <F5>, a confirmation window appears. 
+Select Yes to load the default values.
+Save Changes & Reset
+Once you are finished making your selections, choose this option from the Exit menu to 
+ensure the values you selected are saved. When you select this option or if you press <F10>, 
+a confirmation window appears. Select Yes to save changes and exit.
+Discard Changes & Exit
+This option allows you to exit the Setup program without saving your changes. When you 
+select this option or if you press <Esc>, a confirmation window appears. Select Yes to 
+discard changes and exit.
+ASUS EZ Mode
+This option allows you to enter the EZ Mode screen.
+Launch EFI Shell from filesystem device
+This option allows you to attempt to launch the EFI Shell application (shellx64.efi) from one of 
+the available devices that have a filesystem.
+ASUS 970 PRO GAMING/AURA A-1
+Appendices
+Notices
+Federal Communications Commission Statement
+This device complies with Part 15 of the FCC Rules. Operation is subject to the following two 
+conditions:
+• This device may not cause harmful interference.
+• This device must accept any interference received including interference that may cause 
+undesired operation.
+This equipment has been tested and found to comply with the limits for a Class B digital 
+device, pursuant to Part 15 of the FCC Rules. These limits are designed to provide 
+reasonable protection against harmful interference in a residential installation. This 
+equipment generates, uses and can radiate radio frequency energy and, if not installed 
+and used in accordance with manufacturer’s instructions, may cause harmful interference 
+to radio communications. However, there is no guarantee that interference will not occur 
+in a particular installation. If this equipment does cause harmful interference to radio or 
+television reception, which can be determined by turning the equipment off and on, the user 
+is encouraged to try to correct the interference by one or more of the following measures:
+• Reorient or relocate the receiving antenna.
+• Increase the separation between the equipment and receiver.
+• Connect the equipment to an outlet on a circuit different from that to which the receiver 
+is connected.
+• Consult the dealer or an experienced radio/TV technician for help.
+The use of shielded cables for connection of the monitor to the graphics card is required 
+to assure compliance with FCC regulations. Changes or modifications to this unit not 
+expressly approved by the party responsible for compliance could void the user’s authority 
+to operate this equipment.
+Appendices
+A-2 Appendix
+IC: Canadian Compliance Statement
+Complies with the Canadian ICES-003 Class B specifications. This device complies with RSS 
+210 of Industry Canada. This Class B device meets all the requirements of the Canadian 
+interference-causing equipment regulations. 
+This device complies with Industry Canada license exempt RSS standard(s). Operation is 
+subject to the following two conditions: (1) this device may not cause interference, and (2) 
+this device must accept any interference, including interference that may cause undesired 
+operation of the device. 
+Cut appareil numérique de la Classe B est conforme à la norme NMB-003 du Canada. 
+Cet appareil numérique de la Classe B respecte toutes les exigences du Règlement sur le 
+matériel brouilleur du Canada. 
+Cet appareil est conforme aux normes CNR exemptes de licence d’Industrie Canada. Le 
+fonctionnement est soumis aux deux conditions suivantes : 
+(1) cet appareil ne doit pas provoquer d’interférences et 
+(2) cet appareil doit accepter toute interférence, y compris celles susceptibles de provoquer 
+un fonctionnement non souhaité de l’appareil. 
+Canadian Department of Communications Statement
+This digital apparatus does not exceed the Class B limits for radio noise emissions from 
+digital apparatus set out in the Radio Interference Regulations of the Canadian Department 
+of Communications.
+This class B digital apparatus complies with Canadian ICES-003.
+VCCI: Japan Compliance Statement
+Class B ITE
+KC: Korea Warning Statement
+ASUS 970 PRO GAMING/AURA A-3
+REACH
+Complying with the REACH (Registration, Evaluation, Authorisation, and Restriction of 
+Chemicals) regulatory framework, we published the chemical substances in our products at 
+ASUS REACH website at http://csr.asus.com/english/REACH.htm.
+DO NOT throw the motherboard in municipal waste. This product has been designed to 
+enable proper reuse of parts and recycling. This symbol of the crossed out wheeled bin 
+indicates that the product (electrical and electronic equipment) should not be placed in 
+municipal waste. Check local regulations for disposal of electronic products.
+DO NOT throw the mercury-containing button cell battery in municipal waste. This symbol 
+of the crossed out wheeled bin indicates that the battery should not be placed in municipal 
+waste.
+ASUS Recycling/Takeback Services
+ASUS recycling and takeback programs come from our commitment to the highest standards 
+for protecting our environment. We believe in providing solutions for you to be able to 
+responsibly recycle our products, batteries, other components as well as the packaging 
+materials. Please go to http://csr.asus.com/english/Takeback.htm for detailed recycling 
+information in different regions.
+Google™ License Terms
+Copyright© 2015 Google Inc. All Rights Reserved.
+Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file 
+except in compliance with the License. You may obtain a copy of the License at:
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software distributed under the 
+License is distributed on an “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+ANY KIND, either express or implied.
+See the License for the specific language governing permissions and limitations under the 
+License.
+A-4 Appendix
+Português A AsusTek Inc. declara que este dispositivo está em 
+conformidade com os requisitos essenciais e outras disposições relevantes 
+das Diretivas da CE. Para mais detalhes, consulte a Declaração de 
+Conformidade CE.
+Română Prin prezenta, AsusTek Inc. declară faptul că acest dispozitiv 
+respectă cerinţele esenţiale şi alte prevederi relevante ale directivelor CE. 
+Pentru mai multe detalii, consultaţi declaraţia de conformitate CE.
+Srpski AsusTek Inc. ovim izjavljuje da je ovaj uređaj u saglasnosti sa 
+ključnim zahtevima i drugim relevantnim odredbama CE Direktiva. Molimo 
+vas, pogledajte CE Deklaraciju o usklađenosti za više detalja.
+Slovensky Spoločnosť AsusTek Inc. týmto prehlasuje, že toto zariadenie 
+vyhovuje príslušným požiadavkám a ďalším súvisiacim ustanoveniam 
+smerníc ES. Viac podrobností si pozrite v prehlásení o zhode ES.
+Slovenščina AsusTek Inc. tukaj izjavlja, da je ta naprava skladna s temeljnimi 
+zahtevami in drugimi relevantnimi določili direktiv CE. Za več informacij 
+glejte Izjavo CE o skladnosti.
+Español Por la presente, AsusTek Inc. declara que este dispositivo cumple 
+los requisitos básicos y otras disposiciones relevantes de las directivas de 
+la CE. Consulte la Declaración de conformidad de la CE para obtener más 
+detalles.
+Svenska AsusTek Inc. förklarar härmed att denna enhet är i 
+överensstämmelse med de grundläggande kraven och andra relevanta 
+bestämmelser i CE-direktiven. Se CE-försäkran om överensstämmelse för 
+mer information.
+Українська AsusTek Inc. заявляє, що цей пристрій відповідає основним 
+вимогам відповідних Директив ЄС. Будь ласка, див. більше подробиць у 
+Декларації відповідності нормам ЄС.
+Türkçe AsusTek Inc., bu aygıtın temel gereksinimlerle ve CE Yönergelerinin 
+diğer ilgili koşullarıyla uyumlu olduğunu beyan eder. Daha fazla ayrıntı için 
+lütfen CE Uygunluk Beyanına bakın.
+Bosanski AsusTek Inc. ovim potvrđuje da je ovaj uređaj usklađen s 
+osnovnim zahtjevima i drugim relevantnim propisima Direktiva EK. Za više 
+informacija molimo pogledajte Deklaraciju o usklađenosti EK.
+English AsusTek Inc. hereby declares that this device is in compliance with 
+the essential requirements and other relevant provisions of CE Directives. 
+Please see the CE Declaration of Conformity for more details.
+Français AsusTek Inc. déclare par la présente que cet appareil est 
+conforme aux critères essentiels et autres clauses pertinentes des directives 
+européennes. Veuillez consulter la déclaration de conformité CE pour plus 
+d’informations.
+Deutsch AsusTek Inc. erklärt hiermit, dass dieses Gerät mit den 
+wesentlichen Anforderungen und anderen relevanten Bestimmungen der 
+CE-Richtlinien übereinstimmt. Weitere Einzelheiten entnehmen Sie bitte der 
+CE-Konformitätserklärung.
+Italiano AsusTek Inc. con la presente dichiara che questo dispositivo 
+è conforme ai requisiti essenziali e alle altre disposizioni pertinenti alle 
+direttive CE. Per maggiori informazioni fate riferimento alla dichiarazione 
+di conformità CE.
+Компания ASUS заявляет, что это устройство соответствует основным 
+требованиям и другим соответствующим условиям европейских 
+директив. Подробную информацию, пожалуйста, смотрите в декларации 
+соответствия.
+Български С настоящото AsusTek Inc. декларира, че това устройство 
+е в съответствие със съществените изисквания и другите приложими 
+постановления на директивите CE. Вижте CE декларацията за 
+съвместимост за повече информация.
+Hrvatski AsusTek Inc. ovim izjavljuje da je ovaj uređaj sukladan s bitnim 
+zahtjevima i ostalim odgovarajućim odredbama CE direktiva. Više 
+pojedinosti potražite u CE izjavi o sukladnosti.
+Čeština Společnost AsusTek Inc. tímto prohlašuje, že toto zařízení 
+splňuje základní požadavky a další příslušná ustanovení směrnic CE. Další 
+podrobnosti viz Prohlášení o shodě CE.
+Dansk AsusTek Inc. Erklærer hermed, at denne enhed er i 
+overensstemmelse med hovedkravene and andre relevante bestemmelser i 
+CE-direktiverne. Du kan læse mere i CE-overensstemmelseserklæring.
+Nederlands AsusTek Inc. verklaart hierbij dat dit apparaat compatibel 
+is met de essentiële vereisten en andere relevante bepalingen van CE-
+richtlijnen. Raadpleeg de CE-verklaring van conformiteit voor meer details.
+Eesti Käesolevaga kinnitab AsusTek Inc., et see seade vastab CE direktiivide 
+oluliste nõuetele ja teistele asjakohastele sätetele. Vt üksikasju CE 
+vastavusdeklaratsioonist.
+Suomi AsusTek Inc. vakuuttaa täten, että tämä laite on CE-direktiivien 
+olennaisten vaatimusten ja muiden asiaan kuuluvien lisäysten mukainen. 
+Katso lisätietoja CE-vaatimustenmukaisuusvakuutuksesta.
+Ελληνικά Με το παρόν, η AsusTek Inc. Δηλώνει ότι αυτή η συσκευή 
+συμμορφώνεται με τις θεμελιώδεις απαιτήσεις και άλλες σχετικές διατάξεις 
+των Οδηγιών της ΕΕ. Για περισσότερες λεπτομέρειες ανατρέξτε στην 
+Δήλωση Συμμόρφωσης ΕΕ.
+Magyar Az AsusTek Inc. ezennel kijelenti, hogy a készülék megfelel 
+a CE-irányelvek alapvető követelményeinek és ide vonatkozó egyéb 
+rendelkezéseinek. További részletekért tekintse meg a CE-megfelelőségi 
+nyilatkozatot.
+Latviski Līdz ar šo AsusTek Inc. paziņo, ka šī ierīce atbilst būtiskajām 
+prasībām un citiem saistošajiem nosacījumiem, kas norādīti CE direktīvā. Lai 
+uzzinātu vairāk, skatiet CE Atbilstības deklarāciju.
+Lietuvių Šiuo dokumentu bendrovė „AsusTek Inc.“ pareiškia, kad šis 
+įrenginys atitinka pagrindinius CE direktyvų reikalavimus ir kitas susijusias 
+nuostatas. Daugiau informacijos rasite CE atitikties deklaracijoje.
+Norsk AsusTek Inc. erklærer herved at denne enheten er i samsvar med 
+hovedsaklige krav og andre relevante forskrifter i CE-direktiver. Du finner 
+mer informasjon i CE-samsvarserklæringen.
+Polski Niniejszym AsusTek Inc. deklaruje, że to urządzenie jest zgodne z 
+istotnymi wymaganiami oraz innymi powiązanymi zaleceniami Dyrektyw CE. 
+W celu uzyskania szczegółów, sprawdź Deklarację zgodności CE.
+ASUS 970 PRO GAMING/AURA A-5
+ASUS contact information
+ASUSTeK COMPUTER INC.
+Address 15 Li-Te Road, Peitou, Taipei, Taiwan 11259
+Telephone +886-2-2894-3447
+Fax +886-2-2890-7798
+E-mail info@asus.com.tw
+Web site www.asus.com.com/
+Technical Support
+Telephone +86-21-38429911
+Fax +86-21-5866-8722, ext. 9101#
+Online support https://www.asus.com/tw/support/
+ASUS COMPUTER INTERNATIONAL (America)
+Address 800 Corporate Way, Fremont, CA 94539, USA
+Telephone +1-510-739-3777
+Fax +1-510-608-4555
+Web site http://www.asus.com/us/
+Technical Support
+Support fax +1-812-284-0883
+Telephone +1-812-282-2787
+Online support http://www.service.asus.com/
+ASUS COMPUTER GmbH (Germany and Austria)
+Address Harkort Str. 21-23, D-40880 Ratingen, Germany
+Fax +49-2102-959911
+Web site http://www.asus.com/de
+Online contact http://eu-rma.asus.com/sales
+Technical Support
+Telephone +49-1805-010923
+Support Fax +49-2102-9599-11
+Online support http://www.asus.com/de/support/
+A-6 Appendix
+EC
+ D
+ec
+la
+ra
+tio
+n 
+of
+ C
+on
+fo
+rm
+ity
+ 
+ W
+e,
+ th
+e 
+un
+de
+rs
+ig
+ne
+d,
+ 
+M
+an
+uf
+ac
+tu
+re
+r:
+ 
+A
+S
+U
+ST
+eK
+ C
+O
+M
+P
+U
+TE
+R
+ IN
+C
+. 
+A
+dd
+re
+ss
+: 
+4F
+, N
+o.
+ 1
+50
+, L
+I-T
+E
+ R
+d.
+, P
+E
+IT
+O
+U
+, T
+A
+IP
+E
+I 1
+12
+, T
+A
+IW
+A
+N
+ 
+ A
+ut
+ho
+riz
+ed
+ re
+pr
+es
+en
+ta
+tiv
+e 
+in
+ E
+ur
+op
+e:
+ 
+A
+S
+U
+S 
+C
+O
+M
+P
+U
+TE
+R
+ G
+m
+bH
+ 
+A
+dd
+re
+ss
+, C
+ity
+: 
+H
+A
+R
+K
+O
+R
+T 
+S
+TR
+. 2
+1-
+23
+, 4
+08
+80
+ R
+A
+TI
+N
+G
+E
+N
+ 
+C
+ou
+nt
+ry
+: 
+G
+E
+R
+M
+A
+N
+Y
+ 
+de
+cl
+ar
+e 
+th
+e 
+fo
+llo
+w
+in
+g 
+ap
+pa
+ra
+tu
+s:
+ 
+Pr
+od
+uc
+t n
+am
+e 
+: 
+M
+ot
+he
+rb
+oa
+rd
+ 
+M
+od
+el
+ n
+am
+e 
+: 
+97
+0 
+PR
+O
+ G
+AM
+IN
+G
+/A
+U
+R
+A
+ 
+co
+nf
+or
+m
+ w
+ith
+ th
+e 
+es
+se
+nt
+ia
+l r
+eq
+ui
+re
+m
+en
+ts
+ o
+f t
+he
+ fo
+llo
+w
+in
+g 
+di
+re
+ct
+iv
+es
+: 
+20
+04
+/1
+08
+/E
+C
+-E
+M
+C
+ D
+ire
+ct
+iv
+e 
+ E
+N
+ 5
+50
+22
+:2
+01
+0+
+A
+C
+:2
+01
+1 
+ E
+N
+ 6
+10
+00
+-3
+-2
+:2
+01
+4 
+ E
+N
+ 5
+50
+13
+:2
+00
+1+
+A1
+:2
+00
+3+
+A
+2:
+20
+06
+ 
+ E
+N
+ 5
+50
+24
+:2
+01
+0 
+ E
+N
+ 6
+10
+00
+-3
+-3
+:2
+01
+3 
+ E
+N
+ 5
+50
+20
+:2
+00
+7+
+A1
+1:
+20
+11
+ 
+19
+99
+/5
+/E
+C
+-R
+&
+TT
+E 
+D
+ire
+ct
+iv
+e 
+ E
+N
+ 3
+00
+ 3
+28
+ V
+1.
+8.
+1(
+20
+12
+-0
+6)
+ 
+ E
+N
+ 3
+00
+ 4
+40
+-1
+ V
+1.
+6.
+1(
+20
+10
+-0
+8)
+ 
+ E
+N
+ 3
+00
+ 4
+40
+-2
+ V
+1.
+4.
+1(
+20
+10
+-0
+8)
+ 
+ E
+N
+ 3
+01
+ 5
+11
+ V
+9.
+0.
+2(
+20
+03
+-0
+3)
+ 
+ E
+N
+ 3
+01
+ 9
+08
+-1
+ V
+6.
+2.
+1(
+20
+13
+-0
+4)
+ 
+ E
+N
+ 3
+01
+ 9
+08
+-2
+ V
+6.
+2.
+1(
+20
+13
+-1
+0)
+ 
+ E
+N
+ 3
+01
+ 9
+08
+-1
+3 
+V
+6.
+2.
+1(
+20
+14
+-0
+2)
+ 
+ E
+N
+ 3
+01
+ 8
+93
+ V
+1.
+7.
+1(
+20
+12
+-0
+6)
+ 
+ E
+N
+ 3
+00
+ 3
+30
+-2
+ V
+1.
+5.
+1(
+20
+10
+-0
+2)
+ 
+ E
+N
+ 5
+03
+60
+:2
+00
+1/
+A1
+:2
+01
+2 
+ E
+N
+ 6
+24
+79
+:2
+01
+0 
+ E
+N
+ 6
+23
+11
+:2
+00
+8 
+ E
+N
+ 3
+01
+ 4
+89
+-1
+ V
+1.
+9.
+2(
+20
+11
+-0
+9)
+ 
+ E
+N
+ 3
+01
+ 4
+89
+-3
+ V
+1.
+6.
+1(
+20
+13
+-1
+2)
+ 
+ E
+N
+ 3
+01
+ 4
+89
+-4
+ V
+2.
+1.
+1(
+20
+13
+-1
+2)
+ 
+ E
+N
+ 3
+01
+ 4
+89
+-7
+ V
+1.
+3.
+1(
+20
+05
+-1
+1)
+ 
+ E
+N
+ 3
+01
+ 4
+89
+-9
+ V
+1.
+4.
+1(
+20
+07
+-1
+1)
+ 
+ E
+N
+ 3
+01
+ 4
+89
+-1
+7 
+V
+2.
+2.
+1(
+20
+12
+-0
+9)
+ 
+ E
+N
+ 3
+01
+ 4
+89
+-2
+4 
+V
+1.
+5.
+1(
+20
+10
+-0
+9)
+ 
+ E
+N
+ 3
+01
+ 3
+57
+-2
+ V
+1.
+4.
+1(
+20
+08
+-1
+1)
+ 
+ E
+N
+ 3
+02
+ 2
+91
+-2
+ V
+1.
+1.
+1(
+20
+05
+-0
+7)
+ 
+ E
+N
+ 3
+02
+ 6
+23
+ V
+1.
+1.
+1(
+20
+09
+-0
+1)
+ 
+ E
+N
+ 5
+05
+66
+:2
+01
+3/
+A
+C
+:2
+01
+4 
+ E
+N
+ 5
+03
+85
+:2
+00
+2 
+20
+06
+/9
+5/
+EC
+-L
+VD
+ D
+ire
+ct
+iv
+e 
+ E
+N
+ 6
+09
+50
+-1
+: 2
+00
+6 
+/ A
+12
+: 2
+01
+1 
+ E
+N
+ 6
+09
+50
+-1
+: 2
+00
+6 
+/ A
+2:
+ 2
+01
+3 
+ E
+N
+ 6
+00
+65
+:2
+00
+2 
+/ A
+12
+: 2
+01
+1 
+20
+09
+/1
+25
+/E
+C
+-E
+rP
+ D
+ire
+ct
+iv
+e 
+ R
+eg
+ul
+at
+io
+n 
+(E
+C
+) N
+o.
+ 1
+27
+5/
+20
+08
+ 
+ R
+eg
+ul
+at
+io
+n 
+(E
+C
+) N
+o.
+ 6
+42
+/2
+00
+9 
+ R
+eg
+ul
+at
+io
+n 
+(E
+C
+) N
+o.
+ 2
+78
+/2
+00
+9 
+ R
+eg
+ul
+at
+io
+n 
+(E
+U
+) N
+o.
+ 6
+17
+/2
+01
+3 
+20
+11
+/6
+5/
+EU
+-R
+oH
+S 
+D
+ire
+ct
+iv
+e 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ V
+er
+. 1
+51
+02
+8 
+C
+E 
+m
+ar
+ki
+ng
+ 
+ 
+ 
+ D
+ec
+la
+ra
+tio
+n 
+D
+at
+e:
+ 3
+1/
+12
+/2
+01
+5 
+Ye
+ar
+ to
+ b
+eg
+in
+ a
+ffi
+xi
+ng
+ C
+E 
+m
+ar
+ki
+ng
+: 2
+01
+5 
+P
+os
+iti
+on
+ : 
+ C
+EO
+ 
+ 
+N
+am
+e 
+: 
+ 
+Je
+rr
+y 
+ S
+he
+n 
+S
+ig
+na
+tu
+re
+ : 
+__
+__
+__
+__
+__
+ 
+(E
+C
+ c
+on
+fo
+rm
+ity
+ m
+ar
+ki
+ng
+) 
+ 
+ 
+D
+E
+C
+L
+A
+R
+A
+T
+IO
+N
+ O
+F 
+C
+O
+N
+FO
+R
+M
+IT
+Y
+ 
+Pe
+r F
+C
+C
+ P
+ar
+t 2
+ S
+ec
+tio
+n 
+2.
+ 1
+07
+7(
+a)
+ 
+ 
+ 
+ 
+R
+es
+po
+ns
+ib
+le
+ P
+ar
+ty
+ N
+am
+e:
+ 
+A
+su
+s C
+om
+pu
+te
+r 
+In
+te
+rn
+at
+io
+na
+l 
+ 
+A
+dd
+re
+ss
+: 
+80
+0 
+C
+or
+po
+ra
+te
+ W
+ay
+, F
+re
+m
+on
+t, 
+C
+A
+ 9
+45
+39
+. 
+ 
+ 
+Ph
+on
+e/
+Fa
+x 
+N
+o:
+ 
+(5
+10
+)7
+39
+-3
+77
+7/
+(5
+10
+)6
+08
+-4
+55
+5 
+ he
+re
+by
+ d
+ec
+la
+re
+s t
+ha
+t t
+he
+ p
+ro
+du
+ct
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Pr
+od
+uc
+t N
+am
+e 
+: M
+ot
+he
+rb
+oa
+rd
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+M
+od
+el
+ N
+um
+be
+r :
+ 9
+70
+ P
+R
+O
+ G
+AM
+IN
+G
+/A
+U
+R
+A
+ 
+ 
+C
+on
+fo
+rm
+s t
+o 
+th
+e 
+fo
+llo
+w
+in
+g 
+sp
+ec
+ifi
+ca
+tio
+ns
+: 
+ 
+ 
+FC
+C 
+Pa
+rt 
+15
+, S
+ub
+pa
+rt 
+B,
+ U
+ni
+nt
+en
+tio
+na
+l R
+ad
+ia
+to
+rs
+ 
+ Su
+pp
+le
+m
+en
+ta
+ry
+ In
+fo
+rm
+at
+io
+n:
+ 
+ 
+Th
+is 
+de
+vi
+ce
+ c
+om
+pl
+ie
+s w
+ith
+ p
+ar
+t 1
+5 
+of
+ th
+e 
+FC
+C 
+Ru
+le
+s. 
+O
+pe
+ra
+tio
+n 
+is 
+su
+bj
+ec
+t t
+o 
+th
+e 
+fo
+llo
+w
+in
+g 
+tw
+o 
+co
+nd
+iti
+on
+s: 
+(1
+) T
+hi
+s 
+de
+vi
+ce
+ m
+ay
+ n
+ot
+ c
+au
+se
+ h
+ar
+m
+fu
+l i
+nt
+er
+fe
+re
+nc
+e, 
+an
+d 
+(2
+) t
+hi
+s d
+ev
+ic
+e 
+m
+us
+t a
+cc
+ep
+t a
+ny
+ in
+te
+rfe
+re
+nc
+e 
+re
+ce
+iv
+ed
+, i
+nc
+lu
+di
+ng
+ in
+te
+rfe
+re
+nc
+e 
+th
+at
+ m
+ay
+ ca
+us
+e u
+nd
+es
+ire
+d 
+op
+er
+at
+io
+n.
+ 
+ 
+ 
+R
+ep
+re
+se
+nt
+at
+iv
+e 
+Pe
+rs
+on
+’s
+ N
+am
+e 
+: 
+ 
+St
+ev
+e 
+C
+ha
+ng
+ / 
+Pr
+es
+id
+en
+t 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Si
+gn
+at
+ur
+e 
+: 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ D
+at
+e 
+: 
+ 
+ 
+ 
+ 
+D
+ec
+. 3
+1,
+ 2
+01
+5 
+ 
+ 
+ 
+ 
+ 
+V
+er
+. 1
+40
+33
+1 
+ 
+ Safety information
+ About this guide
+ Package contents
+ 970 PRO GAMING/AURA specifications summary
+ Chapter 1: Product Introduction
+ 1.1 Before you proceed
+ 1.2 Motherboard overview
+ 1.3 Central Processing Unit (CPU)
+ 1.4 System memory
+ 1.5 Expansion slots
+ 1.6 Jumpers
+ 1.7 Connectors
+ 1.8 Onboard LEDs
+ Chapter 2: BIOS Information
+ 2.1 Managing and updating your BIOS
+ 2.2 BIOS setup program
+ 2.3 My Favorites
+ 2.4 Main menu
+ 2.5 Ai Tweaker menu
+ 2.6 Advanced menu
+ 2.7 Monitor menu
+ 2.8 Boot menu
+ 2.9 Tool menu
+ 2.10 Exit menu
+ Appendices
+ Notices
+ ASUS contact information

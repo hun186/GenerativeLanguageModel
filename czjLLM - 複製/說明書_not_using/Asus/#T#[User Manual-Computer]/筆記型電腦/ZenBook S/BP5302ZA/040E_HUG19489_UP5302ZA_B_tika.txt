@@ -1,0 +1,1900 @@
+
+HUG19489
+Első kiadás / Július 2022
+E-kézikönyv
+2 Notebook PC-hez E-kézikönyv
+SZERZŐI JOGI INFORMÁCIÓK
+Az ASUSTeK COMPUTER INC. („ASUS”) előzetes írásos engedélye nélkül ennek a kiadványnak, illetve a benne 
+leírt termékeknek vagy szoftvernek, semmilyen részletét nem szabad sokszorosítani, továbbítani, átírni, 
+adatfeldolgozó rendszerben tárolni, bármilyen nyelvre lefordítani, legyen az bármilyen formában vagy 
+eszközzel, kivéve a vásárlói dokumentációt tartalékmásolat készítése céljából.
+AZ ASUS A KÉZIKÖNYVET „ÖNMAGÁBAN” BOCSÁTJA RENDELKEZÉSRE, BÁRMILYEN KIFEJEZETT VAGY 
+BELEÉRTETT JÓTÁLLÁS NÉLKÜL, TARTALMAZVA, DE NEM KORLÁTOZÓDVA PUSZTÁN AZ ELADHATÓSÁGBAN 
+LÉVŐ JÓTÁLLÁSRA, ILLETVE MEGHATÁROZOTT CÉLRA VALÓ ALKALMASSÁGRA. AZ ASUS, ILLETVE ANNAK 
+IGAZGATÓI, TISZTSÉGVISELŐI, ALKALMAZOTTAI VAGY MEGBÍZOTTAI SEMMILYEN ESETBEN NEM TARTOZNAK 
+FELELŐSSÉGGEL SEMMILYEN OLYAN KÖZVETLEN, KÖZVETETT, ESETI, KÜLÖNLEGES VAGY KÖVETKEZMÉNYES 
+KÁRÉRT, SEM KÁRTÉRÍTÉSSEL AZ ELMARADT NYERESÉG, ELMARADT BEVÉTEL, ADATVESZTÉS VAGY ÜZEMKIESÉS 
+OKOZTA OLYAN KÁRÉRT, AMELY A JELEN KÉZIKÖNYV VAGY TERMÉK HIBÁJÁBÓL ERED, MÉG AKKOR IS, HA AZ 
+ASUS-T TÁJÉKOZTATTÁK ENNEK LEHETŐSÉGÉRŐL.
+A jelen kézikönyvben szereplő termékek és cégnevek az adott cégeik bejegyzett védjegyei vagy szerzői 
+tulajdona lehetnek vagy sem, és használatuk kizárólag azonosítás vagy magyarázat céljából történik a 
+tulajdonos javára, mindennemű jogsértés szándéka nélkül.
+A JELEN KÉZIKÖNYVBEN SZEREPLŐ MŰSZAKI ADATOKAT ÉS INFORMÁCIÓT KIZÁRÓLAG TÁJÉKOZTATÁS 
+CÉLJÁBÓL BIZTOSÍTUNK, ÉS ELŐZETES BEJELENTÉS NÉLKÜL, BÁRMIKOR MEGVÁLTOZHATNAK. NEM 
+ÉRTELMEZHETŐK TOVÁBBÁ AZ ASUS ELKÖTELEZETTSÉGÉNEK. AZ ASUS NEM VÁLLAL SEMMINEMŰ 
+FELELŐSSÉGET A KÉZIKÖNYVBEN ELŐFORDULÓ HIBÁKÉRT VAGY PONTATLAN INFORMÁCIÓKÉRT, A BENNE 
+LEÍRT TERMÉKEKET ÉS SZOFTVERT IS BELEÉRTVE.
+Copyright © 2022 ASUSTeK COMPUTER INC. Minden jog fenntartva!
+A KÖTELEZETTSÉG KORLÁTOZÁSA
+Olyan körülmények is előállhatnak, ahol az ASUS részéről történő mulasztás vagy más felelősség miatt, Ön 
+jogosulttá válik kártérítésre az ASUS-tól. Minden ilyen esetben – függetlenül a jogalaptól, amely alapján Ön 
+kártérítésre jogosult az ASUS-tól –, az ASUS nem vállal felelősséget a testi sérüléseken (a halált is beleértve) és 
+az ingatlanban, illetve személyes ingóságokban bekövetkezett károkon kívül, illetve bármilyen tényleges és 
+közvetlen károkért, amelyek a jelen Garancianyilatkozat szerinti jogi feladatok elvégzésének elmulasztásából 
+vagy sikertelen végrehajtásából erednek, az egyes termékek szerződés szerinti listaára erejéig.
+Az ASUS kizárólag a jelen Garancianyilatkozat szerinti szerződés, vagyoni kártérítés vagy jogsértés alapján 
+köteles Önt kártalanítani veszteségekért, kárért vagy kárigényért.
+Ez a korlátozás az ASUS szállítóira és forgalmazójára is érvényes. Ez a maximális érték, amelynek tekintetében 
+az ASUS, szállítói és az Ön forgalmazója kollektívan felelősek.
+AZ ASUS SEMMILYEN KÖRÜLMÉNYEK KÖZÖTT NEM TARTOZIK FELELŐSSÉGGEL A KÖVETKEZŐKÉRT: 
+(1) HARMADIK FÉL KÁRIGÉNYÉÉRT ÖNNEL SZEMBEN; (2) AZ ÖN NYILVÁNTARTÁSAI VAGY ADATAI 
+MEGSEMMISÜLÉSÉÉRT VAGY KÁROSODÁSÁÉRT, VAGY (3) KÜLÖNLEGES, ESETI VAGY KÖZVETETT KÁRÉRT, 
+ILLETVE KÖVETKEZMÉNYES GAZDASÁGI KÁROKÉRT (AZ ELMARADT NYERESÉGET VAGY MEGTAKARÍTÁST 
+IS BELEÉRTVE), AKKOR IS HA AZ ASUS-T, A SZÁLLÍTÓIT VAGY AZ ÖN FORGALMAZÓJÁT TÁJÉKOZTATTÁK A 
+LEHETŐSÉGÜKRŐL.
+SZERVIZ ÉS TÁMOGATÁS
+Látogassa meg többnyelvű weboldalunkat itt: https://www.asus.com/hu/support.
+A MyASUS számos támogatási szolgáltatást kínál, mint például a hibaelhárítás, a termék teljesítményének 
+optimalizálása, és ASUS szoftver integrálás, valamint segít Önnek megszervezni a személyes asztalát és növelni 
+a tárterületet. Bővebb tudnivalókért látogasson el ide: https://www.asus.com/hu/support/FAQ/1038301/.
+https://www.asus.com/hu/support
+https://www.asus.com/hu/support/FAQ/1038301/
+Notebook PC-hez E-kézikönyv 3
+A kézikönyvről ............................................................................................................7
+A kézikönyvben felhasznált konvenciók ................................................................ 8
+Ikonok ................................................................................................................................. 8
+Tipográfia........................................................................................................................... 8
+Biztonsági óvintézkedések .....................................................................................9
+A Notebook PC használata .......................................................................................... 9
+A Notebook PC gondozása ......................................................................................... 10
+Megfelelő selejtezés ...................................................................................................... 11
+Biztonsági tudnivalók az akkumulátorral kapcsolatban................................... 12
+1. fejezet: A hardver üzembe helyezése
+Ismerkedés a notebookkal .....................................................................................16
+Elölnézet ............................................................................................................................ 16
+Felülnézet .......................................................................................................................... 22
+Alulnézet ............................................................................................................................ 23
+Jobb oldali nézet ............................................................................................................. 25
+Bal oldali nézet ................................................................................................................ 28
+2. fejezet: A Notebook PC használata
+Az első lépések ...........................................................................................................30
+A Notebook PC akkumulátorának feltöltése......................................................... 30
+A kijelző felhajtása .......................................................................................................... 32
+A bekapcsológomb használata ................................................................................. 32
+Az érintőképernyőn és az érintőpárnán használható kézmozdulatok ...33
+Az érintőképernyőn használható kézmozdulatok .............................................. 33
+Az érintőpárna használata ........................................................................................... 35
+A számbillentyűzet használata .................................................................................. 42
+A billentyűzet használata ........................................................................................43
+Gyorsbillentyűk ............................................................................................................... 43
+Funkcióbillentyűk ........................................................................................................... 44
+Windows billentyűk ....................................................................................................... 44
+A kijelzőpanel elforgatása ......................................................................................45
+Tartalomjegyzék
+4 Notebook PC-hez E-kézikönyv
+3. fejezet: A Windows használata
+Első indítás ...................................................................................................................48
+Start menü ...................................................................................................................49
+Windows alkalmazások ...........................................................................................51
+A Windows alkalmazások használata ...................................................................... 52
+A Windows alkalmazások testreszabása ................................................................ 52
+Task view (Feladatnézet) .........................................................................................55
+A vezérlők .....................................................................................................................56
+Az Illesztés funkció ....................................................................................................58
+Az illesztési hozzáférési pontok ................................................................................. 58
+Action Center (Műveletközpont) .........................................................................60
+MyASUS Splendid ......................................................................................................62
+Az OLED kijelző beállítása.......................................................................................64
+A Dark Mode (Sötét mód) beállítása ........................................................................ 64
+A kijelző kikapcsolása, ha nincs használva ............................................................ 66
+A kijelző fényerejének beállítása ............................................................................... 68
+A tálca automatikus elrejtése ..................................................................................... 70
+A Dar Mode (Sötét mód) beállítása a Microsoft Office-ban ............................ 72
+További billentyűparancsok ..................................................................................73
+Csatlakozás vezeték nélküli hálózatokhoz........................................................75
+Wi-Fi ..................................................................................................................................... 75
+Bluetooth ........................................................................................................................... 76
+Airplane mode (Repülési üzemmód) ....................................................................... 77
+A Notebook PC kikapcsolása .................................................................................78
+A Notebook PC Sleep mode-ba (Alvó állapotba) kapcsolása ....................79
+Notebook PC-hez E-kézikönyv 5
+4. fejezet: Bekapcsolási önteszt (POST)
+Bekapcsolási önteszt (POST) .................................................................................82
+A BIOS és a hibaelhárítás elérése a bekapcsolási önteszt segítségével ...... 82
+BIOS ................................................................................................................................82
+Hozzáférés a BIOS-hoz .................................................................................................. 82
+A rendszer helyreállítása .........................................................................................83
+Helyreállítási opciók használata ................................................................................ 84
+Tanácsok és GYIK
+Hasznos tanácsok a notebookhoz .......................................................................88
+Hardver GYIK ...............................................................................................................90
+Szoftveres GYIK ...........................................................................................................93
+Függelékek
+A beépített modem megfelelősége......................................................................... 96
+Áttekintés .......................................................................................................................... 96
+Nyilatkozat a hálózati kompatibilitással kapcsolatban ..................................... 97
+Nem hangberendezések .............................................................................................. 97
+A Szövetségi Távközlési Bizottság interferenciára vonatkozó 
+nyilatkozata....................................................................................................................... 100
+Az FCC rádiófrekvenciának (RF) való kitettségre figyelmeztető 
+nyilatkozata....................................................................................................................... 101
+Rádiófrekvenciának (RF) való kitettségre vonatkozó információk (SAR) .... 101
+UL biztonsági tudnivalók ............................................................................................. 102
+Követelmény a tápellátás biztonságával kapcsolatban .................................... 103
+Tv-vel kapcsolatos megjegyzés ................................................................................. 103
+6 Notebook PC-hez E-kézikönyv
+Macrovision Corporation termékkel kapcsolatos megjegyzés ...................... 103
+Halláskárosodás megelőzése ..................................................................................... 103
+Bevonattal kapcsolatos figyelmeztetés .................................................................. 103
+Skandináv országokra vonatkozó figyelmeztetések a lítiummal 
+kapcsolatban (lítium-ion akkumulátorokra vonatkozóan) .............................. 104
+CTR 21 jóváhagyás (beépített modemmel rendelkező notebookhoz) ....... 105
+Környezetvédelmi szabályozásának való megfelelőségi nyilatkozat .......... 107
+EU REACH és 33. cikkely ............................................................................................... 107
+EU RoHS.............................................................................................................................. 107
+ASUS újrahasznosítási/visszavételi szolgáltatás .................................................. 108
+Ecodesign direktíva ........................................................................................................ 108
+ENERGY STAR minősítésű termék ............................................................................. 109
+EPEAT regisztrált termékek.......................................................................................... 109
+A BIOS betűkészleteinek engedélyezése ............................................................... 110
+Egyszerűsített EU megfelelőségi nyilatkozat ........................................................ 111
+Wi-Fi hálózatra vonatkozó tájékoztatás .................................................................. 112
+Rádiófrekvenciának (RF) való kitettségre vonatkozó információk (SAR) .... 112
+Notebook PC-hez E-kézikönyv 7
+A kézikönyvről
+A kézikönyv tájékoztatást nyújt a Notebook PC hardver- és 
+szoftverjellemzőiről, a következő fejezetekbe szervezve:
+1. fejezet: A hardver üzembe helyezése
+Ez a fejezet a Notebook PC hardverkomponenseit írja le.
+2. fejezet: A Notebook PC használata
+Ez a fejezet elmagyarázza, hogyan használja a Notebook PC 
+különféle részeit.
+3. fejezet: A Windows használata
+Ez a fejezet a Windows rendszernek a Notebook PC-n történő 
+használatáról kínál átterkintést.
+4. fejezet: Bekapcsolási önteszt (POST)
+Ez a fejezet elmagyarázza, hogyan használja POST funkciót a 
+Notebook PC beállításainak módosításához.
+Tanácsok és GYIK
+Ez a fejezet tanácsokat, illetve hardverrel valamint szoftverrel 
+kapcsolatos GYIK-ről ad tájékozódást, amire a Notebook PC 
+karbantartása és egyszerűbb problémáinak megoldása során 
+hivatkozhat. 
+Függelékek
+Ez a szakasz felhívásokat és biztonsági nyilatkozatokat tartalmaz a 
+Notebook PC-vel kapcsolatosan.
+8 Notebook PC-hez E-kézikönyv
+A kézikönyvben felhasznált konvenciók
+Ebben a kézikönyvben a fontos információk kiemeléséhez az üzenetek a 
+következőképpen jelennek meg:
+FONTOS! Ez az üzenet létfontosságú információt tartalmaz, amelyet a 
+feladat végrehajtásához kötelezően be kell tartani. 
+MEGJEGYZÉS: Ez az üzenet kiegészítő információt és tippeket tartalmaz, 
+amelyek segítséget nyújtanak a feladatok végrehajtásához.
+FIGYELEM! Ez az üzenet fontos információt tartalmaz, amelyet be kell 
+tartani a biztonság érdekében, miközben bizonyos feladatokat végeznek 
+el, nehogy megsérüljenek a Notebook PC adatai és részegységei. 
+Ikonok
+Az alábbi ikonok azt jelzik, hogy mely eszköz használható feladatok 
+vagy eljárások sorának elvégzéséhez a Notebook PC-n.
+Tipográfia
+Félkövér = Kötelezően kijelölendő menüt vagy elemet jelöl.
+Dőlt = Ez a hivatkozásként használható fejezeteket mutatja a 
+kézikönyvben.
+= Használja az érintőpanelt.
+= Használja az érintőpadot.
+= Használja a billentyűzetet.
+Notebook PC-hez E-kézikönyv 9
+Biztonsági óvintézkedések
+A Notebook PC használata
+Ez a Notebook PC kizárólag 5°C (41°F) és 35°C (95°F) 
+közötti hőmérsékleten használható.
+Tekintse meg a Notebook PC alján lévő besorolási 
+címkét és győződjön meg arról, hogy a hálózati 
+adapter megfelel az értéknek.
+A Notebook PC erősebben felmelegedhet a 
+használat során vagy az akkumulátoregység töltése 
+közben. Ne hagyja a Notebook PC-t az ölében vagy 
+bármely testrészén, hogy elkerülje a forró készülék 
+miatti sérülést. Ha a Notebook PC-n dolgozik, 
+ne tegye olyan felületre, amely eltakarhatja a 
+szellőzőnyílásokat.
+Ne használjon sérült tápkábelt, kiegészítőt vagy 
+más perifériát a Notebook PC-vel.
+Ne szállítsa vagy fedje le a Notebook PC-t 
+BEKAPCSOLT állapotban olyan anyagokkal, amelyek 
+akadályozzák a szellőzést.
+Ne tegye a Notebook PC-t labilis vagy egyenetlen 
+munkafelületre. 
+A Notebook PC-t átbocsáthatja a repülőtéri 
+átvilágító berendezéseken (futószalagra helyezve), 
+azonban ne tegye ki kézi és egyéb mágneses 
+detektoroknak.
+Vegye fel a kapcsolatot légitársaságával az 
+igénybe vehető fedélzeti szolgáltatásokat, illetve a 
+Notebook PC repülés közben történő használatával 
+kapcsolatos korlátozásokat illetően.
+10 Notebook PC-hez E-kézikönyv
+A Notebook PC gondozása
+A Notebook PC tisztítása előtt húzza ki a hálózati 
+tápkábelt és vegye ki az akkumulátor egységet (ha 
+tartalmaz ilyet). Használjon tiszta cellulózszivacsot 
+vagy puha, meleg vízzel vagy alacsony koncentrációjú, 
+nem dörzsölő hatású mosószerrel nedvesített 
+szarvasbőr kendőt. A felesleges nedvességet száraz 
+kendővel törölje le a Notebook PC felületéről. Ügyelje 
+arra, hogy folyadékok ne jussanak a készülékházba 
+vagy a billentyűzet réseibe, mert ezek rövidzárlatot 
+vagy korróziót okoznak.
+Ne használjon erős oldószereket, például alkoholt, 
+hígítót, benzolt vagy más vegyszereket a Notebook 
+PC-n vagy annak közelében.
+Ne tegyen tárgyakat a Notebook PC tetejére.
+Ne tegye ki a Notebook PC-t erős mágneses vagy 
+elektromos mezőknek.
+Ne tegye ki a Notebook PC-t folyadéknak, esőnek vagy 
+nedvességnek, vagy ne használja azok közelében.
+Ne tegye ki a Notebook PC-t poros környezetnek.
+Notebook PC-hez E-kézikönyv 11
+Megfelelő selejtezés
+NE dobja ki a Notebook PC-t a háztartási szeméttel. 
+Ezt a terméket az alkatrészek újrahasználása és 
+újrahasznosítás céljából készült. Az áthúzott 
+kerekes szeméttárolót ábrázoló jelzéssel 
+ellátott terméket (elektromos és elektronikus 
+berendezéseket, valamint a higanytartalmú cellás 
+elemet) nem szabad háztartási szemétként kezelni. 
+Az elektronikus termékek elhelyezését illetően 
+tájékozódjon a helyi hatóságoknál.
+NE dobja ki az akkumulátort a háztartási 
+hulladékkal együtt. Az áthúzott kerekes 
+szeméttárolót ábrázoló jelzés azt jelenti, hogy az 
+akkumulátort tilos a háztartási hulladékkal együtt 
+leselejtezni.
+Ne használja a Notebook PC-t, ha gázszivárgás van a 
+közelben.
+Ne helyezzen aktív elektronikai eszközöket a 
+Notebook PC közelébe, mert így elkerülheti a 
+kijelzőpanel működésének zavarását elektromágneses 
+hullámok által.
+Ne használja ezt a Notebook PC-t kriptovaluta 
+bányászatához (hatalmas mennyiségű 
+áramfogyasztás és időigény konvertibilis virtuális 
+valuta megszerzéséhez) és/vagy kapcsolódó 
+tevékenységekhez.
+12 Notebook PC-hez E-kézikönyv
+Az akkumulátor védelme
+• Az akkumulátor gyakori feltöltése nagy feszültség mellett 
+lerövidítheti az akkumulátor működési idejét. Ahhoz, hogy 
+megvédje az akkumulátort, amint az teljesen feltöltődött, a 
+rendszer leállíthatja a töltést, amikor az akkumulátor töltésszintje 
+90% és 100% között van.
+MEGJEGYZÉS: Az akkumulátor kezdeti töltési kapacitását általában 90% 
+és 99% közé állítják. A tényleges érték típus szerint változhat.
+• Ha az akkumulátort magas környezeti hőmérsékleten tölti vagy 
+tárolja, az akkumulátort kapacitása végleg leromolhat és gyorsan 
+lerövidül az élettartama. Ha az akkumulátort hőmérséklete túl 
+magas, előfordulhat, hogy a rendszer csökkenti a töltőkapacitást, 
+sőt le is állíthatja a töltést az akkumulátor védelme érdekében.
+• Az akkumulátort kapacitása akkor is csökkenhet, ha az eszköz 
+ki van kapcsolva, vagy leválasztják a hálózati áramforrásról. 
+Ez normális, mert a rendszer ennek ellenére kis mértékben 
+fogyasztja az akkumulátor energiáját.
+Biztonsági tudnivalók az akkumulátorral 
+kapcsolatban
+Notebook PC-hez E-kézikönyv 13
+Az akkumulátor általános gondozása
+• Ha hosszabb ideig nem tervezi használni eszközét, ne feledje 
+50%-ra feltölteni az akkumulátort, majd kapcsolja ki a eszközt, és 
+válassza le a hálózati adaptert. Töltse föl az akkumulátort 50%-os 
+kapacitásra háromhavonta, hogy elkerülje a túlzott önkisülést és 
+az akkumulátor rongálódását.
+• Az akkumulátor működési idejének megnövelése érdekében 
+kerülje az akkumulátor hosszú ideig tartó töltését nagy 
+feszültség mellett. Ha folyamatosan működteti eszközét hálózati 
+áramforrásról, ne feledje kisütni az akkumulátort egészen 50%-ra 
+kéthetente legalább egyszer. Az akkumulátor működési idejének 
+megnövelése érdekében a beállításokat a MyASUS Battery Health 
+Charging menüjében is elvégezheti.
+• Tanácsos az akkumulátort 5°C (41°F) és 35°C (95°F) közötti 
+hőmérsékleten tárolni 50%-os töltöttségen. Az akkumulátor 
+működési idejének megnövelése érdekében a beállításokat a 
+MyASUS Battery Health Charging alatt is elvégezheti.
+• Ne hagyja az akkumulátort nedves környezetben. A nedvességnek 
+való kitétel növelheti az akkumulátor önkisülési sebességét. 
+Az alacsony környezeti hőmérséklettől károsodhatnak az 
+akkumulátorban lévő vegyszerek, míg a magas környezeti 
+hőmérséklet vagy a túlhevülés robbanásveszélyt okozhat.
+• Ne helyezze az eszközt vagy akkumulátor-egységet hősugárzó, 
+kandalló, kazán, hősugárzó, vagy bármilyen, 60°C-ot (140°F) 
+meghaladó hőforrás közelébe. A magas környezeti hőmérséklet 
+robbanást vagy tüzet okozó szivárgást eredményezhet.
+14 Notebook PC-hez E-kézikönyv
+Notebook PC-hez E-kézikönyv 15
+1. fejezet:
+A hardver üzembe helyezése
+16 Notebook PC-hez E-kézikönyv
+Ismerkedés a notebookkal
+Elölnézet
+MEGJEGYZÉS: A billentyűzet elrendezése országonként vagy 
+térségenként eltérő lehet. A notebook típusától függően a notebook 
+megjelenése is eltérő lehet.
+Notebook PC-hez E-kézikönyv 17
+Mikrofonrendszer
+A mikrofonrendszer visszhangkioltási, zajelnyomási és 
+nyalábformálási funkciókat kínál a jobb beszédhang-felismerés 
+és hangrögzítés érdekében.
+Kamerajelző fény
+A kamera jelzőfénye világít, amikor a beépített kamera 
+használatban van.
+Kamera
+A beépített kamera képek, illetve videók készítését teszi lehetővé 
+a notebookon.
+Infravörös kamera
+A beépített kamera képek, illetve videók készítését teszi lehetővé 
+a notebookon. Az infravörös kamera szintén támogatja a 
+Windows Hello használatát.
+MEGJEGYZÉS: A piros infravörös LED villog az adatok olvasása 
+során, mielőtt bejelentkezik a Windows Hello arcfelismerési 
+funkciójával.
+18 Notebook PC-hez E-kézikönyv
+360º-ban állítható érintőképernyős panel
+A notebook érintőképernyős panelének helyzetét 360º-os 
+szögben lehet állítani. Ez lehetővé teszi, hogy a készüléket 
+gyorsan notebookból érintőfunkciós tabletté alakítsa át.
+Ez a nagy felbontású érintőképernyős panel kiváló 
+lehetőségeket biztosít fotók, videók és egyéb multimédiafájlok 
+megtekintéséhez a notebookon. A panel érintőmozdulatokkal is 
+működtethető.
+Felelősség kizárása: Az álló vagy nagy kontrasztú képek 
+hosszan tartó megjelenítése képállandósulást vagy beégést 
+eredményezhet az OLED-kijelzőn. A (bizonyos típusokon) 
+OLED-kijelzővel felszerelt ASUS Notebook PC-n minimálisra 
+lehet csökkenteni a beégés lehetőségét a Sötét mód 
+alapértelmezettként történő beállításával és a kijelző kikapcsolása 
+előtti üresjárati idő lerövidítésével Windows 10 alatt. Az OLED-
+kijelző maximális élettartama érdekében ajánlott egy sötét 
+hátterű animált képernyővédő engedélyezése és az OLED-kijelző 
+maximális fényerőre állításának mellőzése.
+MEGJEGYZÉS:
+• További részletekért tekintse meg a kézikönyvnek Az OLED-
+kijelző beállítása című részét.
+• A notebook tabletté történő átalakításáról szóló további 
+részletekért tekintse meg a kézikönyv A kijelzőpanel 
+elforgatása című részét.
+Notebook PC-hez E-kézikönyv 19
+A mikrofon kikapcsolt állapotát jelző fény
+Ez a jelzőfény világít, amikor a mikrofont kikapcsolása.
+Billentyűzet
+A billentyűzet kényelmes lenyomási mélységű, teljes méretű 
+QUERTZ billentyűket tartalmaz. Emellett használhatja a 
+funkcióbillentyűket, gyorsan elérheti a Windows operációs 
+rendszert, és vezérelhet egyéb multimédiás funkciókat is.
+MEGJEGYZÉS: A billentyűzet elrendezése típusonként és 
+területenként eltérő lehet.
+Caps Lock jelzőfénye
+Ez a jelzőfény a Caps Lock funkció aktiválásakor gyullad ki. A 
+Caps Lockkal csupa nagybetűvel (pl. A, B, C) gépelhet a notebook 
+billentyűzetén.
+20 Notebook PC-hez E-kézikönyv
+Érintőpad/Számbillentyűzet 
+Ez az érintőpad és a számbillentyűzet közötti váltást teszi 
+lehetővé.
+Az érintőpad a képernyőn történő navigáláshoz összetett 
+mozdulatok használatát teszi lehetővé az intuitív felhasználói 
+élmény érdekében. A hagyományos egér funkcióit is szimulálja.
+MEGJEGYZÉS: További részletekért tekintse meg a kézikönyv Az 
+érintőpad használata című részét.
+A számbillentyűzet számok bevitelére használható.
+FONTOS! Ne feledje, hogy a számbillentyűzet számos verzióját 
+kizárólag a legújabb Microsoft Windows operációs rendszer 
+támogatja.
+MEGJEGYZÉS: További részletekért tekintse meg a kézikönyv A 
+számbillentyűzet használata című részét.
+AKörnyezeti megvilágítás érzékelője
+A környezeti megvilágítás érzékelője észleli a környezet 
+megvilágításának mértékét. Segítségével a rendszer 
+automatikusan képes állítani a kijelző fényerejét a környezeti 
+megvilágításnak megfelelően.
+RGB-fényérzékelő
+Az RGB-fényérzékelő automatikusan beállítja a kijelzőpanel 
+színhőmérsékletét a környező fényviszonyoknak megfelelően.
+Notebook PC-hez E-kézikönyv 21
+ToF-érzékelő
+A ToF-érzékelő automatikusan felébreszti és bejelentkezteti a 
+Notebook PC-t a Windows Hello segítségével, miután észleli az 
+Ön jelenlétét a közelben. A Notebook PC Modern készenlétbe 
+lép, miután elhagyja a területet.
+Kamera kikapcsolt állapotát jelző lámpa
+Ez a jelzőfény akkor világít, amikor a kamerát kikapcsolják.
+Főkapcsoló gomb
+Nyomja meg a főkapcsoló gombot a notebook be- és 
+kikapcsolásához. A főkapcsoló gombot a notebook alvó vagy 
+hibernált módba helyezéséhez, illetve alvó vagy hibernált 
+módból történő felébresztéséhez is használhatja.
+Ha a notebook nem reagál, nyomja meg és tartsa lenyomva 
+a főkapcsoló gombot legalább tíz (10) másodpercig, amíg a 
+notebook ki nem kapcsolódik.
+Ujjlenyomat-olvasó
+Ez a beépített ujjlenyomat-olvasó leolvassa az ujjlenyomatát, 
+és biometrikus hitelesítésként használja az ujjlenyomatot a 
+notebook rendszerébe való bejelentkezéshez.
+22 Notebook PC-hez E-kézikönyv
+Felülnézet
+Mikrofonrendszer
+A mikrofonrendszer visszhangkioltási, zajelnyomási és 
+nyalábformálási funkciókat kínál a jobb beszédhang-felismerés 
+és hangrögzítés érdekében.
+Notebook PC-hez E-kézikönyv 23
+Alulnézet
+MEGJEGYZÉS: Az alulnézet az adott modell függvényében változhat.
+FIGYELEM! A Notebook PC erősebben felmelegedhet a használat során 
+vagy az akkumulátoregység töltése közben. Ne hagyja a Notebook PC-t 
+az ölében vagy bármely testrészén, hogy elkerülje a forró készülék miatti 
+sérülést. Ha a Notebook PC-n dolgozik, ne tegye olyan felületre, amely 
+eltakarhatja a szellőzőnyílásokat.
+FONTOS!
+• Az akkumulátor üzemideje a notebook használatától és műszaki 
+adataitól függ. Az akkumulátoregységet nem lehet szétszerelni.
+• A maximális kompatibilitás és megbízhatóság érdekében kizárólag 
+hivatalos forgalmazóktól vásároljon alkatrészeket. Vegye fel a 
+kapcsolatot egy ASUS szervizközponttal vagy hivatalos forgalmazóval 
+a termék javítása érdekében, illetve ha segítségre van szüksége a 
+termék megfelelő szétszereléséhez vagy összeszereléséhez.
+24 Notebook PC-hez E-kézikönyv
+Szellőzőnyílások
+Lehetővé teszik a hideg levegő beáramlását a notebookba, 
+illetve a meleg levegő távozását.
+FIGYELEM! Győződjön meg arról, hogy papír, könyv, ruházat, 
+kábel vagy egyéb tárgy nem akadályozza a levegő áramlását 
+a szellőzőnyílásokon keresztül. Ellenkező esetben a készülék 
+túlhevülhet.
+Hangszórók
+A beépített hangszórókkal maga a notebook is lejátszhatja a 
+hangot. Az audioszolgáltatásokat szoftver vezérli.
+Notebook PC-hez E-kézikönyv 25
+Jobb oldali nézet
+Állapotjelzők
+Az állapotjelzők segítenek megállapítani a notebook 
+hardverének aktuális állapotát.
+ Kétszínű akkumulátortöltés-jelző fény
+ A kétszínű LED vizuálisan jelzi az akkumulátor töltési 
+állapotát. Részletek az alábbi táblázatban:
+26 Notebook PC-hez E-kézikönyv
+ 
+Szín Állapot
+Folyamatos fehér A notebook áramforráshoz 
+csatlakozik, és az akkumulátor 
+töltési szintje 95% és 100% 
+között van.
+Folyamatos 
+narancssárga
+A notebook áramforráshoz 
+csatlakozik, tölti az 
+akkumulátort, és az akkumulátor 
+töltési szintje kevesebb, mint 
+95%.
+Villogó 
+narancssárga
+A notebook akkumulátorról 
+üzemel, és az akkumulátor 
+töltési szintje kevesebb, mint 
+10%.
+A fények nem 
+világítanak
+A notebook akkumulátorról 
+üzemel, és az akkumulátor 
+töltési szintje 10% és 100% 
+között van.
+ Működésjelző fény
+ A működésjelző fény a notebook bekapcsolásakor 
+gyullad ki, és lassan villog, ha a notebook alvó 
+üzemmódban van.
+MicroSD-kártyanyílás
+Ez a beépített memóriakártya-olvasó a microSD-kártya 
+formátumokat támogatja.
+Notebook PC-hez E-kézikönyv 27
+Thunderbolt™ 4/Power Delivery kombinált aljzat
+A Thunderbolt™ 4-port kompatibilis az USB Type-C® szabvánnyal 
+és legfeljebb 40 Gbit/s adatátviteli sebességet biztosít a 
+Thunderbolt™4-eszközök számára. Csatlakoztassa a Notebook 
+PC-t DisplayPort, VGA, DVI vagy HDMI külső megjelenítőhöz 
+a nagy felbontású megjelenítési funkciók kihasználásához az 
+Intel® Thunderbolt™ technologia révén. Ehhez az aljzathoz 
+csatlakoztassa a mellékelt tápfeszültség adaptert az akkumulátor 
+egység töltéséhez és a Notebook PC árammal történő 
+ellátásához.
+MEGJEGYZÉS: A port adatátviteli sebessége modelltől függően 
+eltérhet.
+FIGYELEM! Az adapter a tartós használattól felforrósodhat. Ne 
+takarja le az adaptert, és tartsa távol a testétől, ha az elektromos 
+hálózathoz csatlakozik.
+FONTOS!
+• A Notebook PC teljes feltöltése alacsony feszültségű 
+tápforráson keresztül tovább tarthat.
+• A károk elkerülése érdekében a Notebook PC-t az USB 
+Power Delivery kombinált aljzaton keresztül csak 20V/3,25A 
+áramforrásról töltse. Bővebb tájékoztatásért forduljon 
+valamelyik ASUS szervizközponthoz.
+Fejhallgató/Headset/Mikrofon jack aljzat
+Ez az aljzat aktív hangszórók vagy fejhallgatók csatlakoztatásához 
+való. A aljzaton keresztül headsetet vagy külső mikrofont is 
+csatlakoztathat.
+28 Notebook PC-hez E-kézikönyv
+Bal oldali nézet
+USB 3.2 2. generációs Type-C®/DisplayPort/ 
+tápfeszültség-biztosító kombinált port
+Az USB 3.2 (Univerzális Soros Busz 3.2) 2. generációs Type-C® port 
+akár 10 Gbit/s adatátviteli sebességet biztosít, és visszamenőleg 
+kompatibilis az USB 2.0 szabvánnyal. USB Type-C® adapterrel 
+külső kijelzőhöz csatlakoztathatja a notebookot. Csatlakoztasson 
+egy 20 V/3,25 A teljesítményű áramforrást az akkumulátoregység 
+töltéséhez és a notebook árammal történő ellátásához.
+MEGJEGYZÉS: A port adatátviteli sebessége modelltől függően 
+eltérhet.
+FONTOS!
+• A Notebook PC teljes feltöltése alacsony feszültségű 
+tápforráson keresztül tovább tarthat.
+• károk elkerülése érdekében a Notebook PC-t az USB Power 
+Delivery kombinált aljzaton keresztül csak 20V/3,25A 
+áramforrásról töltse. Bővebb tájékoztatásért forduljon 
+valamelyik ASUS szervizközponthoz.
+Notebook PC-hez E-kézikönyv 29
+2. fejezet:
+A Notebook PC használata
+30 Notebook PC-hez E-kézikönyv
+FONTOS!
+Az adapterre vonatkozó információk:
+• Bemeneti feszültség: 100-240Vac
+• Bemeneti frekvencia: 50-60Hz
+• Névleges kimeneti áramerősség: 3,25A (65W)
+• Névleges kimeneti feszültség: 20V
+A Első használat előtt töltse a Notebook PC- 
+akkumulátorát 3 órán keresztül.
+MEGJEGYZÉS: Az adapter függ a PC modelltől és az Ön régiójától.
+Az első lépések
+A Notebook PC akkumulátorának feltöltése
+A. Csatlakoztassa az AC hálózati vezetéket az AC/DC adapterhez.
+B. Csatlakoztassa a DC elektromos csatlakozót a Notebook PC 
+elektromos (DC) bementére.
+C. Csatlakoztassa az AC adaptert a 100V~240V áramforráshoz.
+Notebook PC-hez E-kézikönyv 31
+FONTOS!
+• Bizonyosodjon meg arról, hogy a Notebook PC címkéjén és 
+az adapteren feltüntetett névleges elektromossági adatok 
+megegyezzenek. Egyes Notebook PC modellek esetében a 
+rendelkezésre álló SKU alapján több névleges kimeneti áramerősség 
+is lehetséges.
+• A Notebook PC első aktiválás előtt csatlakoztassa a Notebook 
+PC-t az adapterhez. Az elektromos csatlakozókábelt mindig 
+hosszabbítókábel nélkül csatlakoztassa a fali csatlakozóaljzathoz. 
+Biztonsági okokból a készüléket kizárólag megfelelően földelt 
+elektromos fali csatlakozóaljzathoz csatlakoztassa.
+• Bizonyosodjon meg arról, hogy a használt fali csatlakozóaljzat a 
+Notebook PC közelében található és jól megközelíthető.
+• A Notebook PC elektromos hálózatról történő leválasztásakor húzza 
+ki a Notebook PC elektromos vezetékét a fali csatlakozóaljzatból.
+FIGYELEM!
+Olvassa el a Notebook PC akkumulátorára vonatkozó alábbi biztonsági 
+utasításokat:
+• A készülékben lévő akkumulátort kizárólag az ASUS által 
+felhatalmazott szakemberek távolíthatják el (kizárólag nem 
+eltávolítható akkumulátorok esetében).
+• A készülékben lévő akkumulátor eltávolításakor vagy 
+szétszerelésekor tűzveszély vagy vegyi anyag okozta égési sérülés 
+veszélye állhat fenn.
+• Saját biztonsága érdekében tartsa be a figyelmeztető címkén lévő 
+utasításokat.
+• Amennyiben az akkumulátort nem megfelelő típusú akkumulátorral 
+cseréli, robbanásveszély áll fenn.
+• Az akkumulátort ne dobja tűzbe.
+• A Notebook PC akkumulátorának rövidzárlata tilos.
+• Soha ne kísérelje meg szétszerelni és újra összeszerelni az 
+akkumulátort (kizárólag el nem távolítható akkumulátorok esetén).
+• Ha az akkumulátornál szivárgást észlel, az akkumulátor használata 
+tilos.
+• Az akkumulátort és annak komponenseit előírásszerűen használja 
+újra, illetve ártalmatlanítsa.
+• Az akkumulátort és más kisméretű komponenseket tartsa 
+gyermekektől távol.
+32 Notebook PC-hez E-kézikönyv
+A kijelző felhajtása
+A bekapcsológomb használata
+Notebook PC-hez E-kézikönyv 33
+Az érintőképernyőn használható kézmozdulatok
+Használja a kézmozdulatokat a programok indítására és a Notebook 
+PC beállításainak megnyitására. A funkciók a Notebook PC 
+érintőképernyőjén alkalmazott kézmozdulatokkal aktiválhatók.
+Az érintőképernyőn és az érintőpárnán 
+használható kézmozdulatok
+Használja a kézmozdulatokat a programok indítására és a Notebook PC 
+beállításainak megnyitására. Az érintőképernyőn és az érintőpárnán 
+használható kézmozdulatokat az alábbi ábrák illusztrálják.
+MEGJEGYZÉS: Az alábbi képernyőképek kizárólag irányadó jelleggel 
+bírnak. Az érintőképernyő modell függvényében különbözhet.
+Koppintás/Dupla koppintás Nyomja le és tartsa lenyomva
+• Az alkalmazások jelöléséhez 
+koppintson egyszer.
+• Az alkalmazások 
+megnyitásához koppintson 
+kétszer.
+Nyomja meg és tartsa nyomva a 
+helyi menü megnyitásához.
+34 Notebook PC-hez E-kézikönyv
+Nagyítás Kicsinyítés
+Két ujját távolítsa el egymástól az 
+érintőképernyőn.
+Két ujját húzza egymáshoz az 
+érintőképernyőn.
+Ujjcsúsztatás Húzás
+Az ujját csúsztatva görgessem 
+felfelé vagy lefelé, illetve pásztázza 
+a képernyőt balra vagy jobbra.
+• Húzással kijelölési mezőt 
+hozhat létre több elem 
+körül.
+• A Drag and drop (Fogd 
+és vidd) módszerrel 
+az elemeket új helyre 
+helyezheti.
+Notebook PC-hez E-kézikönyv 35
+Az érintőpárna használata
+A mutató mozgatása
+Az érintőpárna bármely részét megérintve aktiválhatja a mutatót, 
+amelyet azután az ujjának az érintőpárnán történő csúsztatásával 
+mozgathat.
+Csúsztatás vízszintesen
+Csúsztatás függőlegesen
+Csúsztatás átlós irányban
+36 Notebook PC-hez E-kézikönyv
+Egyujjas mozdulatok
+Koppintás/Dupla koppintás
+• Az alkalmazások jelöléséhez koppintson egyszer.
+• Az alkalmazások megnyitásához koppintson kétszer.
+Drag and drop (Fogd és vidd)
+Koppintson duplán egy elemre, majd csúsztassa az ujját, de közben ne 
+emelje fel az érintőpárnáról. Az elem új helyre helyezéséhez emelje fel 
+az ujját az érintőpárnáról.
+Notebook PC-hez E-kézikönyv 37
+Bal kattintás Jobb kattintás
+• Az alkalmazások jelöléséhez 
+koppintson.
+• Az alkalmazások 
+megnyitásához koppintson 
+kétszer.
+Kattintson erre a gombra helyi 
+menü megnyitásához.
+MEGJEGYZÉS: A kipontozott vonalon belüli területek a bal és jobb 
+egérgomb érintőpárnán lévő helyeit mutatják.
+Kétujjas mozdulatok
+Koppintás
+A jobb kattintás funkció az érintőpárnán két ujjal történő koppintással 
+szimulálható.
+38 Notebook PC-hez E-kézikönyv
+Kétujjas görgetés (felfelé/lefelé) Kétujjas görgetés (balra/jobbra)
+Felfelé vagy lefelé görgetéshez 
+csúsztassa két ujját.
+Balra vagy jobbra görgetéshez 
+csúsztassa két ujját.
+Kicsinyítés Nagyítás
+Két ujját húzza egymáshoz az 
+érintőpárnán.
+Két ujját távolítsa el egymástól az 
+érintőpárnán.
+Notebook PC-hez E-kézikönyv 39
+Drag and drop (Fogd és vidd)
+Jelöljön ki egy elemet, nyomja le és tartsa lenyomva a bal gombot. A 
+másik ujját az érintőpárnán csúsztatva fogja meg az elemet, helyezze 
+az óhajtott helyre és emelje fel az ujját a gombról.
+Háromujjas mozdulatok
+Koppintás
+Koppintson három ujjal az érintőpárnára és indítsa el a Settings 
+(Beállítások) menüben kijelölt funkciót.
+40 Notebook PC-hez E-kézikönyv
+Húzás balra/Húzás jobbra
+Ha több alkalmazást nyitott meg, váltson az alkalmazások között 
+három ujj húzásával balra vagy jobbra.
+Húzás felfelé Húzás lefelé
+Felfelé húzással áttekintheti a 
+megnyitott összes alkalmazást.
+Lefelé húzást követően megjelenik 
+az asztalt.
+Notebook PC-hez E-kézikönyv 41
+Négyujjas mozdulatok
+Koppintás
+Koppintson négy ujjal az érintőpárnára és indítsa el a Settings 
+(Beállítások) menüben kijelölt funkciót.
+42 Notebook PC-hez E-kézikönyv
+A számbillentyűzet használata
+FONTOS! Ne feledje, hogy a számbillentyűzet számos verzióját kizárólag a 
+legújabb Microsoft Windows operációs rendszer támogatja.
+MEGJEGYZÉS: A % and = funkció használatához állítsa a beviteli nyelvet 
+angol nyelvre.
+• Nyomja meg és egy másodpercig tartsa lenyomva a 
+ szimbólumot a számbillentyűk és az érintőpárna 
+közötti váltáshoz.
+• A szimbólumra kattintva beállíthatja a 
+számbillentyűzet fényerejét.
+• Tartsa lenyomva a szimbólumot majd mozdítsa 
+a számbillentyűzeten bármely irányba a Windows 
+Calculator (Windows számológép) aktiválásához.
+Notebook PC-hez E-kézikönyv 43
+A billentyűzet használata
+Használja a hangszóró be- vagy kikapcsolására
+Használja a hangszóró hangerejének csökkentésére
+Használja a hangszóró hangerejének növelésére
+Használja a kijelző fényerejének csökkentésére
+Használja a kijelző fényerejének növelésére
+Használja az érintőpárna aktiválására vagy kikapcsolására
+Használja a háttérvilágítású billentyűzet fényerejének 
+beállítására
+Használja a kijelzőmódok váltására
+MEGJEGYZÉS: Bizonyosodjon meg arról, hogy a második 
+kijelzőt csatlakoztatta a Notebook PC-hez.
+Gyorsbillentyűk
+A notebook billentyűzetén található gyorsbillentyűkkel a következő 
+parancsokat indíthatja el:
+44 Notebook PC-hez E-kézikönyv
+Windows billentyűk
+A Notebook PC billentyűzetén az alábbi két speciális Windows billentyű 
+található:
+A START menü indítása
+Kijelzi a legördülő menüt*
+Funkcióbillentyűk
+A funkcióbillentyűk aktiválásához vagy kikapcsolásához használja 
+a kombinációt. Ha a funkcióbillentyűk aktívak, a 
+gyorsbillentyűk is elérhetők – ehhez tartsa lenyomva a gombot, 
+és nyomja meg a felső sorban lévő gombok valamelyikét.
+Használja a mikrofon be- vagy kikapcsolására
+Használja a kamera be- vagy kikapcsolására
+Használja a képernyőfelvétel aktiválására
+Használja a myASUS indítására
+* Egyes típusokon
+Notebook PC-hez E-kézikönyv 45
+A kijelzőpanel elforgatása
+A Notebook PC kijelzőpanelje 360 fokban elforgatható. A kijelzőpanelt 
+az alábbi ábrának megfelelően állíthatja be.
+360 fokban állítható
+Notebook PC mód
+MEGJEGYZÉS: Az ábrák kizárólag hivatkozási célt szolgálnak.
+46 Notebook PC-hez E-kézikönyv
+Sátor mód
+Állvány mód
+Táblagép mód
+MEGJEGYZÉS: A kijelző Állvány, Sátor és Tablet módba forgatása letiltja a 
+billentyűzetet és érintőpadot.
+Notebook PC-hez E-kézikönyv 47
+3. fejezet:
+A Windows használata
+48 Notebook PC-hez E-kézikönyv
+Első indítás
+Az első aktiválást követően a Notebook PC-t, egy képernyősorozattal 
+végigvezeti Önt a Windows operációs rendszer konfigurálásának 
+lépésein.
+A Notebook PC első bekapcsolása:
+1. Nyomja meg a Notebook PC Be/Ki gombját. Várjon néhány percet, 
+míg megjelenik a beállítási képernyő.
+2. A beállítási képernyőn válassza ki a régiót és a Notebook PC-n 
+használandó nyelvet.
+3. Olvassa el figyelmesen a licencszerződést. Kattintson az Accept 
+(Elfogadás) gombra.
+4. Kövesse a képernyőn kijelzett utasításokat az alábbi alapelemek 
+konfigurálásához:
+• Personalize (Személyre szabás)
+• Get online (Online csatlakozás)
+• Settings (Beállítások)
+• Your account (Az Ön fiókja)
+5. Az alapelemek konfigurálását követően a Windows telepíti 
+az alkalmazásokat és az elsődleges beállításokat. Beállításkor 
+biztosítsa a Notebook PC folyamatos áramellátását.
+6. A beállítások befejeződését követően megjelenik az asztal.
+MEGJEGYZÉS: Az ebben a fejezetben található képernyőképek kizárólag 
+irányadó jelleggel bírnak.
+Notebook PC-hez E-kézikönyv 49
+Start menü
+A Start menü biztosítja a Notebook PC-n lévő programok, Windows 
+alkalmazások, mappák és beállítások elsődleges elérését.
+Használja a Start menüt az alábbi általános tevékenységek 
+kivitelezésére:
+• Programok vagy Windows alkalmazások indítása
+• Gyakran használt programok vagy Windows alkalmazások 
+megnyitása
+• A Notebook PC beállításainak módosítása
+• Segítségkérés a Windows operációs rendszerrel kapcsolatban
+• A Notebook PC kikapcsolása
+• Kijelentkezés a Windows-ból vagy váltás egy másik felhasználói 
+fiókra
+Fiókbeállítások módosítása, zárolása 
+vagy kijelentkezés a fiókból
+A Start menü megnyitása
+A Task view (Feladatnézet) megnyitása
+Leállítás, újraindítás vagy a 
+Notebook PC alvó állapotba 
+kapcsolása
+Alkalmazások indítása a tálcáról
+Alkalmazások indítása a Start menüből
+A Search (Keresés) funkció indítása
+Vezérlők indítása
+50 Notebook PC-hez E-kézikönyv
+A START menü indítása
+Koppintson az asztalon lévő Start ikonra.
+Állítsa az egérmutatót az asztalon látható Start 
+ikonra, majd kattintson.
+Nyomja meg a billentyűzet Windows logó 
+billentyűjét.
+Programok megnyitása a Start menüből
+A Start menüt leggyakrabban a Notebook PC-re telepített programok 
+megnyitásához használjuk.
+Koppintson a program indításához.
+Állítsa az egérmutatót az óhajtott programra, majd 
+kattintson a program indításához.
+A programok közötti böngészésre használja a 
+nyílbillentyűket. Indításhoz nyomja meg az 
+billentyűt.
+MEGJEGYZÉS: Ha az All apps (Minden alkalmazás) gombra kattint, a 
+rendszer betűrendben kijelzi a Notebook PC-n lévő programok és mappák 
+teljes listáját.
+Notebook PC-hez E-kézikönyv 51
+Windows alkalmazások
+Ezek az alkalmazások a Start menübe vannak rögzítve és a könnyebb 
+hozzáférhetőség céljából csempe formában jelennek meg.
+MEGJEGYZÉS: Egyes Windows alkalmazások teljes indításához szükséges 
+a bejelentkezés a Microsoft fiókba.
+52 Notebook PC-hez E-kézikönyv
+A Windows alkalmazások használata
+A Windows alkalmazások testreszabása
+A Start menüben lévő alkalmazások rögzítéséhez a tálcára vagy 
+eltávolításához a tálcából, cselekedjen az alábbi utasítások szerint:
+Windows alkalmazások indítása a Start menüből
+Az alkalmazást rákoppintással indíthatja el.
+Állítsa az egérmutatót az alkalmazásra, majd kattintson 
+az alkalmazás indításához.
+Az alkalmazások közötti böngészésre használja a 
+nyílbillentyűket. Az alkalmazás indításához nyomja meg 
+az billentyűt.
+Alkalmazások mozgatása
+Nyomja meg és tartsa lenyomva az alkalmazás ikonját, 
+majd húzza az új helyre.
+Helyezze az egérmutatót az alkalmazás fölé, majd a 
+Drag and drop (Fogd és vidd) módszerrel helyezze az új 
+helyre.
+Notebook PC-hez E-kézikönyv 53
+Alkalmazások eltávolítása
+Nyomja meg és tartsa nyomva az alkalmazás ikonját, 
+majd koppintson az Unpin from Start (Levétel a Start 
+menüről) elemre.
+Helyezze az egérmutatót az alkalmazás fölé, jobb 
+egérgombbal kattintson az adott alkalmazásra, majd 
+kattintson az Unpin from Start (Levétel a Start 
+menüről) lehetőségre.
+Az alkalmazások közötti tallózásra használja a 
+nyílgombokat. 
+Nyomja meg a vagy az gombokat (a 
+jelölt modellek esetén), majd kattintson az Unpin from 
+Start (Levétel a Start menüről) lehetőségre.
+54 Notebook PC-hez E-kézikönyv
+Több alkalmazás rögzítése a Start menübe
+Az All apps (minden alkalmazás) menüben nyomja 
+meg és tartsa nyomva a Start menühöz hozzáadni kívánt 
+alkalmazás ikonját, majd koppintson a Pin to Start 
+(kitűzés a Start menübe) lehetőségre.
+Az All apps (Minden alkalmazás) menüben mozgassa 
+az egérmutatót a Start menühöz hozzáadandó 
+alkalmazás fölé, kattintson az adott alkalmazásra a jobb 
+egérgombbal, majd kattintson a Pin to Start (Kitűzés a 
+Startra) lehetőségre.
+Az All apps (Minden alkalmazás) opcióban nyomja 
+meg a vagy az (a jelölt modellek 
+esetén) a Start menüben hozzáadandó alkalmazáson 
+majd kattintson a Pin to Start (Kitűzés a Startra) 
+lehetőségre.
+Alkalmazások rögzítése a tálcán
+Nyomja meg és tartsa nyomva az alkalmazás ikonját, 
+majd koppintson az Pin to taskbar (rögzítés a tálcán) 
+elemre.
+Helyezze az egérmutatót az alkalmazás fölé, a jobb 
+egérgombbal kattintson az adott alkalmazásra, majd 
+kattintson a Pin to taskbar (Rögzítés a tálcán) 
+lehetőségre.
+Az alkalmazások közötti tallózásra használja a 
+nyílgombokat. 
+Nyomja meg a vagy az gombot (a 
+jelölt modellek esetén), majd kattintson a Pin to taskbar 
+(Rögzítés a tálcán) lehetőségre.
+Notebook PC-hez E-kézikönyv 55
+Task view (Feladatnézet)
+Használja a Task view (Feladatnézet) lehetőséget a megnyitott 
+alkalmazások és programok közötti illetve az asztalok közötti gyors 
+váltásra.
+A Task view (Feladatnézet) indítása
+Kattintson a tálcán az ikonra.
+Állítsa az egérmutatót a tálcán látható ikonra, majd 
+kattintson.
+A billentyűzeten nyomja meg a 
+gombokat.
+56 Notebook PC-hez E-kézikönyv
+A vezérlők
+Használja a vezérlőket a fontos információk gyors megtekintéséhez.
+A vezérlők indítása
+Kattintson a tálcán az ikonra.
+Állítsa az egérmutatót a tálcán látható ikonra, majd 
+kattintson.
+A billentyűzeten nyomja meg a gombokat.
+Notebook PC-hez E-kézikönyv 57
+A vezérlők testreszabása
+vagy
+A vezérlők tartalmának módosításához kattintson/
+koppintson a ikonra, majd a Manage interests 
+(Érdeklődési körök kezelése) elemre.
+58 Notebook PC-hez E-kézikönyv
+Az Illesztés funkció
+Az Illesztés funkció kijelzi egymás mellett az alkalmazásokat, így a 
+felhasználó azokat könnyen használhatja, illetve könnyen válthat 
+közöttük.
+Az illesztési hozzáférési pontok
+Az alkalmazások illesztéséhez húzza az adott alkalmazásokat ezekre a 
+hozzáférési pontokra.
+Notebook PC-hez E-kézikönyv 59
+Az Illesztés funkció használata
+vagy
+1. Indítsa el az illeszteni kívánt alkalmazást.
+2. Fogja meg az alkalmazás címsorát, és illesztés 
+céljából helyezze az alkalmazást a képernyő 
+szélére.
+3. Indítson el egy másik alkalmazást, ismételje meg a 
+fenti lépéseket és illessze ezt az alkalmazást is.
+1. Indítsa el az illeszteni kívánt alkalmazást.
+2. Nyomja meg és tartsa nyomva a billentyűt, 
+majd a nyílbillentyűkkel illessze az alkalmazást.
+3. Indítson el egy másik alkalmazást, ismételje meg a 
+fenti lépéseket és illessze ezt az alkalmazást is.
+60 Notebook PC-hez E-kézikönyv
+Action Center (Műveletközpont)
+Az Action Center (Műveletközpont) összegyűjti az alkalmazásoktól 
+érkező értesítéseket és támogatja a kommunikációt az adott 
+alkalmazásokkal. Továbbá, az Action Center (Műveletközpont) tartalmaz 
+egy hasznos Quick Actions (Gyorsműveletek) szakaszt is.
+A Quick Actions (Gyorsműveletek) indítása
+Koppintson a tálcán az állapotikonokra.
+Állítsa az egérmutatót a tálcán látható állapotikonra és 
+kattintson.
+A billentyűzeten nyomja meg a gombokat.
+Notebook PC-hez E-kézikönyv 61
+A Notifications (Értesítések) indítása
+Koppintson a tálcán a dátum és idő mezőre.
+Állítsa az egérmutatót a tálcán látható dátum és idő 
+mezőre és kattintson.
+A billentyűzeten nyomja meg a gombokat.
+62 Notebook PC-hez E-kézikönyv
+MyASUS Splendid
+A MyASUS Splendid biztosítja, hogy az ASUS kijelzők azonos és 
+valósághű színekben kerülnek kijelzésre. A kijelzőbeállítások 
+meghatározásához használja a Normal (Normál) mód mellett a Vivid 
+(Élénk), Eye Care (Szemkímélő) vagy Manual (Kézi) módokat is.
+• Normal (Normál) mód: A gammakorrekció és a színhőmérséklet-
+korrekció alkalmazásával a kijelzőn látható kép a lehető 
+legjobban megközelíti az emberi szem által természetes módon 
+látott képet. Az OLED kijelzővel rendelkező modellek esetében 
+ez a mód megfelel a TÜV Low Blue Light Certification tanúsítvány 
+követelményeinek.
+• Vivid (Élénk) mód: Ez a mód támogatja a képtelítettség 
+beállítását, minek következtében a kép élénkebb és valósághűbb 
+lesz.
+• Manual (Kézi) mód: Ez a mód támogatja a színhőmérsékletek 
+beállítását egyéni igények szerint, -50 és +50 között.
+• Eye Care (Szemkímélő) mód: Ebben a módban a kék színű fény 
+kibocsátása akár 30%-kal is kisebb, így biztosítva a felhasználó 
+szemeinek védelmét.
+ 1–5 szint: Minél magasabb az érték, annál alacsonyabba kékfény 
+kibocsátás. Az LCD kijelzővel rendelkező modellek esetében az 
+5-ös szint az optimális beállítás, megfelel a TÜV Low Blue Light 
+Certification tanúsítvány követelményeinek.
+MEGJEGYZÉS: Az OLED kijelző esetében (egyes modelleknél) jobb 
+vizuális élmény biztosításának céljából aktiválja a Settings (Beállítások) 
+> System (Rendszer) > Display (Kijelző) menüútvonalon a HDR 
+lehetőséget, amely megfelel a TÜV Flicker Free Certification tanúsítvány 
+követelményeinek.
+Notebook PC-hez E-kézikönyv 63
+A szemfáradtság enyhítése:
+• Hosszú ideig tartó munkavégzés közben időnként távozzon a 
+képernyő közeléből. A számítógépnél végzett folyamatos munka 
+közben tartson óránként rövid (legalább 5 perces) szüneteteket. 
+A gyakori, rövid szünet hatékonyabbak, mint egy hosszú szünet.
+• A szem kifáradásának és kiszáradásának csökkentésének céljából 
+rendszeresen nézzen távoli objektumokra.
+• A szemkifáradás az alábbi gyakorlatokkal csökkenthető:
+(1) Nézzen felfelé, majd lefelé többször
+(2) Forgassa szemeit lassan
+(3) Nézzen átlós irányban
+ Ha szemeit továbbra is fáradtnak érzi, forduljon orvoshoz.
+• A magas energiatartalmú kékfény a szem kifáradását és időskori 
+makula-degenerációt okozhat. A kékfényszűrő (max.) 30%-
+kal csökkenti a káros kékfény mennyiséget, így elkerülhetők a 
+számítógép használattal kapcsolatos látásproblémák.
+64 Notebook PC-hez E-kézikönyv
+Az OLED kijelző beállítása
+Az OLED kijelző (a jelölt modellek esetében) maximális kihasználásának 
+céljából több beállítást is ajánlunk. Használja ezeket a beállításokat 
+a vizuális élmény optimalizálására, az akkumulátor élettartamának 
+maximalizálására és ASUS Notebook PC élettartamának 
+meghosszabbítására.
+A Dark Mode (Sötét mód) beállítása
+Az alapértelmezett beállítások alapján a Dark Mode (Sötét mód) 
+a készülék szállításakor már aktív. A beállítások ellenőrzése, illetve 
+módosítása:
+1. Nyissa meg a Start menüt.
+2. Kattintson/Koppintson a Settings (Beállítások) menüpontra, és 
+válassza a Personalization (Személyre szabás) lehetőséget.
+Notebook PC-hez E-kézikönyv 65
+3. A lehetőségek megtekintésének céljából kattintson a Colors 
+(Színek) fülre.
+66 Notebook PC-hez E-kézikönyv
+A kijelző kikapcsolása, ha nincs használva
+Bizonyosodjon meg arról, hogy a nem használt kijelzőt automatikusan 
+kikapcsoló beállítás aktív. A beállítások ellenőrzése, illetve módosítása:
+1. Nyissa meg a Start menüt.
+2. Kattintson/Koppintson a Settings (Beállítások) menüpontra, és 
+válassza ki a System (Rendszer) lehetőséget.
+Notebook PC-hez E-kézikönyv 67
+3. A lehetőségek megtekintéséhez válassza a Power & battery 
+(Energiaellátás és akkumulátor) fület.
+68 Notebook PC-hez E-kézikönyv
+A kijelző fényerejének beállítása
+Az OLED kijelző élettartamának meghosszabbítása érdekében ajánlott 
+animált, sötét képernyővédő használata, és nem célszerű az OLED 
+kijelző fényerejének maximális szintre állítása. A beállítások ellenőrzése, 
+illetve módosítása:
+1. Nyissa meg a Start menüt.
+2. Kattintson/Koppintson a Settings (Beállítások) menüpontra, és 
+válassza a Personalization (Személyre szabás) lehetőséget.
+Notebook PC-hez E-kézikönyv 69
+3. Válassza a Lock screen (Zárolási képernyő) fület, majd kattintson 
+a Screen saver (Képernyőkímélő) lehetőségre és tekintse meg 
+az opciókat.
+70 Notebook PC-hez E-kézikönyv
+A tálca automatikus elrejtése
+A tálca automatikus elrejtésével biztosíthatja, hogy a tálca nem jelenik 
+meg hosszú időre az OLED kijelzőn. A beállítások módosítása:
+1. Nyissa meg a Start menüt.
+2. Kattintson/Koppintson a Settings (Beállítások) menüpontra, és 
+válassza a Personalization (Személyre szabás) lehetőséget.
+Notebook PC-hez E-kézikönyv 71
+3. Kattintson a Taskbar (Tálca) fülre és aktiválja az Automatically 
+hide the taskbar (A tálca automatikus elrejtése) lehetőséget.
+72 Notebook PC-hez E-kézikönyv
+1. Nyisson meg egy Microsoft Office alkalmazást, majd kattintson/
+koppintson a File (fájl) > Account (fiók) elemekre.
+2. Válassza az Office Theme (Office téma) alatt a Dark Gray 
+(Sötétszürke) lehetőséget. A téma valamennyi Microsoft 
+alkalmazásban aktiválódik.
+A Dar Mode (Sötét mód) beállítása a Microsoft 
+Office-ban
+Notebook PC-hez E-kézikönyv 73
+További billentyűparancsok
+Használja a billentyűzeten az alábbi billentyűparancsokat az 
+alkalmazások indíthatásához és tallózáshoz a Windowsban.
+Használja a Start menu megnyitására
+Használja az Action Center (Műveletközpont) 
+megnyitására
+Használja az asztal kijelzésére
+Használja a File Explorer (Fájlkezelő) 
+megnyitására
+Használja a Settings (Beállítások) megnyitására
+Használja a Connect (Csatlakozás) kijelző 
+megnyitására
+Használja a Lock screen (Zárolási képernyő) 
+aktiválására
+Használja az összes aktív ablak minimalizálására
+74 Notebook PC-hez E-kézikönyv
+Használja a Search (Keresés) funkció 
+indítására
+Használja a Project (Projekt) kijelző 
+megnyitására
+Használja a Run (Futtatás) ablak 
+megnyitására
+Használja az Accessibility (Kisegítő 
+lehetőségek) opció megnyitására
+Használja a Start gomb helyi menüjének 
+megnyitására
+Aktiválja a nagyító ikont és megnagyítja a 
+kijelzőt.
+Használja a kijelző kicsinyítésére
+Notebook PC-hez E-kézikönyv 75
+Csatlakozás vezeték nélküli hálózatokhoz
+Wi-Fi
+Csatlakoztassa a Notebook PC-t a Wi-Fi hálózathoz és tekintse meg 
+e-mail üzeneteit, böngésszen az interneten és ossza meg a közösségi 
+hálózatokon a különböző alkalmazásokat.
+FONTOS! Az Airplane mode (Repülési üzemmód) kikapcsolja ezt a 
+funkciót. Bizonyosodjon meg arról, hogy az Airplane mode (Repülési 
+üzemmód) ki van kapcsolva, mielőtt csatlakoztatja a Notebook PC-t a 
+Wi-Fi hálózathoz.
+Wi-Fi-csatlakozás
+A Notebook PC csatlakoztatása a Wi-Fi hálózathoz:
+vagy
+1. Kattintson a tálca Action Center (Műveletközpont) 
+ikonjára.
+2. Koppintson/Kattintson a Wi-Fi ikonra és aktiválja a 
+Wi-Fi lehetőséget.
+3. Válasszon egy hozzáférési pontot az elérhető WI-Fi 
+hálózatok listájából.
+4. Válassza a Connect (Csatlakozás) lehetőséget és 
+aktiválja a hálózati csatlakozást.
+MEGJEGYZÉS: Előfordulhat, hogy a Wi-Fi csatlakozás 
+aktiválásához biztonsági kulcs megadása is szükséges.
+76 Notebook PC-hez E-kézikönyv
+vagy
+1. A Start menüben nyissa meg a Settings 
+(Beállítások) menüt.
+2. Kattintson a Bluetooth & Devices (Bluetooth és 
+eszközök) > Add device (Eszköz hozzáadása) 
+lehetőségekre és keresse meg a Bluetooth 
+kompatibilis eszközöket.
+3. Válassza ki a listából azt a készüléket, amellyel a 
+Notebook PC-t párosítani szeretné.
+MEGJEGYZÉS: Egyes Bluetooth- készülékek esetében 
+szükséges lehet a Notebook PC hitelesítő kódjának a 
+közlése.
+Bluetooth
+Használja a Bluetoooth funkciót vezetéknélküli adatátvitelre egyéb 
+Bluetooth kompatibilis készülékekre.
+FONTOS! Az Airplane mode (Repülési üzemmód) kikapcsolja ezt a 
+funkciót. Bizonyosodjon meg arról, hogy az Airplane mode (Repülési 
+üzemmód) ki van kapcsolva, mielőtt aktiválja a Notebook PC Bluetooth 
+funkcióját.
+Párosítás más Bluetooth készülékkel
+Adatátvitelhez szükséges a Notebook PC-t párosítása a másik Bluetooth 
+kompatibilis készülékkel. Az eszközök csatlakoztatása:
+Notebook PC-hez E-kézikönyv 77
+Airplane mode (Repülési üzemmód)
+Az Airplane mode (Repülési üzemmód) inaktiválja a wireless 
+kommunikációt, így a Notebook PC repülőgépen is biztonságosan 
+használható.
+MEGJEGYZÉS: Amennyiben a Notebook PC-t repülőgépen használja, a 
+fedélzeti szolgáltatásokról és a betartandó korlátozásokról érdeklődjön az 
+érintett légitársaságnál.
+Az Airplane mode (Repülési üzemmód) bekapcsolása/
+kikapcsolása
+vagy
+1. Kattintson a tálca Action Center 
+(Műveletközpont) ikonjára.
+2. Az Airplane mode (Repülési üzemmód) be-/
+kikapcsolásához kattintson/koppintson az 
+Airplane mode (Repülési üzemmód) ikonra.
+78 Notebook PC-hez E-kézikönyv
+A Notebook PC kikapcsolása
+A Notebook PC kikapcsolása:
+vagy
+• Normál leállításhoz nyissa meg a Start menüt, 
+majd kattintson a > Shut down (Leállítás) 
+lehetőségre.
+• A bejelentkezési képernyőn kattintson a > 
+Shut down (Leállítás) lehetőségre.
+• A Windows leállításának indításához nyomja meg 
+az gombot. A legördülő listában 
+kattintson a Shut down (Leállítás) lehetőségre, 
+majd az OK-ra.
+• Ha a Notebook PC nem reagál, nyomja meg és 
+tartsa lenyomva a főkapcsoló gombot legalább 
+tíz (10) másodpercig, míg a Notebook PC 
+kikapcsol.
+Notebook PC-hez E-kézikönyv 79
+A Notebook PC Sleep mode-ba (Alvó 
+állapotba) kapcsolása
+A Notebook PC Sleep mode-ba (Alvó állapotba) kapcsolása:
+vagy
+• A Notebook PC alvó állapotba helyezéséhez 
+nyissa meg a Start menüt és kattintson a > 
+Sleep (Alvó állapot) lehetőségre.
+• A bejelentkezési képernyőn kattintson a > 
+Sleep (Alvó állapot) lehetőségre.
+A Windows leállításának indításához nyomja meg az 
+ gombot. A legördülő listában kattintson a 
+Sleep (Alvó állapot) lehetőségre, majd az OK-ra.
+MEGJEGYZÉS: A Notebook PC a Be/Ki gomb egyszeri megnyomásával is 
+alvó állapotba kapcsolható
+80 Notebook PC-hez E-kézikönyv
+Notebook PC-hez E-kézikönyv 81
+4. fejezet:
+Bekapcsolási önteszt (POST)
+82 Notebook PC-hez E-kézikönyv
+Bekapcsolási önteszt (POST)
+A bekapcsolási önteszt a Notebook PC bekapcsolásakor vagy 
+újraindításakor futó, szoftver-vezérelt diagnosztikai tesztek sorozata. A 
+bekapcsolási öntesztet vezérlő szoftver a Notebook PC állandó része.
+A BIOS és a hibaelhárítás elérése a bekapcsolási 
+önteszt segítségével
+A Notebook PC funkcióbillentyűinek segítségével a bekapcsolási 
+önteszt során elérhetők a BIOS beállításai, illetve hibaelhárítási opciók 
+futtathatók. További részletekért lásd az alábbi információkat:
+BIOS
+A BIOS (Basic Input and Output System - alapvető bemeneti és kimeneti 
+rendszer) tárolja a Notebook PC rendszerének indításához szükséges 
+hardver-rendszer beállításokat.
+Az alapértelmezett BIOS beállítások a Notebook PC legtöbb állapotában 
+érvényesek. Az alapértelmezett BIOS beállítások kizárólag az alábbi 
+körülmények fennállása esetén módosíthatók:
+• A rendszer indításakor a képernyőn megjelenő hibaüzenet a BIOS 
+beállítás futtatását kéri.
+• A telepített új rendszerkomponens további BIOS beállításokat 
+vagy frissítéseket igényel.
+FIGYELEM! Nem megfelelő BIOS beállítások használata veszélyeztetheti a 
+rendszer stabilitását vagy rendszerindítási hibát okozhat. Nyomatékosan 
+javasoljuk, hogy a BIOS beállításokat kizárólag képzett szervizszakember 
+segítségével változtassa.
+Hozzáférés a BIOS-hoz
+Indítsa újra a Notebook PC-t, majd a bekapcsolási önteszt közben 
+nyomja meg az gombot.
+Notebook PC-hez E-kézikönyv 83
+A rendszer helyreállítása
+A Notebook PC helyreállítási opcióinak használatával visszaállítható 
+az eredeti rendszerállapot vagy a teljesítmény javítása érdekében 
+egyszerűen frissíthetők a rendszerbeállítások.
+FONTOS!
+• A Notebook PC-n végzett bármely helyreállítás előtt készítsen 
+biztonsági mentést adatfájljairól.
+• Az adatvesztés elkerülése érdekében jegyezze le a fontos egyéni 
+beállításokat, például a hálózati beállításokat, a felhasználóneveket 
+és jelszavakat.
+• A rendszer alaphelyzetbe állítása előtt bizonyosodjon meg arról, 
+hogy a Notebook PC-t csatlakoztatta egy megfelelő áramforráshoz.
+A Windows az alábbi helyreállítási opciókkal rendelkezik:
+• Keep my files (Fájlok megtartása)- ha ezt az opciót választja 
+a Notebook PC frissítése nincs hatással a személyes fájlokra 
+(fényképekre, zenefájlokra, videofájlokra, dokumentumokra).
+ Ezzel az opcióval visszaállíthatja a Notebook PC alapértelmezett 
+beállításait, és törölheti a többi telepített alkalmazást.
+• Remove everything (Minden elem eltávolítása)- ezzel az 
+opcióval a Notebook PC beállításai visszaállíthatók a gyári 
+értékekre. Az opció használata előtt készítsen biztonsági 
+másolatot az adatokról.
+84 Notebook PC-hez E-kézikönyv
+• Advanced startup (Speciális rendszerindítás)- ha ezt az opciót 
+választja a Notebook PC további speciális helyreállítási opciókat is 
+aktiválhat, például:
+- A Notebook PC indítása USB adathordozóról, hálózati 
+csatlakozással vagy Windows helyreállító DVD-ről.
+- AZ alábbi speciális helyreállítási opciók valamelyikének 
+engedélyezése a Troubleshoot (Hibaelhárítás) funkció 
+használatával: Startup Repair (Indítási javítás), Uninstall 
+Updates (Frissítések eltávolítása), Startup Settings 
+(Indítási beállítások), UEFI Firmware Settings (UEFI belső 
+vezérlőprogram beállításai), Command Prompt (Parancssor), 
+System Restore (Rendszer-visszaállítás) és System Image 
+Recovery beállítások(Rendszerkép-helyreállítás).
+Helyreállítási opciók használata
+A Notebook PC-n rendelkezésre álló helyreállítási opciók hozzáférése és 
+használata:
+1. A Settings (Beállítások) menüben kattintson a System 
+(Rendszer) > Recovery (Helyreállítás) lehetőségekre.
+Notebook PC-hez E-kézikönyv 85
+2. Válassza ki az óhajtott végrehajtandó helyreállítási opciót.
+86 Notebook PC-hez E-kézikönyv
+Notebook PC-hez E-kézikönyv 87
+Tanácsok és GYIK 
+88 Notebook PC-hez E-kézikönyv
+Hasznos tanácsok a notebookhoz
+Hogy maximálisan kihasználhassa a notebook funkcióit, fenntarthassa 
+a rendszer teljesítményét és biztonságban tarthassa az adatait, íme 
+néhány hasznos tanács:
+• Rendszeresen frissítse Windows rendszerét, hogy az alkalmazásai 
+a legújabb biztonsági beállításokkal rendelkezzenek.
+• Frissítse a MyASUS-t, hogy a legújabb beállításokkal rendelkezzen 
+a kizárólagosan ASUS alkalmazások, illesztőprogramok és 
+segédprogramok számára.
+• Adatainak védelméhez használjon antivírus szoftvert és frissítse 
+rendszeresen.
+• Hacsak nem szükséges, ne kényszerítse a notebook leállítását 
+kikapcsoláskor.
+• Mindig végezzen biztonsági mentést adatairól, és ne feledjen 
+biztonsági másolatot készíteni egy külső adattároló eszközre.
+• Ha hosszabb ideig nem tervezi használni a Notebook PC-t, ne 
+feledje 50%-ra feltölteni az akkumulátort, majd kapcsolja ki a 
+Notebook PC-t, és válassza le a hálózati adaptert.
+• Ha folyamatosan működteti a Notebook PC-t hálózati 
+áramforrásról, állítsa a Battery Health Charging (Egészséges 
+akkutöltés) elemet Balanced (Kiegyensúlyozott) módra a MyASUS 
+alatt.
+Notebook PC-hez E-kézikönyv 89
+• Válassza le az összes külső eszközt, és győződjön meg arról, 
+hogy rendelkezik a következőkkel, mielőtt alaphelyzetbe állítja a 
+notebookot:
+- Az operációs rendszerekhez és egyéb telepített 
+alkalmazásokhoz való termékkulcsok
+- Elmentett adatok
+- Bejelentkezési azonosító és jelszó
+- Internetkapcsolat adatai
+• Látogassa meg támogatási oldalunkat a hibaelhárításhoz és 
+egyes gyakran feltett kérdések megtekintéséhez itt: 
+https://www.asus.com/hu/support.
+https://www.asus.com/hu/support
+90 Notebook PC-hez E-kézikönyv
+Hardver GYIK
+1. Sötét pont vagy időnként színes pont jelenik meg a kijelzőn, 
+amikor bekapcsolom a notebookot. Mi a teendő?
+Annak ellenére, hogy ezek a pontok normális esetben 
+megjelennek a kijelzőn, nem befolyásolják a rendszer működését. 
+Ha a hiba továbbra is fennáll és később hatással van a rendszer 
+működésére, vegye fel a kapcsolatot a hivatalos ASUS 
+szervizközponttal.
+2. A kijelzőpanel színe és fényereje nem egységes. Hogyan 
+oldhatom meg ezt a problémát?
+A kijelzőpanel színét és fényerejét befolyásolhatja a notebook 
+szöge és aktuális helyzete. A notebook fényereje és színtónusa 
+modelltől függően eltérhet. A kijelzőpanel megjelenésének 
+módosításához használhatja a funkciógombokat vagy az 
+operációs rendszer megjelenítési beállításait.
+3. Hogyan tudom maximálisra növelni a notebook 
+akkumulátorának élettartamát?
+Kipróbálhatja az alábbi javaslatok bármelyikét:
+• Használja a funkciógombokat a kijelző fényerejének 
+beállításához.
+• Ha nem használ Wi-Fi kapcsolatot, állítsa a rendszert 
+Repülőgép módra.
+• Válassza le a használaton kívüli USB-eszközöket.
+• Zárja be a használaton kívüli alkalmazásokat, különösen 
+azokat, amelyek sok rendszermemóriát foglalnak.
+Notebook PC-hez E-kézikönyv 91
+4. Az akkumulátortöltés-jelző fény nem világít. Mi lehet a 
+probléma?
+• Ellenőrizze, hogy megfelelően csatlakozik-e a hálózati 
+adapter vagy az akkumulátoregység. Leválaszthatja a 
+hálózati adaptert vagy akkumulátoregységet is, várjon egy 
+percig, majd csatlakoztassa őket újra a konnektorhoz és 
+notebookhoz.
+• Ha a probléma továbbra is fennáll, akkor vegye fel a 
+kapcsolatot a helyi ASUS szervizközponttal segítségért.
+5. Miért nem működik az érintőpad?
+Nyomja meg az gombot az érintőpad engedélyezéséhez.
+6. Amikor hang- és videofájlokat játszom le, miért nem hallható 
+hang a notebook hangszóróiból?
+Kipróbálhatja az alábbi javaslatok bármelyikét:
+• Nyomja meg az gombot a hangerő növeléséhez.
+• Ellenőrizze, hogy nincsenek-e lenémítva a hangszórók.
+• Ellenőrizze, hogy nincs-e csatlakoztatva fejhallgató jack 
+aljzat a notebookhoz. Ha igen, akkor húzza ki.
+92 Notebook PC-hez E-kézikönyv
+8. A notebookon nem lehet megfelelően gépelni, mert a kurzor 
+állandóan mozog. Mi a teendő?
+Győződjön meg arról, hogy semmi se érinti vagy nyomja 
+véletlenül az érintőpadot, amikor a billentyűzeten gépel. Az 
+érintőpadot az gomb megnyomásával is letilthatja.
+7. Mi a teendő, ha elveszítem a notebook hálózati adapterét, 
+vagy ha az akkumulátor nem működik többé?
+Vegye fel a kapcsolatot a helyi ASUS szervizközponttal 
+segítségért.
+Notebook PC-hez E-kézikönyv 93
+Szoftveres GYIK
+1. A notebook bekapcsolásakor a működésjelző fény világítani 
+kezd, de semmi se jelenik meg a képernyőn. Hogyan 
+javíthatom ezt ki?
+Kipróbálhatja az alábbi javaslatok bármelyikét:
+• Kényszerítse a notebook leállítását a főkapcsoló gomb 
+legalább tíz (10) másodpercig tartó lenyomásával. 
+Ellenőrizze, hogy a hálózati adapter és az akkumulátoregység 
+megfelelően csatlakozik-e, majd kapcsolja be a notebookot.
+• Ha a probléma továbbra is fennáll, akkor vegye fel a 
+kapcsolatot a helyi ASUS szervizközponttal segítségért.
+2. Mi a teendő, ha a képernyőn a következő üzenet jelenik meg? 
+„Remove disks or other media. Press any key to restart.” 
+(Vegye ki a lemezeket és egyéb adathordozókat. Nyomjon 
+meg egy gombot az újraindításhoz.)?
+Kipróbálhatja az alábbi javaslatok bármelyikét:
+• Válassza le az összes csatlakoztatott USB-eszközt, majd 
+indítsa újra a notebookot.
+• Vegye ki az optikai lemezt az optikai meghajtóból, majd 
+indítsa újra a rendszert.
+• Ha a probléma továbbra is fennáll, a notebook memóriájával 
+lehet probléma. Vegye fel a kapcsolatot a helyi ASUS 
+szervizközponttal segítségért.
+94 Notebook PC-hez E-kézikönyv
+3. A notebook az átlagnál lassabban indul és az operációs 
+rendszer is lassú. Hogyan oldhatom meg ezt a problémát?
+Törölje a nemrég telepített vagy az operációs rendszer 
+csomagjához nem tartozó alkalmazásokat, majd indítsa újra a 
+számítógépet.
+4. A notebook nem tölti be a rendszert. Hogyan oldhatom meg 
+ezt a problémát?
+Kipróbálhatja az alábbi javaslatok bármelyikét:
+• Válassza le az összes csatlakoztatott eszközt a notebookról, 
+majd indítsa újra a rendszert.
+• Ha a probléma továbbra is fennáll, akkor vegye fel a 
+kapcsolatot a helyi ASUS szervizközponttal segítségért.
+5. Miért nem tud a notebook kilépni alvó üzemmódból?
+• A legutóbbi üzemállapot visszaállításához meg kell nyomnia 
+a főkapcsoló gombot.
+• Lehet, hogy a rendszer teljesen lemerítette az akkumulátort. 
+Csatlakoztassa a hálózati adaptert a notebookhoz, majd a 
+hálózati adaptert dugja egy konnektorba és nyomja meg a 
+főkapcsoló gombot.
+Notebook PC-hez E-kézikönyv 95
+Függelékek
+96 Notebook PC-hez E-kézikönyv
+A beépített modem megfelelősége
+A beépített modemmel felszerelt notebook megfelel a JATE (Japán), az FCC 
+(USA, Kanada, Korea, Tajvan) és a CTR21 követelményeinek. A beépített 
+modem engedélyezése az egységes végberendezések nyilvános kapcsolt 
+telefonhálózatokhoz (PSTN) történő páneurópai csatlakoztatásáról szóló 98/482/
+EK tanácsi irányelvnek megfelelően történt. A különböző országokban alkalmazott 
+egyedi PSTN-ek közötti eltérések miatt azonban az engedély önmagában nem 
+nyújt feltétel nélküli biztosítékot a PSTN valamennyi hálózati végpontján történő 
+kifogástalan működésre vonatkozóan. Probléma esetén elsőként forduljon a 
+berendezés értékesítőjéhez.
+Áttekintés
+Az Európai Tanács 1998. augusztus 4-i határozata a CTR 21-gyel kapcsolatban 
+az EK Hivatalos Lapjában jelent meg. A CTR 21 vonatkozik minden nem hang 
+közvetítésére használatos, DTMF tárcsázást alkalmazó végberendezésre, amelyet 
+analóg PSTN (nyilvános kapcsolt telefonhálózathoz) szándékoznak csatlakoztatni.
+A CTR 21 (közös műszaki szabályok) előírás a végberendezések analóg nyilvános 
+kapcsolt telefonhálózathoz történő csatlakoztatására (a hangtelefónia jogos 
+esetének szolgáltatását támogató végberendezések kivételével), amelyben a 
+hálózati címkezelés, ha van ilyen, a kéttónusú többfrekvenciás jelzéssel történik.
+Notebook PC-hez E-kézikönyv 97
+Nyilatkozat a hálózati kompatibilitással 
+kapcsolatban
+A gyártó által teendő nyilatkozat az értesített testületnek és a szállítónak: 
+„Ez a nyilatkozat megemlíti azon hálózatokat, amelyekkel a berendezést 
+együttműködésre tervezték és azon értesített hálózatokat is, amelyekben a 
+berendezéssel együttműködési problémák léphetnek fel.”
+A gyártó által teendő nyilatkozat a felhasználónak: „Ez a nyilatkozat megemlíti 
+azon hálózatokat, amelyekkel a berendezést együttműködésre tervezték és azon 
+értesített hálózatokat is, amelyekben a berendezéssel együttműködési problémák 
+léphetnek fel. A gyártó köteles továbbá nyilatkozatot csatolni, amelyben tisztázza, 
+hol függ a hálózati kompatibilitás fizikai és szoftveres kapcsolók beállításától. 
+Köteles továbbá tanácsolni, hogy a felhasználó lépjen kapcsolatba a szállítóval, ha 
+a berendezést más hálózaton kívánja használni.”
+A mai napig a CETECOM értesített testülete több páneurópai jóváhagyást adott 
+ki a CTR 21 alapján. Ennek eredményeként megszülettek Európa első modemei, 
+amelyek nem igényelnek hatósági engedélyezést minden egyes európai 
+országban.
+Nem hangberendezések
+Az üzenetrögzítő berendezések és kihangosítható telefonkészülékek megfelelőek 
+lehetnek a modemekkel, faxberendezésekkel, automata tárcsázókkal és 
+riasztórendszerekkel egyetemben. Az olyan berendezések, amelyekben a 
+végpontok közötti hang érthetőségét törvény szabályozza (pl. mobiltelefonok és 
+vezeték nélküli telefonok is egyes országokban) kivételt képeznek.
+98 Notebook PC-hez E-kézikönyv
+Az alábbi táblázat a CTR21 szabványt jelenleg 
+alkalmazó országokat tartalmazza.
+Ország Alkalmazva További tesztelés
+Ausztria1 Igen Nem
+Belgium Igen Nem
+Cseh Köztársaság Nem Nem alkalmazható
+Dánia1 Igen Igen
+Finnország Igen Nem
+Franciaország Igen Nem
+Németország Igen Nem
+Görögország Igen Nem
+Magyarország Nem Nem alkalmazható
+Izland Igen Nem
+Írország Igen Nem
+Olaszország Egyelőre függőben Egyelőre függőben
+Izrael Nem Nem
+Lichtenstein Igen Nem
+Luxemburg Igen Nem
+Hollandia1 Igen Igen
+Norvégia Igen Nem
+Lengyelország Nem Nem alkalmazható
+Portugália Nem Nem alkalmazható
+Spanyolország Nem Nem alkalmazható
+Svédország Igen Nem
+Svájc Igen Nem
+Egyesült Királyság Igen Nem
+Notebook PC-hez E-kézikönyv 99
+Az információ forrása a CETECOM. Az adatok pontosságáért nem vállalunk 
+felelősséget. Frissebb adatokat tartalmazó táblázatért látogasson el a 
+http://www.cetecom.de/technologies/ctr_21.html weboldalra.
+1 Az országos követelmények kizárólag akkor alkalmazandóak, ha a berendezés 
+impulzus-tárcsázást alkalmazhat (a gyártók nyilatkozhatnak a használati 
+útmutatóban, hogy a berendezés kizárólag a DTMF-jeladást támogatására készült, 
+ami a további tesztelést fölöslegessé teszi).
+Hollandiában további tesztelés szükséges a soros kapcsolást és a hívásazonosítást 
+illetően.
+http://www.cetecom.de/technologies/ctr_21.html
+100 Notebook PC-hez E-kézikönyv
+A Szövetségi Távközlési Bizottság interferenciára 
+vonatkozó nyilatkozata
+Ez az eszköz megfelel az FCC-szabályok 15. részének. Az eszköz az alábbi két 
+feltétel esetén használható:
+• Az eszköz nem okozhat káros interferenciát.
+• Az eszköznek minden zavart fogadnia kell, beleértve a nem kívánatos 
+működést okozó zavarokat is.
+A berendezést a Szövetségi Távközlési Bizottság (Federal Communications 
+Commission – FCC) szabályai 15. részének megfelelően, a B osztályú digitális 
+eszközökre vonatkozó határértékek szerint tesztelték, és azok függvényében 
+megfelelőnek találták. Ezeket a határértékeket úgy állapították meg, hogy 
+megfelelő védelmet nyújtsanak lakóépületekben a káros zavarokkal szemben. Ez 
+a berendezés rádiófrekvenciás energiát használ és sugároz ki, ezért amennyiben 
+nem az utasításoknak megfelelően történik a telepítése és használata, úgy 
+zavarhatja a rádiófrekvenciás kommunikációt. Arra azonban nincsen garancia, 
+hogy egy meghatározott felhasználásnál nem fordul elő zavar. Amennyiben 
+a berendezés a rádiós vagy televíziós vételben káros zavart okoz, amelyről a 
+készülék ki-, illetve bekapcsolásával lehet meggyőződni, a felhasználónak meg kell 
+próbálnia elhárítani az alábbi intézkedések legalább egyikének segítségével:
+• A vevőantenna más irányba állítása vagy áthelyezése.
+• A távolság növelése a berendezés és a vevőkészülék között.
+• A berendezés más áramkörhöz kapcsolódó fali hálózati aljzatba való 
+csatlakoztatása, mint amelyhez a vevőkészülék csatlakozik.
+• Segítségkérés a márkakereskedőtől vagy rádiókkal/televíziókkal foglalkozó 
+gyakorlott szakembertől.
+FIGYELEM! Az FCC emissziós korlátozásainak betartása, és a közeli rádió és televízió 
+vételi interferencia megakadályozásának érdekében árnyékolt kábel használata 
+szükséges. Azt tanácsoljuk, hogy kizárólag a mellékelt tápkábelt használják. Csak olyan 
+árnyékolt kábeleket használjon, melyek a készülék kimeneti és bemeneti portjára 
+csatlakoznak. Bármilyen, a felelős fél által kifejezetten jóvá nem hagyott módosítás 
+vagy változtatás a felhasználóra vonatkozó üzemeltetési jogosultság elvesztését 
+vonhatja maga után.
+(Utánnyomás: 47. Szövetségi Törvénykönyv (Code of Federal Regulations) 15.193 
+része, 1993. Washington: Szövetségi Nyilvántartási Hivatal, Nemzeti Archívum és 
+Nyilvántartási Minisztérium, az USA Nemzeti Nyomdája.)
+Notebook PC-hez E-kézikönyv 101
+Az FCC rádiófrekvenciának (RF) való kitettségre 
+figyelmeztető nyilatkozata
+FIGYELEM! A megfelelőségért felelős fél által kifejezetten jóvá nem hagyott 
+változtatások, illetve módosítások érvényteleníthetik a felhasználó jogkörét, hogy a 
+berendezést működtesse. 
+Ez a berendezés megfelel az FCC nem szabályozott környezetre vonatkozóan 
+előírt, rádiófrekvenciának való kitettségre vonatkozó határértékeinek. Az 
+FCC rádiófrekvenciának (RF) való kitettségre vonatkozó követelményei 
+betartása érdekében kerülje az adóantenna közvetlen érintését sugárzás 
+közben. A végfelhasználók kötelesek betartani az adott kezelési utasításokat, 
+hogy megfeleljenek a rádiófrekvenciának (RF) való kitettségre vonatkozó 
+követelményeknek.
+Rádiófrekvenciának (RF) való kitettségre 
+vonatkozó információk (SAR)
+Ez az eszköz megfelel a rádióhullámoknak való kitettségre vonatkozó kormányzati 
+előírásoknak. Az eszközt úgy tervezték és állították elő, hogy ne lépje túl az 
+Egyesült Államok Szövetségi Távközlési Bizottsága által előírt rádiófrekvenciás (RF) 
+besugárzási határértékeket.
+A vezeték nélküli eszközökre vonatkozó kitettségi szabvány a fajlagos 
+energiaelnyelési tényezőt, azaz az SAR-t (Specific Absorption Rate) használja 
+mértékegységként. Az SAR FCC által előírt határértéke 1,6 W/kg. Az SAR 
+vizsgálatát az FCC által elfogadott, normál üzemeltetési pozíciókban végezték úgy, 
+hogy az eszköz a legnagyobb hitelesített teljesítményen sugárzott valamennyi 
+frekvenciasávban.
+102 Notebook PC-hez E-kézikönyv
+UL biztonsági tudnivalók
+Előírás az UL 1459 szerint olyan távközlési (telefon-) berendezésekre vonatkozóan, 
+amelyek elektromosan csatlakoznak olyan távközlési hálózathoz, amelynek 
+földhöz viszonyított üzemi feszültsége nem haladja meg a 200 V csúcs, 300 
+V csúcstól csúcsig és a 105 V RMS értéket, és amelyet a Nemzeti Elektromos 
+Szabályzat (NFPA 70) szerint telepítettek, illetve használnak.
+A notebook modemjének használata esetén mindig be kell tartani az alapvető 
+biztonsági óvintézkedéseket a tűzveszély, áramütés és személyi sérülés 
+kockázatának csökkentése érdekében, beleértve a következőket:
+• NE használja a notebookot víz, pl. fürdőkád, kézmosó, konyhai mosogató 
+vagy mosdó közelében, nyirkos pincében vagy úszómedence mellett.
+• NE használja a notebookot villámlás közben. A villámlás miatt fennáll az 
+elektromos áramütés csekély veszélye.
+• NE használja a notebookot gázszivárgás közvetlen közelében.
+Előírás az UL 1642 szerint elsődleges (nem újratölthető) és másodlagos 
+(újratölthető) lítium akkumulátoroknak termékek energiaforrásaként való 
+használatára. Ezek az akkumulátorok fémes lítiumot vagy lítium ötvözetet vagy 
+lítium-iont tartalmaznak és egy, kettő vagy több elektrokémiai cellából vannak 
+sorba, párhuzamosan vagy mindkét módon kötve, amelyek a kémiai energiát 
+villamos energiává alakítják át visszafordíthatatlan vagy visszafordítható kémiai 
+reakció útján.
+• NE dobja tűzbe a notebook akkumulátoregységét, mivel felrobbanhat. 
+Tekintse meg a helyi szabályozást az esetleges különleges ártalmatlanítási 
+utasításokat illetően, hogy csökkentse a tűz, illetve robbanás okozta 
+személyi sérülés kockázatát.
+• NE használjon más eszközökhöz tervezett hálózati adaptert vagy 
+akkumulátort, hogy csökkentse a tűz, illetve robbanás okozta személyi 
+sérülés kockázatát. Kizárólag UL jóváhagyással rendelkező és a gyártó 
+vagy hivatalos kereskedők által forgalmazott hálózati adaptert vagy 
+akkumulátort használjon.
+Notebook PC-hez E-kézikönyv 103
+Követelmény a tápellátás biztonságával 
+kapcsolatban
+A legfeljebb 6 A névleges áramfelvétellel rendelkező és több mint 3 kg tömegű 
+termékekkel minimálisan a következő értékű tápkábelt kell használni: H05VV-F, 
+3G, 0,75 mm2 vagy H05VV-F, 2G, 0,75 mm2.
+Tv-vel kapcsolatos megjegyzés
+Megjegyzés kábeltelevízió-rendszer szerelője számára – A kábeltelevízió-
+elosztórendszert az ANSI/NFPA 70 szabvány, illetve a Nemzeti Elektromos 
+Szabályzat (National Electric Code, NEC) – különösen annak 820.93, Koaxiális kábel 
+külső árnyékolója vezetőjének földelése című szakasza szerint kell földelni, és a 
+beszerelés során a koaxiális kábel árnyékolását a kábel épületbe történő belépési 
+pontjánál a földhöz kell forrasztani.
+Macrovision Corporation termékkel kapcsolatos 
+megjegyzés
+Ezt a terméket olyan szerzőijog-védelmi technológia védi, amelyet az 
+Egyesült Államok bizonyos szabadalmai és a Macrovision Corporation és más 
+jogtulajdonosok tulajdonában lévő egyéb szellemi tulajdoni jogok védenek. Ennek 
+a szerzői jogvédelemnek a használatát a Macrovision Corporation vállalatnak jóvá 
+kell hagynia, és otthoni és más korlátozott felhasználásra vonatkozik, hacsak a 
+Macrovision Corporation nem rendelkezik másképp. A visszafejtés és a szétszerelés 
+tilos.
+Halláskárosodás megelőzése
+A halláskárosodás megelőzése érdekében ne hallgasson felvételeket 
+hosszú ideig nagy hangerő mellett.
+Bevonattal kapcsolatos figyelmeztetés
+FONTOS! Az elektromos szigetelés és biztonság érdekében az eszköz – kivéve azon 
+oldalakat, ahol az IO portok találhatók – bevonattal van ellátva.
+104 Notebook PC-hez E-kézikönyv
+Skandináv országokra vonatkozó 
+figyelmeztetések a lítiummal kapcsolatban 
+(lítium-ion akkumulátorokra vonatkozóan)
+CAUTION! Danger of explosion if battery is incorrectly replaced. Replace only with 
+the same or equivalent type recommended by the manufacturer. Dispose of used 
+batteries according to the manufacturer’s instructions. (English)
+ATTENZIONE! Rischio di esplosione della batteria se sostituita in modo errato. 
+Sostituire la batteria con un una di tipo uguale o equivalente consigliata dalla 
+fabbrica. Non disperdere le batterie nell’ambiente. (Italiano)
+VORSICHT! Explosionsgefahr bei unsachgemäßen Austausch der Batterie. Ersatz 
+nur durch denselben oder einem vom Hersteller empfohlenem ähnlichen Typ. 
+Entsorgung gebrauchter Batterien nach Angaben des Herstellers. (Deutsch)
+ADVARSELI! Lithiumbatteri - Eksplosionsfare ved fejlagtig håndtering. Udskiftning 
+må kun ske med batteri af samme fabrikat og type. Levér det brugte batteri 
+tilbage til leverandøren. (Dansk)
+VARNING! Explosionsfara vid felaktigt batteribyte. Använd samma batterityp eller 
+en ekvivalent typ som rekommenderas av apparattillverkaren. Kassera använt 
+batteri enligt fabrikantens instruktion. (Svenska)
+VAROITUS! Paristo voi räjähtää, jos se on virheellisesti asennettu. Vaihda paristo 
+ainoastaan laitevalmistajan sousittelemaan tyyppiin. Hävitä käytetty paristo 
+valmistagan ohjeiden mukaisesti. (Suomi)
+ATTENTION! Danger d’explosion si la batterie n’est pas correctement remplacée. 
+Remplacer uniquement avec une batterie de type semblable ou équivalent, 
+recommandée par le fabricant. Jeter les batteries usagées conformément aux 
+instructions du fabricant. (Français)
+ADVARSEL! Eksplosjonsfare ved feilaktig skifte av batteri. Benytt samme 
+batteritype eller en tilsvarende type anbefalt av apparatfabrikanten. Brukte 
+batterier kasseres i henhold til fabrikantens instruksjoner. (Norsk)
+(日本語)
+ВНИМАНИЕ! При замене аккумулятора на аккумулятор иного типа возможно 
+его возгорание. Утилизируйте аккумулятор в соответствии с инструкциями 
+производителя. (Pyccкий)
+Notebook PC-hez E-kézikönyv 105
+CTR 21 jóváhagyás (beépített modemmel 
+rendelkező notebookhoz)
+Dansk
+Nederlands
+English
+Suomi
+Français
+106 Notebook PC-hez E-kézikönyv
+Deutsch
+Ελληνικά
+Italiano
+Português
+Español
+Svenska
+Notebook PC-hez E-kézikönyv 107
+Környezetvédelmi szabályozásának való 
+megfelelőségi nyilatkozat
+Az ASUS betartja a termékeinek tervezése és gyártása során alkalmazott 
+zöld tervezési koncepciót, és meggyőződik arról, hogy az ASUS termékek az 
+élettartamuk valamennyi szakasza során megfelelnek a globális környezetvédelmi 
+szabályozásoknak. Ezen kívül az ASUS a szabályozás előírásainak értelmében 
+nyilvánosságra hozza a vonatkozó információkat.
+Tekintse meg a http://csr.asus.com/Compliance.htm oldalt azon 
+információnyilvánosságra hozatal tekintetében, amelyre az ASUS a szabályozások 
+értelmében kötelezett.
+EU REACH és 33. cikkely
+Megfelelve a REACH (Registration, Evaluation, Authorization and Restriction 
+of Chemicals – Vegyi anyagok nyilvántartása, értékelése, engedélyezése és 
+korlátozása) szabályozási keretrendszernek, közzétettük a termékeinkben lévő 
+vegyi anyagok listáját az ASUS REACH webhelyen, amely itt található: 
+http://csr.asus.com/english/REACH.htm.
+EU RoHS
+Ez a termék megfelel az EU RoHS irányelvnek. További részletekért lásd: 
+http://csr.asus.com/english/article.aspx?id=35.
+http://csr.asus.com/Compliance.htm
+http://csr.asus.com/english/REACH.htm
+http://csr.asus.com/english/article.aspx?id=35.
+108 Notebook PC-hez E-kézikönyv
+ASUS újrahasznosítási/visszavételi szolgáltatás
+Az ASUS újrahasznosítási és visszavételi program a környezetvédelem iránti 
+nagy fokú elkötelezettségünk eredménye. Olyan megoldásokat nyújtunk a 
+felhasználók számára, amelyek révén felelősségteljesen újrahasznosíthatják az 
+általunk gyártott készülékeket, akkumulátorokat és egyéb alkatrészeket, illetve a 
+csomagolóanyagokat.
+A különféle régiókra vonatkozó újrahasznosítási tudnivalókért látogasson el a 
+http://csr.asus.com/english/Takeback.htm weboldalra.
+Ecodesign direktíva
+Az Európai Unió bejelentett egy keretrendszert az ökológiai tervezés előírásainak 
+felállításáról energiával kapcsolatos termékekre nézve (2009/125/EK). Az adott 
+végrehajtó intézkedések adott termékek, illetve többféle terméktípusok 
+környezetvédelmi teljesítményének javítását célozzák. Az ASUS a 
+termékinformációkat a CSR weboldalán adja meg. További információ itt található: 
+https://csr.asus.com/english/article.aspx?id=1555.
+http://csr.asus.com/english/Takeback.htm
+https://csr.asus.com/english/article.aspx?id=1555.
+Notebook PC-hez E-kézikönyv 109
+EPEAT regisztrált termékek
+A kulcsfontosságú környezetvédelmi információ nyilvánosságra hozatala ASUS 
+EPEAT (Electronic Product Environmental Assessment Tool - Elektronikus termék 
+környezetvédelmi felmérő eszköze) regisztrált termékekhez elérhető itt: 
+https://csr.asus.com/english/article.aspx?id=41. Részletesebb tájékoztatás az 
+EPEAT programról és vásárlási útmutatás itt található: www.epeat.net.
+ENERGY STAR minősítésű termék
+Az ENERGY STAR az Egyesült Államok Környezetvédelmi 
+Hivatalának és az Egyesült Államok Energiaügyi Minisztériumának 
+közös programja, amely energiahatékony termékek és gyakorlatok 
+révén segít mindannyiunkat a költségmegtakarításban, és védi a 
+környezetet.
+Az ENERGY STAR emblémával ellátott összes ASUS termék megfelel az ENERGY 
+STAR szabvány előírásainak, és az energiagazdálkodási funkció alapértelmezés 
+szerint aktiválva van. A monitor nem több mint 10 perc felhasználói tétlenség után 
+automatikusan alvó módra vált. A számítógép nem több mint 30 perc felhasználói 
+tétlenség után automatikusan alvó módra vált. A számítógép felébresztéséhez 
+kattintson az egérrel, nyomjon meg egy tetszőleges billentyűt a billentyűzeten, 
+vagy nyomja meg a főkapcsoló gombot. 
+A http://www.energystar.gov/powermanagement weboldalon megtekintheti 
+az energiagazdálkodással kapcsolatos részletes tudnivalókat és a környezetet 
+érintő előnyöket. Ezenkívül a http://www.energystar.gov webhelyen részletes 
+információkat olvashat az ENERGY STAR közös programról.
+MEGJEGYZÉS: Az Energy Star NEM támogatott a FreeDOS és Linuxalapú operációs 
+rendszereken.
+https://csr.asus.com/english/article.aspx?id=41.
+www.epeat.net
+http://www.energystar.gov/powermanagement
+http://www.energystar.gov
+110 Notebook PC-hez E-kézikönyv
+A BIOS betűkészleteinek engedélyezése
+Szerzői jog © 2022 The Android Open Source Project
+Az Apache licenc, 2.0-s verzió (a „Licenc”) alatt kerül engedélyezésre; a fájl 
+kizárólag a licencszerződés szerint használható. A licenc példányát a következő 
+oldalon szerezheti be: http://www.apache.org/licenses/LICENSE-2.0
+Hacsak a vonatkozó jogszabályok, illetve írásban adott megegyezés mást nem 
+ír elő, a szoftver licenc alatt „JELENLEGI” állapotban, BÁRMILYEN JÓTÁLLÁS VAGY 
+FELTÉTELEK NÉLKÜL - legyen az kifejezett vagy vélelmezett - kerül forgalomba.
+Adott nyelvekre vonatkozó engedélyeket és korlátozásokat lásd a 
+Licencszerződésben.
+http://www.apache.org/licenses/LICENSE-2.0
+Notebook PC-hez E-kézikönyv 111
+Egyszerűsített EU megfelelőségi nyilatkozat
+Az ASUSTek Computer Inc. ezennel kijelenti, hogy ez az eszköz megfelel a 2014/53/
+EU irányelv alapvető követelményeinek és egyéb vonatkozó rendelkezéseinek. Az 
+EU megfelelőségi nyilatkozat teljes szövegét a következő weboldalon tekintheti 
+meg: https://www.asus.com/support/.
+Az 5150-5350 MHz-es sávban működő Wi-Fi-t beltéri használatra kell korlátozni az 
+alábbi táblázatban felsorolt országokban:
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK(NI)
+a. Kis fogyasztású beltéri (LPI) Wi-Fi 6E eszközök: 
+A készülék csak beltéri használatra korlátozódik, ha az 5945-6425 MHz-
+es frekvenciatartományban működik Belgiumban (BE), Bulgáriában 
+(BG), Cipruson (CY), a Cseh Köztársaságban (CZ), Észtországban (EE), 
+Franciaországban (FR), Izlandon (IS), Írországban (IE), Litvániában (LT), 
+Németországban (DE), Hollandiában (NL), illetve Spanyolországban (ES).
+b. Nagyon kis fogyasztású (VLP) Wi-Fi 6E eszközök (hordozható eszközök): 
+A készülék nem használható pilóta nélküli légi járműveken (UAS) az 5945-
+6425 MHz-es frekvenciatartományban Belgiumban (BE), Bulgáriában 
+(BG), Cipruson (CY), a Cseh Köztársaságban (CZ), Észtországban (EE), 
+Franciaországban (FR), Izlandon (IS), Írországban (IE), Litvániában (LT), 
+Németországban (DE), Hollandiában (NL), illetve Spanyolországban (ES).
+https://www.asus.com/support
+112 Notebook PC-hez E-kézikönyv
+Rádiófrekvenciának (RF) való kitettségre 
+vonatkozó információk (SAR)
+Az eszköz megfelel az EU elektromágneses mezőkre vonatkozó előírásának 
+(2014/53/EU), amely az egészségvédelmet szem előtt tartva korlátozza az 
+elektromágneses mezőknek való kitettség mértékét.
+A korlátozások az emberek védelmét szolgáló széles körű ajánlások részét 
+képezik. Az ajánlásokat független tudományos szervezetek fejlesztették ki és 
+ellenőrizték a tudományos vizsgálatok rendszeres és alapos értékelésén keresztül. 
+Az Európai Tanács ajánlott mértékegysége mobileszközök tekintetében a „fajlagos 
+energiaelnyelési tényező” (SAR), és az SAR határértéke 2,0 W/kg átlagosan 10 
+gramm testszövetre vetítve. Megfelel a Nemzetközi Nem Ionizáló Sugárzás Elleni 
+Védelmi Bizottság (ICNIRP) előírásainak.
+A test melletti működését illetően az eszközt megvizsgálták az ICNIRP kitettségre 
+vonatkozó határértékeinek teljesítése tekintetében, és megfelel az EN 50566 és EN 
+62209-2 európai szabvány előírásainak. Az SAR-t a mobileszköznek közvetlenül 
+a testtel való érintkezése, a legnagyobb adásteljesítménye és az összes 
+frekvenciasávban történő sugárzása mellett mérik.
+A rádiófrekvenciának (RF) való kitettségre vonatkozó európai előírásoknak való 
+megfelelés érdekében a felhasználó teste és az eszköz között minimálisan 1 cm 
+elválasztási távolság biztosítandó, az antennát is beleértve, ha a test mellett 
+működtetve használják.
+Wi-Fi hálózatra vonatkozó tájékoztatás
+FONTOS! A Wi-Fi 6E hálózati kártya elérhető a kiválasztott típusokon. A Wi-Fi 6E sáv 
+csatlakoztathatósága az egyes országok/térségek szabályozásától és tanúsításától 
+függően eltérhet.
+ A kézikönyvről
+ A kézikönyvben felhasznált konvenciók
+ Ikonok
+ Tipográfia
+ Biztonsági óvintézkedések
+ A Notebook PC használata
+ A Notebook PC gondozása
+ Megfelelő selejtezés
+ Biztonsági tudnivalók az akkumulátorral kapcsolatban
+ 1. fejezet:
+ A hardver üzembe helyezése
+ Ismerkedés a notebookkal
+ Elölnézet
+ Felülnézet
+ Alulnézet
+ Jobb oldali nézet
+ Bal oldali nézet
+ 2. fejezet: A Notebook PC használata
+ Az első lépések
+ A Notebook PC akkumulátorának feltöltése
+ A kijelző felhajtása
+ A bekapcsológomb használata
+ Az érintőképernyőn és az érintőpárnán használható kézmozdulatok
+ Az érintőképernyőn használható kézmozdulatok
+ Az érintőpárna használata
+ A számbillentyűzet használata
+ A billentyűzet használata
+ Gyorsbillentyűk
+ Funkcióbillentyűk
+ Windows billentyűk
+ A kijelzőpanel elforgatása
+ 3. fejezet: A Windows használata
+ Első indítás
+ Start menü
+ Windows alkalmazások
+ A Windows alkalmazások használata
+ A Windows alkalmazások testreszabása
+ Task view (Feladatnézet)
+ A vezérlők
+ Az Illesztés funkció
+ Az illesztési hozzáférési pontok
+ Action Center (Műveletközpont)
+ MyASUS Splendid
+ Az OLED kijelző beállítása
+ A Dark Mode (Sötét mód) beállítása
+ A kijelző kikapcsolása, ha nincs használva
+ A kijelző fényerejének beállítása
+ A tálca automatikus elrejtése
+ A Dar Mode (Sötét mód) beállítása a Microsoft Office-ban
+ További billentyűparancsok
+ Csatlakozás vezeték nélküli hálózatokhoz
+ Wi-Fi
+ Bluetooth
+ Airplane mode (Repülési üzemmód)
+ A Notebook PC kikapcsolása
+ A Notebook PC Sleep mode-ba (Alvó állapotba) kapcsolása
+ 4. fejezet: Bekapcsolási önteszt (POST)
+ Bekapcsolási önteszt (POST)
+ A BIOS és a hibaelhárítás elérése a bekapcsolási önteszt segítségével
+ BIOS
+ Hozzáférés a BIOS-hoz
+ A rendszer helyreállítása
+ Helyreállítási opciók használata
+ Tanácsok és GYIK
+ Hasznos tanácsok a notebookhoz
+ Hardver GYIK
+ Szoftveres GYIK
+ Függelékek
+ A beépített modem megfelelősége
+ Áttekintés
+ Nyilatkozat a hálózati kompatibilitással kapcsolatban
+ Nem hangberendezések
+ A Szövetségi Távközlési Bizottság interferenciára vonatkozó nyilatkozata
+ Az FCC rádiófrekvenciának (RF) való kitettségre figyelmeztető nyilatkozata
+ Rádiófrekvenciának (RF) való kitettségre vonatkozó információk (SAR)
+ UL biztonsági tudnivalók
+ Követelmény a tápellátás biztonságával kapcsolatban
+ Tv-vel kapcsolatos megjegyzés
+ Macrovision Corporation termékkel kapcsolatos megjegyzés
+ Halláskárosodás megelőzése
+ Bevonattal kapcsolatos figyelmeztetés
+ Skandináv országokra vonatkozó figyelmeztetések a lítiummal kapcsolatban (lítium-ion akkumulátorokra vonatkozóan)
+ CTR 21 jóváhagyás (beépített modemmel rendelkező notebookhoz)
+ Környezetvédelmi szabályozásának való megfelelőségi nyilatkozat
+ EU REACH és 33. cikkely
+ EU RoHS
+ ASUS újrahasznosítási/visszavételi szolgáltatás
+ Ecodesign direktíva
+ ENERGY STAR minősítésű termék
+ EPEAT regisztrált termékek
+ A BIOS betűkészleteinek engedélyezése
+ Egyszerűsített EU megfelelőségi nyilatkozat
+ Wi-Fi hálózatra vonatkozó tájékoztatás
+ Rádiófrekvenciának (RF) való kitettségre vonatkozó információk (SAR)

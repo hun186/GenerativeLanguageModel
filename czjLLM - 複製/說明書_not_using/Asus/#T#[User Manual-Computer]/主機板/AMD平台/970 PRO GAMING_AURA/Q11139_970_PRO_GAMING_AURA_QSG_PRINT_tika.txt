@@ -1,0 +1,354 @@
+
+Install the CPU fan
+Инсталирайте вентилатора на процесора
+Instalace ventilátoru procesoru
+Installer CPU-blæseren
+De CPU-ventilator installeren
+Paigaldage CPU ventilaator
+Installer le ventilateur de CPU
+Asenna suorittimen tuuletin
+Installieren des CPU-Lüfters
+Εγκατάσταση του ανεμιστήρα της CPU
+Szerelje be a CPU ventillátort
+Installare la ventola della CPU
+Pasang kipas CPU
+CPUファン を設置する
+CPU 팬 설치
+Sumontuokite centrinio procesoriaus ventiliatorių
+Uzstādiet centrālā procesora ventilatoru
+Installer CPU-viften
+Instale a ventoinha de CPU
+Instalacja wentylatora procesora
+Установка вентилятора
+Instalaţi ventilatorul CPU-ului
+Instalar el ventilador de la CPU
+Instalirajte CPU ventilator
+Inštalácia ventilátora centrálneho procesora
+Installera CPU-fläkten
+ติดตั้งพัดลม CPU
+CPU fanını takın
+Lắp quạt CPU
+Instalacija ventilatora procesora
+Motherboard Layout
+Install the CPU
+Инсталирайте процесора
+Instalace procesoru
+Installer CPU’en
+De CPU installeren
+Paigaldage CPU
+Installer le CPU
+Asenna suoritin
+Installieren der CPU
+Εγκατάσταση της CPU
+Helyezze be a CPU-t
+Installare la CPU
+Pasang CPU
+CPUを設置する
+CPU 설치
+Sumontuokite centrinį procesorių
+Uzstādiet centrālo procesoru
+Installer sentralprosessoren (CPU)
+Instale a CPU
+Instalacja procesora
+Установка процессора
+Instalaţi CPU-ul
+Instalar la CPU
+Instalirajte CPU
+Inštalácia centrálneho procesora
+Installera CPU
+ติดตั้ง CPU
+CPU’yu takın
+Lắp CPU
+Instalacija procesora
+Step 1 Step 2
+Step 3
+Install memory modules
+Инсталирайте модулите памет
+Instalace paměťových modulů
+Installer hukommelsesmodulerne
+Geheugenmodules installeren
+Paigaldage mälumoodulid
+Installer les modules mémoire
+Asenna muistimoduulit
+Installieren der Speichermodule
+Εγκατάσταση των στοιχείων μνήμης
+Helyezze be a memória modulokat
+Installare i moduli di memoria
+Pasang modul memori
+メモリーモジュールを設置する
+메모리 모듈 설치
+Sumontuokite atminties modulius
+Uzstādiet atmiņas moduļus
+Installer minnemoduler
+Instale módulos de memória
+Instalacja modułów pamięci
+Установка модулей памяти
+Instalaţi modulele de memorie
+Instalar los módulos de memoria
+Instalirajte module memorije
+Inštalácia pamäťových modulov
+Installera minnesmoduler
+ติดตั้งโมดูลหน่วยความจำา
+Bellek modüllerini takın
+Lắp các thanh nhớ
+Instalacija memorijskih modula
+Step 4
+Install SATA devices
+Инсталирайте SATA устройства
+Instalace zařízení SATA
+Installer SATA-udstyret
+SATA-apparaten installeren
+Paigaldage SATA seadmed
+Installer des périphériques SATA
+Asenna SATA-laitteet
+Installieren der SATA-Geräte
+Εγκατάσταση συσκευών SATA
+Szerelje be a SATA eszközöket
+Installare i dispositivi SATA
+Pasang perangkat SATA
+SATA デバイスを取り付ける
+SATA 장치 설치
+Sumontuokite SATA įrenginius
+Uzstādiet SATA ierīces
+Installer SATA-enheter
+Instale dispositivos SATA
+Instalacja urządzeń SATA
+Установка SATA устройств
+Instalaţi dispozitivele SATA
+Instalar dispositivos SATA
+Instalirajte SATA uređaje
+Inštalácia zariadení SATA
+Installera SATA-enheter
+ติดตั้งอุปกรณ์ SATA
+SATA aygıtlarını takın
+Lắp các thiết bị SATA
+Instalacija SATA uređaja
+Q11139
+First Edition 
+November 2015
+Copyright © ASUSTeK Computer Inc. 
+All Rights Reserved
+quick start guide
+Кратко упътване за бърз старт
+Stručná příručka
+Quick Start-vejledning
+Snelstartgids
+Lühijuhend
+Guide de démarrage rapide
+Pikakäynnistysopas
+Schnellstarthilfe
+Οδηγός γρήγορης έναρξης
+Beüzemelési útmutató
+Guida Rapida
+Panduan Ringkas
+クイックスタートガイド
+Жылдам іске қосу нұсқаулығы
+빠른 시작 설명서
+Greitos darbo pradžios vadovas
+Īsa pamācība
+Hurtigstartsveiledning
+Guia de consulta rápida
+Instrukcja szybkiej instalacji
+Краткое руководство
+Ghid de pornire rapidă
+Guía de inicio rápida
+Vodič za brzo korišćenje
+Stručný návod na spustenie
+Snabbstartsguide
+คู่มือเริ่มต้นอย่างเร็ว
+Hızlı Başlatma Kılavuzu
+Höôùng daãn khôûi ñoäng nhanh
+vodič za brzi početak rada
+15060-73010000
+Australia statement notice
+From 1 January 2012 updated warranties apply to all ASUS products, consistent with 
+the Australian Consumer Law. For the latest product warranty details please visit 
+http://support.asus.com. Our goods come with guarantees that cannot be excluded 
+under the Australian Consumer Law. You are entitled to a replacement or refund for a 
+major failure and compensation for any other reasonably foreseeable loss or damage. 
+You are also entitled to have the goods repaired or replaced if the goods fail to be of 
+acceptable quality and the failure does not amount to a major failure.
+If you require assistance please call ASUS Customer Service 1300 2787 88 or visit us at 
+http://support.asus.com
+India E-waste (Management and handling) Rule 2011
+This product complies with the "India E-waste (Management and Handling)Rule 2011" 
+and prohibits use of lead, mercury, hexavalent chromium, polybrominated biphe-
+nyls(PBBs) and polybrominated diphenyl ethers (PBDEs) in concentrations exceeding 
+0.1 % by weight in homogenous materials and 0.01 % by weight in homogenous 
+materials for cadmium, except for the exemptions listed in Schedule-II of the Rule
+AEEE Yönetmeliğine Uygundur
+A B
+C CD
+D E
+B
+A
+970 PRO GAMING/AURA
+Step 4
+Step 5
+Step 6
+Step 7
+Step 7
+Step 1
+Step 2
+Step 3
+Q11139_970 PRO GAMING_AURA_QSG.indd 1 2015/12/11 下午 04:27:52
+Step 5
+Install expansion card(s)
+Инсталирайте допълнителна карта (допълнителни карти)
+Instalace přídavné karty (karet)
+Installer udvidelseskortene
+Uitbreidingskaart(en) installeren
+Paigaldage laienduskaart(-kaardid)
+Installer une carte d’extension
+Asenna laajennuskortti/kortit
+Installieren der Erweiterungskarte(n)
+Εγκατάσταση καρτών επέκτασης
+Helyezze be a bővítőkártyá(ka)t
+Installare le schede di espansione
+Pasang kartu ekspansi
+拡張カードを設置する
+확장 카드 설치
+Sumontuokite išplėtimo plokštę (-es)
+Uzstādiet izvērses karti(-es)
+Installer utvidelseskort
+Instale placas de expansão
+Instalacja kart(y) rozszerzenia
+Установка карт расширения
+Instalaţi cardul/cardurile de extensie
+Instalar tarjetas de expansión
+Instalirajte ekspanzionu/e karticu/e
+Inštalácia rozširujúcich kariet
+Installera expansionskort
+ติดตั้งเอ็กซ์แพนชั่นการ์ด
+Genişletme kartlarını takın
+Lắp (các) thẻ mở rộng
+Instalacija kartica za proširenje
+Step 6
+Install system panel connectors
+Инсталирайте конекторите на ситемния панел
+Instalace konektorů panelu systému
+Installer systempanelets tilslutninger
+Aansluitingen op het systeempaneel installeren
+Paigaldage süsteemi paneeli konnektorid
+Installer les connecteurs système
+Asenna järjestelmäpaneelin liittimet
+Installieren des Systemtafelanschlusses
+Εγκατάσταση συνδέσμων πάνελ συστήματος
+Szerelje be a rendszerpanel csatlakozóit
+Installare i connettori del pannello del sistema
+Pasang konektor panel sistem
+システムパネルコネクターを取り付ける
+시스템 패널 커넥터 설치
+Sumontuokite sistemos plokštės jungtis
+Uzstādiet sistēmas paneļa savienotājus
+Installer kontakter for systempanelet
+Instale os conectores do painel do sistema
+Instalacja złączy panela systemu
+Установка соединений системной панели
+Instalaţi conectorii pentru placa de bază
+Instalar conectores del panel del sistema
+Instalirajte sistemske priključke
+Inštalácia konektorov ovládacieho panela
+Installera systempanelkontakter
+ติดตั้งขั้วต่อแผงระบบ
+Sistem paneli konnektörlerini takın
+Lắp các đầu nối hệ thống ra ngoài
+Instalacija konektora ploče sustava
+Step 7
+Install ATX power connectors
+Инсталирайте ATX конекторите за захранване
+Instalace konektorů napájení ATX
+Installer ATX-strømtilslutningerne
+ATX-voedingsaansluitingen installeren
+Paigaldage ATX-i toitekonnektorid
+Installer les connecteurs d’alimentation ATX
+Asenna ATX-virtaliittimet
+Installieren des ATX-Stromanschlusses
+Εγκατάσταση συνδέσμων τροφοδοσίας ATX
+Csatlakoztassa az ATX tápcsatlakozókat
+Installare i connettori di alimentazione ATX
+Pasang konektor daya ATX
+ATX 電源コネクターを取り付ける
+ATX 전원 커넥터 설치
+Sumontuokite ATX maitinimo jungtis
+Uzstādiet ATX strāvas savienotājus
+Installer kontakter for ATX-strøm
+Instale os conectores de alimentação ATX
+Instalacja złączy zasilacza ATX
+Установка ATX разъема
+Instalaţi pinii conectori ATX
+Instalar conectores de alimentación ATX
+Instalirajte ATX električne priključke
+Inštalácia napájacích konektorov ATX
+Installera ATX strömkontakter
+ติดตั้งขั้วต่อ ATX เพาเวอร์
+ATX güç konnektörlerini takın
+Lắp các đầu nối nguồn ATX
+Instalacija konektora ATX napajanja
+Step 8
+Connect input/output devices
+Свързване на I/O устройства
+Připojení vstupních/výstupních zařízení
+Tilslut input-/outputudstyr
+I/O-apparaten aansluiten
+Ühendage sisend -/väljundseadmed
+Connecter les périphériques d’entrée/sortie
+Liitä tulo/lähtölaitteita
+Eingabe-/Ausgabe-Geräte verbinden
+Σύνδεση συσκευών εισόδου/εξόδου
+Bemeneti/kimeneti eszközök csatlakoztatása
+Collegate i dispositivi di input/output
+Sambungkan perangkat input/output
+入出力デバイスに接続する
+Step 9
+Power on the system and install operating system and drivers
+Включете системата и инсталирайте операционната система и драйверите
+Zapnutí napájení systému a instalace operačního systému a ovladačů
+Tænd for systemet, og installer operativsystemet og de tilhørende drivere
+Het systeem inschakelen en het besturingssysteem en de stuurprogramma’s installeren
+Lülitage süsteemi toide sisse ning installige operatsioonisüsteem ja draiverid
+Allumer le système et installer le système d’exploitation et les pilotes
+Käynnistä järjestelmä ja asenna käyttöjärjestelmä ja ohjaimet
+Einschalten des Systems und installieren des Betriebssystems und der Treiber
+Ενεργοποιήστε το σύστημα και εγκαταστήστε το λειτουργικό σύστημα και τα προγράμματα οδήγησης
+Kapcsolja be a rendszert és telepítse az operációs rendszert és illesztőprogramokat
+Accendere il sistema e installare il sistema operativo e i driver
+Hidupkan sistem, lalu instal sistem operasi dan driver
+システムの電源をONにし、OSとドライバーをインストールする
+시스템 전원 켜기 및 운영체제와 드라이버 설치
+Įjunkite sistemą ir įdiekite operacinę sistemą ir tvarkykles
+Ieslēdziet sistēmu un instalējiet operētājsistēmu un draiverus
+Slå på systemet og installer operativsystem og drivere
+Ligue o sistema e instale o sistema operativo e os controladores
+Włącz zasilanie i zainstaluj system operacyjny oraz sterowniki
+Включение системы и установка операционной системы и драйверов
+Porniţi sistemul şi instalaţi sistemul de operare şi driverele
+Proporcionar alimentación al sistema e instalar el sistema operativo y los controladores
+Uključite sistem i instalirajte operativni sistem i drajvere
+Zapnutie systému a inštalácia operačného systému a ovládačov
+Slå på systemet och installera operativsystem och drivrutiner
+เปิดระบบ และติดตั้งระบบปฏิบัติการและไดรเวอร์
+Sistemi açıp işletim sistemini ve sürücüleri yükleyin
+Bật nguồn hệ thống và cài đặt hệ điều hành cũng như các driver
+Uključivanje sustava i instaliranje operativnih sustava i upravljačkih programa
+A B
+입력/출력 장치 연결
+Prijunkite įvesties / išvesties įrenginius
+Pievienot ievades/izvades ierīces
+Koble til inngang/utgangsenheter.
+Ligar dispositivos de entrada/saída
+Podłączenie urządzeń wejścia/wyjścia
+Подключите устройства ввода/вывода
+Conectare dispozitive de intrare/ieşire
+Conectar dispositivos de entrada y salida
+Povežite ulazne/izlazne uređaje
+Pripojenie vstupných/výstupných zariadení
+Anslut ingående/utgående enheter
+ชื่อมต่ออุปกรณ์อินพุต/เอาต์พุต
+Giriş/çıkış aygıtlarına bağlan
+Kết nối các thiết bị đầu vào/đầu ra
+Spajanje ulaznih/izlaznih uređaja
+A
+OR
+B
+Q11139_970 PRO GAMING_AURA_QSG.indd 2 2015/12/11 下午 04:27:53

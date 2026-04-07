@@ -1,0 +1,1024 @@
+
+RO20513
+Prima ediţie
+Noiembrie 2022
+Manual electronic
+2 Proiector cu LED Manual electronic
+INFORMAȚII DESPRE GARANȚIE ȘI COPYRIGHT
+Nicio parte a acestui manual, inclusiv produsele şi software-ul descrise în acesta, nu poate fi reprodusă, 
+transmisă, transcrisă, stocată într-un sistem de regăsire sau tradusă într-o altă limbă în orice formă sau prin 
+orice metodă, cu excepţia documentaţiei păstrate de cumpărător din motive de siguranţă, fără permisiunea 
+exprimată în scris a ASUSTeK Computer INC. („ASUS”).
+Garanţia produsul sau serviciul va fi extins dacă: (1) produsul este reparat, modificat sau transformat, cu 
+excepţia cazului în care modificarea sau transformarea sunt autorizate în scris de ASUS; sau (2) numărul de 
+serie este şters sau lipseşte.
+ASUS FURNIZEAZĂ ACEST MANUAL „AŞA CUM ESTE”, FĂRĂ NICIO GARANŢIE, FIE EXPLICITĂ SAU IMPLICITĂ, 
+INCLUSIV, DAR FĂRĂ A SE LIMITA LA GARANŢIILE IMPLICITE SAU CONDIŢIILE DE VANDABILITATE SAU 
+CONFORMITATE CU UN ANUMIT SCOP. ÎN NICIUN CAZ ASUS, DIRECTORII SĂI, FUNCŢIONARII, ANGAJAŢII 
+SAU AGENŢII NU VOR FI RESPONSABILI PENTRU VREO DAUNĂ INDIRECTĂ, SPECIALĂ, OCAZIONALĂ SAU 
+ULTERIOARĂ (INCLUSIV DAUNELE PENTRU PIERDEREA BENEFICIILOR, PIERDEREA ÎNTREPRINDERII, PIERDEREA 
+CAPACITĂŢII DE FOLOSINŢĂ SAU A DATELOR, ÎNTRERUPEREA AFACERILOR ŞI ALTELE DE ACEST FEL), CHIAR 
+DACĂ ASUS A FOST INFORMAT ASUPRA POSIBILITĂŢII UNOR ASEMENEA DAUNE APĂRUTE CA URMARE A 
+UNUI DEFECT SAU A UNEI ERORI ÎN ACEST MANUAL SAU PRODUS.
+Produsele şi numele corporaţiilor care apar în acest manual pot fi sau nu mărci înregistrate sau drepturi de 
+autor înregistrate ale respectivelor companii şi sunt utilizate numai pentru identificare sau explicaţii şi în 
+beneficiul utilizatorului, fără a avea intenţia de a încălca legea.
+SPECIFICAŢIILE ŞI INFORMAŢIILE CONŢINUTE ÎN ACEST MANUAL SUNT FURNIZATE NUMAI ÎN SCOP 
+INFORMATIV ŞI SUNT SUPUSE MODIFICĂRILOR ÎN ORICE MOMENT, FĂRĂ ÎNŞTIINŢARE PREALABILĂ, 
+ŞI NU TREBUIE INTERPRETATE CA UN ANGAJAMENT DIN PARTEA ASUS. ASUS NU ÎŞI ASUMĂ NICIO 
+RESPONSABILITATE SAU RĂSPUNDERE PENTRU ERORILE SAU INADVERTENŢELE CARE POT APĂREA ÎN ACEST 
+MANUAL, INCLUSIV PRODUSELE ŞI SOFTWARE-UL DESCRISE ÎN ACESTA.
+Copyright © 2022 ASUSTeK COMPUTER INC. Toate drepturile rezervate.
+LIMITAREA RĂSPUNDERII
+Pot apărea situaţii în care, din cauza neîndeplinirii unor obligaţii din partea ASUS sau a altor responsabilităţi, 
+aveţi dreptul să solicitaţi daune din partea ASUS. În orice situaţie de acest tip, indiferent de baza în care aveţi 
+dreptul să solicitaţi daune din partea ASUS, ASUS este cel mult responsabil pentru daune de rănire corporală 
+(inclusiv deces) şi daune aduse proprietăţii reale şi proprietăţii personale tangibile; sau alte daune reale 
+şi daune directe rezultate din omisiunea sau incapacitatea de a-şi îndeplini îndatoririle legale cuprinse în 
+această Declaraţie de garanţie, până la preţul listat al contractului pentru fiecare produs.
+ASUS va răspunde numai de sau vă va despăgubi pentru pierderile, daunele sau reclamaţiile menţionate în 
+contract, prejudiciile sau încălcările menţionate în această Declaraţie de garanţie.
+Această limită se aplică, de asemenea, furnizorilor ASUS şi distribuitorului acestuia. Aceasta reprezintă limita 
+maximă pentru care ASUS, furnizorii săi şi distribuitorul dumneavoastră sunt responsabili împreună.
+ÎN NICIO SITUAŢIE, ASUS NU RĂSPUNDE PENTRU ORICARE DINTRE URMĂTOARELE: (1) RECLAMAŢIILE 
+TERŢILOR CĂTRE DUMNEAVOASTRĂ‚ REFERITOARE LA DAUNE; (2) PIERDEREA SAU DETERIORAREA 
+ÎNREGISTRĂRILOR SAU DATELOR DUMNEAVOASTRĂ SAU (3) DAUNE SPECIALE, ACCIDENTALE SAU INDIRECTE 
+SAU PENTRU ORICE DAUNE ECONOMICE PE CALE DE CONSECINŢĂ (INCLUSIV PIERDEREA PROFITURILOR 
+SAU A ECONOMIILOR), CHIAR DACĂ ASUS, FURNIZORII SĂI SAU DISTRIBUITORII DUMNEAVOASTRĂ SUNT 
+INFORMAŢI DE ACEASTĂ POSIBILITATE.
+SERVICE ȘI ASISTENȚĂ
+Vizitaţi site-ul nostru multilingv la https://www.asus.com/support/
+3Proiector cu LED Manual electronic
+Cuprins
+Despre acest manual......................................................................................... 5
+Convenţii utilizate în acest manual ............................................................ 6
+Elemente tipografice ....................................................................................... 6
+Versiuni în mai multe limbi ........................................................................... 6
+Măsuri de siguranță ........................................................................................... 7
+Folosirea proiectorului cu LED ..................................................................... 7
+Operaţiile de service pentru componente şi înlocuirea lor ............... 7
+Întreținerea proiectorului cu LED ............................................................... 8
+Eliminarea corectă ............................................................................................ 9
+Capitolul 1: Familiarizarea cu proiectorul LED
+Caracteristici.......................................................................................................12
+Vedere din partea de sus .............................................................................12
+Caracteristici extinse .....................................................................................15
+Lanterna ................................................................................................................15
+Mod SOS ...............................................................................................................16
+Vedere din faţă ................................................................................................17
+Vedere din spate .............................................................................................18
+Vedere din dreapta ........................................................................................20
+Vedere din partea de jos ..............................................................................21
+Capitolul 2: Configurare 
+Operarea proiectorului LED ..........................................................................24
+Conectaţi proiectorul LED la adaptorul de alimentare .....................24
+Cerinţe pentru cablul de alimentare c.a. ...................................................26
+Conectaţi proiectorul LED la dispozitiv ..................................................27
+Apăsaţi pe butonul de alimentare ............................................................28
+Ajustarea focalizării ........................................................................................29
+Mod portret ......................................................................................................30
+Dimensiune ecran şi distanța de proiectare ............................................31
+4 Proiector cu LED Manual electronic
+Capitolul 3: Folosirea proiectorului cu LED
+Utilizarea proiectorului LED pentru prima dată ....................................34
+Operarea meniului de afişare pe ecran ....................................................35
+Utilizarea dongle-ului Wi-Fi (numai pentru modele selectate) .......36
+Oglindire fără fir ..............................................................................................37
+Redarea în flux .................................................................................................39
+Utilizarea unei conexiuni USB ......................................................................40
+Redarea în flux .................................................................................................40
+Opțiunile meniului de afişare pe ecran ....................................................41
+Volum .............................................................................................................41
+Intrare .............................................................................................................41
+Splendid .............................................................................................................41
+Luminozitate ....................................................................................................41
+Contrast .............................................................................................................42
+Corecție eroare de trapez ............................................................................42
+Poziția proiectorului ......................................................................................42
+Configurare .......................................................................................................43
+Informaţii ...........................................................................................................44
+Oprirea proiectorului LED .............................................................................45
+Anexe
+Declaraţia Comisiei federale de comunicaţii 
+(Federal Communications Commission – FCC) .....................................48
+Declaraţia şi conformitatea cu reglementările de mediu 
+la nivel global ....................................................................................................49
+Serviciile de reciclare/returnare ASUS ......................................................49
+Conectivitate HDMI .........................................................................................50
+Temporizări PC acceptate..............................................................................51
+Specificații pentru proiectorul LED E1R ...................................................53
+5Proiector cu LED Manual electronic
+Despre acest manual
+În acest manual sunt furnizate informaţii despre componentele 
+hardware şi caracteristicile software ale proiectorului dvs. cu LED în 
+următoarele capitole:
+Capitolul 1: Familiarizarea cu proiectorul LED
+Aceasta capitol detaliază părțile componente ale proiectorului 
+LED.
+Capitolul 2: Configurare
+Acest capitol vă arată cum să setați proiectorul dvs. cu LED 
+şi cum să folosiți componentele sale pentru conexiune la 
+dispozitiv.
+Capitolul 3: Folosirea proiectorului cu LED
+Acest capitol descrie caracteristicile butoanelor de pe panoul 
+de comandă al proiectorului şi cum să le folosiți pentru a lansa 
+funcțiile proiectorului dvs. cu LED.
+Anexe
+Această secţiune include notificările de siguranţă pentru 
+proiectorul dvs. cu LED.
+6 Proiector cu LED Manual electronic
+Convenţii utilizate în acest manual
+Pentru a evidenţia informaţii cheie din acest manual, unele texte 
+sunt prezentate după cum urmează:
+IMPORTANT! Acest mesaj conţine informaţii esenţiale care trebuie 
+respectate pentru realiza o activitate. 
+NOTĂ: Acest mesaj conţine informaţii şi sfaturi suplimentare care pot 
+fi utile la realizarea activităţilor.
+AVERTISMENT! Acest mesaj conţine informaţii importante care 
+trebuie respectate pentru siguranţa dvs. în timpul realizării anumitor 
+activităţi şi pentru prevenirea deteriorării datelor şi componentelor 
+proiectorului dvs. cu LED. 
+Elemente tipografice
+Aldine indică un meniu sau un articol care trebuie selectat.
+Cursive indică secțiuni pe care le puteți consulta în acest manual.
+Versiuni în mai multe limbi
+Descarcă versiuni în alte limbi ale acestui manual electronic din acest 
+site web: https://www.asus.com/support/
+7Proiector cu LED Manual electronic
+Măsuri de siguranță
+Folosirea proiectorului cu LED
+• Consultaţi manualul şi reţineţi instrucţiunile privind siguranţa 
+înainte de a opera proiectorul dvs. cu LED.
+• Respectați notele şi avertismentele menţionate în manualul de 
+utilizare.
+• Nu aşezaţi proiectorul cu LED pe suprafeţe de lucru inegale sau 
+instabile.
+• Nu folosiţi proiectorul cu LED în medii cu fum. Este posibil 
+ca reziduurile de fum să se acumuleze pe componentele 
+vitale şi să deterioreze proiectorul cu LED sau să îi diminueze 
+performanţele.
+• Nu utilizaţi cabluri de alimentare, accesorii şi alte echipamente 
+periferice deteriorate cu proiectorul dvs. cu LED.
+• Nu lăsați ambalajele din plastic ale proiectorului cu LED la 
+îndemâna copiilor.
+• Nu blocaţi sau plasați nimic în apropierea găurilor de ventilare 
+ale proiectorului cu LED. Procedând astfel se poate acumula 
+căldură în interior care poate degrada calitatea imaginii şi 
+deteriora proiectorul.
+• Asiguraţi-vă că tensiunea de operare a proiectorului dvs. cu LED 
+corespunde cu tensiunea sursei dvs. de alimentare.
+Operaţiile de service pentru componente şi 
+înlocuirea lor
+• Nu dezasamblaţi şi nu încercaţi să efectuaţi personal operaţii de 
+service asupra proiectorului cu LED. Contactaţi centrul local de 
+service ASUS pentru asistenţă.
+• Risc de explozie dacă se înlocuieşte bateria cu un tip 
+necorespunzător. Aruncaţi bateriile uzate în conformitate cu 
+instrucţiunile de siguranţă şi contactaţi centrul local de servicii 
+de asistenţă ASUS. 
+• Când înlocuiţi componentele proiectorului cu LED, achiziţionaţi 
+componentele conform celor specificate de ASUS şi contactaţi 
+centrul local de servicii de asistenţă.
+8 Proiector cu LED Manual electronic
+Întreținerea proiectorului cu LED
+• Închideți apoi deconectați de la priză proiectorul cu LED înainte 
+de a-l curăța. 
+• La curăţarea carcasei proiectorului cu LED, utilizaţi o cârpă 
+moale umezită cu apă sau un amestec de apă şi detergent 
+neutru. Uscaţi-l ştergându-l cu o cârpă moale şi uscată.
+• Asiguraţi-vă că obiectivul este rece înainte de a-l curăța. Ştergeți 
+uşor obiectivul cu o hârtie de curățare a obiectivului. Nu atingeţi 
+obiectivul cu mâinile. 
+• Nu utilizaţi lichid sau aerosoli pentru curățare, benzen sau 
+diluanţi pe proiectorul cu LED.
+• Nu operați acest proiector cu LED imediat după ce l-ați mutat 
+dintr-o locație rece. Când proiectorul cu LED este expus la o 
+schimbare drastică de temperatură, umezeala poate condensa 
+pe obiectiv şi celelalte părți interne ale sale. Pentru a preveni 
+aceasta, folosiți unitatea cu două (2) ore după o schimbare 
+extremă sau bruscă de temperatură.
+• NU folosiți spray care conține gaz inflamabil pentru a curăța 
+lentilele. Acesta poate cauza foc din cauza căldurii excesive din 
+interiorul proiectorului.
+• NU curățați lentila în timp ce proietorul se încălzeşte, deoarece 
+acesta poate cauza ca stratul de pe suprafața lentilei să se 
+decojească.
+• NU folosiți un obiect greu pentru a şterge sau a atinge lentilele. 
+9Proiector cu LED Manual electronic
+Eliminarea corectă
+Nu aruncaţi proiectorul cu LED în gunoiul menajer. 
+Acest produs a fost creat pentru a permite reutilizarea şi 
+reciclarea componentelor în mod corespunzător. Simbolul 
+tomberonului tăiat de linii transversale arată că produsul 
+(electric, dispozitiv electric şi baterie cu celule cu mercur) nu 
+trebuie aruncat în gunoiul menajer. Verificaţi reglementările 
+locale cu privire la casarea produselor electronice.
+Nu aruncați bateria în gunoiul menajer. Simbolul 
+tomberonului tăiat de un x arată că bateria nu trebuie 
+aruncată în gunoiul menajer.
+10 Proiector cu LED Manual electronic
+11Proiector cu LED Manual electronic
+Capitolul 1: Familiarizarea cu 
+proiectorul LED
+Capitolul 1: 
+Familiarizarea cu 
+proiectorul LED
+12 Proiector cu LED Manual electronic
+Caracteristici
+Vedere din partea de sus
+Butoanele de pe panoul de control
+Butoanele de pe panoul de control vă permit să navigați în meniul 
+cu afişare pe ecran. Individual, aceste butoane corespund unei setări 
+specifice a proiectorului LED după cum se indică mai jos.
+Splendid/Exit 
+(Splendid/Ieşire)
+Left/Decrease 
+volume 
+(Stânga/
+Reduceți 
+volumul)
+Menu/OK 
+(Meniu/OK)
+Right/Increase 
+volume 
+(Dreapta/
+Creşteți 
+volumul)
+NOTĂ: Pentru mai multe informații privind utilizarea butoanelor 
+de pe panoul de control pentru a accesa setările proiectorului LEC, 
+consultați Capitolul 3: Utilizarea proiectorului LED.
+13Proiector cu LED Manual electronic
+Indicator de alimentare şi de stare a bateriei
+Acest indicator LED indică următoarele scenarii pentru proiectorul 
+LED:
+• Se aprinde la alimentarea proiectorului LED.
+• Se aprinde fie în verde, fie în roşu, în funcție de starea de 
+încărcare a bateriei.
+Pentru detalii privind modul în care acest indicator LED 
+funcționează ca indicator de stare a bateriei, consultați 
+următorul tabel:
+Culoare Stare
+Verde constant Proiectorul LED este conectat la o sursă de 
+alimentare, funcționează în modul pe baterie 
+şi nivelul de încărcare a bateriei este de peste 
+25 % sau funcționează în modul stație de 
+încărcare.
+Roşu constant Proiectorul LED funcţionează în modul pe 
+baterie, iar nivelul de încărcare a bateriei este 
+de sub 25 %.
+Portocaliu 
+intermitent
+Temperatura proiectorului LED este prea 
+ridicată şi va reduce automat luminozitatea 
+acestuia. Proiectorul LED se va opri dacă 
+temperatura rămâne prea ridicată, pentru a 
+preveni supraîncălzirea.
+Verde intermitent Proiectorul LED este folosit în acest moment ca 
+acumulator extern şi încarcă dispozitivul mobil. 
+14 Proiector cu LED Manual electronic
+Indicator încărcare baterie
+Acest indicator LED se aprinde atunci când proiectorul LED este 
+conectat la o sursă de alimentare cu ajutorul adaptorului său de 
+alimentare.
+IMPORTANT! Utilizaţi numai adaptorul de alimentare inclus 
+pentru a încărca acumulatorul şi a alimenta proiectorul LED.
+15Proiector cu LED Manual electronic
+Caracteristici extinse
+Proiectorul LED are şi caracteristici autonome care sunt lansate prin 
+apăsarea în timp ce proiectorul LED se află în modul pe baterie.
+NOTĂ: 
+• Aceste funcții nu sunt disponibile atunci când proiectorul LED este 
+conectat la o sursă de intrare HDMI sau este pe modul Wi-Fi.
+• Pentru a dezactiva sau a comuta între caracteristica de lanternă şi 
+cea de indicator luminos de urgență a proiectorului LED, apăsați 
+ până când caracteristica de iluminare preferată este activată 
+sau dezactivată.
+IMPORTANT! Asiguraţi-vă că proiectorul LED este încărcat şi poate 
+funcționa în modul pe baterie înainte de a activa aceste caracteristici. 
+Durata de funcționare pe baterie diferă în funcţie de utilizare.
+Lanterna
+Lumina albă a proiectorului cu LED luminează continuu când utilizați 
+această caracteristică.
+ 
+Butonul Splendid/Exit 
+(Splendid/Ieşire)
+Pentru a utiliza proiectorul LED ca lanternă:
+1. Deconectați toate echipamentele periferice şi dongle-ul Wi-
+Fi de la proiectorul LED, apoi apăsați pe butonul de alimentare 
+pentru a-l porni.
+16 Proiector cu LED Manual electronic
+Mod SOS
+Proiectorul LED iluminează alb intermitent atunci când utilizați 
+această caracteristică.
+2. Apăsați repetat pe până când proiectorul LED iluminează 
+alb constant.
+Pentru a utiliza proiectorul LED ca indicator luminos de urgență:
+1. Deconectați toate echipamentele periferice şi dongle-ul Wi-
+Fi de la proiectorul LED, apoi apăsați pe butonul de alimentare 
+pentru a-l porni.
+2. Apăsați repetat pe până când proiectorul LED iluminează 
+alb intermitent.
+Butonul Splendid/Exit 
+(Splendid/Ieşire)
+17Proiector cu LED Manual electronic
+Vedere din faţă
+Lentilă
+Lentila proiectează fişiere video sau imagini pe ecran, de la 
+dispozitivul de intrare.
+AVERTISMENT! 
+• NU atingeţi lentila cu mâna sau cu un obiect ascuțit.
+• NU priviţi direct înspre lentilă.
+18 Proiector cu LED Manual electronic
+Vedere din spate
+Port mufă de ieşire audio
+Portul mufei de ieşire audio vă permite să conectaţi proiectorul LED la 
+căşti.
+Port HDMI
+Acest port este pentru conectori HDMI (High-Definition Multimedia 
+Interface). Acest port este compatibil HDCP pentru DVD HD, Blu-ray şi 
+redarea de alt conținut protejat.
+Port ieşire alimentare/Dongle Wi-Fi
+Acest port de ieşire a alimentării asigură ieşire de tensiune şi de 
+curent de până la 5 V/1 A. Puteți conecta dispozitivul mobil la acest 
+port pentru a-l menține încărcat în timp ce îl utilizați împreună cu 
+proiectorul LED.
+Puteți să introduceți dongle-ul Wi-Fi (livrată împreună cu anumite 
+modele) care vă permite să oglindiți sau să transmiteți conținut de pe 
+dispozitivul mobil.
+NOTĂ: Pentru detalii suplimentare, consultaţi secţiunea 
+Utilizarea conexiunii Wi-Fi din acest manual.
+19Proiector cu LED Manual electronic
+Port de intrare a alimentării (c.c.)
+Introduceţi în acest port adaptorul de alimentare inclus pentru a 
+încărca acumulatorul şi a alimenta proiectorul LED.
+IMPORTANT! Utilizaţi numai adaptorul de alimentare inclus 
+pentru a încărca acumulatorul şi a alimenta proiectorul LED.
+AVERTISMENT! Adaptorul se poate supraîncălzi în timpul 
+funcţionării. NU acoperiţi adaptorul şi țineți-l la distanță față de 
+corp atunci când este conectat la o sursă de alimentare.
+Buton de alimentare
+Apăsați lung pe acest buton de alimentare pentru a porni şi a opri 
+proiectorul LED. Apăsați scurt pe acest buton de alimentare pentru a 
+porni şi a opri modul stație de încărcare.
+20 Proiector cu LED Manual electronic
+Inel focalizare
+Inelul de focalizare vă permite să ajustați focalizarea imaginii 
+proiectorului LED.
+Fante de aerisire
+Fantele de aerisire permit intrarea aerului rece în proiectorul LED şi 
+ieşirea aerului cald din acesta.
+AVERTISMENT! Asiguraţi-vă că fantele de aerisire nu sunt 
+blocate de hârtie, cărţi, cabluri sau alte obiecte, deoarece 
+aparatul se poate supraîncălzi.
+Vedere din dreapta
+21Proiector cu LED Manual electronic
+Vedere din partea de jos
+Soclu trepied
+Ataşați proiectorul LED la un trepied cu ajutorul unui şurub de 
+montare 1/4-20UNC folosind acest soclu.
+NOTĂ: Acest soclu trebuie utilizat numai cu trepieduri cu o 
+înălțime mai mică de 1 metru.
+22 Proiector cu LED Manual electronic
+23Proiector cu LED Manual electronic
+Capitolul 2:
+Configurare 
+Capitolul 2: Configurare 
+24 Proiector cu LED Manual electronic
+Operarea proiectorului LED
+Acest proiector LED portabil vă permite să conectați şi să redați 
+dispozitivele pentru a putea deschide cu uşurință fişiere multimedia 
+şi a reda semnalul audio direct prin difuzoarele sale SonicMaster 
+încorporate.
+Pentru siguranța dvs. şi pentru a menține calitatea acestei unități, 
+consultați paşii următori atunci când operați proiectorul LED.
+Conectaţi proiectorul LED la adaptorul de 
+alimentare
+A. Conectaţi cablul de alimentare AC la adaptorul de alimentare.
+B. Conectaţi adaptorul de alimentare de c.a. la o sursă de 
+alimentare de 100 V~240 V.
+C. Conectați conectorul de alimentare c.c. la proiectorul cu LED.
+Încărcaţi proiectorul LED timp de 5 ore înainte de a-l utiliza în 
+modul pe baterie pentru prima dată.
+NOTĂ: Adaptorul de alimentare poate avea un aspect diferit, în 
+funcţie de model şi de regiunea în care vă aflaţi.
+25Proiector cu LED Manual electronic
+IMPORTANT! 
+• Utilizaţi numai adaptorul de alimentare inclus pentru a încărca 
+acumulatorul şi a alimenta proiectorul LED.
+• Asiguraţi-vă-vă că proiectorul LED este conectat la adaptorul de 
+alimentare înainte de a-l porni pentru prima dată. Întotdeauna 
+conectați cablul de alimentare la o priză de perete fără să folosiți 
+prelungitoare. Pentru siguranța dvs., conectați dispozitivul doar la 
+o priză electrică împământată.
+• Priza electrică trebuie să fie uşor accesibilă şi să se găsească în apropierea 
+proiectorului LED.
+• Pentru a deconecta proiectorul LED de la sursa de alimentare de reţea, 
+deconectaţi-l de la priza de alimentare.
+AVERTISMENT!
+Citiţi următoarele măsuri de precauţie care se aplică în cazul bateriei 
+proiectorului LED:
+• Capacitatea bateriei diferă în funcție de temperatura mediului, de 
+umiditate şi de utilizarea proiectorului LED.
+• Bateria utilizată în acest dispozitiv poate prezenta risc de incendiu sau de 
+ardere chimică în cazul scoaterii sau al dezasamblării.
+• Pentru siguranţa personală, respectaţi etichetele de avertizare.
+• Risc de explozie, dacă se înlocuieşte bateria cu un tip necorespunzător.
+• A NU se arunca în foc.
+• Nu încercaţi niciodată să scurtcircuitaţi bateria proiectorului LED.
+• Nu încercaţi niciodată să dezasamblaţi şi să reasamblaţi bateria.
+• Dacă detectaţi scurgeri, întrerupeţi utilizarea dispozitivului.
+• Bateria şi componentele sale trebuie reciclate sau scoase din uz în mod 
+corespunzător.
+• Nu lăsaţi bateria sau alte componente de mici dimensiuni la îndemâna 
+copiilor.
+• Aruncarea bateriei în foc sau într-un cuptor fierbinte sau zdrobirea 
+mecanică sau tăierea bateriei poate avea ca rezultat explozia;
+• Lăsarea bateriei într-un mediu cu temperatură extrem de ridicată poate 
+avea ca rezultat explozia sau scurgerea lichidului sau gazului inflamabil;
+• Lăsarea bateriei într• un mediu cu presiune extrem de scăzută poate avea 
+ca rezultat explozia sau scurgerea lichidului sau gazului inflamabil.
+26 Proiector cu LED Manual electronic
+Cerinţe pentru cablul de alimentare c.a.
+Utilizaţi tipul corect de fişă de c.a., în conformitate cu locaţia dvs. 
+curentă.
+IMPORTANT! Contactaţi distribuitorul în cazul în care cablul de 
+alimentare de c.a. inclus cu proiectorul cu LED nu corespunde cu 
+sursa de alimentare locală.
+NOTĂ: Recomandăm cu insistenţă utilizarea unui dispozitiv de sursă 
+video care să aibă de asemenea o fişă cu împământare, pentru a 
+preveni interferenţele de semnal datorate fluctuaţiilor de tensiune.
+Pentru Australia şi China continentală Pentru SUA, Canada, Japonia şi Taiwan
+Pentru Europa continentală Pentru Marea Britanie
+27Proiector cu LED Manual electronic
+Conectaţi proiectorul LED la dispozitiv
+ Ieşire audio HDMI
+ Ieşire de alimentare (5 V/1 A)
+28 Proiector cu LED Manual electronic
+Apăsaţi pe butonul de alimentare
+NOTĂ: Acumulatorul din proiectorul LED opreşte încărcarea în timp 
+ce proiectorul LED este în uz. Consultați indicatorul bateriei pentru 
+starea de încărcare curentă a proiectorului LED. De asemenea, puteți 
+consulta secțiunea Vedere din partea de sus din acest manual pentru 
+mai multe detalii.
+29Proiector cu LED Manual electronic
+Ajustarea focalizării
+NOTĂ: Utilizați o imagine statică atunci când reglați afişarea pe ecran.
+Ajustați focalizarea imaginii proiecției pe ecran prin deplasarea 
+inelului de focalizare în sus sau în jos.
+30 Proiector cu LED Manual electronic
+Mod portret
+Proiectorul LED suportă modurile peisaj (standard) şi portret. Pentru 
+a folosi mod portret, rotiți proiectorul într-o poziție verticală şi 
+imaginea verticală poate fi văzută în ecran complet fără dungi negre 
+pe margine.
+NOTĂ: Proiectorul LED vă permite să oglindiți sau să transmiteți 
+conținut de pe dispozitivul mobil, pentru mai multe detalii consultați 
+secțiunea Utilizarea conexiunii ului Wi-Fi din acest manual.
+31Proiector cu LED Manual electronic
+Dimensiune ecran şi distanța de proiectare
+Reglați distanța proiectorului LED față de ecran cu ajutorul tabelului 
+de mai jos.
+Dimensiune ecran Distanţa de 
+proiecţieDiagonală Orizontală Verticală
+inch mm inch mm inch mm inch mm
+30 762 26,14 664 14,72 374 31,29 795
+40 1016 34,88 886 19,60 498 41,77 1061
+50 1270 43,58 1107 24,52 623 52,24 1327
+60 1524 52,28 1328 29,40 747 62,71 1593
+70 1778 61 1550 34,33 872 73,07 1856
+80 2032 69,72 1771 39,21 996 83,54 2122
+90 2286 78,42 1992 44,13 1121 94,05 2389
+100 2540 87,12 2213 49,05 1246 104,48 2654
+110 2794 95,86 2435 53,93 1370 114,96 2920
+120 3048 104,56 2656 58,85 1495 125,39 3185
+32 Proiector cu LED Manual electronic
+33Proiector cu LED Manual electronic
+Capitolul 3:
+Folosirea proiectorului 
+cu LED
+Capitolul 3: Folosirea 
+proiectorului cu LED
+34 Proiector cu LED Manual electronic
+Parcurgeţi paşii de mai jos atunci când utilizaţi proiectorul LED 
+pentru prima dată.
+NOTĂ: Asiguraţi-vă că proiectorul LED este conectat la adaptorul de 
+alimentare înainte de a-l porni pentru prima dată. Vă recomandăm 
+insistent să folosiţi o priză de perete cu împământare în timp ce 
+utilizaţi proiectorul LED în modul de adaptor de alimentare.
+1. Setați proiectorul LED după care apăsați şi țineți apăsat butonul 
+de alimentare pentru trei (3) secunde pentru a-l porni. 
+2. Apăsați pe sau pe de pe panoul de control al 
+proiectorului LED pentru a răsfoi opțiunile de limbă disponibile.
+Utilizarea proiectorului LED pentru prima dată
+Buton Meniu / OK
+Butoane de 
+navigare
+35Proiector cu LED Manual electronic
+Operarea meniului de afişare pe ecran
+Proiectorul LED este un dispozitiv tip plug-and-play care dispune de 
+un meniu de afişare pe ecran ce conține un set de programe şi de 
+setări care pot creşte la maximum gradul de utilizare a proiectorului 
+LED. 
+Lansați meniul de afişare pe ecran apăsând pe de pe panoul de 
+control al proiectorului LED.
+3. După ce ați ales limba preferată, apăsați pe pentru a seta 
+utilizarea acestei limbi pe proiectorul LED.
+4. Acum puteți începe să utilizați proiectorul LED pentru a afişa 
+fişiere de pe dispozitivul de intrare. Este posibil să apară 
+ecranul NO SIGNAL (FĂRĂ SEMNAL) dacă nu este conectat 
+niciun dispozitiv de intrare sau acesta nu este detectat de către 
+proiectorul LED.
+5. Apăsați pe de pe panoul de control al proiectorului LED 
+pentru a lansa meniul de afişare pe ecran al acestuia.
+NOTĂ: Pentru detalii suplimentare, consultaţi secţiunea Opțiunile 
+meniului de afișare pe ecran din acest manual.
+Pentru a face scroll prin opțiunile din meniul de afişare pe ecran, 
+apăsați pe butoanele de navigare ( / ) de pe panoul de 
+control al proiectorului LED. După ajustarea setărilor, apăsați pe 
+pentru a salva noile setări şi pentru a reveni la ecranul de 
+pornire.
+36 Proiector cu LED Manual electronic
+Dongle-ul Wi-Fi opțional permite să proiectați ecranul dispozitivului 
+sau să transmiteți de pe dispozitiv pe proiectorul LED. Procesul de 
+setare poate diferi puțin de la dispozitiv la dispozitiv.
+Asigurați-vă că ați făcut următoarele înainte de a porni oglindirea 
+ecranului sau transmiterii de media de pe dispozitiv:
+1. Introduceți dongle-ul Wi-Fi în portul USB tip A al proiectorului 
+LED.
+2. Ar trebui să treceți automat la modul de proiecție fără fir.
+NOTĂ: Dacă nu sunteți comutat automat la modul de proiecție fără 
+fir, îl puteți schimba prin OSD. Apăsați şi apoi selectați > 
+Mirroring (Oglindire).
+3. Porniți dispozitivul Wi-Fi.
+Utilizarea dongle-ului Wi-Fi 
+(numai pentru modele selectate)
+37Proiector cu LED Manual electronic
+De pe dispozitive Android
+Oglindire fără fir
+NOTĂ: 
+• Numele opțiunilor poate să difere pe dispozitiv. Pentru mai multe 
+informații consultați manualul livrat împreună cu dispozitivul. 
+• Asigurați-vă că sistemul de operare mobil este la zi înainte de a 
+porni proceseul de oglindire. 
+1. Atingeți Oglindire smart sau Transmisie şi conectați-vă la 
+SSID-ul proiectorului LED aşa cum arată pe ecranul de proiecție.
+2. Începeți proiectarea ecranului dispozitivului mobil pe 
+proiectorul LED.
+De pe dispozitive iOS
+1. Porniți Wi-Fi şi selectați SSID-ul proiectorului LED (aşa cum arată 
+pe ecranul proiectorului) din lista de rețele.
+2. Introduceți parola proiectorului (aşa cum arată pe ecranul 
+proiectorului) pentru a se conecta.
+3. Atingeți Oglindire ecran (Transmisie) şi conectați-vă la SSID-ul 
+proiectorului LED aşa cum arată pe ecranul de proiecție.
+4. Începeți proiectarea ecranului dispozitivului mobil pe 
+proiectorul LED.
+38 Proiector cu LED Manual electronic
+De pe laptopuri Windows
+1. Apăsați tasta rapidă Windows ( sau ) + K
+2. Selectați SSID-ul proiectorului LED (aşa cum arată pe ecranul 
+proiectorului) din lista de dispozitive.
+3. Introduceți parola proiectorului (aşa cum arată pe ecranul 
+proiectorului) pentru a se conecta şi începeţi oglidirea.
+De pe MacBook
+1. Selectați SSID-ul proiectorului LED (aşa cum arată pe ecranul 
+proiectorului) din lista de Wi-Fi de pe MacBook.
+2. Introduceți parola proiectorului (aşa cum arată pe ecranul 
+proiectorului) pentru a se conecta.
+3. Deschideți browserul şi tastați URL-ul (http://192.168.xxx.xxx) 
+aşa cum arată pe ecranul proiectorului în bara de adrese. Veți fi 
+redirecționat pe pagina web pentru a se conecta la proiectorul 
+LED la rețeaua Wi-Fi.
+NOTĂ: 
+• Asigurați-vă că dispozitivul şi proiectorul LED sunt conectate la 
+aceeaşi rețea Wi-Fi înainte de a continua la următorul pas.
+• Pentru a se conecta la o altă rețea Wi-Fi repetați pasul 3 şi în 
+pagina web selectați rețeaua Wi-Fi preferată.
+4. Deschideți Control center (Centru de control) pe Mac şi selectați 
+Screen Mirroring (Oglindire ecran). Din lista de dispozitive 
+selectați proiectorul LED ca să începeți oglindirea.
+Scanați codul QR pentru a vedea videoul cu instrucțiuni:
+NOTĂ: Este posibil ca proiectorul dvs. să arate diferit 
+de cel din videoclip, dar interfața şi paşii de urmat sunt 
+aceiaşi.
+39Proiector cu LED Manual electronic
+Redarea în flux
+Redarea în flux de pe video YouTube sau Facebook
+Setări standard
+1. Porniți Wi-Fi şi selectați SSID-ul proiectorului LED (aşa cum arată 
+pe ecranul proiectorului) din lista de rețele.
+2. Introduceți parola proiectorului (aşa cum arată pe ecranul 
+proiectorului) pentru a se conecta.
+3. Deschideți browserul şi tastați URL-ul (http://192.168.xxx.xxx) 
+aşa cum arată pe ecranul proiectorului în bara de adrese. Veți fi 
+redirecționat pe pagina web pentru a se conecta la proiectorul 
+LED la rețeaua Wi-Fi.
+NOTĂ: 
+• Asigurați-vă că dispozitivul şi proiectorul LED sunt conectate la 
+aceeaşi rețea Wi-Fi înainte de a continua la următorul pas.
+• Pentru a se conecta la o altă rețea Wi-Fi repetați pasul 3 şi în 
+pagina web selectați rețeaua Wi-Fi preferată.
+4. Deschideți aplicația YouTube sau Facebook, după care atingeți 
+butonul Cast (Transmisie) pe ecranul video. Din lista de 
+dispozitive selectați proiectorul LED pe care doriți să transmiteți.
+5. Odată conectat, selectați videoul pe care doriți să-l vedeți 
+şi atingeți butonul Play (Redare) Conținutul va porni de pe 
+proiector.
+Scanați codul QR pentru a vedea videoul cu instrucțiuni:
+NOTĂ: Este posibil ca proiectorul dvs. să arate diferit 
+de cel din videoclip, dar interfața şi paşii de urmat sunt 
+aceiaşi.
+40 Proiector cu LED Manual electronic
+Portul USB tip A permite să proiectați ecranul dispozitivului sau să 
+transmiteți de pe dispozitiv pe proiectorul LED. Procesul de setare 
+poate diferi puțin de la dispozitiv la dispozitiv.
+Asigurați-vă că cablul USB este introdus corect în proiectorul LED 
+înainte de a începe oglindirea ecranului sau streamingul media de 
+pe dispozitivul dvs.
+Redarea în flux
+De pe un telefon Android
+1. Conectaţi celălalt capăt al cablului USB la telefon.
+2. Descărcați şi instalați MiraPlug pe telefon.
+3. Deschideți MiraPlug şi atingeți Cast (Transmite).
+De pe un telefon iOS
+1. Conectaţi celălalt capăt al cablului USB la telefon.
+2. Atingeți Trust (Încredere) atunci când vi se cere să confirmați 
+că doriți să permiteți accesul proiectorului LED la telefon.
+Utilizarea unei conexiuni USB
+41Proiector cu LED Manual electronic
+Opțiunile meniului de afişare pe ecran
+Puteți consulta următoarele pagini pentru detalii privind fiecare 
+dintre opțiunile meniului de afişare pe ecran.
+Volum
+Selectați această opțiune de meniu pentru a regla volumul fişierului 
+audio redat pe proiectorul LED. 
+Puteți ajusta volumul pe o scară de la 0 la 10, şi puteți să apăsați şi să 
+țineți apăsat sau pentru a pune rapid pe mute sau a ajusta 
+volumul la cel mai tare/
+Intrare
+Selectați această opțiune de meniu pentru a configura sursele de 
+intrare ale proiectorului LED.
+Splendid
+Selectați această opțiune pentru a activa moduri diferite de afişare. 
+De asemenea, puteți lansa această opțiune de meniu în mod direct 
+apăsând pe . 
+Opțiuni disponibile: Bright (Luminos), Standard (Standard), 
+Theater (Teatru), şi ECO 
+Luminozitate
+Selectați această opțiune de meniu pentru a regla luminozitatea 
+proiecției pe ecran. Puteți regla luminozitatea pe o scară de la 0 la 
+10, de la nivelul cel mai întunecat până la cel mai luminos.
+42 Proiector cu LED Manual electronic
+Corecție eroare de trapez
+Selectați această opțiune pentru a regla trapezul proiecției pe ecran.
+NOTĂ: Dacă doriți să activați funcția Corecție automată de trapez 
+după ajustarea manuală, mergeți la Setări şi porniți Corecție 
+automată trapez.
+Poziția proiectorului
+Această opțiune vă permite să modificați modul în care proiecțiile 
+sunt orientate pe ecran în funcție de locația curentă a proiectorului 
+LED. 
+Puteți modifica orientarea proiectorului pentru a corespunde cu 
+locația în care este amplasat în prezent proiectorul LED: Front Table 
+(Față masă)şi Rear Table (Spate masă).
+Contrast
+Selectați această opțiune de meniu pentru a regla zonele luminoase 
+şi cele întunecate ale proiecției pe ecran. Puteți regla contrastul pe o 
+scară de la 0 la 10, de la nivelul cel mai scăzut al contrastului culorilor 
+până la cel mai ridicat.
+43Proiector cu LED Manual electronic
+Configurare
+Selectați această opțiune de meniu pentru a configura următoarele 
+setări ale proiectorului LED:
+• Limbă - Această opțiune vă permite să setați meniul de afişare 
+pe ecran al proiectorului LED în alte limbi.
+• Reset - Această opțiune reface setările implicite ale proiectorului 
+LED sau a rețelei Wi-Fi. 
+• Corecție automată trapez - Această opțiune permite să activați 
+sau să dezactivați corecția automată al trapezului.
+• Detecție automată tavan - Această opțiune permite să activați 
+sau să dezactivați detecția automată al tavanului.
+• Alimentare automată - Această opțiune vă permite să activați 
+sau să dezactivați funcția de alimentare automată atunci când 
+proiectorul este conectat la un dispozitiv HDMI şi cuplat la o 
+sursă de alimentare folosind adaptorul de alimentare.
+• Expirare OSD - Această opțiune vă permite să setați secundele 
+în care meniul de afişare pe ecran să dispară de pe ecranul 
+proiectat.
+• Expirare alimentare- Această opțiune vă permite să selectați 
+Auto (15 minute) sau să setați numărul de minute fără semnal 
+HDMI înainte ca proiectorul LED să se oprească automat. 
+44 Proiector cu LED Manual electronic
+Informaţii
+Selectați această opțiune de meniu pentru a vedea o prezentare 
+generală a informațiilor despre proiectorul LED.
+numele modelului Versiunea firmware a 
+proiectorului LED
+rezoluția ecranului 
+dispozitivului de intrare
+45Proiector cu LED Manual electronic
+Oprirea proiectorului LED
+1. Apăsaţi pe butonul de alimentare.
+2. Atunci când apare următorul ecran, apăsați pe butonul de 
+alimentare din nou pentru a opri complet proiectorul LED. Dacă 
+doriți să porniți proiectorul LED din nou imediat după ce s-a 
+oprit, aşteptați până când indicatorul Alimentare şi stare baterie 
+se sting. 
+46 Proiector cu LED Manual electronic
+47Proiector cu LED Manual electronic
+Anexe
+Anexe
+48 Proiector cu LED Manual electronic
+Declaraţia Comisiei federale de comunicaţii 
+(Federal Communications Commission – FCC)
+Parte responsabilă: Asus Computer International
+Adresă: 48720 Kato Rd., Fremont, CA 94538, USA
+Nr telefon / fax: (510)739-3777 / (510)608-4555
+Nume produs Proiector LED
+Model: E1R
+Acest dispozitiv a fost testat şi s-a constatat că se încadrează în 
+limitele pentru un dispozitiv digital clasa B, în conformitate cu Partea 
+15 a regulilor Comisiei federale de comunicaţii (FCC). Aceste limite 
+sunt proiectate pentru a asigura o protecţie rezonabilă împotriva 
+interferenţelor nedorite într-o instalație rezidenţială. Acest dispozitiv 
+generează, utilizează şi poate radia energie cu frecvenţă radio şi, 
+dacă nu este instalat şi utilizat în conformitate cu instrucţiunile, 
+poate produce interferenţe dăunătoare comunicaţiilor radio. 
+Cu toate acestea, nu există nicio garanţie că interferenţa nu va 
+apărea într-o anumită instalație. În cazul în care acest echipament 
+produce interferenţe dăunătoare recepţiei radio sau TV, care pot fi 
+determinate prin oprirea şi pornirea echipamentului, utilizatorul este 
+încurajat să încerce să corecteze interferenţele printr-una sau mai 
+multe dintre măsurile următoare:
+• Reorientaţi sau reamplasaţi antena receptoare.
+• Creşteți distanţa dintre echipament şi receptor.
+• Conectați echipamentul la o priză dintr-un circuit diferit de cel 
+la care este conectat receptorul. 
+• Cereţi sfatul distribuitorului sau al unui tehnician radio/TV 
+experimentat.
+Acest dispozitiv este în conformitate cu Partea 15 a Regulilor FCC. 
+Funcţionarea este supusă următoarelor două condiţii:
+1. Acest dispozitiv nu poate produce interferenţe dăunătoare şi
+2. Acest dispozitiv trebuie să accepte orice interferenţă primită, 
+inclusiv interferenţe care pot produce funcţionarea nedorită.
+49Proiector cu LED Manual electronic
+Declaraţia şi conformitatea cu reglementările 
+de mediu la nivel global 
+ASUS respectă conceptul de proiectare ecologică pentru a proiecta şi 
+a fabrica propriile produse şi se asigură că fiecare etapă din ciclul de 
+viaţă al produsului ASUS respectă reglementările de mediu la nivel 
+global. În plus, ASUS publică informaţiile relevante în conformitate 
+cu cerinţele reglementărilor.
+Consultați http://csr.asus.com/english/Compliance.htm pentru 
+divulgarea informațiilor pe baza cerințelor de reglementare pe care 
+le respectă ASUS:
+Declaraţie privind materialele JIS-C-0950 Japonia
+Lista SVHC REACH UE
+Reglementarea RoHS Coreea de Sud
+Serviciile de reciclare/returnare ASUS
+Programele de reciclare şi returnare ASUS se datorează 
+angajamentului nostru faţă de cele mai înalte standarde de protecţie 
+a mediului. Credem în asigurarea soluţiilor pentru ca dvs. să puteţi 
+recicla în mod responsabil produsele, bateriile şi alte componente 
+ale noastre, precum şi materialele de ambalare. Accesați adresa 
+http://csr.asus.com/english/Takeback.htm pentru informaţii detaliate 
+privind reciclarea în diverse regiuni.
+50 Proiector cu LED Manual electronic
+Dispozitive cu port 
+HDMI • Cablu HDMI la HDMI
+Dispozitive cu port 
+micro HDMI • Adaptor micro HDMI la HDMI
+• Cablu HDMI la HDMI
+Dispozitive iOS cu 
+port Lightning™ • Adaptor AV digital Lightning™
+• Cablu HDMI la HDMI
+Dispozitive cu 
+port USB 3.2 Gen 2 
+Type-C® • Adaptor digital AV USB 3.2 Gen 2 Type-C®
+• Cablu HDMI la HDMI
+Conectivitate HDMI
+51Proiector cu LED Manual electronic
+Temporizări PC acceptate
+HDMI (PC)
+Mod Rezoluţie
+Rată de 
+reîmpros-
+pătare 
+(Hz)
+Frecvenţă 
+orizontală 
+(kHz)
+Ceas 
+(MHz)
+VGA 640x480 60,0 31,5 25,175 
+VGA 640x480 66,9 33,2 23,900
+720x480_60 720x480 60,0 29,7 23,700
+720x576_50 720x576 50,0 29,5 23,600
+832x624_75 832x624 74,9 25,4 23,100
+XGA 1024x768 60,0 48,3 65,000 
+XGA 1024x768 75,0 60,0 78,750
+XGA 1024x768 60,0 65,0 65,000 
+720p 1280x720 60,0 45,0 74,250
+720p 1280x720 50,0 36,8 50,000
+WXGA 1280x800 60,0 49,7 83,500
+SXGA 1280x1024 60,0 64,0 108,000 
+UXGA 1600x900 60,0 55,5 93,250
+SVGA 800x600 60,0 37,9 40,000 
+WXGA+ 1440x900 60,0 55,9 106,500
+WSXGA+ 1680x1050 60,0 65,3 146,250
+1080p 1920x1080 60,0 67,5 148,500
+PowerBook G4 1024x768 60,0 48,4 65,000 
+MAC13 640x480 66,7 35,0 30,240
+MAC16 832x624 74,5 49,7 57,280
+MAC19 1024x768 75,0 60,2 80,000 
+MAC21 1152x870 75,0 68,7 100,000
+MAC21 1152x864 60,0 53,3 65,600
+52 Proiector cu LED Manual electronic
+HDMI (Video)
+Tem-
+porizare Rezoluţie
+Frecvență 
+verticală 
+(Hz)
+Frecvenţă 
+orizontală 
+(kHz)
+Frecvenţă 
+ceas punct 
+(MHz)
+480i 720x480 
+(1440x480)16:9 59,94 (29,97) 15,7 27,000 
+576i 720x576 
+(1440x576)16:9 50(25) 15,6 27,000 
+480p 720x480 16:9 59,9 31,5 27,000 
+576p 720x576 16:9 50,0 31,3 27,000 
+720p 1280x720 60,0 45,0 74,250 
+720p 1280x720 50,0 37,5 74,250 
+1080i 1920x1080 60 (30) 33,8 74,250 
+1080i 1920x1080 50 (25) 28,1 74,250 
+1080p 1920x1080 23,97/24 27,0 74,250 
+1080p 1920x1080 60,0 67,5 145,500 
+1080p 1920x1080 50,0 56,3 145,500 
+1080p 1920x1080 25,0 28,1 74,250 
+1080p 1920x1080 30,0 33,8 74,250 
+Limită 
+sursă 
+grafică 
+monitor
+Rata de scanare orizontală: 
+15k-75kHz
+Rata de scanare verticală: 
+24-60Hz
+Rată maximă pixeli: 
+170MHz (digital)
+53Proiector cu LED Manual electronic
+Ecranul Tehnologie de afişare DLP® de 0,2”
+Sursă de iluminare Led R/G/B
+Durată de funcționare 
+sursă de iluminare
+20 000 de ore 
+Rezoluţie reală (nativă) WVGA 854 x 480
+Lumină generată 200 LED Lumen
+Raport contrast (tipic) 500:1
+Saturaţie culori (NTSC) 100%
+Culori afişaj 16,7 milioane de culori
+Lentile de 
+proiecţie Rată de proiecţie
+1,2:1 (37,6 in la 1 m la 
+16:9)
+Distanţa de proiecţie de la 0,5 m la 3,0 m
+Dimensiune proiecţie/
+ecran
+de la 19 in la 110 in
+Compensare proiecţie 100%
+Raport zoom Fix
+Caracteristici 
+video Moduri imagine
+Bright (Luminos), 
+Standard (Standard), 
+Theater (Teatru), ECO
+Reglare trapez Vertical ±40°
+Corecţie automată 
+eroare de trapez
+Da
+Amplasarea 
+proiectorului
+Masă față, masă spate
+Caracteristici 
+audio Difuzoare încorporate
+Difuzor de 2 W 
+(tehnologie audio ASUS 
+SonicMaster)
+(continuare pe pagina urmãtoare)
+Specificații pentru proiectorul LED E1R
+54 Proiector cu LED Manual electronic
+Frecvenţă 
+semnal
+Semnal digital 
+Frecvență
+24,7 KHz(H) - 74,6 KHz(H)/ 
+50 Hz(V) - 60 Hz(V)
+Alimentare Mod pornit ≤45 W
+Mod regim de 
+aşteptare
+< 0,5 W
+Baterie Baterie internă 2 850 mAh (5 V la 1 A)
+Durată baterie Până la 4 ore
+Interferenţe
+Zgomot acustic
+30 dB (mod Standard 
+(Standard))
+28 dB (mod Theater 
+(Cinema))
+Intrare/Ieşire Intrare semnal PC HDMI 1.4b
+Ieşire audio Ieşire căşti
+Port USB 2.0 pentru 
+ieşire de alimentare
+Da (5 V la 1 A)
+Design 
+mecanic
+Culori carcasă Argintiu
+Mufă trepied Da
+Butoane pe aparat Da
+Capac pentru lentilă Nu
+Dimensiuni Dimensiuni fizice
+108 mm x 84 mm x 29 mm 
+(L x l x Î)
+Greutate Greutate netă (aprox.) 310 g
+(continuare pe pagina urmãtoare)
+55Proiector cu LED Manual electronic
+Temperatură în stare 
+de funcţionare
+0 °C - 35 °C
+Umiditate în stare de 
+funcţionare
+de la 20 % la 90 % 
+Accesorii Husă de protecție moale, geantă cu 
+cordon, cablu HDMI, ghid de pornire 
+rapidă, card de garanție
+Doar pentru anumite modele 
+Dongle, cablu de alimentare, cablu USB, 
+Certificate de 
+conformitate
+FCC / CE / CB / RCM / VCCI / IEC62471 / CEC
+NOTĂ:
+• Specificaţiile tehnice pot fi modificate fără o înştiinţare prealabilă.
+• Disponibilitatea produsului poate să difere în funcţie de regiune.
+• Toate mărcile şi numele de produse menționate sunt mărci 
+comerciale ale respectivilor deţinători.
+56 Proiector cu LED Manual electronic
+ Despre acest manual
+ Convenţii utilizate în acest manual
+ Elemente tipografice
+ Versiuni în mai multe limbi
+ Măsuri de siguranță
+ Folosirea proiectorului cu LED
+ Operaţiile de service pentru componente şi înlocuirea lor
+ Întreținerea proiectorului cu LED
+ Eliminarea corectă
+ Capitolul 1: Familiarizarea cu proiectorul LED
+ Caracteristici
+ Vedere din partea de sus
+ Caracteristici extinse
+ Lanterna
+ Mod SOS
+ Vedere din faţă
+ Vedere din spate
+ Vedere din dreapta
+ Vedere din partea de jos
+ Capitolul 2: Configurare 
+ Operarea proiectorului LED
+ Conectaţi proiectorul LED la adaptorul de alimentare
+ Cerinţe pentru cablul de alimentare c.a.
+ Conectaţi proiectorul LED la dispozitiv
+ Apăsaţi pe butonul de alimentare
+ Ajustarea focalizării
+ Mod portret
+ Dimensiune ecran și distanța de proiectare
+ Capitolul 3: Folosirea proiectorului cu LED
+ Utilizarea proiectorului LED pentru prima dată
+ Operarea meniului de afișare pe ecran
+ Utilizarea dongle-ului Wi-Fi
+(numai pentru modele selectate)
+ Oglindire fără fir
+ Redarea în flux
+ Utilizarea unei conexiuni USB
+ Redarea în flux
+ Opțiunile meniului de afișare pe ecran
+ Volum
+ Intrare
+ Splendid
+ Luminozitate
+ Contrast
+ Corecție eroare de trapez
+ Poziția proiectorului
+ Configurare
+ Informaţii
+ Oprirea proiectorului LED
+ Anexe
+ Declaraţia Comisiei federale de comunicaţii (Federal Communications Commission – FCC)
+ Declaraţia şi conformitatea cu reglementările de mediu la nivel global 
+ Serviciile de reciclare/returnare ASUS
+ Conectivitate HDMI
+ Temporizări PC acceptate
+ Specificații pentru proiectorul LED E1R

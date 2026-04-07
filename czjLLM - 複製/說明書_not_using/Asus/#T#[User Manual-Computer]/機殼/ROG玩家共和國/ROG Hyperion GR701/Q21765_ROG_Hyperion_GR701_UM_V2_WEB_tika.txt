@@ -1,0 +1,550 @@
+
+Copyright © 2023 ASUSTeK Computer Inc.
+All Rights Reserved.
+No part of this manual, including the products and software described in it, may be reproduced, transmitted, transcribed, stored 
+in a retrieval system, or translated into any language in any form or by any means, except documentation kept by the purchaser 
+for backup purposes, without the express written permission of ASUSTeK Computer Inc. (“ASUS”).
+Product warranty or service will not be extended if: (1) the product is repaired, modified or altered, unless such repair, 
+modification of alteration is authorized in writing by ASUS; or (2) the serial number of the product is defaced or missing.
+ASUS PROVIDES THIS MANUAL “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT 
+LIMITED TO THE IMPLIED WARRANTIES OR CONDITIONS OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. IN NO 
+EVENT SHALL ASUS, ITS DIRECTORS, OFFICERS, EMPLOYEES OR AGENTS BE LIABLE FOR ANY INDIRECT, SPECIAL, INCIDENTAL, 
+OR CONSEQUENTIAL DAMAGES (INCLUDING DAMAGES FOR LOSS OF PROFITS, LOSS OF BUSINESS, LOSS OF USE OR DATA, 
+INTERRUPTION OF BUSINESS AND THE LIKE), EVEN IF ASUS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES ARISING 
+FROM ANY DEFECT OR ERROR IN THIS MANUAL OR PRODUCT.
+SPECIFICATIONS AND INFORMATION CONTAINED IN THIS MANUAL ARE FURNISHED FOR INFORMATIONAL USE ONLY, AND 
+ARE SUBJECT TO CHANGE AT ANY TIME WITHOUT NOTICE, AND SHOULD NOT BE CONSTRUED AS A COMMITMENT BY ASUS. 
+ASUS ASSUMES NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR INACCURACIES THAT MAY APPEAR IN THIS MANUAL, 
+INCLUDING THE PRODUCTS AND SOFTWARE DESCRIBED IN IT.
+Products and corporate names appearing in this manual may or may not be registered trademarks or copyrights of their 
+respective companies, and are used only for identification or explanation and to the owners’ benefit, without intent to infringe.
+Q21765
+Revised Edition V2
+February 2023
+Accessory Kit Contents 
+2
+Installation Guide 
+3
+Remove the Side Panels 
+4
+Remove the PSU Cover 
+5
+Install The Power Supply Unit (PSU) 
+7
+Install the Cooler & RAM on the Motherboard 
+8
+Install the I/O Shield 
+9
+Install the Motherboard Unit 
+10
+Attach the Front I/O Connectors 
+11
+Sync Case Lighting With Addressable RGB Compatible Motherboards 
+12
+Install the PCI-E Card 
+15
+Install the 2.5" Drives 
+18
+Install the 3.5"/ 2.5" Drives 
+21
+Installation and Maintenance of the Dust Filters 
+23
+Additional Information 
+24
+CPU Cooler Height Limitation 
+25
+Graphics Card Limitation 
+26
+Fan Setup Compatibility 
+27
+Water-cooling Radiator Options 
+31
+Water-cooling Setup Compatibilty 
+33
+Multi Function LED PLATE 
+37
+Accessory Compartment 
+40
+Safety Information 
+41
+Contents
+1
+Accessory 
+Kit Contents
+配備零組件內容物 | 配备组件内容物 | Obsah sady příslušenství | Contenu du kit d’accessoires | Verpackungsinhalt 
+des Zubehörsatzes | Accessori contenuti nel kit | アクセサリキットの内容 | 액세서리 키트 내용물 | Zawartość 
+zestawu akcesoriów | Conteúdo do kit de acessórios | Содержимое комплекта | Contenido del kit de accesorios | 
+Tillbehörssatsens innehåll | Aksesuar Kitinin İçindekiler || תוכן ערכת אביזרים | محتويات طقم الملحقات 
+2
+A
+3.5” Drive / PSU Screws x20
+B
+Motherboard / 2.5” Drive Screws x40
+D
+Motherboard Standoff Tool
+x1
+C
+Motherboard Standoff
+x6
+H
+Q-Connector
+x1
+E
+Vertical Graphics Card Mount
+x1
+F
+Cable Ties x10
+I
+USB Type-A Dust Covers x4
+J
+USB Type-C® Dust Covers 
+x2
+G
+CPU 8-pin Extension Cable (30cm)
+x2
+K
+Screw toolbox
+x1
+安裝指南 | 安装指南 | Instalační příručka | Guide d’installation | Installationsanleitung | Guida all’installazione | 組み立て
+ガイド | 설치 설명서 | Instrukcja instalacji | Manual de instalação | Руководство по установке | Guía de instalación | 
+Installationsguide | Kurulum Kılavuzu | Návod na inštaláciu | מדריך התקנ | دليل التركيب
+Installation
+Guide
+3
+4
+Remove the Side Panels
+移除側面板 | 移除侧面板 | Sejměte boční panely | Retirer les panneaux latéraux | Entfernen der Seitenwände | Rimuovete 
+i pannelli laterali | サイドパネルを取り外す | 측면 패널 제거 | Zdejmij panele boczne | Remover os painéis laterais | 
+Снимите боковые панели | Quite los paneles laterales | Ta bort sidopanelerna | Yan Panelleri Çıkarın | Demontáž bočných 
+panelov | הסרת לוחות הצד | أزل اللوحات الجانبية
+3
+4
+2
+1
+5
+Remove the PSU Cover
+移除電源遮板 | 移除电源盖板 | Sejměte kryt PSU | Retirer le couvercle du bloc d’alimentation | Entfernen der 
+Netzteilabdeckung | Rimuovete la cover dell’alimentatore | 電源装置カバーを取り外す | PSU 커버 제거 | Zdejmij pokrywę 
+PSU | Remover a tampa da fonte de alimentação | Снимите крышку блока питания | Retirar la tapa de la fuente de 
+alimentación | Ta bort PSU-skyddet | PSU Kapağını Çıkarın | Demontáž krytu PSU | أزل غطاء وحدة اإلمداد بالطاقة | 
+PSU-הסרת מכסה ה
+2
+1
+6
+4
+3
+7
+Install The Power Supply Unit (PSU)
+安裝電源供應器 | 安装电源供应器 | Nainstalujte zdroj napájení (PSU) | Installer le bloc d’alimentation | Installation des 
+Netzteils | Installate l’alimentatore (PSU) | 電源装置を取り付ける | 전원 공급장치(PSU) 설치 | Zainstaluj zasilacz (PSU) | 
+Instalar a fonte de alimentação (PSU) | Установите блок питания | Instalar la fuente de alimentación (PSU) | Sätt i 
+strömförsörjningsenheten (PSU) | Güç Kaynağı Ünitesini (PSU) Takın | Inštalácia napájacej jednotky (PSU) | 
+(PSU) התקנת ספק הכוח | 
+1
+2
+8
+Install the Cooler & RAM 
+on the Motherboard
+安裝主機板散熱器和記憶體 | 安装主板散热器和内存 | Nainstalujte chladič a paměť RAM na základní desku | Installer le 
+refroidisseur et la mémoire RAM sur la carte mère | Installation des Kühlers und der RAM-Module auf das Motherboard | 
+Installate dissipatore e RAM sulla scheda madre | CPU、クーラー、メモリーをマザーボードに取り付ける | 
+메인보드에 쿨러 및 RAM 설치 | Zainstaluj element chłodzący i pamięć RAM na płycie głównej | 
+Instalar o dissipador e memória RAM na placa principal | Установите на материнскую 
+плату кулер и память | Instalar el refrigerador y la memoria RAM en la placa base | 
+Montera kylare och RAM på moderkortet | Soğutucu ve RAM’i Anakarta Takın | 
+Inštalácia chladiča a RAM na základnú dosku | 
+ | 
+בלוח האם RAM-התקנת המצנן וה
+2
+1
+9
+Install the I/O Shield
+安裝 I/O 擋板 | 安装 I/O 挡板 | Nainstalujte I/O štít | Installer le cache d’E/S | Installation der E/A-Blende | Installate la 
+mascherina I/O | I/Oシールドを取り付ける | I/O 쉴드 설치 | Zainstaluj osłonę portów We/Wy | Instalar a tampa de E/S | 
+Установите заглушку разъемов ввода-вывода | Instalar la protección de ES/ | Installera I/O-skölden | G/Ç Koruyucuyu 
+Takın | Inštalácia tienenia vstupov/výstupov | | התקנת מגן I/O
+10
+Install the Motherboard Unit
+將主機板裝入機殼 | 将主板装入机箱 | Nainstalujte základní desku | Installer la carte mère | Installation der Motherboard-
+Baugruppe | Installate la scheda madre | マザーボードを取り付ける | 메인보드 유닛 설치 | Zainstaluj płytę główną | 
+Instalar a placa principal | Установите материнскую плату | Instalar la unidad de la placa base | Installera 
+moderkortsenheten | Anakart Ünitesini Takın | Inštalácia jednotky základnej dosky | | התקנת לוח האם
+11
+Attach the Front I/O Connectors
+連接前面板 I/O 插孔 | 连接前面板 I/O 插孔 | Připojte přední I/O konektory | Fixer les connecteurs d’E/S avants | Befestigen 
+der vorderen E/A-Anschlüsse | Collegate i connettori di I/O frontali | フロントI/Oコネクターを取り付ける | 전면 I/O 커넥터 
+연결 | Zamocuj przednie złącza We/Wy | Encaixar os conectores de E/S frontais | Подключите разъемы для передней 
+панели | Acoplar los conectores de E/S frontales | Anslut de främre I/O-kontakterna | Ön G/Ç Konektörlerini Takın | 
+Pripojenie predných vstupných/výstupných konektorov | | 
+הקדמיים I/O-חיבור מחברי ה
+* Cables may vary by country or region
+12
+可編程 RGB燈光與可相容主機板同步燈光控制 | 可编程RGB灯效与可相容主板同步灯光控制 | Synchronizovat osvětlení 
+skříně se základními deskami, které jsou kompatibilní s adresovatelným RGB | Synchroniser l’éclairage du châssis avec les 
+cartes mères compatibles RGB adressables | Synchronisieren der Gehäusebeleuchtung über ansteuerbare RGB-kompatible 
+Motherboards | Sincronizza l’illuminazione del case con le schede madri compatibili con l’indirizzamento RGB | アドレサ
+ブルLED対応マザーボードによるライティングの同期 | 주소 지정이 가능한 RGB를 채택한 싱크 케이스 조명 호환 
+메인보드 | Synchronizacja podświetlenia obudowy z płytami głównymi zgodnymi z adresowalnym podświetleniem RGB | 
+Sincronize a iluminação da caixa com placas principais compatíveis com RGB endereçável | Синхронизировать подсветку 
+корпуса с адресуемой RGB-лентой материнской платы | Sincronizar la iluminación de la carcasa con placas base 
+compatibles con RGB direccionable | Hölje med synkroniserat ljus med adresserbara RGB-kompatibla 
+moderkort | Kasa Aydınlatmasını Adreslenebilir RGB Uyumlu Ana Kartlarla Eşitleyin | Synchronizácia 
+osvetlenia skrinky s adresovateľnými základnými doskami, ktoré sú kompatibilné s RGB| 
+ | والقابلة للتوجيه RGB مزامنة إضاءة الحاوية مع اللوحات األم المتوافقة مع
+ סנכרון תאורת המארז עם לוחות אם תואמים עם 
+RGB שניתן לקצות להם כתובת
+Sync Case Lighting With 
+Addressable RGB Compatible 
+Motherboards
+13
+Front
+Side
+14
+Turn on
+Press LED button for 6 seconds
+Turn off
+Press LED button for 6 seconds
+Mode Change
+Press LED button for 2 seconds
+Back to Default
+Press LED button for 4 seconds
+MB
+Sync up with MB Lighting
+Mode Static 
+Breathing Strobing Rainbow
+Color
+White / Red / Orange / Yellow / Green / Blue / Cyan / 
+Purple / Rainbow
+Default
+Mode: Rainbow 
+Color: Rainbow
+* MB mode only works when connecting control board to MB Addressable RGB header
+* Compatible with AURA Sync
+Front IO Addressable 
+RGB Header
+Side Panel Addressable 
+RGB Header
+15
+Install the PCI-E Card
+安裝 PCI-E 卡 | 安裝 PCI-E 卡 | Nainstalujte PCI-E kartu | Installer la carte PCI-E | Installation der PCI-E-Karte | Installate la 
+scheda PCI-E | 拡張カードを取り付ける | PCI-E 카드 설치 | Zainstaluj kartę PCI-E | Instalar a placa PCI-E | Установите карту 
+PCI-E | Instalar la tarjeta PCI-E | Installera PCI-E-kortet | PCI-E Kartını Takın | Inštalácia karty PCI-E | | התקנת 
+PCI-E כרטיס
+Installing a GPU in a horizontal position
+3
+1
+2
+16
+Installing a GPU in a vertical position
+4
+3
+1
+2
+* Requires riser cable (not included)
+17
+5
+6
+7
+18
+Install the 2.5" Drives
+安裝2.5 吋硬碟或固態硬碟 | 安裝 2.5 英寸硬盘或固态硬盘 | Nainstalujte 2,5” jednotky | Installer les lecteurs 2.5” | 
+Installation der 2,5-Zoll-Laufwerke | Installate i drive 2.5” | 2.5インチ ドライブを取り付ける | 2.5” 드라이브 설치 | Zainstaluj 
+napędy 2,5” | Instalar as unidades de 2,5” | Установите 2,5-дюймовые диски | Instalar las unidades de 2,5” | Installera 
+2,5”-enheterna | 2,5” Sürücüleri Takın | Inštalácia 2,5” jednotiek | | התקנת כונני 2.5 אינץ’
+Installing to the storage plates
+3
+4
+1
+2
+19
+2
+4
+1
+3
+Installing to the side plate
+20
+5
+21
+1
+Install the 3.5"/ 2.5" Drives
+安裝 3.5 / 2.5 吋硬碟 | 安裝 3.5 / 2.5 英寸硬盘 | Nainstalujte 3,5”/2,5” jednotky | Installer les lecteurs 3.5”/2.5” | Installation 
+der 3,5-Zoll-/2,5-Zoll-Laufwerke | Installate i drive 3.5”/2.5” | 3.5インチ/2.5インチ ドライブを取り付ける | 3.5”/2.5” 드라이브 
+설치 | Zainstaluj napędy 3,5”/2,5” | Instalar as unidades de 3,5”/2,5” | Установите 3,5/2,5-дюймовые диски | Instalar las 
+unidades de 3,5”/2,5” | Installera 3,5”/2,5”-enheterna | 3,5”/2,5” Sürücüleri Takın | Inštalácia 3,5”/2,5” jednotiek | 
+’התקנת כונני 3.5 אינץ’/2.5 אינץ | 
+A: 3.5” Drive
+B: 2.5” Drive
+C: AIO
+22
+2
+3.5” Drive
+2.5” Drive
+OR
+23
+Installation and Maintenance of 
+the Dust Filters
+防塵網安裝及保養 | 防尘网安装及保养 | Instalace a údržba prachových filtrů | Installation et entretien des filtres à 
+poussière | Installation und Wartung der Staubfilter | Installazione e manutenzione dei filtri antipolvere | ダストフィルター
+を取り付ける | 먼지 필터의 설치 및 유지보수 | Instalacja i konserwacja filtrów antykurzowych | Instalação e manutenção 
+dos filtros de pó | Установка и обслуживание пылевых фильтров | Instalación y mantenimiento de los filtros de polvo | 
+Installation och underhåll av dammfiltren | Toz Filtrelerinin Kurulumu ve Bakımı | Inštalácia a údržba prachových 
+filtrov | | התקנה ותחזוקה של מסנני אבק
+additional 
+information
+附加資訊 | 附加信息 | Dodatečné informace | Informations supplémentaires | Zusätzliche Informationen | Informazioni 
+addizionali | 追加情報 | 추가 정보 | Informacje dodatkowe | Informações adicionais | Дополнительная информация | 
+Información adicional | Ytterligare information | Ek Bilgiler | Doplnkové informácie | מידע נוסף | معلومات إضافية
+24
+25
+CPU Cooler Height Limitation
+CPU 散熱器高度限制 | CPU 散热器高度限制 | Výškové omezení chladiče CPU | Limitation de hauteur du refroidisseur pour 
+processeur | Höhenbegrenzung des CPU-Kühlers | Limitazioni di altezza per il dissipatore CPU | CPUクーラーの制限 | CPU 
+쿨러 높이 제한 | Ograniczenie wysokości elementu chłodzącego CPU | Limitação de altura do dissipador da CPU | 
+Ограничения для высоты процессорного кулера | Limitación de la altura del refrigerador de la CPU | Höjdbegränsning av 
+CPU-kylare | CPU Soğutucu Yükseklik Sınırlaması | Obmedzenie výšky chladiča jednotky centrálneho 
+procesora | מגבלת גובה של מצנן המעבד המרכזי | حد إرتفاع مبرد وحدة المعالجة المركزية
+Max 
+190 mm
+26
+Graphics Card Limitation
+顯示卡長度限制 | 显卡长度限制 | Omezení grafické karty | Limitations de la carte graphique | Beschränkungen der 
+Grafikkarte | Limitazioni per la scheda grafica | グラフィックスカードの制限 | 그래픽 카드 제한 | Ograniczenia karty 
+graficznej | Limitações de placas gráficas | Ограничения для видеокарты | Limitaciones de la tarjeta gráfica | Begränsningar 
+för grafikkort | Grafik Kartı Sınırlamaları | Obmedzenia grafickej karty | מגבלת כרטיס המסך | حدود بطاقة الرسومات
+Max 460 mm
+27
+Fan Setup Compatibility
+風扇設定相容性 | 风扇设置兼容性 | Kompatibilita nastavení ventilátoru | Compatibilité de configuration du ventilateur 
+| Kompatibilität der Lüftereinrichtung | Specifiche di installazione per le ventole | ファンの取り付け例 | 팬 설치 호환성 
+| Zgodność instalacji wentylatora | Compatibilidade de ventiladores | Совместимость устанавливаемого вентилятора | 
+Compatibilidad de la configuración del ventilador | Kompatibilitet för fläktsinstallation | Fan Kurulumu Uyumluluğu | 
+Kompatibilita nainštalovania ventilátora | תאימות להתקנת מאוורר | توافق إعداد المروحة
+140 mm
+120 mm
+28
+Top
+Top
+29
+Top
+Top
+30
+Front
+Front
+Front
+Front
+31
+Water-cooling Radiator Options
+水冷散熱系統選項 | 水冷散热系统选项 | Možnosti chladiče vodního chlazení | Options de radiateur à refroidissement 
+par eau | Optionen der Wasserkühlung | Opzioni per radiatore raffreddamento a liquido | 水冷ラジエーターの制限 | 
+수냉식 라디에이터 옵션 | Opcje instalacji radiatora chłodzonego wodą | Opções de radiadores de refrigeração a água 
+| Варианты радиатора для водяного охлаждения | Opciones del radiador de refrigeración por agua | Alternativ för 
+vattenkylningselement | Su Soğutma Radyatörü Seçenekleri | Možnosti chladiča na chladenie vodou | 
+אפשרויות רדיאטור לקירור מים | خيارات التبريد بالماء المبرد
+120
+140
+240
+280
+360
+420
+120
+140
+1
+2
+0
+1
+4
+0
+2
+4
+0
+2
+8
+0
+3
+6
+0
+4
+2
+0
+32
+120
+240
+360
+33
+Water-cooling Setup Compatibilty
+水冷散熱系統設定相容性 | 水冷散热系统设置兼容性 | Kompatibilita nastavení vodního chlazení | Compatibilité de 
+configuration du refroidissement par eau | Kompatibilität der Wasserkühlungseinrichtung | Specifiche di installazione 
+raffreddamento a liquido | ラジエーターとファンの制限 | 수냉식 설치 호환성 | Zgodność instalacji chłodzenia wodą | 
+Compatibilidade de radiadores de refrigeração a água | Совместимость с водяным охлаждением | Compatibilidad de 
+la configuración de refrigeración por agua | Kompatibiltet för vattenkylningsinstallation | Su Soğutma 
+Kurulumu Uyumluluğu | Kompatibilita inštalácie chladenia vodou | توافق إعداد تبريد المياه | 
+תאימות התקנה של קירור מים
+55 mm
+34
+70 mm
+35
+5
+5
+ m
+m
+36
+2
+4
+3
+1
+37
+1
+Multi Function LED PLATE
+2
+3
+* Requires micro USB cable (not included)
+Lighting Effect:
+Effect 1
+Effect 2
+Effect 3
+Effect 4
+Effect 5
+Rainbow
+Cycle
+Cycle Wave Breathing
+Darkness
+*Press the LED MODE button to cycle through Lighting effects
+38
+Kickstand
+39
+Mounted
+Horizontal
+Vertical
+40
+Accessory Compartment
+Safety 
+Information
+安規資訊 | 安规信息 | Bezpečnostní informace | Informations relatives à la sécurité | Sicherheitsinformationen | 
+Informazioni sulla sicurezza | 製品の安全性に関する情報 | 안전 정보 | Informacje dotyczące bezpieczeństwa | 
+Informações de segurança | Информация о правилах безопасности | Información de seguridad | Säkerhetsinformation | 
+ Güvenlik Bilgileri | Bezpečnostné informácie | מידע על בטיחות | معلومات السالمة
+41
+42
+REACH
+Complying with the REACH (Registration, Evaluation, Authorisation, and Restriction of Chemicals) regulatory framework, we 
+published the chemical substances in our products at ASUS REACH website at http://csr.asus.com/english/REACH.htm. (English)
+謹遵守REACH(Registration, Evaluation, Authorisation, and Restriction of Chemicals)管理規範，我們會將產品中的化學物質公
+告在華碩REACH網站，詳細請參考http://csr.asus.com/english/REACH.htm. (繁體中文)
+谨遵守REACH(Registration, Evaluation, Authorisation, and Restriction of Chemicals)管理规范，我们会将产品中的化学物质公
+告在华硕REACH网站，详细请参考http://csr.asus.com/english/REACH.htm. (简体中文)
+V rámci shody s regulatorní platformou REACH (Registration, Evaluation, Authorisation, and Restriction of Chemicals (registrace, 
+hodnocení, povolování a omezování chemických látek)) byl zveřejněn seznam chemických látek přítomných v našich 
+produktech na webu ASUS REACH na adrese http://csr.asus.com/english/REACH.htm. (Čeština)
+Conforme avec le Règlement REACH (Enregistrement, Évaluation, Autorisation et Restriction des produits chimiques), nous 
+avons publié la liste des substances chimiques utilisées dans nos produits sur le site Web ASUS REACH à l’adresse 
+http://csr.asus.com/english/REACH.htm. (Français)
+Die rechtliche Rahmenbedingungen für REACH (Registration, Evaluation, Authorisation, and Restriction of Chemicals) erfüllend, 
+veröffentlichen wir die chemischen Substanzen in unseren Produkten auf unserer ASUS REACH-Webseite unter http://csr.asus.
+com/english/REACH.htm. (Deutsch)
+Australia statement notice
+From 1 January 2012 updated warranties apply to all ASUS products, consistent with the Australian Consumer Law. 
+For the latest product warranty details please visit https://www.asus.com/support/. Our goods come with guarantees 
+that cannot be excluded under the Australian Consumer Law. You are entitled to a replacement or refund for a major 
+failure and compensation for any other reasonably foreseeable loss or damage. You are also entitled to have the goods 
+repaired or replaced if the goods fail to be of acceptable quality and the failure does not amount to a major failure. 
+If you require assistance please call ASUS Customer Service 1300 2787 88 or visit us at https://www.asus.com/support/.
+Declaration of compliance for product environmental 
+regulation
+ASUS follows the green design concept to design and manufacture our products, and makes sure that each stage of 
+the product life cycle of ASUS product is in line with global environmental regulations. In addition, ASUS disclose the 
+relevant information based on regulation requirements. 
+Please refer to http://csr.asus.com/Compliance.htm for information disclosure based on regulation requirements ASUS 
+is complied with:
+EU RoHS
+This product complies with the EU RoHS Directive. For more details, see http://csr.asus.com/english/article.aspx?id=35
+India RoHS
+This product complies with the “India E-Waste (Management) Rules, 2016” and prohibits use of lead, mercury, 
+hexavalent chromium, polybrominated biphenyls (PBBs) and polybrominated diphenyl ethers (PBDEs) in 
+concentrations exceeding 0.1% by weight in homogenous materials and 0.01% by weight in homogenous materials 
+for cadmium, except for the exemptions listed in Schedule II of the Rule.
+Vietnam RoHS
+ASUS products sold in Vietnam, on or after September 23, 2011,meet the requirements of the Vietnam Circular 
+30/2011/TT-BCT. 
+Các sản phẩm ASUS bán tại Việt Nam, vào ngày 23 tháng 9 năm2011 trở về sau, đều phải đáp ứng các yêu cầu của 
+Thông tư 30/2011/TT-BCT của Việt Nam.
+Türkiye RoHS
+AEEE Yönetmeliğine Uygundur
+ASUS Recycling/Takeback Services
+ASUS recycling and takeback programs come from our commitment to the highest standards for protecting our 
+environment. We believe in providing solutions for you to be able to responsibly recycle our products, batteries, other 
+components as well as the packaging materials. Please go to http://csr.asus.com/english/Takeback.htm for detailed 
+recycling information in different regions.
+43
+部件名称 有害物质
+铅 (Pb) 汞 (Hg) 镉 (Cd) 六价铬 (Cr+6) 多溴联苯(PBB) 多溴二苯醚(PBDE)
+机箱组 ○ ○ ○ ○ ○ ○
+面板组 ○ ○ ○ ○ ○ ○
+I/O模组 ○ ○ ○ ○ ○ ○
+风扇 ○ ○ ○ ○ ○ ○
+零件包 ○ ○ ○ ○ ○ ○
+本表格依據 SJ/T 11364 的規定編制。
+○： 表示該有害物質在該部件所有均質材料中的含量均在 GB/T 26572 規定的限量要求以下。
+×： 表示該有害物質至少在該部件的某一均質材料中的含量超出 GB/T 26572 規定的限量要求，然該部件仍符合歐盟指令 2011/65/EU 的規范。
+備註：此產品所標示之環保使用期限，係指在一般正常使用狀況下。
+電子電氣產品有害物質限制使用標識：圖中之數字為產品之環保使用期限。僅指電子電氣產品中含有的有害物質
+不致發生外洩或突變，從而對環境造成汙染或對人身、財產造成嚴重損害的期限。
+有害物质名称及含量说明标示：
+Nel rispetto del regolamento REACH (Registration, Evaluation, Authorisation, and Restriction of Chemicals), le sostanze 
+chimiche contenute nei prodotti ASUS sono state pubblicate nel sito web ASUS, alla pagina: 
+http://csr.asus.com/english/REACH.htm. (Italiano)
+REACH (Registration, Evaluation, Authorisation, and Restriction of Chemicals)規則の基準を満たすため、ASUSはREACH専
+用サイトで弊社製品に含まれる化学物質を公開しております。 http://csr.asus.com/english/REACH.htm. (日本語)
+REACH (Registration, Evaluation, Authorisation, and Restriction of Chemicals) 등록, 평가, 승인 및 화학물질규제) 규제 
+기준을 준수하여 ASUS REACH 웹사이트http://csr.asus.com/english/REACH.htm 에 당사 제품에사용된 화학 물질을 
+게시했습니다. (한국어)
+Zgodnie z rozporządzeniem REACH (Rejestracja, ocena, autoryzacja i ograniczenie środków chemicznych), publikujemy 
+informacje o środkach chemicznych w naszych produktach, na stronie internetowej ASUS REACH pod adresem 
+http://csr.asus.com/english/REACH.htm (Polski)
+Cumprindo o quadro regulamentar REACH (Registo, Avaliação, Autorização e Restrição dos Produtos Químicos), 
+divulgamos as substâncias químicas incluídas nos nossos produtos no Web site ASUS REACH em 
+http://csr.asus.com/english/REACH.htm. (Português)
+Согласно регламенту ЕС REACH (Registration, Evaluation, Authorization, and Restriction of Chemicals – Регистрация, 
+Оценка, Разрешения и Ограничения на использование Химических веществ), на сайте ASUS REACH размещен список 
+химических веществ содержащихся в наших продуктах: http://csr.asus.com/english/REACH.htm. (Русский)
+En cumplimiento del marco reglamentario REACH (registro, evaluación, autorización y restricción de productos químicos), 
+hemos publicado las sustancias que contienen nuestros productos a través del sitio web ASUS REACH, al que puede 
+acceder a través de la dirección http://csr.asus.com/english/REACH.htm. (Español)
+Uppfyller REACH (Registration, Evaluation, Authorization, and Restriction of Chemicals (Registrering, Värdering, Behörighet 
+och Begränsning)) reglerande regelverk, vi publicerar de kemiska substanserna i våra produkter på ASUS REACH webbsida 
+på http://csr.asus.com/english/REACH.htm. (Svenska)
+REACH (Kimyasalların Kayıt Altına Alınması, Değerlendirilmesi, Ruhsatlandırılması ve Sınırlandırılması) düzenleyici 
+çerçevesine uygun olarak, ürünlerimizdeki kimyasal maddeleri http://csr.asus.com/english/REACH.htm adresindeki ASUS 
+REACH websitesinde yayınlamaktayız. (Türkçe)
+France sorting and recycling information
+44
+Safety Precautions
+Accessories that came with this product have been designed and verified for the use in connection with this product. 
+Never use accessories for other products to prevent the risk of electric shock or fire.
+安全上のご注意
+付属品は当該専用品です。他の機器には使用しないでください。機器の破損もしくは、火災や感電の原因とな
+ることがあります。
+45
+ Accessory Kit Contents
+ Installation Guide
+ Remove the Side Panels
+ Remove the PSU Cover
+ Install The Power Supply Unit (PSU)
+ Install the Cooler & RAM 
+on the Motherboard
+ Install the I/O Shield
+ Install the Motherboard Unit
+ Attach the Front I/O Connectors
+ Sync Case Lighting With Addressable RGB Compatible Motherboards
+ Install the PCI-E Card
+ Install the 2.5" Drives
+ Install the 3.5"/ 2.5" Drives
+ Installation and Maintenance of the Dust Filters
+ Additional Information
+ CPU Cooler Height Limitation
+ Graphics Card Limitation
+ Fan Setup Compatibility
+ Water-cooling Radiator Options
+ Water-cooling Setup Compatibilty
+ Multi Function LED PLATE
+ Accessory Compartment
+ Safety Information

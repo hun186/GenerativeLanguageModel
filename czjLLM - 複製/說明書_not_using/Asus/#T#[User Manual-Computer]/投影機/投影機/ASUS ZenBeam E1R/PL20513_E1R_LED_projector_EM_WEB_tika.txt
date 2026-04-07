@@ -1,0 +1,1056 @@
+
+PL20513
+Wydanie pierwsze
+Listopad 2022
+PODRĘCZNIK UŻYTKOWNIKA
+2 Podręcznik w wersji elektronicznej do projektora LED
+Informacje o prawach autorskich
+Żadnej z części tego podręcznika, włącznie z opisami produktów i oprogramowania, nie można powielać, 
+transmitować, przetwarzać, przechowywać w systemie odzyskiwania danych lub tłumaczyć na żadne 
+języki, w jakiejkolwiek formie lub w jakikolwiek sposób, bez wyraźnego pisemnego pozwolenia ASUSTeK 
+COMPUTER, INC. (“ASUS”).
+Gwarancja lub serwis produktu nie zostaną przedłużone, jeśli: (1) produkt będzie naprawiany, modyfikowany 
+lub zmieniany, chyba że będą to naprawy, modyfikacje lub zmiany autoryzowane na piśmie przez firmę 
+ASUS; albo (2) numer seryjny produktu zostanie zamazany lub usunięty.
+ASUS UDOSTĘPNIA TEN PODRĘCZNIK W STANIE “JAKI JEST”, BEZ UDZIELANIA JAKICHKOLWIEK GWARANCJI, 
+ZARÓWNO WYRAŹNYCH JAK I DOMNIEMANYCH, WŁĄCZNIE, ALE NIE TYLKO Z DOMNIEMANYMI 
+GWARANCJAMI LUB WARUNKAMI PRZYDATNOŚCI HANDLOWEJ LUB DOPASOWANIA DO OKREŚLONEGO 
+CELU. W ŻADNYM PRZYPADKU FIRMA ASUS, JEJ DYREKTORZY, KIEROWNICY, PRACOWNICY LUB 
+AGENCI NIE BĘDĄ ODPOWIADAĆ ZA JAKIEKOLWIEK NIEBEZPOŚREDNIE, SPECJALNE, PRZYPADKOWE 
+LUB KONSEKWENTNE SZKODY (WŁĄCZNIE Z UTRATĄ ZYSKÓW, TRANSAKCJI BIZNESOWYCH, UTRATĄ 
+MOŻLIWOŚCI KORZYSTANIA LUB UTRACENIEM DANYCH, PRZERWAMI W PROWADZENIU DZIAŁANOŚCI 
+ITP.) NAWET, JEŚLI FIRMA ASUS UPRZEDZAŁA O MOŻLIWOŚCI ZAISTNIENIA TAKICH SZKÓD, W WYNIKU 
+JAKICHKOLWIEK DEFEKTÓW LUB BŁĘDÓW W NINIEJSZYM PODRĘCZNIKU LUB PRODUKCIE.
+Produkty i nazwy firm pojawiające się w tym podręczniku mogą, ale nie muszą być zastrzeżonymi 
+znakami towarowymi lub prawami autorskimi ich odpowiednich właścicieli i używane są wyłącznie w celu 
+identyfikacji lub wyjaśnienia z korzyścią dla ich właścicieli i bez naruszania ich praw.
+SPECYFIKACJE I INFORMACJE ZNAJDUJĄCE SIĘ W TYM PODRĘCZNIKU, SŁUŻĄ WYŁĄCZNIE CELOM 
+INFORMACYJNYM I MOGĄ ZOSTAĆ ZMIENIONE W DOWOLNYM CZASIE, BEZ POWIADOMIENIA, DLATEGO 
+TEŻ, NIE MOGĄ BYĆ INTERPRETOWANE JAKO WIĄŻĄCE FIRMĘ ASUS DO ODPOWIEDZIALNOŚCI.ASUS NIE 
+ODPOWIADA ZA JAKIEKOLWIEK BŁĘDY I NIEDOKŁADNOŚCI, KTÓRE MOGĄ WYSTĄPIĆ W TYM PODRĘCZNIKU, 
+WŁĄCZNIE Z OPISANYMI W NIM PRODUKTAMI I OPROGRAMOWANIEM.
+Copyright © 2022 ASUSTeK COMPUTER INC. Wszelkie prawa zastrzeżone.
+Ograniczenie odpowiedzialności
+W przypadku wystąpienia określonych okoliczności, za które odpowiedzialność ponosi ASUS, a w wyniku 
+których wystąpiły szkody, właściciel będzie uprawniony do uzyskania od firmy ASUS odszkodowania.W 
+każdym takim przypadku niezależnie od podstawy roszczenia od firmy ASUS, odpowiada ona jedynie 
+za uszkodzenia ciała (włącznie ze śmiercią), szkody nieruchomości i rzeczywiste szkody osobiste; lub za 
+wszelkie inne, rzeczywiste i bezpośrednie szkody, wynikające z pominięcia lub niewykonania czynności 
+prawnych wynikających z tego oświadczenia gwarancji, do kwoty określonej w umowie kupna dla każdego 
+produktu.
+ASUS odpowiada lub udziela rekompensaty wyłącznie za stratę, szkody lub roszczenia w oparciu o umowę, 
+odpowiedzialność za szkodę lub naruszenie praw wynikających z niniejszego oświadczenia gwarancyjnego.
+To ograniczenie stosuje się także do dostawców i sprzedawców ASUS. Jest to maksymalny pułap zbiorowej 
+odpowiedzialności firmy ASUS, jej dostawców i sprzedawców.
+BEZ WZGLĘDU NA OKOLICZNOŚCI FIRMA ASUS NIE ODPOWIADA ZA: (1) ROSZCZENIA STRON TRZECICH 
+OD UŻYTKOWNIKA DOTYCZĄCE SZKÓD; (2) UTRATĘ LUB USZKODZENIE NAGRAŃ LUB DANYCH; ALBO (3) 
+SPECJALNE, PRZYPADKOWE LUB NIEBEZPOŚREDNIE SZKODY LUB ZA EKONOMICZNE KONSEKWENCJE 
+SZKÓD (WŁĄCZNIE Z UTRATĄ ZYSKÓW LUB OSZCZĘDNOŚCI), NAWET JEŚLI FIRMA ASUS, JEJ DOSTAWCY LUB 
+SPRZEDAWCY ZOSTANĄ POINFORMOWANI O ICH ODPOWIEDZIALNOŚCI.
+Serwis i pomoc techniczna
+Odwiedź naszą wielojęzyczną stronę sieci web, pod adresem https://www.asus.com/support/
+Podręcznik w wersji elektronicznej do projektora LED 3
+Spis treści
+Informacje dotyczące tego Podręcznika.................................................... 5
+Konwencje stosowane w tym Podręczniku............................................. 6
+Typografia ........................................................................................................... 6
+Wersje wielojęzyczne ...................................................................................... 6
+Środki bezpieczeństwa .................................................................................... 7
+Korzystanie z projektora LED ....................................................................... 7
+Serwisowanie i wymiana części................................................................... 7
+Troska o projektor LED .................................................................................... 8
+Właściwa utylizacja .......................................................................................... 9
+Rozdział 1: Poznajemy projektor LED
+Funkcje .................................................................................................................12
+Widok z góry.....................................................................................................12
+Funkcje rozszerzone ......................................................................................15
+Latarka ...................................................................................................................15
+Tryb SOS ................................................................................................................16
+Widok z przodu ...............................................................................................17
+Widok z tyłu ......................................................................................................18
+Widok z prawej strony ...................................................................................20
+Widok z dołu .....................................................................................................21
+Rozdział 2: Ustawienie
+Obsługa projektora LED .................................................................................24
+Podłącz projektor LED do zasilacza sieciowego ..................................24
+Wymagania dotyczące przewodu zasilającego prądu 
+zmiennego ...........................................................................................................26
+Podłącz projektor LED do urządzenia .....................................................27
+Naciśnij przycisk zasilania ............................................................................28
+Regulacja ostrości ...........................................................................................29
+Orientacja pionowa .......................................................................................30
+Tabela wielkości ekranu i odległości wyświetlania ...............................31
+4 Podręcznik w wersji elektronicznej do projektora LED
+Rozdział 3: Obsługa projektora LED
+Pierwsze użycie projektora LED ..................................................................34
+Obsługa menu ekranowego ........................................................................35
+Korzystanie z modułu Wi-Fi 
+(wyłącznie w wybranych modelach) .........................................................36
+Dublowanie bezprzewodowe ....................................................................37
+Przesyłanie strumieniowe ............................................................................39
+Korzystanie z połączenia USB ......................................................................40
+Przesyłanie strumieniowe ............................................................................40
+Opcje menu ekranowego .............................................................................41
+Volume (Głośność) .........................................................................................41
+Wejście .............................................................................................................41
+Splendid .............................................................................................................41
+Brightness (Jasność) ......................................................................................41
+Contrast (Kontrast) .........................................................................................42
+Keystone ............................................................................................................42
+Położenie projektora .....................................................................................42
+Setup (Konfiguracja) ......................................................................................43
+Information (Informacje)..............................................................................44
+Wyłączanie projektora LED ...........................................................................45
+Załączniki
+Oświadczenie o zgodności z przepisami Federal 
+Communications Commission (FCC) ........................................................48
+Zgodność i deklaracja zgodności z ogólnoświatowymi 
+przepisami ochrony środowiska ................................................................49
+Recycling ASUS/Usługi zwrotu ....................................................................49
+Połączenia HDMI ...............................................................................................50
+Obsługa taktowania komputera .................................................................51
+Dane techniczne projektora LED E1R .......................................................53
+Podręcznik w wersji elektronicznej do projektora LED 5
+Informacje dotyczące tego Podręcznika
+W tym Podręczniku zawarte są informacje na temat sprzętowych i 
+programowych funkcji projektora LCD, które zostały pogrupowane 
+tematycznie w następujące rozdziały:
+Rozdział 1: Poznajemy projektor LED
+W tym rozdziale omówiono szczegółowo elementy projektora 
+LED.
+Rozdział 2: Ustawienie
+W tym rozdziale jest opisany sposób konfiguracji projektora 
+LED i korzystania z jego części do podłączenia urządzeń 
+wejściowych.
+Rozdział 3: Obsługa projektora LED
+W tym rozdziale opisano funkcje przycisków panelu sterowania 
+projektora LED oraz ich wykorzystanie do uruchamiania funkcji 
+projektora LED. 
+Załączniki
+W tym rozdziale zawarte są uwagi dotyczące bezpieczeństwa 
+projektora LED.
+6 Podręcznik w wersji elektronicznej do projektora LED
+Konwencje stosowane w tym Podręczniku
+Dla wyróżnienia kluczowych informacji w tej instrukcji użytkownika 
+komunikaty są przedstawiane następująco:
+WAŻNE! Ten komunikat zawiera istotne informacje, do których należy 
+się zastosować, aby dokończyć zadanie. 
+UWAGA: Ten komunikat zawiera dodatkowe ważne informacje i 
+wskazówki pomocne w dokończeniu zadań.
+OSTRZEŻENIE! Komunikat ten zawiera ważne informacje, do 
+których należy się stosować, aby zapewnić bezpieczeństwo podczas 
+wykonywania zadań oraz aby zapobiec uszkodzeniu danych i 
+komponentów projektora LED. 
+Typografia
+Wytłuszczenie oznacza menu lub element, który należy wybrać.
+Pochylenie oznacza części, do których można się odnieść w 
+tym podręczniku użytkownika.
+Wersje wielojęzyczne
+Pobierz inne wersje językowe niniejszego podręcznika 
+elektronicznego za pośrednictwem strony: 
+https://www.asus.com/support/
+Podręcznik w wersji elektronicznej do projektora LED 7
+Środki bezpieczeństwa
+Korzystanie z projektora LED
+• Przeczytaj ten podręcznik i zwróć uwagę na instrukcje dotyczące 
+bezpieczeństwa przed obsługą projektora LED.
+• Przestrzegaj uwag i ostrzeżeń zawartych w podręczniku 
+użytkownika.
+• Nie należy umieszczać projektora LED na nierównej lub 
+niestabilnej powierzchni.
+• Nie wolno używać projektora LED w zadymionym środowisku. 
+Pozostałości dymu mogą się gromadzić na częściach 
+krytycznych i doprowadzić do uszkodzenia projektora LED lub 
+pogorszenia jego charakterystyki.
+• Z projektorem LED nie należy używać uszkodzonych 
+przewodów zasilających, akcesoriów, ani innych urządzeń 
+peryferyjnych.
+• Projektor LED przechowywać w plastikowym opakowaniu, poza 
+zasięgiem dzieci.
+• Nie blokować ani nie umieszczać żadnych przedmiotów 
+w pobliżu otworów wentylacyjnych projektora LED. 
+Nieprzestrzeganie tej zasady może doprowadzić do nagrzania, 
+które pogorszy jakość obrazu i uszkodzi projektor.
+• Upewnij się, że napięcie pracy projektora LED pasuje do 
+napięcia źródła zasilania.
+Serwisowanie i wymiana części
+• Nie wolno rozbierać lub próbować serwisować projektora LED 
+samodzielnie. Skontaktuj się z lokalnym centrum serwisowym 
+firmy ASUS w celu uzyskania pomocy.
+• Wymiana baterii na baterię nieodpowiedniego typu, może 
+spowodować jej eksplozję. Zużyte baterie należy utylizować 
+zgodnie z instrukcjami bezpieczeństwa, a w celu uzyskania 
+pomocy należy się skontaktować z lokalnym punktem 
+serwisowym ASUS. 
+• W przypadku wymiany części projektora LED, skontaktuj się z 
+lokalnym centrum serwisowym w celu uzyskania pomocy.
+8 Podręcznik w wersji elektronicznej do projektora LED
+Troska o projektor LED
+• Przed czyszczeniem wyłączyć projektor i odłączyć go od źródła 
+zasilania. 
+• W przypadku czyszczenia obudowy projektora LED użyć 
+czystej, miękkiej szmatki zwilżonej wodą lub mieszanką wody z 
+obojętnym detergentem. Urządzenie należy wytrzeć do sucha 
+za pomocą miękkiej, suchej szmatki.
+• Przed czyszczeniem upewnij się, czy obiektyw jest zimny. 
+Delikatnie przetrzyj obiektyw za pomocą papieru do czyszczenia 
+obiektywów. Nie należy dotykać obiektywu rękoma. 
+• Nie wolno stosować do czyszczenia projektora LED 
+środków czyszczących ciekłych lub w aerozolu, benzenu, 
+rozpuszczalników.
+• Nigdy nie wolno uruchamiać projektora LED natychmiast po 
+przeniesieniu go z zimnego miejsca. Kiedy projektor LED jest 
+narażony na drastyczne zmiany temperatury, może dojść do 
+kondensacji wilgoci i na obiektywie i częściach wewnętrznych. 
+Aby temu zapobiegać należy używać urządzenie dwie (2) 
+godziny po wystąpieniu ekstremalnej lub gwałtownej zmiany 
+temperatury.
+• NIE WOLNO czyścić obiektywu sprayami zawierającymi 
+łatwopalne gazy. Mogłoby to doprowadzić do pożaru w 
+wyniku nagromadzenia się nadmiernej ilości ciepła wewnątrz 
+projektora.
+• NIE WOLNO czyścić obiektywu, gdy projektor się rozgrzewa, 
+ponieważ mogłoby to doprowadzić do zdarcia powłoki 
+powierzchniowej obiektywu.
+• NIE WOLNO przecierać ani stukać obiektywu twardymi 
+przedmiotami. 
+Podręcznik w wersji elektronicznej do projektora LED 9
+Właściwa utylizacja
+Nie wolno wyrzucać projektora LED do odpadów 
+komunalnych. Konstrukcja tego produktu umożliwia 
+prawidłowe ponowne wykorzystanie części i recykling. 
+Obecność na produkcie symbolu przekreślonego kosza 
+na kółkach oznacza, że produkt (urządzenie elektryczne, 
+elektroniczne i baterie zawierające rtęć) nie powinny 
+być umieszczane razem z odpadami miejskimi. Sprawdź 
+lokalne przepisy dotyczące utylizacji produktów 
+elektronicznych.
+NIE NALEŻY wyrzucać baterii ze śmieciami miejskimi. 
+Symbol przekreślonego kosza na kółkach oznacza, że 
+baterii nie należy wyrzucać razem z odpadami miejskimi.
+10 Podręcznik w wersji elektronicznej do projektora LED
+Podręcznik w wersji elektronicznej do projektora LED 11
+Rozdział 1: Poznajemy 
+projektor LED
+Rozdział 1: 
+Poznajemy projektor LED
+12 Podręcznik w wersji elektronicznej do projektora LED
+Funkcje
+Widok z góry
+Przyciski panelu sterowania
+Przyciski panelu sterowania umożliwiają nawigowanie w 
+menu ekranowym wyświetlania. Indywidualnie przyciski te 
+odpowiadają również określonym ustawieniom projektora LED, 
+zgodnie z opisem poniżej.
+Splendid/
+Wyjście
+W lewo/
+Zmniejszanie 
+głośności
+Menu/OK
+W prawo/
+Zwiększanie 
+głośności
+UWAGA: W celu uzyskania dodatkowych informacji na temat 
+wykorzystania przycisków panelu sterowania do dostępu do ustawień 
+projektora LED należy zapoznać się z rozdziałem Rozdział 3: Obsługa 
+projektora LED w niniejszym Podręczniku.
+Podręcznik w wersji elektronicznej do projektora LED 13
+Wskaźnik zasilania i wskaźnik stanu baterii
+Ten wskaźnik LED wskazuje następujące stany projektora LED:
+• Świeci po włączeniu zasilania projektora LED.
+• Świeci zielonym lub czerwonym światłem w zależności od 
+stanu naładowania baterii.
+Szczegółowe informacje dotyczące działania tego wskaźnika 
+LED jako wskaźnika stanu baterii zawiera następująca tabela:
+Kolor Stan
+Stałe zielone Projektor LED jest podłączony do źródła 
+zasilania, działa w trybie zasilania 
+bateryjnego, a poziom naładowania baterii 
+jest wyższy niż 25% lub działa w trybie 
+powerbanka.
+Stałe czerwone Projektor LED działa tylko w trybie zasilania 
+bateryjnego, a poziom naładowania baterii 
+nie przekracza 25%.
+Migające 
+pomarańczowe
+Temperatura projektora LED jest zbyt 
+wysoka; jasność zostanie automatycznie 
+zmniejszona. Jeśli zbyt wysoka temperatura 
+będzie się utrzymywać, projektor LED 
+wyłączy się, aby nie doszło do jego 
+przegrzania.
+Miga na zielono Projektor LED jest używany jako powerbank 
+i ładuje urządzenie przenośne. 
+14 Podręcznik w wersji elektronicznej do projektora LED
+Wskaźnik ładowania baterii
+Ten wskaźnik LED świeci po podłączeniu projektora LED do 
+źródła zasilania przy użyciu zasilacza.
+WAŻNE! Do ładowania zestawu baterii i zasilania projektora LED 
+należy używać wyłącznie dostarczonego zasilacza.
+Podręcznik w wersji elektronicznej do projektora LED 15
+Funkcje rozszerzone
+Projektor LED jest także wyposażony w niezależne funkcje, które 
+można uaktywnić po naciśnięciu przycisku , gdy projektor LED 
+działa w trybie zasilania bateryjnego.
+UWAGA: 
+• Funkcje te nie są dostępne, gdy projektor LED jest podłączony do 
+źródła sygnału wejściowego HDMI lub działa w trybie Wi-Fi.
+• Aby wyłączyć lub przełączyć funkcję latarki i oświetlenia 
+awaryjnego projektora LED, należy nacisnąć przycisk do 
+momentu wyłączenia lub włączenia preferowanej funkcji 
+oświetlenia.
+WAŻNE! Przed włączeniem tych funkcji należy upewnić się, że bateria 
+projektora LED jest naładowana i że może on działać w trybie zasilania 
+bateryjnego. Czas pracy baterii zależy od sposobu użytkowania.
+Latarka
+Podczas korzystania z tej funkcji z projektora LED emitowane jest 
+stałe białe światło.
+ 
+Przycisk Splendid/Wyjście
+W celu używania projektora LED jako latarki:
+1. Odłącz od projektora LED wszystkie urządzenia peryferyjne i 
+moduł Wi-Fi, a następnie naciśnij przycisk zasilania, aby włączyć 
+urządzenie.
+16 Podręcznik w wersji elektronicznej do projektora LED
+Tryb SOS
+Podczas korzystania z tej funkcji z projektora LED emitowane jest 
+stałe białe światło.
+W celu używania projektora LED jako latarki:
+1. Odłącz od projektora LED wszystkie urządzenia peryferyjne i 
+moduł Wi-Fi, a następnie naciśnij przycisk zasilania, aby włączyć 
+urządzenie.
+2. Naciskaj powtarzająco , aż projektor LED zacznie emitować 
+stałe białe światło.
+2. Naciskaj powtarzająco , aż projektor LED zacznie emitować 
+stałe białe światło.
+Przycisk Splendid/Wyjście
+Podręcznik w wersji elektronicznej do projektora LED 17
+Widok z przodu
+Obiektyw
+Obiektyw wyświetla wideo lub pliki obrazów z urządzenia 
+wejściowego na ekranie.
+OSTRZEŻENIE! 
+• Nie należy dotykać obiektywu rękoma lub jakimikolwiek 
+ostrymi przedmiotami.
+• NIE WOLNO patrzeć bezpośrednio w obiektyw.
+18 Podręcznik w wersji elektronicznej do projektora LED
+Widok z tyłu
+Gniazdo wyjścia audio
+Do gniazda wyjściowego audio typu jack projektora LED można 
+podłączyć słuchawki.
+Gniazdo HDMI
+Gniazdo to służy do podłączania złączy HDMI (ang. High-
+Definition Multimedia Interface). Port ten jest zgodny z 
+HDCP, co zapewnia odtwarzanie HD DVD, Blu-ray oraz innych 
+zabezpieczonych treści.
+Wyjście zasilania/gniazdo modułu Wi-Fi
+Port wyjścia zasilania zapewnia napięcie i natężenie wyjściowe 
+o maksymalnej wartości 5 V/1A. Do tego portu można 
+podłączyć urządzenie przenośne, aby zapewnić jego ładowanie 
+podczas używania z projektorem LED.
+Można także włożyć moduł Wi-Fi (dołączony do wybranych 
+modeli), który umożliwia dublowanie lub strumieniowe 
+przesyłanie zawartości z ekranu urządzenia przenośnego.
+UWAGA: Szczegółowe informacje można znaleźć w części 
+Korzystanie z połączenia Wi-Fi w tym podręczniku.
+Podręcznik w wersji elektronicznej do projektora LED 19
+Wejście zasilania (prąd stały)
+Podłącz do tego gniazda dołączony do urządzenia zasilacz 
+sieciowy, aby naładować zestaw baterii i doprowadzić zasilanie 
+do projektora LED.
+WAŻNE! Do ładowania zestawu baterii i zasilania projektora LED 
+należy używać wyłącznie dostarczonego zasilacza.
+OSTRZEŻENIE! W czasie użytkowania zasilacz może się 
+nagrzewać. Zasilacza, który jest podłączony do źródła zasilania, 
+nie należy zakrywać, a także należy trzymać go z dala od ciała.
+Przycisk zasilania
+Naciśnij długo przycisk zasilania w celu włączenia lub 
+wyłączenia projektora LED. Naciśnij krótko ten przycisk w celu 
+włączenia lub wyłączenia trybu power bank.
+20 Podręcznik w wersji elektronicznej do projektora LED
+Widok z prawej strony
+Pokrętło ostrości
+Pierścień regulacji ostrości umożliwia wyregulowanie ostrości 
+obrazu projektora LED.
+Otwory wentylacyjne
+Otwory wentylacyjne służą do doprowadzania zimnego 
+powietrza i odprowadzania gorącego powietrza z projektora 
+LED.
+OSTRZEŻENIE! W celu zapobiegania przegrzaniu się urządzenia 
+należy upewnić się, czy otwory wentylacyjne nie są zasłonięte 
+przez kartki papieru, książki, ubrania, przewody lub inne 
+przedmioty.
+Podręcznik w wersji elektronicznej do projektora LED 21
+Widok z dołu
+Gniazdo trójnogu
+Korzystając z tego gniazda, zamocuj projektor LED na statywie 
+ze śrubą mocującą 1/4-20UNC.
+UWAGA: Gniazdo to może być używane wyłącznie do 
+mocowania na statywach o wysokości mniejszej niż 1 metr.
+22 Podręcznik w wersji elektronicznej do projektora LED
+Podręcznik w wersji elektronicznej do projektora LED 23
+Rozdział 2: Ustawienie
+Rozdział 2: 
+Ustawienie
+24 Podręcznik w wersji elektronicznej do projektora LED
+Podłącz projektor LED do zasilacza sieciowego
+A. Podłącz przewód zasilający do zasilacza sieciowego.
+B. Podłącz przewód zasilający prądu przemiennego do gniazda zasilania.
+C. Podłącz złącze zasilania DC do projektora LED.
+Obsługa projektora LED
+Do przenośnego projektora LED można podłączać urządzenia typu 
+plug and play, co umożliwia łatwe otwieranie plików multimedialnych 
+i odtwarzanie dźwięków bezpośrednio z wbudowanych głośników 
+SonicMaster.
+Dla własnego bezpieczeństwa oraz utrzymania jakości urządzenia, 
+należy postępować zgodnie z poniższymi zaleceniami podczas 
+obsługi projektora LED.
+UWAGA: Wygląd zasilacza zależy od modelu i regionu.
+Przed pierwszym użyciem projektora LED w trybie zasilania 
+bateryjnego, baterię urządzenia należy naładować przez 
+5 godziny.
+Podręcznik w wersji elektronicznej do projektora LED 25
+WAŻNE! 
+• Do ładowania zestawu baterii i zasilania projektora LED należy używać 
+wyłącznie dostarczonego zasilacza.
+• Przed pierwszym włączeniem projektora LED należy upewnić się, że 
+jest on podłączony do zasilacza. Przewód zasilający należy zawsze 
+podłączać do gniazda elektrycznego bez użycia przedłużacza. Ze 
+względów bezpieczeństwa urządzenie to można podłączać wyłącznie do 
+odpowiednio uziemionego gniazda elektrycznego.
+• Gniazdo zasilania musi być łatwo dostępne i powinno się znajdować w 
+pobliżu projektora LED.
+• W celu odłączenia projektora LED od zasilania, należy go odłączyć od 
+gniazda zasilania.
+OSTRZEŻENIE!
+ Należy przeczytać następujące środki ostrożności dotyczące baterii 
+projektora LED.
+• Pojemność baterii zależy od temperatury otoczenia, wilgotności i 
+sposobu użytkowania projektora LED.
+• Wyjęcie lub demontaż baterii urządzenia może wiązać się z ryzykiem 
+pożaru lub oparzeń chemicznych.
+• Ze względu na własne bezpieczeństwo należy stosować się do etykiet 
+ostrzegawczych.
+• Niebezpieczeństwo wybuchu w przypadku wymiany baterii na baterię 
+nieodpowiedniego typu.
+• Nie wolno wrzucać do ognia.
+• Nigdy nie należy zwierać biegunów baterii projektora LED.
+• Nie należy nigdy podejmować prób demontażu i ponownego montażu 
+baterii.
+• W przypadku wycieku należy przerwać korzystanie z baterii.
+• Baterię i jej części składowe należy oddać do recyklingu lub w 
+odpowiedni sposób zutylizować.
+• Baterię i inne małe części należy przechowywać poza zasięgiem dzieci. 
+• Wyrzucenie baterii do ognia lub gorącego pieca albo jej mechaniczne 
+zgniecenie lub przecięcie może doprowadzić do wybuchu;
+• Pozostawienie baterii w miejscu o bardzo wysokiej temperaturze może 
+doprowadzić do jej wybuchu albo wycieku łatwopalnego płynu lub gazu;
+• Wystawienie baterii na działanie bardzo niskiego ciśnienia powietrza 
+może doprowadzić do jej wybuchu albo wycieku łatwopalnego płynu lub 
+gazu.
+26 Podręcznik w wersji elektronicznej do projektora LED
+Wymagania dotyczące przewodu zasilającego prądu 
+zmiennego
+Należy korzystać z wtyczki zasilania zgodnej z typem używanym w 
+danej lokalizacji.
+WAŻNE! Jeśli przewód zasilania prądem zmiennym projektora LED 
+nie jest zgodny z lokalnym źródłem zasilania, należy skontaktować się 
+ze sprzedawcą.
+UWAGA: Zalecamy korzystanie z urządzenia będącego źródłem 
+wideo, które posiada wtyczkę z uziemieniem, co zapobiegnie 
+zakłóceniom sygnału w wyniku fluktuacji napięcia.
+Dla Australii i Chin 
+Kontynentalnych
+W Stanach Zjednoczonych, 
+Kanadzie, Japonii i na Tajwanie
+W Europie kontynentalnej Dla Wielkiej Brytanii
+Podręcznik w wersji elektronicznej do projektora LED 27
+Podłącz projektor LED do urządzenia
+ Wyjście audio HDMI
+ Wyjście zasilania (5 V/1 A)
+28 Podręcznik w wersji elektronicznej do projektora LED
+Naciśnij przycisk zasilania
+UWAGA: Podczas używania projektora LED ładowanie zestawu 
+baterii projektora LED jest zatrzymywane. Bieżący stan naładowania 
+projektora LED można określić za pomocą wskaźnika baterii. Dalsze 
+szczegółowe informacje znajdują się w części Widok z góry tego 
+podręcznika.
+Podręcznik w wersji elektronicznej do projektora LED 29
+Regulacja ostrości
+UWAGA: Podczas regulacji ostrości skorzystaj z nieruchomego 
+obrazu.
+Dostosuj ostrość obrazu na ekranie projekcji, przesuwając pokrętło 
+ostrości w górę lub w dół.
+30 Podręcznik w wersji elektronicznej do projektora LED
+Orientacja pionowa
+Projektor LED obsługuje zarówno orientację poziomą (standardową), 
+jak i pionową. W celu korzystania z orientacji pionowej projektor 
+należy ustawić w pionowym położeniu, a pionowy obraz zostanie 
+wyświetlony na pełnym ekranie bez czarnych pasów po bokach.
+UWAGA: Projektor LED umożliwia dublowanie lub strumieniowe 
+przesyłanie zawartości z ekranu urządzenia przenośnego. 
+Szczegółowe informacje można znaleźć w części Korzystanie z 
+połączenia Wi-Fi w tym podręczniku.
+Podręcznik w wersji elektronicznej do projektora LED 31
+Tabela wielkości ekranu i odległości wyświetlania
+Wyreguluj odległość projektora LED od ekranu korzystając z 
+poniższej tabeli.
+Wielkość ekranu Odległość 
+projekcjiPrzekątna W poziomie W pionie
+cale mm cale mm cale mm cale mm
+30 762 26,14 664 14,72 374 31,29 795
+40 1016 34,88 886 19,60 498 41,77 1061
+50 1270 43,58 1107 24,52 623 52,24 1327
+60 1524 52,28 1328 29,40 747 62,71 1593
+70 1778 61 1550 34,33 872 73,07 1856
+80 2032 69,72 1771 39,21 996 83,54 2122
+90 2286 78,42 1992 44,13 1121 94,05 2389
+100 2540 87,12 2213 49,05 1246 104,48 2654
+110 2794 95,86 2435 53,93 1370 114,96 2920
+120 3048 104,56 2656 58,85 1495 125,39 3185
+32 Podręcznik w wersji elektronicznej do projektora LED
+Podręcznik w wersji elektronicznej do projektora LED 33
+Rozdział 3: Obsługa projektora 
+LED
+Rozdział 3: 
+Obsługa projektora LED
+34 Podręcznik w wersji elektronicznej do projektora LED
+W przypadku pierwszego użycia projektora LED należy wykonać 
+poniższe czynności. 
+UWAGA: Przed pierwszym włączeniem projektora LED należy 
+upewnić się, że jest on podłączony do zasilacza. W przypadku 
+używania projektora LED w trybie zasilacza zalecane jest jego 
+podłączenie do uziemionego gniazda elektrycznego.
+1. Ustaw projektor LED, a następnie naciśnij przycisk zasilania i 
+przytrzymaj go przez trzy (3) sekundy, aby włączyć urządzenie. 
+2. Naciśnij przycisk lub w panelu sterowania projektora 
+LED, aby sprawdzić dostępne opcje językowe.
+Pierwsze użycie projektora LED
+Przyciski nawigacji
+Przycisk Menu/OK
+Podręcznik w wersji elektronicznej do projektora LED 35
+3. Po wybraniu preferowanego języka naciśnij przycisk , aby 
+ustawić go jako język obsługi projektora LED.
+4. Można teraz rozpocząć używanie projektora LED do 
+wyświetlania plików z urządzenia wejścia. Jeśli żadne urządzenie 
+wejścia nie jest podłączone lub projektor LED nie wykrywa go, 
+może pojawić się ekran NO SIGNAL (BRAK SYGNAŁU).
+5. Naciśnij przycisk na panelu sterowania projektora LED, aby 
+wyświetlić menu ekranowe.
+Obsługa menu ekranowego
+Projektor LED to urządzenie plug-and-play wyposażone w 
+menu ekranowe, które zawiera zestaw programów i ustawień 
+maksymalizujących jego wykorzystanie. 
+Wyświetl menu ekranowe, naciskając przycisk na panelu 
+sterowania projektora LED.
+UWAGA: Szczegółowe informacje można znaleźć w części Opcje menu 
+ekranowego w tym podręczniku.
+Aby przewinąć opcje menu ekranowego, naciśnij przyciski nawigacji 
+( / ) na panelu sterowania projektora LED. Po dostosowaniu 
+ustawień naciśnij przycisk , aby zapisać nowe ustawienia, a 
+następnie naciśnij przycisk , aby wrócić na ekran główny.
+36 Podręcznik w wersji elektronicznej do projektora LED
+Korzystanie z modułu Wi-Fi 
+(wyłącznie w wybranych modelach)
+Opcjonalny moduł Wi-Fi umożliwia projekcję ekranu urządzenia lub 
+strumieniowe przesyłanie z urządzenia za pomocą projektora LED. 
+Proces konfiguracji może różnić się nieznacznie w zależności od 
+urządzenia.
+Przed rozpoczęciem dublowania ekranu lub strumieniowego 
+przesyłania multimediów z urządzenia należy wykonać poniższe 
+czynności:
+1. Włóż moduł Wi-Fi do portu USB typu A projektora LED.
+2. Automatycznie uaktywniony powinien zostać tryb projekcji 
+bezprzewodowej.
+UWAGA: Jeśli tryb projekcji bezprzewodowej nie zostanie 
+uaktywniony automatycznie, można włączyć go w menu OSD. 
+Naciśnij przycisk , a następnie wybierz pozycję > Mirroring 
+(Dublowanie).
+3. Włącz Wi-Fi na urządzeniu.
+Podręcznik w wersji elektronicznej do projektora LED 37
+Z urządzeń Android
+1. Stuknij pozycję Inteligentne dublowanie lub Prześlij obraz 
+i nawiąż połączenie z identyfikatorem SSID projektora LED, jak 
+pokazano na ekranie projekcji.
+2. Rozpocznij projekcję ekranu urządzenia przenośnego za 
+pomocą projektora LED.
+Dublowanie bezprzewodowe
+Z urządzeń iOS
+1. Włącz Wi-Fi i wybierz z listy sieci identyfikator SSID projektora 
+LED (jak pokazano na ekranie projekcji).
+2. Wprowadź hasło projektora (jak pokazano na ekranie projekcji) 
+w celu połączenia.
+3. Stuknij pozycję Inteligentne dublowanie i nawiąż połączenie 
+z identyfikatorem SSID projektora LED, jak pokazano na ekranie 
+projekcji.
+4. Rozpocznij projekcję ekranu urządzenia przenośnego za 
+pomocą projektora LED.
+UWAGA: 
+• Nazwy opcji zależą od urządzenia. Więcej informacji można 
+znaleźć w podręczniku dołączonym do urządzenia. 
+• Przed rozpoczęciem procesu dublowania lub przesyłania 
+strumieniowego należy upewnić się, że system operacyjny 
+urządzenia przenośnego jest aktualny. 
+38 Podręcznik w wersji elektronicznej do projektora LED
+Z laptopa z systemem Windows
+1. Naciśnij klawisz Windows ( lub ) + K.
+2. Wybierz z listy urządzeń identyfikator SSID projektora LED (jak 
+pokazano na ekranie projekcji).
+3. Wprowadź hasło projektora (jak pokazano na ekranie projekcji) 
+w celu połączenia i rozpoczęcia dublowania.
+Z komputera MacBook
+1. Wybierz identyfikator SSID projektora LED (jak pokazano na 
+ekranie projekcji) z listy sieci Wi-Fi na komputerze MacBook.
+2. Wprowadź hasło projektora (jak pokazano na ekranie projekcji) 
+w celu połączenia.
+3. Otwórz przeglądarkę i wpisz w pasku adresu adres URL 
+(http://192.168.xxx.xxx), jak pokazano na ekranie projekcji. 
+Wyświetlona zostanie strona internetowa w celu połączenia 
+projektora LED z siecią Wi-Fi.
+UWAGA: 
+• Przed przejściem do następnego kroku należy upewnić się, że 
+urządzenie i projektor LED są połączone z tą samą siecią Wi-Fi.
+• W celu połączenia z inną siecią Wi-Fi należy powtórzyć krok 3 i 
+wybrać preferowaną sieć Wi-Fi na stronie internetowej.
+4. Otwórz Control Center (Centrum sterowania) na komputerze 
+Mac i wybierz pozycję Screen Mirroring (Dublowanie ekranu). 
+Na liście urządzeń wybierz projektor LED, aby rozpocząć 
+dublowanie.
+Zeskanuj kod QR, aby obejrzeć film instruktażowy:
+UWAGA: Wygląd projektora może różnić się od 
+przedstawionego na filmie, ale interfejs i procedury 
+pozostają takie same.
+Podręcznik w wersji elektronicznej do projektora LED 39
+Przesyłanie strumieniowe
+Przesyłanie strumieniowe filmu z YouTube lub Facebook
+Ustawienia standardowe
+1. Włącz Wi-Fi i wybierz z listy sieci identyfikator SSID projektora 
+LED (jak pokazano na ekranie projekcji).
+2. Wprowadź hasło projektora (jak pokazano na ekranie projekcji) 
+w celu połączenia.
+3. Otwórz przeglądarkę i wpisz w pasku adresu adres URL 
+(http://192.168.xxx.xxx), jak pokazano na ekranie projekcji. 
+Wyświetlona zostanie strona internetowa w celu połączenia 
+projektora LED z siecią Wi-Fi.
+UWAGA: 
+• Przed przejściem do następnego kroku należy upewnić się, że 
+urządzenie i projektor LED są połączone z tą samą siecią Wi-Fi.
+• W celu połączenia z inną siecią Wi-Fi należy powtórzyć krok 3 i 
+wybrać preferowaną sieć Wi-Fi na stronie internetowej.
+4. Otwórz aplikację YouTube lub Facebook, a następnie stuknij 
+przycisk Cast (Prześlij obraz) na ekranie wideo. Na liście 
+urządzeń wybierz projektor LED, na który obraz ma zostać 
+przesłany strumieniowo.
+5. Po połączeniu wybierz wideo, które chcesz obejrzeć i stuknij 
+przycisk Play (Odtwórz). Rozpocznie się odtwarzanie zawartości 
+za pomocą projektora.
+Zeskanuj kod QR, aby obejrzeć film instruktażowy:
+UWAGA: Wygląd projektora może różnić się od 
+przedstawionego na filmie, ale interfejs i procedury 
+pozostają takie same.
+40 Podręcznik w wersji elektronicznej do projektora LED
+Port USB typu A umożliwia projekcję ekranu urządzenia lub 
+strumieniowe przesyłanie z urządzenia za pomocą projektora LED. 
+Proces konfiguracji może różnić się nieznacznie w zależności od 
+urządzenia.
+Przed rozpoczęciem dublowania ekranu lub strumieniowego 
+przesyłania multimediów z urządzenia należy upewnić się, że kabel 
+USB został prawidłowo podłączony do projektora LED.
+Przesyłanie strumieniowe
+Z telefonu Android
+1. Podłącz drugi koniec kabla USB do telefonu.
+2. Pobierz i zainstaluj na telefonie aplikację MiraPlug.
+3. Otwórz aplikację MiraPlug i stuknij pozycję Cast (Prześlij 
+obraz).
+Z telefonu iOS
+1. Podłącz drugi koniec kabla USB do telefonu.
+2. Stuknij pozycję Trust (Zaufaj) po pojawieniu się monitu o 
+potwierdzenie zezwolenia projektorowi LED na dostęp do 
+telefonu.
+Korzystanie z połączenia USB
+Podręcznik w wersji elektronicznej do projektora LED 41
+Opcje menu ekranowego
+W dalszej części podręcznika można znaleźć szczegółowe informacje 
+na temat każdej opcji menu ekranowego.
+Volume (Głośność)
+Wybierz tę opcję menu, aby wyregulować głośność pliku audio 
+odtwarzanego w projektorze LED. 
+Można dostosować głośność w zakresie od 0 do 10, a także nacisnąć 
+i przytrzymać lub w celu szybkiego wyciszenia albo 
+ustawienia najwyższego poziomu głośności.
+Wejście
+Wybierz tę pozycję menu, aby skonfigurować źródło sygnału 
+wejściowego projektora LED.
+Splendid
+Wybierz tę pozycję menu, aby uaktywnić różne tryby wyświetlania. 
+Tę pozycję menu można także wyświetlić bezpośrednio, naciskając 
+przycisk . 
+Dostępne opcje: Bright (Jasny), Standard (Standardowy), Theater 
+(Kino domowe) i ECO
+Brightness (Jasność)
+Wybierz tę opcję menu, aby wyregulować jasność ekranu projekcji. 
+Jasność można regulować w zakresie od 0 do 10, od najciemniejszej 
+do najjaśniejszej.
+42 Podręcznik w wersji elektronicznej do projektora LED
+Contrast (Kontrast)
+Wybierz tę opcję menu, aby wyregulować jasne i ciemne obszary 
+ekranu projekcji. Kontrast można regulować w zakresie od 0 do 10, 
+od najniższego do najwyższego możliwego kontrastu kolorów.
+Keystone
+Wybierz tę pozycję, aby wykonać korekcję zniekształceń 
+trapezowych obrazu na ekranie projekcji.
+UWAGA: W celu włączenia funkcji automatycznej korekcji 
+zniekształceń trapezowych po wykonaniu korekcji ręcznej należy 
+przejść do pozycji Konfiguracja i włączyć funkcję Autom. keystone.
+Położenie projektora
+Pozycja ta umożliwia zmianę położenia wyświetlanego obrazu na 
+ekranie zgodnie z bieżącą lokalizacją projektora LED. 
+Orientację projekcji można dostosować do aktualnego położenia 
+projektora LED: Front Table (Przód, stół) i Rear Table (Tył, stół).
+Podręcznik w wersji elektronicznej do projektora LED 43
+Setup (Konfiguracja)
+Wybierz tę opcję menu aby skonfigurować następujące ustawienia 
+projektora LED:
+• Language (Język) - Ta opcja umożliwia ustawienie innego 
+języka menu ekranowego projektora LED.
+• Resetuj — pozycja ta umożliwia przywrócenie ustawień 
+domyślnych projektora LED lub sieci Wi-Fi. 
+• Autom. keystone — pozycja ta umożliwia włączenie lub 
+wyłączenie automatycznej korekcji zniekształceń trapezowych.
+• Automatyczne wykrywanie sufitu — pozycja ta umożliwia 
+włączenie lub wyłączenie funkcji automatycznego wykrywania 
+montażu sufitowego.
+• Automatyczne włączanie — pozycja ta umożliwia włączenie 
+lub wyłączenie funkcji automatycznego włączania, gdy 
+projektor LED jest podłączony do urządzenia HDMI i do źródła 
+zasilania za pomocą zasilacza.
+• Limit czasu menu OSD — pozycja ta umożliwia ustawienie 
+liczby sekund do zniknięcia menu ekranowego z ekranu 
+projekcji.
+• Czas do wyłączenia — pozycja ta umożliwia wybranie opcji 
+Auto (15 minut) lub ustawienie liczby minut do automatycznego 
+wyłączenia projektora LED przy braku sygnału HDMI. 
+44 Podręcznik w wersji elektronicznej do projektora LED
+Information (Informacje)
+Wybierz tę opcję menu, aby wyświetlić zestawienie informacji o 
+projektorze LED.
+nazwa modelu wersja firmware 
+projektora LED
+rozdzielczość ekranu 
+urządzenia wejścia
+Podręcznik w wersji elektronicznej do projektora LED 45
+Wyłączanie projektora LED
+1. Naciśnij przycisk zasilania.
+2. Po pojawieniu się poniższego ekranu, ponownie naciśnij 
+przycisk zasilania aby całkowicie wyłączyć projektor LED. W razie 
+konieczności włączenia projektora LED zaraz po jego wyłączeniu 
+należy poczekać, aż zgaśnie wskaźnik zasilania i wskaźnik stanu 
+baterii. 
+46 Podręcznik w wersji elektronicznej do projektora LED
+Podręcznik w wersji elektronicznej do projektora LED 47
+Załączniki
+ZałącznikiZałącznikiZałączniki
+48 Podręcznik w wersji elektronicznej do projektora LED
+Oświadczenie o zgodności z przepisami 
+FederalCommunications Commission (FCC)
+Strona odpowiedzialna: Asus Computer International
+Adres: 48720 Kato Rd., Fremont, CA 94538, USA
+Nr telefonu/faksu: (510)739-3777 / (510)608-4555
+Nazwa produktu: projektor LED
+Model: E1R
+To urządzenie zostało poddane testom i uznane za spełniające 
+wymogi dla urządzeń cyfrowych klasy B, zgodnie z częścią 15 zasad 
+FCC. Ograniczenia te zostały opracowane w celu zapewnienia 
+ochrony przed szkodliwymi zakłóceniami w instalacjach domowych. 
+Urządzenie to wytwarza, używa i może emitować promieniowanie 
+o częstotliwości fal radiowych i jeśli zostanie zainstalowane lub 
+eksploatowane niezgodnie z zaleceniami, może powodować 
+zakłócenia w łączności radiowej. Nie ma jednak gwarancji, że 
+zakłócenia nie wystąpią w przypadku określonej instalacji. Jeśli 
+urządzenie to jest źródłem zakłóceń sygnału radiowego lub 
+telewizyjnego (co można sprawdzić przez włączenie i wyłączenie 
+tego urządzenia), należy spróbować wyeliminować zakłócenia, 
+korzystając z poniższych metod:
+• Zmiana orientacji lub położenia anteny odbiorczej.
+• Zwiększenie odległości między urządzeniem a odbiornikiem.
+• Podłączenie sprzętu do gniazda zasilania w innym obwodzie niż 
+ten, do którego podłączony jest odbiornik.
+• Skontaktowanie się z dostawcą lub doświadczonym technikiem 
+radiowo/telewizyjnym w celu uzyskania pomocy.
+Urządzenie to jest zgodne z częścią 15 zasad FCC. Jego działanie 
+podlega następującym dwóm warunkom: 
+1. Urządzenie to nie może powodować zakłóceń.
+2. Urządzenie to musi przyjmować wszelkie odebrane zakłócenia, 
+z uwzględnieniem zakłóceń, które mogą powodować 
+niepożądane działanie.
+Podręcznik w wersji elektronicznej do projektora LED 49
+Zgodność i deklaracja zgodności z 
+ogólnoświatowymi przepisami ochrony 
+środowiska 
+Firma ASUS wprowadza koncepcje ekologii podczas projektowania 
+i produkcji produktów, a także zapewnia, że na każdym etapie cyklu 
+żywotności produktu ASUS, będzie on zgodny z ogólnoświatowymi 
+przepisami ochrony środowiska. Dodatkowo, ASUS udostępnia 
+odpowiednie informacje, w oparciu o wymagania przepisów.
+Sprawdź stronę sieci web http://csr.asus.com/english/Compliance.htm 
+w celu uzyskania informacji opracowanych w oparciu o wymagania 
+przepisów, z którymi są zgodne produkty ASUS:
+Japońskie deklaracje materiałowe JIS-C-0950
+EU REACH SVHC
+Koreańskie przepisy RoHS
+Recycling ASUS/Usługi zwrotu
+Programy recyklingu i zwrotu ASUS wiążą się z naszym dążeniem do 
+zapewnienia zgodności z najwyższymi wymaganiami dotyczącymi 
+ochrony środowiska. Wierzymy w celowość dostarczania rozwiązań, 
+umożliwiających recykling naszych produktów, baterii, innych 
+komponentów oraz materiałów pakujących. Szczegółowe informacje 
+dotyczące recyklingu w różnych regionach, można uzyskać pod 
+adresem http://csr.asus.com/english/Takeback.htm.
+50 Podręcznik w wersji elektronicznej do projektora LED
+Połączenia HDMI
+Urządzenia ze 
+złączem HDMI • Kabel HDMI do HDMI
+Urządzenia ze 
+złączem micro 
+HDMI
+• Adapter micro HDMI do HDMI
+• Kabel HDMI do HDMI
+Urządzenia 
+iOS ze złączem 
+Lightning™
+• Adapter cyfrowego sygnału AV ze 
+złączem Lightning™
+• Kabel HDMI do HDMI
+Urządzenia z 
+portem USB 3.2 
+Gen 2 Type-C® • Adapter USB 3.2 Gen 2 Type-C® 
+na cyfrowy sygnał AV
+• Kabel HDMI do HDMI
+Podręcznik w wersji elektronicznej do projektora LED 51
+Obsługa taktowania komputera
+HDMI (PC)
+Tryb Rozdzielczość
+Częstotliwość 
+odświeżania 
+(Hz)
+W 
+poziomie 
+(kHz)
+Zegar 
+(MHz)
+VGA 640x480 60,0 31,5 25,175 
+VGA 640x480 66,9 33,2 23,900
+720x480_60 720x480 60,0 29,7 23,700
+720x576_50 720x576 50,0 29,5 23,600
+832x624_75 832x624 74,9 25,4 23,100
+XGA 1024x768 60,0 48,3 65,000 
+XGA 1024x768 75,0 60,0 78,750
+XGA 1024x768 60,0 65,0 65,000 
+720p 1280x720 60,0 45,0 74,250
+720p 1280x720 50,0 36,8 50,000
+WXGA 1280x800 60,0 49,7 83,500
+SXGA 1280x1024 60,0 64,0 108,000 
+UXGA 1600x900 60,0 55,5 93,250
+SVGA 800x600 60,0 37,9 40,000 
+WXGA+ 1440x900 60,0 55,9 106,500
+WSXGA+ 1680x1050 60,0 65,3 146,250
+1080p 1920x1080 60,0 67,5 148,500
+PowerBook 
+G4 1024x768 60,0 48,4 65,000 
+MAC13 640x480 66,7 35,0 30,240
+MAC16 832x624 74,5 49,7 57,280
+MAC19 1024x768 75,0 60,2 80,000 
+MAC21 1152x870 75,0 68,7 100,000
+MAC21 1152x864 60,0 53,3 65,600
+52 Podręcznik w wersji elektronicznej do projektora LED
+HDMI (wideo)
+Taktowanie Rozdzielczość Częstotliwość 
+pionowa (Hz)
+W poziomie 
+(kHz)
+Częstotliwość 
+zegara 
+punktów 
+(MHz)
+480i 720x480 
+(1440x480)16:9 59,94 (29,97) 15,7 27,000 
+576i 720x576 
+(1440x576)16:9 50(25) 15,6 27,000 
+480p 720x480 16:9 59,9 31,5 27,000 
+576p 720x576 16:9 50,0 31,3 27,000 
+720p 1280x720 60,0 45,0 74,250 
+720p 1280x720 50,0 37,5 74,250 
+1080i 1920x1080 60 (30) 33,8 74,250 
+1080i 1920x1080 50 (25) 28,1 74,250 
+1080p 1920x1080 23,97/24 27,0 74,250 
+1080p 1920x1080 60,0 67,5 145,500 
+1080p 1920x1080 50,0 56,3 145,500 
+1080p 1920x1080 25,0 28,1 74,250 
+1080p 1920x1080 30,0 33,8 74,250 
+Zakresy 
+monitora 
+ze źródłem 
+grafiki
+Częstotliwość skanowania w 
+poziomie: 15k–75 kHz
+Częstotliwość skanowania w pionie: 
+24-60Hz
+Maks, częstotliwość pikseli: 
+170 MHz (cyfrowy)
+Podręcznik w wersji elektronicznej do projektora LED 53
+Dane techniczne projektora LED E1R
+Wyświetlacz Technologia 
+wyświetlacza
+0,2” DLP®
+Źródło światła R/G/B LED
+Żywotność źródła światła 20 000 godzin
+Rozdzielczość rzeczy-
+wista (natywna)
+WVGA 854 x 480
+Wyjście światła 200 lumenów LED
+Współczynnik 
+kontrastu (typowy)
+500:1
+Nasycenie koloru (NTSC) 100%
+Kolory wyświetlacza 16,7 miliona kolorów
+Obiektyw pro-
+jekcji
+Współczynnik 
+rzutowania
+1,2 : 1 (37,6 cali przy 
+1 m przy 16:9)
+Odległość projekcji 0,5 ~ 3,0m
+Wielkość ekranu 
+projekcji
+19 ~ 110 cale
+kompensacja projekcji 100%
+Współczynnik 
+powiększenia
+Stały
+Funkcje wideo Tryby obrazu Bright (Jasny), 
+Standard 
+(Standardowy), 
+Theater (Kino 
+domowe), ECO
+Regulacja keystone W pionie ±40°
+Auto Keystone (Au-
+tomatyczna korekcja 
+Keystone)
+Tak
+Umieszczenie 
+projektora
+Front Table (Przód, stół), 
+Rear Table (Tył, stół)
+Funkcje audio Wbudowane głośniki Głośnik 2 W 
+(technologia dźwięku 
+ASUS SonicMaster)
+(cd. na następnej stronie)
+54 Podręcznik w wersji elektronicznej do projektora LED
+Sygnał 
+Częstotliwość
+Częstotliwość sygnału 
+analogowego
+24,7 KHz(H) to 74,6 
+KHz(H) / 50 Hz(V) to 60 
+Hz(V)
+Zasilanie Tryb zasilania ≤45W
+Tryb gotowości <0,5W
+Bateria Bateria wewnętrzna 2850 mAh (5 V przy 1 A)
+Czas pracy baterii Do 4 godzin
+Hałas
+Hałas akustyczny
+30 dB [tryb Standard 
+(Standardowy)]
+28 dB [tryb Theater 
+(Kino)]
+Wejście / wyjście Sygnał wejściowy PC HDMI 1.4b
+Wyjście audio Wyjście słuchawek
+Port USB 2.0 do zasi-
+lania
+Tak (5V/1A)
+Konstrukcja 
+mechaniczna
+Kolory obudowy Srebrny
+Gniazdo trójnogu Tak
+Przyciski na 
+urządzeniu
+Tak
+Pokrywa obiektywu Nie
+Wymiary Wymiary fizyczne 108 mm x 84 mm x 
+29 mm (D x S x W)
+Masa Masa netto (przybliżo-
+na)
+310 g.
+(cd. na następnej stronie)
+Podręcznik w wersji elektronicznej do projektora LED 55
+Temperatura pracy 0 ~ 35o C
+Wilgotność w czasie pracy 20 ~ 90% 
+Akcesoria Miękkie etui ochronne, torba ściągana 
+sznurkiem, kabel HDMI, skrócona 
+instrukcja obsługi, karta gwarancyjna
+Wyłącznie w wybranych modelach 
+Moduł, przewód zasilający, kabel USB, 
+Certyfikaty FCC / CE / CB / RCM / VCCI / IEC62471 / 
+CEC
+UWAGA: 
+• Dane techniczne mogą zostać zmienione bez powiadomienia.
+• Dostępność produktu zależy od regionu.
+• Wszystkie marki i nazwy produktów wymienione są znakami 
+handlowymi ich odpowiednich właścicieli.
+56 Podręcznik w wersji elektronicznej do projektora LED
+ Informacje dotyczące tego Podręcznika
+ Konwencje stosowane w tym Podręczniku
+ Typografia
+ Wersje wielojęzyczne
+ Środki bezpieczeństwa
+ Korzystanie z projektora LED
+ Serwisowanie i wymiana części
+ Troska o projektor LED
+ Właściwa utylizacja
+ Rozdział 1: Poznajemy projektor LED
+ Funkcje
+ Widok z góry
+ Funkcje rozszerzone
+ Latarka
+ Tryb SOS
+ Widok z przodu
+ Widok z tyłu
+ Widok z prawej strony
+ Widok z dołu
+ Rozdział 2: Ustawienie
+ Obsługa projektora LED
+ Podłącz projektor LED do zasilacza sieciowego
+ Wymagania dotyczące przewodu zasilającego prądu zmiennego
+ Podłącz projektor LED do urządzenia
+ Naciśnij przycisk zasilania
+ Regulacja ostrości
+ Orientacja pionowa
+ Tabela wielkości ekranu i odległości wyświetlania
+ Rozdział 3: Obsługa projektora LED
+ Pierwsze użycie projektora LED
+ Obsługa menu ekranowego
+ Korzystanie z modułu Wi-Fi 
+(wyłącznie w wybranych modelach)
+ Dublowanie bezprzewodowe
+ Przesyłanie strumieniowe
+ Korzystanie z połączenia USB
+ Przesyłanie strumieniowe
+ Opcje menu ekranowego
+ Volume (Głośność)
+ Wejście
+ Splendid
+ Brightness (Jasność)
+ Contrast (Kontrast)
+ Keystone
+ Położenie projektora
+ Setup (Konfiguracja)
+ Information (Informacje)
+ Wyłączanie projektora LED
+ Załączniki
+ Oświadczenie o zgodności z przepisami FederalCommunications Commission (FCC)
+ Zgodność i deklaracja zgodności z ogólnoświatowymi przepisami ochrony środowiska 
+ Recycling ASUS/Usługi zwrotu
+ Połączenia HDMI
+ Obsługa taktowania komputera
+ Dane techniczne projektora LED E1R

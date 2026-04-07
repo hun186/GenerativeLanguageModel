@@ -1,0 +1,1453 @@
+
+SW21234
+Första upplagan / Februari 2023
+E-Manual
+2 E-manual för bärbar dator
+Upphovsrättsinformation
+Ingen del av denna manual, inklusive produkter och programvara som beskrivs i den, får utan skriftligt 
+tillstånd från ASUSTeK COMPUTER INC. reproduceras, överföras, kopieras, sparas i ett sökbart system eller 
+översättas till något språk i någon form eller med några medel, förutom dokumentation som förvaras av 
+köparen som säkerhetskopia. (“ASUS”).
+ASUS LEVERERAR DENNA MANUAL “I BEFINTLIGT SKICK” UTAN NÅGON SOM HELST GARANTI, VARKEN 
+UTTALAD ELLER UNDERFÖRSTÅDD, INKLUSIVE MEN INTE BEGRÄNSAD TILL DE UNDERFÖRSTÅDDA 
+GARANTIERNA ELLER VILLKOREN FÖR SÄLJBARHET ELLER LÄMPLIGHET FÖR ETT SÄRSKILT SYFTE. 
+UNDER INGA OMSTÄNDIGHETER SKALL ASUS, DESS DIREKTÖRER, TJÄNSTEMÄN, ANSTÄLLDA ELLER 
+REPRESENTANTER HÅLLAS ANSVARIGA FÖR NÅGRA INDIREKTA, SÄRSKILDA, TILLFÄLLIGA ELLER HÄRAV 
+FÖLJANDE SKADOR (INKLUSIVE SKADOR AVSEENDE FÖRLUST AV FÖRTJÄNST, AFFÄRSFÖRLUSTER, 
+FÖRLUST AV ANVÄNDNING ELLER DATA, AVBROTT AV AFFÄRSVERKSAMHET ELLER LIKNADE) ÄVEN OM 
+ASUS HAR AVISERAT OM MÖJLIGHETEN AV ATT SÅDANA SKADOR KAN UPPSTÅ FRÅN NÅGRA DEFEKTER 
+ELLER FEL I DENNA MANUAL ELLER PRODUKT.
+Produkter och företagsnamn som visas i denna manual kan eller kan inte vara registrerade varumärken 
+eller upphovrättsligt skyddade av respektive företag och används endast för identifiering eller förklaring 
+och till ägarens fördel utan intrångsavsikt.
+SPECIFIKATIONER OCH INFORMATION I DENNA MANUAL LÄMNAS ENDAST SOM INFORMATION OCH KAN 
+ÄNDRAS NÄR SOM HELST UTAN MEDDELANDE OCH SKALL INTE TOLKAS SOM ETT ÅTAGANDE AV ASUS. 
+ASUS PÅTAR SIG INGET ANSVAR ELLER SKYLDIGHET FÖR NÅGRA FEL ELLER BRISTER SOM KAN VISA SIG I 
+DENNA MANUAL INKLUSIVE PRODUKTER OCH PROGRAM SOM BESKRIVS DÄR I.
+Copyright © 2023 ASUSTeK COMPUTER INC. Alla rättigheter förbehållna.
+Ansvarsbegränsning
+Omständigheter kan komma att uppstå där du till följd av en försummelse från ASUS sida eller annan 
+skyldighet är berättigad till ersättning för skador från ASUS. Vid varje sådant yrkande, oavsett på 
+vilken grund du är berättigad att yrka ersättning för skador från ASUS, är ASUS endast ansvariga för 
+kroppsliga skador (inklusive dödsfall) och skador på egendom och skador på personliga ägodelar eller 
+andra verkliga och direkta skador som är ett resultat av underlåtenhet eller försummelse att genomföra 
+juridiska skyldigheter under denna garantiutfästelse, upp till det angivna kontraktspriset för varje 
+produkt.
+ASUS kommer endast att vara ansvarig för eller kompensera dig för förlust, skador eller yrkanden 
+baserade på kontrakt, otillåten handling eller överträdelser enligt dessa garantibestämmelser.
+Denna begränsning gäller också ASUS leverantörer och dess återförsäljare. Det är maximalt vad ASUS, 
+dess leverantörer och din återförsäljare är kollektivt ansvariga för.
+UNDER INGA FÖRHÅLLANDEN ÄR ASUS ANSVARIGA FÖR NÅGOT AV FÖLJANDE: (1) TREDJE PARTS 
+YRKANDEN MOT DIG FÖR SKADOR; (2) FÖRLUST AV ELLER SKADOR PÅ DINA REGISTER ELLER DATA; ELLER 
+(3) SPECIELLA, TILLFÄLLIGA ELLER INDIREKTA SKADOR ELLER FÖR NÅGRA EKONOMISKA FÖLJDSKADOR 
+(INKLUSIVE FÖRLUST AV FÖRTJÄNST ELLER BESPARINGAR), ÄVEN OM ASUS, DESS LEVERANTÖRER ELLER 
+DIN ÅTERFÖRSÄLJARE ÄR INFORMERADE MÖJLIGHETEN FÖR DETTA.
+Service och support
+Besök vår flerspråkiga webbplats på https://www.asus.com/support/.
+MyASUS erbjuder många supportfunktioner inklusive felsökning, produktoptimering, integrering av 
+ASUS-programvara och hjälper till att organisera ditt personliga skrivbord samt ökar lagringsutrymmet. 
+För mer information, besök https://www.asus.com/support/FAQ/1038301/.
+E-manual för bärbar dator 3
+Innehållsförteckning
+Om manualen .............................................................................................................7
+Konventioner som används i denna manual ........................................................ 8
+Ikoner .................................................................................................................................. 8
+Typografi ............................................................................................................................ 8
+Säkerhetsföreskrifter ................................................................................................9
+Använda din bärbara dator ......................................................................................... 9
+Sköt om din bärbara dator .......................................................................................... 10
+Korrekt avyttring ............................................................................................................. 11
+Batterisäkerhetsinformation ....................................................................................... 12
+Kapitel 1: Konfiguration av maskinvaran 
+Lär känna din bärbara dator ..................................................................................16
+Framifrån ............................................................................................................................ 16
+Vy nedtill ............................................................................................................................ 21
+Vy till höger ....................................................................................................................... 23
+Vy till vänster .................................................................................................................... 24
+Kapitel 2: Använda din bärbara dator
+Kom igång ....................................................................................................................28
+Ladda din bärbara dator .............................................................................................. 28
+Lyft för att öppna visningspanelen .......................................................................... 30
+Tryck på strömbrytaren ................................................................................................ 30
+Använda pekplattan .................................................................................................31
+Flytta pekaren .................................................................................................................. 31
+Använda tangentbordet .........................................................................................38
+HotKeys .............................................................................................................................. 38
+Funktionstangenter ....................................................................................................... 39
+Windows-tangenter ....................................................................................................... 39
+4 E-manual för bärbar dator
+Kapitel 3: Använda Windows
+Starta datorn första gången ..................................................................................42
+Menyn Start .................................................................................................................43
+Windows-appar ..........................................................................................................45
+Använda Windows-appar ............................................................................................ 46
+Anpassa Windows-appar ............................................................................................. 46
+Task view (aktivitetsvyn) .........................................................................................48
+Widgets (insticksprogram) .....................................................................................49
+Funktionen Fäst ..........................................................................................................51
+Dispositioner .................................................................................................................... 51
+Action Center (åtgärdscenter) ...............................................................................53
+MyASUS Splendid ......................................................................................................55
+Ställa in OLED-skärmen ...........................................................................................57
+Ställa in mörkt läge ........................................................................................................ 57
+Stänga av skärmen när den inte används .............................................................. 59
+Justera skärmens ljusstyrka ........................................................................................ 61
+Dölj aktivitetsfältet automatiskt ................................................................................ 63
+Ställa in mörkt läge i Microsoft Office ..................................................................... 65
+Andra kortkommandon ..........................................................................................66
+Ansluta till trådlösa nätverk ...................................................................................68
+Wi-Fi ..................................................................................................................................... 68
+Bluetooth ........................................................................................................................... 69
+Airplane mode (flygplansläge) .................................................................................. 70
+Stänga av din bärbara dator ..................................................................................71
+Sätta datorn i viloläge ..............................................................................................72
+E-manual för bärbar dator 5
+Kapitel 4: Självtest vid start (POST, Power-On Self-Test)
+Självtest vid start (POST, Power-On Self-Test) ..................................................74
+Använda självtestfunktionen för att öppna BIOS och felsöka ........................ 74
+BIOS ................................................................................................................................74
+Öppna BIOS ...................................................................................................................... 74
+Återställa systemet ....................................................................................................75
+Använda ett återställningsalternativ ....................................................................... 76
+Tips och vanliga frågor 
+Användbara tips för bärbara datorer ..................................................................80
+Vanliga frågor om maskinvara ..............................................................................82
+Vanliga frågor om programvara ...........................................................................85
+Bilagor
+Federal Communications Commissions meddelande om interferens ........ 88
+Information om FCC RF-exponering........................................................................ 89
+UL:s säkerhetsanvisningar ........................................................................................... 90
+Strömsäkerhetskrav ....................................................................................................... 91
+Tv-meddelanden............................................................................................................. 91
+Macrovision Corporations produktmeddelande ................................................ 91
+Förhindra hörselskador ................................................................................................ 91
+Meddelande om beläggning ..................................................................................... 91
+Nordiska försiktighetsuppmaningar avseende litiumjonbatterier ............... 92
+Försäkran om överensstämmelse av produktens miljöbestämmelse ......... 93
+EU REACH och artikel 33 .............................................................................................. 93
+6 E-manual för bärbar dator
+EU RoHS.............................................................................................................................. 93
+ASUS återvinnings- och återtagningstjänster ...................................................... 94
+Direktiv om ekodesign .................................................................................................. 94
+ENERGY STAR-kvalificerad produkt .......................................................................... 95
+EPEAT registrerade produkter .................................................................................... 95
+Licens för BIOS-teckensnitt ......................................................................................... 96
+Förenklad EU-försäkran om överensstämmelse .................................................. 97
+Meddelande om Wi-Fi-nätverk .................................................................................. 98
+E-manual för bärbar dator 7
+Om manualen
+Manualen ger information om din bärbara dators maskinvaru- och 
+programvaruegenskaper, och har delats in i följande kapitel:
+Kapitel 1: Konfiguration av maskinvaran 
+Detta kapitel preciserar din bärbara dators 
+maskinvarukomponenter. 
+Kapitel 2: Använda din bärbara dator
+Detta kapitel visar hur du använder de olika delarna av din 
+bärbara dator.
+Kapitel 3: Använda Windows
+Detta kapitel ger en översikt över hur du använder Windows på 
+din bärbara dator.
+Kapitel 4: Självtest vid start (POST, Power-On Self-Test)
+Detta kapitel visar hur du använder POST för att ändra 
+inställningarna på din bärbara dator.
+Tips och vanliga frågor 
+Detta avsnitt presenterar några rekommenderade tips, frågor om 
+hårdvara och programvara som du kan läsa för att underhålla och 
+åtgärda vanliga problem med din bärbara dator. 
+Bilagor
+Detta kapitel innehåller meddelanden och säkerhetsuttalanden 
+som rör din bärbara dator.
+8 E-manual för bärbar dator
+Konventioner som används i denna manual
+För att markera viktig information i denna manual, presenteras viss text 
+på följande sätt:
+VIKTIGT! Detta meddelande innehåller vital information som måste följas 
+för att fullfölja en uppgift. 
+OBS! Detta meddelande innehåller ytterligare information och tips som 
+kan hjälpa till att fullfölja en uppgift.
+VARNING! Detta meddelande innehåller viktig information som måste 
+följas för att bibehålla säkerheten när vissa uppgifter genomförs och 
+förhindra skador på den bärbara datorns data och komponenter. 
+Ikoner
+Ikonerna nedan indikerar vilken enhet som kan användas för fullföljande 
+av en serie med uppgifter eller procedurer på din bärbara dator.
+Typografi
+fet = Detta indikerar en meny eller en post som måste väljas.
+kursiv = Detta indikerar ett passage du kan finna i den här 
+manualen.
+= Använda styrplattan.
+= Använda tangentbordet.
+E-manual för bärbar dator 9
+Säkerhetsföreskrifter
+Använda din bärbara dator
+Den här notebookdatorn ska användas i miljöer 
+med lämplig temperatur mellan 5°C (41°F) och 35°C 
+(95°F).
+Se etiketten med märkdata under Notebook PC:n 
+för att se till att din strömadapter överensstämmer 
+med märkdatan.
+Din bärbara dator kan bli varm eller het när den 
+används eller vid laddning av batteriet. Lämna inte 
+din bärbara dator i knät eller nära andra kroppsdelar 
+för att undvika värmeskador. Placera inte den 
+bärbara datorn på ytor som kan blockera ventilerna 
+när du arbetar med den.
+Använd inte skadade elsladdar, tillbehör eller annan 
+kringutrustning. 
+Vid påslagning se till att den bärbara datorn inte 
+bärs eller täcks över med något material som kan 
+reducera luftcirkulationen.
+Placera inte den bärbara datorn på en ojämn eller 
+instabil arbetsyta. 
+Du kan skicka din bärbara dator genom 
+röntgenmaskiner (används på föremål som 
+placerats på transportband), men utsätt den inte för 
+magnetiska detektorer eller handskanner.
+Kontakta flygbolaget för att ta reda på mer 
+om tjänster som kan användas ombord och 
+begränsningar och restriktioner som måste följas 
+när bärbara datorer används ombord under 
+flygning.
+10 E-manual för bärbar dator
+Sköt om din bärbara dator
+Koppla ifrån strömmen och ta bort batteriet 
+(i förekommande fall) innan du rengör den 
+bärbara datorn. Använd en ren cellulosasvamp 
+eller sämskskinn fuktad i varmt vatten eller en 
+lösning med låg koncentration av icke-slipande 
+rengöringsmedel. Avlägsna resterande fukt från 
+den bärbara datorn med en torr trasa. Se till att inga 
+vätskor kommer in i chassiet eller tangentbordet för 
+att förhindra kortslutning eller korrosion.
+Använd inte starka lösningsmedel som alkohol, 
+thinner, bensen eller andra kemikalier på eller i 
+närheten av den bärbara datorn.
+Placera inga föremål ovanpå den bärbara datorn.
+Utsätt inte din bärbara dator för starka magnet- eller 
+elektriska fält.
+Använd eller utsätt inte den bärbara datorn i 
+närheten av vätskor, regn eller fukt. 
+Exponera inte den bärbara datorn för dammiga 
+miljöer.
+E-manual för bärbar dator 11
+Korrekt avyttring
+Kasta inte Notebook PC i hushållssoporna. Denna 
+produkt har konstruerats för att möjliggöra 
+korrekt återanvändning av delar och för 
+återvinning. Symbolen med den överkorsade 
+soptunnan indikerar att produkten (elektriska och 
+elektroniska utrustningar samt knappcellsbatterier 
+som innehåller kvicksilver) inte får kastas i de 
+vanliga hushållssoporna. Kontrollera de lokala 
+bestämmelserna för avyttring av elektroniska 
+produkter.
+Kasta INTE batteriet i hushållssoporna. Symbolen 
+med den överkorsade soptunnan indikerar att 
+batteriet inte får kastas i de vanliga hushållssoporna.
+Använd inte den bärbara datorn i närheten av 
+läckande gas.
+Placera inte aktiva elektriska enheter i närheten 
+av din bärbara dator för att undvika störning från 
+elektromagnetiska vågor på skärmpanelen.
+Använd inte den här bärbara datorn för 
+kryptovalutabrytning (vilket förbrukar mycket el 
+och tid för att gräva konvertibel virtuell valuta) och/
+eller relaterade aktiviteter.
+12 E-manual för bärbar dator
+Batteriskydd
+• Upprepad laddning av batteriet med högspänning kan förkorta 
+batteriets livslängd. För att skydda batteriet, när batteriet är 
+fulladdat, kan man sluta ladda systemet när effekten är mellan 90 
+% och 100 %.
+OBS! Nivån då batteriet börjar laddas igen är vanligtvis inställd på mellan 
+90 och 99 %. Det faktiska värdet kan variera beroende på modell.
+• Laddning eller förvaring av batteriet i höga omgivande 
+temperaturer kan leda till bestående skador på batteriets 
+effektkapacitet och förkortar snabbt batteriets livslängd. 
+Om batteritemperaturen är för hög kan systemet minska 
+laddningskapaciteten för batterieffekten eller stoppa laddningen 
+för att skydda batteriet.
+• Batteriets effektkapacitet kan sjunka även när enheten är 
+avstängd och frånkopplad från växelströmmen. Detta är normalt 
+när systemet fortfarande drar lite ström från batteriet.
+Batterisäkerhetsinformation
+E-manual för bärbar dator 13
+Skötsel av standardbatteri
+• Om du inte ska använda din enhet under lång tid måste 
+batterieffekten laddas till 50 % innan datorn stängs av och 
+växelströmsadaptern kopplas ifrån. Ladda batterieffekten till 50 
+% var tredje månad för att förhindra överladdning och skador på 
+batteriet.
+• Undvik att ladda batteriet med hög spänning under lång tid 
+för att förlänga batteriets livslängd. Om du konstant använder 
+växelström för enheten, måste batterieffekten laddas ur till 50 % 
+minst varannan vecka. Du kan även justera inställningarna från 
+Battery Health Charging (Laddning för batterihälsa) i MyASUS för 
+att förlänga batteriets livslängd.
+• Batteriet bör förvaras i temperaturer mellan 5 °C och 35 °C 
+(41°F och 95 °F) med batterieffekt på 50 %. Du kan även justera 
+inställningarna från Battery Health Charging (Laddning för 
+batterihälsa) i MyASUS för att förlänga batteriets livslängd.
+• Lämna inte batteriet i fuktiga miljöer. Exponering för fuktiga 
+miljöer kan öka batteriets överladdningshastighet. Miljö med 
+låg temperatur kan skada kemikalierna i batteriet, medan hög 
+temperatur eller överhettning kan leda till risk för explosion.
+• Placera inte enheten eller batteripacken nära element, öppna 
+spisar, kaminer, värmare eller andra värmekällor med temperatur 
+över 60 °C (140 °F). Omgivande miljö med hög temperatur kan 
+orsaka explosion eller läckage som kan orsaka brand.
+14 E-manual för bärbar dator
+E-manual för bärbar dator 15
+Kapitel 1: 
+Konfiguration av maskinvaran 
+16 E-manual för bärbar dator
+Lär känna din bärbara dator
+Framifrån
+OBS! Tangentbordets layout kan skilja sig åt mellan olika regioner och 
+länder. Utseendet på den bärbara datorn kan också skilja sig åt beroende 
+på datormodell.
+E-manual för bärbar dator 17
+Arraymikrofoner
+Arraymikrofoner har ekoreducering, brusfilter, och funktioner 
+för inriktning så att röstigenkänningen och ljudinspelningen blir 
+bättre.
+Kamera
+Med den inbyggda kameran kan du ta bilder och spela in videor 
+med din bärbara dator.
+IR-kamera
+Med den inbyggda kameran kan du ta bilder och spela in videor 
+med din bärbara dator. IR-kameran har även stöd för Windows 
+Hello.
+OBS! Den röda IR-LED-lampan blinkar medan data blir inlästa 
+innan du loggar in med Windows Hello-ansiktsigenkänning.
+Indikatorlampa för kamera
+Indikatorlampan för kamera tänds när den inbyggda kameran 
+används.
+18 E-manual för bärbar dator
+Visningspanel
+Visningspanelen tillhandahåller utmärkta funktioner för att titta 
+på fotografier, videor och andra multimediafiler i hög upplösning 
+på din bärbara dator.
+Friskrivning: Långvarig visning av statiska bilder eller bilder 
+med hög kontrast kan leda till att bilden blir kvar eller bränns 
+in på OLED-skärmen. ASUS bärbara dator med OLED-skärm (på 
+vissa modeller) minimerar risken för i inbränning genom att 
+ställa in mörkt läge i Windows som standard och förkorta den 
+inaktiva tiden innan skärmen stängs av. Vi rekommenderar att 
+man aktiverar animerad skärmsläckare med mörk bakgrund och 
+undviker att ställa in OLED-skärmen på maximal ljusstyrka för att 
+förlänga OLED-skärmens livslängd.
+OBS! För mer information, se avsnittet Ställa in OLED-skärmen i 
+denna bruksanvisning.
+Indikator för avstängd mikrofon
+Denna indikator tänds när datorns dockningsenhet är påslagen.
+Tangentbord
+Tangentbordets QWERTY-tangenter i full storlek har ett 
+nedtryckningsdjup som gör det bekvämt att skriva. Det gör även 
+att du kan använda funktionsknapparna, få snabb åtkomst till 
+Windows och styra andra multimediafunktioner.
+OBS! Tangentbordet kan se olika ut på olika modeller och i olika 
+försäljningsområden.
+E-manual för bärbar dator 19
+Indikatorlampa för versallås
+Den här indikatorlampan tänds när versallåsfunktionen är 
+aktiverad. Med versallåset kan du skriva stora bokstäver (versaler) 
+(t.ex. A, B och C) med den bärbara datorns tangentbord.
+Styrplatta
+Styrplattan gör det möjligt att använda flerfingergester, 
+vilket ger en intuitiv användarupplevelse. Den simulerar även 
+funktionerna hos en vanlig mus.
+OBS! Mer information finns i avsnittet Använda styrplattan i den 
+här manualen.
+Sensor för omgivande ljus
+Sensorn för omgivande ljus känner av miljöns omgivande ljus. 
+Det gör att systemet automatiskt kan justera skärmens ljusstyrka 
+efter omgivningens ljusförhållanden.
+RGB-ljussensor
+RGB-ljussensorn justerar automatiskt färgtemperaturen på din 
+bildskärm i enlighet med de omgivande ljusnivåerna.
+20 E-manual för bärbar dator
+Indikator för avstängd kamera
+Denna indikator tänds när kamerans stängs av.
+Strömknapp
+Tryck på strömknappen för att starta och stänga av den bärbara 
+datorn. Du kan också använda strömknappen till att försätta den 
+bärbara datorn i strömsparläge eller viloläge och väcka den från 
+strömsparläge och viloläge.
+Om den bärbara datorn inte svarar håller du strömknappen 
+nedtryckt i minst tio (10) sekunder, tills den bärbara datorn 
+stängs av.
+E-manual för bärbar dator 21
+Vy nedtill
+OBS! Utseendet på undersidan kan skilja sig åt mellan modeller.
+VARNING! Din bärbara dator kan bli varm eller het när den används eller 
+vid laddning av batteriet. Lämna inte din bärbara dator i knät eller nära 
+andra kroppsdelar för att undvika värmeskador. Placera inte den bärbara 
+datorn på ytor som kan blockera ventilerna när du arbetar med den.
+VIKTIGT! 
+• Batteritiden varierar beroende på användning och specifikationer för 
+den bärbara datorn. Batteriet kan inte tas isär.
+• Köp komponenter från auktoriserade återförsäljare för att säkerställa 
+maximal kompatibilitet och tillförlitlighet. Kontakta ett ASUS-
+servicecenter eller en auktoriserad återförsäljare om du behöver 
+produktservice eller hjälp att ta isär eller montera produkten på rätt 
+sätt.
+22 E-manual för bärbar dator
+Luftventiler
+Luftventilerna släpper in sval luft och släpper ut varm luft från 
+den bärbara datorn.
+VARNING! Kontrollera att luftventilerna inte blockeras av papper, 
+böcker, kläder, kablar eller andra föremål, eftersom blockering kan 
+leda till överhettning.
+Högtalare
+De inbyggda högtalarna låter dig spela upp ljud direkt från din 
+bärbara dator. Ljudfunktionerna är programvarustyrda.
+E-manual för bärbar dator 23
+Vy till höger
+Strömindikatorlampa
+Strömindikatorlampan tänds när den bärbara datorn startas och 
+blinkar långsamt när den bärbara datorn är i strömsparläge.
+Ingång för hörlur/headset/mikrofon
+Via den här porten kan du ansluta förstärkarhögtalare och 
+hörlurar. Du kan också använda porten till att ansluta ett headset 
+eller en extern mikrofon.
+USB 3.2 Gen 2-port
+USB 3.2 Gen 2-porten (universell seriebuss) har en 
+överföringshastighet på upp till 10 Gb/s och är bakåtkompatibel 
+med USB 2.0.
+24 E-manual för bärbar dator
+HDMI-utgångsport
+Med den här porten kan du skicka ljud- och videosignaler från 
+din bärbara dator till en HDMI-kompatibel enhet med hjälp av 
+en HDMI-kabel.
+Thunderbolt™ 4/Power Delivery-kombiport
+Thunderbolt™ 4-porten är kompatibel med USB Type-C®-
+standarder och ger en överföringshastighet på upp till 40 Gbit/s 
+för Thunderbolt™ 4-enheter. Anslut din bärbara dator till en 
+DisplayPort-, VGA-, DVI- eller HDMI-extern skärm och upplev 
+skärmfunktioner med hög upplösning via Intel® Thunderbolt™-
+teknologi. Sätt i den medföljande nätadaptern i den här porten 
+för att ladda batteriet och leverera ström till din bärbara dator.
+OBS! Överföringshastigheten för porten kan variera mellan olika 
+modeller.
+VIKTIGT! Det kan ta längre tid att ladda din bärbara dator helt 
+genom en lågspänningskälla.
+Vy till vänster
+E-manual för bärbar dator 25
+Tvåfärgad indikatorlampa för batteriladdning
+Den tvåfärgade LED-lampan är en synlig indikation på batteriets 
+laddningsstatus. Se följande tabell för detaljer:
+Färg Status
+Fast vit Den bärbara datorn är ansluten 
+till en strömkälla och har en 
+batterikapacitet på mellan 95 % 
+och 100 %.
+Fast orange Den bärbara datorn är ansluten 
+till en strömkälla, laddar 
+batteriet och batterikapaciteten 
+är mindre än 95 %.
+Blinkande orange Den bärbara datorn 
+används i batteriläge och 
+batterikapaciteten är mindre än 
+10 %.
+Släckt Den bärbara datorn används 
+i batteriläge och har en 
+batterikapacitet på mellan 10 % 
+och 100 %.
+26 E-manual för bärbar dator
+E-manual för bärbar dator 27
+Kapitel 2:
+Använda din bärbara dator
+28 E-manual för bärbar dator
+Kom igång
+Ladda den bärbara datorn i 3 timmar innan du 
+använder den i batteriläge första gången.
+OBS! Strömadaptern kan se olika ut beroende på modell och region.
+Ladda din bärbara dator
+A. Anslut nätkabeln till strömadaptern.
+B. Anslut nätkontakten till den bärbara datorns eluttag.
+C. Anslut strömadaptern till ett vägguttag (100–240 V).
+VIKTIGT!
+Specifikationer för strömadaptern:
+• Inspänning: 100–240 V AC
+• Ingångsfrekvens: 50–60 Hz
+• Utgående ström: 3,25 A (65 W)
+• Utgångsspänning: 20 V
+E-manual för bärbar dator 29
+VIKTIGT!
+• Leta reda på etiketten som anger in- och utspänning på din bärbara 
+dator och kontrollera att den stämmer med uppgifterna om in-/
+utspänning på strömadaptern. Vissa datormodeller kan ha flera olika 
+utspänningar baserat på tillgängligt SKU.
+• Se till att datorn är ansluten till strömadaptern innan du startar 
+den första gången. Anslut alltid nätkabeln till ett vägguttag utan 
+att använda förlängningssladd. För din egen säkerhet ska enheten 
+anslutas till ett jordat eluttag.
+• Uttaget måste vara lättåtkomligt och nära din bärbara dator.
+• Bryt strömtillförseln till datorn genom att koppla bort den från 
+eluttaget.
+VARNING!
+Läs igenom följande försiktighetsåtgärder avseende din bärbara dators 
+batteri:
+• Batteriet inuti enheten (gäller endast ej löstagbara batterier) får 
+endast tas ut av en ASUS-auktoriserad teknik.
+• Batteriet i den här enheten kan utgöra risk för brand eller kemisk 
+brännskada om det tas bort eller demonteras.
+• Följ varningsetiketterna för din personliga säkerhet.
+• Explosionsrisk om batteriet byts ut mot ett batteri av fel typ.
+• Kassera inte batteriet bland brännbart avfall.
+• Försök aldrig att kortsluta din bärbara dators batteri.
+• Försök aldrig ta isär och montera ihop batteriet 
+(gäller endast ej löstagbara batterier).
+• Ta enheten ur bruk vid eventuellt läckage.
+• Batteriet och dess komponenter ska återvinnas eller kasseras på rätt 
+sätt.
+• Förvara batteriet och andra mindre komponenter utom räckhåll för 
+barn.
+30 E-manual för bärbar dator
+Lyft för att öppna visningspanelen
+Tryck på strömbrytaren
+E-manual för bärbar dator 31
+Använda pekplattan
+Flytta pekaren
+Du kan trycka var som helst på pekplattan för att aktivera pekaren och 
+sedan dra fingret på pekplattan för att flytta pekaren på skärmen.
+Dra horisontellt
+Dra vertikalt
+Dra diagonalt
+32 E-manual för bärbar dator
+Gester med ett finger
+Tryck/dubbeltryck
+• Tryck på en app för att markera den.
+• Tryck två gånger på en app för att öppna den.
+Dra och släpp
+Tryck två gånger på ett objekt och dra sedan med samma finger utan 
+att lyfta det från pekplattan. Släpp objektet på dess nya plats genom 
+att lyfta fingret från pekplattan.
+E-manual för bärbar dator 33
+Vänsterklicka Högerklicka
+• Klicka på en app för att 
+markera den.
+• Dubbelklicka på en app för 
+att öppna den.
+Klicka på den här knappen om du 
+vill öppna högerklicksmenyn.
+OBS! Områdena innanför den streckade linjen motsvarar placeringen av 
+vänster och höger musknapp på pekplattan.
+Gester med två fingrar
+Tryck
+Tryck med två fingrar på pekplattan för att simulera ett högerklick.
+34 E-manual för bärbar dator
+Skrolla med två fingrar (upp/
+ner)
+Skrolla med två fingrar (vänster/
+höger)
+Dra med två fingrar för att skrolla 
+upp eller ner.
+Dra med två fingrar för att skrolla åt 
+vänster eller höger.
+Zooma ut Zooma in
+För ihop två fingrar på pekplattan. Dra isär två fingrar på pekplattan.
+E-manual för bärbar dator 35
+Dra och släpp
+Välj ett objekt och håll sedan den vänstra knappen nedtryckt. Flytta 
+objektet genom att dra det på pekplattan med det andra fingret. Släpp 
+sedan fingret från knappen för att släppa objektet.
+Gester med tre fingrar
+Tryck
+Tryck med tre fingrar på pekplattan för att starta den funktion du valde 
+under Settings (inställningar).
+36 E-manual för bärbar dator
+Dra åt vänster/dra åt höger
+Om du har öppnat flera appar drar du med tre fingrar åt vänster eller 
+höger för att växla mellan dessa appar.
+Dra uppåt Dra nedåt
+Dra uppåt för att se en översikt 
+över alla öppna appar.
+Dra nedåt för att visa skrivbordet.
+E-manual för bärbar dator 37
+Gester med fyra fingrar
+Tryck
+Tryck med fyra fingrar på pekplattan för att starta den funktion du 
+valde under Settings (inställningar).
+38 E-manual för bärbar dator
+Använda tangentbordet
+Sätt på eller stäng av högtalaren
+Sänk högtalarvolymen
+Höj högtalarvolymen
+Minska skärmens ljusstyrka
+Öka skärmens ljusstyrka
+Aktivera eller inaktivera pekplattan
+Justerar ljusstyrkan för det bakgrundsupplysta 
+tangentbordet
+Växla mellan olika visningslägen
+OBS! Se till att den andra skärmen är ansluten till din 
+bärbara dator.
+HotKeys
+HotKeys på din bärbara dators tangentbord kan utlösa följande 
+kommandon:
+E-manual för bärbar dator 39
+Windows-tangenter
+Det finns två Windows-tangenter på din bärbara dators tangentbord 
+som används på följande sätt:
+Funktionstangenter
+Tryck på för att aktivera eller inaktivera 
+funktionstangenterna. När funktionstangenterna är inaktiverade kan du 
+få åtkomst till HotKeys genom att hålla ned i kombination med 
+övre radens tangenter.
+Sätt på eller stäng av mikrofonen
+Sätt på eller stäng av kameran
+Aktivera skärmklippverktyget
+Starta MyASUS
+Öppna menyn Start
+ eller Visa rullgardinsmenyn
+40 E-manual för bärbar dator
+E-manual för bärbar dator 41
+Kapitel 3:
+Använda Windows
+42 E-manual för bärbar dator
+Starta datorn första gången
+Första gången du startar din bärbara dator visas en serie dialogrutor 
+som hjälper dig att konfigurera ditt Windows-operativsystem.
+Så här startar du din bärbara dator första gången:
+1. Tryck på datorns strömbrytare. Vänta några minuter tills 
+konfigurationsskärmen visas.
+2. På konfigurationsskärmen väljer du din region och det språk som 
+ska användas på datorn.
+3. Läs igenom licensavtalet noggrant. Välj Accept (godkänn).
+4. Följ instruktionerna på skärmen för att konfigurera följande 
+grundparametrar:
+• Personalize (anpassa)
+• Get online (anslut till internet)
+• Settings (inställningar)
+• Ditt konto
+5. När du har är klar med grundkonfigurationen fortsätter Windows 
+att installera dina appar och valda inställningar. Din bärbara dator 
+måste vara igång under hela installationsprocessen.
+6. När installationsprocessen är klar visas skrivbordet.
+OBS! Skärmdumparna i det här kapitlet visas endast för referens.
+E-manual för bärbar dator 43
+Menyn Start
+Menyn Start är huvudingången till din dators program, Windows-appar, 
+mappar och inställningar.
+Från menyn Start kan du bland annat göra följande:
+• Starta program eller Windows-appar
+• Öppna program eller Windows-appar som används ofta
+• Justera datorns inställningar
+• Få hjälp med Windows operativsystem
+• Stänga av datorn
+• Logga ut från Windows eller växla till ett annat användarkonto
+Ändra kontoinställningar, lås 
+eller logga ut från ditt konto
+Öppna menyn Start
+Öppna Task view (aktivitetsvyn)
+Stäng av, starta om eller 
+sätt datorn i viloläge
+Öppna en app från aktivitetsfältet
+Öppna en app från menyn Start
+Öppna Search (sök)
+Öppna Widgets (insticksprogram)
+44 E-manual för bärbar dator
+Öppna menyn Start
+Håll muspekaren över startikonen på skrivbordet 
+och klicka sedan på den.
+Tryck på Windows-knappen på tangentbordet.
+Öppna program från menyn Start
+Ett av menyn Starts vanligaste användningsområden är att öppna 
+program som är installerade på din bärbara dator.
+Håll muspekaren över programmet och klicka för att 
+starta det.
+Använd piltangenterna för att bläddra mellan 
+programmen. Tryck på att starta det.
+OBS! Välj All apps (Alla appar) för att visa en lista över alla program och 
+mappar på din bärbara dator i alfabetisk ordning.
+E-manual för bärbar dator 45
+Windows-appar
+De här apparna är fästa på menyn Start och visas som miniatyrbilder för 
+enkel åtkomst.
+OBS! Vissa Windows-appar kräver att du loggar in på ditt Microsoft-konto 
+innan du får full tillgång till dem.
+46 E-manual för bärbar dator
+Använda Windows-appar
+Anpassa Windows-appar
+Så här flyttar, lossar och fäster du appar på aktivitetsfältet:
+Öppna Windows-appar från menyn Start
+Håll muspekaren över appen och klicka för att starta 
+den.
+Använd piltangenterna för att bläddra mellan apparna. 
+Tryck på för att starta en app.
+Flytta appar
+Håll muspekaren över appen och dra och släpp den på 
+en ny plats.
+Lossa appar
+Håll muspekaren över appen och högerklicka på 
+den. Klicka sedan på Unpin from Start (lossa från 
+startmenyn).
+Använd piltangenterna för att navigera till appen. 
+Tryck på eller (på vissa modeller) och 
+välj sedan Unpin from Start (lossa från startmenyn).
+E-manual för bärbar dator 47
+Fästa appar på aktivitetsfältet
+Håll muspekaren över appen och högerklicka på den. 
+Klicka sedan på Pin to taskbar (fäst på aktivitetsfältet).
+Använd piltangenterna för att navigera till appen. 
+Tryck på eller (på vissa modeller) 
+och välj sedan Pin to taskbar (fäst på aktivitetsfältet).
+Fästa fler appar på menyn Start
+Från All apps (alla appar) håller du muspekaren 
+över den app du vill lägga till på menyn Start och 
+högerklickar på den. Klicka sedan på Pin to Start (fäst 
+på startmenyn).
+Från All apps (alla appar) trycker du på eller 
+ (på vissa modeller) på den app du vill 
+lägga till på menyn Start. Tryck sedan på Pin to Start (fäst 
+på startmenyn).
+48 E-manual för bärbar dator
+Task view (aktivitetsvyn)
+Växla snabbt mellan öppna appar och program med funktionen Task 
+view (aktivitetsvyn). Du kan också använda Task view (aktivitetsvyn) för 
+att växla mellan olika skrivbord.
+Öppna Task view (aktivitetsvyn)
+Håll muspekaren över ikonen på aktivitetsfältet och 
+klicka på den.
+Tryck på på tangentbordet.
+E-manual för bärbar dator 49
+Widgets (insticksprogram)
+Du kan öppna Widgets (insticksprogram) för att snabbt komma åt viktig 
+information.
+Öppna Widgets (insticksprogram)
+Håll muspekaren över ikonen på aktivitetsfältet och 
+klicka på den.
+Tryck på på tangentbordet.
+50 E-manual för bärbar dator
+Anpassa Widgets (insticksprogram)
+Klicka/tryck på ikonen och välj sedan Manage 
+interests (hantera intressen) för att ändra innehållet 
+som visas i Widgets (insticksprogrammen).
+E-manual för bärbar dator 51
+Funktionen Fäst
+Med funktionen Fäst visas appar sida vid sida, så att du kan arbeta med 
+eller växla mellan olika appar.
+Dispositioner
+Du kan dra och släppa appar i dispositioner där de klistras fast.
+52 E-manual för bärbar dator
+Använda funktionen Fäst
+1. Öppna appen du vill fästa.
+2. Dra i appens namnlist och släpp den vid 
+skärmkanten för att fästa den.
+3. Öppna en annan app och upprepa ovanstående 
+steg för att fästa en annan app.
+1. Öppna appen du vill fästa.
+2. Håll ner -tangenten och använd sedan 
+piltangenterna för att fästa appen.
+3. Öppna en annan app och upprepa ovanstående 
+steg för att fästa en annan app.
+E-manual för bärbar dator 53
+Action Center (åtgärdscenter)
+I Action Center (åtgärdscenter) visas aviseringar från olika appar och du 
+kan interagera med flera appar från en och samma plats. Här hittar du 
+även den praktiska funktionen Quick Actions (snabbåtgärder).
+Öppna Quick Actions (snabbåtgärder)
+Håll muspekaren över statusikonen på aktivitetsfältet 
+och klicka på den.
+Tryck på på tangentbordet.
+54 E-manual för bärbar dator
+Öppna Notifications (aviseringar)
+Håll muspekaren över datum och klockslag på 
+aktivitetsfältet och klicka.
+Tryck på på tangentbordet.
+E-manual för bärbar dator 55
+MyASUS Splendid
+MyASUS Splendid säkerställer att alla ASUS-visningspaneler visar 
+identiska och exakta färger. Utöver Normal Mode (normalt läge) kan du 
+välja Vivid, Eye Care eller Manual Mode (manuellt läge).
+• Normal Mode (normalt läge): Genom korrigering av 
+gammavärde och färgtemperatur ligger panelens bildvisning 
+så nära det ögat naturligt kan se som möjligt. På modeller med 
+OLED-panel uppfyller detta läge kraven för TÜV Low Blue Light-
+certifiering.
+• Vivid-läge: I det här läget kan du justera bildens mättnad, vilket 
+gör den mer levande och levande.
+• Manual Mode (manuellt läge): I det här läget kan du ställa in 
+färgtemperaturen efter egna önskemål, från -50 till +50.
+• Eye Care Mode (ögonvänligt läge): I det här läget minskar 
+utstrålningen av blått ljus med upp till 30 %, vilket minskar 
+påfrestningen på dina ögon.
+ Nivå 1–5: Ju högre nivå, desto mer minskar utstrålningen av 
+blått ljus. På modeller med LCD-skärm är nivå 5 den optimerade 
+inställningen som även uppfyller kraven för TÜV Low Blue Light-
+certifiering.
+OBS! Aktivera HDR från Settings (inställningar) > System > Display 
+(skärm) för en bättre visningsupplevelse på din OLED-skärm (på vissa 
+modeller). Uppfyller kraven för TÜV Flicker Free-certifiering.
+56 E-manual för bärbar dator
+Så här kan du minska påfrestningen på ögonen:
+• Ta pauser och lämna skärmen om du arbetar många timmar 
+i sträck. Vi rekommenderar att du tar korta pauser (minst 5 
+minuter) efter cirka 1 timmes kontinuerligt arbete vid datorn. 
+Korta och frekventa pauser är mer effektiva än en lång paus.
+• För att minimera ögontorrhet och ögontrötthet bör du låta 
+ögonen vila då och då genom att fokusera på föremål som är 
+långt borta.
+• Upprepa följande övningar för att minska ögontröttheten:
+(1) Titta upp och ner några gånger
+(2) Rulla ögonen långsamt
+(3) Rör ögonen diagonalt
+ Uppsök läkare vid bestående ögontrötthet.
+• Blått ljus med hög energi kan orsaka ögontrötthet och AMD 
+(åldersrelaterad makuladegeneration). Filter för blått ljus minskar 
+det skadliga blå ljuset med 30% (max) för att förhindra CVS 
+(Computer Vision Syndrome).
+E-manual för bärbar dator 57
+Ställa in OLED-skärmen
+För att OLED-skärmen (på vissa modeller) ska fungera så bra som möjligt 
+rekommenderar vi att du gör ett antal inställningar. Dessa inställningar 
+hjälper till att optimera den visuella upplevelsen, maximera batteriets 
+livslängd och förlänga din ASUS-dators livslängd.
+Ställa in mörkt läge
+Mörkt läge är aktiverat som standard. Så här kontrollerar eller justerar 
+du inställningarna:
+1. Öppna menyn Start.
+2. Klicka/tryck på Settings (inställningar) och välj Personalization 
+(anpassa).
+58 E-manual för bärbar dator
+3. Välj fliken Colors (färger) för att visa alternativen.
+E-manual för bärbar dator 59
+Stänga av skärmen när den inte används
+Se till att skärmen stängs av automatiskt när den inte används. Så här 
+kontrollerar eller justerar du inställningarna:
+1. Öppna menyn Start.
+2. Klicka/tryck på Settings (inställningar) och välj System.
+60 E-manual för bärbar dator
+3. Välj fliken Power & battery (ström och batteri) för att visa 
+alternativen.
+E-manual för bärbar dator 61
+Justera skärmens ljusstyrka
+För att OLED-skärmens livslängd ska bli så lång som möjligt 
+rekommenderar vi att du aktiverar animerad skärmsläckare med 
+mörk bakgrund och undviker att ställa in OLED-skärmen på maximal 
+ljusstyrka. Så här kontrollerar eller justerar du inställningarna:
+1. Öppna menyn Start.
+2. Klicka/tryck på Settings (inställningar) och välj Personalization 
+(anpassa).
+62 E-manual för bärbar dator
+3. Välj fliken Lock screen (låsskärm) och sedan Screen saver 
+(skärmsläckare) för att se alternativen.
+E-manual för bärbar dator 63
+Dölj aktivitetsfältet automatiskt
+För att aktivitetsfältet inte ska visas på OLED-skärmen under en 
+längre tid kan du se till att det döljs automatiskt. Så här justerar du 
+inställningarna:
+1. Öppna menyn Start.
+2. Klicka/tryck på Settings (inställningar) och välj Personalization 
+(anpassa).
+64 E-manual för bärbar dator
+3. Välj fliken Taskbar (aktivitetsfältet) och aktivera alternativet 
+Automatically hide the taskbar (dölj aktivitetsfältet 
+automatiskt).
+E-manual för bärbar dator 65
+1. Starta ett Microsoft Office-program och klicka/tryck sedan på File 
+(Arkiv) > Account (konto).
+2. Välj Dark Gray (mörkgrå) under Office Theme (Office-tema). 
+Temat kommer att tillämpas på alla Microsoft-program.
+Ställa in mörkt läge i Microsoft Office
+66 E-manual för bärbar dator
+Andra kortkommandon
+Du kan också använda följande kortkommandon för att öppna program 
+och navigera i Windows.
+Öppna menyn Start
+Öppna Action Center (åtgärdscenter)
+Visa skrivbordet
+Öppna File Explorer (utforskaren)
+Öppna Settings (inställningar)
+Öppna panelen Connect (anslut)
+Aktivera Lock screen (låsskärmen)
+Minimera alla aktiva fönster
+E-manual för bärbar dator 67
+Öppna Search (sök)
+Öppna panelen Project (projicera)
+Öppna dialogrutan Run (kör)
+Öppna Accessibility 
+(hjälpmedelsinställningar)
+Öppna snabbmenyn för startknappen
+Öppna förstoringsglaset och zooma in på 
+skärmen
+Zoomar ut på skärmen
+68 E-manual för bärbar dator
+Ansluta till trådlösa nätverk
+Wi-Fi
+När din bärbara dator är ansluten till ett trådlöst nätverk (Wi-Fi) kan 
+du använda e-post, surfa på internet och dela applikationer via sociala 
+medier.
+VIKTIGT! I Airplane mode (flygplansläge) är den här funktionen 
+inaktiverad. Kontrollera att Airplane mode (flygplansläge) är avstängt 
+innan du ansluter datorn till ett trådlöst nätverk (Wi-Fi).
+Ansluta till Wi-Fi
+Så här ansluter du din bärbara dator till ett trådlöst nätverk (Wi-Fi):
+1. Starta Action Center (åtgärdscenter) från 
+aktivitetsfältet.
+2. Klicka/tryck på Wi-Fi-ikonen för att aktivera Wi-Fi.
+3. Välj en åtkomstpunkt i listan över tillgängliga 
+trådlösa nätverk.
+4. Välj Connect (anslut) för att ansluta till nätverket.
+OBS! Du kan behöva ange en säkerhetsnyckel för att 
+ansluta till det trådlösa nätverket.
+E-manual för bärbar dator 69
+1. Öppna Settings (inställningar) från menyn Start.
+2. Välj Bluetooth & devices (Bluetooth och enheter) 
+> Add device (lägg till enhet) för att söka efter 
+Bluetooth-enheter.
+3. Välj en enhet i listan för att para ihop din dator med 
+enheten.
+OBS! För vissa Bluetooth-enheter kan du behöva ange 
+lösenordet för din bärbara dator.
+Bluetooth
+Med hjälp av Bluetooth kan du överföra data trådlöst till andra 
+Bluetooth-kompatibla enheter.
+VIKTIGT! I Airplane mode (flygplansläge) är den här funktionen 
+inaktiverad. Kontrollera att Airplane mode (flygplansläge) är avstängt 
+innan du aktiverar Bluetooth-anslutningen på din bärbara dator.
+Parkoppling med andra Bluetooth-enheter
+För att kunna överföra data måste du parkoppla din dator med en 
+annan Bluetooth-enhet. Så här ansluter du dina enheter:
+70 E-manual för bärbar dator
+Airplane mode (flygplansläge)
+I Airplane mode (flygplansläge) är all trådlös kommunikation inaktiverad 
+för att du ska kunna använda din bärbara dator på ett säkert sätt under 
+flygresor.
+OBS! Kontakta flygbolaget om du vill veta vilka tjänster som erbjuds 
+ombord och vilka restriktioner som gäller när du använder din dator 
+under flygresan.
+Slå på/av Airplane mode (flygplansläge)
+1. Starta Action Center (åtgärdscenter) från 
+aktivitetsfältet.
+2. Klicka/tryck på ikonen för Airplane mode 
+(flygplansläge) för att aktivera eller inaktivera 
+Airplane mode (flygplansläge).
+E-manual för bärbar dator 71
+Stänga av din bärbara dator
+Du kan stänga av din bärbara dator på något av följande sätt:
+• Öppna menyn Start och välj > Shut down 
+(stäng av) om du vill stänga av datorn på vanligt 
+sätt.
+• Välj > Shut down (stäng av) från 
+inloggningsskärmen.
+• Tryck på för att starta Stäng 
+av Windows. Välj Shut down (stäng av) från 
+rullgardinsmenyn och tryck/klicka sedan på OK.
+• Om datorn inte svarar håller du ner strömbrytaren 
+i minst tio (10) sekunder tills datorn stängs av.
+72 E-manual för bärbar dator
+Sätta datorn i viloläge
+Så här sätter du din bärbara dator i viloläge:
+• Öppna menyn Start och välj > Sleep (viloläge) 
+för att sätta datorn i viloläge.
+• Välj > Sleep (viloläge) från 
+inloggningsskärmen.
+Tryck på för att starta Stäng av Windows. 
+Välj Sleep (viloläge) från rullgardinsmenyn och tryck/
+klicka sedan på OK.
+OBS! Du kan också sätta din bärbara dator i viloläge genom att trycka på 
+strömbrytaren en gång.
+E-manual för bärbar dator 73
+Kapitel 4:
+Självtest vid start (POST, Power-
+On Self-Test)
+74 E-manual för bärbar dator
+Självtest vid start (POST, Power-On Self-Test)
+Självtest vid start (POST, Power-On Self-Test) är en serie 
+programvarustyrda diagnostiska tester som körs när du startar eller 
+startar om din bärbara dator. Programvaran som styr självtestet är 
+installerad som en permanent del av den bärbara datorns arkitektur.
+Använda självtestfunktionen för att öppna BIOS 
+och felsöka
+Under självtestningen kan du öppna BIOS-inställningarna eller 
+felsöka datorn med hjälp av funktionstangenterna. Se nedan för mer 
+information.
+BIOS
+BIOS (Basic Input and Output System) innehåller de 
+maskinvaruinställningar som behövs för att den bärbara datorn ska 
+starta.
+Standardinställningarna i BIOS påverkar de flesta av datorns funktioner. 
+Ändra inte standardinställningarna i BIOS utom under följande 
+omständigheter:
+• Ett felmeddelande visas på skärmen vid systemstart som 
+uppmanar dig att öppna BIOS-inställningarna.
+• Du har installerat en ny systemkomponent som kräver att BIOS-
+inställningarna ändras eller att BIOS uppdateras.
+VARNING! Om olämpliga BIOS-inställningar används kan systemet bli 
+instabilt eller omöjligt att starta. Vi rekommenderar att du endast ändrar 
+BIOS-inställningarna i samråd med utbildad servicepersonal.
+Öppna BIOS
+Starta om din bärbara dator och tryck sedan på under 
+självtestningen (POST, Power-On Self-Test).
+E-manual för bärbar dator 75
+Återställa systemet
+Med hjälp av datorns återställningsfunktion kan du återställa systemet 
+till ursprungligt skick eller uppdatera datorns inställningar för att 
+förbättra prestandan.
+VIKTIGT!
+• Säkerhetskopiera alla dina datafiler innan du använder datorns 
+återställningsfunktion.
+• Notera viktiga personliga inställningar som nätverksinställningar, 
+användarnamn och lösenord för att undvika dataförluster.
+• Se till att din bärbara dator är ansluten till en strömkälla innan du 
+återställer systemet.
+I Windows finns följande återställningsalternativ:
+• Keep my files (spara mina filer) - Med det här alternativet kan 
+du uppdatera din bärbara dator utan att dina personliga filer 
+påverkas (foton, musik, videor, dokument).
+ Med det här alternativet kan du återställa din bärbara dator till 
+standardinställningarna och ta bort andra installerade appar.
+• Remove everything (ta bort allt) - Med det här alternativet 
+återställs din bärbara dator till fabriksinställningarna. Du 
+måste säkerhetskopiera dina data innan du använder den här 
+funktionen.
+76 E-manual för bärbar dator
+• Advanced startup (avancerad start) - Med det här alternativet 
+kan du använda andra avancerade återställningsalternativ på din 
+bärbara dator, till exempel:
+- Använda en USB-enhet, nätverksanslutning eller Windows 
+återställnings-DVD för att starta datorn.
+- Använda Troubleshoot (felsökning) för att aktivera 
+något av följande avancerade återställningsalternativ: 
+startreparation, avinstallera uppdateringar, 
+startinställningar, UEFI firmwareinställningar, 
+kommandotolken, systemåterställning och återställning av 
+systembilder.
+Använda ett återställningsalternativ
+Så här kommer du åt och använder de tillgängliga 
+återställningsalternativen för din bärbara dator:
+1. Öppna Settings (inställningar) och välj System > Recovery 
+(återställning).
+E-manual för bärbar dator 77
+2. Välj det återställningsalternativ du vill använda.
+78 E-manual för bärbar dator
+E-manual för bärbar dator 79
+Tips och vanliga frågor 
+80 E-manual för bärbar dator
+Användbara tips för bärbara datorer
+Här följer några användbara tips som hjälper dig att maximera 
+användningen av den bärbara datorn, bibehålla dess systemprestanda 
+och säkerställa att alla data är säkra:
+• Uppdatera Windows regelbundet så att alla program har de 
+senaste säkerhetsinställningarna.
+• Uppdatera MyASUS för att försäkra dig om att du har de senaste 
+inställningarna för program, drivrutiner och verktyg som är 
+exklusiva för ASUS.
+• Använd ett antivirusprogram för att skydda dina data, och håll 
+det uppdaterat.
+• Undvik att framtvinga åtgärden avslut för att stänga av datorn, 
+om det inte är absolut nödvändigt.
+• Säkerhetskopiera alltid dina data och gör det till en vana att 
+säkerhetskopiera data till en extern enhet.
+• Om du inte ska använda den bärbara datorn under lång tid 
+måste batterieffekten laddas till 50 % innan datorn stängs av och 
+växelströmsadaptern kopplas ifrån.
+• Om du använder växelström konstant för den bärbara datorn, 
+ställ Battery Health Charging (Laddning för batterihälsa) på 
+Balanced mode (Balanserat läge) i MyASUS.
+E-manual för bärbar dator 81
+• Frånkoppla alla externa enheter och kontrollera att du har 
+följande saker innan du återställer den bärbara datorn:
+- Produktnyckel till operativsystem och andra installerade 
+program
+- Säkerhetskopierade data
+- Inloggnings-ID och -lösenord
+- Uppgifter om internetanslutningen
+• Besök vår supportwebbplats för felsökning och visa de vanligaste 
+frågorna https://www.asus.com/support.
+82 E-manual för bärbar dator
+Vanliga frågor om maskinvara
+1. En svart prick, eller ibland en färgad prick, uppträder på 
+skärmen när jag slår på datorn. Vad ska jag göra?
+Trots att prickarna normalt uppträder på skärmen påverkar de 
+inte systemet. Kontakta ett auktoriserat ASUS-servicecenter 
+om problemet fortsätter och efterhand påverkar systemets 
+prestanda.
+2. Skärmbilden har ojämn färg och ljusstyrka. Hur åtgärdar jag 
+det?
+Färgen och ljusstyrkan på skärmbilden kan påverkas av datorns 
+vinkel och placering. Ljusstyrkan och färgtonen på datorn kan 
+även variera beroende på modell. Du justerar skärmbildens 
+utseende med funktionstangenterna eller operativsystemets 
+skärminställningar.
+3. Hur maximerar jag datorbatteriets livslängd?
+Prova att göra något av följande:
+• Ställ in skärmens ljusstyrka med funktionstangenterna.
+• Aktivera flygplansläget om du inte använder en Wi-Fi-
+anslutning.
+• Ta ut USB-enheter som inte används.
+• Stäng program som inte används, speciellt de som upptar 
+mycket systemminne.
+E-manual för bärbar dator 83
+4. Batteriladdningsindikatorn tänds inte. Vad är fel?
+• Kontrollera att strömadaptern och batteriet sitter korrekt. Du 
+kan prova att frånkoppla strömadaptern och ta ut batteriet, 
+vänta någon minut och sedan återansluta strömadaptern till 
+eluttaget och sätta tillbaka batteriet i datorn.
+• Kontakta ASUS lokala servicecenter om du behöver hjälp.
+5. Varför fungerar inte pekplattan?
+Tryck på för att aktivera pekplattan.
+6. Varför hörs inget ljud från datorns högtalare när jag spelar 
+upp ljud- eller videofiler?
+Prova att göra något av följande:
+• Tryck på för att höja högtalarvolymen.
+• Kontrollera om högtalarnas ljud har stängts av.
+• Kontrollera om hörlurar är anslutna till den bärbara datorn. 
+Koppla i så fall bort dem.
+84 E-manual för bärbar dator
+7. Vad gör jag om den bärbara datorns strömadapter försvinner 
+eller om batteriet slutar att fungera?
+Kontakta ASUS lokala servicecenter för att få hjälp.
+8. Tangentnedtryckningarna på den bärbara datorn blir 
+felaktiga eftersom markören rörs hela tiden. Vad ska jag 
+göra?
+Kontrollera att inget oavsiktligt rör vid eller trycker på pekplattan 
+när du skriver på tangentbordet. Du aktiverar pekplattan genom 
+att trycka på .
+E-manual för bärbar dator 85
+Vanliga frågor om programvara
+1. När jag slår på den bärbara datorn tänds strömindikatorn, 
+men inget händer på skärmen. Hur åtgärdar jag det?
+Prova att göra något av följande:
+• Framtvinga åtgärden avslut på den bärbara datorn genom 
+att trycka på strömbrytaren i minst tio (10) sekunder. 
+Kontrollera att strömadaptern och batteriet är korrekt 
+insatta och slå på den bärbara datorn.
+• Kontakta ASUS lokala servicecenter om du behöver hjälp.
+2. Vad gör jag om följande meddelande visas på skärmen: ”Ta 
+bort flyttbara diskar. Tryck ned en tangent för omstart.”?
+Prova att göra något av följande:
+• Frånkoppla alla anslutna USB-enheter och starta om den 
+bärbara datorn.
+• Ta ut den optiska skivan (om inmatad) ur den optiska 
+enheten och starta om.
+• Om problemet kvarstår kan den bärbara datorn ha ett 
+minneslagringsproblem. Kontakta ASUS lokala servicecenter 
+för att få hjälp.
+86 E-manual för bärbar dator
+3. Den bärbara datorn startar långsammare än normalt och 
+operativsystemet släpar efter. Hur åtgärdar jag det?
+Ta bort de senast installerade programmen, eller de program som 
+inte ingick i operativsystemspaketet, och starta om systemet.
+4. Den bärbara datorn startas inte. Hur åtgärdar jag det?
+Prova att göra något av följande:
+• Frånkoppla alla anslutna enheter från den bärbara datorn 
+och starta om systemet.
+• Kontakta ASUS lokala servicecenter om du behöver hjälp.
+5. Varför aktiveras inte den bärbara datorn från viloläget?
+• Du måste trycka på strömbrytaren för att återuppta det 
+senaste körningstillståndet.
+• Systemets batteri kan vara slut. Anslut strömadaptern 
+till den bärbara datorn och till ett eluttag och tryck på 
+strömbrytaren.
+Om du har andra problem kan du besöka 
+https://www.asus.com/support/FAQ/1045091/ för felsökning. 
+E-manual för bärbar dator 87
+Bilagor
+88 E-manual för bärbar dator
+Federal Communications Commissions 
+meddelande om interferens
+Enheten överensstämmer med del 15 i FCC:s regler. Drift omfattas av följande två 
+villkor:
+• Enheten får inte orsaka skadlig interferens.
+• Enheten måste acceptera eventuell interferens som tas emot, däribland 
+interferens som kan orsaka oönskad drift.
+Utrustningen har testats och befunnits överensstämma med gränsvärdena för 
+en digital klass B-enhet i del 15 i Federal Communications Commissions (FCC) 
+regler. Gränsvärdena är fastställda för att ge rimligt skydd mot skadlig interferens 
+i en bostadsinstallation. Utrustningen genererar, använder och kan utstråla 
+radiofrekvensenergi och, om den inte installeras och används i enlighet med 
+anvisningarna, kan orsaka skadlig interferens för radiokommunikation. Inga 
+garantier ges för att interferens inte uppstår i en viss installation. Om utrustningen 
+orsakar skadlig interferens för radio- eller tv-mottagning, vilket går att fastställa 
+genom att stänga av och slå på utrustningen, uppmanas användaren att försöka 
+åtgärda interferensen genom en eller flera av följande åtgärder:
+• Rikta om eller flytta mottagarantennen.
+• Öka avståndet mellan utrustningen och mottagaren.
+• Anslut utrustningen till ett uttag på en annan krets än den som mottagaren 
+är ansluten till.
+• Rådfråga återförsäljaren eller en erfaren radio- och tv-tekniker.
+VARNING! Användning av en skärmad nätsladd krävs för att uppfylla FCC:s 
+gränsvärden och förhindra interferens för närliggande radio- och tv-mottagning. 
+Det är mycket viktigt att bara den medföljande nätsladden används. I/O-enheter får 
+bara anslutas till utrustningen med skärmade kablar. Du varnas om att ändringar 
+och modifieringar som inte uttryckligen har godkänts av den som ansvarar för 
+överensstämmelse kan häva din behörighet att använda utrustningen.
+(Återgiven från Code of Federal Regulations nr 47, del 15.193, 1993. Washington 
+DC: Office of the Federal Register, National Archives and Records Administration, 
+U.S. Government Printing Office.)
+E-manual för bärbar dator 89
+Information om FCC RF-exponering
+Denna enhet uppfyller de statliga kraven för exponering för radiovågor. Denna 
+enhet är konstruerad och tillverkad för att inte överskrida strålningsgränserna 
+för exponering av radiofrekvensenergi (RF) som fastställts av USA:s federala 
+myndighet Federal Communications Commission. Exponeringsstandarden 
+använder en mätenhet känd som Specific Absorption Rate, eller SAR. SAR-
+gränsen som fastställts av FCC är 1,6 W/kg. Testerna för SAR utförs med hjälp 
+av standardarbetspositioner som godkänts av FCC och där testobjektet 
+sänder med den specificerade effektnivån i olika kanaler. FCC har beviljat ett 
+Utrustningsbemyndigande för denna enhet med alla rapporterade SAR-nivåerna 
+utvärderade i enlighet med FCC RF exponeringsriktlinjer. SAR-information om 
+denna enhet finns på fil hos FCC och kan hittas under Display Grant på www.fcc.
+gov/oet/ea/fccid.
+90 E-manual för bärbar dator
+UL:s säkerhetsanvisningar
+För att uppfylla UL 1459 måste telekommunikationsutrustning (telefon) som är 
+avsedd att anslutas elektriskt till ett telekommunikationsnät ha en driftspänning 
+till jord som inte överstiger 200 V topp, 300 V topp-till-topp eller 105 V rms, samt 
+installeras och användas i enlighet med National Electrical Code (NFPA 70).
+Följ alltid grundläggande säkerhetsföreskrifter när den bärbara datorns modem 
+används för att minska risken för brand, elektrisk stöt och personskada, såsom:
+• Använd INTE den bärbara datorn i närheten av vatten, t.ex. nära badkar, 
+tvättställ, diskhoar, tvättbaljor eller pooler, eller i blöta källare.
+• Använd INTE den bärbara datorn under åskväder. Blixten kan orsaka 
+elektriska stötar.
+• Använd INTE den bärbara datorn i närheten av gasläckor.
+För att uppfylla UL 1642 krävs primära (ej laddningsbara) och sekundära 
+(laddningsbara) litiumbatterier för användning som strömkällor i produkter. Dessa 
+batterier innehåller metalliskt litium, en litiumlegering eller en litiumjon och kan 
+bestå av en enda elektrokemisk cell eller två eller fler celler – kopplade i serie, 
+parallellt eller både och – som omvandlar kemisk energi till elektrisk energi genom 
+en irreversibel eller reversibel kemisk reaktion.
+• Släng INTE den bärbara datorns batteri i en brasa, det kan explodera. 
+Minska risken för personskador på grund av brand eller explosion 
+genom att följa lokala föreskrifter och eventuella speciella 
+bortskaffningsanvisningar.
+• Minska risken för personskador på grund av brand eller explosion genom 
+att inte använda strömadaptrar eller batterier från andra enheter. Använd 
+endast UL-certifierade strömadaptrar och batterier från tillverkaren eller 
+auktoriserade återförsäljare.
+E-manual för bärbar dator 91
+Strömsäkerhetskrav
+Till produkter med värden för elektrisk ström på upp till 6 A som väger mer än 3 kg 
+måste godkända nätsladdar användas som är större än eller lika med: H05VV-F, 
+3G, 0,75 mm2 eller H05VV-F, 2G, 0,75 mm2.
+Tv-meddelanden
+Meddelande till installatör av kabel-tv: Kabeldistributionssystemet ska vara jordat 
+enligt ANSI/NFPA 70, National Electrical Code (NEC), i synnerhet avsnitt 820.93, 
+Grounding of Outer Conductive Shield of a Coaxial Cable, och installationen ska 
+innefatta att förbinda koaxialkabelns skärmning till jord vid byggnadens ingång.
+Macrovision Corporations produktmeddelande
+Produkten innehåller upphovsrättsskyddsteknik som är skyddad genom 
+metodanspråk i vissa amerikanska patent och andra immateriella rättigheter 
+som tillhör Macrovision Corporation och andra rättighetsägare. Användning av 
+denna upphovsrättsskyddsteknik måste godkännas av Macrovision Corporation 
+och är endast avsedd för hemmabruk och andra begränsade typer av visning, 
+såvida inget annat godkänts av Macrovision Corporation. Omvänd kompilering och 
+isärtagning är förbjuden.
+Förhindra hörselskador
+Förebygg hörselskador genom att inte lyssna med hög volym under 
+långa perioder.
+Meddelande om beläggning
+VIKTIGT! För att ge elektrisk isolering och upprätthålla elsäkerheten har en 
+beläggning lagts på enheten utom där I/O-portarna sitter.
+92 E-manual för bärbar dator
+Nordiska försiktighetsuppmaningar avseende 
+litiumjonbatterier
+CAUTION! Danger of explosion if battery is incorrectly replaced. Replace only with 
+the same or equivalent type recommended by the manufacturer. Dispose of used 
+batteries according to the manufacturer’s instructions. (English)
+ATTENZIONE! Rischio di esplosione della batteria se sostituita in modo errato. 
+Sostituire la batteria con un una di tipo uguale o equivalente consigliata dalla 
+fabbrica. Non disperdere le batterie nell’ambiente. (Italiano)
+VORSICHT! Explosionsgefahr bei unsachgemäßen Austausch der Batterie. Ersatz 
+nur durch denselben oder einem vom Hersteller empfohlenem ähnlichen Typ. 
+Entsorgung gebrauchter Batterien nach Angaben des Herstellers. (Deutsch)
+ADVARSELI! Lithiumbatteri - Eksplosionsfare ved fejlagtig håndtering. Udskiftning 
+må kun ske med batteri af samme fabrikat og type. Levér det brugte batteri 
+tilbage til leverandøren. (Dansk)
+VARNING! Explosionsfara vid felaktigt batteribyte. Använd samma batterityp eller 
+en ekvivalent typ som rekommenderas av apparattillverkaren. Kassera använt 
+batteri enligt fabrikantens instruktion. (Svenska)
+VAROITUS! Paristo voi räjähtää, jos se on virheellisesti asennettu. Vaihda paristo 
+ainoastaan laitevalmistajan sousittelemaan tyyppiin. Hävitä käytetty paristo 
+valmistagan ohjeiden mukaisesti. (Suomi)
+ATTENTION! Danger d’explosion si la batterie n’est pas correctement remplacée. 
+Remplacer uniquement avec une batterie de type semblable ou équivalent, 
+recommandée par le fabricant. Jeter les batteries usagées conformément aux 
+instructions du fabricant. (Français)
+ADVARSEL! Eksplosjonsfare ved feilaktig skifte av batteri. Benytt samme 
+batteritype eller en tilsvarende type anbefalt av apparatfabrikanten. Brukte 
+batterier kasseres i henhold til fabrikantens instruksjoner. (Norsk)
+(日本語)
+ВНИМАНИЕ! При замене аккумулятора на аккумулятор иного типа возможно 
+его возгорание. Утилизируйте аккумулятор в соответствии с инструкциями 
+производителя. (Pyccкий)
+E-manual för bärbar dator 93
+Försäkran om överensstämmelse av produktens 
+miljöbestämmelse
+ASUS följer konceptet ekodesign när vi tar fram och tillverkar våra produkter. Vi 
+ser till att alla stadier i ASUS-produkternas livscykel överensstämmer med globala 
+miljöbestämmelser. Dessutom redovisar ASUS relevant information baserat på 
+styrningskrav.
+Se http://csr.asus.com/Compliance.htm för informationsgivning i enlighet med 
+styrningskrav som ASUS efterlever.
+EU REACH och artikel 33
+Uppfyller REACH (Registration, Evaluation, Authorization, and Restriction of 
+Chemicals/Registrering, Värdering, Behörighet och Begränsning av kemikalier) 
+reglerande regelverk, vi publicerar de kemiska substanserna i våra produkter på 
+ASUS REACH webbsida på http://csr.asus.com/english/REACH.htm.
+EU RoHS
+Denna produkt överensstämmer med EU:s RoHS-direktiv. För mer information, se 
+http://csr.asus.com/english/article.aspx?id=35.
+94 E-manual för bärbar dator
+ASUS återvinnings- och återtagningstjänster
+ASUS återvinnings- och återtagningsprogram bygger på vår strävan att 
+efterleva de högsta standarderna för att skydda miljön. Vi vill göra det möjligt 
+för våra kunder att återvinna våra produkter, batterier, övriga komponenter och 
+förpackningsmaterial på ett ansvarsfullt sätt.
+Detaljerad information om återvinning i olika regioner finns på 
+http://csr.asus.com/english/Takeback.htm.
+Direktiv om ekodesign
+Europeiska unionen tillkännagav ett ramverk för fastställande av krav på ekodesign 
+för energirelaterade produkter (2009/125/EG). Särskilda genomförandeåtgärder 
+syftar till att förbättra miljöprestandan för specifika produkter eller över flera 
+produkttyper. ASUS tillhandahåller produktinformation på CSR:s webbplats. 
+Ytterligare information finns på https://csr.asus.com/english/article.aspx?id=1555.
+E-manual för bärbar dator 95
+ENERGY STAR-kvalificerad produkt
+ENERGY STAR är ett gemensamt program från USA:s 
+miljöskyddsmyndighet och USA:s energidepartement som hjälper 
+oss att spara pengar och skydda miljön genom energieffektiva 
+produkter och praxis.
+Alla ASUS-produkter med ENERGY STAR-logotypen överensstämmer med ENERGY 
+STAR-standarden, och energisparfunktionerna är aktiverade som standard. 
+Skärmen ställs automatiskt in på viloläge efter 10 minuters inaktivitet. Datorn 
+ställs automatiskt in på viloläge efter 30 minuters inaktivitet. Du aktiverar datorn 
+genom att klicka med musen, trycka på valfri tangent på tangentbordet eller 
+trycka på strömbrytaren. 
+Mer information om energisparfunktioner och fördelar för miljön finns på 
+http://www.energystar.gov/powermanagement. Mer information om det 
+gemensamma ENERGY STAR-programmet finns på http://www.energystar.gov.
+OBS! Energy Star stöds INTE på FreeDOS- och Linux-baserade operativsystem.
+EPEAT registrerade produkter
+Offentliggörande av viktig miljöinformation för ASUS EPEAT (Electronic Product 
+Environmental Assessment Tool) registrerade produkter finns på 
+https://csr.asus.com/english/article.aspx?id=41. Mer information om EPEAT-
+programmet och inköpsvägledning finns på www.epeat.net.
+96 E-manual för bärbar dator
+Licens för BIOS-teckensnitt
+Copyright © 2023 The Android Open Source Project
+Med tillstånd enligt Apache License, Version 2.0 ("Licensen"). Du får inte använda 
+filen annat än i överensstämmelse med denna Licens. Du kan få en kopia av 
+Licensen på http://www.apache.org/licenses/LICENSE-2.0.
+Om det inte krävs enligt gällande lag eller skriftlig överenskommelse, distribueras 
+programvaran under Licensen "I BEFINTLIGT SKICK", UTAN GARANTIER ELLER 
+VILLKOR AV NÅGOT SLAG, vare sig uttryckliga eller underförstådda.
+Se Licens för det speciella språk som styr tillstånd och begränsningar under 
+Licensen.
+E-manual för bärbar dator 97
+Förenklad EU-försäkran om överensstämmelse
+ASUSTek Computer Inc. försäkrar härmed att den här enheten överensstämmer 
+med de väsentliga kraven och andra relevanta bestämmelser i direktiv 2014/53/
+EU. Den fullständiga EU-försäkran om överensstämmelse finns på 
+https://www.asus.com/support/.
+Wi-Fi som använder bandet 5 150–5 350 MHz ska begränsas till att användas 
+inomhus i följande länder:
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK(NI)
+a. Wi-Fi 6E-enheter med låg effekt inomhus (LPI): 
+Enheten är begränsad till användning inomhus enbart när den använder 5 
+945 till 6 425 MHz frekvensband i Belgien (BE), Bulgarien (BG), Cypern (CY), 
+Tjeckien (CZ), Estland (EE), Frankrike (FR), Island (IS), Irland (IE), Litauen (LT), 
+Tyskland (DE), Nederländerna (NL), Spanien (ES).
+b. Wi-Fi 6E-enheter med mycket låg effekt (VLP) (bärbara enheter): 
+Enheten får inte användas på obemannade luftfartyg (UAS) när den 
+använder 5 945 till 6 425 MHz frekvensband i Belgien (BE), Bulgarien (BG), 
+Cypern (CY), Tjeckien (CZ), Estland (EE), Frankrike (FR), Island (IS), Irland (IE), 
+Litauen (LT), Tyskland (DE), Nederländerna (NL), Spanien (ES).
+98 E-manual för bärbar dator
+Meddelande om Wi-Fi-nätverk
+VIKTIGT! Wi-Fi 6E-nätverkskort finns på vissa modeller. Anslutningsmöjligheterna för 
+Wi-Fi 6E-bandet kan variera beroende på reglering och certifiering i varje land/region.
+ Om manualen
+ Konventioner som används i denna manual
+ Ikoner
+ Typografi
+ Säkerhetsföreskrifter
+ Använda din bärbara dator
+ Sköt om din bärbara dator
+ Korrekt avyttring
+ Batterisäkerhetsinformation
+ Kapitel 1: 
+Konfiguration av maskinvaran 
+ Lär känna din bärbara dator
+ Framifrån
+ Vy nedtill
+ Vy till höger
+ Vy till vänster
+ Kapitel 2:
+ Använda din bärbara dator
+ Kom igång
+ Ladda din bärbara dator
+ Lyft för att öppna visningspanelen
+ Tryck på strömbrytaren
+ Använda pekplattan
+ Flytta pekaren
+ Använda tangentbordet
+ HotKeys
+ Funktionstangenter
+ Windows-tangenter
+ Kapitel 3:
+ Använda Windows
+ Starta datorn första gången
+ Menyn Start
+ Windows-appar
+ Använda Windows-appar
+ Anpassa Windows-appar
+ Task view (aktivitetsvyn)
+ Widgets (insticksprogram)
+ Funktionen Fäst
+ Dispositioner
+ Action Center (åtgärdscenter)
+ MyASUS Splendid
+ Ställa in OLED-skärmen
+ Ställa in mörkt läge
+ Stänga av skärmen när den inte används
+ Justera skärmens ljusstyrka
+ Dölj aktivitetsfältet automatiskt
+ Ställa in mörkt läge i Microsoft Office
+ Andra kortkommandon
+ Ansluta till trådlösa nätverk
+ Wi-Fi
+ Bluetooth
+ Airplane mode (flygplansläge)
+ Stänga av din bärbara dator
+ Sätta datorn i viloläge
+ Kapitel 4:
+ Självtest vid start (POST, Power-On Self-Test)
+ Självtest vid start (POST, Power-On Self-Test)
+ Använda självtestfunktionen för att öppna BIOS och felsöka
+ BIOS
+ Öppna BIOS
+ Återställa systemet
+ Använda ett återställningsalternativ
+ Tips och vanliga frågor 
+ Användbara tips för bärbara datorer
+ Vanliga frågor om maskinvara
+ Vanliga frågor om programvara
+ Bilagor
+ Federal Communications Commissions meddelande om interferens
+ Information om FCC RF-exponering
+ UL:s säkerhetsanvisningar
+ Strömsäkerhetskrav
+ Tv-meddelanden
+ Macrovision Corporations produktmeddelande
+ Förhindra hörselskador
+ Meddelande om beläggning
+ Nordiska försiktighetsuppmaningar avseende litiumjonbatterier
+ Försäkran om överensstämmelse av produktens miljöbestämmelse
+ EU REACH och artikel 33
+ EU RoHS
+ ASUS återvinnings- och återtagningstjänster
+ Direktiv om ekodesign
+ ENERGY STAR-kvalificerad produkt
+ EPEAT registrerade produkter
+ Licens för BIOS-teckensnitt
+ Förenklad EU-försäkran om överensstämmelse
+ Meddelande om Wi-Fi-nätverk
