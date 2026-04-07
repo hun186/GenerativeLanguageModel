@@ -1082,7 +1082,13 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     run_stage_pipeline(ctx, runtime, runner, max_rounds=max_rounds)
 
     # 聚合每個 stage 的輸出，保留「全切片視角」的存檔，便於 stage-by-stage 追蹤。
-    stage_merge_root = ops.join(ctx.prompt_dir, f"{main_name}__stage_merges")
+    stage_merge_base = (
+        getattr(ctx, "temp_txt_finished_dir", "")
+        or getattr(ctx, "llm_source_finished_dir", "")
+        or getattr(ctx, "llm_source_dir", "")
+        or ctx.prompt_dir
+    )
+    stage_merge_root = ops.join(stage_merge_base, "_stage_merges", main_name)
     MKDIR(stage_merge_root)
     for stage in stage_defs:
         merged_parts: list[str] = []
