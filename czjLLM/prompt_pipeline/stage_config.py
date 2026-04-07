@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import Any
 
 
@@ -27,7 +28,8 @@ def _normalize_stage_item(item: Any, index: int, defaults: dict[str, Any]) -> di
             item = {"name": k, "task": v}
 
     name = str(item.get("name", "")).strip() or f"stage_{index + 1}"
-    task = str(item.get("task", "")).strip()
+    raw_task = item.get("task", "")
+    task = raw_task if isinstance(raw_task, Mapping) else str(raw_task).strip()
     task_key = str(item.get("task_key", defaults.get("task_key", ""))).strip()
     if not task and not task_key and "name" in item:
         # 允許用 stage name 對映 taskSetting key（由 orchestrator 解析）

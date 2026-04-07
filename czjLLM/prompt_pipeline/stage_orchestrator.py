@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+from collections.abc import Mapping
 from typing import Callable
 
 from czjLLM.prompt_pipeline.stage_runtime import (
@@ -43,7 +44,7 @@ def resolve_pipeline_stages(ctx) -> list[StageDefinition]:
             raw_stages = getattr(ctx, "task", "")
     stages = normalize_stages(raw_stages)
     task_setting = getattr(ctx, "taskSetting", None)
-    if not isinstance(task_setting, dict):
+    if not isinstance(task_setting, Mapping):
         return stages
 
     resolved: list[StageDefinition] = []
@@ -53,14 +54,17 @@ def resolve_pipeline_stages(ctx) -> list[StageDefinition]:
 
         # 1) 明確指定 task_key
         if task_key:
-            task_text = str(task_setting.get(task_key, task_text)).strip()
+            mapped = task_setting.get(task_key, task_text)
+            task_text = mapped if isinstance(mapped, Mapping) else str(mapped).strip()
         # 2) task 為 @taskSetting:key 形式
-        elif task_text.startswith("@taskSetting:"):
+        elif isinstance(task_text, str) and task_text.startswith("@taskSetting:"):
             key = task_text.split(":", 1)[1].strip()
-            task_text = str(task_setting.get(key, "")).strip()
+            mapped = task_setting.get(key, "")
+            task_text = mapped if isinstance(mapped, Mapping) else str(mapped).strip()
         # 3) 若 task 留空，預設用 stage.name 對映 taskSetting
         elif not task_text:
-            task_text = str(task_setting.get(stage.name, "")).strip()
+            mapped = task_setting.get(stage.name, "")
+            task_text = mapped if isinstance(mapped, Mapping) else str(mapped).strip()
 
         if not task_text:
             raise ValueError(f"Stage '{stage.name}' 無法從 taskSetting 解析 task")
