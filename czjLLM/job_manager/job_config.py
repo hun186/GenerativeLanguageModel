@@ -535,17 +535,7 @@ def getTextClass(exclusive = False):
 def showTemplate(task=None):
     assert task in taskSetting,f"{task}不在taskSetting鍵值選項中！"
     print(f"{Fore.LIGHTYELLOW_EX}將執行任務{task}，template為{Fore.RESET}")
-    source = inspect.getsource(taskSetting[task]["template"])
-    varDic = globals().copy()
-    for var in varDic.keys():
-        if "_Rule" in var:
-            source = source.replace("{"+var+"}",varDic[var])
-    if task in ["CLASS EXT","CLASS Diff EXT"]:
-        global textClass
-        source = source.replace("{textClass}", f"{Fore.LIGHTGREEN_EX}{textClass}{Fore.RESET}")
-        if task == "CLASS Diff EXT":
-            global exclusiveTextClass
-            source = source.replace("{exclusiveTextClass}", f"{Fore.LIGHTYELLOW_EX}{exclusiveTextClass}{Fore.RESET}")
+    print(task_template_preview(task))
     if "Translation" in task:
         if os.path.isfile("GenerativeLanguageModel/czjLLM/pre_trans_ak.py"):
             from GenerativeLanguageModel.czjLLM.pre_trans_ak import pre_trans
@@ -554,5 +544,37 @@ def showTemplate(task=None):
             DETAIL_EXT_TRANS_Rule += f"特殊翻譯對照表字典如下 {pre_trans}"
             print(f"已載入特殊翻譯對照表字典，DETAIL_EXT_TRANS_Rule為{DETAIL_EXT_TRANS_Rule}")
             countdown_pause(15)
-    
-    print(source.strip().split('"template":')[1].strip())
+
+
+def task_template_preview(task_or_spec) -> str:
+    """回傳任務 template 可讀字串，支援 task key 或 task dict。"""
+    task_name = ""
+    spec = None
+    if isinstance(task_or_spec, str):
+        task_name = task_or_spec
+        spec = taskSetting.get(task_or_spec)
+    elif isinstance(task_or_spec, dict):
+        spec = task_or_spec
+        task_name = str(spec.get("CT_name", "")).strip()
+    if not isinstance(spec, dict):
+        return str(task_or_spec)
+
+    tpl = spec.get("template")
+    if not callable(tpl):
+        return str(spec)
+
+    source = inspect.getsource(tpl)
+    varDic = globals().copy()
+    for var in varDic.keys():
+        if "_Rule" in var:
+            source = source.replace("{"+var+"}", varDic[var])
+    if task_name in ["CLASS EXT", "CLASS Diff EXT"]:
+        global textClass
+        source = source.replace("{textClass}", f"{Fore.LIGHTGREEN_EX}{textClass}{Fore.RESET}")
+        if task_name == "CLASS Diff EXT":
+            global exclusiveTextClass
+            source = source.replace("{exclusiveTextClass}", f"{Fore.LIGHTYELLOW_EX}{exclusiveTextClass}{Fore.RESET}")
+    try:
+        return source.strip().split('"template":')[1].strip()
+    except Exception:
+        return source.strip()

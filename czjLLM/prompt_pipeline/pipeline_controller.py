@@ -37,7 +37,7 @@ from czjLLM.prompt_pipeline.stage_orchestrator import (
     update_chunk_stage_runtime as _update_chunk_stage_runtime,
 )
 from czjLLM.utilities.atomic_io import atomic_write_json, robust_json_read
-from czjLLM.job_manager.job_config import LLMJobConfig
+from czjLLM.job_manager.job_config import LLMJobConfig, task_template_preview
 #from czjLLM.job_manager.end_point_manager import get_available_end_points
 from czjLLM.job_manager.end_point_manager import select_model
 #from job_manager.win_gui import try_start_gui  # 為避免循環，可移到檔頭
@@ -1032,9 +1032,17 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     stage_defs = resolve_pipeline_stages(ctx)
     stage_map = {s.name: s for s in stage_defs}
     shown_stage_tasks: set[str] = set()
+    total_segments = 0
+    for item in prompt_items:
+        total_segments += len([
+            fp for fp in ops.list_paths(ops.join(item, "TODO"))
+            if str(fp).lower().endswith(".txt")
+        ])
+
     print("=" * 50)
     print("🔁 多階段流程啟動：")
-    print(f"  - chunks: {len(prompt_items)}")
+    print(f"  - input_units: {len(prompt_items)}")
+    print(f"  - source_slices(total txt): {total_segments}")
     print(f"  - stages: {[s.name for s in stage_defs]}")
     print("=" * 50)
 
@@ -1076,9 +1084,9 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
 
     def runner(job, _ctx):
         if job.stage_name not in shown_stage_tasks:
-            print(f"[stage:{job.stage_name}] 📝 使用任務：{job.stage_task}")
+            print(f"[stage:{job.stage_name}] 📝 使用任務：\n{task_template_preview(job.stage_task)}")
             shown_stage_tasks.add(job.stage_name)
-        print(f"[stage:{job.stage_name}] ▶ 開始處理文章分段(segment): {Path(job.chunk_id).name}")
+        print(f"[stage:{job.stage_name}] ▶ 開始處理輸入單位(input_unit): {Path(job.chunk_id).name}")
         _prepare_todo_for_stage(job.chunk_id, job.stage_name)
         _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=True, task_override=job.stage_task)
         _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=False, task_override=job.stage_task)
@@ -1087,7 +1095,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         todo_files = ops.list_paths(ops.join(job.chunk_id, "TODO"))
         if todo_files:
             return {"ok": False, "error": f"todo_remaining:{len(todo_files)}"}
-        print(f"[stage:{job.stage_name}] ✅ 完成文章分段(segment): {Path(job.chunk_id).name}")
+        print(f"[stage:{job.stage_name}] ✅ 完成輸入單位(input_unit): {Path(job.chunk_id).name}")
         return {"ok": True}
 
     run_stage_pipeline(ctx, runtime, runner, max_rounds=max_rounds)
