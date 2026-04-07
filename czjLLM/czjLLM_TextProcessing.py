@@ -96,6 +96,17 @@ if __name__ == '__main__':
         merge_slices=get_param("merge_slices"),
         task_name=get_param("task")
     )
+    # 多階段設定（可直接放在主 YAML 的 stages，或獨立 stage_config_file）
+    stage_cfg_inline = get_param("stages")
+    stage_cfg_file = get_param("stage_config_file")
+    if stage_cfg_file:
+        stage_cfg = load_config_from_file(PGMSubDir=PGMSubDir, config_path=stage_cfg_file)
+        if isinstance(stage_cfg, dict):
+            ctx.stages = stage_cfg.get("stages", stage_cfg)
+        elif isinstance(stage_cfg, list):
+            ctx.stages = stage_cfg
+    elif stage_cfg_inline:
+        ctx.stages = stage_cfg_inline
     #print("ctx in main",ctx)
     # txt 模式：處理所有 .txt
     if mode == "txt":
