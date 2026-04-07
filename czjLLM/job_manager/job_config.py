@@ -122,6 +122,7 @@ class LLMJobConfig:
         self.load_low_watermark = 8
         self.load_high_watermark = 20
         self.per_round_limit = 128
+        self.resume_policy = "resume"
     def __repr__(self):
         return "no show temp"
     def __repr__pending(self):

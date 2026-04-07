@@ -24,6 +24,7 @@ import faulthandler
 
 #from czjLLM.prompt_pipeline.result_handler import PromptResultHandler
 from czjLLM.prompt_pipeline.prompt_generator import generate_prompt
+from czjLLM.taskConfig import taskSetting
 from czjLLM.prompt_pipeline.llm_caller import CallLLMAPI
 from czjLLM.prompt_pipeline.debug_snapshot import build_debug_snapshot
 from czjLLM.prompt_pipeline.stage_runtime import (
@@ -991,11 +992,20 @@ def _collect_prompt_items(prompt_dir: str, main_name: str, ops: MergeOps) -> lis
     """
     prompt_items: list[str] = []
     for fn in ops.list_paths(prompt_dir):
-        parent_dir = Path(ops.get_parent(fn))
-        if parent_dir.name in {"TODO", "Success"}:
-            item_dir = str(parent_dir.parent)
-            if main_name in item_dir:
-                prompt_items.append(item_dir)
+        p = Path(fn)
+        parts = list(p.parts)
+        if "TODO" in parts:
+            idx = parts.index("TODO")
+            if idx > 0:
+                item_dir = str(Path(*parts[:idx]))
+                if main_name in item_dir:
+                    prompt_items.append(item_dir)
+        elif "Success" in parts:
+            idx = parts.index("Success")
+            if idx > 0:
+                item_dir = str(Path(*parts[:idx]))
+                if main_name in item_dir:
+                    prompt_items.append(item_dir)
     return sorted(set(prompt_items))
 
 
@@ -1036,6 +1046,141 @@ def _call_llm_with_task_override(ops: MergeOps, items: list[str], ctx, allow_to_
             ctx.task = old_task
 
 
+def _build_stage_prompt_text(stage_task, content: str, ctx) -> str:
+    """
+    將 stage task 套用到文字內容，產生真正要放入 TODO 的 prompt 文字。
+    """
+    if isinstance(stage_task, Mapping):
+        tpl = stage_task.get("template")
+        if callable(tpl):
+            try:
+                return tpl(content=content)
+            except TypeError:
+                kwargs = {"content": content}
+                if "MainFileName" in str(tpl):
+                    kwargs["MainFileName"] = getattr(ctx, "main_file_name", "")
+                if "keyConsiderations" in str(tpl):
+                    kwargs["keyConsiderations"] = getattr(ctx, "keyConsiderations", "")
+                return tpl(**kwargs)
+        return content
+
+    task_name = str(stage_task or "").strip()
+    if task_name and task_name in taskSetting:
+        return generate_prompt(
+            content=content,
+            keyConsiderations=getattr(ctx, "keyConsiderations", ""),
+            MainFileName=getattr(ctx, "main_file_name", ""),
+            task=task_name,
+            think_mode=getattr(ctx, "think_mode", True),
+        )
+    return content
+
+
+def _count_txt_files(dir_path: str, ops: MergeOps) -> int:
+    if not os.path.isdir(dir_path):
+        return 0
+    return len([
+        fp for fp in ops.list_paths(dir_path)
+        if str(fp).lower().endswith(".txt") and os.path.isfile(fp)
+    ])
+
+
+def _clear_txt_files(dir_path: str, ops: MergeOps):
+    if not os.path.isdir(dir_path):
+        return
+    for fp in ops.list_paths(dir_path):
+        if str(fp).lower().endswith(".txt") and os.path.isfile(fp):
+            os.remove(fp)
+
+
+def _sanitize_stage_name(stage_name: str) -> str:
+    return re.sub(r"[^0-9A-Za-z._-]+", "_", str(stage_name)).strip("_") or "stage"
+
+
+def _stage_todo_dir(item: str, stage_name: str) -> str:
+    return os.path.join(item, "TODO", _sanitize_stage_name(stage_name))
+
+
+def _sync_stage_todo_to_root(item: str, stage_name: str, ops: MergeOps):
+    root_todo = os.path.join(item, "TODO")
+    stage_dir = _stage_todo_dir(item, stage_name)
+    if os.path.isdir(root_todo):
+        for fp in Path(root_todo).glob("*.txt"):
+            if fp.is_file():
+                fp.unlink()
+    if not os.path.isdir(stage_dir):
+        return
+    for src_fp in sorted(ops.list_paths(stage_dir)):
+        if not src_fp.lower().endswith(".txt") or not os.path.isfile(src_fp):
+            continue
+        dst_fp = os.path.join(root_todo, os.path.basename(src_fp))
+        shutil.copy2(src_fp, dst_fp)
+
+
+def _append_resume_log(ctx, message: str):
+    prompt_dir = getattr(ctx, "prompt_dir", "") if ctx is not None else ""
+    if not prompt_dir:
+        return
+    log_dir = os.path.join(prompt_dir, "_resume_logs")
+    os.makedirs(log_dir, exist_ok=True)
+    log_fn = os.path.join(log_dir, "resume_events.log")
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(log_fn, "a", encoding="utf-8") as f:
+        f.write(f"[{now}] {message}\n")
+
+
+def _print_resume_plan(policy: str, prompt_items: list[str], ops: MergeOps, ctx=None):
+    print("=" * 50)
+    print(f"♻️ 恢復策略：{policy}")
+    _append_resume_log(ctx, f"resume_policy={policy}, items={len(prompt_items)}")
+    for item in prompt_items:
+        todo_n = _count_txt_files(ops.join(item, "TODO"), ops)
+        succ_n = _count_txt_files(ops.join(item, "Success"), ops)
+        running_n = _count_txt_files(ops.join(item, "RUNNING"), ops)
+        print(f"  - {Path(item).name}: TODO={todo_n}, Success={succ_n}, RUNNING={running_n}")
+        _append_resume_log(
+            ctx,
+            f"item={Path(item).name} TODO={todo_n} Success={succ_n} RUNNING={running_n}",
+        )
+    print("=" * 50)
+
+
+def _apply_resume_policy_multistage(policy: str, prompt_items: list[str], ops: MergeOps, ctx=None):
+    """
+    resume:
+      - 回收 RUNNING 到 TODO，保留 Success
+    smart_reset:
+      - resume 行為 + 清除 _stage_outputs 快照（避免讀到舊快照）
+    full_restart:
+      - smart_reset 行為 + 清除 Success（強制所有切片重跑）
+    """
+    recover_running_to_todo(prompt_items)
+    _append_resume_log(ctx, "action=recover_running_to_todo(multistage)")
+    for item in prompt_items:
+        if policy in {"smart_reset", "full_restart"}:
+            stage_outputs = ops.join(item, "_stage_outputs")
+            if os.path.isdir(stage_outputs):
+                shutil.rmtree(stage_outputs, ignore_errors=True)
+                _append_resume_log(ctx, f"action=clear stage_outputs item={Path(item).name}")
+        if policy == "full_restart":
+            _clear_txt_files(ops.join(item, "Success"), ops)
+            _append_resume_log(ctx, f"action=clear Success item={Path(item).name}")
+        if policy in {"smart_reset", "full_restart"}:
+            for p in list(Path(item, "TODO").glob("*")):
+                if p.is_dir():
+                    shutil.rmtree(p, ignore_errors=True)
+                    _append_resume_log(ctx, f"action=clear stage_todo_dir item={Path(item).name} dir={p.name}")
+
+
+def _apply_resume_policy_single_stage(policy: str, prompt_items: list[str], ops: MergeOps, ctx=None):
+    recover_running_to_todo(prompt_items)
+    _append_resume_log(ctx, "action=recover_running_to_todo(single)")
+    if policy == "full_restart":
+        for item in prompt_items:
+            _clear_txt_files(ops.join(item, "Success"), ops)
+            _append_resume_log(ctx, f"action=clear Success item={Path(item).name}")
+
+
 def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | None = None, max_rounds: int = 20) -> str:
     """
     多階段版本：
@@ -1048,6 +1193,12 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     prompt_items = _collect_prompt_items(ctx.prompt_dir, main_name, ops)
     if not prompt_items:
         return ""
+    resume_policy = str(getattr(ctx, "resume_policy", "resume") or "resume").strip().lower()
+    if resume_policy not in {"resume", "smart_reset", "full_restart"}:
+        print(f"⚠️ 未知 resume_policy={resume_policy}，將使用 resume")
+        resume_policy = "resume"
+    _print_resume_plan(resume_policy, prompt_items, ops, ctx=ctx)
+    _apply_resume_policy_multistage(resume_policy, prompt_items, ops, ctx=ctx)
 
     runtime = init_chunk_stage_runtime(ctx, prompt_items)
     stage_defs = resolve_pipeline_stages(ctx)
@@ -1080,10 +1231,20 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     for item in prompt_items:
         _copy_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
 
-    def _prepare_todo_for_stage(item: str, stage_name: str):
+    def _prepare_todo_for_stage(item: str, stage_name: str, stage_task):
         stage_def = stage_map[stage_name]
-        todo_dir = ops.join(item, "TODO")
-        if ops.list_paths(todo_dir):
+        todo_dir = _stage_todo_dir(item, stage_name)
+        root_todo_dir = ops.join(item, "TODO")
+        if (
+            stage_name == stage_defs[0].name
+            and stage_def.input_from == "original"
+            and _count_txt_files(root_todo_dir, ops) > 0
+        ):
+            MKDIR(todo_dir)
+            _clear_txt_files(todo_dir, ops)
+            for fp in sorted(ops.list_paths(root_todo_dir)):
+                if fp.lower().endswith(".txt") and os.path.isfile(fp):
+                    shutil.copy2(fp, os.path.join(todo_dir, os.path.basename(fp)))
             return  # 已有 TODO，不覆蓋
 
         if stage_def.input_from == "original":
@@ -1101,7 +1262,15 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         for fp in ops.list_paths(todo_dir):
             if os.path.isfile(fp):
                 os.remove(fp)
-        _copy_txts(src_dir, todo_dir)
+        for src_fp in sorted(ops.list_paths(src_dir)):
+            if not src_fp.lower().endswith(".txt") or not os.path.isfile(src_fp):
+                continue
+            with open(src_fp, "r", encoding="utf-8") as f:
+                source_text = f.read()
+            prompt_text = _build_stage_prompt_text(stage_task, source_text, ctx)
+            dst_fp = os.path.join(todo_dir, os.path.basename(src_fp))
+            with open(dst_fp, "w", encoding="utf-8") as f:
+                f.write(prompt_text)
 
     def _stage_task_debug_text(stage_task) -> str:
         """優先顯示 template 原文；若無法取得則回退為精簡規格。"""
@@ -1122,7 +1291,8 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             print(f"[stage:{job.stage_name}] 📝 使用任務：\n{_stage_task_debug_text(job.stage_task)}")
             shown_stage_tasks.add(job.stage_name)
         print(f"[stage:{job.stage_name}] ▶ 開始處理輸入單位(input_unit): {Path(job.chunk_id).name}")
-        _prepare_todo_for_stage(job.chunk_id, job.stage_name)
+        _prepare_todo_for_stage(job.chunk_id, job.stage_name, job.stage_task)
+        _sync_stage_todo_to_root(job.chunk_id, job.stage_name, ops)
         _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=True, task_override=job.stage_task)
         _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=False, task_override=job.stage_task)
         # 保存本階段 Success 作為後續 stage 可引用輸入
@@ -1203,6 +1373,12 @@ def process_prompt_and_merge(ctx, file_path: str, ops: MergeOps | None = None) -
     if not prompt_items:
         # 沒東西可處理：建議回傳空字串或擲例外，依你原本語意
         return ""
+    resume_policy = str(getattr(ctx, "resume_policy", "resume") or "resume").strip().lower()
+    if resume_policy not in {"resume", "smart_reset", "full_restart"}:
+        print(f"⚠️ 未知 resume_policy={resume_policy}，將使用 resume")
+        resume_policy = "resume"
+    _print_resume_plan(resume_policy, prompt_items, ops, ctx=ctx)
+    _apply_resume_policy_single_stage(resume_policy, prompt_items, ops, ctx=ctx)
 
     # 2) 呼叫 LLM（兩輪：允許重試 / 不允許重試）
     ops.call_llm(prompt_items, ctx, allow_to_retry=True)
