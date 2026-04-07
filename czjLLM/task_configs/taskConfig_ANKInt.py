@@ -684,7 +684,7 @@ taskSetting_ANKInt = {
         "CT_name":"翻譯為繁體中文",
         "InputCutLen":2500, #sample:(Input EN 2703-> TWZH 4101)
         "template":lambda content:(
-            "請使用臺灣習慣用語翻譯下列輸入任務文本為繁體中文，回應不要有LLM回答的前置提示詞或額外說明。\n\n"
+            "請使用臺灣習慣用語翻譯下列輸入任務文本為繁體中文，回應不要有LLM回答的前置提示詞或額外說明，只要回答翻譯結果即可。\n\n"
             "☆下列為輸入任務文本：\n"
             f"{content}"
             )
