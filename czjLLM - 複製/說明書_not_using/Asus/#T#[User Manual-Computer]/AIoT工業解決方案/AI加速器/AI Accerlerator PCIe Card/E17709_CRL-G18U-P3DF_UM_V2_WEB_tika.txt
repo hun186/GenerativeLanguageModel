@@ -1,0 +1,452 @@
+
+AI Accelerator Card
+CRL-G18U-P3DF/CRL-G116U-P3DF
+Hardware User Manual
+COPYRIGHT INFORMATION
+No part of this manual, including the products and software described in it, may be reproduced, 
+transmitted, transcribed, stored in a retrieval system, or translated into any language in any form or by 
+any means, except documentation kept by the purchaser for backup purposes, without the express 
+written permission of ASUSTeK COMPUTER INC. (“ASUS”).
+ASUS PROVIDES THIS MANUAL “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS 
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OR CONDITIONS OF 
+MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL ASUS, ITS 
+DIRECTORS, OFFICERS, EMPLOYEES OR AGENTS BE LIABLE FOR ANY INDIRECT, SPECIAL, INCIDENTAL, 
+OR CONSEQUENTIAL DAMAGES (INCLUDING DAMAGES FOR LOSS OF PROFITS, LOSS OF BUSINESS, 
+LOSS OF USE OR DATA, INTERRUPTION OF BUSINESS AND THE LIKE), EVEN IF ASUS HAS BEEN ADVISED 
+OF THE POSSIBILITY OF SUCH DAMAGES ARISING FROM ANY DEFECT OR ERROR IN THIS MANUAL OR 
+PRODUCT.
+Products and corporate names appearing in this manual may or may not be registered trademarks or 
+copyrights of their respective companies, and are used only for identification or explanation and to 
+the owners’ benefit, without intent to infringe.
+SPECIFICATIONS AND INFORMATION CONTAINED IN THIS MANUAL ARE FURNISHED FOR 
+INFORMATIONAL USE ONLY, AND ARE SUBJECT TO CHANGE AT ANY TIME WITHOUT NOTICE, AND 
+SHOULD NOT BE CONSTRUED AS A COMMITMENT BY ASUS. ASUS ASSUMES NO RESPONSIBILITY OR 
+LIABILITY FOR ANY ERRORS OR INACCURACIES THAT MAY APPEAR IN THIS MANUAL, INCLUDING THE 
+PRODUCTS AND SOFTWARE DESCRIBED IN IT.
+Copyright © 2020 ASUSTeK COMPUTER INC. All Rights Reserved.
+LIMITATION OF LIABILITY
+Circumstances may arise where because of a default on ASUS’ part or other liability, you are entitled to 
+recover damages from ASUS. In each such instance, regardless of the basis on which you are entitled 
+to claim damages from ASUS, ASUS is liable for no more than damages for bodily injury (including 
+death) and damage to real property and tangible personal property; or any other actual and direct 
+damages resulted from omission or failure of performing legal duties under this Warranty Statement, 
+up to the listed contract price of each product.
+ASUS will only be responsible for or indemnify you for loss, damages or claims based in contract, tort 
+or infringement under this Warranty Statement.
+This limit also applies to ASUS’ suppliers and its reseller. It is the maximum for which ASUS, its 
+suppliers, and your reseller are collectively responsible.
+UNDER NO CIRCUMSTANCES IS ASUS LIABLE FOR ANY OF THE FOLLOWING: (1) THIRD-PARTY 
+CLAIMS AGAINST YOU FOR DAMAGES; (2) LOSS OF, OR DAMAGE TO, YOUR RECORDS OR DATA; OR (3) 
+SPECIAL, INCIDENTAL, OR INDIRECT DAMAGES OR FOR ANY ECONOMIC CONSEQUENTIAL DAMAGES 
+(INCLUDING LOST PROFITS OR SAVINGS), EVEN IF ASUS, ITS SUPPLIERS OR YOUR RESELLER IS 
+INFORMED OF THEIR POSSIBILITY.
+SERVICE AND SUPPORT
+Visit our multi-language web site at https://www.asus.com/support/
+Revised Edition V2
+December 2020
+E17709
+AI accelerator card 3
+Contents
+Conventions used in this manual ......................................................................................... 4
+Typography .................................................................................................................................. 4
+Where to find more information .......................................................................................... 4
+ASUS Websites ............................................................................................................................ 4
+Optional Documentation ........................................................................................................ 4
+Chapter 1: Specifications Summary
+1.1 Introduction ..............................................................................................................6
+1.2 Features ......................................................................................................................6
+1.3 Product specification .............................................................................................7
+1.4 Package contents ....................................................................................................7
+1.5 Card layout.................................................................................................................8
+1.6 Dimensions (mm) ....................................................................................................9
+1.7 Block diagram ...........................................................................................................10
+Chapter 2: Hardware Installation
+2.1 Before you proceed ................................................................................................12
+2.2 Card installation .......................................................................................................13
+Appendix
+Safety information .............................................................................................................16
+Electrical safety ........................................................................................................................... 16
+Operation safety ......................................................................................................................... 16
+Care during use ........................................................................................................................... 17
+Notices ...................................................................................................................................18
+ASUS contact information ..............................................................................................23
+4 AI accelerator card
+Conventions used in this manual
+To highlight key information in this manual, some text are presented as 
+follows:
+IMPORTANT! This message contains vital information that must be 
+followed to complete a task. 
+NOTE: This message contains additional information and tips that can 
+help complete tasks.
+WARNING! This message contains important information that must be 
+followed to keep you safe while performing certain tasks and prevent 
+damage to your Single Board Computer's data and components. 
+Typography
+Bold text Indicates a menu or an item to select.
+Italic This indicates sections that you can refer to in this manual. 
+Where to find more information
+Refer to the following sources for additional information and for product 
+and software updates.
+ASUS Websites
+The ASUS websites worldwide (https://www.asus.com/) provide updated 
+information on ASUS hardware and software products. The ASUS websites 
+are listed in the ASUS Contact Information on the inside front cover of this 
+installation guide.
+Optional Documentation
+Your product package may include optional documentation, such as 
+warranty flyers, that may have been added by your dealer. These documents 
+are not part of the standard package.
+1
+Product Overview
+6 AI accelerator card
+1.1 Introduction
+ASUS AI accelerator card is a full height, half length, PCIe Gen3 AI 
+acceleration card based on Google Coral Edge TPU processor. It allows 
+users to build intelligent devices that are efficient, private and ideal for 
+edge AI inference. With twin Axial-tech turbofans which propel cool air 
+over a Copper heatsink in order to dispatch the most heat from the cores, 
+the optimized thermal solution guarantees the best performance at high 
+workload.
+The heart of ASUS Edge AI accelerators is the Edge TPU coprocessor. 
+It’s a small-yet-mighty, low-power ASIC (Application-specific integrated 
+circuit) that provides high performance neural net inferencing. Edge TPU is 
+optimized for TensorFlow Lite models, which means common ML models 
+can be easily compiled and run on the ASUS AI accelerator card.
+1.2 Features
+CRL-G18U-P3DF/CRL-G116U-P3DF features are listed below
+• Eight Google Coral Edge TPU
+• Interface: PCIe Gen. 3 x16
+• Dual Active Turbofan
+• High performance: INT8, 32TOPS/64TOPS
+• Supports TensorFlow Lite framework for on-device deep learning 
+inference
+• Easy IoT integration between edge AI solution and cloud TPU
+AI accelerator card 7
+1.3 Product specification
+CRL-G18U-P3DF CRL-G116U-P3DF
+Main Chip Core Google® Coral Edge TPU Processor
+PCI Express interface PCI Express 3.0 x16
+Software
+Supported Framework TensorFlow lite
+Precision INT8
+Performance 32 TOPS 64 TOPS
+Thermal 
+Solution FAN design Active Fan
+Power
+Power Connector 1 x 6-pin 12V External Power
+Power Consumption 36 W 52 W
+Operating 
+System Linux
+Ubuntu 18.04, Debian 10
+* For latest OS support list, please check the Software 
+User Manual at https://iot.asus.com/products/AI-
+accelerator/AI-Accelerator-PCIe-Card/
+Environment 
+Operating Temperature 0~55°C
+Non-Operating 
+Temperature -40~85°C
+Relative 
+Humidity 0%~85%
+Dimensions
+Width 42.1 mm
+Height 126.3 mm
+Depth 186.3 mm
+Weight 516 g 530 g
+1.4 Package contents
+Check your package for the following items:
+• 1 x AI Accelerator Card
+• 1 x Hardware User Manual
+NOTE: If any of the above items is damaged or missing, please contact 
+your distributor or sales representative immediately.
+8 AI accelerator card
+1.5 Card layout
+Layout contents
+1. Golden fingers
+2. 6-pin Power connector
+AI accelerator card 9
+1.6 Dimensions (mm)
+186.5
+12
+6.
+5
+42.2
+Top
+FrontLeft
+Right
+Bottom
+Back
+10 AI accelerator card
+1.7 Block diagram
+2
+Hardware Installation
+12 AI accelerator card
+2.1 Before you proceed
+Take note of the following precautions before you install the AI accelerator 
+card or change any settings.
+WARNING!
+• Unplug the power cord from the wall socket before touching any 
+component.
+• Before handling components, use a grounded wrist strap or touch 
+a safely grounded object or a metal object, such as the power 
+supply case, to avoid damaging them due to static electricity.
+• Hold components by the edges to avoid touching the ICs on them.
+• Whenever you uninstall any component, place it on a grounded 
+antistatic pad or in the bag that came with the component.
+• Before you install or remove any component, ensure that the ATX 
+power supply is switched off or the power cord is detached from 
+the power supply. Failure to do so may cause severe damage to the 
+motherboard, peripherals, or components.
+• We do not recommend removing or changing the M.2, doing so 
+may cause damage to your AI accelerator card or M.2.
+AI accelerator card 13
+2.2 Card installation
+1. Power off your system and unplug the power cables connected to your 
+system.
+2. Remove your system’s chassis cover and locate the PCI Express slot.
+3. Prepare the AI accelerator card and peel off the protector in the 
+highlighted area.
+Protector
+14 AI accelerator card
+4. Insert the AI accelerator card into the PCIe slot, then push down until it 
+is firmly in place.
+5. Secure the card into the slot with a screw.
+6. Connect a power cable to the AI accelerator card.
+NOTE: There is an auxiliary power connector which supports the power 
+to this AI acceleration card, connect the appropriate power plug from 
+the system power supply to the AI acceleration card’s auxiliary power 
+connector.
+7. Replace your system’s chassis cover.
+8. Reconnect all power cables
+Appendix
+16 AI accelerator card
+Safety information
+Your AI Accelerator card is designed and tested to meet the latest standards 
+of safety for information technology equipment. However, to ensure your 
+safety, it is important that you read the following safety instructions.
+Electrical safety
+• When adding or removing devices to or from the system, ensure that 
+the power cables for the devices are unplugged before the signal cables 
+are connected. If possible, disconnect all power cables from the existing 
+system before you add a device.
+• Make sure that your power supply is set to the correct voltage in your 
+area. If you are not sure about the voltage of the electrical outlet you 
+are using, contact your local power company.
+• If the power supply is broken, do not try to fix it by yourself. Contact a 
+qualified service technician or your retailer.
+Operation safety
+• Before installing devices on your motherboard, carefully read all the 
+manuals that came with the package.
+• Before using the product, make sure all cables are correctly connected 
+and the power cables are not damaged. If you detect any damage, 
+contact your dealer immediately.
+• To avoid short circuits, keep paper clips, screws, and staples away from 
+connectors, slots, sockets and circuitry.
+• Avoid dust, humidity, and extreme temperature. Do not place the 
+product in any area where it may be exposed to moisture.
+• Place the product on a stable surface.
+• If you encounter technical problems with the product, contact a 
+qualified service technician or your retailer.
+AI accelerator card 17
+Care during use
+• Do not walk on the power cord or allow anything to rest on it.
+• Do not spill water or any other liquids on your system.
+• When the system is turned off, a small amount of electrical current still 
+flows. Always unplug the power cord from the power outlets before 
+cleaning the system.
+• If you encounter the following technical problems with the product, 
+unplug the power cord and contact a qualified service technician or 
+your retailer.
+ – The power cord or plug is damaged.
+ – Liquid has been spilled into the system.
+ – The system does not function properly even if you follow 
+ the operating instructions.
+ – The system was dropped or the cabinet is damaged.
+ – The system performance changes.
+NO DISASSEMBLY
+The warranty does not apply to the products 
+that have been disassembled by users
+DO NOT throw the Single Board Computer in municipal waste. This 
+product has been designed to enable proper reuse of parts and 
+recycling. This symbol of the crossed out wheeled bin indicates 
+that the product (electrical, electronic equipment, and mercury-
+containing button cell battery) should not be placed in municipal 
+waste. Check local technical support services for product recycling.
+Lithium-Ion Battery Warning
+CAUTION: Danger of explosion if battery is incorrectly replaced. 
+Replace only with the same or equivalent type recommended 
+by the manufacturer. Dispose of used batteries according to the 
+manufacturer’s instructions.
+18 AI accelerator card
+Notices
+FCC Compliance Information
+Responsible Party: Asus Computer International
+Address: 48720 Kato Rd., Fremont, CA 94538, USA
+Phone / Fax No: (510)739-3777 / (510)608-4555
+This device complies with part 15 of the FCC Rules. Operation is subject 
+to the following two conditions: (1) This device may not cause harmful 
+interference, and (2) this device must accept any interference received, 
+including interference that may cause undesired operation.
+This equipment has been tested and found to comply with the limits for a 
+Class B digital device, pursuant to part 15 of the FCC Rules. These limits are 
+designed to provide reasonable protection against harmful interference in 
+a residential installation. This equipment generates, uses and can radiate 
+radio frequency energy and, if not installed and used in accordance with 
+the instructions, may cause harmful interference to radio communications. 
+However, there is no guarantee that interference will not occur in a 
+particular installation. If this equipment does cause harmful interference 
+to radio or television reception, which can be determined by turning 
+the equipment off and on, the user is encouraged to try to correct the 
+interference by one or more of the following measures:
+ - Reorient or relocate the receiving antenna.
+ - Increase the separation between the equipment and receiver.
+ - Connect the equipment into an outlet on a circuit different from that to 
+which the receiver is connected.
+ - Consult the dealer or an experienced radio/TV technician for help.
+AI accelerator card 19
+Compliance Statement of Innovation, Science and 
+Economic Development Canada (ISED)
+This device complies with Innovation, Science and Economic Development 
+Canada licence exempt RSS standard(s). Operation is subject to the 
+following two conditions: (1) this device may not cause interference, and (2) 
+this device must accept any interference, including interference that may 
+cause undesired operation of the device.
+Operation in the band 5150–5250 MHz is only for indoor use to reduce the 
+potential for harmful interference to co-channel mobile satellite systems.
+CAN ICES-3(B)/NMB-3(B)
+Déclaration de conformité de Innovation, Sciences 
+et Développement économique Canada (ISED)
+Le présent appareil est conforme aux CNR d’Innovation, Sciences et 
+Développement économique Canada applicables aux appareils radio 
+exempts de licence. L’exploitation est autorisée aux deux conditions 
+suivantes : (1) l’appareil ne doit pas produire de brouillage, et (2) l’utilisateur 
+de l’appareil doit accepter tout brouillage radioélectrique subi, même si le 
+brouillage est susceptible d’en compromettre le fonctionnement.
+La bande 5150–5250 MHz est réservée uniquement pour une utilisation 
+à l’intérieur afin de réduire les risques de brouillage préjudiciable aux 
+systèmes de satellites mobiles utilisant les mêmes canaux.
+CAN ICES-3(B)/NMB-3(B)
+VCCI: Japan Compliance Statement
+Class B ITE
+20 AI accelerator card
+KC: Korea Warning Statement
+Declaration of compliance for product 
+environmental regulation
+ASUS follows the green design concept to design and manufacture our 
+products, and makes sure that each stage of the product life cycle of ASUS 
+product is in line with global environmental regulations. In addition, ASUS 
+disclose the relevant information based on regulation requirements.
+Please refer to http://csr.asus.com/Compliance.htm for information 
+disclosure based on regulation requirements ASUS is complied with:
+EU REACH and Article 33
+Complying with the REACH (Registration, Evaluation, Authorisation, and 
+Restriction of Chemicals) regulatory framework, we published the chemical 
+substances in our products at ASUS REACH website at http://csr.asus.com/
+english/REACH.htm.
+EU RoHS
+This product complies with the EU RoHS Directive. For more details, see 
+http://csr.asus.com/english/article.aspx?id=35
+India RoHS
+This product complies with the “India E-Waste (Management) Rules, 2016” 
+and prohibits use of lead, mercury, hexavalent chromium, polybrominated 
+biphenyls (PBBs) and polybrominated diphenyl ethers (PBDEs) in 
+concentrations exceeding 0.1% by weight in homogenous materials and 
+0.01% by weight in homogenous materials for cadmium, except for the 
+exemptions listed in Schedule II of the Rule.
+AI accelerator card 21
+Vietnam RoHS
+ASUS products sold in Vietnam, on or after September 23, 2011,meet the 
+requirements of the Vietnam Circular 30/2011/TT-BCT.
+Các sản phẩm ASUS bán tại Việt Nam, vào ngày 23 tháng 9 năm2011 trở về 
+sau, đều phải đáp ứng các yêu cầu của Thông tư 30/2011/TT-BCT của Việt 
+Nam.
+Turkey RoHS
+AEEE Yönetmeliğine Uygundur
+ASUS Recycling/Takeback Services
+ASUS recycling and takeback programs come from our commitment to the 
+highest standards for protecting our environment. We believe in providing 
+solutions for you to be able to responsibly recycle our products, batteries, 
+other components as well as the packaging materials. Please go to http://
+csr.asus.com/english/Takeback.htm for detailed recycling information in 
+different regions.
+DO NOT throw the motherboard in municipal waste. This 
+product has been designed to enable proper reuse of parts and 
+recycling. This symbol of the crossed out wheeled bin indicates 
+that the product (electrical and electronic equipment) should 
+not be placed in municipal waste. Check local regulations for 
+disposal of electronic products.
+DO NOT throw the mercury-containing button cell battery in 
+municipal waste. This symbol of the crossed out wheeled bin 
+indicates that the battery should not be placed in municipal 
+waste.
+22 AI accelerator card
+Regional notice for California
+ WARNING
+Cancer and Reproductive Harm - 
+www.P65Warnings.ca.gov
+AI accelerator card 23
+ASUS contact information
+ASUSTeK COMPUTER INC.
+Address 1F., No. 15, Lide Rd., Beitou Dist., Taipei City 112, Taiwan
+Telephone +886-2-2894-3447
+Fax +886-2-2890-7798
+Web site www.asus.com
+Technical Support
+Telephone +86-21-38429911
+Fax +86-21-5866-8722, ext. 9101#
+Online support https://www.asus.com/support/Product/ContactUs/Services/
+questionform/?lang=en
+ASUS COMPUTER INTERNATIONAL (America)
+Address 48720 Kato Rd., Fremont, CA 94538, USA
+Telephone +1-510-739-3777
+Fax +1-510-608-4555
+Web site http://www.asus.com/us/
+Technical Support
+Support fax +1-812-284-0883
+Telephone +1-812-282-2787
+Online support https://www.asus.com/support/Product/ContactUs/Services/
+questionform/?lang=en-us
+ASUS COMPUTER GmbH (Germany and Austria)
+Address Harkortstrasse 21-23, 40880 Ratingen, Germany
+Web site https://www.asus.com/de
+Online contact https://www.asus.com/support/Product/ContactUs/Services/
+questionform/?lang=de-de
+Technical Support
+Telephone (DE) +49-2102-5789557
+Telephone (AT) +43-1360-2775461
+Online support https://www.asus.com/de/support
+Call center: https://www.asus.com/support/CallUs
+24 AI accelerator card
+Manufacturer ASUSTeK Computer Inc.
+Tel: +886-2-2894-3447
+Address: 1F., No. 15, Lide Rd., Beitou Dist., Taipei 
+City 112, Taiwan
+Authorised 
+representative in 
+Europe
+ASUSTeK Computer GmbH
+Address: Harkortstrasse 21-23, 40880 Ratingen, 
+Germany
+15060-0WG00000
+ Conventions used in this manual
+ Typography
+ Where to find more information
+ ASUS Websites
+ Optional Documentation
+ Chapter 1: Specifications Summary
+ 1.1 Introduction
+ 1.2 Features
+ 1.3 Product specification
+ 1.4 Package contents
+ 1.5 Card layout
+ 1.6 Dimensions (mm)
+ 1.7 Block diagram
+ Chapter 2: Hardware Installation
+ 2.1 Before you proceed
+ 2.2 Card installation
+ Appendix
+ Safety information
+ Electrical safety
+ Operation safety
+ Care during use
+ Notices
+ ASUS contact information

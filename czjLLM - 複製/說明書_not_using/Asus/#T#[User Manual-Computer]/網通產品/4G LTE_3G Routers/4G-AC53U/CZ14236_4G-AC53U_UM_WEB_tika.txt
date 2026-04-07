@@ -1,0 +1,2756 @@
+
+Uživatelská příručka
+4G-AC53U
+Bezdrátový-AC750 LTE modem router 
+2
+Copyright © 2018 ASUSTeK Computer Inc. Všechna práva vyhrazena.
+Žádná část této příručky, včetně popsaných výrobků a softwaru, nesmí být 
+kopírována, přenášena, přepisována, ukládána do paměťového zařízení nebo 
+překládána do jakéhokoliv jazyka v žádné formě ani žádnými prostředky vyjma 
+dokumentace, které kupující vytvoří jako zálohu, bez výslovného písemného 
+souhlasu společnosti ASUSTeK Computer Inc. („ASUS“).
+V následujících případech nebude záruka na výrobek nebo servis prodloužena: 
+(1) byla provedena oprava, úprava nebo změna výrobku, která nebyla písemně 
+povolena společností ASUS; nebo (2) sériové číslo výrobku je poškozeno nebo 
+chybí.
+ASUS POSKYTUJE TUTO PŘÍRUČKU „TAK, JAK JE“, BEZ ZÁRUKY JAKÉHOKOLI 
+DRUHU, AŤ VÝSLOVNÉ NEBO VYPLÝVAJÍCÍ, VČETNĚ, ALE NIKOLI JEN, 
+PŘEDPOKLÁDANÝCH ZÁRUK NEBO PODMÍNEK PRODEJNOSTI A VHODNOSTI 
+PRO URČITÝ ÚČEL. V ŽÁDNÉM PŘÍPADĚ NEBUDE FIRMA ASUS, JEJÍ ŘEDITELÉ, 
+VEDOUCÍ PRACOVNÍCI, ZAMĚSTNANCI ANI ZÁSTUPCI ODPOVÍDAT ZA ŽÁDNÉ 
+NEPŘÍMÉ, ZVLÁŠTNÍ, NAHODILÉ NEBO NÁSLEDNÉ ŠKODY (VČETNĚ ZA ZTRÁTU 
+ZISKŮ, ZTRÁTU PODNIKATELSKÉ PŘÍLEŽITOSTI, ZTRÁTU POUŽITELNOSTI ČI 
+ZTRÁTU DAT, PŘERUŠENÍ PODNIKÁNÍ A PODOBNĚ), I KDYŽ BYLA FIRMA ASUS 
+UPOZORNĚNA NA MOŽNOST TAKOVÝCH ŠKOD ZPŮSOBENÝCH JAKOUKOLIV 
+VADOU V TÉTO PŘÍRUČCE NEBO VE VÝROBKU.
+TECHNICKÉ ÚDAJE A INFORMACE OBSAŽENÉ V TÉTO PŘÍRUČCE JSOU 
+POSKYTNUTY JEN PRO INFORMACI, MOHOU SE KDYKOLIV ZMĚNIT BEZ 
+PŘEDCHOZÍHO UPOZORNĚNÍ, A NEMĚLY BY BÝT POVAŽOVÁNY ZA ZÁVAZEK 
+FIRMY ASUS. ASUS NEODPOVÍDÁ ZA ŽÁDNÉ CHYBY A NEPŘESNOSTI, KTERÉ 
+SE MOHOU OBJEVIT V TÉTO PŘÍRUČCE, VČETNĚ VÝROBKŮ A SOFTWARU V 
+PŘÍRUČCE POPSANÝCH.
+Výrobky a názvy firem v této příručce mohou, ale nemusí být obchodními 
+známkami nebo copyrighty příslušných firem, a používají se zde pouze pro 
+identifikaci a objasnění a ve prospěch jejich majitelů, bez záměru poškodit cizí 
+práva. 
+CZ14236
+První edice
+Září 2018
+3
+Obsah
+1 Seznámení s bezdrátovým směrovačem
+1.1 Vítejte! .................................................................................................6
+1.2 Obsah krabice ..................................................................................6
+1.3 Váš bezdrátový router ...................................................................7
+1.4 Vlastnosti zařízení ...........................................................................9
+1.5 Umístění směrovače ................................................................... 10
+1.6 Instalace směrovače.................................................................... 11
+1.6.1 Splňte požadavky pro instalaci. .......................................11
+1.6.2 Nainstalujte bezdrátový router LTE. ...............................12
+2 Nastavení hardwaru
+2.1 Rychlé nastavení Internetu (QIS) s automatickým 
+ rozpoznáním.................................................................................. 14
+3 Konfigurování obecných nastavení
+3.1 Používání mapy sítě ................................................................... 18
+3.1.1 Konfigurování nastavení zabezpečení bezdrátového
+ připojení ..................................................................................19
+3.1.2 System Status (Stav systému) ...........................................20
+3.1.3 Správa síťových klientů .......................................................21
+3.1.4 Sledování stavu Internetu ..................................................23
+3.1.5 Sledování vašeho zařízení USB .........................................24
+3.2 Guest Network .............................................................................. 25
+3.3 Používání správce provozu ....................................................... 27
+3.3.1 QoS .............................................................................................27
+3.3.2 Sledování provozu ................................................................28
+3.4 Rodičovská kontrola ................................................................... 29
+3.5 Použití aplikace USB.................................................................... 31
+3.5.1 Používání AiDisk ....................................................................31
+3.5.2 Používání mediálních služeb a serverů .........................34
+4
+Obsah
+3.5.3 Používání služby sdílení místa v síti (Samba) / 
+ Cloud Disk (Disk cloud) .......................................................35
+3.5.4 Používání služby sdílení FTP ..............................................37
+3.6 Používání aplikace AiCloud 2.0 ............................................... 39
+3.6.1 Cloudový disk .........................................................................40
+3.6.2 Chytrý přístup .........................................................................41
+3.6.3 Chytrá synchronizace ..........................................................42
+3.6.4 Sync Server (Synchronizace serveru) .............................43
+3.6.5 Settings (Nastavení) .............................................................46
+4 Konfigurování upřesňujících nastavení
+4.1 Bezdrátové připojení .................................................................. 47
+4.1.1 Obecné ......................................................................................47
+4.1.2 WPS ............................................................................................49
+4.1.3 WDS ............................................................................................51
+4.1.4 Bezdrátový filtr MAC ............................................................53
+4.1.5 Nastavení RADIUS .................................................................54
+4.1.6 Professional (Odborník) ......................................................55
+4.2 LAN .................................................................................................... 58
+4.2.1 LAN IP ........................................................................................58
+4.2.2 Server DHCP ............................................................................59
+4.2.3 Route (Trasa) ...........................................................................61
+4.2.4 Switch Control (Ovládání přepínání) ..............................62
+4.3 WAN .................................................................................................. 63
+4.3.1 Dual WAN (Duální bezdrátová síť WAN) ........................63
+4.3.2 Internetové připojení ..........................................................64
+4.3.3 IPv6 (Internet Settings) .......................................................74
+4.3.4 Aktivace portů ........................................................................75
+4.3.5 Virtuální server/předávání portů .....................................77
+4.3.6 DMZ............................................................................................80
+4.3.7 DDNS .........................................................................................81
+4.3.8 NAT Passthrough (Průchod NAT) ....................................82
+5
+Obsah
+4.4 IPv6 ................................................................................................... 83
+4.5 Server VPN ...................................................................................... 84
+4.6 Brána firewall ................................................................................. 85
+4.6.1 General (Obecné) ..................................................................85
+4.6.2 URL Filter (Filtr URL) ..............................................................85
+4.6.3 Keyword filter (Filtr klíčových slov) .................................86
+4.6.4 Filtr síťových služeb ..............................................................86
+4.7 Správa .............................................................................................. 88
+4.7.1 Provozní režim ........................................................................88
+4.7.2 Systém ................................................................................................... 89
+4.7.3 Upgradování firmwaru ........................................................91
+4.7.4 Obnovení/uložení/odeslání nastavení ..........................92
+4.7.5 Zpětná vazba ..........................................................................93
+4.8 Systémový protokol .................................................................... 94
+4.9 Seznam podporovaných funkcí ethernetové 
+ bezdrátové místní sítě WAN a mobilního 
+ širokopásmového připojení ..................................................... 95
+5 Používání nástrojů
+5.1 Vyhledání zařízení........................................................................ 97
+5.2 Obnova firmwaru ......................................................................... 98
+6 Odstraňování problémů
+6.1 Odstraňování nejčastějších problémů ...............................100
+6.2 Často kladené dotazy (FAQ) ..................................................102
+Dodatky
+Poznámky ..................................................................................................111
+Kontaktní informace společnosti ASUS ..........................................123
+Informace o globální horké síťové lince .........................................124
+6
+1 Seznámení s bezdrátovým 
+směrovačem
+1.1 Vítejte!
+Děkujeme vám za zakoupení ASUS 4G-AC53U bezdrátového LTE 
+směrovače!
+Tento výkonný a stylový model 4G-AC53U je vybaven dvěma 
+pásmy 2,4 GHz a 5 GHz pro bezkonkurenční souběžné bezdrátové 
+přenášení HD datových proudů; serverem SMB, serverem UPnP 
+AV a serverem FTP pro sdílení souborů 24 hodin denně a 7 dní 
+v týdnu; kapacitou pro zpracování 300 000 relací; a technologií 
+ASUS Green Network, která umožňuje ušetřit až 70 % energie.
+1.2 Obsah krabice
+POZNÁMKY:
+• Pokud je některá z položek poškozená nebo chybí, kontaktujte 
+společnost ASUS pro technické připomínky a podporu, viz seznam 
+horkých linek podpory společnosti ASUS na zadní straně této 
+příručky.
+• Uschovejte původní obalový materiál pro případ budoucího 
+záručního servisu, například opravy nebo výměny. 
+4G-AC53U Napájecí adaptér
+Síťový kabel (RJ-45) Stručná příručka
+2 x 3G/4G antény 
+7
+1.3 Váš bezdrátový router
+Indikátor LED USB 2.0 
+ Nesvítí: Není napájení nebo fyzické připojení.
+ Svítí: Navázáno fyzické připojení k zařízením USB 2.0.
+Indikátor místní sítě LAN
+ Nesvítí: Vypnuto nebo žádné fyzické připojení. 
+ Svítí: Fyzické připojení k místní síti (LAN).
+Indikátor LED 5 GHz
+ Nesvítí: Žádný signál 5 GHz. 
+ Svítí: Bezdrátový systém je připraven. 
+ Bliká: Vysílání nebo přijímání dat prostřednictvím bezdrátového připojení.
+Indikátor LED 2.4 GHz
+ Nesvítí: Žádný signál 2,4 GHz. 
+ Svítí: Bezdrátový systém je připraven. 
+ Bliká: Vysílání nebo přijímání dat prostřednictvím bezdrátového připojení.
+8
+Indikátor LED napájení
+ Nesvítí: Žádné napájení. 
+ Svítí: Zařízení je připraveno. 
+ Bliká pomalu: Záchranný režim. 
+ Bliká rychle: Zpracovávání WPS.
+Indikátor LED síly signálu 3G/4G 
+ Svítí 1 indikátor LED: Slabý signál
+ Svítí 2 indikátory LED: Normální signál
+ Svítí 3 indikátory LED: Silný signál
+ Fialový indikátor pro připojení 3G, modrý indikátor pro připojení 4G
+Odpojitelné antény LTE
+Port vstupu stejnosměrného napájení
+K tomuto portu připojte dodaný adaptér střídavého napájení (AC) a připojte 
+router ke zdroji napájení.
+Porty místní sítě LAN (1~2) 
+K těmto portům připojte síťové kabely pro navázání připojení k místní síti LAN. 
+Tlačítko WPS
+Toto tlačítko slouží ke spuštění Průvodce WPS. 
+Resetovací tlačítko
+Toto tlačítko slouží k resetování nebo obnovení výchozích továrních nastavení 
+systému.
+Port USB 2.0
+K tomuto portu připojte zařízení kompatibilní s rozhraním USB 2.0, například 
+pevné disky USB nebo jednotky USB flash.
+Slot na kartu Mini SIM/USIM
+Do tohoto slotu nainstalujte kartu mini SIM/USIM pro navázání mobilního 
+širokopásmového internetového připojení. 
+POZNÁMKY: 
+• Používejte pouze adaptér dodaný se zařízením. Používání jiných 
+adaptérů může poškodit zařízení. 
+• Před zapnutím napájení směrovače nezapomeňte vložit kartu mini 
+SIM/USIM do slotu.
+9
+1.4 Vlastnosti zařízení
+Příkon:
+• Vstup: 100~240V stř. / 50~60Hz, stejnosm. 12V /2A
+• Maximální příkon: 18.4 W
+• Průměrný příkon: 12.7 W 
+• Průměrný příkon je definován při pokojové teplotě ( 23 °C až 
+27 °C ) s následujícím zatížením:
+ • Aktivní mobilní širokopásmové připojení
+ • Bezdrátová síť LAN je zapnutá; k bezdrátové síti LAN 
+nejsou připojena žádná zařízení
+ • K portu LAN je připojeno jedno síťové zařízení; žádný 
+přenos dat; k ostatním portům LAN nejsou připojena 
+žádná síťová zařízení
+Podmínky prostředí: 
+Adaptér 
+stejnosměrného 
+napájení
+Výstup stejnosměrného napájení: 
++12V s proudem 2A
+Provozní teplota 0~40oC Skladování teplota 0~70oC
+Provozní vlhkost 10 ~ 90% Skladování vlhkost 10 ~ 90%
+10
+1.5 Umístění směrovače
+Aby byl zajištěn optimální přenos bezdrátového signálu mezi 
+bezdrátovým směrovačem a síťovými zařízeními, zajistěte, aby 
+byly splněny následující podmínky: 
+• Umístěte bezdrátový LTE router blízko okna, aby bylo přijímat 
+signál LTE nejlepší kvality pro maximální výkon odesílání se 
+základní stanici LTE.
+• Udržujte zařízení mimo kovové překážky a mimo přímé 
+sluneční záření.
+• Umístěte bezdrátový směrovač vodorovně.
+• Bezdrátový LTE router neumísťujte do prašného nebo vlhkého 
+prostředí.
+• Udržujte zařízení v bezpečné vzdálenosti od zařízení Wi-Fi 
+802.11g nebo 20 MHz, počítačových periférií 2.4 GHz, zařízení 
+Bluetooth, bezdrátových telefonů, transformátorů, výkonných 
+motorů, fluorescenčního osvětlení, mikrovlnných trub, 
+chladniček a dalšího průmyslového vybavení, aby se zabránilo 
+ztrátě signálu.
+• Vždy zaktualizujte na nejnovější firmware. Nejnovější 
+aktualizace firmwaru jsou k dispozici na webu společnosti 
+ASUS na adrese https://www.asus.com/Networking/4G-
+AC53U/HelpDesk_Download/. 
+• Pro zajištění optimálního příjmu bezdrátového signálu 
+nasměrujte 2 odnímatelné antény podle následujícího 
+obrázku.
+https://www.asus.com/Networking/4G-AC53U/HelpDesk_Download/
+https://www.asus.com/Networking/4G-AC53U/HelpDesk_Download/
+11
+1.6 Instalace směrovače
+1.6.1 Splňte požadavky pro instalaci.
+Aby bylo možné nastavit bezdrátovou síť, musí být splněny 
+následující požadavky:
+• Karta Mini SIM/USIM s tarifem WCDMA a LTE
+DŮLEŽITÉ! Karta Mini SIM/USIM musí být přihlášena k odběru služeb 
+WCDMA a LTE. Informujte se o těchto službách u vašeho mobilního 
+operátora.
+POZOR! V tomto směrovači používejte pouze standardní kartu Mini 
+SIM/USIM s přiloženým adaptérem SIM. Při použití jiné karty, než SIM, 
+například karty micro nebo nano SIM, může dojít k zaseknutí karty SIM a 
+k poškození směrovače.
+• ADSL/kabelový modem s přihlášením k odběru Internetu
+• Počítač s portem Ethernet RJ-45 (LAN) (10/100/1000 Base-TX) 
+nebo zařízení s technologií Wi-Fi s rozhraním 5 GHz 802.11 
+a/b/g/n/ac
+• Webový prohlížeč, například Internet Explorer, Firefox, Safari 
+nebo Google Chrome
+12
+1.6.2 Nainstalujte bezdrátový router LTE.
+a. Nainstalujte dvě 3G/4G antény.
+b. Zasuňte kartu Mini SIM/USIM do slotu na kartu Mini SIM/
+USIM. Když je karta Mini SIM/USIM řádně nainstalována, 
+indikátor LED mobilní širokopásmové sítě se po zapnutí 
+napájení rozsvítí a pomalu bliká.
+c. Připojte síťový napájecí adaptér směrovače ke vstupnímu 
+portu stejnosměrného napájení a k elektrické zásuvce, a 
+počkejte, dokud se nerozsvítí indikátor LED napájení. Váš 
+směrovač je nyní zapnutý.
+d. Připojte počítač k portu LAN směrovače pomocí dodaného 
+síťového kabelu.
+Wall Power Outlet
+Power c
+Laptop
+LAN
+d
+b
+a a
+13
+Pokyny pro ruční připojení k bezdrátové síti
+POZNÁMKA: Nezapomeňte stisknout tlačítko Wi-Fi na směrovači.
+1. Zapněte funkci Wi-Fi bezdrátového klienta a počkejte na 
+dokončení automatického vyhledání bezdrátových sítí. 
+2. Vyberte bezdrátovou síť s názvem „ASUS_XX_2G“ 
+nebo „ASUS_XX_5G“, což je výchozí síťový název (SSID) 
+bezdrátových směrovačů ASUS v bezdrátových sítích. 
+POZNÁMKA: XX označuje poslední dvě číslice adresy MAC 2,4 GHz. Je 
+uvedeno na štítku na zadní straně přístroje router..
+14
+2 Nastavení hardwaru
+2.1 Rychlé nastavení Internetu (QIS) s 
+automatickým rozpoznáním
+Pokyny pro nastavení směrovače pomocí funkce QIS (Rychlé 
+nastavení Internetu):
+1. Zapněte router. Zkontrolujte, zda se rozsvítí následující 
+indikátory LED:
+• Indikátor LED sítě 
+LAN nebo mobilní 
+širokopásmové sítě 
+• Indikátor LED sítě Wi-Fi 2,4 GHz 
+• Indikátor LED sítě Wi-Fi 5 GHz 
+2. Spusťte webový prohlížeč, například Internet Explorer, Firefox, 
+Google Chrome nebo Safari.
+POZNÁMKA: Pokud se funkce QIS nespustí automaticky, zadejte do 
+adresního řádku http://router.asus.com a zaktualizujte zobrazení prohlížeče.
+3. Přihlaste se k webovému grafickému uživatelskému rozhraní (GUI). 
+Automaticky se zobrazí stránka QIS. Pro přihlášení k webovému 
+grafickému uživatelskému rozhraní (GUI) směrovače je ve výchozí 
+konfiguraci uživatelské jméno a heslo „admin“.
+15
+4. Zadejte jméno a heslo pro přihlášení ke směrovači a klepněte 
+na tlačítko Next (Další). Toto jméno a heslo pro přihlášení k 
+4G-AC53U jsou zapotřebí k zobrazení a k úpravám nastavení 
+směrovače. Poznamenejte si jméno a heslo pro přihlášení ke 
+směrovači pro budoucí použití.
+5. Pokud je připojená síť 3G/4G, funkce Rychlé nastavení 
+Internetu (Quick Internet Setup, QIS) bezdrátového směrovače 
+automaticky rozpozná a použije nastavení APN pro připojení 
+k bezdrátové základnové stanici. Pokud se průvodci QIS 
+nepodaří automaticky použít nastavení APN, proveďte 
+nastavení APN ručně. 
+POZNÁMKA: Kód PIN se může lišit podle poskytovatele.
+16
+ Mobilní širokopásmové připojení bylo úspěšně 
+nakonfigurováno
+6. Pokud jsou nakonfigurovány obě sítě WAN, přejděte k dalšímu 
+kroku a nakonfigurujte nastavení bezdrátové sítě LAN.
+7. Přiřazení názvu sítě (SSID) a klíče zabezpečení vašemu 
+bezdrátovému spoji v pásmu 2.4 GHz. Až budete hotovi, 
+klepněte na Apply (Použít).
+17
+8. Zobrazí se nastavení internetu a bezdrátové sítě. Klepněte na 
+tlačítko Finish (Dokončit). 
+9. Po dokončení nastavení 3G/4G prostřednictvím QIS a 
+úspěšném připojení k Internetu svítí indikátor LED síly signálu 
+3G/4G.
+18
+3 Konfigurování obecných 
+nastavení
+3.1 Používání mapy sítě 
+Funkce Network Map (Mapa sítě) umožňuje zjišťovat stav 
+připojení k Internetu, konfigurovat nastavení zabezpečení sítě a 
+spravovat síťové klienty.
+19
+3.1.1 Konfigurování nastavení zabezpečení 
+bezdrátového připojení
+Chcete-li chránit vaši bezdrátovou síť před neoprávněným 
+přístupem, je třeba nakonfigurovat nastavení jejího zabezpečení.
+Pokyny pro konfigurování zabezpečení bezdrátového 
+připojení:
+1. Na navigačním panelu přejděte na General (Obecné) > 
+Network Map (Mapa sítě).
+2. Na obrazovce Network Map (Mapa sítě) klikněte na ikonu 
+System status (Stav systému) . Můžete nakonfigurovat 
+nastavení zabezpečení bezdrátové sítě, například název 
+bezdrátové sítě (SSID), metodu ověření a nastavení 
+šifrování.
+Nastavení zabezpečení 2,4 GHz Nastavení zabezpečení 5GHz
+20
+3. Do pole Wireless name (SSID) (Název bezdrátové sítě 
+(SSID)) zadejte jedinečný název vaší bezdrátové sítě.
+4. V rozevírací seznamu Authentication Method (Metoda 
+ověření) vyberte metodu ověření pro vaši bezdrátovou síť.
+ IVyberete-li jako metodu ověření WPA-Personal (WPA 
+osobní) nebo WPA-2 Personal (WPA-2 osobní), zadejte klíč 
+WPA-PSK nebo bezpečnostní klíč.
+DŮLEŽITÉ! Standard IEEE 802.11n/ac zakazuje používání vysoké 
+prostupnosti s metodami šifrování WEP nebo WPA-TKP jako šifry unicast. 
+Použijete-li tyto metody šifrování, vaše rychlost přenosu dat klesne na 
+připojení IEEE 802.11g 54 Mb/s.
+5. Po dokončení klepněte na tlačítko Apply (Použít).
+Sledování systémových prostředků:
+1. Na navigačním panelu přejděte na General (Obecné) > 
+Network Map (Mapa sítě).
+2. Na obrazovce Network Map (Mapa sítě) klikněte na ikonu 
+System status (Stav systému) , můžete zjistit informace o 
+procesoru a využití paměti.
+3.1.2 System Status (Stav systému)
+21
+3.1.3 Správa síťových klientů
+Pokyny pro správu síťových klientů:
+1. Na navigačním panelu přejděte na General (Obecné) > karta 
+Network Map (Mapa sítě).
+2. Na obrazovce Network Map (Mapa sítě) vyberte ikonu Client 
+Status (Stav klientů) a zobrazí se informace o síťovém 
+klientovi .
+22
+3. V tabulce Client status (Stav klientů) můžete kliknutím na 
+ikonu zařízení zobrazit podrobný profil zařízení. Chcete-li 
+některému klientovi blokovat přístup k vaší síti, vyberte 
+klienta a klikněte na ikonu .
+23
+3.1.4 Sledování stavu Internetu
+Pokyny pro sledování stavu Internetu:
+1. Na navigačním panelu přejděte na General (Obecné) > karta 
+Network Map (Mapa sítě).
+2. Na obrazovce Network Map (Mapa sítě) vyberte ikonu 
+Internet a zobrazí se konfigurace vašeho Internetu. 
+Kliknutím na ikonu mobilní širokopásmové sítě můžete 
+zobrazit konfiguraci mobilní širokopásmové sítě.
+3. Chcete-li ukončit rozhraní WAN z vaší sítě, klikněte na tlačítko 
+Disable (Deaktivovat) v části Terminate WAN Interface 
+(Ukončit WAN rozhraní).
+Mobilní širokopásmová síť Ethernet LAN jako WAN
+24
+3.1.5 Sledování vašeho zařízení USB
+Tento bezdrátový router ASUS je vybaven dvěma porty USB 2.0 
+pro připojení zařízení USB nebo tiskárny USB pro sdílení souborů a 
+tiskárny s klienty ve vaší síti.
+Pokyny pro sledování vašeho zařízení USB:
+1. Na navigačním panelu přejděte na General (Obecné) > 
+Network Map (Mapa sítě).
+2. Výběrem ikony Stav disku USB na obrazovce Network 
+Map (Mapa sítě) zobrazíte informace o vašem zařízení USB.
+3. V poli Media Server (Mediální server) klikněte na GO 
+(PŘEJÍT) a nastavte server iTune a DLNA pro místní sdílení 
+mediálních souborů.
+POZNÁMKA: Tento bezdrátový router funguje s většinou disků USB 
+HDD/disků Flash (do velikosti 4 TB) a podporuje oprávnění ke čtení a 
+zápisu pro formáty FAT16, FAT32, EXT2, EXT3 a NTFS.
+4. Klepnutím na GO (PŘEJÍT) v poli AiDisk Wizard (Průvodce 
+AiDisk) nakonfigurujte server FTP pro sdílení souborů v 
+Internetu. 
+5. Chcete-li vyjmout disk USB z rozhraní USB, klikněte na tlačítko 
+Remove (Odebrat) v poli Safely Remove disk (Bezpečné 
+odebrání disku). Po úspěšném vyjmutí disku USB se zobrazí 
+stav USB jako Unmounted (Odpojeno). 
+25
+3.2 Guest Network
+Funkce Guest Network (Hostovaná síť) poskytuje dočasným 
+návštěvníkům připojení k Internetu prostřednictvím přístupu k 
+samostatným SSID nebo sítím bez přístupu k vaší privátní síti.
+Pokyny pro vytvoření hostované sítě:
+1. Na navigačním panelu přejděte na General (Obecné) > 
+Guest Network (Hostovaná síť).
+2. Na obrazovce Guest Network (Hostovaná síť) vyberte 
+frekvenční pásmo 2.4 GHz nebo 5 GHz pro hostovanou síť, 
+kterou chcete vytvořit. 
+3. Klepněte na Enable (Aktivovat).
+4. Nakonfigurujte nastavení hosta na místní obrazovce
+5. Přiřaďte název bezdrátového připojení dočasné sítě v poli 
+Network Name (SSID) (Název sítě (SSID)).
+6. Vyberte nastavení Authentication Method (Metoda ověření)
+7. Vyberete-li metodu ověření WPA, vyberte šifrování WPA.
+8. Určete Access time (Čas přístupu) nebo vyberte Limitless 
+(Bez omezení).
+26
+11. Po dokončení klepněte na tlačítko Apply (Použít).
+9. Vyberte možnost Disable (Zakázat) nebo Enable (Povolit) u 
+položky Access Intranet (Přístup k Intranetu).
+10. Vyberte No (Ne) nebo Yes (Ano) v části MAC Filter (Filtr 
+MAC) pro vaši hostovanou síť.
+27
+3.3 Používání správce provozu
+3.3.1 QoS
+Tato funkce zajišťuje dostatečnou šířku pásma pro úlohy a 
+aplikace, kterým stanovíte vyšší prioritu.
+Pokyny pro aktivaci funkce QoS:
+1. Na navigačním panelu přejděte na General (Obecné) > 
+Traffic Manager (Správce provozu) > kartu QoS. 
+2. V podokně Enable Smart QoS (Aktivovat Smart QoS) 
+klepněte na ON (ZAPNUTO). 
+3. Vyplňte políčka šířky pásma pro odesílání a stahování.
+POZNÁMKA: Informace o šířce pásma vám poskytne váš 
+poskytovatel Internetu. Šířku vašeho pásma si můžete rovněž 
+změřit na webu http://speedtest.net.
+4. Vyberte typ QoS (adaptivní nebo tradiční) pro vaší konfiguraci. 
+POZNÁMKA: Definici typu QoS si můžete přečíst na kartě QoS. 
+5. Klepněte na Apply (Použít).
+28
+3.3.2 Sledování provozu
+Funkce sledování provozu umožňuje vyhodnocovat využití 
+šířky pásma a rychlost připojení k Internetu, drátových nebo 
+bezdrátových sítí. Umožňuje každodenní sledování síťového 
+provozu v reálném čase. Rovněž umožňuje zobrazit síťový provoz 
+za posledních 24 hodin.
+29
+3.4 Rodičovská kontrola
+Rodičovská kontrola umožňuje nastavit časový limit používání sítě 
+klientem.
+Pokyny pro přechod na hlavní stránku rodičovské kontroly:
+1. Na navigačním panelu přejděte na General (Obecné) > 
+Parental Controls (Rodičovská kontrola). 
+2. V podokně Enable Parental Controls (Aktivovat 
+rodičovskou kontrolu) klepněte na ON (ZAPNUTO).
+POZNÁMKA: Zajistěte, aby byl čas vašeho systému synchronizován se 
+serverem NTP.
+30
+3. Ve sloupci Clients Name (Název klienta) vyberte nebo 
+zadejte název klienta z rozevíracího seznamu.
+POZNÁMKA: Rovněž můžete zadat adresu MAC klienta do sloupce 
+Client MAC Address (Adresa MAC klienta). Název klienta nesmí 
+obsahovat žádné zvláštní znaky nebo mezery, které by mohly způsobit 
+abnormální chování směrovače.
+4. Klepnutím na přidejte profil klienta.
+5. Klepnutím na Apply (Použít) uložte nastavení.
+31
+3.5 Použití aplikace USB
+Funkce USB Extension (Rozšíření USB) nabízí podnabídky AiDisk, a 
+podnabídky mediálních služeb a serverů.
+DŮLEŽITÉ! Chcete-li používat funkce serveru, je třeba připojit 
+paměťové zařízení USB, například pevný disk USB nebo disk USB flash, 
+k portu USB 2.0 na zadním panelu bezdrátového směrovače. Paměťové 
+zařízení USB musí být správně naformátováno a rozděleno na oddíly. 
+Tabulka podporovaných souborových systémů viz webové stránky 
+ASUS na adrese http://event.asus.com/2009/networks/disksupport/.
+3.5.1 Používání AiDisk
+AiDisk umožňuje sdílet soubory na disku USB prostřednictvím 
+Internetu. AiDisk rovněž pomáhá při nastavování ASUS DDNS a 
+serveru FTP. 
+Pokyny pro používání AiDisk:
+1. Na navigačním panelu přejděte na General (Obecné) > 
+USB application (USB aplikace) a potom klepněte na ikonu 
+AiDisk.
+2. Na obrazovce Welcome to AiDisk wizard (Vítá vás Průvodce 
+AiDisk) klepněte na Go (Pokračovat).
+32
+3. Vyberte přístupová práva, která chcete přidělit klientům pro 
+přístup ke sdíleným datům.
+4. Vytvořte váš název domény prostřednictvím služeb ASUS 
+DDNS, vyberte možnost I will use the service and accept 
+the Terms of service (Budu používat službu a souhlasím 
+s podmínkami služby) a zadejte název vaší domény. Po 
+dokončení klepněte na tlačítko Next (Další). 
+33
+ Rovněž můžete vybrat možnost Skip ASUS DDNS settings 
+(Přeskočit nastavení ASUS DDNS) a potom klepnutím na 
+tlačítko Next (Další) přeskočit nastavení DDNS.
+5. Klepnutím na tlačítko Finish (Dokončit) dokončete 
+konfiguraci.
+6. Chcete-li přejít na server FTP, který jste vytvořili, spusťte 
+webový prohlížeč nebo nástroj klienta FTP jiného výrobce 
+a zadejte odkaz na server FTP (ftp://<domain name>.
+asuscomm.com), který jste předtím vytvořili.
+34
+3.5.2 Používání mediálních služeb a serverů
+Aplikace Servers Center (Centrum serverů) umožňuje sdílet mediální 
+soubory z disku USB prostřednictvím adresáře serveru médií, služby 
+sdílení Samba nebo FTP. V aplikaci Servers Center (Centrum serverů) 
+lze rovněž nakonfigurovat další nastavení disku USB.
+Používání serveru médií
+Tento bezdrátový router umožňuje zařízením s podporou DLNA 
+přistupovat k multimediálním souborům z disku USB připojeného 
+k bezdrátovému směrovači.
+POZNÁMKA: Před používáním funkce DLNA Media Server (Mediální 
+server DLNA) připojte zařízení k síti 4G-AC53U.
+Chcete-li spustit stránku nastavení aplikace Media Server (Server 
+médií), přejděte na General (Obecné) > USB application (USB 
+aplikace) > Media Services and Servers (Mediální služby a 
+servery médií) > kartu Media Servers (Servery médií). Níže je 
+uveden popis jednotlivých polí:
+• Povolit server iTunes: Výběrem ON/OFF (ZAP./VYP.) 
+povolte/ zakažte server iTunes.
+• Povolit mediální server DLNA: Výběrem ON/OFF (ZAP./
+VYP.) povolte/ zakažte mediální server DLNA.
+• Status mediálního serveru: Zobrazí status mediálního serveru. 
+• Media Server Path Setting (Nastavení umístění serveru 
+médií): Vyberte All Disks Shared (Všechny disky sdílené) 
+nebo Manual Media Server Path (Ruční zadání umístění 
+serveru médií).
+35
+3.5.3 Používání služby sdílení místa v síti (Samba) / 
+Cloud Disk (Disk cloud)
+Služba sdílení místa v síti (Samba) / Cloud Disk (Disk cloud) 
+umožňuje nastavit účet a oprávnění pro službu Samba.
+Pokyny pro používání sdílení Samba:
+1. Na navigačním panelu přejděte na General (Obecné) > USB 
+application (USB aplikace) > Media Services and Servers 
+(Mediální služby a servery médií) > kartu Network Place 
+(Samba) Share (Sdílené síťové místo (Samba)) / Cloud Disk 
+(Disk cloud). 
+POZNÁMKA: Služba Network Place (Samba) Share (Sdílení místa v síti 
+(Samba)) je ve výchozí konfiguraci povolena.
+2. Podle následujících kroků můžete přidat, odstranit nebo 
+upravit účet.
+36
+Pokyny pro odstranění stávajícího účtu:
+a) Vyberte účet, který chcete odstranit.
+b) Klepněte na .
+c) Po vyzvání klepnutím na Delete (Odstranit) potvrďte 
+odstranění účtu.
+Pokyny pro přidání složky:
+a) Klepněte na .
+b) Zadejte název složky a klepněte na Add (Přidat). Vytvořená 
+složka bude přidána do seznamu složek.
+Pokyny pro vytvoření nového účtu:
+a) Klepnutím na přidáte nový účet.
+b) Do polí Account (Účet) a Password (Heslo) zadejte název 
+a heslo síťového klienta. Opakovaným zadáním potvrďte 
+heslo. Klepnutím na Add (Přidat) přidejte účet do seznamu.
+37
+3. V seznamu souborů/složek, vyberte typ přístupových práv, 
+který chcete přidělit pro specifické souborů/složek:
+• R/W: Výběrem této možnosti přidělíte přístup pro čtení/
+zápis.
+• R: Výběrem této možnosti přidělíte přístup pouze pro čtení.
+• Ne: Tuto možnost vyberte, pokud nechcete sdílet specifický 
+soubor
+4. Klepnutím na tlačítko Apply (Použít) vejdou změny v 
+platnost.
+3.5.4 Používání služby sdílení FTP
+Sdílení FTP umožňuje serveru FTP sdílet soubory z disku USB 
+pro další zařízeních prostřednictvím místní sítě LAN nebo 
+prostřednictvím Internetu.
+DŮLEŽITÉ: 
+• Bezpečně odeberte disk USB. V případě nesprávného odebrání disku 
+USB může dojít k poškození dat. 
+• Pokyny pro bezpečné odebrání disku USB viz část Bezpečné 
+odebráni disku USB v části 3.1.5 Sledování vašeho zařízení USB.
+38
+Pokyny pro používání služby FTP Share (Sdílení FTP):
+POZNÁMKA: Zkontrolujte, zda jste nakonfigurovali váš server FTP 
+prostřednictvím AiDisk. Další podrobnosti viz část 3.5.1 Používání 
+aplikace AiDisk.
+1. Na navigačním panelu klepněte na General (Obecné) > USB 
+application (USB aplikace) > Media Services and Servers 
+(Mediální služby a servery médií) > karta FTP Share 
+(Sdílení FTP). 
+2. V seznamu souborů/složek, vyberte typ přístupových práv, 
+který chcete přidělit pro specifické souborů/složek:
+ • R/W: Výběrem této možnosti přidělíte přístup pro čtení/
+zápis ke specifické složek.
+ • W: Výběrem této možnosti přidělíte přístup pouze pro 
+zápis ke specifické složek.
+ • R: Výběrem této možnosti přidělíte přístup pouze pro 
+čtení ke specifické složek.
+ • Ne: Tyto možnost vyberte, pokud nechcete sdílet 
+specifickou složek.
+3. Podle potřeby můžete nastavit pole Allow anonymous login 
+(Povolit anonymní přihlášení) na ON (ZAPNUTO).
+4. Do pole Maximum number of concurrent connections 
+(Maximální počet souběžných připojení) zadejte počet 
+zařízení, která se mohou současně připojit ke sdílenému 
+serveru FTP.
+5. Klepnutím na tlačítko Apply (Použít) vejdou změny v 
+platnost.
+6. Chcete-li přejít na server FTP, zadejte odkaz na server FTP 
+ftp://<název hostitele>.asuscomm.com a vaše uživatelské 
+jméno a heslo do webového prohlížeče nebo nástroje FTP 
+jiného výrobce.
+39
+3.6 Používání aplikace AiCloud 2.0
+AiCloud 2.0 je aplikace cloudových služeb, která umožňuje 
+ukládat, synchronizovat, sdílet a přistupovat k vašim souborům.
+Pokyny pro používání aplikace AiCloud:
+1. Stáhněte aplikaci ASUS AiCloud z obchodu Google Play 
+Store nebo Apple Store a nainstalujte ji do vašeho chytrého 
+přístroje. 
+2. Připojte chytrý přístroj k síti. Dokončete konfiguraci aplikace 
+AiCloud podle zobrazených pokynů.
+40
+3.6.1 Cloudový disk
+Pokyny pro vytvoření cloudového disku:
+1. Připojte paměťové USB zařízení k bezdrátovému směrovači.
+2. Zapněte Cloud Disk (Cloudový disk).
+3. Přejděte na https://router.asus.com a zadejte účet a heslo 
+pro přihlášení ke směrovači. Pro dosažení optimálních 
+výsledků doporučujeme používat prohlížeč Google Chrome 
+nebo Firefox.
+41
+4. Nyní můžete začít přistupovat k souborům na cloudovém 
+disku v zařízeních připojených k síti.
+POZNÁMKA: Při přistupování k zařízením, která jsou připojena k síti, 
+je nezbytné ručně zadat uživatelské jméno a heslo zařízení; aplikace 
+AiCloud z bezpečnostních důvodů tyto údaje neuloží.
+3.6.2 Chytrý přístup
+Funkce Smart Access (Chytrý přístup) umožňuje snadný přístup k 
+domácí síti prostřednictvím názvu domény směrovače.
+POZNÁMKY: 
+• Název domény pro router lze vytvořit pomocí ASUS DDNS. Další 
+podrobnosti viz část 4.3.7 DDNS.
+• Ve výchozí konfiguraci aplikace AiCloud poskytuje zabezpečené 
+připojení HTTPS. Pro velmi bezpečné používání funkcí Cloud Disk 
+(Cloudový disk) a Smart Access (Chytrý přístup) zadejte 
+https://[yourASUSDDNSname].asuscomm.com.
+42
+3.6.3 Chytrá synchronizace
+Pokyny pro používání funkce Smart Sync (Chytrá synchronizace):
+1. Spusťte aplikaci AiCloud 2.0 a klepněte na Smart Sync 
+(Chytrá synchronizace) > Go (Přejít).
+2. Výběrem ON (ZAP.) aktivujte funkci Smart Sync (Chytrá 
+synchronizace).
+3. Klepněte na Add new account (Přidat nový účet). 
+4. Zadejte heslo k účtu ASUS WebStorage a vyberte adresář, 
+který chcete synchronizovat se službou WebStorage.
+5. Vyberte pravidla synchronizace pro úlohu chytré 
+synchronizace.
+• Synchronization (Synchronizace): Výběrem volby 
+Synchronization (Synchronizace) lze synchronizovat složku 
+mezi dvěma servery; tato úloha synchronizace vždy udržuje 
+stejné soubory ve vaší složce.
+• Download to USB Disk (Stáhnout na disk USB): Výběrem 
+volby Download to USB Disk (Stáhnout na disk USB) 
+můžete replikovat vzdálené soubory do místní složky na 
+disku USB.
+• Upload to Cloud (Odeslat do cloudu): Výběrem Upload 
+to Cloud (Odeslat do cloudu) můžete replikovat místní 
+soubory do vzdálené složky na ASUS WebStorage.
+43
+6. Kliknutím na Apply (Použít) přidejte úlohu synchronizace.
+3.6.4 Sync Server (Synchronizace serveru)
+44
+Pokyny pro použití synchronizace serveru:
+1. Na navigačním panelu klikněte na AiCloud 2.0 > Sync Server 
+(Synchronizace serveru).
+2. Zadáním konfigurace synchronizace serveru v části Invitation 
+Generator (Generátor pozvání) aktivujte Smart Sync 
+(Chytrá synchronizace).
+3. Odešlete známému pozvání k synchronizaci.
+4. Po vytvoření pozvání můžete zkontrolovat úlohu 
+synchronizace v tabulce Sync List (Seznam synchronizace).
+5. Kliknutím na tlačítko Delete (Odstranit) můžete úlohu 
+ukončit, pokud již nechcete synchronizovat složku se 
+vzdáleným klientem.
+45
+6. Činnosti synchronizačního serveru lze rovněž zobrazit 
+kliknutím na tlačítko Check log (Kontrola protokolu) nebo 
+na kartu Log (Protokol).
+46
+3.6.5 Settings (Nastavení)
+AiCloud 2.0 umožňuje definovat zásady přístupu a zabránit 
+neoprávněnému přístupu, například slovníkovému útoku. Když 
+se hostitel pokusí o přístup k AiCloud a přesáhne stanovený 
+maximální počet neúspěšných pokusů o přihlášení v daném 
+intervalu, služba AiCloud bude automaticky deaktivována. 
+Protokol Secure Socket Layer (SSL) zajišťujte šifrovanou 
+komunikaci mezi webovým serverem a prohlížeči pro bezpečné 
+přenášení dat, což zahrnuje přístupové heslo. Pro přístup 
+uživatele k webovému portálu AiCloud použijte výchozí port 443 
+s protokolem https. Pro dodávání obsahu se používá výchozí port 
+8082 s protokolem http.
+47
+4 Konfigurování upřesňujících 
+nastavení
+4.1 Bezdrátové připojení
+4.1.1 Obecné
+Na kartě General (Obecné) lze konfigurovat základní nastavení 
+bezdrátového připojení. 
+Pokyny pro konfigurování základních nastavení 
+bezdrátového připojení:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > Wireless (Bezdrátové připojení) > 
+karta General (Obecné).
+2. Vyberte frekvenční pásmo 2.4 GHz nebo 5 GHz pro 
+bezdrátovou síť.
+3. V poli SSID, přiřaďte jedinečný název obsahující maximálně 
+32 znaků jako SSID (Service Set Identifier) nebo název sítě pro 
+identifikaci vaší bezdrátové sítě. Prostřednictvím přiřazeného 
+SSID mohou zařízení Wi-Fi identifikovat bezdrátovou síť 
+a připojit se. Při uložení nových SSID do nastavení jsou 
+zaktualizovány SSID na informačním panelu.
+48
+4. Výběrem Yes (Ano) v poli Hide SSID (Skrýt SSID) zabráníte 
+bezdrátovým zařízením v rozpoznání vašeho SSID. Když je 
+tato funkce aktivována, bude třeba při přístup k bezdrátové 
+síti ručně zadat SSID v bezdrátovém zařízení. 
+5. V poli Wireless Mode (Bezdrátový režim), výběrem některé 
+z následujících možností bezdrátového režimu určete 
+typy bezdrátových zařízení, která se mohou připojovat k 
+bezdrátovému směrovači: 
+• Automaticky: Výběrem možnosti Auto (Automaticky) 
+umožníte, aby se k bezdrátovému směrovači mohla 
+připojovat zařízení 802.11AC, 802.11n, 802.11g a 802.11b.
+• Starší: Výběrem možnosti Legacy (Starší) umožníte, aby 
+se k bezdrátovému směrovači mohla připojovat zařízení 
+802.11b/g/n. Nicméně hardware, který nativně podporuje 
+standard 802.11n, bude přenášet data pouze maximální 
+rychlostí 54 Mb/s. 
+• b/g Protection (Ochrana b/g): Zaškrtnutím volby b/g 
+Protection (Ochrana b/g) povolíte bezdrátovému směrovači 
+provádět přenosy s ochranou 802.11n ze starších zařízení s 
+připojením 802.11g, 802.11b.
+6. V poli Control Channel (Řídící kanál) vyberte provozní 
+kanál bezdrátového směrovače. Výběrem možnosti Auto 
+(Automaticky) bude bezdrátový router automaticky vybírat 
+kanál, který je nejméně rušený. 
+7. V poli Channel bandwidth (Šířka pásma kanálu) vyberte 
+některou z následujících šířek pásem kanálu pro dosažení 
+vyšších přenosových rychlostí:
+• 20/40MHz (výchozí): Tímto výběrem bude automaticky 
+zvolena nejvhodnější šířka pásma pro vaše bezdrátové 
+prostředí. V pásmu 5 GHz je vybrána výchozí šířka pásma 
+20/40/80MHz.
+• 80MHz: Výběrem této šířky pásma dosáhnete maximální 
+propustnost 5GHz bezdrátového připojení.
+• 40MHz: Výběrem této šířky pásma dosáhnete maximální 
+propustnost 2,4GHz bezdrátového připojení.
+• 20MHz: Vyberte tuto šířku pásma, pokud se setkáte s 
+problémy s bezdrátovým připojením. 
+8. V případě výběru 20/40/80MHz, 20/40MHz, 40MHz nebo 
+80MHz můžete v poli Extension Channel (Rozšiřovací 
+kanál) definovat horní nebo dolní sousední kanál, který se má 
+použít.
+49
+9. V poli Authentication Method (Metoda ověření) vyberte 
+některou z následujících metod ověření: 
+• Otevřený systém: Tato volba neposkytuje žádné 
+zabezpečení.
+• WPA/WPA2 osobní/WPA auto-osobní: Tato volba poskytuje 
+silné zabezpečení. Můžete použít ověřování WPA (s TKIP) 
+nebo WPA2 (s AES). V případě výběru této volby musíte 
+použít šifrování TKIP + AES a zadat přístupové heslo WPA 
+(síťový klíč).
+• WPA/WPA2 podnikový/WPA auto-podnikový: Tato 
+volba poskytuje velmi silné zabezpečení. Je k dispozici s 
+integrovaným serverem EAP nebo externím ověřovacím 
+serverem RADIUS.
+10. Po dokončení klepněte na tlačítko Apply (Použít).
+4.1.2 WPS
+WPS (Wi-Fi Protected Setup) je standard zabezpečení 
+bezdrátového připojení, který umožňuje snadno připojovat 
+zařízení k bezdrátové síti. Funkci WPS nakonfigurovat 
+prostřednictvím kódu PIN nebo tlačítka WPS. 
+POZNÁMKA: Zkontrolujte, zda zařízení podporují standard WPS.
+50
+Pokyny pro aktivaci standardu WPS v bezdrátové síti:
+1. Na navigačním panelu přejděte na Advanced Settings (Upřesnit 
+nastavení) > Wireless (Bezdrátové připojení) > karta WPS. 
+2. V poli Enable WPS (Aktivovat WPS) přemístěte posuvník do 
+polohy ON (ZAP.).
+3. Standard WPS používá rádiová pásma 2.4 GHz a 5 GHz současně.
+4. K párování bezdrátového připojení lze použít některou z 
+následujících metod WPS:
+• Režim PBC (Push Button Configuration):
+ • Hardwarová konfigurace PBC na směrovači: Stiskněte fyzické 
+tlačítko WPS na bezdrátovém směrovači a potom stiskněte a 
+podržte tlačítko WPS na bezdrátovém klientovi po dobu tří (3) 
+minut. 
+ • Softwarová konfigurace PBC na směrovači: Zaškrtněte <Push 
+button> (Tlačítko) v poli WPS Method (Metoda WPS), 
+klikněte na Start a potom stiskněte a podržte tlačítko WPS na 
+bezdrátovém klientovi po dobu tří (3) minut. 
+• Režim PIN Code (Kód PIN):
+ • Párování z bezdrátového klienta: Stiskněte tlačítko WPS na 
+bezdrátovém klientovi, proveďte připojení WPS v režimu kódu 
+PIN a zadejte AP PIN Code (Kód PIN AP) v klientském zařízení.
+ • Párování z bezdrátového směrovače: Stiskněte tlačítko WPS 
+na bezdrátovém klientovi, proveďte připojení WPS v režimu 
+kódu PIN a zadejte Client PIN Code (Kód PIN klienta) v části 
+WPS Method (Metoda WPS) > pole Client PIN Code (Kód PIN 
+klienta). Zkontrolujte správnost kódu PIN a potom kliknutím na 
+Start proveďte spárování s bezdrátovým klientem.
+POZNÁMKY: 
+• Standard WPS podporuje ověřování prostřednictvím Open System 
+(Otevřený systém) a WPA2-Personal (WPA2-osobní). Standard WPS 
+nepodporuje bezdrátové sítě, které využívají metody šifrování Shared 
+Key (Sdílený klíč), WPA-Personal (WPA-osobní), WPA-Enterprise (WPA-
+podnikový), WPA2-Enterprise (WPA2-podnikový) a RADIUS.
+• Vyhledejte umístění tlačítka WPS na bezdrátovém zařízení nebo v 
+příslušné uživatelské příručce.
+• Během procesu WPS bezdrátový router vyhledává veškerá dostupná 
+zařízení WPS. Pokud bezdrátový router nenajde žádná zařízení WPS, 
+přejde do nečinného režimu.
+• Indikátory LED napájení směrovače budou rychle blikat po dobu tří 
+minut, dokud nebude konfigurování WPS dokončeno.
+51
+4.1.3 WDS
+Most nebo WDS (Wireless Distribution System) umožňuje připojit 
+bezdrátový router ASUS exkluzivně k jinému bezdrátovému 
+přístupovému bodu, aniž by ostatní bezdrátová zařízení nebo 
+stanice mohly přistupovat k vašemu bezdrátovému směrovači ASUS. 
+Bezdrátový router ASUS lze rovněž považovat za bezdrátový generický 
+zesilovač, který komunikuje s jiným bezdrátovým přístupovým bodem 
+a jinými bezdrátovými zařízeními. 
+Pokyny pro konfigurování bezdrátového mostu:
+1. Na navigačním panelu přejděte na Advanced Settings (Upřesnit 
+nastavení) > Wireless (Bezdrátové připojení) > WDS.
+52
+2. Vyberte frekvenční pásmo pro bezdrátový most.
+3. V poli AP Mode (Režim AP) vyberte některou z následujících 
+možností:
+• Pouze AP: Deaktivujte funkci bezdrátového mostu.
+• Pouze WDS: Aktivuje funkci bezdrátového mostu, ale zabraňuje 
+ostatním bezdrátovým zařízením/stanicím připojit se ke 
+směrovači.
+• HYBRID: Aktivuje funkci bezdrátového mostu a umožňuje 
+ostatním bezdrátovým zařízením/stanicím připojit se ke 
+směrovači.
+4. V poli Connect to APs in list (Připojit k AP v seznamu) 
+klepněte na Yes (Ano), chcete-li se připojit k některému 
+přístupovému bodu v seznamu vzdálených přístupových 
+bodů.
+5. V poli Control Channel (Řídící kanál) vyberte provozní 
+kanál bezdrátového mostu. Výběrem možnosti Auto 
+(Automaticky) bude router automaticky vybírat kanál, který 
+je nejméně rušený.
+6. Klepněte na Apply (Použít).
+POZNÁMKY: 
+• V režimu Hybrid mají bezdrátová zařízení připojená k bezdrátovému 
+směrovači ASUS k dispozici pouze poloviční rychlost připojení 
+přístupového bodu. 
+• Veškeré přístupové body přidané do seznamu se musí nacházet na 
+stejném řídícím kanálu a na stejné pevné šířce pásma kanálu, jako 
+bezdrátový router ASUS. Položku Control Channel (Řídící kanál) lze 
+upravit v části nabídky Advanced Settings (Upřesnit nastavení) > 
+Wireless (Bezdrátové připojení) > General (Obecné).
+53
+4.1.4 Bezdrátový filtr MAC
+Bezdrátový filtr MAC umožňuje kontrolovat pakety přenášené na 
+určenou adresu MAC (Media Access Control) ve vaší bezdrátové 
+síti.
+Pokyny pro konfigurování bezdrátového filtru MAC:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > Wireless (Bezdrátové připojení) > 
+karta Wireless MAC Filter (Bezdrátový filtr MAC).
+2. Zatrhněte Yes (Ano) v poli Enable Mac Filter (Povolit filtr 
+Mac).
+3. V rozevíracím seznamu MAC Filter Mode (Režim filtru 
+MAC) vyberte možnost Accept (Přijmout) nebo Reject 
+(Odmítnout).
+• Výběrem možnosti Accept (Přijmout) povolíte zařízením v 
+seznamu filtru MAC přístup k bezdrátové síti.
+• Výběrem možnosti Reject (Odmítnout) zabráníte zařízením 
+v seznamu filtru MAC v přístupu k bezdrátové síti.
+4. V seznamu filtru MAC klepněte na tlačítko Add (Přidat) a 
+zadejte adresu MAC bezdrátového zařízení.
+5. Klepněte na Apply (Použít).
+54
+4.1.5 Nastavení RADIUS
+Nastavení RADIUS (Remote Authentication Dial In User Service) 
+poskytuje dodatečnou vrstvu zabezpečení při výběru režimu 
+ověřování WPA-podnikový, WPA2-podnikový nebo Radius s 
+802.1x.
+Pokyny pro konfigurování bezdrátových nastavení RADIUS:
+1. Zkontrolujte, zda je režim ověřování bezdrátového směrovače 
+nastaven na WPA-podnikový, WPA2-podnikový nebo 
+Radius s 802.1x.
+POZNÁMKA: Pokyny pro konfigurování režimu ověřování bezdrátového 
+směrovače viz část 4.1.1 Obecné.
+2. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > Wireless (Bezdrátové připojení) > 
+RADIUS Setting (Nastavení RADIUS).
+3. Vyberte frekvenční pásmo.
+4. Do pole Server IP Address (Adresa IP serveru) zadejte 
+adresu IP serveru RADIUS.
+5. Do pole Server Port (Port serveru) zadejte port serveru.
+6. Do pole Connection Secret (Tajemství připojení) zadejte 
+heslo pro přístup k serveru RADIUS.
+7. Klepněte na Apply (Použít).
+55
+4.1.6 Professional (Odborník)
+Na obrazovce Professional (Odborník) jsou k dispozici možnosti 
+upřesňující konfigurace. 
+POZNÁMKA: Na této stránce doporučujeme použít výchozí hodnoty. 
+Na obrazovce Professional Settings (Odborné nastavení) 
+můžete nakonfigurovat následující položky:
+• Frekvence: Vyberte frekvenční pásmo, pro které budou 
+použita profesionální nastavení.
+• Povolit rádio: Výběrem možnosti Yes (Ano) aktivujete 
+bezdrátovou síť. Výběrem možnosti No (Ne) deaktivujete 
+bezdrátovou síť.
+• Enable wireless scheduler (Aktivovat bezdrátový 
+plánovač): Výběrem možnosti Yes (Ano) aktivujete 
+bezdrátovou síť podle plánovaných pravidel. Výběrem 
+možnosti No (Ne) zakážete plánovaná pravidla.
+• Nastavit izolovaný AP: Položka Set AP isolated (Nastavit 
+izolovaný AP) zabraňuje vzájemnou komunikaci bezdrátových 
+zařízení ve vaší síti. Tato funkce je vhodná, pokud se k vaší síti 
+56
+často připojuje nebo odpojuje velké množství hostů. Výběrem 
+možnosti Yes (Ano) aktivujte tuto funkci; výběrem možnosti No 
+(Ne) deaktivujte tuto možnost.
+• Roaming Assistant (Roamingový asistent): Když vaše 
+bezdrátové prostředí zajistilo několik AP (přístupových bodů) 
+nebo bezdrátových generických zesilovačů pro pokrytí 
+všech mrtvých zón bezdrátové sítě. Když se klient, připojený 
+na AP1, přesune z místa s lepším signálem na místo se 
+špatným signálem, ale k dispozici je další signál z AP2. 
+Aby se zabránilo fixování klienta na AP1, můžete aktivovat 
+funkci Roaming Assistant (Roamingový asistent) a nastavit 
+minimální hodnotu RSSI jako práh. Když je kvalita připojení 
+nižší, než práh, AP1 odpojí bezdrátového klienta, který může 
+přehodnotit bezdrátové prostředí a vybrat AP s nejlepší 
+kvalitou signálu, například AP2.
+• Enable IGMP Snooping (Povolit sledování IGMP): Když je 
+povoleno sledování IGMP, je vícesměrový provoz předáván 
+pouze bezdrátovému klientovi, který je členem konkrétní 
+vícesměrové skupiny.
+• Rychlost vícesměrového vysílání (Mb/s): Vyberte 
+rychlost vícesměrového vysílání nebo klepnutím na Disable 
+(Deaktivovat) vypněte simultánní individuální přenos.
+• Typ preambule: Typ preambule definuje dobu, po kterou router 
+provádí kontrolu CRC (Cyclic Redundancy Check). CRC je metoda 
+určování chyb během přenášení dat. Pro frekventovanou 
+bezdrátovou síť s vysokým síťovým provozem vyberte možnost 
+Short (Krátká). Pokud je vaše síť složena ze starších nebo 
+zastaralých bezdrátových zařízení, vyberte možnost Long 
+(Dlouhá).
+• Práh RTS: Výběrem nižší prahové hodnoty RTS (Request to 
+Send) se vylepší bezdrátová komunikace ve frekventované nebo 
+rušené bezdrátové síti s vysokým síťovým provozem a velkým 
+počtem bezdrátových zařízení.
+• Interval DTIM: Interval DTIM (Delivery Traffic Indication 
+Message) nebo rychlost blikání dat je časový interval předtím, 
+než je bezdrátovému zařízení v režimu spánku odeslán signálu o 
+datovém paketu čekajícím na doručení. Výchozí hodnota jsou tři 
+milisekundy. 
+57
+• Interval blikání: Interval blikání je čas mezi dvěma intervaly 
+DTIM. Výchozí hodnota je 100 milisekund. V případě nestabilního 
+bezdrátového připojení nebo roamingujících zařízení snižte 
+hodnotu intervalu blikání. 
+• Povolit shlukování TX: Povolení shlukování TX zvyšuje 
+přenosovou rychlost mezi bezdrátovým směrovačem a 
+zařízeními 802.11g.
+• Povolit WMM APSD: WMM APSD (Automatic Power Save 
+Delivery) představuje vylepšení staršího úsporného režimu. 
+Po aktivaci WMM APSD bude bezdrátový AP řídit využívání 
+rádiového pásma, aby se prodloužila životnosti baterie u 
+bezdrátových klientů s bateriovým napájením, například 
+chytrého telefonu nebo notebooku. APSD automaticky 
+přechází na delší interval blikání, když provoz nevyžaduje 
+krátký interval výměny paketů.
+58
+4.2 LAN
+4.2.1 LAN IP
+Na obrazovce LAN IP lze upravit nastavení LAN IP bezdrátového 
+směrovače.
+POZNÁMKA: Jakékoli změny adresy LAN IP se projeví v nastavení 
+DHCP.
+Pokyny pro úpravy nastavení LAN IP:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > LAN > karta LAN IP.
+2. Upravte položky IP address (Adresa IP) a Subnet Mask 
+(Maska podsítě).
+3. Po dokončení klepněte na tlačítko Apply (Použít).
+59
+4.2.2 Server DHCP
+Tento bezdrátový router využívá server DHCP k automatickému 
+přiřazování adres IP ve vaší síti. Můžete určit rozsah adres IP a 
+dobu zapůjčení pro klienty ve vaší síti.
+Pokyny pro konfiguraci serveru DHCP:
+1. Na navigačním panelu, přejděte na Advanced Settings 
+(Upřesnit nastavení) > LAN > karta DHCP Server (Server 
+DHCP).
+2. V poli Enable the DHCP Server (Povolit server DHCP?) 
+zaškrtněte možnost Yes (Ano).
+3. Do textového pole Domain Name (Název domény) zadejte 
+název domény bezdrátového směrovače.
+4. Do pole IP Pool Starting Address (Počáteční adresa fondu 
+IP) zadejte počáteční adresu IP.
+60
+5. Do pole IP Pool Ending Address (Koncová adresa fondu IP) 
+zadejte koncovou adresu IP.
+6. Do pole Lease Time (Doba zapůjčení) zadejte čas, kdy vyprší 
+platnost adres IP a bezdrátový router automaticky přiřadí 
+nové adresy IP síťovým klientům. 
+POZNÁMKY:
+• Doporučujeme při určování rozsahu adres IP používat formát adresy 
+IP 192.168.1.xxx (kde xxx může být libovolné číslo mezi 2 a 254).
+• Počáteční adresa fondu IP nesmí být větší, než koncová adresa fondu 
+IP.
+7. Podle potřeby v části DNS and Server Settings (Nastavení 
+DNS a serveru) zadejte adresu IP serveru DNS a serveru WINS.
+8. Tento bezdrátový router rovněž umožňuje ručně přiřazovat 
+adresy IP zařízením v síti. V poli Enable Manual Assignment 
+(Povolit ruční přidělování) vyberte možnost Yes (Ano) a 
+přiřaďte adresu IP konkrétním adresám MAC v síti. Do seznam 
+DHCP lze přidat až 32 adres MAC pro ruční přirazování.
+61
+4.2.3 Route (Trasa)
+Pokud vaše síť využívá více bezdrátových směrovačů, můžete 
+nakonfigurovat tabulku směrování pro sdílení stejné internetové 
+služby.
+POZNÁMKA: Bez důkladné znalosti tabulek směrování 
+nedoporučujeme měnit výchozí nastavení směrování. 
+Pokyny pro konfigurování tabulky směrování LAN:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > LAN > karta Route (Trasa). 
+2. V poli Enable static routes (Povolit statické trasy) vyberte 
+možnost Yes (Ano).
+3. V části Static Route List (Seznam statických tras) zadejte 
+síťové informace dalších přístupových bodů nebo uzlů. 
+Klepnutím na tlačítko Add (Přidat) nebo Delete 
+(Odstranit) přidejte nebo odstraňte zařízení ze seznamu.
+4. Klepněte na Apply (Použít).
+62
+4.2.4 Switch Control (Ovládání přepínání)
+Karta Switch Control (Ovládání přepínání) umožňuje 
+nakonfigurovat akceleraci NAT a snížení zatížení sítě pro zvýšení 
+výkonnosti sítě. Bez důkladné znalosti nedoporučujeme měnit 
+výchozí nastavení směrování. 
+63
+4.3 WAN
+4.3.1 Dual WAN (Duální bezdrátová síť WAN)
+4G-AC53U je vybaven podporou duální WAN. Výběrem tohoto 
+režimu bude sekundární síť WAN jako záložní přístup k síti. Pokud 
+primární WAN připojení selže, sekundární síť WAN automaticky 
+naváže nové připojení.
+1. Připojte počítač k portu LAN směrovače dodaným síťovým 
+kabelem.
+2. V podokně Enable Dual WAN (Aktivovat duální WAN) 
+klepněte na ON (ZAPNUTO).
+• Failover Mode (Režim zabezpečení proti selhání): Výběrem 
+tohoto režimu bude sekundární síť WAN jako záložní přístup k 
+síti.
+• Allow Failback (Povolit navrácení služeb po obnovení): 
+Zaškrtnutím tohoto políčka povolíte automatické přepnutí 
+internetového připojení zpět na primární síť WAN, jakmile 
+bude primární WAN zpřístupněna.
+64
+4.3.2 Internetové připojení
+Na obrazovce Internetové připojení lze konfigurovat nastavení 
+různých typů připojení WAN. 
+65
+4.3.2.1 Mobile broadband (Mobilní širokopásmová síť)
+V modelu 4G-AC53U je zabudován 3G/4G modem, který 
+umožňuje přistupovat k Internetu prostřednictvím mobilního 
+širokopásmového připojení.
+Pokyny pro nastavení přístupu k mobilnímu 
+širokopásmovému Internetu: 
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > WAN > karta Internet 
+Connection (Připojení k Internetu) a vyberte Mobile 
+Broadband (Mobilní širokopásmová síť).
+2. V poli Enable Mobile Broadband (Povolit mobilní 
+širokopásmovou síť) vyberte možnost Enable (Povolit). 
+3. Zkontrolujte, zda jste správně vložili kartu SIM, a 
+nakonfigurujte mobilní nastavení směrovače.
+4. Proveďte následující nastavení:
+• Location (Umístění): Z rozevíracího seznamu vyberte 
+umístění poskytovatele služeb 3G/4G.
+• ISP: Z rozevíracího seznamu vyberte vašeho poskytovatele 
+internetových služeb (ISP).
+• APN (Access Point Name) service (Služba APN (Access 
+Point Name) (volitelně): Podrobné údaje vám poskytne váš 
+poskytovatel služeb 3G/4G.
+• Dial Number (Vytočit číslo): Přístupové číslo poskytovatele 
+služeb 3G/4G
+• PIN code (Kód PIN): Zadejte kód PIN poskytovatele 3G/4G 
+pro připojení v části SIM PIN Management (Správa SIM PIN), 
+pokud je vyžadována karta SIM.
+66
+POZNÁMKY:
+• Výchozí kód PIN se může lišit podle poskytovatele.
+• Při prvním nastavení nebo po restartování směrovače je třeba v 
+některém ze dvou následujících případů zadat kód PIN: 
+ • Váš poskytovatel internetových služeb (ISP) aktivoval ověření 
+pomocí kódu PIN jako výchozí. 
+ • Aktivovali jste ověření pomocí kódu PIN ručně ve webovém 
+grafickém uživatelském rozhraní (GUI) směrovače nebo ve vašem 
+mobilním telefonu.
+• Pokud je aktivováno ověření pomocí kódu PIN, v oblasti stavových 
+ikon se zobrazí ikona stavu zámku SIM .
+• Username / Password (Uživatelské jméno / heslo): Zadejte 
+uživatelské jméno a heslo od poskytovatele sítě 3G/4G.
+• Idle Time (Doba nečinnosti): Zadejte čas (v minutách), po 
+jehož uplynutí router přejde do režimu spánku, když není na 
+síti žádná aktivita. 
+67
+Konfigurace připojení k Internetu
+Pokyny pro konfiguraci mobilního širokopásmového připojení: 
+1. V poli Network Type (Typ sítě) vyberte vaši 
+upřednostňovanou síť:
+• Auto (Automaticky) (výchozí): Výběrem možnosti Auto 
+(Automaticky) bude bezdrátový router automaticky vybírat 
+kanál, který má k dispozici připojení ze sítě 4G, 3G a 2G. 
+• 3G/4G: Výběrem volby 3G/4G povolíte bezdrátovému 
+směrovači, aby se automaticky připojil k síti 3G nebo 4G. 
+• 4G only (Pouze 4G): Výběrem této možnosti se bezdrátový 
+směrovač automaticky připojí pouze k síti 4G.
+• 3G only (Pouze 3G): Výběrem této možnosti se bezdrátový 
+směrovač automaticky připojí pouze k síti 3G.
+• 2G only (Pouze 2G): Výběrem této možnosti se bezdrátový 
+směrovač automaticky připojí pouze k síti 2G.
+2. Connection Type (Typ připojení): V tomto poli lze definovat 
+zásady připojení. 
+3. PDP Type (Typ PDP): Tento bezdrátový router podporuje 
+několik typů PDP, PPP, IPv4, IPv6, IPv6toIPv4.
+4. Roaming : Při cestě do jiné země může pomocí původní 
+karty SIM přistupovat k místní síti, pokud váš poskytovatel 
+ISP zajišťuje v této zemi roamingovou službu. Aktivací těchto 
+funkcí budete mít povolen přístup k místní síti.
+• Klepnutím na Scan (Vyhledat) se zobrazí všechny dostupné 
+mobilní sítě. 
+• Vyberte dostupnou mobilní síť a klepnutím na Apply 
+(Použít) se k ní připojte. 
+68
+POZNÁMKY: 
+• Tento router LTE dokáže rozpoznat vašeho ISP na základě informací 
+IMSI vaší karty SIM. Pokud nebude nalezena mobilní síť vašeho ISP, 
+připojte se k roamingující síti jiných ISP.
+• Používání roamingové služby bude dodatečně zpoplatněno. Před 
+použití roamingové služby se informujte u vašeho poskytovatele 
+mobilní služby. 
+Omezení provozu
+Pokyny pro konfigurování nastavení využití dat:
+1. Data usage (Využití dat): Ukazuje využití dat. 
+2. Počáteční den cyklu: Vyberte den, od kterého se má začít 
+shromažďovat využití dat. Na konci každého cyklu bude 
+využití dat vynulováno.
+3. Data Usage Limit (Limit využití dat): Nastavte měsíční horní 
+limit využívání Internetu. Když vaše využití dat dosáhne tento 
+limit, přístup k Internetu bude zablokován.
+4. Upozornění využití dat: Nastavte maximální využití 
+internetové šířky pásma, při kterém bude odesláno 
+upozornění. Když využití Internetu dosáhne tohoto limitu, 
+bude přístup k Internetu zablokován. 
+5. Odeslat SMS s oznámením: Aktivací této funkce obdržíte 
+SMS s oznámením po dosažení maximálního limitu pro využití 
+Internetu.
+69
+Konfigurace kódu PIN
+Zadejte kód PIN, pokud je vyžadována karta SIM; zadejte kód PIN 
+před použitím připojení APN.
+Když je aktivováno ověření kódem PIN, můžete rovněž kliknout na 
+tlačítko Modify (Upravit) a změnit kód PIN.
+6. Číslo mobilního telefonu: Zadejte číslo mobilního telefonu, 
+na které bude zaslána SMS s oznámením.
+POZNÁMKA: Z účtu vašeho mobilního telefonu bude odečten 
+poplatek za SMS.
+7. Klikněte na Apply (Použít).
+70
+Mobile Connection Status (Stav mobilního připojení) 
+Pokyny pro vyhledání informací o mobilní širokopásmové síti:
+1. Kliknutím na vyhledejte podrobné informace.
+2. Na obrazovce Mobile Connection Status (Stav mobilního 
+připojení) je podrobně zobrazen stav mobilního 
+širokopásmového připojení.
+71
+4.3.2.2 Ethernet LAN jako WAN
+Pokyny pro konfigurování nastavení připojení WAN:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > WAN > karta Internet Connection 
+(Internetové připojení).
+2. V rozhraní WAN vyberte Ethernet LAN.
+3. Nakonfigurujte níže uvedená nastavení: Po dokončení 
+klepněte na tlačítko Apply (Použít).
+• Typ připojení WAN: Vyberte typ poskytovatele 
+internetových služeb. K dispozici jsou možnosti Automatic 
+IP (Automatická adresa IP), PPPoE, PPTP, L2TP nebo fixed 
+IP (Pevná adresa IP). Pokud router nemůže získat platnou 
+adresu IP nebo pokud neznáte typ připojení WAN, požádejte 
+o pomoc vašeho ISP.
+72
+• Povolit WAN: Výběrem možnosti Yes (Ano) aktivujte přístup 
+směrovače k Internetu. Výběrem možnosti No (Ne) zakážete 
+přístup k Internetu.
+• Povolit NAT: V systému NAT (Network Address Translation) 
+se používá jedna veřejná adresa IP (WAN IP) k poskytování 
+přístupu k Internetu síťovým klientům s privátní adresou IP v 
+místní síti LAN. Privátní adresa IP každého síťového klienta je 
+uložena do tabulky NAT a je použita ke směrování příchozích 
+datových paketů.
+• Povolit UPnP: Technologie UPnP (Universal Plug and Play) 
+umožňuje ovládat více zařízení (směrovače, televizory, 
+stereofonní systémy, herní konzole, mobilní telefony) 
+prostřednictvím sítě na bázi IP s nebo bez centrálního 
+ovládání prostřednictvím brány. Technologie UPnP umožňuje 
+připojit počítače všech formátů a poskytuje hladký přístup 
+k síti pro vzdálenou konfiguraci a přenos dat. S technologií 
+UPnP je nové síťové zařízení vyhledáno automaticky. Po 
+připojení k síti lze zařízení vzdáleně konfigurovat pro 
+podporu P2P aplikací, interaktivních her, videokonferencí 
+a webových nebo proxy serverů. Na rozdíl od předávání 
+portů, které vyžaduje ruční konfiguraci nastavení portů, 
+technologie UPnP automaticky konfiguruje router tak, aby 
+akceptoval příchozí připojení a směroval požadavky na 
+konkrétní počítače v místní síti. 
+• Připojit k serveru DNS: Umožňuje tomuto serveru automaticky 
+získávat adresu IP DNS od ISP. DNS je hostitel v Internetu, který 
+překládá internetové názvy na číselné adresy IP. 
+• Ověřování: Někteří ISP mohou tuto položku specifikovat. 
+Informujte se u vašeho ISP a případně zadejte.
+• Název hostitele: Do tohoto pole můžete zadat název 
+hostitele vašeho směrovače. Obvykle se jedná o zvláštní 
+požadavek ISP. Pokud váš ISP přiřadil vašemu počítači název 
+hostitele, zadejte jej zde.
+ Adresa MAC: Adresa MAC (Media Access Control) je 
+jednoznačný identifikátor síťového zařízení. Někteří ISP 
+sledují adresy MAC síťových zařízení, která se připojují k jejich 
+službám, a odmítají každé nerozpoznané zařízení, které se 
+pokusí připojit. Chcete-li zabránit problémy s připojením 
+z důvodu nezaregistrované adresy MAC, použijte jednu z 
+následujících možností:
+73
+• Kontaktujte vašeho ISP a požádejte jej o registraci adresy 
+MAC k využívané službě ISP.
+• Naklonujte nebo změňte adresu MAC bezdrátového 
+směrovače ASUS tak, aby se shodovala s adresou MAC 
+předchozího síťového zařízení, která byla poskytovatelem ISP 
+registrována. 
+• DHCP query frequency (Četnost dotazování DHCP): Mění 
+nastavení intervalu vyhledávání DHCP, aby se zabránilo 
+přetížení serveru DHCP.
+• První zpoždění: Nastavte zpoždění (v sekundách) před 
+odesláním prvního paketu ping.
+• Interval opakování: Nastavte časový interval (v sekundách) 
+mezi dvěma pakety ping.
+• Počet opakování převzetí služeb při selhání: Nastavte čas 
+(v sekundách), po kterém systém spustí převzetí služeb při 
+selhání nebo navrácení služeb po obnovení, když vyprší čítač 
+testu ping a cílová adresa IP neodpovídá.
+• Enable User-defined Target (Povolit cíl definovaný 
+uživatelem): Vyberte možnost Yes (Ano), když chcete ručně 
+definovat cílovou adresu IP nebo FQDN (Fully Qualified 
+Domain Name) pro testovací paket ping. 
+74
+4.3.3 IPv6 (Internet Settings)
+Tento bezdrátový router podporuje adresování IPv6, systém, 
+který podporuje více adres IP. Tento standard dosud není velmi 
+rozšířen. Zeptejte se vašeho ISP, zda jeho internetové služby 
+podporují IPv6. 
+Pokyny pro nastavení IPv6:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > IPv6.
+2. Vyberte příslušnou možnost Connection Type (Typ 
+připojení). Možnosti konfigurace se liší v závislosti na 
+vybraném typu připojení.
+3. Zadejte nastavení IPv6 LAN a DNS.
+4. Klepněte na Apply (Použít).
+POZNÁMKA: Specifické informace IPv6 pro vaše internetové služby vám 
+poskytne váš ISP.
+75
+4.3.4 Aktivace portů
+Aktivace rozsahu portů otevírá na omezenou dobu předem 
+určený příchozí port, kdykoli některý klient místní sítě provede 
+odchozí připojení na některý určený port. Aktivace portů se 
+používá v následujících situacích:
+• Více místních klientů vyžaduje předávání portu pro stejnou 
+aplikaci v různou dobu.
+• Některá aplikace vyžaduje konkrétní příchozí porty, které se 
+liší od odchozích portů.
+Pokyny pro nastavení aktivace portů:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > WAN > karta Port Trigger (Aktivace 
+portů).
+76
+2. V poli Enable Port Trigger (Povolit aktivaci portů) 
+zaškrtněte Yes (Ano).
+3. V poli Well-Known Applications (Známé aplikace) vyberte 
+oblíbené hry a webové služby, které chcete přidat do 
+seznamu aktivace portů.
+4. Do tabulky Trigger Port List (Seznam aktivace portů) 
+zadejte následující údaje:
+• Popis: Zadejte krátký název nebo popis služby.
+• Aktivační port: Určete aktivační port pro otevření příchozího 
+portu.
+• Protokol: Vyberte protokol TCP nebo UDP.
+• Příchozí port: Určete příchozí port pro příjem příchozích dat 
+z Internetu.
+• Protokol: Vyberte protokol TCP nebo UDP.
+5. Chcete-li zadat údaje pro aktivaci portu do seznamu, klepněte 
+na Add (Přidat) . Klepnutím na tlačítko Delete (Odstranit) 
+ odstraníte položku aktivace portu ze seznamu.
+6. Po dokončení klepněte na Apply (Použít).
+POZNÁMKY:
+• Při připojování k serveru IRC provede klientský počítač odchozí 
+připojení pomocí rozsahu aktivačních portů 66660 - 7000. Server IRC 
+server odpoví ověřením uživatelského jména a vytvořením nového 
+připojení ke klientskému počítači pomocí příchozího portu.
+• Pokud je aktivace portů deaktivována, router ukončí připojení, 
+protože nemůže určit počítač, který požaduje o přístup k IRC. Když 
+je aktivace portů aktivována, router přiřadí příchozí port při přijetí 
+příchozích dat. Tento příchozí port se po vypršení stanovené doby 
+uzavře, protože si router není jistý, kdy bude aplikace ukončena.
+• Aktivace portů pouze umožňuje, aby jeden klient v síti používal 
+konkrétní službu a specifický příchozí port současně.
+• Nelze používat stejnou aplikaci pro aktivaci portu ve více počítačích 
+současně. Směrovač předá port pro odeslání požadavku/aktivace 
+směrovači zpět pouze poslednímu počítači.
+77
+4.3.5 Virtuální server/předávání portů
+Předávání portů je způsob směrování síťového provozu z 
+Internetu na konkrétní port a konkrétní rozsah portů jednoho 
+nebo více zařízení v místní síti. Nastavením předávání portů 
+ve směrovači umožňuje počítačům mimo síť přistupovat ke 
+specifickým službám, které poskytuje některý počítač ve vaší síti.
+POZNÁMKA: Když je aktivováno předávání portů, router ASUS blokuje 
+nevyžádaný příchozí provoz z Internetu a povoluje pouze odpovědi na 
+odchozí požadavky z místní sítě LAN. Síťový klient nemá přímý přístup k 
+Internetu a naopak.
+Pokyny pro nastavení předávání portů:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > WAN > karta Virtual Server / Port 
+Forwarding (Virtuální server / předávání portů).
+2. V poli Enable Port Forwarding (Povolit předávání portů) 
+zaškrtněte Yes (Ano).
+78
+3. V poli Famous Server List (Seznam slavných serverů) 
+vyberte typ služby, ke které chcete přistupovat. 
+4. V poli Famous Game List (Seznam slavných her) vyberte 
+oblíbenou hru, ke které chcete přistupovat. Tato položka 
+zobrazuje port, který je vyžadován pro správné fungování 
+vybrané oblíbené online hry. 
+5. Do tabulky Port Forwarding List (Seznam předávání portů) 
+zadejte následující údaje:
+• Název služby: Zadejte název služby.
+• Rozsah portů: Chcete-li určit rozsah portů pro klienty ve 
+stejné síti, zadejte údaje Service Name (Název služby), Port 
+Range (Rozsah portů) (například 10200:10300), LAN IP address 
+(Adresa IP místní sítě LAN) a položku Local Port (Místní port) 
+ponechte prázdnou. Rozsah portů akceptuje různé formáty, 
+například Rozsah portů (300:350), individuální porty (566,789) 
+nebo kombinaci (1015:1024,3021). 
+POZNÁMKY:
+• Když je deaktivována síťová brána firewall a nastavíte 80 jako rozsah 
+portů serveru HTTP pro nastavení WAN, dojde ke konfliktu vašeho 
+serveru http/webového serveru s uživatelským webovým rozhraním 
+směrovače.
+• Síť využívá porty k výměně dat a každému portu je přiřazeno číslo 
+a konkrétní úloha. Například port 80 se používá pro protokol HTTP. 
+Konkrétní port může používat najednou pouze jedna aplikace nebo 
+služba. Z tohoto důvodu nemohou dva počítače současně získat 
+přístup k datům prostřednictvím stejného portu. Například nelze 
+nastavit předávání portu 100 pro dva počítače současně.
+• Místní adresa IP: Zadejte síťovou adresu IP klienta. 
+POZNÁMKA: Aby předávání portů fungovalo správně, použijte pro místního 
+klienta statickou adresu IP. Další informace viz část 4.2 LAN.
+79
+• Místní port: Zadejte konkrétní port pro příjem předávaných 
+paketů. Toto pole ponechte prázdné, pokud chcete, aby byly 
+příchozí pakety přesměrovávány na určený rozsah portů.
+• Protokol: Vyberte protokol. Pokud si nejste jisti, vyberte možnost 
+BOTH (OBOJE).
+5. Chcete-li zadat údaje pro aktivaci portu do seznamu, 
+klepněte na Add (Přidat) . Klepnutím na tlačítko Delete 
+(Odstranit) odstraníte položku aktivace portu ze 
+seznamu.
+6. Po dokončení klepněte na Apply (Použít).
+Pokyny pro kontrolu úspěšné konfigurace předávání portů:
+• Zkontrolujte, zda je nakonfigurován a spuštěn váš server nebo 
+aplikace.
+• Budete potřebovat klienta mimo vaši místní síť LAN, který má 
+ovšem přístup k Internetu (též „internetový klient“). Tento klient 
+nesmí být připojen ke směrovači ASUS.
+• V internetovém klientovi zadejte adresu IP sítě WAN směrovače 
+pro přístup k serveru. Pokud byl port úspěšně předán, mělo by 
+být možné přistupovat k souborům nebo aplikacím.
+Rozdíly mezi aktivací portů a předáváním portů: 
+• Předávání portů bude fungovat i bez nakonfigurování specifické 
+adresy IP místní sítě LAN. Na rozdíl od předávání portů, které 
+vyžaduje statickou adresu IP sítě LAN, umožňuje předávání 
+portů předávat dynamické porty pomocí směrovače. Jsou 
+nakonfigurovány předem stanovené rozsahy portů pro příjem 
+příchozích připojení na omezenou dobu. Aktivace portů umožňuje 
+více počítačům využívat aplikace, které by normálně vyžadovaly 
+ruční předávání totožných portů na každý počítač v síti.
+• Aktivace portů je bezpečnější, než předávání portů, protože 
+příchozí porty nejsou otevřené po celou dobu. Jsou otevřeny 
+pouze když aplikace navazuje odchozí připojení prostřednictvím 
+aktivačního portu.
+80
+4.3.6 DMZ
+Virtuální DMZ vystavuje jednoho klienta na Internetu a umožňuje, 
+aby tento klient přijímal veškeré příchozí pakety směrované do 
+vaší místní sítě LAN. 
+Příchozí provoz z Internetu je obvykle likvidován a směrován 
+na konkrétního klienta pouze, pokud je v síti nakonfigurováno 
+předávání nebo aktivace portů. V konfiguraci DMZ přijímá jeden 
+síťový klient všechny příchozí pakety. 
+Nastavení DMZ v síti je vhodné, když potřebujete příchozí 
+porty otevřené nebo chcete hostovat doménový, webový nebo 
+e-mailový server.
+UPOZORNĚNÍ: Otevřením všech portů klienta pro přístup z Internetu 
+bude síť náchylná na útoky zvnějšku. Uvědomte si bezpečnostní rizika 
+vyplývající z používání DMZ.
+Pokyny pro nastavení DMZ:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > WAN > karta DMZ.
+2. Nakonfigurujte následující nastavení. Po dokončení klepněte 
+na tlačítko Apply (Použít).
+• Adresa IP vystavené stanice: Zadejte síťovou adresu IP 
+klienta, který bude zajišťovat službu DMZ a bude vystaven v 
+Internetu. Zajistěte, aby měl klient serveru statickou adresu IP.
+Pokyny pro odebrání DMZ:
+1. Odstraňte síťovou adresu IP klienta z textového pole IP 
+Address of Exposed Station (Adresa IP vystavené stanice).
+2. Po dokončení klepněte na tlačítko Apply (Použít).
+81
+4.3.7 DDNS
+Nastavení DDNS (Dynamic DNS) vyžaduje přístup ke směrovači z 
+místa mimo síť prostřednictvím poskytované služby ASUS DDNS 
+nebo jiné služby DDNS.
+Pokyny pro nastavení DDNS:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > WAN > karta DDNS.
+2. Nakonfigurujte níže uvedená nastavení: Po dokončení 
+klepněte na tlačítko Apply (Použít).
+• Povolit klienta DDNS: Povolte, aby mohl server DDNS 
+přistupovat ke směrovači ASUS prostřednictvím názvu DNS, 
+nikoli adresy IP sítě WAN.
+• Název serveru a hostitele: Vyberte server ASUS DDNS nebo 
+jiný server DDNS. Chcete-li používat server ASUS DDNS, 
+zadejte název hostitele ve formátu xxx.asuscomm.com (xxx je 
+váš název hostitele). 
+• Chcete-li používat jinou službu DDNS, klepněte na FREE TRIAL 
+(BEZPLATNÉ VYZKOUŠENÍ) a nejdříve se zaregistrujte online. 
+Vyplňte pole User Name or E-mail Address (Uživatelské jméno 
+nebo e-mailová adresa) a Password or DDNS Key (Heslo nebo 
+klíč DDNS).
+• Povolit zástupný znak: Povolte zástupný znak, pokud jej 
+služba DDNS vyžaduje.
+POZNÁMKY: 
+Za následujících podmínek služba DDNS nefunguje:
+• Když bezdrátový router používá privátní adresu IP sítě WAN (192.168.
+x.x, 10.x.x.x nebo 172.16.x.x), jak je uvedeno žlutým textem.
+• Směrovač se pravděpodobně nachází v síti, která používá více 
+tabulek NAT.
+82
+4.3.8 NAT Passthrough (Průchod NAT)
+Funkce NAT Passthrough (Průchod NAT) umožňuje připojení 
+VPN (Virtual Private Network) procházet směrovačem k síťovým 
+klientům. Možnosti PPTP Passthrough (Průchod PPTP), L2TP 
+Passthrough (Průchod L2TP), IPsec Passthrough (Průchod IPsec) 
+a RTSP Passthrough (Průchod RTSP) jsou aktivovány ve výchozí 
+konfiguraci.
+Chcete-li aktivovat / deaktivovat nastavení NAT Passthrough 
+(Průchod NAT):
+1. Přejděte na Advanced Settings (Upřesnit nastavení) > WAN 
+> karta NAT Passthrough (Průchod NAT). 
+2. Vyberte možnost Enable (Povolit) nebo Disable (Zakázat) 
+pro specifický typ průchodu provozu bránou firewall NAT.
+3. Po dokončení klepněte na tlačítko Apply (Použít).
+83
+4.4 IPv6
+Tento bezdrátový směrovač podporuje adresování IPv6, systém, 
+který podporuje více adres IP. Tento standard dosud není velmi 
+rozšířen. Zeptejte se vašeho ISP, zda jeho internetové služby 
+podporují IPv6. 
+Pokyny pro nastavení IPv6:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > IPv6.
+2. Vyberte příslušnou možnost Connection Type (Typ 
+připojení). Možnosti konfigurace se liší v závislosti na 
+vybraném typu připojení.
+3. Zadejte nastavení IPv6 LAN a DNS.
+4. Klepněte na Apply (Použít).
+POZNÁMKA: Specifické informace IPv6 pro vaše internetové služby vám 
+poskytne váš ISP.
+84
+4.5 Server VPN
+Síť VPN (Virtual Private Network) umožňuje bezpečnou 
+komunikaci se vzdáleným počítačem nebo vzdálenou sítí 
+prostřednictvím veřejné sítě, například Internetu.
+POZNÁMKA: Před nastavením připojení VPN je zapotřebí získat adresu 
+IP nebo název domény serveru VPN, ke kterému se pokoušíte připojit.
+Pokyny pro nastavení přístupu k serveru VPN:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > VPN Server (Server VPN).
+2. V poli Enable VPN Server (Aktivovat server VPN) vyberte 
+Yes (Ano). 
+3. V rozevíracím seznamu VPN Details (Podrobnosti VPN) 
+vyberte volbu Advanced Settings (Upřesnit nastavení), 
+chcete-li konfigurovat upřesňující nastavení VPN, například 
+podporu vysílání, ověření, šifrování MPPE a rozsah adres IP 
+klienta. 
+4. V poli Network Place (Samba) Support (Podpora místa v 
+síti (Samba)) vyberte Yes (Ano).
+5. Zadejte uživatelské jméno a heslo pro přístup k serveru VPN. 
+Klepněte na tlačítko .
+6. Klepněte na Apply (Použít).
+85
+4.6 Brána firewall
+Tento bezdrátový router může fungovat jako hardwarová brána 
+firewall pro vaši síť. 
+POZNÁMKA: Funkce brány firewall je ve výchozí konfiguraci 
+aktivována.
+4.6.1 General (Obecné)
+Pokyny pro základní nastavení brány firewall:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > Firewall (Brána firewall) > karta 
+General (Obecné).
+2. V poli Enable Firewall (Aktivovat bránu firewall) vyberte 
+Yes (Ano).
+3. V části Enable DoS protection (Aktivovat ochranu DoS) 
+výběrem možnosti Yes (Ano) nastavíte ochranu sítě před 
+útoky DoS (Denial of Service); nicméně to může omezit výkon 
+směrovače. 
+4. Můžete rovněž sledovat pakety vyměněné mezi připojením 
+LAN a WAN. V části Logged packets type (Typ sledovaných 
+paketů) vyberte Dropped (Zahozené), Accepted (Přijaté) 
+nebo Both (Oboje).
+5. Klepněte na Apply (Použít).
+4.6.2 URL Filter (Filtr URL)
+Můžete nastavit klíčová slova nebo webové adresy pro zabránění 
+přístupu ke konkrétním adresám URL.
+POZNÁMKA: Filtr URL vychází z dotazu DNS. Pokud síťový klient již 
+navštívil webový server, jako například http://www.abcxxx.com, potom 
+tento webový server nebude blokován (mezipaměť DNS v systému 
+uchovává dříve navštívené webové servery). Chcete-li tento problém 
+odstranit, před nastavením filtru URL vymažte mezipaměť DNS.
+86
+Pokyny pro nastavení filtru URL:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > Firewall (Brána firewall) > karta URL 
+Filter (Filtr URL).
+2. V poli Enable URL Filter (Povolit filtr URL) vyberte možnost 
+Enabled (Povoleno).
+3. Zadejte adresu URL a klepněte na tlačítko .
+4. Klepněte na Apply (Použít).
+4.6.3 Keyword filter (Filtr klíčových slov)
+Filtr klíčových slov blokuje přístup k webovým stránkám, které 
+obsahují určená klíčová slova. Pokyny pro nastavení filtru 
+klíčových slov:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > Firewall (Brána firewall) > karta 
+Keyword Filter (Filtr klíčových slov).
+2. V poli Enable Keyword Filter (Povolit filtr klíčových slov) 
+vyberte možnost Enabled (Povoleno).
+3. Zadejte slovo nebo frázi a klepněte na tlačítko Add (Přidat).
+4. Klepněte na Apply (Použít).
+POZNÁMKY:
+• Filtr klíčových slov vychází z dotazu DNS. Pokud síťový klient již 
+navštívil webový server, jako například http://www.abcxxx.com, 
+potom tento webový server nebude blokován (mezipaměť DNS v 
+systému uchovává dříve navštívené webové servery). Chcete-li tento 
+problém odstranit, před nastavením filtru klíčových slov vymažte 
+mezipaměť DNS.
+• Webové stránky s kompresí HTTP nelze filtrovat. Stránky HTTPS 
+rovněž nelze blokovat pomocí filtru klíčových slov.
+4.6.4 Filtr síťových služeb
+Filtr síťových služeb blokuje výměnu paketů ze sítě LAN do 
+sítě WAN a omezuje síťovým klientům přístup ke specifickým 
+webovým službám, například Telnet nebo FTP.
+87
+Pokyny pro nastavení filtru síťových služeb:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > Firewall (Brána firewall) > karta 
+Network Service Filter (Filtr síťových služeb).
+2. V poli Enable Network Services Filter (Povolit filtr síťových 
+služeb) vyberte možnost Yes (Ano).
+3. Vyberte typ tabulky filtrování. Black List (Blokovat) blokuje 
+specifikované síťové služby. White List (Neblokovat) 
+omezuje přístup pouze na specifikované síťové služby.
+4. Určete den a čas aktivace filtrů. 
+5. Chcete-li specifikovat síťovou službu pro filtrování, zadejte 
+údaje Source IP (Zdrojová adresa IP), Destination IP (Cílová 
+adresa IP), Port Range (Rozsah portů) a Protocol (Protokol). 
+Klepněte na tlačítko .
+6. Klepněte na Apply (Použít).
+88
+4.7 Správa
+4.7.1 Provozní režim
+Na stránce provozního režimu lze vybrat vhodný režim pro vaši síť.
+Pokyny pro nastavení provozního režimu:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > Administration (Správa) > karta 
+Operation Mode (Provozní režim).
+2. Vyberte některý z těchto provozních režimů:
+• Režim bezdrátového směrovače (výchozí): V režimu 
+bezdrátového směrovače se bezdrátový router připojuje 
+k Internetu a poskytuje přístup k Internetu dostupným 
+zařízením ve své vlastní místní síti.
+• Režim přístupového bodu: V tomto režimu vytváří router ve 
+stávající síti novou bezdrátovou síť.
+3. Klepněte na Apply (Použít).
+POZNÁMKA: Při změně režimů se router restartuje.
+89
+4.7.2 Systém
+Na stránce System (Systém) lze konfigurovat nastavení 
+bezdrátového směrovače.
+90
+Pokyny pro provádění systémových nastavení:
+1. Na navigačním panelu přejděte na Advanced Settings (Upřesnit 
+nastavení) > Administration (Správa) > karta System (Systém).
+2. Můžete konfigurovat následující nastavení:
+• Změnit heslo pro přihlášení ke směrovači: Můžete změnit 
+heslo a jméno pro přihlášení k bezdrátovému směrovači; zadejte 
+nové jméno a heslo.
+• Chování tlačítka WPS: Pomocí fyzického tlačítka WPS na 
+bezdrátovém směrovači lze aktivovat WPS.
+• Časové pásmo: Vyberte časové pásmo vaší sítě.
+• Server NTP: Bezdrátový router může přistupovat k serveru NTP 
+(Network time Protocol) a synchronizovat čas.
+• Auto Logout (Automatické odhlášení): Po uplynutí 
+intervalu nečinnosti se systém automaticky odhlásí od 
+stránky pro správu. Chcete-li automatické odhlášení zrušit, 
+nastavte hodnotu 0.
+• Enable WAN down browser redirect notice (Aktivovat 
+upozornění na přesměrování prohlížeče při výpadku 
+WAN): Dojde-li k přerušení připojení sítě WAN, systém 
+zobrazí místní okno s pokyny pro konfigurování připojení 
+WAN. Pokud nechcete, aby se tato zpráva zobrazovala, zrušte 
+ji výběrem možnosti No (Ne).
+• Povolit plánovač restartování: Kliknutím na Yes (Ano) 
+bude bezdrátový směrovač pravidelně restartován.
+• Povolit Telnet: Klepnutím na Yes (Ano) povolíte služby Telnet v 
+síti. Klepnutím na No (Ne) zakážete Telnet.
+• Aktivovat SSH: Kliknutím na Yes (Ano) aktivujte přístup 
+SSH k síti LAN nebo WAN. Kliknutím na No (Ne) deaktivujte 
+přístup SSH.
+• Časový limit nečinnosti: Slouží ke konfiguraci časového 
+limitu nečinnosti pro Telnet/ SSH.
+• Metoda ověřování: Pro zajištění přístupu ke směrovači můžete 
+vybrat protokol HTTP, HTTPS nebo oba.
+• Povolit přístup k síti z WAN: Výběrem Yes (Ano) povolíte 
+zařízením mimo síť přístup k nastavení GUI bezdrátového 
+směrovače. Výběrem možnosti No (Ne) zakážete přístup.
+• Povolit pouze specifickou adresu IP: Chcete-li určit adresy 
+IP zařízení, která mají povolen přístup k nastavení GUI 
+bezdrátového směrovače ze sítě WAN, klepněte na Yes (Ano). 
+3. Klepněte na Apply (Použít).
+91
+4.7.3 Upgradování firmwaru
+POZNÁMKA: Stáhněte nejaktuálnější firmware z webu společnosti 
+ASUS na adrese http://www.asus.com/Networking/4G-AC53U/
+HelpDesk_Download/
+Pokyny pro upgradování firmwaru:
+1. Na navigačním panelu přejděte na Advanced Settings (Upřesnit 
+nastavení) > Administration (Správa) > karta Firmware 
+Upgrade (Upgrade firmwaru).
+2. V poli New Firmware File (Nový soubor firmwaru) klepněte na 
+Browse (Procházet) a vyhledejte stažený soubor.
+3. Klepněte na Upload (Odeslat). 
+POZNÁMKY: 
+• Po dokončení upgradu chvilku počkejte, než se systém restartuje.
+• Dojde-li při procesu upgradování k chybě, bezdrátový router přejde 
+automaticky do nouzového nebo chybového režimu a indikátor LED 
+napájení na předním panelu pomalu bliká. Chcete-li obnovit nebo 
+obnovit systém, viz část 5.2 Obnova firmwaru. 
+92
+4.7.4 Obnovení/uložení/odeslání nastavení
+Pokyny pro obnovení/uložení/odeslání nastavení:
+1. Na navigačním panelu přejděte na Advanced Settings (Upřesnit 
+nastavení) > Administration (Správa) > karta Restore/Save/
+Upload Setting (Obnovit/uložit/načíst nastavení).
+2. Vyberte úlohy, které chcete provést:
+• Chcete-li obnovit výchozí tovární nastavení, klepněte na Restore 
+(Obnovit) a potom klepněte na tlačítko OK v potvrzovací zprávě.
+• Chcete-li uložit aktuální nastavení systému, klepněte na Save 
+(Uložit), přejděte na složku, do které chcete soubor uložit, a 
+klepněte na tlačítko Save (Uložit).
+• Chcete-li obnovit předchozí systémová nastavení, klepnutím na 
+Browse (Procházet) vyhledejte systémový soubor, který chcete 
+obnovit, a potom klepněte na Upload (Odeslat).
+POZNÁMKA: Dojde-li k problémům, načtěte nejnovější verzi firmwaru a 
+nakonfigurujte nová nastavení. Neobnovujte výchozí nastavení směrovače.
+93
+4.7.5 Zpětná vazba
+Karta zpětné vazby slouží k diagnostikování problémů a ke 
+zvyšování spokojenosti uživatelů směrovače ASUS. Po vyplnění 
+bude formulář odeslán týmu odborné pomoci ASUS.
+94
+4.8 Systémový protokol
+Systémový protokol obsahuje záznam vašich síťových aktivit.
+POZNÁMKA: Při restartování nebo vypnutí směrovače se systémový 
+protokol resetuje.
+Pokyny pro zobrazení systémového protokolu:
+1. Na navigačním panelu přejděte na Advanced Settings 
+(Upřesnit nastavení) > System Log (Systémový protokol).
+2. Můžete zobrazit vaše síťové aktivity na následujících kartách:
+• Obecný protokol
+• Protokol bezdrátového připojení
+• Zápůjčky DHCP
+• IPv6 (informace o sítích WAN a LAN) 
+• Protokol bezdrátového připojení
+• Předávání portů
+• Routing Table
+• Tabulka směrování
+95
+4.9 Seznam podporovaných funkcí 
+ethernetové bezdrátové místní sítě WAN a 
+mobilního širokopásmového připojení
+Tento bezdrátový router podporuje drátovou síť WAN a mobilní 
+širokopásmovou síť WAN v režimech rychlého zabezpečení proti selhání 
+a navrácení služeb po obnovení. Mobilní širokopásmová síť WAN slouží 
+jak k přístupu k Internetu, tak jako rozhraní zálohování WAN. LAN, WAN, 
+VPN a brána firewall podporují různé funkce. Viz následující srovnávací 
+tabulka.
+LAN jako WAN Mobilní širokopásmová síť
+LAN
+IPTV Není k dispozici Není k dispozici
+Ovládání přepínání >>Akcelerace NAT 
+(pouze IPv4)
+V V
+Ovládání přepínání >>Snížení zatížení 
+sítě
+V V
+WAN
+IPv6 V V
+Aktivace portů V V (2)
+Virtuální server/předávání portů V V (2)
+DMZ V V (2)
+DDNS V V (2)
+Průchod NAT V V (2)
+Správce provozu
+QoS V V
+Brána firewall
+Obecné V V 
+Filtr URL V V 
+Filtr klíčových slov V V 
+Filtr síťových služeb V V 
+Brána firewall IPv6 V Není k dispozici
+Správa
+Systém >>Povolit přístup k síti z WAN V V (2)
+96
+Aplikace
+AiCloud
+Přístup z WAN
+V V (2)
+Server VPN V V (2)
+Server FTP V V (2)
+POZNÁMKY: 
+V : Mobilní síť WAN oddělila konfiguraci na své konfigurační stránce
+V (2) : Ve většině případů internetová služba poskytuje mobilní 
+širokopásmovou a soukromou adresu IP, což způsobí selhání 
+přístupu služby WAN ze strany WAN.
+97
+5 Používání nástrojů
+POZNÁMKY:
+• Stáhněte a nainstalujte nástroje bezdrátového směrovače z 
+webových stránek společnosti ASUS: 
+ • Device Discovery v1.4.7.1 na adrese http://dlcdnet.asus.com/
+pub/ASUS/LiveUpdate/Release/Wireless/Discovery.zip
+ • Firmware Restoration v1.9.0.4 na adrese http://dlcdnet.asus.com/
+pub/ASUS/LiveUpdate/Release/Wireless/Rescue.zip
+ • Windows Printer Utility v1.0.5.5 na adrese http://dlcdnet.asus.
+com/pub/ASUS/LiveUpdate/Release/Wireless/Printer.zip
+• Tyto nástroje nejsou podporovány v operačním systému MAC.
+5.1 Vyhledání zařízení
+Device Discovery (Vyhledání zařízení) je nástroj ASUS WLAN, který 
+rozpoznává bezdrátový router ASUS, a umožňuje konfigurovat 
+nastavení bezdrátové sítě.
+Pokyny pro spuštění nástroje Device Discovery (Vyhledání 
+zařízení):
+• Na pracovní ploše počítače klepněte na Start > All 
+Programs (Všechny programy) > ASUS Utility (ASUS 
+nástroj) > 4G-AC53U Wireless Router(Bezdrátový router 
+4G-AC53U) > Device Discovery (Vyhledání zařízení).
+POZNÁMKA: Když nastavíte router na režim přístupového bodu, je 
+třeba použít funkci Device Discovery (Vyhledání zařízení) pro získání 
+adresy IP směrovače. 
+98
+5.2 Obnova firmwaru
+Funkce Firmware Restoration (Obnova firmwaru) se používá na 
+bezdrátovém směrovači ASUS, který selhal během aktualizace 
+firmwaru. Znovu načte určený firmware. Tento proces trvá 
+přibližně tři až čtyři minuty.
+DŮLEŽITÉ! Před použitím nástroje Firmware Restoration (Obnova 
+firmwaru) spusťte záchranný režim. 
+POZNÁMKA: Tato funkce není podporována v operačním systému MAC.
+Pokyny pro spuštění záchranného režimu a použití nástroje 
+Firmware Restoration (Obnova firmwaru):
+1. Odpojte bezdrátový router od zdroje napájení.
+2. Stiskněte a podržte resetovací tlačítko na zadním panelu a 
+zároveň znovu připojte bezdrátový router ke zdroji napájení. 
+Resetovací tlačítko uvolněte, když indikátor LED napájení 
+na předním panelu začne pomalu blikat, což znamená, že se 
+bezdrátový router nachází v záchranném režimu.
+99
+3. Nastavte statickou adresu IP v počítači a použijte následující 
+pro nastavení TCP/IP:
+ Adresa IP: 192.168.1.x
+ Maska podsítě: 255.255.255.0
+4. Na pracovní ploše počítače klepněte na Start > All Programs 
+(Všechny programy) > ASUS Utility 4G-AC53U Wireless 
+Router (ASUS nástroj 4G-AC53U bezdrátový router) > 
+Firmware Restoration (Obnova firmwaru).
+5. Určete soubor firmwaru a potom klepněte na Upload (Odeslat). 
+POZNÁMKA: Toto není nástroj pro upgradování firmwaru a nelze jej 
+použít na funkčním bezdrátovém směrovači ASUS. Běžné aktualizace 
+firmwaru musí být prováděny prostřednictvím webového rozhraní. 
+Další podrobnosti viz Kapitola 4: Konfigurování upřesňujících 
+nastavení.
+100
+6 Odstraňování problémů
+V této kapitole jsou uvedena řešení problémů, se kterými se můžete 
+při používání směrovače setkat. Setkáte-li se s problémy, které nejsou 
+uvedeny v této kapitole, navštivte webové stránky odborné pomoci 
+společnosti ASUS na adrese: http://support.asus.com/, kde najdete 
+další informace a kontakty na technickou podporu společnosti ASUS.
+6.1 Odstraňování nejčastějších problémů
+Setkáte-li se při používání tohoto směrovače s problémy, před 
+hledáním dalších řešení vyzkoušejte základní kroky uvedené v této 
+části.
+Upgradujte firmware na nejnovější verzi.
+1. Spusťte webové grafické uživatelské rozhraní GUI. Přejděte na 
+Advanced Settings (Upřesnit nastavení) > Administration 
+(Správa) > karta Firmware Upgrade (Upgrade firmwaru). 
+Klepnutím na Check (Zkontrolovat) ověřte, zda je k dispozici 
+nejaktuálnější verze. 
+2. Pokud není k dispozici nejaktuálnější firmware, navštivte globální 
+webové stránky společnosti ASUS na adrese http://www.asus.
+com/Networking/4G-AC53U/HelpDesk_Download/ a stáhněte 
+nejaktuálnější firmware. 
+3. Na stránce Firmware Upgrade (Upgrade firmwaru) klepněte na 
+tlačítko Browse (Procházet) a vyhledejte soubor firmwaru. 
+4. Klepnutím na tlačítko Upload (Načíst) upgradujte firmware.
+Restartujte síť v následujícím pořadí:
+1. Vypněte modem.
+2. Odpojte modem od elektrické zásuvky.
+3. Vypněte router a počítače.
+4. Připojte modem k elektrické zásuvce.
+5. Zapněte modem a počkejte 2 minuty.
+6. Zapněte router a počkejte 2 minuty.
+7. Zapněte počítače.
+101
+Zkontrolujte, zda jsou ethernetové kabely řádně připojeny.
+• Když je ethernetový kabel, který spojuje router s modemem, 
+řádně připojen, svítí indikátor LED sítě WAN. 
+• Když je ethernetový kabel, který spojuje spuštěný počítač se 
+směrovačem, řádně připojen, svítí příslušný indikátor LED 
+místní sítě LAN. 
+Zkontrolujte, zda se nastavení bezdrátového připojení v 
+počítači shoduje s nastavením bezdrátového připojení ve 
+směrovači.
+• Když připojujete počítač ke směrovači bezdrátově, ověřte 
+správnost SSID (název bezdrátové sítě), metody šifrování a 
+hesla.
+Zkontrolujte správnost síťových nastavení. 
+• Každý klient v síti musí mít platnou adresu IP. Společnost 
+ASUS doporučuje používat server DHCP bezdrátového 
+směrovače k přidělování adres IP počítačům v síti.
+• Někteří poskytovatelé kabelových modemových služeb 
+vyžadují používání adresy MAC počítače, který byl 
+zaregistrován k účtu jako první. Adresu MAC můžete zobrazit 
+ve webovém grafickém uživatelském rozhraní (GUI), Network 
+Map (Mapa sítě) > stránka Clients (Klienti) a umístěním myši 
+na vaše zařízení v části Client Status (Stav klienta).
+102
+6.2 Často kladené dotazy (FAQ) 
+Nelze přistupovat ke grafickému uživatelskému rozhraní 
+(GUI) směrovače prostřednictvím webového prohlížeče
+• Pokud je počítač připojen kabelem, zkontrolujte připojení 
+ethernetového kabelu a stav indikátoru LED podle pokynů v 
+předchozí části.
+• Zkontrolujte, zda používáte správné přihlašovací údaje. Výchozí 
+tovární přihlašovací jméno a heslo jsou „admin/admin“. Při 
+zadávání přihlašovacích údajů zkontrolujte, zda není zapnutá 
+funkce klávesy Caps Lock.
+• Odstraňte soubory cookie a soubory ve webovém prohlížeči. V 
+případě prohlížeče Internet Explorer 8 postupujte podle těchto 
+kroků:
+ 1. Spusťte prohlížeč Internet 
+Explorer 8 a potom klepněte 
+na příkaz Tools (Nástroje) > 
+Internet Options (Možnosti 
+Internetu).
+ 2. Na kartě General (Obecné) 
+v části Browsing history 
+(Historie procházení) 
+klepněte na tlačítko 
+Delete… (Odstranit...), 
+vyberte položku Temporary 
+Internet Files (Dočasné 
+soubory Internetu) a 
+Cookies (Soubory cookie) 
+a potom klepněte na tlačítko 
+Delete (Odstranit). 
+POZNÁMKY: 
+• Příkazy pro odstraňování souborů cookie a souborů se liší podle 
+webového prohlížeče.
+• Deaktivujte nastavení serveru proxy, zrušte telefonické 
+připojení a nastavte TCP/IP na automatické získání adresy IP. 
+Další podrobnosti viz Kapitola 1 této uživatelské příručky.
+• Zkontrolujte, zda používáte ethernetové kabely kategorie CAT5e 
+nebo CAT6. 
+103
+Klient nemůže navázat bezdrátové připojení ke směrovači.
+POZNÁMKA: Pokud máte problémy k síti 5 GHz, zkontrolujte, zda 
+vaše bezdrátové zařízení podporuje 5 GHz nebo zda je dvoupásmové.
+• Mimo dosah:
+ • Umístěte router blíže k bezdrátovému klientovi.
+ • Zkuste nastavit antény směrovače do optimální polohy podle 
+pokynů v části 1.4 Umístění směrovače. 
+• Server DHCP je deaktivován: 
+ 1. Spusťte webové grafické uživatelské rozhraní GUI. Přejděte 
+na General (Obecné) > Network Map (Mapa sítě)> Clients 
+(Klienti) a vyhledejte zařízení, které chcete připojit ke 
+směrovači. 
+ 2. Pokud zařízení nelze najít v části Network Map (Mapa sítě), 
+přejděte na Advanced Settings (Upřesnit nastavení)> 
+LAN > DHCP Server (Server DHCP), seznam Basic Config 
+(Základní konfigurace) a vyberte možnost Yes (Ano) v části 
+Enable the DHCP Server (Povolit server DHCP).
+• Název sítě SSID je skrytý. Pokud vaše zařízení může najít názvy 
+sítě SSID ostatních směrovačů, ale nemůže najít název sítě 
+SSID vašeho směrovače, přejděte na Advanced Settings 
+(Upřesnit nastavení) > Wireless (Bezdrát) > General 
+(Obecné), vyberte No (Ne) v části Hide SSID (Skrýt SSID) a 
+vyberte Auto (Automaticky) v části Control Channel (Řídící 
+kanál).
+• Používáte-li adaptér bezdrátové místní sítě LAN, zkontrolujte, 
+zda používaný bezdrátový kanál odpovídá kanálům 
+dostupným ve vaší zemi/oblasti. Pokud ne, upravte kanál, 
+šířku pásma kanálu a bezdrátový režim.
+• Pokud se přesto nemůžete bezdrátově připojit ke směrovači, 
+můžete obnovit výchozí tovární nastavení směrovače. 
+V grafickém uživatelském rozhraní (GUI) klepněte na 
+Administration (Správa) > Restore/Save/Upload Setting 
+(Obnovit/uložit/načíst nastavení) a klepněte na Restore 
+(Obnovit).
+104
+Nelze přistupovat k Internetu.
+• Zkontrolujte, zda se router může připojit k adrese IP sítě WAN 
+vašeho ISP. Spusťte webové grafické uživatelské rozhraní 
+(GUI), přejděte na General (Obecné)> Network Map (Mapa 
+sítě) a zkontrolujte Internet Status (Stav sítě Internet). 
+• Pokud se router nemůže připojit k adrese IP sítě WAN vašeho 
+ISP, zkuste restartovat síť podle pokynů v části Restartujte 
+síť v následujícím pořadí v kapitole Odstraňování 
+nejčastějších problémů. 
+• Zařízení je blokováno funkcí rodičovské kontroly. Přejděte na 
+General (Obecné) > Parental Control (Rodičovská kontrola) 
+a zkontrolujte, zda je zařízení v seznamu. Pokud je zařízení 
+uvedeno v seznamu Client Name (Název klienta), odstraňte 
+jej tlačítkem Delete (Odstranit) nebo upravte nastavení časové 
+správy.
+• Pokud stále nelze přistupovat k Internetu, zkuste restartovat 
+počítač a ověřte adresu IP a adresu brány sítě. 
+• Zkontrolujte stavové indikátory na modemu ADSL a na 
+bezdrátovém směrovači. Pokud indikátor LED sítě WAN 
+na bezdrátovém směrovači NESVÍTÍ, zkontrolujte, zda jsou 
+všechny kabely řádně připojeny.
+Mobilní širokopásmový Internet není dostupný.
+• Vložte kartu SIM s odběrem internetové služby a zkontrolujte, 
+zda svítí indikátor LED mobilního širokopásmového připojení 
+3G/4G. Pokud tomu tak není, zkontrolujte, zda je karta SIM 
+vložena správně.
+• Nastavení APN se nemůže použít automaticky. Najděte 
+nastavení služby APN od vašeho ISP, ručně zadejte APN a 
+související nastavení v části Advanced Settings (Upřesnit 
+nastavení) > WAN > karta Internet Connection (Připojení 
+k Internetu) a vyberte WAN Type (Typ WAN) v části Mobile 
+broadband (Mobilní širokopásmové připojení).
+• Síť APN je nakonfigurována správně, ale přesto se nelze 
+připojit k Internetu. Zkontrolujte 
+ • Zda je frekvenční pásmo kompatibilní s vaším ISP 
+105
+ • Umístěte bezdrátový router k oknu, aby byl zajištěn 
+dostatečně silný signál 3G/4G.
+• Služba aktivace portů, předávání portů, DDNS nebo 
+DMZ nefungují. Ve většině případů poskytuje ISP mobilní 
+širokopásmovou a soukromou adresu IP. V tomto případě 
+nebudou fungovat některé služby, například AiCloud, webový 
+přístup ze sítě WAN a většina služeb přistupujících ze sítě 
+WAN. Prosím požádejte o řešení vašeho ISP.
+Zapomněli jste SSID (název sítě) nebo síťové heslo
+• Nastavte nový název SSID a šifrovací klíč prostřednictvím 
+pevného připojení (ethernetového kabelu). Spusťte webové 
+grafické uživatelské rozhraní (GUI), přejděte na Network 
+Map (Mapa sítě), klepněte na ikonu směrovače, zadejte nový 
+název SSID a šifrovací klíč a potom klepněte na tlačítko Apply 
+(Použít). 
+• Obnovte výchozí nastavení směrovače. Spusťte grafické 
+uživatelské rozhraní (GUI), přejděte na Administration 
+(Správa) > Restore/Save/Upload Setting (Obnovit/uložit/
+načíst nastavení) a klepněte na Restore (Obnovit). Výchozí 
+účet a heslo pro přihlášení jsou oboje „admin“. 
+106
+Pokyny pro obnovení výchozích nastavení systému
+• Přejděte na Administration (Správa) > Restore/Save/
+Upload Setting (Obnovit/uložit/načíst nastavení) a 
+klepněte na Restore (Obnovit). 
+ Mezi výchozí tovární nastavení patří:
+ Uživatelské jméno: admin 
+ Heslo admin
+ Povolit DHCP: Yes (Ano) (pokud je připojen 
+ kabel WAN)
+ Adresa IP 192.168.1.1
+ Název domény: (Prázdné)
+ Maska podsítě: 255.255.255.0
+ Server DNS 1: 192.168.1.1
+ Server DNS 2: (Prázdné)
+ SSID (2.4GHz): ASUS_XX_2G
+ SSID (5GHz): ASUS_XX_5G
+POZNÁMKA: XX označuje poslední dvě číslice adresy MAC 2,4 GHz. Je 
+uvedeno na štítku na zadní straně přístroje 4G-AC53U.
+Upgrade firmwaru se nezdařil. 
+Spusťte záchranný režim a spusťte nástroj Firmware Restoration 
+(Obnova firmwaru). Pokyny pro používání nástroje Firmware 
+Restoration (Obnova firmwaru) viz část 5.2 Obnova firmwaru.
+107
+Nelze přistupovat k webovému grafickému 
+uživatelskému rozhraní (GUI)
+A. Deaktivujte server proxy, je-li aktivován.
+Před konfigurováním bezdrátového směrovače proveďte kroky 
+popsané v této části pro váš hostitelský počítač a síťové klienty. 
+Windows® 7
+1. Klepnutím na Start > Internet 
+Explorer spusťte webový 
+prohlížeč.
+2. Klepněte na Tools (Nástroje) 
+> Internet options (Možnosti 
+Internetu) > na kartu 
+Connections (Připojení) > 
+LAN settings (Nastavení 
+místní sítě).
+3. Na obrazovce Nastavení 
+místní sítě (LAN) zrušte 
+zaškrtnutí políčka Use a 
+proxy server for your 
+LAN (Použít pro síť LAN 
+server proxy).
+4. Po dokončení klepněte na 
+OK.
+108
+MAC OS
+1. V prohlížeči Safari 
+klepněte na Safari 
+> Preferences 
+(Předvolby) > 
+Advanced (Upřesnit) 
+> Change Settings... 
+(Změnit nastavení...).
+2. Na obrazovce Network 
+(Síť) zrušte výběr 
+položky FTP Proxy 
+(FTP server proxy) 
+a Web Proxy (HTTP) 
+(Webový server proxy (HTTP)).
+3. Po dokončení klepněte na Apply Now (Použít).
+POZNÁMKA: Podrobné pokyny pro deaktivaci serveru proxy viz 
+nápověda k prohlížeči. 
+B. Proveďte nastavení TCP/IP pro automatické získání 
+adresy IP.
+Windows® 7
+1. Klepněte na Start > Control 
+Panel (Ovládací panely) > 
+Network and Internet (Síť 
+a Internet) > Network and 
+Sharing Center (Centrum 
+sítí a sdílení) > Manage 
+network connections 
+(Spravovat síťová 
+připojení).
+2. Vyberte Internet Protocol 
+Version 4 (TCP/IPv4) 
+(Protokol Internet verze 4 
+(TCP/IPv4)) nebo Internet 
+Protocol Version 6 (TCP/
+IPv6) (Protokol Internet verze 6 (TCP/IPv6) a potom 
+klepněte na Properties (Vlastnosti). 
+109
+3. Zaškrtnutím položky 
+Obtain an IP address 
+automatically (Získat 
+adresu IP automaticky) 
+budou nastavení iPv4 IP 
+získána automaticky. 
+ Zaškrtnutím položky 
+Obtain an IPv6 address 
+automatically (Získat 
+adresu IPv6 automaticky) 
+budou nastavení iPv6 IP 
+získána automaticky. 
+4. Po dokončení klepněte na 
+OK.
+MAC OS
+1. Klepněte na ikonu 
+Apple v levé horní 
+části obrazovky.
+2. Klepněte na System 
+Preferences 
+(Systémové 
+preference) > Network 
+(Síť) > Configure... 
+(Konfigurovat...).
+3. Na kartě TCP/IP vyberte 
+Using DHCP (Použití 
+protokolu DHCP) v rozevíracím seznamu Configure IPv4 
+(Konfigurovat IPv4).
+4. Po dokončení klepněte na Apply Now (Použít).
+POZNÁMKA: Podrobnosti o konfigurování nastavení TCP/IP počítače viz 
+nápověda k operačnímu systému a podpůrné funkce.
+110
+C. Deaktivujte telefonické připojení, je-li aktivováno.
+Windows® 7
+1. Klepnutím na Start > Internet 
+Explorer spusťte webový 
+prohlížeč.
+2. Klepněte na Tools (Nástroje) 
+> Internet options (Možnosti 
+Internetu) > na kartu 
+Connections (Připojení).
+3. Zaškrtěte políčko Never dial a 
+connection (Nikdy nevytáčet 
+připojení).
+4. Po dokončení klepněte na OK.
+POZNÁMKA: Podrobné pokyny pro deaktivaci telefonického připojení 
+viz nápověda k prohlížeči.
+111
+Dodatky
+Poznámky
+ASUS Recycling/Takeback Services
+ASUS recycling and takeback programs come from our 
+commitment to the highest standards for protecting our 
+environment. We believe in providing solutions for you to be able 
+to responsibly recycle our products, batteries, other components, 
+as well as the packaging materials. Please go to http://csr.asus.
+com/english/Takeback.htm for the detailed recycling information 
+in different regions.
+REACH
+Complying with the REACH (Registration, Evaluation, 
+Authorisation, and Restriction of Chemicals) regulatory 
+framework, we published the chemical substances in our products 
+at ASUS REACH website at
+http://csr.asus.com/english/index.aspx
+Federal Communications Commission Statement
+This device complies with Part 15 of the FCC Rules. Operation is 
+subject to the following two conditions: 
+• This device may not cause harmful interference.
+• This device must accept any interference received, including 
+interference that may cause undesired operation.
+This equipment has been tested and found to comply with the 
+limits for a class B digital device, pursuant to part 15 of the FCC 
+Rules. These limits are designed to provide reasonable protection 
+against harmful interference in a residential installation.
+112
+This equipment generates, uses and can radiate radio frequency 
+energy and, if not installed and used in accordance with 
+the instructions, may cause harmful interference to radio 
+communications. However, there is no guarantee that interference 
+will not occur in a particular installation. If this equipment does 
+cause harmful interference to radio or television reception, which 
+can be determined by turning the equipment off and on, the user 
+is encouraged to try to correct the interference by one or more of 
+the following measures:
+• Reorient or relocate the receiving antenna.
+• Increase the separation between the equipment and receiver.
+• Connect the equipment into an outlet on a circuit different 
+from that to which the receiver is connected.
+• Consult the dealer or an experienced radio/TV technician for 
+help.
+IMPORTANT! This device is going to be operated in 5.15~5.25GHz 
+frequency range, it is restricted in indoor environment only.
+WARNING!
+• Any changes or modifications not expressly approved by the party 
+responsible for compliance could void the user’s authority to operate 
+the equipment.
+• Users must not modify this device. Modifications by anyone other 
+than the party responsible for compliance with the rules of the 
+Federal Communications Commission (FCC) may void the authority 
+granted under FCC regulations to operate this device.
+ • For product available in the USA/Canada market, only channel 1~11 
+can be operated. Selection of other channels is not possible.
+113
+CE statement
+Zjednodušené prohlášení o shodě s EU
+Společnost ASUSTek Computer Inc. tímto prohlašuje, že toto 
+zařízení splňuje základní požadavky a další příslušná ustanovení 
+směrnice 2014/53/EU. Plné znění prohlášení o shodě EU je k 
+dispozici na adrese https://www.asus.com/support/
+Toto zařízení vyhovuje limitům EU pro vystavení vyzařování 
+stanoveným pro neřízené prostředí. Toto zařízení musí být 
+nainstalováno a provozováno v minimální vzdálenosti 20 cm mezi 
+zářičem a vaším tělem.
+Všechny provozní režimy:
+2.4GHz: 802.11b, 802.11g, 802.11n(HT20), 802.11n(HT40)
+5GHz: 802.11a, 802.11n(HT20), 802.11n(HT40), 802.11ac(VHT20), 
+802.11ac(VHT40), 802.11ac(VHT80)
+Níže je uvedena frekvence, režim a maximální vysílaný výkon v EU:
+2412-2472MHz (802.11n HT40 13.5Mbps): 14.8 dBm
+5180-5240MHz (802.11n HT40 13.5Mbps): 16.87 dBm
+5260-5320MHz (802.11n HT40 13.5Mbps): 16.85 dBm
+5500-5700MHz (802.11a 6Mbps): 20.64 dBm
+WCDMA Band I: 21.94 dBm
+WCDMA Band VIII: 22.91 dBm
+LTE Band 1: 22.18 dBm
+LTE Band 3: 22.26 dBm
+LTE Band 7: 22.04 dBm
+LTE Band 8: 22.26 dBm
+LTE Band 20: 22.09 dBm
+LTE Band 38: 23.17 dBm
+Při provozu ve frekvenčním rozsahu 5150 až 5350 MHz je 
+používání tohoto zařízení omezeno pouze na vnitřní prostory.
+114
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH UK HR
+Bezpečnostní informace
+• Počítač používejte jen při teplotě okolí 0 ˚C (32 ˚F) až 40 ˚C 
+(104 ˚F).
+• Informace naleznete na energetickém štítku na spodní straně 
+vašeho produktu. Ujistěte se, že napájecí adaptér je v souladu 
+s hodnotou na něm uvedenou.
+• NEPOKLÁDEJTE na nerovné ani nestabilní pracovní povrchy. 
+Pokud je skříň počítače poškozená, vyhledejte opravnu.
+• NEDÁVEJTE ani neupouštějte předměty na horní stranu 
+produktu ani do něj nezastrkujte žádné cizí objekty.
+• NEVYSTAVUJTE ani nepoužívejte blízko tekutin, deště nebo 
+vlhkosti. NEPOUŽÍVEJTE modem během bouřek.
+• NEZAKRÝVEJTE otvory na produktu, které mají zabránit 
+přehřátí systému.
+• NEPOUŽÍVEJTE poškozené napájecí kabely, doplňky ani jiné 
+periférie.
+• Pokud je napájecí zdroj porouchaný, nepokoušejte se jej 
+opravovat. Kontaktujte kvalifikovaného servisního technika 
+nebo prodejce.
+• Aby nedošlo k zásahu elektrickým proudem, odpojte napájecí 
+kabel z elektrické zásuvky před přemístěním počítače.
+CE Mark Warning
+This is a Class B product, in a domestic environment, this product 
+may cause radio interference, in which case the user may be 
+required to take adequate measures.
+This equipment may be operated in AT, BE, CY, CZ, DK, EE, FI, FR, 
+DE, GR, HU, IE, IT, LU, MT, NL, PL, PT, SK, SL, ES, SE, GB, IS, LI, NO, CH, 
+BG, RO, RT.
+115
+Radio Frequency (RF) Exposure Information
+This equipment complies with IC RSS-102 radiation exposure 
+limits set forth for an uncontrolled environment. This equipment 
+should be installed and operated with minimum distance 31 cm 
+between the radiator & your body.
+Cet équipement est conforme aux limites d’exposition aux 
+rayonnements IC établies pour un environnement non contrôlé. 
+Cet équipement doit être installé et utilisé avec un minimum de 
+31 cm de distance entre la source de rayonnement et votre corps.
+GNU General Public License
+Licensing information
+This product includes copyrighted third-party software licensed 
+under the terms of the GNU General Public License. Please see The 
+GNU General Public License for the exact terms and conditions of 
+this license. All future firmware updates will also be accompanied 
+with their respective source code. Please visit our web site for 
+updated information. Note that we do not offer direct support for 
+the distribution.
+GNU GENERAL PUBLIC LICENSE
+Version 2, June 1991
+Copyright (C) 1989, 1991 Free Software Foundation, Inc.
+59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+Everyone is permitted to copy and distribute verbatim copies of 
+this license document, but changing it is not allowed.
+Preamble
+The licenses for most software are designed to take away your 
+freedom to share and change it. By contrast, the GNU General 
+116
+Public License is intended to guarantee your freedom to share 
+and change free software--to make sure the software is free for all 
+its users. This General Public License applies to most of the Free 
+Software Foundation’s software and to any other program whose 
+authors commit to using it. (Some other Free Software Foundation 
+software is covered by the GNU Library General Public License 
+instead.) You can apply it to your programs, too.
+When we speak of free software, we are referring to freedom, not 
+price. Our General Public Licenses are designed to make sure that 
+you have the freedom to distribute copies of free software (and 
+charge for this service if you wish), that you receive source code or 
+can get it if you want it, that you can change the software or use 
+pieces of it in new free programs; and that you know you can do 
+these things.
+To protect your rights, we need to make restrictions that forbid 
+anyone to deny you these rights or to ask you to surrender the 
+rights. These restrictions translate to certain responsibilities for 
+you if you distribute copies of the software, or if you modify it.
+For example, if you distribute copies of such a program, whether 
+gratis or for a fee, you must give the recipients all the rights that 
+you have. You must make sure that they, too, receive or can get 
+the source code. And you must show them these terms so they 
+know their rights.
+We protect your rights with two steps: (1) copyright the software, 
+and (2) offer you this license which gives you legal permission to 
+copy, distribute and/or modify the software.
+Also, for each author’s protection and ours, we want to make 
+certain that everyone understands that there is no warranty for 
+this free software. If the software is modified by someone else and 
+passed on, we want its recipients to know that what they have is 
+not the original, so that any problems introduced by others will 
+not reflect on the original authors’ reputations.
+117
+Finally, any free program is threatened constantly by software 
+patents. We wish to avoid the danger that redistributors of a free 
+program will individually obtain patent licenses, in effect making 
+the program proprietary. To prevent this, we have made it clear 
+that any patent must be licensed for everyone’s free use or not 
+licensed at all.
+The precise terms and conditions for copying, distribution and 
+modification follow.
+Terms & conditions for copying, distribution, & modification
+0. This License applies to any program or other work which 
+contains a notice placed by the copyright holder saying it may 
+be distributed under the terms of this General Public License. 
+The “Program”, below, refers to any such program or work, and 
+a “work based on the Program” means either the Program or 
+any derivative work under copyright law: that is to say, a work 
+containing the Program or a portion of it, either verbatim or 
+with modifications and/or translated into another language. 
+(Hereinafter, translation is included without limitation in the 
+term “modification”.) Each licensee is addressed as “you”.
+ Activities other than copying, distribution and modification 
+are not covered by this License; they are outside its scope. The 
+act of running the Program is not restricted, and the output 
+from the Program is covered only if its contents constitute 
+a work based on the Program (independent of having been 
+made by running the Program). Whether that is true depends 
+on what the Program does.
+1. You may copy and distribute verbatim copies of the Program’s 
+source code as you receive it, in any medium, provided that 
+you conspicuously and appropriately publish on each copy 
+an appropriate copyright notice and disclaimer of warranty; 
+keep intact all the notices that refer to this License and to the 
+absence of any warranty; and give any other recipients of the 
+Program a copy of this License along with the Program.
+ You may charge a fee for the physical act of transferring a 
+copy, and you may at your option offer warranty protection in 
+exchange for a fee.
+118
+2. You may modify your copy or copies of the Program or any 
+portion of it, thus forming a work based on the Program, and 
+copy and distribute such modifications or work under the 
+terms of Section 1 above, provided that you also meet all of 
+these conditions:
+ a) You must cause the modified files to carry prominent 
+notices stating that you changed the files and the date of any 
+change.
+ b) You must cause any work that you distribute or publish, 
+that in whole or in part contains or is derived from the 
+Program or any part thereof, to be licensed as a whole at no 
+charge to all third parties under the terms of this License.
+ c) If the modified program normally reads commands 
+interactively when run, you must cause it, when started 
+running for such interactive use in the most ordinary way, to 
+print or display an announcement including an appropriate 
+copyright notice and a notice that there is no warranty (or 
+else, saying that you provide a warranty) and that users may 
+redistribute the program under these conditions, and telling 
+the user how to view a copy of this License. (Exception: if the 
+Program itself is interactive but does not normally print such 
+an announcement, your work based on the Program is not 
+required to print an announcement.)
+ These requirements apply to the modified work as a whole. 
+If identifiable sections of that work are not derived from the 
+Program, and can be reasonably considered independent and 
+separate works in themselves, then this License, and its terms, 
+do not apply to those sections when you distribute them as 
+separate works. But when you distribute the same sections 
+as part of a whole which is a work based on the Program, the 
+distribution of the whole must be on the terms of this License, 
+whose permissions for other licensees extend to the entire 
+whole, and thus to each and every part regardless of who 
+wrote it.
+ Thus, it is not the intent of this section to claim rights or 
+contest your rights to work written entirely by you; rather, 
+the intent is to exercise the right to control the distribution of 
+derivative or collective works based on the Program.
+119
+ In addition, mere aggregation of another work not based on 
+the Program with the Program (or with a work based on the 
+Program) on a volume of a storage or distribution medium 
+does not bring the other work under the scope of this License.
+3. You may copy and distribute the Program (or a work based on 
+it, under Section 2) in object code or executable form under 
+the terms of Sections 1 and 2 above provided that you also do 
+one of the following:
+ a) Accompany it with the complete corresponding machine-
+readable source code, which must be distributed under the 
+terms of Sections 1 and 2 above on a medium customarily 
+used for software interchange; or,
+ b) Accompany it with a written offer, valid for at least three 
+years, to give any third party, for a charge no more than your 
+cost of physically performing source distribution, a complete 
+machine-readable copy of the corresponding source code, to 
+be distributed under the terms of Sections 1 and 2 above on a 
+medium customarily used for software interchange; or,
+ c) Accompany it with the information you received as to 
+the offer to distribute corresponding source code. (This 
+alternative is allowed only for noncommercial distribution and 
+only if you received the program in object code or executable 
+form with such an offer, in accord with Subsection b above.)
+ The source code for a work means the preferred form of 
+the work for making modifications to it. For an executable 
+work, complete source code means all the source code for all 
+modules it contains, plus any associated interface definition 
+files, plus the scripts used to control compilation and 
+installation of the executable. However, as a special exception, 
+the source code distributed need not include anything that 
+is normally distributed (in either source or binary form) with 
+the major components (compiler, kernel, and so on) of the 
+operating system on which the executable runs, unless that 
+component itself accompanies the executable.
+ If distribution of executable or object code is made by 
+offering access to copy from a designated place, then offering 
+equivalent access to copy the source code from the same 
+place counts as distribution of the source code, even though 
+120
+third parties are not compelled to copy the source along with 
+the object code.
+4. You may not copy, modify, sublicense, or distribute the 
+Program except as expressly provided under this License. Any 
+attempt otherwise to copy, modify, sublicense or distribute 
+the Program is void, and will automatically terminate your 
+rights under this License. However, parties who have received 
+copies, or rights, from you under this License will not have 
+their licenses terminated so long as such parties remain in full 
+compliance.
+5. You are not required to accept this License, since you have 
+not signed it. However, nothing else grants you permission to 
+modify or distribute the Program or its derivative works. These 
+actions are prohibited by law if you do not accept this License.
+ Therefore, by modifying or distributing the Program (or any 
+work based on the Program), you indicate your acceptance 
+of this License to do so, and all its terms and conditions for 
+copying, distributing or modifying the Program or works 
+based on it.
+6. Each time you redistribute the Program (or any work based 
+on the Program), the recipient automatically receives a license 
+from the original licensor to copy, distribute or modify the 
+Program subject to these terms and conditions. You may not 
+impose any further restrictions on the recipients’ exercise 
+of the rights granted herein. You are not responsible for 
+enforcing compliance by third parties to this License.
+7. If, as a consequence of a court judgment or allegation of 
+patent infringement or for any other reason (not limited to 
+patent issues), conditions are imposed on you (whether by 
+court order, agreement or otherwise) that contradict the 
+conditions of this License, they do not excuse you from the 
+conditions of this License. If you cannot distribute so as to 
+satisfy simultaneously your obligations under this License and 
+any other pertinent obligations, then as a consequence you 
+may not distribute the Program at all. For example, if a patent 
+license would not permit royalty-free redistribution of the 
+Program by all those who receive copies directly or indirectly 
+through you, then the only way you could satisfy both it and 
+121
+this License would be to refrain entirely from distribution of 
+the Program.
+ If any portion of this section is held invalid or unenforceable 
+under any particular circumstance, the balance of the section 
+is intended to apply and the section as a whole is intended to 
+apply in other circumstances.
+ It is not the purpose of this section to induce you to infringe 
+any patents or other property right claims or to contest 
+validity of any such claims; this section has the sole purpose 
+of protecting the integrity of the free software distribution 
+system, which is implemented by public license practices. 
+Many people have made generous contributions to the wide 
+range of software distributed through that system in reliance 
+on consistent application of that system; it is up to the author/
+donor to decide if he or she is willing to distribute software 
+through any other system and a licensee cannot impose that 
+choice.
+ This section is intended to make thoroughly clear what is 
+believed to be a consequence of the rest of this License.
+8. If the distribution and/or use of the Program is restricted 
+in certain countries either by patents or by copyrighted 
+interfaces, the original copyright holder who places the 
+Program under this License may add an explicit geographical 
+distribution limitation excluding those countries, so that 
+distribution is permitted only in or among countries not thus 
+excluded. In such case, this License incorporates the limitation 
+as if written in the body of this License.
+9. The Free Software Foundation may publish revised and/
+or new versions of the General Public License from time to 
+time. Such new versions will be similar in spirit to the present 
+version, but may differ in detail to address new problems or 
+concerns.
+ Each version is given a distinguishing version number. If the 
+Program specifies a version number of this License which 
+applies to it and “any later version”, you have the option of 
+following the terms and conditions either of that version or of 
+any later version published by the Free Software Foundation. 
+If the Program does not specify a version number of this 
+License, you may choose any version ever published by the 
+122
+Free Software Foundation.
+10. If you wish to incorporate parts of the Program into other free 
+programs whose distribution conditions are different, write to 
+the author to ask for permission.
+ For software which is copyrighted by the Free Software 
+Foundation, write to the Free Software Foundation; we 
+sometimes make exceptions for this. Our decision will be 
+guided by the two goals of preserving the free status of all 
+derivatives of our free software and of promoting the sharing 
+and reuse of software generally.
+NO WARRANTY
+11 BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, 
+THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT 
+PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE 
+STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR 
+OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT 
+WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, 
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR 
+PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND 
+PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE 
+PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL 
+NECESSARY SERVICING, REPAIR OR CORRECTION.
+12 IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR 
+AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR 
+ANY OTHER PARTY WHO MAY MODIFY AND/OR REDISTRIBUTE 
+THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR 
+DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL 
+OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE 
+OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT 
+LIMITED TO LOSS OF DATA OR DATA BEING RENDERED 
+INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD 
+PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH 
+ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER 
+PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH 
+DAMAGES.
+END OF TERMS AND CONDITIONS
+123
+Kontaktní informace společnosti ASUS
+ASUSTeK COMPUTER INC.
+Adresa 15 Li-Te Road, Peitou, Taipei, Taiwan 11259
+Webové stránky www.asus.com.tw
+Technická podpora
+Telefon +886228943447
+Fax +886228907698
+Podpora online support.asus.com
+ASUS COMPUTER INTERNATIONAL (Amerika)
+Adresa 48720 Kato Rd., Fremont, CA 94538, USA 
+Telefon +1-510-739-3777
+Fax +1-510-608-4555
+Webové stránky usa.asus.com
+Podpora online support.asus.com
+ASUS COMPUTER GmbH (Německo a Rakousko)
+Adresa Harkort Str. 21-23, D-40880 Ratingen, Germany
+Fax +49-2102-959931
+Webové stránky asus.com/de
+Kontakt online eu-rma.asus.com/sales
+Technická podpora
+Telefon (Součást) +49-2102-5789555
+Telefon Německo (Systém/notebook/Eee/LCD) +49-2102-5789557
+Telefon Rakousko (Systém/notebook/Eee/LCD) +43-820-240513
+Fax technické podpory +49-2102-959911
+Podpora online support.asus.com
+124
+Informace o globální horké síťové lince
+Region Country/ Area Hotline Number Service Hours
+Europe
+Cyprus 800-92491 09:00-13:00 ; 
+14:00-18:00 Mon-Fri
+France 0033-170949400 09:00-18:00 Mon-Fri
+Germany
+0049-1805010920
+09:00-18:00 Mon-Fri
+10:00-17:00 Mon-Fri
+0049-1805010923
+(component support)
+0049-2102959911 (Fax)
+Hungary 0036-15054561 09:00-17:30 Mon-Fri
+Italy 199-400089 09:00-13:00 ; 
+14:00-18:00 Mon-Fri
+Greece 00800-44142044 09:00-13:00 ; 
+14:00-18:00 Mon-Fri
+Austria 0043-820240513 09:00-18:00 Mon-Fri
+Netherlands/
+Luxembourg 0031-591570290 09:00-17:00 Mon-Fri
+Belgium 0032-78150231 09:00-17:00 Mon-Fri
+Norway 0047-2316-2682 09:00-18:00 Mon-Fri
+Sweden 0046-858769407 09:00-18:00 Mon-Fri
+Finland 00358-969379690 10:00-19:00 Mon-Fri
+Denmark 0045-38322943 09:00-18:00 Mon-Fri
+Poland 0048-225718040 08:30-17:30 Mon-Fri
+Spain 0034-902889688 09:00-18:00 Mon-Fri
+Portugal 00351-707500310 09:00-18:00 Mon-Fri
+Slovak Republic 00421-232162621 08:00-17:00 Mon-Fri
+Czech Republic 00420-596766888 08:00-17:00 Mon-Fri
+Switzerland-German 0041-848111010 09:00-18:00 Mon-Fri
+Switzerland-French 0041-848111014 09:00-18:00 Mon-Fri
+Switzerland-Italian 0041-848111012 09:00-18:00 Mon-Fri
+United Kingdom 0044-1442265548 09:00-17:00 Mon-Fri
+Ireland 0035-31890719918 09:00-17:00 Mon-Fri
+Russia and CIS 008-800-100-ASUS 09:00-18:00 Mon-Fri
+Ukraine 0038-0445457727 09:00-18:00 Mon-Fri
+125
+Informace o globální horké síťové lince
+Region Country/ Area Hotline Numbers Service Hours
+Asia-Pacific
+Australia 1300-278788 09:00-18:00 Mon-Fri
+New Zealand 0800-278788 09:00-18:00 Mon-Fri
+Japan
+0800-1232787
+09:00-18:00 Mon-Fri
+09:00-17:00 Sat-Sun
+0081-570783886
+( Non-Toll Free )
+09:00-18:00 Mon-Fri
+09:00-17:00 Sat-Sun
+Korea 0082-215666868 09:30-17:00 Mon-Fri
+Thailand 0066-24011717 09:00-18:00 Mon-Fri
+1800-8525201
+Singapore 0065-64157917 11:00-19:00 Mon-Fri
+0065-67203835 11:00-19:00 Mon-Fri
+( Repair Status Only ) 11:00-13:00 Sat
+Malaysia 1300-88-3495 9:00-18:00 Mon-Fri
+Philippine 1800-18550163 09:00-18:00 Mon-Fri
+India
+1800-2090365
+09:00-18:00 Mon-Sat
+India(WL/NW) 09:00-21:00 Mon-Sun
+Indonesia 0062-2129495000 09:30-17:00 Mon-Fri
+500128 (Local Only) 9:30 – 12:00 Sat
+Vietnam 1900-555581 08:00-12:00 
+13:30-17:30 Mon-Sat
+Hong Kong 00852-35824770 10:00-19:00 Mon-Sat
+Taiwan 0800-093-456; 
+02-81439000
+9:00-12:00 Mon-Fri; 
+13:30-18:00 Mon-Fri
+Americas
+USA
+1-812-282-2787
+8:30-12:00 EST Mon-Fri
+Canada 9:00-18:00 EST Sat-Sun
+Mexico 001-8008367847 08:00-20:00 CST Mon-Fri
+08:00-15:00 CST Sat
+Brazil
+4003 0988 (Capital)
+0800 880 0988
+(demais localidades)
+9:00am-18:00 Mon-Fri
+126
+Informace o globální horké síťové lince
+Výrobce: ASUSTeK Computer Inc.
+Telefon: +886-2-2894-3447
+Adresa: 4F, No. 150, LI-TE RD., PEITOU, 
+TAIPEI 112, TAIWAN
+Zplnomocněný 
+zástupce v Evropě:
+ASUS Computer GmbH
+Adresa: HARKORT STR. 21-23, 40880 
+RATINGEN, GERMANY
+Region Country/ Area Hotline Numbers Service Hours
+Middle 
+East + 
+Africa
+Egypt 800-2787349 09:00-18:00 Sun-Thu
+Saudi Arabia 800-1212787 09:00-18:00 Sat-Wed
+UAE 00971-42958941 09:00-18:00 Sun-Thu
+Turkey 0090-2165243000 09:00-18:00 Mon-Fri
+South Africa 0861-278772 08:00-17:00 Mon-Fri
+Israel *6557/00972-39142800 08:00-17:00 Sun-Thu
+*9770/00972-35598555 08:30-17:30 Sun-Thu
+Balkan 
+Countries
+Romania 0040-213301786 09:00-18:30 Mon-Fri
+Bosnia 
+Herzegovina 00387-33773163 09:00-17:00 Mon-Fri
+Bulgaria 00359-70014411 09:30-18:30 Mon-Fri
+00359-29889170 09:30-18:00 Mon-Fri
+Croatia 00385-16401111 09:00-17:00 Mon-Fri
+Montenegro 00382-20608251 09:00-17:00 Mon-Fri
+Serbia 00381-112070677 09:00-17:00 Mon-Fri
+Slovenia 00368-59045400
+08:00-16:00 Mon-Fri
+00368-59045401
+Baltic 
+Countries
+Estonia 00372-6671796 09:00-18:00 Mon-Fri
+Latvia 00371-67408838 09:00-18:00 Mon-Fri
+Lithuania-
+Kaunas 00370-37329000 09:00-18:00 Mon-Fri
+Lithuania-Vilnius 00370-522101160 09:00-18:00 Mon-Fri
+POZNÁMKY: 
+• E-mailová adresa podpory ve Velké Británii: network_support_
+uk@asus.com.
+• Další informace viz webové stránky podpory společnosti ASUS na 
+adrese: http://support.asus.com

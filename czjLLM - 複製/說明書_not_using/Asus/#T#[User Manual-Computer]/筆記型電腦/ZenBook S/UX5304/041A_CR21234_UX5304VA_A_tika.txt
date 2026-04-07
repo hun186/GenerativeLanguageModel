@@ -1,0 +1,1528 @@
+
+CR21234
+Prvo izdanje / Veljača 2023
+E-priručnik
+2 E-priručnik za prijenosno računalo
+Autorsko pravo
+Niti jedan dio ovog priručnika, uključujući u njemu opisane proizvode i softver, ne smije se bez izričite 
+pismene suglasnosti tvrtke ASUSTeK COMPUTER INC. (u daljnjem tekstu: ASUS) reproducirati, prenositi, 
+prepisivati, pohranjivati u sustavu gdje se mu se može ponovo pristupiti ili prevoditi na bilo koji jezik, u bilo 
+kojem obliku ili na bilo koji način, osim dokumentacije koju prodavatelj čuva u svrhu izrade sigurnosne kopije.
+ASUS DOSTAVLJA OVAJ PRIRUČNIK “KAKAV JEST” BEZ BILO KAKVOG JAMSTVA, IZRAVNOG ILI NEIZRAVNOG, 
+UKLJUČUJUĆI BEZ OGRANIČENJA, NEIZRAVNA JAMSTVA I UVJETE UTRŽIVOSTI I POGODNOSTI ZA ODREĐENU 
+SVRHU. NI U KOJEM SLUČAJU ASUS, NJEGOVI MENADŽERI, UPRAVA, ZAPOSLENICI I AGENTI NEĆE BITI 
+ODGOVORNI NI ZA BILO KAKVU NEIZRAVNU, POSEBNU, SLUČAJNU ILI POSLJEDIČNU ŠTETU (UKLJUČUJUĆI 
+ŠTETU ZBOG GUBITKA DOBITI, POSLOVNOG GUBITKA, GUBITKA ILI KORIŠTENJA PODATAKA, PREKIDA 
+POSLOVANJA I SLIČNE ŠTETE), ČAK NI AKO JE ASUS, ZBOG BILO KAKVOG NEDOSTATKA ILI POGREŠKE U 
+OVOM PRIRUČNIKU ILI PROIZVODU, BIO UPOZNAT S MOGUĆNOŠĆU NASTANKA TAKVIH ŠTETA.
+Nazivi proizvoda i tvrtki iz ovog priručnika mogu, ali ne moraju, biti registrirani zaštitni znaci ili proizvodi 
+zaštićeni autorskim pravima pripadajućih vlasnika, te služe samo za potrebe identifikacije i objašnjenja u 
+korist vlasnika tih proizvoda i tvrtki, bez namjere kršenja njihovih prava.
+TEHNIČKE KARAKTERISTIKE I PODACI IZ OVOG PRIRUČNIKA SLUŽE SAMO U INFORMATIVNE SVRHE. 
+PRIDRŽANO JE PRAVO NJIHOVE IZMJENE BEZ PRETHODNE NAJAVE I NEĆE SE SMATRATI OBVEZOM TVRTKE 
+ASUS. ASUS NE PREUZIMA ODGOVORNOST NI OBVEZU ZA BILO KAKVE POGREŠKE I NETOČNOSTI KOJE MOGU 
+POSTOJATI U OVOM PRIRUČNIKU, UKLJUČUJUĆI OPISANE PROIZVODE I SOFTVER.
+Copyright © 2023 ASUSTeK COMPUTER INC. Sva prava pridržana
+Ograničenje odgovornosti
+U određenim situacijama zbog nedostatka za koji je odgovorna tvrtka ASUS ili drugih obveza, možete imati 
+pravo na naknadu štete od tvrtke ASUS. U tom slučaju, bez obzira na osnovu temeljem koje potražujete 
+naknadu štete od tvrtke ASUS, ASUS će biti odgovoran isključivo za štete nastale kao posljedica tjelesne 
+ozljede (uključujući smrt), oštećenja nepokretne i pokretne imovine, ili sve druge stvarne i izravne štete 
+koje su uzrokovane nepoštivanjem i neizvršavanjem zakonskih obveza propisanih ovim jamstvom, u iznosu 
+do navedene ugovorne cijene svakog pojedinog proizvoda.
+ASUS je isključivo odgovoran za nadoknadu štete, gubitka i potraživanja koja proizlaze iz ugovora, kaznene 
+odgovornosti ili kršenja prava prema odredbama ovog jamstva.
+To se ograničenje također odnosi na dobavljače tvrtke ASUS i prodajno mjesto na kojem ste kupili proizvod 
+te predstavlja maksimalnu odgovornost tvrtke ASUS, njezinih dobavljača i prodajnog mjesta.
+TVRTKA ASUS NI U KOJIM OKOLNOSTIMA NEĆE BITI ODGOVORNA ZA SLJEDEĆE: (1) POTRAŽIVANJA TREĆIH 
+OSOBA U VAŠE IME; (2) GUBITAK ZAPISA I PODATAKA TE OŠTEĆENJA ISTIH; ILI (3) POSEBNE, SLUČAJNE, 
+NEIZRAVNE I BILO KAKVE POSLJEDIČNE POSLOVNE ŠTETE (UKLJUČUJUĆI GUBITAK DOBITI I UŠTEĐEVINE), 
+ČAK NI AKO SU ASUS, NJEGOVI DOBAVLJAČI I PRODAJNO MJESTO NA KOJEM STE KUPILI PROIZVOD, BILI 
+SVJESNI MOGUĆNOSTI NASTANKA TAKVIH ŠTETA.
+Servis i podrška
+Posjetite našu višejezičnu web stranicu na https://www.asus.com/support/.
+MyASUS nudi razne funkcije podrške uključujući rješavanje problema, optimizaciju rada proizvoda, 
+integraciju ASUS softvera i pomaže u organiziranju osobne radne površine i povećanju prostora za 
+pohranu. Više pojedinosti potražite na https://www.asus.com/support/FAQ/1038301/.
+E-priručnik za prijenosno računalo 3
+Sadržaj
+O ovom priručniku ....................................................................................................7
+Konvencije koje se koriste u ovom priručniku ..................................................... 8
+Ikone .................................................................................................................................... 8
+Tipografija ......................................................................................................................... 8
+Sigurnosne mjere opreza ........................................................................................9
+Upotreba prijenosnog računala ................................................................................ 9
+Briga o prijenosnom računalu.................................................................................... 10
+Propisno zbrinjavanje ................................................................................................... 11
+Podaci o sigurnosti baterije ........................................................................................ 12
+Poglavlje 1: Postavljanje hardvera
+Upoznajte svoje prijenosno računalo ................................................................16
+Prikaz sprijeda .................................................................................................................. 16
+Pogled s donje strane .................................................................................................... 21
+Pogled s desne strane ................................................................................................... 23
+Pogled s lijeve strane ..................................................................................................... 24
+Poglavlje 2: Upotreba prijenosnog računala
+Početak rada ................................................................................................................28
+Napunite svoje prijenosno računalo ....................................................................... 28
+Podignite kako biste otvorili ploču zaslona .......................................................... 30
+Pritisnite gumb napajanja ........................................................................................... 30
+Upotreba dodirne pločice ......................................................................................31
+Upotreba tipkovnice .................................................................................................38
+Tipke prečaca ................................................................................................................... 38
+Funkcijske tipke ............................................................................................................... 39
+Tipke sustava Windows ................................................................................................ 39
+4 E-priručnik za prijenosno računalo
+Poglavlje 3.: Rad sa sustavom Windows
+Prvi rad sa sustavom .................................................................................................42
+Izbornik Start ...............................................................................................................43
+Aplikacije sustava Windows ...................................................................................45
+Rad s aplikacijama sustava Windows ...................................................................... 46
+Prilagođavanje aplikacija sustava Windows.......................................................... 46
+Prikaz zadatka .............................................................................................................48
+Widgeti ..........................................................................................................................49
+Značajka Snap (Poravnanje) ..................................................................................51
+Pristupne točke za Snap (Poravnanje) ..................................................................... 51
+Action Center (Akcijski centar) ..............................................................................53
+MyASUS Splendid ......................................................................................................55
+Postavljanje OLED zaslona .....................................................................................57
+Postavljanje tamnog načina rada ............................................................................. 57
+Isključivanje zaslona kad se ne upotrebljava........................................................ 59
+Podešavanje svjetline zaslona.................................................................................... 61
+Automatsko skrivanje programske trake ............................................................... 63
+Postavljanje tamnog načina rada u aplikaciji Microsoft Office ...................... 65
+Ostali tipkovni prečaci .............................................................................................66
+Povezivanje s bežičnim mrežama ........................................................................68
+Wi-Fi ..................................................................................................................................... 68
+Bluetooth ........................................................................................................................... 69
+Način rada u zrakoplovu .............................................................................................. 70
+Isključivanje prijenosnog računala ......................................................................71
+Stavljanje prijenosnog računala u stanje mirovanja .....................................72
+E-priručnik za prijenosno računalo 5
+Poglavlje 4.: Samoprovjera pri uključivanju
+Samoprovjera pri uključivanju ..............................................................................74
+Upotreba POST-a za pristup BIOS-u i rješavanje problema ............................. 74
+BIOS ................................................................................................................................74
+Pristupanje BIOS-u ......................................................................................................... 74
+Oporavak sustava ......................................................................................................75
+Izvođenje opcije oporavka .......................................................................................... 76
+Savjeti i ČPP
+Korisni savjeti za upotrebu prijenosnog računala .........................................80
+Česta pitanja o hardveru .........................................................................................82
+Česta pitanja o softveru...........................................................................................85
+Dodaci
+Izjava o sukladnosti s pravilima Federalne komisije za komunikacije 
+(engl. Federal Communications Commission) o smetnjama .......................... 88
+FCC informacije o izloženosti RF zračenju ............................................................. 89
+Obavijest o sigurnosti u skladu s UL standardima .............................................. 90
+Sigurnosni zahtjevi za napajanje .............................................................................. 91
+Obavijest o televiziji ....................................................................................................... 91
+Obavijest o proizvodima tvrtke Macrovision Corporation .............................. 91
+6 E-priručnik za prijenosno računalo
+Sprječavanje oštećenja sluha ..................................................................................... 91
+Obavijest o premazu ..................................................................................................... 91
+Upozorenja za litij (litij-ionske baterije) za nordijske zemlje ........................... 92
+Izjava o sukladnosti Uredbi o zaštiti okoliša proizvoda .................................... 93
+EU REACH i članak 33 .................................................................................................... 93
+EU RoHS.............................................................................................................................. 93
+Usluga recikliranja/prihvata tvrtke ASUS ............................................................... 94
+Direktiva o ekodizajnu .................................................................................................. 94
+Proizvod s kvalifikacijom ENERGY STAR ................................................................. 95
+EPEAT registrirani proizvodi ........................................................................................ 95
+Licenca za tekstualne fontove BIOS-a ..................................................................... 96
+Pojednostavljena EU izjava o usklađenosti ........................................................... 96
+Obavijest o Wi-Fi mreži ................................................................................................. 97
+E-priručnik za prijenosno računalo 7
+O ovom priručniku
+Ovaj priručnik donosi informacije o hardverskim i softverskim 
+funkcijama prijenosnog računala i organiziran je po sljedećim 
+poglavljima:
+Poglavlje 1: Postavljanje hardvera
+Ovo poglavlje detaljno opisuje hardverske komponente 
+prijenosnog računala.
+Poglavlje 2: Upotreba prijenosnog računala
+Ovo poglavlje prikazuje način upotrebe različitih dijelova 
+prijenosnog računala.
+Poglavlje 3: Rad sa sustavom Windows
+Ovo poglavlje donosi pregled upotrebe sustava Windows 
+prijenosnog računala.
+Poglavlje 4: Samoprovjera pri uključivanju
+Ovo poglavlje prikazuje način upotrebe provjere POST za 
+promjenu postavki prijenosnog računala.
+Savjeti i ČPP
+U ovom odjeljku nalaze se preporučeni savjeti, ČPP o hardveru i 
+softveru koje vam pomažu za održavanje i uklanjanje uobičajenih 
+problema s prijenosnim računalom.
+Dodaci
+Ovo poglavlje prikazuje obavijesti i sigurnosne izjave prijenosnog 
+računala.
+8 E-priručnik za prijenosno računalo
+Konvencije koje se koriste u ovom priručniku
+U svrhu naglašavanja ključnih informacija u ovom priručniku, poruke su 
+predstavljene na sljedeći način:
+VAŽNO! Ova poruka sadrži bitne informacije koje za dovršenje zadatka 
+treba pročitati. 
+NAPOMENA: Ova poruka sadrži dodatne informacije i savjete koji mogu 
+pomoći u izvođenju zadataka.
+UPOZORENJE! Ova poruka sadrži važne informacije koje treba uzeti u 
+obzir radi očuvanja vlastite sigurnosti kod izvođenja određenih zadataka i 
+radi sprečavanja oštećenja podataka na prijenosnom računalu i njegovih 
+dijelova. 
+Ikone
+Ikone u nastavku označavaju koji uređaj se može koristiti za izvršavanje 
+serije zadataka ili postupaka na prijenosnom računalu.
+= Korištenje dodirne plohe.
+= Korištenje tipkovnice.
+Tipografija
+Podebljano = Označava izbornik ili stavku koju je potrebno odabrati.
+Kurziv = Ovo označava poglavlja koja možete potražiti u ovom 
+priručniku.
+E-priručnik za prijenosno računalo 9
+Sigurnosne mjere opreza
+Upotreba prijenosnog računala
+Prijenosno računalo smije se koristiti samo pri 
+temperaturama okruženja od 5 °C (41 °F) do 35 °C 
+(95 °F).
+Nazivni napon naveden je na natpisnoj pločici s 
+donje strane računala i mora biti jednak naponu 
+strujnog adaptera.
+Prijenosno računalo može postati toplo ili vruće 
+tijekom uporabe ili punjenja baterijskog modula. 
+Prijenosno računalo nemojte ostavljati u krilu ili 
+blizu bilo kojeg dijela tijela da ne dođe do ozljede 
+zbog izlaganja toplini. Kada radite na prijenosnom 
+računalu, nemojte ga stavljati na površine koje 
+mogu zaklanjati ventilacijske otvore.
+Ne koristite oštećene kabele napajanja, dodatnu 
+opremu ili druge vanjske uređaje s prijenosnim 
+računalom.
+Kada je prijenosno računalo uključeno, pazite da ga 
+ne prenosite ili prekrivate s predmetima koji mogu 
+ograničiti protok zraka.
+Prijenosno računalo nemojte stavljati na neravne ili 
+nestabilne radne površine. 
+Vaše prijenosno računalo može prolaziti kroz RTG 
+uređaje u zračnim lukama (koriste se za predmete 
+postavljene na transportne trake), ali nemojte ga 
+izlagati utjecaju magnetskih detektora i palica.
+Kontaktirajte svoju zrakoplovnu tvrtku kako biste 
+se upoznali s povezanim uslugama na letu koje je 
+moguće koristiti i ograničenjima koja treba slijediti 
+pri korištenju prijenosnog računala tijekom leta.
+10 E-priručnik za prijenosno računalo
+Briga o prijenosnom računalu
+Odspojite izvor izmjeničnog napajanja i izvadite 
+baterijski modul (ako se koristi) prije čišćenja 
+prijenosnog računala. Koristite čistu spužvu od 
+celuloze ili krpu od jelenske kože navlaženu toplom 
+vodom ili otopinom s niskom koncentracijom 
+neabrazivnog deterdženta. Uklonite višak vlage 
+s prijenosnog računala koristeći suhu krpu. 
+Onemogućite prodor tekućina u kućište ili kroz 
+zazor tipkovnice kako biste spriječili nastanak 
+kratkog spoja ili korozije.
+Ne koristite jaka otapala kao što su alkohol, 
+razrjeđivači, benzen ili druge kemikalije na ili oko 
+prijenosnog računala.
+Nemojte stavljati predmete na prijenosno računalo.
+Nemojte izlagati prijenosno računalo snažnim 
+magnetskim ili električnim poljima.
+Prijenosno računalo nemojte koristiti ili izlagati 
+utjecaju tekućina, kiše ili vlage. 
+Prijenosno računalo nemojte izlagati prašnjavim 
+uvjetima rada.
+E-priručnik za prijenosno računalo 11
+Propisno zbrinjavanje
+NEMOJTE odlagati prijenosno računalo u komunalni 
+otpad. Dijelove ovog proizvoda moguće je ponovo 
+koristiti i reciklirati. Simbol prekriženog koša za 
+otpatke označava da se proizvod (električna i 
+elektronička oprema te baterije koje sadrže živu) 
+ne smije odlagati zajedno s komunalnim otpadom. 
+Elektroničke proizvode odložite prema važećim 
+lokalnim propisima.
+NE odlažite bateriju zajedno s komunalnim 
+otpadom. Simbol prekrižene kante za otpatke 
+označava da se baterija ne smije odlagati zajedno s 
+komunalnim otpadom.
+Prijenosno računalo nemojte koristiti blizu mjesta 
+gdje istječe plin.
+Ne stavljajte aktivne elektroničke uređaje blizu 
+prijenosnog računala kako biste izbjegli smetnje od 
+elektromagnetskih valova na ploči zaslona.
+Ne koristite ovo prijenosno računalo za rudarenje 
+kripto valuta (što iziskuje ogromnu količinu 
+električne energije i vremena kako bi se dobile 
+konvertibilne virtualne valute) i/ili povezane 
+aktivnosti.
+12 E-priručnik za prijenosno računalo
+Zaštita baterije
+• Često punjenje baterije pod visokim naponom može skratiti radni 
+vijek baterije. Radi zaštite baterije nakon potpunog punjenja 
+baterije, sustav može obustaviti punjenje kada je baterija bude 
+između 90% i 100% napunjenosti.
+NAPOMENA: Razina napunjenosti pri kojoj baterija završava punjenje 
+obično je postavljena između 90 % i 99 %. Stvarna vrijednost može se 
+razlikovati prema modelu.
+• Punjenje ili skladištenje baterije na visokim temperaturama 
+okoline može dovesti do trajnog oštećenja kapaciteta baterije 
+i brzo skratiti radni vijek baterije. Ako je temperatura baterije 
+previsoka, sustav može smanjiti kapacitet punjenja baterije ili čak 
+obustaviti punjenje radi zaštite baterije.
+• Kapacitet baterije može se smanjiti čak i kad je uređaj isključen 
+i odvojen od izmjeničnog napajanja. To je normalno jer sustav i 
+dalje troši malu količinu energije iz baterije.
+Podaci o sigurnosti baterije
+E-priručnik za prijenosno računalo 13
+Standardno održavanje baterije
+• Ako se nećete koristiti duže vrijeme, obvezno napunite bateriju 
+do 50% i zatim isključite uređaj i odspojite adapter za izmjeničnu 
+struju. Napunite bateriju na 50% svaka tri mjeseca kako biste 
+izbjegli prekomjerno pražnjenje i onemogućili oštećenje baterije.
+• Izbjegavajte punjenje baterije pod visokim naponom duže 
+vrijeme kako biste produžili vijek trajanja baterije. Ako stalno 
+koristite izmjenično napajanje za uređaj, pazite da bateriju 
+ispraznite na 50% barem jednom u dva tjedna. Postavke možete 
+podesiti i putem Battery Health Charging (Punjenje i stanje 
+baterije) u MyASUS-u kako biste produžili vijek trajanja baterije.
+• Preporučuje se skladištenje baterije na temperaturama između 
+5 °C (41 °F) i 35 °C (95 °F) koja je napunjena na 50% kapaciteta. 
+Postavke možete podesiti i putem Battery Health Charging 
+(Punjenje i stanje baterije) u MyASUS-u kako biste produžili vijek 
+trajanja baterije.
+• Bateriju nemojte ostavljati u vlažnom okruženju. Izloženost 
+vlažnom okruženju može povećati brzinu prekomjernog 
+pražnjenja baterije. Okruženje s niskom temperaturom može 
+oštetiti kemijske tvari u bateriji, dok visoka temperatura ili 
+pregrijavanje mogu dovesti do eksplozije.
+• Ne stavljajte uređaj ili baterijski modul u blizini radijatora, kamina, 
+peći, grijalica i drugih izvora topline s temperaturom većom od 60 
+°C (140 °F). Okruženje s visokom temperaturom može dovesti do 
+eksplozije ili istjecanja koje može uzrokovati požar.
+14 E-priručnik za prijenosno računalo
+E-priručnik za prijenosno računalo 15
+Poglavlje 1: 
+Postavljanje hardvera
+16 E-priručnik za prijenosno računalo
+Upoznajte svoje prijenosno računalo
+Prikaz sprijeda
+NAPOMENA: Raspored tipki na tipkovnici može se razlikovati ovisno o 
+regiji ili državi. Izgled prijenosnog računala također se može razlikovati 
+ovisno o modelu prijenosnog računala.
+E-priručnik za prijenosno računalo 17
+Niz mikrofona
+Niz mikrofona odlikuje se funkcijama poništavanja jeke, 
+utišavanja buke i oblikovanja snopa u svrhu boljeg 
+prepoznavanja glasa i snimanja zvuka.
+Kamera
+Ugrađena kamera omogućuje snimanje fotografija ili videozapisa 
+s pomoću prijenosnog računala.
+Infracrvena kamera
+Ugrađena kamera omogućuje snimanje fotografija ili videozapisa 
+s pomoću prijenosnog računala. Infracrvena kamera također 
+podržava Windows Hello.
+NAPOMENA: Crveni LED indikator infracrvene kamere treperi 
+dok se podaci iščitavaju prije nego što se prijavite s pomoću 
+prepoznavanja lica značajke Windows Hello.
+Indikator kamere
+Indikator kamere svijetli kad se ugrađena kamera upotrebljava.
+18 E-priručnik za prijenosno računalo
+Ploča zaslona
+Ova ploča zaslona visoke rezolucije odlikuje se izvrsnim 
+značajkama prikaza za fotografije, videozapise i druge 
+multimedijske datoteke na vašem prijenosnom računalu.
+Izjava o ogradi od odgovornosti: Dugotrajni prikaz nepomičnih 
+slika ili slika s visokim kontrastom može dovesti do zadržavanja 
+slike ili njezinog pamćenja na OLED zaslonu. ASUS prijenosno 
+računalo s OLED zaslonom (na nekim modelima) smanjuje 
+mogućnost trajnog pamćenja slike postavkom Dark Mode 
+(Način rada u tami) u sustavu Windows po zadanoj postavci i 
+skraćivanjem vremena neaktivnosti prije isključivanja zaslona. 
+Preporučuje se da aktivirate animirani čuvar zaslona s tamnom 
+pozadinom kako biste izbjegli rad OLED zaslona na maksimalnoj 
+svjetlini čime se produžuje životni vijek OLED zaslona.
+NAPOMENA: Više pojedinosti potražite u odjeljku Podešavanje 
+OLED zaslona u ovom priručniku.
+Indikator za isključen mikrofon
+Ovaj indikator svijetli kada je isključen mikrofon.
+Tipkovnica
+Tipkovnica sadrži QWERTY tipke pune veličine s ugodnom 
+dubinom hoda za tipkanje. Omogućuje vam da upotrebljavate 
+funkcijske tipke, omogućuje brzi pristup sustavu Windows te 
+upravlja drugim multimedijskim funkcijama.
+NAPOMENA: Raspored tipki na tipkovnici razlikuje se ovisno o 
+modelu ili teritoriju.
+E-priručnik za prijenosno računalo 19
+Indikator samo velikih slova
+Indikator svijetli kad se aktivira funkcija upotrebe samo velikih 
+slova. Upotreba samo velikih slova omogućuje vam da unosite 
+velika slova (npr. A, B, C) s pomoću tipkovnice prijenosnog 
+računala.
+Dodirna pločica
+Dodirna pločica omogućuje upotrebu dodira s više prstiju za 
+navigaciju na zaslonu, što omogućuje intuitivno korisničko 
+iskustvo. Također oponaša funkcije normalnog miša.
+NAPOMENA: Dodatne informacije potražite u dijelu Upotreba 
+dodirne pločice u ovom priručniku.
+Senzor svjetlosti okruženja
+Senzor svjetlosti okruženja prepoznaje količinu svjetlosti u 
+vašem okruženju. Senzor omogućuje sustavu da automatski 
+podesi svjetlinu zaslona ovisno o svjetlosnim uvjetima okruženja.
+Senzor RGB svjetla
+Senzor RGB svjetla automatski će prilagoditi temperaturu boje 
+ploče zaslona u skladu s razinama okolne rasvjete.
+20 E-priručnik za prijenosno računalo
+Indikator isključenosti kamere
+Ovaj indikator svijetli kada je kamera isključena.
+Gumb napajanja
+Pritisnite gumb napajanja kako biste uključili ili isključili 
+prijenosno računalo. Gumb napajanja također možete 
+upotrijebiti kako biste prijenosno računalo stavili u stanje 
+mirovanja ili hibernacije i kako biste ga probudili iz stanja 
+mirovanja ili hibernacije.
+U slučaju kada prijenosno računalo ne reagira, pritisnite i držite 
+gumb napajanja najmanje deset (10) sekundi dok se prijenosno 
+računalo ne isključi.
+E-priručnik za prijenosno računalo 21
+Pogled s donje strane
+NAPOMENA: Pogled s donje strane može se razlikovati ovisno o modelu.
+UPOZORENJE! Prijenosno računalo može postati toplo ili vruće tijekom 
+uporabe ili punjenja baterijskog modula. Prijenosno računalo nemojte 
+ostavljati u krilu ili blizu bilo kojeg dijela tijela da ne dođe do ozljede 
+zbog izlaganja toplini. Kada radite na prijenosnom računalu, nemojte ga 
+stavljati na površine koje mogu zaklanjati ventilacijske otvore.
+VAŽNO! 
+• Trajanje baterije ovisi o upotrebi i o specifikacijama prijenosnog 
+računala. Bateriju nije moguće rastaviti.
+• Dijelove kupujte od ovlaštenih zastupnika kako biste osigurali 
+maksimalnu kompatibilnost i pouzdanost. Ako vam je potrebna 
+usluga servisa ili pomoć s pravilnim rastavljanjem ili sastavljanjem 
+proizvoda, obratite se servisnom centru tvrtke ASUS ili ovlaštenom 
+zastupniku.
+22 E-priručnik za prijenosno računalo
+Ventilacijski otvori
+Ventilacijski otvori omogućuju ulazak hladnog zraka i izlazak 
+toplog zraka iz prijenosnog računala.
+UPOZORENJE! Uvjerite se da papir, knjige, odjeća, kabeli ili 
+drugi predmeti ne blokiraju niti jedan od ventilacijskih otvora. U 
+suprotnom može doći do pregrijavanja.
+Zvučnici
+Ugrađeni zvučnici omogućuju vam da čujete zvuk izravno iz 
+prijenosnog računala. Značajkama zvuka upravlja se putem 
+softvera.
+E-priručnik za prijenosno računalo 23
+Pogled s desne strane
+PIndikator napajanja
+Indikator napajanja svijetli kad se prijenosno računalo uključi i 
+polako treperi kad je prijenosno računalo u stanju mirovanja.
+Priključak za slušalice / naglavni komplet / mikrofon
+Ovaj vam priključak omogućuje da povežete pojačane zvučnike 
+ili slušalice. Priključak također možete upotrebljavati za 
+povezivanje naglavnog kompleta ili vanjskog mikrofona.
+USB 3.2 priključak 2. generacije
+USB 3.2 (univerzalna serijska sabirnica 3.2) priključak 2. 
+generacije osigurava brzinu prijenosa do 10 Gbit/s i kompatibilan 
+je sa standardom USB 2.0.
+24 E-priručnik za prijenosno računalo
+Pogled s lijeve strane
+Izlazni priključak HDMI
+Ovaj priključak omogućava slanje audio i video signala putem 
+HDMI kabela s prijenosnog računala na uređaj kompatibilan s 
+HDMI.
+Kombinirani priključak za Thunderbolt™ 4/ električno 
+napajanje
+Priključak Thunderbolt™ 4 kompatibilan je s USB Type-C® 
+standardima i omogućuje brzinu prijenosa do 40 Gbit/s za 
+uređaje s priključkom Thunderbolt™ 4. Spojite prijenosno 
+računalo na DisplayPort, VGA, DVI ili HDMI vanjski zaslon i 
+koristite funkcije prikaza u visokoj razlučivosti preko tehnologije 
+Intel® Thunderbolt™. Ukopčajte isporučeni adapter napajanja 
+u ovaj priključak ako želite napuniti baterijski modul i osigurati 
+napajanje prijenosnom računalu.
+NAPOMENA: Brzina prijenosa ovog priključka može se razlikovati 
+ovisno o modelu.
+VAŽNO! Potpuno punjenje prijenosnog računala iz izvora 
+napajanja nižeg napona može potrajati duže.
+E-priručnik za prijenosno računalo 25
+Dvobojni indikator stanja napunjenosti baterije
+Dvobojni LED indikator vizualno prikazuje stanje napunjenosti 
+baterije. Sljedeća tablica sadrži pojedinosti:
+Boja Stanje
+Neprestano bijelo Prijenosno je računalo 
+priključeno na izvor napajanja 
+i baterija je napunjena između 
+95 % i 100 %.
+Neprestano 
+narančasto
+Prijenosno je računalo 
+priključeno na izvor napajanja, 
+baterija se puni i napunjena je 
+manje od 95 %.
+Trepereće 
+narančasto
+Prijenosno se računalo napaja iz 
+baterije i baterija je napunjena 
+manje od 10 %.
+Isključeno svjetlo Prijenosno se računalo napaja iz 
+baterije i baterija je napunjena 
+između 10 % i 100 %.
+26 E-priručnik za prijenosno računalo
+E-priručnik za prijenosno računalo 27
+Poglavlje 2:
+Upotreba prijenosnog računala
+28 E-priručnik za prijenosno računalo
+VAŽNO!
+Informacije o adapteru za napajanje:
+• Ulazni napon: 100 – 240 V AC
+• Ulazna frekvencija: 50 – 60Hz
+• Nazivna izlazna struja: 3,25A (65W)
+• Nazivni izlazni napon: 20 V
+Punite prijenosno računalo 3 sata prije prve upotrebe u 
+baterijskom načinu rada.
+NAPOMENA: Adapter za napajanje može varirati izgledom ovisno o 
+modelima i regiji u kojoj se nalazite.
+Početak rada
+Napunite svoje prijenosno računalo
+A. Spojite kabel za izmjeničnu struju u adapter izmjenične/
+istosmjerne struje.
+B. Spojite konektor za istosmjernu struju na ulazni priključak za 
+napajanje (DC) prijenosnog računala.
+C. Priključite adapter izmjenične struje u izvor napajanja od 
+100 V~240 V.
+E-priručnik za prijenosno računalo 29
+VAŽNO!
+• Pronađite oznaku nazivne ulazne/izlazne struje na svom prijenosnom 
+računalu i provjerite podudara li se s podacima o ulaznoj/izlaznoj 
+struji na vašem adapteru za napajanje. Neki modeli prijenosnih 
+računala mogu imati više nazivnih izlaznih struja na temelju 
+dostupnog inventarnog broja.
+• Prije prvog uključivanja provjerite je li vaše prijenosno računalo 
+spojeno na adapter za napajanje. Uvijek spojite kabel za napajanje u 
+zidnu utičnicu bez upotrebe produžnih kabela. Radi vaše sigurnosti 
+priključite ovaj uređaj samo na ispravno uzemljenu električnu 
+utičnicu.
+• Utičnica mora biti lako dostupna i u blizini prijenosnog računala.
+• Za odspajanje prijenosnog računala iz glavnog napajanja, odspojite 
+računalo iz utičnice.
+UPOZORENJE!
+Pročitajte sljedeće mjere opreza za bateriju prijenosnog računala:
+• Bateriju iz uređaja smiju izvaditi samo tehničari koje je ovlastila tvrtka 
+ASUS (samo za baterije koje se ne mogu izvaditi).
+• Baterija koja se upotrebljava u ovom uređaju može predstavljati 
+opasnost od požara ili kemijskih opeklina ako se ukloni ili rastavi.
+• Slijedite naljepnice s upozorenjima radi osobne sigurnosti.
+• Opasnost od eksplozije ako se baterija zamijeni pogrešnom vrstom.
+• Ne bacajte u vatru.
+• Nikada ne pokušavajte kratko spojiti bateriju prijenosnog računala.
+• Nikada ne pokušavajte rastaviti i ponovo sastaviti bateriju (samo za 
+bateriju koja se ne može izvaditi).
+• Prekinite upotrebu ako pronađete curenje.
+• Baterija i njezini dijelovi moraju se reciklirati ili odložiti u otpad na 
+odgovarajući način.
+• Držite bateriju i druge male dijelove dalje od djece.
+30 E-priručnik za prijenosno računalo
+Podignite kako biste otvorili ploču zaslona
+Pritisnite gumb napajanja
+E-priručnik za prijenosno računalo 31
+Upotreba dodirne pločice
+Pomicanje pokazivača
+Možete dodirnuti bilo gdje na dodirnoj pločici za aktiviranje njezina 
+pokazivača, a zatim povući prstom po dodirnoj pločici za pomicanje 
+pokazivača na zaslonu.
+Povlačenje vodoravno
+Povlačenje okomito
+Povlačenje dijagonalno
+32 E-priručnik za prijenosno računalo
+Pokreti s jednim prstom
+Dodir / dvostruki dodir
+• Dodirnite aplikaciju kako biste je odabrali.
+• Dodirnite aplikaciju dvaput kako biste je pokrenuli.
+Povlačenje i ispuštanje
+Dodirnite stavku dvaput, zatim pomaknite isti prst ne podižući ga s 
+dodirne pločice. Da biste stavku ispustili na novu lokaciju, podignite 
+prst s dodirne pločice.
+E-priručnik za prijenosno računalo 33
+Lijevi klik Desni klik
+• Kliknite aplikaciju kako biste 
+je odabrali.
+• Dvaput kliknite aplikaciju 
+kako biste je pokrenuli.
+Kliknite ovaj gumb da biste otvorili 
+izbornik koji se otvara desnom 
+tipkom miša.
+NAPOMENA: Područja unutar točkaste linije predstavljaju lokacije lijeve 
+tipke miša i desne tipke miša na dodirnoj pločici.
+Pokreti s dva prsta
+Dodir
+Dodirnite dodirnu pločicu dvama prstima kako biste simulirali funkciju 
+desnog klika.
+34 E-priručnik za prijenosno računalo
+Pomicanje s dva prsta (gore/
+dolje)
+Pomicanje s dva prsta (lijevo/
+desno)
+Pomaknite dva prsta za pomicanje 
+prema gore ili dolje.
+Pomaknite dva prsta za pomicanje 
+ulijevo ili udesno.
+Smanjivanje Povećavanje
+Primaknite dva prsta na dodirnoj 
+pločici.
+Razmaknite dva prsta na dodirnoj 
+pločici.
+E-priručnik za prijenosno računalo 35
+Povlačenje i ispuštanje
+Odaberite stavku, zatim pritisnite i zadržite lijevi gumb. Drugim prstom 
+povucite po dodirnoj pločici kako biste povukli stavku i podignite prst 
+s gumba za ispuštanje stavke.
+Pokreti s tri prsta
+Dodir
+Dodirnite dodirnu pločicu trima prstima za pokretanje funkcije koju ste 
+odabrali u stavci Settings (Postavke).
+36 E-priručnik za prijenosno računalo
+Prelazak prstima ulijevo / prelazak prstima udesno
+Ako ste otvorili više aplikacija, prijeđite trima prstima ulijevo ili udesno 
+za prebacivanje između tih aplikacija.
+Prelazak prstima prema gore Prelazak prstima prema dolje
+Prijeđite prstima prema gore kako 
+biste vidjeli pregled svih aplikacija 
+koje su trenutačno otvorene.
+Prijeđite prstima prema dolje za 
+prikaz radne površine.
+E-priručnik za prijenosno računalo 37
+Pokreti s četiri prsta
+Dodir
+Dodirnite dodirnu pločicu četirima prstima za pokretanje funkcije koju 
+ste odabrali u stavci Settings (Postavke).
+38 E-priručnik za prijenosno računalo
+Upotreba tipkovnice
+Uključuje ili isključuje zvučnik
+Stišava glasnoću zvučnika
+Pojačava glasnoću zvučnika
+Smanjuje svjetlinu zaslona
+Povećava svjetlinu zaslona
+Omogućuje ili onemogućuje dodirnu pločicu
+Podešava svjetlinu pozadinskog osvjetljenja tipkovnice
+Mijenja način prikaza
+NAPOMENA: Provjerite je li drugi zaslon povezan s 
+prijenosnim računalom.
+Tipke prečaca
+Tipke prečaca na vašem prijenosnom računalu mogu aktivirati sljedeće 
+naredbe:
+E-priručnik za prijenosno računalo 39
+Tipke sustava Windows
+Postoje dvije posebne tipke sustava Windows na tipkovnici prijenosnog 
+računala koje se upotrebljavaju kako slijedi:
+Funkcijske tipke
+Pritisnite za omogućavanje ili onemogućavanje 
+značajke funkcijskih tipki. Kada je omogućena značajka funkcijskih tipki, 
+možete pristupiti i tipkama prečaca držeći pritisnutu tipku u 
+kombinaciji s tipkama u gornjem redu.
+Uključuje ili isključuje mikrofon
+Uključuje ili isključuje zvučnik
+Aktivira alat za snimanje zaslona
+Pokreće MyASUS
+Pokretanje izbornika Start
+ ili Prikaz padajućeg izbornika
+40 E-priručnik za prijenosno računalo
+E-priručnik za prijenosno računalo 41
+Poglavlje 3.:
+Rad sa sustavom Windows
+42 E-priručnik za prijenosno računalo
+Prvi rad sa sustavom
+Prilikom prvog pokretanja prijenosnog računala pojavit će se niz zaslona 
+koji će vas voditi pri konfiguriranju operacijskog sustava Windows.
+Za prvo pokretanje prijenosnog računala:
+1. Pritisnite gumb napajanja na prijenosnom računalu. Pričekajte 
+nekoliko minuta dok se ne prikaže zaslon postavljanja.
+2. Na zaslonu postavljanja odaberite svoju regiju i jezik koji želite 
+upotrebljavati na svom prijenosnom računalu.
+3. Pažljivo pročitajte Ugovor o licenci. Odaberite Accept (Prihvati).
+4. Slijedite upute na zaslonu za konfiguriranje sljedećih osnovnih 
+stavki:
+• Personalizacija
+• Spajanje na mrežu
+• Postavke
+• Vaš račun
+5. Nakon konfiguriranja osnovnih stavki, Windows nastavlja s 
+instaliranjem vaših aplikacija i željenih postavki. Pobrinite se 
+da prijenosno računalo ostane uključeno tijekom postupka 
+postavljanja.
+6. Po završetku postupka postavljanja pojavljuje se radna površina.
+NAPOMENA: Snimke zaslona u ovom poglavlju služe samo za referencu.
+E-priručnik za prijenosno računalo 43
+Izbornik Start
+Izbornik Start glavni je ulaz u programe prijenosnog računala, aplikacije, 
+mape i postavke sustava Windows.
+Izbornik Start možete upotrebljavati za obavljanje ovih uobičajenih 
+aktivnosti:
+• Pokretanje programa ili aplikacija sustava Windows
+• Otvaranje često korištenih programa ili aplikacija sustava 
+Windows
+• Podešavanje postavki prijenosnog računala
+• Traženje pomoći s operacijskim sustavom Windows
+• Isključivanje prijenosnog računala
+• Odjavu iz sustava Windows ili prebacivanje na drugi korisnički 
+račun
+Mijenjanje postavki računa, 
+zaključavanje ili odjava s računa
+Pokretanje izbornika Start
+Pokretanje prikaza zadatka
+Isključivanje, ponovno pokretanje 
+ili stavljanje prijenosnog računala u 
+stanje mirovanja
+Pokretanje aplikacije s programske trake
+Pokretanje aplikacije iz izbornika Start
+Pokretanje pretraživanja
+Pokretanje widgeta
+44 E-priručnik za prijenosno računalo
+Pokretanje izbornika Start
+Postavite pokazivač miša iznad ikone Start na 
+radnoj površini pa je kliknite.
+Pritisnite tipku s logotipom sustava Windows na 
+tipkovnici.
+Otvaranje programa iz izbornika Start
+Izbornik Start se, između ostaloga, najčešće upotrebljava za otvaranje 
+programa instaliranih na prijenosnom računalu.
+Postavite pokazivač miša iznad programa i kliknite kako 
+biste ga pokrenuli.
+Služite se tipkama sa strelicama za pregledavanje 
+programa. Pritisnite za pokretanje.
+NAPOMENA: Odaberite All apps (Sve aplikacije) za prikaz cijelog popisa 
+programa i mapa na prijenosnom računalu abecednim redoslijedom.
+E-priručnik za prijenosno računalo 45
+Aplikacije sustava Windows
+To su aplikacije prikvačene na izborniku Start i prikazane u obliku 
+pločica za jednostavan pristup.
+NAPOMENA: Za neke aplikacije sustava Windows morat ćete se prijaviti 
+na svoj Microsoft račun kako bi se potpuno pokrenule.
+46 E-priručnik za prijenosno računalo
+Rad s aplikacijama sustava Windows
+Prilagođavanje aplikacija sustava Windows
+Aplikacije možete premjestiti, otkvačiti ili prikvačiti na programsku traku 
+iz izbornika Start s pomoću sljedećih koraka:
+Pokretanje aplikacija sustava Windows iz izbornika Start
+Postavite pokazivač miša iznad aplikacije i kliknite za 
+pokretanje.
+Služite se tipkama sa strelicama za pregledavanje 
+aplikacija. Pritisnite za pokretanje aplikacije.
+Premještanje aplikacija
+Postavite pokazivač miša iznad aplikacije, a zatim 
+povucite i ispustite aplikaciju na novu lokaciju.
+Otkvačivanje aplikacija
+Postavite pokazivač miša iznad aplikacije i kliknite je 
+desnom tipkom miša, a zatim kliknite Unpin from Start 
+(Otkvači s izbornika Start).
+Upotrijebite tipke sa strelicama za navigaciju do 
+aplikacije. 
+Pritisnite ili (na nekim modelima), 
+zatim odaberite Unpin from Start (Otkvači s izbornika 
+Start).
+E-priručnik za prijenosno računalo 47
+Prikvačivanje aplikacija na programsku traku
+Postavite pokazivač miša iznad aplikacije i kliknite je 
+desnom tipkom miša, a zatim kliknite Pin to taskbar 
+(Prikvači na programsku traku).
+Upotrijebite tipke sa strelicama za navigaciju do 
+aplikacije. 
+Pritisnite ili (na nekim modelima), 
+zatim odaberite Pin to taskbar (Prikvači na 
+programsku traku).
+Prikvačivanje više aplikacija na izbornik Start
+Iz stavke All apps (Sve aplikacije) postavite pokazivač 
+miša iznad aplikacije koju želite dodati u izbornik Start 
+i desnom tipkom miša je kliknite, a zatim kliknite Pin to 
+Start (Prikvači na Start).
+Iz stavke All apps (Sve aplikacije) pritisnite ili 
+ (na nekim modelima) u aplikaciji koju 
+želite dodati u izbornik Start, zatim odaberite Pin to 
+Start (Prikvači na Start).
+48 E-priručnik za prijenosno računalo
+Prikaz zadatka
+Brzo se prebacite između otvorenih aplikacija i programa pomoću 
+značajke prikaza zadatka, a možete upotrijebiti i prikaz zadatka za 
+prebacivanje između radnih površina.
+Pokretanje prikaza zadatka
+Postavite pokazivač miša iznad ikone na 
+programskoj traci i kliknite je.
+Pritisnite na tipkovnici.
+E-priručnik za prijenosno računalo 49
+Widgeti
+Widgete možete pokrenuti za brzi pristup važnim informacijama.
+Pokretanje widgeta
+Postavite pokazivač miša iznad ikone na 
+programskoj traci i kliknite je.
+Pritisnite na tipkovnici.
+50 E-priručnik za prijenosno računalo
+Prilagođavanje widgeta
+Kliknite/dodirnite ikonu, a zatim odaberite Manage 
+interest (Upravljanje interesima) kako biste promijenili 
+sadržaj koji se prikazuje u widgetima.
+E-priručnik za prijenosno računalo 51
+Značajka Snap (Poravnanje)
+Značajka Snap (Poravnanje) prikazuje aplikacije jednu pored druge, što 
+vam omogućuje rad ili prebacivanje između aplikacija.
+Pristupne točke za Snap (Poravnanje)
+Aplikacije možete povlačiti i ispuštati na te pristupne točke kako biste ih 
+poravnali na njihovom mjestu.
+52 E-priručnik za prijenosno računalo
+Upotreba značajke Snap (Poravnanje)
+1. Pokrenite aplikaciju koju želite poravnati.
+2. Povucite naslovnu traku svoje aplikacije i ispustite 
+aplikaciju na rub zaslona kako biste je poravnali.
+3. Pokrenite drugu aplikaciju i ponovite prethodno 
+navedene korake kako biste poravnali drugu 
+aplikaciju.
+1. Pokrenite aplikaciju koju želite poravnati.
+2. Pritisnite i držite tipku , a zatim tipkama sa 
+strelicama poravnajte aplikaciju.
+3. Pokrenite drugu aplikaciju i ponovite prethodno 
+navedene korake kako biste poravnali drugu 
+aplikaciju.
+E-priručnik za prijenosno računalo 53
+Action Center (Akcijski centar)
+Akcijski centar objedinjuje obavijesti iz aplikacija i jedinstveno je mjesto 
+na kojem možete stupiti u interakciju s njima. Također ima vrlo koristan 
+odjeljak Quick Actions (Brze akcije).
+Pokretanje stavke Quick Action (Brze akcije)
+Postavite pokazivač miša iznad ikona stanja na 
+programskoj traci i kliknite ih.
+Pritisnite na tipkovnici.
+54 E-priručnik za prijenosno računalo
+Pokretanje stavke Notifications (Obavijesti)
+Postavite pokazivač miša iznad datuma i vremena na 
+programskoj traci i kliknite ih.
+Pritisnite na tipkovnici.
+E-priručnik za prijenosno računalo 55
+MyASUS Splendid
+MyASUS Splendid omogućuje da sve ploče zaslona marke ASUS 
+prikazuju jednake i točne boje. Za podešavanje postavki prikaza 
+možete, osim opcije Normal Mode (Normalan način rada), odabrati Vivid 
+(Živopisno), Eye Care (Zaštita za oči) ili Manual Mode (Ručni način rada).
+• Normal mode (Normalan način rada): Preko ispravki game 
+i temperature boje, prikaz slike na ploči bit će koliko je god 
+moguće bliži onom kako oko prirodno vidi boje. Za model s OLED 
+zaslonom, taj način rada u skladu je s TÜV certifikatom za nisku 
+razinu plave svjetlosti.
+• Vivid mode (Živopisan način rada): U ovom načinu rada 
+omogućeno je podešavanje zasićenje slike što ju čini živopisnijom 
+i jarkijom.
+• Manual mode (Ručni način rada): U ovom načinu rada 
+omogućeno je podešavanje vrijednosti temperature boje prema 
+vlastitim potrebama u rasponu od -50 do +50.
+• Eye Care Mode (Način rada za zaštitu očiju): U ovom načinu 
+rada smanjena je emisija plave svjetlosti za 30 %, što pomaže pri 
+zaštiti vaših očiju.
+ Razina 1 – 5: Što je razina viša, to će emisija plave svjetlosti 
+biti manja. Za model s LCD zaslonom, razina 5 optimizirana je 
+postavka i u skladu je s TÜV certifikatom za nisku razinu plave 
+svjetlosti.
+NAPOMENA: Omogućite HDR u stavci Settings (Postavke) > System 
+(Sustav) > Display (Zaslon) za bolji doživljaj gledanja na OLED zaslonu 
+(na nekim modelima) koji je u skladu s TÜV certifikatom za zaslon bez 
+treperenja.
+56 E-priručnik za prijenosno računalo
+Kako biste izbjegli naprezanje očiju, slijedite sljedeće savjete:
+• U slučaju dugotrajnog rada, povremeno se odmaknite od 
+zaslona. Preporučuju se kratke stanke (barem 5 minuta) nakon 
+oko 1 sata neprekidnog rada za računalom. Kraće ali češće stanke 
+učinkovitije su od jedne duže stanke.
+• Da bi se smanjilo naprezanje i suhoća očiju, povremeno odmorite 
+oči fokusirajući se na predmete u daljini.
+• Ponavljajte sljedeće vježbe da smanjite naprezanje očiju:
+(1) Više puta pogledajte prema gore i dolje
+(2) Polagano kolutajte očima
+(3) Pomičite oči u dijagonalnom smjeru
+ Ako naprezanje očiju potraje, obratite se liječniku.
+• Plava svjetlost visoke energije može dovesti do naprezanja očiju 
+i starosne degeneracije makule. Filtar za plavu svjetlost smanjuje 
+do 30 % (maks.) štetne plave svjetlosti kako bi se izbjegao 
+sindrom računalnog vida.
+E-priručnik za prijenosno računalo 57
+Postavljanje OLED zaslona
+Kako biste maksimalno iskoristili OLED zaslon (na odabranim modelima), 
+preporučujemo da prilagodite nekoliko postavki. Te postavke pomažu 
+pri optimizaciji vizualnog doživljaja, maksimiziranju trajanje baterije i 
+produljenju vijeka trajanja vašeg prijenosnog računala ASUS.
+Postavljanje tamnog načina rada
+Dark Mode (Tamni način rada) standardno je omogućen. Za provjeru ili 
+podešavanje postavki:
+1. Pokrenite izbornik Start.
+2. Kliknite/dodirnite Settings (Postavke) i odaberite stavku 
+Personalization (Personalizacija).
+58 E-priručnik za prijenosno računalo
+3. Odaberite karticu Colors (Boje) za prikaz opcija.
+E-priručnik za prijenosno računalo 59
+Isključivanje zaslona kad se ne upotrebljava
+Postavite da se zaslon automatski isključi kad se ne upotrebljava. Za 
+provjeru ili podešavanje postavki:
+1. Pokrenite izbornik Start.
+2. Kliknite/dodirnite Settings (Postavke) i odaberite System 
+(Sustav).
+60 E-priručnik za prijenosno računalo
+3. Odaberite karticu Power & battery (Napajanje i baterija) za 
+prikaz opcija.
+E-priručnik za prijenosno računalo 61
+Podešavanje svjetline zaslona
+Preporučuje se da omogućite animirani čuvar zaslona s tamnom 
+pozadinom i izbjegavate postavljanje OLED zaslona na maksimalnu 
+svjetlinu kako biste produljili vijek trajanja OLED zaslona. Za provjeru ili 
+podešavanje postavki:
+1. Pokrenite izbornik Start.
+2. Kliknite/dodirnite Settings (Postavke) i odaberite stavku 
+Personalization (Personalizacija).
+62 E-priručnik za prijenosno računalo
+3. Odaberite karticu Lock screen (Zaključani zaslon) i zatim 
+odaberite Screen saver (Čuvar zaslona) za prikaz opcija.
+E-priručnik za prijenosno računalo 63
+Automatsko skrivanje programske trake
+Kako biste izbjegli dugotrajno prikazivanje programske trake na 
+OLED zaslonu, aktivirajte automatsko sakrivanje programske trake. Za 
+podešavanje postavki:
+1. Pokrenite izbornik Start.
+2. Kliknite/dodirnite Settings (Postavke) i odaberite stavku 
+Personalization (Personalizacija).
+64 E-priručnik za prijenosno računalo
+3. Odaberite karticu Taskbar (Programska traka) i zatim 
+omogućite opciju Automatically hide the taskbar (Automatski 
+sakrij programsku traku).
+E-priručnik za prijenosno računalo 65
+1. Pokrenite aplikaciju Microsoft Office, a zatim kliknite/dodirnite 
+stavku File (Datoteka) > Account (Račun).
+2. Odaberite Dark Gray (Tamnosiva) u stavci Office Theme (Tema 
+sustava Office). Tema će se primijeniti na sve Microsoft aplikacije.
+Postavljanje tamnog načina rada u aplikaciji 
+Microsoft Office
+66 E-priručnik za prijenosno računalo
+Ostali tipkovni prečaci
+Pri upotrebi tipkovnice možete se služiti i sljedećim prečacima kako 
+biste lakše pokrenuli aplikacije i navigirali sustavom Windows.
+Pokreće izbornik Start
+Pokreće Action Center (Akcijski centar)
+Pokreće radnu površinu
+Pokreće File Explorer (Eksplorer za datoteke)
+Pokreće Settings (Postavke)
+Pokreće okno Connect (Povezivanje)
+Aktivira Lock screen (Zaključani zaslon)
+Minimizira sve trenutačno aktivne prozore
+E-priručnik za prijenosno računalo 67
+Pokreće Search (Pretraživanje)
+Pokreće okno Project (Projekt)
+Otvara prozor Run (Pokretanje)
+Otvara Acessibility (Pristupačnost)
+Otvara kontekstni izbornik gumba Start
+Pokreće ikonu povećala i povećava zaslon
+Smanjuje zaslon
+68 E-priručnik za prijenosno računalo
+Povezivanje s bežičnim mrežama
+Wi-Fi
+Pristupajte e-pošti, surfajte internetom i dijelite aplikacije putem web-
+mjesta za društveno umrežavanje služeći se Wi-Fi vezom prijenosnog 
+računala.
+VAŽNO! Airplane mode (Način rada u zrakoplovu) onemogućuje ovu 
+značajku. Prije nego što omogućite Wi-Fi vezu na prijenosnom računalu, 
+provjerite je li isključen Airplane mode (Način rada u zrakoplovu).
+Povezivanje s Wi-Fi mrežom
+Spojite prijenosno računalo na Wi-Fi mrežu služeći se sljedećim 
+koracima:
+1. Pokrenite Action Center (Akcijski centar) iz 
+programske trake.
+2. Kliknite/dodirnite ikonu Wi-Fi kako biste omogućili 
+Wi-Fi.
+3. Odaberite pristupnu točku s popisa dostupnih Wi-Fi 
+veza.
+4. Odaberite Connect (Povezivanje) za pokretanje 
+mrežne veze.
+NAPOMENA: Možda će se od vas zatražiti da unesete 
+sigurnosni ključ za aktiviranje Wi-Fi veze.
+E-priručnik za prijenosno računalo 69
+1. Pokrenite Settings (Postavke) iz izbornika Start.
+2. Odaberite Bluetooth & devices (Bluetooth 
+i uređaji) > Add device (Dodaj uređaj) za 
+pretraživanje uređaja koji podržavaju Bluetooth.
+3. Odaberite uređaj s popisa za uparivanje prijenosnog 
+računala s uređajem.
+NAPOMENA: Za neke uređaje koji podržavaju Bluetooth 
+možda ćete morati unijeti pristupnu šifru na svom 
+prijenosnom računalu.
+Bluetooth
+Bluetooth upotrebljavajte za lakši bežični prijenos podataka s drugim 
+uređajima koji podržavaju Bluetooth.
+VAŽNO! Airplane mode (Način rada u zrakoplovu) onemogućuje 
+ovu značajku. Prije nego što omogućite Bluetooth vezu na prijenosnom 
+računalu, provjerite je li isključen Airplane mode (Način rada u 
+zrakoplovu).
+Uparivanje s drugim uređajima koji podržavaju Bluetooth
+Za omogućavanje prijenosa podataka potrebno je upariti prijenosno 
+računalo s drugim uređajima koji podržavaju Bluetooth. Povežite svoje 
+uređaje služeći se sljedećim koracima:
+70 E-priručnik za prijenosno računalo
+Način rada u zrakoplovu
+Način rada u zrakoplovu onemogućuje bežičnu komunikaciju, kako 
+biste mogli sigurno upotrebljavati prijenosno računalo tijekom leta.
+NAPOMENA: Obratite se svom pružatelju usluga zračnog prijevoza kako 
+biste saznali koje povezane usluge možete upotrebljavati tijekom leta i 
+kojih se ograničenja morate pridržavati prilikom upotrebe prijenosnog 
+računala tijekom leta.
+Uključivanje/isključivanje načina rada u zrakoplovu
+1. Pokrenite Action Center (Akcijski centar) iz 
+programske trake.
+2. Kliknite/dodirnite ikonu Airplane mode (Način 
+rada u zrakoplovu) kako biste omogućili ili 
+onemogućili zrakoplovni način rada.
+E-priručnik za prijenosno računalo 71
+Isključivanje prijenosnog računala
+Prijenosno računalo možete isključiti bilo kojim od sljedećih postupaka:
+• Pokrenite izbornik Start, zatim odaberite > 
+Shut down (Isključi) za normalno isključivanje.
+• Na zaslonu za prijavu odaberite > Shut down 
+(Isključi).
+• Pritisnite kako biste pokrenuli Shut 
+Down Windows (Isključivanje sustava Windows). 
+Odaberite Shut down (Isključi) iz padajućeg 
+popisa i zatim odaberite OK (U redu).
+• Ako prijenosno računalo ne reagira, pritisnite 
+i držite gumb napajanja najmanje deset (10) 
+sekundi dok se prijenosno računalo ne isključi.
+72 E-priručnik za prijenosno računalo
+Stavljanje prijenosnog računala u stanje 
+mirovanja
+Za stavljanje prijenosnog računala u stanje mirovanja:
+• Pokrenite izbornik Start, a zatim odaberite > 
+Sleep (Stanje mirovanja) kako biste prijenosno 
+računalo stavili u stanje mirovanja.
+• Na zaslonu za prijavu odaberite > Sleep 
+(Stanje mirovanja).
+Pritisnite kako biste pokrenuli Shut Down 
+Windows (Isključivanje sustava Windows). Odaberite 
+Sleep (Stanje mirovanja) s padajućeg popisa i zatim 
+odaberite OK (U redu).
+NAPOMENA: Prijenosno računalo možete također staviti u stanje 
+mirovanja tako da jedanput pritisnete gumb napajanja.
+E-priručnik za prijenosno računalo 73
+Poglavlje 4.:
+Samoprovjera pri uključivanju
+74 E-priručnik za prijenosno računalo
+Samoprovjera pri uključivanju
+Samoprovjera pri uključivanju (engl. Power-On Self-Test, POST) niz je 
+softverski kontroliranih dijagnostičkih testova koji se pokreću kada 
+uključite ili ponovno pokrenete prijenosno računalo. Softver koji 
+upravlja POST-om instaliran je kao trajni dio arhitekture prijenosnog 
+računala.
+Upotreba POST-a za pristup BIOS-u i rješavanje 
+problema
+Tijekom POST-a možete pristupiti postavkama BIOS-a ili pokrenuti 
+opcije za rješavanje problema pomoću funkcijskih tipki prijenosnog 
+računala. Više pojedinosti možete pronaći u sljedećim informacijama.
+BIOS
+BIOS (Basic Input and Output System), odnosno Osnovni sustav ulaza i 
+izlaza, sadrži postavke hardvera sustava koje su potrebne za pokretanje 
+sustava na prijenosnom računalu.
+Zadane postavke BIOS-a primjenjuju se na većinu stanja prijenosnog 
+računala. Nemojte mijenjati zadane postavke BIOS-a, osim u sljedećim 
+okolnostima:
+• Tijekom pokretanja sustava na zaslonu se pojavljuje poruka o 
+pogrešci i zahtijeva da pokrenete postavljanje BIOS-a.
+• Instalirali ste novu komponentu sustava koja zahtijeva daljnje 
+namještanje postavki BIOS-a ili ažuriranja.
+UPOZORENJE! Upotreba neprimjerenih postavki BIOS-a može dovesti do 
+nestabilnosti sustava ili neuspješnog pokretanja. Izričito preporučujemo 
+da postavke BIOS-a mijenjate samo uz pomoć kvalificiranog servisnog 
+osoblja.
+Pristupanje BIOS-u
+Ponovno pokrenite prijenosno računalo i pritisnite tijekom 
+POSTA-a.
+E-priručnik za prijenosno računalo 75
+Oporavak sustava
+Upotrebom opcija za oporavak na prijenosnom računalu možete vratiti 
+sustav u izvorno stanje ili jednostavno osvježiti njegove postavke kako 
+biste mu poboljšali performance.
+VAŽNO!
+• Napravite sigurnosnu kopiju svih svojih datoteka s podacima prije 
+svakog pokretanja oporavka na prijenosnom računalu.
+• Zabilježite važne prilagođene postavke, kao što su mrežne postavke, 
+korisnička imena i lozinke, kako biste izbjegli gubitak podataka.
+• Prije resetiranja sustava provjerite je li prijenosno računalo spojeno 
+na izvor napajanja.
+Sustav Windows omogućuje vam da obavite bilo koju od sljedećih 
+opcija oporavka:
+• Keep my file (Zadrži moje datoteke) – Ova vam opcija 
+omogućuje da osvježite svoje prijenosno računalo, a da to ne 
+utječe na vaše osobne datoteke (fotografije, glazbu, videozapise, 
+dokumente).
+ S ovom opcijom možete vratiti svoje prijenosno računalo na 
+zadane postavke i izbrisati druge instalirane aplikacije.
+• Remove everything (Ukloni sve) – Ova opcija resetira vaše 
+prijenosno računalo na tvorničke postavke. Morate napraviti 
+sigurnosnu kopiju svojih podataka prije nego što provedete ovu 
+opciju.
+76 E-priručnik za prijenosno računalo
+• Advanced startup (Napredno pokretanje) – Upotrebom ove 
+opcije možete izvoditi druge napredne opcije oporavka na 
+prijenosnom računalu, kao što su:
+- Upotreba USB pogona, mrežne veze ili DVD-a za oporavak 
+sustava Windows za pokretanje prijenosnog računala.
+- Upotreba opcije Troubleshoot (Rješavanje problema) za 
+omogućavanje bilo koje od ovih naprednih opcija oporavka: 
+Startup Repair (Popravak pri pokretanju), Uninstall Updates 
+(Deinstaliraj ažuriranja), Startup Settings (Postavke 
+pokretanja), UEFI Firmware Settings (Postavke UEFI fimvera), 
+Command Prompt (Naredbeni redak), System Restore 
+(Vraćanje sustava) i System Image Recovery (Oporavak 
+pomoću slike sustava).
+Izvođenje opcije oporavka
+Pogledajte sljedeće korake ako želite pristupiti bilo kojoj od dostupnih 
+opcija oporavka za prijenosno računalo i upotrijebiti je.
+1. Pokrenite Settings (Postavke) i odaberite System (Sustav) > 
+Recovery (Oporavak).
+E-priručnik za prijenosno računalo 77
+2. Odaberite opciju oporavka koju želite izvesti.
+78 E-priručnik za prijenosno računalo
+E-priručnik za prijenosno računalo 79
+Savjeti i ČPP
+80 E-priručnik za prijenosno računalo
+Korisni savjeti za upotrebu prijenosnog 
+računala
+Sljedeći će vam savjeti pomoći da maksimalno iskoristite mogućnosti 
+prijenosnog računala, održavate rad sustava i zaštitite svoje podatke:
+• Povremeno nadogradite sustav Windows kako bi sigurnosne 
+postavke aplikacija uvijek bile ažurne.
+• Ažurirajte MyASUS kako biste osigurali najnovije postavke za 
+ekskluzivne ASUS aplikacije, upravljačke programe i uslužne 
+programe.
+• Podatke zaštitite antivirusnim softverom i pazite da je i taj softver 
+uvijek ažuran.
+• Osim ako to nije neophodno, prijenosno računalno nemojte 
+prisilno isključivati.
+• Uvijek izradite sigurnosnu kopiju podataka i pohranite je na 
+vanjskom uređaju za pohranu.
+• Ako prijenosno računalo nećete koristiti duže vrijeme, obvezno 
+napunite bateriju do 50% i zatim isključite prijenosno računalo i 
+odspojite adapter za izmjeničnu struju.
+• Ako stalno upotrebljavate izmjenično napajanje za prijenosno 
+računalo, u postavkama za MyASUS podesite Battery Power 
+Charging (Punjenje baterije) na Balanced (Uravnoteženi) način 
+rada.
+E-priručnik za prijenosno računalo 81
+• Prije ponovnog postavljanja računala odspojite sve vanjske 
+uređaje i provjerite imate li sve s popisa u nastavku:
+- Ključeve proizvoda za operacijski sustav i druge instalirane 
+aplikacije
+- Sigurnosnu kopiju podataka
+- Korisničko ime i lozinku za prijavu
+- Podatke o internetskoj vezi
+• Posjetite našu stranicu za podršku radi rješavanja problema i 
+pogledajte neka od najčešćih pitanja na 
+https://www.asus.com/support
+82 E-priručnik za prijenosno računalo
+Česta pitanja o hardveru
+1. Kada uključim prijenosno računalo, na zaslonu se pojavljuje 
+crna točka, a ponekad i obojana točka. Što trebam učiniti?
+Pojava ovih točaka na zaslonu normalna je i ne utječe na rad 
+sustava. Ako se točke nastave pojavljivati i počnu utjecati na 
+rad sustava, za pomoć se obratite ovlaštenom servisnom centru 
+tvrtke ASUS.
+2. Boje i svjetlina ploče zaslona nisu ujednačene. Kako to mogu 
+popraviti?
+Na boje i svjetlinu ploče zaslona mogu utjecati kut i trenutačni 
+položaj prijenosnog računala. Svjetlina i ton boja prijenosnog 
+računala mogu se razlikovati i ovisno o modelu. Izgled ploče 
+zaslona možete podesiti funkcijskim tipkama ili podešavanjem 
+postavki zaslona operacijskog sustava.
+3. Kako mogu maksimalno produljiti trajanje baterije?
+Možete isprobati bilo koji od sljedećih prijedloga:
+• Podesite svjetlinu zaslona funkcijskim tipkama.
+• Ako ne upotrebljavate niti jednu Wi-Fi vezu, uključite 
+Airplane mode (Zrakoplovni način rada).
+• Odspojite sve USB uređaje koje ne upotrebljavate.
+• Zatvorite aplikacije koje ne upotrebljavate, pogotovo one 
+koje upotrebljavaju puno RAM memorije.
+E-priručnik za prijenosno računalo 83
+4. Ne uključuje se indikator napunjenosti baterije. Što nije u 
+redu?
+• Provjerite je li adapter za napajanje pravilno ukopčan te je 
+li baterija pravilno umetnuta. Možete i iskopčati adapter 
+za napajanje ili izvaditi bateriju, pričekati minutu i zatim 
+ponovo ukopčati adapter u izvor napajanja ili vratiti bateriju 
+u prijenosno računalo.
+• Ako je problem i dalje prisutan, za pomoć se obratite 
+servisnom centru tvrtke ASUS.
+5. Zašto dodirna pločica ne radi?
+Za omogućavanje dodirne pločice pritisnite .
+6. Zašto prilikom reprodukcije zvučnih i videodatoteka iz 
+zvučnika prijenosnog računala ne izlazi zvuk?
+Možete isprobati bilo koji od sljedećih prijedloga:
+• Pritisnite kako biste pojačali glasnoću zvučnika.
+• Provjerite jesu li zvučnici postavljeni na nečujno.
+• Ako je neki uređaj povezan s prijenosnim računalom putem 
+priključka za slušalice, odspojite ga.
+84 E-priručnik za prijenosno računalo
+7. Što trebam učiniti ako izgubim adapter za napajanje 
+prijenosnog računala ili ako baterija prestane raditi?
+Za pomoć se obratite lokalnom servisnom centru tvrtke ASUS.
+8. Ne mogu pravilno upotrebljavati tipkovnicu prijenosnog 
+računala jer se kursor neprekidno pomiče. Što trebam učiniti?
+Pazite da ništa nehotice ne dodiruje ili pritišće dodirnu pločicu 
+dok upotrebljavate tipkovnicu. Možete i pritisnuti i 
+onemogućiti dodirnu pločicu.
+E-priručnik za prijenosno računalo 85
+Česta pitanja o softveru
+1. Kada uključim prijenosno računalo, uključuje se indikator 
+napajanja, ali na zaslonu se ništa ne pojavljuje. Kako to mogu 
+popraviti?
+Možete isprobati bilo koji od sljedećih prijedloga:
+• Pritisnite gumb napajanja i držite ga pritisnutim najmanje 
+deset (10) sekundi kako biste prisilno isključili prijenosno 
+računalo. Provjerite je li adapter za napajanje pravilno 
+ukopčan i je li baterija pravilno umetnuta i zatim ponovo 
+uključite prijenosno računalo.
+• Ako je problem i dalje prisutan, za pomoć se obratite 
+servisnom centru tvrtke ASUS.
+2. Što trebam učiniti kada se na zaslonu pojavi ova poruka: 
+"Remove disks or other media. Press any key to restart." 
+(Izvadite disk ili uklonite druge medije. Za ponovno 
+pokretanje pritisnite bilo koju tipku.)?
+Možete isprobati bilo koji od sljedećih prijedloga:
+• Odspojite sve povezane USB uređaje i zatim ponovo 
+pokrenite prijenosno računalo.
+• Izvadite sve optičke diskove iz optičkog pogona i zatim 
+ponovo pokrenite prijenosno računalo.
+• Ako je problem i dalje prisutan, možda postoji problem s 
+memorijom prijenosnog računala. Za pomoć se obratite 
+lokalnom servisnom centru tvrtke ASUS.
+86 E-priručnik za prijenosno računalo
+3. Prijenosno se računalo pokreće sporije nego inače, a 
+operacijski sustav zastajkuje u radu. Kako to mogu popraviti?
+Deinstalirajte aplikacije koje ste nedavno instalirali ili aplikacije 
+koje nisu bile dio paketa aplikacija isporučenog s operacijskim 
+sustavom i zatim ponovo pokrenite računalo.
+4. Moje se prijenosno računalo ne pokreće. Kako to mogu 
+popraviti?
+Možete isprobati bilo koji od sljedećih prijedloga:
+• Odspojite sve uređaje koji su povezani s prijenosnim 
+računalom i zatim ponovo pokrenite sustav.
+• Ako je problem i dalje prisutan, za pomoć se obratite 
+servisnom centru tvrtke ASUS.
+5. Zašto prijenosno računalo ne mogu probuditi iz stanja 
+mirovanja?
+• Kako biste prijenosno računalo prebacili u zadnji 
+upotrijebljeni način rada, pritisnite gumb napajanja.
+• Baterija prijenosnog računala možda je potpuno prazna. 
+Ukopčajte adapter za napajanje u prijenosno računalo i u 
+izvor napajanja i zatim ponovo pritisnite gumb napajanja.
+Ako imate bilo kakvih drugih problema, posjetite 
+https://www.asus.com/support/FAQ/1045091/ radi rješavanja problema.
+E-priručnik za prijenosno računalo 87
+Dodaci
+88 E-priručnik za prijenosno računalo
+Izjava o sukladnosti s pravilima Federalne 
+komisije za komunikacije (engl. Federal 
+Communications Commission) o smetnjama
+Ovaj je uređaj sukladan s člankom 15. FCC pravila. Rukovanje je podložno dvama 
+uvjetima:
+• Ovaj uređaj ne smije uzrokovati štetne smetnje.
+• Ovaj će uređaj primiti sve smetnje kojima bude izložen, uključujući i one 
+koje bi mogle uzrokovati neželjene posljedice.
+Ova je oprema testirana i sukladna je s ograničenjima za digitalne uređaje klase 
+B, sukladno s člankom 15 pravila Federalne komisije za komunikacije (FCC). Ta su 
+ograničenja definirana kako bi se pružila odgovarajuća zaštita od štetnih smetnji 
+u stambenim prostorima. Ova oprema stvara, upotrebljava i može emitirati 
+radiofrekvencijsko zračenje te, ako se ne instalira i ne upotrebljava u skladu s 
+uputama, može uzrokovati smetnje štetne za radiokomunikacijsku opremu. Ne 
+jamči se, međutim, da do smetnji neće doći pri određenom obliku instalacije. Ako 
+oprema uzrokuje štetne smetnje u prijamu radijskog ili televizijskog signala, što se 
+može odrediti uključivanjem i isključivanjem opreme, korisniku se preporučuje da 
+smetnje pokuša ispraviti na jedan ili više sljedećih načina:
+• Premještanjem ili preusmjeravanjem antene koja se upotrebljava za prijam.
+• Povećavanjem razmaka između opreme i prijamnika.
+• Priključivanjem opreme u utičnicu u koju nije priključen prijamnik.
+• Pomoć zatražite od zastupnika ili iskusnog tehničara za radijsku/televizijsku 
+opremu.
+UPOZORENJE! Kako bi emisija bila u skladu s ograničenjima FCC-a te kako bi se 
+spriječile smetnje u prijamu radijske i televizijske opreme koja se nalazi u blizini, 
+potrebno je upotrebljavati zaštićeni kabel za napajanje. Zbog toga upotrebljavajte 
+isključivo isporučeni kabel za napajanje. Za priključivanje izlaznih i ulaznih uređaja na 
+ovu opremu upotrijebite isključivo zaštićene kabele za napajanje. Upozoravamo vas da 
+zbog promjene ili preinaka koje nije izričito odobrilo tijelo zaduženo za osiguravanje 
+sukladnosti možete izgubiti pravo na upotrebu opreme.
+(Ponovljeno izdanje Kodeksa saveznih propisa br. 47, članak 15.193, 1993. 
+Washington DC: Office of the Federal Register, National Archives and Records 
+Administration, U.S. Government Printing Office.)
+E-priručnik za prijenosno računalo 89
+FCC informacije o izloženosti RF zračenju
+Ovaj uređaj zadovoljava vladine zahtjeve o izloženosti radio valovima. Ovaj 
+uređaj je dizajniran i proizveden tako da ne prekoračuje granice izloženosti 
+utjecaju radio frekvencijske (RF) energije, koje je postavila Federalna komisija 
+za komunikacije vlade SAD-a. Standard izloženosti koristi jedinicu za mjerenje, 
+poznatu pod nazivom Specific Absorption Rate (Specifična stopa apsorpcije) ili 
+SAR. Ograničenje za SAR utvrđeno u FCC iznosi 1,6 W/kg. Ispitivanja vrijednosti 
+SAR provedena su u standardnim radnim položajima koji su usvojeni u FCC s EUT 
+emitiranjem na propisanoj razini snage na različitim kanalima. FCC je odobrila 
+autorizaciju opreme za ovaj uređaj sa svim prijavljenim SAR razinama koje su 
+procijenjene kao sukladne FCC smjernicama o RF izloženosti. SAR podaci o ovom 
+uređaju nalaze se u datoteci s FCC i mogu se pronaći u odjeljku Display Grant na 
+www.fcc.gov/oet/ea/fccid.
+90 E-priručnik za prijenosno računalo
+Obavijest o sigurnosti u skladu s UL standardima
+Potrebno u skladu sa standardom UL 1459 o telekomunikacijskoj (telefonskoj) 
+opremi koja se električnim putem priključuje na telekomunikacijsku mrežu čiji je 
+maksimalni vršni radni napon 200 V, maksimalan napon od vrha do vrha 300 V, a 
+maksimalan efektivni napon 105 V te koja se postavlja ili upotrebljava u skladu s 
+državnim standardom o elektroničkoj opremi (engl. National Electrical Code, NFPA 
+70).
+Prilikom upotrebe modema prijenosnog računala uvijek se pridržavajte osnovnih 
+mjera opreza kako bi se smanjila opasnost od požara, strujnog udara i ozljeda, 
+uključujući i ove:
+• NEMOJTE upotrebljavati prijenosno računalo blizu vode, na primjer, blizu 
+kade, umivaonika, sudopera, u vlažnim podrumima ili blizu bazena.
+• NEMOJTE upotrebljavati prijenosno računalo za vrijeme grmljavine. Postoji 
+mali rizik od strujnog udara izazvanog udarom groma.
+• NEMOJTE upotrebljavati prijenosno računalo u blizini mjesta na kojem je 
+došlo do curenja plina.
+Potrebno u skladu sa standardom UL 1642 koji se odnosi na primarne (jednokratne) 
+i sekundarne (punjive) litijske baterije koje se u proizvodima upotrebljavaju 
+kao izvor napajanja. Ove baterije sadrže metal litij ili njegove legure ili ione, a 
+izgrađene su od jedne ili više elektrokemijskih ćelija povezanih serijski, paralelno ili 
+na oba načina koje ireverzibilnim ili reverzibilnim kemijskim reakcijama kemijsku 
+energiju pretvaraju u električnu.
+• Bateriju prijenosnog računala NEMOJTE baciti u vatru jer može eksplodirati. 
+Kako biste smanjili rizik od ozljede zbog požara ili eksplozije, od lokalnog 
+tijela zatražite informacije o postojanju posebnih propisa o odlaganju.
+• Kako biste smanjili rizik od ozljede zbog požara ili eksplozije, NEMOJTE 
+upotrebljavati adaptere za napajanje ili baterije iz drugih uređaja. 
+Upotrebljavajte samo adaptere za napajanje s UL certifikatom ili baterije 
+koje ste nabavili kod proizvođača ili ovlaštenog zastupnika.
+E-priručnik za prijenosno računalo 91
+Sigurnosni zahtjevi za napajanje
+Za napajanje proizvoda s nazivnom električnom strujom do 6 A težih od 3 kg 
+moraju se upotrebljavati kabeli za napajanje čije su dimenzije najmanje: H05VV-F, 
+3G, 0,75 mm2 ili H05VV-F, 2G, 0,75 mm2.
+Obavijest o televiziji
+Obavijest instalaterima sustava kabelske televizije: kabelski distribucijski sustav 
+treba biti uzemljen u skladu sa standardom ANSI/NFPA 70 te državnim standardom 
+o elektroničkoj opremi (engl. National Electrical Code (NEC)), i to posebice u skladu 
+s dijelom 820.93 – Uzemljenje vanjskog razvodnog ožičenja koaksijalnog kabela 
+u skladu s kojim prilikom montaže ožičenje koaksijalnog kabela treba uzemljiti na 
+mjestu ulaza u zgradu.
+Obavijest o proizvodima tvrtke Macrovision 
+Corporation
+Ovaj proizvod upotrebljava tehnologiju u vlasništvu tvrtke Macrovision 
+Corporation i drugih vlasnika prava koji su svoja autorska prava zaštitili metodama 
+iz određenih američkih zakona o patentima i intelektualnom vlasništvu. Osim ako 
+tvrtka Macrovision Corporation nije dala drugačije odobrenje, za svaku je upotrebu 
+njezine zaštićene tehnologije namijenjene za kućnu ili drugu ograničenu upotrebu 
+potrebno ishoditi odobrenje tvrtke Macrovision Corporation. Rastavljanje ili 
+obrnuti inženjering nisu dozvoljeni.
+Sprječavanje oštećenja sluha
+Kako biste spriječili moguća oštećenja sluha, nemojte dugo 
+slušati veoma glasne sadržaje.
+Obavijest o premazu
+VAŽNO! Na cijeli je uređaj osim na mjesta na kojima se nalaze ulazni i izlazni priključci 
+nanesen premaz koji omogućuje strujnu izolaciju i sigurnost električne opreme.
+92 E-priručnik za prijenosno računalo
+Upozorenja za litij (litij-ionske baterije) za 
+nordijske zemlje
+CAUTION! Danger of explosion if battery is incorrectly replaced. Replace only with 
+the same or equivalent type recommended by the manufacturer. Dispose of used 
+batteries according to the manufacturer’s instructions. (English)
+ATTENZIONE! Rischio di esplosione della batteria se sostituita in modo errato. 
+Sostituire la batteria con un una di tipo uguale o equivalente consigliata dalla 
+fabbrica. Non disperdere le batterie nell’ambiente. (Italian)
+VORSICHT! Explosionsgefahr bei unsachgemäßen Austausch der Batterie. Ersatz 
+nur durch denselben oder einem vom Hersteller empfohlenem ähnlichen Typ. 
+Entsorgung gebrauchter Batterien nach Angaben des Herstellers. (German)
+ADVARSELI! Lithiumbatteri - Eksplosionsfare ved fejlagtig håndtering. Udskiftning 
+må kun ske med batteri af samme fabrikat og type. Levér det brugte batteri 
+tilbage til leverandøren. (Danish)
+VARNING! Explosionsfara vid felaktigt batteribyte. Använd samma batterityp eller 
+en ekvivalent typ som rekommenderas av apparattillverkaren. Kassera använt 
+batteri enligt fabrikantens instruktion. (Swedish)
+VAROITUS! Paristo voi räjähtää, jos se on virheellisesti asennettu. Vaihda paristo 
+ainoastaan laitevalmistajan sousittelemaan tyyppiin. Hävitä käytetty paristo 
+valmistagan ohjeiden mukaisesti. (Finnish)
+ATTENTION! Danger d’explosion si la batterie n’est pas correctement remplacée. 
+Remplacer uniquement avec une batterie de type semblable ou équivalent, 
+recommandée par le fabricant. Jeter les batteries usagées conformément aux 
+instructions du fabricant. (French)
+ADVARSEL! Eksplosjonsfare ved feilaktig skifte av batteri. Benytt samme 
+batteritype eller en tilsvarende type anbefalt av apparatfabrikanten. Brukte 
+batterier kasseres i henhold til fabrikantens instruksjoner. (Norwegian)
+(Japanese)
+ВНИМАНИЕ! При замене аккумулятора на аккумулятор иного типа возможно 
+его возгорание. Утилизируйте аккумулятор в соответствии с инструкциями 
+производителя. (Russian)
+E-priručnik za prijenosno računalo 93
+EU REACH i članak 33
+U skladu s okvirnim REACH regulacijama (Registracija, evaluacija, autorizacija i 
+ograničenje kemikalija) objavljujemo kemijske supstance u našim proizvodima na 
+ASUS REACH web-mjestu http://csr.asus.com/english/REACH.htm.
+Izjava o sukladnosti Uredbi o zaštiti okoliša 
+proizvoda
+Tvrtka ASUS se pri dizajnu i proizvodnji proizvoda pridržava koncepata o ekološki 
+prihvatljivom dizajnu pa je svaka faza životnog ciklusa ASUS proizvoda u skladu s 
+globalnim propisima o zaštiti okoliša. Uz to, tvrtka ASUS ispunjava svoju zakonsku 
+obvezu objavljivanja važnih informacija.
+Pojedinosti o tome koje je informacije tvrtka ASUS zakonski dužna objavljivati 
+potražite na web-mjestu http://csr.asus.com/Compliance.htm.
+EU RoHS
+Proizvod je sukladan direktivi EU RoHS. Za više pojedinosti pogledajte 
+http://csr.asus.com/english/article.aspx?id=35.
+94 E-priručnik za prijenosno računalo
+Usluga recikliranja/prihvata tvrtke ASUS
+Programi recikliranja i prihvata tvrtke ASUS rezultat su predanosti najvišim 
+standardima zaštite okoliša. Vjerujemo da trebamo ponuditi rješenja za odgovorno 
+recikliranje naših proizvoda, baterija, drugih komponenti i ambalaže.
+Pojedinosti o recikliranju za pojedine regije potražite na web-mjestu http://csr.
+asus.com/english/Takeback.htm.
+Direktiva o ekodizajnu
+Europska Unija objavila je okvir za postavljanje zahtjeva ekološkog dizajna na 
+energetski povezane proizvode (2009/125/EZ). Specifične mjere za implementaciju 
+usmjerenu su na poboljšanje utjecaja određenih proizvoda ili više vrsta proizvoda 
+na okoliš. ASUS pruža informacije o proizvodima na CSR web-mjestu. Dodatne 
+informacije možete pronaći na https://csr.asus.com/english/article.aspx?id=1555.
+E-priručnik za prijenosno računalo 95
+Proizvod s kvalifikacijom ENERGY STAR
+ENERGY STAR zajednički je program Američke agencije za zaštitu 
+okoliša (engl. Environmental Protection Agency) i Ministarstva 
+energetike SAD-a (engl. Department of Energy) čije smjernice o 
+energetski učinkovitim proizvodima omogućuju uštede i čuvaju 
+okoliš.
+Svi ASUS proizvodi s logotipom ENERGY STAR sukladni su sa standardom ENERGY 
+STAR, a njihove su funkcije upravljanja energijom tvornički postavljene. Monitor 
+automatski prelazi u stanje mirovanja najviše 10 minuta neaktivnosti korisnika, 
+računalo automatski prelazi u stanje mirovanja najviše 30 minuta neaktivnosti 
+korisnika. Računalo možete probuditi pritiskom tipke miša, pritiskom na bilo koju 
+tipku na tipkovnici ili pritiskom na gumb napajanja. 
+Više informacija o upravljanju energijom i njegovim koristima za okoliš potražite 
+na web-mjestu http://www.energystar.gov/powermanagement. Uz to, pojedinosti 
+o zajedničkom programu ENERGY STAR potražite na web-mjestu http://www.
+energystar.gov.
+NAPOMENA: Energy Star NIJE podržan na uređajima s operacijskim sustavima 
+FreeDOS i LINUX.
+EPEAT registrirani proizvodi
+Javno izlaganje ključnih informacija za okoliš za ASUS EPEAT (Electronic Product 
+Environmental Assessment Tool) (Alat za procjenu utjecaja elektroničkog 
+proizvoda na okoliš) registrirane proizvode dostupno je na 
+https://csr.asus.com/english/article.aspx?id=41. Više informacija o EPEAT 
+programu i pomoći kod kupnje možete pronaći na www.epeat.net.
+96 E-priručnik za prijenosno računalo
+Licenca za tekstualne fontove BIOS-a
+Copyright © 2023 Android projekt otvorenog koda
+Licenciran je u okviru licence Apache, verzija 2.0 („licenca“); ova datoteka smije se 
+koristiti samo u skladu s licencom. Kopiju licence možete dobiti na 
+http://www.apache.org/licenses/LICENSE-2.0.
+Osim ako to traži važeći zakon ili ako se o tome postoji pismeni dogovor, softver 
+koji je distribuiran u okviru ove licence distribuira se na osnovi pravila „KAKAV 
+JEST“, BEZ JAMSTAVA ILI UVJETA BILO KOJE VRSTE, bilo da su ona izričita ili 
+samorazumljiva.
+Potražite u licenci i u okviru ove licence karakteristične dozvole i ograničenja u 
+vezi jezika.
+Pojednostavljena EU izjava o usklađenosti
+Tvrtka ASUSTek Computer Inc. ovim izjavljuje kako ovaj uređaj udovoljava 
+osnovnim zahtjevima i drugim relevantnim odredbama Direktive 2014/53/EU. 
+Cijeli tekst EU Izjave o usklađenosti dostupan je na web-mjestu 
+https://www.asus.com/support/.
+Wi-Fi tehnologija u rasponu od 5150 – 5350 MHz u državama navedenima u 
+nastavku smije se upotrebljavati samo u zatvorenim prostorima:
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK(NI)
+E-priručnik za prijenosno računalo 97
+a. Unutarnji uređaji male snage (LPI) Wi-Fi 6E: 
+Uređaj je ograničen na upotrebu u zatvorenom prostoru samo kada radi u 
+frekvencijskom pojasu od 5945 do 6425 MHz u Belgiji (BE), Bugarskoj (BG), 
+Cipru (CY), Češkoj (CZ), Estoniji (EE), Francuskoj (FR), Islandu (IS), Irskoj (IE), 
+Litvi (LT), Njemačkoj (DE), Nizozemskoj (NL), Španjolskoj (ES).
+b. Uređaji vrlo male snage (VLP) Wi-Fi 6E (prijenosni uređaji): 
+Uređaj nije dopušteno koristiti u sustavima bespilotnih letjelica (UAS) kada 
+radi u frekvencijskom pojasu od 5945 do 6425 MHz u Belgiji (BE), Bugarskoj 
+(BG), Cipru (CY), Češkoj (CZ), Estoniji (EE), Francuskoj (FR), Islandu (IS), Irskoj 
+(IE), Litvi (LT), Njemačkoj (DE), Nizozemskoj (NL), Španjolskoj (ES).
+Obavijest o Wi-Fi mreži
+VAŽNO! Wi-Fi 6E mrežna kartica dostupna je na određenim modelima. Mogućnost 
+povezivanja Wi-Fi 6E frekvencijskog pojasa može se razlikovati prema propisima i 
+certifikaciji svake od zemalja/regija.
+98 E-priručnik za prijenosno računalo
+ O ovom priručniku
+ Konvencije koje se koriste u ovom priručniku
+ Ikone
+ Tipografija
+ Sigurnosne mjere opreza
+ Upotreba prijenosnog računala
+ Briga o prijenosnom računalu
+ Propisno zbrinjavanje
+ Podaci o sigurnosti baterije
+ Poglavlje 1: 
+ Postavljanje hardvera
+ Upoznajte svoje prijenosno računalo
+ Prikaz sprijeda
+ Pogled s donje strane
+ Pogled s desne strane
+ Pogled s lijeve strane
+ Poglavlje 2: Upotreba prijenosnog računala
+ Početak rada
+ Napunite svoje prijenosno računalo
+ Podignite kako biste otvorili ploču zaslona
+ Pritisnite gumb napajanja
+ Upotreba dodirne pločice
+ Upotreba tipkovnice
+ Tipke prečaca
+ Funkcijske tipke
+ Tipke sustava Windows
+ Poglavlje 3.: Rad sa sustavom Windows
+ Prvi rad sa sustavom
+ Izbornik Start
+ Aplikacije sustava Windows
+ Rad s aplikacijama sustava Windows
+ Prilagođavanje aplikacija sustava Windows
+ Prikaz zadatka
+ Widgeti
+ Značajka Snap (Poravnanje)
+ Pristupne točke za Snap (Poravnanje)
+ Action Center (Akcijski centar)
+ MyASUS Splendid
+ Postavljanje OLED zaslona
+ Postavljanje tamnog načina rada
+ Isključivanje zaslona kad se ne upotrebljava
+ Podešavanje svjetline zaslona
+ Automatsko skrivanje programske trake
+ Postavljanje tamnog načina rada u aplikaciji Microsoft Office
+ Ostali tipkovni prečaci
+ Povezivanje s bežičnim mrežama
+ Wi-Fi
+ Bluetooth
+ Način rada u zrakoplovu
+ Isključivanje prijenosnog računala
+ Stavljanje prijenosnog računala u stanje mirovanja
+ Poglavlje 4.: Samoprovjera pri uključivanju
+ Samoprovjera pri uključivanju
+ Upotreba POST-a za pristup BIOS-u i rješavanje problema
+ BIOS
+ Pristupanje BIOS-u
+ Oporavak sustava
+ Izvođenje opcije oporavka
+ Savjeti i ČPP
+ Korisni savjeti za upotrebu prijenosnog računala
+ Česta pitanja o hardveru
+ Česta pitanja o softveru
+ Dodaci
+ Izjava o sukladnosti s pravilima Federalne komisije za komunikacije (engl. Federal Communications Commission) o smetnjama
+ FCC informacije o izloženosti RF zračenju
+ Obavijest o sigurnosti u skladu s UL standardima
+ Sigurnosni zahtjevi za napajanje
+ Obavijest o televiziji
+ Obavijest o proizvodima tvrtke Macrovision Corporation
+ Sprječavanje oštećenja sluha
+ Obavijest o premazu
+ Upozorenja za litij (litij-ionske baterije) za nordijske zemlje
+ Izjava o sukladnosti Uredbi o zaštiti okoliša proizvoda
+ EU REACH i članak 33
+ EU RoHS
+ Usluga recikliranja/prihvata tvrtke ASUS
+ Direktiva o ekodizajnu
+ Proizvod s kvalifikacijom ENERGY STAR
+ EPEAT registrirani proizvodi
+ Licenca za tekstualne fontove BIOS-a
+ Pojednostavljena EU izjava o usklađenosti
+ Obavijest o Wi-Fi mreži

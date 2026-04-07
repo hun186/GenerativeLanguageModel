@@ -1,0 +1,1764 @@
+
+AI2302AI2302
+Käyttöopas
+2
+Huolto ja turvallisuus
+Ohjeet
+Liikenneturvallisuus on ensisijalla. On vahvasti suositeltavaa olla käyttämättä laitetta 
+ajaessa tai käytettäessä minkään tyyppistä ajoneuvoa.
+Tätä laitetta tulee aina käyttää ympäristössä, jonka lämpötila on välillä 0°C (32°F) – 
+35°C (95°F).
+Sammuta laite rajoitetuilla alueilla, joilla mobiililaitteiden käyttö on kiellettyä. 
+Noudata aina rajoitettujen alueiden sääntöjä ja säädöksiä, kuten lentokoneessa, 
+elokuvateatterissa, sairaalassa tai lääkinnällisen laitteen lähellä, lähellä polttoaineita, 
+rakennustyömailla, räjäytystyömailla ja muilla vastaavilla alueilla.
+Käytä tämän laitteen kanssa vain ASUKSEN hyväksymiä verkkolaitteita ja kaapeleita. 
+Varmista laitteen pohjassa sijaitsevasta arvokilvestä vastaako verkkolaite tämän 
+laitteen nimellisarvoa.
+Älä käytä vahingoittuneita virtakaapeleita, lisävarusteita ja muita lisäosia tämän 
+laitteen kanssa.
+Pidä laite kuivana. Älä altista laitetta nesteille, sateelle tai kosteudelle tai käytä niiden 
+lähellä. 
+Laitetta voi käyttää röntgenlaitteiden läpivalaisussa (kuten lentoaseman 
+tuvallisuustarkastuksissa), mutta älä altista laitetta magneettitunnistimille tai 
+-sauvoille.
+Laitteen näyttö on valmistettu lasista. Jos lasi särkyy, lopeta laitteen käyttö äläkä 
+koske lasinsirpaleisiin. Lähetä laite heti ASUKSEN valtuuttamaan huoltoon.
+Kuulovamman estämiseksi älä kuuntele korkeilla äänenvoimakkuuksilla pitkiä aikoja.
+Irrota laite pistorasiasta ennen puhdistamista. Puhdista laitteen näyttö ainoastaan 
+selluloosasienellä tai säämiskäliinalla.
+Lähetä laite vain ASUKSEN valtuuttamaan huoltoon.
+FI21835
+Heinäkuu 2023
+Ensimmäinen painos
+3
+Oikea hävittäminen
+Akun vaihtaminen vääräntyyppiseen aiheuttaa räjähdysvaaran. Hävitä käytetyt akut 
+ohjeiden mukaisesti.
+ÄLÄ heitä akkua talousjätteisiin. Symboli, jossa roskalaatikon päällä on risti, 
+merkitsee, ettei akkua saa laittaa talousjätteisiin.
+ÄLÄ hävitä ASUS Phone kotitalousjätteen mukana. TämätuoteonsuunniteltuTämä 
+tuote on suunniteltu siten, että sen osat voidaan käyttää uudelleen ja kierrättää. 
+Rastilla ylivedetyn roskasäiliön symboli ilmoittaa, että tuotetta (sähkö-, elektroninen 
+tuote ja elohopeaa sisältävä kennoakku) ei saa hävittää kunnallisjätteen mukana. 
+Tarkista alueesi sähkölaitteita koskevat jätemääräykset.
+ÄLÄ heitä ASUS Phone tuleen. ÄLÄ aiheuta oikosulkua kontaktien välille. ÄLÄ pura 
+ASUS Phone.
+ZenTalk-fanifoorumi 
+(http://www.asus.com/zentalk/global_forward.php)
+HUOMAUTUS: 
+• Katso lisää laitteesi oikeudellisia ja e-merkintätietoja kohdasta Settings (Asetukset) > System (Järjestelmä) > 
+Regulatory labels (Viranomaismerkinnät) ja Settings (Asetukset) > System (Järjestelmä) > About phone 
+(Tietoja puhelimesta) > Legal information (Oikeudelliset tiedot).
+• Tämän käyttöoppaan sovelluskuvaukset ovat vain viitteellisiä eivätkä ne ehkä vastaa täsmälleen 
+sitä, mitä näet laitteessasi.
+4
+1 Perusominaisuudet
+Tervetuloa! ............................................................................................................................................... 7
+Valmistele ASUS Phone -puhelimesi! ............................................................................................. 8
+Ensimmäinen käyttökerta ................................................................................................................16
+Navigointieleiden ohje ......................................................................................................................17
+Kosketusnäytön käyttö ......................................................................................................................18
+2 Oma koti kullan kallis
+Zen Home -ominaisuudet ..........................................................................................21
+Alkunäyttö ..............................................................................................................................................21
+Pika-asetukset .......................................................................................................................................22
+Ilmoitukset ............................................................................................................................................23
+Reunatyökalua ......................................................................................................................................24
+Aloitusnäytön mukauttaminen .................................................................................25
+Wallpapers (Taustakuvat) .................................................................................................................26
+Pienoissovellukset ...............................................................................................................................27
+Asetukset ................................................................................................................................................27
+Päiväyksen ja kellonajan määrittäminen ....................................................................................28
+Soittoäänen ja hälytysäänien määrittäminen ...........................................................................28
+3 Työhön ja vapaa-aikaan
+Chrome ........................................................................................................................29
+Chromen käynnistäminen ................................................................................................................29
+Sivun jakaminen ..................................................................................................................................30
+Sivujen lisääminen kirjanmerkkeihin ...........................................................................................30
+Selaustietojen tyhjentäminen ........................................................................................................30
+Gmail ............................................................................................................................31
+Google-kalenteri.........................................................................................................32
+Tapahtumien luominen .....................................................................................................................32
+Tapahtumien muokkaaminen tai poistaminen ........................................................................32
+Muistutusten luominen.....................................................................................................................33
+Muistutusten muokkaaminen tai poistaminen .......................................................................33
+Tiedostonhallinta .......................................................................................................34
+ASUS -puhelinklooni ..................................................................................................35
+4 Pidä yhteyttä
+Soita tyylillä ................................................................................................................36
+Kaksois-SIM-ominaisuus ...................................................................................................................36
+Puheluiden soittaminen ...................................................................................................................38
+Suosikkiyhteystiedoille soittaminen ............................................................................................40
+Puheluiden vastaanottaminen .......................................................................................................40
+Muut soittotoiminnot ........................................................................................................................41
+Puheluiden tallentaminen ...............................................................................................................42
+Yhteystietojen hallinta ...............................................................................................43
+Yhteystietojen asetukset ..................................................................................................................43
+Sisällysluettelo
+5
+Profiilin määrittäminen .....................................................................................................................43
+Yhteystietojen lisääminen ................................................................................................................44
+Suosikkiyhteystietojen merkitseminen .......................................................................................45
+Yhteystietojen ja sosiaalisten verkkojen yhdistäminen ........................................................46
+Lähetä viestejä jne ......................................................................................................47
+Google Messenger ..............................................................................................................................47
+5 Viihde
+Kuulokkeiden käyttö ..................................................................................................48
+Audioliittimen liittäminen ................................................................................................................48
+YT Music .......................................................................................................................49
+6 Arvokkaita hetkiä
+Tallenna muistoja .......................................................................................................50
+Kamera-sovelluksen käynnistäminen ..........................................................................................50
+Kuvien sijainnit .....................................................................................................................................51
+Kameran lisäasetukset .......................................................................................................................51
+Intervallikuvaus ....................................................................................................................................52
+Gallerian käyttö ..........................................................................................................53
+Valokuvan paikkatietojen tarkasteleminen ...............................................................................53
+Kuvan muokkaaminen ......................................................................................................................53
+Tiedostojen jakaminen galleriasta ................................................................................................54
+Tiedostojen poistaminen galleriasta ............................................................................................54
+7 Yhteydet
+Mobiiliverkko ..............................................................................................................55
+Mobiiliverkon käyttöönottaminen ................................................................................................55
+Wi-Fi .............................................................................................................................55
+Wi-Fi-yhteyttä otetaan käyttöön ....................................................................................................55
+Wi-Fi-verkkoon yhdistäminen .........................................................................................................56
+Wi-Fi:n ottaminen pois käytöstä ....................................................................................................56
+Bluetooth® ...................................................................................................................56
+Bluetooth®:in käyttöönotto .............................................................................................................56
+ASUS Phone ja Bluetooth®-laitteen parin muodostaminen ................................................57
+ASUS Phone ja Bluetooth®-laitteen laiteparin purkaminen .................................................57
+Jaettu yhteys ...............................................................................................................58
+WiFi-hotspot ..........................................................................................................................................58
+USB-jakaminen ....................................................................................................................................59
+Jaettu Bluetooth-yhteys ....................................................................................................................59
+8 Matkasovellukset
+Sää ................................................................................................................................60
+Sää-sovelluksen käynnistäminen ..................................................................................................60
+Sää-alkunäyttö ......................................................................................................................................61
+Kello .............................................................................................................................62
+Herätyskello ...........................................................................................................................................62
+Maailmankello ......................................................................................................................................63
+Sekuntikello ...........................................................................................................................................63
+6
+Ajastin ......................................................................................................................................................64
+9 Zen missä tahansa
+Zenin erikoisohjelmat ................................................................................................65
+Laskin .......................................................................................................................................................65
+Äänitallennin .........................................................................................................................................66
+Mobiilihallinta ............................................................................................................68
+10 Zen-puhelimen kunnossapito
+Laitteen pitäminen ajan tasalla .................................................................................69
+Järjestelmän päivittäminen .............................................................................................................69
+Tallennustila ..........................................................................................................................................69
+Varmuuskopiointi ja palautus .........................................................................................................69
+Nollaa ......................................................................................................................................................69
+ASUS Phone suojaaminen ..........................................................................................70
+Sormenjälkitunnusanturi ..........................................................................................73
+ASUS-puhelimen käynnistäminen ensimmäistä kertaa ........................................................73
+Sormenjälkitunnuksen asettaminen Asetuksista ....................................................................74
+Kasvojentunnistus .....................................................................................................75
+Kasvojentunnistuksen asettaminen Asetuksista ....................................................................75
+ASUS Phone tunnistetietojen määrittäminen ..........................................................78
+liitteet
+7Luku 1: Perusominaisuudet
+Tervetuloa!
+Tutustu intuitiivisen yksinkertaiseen ASUS Zen UI -käyttöliittymään!
+ASUS Zen UI on loistava ja erittäin helppokäyttöinen käyttöliittymä, joka on suunniteltu vain 
+ASUS Phone. Siinä on muihin sovelluksiin integroituja tai yhdistettyjä erikoissovelluksia, jotka on 
+suunniteltu juuri sinun yksilöllisiin tarpeisiin ja jotka helpottavat elämääsi ja tekevät ASUS Phone 
+käytöstä entistä mukavampaa.
+Kamera
+PixelMaster-teknologia tallentaa tärkeimmät hetkesi todentuntuisina ja 
+huippulaadukkaina kuvina ja videoina.
+Viestit
+Messages, intuitiivinen ja ilahduttava sovellus, antaa lähettää/vastaanottaa SMS/MMS-
+viestejä, sekä lähettää ryhmätekstejä, valokuvia tai ääniviestejä. Voit lisätä emojeita 
+tai tarroja viesteihin, jakaa sijaintisi, arkistoida viestisi ja estää helposti SMS-viestien 
+lähettäjiä. Voit myös ottaa valokuvia tai tallentaa videoita ja jakaa helposti näitä 
+tiedostoja. 
+Tiedostonhallinta
+Resurssienhallintaa käyttämällä voit paikallistaa ja hallita helposti ASUS Phone sisäisen 
+tallennustilan ja puhelimeen liitettyjen ulkoisten tallennuslaitteiden tietoja.
+HUOMAUTUS: ASUS Zen UI -käyttöliittymän sovellusten saatavuus voi vaihdella alueen ja ASUS Phone 
+mallin mukaan. Pyyhkäise ylös aloitusnäytössä tarkistaaksesi käytettävissä olevat sovelluksen ASUS-
+puhelimessasi.
+1 Perusominaisuudet
+1Perusominaisuudet
+8 Luku 1: Perusominaisuudet
+Valmistele ASUS Phone -puhelimesi!
+Osat ja ominaisuudet
+Tutustu laitteeseesi ja valmistele se käyttökuntoon käden käänteessä.
+VAROITUS! 
+• Verkkoyhteyden ja akun ongelmien välttämiseksi:
+ • ÄLÄ aseta antennialueelle metallisia tarroja.
+ • ÄLÄ käytä metallista kehystä/koteloa ASUS-puhelimellasi.
+ • ÄLÄ peitä antennialuetta käsilläsi tai muulla käyttäessäsi joitakin toimintoja, kuten puheluiden 
+soittaminen tai mobiilidatayhteys.
+• On suositeltavaa käyttää ASUS-yhteensopivia näytönsuojuksia. Muiden kuin ASUS-yhteensopivien 
+näytönsuojusten käyttö voi aiheuttaa ASUS-puhelimen anturin toimintahäiriön.
+TÄRKEÄÄ!
+• Emme suosittele näytönsuojuksen käyttöä, sillä se voi häiritä läheisyysanturia. Jos haluat käyttää 
+näytönsuojusta, varmista, ettei se estä läheisyysanturia.
+• Pidä laite, erityisesti kosketusnäyttö, aina kuivana. Vesi tai muut nesteet voivat aiheuttaa 
+kosketusnäytön toimintahäiriön.
+Kosketusnäyttöruutu
+Etukamera
+Kaiutin
+Valoanturi & läheisyysanturi
+Mikrofoni
+USB-tyyppi C -portti
+Virtanäppäin & 
+Sormenjälki- 
+anturi
+Nano-SIM - korttipaikka
+Äänipistoke
+Modtager
+Takakamera Kameran salama
+Äänenvoimak-
+kuusnäppäin
+Mikrofoni
+Poistoreikä
+Langaton latausalue
+NFC-tunnistusanturi
+9Luku 1: Perusominaisuudet
+Nano-SIM-kortin asentaminen
+Nano-SIM-korttipaikat tukevat GSM/GPRS/EDGE, WCDMA/HSPA+/DC-HSPA+, FDD-LTE, TD-LTE, ja 
+5G NR Sub-6-verkkokaistoja. 
+VAARA! Ole erityisen varovainen käsitellessäsi Nano-SIM-korttia. ASUS ei ole vastuussa mistään Nano-
+SIM-korteille tapahtuvista katoamisista tai vahingoista.
+Nano-SIM-kortin asentaminen:
+1. Työnnä toimitukseen kuuluvan piikki korttipaikan reikään poistaaksesi telakan.
+2. Liitä Nano SIM kortit korttipaikkoihin.
+3. Työnnä kelkka varovasti takaisin, kunnes on tiukasti kiinni.
+VAARA! 
+• Älä käytä teräviä työkaluja tai liuottimia laitteen puhdistamiseen välttääksesi sen naarmuuntumisen.
+• Käytä ASUS-puhelimessasi ainoastaan vakio Nano SIM korttia.
+HUOMAUTUS:
+• Nano-SIM-korttipaikat tukevat GSM/GPRS/ EDGE, WCDMA/HSPA+/DC-HSPA+, FDD-LTE, TD-LTE, ja 5G 
+NR Sub-6-verkkokaistoja. Molemmat Nano SIM -kortit voidaan liittää VoLTE 4G -puhelupalveluihin. 
+Mutta vain yksi voidaan liittää 5G NR Sub-6-datapalveluun samanaikaisesti.
+• Todellinen verkon ja taajuuskaistan käyttö on alueesi verkon käyttöönoton mukainen. Ota yhteyttä 
+televiestintäpalveluntarjoajaasi jos 5G NR Sub-6-tuki ja VoLTE 4G -puhelupalvelu ovat käytettävissä 
+alueellasi.
+Nano-SIM1
+Nano-SIM2
+10 Luku 1: Perusominaisuudet
+Nano-SIM-kortin poistaminen:
+1. Työnnä toimitukseen kuuluvan piikki korttipaikan reikään poistaaksesi telakan.
+2. Poista nano SIM -kortit korttipaikoista.
+3. Työnnä kelkka varovasti takaisin, kunnes on tiukasti kiinni.
+Nano-SIM-kortin vaihtaminen
+VAARA! Ole erityisen huolellinen käsitellessäsi Nano-SIM-korttia. ASUS ei ole vastuussa mistään Nano-
+SIM-korteillesi kertyneistä tietojen menetyksistä tai vahingoista.
+Nano-SIM1
+Nano-SIM2
+11Luku 1: Perusominaisuudet
+ASUS Phone :n lataaminen
+ASUS Phone-puhelin toimitetaan osittain ladattuna, mutta se on ladattava kokonaan ennen 
+ensimmäistä käyttökertaa. Lue seuraavat tärkeät ilmoitukset ja varoitukset ennen laitteen 
+lataamista.
+TÄRKEÄÄ!
+• Kuori pois suojaava kelmu verkkolaitteesta ja USB-tyyppi C-kaapelista ennen niiden käyttöä 
+laitteellasi.
+• Varmista, että liität verkkolaitteen yhteensopivaan pistorasiaan. Voit liittää verkkolaitteen mihin 
+tahansa yhteensopivaan 100–240 V:n pistorasiaan. 
+• Verkkolaitteen antojännite tälle laitteelle on +5V-10V 3A, 30W.
+• Kun käytät ASUS Phone-puhelinta pistorasiaan liitettynä, pistorasian on oltava lähellä laitetta 
+helposti tavoitettavissa.
+• Energian säästämiseksi irrota verkkolaite pistorasiasta, kun se ei ole käytössä.
+• Älä aseta raskaita esineitä ASUS Phone-puhelimen päälle.
+VAARA! 
+• ASUS Phone-puhelin voi kuumentua ladattaessa. Tämä on normaalia, mutta jos laite kuumenee 
+epätavallisen paljon, irrota USB-tyyppi C-kaapeli laitteesta ja lähetä laite sekä verkkolaite ja kaapeli 
+ASUKSEN valtuutettuun huoltokeskukseen.
+• Estääksesi ASUS Phone-puhelimen, verkkolaitteen tai USB-tyyppi C-kaapelin vahingoittumisen. 
+Varmista, että USB-tyyppi C-kaapeli, verkkolaite ja laitteesi on liitetty oikein ennen lataamista.
+ASUS Phone :n lataaminen:
+1. Liitä USB-liitin verkkolaitteen USB-porttiin.
+2. Liitä USB-kaapelin toinen pää ASUS-puhelimeesi.
+3. Liitä verkkolaite maadoitettuun pistorasiaan.
+1
+2
+3
+12 Luku 1: Perusominaisuudet
+TÄRKEÄÄ!
+• Kun käytät ASUS Phone:ttä sen ollessa liitettynä pistorasiaan, maadoitetun pistorasian on oltava 
+lähellä laitetta ja helposti tavoitettavissa.
+• Kun lataat ASUS Phone:ttä tietokoneella, varmista, että liität USB-tyyppi C-kaapelin tietokoneen USB 
+-porttiin.
+• Vältä lataamasta ASUS Phone:ttä ympäristössä, jonka lämpötila on yli 35°C (95°F).
+• Lataa ASUS Phone-puhelinta kahdeksan (8) tuntia ennen sen ensimmäistä käyttöä akkutilassa.
+• Akun lataustila osoitetaan seuraavilla kuvakkeilla:
+ 
+Matala Ei latausta Ladataan Täysi
+HUOMAUTUKSIA:
+• Käytä turvallisuussyistä AINOASTAAN toimitukseen kuuluvaa verkkolaitetta ja kaapelia välttääksesi 
+laitteen vahingoittumisen ja estääksesi henkilövamman vaaran.
+• Käytä turvallisuussyistä AINOASTAAN toimitukseen kuuluvaa verkkolaitetta ja kaapelia ASUS-
+puhelimen lataamiseen.
+4. Kun akku on ladattu täyteen, irrota USB-kaapeli ensin ASUS Phone-puhelimesta ennen kuin 
+irrotat verkkolaitteen pistorasiasta.
+HUOMAUTUKSIA: 
+• Voit käyttää laitetta latauksen aikana, mutta tällöin laitteen täyteen lataaminen kestää pitempään.
+• Laitteen akun täyteen lataaminen tietokoneen USB-portin kautta voi kestää pitempään.
+• Jos tietokone ei anna riittävästi latausvirtaa USB-portin kautta, lataa ASUS Phone-puhelin sen 
+asemesta pistorasiaan liitetyllä verkkolaitteella.
+13Luku 1: Perusominaisuudet
+ASUS-puhelimen lataaminen langattomasti
+Voit ostaa Qi-sertifioidun langattoman laturin ASUS-puhelimen lataamiseksi langattomasti.
+Jos käytät ASUS-puhelinta latauksen aikana, lataaminen voi hidastua tai jopa pysähtyä akun 
+suojelemiseksi. Määrättyjen sovellusten käyttö lataamisen aikana voi pysäyttää lataamisen tai 
+vaikuttaa latauksen toimivuuteen. 
+Kun lataat langattomasti, varmista että poistat kaikki kannet, kotelot tai muut puhelimen 
+lisävarusteet ja pidät mielessä seuraavat asiat:
+• Älä aseta mitään johtavia materiaaleja, kuten metalliosia ja magneetteja ASUS-puhelimen ja 
+laturin väliin palovammojen välttämiseksi.
+• Älä aseta laturille luottokortteja, matkakortteja tai avainkortteja (RFID) välttääksesi niiden 
+demagnetoitumisen tai vahingoittumisen.
+VAARA! Jos ASUS-puhelin on asetettu väärin langattomalle laturille, latausaika voi pidentyä 
+merkittävästi.
+Lataa ASUS-puhelin langattomalla laturilla seuraavasti:
+1. Aseta ASUS-puhelin langattomalle laturille laturin ohjeiden mukaisesti.
+HUOMAUTUS: Langattoman latauksen kelojen ASUS-puhelimen takana on oltava kosketuksissa laturin 
+kanssa.
+2. Kun lataus alkaa, langattoman latauksen kuvake tulee näkyviin näyttöön.
+3. Kun lataaminen on valmis, poista ASUS-puhelin langattomasta lataustelineestä tai latauslevyltä.
+VAARA! Jos varotoimia ei noudateta, laite ei ehkä lataa oikein tai se voi ylikuumentua.
+14 Luku 1: Perusominaisuudet
+NFC:n käyttö
+Voit käyttää NFC:tä seuraavissa käyttötarkoituksissa:
+Reader mode (Lukijatila): Puhelin lukee tietoja kontaktittomasta kortista, NFC -tunnisteesta tai 
+muista NFC-laitteista.
+Aseta puhelimen NFC-alue kontaktittomalle kortille, NFC-tunnisteelle tai NFC-laitteelle.
+Card Emulation mode (Korttiemulaatiotila): Puhelintasi voi käyttää kuten kontaktitonta korttia.
+Aseta puhelimen NFC-alue NFC-lukijan NFC-alueelle.
+Peer-to-Peer mode (Vertaisverkkotila): Siirtää valokuva, yhteystietoja tai muuta dataa puhelimesi 
+ja NFC:tä tukevan älypuhelimen välillä.
+Vie molempien puhelinten NFC-alueet tiiviisti yhteen.
+15Luku 1: Perusominaisuudet
+ASUS Phone :n kytkeminen päälle tai pois päältä
+Laitteen käynnistäminen
+Kytke laite päälle pitämällä virtapainiketta painettuna, kunnes laite värisee ja käynnistyy.
+Laitteen sammuttaminen
+Laitteen sammuttaminen: 
+Pidä virtapainiketta painettuna, ja kun saat kehotuksen, napauta Power off (Virta pois).
+Lepotila
+Voit asettaa laitteen lepotilaan painamalla virtapainiketta, kunnes näyttö sammuu.
+Virtanäppäin
+HUOMAUTUS: Kun järjestelmä on alhaalla, pidä Äänenvoimakkuus alas - ja Virtanäppäintä 
+samanaikaisesti painettuna 8 sekuntia käynnistääksesi puhelimen uudelleen. Jos tämä ei toimi, yritä 
+uudelleen pitämällä näppäimiä uudelleen painettuina 12 sekuntia.
+16 Luku 1: Perusominaisuudet
+Ensimmäinen käyttökerta
+Kun kytket ASUS Phone päälle ensimmäistä kertaa, ohjattu asetus opastaa sinut läpi 
+asetusprosessin. Toimi näytön ohjeiden mukaisesti valitaksesi kielen, asettaaksesi 
+matkapuhelinverkon, Wi-Fi- ja suojausasetukset ja synkronoidaksesi tilit.
+Aseta laitteesi Google- tai ASUS-tilillä. Jos sinulla ei vielä ole Google- tai ASUS-tiliä, siirry eteenpäin 
+luomaan sellainen.
+Google-tili
+Google-tilin käyttö mahdollistaa näiden Android-käyttöjärjestelmän ominaisuuksien täyden 
+hyödyntämisen:
+• Voit organisoida ja tarkastella kaikkia tietojasi mistä tahansa.
+• Kaikkien tietojesi automaattinen varmuuskopiointi.
+• Google-palveluiden käyttö mukavasti mistä tahansa.
+ASUS-tili
+ASUS-tili tarjoaa seuraavia etuja:
+• Mukautettu ASUS-tukipalvelu ja takuun laajennus rekisteröidyille tuotteille.
+• Uusimmat laite- ja laiteohjelmistopäivitykset.
+Akkutehon säästövinkkejä
+Akun lataus on ASUS Phone elämänlanka. Tässä joitakin akkutehon säästövinkkejä, joita auttavat 
+säästämään ASUS Phone akkutehoa.
+ – Sulje kaikki käynnissä olevat sovellukset, jotka eivät ole käytössä.
+ – Kun laitetta ei käytetä, paina virtapainiketta asettaaksesi laitteen lepotilaan.
+ – Vähennä näytön kirkkautta.
+ – Pidä kaiuttimen äänenvoimakkuus matalalla tasolla.
+ – Poista Wi-Fi-ominaisuus käytöstä.
+ – Poista Bluetooth-ominaisuus käytöstä.
+ – Poista näytön automaattinen kierto -ominaisuus käytöstä.
+ – Poista kaikki laitteen automaattiset synkronointiominaisuudet käytöstä.
+17Luku 1: Perusominaisuudet
+Navigointieleiden ohje
+Kun käynnistät ensimmäistä kertaa, lue Instruction of Navigation Gestures (Navigointieleiden 
+ohje) ja napsauta Done (Valmis) sulkeaksesi ohjeet.
+HUOMAUTUS: Voit valita kohteiden Gesture navigation (Elenavigointi) tai Navigation bar 
+(Navigointipalkki) välillä milloin tahansa kohdassa Settings (Asetukset) > Display (Näyttö) > System 
+navigation (Järjestelmänavigointi).
+18 Luku 1: Perusominaisuudet
+Kosketusnäytön käyttö
+Käytä näitä eleitä kosketusnäytöllä käynnistääksesi sovelluksia, käyttääksesi joitakin asetuksia ja 
+navigoidaksesi ASUS Phone.
+Sovellusten käynnistys
+Käynnistä sovellus napauttamalla sitä.
+Kohteiden poistaminen tai siirtäminen
+Tee jokin seuraavista:
+• Siirtääksesi sovellusta tai pienohjelmaa, napauta ja pidä ja sitten vedä kohde haluamaasi 
+sijaintiin.
+• Poistaaksesi sovelluksen, napauta ja pidä sitä ja napauta sitten Uninstall (Poista asennus).
+• Poistaaksesi pienohjelman, napauta ja pidä sitä painettuna ja vedä se sitten näytön yläosassa 
+olevalle Remove (Poista)-kuvakkeelle.
+19Luku 1: Perusominaisuudet
+Siirtyminen sivuilla tai näytöillä
+Tee jokin seuraavista:
+• Pyyhkäise sormellasi vasemmalle tai oikealle vaihtaaksesi näyttöjen välillä tai siirry avaamaan 
+Google-haku.
+• Vieritä sormella ylös tai alas selataksesi sivuja tai luettelokohteita.
+Lähentäminen
+Levitä kahta sormea erilleen kosketuspaneelilla lähentääksesi kuvaa Valokuvat tai Kartoissa tai 
+lähennä web-sivua.
+20 Luku 1: Perusominaisuudet
+Loitontaminen
+Levitä kahta sormea erilleen kosketuspaneelilla lähentääksesi kuvaa Valokuvat tai Kartoissa tai 
+lähennä web-sivua.
+HUOMAUTUS: Et ehkä voi lähentää/loitontaa joitakin web-sivuja, jotka on voitu suunnitella erityisesti 
+sopiviksi mobiililaitteen näyttöön.
+21Luku 2: Oma koti kullan kallis
+Zen Home -ominaisuudet
+Alkunäyttö
+Saat muistutuksia tärkeistä tapahtumista, sovellus- ja järjestelmäpäivityksiä, säätiedotuksia ja 
+tekstiviestejä itsellesi tärkeiltä ihmisiltä, kaikki suoraan alkunäytöltä. 
+2 Oma koti kullan kallis
+2Oma koti kullan kallis
+Napauta avataksesi Google Search (Google-haku) -sivun
+Napauta avataksesi Voice Search (Äänihaku) -toiminnon
+Pyyhkäise alas tällä alueella näyttääksesi Järjestelmäilmoitukset
+Pyyhkäise alas tällä alueella näyttääksesi Pika-asetukset
+Napauta avataksesi sovelluksen
+Pyyhkäise ylös avataksesi All Apps (Kaikki sovellukset) -näytön
+Napauta avataksesi Clock (Kello) -toiminnon
+Napauta avataksesi Weather (Sää) -toiminnon
+22 Luku 2: Oma koti kullan kallis
+Pika-asetukset
+Pika-asetukset-ilmoituspaneeli tarjoaa yhden kosketuksen haun tietyille ASUS Phone langattomille 
+toiminnoille ja asetuksille. Kaikille näille ominaisuuksille on oma painikkeensa. 
+Käynnistä pika-asetukset-paneeli pyyhkäisemällä kahdesti alas näytön yläosasta.
+HUOMAUTUS: Kirkas kuvake tarkoittaa, että ominaisuus on parhaillaan käytössä, kun taas harmaa 
+painike ilmaisee käytöstä poistettua ominaisuutta. 
+• Napauta näitä painikkeita pikakäynnistääksesi nämä 
+apuohjelmat
+• Liu’uta vasemmalle tai oikealle nähdäksesi lisää kuvakkeita
+Liu’uta vasemmalle tai oikealle ottaaksesi käyttöön 
+näytön kirkkauden automaattisen säädön
+Napauta avataksesi Settings (Asetukset) -kohdan
+Napauta valitaksesi / poistaaksesi valinnan kohteista 
+näyttääksesi Pika-asetukset
+Ominaisuuksien lisääminen 
+Ominaisuuksien lisääminen Pika-asetukset-paneelista:
+1. Käynnistä Pika-asetukset ja napauta .
+2. Pyyhkäise ylös Hold and drag to rearrange tiles (Pidä ja vedä järjestääksesi ruudut 
+uudelleen). 
+3. Vedä ja pudota Hold and drag to add tiles (Pidä ja vedä lisätäksesi ruutuja) -kohdassa 
+kuvaketta ylöspäin lisätäksesi sen Pika-asetukset-paneeliin. 
+4. Napauta siirtyäksesi takaisin ja tarkastellaksesi nykyistä Pika-asetukset-paneelia. 
+Ominaisuuksien poistaminen 
+Olemassa olevien ominaisuuksien poistaminen Pika-asetukset-paneelista:
+1. Käynnistä Pika-asetukset ja napauta .
+2. Napauta ja vedä Hold and drag to rearrange tiles (Pidä ja vedä järjestääksesi ruudut 
+uudelleen) -kohdan alla olevaa kuvaketta poistaaksesi sen Pika-asetukset -paneelista.
+Napauta sammuttaaksesi, käynnistä ASUS-puhelin uudelleen, 
+ota näyttökuva tai käytä hätätilaominaisuutta
+23Luku 2: Oma koti kullan kallis
+Ilmoitukset 
+Järjestelmäilmoituksissa näet ASUS-puhelimeen tehdyt uusimmat päivitykset ja järjestelmän 
+muutokset. Useimmat näistä muutoksista liittyvät dataan ja järjestelmään. 
+Käynnistä Ilmoitukset-paneeli pyyhkäisemällä alas näytön yläosasta.
+Napauta tätä poistaaksesi kaikki listatut ilmoitukset
+• Pyyhkäise ilmoitusta vasemmalle tai oikealle saadaksesi lisää valintoja
+• Napauta ilmoitusta näyttääksesi sen tiedot
+Napauta hallitaksesi ilmoituksia
+24 Luku 2: Oma koti kullan kallis
+Reunatyökalua
+Reunatyökalu mahdollistaa järjestelmäpikavalintojen nopean suorittamisen ja sovelluksen 
+avaamisen kelluvassa ikkunassa.
+Avataksesi sivupalkin, liu’uta sitä reunasta sisään päin.
+Liu’uta 
+avataksesi 
+sivupalkin
+Napauta 
+avataksesi 
+Settings 
+(Asetukset) 
+-kohdan
+25Luku 2: Oma koti kullan kallis
+Aloitusnäytön mukauttaminen
+Anna alkunäytölle oma persoonallinen leimasi. Valitse mieleenpainuva kuva taustakuvaksi ja lisää 
+pienohjelmia tarkastellaksesi nopeasti tärkeitä tietoja. Voit myös lisätä uusia sivuja, jolloin voit lisätä 
+ja käyttää tai tarkastella nopeasti sovelluksia tai pienohjelmia alkunäytöllä.
+Hallitse kotinäyttöä -toiminnon käynnistäminen, napauta ja pidä Kotinäytön tyhjää aluetta 
+painettuna.
+26 Luku 2: Oma koti kullan kallis
+Wallpapers (Taustakuvat)
+Sijoita sovellukset, kuvakkeet ja muut Zen-elementit puoleensavetävään taustakuvaan. Voit ladata 
+kuvakepaketteja ja taustakuvia internetistä. Voit myös valita animoidun taustakuvan tehdäksesi 
+näytöstäsi elävämmän.
+Taustakuvan käyttö
+Taustakuvan käyttö:
+1. Napauta ja pidä alkunäytöllä tyhjää aluetta painettuna ja valitse Wallpaper & style (Taustakuva 
+& tyyli).
+2. Napauta Change wallpaper (Vaihtaaksesi taustakuvan) ja valitse asettaaksesi taustakuvan 
+kohteelle Lock screen (Lukitusnäyttö) tai Home screen (Kotinäyttö).
+3. Valitse taustakuva ja napauta Apply (Käytä).
+HUOMAUTUS: Voit myös asettaa taustakuva-asetukset kohdassa Settings (Asetukset) > Wallpaper & 
+style(Taustakuva & tyyli).
+Napauta valitaksesi kuvan Galleriasta
+Pyyhkäise oikealle tai vasemmalle valitaksesi, mihin 
+haluat sijoittaa taustakuvan
+Napauta leikataksesi taustakuvaa 
+27Luku 2: Oma koti kullan kallis
+Pienoissovellukset 
+Voit sijoittaa pienoissovelluksia - pieniä, dynaamisia sovelluksia - kotinäytölle. Pienoissovellukset 
+tarjoavat pikanäkymiä mm. sääennusteisiin, kalenteritapahtumatietoihin ja akkutilaan.
+Pienohjelmien lisääminen
+Pienohjelman lisääminen:
+1. Napauta ja pidä alkunäytöllä tyhjää aluetta painettuna ja valitse Widgets (Pienoissovellukset).
+2. Widgetit -kohdassa, napauta kohdetta ja pidä lisättävää pienoisohjelmaa painettuna ja vedä se 
+alkunäytön tyhjälle alueelle.
+Sovelluksen pikavalinnan poistaminen:
+Napauta ja pidä alkunäytössä sovellusta ja vedä se Remove (Poista) -kohtaan näytöllä.
+Asetukset
+Voit muokata Aloitusnäyttöä, käyttää AppLock-toimintoa ja piilottaa sovelluksia.
+1. Napauta ja pidä Kotinäytöllä tyhjää aluetta painettuna ja valitse Preferences (Asetukset).
+2. Napauta ominaisuutta muokataksesi asetukset.
+Kotinäytön muokkaaminen
+Voit valita vieritystehosteen, muuttaa kuvaketekstien väriä, valita kansion teeman ja asettaa 
+oletusnäytön.
+1. Napauta ja pidä Kotinäytöllä tyhjää aluetta painettuna ja valitse Edit Home edit (Muokkaa 
+Kotinäyttö).
+2. Napauta ominaisuutta muokataksesi Kotinäyttöä.
+28 Luku 2: Oma koti kullan kallis
+Päiväyksen ja kellonajan määrittäminen
+Aloitusnäytön päivämäärä ja kellonaika synkronoituvat oletusarvoisesti aina 
+matkapuhelinoperaattorisi asetusten mukaisesti.
+Päiväyksen ja kellonajan asetusten muuttaminen:
+1. Avaa Asetukset-näyttö jollakin seuraavista tavoista:
+ • Avaa pika-asetukset ja napauta sitten . 
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset). 
+2. Selaa Asetukset-näyttöä alaspäin ja valitse System (Järjestelmä) > Date & time (Päivämäärä 
+ja aika).
+3. Liu’uta Set time automatically (Aseta aika automaattisesti) ja Set time zone automatically 
+(Aseta aikavyöhyke automaattisesti) pois-tilaan.
+4. Napauta Date (Päivämäärä) ja Time (Aika) säätääksesi päivämäärän ja ajan.
+5. Napauta Time Zone (Aikavyöhyke) valitaksesi aikavyöhykkeen.
+6. Voit käyttää halutessasi myös 24-tuntista näyttötapaa.
+HUOMAUTUS: Katso myös kohta Kello.
+Soittoäänen ja hälytysäänien määrittäminen
+Voit määrittää äänet, joita käytetään puhelimen soittoäänenä sekä esimerkiksi tekstiviestien, 
+sähköpostien ja tapahtumien ilmoitusääninä. Voit myös ottaa käyttöön tai poistaa käytöstä 
+näppäinäänet, kosketusäänet, ja ruudunlukitusäänen. Lisäksi voit määrittää, että ASUS Phone antaa 
+värinäpalautteen, kun kosketat näyttöä.
+Ääniasetusten määrittäminen:
+1. Avaa Asetukset-näyttö jollakin seuraavista tavoista:
+ • Avaa pika-asetukset ja napauta sitten . 
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset). 
+2. Valitse Sound & vibration (Ääni ja värinä) ja aseta haluamasi ääniasetukset.
+HUOMAUTUS: Paina äänenvoimakkuusnäppäintä ja napauta > missä tahansa näytöllä 
+avataksesi Sound & vibration (Ääni ja värinä) -valikon.
+29Luku 3: Työhön ja vapaa-aikaan
+Työhön ja vapaa-aikaan
+3 Työhön ja vapaa-aikaan
+Chrome
+Chrome for Android`-sovellus tarjoaa saman nopean, turvallisen ja vakaan web-selauskokemuksen 
+kuin tietokoneen työpöydän Chrome. Kirjaudu sisään Google-tilillesi synkronoimaan välilehtiä, 
+kirjanmerkkejä ja kaikkien laitteittesi selaushistoriaa. Jos sinulla ei ole Google-tiliä, rekisteröi 
+sellainen.
+HUOMAUTUS: Katso lisätietoja Google-tilin luomisesta kohdasta Gmail.
+TÄRKEÄÄ! Varmista aina ennen netin tai nettiyhteyttä vaativien ominaisuuksien käyttöä, että ASUS 
+Phone on yhdistetty WiFi- tai mobiiliverkkoon. Katso lisätietoja kohdasta Yhteydet.
+Chromen käynnistäminen
+Tee alkunäytössä jokin seuraavista käynnistääksesi Chromen:
+• Napauta .
+• Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Chrome.
+3
+30 Luku 3: Työhön ja vapaa-aikaan
+Sivun jakaminen
+Jaa mielenkiintoisia sivuja ASUS Phonesi muille henkilöille sähköpostin, pilvipalvelun, Bluetooth-
+yhteyden tai ASUS Phone muiden sovellusten avulla.
+1. Käynnistä Chrome.
+2. Napauta verkkosivulla > Share... (Jaa...).
+3. Napauta valitaksesi sivun jakamistavan.
+Sivujen lisääminen kirjanmerkkeihin
+Lisää suosikkisivusi ja -sivustosi kirjanmerkkeihin, jotta voit palata niiden pariin myöhemmin.
+Näin lisäät sivun kirjanmerkkeihin:
+Napauta sivulla > . Tarkastellaksesi suosikkisivujasi, napauta > Bookmarks (Kirjanmerkit) 
+ja valitse sivu, jota haluat tarkastella tai käyttää.
+Selaustietojen tyhjentäminen
+Selaimen välimuistin tyhjentäminen poistaa väliaikaiset internet-tiedostot sekä ASUS Phone 
+muistiin väliaikaisesti tallennetut sivustot ja evästeet. Tämä toiminto nopeuttaa sivujen lataamista 
+selaimessa.
+1. Käynnistä selain.
+2. Napauta > Settings (Asetukset) > Privacy and security (Tietosuoja ja uojaus) > Clear 
+browsing data (Selaustietojen tyhjentäminen).
+3. Valitse selaustiedot, jotka haluat poistaa. 
+4. Kun olet valmis, napsauta Clear data (Tyhjennä).
+31Luku 3: Työhön ja vapaa-aikaan
+Gmail
+Käytä Gmailia Google-tilisi asettamiseen päästäksesi Googleen liittyviin palveluihin ja sovelluksiin 
+sekä vastaanottamaan, lähettämään ja selaamaan sähköposteja suoraan ASUS-puhelimestasi. Voit 
+asettaa Gmaililla myös muita sähköpostitilejä, kuten Yahoo tai työsähköpostisi. 
+TÄRKEÄÄ! ASUS-puhelimen on oltava yhdistetty Wi-Fi- tai matkapuhelinverkkoon niin, että voit lisätä 
+sähköpostitilin tai lähettää ja vastaanottaa sähköposteja lisätyiltä tileiltä. Katso lisätietoja kohdasta Pysy 
+yhdistettynä.
+Google-tilin asettaminen:
+1. Tee alkunäytössä jokin seuraavista käynnistääksesi Gmailin: 
+ • Napauta Google > Gmail.
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Gmail.
+2. Napauta GOT IT (YMMÄRRÄN) ja sitten Add an email address (Lisää sähköpostiosoite).
+3. Valitse Google.
+4. Syötä sähköpostiosoitteesi. Luodaksesi uuden Google-tilin, napauta Create account (luo uusi 
+tili).
+5. Kirjaudu sisään Google-tilillesi seuraavien ohjeiden mukaisesti. 
+HUOMAUTUS: Jos haluat asettaa työtilisi ASUS-puhelimeen, kysy sähköpostiasetukset verkkosi 
+järjestelmänvalvojalta.
+32 Luku 3: Työhön ja vapaa-aikaan
+Google-kalenteri
+Tuo aikataulusi elämään ja seuraa kaikkia tärkeitä tapahtumiasi tai muistutuksia. Luomasi 
+tai muokkaamasi tapahtumat synkronoituvat automaattisesti kaikkien niiden Google-
+kalenteriversioiden kanssa, joihin olet kirjautunut. 
+Tapahtumien luominen
+Tapahtuman luominen:
+Google-tilin asettaminen:
+1. Tee alkunäytössä jokin seuraavista käynnistääksesi Gmailin: 
+ • Napauta Google > Calendar (Kalenteri).
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Calendar (Kalenteri).
+2. Napauta ja naputa sitten Event (Tapahtuma).
+3. Syötä tapahtumasi nimi ja valitse tapahtumalle päivämäärä ja aika. Voit asettaa tapahtuman 
+koko päivän tai toistuvaksi tapahtumaksi. 
+• Koko päivän tapahtuma: Siirrä All day (Koko päivä) -kentässä liukusäädintä oikealle. 
+• Toistuva tapahtuma: Napauta More options (Lisää valintoja) > , valitse sitten kuinka 
+usein haluat tapahtuman toistuvat tai tapahtuvan uudelleen. 
+4. Asettaaksesi aikavyöhykkeen, napauta More options (Lisää valintoja) > , syötä sitten maa, 
+jonka aikavyöhykkeen haluat näyttää.
+5. Syötä Add location (Lisää sijainti) kenttään tapahtuman pitopaikka tai sijainti. 
+6. Napauta , sen jälkeen voit valita tai asettaa ajan tai päivän saadaksesi tapahtumasta 
+ilmoituksen tai muistutuksen. 
+7. Syötä Invite people (Kutsu henkilöitä) -kenttään tapahtumasi vieraiden sähköpostiosoitteet. 
+8. Voit myös lisätä huomautuksen tai liitteen Add note (Lisää huomautus) - tai Add attachment 
+(Lisää liite) kentästä.
+9. Kun olet valmis, napauta Save (Tallenna).
+Tapahtumien muokkaaminen tai poistaminen
+Tapahtuman muokkaaminen tai poistaminen:
+1. Napauta alkunäytössä Google > Calendar (Kalenteri). 
+2. Napauta muokattavaa tai poistettavaa tapahtumaa.
+3. Muokataksesi tapahtumaa, napauta ja tee tarvittavat muutokset. Poistaaksesi tapahtuman, 
+napauta > Delete (Poista), napauta sitten Delete (Poista) vahvistaaksesi poistamisen.
+33Luku 3: Työhön ja vapaa-aikaan
+Muistutusten luominen
+Muistutuksen luominen:
+1. Napauta alkunäytössä Google > Calendar (Kalenteri). 
+2. Napauta ja naputa sitten Reminder (Muistutus).
+3. Syötä muistutuksen nimi.
+4. Aseta muistutuksen päivämäärä ja aika. Voit asettaa muistutuksen koko päivän tai toistuvaksi 
+muistutukseksi. 
+• Koko päivän muistutus: Siirrä All day (Koko päivä) -kentässä liukusäädintä oikealle. 
+• Toistuva muistutus: Napauta , valitse sitten kuinka usein haluat muistutuksen toistuvan 
+tai tapahtuvan uudelleen.
+5. Kun olet valmis, napauta Save (Tallenna).
+Muistutusten muokkaaminen tai poistaminen 
+Muistutuksen muokkaaminen tai poistaminen: 
+1. Tap Google > Calendar (Kalenteri). 
+2. Napauta muokattavaa tai poistettavaa muistutusta. 
+3. Muokataksesi muistutusta, napauta ja tee tarvittavat muutokset. Poistaaksesi muistutuksen, 
+napauta > Delete (Poista), napauta sitten Delete (Poista) vahvistaaksesi poistamisen.
+34 Luku 3: Työhön ja vapaa-aikaan
+Tiedostonhallinta
+Resurssienhallintaa käyttämällä voit paikallistaa ja hallita helposti ASUS Phone sisäisen 
+tallennustilan ja puhelimeen liitettyjen ulkoisten tallennuslaitteiden tietoja.
+Käynnistääksesi Tiedostonhallinnan, pyyhkäise ylös aloitusnäytöllä ja napauta sitten File Manager 
+(Tiedostonhallinta).
+TÄRKEÄÄ! Varmista ennen verkko- ja pilvitallennustilaan tallennettujen tiedostojen käyttöä, että Wi-
+Fi- tai matkapuhelinverkko on otettu käyttöön ASUS-puhelimessasi. Katso lisätietoja kohdasta Staying 
+connected (Pysy yhdistettynä).
+Napauta näyttääksesi luokassa olevat tiedostot
+Näyttää sisäisen tallennustilan käytön
+Napauta hakeaksesi tiedostoa
+Napauta käyttääksesi sisäistä, verkko- ja 
+pilvitallennustilaa
+Napauta muokataksesi luokkia ja määrittääksesi asetuksia.
+35Luku 3: Työhön ja vapaa-aikaan
+ASUS -puhelinklooni
+Siirrä langattomasti tietojasi, kuten yhteystiedot, puhelulokit tai valokuvat vanhasta 
+mobiililaitteesta ASUS-puhelimeesi.
+ASUS-puhelinklooni käyttö:
+1. Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Phone Clone (Puhelinklooni).
+2. Napauta Get Started (Näin pääset alkuun) ja suorita sitten tietojen siirto loppuun näytön 
+ohjeiden mukaisesti.
+36 Luku 4: Pidä yhteyttä
+Pidä yhteyttä
+4 Pidä yhteyttä
+4
+Soita tyylillä
+Kaksois-SIM-ominaisuus
+ASUS Phone kaksois-SIM-ominaisuus antaa hallita asennettujen Nano-SIM-korttien asetuksia. 
+Tällä ominaisuudella voit ottaa käyttöön / pois käytöstä Nano-SIM-kortteja tai asettaa kortin 
+oletusverkoksi.
+Nano SIM-korttien nimeäminen uudelleen
+Muuta ASUS Phone Nano-SIM-korttien nimet helposti yksilöitävään muotoon. 
+Muuttaaksesi Nano SIM-korttien nimiä, napauta SIM1- tai SIM2 ja näppäile sitten Nano SIM-
+korttien nimet.
+HUOMAUTUS: Jos SIM-korteilla on eri mobiilipalveluntarjoaja, on suositeltavaa käyttää 
+näiden palveluntarjoajien nimiä SIM-korttiniminä. Jos molemmilla SIM-korteilla on sama 
+mobiilipalveluntarjoaja, on suositeltavaa käyttää matkapuhelinten numeroita SIM-korttiniminä.
+37Luku 4: Pidä yhteyttä
+Oletus-SIM-kortin määrittäminen
+Määritä SIM-kortti oletus-SIM-kortiksi äänipuheluille ja datapalveluille. 
+SIM-kortti äänipuheluille
+Kun soitat puhelun, ASUS Phone käyttää automaattisesti oletus-SIM-korttia puhelun yhdistämiseen.
+Voit määrittää SIM-kortin äänipuheluille napauttamalla Voice call (Äänipuhelu) ja napauttamalla 
+sitten käytettävää SIM-korttia.
+SIM-kortti datapalveluille
+Määrittääksesi SIM-kortin datapalveluille, napauta Data service network (Datapalveluverkko) ja 
+valitse sitten SIM1 tai SIM2.
+TÄRKEÄÄ! Voit käyttää tätä ominaisuuttaa vain soittaessasi puhelun yhteystietoluettelosta.
+SIM-kortti tekstiviestejä varten
+Määrittääksesi SIM-kortin tekstiviestejä varten, napauta SMS messages (Tekstiviestit) ja valitse 
+sitten SIM1 tai SIM2.
+38 Luku 4: Pidä yhteyttä
+Puheluiden soittaminen
+ASUS Phone voi soittaa puheluita monella eri tavalla. Voit soittaa kavereillesi yhteystietoluettelon 
+avulla, valita numeron nopeasti smart dial -toiminnolla tai tallentaa usein käyttämäsi yhteystiedon 
+pikavalintanumeroksi.
+HUOMAUTUS: Järjestele yhteystietosi Yhteystiedot-sovelluksessa. Katso lisätietoja kohdasta 
+Yhteystietojen hallinta.
+Puhelin-sovelluksen avaaminen
+Voit käynnistää Puhelin-sovelluksen aloitusnäytöstä jollakin seuraavista tavoista:
+• Napauta .
+• Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Phone (Puhelin).
+Puhelinnumeron valitseminen
+Valitse numero suoraan Puhelin-sovelluksen avulla.
+1. Napauta aloitusnäytössä ja käytä numeronäppäimiä.
+2. Soita numeroon painamalla soittopainiketta SIM1 tai SIM2.
+HUOMAUTUS: Soittopainikkeiden tekstit voivat vaihdella SIM-korttien asetusten mukaan. Katso 
+lisätietoja kohdasta Kaksois-SIM-ominaisuus.
+Alanumeron valitseminen
+Jos haluat soittaa johonkin alanumeroon, voit ohittaa puhelinvastaajan äänikomennot seuraavilla 
+tavoilla.
+Alanumeron valinnan pyytäminen
+Voit lisätä puhelinnumeron perään alanumeron valintapyynnön.
+1. Syötä ensisijainen puhelinnumero Puhelin-sovelluksessa.
+2. Liittääksesi vahvistuskehotteen, napauta ja pidä #-painiketta painettuna, kunnes puolipiste (;) 
+tulee näkyviin.
+3. Syötä alavalinnan numero. 
+4. Soita puhelu painamalla soittopainiketta SIM1 tai SIM2.
+5. Vahvista alanumeron valinta pyydettäessä napauttamalla Kyllä.
+6. Lopeta puhelu napauttamalla .
+39Luku 4: Pidä yhteyttä
+Alanumeron automaattinen valinta
+Voit lisätä ensisijaisen numeron loppuun lyhyen tai pitkän tauon, jolloin alanumero valitaan 
+automaattisesti.
+1. Syötä ensisijainen puhelinnumero Puhelin-sovelluksessa.
+2. Liittääksesi tauon, napauta ja pidä *-painiketta painettuna, kunnes pilkku (,) tulee näkyviin.
+3. Syötä alavalinnan numero. 
+4. Soita puhelu painamalla soittopainiketta SIM1 tai SIM2.
+5. Lopeta puhelu napauttamalla .
+Yhteystietojen älykäs valinta
+Kun kirjoitat yhteystiedon numeron ensimmäisiä numeroita tai nimen ensimmäisiä kirjaimia, Smart 
+Dial -toiminto suodattaa yhteystietoluettelosi ja puheluhistorian sisällön niiden mukaan ja tarjoaa 
+valintojasi vastaavia osumia. Voit tarkistaa, löytyykö etsimäsi yhteystieto hakutulosten luettelosta ja 
+valita sen siitä nopeasti.
+1. Avaa Puhelin-sovellus ja kirjoita sitten yhteystiedon numero tai nimi. 
+2. Napauta hakutulosten luettelosta sitä yhteystietoa, jolle haluat soittaa. Jos etsimäsi yhteystieto 
+ei ole luettelossa, kirjoita sen numero tai nimi kokonaisuudessaan.
+3. Soita puhelu painamalla soittopainiketta SIM1 tai SIM2.
+HUOMAUTUS: Soittopainikkeiden tekstit voivat vaihdella SIM-korttien asetusten mukaan. Katso 
+lisätietoja myös kohdasta Kaksois-SIM-ominaisuus.
+Yhteystiedot-sovelluksesta soittaminen
+Yhteystiedot-sovelluksen avulla voit soittaa yhteystietoluettelossa oleville yhteystiedoille.
+1. Käynnistä Yhteystiedot-sovellus.
+2. Napauta ensin yhteystiedon nimeä ja sen jälkeen numeroa, johon haluat soittaa.
+3. Jos laitteeseen on asetettu kaksi SIM-korttia, napauta sitä SIM-korttia, jolla haluat soittaa.
+4. Lopeta puhelu napauttamalla .
+40 Luku 4: Pidä yhteyttä
+Suosikkiyhteystiedoille soittaminen
+Jos lisäät yhteystiedon Suosikit-luetteloosi, voit soittaa hänelle nopeasti Yhteystiedot-sovelluksesta.
+1. Avaa Yhteystiedot- tai Puhelin-sovellus.
+2. Avaa Suosikit-luettelo napauttamalla Groups (Ryhmät) > Favorites (Suosikit), ja napauta sitten 
+sitä suosikkiyhteystietoa, jolle haluat soittaa.
+3. Lopeta puhelu napauttamalla .
+Puheluiden vastaanottaminen
+ASUS Phone näyttö menee päälle, kun laitteeseen tulee saapuva puhelu. Saapuvan puhelun näyttö 
+vaihtelee myös ASUS Phone tilan mukaan.
+Puheluihin vastaaminen
+Liu’uta kohtaan vastataksesi tai hylätäksesi puhelun.
+Puhelulokien hallinta
+Puhelulokien avulla voit soittaa takaisin vastaamattomien puheluiden soittajille, tallentaa soittajien 
+numeroita yhteystietoluetteloosi, estää soittajia tai valita uudelleen viimeksi valitsemiasi numeroita 
+tai yhteyshenkilöitä. 
+Puheluiden tallentaminen yhteystietoihin
+Voit lisätä numeron puhelulokista yhteystietoluetteloosi.
+1. Avaa puhelulokit napauttamalla Puhelin-sovelluksessa Recents (Uusimmat).
+2. Napauta sen numeron vieressä, jonka haluat lisätä yhteystietoluetteloosi.
+3. Napauta näytön oikeassa yläkulmassa ja napauta sitten Add to contacts (Lisää 
+yhteystietoihin).
+4. Valitse Create new contact (Luo uusi yhteystieto), jos haluat lisätä yhteystietoluetteloosi 
+uuden tietueen. 
+ Napauta Add to an existing contact (Lisää olemassa olevaan yhteystietoon), valitse 
+yhteystieto, valitse korvataanko yhteystiedon numero tällä uudella vai lisätäänkö uusi syöte, ja 
+napauta sitten .
+41Luku 4: Pidä yhteyttä
+Viimeksi valitun numeron uudelleenvalinta
+Näin valitset viimeksi valitun numeron uudelleen:
+1. Avaa puhelulokit napauttamalla Puhelin-sovelluksessa Recents (Uusimmat).
+2. Napauta viimeksi soitettua numeroa soittaaksesi numeroon uudelleen.
+3. Jos on asennettu kaksi SIM-korttia, napauta SIM-korttia, josta haluat soittaa numeron uudelleen.
+4. Lopeta puhelu napauttamalla .
+Muut soittotoiminnot
+Puhelun aikana valitse sitten jokin puhelun aikana käytettävissä olevista toiminnoista.
+Yhteystiedot 
+Avaa Asetukset-sovelluksen.
+Kokouspuhelu
+Jos olet tilannut matkapuhelinoperaattoriltasi kokouspuhelupalvelun, voit lisätä tämän 
+kuvakkeen avulla uusia osapuolia meneillään olevaan puheluun.
+HUOMAUTUS: Kokouspuhelun osapuolten sallittu määrä riippuu kokouspuhelupalvelun 
+tilauksestasi. Pyydä tarvittaessa lisätietoja tästä toiminnosta omalta 
+matkapuhelinoperaattoriltasi.
+Tallennus
+Tallentaa käynnissä olevan puhelun.
+TÄRKEÄÄ! Muista ennen puhelun tallentamista, että useimpien maiden lainsäädäntö 
+edellyttää, että sinun on kysyttävä tallentamiseen lupa puhelun muilta osapuolilta.
+HUOMAUTUS: Tästä on lisätietoja kohdassa Puheluiden tallentaminen.
+Kaiutin
+Kytkee kaiuttimen päälle tai pois päältä.
+Mikrofoni
+Kytkee mikrofonin päälle tai pois päältä käynnissä olevan puhelun osalta. Kun mikrofoni 
+on pois päältä tai mykistettynä, kuulet soittajan äänen mutta hän ei kuule sinua.
+Aseta puhelu pitoon
+Asettaa aktiivisen puhelun pitoon.
+Näppäimistö
+Tuo esiin näppäimistön.
+42 Luku 4: Pidä yhteyttä
+Puheluiden tallentaminen
+Voit tallentaa puhelusi ASUS Phonesi myöhempää käyttöä varten.
+1. Soita yhteyshenkilölle tai johonkin numeroon. 
+2. Tallenna puhelu napauttamalla .
+TÄRKEÄÄ! Muista kysyä muiden osapuolten lupa puhelun tallentamiseen aina ennen tallennuksen 
+aloittamista.
+3. Lopeta tallennus napauttamalla . Järjestelmän ilmoituspalkkiin ilmestyy kuvake .
+4. Voit avata tallennetun keskustelun vetämällä ensin näytön vasemmasta ylälaidasta alaspäin ja 
+napauttamalla sitten Call recording saved (Puhelu tallennettu) -ilmoitusta.
+43Luku 4: Pidä yhteyttä
+Yhteystietojen hallinta
+Järjestä yhteystietosi, jotta sinun on helpompi pitää heihin yhteyttä soittamalla, tekstiviesteillä, 
+sähköpostilla tai sosiaalisten verkkojen välityksellä. Suosikit-ryhmän jäseniin on helppo ottaa 
+nopeasti yhteyttä ja VIP-ryhmään voi lisätä yhteystietoja, joiden kohdalla haluat saada ilmoituksen 
+kaikista tulevista tapahtumista, vastaamattomista puheluista tai uusista viesteistä.
+Voit myös synkronoida yhteystietoja sähköposti- ja sosiaalisen median palveluiden tiliesi 
+kanssa, yhdistää yhteyshenkilöiden tietoja yhteen ja samaan paikkaan tai suodattaa haluamiasi 
+yhteystietoja.
+Käynnistääksesi Yhteystiedot-sovelluksen, pyyhkäise ylös aloitusnäytöllä ja napauta sitten Contacts 
+(Yhteystiedot).
+Yhteystietojen asetukset
+Valitse yhteystietojen näyttötapa Yhteystiedot-sovelluksen asetuksista. Voit valita esimerkiksi, 
+näytetäänkö vain yhteystiedot, joille on tallennettu puhelinnumero, järjestetäänkö luettelo 
+etu- vai sukunimen mukaan ja näytetäänkö ensin yhteystiedon etu- vai sukunimi. Voit määrittää 
+Yhteystiedot-asetuksesi napauttamalla Yhteystiedot-sovelluksessa > Asetukset. 
+Profiilin määrittäminen
+Tee ASUS Phonesi sinun oma laitteesi määrittämällä profiilisi tiedot.
+1. Avaa Yhteystiedot-sovellus ja napauta sitten Set up my profile (Määritä profiilini) tai Me 
+(Minä).
+HUOMAUTUS: Me (Minä) näkyy, jos olet määrittänyt ASUS Phone oman Google-tilisi.
+2. Täytä kentät, kuten matkapuhelin- tai kotipuhelinnumero. Jos haluat lisätä muita tietoja, 
+napauta Add another field (Lisää toinen kenttä).
+3. Kun olet täyttänyt kaikki omat tietosi, napauta . 
+44 Luku 4: Pidä yhteyttä
+Yhteystietojen lisääminen
+Voit lisätä laitteeseesi yhteystietoja, työ-, Google- tai muita sähköpostitilejä sekä muita tärkeitä 
+yhteystietoja, kuten puhelinnumeroita, sähköpostiosoitteita ja VIP-yhteystietojen erityistapahtumia.
+1. Avaa Yhteystiedot-sovellus ja napauta sitten .
+2. Valitse Device (Laite).
+HUOMAUTUKSIA: 
+• Voit tallentaa yhteystiedon myös SIM-kortille tai sähköpostitilin tietoihin.
+• Jos sinulla ei ole sähköpostitiliä, napauta Add account (Lisää uusi tili) ja luo tili.
+3. Täytä välttämättömät tietosi, kuten nimi, matkapuhelin- tai kotipuhelinnumero sekä 
+sähköpostiosoite.
+4. Jos haluat lisätä jonkin toisen yhteystietokentän, napauta Add another field (Lisää toinen 
+kenttä).
+5. Kun olet täyttänyt tiedot, napauta .
+Alanumeron lisääminen yhteystiedon puhelinnumeroon
+Voit ohittaa puhelinvastaajan äänikehotteet lisäämällä yhteystiedon numeroon hänen 
+alanumeronsa.
+1. Syötä yhteystiedon tietonäytössä yhteystiedon pääpuhelinnumero ja alanumero jommalla 
+kummalla näistä kahdesta tavasta:
+ • Syötä pilkku (,) päänumeron jälkeen ja syötä sitten yhteystiedon alanumero. Numeroa 
+valittaessa ilmenee lyhyt tauko ennen kuin alanumero valitaan automaattisesti. 
+Jatkaaksesi taukoa, napauta Pause (Tauko) liittääksesi toisen pilkun. 
+ • Syötä puolipiste (;) päänumeron jälkeen, syötä sitten yhteystiedon alanumero. Kun soitat 
+yhteystietonumeroon, sinua kehotetaan vahvistamaan alanumero. Napauta Yes (Kyllä) 
+vahvistusviestissä.
+2. Kun olet syöttänyt tiedot, napauta .
+45Luku 4: Pidä yhteyttä
+Yhteystiedon profiilin muokkaaminen
+Muokkaa yhteystiedon tietoja, lisää valokuva, määritä soittoääni tai ota valokuva, jota käytetään 
+yhteystiedon profiilin kansikuvana.
+1. Avaa Yhteystiedot-sovellus ja valitse yhteystieto, jonka tietoja tai profiilia haluat muokata tai 
+mukauttaa.
+2. Tee haluamasi muutokset yhteystiedon profiilisivulla.
+Napauta lisätäksesi Suosikit-luetteloon
+Suosikkiyhteystietojen merkitseminen
+Määritä usein käyttämäsi yhteystiedot suosikkiyhteystiedoiksi, jotta voit soittaa heille nopeasti 
+Puhelin-sovelluksesta.
+1. Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Contacts (Yhteystiedot).
+2. Valitse yhteystieto, jonka haluat merkitä suosikiksi.
+3. Napauta . Yhteystieto on lisätty Yhteystiedot-sovelluksen Suosikit-luetteloon. 
+HUOMAUTUKSIA: 
+• Tarkastellaksesi Suosikit-luetteloasi, pyyhkäise ylös aloitusnäytöllä ja napauta sitten Contacts 
+(Yhteystiedot) > Groups (Ryhmät) > Favorites (Suosikit).
+• Katso lisätietoja kohdasta Suosikkiyhteystiedoille soittaminen.
+Tästä napauttamalla voit muokata yhteystiedon tietoja
+Asetukset
+46 Luku 4: Pidä yhteyttä
+Estoluettelon hallinta
+Numeroiden estäminen
+Voit välttää ei-toivottuja puheluita ja viestejä luomalla oman estettyjen yhteystietojen ja 
+puhelinnumeroiden luettelon. Estetyt puhelut ja viestit tallennetaan Block List (Estoluettelo) 
+-arkistoon.
+1. Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Phone (Puhelin) ja napauta sitten > Settings 
+(Asetukset) > Blocked numbers (Estetyt numerot).
+2. Napauta Add a number (Lisää numero) ja syötä estettävä puhelinnumero. Kun olet valmis, 
+napauta Block (Estä).
+Numeroiden eston peruminen
+Voit poistaa estetyn numeron luettelosta ja vastaanottaa puheluita tai viestejä kyseisestä 
+numerosta uudelleen.
+1. Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Phone (Puhelin) ja napauta sitten > Settings 
+(Asetukset) > Blocked numbers (Estetyt numerot).
+2. Napauta × sen numeron vieressä, jonka eston haluat poistaa ja napauta sitten Unblock (Poista) 
+esto.
+Yhteystietojen ja sosiaalisten verkkojen yhdistäminen
+Kun yhdistät sosiaalisen median tilisi omiin yhteystietoihisi, voit tarkastella helpommin heidän 
+sosiaalisen median profiileja, uutisia ja syötteitä. Voit siis seurata yhteystietojesi aktiviteetteja 
+reaaliajassa.
+TÄRKEÄÄ! Sinun täytyy kirjautua omaan sosiaalisen median tiliisi ja synkronoida sen asetukset ennen 
+kuin voit yhdistää omien yhteystietojesi sosiaalisen median tilisi.
+Sosiaalisen median tilisi synkronointi
+Lisää yhteystietojesi sosiaalisen median tilit ASUS Phone yhteystietoihin synkronoimalla oma 
+sosiaalisen median tilisi.
+1. Käynnistä Asetukset-näyttö millä tahansa seuraavista tavoista:
+ • Avaa pika-asetukset ja napauta sitten . 
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset). 
+2. Napauta sosiaalisen median tiliäsi Settings (Asetukset)-näytön Passwords & accounts 
+(Salasanat ja tilit)-kohdassa.
+3. Liu’uta Automatically sync data (Synkronoi tiedot automaattisesti) ON (Päällä) -asentoon 
+synkronoi yhteystietojesi sosiaalisen median tilit.
+4. Käynnistä Yhteystiedot-sovellus tarkastellaksesi yhteystietoluetteloasi. Napauta yhteystietoja 
+nähdäksesi, mistä sosiaalisesta verkosta yhteystieto on.
+47Luku 4: Pidä yhteyttä
+Lähetä viestejä jne
+Google Messenger
+Google Messenger, intuitiivinen ja ilahduttava sovellus, antaa lähettää/vastaanottaa SMS/MMS-
+viestejä, sekä lähettää ryhmätekstejä, valokuvia tai ääniviestejä. Voit lisätä emojeita tai tarroja 
+viesteihin, jakaa sijaintisi, arkistoida viestisi ja estää helposti SMS-viestien lähettäjiä. Voit myös ottaa 
+valokuvia tai tallentaa videoita ja jakaa helposti näitä tiedostoja. 
+Viestien lähettäminen 
+1. Napauta alkunäytössä .
+2. Napauta Start chat (Aloita keskustelu) ja valitse sitten yhteystieto, jolle haluat lähettää viestin.
+3. Valitse SIM-tili, josta aiot lähettää viestisi.
+4. Aloita viestin kirjoittaminen viestikentässä.
+5. Kun olet valmis, napauta lähettääksesi viestisi.
+Viesteihin vastaaminen
+1. Napauta viestikehotetta Alkunäytössä tai Lukitusnäytössä.
+2. Valitse SIM-tili, josta aiot lähettää vastauksesi.
+3. Aloita vastauksen kirjoittaminen viestikentässä.
+4. Kun olet valmis, napauta lähettääksesi vastauksesi.
+48 Luku 5: Viihde
+Kuulokkeiden käyttö
+Nauti vapaudesta tehdä muita asioita puhelun aikana tai nauti suosikkimusiikkisi kuuntelusta 
+kuulokkeilla.
+Audioliittimen liittäminen
+Liitä 3,5 mm kuulokeliitin laitteen audioporttiin.
+Viihde 5
+5 Viihde
+VAROITUS! Kuunteleminen korkealla äänenvoimakkuudella pitkiä aikoja voi vahingoittaa kuuloa.
+HUOMAUTUKSIA:
+• On vahvasti suositeltavaa käyttää ainoastaan yhteensopivia kuulokkeita.
+• Audioliittimen irrottaminen musiikin kuuntelun aikana keskeyttää automaattisesti toistetun 
+musiikin.
+• Audioliittimen irrottaminen videon katselun aikana keskeyttää automaattisesti videon toiston.
+49Luku 5: Viihde
+YT Music
+YT Music -sovelluksella voit suoratoistaa suosikkimusiikkiasi, luoda soittolistoja tai kuunnella 
+radiota. Voit myös tilata YT Music sovelluksen miljoonien musiikkitiedostojen rajoittamatonta ja 
+mainoksetonta käyttöä varten, ja voit lisätä niitä omaan musiikkikirjastoosi. 
+YT Music -sovelluksen asettaminen 
+Kirjaudu sisään Google- tai Gmail-tilillesi voidaksesi käyttää YT Music -sovellusta. Kun olet 
+kirjautunut sisään tilillesi, kai musiikkitiedostosi ASUS-puhelimesta, mukaan lukien siirretyt tai YT 
+Music -kaupasta ostetut, lisätään kirjastoosi. 
+YT Music -sovelluksen asettaminen: 
+1. Napauta alkunäytössä, Google > YT Music.
+2. Napauta SIGN IN (KIRJAUDU SISÄÄN) > Add account (Lisää tili).
+3. Kirjaudu sisään tilillesi seuraavien ohjeiden mukaisesti. 
+HUOMAUTUS: YT Music -tilaus on käytettävissä vain joissakin maissa ja joillakin alueilla. 
+50 Luku 6: Arvokkaita hetkiä
+Arvokkaita hetkiä 6
+6 Arvokkaita hetkiä
+Tallenna muistoja
+Kamera-sovelluksen käynnistäminen
+Sieppaa kuvia ja tallenna videoita ASUS Phone kamerasovelluksella. Katso alla olevista ohjeista, 
+kuinka kamerasovellus avataan.
+Lukitusnäytöstä
+Pyyhkäise ylös käynnistääksesi kamerasovelluksen.
+Alkunäytöstä
+Napauta .
+51Luku 6: Arvokkaita hetkiä
+Kuvien sijainnit
+Toimi seuraavasti ottaaksesi käyttöön sijainnin tunnisteominaisuuden: 
+1. Kytke sijainnin käyttö päälle kohdasta Settings (Asetukset) > Location (Sijainti) ja liu’uta Use 
+location (Käytä sijaintia) päälle.
+2. Varmista, että olet jakanut sijaintisi Google Maps -palveluun. 
+3. Napauta kamerasovelluksen alkunäytössä > ja aktivoi Location services 
+(Sijaintipalvelut) ennen kuin otat valokuvan.
+Kameran alkunäyttö
+ASUS Phone kamerassa on automaattinen olosuhteiden tunnistus ja kuvanvakain. Siinä on myös 
+videokuvan vakaintoiminto, joka estää videokuvan tärinää. 
+Napauta kuvakkeita aloittaaksesi kameran käytön ja tutki ASUS Phone kuva- ja video-
+ominaisuuksia.
+Katso galleriaa
+Pyyhkäise oikealle/vasemmalle käyttääksesi edistyneitä kamera-asetuksia
+Ota Kauneus-ominaisuus käyttöön tai pois käytöstä
+Napauta käyttääksesi Google Lens -sovellusta
+Napauta valitaksesi näyttötilan
+• Suljinpainike
+• Liu’uta ylös asettaaksesi laskennan ennen kuvien ottamista
+Kosketa vaihtaaksesi etu- ja takakameran välillä
+Kameran lisäasetukset
+Tutki uusia tapoja kuvata valokuvia tai videoita ja tee kuvatuista hetkistä erityisen mieleenpainuvia 
+ASUS Phone kameran lisäasetuksilla.
+TÄRKEÄÄ! Käytä asetuksia ensin ennen kuvien ottamista. Käytettävissä olevat ominaisuudet voivat 
+vaihdella malleittain.
+Kosketa vaihtaaksesi Normaalitilan ja 2.0x-optisen zoomin välillä
+Napauta valitaksesi flash-ominaisuuden
+Pyyhkäise alas tai napauta saadaksesi lisää asetusvalintoja
+Kosketa vaihtaaksesi Normaalitilan ja Laajakulmatilan
+Yökuvaus
+52 Luku 6: Arvokkaita hetkiä
+Hidastus
+Hidastettu video -ominaisuus mahdollistaa videoitten kuvaamisen hidastettuna toistettaviksi.
+Hidastettujen videoitten kuvaaminen
+1. Pyyhkäise Kamera-sovelluksen aloitusnäytössä oikealle ja napauta sitten Slow motion 
+(Hidastus).
+2. Napauta suljinpainiketta aloittaaksesi hidastettujen videoitten kuvaamisen.
+Intervallikuvaus
+ASUS Phone videon aikaväli -ominaisuus antaa ottaa stillkuvia toistettavaksi automaattisella 
+aikavälillä. Tällä tehosteella tapahtuvat näyttävän siirtyvän eteenpäin nopeasti, vaikka ne 
+todellisuudessa ovat tapahtuneet ja ne on kuvattu pitkän ajan kuluessa.
+Aikavälivideoiden kuvaaminen
+1. Pyyhkäise kamerasovelluksen alkunäytöllä oikealle ja napauta sitten TIME LAPSE 
+(INTERVALLIKUVAUS).
+2. Napauta suljinpainiketta ja valitse sitten aikaväli-intervalli.
+3. Napauta suljinpainiketta aloittaaksesi Intervallikuvausvideon kuvaamisen.
+Panoraama
+Ota kuvia eri kulmista käyttämällä Panoraama-ominaisuutta. Laajan kulman perspektiivistä otetut 
+kuvat nidotaan automaattisesti yhteen tällä ominaisuudella.
+Panoraamavalokuvien ottaminen
+1. Pyyhkäise kamerasovelluksen alkunäytössä vasemmalle kohtaan PANO (Panoraama).
+2. Pidä puhelinta vakaasi ja napauta suljinpainiketta käynnistääksesi automaattisen panoraaman.
+Yö
+Ota hyvin valaistuja valokuva jopa yöaikaan tai hämärässä käyttämällä ASUS Phone Yö-
+ominaisuutta.
+HUOMAUTUS: Pidä kätesi vakaina ennen ja ASUS Phone kuvauksen aikana estääksesi sumeat kuvat.
+Yövalokuvien kuvaaminen
+1. Pyyhkäise kamerasovelluksen alkunäytössä vasemmalle kohtaan MORE (LISÄÄ) > NIGHT (YÖ).
+2. Napauta suljinpainiketta käynnistääksesi yövalokuvien kuvaamisen
+53Luku 6: Arvokkaita hetkiä
+Gallerian käyttö
+Näytä ASUS Phone kuvia ja toista videoita Galleria-sovelluksella. 
+Tällä sovelluksella voit muokata, jakaa tai poistaa ASUS Phone tallennettuja kuva- ja 
+videotiedostoja. Galleriassa voit näyttää kuvia diaesityksinä tai napauttaa näkymää valitaksesi kuva- 
+tai videotiedoston. 
+Käynnistä Galleria, pyyhkäise ylös aloitusnäytöllä ja napauta sitten Galleria.
+Valokuvan paikkatietojen tarkasteleminen
+Salli paikkatietojen käyttäminen ASUS Phone asetuksista, jotta paikkatiedot tallentuvat valokuviin. 
+Valokuvien paikkatiedoissa näkyy, missä valokuva on otettu, sekä Google Maps- tai Baidu (vain 
+Kiinassa) -palvelun kartta.
+Valokuvan tietojen tarkasteleminen:
+1. Kytke sijainnin käyttö päälle kohdasta Settings (Asetukset) > Location (Sijainti) ja liu’uta Use 
+location (Käytä sijaintia) päälle.
+2. Varmista, että jaat sijaintitietosi Google Maps- tai Baidu-sovelluksen kanssa.
+3. Avaa Galleria-sovellus ja valitse kuva, jonka tietoja haluat tarkastella.
+4. Napauta valokuvaa ja napauta sitten Details (Tiedot).
+Kuvan muokkaaminen
+Galleria-sovelluksessa on myös omat kuvankäsittelytyökalunsa, joita voi käyttää ASUS Phone 
+tallennettujen kuvien parantamiseen.
+1. Tee jompi kumpi seuraavista:
+ • Napauta Gallery (Galleria) > Photos screen (Valokuvat-näyttö) -kohdassa muokattavaa 
+kuvaa. 
+ • Napauta Gallery (Galleria) > Albums screen (Albumi- näytössä) kansiota, jossa kuvat 
+sijaitsevat. Avattuasi kansion, napauta muokattavaa kuvaa.
+2. Napauta Edit (Muokkaa) avataksesi kuvan muokkauksen työkalurivin.
+3. Napauta mitä tahansa työkalurivin kuvaketta soveltaaksesi muutokset kuvaan.
+54 Luku 6: Arvokkaita hetkiä
+Tiedostojen jakaminen galleriasta
+1. Tee jompi kumpi seuraavista:
+ • Napauta Gallery (Galleria)> Photos screen (Valokuvat-näyttö) -kohdassa > Select 
+(Valitse) aktivoidaksesi tiedostovalinnan. 
+ • Napauta Gallery (Galleria) >Albums screen (Albumi- näyttö) -kohdassa kansiota, 
+jossa jaettavat tiedostot sijaitsevat. Avattuasi kansion, napauta > Select (Valitse) 
+aktivoidaksesi tiedostovalinnan.
+2. Napauta jaettavia tiedostoja. Valintamerkki tulee näkyviin valitsemasi kuvan päälle.
+3. Napauta ja valitse sitten luettelosta, mihin haluat jakaa kuvat.
+Tiedostojen poistaminen galleriasta
+1. Tee jompi kumpi seuraavista:
+ • Napauta Gallery (Galleria)> Photos screen (Valokuvat-näyttö) -kohdassa > Select 
+(Valitse) aktivoidaksesi tiedostovalinnan. 
+ • Napauta Gallery (Galleria) >Albums screen (Albumi- näyttö) -kohdassa kansiota, napauta 
+kansiota, jossa poistettavat tiedostot sijaitsevat. Avattuasi kansion, napauta > Select 
+(Valitse) aktivoidaksesi tiedostovalinnan.
+2. Napauta poistettavia tiedostoja. Valintamerkki tulee näkyviin valitsemasi kuvan päälle.
+3. Napauta .
+55Luku 7: Yhteydet
+Yhteydet 7
+7 Yhteydet
+Mobiiliverkko
+Jos käytettävissä ei ole WiFi-verkkoa, voit muodostaa internet-yhteyden ottamalla mobiiliverkon 
+tiedonsiirron käyttöön.
+Mobiiliverkon käyttöönottaminen
+1. Avaa Asetukset-näyttö jollakin seuraavista tavoista:
+ • Käynnistä Pika-asetukset ja napauta sitten . 
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset). 
+2. Napauta Network & internet (Verkko ja internet) > Internet > SIM1 tai SIM2.
+3. Liu’utu Mobile data (Mobiilidata) kohtaan ON (Päällä), ja määritä tarvittaessa muut 
+matkapuhelinverkon asetukset.
+HUOMAUTUKSIA:
+• Jos käytät Internetiä mobiiliverkkoyhteydellä, siitä voi aiheutua liittymätyypistäsi riippuen 
+lisäkustannuksia.
+• Ota yhteyttä matkapuhelinoperaattoriisi, jos haluat lisätietoja mobiiliverkon maksuista ja 
+veloituksista.
+Wi-Fi
+ASUS Phone Wi-Fi-tekniikka pitää sinut yhdistettynä langattomaan maailmaan. Päivitä sosiaalisen 
+median tilisi, selaa internetiä tai vaihda tietoja ja viestejä langattomasti ASUS Phone.
+Wi-Fi-yhteyttä otetaan käyttöön
+1. Avaa Asetukset-näyttö jollakin seuraavista tavoista:
+ • Käynnistä Pika-asetukset ja napauta sitten > Network & internet (Verkko ja 
+internet) > Internet. 
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset) > Network & 
+internet (Verkko ja internet) > Internet. 
+2. Liu'uta Wi-Fi-kytkintä oikealle kytkeäksesi Wi-Fi:n päälle.
+HUOMAUTUS: Voit ottaa Wi-Fi:n käyttöön myös Pika-asetukset-näytöllä. Katso osasta 
+Pika-asetukset, kuinka Pika-asetukset-näyttö käynnistetään.
+56 Luku 7: Yhteydet
+Wi-Fi-verkkoon yhdistäminen
+1. Napauta Asetukset-näytössä Network & internet (Verkko ja internet) > Internet > Wi-Fi 
+näyttääksesi kaikki tunnistetut Wi-Fi-verkot.
+2. Napauta verkkonimeä muodostaaksesi yhteyden siihen. Suojattua verkkoa käytettäessä voit 
+saada kehotuksen näppäillä salasana tai muita suojaustunnistetietoja.
+HUOMAUTUKSIA:
+• ASUS Phone muodostaa automaattisesti yhteyden uudelleen aiemmin yhdistettyyn verkkoon.
+• Kytke Wi-Fi-ominaisuus pois päältä akkuvirran säästämiseksi.
+Wi-Fi:n ottaminen pois käytöstä
+Näin Wi-Fi otetaan pois käytöstä:
+1. Tee jompi kumpi seuraavista:
+ • Käynnistä Pika-asetukset ja napauta sitten > Network & internet (Verkko ja 
+internet) > Internet. 
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset) > Network & 
+Internet (Verkko ja Internet) > Internet. 
+2. Liu'uta Wi-Fi-kytkintä vasemmalle kytkeäksesi Wi-Fi:n pois päältä.
+HUOMAUTUS: Voit ottaa Wi-Fi:n pois käytöstä myös Pika-asetukset-näytöllä. Katso osasta 
+Pika-asetukset, kuinka Pika-asetukset-näyttö käynnistetään.
+Bluetooth®
+Käytä ASUS Phone Bluetooth-ominaisuutta tiedostojen lähettämiseen tai vastaanottamiseen ja 
+multimediatiedostojen suoratoistoon muilla älylaitteilla lyhyillä välimatkoilla. Bluetooth-yhteydellä 
+voit jakaa mediatiedostoja ystäviesi älylaitteiden kanssa, lähettää tietoja tulostettavaksi Bluetooh-
+tulostimella tai toistaa musiikkitiedostoja Bluetooth-kaiuttimella.
+Bluetooth®:in käyttöönotto
+1. Tee jompi kumpi seuraavista:
+ • Käynnistä Pika-asetukset ja napauta sitten > Connected devices (Liitetyt laitteet).
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset) > Connected 
+devices (Liitetyt laitteet).
+2. Napauta Pair new device (Pariuta uusi laite) tai Connection preferences (Yhteysasetukset).
+3. Liu'uta Bluetooth-kytkintä oikealle kytkeäksesi Bluetoothin päälle.
+HUOMAUTUS: Voit ottaa Bluetoothin käyttöön myös Pika-asetukset-näytöllä. Katso osasta 
+Pika-asetukset, kuinka Pika-asetukset-näyttö käynnistetään.
+57Luku 7: Yhteydet
+ASUS Phone ja Bluetooth®-laitteen parin muodostaminen
+Ennen kuin käytät ASUS Phone Bluetooth-ominaisuutta täydessä laajuudessaan, sinun on 
+muodostettava siitä laitepari Bluetooth-laitteen kanssa. ASUS Phone tallentaa automaattisesti 
+Bluetooth-laitteen parinmuodostusyhteyden.
+1. Napauta Asetukset-näytössä Connected devices (Liitetyt laitteet) > Connection preferences 
+(Yhteysasetukset) > Bluetooth näyttääksesi kaikki käytettävissä olevat laitteet.
+TÄRKEÄÄ!
+• Jos parin muodostettava laite ei ole luettelossa, varmista, että sen Bluetooth-ominaisuus otetaan 
+käyttöön ja siitä tehdään löydettävissä oleva.
+• Katso laitteen toimitukseen kuuluvasta käyttöoppaasta, kuinka sen Bluetooth-ominaisuus otetaan 
+käyttöön ja laitteesta tehdään löydettävissä oleva.
+2. Napauta > Refresh (Virkistä) hakeaksesi lisää Bluetooth-laitteita.
+3. Napauta käytettävissä olevien laitteiden luettelossa parin muodostettavaa Bluetooth-laitetta.
+4. Varmista, että molemmissa laitteissa näkyy sama todentamisavain ja napauta sitten Pair 
+(Muodosta Laitepari). 
+HUOMAUTUS: Kytke Bluetooth-ominaisuus pois päältä akkuvirran säästämiseksi.
+ASUS Phone ja Bluetooth®-laitteen laiteparin purkaminen
+1. Napauta Asetukset-näytössä Connected devices (Liitetyt laitteet) > Connection preferences 
+(Yhteysasetukset) > Bluetooth näyttääksesi kaikki käytettävissä olevat ja parin muodostaneet 
+laitteet.
+2. Napauta parin muodostaneiden laitteiden luettelossa Bluetooth-laitetta, jonka laiteparin 
+haluat purkaa ja napauta sitten Forget (Unohda).
+58 Luku 7: Yhteydet
+Jaettu yhteys
+Jos WiFi-yhteyttä ei ole käytettävissä, voit käyttää ASUS Phone modeemina ja tehdä siitä WiFi-
+tukiaseman, jotta voit käyttää internetiä kannettavalla tietokoneella, toisella tabletilla tai muilla 
+mobiililaitteilla.
+TÄRKEÄÄ! Useimmat matkapuhelinoperaattorit edellyttävät kiinteähintaista datapakettia, 
+jotta voit käyttää yhteyden jakamista. Kysy lisätietoja tämänkaltaisesta datapaketista omalta 
+matkapuhelinoperaattoriltasi.
+HUOMAUTUKSIA:
+• Jaetun yhteyden kautta käytettävä internet-yhteys voi olla normaalia WiFi- tai mobiilidatayhteyttä 
+hitaampi.
+• ASUS Phone internet-yhteyden voi jakaa vain rajoitetulle määrälle mobiililaitteita.
+• Kytke jaettu yhteys pois päältä, kun et käytä sitä, sillä se kuluttaa akkua.
+WiFi-hotspot
+Muuta ASUS Phone WiFi-tukiasemaksi, jotta voit jakaa internet-yhteyden muiden laitteiden kanssa.
+1. Tee jompi kumpi seuraavista:
+ • Käynnistä Pika-asetukset ja napauta sitten > Network & internet (Verkko ja internet). 
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset) > Network & internet 
+(Verkko ja internet). 
+2. Napauta Hotspot & tethering (Verkkopiste ja jakaminen) ja liu’uta sitten Wi-Fi hotspot päälle.
+3. Napauta Wi-Fi hotspot (Wi-Fi-verkkopiste) > Hotspot name (Verkkopisteen nimi) 
+määrittääksesi yksilöllisen SSID-tunnuksen tai verkon nimen ja napauta Hotspot password 
+(Verkkopistesalasana) määrittääksesi vahvan, 8 merkkiä pitkän salasanan Wi-Fi-
+verkkopisteellesi. Kun olet valmis, napauta OK.
+4. Käytä ASUS Phone hotspot-yhteyttä muilla laitteilla normaalin WiFi-verkon tavoin.
+59Luku 7: Yhteydet
+Jaettu Bluetooth-yhteys
+Ota Bluetooth-jakaminen käyttöön ROG-puhelimessa ja jaa sen internet-yhteys muiden laitteiden 
+kanssa.
+1. Ota Bluetooth käyttöön ROG-laitteessasi ja muissa laitteissa.
+2. Liitä laitteet laitepariksi.
+HUOMAUTUS: Katso lisätietoja kohdasta ASUS Phone ja Bluetooth®-laitteen parin muodostaminen.
+3. Napauta Asetukset-näytössä Network & internet (Verkko ja internet) > Hotspot & Tethering 
+(Verkkopiste ja jakaminen), näytössä Jaettu Bluetooth-yhteys kohtaan ON (Päälle). 
+USB-jakaminen 
+Ota USB-jakaminen käyttöön ROG-puhelimessa ja jaa sen internet-yhteys muiden laitteiden kanssa. 
+1. Liitä ASUS-puhelin toiseen laitteeseen USB-kaapelilla. 
+2. Napauta Asetukset-näytöllä Network & internet (Verkko ja internet) > Hotspot & Tethering 
+(Verkkopiste ja jakaminen) ja liu’uta sitten USB tethering (USB-jakaminen) ON (Päällä) 
+-tilaan ottaaksesi jakamisen käyttöön.
+60 Luku 8: Matkasovellukset
+Matkasovellukset 8
+8 Matkasovellukset
+Sää
+Hae reaaliaikaisia sääpäivityksiä suoraan ASUS Phone sääsovelluksella. Sää-sovelluksella voit 
+tarkistaa myös muita säätietoja ympäri maailman. 
+Sää-sovelluksen käynnistäminen
+Alkunäytöllä tee jompi kumpi seuraavista käynnistääksesi Sää-sovelluksen:
+• Napauta sääkuvaketta.
+• Pyyhkäise ylös Aloitusnäytöllä ja napauta sitten Weather (Sää)-kuvaketta.
+61Luku 8: Matkasovellukset
+Sää-alkunäyttö
+Määritä nykyinen sijaintisi, jotta voit vastaanottaa sen ja muiden paikkojen säätiedotteita. 
+Napauta muokataksesi sijaintilistaa
+Napauta virkistääksesi säätiedot, lisätäksesi kaupungin 
+sijaintilistaan tai määrittääksesi sääasetukset
+Pyyhkäise ylös nähdäksesi muita säätietoja
+Pyyhkäise vasemmalle tai oikealle nähdäksesi muiden 
+sijaintiluettelosi paikkakuntien säätiedot
+62 Luku 8: Matkasovellukset
+Kello
+Mukauta ASUS Phone aikavyöhykeasetuksia, aseta hälytyksiä ja käytä ASUS Phone sekuntikellona 
+Kello-sovellusta käyttämällä.
+Kellon käynnistäminen
+Voit käynnistää Kello-sovelluksen seuraavalla kahdella tavalla:
+• Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Clock (Kello).
+• Napauttamalla ASUS Phone alkunäytössä digitaalista kellonäyttöä.
+Herätyskello
+Napauta Alarm (Herätys) käyttääksesi ASUS Phone herätyskelloasetuksia.
+Liu’uta kytkeäksesi hälytyksen päälle/pois
+Napauta tätä asettaaksesi uuden herätysajan
+Napauta tätä käyttääksesi herätyskello-ominaisuuden asetuksia
+63Luku 8: Matkasovellukset
+Maailmankello
+Napauta World Clock (Maailmankello) käyttääksesi ASUS Phone maailmankelloasetuksia.
+Napauta tätä lisätäksesi uuden kaupungin merkin 
+maailmankellokarttaan
+Sekuntikello
+Napauta Stopwatch (Sekuntikello) käyttääksesi ASUS Phone sekuntikellona.
+Napauta tätä painiketta käynnistääksesi sekuntikello-ominaisuuden
+Napauta tätä muokataksesi maailmankelloon merkittyä kaupunkeja
+64 Luku 8: Matkasovellukset
+Ajastin
+Voit asettaa ASUS Phone useita ajastinvalintoja. Tee niin seuraavien ohjeiden mukaisesti:
+Ajastimen asettaminen
+Napauta Timer (Ajastin) käyttääksesi ASUS Phone ajastinominaisuutta.
+Napauta tätä painiketta käynnistääksesi ajastimen
+Napauta tätä asettaaksesi uuden ajastimen
+Napauta tätä poistaaksesi ajastimet tai käyttääksesi asetuksia
+65Luku 9: Zen missä tahansa
+Zen missä tahansa 9
+9 Zen missä tahansa
+Zenin erikoisohjelmat
+Laskin
+Voit laskea ASUS-puhelimella ottamalla Laskin-sovelluksen käyttöön. 
+Laskimen käynnistäminen
+Käynnistä laskin jommalla kummalla seuraavista valinnoista:
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Calculator (Laskin).
+ • Avaa Pika-asetukset-paneeli, Laskin-kuvake näkyy luettelossa. Napauta sitä päästäksesi 
+alkuun laskuissasi.
+Laskimen näyttö
+Napauta tätä käynnistääksesi laskimen
+66 Luku 9: Zen missä tahansa
+Äänitallennin
+Ota käyttöön Sound Recorder -sovellus tallentaaksesi ASUS Phone audiotiedostoja. 
+Sound Recorder -sovelluksen käynnistäminen
+Käynnistä äänen tallentaminen pyyhkäise ylös aloitusnäytöllä ja napauta sitten Recorder 
+(Tallennin).
+Napauta tätä aloittaaksesi äänen tallennuksen
+Napauta tätä mukauttaaksesi Sound Recorder 
+-sovelluksen asetuksia
+Napauta tätä nähdäksesi luettelon tallennetuista 
+audiotallennustiedostoista
+67Luku 9: Zen missä tahansa
+Äänityksen keskeyttäminen
+Kun äänitys on keskeytetty, voit joko jatkaa äänitystä tai poistaa tai tallentaa äänityksen.
+Tätä napauttamalla voit jatkaa äänitystä
+Tätä napauttamalla voit tallentaa äänityksen
+Tätä napauttamalla voit poistaa äänityksen
+Ääniteluettelo
+Ääniteluettelossa voit toistaa, nimetä, jakaa tai poistaa tallennettuja äänitteitä.
+Voit katsella ääniteluetteloasi napauttamalla Ääninauhuri-toiminnon päävalikossa .
+Tätä napauttamalla voit toistaa/keskeyttää valitun äänitteen
+Napauta ja pidä kohdetta jakaaksesi, nimetäksesi uudelleen, 
+poistaaksesi tai näyttääksesi valitun tallennuksesi tiedot
+68 Luku 9: Zen missä tahansa
+Mobiilihallinta 
+Mobile Manager tarjoaa integroidun käyttöliittymän useille sovelluksille, jotka on suunniteltu 
+optimoimaan laitteen suorituskykyä, hallitsemaan puhelimen tehoa ja tallennustilan käyttöä. 
+Käynnistääksesi ASUS Mobile Manager -sovelluksen, pyyhkäise ylös aloitusnäytöllä ja napauta 
+sitten Settings (Asetukset) > Advanced (Lisäasetukset) > Mobile Manager (Mobiilihallinta).
+Sulkee taustalla toimivat käyttämättömät prosessit 
+järjestelmämuistin lisäämiseksi
+Napauta tätä näyttääksesi mobiilidatan käytön, asettaaksesi 
+kuukausittaisen rajan mobiilidatan käytölle ja ohjataksesi 
+sovellukisa käyttämään internetiä vain Wi-Fi-yhteydellä, vain 
+matkapuhelinverkolla tai ei kummallakaan tai molemmilla.
+Napauta tätä suorittaaksesi tietosuoja- ja 
+turvallisuusskannauksen ja estääksesi sovelluksia käyttämästä 
+vaarallisia käyttöoikeuksia ja käynnistymästä automaattisesti
+Napauta tätä poistaaksesi valittujen käyttämättömien sovellusten 
+asetukset vapauttaaksesi tallennustilaa
+69Luku 10: ZEN-puhelimen kunnossapito
+Zen-puhelimen kunnossapito 10
+10 Zen-puhelimen kunnossapito
+Laitteen pitäminen ajan tasalla
+Pidä ASUS Phone ajan tasalla Android-järjestelmän päivityksistä, päivitetyistä sovelluksista ja 
+ominaisuuksista.
+Järjestelmän päivittäminen
+1. Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset). 
+2. Liu’uta Asetukset-näytössä alaspäin näyttääksesi muita kohteita ja napauta sitten System 
+(Järjestelmä) > System updates (Järjestelmäpäivitykset) tarkistaaksesi järjestelmän 
+päivitykset. 
+3. Napauta Järjestelmäpäivitysnäytössä asettaaksesi järjestelmäpäivitysten automaattisen 
+lataamisen.
+Tallennustila
+Voit tallentaa tietoja, sovelluksia tai tiedostoja ASUS Phone (sisäinen tallennustila), ulkoiseen 
+tallennustilaan tai online-tallennustilaan. Tarvitaan internet-yhteys tiedostojen siirtämiseksi tai 
+lataamiseksi online-tallennustilassa. Käytä toimitukseen kuuluvaa USB-kaapelia tiedostojen 
+kopiointiin tietokoneesta ASUS Phone tai päinvastoin.
+Varmuuskopiointi ja palautus
+Varmuuskopioi tiedot, Wi-Fi-salasanat ja muut asetukset Google-palvelimille ASUS Phone. Toimi 
+näin:
+1. Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset) > System (Järjestelmä) > 
+Backup (Varmuuskopioi).
+2. Varmuuskopioi ja palauta -ikkunassa voit:
+• Takaisin Google Driveen: Tämä ominaisuus varmuuskopioi käyttöön otettuna omat 
+tietosi, Wi-Fi-salasanat ja muut Google Drive -asetukset. 
+Nollaa 
+Nollaa verkkoasetukset ja sovellusten ensisijaisuus tai nollaa tehtaan oletusasetuksiin.
+1. Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset) > System (Järjestelmä) > 
+Reset options (Nollata valintoja).
+2. Nollaa-ikkunassa voit:
+ • Nollaa Wi-Fi, mobiili ja Bluetooth: Tämä ominaisuus palauttaa Wi-Fi-salasanat ja 
+verkkoasetukset.
+ • Pyyhi kaikki asetukset: Pyyhkii kaikki puhelimen asetukset.
+ • Poista kaikki tiedot (nollaus tehdasasetuksiin): Tyhjentää kaikki puhelimen tiedot.
+70 Luku 10: ZEN-puhelimen kunnossapito
+ASUS Phone suojaaminen
+Lukitusnäyttö tulee oletuksena näkyviin, kun käynnistät laitteen, ja kun herätät sen lepotilasta. 
+Lukitusnäytöstä voi jatkaa laitteesi Android-järjestelmään pyyhkäisemällä kosketusnäyttöpaneelia.
+Laitteesi lukitusnäyttöpaneelin voi myös mukauttaa säätelemään mobiilidatan ja sovellusten 
+käyttöä.
+Näytön lukituksen vapauttaminen
+Kun näyttö on lukittu, voit avata sen ASUS Phone suojauksen lukituksen avausvalinnoilla.
+1. Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset) > Security & location 
+(Suojaus ja sijainti).
+2. Napauta Screen lock (Ruudun lukitus) ja valitse sitten valinta ASUS Phone lukituksen 
+avaamiseksi.
+HUOMAUTUKSIA:
+• Katso lisätietoja Unlock screen options (Näytön lukituksen vapauttamisvalinnat) -kohdasta.
+• Voit deaktivoida asettamasi näytön lukituksen vapauttamisvalinnat napauttamalla None (Ei mitään) 
+Valitse näytön lukitusnäyttö -kohdassa.
+Näytön lukituksen vapauttamisvalinnat
+Valitse jokin näistä valinnoista lukitaksesi ASUS Phone.
+Pyyhkäise
+Pyyhkäise ylös avataksesi ASUS Phone -puhelimen lukituksen.
+71Luku 10: ZEN-puhelimen kunnossapito
+PIN-koodin
+Näppäile vähintään neljä numeroa asettaaksesi PIN-koodin.
+TÄRKEÄÄ! Varmista, että muistat luomasi laitteen lukituksesta vapauttamis-PIN-koodin.
+Kuvio
+Liu'uta sormea pisteiden päällä ja luo kuvio. 
+TÄRKEÄÄ! Varmista, että muistat luomasi laitteen lukituksesta vapauttamiskuvion.
+72 Luku 10: ZEN-puhelimen kunnossapito
+Salasana
+Näppäile vähintään neljä merkkiä luodaksesi salasanan.
+TÄRKEÄÄ! Varmista, että muistat luomasi laitteen lukituksesta vapauttamissalasanan.
+73Luku 10: ZEN-puhelimen kunnossapito
+Sormenjälkitunnusanturi
+Sormenjälkitunnusanturi estää muita käyttämästä ASUS-puhelintasi ilman lupaa. Voit käyttää 
+sormenjälkeäsi laitteen lukituksen avaamiseen sekä puheluihin ja tietoihin pääsemiseen. Kun 
+asetat sormenjälkitunnuksen, sinun on asetettava myös näyttölukitusmenetelmä laitteen 
+käynnistämiseen.
+ASUS-puhelimen käynnistäminen ensimmäistä kertaa
+Sormenjälkitunnuksen asettaminen ASUS-puhelinta ensimmäistä kertaa käytettäessä:
+1. Varmista, että sormenjäljen identifiointimoduuli ja sormesi ovat puhtaat ja kuivat.
+2. Seuraa Tervetuloa-sivulta näytön ohjeita Protect your phone (Suojaa puhelimesi) -sivulle ja 
+rastita Set up fingerprint (Aseta sormenjälki).
+3. Napsauta Continue (Jatka) valitaksesi näytönlukitusmenetelmän ja seuraa sitten ohjeita Locate 
+finger print scanner (Paikanna sormenjälkiskanneri) sivulle ja napsauta Next (Seuraava).
+4. Paikallista sormenjälkiskanneri laitteen oikea puoli, sovita sormesi skannerille ja pyri painamaan 
+sitä sormenpään eri alueilla toistuvasti, kunnes sormenjälkesi on kuvattu.
+5. Napsauta Next (Seuraava) suorittaaksesi asetuksen loppuun.
+74 Luku 10: ZEN-puhelimen kunnossapito
+4. Avaa puhelimen lukitus, mikäli se on lukittu. Jos ei ole, aseta varmuuskopionäytön 
+lukitusmenetelmä ohjeiden mukaisesti.
+5. Napauta Add fingerprint (Lisää sormenjälki) -sivua.
+Sormenjälkitunnuksen asettaminen Asetuksista
+Sormenjälkitunnuksen asettaminen Settings (Asetuksista):
+1. Varmista, että sormenjälkiskanneri ja sormesi ovat puhtaat ja kuivat.
+2. Käynnistä Asetukset-näyttö millä tahansa seuraavista tavoista:
+ • Käynnistä Pika-asetukset ja napauta sitten .
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset). 
+3. Vieritä Settings (Asetukset)-näyttöä alas ja valitse Security & lock screen (Suojaus ja 
+lukitusnäyttö) > Fingerprint (Sormenjälki). 
+6. Aseta ja nosta sormea jatkuvasti skannerilla, kunnes sormenjälki on kuvattu.
+7. Napsauta Done (Valmis) suorittaaksesi asetuksen loppuun.
+75Luku 10: ZEN-puhelimen kunnossapito
+Kasvojentunnistus 
+Kasvojentunnistus estää vaivattomasti muita käyttämästä ASUS-puhelintasi ilman lupaa. Voit 
+valaista ASUS-puhelimen näytön ja katsoa sitä avataksesi laitteesi, käyttääksesi puhelimen 
+Alkunäyttöä yhdessä sekunnissa. Kun asetat kasvojentunnistuksen, sinun on asetettava myös 
+näyttölukitusmenetelmä laitteen käynnistämiseen. 
+Kasvojentunnistuksen asettaminen Asetuksista 
+Kasvojentunnistuksen asettaminen Settings (Asetukset) -kohdassa:
+1. Käynnistä Asetukset-näyttö millä tahansa seuraavista tavoista:
+ • Käynnistä Pika-asetukset ja napauta sitten .
+ • Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset). 
+2. Vieritä alas Settings (Asetukset) -näytössä ja valitse Security & lock screen (Suojaus ja 
+lukitusnäyttö) > Face recognition (Kasvojentunnistus). 
+3. Napauta Continue (Jatka).
+76 Luku 10: ZEN-puhelimen kunnossapito
+5. Napauta Next (Seuraava) ja rekisteröi kasvosi ohjeiden mukaisesti.
+4. Aseta varmuuskopionäytön lukitusmenetelmä ohjeiden mukaisesti.
+77Luku 10: ZEN-puhelimen kunnossapito
+HUOMAUTUKSIA: 
+• Pidä suu, nenä ja avonaiset silmät näkyvissä, kun käytät kasvojentunnistusominaisuutta.
+• Aurinkolasien pitäminen tai riittämätön valo voi johtaa kasvojentunnistuksen epäonnistumiseen.
+6. Valitse, kuinka haluat näyttää ilmoituksesi lukitusnäytöllä ja napsauta sitten Done (Valmis).
+7. Kun olet valmis, napauta Turn On (Kytke päälle) ottaaksesi käyttöön kasvojentunnistuksen 
+puhelimen avaamiseksi.
+78 Luku 10: ZEN-puhelimen kunnossapito
+ASUS Phone tunnistetietojen määrittäminen
+Selvitä ASUS Phone tunnistetiedot, kuten sarjanumero, IMEI-numero ja mallinumero. 
+Ne ovat tärkeitä tietoja, koska jos ASUS Phone häviää, voit ilmoittaa nämä tiedot omalle 
+matkapuhelinoperaattorillesi, joka pystyy estämään ASUS Phone luvattoman käytön.
+Näin tarkistat ASUS Phone tunnistetiedot:
+1. Pyyhkäise ylös aloitusnäytöllä ja napauta sitten Settings (Asetukset).
+2. Selaa Asetukset-näyttöä alaspäin ja napauta kohtaa System (Järjestelmä) > About phone 
+(Tietoja puhelimesta). Tietoja-näytössä näkyy ASUS Phone laitteen nimi, tila, lakitiedot, 
+käyttöjärjestelmän versio sekä laitteisto- ja ohjelmistotiedot.
+3. Nähdäksesi ASUS-puhelimen sarjanumeron SIM-tilan, ja IMEI-numeron, napauta Status (Tila).
+79
+Liitteet
+liitteet
+Turvallisuustietoja
+VAARA! Muiden kuin tässä määritettyjen ohjainten tai säätimien käyttö tai toimenpiteiden 
+suorittaminen voi johtaa vaaralliselle säteilylle altistumiseen.
+ASUS Phone:n huolto
+• Käytä ASUS Phone-laitetta ympäristössä, jonka lämpötilaväli on 0 °C (32 °F) - 35 °C (95 °F).
+• Puhdista puhelimen pinta vedellä kostutetulla liinalla. Älä käytä alkoholi, orgaanisia liuottimia, 
+pesuainetta äläkä käytä korkeapaineista suihketta vahingon välttämiseksi.
+• Äkilliset lämpötilanmuutokset voivat aiheuttaa kondensaatiota tai linssin sumentumisen. Jos 
+näin käy, jätä puhelin huoneenlämpötilaan tai kuivaan ympäristöön ja odota, kunnes kosteus 
+on kuivunut ennen puhelimen käyttöä. Pidä puhelinta kylmissä olosuhteissa kondensaation 
+estämiseksi lämpimämmissä paikoissa, kuten taskussa.
+Akku
+VAROITUS! Akun purkaminen itse mitätöi sen takuun ja voi aiheuttaa vakavaa vahinkoa.
+ROG-puhelimesi on varustettu korkean suorituskyvyn kiinteällä litium-polymeeri-akulla. Noudata 
+kunnossapito-ohjeita varmistaaksesi pitkän akkukeston.
+• Älä irrota kiinteää litium-polymeeriakkua, se mitätöi takuun.
+• Vältä lataamista erittäin lämpimissä tai kylmissä lämpötiloissa. Akku toimii optimaalisesti 
+ympäristön lämpötilan ollessa +5 °C - +35 °C.
+• Älä irrota ja vaihda akkua ei-hyväksyttyyn akkuun.
+• Käytä ainoastaan ASUS-akkua. Erilaisen akun käyttö voi aiheuttaa fyysistä haittaa / 
+henkilövahingon ja voi vahingoittaa laitetta.
+• Älä koskaan irrota ja upota akkua veteen tai muuhun nesteeseen.
+• Älä koskaan yritä avata akkua, sillä se sisältää aineita, jotka ovat nieltynä haitallisia, äläkä anna 
+aineen joutua kosketuksiin suojaamattoman ihon kanssa.
+• Älä koskaan irrota ja oikosulje akkua, se voi ylikuumentua ja aiheuttaa tulipalon. Pidä akku 
+loitolla koruista muista metalliesineistä.
+• Älä koskaan irrota ja hävitä akkua tulessa. Se voi räjähtää ja vapauttaa haitallisia aineita 
+ympäristöön.
+• Älä koskaan irrota ja hävitä akkua tavallisen kotitalousjätteen mukana. Vie se vaarallisten 
+aineiden keräyspisteeseen.
+80
+• Älä kosketa akun napoja.
+• Välttääksesi tulipalon tai palovammat, älä pura, taivuta, riko tai rei’itä akkua.
+HUOMAUTUKSIA:
+• Räjähdysvaara, jos akku on vaihdettu vääräntyyppiseen akkuun.
+• Hävitä käytetyt paristot ohjeiden mukaisesti.
+Laturi
+• Käytä ainoastaan ASUS Phone-laitteen toimitukseen kuuluvaa laturia.
+• Älä koskaan vedä laturin johdosta irroittaaksesi pistorasiasta - vedä laturista itsestään.
+Varoitukset
+ASUS Phone-laitteesi on korkealaatuinen väline. Lue ennen käyttöä kaikki ohjeet ja 
+varoitusmerkinnät (1) verkkolaitteessa.
+• Älä käytä ASUS Phone-laitetta äärimmäisissä olosuhteissa, joissa esiintyy korkeita lämpötiloja 
+tai kosteutta. ASUS Phone-laite toimii optimaalisesti lämpötila-alueella 
+0 °C (32 °F) - 35 °C (95 °F).
+• Älä pura ASUS Phone-laitetta tai sen varusteita. Jos huolto tai korjaus on tarpeen, toimita laite 
+valtuutettuun huoltokeskukseen. Jos laite puretaan, seurauksena voi olla sähköisku tai tulipalo.
+• Älä oikosulje akun napoja metalliesineillä.
+Käyttäjän käyttö työkalulla
+Jos TYÖKALU on välttämätön pääsylle KÄYTTÄJÄN KÄYTTÖALUEELLE, joko kyseisen alueen kaikkien 
+muiden osastojen, jotka sisältävät vaaran, tulee olla KÄYTTÄJÄN pääsemättömissä käyttämällä 
+samaa työkalua, tai sellaisten osastojen on oltava merkittyjä niin, ettei se rohkaise KÄYTTÄJÄN 
+pääsyä.
+81
+Yhdenmukaisuus EU:n radiolaitedirektiivin kanssa
+Yksinkertaistettu EU-vaatimustenmukaisuusvakuutus
+ASUS COMPUTER GmbH ilmoittaa täten, että ASUS_AI2302-radiolaite on yhdenmukainen 2014/53/
+EU-direktiivin kanssa. Koko EU-vaatimustenmukaisuusvakuutuksen teksti on nähtävissä osoitteessa 
+https://www.asus.com/support/. (Hae kohdetta AI2302)
+RF-lähtötaulukko
+Kohteet Radiotaajuuden maksimilähtöteho -taulukko
+GSM
+GSM 900 Burst (880~915 ; 925~960 MHz) 34.5 (dBm)
+GSM 1800 Burst (1710~1785 ; 1805~1880 MHz) 31.5 (dBm)
+WCDMA
+WCDMA Band I (1920-1980 ; 2110~2170 MHz) 25.0 (dBm)
+WCDMA Band V (824~849 ; 869~894 MHz) 25.0 (dBm)
+WCDMA Band VIII (880~915 ; 925~960 MHz) 25.0 (dBm)
+LTE
+LTE Band 1 (1920-1980 ; 2110~2170 MHz) 24.5 (dBm)
+LTE Band 3 (1710~1785 ; 1805~1880 MHz) 24.5 (dBm)
+LTE Band 5 (824~849 ; 869~894 MHz) 24.5 (dBm)
+LTE Band 7 (2500-2570 ; 2620-2690 MHz) 24.5 (dBm)
+LTE Band 8 (880~915 ; 925~960 MHz) 24.5 (dBm)
+LTE Band 20 (832~862 ; 791~821 MHz) 24.5 (dBm)
+LTE Band 28 (703~748 ; 758~803 MHz) 24.5 (dBm)
+LTE Band 34 (2010~2025 MHz) 24.5 (dBm)
+LTE Band 38 (2570~2620 MHz) 24.5 (dBm)
+LTE Band 40 (2300~2400 MHz) 24.5 (dBm)
+LTE Band 41 (2496~2690 MHz) 24.5 (dBm)
+LTE Band 42 (3400~3600 MHz) 24.5 (dBm)
+FR1
+NR n1 (1920~1980 ; 2110~2170 MHz) 24.5 (dBm)
+NR n3 (1710~1785 ; 1805~1880 MHz) 24.5 (dBm)
+NR n5 (824~849 ; 869~894 MHz) 24.5 (dBm)
+NR n7 (2500~2570 ; 2620~2690 MHz) 24.5 (dBm)
+NR n8 (880~915 ; 925~960 MHz) 24.5 (dBm)
+NR n20 (832~862 ; 791~821 MHz) 24.5 (dBm)
+NR n28 (703~748 ; 758~803 MHz) 24.5 (dBm)
+NR n38 (2570~2620 MHz) 24.5 (dBm)
+NR n41 (2496~2690 MHz) 24.5 (dBm)
+NR n77 (3300~4200 MHz) 24.5 (dBm)
+NR n78 (3300~3800 MHz) 24.5 (dBm)
+NR n78 (3300~3800 MHz) 24.5 (dBm)
+WLAN
+WLAN 2.4GHz (2412~2472 MHz) 17.0 (dBm)
+WLAN 5GHz (5150~5850 MHz) 20.5 (dBm)
+WLAN 6GHz (5945~6425 MHz) 18.5 (dBm)
+Bluetooth
+Bluetooth BR/EDR (2402~2480 MHz) 20.0 (dBm)
+Bluetooth -LE (2402~2480 MHz) 9.0 (dBm)
+NFC 13.553~13.567 MHz -16.99 dBuA/m @10m
+82
+HUOMAUTUS: Tämä radiotaajuustehotaulukko on tarkoitettu vain EU:n jäsenvaltioille, EEA-valtioille, 
+EFTA-valtioille ja Turkille. Taajuusalue ja radiotaajusantoteho voi olla erilainen muissa ei-EU-maissa.
+5150 - 5350 MHz:in taajuudella toimiva WiFi on rajoitettu sisäkäyttöön taulukossa luetelluissa maissa:
+Tietoja radiotaajuudelle altistumisesta
+Tämä ASUS-tuote on testattu ja se vastaa soveltuvia eurooppalaisia SAR-rajoja. SAR-raja on 2.0 W/
+kg maissa, joissa tämän laitteen maksimi-SAR-arvot ovat seuraavat:
+• Pää: 1.575 W/Kg @10g 
+• Keho: 1.42 W/Kg @10g
+* ASUS Puhelin 5G NR Sub-6/4G LTE-kaistan yhteensopivuus vaihtelee alueittain. Tarkista 
+yhteensopivuus paikalliselta operaattorilta.
+HUOMAUTUKSIA: 
+• Low Power Indoor (LPI) Wi-Fi 6E -laitteiden LPI Wi-Fi 6E -tehoraja on 23 dBm: 
+ Laite on rajoitettu sisäkäyttöön vain, kun se toimii 5945-6425 MHz taajuusalueella AT, BE, BG, CZ, 
+DK, EE, FR, DE, IS, IE, IT, EL, ES, CY, LV, LI, LT, LU, HU, MT, NL, NO, PL, PT, RO, SI, SK, TR, FI, SE, CH, HR ja 
+UK(NI).
+• Erittäin pienitehoisille (VLP) Wi-Fi 6E -laitteille (kannettavat laitteet) LPI Wi-Fi 6E -tehoraja on 14 
+dBm:
+ Laitetta ei saa käyttää miehittämättömissä lentokonejärjestelmissä (UAS) toimittaessa 5945–6425 
+MHz taajuusalueella AT, BE, BG, CZ, DK, EE, FR, DE, IS, IE, IT, EL, ES, CY, LV, LI, LT, LU, HU, MT, NL, NO, 
+PL, PT, RO, SI, SK, TR, FI, SE, CH, HR ja UK(NI).
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH UK (NI) HR
+Matala sininen valo -sertifikaatti
+ASUS-puhelin vähentää sen näytön lähettämää sinistä valoa tarjoten siten 
+mukavamman katselukokemuksen. 
+Näytön kirkkaus on asetettu oletuksena maksimiin, ja puhelin on tällöin TÜV 
+Rheinland Low Blue Light -sertifikaatin mukainen.
+CE-merkintä
+Kantaessasi tätä laitetta tai kun sitä käytettään kiinni kehossa, käytä joko hyväksyttyä 
+lisävarustetta, kuten kotelo, tai ylläpidä muuten 5 mm:n etäisyys kehdosta varmistaaksesi RF-
+altistumisvaatimustenmukaisuuden.
+83
+ASUS Phone GPS (Global Positioning System) -järjestelmän käyttö
+ASUS Phone GPS-paikantamisominaisuuden käyttö:
+• Varmista, että laitteesi on yhdistetty internetiin ennen Google Map - sovelluksen tai muun GPS-
+sovelluksen käyttöä.
+• Varmista ennen laitteen GPS-sovelluksen ensimmäistä käyttöä, että olet ulkona saadaksesi 
+parhaat paikantamistiedot.
+• Kun käytät laitteen GPS-sovellusta ajoneuvon sisällä, auton ikkunan metalliosat ja muut 
+elektroniset laitteet saattavat vaikuttaa GPS:n suorituskykyyn. 
+Silmien rasituksen helpottaminen
+Silmien rasituksen helpottamiseksi:
+• Pidä säännöllisesti taukoja, kun käytät ASUS-puhelinta (vähintään yksi 10-minuutin tauko puolen 
+tunnin välein).
+• Kohdista säännöllisesti katseesi etäisiin kohteisiin silmien rentouttamiseksi.
+• Tee silmäharjoituksia usein, mm:
+ (1) Katso ylös ja alas liikuttamatta päätä
+ (2) Siirrä silmiä vasemmalta oikealle liikuttamatta päätä
+ (3) Pyöritä silmiä hitaasti
+ (4) Siirrä silmiä viistosti
+VAROITUS: Pidä ASUS-puhelimen näyttö loitolla alle 2-vuotiasita vauvoista ja taaperoista. 2-Vuotiaille ja 
+vanhemmille lapsille ei tulisi antaa päivittäin tuntia enempää ruutuaikaa.
+Suojautuminen kuulovauriolta 
+Kuulovamman estämiseksi älä kuuntele korkeilla äänenvoimakkuuksilla pitkiä aikoja.
+Ranskassa tämän laitteen kuulokkeet/korvanapit ovat yhteensopivia äänenpainetason vaatimusten 
+kanssa, jotka on asetettu sovellettavissa EN 50332-1 -standardeissa: 2013 ja/tai EN50332-2: 2013 
+-standardissa, kuten Ranskan artikla L.5232-1 vaatii.
+ 
+84
+Valmistaja: ASUSTeK Computer Inc.
+Osoite: 1F., No.15, Lide RD., Beitou Dist., Taipei City 112
+Valtuutettu edustaja Euroopassa: ASUS Computer GmbH
+Osoite: HARKORT STR. 21-23, 40880 RATINGEN, GERMANY
+Mallin nimi: ASUS_AI2302
+ASUS-kierrätys/Takaisinottopalvelut
+ASUS-kierrätys- ja takaisinotto-ohjelmat perustuvat sitoutumiseemme korkeimpiin 
+standardeihin ympäristömme suojelemiseksi. Me uskomme tarjoamiemme ratkaisujen antavan 
+sinulle mahdollisuuden kierrättää vastuullisesti tuotteemme, paristot ja muut osat sekä 
+pakkausmateriaalin. Siirry kohtaan http://csr.asus.com/english/Takeback.htm saadaksesi lisätietoja 
+kierrätyksestä eri alueilla.
+Pinnoitehuomautus
+TÄRKEÄÄ! Sähköeristyksen ja sähköturvallisuuden ylläpitämiseksi laitteen runko on päällystetty 
+eristävästi lukuun ottamatta alueita, joilla IO-portit sijaitsevat.
+Vihreä ASUS-ilmoitus
+ASUS on sitoutunut luomaan ympäristöystävällisiä tuotteita ja pakkauksia turvatakseen 
+kuluttajien terveyden vähentäen samalla vaikutusta ympäristöön. Käyttöohjeiden sivujen määrän 
+vähentäminen on yhdenmukainen hiilidioksidipäästöjen vähentämisen kanssa.
+Katso yksityiskohtainen käyttöopas ja aiheeseen liittyviä tietoja ASUS Phone käyttöoppaasta tai 
+ASUS-tukisivustosta osoitteessa https://www.asus.com/support.
+Authorized representative in United Kingdom: ASUSTEK (UK) LIMITED
+Address, City: 
+1st Floor, Sackville House, 143-149 Fenchurch Street, London, EC3M 6BL England
+Country: 
+United Kingdom
+ 1 Perusominaisuudet
+ Tervetuloa!
+ Valmistele ASUS Phone -puhelimesi!
+ Ensimmäinen käyttökerta
+ Navigointieleiden ohje
+ Kosketusnäytön käyttö
+ 2 Oma koti kullan kallis
+ Zen Home -ominaisuudet
+ Alkunäyttö
+ Pika-asetukset
+ Ilmoitukset 
+ Reunatyökalua
+ Aloitusnäytön mukauttaminen
+ Wallpapers (Taustakuvat)
+ Pienoissovellukset 
+ Asetukset
+ Päiväyksen ja kellonajan määrittäminen
+ Soittoäänen ja hälytysäänien määrittäminen
+ 3 Työhön ja vapaa-aikaan
+ Chrome
+ Chromen käynnistäminen
+ Sivun jakaminen
+ Sivujen lisääminen kirjanmerkkeihin
+ Selaustietojen tyhjentäminen
+ Gmail
+ Google-kalenteri
+ Tapahtumien luominen
+ Tapahtumien muokkaaminen tai poistaminen
+ Muistutusten luominen
+ Muistutusten muokkaaminen tai poistaminen 
+ Tiedostonhallinta
+ ASUS -puhelinklooni
+ 4 Pidä yhteyttä
+ Soita tyylillä
+ Kaksois-SIM-ominaisuus
+ Puheluiden soittaminen
+ Suosikkiyhteystiedoille soittaminen
+ Puheluiden vastaanottaminen
+ Muut soittotoiminnot
+ Puheluiden tallentaminen
+ Yhteystietojen hallinta
+ Yhteystietojen asetukset
+ Profiilin määrittäminen
+ Yhteystietojen lisääminen
+ Suosikkiyhteystietojen merkitseminen
+ Yhteystietojen ja sosiaalisten verkkojen yhdistäminen
+ Lähetä viestejä jne
+ Google Messenger
+ 5 Viihde
+ Kuulokkeiden käyttö
+ Audioliittimen liittäminen
+ YT Music
+ 6 Arvokkaita hetkiä
+ Tallenna muistoja
+ Kamera-sovelluksen käynnistäminen
+ Kuvien sijainnit
+ Kameran lisäasetukset
+ Intervallikuvaus
+ Gallerian käyttö
+ Valokuvan paikkatietojen tarkasteleminen
+ Kuvan muokkaaminen
+ Tiedostojen jakaminen galleriasta
+ Tiedostojen poistaminen galleriasta
+ 7 Yhteydet
+ Mobiiliverkko
+ Mobiiliverkon käyttöönottaminen
+ Wi-Fi
+ Wi-Fi-yhteyttä otetaan käyttöön
+ Wi-Fi-verkkoon yhdistäminen
+ Wi-Fi:n ottaminen pois käytöstä
+ Bluetooth®
+ Bluetooth®:in käyttöönotto
+ ASUS Phone ja Bluetooth®-laitteen parin muodostaminen
+ ASUS Phone ja Bluetooth®-laitteen laiteparin purkaminen
+ Jaettu yhteys
+ WiFi-hotspot
+ USB-jakaminen 
+ Jaettu Bluetooth-yhteys
+ 8 Matkasovellukset
+ Sää
+ Sää-sovelluksen käynnistäminen
+ Sää-alkunäyttö
+ Kello
+ Herätyskello
+ Maailmankello
+ Sekuntikello
+ Ajastin
+ 9 Zen missä tahansa
+ Zenin erikoisohjelmat
+ Laskin
+ Äänitallennin
+ Mobiilihallinta 
+ 10 Zen-puhelimen kunnossapito
+ Laitteen pitäminen ajan tasalla
+ Järjestelmän päivittäminen
+ Tallennustila
+ Varmuuskopiointi ja palautus
+ Nollaa 
+ ASUS Phone suojaaminen
+ Sormenjälkitunnusanturi
+ ASUS-puhelimen käynnistäminen ensimmäistä kertaa
+ Sormenjälkitunnuksen asettaminen Asetuksista
+ Kasvojentunnistus 
+ Kasvojentunnistuksen asettaminen Asetuksista 
+ ASUS Phone tunnistetietojen määrittäminen
+ liitteet

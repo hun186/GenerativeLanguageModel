@@ -1,0 +1,132 @@
+# 建議檔名：config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
+# 用法：在 akconfig_es_test.py 設定 mapping_file 指到本檔
+# 注意：此 mapping 針對 ES 7.x（單一 type）
+
+properties:
+  multidim_event_json:
+    type: nested
+    properties:
+      unique_key:
+        type: keyword
+
+      article_date_iso:
+        type: date
+        format: yyyy-MM-dd
+        ignore_malformed: true
+        
+      article_title:
+        type: text
+        fields:
+          raw:
+            type: keyword
+      Event_Summary:
+        type: text
+
+      facet:
+        type: keyword
+      core_entities:
+        type: keyword
+      locations:
+        type: keyword
+
+      date_range:
+        properties:
+          start:
+            type: date
+            format: yyyy-MM-dd
+            ignore_malformed: true
+          end:
+            type: date
+            format: yyyy-MM-dd
+            ignore_malformed: true
+
+      Event:
+        properties:
+          subject:     { type: keyword }
+          object:      { type: keyword }
+          aspect:      { type: keyword }
+          medium:      { type: keyword }
+          action:      { type: keyword }
+
+          # ✅ 新三欄：標準化日期 / 原始字面 / 精度
+          time_iso:
+            type: date
+            format: yyyy-MM-dd
+            ignore_malformed: true
+          time_raw:        { type: keyword }     # 或 text，依查詢需求
+          time_precision:  { type: keyword }     # "day" | "month" | "year" | "unknown"
+
+          location:    { type: keyword }
+          consequence: { type: text }
+          relation:    { type: text }
+          source:      { type: keyword }
+
+      Person:
+        type: nested
+        properties:
+          name:     { type: keyword }
+          role:     { type: keyword }
+          action:   { type: text }
+          quote:    { type: text }
+          stance:   { type: keyword }
+          relation: { type: text }
+
+      Involved_Parties:
+        type: nested
+        properties:
+          party_name: { type: keyword }
+          party_role: { type: keyword }
+
+      Impact:
+        type: nested
+        properties:
+          impact_description: { type: text }
+
+      Event_Timeline:
+        type: nested
+        properties:
+          # ✅ 新三欄：同 Event 的時間拆分
+          date_iso:
+            type: date
+            format: yyyy-MM-dd
+            ignore_malformed: true
+          date_raw:        { type: keyword }
+          date_precision:  { type: keyword }     # "day" | "month" | "year" | "unknown"
+
+          description: { type: text }
+
+      evidence_snippets:
+        type: nested
+        properties:
+          text:           { type: text }
+          source_id:      { type: keyword }
+          char_start:     { type: integer }
+          char_end:       { type: integer }
+          paragraph_id:   { type: keyword }
+          sentence_index: { type: integer }
+          confidence:     { type: integer }
+
+      importance:
+        properties:
+          coverage:         { type: integer }
+          novelty:          { type: integer }
+          impact:           { type: integer }
+          credibility:      { type: integer }
+          importance_score: { type: integer }
+          
+      update_time_ai:
+        type: date
+        format: strict_date_optional_time||epoch_millis
+        ignore_malformed: true
+        
+  multidim_event_json_meta:
+    type: object           # 需要 nested 再改
+    properties:
+      processed_at:   { type: date }
+      model_tag:      { type: keyword }
+      pipeline_hash:  { type: keyword }
+      #model_spec:     { type: keyword }
+      source:         { type: keyword }
+      channel:        { type: keyword }
+      task:           { type: keyword }
+      force_reason:   { type: keyword }

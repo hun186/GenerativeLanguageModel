@@ -1,0 +1,939 @@
+
+FI20513
+Ensimmäinen painos
+Marraskuu 2022
+E-käyttöopas
+2 LED-projektorin E-käyttöopas
+TEKIJÄNOIKEUS- JA TAKUUTIEDOT
+Tämän käyttöoppaan osia tai siinä kuvattuja tuotteita ja ohjelmistoja ei saa monistaa, siirtää, jäljentää, 
+tallentaa hakujärjestelmään tai kääntää millekään kielelle missään muodossa tai millään tavalla, lukuun 
+ottamatta dokumentaatiota, jonka ostaja on säilyttänyt varmistustarkoituksessa, ilman ASUSTeK COMPUTER 
+INC:n (“ASUS”) erikseen myöntämää, kirjallista lupaa.
+Tuotetakuuta tai -huoltoa ei jatketa, jos: (1) tuotetta on korjattu, muokattu tai muunneltu, ellei sellainen 
+korjaus, muokkaus tai muuntelu ole ASUKSEN kirjallisesti valtuuttama, tai (2) sarjanumero puuttuu tai on 
+turmeltu.
+ASUS TARJOAA TÄMÄN KÄYTTÖOPPAAN “SELLAISENAAN” ILMAN MINKÄÄNLAISTA SUORAA TAI EPÄSUORAA 
+TAKUUTA, MUKAAN LUKIEN MUTTA EI AINOASTAAN EPÄSUORAT TAKUUT TAI KAUPATTAVUUSEDELLYTYKSET 
+TAI SOVELTUVUUS TIETTYYN KÄYTTÖÖN. ASUS, SEN JOHTAJAT, TOIMIHENKILÖT, TYÖNTEKIJÄT TAI EDUSTAJAT 
+EIVÄT MISSÄÄN TAPAUKSESSA OLE VASTUUSSA MISTÄÄN EPÄSUORISTA, ERITYISISTÄ, SATUNNAISISTA TAI 
+VÄLILLISISTÄ VAHINGOISTA (MUKAAN LUKIEN LIIKEVOITON MENETYKSET, LIIKETOIMINNAN MENETYKSET, 
+HYÖDYN TAI DATAN MENETYKSET, LIIKETOIMINNAN KESKEYTYKSET YMS.), VAIKKA ASUS:LLE OLISI 
+ILMOITETTU, ETTÄ TÄMÄN KÄYTTÖOPPAAN TAI TUOTTEEN VIAT TAI VIRHEET SAATTAVAT AIHEUTTAA 
+KYSEISIÄ VAHINKOJA.
+Tässä käyttöoppaassa mainitut tuotteet ja yritysnimet saattavat olla yritystensä rekisteröityjä tavaramerkkejä 
+tai tekijänoikeuksia, ja niitä käytetään ainoastaan omistajan avuksi tunnistamiseen tai selittämiseen ilman 
+loukkaustarkoitusta. 
+TÄSSÄ KÄYTTÖOPPAASSA ESITELLYT TEKNISET TIEDOT JA INFORMAATIO ON TUOTETTU AINOASTAAN 
+INFORMAATIOKÄYTTÖÖN, JA NE VOIVAT MUUTTUA MILLOIN TAHANSA ILMAN ENNAKKOVAROITUSTA, 
+JOTEN NE EIVÄT OLE ASUS:N SITOUMUKSIA. ASUS EI OTA MINKÄÄNLAISTA VASTUUTA KÄYTTÖOPPAASSA 
+MAHDOLLISESTI ESIINTYVISTÄ VIRHEISTÄ, MUKAAN LUKIEN SIINÄ KUVATUT TUOTTEET JA OHJELMISTOT. 
+Copyright © 2022 ASUSTeK COMPUTER INC. Kaikki oikeudet pidätetään.
+Vastuurajoitus
+Joissain tapauksissa voit olla oikeutettu saamaan korvauksia ASUSilta ASUSin tai muun vastuullisen 
+osapuolen virheen vuoksi. Sellaisessa tapauksessa, syistä riippumatta, jossa olet oikeutettu hakemaan 
+vahingonkorvauksia ASUSilta, ASUS on vastuussa ainoastaan ruumiillisista vahingoista (mukaan lukien 
+kuolema) sekä kiinteälle omaisuudelle ja henkilökohtaiselle reaaliomaisuudelle aiheutuneista vahingoista 
+tai mistä tahansa muista todellisista ja suorista vahingoista, jotka ovat aiheutuneet tässä takuuasiakirjassa 
+mainittujen juridisten velvollisuuksien laiminlyönnistä tai puutteellisuudesta, mukaan lukien kunkin 
+tuotteen luettelonmukainen sopimushinta.
+ASUS on vastuussa tai hyvittää ainoastaan menetykset, vahingot tai korvausvaatimukset, jotka johtuvat 
+tässä takuuasiakirjassa mainituista rikkomuksista tai oikeudenloukkauksista.
+Rajoitus koskee myös ASUSin hankkijoita ja jälleenmyyjää. Se on ASUSin, sen hankkijoiden ja jälleenmyyjäsi 
+yhteinen enimmäisvastuu.
+ASUS EI OLE MISSÄÄN TAPAUKSESSA VASTUUSSA SEURAAVISTA: (1) KOLMANNEN OSAPUOLEN 
+KORVAUSVAATIMUKSET SINULLE AIHEUTUNEISTA VAHINGOISTA; (2) TALLENTEIDESI TAI DATASI KATOAMINEN 
+TAI VAHINGOITTUMINEN; TAI (3) ERITYISET, SATUNNAISET TAI EPÄSUORAT VAHINGOT TAI TALOUDELLISET 
+VÄLILLISET VAHINGOT (MUKAAN LUKIEN MENETETYT LIIKEVOITOT TAI SÄÄSTÖT), VAIKKA ASUS, SEN 
+HANKKIJAT TAI JÄLLEENMYYJÄT OLISIVAT MAHDOLLISUUDESTA TIETOISIA.
+Huolto ja tuki
+Siirry monikieliselle verkkosivustollemme osoitteessa https://www.asus.com/support
+LED-projektorin E-käyttöopas 3
+Sisältö
+Tietoja tästä käyttöoppaasta .......................................................................... 5
+Tämän käyttöoppaan merkintätavat ......................................................... 6
+Typografia ........................................................................................................... 6
+Monikieliset versiot .......................................................................................... 6
+Turvallisuusvarotoimenpiteet ....................................................................... 7
+LED-projektorin käyttö ................................................................................... 7
+Osien huolto ja vaihto ..................................................................................... 7
+Huolenpito monitorista .................................................................................. 8
+Oikea hävittäminen ......................................................................................... 9
+Luku 1: LED-projektoriin tutustuminen
+Ominaisuudet ....................................................................................................12
+Näkymä päältä .................................................................................................12
+Laajennetut ominaisuudet ..........................................................................15
+Taskulamppu .......................................................................................................15
+SOS-tila ..................................................................................................................16
+Näkymä edestä ................................................................................................17
+Näkymä takaa ..................................................................................................18
+Oikea näkymä ..................................................................................................20
+Näkymä alta ......................................................................................................21
+Luku 2: Asettaminen 
+LED-projektoriin käyttö ..................................................................................24
+Liitä LED-projektori verkkolaitteeseen ...................................................24
+Virtajohtovaatimukset .....................................................................................26
+Käytä oikeaa, sijaintisi mukaista virtapistoketta. ....................................26
+Liitä LED-projektori laitteeseesi .................................................................27
+Paina virtapainiketta......................................................................................28
+Säädä tarkennusta ..........................................................................................29
+Pystytila .............................................................................................................30
+Näyttökoko ja heijastusetäisyys ...................................................................31
+4 LED-projektorin E-käyttöopas
+Luku 3: LED-projektorin käyttö
+LED-projektorin ensimmäinen käyttö ......................................................34
+Kuvaruutunäyttövalikon käyttö ..................................................................35
+Wi-Fi-käyttöavaimen käyttö(vain tietyissä malleissa) .........................36
+Langaton peilaus ............................................................................................37
+Suoratoisto ........................................................................................................39
+USB-yhteyden käyttö ......................................................................................40
+Suoratoisto ........................................................................................................40
+Kuvaruutuvalikon valikkovalinnat..............................................................41
+Äänenvoimakkuus .........................................................................................41
+Tulo .............................................................................................................41
+Splendid .............................................................................................................41
+Kirkkaus .............................................................................................................41
+Kontrasti .............................................................................................................42
+Trapetsi .............................................................................................................42
+Projektorin sijainti...........................................................................................42
+Asetus .............................................................................................................43
+Tiedot .............................................................................................................44
+LED-projektorin kytkeminen pois päältä .................................................45
+Liitteet
+FCC-lausunto .....................................................................................................48
+Kansainvälisen ympäristösäätelyn yhdenmukaisuusilmoitus ........49
+ASUS-kierrätys-/takaisinottopalvelut .......................................................49
+HDMI-liitettävyys ..............................................................................................50
+Tuetut PC-ajoitukset ........................................................................................51
+E1R -LED-projektorin tekniset tiedot ........................................................53
+LED-projektorin E-käyttöopas 5
+Tietoja tästä käyttöoppaasta
+Tämä käyttöopas tarjoaa tietoja LED-projektorisi laitteiston ja 
+ohjelmiston ominaisuuksista seuraavissa luvuissa:
+Luku 1: LED-projektoriin tutustuminen
+Tässä luvussa kuvataan LED-projektorisi osat.
+Luku 2: Asettaminen
+Tässä luvussa näytetään, kuinka LED-projektori asetetaan ja sen 
+osien käyttö tulolähdeyhteyttä varten.
+Luku 3: LED-projektorin käyttö
+Tässä luvussa kuvataan LED-projektorin ohjauspaneelin 
+painikkeiden ominaisuudet ja kuinka niitä käytetään LED-
+projektorin toimintojen käynnistämiseen.
+Liitteet
+Tämä luku sisältää LED-projektorin turvallisuusilmoitukset.
+6 LED-projektorin E-käyttöopas
+Tämän käyttöoppaan merkintätavat
+Tämän käyttöoppaan tärkeiden tietojen korostamiseksi osa tekstistä 
+on esitetty seuraavasti:
+TÄRKEÄÄ! Tämä viesti sisältää tärkeitä tietoja, joiden mukaisesti on 
+toimittava tehtävän suorittamiseksi loppuun. 
+HUOMAUTUS: Tämä viesti sisältää lisätietoja ja vinkkejä, jotka 
+helpottavat tehtävän suorittamista loppuun.
+VAROITUS! Tämä viesti sisältää tärkeitä tietoja, joiden mukaisesti on 
+toimittava oman turvallisuutesi säilyttämiseksi tehtäviä suoritettaessa 
+ja LED-projektorin tietojen ja osien vahingoittumisen estämiseksi. 
+Typografia
+Lihavoitu ilmaisee valikon tai kohteen, joka on valittava.
+Kursivoitu ilmaisee osat, joita voit katsoa tässä käyttöoppaassa.
+Monikieliset versiot
+Voit ladata tämän E-käyttöoppaan muunkielisiä versioita tältä 
+verkkosivustolta: https://www.asus.com/support
+LED-projektorin E-käyttöopas 7
+Turvallisuusvarotoimenpiteet
+LED-projektorin käyttö
+• Tutustu käyttöoppaaseen ja huomioi turvallisuusohjeet ennen 
+LED-projektorin käyttöä.
+• Toimi käyttöoppaassa annettujen ilmoitusten ja varoitusten 
+mukaisesti.
+• ÄLÄ sijoita LED-projektoria epätasaiselle tai epävakaalle tasolle.
+• ÄLÄ käytä LED-projektoria savuisissa ympäristöissä. Savujäämiä 
+voi kertyä kriittisiin osiin, mikä voi vahingoittaa LED-projektoria 
+tai heikentää sen suorituskykyä.
+• ÄLÄ käytä LED-projektorin kanssa vahingoittuneita virtajohtoja, 
+lisälaitteita tai muita lisävarusteita.
+• Pidä LED-projektorin muovipussit lasten ulottumattomissa.
+• ÄLÄ tuki LED-projektorin tuuletusaukkoja tai aseta mitään 
+niiden lähelle. Se voi aiheuttaa sisäisen kuumuuden kertymistä, 
+mikä voi heikentää kuvanlaatua ja vahingoittaa projektoria.
+• Varmista, että LED-projektorin käyttöjännite vastaa virtalähteen 
+jännitettä.
+Osien huolto ja vaihto
+• ÄLÄ pura tai yritä huoltaa tätä LED-projektoria itse. Pyydä apua 
+paikallisesta ASUS-huoltokeskuksesta.
+• Räjähdysvaara, jos akku on vaihdettu vääräntyyppiseen akkuun. 
+Hävitä käytetyt akut turvallisuusohjeiden mukaisesti ja ota 
+yhteyttä paikalliseen ASUS-huoltokeskukseen avun saamiseksi. 
+• Kun vaihdat LED-projektorin osia, käytä vain ASUKSEN 
+määrittämiä osia ja ota yhteyttä paikalliseen huoltokeskukseen 
+avun saamiseksi.
+8 LED-projektorin E-käyttöopas
+Huolenpito monitorista
+• Kytke LED-projektori pois päältä ja irrota virtajohto pistorasiasta 
+ennen sen puhdistamista. 
+• Kun puhdistat LED-projektorin kotelon, käytä pehmeää, 
+puhdasta liinaa, joka on kostutettu vedellä tai neutraalilla 
+pesuaineliuoksella. Pyyhi kotelo kuivaksi kuivalla liinalla.
+• Varmista, että linssi on viileä ennen sen puhdistamista. Pyyhi 
+linssi varovasti linssinkiillotuspaperilla. ÄLÄ kosketa linssiä 
+paljain käsin. 
+• ÄLÄ käytä nestemäisiä tai aerosolipuhdistusaineita, bentseeni 
+tai ohentimia LED-projektorin puhdistamiseen.
+• Älä käytä tätä LED-projektoria heti sen kylmästä tilasta 
+siirtämisen jälkeen. Kun LED-projektori on altistunut jyrkille 
+lämpötilan muutoksille, kosteutta voi kondensoitua linssiin ja 
+muihin sisäisiin osiin. Tämän estämiseksi, käytä yksikköä kaksi (2) 
+tuntia jyrkän tai äkillisen lämpötilan muutoksen jälkeen.
+• ÄLÄ käytä linssin puhdistamiseen suihkeita, jotka sisältävät 
+syttyviä kaasuja. Tämä voi aiheuttaa syttymisen projektorin 
+sisällä vallitsevan suuren kuumuuden vuoksi.
+• ÄLÄ puhdista linssiä projektorin lämmetessä, se voi aiheuttaa 
+linssin pintakalvon kuoriutumisen.
+• ÄLÄ käytä kovaa esinettä linssin pyyhkimiseen tai 
+napauttamiseen. 
+LED-projektorin E-käyttöopas 9
+Oikea hävittäminen
+Älä hävitä LED-projektoria kotitalousjätteen 
+mukana. Tämä tuote on suunniteltu siten, että osat 
+voidaan käyttää uudelleen ja kierrättää. Yliviivatun 
+roskasäiliön symboli ilmoittaa, että tuotetta (sähkö- 
+tai elektroniikkalaitetta ja elohopeaa sisältävää 
+kennoakkua) ei saa hävittää kunnallisjätteen mukana. 
+Tarkista paikalliset säädökset sähkölaitteiden 
+hävittämisestä.
+Älä hävitä akkua kotitalousjätteen mukana. Yliviivatun 
+roskasäiliön symboli ilmoittaa, että akkua ei saa 
+hävittää kunnallisjätteen mukana.
+10 LED-projektorin E-käyttöopas
+LED-projektorin E-käyttöopas 11
+Luku 1: 
+LED-projektoriin 
+tutustuminen
+12 LED-projektorin E-käyttöopas
+Ominaisuudet
+Näkymä päältä
+Ohjauspaneelin painikkeet
+Ohjauspaneelin painikkeet mahdollistavat navigoinnin 
+kuvaruutunäyttövalikossa. Kukin näistä painikkeista vastaa määrättyä 
+LED-projektorin asetusta, kuten alla on esitetty.
+Splendid/
+Lopeta
+Vasen/Vähennä 
+äänenvoimakkuutta Valikko/OK Oikea/Lisää 
+äänenvoimakkuutta
+HUOMAUTUS: Katso lisätietoja ohjauspaneelin painikkeiden käytöstä 
+käyttääksesi LED projektorin asetuksia, katso Luku 3: LED-projektorin 
+käyttö.
+LED-projektorin E-käyttöopas 13
+Virran merkkivalo ja akun tilan ilmaisin
+Tämä LED-merkkivalo ilmaisee LED-projektorisi seuraavia tiloja:
+• Se syttyy, kun LED-projektori käynnistetään.
+• Se syttyy joko vihreänä tai punaisena akun varaustilan 
+mukaan.
+Katso seuraavasta taulukosta tiedot, kuinka tämä LED-merkkivalo 
+toimii akun tilan merkkivalona.
+Väri Tila
+Tasainen vihreä LED-projektori on liitetty virtalähteeseen, toimii 
+akkutilassa ja akun varaus on yli 25 %, tai toimii 
+virtapankkitilassa.
+Tasainen 
+punainen
+LED-projektori toimii vain akkutilassa ja akun 
+varaus on pienempi tai yhtä suuri kuin 25 %.
+Vilkkuva oranssi LED-projektorin lämpötila on liian korkea 
+mikä laskee sen kirkkautta automaattisesti. 
+Ylikuumenemisen estämiseksi LED-projektori 
+sammuu, jos lämpötila on edelleen liian korkea.
+Vilkkuva vihreä LED-projektoria käytetään tällä hetkellä 
+virtapankkina ja mobiililaitteen lataamiseen. 
+14 LED-projektorin E-käyttöopas
+Akun varaustilan merkkivalo
+Tämä LED-merkkivalo syttyy, kun LED-projektori liitetään 
+virtalähteeseen verkkolaitteella.
+TÄRKEÄÄ! Käytä vain toimitukseen kuuluvaa verkkolaitetta 
+akun lataamiseen ja virtalähteenä LED-projektorille.
+LED-projektorin E-käyttöopas 15
+Laajennetut ominaisuudet
+LED-projektorissasi on myös itsenäisiä ominaisuuksia, jotka 
+käynnistetään painamalla -painiketta, kun LED-projektori on 
+akkutilassa.
+HUOMAUTUS: 
+• Nämä ominaisuudet eivät ole käytettävissä, kun LED-projektori on 
+kytketty HDMI-tulolähteeseen tai Wi-Fi-tilassa.
+• Sammuttaaksesi LED-projektorin tai vaihtaaksesi sen taskulampun 
+ja hätävalon välillä, paina -painiketta, kunnes haluamasi 
+valaistusominaisuus on pois käytöstä tai käytössä.
+TÄRKEÄÄ! Varmista, että LED-projektori on ladattu ja pystyy 
+toimimaan akkutilassa ennen kuin otat nämä ominaisuudet käyttöön. 
+Akkukesto vaihtelee käytön mukaan.
+Taskulamppu
+LED-projektori vilkkuu tasaisesti valkoisena, kun käytät tätä 
+ominaisuutta.
+ 
+Splendid/Lopeta-painike
+Käyttääksesi LED-projektoria taskulamppuna:
+1. Irrota kaikki LED-projektorin lisälaitteet ja Wi-Fi-käyttöavain ja 
+paina sitten virtapainiketta kytkeäksesi sen päälle.
+16 LED-projektorin E-käyttöopas
+SOS-tila
+LED-projektori vilkkuu valkoisena, kun käytät tätä ominaisuutta.
+ 
+Splendid/Lopeta-painike
+Käyttääksesi LED-projektoria hätävalona:
+1. Irrota kaikki LED-projektorin lisälaitteet ja Wi-Fi-käyttöavain ja 
+paina sitten virtapainiketta kytkeäksesi sen päälle.
+2. Paina toistuvasti -painiketta, kunnes LED-projektori vilkkuu 
+valkoisena.
+2. Paina toistuvasti -painiketta, kunnes LED-projektori vilkkuu 
+tasaisesti valkoisena.
+LED-projektorin E-käyttöopas 17
+Näkymä edestä
+Linssi
+Linssi projisoi video- tai kuvatiedostoja näytölle tulolaitteestasi.
+VAROITUS!
+• ÄLÄ kosketa linssiä paljain käsin tai millään terävällä 
+esineellä.
+• ÄLÄ katso suoraan linssiin.
+18 LED-projektorin E-käyttöopas
+Näkymä takaa
+Audiolähtöliitäntäportti
+Audiolähtöliitin mahdollistaa LED-projektorin liittämisen 
+kuulokkeisiin.
+HDMI-portti
+Tämä portti on HDMI (High-Definition Multimedia Interface) 
+-liitännälle. Tämä portti on HDCP-yhteensopiva HD DVD -, Blu-ray- ja 
+muiden suojattujen sisältöjen toistoon.
+Virtalähtö-/Wi-Fi-käyttöavainportti
+Tämä virtalähtöportti tarjoaa enintään 5 V / 1A:n lähtöjännitteen 
+ja -virran. Voit liittää mobiililaitteen tähän porttiin pitääksesi sen 
+ladattuna, kun käytät sitä LED-projektorin kanssa.
+Voit myös lisätä Wi-Fi-käyttöavaimen, jonka avulla voit peilata tai 
+suoratoistaa sisältöä mobiililaitteeltasi.
+HUOMAUTUS: Katso lisätietoja Wi-Fi-yhteyden käyttäminen 
+-kohdasta tässä oppaassa.
+LED-projektorin E-käyttöopas 19
+Virtaliitäntä (DC)
+Liitä toimitukseen kuuluva verkkolaite tähän porttiin lataamaan akkua 
+ja virtalähteeksi LED-projektorille.
+TÄRKEÄÄ! Käytä vain toimitukseen kuuluvaa verkkolaitetta 
+akun lataamiseen ja virtalähteenä LED-projektorille.
+VAROITUS! Verkkolaite voi lämmetä tai kuumentua käytössä. 
+ÄLÄ peitä verkkolaitetta ja pidä sitä erillään kehostasi, kun se on 
+liitetty virtalähteeseen.
+Virtapainike
+Paina pitkään tätä virtapainiketta kytkeäksesi LED-projektorin päälle 
+tai pois. Paina lyhyesti tätä painiketta kytkeäksesi virtapankkitilan 
+päälle tai pois.
+20 LED-projektorin E-käyttöopas
+Kohdistuksen säädin
+Tarkennusrengas mahdollistaa LED-projektorin kuvan tarkennuksen 
+säätämisen.
+Tuuletusaukot
+Ilma-aukot mahdollistavat viileän ilman pääsyn projektoriin ja 
+kuuman ilman poistamisen siitä.
+VAROITUS! Varmista, etteivät paperi, kirjat, vaatetus, kaapelit 
+tai muut kohteet tuki tuuletusaukkoja, muuten seurauksena voi 
+olla ylikuumeneminen.
+Oikea näkymä
+LED-projektorin E-käyttöopas 21
+Näkymä alta
+Kolmijalan istukka
+Kiinnitä LED-projektori kolmijalkaan 1/4-20UNC-kiinnitysruuvilla tällä 
+istukalla.
+HUOMAUTUS: Tätä istukkaa tulee käyttää vain kolmijaloilla, 
+joiden korkeus on alle 1 m.
+22 LED-projektorin E-käyttöopas
+LED-projektorin E-käyttöopas 23
+Luku 2: 
+Asettaminen 
+24 LED-projektorin E-käyttöopas
+LED-projektoriin käyttö
+Tämä kannettava LED-projektori antaa sinun liittää ja käyttää laitteita 
+niin, että voit avata helposti multimediatiedostoja ja kuulla audion 
+suoraan sen sisäisistä SonicMaster-kuulokkeista.
+Oman turvallisuutesi ja tämän yksikön laadun ylläpitämiseksi, 
+tutustu seuraaviin ohjeiseen, kun käytät LED-projektoria.
+Liitä LED-projektori verkkolaitteeseen
+A. Liitä virtajohto AC-verkkolaitteeseen.
+B. Liitä verkkolaite 100 V - 240 V -virtalähteeseen.
+C. Liitä DC-virtapistoke LED-projektoriin.
+Lataa LED-projektoria 5 tuntia ennen sen käyttöä akkutilassa 
+ensimmäistä kertaa.
+HUOMAUTUS: Verkkolaitteen ulkoasu voi olla erilainen mallisi ja 
+alueesi mukaan.
+LED-projektorin E-käyttöopas 25
+VAROITUS!
+Lue seuraavat LED-projektori akun varotoimet.
+• Akkukapasiteetti vaihtelee ympäristön lämpötilan, kosteuden ja 
+LED-projektorin käytön mukaan.
+• Tässä laitteessa käytetty akku voi aiheuttaa tulipalon tai 
+kemiallisen palovamman vaaran, jos se poistetaan tai puretaan.
+• Seuraavien varoitustarrojen tarkoitus on varmistaa turvallisuutesi.
+• Räjähdysvaara, jos akku on vaihdettu vääräntyyppiseen akkuun.
+• ÄLÄ koskaan hävitä polttamalla.
+• Älä koskaan yritä oikosulkea LED-projektorin akkua.
+• Älä koskaan yritä purkaa tai koota akkua uudelleen.
+• Jos havaitset, vuodon lopeta akun käyttö.
+• Akku ja sen osat on kierrätettävä tai hävitettävä asianmukaisesti.
+• Pidä akku ja muut pienet osat lasten ulottumattomissa. 
+• Akun hävittäminen polttamalla tai kuumassa uunissa tai 
+sen mekaaninen murskaaminen ja leikkaaminen voi johtaa 
+räjähdykseen;
+• Akun jättäminen erittäin kuumaan ympäristöön voi johtaa 
+räjähdykseen tai syttyvän nesteen tai kaasun vuotamiseen;
+• Akun altistaminen erittäin matalaan ilmanpaineeseen voi johtaa 
+räjähdykseen tai syttyvän nesteen tai kaasun vuotamiseen.
+TÄRKEÄÄ! 
+• Käytä vain toimitukseen kuuluvaa verkkolaitetta akun lataamiseen 
+ja virtalähteenä LED-projektorille.
+• Varmista, että LED-projektori on liitetty verkkolaitteeseen ennen 
+kuin kytket sen päälle ensimmäistä kertaa. Liitä virtajohto 
+pistorasiaan aina ilman jatkojohtoja. Liitä tämä laite oman 
+turvallisuutesi vuoksi vain oikein maadoitettuun pistorasiaan.
+• Pistorasian on oltava helposti tavoitettavissa ja lähellä LED-
+projektoria.
+• Irrottaaksesi LED-projektorin verkkovirrasta, irrota se pistorasiasta.
+26 LED-projektorin E-käyttöopas
+Virtajohtovaatimukset
+Käytä oikeaa, sijaintisi mukaista virtapistoketta.
+TÄRKEÄÄ! Ota yhteyttä jälleenmyyjään, jos LED-projektorin 
+toimitukseen kuuluva virtajohto ei vastaa paikallista virtalähdettäsi.
+HUOMAUTUS: On vahvasti suositeltavaa käyttää videolähdelaitetta, 
+jossa myös on käytössä maadoitettu pistoke jännitteen vaihteluista 
+johtuvien signaalihäiriöiden estämiseksi.
+Australia ja Manner-Kiina USA, Kanada, Japani ja Taiwan
+Manner-Eurooppa Yhdistynyt kuningaskunta
+LED-projektorin E-käyttöopas 27
+Liitä LED-projektori laitteeseesi
+ Audiolähtö HDMI
+ Virtalähtö (5 V / 1 A)
+28 LED-projektorin E-käyttöopas
+Paina virtapainiketta
+HUOMAUTUS: Akkupakkaus LED-projektorin sisällä lopettaa 
+lataamisen, kun LED-projektoria käytetään. Katso LED-projektorin 
+nykyinen latauksen tila akun ilmaisimesta. Voit katsoa lisätietoja myös 
+tämän käyttöoppaan Näkymä päältä -osasta.
+LED-projektorin E-käyttöopas 29
+Säädä tarkennusta
+HUOMAUTUS: Käytä stillkuvaa, kun säädät kuvaa näytöllä
+Säädä valkokankaalle projisoidun kuvan tarkennusta siirtämällä 
+tarkennussäädintä ylös tai alas.
+30 LED-projektorin E-käyttöopas
+Pystytila
+LED-projektori tukee sekä vaaka- (vakio) että pystytilaa. Käyttääksesi 
+pystytilaa, kierrä projektori pystyasentoon, tällöin pystykuvaa voi 
+katsoa koko näytöllä ilman sivuilla olevia mustia palkkeja.
+HUOMAUTUS: LED-projektorisi avulla voit peilata tai suoratoistaa 
+sisältöä mobiililaitteestasi , katso lisätietoja Wi-Fi-yhteyden 
+käyttäminen. -kohdasta tässä oppaassa.
+LED-projektorin E-käyttöopas 31
+Näyttökoko ja heijastusetäisyys
+Säädä LED projektorin etäisyys näytöstä alla olevan taulukon 
+mukaisesti.
+Näyttökoko Projisointi-
+etäisyysDiagonaali Vaaka Pysty
+Tuumaa mm Tuumaa mm Tuumaa mm Tuumaa mm
+30 762 26,14 664 14,72 374 31,29 795
+40 1016 34,88 886 19,60 498 41,77 1061
+50 1270 43,58 1107 24,52 623 52,24 1327
+60 1524 52,28 1328 29,40 747 62,71 1593
+70 1778 61 1550 34,33 872 73,07 1856
+80 2032 69,72 1771 39,21 996 83,54 2122
+90 2286 78,42 1992 44,13 1121 94,05 2389
+100 2540 87,12 2213 49,05 1246 104,48 2654
+110 2794 95,86 2435 53,93 1370 114,96 2920
+120 3048 104,56 2656 58,85 1495 125,39 3185
+32 LED-projektorin E-käyttöopas
+LED-projektorin E-käyttöopas 33
+Luku 3: 
+LED-projektorin käyttö
+34 LED-projektorin E-käyttöopas
+Tutustu seuraaviin ohjeisiin, kun käytät LED-projektoria ensimmäistä 
+kertaa.
+HUOMAUTUS: Varmista, että LED-projektori on liitetty 
+verkkolaitteeseen ennen sen ensimmäistä käynnistämistä. On 
+vahvasti suositeltavaa käyttää maadoitettua pistorasiaa, kun käytät 
+LED-projektoria verkkolaitetilassa.
+1. Aseta LED-projektori ja pidä sitten virtapainiketta painettuna 
+kolme (3) sekuntia kytkeäksesi sen päälle. 
+2. Paina LED-projektorin ohjauspaneelin - tai -painiketta 
+selataksesi käytettävissä olevia kielivalintoja.
+ 
+LED-projektorin ensimmäinen käyttö
+Valikko/OK-painike
+Navigointipainikkeet
+LED-projektorin E-käyttöopas 35
+HUOMAUTUS: Katso lisätietoja tämän käyttöoppaan 
+Kuvaruutunäyttövalikkovalinnat-osasta.
+Kuvaruutunäyttövalikon käyttö
+Tämä LED-projektori on plug-and-play-laite, jossa on myös 
+kuvaruutunäyttövalikko, joka sisältää ohjelmia ja asetuksia, joilla voi 
+maksimoida LED-projektorin käytön. 
+Käynnistä kuvaruutunäyttövalikko painamalla LED-projektorin 
+ohjauspaneelin -painiketta.
+3. Kun olet valinnut haluamasi kielen, paina asettaaksesi 
+tämän kielen käytettäväksi LED-projektorissasi.
+4. Voit nyt aloittaa LED-projektorin käytön tulolaitteen tiedostojen 
+näyttämiseksi. EI SIGNAALIA -ilmoitus voi tulla näkyviin, 
+jos tulolaitetta ei ole liitetty, tai jos LED-projektori ei pysty 
+tunnistamaan sitä.
+5. Paina LED-projektorin ohjauspaneelissa käynnistääksesi 
+sen kuvaruutunäyttövalikon.
+Vierittääksesi kuvaruutunäyttövalikon valintoja, paina LED-
+projektorin ohjauspaneelin navigointipainikkeita ( / ). 
+Säädettyäsi asetukset, paina -painiketta tallentaaksesi uudet 
+asetukset ja paina siirtyäksesi takaisin aloitussivulle.
+36 LED-projektorin E-käyttöopas
+Wi-Fi-käyttöavaimen käyttö 
+(vain tietyissä malleissa)
+Valinnaisen Wi-Fi-käyttöavaimen avulla voit heijastaa laitteesi näytön 
+tai suoratoistaa laitteeltasi LED-projektoriisi. Asennusprosessi voi 
+vaihdella hieman laitteittain.
+Varmista, että teet seuraavat toimet, ennen kuin aloitat näytön 
+peilauksen tai median suoratoiston laitteeltasi:
+1. Liitä Wi-Fi-käyttöavain LED-projektorin USB Type-A -porttiin.
+2. Tilan tulisi vaihtua automaattisesti langattomaksi 
+projisointitilaksi.
+HUOMAUTUS: Jos tila ei vaihdu automaattisesti langattomaksi 
+projisointitilaksi, voit vaihtaa sen OSD-valikolla. Paina ja valitse 
+sitten > Peilaus.
+3. Käännä Wi-Fi päälle laitteessasi.
+LED-projektorin E-käyttöopas 37
+Android-laitteista
+Langaton peilaus
+iOS-laitteista
+1. Käännä Wi-Fi päälle ja valitse verkkoluettelosta LED-projektorisi 
+SSID (kuten projektionäytössä näkyy).
+2. Anna projektorin salasana (kuten näkyy projektionäytössä) 
+muodostaaksesi yhteyden.
+3. Napauta Näytön peilaus ja yhdistä LED-projektorin SSID-
+tunnukseen, kuten näytetty projisointinäytöllä.
+4. Aloit mobiililaitteen näytön projisointi LED-projektoriin.
+HUOMAUTUS: 
+• Vaihtoehtojen nimet voivat vaihdella laitteittain. Katso lisätietoja 
+laitteen mukana toimitetusta käyttöoppaasta. 
+• Varmista, että mobiilikäyttöjärjestelmäsi on ajan tasalla, ennen 
+kuin aloitat peilaus- tai suoratoistoprosessin. 
+1. Napauta Älykäs peilaus tai Suoratoista ja yhdistä LED-
+projektorin SSID-tunnukseen, kuten näytetty projisointinäytöllä.
+2. Aloit mobiililaitteen näytön projisointi LED-projektoriin.
+38 LED-projektorin E-käyttöopas
+Windows kannettavasta tietokoneesta
+1. Paina pikanäppäintä Windows-näppäin ( tai ) + K.
+2. Valitse laiteluettelosta LED-projektorisi SSID (kuten 
+projektionäytössä näkyy).
+3. Anna projektorin salasana (kuten näkyy projektionäytössä) 
+muodostaaksesi yhteyden ja aloittaaksesi peilauksen.
+MacBookista
+1. Valitse LED-projektorisi SSID (kuten projektionäytössä näkyy) 
+MacBookin Wi-Fi-luettelosta.
+2. Anna projektorin salasana (kuten näkyy projektionäytössä) 
+muodostaaksesi yhteyden.
+3. Avaa selain ja kirjoita URL-osoite (http://192.168.xxx.xxx) 
+osoitepalkkiin projektionäytön osoittamalla tavalla. Sinut 
+ohjataan verkkosivulle yhdistämään LED-projektori Wi-Fi-
+verkkoon.
+HUOMAUTUS:
+• Varmista, että, että laitteesi ja LED-projektori on yhdistetty samaan 
+Wi-Fi-verkkoon, ennen kuin jatkat seuraavaan vaiheeseen.
+• Muodostaaksesi yhteyden eri Wi-Fi-verkkoon, toista vaihe 3 ja 
+valitse verkkosivulla haluamasi Wi-Fi-verkko.
+4. Avaa Ohjauskeskus Macissasi ja valitse Näytön peilaus. Aloita 
+peilaus valitsemalla laiteluettelosta LED-projektorisi.
+Katso ohjevideo skannaamalla QR-koodi:
+HUOMAUTUS: Projektorisi ulkoasu voi olla erilainen 
+kun videolla, mutta liittymä ja seurattavat vaiheet ovat 
+samat.
+LED-projektorin E-käyttöopas 39
+Suoratoisto
+Suoratoisto YouTubesta tai Facebookista
+Vakioasetukset
+1. Käännä Wi-Fi päälle ja valitse verkkoluettelosta LED-projektorisi 
+SSID (kuten projektionäytössä näkyy).
+2. Anna projektorin salasana (kuten näkyy projektionäytössä) 
+muodostaaksesi yhteyden.
+3. Avaa selain ja kirjoita URL-osoite (http://192.168.xxx.xxx) 
+osoitepalkkiin projektionäytön osoittamalla tavalla. Sinut 
+ohjataan verkkosivulle yhdistämään LED-projektori Wi-Fi-
+verkkoon.
+HUOMAUTUS:
+• Varmista, että laitteesi ja LED-projektori on yhdistetty samaan Wi-
+Fi-verkkoon, ennen kuin jatkat seuraavaan vaiheeseen.
+• Muodostaaksesi yhteyden eri Wi-Fi-verkkoon, toista vaihe 3 ja 
+valitse verkkosivulla haluamasi Wi-Fi-verkko.
+4. Avaa YouTube- tai Facebook-sovellus ja napauta sitten Cast-
+painiketta videonäytössä. Valitse laiteluettelosta LED-
+projektori, johon haluat suoratoistaa.
+5. Kun yhteys on muodostettu, valitse video, jonka haluat katsoa, 
+ja napauta Toista. Sisällön toisto alkaa projektorista.
+Katso ohjevideo skannaamalla QR-koodi:
+HUOMAUTUS: Projektorisi ulkoasu voi olla erilainen 
+kun videolla, mutta liittymä ja seurattavat vaiheet ovat 
+samat.
+40 LED-projektorin E-käyttöopas
+USB Type-A portti mahdollistaa laitteesi näytön heijastamisen tai 
+suoratoiston laitteeltasi LED-projektoriin. Asennusprosessi voi 
+vaihdella hieman laitteittain.
+Varmista, että USB-kaapeli on liitetty oikein LED-projektoriin ennen 
+kuin aloitat näytön peilaamisen tai median suoratoiston laitteeltasi.
+Suoratoisto
+Android-puhelimesta
+1. Liitä USB -kaapelin toinen pää puhelimeesi.
+2. Lataa ja asenna MiraPlug puhelimeesi.
+3. Avaa MiraPlug ja napauta Cast.
+iOS-puhelimesta
+1. Liitä USB -kaapelin toinen pää puhelimeesi.
+2. Napauta Trust, kun sinua pyydetään vahvistamaan, että haluat 
+sallia LED-projektorille puhelimen käytön.
+USB-yhteyden käyttö
+LED-projektorin E-käyttöopas 41
+Kuvaruutuvalikon valikkovalinnat
+Voit katsoa seuraavilta sivuilta tiedot eri kuvaruutunäyttövalikon 
+valinnoista.
+Äänenvoimakkuus
+Valitse tämä valikkovalinta säätääksesi LED-projektorissa toistettavan 
+audiotiedoston äänenvoimakkuutta. 
+Voit säätää äänenvoimakkuutta asteikolla 0–10 ja voit myös pitää 
+- tai -painiketta painettuna mykistääksesi tai säätääksesi 
+äänenvoimakuuden äänekkäimmäksi.
+Tulo
+Valitse tämä valikkovalinta määrittääksesi tulolähteen LED-
+projektorille.
+Splendid
+Valitse tämä valikkovalinta aktivoidaksesi eri näyttötiloja. Voit myös 
+käynnistää tämän valikkovalinnan suoraan painamalla 
+-painiketta . 
+Käytettävissä olevat valinnat: Kirkas, Vakio, Teatteri, ja ECO
+Kirkkaus
+Valitse tämä valikkovalinta säätääksesi näytölle projisoinnin 
+kirkkautta. Voit säätää kirkkautta asteikolla 0–10, tummimmasta 
+kirkkaimpaan.
+42 LED-projektorin E-käyttöopas
+Kontrasti
+Valitse tämä valikkovalinta säätääksesi näytölle projisoinnin 
+vaaleita ja tummia alueita. Voit säätää kontrastia asteikolla 0–10, 
+matalimmasta korkeimpaan mahdolliseen värikontrastiin
+Trapetsi
+Valitse tämä valinta säätääksesi näytölle projisoinnin 
+trapetsikorjauksen.
+HUOMAUTUS: Jos haluat ottaa käyttöön automaattisen 
+trapetsikorjausominaisuuden manuaalisen säätämisen jälkeen, siirry 
+kohtaan Asetus ja kytke päälle Automaattinen trapetsikorjaus.
+Projektorin sijainti
+Tämä valinta antaa sinun muuttaa tapaa, jolla projisointi suunnataan 
+näytölle perustuen LED-projektorin sijaintiin. 
+Voit muuttaa projektorin suuntauksen vastaamaan sijaintia, johon 
+LED-projektori on sijoitettu: Etupöytä ja Takapöytä.
+LED-projektorin E-käyttöopas 43
+Asetus
+Valitse tämä valikkovalinta määrittääksesi LED-projektorille seuraavat 
+asetukset:
+• Kieli - Tämä valinta antaa asettaa LED-projektorin 
+kuvaruutunäyttövalikon muunkieliseksi.
+• Nollaa - Tämä valinta palauttaa LED-projektorin tai Wi-Fi-verkon 
+oletusasetukset. 
+• Automaattien trapetsikorjaus - Tämä valinta antaa ottaa 
+automaattisen trapetsikorjauksen päälle tai pois päältä.
+• Automaattinen katontunnistus - Tämä valinta antaa ottaa 
+automaattisen katontunnistuksen päälle tai pois päältä.
+• Automaattinen käynnistys - Tämä valinta antaa ottaa 
+automaattinen käynnistys -ominaisuuden päälle tai pois 
+päältä, kun LED-projektori on liitetty HDMI-laitteeseen ja 
+virtalähteeseen käyttämällä sen verkkolaitetta.
+• OSD:n aikakatkaisu - Tämä valinta antaa ottaa asettaa 
+sekuntimäärä ennen kuin kuvaruutunäyttövalikko poistuu 
+näkyvistä projisointinäytöltä.
+• Virran aikakatkaisu - Tämä valinta antaa valita Automaattinen 
+(15 minuuttia) tai asettaa minuuttien määrän, kun HDMI-
+signaalia ei ole ennen kuin LED-projektori sammuu 
+automaattisesti. 
+44 LED-projektorin E-käyttöopas
+Tiedot
+Valitse tämä valikkovalinta nähdäksesi LED-projektorisi tietojen 
+yleiskatsauksen.
+mallinimi LED-projektorin 
+laiteohjelmistoversio
+tulolaitteen 
+näyttöresoluutio
+LED-projektorin E-käyttöopas 45
+2. Kun seuraava näyttö tulee näkyviin, paina uudelleen 
+virtapainiketta sammuttaaksesi LED-projektorin kokonaan. Jos 
+sinun on kytkettävä LED-projektori uudelleen päälle heti sen 
+sammutuksen jälkeen, odota, kunnes Virran merkkivalo ja akun 
+tilan ilmaisin sammuvat. 
+LED-projektorin kytkeminen pois päältä
+1. Paina virtapainiketta.
+46 LED-projektorin E-käyttöopas
+LED-projektorin E-käyttöopas 47
+Liitteet
+48 LED-projektorin E-käyttöopas
+FCC-lausunto
+Vastuullinen osapuoli: Asus Computer International
+Osoite: 48720 Kato Rd., Fremont, CA 94538, USA
+Puhelin / Faksinro: (510)739-3777 / (510)608-4555
+Tuotenimi LED-projektori
+Malli: E1R
+Tämä laite on testattu ja sen on havaittu toimivan digitaalilaitteiden 
+luokan B rajoissa, jotka on määritelty FCC:n sääntöjen kohdassa 15. 
+Näiden rajoitusten tarkoitus on varmistaa, että laite on kohtuullisesti 
+häiriösuojattu asuinhuoneistoissa käyttämistä varten. Tämä laite 
+tuottaa, käyttää ja voi säteillä energiaa radiotaajuudella, ja jos sitä 
+ei ole asennettu tai käytetä ohjeiden mukaan, se voi aiheuttaa 
+vahingollista häirintää radioliikenteelle. Ei voida kuitenkaan 
+täysin taata, ettei häiriöitä esiinny tietyssä asennuksessa. Jos tämä 
+aiheuttaa häiriöitä radio- tai televisiovastaanottimissa, jotka voi 
+päätellä sammuttamalla ja käynnistämällä laitetta, on suositeltavaa 
+yrittää korjata häiriöitä yhdellä tai useammalla seuraavista keinoista:
+• Suuntaa vastaanottoantenni uudelleen tai vaihda sen paikkaa.
+• Lisää laitteen ja vastaanottimen välistä etäisyyttä.
+• Liitä laite pistorasiaan, joka on eri virtapiirissä kuin johon 
+vastaanotin on liitetty. 
+• Kysy neuvoa jälleenmyyjältä tai kokeneelta radio/TV-asentajalta.
+Tämä laite on FCC-sääntöjen osan 15 mukainen. Käyttö on kahden 
+seuraavan ehdon alainen:
+1. Tämä laite ei saa aiheuttaa haitallista häiriötä, ja
+2. Tämän laitteen on hyväksyttävä kaikki häiriö, joka saattaa 
+aiheuttaa epätoivottavaa toimintaa.
+LED-projektorin E-käyttöopas 49
+Kansainvälisen ympäristösäätelyn 
+yhdenmukaisuusilmoitus 
+ASUS toimii vihreän design-konseptin mukaisesti tuotteittensa 
+suunnittelussa ja valmistuksessa ja varmistaa, että jokainen 
+vaihe ASUS-tuotteen elinkaaren aikana on kansainvälisten 
+ympäristösäädösten mukainen. Lisäksi ASUS paljastaa 
+säädösvaatimuksiin perustuvat asiaankuuluvat tiedot.
+Katso osoitteestahttp://csr.asus.com/english/Compliance.htm 
+tiedot tietojen ilmoittamisesta perustuen ASUKSEN noudattamiin 
+säädösten vaatimuksiin:
+Japani JIS-C-0950-materiaali-ilmoitus
+EU REACH SVHC
+Korea RoHS
+ASUS-kierrätys-/takaisinottopalvelut
+ASUS-kierrätys- ja takaisinotto-ohjelmien taustalla on 
+sitoutumisemme korkeimpiin ympäristönsuojelustandardeihin. 
+Haluamme tarjota sinulle ratkaisuja, joilla voit kierrättää vastuullisesti 
+tuotteitamme, paristoja ja muita osia sekä pakkausmateriaaleja. 
+Katso lisätietoja kierrätyksestä eri alueella osoitteesta 
+http://csr.asus.com/english/Takeback.htm.
+50 LED-projektorin E-käyttöopas
+Laitteet, joissa on 
+HDMI-portti • HDMI - HDMI -kaapeli
+Laitteet, joissa on 
+micro HDMI -portti • Micro HDMI - HDMI-sovitin
+• HDMI - HDMI -kaapeli
+iOS-laitteet, joissa 
+Lightning™-portti • Lightning™-digitaalinen AV-sovitin
+• HDMI - HDMI -kaapeli
+Laitteet, joissa USB 
+3.2 Gen 2 Type-C® 
+-portti • USB 3.2 Gen 2 Type-C® -digitaalinen AV-
+sovitin
+• HDMI - HDMI -kaapeli
+HDMI-liitettävyys
+LED-projektorin E-käyttöopas 51
+HDMI (PC)
+Tuetut PC-ajoitukset
+Tila Kuvatark-
+kuus
+Virkistysta-
+ajuus (Hz)
+V-taajuus 
+(kHz)
+Kello 
+(MHz)
+VGA 640x480 60,0 31,5 25,175 
+VGA 640x480 66,9 33,2 23,900
+720x480_60 720x480 60,0 29,7 23,700
+720x576_50 720x576 50,0 29,5 23,600
+832x624_75 832x624 74,9 25,4 23,100
+XGA 1024x768 60,0 48,3 65,000 
+XGA 1024x768 75,0 60,0 78,750
+XGA 1024x768 60,0 65,0 65,000 
+720p 1280x720 60,0 45,0 74,250
+720p 1280x720 50,0 36,8 50,000
+WXGA 1280x800 60,0 49,7 83,500
+SXGA 1280x1024 60,0 64,0 108,000 
+UXGA 1600x900 60,0 55,5 93,250
+SVGA 800x600 60,0 37,9 40,000 
+WXGA+ 1440x900 60,0 55,9 106,500
+WSXGA+ 1680x1050 60,0 65,3 146,250
+1080p 1920x1080 60,0 67,5 148,500
+PowerBook G4 1024x768 60,0 48,4 65,000 
+MAC13 640x480 66,7 35,0 30,240
+MAC16 832x624 74,5 49,7 57,280
+MAC19 1024x768 75,0 60,2 80,000 
+MAC21 1152x870 75,0 68,7 100,000
+MAC21 1152x864 60,0 53,3 65,600
+52 LED-projektorin E-käyttöopas
+HDMI (Video)
+Ajoitus Kuvatark-
+kuus
+P-taajuus 
+(Hz)
+V-taajuus 
+(kHz)
+Pistekello- 
+taajuus 
+(MHz)
+480i 720x480 
+(1440x480)16:9 59,94 (29,97) 15,7 27,000 
+576i 720x576 
+(1440x576)16:9 50 (25) 15,6 27,000 
+480p 720x480 16:9 59,9 31,5 27,000 
+576p 720x576 16:9 50,0 31,3 27,000 
+720p 1280x720 60,0 45,0 74,250 
+720p 1280x720 50,0 37,5 74,250 
+1080i 1920x1080 60 (30) 33,8 74,250 
+1080i 1920x1080 50 (25) 28,1 74,250 
+1080p 1920x1080 23,97/24 27,0 74,250 
+1080p 1920x1080 60,0 67,5 145,500 
+1080p 1920x1080 50,0 56,3 145,500 
+1080p 1920x1080 25,0 28,1 74,250 
+1080p 1920x1080 30,0 33,8 74,250 
+Graafisen 
+lähteen 
+monitorialueen 
+rajat
+Vaakaskannausnopeus: 
+15k –75 kHz
+Pystyskannausnopeus: 
+24-60Hz
+Maksimi pikselinopeus: 
+170 MHz (digitaalinen)
+LED-projektorin E-käyttöopas 53
+Näyttö Näyttöteknologia 0,2” DLP®
+Valolähde R/G/B-LED
+Valolähteen käyttöikä 20 000 h 
+Todellinen resoluutio 
+(natiivi)
+WVGA 854 x 480
+Valolähtö 200 LED lumenia
+Kontrastisuhde 
+(tyypillinen)
+500:1
+Värikylläisyys (NTSC) 100%
+Näyttövärit 16,7 miljoonaa väriä
+Projisointi-
+linssi Heittosuhde
+1,2:1 (37,6 in @1 m 
+@16:9)
+Heijastusetäisyys 0,5–3,0 m
+Heijastus-/Näyttökoko 19–110 in
+Projisointipoikkeama 100%
+Zoomaussuhde Kiinteä
+Video 
+Ominaisuudet Kuvatilat
+Kirkas, Vakio, Teatteri, 
+ECO
+Trapetsisäätö Pysty ±40 °
+Automaattinen trapet-
+sikorjaus 
+Kyllä
+Projektorin sijoittami-
+nen
+Etupöytä, Takapöytä
+Audio 
+Ominaisuudet Sisäiset kaiuttimet
+2 W:n kaiutin 
+(ASUS SonicMaster 
+-audioteknologia)
+(Jatkuu seuraavalla sivulla)
+E1R -LED-projektorin tekniset tiedot
+54 LED-projektorin E-käyttöopas
+Signaali 
+Taajuus
+Digitaalinen signaali 
+Taajuus
+24,7 Khz (V) - 74,6 Khz (V) / 
+50 Hz (P) - 60 Hz (P)
+Virta Virta päällä -tila ≤45 W
+Valmiustila <0,5 W
+Akku Sisäinen akku 2 850 mAh (5 V @ 1 A)
+Pariston kesto Jopa 4 tuntia
+Melu
+Akustinen kohina
+30 dB (Vakiotila)
+28 dB (Teatteritila)
+Tulo / Lähtö PC-signaalitulo HDMI 1.4b
+Äänilähtö Kuulokelähtö
+USB 2.0 -portti 
+virtalähdölle
+Kyllä (5 V @ 1 A)
+Mekaanin-
+en design
+Rungon värit Hopea
+Kolmijalan istukka Kyllä
+Koneen painikkeet Kyllä
+Linssin kansi Ei
+Mitat Fyysiset mitat 
+108 x 84 x 29 mm 
+(P x L x K)
+Paino Nettopaino (noin) 310 g
+(Jatkuu seuraavalla sivulla)
+LED-projektorin E-käyttöopas 55
+Käyttölämpötila 0 –35 °C
+Käyttökosteus 20–90 % 
+Lisävarusteet Pehmeä suojakotelo, Vetonarukassi, HDMI-
+kaapeli, Pikaopas, Takuukortti
+Vain tietyissä malleissa 
+Käyttöavain, Virtajohto, USB-kaapeli, 
+Säädöshyväksynnät FCC / CE / CB / RCM / VCCI / IEC62471 / CEC
+HUOMAUTUS:
+• Tekniset tiedot voivat muuttua ilman ennakkoilmoitusta.
+• Tuotteen saatavuus voi vaihdella alueittain.
+• Kaikki mainitut tuotemerkit ja tuotenimet ovat niiden omistajien 
+omaisuutta.
+56 LED-projektorin E-käyttöopas
+ Tietoja tästä käyttöoppaasta
+ Tämän käyttöoppaan merkintätavat
+ Typografia
+ Monikieliset versiot
+ Turvallisuusvarotoimenpiteet
+ LED-projektorin käyttö
+ Osien huolto ja vaihto
+ Huolenpito monitorista
+ Oikea hävittäminen
+ Luku 1: LED-projektoriin tutustuminen
+ Ominaisuudet
+ Näkymä päältä
+ Laajennetut ominaisuudet
+ Taskulamppu
+ SOS-tila
+ Näkymä edestä
+ Näkymä takaa
+ Oikea näkymä
+ Näkymä alta
+ Luku 2: Asettaminen 
+ LED-projektoriin käyttö
+ Liitä LED-projektori verkkolaitteeseen
+ Virtajohtovaatimukset
+ Käytä oikeaa, sijaintisi mukaista virtapistoketta.
+ Liitä LED-projektori laitteeseesi
+ Paina virtapainiketta
+ Säädä tarkennusta
+ Pystytila
+ Näyttökoko ja heijastusetäisyys
+ Luku 3: LED-projektorin käyttö
+ LED-projektorin ensimmäinen käyttö
+ Kuvaruutunäyttövalikon käyttö
+ Wi-Fi-käyttöavaimen käyttö(vain tietyissä malleissa)
+ Langaton peilaus
+ Suoratoisto
+ USB-yhteyden käyttö
+ Suoratoisto
+ Kuvaruutuvalikon valikkovalinnat
+ Äänenvoimakkuus
+ Tulo
+ Splendid
+ Kirkkaus
+ Kontrasti
+ Trapetsi
+ Projektorin sijainti
+ Asetus
+ Tiedot
+ LED-projektorin kytkeminen pois päältä
+ Liitteet
+ FCC-lausunto
+ Kansainvälisen ympäristösäätelyn yhdenmukaisuusilmoitus 
+ ASUS-kierrätys-/takaisinottopalvelut
+ HDMI-liitettävyys
+ Tuetut PC-ajoitukset
+ E1R -LED-projektorin tekniset tiedot

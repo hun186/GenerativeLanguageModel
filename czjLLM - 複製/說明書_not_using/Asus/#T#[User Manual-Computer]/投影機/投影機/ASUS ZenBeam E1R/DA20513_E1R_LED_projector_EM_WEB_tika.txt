@@ -1,0 +1,957 @@
+
+DA20513
+Første udgave
+November 2022
+E-vejledning
+2 LED-projektor - E-vejledning
+OPLYSNINGER OM OPHAVSRET OG GARANTI
+Ingen del af denne manual, inklusive produkterne og softwaren beskrevet heri, må - undtagen som 
+reservedokumentation for køberen selv - på nogen måde kopieres, transmitteres, transkriberes, lagres på 
+et søgesystem eller oversættes til andet sprog uden udtrykkelig, skriftlig tilladelse fra ASUSTeK COMPUTER 
+INC. (“ASUS”).
+Produktgarantien eller -servicen vil ikke blive forlænget, hvis: (1) Produktet er blevet repareret, modificeret 
+eller ændret, medmindre en sådan reparation, modifikation eller ændring er skriftligt godkendt af ASUS, 
+eller (2) produktets serienummer er ødelagt eller mangler.
+ASUS LEVERER DENNE MANUAL ”SOM DEN ER” - UDEN GARANTI AF NOGEN ART, HVERKEN UDTRYKKELIG 
+ELLER UNDERFORSTÅET, HERUNDER, MEN IKKE BEGRÆNSET TIL UNDERFORSTÅEDE GARANTIER OG 
+BETINGELSER VEDRØRENDE SALGBARHED ELLER EGNETHED TIL ET GIVENT FORMÅL. ASUS’ DIREKTØRER, 
+CHEFER, ANSATTE OG AGENTER ER IKKE I NOGET TILFÆLDE ANSVARLIGE FOR NOGEN SOM HELST INDIREKTE, 
+SÆRLIG, TILFÆLDIG ELLER FØLGELIG SKADE (HERUNDER SKADE I FORM AF TAB AF FORTJENESTE, TAB AF 
+FORRETNING, TAB AF BRUG ELLER DATA, FORSTYRRELSE AF FORRETNING OSV), SELV, HVIS ASUS ER BLEVET 
+OPLYST OM MULIGHEDEN FOR SÅDANNE SKADER SOM FØLGE AF FEJL I DENNE MANUAL ELLER DETTE 
+PRODUKT.
+Produkter og selskabsnavne i denne manual kan være eller ikke være deres respektive virksomheders 
+registrerede varemærker eller ophavsretter og tjener kun som identifikation og forklaring og til ejerens 
+fordel uden nogen som helst hensigt om at krænke.
+SPECIFIKATIONER OG INFORMATIONER I DENNE MANUAL SKAL KUN TJENE SOM INFORMATION OG KAN TIL 
+HVER EN TID OG UDEN VARSEL ÆNDRES. DE FORPLIGTER IKKE PÅ NOGEN MÅDE ASUS. ASUS PÅTAGER SIG 
+INTET ANSVAR FOR FEJL OG UNØJAGTIGHEDER I DENNE MANUAL, HERUNDER I RELATION TIL PRODUKTET 
+OG SOFTWAREN BESKREVET HERI.
+Copyright © 2022 ASUSTeK COMPUTER INC. Alle rettigheder forbeholdt.
+Ansvarsbegrænsning
+Der kan opstå tilfælde, hvor du, som følge af mangler fra ASUS’ side eller andet ansvar, er berettiget til 
+erstatning fra ASUS. I alle sådanne tilfælde, uanset baggrunden for hvilken du er berettiget til erstatning fra 
+ASUS, er ASUS kun ansvarlig - op til den listede kontraktpris - for skade på person (inklusive død), skade på 
+fast ejendom, skade på konkret personlig ejendom samt for reel og direkte skade som følge af undladelse af 
+eller fejl ved udførelse af de retslige forpligtelser under denne garanti.
+ASUS vil kun være ansvarlig for og erstatte tab, skade, skader eller krav på basis af denne kontrakt, 
+skadevoldende handling eller brud i henhold til denne garantierklæring.
+Denne begrænsning gælder også ASUS’ leverandører og forhandlere. Den er ASUS’, dets leverandørers og 
+din forhandlers maksimale, kollektive ansvar.
+ASUS ER IKKE UNDER NOGEN OMSTÆNDIGHEDER ANSVARLIG FOR: (1) TREDIEPARTS SKADESKRAV MOD DIG, 
+(2) TAB AF ELLER SKADE PÅ DINE DATAREGISTRERINGER, (3) SÆRLIGE, TILFÆLDIGE ELLER INDIREKTE SKADER 
+ELLER FOR NOGEN ØKONOMISK FØLGESKADE (HERUNDER TAB AF FORTJENESTE OG OPSPARING), OGSÅ 
+SELVOM ASUS, DETS LEVERANDØRER ELLER DIN FORHANDLER ER OPLYST OM MULIGHEDEN HERFOR.
+Service og støtte
+Besøg vores flersprogede wbeside på https://www.asus.com/support
+LED-projektor - E-vejledning 3
+Indholdsfortegnelse
+Om denne vejledning ....................................................................................... 5
+Konventioner, brugt i denne manual ........................................................ 6
+Typografi .............................................................................................................. 6
+Udgaver på andre sprog ................................................................................ 6
+Sikkerhedsforanstaltninger ............................................................................ 7
+Brug af din LED-projektor .............................................................................. 7
+Servicering og udskiftning af dele ............................................................. 7
+Vedligeholdelse af din LED-projektor ....................................................... 8
+Ansvarlig bortskaffelse ................................................................................... 9
+Kapitel 1: Lær din LED-projektor at kende
+Egenskaber .........................................................................................................12
+Set oppefra .......................................................................................................12
+Udvidede funktioner .....................................................................................15
+Flashlight (Lommelygte) .................................................................................15
+SOS-funktion .......................................................................................................16
+Set forfra ............................................................................................................17
+Set bagfra ..........................................................................................................18
+Set fra højre side .............................................................................................20
+Set fra bunden .................................................................................................21
+Kapitel 2: Setting up 
+Betjening af din LED-projektor ....................................................................24
+Forbind LED-projektoren til strømadapteren.......................................24
+Krav til strømkablet ...........................................................................................26
+Tilslutning af LED-projektoren til din enhed ........................................27
+Tryk på tænd/sluk knappen ........................................................................28
+Juster fokus .......................................................................................................29
+Portrætfunktion ..............................................................................................30
+Skærmstørrelse og projektionsafstand .....................................................31
+4 LED-projektor - E-vejledning
+Kapitel 3: Sådan bruges din LED-projektor
+Når din LED-projektor bruges for første gang .......................................34
+Brug af skærmmenuen...................................................................................35
+Sådan bruges Wi-Fi-donglen (kun på udvalgte modeller) ................36
+Trådløs spejling ...............................................................................................37
+Streaming ..........................................................................................................39
+Brug med en USB-forbindelse .....................................................................40
+Streaming ..........................................................................................................40
+Punkterne i skærmmenuen ..........................................................................41
+Lydstyrke ............................................................................................................41
+Indgang .............................................................................................................41
+Splendid .............................................................................................................41
+Lysstyrke ............................................................................................................41
+Kontrast .............................................................................................................42
+Keystone ............................................................................................................42
+Projektorplacering..........................................................................................42
+Installation ........................................................................................................43
+Oplysninger ......................................................................................................44
+Sådan slukkes din LED-projektor ................................................................45
+Bilag
+Erklæring fra Den Føderale Kommunikationskommission (FCC) ...48
+HDMI-tilslutning ...............................................................................................50
+Understøttede pc-tider ..................................................................................51
+Specifikationer til E1R LED-projektoren ...................................................53
+LED-projektor - E-vejledning 5
+Om denne vejledning
+Denne vejledning giver dig oplysninger om hardwaren og softwaren 
+på din LED-projektor, og er organiseret i følgende kapitler:
+Kapitel 1: Lær din LED-projektor at kende
+Dette kapitel handler om delene til din LED-projektor.
+Kapitel 2: Setting up
+Dette kapitel beskriver, hvordan din LED-projektor opstilles og 
+bruges med andre enheder.
+Kapitel 3: Sådan bruges din LED-projektor
+Dette kapitel beskriver, hvordan knapperne på LED-projektorens 
+betjeningspanel virker, og hvordan man bruger dem til at starte 
+funktionerne på din LED-projektor.
+Bilag
+Dette afsnit indeholder sikkerhedsbeskeder til din LED-
+projektor.
+6 LED-projektor - E-vejledning
+Konventioner, brugt i denne manual
+For at fremhæve nøgleoplysninger i denne manual, vises nogen 
+tekst på følgende måde:
+VIGTIGT! Denne besked indeholder vigtige oplysninger, som skal 
+følges for at udføre en opgave. 
+BEMÆRK: Denne besked indeholder flere oplysninger og tips, som 
+kan hjælpe med at udføre bestemte opgaver.
+ADVARSEL! Denne besked indeholder vigtige oplysninger, som - af 
+hensyn til din sikkerhed - skal følges, når du udfører opgaver, og for at 
+dataene og delene på din LED-projektor ikke beskadiges. 
+Typografi
+Fed indikerer en menu eller et punkt, som skal vælges.
+Kursiv indikerer afsnit, som du henvises til i denne vejledning.
+Udgaver på andre sprog
+Download udgaver af denne E-vejledning på andre sprog på 
+følgende websted: https://www.asus.com/support
+LED-projektor - E-vejledning 7
+Sikkerhedsforanstaltninger
+Brug af din LED-projektor
+• Læs vejledningen og sikkerhedsforskrifterne, inden du tager din 
+LED-projektor i brug.
+• Læs bemærkningerne og advarslerne, der er angivet i 
+brugervejledningen.
+• Din LED-projektor må IKKE stilles på ujævne eller ustabile 
+overflader.
+• Din LED-projektor må IKKE bruges i røgfyldte omgivelser. Røg 
+kan føre til ophobning af skidt på kritiske dele og beskadige din 
+LED-projektor eller reducere dens ydeevne.
+• Brug IKKE beskadigede el-ledninger, tilbehør eller eksterne 
+enheder med din LED-projektor.
+• Hold plastikemballagen til din LED-projektor ude af børns 
+rækkevidde.
+• Der må IKKE placeres noget i nærheden af ventilationshullerne 
+på din LED-projektor, og de må IKKE blokeres. Dette kan 
+gøre projektoren varmere indvendig, hvilket kan forringe 
+billedkvaliteten og beskadige den.
+• Sørg for at driftsspændingen på din LED-projektor passer med 
+spænding på din strømkilde.
+Servicering og udskiftning af dele
+• Du må IKKE adskille din LED-projektor, eller selv forsøge at 
+reparere den. Kontakt dit lokale ASUS-servicecenter for at få 
+hjælp.
+• Der er eksplosionsfare, hvis der indsættes en forkert type 
+batterier. Opbrugte batterier skal bortskaffes i henhold 
+til sikkerhedsinstruktionerne. Kontakt dit lokale ASUS-
+servicecenter for hjælp. 
+• Hvis du skal udskifter dele på din LED-projektor, skal du 
+bruge dele, der er anbefalet af ASUS og kontakte dit lokale 
+servicecenter for hjælp.
+8 LED-projektor - E-vejledning
+Vedligeholdelse af din LED-projektor
+• Sluk din LED-projektor, og træk stikket ud af stikkontakten før 
+rengøring. 
+• Når kabinettet på din LED-projektor skal rengøres, skal du bruge 
+en ren, blød klud, der er fugtet med vand eller en blanding af 
+vand og neutralt rengøringsmiddel. Tør kabinettet efter med en 
+blød tør klud.
+• Sørg for, at objektivet har kølet ned, inden det rengøres. Tør 
+forsigtigt objektivet af med et rensepapir til objektiver. Rør IKKE 
+ved objektivet med dine fingre. 
+• Brug IKKE flydende rengøringsmidler, rengøringsmidler på 
+spraydåser, benzen eller fortynder på din LED-projektor.
+• Brug aldrig denne LED-projektor straks efter at have flyttet 
+den fra et koldt sted til et varmere sted. Hvis LED-projektoren 
+udsættes for en drastisk temperaturændring, kan der dannes 
+fugt på objektivet og dets dele indeni. For at undgå dette, 
+skal vente i to (2) timer efter en ekstrem eller pludselig 
+temperaturændring, før enheden bruges.
+• Brug IKKE en spray, der indeholder brændbare gasser til, at 
+regøre objektivet. Dette kan forårsage brand på grund af for høj 
+varme inde i projektoren.
+• Rengør IKKE objektivet, hvis projektoren opvarmes, da dette kan 
+gøre, at objektivets overfladefilm skaller af.
+• Brug IKKE hårde genstande til at tørre eller banke på objektivet. 
+LED-projektor - E-vejledning 9
+Ansvarlig bortskaffelse
+Din LED-projektor må ikke bortskaffes sammen med 
+almindeligt husholdningsaffald. Dette produktet er 
+designet med henblik på genbrug af dele. Symbolet 
+på den overkrydsede affaldsbeholder på hjul angiver, 
+at produktet (elektrisk- og elektronisk udstyr og 
+kviksølvholdige knapcellebatterier) ikke må bortskaffes 
+med kommuneaffaldet. Tjek de lokale regler vedrørende 
+bortskaffelse af elektroniske produkter.
+Du må ikke bortskaffe batteriet sammen med dit almindelige 
+husholdningsaffald. Symbolet med den overkrydsede 
+affaldscontainer på hjul indikerer, at batteriet ikke må 
+anbringes sammen med husholdningsaffald.
+10 LED-projektor - E-vejledning
+LED-projektor - E-vejledning 11
+Kapitel 1: Lær din LED-projektor 
+at kende
+Kapitel 1:
+Lær din LED-projektor at 
+kende
+12 LED-projektor - E-vejledning
+Egenskaber
+Set oppefra
+Knapperne på betjeningspanelet
+Med knapperne på betjeningspanelet kan du navigere i 
+skærmmenuen. Disse knapper bruges til, at indstille LED-
+projektoren, som angivet nedenfor.
+Splendid/
+Afslut
+Venstre/
+Skru ned for 
+lydstyrken
+Menu/OK Højre/Skru op 
+for lydstyrken
+BEMÆRK: Du kan læse mere om, hvordan knapperne på 
+betjeningspanelet bruges til indstillingerne på din LED-projektor i 
+kapitel 3: Sådan bruges din LED-projektor.
+LED-projektor - E-vejledning 13
+Strøm og batteri-indikator
+LED-indikatoren viser følgende status på din LED-projektor:
+• Den lyser, når LED-projektoren er tændt.
+• Den lyser enten som grøn eller rød, afhængigt af batteriets 
+opladningsstatus.
+Du kan finde flere oplysninger om, hvordan denne LED-
+indikator virker som en batteri-indikator i følgende tabel:
+Farve Status
+Lyser grøn LED-projektoren er tilsluttet en strømkilde, 
+kører på batteri og batteristrømmen 
+er over 25% eller projektoren kører på 
+powerbank-funktionen.
+Lyser rød LED-projektoren bruger batteriet, og 
+batteriniveauet er under 25%.
+Blinker orange LED-projektorens temperatur er for høj og 
+den skruer automatisk ned for lysstyrken. 
+LED-projektoren lukker ned, hvis 
+temperaturen stadig er for høj, så den ikke 
+overopheder.
+Blinker grøn LED-projektoren bruges i øjeblikket som 
+en powerbank og oplader din mobilenhed. 
+14 LED-projektor - E-vejledning
+Batteriopladningsindikator
+Denne LED-indikator lyser, når LED-projektoren sluttes til en 
+strømkilde med dens strømadapter.
+VIGTIGT! Brug kun den medfølgende strømadapter til at 
+oplade batteripakken og strømforsyne din LED-projektor.
+LED-projektor - E-vejledning 15
+Udvidede funktioner
+Din LED-projektor har også enkeltstående funktioner, der startes ved 
+at trykke på -knappen, når LED-projektoren er på 
+batterifunktionen.
+BEMÆRK: 
+• Disse funktioner kan ikke bruges, hvis din LED-projektor er 
+tilsluttet en HDMI-indgangskilde eller er på Wi-Fi-funktionen.
+• For at slukke for eller skifte mellem LED-projektorens lommelygte 
+og nødlys, skal du blot trykke på -knappen, indtil den 
+ønskede belysningsfunktion er deaktiveret eller aktiveret.
+VIGTIGT! Sørg for, at din LED-projektor er opladet og kan køre på 
+batterifunktionen, før du aktiverer disse funktioner. Batteriets levetid 
+varierer afhængigt af brugen.
+Flashlight (Lommelygte)
+LED-projektoren blinker konstant hvidt lys, når du bruger denne 
+funktion.
+ 
+Splendid/Afslut-knap
+Sådan bruges din LED-projektor som en lommelygte:
+1. Afbryd alle eksterne enheder og Wi-Fi-donglen fra din LED-
+projektor, og tryk derefter på tænd/sluk-knappen for at tænde 
+den.
+16 LED-projektor - E-vejledning
+SOS-funktion
+LED-projektoren blinker et blinkende hvidt lys, når du bruger denne 
+funktion.
+Splendid/Afslut-knap
+Sådan bruges din LED-projektor som nødlys:
+1. Afbryd alle eksterne enheder og Wi-Fi-donglen fra din LED-
+projektor, og tryk derefter på tænd/sluk-knappen for at tænde 
+den.
+2. Tryk gentagne gange på , indtil LED-projektoren blinker et 
+hvidt lys.
+2. Tryk gentagne gange på , indtil LED-projektoren blinker et 
+konstant hvidt lys.
+LED-projektor - E-vejledning 17
+Set forfra
+Objektiv
+Objektivet projicerer video- og billedfiler på skærmen fra den 
+tilsluttede enhed.
+ADVARSEL!
+• Objektivet må IKKE røres med dine hænderne eller skarpe 
+genstande.
+• Kik IKKE direkte ind i objektivet.
+18 LED-projektor - E-vejledning
+Set bagfra
+Lydudgangsstik
+Lydudgangsstikket giver dig mulighed for at forbinde din LED-
+projektor til et par hovedtelefoner.
+HDMI-port
+Denne port er beregnet til HDMI-stik (High-Definition 
+Multimedia Interface). Denne port er HDCP-kompatible, og 
+beregnet til afspilning af HD-dvd’er, Blu-ray-diske og andet 
+beskyttet indhold.
+Stik til strømforsyning/Wi-Fi-dongle
+Denne strømudgang forsyner op til 5 V/1A udgangsspænding 
+og strøm. Du kan slutte din mobilenhed til dette stik for, at lade 
+den op, når du bruger LED-projektoren.
+Du kan også sætte en Wi-Fi-dongle i (følger med bestemte 
+modeller), hvilket giver dig mulighed for at spejle eller streame 
+indhold fra din mobilenhed.
+BEMÆRK: Du kan finde flere oplysninger i afsnittet Sådan 
+bruges Wi-Fi-forbindelsen i denne vejledningen.
+LED-projektor - E-vejledning 19
+Strømstik (DC)
+Sæt den medfølgende strømforsyning i dette stik for at lade 
+batteripakken op og strømforsyne din LED-projektor.
+VIGTIGT! Brug kun den medfølgende strømadapter til at oplade 
+batteripakken og strømforsyne din LED-projektor.
+ADVARSEL! Under brugen kan adapteren blive varm. Adapteren 
+må IKKE tildækkes, og den skal holdes væk fra kroppen, når den 
+er forbundet til en strømkilde.
+Tænd/sluk-knap
+Hold denne tænd/sluk-knap nede for, at tænde og 
+slukke din LED-projektor. Tryk på denne knap for, at slå 
+powerbankfunktionen til og fra.
+20 LED-projektor - E-vejledning
+Set fra højre side
+Fokusknap
+Fokusringen giver dig mulighed for, at justere fokussen på din 
+LED-projektor.
+Ventilationsåbninger
+Ventilationsåbningerne trækker kold luft ind og blæser varm 
+luft ud af LED-projektor.
+ADVARSEL! Sørg for at papir, bøger, stof, ledninger eller andre 
+ting ikke tildækker nogen af ventilationsåbningerne, da dette 
+kan overophede pc’en.
+LED-projektor - E-vejledning 21
+Set fra bunden
+Stativstik
+Sæt LED-projektoren på et stativ med et 1/4-20UNC-
+monteringsskrue og dette stik.
+BEMÆRK: Dette stik må kun bruges med stativer, der er op til 1 
+meter høje.
+22 LED-projektor - E-vejledning
+LED-projektor - E-vejledning 23
+Kapitel 2:
+Setting up 
+Kapitel 2: Setting up 
+24 LED-projektor - E-vejledning
+Betjening af din LED-projektor
+Denne bærbare LED-projektor kan bruges til, at tilslutte og afspille 
+fra dine enheder, så du nemt kan åbne multimediefiler og høre lyd 
+direkte fra de indbyggede SonicMaster-højttalere.
+Af hensyn til din sikkerhed og for at opretholde kvaliteten af denne 
+enhed, bedes du se følgende trin, når du bruger din LED-projektor.
+Forbind LED-projektoren til strømadapteren
+A. Slut ledningen til vekselstrømadapteren.
+B. Sæt AV-strømadapteren i en 100~240 V strømkilde.
+C. Slut jævnstrømsstikket til din LED-projektor.
+Oplad din LED-projektor i 5 timer, før du bruger den med 
+batteriet for første gang.
+BEMÆRK: Strømadapterens udseende kan variere afhængig af model 
+og region.
+LED-projektor - E-vejledning 25
+VIGTIGT! 
+• Du må kun bruge den medfølgende strømadapter til at oplade batteriet 
+og strømforsyne din LED-projektor.
+• Sørg for at din LED-projektor er forbundet til strømadapteren, før du 
+tænder for den første gang. Sæt altid ledningen i en stikkontakt uden 
+brug af forlængerledninger. Af hensyn til din sikkerhed må denne enhed 
+kun sluttes til en jordforbundet stikkontakt.
+• Stikkontakten skal være let tilgængelig, og den skal være i nærheden at 
+din LED-projektor.
+• For at afbryde din LED-projektor fra strømforsyningen, skal du trække 
+stikket ud af stikkontakten.
+ADVARSEL!
+Læs følgende forholdsregler for batteriet i din LED-projektor:
+• Batterikapaciteten varierer, afhængig af miljøtemperaturen, fugtigheden 
+og brug af LED-projektoren.
+• Batteriet, som bruges i denne enhed, kan udgøre en risiko for brand eller 
+forbrændinger pga. kemikalier, hvis det fjernes eller skilles ad.
+• For din personlige sikkerheds, bedes du venligst følge 
+advarselsmærkaterne.
+• Der er eksplosionsfare, hvis der indsættes en forkert type batterier.
+• Produktet må IKKE brændes.
+• Forsøg aldrig, at kortslutte batteriet i din LED-projektor.
+• Forsøg aldrig at skille batteriet ad eller samle det.
+• Hold op med at bruge batteriet hvis det begynder at lække.
+• Batteriet og dets dele skal genbruges eller bortskaffes på en miljørigtig 
+måde.
+• Hold batteriet og andre små dele væk fra små børn. 
+• Hvis batteriet bortskaffelse i ild eller i en varm ovn eller ved mekanisk 
+knusning, eller hvis det skæres op, kan det føre til en eksplosion.
+• Hvis et batteri efterlades i et område med høj varme, kan det føre til en 
+eksplosion eller lækage af brændbart væske eller gas.
+• Hvis et batteri udsættes for ekstremt lavt lufttryk, kan det føre til en 
+eksplosion eller lækage af brændbart væske eller gas.
+26 LED-projektor - E-vejledning
+Krav til strømkablet
+Brug det korrekte strømstik i henhold til hvor du befinder dig.
+VIGTIGT! Kontakt din forhandler, hvis strømkablet, der følger med din 
+LED-projektor, ikke passer med din lokale strømkilde.
+BEMÆRK: Vi anbefaler, at du bruger en videoenhed, også bruger et 
+stik med jordforbindelse, så du undgår signalforstyrrelser på grund af 
+spændingsudsving.
+Til brug i Australien og Kina I USA, Canada, Japan og Taiwan
+Til brug i Kontinentaleuropa Til brug i Storbritannien
+LED-projektor - E-vejledning 27
+Tilslutning af LED-projektoren til din enhed
+ Lydudgang HDMI
+ Strømforsyning (5V/1A)
+28 LED-projektor - E-vejledning
+Tryk på tænd/sluk knappen
+BEMÆRK: Batteripakken i din LED-projektor lades ikke op, når LED-
+projektoren er i brug. Batteriniveauet kan ses på batteri-indikatoren 
+på din LED-projektor. For yderligere oplysninger bedes du venligst se 
+afsnittet Set fra oven i denne vejledning.
+LED-projektor - E-vejledning 29
+Juster fokus
+BEMÆRK: Brug et stillbillede, når du justerer skærmbilledet.
+Juster fokussen på det fremviste billede ved, at flytte fokusringen op 
+og ned.
+30 LED-projektor - E-vejledning
+Portrætfunktion
+Din LED-projektor kan både vise billedet vandret (standard) og 
+lodret. For at vise billedet lodret, skal du stille projektoren lodret op, 
+hvorefter det lodrette billede vises i fuld skærm uden sorte linjer på 
+siderne.
+BEMÆRK: Din LED-projektor giver dig mulighed for at spejle eller 
+streame indhold fra din mobilenhed. Se afsnittet Sådan bruges Wi-Fi-
+forbindelsen i denne vejledning for yderligere oplysninger.
+LED-projektor - E-vejledning 31
+Skærmstørrelse og projektionsafstand
+Juster LED-projektorens afstand fra skærmen ved brug af 
+nedenstående tabel.
+Skærmstørrelse Projicerings-
+afstandDiagonal Vandret Lodret
+tommer mm tommer mm tommer mm tommer mm
+30 762 26,14 664 14,72 374 31,29 795
+40 1016 34,88 886 19,60 498 41,77 1061
+50 1270 43,58 1107 24,52 623 52,24 1327
+60 1524 52,28 1328 29,40 747 62,71 1593
+70 1778 61 1550 34,33 872 73,07 1856
+80 2032 69,72 1771 39,21 996 83,54 2122
+90 2286 78,42 1992 44,13 1121 94,05 2389
+100 2540 87,12 2213 49,05 1246 104,48 2654
+110 2794 95,86 2435 53,93 1370 114,96 2920
+120 3048 104,56 2656 58,85 1495 125,39 3185
+32 LED-projektor - E-vejledning
+LED-projektor - E-vejledning 33
+Kapitel 3: Sådan bruges din 
+LED-projektor
+Kapitel 3:
+Sådan bruges din LED-
+projektor
+34 LED-projektor - E-vejledning
+Når din LED-projektor bruges for første gang
+Se følgende trin, når du bruger din LED-projektor for første gang.
+BEMÆRK: Sørg for at din LED-projektor er forbundet til 
+strømadapteren, før du tænder for den første gang. Vi anbefaler, at du 
+slutter din LED-projektor til en jordforbundet stikkontakt.
+1. Sæt LED-projektor op, og hold tænd/sluk-knappen nede i tre (3) 
+sekunder for at tænde den. 
+2. Brug knapperne og på betjeningspanelet på din LED-
+projektoren for, at se hvilke sprog du kan vælge.
+Navigationsknapper
+Menu/OK-knap
+LED-projektor - E-vejledning 35
+BEMÆRK: Du kan finde flere oplysninger i afsnittet Indstillingerne i 
+skærmmenuen i denne vejledningen.
+Brug af skærmmenuen
+Din LED-projektor er en plug-and-play-enhed, der også har en 
+skærmmenu med programmer og indstillinger, så du kan få det 
+meste ud af din LED-projektor. 
+Åbn skærmmenuen ved, at trykke på på LED-projektorens 
+betjeningspanel.
+3. Når du har valgt dit foretrukne sprog, skal du trykke på for, 
+at bruge dette sprog på LED-projektoren.
+4. Du kan nu bruge din LED-projektor til, at vise filer fra en tilsluttet 
+enhed. NO SIGNAL (INTET SIGNAL)-skærmen vises muligvis, 
+hvis der ikke er tilsluttet en enhed, eller hvis enheden ikke kan 
+registreres af LED-projektoren.
+5. Tryk på på din LED-projektorens betjeningspanel for, at 
+åbne skærmmenuen.
+For at rulle gennem indstillingerne i skærmmenuen, skal du trykke 
+på navigationsknapperne ( / ) på din LED-projektorens 
+betjeningspanel. Når du er færdig med at justere, skal du trykke på 
+ for, at gemme de nye indstillinger. Tryk derefter på eller 
+for, at gå tilbage til startskærmen.
+36 LED-projektor - E-vejledning
+Sådan bruges Wi-Fi-donglen 
+(kun på udvalgte modeller)
+Med Wi-Fi-donglen (ekstraudstur) kan du projicere din enheds 
+skærm eller streame fra din enhed til din LED-projektor. 
+Opsætningsmåden kan variere lidt fra enhed til enhed.
+Sørg for, at gøre følgende, før du starter skærmspejling eller 
+mediestreaming fra din enhed:
+1. Sæt Wi-Fi-donglen i USB Type-A-porten på din LED-projektor.
+2. Projektoren skifter automatisk til den trådløse 
+projiceringsfunktion.
+BEMÆRK: Hvis den ikke automatisk skifter til den trådløse 
+projiceringsfunktion, kan dette ændres i skærmmenuen. Tryk på 
+og vælg derefter > Spejling.
+3. Slå Wi-Fi til på din enhed.
+LED-projektor - E-vejledning 37
+Fra Android-enheder
+1. Tryk på Smart Mirroring eller Cast og opret forbindelse til din 
+LED-projektors SSID, som vist på projektionsskærmen.
+2. Herefter kan du projicere din mobilenheds skærm via LED-
+projektoren.
+Trådløs spejling
+Fra iOS-enheder
+1. Slå Wi-Fi til og vælg din LED-projektors SSID (som vist på 
+projektionsskærmen) på listen over netværker.
+2. Indtast projektorens adgangskode (som vist på 
+projektionsskærmen) for, at oprette forbindelsen.
+3. Tryk på Screen Mirroring og opret forbindelse til din LED-
+projektors SSID, som vist på projektionsskærmen.
+4. Herefter kan du projicere din mobilenheds skærm via LED-
+projektoren.
+BEMÆRK: 
+• Punkterne kan variere afhængigt af din enhed. Du kan finde flere 
+oplysninger i vejledningen, der fulgte med din enhed. 
+• Sørg for, at dit mobile operativsystem er opdateret, før du starter 
+spejlingen eller streamingen. 
+38 LED-projektor - E-vejledning
+Fra en Windows bærbar computer
+1. Tryk på genvejstasten Windows ( eller ) + K.
+2. Vælg din LED-projektors SSID (som vist på projektionsskærmen) 
+på listen over enheder.
+3. Indtast projektorens adgangskode (som vist på 
+projektionsskærmen) for, at oprette forbindelsen og starte 
+spejlingen.
+Fra en MacBook
+1. Vælg din LED-projektors SSID (som vist på projektionsskærmen) 
+på listen over Wi-Fi-netværker på din MacBook.
+2. Indtast projektorens adgangskode (som vist på 
+projektionsskærmen) for, at oprette forbindelsen.
+3. Åbn din browser, og indtast internetadressen (http://192.168.
+xxx.xxx), som vist på projektionsskærmen i adressefeltet. 
+Herefter sendes du til en webside, hvor du kan forbinde din 
+LED-projektor til Wi-Fi-netværket.
+BEMÆRK: 
+• Sørg for, at din enhed og LED-projektor er forbundet til det 
+samme Wi-Fi-netværk, før du fortsætter til næste trin.
+• Hvis du vil oprette forbindelse til et andet Wi-Fi-netværk, skal du 
+gentage trin 3 og vælge det ønskede Wi-Fi-netværk på websiden.
+4. Åbn Kontrolcenter på din Mac, og vælg Skærmspejling. På 
+listen over enheder skal du vælge din LED-projektor for, at starte 
+spejlingen.
+Scan QR-koden for, at se vejledningsvideoen:
+BEMÆRK: Din projektor ligner muligvis ikke den i 
+videoen, men grænsefladen og vejledningerne er ens.
+LED-projektor - E-vejledning 39
+Streaming
+Streaming fra YouTube eller Facebook-video
+Standardindstillinger
+1. Slå Wi-Fi til og vælg din LED-projektors SSID (som vist på 
+projektionsskærmen) på listen over netværker.
+2. Indtast projektorens adgangskode (som vist på 
+projektionsskærmen) for, at oprette forbindelsen.
+3. Åbn din browser, og indtast internetadressen (http://192.168.
+xxx.xxx), som vist på projektionsskærmen i adressefeltet. 
+Herefter sendes du til en webside, hvor du kan forbinde din 
+LED-projektor til Wi-Fi-netværket.
+BEMÆRK: 
+• Sørg for, at din enhed og LED-projektor er forbundet til det 
+samme Wi-Fi-netværk, før du fortsætter til næste trin.
+• Hvis du vil oprette forbindelse til et andet Wi-Fi-netværk, skal du 
+gentage trin 3 og vælge det ønskede Wi-Fi-netværk på websiden.
+4. Åbn appen YouTube eller Facebook, og tryk derefter på Cast-
+knappen på videoskærmen. På listen over enheder skal du 
+vælge din LED-projektor, som du vil streame til.
+5. Når forbindelsen er blevet oprettet, skal du vælge videoen, som 
+du vil se. Tryk derefter på Afspil. Dit indhold afspilles nu fra 
+projektoren.
+Scan QR-koden for, at se vejledningsvideoen:
+BEMÆRK: Din projektor ligner muligvis ikke den i 
+videoen, men grænsefladen og vejledningerne er ens.
+40 LED-projektor - E-vejledning
+Med USB Type-A-porten kan du projicere din enheds skærm eller 
+streame fra din enhed til din LED-projektor. Opsætningsmåden kan 
+variere lidt fra enhed til enhed.
+Sørg for, at USB-kablet sættes rigtigt i din LED-projektor, før 
+skærmspejlingen eller mediestreamingen startes på din enhed.
+Streaming
+På en Android-telefon
+1. Slut den anden enden af USB-kablet til din telefon.
+2. Download MiraPlug på din telefon og installer den.
+3. Åbn MiraPlug, og tryk på Cast.
+På en iOS-telefon
+1. Slut den anden enden af USB-kablet til din telefon.
+2. Tryk på Hav tillid til, når du skal bekræfte, at du vil give din LED-
+projektor adgang til din telefon.
+Brug med en USB-forbindelse
+LED-projektor - E-vejledning 41
+Punkterne i skærmmenuen
+På følgende sider kan du finde flere oplysninger, om hvert punkt i 
+skærmmenuen.
+Lydstyrke
+Vælg dette menupunkt for, at justere lydstyrken på den lydfil, der 
+afspilles på din LED-projektor. 
+Du kan justere lydstyrken fra 0 til 10. Du kan også holde eller 
+ nede, for hurtigt at slå lyden fra eller skrue helt op for 
+lydstyrken.
+Splendid
+Vælg dette menupunkt for, at aktivere forskellige visningsfunktioner. 
+Du kan også åbne dette menupunkt ved, at trykke på . 
+Tilgængelige valgmuligheder: Lyst, Standard, Biograf og 
+Energisparende
+Indgang
+Vælg dette menupunkt for, at konfigurere indgangskilden til din 
+LED-projektor.
+Lysstyrke
+Vælg dette menupunkt for, at justere lysstyrken på 
+billedprojektionen. Lysstyrken kan justeres fra 0 til 10, fra mørk til lys.
+42 LED-projektor - E-vejledning
+Kontrast
+Vælg dette menupunkt for, at justere de lyse og mørke områder 
+på billedprojektionen. Kontrasten kan justeres fra 0 til 10, fra den 
+laveste til den højest mulige farvekontrast.
+Keystone
+Vælg dette punkt for, at justere keystone-effekten på 
+billedprojektionen.
+BEMÆRK: Hvis du ønsker at aktivere Auto Keystone-funktionen efter 
+bruge den manuelle justering, skal du gå til Opsætning og slå Auto 
+Keystone til.
+Projektorplacering
+I dette punkt kan du skifte, hvordan billedet vises på skærmen i 
+henhold til placeringen af din LED-projektor. 
+Du kan ændre projektorens retning, så den passer til stedet, hvor 
+den i øjeblikket står: Forfra bord og Bagfra bord.
+LED-projektor - E-vejledning 43
+Installation
+Vælg dette menupunkt for, at konfigurere følgende indstillinger på 
+din LED-projektor.
+• Sprog - I dette punkt kan du indstille sproget, der bruges i LED-
+projektorens skærmmenu.
+• Nulstil - I dette punkt kan du gendanne indstillingerne til 
+standardindstillingerne på din LED-projektor eller Wi-Fi-
+netværk. 
+• Auto Keystone - I dette punkt kan du slå den automatiske 
+keystone-rettelse til og fra.
+• Automatisk loftregistrering - I dette punkt kan du slå 
+automatisk loftsregistrering til og fra.
+• Auto Power - I dette punkt kan du slå den automatiske 
+opstartsfunktion til og fra, når din LED-projektor er forbundet 
+til en HDMI-enhed og sluttet til en strømkilde med dens 
+strømadapter.
+• Skærmmenuens tidsudløb - I dette punkt kan du indstille, hvor 
+mange sekunder der skal gå, før skærmmenuen forsvinder fra 
+projektionsskærmen.
+• Forløbet tid før nedlukning- I dette punkt kan du vælge Auto 
+(15 minutter), eller indstille hvor mange minutter der skal gå 
+uden et HDMI-signal, før din LED-projektor automatisk slukker. 
+44 LED-projektor - E-vejledning
+Oplysninger
+Vælg dette menupunkt for, at se en oversigt over oplysninger om din 
+LED-projektor.
+Modelnavn LED-projektorens 
+firmwareversion
+Indgangsenhedens 
+skærmopløsning
+LED-projektor - E-vejledning 45
+Sådan slukkes din LED-projektor
+1. Tryk på tænd/sluk knappen
+2. Når følgende skærmbillede vises, skal du trykke på tænd/sluk-
+knappen igen for, at slukke din LED-projektor helt. Hvis LED-
+projektoren skal tændes igen umiddelbart efter den er blevet 
+slukket, skal du vente, indtil strømindikatoren og batteri-
+indikatoren lyser. 
+46 LED-projektor - E-vejledning
+LED-projektor - E-vejledning 47
+Bilag
+BilagBilagBilag
+48 LED-projektor - E-vejledning
+Erklæring fra Den Føderale 
+Kommunikationskommission (FCC)
+Ansvarlig part: Asus Computer International
+Adresse: 48720 Kato Rd., Fremont, CA 94538, USA
+Telefonnummer/Faxnummer: (510)739-3777 / (510)608-4555
+Produktnavn: LED-projektor
+Model: E1R
+Dette udstyr er testet og fundet at opfylde grænserne for klasse B 
+digitalt udstyr i henhold til FCC reglernes afsnit 15. Formålet med 
+disse krav er at sikre rimelig beskyttelse skadelige forstyrrelser 
+fra installationer i private boliger. Dette udstyr skaber, bruger og 
+kan udstråle radiofrekvensenergi, som, hvis det ikke installeres og 
+bruges i overensstemmelse med instruktionerne, kan forårsage 
+skadelig interferens med radiokommunikation. Men der er ingen 
+garanti for at forstyrrelser ikke kan opstå i en bestem installation. 
+Hvis dette udstyr forårsager skadelig interferens på radio- og 
+fjernsynsmodtagelse, hvilket kan afgøres ved at slå udstyret til og 
+fra, skal brugeren prøve at afhjælpe interferensen på en eller flere af 
+følgende måder:
+• Ret modtagerantennen i en anden retning eller anbring den et 
+andet sted.
+• Forøg afstanden mellem udstyret og modtageren.
+• Forbind udstyret til en anden kontakt i et andet kredsløb end 
+det, modtageren er forbundet til. 
+• Bed forhandleren eller en erfaren radio- eller TV-teknikner om 
+hjælp.
+Denne enhed overholder afsnit 15 i FCC-reglerne. Betjening skal ske 
+under følgende to betingelser:
+1. Dette apparat må ikke forårsage skadelig interferens, og
+2. Denne enhed skal acceptere enhver modtagen interferens, 
+inklusive interferens, som kan forårsage uønsket drift.
+LED-projektor - E-vejledning 49
+Overholdelse og erklæring om den globale 
+miljøregulering 
+ASUS følger et grønt designkoncept til at designe og producere 
+vores produkter, og vi sørger for at hver enkelt fase af ASUS 
+produktets livscyklus er i overensstemmelse med de globale 
+miljøreguleringer. Derudover videregive ASUS relevante oplysninger 
+i henhold til lovgivningskravene.
+Du kan læse mere om, hvilke lovgivningskrav ASUS overholder på 
+http://csr.asus.com/english/Compliance.htm:
+Japan JIS-C-0950 om materielle erklæringer
+EU REACH SVHC
+RoHS i Korea
+ASUS Genbrug/Returservice
+ASUS’s genbrugs- og returprogrammer kommer fra vores forpligtelse 
+til at opfylde de højeste standarder indenfor miljøbeskyttelse. Vi 
+tror på at levere løsninger, som giver dig mulighed for ansvarligt at 
+genbruge vores produkter, batterier og andre komponenter samt 
+vores emballage. Se venligst http://csr.asus.com/english/Takeback.
+htm for yderligere oplysninger om genbrug i de forskellige regioner.
+50 LED-projektor - E-vejledning
+Enheder med en 
+HDMI-port • HDMI til HDMI-kabel
+Enheder med en 
+micro HDMI-port • Micro HDMI til HDMI-adapter
+• HDMI til HDMI-kabel
+iOS-enheder med 
+Lightning™-port • Lightning™ Digital AV-adapter
+• HDMI til HDMI-kabel
+Enheder med USB 
+3.2 Gen 2 Type-C®-
+port • USB 3.2 Gen 2 Type-C® Digital AV-
+adapter
+• HDMI til HDMI-kabel
+HDMI-tilslutning
+LED-projektor - E-vejledning 51
+Understøttede pc-tider
+HDMI (PC)
+Funktion Opløsning Opdaterings-
+hastighed (Hz)
+H-frekvens 
+(kHz)
+Klok 
+(MHz)
+VGA 640x480 60,0 31,5 25,175 
+VGA 640x480 66,9 33,2 23,900
+720x480_60 720x480 60,0 29,7 23,700
+720x576_50 720x576 50,0 29,5 23,600
+832x624_75 832x624 74,9 25,4 23,100
+XGA 1024x768 60,0 48,3 65,000 
+XGA 1024x768 75,0 60,0 78,750
+XGA 1024x768 60,0 65,0 65,000 
+720p 1280x720 60,0 45,0 74,250
+720p 1280x720 50,0 36,8 50,000
+WXGA 1280x800 60,0 49,7 83,500
+SXGA 1280x1024 60,0 64,0 108,000 
+UXGA 1600x900 60,0 55,5 93,250
+SVGA 800x600 60,0 37,9 40,000 
+WXGA+ 1440x900 60,0 55,9 106,500
+WSXGA+ 1680x1050 60,0 65,3 146,250
+1080p 1920x1080 60,0 67,5 148,500
+PowerBook G4 1024x768 60,0 48,4 65,000 
+MAC13 640x480 66,7 35,0 30,240
+MAC16 832x624 74,5 49,7 57,280
+MAC19 1024x768 75,0 60,2 80,000 
+MAC21 1152x870 75,0 68,7 100,000
+MAC21 1152x864 60,0 53,3 65,600
+52 LED-projektor - E-vejledning
+HDMI (Video)
+Timing Opløsning V-frekvens 
+(Hz)
+H-frekvens 
+(kHz)
+Punktur-
+frekvens 
+(MHz)
+480i 720x480 
+(1440x480)16:9
+59,94 
+(29,97) 15,7 27,000 
+576i 720x576 
+(1440x576)16:9 50(25) 15,6 27,000 
+480p 720x480 16:9 59,9 31,5 27,000 
+576p 720x576 16:9 50,0 31,3 27,000 
+720p 1280x720 60,0 45,0 74,250 
+720p 1280x720 50,0 37,5 74,250 
+1080i 1920x1080 60 (30) 33,8 74,250 
+1080i 1920x1080 50 (25) 28,1 74,250 
+1080p 1920x1080 23,97/24 27,0 74,250 
+1080p 1920x1080 60,0 67,5 145,500 
+1080p 1920x1080 50,0 56,3 145,500 
+1080p 1920x1080 25,0 28,1 74,250 
+1080p 1920x1080 30,0 33,8 74,250 
+Skærmens 
+grænseområde 
+til grafikkilde
+Vandret 
+scanningshastighed: 
+15k-75kHz
+Lodret 
+scanningshastighed: 24-
+60Hz
+Maks, pixelhastighed: 
+170MHz (digital)
+LED-projektor - E-vejledning 53
+Specifikationer til E1R LED-projektoren
+Skærm Skærmteknologi 0,2” DLP®
+Lyskilde R/G/B LED
+Lyskildens levetid 20,000 timer 
+Original opløsning WVGA 854 x 480
+Lysudsendelse 200 LED Lumen
+Kontrastforhold 
+(typisk)
+500:1
+Farvemætning (NTSC) 100%
+Skærmfarver 16,7 millioner farver
+Projekti-
+onsobjektiv Projektionsforhold
+1,2:1 (37,6” på1 meter 
+på 16:9)
+Projiceringsafstand 0,5 meter til 3,0 meter
+Projektion/Skærmstør-
+relse
+19-110 tommer
+Projektionsforskydning 100%
+Zoomforhold Fastsat
+Video 
+Features Billedfunktioner
+Lyst, Standard, Biograf, 
+Energisparende
+Keystone-justering Lodret ± 40°
+Auto-keystone Ja
+Projektorplacering Forfra bord, Bagfra bord
+Lydfunkti-
+oner Indbygget højttalere
+2W højttaler 
+(lydteknologi fra ASUS 
+SonicMaster)
+(fortsættes på næste side)
+54 LED-projektor - E-vejledning
+Signal 
+Frekvens
+Digital signal 
+Frekvens
+24,7 KHz(H) til 74,6 
+KHz(H)/50 Hz(V) til 60 
+Hz(V)
+Strøm Tændt ≤45W
+Standby-funktion <0,5W
+Batteriet Internt batteri 2850mAh (5V på 1A)
+Batterilevetid Op til 4 timer
+Støj
+Akustisk støj
+30 dB (Standard funktion)
+28 dB (Biograf-funktion)
+Indgang/ 
+Udgang
+Pc-signalindgang HDMI 1.4b
+Lyd ud Høretelefon-udgangsstik
+USB 2.0-port til 
+strømforsyning
+Ja (5V på 1A)
+Mekanisk 
+design
+Kabinetfarver Sølv
+Stativstik Ja
+Knapper på enheden Ja
+Objektivdæksel Nej
+Mål Fysiske mål 108 mm x 84 mm x 29 mm 
+(L x B x H)
+Vægt Bruttovægt (skøn.) 310 g
+(fortsættes på næste side)
+LED-projektor - E-vejledning 55
+Driftstemperatur 0 ~ 35 oC
+Driftsfugtighed 20 % til 90% 
+Tilbehør Blødt beskyttende etui, pose, HDMI-
+kabel, startvejledning, garantibevis
+Kun på udvalgte modeller 
+Dongle, ledning, USB-kabel, 
+Lovgodkendelser FCC / CE / CB / RCM / VCCI / IEC62471 / 
+CEC
+BEMÆRK:
+• Specifikationerne kan ændres uden varsel.
+• Produkttilgængelighed kan variere efter region.
+• Alle nævnte mærke- og produktnavne er varemærker tilhørende 
+deres respektive virksomheder.
+56 LED-projektor - E-vejledning
+ Om denne vejledning
+ Konventioner, brugt i denne manual
+ Typografi
+ Udgaver på andre sprog
+ Sikkerhedsforanstaltninger
+ Brug af din LED-projektor
+ Servicering og udskiftning af dele
+ Vedligeholdelse af din LED-projektor
+ Ansvarlig bortskaffelse
+ Kapitel 1: Lær din LED-projektor at kende
+ Egenskaber
+ Set oppefra
+ Udvidede funktioner
+ Flashlight (Lommelygte)
+ SOS-funktion
+ Set forfra
+ Set bagfra
+ Set fra højre side
+ Set fra bunden
+ Kapitel 2: Setting up 
+ Betjening af din LED-projektor
+ Forbind LED-projektoren til strømadapteren
+ Krav til strømkablet
+ Tilslutning af LED-projektoren til din enhed
+ Tryk på tænd/sluk knappen
+ Juster fokus
+ Portrætfunktion
+ Skærmstørrelse og projektionsafstand
+ Kapitel 3: Sådan bruges din LED-projektor
+ Når din LED-projektor bruges for første gang
+ Brug af skærmmenuen
+ Sådan bruges Wi-Fi-donglen 
+(kun på udvalgte modeller)
+ Trådløs spejling
+ Streaming
+ Brug med en USB-forbindelse
+ Streaming
+ Punkterne i skærmmenuen
+ Lydstyrke
+ Indgang
+ Splendid
+ Lysstyrke
+ Kontrast
+ Keystone
+ Projektorplacering
+ Installation
+ Oplysninger
+ Sådan slukkes din LED-projektor
+ Bilag
+ Erklæring fra Den Føderale Kommunikationskommission (FCC)
+ HDMI-tilslutning
+ Understøttede pc-tider
+ Specifikationer til E1R LED-projektoren

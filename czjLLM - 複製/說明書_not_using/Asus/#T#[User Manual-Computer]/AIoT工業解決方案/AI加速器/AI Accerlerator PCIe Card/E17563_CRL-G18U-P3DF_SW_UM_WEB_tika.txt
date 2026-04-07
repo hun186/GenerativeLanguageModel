@@ -1,0 +1,230 @@
+
+AI Accelerator Card
+CRL-G18U-P3DF/CRL-G116U-P3DF
+Software User Manual
+COPYRIGHT INFORMATION
+No part of this manual, including the products and software described in it, may be reproduced, 
+transmitted, transcribed, stored in a retrieval system, or translated into any language in any form or by 
+any means, except documentation kept by the purchaser for backup purposes, without the express 
+written permission of ASUSTeK COMPUTER INC. (“ASUS”).
+ASUS PROVIDES THIS MANUAL “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS 
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OR CONDITIONS OF 
+MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL ASUS, ITS 
+DIRECTORS, OFFICERS, EMPLOYEES OR AGENTS BE LIABLE FOR ANY INDIRECT, SPECIAL, INCIDENTAL, 
+OR CONSEQUENTIAL DAMAGES (INCLUDING DAMAGES FOR LOSS OF PROFITS, LOSS OF BUSINESS, 
+LOSS OF USE OR DATA, INTERRUPTION OF BUSINESS AND THE LIKE), EVEN IF ASUS HAS BEEN ADVISED 
+OF THE POSSIBILITY OF SUCH DAMAGES ARISING FROM ANY DEFECT OR ERROR IN THIS MANUAL OR 
+PRODUCT.
+Products and corporate names appearing in this manual may or may not be registered trademarks or 
+copyrights of their respective companies, and are used only for identification or explanation and to 
+the owners’ benefit, without intent to infringe.
+SPECIFICATIONS AND INFORMATION CONTAINED IN THIS MANUAL ARE FURNISHED FOR 
+INFORMATIONAL USE ONLY, AND ARE SUBJECT TO CHANGE AT ANY TIME WITHOUT NOTICE, AND 
+SHOULD NOT BE CONSTRUED AS A COMMITMENT BY ASUS. ASUS ASSUMES NO RESPONSIBILITY OR 
+LIABILITY FOR ANY ERRORS OR INACCURACIES THAT MAY APPEAR IN THIS MANUAL, INCLUDING THE 
+PRODUCTS AND SOFTWARE DESCRIBED IN IT.
+Copyright © 2020 ASUSTeK COMPUTER INC. All Rights Reserved.
+LIMITATION OF LIABILITY
+Circumstances may arise where because of a default on ASUS’ part or other liability, you are entitled to 
+recover damages from ASUS. In each such instance, regardless of the basis on which you are entitled 
+to claim damages from ASUS, ASUS is liable for no more than damages for bodily injury (including 
+death) and damage to real property and tangible personal property; or any other actual and direct 
+damages resulted from omission or failure of performing legal duties under this Warranty Statement, 
+up to the listed contract price of each product.
+ASUS will only be responsible for or indemnify you for loss, damages or claims based in contract, tort 
+or infringement under this Warranty Statement.
+This limit also applies to ASUS’ suppliers and its reseller. It is the maximum for which ASUS, its 
+suppliers, and your reseller are collectively responsible.
+UNDER NO CIRCUMSTANCES IS ASUS LIABLE FOR ANY OF THE FOLLOWING: (1) THIRD-PARTY 
+CLAIMS AGAINST YOU FOR DAMAGES; (2) LOSS OF, OR DAMAGE TO, YOUR RECORDS OR DATA; OR (3) 
+SPECIAL, INCIDENTAL, OR INDIRECT DAMAGES OR FOR ANY ECONOMIC CONSEQUENTIAL DAMAGES 
+(INCLUDING LOST PROFITS OR SAVINGS), EVEN IF ASUS, ITS SUPPLIERS OR YOUR RESELLER IS 
+INFORMED OF THEIR POSSIBILITY.
+SERVICE AND SUPPORT
+Visit our multi-language web site at https://www.asus.com/support/
+First Edition
+December 2020
+E17563
+AI accelerator card 3
+Contents
+Conventions used in this manual ......................................................................................... 4
+Typography .................................................................................................................................. 4
+Where to find more information .......................................................................................... 4
+ASUS Websites ............................................................................................................................ 4
+Optional Documentation ........................................................................................................ 4
+1. Software requirements ....................................................................5
+2. Linux OS .............................................................................................5
+2.1 Installing the Edge TPU drivers ............................................................................... 5
+2.2. Installing the Edge TPU runtime ............................................................................. 5
+2.3. Begin multiple Edge TPU tests ................................................................................ 6
+2.4 Monitor Edge TPU status ........................................................................................... 7
+3. Windows OS ......................................................................................8
+3.1 Installing the Edge TPU drivers ............................................................................... 8
+3.2 Monitor Edge TPU status ........................................................................................... 8
+ASUS contact information ........................................................................9
+4 AI accelerator card
+Conventions used in this manual
+To highlight key information in this manual, some text are presented as 
+follows:
+IMPORTANT! This message contains vital information that must be 
+followed to complete a task. 
+NOTE: This message contains additional information and tips that can 
+help complete tasks.
+WARNING! This message contains important information that must be 
+followed to keep you safe while performing certain tasks and prevent 
+damage to your Single Board Computer's data and components. 
+Typography
+Bold text Indicates a menu or an item to select.
+Italic This indicates sections that you can refer to in this manual. 
+Where to find more information
+Refer to the following sources for additional information and for product 
+and software updates.
+ASUS Websites
+The ASUS websites worldwide (https://www.asus.com/) provide updated 
+information on ASUS hardware and software products. The ASUS websites 
+are listed in the ASUS Contact Information on the inside front cover of this 
+installation guide.
+Optional Documentation
+Your product package may include optional documentation, such as 
+warranty flyers, that may have been added by your dealer. These documents 
+are not part of the standard package.
+AI accelerator card 5
+1. Software requirements
+• Workstation running Ubuntu/Debian/Windows 10 
+(stable release preferred e.g. Ubuntu 18.04.4 or Debian Buster)
+• Assembled AI Accelerator Card, installed into the workstation’s PCIe 
+slot.
+NOTE: For more information on installing the AI Accelerator card to the 
+system’s PCIe slot, please refer to 2.2 Card Installation in the Hardware 
+User Manual.
+• Working network connection.
+2. Linux OS
+NOTE: The command line results are for reference only and may differ 
+according to your system.
+2.1 Installing the Edge TPU drivers
+Please visit https://coral.ai/docs/m2/get-started/#2a-on-linux and "2a: On 
+Linux" for more information on installing the Edge TPU drivers on Linux.
+2.2 Installing the Edge TPU runtime
+The Edge TPU runtime is required to communicate with the Edge TPU. You 
+can install the Edge TPU runtime on your host computer using the following 
+command:
+$ sudo apt-get update
+$ sudo apt-get install libedgetpu1-std python3-edgetpu 
+libpython3-dev build-essential libusb-1.0-0-dev
+https://coral.ai/docs/m2/get-started/#2a-on-linux
+6 AI accelerator card
+multiple_tpus_performance_analysis.cc:108] Model name: 
+mobilenet_v1_1.0_224_quant_edgetpu.tflite
+multiple_tpus_performance_analysis.cc:82] Single Edge TPU base 
+time 69760.4 seconds.
+multiple_tpus_performance_analysis.cc:84] # TPUs: speedup: 
+1.99319
+multiple_tpus_performance_analysis.cc:84] # TPUs: speedup: 
+2.9895
+multiple_tpus_performance_analysis.cc:84] # TPUs: speedup: 
+3.94866
+multiple_tpus_performance_analysis.cc:84] # TPUs: speedup: 
+4.89411
+multiple_tpus_performance_analysis.cc:84] # TPUs: speedup: 
+5.77968
+multiple_tpus_performance_analysis.cc:84] # TPUs: speedup: 
+6.66029
+3. You can check the test result through the Pass or fail log.
+2.3 Begin multiple Edge TPU tests
+1. Clone the "edgetpu" source code of Google from github.
+$ git clone https://github.com/google-coral/edgetpu
+$ cd edgetpu/benchmarks
+$ python3 multiple_tpus_performance_analysis.py
+2. Open the “edgetpu” folder, then enter the following commands to test 
+multiple Edge TPUs:
+AI accelerator card 7
+2.4 Monitor Edge TPU status
+2.4.1 Related commands for multiple Edge TPUs
+Task Command
+Amount of 
+Edge TPUs
+ls -l /sys/class/apex/
+Link speed cat /sys/class/apex/apex_*/device/current_link_speed
+Link width cat /sys/class/apex/apex_*/device/current_link_width
+2.4.2 API list
+For more information on Edge TPU API you can visit the Google webpage at 
+https://coral.ai/docs/edgetpu/api-intro/#edge-tpu-api-overview.
+You can find a brief list of related commands for multiple Edge TPUs 
+monitoring in the table below:
+NOTE: Please refer to https://coral.ai/docs/pcie-parameters for more 
+information.
+8 AI accelerator card
+NOTE: Please refer to https://coral.ai/docs/pcie-parameters/#using-the-
+parameters-on-windows for more information.
+3.2.2 API list
+For more information on Edge TPU API you can visit the Google webpage at 
+https://coral.ai/docs/edgetpu/api-intro/#edge-tpu-api-overview.
+3.2 Monitor Edge TPU status
+3.2.1 Related commands for multiple Edge TPUs
+You can get the Edge TPU temperature with the following PowerShell 
+command: 
+Get-Counter -Counter '\Coral PCIE Accelerator(*)\Temperature'
+3. Windows OS
+3.1 Installing the Edge TPU drivers
+Please visit https://coral.ai/docs/m2/get-started/#2b-on-windows and "2a: 
+On Windows" for more information on installing the Edge TPU drivers on 
+Windows.
+https://coral.ai/docs/m2/get-started/#2b-on-windows
+AI accelerator card 9
+ASUS contact information
+ASUSTeK COMPUTER INC.
+Address 1F., No. 15, Lide Rd., Beitou Dist., Taipei City 112, Taiwan
+Telephone +886-2-2894-3447
+Fax +886-2-2890-7798
+Web site www.asus.com
+Technical Support
+Telephone +86-21-38429911
+Fax +86-21-5866-8722, ext. 9101#
+Online support https://www.asus.com/support/Product/ContactUs/Services/
+questionform/?lang=en
+ASUS COMPUTER INTERNATIONAL (America)
+Address 48720 Kato Rd., Fremont, CA 94538, USA
+Telephone +1-510-739-3777
+Fax +1-510-608-4555
+Web site http://www.asus.com/us/
+Technical Support
+Support fax +1-812-284-0883
+Telephone +1-812-282-2787
+Online support https://www.asus.com/support/Product/ContactUs/Services/
+questionform/?lang=en-us
+ASUS COMPUTER GmbH (Germany and Austria)
+Address Harkortstrasse 21-23, 40880 Ratingen, Germany
+Web site https://www.asus.com/de
+Online contact https://www.asus.com/support/Product/ContactUs/Services/
+questionform/?lang=de-de
+Technical Support
+Telephone (DE) +49-2102-5789557
+Telephone (AT) +43-1360-2775461
+Online support https://www.asus.com/de/support
+Call center: https://www.asus.com/support/CallUs
+10 AI accelerator card
+Manufacturer ASUSTeK Computer Inc.
+Tel: +886-2-2894-3447
+Address: 1F., No. 15, Lide Rd., Beitou Dist., Taipei 
+City 112, Taiwan
+Authorised 
+representative in 
+Europe
+ASUSTeK Computer GmbH
+Address: Harkortstrasse 21-23, 40880 Ratingen, 
+Germany
+ Conventions used in this manual
+ Typography
+ Where to find more information
+ ASUS Websites
+ Optional Documentation
+ 1. Software requirements
+ 2. Linux OS
+ 2.1 Installing the Edge TPU drivers
+ 2.2. Installing the Edge TPU runtime
+ 2.3. Begin multiple Edge TPU tests
+ 2.4 Monitor Edge TPU status
+ 3. Windows OS
+ 3.1 Installing the Edge TPU drivers
+ 3.2 Monitor Edge TPU status
+ ASUS contact information

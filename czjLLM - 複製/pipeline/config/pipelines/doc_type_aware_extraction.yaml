@@ -1,0 +1,10 @@
+doc_type_aware_extraction:
+  steps:
+    - name: chunk_summary
+      level: chunk
+    - name: doc_type_classification
+      level: document
+    - name: extraction_multidim
+      level: chunk
+    - name: merge_multidim
+      level: document

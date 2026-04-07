@@ -1,0 +1,1455 @@
+
+ 
+C620A/C422A/C622A/
+C423A/C623A/
+C424A/C624A/C624B/
+C624W/C627A-sarja 
+LCD-näyttö
+Käyttöohje
+ii
+Ensimmäinen painos 
+Kesäkuu 2015
+Copyright © 2015 ASUSTeK COMPUTER INC. Kaikki oikeudet pidätetään.
+Tämän käyttöoppaan osia tai siinä kuvattuja tuotteita ja ohjelmistoja ei saa monistaa, siirtää, jäljentää, 
+tallentaa hakujärjestelmään tai kääntää millekään kielelle missään muodossa tai millään tavalla, lukuun 
+ottamatta dokumentaatiota, jonka ostaja on säilyttänyt varmistustarkoituksessa, ilman ASUSTeK 
+COMPUTER INC:n (” ASUS”) erikseen myöntämää, kirjallista lupaa. (“ASUS”).
+Tuotteen takuuta tai huoltoa ei jatketa, jos: (1) tuotetta on korjattu tai muokattu ilman ASUS:n antamaa 
+kirjallista valtuutusta; tai (2) tuotteen sarjanumero on raaputettu irti tai puuttuu.
+ASUS TARJOAA TÄMÄN KÄYTTÖOPPAAN ”SELLAISENAAN” ILMAN MINKÄÄNLAISTA SUORAA 
+TAI EPÄSUORAA TAKUUTA, MUKAAN LUKIEN MUTTEI AINOASTAAN EPÄSUORAT TAKUUT 
+TAI KAUPATTAVUUSEDELLYTYKSET TAI SOVELTUVUUS TIETTYYN KÄYTTÖÖN. ASUS, SEN 
+JOHTAJAT, TOIMIHENKILÖT, TYÖNTEKIJÄT TAI EDUSTAJAT EIVÄT MISSÄÄN TAPAUKSESSA 
+OLE VASTUUSSA MISTÄÄN EPÄSUORISTA, ERITYISISTÄ, SATUNNAISISTA TAI VÄLILLISISTÄ 
+VAHINGOISTA (MUKAAN LUKIEN LIIKEVOITON MENETYKSET, LIIKETOIMINNAN MENETYKSET, 
+HYÖDYN TAI TIETOJEN MENETYKSET, LIIKETOIMINNA KESKEYTYKSET YM), VAIKKA ASUS:LLE 
+OLISI ILMOITETTU, ETTÄ TÄMÄN KÄYTTÖOPPAAN TAI TUOTTEEN VIAT TAI VIRHEET SAATTAVAT 
+AIHEUTTAA KYSEISIÄ VAHINKOJA.
+TÄSSÄ KÄYTTÖOPPAASSA ESITELLYT TEKNISET TIEDOT JA INFORMAATIO ON TUOTETTU 
+AINOASTAAN INFORMAATIOKÄYTTÖÖN, JA NE VOIVAT MUUTTUA MILLOIN TAHANSA 
+ILMAN ENNAKKOVAROITUSTA, JOTEN NE EIVÄT OLE ASUS:N SITOUMUKSIA. ASUS EI OTA 
+MINKÄÄNLAISTA VASTUUTA KÄYTTÖOPPAASSA MAHDOLLISESTI ESIINTYVISTÄ VIRHEISTÄ, 
+MUKAAN LUKIEN SIINÄ KUVATUT TUOTTEET JA OHJELMISTOT.
+Tässä käyttöoppaassa mainitut tuotteet ja yritysnimet saattavat olla yritystensä rekisteröityjä 
+tavaramerkkejä tai tekijänoikeuksia, ja niitä käytetään ainoastaan omistajan avuksi tunnistamiseen tai 
+selittämiseen ilman loukkaustarkoitusta.
+iii
+Sisältö
+Sisältö ......................................................................................................... iii
+Ilmoitus ........................................................................................................ iv
+Turvallisuustiedot ...................................................................................... vii
+Huolto ja puhdistus .................................................................................. viii
+Takeback Services ...................................................................................... ix
+Kappale 1: Tuotteen esittely
+1.1 Tervetuloa! .................................................................................. 1-1
+1.2 Pakkauksen sisältö ...................................................................... 1-1
+1.3 Näytön esittely .............................................................................. 1-2
+1.3.1 Etunäkymä ...................................................................... 1-2
+1.3.2 Takanäkymä ................................................................... 1-4
+1.3.3 QuickFit-toiminto ............................................................. 1-5
+Kappale 2: Asetukset
+2.1 Näytön varren/jalustan kokoaminen .......................................... 2-1
+2.2 Varren/jalustan irrotus (VESA-seinäkiinnikkeelle) .................... 2-1
+2.3 MiniPC-paketin kiinnitys/poisto 
+ (C620A/C622A/C623A/C624A/C624B/C624W/C627A) ................ 2-3
+2.4 Näytön säätäminen ...................................................................... 2-4
+2.5 Kaapelien kytkeminen ................................................................. 2-5
+2.6 Monitorin kytkeminen päälle ....................................................... 2-6
+Kappale 3: Yleisohjeet
+3.1 Kuvaruutu (OSD) -valikko ........................................................... 3-1
+3.1.1 Uudelleenmääritys .......................................................... 3-1
+3.1.2 Kuvaruutuvalikon johdanto .............................................. 3-2
+3.2 Teknisten tietojen yhteenveto ................................................... 3-10
+3.3 Vianetsintä (FAQ) ....................................................................... 3-17
+3.4 Tuetut käyttötilat ........................................................................ 3-18
+iv
+Ilmoitus
+Federal Communications Commissionin ilmoitus
+Tämä laite täyttää FCC-määräysten osan 15 vaatimukset. Laitteen käyttö 
+on seuraavien ehtojen alaista:
+• Tämä laite ei saa aiheuttaa haitallisia häiriöitä ja
+• Tämän laitteen on siedettävä muualta tuleva häiriö, myös mahdollisesti 
+asiaankuulumatonta toimintaa aiheuttavat häiriöt.
+Tämä laite on testattu, ja sen on osoitettu täyttävän FCC-määräysten 
+osassa 15 luokan B digitaalilaitteille asetetut raja-arvot. Näiden raja-arvo-
+jen tarkoituksena on taata riittävä suojaus haitallisilta häiriöiltä asuintilois-
+sa. Tämä laite kehittää, käyttää ja voi säteillä radiotaajuista energiaa. Jos 
+laitetta ei asennetta ja käytetä ohjeiden mukaisesti, se saattaa aiheuttaa 
+haitallisia häiriöitä radioliikenteelle. Ei kuitenkaan voida taata, että häiriöi-
+tä ei esiintyisi jossakin tietyssä asennustavassa. Jos tämä laite häiritsee 
+haitallisesti radio- tai televisiovastaanottoa (mikä voidaan todeta sammut-
+tamalla laite ja käynnistämällä se uudelleen), voit yrittää poistaa häiriöt 
+yhdellä tai useammalla seuraavista toimenpiteistä:
+• Suuntaa antenni uudelleen tai siirrä se toiseen paikkaan.
+• Lisää laitteen ja vastaanottimen välistä etäisyyttä.
+• Kytke laite pistorasiaan, joka on eri virtapiirissä kuin vastaanotin.
+• Kysy neuvoja jälleenmyyjältä tai kokeneelta radio/TV-teknikolta.
+Suojattujen kaapeleiden käyttö näytön liittämiseksi grafiikkakorttiin on 
+välttämätöntä FCC-määräysten noudattamiseksi. Muutokset tai muokkausket 
+tähän laitteeseen, joita vaatimustenmukaisuuden täyttämisestä vastaava taho 
+ei ole nimenomaisesti hyväksynyt, voivat johtaa käyttäjän käyttöoikeuden 
+menettämiseen tämän laitteen osalta.
+ENERGY STAR -yhteensopiva tuote
+ENERGY STAR on Yhdysvaltojen ympäristönsuojeluviraston ja 
+Yhdysvaltojen energiaministeriön kanssa toimiva yhteistyöohjelma, 
+joka auttaa meitä kaikkia säästämään rahaa ja suojelemaan 
+ympäristöä energiatehokkailla tuotteilla ja käytännöillä.
+Kaikki ASUS-tuotteet, joissa on ENERGY STAR-logo ovat yhteensopivia 
+ENERGY STAR -standardin kanssa, ja niissä on virranhallintatoiminto oletuksena 
+päällä. Näyttö ja tietokone menevät automaattisesti unitilaan 10 ja 30 minuutin 
+käyttämättömyyden jälkeen. Herättääksesi tietokoneen, napsauta hiirtä tai paina 
+jotain näppäimistön näppäintä. Katso lisätietoja virranhallinnasta ja sen hyödyistä 
+ympäristölle osoitteesta http://www.energystar.gov/powermanagement. Katso 
+lisäksi yksityiskohtaisia tietoja ENERGY STAR -yhteistyöohjelmasta osoitteesta 
+http://www.energystar.gov.
+v
+HUOMAUTUS: Energy Star EI ole tuettu FreeDOS- ja Linux-pohjaisissa 
+käyttöjärjestelmissä.
+Kanadan viestintälaitoksen ilmoitus
+Tämä digitaalinen luokan B -laite ei ylitä digitaalisia laitteita koskevan 
+Kanadan viestintälaitoksen asettaman määräyksen rajoja koskien 
+radiotaajuista kohinaa.
+Tämä luokan B digitaalilaite on kanadalaisen ICES-003:n mukainen.
+This Class B digital apparatus meets all requirements of the Canadian 
+Interference - Causing Equipment Regulations.
+Cet appareil numérique de la classe B respecte toutes les exigences du 
+Réglement sur le matériel brouiller du Canada.
+vi
+A third-party certification according to ISO 14024
+Say hello
+to a more sustainable product
+IT products are associated with a wide range of sustainability risks 
+throughout their life cycle. Human rights violations are common in the 
+factories. Harmful substances are used both in products and their 
+manufacture. Products can often have a short lifespan because of poor 
+ergonomics, low quality and when they are not able to be repaired or 
+upgraded. 
+This product is a better choice. It meets all the criteria in TCO Certified, 
+the world’s most comprehensive sustainability certification for IT 
+products. Thank you for making a responsible product choice, that help 
+drive progress towards a more sustainable future!
+Criteria in TCO Certified have a life-cycle perspective and balance 
+environmental and social responsibility. Conformity is verified by 
+independent and approved verifiers that specialize in IT products, social 
+responsibility or other sustainability issues. Verification is done both 
+before and after the certificate is issued, covering the entire validity 
+period. The process also includes ensuring that corrective actions are 
+implemented in all cases of factory non-conformities. And last but not 
+least, to make sure that the certification and independent verification is 
+accurate, both TCO Certified and the verifiers are reviewed regularly.
+Want to know more?
+Read information about TCO Certified, full criteria documents, news and 
+updates at tcocertified.com. On the website you’ll also find our Product 
+Finder, which presents a complete, searchable listing of certified 
+products. 
+Toward sustainable IT products
+vii
+Turvallisuustiedot
+• Lue huolellisesti kaikki toimitukseen kuuluvat asiakirjat ennen näytön 
+asettamista
+• Estääksesi tulipalon tai sähköiskun vaaran älä koskaan altista näyttöä sateelle 
+tai kosteudelle.
+• Älä koskaan yritä avata näytön koteloa. Näytön sisällä oleva vaarallisen korkea 
+jännite voi johtaa vakavaan fyysiseen vammaan. 
+• Jos virtalähde on rikkoutunut, älä yritä korjata sitä itse. Ota yhteys pätevään 
+huoltoteknikkoon tai jälleenmyyjään.
+• Ennen kuin käytät tuotetta, varmista, että kaikki kaapelit on liitetty oikein, ja että 
+virtakaapelit eivät ole vahingoittuneet. Jos havaitset mitä tahansa vahinkoja, 
+ota heti yhteys jälleenmyyjään. 
+• Kotelon takana ja päällä olevat aukot ja raot on tarkoitettu ilmanvaihtoon. Älä 
+tuki näitä aukkoja. Älä koskaan aseta tätä tuotetta lähelle lämpöpatteria tai 
+lämmönlähdettä, jollei kunnollisesta ilmanvaihdosta ole huolehdittu. 
+• Näyttöä tulee käyttää vain näytön kilvessä osoitetulla virtalähteellä. Jollet ole 
+varma kotitaloudessasi käytettävästä virrasta, ota yhteys jälleenmyyjään tai 
+paikalliseen sähköyhtiöön. 
+• Käytä asianmukaista virtapistoketta, joka on paikallisten sähköstandardien 
+mukainen. 
+• Älä ylikuormita jatkopistorasioita ja jatkojohtoja. Ylikuormitus voi johtaa 
+tulipaloon tai sähköiskuun.
+• Vältä pölyä, kosteutta ja äärimmäisiä lämpötiloja. Älä aseta näyttöä paikkaan, 
+jossa se voi kastua. Sijoita näyttö vakaalle alustalle. 
+• Irrota näyttö verkkovirrasta ukonilman ajaksi, tai kun sitä ei käytetä pitkään 
+aikaan. Tämä suojelee näyttöä ylijännitteen aiheuttamilta vahingoilta. 
+• Älä koskaan työnnä esineitä tai kaada mitään nestettä näytön kotelon 
+aukkoihin.
+• Varmista näytön tyydyttävä toiminta käyttämällä sitä vain UL listattujen 
+tietokoneiden kanssa, joissa on asianmukaisesti määritetyt 100 - 240 V 
+AC -merkinnällä varustetut pistorasiat.
+• Jos näytössä ilmenee teknisiä ongelmia, ota yhteys pätevään huoltoteknikkoon 
+tai jälleenmyyjään. 
+• Äänenvoimakkuuden hallinnan säätäminen sekä korjaus muihin asetuksiin 
+kuin keskikohtaan voi lisätä kuulokkeiden lähtöjännitettä ja siten vähentää 
+äänenpaineen tasoa.
+Tämä yli ruksittu roskakori osoittaa, että tuotetta (elektroniikka tai elohopeaa 
+sisältävä nappipatteri) ei saa hävittää kotitalousjätteen mukana. Tarkista 
+paikalliset määräykset elektroniikkatuotteiden hävittämisestä.
+A third-party certification according to ISO 14024
+Say hello
+to a more sustainable product
+IT products are associated with a wide range of sustainability risks 
+throughout their life cycle. Human rights violations are common in the 
+factories. Harmful substances are used both in products and their 
+manufacture. Products can often have a short lifespan because of poor 
+ergonomics, low quality and when they are not able to be repaired or 
+upgraded. 
+This product is a better choice. It meets all the criteria in TCO Certified, 
+the world’s most comprehensive sustainability certification for IT 
+products. Thank you for making a responsible product choice, that help 
+drive progress towards a more sustainable future!
+Criteria in TCO Certified have a life-cycle perspective and balance 
+environmental and social responsibility. Conformity is verified by 
+independent and approved verifiers that specialize in IT products, social 
+responsibility or other sustainability issues. Verification is done both 
+before and after the certificate is issued, covering the entire validity 
+period. The process also includes ensuring that corrective actions are 
+implemented in all cases of factory non-conformities. And last but not 
+least, to make sure that the certification and independent verification is 
+accurate, both TCO Certified and the verifiers are reviewed regularly.
+Want to know more?
+Read information about TCO Certified, full criteria documents, news and 
+updates at tcocertified.com. On the website you’ll also find our Product 
+Finder, which presents a complete, searchable listing of certified 
+products. 
+Toward sustainable IT products
+viii
+Huolto ja puhdistus
+• Ennen kuin nostat tai sijoitat näytön uuteen paikkaan, on parempi irrottaa 
+kaapelit ja virtajohto. Sijoita näyttö uuteen paikkaan oikealla nostotekniikalla. 
+Kun nostat tai kannat näyttöä, pidä kiinni näytön reunoista. Älä nosta näyttöä 
+sen telineestä tai johdosta. 
+• Puhdistus. Sammuta näyttö pois päältä ja irrota virtajohto. Puhdista näytön 
+pinta nukkaamattomalla, hankaamattomalla liinalla. Pinttyneet tahrat voi 
+poistaa miedolla puhdistusaineliuoksella kostutetulla liinalla. 
+• Vältä käyttämästä alkoholia tai asetonia sisältäviä puhdistusaineita. Käytä 
+näytön puhdistukseen tarkoitettua puhdistusainetta. Älä koskaan suihkuta 
+puhdistusainetta suoraan näyttöön, sillä sitä voi tippua näytön sisään, mikä voi 
+aiheuttaa sähköiskun. 
+Seuraavat näytön oireet ovat normaaleita:
+• Saatat havaita vähäistä kirkkauden epätasaisuutta käyttämäsi työpöydän 
+taustakuvan mukaan. 
+• Kun sama kuva on näytössä tuntikausia, edellisen näytön jälkikuva saattaa 
+pysyä näkyvissä, kun näytetään uusi kuva. Näyttö toipuu hitaasti tai voit kytkeä 
+virtakytkimen pois päältä muutamaksi tunniksi. 
+• Jos näyttö muuttuu mustaksi tai vilkkuu tai et voi enää työskennellä näytön 
+kanssa, ota yhteys jälleenmyyjään tai huoltokeskukseen vian korjaamiseksi. 
+Älä yritä korjata näyttöä itse! 
+Tässä oppaassa käytetyt merkintätavat
+VAROITUS: Tietoja, jotka estävät sinua vahingoittamasta itseäsi, kun 
+yrität suorittaa jotakin tehtävää. 
+VARO: Tietoja, jotka estävät sinua vahingoittamasta osia, kun yrität 
+suorittaa jotakin tehtävää. 
+TÄRKEÄÄ: Tietoja, joita sinun TÄYTYY noudattaa tehtävän loppuun 
+suorittamiseksi.
+HUOMAA: Vihjeitä ja lisätietoja avuksi tehtävän loppuun suorittamisessa.
+ix
+Mistä löydät lisätietoja
+Katso seuraavista lähteistä lisätietoja sekä tuote- ja ohjelmistopäivityksiä.
+1. ASUS:n verkkosivut
+ASUS-yrityksen maailmanlaajuiset verkkosivustot tarjoavat päivitettyjä tietoja 
+ASUS-laitteisto- ja -ohjelmistotuotteista. Katso: http://www.asus.com.
+2. Valinnainen dokumentaatio
+Tuotteen pakkaus saattaa sisältää jälleenmyyjän lisäämiä valinnaisia 
+asiakirjoja. Nämä asiakirjat eivät sisälly vakiopakkaukseen.
+Takeback Services
+ASUS recycling and takeback programs come from our commitment to the highest 
+standards for protecting our environment. We believe in providing solutions for 
+our customers to be able to responsibly recycle our products, batteries and other 
+components as well as the packaging materials. 
+Please go to http://csr.asus.com/english/Takeback.htm for detail recycling 
+information in different region.
+x
+1-1ASUS C-sarja LCD-näyttö 
+1.1 Tervetuloa! 
+Kiitos ASUS® LCD-näytön hankkimisesta!
+ASUS:n uusin laajakuva-LCD-näyttö tarjoaa leveämmän, kirkkaamman ja 
+kristallinkirkkaan näytön sekä runsaasti ominaisuuksia, jotka parantavat 
+katselukokemustasi. 
+Näillä ominaisuuksilla varustettuna pääset nauttimaan näytön tuomista 
+ilahduttavista visuaalisista elämyksistä!
+1.2 Pakkauksen sisältö
+Tarkista, että pakkauksessa on seuraava sisältö:
+ LCD-näyttö
+ Näytön jalustaa
+ Pikaopas
+ Takuukortti
+ Virtajohto
+ DVI-kaapeli (valitut mallit)
+ HDMI-kaapeli (valitut mallit)
+ DisplayPort-kaapeli (valitut mallit)
+ DisplayPort-kaapeli (Mini-DP - DP) (valitut mallit)
+ VGA-kaapeli (valitut mallit)
+ USB-kaapeli (valitut mallit)
+ Äänikaapeli (valitut mallit)
+ MiniPC-paketti (valitut mallit)
+Jos jokin yllä olevista kohteista on vaurioitunut tai puuttuu, ota yhteyttä laitteen 
+myyjään heti.
+1-2 Kappale 1: Tuotteen esittely
+1.3 Näytön esittely
+1.3.1 Etunäkymä
+C422A/C423A/C424A 
+Menu
+Close
+Quick Fit
+Brightness
+Blue Light Filter
+Menu
+Close
+Quick Fit
+Brightness
+Blue Light Filter
+C620A/C622A/C623A/C624A/C624B/
+C624W/C627A
+7
+123456
+1. Virtapainike/virran merkkivalo
+• Kytkee näytön päälle/pois.
+• Virran merkkivaon värimääritelmä on alla olevan taulukon mukainen.
+Tila Kuvaus
+Valkoinen Päällä
+Oranssi Valmiustila
+Pois päältä Pois
+2. Valikkopainike:
+• Paina tätä painiketta näyttääksesi OSD-valikon, kun OSD on pois 
+päältä.
+• Siirtyy OSD-valikkoon.
+• Vaihtaa Key Lock (näppäimen lukitus) toimintoa päälle ja pois pitkällä 
+painalluksella 5 sekunnin ajan.
+3. Sulje-painike: 
+• Paina tätä painiketta saadaksesi näkyviin OSD-valikon, kun OSD on pois 
+päältä.
+• Poistuu OSD-valikosta. 
+4. QuickFit-painike:
+• Paina tätä painiketta saadaksesi näkyviin OSD-valikon, kun OSD on pois 
+päältä.
+1-3ASUS C-sarja LCD-näyttö 
+• Tämä on pikanäppäin, jolla aktivoidaan kohdistamiselle suunniteltu 
+QuickFit-toiminto.
+• QuickFit-toiminto sisältää useita sivuja yleisiä ruudukkokuvioita, 
+paperikokoja ja valokuvakokoja. (Katso kohta 1.3.3 QuickFit-toiminto). 
+5. Oikopolku 
+• Paina tätä painiketta saadaksesi näkyviin OSD-valikon, kun OSD on pois 
+päältä.
+• Oletus: Brightness (Kirkkauden) pikanäppäin
+• Vaihda pikanäppäimen toimintoa menemällä Shortcut (Oikopolku) > 
+Shortcut 1 (Oikopolku 1)-valikkoon.
+6. Oikopolku 
+• Paina tätä painiketta saadaksesi näkyviin OSD-valikon, kun OSD on pois 
+päältä.
+• Oletus: Blue light filter (Sinisen valon suodattimen) pikanäppäin
+• Vaihda pikanäppäimen toimintoa menemällä Shortcut (Oikopolku) > 
+Shortcut 2 (Oikopolku 2)-valikkoon.
+7. Liiketunnistin (vain C623AQR):
+• Havaitsee käyttäjän läsnäolon näyttöruudun edessä. Näyttö siirtyy 
+automaattisesti valmiustilaan, jos näytön edessä ei havaita liikkuvia 
+kohteita yli 60 sekuntiin. Kun käyttäjä tulee takaisin, virta menee päälle 
+automaattisesti, kun se havaitsee käyttäjän läsnäolon. Oletuksena 
+Human Sensor (Liiketunnistin) on “Off” (Pois). Käyttäjä voi aktivoida 
+tämän toiminnon OSD-asetusten kautta.
+1-4 Kappale 1: Tuotteen esittely
+1.3.2 Takanäkymä
+C422AQ/C423AQ/
+C424AQ
+C422AQE/C423AQE/
+C424AQE
+C620AQE/C622AQE/
+C623AQE/C624AQE
+1 2 3 4 5 6 7 8
+10
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8
+C422AQH
+10
+1 2 3 4 57 8 11 6 9
+C422AQHE
+1 2 3 4 57 8 11 6
+C620AQ/C622AQ/
+C623AQ/C623AQR/
+C624AQ/C624BQ
+10
+1 2 3 4 5 6 7 8 9
+C627AQ
+10
+1 2 3 45 7 8 911 1012
+C624WQ
+10
+1 2 3 47 8 11 6 9 10
+C622AQH/C623AQH/
+C624AQH/C624BQH
+10
+1 2 3 4 57 8 11 6 9
+1. Kensington-lukon aukko.
+2. Virtakytkin. Paina painiketta kytkeäksesi virran päälle/pois.
+3. AC-IN-portti. Tämä portti liittää virtajohdon.
+1-5ASUS C-sarja LCD-näyttö 
+4. DisplayPort in. Tämä portti on DisplayPort-yhteensopivan laitteen 
+liittämiseen. 
+5. DVI-portti. Tämä 24-pinninen portti on PC:n DVI-D digitaalisen signaalin 
+liitännälle.
+6. VGA-portti. Tämä 15-pinninen portti on PC VGA -liitäntää varten.
+7. Audio-in-portti. Tämä portti liittää PC-äänilähteen niputetulla äänikaapelilla.
+8. Kuulokejakki. Tämä portti on saatavilla vain kun HDMI/DisplayPort-kaapeli 
+on liitetty.
+9. USB ylävirran portti. Tätä portti on USB-ylävirran kaapelin liittämistä varten. 
+Tämä mahdollistaa näytön USB-porttien toiminnan.
+10. USB alavirran portit. Nämä portit ovat USB-laitteiden liittämistä varten, 
+esim. näppäimistö/hiiri, USB-tikku jne.
+11. HDMI-portti. Tämä portti on HDMI-yhteensopivan laitteen liittämiseen.
+12. Mini DisplayPort in. Tämä portti on Mini-DisplayPort-yhteensopivan laitteen 
+liittämiseen.
+1.3.3 QuickFit-toiminto
+QuickFit-toiminto sisältää kolmenlaisia kuvioita: (1) Ruudukkokuviot (2) Paperikoko 
+(3) Valokuvakoko. Paina QuickFit-painiketta kuvioiden aktivoimiseksi. Paina ruudun 
+osoittamia painikkeita haluamasi kuvion valitsemiseksi.
+Joitakin seuraavista kuvioista ei ole saatavilla. Katso todellisia näytöllä 
+näytettäviä kuvioita.
+1. Ruudukkokuviot
+Ruudukkokuviot helpottavat käyttäjien tehokasta organisointia ja he voivat verrata 
+eri sisältöjä, kuten taulukkolaskenta-asiakirjoja ja kuvien muokkausta.
+Kohdistusruudukko 1 Kohdistusruudukko 2
+Alignment Grid 1 Alignment Grid 2
+1-6 Kappale 1: Tuotteen esittely
+2. Paperikoko
+QuickFit tarjoaa useita yleisesti käytettyjä paperikokoja käyttäjille, jotka voivat 
+katsella asiakirjojaan oikeassa koossa ruudulla.
+A4 B5
+A4 B5
+Kirje
+Letter
+3. Valokuvakoko
+Monet todelliset valokuvakoot, jotka näytetään QuickFit-toiminnossa tarjoaa 
+valokuvaajille ja muille käyttäjille tarkan näkymän ja he voivat muokata kuviaan 
+oikeassa koossa ruudulla.
+Valokuva 4x6, 3x5, 2x2 Valokuva 8x10, 5x7
+3x5 2x24x6 5x78x10
+2-1ASUS C-sarja LCD-näyttö
+2.1 Näytön varren/jalustan kokoaminen
+Kokoan näytön jalusta:
+1. Laita näytön etuosa pöytää vasten.
+2. Liitä jalusta varteen ja varmista, että varren kieleke sopii jalustan uraan.
+3. Kiinnitä jalusta varteen kiinnittämällä nippuruuvi.
+Suosittelemme, että peität pöydän pinnan pehmeällä kankaalla estääksesi 
+näytön vahingoittumisen.
+C422A/C423A/C424A
+C620A/C622A/C623A/C624A/C624B/C624W/C627A
+2.2 Varren/jalustan irrotus 
+ (VESA-seinäkiinnikkeelle)
+Tämän näytön irrotettava varsi/jalusta on suunniteltu varta vasten VESA-
+seinäkiinnitykselle.
+Varren/jalustan irrotus:
+2-2 Kappale 2: Asetukset
+C422A/C423A/C424A
+1. Laita näytön etuosa pöytää vasten.
+2. Poista suojakumit ruuvien neljästä reiästä. (Kuva 1)
+3. Poista jalusta (Kuva 2).
+4. Käytä ruuvimeisseliä saranan ruuvin irrottamiseksi (Kuva 3), poista sitten 
+sarana.
+1
+2
+(Kuva 1) (Kuva 2)
+1
+2
+(Kuva 3)
+C620A/C622A/C623A/C624A/C624B/C624W/C627A
+1. Laita näytön etuosa pöytää vasten.
+2. Paina vapautuspainiketta ja irrota sitten varsi/jalusta näytöstä (Kuva 2).
+2
+1
+(Kuva 1) (Kuva 2)
+2-3ASUS C-sarja LCD-näyttö
+Suosittelemme, että peität pöydän pinnan pehmeällä kankaalla estääksesi 
+näytön vahingoittumisen.
+• VESA-seinäkiinnityspaketti (100 x 100 mm) ostetaan erikseen.
+• Käytä vain UL Listed -seinäkiinnityskannattimia, joiden minimipaino/
+kuorma on 22,7 kg (Ruuvikoko: M4 x 10 mm)
+2.3 MiniPC-paketin kiinnitys/poisto 
+ (C620A/C622A/C623A/C624A/ 
+ C624B/C624W/C627A)
+MiniPC-paketin kiinnitys
+2
+1
+MiniPC-paketin poistaminen
+2
+1
+2-4 Kappale 2: Asetukset
+2.4 Näytön säätäminen
+• Parhaaksi katselukulmaksi suositellaan näytön koko tasoa, säädä sitten näytön 
+kulmaa haluamasi mukaan.
+• Pidä kiinni jalustasta näytön kulmaa säätäessäsi, ettei se putoa.
+• C422A/C423A/C424A: Suositeltu säätökulma on +20˚ - -5˚.
+• C620A/C622A/C623A/C624A/C624B/C624W: Voit säätää näytön kulmaa 
++35˚ - -5˚ ja se mahdollistaa 90˚ nivelletyn säädön joka vasemmalta tai 
+oikealta. Voit myös säätää näytön korkeutta +/- 130 mm.
+• C627A: Voit säätää näytön kulmaa +35˚ - -5˚ ja se mahdollistaa 90˚ nivelletyn 
+säädön joka vasemmalta tai oikealta. Voit myös säätää näytön korkeutta +/- 
+150 mm.
+90° 
+0° 
+90° 
+C4-sarja
+-5° ~ +20°
+C6-sarja
+-5° ~ +35°
+C6-sarja
+-90° ~ +90°
+C6-sarja
+150mm
+130mm
+(vain malleille 
+C627A)
+ 
+Näytön kääntö (C620A/C622A/C623A/C624A/C624B/C624W/C627A)
+1. Nosta näyttöä korkeimpaan kohtaan.
+2. Nosta näyttöä sen maksimikulmaan.
+3. Käännä näyttöä myötäpäivään/vastapäivään haluamaasi kulmaan.
+(Kallistus)
+(Nivel) (Korkeuden säätö)
+(Kallistus)
+2-5ASUS C-sarja LCD-näyttö
+On normaalia, että näyttö tärisee hieman katselukulmaa säädettäessä.
+2.5 Kaapelien kytkeminen
+Liitä kaapelit ohjeiden mukaisesti:
+• Yhdistä virtajohto: Liitä virtajohdon toinen pää näytön AC-tuloporttiin, toinen 
+pää virtalähteeseen. 
+• Liitä VGA/DVI/DisplayPort/HDMI/Mini DisplayPort-kaapeli: 
+a. Liitä VGA/DVI/DisplayPort/HDMI/Mini DisplayPort -kaapelin toinen pää 
+näytön VGA/DVI/DisplayPort/HDMI/Mini DisplayPort -liitäntään.
+b. Liitä VGA/DVI/DisplayPort/HDMI/Mini DisplayPort -kaapelin toinen pää 
+tietokoneesi VGA/DVI/DisplayPort/HDMI/Mini DisplayPort -liitäntään.
+c. Kiristä kaksi ruuvia kiinnittääksesi VGA/DVI-liittimen.
+2-6 Kappale 2: Asetukset
+• Äänikaapelin liittäminen: liitä äänikaapelin toinen pää näytön äänituloporttiin, 
+toinen pää tietokoneen äänilähtöporttiin.
+• Kuulokkeiden käyttö: Yhdistä pistokepää näytön kuulokejakkiin, kun HDMI- 
+tai DisplayPort-signaali syötetään.
+• USB 2.0 -porttien käyttö: Ota mukana tuleva USB 2.0 -kaapeli, ja kytke 
+USB:n ylävirran kaapelin pienempi pää (tyyppi B) näytön USB ylävirran porttiin, 
+ja suurempi pää (tyyppi A) tietokoneesi USB 2.0 -porttiin. Varmista, että 
+tietokoneeseesi on asennettu uusin Windows 7/Windows 8 -käyttöjärjestelmä. 
+Tämä mahdollistaa näytön USB-porttien toiminnan.
+• USB 3.0 -porttien käyttö: Ota mukana tuleva USB 3.0-kaapeli ja kytke USB:n 
+ylävirran kaapelin pienempi pää (tyyppi B) näytön USB ylävirran porttiin, 
+ja suurempi pää (tyyppi A) tietokoneesi USB 3.0 -porttiin. Varmista, että 
+tietokoneeseesi on asennettu uusin Windows 7/Windows 8.1/ 
+Windows 10 -käyttöjärjestelmä. Tämä mahdollistaa näytön USB-porttien 
+toiminnan.
+Kun kaapelit on kytketty, voit valita halutun signaalin Input Select (Tulon 
+valinta) -kohdasta OSD-valikossa.
+2.6 Monitorin kytkeminen päälle
+Paina virtapainiketta . Ks. sivu 1-2 virtapainikkeen sijainti. Virran merkkivalo 
+syttyy valkoisena näyttäen, että näyttö on päällä.
+3-1ASUS C-sarja LCD-näyttö 
+3.1 Kuvaruutu (OSD) -valikko 
+3.1.1 Uudelleenmääritys
+Scenery Mode
+Standard Mode
+Theater Mode
+Night View Mode
+sRGB Mode
+Reading Mode
+Darkroom Mode
+Splendid
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+1. Paina mitä tahansa painiketta (paitsi virtapainiketta) saadaksesi näkyviin 
+OSD-valikon.
+2. Paina Menu -painiketta OSD-valikon aktivoimiseksi.
+3. Paina ruudun osoittamia painikkeita navigoidaksesi toimintojen läpi. Korosta 
+haluttua toimintoa ja paina -painiketta sen aktivoimiseksi. Jos valitussa 
+toiminnossa on alavalikko, paina ja uudelleen navigoidaksesi 
+alavalikon toimintojen läpi. Korosta haluttua toimintoa ja paina sen 
+aktivoimiseksi. 
+4. Paina ja muuttaaksesi valitun toiminnon asetuksia.
+5. Poistu ja tallenna OSD-valikko painamalla tai toistuvasti, kunnes 
+OSD-valikko katoaa näkyvistä. Toista vaiheet 1-4 muiden toimintojen 
+säätämiseksi.
+3-2 Kappale 3: Kuvaruutu (OSD) -valikko 
+3.1.2 Kuvaruutuvalikon johdanto
+1. Splendid
+Tämä toiminto sisältää 7-8 haluamaasi alitoimintoa. Jokaisessa tilassa 
+on Reset (Nollauksen) valinta, jolla voit ylläpitää asetustasi tai palata 
+esiasetuksen tilaan.
+Scenery Mode
+Standard Mode
+Theater Mode
+Night View Mode
+sRGB Mode
+Reading Mode
+Darkroom Mode
+Splendid
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+Scenery Mode
+Standard Mode
+Theater Mode
+Game Mode
+Night View Mode
+sRGB Mode
+Reading Mode
+Darkroom Mode
+Splendid
+ASUS C627A
+Standard Mode DisplayPort 2560 x 1440 @ 60Hz
+• Scenery Mode (Näkymätila): Paras valinta näkymäkuvan näyttämiseksi 
+SplendidPlus Video Enhancement -toiminnolla.
+• Standard Mode (Standarditila): Paras valinta muokkaamiseen 
+SplendidPlus Video Enhancement -toiminnolla.
+Vakiotila on Energy Star® -vaatimusten mukainen.
+• Theater Mode (Teatteritila): Paras valinta elokuviin, joissa on 
+SplendidPlus Video Enhancement.
+• Game Mode (Pelitila) (vain C624W/C627A): Paras valinta pelien 
+pelaamiseen, joissa on SplendidPlus Video Enhancement.
+3-3ASUS C-sarja LCD-näyttö 
+• Night View Mode (Yökatselutila): Paras valinta tummasävyisten pelien 
+pelaamiseen, joissa on SplendidPlus Video Enhancement.
+• sRGB Mode (sRGB-tila): Tämä on paras valinta kuvien ja grafiikan 
+katseluun tietokoneelta.
+• Reading Mode (Lukutila): Tämä on paras valinta kirjan lukemiseen.
+• Darkroom Mode (Pimiötila): Tämä on paras valinta heikon ympäröivän 
+valon ympäristöön.
+• Standard mode (Standarditilassa) seuraavat toiminnot eivät ole käyttäjän 
+määritettävissä: Saturation (Värikylläisyys), Skin Tone (Ihonsävy), 
+Sharpness (Terävyys), ASCR.
+• sRGB mode (sRGB-tilassa) seuraavat toiminnot eivät ole käyttäjän 
+määritettävissä: Brightness (Kirkkaus), Contrast (Kontrasti), Saturation 
+(Värikylläisyys), Color Temp. (Värilämpötila), Skin Tone (Ihonsävy), 
+Sharpness (Terävyys), ASCR.
+• Reading mode (Lukutilassa) seuraavat toiminnot eivät ole käyttäjän 
+määritettävissä: Contrast (Kontrasti), Saturation (Värikylläisyys), Color 
+Temp. (Värilämpötila), Skin Tone (Ihonsävy), Sharpness (Terävyys), 
+ASCR.
+2. Blue Light Filter (Sinisen valon suodatin)
+Tässä toiminnossa voit säätää sinisen valon suodattimen tasoa.
+Level 0
+Level 1
+Level 2
+Level 3
+Level 4
+Blue Light Filter
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+• Level 0 (Taso 0): Ei muutosta
+• Level 1~4 (Taso 1~4): Mitä korkeampi taso, sitä vähemmän sinistä 
+valoa siroaa. Kun Blue Light Filter (Sinisen valon suodatin) on aktivoitu, 
+Standard Mode (Standarditila) -oletusasetukset tuodaan automaattisesti. 
+Tason 1-3 välillä Brightness (Kirkkaus) -asetus on käyttäjän 
+määritettävissä. Taso 4 on optimoitu asetus. Se on TUV:n sinisen valon 
+sertifikaatin mukainen. Brightness (Kirkkaus) -toiminto ei ole käyttäjän 
+määritettävissä.
+3-4 Kappale 3: Kuvaruutu (OSD) -valikko 
+Katso seuraava kohta silmien rasituksen helpottamiseksi:
+• Käyttäjien tulee pitää taukoja näytön katselusta pitkiä aikoja 
+työskennellessään. On suositeltavaa pitää lyhyitä taukoja (vähintään 
+5 minuuttia) tunnin tietokoneella työskentelyn jälkeen. Lyhyiden, 
+säännöllisten taukojen pitäminen on tehokkaampaa kuin yhden pidemmän 
+tauon pitäminen.
+• Silmien rasituksen ja kuivuuden minimoimiseksi käyttäjien tulisi antaa 
+silmien levätä säännöllisesti keskittymällä kauempana oleviin kohteisiin.
+• Silmäharjoitukset auttavat vähentämään silmien rasitusta. Toista 
+nämä harjoitukset usein. Jos silmien rasitus jatkuu, hakeudu lääkäriin. 
+Silmäharjoituksia: (1) Katso toistuvasti ylös ja alas (2) Pyöritä silmiäsi 
+hitaasi (3) Liikuta silmiä ylhäältä vinosti alas ja päinvastoin.
+• Korkeaenerginen sininen valo voi aiheuttaa silmien rasitusta ja ikään 
+liittyvän silmänpohjan rappeuman. Sinisen valon suodatin vähentää 
+70% (max.) haitallista sinistä valoa CVS-syndrooman (Computer Vision 
+Syndrome) välttämiseksi.
+3. Color (Väri) 
+Aseta haluttu väriasetus tästä valikosta. 
+Brightness
+Contrast
+Saturat ion
+Color Temp.
+Skin Tone 
+Color
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+• Brightness (Kirkkaus): Säätöalue on 0-100.
+• Contrast (Kontrasti): Säätöalue on 0-100. 
+• Saturation (Värikylläisyys): Säätöalue on 0-100. 
+• Color Temp. (Värilämpötila): Sisältää 4 tilaa, eli Cool (Viileä), Normal 
+(Normaali), Warm (Lämmin) ja User Mode (Käyttäjätila).
+• Skin Tone (Ihonsävy): Sisältää kolme väritilaa, eli Reddish (Punertava), 
+Natural (Luonnollinen) ja Yellowish (Kellertävä).
+3-5ASUS C-sarja LCD-näyttö 
+4. Image (Kuva)
+Kuvaan liittyvät asetukset tehdään tästä valikosta.
+Sharpness
+Trace Free
+Aspect Control
+Viv idPixel
+ASCR
+Posit ion
+Focus
+Auto Adjust 
+Image
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+• Sharpness (Terävyys): Säätöalue on 0-100.
+• Trace Free: Säätää näytön vasteaikaa.
+• Aspect Control (Kuvasuhteen hallinta): Säätää kuvasuhteeksi Full 
+(Täysi), 4:3, 1:1 (valinnainen) tai OverScan (valinnainen).
+4:3 on saatavilla vain silloin, kun tulolähde on 4:3-formaatissa. OverScan 
+on käytettävissä vain HDMI-tulolähteellä tai joillakin tyypillisillä ajoituksilla.
+• VividPixel: Parantaa näytetyn kuvan ääriviivoja ja luo ruudulle 
+korkealaatuisia kuvia.
+• ASCR: Kytkee ASCR (ASUS Smart -kontrastisuhde) -toiminnon päälle/
+pois.
+• Position (Sijainti) (Saatavilla vain VGA-tulolle): Säätää kuvan vaaka- 
+(H-Position (V-sijainti)) ja pystysijaintia (V-Position (P-sijainti)). Säätöalue 
+on 0-100.
+• Focus (Tarkennus) (Saatavilla vain VGA-tulolle): Vähentää kuvan 
+vaakaja pystyviivojen kohinaa säätämällä (Phase (Vaihe)) ja (Clock 
+(Kello)) erikseen. Säätöalue on 0-100.
+• Phase (Vaihe) säätää pikselikellosignaalin vaihetta. Väärällä vaiheen 
+säädöllä ruutu näyttää vakiohäiriöitä.
+• Clock (Kello) (pikselitaajuus) ohjaa yhdellä vaakapyyhkäisyllä skannattujen 
+pikseleiden määrää. Jos taajuus ei ole oikea, ruudussa näkyy 
+pystysuuntaisia raitoja ja kuva ei ole oikeassa suhteessa.
+• Auto Adjust. (Autom. säätö): Säätää kuvaa automaattisesti sen 
+optimoituun asentoon, kelloon ja vaiheeseen (vain VGA-tilalle).
+3-6 Kappale 3: Kuvaruutu (OSD) -valikko 
+5. Sound (Ääni)
+Voit säätää kohtia Volume (Äänenvoimakkuus), Mute (Mykistys) ja Source 
+(Lähde) tästä valikosta.
+Volume
+Mute
+Source 
+Sound
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+• Volume (Äänenvoimakkuus): säätöalue on 0-100.
+• Mute (Mykistys): Vaihtelee näytön ääntä päälle ja pois.
+• Source (Lähde): päättää, mistä lähteestä näytön ääni tulee.
+6. Input Select (Tulon valinta) 
+Tässä toiminnossa voit valita halutun tulolähteen.
+VGA
+DVI
+HDMI
+DisplayPort 
+Input Select
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+DVI
+HDMI
+DisplayPort
+Mini DisplayPort 
+Input Select
+ASUS C627A
+Standard Mode DisplayPort 2560 x 1440 @ 60Hz
+3-7ASUS C-sarja LCD-näyttö 
+7. System Setup (Järjestelmän asetukset)
+Voit tehdä muutoksia järjestelmään.
+Splendid Demo Mode
+ECO Mode
+USB Charging
+OSD Setup
+Language
+Key Lock
+Informat ion
+More 
+System Setup
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+• Splendid Demo Mode: Jakaa ruudun kahteen osaan Splendid-tilojen 
+vertailua varten. (vain Scenery Mode (Näkymätila))
+• ECO Mode: Vähentää virrankulutusta.
+• USB Charging (USB-lataus) (vain malleille C422AQ/C422AQH/
+C423AQ/C424AQ/C620AQ/C622AQ/C622AQH/C623AQ/C623AQH/
+C623AQR/C624AQ/C624BQ/C624AQH/C624BQH/C627AQ): 
+* “On” (Päällä) mahdollistaa USB alavirran porttien muodostavan 
+5V/500mA virran, kun näyttö on päällä tai valmiustilassa.
+* “Off” (Pois) mahdollistaa USB alavirran porttien muodostavan 
+5V/500mA virran vain kun näyttö on päällä.
+• USB Charging (USB-lataus) (vain malleille C624WQ): 
+* “On” (Päälle) antaa USB downstream -porttien tuottaa 5 V / 2 
+A - tai 5 V / 900 mA -lähdön, kun näyttö on kytketty päälle tai 
+se on valmiustilassa. Alla oleva taulukko osoittaa, voidaanko 
+USB downstream -portteja käyttää ulkoisen laitteen lataamiseen 
+erilaisissa tilanteissa. 
+Downstream-
+portti Näytön tila
+Kun upstream-
+portti on yhdistetty 
+tietokoneeseen...
+Kun upstream-porttia 
+EI ole yhdistetty 
+tietokoneeseen...
+-portti 
+Päälle Sallii latauksen Sallii latauksen
+Valmiustila Sallii latauksen Sallii latauksen
+-portti
+Päälle Sallii latauksen Ei salli latausta
+Valmiustila Sallii latauksen Ei salli latausta
+3-8 Kappale 3: Kuvaruutu (OSD) -valikko 
+* “Off“ (Pois) antaa USB downstream -porttien tuottaa 5 V / 2 A - 
+tai 5 V / 900 mA -lähdön vain, kun näyttö on kytketty päälle. Alla 
+oleva taulukko osoittaa, voidaanko USB downstream -portteja 
+käyttää ulkoisen laitteen lataamiseen erilaisissa tilanteissa. 
+Downstream-
+portti Näytön tila
+Kun upstream-
+portti on yhdistetty 
+tietokoneeseen...
+Kun upstream-porttia 
+EI ole yhdistetty 
+tietokoneeseen...
+-portti 
+Päälle Sallii latauksen Sallii latauksen
+Valmiustila Ei salli latausta Ei salli latausta
+-portti
+Päälle Sallii latauksen Ei salli latausta
+Valmiustila Ei salli latausta Ei salli latausta
+• OSD Setup (OSD-asetukset): 
+* Säätää OSD-aikakatkaisua 10-120 sekuntia. 
+* Ottaa DDC/CI-toiminnon käyttöön/pois käytöstä.
+* Säätää OSD-taustaa läpikuultamattomasta läpinäkyväksi.
+• Language (Kieli) : Valittavana on 21 kieltä, joihin kuuluu englanti, ranska, 
+saksa, italia, espanja, hollanti, portugali, venäjä, tsekki, kroatia, puola, 
+romania, unkari, turkki, yksinkertaistettu kiina, perinteinen kiina, japani, 
+korea, thai, indonesia, persia. 
+• Key Lock (Näppäimistölukko): Ota kaikki toimintopainikkeet pois 
+käytöstä. Paina toista painiketta oikealta yli viiden sekunnin ajan 
+peruuttaaksesi näppäinlukitustoiminnon.
+• Auto Source Detection (Autom. lähteen haku) (vain C624WQ/
+C627AQ): Ottaa automaattisen lähteen hakutoiminnon käyttöön tai pois 
+käytöstä.
+• Information (Tietoja): Näyttää näytön tiedot. 
+• Power Indicator (Virran merkkivalo): Kytkee virran LED-merkkivalon 
+päälle/pois päältä.
+• Human Sensor (Liiketunnistin) (vain C623AQR): Kytkee Human 
+Sensor (Liiketunnistin) -toiminnon päälle/pois ja säätää sen herkkyyttä. 
+Toiminta-alue on 50-70 cm. Oletuksena se on “Off” (Pois). 
+* Low (Matala): Anturin etäisyys on n. 50 cm.
+* Medium (Keski): Anturin etäisyys on n. 60 cm.
+* High (Korkea): Anturin etäisyys on n. 70 cm.
+• Havaitsemisalue voi olla eri, jos käyttäjällä on tummat tai kirkasväriset 
+vaatteet. Aseta herkkyys kohtaan High (Korkea), kun käytät mustia tai 
+tummia vaatteita.
+• Älä laita mitään esineitä liian lähelle Human Sensoria (Liiketunnistin) 
+häiriöiden välttämiseksi.
+3-9ASUS C-sarja LCD-näyttö 
+• Power Key Lock (Virta päällä lukitus): Ottaa virtapainikkeen käyttöön 
+tai pois käytöstä.
+• All Reset (Nollaa kaikki): “Yes” (Kyllä) -valinnalla voit tallentaa kaikki 
+oletusasetukset.
+8. Shortcut (Oikopolku)
+Määrittää toiminnot Oikopolku 1- ja 2 -painikkeille.
+Shortcut 1
+Shortcut 2
+ 
+Shortcut
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+• Shortcut 1 (Oikopolku 1)/Shortcut 2 (Oikopolku 2): Valitsee toiminnon 
+Oikopolku 1 -ja 2 painikkeille.
+Kun tietty toiminto on valittu tai aktivoitu, oikopolkunäppäin ei välttämättä 
+tue sitä. Saatavilla olevat toiminnot oikopolulle: Blue Light Filter (Sinisen 
+valon suodatin), Splendid, Brightness (Kirkkaus), Auto Adjust (Autom. 
+säätö), Contrast (Kontrasti), Color Temp. (Värilämpötila), Volume 
+(Äänenvoimakkuus).
+3-10 Kappale 3: Kuvaruutu (OSD) -valikko 
+3.2 Teknisten tietojen yhteenveto
+C422A/C423A/C424A
+Paneelityyppi TFT LCD
+Paneelin koko C422AQ/C422AQE/C422AQH/C422AQHE: 
+21,5" (16:9, 54,6 cm) laajakuva 
+C423AQ/C423AQE: 23" (16:9, 58,4 cm) laajakuva 
+C424AQ/C424AQE: 23,8" (16:9, 60,5 cm) laajakuva
+Max.resoluutio C422AQ/C422AQE/C422AQH/C422AQHE: 
+1920 x 1080 
+C423AQ/C423AQE: 1920 x 1080 
+C424AQ/C424AQE: 1920 x 1080
+Pikselien korkeus C422AQ/C422AQE/C422AQH/C422AQHE: 
+0,248 mm x 0,248 mm 
+C423AQ/C423AQE: 0,2652 mm x 0,2652 mm 
+C424AQ/C424AQE: 0,2745 mm x 0,2745 mm
+Kirkkaus (tyypillinen) 250 cd/m2
+Kontrastisuhde (tyypillinen) 1000:1
+Kontrastisuhde (Max.) 100000000:1 (kun ASCR on päällä)
+Katselukulma (V/P) CR>10 178˚/178˚
+Näyttövärit 16,7 M
+Vastausaika < 5 ms
+SplendidPlus Video 
+Enhancement
+Kyllä
+SplendidPlus-valinta 7 videon esiasetettua tilaa
+Automaattinen säätö Kyllä
+Värilämpötilan valinta 4 värilämpötilaa
+Analoginen tulo D-sub
+Digitaalinen tulo DVI-D HDCP:llä, DisplayPort v1.2, HDMI (vain 
+C422AQH/C422AQHE)
+Kuulokejakki Kyllä
+Äänitulo Kyllä
+Kaiutin (sisäänrakennettu) 2 W x 2 Stereo, RMS
+USB 2.0 -portti Ylävirtaan x 1, alavirtaan x 2 (vain C422AQ/
+C423AQ/C424AQ)
+USB 3.0 -portti Ylävirtaan x 1, alavirtaan x 2 (vain C422AQH)
+Värit Musta
+Virran LED Valkoinen (päällä)/oranssi (valmiustila)
+Kallistus +20˚~ -5˚
+Kääntö Ei
+Nivel Ei
+Korkeuden säätö Ei
+Kensington-lukko Kyllä
+AC-tulojännite AC: 100~240 V
+3-11ASUS C-sarja LCD-näyttö 
+Tehonkulutus C422AQ/C422AQE/C422AQH/C422AQHE: Virta 
+päällä: < 21,09 W** (tyyp.), Valmiustila: < 0,5 W 
+(tyyp.), virta pois: 0 W (Sammutettu) 
+C423AQ/C423AQE: Virta päällä: < 22 W** (tyyp.), 
+Valmiustila: < 0,5 W (tyyp.), virta pois: 0 W 
+(Sammutettu) 
+C424AQ/C424AQE: Virta päällä: < 22,97 W** 
+(tyyp.), Valmiustila: < 0,5 W (tyyp.), virta pois: 0 W 
+(Sammutettu)
+Lämpötila (käyttö) 0˚C~40˚C
+Lämpötila (ei käytössä) -20˚C~+60˚C
+Mitat (W x H x D) jalustalla C422AQ/C422AQE/C422AQH/C422AQHE: 514 
+x 383 x 195 mm (kone), 576 x 442 x 120 mm 
+(pakkaus) 
+C423AQ/C423AQE: 548 x 403 x 195 mm (kone), 
+617 x 119 x 462 mm (pakkaus) 
+C424AQ/C424AQE: 562 x 406 x 195 mm (kone), 
+632 x 127 x 465 mm (pakkaus) 
+Paino (arv.) C422AQ/C422AQE/C422AQH/C422AQHE: 3,8 kg 
+(netto); 5,3 kg (brutto) 
+C423AQ/C423AQE: 4,3 kg (netto); 5,7 kg (brutto) 
+C424AQ/C424AQE: 4,3 kg (netto); 5,9 kg (brutto)
+Monikielinen 21 kieltä (englanti, ranska, saksa, italia, espanja, 
+hollanti, portugali, venäjä, tsekki, kroatia, puola, 
+romania, unkari, turkki, yksinkertaistettu kiina, 
+perinteinen kiina, japani, korea, thai, indonesia, 
+persia)
+Lisävarusteet Virtajohto, DVI-kaapeli (valinnainen), DisplayPort-
+kaapeli, VGA-kaapeli, äänikaapeli, USB-kaapeli 
+(vain C422AQ/C422AQH/C423AQ/C424AQ), 
+pikaopas, takuukortti
+Vaatimustenmukaisuus ja 
+standardit
+UL/cUL, CB, CE, ErP, FCC, ISO9241-307, RCM, 
+VCCI, RoHS, Windows 7 & 8 WHQL, Energy Star®, 
+Flicker Free, Low blue Light, TUV-GS, TUV-Ergo, 
+CU, PSE, WEEE, EMC DoC, UkrSEPRO, MEPS, 
+NFPA99
+*Kaikki tiedot voivat muuttua ilman erillistä ilmoitusta.
+**Mittaa ruudun kirkkautta 200 cd/m2 ilman ääni/USB/kortinlukija-liitäntää.
+3-12 Kappale 3: Kuvaruutu (OSD) -valikko 
+C620A/C622A/C623A/C624A/C624B/C624W
+Paneelityyppi TFT LCD
+Paneelin koko C620AQ/C620AQE: 19.45" (16:10, 49,4 cm) 
+laajakuva 
+C622AQ/C622AQE/C622AQH: 21,5" (16:9, 54,6 cm) 
+laajakuva
+C623AQ/C623AQE/C623AQR/C623AQH: 23" (16:9, 
+58,4 cm) laajakuva 
+C624AQ/C624AQE/C624AQH: 23,8" (16:9, 60,5 cm) 
+laajakuva 
+C624BQ/C624BQH/C624WQ: 24" (16:10, 61,13 cm) 
+laajakuva
+Max.resoluutio C620AQ/C620AQE: 1440 x 900 
+C622AQ/C622AQE/C622AQH: 1920 x 1080 
+C623AQ/C623AQE/C623AQR/C623AQH: 1920 x 
+1080 
+C624AQ/C624AQE/C624AQH: 1920 x 1080 
+C624BQ/C624BQH/C624WQ: 1920 x 1200
+Pikselien korkeus C620AQ/C620AQE: 0,2907 mm x 0,2915 mm 
+C622AQ/C622AQE/C622AQH: 0,248 mm x 0,248 mm 
+C623AQ/C623AQE/C623AQR/C623AQH: 0,2652 mm x 
+0,2652 mm
+C624AQ/C624AQE/C624AQH: 0,2745 mm x 0,2745 mm 
+C624BQ/C624BQH/C624WQ: 0,270 mm x 0,270 mm
+Kirkkaus (tyypillinen) C620AQ/C620AQE/C622AQ/C622AQE/C622AQH/
+C623AQ/C623AQE/C623AQR/C623AQH/C624AQ/
+C624AQE/C624AQH/C624BQ: 250 cd/m2
+C624BQH/C624WQ: 300 cd/m2
+Kontrastisuhde (tyypillinen) 1000:1
+Kontrastisuhde (Max.) 100000000:1 (kun ASCR on päällä)
+Katselukulma (V/P) CR>10 178˚/178˚
+Näyttövärit 16,7 M
+Vastausaika < 5 ms
+SplendidPlus Video 
+Enhancement
+Kyllä
+SplendidPlus-valinta 7 - 8 videon esiasetettua tilaa
+Automaattinen säätö Kyllä
+Värilämpötilan valinta 4 värilämpötilaa
+Analoginen tulo D-sub
+Digitaalinen tulo DVI-D HDCP:llä, DisplayPort v1.2, HDMI (vain 
+C622AQH/C623AQH/C624AQH/C624BQH/C624WQ)
+Kuulokejakki Kyllä
+Äänitulo Kyllä
+Kaiutin (sisäänrakennettu) 2 W x 2 Stereo, RMS
+USB 2.0 -portti C620AQ/C622AQ/C623AQ/C623AQR/C624AQ/
+C624BQ: Ylävirtaan x 1, alavirtaan x 2
+USB 3.0 -portti C622AQH/C623AQH/C624AQH/C624BQH: 
+Ylävirtaan x 1, alavirtaan x 2 
+C624WQ: Ylävirtaan x 1, alavirtaan x 4
+Värit Musta
+3-13ASUS C-sarja LCD-näyttö 
+Virran LED Valkoinen (päällä)/oranssi (valmiustila)
+Kallistus +35˚~ -5˚
+Kääntö +90˚~ -90˚
+Nivel +90˚~ -90˚
+Korkeuden säätö 130 mm
+Kensington-lukko Kyllä
+AC-tulojännite AC: 100~240 V
+Tehonkulutus C620AQ/C620AQE: Virta päällä: < 15,74 W** 
+(tyyp.), Valmiustila: < 0,5 W (tyyp.), virta pois: 0 W 
+(Sammutettu) 
+C622AQ/C622AQE/C622AQH: Virta päällä: < 21,09 
+W** (tyyp.), Valmiustila: < 0,5 W (tyyp.), virta pois: 0 
+W (Sammutettu) 
+C623AQ/C623AQE/C623AQR/C623AQH: Virta 
+päällä: < 22 W** (tyyp.), Valmiustila: < 0,5 W (tyyp.), 
+virta pois: 0 W (Sammutettu) 
+C624AQ/C624AQE/C624AQH: Virta päällä: < 22,97 
+W** (tyyp.), Valmiustila: < 0,5 W (tyyp.), virta pois: 0 
+W (Sammutettu) 
+C624BQ/C624BQH: Virta päällä: < 25,4 W** 
+(tyyp.), Valmiustila: < 0,5 W (tyyp.), virta pois: 0 W 
+(Sammutettu) 
+C624WQ: Virta päällä: < 13,3 W** (tyyp.), Valmiustila: 
+< 0,22 W (tyyp.), virta pois: 0 W (Sammutettu)
+Lämpötila (käyttö) 0˚C~40˚C
+Lämpötila (ei käytössä) -20˚C~+60˚C
+Mitat (W x H x D) jalustalla C620AQ/C620AQE: 459 x 477 x 211 mm (korkein), 
+459 x 347 x 211 mm (matalin), 621 x 173 x 382 mm 
+(pakkaus) 
+C622AQ/C622AQE/C622AQH: 514 x 477 x 211 mm 
+(korkein), 514 x 347 x 211 mm (matalin), 643 x 378 x 
+190 mm (pakkaus) 
+C623AQ/C623AQE/C623AQR/C623AQH: 548 x 490 
+x 211 mm (korkein), 548 x 360 x 211 mm (matalin), 
+652 x 173 x 403 mm (pakkaus) 
+C624AQ/C624AQE/C624AQH: 562 x 492 x 211 mm 
+(korkein), 562 x 362 x 211 mm (matalin), 660 x 180 x 
+420 mm (pakkaus) 
+C624BQ/C624BQH: 561 x 511 x 211 mm (korkein), 
+561 x 381 x 211 mm (matalin), 662 x 179 x 454 mm 
+(pakkaus) 
+C624WQ: 533 x 505 x 211 mm (korkein), 533 x 375 x 
+211 mm (matalin), 649 x 192 x 475 mm (pakkaus)
+3-14 Kappale 3: Kuvaruutu (OSD) -valikko 
+Paino (arv.) C620AQ/C620AQE: 4,8 kg (netto); 6,4 kg (brutto) 
+C622AQ/C622AQE/C622AQH: 5,7 kg (netto); 7,2 kg 
+(brutto) 
+C623AQ/C623AQE/C623AQR/C623AQH: 5,7 kg 
+(netto); 7,3 kg (brutto) 
+C624AQ/C624AQE/C624AQH: 5,8 kg (netto); 7,9 kg 
+(brutto) 
+C624BQ/C624BQH: 6,2 kg (netto); 8,2 kg (brutto) 
+C624WQ: 6,1 kg (netto); 3,9 kg (ilman jalustaa); 8,3 
+kg (brutto)
+Monikielinen 21 kieltä (englanti, ranska, saksa, italia, espanja, 
+hollanti, portugali, venäjä, tsekki, kroatia, puola, 
+romania, unkari, turkki, yksinkertaistettu kiina, 
+perinteinen kiina, japani, korea, thai, indonesia, 
+persia)
+Lisävarusteet Virtajohto, DVI-kaapeli (valinnainen), HDMI-kaapeli 
+(valinnainen), DisplayPort-kaapeli (valinnainen), 
+VGA-kaapeli (valinnainen), äänikaapeli (valinnainen), 
+USB-kaapeli (vain C620AQ/C622AQ/C623AQ/
+C623AQR/C624AQ/C624BQ/C624WQ), pikaopas, 
+takuukortti, Minitietokonesarja (valinnainen)
+Vaatimustenmukaisuus ja 
+standardit
+UL/cUL, CB, CE, ErP, FCC, ISO9241-307, RCM, 
+VCCI, RoHS, Windows 7 & 8 & 10 WHQL, Energy 
+Star®, Flicker Free, Low blue Light, TUV-GS, TUV-
+Ergo, CU, PSE, WEEE, EMC DoC, UkrSEPRO, 
+MEPS, BSMI, NFPA99
+Vain C624WQ: CCC, CEL, PC Recycle, J-MOSS, 
+KC, KCC, e-Standby, TCO 8.0, ICE-3
+*Kaikki tiedot voivat muuttua ilman erillistä ilmoitusta.
+**Mittaa ruudun kirkkautta 200 cd/m2 ilman ääni/USB/kortinlukija-liitäntää.
+3-15ASUS C-sarja LCD-näyttö 
+C627A
+Paneelityyppi TFT LCD
+Paneelin koko 27" (16:9, 68,47 cm) laajakuva
+Max.resoluutio 2560 x 1440
+Pikselien korkeus 0,2331 mm x 0,2331 mm
+Kirkkaus (tyypillinen) 350 cd/m2
+Kontrastisuhde (tyypillinen) 1000:1
+Kontrastisuhde (Max.) 100000000:1 (kun ASCR on päällä)
+Katselukulma (V/P) CR>10 178˚/178˚
+Näyttövärit 16,7 M
+Vastausaika < 5 ms
+SplendidPlus Video 
+Enhancement
+Kyllä
+SplendidPlus-valinta 8 videon esiasetettua tilaa
+Automaattinen säätö Kyllä
+Värilämpötilan valinta 4 värilämpötilaa
+Analoginen tulo Ei
+Digitaalinen tulo DVI-D HDCP:llä, DisplayPort v1.2, HDMI, mini-
+DisplayPort
+Kuulokejakki Kyllä
+Äänitulo Kyllä
+Kaiutin (sisäänrakennettu) 2 W x 2 Stereo, RMS
+USB 3.0-portti Ylävirtaan x 1, alavirtaan x 4
+Värit Musta
+Virran LED Valkoinen (päällä)/oranssi (valmiustila)
+Kallistus +35˚~ -5˚
+Kääntö +90˚~ -90˚
+Nivel +90˚~ -90˚
+Korkeuden säätö 150 mm
+Kensington-lukko Kyllä
+AC-tulojännite AC: 100~240 V
+Tehonkulutus Virta päällä: < 75 W** (tyyp.), Valmiustila: < 0,5 W 
+(tyyp.), virta pois: 0 W (Sammutettu)
+Lämpötila (käyttö) 0˚C~40˚C
+Lämpötila (ei käytössä) -20˚C~+60˚C
+Mitat (W x H x D) ilman jalustaa 615 x 372 x 51 mm
+Mitat (W x H x D) jalustalla 615 x 532 x 226 mm (korkein), 
+615 x 382 x 226 mm (matalin), 
+735 x 216 x 464 mm (pakkaus)
+Paino (arv.) 7,7 kg (netto); 5 kg (ilman jalustaa); 10,8 kg (brutto)
+Monikielinen 21 kieltä (englanti, ranska, saksa, italia, espanja, 
+hollanti, portugali, venäjä, tsekki, kroatia, puola, 
+romania, unkari, turkki, yksinkertaistettu kiina, 
+perinteinen kiina, japani, korea, thai, indonesia, 
+persia)
+3-16 Kappale 3: Kuvaruutu (OSD) -valikko 
+Lisävarusteet Virtajohto, DVI-kaapeli (valinnainen), HDMI-kaapeli, 
+DisplayPort-kaapeli, DisplayPort-kaapeli (Mini-
+DP - DP) (valinnainen), äänikaapeli, USB-kaapeli, 
+pikaopas, takuukortti
+Vaatimustenmukaisuus ja 
+standardit
+UL/cUL, FCC, ICES-3, CB, CE, ErP, WEEE, TUV-
+GS, TUV-Ergo, ISO 9241-307, UkrSEPRO, CU, 
+CCC, CEL, BSMI, RCM, MEPS, VCCI, PSE, PC 
+Recycle, J-MOSS, KC, KCC, e-Standby, Energy 
+Star®, RoHs, Windows 7/8.1/10 WHQL, Flicker 
+Free, Low Blue Light, NFPA99
+*Kaikki tiedot voivat muuttua ilman erillistä ilmoitusta.
+**Mittaa ruudun kirkkautta 200 cd/m2 ilman ääni/USB/kortinlukija-liitäntää.
+3-17ASUS C-sarja LCD-näyttö 
+3.3 Vianetsintä (FAQ)
+Ongelma Mahdollinen ratkaisu
+Virran LED-valo ei pala • Paina -painiketta tarkistaaksesi, onko 
+näyttö Päällä -tilassa.
+• Tarkista, onko virtajohto liitetty oikein 
+näyttöön ja pistorasiaan. 
+• Tarkista, onko virtapainike PÄÄLLÄ.
+Virran LED palaa oranssina, eikä näytössä 
+näy kuvaa 
+• Tarkista ovatko näyttö ja tietokone päällä.
+• Varmista, että signaalikaapeli liitetty 
+tiukasti näyttöön ja tietokoneeseen.
+• Tarkista signaalikaapeli ja varmista, ettei 
+yksikään nasta ole taipunut.
+• Liitä tietokone toiseen käytettävissä 
+olevaan näyttöön tarkistaaksesi toimiiko 
+tietokone oikein.
+Näytön kuva on liian vaalea tai tumma • Säädä Contrast (Kontrasti) ja Brightness 
+(Kirkkaus) asetuksia OSD:n kautta.
+Ruudun kuva ei ole keskitetty tai oikean 
+kokoinen
+• Säädä H-Position (V-sijainti) ja P-position 
+(P-sijainti) -asetuksia OSD:n kautta.
+Näytön kuva hyppii tai kuvassa esiintyy 
+aaltokuvioita
+• Varmista, että signaalikaapeli on liitetty 
+tiukasti näyttöön ja tietokoneeseen.
+• Siirrä elektronisia häiriötä aiheuttavat 
+laitteet kauemmaksi.
+Näytön kuvassa on värivirheitä (valkoinen 
+ei näytä valkoiselta)
+• Tarkista signaalikaapeli ja varmista, ettei 
+yksikään nasta ole taipunut. 
+• All Reset (Nollaa kaikki) 
+kuvaruutuvalikolla.
+• Säädä R/G/B-väriasetukset tai valitse 
+OSD:lla Color Temp. (Värilämpötila).
+Ruudun kuva on sumea tai epäselvä • Säädä Phase (Vaihe)- ja Clock (Kello) 
+-asetuksia OSD:n kautta.
+Ei ääntä, tai äänen taso on liian matala • Varmista, että HDMI/Displayport-
+kaapeli on liitetty tiukasti näyttöön ja 
+tietokoneeseen.
+• Säädä sekä näytön että HDMI/
+DisplayPort -laitteen äänenvoimakkuuden 
+asetuksia. 
+• Varmista, että tietokoneen äänikorttiajuri 
+on oikein asennettu ja aktivoitu.
+3-18 Kappale 3: Kuvaruutu (OSD) -valikko 
+3.4 Tuetut käyttötilat
+C620A
+Resoluutiotaajuus Vaakataajuus 
+(KHz)
+Pystytaajuus (Hz) Pikseli (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 48,08(P) 72,12(P) 50,00
+800x600 46,86(P) 75,00(P) 49,50
+832X624 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1360x768 47,712(P) 59,79(P) 85,5
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+* “P”, “N” on lyhenne sanoista “positiivinen”, “negatiivinen” tulevan H/V-synkronoinnin napaisuus 
+(tuloajastus).
+Kun näyttö toimii videotilassa (eli ei näytä tietoja), seuraavia teräväpiirtotiloja tuetaan 
+vakiopiirtoterävyyden lisäksi.
+Esiase-
+tus
+Ajastuk-
+sen nimi
+Pikseliformaatti Vaakataa-
+juus (kHz)
+Pystytaa-
+juus (Hz)
+Pikselitaa-
+juus (MHz)
+OSD-näyttö
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+3-19ASUS C-sarja LCD-näyttö 
+C422A/C622A/C423A/C623A/C424A/C624A
+Resoluutiotaajuus Vaakataajuus 
+(KHz)
+Pystytaajuus (Hz) Pikseli (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 48,08(P) 72,12(P) 50,00
+800x600 46,86(P) 75,00(P) 49,50
+832X624 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(N) 108
+1280x1024 79,98(P) 75,02(N) 135
+1360x768 47,712(P) 59,79(P) 85,5
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(P) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+* “P”, “N” on lyhenne sanoista “positiivinen”, “negatiivinen” tulevan H/V-synkronoinnin napaisuus 
+(tuloajastus).
+3-20 Kappale 3: Kuvaruutu (OSD) -valikko 
+Kun näyttö toimii videotilassa (eli ei näytä tietoja), seuraavia teräväpiirtotiloja tuetaan 
+vakiopiirtoterävyyden lisäksi.
+Esiase-
+tus
+Ajastuksen 
+nimi
+Pikselifor-
+maatti
+Vaakataa-
+juus (kHz)
+Pystytaajuus 
+(Hz)
+Pikselitaa-
+juus (MHz)
+OSD-näyttö
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+C624B
+Resoluutiotaajuus Vaakataajuus 
+(KHz)
+Pystytaajuus 
+(Hz)
+Pikseli 
+(MHz)
+640x480 31,47(N) 59,94(N) 25,18
+800x600 35,16(P) 56,25(P) 36
+800x600 37,88(P) 60,32(P) 40
+1024x768 48,36(N) 60,00(N) 65
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(P) 108
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(N) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+1920x1200 
+(Vähentää 
+sammutusta)
+74,038(P) 59,95(N) 154
+* “P”, “N” on lyhenne sanoista “positiivinen”, “negatiivinen” tulevan H/V-synkronoinnin napaisuus 
+(tuloajastus). 
+* Taulukossa lueteltuja tiloja ei tueta. Parhaan resoluution saamiseksi suosittelemme valitsemaan 
+yllä olevassa taulukossa luetellun tilan.
+* Tämä näyttö tukee täysi-HD-videosisältöä (480p, 576p, 720p, 1080i/p) pelikonsoleista, DVD-
+soittimista ja muista kuluttajien videolaitteista HDMI:n kautta.
+3-21ASUS C-sarja LCD-näyttö 
+Kun näyttö toimii videotilassa (eli ei näytä tietoja), seuraavia teräväpiirtotiloja tuetaan 
+vakiopiirtoterävyyden lisäksi.
+Esi-
+asetus
+Ajastuksen 
+nimi
+Pikselifor-
+maatti
+Vaakataa-
+juus (kHz)
+Pystytaajuus 
+(Hz)
+Pikselitaa-
+juus (MHz)
+OSD-näyttö
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+C627A
+Resoluutiotaajuus Vaakataajuus 
+(KHz)
+Pystytaajuus (Hz) Pikseli (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 46,86(P) 75,00(P) 49,50
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(N) 108
+1280x1024 79,98(P) 75,02(N) 135
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(P) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+3-22 Kappale 3: Kuvaruutu (OSD) -valikko 
+1920x1200 
+(Vähentää 
+sammutusta)
+74,038(P) 59,95(N) 154
+1920x1200 74,556(N) 59,885(P) 193,25
+2048x1152 
+(Vähentää 
+sammutusta)
+70,99(P) 59,9(N) 156,75
+2560x1080 66,636(P) 59,978(N) 181,25
+2560x1440 88,787(P) 59,951(N) 241,5
+* “P”, “N” on lyhenne sanoista “positiivinen”, “negatiivinen” tulevan H/V-synkronoinnin napaisuus 
+(tuloajastus).
+Kun näyttö toimii videotilassa (eli ei näytä tietoja), seuraavia teräväpiirtotiloja tuetaan 
+vakiopiirtoterävyyden lisäksi.
+Esi-
+asetus
+Ajastuksen 
+nimi
+Pikselifor-
+maatti
+Vaakataa-
+juus (kHz)
+Pystytaajuus 
+(Hz)
+Pikselitaa-
+juus (MHz)
+OSD-näyttö
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+C624W
+Resoluutiotaajuus Vaakataajuus 
+(KHz)
+Pystytaajuus (Hz) Pikseli (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480* 37,87(N) 72,82(N) 31,5
+640x480* 37,5(N) 75,00(N) 31,5
+720x400* 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36
+800x600 37,88(P) 60,32(P) 40
+800x600* 46,86(P) 75,00(P) 49,5
+832X624* 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65
+1024x768 56,476(N) 70,069(N) 75
+1024x768* 60,02(N) 75,00(N) 78,75
+1152x864* 67,5(P/N) 75,00(P/N) 108
+3-23ASUS C-sarja LCD-näyttö 
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(P) 108
+1280x1024* 79,98(P) 75,02(P) 135
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(N) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+1920x1200 
+(Vähentää 
+sammutusta)
+74,038(P) 59,95(N) 154
+Ajastuksen 
+nimi
+Pikseliformaatti Vaakataajuus (kHz) Pystytaajuus (Hz) Pikselitaa-
+juus (MHz)
+480p 720 x 480 31,469 60 27
+720p60 1280 x 720 45 60 74,25
+576p 720 x 576 31,25 50 27
+720p50 1280 x 720 37,5 50 74,25
+1080p60 1920 x 1080 67,5 60 148,5
+1080p50 1920 x 1080 56,25 50 148,5
+* Nämä ajoitukset eivät ole tuettuja OverScan-toimintoa käytettäessä. 
+ Sisältö
+ Ilmoitus
+ Turvallisuustiedot
+ Huolto ja puhdistus
+ Takeback Services
+ Kappale 1: Tuotteen esittely
+ 1.1 Tervetuloa! 
+ 1.2 Pakkauksen sisältö
+ 1.3 Näytön esittely
+ 1.3.1 Etunäkymä
+ 1.3.2 Takanäkymä
+ 1.3.3 QuickFit-toiminto
+ Kappale 2: Asetukset
+ 2.1 Näytön varren/jalustan kokoaminen
+ 2.2 Varren/jalustan irrotus (VESA-seinäkiinnikkeelle)
+ 2.3 MiniPC-paketin kiinnitys/poisto (C620A/C622A/C623A/C624A/C624B/C624C/C627A)
+ 2.4 Näytön säätäminen
+ 2.5 Kaapelien kytkeminen
+ 2.6 Monitorin kytkeminen päälle
+ Kappale 3: Yleisohjeet
+ 3.1 Kuvaruutu (OSD) -valikko 
+ 3.1.1 Uudelleenmääritys
+ 3.1.2 Kuvaruutuvalikon johdanto
+ 3.2 Teknisten tietojen yhteenveto
+ 3.3 Vianetsintä (FAQ)
+ 3.4 Tuetut käyttötilat

@@ -1,0 +1,1793 @@
+
+Manuale utente (e-Manual)
+I19489
+Prima edizione / Luglio 2022
+2 Notebook PC - Manuale utente (e-Manual)
+INFORMAZIONI SUL COPYRIGHT
+Nessuna parte di questo manuale, compresi i prodotti e i software in esso descritti, può essere riprodotta, trasmessa, 
+trascritta, archiviata in un sistema di recupero o tradotta in alcuna lingua, in alcuna forma e in alcun modo, fatta 
+eccezione per la documentazione conservata dall’acquirente a scopi di backup, senza l’espressa autorizzazione scritta 
+di ASUSTeK COMPUTER INC. (“ASUS”).
+ASUS FORNISCE QUESTO MANUALE “COSÌ COM’È” SENZA GARANZIA DI ALCUN TIPO, ESPLICITA O IMPLICITA, 
+INCLUDENDO SENZA LIMITAZIONI LE GARANZIE O CONDIZIONI IMPLICITE DI COMMERCIABILITÀ O IDONEITÀ AD 
+UN PARTICOLARE SCOPO. IN NESSUN CASO ASUS, I SUOI DIRIGENTI, FUNZIONARI, IMPIEGATI O DISTRIBUTORI SONO 
+RESPONSABILI PER QUALSIASI DANNO INDIRETTO, PARTICOLARE, ACCIDENTALE O CONSEGUENTE (COMPRESI DANNI 
+DERIVANTI DA PERDITA DI PROFITTO, PERDITA DI CONTRATTI, PERDITA D’USO O DI DATI, INTERRUZIONE DELL’ATTIVITÀ 
+E SIMILI), ANCHE SE ASUS È STATA AVVISATA DELLA POSSIBILITÀ CHE TALI DANNI SI POSSANO VERIFICARE IN SEGUITO 
+A QUALSIASI DIFETTO O ERRORE NEL PRESENTE MANUALE O NEL PRODOTTO.
+I prodotti e nomi delle aziende che compaiono in questo manuale possono essere marchi registrati o diritti d’autore 
+delle rispettive aziende, o meno, e sono usati a solo scopo identificativo o illustrativo, a beneficio dell’utente, senza 
+alcuna intenzione di violazione dei diritti di alcun soggetto.
+LE SPECIFICHE E LE INFORMAZIONI CONTENUTE IN QUESTO MANUALE SONO FORNITE A SOLO USO INFORMATIVO 
+E SONO SOGGETTE A CAMBIAMENTI IN QUALSIASI MOMENTO, SENZA PREAVVISO, E NON POSSONO ESSERE 
+INTERPRETATE COME UN IMPEGNO DA PARTE DI ASUS. ASUS NON SI ASSUME ALCUNA RESPONSABILITÀ E NON SI FA 
+CARICO DI ALCUN ERRORE O INESATTEZZA CHE POSSA COMPARIRE IN QUESTO MANUALE COMPRESI I PRODOTTI E I 
+SOFTWARE DESCRITTI AL SUO INTERNO.
+Copyright © 2022 ASUSTeK Computer, Inc. Tutti i diritti riservati.
+CONDIZIONI E LIMITI DI COPERTURA DELLA GARANZIA SUL PRODOTTO
+Le condizioni di garanzia variano a seconda del tipo di prodotto e sono specificatamente indicate nel Certificato di 
+Garanzia allegato a cui si fa espresso rinvio.
+Inoltre la garanzia stessa non è valida in caso di danni o difetti dovuti ai seguenti fattori: (a) uso non idoneo, 
+funzionamento o manutenzione impropri inclusi (senza limitazioni) e l’utilizzo del prodotto con una finalità 
+diversa da quella conforme alle istruzioni fornite da ASUSTeK COMPUTER INC. in merito all’idoneità di utilizzo e alla 
+manutenzione; (b) installazione o utilizzo del prodotto in modo non conforme agli standard tecnici o di sicurezza 
+vigenti nell’Area Economica Europea e in Svizzera; (c) collegamento a rete di alimentazione con tensione non corretta; 
+(d) utilizzo del prodotto con accessori di terzi, prodotti o dispositivi ausiliari o periferiche; (e) tentativo di riparazione 
+effettuato da una qualunque terza parte diversa dai centri di assistenza ASUSTeK COMPUTER INC. autorizzati; (f ) 
+incidenti, fulmini, acqua, incendio o qualsiasi altra causa il cui controllo non dipenda da ASUSTeK COMPUTER INC.; (g) 
+abuso, negligenza o uso commerciale.
+La Garanzia non è valida per l’assistenza tecnica o il supporto per l’utilizzo del Prodotto in merito all’utilizzo 
+dell’hardware o del software. L’assistenza e il supporto disponibili (se previsti) nonchè le spese e gli altri termini 
+relativi all’assistenza e al supporto (se previsti) verranno specificati nella documentazione destinata al cliente fornita a 
+corredo del prodotto.
+È responsabilità dell’utente, prima ancora di richiedere l’assistenza, effettuare il backup dei contenuti presenti sul 
+Prodotto, inclusi i dati archiviati o il software installato.
+ASUSTeK COMPUTER INC. non è in alcun modo responsabile per qualsiasi danno, perdita di programmi, dati o altre 
+informazioni archiviate su qualsiasi supporto o parte del prodotto per il quale viene richiesta l’assistenza; ASUSTeK 
+COMPUTER INC. non è in alcun modo responsabile delle conseguenze di tali danni o perdite, incluse quelle di attività, 
+in caso di malfunzionamento di sistema, errori di programmi o perdite di dati.
+Notebook PC - Manuale utente (e-Manual) 3
+È responsabilità dell’utente, prima ancora di richiedere l’assistenza, eliminare eventuali funzioni, componenti, 
+opzioni, modifiche e allegati non coperti dalla Garanzia prima di far pervenire il prodotto a un centro servizi ASUSTeK 
+COMPUTER INC. ASUSTeK COMPUTER INC. non è in alcun modo responsabile di qualsiasi perdita o danno ai 
+componenti sopra descritti.
+ASUSTeK COMPUTER INC. non è in alcun modo responsabile di eliminazioni, modifiche o alterazioni ai contenuti 
+presenti sul Prodotto compresi eventuali dati o applicazioni prodottesi durante le procedure di riparazione del 
+Prodotto stesso. Il Prodotto verrà restituito all’utente con la configurazione originale di vendita, in base alle 
+disponibilità di software a magazzino.
+LIMITAZIONE DI RESPONSABILITÀ
+Potrebbero verificarsi circostanze per le quali, a causa di difetti di componenti ASUS, o per altre ragioni, abbiate diritto 
+a richiedere un risarcimento danni ad ASUS. In ciascuna di queste circostanze, a prescindere dai motivi per i quali si 
+ha diritto al risarcimento danni, ASUS è responsabile per i danni alle persone (incluso il decesso), danni al patrimonio 
+o alla proprietà privata; o qualsiasi altro danno reale e diretto risultante da omissione o mancata osservazione degli 
+obblighi di legge previsti in questo Certificato di Garanzia, fino al prezzo contrattuale elencato per ogni prodotto e 
+non oltre.
+ASUS sarà solo responsabile o indennizzerà per perdite, danni o reclami su base contrattuale, extracontrattuale o di 
+infrazione ai sensi del presente Certificato di Garanzia.
+Questo limite si applica anche ai fornitori e rivenditori ASUS. Questo è il limite massimo per il quale ASUS, i suoi 
+fornitori e il vostro rivenditore sono responsabili collettivamente.
+IN NESSUN CASO ASUS È RESPONSABILE DI QUANTO SEGUE: (1) RICHIESTE DI TERZI PER DANNI DA VOI CAUSATI; (2) 
+PERDITA O DANNEGGIAMENTO DEI VOSTRI DATI O DOCUMENTI O (3) QUALSIASI DANNO INDIRETTO, PARTICOLARE, 
+ACCIDENTALE O CONSEGUENTE (COMPRESI DANNI DERIVANTI DA PERDITA DI PROFITTO, PERDITA DI CONTRATTI, 
+PERDITA D’USO O DI DATI, INTERRUZIONE DELL’ ATTIVITÀ E SIMILI) ANCHE SE ASUS, I SUOI DISTRIBUTORI E I VOSTRI 
+RIVENDITORI SONO CONSAPEVOLI DELLA POSSIBILITÀ CHE TALI DANNI SI POSSANO VERIFICARE.
+LICENZA SOFTWARE
+I prodotti ASUS possono essere corredati da software, secondo la tipologia del prodotto. I software, abbinati ai 
+prodotti, sono in versione “OEM”: il software OEM viene concesso in licenza all’utente finale come parte integrante 
+del prodotto; ciò significa che non può essere trasferito ad altri sistemi hardware e che, in caso di rottura, di furto o in 
+ogni altra situazione che lo renda inutilizzabile anche la possibilità di utilizzare il prodotto OEM viene compromessa. 
+Chiunque acquisti, unitamente al prodotto, un software OEM è tenuto ad osservare i termini e le condizioni del 
+contratto di licenza, denominato “EULA” (End User Licence Agreement), tra il proprietario del software e l’utente finale 
+e visualizzato a video durante l'installazione del software stesso. Si avvisa che l’accettazione da parte dell’utente delle 
+condizioni dell’EULA ha luogo al momento dell’installazione del software stesso.
+ASSISTENZA E SUPPORTO
+Visitate il nostro sito Web multilingue https://www.asus.com/it/support.
+MyASUS offre una vasta gamma di funzioni di supporto, ad esempio diagnostica e risoluzione dei problemi, 
+ottimizzazione delle prestazioni dei prodotti o integrazione dei software ASUS. Vi aiuta inoltre a organizzare il vostro 
+desktop e ad aumentare lo spazio di archiviazione. Per maggiori dettagli, visitate 
+https://www.asus.com/it/support/FAQ/1038301/.
+4 Notebook PC - Manuale utente (e-Manual)
+Indice
+Informazioni sul manuale ............................................................................................7
+Note e messaggi del manuale ..........................................................................................8
+Icone ...........................................................................................................................................8
+Formati carattere ...................................................................................................................8
+Norme di sicurezza .........................................................................................................9
+Utilizzo del vostro Notebook PC ......................................................................................9
+Cura del Notebook PC .........................................................................................................10
+Corretto smaltimento ..........................................................................................................11
+Informazioni sulla sicurezza della batteria ..................................................................12
+Capitolo 1: Configurazione hardware
+Conoscete il vostro Notebook PC .............................................................................16
+Vista frontale ............................................................................................................................16
+Vista dall’alto............................................................................................................................22
+Vista dal basso .........................................................................................................................23
+Vista lato destro ......................................................................................................................25
+Vista lato sinistro ....................................................................................................................28
+Capitolo 2: Usare il PC Notebook
+Introduzione ......................................................................................................................30
+Ricaricare il PC Notebook ...................................................................................................30
+Solleva per aprire il pannello del display .....................................................................32
+Premi il pulsante di accensione .......................................................................................32
+Movimenti delle dita per il pannello touch screen e il touchpad ................ 33
+Utilizzo dei movimenti sul pannello touch screen ...................................................33
+Utilizzo del touchpad ...........................................................................................................35
+Utilizzo del tastierino numerico.......................................................................................42
+Uso della tastiera .............................................................................................................43
+Tasti di scelta rapida .............................................................................................................43
+Tasti funzione ..........................................................................................................................44
+Tasti di Windows ....................................................................................................................44
+Rotazione dello schermo .............................................................................................45
+Notebook PC - Manuale utente (e-Manual) 5
+Capitolo 3: Lavorare con Windows
+Primo avvio ........................................................................................................................48
+Menu Start ..........................................................................................................................49
+App di Windows ...............................................................................................................51
+Lavorare con le app di Windows .....................................................................................52
+Personalizzazione delle app di Windows .....................................................................52
+Visualizzazione attività ..................................................................................................55
+Widget..................................................................................................................................56
+Funzione di ancoraggio ................................................................................................58
+Hotspot ......................................................................................................................................58
+Centro notifiche ...............................................................................................................60
+MyASUS Splendid ...........................................................................................................62
+Impostazione del display OLED .................................................................................64
+Impostazione della modalità scura ................................................................................64
+Spegnimento del display quando non in uso ...........................................................66
+Regolazione della luminosità del display ....................................................................68
+Nascondi automaticamente la barra delle applicazioni ........................................70
+Impostazione della modalità scura in Microsoft Office .........................................72
+Altre scorciatoie da tastiera .........................................................................................73
+Connessione a reti wireless .........................................................................................75
+Wi-Fi.............................................................................................................................................75
+Bluetooth ..................................................................................................................................76
+Modalità aereo ........................................................................................................................77
+Spegnimento del PC Notebook.................................................................................78
+Sospensione del PC Notebook ..................................................................................79
+Capitolo 4: Verifica automatica durante l'accensione (POST)
+Verifica automatica durante l'accensione (POST) ..............................................82
+Utilizzo del POST per accedere al BIOS e alla risoluzione dei problemi ..........82
+BIOS .......................................................................................................................................82
+Accesso al BIOS .......................................................................................................................82
+Ripristino del sistema .....................................................................................................83
+Esecuzione di un'opzione di ripristino ..........................................................................84
+6 Notebook PC - Manuale utente (e-Manual)
+Consigli e domande frequenti (FAQ)
+Consigli utili per il vostro Notebook PC ..................................................................88
+Domande frequenti sull'hardware ...........................................................................90
+Domande frequenti sul software ..............................................................................93
+Appendice
+Conformità modem interno ..............................................................................................96
+Generalità .................................................................................................................................96
+Dichiarazione di compatibilità di rete ...........................................................................97
+Apparecchi non voce ...........................................................................................................97
+Dichiarazione sulle interferenze FCC 
+(Federal Communications Commission) ......................................................................100
+Dichiarazione precauzionale FCC per l'esposizione a RF ......................................101
+Informazioni sull'esposizione a radio frequenza RF (SAR) ....................................101
+Comunicazioni sulla sicurezza UL ...................................................................................102
+Requisiti per la sicurezza elettrica ...................................................................................103
+Nota per gli installatori di sistemi CATV .......................................................................103
+Nota sul prodotto da parte di Macrovision Corporation .......................................103
+Prevenzione della perdita dell'udito ..............................................................................103
+Avviso sul rivestimento esterno ......................................................................................103
+Precauzioni Nordic Lithium (per batterie agli ioni di Litio) ...................................104
+Omologazione CTR 21 (per Notebook PC dotati di modem interno) ..............105
+Dichiarazione di conformità per 
+la regolamentazione ambientale del prodotto .........................................................107
+UE REACH e Articolo 33 .......................................................................................................107
+EU RoHS .....................................................................................................................................107
+Servizio di ritiro e riciclaggio ASUS .................................................................................108
+Direttiva Ecodesign ...............................................................................................................108
+Prodotto qualificato ENERGY STAR ................................................................................109
+Registrazione EPEAT .............................................................................................................109
+Licenza per i font di testo BIOS ........................................................................................110
+Dichiarazione di conformità UE semplificata .............................................................111
+Avviso rete Wi-Fi .....................................................................................................................112
+Informazioni sull'esposizione a RF (SAR) ......................................................................112
+Notebook PC - Manuale utente (e-Manual) 7
+Informazioni sul manuale
+Questo manuale descrive le caratteristiche hardware e software del vostro 
+Notebook PC e le organizza nei seguenti capitoli: 
+Capitolo 1: Configurazione hardware
+Descrizione delle componenti hardware del Notebook PC.
+Capitolo 2: Usare il PC Notebook
+Informazioni sull'utilizzo delle varie componenti del Notebook PC.
+Capitolo 3: Lavorare con Windows
+Informazioni generali sull'utilizzo di Windows sul Notebook PC.
+Capitolo 4: Verifica automatica durante l’accensione (POST)
+Modalità di utilizzo della fase di POST per modificare le impostazioni 
+del Notebook PC.
+Consigli e domande frequenti (FAQ)
+Questa sezione vi propone alcuni consigli, domande e risposte comuni 
+relative all'hardware e al software. Usate questa sezione come primo 
+tentativo di risoluzione dei problemi generici che potreste incontrare 
+durante l'utilizzo del vostro Notebook PC.
+Appendice
+Comunicazioni e informazioni sulla sicurezza per il vostro Notebook 
+PC.
+8 Notebook PC - Manuale utente (e-Manual)
+Formati carattere
+Grassetto = Indica il menu o l'oggetto da selezionare.
+Corsivo = Indica le sezioni alle quali potete fare riferimento in questo 
+manuale.
+= Utilizzare lo schermo touch.
+= Utilizzare il touchpad.
+= Utilizzare la tastiera.
+Note e messaggi del manuale
+Per evidenziare le informazioni chiave contenute nel manuale alcuni messaggi 
+sono presentati nelle forme seguenti:
+IMPORTANTE! Messaggio contenente informazioni importanti per il 
+completamento di un'operazione.
+NOTA: Messaggio contenente informazioni aggiuntive e suggerimenti per 
+completare un'operazione.
+ATTENZIONE! Messaggio contenente le indicazioni da seguire per garantire la 
+sicurezza di determinate operazioni onde evitare danni ai dati e alle componenti 
+del vostro Notebook PC.
+Icone
+Le icone indicano i dispositivi di input da utilizzare per l'esecuzione di una 
+serie di operazioni e attività con il Notebook PC.
+Notebook PC - Manuale utente (e-Manual) 9
+Norme di sicurezza
+Utilizzo del vostro Notebook PC
+Questo Notebook PC deve essere utilizzato solamente 
+in ambienti con temperature comprese fra 5 °C (41 °F) 
+e 35 °C (95 °F).
+Consultate l'etichetta indicante la potenza posta 
+sul lato inferiore del Notebook PC e assicuratevi che 
+l'adattatore di alimentazione sia compatibile con tale 
+potenza.
+Il Notebook PC può scaldarsi notevolmente durante 
+l’uso o durante la ricarica della batteria. Per evitare 
+lesioni derivanti da esposizione al calore non lasciate 
+il Notebook PC sul grembo o su nessun’altra parte del 
+corpo. Quando state usando il vostro Notebook PC 
+non riponetelo su superfici che possano bloccarne le 
+prese d’aria.
+Non utilizzate cavi di alimentazione, accessori o 
+periferiche danneggiate con il vostro Notebook PC.
+Quando il vostro Notebook PC è acceso assicuratevi 
+di non trasportarlo né di coprirlo con qualsivoglia 
+materiale che possa ridurne la circolazione dell'aria.
+NON collocate il vostro Notebook PC su superfici 
+irregolari o instabili.
+Potete esporre il vostro Notebook PC a controlli 
+tramite macchine a raggi X (usate, in genere, con 
+nastri trasportatori) ma non esponetelo a rilevatori 
+magnetici e metal detector.
+Contattate la vostra compagnia aerea per avere 
+informazioni sui relativi servizi disponibili e sulle 
+restrizioni applicate all'uso dei dispositivi elettronici 
+durante il volo.
+10 Notebook PC - Manuale utente (e-Manual)
+Cura del Notebook PC
+Scollegare l’alimentazione CA e rimuovere la batteria 
+(se applicabile) prima di pulire il PC Notebook. Utilizzare 
+una spugna di cellulosa pulita o un panno scamosciato 
+inumidito con acqua tiepida o una soluzione a bassa 
+concentrazione di detergente non abrasivo. Rimuovere 
+l’eventuale umidità in eccesso dal PC Notebook 
+utilizzando un panno asciutto. Impedire la penetrazione 
+di liquidi all’interno della scocca o degli interstizi 
+della tastiera per prevenire il rischio di cortocircuito o 
+corrosione.
+Non utilizzare solventi aggressivi come alcol, diluenti, 
+benzene o altri prodotti chimici sopra o vicino al tuo 
+Notebook PC.
+Non posate oggetti sul vostro Notebook PC.
+Non esponete il vostro Notebook PC a forti campi 
+elettrici o magnetici.
+Non esponete il vostro Notebook PC a liquidi, pioggia o 
+umidità.
+Non tenete il vostro Notebook PC in ambienti polverosi.
+Notebook PC - Manuale utente (e-Manual) 11
+Corretto smaltimento
+Non buttate il vostro Notebook PC nei bidoni dei rifiuti 
+municipali. Questo prodotto è stato concepito per 
+permettere il riutilizzo di alcune parti e il riciclaggio 
+di altre. Il simbolo X sul bidone dei rifiuti indica che il 
+prodotto (elettrico, elettronico, batterie contenenti 
+mercurio) non deve essere buttato nei bidoni dei rifiuti 
+municipali. Controllate le normative locali vigenti per il 
+corretto smaltimento dei prodotti elettronici.
+Non buttate la batteria nei bidoni dei rifiuti municipali. Il 
+simbolo X sul bidone dei rifiuti indica che la batteria non 
+deve essere buttata nei bidoni dei rifiuti municipali.
+Non usate il vostro Notebook PC nelle vicinanze di fughe 
+di gas.
+Non collocare dispositivi elettronici attivi in prossimità 
+del PC Notebook per evitare l’interferenza delle onde 
+elettromagnetiche con il pannello del display.
+Non utilizzare questo PC portatile per il mining 
+di criptovalute (consuma una grande quantità di 
+elettricità e di tempo per ottenere valuta virtuale 
+convertibile) e/o attività correlate.
+12 Notebook PC - Manuale utente (e-Manual)
+Protezione della batteria
+• Ricaricare frequentemente una batteria ad alta tensione può 
+ridurne la durata utile. Quando una batteria è completamente 
+carica, per proteggerla il sistema smette di caricarla se la 
+percentuale di carica è tra il 90% e il 100%.
+NOTA: La capacità di carica iniziale della batteria è solitamente 
+impostata tra il 90% e il 99%. I valori effettivi possono variare in base al 
+modello.
+• Caricare o conservare una batteria in un luogo con temperatura 
+elevata può danneggiarne la capacità di carica in modo 
+permanente, riducendone la durata utile. Se la temperatura 
+della batteria è troppo elevata, il sistema può ridurre la capacità 
+di carica o interrompere il caricamento per proteggerla.
+• La capacità di carica della batteria potrebbe ridursi anche 
+quando il dispositivo è spento e scollegato dall’alimentazione 
+CA. Questo avviene perché il sistema continua comunque a 
+utilizzare in minima parte la carica della batteria.
+Informazioni sulla sicurezza della batteria
+Notebook PC - Manuale utente (e-Manual) 13
+Cura standard della batteria
+• Se non si utilizza il dispositivo per un tempo prolungato, 
+ricaricare la batteria del 50% e spegnere il dispositivo, quindi 
+disconnettere l’adattatore di corrente CA. Ricaricare la batteria 
+al 50% ogni tre mesi per evitare che si scarichi eccessivamente e 
+per prevenire eventuali danni.
+• Evitare di caricare la batteria ad alta tensione per un tempo 
+prolungato per estenderne la durata utile. Se l’alimentazione CA 
+è costantemente in uso sul dispositivo, assicurarsi di scaricare la 
+batteria al 50% almeno una volta ogni due settimane. È anche 
+possibile regolare le impostazioni della funzione Battery Health 
+Charging in MyASUS per estendere la durata utile della batteria.
+• Si consiglia di conservare la batteria a una temperatura 
+compresa tra 5°C (41°F) e 35°C (95°F) con la carica al 50%. È 
+anche possibile regolare le impostazioni della funzione Battery 
+Health Charging in MyASUS per estendere la durata utile della 
+batteria.
+• Non lasciare la batteria in ambienti molto umidi. L’esposizione 
+all’umidità potrebbe aumentare la velocità di scarica. Le basse 
+temperature potrebbero danneggiare gli agenti chimici che si 
+trovano all’interno della batteria, mentre le temperature alte o 
+eccessive potrebbero provocare esplosioni.
+• Non posizionare il dispositivo o la batteria in prossimità di 
+radiatori, caminetti, caldaie, caloriferi o fonti di calore con 
+temperature superiori ai 60°C (140°F). Le alte temperature 
+potrebbero infatti causare esplosioni o generare perdite di 
+materiali infiammabili.
+14 Notebook PC - Manuale utente (e-Manual)
+Notebook PC - Manuale utente (e-Manual) 15
+Capitolo 1: 
+Configurazione hardware
+16 Notebook PC - Manuale utente (e-Manual)
+Conoscete il vostro Notebook PC
+Vista frontale
+NOTA: Il layout della tastiera può variare in base alla regione o al Paese. L'aspetto 
+stesso del Notebook PC può variare a seconda del modello.
+Notebook PC - Manuale utente (e-Manual) 17
+Microfoni vettoriali
+Il microfono vettoriale fornisce funzioni di cancellazione dell’eco, 
+eliminazione del rumore e filtraggio spaziale per un miglior 
+riconoscimento vocale e una qualità di registrazione audio 
+superiore.
+Indicatore videocamera
+L’indicatore della videocamera si illumina quando la videocamera 
+integrata è in uso.
+Videocamera
+La videocamera integrata vi permette di scattare foto o acquisire 
+video tramite il vostro Notebook PC.
+Videocamera a infrarossi
+La videocamera integrata vi permette di scattare foto o acquisire 
+video tramite il vostro Notebook PC. La videocamera a infrarossi 
+supporta Windows Hello.
+NOTA: Il LED IR rosso lampeggia durante la lettura dei dati e prima di 
+accedere al sistema di riconoscimento facciale Windows Hello.
+18 Notebook PC - Manuale utente (e-Manual)
+Pannello touch screen orientabile a 360º
+Il pannello touch screen del vostro Notebook PC può essere 
+orientato a piacere secondo un angolo di 360º. Questa caratteristica 
+vi permette di trasformare il vostro Notebook PC in un tablet PC con 
+schermo touch.
+Lo schermo touch ad alta definizione fornisce eccellente qualità 
+di visualizzazione per foto, video e altri file multimediali sul vostro 
+Notebook PC. Vi permette inoltre di utilizzare tutte le funzionalità 
+del vostro Notebook PC tramite l’uso dei gesti interattivi.
+Disclaimer: La visualizzazione prolungata di immagini statiche o ad 
+alto contrasto può causare la persistenza dell’immagine o il burn-
+in sul display OLED. Il PC Notebook ASUS con display OLED (nei 
+modelli selezionati) riduce al minimo la probabilità di burn-in grazie 
+all’impostazione predefinita della modalità scura su Windows 10 e 
+riducendo il tempo di inattività necessario per lo spegnimento dello 
+schermo. Si consiglia di abilitare lo screen saver animato con sfondo 
+scuro ed evitare di impostare il display OLED alla massima luminosità 
+per prolungare la vita utile del display OLED.
+NOTA: 
+• Per maggiori dettagli, fare riferimento alla sezione Impostazione 
+del display OLED in questo manuale.
+• Per maggiori dettagli su come trasformare il Notebook PC in un 
+dispositivo tablet fate riferimento alla sezione Rotazione dello 
+schermo di questo manuale.
+Notebook PC - Manuale utente (e-Manual) 19
+Indicatore microfono off
+Questo indicatore si accende quando il microfono è spento.
+Tastiera
+La tastiera fornisce tasti QWERTY a grandezza naturale per una 
+digitazione confortevole. Vi permette anche l’utilizzo dei tasti 
+funzione, l’accesso veloce a Windows e il controllo di altre funzioni 
+multimediali.
+NOTA: Il layout della tastiera varia a seconda del modello e del 
+territorio.
+Indicatore blocco maiuscole
+Questo indicatore si illumina quando la funzione blocco maiuscole 
+è attivata. Con blocco maiuscole potete digitare lettere maiuscole 
+(come A, B, C) usando la tastiera del vostro Notebook PC.
+20 Notebook PC - Manuale utente (e-Manual)
+Touchpad/NumberPad 
+Permette di passare tra Touchpad e NumberPad.
+Il touchpad permette l’utilizzo di gesti interattivi multipli, per la 
+navigazione sullo schermo, fornendovi un’esperienza intuitiva. 
+Inoltre simula il funzionamento di un mouse standard.
+NOTA: Per maggiori dettagli fate riferimento alla sezione Utilizzare il 
+touchpad di questo manuale.
+Il NumberPad permette di inserire input numerico.
+IMPORTANTE! Ti preghiamo di notare che tutte le versioni 
+del tastierino numerico sono supportate solo dal più recente 
+sistema operativo Microsoft Windows.
+NOTA: Per maggiori dettagli fate riferimento alla sezione Utilizzare il 
+NumberPad di questo manuale.
+Sensore di luce ambientale
+Il sensore di luce rileva la quantità di luce presente nell’ambiente 
+circostante. Permette al sistema di regolare automaticamente la 
+luminosità dello schermo a seconda delle condizioni di luce presenti 
+in un determinato momento.
+Sensore di luce RGB
+Il sensore di luce RGB regolerà automaticamente la temperatura del 
+colore del pannello display in base ai livelli di luce circostante.
+Notebook PC - Manuale utente (e-Manual) 21
+Sensore ToF
+Il sensore ToF si riattiverà automaticamente e accederà al Notebook 
+PC con Windows Hello dopo aver rilevato la tua presenza nelle 
+vicinanze. Il Notebook PC entrerà in Modern Standby dal momento 
+in cui non rileverà più la presenza nelle vicinanze.
+Indicatore telecamera off
+Questo indicatore si illumina quando la telecamera è spenta.
+Pulsante di accensione/spegnimento
+Premete il pulsante di accensione/spegnimento per accendere o 
+spegnere il vostro Notebook PC. Potete anche usare il pulsante di 
+accensione/spegnimento per mettere il vostro Notebook PC in stato 
+di sospensione o ibernazione e per risvegliarlo dalla sospensione o 
+dall’ibernazione.
+Nel caso in cui il vostro Notebook PC non dia risposta alle vostre 
+istruzioni premete e tenete premuto il pulsante di accensione/
+spegnimento per almeno dieci (10) secondi fino a quando il 
+Notebook PC non si spegne.
+Sensore impronta digitale
+Il lettore integrato di impronte digitali acquisisce la vostra impronta 
+digitale e la usa come credenziale di accesso al Notebook PC.
+22 Notebook PC - Manuale utente (e-Manual)
+Vista dall’alto
+Microfoni vettoriali
+Il microfono vettoriale fornisce funzioni di cancellazione dell’eco, 
+eliminazione del rumore e filtraggio spaziale per un miglior 
+riconoscimento vocale e una qualità di registrazione audio 
+superiore.
+Notebook PC - Manuale utente (e-Manual) 23
+Vista dal basso
+NOTA: La parte inferiore può variare a seconda del modello.
+AVVERTIMENTO! Il Notebook PC può scaldarsi notevolmente durante l'uso o 
+durante la ricarica della batteria. Per evitare lesioni derivanti da esposizione al 
+calore non lasciate il Notebook PC sul grembo o su nessun'altra parte del corpo. 
+Quando state usando il vostro Notebook PC non riponetelo su superfici che 
+possano bloccarne le prese d'aria.
+IMPORTANTE!
+• La durata della batteria varia in base all'uso e alle specifiche di questo 
+Notebook PC. La batteria non può essere disassemblata.
+• Acquistate le componenti solamente da rivenditori autorizzati in modo 
+da assicurarvi massima compatibilità ed affidabilità. Consultate un centro 
+servizi ASUS o un rivenditore autorizzato per assistenza o informazioni 
+sullo smontaggio e rimontaggio del prodotto.
+24 Notebook PC - Manuale utente (e-Manual)
+Prese d'aria
+Le prese d'aria permettono all'aria fresca di entrare e all'aria calda di 
+uscire nel/dal vostro Notebook PC.
+AVVERTIMENTO! Assicuratevi che, in nessun modo, oggetti come 
+libri, vestiti, cavi o altro blocchino anche solo una delle prese d'aria. 
+Potrebbero verificarsi surriscaldamenti.
+Altoparlanti audio
+Gli altoparlanti integrati vi permettono di ascoltare suoni e musica 
+direttamente dal vostro Notebook PC. Le caratteristiche audio sono 
+gestite tramite software.
+Notebook PC - Manuale utente (e-Manual) 25
+Vista lato destro
+Indicatori di stato
+Gli indicatori di stato vi aiuteranno ad identificare lo stato hardware 
+corrente del vostro Notebook PC.
+ Indicatore bi-colore di carica della batteria
+ Il LED bi-colore fornisce un’indicazione visuale dello 
+stato di carica della batteria. Fate riferimento alla 
+seguente tabella per i dettagli:
+26 Notebook PC - Manuale utente (e-Manual)
+ 
+Colore Stato
+Bianco fisso Il Notebook PC è collegato ad una 
+fonte di alimentazione e la carica 
+della batteria è compresa tra il 95% 
+e il 100%.
+Arancione fisso Il Notebook PC è collegato ad una 
+fonte di alimentazione, la batteria 
+si sta caricando e la carica della 
+batteria è inferiore al 95%.
+Arancione 
+lampeggiante
+Il Notebook PC è in modalità 
+batteria e la carica della batteria è 
+inferiore a 10%.
+Spento Il Notebook PC è in modalità 
+batteria e la carica della batteria è 
+compresa tra 10% e 100%.
+ Indicatore di alimentazione
+ L'indicatore di alimentazione si illumina all'accensione del 
+vostro Notebook PC e lampeggia quando il Notebook PC 
+è in sospensione.
+Lettore di schede di memoria microSD
+Il lettore integrato di schede di memoria vi permette di leggere e 
+scrivere dati sulle schede compatibili con il formato microSD.
+Notebook PC - Manuale utente (e-Manual) 27
+Porta combinata Thunderbolt™ 4/Power Delivery
+La porta Thunderbolt™ 4 è compatibile con gli standard USB di tipo 
+C® e fornisce un trasferimento dati fino a 40 Gbit/s per i dispositivi 
+Thunderbolt™ 4. Collegate il vostro Notebook PC ad un monitor 
+esterno con interfaccia DisplayPort, VGA, DVI o HDMI e sperimentate 
+le funzionalità per i display ad alta risoluzione tramite la tecnologia 
+Intel® Thunderbolt™. Inserite l’alimentatore in dotazione in questo 
+ingresso per caricare la batteria e fornire alimentazione al vostro 
+Notebook PC.
+NOTA: La velocità di trasferimento di questa porta può variare in 
+base al modello.
+AVVERTIMENTO! L’adattatore di alimentazione potrebbe riscaldarsi 
+durante l’uso. Non coprite mai l’adattatore di alimentazione e 
+tenetelo lontano dal corpo se è collegato ad una fonte di energia.
+IMPORTANTE! 
+• Usando una sorgente di alimentazione a bassa tensione 
+potrebbe essere necessario più tempo per una carica completa 
+del Notebook PC.’
+• Per prevenire eventuali danni, utilizzare solo una fonte di 
+alimentazione da 20V/3.25A per caricare il Notebook PC 
+tramite la porta USB combo Power Delivery. Per maggiori 
+informazioni e assistenza, contattare un ASUS Service 
+Center.
+Porta jack 2-in-1 ingresso microfono/uscita cuffie
+Questa porta permette di collegare il vostro Notebook a cuffie 
+o altoparlanti amplificati. Potete anche usare questa porta per 
+collegare un headset o un microfono esterno.
+28 Notebook PC - Manuale utente (e-Manual)
+Vista lato sinistro
+Porta combo USB 3.2 Gen 2 di tipo C®/DisplayPort/ 
+Power Delivery 
+Questa porta USB 3.2 Gen 2 di tipo C® (Universal Serial Bus 
+3.2) fornisce una velocità di trasferimento fino a 10 Gbit/s ed è 
+retrocompatibile con lo standard USB 2.0. Usate un adattatore USB 
+di tipo C® per collegare il vostro Notebook PC ad un display esterno. 
+Collegate una fonte di alimentazione con valori 20V/3.25A per 
+caricare la batteria e fornire alimentazione al vostro Notebook PC.
+NOTA: La velocità di trasferimento di questa porta può variare in 
+base al modello.
+IMPORTANTE! 
+• Usando una sorgente di alimentazione a bassa tensione 
+potrebbe essere necessario più tempo per una carica completa 
+del Notebook PC.’
+• Per prevenire eventuali danni, utilizzare solo una fonte di 
+alimentazione da 20V/3.25A per caricare il Notebook PC tramite 
+la porta USB combo Power Delivery. Per maggiori informazioni 
+e assistenza, contattare un ASUS Service Center.
+Notebook PC - Manuale utente (e-Manual) 29
+Capitolo 2: 
+Usare il PC Notebook
+30 Notebook PC - Manuale utente (e-Manual)
+IMPORTANTE!
+Informazioni sull'adattatore di alimentazione:
+• Tensione di ingresso: 100-240Vca
+• Frequenza di ingresso: 50-60Hz
+• Corrente di uscita nominale: 3.25A (65W)
+• Tensione di uscita nominale: 20V
+Ricarica il PC Notebook per 3 ore prima di utilizzarlo in 
+modalità batteria per la prima volta.
+NOTA: L'aspetto dell'alimentatore può variare a seconda dei modelli e della 
+regione.
+Introduzione
+Ricaricare il PC Notebook
+A. Collega il cavo di alimentazione CA all'adattatore CA/CC.
+B. Collega il connettore di alimentazione CC alla porta di ingresso di 
+alimentazione (CC) del PC Notebook.
+C. Collega l'adattatore di alimentazione CA a una fonte di alimentazione 
+da 100V~240V.
+Notebook PC - Manuale utente (e-Manual) 31
+IMPORTANTE!
+• Individua l'etichetta di classificazione energetica di ingresso/uscita sul PC 
+Notebook e assicurati che le informazioni riportate corrispondano a quelle 
+indicate sull'adattatore di alimentazione. Alcuni modelli di PC Notebook 
+possono avere più correnti di uscita nominali in base alla SKU disponibile.
+• Prima di accendere il PC Notebook per la prima volta, assicurati che sia 
+collegato all'adattatore di corrente. Collega sempre il cavo di alimentazione 
+nella presa senza utilizzare prolunghe. Per la tua sicurezza, collega questo 
+dispositivo solo a una presa elettrica correttamente messa a terra.
+• La presa di corrente deve essere facilmente accessibile e vicina al PC 
+Notebook.
+• Per scollegare il PC Notebook dall'alimentazione principale, disconnettilo 
+dalla presa di corrente.
+AVVERTENZA!
+Leggi le seguenti precauzioni per la batteria del PC Notebook:
+• La batteria all'interno del dispositivo deve essere rimossa solo da tecnici 
+ASUS autorizzati (solo per batterie non rimovibili).
+• La batteria utilizzata in questo dispositivo può presentare un rischio di 
+incendio o ustione chimica se rimossa o smontata.
+• Rispetta quanto indicato sulle etichette di avvertenza per la tua sicurezza 
+personale.
+• Rischio di esplosione se la batteria viene sostituita con una batteria di tipo 
+errato.
+• Non gettare nel fuoco.
+• Non tentare mai di cortocircuitare la batteria del PC Notebook.
+• Non tentare mai di smontare e rimontare la batteria (solo per batteria non 
+rimovibile).
+• Interrompi l'utilizzo se rilevi perdite.
+• La batteria e i suoi componenti devono essere riciclati o smaltiti 
+correttamente.
+• Tieni la batteria e altri piccoli componenti lontano dalla portata dei 
+bambini.
+32 Notebook PC - Manuale utente (e-Manual)
+Solleva per aprire il pannello del display
+Premi il pulsante di accensione
+Notebook PC - Manuale utente (e-Manual) 33
+Utilizzo dei movimenti sul pannello touch screen
+I movimenti delle dita ti permettono di lanciare programmi e accedere alle 
+impostazioni del tuo PC Notebook. Le funzioni possono essere attivate 
+utilizzando i movimenti delle dita sul pannello touch screen del PC Notebook.
+Movimenti delle dita per il pannello touch 
+screen e il touchpad
+I movimenti delle dita ti permettono di lanciare programmi e accedere alle 
+impostazioni del tuo PC Notebook. Fai riferimento alle seguenti illustrazioni 
+quando utilizzi i movimenti delle dita sul pannello touch screen e sul 
+touchpad.
+Tocca/Tocca due volte Tieni premuto
+• Tocca un'app per selezionarla.
+• Tocca due volte un'app per 
+avviarla.
+Tieni premuto per aprire il menu di 
+scelta rapida.
+NOTA: Gli screenshot sono solo per riferimento. L'aspetto del pannello touch 
+screen può variare a seconda del modello.
+34 Notebook PC - Manuale utente (e-Manual)
+Ingrandisci Riduci
+Allarga le due dita sul pannello touch 
+screen.
+Unisci le due dita sul pannello touch 
+screen.
+Scorrimento del dito Trascina
+Fai scorrere il dito per spostarti verso 
+l'alto e verso il basso e per eseguire 
+una panoramica dello schermo a 
+sinistra a destra.
+• Trascina per creare una 
+casella di selezione attorno a 
+più elementi.
+• Trascina un elemento per 
+spostarlo in una nuova 
+posizione.
+Notebook PC - Manuale utente (e-Manual) 35
+Utilizzo del touchpad
+Muovere il puntatore
+Tocca un punto qualsiasi del touchpad per attivarne il puntatore, quindi fai 
+scorrere il dito sul touchpad per spostare il puntatore sullo schermo.
+Scorrimento orizzontale
+Scorrimento verticale
+Scorrimento diagonale
+36 Notebook PC - Manuale utente (e-Manual)
+Movimenti con un dito
+Tocca/Tocca due volte
+• Tocca un'app per selezionarla.
+• Tocca due volte un'app per avviarla.
+Trascina e rilascia
+Tocca due volte un elemento, quindi fai scorrere lo stesso dito senza 
+sollevarlo dal touchpad. Per rilasciare l'elemento nella nuova posizione, 
+solleva il dito dal touchpad.
+Notebook PC - Manuale utente (e-Manual) 37
+Clic con pulsante sinistro Clic con pulsante destro
+• Fai clic su un'app per 
+selezionarla.
+• Fai doppio clic su un'app per 
+avviarla.
+Fai clic su questo pulsante per aprire il 
+menu di scelta rapida.
+NOTA: Le aree all'interno della linea tratteggiata rappresentano le posizioni del 
+pulsante sinistro del mouse e del pulsante destro del mouse sul touchpad.
+Movimenti con due dita
+Tocca
+Tocca il touchpad con due dita per simulare la funzione di clic con il pulsante 
+destro.
+38 Notebook PC - Manuale utente (e-Manual)
+Scorrimento con due dita (su/giù) Scorrimento con due dita (sinistra/
+destra)
+Fai scorrere due dita per spostarti 
+verso l'alto o verso il basso.
+Fai scorrere due dita per spostarti 
+verso sinistra o verso destra.
+Riduci Ingrandisci
+Unisci le due dita sul touchpad. Allarga le due dita sul touchpad.
+Notebook PC - Manuale utente (e-Manual) 39
+Trascina e rilascia
+Seleziona un elemento, quindi tieni premuto il pulsante sinistro. Usando 
+l'altro dito, scorri sul touchpad per trascinare l'elemento, solleva il dito dal 
+pulsante per rilasciare l'elemento.
+Movimenti con tre dita
+Tocca
+Tocca il touchpad con tre dita per avviare la funzione selezionata in 
+Impostazioni.
+40 Notebook PC - Manuale utente (e-Manual)
+Scorri a sinistra/Scorri a destra
+Se sono aperte più app, fai scorrere tre dita verso sinistra o verso destra per 
+passare da una app all'altra.
+Scorri verso l'alto Scorri verso il basso
+Scorri verso l'alto per visualizzare 
+una panoramica di tutte le app 
+attualmente aperte.
+Scorri verso il basso per mostrare il 
+desktop.
+Notebook PC - Manuale utente (e-Manual) 41
+Movimenti con quattro dita
+Tocca
+Tocca il touchpad con quattro dita per avviare la funzione selezionata in 
+Impostazioni.
+42 Notebook PC - Manuale utente (e-Manual)
+Utilizzo del tastierino numerico
+IMPORTANTE! Ti preghiamo di notare che tutte le versioni del tastierino 
+numerico sono supportate solo dal più recente sistema operativo 
+Microsoft Windows.
+NOTA: Per utilizzare la funzione % e =, imposta la lingua di input 
+sull'inglese.
+• Tieni premuto per un secondo per alternare tra 
+il tastierino numerico e il touchpad.
+• Tocca per regolare la luminosità del tastierino 
+numerico.
+• Tieni premuto quindi scorri in una direzione 
+qualunque sul tastierino numerico per avviare 
+Calcolatrice di Windows.
+Notebook PC - Manuale utente (e-Manual) 43
+Uso della tastiera
+Attivare e disattivare l'altoparlante
+Abbassare il volume dell'altoparlante
+Alzare il volume dell'altoparlante
+Ridurre la luminosità del display
+Aumentare la luminosità del display
+Abilitare o disabilitare il touchpad
+Regolare la luminosità della tastiera retroilluminata
+Cambiare la modalità di visualizzazione
+NOTA: Assicurati che il secondo display sia collegato al PC 
+Notebook.
+Tasti di scelta rapida
+I tasti di scelta rapida sulla tastiera del PC Notebook possono attivare i 
+seguenti comandi:
+44 Notebook PC - Manuale utente (e-Manual)
+Tasti di Windows
+Sulla tastiera del PC Notebook sono presenti due tasti di Windows speciali 
+usati come di seguito:
+Avvia il menu Start
+Visualizza il menu a tendina*
+* Su modelli selezionati
+Tasti funzione
+Premi per abilitare o disabilitare i tasti funzione. Quando i 
+tasti funzione sono abilitati, è possibile anche accedere ai tasti di scelta rapida 
+tenendo premuto in combinazione con i tasti della riga superiore.
+Attivare e disattivare il microfono
+Attivare e disattivare la telecamera
+Attivare lo strumento di cattura dello schermo
+Lanciare MyASUS
+Notebook PC - Manuale utente (e-Manual) 45
+Rotazione dello schermo
+Lo schermo del vostro Notebook PC può essere ruotato di 360 gradi. Potete 
+ruotate lo schermo come mostrato qui di seguito.
+Modalità Notebook PC
+Rotazione a 360°
+NOTA: Le illustrazioni sono solo per riferimento.
+46 Notebook PC - Manuale utente (e-Manual)
+Modalità tenda
+Modalità supporto
+Modalità tablet
+NOTA: Le posizioni tenda, supporto e tablet disabilitano la tastiera e il touchpad.
+Notebook PC - Manuale utente (e-Manual) 47
+Capitolo 3: 
+Lavorare con Windows
+48 Notebook PC - Manuale utente (e-Manual)
+Primo avvio
+Quando il PC Notebook viene avviato per la prima volta, appare una serie di 
+schermate che guidano l'utente nella configurazione del sistema operativo 
+Windows.
+Per avviare il PC Notebook per la prima volta:
+1. Premi il pulsante di accensione sul tuo PC Notebook. Attendi qualche 
+minuto finché non viene visualizzata la schermata di configurazione.
+2. Dalla schermata di configurazione, scegli la tua regione e una lingua da 
+usare sul tuo PC Notebook.
+3. Leggi attentamente il contratto di licenza. Seleziona Accept (Accetta).
+4. Segui le istruzioni sullo schermo per configurare i seguenti elementi di 
+base:
+• Personalizza
+• Connetti
+• Impostazioni
+• Il tuo account
+5. Dopo aver configurato gli elementi di base, Windows procede 
+all'installazione delle app e delle impostazioni preferite. Assicurati che 
+il PC Notebook sia acceso durante il processo di configurazione.
+6. Una volta completato il processo, viene visualizzato il desktop.
+NOTA: Gli screenshot in questo capitolo sono solo di riferimento.
+Notebook PC - Manuale utente (e-Manual) 49
+Menu Start
+Il menu Start è l'accesso principale ai programmi, alle app di Windows, alle 
+cartelle e alle impostazioni del PC Notebook.
+È possibile utilizzare il menu Start per svolgere le seguenti attività:
+• Avviare programmi o app di Windows
+• Aprire i programmi o le app di Windows comunemente utilizzati
+• Regolare le impostazioni del PC Notebook
+• Ottenere assistenza per il sistema operativo Windows
+• Spegnere il PC Notebook
+• Disconnettersi da Windows o passare a un altro account utente
+Modifica le impostazioni dell'account, blocca o esci dall'account
+Avvia il menu Start
+Avvia la visualizzazione attività
+Spegni, riavvia o sospendi il 
+PC Notebook
+Avvia un'app dalla barra delle applicazioni
+Avvia un'app dal menu Start
+Avvia la ricerca
+Avvia i widget
+50 Notebook PC - Manuale utente (e-Manual)
+Avvio del menu Start
+Tocca l'icona sul desktop.
+Posiziona il puntatore del mouse sull'icona Start sul 
+desktop, quindi fai clic su di essa.
+Premi il logo di Windows sulla tastiera.
+Apertura dei programmi dal menu Start
+Uno degli usi più comuni del menu Start è l'apertura di programmi installati 
+sul PC Notebook.
+Tocca il programma per avviarlo.
+Posiziona il puntatore del mouse sul programma, quindi fai 
+clic per avviarlo.
+Usa i tasti freccia per navigare tra i programmi. Premi 
+ per avviare il programma desiderato.
+NOTA: Seleziona Tutte le applicazioni per visualizzare un elenco completo dei 
+programmi e delle cartelle sul PC Notebook in ordine alfabetico.
+Notebook PC - Manuale utente (e-Manual) 51
+App di Windows
+Sono le app contenute nel menu Start e visualizzate come riquadri per un 
+facile accesso.
+NOTA: Alcune app di Windows richiedono l'accesso all'account Microsoft prima 
+di essere avviate completamente.
+52 Notebook PC - Manuale utente (e-Manual)
+Lavorare con le app di Windows
+Personalizzazione delle app di Windows
+Puoi spostare, rimuovere o aggiungere app alla barra delle applicazioni dal 
+menu Start seguendo i passaggi seguenti:
+Avvio di app di Windows dal menu Start
+Tocca l'app per avviarla.
+Posiziona il puntatore del mouse sull'app, quindi fai clic per 
+avviarla.
+Usa i tasti freccia per navigare tra le app. Premi 
+per avviare un'app.
+Spostare le app
+Tieni premuta l'app, quindi trascinala e rilasciala in una nuova 
+posizione.
+Posiziona il puntatore del mouse sull'app, quindi trascina e 
+rilascia l'app in una nuova posizione.
+Notebook PC - Manuale utente (e-Manual) 53
+Rimuovere le app dal menu Start
+Tieni premuta l'app, quindi tocca Unpin from Start (Rimuovi 
+da Start).
+Posiziona il puntatore del mouse sull'app e fai clic con il 
+pulsante destro del mouse, quindi fai clic su Unpin from 
+Start (Rimuovi da Start).
+Usa i tasti freccia per accedere all'app. 
+Premi o (su modelli selezionati), quindi 
+seleziona Unpin from Start (Rimuovi da Start).
+54 Notebook PC - Manuale utente (e-Manual)
+Aggiungere più app al menu Start
+Da Tutte le applicazioni, tieni premuta l'app che desideri 
+aggiungere al menu Start, quindi seleziona Aggiungi a Start.
+Da Tutte le applicazioni, posiziona il puntatore del mouse 
+sull'app che desideri aggiungere al menu Start e fai clic con 
+il pulsante destro del mouse, quindi fai clic su Pin to Start 
+(Aggiungi a Start).
+Da Tutte le applicazioni, premi o (su 
+modelli selezionati) sull'app che desideri aggiungere al menu 
+Start, quindi seleziona Pin to Start (Aggiungi a Start).
+Aggiungere app alla barra delle applicazioni
+Tieni premuta l'app, quindi tocca Pin to taskbar (Aggiungi 
+alla barra delle applicazioni).
+Posiziona il puntatore del mouse sull'app e fai clic con il 
+pulsante destro del mouse, quindi fai clic su Pin to taskbar 
+(Aggiungi alla barra delle applicazioni).
+Usa i tasti freccia per accedere all'app. 
+Premi o (su modelli selezionati), 
+quindi seleziona Pin to taskbar (Aggiungi alla barra delle 
+applicazioni).
+Notebook PC - Manuale utente (e-Manual) 55
+Visualizzazione attività
+Passa rapidamente tra app e programmi aperti utilizzando la funzione di 
+visualizzazione attività, che può essere utilizzata anche per passare da un 
+desktop all'altro.
+Avvio della visualizzazione attività
+Tocca l’icona sulla barra delle applicazioni.
+Posiziona il puntatore del mouse sull'icona sulla barra 
+delle applicazioni e fai clic su di essa.
+Premi sulla tastiera.
+56 Notebook PC - Manuale utente (e-Manual)
+Widget
+Puoi avviare i widget per accedere rapidamente a informazioni importanti.
+Avvio dei widget
+Tocca l'icona sulla barra delle applicazioni.
+Posiziona il puntatore del mouse sull'icona sulla barra 
+delle applicazioni e fai clic su di essa.
+Premi sulla tastiera.
+Notebook PC - Manuale utente (e-Manual) 57
+Personalizzazione dei widget
+o
+Fai clic su/tocca l'icona , quindi seleziona Manage 
+interests (Gestisci interessi) per modificare il contenuto 
+visualizzato nei widget.
+58 Notebook PC - Manuale utente (e-Manual)
+Funzione di ancoraggio
+La funzione di ancoraggio mostra le app affiancate, consentendoti di lavorare 
+o passare da un'app all'altra.
+Hotspot
+Puoi trascinare e rilasciare le app su questi hotspot per ancorarle in posizione.
+Notebook PC - Manuale utente (e-Manual) 59
+Utilizzo della funzione di ancoraggio
+o
+1. Avvia l'app che desideri ancorare.
+2. Trascina la barra del titolo della tua app e rilascia l'app 
+sul bordo dello schermo per ancorarla.
+3. Avvia un'altra app e ripeti i passaggi precedenti per 
+ancorarla.
+1. Avvia l'app che desideri ancorare.
+2. Tieni premuto il tasto , quindi utilizza i tasti 
+freccia per ancorare l'app.
+3. Avvia un'altra app e ripeti i passaggi precedenti per 
+ancorarla.
+60 Notebook PC - Manuale utente (e-Manual)
+Centro notifiche
+Il Centro notifiche consolida le notifiche dalle app in un'unica posizione, dalla 
+quale è possibile interagire con esse. Presenta anche una utilissima sezione 
+chiamata Azioni rapide.
+Avvio di Azioni rapide
+Tocca le icone di stato sulla barra delle applicazioni.
+Posiziona il puntatore del mouse sulle icone di stato sulla 
+barra delle applicazioni e fai clic.
+Premi sulla tastiera.
+Notebook PC - Manuale utente (e-Manual) 61
+Avvio delle notifiche
+Tocca la data e l'ora sulla barra delle applicazioni.
+Posiziona il puntatore del mouse sulla data e l'ora sulla barra 
+delle applicazioni e fai clic.
+Premi sulla tastiera.
+62 Notebook PC - Manuale utente (e-Manual)
+MyASUS Splendid
+MyASUS Splendid fa in modo che tutti i display ASUS mostrino colori identici 
+e accurati. Oltre alla modalità Normal (Normale), è possibile selezionare le 
+modalità Vivid (Vivido), Eye Care (Protezione occhi) o Manual (Manuale) per 
+regolare le impostazioni del display.
+• Modalità Normal (Normale): Attraverso la correzione della gamma 
+e della temperatura del colore, l'output dell'immagine dal pannello è 
+quanto più vicino possibile a ciò che l'occhio può vedere naturalmente. 
+Per il modello con pannello OLED, questa modalità è conforme alla 
+certificazione TÜV Low Blue Light.
+• Modalità Vivid (Vivido): Questa modalità consente di regolare la 
+saturazione dell'immagine, rendendola più vivida e vibrante.
+• Modalità Manual (Manuale): Questa modalità consente di regolare 
+il valore della temperatura del colore in base alle proprie esigenze 
+personali, da -50 a +50.
+• Modalità Eye Care (Protezione occhi): Questa modalità riduce 
+l'emissione di luce blu fino al 30%, aiutando a proteggere gli occhi.
+ Livello 1-5: Maggiore è il livello, minore è l'emissione di luce blu. Per il 
+modello con pannello LCD, il Livello 5 è l'impostazione ottimizzata ed è 
+conforme alla certificazione TÜV Low Blue Light.
+NOTA: Abilitare HDR in Settings (Impostazioni) > System (Sistema) > 
+Dispalay (Display)per una migliore esperienza visiva con il pannello OLED (su 
+modelli selezionati), conforme alla certificazione TÜV Flicker Free.
+Notebook PC - Manuale utente (e-Manual) 63
+Ti preghiamo di fare riferimento ai seguenti suggerimenti per alleviare 
+l'affaticamento degli occhi:
+• Prenditi un po' di tempo lontano dal display se lavori per molte ore. Ti 
+consigliamo di effettuare brevi pause (almeno 5 minuti) dopo circa 1 
+ora di lavoro continuo al computer. Pause brevi e frequenti sono più 
+efficaci di una pausa lunga.
+• Per ridurre al minimo l'affaticamento e la secchezza degli occhi, fai 
+riposare con frequenza gli occhi mettendo a fuoco oggetti lontani.
+• Ripeti i seguenti esercizi per ridurre l'affaticamento degli occhi:
+(1) Guarda in su e in giù ripetutamente
+(2) Alza lentamente gli occhi
+(3) Muovi gli occhi in diagonale
+ Se l'affaticamento degli occhi persiste, consulta un medico.
+• La luce blu ad alta energia può causare affaticamento degli occhi e 
+AMD (degenerazione maculare correlata all'età). Il filtro per la luce blu 
+riduce del 30% (max.) la luce blu dannosa per evitare la CVS (sindrome 
+da visione al computer).
+64 Notebook PC - Manuale utente (e-Manual)
+Impostazione del display OLED
+Per ottenere il massimo dal display OLED (su modelli selezionati), consigliamo 
+diverse impostazioni. Queste impostazioni aiutano ad ottimizzare l'esperienza 
+visiva, massimizzare la durata della batteria e prolungare la vita utile del tuo 
+PC Notebook ASUS.
+Impostazione della modalità scura
+La modalità scura è abilitata per impostazione predefinita. Per controllare o 
+regolare le impostazioni:
+1. Avvia il menu Start.
+2. Fai clic su/tocca Settings (Impostazioni) e seleziona Personalization 
+(Personalizzazione).
+Notebook PC - Manuale utente (e-Manual) 65
+3. Seleziona la scheda Colors (Colori) per visualizzare le opzioni.
+66 Notebook PC - Manuale utente (e-Manual)
+Spegnimento del display quando non in uso
+Assicurati di impostare il display in modo che si spenga automaticamente 
+quando non è in uso. Per controllare o regolare le impostazioni:
+1. Avvia il menu Start.
+2. Fai clic su/tocca Settings (Impostazioni) e seleziona System (Sistema).
+Notebook PC - Manuale utente (e-Manual) 67
+3. Seleziona la scheda Power & battery (Alimentazione e batteria) per 
+visualizzare le opzioni.
+68 Notebook PC - Manuale utente (e-Manual)
+Regolazione della luminosità del display
+Si consiglia di abilitare lo screen saver animato con sfondo scuro ed evitare di 
+impostare il display OLED alla massima luminosità per prolungare la vita utile 
+del display OLED. Per controllare o regolare le impostazioni:
+1. Avvia il menu Start.
+2. Fai clic su/tocca Settings (Impostazioni) e seleziona Personalization 
+(Personalizzazione).
+Notebook PC - Manuale utente (e-Manual) 69
+3. Seleziona la scheda Lock screen (Schermata di blocco) e seleziona 
+Screen saver (Screen saver) per visualizzare le opzioni.
+70 Notebook PC - Manuale utente (e-Manual)
+Nascondi automaticamente la barra delle 
+applicazioni
+Per non visualizzare la barra delle applicazioni sul display OLED per un 
+tempo prolungato, assicurati di nascondere automaticamente la barra delle 
+applicazioni. Per regolare le impostazioni:
+1. Avvia il menu Start.
+2. Fai clic su/tocca Settings (Impostazioni) e seleziona Personalization 
+(Personalizzazione).
+Notebook PC - Manuale utente (e-Manual) 71
+3. Seleziona la scheda Taskbar (Barra delle applicazioni) e abilita 
+Automatically hide the taskbar (Nascondi automaticamente la barra 
+delle applicazioni).
+72 Notebook PC - Manuale utente (e-Manual)
+1. Lancia un'applicazione di Microsoft Office, quindi fai clic su/tocca File 
+> Account.
+2. Seleziona Dark Gray (Grigio scuro) in Office Theme (Tema di Office). 
+Il tema verrà applicato a tutte le applicazioni Microsoft.
+Impostazione della modalità scura in Microsoft 
+Office
+Notebook PC - Manuale utente (e-Manual) 73
+Altre scorciatoie da tastiera
+Utilizzando la tastiera, puoi anche ricorrere alle seguenti scorciatoie per 
+avviare applicazioni e navigare in Windows.
+Lancia il Start menu (menu Start)
+Lancia il Action Cener (Centro notifiche)
+Lancia il desktop
+Lancia File Explorer (Esplora file)
+Lancia Settings (Impostazioni)
+Lancia il pannello Connect (Connetti)
+Attiva la schermata di blocco
+Riduce a icona tutte le finestre attualmente attive
+74 Notebook PC - Manuale utente (e-Manual)
+Lancia Search (Ricerca)
+Lancia il pannello Project (Progetto)
+Apre la finestra Run (Esegui)
+Apre Accessibility (Accessibilità)
+Apre il menu contestuale del pulsante Start
+Avvia l'icona della lente d'ingrandimento e 
+ingrandisce lo schermo
+Rimpicciolisce lo schermo
+Notebook PC - Manuale utente (e-Manual) 75
+Connessione a reti wireless
+Wi-Fi
+Consente di accedere alle e-mail, navigare in Internet e condividere 
+applicazioni tramite siti di social network utilizzando la connessione Wi-Fi del 
+tuo PC Notebook.
+IMPORTANTE! Airplane mode (Modalità aereo) disabilita questa funzione. 
+Assicurati che la Airplane mode (Modalità aereo) sia disattivata prima di 
+abilitare la connessione Wi-Fi del PC Notebook.
+Connessione al Wi-Fi
+Collega il tuo PC Notebook a una rete Wi-Fi seguendo i passaggi seguenti:
+o
+1. Lancia Action Center (Centro notifiche) dalla barra 
+delle applicazioni.
+2. Fai clic su/tocca l'icona Wifi abilitare il Wi-Fi.
+3. Seleziona un punto di accesso dall'elenco delle 
+connessioni Wi-Fi disponibili.
+4. Seleziona Connect (Connetti) per avviare la 
+connessione di rete.
+NOTA: Potrebbe essere richiesto di inserire una chiave di 
+sicurezza per attivare la connessione Wi-Fi.
+76 Notebook PC - Manuale utente (e-Manual)
+o
+1. Lancia Settings (Impostazioni) dal menu Start.
+2. Seleziona Bluetooth & devices (Bluetooth e 
+dispositivi) > Add device (Aggiungi dispositivo) per 
+cercare dispositivi abilitati Bluetooth.
+3. Seleziona un dispositivo dall'elenco per associare il tuo 
+PC Notebook al dispositivo.
+NOTA: Per alcuni dispositivi abilitati Bluetooth potrebbe essere 
+richiesto di inserire il codice di accesso del PC Notebook.
+Bluetooth
+Utilizza il Bluetooth per facilitare i trasferimenti di dati wireless con altri 
+dispositivi abilitati Bluetooth.
+IMPORTANTE! Airplane mode (Modalità aereo) disabilita questa funzione. 
+Assicurati che la Airplane mode (Modalità aereo) sia disattivata prima di 
+abilitare la connessione Bluetooth del tuo PC Notebook.
+Associazione ad altri dispositivi abilitati Bluetooth
+Devi associare il tuo PC Notebook ad altri dispositivi abilitati Bluetooth 
+per abilitare il trasferimento dei dati. Collega i tuoi dispositivi utilizzando i 
+seguenti passaggi:
+Notebook PC - Manuale utente (e-Manual) 77
+Modalità aereo
+La modalità aereo disabilita la comunicazione wireless, permettendoti di 
+usare il tuo PC Notebook in sicurezza durante il volo.
+NOTA: Contatta la compagnia aerea per conoscere i servizi che possono essere 
+utilizzati e le restrizioni che devono essere rispettate quando si utilizza il PC 
+Notebook in volo.
+Attivazione/disattivazione della modalità aereo
+o
+1. Lancia Action Center (Centro notifiche) dalla barra 
+delle applicazioni.
+2. Fai clic su/tocca l'icona della Airplane mode 
+(Modalità aereo) per abilitare o disabilitare la 
+modalità aereo.
+78 Notebook PC - Manuale utente (e-Manual)
+Spegnimento del PC Notebook
+Puoi spegnere il PC Notebook eseguendo una delle seguenti procedure:
+o
+• Avvia il menu Start, quindi seleziona > Shut down 
+(Arresta) per eseguire uno spegnimento normale.
+• Dalla schermata di accesso, seleziona > Shut 
+down (Arresta).
+• Premi per avviare Fine della sessione di 
+lavoro. Seleziona Shut down (Arresta) dall'elenco a 
+discesa, quindi seleziona OK.
+• Se il PC Notebook non risponde, tieni premuto il 
+pulsante di accensione per almeno dieci (10) secondi 
+finché il PC Notebook non si spegne.
+Notebook PC - Manuale utente (e-Manual) 79
+Sospensione del PC Notebook
+Per attivare la modalità Sospensione del PC Notebook:
+o
+• Avvia il menu Start, quindi seleziona > Sleep 
+(Sospendi) per impostare la modalità di sospensione 
+del PC Notebook.
+• Dalla schermata di accesso, seleziona > Sleep 
+(Sospendi).
+Premi per avviare Fine della sessione di lavoro. 
+Seleziona Sleep (Sospendi) dall'elenco a discesa, quindi 
+seleziona OK.
+NOTA: La modalità Sospensione del PC Notebook può essere impostata anche 
+premendo una volta il pulsante di accensione.
+80 Notebook PC - Manuale utente (e-Manual)
+Notebook PC - Manuale utente (e-Manual) 81
+Capitolo 4: 
+Verifica automatica durante 
+l'accensione (POST)
+82 Notebook PC - Manuale utente (e-Manual)
+Verifica automatica durante l'accensione (POST)
+Il POST (verifica automatica durante l'accensione) è una serie di test 
+diagnostici controllati da software che vengono eseguiti all'accensione o al 
+riavvio del PC Notebook. Il software che controlla il POST è installato come 
+componente permanente dell'architettura del PC Notebook.
+Utilizzo del POST per accedere al BIOS e alla 
+risoluzione dei problemi
+Durante il POST, puoi accedere alle impostazioni del BIOS o eseguire le 
+opzioni di risoluzione dei problemi utilizzando i tasti funzione del tuo PC 
+Notebook. Fai riferimento alle informazioni seguenti per maggiori dettagli.
+BIOS
+Il BIOS (Basic Input and Output System) memorizza le impostazioni hardware 
+di sistema necessarie per l'avvio del sistema nel PC Notebook.
+Le impostazioni predefinite del BIOS si applicano alla maggior parte delle 
+condizioni del PC Notebook. Non modificare le impostazioni del BIOS 
+predefinite tranne nelle seguenti circostanze:
+• Durante l'avvio del sistema, sullo schermo viene visualizzato un 
+messaggio di errore che richiede di eseguire la configurazione del 
+BIOS.
+• È stato installato un nuovo componente di sistema che richiede 
+ulteriori impostazioni o aggiornamenti del BIOS.
+AVVERTENZA! L'utilizzo di impostazioni del BIOS inadeguate può causare 
+instabilità del sistema o errore di avvio. Si consiglia vivamente di modificare le 
+impostazioni del BIOS solo con l'aiuto di personale di assistenza qualificato.
+Accesso al BIOS
+Riavvia il PC Notebook, quindi premi durante il POST.
+Notebook PC - Manuale utente (e-Manual) 83
+Ripristino del sistema
+L'utilizzo delle opzioni di ripristino sul PC Notebook consente di ripristinare 
+il sistema al suo stato originale o semplicemente di aggiornare le sue 
+impostazioni per migliorarne le prestazioni.
+IMPORTANTE!
+• Esegui il backup di tutti i tuoi file di dati prima di eseguire qualsiasi opzione 
+di ripristino sul tuo PC Notebook.
+• Annota importanti impostazioni personalizzate, come impostazioni di rete, 
+nomi utente e password, per evitare la perdita di dati.
+• Assicurati che il tuo Notebook PC sia collegato a una fonte di alimentazione 
+prima di ripristinare il sistema.
+Windows ti consente di eseguire una delle seguenti opzioni di ripristino:
+• Keep my files (Mantieni i miei file) - Questa opzione ti permette 
+di aggiornare il tuo PC Notebook senza alterare i file personali (foto, 
+musica, video, documenti).
+ Usando questa opzione, puoi ripristinare il tuo PC Notebook alle sue 
+impostazioni predefinite ed eliminare le altre app installate.
+• Remove everything (Rimuovi tutto) - Questa opzione ripristina le 
+impostazioni di fabbrica del tuo PC Notebook. È necessario eseguire il 
+backup dei dati prima di eseguire questa opzione.
+84 Notebook PC - Manuale utente (e-Manual)
+• Advanced startup (Avvio avanzato) - L'utilizzo di questa opzione 
+consente di eseguire altre opzioni di ripristino avanzate sul PC 
+Notebook come:
+- Usare un'unità USB, una connessione di rete o un DVD di 
+ripristino di Windows per avviare il PC Notebook.
+- Usare la Troubleshoot (Risoluzione dei problemi)per abilitare 
+una di queste opzioni di ripristino avanzate: Ripristino all'avvio, 
+Disinstalla aggiornamenti, Impostazioni di avvio, Impostazioni 
+firmware UEFI, Prompt dei comandi, Ripristino configurazione di 
+sistema e Ripristino immagine di sistema.
+Esecuzione di un'opzione di ripristino
+Fai riferimento ai seguenti passaggi se desideri accedere e utilizzare una delle 
+opzioni di ripristino disponibili per il tuo PC Notebook.
+1. Lancia Settings (Impostazioni)e seleziona System (Sistema) > 
+Recovery (Ripristino).
+Notebook PC - Manuale utente (e-Manual) 85
+2. Seleziona l'opzione di ripristino che desideri eseguire.
+86 Notebook PC - Manuale utente (e-Manual)
+Notebook PC - Manuale utente (e-Manual) 87
+Consigli e domande frequenti 
+(FAQ)
+88 Notebook PC - Manuale utente (e-Manual)
+Consigli utili per il vostro Notebook PC
+Di seguito una serie di consigli utili per sfruttare al meglio il vostro Notebook 
+PC, mantenere costanti le prestazioni nel tempo e assicurarvi che tutti i dati 
+siano conservati correttamente:
+• Aggiornate Windows periodicamente in modo che le applicazioni 
+dispongano, in ogni momento, delle ultime impostazioni di sicurezza.
+• Aggiornare MyASUS per disporre sempre delle impostazioni più recenti 
+previste per applicazioni, driver e utility esclusivi di ASUS.
+• Usate un software anti-virus per rilevare i virus, rimuovere le infezioni e 
+tenetelo aggiornato.
+• A meno che non sia assolutamente necessario evitate di spegnere 
+manualmente il Notebook PC.
+• Fate sempre una copia di backup dei vostri dati personali su un 
+dispositivo di archiviazione esterno.
+• Se non si utilizza il PC Notebook per un tempo prolungato, ricaricare 
+la batteria del 50% e spegnere il PC Notebook, quindi disconnettere 
+l’adattatore di corrente CA.
+• Se l’alimentazione CA è costantemente in uso sul PC Notebook, 
+impostare la funzione Battery Health Charging (Ricarica protezione 
+batteria) sulla modalità Balanced (Bilanciata) in MyASUS.
+Notebook PC - Manuale utente (e-Manual) 89
+• Scollegate tutti i dispositivi esterni e assicuratevi di disporre dei 
+seguenti elementi prima di resettare il vostro Notebook PC:
+- Codice del vostro sistema operativo e di tutti i programmi 
+installati che richiedono una licenza
+- Copia di backup dei vostri dati
+- Nomi utente e password
+- Informazioni e impostazioni della connessione a Internet
+• Visitare il supporto per la risoluzione dei problemi più comuni e per 
+visualizzare alcune delle domande frequenti: 
+https://www.asus.com/it/support.
+90 Notebook PC - Manuale utente (e-Manual)
+Domande frequenti sull'hardware
+1. Un punto nero, a volte colorato, appare sullo schermo quando 
+accendo il Notebook PC. Cosa devo fare?
+Questi punti sul vostro schermo non influiscono sulle prestazioni 
+del sistema. Se il problema persiste e, di conseguenza, peggiora le 
+prestazioni del sistema, recatevi presso un centro assistenza autorizzato 
+ASUS.
+2. Il mio schermo ha un colore e/o una luminosità irregolari. Come 
+risolvo questo problema?
+Il colore e la luminosità possono variare a seconda dell'angolo di 
+visualizzazione e della posizione del Notebook PC. Colore e luminosità 
+possono variare anche a seconda del modello. Potete usare i tasti 
+funzione, o le impostazioni del display del vostro sistema operativo, 
+per regolare l'aspetto dello schermo.
+3. Come posso massimizzare la durata della batteria del mio 
+Notebook PC?
+Provate in uno dei seguenti modi:
+• Usate i tasti funzione per regolare la luminosità del display.
+• Se non state usando connessioni Wi-Fi abilitate la Modalità 
+aereo.
+• Scollegate tutti i dispositivi USB che non utilizzate.
+• Chiudete le applicazioni che non state usando, specialmente 
+quelle che richiedono un elevato quantitativo di memoria di 
+sistema.
+Notebook PC - Manuale utente (e-Manual) 91
+4. L'indicatore di carica della batteria non si illumina. Cosa non va?
+• Assicuratevi che la batteria e l'adattatore di alimentazione siano 
+installati correttamente. Potete anche provare a scollegare 
+batteria e adattatore di alimentazione dal Notebook PC per un 
+minuto. Provate successivamente a ricollegarli.
+• Se il problema persiste contattate il servizio clienti ASUS più 
+vicino per richiedere assistenza.
+5. Perché il mio touchpad non funziona?
+Premete per abilitare il touchpad.
+6. Perché quando eseguo file audio o video non sento alcun suono 
+provenire dagli altoparlanti del mio Notebook PC?
+Provate in uno dei seguenti modi:
+• Premete per alzare il volume degli altoparlanti.
+• Verificate che l'impostazione Silenzioso sia disattivata.
+• Controllate che un jack non sia collegato alla porta riservata per 
+le cuffie e, se presente, scollegatelo.
+92 Notebook PC - Manuale utente (e-Manual)
+7. Cosa devo fare se perdo l’adattatore di alimentazione del mio 
+Notebook PC o se la batteria smette di funzionare?
+Contattate il centro assistenza ASUS per ricevere assistenza.
+8. Non riesco a digitare correttamente sul mio Notebook PC perché il 
+mio cursore si muove in continuazione. Cosa devo fare?
+Assicuratevi che niente tocchi accidentalmente il touchpad mentre 
+state digitando sulla tastiera. Potete scegliere di disabilitare il touchpad 
+premendo la combinazione di tasti .
+Notebook PC - Manuale utente (e-Manual) 93
+Domande frequenti sul software
+1. Quando accendo il mio Notebook PC l'indicatore di alimentazione 
+si illumina ma lo schermo rimane nero. Come risolvo questo 
+problema?
+Provate in uno dei seguenti modi:
+• Forzate lo spegnimento del vostro Notebook PC premendo 
+il pulsante di accensione/spegnimento per almeno dieci 
+(10) secondi. Verificate che l’adattatore di alimentazione e la 
+batteria siano inseriti correttamente e accendete nuovamente il 
+Notebook PC.
+• Se il problema persiste contattate il servizio clienti ASUS più 
+vicino per richiedere assistenza.
+2. Cosa devo fare quando mi appare la scritta: “Rimuovere i dischi o 
+gli altri supporti. Premere un tasto per riavviare.”?
+Provate in uno dei seguenti modi:
+• Scollegate tutti i dispositivi USB connessi e riavviate il vostro 
+Notebook PC.
+• Rimuovete il disco ottico (se presente) dal drive ottico.
+• Se il problema persiste il vostro Notebook PC potrebbe avere 
+problemi alla memoria interna. Contattate il centro assistenza 
+ASUS per ricevere assistenza.
+94 Notebook PC - Manuale utente (e-Manual)
+3. Il mio Notebook PC si avvia più lentamente del solito e il mio 
+sistema operativo è lento. Come risolvo questo problema?
+Eliminate le applicazioni installate di recente che non facevano parte 
+della dotazione originaria. Riavviate il sistema.
+4. Il mio Notebook PC non si avvia. Come risolvo questo problema?
+Provate in uno dei seguenti modi:
+• Scollegate tutti i dispositivi collegati al Notebook PC e riavviate il 
+sistema.
+• Se il problema persiste contattate il servizio clienti ASUS più 
+vicino per richiedere assistenza.
+5. Perché il mio Notebook PC non si risveglia dalla sospensione?
+• Per ripristinare il precedente stato operativo è necessario 
+premere il pulsante di accensione/spegnimento.
+• La batteria potrebbe essere scarica. Collegate il Notebook 
+PC all'adattatore di alimentazione e collegate l'adattatore di 
+alimentazione ad una presa di corrente. Premete nuovamente il 
+pulsante di accensione/spegnimento.
+Notebook PC - Manuale utente (e-Manual) 95
+Appendice
+96 Notebook PC - Manuale utente (e-Manual)
+Conformità modem interno
+Il modello di Notebook PC con modem interno è conforme ai seguenti standard: 
+JATE (Giappone), FCC (USA, Canada, Corea, Taiwan) e CTR21. Il modem interno è stato 
+approvato in accordo con la Decisione del Consiglio 98/482/EC per la connessione pan-
+europea di terminale singolo alla rete telefonica pubblica (PSTN). Tuttavia, a causa delle 
+differenze tra le reti telefoniche pubbliche individuali dei vari paesi l'approvazione 
+non costituisce di per sé una garanzia assoluta di funzionamento corretto su qualsiasi 
+punto di terminazione di una rete telefonica pubblica. Nel caso sorgano dei problemi vi 
+suggeriamo di contattare, in primo luogo, il fornitore del vostro apparecchio.
+Generalità
+In data 4 Agosto 1998 è stata pubblicata, sulla Gazzetta Ufficiale della CE, la decisione 
+del Commissione relativa alla regolamentazione tecnica CTR 21. La regolamentazione 
+CTR 21 si applica a tutti i terminali non-voce con composizione DTMF (multifrequenza) 
+destinati ad essere collegati alla rete telefonica pubblica analogica PSTN.
+La regolamentazione CTR 21 è relativa ai requisiti di connessione per il collegamento 
+alla rete telefonica pubblica commutata (PSTN) (eccetto apparecchiature terminali per il 
+servizio di telefonia vocale in casi giustificati) in cui l'eventuale indirizzamento di rete è 
+effettuato con segnalazione bitonale a più frequenze (DTMF).
+Notebook PC - Manuale utente (e-Manual) 97
+Dichiarazione di compatibilità di rete
+Dichiarazione da effettuarsi da parte del produttore nei confronti dell'Ente di Notifica e 
+del venditore: "Questa dichiarazione deve indicare quali sono le reti sulle quali il prodotto 
+è stato progettato per operare e su quali reti note il prodotto potrebbe andare incontro a 
+difficoltà operative.”
+Dichiarazione da effettuarsi da parte del produttore nei confronti dell'utente: "Questa 
+dichiarazione deve indicare quali sono le reti sulle quali il prodotto è stato progettato 
+per operare e su quali reti note il prodotto potrebbe andare incontro a difficoltà 
+operative. Il produttore includerà, inoltre, una dichiarazione indicante chiaramente le 
+circostanze nelle quali la compatibilità di rete dipenda da impostazioni fisiche e software 
+personalizzabili. Dovrà inoltre raccomandare all'utente di contattare il rivenditore nel 
+caso in cui l'utente volesse collegare l'apparecchiatura ad una rete diversa.”
+Fino ad oggi l'Ente di Notifica di CETECOM ha rilasciato diverse approvazioni pan-
+Europee sulla base delle regolamentazioni CTR 21. Come risultato otteniamo i primi 
+modem europei che non richiedono un'omologazione specifica in ciascun singolo Paese 
+europeo.
+Apparecchi non voce
+Possono essere inclusi in questa categoria le segreterie telefoniche, i telefoni viva-
+voce così come modem, fax, combinatori automatici del numero e sistemi di allarme. 
+Le apparecchiature in cui la qualità punto-punto della conversazione è controllata da 
+regolazioni (per esempio i telefoni a cornetta e, in alcuni paesi, i telefoni senza fili) sono 
+escluse.
+98 Notebook PC - Manuale utente (e-Manual)
+Paesi in cui sono in vigore gli standard CTR21
+Paese: Applicato Ulteriori collaudi
+Austria1 Sì No
+Belgio Sì No
+Repubblica Ceca No Non Applicabile
+Danimarca1 Sì Sì
+Finlandia Sì No
+Francia Sì No
+Germania Sì No
+Grecia Sì No
+Ungheria No Non Applicabile
+Islanda Sì No
+Irlanda Sì No
+Italia In sospeso In sospeso
+Israele No No
+Lichtenstein Sì No
+Lussemburgo Sì No
+Paesi Bassi1 Sì Sì
+Norvegia Sì No
+Polonia No Non Applicabile
+Portogallo No Non Applicabile
+Spagna No Non Applicabile
+Svezia Sì No
+Svizzera Sì No
+Regno Unito Sì No
+Notebook PC - Manuale utente (e-Manual) 99
+Queste informazioni sono state riprodotte da CETECOM e sono fornite senza assunzione 
+di responsabilità. Per aggiornamenti alla tabella visitate la pagina http://www.cetecom.
+de/technologies/ctr_21.html.
+1 I regolamenti nazionali sono applicabili solo se l'apparecchiatura può utilizzare 
+la composizione a impulsi (il fabbricante può dichiarare nella guida utente che 
+l'apparecchio è progettato per supportare solo la segnalazione DTMF rendendo 
+superflua l'esecuzione di ulteriori collaudi).
+Nei Paesi Bassi sono richiesti ulteriori collaudi per il collegamento in serie e per le 
+funzionalità di identificativo chiamante.
+100 Notebook PC - Manuale utente (e-Manual)
+Dichiarazione sulle interferenze FCC (Federal 
+Communications Commission)
+Questo dispositivo rispetta i requisiti indicati nel regolamento FCC - Parte 15. Il 
+funzionamento è soggetto alle seguenti due condizioni:
+• Questo dispositivo non provoca interferenze dannose.
+• Questo dispositivo accetta qualsiasi interferenza comprese quelle che potrebbero 
+causare un comportamento indesiderato.
+I collaudi ai quali è stato sottoposto questo apparecchio ne dimostrano la conformità 
+ai limiti stabiliti per i dispositivi digitali di classe B, come indicato dal paragrafo 15 delle 
+norme FCC. Questi limiti sono stati definiti per offrire una ragionevole protezione contro 
+le interferenze dannose quando l'apparecchio viene usato in ambienti residenziali. 
+Questo apparecchio genera, usa e può emettere energia in radiofrequenza e, se non 
+viene installato e utilizzato come indicato nel manuale d'uso, può provocare interferenze 
+dannose alle comunicazioni radio. Non è tuttavia possibile garantire che non si 
+verifichino interferenze in casi particolari. Se questo apparecchio causasse interferenze 
+dannose alla ricezione di programmi radiofonici e televisivi, fatto verificabile spegnendo 
+e riaccendendo l'apparecchio stesso, consigliamo all'utente di provare a correggere 
+l'interferenza in uno o più dei seguenti modi:
+• Riorientate o riposizionate l'antenna ricevente.
+• Aumentate la distanza tra il dispositivo e il ricevitore.
+• Collegate l'apparecchio ad una diversa presa di corrente in modo che 
+apparecchio e ricevitore si trovino su circuiti diversi.
+• Consultate, per richiedere assistenza, il rivenditore o un tecnico radio/TV 
+qualificato.
+AVVERTIMENTO! È obbligatorio l'utilizzo di un cavo d'alimentazione schermato in modo 
+da rispettare i limiti sulle emissioni imposti dai regolamenti FCC e prevenire interferenze 
+con la ricezione radio o televisiva. È essenziale che venga utilizzato solo il cavo in dotazione. 
+Utilizzate solo cavi schermati per collegare periferiche di I/O a questo dispositivo. Eventuali 
+modifiche o cambiamenti, non espressamente approvati dall'autorità responsabile per la 
+conformità, potrebbero invalidare il diritto dell'utente all'utilizzo di questo apparecchio.
+(Paragrafi riprodotti dal codice dei Regolamenti Federali #47, parte 15.193, 1993. 
+Washington DC: Ufficio del Federal Register, National Archives and Records 
+Administration, U.S. Government Printing Office.)
+Notebook PC - Manuale utente (e-Manual) 101
+Dichiarazione precauzionale FCC per l'esposizione a 
+RF
+AVVERTIMENTO! Eventuali modifiche o cambiamenti, non espressamente approvati 
+dall'autorità responsabile per la conformità, potrebbero invalidare il diritto dell'utente 
+all'utilizzo di questo apparecchio.
+Questo apparecchio è conforme ai limiti FCC, per l’esposizione a radiazioni, stabiliti per 
+un ambiente non controllato. Per mantenere la conformità con i requisiti previsti per 
+l’esposizione a radiofrequenza FCC si prega di evitare il contatto diretto con l’antenna 
+trasmittente in fase di trasmissione. L’utente deve attenersi strettamente alle specifiche 
+istruzioni operative in modo da soddisfare i requisiti richiesti in materia.
+Informazioni sull'esposizione a radio frequenza RF 
+(SAR)
+Questo dispositivo soddisfa i requisiti nazionali per l'esposizione a onde radio. Questo 
+dispositivo è stato progettato e realizzato per non superare i valori di emissione limite 
+per quanto riguarda l'esposizione a energia in radio frequenza (RF) stabiliti dall'FCC del 
+governo statunitense.
+La normativa per l'esposizione utilizza un'unità di misura nota come tasso di 
+assorbimento specifico o SAR (Specific Absorption Rate). Il limite SAR definito dall'FCC 
+è pari a 1.6W/kg. I test SAR sono condotti utilizzando posizioni operative standard, 
+approvate dall'FCC, nel corso delle quali la trasmissione del dispositivo avviene al 
+massimo livello energetico in tutti i differenti canali.
+102 Notebook PC - Manuale utente (e-Manual)
+Comunicazioni sulla sicurezza UL
+Lo standard UL 1459 si applica a dispositivi per telecomunicazioni (telefoni) da collegare 
+elettronicamente ad una rete di telecomunicazioni, con valori operativi di tensione a 
+terra che non superino i 200V, 300V picco-picco, 105V rms, e installati o utilizzati secondo 
+le Norme Elettriche Nazionali (NFPA 70).
+Quando si usa il modem del Notebook PC, per ridurre il rischio di incendi, scosse 
+elettriche e danni alle persone, si dovrebbero sempre seguire le precauzioni di sicurezza 
+di base, ovvero:
+• NON utilizzate il Notebook PC vicino a fonti d'acqua come, ad esempio, lavandini, 
+vasche da bagno, lavelli, superfici bagnate o piscine.
+• NON utilizzate il Notebook PC durante i temporali. Si può incorrere nel rischio, 
+seppur remoto, di essere vittime di scosse elettriche causate da fulmini.
+• NON utilizzate il Notebook PC quando vi trovate nelle vicinanze di una fuga di 
+gas.
+Lo standard UL 1642 si applica a batterie al litio primarie (non ricaricabili) e secondarie 
+(ricaricabili) da utilizzare come sorgenti di alimentazione per i prodotti. Queste batterie 
+contengono litio metallico, o una lega di litio, o ioni di litio, e possono consistere in una 
+singola cella elettrochimica, oppure, due o più celle collegate in serie, in parallelo, o in 
+entrambi i modi e che trasformano l'energia chimica in energia elettrica attraverso una 
+reazione chimica reversibile o irreversibile.
+• NON esponete la batteria del Notebook PC al fuoco poiché potrebbe esplodere. 
+Attenetevi alle normative locali in merito allo smaltimento di rifiuti speciali per 
+ridurre il rischio di danni a persone, incendi o esplosioni.
+• Per evitare danni a persone causati da incendi o esplosioni NON utilizzate 
+adattatori di corrente o batterie di altri dispositivi. Fate uso solamente di 
+adattatori di corrente e batterie certificati UL o forniti dal produttore o dai 
+rivenditori autorizzati.
+Notebook PC - Manuale utente (e-Manual) 103
+Requisiti per la sicurezza elettrica
+I prodotti con un consumo elettrico superiore a 6A e con peso superiore a 3Kg devono 
+utilizzare cavi di alimentazione approvati con caratteristiche pari o superiori a: H05VV-F, 
+3G, 0.75mm² o H05VV-F, 2G, 0.75mm².
+Nota per gli installatori di sistemi CATV
+Nota per gli installatori di sistemi CATV - Questo promemoria serve a richiamare 
+l’attenzione degli installatori di sistemi CATV sulla sezione 820-93 del Codice Elettrico 
+Nazionale la quale fornisce le direttive per un’appropriata messa a terra e, in particolare, 
+specifica che lo schermo del cavo coassiale deve essere collegato ad un sistema di messa 
+a terra il più vicino possibile all’ingresso dell’edificio.
+Nota sul prodotto da parte di Macrovision 
+Corporation
+Questo prodotto contiene tecnologia protetta dai diritti d'autore grazie ai diritti di alcuni 
+brevetti degli U.S.A. ed altri diritti di proprietà in possesso di Macrovision Corporation e 
+di altri proprietari di diritti. L'utilizzo di questa tecnologia di protezione dei diritti d'autore 
+deve essere autorizzato da Macrovision Corporation ed è consentito solamente per 
+uso domestico, ed altri usi limitati, a meno che non si disponga dell'autorizzazione di 
+Macrovision Corporation. Reverse engineering e smontaggio sono proibiti.
+Prevenzione della perdita dell'udito
+Per prevenire possibili danni all’udito non ascoltate suoni a volume troppo 
+alto per lunghi periodi di tempo.
+Avviso sul rivestimento esterno
+IMPORTANTE! Per fornire isolamento elettrico, e garantire sicurezza elettrica, la scocca di 
+questo dispositivo, ad eccezione delle zone in cui si trovano le porte I/O (Input/Output), è 
+stata trattata con un rivestimento isolante e protettivo.
+104 Notebook PC - Manuale utente (e-Manual)
+Precauzioni Nordic Lithium (per batterie agli ioni di 
+Litio)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Notebook PC - Manuale utente (e-Manual) 105
+Omologazione CTR 21 (per Notebook PC dotati di 
+modem interno)
+Dansk
+Niederländisch
+Suomi
+Français
+106 Notebook PC - Manuale utente (e-Manual)
+Deutsch
+Ελληνικά
+Italiano
+Português
+Español
+Sverige
+Notebook PC - Manuale utente (e-Manual) 107
+Dichiarazione di conformità per la regolamentazione 
+ambientale del prodotto
+ASUS, durante la progettazione e realizzazione dei suoi prodotti, rispetta il concetto del 
+“Green Design” (Progettazione Verde) e si assicura che tutte le fasi produttive siano in 
+linea con le normative internazionali sull'ambiente. Inoltre, ASUS, mette a conoscenza 
+del pubblico le informazioni sulla conformità con le disposizioni in vigore nei vari paesi 
+del mondo.
+Consultate la pagina web http://csr.asus.com/Compliance.htm per conoscere le 
+normative osservate e applicate da ASUS.
+UE REACH e Articolo 33
+Nel rispetto del regolamento REACH (Registration, Evaluation, Authorization and 
+Restriction of Chemicals) le sostanze chimiche contenute nei prodotti ASUS sono state 
+pubblicate sul sito web ASUS REACH: http://csr.asus.com/english/REACH.htm.
+EU RoHS
+Questo dispositivo è conforme con la direttiva EU RoHS. Per ulteriori informazioni 
+consultate http://csr.asus.com/english/article.aspx?id=35.
+108 Notebook PC - Manuale utente (e-Manual)
+Servizio di ritiro e riciclaggio ASUS
+Il programma di ritiro e riciclaggio dei prodotti ASUS deriva dal costante impegno 
+aziendale a raggiungere i più elevati standard di protezione ambientale. ASUS crede, 
+infatti, di poter fornire soluzioni in grado di riciclare in modo responsabile non soltanto i 
+prodotti, le batterie e le altre componenti elettroniche, ma anche i materiali utilizzati per 
+l'imballaggio.
+Per informazioni dettagliate sulle modalità di riciclaggio nei vari paesi visitate la pagina: 
+http://csr.asus.com/english/Takeback.htm.
+Direttiva Ecodesign
+L'Unione Europea ha annunciato un insieme di normative per definire i requisiti di 
+ecocompatibilità dei prodotti relativi all'energia (2009/125/CE). Le specifiche misure 
+attuative sono volte a migliorare le prestazioni ambientali di prodotti specifici o di 
+diversi tipi di prodotto. ASUS fornisce le informazioni sul prodotto sul sito CSR. Ulteriori 
+informazioni possono essere reperite all'indirizzo 
+https://csr.asus.com/english/article.aspx?id=1555.
+Notebook PC - Manuale utente (e-Manual) 109
+Prodotto qualificato ENERGY STAR
+ENERGY STAR è un programma congiunto dell'agenzia americana per 
+la protezione ambientale (U.S. Environmental Protection Agency) e del 
+ministero statunitense per l'energia (U.S. Department of Energy) che 
+mira a proteggere l'ambiente attraverso l'impiego di prodotti ecologici 
+più efficienti dal punto di vista energetico.
+Tutti i prodotti ASUS con il logo ENERGY STAR sono conformi agli standard ENERGY STAR, 
+la funzione di gestione dell'energia è abilitata come impostazione standard. Il monitor 
+è impostato per entrare automaticamente in sospensione entro 10 minuti di inattività; il 
+computer è impostato per entrare automaticamente in sospensione entro 30 minuti di 
+inattività. Per riattivare il computer cliccate sul mouse, premete un tasto qualsiasi della 
+tastiera o il pulsante di accensione/spegnimento.
+Per approfondimenti sull'argomento, e per conoscere i benefici che queste 
+politiche portano all'ambiente, visitate il sito Internet: http://www.energystar.gov/
+powermanagement. Per ulteriori informazioni sul programma congiunto ENERGY STAR 
+visitate il sito: http://www.energystar.gov.
+NOTA: Energy Star NON è supportato dai sistemi operativi basati su Linux e FreeDOS.
+Registrazione EPEAT
+La divulgazione pubblica delle informazioni ambientali chiave per i prodotti ASUS 
+registrati EPEAT (Electronic Product Environmental Assessment Tool) è disponibile 
+all'indirizzo https://csr.asus.com/english/article.aspx?id=41. Ulteriori informazioni in 
+merito al programma EPEAT e guide all'acquisto possono essere reperite al sito 
+www.epeat.net.
+110 Notebook PC - Manuale utente (e-Manual)
+Licenza per i font di testo BIOS
+Copyright © 2022 The Android Open Source Project
+Concesso in Licenza Apache, Versione 2.0 (la “Licenza”); questo file può essere utilizzato 
+solo in conformità con la Licenza. Una copia della Licenza è disponibile alla pagina 
+http://www.apache.org/licenses/LICENSE-2.0.
+Tranne nei casi previsti dalla legge o in presenza di un accordo scritto, il software indicato 
+nella Licenza è distribuito “COSÌ COME È”, SENZA GARANZIE NÉ CONDIZIONI DI ALCUN 
+GENERE, tranne quelle espresse o sottintese.
+Per maggiori informazioni sulle autorizzazioni e le limitazioni specifiche per ciascuna 
+lingua, consultare la Licenza.
+Notebook PC - Manuale utente (e-Manual) 111
+Dichiarazione di conformità UE semplificata
+ASUSTek Computer Inc. con la presente dichiara che questo dispositivo è conforme ai 
+requisiti essenziali e alle altre disposizioni pertinenti con la direttiva 2014/53/EU. Il testo 
+completo della dichiarazione di conformità UE è disponibile all'indirizzo: 
+https://www.asus.com/support/.
+L'utilizzo della rete Wi-Fi con frequenza compresa nell'intervallo 5150-5350 MHz deve 
+essere limitato all'interno degli edifici per i paesi presenti nella seguente tabella:
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK(NI)
+a. Dispositivi LPI (Low Power Indoor) Wi-Fi 6E: 
+Il dispositivo è limitato all'uso in ambienti interni quando funziona nella gamma 
+di frequenza da 5945 a 6425 MHz in Belgio (BE), Bulgaria (BG), Cipro (CY), 
+Repubblica Ceca (CZ), Estonia (EE), Francia (FR), Islanda (IS), Irlanda (IE), Lituania 
+(LT), Germania (DE), Paesi Bassi (NL), Spagna (ES).
+b. Dispositivi VLP (Very Low Power) Wi-Fi 6E (dispositivi portatili): 
+Il dispositivo non può essere utilizzato su Unmanned Aircraft Systems (UAS) 
+quando opera nella gamma di frequenza da 5945 a 6425 MHz in Belgio (BE), 
+Bulgaria (BG), Cipro (CY), Repubblica Ceca (CZ), Estonia (EE ), Francia (FR), Islanda 
+(IS), Irlanda (IE), Lituania (LT), Germania (DE), Paesi Bassi (NL), Spagna (ES).
+112 Notebook PC - Manuale utente (e-Manual)
+Informazioni sull'esposizione a RF (SAR)
+Questo dispositivo è compatibile con i requisiti EU (2014/53/EU) il cui scopo è limitare 
+l'esposizione della popolazione ai campi elettromagnetici per proteggere la salute.
+Questi limiti fanno parte di un insieme più ampio di raccomandazioni per la protezione 
+della popolazione. Queste raccomandazioni sono state sviluppate e controllate da 
+organizzazioni scientifiche indipendenti attraverso valutazioni periodiche e approfondite 
+di studi scientifici. L'unità di misura per il limite raccomandato dal Consiglio Europeo per i 
+dispositivi mobili è il "tasso di assorbimento specifico" (SAR), e il limite SAR è di 2.0 W/Kg 
+in media per 10 grammi di tessuto corporeo. Esso soddisfa i requisiti della Commissione 
+Internazionale per la Protezione dalle Radiazioni Non Ionizzanti (ICNIRP).
+Questo dispositivo è stato testato e trovato conforme alle linee guida ICNIRP per 
+l'esposizione e agli standard europei EN 50566 e EN 62209-2 in merito alle operazioni 
+vicine al corpo. Il tasso di assorbimento specifico (SAR) è misurato con il dispositivo a 
+diretto contatto con il corpo, in trasmissione al massimo livello di potenza certificata e in 
+tutte le bande di frequenza del dispositivo mobile.
+Nel caso di utilizzo a contatto con il corpo è necessario mantenere una distanza di 
+almeno 1 cm tra il corpo e il dispositivo, inclusa l'antenna, per rispettare i requisiti europei 
+per l'esposizione RF.
+Avviso rete Wi-Fi
+IMPORTANTE! La scheda di rete Wi-Fi 6E è disponibile su alcuni modelli. La connettività della 
+banda Wi-Fi 6E potrebbe variare in base alla normativa e alla certificazione di ciascun Paese/
+regione.
+ Informazioni sul manuale
+ Note e messaggi del manuale
+ Icone
+ Formati carattere
+ Norme di sicurezza
+ Utilizzo del vostro Notebook PC
+ Cura del Notebook PC
+ Corretto smaltimento
+ Informazioni sulla sicurezza della batteria
+ Capitolo 1: Configurazione hardware
+ Conoscete il vostro Notebook PC
+ Vista frontale
+ Vista dall’alto
+ Vista dal basso
+ Vista lato destro
+ Vista lato sinistro
+ Capitolo 2: Usare il PC Notebook
+ Introduzione
+ Ricaricare il PC Notebook
+ Solleva per aprire il pannello del display
+ Premi il pulsante di accensione
+ Movimenti delle dita per il pannello touch screen e il touchpad
+ Utilizzo dei movimenti sul pannello touch screen
+ Utilizzo del touchpad
+ Utilizzo del tastierino numerico
+ Uso della tastiera
+ Tasti di scelta rapida
+ Tasti funzione
+ Tasti di Windows
+ Rotazione dello schermo
+ Capitolo 3: Lavorare con Windows
+ Primo avvio
+ Menu Start
+ App di Windows
+ Lavorare con le app di Windows
+ Personalizzazione delle app di Windows
+ Visualizzazione attività
+ Widget
+ Funzione di ancoraggio
+ Hotspot
+ Centro notifiche
+ MyASUS Splendid
+ Impostazione del display OLED
+ Impostazione della modalità scura
+ Spegnimento del display quando non in uso
+ Regolazione della luminosità del display
+ Nascondi automaticamente la barra delle applicazioni
+ Impostazione della modalità scura in Microsoft Office
+ Altre scorciatoie da tastiera
+ Connessione a reti wireless
+ Wi-Fi
+ Bluetooth
+ Modalità aereo
+ Spegnimento del PC Notebook
+ Sospensione del PC Notebook
+ Capitolo 4: Verifica automatica durante l'accensione (POST)
+ Verifica automatica durante l'accensione (POST)
+ Utilizzo del POST per accedere al BIOS e alla risoluzione dei problemi
+ BIOS
+ Accesso al BIOS
+ Ripristino del sistema
+ Esecuzione di un'opzione di ripristino
+ Consigli e domande frequenti (FAQ)
+ Consigli utili per il vostro Notebook PC
+ Domande frequenti sull'hardware
+ Domande frequenti sul software
+ Appendice
+ Conformità modem interno
+ Generalità
+ Dichiarazione di compatibilità di rete
+ Apparecchi non voce
+ Dichiarazione sulle interferenze FCC (Federal Communications Commission)
+ Dichiarazione precauzionale FCC per l'esposizione a RF
+ Informazioni sull'esposizione a radio frequenza RF (SAR)
+ Comunicazioni sulla sicurezza UL
+ Requisiti per la sicurezza elettrica
+ Nota per gli installatori di sistemi CATV
+ Nota sul prodotto da parte di Macrovision Corporation
+ Prevenzione della perdita dell'udito
+ Avviso sul rivestimento esterno
+ Precauzioni Nordic Lithium (per batterie agli ioni di Litio)
+ Omologazione CTR 21 (per Notebook PC dotati di modem interno)
+ Dichiarazione di conformità per la regolamentazione ambientale del prodotto
+ UE REACH e Articolo 33
+ EU RoHS
+ Servizio di ritiro e riciclaggio ASUS
+ Direttiva Ecodesign
+ Prodotto qualificato ENERGY STAR
+ Registrazione EPEAT
+ Licenza per i font di testo BIOS
+ Dichiarazione di conformità UE semplificata
+ Avviso rete Wi-Fi
+ Informazioni sull'esposizione a RF (SAR)
