@@ -210,6 +210,8 @@ def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None,
     
     # 任務
     ctx.task = task_name or set_task(ctx)
+    # 讓多階段 orchestrator 可直接取用既有任務字典
+    ctx.taskSetting = taskSetting
 
     # 頻道（txt 模式才有）
     if ctx.mode == "txt":
