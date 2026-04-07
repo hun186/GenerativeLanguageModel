@@ -2,6 +2,12 @@
 
 本文件提供「可直接套用」的設定範例，對應目前系統支援的多階段欄位：
 
+> 建議檔案分層：  
+> - `czjLLM/yaml/`：執行啟動設定（model、mode、source dir…）  
+> - `czjLLM/stage_configs/`：多階段工作流設定（stages / routing / retries）
+>
+> 補充：多階段啟動時，`yaml` 可不填 `task`；程式會自動用第一個 stage 推導相容值。
+
 - `name`: 階段名稱（不可重複）
 - `task`: 該階段要給 LLM 的任務描述
 - `task_key`: 從 `taskSetting` 字典取任務內容（可替代 `task`）

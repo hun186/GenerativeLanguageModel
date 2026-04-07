@@ -7,10 +7,9 @@ llm_source_dir: czjLLM/LLMSourcePool/multi_stage_test
 llm_source_backup_dir: czjLLM/LLMSourcePool_origin_backup/multi_stage_test
 
 # 多階段設定檔
-stage_config_file: czjLLM/yaml/multi_stage_pdf_en2zh_summary_stages.yaml
+stage_config_file: czjLLM/stage_configs/multi_stage_pdf_en2zh_summary.yaml
 
-# 相容舊流程所需（多階段時會忽略單一 task）
-task: "PDF OPT-Instruction First"
+# 多階段模式可不填 task（啟動時會自動從第一個 stage 推導）
 
 # 模型設定名稱（請依你環境可用模型調整）
 model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
