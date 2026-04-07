@@ -122,13 +122,18 @@ if __name__ == '__main__':
         stage_cfg_preview = stage_cfg_inline
     task_hint = infer_multistage_task_hint(stage_cfg_preview)
 
+    merge_slices_cfg = get_param("merge_slices")
+    if merge_slices_cfg is None and stage_cfg_preview:
+        # 多階段預設不走互動式「切片合併」詢問，避免非 JSON 任務誤導。
+        merge_slices_cfg = False
+
     # 初始化任務參數
     ctx = initialize_config(
         PGMSubDir=PGMSubDir,
         mode=mode,
         channel=get_param("channel"),
         model_spec_name=get_param("model_spec"),
-        merge_slices=get_param("merge_slices"),
+        merge_slices=merge_slices_cfg,
         task_name=get_param("task") or task_hint
     )
     # 多階段設定（可直接放在主 YAML 的 stages，或獨立 stage_config_file）
