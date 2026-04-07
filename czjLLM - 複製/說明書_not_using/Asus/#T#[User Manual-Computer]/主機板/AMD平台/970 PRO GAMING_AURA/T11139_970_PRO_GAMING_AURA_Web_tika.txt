@@ -1,0 +1,3120 @@
+
+Mo
+th
+er
+bo
+ar
+d
+970 PRO 
+GAMING/
+AURA
+使 用 手 冊
+ii
+T11139 
+第一版 
+2016 年 1 月發行
+版權說明
+©ASUSTeK Computer Inc. All rights reserved. 華碩電腦股份有限公司保留所有權利
+本使用手冊包括但不限於其所包含的所有資訊皆受到著作權法之保護，未經華碩電腦
+股份有限公司（以下簡稱「華碩」）許可，不得任意地仿製、拷貝、謄抄、轉譯或為
+其他利用。
+免責聲明
+本使用手冊是以「現況」及「以目前明示的條件下」的狀態提供給您。在法律允許的
+範圍內，華碩就本使用手冊，不提供任何明示或默示的擔保及保證，包括但不限於商
+業適銷性、特定目的之適用性、未侵害任何他人權利及任何得使用本使用手冊或無法
+使用本使用手冊的保證，且華碩對因使用本使用手冊而獲取的結果或透過本使用手冊
+所獲得任何資訊之準確性或可靠性不提供擔保。
+台端應自行承擔使用本使用手冊的所有風險。 台端明確了解並同意，華碩、華碩之
+授權人及其各該主管、董事、員工、代理人或關係企業皆無須為您因本使用手冊、或
+因使用本使用手冊、或因不可歸責於華碩的原因而無法使用本使用手冊或其任何部分
+而可能產生的衍生、附隨、直接、間接、特別、懲罰或任何其他損失（包括但不限於
+利益損失、業務中斷、資料遺失或其他金錢損失）負責，不論華碩是否被告知發生上
+開損失之可能性。
+由於部分國家或地區可能不允許責任的全部免除或對前述損失的責任限制，所以前述
+限制或排除條款可能對您不適用。
+台端知悉華碩有權隨時修改本使用手冊。本產品規格或驅動程式一經改變，本使用手
+冊將會隨之更新。本使用手冊更新的詳細說明請您造訪華碩的客戶服務網 http://support.
+asus.com，或是直接與華碩資訊產品技術支援專線 0800-093-456 聯絡。
+於本使用手冊中提及之第三人產品名稱或內容，其所有權及智慧財產權皆為各別產品
+或內容所有人所有且受現行智慧財產權相關法令及國際條約之保護。
+當下列兩種情況發生時，本產品將不再受到華碩之保固及服務：
+（1） 本產品曾經過非華碩授權之維修、規格更改、零件替換或其他未經過華碩授權
+的行為。
+（2）本產品序號模糊不清或喪失。
+iii
+Offer to Provide Source Code of Certain Software
+This product may contain copyrighted software that is licensed under the General Public License (“GPL”) 
+and under the Lesser General Public License Version (“LGPL”). The GPL and LGPL licensed code in this 
+product is distributed without any warranty. Copies of these licenses are included in this product.
+You may obtain the complete corresponding source code (as defined in the GPL) for the GPL Software, 
+and/or the complete corresponding source code of the LGPL Software (with the complete machine-
+readable “work that uses the Library”) for a period of three years after our last shipment of the product 
+including the GPL Software and/or LGPL Software, which will be no earlier than December 1, 2011, either
+(1) for free by downloading it from http://support.asus.com/download; 
+or 
+(2) for the cost of reproduction and shipment, which is dependent on the preferred carrier and the location 
+where you want to have it shipped to, by sending a request to:
+ASUSTeK Computer Inc. 
+Legal Compliance Dept. 
+15 Li Te Rd., 
+Beitou, Taipei 112 
+Taiwan
+In your request please provide the name, model number and version, as stated in the About Box of the 
+product for which you wish to obtain the corresponding source code and your contact details so that we 
+can coordinate the terms and cost of shipment with you.
+The source code will be distributed WITHOUT ANY WARRANTY and licensed under the same license as 
+the corresponding binary/object code.
+This offer is valid to anyone in receipt of this information.
+ASUSTeK is eager to duly provide complete source code as required under various Free Open Source 
+Software licenses. If however you encounter any problems in obtaining the full corresponding source code 
+we would be much obliged if you give us a notification to the email address gpl@asus.com, stating the 
+product and describing the problem (please do NOT send large attachments such as source code archives 
+etc to this email address).
+Google™ License Terms
+Copyright© 2015 Google Inc. All Rights Reserved.
+Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except 
+in compliance with the License. You may obtain a copy of the License at: http://www.apache.org/
+licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software distributed under the License 
+is distributed on an “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+either express or implied.
+See the License for the specific language governing permissions and limitations under the License.
+iv
+目錄內容
+安全性須知..........................................................................................................................................v
+關於這本使用手冊 ......................................................................................................................... vi
+包裝內容物..................................................................................................................................... viii
+970 PRO GAMING/AURA 規格列表..................................................................................... viii
+第一章：產品介紹
+1.1 主機板安裝前 .................................................................................................................... 1-1
+1.2 主機板概述 ......................................................................................................................... 1-1
+1.3 中央處理器 (CPU) ........................................................................................................... 1-5
+1.4 系統記憶體 ......................................................................................................................... 1-9
+1.5 擴充插槽 ...........................................................................................................................1-12
+1.6 跳線選擇區 .......................................................................................................................1-15
+1.7 元件與周邊裝置的連接 ...............................................................................................1-17
+1.8 內建指示燈 .......................................................................................................................1-26
+第二章：BIOS 資訊
+2.1 管理、更新您的 BIOS 程式 ........................................................................................ 2-1
+2.2 BIOS 程式設定 .................................................................................................................. 2-6
+2.3 我的最愛（My Favorites） ........................................................................................2-10
+2.4 主選單（Main） .............................................................................................................2-11
+2.5 Ai Tweaker 選單（Ai Tweaker） ............................................................................2-13
+2.6 進階選單（Advanced） ...............................................................................................2-18
+2.7 監控選單（Monitor） ..................................................................................................2-24
+2.8 啟動選單（Boot） .........................................................................................................2-28
+2.9 工具選單（Tools） .......................................................................................................2-33
+2.10 離開 BIOS 程式（Exit） .............................................................................................2-34
+附錄
+華碩的連絡資訊 ............................................................................................................................... 1
+v
+安全性須知
+電氣方面的安全性
+• 為避免可能的電擊造成嚴重損害，在搬動電腦主機之前，請先將電腦電源線暫時
+從電源插槽中拔掉。
+• 當您要加入硬體裝置到系統中或者要移除系統中的硬體裝置時，請務必先連接該
+裝置的排線，然後再連接電源線。可能的話，在安裝硬體裝置之前先拔掉電腦的
+電源供應器電源線。
+• 當您要從主機板連接或拔除任何的排線之前，請確定所有的電源線已事先拔掉。
+• 在使用介面卡或擴充卡之前，我們建議您可以先尋求專業人士的協助。這些裝置
+有可能會干擾接地的迴路。
+• 請確定電源供應器的電壓設定已調整到本國/本區域所使用的電壓標準值。若您不
+確定您所屬區域的供應電壓值為何，那麼請就近詢問當地的電力公司人員。
+• 如果電源供應器已損壞，請不要嘗試自行修復。請將之交給專業技術服務人員或
+經銷處理。
+操作方面的安全性
+• 在您安裝主機板以及加入硬體裝置之前，請務必詳加閱讀本手冊所提供的相關資
+訊。
+• 在使用產品之前，請確定所有的排線、電源線都已正確地連接好。若您發現有任
+何重大的瑕疵，請儘速連絡您的經銷商。
+• 為避免發生電氣短路情形，請務必將所有沒用到的螺絲、迴紋針及其他零件收
+好，不要遺留在主機板上或電腦主機中。
+• 灰塵、濕氣以及劇烈的溫度變化都會影響主機板的使用壽命，因此請儘量避免放
+置在這些地方。
+• 請勿將電腦主機放置在容易搖晃的地方。
+• 若在本產品的使用上有任何的技術性問題，請與經過檢定或有經驗的技術人員連
+絡。
+華碩 REACH
+注意：請遵守 REACH（Registration，Evaluation，Authorisation，and Restriction 
+of Chemicals）管理規範，我們會將產品中的化學物質公告在華碩 REACH 網站，詳細
+請參考 http://csr.asus.com/english/REACH.html。
+這個畫叉的帶輪子的箱子表示這個產品（電子裝置）不能直接放入垃圾
+筒。請依據不同地方的規定處理。
+請勿將含汞電池丟棄於一般垃圾筒。此畫叉的帶輪子的箱子表示電池不能
+放入一般垃圾筒。
+vi
+關於這本使用手冊
+產品使用手冊包含了所有當您在安裝華碩 970 PRO GAMING/AURA 主機板時所需
+用到的資訊。
+使用手冊的編排方式
+使用手冊是由下面幾個章節所組成：
+• 第一章：產品介紹
+您可以在本章節中發現諸多華碩所賦予 970 PRO GAMING/AURA 主機板的優
+異特色。利用簡潔易懂的說明讓您能很快地掌握 970 PRO GAMING/AURA 主機板
+的各項特性，當然，在本章節中我們也會提及所有能夠應用在 970 PRO GAMING/
+AURA 主機板的新產品技術。
+• 第二章：BIOS 資訊
+本章節描述如何使用 BIOS 設定程式中的每一個選單項目來更改系統的組態設
+定。此外也會詳加介紹 BIOS 各項設定值的使用時機與參數設定。
+提示符號
+為了能夠確保您正確地完成主機板設定，請務必注意下面這些會在本手冊中出現
+的標示符號所代表的特殊含意。
+警告：提醒您在進行某一項工作時要注意您本身的安全。
+ 小心：提醒您在進行某一項工作時要注意勿傷害到電腦主機板元件。
+ 重要： 此符號表示您必須要遵照手冊所描述之方式完成一項或多項軟硬體的安
+裝或設定。
+注意：提供有助於完成某項工作的訣竅與其他額外的資訊。
+vii
+哪裡可以找到更多的產品資訊
+您可以經由下面所提供的兩個管道來獲得您所使用的華碩產品資訊以及軟硬體的
+更新資訊等。
+1. 華碩網站
+您可以到 http://tw.asus.com 華碩電腦全球資訊網站取得所有關於華碩軟硬體產品
+的各項資訊。
+2. 其他檔案
+在您的產品包裝盒中除了本手冊所列舉的標準配件之外，也有可能會夾帶有其他
+的檔案，譬如經銷商所附的產品保證單據等。
+請注意！
+本產品享有三年產品保固期，倘若自行撕毀或更換原廠保固序號標籤，即取消保
+固權益，且不予提供維修服務。
+服務據點查詢
+您可以至 http://www.asus.com/tw/support/Service-Center/Taiwan 查詢最近的服務據
+點，或是請電 0800-093-456，由客服人員提供您相關協助。
+viii
+970 PRO GAMING/AURA 規格列表
+（下頁繼續）
+中央處理器 支 援 AM3+ FX™/Phenom™ II/Athlon™ II/Sempron™ 100 系列
+處理器
+支援 AM3+ 32 nm 處理器
+最高支援 125W CPU
+支援 AMD Cool ‘n’ Quiet™ 技術
+* 請造訪華碩網站 http:/tw.asus.com 獲取最新的處理器支援列表
+晶片組 AMD® 970+SB950 晶片組
+記憶體 4 x 記憶體插槽，最高支援 32GB DDR3 2133（超
+頻）*/1866/1600/1333/1066 MHz un-buffered、non-ECC 記
+憶體模組
+支援雙通道記憶體架構
+* 請造訪 http://tw.asus.com 獲取最新記憶體合格供應商列表
+（QVL）
+** 由於 32-bit Windows 作業系統記憶體位址的限制，當您安裝 
+4GB 或更多的記憶體模組時，系統實際可用的總記憶體只有 
+3GB 或更少。當您的主機板安裝 4GB 或更多的記憶體時，建
+議您安裝 64-bit Windows 作業系統
+*** 由於處理器的規格限制，AMD 100 系列處理器最高僅支援至 
+DDR3 1066MHz。透過華碩的優良技術，本主機板可支援至 
+DDR3 1333MHz
+**** 要支援 DDR3 1866MHz（以上）記憶體時，請先安裝 8 系列 
+AM3+ 處理器
+系統匯流排 最高達 4.8 GT/s HyperTransport™ 3
+Multi-GPU 支援 支援 NVIDIA® Quad-GPU SLI™ 技術
+支援 AMD® Quad-GPU CrossFireXTM 技術
+擴充槽 2 x PCI Express 2.0 x16 插槽（支援 x16、x8/x8）
+2 x PCI Express 2.0 x1 插槽
+2 x PCI 插槽
+包裝內容物
+在您拿到本主機板包裝盒之後，請馬上檢查下面所列出的各項標準配件是否齊全。
+主機板 華碩 970 PRO GAMING/AURA 主機板
+排線
+2 x Serial ATA 6.0 Gb/s 排線
+1 x ASUS SLI™ 橋接連接器
+配件
+1 x I/O 擋板
+1 x 線標
+1 x 束線帶
+1 x M.2 螺絲組
+公用程式光碟 驅動程式與公用程式光碟
+相關文件 使用手冊
+若以上列出的任何一項配件有損毀或是短缺的情形，請盡速與您的經銷
+商聯絡。
+ix
+970 PRO GAMING/AURA 規格列表
+儲存媒體連接槽 AMD SB950 Express 晶片組
+ - 6 x SATA 6Gb/s 連接埠（黑色），支援 RAID 0、1、5 與 
+10 磁碟陣列設定
+ - 1 x M.2 插槽 3，支援 M Key、type 2242/2260/2280 類型儲
+存裝置（PCIE 2.0 x4 模式）
+網路功能 Intel I211 網路控制器
+突波防護 LANGuard
+GameFirst 技術
+音效 SupremeFX 8 聲道高傳真音效編解碼晶片
+ - 支援音效連接埠偵測（Jack-Detection）、多音源獨立輸出
+（multi-streaming）與前面板麥克風音效連接埠變換（Jack-
+Retasking）功能
+ - 高品質 115dB SNR 立體聲播放輸出音效
+音效功能：
+ - SupremeFX Shielding™ 技術
+ - Headphone AMP
+ - 後側面板具備有光纖 S/PDIF 數位輸出連接埠
+ - Sonic Radar II
+USB ASMedia® USB 3.1 控制器
+ - 2 x USB 3.1 連接埠（2 x Type-A，位於後側面板）
+ASMedia® USB 3.0 控制器
+ - 2 x USB 3.0 連接埠（2 個位於主機板中央）
+AMD SB950 控制器
+ - 14 x USB 2.0 連接埠（6 個位於主機板中央，8 個位於後側
+面板）
+內建 I/O 裝置連接埠 1 x 19-pin USB 3.0/2.0 擴充套件排線插槽，可擴充 2 組外接式 
+USB 3.0/2.0 連接埠
+3 x USB 2.0/1.1 擴充套件排線插槽，可擴充 6 組外接式 USB 
+2.0/1.1 連接埠
+1 x 系統控制面板連接排針
+1 x 前面板音效連接排針（AAFP）
+6 x SATA 6Gb/s 裝置連接插座（黑色）
+1 x M.2 插槽 3（M Key, 2242/2260/2280 類型儲存裝置）
+1 x 4-pin 水泵插槽
+1 x CPU 風扇插座（4-pin）
+1 x CPU OPT 風扇插座（4-pin）
+3 x 機殼風扇電源插槽（4-pin）
+1 x 序列埠連接插座（COM）
+1 x TPM 接頭
+1 x 24-pin EATX 主機板電源插槽
+1 x 8-pin EATX 12V 主機板電源插槽
+1 x Slow Mode 接頭
+1 x Safe Boot 接頭
+1 x ReTry 接頭
+1 x 組態資料清除（CMOS）
+（下頁繼續）
+x
+華碩遊戲獨家功能 玩家守護者
+ - DIGI+ VRM 數位供電控制
+ - 記憶體過流保護
+ - ESD 靜電防護：網路、音效、鍵盤滑鼠與 USB 3.1/3.0/2.0 
+連接埠
+ - 不鏽鋼防潮後側面板
+ - Q-Design（Q-Shield、Q-DIMM、Q-LED、Q-Slot）
+效能最佳化
+ - 華碩 DIGI+ VRM 公用程式
+ - AI Suite 3
+ - Fan Xpert 2
+ - UEFI BIOS EZ Mode（O.C. Tuner、CrashFree BIOS 3、EZ 
+Flash 2）
+ - RAMCache 記憶體快取技術
+ - USB 3.1 Boost 具有快速的 USB 3.1 傳輸速度
+華碩獨家功能
+ - Disk Unlocker
+ - 推播資訊（Push Notice）
+ - AI Charger+
+ - 華碩 CPU-Z
+ - Aura: RGB Lighting control
+後側面板裝置連接埠 1 x PS/2 鍵盤/滑鼠連接埠
+1 x 光纖 S/PDIF 數位音訊輸出連接埠
+1 x RJ-45 網路連接埠
+2 x USB 3.1 裝置連接埠（2 x Type-A，紅色）
+8 x USB 2.0 裝置連接埠
+6 x 音效連接埠，支援 8 聲道
+BIOS 功能 64Mb Flash ROM、UEFI BIOS、PnP、DMI 2.0、WfM2.0、SM BIOS 
+2.7、ACPI 2.0a、多國語言 BIOS、ASUS EZ Flash 2、F12 鍵截圖
+功能、F3 捷徑功能、華碩 DRAM SPD 記憶體資訊
+管理功能 WfM 2.0、DMI 2.0、WOL by PME、WOR by PME、PXE
+驅動程式與應用程式
+光碟
+驅動程式
+華碩應用程式
+華碩 EZ Update
+防毒軟體（OEM 版本）
+支援作業系統 Windows® 10
+Windows® 8.1
+Windows® 7
+主機板尺寸 ATX 型式：12.0 x 9.6 吋（30.5 x 24.4 公分）
+970 PRO GAMING/AURA 規格列表
+規格若有變動，恕不另行通知
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-1
+1.1 主機板安裝前
+在您動手更改主機板上的任何設定之前，請務必先作好以下所列出的各項預防措
+施。
+• 在處理主機板上的任何元件之前，請您先拔掉電腦的電源線。
+• 為避免產生靜電，在拿取任何電腦元件時除了可以使用防靜電手環之
+外，您也可以觸摸一個有接地線的物品或者金屬物品像電源供應器外
+殼等。
+• 拿取積體電路元件時請儘量不要觸碰到元件上的晶片。
+• 在您移除任何一個積體電路元件後，請將該元件放置在絕緣墊上以隔離
+靜電，或者直接放回該元件的絕緣包裝袋中儲存。
+• 在您安裝或移除任何元件之前，請確認 ATX 電源供應器的電源開關是
+切換到關閉（OFF）的位置，而最安全的做法是先暫時拔出電源供應器
+的電源線，等到安裝/移除工作完成後再將之接回。如此可避免因仍有
+電力殘留在系統中而嚴重損及主機板、周邊裝置、元件等。
+1.2 主機板概述
+當您安裝主機板到電腦機殼內時，請確認主機板與機殼大小相適應。
+1.2.1 主機板的擺放方向
+當您安裝主機板到電腦主機機殼內時，務必確認安裝的方向是否正確。主機板的
+外接插頭的方向應是朝向主機機殼的後方面板，而且您也會發現主機機殼後方面板會
+有相對應的預留孔位。
+請確認在安裝或移除主機板前先拔除電源線，否則可能導致主機板元器件
+毀損與對使用者的人身傷害。
+1產品介紹
+1-2 第一章：產品介紹
+此面朝向電腦主
+機的後方面板
+1.2.2 螺絲孔位
+請將下圖所圈選出來的「九」個螺絲孔位對準主機機殼內相對位置的螺絲孔，接
+著再一一鎖上螺絲固定主機板。
+請勿將螺絲鎖得太緊！否則容易導致主機板的印刷電路板產生龜裂。
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-3
+1.2.3 主機板結構圖
+1-4 第一章：產品介紹
+1.2.4 主機板元件說明
+連接插槽/跳線選擇區/插槽 頁數
+1. ATX power connectors (24-pin EATXPWR, 8-pin EATX12V) 1-19
+2. AMD AM3+ socket 1-5
+3.
+CPU, CPU optional, water pump, and chassis fan connectors (4-pin CPU_FAN, 4-pin 
+CPU_OPT, 4-pin w_PUMP, 4-pin CHA_FAN1-3)
+1-20
+4. DDR3 DIMM slots 1-9
+5. USB 3.0 connector (20-1 pin USB3_12) 1-22
+6. AMD SB950 Serial ATA 6.0Gb/s connector (SATA6G_1~6 [black]) 1-23
+7. M.2 (Socket 3) 1-25
+8. Standby Power LED (SB_PWR) 1-26
+9. System panel connector (20-5 pin PANEL) 1-24
+10. Overclocking Jack (8-1 pin OCJ) 1-16
+11. Clear RTC RAM (3-pin CLRTC) 1-15
+12. USB 2.0 connector (10-1 pin USB910, USB1112, USB1314) 1-22
+13. TPM connector (14-1 pin TPM) 1-21
+14. Serial port connector (10-1 pin COM) 1-20
+15. Front panel audio connector (10-1 pin AAFP) 1-21
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-5
+1.3 中央處理器 (CPU)
+本主機板配備一組中央處理器插槽，是專為 AMD® FX™/Phenom™ II/Athlon™ II/
+Sempron™ 100 系列所設計。
+當您安裝處理器時，請確認所有的電源線都已拔除。
+AM3+ 插槽與 AM2+/AM2 插槽不同，請確認您的處理器使用的是 AM3+ 插
+槽。處理器只能以一個方向正確安裝，請勿強制將處理器裝入插槽，以避
+免弄彎處理器的針腳和處理器本身！
+1-6 第一章：產品介紹
+1.3.1 安裝中央處理器
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-7
+若您所購買的是散裝的處理器
+散熱器和風扇，在安裝散熱器
+和風扇之前，請確認散熱器或
+處理器上已正確塗上散熱膏。
+1.3.2 安裝散熱器和風扇
+請依照下面步驟安裝處理器的散熱器和風扇：
+1-8 第一章：產品介紹
+請按照以下的步驟卸除散熱器和風扇：
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-9
+1.4 系統記憶體
+1.4.1 概述
+本主機板配備四組 DDR3（Double Data Rate，雙倍資料傳送率）記憶體插槽。 
+DDR3 記憶體模組和 DDR 或 DDR2 記憶體模組不同，請勿將 DDR 或 DDR2 記憶體模
+組 安裝在 DDR3 記憶體插槽。下圖所示為 DDR3 記憶體插槽在主機板上的位置。
+建議您安裝電壓低於 1.5V 的 DDR3L 記憶體模組以維持系統穩定。
+記憶體建議設定：
+通道 插槽
+通道 A DIMM_A1 & DIMM_A2
+通道 B DIMM_B1 & DIMM_B2
+1-10第一章：產品介紹
+1.4.2 記憶體設定
+您可以任意選擇使用 1GB、2GB、4GB 與 8GB unbuffered non-ECC DDR3 記憶體模
+組至本主機板的 DIMM 插槽上。
+請造訪 http://tw.asus.com 獲取最新記憶體合格供應商列表（QVL）。
+• 您可以在通道 A 與通道 B 安裝不同容量的記憶體模組，在雙通道設定
+中，系統會偵測較低容量通道的記憶體容量。任何在較高容量通道的其
+他記憶體容量，會被偵測為單通道模式執行。
+• 在本主機板請使用相同 CAS（CAS-Latency 行位址控制器延遲時間）值
+記憶體模組。建議您使用同一廠商所生產的相同容量型號的記憶體。請
+參考記憶體合格商供應列表。
+• 由於 Windows® 32-bit 作業系統記憶體位址的限制，當您安裝 4GB 或更
+大記憶體時，實際可使用的記憶體將為 3GB 或更小。為了更加有效地使
+用記憶體空間，我們建議您做以下操作：
+ - 若要安裝 Windows® 32-bit 作業系統，請安裝最多 3GB 總記憶體。
+ - 若要安裝 4GB 或更多總記憶體，請安裝 Windows® 64-bit 作業系統。
+• 本主機板不支援由 512Mb（64MB）或更小容量的晶片構成的記憶體模
+組。
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-11
+1.4.3 安裝記憶體模組
+取出記憶體模組
+1-12第一章：產品介紹
+安裝 / 移除任何擴充卡之前，請暫時先將電腦的電源線拔出。如此可免除
+因電氣殘留於電腦中而發生的意外狀況。
+1.5 擴充插槽
+考慮到未來會擴充系統機能的可能性，本主機板提供了擴充插槽，在接下來的次
+章節中，將會描述主機板上這些擴充插槽的相關資訊。
+1.5.1 安裝擴充卡
+請依照下列步驟安裝擴充卡：
+1. 在安裝擴充卡之前，請先詳讀該擴充卡的使用說明，並且要針對該卡作必要的硬
+體設定變更。
+2. 鬆開電腦主機的機殼蓋並將之取下（如果您的主機板已經放置在主機內）。
+3. 找到一個您想要插入新擴充卡的空置插槽，並以十字螺絲起子鬆開該插槽位於主
+機背板的金屬擋板的螺絲，最後將金屬擋板移出。
+4. 將擴充卡上的金手指對齊主機板上的擴充槽，接著慢慢地插入槽中，並以目視的
+方法確認擴充卡上的金手指已完全沒入擴充槽中。
+5. 再用剛才鬆開的螺絲將擴充卡固定在機殼內。
+6. 將電腦主機的機殼蓋裝回鎖好。
+1.5.2 設定擴充卡
+在安裝好擴充卡之後，接著還須藉由軟體設定來調整該擴充卡的相關設定。
+1. 開啟電腦，接著更改必要的 BIOS 程式設定。若需要的話，您也可以參閱 第二章 
+BIOS 資訊 以獲得更多資訊。
+2. 為加入的擴充卡指派一組尚未被系統使用到的 IRQ。
+3. 為新的擴充卡安裝軟體驅動程式。
+當您將 PCI 擴充卡插在可以分享的擴充插槽時，請注意該擴充卡的驅動
+程式是否支援 IRQ 分享或者該擴充卡並不需要指派 IRQ。否則會容易因 
+IRQ 指派不當產生衝突，導致系統不穩定且該擴充卡的功能也無法使用。
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-13
+1.5.3 PCI Express 2.0 介面卡擴充插槽
+插槽編號 擴充插槽
+PCIe 2.0 x1_1 插槽
+PCIe 2.0 x16/x8_1 插槽
+PCI 1
+PCIe 2.0 x1_2 插槽
+PCIe 2.0 x8_2 插槽
+PCI 2
+1-14第一章：產品介紹
+本主機板指定中斷要求
+VGA 設定
+PCI Express 3.0 運作模式
+PCIe 2.0 x16/x8_1 PCIe 2.0 x8_2
+Single VGA/PCIe 顯示卡 x16（建議使用單張顯示卡） N/A
+Dual VGA/PCIe 顯示卡 x8 x8
+• 當在執行 CrossFireX™ 時，建議提供系統充足的電力供應。
+• 當您安裝多張顯示卡時，建議您將機殼風扇的排線連接至主機板上標示 
+CHA_FAN1-2 的插座，以獲得更良好的散熱環境。
+A B C D E F G H
+PCIEX1_1 - - - - - - - 共享
+PCIE_X16/X8_1 共享 - - - - - - -
+PCI1 - - - - 共享 - - -
+PCIEX1_2 共享 - - - - - - -
+PCIE_X8_2 - - - - 共享 - - -
+PCI2 - - - - - 共享 - -
+M.2 PCIE X4 SLOT - - - - 共享 - - -
+HD Audio 共享 - - - - - - -
+Intel LAN 控制器 - - 共享 - - - - -
+SATA 控制器 - - - 共享 - - - -
+USB 1.1 控制器 1 - - 共享 - - - - -
+USB 1.1 控制器 2 - - - - 共享 - - -
+USB 1.1 控制器 3 - - - - - - 共享 -
+USB 1.1 控制器 4 - - 共享 - - - - -
+USB 2.0 控制器 1 - 共享 - - - - - -
+USB 2.0 控制器 2 - - - - - 共享 - -
+USB 2.0 控制器 3 - - - - - - - 共享
+Asmedia USB 3.1 控制器 共享 - - - - - - -
+Asmedia USB 3.0 控制器 - 共享 - - - - - -
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-15
+1.6 跳線選擇區
+1. CMOS 組態資料清除（3-pin CLRTC）
+在主機板上的 CMOS 記憶體中記載著正確的時間與系統硬體組態等資料，這
+些資料並不會因電腦電源的關閉而遺失資料與時間的正確性，因為這個 CMOS 
+的電源是由主機板上的鋰電池所供應。
+• 如果上述方法無效，請移除主機板上的內建電池，再將跳線帽移除一次
+來清除 CMOS 組態資料。在 CMOS 組態資料清除後，請將電池重新裝
+回主機板。
+• 如果您是因為超頻的緣故導致系統無法正常開機，您無須使用上述的組
+態資料清除方式來排除問題。建議可以採用 C.P.R（CPU 自動參數回復）
+功能，只要將系統重新開啟 BIOS 即可自動回復預設值。
+• 由於晶片組的運作，若要啟動 C.P.R. 功能，必須先將 AC 電源關閉，在
+重新啟動系統之前，請先將電源關閉或將插頭拔起。
+除了清除 CMOS 組態資料之外，請勿將主機板上 CLRTC 的跳線帽由預設
+值的位置移除，因為這麼做可能會導致系統開機失敗。
+想要清除這些資料，可以依照下列步驟進行：
+1. 關閉電腦電源，拔掉電源線；
+2. 將 CLRTC 跳線帽由 [1-2]（預設值）改為 [2-3] 約五∼十秒鐘（此時即清除 
+CMOS 資料），接著再將跳線帽改回 [1-2]；
+3. 插上電源線，開啟電腦電源；
+4. 當開機步驟正在進行時按著鍵盤上的 ＜Del＞ 鍵進入 BIOS 程式畫面重新設定 
+BIOS 資料。
+1-16第一章：產品介紹
+2. 超頻插頭（8-1 pin OCJ）
+這個跳線帽支援超頻功能 ReTry、Safe Boot 及 Slow Mode。使用本功能時，
+請以金屬物體將相對應的跳線帽針腳短路約五∼十秒鐘。
+• ReTry 按鈕
+當開機進行過程中，遇到重置（Reset）開關也無作用時，按下此按鈕則會強
+制系統重新開機，並且會保有原本相同的設定來提供連續快速重試，以達到有效
+的 POST（開機自我測試）。
+• Safe Boot 按鈕
+這個安全開機（Safe Boot）按鈕可以在任何時間按下後，便能強制降系統重
+新開機並進入 BIOS 安全模式。此按鈕可以暫時套用安全設定值至 BIOS，並同時
+保留所有超頻設定值，以提供您修改導致開機失效的設定。在超頻或調整您的系
+統設定時，使用此按鈕。
+• Slow Mode 開關
+本開關適用在LN2測試。某些處理器要達到最高頻率的最適溫度範圍很小，
+所以在高頻率下高於或低於最適溫度都會導致系統不穩定。例如，某些處理器可
+能為了執行 5.8GHz 而需要加載至 -80℃，此為意味著為了保持在 5GHz，而有約 
+75℃ 的閒置。
+邁向寒冷或溫暖崩毀，則會保持在穩定以較低的頻率在非常冷或較暖的溫
+度。一旦要從高頻率轉換至低頻率時若溫度回升不夠快時系統則會當機，要克服
+這個問題，只要在溫度與最大頻率不同步時的關鍵時刻立即切換至“Slow”模式
+即可以避免當機。。在切至 Slow-Mode 模式的臨界時刻為當溫度/最大頻率校準
+為 off-synch，可以確保遇到大量的崩毀，甚至當於低溫環境下嘗試重新開機至作
+業系統。
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-17
+1.7 元件與周邊裝置的連接
+1.7.1 後側面板連接埠
+後側面板連接埠
+1. PS/2 鍵盤/滑鼠連接埠 6. USB 2.0 連接埠 34
+2. 光纖 S/PDIF 數位音效輸出連接埠 7. USB 2.0 連接埠 12
+3. 網路連接埠* 8. USB 3.1 連接埠
+4. USB 2.0 連接埠 78 9. 音效輸出/輸入接頭**
+5. USB 2.0 連接埠 56
+* 與 **： 請參考下頁表格中網路連接埠指示燈與音效連接埠的定義。
+1-18第一章：產品介紹
+Activity/Link LED 指示燈 速度指示燈
+狀態 描述 狀態 描述
+關閉 沒有連接 關閉 連接速度 10Mbps
+橘色 已連接 橘色 連接速度 100Mbps
+橘色（閃爍） 資料傳送中 綠色 連接速度 1Gbps
+橘色（閃爍後
+持續亮著）
+準備從 S5 模式
+啟動喚醒功能
+** 2、4、6 或 8 聲道音效設定
+* 網路指示燈之燈號說明
+接頭
+耳機 / 2 聲道
+喇叭輸出
+4 聲道
+喇叭輸出
+6 聲道
+喇叭輸出
+8 聲道
+喇叭輸出
+淺藍色 聲音輸入端 聲音輸入端 聲音輸入端 聲音輸入端
+草綠色 聲音輸出端 前置喇叭輸出 前置喇叭輸出 前置喇叭輸出
+粉紅色 麥克風輸入端 麥克風輸入端 麥克風輸入端 麥克風輸入端
+橘色 – –
+中央/重低音 
+喇叭輸出
+中央/重低音 
+喇叭輸出
+黑色 – 後置喇叭輸出 後置喇叭輸出 後置喇叭輸出
+灰色 – – –
+側邊環繞喇叭輸
+出
+ACT/LINK 
+指示燈
+速度 
+指示燈
+網路連接埠
+• 由於 USB 3.0 控制器限制，USB 3.0 裝置僅可在 Windows® 作業系統環
+境中，且安裝了 USB 3.0 驅動程式後才可使用。
+• 已連接的 USB 3.0 裝置將按照作業系統的設定以 xHCI 或 EHCI 模式運
+作。
+• USB 3.0 裝置僅可作為資料儲存裝置使用。
+• 強烈建議您將 USB 3.0 裝置連接到 USB 3.0 連接埠，以得到更快的傳送
+速率與更好的效能。
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-19
+1.7.2 內部連接埠
+1. ATX 主機板電源插槽（24-pin EATXPWR、8-pin EATX12V）
+這些電源插槽用來連接到一個 ATX 電源供應器。電源供應器所提供的連接插
+頭已經過特別設計，只能以一個特定方向插入主機板上的電源插槽。找到正確的
+插入方向後，僅需穩穩地將之套進插槽中即可。
+• 建議您使用與 2.0 規格的 24-pin ATX 12V 相容的電源（PSU），才能
+提供至少 350W 高功率的電源，以供應系統足夠的電源需求。
+• 如果您想要安裝其他的硬體裝置，請務必使用較高功率的電源以提供足
+夠的裝置用電需求。若電源無法提供裝置足夠的用電需求，則系統將會
+變得不穩定或無法開啟。
+1-20第一章：產品介紹
+千萬要記得連接風扇的電源，若系統中缺乏足夠的風量來散熱，很容易因
+為主機內部溫度逐漸升高而導致當機，甚至更嚴重者會燒毀主機板上的電
+子元件。注意：這些插槽並不是單純的排針，不要將跳線帽套在它們的針
+腳上！中央處理器風扇（CPU_FAN）電源插槽最大支援 1A（12W）電源。
+2. 中央處理器風扇、中央處理器選用風扇、水泵、機殼風扇電源插槽（4-pin CPU_
+FAN, 4-pin CPU_OPT, 4-Pin W_PUMP, 4-pin CHA_FAN1-3）
+將風扇排線連接至風扇插槽，並確認每條連接排線的黑線是接到風扇電源插
+槽上的接地端（GND）。
+3. 序列埠連接插座（10-1 pin COM）
+這組插座是用來連接序列埠（COM）。將序列埠模組的排線連接到這個插
+座，接著將該模組安裝到機殼後側面板空的插槽中。
+序列埠（COM）模組為選購配備，請另行購買。
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-21
+TPM 模組為選購配備，請另行購買。
+5. TPM 連接排針（14-1 pin TPM）
+這些排針支援可信任平台模組（Trusted Platform Module，TPM）系統，可以
+安全的儲存密鑰、數位證書、密碼和資料。一個 TPM 系統可幫助提高網路安全
+性，保護數位身份和確保平台完整。
+4. 前面板音效連接排針（10-1 pin AAFP）
+這組音效外接排針供您連接到前面板的音效排線，除了讓您可以輕鬆地透過
+主機前面板來控制音效輸出/輸入等功能，並且支援 AC’97 或 HD Audio 音效標
+準。將前面板音效輸出/輸入模組排線的一端連接到這個插槽上。
+• 建議您將支援高傳真（high definition）音效的前面板音效模組連接到這
+組排針，如此才能得到高傳真音效的功能。
+• 若要將高傳真音效前面板模組安裝至本接針，請將 BIOS 程式中 Front 
+Panel Type 項目設定為 [HD Audio]，若要將 AC 97 音效前面板模組安
+裝至本接針，請將此項目設定為 [AC 97]。預設情況下本連接埠設定為 
+[HD Audio]。
+1-22第一章：產品介紹
+7. USB 3.0 擴充套件排線插座（20-1 pin USB3_12）
+這個插槽用來連接額外的 USB 3.0 連接埠模組，並與 USB 2.0 規格相容。若
+是您的機殼提供有 USB 3.0 前面板連接排線，將該排線連接至本插槽，就可擁有
+前面板 USB 3.0 解決方案，支援傳送速率最高達 5Gbps，可對 USB 充電裝置進
+行快速充電並優化能效。
+6. USB 2.0 擴充套件排線插座（10-1 pin USB910, USB1112, USB1314）
+這些 USB 擴充套件排線插座支援 USB 2.0 規格，傳送速率最高達 480Mbps 
+，比 USB 1.1（Full Speed）規格的 12Mbps 快 40 倍，可以提供更高速的網路連
+接、互動式電腦遊戲，還可以同時執行高速的周邊裝置。
+請勿將 1394 排線連接到 USB 插座上，這麼做可能會導致主機板的毀損。
+USB 2.0 模組需另行購買。
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-23
+8. AMD SB950 Serial ATA 6.0Gb/s 裝置連接插座 (7-pin SATA6G_1～6 [黑色])
+這些插槽支援使用 Serial ATA 6.0Gb/s 排線連接 Serial ATA 6.0Gb/s 硬碟或光
+碟機。
+將 SATA 訊號線上的直角接頭端
+（right angle side）連接在 SATA 裝
+置上，或是將直角接頭端安裝至主機
+板內建的 SATA 連接埠，以避免造成
+與較大顯示卡的衝突。
+1-24第一章：產品介紹
+• 系統電源指示燈連接排針（4-pin +PWR_LED-）
+ 這組排針可連接到電腦主機面板上的系統電源指示燈。在您開啟電腦並且使用電
+腦的情況下，該指示燈會持續亮著；而當指示燈閃爍時，即表示電腦正處於睡眠
+模式中。
+• 硬碟動作指示燈連接排針（2-pin +HDD_LED-）
+ 您可以連接此組 LED 接針到電腦主機面板上的硬碟動作指示燈號，如此一旦硬
+碟有存取動作時，指示燈隨即亮起。
+• 內建喇叭連接插座 (4-pin SPEAKER)
+ 此 4-pin 的連接插座用於連接機殼的系統警報喇叭。您可以聽到系統的警報聲。
+• ATX 電源/軟關機開關連接排針（2-pin PWR_SW）
+ 這組排針連接到電腦主機面板上控制電腦電源的開關。
+• 軟開機開關連接排針（2-pin RESET）
+ 這組二腳位排針連接到電腦主機面板上的 Reset 開關。可以讓您在不需要關掉電
+腦電源即可重新開機，尤其在系統當機的時候特別有用。
+9. 系統控制面板連接排針（20-5 pin PANEL）
+這一組連接排針包括了數個連接到電腦主機前面板的功能接針。
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-25
+10. M.2 插槽（Socket 3）
+這個插槽支援 M Key 與 2242 (22mm x 42mm)、2260 (22mm x 60mm)及 2280 
+(22mm x 80mm) PCIe 類型儲存裝置。
+M.2 僅支援資料儲存。
+1-26第一章：產品介紹
+1.8 內建指示燈
+1. 電力指示燈（SB_PWR）
+當主機板上內建的電力指示燈（SB_PWR）亮著時，表示當前系統是處於正常
+運作、省電模式或者軟關機的狀態中，並非完全斷電。這個警示燈可用來提醒您
+在安裝或移除任何的硬體裝置之前，都必須先移除電源，等待警示燈熄滅才可進
+行。請參考下圖所示。
+２. Q 指示燈（BOOT_DEVICE_LED、VGA_LED、DRAM_LED、CPU_LED）
+Q 指示燈從主機板開機後依序檢視 CPU、記憶體、顯示卡與開機裝置狀態。
+當發現錯誤時，在該項目旁的指示燈則會亮燈直到問題解決。透過直覺的方式提
+供這項友善的設計，能在短短幾秒內找到問題點。
+華碩 970 PRO GAMING/AURA 主機板使用手冊 1-27
+3. M2 指示燈（M2_SSD_LED）
+M2 指示燈亮起表示安裝的 M.2（NGFF）卡已被存取。
+4. RGB 指示燈
+RGB LED 燈光控制可以讓您自訂喜愛的 LED 指示燈效果。您可以設定不同的
+燈光效果代表處理器溫度等狀態。
+您可以由 LED 控制 APP Aura 中變更指示燈燈光設定。
+1-28第一章：產品介紹
+2-1華碩 970 PRO GAMING/AURA 主機板使用手冊
+2
+2.1 管理、更新您的 BIOS 程式
+建議您先將主機板原始的 BIOS 程式備份到一片 USB 隨身碟中，以備您
+往後需要再度安裝原始的 BIOS 程式。使用華碩線上更新程式來拷貝主機
+板原始的 BIOS 程式。
+2.1.1 EZ Update
+EZ Update 可自動更新主機板的軟體、驅動程式與 BIOS 程式。使用這個應用程
+式，您也可以手動更新已儲存的 BIOS 並選擇系統進入開機自我測試（POST）時的啟
+動圖標。
+要開啟 EZ Update，在 AI Suite 3 主選單中點選 EZ Update。
+點選自動自動更新
+主機板的軟體、驅
+動程式與韌體
+點選從檔案搜尋
+並選擇 BIOS
+點選選擇
+啟動圖示
+點選更新 
+BIOS
+在使用 EZ Update 之前，請先確認您已經透過內部網路對外連線，或者透
+過網際網路服務供應商（ISP）所提供的連接方式連線到網際網路。
+BIOS 資訊
+第二章：BIOS 資訊2-2
+在使用此程式前，請從華碩網站上（http://tw.asus.com）下載最新的 BIO 
+S 檔案。
+請依據以下步驟使用 EZ Flash 3 更新 BIOS：
+1. 將儲存有最新 BIOS 檔案的 USB 隨身碟插入 USB 連接埠。
+2. 進入 BIOS 設定程式的 進階模式（Advanced Mode） 畫面，來到 Tool 選單並選
+擇 EZ Flash2 並按下 ＜Enter＞ 鍵將其開啟。
+3. 按下 ＜Tab＞ 鍵切換到 Driver 區域。
+4. 按上/下方向鍵找到儲存有最新 BIOS 檔案的 USB 隨身碟，接著按下 ＜Enter＞ 
+鍵。
+5. 按下 ＜Tab＞ 鍵切換到 Folder Info 區域。 
+6. 按上/下方向鍵找到最新 BIOS 檔案，接著按下 ＜Enter＞ 鍵開始更新 BIOS。更
+新完成後重新啟動電腦。
+2.1.2 華碩 EZ Flash 2
+華碩 EZ Flash 2 程式讓您能輕鬆的更新 BIOS 程式，可以不必再到作業系統模式
+下執行。
+•本功能僅支援採用 FAT 32/16 格式單一磁區的 USB 裝置，如 USB 隨
+身碟。
+•載入 BIOS 預設設定可獲得系統相容性與穩定性。在 Exit 選單中選擇 
+Load Optimized Defaults 項目 
+•當更新 BIOS 時，請勿關閉或重置系統以避免系統開機失敗。
+2-3華碩 970 PRO GAMING/AURA 主機板使用手冊
+FreeDOS 環境中不支援 NTFS 格式。請確認您的 USB 隨身碟為 FAT32/16 
+格式單一磁區的格式。
+更新 BIOS 之前
+• 準備好主機板的驅動程式與公用程式光碟與一個 USB 隨身碟。
+• 從華碩網站（http://support.asus.com）下載最新的 BIOS 檔案與 BIOS Updater 工
+具程式，並將它們儲存於 USB 隨身碟中。
+• 關閉電腦。
+• 確認您的電腦有 DVD 光碟機。
+•使用此程式前，請將行動儲存裝置中的 B IOS 檔案重新命名
+為：970PGMA.CAP。
+•從驅動程式與公用程式光碟中的 BIOS 可能不是最新版本，請造訪華碩
+網站（http://tw.asus.com）來下載最新的 BIOS 程式。
+當更新 BIOS 時，請勿關閉或重置系統！若是這麼做，將可能導致系統
+開機失敗。
+2.1.3 華碩 CrashFree BIOS 3 程式
+華碩 CrashFree BIOS 3 工具程式讓您在當 BIOS 程式與資料被病毒入侵或損毀時，
+可以輕鬆地從驅動程式與公用程式光碟中，或是從含有最新或原始 BIOS 檔案的 USB 
+隨身碟中回復 BIOS 程式的資料。
+回復 BIOS 程式
+請依照下列步驟回復 BIOS 程式：
+1. 啟動系統。
+2. 將儲存有 BIOS 檔案的驅動程式與公用程式光碟放入光碟機，或 USB 隨身碟插入 
+USB 連接埠。
+3. 接著工具程式便會自動檢查裝置中是否存有 BIOS 檔案。當搜索到 BIOS 檔案
+後，工具程式會開始讀取 BIOS 檔案並自動進入 EZ Flash 3 應用程式。
+4. 系統要求您進入 BIOS 設定程式來回復 BIOS 設定。為保證系統的相容性與穩定
+性，建議您按下 ＜F5＞ 來載入預設的 BIOS 設定值。
+2.1.4 華碩 BIOS Updater
+華碩 BIOS Updater 可讓您在 DOS 環境下更新 BIOS 檔案。
+本章節畫面僅供參考，可能與您所見到的 BIOS 畫面有所差異。
+第二章：BIOS 資訊2-4
+在 DOS 環境中啟動系統
+請依照以下步驟在 DOS 環境中啟動系統：
+1. 將儲存有最新的 BIOS 檔案與 BIOS Updater 工具程式的 USB 隨身碟連接到電腦
+的 USB 連接埠。
+2. 啟動電腦然後按下 <F8> 來啟動 BIOS Boot Device Select 選單。
+3. 當 BIOS Boot Device Select 選單出現時，將驅動程式與公用程式光碟放入光碟
+機，並選擇光碟機為啟動裝置。
+5. 在 FreeDOS 彈出視窗中，在提示符後輸入 d: 然後按下 <Enter>，從 Drive C（光
+碟機）切換為 Drive D（USB 隨身碟）。
+更新 BIOS 檔案
+請依照以下步驟更新 BIOS 檔案：
+1. 在 FreeDOS 彈出視窗的提示符後輸入 bupdater /pc /g 並按下 <Enter>。
+Please select boot device:
+E1: ASUS DVD-E818A6T (4069MB)
+ USB DISK 2.0 (3824MB)
+UEFI: (FAT) USB DISK 2.0 (3824MB)
+Enter Setup
+ and  to move selection 
+ENTER to select boot device
+ESC to boot using defaults
+4. 當 Boot Loader 出現時，在五秒內按下 <Enter> 來進入 FreeDOS 彈出視窗。
+Welcome to FreeDOS (http://www.freedos.org)!
+C:/> d:
+D:/>
+D:/> bupdater /pc /g
+ISOLINUX 3.20 2006-08-26 Copyright (C) 1994-2005 H. Peter Anvin
+A Bootable DVD/CD is detected. Press ENTER to boot from the DVD/CD.
+If no key is pressed within 5 seconds, the system will boot next priority
+device automatically. boot:
+2-5華碩 970 PRO GAMING/AURA 主機板使用手冊
+2. 在 BIOS Updater 畫面中，按下 <Tab> 鍵從檔案欄位切換至磁碟欄位，然後選擇 
+D:。
+3. 按下 <Tab> 鍵從磁碟欄位切換至檔案欄位，接著用 <Up/Down 或 Home/End> 鍵
+來選擇 BIOS 檔案並按下 <Enter>。
+4. 在 BIOS Updater 檢查您所選擇的 BIOS 檔案後，選擇 Yes 來確認更新 BIOS。
+5. 選擇 Yes 並按下 <Enter>。當 BIOS 更新完畢後，按 <ESC> 離開 BIOS Updater。
+6. 重新啟動您的電腦。
+請確認載入 BIOS 程式的出廠預設值以確保系統運作處於最佳效能與穩定
+狀態。請在 Exit 選單中選擇 Load Optimized Defaults 項目。
+當更新 BIOS 時，請勿關閉或重置系統！若是這麼做，將可能導致系統
+開機失敗。
+由於安全規則之限制，不支援 BIOS 備份功能。
+Are you sure you want to update the BIOS?
+Yes No
+磁碟
+面板
+檔案
+面板
+ASUSTeK BIOS Updater for DOS V1.30 [2015/01/01]
+Current ROM
+BOARD: 970 PRO GAMING/AURA
+VER: 0202 (H :00 B :00)
+DATE: 08/12/2015
+Update ROM
+BOARD: Unknown
+VER: Unknown
+DATE: Unknown
+PATH: C:\
+C:
+D:
+FORMAN~1 <DIR>
+970PGMA.CAP 8390656 2015-12-08 21:14:34
+Note
+[Enter] Select or Load [Tab] Switch [V] Drive Info
+[Up/Down/Home/End] Move [Esc] Exit
+第二章：BIOS 資訊2-6
+• 本章節的 BIOS 程式畫面僅供參考，將可能與您所見到的畫面有所差異。
+• 請至華碩網站（http://tw.asus.com）下載最新的 BIOS 程式檔案來獲得最
+新的 BIOS 程式資訊。
+• BIOS 程式的出廠預設值可讓系統運作處於最佳效能，但是若系統因您
+改變 BIOS 程式而導致不穩定，請讀取出廠預設值來保持系統的穩定。
+在 Exit 選單中選擇 Load Optimized Defaults 項目。
+• 變更任何 BIOS 設定後，若系統無法啟動，嘗試清除 CMOS 資料並將
+主機板回復至預設設定。請參閱 1.6 跳線選擇區 一節中關於清除 RTC 
+RAM 的詳細說明。
+透過電源鍵、Reset 鍵或 <Ctrl> + <Alt> + <Del> 鍵強迫正在運作的系統重新
+開機會毀損到您的資料或系統，我們建議您正確地關閉正在運作的系統。
+2.2 BIOS 程式設定
+BIOS 設定程式用於更新或設定 BIOS。BIOS 設定畫面中標示了操作功能鍵與簡明
+的操作說明，幫助您進行系統設定。
+在開機時進入 BIOS 設定，您可以依據以下步驟進行：
+• 在系統自我測試（POST）過程中按下 <Delete> 或 <F2> 鍵。若不按下 <Delete> 
+或 <F2> 鍵，自我測試會繼續進行。
+在 POST 過程結束後再進入 BIOS 設定，您可以選擇以下任一步驟進行：
+• 按下 <Ctrl> + <Alt> + <Del> 鍵。 
+• 按下機殼上的 RESET 按鈕重新開機。
+• 您也可以將電腦關閉然後再重新開機。請在嘗試了以上兩種方法失敗後再選擇這
+一操作。
+2-7華碩 970 PRO GAMING/AURA 主機板使用手冊
+BIOS 選單畫面
+BIOS 設定程式有二種使用模式：EZ 模式（EZ Mode） 與 進階模式（Advanced 
+Mode）。您可以在 Exit 選單中變更模式，或透過 EZ 模式/進階模式畫面中的 Exit/
+Advanced Mode 按鈕來變更。
+• 啟動裝置項目依據系統中安裝的裝置而定。
+• 只有安裝了開機裝置後，Boot Menu（F8）按鈕才可用。
+EZ 模式（EZ Mode）
+預設情況下，當您進入 BIOS 設定程式後，EZ 模式（EZ Mode）畫面就會出現。 
+EZ 模式（EZ Mode）顯示基本系統資訊概要，並用來選擇顯示語言、系統效能模式
+與啟動裝置順序。要進入進階模式（Advanced Mode），點選 Exit/Advanced Mode 按
+鈕，接著選擇進階模式（Advanced Mode），或是按 <F7> 鍵來進入進階 BIOS 設定。
+進入 BIOS 設定程式的預設畫面可變更。
+不儲存變更並離開 BIOS 設定程式，
+儲存變更並重新啟動系統，或進入
+進階模式（Advanced Mode）
+選擇 BIOS 設定
+程式的顯示語言
+顯示 CPU 的溫度、記
+憶體資訊、CPU 電壓輸
+出，CPU/機殼風扇速度
+載入最佳
+化預設值 
+選擇開機
+裝置順序選擇開機
+裝置順序
+節能模式
+顯示 Advanced 
+模式選單
+選擇 Advanced 
+模式功能
+一般模式 華碩最佳
+化模式
+顯示所選模式
+的系統內容
+第二章：BIOS 資訊2-8
+進階模式（Advanced Mode）
+進階模式（Advanced Mode）為有經驗的終端使用者提供進階的 BIOS 設定項目。
+以下為進階模式（Advanced Mode）的參考圖示。
+要進入 EZ 模式（EZ Mode），點選 Exit 按鈕，然後選擇華碩 EZ 模式（EZ 
+Mode）或點按 <F7> 鍵。
+My Favorites 本項目用於保存經常使用的系統設定和配置資訊。
+Main 本項目提供系統基本設定
+Ai Tweaker 本項目用於變更超頻設定
+Advanced 本項目提供系統進階功能設定
+Monitor 本項目顯示系統溫度、電源狀態，並變更風扇設定
+Boot 本項目提供系統開啟設定
+Tool 本項目提供特殊功能設定
+Exit 本項目提供離開 BIOS 設定程式與出廠預設值還原功能
+線上操作說明功能表列選單項目 設定值
+設定視窗
+返回按鈕
+子選單項目
+操作功能鍵
+捲軸
+快速筆記
+上次修正設定
+功能表列
+BIOS 設定程式最上方各選單功能說明如下：
+2-9華碩 970 PRO GAMING/AURA 主機板使用手冊
+選單項目
+在功能表列選定選項時，被選擇的功能將會反白，像是選擇 Main 就會顯示主選單
+項目。
+點選功能表列中的其他項目（例如：Ai Tweaker、Advanced、Monitor、Boot、
+Tool 與 Exit）也會出現該項目不同的選項。
+返回按鈕
+當進入子選單時，此按鈕會出現。按下 <Esc> 或使用 USB 滑鼠點選此按鈕回到前
+一個選單畫面。
+子選單項目
+在任何選單畫面中的項目前若有一個大於號（>）則表示此項目有子選單。要顯示
+子選單，選擇此項目，接著按下 <Enter> 鍵。
+設定視窗
+在選單中選擇功能項目，接著按下 <Enter> 鍵，程式將會顯示包含此功能所提供的
+選項小視窗，您可以利用此視窗來設定您所想要的設定。
+捲軸
+在選單畫面的右方若出現捲軸，即代表此頁選項超過可顯示的畫面，您可利用上/
+下方向鍵或是 PageUp/PageDown 鍵來切換畫面。
+操作功能鍵
+在選單畫面的右下方為操作功能鍵說明，請參照功能鍵說明來選擇及改變各項功
+能。
+線上操作說明
+在選單畫面的右上方為目前所選擇的作用選項的功能說明，此說明會依選項的不
+同而自動變更。
+設定值
+此區域顯示選單項目的設定值。這些項目中，有的功能選項僅為告知使用者目前
+執行狀態，並無法更改，此類項目就會以淡灰色顯示。而可更改的項目，當您使用方
+向鍵移動項目時，被選擇的項目以反白顯示。
+設定值被選擇後以反白顯示。要改變設定值請選擇此項目，並按下 <Enter> 鍵以顯
+示設定值列表。
+快速筆記
+此區域可進入您在 BIOS 中所做的內容筆記。
+上次修改設定按鈕
+此按鈕可顯示您在 BIOS 設定中上一次所做的修改項目。
+第二章：BIOS 資訊2-10
+2.3 我的最愛（My Favorites）
+在此選單中您可以輕鬆儲存並使用您偏好的 BIOS 項目設定。
+以下項目無法加入至我的最愛：
+• 有子選單的項目。
+• 使用者自訂項目，例如：語言、開機裝置順序。
+• 設定項目，例如：記憶體 SPD 資訊、系統時間與日期。
+新增項目至我的最愛
+請依照以下步驟新增項目至我的最愛：
+1. 請使用箭頭符號選擇想要新增的項目，使用滑鼠時，請將游標移至該項目上。
+2. 按下 <F4> 鍵或是滑鼠右鍵，以將項目新增至我的最愛。
+2-11華碩 970 PRO GAMING/AURA 主機板使用手冊
+2.4 主選單（Main）
+當您進入 BIOS 設定程式的進階模式（Advanced Mode）時，首先出現的第一個畫
+面即為主選單。主選單顯示系統資訊概要，用來設定系統日期、時間、語言與安全設
+定。
+• 若您忘記設定的 BIOS 密碼，可以採用清除 CMOS 即時鐘（RTC）記憶
+體器。請參閱 1.6 跳線選擇區 一節取得更多資訊。
+• 螢幕上方的 Administrator 或 User Password 項目顯示為預設值 [Not 
+Installed]。設定密碼後，這些項目顯示為 [Installed]。
+System Language [English]
+用 來 選 擇 B I O S 語 言 。 設 定 值 有 ： [ E n g l i s h ] 
+ [Español] [Русский] [한국어]。
+System Date [Day xx/xx/xxxx]
+設定您的系統日期（通常是目前的日期）。
+System Time [xx:xx:xx]
+設定系統的時間（通常是目前的時間）。
+安全性菜單（Security）
+本選單可讓您改變系統安全設定。
+第二章：BIOS 資訊2-12
+Administrator Password（設定系統管理員密碼）
+當您設定系統管理員密碼後，建議您先登入您的帳戶，以免 BIOS 設定程式中的某
+些資訊無法檢視或變更設定。
+請依照以下步驟設定系統管理員密碼（Administrator Password）：
+1. 請選擇 Administrator Password 項目並按下 <Enter>。
+2. 由 Create New Password 視窗輸入欲設定的密碼，輸入完成按下 <Enter>。
+3. 請再一次輸入密碼以確認密碼正確。
+請依照以下步驟變更系統管理員密碼（Administrator Password）：
+1. 請選擇 Administrator Password 項目並按下 <Enter>。
+2. 由 Enter Current Password 視窗輸入密碼並按下 <Enter>。
+3. 由 Create New Password 視窗輸入新密碼，輸入完成按下 <Enter>。
+4. 請再一次輸入密碼以確認密碼正確。
+欲刪除系統管理員密碼時，請依照變更系統管理員密碼之步驟，但請在輸入/確
+認密碼視窗出現時，按下 <Enter> 鍵。當您刪除系統管理員密碼後，Administrator 
+Password 項目將顯示為 Not Installed。
+User Password（設定使用者密碼）
+當您設定使用者密碼後，你必需登入您的帳戶才能使用 BIOS 設定程式。使用者密
+碼的預設值為 Not Installed，當您設定密碼後將顯示 Installed。
+請依照以下步驟設定使用者密碼（User Password）：
+1. 請選擇 User Password 項目並按下 <Enter>。
+2. 由 Create New Password 視窗輸入欲設定的密碼，輸入完成按下 <Enter>。
+3. 請再一次輸入密碼以確認密碼正確。
+請依照以下步驟變更使用者密碼（User Password）：
+1. 請選擇 User Password 項目並按下 <Enter>。
+2. 由 Enter Current Password 視窗輸入密碼並按下 <Enter>。
+3. 由 Create New Password 視窗輸入新密碼，輸入完成按下 <Enter>。
+4. 請再一次輸入密碼以確認密碼正確。
+欲刪除使用者密碼時，請依照變更使用者密碼之步驟，但請在輸入/確認密碼視
+窗出現時，按下 <Enter> 鍵。當您刪除使用者密碼後，User Password 項目將顯示為 
+Not Installed。
+2-13華碩 970 PRO GAMING/AURA 主機板使用手冊
+2.5 Ai Tweaker 選單（Ai Tweaker）
+Ai Tweaker 選單項目可讓您設定超頻的相關選項。
+在您設定此進階選單設定時，不正確的設定值將導致系統功能異常。
+此部份中的設定值依您主機板上所安裝的 CPU 與記憶體模組型號而定。
+Current CPU Speed : xxxxMHz
+顯示目前 CPU 速度。
+Target CPU Speed : xxxxMHz
+顯示目標 CPU 速度。
+Current Memory Frequency : xxxxMHz
+顯示目前記憶體頻率。
+Current NB Frequency : xxxxMHz
+顯示目前北橋頻率。
+Current HT Link Speed : xxxxMHz
+顯示目前 HyperTransport 連接速度。
+第二章：BIOS 資訊2-14
+Ai Overclock Tuner [Auto]
+本項目可以讓您設定 CPU 的超頻選項來達到您所想要的 CPU 內頻。請選擇以下
+任一種預設的超頻選項：
+[Auto] 自動載入系統最佳化設定值。
+[Manual] 可讓您獨立設定超頻參數。
+[D.O.C.P.] 可讓您選擇 DRAM 檔案資訊，相關參數會自動進行調整。
+CPU Ratio [Auto]
+本項目用來設定 CPU 核心時脈與前側匯流排頻率的比值。請使用 <+> 或 <-> 按鍵
+來調整。設定值會隨著所安裝的處理器而有不同。
+AMD Turbo CORE technology [Auto]
+本項目用來開啟或關閉 AMD Turbo CORE 技術。設定值有：[Auto] [Disabled] 
+[Enabled]。
+Memory Frequency [Auto]
+本項為提供您設定記憶體的運作頻率。設定值有：[Auto] DDR3-800MHz] [DDR3-
+1066MHz] [DDR3-1333MHz] [DDR3-1600MHz] [DDR3-1866MHz] [DDR3-2133MHz] 
+[DDR3-2400MHz]。
+設定過高的記憶體頻率將會導致系統的不穩定與硬體損毀，當系統出現不
+穩定的狀況時，建議您使用預設值。
+CPU/NB Frequency [Auto]
+本項目用於設定 CPU/北橋頻率。設定值有：[Auto] [1400MHz] [1600MHz] 
+[1800MHz] [2000MHz] [2200MHz] [2400MHz] [2600MHz] [2800MHz] [3000MHz] 
+[3200MHz]。
+HT Link Speed [Auto]
+本項目用來選擇 HyperTransport 連接速度。設定值有：[Auto] [800MHz] 
+[1000MHz] [1200MHz] [1400MHz] [1600MHz] [1800MHz] [2000MHz] [2200MHz] 
+[2400MHz]。
+CPU Spread Spectrum [Auto]
+[Auto] 自動調整設定值。
+[Disabled] 提升 BCLK 的超頻能力。
+[Enabled] 由 EMI 控制。
+PCIe Spread Spectrum [Auto]
+[Auto] 自動調整設定值。
+[Disabled] 提升 PCIE 的超頻能力。
+[Enabled] 由 EMI 控制。
+2-15華碩 970 PRO GAMING/AURA 主機板使用手冊
+DRAM Driving Control
+本選單中的項目可讓您設定 DRAM driving 控制功能，您可以使用 <+> 與 <-> 鍵調
+整數值。當您要回復預設值時，請使用鍵盤輸入 <auto> 並按下 <Enter> 鍵。
+自行更改數值將會導致系統的不穩定與硬體損毀，當系統出現不穩定的狀
+況時，建議您使用預設值。
+自行更改數值將會導致系統的不穩定與硬體損毀，當系統出現不穩定的狀
+況時，建議您使用預設值。
+EPU Power Saving Mode [Disabled]
+本項目可以開啟或關閉 EPU 省電功能。設定值有：[Disabled] [Enabled]。
+以下的項目僅當您將 EPU Power Saving Mode 設定為 [Enabled] 時，才
+會顯示。
+EPU Setting [Auto]
+本項為用來選擇 EPU 省電模式。設定值有：[Auto] [Light Power Saving 
+Mode] [Medium Power Saving Mode] [Max Power Saving Mode]。
+OC Tuner [CANCEL]
+OC Tuner 自動超頻 CPU 與記憶體的頻率與電壓以增強系統效能，並且依據圖形顯
+示卡的負載能力加快 iGPU 至最高效能。設定值有：[OK] [Cancel]。
+以下子項目的設定值會依主機板安裝的處理器與記憶體而異。
+DRAM Timing Control
+本選單中的項目可讓您設定 DRAM timing 控制功能，您可以使用 <+> 與 <-> 鍵調
+整數值。當您要回復預設值時，請使用鍵盤輸入 <auto> 並按下 <Enter> 鍵。
+DIGI+ Power Control
+CPU Load-Line Calibration [Auto]
+Load-line 是根據 Intel 所訂立之 VRM 規格，其設定值將影響 CPU 電壓。
+CPU 運作電壓將依 CPU 的負載呈比例性遞減，當您將此項目的設定值設定越高
+時，將可提高電壓值與超頻能力，但會增加 CPU 及 VRM 的溫度。設定值有：
+[Auto] [Regular] [Medium] [High] [Ultra High] [Extreme]。
+第二章：BIOS 資訊2-16
+超頻或處理器高負載時設定較高的數值以獲得額外的電力支援。
+以下項目只有在 CPU Voltage Frequency 設定為 [Auto] 時才會出現。
+VRM Spread Spectrum [Disabled]
+本項目可讓您啟動 VRM Spread Spectrum 項目以增加系統穩定性。設定值
+有：[Enabled] [Disabled]。
+CPU/NB Load-Line Calibration [Auto]
+本項目用來選擇處理器/北橋 Load-Line 模式。設定值有：[Auto] [Regular] 
+[High] [Extreme]。
+CPU Current Capability [Auto]
+CPU Current Capability 代表 VRM 可提供更高超頻所需的總電源量。此選項
+設定越高時，VRM 總電源傳輸範圍也越高。較高比例的設定可同時增加總電
+源輸出進而擴展系統超頻性。設定值有：[Auto] [100%] [110%] [120%] [130%] 
+[140%]。
+CPU/NB Current Capability [Auto]
+CPU/NB Current Capability 代表 VRM 可提供 DRAM 控制器更高超頻所需的
+總電源量。此選項設定越高時，VRM 總電源傳輸範圍也越高。較高比例的設定
+可同時增加總電源輸出進而擴展系統超頻性。設定值有：[Auto] [100%] [110%] 
+[120%] [130%]。
+CPU Power Phase Control [Standard]
+相數切換代表 VRM 有幾相供應 CPU 所需電源。在系統高負載時，可增加電
+源相數以提升 VRM 輸出電壓的暫態響應並可得到更好的散熱效能。在系統低負
+載時，藉由減少電源相數可增加 VRM 電源效能。
+[Standard] 根據 CPU 自身的參數設定以決定電源相數。
+[Optimized] 使用華碩最佳化參數設定。
+[Extreme] 全相數電源模式。
+[Manual Adjustment] 提供手動方式調整較高的相式響應以增加系統效能，
+或是較慢的相式響應以增加記憶體效率。
+CPU Voltage Frequency [Auto]
+切換頻率將影響 VRM 輸出電壓的暫態響應和元件的散熱性。設定較高的頻
+率可獲得較快的電壓暫態響應。設定值有：[Auto] [Manual]。
+2-17華碩 970 PRO GAMING/AURA 主機板使用手冊
+Offset Mode Sign [+]
+[＋] 設定正數值偏移電壓。
+[–] 設定負數值偏移電壓。
+CPU Offset Voltage [Auto]
+本項目可以讓您設定 Offset 的 CPU 電壓值。設定值為以 0.06250V 為間隔，變更
+的範圍從 0.006250V 至 0.700000V。
+CPU/NB Offset Mode Sign [+]
+[＋] 設定正數值偏移電壓。
+[–] 設定負數值偏移電壓。
+CPU/NB Offset Voltage [Auto]
+本項目可以讓您設定 Offset 的 CPU/NB 電壓值。設定值為以 0.06250V 為間隔，
+變更的範圍從 0.006250V 至 0.700000V。
+以下項目只有在 CPU Voltage Frequency 設定為 [Manual] 時才會出現。
+以下項目只有在 CPU & NB Voltage 設定為 [Offset Mode] 時才會出現。
+VRM Fixed Frequency Mode [200]
+本項目可讓您手動設定 VRM 頻率。請使用 <+> 與 <-> 鍵調整數值。數值以 
+10KHz 為間隔，變更的範圍由 200KHz 至 400KHz 。
+CPU Power Duty Control [T.Probe]
+[T.Probe] 維持各相散熱平衡。
+[Extreme] 維持各相電流平衡。
+CPU Power Response Control [Auto]
+設定值有：[Auto] [Regular] [Medium] [Fast] [Ultra Fast]。
+CPU/NB Power Response Control [Auto]
+設定值有：[Auto] [Regular] [Medium] [Fast] [Ultra Fast]。
+CPU Power Thermal Control [130]
+較高的溫度帶給 CPU 電力更大的散熱範圍，並擴展超頻容忍度來增加超頻
+的潛力。設定值有：[130] - [151]。
+CPU & NB Voltage [Offset Mode]
+[Manual Mode] 設定固定的處理器與北橋電壓值。
+[Offset Mode] 設定 Offset 的電壓值。
+第二章：BIOS 資訊2-18
+在您設定本進階選單的設定時，不正確的數值將導致系統毀損。
+2.6 進階選單（Advanced）
+進階選單可讓您改變中央處理器與其他系統裝置的細部設定。
+CPU Manual Voltage [Auto]
+本項目用來設定固定的 CPU 電壓值。請使用 <+> 或 <-> 按鍵來調整。設定值為以 
+0.06250V 為間隔，變更的範圍從 0.006250V 至 2.075000V。
+CPU/NB Manual Voltage [Auto]
+本項目用來設定固定的 CPU/NB 電壓值。請使用 <+> 或 <-> 按鍵來調整。設定值
+為以 0.06250V 為間隔，變更的範圍從 0.500000V 至 1.900000V。
+CPU VDDA Voltage [Auto]
+本項目用來設定 CPU VDDA 電壓值。請使用 <+> 或 <-> 按鍵來調整。設定值為以 
+0.006250V 為間隔，變更的範圍從 2.200000V 至 2.800000V。
+DRAM Voltage [Auto]
+本項目用來設定記憶體電壓值。請使用 <+> 或 <-> 按鍵來調整。設定值為以 
+0.006250V 為間隔，變更的範圍從 1.200000V 至 2.200000V。
+NB Voltage [Auto]
+本項目用來設定北橋電壓值。請使用 <+> 或 <-> 按鍵來調整。設定值為以 
+0.006250V 為間隔，變更的範圍從 1.100000V 至 1.250000V。
+NB HT Voltage [Auto]
+本項目用來設定北橋 HyperTransport 電壓值。請使用 <+> 或 <-> 按鍵來調整。設
+定值為以 0.006250V 為間隔，變更的範圍從 1.200000V 至 1.400000V。
+以下項目只有在 CPU & NB Voltage 設定為 [Manual Mode] 時才會出現。
+2-19華碩 970 PRO GAMING/AURA 主機板使用手冊
+2.6.1 處理器設定（CPU Configuration）
+本項目可讓您得知中央處理器的各項資訊與變更中央處理器的相關設定。
+以下畫面所顯示項目可能會因您所安裝處理器不同而有所差異。
+2.6.2 SATA 設定
+當您進入 BIOS 設定程式時，BIOS 設定程式將自動偵測已安裝的 SATA 裝置。當
+未偵側到 SATA 裝置時將顯示 Not Present。
+SB SATA Configuration
+設定 SATA 選項。
+OnChip SATA Channel [Enabled]
+本項目用來開啟或關閉 serial ATA。設定值有：[Enabled] [Disabled]。
+Cool‘n’Quiet [Always Enabled]
+本項目用來開啟或關閉 Cool ‘n’ Quiet 功能。設定值有：[Disabled by CPU] 
+[Always Enabled] [Always Disabled]。
+C1E [Enabled]
+本項目用來啟動或關閉關閉處理器內建的 Enhanced Halt State 省電功能。設定值
+有：[Disabled] [Enabled]
+SVM [Enabled]
+[Disabled] 關閉此功能。
+[Enabled] 開啟 AMD Secure Virtual Machine 模式。
+Core C6 State [Enabled]
+本項目用來開啟或關閉 Core C6 state 功能。設定值有：[Disabled] [Enabled]。
+HPC Mode [Disabled]
+本項目用來開啟或關閉 High Performance Computing 模式。設定值有：[Disabled] 
+[Enabled]。
+Apm Master Mode [Auto]
+本項目用來開啟或關閉 APM。設定值有：[Auto] [Disabled] [Enabled]。
+以下項目只有在 OnChip SATA Channel 設定為 [Enabled] 時才會出現。
+第二章：BIOS 資訊2-20
+Board SATA RAID ROM [Legacy ROM]
+本項目用來選擇 Board SATA RAID ROM。設定值有：[Disabled] [Legacy 
+ROM] [UEFI DRIVER]。
+SATA Port5 - Port6 [AHCI]
+本項目用來設定 SATA port 5~6 模式。設定值有：[AHCI] [IDE] [RAID]。
+SATA Port1 - Port4 [AHCI]
+[IDE] 若您要將 Serial ATA 硬碟作為 Parallel ATA 儲存裝置，請設為 [IDE]
+。
+[RAID] 若您要使用 SATA 硬碟建立 RAID 設定，請設為 [RAID]。
+[AHCI] 若您要讓 Serial ATA 硬碟使用 AHCI（Advanced Host Controller Inter-
+face），請設為 [AHCI]。AHCI 允許內建儲存驅動器開啟進階 Serial 
+ATA 功能，透過原生命令排序技術來提升運作效能。
+以下項目只有在 SATA Port1 - Port4 設定為 [AHCI] 時才會出現。
+以下項目只有在 SATA Port1 - Port4 設定為 [RAID] 時才會出現。
+以下項目只有在 SATA Port5 - Port6 設定為 [ACHI] 時才會出現。
+SATA ESP on PORT1 ~ 4 [Disabled]
+設定值有：[Enabled] [Disabled]。
+SATA ESP on PORT5 ~ 6 [Disabled]
+設定值有：[Enabled] [Disabled]。
+S.M.A.R.T. Status Check [Enabled]
+[Disabled] 關閉 S.M.A.R.T 功能。
+[Enabled] 開啟 S.M.A.R.T 功能。
+• 當 SATA Port1–Port 4 與 SATA Port5–Port 6 項目設定為 [AHCI]
+時，SATA 1∼6 插槽的資訊只有在作業系統環境下或在開機自我檢測
+（POST）時才看得到。
+• SATA Port5 - Port6 的設定選項會依 SATA Port1 - Port4 的設定而異。
+2-21華碩 970 PRO GAMING/AURA 主機板使用手冊
+2.6.4 CPU Core On/Off 功能
+CPU Core Activation [Auto]
+本項目可以讓使用者手動關閉處理器核心。設定值有：[Auto] [Manual]。
+2.6.3 USB 裝置設定（USB Configuration）
+本選單可以讓您變更 USB 裝置的各項相關設定。
+以下項目只有在 Legacy USB Support 設定為 [Auto] 或 [Enabled] 時才會
+出現。
+以下項目只有在 CPU Core Activation 設定為 [Manual] 時才會出現。
+3rd & 4th Core [Enabled]
+設定值有：[Disabled] [Enabled]。
+Legacy USB3.0 Support [Enabled]
+[Disabled] 關閉本功能。
+[Enabled] 啟動在一般傳統作業系統中支援 USB 3.0 裝置功能。
+EHCI Hand-off [Disabled]
+[Enabled] 啟動支援沒有 EHCI hand-off 功能的作業系統。
+[Disabled] 關閉本功能。
+SB USB Configuration
+SB USB 設定選項。
+USB PORT 1 ~ 14 [Enabled]
+設定值有：[Disabled] [Enabled]。
+Legacy USB Support [Enabled]
+[Disabled] 關閉本功能。
+[Enabled] 啟動在一般傳統作業系統中支援 USB 裝置功能。
+[Auto] 系統可以在開機時便自動偵測是否有 USB 裝置存在，若是，則啟動 
+USB 控制器；反之則不會啟動。
+在 USB Devices 項目中會顯示自動偵測到的數值或裝置。若無連接任何
+裝置，則會顯示 None。
+第二章：BIOS 資訊2-22
+5th & 6th Core [Enabled]
+設定值有：[Disabled] [Enabled]。
+7th & 8th Core [Enabled]
+設定值有：[Disabled] [Enabled]。
+2.6.5 內建裝置設定（OnBoard Devices Configuration）
+Asmedia USB 3.1 Controller [Enabled]
+[Disabled] 關閉此控制器。
+[Enabled] 啟動此控制器。
+Asmedia USB 3.0 Controller [Enabled]
+[Disabled] 關閉此控制器。
+[Enabled] 啟動此控制器。
+Asmedia USB 3.0 Battery Charging Support [Disabled]
+[Disabled] 關閉此功能。
+[Enabled] 啟動此功能。
+Intel LAN Controller [Enabled]
+[Enabled] 啟動 Intel LAN 網路控制器。
+[Disabled] 關閉此控制器。
+以下的項目僅當您將 Serial Port 設定為 [Enabled] 時，才會顯示。
+以下的項目僅當您將 Intel LAN Controller 設定為 [Enabled] 時，才會顯示。
+Change Settings [IO=3F8h; IRQ=4]
+本項目可以設定序列埠的位址。設定值有：[IO=3F8h; IRQ=4] [IO=2F8h; 
+IRQ=3] [IO=3E8h; IRQ=4] [IO=2E8h; IRQ=3]。
+Intel LAN PXE Option ROM [Disabled]
+本項目可以讓您開啟或關閉 Realtek 網路控制器的 PXE Option Rom（PXE 隨選唯
+讀記憶體）。設定值有：[Enabled] [Disabled]。
+Serial Port Configuration
+以下的項目可以讓您進行序列埠設定。
+Serial Port [Enabled]
+本項目可以啟動或關閉序列埠。設定值有：[Disabled] [Enabled]。
+2-23華碩 970 PRO GAMING/AURA 主機板使用手冊
+2.6.6 進階電源管理設定（APM Configuration）
+ErP Ready [Disabled]
+在 S5 休眠模式下關閉某些電源，減少待機模式下電力的流失，以符合歐盟能源使
+用產品（Energy Related Product）的規範。網路喚醒功能（WOL）、USB 喚醒功能、
+音效，及主機板上 LED 指示燈的電源將會關閉，您可能無法使用網路功能、USB 喚
+醒功能及音效提醒等。設定值有：[Disabled] [Enabled]。
+Restore AC Power Loss [Power Off]
+[Power On] 系統在電源中斷之後重新開啟。
+[Power Off] 系統在電源中斷之後電源將維持關閉狀態。
+[Last State] 將系統設定回復到電源未中斷之前的狀態。
+Power On By PME [Disabled]
+[Disabled] 關閉透過 PCI/PCIE 設備將 PME 從 S5 喚醒。
+[Enabled] 用來開啟 PCI/PCIE 網路卡或數據卡喚醒系統。要使用本功能，ATX 
+電源必須可提供至少 1A 的電流與 +5VSB 的電壓。
+Power On By Ring [Disabled]
+[Disabled] 關閉數據機喚醒功能。
+[Enabled] 開啟數據機喚醒功能。
+以下的項目僅當您將 HD Audio Azalia 設定為 [Enabled] 時，才會顯示。
+Azalia Front Panel [HD]
+本項目可以讓您依照前面板音效連接埠的支援功能，將前面板音效連接埠
+（AAFP）模式設定為 legacy AC’97 或是高傳真音效。
+[AC 97] 將前面板音效連接埠（AAFP）模式設定為 legacy AC’97。
+[HD] 將前面板音效連接埠（AAFP）模式設定為高傳真音效。
+SPDIF Out Type [SPDIF]
+[SPDIF] 設定為 SPDIF 輸出。
+[HDMI] 設定為 HDMI 輸出。
+SB HD Azalia Configuration
+HD Azalia Configuration
+本項目可以讓您啟動或關閉高傳真音效控制器。
+[Disabled] 關閉高傳真音效控制器。
+[Enabled] 啟動高傳真音效控制器。
+第二章：BIOS 資訊2-24
+2.7 監控選單（Monitor）
+本選單顯示系統溫度/電源狀態，並可用來變更風扇設定。
+2.6.7 網路協定堆疊（Network Stack）
+Network Stack [Disabled]
+本項目用來啟動或關閉 UEFI 網路協定堆疊（network stack）功能。設定值有：
+[Disabled] [Enable]。
+Ipv4 PXE Support [Enabled]
+本項目為啟用或關閉 Ipv4 PXE 支援功能。設定值有：[Disabled] [Enabled]。
+Ipv6 PXE Support [Enabled]
+本項目為啟用或關閉 Ipv6 PXE 支援功能。設定值有：[Disabled] [Enabled]。
+2.6.8 NVMe 設定
+連接 NVMe 裝置時，您可以檢視 NVMe 控制器與驅動程式資訊。
+以下的項目僅當您將 Network Stack 設定為 [Enabled] 時，才會顯示。
+Power On By RTC [Disabled]
+[Disabled] 關閉即時時鐘（RTC）喚醒功能。
+[Enabled] 當您設為 [Enabled] 時，將出現 RTC Alarm Date、RTC Alarm 
+Hour、RTC Alarm Minute 與 RTC Alarm Second 子項目，您可自行設
+定時間讓系統自動開機。
+2-25華碩 970 PRO GAMING/AURA 主機板使用手冊
+CPU Temperature/MB Temperature [xxx℃/xxx℉]
+內建的溫度感測器可以自動偵測並顯示目前處理器與主機板的溫度。若是您不想
+顯示偵測的溫度，請選擇 [Ignore]。
+VCORE Voltage, 3.3V Voltage, 5V Voltage, 12V Voltage, VDDA2.5V Voltage
+本系列主機板具有電壓監控的功能，用來確保主機板以及 CPU 接受正確的電壓
+準位，以及穩定的電流供應。若是您不想偵測這些項目，請按下 <Enter> 鍵並選擇 
+[Ignore]。
+CPU Fan Speed, CPU Opt Fan Speed, Chassis Fan 1-3 Speed, and Water Pump 
+Speed [xxxx RPM] or [Ignore] / [N/A]
+為了避免系統因為過熱而造成損壞，本系列主機板備有風扇的轉速 RPM
+（Rotations Per Minute）監控，所有的風扇都設定了轉速安全範圍，一旦風扇轉速低
+於安全範圍，華碩智慧型主機板就會發出警訊，通知使用者注意。如果風扇並未連接
+至主機板，本項目會顯示 N/A。若是您不想顯示偵測的速度，請選擇 [Ignore]。
+CPU Q-Fan Control [PWM Mode]
+本項目用來設定 CPU Q-Fan 運作模式。
+[Disabled] 關閉 CPU Q-Fan 控制功能。
+[DC Mode] 當安裝 3-pin 的處理器風扇時，請選擇本項目來使用 Q-Fan 控制的 
+DC 模式。
+[PWM Mode] 在 PWM 模式啟動 CPU Q-Fan 控制來使用 4-pin 處理器風扇。
+以下的項目只有在 CPU Fan Profile 設為 [Manual] 時才會出現。
+CPU Upper Temperature [70]
+使用 <+> 與 <-> 鍵調整處理器溫度的最大值。數值的變更範圍由 20℃ 至 
+75℃。
+CPU Fan Speed Low Limit [600 RPM]
+本項目可以讓您設定 CPU Q-Fan Control 的功能及處理器風扇速度。設定值有：
+[Ignore] [200 RPM] [300 RPM] [400 RPM] [500 RPM] [600 RPM]。
+CPU Fan Profile [Standard]
+本項目用來設定處理器風扇適當的效能。
+[Standard] 設定為 [Standard] 讓處理器風扇依據處理器的溫度自動調整。
+[Silent] 設定為 [Silent] 將風扇速度調整到最低，並擁有最安靜的執行環境。
+[Turbo] 設定為 [Turbo] 來獲得處理器風扇的最大轉速。
+[Manual] 設定為 [Manual] 來指派詳細的風扇轉速控制參數。
+以下的項目只有在 CPU Q-Fan Control 設為 [PWM Mode] 與 [DC Mode] 
+時才會出現。
+第二章：BIOS 資訊2-26
+CPU Lower Temperature [20]
+使用 <+> 與 <-> 鍵調整處理器溫度的最小值。數值的變更範圍由 20℃ 至 
+75℃。
+CPU Fan Max. Duty Cycle(%) [100]
+使用 <+> 與 <-> 鍵調整處理器風扇的最大工作週期。數值可能會隨著 Q-Fan 
+調整而異。
+CPU Fan Min. Duty Cycle(%) [30]
+使用 <+> 與 <-> 鍵調整處理器風扇的最小工作週期。數值的變更範圍由 40% 
+至 100%，當 CPU 溫度在其 CPU lower 溫度設定值之下時，CPU 風扇將會以最
+小轉速週期運作。
+Chassis Q-Fan Control [Disabled]
+[Disabled] 關閉 Chassis Q-Fan 控制功能。
+[Enabled] 啟用 chassis Q-Fan 控制功能。
+以下的項目只有當您將 Chassis Q-Fan Control 設為 [Enabled] 時才會出現。
+Chassis Fan Speed Low Limit [600 RPM]
+本項目只有在 Chassis Q-Fan Control 設定為 [Enabled] 時才會出現。本項目可以
+讓您設定 CPU Q-Fan Control 的功能及機殼風扇速度。設定值有：[Ignore] [100 RPM] 
+[200 RPM] [300 RPM] [400 RPM] [500 RPM] [600 RPM]。
+Chassis Fan Profile [Standard]
+本項目用來設定機殼風扇適當的效能。
+[Standard] 設定為 [Standard] 讓機殼風扇依據處理器的溫度自動調整。
+[Silent] 設定為 [Silent] 將風扇速度調整到最低，並擁有最安靜的執行環境。
+[Turbo] 設定為 [Turbo] 來獲得機殼風扇的最大轉速。
+[Manual] 設定為 [Manual] 來指派詳細的風扇轉速控制參數。
+以下的項目只有當您將 Chassis Q-Fan Control 設為 [Manual] 時才會出現。
+Chassis Upper Temperature [70]
+請使用 <+> 與 <-> 鍵調整機殼溫度的數值。數值的變更範圍由 40℃ 至 
+90℃。
+Chassis Lower Temperature [40]
+顯示機殼風扇溫度的最小值。
+Chassis Fan Max. Duty Cycle(%) [60]
+請使用 <+> 與 <-> 鍵調整機殼風扇的最大工作週期。數值的變更範圍由 60% 
+至 100%。當機殼溫度達最大值時，機殼風扇將以最大工作週期運作。
+Chassis Fan Min. Duty Cycle(%) [60]
+使用 <+> 與 <-> 鍵調整機殼風扇的最小工作週期。數值的變更範圍由 60% 
+至 100%。當機殼溫度低於 40℃ 時，機殼風扇會以最小工作週期運轉。
+2-27華碩 970 PRO GAMING/AURA 主機板使用手冊
+PUMP Fan Speed Low Limit [600 RPM]
+本項目可以讓您設定水泵速度。設定值有：[Ignore] [100 RPM] [200 RPM] [300 
+RPM] [400 RPM] [500 RPM] [600 RPM]。
+Water Pump Profile [Standard]
+本項目用來設定水泵適當的效能。
+[Standard] 設定為 [Standard] 讓水泵依據處理器的溫度自動調整。
+[Silent] 設定為 [Silent] 將水泵速度調整到最低，並擁有最安靜的執行環境。
+[Turbo] 設定為 [Turbo] 來獲得水泵的最大轉速。
+[Manual] 設定為 [Manual] 來指派詳細的水泵轉速控制參數。
+以下的項目只有當您將 Water Pump Profile 設為 [Manual] 時才會出現。
+Water Pump Control [Disabled]
+[Disabled] 關閉水泵控制功能。
+[DC mode] 在 DC 模式啟動水泵控制功能來使用 3-pin 機殼風扇。
+[PWM mode] 在 PWM 模式啟動水泵控制功能來使用 4-pin 機殼風扇。
+以下的項目只有當您將 Water Pump Control 設為 [DC mode] 或 [PWM 
+mode] 時才會出現。
+Water Pump Upper Temperature [70]
+請使用 <+> 與 <-> 鍵調整水泵溫度的最大數。數值的變更範圍由 40℃ 至 
+90℃。
+Water Pump Lower Temperature [40]
+請使用 <+> 與 <-> 鍵調整水泵溫度的最小值。數值的變更範圍由 40℃ 至 
+90℃。當處理器溫度低於最小值時，水泵會以最小工作週期運轉。
+Water Pump Max. Duty Cycle (%) [60]
+請使用 <+> 與 <-> 鍵調整水泵的最大工作週期。數值的變更範圍由 60% 至 
+100%。當處理器溫度達最大值時，水泵將以最大工作週期運作。
+Water Pump Min. Duty Cycle(%) [60]
+使用 <+> 與 <-> 鍵調整水泵的最小工作週期。數值的變更範圍由 60% 至 
+100%。當處理器溫度低於最小值時，水泵會以最小工作週期運轉。
+第二章：BIOS 資訊2-28
+2.8 啟動選單（Boot）
+本選單可讓您改變系統啟動裝置與相關功能。
+Fast Boot [Enabled]
+[Disabled] 使系統使用正常啟動速度。
+[Enabled] 加速系統啟動速度。
+以下的項目只有當您將 Fast Boot 設為 [Enabled] 時才會出現。
+USB Support [Partial Initialization]
+[Disabled] 所有 USB 裝置直到作業系統開啟後才可使用。
+[Full Initialization] 所有 USB 裝置在作業系統環境及 POST 時均可使用。
+[Partial Initialization] 在作業系統開啟前僅可使用 USB 鍵盤與滑鼠。
+P/2 Keyboard and Mouse Support [Full Initialization]
+提供您關閉或在 POST（開機自我測試）過程中可以完整控制 PS/2 裝置。
+設定值有：[Disabled] [Full Initialization] [Auto]。
+2-29華碩 970 PRO GAMING/AURA 主機板使用手冊
+Network Stack Driver Support [Disabled]
+[Disabled] 在 POST 時略過載入網路協定堆疊驅動器。
+[Enabled] 在 POST 時載入網路協定堆疊驅動器。
+Next Boot after AC Power Loss [Normal Boot]
+[Normal Boot] 在電源中斷後恢復至正常啟動速度。
+[Fast Boot] 在電源中斷後加快啟動速度。
+Boot Logo Display [Auto]
+[Disabled] 關閉個人化開機畫面功能。
+[Full Screen] 啟動全螢幕個人化開機畫面功能。
+[Auto] 啟動個人化開機畫面功能。
+以下的項目僅當 Boot Logo Display 設定為 [Disabled] 時才會顯示。
+本功能僅限正常開機時執行。
+Post Delay Time [3 sec]
+本項目允許您選擇所需的額外等候 POST 時間，讓您輕鬆進入 BIOS 設定
+畫面。在正常開機時，僅能執行 POST 延遲時間。數值的變更範圍為 0 至 10 
+秒。
+Post Report [5 sec]
+本項目可讓您選擇想要的 POST 回報等候時間，數值的範圍為從 0 至 10 
+秒，或直到按下 <ESC> 鍵。設定值有：[1 sec] - [10 sec] [Until Press ESC]。
+以下的項目僅當 Boot Logo Display 設定為 [Auto] 或 [Full Screen] 時才
+會顯示。
+第二章：BIOS 資訊2-30
+INT19 Trap Response [Postponed]
+[Immediate] 立即執行 trap of INT19。
+[Postponed] 在傳統開機程序執行 trap of INT19。
+Bootup NumLock State [On]
+[On] 設定開機時 NumLock 鍵自動開啟 [On]。
+[Off] 設定開機時 NumLock 鍵自動關閉 [Off]。
+Wait For ‘F1’ If Error [Enabled]
+[Disabled] 關閉本功能。
+[Enabled] 系統在開機過程出現錯誤訊息時，將會等待您按下 <F1> 鍵確認才會
+繼續進行開機程序。
+Option ROM Messages [Force BIOS]
+[Force BIOS] 選購裝置韌體資訊會在開機自我偵測時顯示。
+[Keep Current] 在開機自我偵測時關閉選購裝置韌體資訊並只顯示華碩開機圖示。
+Setup Mode [EZ Mode]
+[Advanced Mode] 將 Advanced Mode 設定為 BIOS 設定程式的預設值。
+[EZ Mode] 將 EZ Mode 設定為 BIOS 設定程式的預設值。
+CSM （相容性支援模組）
+本項目用來設定 CSM（相容性支援模組）項目來完全支援各種 VGA、啟動裝置和
+附加裝置，藉以獲得更佳的相容性。
+Launch CSM [Enabled]
+[Auto] 系統將自動偵測啟動裝置和附加裝置。
+[Enabled] 為獲得更好的相容性，開啟 CSM 以完全支援非 UEFI 驅動的附加裝
+置或 Windows UEFI 模式。
+[Disabled] 關閉此功能。
+以下的項目只有在 Launch CSM 設為 [Enabled] 時才會出現。
+Boot Devices Control [UEFI and Legacy OPROM]
+本項目為設定啟動裝置的類型。設定值有：[UEFI and Legacy OPROM] 
+[Legacy OPROM only] [UEFI only]。
+Boot from Network Devices [Legacy OpROM first]
+本項目用來設定想要執行的網路裝置。設定值有：[Legacy OpROM first] 
+[UEFI driver first] [Ignore]。
+Boot from Storage Devices [Legacy OpROM first]
+本項目用來設定想要執行的儲存裝置。設定值有：[Both, Legacy OpROM 
+first] [Both, UEFI first] [Legacy OpROM first] [UEFI driver first] [Ignore]。
+2-31華碩 970 PRO GAMING/AURA 主機板使用手冊
+Boot from PCI-E/PCI Expansion Devices [Legacy OpROM first]
+本項目用來設定想要執行的 PCIe/PCI 擴充裝置。設定值有：[Legacy 
+OpROM first] [UEFI driver first]。
+Secure Boot menu
+本項目用來設定 Windows® 安全啟動的相關參數以及管理系統金鑰，以提升系統在
+開機自我偵測（POST）時的安全性，避免受到未授權的使用者與惡意軟體的危害。
+OS Type [Windows UEFI mode]
+[Windows UEFI Mode] 本項用來選擇安裝的作業系統。執行 Microsoft® 安全
+啟動檢查。只有在 Windows® UEFI 模式或其他 Micro-
+soft® 安全啟動相容作業系統中啟動時選擇此項目。
+[Other OS] 在 Windows® 非 UEFI 模式中啟動時獲得最佳功能。Microsoft® 
+安全啟動功能僅可在 Windows® UEFI 模式下正確執行。
+Key Management
+本項目可以讓您管理安全啟動的金鑰。
+Clear Secure Boot keys
+本項目只有在載入預設的安全開機金鑰時才會出現。用來讓您清除所有預
+設的安全開機金鑰。
+Save Secure Boot Keys
+本項目用來將平台金鑰（PK）儲存至 USB 儲存裝置。
+PK Management
+Platform Key（PK）鎖定並保護韌體遭到未授權的變更。在進入作業系統前
+將需先驗證 PK。
+Delete PK
+本項用來刪除系統中的 PK，當 PK 刪除後即無法使用 Secure Boot 金鑰。
+設定值有：[Yes] [No]
+Load PK from File
+本項目用來設定由 USB 儲存裝置載入 PK。
+KEK Management
+KEK（Key-exchange Key 或 Key Enrollment Key）用來管理 db 和 dbx。
+Key-exchange Key（KEK）指的是 Microsoft® Secure Boot Key-Enrollment 
+Key（KEK）。
+PK 檔案必須格式化為一個基於時間認證變量的 UEFI 變量結構。
+Delete the KEK
+本項目用來刪除系統中的 KEK。設定值有：[Yes] [No]。
+第二章：BIOS 資訊2-32
+Load KEK from File
+本項目用來設定由 USB 儲存裝置下載 KEK。
+Append KEK from File
+本項目用來設定由儲存裝置下載其他 KEK 以管理 db 和 dbx。
+KEK 檔案必須格式化為一個基於時間認證變量的 UEFI 變量結構。
+DB Management
+db（認證簽名資料庫）列出可以在單一電腦載入之 UEFI 應用程式、作業系
+統載入器與 UEFI 驅動程式的簽名者或圖片影像。
+Delete the db
+本項目用來刪除系統中的 db 檔案。設定值有：[Yes] [No]
+Load db from File
+本項目用來由 USB 儲存裝置載入已下載的認證簽名資料庫（db）。
+Append db from file
+本項目用來由儲存裝置載入附加的認證簽名資料庫（db），以安全的載入
+更多的圖片影像。
+dbx 檔案必須格式化為一個基於時間認證變量的 UEFI 變量結構。
+db 檔案必須格式化為一個基於時間認證變量的 UEFI 變量結構。
+DBX Management
+dbx（撤銷簽名資料庫）列出 db 項目中不再被信任且無法被載入之被禁止的
+圖片影像。
+Delete the dbx
+本項目用來刪除系統中的 dbx 檔案。
+Load dbx from File
+本項目用來由 USB 儲存裝置載入已下載的撤銷簽名資料庫（dbx）。設定
+值有：[Yes] [No]。
+Append dbx from File
+本項目用來由儲存裝置載入附加的撤銷簽名資料庫（dbx），以使更多的 
+db 圖片影像無法被載入。
+2-33華碩 970 PRO GAMING/AURA 主機板使用手冊
+2.9 工具選單（Tool）
+本工具選單可以讓您針對特別功能進行設定。請選擇選單中的選項並按下 <Enter> 
+鍵來顯示子選單。
+ASUS SPD Information
+DIMM Slot # [Slot 2]
+本選單可以讓您儲存或載入 BIOS 設定。 設定值有：[Slot 1] [Slot 2] [Slot 
+3] [Slot 4]。
+ASUS O.C. Profile
+本選單可以讓您儲存或載入 BIOS 設定。 
+ASUS EZ Flash 2
+本項目可以讓您啟動華碩 EZ Flash 2 程式，按下 <Enter> 會出現再次確認的視
+窗，請使用左右鍵選擇 [Yes] 或 [No]，接著按下 <Enter> 確認。
+請參考 2.1.2 華碩 EZ Flash 2 的說明。
+若您尚未儲存新的 BIOS 檔案時，Setup Profile Status 項目將顯示為 Not 
+Installed。
+• 當進行 BIOS 升級時，請勿關閉或重新啟動系統以免造成系統開機失敗。
+• 建議您只在相同的記憶體/處理器設定與相同的 BIOS 版本狀態下更新 
+BIOS 程式。
+Save to Profile
+本項目可以讓您儲存目前的 BIOS 檔案至 BIOS Flash 中，請輸入您的檔案名
+稱，然後按下 <Enter> 鍵，接著選擇 Yes。
+Load from Profiles
+本項目可以讓您載入先前儲存在 BIOS Flash 中的 BIOS 設定。輸入儲存在您
+的 BIOS 設定中的檔案編號，然後按下 <Enter> 鍵並選擇 Yes 來載入檔案。
+第二章：BIOS 資訊2-34
+2.10 離開 BIOS 程式（Exit）
+本選單可讓您讀取 BIOS 程式出廠預設值與離開 BIOS 程式，並可儲存與取消對 
+BIOS 項目的更改。您可以從「Exit」選單中進入 EZ 模式（EZ Mode）。
+Load Optimized Defaults
+本項目可讓您載入 BIOS 程式設定選單中每個參數的預設值。當您選擇本項目或按
+下 <F5>，便會出現一個確認對話視窗，選擇 Yes 以載入預設值。
+Save Changes & Reset
+當您完成對 BIOS 設定程式所做的變更後，請選擇本項目或按下 <F10>，將會出現
+一個確認對話視窗，請選擇 Yes 以儲存設定並離開 BIOS 設定程式。
+Discard Changes & Exit
+本項目可讓您放棄所做的變更，並回復原先儲存的設定。在選擇本項目或按下 
+<Esc>鍵後，將會出現一個確認對話視窗，請選擇 Yes 以放棄任何設定並載入原先儲
+存的設定，同時離開 BIOS 設定程式。
+ASUS EZ Mode
+選擇本項目可進入 EZ Mode 選單。
+Launch EFI Shell from filesystem device
+本項目可以讓您由含有資料系統的裝置中啟動 EFI Shell（shellx64.efi）。
+華碩的連絡資訊
+華碩電腦公司 ASUSTeK COMPUTER INC.（台灣）
+市場訊息
+地址： 台灣臺北市北投區立德路15號
+電話：+886-2-2894-3447
+傳真：+886-2-2890-7798
+電子郵件：info@asus.com.tw
+全球資訊網：http://tw.asus.com
+技術支援
+電話： +886-2-2894-3447（0800-093-456）
+線上支援： http://support.asus.com/techserv/
+techserv.aspx
+華碩電腦公司 ASUSTeK COMPUTER INC.（亞太地區）
+市場訊息
+地址： 台灣臺北市北投區立德路15號
+電話：+886-2-2894-3447
+傳真：+886-2-2890-7798
+電子郵件：info@asus.com.tw
+全球資訊網：http://tw.asus.com
+技術支援
+電話：+86-21-38429911
+傳真： +86-21-58668722, ext. 9101#
+線上支援： http://support.asus.com/techserv/
+techserv.aspx
+ASUS COMPUTER INTERNATIONAL（美國）
+市場訊息
+地址： 800 Corporate Way, Fremont, CA 94539, 
+USA
+電話：+1-510-739-3777
+傳真：+1-510-608-4555
+電子郵件： http://vip.asus.com/eservice/
+techserv.aspx
+技術支援
+電話：+1-812-282-2787
+傳真：+1-812-284-0883
+線上支援： http://support.asus.com/techserv/
+techserv.aspx
+ASUS COMPUTER GmbH（德國/奧地利）
+市場訊息
+地址： Harkort Str. 21-23, D-40880 Ratingen, 
+Germany
+傳真：+49-2102-959911
+全球資訊網：http://www.asus.de
+線上連絡： http://www.asus.de/sales（僅回答市
+場相關事務的問題）
+技術支援
+電話：+49-1805-010923（元件）
+電話：+49-1805-010920（系統/筆記型電腦 
+ /Eee 系列產品/LCD）
+傳真：+49-2102-9599-11
+線上支援： http://support.asus.com/techserv/
+techserv.aspx
+附錄
+EC
+ D
+ec
+la
+ra
+tio
+n 
+of
+ C
+on
+fo
+rm
+ity
+ 
+ W
+e,
+ th
+e 
+un
+de
+rs
+ig
+ne
+d,
+ 
+M
+an
+uf
+ac
+tu
+re
+r:
+ 
+A
+S
+U
+ST
+eK
+ C
+O
+M
+P
+U
+TE
+R
+ IN
+C
+. 
+A
+dd
+re
+ss
+: 
+4F
+, N
+o.
+ 1
+50
+, L
+I-T
+E
+ R
+d.
+, P
+E
+IT
+O
+U
+, T
+A
+IP
+E
+I 1
+12
+, T
+A
+IW
+A
+N
+ 
+ A
+ut
+ho
+riz
+ed
+ re
+pr
+es
+en
+ta
+tiv
+e 
+in
+ E
+ur
+op
+e:
+ 
+A
+S
+U
+S 
+C
+O
+M
+P
+U
+TE
+R
+ G
+m
+bH
+ 
+A
+dd
+re
+ss
+, C
+ity
+: 
+H
+A
+R
+K
+O
+R
+T 
+S
+TR
+. 2
+1-
+23
+, 4
+08
+80
+ R
+A
+TI
+N
+G
+E
+N
+ 
+C
+ou
+nt
+ry
+: 
+G
+E
+R
+M
+A
+N
+Y
+ 
+de
+cl
+ar
+e 
+th
+e 
+fo
+llo
+w
+in
+g 
+ap
+pa
+ra
+tu
+s:
+ 
+Pr
+od
+uc
+t n
+am
+e 
+: 
+M
+ot
+he
+rb
+oa
+rd
+ 
+M
+od
+el
+ n
+am
+e 
+: 
+97
+0 
+PR
+O
+ G
+AM
+IN
+G
+/A
+U
+R
+A
+ 
+co
+nf
+or
+m
+ w
+ith
+ th
+e 
+es
+se
+nt
+ia
+l r
+eq
+ui
+re
+m
+en
+ts
+ o
+f t
+he
+ fo
+llo
+w
+in
+g 
+di
+re
+ct
+iv
+es
+: 
+20
+04
+/1
+08
+/E
+C
+-E
+M
+C
+ D
+ire
+ct
+iv
+e 
+ E
+N
+ 5
+50
+22
+:2
+01
+0+
+A
+C
+:2
+01
+1 
+ E
+N
+ 6
+10
+00
+-3
+-2
+:2
+01
+4 
+ E
+N
+ 5
+50
+13
+:2
+00
+1+
+A1
+:2
+00
+3+
+A
+2:
+20
+06
+ 
+ E
+N
+ 5
+50
+24
+:2
+01
+0 
+ E
+N
+ 6
+10
+00
+-3
+-3
+:2
+01
+3 
+ E
+N
+ 5
+50
+20
+:2
+00
+7+
+A1
+1:
+20
+11
+ 
+19
+99
+/5
+/E
+C
+-R
+&
+TT
+E 
+D
+ire
+ct
+iv
+e 
+ E
+N
+ 3
+00
+ 3
+28
+ V
+1.
+8.
+1(
+20
+12
+-0
+6)
+ 
+ E
+N
+ 3
+00
+ 4
+40
+-1
+ V
+1.
+6.
+1(
+20
+10
+-0
+8)
+ 
+ E
+N
+ 3
+00
+ 4
+40
+-2
+ V
+1.
+4.
+1(
+20
+10
+-0
+8)
+ 
+ E
+N
+ 3
+01
+ 5
+11
+ V
+9.
+0.
+2(
+20
+03
+-0
+3)
+ 
+ E
+N
+ 3
+01
+ 9
+08
+-1
+ V
+6.
+2.
+1(
+20
+13
+-0
+4)
+ 
+ E
+N
+ 3
+01
+ 9
+08
+-2
+ V
+6.
+2.
+1(
+20
+13
+-1
+0)
+ 
+ E
+N
+ 3
+01
+ 9
+08
+-1
+3 
+V
+6.
+2.
+1(
+20
+14
+-0
+2)
+ 
+ E
+N
+ 3
+01
+ 8
+93
+ V
+1.
+7.
+1(
+20
+12
+-0
+6)
+ 
+ E
+N
+ 3
+00
+ 3
+30
+-2
+ V
+1.
+5.
+1(
+20
+10
+-0
+2)
+ 
+ E
+N
+ 5
+03
+60
+:2
+00
+1/
+A1
+:2
+01
+2 
+ E
+N
+ 6
+24
+79
+:2
+01
+0 
+ E
+N
+ 6
+23
+11
+:2
+00
+8 
+ E
+N
+ 3
+01
+ 4
+89
+-1
+ V
+1.
+9.
+2(
+20
+11
+-0
+9)
+ 
+ E
+N
+ 3
+01
+ 4
+89
+-3
+ V
+1.
+6.
+1(
+20
+13
+-1
+2)
+ 
+ E
+N
+ 3
+01
+ 4
+89
+-4
+ V
+2.
+1.
+1(
+20
+13
+-1
+2)
+ 
+ E
+N
+ 3
+01
+ 4
+89
+-7
+ V
+1.
+3.
+1(
+20
+05
+-1
+1)
+ 
+ E
+N
+ 3
+01
+ 4
+89
+-9
+ V
+1.
+4.
+1(
+20
+07
+-1
+1)
+ 
+ E
+N
+ 3
+01
+ 4
+89
+-1
+7 
+V
+2.
+2.
+1(
+20
+12
+-0
+9)
+ 
+ E
+N
+ 3
+01
+ 4
+89
+-2
+4 
+V
+1.
+5.
+1(
+20
+10
+-0
+9)
+ 
+ E
+N
+ 3
+01
+ 3
+57
+-2
+ V
+1.
+4.
+1(
+20
+08
+-1
+1)
+ 
+ E
+N
+ 3
+02
+ 2
+91
+-2
+ V
+1.
+1.
+1(
+20
+05
+-0
+7)
+ 
+ E
+N
+ 3
+02
+ 6
+23
+ V
+1.
+1.
+1(
+20
+09
+-0
+1)
+ 
+ E
+N
+ 5
+05
+66
+:2
+01
+3/
+A
+C
+:2
+01
+4 
+ E
+N
+ 5
+03
+85
+:2
+00
+2 
+20
+06
+/9
+5/
+EC
+-L
+VD
+ D
+ire
+ct
+iv
+e 
+ E
+N
+ 6
+09
+50
+-1
+: 2
+00
+6 
+/ A
+12
+: 2
+01
+1 
+ E
+N
+ 6
+09
+50
+-1
+: 2
+00
+6 
+/ A
+2:
+ 2
+01
+3 
+ E
+N
+ 6
+00
+65
+:2
+00
+2 
+/ A
+12
+: 2
+01
+1 
+20
+09
+/1
+25
+/E
+C
+-E
+rP
+ D
+ire
+ct
+iv
+e 
+ R
+eg
+ul
+at
+io
+n 
+(E
+C
+) N
+o.
+ 1
+27
+5/
+20
+08
+ 
+ R
+eg
+ul
+at
+io
+n 
+(E
+C
+) N
+o.
+ 6
+42
+/2
+00
+9 
+ R
+eg
+ul
+at
+io
+n 
+(E
+C
+) N
+o.
+ 2
+78
+/2
+00
+9 
+ R
+eg
+ul
+at
+io
+n 
+(E
+U
+) N
+o.
+ 6
+17
+/2
+01
+3 
+20
+11
+/6
+5/
+EU
+-R
+oH
+S 
+D
+ire
+ct
+iv
+e 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ V
+er
+. 1
+51
+02
+8 
+C
+E 
+m
+ar
+ki
+ng
+ 
+ 
+ 
+ D
+ec
+la
+ra
+tio
+n 
+D
+at
+e:
+ 3
+1/
+12
+/2
+01
+5 
+Ye
+ar
+ to
+ b
+eg
+in
+ a
+ffi
+xi
+ng
+ C
+E 
+m
+ar
+ki
+ng
+: 2
+01
+5 
+P
+os
+iti
+on
+ : 
+ C
+EO
+ 
+ 
+N
+am
+e 
+: 
+ 
+Je
+rr
+y 
+ S
+he
+n 
+S
+ig
+na
+tu
+re
+ : 
+__
+__
+__
+__
+__
+ 
+(E
+C
+ c
+on
+fo
+rm
+ity
+ m
+ar
+ki
+ng
+) 
+ 
+ 
+D
+E
+C
+L
+A
+R
+A
+T
+IO
+N
+ O
+F 
+C
+O
+N
+FO
+R
+M
+IT
+Y
+ 
+Pe
+r F
+C
+C
+ P
+ar
+t 2
+ S
+ec
+tio
+n 
+2.
+ 1
+07
+7(
+a)
+ 
+ 
+ 
+ 
+R
+es
+po
+ns
+ib
+le
+ P
+ar
+ty
+ N
+am
+e:
+ 
+A
+su
+s C
+om
+pu
+te
+r 
+In
+te
+rn
+at
+io
+na
+l 
+ 
+A
+dd
+re
+ss
+: 
+80
+0 
+C
+or
+po
+ra
+te
+ W
+ay
+, F
+re
+m
+on
+t, 
+C
+A
+ 9
+45
+39
+. 
+ 
+ 
+Ph
+on
+e/
+Fa
+x 
+N
+o:
+ 
+(5
+10
+)7
+39
+-3
+77
+7/
+(5
+10
+)6
+08
+-4
+55
+5 
+ he
+re
+by
+ d
+ec
+la
+re
+s t
+ha
+t t
+he
+ p
+ro
+du
+ct
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Pr
+od
+uc
+t N
+am
+e 
+: M
+ot
+he
+rb
+oa
+rd
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+M
+od
+el
+ N
+um
+be
+r :
+ 9
+70
+ P
+R
+O
+ G
+AM
+IN
+G
+/A
+U
+R
+A
+ 
+ 
+C
+on
+fo
+rm
+s t
+o 
+th
+e 
+fo
+llo
+w
+in
+g 
+sp
+ec
+ifi
+ca
+tio
+ns
+: 
+ 
+ 
+FC
+C 
+Pa
+rt 
+15
+, S
+ub
+pa
+rt 
+B,
+ U
+ni
+nt
+en
+tio
+na
+l R
+ad
+ia
+to
+rs
+ 
+ Su
+pp
+le
+m
+en
+ta
+ry
+ In
+fo
+rm
+at
+io
+n:
+ 
+ 
+Th
+is 
+de
+vi
+ce
+ c
+om
+pl
+ie
+s w
+ith
+ p
+ar
+t 1
+5 
+of
+ th
+e 
+FC
+C 
+Ru
+le
+s. 
+O
+pe
+ra
+tio
+n 
+is 
+su
+bj
+ec
+t t
+o 
+th
+e 
+fo
+llo
+w
+in
+g 
+tw
+o 
+co
+nd
+iti
+on
+s: 
+(1
+) T
+hi
+s 
+de
+vi
+ce
+ m
+ay
+ n
+ot
+ c
+au
+se
+ h
+ar
+m
+fu
+l i
+nt
+er
+fe
+re
+nc
+e, 
+an
+d 
+(2
+) t
+hi
+s d
+ev
+ic
+e 
+m
+us
+t a
+cc
+ep
+t a
+ny
+ in
+te
+rfe
+re
+nc
+e 
+re
+ce
+iv
+ed
+, i
+nc
+lu
+di
+ng
+ in
+te
+rfe
+re
+nc
+e 
+th
+at
+ m
+ay
+ ca
+us
+e u
+nd
+es
+ire
+d 
+op
+er
+at
+io
+n.
+ 
+ 
+ 
+R
+ep
+re
+se
+nt
+at
+iv
+e 
+Pe
+rs
+on
+’s
+ N
+am
+e 
+: 
+ 
+St
+ev
+e 
+C
+ha
+ng
+ / 
+Pr
+es
+id
+en
+t 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Si
+gn
+at
+ur
+e 
+: 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ D
+at
+e 
+: 
+ 
+ 
+ 
+ 
+D
+ec
+. 3
+1,
+ 2
+01
+5 
+ 
+ 
+ 
+ 
+ 
+V
+er
+. 1
+40
+33
+1 
+ 
+ 目錄
+ 安全性須知
+ 關於這本使用手冊
+ 包裝內容物
+ 970 PRO GAMING/AURA 規格列表
+ 第一章：產品介紹
+ 1.1 主機板安裝前
+ 1.2 主機板概述
+ 1.3 中央處理器 (CPU)
+ 1.4 系統記憶體
+ 1.5 擴充插槽
+ 1.6 跳線選擇區
+ 1.7 元件與周邊裝置的連接
+ 1.8 內建指示燈
+ 第二章：BIOS 資訊
+ 2.1 管理、更新您的 BIOS 程式
+ 2.2 BIOS 程式設定
+ 2.3 我的最愛（My Favorites）
+ 2.4 主選單（Main）
+ 2.5 Ai Tweaker 選單（Ai Tweaker）
+ 2.6 進階選單（Advanced）
+ 2.7 監控選單（Monitor）
+ 2.8 啟動選單（Boot）
+ 2.9 工具選單（Tools）
+ 2.10 離開 BIOS 程式（Exit）
+ 附錄
+ 華碩的連絡資訊

@@ -1,0 +1,958 @@
+
+E20513
+First Edition
+October 2022
+E-Manual
+2 LED projector E-Manual
+COPYRIGHT AND WARRANTY INFORMATION
+No part of this manual, including the products and software described in it, may be reproduced, transmitted, 
+transcribed, stored in a retrieval system, or translated into any language in any form or by any means, except 
+documentation kept by the purchaser for backup purposes, without the express written permission of 
+ASUSTeK COMPUTER INC. (“ASUS”).
+Product warranty or service will not be extended if: (1) the product is repaired, modified or altered, unless 
+such repair, modification of alteration is authorized in writing by ASUS; or (2) the serial number of the is 
+defaced or missing.
+ASUS PROVIDES THIS MANUAL “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, 
+INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OR CONDITIONS OF MERCHANTABILITY OR 
+FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL ASUS, ITS DIRECTORS, OFFICERS, EMPLOYEES OR 
+AGENTS BE LIABLE FOR ANY INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES (INCLUDING 
+DAMAGES FOR LOSS OF PROFITS, LOSS OF BUSINESS, LOSS OF USE OR DATA, INTERRUPTION OF BUSINESS 
+AND THE LIKE), EVEN IF ASUS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES ARISING FROM 
+ANY DEFECT OR ERROR IN THIS MANUAL OR PRODUCT.
+Products and corporate names appearing in this manual may or may not be registered trademarks or 
+copyrights of their respective companies, and are used only for identification or explanation and to the 
+owners’ benefit, without intent to infringe.
+SPECIFICATIONS AND INFORMATION CONTAINED IN THIS MANUAL ARE FURNISHED FOR INFORMATIONAL 
+USE ONLY, AND ARE SUBJECT TO CHANGE AT ANY TIME WITHOUT NOTICE, AND SHOULD NOT BE 
+CONSTRUED AS A COMMITMENT BY ASUS. ASUS ASSUMES NO RESPONSIBILITY OR LIABILITY FOR ANY 
+ERRORS OR INACCURACIES THAT MAY APPEAR IN THIS MANUAL, INCLUDING THE PRODUCTS AND 
+SOFTWARE DESCRIBED IN IT.
+Copyright © 2022 ASUSTeK COMPUTER INC. All Rights Reserved.
+LIMITATION OF LIABILITY
+Circumstances may arise where because of a default on ASUS’ part or other liability, you are entitled to 
+recover damages from ASUS. In each such instance, regardless of the basis on which you are entitled to 
+claim damages from ASUS, ASUS is liable for no more than damages for bodily injury (including death) and 
+damage to real property and tangible personal property; or any other actual and direct damages resulted 
+from omission or failure of performing legal duties under this Warranty Statement, up to the listed contract 
+price of each product.
+ASUS will only be responsible for or indemnify you for loss, damages or claims based in contract, tort or 
+infringement under this Warranty Statement.
+This limit also applies to ASUS’ suppliers and its reseller. It is the maximum for which ASUS, its suppliers, and 
+your reseller are collectively responsible.
+UNDER NO CIRCUMSTANCES IS ASUS LIABLE FOR ANY OF THE FOLLOWING: (1) THIRD-PARTY CLAIMS 
+AGAINST YOU FOR DAMAGES; (2) LOSS OF, OR DAMAGE TO, YOUR RECORDS OR DATA; OR (3) SPECIAL, 
+INCIDENTAL, OR INDIRECT DAMAGES OR FOR ANY ECONOMIC CONSEQUENTIAL DAMAGES (INCLUDING 
+LOST PROFITS OR SAVINGS), EVEN IF ASUS, ITS SUPPLIERS OR YOUR RESELLER IS INFORMED OF THEIR 
+POSSIBILITY.
+SERVICE AND SUPPORT
+Visit our multi-language web site at https://www.asus.com/support/
+LED projector E-Manual 3
+Table of Contents
+About this manual ............................................................................................. 5
+Conventions used in this manual ............................................................... 6
+Typography ......................................................................................................... 6
+Multi-language versions ................................................................................ 6
+Safety precautions ............................................................................................. 7
+Using your LED projector ............................................................................... 7
+Servicing and replacement of parts .......................................................... 7
+Caring for your LED projector ...................................................................... 8
+Proper disposal .................................................................................................. 9
+Chapter 1: Getting to know your LED projector
+Features ...............................................................................................................12
+Top View .............................................................................................................12
+Extended features ..........................................................................................15
+Flashlight ..............................................................................................................15
+SOS mode .............................................................................................................16
+Front View..........................................................................................................17
+Rear View ...........................................................................................................18
+Right View .........................................................................................................20
+Bottom View .....................................................................................................21
+Chapter 2: Setting up 
+Operating your LED projector .....................................................................24
+Connect the LED projector to the power adapter ..............................24
+AC power cord requirements ........................................................................26
+Use the correct AC plug type according to your current location. ..26
+Connect the LED projector to your device ............................................27
+Press the power button ................................................................................28
+Adjust focus ......................................................................................................29
+Portrait mode ...................................................................................................30
+Screen size and projection distance table ................................................31
+4 LED projector E-Manual
+Chapter 3: Using the LED projector
+Using your LED projector for the first time .............................................34
+Operating the onscreen display menu .....................................................35
+Using Wi-Fi connection 
+(for selected models only).............................................................................36
+Wireless Mirroring ..........................................................................................37
+Streaming ..........................................................................................................39
+Using USB connection ....................................................................................40
+Streaming ..........................................................................................................40
+Onscreen display menu options .................................................................41
+Volume .............................................................................................................41
+Input .............................................................................................................41
+Splendid .............................................................................................................41
+Brightness..........................................................................................................41
+Contrast .............................................................................................................42
+Keystone ............................................................................................................42
+Projector Position ...........................................................................................42
+Setup .............................................................................................................43
+Information .......................................................................................................44
+Turning off your LED projector ....................................................................45
+Appendices
+Federal Communications Commission Statement ..............................48
+Canadian Department of Communications Statement .....................49
+Global Environmental Regulation Compliance and Declaration ...50
+ASUS Recycling/Takeback Services ...........................................................50
+HDMI Connectivity ..........................................................................................51
+Supported PC Timings ....................................................................................52
+Specifications for E1R LED projector .........................................................54
+LED projector E-Manual 5
+About this manual
+This manual provides information about the hardware and software 
+features of your LED projector through the following chapters:
+Chapter 1: Getting to know your LED Projector
+This chapter details the parts of your LED projector.
+Chapter 2: Setting up
+This chapter shows you how to set up your LED projector and 
+use its parts for input device connection.
+Chapter 3: Using the LED projector
+This chapter describes the features of the LED projector’s control 
+panel buttons and how to use them to launch the functions of 
+your LED projector.
+Appendices
+This section includes safety notices for your LED projector.
+6 LED projector E-Manual
+Conventions used in this manual
+To highlight key information in this manual, some text are presented 
+as follows:
+IMPORTANT! This message contains vital information that must be 
+followed to complete a task. 
+NOTE: This message contains additional information and tips that can 
+help complete tasks.
+WARNING! This message contains important information that must 
+be followed to keep you safe while performing tasks and prevent 
+damage to your LED projector's data and components. 
+Typography
+Bold indicates a menu or an item that must be selected.
+Italic indicates sections that you can refer to in this manual.
+Multi-language versions
+Download other language versions of this E-Manual via this website: 
+https://www.asus.com/support/
+LED projector E-Manual 7
+Safety precautions
+Using your LED projector
+• Refer to the manual and take note of the safety instructions 
+before operating your LED projector.
+• Follow the notes and warnings stated in the user manual.
+• DO NOT place your LED projector on uneven or unstable 
+surfaces.
+• DO NOT use your LED projector in smoky environments. Smoke 
+residue may cause build-up on critical parts and damage the LED 
+projector or decrease its performance.
+• DO NOT use damaged power cords, accessories, and other 
+peripherals with your LED projector.
+• Keep the LED projector’s plastic packages out of the reach of 
+children.
+• DO NOT block or place anything near the LED projector’s 
+ventilation holes. Doing so may cause internal heat build-up that 
+can degrade picture quality and damage the projector.
+• Ensure that the operating voltage of your LED projector matches 
+the voltage of your power source.
+Servicing and replacement of parts
+• DO NOT disassemble or attempt to service this LED projector by 
+yourself. Contact your local ASUS service center for assistance.
+• Risk of explosion if battery is replaced by an incorrect type. 
+Dispose used batteries according to safety instructions and 
+contact your local ASUS service center for assistance. 
+• When replacing parts of your LED projector, purchase items 
+as specified by ASUS and contact your local service center for 
+assistance.
+8 LED projector E-Manual
+Caring for your LED projector
+• Switch off then unplug the LED projector from the power outlet 
+before cleaning it. 
+• When cleaning the LED projector’s housing, use a clean soft cloth 
+dampened with water or a mix of water and neutral detergent. 
+Wipe it dry using a soft dry cloth.
+• Ensure that the lens is cool before cleaning it. Gently wipe the 
+lens using a lens cleaning paper. DO NOT touch the lens with 
+your hands. 
+• DO NOT use liquid or aerosole cleaners, benzene, or thinners on 
+your LED projector.
+• Never operate this LED projector immediately after moving it 
+from a cold location. When the LED projector is exposed to a 
+drastic change in temperature, moisture may condense on the 
+lens and its other internal parts. To prevent this, use the unit two 
+(2) hours after an extreme or sudden change in temperature 
+occurs.
+• DO NOT use a spray containing flammable gases to clean the 
+lens. This may cause a fire due to excessive heat inside the 
+projector.
+• DO NOT clean the lens while the projector is warming up as this 
+may cause the lens’ surface film to peel off.
+• DO NOT use a hard object to wipe or tap the lens.
+Safety Precautions
+Accessories that came with this product have been designed and 
+verified for the use in connection with this product. Never use 
+accessories for other products to prevent the risk of electric shock or 
+fire.
+安全上のご注意
+付属品は当該専用品です。他の機器には使用しないでください。機
+器の破損もしくは、火災や感電の原因となることがあります。
+LED projector E-Manual 9
+Proper disposal
+DO NOT throw your LED projector in municipal waste. 
+This product has been designed to enable proper 
+reuse of parts and recycling. The symbol of the crossed 
+out wheeled bin indicates that the product (electrical, 
+electronic equipment and mercury-containing button 
+cell battery) should not be placed in municipal waste. 
+Check local regulations for disposal of electronic 
+products.
+DO NOT throw the battery in municipal waste. The 
+symbol of the crossed out wheeled bin indicates that 
+the battery should not be placed in municipal waste.
+10 LED projector E-Manual
+LED projector E-Manual 11
+Chapter 1:
+Getting to know your 
+LED projector
+12 LED projector E-Manual
+Features
+Top View
+Control panel buttons
+The control panel buttons allow you to navigate the onscreen display 
+menu. Individually, these buttons also correspond to a specific LED 
+projector setting as indicated below.
+Splendid/Exit Left/Decrease 
+volume Menu/OK Right/Increase 
+volume
+NOTE: For more information on using the control panel buttons to 
+access your LED projector’s settings, refer to Chapter 3: Using the LED 
+projector.
+LED projector E-Manual 13
+Power indicator and battery status indicator
+This LED indicator indicates the following scenarios for your LED 
+projector:
+• It lights up when the LED projector is powered on.
+• It lights up as either green or red depending on the battery charge 
+status.
+For details on how this LED indicator functions as a battery status 
+indicator, refer to the following table:
+Color Status
+Solid Green The LED projector is plugged to a power source, 
+running in battery mode and the battery power 
+is more than 25%, or running in power bank 
+mode.
+Solid Red The LED projector is running in battery mode 
+only and the battery power is not more than 
+25%.
+Blinking Orange The temperature of the LED projector 
+is too high and will lower its brightness 
+automatically. The LED projector will shut down 
+if the temperature is still too high to prevent 
+overheating.
+Blinking Green The LED projector is currently used as a power 
+bank and charging your mobile device. 
+14 LED projector E-Manual
+Battery charge indicator
+This LED indicator lights up when the LED projector is plugged to a 
+power source using its power adapter.
+IMPORTANT! Use only the bundled power adapter to charge 
+the battery pack and supply power to your LED projector.
+LED projector E-Manual 15
+Extended features
+Your LED projector also have stand-alone features that are launched 
+by pressing while your LED projector is in battery mode.
+NOTE: 
+• These features are not available when your LED projector is 
+connected to an HDMI input source or in Wi-Fi mode.
+• To turn off or switch between the flashlight and emergency light 
+feature of your LED projector, just press until your preferred 
+lighting feature is disabled or enabled.
+IMPORTANT! Make sure that your LED projector is charged and can 
+run in battery mode before enabling these features. Battery time 
+varies depending on usage.
+Flashlight
+The LED projector flashes a steady white light when you use this 
+feature.
+ 
+Splendid/Exit 
+button
+To use your LED projector as a flashlight:
+1. Disconnect all peripherals and the Wi-Fi dongle from your LED 
+projector, and then press the power button to turn it on.
+16 LED projector E-Manual
+SOS mode
+The LED projector flashes a blinking white light when you use this 
+feature.
+ 
+Splendid/Exit 
+button
+To use your LED projector as an emergency light:
+1. Disconnect all peripherals and the Wi-Fi dongle from your LED 
+projector, and then press the power button to turn it on.
+2. Press repeatedly until the LED projector flashes a blinking 
+white light.
+2. Press repeatedly until the LED projector flashes a steady 
+white light.
+LED projector E-Manual 17
+Front View
+Lens
+The lens projects video or image files onscreen from your input 
+device.
+WARNING! 
+• DO NOT touch the lens with your hands or any sharp object.
+• DO NOT look directly into the lens.
+18 LED projector E-Manual
+Audio output jack port
+The audio output jack port allows you to connect your LED projector 
+to headphones.
+HDMI port
+This port is for the HDMI (High-Definition Multimedia Interface) 
+connectors. These port are HDCP compliant for HD DVD, Blu-ray, and 
+other protected content playback.
+Power output/Wi-Fi dongle port
+This power output port provides up to 5V/1A of output voltage and 
+current. You can connect your mobile device to this port to keep it 
+charged while using it with your LED projector.
+You can also insert a Wi-Fi dongle (bundled with selected models) 
+that allows you to mirror or stream content from your mobile device.
+NOTE: For more details, refer to the Using Wi-Fi connection 
+section in this manual. 
+Rear View
+LED projector E-Manual 19
+Power (DC) input port
+Insert the bundled power adapter into this port to charge the battery 
+pack and supply power to your LED projector.
+IMPORTANT! Use only the bundled power adapter to charge 
+the battery pack and supply power to your LED projector.
+WARNING! The adapter may become warm to hot while in use. 
+DO NOT cover the adapter and keep it away from your body 
+while it is connected to a power source. 
+Power button
+Long press this power button to turn on or turn off your LED projector. 
+Short press this button to turn on or turn off power bank mode.
+20 LED projector E-Manual
+Focus dial
+The focus ring allows you to adjust the image focus of your LED 
+projector.
+Air vents
+The air vents allow cool air to enter and warm air to exit the LED 
+projector.
+WARNING! Ensure that paper, books, clothing, cables, or other 
+objects do not block any of the air vents or else overheating 
+may occur.
+Right View
+LED projector E-Manual 21
+Bottom View
+Tripod socket
+Attach the LED projector to a tripod with a 1/4-20UNC mounting 
+screw using this socket.
+NOTE: This socket should only be used with tripods that are less 
+than 1 meter in height.
+22 LED projector E-Manual
+LED projector E-Manual 23
+Chapter 2:
+Setting up 
+Chapter 2: Setting up 
+24 LED projector E-Manual
+Operating your LED projector
+This portable LED projector allows you to plug and play your devices 
+so you can easily open multimedia files and hear audio straight from 
+its built-in SonicMaster speakers.
+For your safety and to maintain the quality of this unit, refer to the 
+following steps when operating your LED projector.
+Connect the LED projector to the power adapter
+A. Connect the power cord to the AC power adapter.
+B. Plug the AC power adapter into a 100V~240V power source.
+C. Connect the DC power connector to your LED projector.
+NOTE: The power adapter may vary in appearance, depending on 
+model and region.
+Charge the LED projector for 5 hours before using it in battery 
+mode for the first time.
+LED projector E-Manual 25
+WARNING!
+Read the following precautions for your LED projector’s battery:
+• The battery capacity will vary depending on the environment 
+temperature, humidity, and LED Projector usage.
+• The battery used in this device may present a risk of fire or 
+chemical burn if removed or disassembled.
+• Follow the warning labels for your personal safety.
+• Risk of explosion if battery is replaced by an incorrect type.
+• DO NOT dispose of in fire.
+• Never attempt to short-circuit your LED projector’s battery.
+• Never attempt to disassemble and reassemble the battery.
+• Discontinue usage if leakage is found.
+• The battery and its components must be recycled or disposed of 
+properly.
+• Keep the battery and other small components away from children.
+• Disposal of a battery into fire or a hot oven, or mechanically 
+crushing or cutting of a battery, that can result in an explosion;
+• Leaving a battery in an extremely high temperature surrounding 
+environment that can result in an explosion or the leakage of 
+flammable liquid or gas;
+• A battery subjected to extremely low air pressure that may result 
+in an explosion or the leakage of flammable liquid or gas.
+IMPORTANT! 
+• Use only the bundled power adapter to charge the battery pack 
+and supply power to your LED projector.
+• Make sure that your LED projector is connected to the power 
+adapter before turning it on for the first time. Always plug the 
+power cord into a wall socket without using extension cords. For 
+your safety, connect this device to a properly grounded electrical 
+outlet only.
+• The socket outlet must be easily accessible and near your LED 
+projector.
+• To disconnect your LED projector from its main power supply, 
+unplug your LED projector from the power socket.
+26 LED projector E-Manual
+AC power cord requirements
+Use the correct AC plug type according to your current location.
+IMPORTANT! Contact your sales dealer if the AC power cord bundled with 
+your LED projector does not match your local power source.
+NOTE: We highly recommend that you use a video source device that also 
+uses a grounding type plug to prevent signal interference due to voltage 
+fluctuations.
+For Australia and Mainland China For USA, Canada, Japan, and Taiwan
+For Continental Europe For UK
+LED projector E-Manual 27
+Connect the LED projector to your device
+ Audio output HDMI
+ Power output (5V/1A)
+28 LED projector E-Manual
+Press the power button
+NOTE: The battery pack inside your LED projector stops charging 
+while the LED projector is in use. Refer to the battery indicator for the 
+current charge status of your LED projector. You may also refer to the 
+Top View section in this manual for more details.
+LED projector E-Manual 29
+Adjust focus
+NOTE: Use a still image when adjusting the onscreen display.
+Adjust the image focus of the projection onscreen by moving the 
+focus dial up or down.
+30 LED projector E-Manual
+Portrait mode
+Your LED projector supports both landscape (standard) and portrait 
+modes. To use the portrait mode, rotate the projector to a vertical 
+position, and the vertical image can be viewed in full screen without 
+black bars on the sides.
+NOTE: Your LED projector allows you to mirror or stream content from 
+your mobile device, refer to the Using Wi-Fi connection section in this 
+manual for more details.
+LED projector E-Manual 31
+Screen size and projection distance table
+Adjust the LED projector’s distance from the screen using the table 
+below.
+Screen Size Projection 
+DistanceDiagonal Horizontal Vertical
+inch mm inch mm inch mm inch mm
+30 762 26.14 664 14.72 374 31.29 795
+40 1016 34.88 886 19.60 498 41.77 1061
+50 1270 43.58 1107 24.52 623 52.24 1327
+60 1524 52.28 1328 29.40 747 62.71 1593
+70 1778 61 1550 34.33 872 73.07 1856
+80 2032 69.72 1771 39.21 996 83.54 2122
+90 2286 78.42 1992 44.13 1121 94.05 2389
+100 2540 87.12 2213 49.05 1246 104.48 2654
+110 2794 95.86 2435 53.93 1370 114.96 2920
+120 3048 104.56 2656 58.85 1495 125.39 3185
+32 LED projector E-Manual
+LED projector E-Manual 33
+Chapter 3:
+Using the LED projector
+Chapter 3: Using the LED 
+projector
+34 LED projector E-Manual
+Refer to the following steps when using your LED projector for the 
+first time.
+NOTE: Ensure that your LED projector is connected to the power 
+adapter before turning it on for the first time. We strongly recommend 
+that you use a grounded wall socket while using your LED projector 
+on power adapter mode.
+1. Set up your LED projector then press and hold the power button 
+for three (3) seconds to turn it on. 
+2. Press or on your LED projector's control panel to 
+browse through the available language options.
+ 
+Menu/OK button
+Navigation 
+buttons
+Using your LED projector for the first 
+time
+LED projector E-Manual 35
+NOTE: For more details, refer to the Onscreen display menu options 
+section in this manual.
+Operating the onscreen display menu
+Your LED projector is a plug-and-play device that also features an 
+onscreen display menu that contains a set of programs and settings 
+that can maximize your use of the LED projector. 
+Launch the onscreen display menu by pressing on the control 
+panel of your LED projector.
+To scroll through the options on the onscreen display menu, press 
+the navigation buttons ( / ) on your LED projector's control 
+panel. After adjusting the settings, press to save the new 
+settings and press to go back to the home screen.
+3. After you have chosen your preferred language, press to set 
+this language for use on your LED projector.
+4. You may now start using your LED projector to display files from 
+your input device. The NO SIGNAL screen may appear if no input 
+device is connected or cannot be detected by the LED projector.
+5. Press on your LED projector's control panel to launch its 
+onscreen display menu.
+36 LED projector E-Manual
+The optional Wi-Fi dongle allows you to project your device’s screen 
+or stream from your device to your LED projector. The setup process 
+may differ slightly from device to device.
+Make sure to do the following before starting screen mirroring or 
+media streaming from your device:
+1. Insert the Wi-Fi dongle into your LED projector’s USB Type-A port.
+2. You should automatically be switched to wireless projection 
+mode.
+NOTE: If you are not automatically switched to wireless projection 
+mode, you can change it through the OSD. Press and then select 
+ > Mirroring.
+3. Turn on Wi-Fi on your device.
+Using Wi-Fi connection 
+(for selected models only)
+LED projector E-Manual 37
+From Android devices
+1. Tap Smart Mirroring or Cast and connect to your LED projector’s 
+SSID as shown on the projection screen.
+2. Begin projecting your mobile device’s screen to the LED 
+projector.
+Wireless Mirroring
+From iOS devices
+1. Turn on Wi-Fi and select your LED projector’s SSID (as shown on 
+the projection screen) from the network list.
+2. Enter the projector password (as shown on the projection screen) 
+to connect.
+3. Tap Screen Mirroring and connect to your LED projector’s SSID 
+as shown on the projection screen.
+4. Begin projecting your mobile device’s screen to the LED 
+projector.
+NOTE: 
+• The option names may vary depending on device. For more 
+information, refer to the manual supplied with your device. 
+• Ensure your mobile operating system is up to date before you 
+start the mirroring or streaming process.
+38 LED projector E-Manual
+From Windows laptop
+1. Press the shortcut Windows Key ( or ) + K.
+2. Select your LED projector’s SSID (as shown on the projection 
+screen) from the device list.
+3. Enter the projector password (as shown on the projection screen) 
+to connect and start mirroring.
+From MacBook
+1. Select your LED projector’s SSID (as shown on the projection 
+screen) from the Wi-Fi list on your MacBook.
+2. Enter the projector password (as shown on the projection screen) 
+to connect.
+3. Open your browser and type the URL (http://192.168.xxx.xxx) as 
+shown on the projection screen in the address bar. You will be 
+directed to a web page to connect your LED projector to the Wi-
+Fi network.
+NOTE: 
+• Make sure that your device and LED projector are connected to 
+the same Wi-Fi network before you continue to the next step.
+• To connect to a different Wi-Fi network, repeat step 3 and select 
+the Wi-Fi network you prefer on the web page.
+4. Open Control Center on your Mac and select Screen Mirroring. 
+From the device list, select your LED projector to start mirroring.
+Scan the QR code to watch the instructional video:
+NOTE: Your projector may look different from the one 
+in the video, but the interface and the steps to follow 
+are the same.
+LED projector E-Manual 39
+Streaming
+Streaming from YouTube or Facebook video
+Standard settings
+1. Turn on Wi-Fi and select your LED projector’s SSID (as shown on 
+the projection screen) from the network list.
+2. Enter the projector password (as shown on the projection screen) 
+to connect.
+3. Open your browser and type the URL (http://192.168.xxx.xxx) as 
+shown on the projection screen in the address bar. You will be 
+directed to a web page to connect your LED projector to the Wi-
+Fi network.
+NOTE: 
+• Ensure your device and LED projector are connected to the same 
+Wi-Fi network before you continue to the next step.
+• To connect to a different Wi-Fi network, repeat step 3 and select 
+the Wi-Fi network you prefer on the web page.
+4. Open the YouTube or Facebook app, then tap the Cast button 
+ on the video screen. From the device list, select your LED 
+projector to stream to.
+5. Once connected, select the video you wish to watch and tap 
+Play. Your content will start playing from the projector.
+Scan the QR code to watch the instructional video:
+NOTE: Your projector may look different from the one 
+in the video, but the interface and the steps to follow 
+are the same.
+40 LED projector E-Manual
+The USB Type-A port allows you to project your device’s screen or 
+stream from your device to your LED projector. The setup process 
+may differ slightly from device to device.
+Make sure that the USB cable is inserted correctly into your LED 
+projector before starting screen mirroring or media streaming from 
+your device.
+Streaming
+From an Android phone
+1. Connect the other end of the USB cable to your phone.
+2. Download and install MiraPlug on your phone.
+3. Open MiraPlug and tap Cast.
+From an iOS phone
+1. Connect the other end of the USB cable to your phone.
+2. Tap Trust when asked to confirm that you want to allow your 
+LED projector access to your phone.
+Using USB connection
+LED projector E-Manual 41
+Onscreen display menu options
+You may refer to the following pages for details on each of the 
+onscreen display menu options.
+Volume 
+Select this menu option to adjust the volume of the audio file played 
+on your LED projector. 
+You may adjust the volume on a scale of 0 to 10, and you may also 
+press and hold or to quickly mute or adjust the volume to 
+the loudest.
+Input 
+Select this menu option to configure the input source for your LED 
+projector.
+Splendid 
+Select this menu option to activate different display modes. You may 
+also directly launch this menu option by pressing . 
+Available options: Bright, Standard, Theater, and ECO
+Brightness
+Select this menu option to adjust the brightness of your projection 
+on screen. You may adjust the brightness on a scale of 0 to 10, from 
+darkest to brightest.
+42 LED projector E-Manual
+Contrast 
+Select this menu option to adjust the light and dark areas of your 
+projection on screen. You may adjust the contrast on a scale of 0 to 
+10, from the lowest to the highest possible color contrast.
+Keystone
+Select this option to adjust the keystone of your projection onscreen.
+NOTE: If you wish to enable the Auto Keystone feature after manual 
+adjustment, go to Setup and turn on Auto Keystone.
+Projector Position
+This option allows you to change the way your projections are 
+oriented on screen based from the current location of your LED 
+projector. 
+You may change your projection’s orientation to correspond with the 
+location where your LED projector is currently placed: Front Table 
+and Rear Table.
+LED projector E-Manual 43
+Setup 
+Select this menu option to configure the following settings of your 
+LED projector:
+• Language - This option allows you to set the LED projector’s 
+onscreen display menu to other languages.
+• Reset - This option restores the default settings of your LED 
+projector or Wi-Fi network. 
+• Auto Keystone - This option allows you to enable or disable auto 
+keystone correction.
+• Auto Ceiling Detection - This option allows you to enable or 
+disable auto ceiling detection.
+• Auto Power - This option allows you to enable or disable the 
+auto power on feature when your LED projector is connected to 
+an HDMI device and plugged to a power source using its power 
+adapter.
+• OSD Timeout - This option allows you to set the number of 
+seconds before the onscreen display menu disappears from your 
+projection screen.
+• Power Timeout - This option allows you to select Auto (15 
+minutes) or set the number of minutes with no HDMI signal 
+before your LED projector shut down automatically. 
+44 LED projector E-Manual
+Information
+Select this menu option to see an overview of information about 
+your LED projector.
+model name LED projector's 
+firmware version
+input device's 
+screen resolution
+LED projector E-Manual 45
+Turning off your LED projector
+1. Press the power button.
+2. When the following screen appears, press the power button 
+again to completely turn off your LED projector. If you need to 
+turn on your LED projector again immediately after turning it off, 
+please wait until the Power indicator and battery status indicator 
+lights off. 
+46 LED projector E-Manual
+LED projector E-Manual 47
+Appendices
+AppendicesAppendicesAppendices
+48 LED projector E-Manual
+Federal Communications Commission 
+Statement
+Responsible Party: Asus Computer International
+Address: 48720 Kato Rd., Fremont, CA 94538, USA
+Phone / Fax No: (510)739-3777 / (510)608-4555
+Product name: LED projector
+Model: E1R
+This equipment has been tested and found to comply with the 
+limits for a class B digital device, pursuant to Part 15 of the Federal 
+Communications Commission (FCC) rules. These limits are designed 
+to provide reasonable protection against harmful interference in 
+a residential installation. This equipment generates, uses, and can 
+radiate radio frequency energy and, if not installed and used in 
+accordance with the instructions, may cause harmful interference 
+to radio communications. However, there is no guarantee that 
+interference will not occur in a particular installation. If this 
+equipment does cause harmful interference to radio or television 
+reception, which can be determined by turning the equipment off 
+and on, the user is encouraged to try to correct the interference by 
+one or more of the following measures:
+• Reorient or relocate the receiving antenna.
+• Increase the distance between the equipment and receiver.
+• Connect the equipment to an outlet on a different circuit than 
+that which the receiver is connected to. 
+• Consult the dealer or an experienced radio/TV technician for 
+help.
+This device complies with Part 15 of the FCC Rules. Operation is 
+subject to the following two conditions:
+1. This device may not cause harmful interference, and
+2. This device must accept any interference that may cause 
+undesired operation.
+LED projector E-Manual 49
+Canadian Department of 
+Communications Statement
+This digital apparatus does not exceed the Class B limits for 
+radio noise emissions from digital apparatus set out in the 
+Radio Interference Regulations of the Canadian Department of 
+Communications.
+This class B digital apparatus complies with Canadian ICES-003.
+50 LED projector E-Manual
+Global Environmental Regulation 
+Compliance and Declaration 
+ASUS follows the green design concept to design and manufacture 
+our products, and makes sure that each stage of the product 
+life cycle of ASUS product is in line with global environmental 
+regulations. In addition, ASUS disclose the relevant information 
+based on regulation requirements.
+Please refer to http://csr.asus.com/english/Compliance.htm for 
+information disclosure based on regulation requirements ASUS is 
+complied with:
+Japan JIS-C-0950 Material Declarations
+EU REACH SVHC
+Korea RoHS
+ASUS Recycling/Takeback Services
+ASUS recycling and takeback programs come from our commitment 
+to the highest standards for protecting our environment. We believe 
+in providing solutions for you to be able to responsibly recycle our 
+products, batteries, other components as well as the packaging 
+materials. Please go to http://csr.asus.com/english/Takeback.htm for 
+detailed recycling information in different regions.
+LED projector E-Manual 51
+Devices with HDMI 
+port • HDMI to HDMI Cable
+Devices with micro 
+HDMI port • Micro HDMI to HDMI Adapter
+• HDMI to HDMI Cable
+iOS devices with 
+Lightning™ port • Lightning™ Digital AV Adapter
+• HDMI to HDMI Cable
+Devices with USB 3.2 
+Gen 2 Type-C® port
+• USB 3.2 Gen 2 Type-C® Digital AV Adapter
+• HDMI to HDMI Cable
+HDMI Connectivity
+52 LED projector E-Manual
+Supported PC Timings
+HDMI (PC)
+Mode Resolution Refresh 
+rate (Hz)
+H-frequency 
+(kHz)
+Clock 
+(MHz)
+VGA 640x480 60.0 31.5 25.175 
+VGA 640x480 66.9 33.2 23.900
+720x480_60 720x480 60.0 29.7 23.700
+720x576_50 720x576 50.0 29.5 23.600
+832x624_75 832x624 74.9 25.4 23.100
+XGA 1024x768 60.0 48.3 65.000 
+XGA 1024x768 75.0 60.0 78.750
+XGA 1024x768 60.0 65.0 65.000 
+720p 1280x720 60.0 45.0 74.250
+720p 1280x720 50.0 36.8 50.000
+WXGA 1280x800 60.0 49.7 83.500
+SXGA 1280x1024 60.0 64.0 108.000 
+UXGA 1600x900 60.0 55.5 93.250
+SVGA 800x600 60.0 37.9 40.000 
+WXGA+ 1440x900 60.0 55.9 106.500
+WSXGA+ 1680x1050 60.0 65.3 146.250
+1080p 1920x1080 60.0 67.5 148.500
+PowerBook G4 1024x768 60.0 48.4 65.000 
+MAC13 640x480 66.7 35.0 30.240
+MAC16 832x624 74.5 49.7 57.280
+MAC19 1024x768 75.0 60.2 80.000 
+MAC21 1152x870 75.0 68.7 100.000
+MAC21 1152x864 60.0 53.3 65.600
+LED projector E-Manual 53
+HDMI (Video)
+Timing Resolution V-frequency 
+(Hz)
+H-frequency 
+(kHz)
+Dot Clock 
+Frequency 
+(MHz)
+480i 720x480 
+(1440x480)16:9 59.94 (29.97) 15.7 27.000 
+576i 720x576 
+(1440x576)16:9 50 (25) 15.6 27.000 
+480p 720x480 16:9 59.9 31.5 27.000 
+576p 720x576 16:9 50.0 31.3 27.000 
+720p 1280x720 60.0 45.0 74.250 
+720p 1280x720 50.0 37.5 74.250 
+1080i 1920x1080 60 (30) 33.8 74.250 
+1080i 1920x1080 50 (25) 28.1 74.250 
+1080p 1920x1080 23.97/24 27.0 74.250 
+1080p 1920x1080 60.0 67.5 145.500 
+1080p 1920x1080 50.0 56.3 145.500 
+1080p 1920x1080 25.0 28.1 74.250 
+1080p 1920x1080 30.0 33.8 74.250 
+Graphic 
+source 
+monitor 
+range 
+limits
+Horizontal scan rate: 15k-75kHz
+Vertical scan rate: 24-60Hz
+Max. pixel rate: 170MHz (digital)
+54 LED projector E-Manual
+Display Display Technology 0.2” DLP®
+Light Source R/G/B LED
+Light Source Life 20,000 hrs 
+True Resolution (native) WVGA 854 x 480
+Light Output 200 LED Lumens
+Contrast Ratio (typical) 500:1
+Color Saturation (NTSC) 100%
+Display Colors 16.7 million colors
+Projection 
+Lens
+Throw Ratio 1.2:1 (37.6 in. @1 m @16:9)
+Projection Distance 0.5 m to 3.0 m
+Projection/Screen Size 19 in to 110 in
+Projection Offset 100%
+Zoom Ratio Fixed
+Video 
+Features Picture Modes
+Bright, Standard, Theater, 
+ECO
+Keystone Adjustment Vertical ±40°
+Auto Keystone Yes
+Projector Placement Front Table, Rear Table
+Audio 
+Features Built-in speakers
+2W speaker (ASUS 
+SonicMaster Audio 
+technology)
+(continued on the next page)
+Specifications for E1R LED projector
+LED projector E-Manual 55
+Signal 
+Frequency
+Digital Signal 
+Frequency
+24.7 KHz(H) to 74.6 KHz(H) / 
+50 Hz(V) to 60 Hz(V)
+Power Power On Mode ≤45 W
+Standby Mode <0.5 W
+Battery Internal Battery 2850mAh (5V@1A)
+Battery Life Up to 4 hours
+Noise
+Acoustic Noise
+30 dB (Standard mode)
+28 dB (Theater mode)
+Input / 
+Output PC Signal Input HDMI 1.4b
+Audio Out Earphone out
+USB 2.0 port for 
+power output
+Yes (5V@1A)
+Mechanical 
+Design
+Chassis Colors Silver
+Tripod Socket Yes
+On-machine Buttons Yes
+Lens Cover No
+Dimension Physical Dimension
+108 mm x 84 mm x 29 mm 
+(L x W x H)
+Weight Net Weight (Esti.) 310 g
+(continued on the next page)
+56 LED projector E-Manual
+Operating Temperature 0° C to 35° C
+Operating Humidity 20% to 90% 
+Accessories Soft Protective Case, Drawstring Bag, HDMI 
+Cable, Quick Start Guide, Warranty Card
+For Select Models Only 
+Dongle, Power Cord, USB Cable, 
+Regulation Approvals FCC / CE / CB / RCM / VCCI / IEC62471 / CEC
+NOTE:
+• Specifications are subject to change without prior notice.
+• Product availability may vary by region.
+• All brand and product names mentioned are trademarks of their 
+respective companies.
+ About this manual
+ Conventions used in this manual
+ Typography
+ Multi-language versions
+ Safety precautions
+ Using your LED projector
+ Servicing and replacement of parts
+ Caring for your LED projector
+ Proper disposal
+ Chapter 1: Getting to know your LED projector
+ Features
+ Top View
+ Extended features
+ Flashlight
+ SOS mode
+ Front View
+ Rear View
+ Right View
+ Bottom View
+ Chapter 2: Setting up 
+ Operating your LED projector
+ Connect the LED projector to the power adapter
+ AC power cord requirements
+ Use the correct AC plug type according to your current location.
+ Connect the LED projector to your device
+ Press the power button
+ Adjust focus
+ Portrait mode
+ Screen size and projection distance table
+ Chapter 3: Using the LED projector
+ Using your LED projector for the first time
+ Operating the onscreen display menu
+ Using Wi-Fi connection
+(for selected models only)
+ Wireless Mirroring
+ Streaming
+ Using USB connection
+ Streaming
+ Onscreen display menu options
+ Volume 
+ Input 
+ Splendid 
+ Brightness
+ Contrast 
+ Keystone
+ Projector Position
+ Setup 
+ Information
+ Turning off your LED projector
+ Appendices
+ Federal Communications Commission Statement
+ Canadian Department of Communications Statement
+ Global Environmental Regulation Compliance and Declaration 
+ ASUS Recycling/Takeback Services
+ HDMI Connectivity
+ Supported PC Timings
+ Specifications for E1R LED projector

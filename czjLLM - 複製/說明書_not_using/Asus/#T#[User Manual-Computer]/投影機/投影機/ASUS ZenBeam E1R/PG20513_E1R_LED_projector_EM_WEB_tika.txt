@@ -1,0 +1,1003 @@
+
+PG20513
+Primeira edição
+novembro de 2022
+Manual electrónico
+2 Manual Electrónico do Projector LED
+INFORMAÇÕES SOBRE DIREITOS DE AUTOR E GARANTIA
+Nenhuma parte deste manual, incluindo os produtos e software aqui descritos, pode ser reproduzida, 
+transmitida, transcrita, armazenada num sistema de recuperação, ou traduzida para outro idioma por 
+qualquer forma ou por quaisquer meios, excepto a documentação mantida pelo comprador como cópia de 
+segurança, sem o consentimento expresso e por escrito da ASUSTeK COMPUTER INC. (“ASUS”).
+A garantia do produto ou serviço não será alargada se: (1) o produto for reparado, modificado ou alterado, 
+a não ser que tal reparação, modificação ou alteração seja autorizada por escrito pela ASUS; ou (2) caso o 
+número de série do produto tenha sido apagado ou esteja em falta.
+A ASUS FORNECE ESTE MANUAL “TAL COMO ESTÁ” SEM QUALQUER TIPO DE GARANTIA QUER EXPRESSA 
+QUER IMPLÍCITA, INCLUINDO MAS NÃO LIMITADA ÀS GARANTIAS IMPLÍCITAS OU QUALIDADE OU 
+ADEQUABILIDADE PARA UM DETERMINADO FIM. EM CIRCUNSTÂNCIA ALGUMA PODE A ASUS, SEUS 
+DIRECTORES, OFICIAIS, EMPREGADOS OU AGENTES, SER RESPONSABILIZADA POR QUAISQUER DANOS 
+INDIRECTOS, ESPECIAIS, ACIDENTAIS OU CONSEQUENTES (INCLUINDO DANOS PELA PERDA DE LUCROS, 
+PERDA DE NEGÓCIO, PERDA DE UTILIZAÇÃO OU DE DADOS, INTERRUPÇÃO DA ACTIVIDADE, ETC.) MESMO 
+QUE A ASUS TENHA SIDO ALERTADA PARA A POSSIBILIDADE DE OCORRÊNCIA DE TAIS DANOS, RESULTANTES 
+DE QUALQUER DEFEITO OU ERRO NESTE MANUAL OU NO PRODUTO.
+Os nomes dos produtos e das empresas mencionados neste manual podem ou não ser marcas registadas 
+ou estarem protegidos por direitos de autor que pertencem às respectivas empresas. Estes nomes são aqui 
+utilizados apenas para fins de identificação ou explicação, para benefício dos proprietários e sem qualquer 
+intenção de violação dos direitos de autor.
+AS ESPECIFICAÇÕES E INFORMAÇÕES CONTIDAS NESTE MANUAL SÃO FORNECIDAS APENAS PARA 
+FINS INFORMATIVOS E ESTÃO SUJEITAS A ALTERAÇÃO EM QUALQUER ALTURA SEM AVISO PRÉVIO, 
+NÃO CONSTITUINDO QUALQUER OBRIGAÇÃO POR PARTE DA ASUS. A ASUS NÃO ASSUME QUALQUER 
+RESPONSABILIDADE POR QUAISQUER ERROS OU IMPRECISÕES QUE POSSAM APARECER NESTE MANUAL, 
+INCLUINDO OS PRODUTOS E SOFTWARE NELE DESCRITOS.
+Copyright © 2022 ASUSTeK COMPUTER INC. Reservados todos os direitos.
+Limitação de responsabilidade
+Podem haver situações em que devido a um erro da ASUS ou de terceiros, o utilizador tenha direito a pedir 
+à ASUS uma compensação por danos causados. Nesta situação, e independentemente da compensação 
+que possa pedir à ASUS, a ASUS apenas se compromete a compensar os ferimentos causados (incluindo a 
+morte) e os danos materiais a bens e a bens pessoais tangíveis; ou os danos actuais ou directos resultantes 
+da omissão ou falha em executar determinadas obrigações legais obrigatórias no âmbito desta garantia e 
+tendo como base o preço listado no contrato e relativo a cada produto.
+A ASUS apenas se responsabiliza ou indemniza as perdas, os danos ou os pedidos feitos com base no 
+contrato, e pelos actos ilícitos ou violações nos termos desta garantia.
+Estes limites aplicam-se também aos fornecedores da ASUS e seus revendedores. Este é o limite máximo de 
+responsabilidade da ASUS; seus fornecedores e revendedores.
+EM CIRCUNSTÂNCIA ALGUMA PODE A ASUS SER RESPONSABILIZADA PELO SEGUINTE: (1) PEDIDOS DE 
+COMPENSAÇÃO DE TERCEIROS DEVIDO A DANOS; (2) PERDA OU DANOS SOFRIDOS EM TERMOS DOS 
+DADOS, OU (3) DANOS ESPECIAIS, ACIDENTAIS OU INDIRECTOS OU AINDA QUAISQUER CONSEQUÊNCIAS 
+DE CARÁCTER ECONÓMICO (INCLUINDO PERDA DE RECEITAS OU POUPANÇAS), MESMO QUE A ASUS, SEUS 
+FORNECEDORES OU REVENDEDORES TENHA SIDO INFORMADA DESTA POSSIBILIDADE.
+Manutenção e assistência
+Visite o nosso web site multilingue em https://www.asus.com/support/
+Manual Electrónico do Projector LED 3
+Índice
+Sobre este manual ............................................................................................. 5
+Convenções utilizadas neste manual ........................................................ 6
+Tipografia ............................................................................................................ 6
+Versões multilingue ......................................................................................... 6
+Precauções de segurança ................................................................................ 7
+Utilizar o seu projector LED .......................................................................... 7
+Reparação e peças de substituição ............................................................ 7
+Cuidados com o seu projector LED ............................................................ 8
+Eliminação correcta ......................................................................................... 9
+Capítulo 1: Conheça o seu projetor LED
+Características ...................................................................................................12
+Vista superior ...................................................................................................12
+Funcionalidades avançadas ........................................................................15
+Lanterna ................................................................................................................15
+Modo SOS .............................................................................................................16
+Vista frontal .......................................................................................................17
+Vista posterior ..................................................................................................18
+Vista direita .......................................................................................................20
+Vista inferior ......................................................................................................21
+Capítulo 2: Instalação 
+Operar o projector LED ..................................................................................24
+Ligar o projector LED ao transformador .................................................24
+Requisitos do cabo de alimentação AC .....................................................26
+Utilize a ficha de alimentação AC correcta de acordo com a sua 
+localização. ...........................................................................................................26
+Ligar o projector LED ao seu dispositivo ................................................27
+Premir o botão de energia...........................................................................28
+Focagem automática ....................................................................................29
+Modo vertical ...................................................................................................30
+Tabela de tamanho do ecrã e distância de projecção ..........................31
+4 Manual Electrónico do Projector LED
+Capítulo 3: Utilizar o projector LED
+Utilizar o projector LED pela primeira vez ...............................................34
+Utilizar o menu apresentado no ecrã ........................................................35
+Utilizar o adaptador Wi-Fi(apenas para alguns modelos) ..................36
+Espelhamento sem fios ................................................................................37
+Transmitir ...........................................................................................................39
+Utilizar uma ligação USB ................................................................................40
+Transmitir ...........................................................................................................40
+Opções do menu apresentado no ecrã ....................................................41
+Volume .............................................................................................................41
+Entrada .............................................................................................................41
+Splendid .............................................................................................................41
+Brilho .............................................................................................................41
+Contraste ...........................................................................................................42
+Distorção ............................................................................................................42
+Posição do projetor ........................................................................................42
+Configuração ....................................................................................................43
+Informações ......................................................................................................44
+Desligar o projector LED ................................................................................45
+Anexos
+Declaração da Federal Communications Commision .........................48
+Declaração e conformidade relativa às normas ambientais 
+a nível global ....................................................................................................49
+Reciclagem ASUS/Serviços de devolução ...............................................49
+Conectividade HDMI .......................................................................................50
+Resoluções e frequências de PC suportadas ..........................................51
+Especificações do projector LED E1R ........................................................53
+Manual Electrónico do Projector LED 5
+Sobre este manual
+Este manual fornece informações sobre as características do 
+software e hardware do seu projector LED, organizadas pelos 
+seguintes capítulos:
+Capítulo 1: Conheça o seu projetor LED
+Este capítulo apresenta detalhes sobre os componentes do 
+projetor LED. 
+Capítulo 2: Instalação
+Este capítulo mostra como instalar o seu projector LED e utilizar 
+os seus componentes para ligação de dispositivos.
+Capítulo 3: Utilizar o projector LED
+Este capítulo descreve as funções dos botões do painel de 
+controlo do projector LED e como utilizá-los para executar as 
+funções do projector LED.
+Anexos
+Esta secção inclui avisos de segurança para o seu projector LED.
+6 Manual Electrónico do Projector LED
+Convenções utilizadas neste manual
+Para realçar informações importantes neste manual, são 
+apresentadas as seguintes mensagens:
+IMPORTANTE! Esta mensagem contém informações vitais que 
+deverão ser seguidas para executar uma tarefa. 
+NOTA: Esta mensagem contém informações e sugestões adicionais 
+que ajudam a executar tarefas.
+AVISO! Esta mensagem contém informações importantes que 
+deverão ser seguidas para sua segurança durante a execução de 
+tarefas e para evitar danos nos dados e componentes do seu projector 
+LED. 
+Tipografia
+Negrito Indica um menu ou item que deve ser selecionado.
+Itálico Indica secções que pode consultar neste manual.
+Versões multilingue
+Transfira versões noutros idiomas deste Manual Electrónico através 
+do website: https://www.asus.com/support/
+Manual Electrónico do Projector LED 7
+Precauções de segurança
+Utilizar o seu projector LED
+• Consulte o manual e tenha atenção às instruções de segurança 
+antes de utilizar o seu projector LED.
+• Siga todas as notas e avisos incluídos no manual do utilizador.
+• NÃO coloque o projector LED em superfícies desniveladas ou 
+instáveis.
+• NÃO utilize o projector LED em ambientes com fumo. Os 
+resíduos de fumo poderão acumular-se em componentes 
+críticos danificando o projector LED ou diminuindo o seu 
+desempenho.
+• NÃO utilize cabos de alimentação, acessórios e outros 
+periféricos danificados com o seu projector LED.
+• Mantenha as embalagens de plástico do projector LED fora do 
+alcance de crianças.
+• NÃO bloqueie nem coloque quaisquer objectos próximo dos 
+orifícios de ventilação do projector LED. Se o fizer poderá 
+originar o aumento da temperatura interna, o que poderá 
+degradar a qualidade da imagem e danificar o projector.
+• Certifique-se de que a tensão de funcionamento do projector 
+LED coincide com a tensão da sua fonte de alimentação.
+Reparação e peças de substituição
+• NÃO desmonte nem tente reparar este projector LED. Contacte 
+o centro de assistência da ASUS para obter assistência.
+• Existe o risco de explosão se a bateria for substituída por outra 
+de tipo incorreto. Elimine as baterias usadas de acordo com 
+as instruções de segurança e contacte o centro de assistência 
+ASUS local para obter ajuda. 
+• Para substituir peças do seu projector LED, compre os itens 
+especificados pela ASUS e contacte o seu centro de assistência 
+para obter assistência.
+8 Manual Electrónico do Projector LED
+Cuidados com o seu projector LED
+• Desligue o projector LED e retire o cabo de alimentação da 
+tomada eléctrica antes de o limpar. 
+• Para limpar a caixa do projector LED, utilize um pano macio 
+e limpo humedecido com água ou uma mistura de água e 
+detergente neutro. Limpe o projector utilizando um pano macio 
+e seco.
+• Certifique-se que a lente está fria antes de a limpar. Limpe 
+cuidadosamente a lente utilizando papel para limpeza de lentes. 
+NÃO toque na lente com as mãos. 
+• NÃO utilize produtos de limpeza líquidos ou sob a forma de 
+aerossóis, benzeno ou diluentes no seu projector LED.
+• Nunca utilize este projector LED imediatamente depois de o 
+retirar de um local frio. Quando o projector LED é exposto a uma 
+mudança drástica de temperatura, pode ocorrer a formação 
+de condensação na lente e nos componentes internos. Para o 
+evitar, utilize o projector duas (2) horas após a ocorrência de 
+uma mudança extrema ou súbita de temperatura.
+• NÃO utilize sprays com gases inflamáveis para limpar a lente. 
+Poderá originar um incêndio devido ao calor excessivo no 
+interior do projetor.
+• NÃO limpe a lente quando o projetor estiver a aquecer, pois a 
+película na superfície da lente pode descolar.
+• NÃO utilize um objeto rígido para limpar ou tocar na lente. 
+Manual Electrónico do Projector LED 9
+Eliminação correcta
+NÃO elimine o projector LED junto com o lixo 
+doméstico.Este produto foi concebido para permitir 
+a reutilização e reciclagem dos seus componentes. 
+O símbolo do caixote do lixo com uma cruz por 
+cima indica que o produto (equipamento eléctrico 
+e electrónico, e com baterias contendo mercúrio) 
+não deve ser colocado junto com o lixo doméstico. 
+Consulte os regulamentos locais relativamente à 
+eliminação de equipamentos electrónicos.
+NÃO deite a bateria no lixo municipal. O símbolo do 
+caixote com uma cruz por cima indica que a bateria 
+não deve ser colocada no lixo municipal.
+10 Manual Electrónico do Projector LED
+Manual Electrónico do Projector LED 11
+Capítulo 1: 
+Conheça o seu projetor 
+LED
+12 Manual Electrónico do Projector LED
+Características
+Vista superior
+Botões do painel de controlo
+Os botões do painel de controlo permitem navegar no menu 
+apresentado no ecrã. Individualmente, estes botões correspondem 
+também a uma função específica do projector LED, como indicado 
+abaixo.
+Splendid/Sair
+Esquerda/
+Diminuir o 
+volume
+Menu/OK
+Direita/
+Aumentar o 
+volume
+NOTA: Para mais informações sobre a utilização dos botões do painel 
+de controlo para aceder às definições do projector LED, consulte a 
+secção Capítulo 3: Utilizar o projector LED neste manual.
+Manual Electrónico do Projector LED 13
+Indicador de energia e de estado da bateria
+Este indicador LED indica os seguintes cenários do seu projector LED:
+• Acende quando a o projector LED está ligado.
+• Acende em verde ou em vermelho dependendo do estado 
+da carga da bateria.
+Para obter mais detalhes sobre as funções deste indicador LED como 
+indicador de bateria, consulte a tabela seguinte:
+Cor Estado
+Verde estático O projetor LED está ligado a uma fonte de 
+alimentação, está a funcionar no modo de 
+bateria e a carga da mesma é superior a 25% 
+ou está a funcionar no modo de carregador de 
+bateria.
+Vermelho estático O projetor LED está a funcionar no modo de 
+bateria e a carga da mesma não é superior a 
+25%.
+Laranja 
+intermitente
+A temperatura do projetor LED é 
+demasiado elevada e o brilho irá diminuir 
+automaticamente. O projetor LED irá desligar 
+se a temperatura continuar demasiado elevada 
+para impedir o sobreaquecimento.
+Verde 
+intermitente
+O projetor LED está a ser atualmente usado 
+como powerbank para carregar o seu 
+dispositivo móvel. 
+14 Manual Electrónico do Projector LED
+Indicador de carga da bateria
+Este indicador LED acende quando o projector LED está ligado a uma 
+fonte de alimentação através do transformador.
+IMPORTANTE! Utilize apenas o transformador fornecido para 
+carregar a bateria e alimentar o projector LED.
+Manual Electrónico do Projector LED 15
+Funcionalidades avançadas
+O projetor LED possui funções independentes que são executadas 
+através do botão quando o projetor LED se encontra no modo 
+de bateria.
+NOTA:
+• Estas funcionalidades não estão disponíveis quando o projetor 
+LED está ligado a uma fonte de entrada HDMI ou no modo Wi-Fi.
+• Para desativar ou alternar entre a função de lanterna e a luz de 
+emergência do projetor LED, pressione o botão até que a 
+função pretendida esteja ativada ou desativada.
+IMPORTANTE! Antes de ativar esta função, certifique-se de que 
+a bateria do projetor LED está carregada e que o mesmo pode 
+funcionar no modo de bateria. A duração da bateria depende da 
+utilização.
+Lanterna
+O projector LED emite uma luz branca estática quando esta função é 
+utilizada.
+ 
+Botão Splendid/Sair
+Para utilizar o projector LED como lanterna:
+1. Desligue todos os periféricos e o adaptador Wi-Fi do projetor 
+LED e pressione o botão de energia para o ligar.
+16 Manual Electrónico do Projector LED
+2. Prima repetidamente o botão até que o projector LED 
+emita uma luz branca estática.
+Modo SOS
+O projector LED emite uma luz branca intermitente quando esta 
+função é utilizada.
+ 
+Botão Splendid/Sair
+Para utilizar o projector LED como lanterna:
+1. Desligue todos os periféricos e o adaptador Wi-Fi do projetor 
+LED e pressione o botão de energia para o ligar.
+2. Prima repetidamente o botão até que o projector LED 
+emita uma luz branca intermitente.
+Manual Electrónico do Projector LED 17
+Vista frontal
+Lente
+A lente projecta ficheiros de vídeo e de imagem no ecrã a partir do 
+seu dispositivo de entrada.
+AVISO!
+• NÃO toque na lente com as mãos ou qualquer objecto 
+afiado.
+• NÃO olhe diretamente para a lente.
+18 Manual Electrónico do Projector LED
+Vista posterior
+Porta de saída de áudio
+A porta de saída de áudio permite ligar o projetor LED a 
+auscultadores.
+Porta HDMI
+Esta porta destina-se à ligação de conectores HDMI (High-Definition 
+Multimedia Interface). Esta porta é compatível com HDCP, para 
+reprodução de HD DVD, Blu-ray e outros conteúdos protegidos.
+Porta de saída de energia/adaptador Wi-Fi
+Esta porta de saída de alimentação fornece 5V/1A de tensão e 
+corrente. Pode ligar o seu dispositivo móvel a esta porta para o 
+carregar enquanto utiliza o seu projector LED.
+Também pode ligar o adaptador Wi-Fi (fornecido com alguns 
+modelos) que permite espelhar ou transmitir conteúdos do seu 
+dispositivo móvel.
+NOTA: Para obter mais detalhes, consulte a secção Utilizar a 
+ligação Wi-Fi neste manual.
+Manual Electrónico do Projector LED 19
+Porta de entrada de alimentação (DC)
+Ligue o transformador fornecido a esta porta para carregar a bateria e 
+alimentar o projector LED.
+IMPORTANTE! Utilize apenas o transformador fornecido para 
+carregar a bateria e alimentar o projector LED.
+AVISO! O transformador pode aquecer durante a sua utilização. 
+NÃO cubra o transformador e afaste-o do corpo enquanto este 
+estiver ligado a uma fonte de alimentação.
+Botão de energia
+Mantenha premido este botão para ligar ou desligar o projetor LED. 
+Prima brevemente este botão para ativar ou desativar o modo de 
+carregador de bateria.
+20 Manual Electrónico do Projector LED
+Regulador de focagem
+O anel de focagem permite ajustar a focagem da imagem do projector 
+LED.
+Orifícios de ventilação
+Os orifícios de ventilação permitem que o ar fresco entre e o ar quente 
+saia do projector LED.
+AVISO! Para evitar o sobreaquecimento, assegure-se que os 
+orifícios de ventilação não estão bloqueadas por papeis, livros, 
+roupa, cabos ou outros objectos.
+Vista direita
+Manual Electrónico do Projector LED 21
+Conector de tripé
+Encaixe o projetor LED num tripé com um parafuso de montagem de 
+1/4-20UNC utilizando este orifício.
+NOTA: Este orifício deve ser utilizado apenas com tripés com 
+uma altura inferior a 1 metro.
+Vista inferior
+22 Manual Electrónico do Projector LED
+Manual Electrónico do Projector LED 23
+Capítulo 2: 
+Instalação 
+24 Manual Electrónico do Projector LED
+Ligar o projector LED ao transformador
+A. Ligue o cabo de alimentação ao adaptador de corrente AC.
+B. Ligue o transformador AC a uma tomada eléctrica de 
+100V~240V.
+C. Ligue o conector de alimentação DC ao projetor LED.
+Operar o projector LED
+Este projector LED permite-lhe ligar os seus dispositivos para que 
+possa abrir facilmente ficheiros multimédia e ouvir o som a partir 
+dos altifalantes SonicMaster incorporados.
+Para sua segurança e para manter a qualidade deste produto, 
+consulte os passos seguintes para operar o projector LED.
+Carregue a bateria do projector LED durante 5 hours (5 horas) 
+antes de o utilizar pela primeira vez no modo de bateria.
+NOTA: O aspeto do adaptador de corrente poderá diferir de acordo 
+com modelo e região.
+Manual Electrónico do Projector LED 25
+AVISO!
+Leia as seguintes precauções sobre a bateria do seu projetor LED.
+• A capacidade da bateria irá variar dependendo da temperatura 
+ambiente, da humidade e da utilização do projetor LED.
+• A bateria usada neste dispositivo poderá apresentar risco de 
+incêndio ou queimaduras químicas caso seja removida ou 
+desmontada.
+• Para sua segurança, cumpra as indicações das etiquetas de aviso.
+• Existe o risco de explosão se a bateria for substituída por outra de 
+tipo incorreto.
+• NÃO elimine a bateria no fogo.
+• Nunca tente provocar curto-circuito na bateria do projetor LED.
+• Nunca tente desmontar e voltar a montar a bateria.
+• Em caso de fuga de líquido, deixe de usar a bateria.
+• A bateria e os seus componentes devem ser reciclados ou 
+eliminados corretamente.
+• Mantenha a bateria e outros pequenos componentes afastados 
+de crianças. 
+• A eliminação de uma bateria no fogo ou forno quente, ou 
+compressão ou corte mecânico da bateria, que originar uma 
+explosão.
+• Deixar um bateria num ambiente a temperatura extremamente 
+alta que pode originar uma explosão ou derrame de líquido ou 
+gás inflamável.
+• Uma bateria sujeita a pressão de ar extremamente baixa que pode 
+originar uma explosão ou derrame de líquido ou gás inflamável.
+IMPORTANTE!
+• Utilize apenas o transformador fornecido para carregar a bateria e 
+alimentar o projector LED.
+• Certifique-se de que o projetor LED está ligado ao adaptador de 
+corrente antes de o ligar pela primeira vez. Ligue sempre o cabo 
+de alimentação a uma tomada elétrica sem utilizar cabos de 
+extensão. Para sua segurança, ligue este dispositivo apenas a uma 
+tomada elétrica com a devida ligação à terra.
+• A tomada eléctrica deverá estar facilmente acessível e próxima do 
+projector LED.
+• Para desligar o projector LED da fonte de alimentação, retire o 
+cabo de alimentação do projector LED da tomada eléctrica.
+26 Manual Electrónico do Projector LED
+Requisitos do cabo de alimentação AC
+Utilize a ficha de alimentação AC correcta de acordo com a sua 
+localização.
+IMPORTANTE! Contacte o seu revendedor se o cabo de alimentação 
+AC fornecido com o projetor LED não corresponder à fonte de 
+alimentação local.
+NOTA: Recomendamos que utilize um dispositivo de vídeo que 
+utilize também um tipo de ficha com ligação à terra para evitar 
+interferências no sinal devido a flutuações da tensão.
+Para a Austrália e China continental Para EUA, Canadá, Japão e Taiwan
+Para Europa continental Para o Reino Unido
+Manual Electrónico do Projector LED 27
+Ligar o projector LED ao seu dispositivo
+ Saída de áudio HDMI
+ Saída de alimentação (5V/1A)
+28 Manual Electrónico do Projector LED
+Premir o botão de energia
+NOTA: A bateria incorporada no projector LED irá parar de carregar 
+enquanto o projector LED estiver a ser utilizado. Consulte o indicador 
+de bateria para saber o estado da carga do projector LED. Para obter 
+mais detalhes, pode também consultar a secção Vista superior neste 
+manual.
+Manual Electrónico do Projector LED 29
+Focagem automática
+NOTA: Utilize uma imagem estática para ajustar a exibição no ecrã.
+Ajuste a focagem da imagem projetada rodando o anel de focagem 
+cima ou para baixo.
+30 Manual Electrónico do Projector LED
+Modo vertical
+O projetor LED suporta os modos horizontal (padrão) e vertical. Para 
+utilizar o modo vertical, rode o projetor para uma posição vertical e 
+a imagem vertical pode ser visualizada em ecrã inteiro sem barras 
+pretas nas laterais.
+NOTA: O projetor LED permite espelhar ou transmitir conteúdo a 
+partir do seu dispositivo móvel. Consulte mais detalhes na secção 
+Utilizar o ligação Wi-Fi neste manual.
+Manual Electrónico do Projector LED 31
+Tabela de tamanho do ecrã e distância de projecção
+Ajuste a distância do projector LED para o ecrã utilizando a tabela 
+seguinte.
+Tamanho do ecrã Distância de 
+projecçãoDiagonal Horizontal Vertical
+poleg mm poleg mm poleg mm poleg mm
+30 762 26,14 664 14,72 374 31,29 795
+40 1016 34,88 886 19,60 498 41,77 1061
+50 1270 43,58 1107 24,52 623 52,24 1327
+60 1524 52,28 1328 29,40 747 62,71 1593
+70 1778 61 1550 34,33 872 73,07 1856
+80 2032 69,72 1771 39,21 996 83,54 2122
+90 2286 78,42 1992 44,13 1121 94,05 2389
+100 2540 87,12 2213 49,05 1246 104,48 2654
+110 2794 95,86 2435 53,93 1370 114,96 2920
+120 3048 104,56 2656 58,85 1495 125,39 3185
+32 Manual Electrónico do Projector LED
+Manual Electrónico do Projector LED 33
+Capítulo 3: 
+Utilizar o projector LED
+34 Manual Electrónico do Projector LED
+Consulte os passos seguintes quando utilizar o projector LED pela 
+primeira vez.
+NOTA: Certifique-se de que o seu projetor LED está ligado ao 
+transformador antes de o ligar pela primeira vez. Recomendamos 
+vivamente que utilize uma tomada elétrica com ligação à terra 
+quando utilizar o projetor LED com o transformador.
+1. Instale o projetor LED e mantenha pressionado o botão de 
+energia durante três (3) segundos para ligar. 
+2. Prima ou no painel de controlo do projector LED para 
+percorrer as opções de idioma disponíveis.
+ 
+Utilizar o projector LED pela primeira vez
+Botão Menu/OK
+Botões de 
+navegação
+Manual Electrónico do Projector LED 35
+NOTA: Para obter mais detalhes, consulte a secção Opções do menu 
+apresentado no ecrã deste manual.
+Utilizar o menu apresentado no ecrã
+O projector LED é um dispositivo plug-and-play que dispõe de um 
+menu apresentado no ecrã que contém um conjunto de programas 
+e definições que podem maximizar a utilização do projector LED. 
+Aceda ao menu apresentado no ecrã pressionando o botão no 
+painel de controlo do projetor LED.
+Para percorrer as opções no menu apresentado no ecrã, pressione os 
+botões de navegação ( / ) no painel de controlo do projetor 
+LED. Depois de ajustar as definições, pressione para guardar as 
+novas definições e pressione para voltar ao ecrã inicial.
+3. Após a seleção do idioma preferido, pressione para o 
+definir como idioma do projetor LED.
+4. Pode agora começar a utilizar o projector LED para exibir 
+ficheiros do dispositivo de entrada. A mensagem NO SIGNAL 
+(SEM SINAL) poderá ser exibida se o dispositivo de entrada 
+estiver ligado ou não for detectado pelo projector LED.
+5. Pressione no painel de controlo do projetor LED para 
+aceder ao menu.
+36 Manual Electrónico do Projector LED
+O adaptador Wi-Fi opcional permite projetar o ecrã ou transmitir 
+a partir do seu dispositivo para o projetor LED. O processo de 
+configuração pode diferir ligeiramente de acordo com o dispositivo.
+Faça o seguinte antes de começar a espelhar o ecrã ou a transmitir 
+multimédia a partir do seu dispositivo:
+1. Ligue o adaptador Wi-Fi à porta USB Tipo A do projetor LED.
+2. Irá mudar automaticamente para o modo de projeção sem fios.
+NOTA: Se não mudar automaticamente para o modo de projeção sem 
+fios, pode alterar através do menu OSD. Pressione e, em seguida, 
+selecione > Espelhamento.
+3. Ative a ligação Wi-Fi no seu dispositivo.
+Utilizar o adaptador Wi-Fi 
+(apenas para alguns modelos)
+Manual Electrónico do Projector LED 37
+A partir de dispositivos Android
+Espelhamento sem fios
+A partir de dispositivos iOS
+1. Ative a ligação Wi-Fi e selecione o SSID do seu projetor LED 
+(conforme exibido no ecrã de projeção) na lista de redes.
+2. Introduza a palavra-passe do projetor (conforme exibido no 
+ecrã de projeção) para ligar.
+3. Toque em Espelhamento do ecrã ou Cast (Transmitir) e ligue 
+ao SSID do seu projetor LED, conforme exibido no ecrã de 
+projeção.
+4. Comece a projetar o ecrã do seu dispositivo móvel com o 
+projetor LED.
+NOTA: 
+• Os nomes das opções poderão ser diferentes de acordo com 
+o dispositivo. Para obter mais informações, consulte o manual 
+fornecido com o seu dispositivo. 
+• Certifique-se de que o sistema operativo do dispositivo móvel 
+está atualizado antes de começar a espelhar ou a transmitir. 
+1. Toque em Espelhamento automático ou Transmitir e ligue ao 
+SSID do seu projetor LED, conforme exibido no ecrã de projeção.
+2. Comece a projetar o ecrã do seu dispositivo móvel com o 
+projetor LED.
+38 Manual Electrónico do Projector LED
+A partir de um computador portátil Windows
+1. Pressione a tecla de atalho do Windows ( ou ) + K.
+2. Selecione o SSID do seu projetor LED (conforme exibido no ecrã 
+de projeção) na lista de dispositivos.
+3. Introduza a palavra-passe do projetor (conforme exibido no 
+ecrã de projeção) para ligar e começar a espelhar o ecrã.
+A partir de um MacBook
+1. Selecione o SSID do seu projetor LED (conforme exibido no ecrã 
+de projeção) na lista de redes Wi-Fi do MacBook.
+2. Introduza a palavra-passe do projetor (conforme exibido no 
+ecrã de projeção) para ligar.
+3. Abra o navegador e digite o URL (http://192.168.xxx.xxx) na 
+barra de endereço. Será direcionado para uma página web para 
+ligar o projetor LED à rede Wi-Fi.
+NOTA: 
+• Certifique-se de que o seu dispositivo e o projetor LED estão 
+ligados à mesma rede Wi-Fi antes de avançar para o passo 
+seguinte.
+• Para ligar a uma rede Wi-Fi diferente, repita o passo 3 e selecione a 
+rede Wi-Fi da sua preferência na página web.
+4. Abra a Central de controlo no seu Mac e selecione Projeção do 
+ecrã. Na lista de dispositivos, selecione o seu projetor LED para 
+começar a espelhar.
+Faça a leitura do código QR para ver o vídeo com instruções:
+NOTA: O aspeto do projetor pode ser diferente do 
+apresentado no vídeo, mas a interface e os passos a 
+seguir são os mesmos.
+Manual Electrónico do Projector LED 39
+Transmitir
+Transmitir a partir do YouTube ou Facebook
+Definições padrão
+1. Ative a ligação Wi-Fi e selecione o SSID do seu projetor LED 
+(conforme exibido no ecrã de projeção) na lista de redes.
+2. Introduza a palavra-passe do projetor (conforme exibido no 
+ecrã de projeção) para ligar.
+3. Abra o navegador e digite o URL (http://192.168.xxx.xxx) na 
+barra de endereço. Será direcionado para uma página web para 
+ligar o projetor LED à rede Wi-Fi.
+NOTA: 
+• Certifique-se de que o seu dispositivo e projetor LED estão ligados 
+à mesma rede Wi-Fi antes de avançar para o passo seguinte.
+• Para ligar a uma rede Wi-Fi diferente, repita o passo 3 e selecione a 
+rede Wi-Fi da sua preferência na página web.
+4. Abra a aplicação YouTube ou Facebook e toque no botão 
+Transmitir no ecrã do vídeo. Na lista de dispositivos, 
+selecione o seu projetor LED para transmitir.
+5. Depois de ligado, selecione o vídeo que pretende ver e toque 
+em Reproduzir. O seu conteúdo começará a ser reproduzido no 
+projetor.
+Faça a leitura do código QR para ver o vídeo com instruções:
+NOTA: O aspeto do projetor pode ser diferente do 
+apresentado no vídeo, mas a interface e os passos a 
+seguir são os mesmos.
+40 Manual Electrónico do Projector LED
+A porta USB Tipo A permite projetar o ecrã ou transmitir a partir do 
+seu dispositivo para o projetor LED. O processo de configuração 
+pode diferir ligeiramente de acordo com o dispositivo.
+Certifique-se de que o cabo USB está corretamente ligado ao 
+projetor LED antes de começar a espelhar ou a transmitir conteúdos 
+multimédia a partir do seu dispositivo.
+Transmitir
+A partir de um telefone Android
+1. Ligue a outra extremidade do cabo USB ao seu telefone.
+2. Transfira e instale o MiraPlug no seu telefone.
+3. Abra o MiraPlug e toque em Transmitir.
+A partir de um telefone iOS
+1. Ligue a outra extremidade do cabo USB ao seu telefone.
+2. Toque em Confiar quando solicitado para permitir o acesso do 
+projetor LED ao seu telefone.
+Utilizar uma ligação USB
+Manual Electrónico do Projector LED 41
+Brilho
+Seleccione esta opção do menu para ajustar o brilho da imagem 
+projectada. Pode ajustar o brilho numa escala de 0 a 10, do mais 
+escuro ao mais claro.
+Opções do menu apresentado no ecrã
+Pode consultar as páginas seguintes para obter mais detalhes sobre 
+as opções do menu apresentado no ecrã.
+Volume
+Seleccione esta opção do menu para ajustar o volume dos ficheiros 
+de áudio reproduzidos no projector LED. 
+Pode ajustar o volume numa escala de 0 a 10 e também pode 
+manter pressionado ou para desativar rapidamente o som 
+ou ajustar o volume para o nível mais elevado.
+Entrada
+Selecione esta opção do menu para configurar a fonte de entrada do 
+projetor LED:
+Splendid
+Selecione esta opção de menu para ativar diferentes modos de 
+exibição. Pode também aceder diretamente a esta opção do menu 
+pressionando . 
+Opções disponíveis: Brilhante, Padrão, Cinema e ECO
+42 Manual Electrónico do Projector LED
+Contraste
+Seleccione esta opção do menu para ajustar as áreas claras e escuras 
+da imagem projectada. Pode ajustar o contraste numa escala de 0 a 
+10, desde o contraste de cor mais baixo até ao mais alto.
+Distorção
+Selecione esta opção para ajustar a distorção da imagem projetada.
+NOTA: Se pretender ativar a função Correção automática de distorção 
+após o ajuste manual, aceda a Configuração e ative Correção 
+automática de distorção.
+Posição do projetor
+Esta opção permite alterar a orientação das projeções no ecrã, com 
+base na localização do projetor LED. 
+Pode alterar a orientação do projector para corresponder à 
+localização onde o projector LED está colocado: Projeção frontal e 
+Retroprojeção.
+Manual Electrónico do Projector LED 43
+Configuração
+Seleccione esta opção do menu para configurar as seguintes 
+definições do projector LED:
+• Language (IDIOMA) - Esta opção permite definir o idioma 
+utilizado no menu apresentado no ecrã do projector LED.
+• Reposição - Esta opção restaura as predefinições do projetor 
+LED ou da rede Wi-Fi. 
+• Correção automática de distorção - Esta opção permite ativar 
+ou desativar a correção automática de distorção.
+• Deteção automática de teto - Esta opção permite ativar ou 
+desativar a deteção automática de teto.
+• Ligação automática - Esta opção permite ativar ou desativar a 
+função de ligação automática quando o projetor LED está ligado 
+a um dispositivo HDMI e a uma fonte de alimentação utilizando 
+o transformador.
+• Tempo limite do OSD - Esta opção permite definir os segundos 
+após os quais o menu apresentado desaparece da imagem 
+projetada.
+• Tempo limite para ligar - Esta opção permite selecionar 
+Automático (15 minutos) ou definir o número de minutos sem 
+sinal HDMI antes de o projetor LED desligar automaticamente. 
+44 Manual Electrónico do Projector LED
+Informações
+Seleccione esta opção do menu para ver um resumo das informações 
+sobre o projector LED.
+nome do modelo versão do firmware 
+do projector LED
+resolução de ecrã do 
+dispositivo de entrada
+Manual Electrónico do Projector LED 45
+Desligar o projector LED
+1. Prima o botão de energia.
+2. Quando o seguinte ecrã for exibido, prima novamente o botão 
+de energia para desligar completamente o projector LED. Se 
+precisar de ligar novamente o projetor LED logo após o desligar, 
+aguarde até que o indicador de energia e o indicador de estado 
+da bateria apaguem. 
+46 Manual Electrónico do Projector LED
+Manual Electrónico do Projector LED 47
+Anexos
+48 Manual Electrónico do Projector LED
+Declaração da Federal Communications 
+Commision
+Parte responsável: Asus Computer International
+Morada: 48720 Kato Rd., Fremont, CA 94538, EUA
+N.o de telefone/Fax: (510)739-3777 / (510)608-4555
+Nome do produto: Projector LED
+Modelo: E1R
+Este equipamento foi testado e concluiu-se que está em 
+conformidade com os limites estabelecidos para dispositivos digitais 
+de classe B, de acordo com a secção 15 das normas da “Federal 
+Communications Commission” (FCC). Estes limites foram concebidos 
+para disponibilizar uma protecção razoável contra interferências 
+perigosas em instalações residenciais. Este equipamento gera, 
+utiliza e pode irradiar energia de frequência de rádio e, se não for 
+instalado e utilizado de acordo com as instruções, pode provocar 
+interferências perigosas nas comunicações de rádio. Contudo, não 
+há qualquer garantia de que as interferências possam ocorrer numa 
+instalação particular. Se este equipamento provocar interferências 
+perigosas na recepção de rádio ou de televisão, o que pode ser 
+determinado desligando e voltando a ligar o equipamento, o 
+utilizador é encorajado a tentar corrigir a interferência através de 
+uma ou mais das seguintes medidas:
+• Reorientação ou recolocação da antena receptora.
+• Aumentar a separação existente entre o equipamento e o 
+receptor.
+• Ligue o equipamento a uma tomada num circuito diferente 
+daquele ao qual o receptor está ligado.
+• Procure um fornecedor ou um técnico de televisão/rádio com 
+experiência.
+Manual Electrónico do Projector LED 49
+Declaração e conformidade relativa às normas 
+ambientais a nível global 
+A ASUS rege-se pelo conceito do design ecológico na produção 
+dos seus produtos e garante que todas as etapas do ciclo de vida 
+do produto ASUS estão de acordo com as normas ambientais a 
+nível global. Além disso, a ASUS revela as informações relevantes de 
+acordo com os requisitos regulamentares.
+Consulte a página http://csr.asus.com/english/Compliance.htm 
+para obter informações relativas aos requisitos regulamentares 
+cumpridos pela ASUS:
+Declarações de material do Japão JIS-C-0950
+REACH SVHC da UE
+RoHS Coreia
+Reciclagem ASUS/Serviços de devolução
+Os programas de reciclagem e de devolução da ASUS resultam do 
+nosso compromisso de elevar os padrões da protecção do nosso 
+ambiente. Oferecemos soluções para que possa reciclar de forma 
+responsável os nossos produtos, baterias e outros componentes, 
+assim como os materiais de embalagem. Visite a página 
+http://csr.asus.com/english/Takeback.htm para obter informações 
+relativas ao processo de reciclagem em diferentes regiões.
+Este dispositivo está em conformidade com as normas da FCC, 
+secção 15. O funcionamento está sujeito às seguintes duas 
+condições:
+1. Este dispositivo não pode provocar interferências perigosas.
+2. Este dispositivo tem de aceitar qualquer interferência recebida, 
+incluindo interferências que possam dar origem a um 
+funcionamento indesejado. 
+50 Manual Electrónico do Projector LED
+Dispositivos com 
+porta HDMI • Cabo HDMI para HDMI
+Dispositivos com 
+porta micro HDMI • Adaptador micro HDMI para HDMI
+• Cabo HDMI para HDMI
+Dispositivos 
+iOS com porta 
+Lightning™ • Adaptador AV digital Lightning™
+• Cabo HDMI para HDMI
+Dispositivos com 
+porta USB 3.2 Gen 2 
+Tipo C® • Adaptador AV digital USB 3.2 Gen 2 Tipo C®
+• Cabo HDMI para HDMI
+Conectividade HDMI
+Manual Electrónico do Projector LED 51
+Resoluções e frequências de PC suportadas
+HDMI (PC)
+Modo Resolução
+Frequência de 
+atualização 
+(Hz)
+Frequência 
+H. (KHz)
+Frequência 
+(MHz)
+VGA 640x480 60,0 31,5 25,175 
+VGA 640x480 66,9 33,2 23,900
+720x480_60 720x480 60,0 29,7 23,700
+720x576_50 720x576 50,0 29,5 23,600
+832x624_75 832x624 74,9 25,4 23,100
+XGA 1024x768 60,0 48,3 65,000 
+XGA 1024x768 75,0 60,0 78,750
+XGA 1024x768 60,0 65,0 65,000 
+720p 1280x720 60,0 45,0 74,250
+720p 1280x720 50,0 36,8 50,000
+WXGA 1280x800 60,0 49,7 83,500
+SXGA 1280x1024 60,0 64,0 108,000 
+UXGA 1600x900 60,0 55,5 93,250
+SVGA 800x600 60,0 37,9 40,000 
+WXGA+ 1440x900 60,0 55,9 106,500
+WSXGA+ 1680x1050 60,0 65,3 146,250
+1080p 1920x1080 60,0 67,5 148,500
+PowerBook G4 1024x768 60,0 48,4 65,000 
+MAC13 640x480 66,7 35,0 30,240
+MAC16 832x624 74,5 49,7 57,280
+MAC19 1024x768 75,0 60,2 80,000 
+MAC21 1152x870 75,0 68,7 100,000
+MAC21 1152x864 60,0 53,3 65,600
+52 Manual Electrónico do Projector LED
+HDMI (Video)
+Frequência Resolução Frequência 
+V (Hz)
+Frequência 
+H. (KHz)
+Frequência 
+do relógio de 
+pixéis (MHz)
+480i 720x480 
+(1440x480)16:9 59,94 (29,97) 15,7 27,000 
+576i 720x576 
+(1440x576)16:9 50(25) 15,6 27,000 
+480p 720x480 16:9 59,9 31,5 27,000 
+576p 720x576 16:9 50,0 31,3 27,000 
+720p 1280x720 60,0 45,0 74,250 
+720p 1280x720 50,0 37,5 74,250 
+1080i 1920x1080 60 (30) 33,8 74,250 
+1080i 1920x1080 50 (25) 28,1 74,250 
+1080p 1920x1080 23,97/24 27,0 74,250 
+1080p 1920x1080 60,0 67,5 145,500 
+1080p 1920x1080 50,0 56,3 145,500 
+1080p 1920x1080 25,0 28,1 74,250 
+1080p 1920x1080 30,0 33,8 74,250 
+Limites do 
+monitor 
+em termos 
+gráficos
+Intervalo de varrimento na 
+horizontal: 15k-75kHz
+Intervalo de varrimento na 
+vertical: 24-60Hz
+Frequência máx. de pixéis: 170 
+MHz (digital)
+Manual Electrónico do Projector LED 53
+Especificações do projector LED E1R
+Exibição Tecnologia de exibição 0,2” DLP®
+Fonte de luz R/G/B LED
+Duração da fonte de 
+luz
+20,000 horas
+Resolução real (nativa) WVGA 854 x 480
+Luminosidade LED de 200 lúmenes
+Relação de contraste 
+(típico)
+500:1
+Saturação de cor 
+(NTSC)
+100%
+Cores exibidas 16,7 mil milhões de cores
+Lente de 
+projecção
+Relação de distância e 
+tamanho de projecção
+1,2:1 (37,6” @1 m @16:9)
+Distância de projecção 0,5 m a 3,0 m
+Projecção/Tamanho do 
+ecrã
+19 in. a 110 in.
+Desvio de projecção 100%
+Taxa de zoom Fixo
+Características 
+de vídeo
+Modos de imagem Brilhante, Padrão, Cinema, 
+ECO
+Ajuste de distorção Vertical ±40°
+Correção automática 
+de distorção
+Sim
+Colocação do projector Projeção frontal, 
+Retroprojeção
+Características 
+de áudio
+Altifalantes 
+incorporados
+Altifalante de 2W 
+(Tecnologia ASUS 
+SonicMaster Audio)
+(continua na página seguinte)
+54 Manual Electrónico do Projector LED
+Sinal 
+Frequência
+Frequência do
+sinal digital
+24,7 KHz (H) a 74,6 KHz (H) 
+/ 50 Hz (V) a 60 Hz (V)
+Energia Modo Ligado ≤45W
+Modo de suspensão <0.5W
+Bateria Bateria interna 2850mAh (5V a 1A)
+Autonomia Até 4 horas
+Ruído Ruído acústico 30 dB (modo Normal)
+28 dB (modo Cinema)
+Entrada/ Saída Entrada de sinal de PC HDMI 1.4b
+Saída de áudio Saída de auscultadores
+Porta USB 2.0 para 
+saída de alimentação
+Sim (5V a 1A)
+Características 
+mecânicas
+Cores disponíveis Prateado
+Entrada para tripé Sim
+Botões na unidade Sim
+Tampa da lente Não
+Dimensões Dimensões físicas 108 mm x 84 mm x 29 mm 
+(C x L x A)
+Peso Peso líquido (Estim.) 310 g
+(continua na página seguinte)
+Manual Electrónico do Projector LED 55
+Temperatura em 
+funcionamento
+0°C ~ 35°C
+Humidade em 
+funcionamento
+20 ~ 90% 
+Acessórios Bolsa de proteção, Saco com cordão, Cabo 
+HDMI, Guia de consulta rápida, Certificado 
+de garantia
+Apenas para alguns modelos 
+Adaptador, Cabo de alimentação, Cabo 
+USB, 
+Aprovações 
+regulamentares
+FCC / CE / CB / RCM / VCCI / IEC62471 / CEC
+NOTA:
+• As especificações estão sujeitas a alterações sem aviso prévio.
+• A disponibilidade do produto poderá variar de acordo com a 
+região.
+• Todas as marcas e nomes de produtos mencionados neste manual 
+são marcas comerciais das respectivas empresas.
+56 Manual Electrónico do Projector LED
+ Sobre este manual
+ Convenções utilizadas neste manual
+ Tipografia
+ Versões multilingue
+ Precauções de segurança
+ Utilizar o seu projector LED
+ Reparação e peças de substituição
+ Cuidados com o seu projector LED
+ Eliminação correcta
+ Capítulo 1: Conheça o seu projetor LED
+ Características
+ Vista superior
+ Funcionalidades avançadas
+ Lanterna
+ Modo SOS
+ Vista frontal
+ Vista posterior
+ Vista direita
+ Vista inferior
+ Capítulo 2: Instalação 
+ Operar o projector LED
+ Ligar o projector LED ao transformador
+ Requisitos do cabo de alimentação AC
+ Utilize a ficha de alimentação AC correcta de acordo com a sua localização.
+ Ligar o projector LED ao seu dispositivo
+ Premir o botão de energia
+ Focagem automática
+ Modo vertical
+ Tabela de tamanho do ecrã e distância de projecção
+ Capítulo 3: Utilizar o projector LED
+ Utilizar o projector LED pela primeira vez
+ Utilizar o menu apresentado no ecrã
+ Utilizar o adaptador Wi-Fi(apenas para alguns modelos)
+ Espelhamento sem fios
+ Transmitir
+ Utilizar uma ligação USB
+ Transmitir
+ Opções do menu apresentado no ecrã
+ Volume
+ Entrada
+ Splendid
+ Brilho
+ Contraste
+ Distorção
+ Posição do projetor
+ Configuração
+ Informações
+ Desligar o projector LED
+ Anexos
+ Declaração da Federal Communications Commision
+ Declaração e conformidade relativa às normas ambientais a nível global 
+ Reciclagem ASUS/Serviços de devolução
+ Conectividade HDMI
+ Resoluções e frequências de PC suportadas
+ Especificações do projector LED E1R

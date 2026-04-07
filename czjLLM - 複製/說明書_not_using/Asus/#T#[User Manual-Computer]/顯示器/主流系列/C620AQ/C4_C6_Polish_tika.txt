@@ -1,0 +1,1567 @@
+
+ 
+Monitor LCD z serii 
+C620A/C422A/C622A/
+C423A/C623A/C424A/
+C624A/C624B/C624W/ 
+C627A
+Podręcznik użytkownika
+ii
+Wydanie pierwsze 
+Czerwiec 2015 r.
+Copyright © 2015 ASUSTeK COMPUTER INC. Wszelkie prawa zastrzeżone.
+Reprodukowanie, przekazywanie, przepisywanie, zapisywanie w systemie odzysku lub tłumaczenie 
+na jakikolwiek język jakiejkolwiek części niniejszego podręcznika, w tym opisanych w nim produktów 
+i oprogramowania, w dowolnej formie i dowolnymi środkami, poza dokumentacją zachowaną przez 
+kupującego w celu posiadania kopii zapasowej, jest zabronione bez wcześniejszej, wyraźnej, pisemnej 
+zgody firmy ASUSTeK COMPUTER INC. („ASUS”).
+Gwarancja na produkt lub usługa serwisowa zostanie przerwana w przypadku: (1) naprawy lub modyfikacji 
+produktu, czy też wprowadzenia zmian w produkcie, chyba że taka naprawa, modyfikacje lub zmiany 
+zostały pisemnie autoryzowane przez firmę ASUS; lub (2) jeśli numer seryjny produktu został odklejony 
+lub jest brakujący.
+FIRMA ASUS DOSTARCZA NINIEJSZY PODRĘCZNIK W STANIE „TAKIM JAKI JEST”, BEZ ŻADNEGO 
+RODZAJU GWARANCJI: JAWNEJ ANI DOROZUMIANEJ, W TYM M.IN. BEZ DOROZUMIANYCH 
+GWARANCJI LUB WARUNKÓW Z TYTUŁU SPRZEDAŻY LUB PRZYDATNOŚCI W OKREŚLONYM 
+CELU. W ŻADNEJ SYTUACJI FIRMA ASUS, ANI JEJ DYREKTORZY, KIEROWNICY, PRACOWNICY, 
+CZY TEŻ PRZEDSTAWICIELE, NIE PONOSZĄ ODPOWIEDZIALNOŚCI ZA WSZELKIE 
+BEZPOŚREDNIE, CELOWE, PRZYPADKOWE LUB WYNIKOWE SZKODY (W TYM SZKODY W 
+WYNIKU UTRATY ZYSKÓW, UTRATY MOŻLIWOŚCI DZIAŁALNOŚCI, UŻYTKOWANIA LUB UTRATY 
+DANYCH, ZAKŁÓCENIA DZIAŁALNOŚCI ITP.), NAWET JEŚLI FIRMA ASUS ZOSTAŁA UPRZEDZONA 
+O MOŻLIWOŚCI WYSTĄPIENIA TAKICH SZKÓD W WYNIKU DOWOLNEGO DEFEKTU LUB BŁĘDU W 
+NINIEJSZYM PODRĘCZNIKU LUB PRODUKCIE.
+SPECYFIKACJE I INFORMACJE ZAWARTE W NINIEJSZYM PODRĘCZNIKU SĄ PRZEZNACZONE 
+WYŁĄCZNIE W CELACH INFORMACYJNYCH I MOGĄ ULEC ZMIANIE W DOWOLNYM CZASIE BEZ 
+POWIADOMIENIA, ORAZ NIE POWINNY BYĆ ROZUMIANE JAKO ZOBOWIĄZANIE ZE STRONY 
+FIRMY ASUS. FIRMA ASUS NIE PONOSI ODPOWIEDZIALNOŚCI ANI NIE PRZYJMUJE ZOBOWIĄZAŃ 
+ZA JAKIEKOLWIEK BŁĘDY LUB NIEPRAWIDŁOWOŚCI, KTÓRE MOGĄ WYSTĄPIĆ W NINIEJSZYM 
+PODRĘCZNIKU, W TYM ZA OPISANE W NIM PRODUKTY I OPROGRAMOWANIE.
+Występujące w niniejszym podręczniku nazwy produktów i firm mogą ale nie muszą być zarejestrowanymi 
+znakami handlowymi lub być objęte prawami autorskimi odpowiednich firm, oraz są używane wyłącznie w 
+celu identyfikacji lub wyjaśnień na korzyść ich właściciela, bez zamierzenia naruszenia praw.
+iii
+Zawartość
+Zawartość .................................................................................................... iii
+Uwagi ......................................................................................................... iv
+Informacje dotyczące bezpieczeństwa .................................................... vii
+Obsługa i czyszczenie .............................................................................. viii
+Takeback Services ...................................................................................... ix
+Rozdział 1: Informacje o produkcie
+1.1 Witamy! ....................................................................................... 1-1
+1.2 Zawartość opakowania ................................................................ 1-1
+1.3 Opis monitora ............................................................................... 1-2
+1.3.1 Widok z przodu ............................................................... 1-2
+1.3.2 Widok z tyłu ..................................................................... 1-4
+1.3.3 Funkcja QuickFit ............................................................. 1-5
+Rozdział 2: Konfiguracja
+2.1 Montaż ramienia/podstawy monitora ......................................... 2-1
+2.2 Demontaż ramienia/podstawy 
+ (do montażu ściennego VESA) ................................................... 2-1
+2.3 Montaż/demontaż zestawu MiniPC 
+ (C620A/C622A/C623A/C624A/C624B/C624W/C627A) ................ 2-3
+2.4 Ustawianie monitora .................................................................... 2-4
+2.5 Podłączanie przewodów .............................................................. 2-5
+2.6 Włączanie monitora ..................................................................... 2-6
+Rozdział 3: Instrukcje ogólne
+3.1 Menu OSD (ang. On-Screen Display) ........................................ 3-1
+3.1.1 Ponowna konfiguracja ..................................................... 3-1
+3.1.2 Informacje o funkcjach menu OSD ................................. 3-2
+3.2 Podsumowanie specyfikacji ..................................................... 3-10
+3.3 Rozwiązywanie problemów (Często zadawane pytania) ........ 3-17
+3.4 Obsługiwane tryby operacyjne ................................................. 3-18
+iv
+Uwagi
+Oświadczenie FCC (Federalnej komisji łączności)
+To urządzenie jest zgodne z sekcją 15 przepisów FCC. Urządzenie można 
+obsługiwać w przypadku spełnienia dwóch następujących warunków:
+• Niniejsze urządzenie nie może wywoływać szkodliwych zakłóceń, oraz
+• Niniejsze urządzenie musi działać w warunkach wszelkich zakłóceń 
+zewnętrznych, w tym takich, które mogą powodować niepożądane działanie.
+To urządzenie zostało sprawdzone i spełnia ograniczenia dla urządzeń 
+cyfrowych Klasy B, zgodnie z sekcją 15 przepisów FCC. Ograniczenia 
+te zostały stworzone w celu zapewnienia stosownej ochrony przed 
+szkodliwymi zakłóceniami w przypadku instalacj i w budynkach 
+mieszkalnych. Sprzęt ten wytwarza, używa i może wydzielać energię o 
+częstotliwości radiowej, oraz, jeśli nie zostanie zainstalowany zgodnie 
+z wytycznymi producenta, może powodować szkodliwe zakłócenia 
+komunikacji radiowej. Nie ma jednak gwarancji, że zakłócenia nie wystąpią 
+w określonej instalacji. Jeśli niniejszy sprzęt będzie powodował szkodliwe 
+zakłócenia w odbiorze radia lub telewizji, co można stwierdzić wyłączając 
+i ponownie włączając sprzęt, zachęca się użytkownika do skorygowania 
+zakłóceń przynajmniej w jeden z następujących sposobów:
+• Ponowne ukierunkowanie lub przeniesienie anteny odbioru.
+• Zwiększenie odległości pomiędzy urządzeniem a odbiornikiem.
+• Podłączenie sprzętu do gniazda w obwodzie innym niż obwód, do którego jest 
+podłączony odbiornik.
+• Zasięgnięcie porady u sprzedawcy lub doświadczonego technika radiowego/
+telewizyjnego.
+W celu zapewnienia zgodności z przepisami FCC do podłączania monitora 
+do karty graficznej należy używać kabli ekranowanych. Dokonywanie 
+zmian lub modyfikacji w niniejszym urządzeniu, bez wyraźnej zgody strony 
+odpowiedzialnej za zapewnienie zgodności, może spowodować unieważnienie 
+praw użytkownika do obsługi tego sprzętu.
+Produkt zgodny z ENERGY STAR
+ENERGY STAR to połączony program Amerykańskiej Agencji Ochrony 
+Środowiska (U.S. Environmental Protection Agency) i Amerykańskiego 
+Departamentu Energii (U.S. Department of Energy), pomagający w 
+oszczędzaniu pieniędzy i ochronie środowiska naturalnego, poprzez 
+stosowanie efektywnych energetycznie produktów i praktyk.
+v
+Wszystkie produkty ASUS z logo ENERGY STAR są zgodne ze standardem 
+ENERGY STAR, a funkcja zarządzania zasilaniem jest włączona domyślnie. 
+Monitor i komputer są automatycznie ustawiane na uśpienie po 10 i 30 minutach 
+nieaktywności użytkownika. Aby wybudzić komputer, kliknij mysz lub naciśnij 
+dowolny przycisk na klawiaturze. W celu uzyskania szczegółowych informacji o 
+zarządzaniu i korzyściach dla środowiska naturalnego należy odwiedzić http://
+www.energystar.gov/powermanagement. Dodatkowo, aby uzyskać szczegółowe 
+informacje o połączonym programie ENERGY STAR, należy odwiedzić http://www.
+energystar.gov.
+UWAGA: Program Energy Star NIE jest obsługiwany w systemie operacyjnym 
+FreeDOS i systemach operacyjnych opartych na systemie Linux.
+Oświadczenie kanadyjskiego Departamentu ds. Łączności 
+(Department of Communications)
+Niniejsze urządzenie cyfrowe nie przekracza ograniczeń Klasy B 
+dotyczących emisji zakłóceń radiowych przez urządzenia cyfrowe, zgodnie 
+z zarządzeniami dotyczącymi zakłóceń radiowych, wydanymi przez 
+kanadyjski Departament do spraw Łączności.
+Niniejsze urządzenie cyfrowe klasy B spełnia kanadyjską normę ICES-003.
+This Class B digital apparatus meets all requirements of the Canadian 
+Interference - Causing Equipment Regulations.
+Cet appareil numérique de la classe B respecte toutes les exigences du 
+Réglement sur le matériel brouiller du Canada.
+vi
+A third-party certification according to ISO 14024
+Say hello
+to a more sustainable product
+IT products are associated with a wide range of sustainability risks 
+throughout their life cycle. Human rights violations are common in the 
+factories. Harmful substances are used both in products and their 
+manufacture. Products can often have a short lifespan because of poor 
+ergonomics, low quality and when they are not able to be repaired or 
+upgraded. 
+This product is a better choice. It meets all the criteria in TCO Certified, 
+the world’s most comprehensive sustainability certification for IT 
+products. Thank you for making a responsible product choice, that help 
+drive progress towards a more sustainable future!
+Criteria in TCO Certified have a life-cycle perspective and balance 
+environmental and social responsibility. Conformity is verified by 
+independent and approved verifiers that specialize in IT products, social 
+responsibility or other sustainability issues. Verification is done both 
+before and after the certificate is issued, covering the entire validity 
+period. The process also includes ensuring that corrective actions are 
+implemented in all cases of factory non-conformities. And last but not 
+least, to make sure that the certification and independent verification is 
+accurate, both TCO Certified and the verifiers are reviewed regularly.
+Want to know more?
+Read information about TCO Certified, full criteria documents, news and 
+updates at tcocertified.com. On the website you’ll also find our Product 
+Finder, which presents a complete, searchable listing of certified 
+products. 
+Toward sustainable IT products
+vii
+Informacje dotyczące bezpieczeństwa
+• Przed skonfigurowaniem monitora należy dokładnie przeczytać całą, 
+znajdującą się w opakowaniu dokumentację. 
+• Aby nie dopuścić do zagrożenia pożarem lub porażenia prądem elektrycznym, 
+nigdy nie należy narażać monitora na działanie deszczu lub wilgoci. 
+• Nigdy nie należy otwierać obudowy monitora. Niebezpieczne wysokie napięcie 
+wewnątrz monitora może spowodować poważne obrażenia fizyczne. 
+• W przypadku uszkodzenia źródła zasilania nie należy podejmować 
+samodzielnych prób jego naprawy. Skontaktuj się z wykwalifikowanym 
+technikiem serwisowym lub sprzedawcą. 
+• Przed rozpoczęciem korzystania z produktu upewnij się, że wszystkie 
+przewody są prawidłowo podłączone i przewody zasilania nie są uszkodzone. 
+W przypadku wykrycia uszkodzenia skontaktuj się niezwłocznie ze 
+sprzedawcą. 
+• Szczeliny i otwory z tyłu, lub u góry obudowy zapewniają wentylację. Szczelin 
+nie należy zasłaniać. Produktu nie należy nigdy stawiać w pobliżu lub nad 
+grzejnikiem lub źródłem ciepła, chyba że zapewniono odpowiednią wentylację. 
+• Ten monitor należy zasilać tylko prądem ze źródła zasilania o charakterystyce 
+podanej na etykiecie. Jeśli nie jesteś pewny co do rodzaju źródła zasilania 
+dostępnego w domu, skontaktuj się ze sprzedawcą lub lokalną firmą 
+dostarczającą prąd. 
+• Używaj odpowiedniej wtyczki zasilającej, która spełnia lokalne, standardowe 
+wartości zasilania. 
+• Nie przeciążaj listew zasilających oraz kabli przedłużających. Nadmierne 
+obciążenie może doprowadzić do pożaru lub porażenia prądem elektrycznym. 
+• Unikaj kurzu, wilgotności i skrajnych temperatur. Nie stawiaj monitora w 
+miejscu, w którym może zmoknąć. Umieść monitor na stabilnej powierzchni. 
+• Odłączaj urządzenie w trakcie burzy z wyładowaniami atmosferycznymi lub 
+jeśli nie będzie używane przez dłuższy czas. Zapewni to ochronę monitora 
+przed uszkodzeniem w wyniku skoków napięcia. 
+• Nigdy nie wciskaj do szczelin w obudowie monitora przedmiotów ani nie 
+rozlewaj na szczeliny te płynów.
+• Aby zapewnić satysfakcjonujące działanie, używaj monitora tylko z 
+wymienionymi na liście UL komputerami, które posiadają odpowiednio 
+skonfigurowane gniazda oznaczone 100-240 V prądu przemiennego. 
+• W przypadku wystąpienia problemów technicznych z monitorem, skontaktuj się 
+z wykwalifikowanym technikiem serwisowym lub danym sprzedawcą. 
+• Ustawienie kontrolki głośności oraz korektora na ustawienie inne niż środkowe 
+może spowodować wzrost napięcia wyjściowego do słuchawek i zwiększenie 
+poziomu ciśnienia akustycznego.
+Ten symbol przedstawiający przekreślony rysunek pojemnika na śmieci na 
+kółkach, oznacza, że danego produktu (elektrycznego, elektronicznego sprzętu 
+i zawierającej rtęć baterii guzikowej) nie należy wyrzucać wraz z odpadami 
+komunalnymi. Sprawdź lokalne rozporządzenia dotyczące wyrzucania 
+produktów elektronicznych.
+viii
+Obsługa i czyszczenie
+• Przed uniesieniem lub zmianą pozycji monitora najlepiej jest odłączyć kable 
+i przewód zasilania. Ustawiając monitor, postępuj zgodnie z odpowiednimi 
+technikami podnoszenia. Unosząc lub przenosząc monitor, chwytaj za jego 
+krawędzi. Nie unoś wyświetlacza, trzymając za stojak lub przewód. 
+• Czyszczenie. Wyłącz monitor i odłącz przewód zasilania. Oczyść powierzchnię 
+monitora przy pomocy gładkiej szmatki, niepozostawiającej włókien. Uporczywe 
+plamy mogą być usuwane przy użyciu zwilżonej w łagodnym detergencie 
+szmatki. 
+• Unikaj używania środków czyszczących zawierających alkohol lub aceton. 
+Używaj środka czyszczącego przeznaczonego do użytku z monitorem. Nigdy 
+nie pryskaj środkiem bezpośrednio na ekran. Mogłoby to spowodować kontakt 
+środka czyszczącego z wnętrzem monitora i doprowadzić do porażenia 
+prądem elektrycznym. 
+Na monitorze mogą wystąpić następujące symptomy:
+• W zależności od używanego wzoru pulpitu, na jasność na ekranie może nie 
+być idealnie równomierna. 
+• Jeśli ten sam obraz jest wyświetlany godzinami, po przełączeniu obrazu na 
+ekranie może pozostać powidok poprzedniego ekranu. Powidok na ekranie 
+będzie powoli znikał. Możesz też wyłączyć przełącznik zasilania na kilka 
+godzin. 
+• Jeśli ekran stanie się czarny lub zacznie migać, lub jeśli nie możesz już więcej 
+pracować na urządzeniu, skontaktuj się z danym sprzedawcą lub centrum 
+serwisowym w celu rozwiązania problemu. Ekranu nie należy naprawiać we 
+własnym zakresie! 
+Oznaczenia stosowane w niniejszym podręczniku
+PRZESTROGA: Informacje mające na celu zapobieganie obrażeniom 
+użytkownika podczas próby wykonania zadania. 
+OSTRZEŻENIE: Informacje mające na celu zapobieganie uszkodzeniom 
+elementów urządzenia podczas próby wykonania zadania. 
+WAŻNE: Informacje, których NALEŻY przestrzegać w celu wykonania 
+zadania.
+UWAGA: Wskazówki i dodatkowe informacje, mające na celu pomoc w 
+wykonaniu zadania.
+ix
+Gdzie można znaleźć więcej informacji
+Dodatkowe informacje i aktualizacje produktu i oprogramowania można znaleźć w 
+poniższych źródłach.
+1. Strony internetowe ASUS
+Strony internetowe ASUS na całym świecie zapewniają zaktualizowane 
+informacje dotyczące osprzętu i oprogramowania ASUS. Patrz 
+http://www.asus.com
+2. Opcjonalna dokumentacja
+Opakowanie produktu może zawierać opcjonalne dokumenty, które 
+mogły zostać dodane przez sprzedawcę. Dokumenty te nie są częścią 
+standardowego opakowania.
+Takeback Services
+ASUS recycling and takeback programs come from our commitment to the highest 
+standards for protecting our environment. We believe in providing solutions for 
+our customers to be able to responsibly recycle our products, batteries and other 
+components as well as the packaging materials. 
+Please go to http://csr.asus.com/english/Takeback.htm for detail recycling 
+information in different region.
+x
+Monitor LCD z serii ASUS C 
+1.1 Witamy! 
+Dziękujemy za zakup monitora LCD firmy ASUS®!
+Najnowszy panoramiczny monitor LCD firmy ASUS zapewnia szerszy i jaśniejszy 
+wyświetlacz o krystalicznej wyrazistości, a dodatkowo oferuje wiele funkcji 
+poprawiających jakość oglądania. 
+Funkcje te gwarantują komfort oglądania i niezwykłe odczucia wizualne za 
+pośrednictwem monitora!
+1.2 Zawartość opakowania
+Sprawdź, czy w opakowaniu znajdują się:
+ Monitor LCD
+ Podstawa monitora
+ Skrócona instrukcja obsługi
+ Karta gwarancyjna
+ Przewód zasilania
+ Przewód DVI (wybrane modele)
+ Przewód HDMI (wybrane modele)
+ Przewód DisplayPort (wybrane modele)
+ Przewód DisplayPort (Mini-DP do DP) (wybrane modele)
+ Przewód VGA (wybrane modele)
+ Przewód USB (wybrane modele)
+ Przewód audio (wybrane modele)
+ Zestaw MiniPC (wybrane modele)
+Jeśli dowolny z powyższych elementów jest uszkodzony lub go brak, skontaktuj 
+się niezwłocznie z danym sprzedawcą.
+1-2 Rozdział 1: Informacje o produkcie
+1.3 Opis monitora
+1.3.1 Widok z przodu
+C422A/C423A/C424A 
+Menu
+Close
+Quick Fit
+Brightness
+Blue Light Filter
+Menu
+Close
+Quick Fit
+Brightness
+Blue Light Filter
+C620A/C622A/C623A/C624A/C624B/
+C624W/C627A
+7
+123456
+1. Przycisk/wskaźnik zasilania
+• Włącza/wyłącza monitor.
+• Wyjaśnienie kolorów wskaźnika zasilania zostało przedstawione w 
+poniższej tabeli.
+Stan Opis
+Biały Wł.
+Bursztynowy Tryb gotowości
+Wył. Wył.
+2. Przycisk Menu:
+• Naciśnij ten przycisk, aby wyświetlić menu OSD przy wyłączonym 
+OSD.
+• Otwiera menu OSD.
+• Naciśnięcie i przytrzymanie przez 5 sekund powoduje włączenie lub 
+wyłączenie blokady klawiszy.
+3. Przycisk Zamknij: 
+• Naciśnij ten przycisk, aby wyświetlić menu OSD przy wyłączonym 
+OSD.
+• Wychodzi z menu OSD. 
+4. Przycisk QuickFit:
+• Naciśnij ten przycisk, aby wyświetlić menu OSD przy wyłączonym 
+OSD.
+Monitor LCD z serii ASUS C 
+• To klawisz skrótu do włączania funkcji QuickFit dopasowania.
+• Funkcja QuickFit zawiera strony popularnych wzorów siatek i rozmiarów 
+papieru i zdjęć. (Patrz rozdział 1.3.3 Funkcja QuickFit). 
+5. Skrót 
+• Naciśnij ten przycisk, aby wyświetlić menu OSD przy wyłączonym 
+OSD.
+• Domyślne: Klawisz skrótu Jasność
+• Aby zmienić funkcję klawisza skrótu, przejdź do menu Skrót > Skrót 1.
+6. Skrót 
+• Naciśnij ten przycisk, aby wyświetlić menu OSD przy wyłączonym 
+OSD.
+• Domyślne: Klawisz skrótu funkcji Filtr światła nieb
+• Aby zmienić funkcję klawisza skrótu, przejdź do menu Skrót > Skrót 2.
+7. Czujnik człowieka (tylko model C623AQR):
+• Wykrywa obecność użytkownika przed ekranem monitora. Jeśli przed 
+monitorem przez ponad 60 sekund nie zostanie wykryty poruszający 
+się obiekt, monitor automatycznie przechodzi w tryb gotowości. Jeśli 
+monitor wykryje obecność użytkownika po jego powrocie, zasilanie 
+zostanie automatycznie przywrócone. Domyślnym ustawieniem czujnika 
+człowieka jest „WYŁ.”. Użytkownik może aktywować te funkcję poprzez 
+ustawienia OSD.
+1-4 Rozdział 1: Informacje o produkcie
+1.3.2 Widok z tyłu
+C422AQ/C423AQ/
+C424AQ
+C422AQE/C423AQE/
+C424AQE
+C620AQE/C622AQE/
+C623AQE/C624AQE
+1 2 3 4 5 6 7 8
+10
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8
+C422AQH
+10
+1 2 3 4 57 8 11 6 9
+C422AQHE
+1 2 3 4 57 8 11 6
+C620AQ/C622AQ/
+C623AQ/C623AQR/
+C624AQ/C624BQ
+10
+1 2 3 4 5 6 7 8 9
+C627AQ
+10
+1 2 3 45 7 8 911 1012
+C624WQ
+10
+1 2 3 47 8 11 6 9 10
+C622AQH/C623AQH/
+C624AQH/C624BQH
+10
+1 2 3 4 57 8 11 6 9
+1. Gniazdo blokady Kensington.
+2. Przełącznik zasilania. Naciśnij przełącznik, aby włączyć/wyłączyć zasilanie.
+3. Port wejścia AC-IN. Port ten umożliwia podłączenie przewodu zasilania.
+Monitor LCD z serii ASUS C 
+4. Wejście DisplayPort. Port ten służy do podłączania urządzenia z obsługą 
+DisplayPort. 
+5. Port DVI. Ten 24-stykowy port służy do podłączania sygnału cyfrowego 
+DVI-D komputera PC (komputer osobisty).
+6. Port VGA. To 15-stykowy port dla złącza VGA komputera.
+7. Port wejścia Audio-in. Port ten umożliwia podłączenie źródła audio 
+komputera przy użyciu zwiniętego przewodu audio.
+8. Gniazdo słuchawek. Port ten jest dostępny tylko po podłączeniu przewodu 
+HDMI/DisplayPort.
+9. Port przesyłania danych USB. Port ten służy do podłączania przewodu do 
+przesyłania danych USB. Połączenie to powoduje włączenie portów USB na 
+monitorze.
+10. Porty pobierania danych USB. Porty te służą do podłączania urządzeń 
+USB, np. klawiatury/myszy USB, napędu Flash USB itd.
+11. Port HDMI. Port ten służy do podłączania urządzenia z obsługą HDMI.
+12. Wejście Mini DisplayPort. Port ten służy do podłączania urządzenia z 
+obsługą mini DisplayPort.
+1.3.3 Funkcja QuickFit
+Funkcja QuickFit oferuje trzy rodzaje wzorów: (1) Wzory siatki (2) Rozmiar papieru 
+(3) Rozmiar zdjęć. Aby aktywować wzory, naciśnij przycisk QuickFit. Naciśnij 
+przyciski, jak przedstawiono na ekranie, aby wybrać żądany wzór.
+Niektóre z poniższych wzorów mogą nie być dostępne. Zapoznaj się z 
+rzeczywistymi wzorami wyświetlanymi na monitorze.
+1. Wzory siatki
+Wzory siatek ułatwiają użytkownikom wydajną organizację i porównanie różnych 
+zawartości, np. wyświetlanie arkuszy kalkulacyjnych i edycja zdjęć.
+Siatka dopasowania 1 Siatka dopasowania 2
+Alignment Grid 1 Alignment Grid 2
+1-6 Rozdział 1: Informacje o produkcie
+2. Rozmiar papieru
+Funkcja QuickFit zapewnia wiele często używanych standardowych rozmiarów 
+papieru, aby użytkownicy mogli wyświetlać dokumenty w rozmiarze rzeczywistym 
+na ekranie.
+A4 B5
+A4 B5
+Letter
+Letter
+3. Rozmiar zdjęć
+Różne rzeczywiste rozmiary zdjęć wyświetlane w funkcji QuickFit zapewniają 
+fotografom i innym użytkownikom możliwość precyzyjnego wyświetlania i 
+edytowania zdjęć w rozmiarze rzeczywistym na ekranie.
+Zdjęcie 4x6, 3x5, 2x2 Zdjęcie 8x10, 5x7
+3x5 2x24x6 5x78x10
+2-1Monitor LCD z serii ASUS C
+2.1 Montaż ramienia/podstawy monitora
+Aby zmontować podstawę monitora:
+1. Połóż monitor na stole ekranem do dołu.
+2. Przyczep podstawę do ramienia, dopasowując zapadkę w ramieniu do 
+wycięcia w podstawie.
+3. Przymocuj podstawę do ramienia, dokręcając dołączoną do zestawu śrubę.
+Aby zapobiec uszkodzeniu monitora, zalecamy położenie na stole miękkiej 
+szmatki.
+C422A/C423A/C424A
+C620A/C622A/C623A/C624A/C624B/C624W/C627A
+2.2 Demontaż ramienia/podstawy 
+ (do montażu ściennego VESA)
+Odłączane ramię/podstawa tego monitora zostały specjalnie zaprojektowane do 
+montażu ściennego VESA.
+Aby zdemontować ramię/podstawę:
+2-2 Rozdział 2: Konfiguracja
+C422A/C423A/C424A
+1. Połóż monitor na stole ekranem do dołu.
+2. Usuń gumowe zaślepki w czterech otworach śrub. (Rysunek 1)
+3. Wyciągnij podstawę (Rysunek 2).
+4. Przy użyciu śrubokrętu wykręć śrubę z zawiasu z (Rysunek 3), a następnie 
+wyciągnij zawias.
+1
+2
+(Rysunek 1) (Rysunek 2)
+1
+2
+(Rysunek 3)
+C620A/C622A/C623A/C624A/C624B/C624W/C627A
+1. Połóż monitor na stole ekranem do dołu.
+2. Naciśnij przycisk zwalniania, a następnie odłącz ramię/podstawę od monitora 
+(Rysunek 2).
+2
+1
+(Rysunek 1) (Rysunek 2)
+2-3Monitor LCD z serii ASUS C
+Aby zapobiec uszkodzeniu monitora, zalecamy położenie na stole miękkiej 
+szmatki.
+• Zestaw do montażu ściennego VESA (100 x 100 mm) kupuje się 
+oddzielnie.
+• Należy używać tylko z uchwytem mocującym wyszczególnionym na liście 
+UL przy minimalnej wadze/obciążeniu wynoszącym 22,7 kg (Rozmiar 
+śruby: M4 x 10 mm)
+2.3 Montaż/demontaż zestawu MiniPC 
+ (C620A/C622A/C623A/C624A/ 
+ C624B/C624W/C627A)
+Montaż zestawu MiniPC
+2
+1
+Demontaż zestawu MiniPC
+2
+1
+2-4 Rozdział 2: Konfiguracja
+2.4 Ustawianie monitora
+• Aby uzyskać optymalną jakość oglądania, zalecamy spojrzenie na monitor 
+całościowo, a następnie ustawienie monitora pod najbardziej komfortowym 
+kątem.
+• Przytrzymaj stojak, aby zapobiec spadnięciu monitora podczas zmiany jego 
+kąta nachylenia.
+• C422A/C423A/C424A: Zalecana regulacja kąta wynosi od +20˚ do -5˚.
+• C620A/C622A/C623A/C624A/C624B/C624W: Kąt nachylenia monitora można 
+zmienić, wybierając wartość od +35˚ do -5˚. Monitor umożliwia także regulację 
+obrotu do 90˚ w lewą lub prawą stronę. Można także dostosować wysokość 
+monitora, wybierając wartość do +/- 130 mm.
+• C627A: Kąt nachylenia monitora można zmienić, wybierając wartość od +35˚ 
+do -5˚. Monitor umożliwia także regulację obrotu do 90˚ w lewą lub prawą 
+stronę. Można także dostosować wysokość monitora, wybierając wartość do 
++/- 150 mm.
+90° 
+0° 
+90° 
+serii C4
+-5° ~ +20°
+serii C6
+-5° ~ +35°
+serii C6
+-90° ~ +90°
+serii C6
+150mm
+130mm
+(tylko model C627A)
+ 
+Obracanie monitora (C620A/C622A/C623A/C624A/C624B/C624W/C627A)
+1. Unieś monitor do najwyższej pozycji.
+2. Pochyl monitor pod maksymalnym kątem.
+3. Obróć monitor w prawo/w lewo pod żądanym kątem.
+(Nachylenie)
+(Obracanie) (Regulacja wysokości)
+(Nachylenie)
+2-5Monitor LCD z serii ASUS C
+Podczas ustawiania kąta oglądania, monitor może ulegać lekkim wstrząsom. 
+Jest to normalne.
+2.5 Podłączanie przewodów
+Podłącz przewody zgodnie z poniższymi instrukcjami:
+• Aby podłączyć przewód zasilania: podłącz jeden koniec przewodu zasilania 
+odpowiednio do portu wejściu prądu przemiennego w monitorze, a drugi koniec 
+do gniazda zasilania. 
+• Aby podłączyć przewód VGA/DVI/DisplayPort/HDMI/Mini DisplayPort: 
+a. Podłącz jeden koniec przewodu VGA/DVI/DisplayPort/HDMI/Mini 
+DisplayPort do gniazda VGA/DVI/DisplayPort/HDMI/Mini DisplayPort 
+monitora.
+b. Podłącz drugi koniec przewodu VGA/DVI/DisplayPort/HDMI/Mini 
+DisplayPort do gniazda VGA/DVI/DisplayPort/HDMI/Mini DisplayPort 
+komputera.
+c. Dokręć dwie śruby, aby zabezpieczyć złącze VGA/DVI.
+2-6 Rozdział 2: Konfiguracja
+• Aby podłączyć przewód audio: podłącz jeden koniec przewodu audio do 
+portu wejścia audio monitora, a drugi do portu wyjścia audio komputera.
+• Aby korzystać z zestawu słuchawkowego: podłącz koniec z wtyczką do 
+gniazda zestawu słuchawkowego monitora przy dostarczanym sygnale HDMI 
+lub DisplayPort.
+• Aby korzystać z portów USB 2.0: weź dostarczony przewód USB 2.0 i 
+podłącz mniejszą końcówkę (typu B) przewodu do przesyłania danych USB 
+do portu przesyłającego USB monitora, a większą końcówkę (typu A) do 
+portu USB 2.0 komputera. Upewnij się, że w komputerze zainstalowany jest 
+najnowszy system operacyjny Windows 7/Windows 8. Umożliwi to działanie 
+portów USB na monitorze.
+• Aby korzystać z portów USB 3.0: Weź dostarczony przewód USB 3.0 i 
+podłącz mniejszą końcówkę (typu B) przewodu do przesyłania danych USB 
+do portu przesyłającego USB monitora, a większą końcówkę (typu A) do 
+portu USB 3.0 komputera. Upewnij się, że w komputerze zainstalowany jest 
+najnowszy system operacyjny Windows 7/Windows 8.1/Windows 10. Umożliwi 
+to działanie portów USB na monitorze.
+Po podłączeniu tych przewodów możesz wybrać żądany sygnał w 
+pozycji Wybór wejścia w menu OSD.
+2.6 Włączanie monitora
+Naciśnij przycisk zasilania . Na stronach 1-2 można znaleźć informacje o lokalizacji 
+przycisku zasilania. Wskaźnik zasilania zaświeci się na biało, co będzie oznaczać, 
+że monitor jest WŁĄCZONY.
+3-1Monitor LCD z serii ASUS C 
+3.1 Menu OSD (ang. On-Screen Display) 
+3.1.1 Ponowna konfiguracja
+Tryb Scener ia
+Tryb Standardowy
+Tryb Teatr
+Tryb Widok nocny
+Tryb sRGB
+Tryb Odczytu
+Tryb Ciemni
+Splendid
+ASUS C622A
+Tryb Standardowy VGA 1920 x 1080 @ 60Hz
+1. Naciśnij dowolny przycisk (poza przyciskiem zasilania), aby wyświetlić menu 
+OSD.
+2. Naciśnij przycisk Menu, aby aktywować menu OSD.
+3. Naciskając przyciski, jak przedstawiono na ekranie, można poruszać się 
+pomiędzy funkcjami. Zaznacz żądaną funkcję i naciśnij przycisk , aby ją 
+aktywować. Jeśli wybrana funkcja ma menu podrzędne, naciśnij przycisk 
+i ponownie, aby przechodzić pomiędzy funkcjami menu podrzędnego. 
+Zaznacz żądaną funkcję menu podrzędnego i naciśnij przycisk , aby ją 
+aktywować. 
+4. Naciśnij przycisk i , aby zmienić ustawienia wybranej funkcji.
+5. Aby wyjść z menu OSD i zapisać jego ustawienia, naciskaj przycisk lub , 
+aż menu OSD zniknie. Aby skonfigurować inne funkcje, powtórz kroki 1-4.
+3-2 Rozdział 3: Menu OSD (ang. On-Screen Display) 
+3.1.2 Informacje o funkcjach menu OSD
+1. Splendid
+Funkcja ta oferuje do wyboru 7–8 funkcji podrzędnych, w zależności od 
+preferencji. Każdy tryb posiada opcję Wyzeruj, która umożliwia zachowanie 
+ustawienia lub powrót do zaprogramowanego trybu.
+Tryb Scener ia
+Tryb Standardowy
+Tryb Teatr
+Tryb Widok nocny
+Tryb sRGB
+Tryb Odczytu
+Tryb Ciemni
+Splendid
+ASUS C622A
+Tryb Standardowy VGA 1920 x 1080 @ 60Hz
+Tryb Scener ia
+Tryb Standardowy
+Tryb Teatr
+Tryb Gra 
+Tryb Widok nocny
+Tryb sRGB
+Tryb Odczytu
+Tryb Ciemni
+Splendid
+ASUS C627A
+Tryb Standardowy DisplayPort 2560 x 1440 @ 60Hz
+• Tryb Sceneria: najlepszy wybór do wyświetlania zdjęć scenerii dzięki 
+funkcji poprawy jakości wideo SplendidPlus.
+• Tryb Standardowy: najlepszy wybór do edycji dokumentów dzięki funkcji 
+poprawy jakości wideo SplendidPlus.
+Tryb standardowy spełnia wymagania Energy Star®.
+• Tryb Teatr: najlepszy wybór dla filmów dzięki funkcji poprawy jakości 
+wideo SplendidPlus.
+3-3Monitor LCD z serii ASUS C 
+• Tryb Gra (tylko model C624W/C627A): Najlepszy wybór dla gier z 
+użyciem funkcji poprawy jakości wideo SplendidPlus.
+• Tryb Widok nocny: najlepszy wybór dla gier lub filmów o mrocznej 
+scenerii dzięki funkcji poprawy jakości wideo SplendidPlus.
+• Tryb sRGB: najlepszy wybór do oglądania zdjęć i grafiki z komputera.
+• Tryb Odczytu: najlepszy wybór do czytania książek.
+• Tryb Ciemni: najlepszy wybór przy słabym świetle otoczenia.
+• W trybie Standard użytkownik nie może konfigurować poniższych funkcji: 
+Nasycenie, Odcień skóry, Wyrazistość, ASCR.
+• W trybie sRGB użytkownik nie może konfigurować poniższych 
+funkcji: Jasność, Kontrast, Nasycenie, Temp. barwowa, Odcień skóry, 
+Wyrazistość, ASCR.
+• W trybie Odczytu użytkownik nie może konfigurować poniższych funkcji: 
+Kontrast, Nasycenie, Temp. barwowa, Odcień skóry, Wyrazistość, ASCR.
+2. Filtr światła nieb.
+Funkcja ta umożliwia dostosowanie poziomu filtrowania światła niebieskiego.
+Poziom 0
+Poziom 1
+Poziom 2
+Poziom 3
+Poziom 4
+Filtr światła nieb.
+ASUS C622A
+Tryb Standardowy VGA 1920 x 1080 @ 60Hz
+• Poziom 0: Brak zmian.
+• Poziom 1-4: im wyższy poziom, tym mniej rozproszonego światła 
+niebieskiego. Po włączeniu Filtru światła niebieskiego zostaną 
+automatycznie importowane domyślne ustawienia Trybu standardowego. 
+Pomiędzy Poziomem 1 a Poziomem 3 użytkownik może konfigurować 
+funkcję Jasności. Optymalnym ustawieniem jest Poziom 4. Ustawienie 
+to jest zgodne z certyfikacją TUV w zakresie niskiego poziomu światła 
+niebieskiego. Użytkownik nie może konfigurować ustawień funkcji 
+Jasności.
+3-4 Rozdział 3: Menu OSD (ang. On-Screen Display) 
+Aby zmniejszyć przemęczenie oczu, należy stosować się do poniższych 
+wskazówek:
+• Użytkownicy pracujący przez długie godziny przed wyświetlaczem powinni 
+robić przerwy. Zaleca się krótkie przerwy (co najmniej 5 minut) po około 
+godzinie ciągłej pracy przy komputerze. Krótkie i częste przerwy są 
+bardziej efektywne niż jedna dłuższa przerwa.
+• Aby zminimalizować przemęczenie oczu, użytkownicy powinni czasami 
+odrywać wzrok od wyświetlacza, skupiając go na przedmiotach 
+położonych w dużej odległości.
+• Ćwiczenia oczu mogą pomóc w zmniejszeniu ich przemęczenia. Zalecamy 
+częste powtarzanie ćwiczeń. Jeśli przemęczenie oczy nie ustaje, należy 
+zasięgnąć porady lekarza. Ćwiczenia oczu: (1) Naprzemienne spoglądanie 
+w górę i w dół (2) Powolne przewracanie oczami (3) Przesuwanie 
+spojrzenia po przekątnej.
+• Intensywne niebieskie światło może spowodować zmęczenie oczu i 
+AMD (ang. Age-Related Macular Degeneration — zwyrodnienie plamki 
+związane z wiekiem). Filtr światła niebieskiego pozwoli zredukować 70% 
+(maks.) szkodliwego światła niebieskiego w celu uniknięcia syndromu 
+widzenia komputerowego CVS (ang. Computer Vision Syndrome).
+3. Kolor 
+W tym menu można ustawić żądany kolor. 
+Jasność 
+Kontrast 
+Nasycenie 
+Temp. barwowa
+Odcień skóry 
+Kolor 
+ASUS C622A
+Tryb Standardowy VGA 1920 x 1080 @ 60Hz
+• Jasność: Zakres regulacji wynosi od 0 do 100.
+• Kontrast: Zakres regulacji wynosi od 0 do 100.
+• Nasycenie: Zakres regulacji wynosi od 0 do 100.
+• Temp. barwowa: dostępne są 4 tryby: Zimna, Normalna, Ciepła i Tryb 
+użytkownika.
+• Odcień skóry: zawiera trzy tryby kolorów Czerwonawy, Naturalny, 
+Żółtawy.
+3-5Monitor LCD z serii ASUS C 
+4. Obraz
+Umożliwia konfigurację ustawienia w menu związanego z obrazem.
+Wyrazistość
+Trace Free
+Kontrola proporcj i
+Viv idPixel
+ASCR
+Pozycja
+Ostrość
+AUTOM. regulacja
+Obraz 
+ASUS C622A
+Tryb Standardowy VGA 1920 x 1080 @ 60Hz
+• Wyrazistość: Zakres regulacji wynosi od 0 do 100.
+• Trace Free: dostosowuje czas reakcji monitora.
+• Kontrola proporcji: umożliwia dostosowanie proporcji obrazu 
+poprzez wybór ustawienia: Pełny, 4:3, 1:1 (opcjonalnie) lub OverScan 
+(opcjonalnie).
+Ustawienie 4:3 jest dostępne tylko w przypadku ustawienie dla źródła 
+wejścia formatu 4:3. Opcja OverScan jest dostępna wyłącznie dla źródła 
+wejścia HDMI lub dla niektórych typowych taktowań.
+• VividPixel: poprawia kontury wyświetlanego obrazu i powoduje 
+wyświetlanie wysokiej jakości obrazu na ekranie.
+• ASCR: Umożliwia włączanie/wyłączanie funkcji ASCR (ASUS Smart 
+Contrast Ratio).
+• Pozycja (opcja dostępna tylko dla wejścia VGA): umożliwia 
+dostosowanie pozycji obrazu w poziomie (Pozycja pozioma)/pozycji w 
+pionie (Pozycja pionowa). Zakres regulacji wynosi od 0 do 100.
+• Ostrość (opcja dostępna tylko dla wejścia VGA): zmniejsza szum linii 
+poziomej i linii pionowej obrazu przez dostosowanie indywidualne opcji 
+Faza i Zegar. Zakres regulacji wynosi od 0 do 100.
+• Ustawienie Faza służy do regulacji fazy sygnału zegara pikseli. W 
+przypadku niewłaściwego ustawienia fazy na ekranie występują poziome 
+zakłócenia.
+• Zegar (częstotliwość pikseli) określa liczbę pikseli skanowanych w 
+pojedynczym przejściu poziomym. Jeśli częstotliwość jest nieprawidłowa, 
+na ekranie występują pionowe pasy i obraz jest nieproporcjonalny.
+• AUTOM. regulacja: służy do automatycznej regulacji obrazu w 
+zależności od zoptymalizowanej pozycji, zegara i fazy (tylko tryb VGA).
+3-6 Rozdział 3: Menu OSD (ang. On-Screen Display) 
+5. Dźwięk
+W tym menu użytkownik może zmieniać ustawienia funkcji Głośność, 
+Wyciszenie i Źródło.
+Głośność
+Wyciszenie
+Źródło 
+Dźwięk
+ASUS C622A
+Tryb Standardowy VGA 1920 x 1080 @ 60Hz
+• Głośność: zakres regulacji wynosi od 0 do 100.
+• Wyciszenie: włącza lub wyłącza dźwięk monitora.
+• Źródło: określa z jakiego źródła pochodzi dźwięk monitora.
+6. Wybór wejścia 
+Funkcja ta umożliwia wybór żądanego źródła wejścia.
+VGA
+DVI
+HDMI
+DisplayPort 
+Wybór wejścia
+ASUS C622A
+Tryb Standardowy VGA 1920 x 1080 @ 60Hz
+DVI
+HDMI
+DisplayPort
+Mini DisplayPort 
+Wybór wejścia
+ASUS C627A
+Tryb Standardowy DisplayPort 2560 x 1440 @ 60Hz
+3-7Monitor LCD z serii ASUS C 
+7. Ustawienia systemu
+Umożliwia konfigurację ustawień systemu.
+Splendid Demo Mode
+ECO Mode
+Ładowanie USB
+Ustawienia OSD
+Język
+Blokada klawiszy
+Informacje
+Więcej 
+Ustawienia systemu
+ASUS C622A
+Tryb Standardowy VGA 1920 x 1080 @ 60Hz
+• Splendid Demo Mode: umożliwia podział ekranu na dwie części w celu 
+porównania trybów Splendid. (Tylko w trybie Sceneria)
+• ECO Mode: powoduje zmniejszenie zużycia energii.
+• Ładowanie USB (tylko modele C422AQ/C422AQH/C423AQ/C424AQ/
+C620AQ/C622AQ/C622AQH/C623AQ/C623AQH/C623AQR/C624AQ/
+C624BQ/C624AQH/C624BQH/C627AQ): 
+* Opcja „WŁ.” umożliwia używanie portów przesyłania danych USB 
+do generowania napięcia 5 V/500 mA, gdy monitor jest włączony 
+lub w trybie gotowości.
+* Opcja „WYŁ.” umożliwia używanie portów przesyłania danych 
+USB do generowania napięcia 5 V/500 mA, gdy monitor jest 
+włączony.
+• Ładowanie USB (tylko modele C624WQ): 
+* “WŁ.” umożliwia generowanie przez porty pobierania danych 
+USB wyjścia 5V/2A lub 5V/900mA, gdy monitor jest włączony lub 
+gdy znajduje się w trybie gotowości. Tabela poniżej pokazuje, 
+czy porty USB pobierania danych można używać do ładowania 
+urządzenia zewnętrznego w różnych sytuacjach. 
+Port pobierania 
+danych
+Stan 
+monitora
+Gdy port przesyłania 
+danych jest 
+podłączony do 
+komputera PC...
+Gdy port przesyłania 
+danych NIE jest 
+podłączony do 
+komputera PC...
+Port 
+Włącz Umożliwia ładowanie Umożliwia ładowanie
+Oczekiwanie Umożliwia ładowanie Umożliwia ładowanie
+Port 
+Włącz Umożliwia ładowanie Nie umożliwia 
+ładowania
+Oczekiwanie Umożliwia ładowanie Nie umożliwia 
+ładowania
+3-8 Rozdział 3: Menu OSD (ang. On-Screen Display) 
+* “WYŁ.” umożliwia generowanie przez porty pobierania danych 
+USB wyjścia 5V/2A lub 5V/900mA, tylko wtedy, gdy monitor jest 
+włączony. Tabela poniżej pokazuje, czy porty USB pobierania 
+danych można używać do ładowania urządzenia zewnętrznego w 
+różnych sytuacjach. 
+Port pobierania 
+danych
+Stan 
+monitora
+Gdy port przesyłania 
+danych jest 
+podłączony do 
+komputera PC...
+Gdy port przesyłania 
+danych NIE jest 
+podłączony do 
+komputera PC...
+Port 
+Włącz Umożliwia ładowanie Umożliwia ładowanie
+Oczekiwanie Nie umożliwia 
+ładowania
+Nie umożliwia 
+ładowania
+Port 
+Włącz Umożliwia ładowanie Nie umożliwia 
+ładowania
+Oczekiwanie Nie umożliwia 
+ładowania
+Nie umożliwia 
+ładowania
+• Ustawienia OSD: 
+* Umożliwia dostosowanie Czasu zakończenia wyświetlania OSD 
+poprzez wybór wartości od 10 do 120 sekund. 
+* Włącza lub wyłącza funkcję DDC/CI.
+* Dostosowuje Tło menu OSD, od ciemnego do przezroczystego.
+• Język: dostępnych jest 21 języków do wyboru, w tym angielski, francuski, 
+niemiecki, włoski, hiszpański, holenderski, portugalski, rosyjski, czeski, 
+chorwacki, polski, rumuński, węgierski, turecki, uproszczony chiński, 
+tradycyjny chiński, japoński, koreański, tajski, indonezyjski i perski. 
+• Blokada klawiszy: służy do wyłączania klawiszy wszystkich funkcji. 
+Naciskaj drugi przycisk z prawej strony przez ponad pięć sekund, aby 
+anulować funkcję blokady klawiszy.
+• Automatycznie wykrywanie źródła (tylko model C624WQ/C627AQ): 
+włącza lub wyłącza funkcję automatycznego wykrywania źródła.
+• Informacje: wyświetla informacje o monitorze. 
+• Wskaźnik zasilania: włącza/wyłącza wskaźnik LED zasilania.
+• Czujnik człowieka (tylko model C623AQR): włącza/wyłącza funkcję 
+wykrywania użytkownika i ustawia jej czułość. Efektywny zasięg wynosi 
+od 50 do 70 cm. Domyślne ustawienie to WYŁ. 
+* Niska: odległość czujnika wynosi ok 50 cm.
+* Średnia: odległość czujnika wynosi ok 60 cm.
+* Wysoka: odległość czujnika wynosi ok 70 cm.
+3-9Monitor LCD z serii ASUS C 
+• Zakres wykrywania może się nieznacznie różnić, jeśli użytkownik jest 
+ubrany w ciemne lub jasne kolory. Ustaw wysoką czułość, jeśli użytkownik 
+jest ubrany w czarne lub inne ciemne kolory.
+• Aby uniknąć zakłóceń, nie należy umieszczać żadnych przedmiotów w 
+pobliżu Czujnika człowieka.
+• Blokada zasilania: powoduje włączenie lub wyłączenie przycisku 
+zasilania.
+• Wyzeruj wszystko: wybór opcji „TAK” umożliwia przywrócenie ustawień 
+domyślnych.
+8. Skrót
+Definiuje funkcje dla przycisków Skrót 1 i 2.
+Skrót 1
+Skrót 2
+ 
+Skrót
+ASUS C622A
+Tryb Standardowy VGA 1920 x 1080 @ 60Hz
+• Skrót 1/Skrót 2: wybiera funkcję dla przycisków Skrót 1 i 2.
+W przypadku wyboru lub aktywacji określonej funkcji klawisz skrótu może 
+nie być obsługiwany. Dostępne funkcje dla klawisza skrótu: Filtr światła 
+nieb., Splendid, Jasność, AUTOM. regulacja, Kontrast, Temp. barwowa, 
+Głośność.
+3-10 Rozdział 3: Menu OSD (ang. On-Screen Display) 
+3.2 Podsumowanie specyfikacji
+C422A/C423A/C424A
+Rodzaj panelu Wyświetlacz LCD TFT
+Rozmiar panelu C422AQ/C422AQE/C422AQH/C422AQHE: 
+ekran panoramiczny 21,5" (16:9, 54,6 cm) 
+C423AQ/C423AQE: ekran panoramiczny 23" (16:9, 
+58,4 cm) 
+C424AQ/C424AQE: ekran panoramiczny 23,8" 
+(16:9, 60,5 cm)
+Maks. rozdzielczość C422AQ/C422AQE/C422AQH/C422AQHE: 
+1920 x 1080 
+C423AQ/C423AQE: 1920 x 1080 
+C424AQ/C424AQE: 1920 x 1080
+Podziałka pikseli C422AQ/C422AQE/C422AQH/C422AQHE: 
+0,248 mm x 0,248 mm 
+C423AQ/C423AQE: 0.2652 mm x 0.2652 mm 
+C424AQ/C424AQE: 0,2745 mm x 0,2745 mm
+Jasność (typowa) 250 cd/m2
+Współczynnik kontrastu 
+(typowy)
+1000:1
+Współczynnik kontrastu 
+(maksymalny)
+100.000.000:1 (przy włączonej funkcji ASCR)
+Kąt widzenia (poz./pion.) 
+CR>10
+178˚/178˚
+Kolory wyświetlacza 16,7 M
+Czas reakcji < 5 ms
+Funkcja poprawy jakości wideo 
+SplendidPlus
+Tak
+Wybór funkcji SplendidPlus 7 zaprogramowanych trybów wideo
+Automatyczna regulacja Tak
+Wybór temperatury barwowej 4 temperatury barwowe
+Wejście analogowe D-sub
+Wejście cyfrowe DVI-D z HDCP, DisplayPort v1.2, HDMI (tylko 
+modele C422AQH/C422AQHE)
+Gniazdo słuchawek Tak
+Wejście audio Tak
+Głośnik (wbudowany) 2 W x 2 Stereo, RMS
+Port USB 2.0 Przesyłania danych x 1, pobierania danych x 2 
+(tylko modele C422AQ/C423AQ/C424AQ)
+Port USB 3.0 Przesyłania danych x 1, pobierania danych x 2 
+(tylko modele C422AQH)
+Kolory Czarny
+Dioda LED zasilania Biała (Wł.)/Bursztynowa (tryb gotowości)
+Nachylenie +20˚~ -5˚
+Obrót wyświetlacza Nie
+Obracanie Nie
+Regulacja wysokości Nie
+Blokada Kensington Tak
+3-11Monitor LCD z serii ASUS C 
+Napięcie wejścia prądu 
+przemiennego
+Prąd przemienny: 100-240 V
+Zużycie energii C422AQ/C422AQE/C422AQH/C422AQHE: 
+Włączone zasilanie: < 21,09 W** (typowe), Tryb 
+gotowości: < 0,5 W (typowe), Wyłączone zasilanie: 
+0 W (Wyłączone urządzenie) 
+C423AQ/C423AQE: Włączone zasilanie: < 22 
+W** (typowe), Tryb gotowości: < 0,5 W (typowe), 
+Wyłączone zasilanie: 0 W (Wyłączone urządzenie) 
+C424AQ/C424AQE: Włączone zasilanie: < 22,97 
+W** (typowe), Tryb gotowości: < 0,5 W (typowe), 
+Wyłączone zasilanie: 0 W (Wyłączone urządzenie)
+Temperatura (pracy) 0˚C-40˚C
+Temperatura (niepracującego 
+urządzenia)
+-20˚C-+60˚C
+Wymiary (W x Sz x Gł) ze 
+stojakiem
+C422AQ/C422AQE/C422AQH/C422AQHE: 
+514 x 383 x 195 mm (urządzenie), 
+576 x 442 x 120 mm (opakowanie) 
+C423AQ/C423AQE: 548 x 403 x 195 mm 
+(urządzenie), 617 x 119 x 462 mm (opakowanie) 
+C424AQ/C424AQE: 562 x 406 x 195 mm 
+(urządzenie), 632 x 127 x 465 mm (opakowanie) 
+Waga (szacowana) C422AQ/C422AQE/C422AQH/C422AQHE: 
+3,8 kg (netto); 5,3 kg (brutto) 
+C423AQ/C423AQE: 4,3 kg (netto); 5,7 kg (brutto) 
+C424AQ/C424AQE: 4,3 kg (netto); 5,9 kg (brutto)
+Wiele języków 21 języków (angielski, francuski, niemiecki, włoski, 
+hiszpański, holenderski, portugalski, rosyjski, 
+czeski, chorwacki, polski, rumuński, węgierski, 
+turecki, uproszczony chiński, tradycyjny chiński, 
+japoński, koreański, tajski, indonezyjski i perski)
+Akcesoria Przewód zasilania, przewód DVI (opcjonalny), 
+przewód DisplayPort, przewód VGA, przewód 
+audio, przewód USB (tylko modele C422AQ/
+C422AQH/C423AQ/C424AQ), skrócona instrukcja 
+obsługi, karta gwarancyjna
+Zgodność i normy UL/cUL, CB, CE, ErP, FCC, ISO9241-307, RCM, 
+VCCI, RoHS, Windows 7 & 8 WHQL, Energy Star®, 
+Flicker Free, Low blue Light, TUV-GS, TUV-Ergo, 
+CU, PSE, WEEE, EMC DoC, UkrSEPRO, MEPS, 
+NFPA99
+*Specyfikacje mogą ulec zmianie bez powiadomienia.
+**pomiar jasności ekranu o wartości 200 nitów bez połączenia audio/USB/czytnika kart.
+3-12 Rozdział 3: Menu OSD (ang. On-Screen Display) 
+C620A/C622A/C623A/C624A/C624B/C624W
+Rodzaj panelu Wyświetlacz LCD TFT
+Rozmiar panelu C620AQ/C620AQE: ekran panoramiczny 19,45" 
+(16:10, 49,4 cm) 
+C622AQ/C622AQE/C622AQH: ekran panoramiczny 
+21,5" (16:9, 54,6 cm)
+C623AQ/C623AQE/C623AQR/C623AQH: ekran 
+panoramiczny 23" (16:9, 58,4 cm) 
+C624AQ/C624AQE/C624AQH: ekran panoramiczny 
+23,8" (16:9, 60,5 cm) 
+C624BQ/C624BQH/C624WQ: ekran panoramiczny 
+24" (16:10, 61,13 cm)
+Maks. rozdzielczość C620AQ/C620AQE: 1440 x 900 
+C622AQ/C622AQE/C622AQH: 1920 x 1080 
+C623AQ/C623AQE/C623AQR/C623AQH: 1920 x 1080 
+C624AQ/C624AQE/C624AQH: 1920 x 1080 
+C624BQ/C624BQH/C624WQ: 1920 x 1200
+Podziałka pikseli C620AQ/C620AQE: 0,2907 mm x 0,2915 mm 
+C622AQ/C622AQE/C622AQH: 0,248 mm x 0,248 mm 
+C623AQ/C623AQE/C623AQR/C623AQH: 0,2652 mm x 
+0,2652 mm
+C624AQ/C624AQE/C624AQH: 0,2745 mm x 0,2745 mm 
+C624BQ/C624BQH/C624WQ: 0,270 mm x 0,270 mm
+Jasność (typowa) C620AQ/C620AQE/C622AQ/C622AQE/C622AQH/
+C623AQ/C623AQE/C623AQR/C623AQH/C624AQ/
+C624AQE/C624AQH/C624BQ: 250 cd/m2
+C624BQH/C624WQ: 300 cd/m2
+Współczynnik kontrastu 
+(typowy)
+1000:1
+Współczynnik kontrastu 
+(maksymalny)
+100.000.000:1 (przy włączonej funkcji ASCR)
+Kąt widzenia (poz./pion.) 
+CR>10
+178˚/178˚
+Kolory wyświetlacza 16,7 M
+Czas reakcji < 5 ms
+Funkcja poprawy jakości wideo 
+SplendidPlus
+Tak
+Wybór funkcji SplendidPlus 7 - 8 zaprogramowanych trybów wideo
+Automatyczna regulacja Tak
+Wybór temperatury barwowej 4 temperatury barwowe
+Wejście analogowe D-sub
+Wejście cyfrowe DVI-D z HDCP, DisplayPort v1.2, HDMI (tylko 
+model C622AQH/C623AQH/C624AQH/C624BQH/
+C624WQ)
+Gniazdo słuchawek Tak
+Wejście audio Tak
+Głośnik (wbudowany) 2 W x 2 Stereo, RMS
+Port USB 2.0 C620AQ/C622AQ/C623AQ/C623AQR/C624AQ/
+C624BQ: Przesyłania danych x 1, pobierania danych 
+x 2
+3-13Monitor LCD z serii ASUS C 
+Port USB 3.0 C622AQH/C623AQH/C624AQH/C624BQH: 
+Przesyłania danych x 1, pobierania danych x 2 
+C624WQ: Przesyłania danych x 1, pobierania 
+danych x 4
+Kolory Czarny
+Dioda LED zasilania Biała (Wł.)/Bursztynowa (tryb gotowości)
+Nachylenie +35˚~ -5˚
+Obrót wyświetlacza +90˚~ -90˚
+Obracanie +90˚~ -90˚
+Regulacja wysokości 130 mm
+Blokada Kensington Tak
+Napięcie wejścia prądu 
+przemiennego
+Prąd przemienny: 100-240 V
+Zużycie energii C620AQ/C620AQE: Włączone zasilanie: < 15,74 
+W** (typowe), Tryb gotowości: < 0,5 W (typowe), 
+Wyłączone zasilanie: 0 W (Wyłączone urządzenie) 
+C622AQ/C622AQE/C622AQH: Włączone zasilanie: 
+< 21,09 W** (typowe), Tryb gotowości: < 0,5 W 
+(typowe), Wyłączone zasilanie: 0 W (Wyłączone 
+urządzenie) 
+C623AQ/C623AQE/C623AQR/C623AQH: 
+Włączone zasilanie: < 22 W** (typowe), Tryb 
+gotowości: < 0,5 W (typowe), Wyłączone zasilanie: 
+0 W (Wyłączone urządzenie) 
+C624AQ/C624AQE/C624AQH: Włączone zasilanie: 
+< 22,97 W** (typowe), Tryb gotowości: < 0,5 W 
+(typowe), Wyłączone zasilanie: 0 W (Wyłączone 
+urządzenie) 
+C624BQ/C624BQH: Włączone zasilanie: < 25,4 
+W** (typowe), Tryb gotowości: < 0,5 W (typowe), 
+Wyłączone zasilanie: 0 W (Wyłączone urządzenie) 
+C624WQ: Włączone zasilanie: < 13,3 W** (typowe), 
+Tryb gotowości: < 0,22 W (typowe), Wyłączone 
+zasilanie: 0 W (Wyłączone urządzenie)
+Temperatura (pracy) 0˚C-40˚C
+Temperatura (niepracującego 
+urządzenia)
+-20˚C-+60˚C
+3-14 Rozdział 3: Menu OSD (ang. On-Screen Display) 
+Wymiary (W x Sz x Gł) ze 
+stojakiem
+C620AQ/C620AQE: 459 x 477 x 211 mm (najwyższe), 
+459 x 347 x 211 mm (najniższe), 
+621 x 173 x 382 mm (opakowanie) 
+C622AQ/C622AQE/C622AQH: 514 x 477 x 211 mm 
+(najwyższe), 514 x 347 x 211 mm (najniższe), 
+643 x 378 x 190 mm (opakowanie) 
+C623AQ/C623AQE/C623AQR/C623AQH: 548 x 
+490 x 211 mm (najwyższe), 548 x 360 x 211 mm 
+(najniższe), 652 x 173 x 403 mm (opakowanie) 
+C624AQ/C624AQE/C624AQH: 562 x 492 x 211 mm 
+(najwyższe), 562 x 362 x 211 mm (najniższe), 660 x 
+180 x 420 mm (opakowanie) 
+C624BQ/C624BQH: 561 x 511 x 211 mm (najwyższy), 
+561 x 381 x 211 mm (najniższy), 662 x 179 x 454 mm 
+(opakowanie) 
+C624WQ: 533 x 505 x 211 mm (najwyższe), 533 
+x 375 x 211 mm (najniższe), 649 x 192 x 474 mm 
+(opakowanie) 
+Waga (szacowana) C620AQ/C620AQE: 4,8 kg (netto); 6,4 kg (brutto) 
+C622AQ/C622AQE/C622AQH: 5,7 kg (netto); 
+7,2 kg (brutto) 
+C623AQ/C623AQE/C623AQR/C623AQH: 
+5,7 kg (netto); 7,3 kg (brutto) 
+C624AQ/C624AQE/C624AQH: 5,8 kg (netto); 
+7,9 kg (brutto) 
+C624BQ/C624BQH: 6,2 kg (netto); 8,2 kg (brutto) 
+C624WQ: 6,1 kg (netto); 3,9 kg (bez stojaka); 8,3 
+kg (brutto)
+Wiele języków 21 języków (angielski, francuski, niemiecki, włoski, 
+hiszpański, holenderski, portugalski, rosyjski, 
+czeski, chorwacki, polski, rumuński, węgierski, 
+turecki, uproszczony chiński, tradycyjny chiński, 
+japoński, koreański, tajski, indonezyjski i perski)
+Akcesoria Przewód zasilania, przewód DVI (opcjonalny), 
+przewód HDMI (opcjonalny), przewód DisplayPort 
+(opcjonalny), przewód VGA (opcjonalny), przewód 
+audio (opcjonalny), przewód USB (tylko modele 
+C620AQ/C622AQ/C623AQ/C623AQR/C624AQ/
+C624BQ/C624WQ), skrócona instrukcja obsługi, 
+karta gwarancyjna, Zestaw MiniPC (opcjonalny)
+Zgodność i normy UL/cUL, CB, CE, ErP, FCC, ISO9241-307, RCM, 
+VCCI, RoHS, Windows 7 & 8 & 10 WHQL, Energy 
+Star®, Flicker Free, Low blue Light, TUV-GS, TUV-
+Ergo, CU, PSE, WEEE, EMC DoC, UkrSEPRO, 
+MEPS, BSMI, NFPA99
+Wyłącznie dla C624WQ: CCC, CEL, PC Recycle, 
+J-MOSS, KC, KCC, e-Standby, TCO 8.0, ICE-3
+*Specyfikacje mogą ulec zmianie bez powiadomienia.
+**pomiar jasności ekranu o wartości 200 nitów bez połączenia audio/USB/czytnika kart.
+3-15Monitor LCD z serii ASUS C 
+C627A
+Rodzaj panelu Wyświetlacz LCD TFT
+Rozmiar panelu Ekran panoramiczny 27" (16:9, 68,47 cm)
+Maks. rozdzielczość 2560 x 1440
+Podziałka pikseli 0,2331 mm x 0,2331 mm
+Jasność (typowa) 350 cd/m2
+Współczynnik kontrastu 
+(typowy)
+1000:1
+Współczynnik kontrastu 
+(maksymalny)
+100.000.000:1 (przy włączonej funkcji ASCR)
+Kąt widzenia (poz./pion.) 
+CR>10
+178˚/178˚
+Kolory wyświetlacza 16,7 M
+Czas reakcji < 5 ms
+Funkcja poprawy jakości wideo 
+SplendidPlus
+Tak
+Wybór funkcji SplendidPlus 8 zaprogramowanych trybów wideo
+Automatyczna regulacja Tak
+Wybór temperatury barwowej 4 temperatury barwowe
+Wejście analogowe Nie
+Wejście cyfrowe DVI-D z HDCP, DisplayPort v1.2, HDMI, mini 
+DisplayPort
+Gniazdo słuchawek Tak
+Wejście audio Tak
+Głośnik (wbudowany) 2 W x 2 Stereo, RMS
+Port USB 3.0 Przesyłania danych x 1, pobierania danych x 4
+Kolory Czarny
+Dioda LED zasilania Biała (Wł.)/Bursztynowa (tryb gotowości)
+Nachylenie +35˚~ -5˚
+Obrót wyświetlacza +90˚~ -90˚
+Obracanie +90˚~ -90˚
+Regulacja wysokości 150 mm
+Blokada Kensington Tak
+Napięcie wejścia prądu 
+przemiennego
+Prąd przemienny: 100-240 V
+Zużycie energii Włączone zasilanie: < 75 W** (typowe), Tryb 
+gotowości: < 0,5 W (typowe), Wyłączone zasilanie: 
+0 W (Wyłączone urządzenie)
+Temperatura (pracy) 0˚C-40˚C
+Temperatura (niepracującego 
+urządzenia)
+-20˚C-+60˚C
+Wymiary (W x Sz x Gł) bez 
+stojaka
+615 x 372 x 51 mm
+Wymiary (W x Sz x Gł) ze 
+stojakiem
+615 x 532 x 226 mm (najwyższy) 
+615 x 382 x 226 mm (najniższy) 
+735 x 216 x 464 mm (opakowanie)
+Waga (szacowana) 7,7 kg (netto); 5 kg (Bez stojaka); 10,8 kg (brutto)
+3-16 Rozdział 3: Menu OSD (ang. On-Screen Display) 
+Wiele języków 21 języków (angielski, francuski, niemiecki, włoski, 
+hiszpański, holenderski, portugalski, rosyjski, 
+czeski, chorwacki, polski, rumuński, węgierski, 
+turecki, uproszczony chiński, tradycyjny chiński, 
+japoński, koreański, tajski, indonezyjski i perski)
+Akcesoria Przewód zasilania, przewód DVI (opcjonalny), 
+przewód HDMI, przewód DisplayPort, przewód 
+DisplayPort (Mini-DP do DP) (opcjonalny), przewód 
+audio, przewód USB, skrócona instrukcja obsługi, 
+karta gwarancyjna
+Zgodność i normy UL/cUL, FCC, ICES-3, CB, CE, ErP, WEEE, TUV-
+GS, TUV-Ergo, ISO 9241-307, UkrSEPRO, CU, 
+CCC, CEL, BSMI, RCM, MEPS, VCCI, PSE, PC 
+Recycle, J-MOSS, KC, KCC, e-Standby, Energy 
+Star®, RoHs, Windows 7/8.1/10 WHQL, Flicker 
+Free, Low Blue Light, NFPA99
+*Specyfikacje mogą ulec zmianie bez powiadomienia.
+**pomiar jasności ekranu o wartości 200 nitów bez połączenia audio/USB/czytnika kart.
+3-17Monitor LCD z serii ASUS C 
+3.3 Rozwiązywanie problemów (Często 
+ zadawane pytania)
+Problem Możliwe rozwiązanie
+Dioda zasilania LED nie jest 
+WŁĄCZONA
+• Naciśnij przycisk , aby sprawdzić, czy monitor 
+znajduje się w trybie WŁ.
+• Sprawdź, czy przewód zasilania jest odpowiednio 
+podłączony do monitora i do gniazda zasilania. 
+• Sprawdź, czy przełącznik zasilania jest 
+WŁĄCZONY.
+Dioda zasilania LED świeci się na 
+bursztynowo a na ekranie brak 
+obrazu 
+• Sprawdź, czy monitor i komputer znajdują się w 
+trybie WŁ.
+• Upewnij się, że przewód sygnałowy jest 
+odpowiednio podłączony do monitora i komputera.
+• Obejrzyj przewód sygnałowy i sprawdź, czy żaden 
+z wtyków nie jest wygięty.
+• Podłącz komputer do innego dostępnego 
+monitora, aby sprawdzić, czy komputer działa 
+prawidłowo.
+Obraz na ekranie jest zbyt jasny 
+lub zbyt ciemny
+• Dostosuj ustawienia Kontrast i Jasności w menu 
+OSD.
+Obraz na ekranie nie jest 
+wypośrodkowany lub ma 
+nieprawidłowy rozmiar
+• Dostosuj ustawienia Pozycji poziomej i Pozycji 
+pionowej w menu OSD.
+Obraz na ekranie podskakuje lub 
+na obrazie widoczny jest wzór fali
+• Upewnij się, że przewód sygnałowy jest 
+odpowiednio podłączony do monitora i komputera.
+• Odsuń urządzenia elektryczne, które mogą 
+powodować zakłócenia elektryczne.
+Kolory obrazu na ekranie są 
+zniekształcone (kolor biały nie 
+wygląda jak biały)
+• Obejrzyj przewód sygnałowy i sprawdź, czy żaden 
+z wtyków nie jest wygięty. 
+• Włącz funkcję Wyzeruj wszystko w menu OSD.
+• Dostosuj ustawienia koloru R/G/B lub wybierz 
+Temp. barwowa w menu OSD.
+Obraz na ekranie jest niewyraźny 
+lub nieostry
+• Dostosuj ustawienia opcji Faza i Zegar w menu 
+OSD.
+Brak dźwięku lub dźwięk jest 
+bardzo cichy
+• Upewnij się, że przewód HDMI/DisplayPort jest 
+odpowiednio podłączony do monitora i komputera.
+• Dostosuj ustawienia głośności posiadanego 
+monitora oraz urządzenia HDMI/DisplayPort. 
+• Upewnij się, że sterownik karty dźwiękowej 
+komputera jest odpowiednio zainstalowany i 
+uruchomiony.
+3-18 Rozdział 3: Menu OSD (ang. On-Screen Display) 
+3.4 Obsługiwane tryby operacyjne
+C620A
+Rozdzielczość 
+Częstotliwość
+Częstotliwość 
+pozioma (KHz)
+Częstotliwość 
+pionowa (Hz)
+Pikseli (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 48,08(P) 72,12(P) 50,00
+800x600 46,86(P) 75,00(P) 49,50
+832x624 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1360x768 47,712(P) 59,79(P) 85,5
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+* „P” i „N” oznaczają biegun „dodatni” i „ujemny” wejściowych H-sync/V-sync (taktowanie 
+wejściowe).
+Jeśli monitor działa w trybie wideo (tzn. nie są wyświetlane na nim dane), oprócz wideo w 
+rozdzielczości standardowej obsługiwane powinny także być następujące tryby rozdzielczości HD.
+Ustawienie 
+wstępne
+Nazwa 
+taktowania
+Format 
+pikseli
+Częstotliwość 
+pozioma (KHz)
+Częstotliwość 
+pionowa (Hz)
+Częstotliwość 
+pikseli (MHz)
+Menu OSD
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+3-19Monitor LCD z serii ASUS C 
+C422A/C622A/C423A/C623A/C424A/C624A
+Rozdzielczość 
+Częstotliwość
+Częstotliwość 
+pozioma (KHz)
+Częstotliwość 
+pionowa (Hz)
+Pikseli (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 48,08(P) 72,12(P) 50,00
+800x600 46,86(P) 75,00(P) 49,50
+832x624 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(N) 108
+1280x1024 79,98(P) 75,02(N) 135
+1360x768 47,712(P) 59,79(P) 85,5
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(P) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+* „P” i „N” oznaczają biegun „dodatni” i „ujemny” wejściowych H-sync/V-sync (taktowanie 
+wejściowe).
+3-20 Rozdział 3: Menu OSD (ang. On-Screen Display) 
+Jeśli monitor działa w trybie wideo (tzn. nie są wyświetlane na nim dane), oprócz wideo w 
+rozdzielczości standardowej obsługiwane powinny także być następujące tryby rozdzielczości HD.
+Ustawienie 
+wstępne
+Nazwa 
+taktowania
+Format 
+pikseli
+Częstotliwość 
+pozioma 
+(KHz)
+Częstotliwość 
+pionowa (Hz)
+Częstotliwość 
+pikseli (MHz)
+Menu OSD
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+C624B
+Rozdzielczość Częstotliwość Częstotliwość 
+pozioma (KHz)
+Częstotliwość 
+pionowa (Hz)
+Pikseli 
+(MHz)
+640x480 31,47(N) 59,94(N) 25,18
+800x600 35,16(P) 56,25(P) 36
+800x600 37,88(P) 60,32(P) 40
+1024x768 48,36(N) 60,00(N) 65
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(P) 108
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(N) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+1920x1200(Obniżone wygaszanie) 74,038(P) 59,95(N) 154
+* „P” i „N” oznaczają biegun „dodatni” i „ujemny” wejściowych H-sync/V-sync (taktowanie 
+wejściowe). 
+* Tryby nie wymienione w tabeli mogą nie być obsługiwane. Aby uzyskać optymalną rozdzielczość, 
+zalecamy wybór trybu wymienionego w powyższej tabeli.
+* Ten monitor obsługuje treści wideo w rozdzielczości Full HD (480p, 576p, 720p, 1080i/p) z konsoli 
+do gier, odtwarzaczy DVD i innych urządzeń wideo klienta za pośrednictwem HDMI.
+Jeśli monitor działa w trybie wideo (tzn. nie są wyświetlane na nim dane), oprócz wideo w 
+rozdzielczości standardowej obsługiwane powinny także być następujące tryby rozdzielczości HD.
+Ustawienie 
+wstępne
+Nazwa 
+taktowania
+Format pikseli Częstotliwość 
+pozioma (KHz)
+Częstotliwość 
+pionowa (Hz)
+Częstotliwość 
+pikseli (MHz)
+Menu OSD
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+3-21Monitor LCD z serii ASUS C 
+C627A
+Rozdzielczość 
+Częstotliwość
+Częstotliwość 
+pozioma (KHz)
+Częstotliwość 
+pionowa (Hz)
+Pikseli (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480 37,87(N) 72,82(N) 31,5
+640x480 37,5(N) 75,00(N) 31,5
+720x400 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36,00
+800x600 37,88(P) 60,32(P) 40,00
+800x600 46,86(P) 75,00(P) 49,50
+1024x768 48,36(N) 60,00(N) 65,00
+1024x768 56,476(N) 70,069(N) 75,00
+1024x768 60,02(N) 75,00(N) 78,75
+1152x864 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(N) 108
+1280x1024 79,98(P) 75,02(N) 135
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(P) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+1920x1200 
+(Obniżone 
+wygaszanie)
+74,038(P) 59,95(N) 154
+1920x1200 74,556(N) 59,885(P) 193,25
+2048x1152 
+(Obniżone 
+wygaszanie)
+70,99(P) 59,9(N) 156,75
+2560x1080 66,636(P) 59,978(N) 181,25
+2560x1440 88,787(P) 59,951(N) 241,5
+* „P” i „N” oznaczają biegun „dodatni” i „ujemny” wejściowych H-sync/V-sync (taktowanie 
+wejściowe).
+Jeśli monitor działa w trybie wideo (tzn. nie są wyświetlane na nim dane), oprócz wideo w 
+rozdzielczości standardowej obsługiwane powinny także być następujące tryby rozdzielczości HD.
+3-22 Rozdział 3: Menu OSD (ang. On-Screen Display) 
+Ustawienie 
+wstępne
+Nazwa 
+taktowania
+Format 
+pikseli
+Częstotliwość 
+pozioma 
+(KHz)
+Częstotliwość 
+pionowa (Hz)
+Częstotliwość 
+pikseli (MHz)
+Menu OSD
+1 480p 720 x 480 31,469 60 27 480p-60Hz
+2 720p60 1280 x 720 45 60 74,25 720p-60Hz
+3 576p 720 x 576 31,25 50 27 576p-50Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p-50Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p-60Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p-50Hz
+C624W
+Rozdzielczość 
+Częstotliwość
+Częstotliwość 
+pozioma (KHz)
+Częstotliwość 
+pionowa (Hz)
+Pikseli (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480* 37,87(N) 72,82(N) 31,5
+640x480* 37,5(N) 75,00(N) 31,5
+720x400* 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36
+800x600 37,88(P) 60,32(P) 40
+800x600* 46,86(P) 75,00(P) 49,5
+832X624* 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65
+1024x768 56,476(N) 70,069(N) 75
+1024x768* 60,02(N) 75,00(N) 78,75
+1152x864* 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(P) 108
+1280x1024* 79,98(P) 75,02(P) 135
+1366x768 47,712(P) 59,79(P) 85,5
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(N) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+3-23Monitor LCD z serii ASUS C 
+1920x1200 
+(Obniżone 
+wygaszanie)
+74,038(P) 59,95(N) 154
+Nazwa 
+taktowania
+Format pikseli Częstotliwość 
+pozioma (KHz)
+Częstotliwość 
+pionowa (Hz)
+Częstotliwość 
+pikseli (MHz)
+480p 720 x 480 31,469 60 27
+720p60 1280 x 720 45 60 74,25
+576p 720 x 576 31,25 50 27
+720p50 1280 x 720 37,5 50 74,25
+1080p60 1920 x 1080 67,5 60 148,5
+1080p50 1920 x 1080 56,25 50 148,5
+* Te taktowania nie są obsługiwane podczas używania funkcji OverScan. 
+ Zawartość
+ Uwagi
+ Informacje dotyczące bezpieczeństwa
+ Obsługa i czyszczenie
+ Takeback Services
+ Rozdział 1: Informacje o produkcie
+ 1.1 Witamy! 
+ 1.2 Zawartość opakowania
+ 1.3 Opis monitora
+ 1.3.1 Widok z przodu
+ 1.3.2 Widok z tyłu
+ 1.3.3 Funkcja QuickFit
+ Rozdział 2: Konfiguracja
+ 2.1 Montaż ramienia/podstawy monitora
+ 2.2 Demontaż ramienia/podstawy (do montażu ściennego VESA)
+ 2.3 Montaż/demontaż zestawu MiniPC (C620A/C622A/C623A/C624A/ C624B/C624C/C627A)
+ 2.4 Ustawianie monitora
+ 2.5 Podłączanie przewodów
+ 2.6 Włączanie monitora
+ Rozdział 3: Instrukcje ogólne
+ 3.1 Menu OSD (ang. On-Screen Display) 
+ 3.1.1 Ponowna konfiguracja
+ 3.1.2 Informacje o funkcjach menu OSD
+ 3.2 Podsumowanie specyfikacji
+ 3.3 Rozwiązywanie problemów (Często zadawane pytania)
+ 3.4 Obsługiwane tryby operacyjne

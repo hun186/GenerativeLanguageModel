@@ -1,0 +1,200 @@
+'T」 JF
+
+121/24 小 晓 艇 讥 换 霁 长 按 !HP 罐 约 5 秋 国 国
+MODEF 可 切 换 晃 颤 / 吕 期 / 症 锭
+
+@ “ 功 能 简 丫 :
+
+_ 一 万 年 历 : 显 示 年 (1900 年 一 2099 年 ) 、 月、 日 及 自 动 调 整 星 期 :
+一 正 常 时 间 , 显 示 时 、 分 , 实 现 12/24 小 时 时 间 制 转 换 :;
+一 闹 钟 功 能 , 可 设 定 每 天 闹 铃 、 整 点 报 时 、 贪 睡 ( 懒 床 ) 提 醒 功 能 ;
+
+UP、DOWN 为 + - 鳢 `′′′='′1"。麦Z蔓亘童茎^蠢`…妻丢「]1〔骂………i[荸…嗝，】 光 绍
+
+“ 一 温 谊 度 变 化 4 级 天 气 预 报 : 普 天 、 半 晴 、 阴 天 、 雨 天 ;
+
+一 舒 适 度 图 案 显 示 : 干 燥 、 舒 适 、 潮 湿 3 级 舒 适 度 图 案 :
+
+一 温 湿 度 检 测 范 围 0IC 一 60“C, 刷 新 时 间 60 秒 , 湿 度 20%W 一 99% , 刷 新 时 间 : 60 秒 “C/ 中 温 度 单 位 按 键 切 换 功 能 :
+一 语 言 显 示 , 七 段 星 期 语 言 显 示 ; ′
+
+一 温 度 曲 线 图 : 12 小 时 温 度 变 化 趋 势 曲 线 图 ;
+
+一 温 湿 度 记 录 , 温 涨 度 最 大 最 小 值 历 史 记 录 ;
+
+一 低 电 压 检 测 功 能 :
+
+一 背 光 功 能 :
+
+@ “ 基 本 操 作 :
+在 时 间 模 式 下 ; 按 “MODE“ 键 可 切 换 模 式 , 依 次 切 换 顺 序 ; 曰妄葭E]刁莫三〔亡 闹 铃 模 式 、 依 次 循 环 , 亘菽`^不查`′紊【，牙壬{[了I按夕昼堑乏茎才【少'熹′誓]〕区回至u正′…'_『菅宫，l疆_J`
+间 显 示
+
+@ 设 置 时 间 | ′
+在 时 间 模 式 下 , 按 住 “MODE“ 键 三 秒 钟 , 可 以 进 行 时 间 的 设 置 。 时 钟 的 数 字 进 入 闪 烁 状 态 , 通 过 按 “UP“ 或 “D0WN“ 来 进 行 设 置
+小 时 加 减 ; 长 按 住 “UP“ 或 “D0WN“ 键 不 放 加 速 递 增 或 递 减 功 能 . ′ ′
+
+“ 再 按 一 次 “MODE“ 键 , 分 钟 的 数 字 进 入 闪 烁 状 态 , 通 过 按 “UP“ 或 “DOWN“ 来 进 行 设 置 分 钟 加 减 ; 长 按 住 “<UP“ 或 “DOWN“ 键 不
+
+. 放 加 速 递 增 或 递 减 功 能 。
+
+@ “ 设 置 闹 钟
+
+在 正 常 时 间 显 示 状 态 下 ; 按 “<MODE“ 两 次 , 进 入 闸 铃 时 间 的 设 置 。 ′
+
+“ 按 住 “MODE“ 键 三 秒 钟 , 可 以 进 行 闸 钟 的 设 置 。 小 时 数 字 进 入 闪 标 状 态 , 通 过 按 “UP“ 或 “DOWN“ 键 进 行 小 时 加 凑 ; 长 接 住
+“UP“ 或 “D0WN“ 键 不 放 加 速 递 增 或 递 减 功 能 。
+
+再 按 一 次 “MODE“ 键 , 分 钟 的 数 字 进 入 闪 烁 状 态 , 通 过 按 “UP“ 或 “DOWN“ 键 来 进 行 分 钟 加 减 ; 长 按 住 “UP“ 或 “DOWN“ 键 不 放 加
+速 递 增 或 递 减 功 能 。 一
+
+@ “ 设 置 日 历 “ ′ ′
+
+在 时 间 模 式 下 ; 按 “MODE“ 键 , 进 入 日 历 显 示 状 态 。 ` …
+再 按 住 “MODE“ 键 三 秒 表 , 进 入 日 历 设 置 功 能 。 年 份 数 字 闪 烁 , 通 过 按 “UP“ 或 “DOWN“ 键 来 设 置 年 份 , 再 按 一 次 “MODE“, 月
+份 数 字 闪 烁 , 通 过 按 “UP“ 或 “D0WN“ 键 来 设 置 月 份 。 再 按 一 次 “MODE“, 日 期 数 字 闪 烁 , 通 过 按 “UP“ 或 “DOWN“ 键 来 设 置 日 期
+: 长 按 “UP“ 或 “D0WN“ 键 有 连 加 连 减 功 能 。 星 期 随 着 日 期 的 变 化 而 自 动 变 化 ; 二 月 份 最 大 天 数 28 天 , 闰 年 二 月 份 最 大 天 数 29 天 。
+
+@ “ 闹 钟 的 开 / 关
+在 任 意 模 式 下 , 按 “UP “ 鲁I重开启亘'一,呓关I)〕]]_F盲]'熹毕〉工叉〕盲It`昙
+
+@ “ 温 涨 度 最 大 / 最 小
+
+在 任 一 状 态 , 按 “MAX/MIN“ ′s建_'荤】丁查看警扁l惠显/壹1'〔〕迂最'j、{直8蕙专三L自乏一;′〕)区回至u三__~′]前庵`芽J'<苓佳〕'_扁c'示 再 按 一 次 返 回 到 标 准 显 示 。
+
+在 每 天 凌 晨 0:00 自 动 清 除 过 去 一 天 存 储 记 忆 的 最 大 值 或 最 小 值 , 重 新 记 忆 新 一 天 的 最 大 最 小 值 , 不-'…【了手动薯肯醇嘉埕蚤L丨船`X/}'{IN}肝玉录 如 果
+“ 断 电 , 系 统 将 不 保 存 任 何 记 忆 。
+
+ 
+
+@ 12/24 小 时 格 式
+
+在 时 间 模 式 下 ; 按 住 “UP“ 键 三 秒 钟 , 可 转 换 12/24 小 时 制 显 示 模 式 。
+@ “ 温 度 显 示
+
+在 时 间 模 式 下 ; 按 <DOWN“ 键 , 可 转 换 摄 氏 “C 与 华 氏 下 显 示 模 式 .
+
+@ “ 天 气 预 报 显 示
+
+天 气 共 分 4 级 : 晰 天 、 半 晴 、 阴 天 、 雨 天 -
+
+@ 贪 睦
+
+闹 铃 响 闸 时 ; 按 “SNZ“ 键 可 开 启 贪 睡 , 一 次 可 贪 睡 8 分 钟 。
+
+@ “ 哲 停 / 胆 光 ′ ′
+
+在 任 何 模 式 下 , 按 “SNZ/LIGHT“ 键 可 开 启 背 光 灯 点 亮 8 秒 后 自 动 息 灭 .
+@ “ 电 池 更 换
+
+_茎…(lLCD鳌′莹蜇之字显看一文不v肯亘叼】Z麦l淳三显示及闹铃声音很小时 请 打 开 电 池 盖 , 更 换 同 样 的 两 节 “AAA“ 七 号 电 池 , 然 后 装 上 电 池 盖 .
+@ “ 注 意 事 项 ,
+
+* 本 机 是 采 用 两 节 “AAA“ 七 号 电 池 。
+
+* 本 机 应 放 置 在 防 潮 防 晒 地 方 , 防 止 剧 烈 碰 撞 、 振查动
+
+# 当 长 期 不 使 用 时 请 将 电 池 取 出 。
+
+* 当 装 上 电 池 后 LCD 显 示 内 容 错 乱 或 不 显 示 时 , 请 重 新 安 装 电 池 。
+* 本 说 明 书 如 有 更 改 恕 不 另 行 通 知 。
+Multifunctional pneumatic We霍lt_]e丨' forecast clock
+
+eFunctions:
+
+一 Calendar: show the year (1999- 二Z()99) month and day, automatically adjust the week;
+
+Normal time: show the hour and minute, realize 12/24 hour system conversion:
+
+-Alarm function: set daily alarm, hourly chime, snooze (sleep In) alerts:;
+
+一 Temperature and humidity change 4-level weather forecast: sunny, semi-sunny, cloudyy; rainy:;
+
+一 Comfort pattern show: dry, comfortable, moisture 3-level comfort pattermn:;
+
+一 Temperature and humidity detection range: 0C 一 60 C,refreshing time: 60s, humidity: 20?6 一 9906 , ″鏖freshmg time:60s.C/ 丁 temperature unit
+switching function:;
+
+一 Language show: seven-segment W(羞e丨( language show:;
+
+--Temperature curve: 12-hour temperature change trend curve:;
+
+一 Temperature and humidity record: history record of maximum and minimum temperature and humidity;
+一 Low-voltage detection function:;
+
+-~--Backlight;
+
+eBasic operation:
+In time mode, pressing“MODE“ button can switch the mode in sequence; date mode, alarm mode, followed by (:)/c丨(妻， or lt can return to tbhe normal
+time show ifnot pressing any buttons for 8 seconds.
+
+e@Set the time
+
+In time mode, pressing“MODE“ button for 3 seconds can set the time. The clock digltal flashes, pressing“UP“or“DOWNMN“ can set the hours;
+Pressing“UP“「or“DOWN“ buttons for a long time can accelerate the increment or decrement function,.
+
+Repress“MODE“ key, the minute digital flashes, pressing“UP“or“DOWN“ can set the minutes; Pressing “UP” or“DOWN“「 buttons for a long time
+can accelerate the increment or decrement function.
+
+eSet the alarm
+
+In the normal time show status, pressing“MODE“ for twice can set the alarm time.
+
+Pressing“MODE“ button for 3 seconds can set the alarm. The hour digital flashes, pressing“UP“or“DOWN“ button can set the hour:; 薹)】'壑妻SS丨【薹g “UP“「
+or“DOWN“ buttons for a long time can accelerate the increment or decrement function.
+
+Repress“MODE“ key, the minute digital flashes, pressing “UP“or“DOWN“「 can set the minutes; Pressing“UP“or “DOWN“「 buttons for a long time
+can accelerate the increment or decrement function.
+
+eSet the calendar
+
+Jn time mode, pressing“MODE“ button can enter the calendar show status.
+
+Repressing“MODE“ button for 3 seconds can set the calendar. The year digital flashes, pressing “UP“or“DOWN“ button can set the year, repressing
+“MODE「“,the month digital flashes, and pressing “UP“or“DOWN「“「 button can set the month. Repressing“MODE“, the date digital flashes, pressing
+
+“UP“or“DOWMN“「 button can set the data; pressing“UP“or“DOWN「“ button can increase or decrease continuously. The week automatically changes
+
+along with the date; the maximum day in February is 28, and that in leap year 1is 29.
+
+eAlarm on/o 代
+
+In any mode, pressing“UP“ button can turn on or turn o 任 the alarm
+
+Max/min temperature and humidity
+
+In any status, pressing“MAX/MIN“ button can check the maximum and minimum temperature and humidity, and it will retum to the (:ll薹`re薹】t standard
+show automatically after 8 seconds, repressing can retum to the standard show.
+
+At 0:00 at each day, the maximum or minimum storage memory in the past day will be cleared automatically, and it will record the maximum or
+minimum value at a new day, the MAX/MIN record can not be cleared manually. If power failure occurs, the system will not save any memory.
+
+@ 121/24 hour format
+In time mode, pressing “ 个 P“ button for 3 seconds can switch 12/24 hour system show mode:.
+
+eTemperature show
+In time mode, pressing“DOWN「“「 button can switch Celsius C and Fahrenheit 下 show mode.
+
+e Weather forecast show 园
+There are four statuses of the weather: sunny, semi-sunny, cloudy, rainy. ′
+
+@Snooze
+When the alarm beeps, pressing“SNZ“ button can start the snooze, and you can snooze for 8 minutes at once.
+
+ePause/backiight
+. In any mode, pressing“SNZLIGHT“ button can tumn on the backiight, and it will put out 删tomanca‖y after 8 seconds.
+
+Battery replacement
+When LCD digital display is unclear or there is no show or the alarm sound is too small, 阗eaSe open the l)attt事!_)′ cover, replace the same two "/~」'蘑t′薯~^
+batterlies, and install the battery cover ′
+
+e@Notes:
+
+* The machine uses two“AAA“ batteries.
+
+* The machine shall be placed in moisture-proof and sunscreen place to prevent violent 饥)n】s薹0n and \/】t)】'噩lt】0薹】
+
+* Please remove the battery when not using for a long time.
+
+* Please reinstall the battery when LCD show content is confused or there is no content after 】薹疃sta薹_】】薹】g the battery.
+* There is no t`tl】-t膏lt官r notice if the specification is changed.

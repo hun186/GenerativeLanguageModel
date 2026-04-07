@@ -1,0 +1,1728 @@
+
+CZ19489
+První edice / Červenec 2022
+E-příručka
+2 Uživatelská příručka notebooku
+INFORMACE O AUTORSKÝCH PRÁVECH
+Žádná část této příručky, včetně výrobků a softwaru v příručce popsaných, nesmí být reprodukována, 
+přenesena, přepsána, uložena v systému pro ukládání dat, ani přeložena do žádného jazyka v žádné 
+podobě a žádným způsobem, kromě dokumentace uložené kupujícím pro účel zálohování, bez 
+písemného souhlasu firmy ASUSTeK COMPUTER INC. (“ASUS”).
+ASUS POSKYTUJE TUTO PŘÍRUČKU “TAK, JAK JE”, BEZ ZÁRUKY JAKÉHOKOLI DRUHU, AŤ VÝSLOVNÉ NEBO 
+VYPLÝVAJÍCÍ, VČETNĚ, ALE NIKOLI JEN, PŘEDPOKLÁDANÝCH ZÁRUK NEBO PODMÍNEK PRODEJNOSTI 
+A VHODNOSTI PRO URČITÝ ÚČEL. V ŽÁDNÉM PŘÍPADĚ NEBUDE FIRMA ASUS, JEJÍ ŘEDITELÉ, VEDOUCÍ 
+PRACOVNÍCI, ZAMĚSTNANCI ANI ZÁSTUPCI ODPOVÍDAT ZA ŽÁDNÉ NEPŘÍMÉ, ZVLÁŠTNÍ, NAHODILÉ 
+NEBO NÁSLEDNÉ ŠKODY (VČETNĚ ZA ZTRÁTU ZISKŮ, ZTRÁTU PODNIKATELSKÉ PŘÍLEŽITOSTI, ZTRÁTU 
+POUŽITELNOSTI ČI ZTRÁTU DAT, PŘERUŠENÍ PODNIKÁNÍ A PODOBNĚ), I KDYŽ BYLA FIRMA ASUS 
+UPOZORNĚNA NA MOŽNOST TAKOVÝCH ŠKOD ZPŮSOBENÝCH JAKOUKOLIV VADOU V TÉTO PŘÍRUČCE 
+NEBO VE VÝROBKU.
+Výrobky a názvy firem v této příručce mohou, ale nemusí být obchodními známkami nebo copyrighty 
+příslušných firem, a používají se zde pouze pro identifikaci a objasnění a ve prospěch jejich majitelů, bez 
+záměru poškodit cizí práva.
+TECHNICKÉ ÚDAJE A INFORMACE OBSAŽENÉ V TÉTO PŘÍRUČCE JSOU POSKYTNUTY JEN PRO INFORMACI, 
+MOHOU SE KDYKOLIV ZMĚNIT BEZ PŘEDCHOZÍHO UPOZORNĚNÍ, A NEMĚLY BY BÝT POVAŽOVÁNY 
+ZA ZÁVAZEK FIRMY ASUS. ASUS NEODPOVÍDÁ ZA ŽÁDNÉ CHYBY A NEPŘESNOSTI, KTERÉ SE MOHOU 
+OBJEVIT V TÉTO PŘÍRUČCE, VČETNĚ VÝROBKŮ A SOFTWARU V PŘÍRUČCE POPSANÝCH.
+Copyright © 2022 ASUSTeK COMPUTER INC. Všechna práva vyhrazena.
+OMEZENÍ ODPOVĚDNOSTI
+Mohou nastat takové okolnosti, že v důsledku selhání ze strany firmy ASUS nebo z jiné odpovědnosti 
+budete mít právo na náhradu škody od firmy ASUS. V každém takovém případě, bez ohledu na důvod, 
+pro který máte právo požadovat náhradu od firmy ASUS, nebude ASUS odpovídat za víc než za škody 
+kvůli zranění (včetně smrti) a poškození nemovitostí a hmotného osobního majetku; nebo jakékoliv 
+skutečné a přímé škody v důsledků opomenutí nebo neplnění zákonných povinností dle této záruky, až 
+do výše ceníkové smluvní ceny každého výrobku.
+Firma ASUS bude odpovědná nebo vás odškodní jen za ztrátu, škody nebo reklamace na základě této 
+smlouvy, přečinu nebo porušení cizích práv dle této záruky.
+Toto omezení se vztahuje i na dodavatele a prodejce firmy ASUS. To je maximum, za které jsou firma 
+ASUS, její dodavatelé a váš prodejce kolektivně odpovědní.
+ZA ŽÁDNÝCH OKOLNOSTÍ NEBUDE FIRMA ASUS ODPOVÍDAT ZA NÁSLEDUJÍCÍ: (1) NÁROKY/ŽALOBY 
+TŘETÍCH STRAN NA VÁS KVŮLI ZTRÁTÁM; (2) ZTRÁTU NEBO POŠKOZENÍ VAŠICH ZÁZNAMŮ NEBO DAT (3) 
+ZVLÁŠTNÍ, NAHODILÉ NEBO NEPŘÍMÉ ŠKODY NEBO JAKÉKOLIV EKONOMICKÉ NÁSLEDNÉ ŠKODY (VČETNĚ 
+ZTRÁTY ZISKU NEBO ÚSPOR), DOKONCE I KDYŽ BY ASUS BYL UPOZORNĚN NA MOŽNOST TAKOVÝCH 
+ŠKOD.
+SERVIS A PODPORA
+Navštivte náš web ve více jazycích na adrese https://www.asus.com/cz/support/.
+Aplikace MyASUS nabízí různé podpůrné funkce, včetně řešení problémů, optimalizace výkonu produktů 
+nebo integrace softwaru ASUS, pomáhá organizovat soukromou plochu a uvolnit místo v úložišti. Další 
+podrobnosti naleznete na adrese https://www.asus.com/cz/support/FAQ/1038301/.
+Uživatelská příručka notebooku 3
+Obsah
+O této příručce ............................................................................................................7
+Konvence použité v této příručce ............................................................................. 8
+Ikony .................................................................................................................................... 8
+Typografie ......................................................................................................................... 8
+Bezpečnostní opatření .............................................................................................9
+Použití notebooku .......................................................................................................... 9
+Péče o notebook ............................................................................................................. 10
+Správná likvidace ............................................................................................................ 11
+Bezpečnostní informace k baterii ............................................................................. 12
+Kapitola 1: Nastavení hardwaru
+Seznámení s notebookem ......................................................................................16
+Pohled zepředu ............................................................................................................... 16
+Pohled shora ..................................................................................................................... 22
+Pohled zespodu ............................................................................................................... 23
+Pohled zprava .................................................................................................................. 25
+Pohled zleva ..................................................................................................................... 28
+Kapitola 2: Použití vašeho notebooku
+Začínáme ......................................................................................................................30
+Nabijte si notebook........................................................................................................ 30
+Zvednutím otevřete panel displeje .......................................................................... 32
+Stiskněte tlačítko napájení .......................................................................................... 32
+Gesta pro dotykový panel a touchpad ..............................................................33
+Používání gest na dotykovém panelu ..................................................................... 33
+Použití touchpadu .......................................................................................................... 35
+Použití zařízení NumberPad ........................................................................................ 42
+Použití klávesnice ......................................................................................................43
+Klávesové zkratky ........................................................................................................... 43
+Funkční klávesy ............................................................................................................... 44
+Klávesy Windows ............................................................................................................ 44
+Otáčení panelu displeje ..........................................................................................45
+4 Uživatelská příručka notebooku
+Kapitola 3: Práce s Windows
+Začínáme poprvé.......................................................................................................48
+Nabídka Start ..............................................................................................................49
+Aplikace Windows .....................................................................................................51
+Práce s aplikacemi Windows ....................................................................................... 52
+Přizpůsobení aplikací Windows ................................................................................. 52
+Zobrazení úloh............................................................................................................55
+Widgety .........................................................................................................................56
+Funkce Snap ................................................................................................................58
+Přichycení hotspotů ....................................................................................................... 58
+Centrum akcí ...............................................................................................................60
+MyASUS Splendid ......................................................................................................62
+Nastavení OLED displeje .........................................................................................64
+Nastavení tmavého režimu ......................................................................................... 64
+Vypnutí displeje, pokud se nepoužívá .................................................................... 66
+Nastavení jasu displeje ................................................................................................. 68
+Automatické skrývání hlavního panelu .................................................................. 70
+Nastavení tmavého režimu v aplikaci Microsoft Office .................................... 72
+Ostatní klávesové zkratky .......................................................................................73
+Připojení k bezdrátovým sítím ..............................................................................75
+Wi-Fi ..................................................................................................................................... 75
+Bluetooth ........................................................................................................................... 76
+Režim Letadlo .................................................................................................................. 77
+Vypnutí vašeho notebooku ...................................................................................78
+Uvedení vašeho notebooku do režimu spánku..............................................79
+Uživatelská příručka notebooku 5
+Kapitola 4: Automatický test při spuštění počítače (POST)
+Automatický test při spuštění počítače (POST) ..............................................82
+Použití POST pro přístup k systému BIOS a řešení problémů ......................... 82
+BIOS ................................................................................................................................82
+Přístup k systému BIOS ................................................................................................. 82
+Obnovení systému ....................................................................................................83
+Provedení možnosti obnovení ................................................................................... 84
+Tipy a odpovědi na časté dotazy
+Užitečné tipy pro váš notebook ...........................................................................88
+Odpovědi na časté dotazy o hardwaru..............................................................90
+Odpovědi na časté dotazy o softwaru ...............................................................93
+Přílohy
+Slučitelnost interního modemu ................................................................................ 96
+Přehled ............................................................................................................................... 96
+Prohlášení o síťové kompatibilitě ............................................................................. 97
+Nehlasové zařízení ......................................................................................................... 97
+Prohlášení Federální komunikační komise (FCC) o rušení ............................... 100
+Prohlášení o vystavování radiové frekvenci (RF) dle FCC ................................. 101
+Informace o vystavení radiofrekvenčním polím (SAR) ...................................... 101
+Bezpečnostní informace UL ........................................................................................ 102
+Bezpečnostní požadavky na napájení .................................................................... 103
+Poznámky k TV ................................................................................................................. 103
+Informace o produktu Macrovision Corporation ................................................ 103
+Prevence ztráty sluchu .................................................................................................. 103
+Poznámka k izolaci ......................................................................................................... 103
+6 Uživatelská příručka notebooku
+Severská opatření pro lithium (pro baterie lithium-ion) .................................. 104
+Schválení CTR 21 (pro notebook s integrovaným modemem) ...................... 105
+Prohlášení o shodě pro směrnici upravující vliv produktů na životní 
+prostředí ............................................................................................................................. 107
+EU REACH a článek 33 ................................................................................................... 107
+EU RoHS.............................................................................................................................. 107
+Recyklační/Sběrné služby společnosti ASUS ........................................................ 108
+Směrnice o ekodesignu ................................................................................................ 108
+Produkt zařazený do programu ENERGY STAR .................................................... 109
+Produkty registrované v systému EPEAT ................................................................ 109
+Licence na písma systému BIOS ................................................................................ 110
+Zjednodušené prohlášení o shodě EU .................................................................... 111
+Oznámení k síti Wi-Fi ..................................................................................................... 111
+Informace o vystavení radiofrekvenčním polím (SAR) ...................................... 112
+Uživatelská příručka notebooku 7
+O této příručce
+Tato příručka poskytuje informace o hardwaru a softwaru notebooku, 
+rozdělené do následujících kapitol:
+Kapitola 1: Nastavení hardwaru
+Popisuje hardwarové komponenty notebooku.
+Kapitola 2: Použití vašeho notebooku
+Tato kapitola představuje použití jednotlivých částí notebooku.
+Kapitola 3: Práce s Windows
+Uvádí přehled, jak používat Windows na notebooku.
+Kapitola 4: Automatický test při spuštění počítače (POST)
+Tato kapitola představuje použití nástroje POST ke změně 
+nastavení notebooku.
+Tipy a odpovědi na časté dotazy
+Tato část obsahuje některé doporučené tipy a odpovědi na časté 
+dotazy o hardwaru a softwaru, které můžete využít při údržbě a 
+odstraňování běžných problémů s notebookem.
+Přílohy
+Obsahuje upozornění a bezpečnostní prohlášení k notebooku.
+8 Uživatelská příručka notebooku
+Konvence použité v této příručce
+Zdůrazněné věty v této příručce uvádějí klíčové informace tímto 
+způsobem:
+DŮLEŽITÉ! Tato zpráva uvádí zásadně důležité informace, které je nutno 
+při provádění úkolu respektovat. 
+POZNÁMKA: Tato zpráva uvádí doplňující informace a tipy, které mohou 
+pomoci při provádění úkolů.
+VAROVÁNÍ! Tato zpráva uvádí důležité informace pro bezpečnost při 
+provádění úkolů a předcházení poškození součástek notebooku a dat. 
+Ikony
+Následující ikony signalizují, které zařízení lze využít k realizaci řady 
+úkolů nebo postupů na vašem notebooku.
+Typografie
+Tučné = Označuje nabídku nebo položku, kterou je nutno vybrat.
+Ležaté = Označuje části v této příručce, podle kterých můžete 
+postupovat.
+= Použijte panel dotykové obrazovky.
+= Použijte touchpad.
+= Použijte klávesnici.
+Uživatelská příručka notebooku 9
+Bezpečnostní opatření
+Použití notebooku
+Tento notebook je dovoleno používat pouze v 
+prostředí o teplotách v rozmezí 
+5 °C (41 °F) a 35 °C (95 °F).
+Prohlédněte si výkonový štítek umístěný na spodní 
+straně notebooku a ověřte si, zda používaný 
+napájecí adaptér odpovídá uvedeným hodnotám.
+Váš notebook může být teplý až horký, pokud 
+jej používáte nebo nabíjíte baterii. Nenechávejte 
+notebook na klíně ani jiné časti těla, abyste zabránili 
+poranění horkem. Při používání notebook nestavte 
+na povrch, který by mohl zakrýt výdechy vzduchu.
+Nepoužívejte s notebookem poškozené napájecí 
+kabely, doplňky ani jiné periférie.
+Zapnutý notebook nepřenášejte ani nezakrývejte 
+materiály, které by snížily oběh vzduchu.
+Nepokládejte notebook na nerovné ani nestabilní 
+pracovní povrchy. 
+Notebook můžete poslat přes letecké rentgenové 
+stroje (používané ke kontrole předmětů na 
+dopravníkovém pásu), ale chraňte jej před 
+magnetickými a ručními detektory.
+Ohledně možností používání notebooku v letadle 
+a možnosti využití služeb kontaktujte leteckého 
+dopravce.
+10 Uživatelská příručka notebooku
+Péče o notebook
+Před čištěním notebooku odpojte napájení a 
+vyjměte baterii. Otřete čistou houbou z celulózy 
+nebo jelenicovou utěrkou namočenou v teplé vodě 
+nebo ve slabém roztoku neabrazivního čistícího 
+prostředku. Přebytečnou vlhkost otřete suchým 
+hadrem. Zabraňte vniknutí tekutin do mezer ve 
+skříni nebo klávesnici, aby nedošlo ke zkratu nebo 
+korozi.
+Na notebook ani na jeho okolí neaplikujte silná 
+rozpouštědla, jako alkohol, ředidla, benzen nebo 
+jiné chemikálie.
+Na notebook nic nestavte.
+Nevystavujte notebook silným magnetickým ani 
+elektrickým polím.
+Nevystavujte ani nepoužívejte notebook blízko 
+tekutin, deště nebo vlhkosti.
+Notebook chraňte před prachem.
+Uživatelská příručka notebooku 11
+Správná likvidace
+Notebook NEODSTRAŇUJTE s běžným domovním 
+odpadem. Tento produkt byl vyvinut tak, aby 
+bylo možné řádné opakované použití jeho dílů 
+a recyklace. Symbol přeškrtnutého kontejneru 
+ukazuje, že tento produkt (elektrické nebo 
+elektronické zařízení a knoflíková baterie s obsahem 
+rtuti) nesmí být likvidován společně s komunálním 
+odpadem. V souvislosti s odstraňováním 
+elektronických výrobků si prostudujte místní 
+předpisy.
+NEVHAZUJTE baterii do komunálního odpadu. 
+Symbol přeškrtnuté popelnice s kolečky ukazuje, 
+že tato baterie nesmí být likvidována společně s 
+komunálním odpadem.
+Nepoužívejte notebook v případě úniku plynu.
+Neumisťujte do blízkosti notebooku aktivní 
+elektronická zařízení, aby nedocházelo k 
+elektromagnetickému rušení zobrazovacího panelu.
+Nepoužívejte tento notebook k těžbě kryptoměny 
+(náročné na obrovské množství elektřiny a času 
+k získání směnitelné virtuální měny) a/nebo k 
+souvisejícím činnostem.
+12 Uživatelská příručka notebooku
+Ochrana baterie
+• Časté nabíjení baterie, když je napětí baterie vysoké, může zkrátit 
+životnost baterie. Když je baterie plně nabitá, systém může kvůli 
+ochraně baterie nabíjení přerušit, když je napětí baterie mezi 
+90 % a 100 %.
+POZNÁMKA: Napětí pro zahájení nabíjení baterie je obvykle nastaveno 
+mezi 90 % a 99 %. Skutečná hodnota se může lišit podle modelu.
+• Nabíjení nebo skladování baterie v prostředí s vysokou teplotou 
+může trvale snížit kapacitu baterie a výrazně zkrátit její životnost. 
+Pokud je teplota baterie příliš vysoká, systém může kvůli ochraně 
+baterie omezit nabíjení baterie nebo nabíjení zcela zastavit.
+• Kapacita baterie se může snížit, i když je zařízení vypnuté a 
+odpojené od elektrické sítě. To je normální, protože systém stále 
+čerpá malé množství napětí z baterie.
+Bezpečnostní informace k baterii
+Uživatelská příručka notebooku 13
+Standardní péče o baterii
+• Nebudete-li zařízení delší dobu používat, nabijte baterii na 50 %, 
+potom zařízení vypněte a odpojte napájecí adaptér. Každé tři 
+měsíce dobijte baterii na 50 %, aby nedošlo k přílišnému vybití a 
+poškození baterie.
+• Chcete-li prodloužit životnost baterie, nenabíjejte ji dlouhou 
+dobu, když je její napětí vysoké. Pokud zařízení napájíte neustále 
+z elektrické sítě, alespoň jednou za dva týdny baterii vybijte 
+na 50 %. Životnost baterie můžete také prodloužit použitím 
+správného nastavení v části Nabíjení s ohledem na životnost 
+baterie v aplikaci MyASUS.
+• Baterii se doporučuje skladovat při teplotě mezi 5 °C (41 °F) a 
+35 °C (95 °F) a s 50% napětím. Životnost baterie můžete také 
+prodloužit použitím správného nastavení v části Nabíjení s 
+ohledem na životnost baterie v aplikaci MyASUS.
+• Nenechávejte baterii ve vlhkém prostředí. Ve vlhkém prostředí 
+se může baterie rychleji příliš vybít. Nízké okolní teploty mohou 
+poškodit chemikálie v baterii, zatímco s vysokými teplotami a 
+přehříváním souvisí riziko výbuchu.
+• Neumisťujte zařízení ani baterii do blízkosti radiátorů, krbů, 
+kamen, topení ani jiných zdrojů tepla s teplotami přes 60 °C 
+(140 °F). Vysoká okolní teplota může mít za následek výbuch nebo 
+vytečení a následný požár.
+14 Uživatelská příručka notebooku
+Uživatelská příručka notebooku 15
+Kapitola 1:
+Nastavení hardwaru
+16 Uživatelská příručka notebooku
+Seznámení s notebookem
+Pohled zepředu
+POZNÁMKA: Rozložení klávesnice se může lišit podle oblasti nebo země. 
+Vzhled notebooku se může rovněž lišit podle modelu notebooku.
+Uživatelská příručka notebooku 17
+Mikrofonní pole
+Funkce mikrofonního pole zajišťuje potlačení ozvěny a šumu a 
+formování paprsku pro lepší rozpoznání hlasu a záznam zvuku.
+Kontrolka kamery
+Kontrolka kamery signalizuje, že se zabudovaná kamera právě 
+používá.
+Kamera
+Zabudovanou kameru lze použít k fotografování nebo záznamu 
+videa pomocí notebooku.
+Infračervená kamera
+Zabudovanou kameru lze použít k fotografování nebo záznamu 
+videa pomocí notebooku. Infračervená kamera rovněž 
+podporuje službu Windows Hello.
+POZNÁMKA: Infračervená kontrolka LED bliká, když se načítají 
+data před přihlášením pomocí rozpoznávání obličeje v rámci 
+služby Windows Hello.
+18 Uživatelská příručka notebooku
+360° nastavitelný panel s dotykovou obrazovkou
+Panel s dotykovou obrazovkou tohoto notebooku lze nastavit 
+v plném rozsahu 360°. Tato funkce umožňuje rychle přeměnit 
+notebook na dotykový tablet.
+Tento panel s dotykovou obrazovkou o vysokém rozlišení nabízí 
+skvělé zobrazení fotografií, videí a dalších multimediálních 
+souborů na notebooku. Umožňuje také ovládání pomocí 
+dotykových gest.
+Prohlášení: Dlouhodobé zobrazení statického obrazu nebo 
+obrazu s vysokým kontrastem může mít za následek vytvoření 
+zbytkového obrazu nebo vypálení obrazu na displeji OLED. 
+Notebook ASUS s displejem OLED (u vybraných modelů) 
+minimalizuje riziko vypálení obrazu tím, že je ve výchozím 
+nastavení v systému Windows zvolen tmavý režim, a zkrácením 
+doby nečinnosti před vypnutím obrazovky. Kvůli prodloužení 
+životnosti displeje OLED se doporučuje zapnout animovaný šetřič 
+obrazovky s tmavým pozadím a nenastavovat pro displej OLED 
+maximální jas.
+POZNÁMKA:
+• Další podrobnosti naleznete v části Nastavení displeje OLED v 
+této příručce.
+• Další pokyny k tomu, jak můžete z notebooku vytvořit tablet, 
+najdete v kapitole Otáčení panelu s displejem v této příručce.
+Uživatelská příručka notebooku 19
+Indikátor vypnutí mikrofonu
+Tento indikátor svítí, když je mikrofon vypnutý.
+Klávesnice
+Klávesnice QWERTY v plné velikosti s pohodlným zdvihem kláves 
+pro psaní. Současně nabízí funkční klávesy k rychlému vyvolání 
+funkcí systému Windows a ovládání multimediálních funkcí.
+POZNÁMKA: Rozložení klávesnice se liší podle modelu nebo 
+regionu.
+Kontrolka zámku velkých písmen
+Tato kontrolka svítí, když je aktivní funkce Caps Lock. Funkce 
+Caps Lock umožňuje psaní velkými písmeny (např. A, B, C) na 
+klávesnici vašeho notebooku.
+20 Uživatelská příručka notebooku
+Touchpad / Číselná klávesnice NumberPad
+Umožňuje přepínat mezi touchpad a číselnou klávesnicí 
+NumberPad.
+Touchpad podporuje navigaci na obrazovce formou gest, která 
+využívají několika prstů, což přináší intuitivní ovládání. Simuluje 
+také funkce běžné myši.
+POZNÁMKA: Další podrobnosti najdete v kapitole Používání 
+touchpadu v této příručce.
+Číselná klávesnice NumberPad umožňuje zadávat čísla.
+DŮLEŽITÉ! Upozorňujeme, že všechny verze zařízení NumberPad 
+jsou podporovány pouze v nejnovějším operačním systému 
+Microsoft Windows.
+POZNÁMKA: Další podrobnosti viz část Používání číselné 
+klávesnice NumberPad v této příručce.
+Snímač okolního osvětlení
+Snímač okolního osvětlení detekuje množství okolního světla. 
+Systém dokáže automaticky přizpůsobit jas displeje okolnímu 
+světlu.
+Snímač osvětlení RGB
+Snímač osvětlení RGB bude automaticky upravovat teplotu 
+barev zobrazovacího panelu podle úrovně okolního osvětlení.
+Uživatelská příručka notebooku 21
+Snímač ToF
+Snímač ToF automaticky probudí a přihlásí se k vašemu 
+notebooku prostřednictvím služby Windows Hello po zjištění 
+vaší přítomnosti v okolí. Jakmile se vzdálíte, notebook přejde do 
+moderního pohotovostního režimu.
+Kontrolka vypnutí kamery
+Tento indikátor svítí, když je kamera vypnutá.
+Tlačítko napájení
+Stisknutím tlačítka napájení notebook zapnete nebo vypnete. 
+Tlačítkem napájení také notebook přepnete do režimu spánku 
+nebo hibernace nebo jej z režimu spánku nebo hibernace 
+probudíte.
+Pokud notebook přestane reagovat, stiskněte a přidržte tlačítko 
+napájení alespoň deset (10) sekund, dokud se notebook 
+nevypne.
+Snímač otisků prstů
+Tento zabudovaný snímač otisků prstů sejme otisk vašeho prstu 
+a použije jej jako biometrické ověření pro přihlášení do systému 
+notebooku.
+22 Uživatelská příručka notebooku
+Pohled shora
+Mikrofonní pole
+Funkce mikrofonního pole zajišťuje potlačení ozvěny a šumu a 
+formování paprsku pro lepší rozpoznání hlasu a záznam zvuku.
+Uživatelská příručka notebooku 23
+Pohled zespodu
+POZNÁMKA: Pohled zespodu se může lišit v závislosti na modelu.
+VAROVÁNÍ! Váš notebook může být teplý až horký, pokud jej používáte 
+nebo nabíjíte baterii. Nenechávejte notebook na klíně ani jiné časti těla, 
+abyste zabránili poranění horkem. Při používání notebook nestavte na 
+povrch, který by mohl zakrýt výdechy vzduchu.
+DŮLEŽITÉ! 
+• Doba provozu na baterie se liší podle použití a parametrů tohoto 
+notebooku. Baterii nelze rozebrat.
+• Aby byla zjištěna maximální kompatibilita a spolehlivost, nakupujte 
+součásti u autorizovaných prodejců. Chcete-li produkt opravit nebo 
+pomoci s jeho demontáží nebo montáží, poraďte se s některým 
+servisním střediskem společnosti ASUS nebo s autorizovanými 
+prodejci.
+24 Uživatelská příručka notebooku
+Větrací otvory
+Větrací otvory umožňují přívod studeného a odvod horkého 
+vzduchu z notebooku.
+VAROVÁNÍ! Neblokujte otvory papírem, knihami, kabely a jinými 
+předměty, aby se notebook nepřehřál.
+Reproduktory
+Zabudované reproduktory vám umožní poslouchat zvuk přímo 
+z notebooku. Funkce zvuku jsou řízeny softwarově.
+Uživatelská příručka notebooku 25
+Pohled zprava
+Stavové kontrolky
+Stavové kontrolky pomáhají zjistit aktuální stav hardwaru 
+notebooku.
+ Dvoubarevná kontrolka nabíjení baterie
+ Dvoubarevná kontrolka LED signalizuje stav nabití 
+baterie. Podrobnosti najdete v následující tabulce:
+26 Uživatelská příručka notebooku
+Barva Stav
+Svítí bíle Notebook je připojený ke zdroji 
+napájení a stav baterie je mezi 
+95 % a 100 %.
+Svítí oranžově Notebook je připojený ke zdroji 
+napájení, baterie se nabíjí a její 
+stav je nižší než 95 %.
+Bliká oranžově Notebook se napájí z baterie 
+a její stav je nižší než 10 %.
+Nesvítí Notebook se 
+napájí z baterie a její stav je 10 % 
+až 100 %.
+ Kontrolka napájení
+ Kontrolka napájení svítí, když je notebook zapnutý, 
+a pomalu bliká, když je v režimu spánku.
+Slot karty MicroSD
+Tato vestavěná čtečka paměťových karet podporuje formát karet 
+MicroSD.
+Uživatelská příručka notebooku 27
+Kombinovaný port Thunderbolt™ 4 / napájení
+Port Thunderbolt™ 4 je kompatibilní se standardem USB Type-C® 
+a pro zařízení kompatibilní s technologií Thunderbolt™ 4 nabízí 
+přenosovou rychlost až 40 Gbit/s. Připojte svůj notebook k 
+externímu displeji s rozhraním DisplayPort, VGA, DVI nebo HDMI 
+a využijte zobrazení s vysokým rozlišením díky technologii Intel® 
+Thunderbolt™. Připojením dodaného napájecího adaptéru k 
+tomuto portu můžete nabít baterii a napájet notebook.
+POZNÁMKA: Přenosová rychlost tohoto portu se může lišit podle 
+modelu.
+VAROVÁNÍ! Adaptér se může při použití zahřívat. Adaptér 
+nezakrývejte, a když je zapojený do elektrické zásuvky, udržujte 
+jej v bezpečné vzdálenosti od těla.
+DŮLEŽITÉ! 
+• Nabíjení notebooku přes nízkonapěťový napájecí zdroj může 
+trvat déle.
+• Abyste předešli jakémukoli poškození, používejte k nabíjení 
+notebooku přes kombinovaný USB Power Delivery port 
+pouze napájecí zdroje o výkonu 20 V/3,25 A. Další informace 
+vám poskytne servisní středisko společnosti ASUS.
+Konektor pro připojení sluchátek / sluchátek s mikrofonem / 
+mikrofonu
+K tomuto portu lze připojit reproduktory se zesilovačem 
+nebo sluchátka. K tomuto portu lze rovněž připojit sluchátka 
+s mikrofonem nebo externí mikrofon.
+28 Uživatelská příručka notebooku
+Pohled zleva
+Kombinovaný port USB 3.2 Gen 2 Type-C® / DisplayPort / 
+napájení
+Port USB 3.2 Gen 2 Type-C® podporuje přenosovou rychlost až 
+10 Gb/s a je zpětně kompatibilní s rozhraním USB 2.0. Pomocí 
+adaptéru USB Type-C® připojíte notebook k externímu displeji. 
+Aby bylo možné nabíjet baterii a napájet notebook, připojte 
+zdroj napájení s výstupem 20 V/3,25 A.
+POZNÁMKA: Přenosová rychlost tohoto portu se může lišit podle 
+modelu.
+DŮLEŽITÉ! 
+• Nabíjení notebooku přes nízkonapěťový napájecí zdroj může 
+trvat déle.
+• Abyste předešli jakémukoli poškození, používejte k nabíjení 
+notebooku přes kombinovaný USB Power Delivery port 
+pouze napájecí zdroje o výkonu 20 V/3,25 A. Další informace 
+vám poskytne servisní středisko společnosti ASUS.
+Uživatelská příručka notebooku 29
+Kapitola 2:
+Použití vašeho notebooku
+30 Uživatelská příručka notebooku
+DŮLEŽITÉ!
+Informace o napájecím adaptéru:
+• Vstupní napětí: 100-240 VAC
+• Vstupní frekvence: 50-60 Hz
+• Jmenovitý výstupní proud: 3,25 A (65 W)
+• Jmenovité výstupní napětí: 20 V
+Notebook nabíjejte 3 hodiny před prvním použitím v 
+režimu baterie.
+POZNÁMKA: Vzhled napájecího adaptéru se může lišit v závislosti na 
+modelech a na vašem regionu.
+Začínáme
+Nabijte si notebook
+A. Připojte napájecí kabel se střídavým proudem k adaptéru 
+střídavého/stejnosměrného proudu.
+B. Připojte konektor stejnosměrného napájení do vstupního portu 
+napájení (střídavého proudu) notebooku.
+C. Zapojte napájecí adaptér do zdroje 100 V~240 V.
+Uživatelská příručka notebooku 31
+DŮLEŽITÉ!
+• Vyhledejte štítek se vstupními/výstupními jmenovitými hodnotami 
+na svém notebooku a ujistěte se, že se shoduje s informacemi 
+o vstupních/výstupních jmenovitých hodnotáchna napájecím 
+adaptéru. Některé modely notebooků mohou mít více jmenovitých 
+výstupních proudů na základě dostupných SKU.
+• Před prvním zapnutím se ujistěte, že je notebook připojen k 
+napájecímu adaptéru. Vždy zapojte napájecí kabel do síťové zásuvky 
+bez použití prodlužovacích kabelů. Z bezpečnostních důvodů 
+připojujte toto zařízení pouze k řádně uzemněné elektrické zásuvce.
+• Zásuvka musí být snadno přístupná a v blízkosti vašeho notebooku.
+• Chcete-li svůj notebook odpojit od hlavního zdroje napájení, odpojte 
+jej ze zásuvky.
+VAROVÁNÍ!
+Přečtěte si následující bezpečnostní opatření pro baterii vašeho 
+notebooku:
+• Baterii uvnitř přístroje smí vyjmout pouze autorizovaní technici 
+společnosti ASUS (platí pouze pro nevyjímatelné baterie).
+• Při vyjmutí nebo demontáži baterie použité v tomto zařízení může 
+hrozit nebezpečí požáru nebo chemického popálení.
+• Postupujte podle varovných štítků pro vaši osobní bezpečnost.
+• Nebezpečí výbuchu při výměně baterie za nesprávný typ.
+• Nevyhazujte do ohně.
+• Nikdy se nepokoušejte zkratovat baterii notebooku.
+• Nikdy se nepokoušejte baterii demontovat a znovu namontovat 
+(platí pouze pro nevyjímatelnou baterii).
+• Pokud zjistíte únik kapaliny, přestaňte používat.
+• Baterie a její součásti musí být řádně recyklovány nebo zlikvidovány.
+• Uchovávejte baterii a další malé součásti mimo dosah dětí.
+32 Uživatelská příručka notebooku
+Zvednutím otevřete panel displeje
+Stiskněte tlačítko napájení
+Uživatelská příručka notebooku 33
+Používání gest na dotykovém panelu
+Gesta vám umožňují spouštět programy a přistupovat k nastavení 
+vašeho notebooku. Funkce lze aktivovat pomocí gest rukou na 
+dotykovém panelu vašeho notebooku.
+Gesta pro dotykový panel a touchpad
+Gesta vám umožňují spouštět programy a přistupovat k nastavení 
+vašeho notebooku. Při používání gest rukou na dotykovém panelu a 
+touchpadu se řiďte následujícími obrázky.
+POZNÁMKA: Následující snímky obrazovky jsou pouze orientační. Vzhled 
+dotykového panelu se může lišit v závislosti na modelu.
+Klepnutí/Dvojité klepnutí Stiskněte a podržte
+• Klepnutím na aplikaci ji 
+vyberte.
+• Dvojitým klepnutím aplikaci 
+spustíte.
+Stisknutím a podržením otevřete 
+nabídku z klepnutí pravým 
+tlačítkem myši.
+34 Uživatelská příručka notebooku
+Přiblížit Oddálit
+Roztáhněte své dva prsty na 
+dotykovém panelu.
+Spojte své dva prsty na 
+dotykovém panelu.
+Posunutí prstu Přetáhněte
+Posunutím prstu přejděte nahoru 
+a dolů a posunutím prstu posuňte 
+obrazovku doleva nebo doprava.
+• Přetažením vytvoříte 
+výběrové pole kolem více 
+položek.
+• Přetažením a puštěním 
+položky ji přesuňte na 
+nové místo.
+Uživatelská příručka notebooku 35
+Použití touchpadu
+Přesouvání kurzoru
+Klepnutím na libovolné místo na touchpadu můžete aktivovat jeho 
+kurzor a posunutím prstu na touchpadu můžete pohybovat kurzorem 
+na obrazovce.
+Posunout vodorovně
+Posunout svisle
+Posunout diagonálně
+36 Uživatelská příručka notebooku
+Gesta jedním prstem
+Klepnutí/Dvojité klepnutí
+• Klepnutím na aplikaci ji vyberte.
+• Dvojitým klepnutím aplikaci spustíte.
+Přetáhnout a pustit
+Klepněte dvakrát na položku a posuňte tentýž prst, aniž byste jej zvedli 
+z touchpadu. Chcete-li položku pustit na nové místo, zvedněte prst z 
+touchpadu.
+Uživatelská příručka notebooku 37
+Kliknutí levým tlačítkem Kliknutí pravým tlačítkem
+• Kliknutím na aplikaci ji 
+vyberte.
+• Dvojitým kliknutím aplikaci 
+spustíte.
+Kliknutím na toto tlačítko otevřete 
+nabídku otvíranou kliknutím 
+pravého tlačítka.
+POZNÁMKA: Oblasti uvnitř tečkované čáry představují umístění levého 
+tlačítka myši a pravého tlačítka myši na touchpadu.
+Gesta dvou prstů
+Klepnutí
+Klepnutím dvěma prsty na touchpadu simulujete funkci kliknutí 
+pravým tlačítkem myši.
+38 Uživatelská příručka notebooku
+Posun dvou prstů (nahoru/dolů) Posun dvou prstů (vlevo/vpravo)
+Posunutím dvou prstů posuňte 
+nahoru nebo dolů.
+Posunutím dvou prstů posuňte 
+doleva nebo doprava.
+Oddálit Přiblížit
+Přibližte dva prsty na touchpadu k 
+sobě.
+Roztáhněte dva prsty na touchpadu 
+od sebe.
+Uživatelská příručka notebooku 39
+Přetáhnout a pustit
+Vyberte položku a stiskněte a podržte levé tlačítko. Druhým prstem 
+posouvejte po touchpadu a položku přetáhněte a zvednutím prstu z 
+tlačítka položku upusťte.
+Gesta tří prstů
+Klepnutí
+Klepnutím třemi prsty na touchpad spustíte funkci, kterou jste vybrali v 
+Nastavení.
+40 Uživatelská příručka notebooku
+Přejetí doleva/Přejetí doprava
+Pokud jste otevřeli více aplikací, pro přepínání mezi těmito aplikacemi 
+přejeďte třemi prsty doleva nebo doprava.
+Přejetí nahoru Přejetí dolů
+Přejetím nahoru zobrazíte přehled 
+všech aktuálně otevřených aplikací.
+Přejetím dolů zobrazíte plochu.
+Uživatelská příručka notebooku 41
+Gesta čtyř prstů
+Klepnutí
+Klepnutím čtyřmi prsty na touchpad spustíte funkci, kterou jste vybrali 
+v Nastavení.
+42 Uživatelská příručka notebooku
+Použití zařízení NumberPad
+DŮLEŽITÉ! Upozorňujeme, že všechny verze zařízení NumberPad 
+jsou podporovány pouze v nejnovějším operačním systému Microsoft 
+Windows.
+POZNÁMKA: Pro použití funkce % a = nastavte vstupní jazyk na 
+angličtinu.
+• Stiskněte a podržte po dobu jedné vteřiny 
+pro přepínání mezi číselnými tlačítky nebo 
+touchpadem.
+• Klepnutím na upravte jas zařízení NumberPad.
+• Stiskněte a podržte a pak posuňte kamkoli na 
+zařízení NumberPad pro spuštění aplikace Windows 
+Calculator.
+Uživatelská příručka notebooku 43
+Použití klávesnice
+Zapne nebo vypne reproduktor
+Ztlumí hlasitost reproduktoru
+Zvyšuje hlasitost reproduktoru
+Snižuje jas displeje
+Zvýší jas displeje
+Povolí nebo zakáže touchpad
+Nastaví jas podsvícené klávesnice
+Přepne režim displeje
+POZNÁMKA: Ujistěte se, že máte k notebooku připojen 
+druhý displej.
+Klávesové zkratky
+Klávesové zkratky na klávesnici notebooku lze spustit následujícími 
+příkazy:
+44 Uživatelská příručka notebooku
+Klávesy Windows
+Na klávesnici vašeho notebooku se používají dvě speciální klávesy 
+Windows, jak je uvedeno níže:
+Spustí nabídku Start
+Zobrazí rozbalovací nabídku*
+* U vybraných modelů
+Funkční klávesy
+Stisknutím povolíte nebo zakážete funkční klávesy. 
+Pokud jsou funkční klávesy povolené, můžete klávesové zkratky povolit 
+podržením spolu s klávesami v horní řadě.
+Zapne nebo vypne mikrofon
+Zapne nebo vypne kameru
+Aktivuje nástroj pro snímání obrazovky
+Spouští MyASUS
+Uživatelská příručka notebooku 45
+Otáčení panelu displeje
+Panel displeje notebooku lze nastavit v rozsahu 360 stupňů. Displej lze 
+nastavit podle následujícího obrázku.
+Režim notebooku
+Rozsah nastavení 360 stupňů
+POZNÁMKA: Obrázky jsou pouze orientační.
+46 Uživatelská příručka notebooku
+Režim Áčko
+Režim Stojánek
+Režim tabletu
+POZNÁMKA: Otočením displeje do režimu Stojánek, Áčko a Tablet se 
+deaktivuje klávesnice a dotyková plocha.
+Uživatelská příručka notebooku 47
+Kapitola 3:
+Práce s Windows
+48 Uživatelská příručka notebooku
+Začínáme poprvé
+Při prvním spuštění vašeho notebooku se zobrazí řada obrazovek, které 
+vás provedou konfigurací operačního systému Windows.
+Pro první spuštění vašeho notebooku:
+1. Stiskněte tlačítko napájení vašeho notebooku. Počkejte několik 
+minut, dokud se neobjeví obrazovka nastavení.
+2. Na obrazovce nastavení vyberte oblast a jazyk, který chcete 
+používat na vašem notebooku.
+3. Pečlivě si přečtěte licenční smlouvu. Vyberte možnost Accept 
+(Přijmout).
+4. Při konfiguraci následujících základních položek postupujte podle 
+pokynů na obrazovce:
+• Přizpůsobení
+• Připojení k internetu
+• Nastavení
+• Váš účet
+5. Po konfiguraci základních položek pokračuje systém Windows v 
+instalaci aplikací a preferovaných nastavení. Během nastavování 
+zajistěte, aby byl váš notebook stále napájený.
+6. Po dokončení nastavení se zobrazí Plocha.
+POZNÁMKA: Snímky obrazovky v této kapitole mají pouze informativní 
+charakter.
+Uživatelská příručka notebooku 49
+Nabídka Start
+Nabídka Start je hlavní bránou k programům, aplikacím Windows, 
+složkám a nastavení vašeho notebooku.
+Pomocí nabídky Start můžete provádět následující běžné činnosti:
+• Spouštět programy nebo aplikace Windows
+• Otevírat běžně používané programy nebo aplikace Windows
+• Upravovat nastavení vašeho notebooku
+• Získat pomoc s operačním systémem Windows
+• Vypnout váš notebook
+• Odhlásit se z Windows nebo přepnout na jiný uživatelský účet
+Změnit nastavení účtu, uzamknout jej nebo 
+se z něj odhlásit
+Spustit nabídku Start
+Spustit zobrazení úloh
+Vypnout, restartovat nebo 
+uvést váš notebook do 
+režimu spánku
+Spustit aplikaci z 
+hlavního panelu
+Spustit aplikaci z nabídky Start
+Spustit vyhledávání
+Spustit widgety
+50 Uživatelská příručka notebooku
+Spouštění nabídky Start
+Klepněte na ikonu Start na ploše.
+Umístěte kurzor myši nad ikonu Start na ploše a 
+klikněte na ni.
+Stiskněte klávesu s logem Windows na klávesnici.
+Otvírání programů z nabídky Start
+Jedním z nejčastějších použití nabídky Start je otevření programů 
+nainstalovaných ve vašem notebooku.
+Klepnutím na program jej spusťte.
+Umístěte kurzor myši nad program a poté jej kliknutím 
+spusťte.
+Pomocí kláves se šipkami procházejte programy. 
+Stiskněte pro spuštění.
+POZNÁMKA: Vyberte možnost Všechny aplikace pro zobrazení úplného 
+seznamu programů a složek v notebooku v abecedním pořadí.
+Uživatelská příručka notebooku 51
+Aplikace Windows
+Jedná se o aplikace připnuté v nabídce Start a zobrazené ve formátu 
+dlaždic pro snadný přístup.
+POZNÁMKA: Některé aplikace systému Windows vyžadují před úplným 
+spuštěním přihlášení k účtu Microsoft.
+52 Uživatelská příručka notebooku
+Práce s aplikacemi Windows
+Přizpůsobení aplikací Windows
+Aplikace můžete přesouvat, odepínat nebo připínat na hlavní panel z 
+nabídky Start pomocí následujících kroků:
+Spouštění aplikací Windows z nabídky Start
+Klepnutím na aplikaci ji spustíte.
+Umístěte kurzor myši nad aplikaci a poté klikněte pro 
+její spuštění.
+Pomocí kláves se šipkami procházejte aplikace. 
+Stisknutím spustíte aplikaci.
+Přesouvání aplikací
+Stiskněte a podržte aplikaci a přetáhněte ji upusťte na 
+nové místo.
+Umístěte kurzor myši nad aplikaci a přetáhněte a 
+upusťte aplikaci na nové místo.
+Uživatelská příručka notebooku 53
+Odepínání aplikací
+Stiskněte a podržte aplikaci a poté klepněte na Unpin 
+from Start (Odepnout ze Startu).
+Umístěte kurzor myši nad aplikaci, klikněte na ni pravým 
+tlačítkem myši a poté klepněte na tlačítko Unpin from 
+Start (Odepnout ze Startu).
+Pomocí kláves se šipkami přejděte do aplikace. 
+Stiskněte tlačítko nebo (u vybraných 
+modelů) a zvolte Unpin from Start (Odepnout ze 
+Startu).
+54 Uživatelská příručka notebooku
+Připínání více aplikací do nabídky Start
+V seznamu Všechny aplikace stiskněte a podržte 
+aplikaci, kterou chcete přidat do nabídky Start, a potom 
+klepněte na Pin to Start (Připnout na Start).
+V seznamu Všechny aplikace umístěte kurzor myši nad 
+aplikaci, kterou chcete přidat do nabídky Start, a klikněte 
+na ni pravým tlačítkem myši a poté klikněte na tlačítko 
+Pin to Start (Připnout na Start).
+V seznamu Všechny aplikace stiskněte nebo 
+ (u vybraných modelů) v aplikaci, kterou 
+chcete přidat do nabídky Start, a vyberte možnost Pin to 
+Start (Připnout na Start).
+Připínání aplikací na hlavní panel
+Stiskněte a podržte aplikaci a klepněte na možnost Pin 
+to taskbar (Připnout na hlavní panel).
+Umístěte kurzor myši nad aplikaci, klikněte na ni pravým 
+tlačítkem myši a pak klikněte na tlačítko Pin to taskbar 
+(Připnout na hlavní panel).
+Pomocí kláves se šipkami přejděte do aplikace. 
+Stiskněte nebo (u vybraných 
+modelů) a vyberte Pin to taskbar (Připnout na hlavní 
+panel).
+Uživatelská příručka notebooku 55
+Zobrazení úloh
+Rychlé přepínání mezi otevřenými aplikacemi a programy pomocí 
+funkce Zobrazení úloh. Můžete také použít Zobrazení úloh pro 
+přepínání mezi plochami.
+Spouštění Zobrazení úloh
+Klepněte na ikonu na hlavním panelu.
+Umístěte kurzor myši nad ikonu na hlavním panelu 
+a klikněte na ni.
+Stiskněte na klávesnici .
+56 Uživatelská příručka notebooku
+Widgety
+Můžete spustit widgety pro rychlý přístup k důležitým informacím.
+Spouštění widgetů
+Klepněte na ikonu na hlavním panelu.
+Umístěte kurzor myši nad ikonu na hlavním panelu 
+a klikněte na ni.
+Stiskněte na klávesnici .
+Uživatelská příručka notebooku 57
+Přizpůsobení widgetů
+nebo
+Klikněte/Klepněte na ikonu a vyberte možnost 
+Manage interests (Spravovat zájmy) pro změnu 
+obsahu, který se zobrazí ve widgetech.
+58 Uživatelská příručka notebooku
+Funkce Snap
+Funkce Snap zobrazuje aplikace vedle sebe, což vám umožňuje pracovat 
+nebo přepínat mezi aplikacemi.
+Přichycení hotspotů
+Můžete přetáhnout a pustit aplikace do těchto hotspotů a přichytit je 
+na místo.
+Uživatelská příručka notebooku 59
+Užívání funkce přichycení
+nebo
+1. Spusťte aplikaci, kterou hodláte přichytit.
+2. Přetáhněte záhlaví své aplikace a pusťte aplikaci 
+na okraj obrazovky pro její přichycení.
+3. Spusťte jinou aplikaci a zopakujte výše uvedené 
+kroky pro přichycení další aplikace.
+1. Spusťte aplikaci, kterou hodláte přichytit.
+2. Stiskněte a podržte klávesu a potom pomocí 
+kláves se šipkami aplikaci přichyťte.
+3. Spusťte jinou aplikaci a zopakujte výše uvedené 
+kroky pro přichycení další aplikace.
+60 Uživatelská příručka notebooku
+Centrum akcí
+Centrum akcí konsoliduje oznámení z aplikací a představuje jediné 
+místo, kde s nimi můžete komunikovat. Má také velmi užitečnou sekci 
+Rychlé akce.
+Spouštění Rychlých akcí
+Klepněte na ikony stavu na hlavním panelu.
+Umístěte kurzor myši nad stavové ikony na hlavním 
+panelu a klikněte na ně.
+Stiskněte na klávesnici .
+Uživatelská příručka notebooku 61
+Spouštění Oznámení
+Na hlavním panelu klepněte na datum a čas.
+Umístěte kurzor myši nad datum a čas na hlavním 
+panelu a klikněte na něj.
+Stiskněte na klávesnici .
+62 Uživatelská příručka notebooku
+MyASUS Splendid
+MyASUS Splendid zajišťuje, aby všechny panely displeje ASUS měly 
+stejné a přesné barvy. Nastavení displeje můžete upravit volbou Živost, 
+Péče o oči, nebo Ruční režim vedle Normální režim.
+• Normal Mode (Normální režim): Díky korekci gama záření a 
+teploty barev je obrazový výstup z panelu co nejblíže tomu, co 
+vaše oko přirozeně vidí. U modelu s panelem OLED je tento režim 
+v souladu s certifikací TÜV Low Blue Light.
+• Vivid Mode (Režim Vivid): Tento režim umožňuje nastavit sytost 
+obrazu, takže je živější a sytější.
+• Manual Mode (Ruční režim): Tento režim umožňuje přizpůsobit 
+hodnotu teploty barev vašim osobním potřebám v rozsahu od 
+-50 do +50.
+• Eye Care Mode (Režim péče o oči): Tento režim snižuje 
+vyzařování modrého světla až o 30 % a pomáhá chránit vaše oči.
+ Úroveň 1-5: Čím vyšší úroveň, tím více se sníží emise modrého 
+světla. Pro model s LCD panelem je úroveň 5 optimalizovaným 
+nastavením a je v souladu s certifikací TÜV Low Blue Light.
+POZNÁMKA: Povolte HDR z Settings (Nastavení) > System (Systém) > 
+Display (Displej) pro lepší zážitek ze sledování s vaším OLED panelem (u 
+vybraných modelů) a je to v souladu s certifikací TÜV Flicker Free.
+Uživatelská příručka notebooku 63
+Viz následující tipy ke zmírnění namáhání očí:
+• Při dlouhé pracovní době si od displeje chvíli oddychněte. 
+Doporučuje se udělat si krátkou přestávku (nejméně 5 minut) po 
+přibližně 1 hodině nepřetržité práce u počítače. Krátké a časté 
+přestávky jsou účinnější než dlouhé přestávky.
+• Abyste minimalizovali namáhání očí a suchost očí, pravidelně 
+odpočívejte zaostřením pohledu na předměty, které jsou daleko.
+• Pro snížení namáhání očí opakujte následující cvičení:
+(1) Opakovaně se dívejte nahoru a dolů
+(2) Pomalu otáčejte očima
+(3) Pohybujte očima diagonálně
+ Pokud namáhání očí přetrvává, poraďte se prosím s lékařem.
+• Vysoce energetické modré světlo může vést k namáhání očí a 
+AMD (Age-Related Macular Degeneration (Věkem podmíněná 
+makulární degenerace)). Filtr modrého světla snižuje škodlivé 
+modré světlo o 30 % (max.), aby se zabránilo CVS (Computer 
+Vision Syndrome (Syndrom počítačového vidění)).
+64 Uživatelská příručka notebooku
+Nastavení OLED displeje
+Pro zajištění co největšího využití OLED displeje (u vybraných modelů) 
+doporučujeme několik nastavení. Tato nastavení pomáhají optimalizovat 
+vizuální zážitek, maximalizovat životnost baterie a prodlužovat životnost 
+vašeho notebooku ASUS.
+Nastavení tmavého režimu
+Ve výchozím nastavení je aktivován tmavý režim. Postup kontroly nebo 
+úpravy nastavení:
+1. Spusťte nabídku Start.
+2. Klikněte/Klepněte na Settings (Nastavení) a vyberte možnost 
+Personalization (Přizpůsobení).
+Uživatelská příručka notebooku 65
+3. Pro zobrazení možností vyberte záložku Colors (Barvy).
+66 Uživatelská příručka notebooku
+Vypnutí displeje, pokud se nepoužívá
+Ujistěte se, že jste nastavili automatické vypnutí displeje, pokud jej 
+nepoužíváte. Postup kontroly nebo úpravy nastavení:
+1. Spusťte nabídku Start.
+2. Klikněte/Klepněte na Settings (Nastavení) a vyberte možnost 
+System (Systém).
+Uživatelská příručka notebooku 67
+3. Pro zobrazení možností vyberte záložku Power & battery 
+(Napájení a baterie).
+68 Uživatelská příručka notebooku
+Nastavení jasu displeje
+Doporučuje se povolit animovaný šetřič obrazovky s tmavým pozadím a 
+vyhnout se nastavení OLED displeje na maximální jas, abyste prodloužili 
+životnost OLED displeje. Postup kontroly nebo úpravy nastavení:
+1. Spusťte nabídku Start.
+2. Klikněte/Klepněte na Settings (Nastavení) a vyberte možnost 
+Personalization (Přizpůsobení).
+Uživatelská příručka notebooku 69
+3. Vyberte záložku Lock screen (Zamknout obrazovku) a poté 
+vyberte Screen saver (Spořič obrazovky) pro zobrazení 
+možností.
+70 Uživatelská příručka notebooku
+Automatické skrývání hlavního panelu
+Abyste se vyhnuli zobrazování hlavního panelu na OLED displeji po 
+delší dobu, ujistěte se, že se hlavní panel automaticky skryje. Změna 
+nastavení:
+1. Spusťte nabídku Start.
+2. Klikněte/Klepněte na Settings (Nastavení) a vyberte možnost 
+Personalization (Přizpůsobení).
+Uživatelská příručka notebooku 71
+3. Vyberte záložku Taskbar (Hlavní panel) a potom povolte 
+Automatically hide the taskbar (Automatické skrytí hlavního 
+panelu).
+72 Uživatelská příručka notebooku
+1. Spusťte aplikaci Microsoft Office a klikněte/klepněte na File 
+(Soubor) > Account (Účet).
+2. V oddílu Dark Gray (Motiv kanceláře) vyberte možnost Office 
+Theme (Tmavě šedá). Motiv bude aplikován na všechny aplikace 
+společnosti Microsoft.
+Nastavení tmavého režimu v aplikaci Microsoft 
+Office
+Uživatelská příručka notebooku 73
+Ostatní klávesové zkratky
+Pomocí klávesnice můžete také používat následující zkratky, které vám 
+pomohou spouštět aplikace a navigovat se v systému Windows.
+Spustí Start menu (nabídku Start)
+Spustí Action Center (Centrum akcí)
+Spustí pracovní plochu
+Spustí File Explorer (Průzkumníka souborů)
+Spustí Settings (Nastavení)
+Spustí panel Connect (Připojení) 
+Aktivuje obrazovku uzamčení
+Minimalizuje všechna aktuálně aktivní okna
+74 Uživatelská příručka notebooku
+Spustí Search (Vyhledávání)
+Spustí panel Project (Projekt) 
+Otevře okno Run (Spustit)
+Otevře Accessibility (Přístupnost)
+Otevře kontextovou nabídku tlačítka Start
+Spustí ikonu lupy a přiblíží obrazovku
+Oddálí obrazovku
+Uživatelská příručka notebooku 75
+Připojení k bezdrátovým sítím
+Wi-Fi
+Přistupujte k e-mailům, surfujte po internetu a sdílejte aplikace 
+prostřednictvím sociálních sítí pomocí Wi-Fi připojení vašeho 
+notebooku.
+DŮLEŽITÉ! Airplane mode (Režim Letadlo) tuto funkci deaktivuje. Před 
+povolením Wi-Fi připojení vašeho notebooku se ujistěte, že je Airplane 
+mode (Režim Letadlo) vypnutý.
+Připojení Wi-Fi
+Připojte svůj notebook k síti Wi-Fi pomocí následujících kroků:
+nebo
+1. Spustit Action Center (Centrum akcí) z hlavního 
+panelu.
+2. Pro povolení Wi-Fi klikněte/klepněte na ikonu Wi-Fi.
+3. Ze seznamu dostupných Wi-Fi připojení vyberte 
+přístupový bod.
+4. Pro spuštění síťového připojení vyberte možnost 
+Connect (Připojit).
+POZNÁMKA: Pro aktivaci připojení Wi-Fi můžete být 
+vyzváni k zadání bezpečnostního klíče.
+76 Uživatelská příručka notebooku
+nebo
+1. Spusťte Settings (Nastavení) z nabídky Start.
+2. Vyberte Bluetooth & devices (Bluetooth a 
+zařízení) > Add device (Přidat zařízení) k 
+vyhledávání zařízení s podporou Bluetooth.
+3. Vyberte zařízení ze seznamu pro spárování vašeho 
+notebooku se zařízením.
+POZNÁMKA: U některých zařízení s funkcí Bluetooth 
+můžete být vyzváni, abyste zadali přístupový kód vašeho 
+notebooku.
+Bluetooth
+Pro usnadnění bezdrátového přenosu dat s jinými zařízeními s 
+podporou Bluetooth použijte Bluetooth.
+DŮLEŽITÉ! Airplane mode (Režim Letadlo) tuto funkci deaktivuje. Před 
+povolením připojení Bluetooth notebooku se ujistěte, že je Airplane 
+mode (Režim Letadlo) vypnutý.
+Párování s jinými zařízeními s podporou Bluetooth
+Abyste mohli přenášet data, musíte svůj notebook spárovat s jinými 
+zařízeními s funkcí Bluetooth. Připojte svá zařízení pomocí následujících 
+kroků:
+Uživatelská příručka notebooku 77
+Režim Letadlo
+Režim Letadlo deaktivuje bezdrátovou komunikaci, což vám umožní 
+bezpečně používat svůj notebook během letu.
+POZNÁMKA: Obraťte se na svého poskytovatele leteckých služeb, 
+abyste se dozvěděli o souvisejících službách za letu, které lze použít, a o 
+omezeních, která je třeba dodržovat při používání vašeho notebooku za 
+letu.
+Zapnutí/Vypnutí režimu Letadlo
+nebo
+1. Spustit Action Center (Centrum akcí) z hlavního 
+panelu.
+2. Kliknutím/Klepnutím na ikonu Airplane mode 
+(Režim Letadlo) aktivujete nebo deaktivujete 
+režim Letadlo.
+78 Uživatelská příručka notebooku
+Vypnutí vašeho notebooku
+Váš notebook můžete vypnout jedním z následujících postupů:
+nebo
+• Spusťte nabídku Start a poté vyberte > Shut 
+down (Vypnout) pro normální vypnutí.
+• Na přihlašovací obrazovce vyberte možnost > 
+Shut down (Vypnout).
+• Stisknutím tlačítka spustíte funkci 
+Vypnout Windows. V rozevíracím seznamu 
+vyberte možnost Shut down (Vypnout) a potom 
+vyberte možnost OK.
+• Pokud váš notebook přestane reagovat, stiskněte 
+a přidržte tlačítko napájení alespoň deset (10) 
+sekund, dokud se notebook nevypne.
+Uživatelská příručka notebooku 79
+Uvedení vašeho notebooku do režimu 
+spánku
+Pro uvedení vašeho notebooku do režimu spánku:
+nebo
+• Spusťte nabídku Start a poté vyberte > Sleep 
+(Spánek) pro uvedení vašeho notebooku do 
+režimu spánku.
+• Na přihlašovací obrazovce vyberte možnost > 
+Sleep (Spánek).
+Stisknutím tlačítka spustíte funkci Vypnout 
+systém Windows. V rozevíracím seznamu vyberte 
+možnost Sleep (Spánek) a poté vyberte možnost OK.
+POZNÁMKA: Váš notebook můžete také uvést do režimu spánku jedním 
+stisknutím tlačítka napájení.
+80 Uživatelská příručka notebooku
+Uživatelská příručka notebooku 81
+Kapitola 4:
+Automatický test při spuštění 
+počítače (POST)
+82 Uživatelská příručka notebooku
+Automatický test při spuštění počítače (POST)
+POST (Power-On Self-Test) je série softwarově řízených diagnostických 
+testů, které se spustí při zapnutí nebo restartu vašeho notebooku. 
+Software, kterým se řídí POST, je nainstalován jako trvalá součást 
+architektury notebooku.
+Použití POST pro přístup k systému BIOS a řešení 
+problémů
+Během POST můžete přistupovat k nastavení systému BIOS nebo 
+pomocí funkčních kláves vašeho notebooku spouštět možnosti řešení 
+problémů. Pro více informací viz níže.
+BIOS
+Systém BIOS (Basic Input and Output System) ukládá v notebooku 
+nastavení hardwaru systému, která jsou potřebná pro spuštění systému.
+Výchozí nastavení systému BIOS platí pro většinu podmínek vašeho 
+notebooku. Neměňte výchozí nastavení systému BIOS s výjimkou 
+následujících okolností:
+• Během zavádění operačního systému se na obrazovce zobrazí 
+chybové hlášení a požádá vás o spuštění nastavení systému BIOS.
+• Nainstalovali jste novou systémovou komponentu, která vyžaduje 
+další nastavení nebo aktualizace systému BIOS.
+VAROVÁNÍ! Použití nevhodných nastavení systému BIOS může mít za 
+následek nestabilitu systému nebo selhání zavádění operačního systému. 
+Důrazně doporučujeme změnit nastavení systému BIOS pouze za pomoci 
+vyškoleného servisního personálu.
+Přístup k systému BIOS
+Restartujte svůj notebook a poté během POST stiskněte .
+Uživatelská příručka notebooku 83
+Obnovení systému
+Pomocí možností obnovení v notebooku můžete systém obnovit do 
+původního stavu nebo jednoduše obnovit jeho nastavení a zlepšit tak 
+jeho výkon.
+DŮLEŽITÉ!
+• Před provedením jakékoli možnosti obnovení v notebooku zálohujte 
+všechny své datové soubory.
+• Poznamenejte si důležitá přizpůsobená nastavení, jako jsou nastavení 
+sítě, uživatelská jména a hesla, abyste se vyhnuli ztrátě dat.
+• Před resetováním systému se ujistěte, že je notebook připojen ke 
+zdroji napájení.
+Systém Windows vám umožňuje provést některou z následujících 
+možností obnovení:
+• Keep my files (Ponechat mé soubory) - Tato možnost umožňuje 
+obnovit váš notebook bez ovlivnění osobních souborů (fotografie, 
+hudba, videa, dokumenty).
+ Pomocí této možnosti můžete obnovit výchozí nastavení vašeho 
+notebooku a odstranit další nainstalované aplikace.
+• Remove everything (Odstranit vše) - Tato možnost resetuje 
+váš notebook do továrního nastavení. Před provedením této 
+možnosti musíte zálohovat svá data.
+84 Uživatelská příručka notebooku
+• Advanced startup (Pokročilé spuštění) - Pomocí této možnosti 
+můžete v notebooku provádět další možnosti pokročilého 
+obnovení, jako například:
+- Použití jednotky USB, síťového připojení nebo disku DVD 
+pro obnovení systému Windows pro spuštění vašeho 
+notebooku.
+- Pomocí funkce Troubleshoot (Odstraňování potíží) 
+povolte některou z těchto pokročilých možností obnovení: 
+Oprava při spuštění, odinstalování aktualizací, nastavení 
+spuštění, nastavení firmwaru UEFI, výzva k příkazu, obnovení 
+systému a obnovení obrazu systému.
+Provedení možnosti obnovení
+Chcete-li získat přístup k některé z dostupných možností obnovení 
+vašeho notebooku a použít ji, postupujte podle následujících kroků.
+1. Spusťte Settings (Nastavení) a vyberte System (Systém) > 
+Recovery (Obnovit).
+Uživatelská příručka notebooku 85
+2. Vyberte možnost obnovení, kterou chcete provést.
+86 Uživatelská příručka notebooku
+Uživatelská příručka notebooku 87
+Tipy a odpovědi na časté 
+dotazy
+88 Uživatelská příručka notebooku
+Užitečné tipy pro váš notebook
+Pro zajištění optimálního využívání notebooku, udržování výkonu 
+systému a zajištění bezpečnosti všech vašich dat se můžete řídit 
+následujícími užitečnými tipy:
+• Pravidelně aktualizujte operační systém Windows tak, aby bylo 
+zajištěno nejaktuálnější nastavení zabezpečení aplikací.
+• Aktualizujte aplikaci MyASUS, abyste zajistili, že budete mít k 
+dispozici nejnovější exkluzivní aplikace, ovladače a nástroje ASUS.
+• Svá data chraňte pravidelně aktualizovaným antivirovým 
+softwarem.
+• Pokud možno se vyhýbejte nucenému vypínání notebooku.
+• Data vždy zálohujte a pravidelně vytvářejte záložní data na 
+externím paměťovém zařízení.
+• Nebudete-li notebook delší dobu používat, nabijte baterii na 
+50 %, potom notebook vypněte a odpojte napájecí adaptér.
+• Pokud notebook napájíte neustále z elektrické sítě, v aplikaci 
+MyASUS nastavte nabíjení s ohledem na životnost baterie na 
+vyvážený režim.
+Uživatelská příručka notebooku 89
+• Před resetováním notebooku odpojte všechna externí zařízení 
+a připravte si následující položky:
+- Klíč produktu k operačnímu systému a dalším 
+nainstalovaným aplikacím
+- Zálohovaná data
+- Přihlašovací jméno a heslo
+- Údaje pro připojení k Internetu
+• Informace pro řešení problémů a odpovědi na časté otázky 
+naleznete na našich stránkách podpory na adrese 
+https://www.asus.com/cz/support/.
+90 Uživatelská příručka notebooku
+Odpovědi na časté dotazy o hardwaru
+1. Při vypnutí notebooku se na displeji zobrazí černá, někdy 
+barevná, tečka. Jak postupovat?
+Ačkoli se tyto tečky na displeji normálně zobrazují, nemají žádný 
+negativní vliv na systém. Pokud se případ opakuje a zásadně 
+omezuje výkon systému, poraďte se s autorizovaným servisním 
+střediskem ASUS.
+2. Barva a jas nejsou na displeji zobrazeny rovnoměrně. Jak to 
+lze opravit?
+Barva a jas displeje mohou být ovlivněny úhlem a aktuální 
+polohou notebooku. Jas a barevný tón notebooku se mohou 
+rovněž lišit podle modelu. Zobrazení displeje můžete upravit 
+funkčními klávesami nebo v nastavení zobrazení v operačním 
+systému.
+3. Jak lze maximalizovat životnost baterie notebooku?
+Můžete vyzkoušet některé z následujících doporučení:
+• Upravte jas displeje funkčními klávesami.
+• Nepoužíváte-li žádné připojení Wi-Fi, přepněte systém do 
+režimu Airplane mode (Režim v letadle).
+• Odpojte nepoužívaná zařízení USB.
+• Ukončete nepoužívané aplikace, zejména takové, které 
+využívají příliš mnoho systémové paměti.
+Uživatelská příručka notebooku 91
+4. Indikátor nabíjení baterie nesvítí. Co se stalo?
+• Zkontrolujte, zda je správně připojen napájecí adaptér nebo 
+baterie. Můžete rovněž zkusit odpojit napájecí adaptér nebo 
+baterii, počkat jednu minutu a potom je znovu připojit 
+k elektrické zásuvce a k notebooku.
+• Pokud problém přetrvává, požádejte o pomoc nejbližší 
+servisní středisko ASUS.
+5. Proč nefunguje touchpad?
+Touchpad aktivujte stisknutím tlačítka .
+6. Proč není při přehrávání zvukových souborů a videa slyšet 
+zvuk z reproduktorů notebooku?
+Můžete vyzkoušet některé z následujících doporučení:
+• Zvyšte hlasitost reproduktoru stisknutím tlačítka .
+• Zkontrolujte, zda reproduktory nejsou ztlumené.
+• Zkontrolujte, zda není k notebooku připojena zástrčka 
+sluchátek, a případně ji odpojte.
+92 Uživatelská příručka notebooku
+7. Co dělat v případě ztráty napájecího adaptéru notebooku 
+nebo když přestane fungovat baterie?
+Požádejte o pomoc nejbližší servisní středisko ASUS.
+8. Nelze správně používat klávesy notebooku, protože kurzor se 
+neustále pohybuje. Jak postupovat?
+Při psaní na klávesnici se nesmí nic náhodně dotýkat touchpadu 
+ani se k němu tisknout. Můžete také deaktivovat touchpad 
+stisknutím tlačítka .
+Uživatelská příručka notebooku 93
+Odpovědi na časté dotazy o softwaru
+1. Po zapnutí notebooku indikátor napájení svítí, ale na 
+obrazovce se nic nezobrazí. Jak to lze opravit?
+Můžete vyzkoušet některé z následujících doporučení:
+• Vynuťte vypnutí notebooku stisknutím a podržením tlačítka 
+napájení alespoň na deset (10) sekund. Zkontrolujte, zda 
+je správně připojen napájecí adaptér a baterie, a potom 
+zapněte notebook.
+• Pokud problém přetrvává, požádejte o pomoc nejbližší 
+servisní středisko ASUS.
+2. Jak postupovat, když se na displeji zobrazí tato zpráva: 
+„Remove disks or other media. Press any key to restart.“ 
+(Vyjměte disk nebo jiná média. Restartujte stisknutím 
+libovolné klávesy.)?
+Můžete vyzkoušet některé z následujících doporučení:
+• Odpojte všechna připojená zařízení USB a potom notebook 
+restartujte.
+• Vyjměte veškeré optické disky ponechané v optické 
+jednotce a potom restartujte.
+• Pokud problém přetrvává, pravděpodobně došlo k potížím 
+s pamětí notebooku. Požádejte o pomoc nejbližší servisní 
+středisko ASUS.
+94 Uživatelská příručka notebooku
+3. Zavádění operačního systému do notebooku je pomalejší než 
+obvykle a operační systém má prodlevy. Jak to lze opravit?
+Odstraňte nedávno nainstalované aplikace nebo aplikace, které 
+nebyly obsaženy v balíčku s operačním systémem, a potom 
+systém restartujte.
+4. Nelze zavést operační systém notebooku. Jak to lze opravit?
+Můžete vyzkoušet některé z následujících doporučení:
+• Odpojte všechna zařízení připojená k notebooku a potom 
+restartujte systém.
+• Pokud problém přetrvává, požádejte o pomoc nejbližší 
+servisní středisko ASUS.
+5. Proč nelze notebook probudit z režimu spánku?
+• Pro obnovu do posledního funkčního stavu je třeba 
+stisknout tlačítko napájení.
+• Baterie systému je pravděpodobně zcela vybitá. Připojte 
+napájecí adaptér k notebooku a k elektrické zásuvce 
+a stiskněte tlačítko napájení.
+Uživatelská příručka notebooku 95
+Přílohy
+96 Uživatelská příručka notebooku
+Slučitelnost interního modemu
+Tento notebook s interním modemem vyhovuje standardům JATE (Japonsko), 
+FCC (USA, Kanada, Korea, Tchaj-wan) a CTR21. Interní modem byl schválen podle 
+rozhodnutí Rady 98/482/EC pro celoevropské připojení jedné stanice k veřejné 
+telefonní síti. Ale vzhledem k rozdílům mezi jednotlivými veřejnými telefonními 
+sítěmi v různých zemích nezaručuje toto schválení bezpodmínečné zajištění 
+úspěšné funkce na každém koncovém bodě veřejné telefonní sítě. V případě 
+problémů byste měli nejprve kontaktovat svého dodavatele vybavení.
+Přehled
+4. srpna 1998 bylo v Oficiálním zpravodaji RE zveřejněno rozhodnutí Rady 
+Evropy o CTR 21. CTR 21 platí pro veškerá koncová nehlasová zařízení s tónovým 
+vytáčením, která se mají připojit k analogové veřejné telefonní síti.
+CTR 21 (Společné technické předpisy) pro připojovací požadavky na připojení 
+k analogové veřejné telefonní síti koncových zařízení (kromě koncových zařízení 
+podporujících hlasovou telefonii), u kterých je síťové adresování, pokud je 
+poskytováno, realizováno dvoutónovou vícefrekvenční signalizací.
+Uživatelská příručka notebooku 97
+Prohlášení o síťové kompatibilitě
+Prohlášení, které výrobce učiní k upozorněnému orgánu a dodavateli: „Toto 
+prohlášení bude označovat sítě, pro které je toto zařízení navrženo ke spolupráci, 
+a všechny upozorněné sítě, se kterými může mít toto zařízení problémy 
+spolupracovat.“
+Prohlášení, které výrobce učiní k uživateli: „Toto prohlášení bude označovat sítě, 
+pro které je toto zařízení navrženo ke spolupráci, a všechny upozorněné sítě, se 
+kterými může mít toto zařízení problémy spolupracovat. Výrobce rovněž připojí 
+prohlášení, aby vyjasnil, kde síťová kompatibilita závisí na nastavení fyzické 
+a softwarové vrstvy. Také poradí uživateli, aby kontaktoval dodavatele, pokud je 
+žádoucí používat zařízení na jiné síti.“
+Prozatím Upozorněný orgán CETECOM vydal několik celoevropských schválení 
+pomocí CTR 21. Výsledkem jsou první evropské modemy, které nevyžadují 
+zákonná schválení pro každý jednotlivý evropský stát.
+Nehlasové zařízení
+Takto mohou být schváleny záznamníky a hlasité telefony a také modemy, faxy, 
+zařízení pro automatické vytáčení a poplašné systémy. Zařízení, u kterého je 
+kvalita řeči po celé trase upravena nařízeními (např. ruční telefony a v některých 
+státech i bezdrátové telefony) jsou vyloučena.
+98 Uživatelská příručka notebooku
+Tato tabulka uvádí země, které už používají normu CTR 21.
+Země Použito Další testy
+Rakousko1 Ano Ne
+Belgie Ano Ne
+Česká republika Ne Nevztahuje se
+Dánsko1 Ano Ano
+Finsko Ano Ne
+Francie Ano Ne
+Německo Ano Ne
+Řecko Ano Ne
+Maďarsko Ne Nevztahuje se
+Island Ano Ne
+Irsko Ano Ne
+Itálie Nerozhodnuto Nerozhodnuto
+Izrael Ne Ne
+Lichtenštejnsko Ano Ne
+Lucembursko Ano Ne
+Nizozemsko1 Ano Ano
+Norsko Ano Ne
+Polsko Ne Nevztahuje se
+Portugalsko Ne Nevztahuje se
+Španělsko Ne Nevztahuje se
+Švédsko Ano Ne
+Švýcarsko Ano Ne
+Spojené království Ano Ne
+Uživatelská příručka notebooku 99
+Tyto informace byly zkopírovány z CETECOM a uvádíme je bez záruky. Aktualizace 
+této tabulky najdete na adrese http://www.cetecom.de/technologies/ctr_21.html.
+1 Vnitrostátní požadavky se uplatní, jen pokud může zařízení používat pulzní 
+vytáčení (výrobci mohou v uživatelském návodu uvést, že zařízení má podporovat 
+jen tónové vytáčení DTMF, a další testy by pak byly zbytečné).
+V Nizozemsku jsou nutné další testy pro sériové připojení a identifikaci volajícího.
+100 Uživatelská příručka notebooku
+VAROVÁNÍ! Je nutné použít stíněný napájecí kabel, aby byly splněny vyzařovací 
+limity FCC a aby se zabránilo rušení blízkých rozhlasových a televizních přijímačů. Je 
+nezbytné používat pouze dodaný napájecí kabel. Pro připojení vstupních a výstupních 
+zařízení k tomuto zařízení používejte jen stíněné kabely. Upozorňujeme, že změny 
+nebo úpravy výslovně neschválené úřadem odpovědným za shodu mohou vést 
+k odebrání vašeho oprávnění používat toto zařízení.
+(Přetištěno z Federálního zákoníku č. 47, část 15.193, 1993. Washington DC: Úřad 
+federálního registrátora, Správa národních archívů a záznamů, tiskový úřad vlády 
+USA.)
+Prohlášení Federální komunikační komise (FCC) 
+o rušení
+Toto zařízení vyhovuje Části 15 předpisů FCC. Provoz zařízení podléhá následujícím 
+dvěma podmínkám:
+• Toto zařízení nesmí způsobovat škodlivé rušení.
+• Toto zařízení musí přijmout veškeré přijaté rušení, včetně rušení, které by 
+mohlo způsobit nežádoucí činnost.
+Toto zařízení bylo testováno a bylo shledáno, že vyhovuje omezením pro 
+digitální zařízení třídy B, dle části 15 pravidel Federální komunikační komise 
+(FCC). Tato omezení jsou navržena tak, aby zajišťovala přiměřenou ochranu proti 
+nežádoucímu rušení při normální instalaci. Toto zařízení generuje, používá a může 
+vyzařovat energii na radiové frekvenci a pokud není instalováno a používáno 
+podle pokynů, může rušit rozhlasovou/radiovou komunikaci. V žádném případě 
+však není možné zaručit, že v určité konkrétní situaci k rušení nedojde. Pokud toto 
+zařízení způsobuje škodlivé rušení příjmu rozhlasu nebo televize, což lze zjistit 
+tak, že zařízení vypnete a zapnete, uživateli doporučujeme zkusit odstranit rušení 
+pomocí jedné nebo několika z následujících metod:
+• Otočit nebo přemístit přijímací anténu.
+• Zvětšit odstup mezi zařízením a přijímačem.
+• Připojit zařízení do zásuvky na jiném okruhu, než do kterého je připojen 
+přijímač.
+• Poradit se s dodavatelem nebo zkušeným rozhlasovým/TV technikem.
+Uživatelská příručka notebooku 101
+Prohlášení o vystavování radiové frekvenci (RF) 
+dle FCC
+VAROVÁNÍ! Jakékoliv změny nebo úpravy výslovně neschválené úřadem odpovědným 
+za shodu mohou vést k odebrání vašeho oprávnění používat toto zařízení. 
+Toto zařízení vyhovuje limitům FCC pro vystavení vyzařování stanoveným pro 
+neřízené prostředí. Abyste vyhověli požadavkům FCC pro vystavení radiovým 
+frekvencím, vyhněte se přímému kontaktu s vysílací anténou během přenosu 
+dat. Koncoví uživatelé musejí dodržovat specifické provozní pokyny, aby vyhověli 
+požadavkům pro vystavení radiovým frekvencím.
+Informace o vystavení radiofrekvenčním polím 
+(SAR)
+Toto zařízení vyhovuje státním předpisům pro vystavení rádiovým vlnám. Toto 
+digitální zařízení bylo zkonstruováno a vyrobeno tak, aby nepřekračovalo limity 
+vystavení rádiovým (RF) vlnám stanovené Federální komunikační komisí vlády 
+USA.
+Tato norma vlivu vystavení bezdrátovým zařízením používá jako měrnou jednotku 
+měrný absorbovaný výkon (SAR, Specific Absorption Rate). Limit SAR dle FCC je 1,6 
+W/kg. Testy SAR se provádějí ve standardních polohách používání schválených FCC 
+a při vysílání na nejvyšší certifikovaný výkon ve všech testovaných frekvenčních 
+pásmech.
+102 Uživatelská příručka notebooku
+Bezpečnostní informace UL
+Požadováno pro UL 1459 pro telekomunikační (telefonní) zařízení, která se mají 
+elektricky připojit k telekomunikační síti s provozním napětím k zemi do 200 
+V max., 300 V mezi špičkami, a 105 V rms, a instalovat nebo používat v souladu 
+s Národním elektrickým zákoníkem (NFPA 70).
+Při používání modemu spolu s notebookem je vždy nutné dbát na základní 
+bezpečnostní opatření, aby se snížilo nebezpečí požáru, úrazu elektrickým 
+proudem a zranění osob; k opatřením patří:
+• NEPOUŽÍVEJTE notebook v blízkosti vody, např. blízko vany, umývadla, 
+dřezu nebo nádoby na prádlo, ve vlhkém suterénu nebo poblíž bazénu.
+• NEPOUŽÍVEJTE notebook během bouřky s elektrickými výboji. Hrozí určité 
+riziko zásahu elektrickým výbojem blesku.
+• NEPOUŽÍVEJTE notebook poblíž oblasti s unikajícím plynem.
+Požadováno pro UL 1642 o primárních (nedobíjitelných) a sekundárních 
+(dobíjitelných) lithiových baterií použitých jako zdroj napájení ve výrobcích. Tyto 
+baterie obsahují kovové lithium nebo lithiovou slitinu nebo ionty lithia 
+a mohou se skládat z jednoho elektrochemického článku nebo dvou či více článků 
+připojených sériově, paralelně nebo obojím způsobem, které převádějí chemickou 
+energii na elektrickou pomocí nevratné nebo vratné chemické reakce.
+• NEODHAZUJTE baterii notebooku do ohně, může dojít k explozi. 
+Zkontrolujte místní zákony, zda obsahují speciální pokyny pro likvidaci, aby 
+se snížilo riziko poranění osob ohněm nebo výbuchem.
+• NEPOUŽÍVEJTE napájecí adaptéry ani baterie z jiných zařízení, abyste 
+snížili riziko poranění osob ohněm nebo výbuchem. Používejte pouze 
+napájecí adaptéry certifikované UL nebo baterie dodané výrobcem nebo 
+autorizovanými prodejci.
+Uživatelská příručka notebooku 103
+Bezpečnostní požadavky na napájení
+Výrobky se jmenovitým proudem do 6 A s hmotností přes 3 kg musejí používat 
+schválené napájecí kabely alespoň s tímto průřezem: H05VV-F, 3G, 0,75mm2 nebo 
+H05VV-F, 2G, 0,75mm2.
+Poznámky k TV
+Poznámka pro technika provádějícího instalaci systému CATV – kabelová přípojka 
+musí být uzemněná (ukostřená) v souladu s částí ANSI/NFPA 70 směrnice NEC 
+(National Electrical Code), konkrétně s oddílem 820.93, Uzemnění vnějšího 
+vodivého stínění koaxiálního kabelu – instalace musí obsahovat připojení stínění 
+koaxiálního kabelu k uzemnění na vstupu do budovy.
+Informace o produktu Macrovision Corporation
+Tento výrobek je vybaven technologií chráněnou autorským právem, která je 
+zabezpečená právním nárokem na určité patenty zapsané v USA a další práva 
+spojená s duševním vlastnictvím vlastněná korporací Macrovision a dalšími. 
+Použití technologii ochrany autorských práv podléhá schválení Macrovision 
+Corporation a je určeno k domácímu použití a dalšímu omezenému obecenstvu, 
+pokud Macrovision Corporation neschválí něco jiného. Zpětná analýza a zpětný 
+překlad jsou zakázány.
+Prevence ztráty sluchu
+Abyste předešli poškození sluchu, vyvarujte se dlouhodobému 
+poslechu hlasitého zvuku.
+Poznámka k izolaci
+DŮLEŽITÉ! K zajištění elektrické izolace a udržování elektrického zabezpečení, je 
+zařízení izolováno speciálním povlakem s výjimkou oblastí, kde jsou umístěny vstupní 
+a výstupní porty.
+104 Uživatelská příručka notebooku
+Severská opatření pro lithium (pro baterie 
+lithium-ion)
+CAUTION! Danger of explosion if battery is incorrectly replaced. Replace only with 
+the same or equivalent type recommended by the manufacturer. Dispose of used 
+batteries according to the manufacturer’s instructions. (English)
+ATTENZIONE! Rischio di esplosione della batteria se sostituita in modo errato. 
+Sostituire la batteria con un una di tipo uguale o equivalente consigliata dalla 
+fabbrica. Non disperdere le batterie nell’ambiente. (Italiano)
+VORSICHT! Explosionsgefahr bei unsachgemäßen Austausch der Batterie. Ersatz 
+nur durch denselben oder einem vom Hersteller empfohlenem ähnlichen Typ. 
+Entsorgung gebrauchter Batterien nach Angaben des Herstellers. (Deutsch)
+ADVARSELI! Lithiumbatteri - Eksplosionsfare ved fejlagtig håndtering. Udskiftning 
+må kun ske med batteri af samme fabrikat og type. Levér det brugte batteri 
+tilbage til leverandøren. (Dansk)
+VARNING! Explosionsfara vid felaktigt batteribyte. Använd samma batterityp eller 
+en ekvivalent typ som rekommenderas av apparattillverkaren. Kassera använt 
+batteri enligt fabrikantens instruktion. (Svenska)
+VAROITUS! Paristo voi räjähtää, jos se on virheellisesti asennettu. Vaihda paristo 
+ainoastaan laitevalmistajan sousittelemaan tyyppiin. Hävitä käytetty paristo 
+valmistagan ohjeiden mukaisesti. (Suomi)
+ATTENTION! Danger d’explosion si la batterie n’est pas correctement remplacée. 
+Remplacer uniquement avec une batterie de type semblable ou équivalent, 
+recommandée par le fabricant. Jeter les batteries usagées conformément aux 
+instructions du fabricant. (Français)
+ADVARSEL! Eksplosjonsfare ved feilaktig skifte av batteri. Benytt samme 
+batteritype eller en tilsvarende type anbefalt av apparatfabrikanten. Brukte 
+batterier kasseres i henhold til fabrikantens instruksjoner. (Norsk)
+(日本語)
+ВНИМАНИЕ! При замене аккумулятора на аккумулятор иного типа возможно 
+его возгорание. Утилизируйте аккумулятор в соответствии с инструкциями 
+производителя. (Pyccкий)
+Uživatelská příručka notebooku 105
+Schválení CTR 21 (pro notebook s integrovaným 
+modemem)
+Dansk
+Nederlands
+English
+Suomi
+Français
+106 Uživatelská příručka notebooku
+Deutsch
+Ελληνικά
+Italiano
+Português
+Español
+Svenska
+Uživatelská příručka notebooku 107
+Prohlášení o shodě pro směrnici upravující vliv 
+produktů na životní prostředí
+Společnost ASUS při vývoji a výrobě svých produktů dodržuje koncepci 
+ekologického designu a zajišťujte, aby byl každý stupeň životnosti produktu ASUS 
+v souladu s globálními předpisy na ochranu životního prostředí. Kromě toho 
+společnost ASUS zveřejňuje příslušné informace podle regulačních požadavků.
+Zásady zveřejňování informací na základě regulačních požadavků, které 
+společnost ASUS dodržuje, jsou uvedeny na adrese 
+http://csr.asus.com/Compliance.htm.
+EU REACH a článek 33
+V souladu se směrnicí EU nazvanou REACH (Registration, Evaluation, Authorisation, 
+and Restriction of Chemicals) jsme na webu ASUS REACH 
+http://csr.asus.com/english/REACH.htm zveřejnili chemické látky obsažené v 
+našich produktech.
+EU RoHS
+Tento produkt splňuje Směrnici EU RoHS. Podrobnosti viz 
+http://csr.asus.com/english/article.aspx?id=35.
+108 Uživatelská příručka notebooku
+Recyklační/Sběrné služby společnosti ASUS
+Programy pro recyklaci a zpětný odběr použitých produktů společnosti ASUS 
+vycházejí z našeho závazku dodržování nejvyšších standardů pro ochranu našeho 
+životního prostředí. Věříme, že poskytováním těchto řešení našim zákazníkům 
+umožníme odpovědně recyklovat naše produkty, baterie a další součásti a také 
+obalové materiály.
+Podrobné informace o recyklaci v různých regionech jsou uvedeny na adrese 
+http://csr.asus.com/english/Takeback.htm.
+Směrnice o ekodesignu
+Evropská unie vyhlásila rámec pro nastavení požadavků pro ekodesign produktů 
+spojených se spotřebou energie (2009/125/ES). Zvláštní prováděcí opatření slouží 
+ke zlepšení vlivu na životní prostředí specifických produktů nebo napříč několika 
+typy produktů. ASUS poskytuje informace o produktech na webové stránce CSR. 
+Podrobnosti naleznete na https://csr.asus.com/english/article.aspx?id=1555.
+Uživatelská příručka notebooku 109
+Produkty registrované v systému EPEAT
+Důležité ekologické informace ohledně produktů registrovaných v programu 
+ASUS EPEAT (Electronic Product Environmental Assessment Tool) jsou k dispozici 
+na https://csr.asus.com/english/article.aspx?id=41. Podrobnosti o programu EPEAT 
+a pokynech k nákupu naleznete na www.epeat.net.
+Produkt zařazený do programu ENERGY STAR
+ENERGY STAR je společný program agentury pro ochranu životního 
+prostředí (U.S. Environmental Protection Agency) a ministerstva 
+energetiky Spojených států amerických (U.S. Department of 
+Energy), který nám všem pomáhá šetřit náklady a chránit životní 
+prostředí používáním energeticky úsporných produktů a postupů.
+Všechny produkty ASUS s logem ENERGY STAR splňují standard ENERGY STAR 
+a ve výchozí konfiguraci mají aktivovanou funkci řízení spotřeby. Monitor se 
+po nečinnosti nejpozději do 10 minut automaticky přepne do režimu spánku a 
+počítač se po nečinnosti nejpozději do 30 minut automaticky přepne do režimu 
+spánku. Chcete-li probudit počítač, klikněte myší, stiskněte libovolnou klávesu na 
+klávesnici nebo stiskněte tlačítko napájení. 
+Podrobné informace o řízení spotřeby a jeho výhodách pro životní prostředí 
+najdete na webu http://www.energystar.gov/powermanagement. Podrobné 
+informace o společném programu ENERGY STAR najdete na webu 
+http://www.energystar.gov.
+POZNÁMKA: Program Energy Star NEPODPORUJE operační systémy FreeDOS a 
+operační systémy založené na Linuxu.
+110 Uživatelská příručka notebooku
+Licence na písma systému BIOS
+Copyright © 2022 The Android Open Source Project
+Licencováno dle licence Apache, verze 2.0 („Licence“); tento soubor nesmíte 
+použít jinak než v souladu s Licencí. Kopii Licence můžete získat na adrese 
+http://www.apache.org/licenses/LICENSE-2.0.
+Pokud to není vyžadováno zákonem nebo písemně dohodnuto, software 
+distribuovaný dle Licence je distribuován „JAK JE“, BEZ JAKÝCHKOLI ZÁRUK NEBO 
+UJIŠTĚNÍ, výslovných nebo implikovaných.
+Konkrétní informace o svoleních a omezeních v rámci Licence naleznete v Licenci.
+Uživatelská příručka notebooku 111
+Zjednodušené prohlášení o shodě EU
+Společnost ASUSTek Computer Inc. tímto prohlašuje, že toto zařízení splňuje 
+základní požadavky a další příslušná ustanovení směrnice 2014/53/EU. Plné znění 
+prohlášení o shodě EU je k dispozici na adrese https://www.asus.com/support/.
+V zemích uvedených v tabulce níže je provoz sítě Wi-Fi v pásmu 5150 až 5350 MHz 
+povolen pouze ve vnitřních prostorech.
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK(NI)
+a. Zařízení Wi-Fi 6E s nízkým výkonem („LPI“): 
+Při provozu ve frekvenčním pásmu 5945 až 6425 MHz je používání tohoto 
+zařízení omezeno pouze na interiér v Belgii (BE), Bulharsku (BG), Kypru (CY), 
+České republice (CZ), Estonsku (EE), Francii (FR), Islandu (IS), Irsku (IE), Litvě 
+(LT), Německu (DE), Nizozemsku (NL), Španělsku (ES).
+b. Zařízení Wi-Fi 6E s velmi nízkým výkonem („VLP“) (přenosná zařízení): 
+Při provozu ve frekvenčním pásmu 5945 až 6425 MHz není povoleno 
+používat toto zařízení v systémech bezpilotních letadel (UAS) v Belgii (BE), 
+Bulharsku (BG), Kypru (CY), České republice (CZ), Estonsku (EE), Francii (FR), 
+Islandu (IS), Irsku (IE), Litvě (LT), Německu (DE), Nizozemsku (NL), Španělsku 
+(ES).
+Oznámení k síti Wi-Fi
+DŮLEŽITÉ! Síťová karta Wi-Fi 6E je k dispozici u vybraných modelů. Možnost připojení 
+k pásmu Wi-Fi 6E se může lišit podle předpisu a certifikaci konkrétní země/regionu.
+https://www.asus.com/support
+112 Uživatelská příručka notebooku
+Informace o vystavení radiofrekvenčním polím 
+(SAR)
+Toto zařízení vyhovuje předpisům EU (2014/53/EU) pro omezení expozice občanů 
+rádiovým vlnám v zájmu ochrany veřejného zdraví.
+Tyto limity jsou součástí rozsáhlé sady doporučení v zájmu ochrany veřejného 
+zdraví. Tato doporučení byla vyvinuta a v rámci pravidelného podrobného 
+posuzování dostupných vědeckých studií překontrolována nezávislými vědeckými 
+organizacemi. Limit doporučovaný Radou Evropy pro mobilní zařízení je vyjádřen 
+v jednotce „Měrný absorbovaný výkon“ (SAR), s tím, že stanovený limit SAR je 
+průměrně 2,0 W/ kg na 10 g tkáně. Vyhovuje požadavkům Mezinárodní komise 
+pro ochranu před neionizujícím zářením (ICNIRP).
+Toto zařízení bylo testováno a při provozování v blízkosti lidského těla vyhovuje 
+pokynům ICNIRP pro vystavení a evropským normám EN 50566 a EN 62209-2. SAR 
+se měří při přímém kontaktu zařízení s tělem při vysílání na nejvyšší certifikovaný 
+výstupní výkon ve všech frekvenčních pásmech mobilního zařízení.
+Aby byly splněny požadavky na vystavení radiofrekvenčnímu záření v Evropě, musí 
+být mezi tělem uživatele a zařízením, včetně antény při nošení na těle, zachována 
+minimální vzdálenost 1 cm.
+ O této příručce
+ Konvence použité v této příručce
+ Ikony
+ Typografie
+ Bezpečnostní opatření
+ Použití notebooku
+ Péče o notebook
+ Správná likvidace
+ Bezpečnostní informace k baterii
+ Kapitola 1:
+ Nastavení hardwaru
+ Seznámení s notebookem
+ Pohled zepředu
+ Pohled shora
+ Pohled zespodu
+ Pohled zprava
+ Pohled zleva
+ Kapitola 2:
+ Použití vašeho notebooku
+ Začínáme
+ Nabijte si notebook
+ Zvednutím otevřete panel displeje
+ Stiskněte tlačítko napájení
+ Gesta pro dotykový panel a touchpad
+ Používání gest na dotykovém panelu
+ Použití touchpadu
+ Použití zařízení NumberPad
+ Použití klávesnice
+ Klávesové zkratky
+ Funkční klávesy
+ Klávesy Windows
+ Otáčení panelu displeje
+ Kapitola 3:
+ Práce s Windows
+ Začínáme poprvé
+ Nabídka Start
+ Aplikace Windows
+ Práce s aplikacemi Windows
+ Přizpůsobení aplikací Windows
+ Zobrazení úloh
+ Widgety
+ Funkce Snap
+ Přichycení hotspotů
+ Centrum akcí
+ MyASUS Splendid
+ Nastavení OLED displeje
+ Nastavení tmavého režimu
+ Vypnutí displeje, pokud se nepoužívá
+ Nastavení jasu displeje
+ Automatické skrývání hlavního panelu
+ Nastavení tmavého režimu v aplikaci Microsoft Office
+ Ostatní klávesové zkratky
+ Připojení k bezdrátovým sítím
+ Wi-Fi
+ Bluetooth
+ Režim Letadlo
+ Vypnutí vašeho notebooku
+ Uvedení vašeho notebooku do režimu spánku
+ Kapitola 4:
+ Automatický test při spuštění počítače (POST)
+ Automatický test při spuštění počítače (POST)
+ Použití POST pro přístup k systému BIOS a řešení problémů
+ BIOS
+ Přístup k systému BIOS
+ Obnovení systému
+ Provedení možnosti obnovení
+ Tipy a odpovědi na časté dotazy
+ Užitečné tipy pro váš notebook
+ Odpovědi na časté dotazy o hardwaru
+ Odpovědi na časté dotazy o softwaru
+ Přílohy
+ Slučitelnost interního modemu
+ Přehled
+ Prohlášení o síťové kompatibilitě
+ Nehlasové zařízení
+ Prohlášení Federální komunikační komise (FCC) o rušení
+ Prohlášení o vystavování radiové frekvenci (RF) dle FCC
+ Informace o vystavení radiofrekvenčním polím (SAR)
+ Bezpečnostní informace UL
+ Bezpečnostní požadavky na napájení
+ Poznámky k TV
+ Informace o produktu Macrovision Corporation
+ Prevence ztráty sluchu
+ Poznámka k izolaci
+ Severská opatření pro lithium (pro baterie lithium-ion)
+ Schválení CTR 21 (pro notebook s integrovaným modemem)
+ Prohlášení o shodě pro směrnici upravující vliv produktů na životní prostředí
+ EU REACH a článek 33
+ EU RoHS
+ Recyklační/Sběrné služby společnosti ASUS
+ Směrnice o ekodesignu
+ Produkt zařazený do programu ENERGY STAR
+ Produkty registrované v systému EPEAT
+ Licence na písma systému BIOS
+ Zjednodušené prohlášení o shodě EU
+ Oznámení k síti Wi-Fi
+ Informace o vystavení radiofrekvenčním polím (SAR)

@@ -1,0 +1,1761 @@
+
+Türkçe Tanıtma ve Kullanma Kılavuzu 
+Taşınabilir Bilgisayar UP5302ZA
+TR19489
+Birinci Sürüm / Temmuz 2022
+2 Dizüstü Bilgisayar E-Kılavuzu
+Telif Hakkı Bilgileri
+İçinde açıklanan ürünler ve yazılım da dahil olmak üzere bu kılavuzun hiçbir bölümü, ASUSTeK 
+COMPUTER INC.’in (“ASUS”) açık yazılı izni olmaksızın, alıcı tarafından yedekleme amaçları doğrultusunda 
+saklanan dokümantasyon hariç olmak üzere, herhangi bir şekilde ya da herhangi bir yolla yeniden 
+çoğaltılamaz, devredilemez, sureti alınamaz, yeniden kullanma sisteminde saklanamaz ya da herhangi 
+bir dile tercüme edilemez.
+ASUS, BU KILAVUZU, “MEVCUT DURUMUYLA” VE KISITLI OLMAMAKLA BERABER ZIMNİ GARANTİLER YA 
+DA ÖZEL BİR AMACA YÖNELİK TİCARİ ELVERİŞLİLİK YA DA UYGUNLUK KOŞULLARI DA DAHİL OLMAK 
+ÜZERE, AÇIK YA DA ZIMNİ HERHANGİ BİR ÇEŞİT GARANTİ VERMEKSİZİN SAĞLAMAKTADIR. ASUS YA DA 
+DİREKTÖRLERİ, GÖREVLİLERİ, ÇALIŞANLARI YA DA TEMSİLCİLERİ, HERHANGİ BİR DOLAYLI, ÖZEL, ARIZA YA 
+DA SONUÇSAL HASARDAN (KAR KAYBI, İŞ KAYBI, KULLANIM YA DA VERİ KAYBI, İŞİN KESİNTİYE UĞRAMASI 
+VE BENZERİ HASARLAR DA DAHİL OLMAK ÜZERE) DOLAYI, SÖZ KONUSU HASARIN BU KILAVUZDAKİ 
+YA DA ÜRÜNDEKİ HERHANGİ BİR KUSURDAN YA DA HATADAN KAYNAKLANABİLECEĞİNİN ASUS’A 
+BİLDİRİLMİŞ OLMASI DURUMUNDA DAHİ, SORUMLU OLMAYACAKTIR.
+Bu kılavuzda yer alan ürünler ve şirket adları, ilgili şirketlerin tescilli ticari markaları ya da telif hakları 
+olabilir ya da olmayabilir ve ihlal maksadı olmaksızın yalnızca tanımlama ya da açıklama amaçları ve 
+sahibinin faydası doğrultusunda kullanılabilir.
+BU KILAVUZ KAPSAMINDAKİ SPESİFİKASYONLAR VE BİLGİLER YALNIZCA KULLANIM AMAÇLI SUNULMUŞ 
+OLUP HERHANGİ BİR ZAMANDA HABER VERİLMEKSİZİN DEĞİŞTİRİLEBİLİR VE ASUS TARAFINDAN VERİLMİŞ 
+BİR TAAHHÜT OLARAK YORUMLANMAMALIDIR. ASUS, İÇİNDE AÇIKLANAN ÜRÜNLER VE YAZILIM DA 
+DAHİL OLMAK ÜZERE BU KILAVUZDA GÖRÜLEBİLECEK HERHANGİ BİR HATADAN YA DA YANLIŞLIKTAN 
+DOLAYI HİÇBİR SORUMLULUK YA DA YÜKÜMLÜLÜK KABUL ETMEZ.
+Telif Hakkı © 2022 ASUSTeK COMPUTER INC. Her Hakkı Saklıdır.
+Sınırlı Sorumluluk
+ASUS’tan kaynaklanan bir temerrütten ya da diğer bir yükümlülükten dolayı meydana gelebilecek 
+durumlarda, zararları ASUS’tan tazmin etme hakkına sahipsiniz. Bu tür bir durumda, ASUS’tan zarar 
+tazmin etme hakkınızın neye dayandığı önemli olmaksızın, ASUS, bedensel yaralanma (ölüm de dahil) 
+ve taşınmaz mülke ve maddi kişisel mala gelen zararlara; ya da bu Garanti Beyanatında belirtilen kanuni 
+yükümlülüklerin ihmalinden ya da yerine getirilmemesinden kaynaklanan diğer herhangi bir fiili ve 
+doğrudan hasara karşı, söz konusu ürünün liste sözleşme fiyatından daha fazla olmayacak şekilde 
+sorumludur.
+ASUS yalnızca sözleşmeye dayalı kayıplardan, zararlardan ya da iddialardan, haksız fiillerden ya da bu 
+Garanti Beyanatı uyarınca söz konusu olan ihlalden dolayı zararlarınızı tazmin etmekle yükümlü olacaktır.
+Bu limit ayrıca ASUS’un tedarikçileri ve satıcıları için de geçerlidir. Bu, ASUS’un, tedarikçilerinin ve 
+satıcınızın müşterek sorumluluklarına ilişkin maksimum limittir.
+ASUS, HİÇBİR KOŞUL ALTINDA ŞU SAYILANLARDAN HERHANGİ BİRİNE KARŞI YÜKÜMLÜ OLMAYACAKTIR: 
+(1) HASARLARLA İLGİLİ OLARAK TARAFINIZA YÖNELİK ÜÇÜNCÜ TARAF İDDİALARI; (2) KAYIT YA DA VERİ 
+KAYIPLARINIZ YA DA BUNLARIN ZARAR GÖRMESİ; YA DA (3) ÖZEL, ARIZA YA DA DOLAYLI ZARARLAR YA 
+DA HERHANGİ BİR EKONOMİK SONUÇSAL ZARAR (KAR YA DA TASARRUF KAYIPLARI DA DAHİL) - ASUS’UN, 
+TEDARİKÇİLERİNİN YA DA SATICINIZIN SÖZ KONUSU ZARARIN OLASILIĞI KONUSUNDA BİLGİLENDİRİLMİŞ 
+OLMALARI DURUMUNDA DAHİ YÜKÜMLÜ OLMAYACAKTIR.
+Hizmet Ve Destek
+Çok dilli web sitemizi https://www.asus.com/tr/support adresinde ziyaret edin
+MyASUS; sorun giderme, ürün performans optimizasyonu, ASUS yazılım entegrasyonu gibi çeşitli destek 
+özellikleri sunar ve kişisel masaüstünüzü düzenleyip depolama alanını artırmanıza yardımcı olur. Daha 
+fazla ayrıntı için https://www.asus.com/tr/support/FAQ/1038301/ adresini ziyaret edin
+Dizüstü Bilgisayar E-Kılavuzu 3
+İçindekiler
+Bu Kılavuz Hakkında .................................................................................................7
+Bu Kılavuzda Kullanılan İfadeler ................................................................................ 8
+Simgeler ............................................................................................................................. 8
+Tipografya ......................................................................................................................... 8
+Güvenlik Tedbirleri ....................................................................................................9
+Dizüstü Bilgisayarınızı Kullanma ............................................................................... 9
+Dizüstü Bilgisayarınızın Bakımı .................................................................................. 10
+Düzgün Geri Dönüşüm ................................................................................................ 11
+Pil güvenlik bilgileri ........................................................................................................ 12
+1. Bölüm: Donanım Yerleşimi
+Dizüstü Bilgisayarınızı Tanıma ...............................................................................16
+Önden Görünüm............................................................................................................. 16
+Üstten Görünüm ............................................................................................................. 22
+Alt Görünüm ..................................................................................................................... 23
+Sağ Görünüm ................................................................................................................... 25
+Sol Görünüm .................................................................................................................... 28
+2. Bölüm: Dizüstü Bilgisayarınızı kullanma
+Kullanmaya başlama .................................................................................................30
+Dizüstü Bilgisayarınızı şarj etme ................................................................................ 30
+Ekran panelini kaldırarak açın .................................................................................... 32
+Güç düğmesine basın ................................................................................................... 32
+Dokunmatik ekran paneli ve dokunmatik yüzey hareketleri .....................33
+Dokunmatik ekran paneli hareketlerini kullanma .............................................. 33
+Dokunmatik yüzeyi kullanma..................................................................................... 35
+NumberPad'i kullanma ................................................................................................. 42
+Klavyeyi kullanma ......................................................................................................43
+Kısayol Tuşları ................................................................................................................... 43
+İşlev tuşları ........................................................................................................................ 44
+Windows tuşları ............................................................................................................... 44
+Ekran panelini döndürme .......................................................................................45
+4 Dizüstü Bilgisayar E-Kılavuzu
+3. Bölüm: Windows'da çalışma
+İlk kez başlatma ..........................................................................................................48
+Start menu (Başlat menüsü) ..................................................................................49
+Windows uygulamaları ............................................................................................51
+Windows uygulamalarıyla çalışma ........................................................................... 52
+Windows uygulamalarını özelleştirme .................................................................... 52
+Task view (Görev görünümü) ................................................................................55
+Widgets (Pencere öğeleri) ......................................................................................56
+Tutturma özelliği ........................................................................................................58
+Tutturma etkin noktaları .............................................................................................. 58
+Action Center (İşlem Merkezi) ...............................................................................60
+MyASUS Splendid ......................................................................................................62
+OLED ekranı ayarlama ..............................................................................................64
+Koyu Modu ayarlama .................................................................................................... 64
+Kullanılmadığı sırada ekranı kapatma ..................................................................... 66
+Ekran parlaklığını ayarlama ......................................................................................... 68
+Görev çubuğunu otomatik gizleme ......................................................................... 70
+Microsoft Office'te Koyu Modu ayarlama .............................................................. 72
+Diğer klavye kısayolları ............................................................................................73
+Kablosuz ağlara bağlanma .....................................................................................75
+Wi-Fi ..................................................................................................................................... 75
+Bluetooth ........................................................................................................................... 76
+Uçak modu ........................................................................................................................ 77
+Dizüstü Bilgisayarınızı kapatma ............................................................................78
+Dizüstü Bilgisayarınızı uyku moduna geçirme ................................................79
+Dizüstü Bilgisayar E-Kılavuzu 5
+4. Bölüm: Açılış Sırasında Kendi Kendine Test (POST)
+Açılış Sırasında Kendi Kendine Test (POST) ......................................................82
+BIOS ve Sorun Giderme bölümlerine erişmek için POST'u kullanma ........... 82
+BIOS ................................................................................................................................82
+BIOS'a erişme .................................................................................................................... 83
+Sisteminizi kurtarma .................................................................................................83
+Kurtarma seçeneği uygulama .................................................................................... 84
+İpuçları ve SSS
+Dizüstü Bilgisayarınız İçin Faydalı İpuçları ........................................................88
+Donanımla İlgili Sıkça Sorulan Sorular ...............................................................90
+Yazılımla İlgili Sıkça Sorulan Sorular ....................................................................93
+Ekler
+Dahili Modem Uyumluluğu ........................................................................................ 96
+Genel Bakış ........................................................................................................................ 96
+Ağ Uyumluluğu Beyanı ................................................................................................. 97
+Sesli Olmayan Ekipman ................................................................................................ 97
+Federal İletişim Komisyonu Parazit Bildirimi ......................................................... 100
+FCC Radyo Frekansına (RF) Maruz Kalma Uyarısı Bildirimi ............................... 101
+RF'ye Maruz Kalma Bilgileri (SAR) ............................................................................. 101
+UL Güvenlik Bildirimleri ................................................................................................ 102
+Güç Güvenlik Gerekliliği ............................................................................................... 103
+TV Bildirimleri ................................................................................................................... 103
+Macrovision Corporation Ürün Bildirimi ................................................................ 103
+İşitme Kaybının Önlenmesi ......................................................................................... 103
+Kaplama Bildirimi ............................................................................................................ 103
+Nordik Lityum Uyarıları (lityum iyon piller için) ................................................... 104
+6 Dizüstü Bilgisayar E-Kılavuzu
+CTR 21 Onayı (dahili Modemi olan Dizüstü Bilgisayar için) ............................. 105
+Ürün Çevre Yönetmeliğine Uygunluk Beyanı ....................................................... 107
+AB REACH ve Madde 33 ................................................................................................ 107
+AB RoHS ............................................................................................................................. 107
+ASUS Geri Dönüşüm/Geri Alma Hizmetleri ........................................................... 108
+Eko Tasarım Yönergesi ................................................................................................... 108
+ENERGY STAR Uyumlu Ürün ........................................................................................ 109
+EPEAT'ye Kayıtlı Ürünler ............................................................................................... 109
+BIOS Metin Yazı Tipleri Lisansı .................................................................................... 110
+Basitleştirilmiş AB Uyumluluk Beyanı ...................................................................... 111
+Wi-Fi Ağ Bildirimi............................................................................................................. 112
+RF'ye Maruz kalma bilgileri (SAR) .............................................................................. 112
+Dizüstü Bilgisayar E-Kılavuzu 7
+Bu Kılavuz Hakkında
+Bu kılavuz, dizüstü bilgisayarınızın donanım ve yazılım özellikleri 
+hakkında bilgi vermekte olup aşağıdaki bölümlerden oluşmaktadır:
+1. Bölüm: Donanım Yerleşimi
+Bu bölümde dizüstü bilgisayarınızın donanım bileşenleri ele 
+alınmıştır.
+2. Bölüm: Dizüstü Bilgisayarınızı kullanma
+Bu bölümde dizüstü bilgisayarınızın farklı parçalarının nasıl 
+kullanıldığı gösterilmiştir.
+3. Bölüm: Windows’da çalışma
+Bu bölümde dizüstü bilgisayarınızdaki Windows işletim sisteminin 
+kullanımı hakkında genel bir bakış yer almaktadır.
+4. Bölüm: Açılış Sırasında Kendi Kendine Test (POST)
+Bu bölümde dizüstü bilgisayarınızın ayarlarını değiştirmek için 
+POST'u nasıl kullanabileceğiniz gösterilmiştir.
+İpuçları ve SSS
+Bu kısım, dizüstü bilgisayarınızla yaşadığınız yaygın sorunları 
+ele almak ve gidermek için başvurabileceğiniz bazı önerilen 
+ipuçlarını, sık sorulan donanım ve yazılım sorularını sunmaktadır. 
+Ekler
+Bu bölümde dizüstü bilgisayarınız için uyarılar ve güvenlik 
+bildirimleri yer almaktadır.
+8 Dizüstü Bilgisayar E-Kılavuzu
+Bu Kılavuzda Kullanılan İfadeler
+Bu kılavuzdaki önemli bilgileri vurgulamak için, mesajlar aşağıdaki gibi 
+gösterilir:
+ÖNEMLİ! Bu iletide görevi tamamlamak için uygulanması gereken önemli 
+bilgiler bulunur. 
+NOT: Bu iletide görevleri tamamlamaya yardımcı olabilecek ilave bilgiler 
+ve ipuçları bulunur.
+UYARI! Bu iletide belirli görevleri yaparken güvenliğinizi korumak 
+ve dizüstü bilgisayarınızın veri ve bileşenlerinde hasarı önlemek için 
+uygulanması gereken önemli bilgiler bulunur.
+Simgeler
+Aşağıdaki simgeler, dizüstü bilgisayarınızda görev veya prosedür dizisini 
+tamamlamak için kullanılan aygıtı gösterir.
+Kalın = Bu, seçilmesi gereken bir menü veya öğeyi belirtir.
+İtalik = Bu, kılavuzda danışabileceğiniz kısımları göstermektedir.
+Tipografya
+= Dokunmatik ekranı kullanın.
+= Dokunmatik yüzeyi kullanın.
+= Klavyeyi kullanın.
+Dizüstü Bilgisayar E-Kılavuzu 9
+Güvenlik Tedbirleri
+Dizüstü Bilgisayarınızı Kullanma
+Bu dizüstü bilgisayar, yalnızca ortam sıcaklığının 5°C 
+(41°F) ila 35°C (95°F) arasında olduğu ortamlarda 
+kullanılmalıdır.
+Dizüstü bilgisayarınızın, altında yer alan elektrik girdi 
+bilgilerine bakınız ve şarj adaptörünüz ile uyumlu 
+olduğundan emin olunuz.
+Dizüstü Bilgisayarınız kullanımdayken veya pil takımını 
+şarj ederken ısınabilir. Isı nedeniyle yaralanmayı 
+önlemek için Dizüstü Bilgisayarınızı kucağınızda ya da 
+vücudunuzun herhangi bir yerine bırakmayın. Dizüstü 
+bilgisayarınızda çalışırken havalandırma deliklerini 
+engelleyebilecek yüzeyler üzerine yerleştirmeyin.
+Dizüstü bilgisayarınızla zarar görmüş güç kabloları, 
+aksesuarlar ve diğer çevre aygıtlarını kullanmayın.
+Güç açıkken, dizüstü bilgisayarınızı hava sirkülasyonunu 
+azaltan malzemeler içinde taşımadığınızdan veya bu 
+malzemelerle üzerini kapatmadığınızdan emin olun.
+Dizüstü bilgisayarınızı düzgün veya sabit olmayan 
+çalışma yüzeylerine yerleştirmeyin. 
+Dizüstü bilgisayarınızı hava alanındaki röntgen 
+makinelerinden geçirebilirsiniz (taşıyıcı bantlara 
+yerleştirilen eşyalar için kullanılırlar), ancak manyetik 
+detektörlere ve manyetik çubuklara maruz bırakmayın.
+Kullanılabilen ilgili uçak hizmetleri ve dizüstü 
+bilgisayarınızı uçakta kullanırken izlenmesi gereken 
+kısıtlamalar hakkında bilgi için hava alanı sağlayıcınızla 
+iletişim kurun.
+10 Dizüstü Bilgisayar E-Kılavuzu
+Dizüstü Bilgisayarınızın Bakımı
+Dizüstü bilgisayarınızı temizlemeden önce AC 
+gücünü kesin ve pil takımlarını (varsa) çıkarın. 
+Temiz selüloz bir sünger veya ılık su ya da düşük 
+yoğunluklu aşındırıcı olmayan deterjan solüsyonu 
+ile nemlendirilmiş güderi kullanın. Dizüstü 
+Bilgisayarınızda kalan nemi kuru bir bezle giderin. 
+Kısa devre veya aşınmayı önlemek için kasaya veya 
+klavye boşluklarına sıvı girmemesine dikkat edin.
+Dizüstü bilgisayarınızın üzerinde ya da yakınında 
+alkol, tiner, benzen ya da diğer kimyasallar gibi 
+güçlü çözücüler kullanmayınız.
+Dizüstü bilgisayarın üstüne nesneler yerleştirmeyin.
+Dizüstü bilgisayarınızı güçlü manyetik veya 
+elektriksel alanlara maruz bırakmayın.
+Dizüstü bilgisayarınızı sıvılara, yağmura ya da neme 
+maruz bırakmayın veya yanında kullanmayın.
+Dizüstü bilgisayarınızı kirli veya tozlu ortamlara 
+maruz bırakmayın.
+Dizüstü Bilgisayar E-Kılavuzu 11
+Düzgün Geri Dönüşüm 
+Dizüstü bilgisayarı kamu çöplüğüne ATMAYINIZ. Bu 
+ürün parçalar uygun biçimde yeniden kullanılacak 
+ve geri dönüştürülebilecek şekilde tasarlanmıştır. 
+Çarpı işaretli çöp kutusu sembolü ürünün (elektrikli, 
+elektronik ekipmanlar ve cıva içeren düğme piller) 
+ev atıklarıyla birlikte atılmaması gerektiğini gösterir. 
+Elektronik ürünlerin elden çıkarılması ile ilgili olarak 
+lokal düzenlemeleri kontrol ediniz.
+Pili kentsel atıklarla birlikte ATMAYIN. Üzeri çizili 
+tekerlekli çöp kutusu sembolü pilin kentsel atıklarla 
+atılmaması gerektiğini belirtir.
+Dizüstü bilgisayarınızı gaz sızıntılarının yakınında 
+kullanmayın.
+Ekran panelinde elektromanyetik dalga parazitini 
+önlemek için Notebook PC’nizin yakınına aktif 
+elektronik cihazlar yerleştirmeyin.
+Bu dizüstü bilgisayarı kripto para madenciliği 
+(dönüştürülebilir sanal para kazanmak için yüksek 
+miktarda elektrik ve zaman harcamak) ve/veya ilgili 
+faaliyetler için kullanmayın.
+12 Dizüstü Bilgisayar E-Kılavuzu
+Pil koruması
+• Pilin yüksek gerilim altında sıkça şarj edilmesi pil ömrünü 
+kısaltabilir. Sistem, pili korumak için, pil tamamen dolduktan sonra 
+pil gücü %90 ile %100 arasındayken şarj etmeyi durdurabilir.
+NOT: Başlangıç pil gücü şarj kapasitesi genellikle %90 ile %99 arasında 
+ayarlanır. Gerçek değer modele göre değişebilir.
+• Pilin yüksek ortam sıcaklıklarında şarj edilmesi ya da saklanması, 
+pil gücü kapasitesinde kalıcı hasara neden olabilir ve hızla pil 
+ömrünü kısaltabilir. Pil sıcaklığı çok yüksekse, sistem pil gücü 
+şarj kapasitesini azaltabilir ve hatta pili korumak için şarj işlemini 
+durdurabilir.
+• Cihazınız kapalı olup AC güce bağlı olmadığında bile pil gücü 
+kapasitesi azalabilir. Sistem pilden az miktarda güç çekmeye 
+devam ettiğinden bu normaldir.
+Pil güvenlik bilgileri
+Dizüstü Bilgisayar E-Kılavuzu 13
+Standart pil bakımı
+• Cihazınızı uzun süredir kullanmıyorsanız, pil gücünü %50’ye kadar 
+şarj edin ve ardından cihazınızı kapatın ve AC güç adaptörünün 
+bağlantısını kesin. Aşırı boşalmayı ve pil hasarını önlemek için pil 
+gücünü üç ayda bir %50’ye kadar yeniden şarj edin.
+• Pil ömrünü uzatmak için, pili uzun süre boyunca yüksek gerilimde 
+şarj etmeyin. Cihazınız için sürekli olarak AC güç kullanıyorsanız, 
+en az iki haftada bir pil gücünü %50’ye kadar boşaltın. Pil ömrünü 
+uzatmak için MyASUS’ta Uzun Ömürlü Pil Şarjı Denetiminden 
+(Battery Health Charging) ayarları düzenleyebilirsiniz.
+• Pilinizi, pil gücü %50 olarak 5°C (41°F) ile 35°C (95°F) arasındaki 
+sıcaklıklarda saklamanız önerilir. Pil ömrünü uzatmak için 
+MyASUS’ta Uzun Ömürlü Pil Şarjı Denetiminden (Battery Health 
+Charging) ayarları düzenleyebilirsiniz.
+• Pilinizi nemli ortamlarda bırakmayın. Nemli ortamlara maruz 
+kalma, pilin aşırı boşalma hızını artırabilir. Düşük sıcaklıktaki 
+ortamlar pilin içindeki kimyasallara zarar verebilirken, yüksek 
+sıcaklık veya aşırı ısınma patlama riskine yol açabilir.
+• Cihazınızı veya pil paketinizi radyatör, şömine, fırın, ısıtıcı veya 
+sıcaklığı 60°C’yi (140°F) geçen diğer ısı kaynaklarının yanına 
+koymayın. Çevreleyen ortamın yüksek sıcaklıkta olması, yangınla 
+sonuçlanabilecek patlama ya da sızıntıya neden olabilir.
+14 Dizüstü Bilgisayar E-Kılavuzu
+Dizüstü Bilgisayar E-Kılavuzu 15
+1. Bölüm: 
+Donanım Yerleşimi
+16 Dizüstü Bilgisayar E-Kılavuzu
+Dizüstü Bilgisayarınızı Tanıma
+Önden Görünüm
+NOT: Klavyenin düzeni ülkeye veya bölgeye bağlı olarak farklılık 
+gösterebilir. Dizüstü Bilgisayarın görünümü de Dizüstü Bilgisayar 
+modeline bağlı olarak farklılık gösterebilir.
+Dizüstü Bilgisayar E-Kılavuzu 17
+Dizi mikrofonlar
+Dizi mikrofonlar daha iyi ses tanıma ve ses kaydı için yankı 
+giderme, gürültü bastırma ve hüzmeleme işlevlerine sahiptir.
+Kamera göstergesi
+Kamera göstergesi, dahili kamera kullanılırken yanar.
+Kamera
+Dahili kamera, Dizüstü Bilgisayarınızı kullanarak fotoğraf 
+çekebilmenizi veya video kaydedebilmenizi sağlar.
+Kızılötesi Kamera
+Dahili kamera, Dizüstü Bilgisayarınızı kullanarak fotoğraf 
+çekebilmenizi veya video kaydedebilmenizi sağlar. Kızılötesi 
+Kamera Windows Hello uygulamasını da destekler.
+NOT: Windows Hello yüz tanıma özelliğiyle oturum açmadan 
+önce verilerin okunması işlemi sırasında kırmızı kızılötesi LED 
+yanıp söner.
+18 Dizüstü Bilgisayar E-Kılavuzu
+360 derece ayarlanabilir dokunmatik ekran
+Dizüstü Bilgisayarınızın dokunmatik ekranı, 360 derece 
+açıyla tüm yönlere ayarlanabilir. Bu özellik, aygıtınızı Dizüstü 
+Bilgisayardan dokunmatik tablet bilgisayara hızlı bir şekilde 
+dönüştürebilmenizi sağlar.
+Yüksek çözünürlüklü dokunmatik ekran, Dizüstü 
+Bilgisayarınızdaki fotoğraflar, videolar ve diğer çoklu ortam 
+dosyaları için harika görüntüleme özellikleri sunar. Ayrıca Dizüstü 
+Bilgisayarınızı dokunma hareketleriyle kullanabilmenizi sağlar.
+Sorumluluk Reddi: Sabi veya yüksek karşıtlıklı görüntülerin 
+uzun süre görüntülenmesi, OLED ekrandan görüntü kalıcılığı 
+veya yanmaya neden olabilir. OLED ekranlı (belirli modellerde) 
+ASUS Dizüstü Bilgisayar, Windows‘da Koyu Mod varsayılan 
+olarak ayarlayarak ve ekran kapatılmadan önce boştaki süreyi 
+kısaltarak yanma potansiyelini en aza indirir. OLED ekranınızın 
+kullanım ömrünü uzatmak için hareketli koyu arkaplan ekran 
+koruyucusunu etkinleştirmeniz ve OLED ekranınızı maksimum 
+parlaklığa ayarlamaktan kaçınmanız önerilir.
+NOT: 
+• Daha fazla ayrıntı için, bu kılavuzdaki OLED ekranı ayarlama 
+kısmına başvurun.
+• Dizüstü Bilgisayarınızı tablet aygıtına dönüştürme konusunda 
+daha fazla bilgi için lütfen bu kılavuzdaki Ekranı döndürme 
+bölümüne bakın.
+Dizüstü Bilgisayar E-Kılavuzu 19
+Mikrofon kapalı göstergesi
+Bu gösterge, mikrofon kapatıldığında yanar.
+Klavye
+Klavye, yazmak için konforlu bir gezinme derinliği sunan, 
+tam boyutta Q klavye tuşlarına sahiptir. Ayrıca işlev tuşlarını 
+kullanabilmenize olanak tanır, Windows’a hızlı erişim sunar ve 
+diğer çoklu ortam işlevlerini kontrol edebilmenizi sağlar.
+NOT: Klavye düzeni modele veya bölgeye bağlı olarak değişiklik 
+gösterir.
+Büyük harf kilidi göstergesi
+Büyük harf kilidi işlevi etkinleştirildiğinde bu gösterge yanar. 
+Büyük harf kilidi, Dizüstü Bilgisayarınızın klavyesiyle büyük 
+harfler yazabilmenizi (örn. A, B, C) sağlar.
+20 Dizüstü Bilgisayar E-Kılavuzu
+Dokunmatik Yüzey/Sayısal Tuş Takımı
+Bu, dokunmatik yüzey ve sayısal tuş takımı arasında geçiş 
+yapmanızı sağlar.
+Dokunmatik yüzey, ekranda gezinmek için çoklu hareketleri 
+kullanabilmenizi sağlayarak sezgisel kullanıcı deneyimi sunar. 
+Ayrıca normal bir farenin işlevlerine sahiptir.
+NOT: Daha fazla bilgi için bu kılavuzdaki Dokunmatik yüzeyi 
+kullanma bölümüne bakın.
+Tuş takımı, sayısal girişler içindir.
+ÖNEMLİ! Tüm NumberPad sürümlerinin yalnızca en son Microsoft 
+Windows işletim sisteminde desteklendiğini lütfen unutmayın.
+NOT: Daha fazla bilgi için bu kılavuzun Sayısal Tuş Takımını 
+kullanma bölümüne bakın.
+Ortam ışığı sensörü
+Ortam ışığı sensörü, ortamınızdaki ortam ışığı miktarını algılar. 
+Bu, sistemin ortam ışığı koşullarına göre ekran parlaklığını 
+otomatik olarak ayarlayabilmesini sağlar.
+RGB ışık sensörü
+RGB ışık sensörü, ekran panelinizin renk sıcaklığını etraftaki ışık 
+seviyelerine göre otomatik olarak ayarlayacaktır.
+Dizüstü Bilgisayar E-Kılavuzu 21
+ToF sensörü
+ToF sensörü civarda varlığınızı algıladıktan sonra otomatik olarak 
+uyanacak ve Windows Hello ile Dizüstü Bilgisayarınızda oturum 
+açacaktır. Siz civardan ayrıldıktan sonra Dizüstü Bilgisayarınız 
+Modern Bekleme konumuna girecektir.
+Kamera kapalı göstergesi
+Bu gösterge, kamera kapatıldığında yanar.
+Güç düğmesi
+Dizüstü Bilgisayarınızı açmak veya kapatmak için güç düğmesine 
+basın. Dizüstü Bilgisayarınızı uyku ya da hazırda bekletme 
+moduna almak ve uyku ya da hazırda bekletme modundan 
+çıkarmak için de güç düğmesini kullanabilirsiniz.
+Dizüstü Bilgisayarınız yanıt vermediğinde, güç düğmesini 
+Dizüstü Bilgisayarınız kapanana kadar en az on (10) saniye basılı 
+tutun.
+Parmak izi sensörü
+Bu dahili parmak izi sensörü, parmak izinizi kaydeder ve Dizüstü 
+Bilgisayarınızın sisteminde oturum açmak için biyometrik kimlik 
+doğrulama olarak kullanır.
+22 Dizüstü Bilgisayar E-Kılavuzu
+Üstten Görünüm
+Dizi mikrofonlar
+Dizi mikrofonlar daha iyi ses tanıma ve ses kaydı için yankı 
+giderme, gürültü bastırma ve hüzmeleme işlevlerine sahiptir.
+Dizüstü Bilgisayar E-Kılavuzu 23
+Alt Görünüm
+NOT: Alttan görünüm modele bağlı olarak görünüm olarak değişebilir.
+rebilir.
+UYARI! Dizüstü Bilgisayarınız kullanımdayken veya pil takımını şarj 
+ederken ısınabilir. Isı nedeniyle yaralanmayı önlemek için Dizüstü 
+Bilgisayarınızı kucağınızda ya da vücudunuzun herhangi bir yerine 
+bırakmayın. Dizüstü bilgisayarınızda çalışırken havalandırma deliklerini 
+engelleyebilecek yüzeyler üzerine yerleştirmeyin.
+ÖNEMLİ! 
+• Pil süresi, kullanıma ve bu Dizüstü Bilgisayarın özelliklerine bağlı 
+olarak farklılık gösterir. Pil takımı parçalarına ayrılamaz.
+• En üst düzey uyumluluğu ve güvenilirliği sağlamak için yetkili 
+satıcılardan bileşenler satın alın. Ürünün uygun biçimde sökülmesi 
+veya monte edilmesi konusunda ürün servisi ya da yardım için bir 
+ASUS servis merkezine veya yetkili satıcılara danışın.
+24 Dizüstü Bilgisayar E-Kılavuzu
+Hava kanalları
+Hava kanalları, Dizüstü Bilgisayarınıza soğuk havanın girmesini 
+ve Dizüstü Bilgisayarınızdan sıcak havanın çıkmasını sağlar.
+UYARI! Aşırı ısınmayı önlemek için kağıt, kitap, giysi, kablo veya 
+diğer nesnelerin hava kanallarını engellemediğinden emin olun. 
+Aksi taktirde aygıt aşırı ısınabilir.
+Hoparlörler
+Dahili hoparlörler sesi doğrudan Dizüstü Bilgisayarınızdan 
+duymanızı sağlar. Ses özellikleri yazılım kontrollüdür.
+Dizüstü Bilgisayar E-Kılavuzu 25
+Durum göstergeleri
+Durum göstergeleri Dizüstü Bilgisayarınızın mevcut donanım 
+durumunu tanımlamaya yardımcı olur.
+ İki renkli pil şarjı göstergesi
+ İki renkli LED, pil şarj durumunun görsel bir 
+göstergesidir. Ayrıntılar için aşağıdaki tabloya bakın:
+Sağ Görünüm
+26 Dizüstü Bilgisayar E-Kılavuzu
+ 
+Renk Durum
+Sabit Beyaz Dizüstü Bilgisayarınız bir güç 
+kaynağına bağlıdır ve pil gücü 
+%95 ile %100 arasındadır.
+Sabit Turuncu Dizüstü Bilgisayarınız bir güç 
+kaynağına bağlıdır, pilini şarj 
+etmektedir ve pil gücü %95'ten 
+daha azdır.
+Yanıp Sönen 
+Turuncu
+Dizüstü Bilgisayar pil modunda 
+çalışmaktadır ve pil gücü 
+%10'dan azdır.
+Işıklar kapalı Dizüstü Bilgisayar pil modunda 
+çalışmaktadır ve pil gücü %10 ile 
+%100 arasındadır.
+ Güç göstergesi
+ Güç göstergesi, Dizüstü Bilgisayar açıldığında yanar 
+ve Dizüstü Bilgisayar uyku modundayken yavaşça 
+yanıp söner.
+MicroSD kart yuvası
+Bu dahili bellek kartı okuyucu yuvası, microSD kart formatlarını 
+destekler.
+Dizüstü Bilgisayar E-Kılavuzu 27
+Thunderbolt™ 4/Güç Dağıtımı birleşik bağlantı noktası
+Thunderbolt™ 4 bağlantı noktası USB Type-C® standartlarıyla 
+uyumludur ve Thunderbolt™ 4 cihazları için 40 Gbit/sn’ye kadar 
+aktarım hızı sağlar. Dizüstü Bilgisayarınızı bir DisplayPort, VGA, 
+DVI veya HDMI harici ekrana bağlayın ve Intel® Thunderbolt™ 
+teknolojisi ile yüksek çözünürlüklü ekran özelliklerini 
+deneyimleyin. Pil takımını şarj etmek ve Dizüstü Bilgisayarınıza 
+güç sağlamak için birlikte verilen güç adaptörünü bu bağlantı 
+noktasına takın.
+NOT: Bu bağlantı noktasının aktarım hızı modele göre değişiklik 
+gösterebilir.
+UYARI! Adaptör, kullanım sırasında ılık veya sıcak hale gelebilir. 
+Adaptörün üzerini kapatmayın ve bir güç kaynağına bağlıyken 
+vücudunuzdan uzak tutun.
+ÖNEMLİ!
+• Dizüstü bilgisayarınızı düşük voltajlı bir güç kaynağı ile tam 
+olarak şarj etmek daha uzun sürebilir.
+• Herhangi bir hasarı önlemek için dizüstü bilgisayarınızı USB 
+Power Delivery birleşik bağlantı noktasıyla şarj ederken 
+yalnızca 20V/3,25A dereceli güç kaynaklarını kullanın. Daha 
+fazla bilgi için bir ASUS servis merkezinden destek alın.
+Kulaklık/Mikrofonlu Kulaklık/Mikrofon jakı
+Bu bağlantı noktası, güçlendirilmiş hoparlörleri veya kulaklıkları 
+bağlayabilmenizi sağlar. Bu bağlantı noktasını, mikrofonlu 
+kulaklığınızı veya harici bir mikrofonu bağlamak için de 
+kullanabilirsiniz.
+28 Dizüstü Bilgisayar E-Kılavuzu
+Sol Görünüm
+USB 3.2 Gen 2 Type-C®/DisplayPort/Güç Sağlama 
+birleşik bağlantı noktası
+USB 3.2 (Evrensel Seri Veri Yolu 3.2) Gen 2 Type-C® bağlantı 
+noktası, 10 Gbit/sn değerine kadar aktarım hızı sağlar ve USB 2.0 
+ile geriye dönük uyumludur. Dizüstü bilgisayarınızı bir harici 
+ekrana bağlamak için USB Type-C® adaptörü kullanın. Pil paketini 
+şarj etmek ve dizüstü bilgisayarınıza güç sağlamak için 20 V/3,25 
+A derecelendirmeli bir güç kaynağı bağlayın.
+NOT: Bu bağlantı noktasının aktarım hızı modele bağlı olarak 
+farklılık gösterebilir.
+ÖNEMLİ!
+• Dizüstü bilgisayarınızı düşük voltajlı bir güç kaynağı ile tam 
+olarak şarj etmek daha uzun sürebilir.
+• Herhangi bir hasarı önlemek için dizüstü bilgisayarınızı USB 
+Power Delivery birleşik bağlantı noktasıyla şarj ederken 
+yalnızca 20 V/3,25 A dereceli güç kaynaklarını kullanın. Daha 
+fazla bilgi için bir ASUS servis merkezinden destek alın.
+Dizüstü Bilgisayar E-Kılavuzu 29
+2. Bölüm: 
+Dizüstü Bilgisayarınızı 
+kullanma
+30 Dizüstü Bilgisayar E-Kılavuzu
+ÖNEMLİ!
+Güç adaptörü bilgileri:
+• Giriş gerilimi: 100-240 Vac
+• Giriş frekansı: 50-60 Hz
+• Anma çıkış akımı: 3,25A (65W)
+• Anma çıkış gerilimi: 20 V
+Dizüstü Bilgisayarı pil modunda ilk kez kullanmadan 
+önce 3 saat şarj edin.
+NOT: Güç adaptörünün görünümü modele ve bölgenize bağlı olarak 
+farklılık gösterebilir.
+Kullanmaya başlama
+Dizüstü Bilgisayarınızı şarj etme
+A. AC güç kablosunu AC/DC adaptörüne bağlayın.
+B. DC güç konektörünü Dizüstü Bilgisayarınızın güç (DC) girişi 
+bağlantı noktasına bağlayın.
+C. AC güç adaptörünü 100 V~240 V güç kaynağına takın.
+Dizüstü Bilgisayar E-Kılavuzu 31
+ÖNEMLİ!
+• Dizüstü Bilgisayarınızın giriş/çıkış sınıflama etiketini bulun ve güç 
+adaptörünüzün giriş/çıkış sınıf bilgileriyle uyuştuğundan emin olun. 
+Bazı Dizüstü Bilgisayar modellerinde mevcut SKU'ya bağlı olarak 
+birden fazla anma çıkış akımı olabilir.
+• Dizüstü Bilgisayarınızı ilk kez açmadan önce güç adaptörüne 
+bağladığınızdan emin olun. Güç kablosunu duvardaki prize takmak 
+için asla uzatma kablosu kullanmayın. Güvenliğiniz için bu cihazı 
+yalnızca doğru şekilde topraklanmış bir elektrik prizine bağlayın.
+• Priz çıkışı kolayca erişilebilir bir yerde ve Dizüstü Bilgisayarınızın 
+yakınında olmalıdır.
+• Dizüstü Bilgisayarınızın ana güç kaynağıyla bağlantısını kesmek için 
+bilgisayarın fişini elektrik prizinden çıkarın.
+UYARI!
+Dizüstü Bilgisayarınızın piliyle ilgili aşağıdaki önlemlere göz atın:
+• Cihazın içindeki pili yalnızca ASUS yetkili teknisyenleri çıkarmalıdır 
+(sadece çıkarılamaz piller için geçerlidir).
+• Bu cihazda kullanılan pil, çıkarılması veya parçalarına ayrılması 
+durumunda yangın ya da kimyasal yanık riski oluşturabilir.
+• Kişisel güvenliğiniz için uyarı etiketlerine uyun.
+• Pil yanlış türde bir pille değiştirilirse patlama riski oluşur.
+• Bertaraf etmek için ateşe atmayın.
+• Dizüstü Bilgisayarınızın piline kısa devre yaptırmayı asla denemeyin.
+• Asla pili sökmeye ve yeniden birleştirmeye çalışmayın 
+(sadece çıkarılamaz piller için geçerlidir).
+• Sızıntı tespit ederseniz pili kullanmayı bırakın.
+• Pil ve bileşenleri, geri dönüşüme gönderin veya uygun şekilde atın.
+• Pili ve küçük bileşenleri çocuklardan uzak tutun.
+32 Dizüstü Bilgisayar E-Kılavuzu
+Ekran panelini kaldırarak açın
+Güç düğmesine basın
+Dizüstü Bilgisayar E-Kılavuzu 33
+Dokunmatik ekran paneli hareketlerini kullanma
+Hareketleri kullanarak programları başlatabilir ve Dizüstü Bilgisayarınızın 
+ayarlarına erişebilirsiniz. Dizüstü Bilgisayarınızın dokunmatik ekran 
+panelinde el hareketlerini kullanarak işlevleri etkinleştirebilirsiniz.
+Dokunmatik ekran paneli ve dokunmatik 
+yüzey hareketleri
+Hareketleri kullanarak programları başlatabilir ve Dizüstü Bilgisayarınızın 
+ayarlarına erişebilirsiniz. Dokunmatik ekran paneli ve dokunmatik 
+yüzeyde el hareketlerinin kullanımıyla ilgili olarak aşağıdaki resimlere 
+bakın.
+NOT: Aşağıdaki ekran görüntüleri yalnızca referans amaçlıdır. Dokunmatik 
+ekran panelinin görünümü modele bağlı olarak farklılık gösterebilir.
+Dokunma/Çift dokunma Basılı tutma
+• Uygulamayı seçmek için 
+üzerine dokunun.
+• Uygulamayı başlatmak için 
+üzerine çift dokunun.
+Sağ tıklama menüsünü açmak 
+için basılı tutun.
+34 Dizüstü Bilgisayar E-Kılavuzu
+Yakınlaştırma Uzaklaştırma
+Dokunmatik ekran panelinde 
+iki parmağınızı birbirinden 
+uzaklaştırın.
+Dokunmatik ekran panelinde iki 
+parmağınızı birbirine yaklaştırın.
+Parmak kaydırma Sürükleme
+Ekranı aşağı yukarı ve sağa sola 
+kaydırmak için parmağınızı 
+kaydırın.
+• Birden fazla öğeyi 
+çevreleyen bir seçim 
+kutusu oluşturmak için 
+sürükleyin.
+• Yeni bir konuma taşımak 
+için öğeyi sürükleyip 
+bırakın.
+Dizüstü Bilgisayar E-Kılavuzu 35
+Dokunmatik yüzeyi kullanma
+İşaretçiyi hareket ettirme
+Dokunmatik yüzeyin herhangi bir noktasına dokunarak işaretçisini etkin 
+hale getirebilir ve parmağınızı dokunmatik yüzeyde kaydırarak işaretçiyi 
+ekranda hareket ettirebilirsiniz.
+Yatay kaydırma
+Dikey kaydırma
+Çapraz kaydırma
+36 Dizüstü Bilgisayar E-Kılavuzu
+Tek parmakla yapılan hareketler
+Dokunma/Çift dokunma
+• Uygulamayı seçmek için üzerine dokunun.
+• Uygulamayı başlatmak için üzerine çift dokunun.
+Sürükleyip bırakma
+Öğeye çift dokunun, ardından aynı parmağı dokunmatik yüzeyden 
+kaldırmadan kaydırın. Öğeyi yeni konumuna bırakmak için parmağınızı 
+dokunmatik yüzeyden kaldırın.
+Dizüstü Bilgisayar E-Kılavuzu 37
+Sol tıklama Sağ tıklama
+• Uygulamayı seçmek için 
+üzerine tıklayın.
+• Uygulamayı başlatmak için 
+üzerine çift tıklayın.
+Sağ tıklama menüsünü açmak için 
+bu düğmeye tıklayın.
+NOT: Noktalı çizginin içindeki alanlar, farenin sol düğmesi ve sağ 
+düğmesinin dokunmatik yüzeydeki konumunu göstermektedir.
+İki parmakla yapılan hareketler
+Dokunma
+Sağ tıklama işlevini gerçekleştirmek için dokunmatik yüzeye iki 
+parmakla dokunun.
+38 Dizüstü Bilgisayar E-Kılavuzu
+İki parmakla kaydırma (yukarı/
+aşağı)
+İki parmakla kaydırma (sola/
+sağa)
+Aşağı veya yukarı kaydırmak için 
+iki parmağınızı kaydırın.
+Sağa veya sola kaydırmak için iki 
+parmağınızı kaydırın.
+Uzaklaştırma Yakınlaştırma
+Dokunmatik yüzeyde iki 
+parmağınızı birbirine yaklaştırın.
+Dokunmatik yüzeyde iki 
+parmağınızı birbirinden 
+uzaklaştırın.
+Dizüstü Bilgisayar E-Kılavuzu 39
+Sürükleyip bırakma
+Öğeyi seçin, ardından sol düğmeyi basılı tutun. Öğeyi sürüklemek için 
+diğer parmağınızı dokunmatik yüzeyde kaydırın ve öğeyi bırakmak için 
+parmağınızı düğmeden kaldırın.
+Üç parmakla yapılan hareketler
+Dokunma
+Settings (Ayarlar) bölümünde seçtiğiniz işlevi başlatmak için 
+dokunmatik yüzeye üç parmakla dokunun.
+40 Dizüstü Bilgisayar E-Kılavuzu
+Sola kaydırma/Sağa kaydırma
+Birden fazla uygulama açtıysanız bu uygulamalar arasında geçiş 
+yapmak için üç parmağınızı sağa veya sola kaydırın.
+Yukarı kaydırma Aşağı kaydırma
+Açık durumda olan tüm 
+uygulamalara genel bakış için 
+yukarı kaydırın.
+Masaüstünü görüntülemek için 
+aşağı kaydırın.
+Dizüstü Bilgisayar E-Kılavuzu 41
+Dört parmakla yapılan hareketler
+Dokunma
+Settings (Ayarlar) bölümünde seçtiğiniz işlevi başlatmak için 
+dokunmatik yüzeye dört parmakla dokunun.
+42 Dizüstü Bilgisayar E-Kılavuzu
+NumberPad'i kullanma
+ÖNEMLİ! Tüm NumberPad sürümlerinin yalnızca en son Microsoft 
+Windows işletim sisteminde desteklendiğini lütfen unutmayın.
+NOT: % ve = işlevini kullanmak için giriş dilini İngilizce olarak ayarlayın.
+• Sayı tuşları ile dokunmatik yüzey arasında geçiş 
+yapmak için simgesini bir saniyeliğine basılı 
+tutun.
+• NumberPad'in parlaklığını ayarlamak için 
+simgesine dokunun.
+• Windows Hesap Makinesi'ni açmak için 
+simgesini basılı tutun ve NumberPad'in üzerinde 
+herhangi bir yere kaydırın.
+Dizüstü Bilgisayar E-Kılavuzu 43
+Klavyeyi kullanma
+Hoparlörü açar veya kapatır
+Hoparlörün ses düzeyini alçaltır
+Hoparlörün ses düzeyini yükseltir
+Ekran parlaklığını azaltır
+Ekran parlaklığını artırır
+Dokunmatik yüzeyi etkinleştirir veya devre dışı bırakır
+Arkadan aydınlatmalı klavye için parlaklığı ayarlar
+Ekran modunu değiştirir
+NOT: İkinci ekranın Dizüstü Bilgisayarınıza bağlı 
+olduğundan emin olun.
+Kısayol Tuşları
+Dizüstü bilgisayarınızın klavyesindeki kısayol tuşları aşağıdaki komutları 
+tetikleyebilir:
+44 Dizüstü Bilgisayar E-Kılavuzu
+Windows tuşları
+Dizüstü Bilgisayarınızın klavyesinde aşağıda açıklandığı şekilde 
+kullanılan iki adet özel Windows tuşu vardır:
+Başlat menüsünü açar
+Açılır menüyü görüntüler*
+* Belirli modellerde
+İşlev tuşları
+İşlev tuşları özelliğini etkinleştirmek veya devre dışı bırakmak için 
+ tuşlarına basın. İşlev tuşları özelliği etkinleştirildiğinde 
+ tuşunu üst satır tuşlarıyla birlikte basılı tutarak da kısayol 
+tuşlarına erişebilirsiniz.
+Mikrofonu açar veya kapatır
+Kamerayı açar veya kapatır
+Ekran yakalama aracını etkinleştirir
+MyASUS'u başlatır
+Dizüstü Bilgisayar E-Kılavuzu 45
+Dizüstü bilgisayar modu
+360 derece ayarlanabilir
+Ekran panelini döndürme
+Dizüstü bilgisayarınızın ekran paneli 360 dereceye kadar ayarlanabilir. 
+Ekran panelini aşağıda gösterildiği gibi ayarlayabilirsiniz.
+NOT: Gösterimler yalnızca başvuru içindir.
+46 Dizüstü Bilgisayar E-Kılavuzu
+Çadır modu
+Sehpa modu
+Tablet modu
+NOT: Ekranı Ayaklı, Çadır ve Tablet moduna döndürmek klavye ve 
+dokunmatik yüzeyi devre dışı bırakacaktır.
+Dizüstü Bilgisayar E-Kılavuzu 47
+3. Bölüm: 
+Windows'da çalışma
+48 Dizüstü Bilgisayar E-Kılavuzu
+İlk kez başlatma
+Dizüstü Bilgisayarınızı ilk kez başlattığınızda Windows işletim sistemini 
+yapılandırmanız için yol gösteren bir dizi ekran görüntülenir.
+Dizüstü Bilgisayarınızı ilk kez başlatmak için:
+1. Dizüstü Bilgisayarınızdaki güç düğmesine basın. Kurulum ekranı 
+görünene kadar birkaç dakika bekleyin.
+2. Kurulum ekranında, Dizüstü Bilgisayarınızda bölgenizi ve 
+kullanılacak dili seçin.
+3. Lisans Sözleşmesi'ni dikkatle okuyun. Accept (Kabul Et) öğesini 
+seçin.
+4. Aşağıdaki temel öğeleri yapılandırmak için ekrandaki talimatları 
+izleyin:
+• Personalize (Kişiselleştirme)
+• Get online (İnternete bağlanma)
+• Settings (Ayarlar)
+• Your account (Hesabınız)
+5. Temel öğeler yapılandırıldıktan sonra Windows, uygulamalarınızı 
+ve tercih ettiğiniz ayarları yükler. Kurulum işlemi boyunca Dizüstü 
+Bilgisayarınızın açık kaldığından emin olun.
+6. Kurulum işlemi tamamlandığında Masaüstü görünür.
+NOT: Bu bölümdeki ekran görüntüleri yalnızca referans amaçlıdır.
+Dizüstü Bilgisayar E-Kılavuzu 49
+Start menu (Başlat menüsü)
+Start menu (Başlat menüsü), Dizüstü Bilgisayarınızdaki programlara, 
+Windows uygulamalarına, klasörlere ve ayarlara erişebileceğiniz temel 
+noktadır.
+Aşağıdaki en çok kullanılan işlemleri Start menu (Başlat menüsü) 
+ekranından gerçekleştirebilirsiniz:
+• Programları veya Windows uygulamalarını başlatma
+• Sık kullanılan programları veya Windows uygulamalarını açma
+• Dizüstü Bilgisayarı ayarlarını düzenleme
+• Windows işletim sistemiyle ilgili yardım alma
+• Dizüstü Bilgisayarınızı kapatma
+• Windows oturumunuzu kapatma veya farklı bir kullanıcı hesabına 
+geçme
+Hesap ayarlarını değiştirin, hesabı kilitleyin veya hesaptan çıkış yapın
+Start menu (Başlat menüsü) ekranını açın
+Task view (Görev görünümü) özelliğini açın
+Dizüstü Bilgisayarınızı kapatın, yeniden 
+başlatın veya uyku moduna geçirin
+Görev çubuğundan bir uygulama başlatın
+Start menu (Başlat menüsü) ekranından bir uygulama başlatın
+Search (Arama) işlevini başlatın
+Widgets (Pencere öğeleri) ekranını başlatın
+50 Dizüstü Bilgisayar E-Kılavuzu
+Başlat menüsünü açma
+Masaüstünüzde Başlat simgesine dokunun.
+Fare işaretçisini masaüstünüzde Başlat simgesinin 
+üzerine getirip tıklayın.
+Klavyenizde Windows logosu tuşuna basın.
+Başlat menüsünden program açma
+Başlat menüsünün en yaygın kullanımlarından biri Dizüstü 
+Bilgisayarınızda yüklü programları açmaktır.
+Programı başlatmak için üzerine dokunun.
+Fare işaretçisini programın üzerine getirin ve programı 
+başlatmak için tıklayın.
+Ok tuşlarını kullanarak programlar arasında gezinin. 
+Programı başlatmak için tuşuna basın.
+NOT: Dizüstü Bilgisayarınızdaki program ve klasörlerin tam listesini 
+alfabetik sırada görüntülemek için All apps (Tüm uygulamalar) öğesini 
+seçin.
+Dizüstü Bilgisayar E-Kılavuzu 51
+Windows uygulamaları
+Bu uygulamalar, Başlat menüsüne sabitlenmiştir ve kolay erişim 
+sağlamak için kutu biçiminde görüntülenir.
+NOT: Bazı Windows uygulamalarının tam olarak başlatılabilmesi için 
+Microsoft hesabınızla oturum açmanız gerekir.
+52 Dizüstü Bilgisayar E-Kılavuzu
+Windows uygulamalarıyla çalışma
+Windows uygulamalarını özelleştirme
+Aşağıdaki adımları kullanarak uygulamaları Başlat menüsünden 
+taşıyabilir, kaldırabilir veya görev çubuğuna sabitleyebilirsiniz.
+Başlat menüsünden Windows uygulamalarını başlatma
+Uygulamayı başlatmak için üzerine dokunun.
+Fare işaretçisini uygulamanın üzerine getirin, ardından 
+uygulamayı başlatmak için tıklayın.
+Ok tuşlarını kullanarak uygulamalar arasında gezinin. 
+Uygulamayı başlatmak için tuşuna basın.
+Uygulamayı taşıma
+Uygulamayı basılı tutun, ardından sürükleyip yeni bir 
+konuma bırakın.
+Fare işaretçisini uygulamanın üzerine getirin, ardından 
+uygulamayı sürükleyip yeni bir konuma bırakın.
+Dizüstü Bilgisayar E-Kılavuzu 53
+Sabitlenmiş uygulamayı kaldırma
+Uygulamayı basılı tutun, ardından Unpin from Start 
+(Başlangıç'tan kaldır) öğesine dokunun.
+Fare işaretçisini uygulamanın üzerine getirip sağ tıklayın, 
+ardından Unpin from Start (Başlangıç'tan kaldır) 
+öğesine tıklayın.
+Ok tuşlarını kullanarak uygulamaya gidin. 
+ tuşuna veya tuşlarına (belirli 
+modellerde) basın, ardından Unpin from Start 
+(Başlangıç'tan kaldır) öğesini seçin.
+54 Dizüstü Bilgisayar E-Kılavuzu
+Başlat menüsüne daha fazla uygulama sabitleme
+All apps (Tüm uygulamalar) bölümünde, Başlat 
+menüsüne eklemek istediğiniz uygulamayı basılı tutun, 
+ardından Pin to Start (Başlangıç'a sabitle) öğesine 
+dokunun.
+All apps (Tüm uygulamalar) bölümünde, fare 
+işaretçisini Başlat menüsüne eklemek istediğiniz 
+uygulamanın üzerine getirip sağ tıklayın, ardından Pin 
+to Start (Başlangıç'a sabitle) öğesine tıklayın.
+All apps (Tüm uygulamalar) bölümünde, Başlat 
+menüsüne eklemek istediğiniz uygulamada 
+tuşuna veya tuşlarına (belirli modellerde) 
+basın, ardından Pin to Start (Başlangıç'a sabitle) 
+öğesini seçin.
+Uygulamayı görev çubuğuna sabitleme
+Uygulamayı basılı tutun, ardından Pin to taskbar (Görev 
+çubuğuna sabitle) öğesine dokunun.
+Fare işaretçisini uygulamanın üzerine getirip sağ tıklayın, 
+ardından Pin to taskbar (Görev çubuğuna sabitle) 
+öğesine tıklayın.
+Ok tuşlarını kullanarak uygulamaya gidin. 
+ tuşuna veya tuşlarına (belirli 
+modellerde) basın, ardından Pin to taskbar (Görev 
+çubuğuna sabitle) öğesini seçin.
+Dizüstü Bilgisayar E-Kılavuzu 55
+Task view (Görev görünümü)
+Açık uygulama ve programlar arasında hızla geçiş yapmak için Task 
+view (Görev görünümü) özelliğini kullanın. Görev görünümü sayesinde 
+masaüstleri arasında da geçiş yapabilirsiniz.
+Task view (Görev görünümü) özelliğini açma
+Görev çubuğunda simgesine dokunun.
+Fare işaretçisini görev çubuğunda simgesinin 
+üzerine getirip tıklayın.
+Klavyenizde tuşlarına basın.
+56 Dizüstü Bilgisayar E-Kılavuzu
+Widgets (Pencere öğeleri)
+Önemli bilgilere hızla erişmek için Widgets (Pencere öğeleri) ekranını 
+başlatabilirsiniz.
+Widgets (Pencere öğeleri) ekranını başlatma
+Görev çubuğunda simgesine dokunun.
+Fare işaretçisini görev çubuğunda simgesinin 
+üzerine getirip tıklayın.
+Klavyenizde tuşlarına basın.
+Dizüstü Bilgisayar E-Kılavuzu 57
+Widgets (Pencere öğeleri) ekranını özelleştirme
+veya
+ simgesine tıklayın veya dokunun, ardından Widgets 
+(Pencere öğeleri) ekranında görüntülenen içeriği 
+değiştirmek için Manage interests (İlgi alanlarını 
+yönet) öğesini seçin.
+58 Dizüstü Bilgisayar E-Kılavuzu
+Tutturma özelliği
+Tutturma özelliği, uygulamaları yan yana görüntüleyerek birden fazla 
+uygulamada çalışmanıza veya uygulamalar arasında geçiş yapmanıza 
+olanak sağlar.
+Tutturma etkin noktaları
+Uygulamaları bu etkin noktalara sürükleyip bırakarak sabit şekilde 
+tutturabilirsiniz.
+Dizüstü Bilgisayar E-Kılavuzu 59
+Tutturma özelliğini kullanma
+veya
+1. Tutturmak istediğiniz uygulamayı başlatın.
+2. Uygulamanızın başlık çubuğunu sürükleyip 
+uygulamayı ekranın kenarında bırakarak tutturun.
+3. Başka bir uygulamayı başlatın ve yukarıdaki 
+adımları tekrarlayarak bu uygulamayı da tutturun.
+1. Tutturmak istediğiniz uygulamayı başlatın.
+2. tuşunu basılı tutun, ardından ok tuşlarını 
+kullanarak uygulamayı tutturun.
+3. Başka bir uygulamayı başlatın ve yukarıdaki 
+adımları tekrarlayarak bu uygulamayı da tutturun.
+60 Dizüstü Bilgisayar E-Kılavuzu
+Action Center (İşlem Merkezi)
+Action Center (İşlem Merkezi), uygulama bildirimlerini bir araya getirir. 
+Böylece bu bildirimlerle tek bir yerde etkileşim kurabilirsiniz. Hızlı 
+Eylemler adlı kullanışlı bir bölümü de vardır.
+Hızlı Eylemler'i başlatma
+Görev çubuğunda durum simgelerine dokunun.
+Fare işaretçisini görev çubuğunda durum simgelerinin 
+üzerine getirip tıklayın.
+Klavyenizde tuşlarına basın.
+Dizüstü Bilgisayar E-Kılavuzu 61
+Bildirimleri başlatma
+Görev çubuğunda tarih ve saate dokunun.
+Fare işaretçisini görev çubuğunda tarih ve saatin üzerine 
+getirip tıklayın.
+Klavyenizde tuşlarına basın.
+62 Dizüstü Bilgisayar E-Kılavuzu
+MyASUS Splendid
+MyASUS Splendid, tüm ASUS ekran panellerinde aynı ve doğru renklerin 
+gösterilmesini sağlar. Ekran ayarlarını düzenlemek için Normal Mode'un 
+(Normal Mod) yanı sıra Vivid (Canlı Mod), Eye Care (Göz Koruma Modu) 
+veya Manual Mode (Manuel Mod) arasından seçim yapabilirsiniz.
+• Normal Mode (Normal Mod): Gama ve Renk sıcaklığı düzeltmesi 
+sayesinde panelin görüntü çıkışı, gözünüzün doğal olarak 
+görebildiği renklere en yakın renkleri sunar. OLED paneline 
+sahip modellerde bu mod, TÜV Düşük Mavi Işık Sertifikası ile 
+uyumludur.
+• Vivid Mode (Canlı Mod): Bu mod, görüntünün doygunluğunu 
+ayarlayarak daha canlı ve çarpıcı hale getirmenize olanak sağlar.
+• Manual Mode (Manuel Mod): Bu mod, renk sıcaklığı değerini 
+kişisel ihtiyaçlarınıza göre -50 ila +50 arasında ayarlamanıza 
+olanak sağlar.
+• Eye Care Mode (Göz Koruma Modu): Bu mod, mavi ışık 
+emisyonunu %30'a kadar azaltarak gözlerinizin korunmasına 
+yardımcı olur.
+ Düzey 1-5: Düzey yükseldikçe mavi ışık emisyonundaki azalma 
+daha fazla olur. LCD paneline sahip modellerde Düzey 5, optimize 
+edilmiş ayardır ve TÜV Düşük Mavi Işık Sertifikası ile uyumludur.
+NOT: OLED panelinizde (belirli modellerde) daha iyi bir görüntü deneyimi 
+için Settings (Ayarlar) > System (Sistem) > Display (Ekran) bölümünde 
+HDR'ı etkinleştirin. Ayrıca, TÜV Titreşimsiz Sertifikası ile uyumludur.
+Dizüstü Bilgisayar E-Kılavuzu 63
+Göz yorgunluğunu azaltmak için aşağıdaki ipuçlarından yararlanın:
+• Uzun saatler boyunca çalışıyorsanız ekrandan bir süre uzaklaşın. 
+Bilgisayarda 1 saat boyunca kesintisiz olarak çalıştıktan sonra kısa 
+bir mola (en az 5 dakika) verilmesi tavsiye edilir. Sık aralıklarla 
+kısa molalar vermek tek seferde uzun bir mola vermekten daha 
+etkilidir.
+• Göz yorgunluğu ve göz kuruluğunu en aza indirmek için düzenli 
+aralıklarla uzaktaki nesnelere odaklanarak gözlerinizi dinlendirin.
+• Göz yorgunluğunu azaltmak için aşağıdaki egzersizleri tekrarlayın:
+(1) Yukarı ve aşağı doğru bakıp bu hareketi tekrarlayın.
+(2) Gözlerinizi yavaşça döndürün.
+(3) Gözlerinizi çapraz yönde hareket ettirin.
+ Göz yorgunluğu devam ediyorsa lütfen bir doktora danışın.
+• Yüksek enerjili mavi ışık, göz yorgunluğuna ve yaşa bağlı makula 
+dejenerasyonuna yol açabilir. Mavi ışık filtresi, bilgisayara bakma 
+sendromunu önlemek için zararlı mavi ışığı %30 (maksimum) 
+oranında azaltır.
+64 Dizüstü Bilgisayar E-Kılavuzu
+OLED ekranı ayarlama
+OLED ekranınızı (belirli modellerde) en iyi şekilde kullanmak için 
+tavsiye edebileceğimiz çeşitli ayarlar vardır. Bu ayarlar görsel deneyimi 
+optimize etmeye, pil ömrünü en üst düzeye çıkarmaya ve ASUS Dizüstü 
+Bilgisayarınızın kullanım ömrünü uzatmaya yardımcı olur.
+Koyu Modu ayarlama
+Koyu Mod varsayılan olarak etkindir. Ayarları kontrol etmek veya 
+düzenlemek için:
+1. Başlat menüsünü açın.
+2. Settings (Ayarlar) öğesine tıklayın/dokunun ve Personalization 
+(Kişiselleştirme) seçeneğini belirleyin.
+Dizüstü Bilgisayar E-Kılavuzu 65
+3. Seçenekleri görüntülemek için Colors (Renkler) sekmesini seçin.
+66 Dizüstü Bilgisayar E-Kılavuzu
+Kullanılmadığı sırada ekranı kapatma
+Ekranınızı kullanılmadığı sırada otomatik olarak kapatılacak şekilde 
+ayarlayın. Ayarları kontrol etmek veya düzenlemek için:
+1. Başlat menüsünü açın.
+2. Settings (Ayarlar) öğesine tıklayın/dokunun ve System (Sistem) 
+seçeneğini belirleyin.
+Dizüstü Bilgisayar E-Kılavuzu 67
+3. Seçenekleri görüntülemek için Power & battery (Güç ve pil) 
+sekmesini seçin.
+68 Dizüstü Bilgisayar E-Kılavuzu
+Ekran parlaklığını ayarlama
+OLED ekranınızın kullanım ömrünü uzatmak için, animasyonlu koyu 
+arka plan ekran koruyucuyu etkinleştirmeniz ve OLED ekranı maksimum 
+parlaklığa ayarlamaktan kaçınmanız önerilir. Ayarları kontrol etmek veya 
+düzenlemek için:
+1. Başlat menüsünü açın.
+2. Settings (Ayarlar) öğesine tıklayın/dokunun ve Personalization 
+(Kişiselleştirme) seçeneğini belirleyin.
+Dizüstü Bilgisayar E-Kılavuzu 69
+3. Seçenekleri görüntülemek için Lock screen (Kilit ekranı) 
+sekmesini, ardından Screen saver (Ekran koruyucu) öğesini 
+seçin.
+70 Dizüstü Bilgisayar E-Kılavuzu
+Görev çubuğunu otomatik gizleme
+OLED ekranınızda görev çubuğunun uzun süre görüntülenmesini 
+önlemek için görev çubuğunu otomatik olarak gizlenmesini sağlayın. 
+Ayarları düzenlemek için:
+1. Başlat menüsünü açın.
+2. Settings (Ayarlar) öğesine tıklayın/dokunun ve Personalization 
+(Kişiselleştirme) seçeneğini belirleyin.
+Dizüstü Bilgisayar E-Kılavuzu 71
+3. Taskbar (Görev çubuğu) sekmesini seçin ve Automatically hide 
+the taskbar (Görev çubuğunu otomatik olarak gizle) öğesini 
+etkinleştirin.
+72 Dizüstü Bilgisayar E-Kılavuzu
+1. Bir Microsoft Office uygulamasını başlatın ve File (Dosya) > 
+Account (Hesap) öğesine tıklayın/dokunun.
+2. Office Theme (Office Teması) altında Dark Gray (Koyu Gri) 
+öğesini seçin. Bu tema tüm Microsoft uygulamalarına uygulanır.
+Microsoft Office'te Koyu Modu ayarlama
+Dizüstü Bilgisayar E-Kılavuzu 73
+Diğer klavye kısayolları
+Aşağıdaki klavye kısayollarını kullanarak da uygulamaları başlatmanız ve 
+Windows'da gezinmeniz mümkündür.
+Start menu (Başlat menüsü) ekranını açar
+Action Center (İşlem Merkezi) penceresini açar
+Masaüstünü açar
+File Explorer (Dosya Gezgini) ekranını açar
+Settings (Ayarlar) ekranını açar
+Connect (Bağlan) panelini açar
+Kilit ekranını etkinleştirir
+Etkin durumdaki tüm pencereleri simge 
+durumuna küçültür
+74 Dizüstü Bilgisayar E-Kılavuzu
+Search (Arama) işlevini başlatır
+Project (Proje) panelini açar
+Run (Çalıştır) penceresini açar
+Accessibility (Erişilebilirlik) ekranını açar
+Başlat düğmesinin bağlam menüsünü açar
+Büyüteç simgesini başlatır ve ekranınızı 
+yakınlaştırır
+Ekranınızı uzaklaştırır
+Dizüstü Bilgisayar E-Kılavuzu 75
+Kablosuz ağlara bağlanma
+Wi-Fi
+Dizüstü Bilgisayarınızın Wi-Fi bağlantısını kullanarak e-postalara erişin, 
+internette dolaşın ve sosyal ağ siteleri üzerinden uygulama paylaşın.
+ÖNEMLİ! Airplane mode (Uçak modu) bu özelliği devre dışı bırakır. 
+Dizüstü Bilgisayarınızın Wi-Fi bağlantısını etkinleştirmeden önce Airplane 
+mode (Uçak modu) seçeneğinin kapatıldığından emin olun.
+Wi-Fi ağına bağlanma
+Dizüstü Bilgisayarınızı bir Wi-Fi ağına bağlamak için aşağıdaki adımları 
+uygulayın:
+veya
+1. Görev çubuğundan Action Center (İşlem Merkezi) 
+penceresini açın.
+2. Wi-Fi simgesine tıklayarak/dokunarak Wi-Fi 
+özelliğini etkinleştirin.
+3. Mevcut Wi-Fi bağlantıları arasından bir erişim 
+noktası seçin.
+4. Ağ bağlantısını başlatmak için Connect (Bağlan) 
+öğesini seçin.
+NOT: Wi-Fi bağlantısını etkinleştirmek için bir güvenlik 
+anahtarı girmeniz istenebilir.
+76 Dizüstü Bilgisayar E-Kılavuzu
+veya
+1. Başlat menüsünden Settings (Ayarlar) bölümünü 
+açın.
+2. Bluetooth özellikli cihazları aramak için Bluetooth 
+& devices (Bluetooth ve cihazlar) > Add device 
+(Cihaz ekle) öğesini seçin.
+3. Dizüstü Bilgisayarınızla eşleştirmek için listeden bir 
+cihaz seçin.
+NOT: Bazı Bluetooth özellikli cihazlar için Dizüstü 
+Bilgisayarınızın geçiş kodunu girmeniz istenebilir.
+Bluetooth
+Bluetooth özellikli diğer cihazlarla kablosuz veri aktarımına olanak 
+sağlamak için Bluetooth'u kullanın.
+ÖNEMLİ! Airplane mode (Uçak modu) bu özelliği devre dışı bırakır. 
+Dizüstü Bilgisayarınızın Bluetooth bağlantısını etkinleştirmeden önce 
+Airplane mode (Uçak modu) seçeneğinin kapatıldığından emin olun.
+Bluetooth özellikli diğer cihazlarla eşleştirme
+Veri aktarımına olanak sağlamak için Dizüstü Bilgisayarınızı Bluetooth 
+özellikli diğer cihazlarla eşleştirmeniz gerekir. Cihazlarınız arasında 
+bağlantı kurmak için aşağıdaki adımları uygulayın:
+Dizüstü Bilgisayar E-Kılavuzu 77
+Uçak modu
+Uçak modu, uçuş halindeyken Dizüstü Bilgisayarınızı güvenle 
+kullanabilmeniz için kablosuz iletişimi devre dışı bırakır.
+NOT: Uçuş sırasında kullanabileceğiniz ilgili hizmetler ve uçakta Dizüstü 
+Bilgisayarınızı kullanırken uymanız gereken kısıtlamalar hakkında bilgi 
+almak için havayolu şirketinizle iletişim kurun.
+Uçak modunu açma/kapatma
+veya
+1. Görev çubuğundan Action Center (İşlem 
+Merkezi) penceresini açın.
+2. Uçak modunu etkinleştirmek veya devre dışı 
+bırakmak için Airplane mode (Uçak modu) 
+simgesine tıklayın/dokunun.
+78 Dizüstü Bilgisayar E-Kılavuzu
+Dizüstü Bilgisayarınızı kapatma
+Dizüstü Bilgisayarınızı kapatmak için aşağıdaki prosedürlerden birini 
+uygulayabilirsiniz:
+veya
+• Başlat menüsünü açın, ardından normal kapatma 
+işlemi için > Shut down (Kapat) öğesini seçin.
+• Oturum açma ekranından > Shut down 
+(Kapat) öğesini seçin.
+• tuşlarına basarak Shut Down 
+Windows (Windows'u Kapat) penceresini açın. 
+Açılır listeden Shut down (Kapat) öğesini, 
+ardından OK (Tamam) düğmesini seçin.
+• Dizüstü Bilgisayarınız yanıt vermiyorsa güç 
+düğmesini cihaz kapanana kadar en az on (10) 
+saniye basılı tutun.
+Dizüstü Bilgisayar E-Kılavuzu 79
+Dizüstü Bilgisayarınızı uyku moduna geçirme
+Dizüstü Bilgisayarınızı Uyku moduna geçirmek için:
+veya
+• Başlat menüsünü açıp > Sleep (Uyku) öğesini 
+seçerek Dizüstü Bilgisayarınızı uyku moduna 
+geçirin.
+• Oturum açma ekranından > Sleep (Uyku) 
+öğesini seçin.
+ tuşlarına basarak Shut Down Windows 
+(Windows'u Kapat) penceresini açın. Açılır listeden 
+Sleep (Uyku) öğesini, ardından OK (Tamam) 
+düğmesini seçin.
+NOT: Güç düğmesine bir kez basarak da Dizüstü Bilgisayarınızı Uyku 
+moduna geçirebilirsiniz.
+80 Dizüstü Bilgisayar E-Kılavuzu
+Dizüstü Bilgisayar E-Kılavuzu 81
+4. Bölüm: 
+Açılış Sırasında Kendi Kendine 
+Test (POST)
+82 Dizüstü Bilgisayar E-Kılavuzu
+Açılış Sırasında Kendi Kendine Test (POST)
+Açılış Sırasında Kendi Kendine Test (POST), Dizüstü Bilgisayarınızı 
+açtığınızda veya yeniden başlattığınızda çalıştırılan ve yazılım tarafından 
+kontrol edilen bir dizi tanılama testidir. POST'u kontrol eden yazılım, 
+Dizüstü Bilgisayarınızın yapısının kalıcı bir parçası olacak şekilde 
+kurulmuştur.
+BIOS ve Sorun Giderme bölümlerine erişmek için 
+POST'u kullanma
+POST sırasında Dizüstü Bilgisayarınızdaki işlev tuşlarını kullanarak BIOS 
+ayarlarına erişebilir veya sorun giderme seçeneklerini çalıştırabilirsiniz. 
+Daha fazla ayrıntı için aşağıdaki bilgilere bakabilirsiniz.
+BIOS
+Temel Giriş ve Çıkış Sistemi (BIOS), Dizüstü Bilgisayarınızda sistemin 
+başlatılması için gerekli olan sistem donanımı ayarlarını saklar.
+Varsayılan BIOS ayarları, Dizüstü Bilgisayarınızdaki birçok durum 
+için geçerlidir. Aşağıdaki durumlar dışında varsayılan BIOS ayarlarını 
+değiştirmeyin:
+• Sistem başlatılırken ekranda bir hata iletisi görünüyor ve BIOS 
+Kurulumunu çalıştırmanız isteniyorsa.
+• BIOS ayarlarını değiştirmenizi veya BIOS güncellemesi yapmanızı 
+gerektiren yeni bir sistem bileşeni kurduysanız.
+UYARI! Uygun olmayan BIOS ayarlarının kullanılması, sistemin kararsız 
+hale gelmesine veya önyükleme hatası oluşmasına neden olabilir. BIOS 
+ayarlarını yalnızca eğitimli servis personelinin yardımıyla değiştirmenizi 
+önemle tavsiye ederiz.
+Dizüstü Bilgisayar E-Kılavuzu 83
+Sisteminizi kurtarma
+Dizüstü Bilgisayarınızdaki kurtarma seçeneklerini kullanarak sistemi 
+özgün durumuna geri yükleyebilir veya ayarları yenileyerek performansı 
+artırabilirsiniz.
+ÖNEMLİ!
+• Dizüstü Bilgisayarınızda herhangi bir kurtarma seçeneğine 
+başvurmadan önce tüm veri dosyalarınızı yedekleyin.
+• Veri kaybını önlemek için ağ ayarları, kullanıcı adları ve parolalar gibi 
+önemli özelleştirilmiş ayarları not edin.
+• Sisteminizi sıfırlamadan önce Dizüstü Bilgisayarınızın bir güç 
+kaynağına takılı olduğundan emin olun.
+Windows ile aşağıdaki kurtarma seçeneklerinden herhangi birini 
+kullanabilirsiniz:
+• Keep my files (Dosyalarımı sakla): Bu seçenek, kişisel 
+dosyalarınız (fotoğraflar, müzikler, videolar, belgeler) 
+etkilenmeden Dizüstü Bilgisayarınızı yenilemenize olanak sağlar.
+ Bu seçeneği kullanarak Dizüstü Bilgisayarınızda varsayılan ayarları 
+geri yükleyebilir ve yüklenmiş diğer uygulamaları silebilirsiniz.
+• Remove everything (Her şeyi kaldır): Bu seçenek, Dizüstü 
+Bilgisayarınızı fabrika ayarlarına sıfırlar. Bu seçeneği kullanmadan 
+önce verilerinizi yedeklemelisiniz.
+BIOS'a erişme
+Dizüstü Bilgisayarınızı yeniden başlatın ve POST sırasında 
+tuşuna basın.
+84 Dizüstü Bilgisayar E-Kılavuzu
+• Advanced startup (Gelişmiş başlangıç): Bu seçenek, Dizüstü 
+Bilgisayarınızda aşağıdaki gibi diğer gelişmiş kurtarma 
+seçeneklerini uygulamanıza olanak sağlar.
+- USB sürücüsü, ağ bağlantısı veya Windows kurtarma DVD'si 
+kullanarak Dizüstü Bilgisayarınızı başlatma.
+- Troubleshoot (Sorun Giderme) özelliğini kullanarak şu 
+gelişmiş kurtarma seçeneklerinden yararlanma: Başlangıç 
+Onarma, Güncelleştirmeleri Kaldırma, Başlangıç Ayarları, 
+UEFI Donanım Yazılımı Ayarları, Komut İstemi, Sistem Geri 
+Yükleme ve Sistem Görüntüsü Kurtarma.
+Kurtarma seçeneği uygulama
+Dizüstü Bilgisayarınızdaki mevcut kurtarma seçeneklerine erişmek ve 
+bunlardan birini kullanmak için aşağıdaki adımları uygulayın.
+1. Settings (Ayarlar) ekranını açın ve System (Sistem) > Recovery 
+(Kurtarma) öğesini seçin.
+Dizüstü Bilgisayar E-Kılavuzu 85
+2. Uygulamak istediğiniz kurtarma seçeneğini belirleyin.
+86 Dizüstü Bilgisayar E-Kılavuzu
+Dizüstü Bilgisayar E-Kılavuzu 87
+İpuçları ve SSS
+88 Dizüstü Bilgisayar E-Kılavuzu
+Dizüstü Bilgisayarınız İçin Faydalı İpuçları
+Dizüstü Bilgisayarınızı en verimli şekilde kullanmanıza ve sistem 
+performansını korumanıza yardımcı olmak ve tüm verilerinizin 
+güvenle saklandığından emin olmak için aşağıdaki ipuçlarından 
+faydalanabilirsiniz:
+• Uygulamalarınızın en son güvenlik ayarlarına sahip olması için 
+düzenli olarak Windows güncellemelerini yapın.
+• ASUS uygulamaları, sürücüleri ve yardımcı yazılımları için en 
+son ayarlara sahip olduğunuzdan emin olmak için MyASUS’u 
+güncelleyin.
+• Verilerinizi korumak için bir antivirüs yazılımı kullanın ve bu 
+yazılımı da güncelleyin.
+• Kesinlikle gerekmediği sürece Dizüstü Bilgisayarınızı zorla 
+kapatma yöntemiyle kapatmaktan kaçının.
+• Her zaman verilerinizi yedekleyin ve harici bir depolama 
+sürücüsünde yedek veri oluşturduğunuzdan emin olun.
+• Notebook PC’nizi uzun süredir kullanmıyorsanız, pil gücünü 
+%50’ye kadar şarj edin ve ardından Notebook PC’nizi kapatın ve 
+AC güç adaptörünün bağlantısını kesin.
+• Notebook PC’niz için sürekli olarak AC güç kullanıyorsanız, 
+MyASUS’ta Uzun Ömürlü Pil Şarjı Denetimini (Battery Health 
+Charging) Dengeli moda ayarlayın.
+Dizüstü Bilgisayar E-Kılavuzu 89
+• Dizüstü Bilgisayarınızı sıfırlamadan önce tüm harici cihazların 
+bağlantısını kesin ve aşağıdakilerin elinizde bulunduğundan emin 
+olun:
+- İşletim sistemlerinizin ve kurulu diğer uygulamaların ürün 
+anahtarı
+- Yedek veriler
+- Oturum açma kimliği ve parolası
+- İnternet bağlantısı bilgisi
+• Sorun giderme için destek sitemizi ziyaret edin ve en sık sorulan 
+soruların bazılarını gözden geçirin: 
+https://www.asus.com/tr/support
+90 Dizüstü Bilgisayar E-Kılavuzu
+Donanımla İlgili Sıkça Sorulan Sorular
+1. Dizüstü Bilgisayarımı açtığımda siyah bir nokta veya bazen 
+renkli bir nokta görünüyor. Ne yapmalıyım?
+Bu noktalar normalde ekranda görünse de sisteminizi etkilemez. 
+Bu durum devam eder ve sistem performansınızı etkilemeye 
+başlarsa yetkili bir ASUS servis merkezine danışın.
+2. Ekranımın rengi ve parlaklığı dengesiz. Bunu nasıl 
+düzeltebilirim?
+Ekranınızın rengi ve parlaklığı, Dizüstü Bilgisayarınızın açısı 
+ve geçerli pozisyonundan etkileniyor olabilir. Ayrıca Dizüstü 
+Bilgisayarınızın parlaklığı ve renk tonu modele göre de değişkenlik 
+gösterebilir. Ekranınızın görünümünü ayarlamak için işlev tuşlarını 
+veya işletim sisteminizdeki ekran ayarlarını kullanabilirsiniz.
+3. Dizüstü Bilgisayarımın pil ömrünü nasıl en üst düzeye 
+çıkarabilirim?
+Aşağıdaki önerilerden birini deneyebilirsiniz:
+• Ekran parlaklığını ayarlamak için işlev tuşlarını kullanın.
+• Wi-Fi bağlantısı kullanmıyorsanız sisteminizi Uçak moduna 
+alın.
+• Kullanılmayan USB cihazlarını çıkarın.
+• Kullanılmayan, özellikle de sistem belleğini çok fazla tüketen 
+uygulamaları kapatın.
+Dizüstü Bilgisayar E-Kılavuzu 91
+4. Pil şarj göstergem yanmıyor. Sorun nedir?
+• Güç adaptörünün veya pil takımının düzgün takıldığından 
+emin olun. Ayrıca güç adaptörünü veya pil takımını 
+çıkarabilir, bir dakika bekleyebilir ve ardından tekrar elektrik 
+prizine ve Dizüstü Bilgisayara takabilirsiniz.
+• Sorun devam ederse destek için yerel ASUS servis 
+merkezinize başvurun.
+5. Dokunmatik yüzey neden çalışmıyor?
+Dokunmatik yüzeyi etkinleştirmek için tuşuna basın.
+6. Ses ve video dosyaları yürüttüğümde neden Dizüstü 
+Bilgisayarımın hoparlörlerinden hiç ses duyamıyorum?
+Aşağıdaki önerilerden birini deneyebilirsiniz:
+• Hoparlör ses düzeyini yükseltmek için tuşuna basın.
+• Hoparlörlerin sessiz olarak ayarlanıp ayarlanmadığını kontrol 
+edin.
+• Dizüstü Bilgisayarınıza kulaklık jakı takılı olup olmadığını 
+kontrol edin ve takılıysa çıkarın.
+92 Dizüstü Bilgisayar E-Kılavuzu
+7. Dizüstü Bilgisayarımın güç adaptörü kaybolursa veya pilim 
+bozulursa ne yapmalıyım?
+Destek için yerel ASUS servis merkezinize ulaşın.
+8. Dizüstü Bilgisayarım tuş vuruşlarını düzgün yapamıyor çünkü 
+imlecim devamlı hareket ediyor. Ne yapmalıyım?
+Klavye ile yazarken dokunmatik yüzeye hiçbir şeyin kazara 
+dokunmadığından veya basmadığından emin olun. Ayrıca 
+ tuşuna basarak dokunmatik yüzeyi devre dışı 
+bırakabilirsiniz.
+Dizüstü Bilgisayar E-Kılavuzu 93
+Yazılımla İlgili Sıkça Sorulan Sorular
+1. Dizüstü Bilgisayarımı açtığımda güç göstergesi yanıyor ama 
+ekranımda hiçbir şey görünmüyor. Bunu düzeltmek için ne 
+yapabilirim?
+Aşağıdaki önerilerden birini deneyebilirsiniz:
+• Güç düğmesini en az on (10) saniye basılı tutarak Dizüstü 
+Bilgisayarınızı kapatın. Güç adaptörünün ve pil takımının 
+doğru yerleştirilip yerleştirilmediğini kontrol edin ve 
+ardından Dizüstü Bilgisayarınızı açın.
+• Sorun devam ederse destek için yerel ASUS servis 
+merkezinize başvurun.
+2. Ekranımda şu mesaj görüntülendiğinde ne yapmalıyım? 
+"Remove disks or other media. Press any key to restart." 
+(Diskleri veya diğer ortam cihazlarını çıkarın. Yeniden 
+başlatmak için herhangi bir tuşa basın.)
+Aşağıdaki önerilerden birini deneyebilirsiniz:
+• Bağlı tüm USB cihazlarını çıkarın ve ardından Dizüstü 
+Bilgisayarınızı yeniden başlatın.
+• Optik sürücünün içinde kalan optik diskleri çıkarın ve 
+ardından yeniden başlatın.
+• Sorun devam ediyorsa Dizüstü Bilgisayarınızda bir bellek 
+depolama sorunu olabilir. Destek için yerel ASUS servis 
+merkezinize ulaşın.
+94 Dizüstü Bilgisayar E-Kılavuzu
+3. Dizüstü Bilgisayarım normalde olduğundan daha yavaş 
+başlatılıyor ve işletim sistemim duraklıyor. Bunu nasıl 
+düzeltebilirim?
+Son yüklediğiniz veya işletim sistemi paketinize dahil olmayan 
+uygulamaları silin ve sisteminizi yeniden başlatın.
+4. Dizüstü Bilgisayarım başlatılmıyor. Bunu nasıl düzeltebilirim?
+Aşağıdaki önerilerden birini deneyebilirsiniz:
+• Dizüstü Bilgisayarınıza bağlı tüm cihazları çıkarın ve 
+ardından sisteminizi yeniden başlatın.
+• Sorun devam ederse destek için yerel ASUS servis 
+merkezinize başvurun.
+5. Dizüstü Bilgisayarım neden uyku modundan çıkamıyor?
+• Son çalışma durumunuzdan devam etmek için güç 
+düğmesine basmanız gerekir.
+• Sisteminiz pil gücünü tamamen kullanmış olabilir. Güç 
+adaptörünü Dizüstü Bilgisayarınıza bağlayın, elektrik prizine 
+takın ve ardından güç düğmesine basın.
+Dizüstü Bilgisayar E-Kılavuzu 95
+Ekler
+96 Dizüstü Bilgisayar E-Kılavuzu
+Dahili Modem Uyumluluğu
+Dahili modemli Dizüstü Bilgisayar modeli; JATE (Japonya), FCC (ABD, Kanada, Kore, 
+Tayvan) ve CTR21 ile uyumludur. Dahili modem, pan-Avrupa kamu anahtarlamalı 
+telefon şebekesine (PSTN) tek terminalli bağlantı ile ilgili Konsey Kararı 98/482/
+EC uyarınca onaylanmıştır. Ancak farklı ülkelerdeki PSTN'ler arasındaki farklardan 
+dolayı onay, her PSTN şebekesi terminal noktasında koşulsuz bir şekilde başarılı 
+çalışmayı tek başına garanti etmez. Sorun olursa ilk olarak ekipman tedarikçinizle 
+iletişim kurmalısınız.
+Genel Bakış
+CTR 21 ile ilgili 4 Ağustos 1998 tarihli Avrupa Konseyi Kararı, EC Resmi Gazetesinde 
+yayınlanmıştır. CTR 21, analog PSTN'ye (Kamu Anahtarlamalı Telefon Şebekesi) 
+bağlanacak olan tüm DTMF çevirmeli sesli olmayan terminal ekipmanı için 
+geçerlidir.
+Varsa ağ adresinin çift tonlu çok frekanslı sinyalizasyonla yapıldığı, terminal 
+ekipmanının (sesli telefon haklı durum hizmetini destekleyen terminal ekipmanı 
+hariç) analog kamu anahtarlamalı telefon şebekelerine bağlantı için eklenti 
+gerekliliklerine yönelik CTR 21 (Ortak Teknik Yönetmelik).
+Dizüstü Bilgisayar E-Kılavuzu 97
+Ağ Uyumluluğu Beyanı
+Üretici tarafından Onaylanmış Kuruluşa ve tedarikçiye yapılacak bildiri: "Bu beyan, 
+ekipmanın çalışacak şekilde tasarlandığı ağları ve ekipmanın birlikte çalışma 
+zorlukları yaşayabileceği her türlü onaylanmış ağı belirtecektir."
+Üretici tarafından kullanıcıya yapılacak bildiri: "Bu beyan, ekipmanın çalışacak 
+şekilde tasarlandığı ağları ve ekipmanın birlikte çalışma zorlukları yaşayabileceği 
+her türlü onaylanmış ağı belirtecektir. Üretici ayrıca ağ uyumluluğunun, fiziksel ve 
+yazılım anahtar ayarlarına bağlı olduğunu açıkça belirten bir bildiri hazırlamalıdır. 
+Kullanıcı ekipmanı başka bir ağda kullanmak isterse bu bildiri, kullanıcının 
+tedarikçiye başvurmasını önermelidir."
+Onaylanmış Kuruluş CETECOM, şimdiye kadar CTR 21 kullanan çeşitli pan-Avrupa 
+onayları vermiştir. Bunun sonucunda Avrupa'nın, her bir Avrupa ülkesinde ayrı ayrı 
+mevzuat onayı almayı gerektirmeyen ilk modemleri ortaya çıkmıştır.
+Sesli Olmayan Ekipman
+Telesekreterler ve hoparlörlü telefonların yanı sıra modemler, faks makineleri, 
+otomatik çeviriciler ve alarm sistemleri de uygun olabilir. Uçtan uca konuşma 
+kalitesinin yönetmeliklerle kontrol edildiği ekipmanlar (örn. ahizeli telefonlar ve 
+bazı ülkelerde telsiz telefonlar) bunun dışındadır.
+98 Dizüstü Bilgisayar E-Kılavuzu
+Bu tabloda şu anda CTR21 standardı kapsamında olan 
+ülkeler gösterilmektedir.
+Ülke Geçerli Daha Fazla Test
+Avusturya1 Evet Hayır
+Belçika Evet Hayır
+Çekya Hayır Geçerli Değil
+Danimarka1 Evet Evet
+Finlandiya Evet Hayır
+Fransa Evet Hayır
+Almanya Evet Hayır
+Yunanistan Evet Hayır
+Macaristan Hayır Geçerli Değil
+İzlanda Evet Hayır
+İrlanda Evet Hayır
+İtalya Beklemede Beklemede
+İsrail Hayır Hayır
+Lihtenştayn Evet Hayır
+Lüksemburg Evet Hayır
+Hollanda1 Evet Evet
+Norveç Evet Hayır
+Polonya Hayır Geçerli Değil
+Portekiz Hayır Geçerli Değil
+İspanya Hayır Geçerli Değil
+İsveç Evet Hayır
+İsviçre Evet Hayır
+İngiltere Evet Hayır
+Dizüstü Bilgisayar E-Kılavuzu 99
+Bu bilgi, CETECOM'dan alınmıştır ve herhangi bir sorumluluk kabul edilmeksizin 
+paylaşılmıştır. Bu tablodaki güncellemeler için 
+http://www.cetecom.de/technologies/ctr_21.html adresini ziyaret edebilirsiniz.
+1 Ulusal gereklilikler yalnızca ekipman çevirmeli aramayı kullanacaksa 
+geçerli olabilir (üreticiler kullanma kılavuzunda ekipmanın yalnızca DTMF 
+sinyalizasyonunu kullanabileceğini belirtebilirler, bu durum ek testleri gereksiz 
+kılar).
+Hollanda'da seri bağlantı ve arayan kimliği özellikleri için ek test gereklidir.
+100 Dizüstü Bilgisayar E-Kılavuzu
+Federal İletişim Komisyonu Parazit Bildirimi
+Bu cihaz, FCC Kuralları Bölüm 15 ile uyumludur. İşletim, aşağıdaki iki koşula tabidir:
+• Bu cihaz zararlı parazite neden olmaz.
+• Bu cihaz, istenmeyen çalışmaya neden olabilecek parazit de dahil alınan 
+her türlü paraziti kabul eder.
+Bu ekipman, Federal İletişim Komisyonu (FCC) kuralları Bölüm 15 uyarınca test 
+edilmiş ve sınıf B dijital cihaz için belirlenen sınırlara uyduğu görülmüştür. Bu 
+sınırlar, konutta kurulumda zararlı parazite karşı makul bir koruma sağlayacak 
+şekilde tasarlanmıştır. Bu ekipman radyo frekansı oluşturur, kullanabilir ve yayabilir 
+ve bu talimatlara göre kurulmaz ve kullanılmazsa telsiz iletişiminde zararlı parazite 
+neden olabilir. Ancak parazitin belirli bir kurulumda oluşmayacağına dair bir 
+garanti yoktur. Ekipman; radyo veya televizyon yayını sırasında ekipmanı kapatarak 
+ve açarak tespit edilecek olan zararlı parazite neden olursa kullanıcının aşağıdaki 
+önlemlerden birini veya daha fazlasını kullanarak paraziti düzeltmesi teşvik edilir:
+• Alıcı antenin yönünü veya konumunu değiştirin.
+• Ekipman ve alıcı arasındaki mesafeyi arttırın.
+• Ekipmanı, alıcının bağlandığından daha farklı bir devredeki prize bağlayın.
+• Yardım için bayiye veya deneyimli bir radyo/TV teknisyenine danışın.
+UYARI! FCC emisyon sınırlarına uymak ve yakın civarda radyo ve televizyon yayını 
+alınırken paraziti önlemek için korumalı güç kablosunun kullanılması gereklidir. 
+Yalnızca verilen güç kablosunun kullanılması gerekir. Bu ekipmana G/Ç cihazlarını 
+bağlamak için yalnızca korumalı kablolar kullanın. Uyumluluktan sorumlu tarafça 
+açıkça onaylanmayan değişikliklerin, ekipmanı çalıştırma yetkinizi geçersiz 
+kılabileceğini unutmayın.
+(Federal Yönetmelikler Kanunu no. 47, bölüm 15.193, 1993’ten alınarak yeniden 
+basılmıştır. Washington DC: Federal Sicil Dairesi, Ulusal Arşivler ve Kayıtlar İdaresi, 
+ABD Devlet Baskı Dairesi.)
+Dizüstü Bilgisayar E-Kılavuzu 101
+FCC Radyo Frekansına (RF) Maruz Kalma Uyarısı 
+Bildirimi
+UYARI! Uyumluluktan sorumlu tarafça açıkça onaylanmayan değişiklikler, kullanıcının 
+bu ekipmanı çalıştırma yetkisini geçersiz kılabilir. 
+Bu ekipman kontrolsüz bir ortam için belirlenen FCC radyasyona maruz kalma 
+sınırlarına uyar. FCC RF maruz kalma gerekliliklerine uyumluluğu sağlamak için 
+lütfen iletim sırasında verici anteniyle doğrudan temastan kaçının. Son kullanıcılar 
+RF'ye maruz kalma uyumluluğunu karşılamak için özel çalıştırma talimatlarına 
+uymalıdır.
+RF'ye Maruz Kalma Bilgileri (SAR)
+Bu cihaz, devletin radyo dalgalarına maruz kalmayla ilgili gerekliliklerini karşılar. 
+Bu cihaz, ABD Hükümeti'nin Federal İletişim Komisyonu tarafından belirlenen 
+radyo frekansı (RF) enerjisine maruz kalma emisyon sınırlarını aşmayacak şekilde 
+tasarlanmış ve üretilmiştir.
+Kablosuz cihazın maruz kalma standardı, Özel Soğurma Oranı veya SAR olarak 
+bilinen bir ölçüm birimini içerir. FCC tarafından belirlenen SAR limiti 1,6 W/kg'dır. 
+SAR testleri, cihaz tüm test edilmiş frekans bantlarında en yüksek onaylanmış 
+güç seviyesinde iletim yaparken FCC tarafından kabul edilen standart çalıştırma 
+pozisyonları kullanılarak yapılmıştır.
+102 Dizüstü Bilgisayar E-Kılavuzu
+UL Güvenlik Bildirimleri
+Çalıştırma gerilimi ile topraklama arasında 200 V tepe, 300 V tepeden tepeye 
+ve 105 V rms değerlerini aşmayan ve Ulusal Elektrik Kanunu (NFPA 70) uyarınca 
+kurulan veya kullanılan bir telekomünikasyon şebekesine elektrikle bağlanacak 
+telekomünikasyon (telefon) ekipmanını kapsayan UL 1459 için gereklidir.
+Dizüstü Bilgisayar modemini kullanırken yangın, elektrik çarpması ve kişilerin 
+yaralanması riskini azaltmak için aşağıdakiler dahil temel güvenlik tedbirlerine her 
+zaman uyulmalıdır:
+• Dizüstü Bilgisayarı su kaynaklarının; örneğin küvet, leğen, mutfak lavabosu 
+veya çamaşır yıkama leğeninin yanında, ıslak bir bodrumda veya yüzme 
+havuzunun yakınında KULLANMAYIN.
+• Dizüstü Bilgisayarı gök gürültülü sağanak sırasında KULLANMAYIN. 
+Yıldırımdan dolayı uzak bir elektrik çarpması riski olabilir.
+• Dizüstü Bilgisayarı gaz kaçağının olduğu bir durumda KULLANMAYIN.
+Ürünlerde güç kaynağı olarak kullanılan birincil (şarj edilemez) ve ikincil (şarj 
+edilebilir) lityum pilleri kapsayan UL 1642 için gereklidir. Bu piller metalik lityum 
+veya lityum alaşım ya da lityum iyon içerir ve seri, paralel veya her iki şekilde bağlı 
+olan ve kimyasal enerjiyi tersine çevrilemez ya da tersine çevrilebilir kimyasal 
+reaksiyonla elektrik enerjisine dönüştüren tek bir elektrokimyasal hücre veya iki ya 
+da daha fazla hücreden oluşabilir.
+• Dizüstü Bilgisayar pil takımını YAKMAYIN, aksi takdirde patlayabilir. Yangın 
+veya patlamadan dolayı kişilerin yaralanma riskini azaltmak için olası özel 
+atma talimatlarına dair yerel yasaları kontrol edin.
+• Yangın veya patlamadan dolayı kişilerin yaralanma riskini azaltmak için 
+başka cihazlardaki güç adaptörlerini veya pilleri KULLANMAYIN. Yalnızca 
+üretici veya yetkili bayiler tarafından verilen UL sertifikalı güç adaptörlerini 
+veya pilleri kullanın.
+Dizüstü Bilgisayar E-Kılavuzu 103
+Güç Güvenlik Gerekliliği
+6 A'ya kadar elektrik akımı sınıflandırması olan ve 3 kg'dan ağır olan ürünlerde 
+şu değerlerden yüksek veya onlara eşit onaylanmış güç kabloları kullanılmalıdır: 
+H05VV-F, 3G, 0,75 mm2 veya H05VV-F, 2G, 0,75 mm2.
+TV Bildirimleri
+CATV Sistem Kurucusu için not: Kablo dağıtımı sistemi ANSI/NFPA 70, Ulusal 
+Elektrik Kanunu (NEC), özellikle de Bölüm 820.93, Koaksiyel Kablonun Dış İletken 
+Koruyucusunun Topraklaması başlığı uyarınca topraklanmalıdır. Kurulumda, 
+koaksiyel kablonun blendajının bina girişindeki topraklamaya bağlantısı da 
+olmalıdır.
+Macrovision Corporation Ürün Bildirimi
+Bu ürün, Macrovision Corporation'a ve diğer hak sahiplerine ait olan belirli ABD 
+patentlerinin yöntem talepleri ve diğer fikri mülkiyet haklarıyla korunan telif 
+hakkı koruma teknolojisine sahiptir. Bu telif hakkı koruma teknolojisinin kullanımı, 
+Macrovision Corporation tarafından yetkilendirilmelidir ve Macrovision Corporation 
+tarafından aksine izin verilmediği sürece evde ve diğer sınırlı izleme amaçlı kullanım 
+için üretilmiştir. Ters mühendislik veya sökmek yasaktır.
+İşitme Kaybının Önlenmesi
+Olası işitme kaybını önlemek için uzun süre boyunca yüksek ses 
+düzeyinde dinlemeyin.
+Kaplama Bildirimi
+ÖNEMLİ! Elektrik yalıtımı sağlamak ve elektrik güvenliğini sürdürmek için G/Ç bağlantı 
+noktalarının bulunduğu yerler hariç cihaza yalıtıcı bir kaplama uygulanmıştır.
+104 Dizüstü Bilgisayar E-Kılavuzu
+Nordik Lityum Uyarıları (lityum iyon piller için)
+CAUTION! Danger of explosion if battery is incorrectly replaced. Replace only with 
+the same or equivalent type recommended by the manufacturer. Dispose of used 
+batteries according to the manufacturer’s instructions. (English)
+ATTENZIONE! Rischio di esplosione della batteria se sostituita in modo errato. 
+Sostituire la batteria con un una di tipo uguale o equivalente consigliata dalla 
+fabbrica. Non disperdere le batterie nell’ambiente. (Italiano)
+VORSICHT! Explosionsgefahr bei unsachgemäßen Austausch der Batterie. Ersatz 
+nur durch denselben oder einem vom Hersteller empfohlenem ähnlichen Typ. 
+Entsorgung gebrauchter Batterien nach Angaben des Herstellers. (Deutsch)
+ADVARSELI! Lithiumbatteri - Eksplosionsfare ved fejlagtig håndtering. Udskiftning 
+må kun ske med batteri af samme fabrikat og type. Levér det brugte batteri 
+tilbage til leverandøren. (Dansk)
+VARNING! Explosionsfara vid felaktigt batteribyte. Använd samma batterityp eller 
+en ekvivalent typ som rekommenderas av apparattillverkaren. Kassera använt 
+batteri enligt fabrikantens instruktion. (Svenska)
+VAROITUS! Paristo voi räjähtää, jos se on virheellisesti asennettu. Vaihda paristo 
+ainoastaan laitevalmistajan sousittelemaan tyyppiin. Hävitä käytetty paristo 
+valmistagan ohjeiden mukaisesti. (Suomi)
+ATTENTION! Danger d’explosion si la batterie n’est pas correctement remplacée. 
+Remplacer uniquement avec une batterie de type semblable ou équivalent, 
+recommandée par le fabricant. Jeter les batteries usagées conformément aux 
+instructions du fabricant. (Français)
+ADVARSEL! Eksplosjonsfare ved feilaktig skifte av batteri. Benytt samme 
+batteritype eller en tilsvarende type anbefalt av apparatfabrikanten. Brukte 
+batterier kasseres i henhold til fabrikantens instruksjoner. (Norsk)
+(日本語)
+ВНИМАНИЕ! При замене аккумулятора на аккумулятор иного типа возможно 
+его возгорание. Утилизируйте аккумулятор в соответствии с инструкциями 
+производителя. (Pyccкий)
+Dizüstü Bilgisayar E-Kılavuzu 105
+CTR 21 Onayı (dahili Modemi olan Dizüstü 
+Bilgisayar için)
+Dansk
+Nederlands
+English
+Suomi
+Français
+106 Dizüstü Bilgisayar E-Kılavuzu
+Deutsch
+Ελληνικά
+Italiano
+Português
+Español
+Svenska
+Dizüstü Bilgisayar E-Kılavuzu 107
+Ürün Çevre Yönetmeliğine Uygunluk Beyanı
+ASUS, ürünlerimizi tasarlar ve üretirken yeşil tasarım konseptini izler ve 
+ASUS ürününün ürün yaşam döngüsünün her aşamasının, global çevresel 
+yönetmeliklere uygun olmasını sağlar. Ek olarak ASUS, yönetmelik gerekliliklerine 
+göre ilgili bilgileri açıklar.
+ASUS'un uyduğu yönetmelik gerekliliklerine göre bilgi açıklaması için lütfen 
+http://csr.asus.com/Compliance.htm adresine gidin.
+AB REACH ve Madde 33
+REACH (Kimyasalların Kaydı, Değerlendirilmesi, İzni ve Kısıtlanması) düzenleyici 
+çerçevesine uyumlu olarak, ürünlerimizdeki kimyasal maddeleri 
+http://csr.asus.com/english/REACH.htm adresindeki ASUS REACH sitesinde 
+yayınlamaktayız.
+AB RoHS
+Bu ürün AB RoHS (Belirli Tehlikeli Maddelerin Kullanımının Kısıtlanması) 
+Yönergesi'ne uygundur. Daha fazla bilgi için, bkz 
+http://csr.asus.com/english/article.aspx?id=35.
+108 Dizüstü Bilgisayar E-Kılavuzu
+ASUS Geri Dönüşüm/Geri Alma Hizmetleri
+ASUS geri dönüşüm ve geri alma programları, çevremizi korumak için en yüksek 
+standartlara olan bağlılığımızın bir sonucudur. Ürünlerimizi, pilleri, diğer bileşenleri 
+ve ambalaj malzemelerini sorumlu bir şekilde geri dönüşüme dahil edebilmeniz 
+için size çözümler sunacağımıza inanıyoruz.
+Lütfen farklı bölgelerdeki detaylı geri dönüşüm bilgileri için http://csr.asus.com/
+english/Takeback.htm adresine gidin.
+Eko Tasarım Yönergesi
+Avrupa Birliği, enerji bağlantılı ürünlerde eko tasarım gereksinimlerinin 
+düzenlenmesi için bir çerçeve ilan etmiştir(2009/125/EC). Özel Uygulama 
+Tedbirleri, belirli ürünlerde veya birden fazla ürün tipinde çevresel performansı 
+iyileştirmeyi hedeflemektedir. ASUS CRS websitesinde ürün bilgilerini sunmaktadır. 
+Daha fazla bilgiye https://csr.asus.com/english/article.aspx?id=1555 adresinden 
+ulaşılabilir.
+Dizüstü Bilgisayar E-Kılavuzu 109
+EPEAT'ye Kayıtlı Ürünler
+ASUS EPEAT (Elektronik Ürün Çevresel Değerlendirme Aracı)'na kayıtlı ürünler için 
+önemli çevresel bilgilerin kamu açıklaması 
+https://csr.asus.com/english/article.aspx?id=41 adresinde yapılmaktadır. EPEAT 
+programı hakkında daha fazla bilgiye ve satın alma kılavuzuna www.epeat.net 
+adresinden ulaşılabilir.
+ENERGY STAR Uyumlu Ürün
+ENERGY STAR, ABD Çevre Koruma Kurumu ve ABD Enerji 
+Bakanlığı’nın, hepimizin para tasarrufu yapmasına ve enerji 
+tasarruflu ürünler ve uygulamalar yoluyla çevreyi korumasına 
+yardımcı olmak için geliştirdiği ortak bir programdır.
+ENERGY STAR logosunu taşıyan tüm ASUS ürünleri ENERGY STAR standardına 
+uyar ve güç yönetimi özelliği varsayılan olarak etkinleştirilmiştir. Monitör 10 
+dakikalık kullanıcı eylemsizliğinde otomatik olarak uyku moduna geçer, bilgisayar 
+30 dakikalık kullanıcı eylemsizliğinde otomatik olarak uyku moduna geçer. 
+Bilgisayarınızı uyandırmak için fareye tıklayın, klavyede herhangi bir tuşa basın 
+veya güç düğmesine basın. 
+Güç yönetimi ve bunun çevreye faydaları hakkında detaylı bilgi için lütfen 
+http://www.energystar.gov/powermanagement adresini ziyaret edin. Ek olarak 
+ENERGY STAR ortak programı hakkında detaylı bilgiler için lütfen 
+http://www.energystar.gov adresini ziyaret edin.
+NOT: Energy Star, FreeDOS ve Linux tabanlı işletim sistemlerinde DESTEKLENMEZ.
+110 Dizüstü Bilgisayar E-Kılavuzu
+BIOS Metin Yazı Tipleri Lisansı
+Telif Hakkı © 2022 The Android Open Source Project
+Apache Lisansı, Sürüm 2.0 (“Lisans”) altında lisanslıdır; bu dosyayı Lisans ile uyumlu 
+olan durumlar haricinde kullanamazsınız. Lisansın bir kopyasını 
+http://www.apache.org/licenses/LICENSE-2.0 adresinden alabilirsiniz
+Geçerli yasalar gerektirmediği ya da yazılı olarak kabul edilmediği sürece, Lisans 
+çerçevesinde dağıtılan yazılım hiçbir sarih ya da zımni GARANTİ OLMAKSIZIN 
+"OLDUĞU GİBİ" dağıtılmaktadır.
+Lisans kapsamındaki spesifik dil uygulama izinleri ve sınırlamaları için Lisansa 
+bakın.
+Dizüstü Bilgisayar E-Kılavuzu 111
+Basitleştirilmiş AB Uyumluluk Beyanı
+ASUSTek Computer Inc. bu cihazın 2014/53/EU Direktifinin temel gerekliliklerine 
+ve diğer ilgili hükümlerine uyduğunu beyan eder. AB uyumluluk beyanının tam 
+metnine https://www.asus.com/support/ adresinden ulaşabilirsiniz.
+5150-5350 MHz bandında çalışan WiFi aşağıdaki tabloda listelenen ülkelerde iç 
+mekan kullanımıyla sınırlıdır:
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK(NI)
+a. Düşük Güç İç Mekan (LPI) Wi-Fi 6E cihazları: 
+Belçika (BE), Bulgaristan (BG), Kıbrıs (CY), Çek Cumhuriyeti (CZ), Estonya (EE), Fransa (FR), 
+İzlanda (IS), İrlanda (IE), Litvanya (LT), Almanya (DE), Hollanda (NL), İspanya (ES)’da 5945 ila 
+6425 Mhz frekans aralığında çalışırken cihaz yalnızca iç mekanda kullanım ile sınırlandırılmıştır.
+b. Çok Düşük Güç (VLP) Wi-Fi 6E cihazları (taşınabilir cihazlar): 
+Belçika (BE), Bulgaristan (BG), Kıbrıs (CY), Çek Cumhuriyeti (CZ), Estonya (EE), Fransa (FR), 
+İzlanda (IS), İrlanda (IE), Litvanya (LT), Almanya (DE), Hollanda (NL), İspanya (ES)’da 5945 ila 
+6425 Mhz frekans aralığında çalışırken cihazın İnsansız Hava Aracı Sistemleri (UAS)’ta kullanımı 
+izinli değildir.
+112 Dizüstü Bilgisayar E-Kılavuzu
+RF'ye Maruz kalma bilgileri (SAR)
+Bu cihaz, sağlık koruması yoluyla kamunun elektromanyetik alanlara maruz kalma 
+sınırlamasına dair AB gerekliliklerini (2014/53/EU) karşılar.
+Sınırlar, kamunun korunmasına dair kapsamlı önerilerin bir parçasıdır. Bu öneriler, 
+bilimsel çalışmalar düzenli ve titizlikle değerlendirilerek bağımsız bilimsel 
+kuruluşlar tarafından oluşturulmuş ve kontrol edilmiştir. Avrupa Konseyi'nin 
+mobil cihazlar için önerilen sınırının ölçüm birimi, "Özel Soğurma Oranı" (SAR) 
+olarak adlandırılır ve SAR sınırı 10 gram vücut dokusu üzerinden ortalaması 
+alınmış olan 2,0 W/kg'dır. Uluslararası İyonlaştırıcı Olmayan Radyasyon Koruması 
+Komisyonunun (ICNIRP) gerekliliklerini karşılar.
+Bu cihaz vücuda yakın çalıştırma açısından test edilmiştir ve ICNIRP maruz kalma 
+kılavuzlarına ve Avrupa Standardı EN 50566 ve EN 62209-2'ye uyar. SAR, mobil 
+cihaz tüm frekans bantlarında en yüksek onaylanmış çıkış gücü seviyesinde iletim 
+yaptığı sırada doğrudan vücuda temas ederken ölçülür.
+Avrupa'daki RF'ye maruz kalma gerekliliklerine uymak için vücuda bağlı çalıştırma 
+sırasında kullanıcının vücudu ile anten de dahil cihaz arasında minimum 1 cm 
+ayırma mesafesi korunmalıdır.
+Wi-Fi Ağ Bildirimi
+ÖNEMLİ! Wi-Fi 6E ağ kartı, seçili modellerde kullanılabilir. Wi-Fi 6E bandının 
+bağlanabilirliği, her bir ülkenin/bölgenin yönetmeliğine ve sertifikasyonuna göre 
+değişebilir.
+ Bu Kılavuz Hakkında
+ Bu Kılavuzda Kullanılan İfadeler
+ Simgeler
+ Tipografya
+ Güvenlik Tedbirleri
+ Dizüstü Bilgisayarınızı Kullanma
+ Dizüstü Bilgisayarınızın Bakımı
+ Düzgün Geri Dönüşüm 
+ Pil güvenlik bilgileri
+ 1. Bölüm: Donanım Yerleşimi
+ Dizüstü Bilgisayarınızı Tanıma
+ Önden Görünüm
+ Üstten Görünüm
+ Alt Görünüm
+ Sağ Görünüm
+ Sol Görünüm
+ 2. Bölüm: Dizüstü Bilgisayarınızı kullanma
+ Kullanmaya başlama
+ Dizüstü Bilgisayarınızı şarj etme
+ Ekran panelini kaldırarak açın
+ Güç düğmesine basın
+ Dokunmatik ekran paneli ve dokunmatik yüzey hareketleri
+ Dokunmatik ekran paneli hareketlerini kullanma
+ Dokunmatik yüzeyi kullanma
+ NumberPad'i kullanma
+ Klavyeyi kullanma
+ Kısayol Tuşları
+ İşlev tuşları
+ Windows tuşları
+ Ekran panelini döndürme
+ 3. Bölüm: Windows'da çalışma
+ İlk kez başlatma
+ Start menu (Başlat menüsü)
+ Windows uygulamaları
+ Windows uygulamalarıyla çalışma
+ Windows uygulamalarını özelleştirme
+ Task view (Görev görünümü)
+ Widgets (Pencere öğeleri)
+ Tutturma özelliği
+ Tutturma etkin noktaları
+ Action Center (İşlem Merkezi)
+ MyASUS Splendid
+ OLED ekranı ayarlama
+ Koyu Modu ayarlama
+ Kullanılmadığı sırada ekranı kapatma
+ Ekran parlaklığını ayarlama
+ Görev çubuğunu otomatik gizleme
+ Microsoft Office'te Koyu Modu ayarlama
+ Diğer klavye kısayolları
+ Kablosuz ağlara bağlanma
+ Wi-Fi
+ Bluetooth
+ Uçak modu
+ Dizüstü Bilgisayarınızı kapatma
+ Dizüstü Bilgisayarınızı uyku moduna geçirme
+ 4. Bölüm: Açılış Sırasında Kendi Kendine Test (POST)
+ Açılış Sırasında Kendi Kendine Test (POST)
+ BIOS ve Sorun Giderme bölümlerine erişmek için POST'u kullanma
+ BIOS
+ BIOS'a erişme
+ Sisteminizi kurtarma
+ Kurtarma seçeneği uygulama
+ İpuçları ve SSS
+ Dizüstü Bilgisayarınız İçin Faydalı İpuçları
+ Donanımla İlgili Sıkça Sorulan Sorular
+ Yazılımla İlgili Sıkça Sorulan Sorular
+ Ekler
+ Dahili Modem Uyumluluğu
+ Genel Bakış
+ Ağ Uyumluluğu Beyanı
+ Sesli Olmayan Ekipman
+ Federal İletişim Komisyonu Parazit Bildirimi
+ FCC Radyo Frekansına (RF) Maruz Kalma Uyarısı Bildirimi
+ RF'ye Maruz Kalma Bilgileri (SAR)
+ UL Güvenlik Bildirimleri
+ Güç Güvenlik Gerekliliği
+ TV Bildirimleri
+ Macrovision Corporation Ürün Bildirimi
+ İşitme Kaybının Önlenmesi
+ Kaplama Bildirimi
+ Nordik Lityum Uyarıları (lityum iyon piller için)
+ CTR 21 Onayı (dahili Modemi olan Dizüstü Bilgisayar için)
+ Ürün Çevre Yönetmeliğine Uygunluk Beyanı
+ AB REACH ve Madde 33
+ AB RoHS
+ ASUS Geri Dönüşüm/Geri Alma Hizmetleri
+ Eko Tasarım Yönergesi
+ ENERGY STAR Uyumlu Ürün
+ EPEAT'ye Kayıtlı Ürünler
+ BIOS Metin Yazı Tipleri Lisansı
+ Basitleştirilmiş AB Uyumluluk Beyanı
+ Wi-Fi Ağ Bildirimi
+ RF'ye Maruz kalma bilgileri (SAR)

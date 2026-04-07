@@ -1,0 +1,44 @@
+
+PowerPoint 簡報
+Full height, half length, PCIe Gen3 AI accelerator card based on Google® Coral 
+Edge TPU processor, enabling AI-based real-time decision process at edge
+Features
+• Support up to 8~16 x Google® Coral Edge TPU M.2 modules 
+• Support TensorFlow Lite machine learning framework
+• Compatible with PCI Express 3.0 x16 expansion slot
+• Optimized thermal design with twin tuborfans
+Specifications
+CRL-G18U-P3DF / 
+CRL-G116U-P3DF
+Main Chip Core Google® Coral Edge TPU Processor
+PCIe Interface Technology PCI Express 3.0 x16
+Software
+Supported Framework TensorFlow lite
+Precision INT8
+Performance
+CRL-G18U-P3DF: 32 TOPS
+CRL-G116U-P3DF: 64 TOPS
+Thermal Solution FAN design Active Fan
+Power
+Power Connector 1 x 6-pin 12V External Power
+Power Consumption
+CRL-G18U-P3DF: 36 W
+CRL-G116U-P3DF: 52 W
+Operating System Linux
+Ubuntu 18.04, Debian 10 
+*For latest OS support list, please check https://iot.asus.com/
+Environment
+Operating Temperature 0~55° C
+Non-Operating Temperature -40~85° C
+Relative Humidity 0%~85%
+Dimension
+Width 42.1 mm
+Height 126.3 mm
+Depth 186.3 mm
+Weight Weight
+CRL-G18U-P3DF: 516 g
+CRL-G116U-P3DF: 530 g
+AI ACCLERATOR CARD
+DATASHEET
+Dimension (mm)
+https://iot.asus.com/

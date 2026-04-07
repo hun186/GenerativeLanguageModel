@@ -1,0 +1,167 @@
+# Welcome to the Dev Tools Console!
+#
+# You can use Console to explore the Elasticsearch API. See the Elasticsearch API reference to learn more:
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html
+#
+# Here are a few examples to get you started.
+
+
+# Create an index
+PUT news_test
+
+DELETE news_test
+
+# Add a document to my-index
+POST /my-index/_doc
+{
+    "id": "park_rocky-mountain",
+    "title": "Rocky Mountain",
+    "description": "Bisected north to south by the Continental Divide, this portion of the Rockies has ecosystems varying from over 150 riparian lakes to montane and subalpine forests to treeless alpine tundra."
+}
+
+
+# Perform a search in my-index
+GET /news_test
+GET /news_test/_mapping
+GET /news_test/_search
+POST news_test/_search
+{
+  "size": 3,
+  "runtime_mappings": {
+    "subject_rt": { "type": "keyword", "script": {"source": "emit(params._source.communication?.subject)"} },
+    "content_rt": { "type": "keyword", "script": {"source": "emit(params._source.rawInfo?.content)"} }
+  },
+  "query": {
+    "bool": {
+      "should": [
+        {"wildcard": {"subject_rt": {"value": "*月薪*5*萬*"}}},
+        {"wildcard": {"subject_rt": {"value": "*免繳*所得稅*"}}},
+        {"wildcard": {"content_rt": {"value": "*月薪*5*萬*"}}}
+      ],
+      "filter": [{"term": {"rawInfo.langCode": "C"}}]
+    }
+  },
+  "_source": ["uuid","communication.subject"]
+}
+GET news_test/_search
+{
+  "query": {
+    "query_string": {
+      "default_field": "_source.uuid",
+      "query": "409333402eb8c9e1eacec84317efef4a193b3860"
+    }
+  }
+}
+
+GET news_test/_doc/515e657ffa54e13b7ac982020f3d7c7fe04daa51
+DELETE news_test_v2
+
+PUT news_test_v2
+{
+  "mappings": {
+    "properties": {
+      "update_time": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss"
+      }
+    }
+  }
+}
+POST _reindex
+{
+  "source": { "index": "news_test" },
+  "dest":   { "index": "news_test_v2" },
+  "script": {
+    "lang": "painless",
+    "source": """
+      if (ctx._source.update_time != null) {
+        ctx._source.update_time = ctx._source.update_time;   // 讓 date mapping 解析 ISO 字串
+      }
+    """
+  }
+}
+
+POST /_aliases
+{
+  "actions": [
+    { "remove": { "index": "news_test",   "alias": "news_test" }},
+    { "add":    { "index": "news_test_v2","alias": "news_test" }}
+  ]
+}
+GET news_test/_count
+GET news_test_v2/_count
+DELETE /news_test
+POST /_aliases
+{
+  "actions": [
+    { "add": { "index": "news_test_v2", "alias": "news_test", "is_write_index": true } }
+  ]
+}
+GET /_alias/news_test
+
+POST news_test_v2/_doc/iso_test?refresh=true
+{
+  "update_time": "2025-10-22T13:37:43Z"
+}
+POST news_test/_count
+{
+  "query": {
+    "term": { "selectedMessage": true }
+  }
+}
+POST news_test/_update/9be0d73605b0d15aa12640dc5fb6410ce481d94b
+{
+  "script": {
+    "lang": "painless",
+    "source": "if (ctx._source.containsKey('multidim_event_json')) { ctx._source.remove('multidim_event_json'); }"
+  }
+}
+POST news_test/_update/9be0d73605b0d15aa12640dc5fb6410ce481d94b
+POST news_test/_update/894349c7b5e001a2b153fdd35c64ed97e7df97df
+{
+  "script": {
+    "lang": "painless",
+    "params": {
+      "fields": ["multidim_event_json",
+                  "update_time_ai"
+      ]
+    },
+    "source": "for (f in params.fields) { if (ctx._source.containsKey(f)) { ctx._source.remove(f); } }"
+  }
+}
+POST news_test/_search
+{
+  "query": { "exists": { "field": "multidim_event_json" } },
+  "track_total_hits": true,
+  "size": 0
+}
+#查詢某個時間區內AI更新的
+POST news_test/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "range": { "update_time_ai": { "gte": "2025-11-10T00:00:00Z", "lt": "2025-11-11T00:00:00Z" } } },
+        { "nested": { "path": "multidim_event_json", "query": { "match_all": {} } } }
+      ]
+    }
+  },
+  "track_total_hits": true,
+  "size": 0
+}
+#將某個時間區內AI更新的結果刪除，以利重算。
+POST news_test/_update_by_query?conflicts=proceed&refresh=true
+{
+  "script": {
+    "lang": "painless",
+    "source": "ctx._source.remove('multidim_event_json')"
+  },
+  "query": {
+    "bool": {
+      "must": [
+        { "range": { "update_time_ai": { "gte": "2025-11-10T00:00:00Z", "lt": "2025-11-11T00:00:00Z" } } },
+        { "nested": { "path": "multidim_event_json", "query": { "match_all": {} } } }
+      ]
+    }
+  }
+}

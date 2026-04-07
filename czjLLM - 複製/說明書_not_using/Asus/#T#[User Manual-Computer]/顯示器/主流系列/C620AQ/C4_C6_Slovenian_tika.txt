@@ -1,0 +1,1527 @@
+
+ 
+Monitor LCD C620A/
+C422A/C622A/C423A/
+C623A/C424A/C624A/
+C624B/C624W/C627A 
+Series
+Uporabniški priročnik
+ii
+Prva izdaja 
+Junij 2015
+Copyright © 2015 ASUSTeK COMPUTER INC. Vse pravice pridržane.
+Nobenega dela tega priročnika, vključno z opisanimi izdelki in programsko opremo, ni dovoljeno kopirati, 
+prenašati, prepisovati, shranjevati v sistem za pridobivanje ali prevajati v kateri koli jezik v kakršni koli 
+obliki in s kakršnimi koli sredstvi, z izjemo dokumentacije, ki jo kupec hrani za namene varnostnega 
+kopiranja, brez izrecnega pisnega dovoljenja družbe ASUSTeK COMPUTER INC. (»ASUS«).
+Garancija ali storitev za izdelek se ne podaljšata v naslednjih primerih: (1) če izdelek popravite, prilagodite 
+ali spremenite, razen če za takšno popravilo, prilagoditev ali spremembo pridobite pisno dovoljenje družbe 
+ASUS; ali (2) če je serijska številka izdelka poškodovana ali manjka.
+ASUS NUDI TA PRIROČNIK »TAKŠEN KOT JE« IN BREZ GARANCIJ KAKRŠNE KOLI VRSTE, PA 
+NAJ BODO IZRECNE ALI IMPLICITNE, KAR VKLJUČUJE TUDI IMPLICITNE GARANCIJE ALI POGOJE 
+TRŽNOSTI ALI PRIMERNOSTI ZA DOLOČEN NAMEN, VENDAR NI OMEJENO NANJE. V NOBENEM 
+PRIMERU NE BODO DRUŽBA ASUS, NJENI DIREKTORJI, URADNIKI, ZAPOSLENI ALI POSREDNIKI 
+ODGOVORNI ZA NOBENO POSREDNO, POSEBNO, NAKLJUČNO ALI POSLEDIČNO ŠKODO 
+(VKLJUČNO S ŠKODO ZARADI IZGUBE DOBIČKOV, IZGUBE POSLOVANJA, IZGUBE UPORABE 
+ALI PODATKOV, PREKINITVE POSLOVANJA IN PODOBNIH ZADEV), TUDI ČE JE BILA DRUŽBA 
+ASUS OBVEŠČENA O MOŽNOSTI TAKŠNE ŠKODE, NASTALE ZARADI KAKRŠNE KOLI OKVARE ALI 
+NAPAKE V TEM PRIROČNIKU ALI IZDELKU.
+TEHNIČNI PODATKI IN INFORMACIJE V TEM PRIROČNIKU SO ZAGOTOVLJENI ZGOLJ V 
+INFORMATIVNE NAMENE IN SE LAHKO OBČASNO IN BREZ VNAPREJŠNJEGA OBVESTILA 
+SPREMENIJO TER ZA DRUŽBO ASUS NISO OBVEZUJOČI. DRUŽBA ASUS NE PREVZEMA NOBENE 
+ODGOVORNOSTI ZA NOBENE NAPAKE ALI NEPRAVILNOSTI V TEM PRIROČNIKU, VKLJUČNO Z 
+OPISANIMI IZDELKI IN PROGRAMSKO OPREMO.
+Imena izdelkov in podjetij, navedena v tem priročniku, so lahko ali niso registrirane blagovne znamke 
+ali avtorske pravice njihovih ustreznih podjetij. Uporabljajo se zgolj za identifikacijo ali razlago v korist 
+imetnika in nimajo namena kršitve.
+iii
+Kazalo
+Kazalo ......................................................................................................... iii
+Opombe ....................................................................................................... iv
+Varnostne informacije ............................................................................... vii
+Vzdrževanje in čiščenje ............................................................................ viii
+Takeback Services ...................................................................................... ix
+1. poglavje: Predstavitev izdelka
+1.1 Dobrodošli! ................................................................................. 1-1
+1.2 Vsebina paketa ............................................................................. 1-1
+1.3 Predstavitev monitorja ................................................................ 1-2
+1.3.1 Pogled od spredaj ........................................................... 1-2
+1.3.2 Pogled od zadaj .............................................................. 1-4
+1.3.3 Funkcija QuickFit ............................................................ 1-5
+2. poglavje: Namestitev
+2.1 Pritrditev ročice/podstavka monitorja ........................................ 2-1
+2.2 Odstranjevanje ročice/podstavka 
+ (za stensko montažo VESA) ........................................................ 2-1
+2.3 Pritrjevanje/snemanje kompleta MiniPC 
+ (C620A/C622A/C623A/C624A/C624B/C624W/C627A) ................ 2-3
+2.4 Prilagajanje monitorja .................................................................. 2-4
+2.5 Priključitev kablov ........................................................................ 2-5
+2.6 Vklop monitorja ............................................................................ 2-6
+3. poglavje: Splošna navodila
+3.1 Zaslonski meni OSD ................................................................... 3-1
+3.1.1 Način konfiguriranja ........................................................ 3-1
+3.1.2 Predstavitev funkcije OSD .............................................. 3-2
+3.2 Povzetek tehničnih podatkov .................................................... 3-10
+3.3 Odpravljanje težav (Pogosta vprašanja) .................................. 3-17
+3.4 Podprti operacijski načini ......................................................... 3-18
+iv
+Opombe
+Izjava zvezne komisije za telekomunikacije FCC 
+(Federal Communications Commission)
+Ta naprava je v skladu s 15. delom pravil FCC. Pri delovanju morata biti 
+upoštevana naslednja pogoja:
+• ta naprava ne sme povzročati škodljivih motenj; in
+• ta naprava mora sprejemati katere koli prejete motnje, vključno z motnjami, ki 
+lahko povzročajo neželeno delovanje.
+Ta oprema je preizkušena in v skladu s 15. delom pravil FCC ustreza 
+omejitvam za digitalne naprave razreda B. Te omejitve služijo kot 
+zadovoljiva zaščita pred škodljivimi motnjami v stanovanjskih namestitvah. 
+Ta oprema ustvarja, uporablja in lahko oddaja radijsko frekvenčno 
+energijo. Če ni nameščena in uporabljena v skladu z navodili proizvajalca, 
+lahko povzroča škodljive motnje v radijskih komunikacijah. Vendar pa 
+ni mogoče dati nobenega zagotovila, da pri določeni namestitvi ne bo 
+prišlo do motenj. Če ta oprema povzroča škodljive motnje radijskega ali 
+televizijskega sprejema, kar lahko določite tako, da opremo izklopite in 
+nato vklopite, uporabniku svetujemo, da poskusi odpraviti motnjo z enim ali 
+več spodnjih ukrepov:
+• preusmeritev ali premestitev sprejemne antene;
+• povečanje razdalje med opremo in sprejemnikom;
+• priključitev opreme v vtičnico v vezju, ki ni v tistem, v katerega je priključen 
+sprejemnik;
+• stik s prodajalcem ali izkušenim radijskim/televizijskim tehnikom za pomoč.
+Za zagotovitev skladnosti s pravili komisije FCC morate za povezavo monitorja 
+in grafične kartice uporabiti zaščitene kable. Spremembe ali prilagoditve te 
+enote, ki jih izrecno ne dovoli stran, odgovorna za skladnost, lahko razveljavijo 
+uporabnikovo pooblastilo za uporabo opreme.
+Izdelek, skladen s standardom ENERGY STAR
+ENERGY STAR je skupni program Agencije za varstvo okolja ZDA 
+in ministrstva ZDA za energijo, ki nam vsem pomaga prihraniti denar 
+in zaščititi okolje z energijsko učinkovitimi proizvodi in praksami.
+Vsi izdelki ASUS z logotipom ENERGY STAR so skladni s standardom ENERGY 
+STAR, funkcija upravljanja energije pa je privzeto omogočena. Monitor in 
+računalnik samodejno preklopita v način spanja po 10 in 30 minutah uporabnikove 
+neaktivnosti. Računalnik zbudite tako, da kliknete z miško ali pritisnete kateri koli 
+gumb na tipkovnici. Za podrobne informacije o upravljanju energije in njegovi 
+koristi za okolje obiščite spletno mesto 
+http://www.energystar.gov/powermanagement. Poleg tega obiščite tudi spletno 
+mesto http://www.energystar.gov za podrobne informacije o skupnem programu 
+ENERGY STAR.
+v
+OPOMBA: Programa Energy Star ne podpirata operacijska sistema FreeDOS 
+in Linux.
+Izjava kanadskega oddelka za komunikacije
+Ta digitalna naprava ne presega omejitev razreda B za oddajanje 
+radijskega hrupa iz digitalne naprave, določenih v uredbah za radijske 
+motnje kanadskega oddelka za komunikacije.
+Ta digitalna naprava razreda B je v skladu s kanadskim standardom ICES-
+003.
+This Class B digital apparatus meets all requirements of the Canadian 
+Interference - Causing Equipment Regulations.
+Cet appareil numérique de la classe B respecte toutes les exigences du 
+Réglement sur le matériel brouiller du Canada.
+vi
+A third-party certification according to ISO 14024
+Say hello
+to a more sustainable product
+IT products are associated with a wide range of sustainability risks 
+throughout their life cycle. Human rights violations are common in the 
+factories. Harmful substances are used both in products and their 
+manufacture. Products can often have a short lifespan because of poor 
+ergonomics, low quality and when they are not able to be repaired or 
+upgraded. 
+This product is a better choice. It meets all the criteria in TCO Certified, 
+the world’s most comprehensive sustainability certification for IT 
+products. Thank you for making a responsible product choice, that help 
+drive progress towards a more sustainable future!
+Criteria in TCO Certified have a life-cycle perspective and balance 
+environmental and social responsibility. Conformity is verified by 
+independent and approved verifiers that specialize in IT products, social 
+responsibility or other sustainability issues. Verification is done both 
+before and after the certificate is issued, covering the entire validity 
+period. The process also includes ensuring that corrective actions are 
+implemented in all cases of factory non-conformities. And last but not 
+least, to make sure that the certification and independent verification is 
+accurate, both TCO Certified and the verifiers are reviewed regularly.
+Want to know more?
+Read information about TCO Certified, full criteria documents, news and 
+updates at tcocertified.com. On the website you’ll also find our Product 
+Finder, which presents a complete, searchable listing of certified 
+products. 
+Toward sustainable IT products
+vii
+Varnostne informacije
+• Preden namestite monitor, natančno preberite vso dokumentacijo, priloženo v 
+škatli. 
+• Da preprečite nevarnost požara ali električnega udara, monitorja nikoli ne 
+izpostavljajte dežju ali vlagi. 
+• Nikoli ne poskušajte odpreti ohišja monitorja. Nevarne visoke napetosti v 
+monitorju lahko povzročijo resne fizične poškodbe. 
+• Če pride do okvare napajanja, je ne poskušajte odpraviti sami. Obrnite se na 
+kvalificiranega servisnega tehnika ali svojega prodajalca. 
+• Preden uporabite izdelek, se prepričajte, da so vsi kabli pravilno priključeno 
+in da napajalni kabli niso poškodovani. Če odkrijete poškodbe, se nemudoma 
+obrnite na svojega prodajalca. 
+• Reže in odprtine na zadnji ali zgornji strani ohišja so namenjene prezračevanju. 
+Teh rež ne smete blokirati. Tega izdelka nikoli ne postavljajte zraven radiatorja 
+ali vira toplote ali nad njega, razen če zagotovite ustrezno prezračevanje. 
+• Monitor lahko deluje samo z virom napajanja, ki je naveden na nalepki. Če 
+niste prepričani, kakšen vir napajanja imate, se obrnite na prodajalca ali lokalno 
+podjetje za dobavo električne energije. 
+• Uporabite ustrezen napajalni vtič, ki ustreza lokalnemu standardu za napajanje. 
+• Pazite, da ne preobremenite razdelilnikov in podaljškov. Preobremenitev lahko 
+povzroči požar ali električni udar. 
+• Izogibajte se ekstremnemu prahu, vlagi in temperaturi. Monitorja ne postavljajte 
+na nobeno mesto, kjer se lahko zmoči. Monitor postavite na stabilno površino. 
+• Enoto odklopite med nevihto ali če je dlje časa ne boste uporabljali. S tem jo 
+zaščitite pred poškodbami zaradi napetostnega nihanja. 
+• V reže na ohišju monitorja nikoli ne vstavljajte predmetov ali polivajte tekočin.
+• Za zagotovitev zadovoljivega delovanja uporabljajte monitor samo z računalniki 
+z oznako UL, ki imajo ustrezno konfigurirane vtičnice z oznako med 100 in 
+240 V izmeničnega toka. 
+• Če pride na monitorju do tehničnih težav, se obrnite na kvalificiranega 
+servisnega tehnika ali svojega prodajalca. 
+• Če prilagodite kontrolnik za glasnost in izenačevalnik na nastavitve, ki niso na 
+sredini, lahko povečate izhodno napetost ušesnih/naglavnih slušalk, s tem pa 
+tudi raven zvočnega pritiska.
+Ta simbol prekrižanega smetnjaka s kolesi pomeni, da izdelka (električne in 
+elektronske opreme ter celične baterije v obliki kovanca, ki vsebuje živo srebro) 
+ne smete odložiti med običajne odpadke. Za odstranjevanje elektronskih 
+izdelkov glejte lokalne uredbe.
+viii
+Vzdrževanje in čiščenje
+• Preden dvignete ali premaknete monitor, priporočamo, da odklopite kable in 
+napajalni kabel. Pri postavitvi monitorja upoštevajte načine pravilnega dviga. 
+Ko monitor dvignete ali nosite, ga primite za robove. Zaslona ne dvigajte tako, 
+da ga primete za stojalo ali kabel. 
+• Čiščenje. Izklopite monitor in odklopite napajalni kabel. Površino monitorja 
+očistite z neabrazivno krpo brez vlaken. Trdovratne madeže lahko odstranite s 
+krpo, ki jo navlažite z nežnim čistilom. 
+• Izogibajte se uporabi čistil, ki vsebujejo alkohol ali aceton. Uporabite čistilo, ki 
+je namenjeno za uporabo z monitorjem. Čistila nikoli ne pršite neposredno po 
+zaslonu, saj lahko prodre v monitor in povzroči električni udar. 
+Naslednji simptomi na monitorju so normalni:
+• Zaradi vzorca namizja lahko na zaslonu opazite nekoliko neenakomerno 
+osvetljenost. 
+• Če je ista slika prikazana več ur, lahko po preklopu slike ostane odtis 
+prejšnjega zaslona. Zaslon se bo počasi obnovil, lahko pa tudi za nekaj ur 
+izklopite stikalo za vklop/izklop. 
+• Če zaslon potemni, utripa ali ne deluje več, se za popravilo obrnite na svojega 
+prodajalca ali servisni center. Zaslona ne popravljajte sami. 
+Dogovori, uporabljeni v tem vodniku
+OPOZORILO: informacije, ki preprečujejo vaše poškodbe pri poskusu 
+dokončanja naloge. 
+POZOR: informacije, ki preprečujejo poškodbe komponent pri poskusu 
+dokončanja naloge. 
+POMEMBNO: informacije, ki jih MORATE upoštevati za dokončanje 
+naloge.
+OPOMBA: namigi in dodatne informacije, ki vam bodo v pomoč pri 
+dokončanju naloge.
+ix
+Kje so na voljo dodatne informacije
+Za dodatne informacije in posodobitve izdelka ter programske opreme glejte 
+naslednje vire.
+1. Spletna mesta ASUS
+Spletna mesta ASUS po vsem svetu zagotavljajo posodobljene informacije o 
+izdelkih strojne in programske opreme ASUS. Pojdite na spletno mesto 
+http://www.asus.com.
+2. Dodatna dokumentacija
+V škatli z izdelkom je lahko priložena dodatna dokumentacija, ki jo lahko doda 
+prodajalec. Ti dokumenti niso del standardnega paketa.
+Takeback Services
+ASUS recycling and takeback programs come from our commitment to the highest 
+standards for protecting our environment. We believe in providing solutions for 
+our customers to be able to responsibly recycle our products, batteries and other 
+components as well as the packaging materials. 
+Please go to http://csr.asus.com/english/Takeback.htm for detail recycling 
+information in different region.
+x
+1-1Monitor ASUS LCD C Series 
+1.1 Dobrodošli! 
+Hvala, ker ste kupili monitor LCD ASUS®.
+Najnovejši širokozaslonski monitor LCD ASUS zagotavlja širši, svetlejši in kristalno 
+jasen zaslon, poleg tega pa še veliko funkcij, ki izboljšujejo izkušnjo gledanja. 
+S temi funkcijami boste uživali, ker zagotavljajo priročnost in čudovito vizualno 
+izkušnjo monitorja.
+1.2 Vsebina paketa
+Preverite, ali so v škatli spodaj navedeni elementi:
+ Monitor LCD
+ Podstavek monitorja
+ Vodnik za hitri začetek
+ Garancijska kartica
+ Napajalni kabel
+ Kabel DVI (za izbrane modele)
+ Kabel HDMI (za izbrane modele)
+ Kabel DisplayPort (za izbrane modele)
+ Kabel DisplayPort (iz Mini-DP v DP) (za izbrane modele)
+ Kabel VGA (za izbrane modele)
+ Kabel USB (za izbrane modele)
+ Zvočni kabel (za izbrane modele)
+ Komplet MiniPC (za izbrane modele)
+Če je kateri od zgoraj navedenih elementov poškodovan ali manjka, se 
+nemudoma obrnite na svojega prodajalca.
+1-2 1. poglavje: Predstavitev izdelka
+1.3 Predstavitev monitorja
+1.3.1 Pogled od spredaj
+C422A/C423A/C424A 
+Menu
+Close
+Quick Fit
+Brightness
+Blue Light Filter
+Menu
+Close
+Quick Fit
+Brightness
+Blue Light Filter
+C620A/C622A/C623A/C624A/C624B/
+C624W/C627A
+7
+123456
+1. Gumb/indikator za vklop/izklop
+• Vklopi/izklopi monitor.
+• Definicije barv indikatorja vklopa/izklopa so navedene v spodnji tabeli.
+Stanje Opis
+Sveti belo Vklopljeno
+Sveti oranžno Način pripravljenosti
+Izklopljeno Izklopljeno
+2. Gumb menija:
+• Ta gumb pritisnite, da prikažete meni OSD, ko je ta izklopljen.
+• Odpre meni OSD.
+• Ob dolgem, petsekundnem pritisku vklopi in izklopi funkcijo Key Lock 
+(Zaklepanje tipk).
+3. Gumb za zapiranje: 
+• Ta gumb pritisnite, da prikažete meni OSD, ko je ta izklopljen.
+• Zapre meni OSD. 
+4. Gumb QuickFit:
+• Ta gumb pritisnite, da prikažete meni OSD, ko je ta izklopljen.
+• To je bližnjična tipka za aktiviranje funkcije QuickFit, oblikovane za 
+poravnavo.
+• Funkcija QuickFit vsebuje strani splošnih mrežnih vzorcev, velikosti 
+papirja in velikosti fotografij. (Glejte poglavje 1.3.3 Funkcija QuickFit). 
+1-3Monitor ASUS LCD C Series 
+5. Bližnjica 
+• Ta gumb pritisnite, da prikažete meni OSD, ko je ta izklopljen.
+• Privzeto: bližnjična tipka Brightness (Svetlost)
+• Če želite spremeniti funkcijo bližnjične tipke, izberite meni Shortcut 
+(Bližnjica) > Shortcut 1 (Bližnjica 1).
+6. Bližnjica 
+• Ta gumb pritisnite, da prikažete meni OSD, ko je ta izklopljen.
+• Privzeto: bližnjična tipka Blue light filter (Filter modre svetlobe)
+• Če želite spremeniti funkcijo bližnjične tipke, izberite meni Shortcut 
+(Bližnjica) > Shortcut 2 (Bližnjica 2).
+7. Senzor za ljudi (samo za model C623AQR):
+• Zazna prisotnost uporabnika pri zaslonu monitorja. Če pred monitorjem 
+več kot 60 sekund ni zaznan noben premikajoč se predmet, monitor 
+samodejno preklopi v način pripravljenosti. Ko se uporabnik vrne, se 
+napajanje samodejno vklopi, ko je zaznana prisotnost uporabnika. 
+Privzeta nastavitev za Human sensor (Senzor za ljudi) je »Off« 
+(Izklopljeno). Uporabnik lahko aktivira to funkcijo prek nastavitev menija 
+OSD.
+1-4 1. poglavje: Predstavitev izdelka
+1.3.2 Pogled od zadaj
+C422AQ/C423AQ/
+C424AQ
+C422AQE/C423AQE/
+C424AQE
+C620AQE/C622AQE/
+C623AQE/C624AQE
+1 2 3 4 5 6 7 8
+10
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8
+C422AQH
+10
+1 2 3 4 57 8 11 6 9
+C422AQHE
+1 2 3 4 57 8 11 6
+C620AQ/C622AQ/
+C623AQ/C623AQR/
+C624AQ/C624BQ
+10
+1 2 3 4 5 6 7 8 9
+C627AQ
+10
+1 2 3 45 7 8 911 1012
+C624WQ
+10
+1 2 3 47 8 11 6 9 10
+C622AQH/C623AQH/
+C624AQH/C624BQH
+10
+1 2 3 4 57 8 11 6 9
+1. Reža za ključavnico Kensington.
+2. Stikalo za vklop/izklop. Pritisnite stikalo, da vklopite/izklopite napajanje.
+3. Vrata AC-IN. V ta vrata priključite napajalni kabel.
+1-5Monitor ASUS LCD C Series 
+4. Vhod DisplayPort. Ta vrata omogočajo povezavo z napravo, združljivo s 
+standardom DisplayPort. 
+5. Vrata DVI. Ta 24-nožična vrata so namenjena za digitalno signalno povezavo 
+DVI-D osebnega računalnika.
+6. Vrata VGA. Ta 15-nožična vrata so namenjena za povezavo računalnika 
+VGA.
+7. Vrata za vhod zvoka. V ta vrata lahko s kablom za zvok priključite vir zvoka 
+računalnika.
+8. Priključek za slušalke. Ta vrata so na voljo samo, če je priključen kabel 
+HDMI/DisplayPort.
+9. Vrata USB za prenos v smeri navzgor. V ta vrata lahko priključite kabel 
+USB za prenos v smeri navzgor. Povezava omogoči vrata USB na monitorju.
+10. Vrata USB za prenos v smeri navzdol. V ta vrata lahko priključite naprave 
+USB, na primer tipkovnico/miško USB, bliskovni pogon USB itd.
+11. Vrata HDMI. V ta vrata lahko priključite napravo, združljivo s standardom 
+HDMI.
+12. Vhod mini DisplayPort. Ta vrata omogočajo povezavo z napravo, združljivo 
+s standardom Mini DisplayPort.
+1.3.3 Funkcija QuickFit
+Funkcija QuickFit vsebuje tri vrste vzorcev: (1) Mrežni vzorci (2) Velikost papirja 
+(3) Velikost fotografije. Vzorce aktivirate tako, da pritisnete gumb QuickFit. Za 
+izbiro želenega vzorca pritisnite gumba, naznačene na zaslonu.
+Nekateri od naslednjih vzorcev morda ne bodo na voljo. Glejte dejanske vzorce, 
+prikazane na vašem monitorju.
+1. Mrežni vzorci
+Mrežni vzorci uporabnikom omogočajo učinkovito organiziranje in primerjanje 
+različnih vsebin, na primer ogled preglednic in urejanje fotografij.
+Mreža za poravnavo 1 Mreža za poravnavo 2
+Alignment Grid 1 Alignment Grid 2
+1-6 1. poglavje: Predstavitev izdelka
+2. Velikost papirja
+Funkcija QuickFit zagotavlja več pogosto uporabljanih standardnih velikosti papirja, 
+da si lahko uporabniki na zaslonu ogledajo dokumente v realni velikosti.
+A4 B5
+A4 B5
+Letter
+Letter
+3. Velikost fotografije
+Različne realne velikosti fotografij, prikazane v funkciji QuickFit, fotografom in 
+drugim uporabnikom omogočajo natančen prikaz in urejanje fotografij v realni 
+velikosti na zaslonu.
+Fotografija 4x6, 3x5, 2x2 Fotografija 8x10, 5x7
+3x5 2x24x6 5x78x10
+2-1Monitor ASUS LCD C Series
+2.1 Pritrditev ročice/podstavka monitorja
+Podstavek monitorja pritrdite tako:
+1. Monitor položite na mizo s sprednjo stranjo obrnjeno navzdol.
+2. Podstavek pritrdite na ročico, pri tem pa pazite, da se jeziček na ročici prilega 
+v utor na podstavku.
+3. Podstavek še dodatno pritrdite na ročico tako, da privijete vijak iz kompleta.
+Priporočamo, da na mizo razprostrete mehko krpo, da preprečite poškodbo 
+monitorja.
+C422A/C423A/C424A
+C620A/C622A/C623A/C624A/C624B/C624W/C627A
+2.2 Odstranjevanje ročice/podstavka 
+(za stensko montažo VESA)
+Snemljiva ročica/podstavek tega monitorja je posebej oblikovan za stensko montažo 
+VESA.
+Postopek snemanja ročice/podstavka:
+2-2 2. poglavje: Namestitev
+C422A/C423A/C424A
+1. Monitor položite na mizo s sprednjo stranjo obrnjeno navzdol.
+2. Odstranite gumo iz štirih luknjic za vijake. (slika 1)
+3. Odstranite podstavek (slika 2).
+4. S pomočjo izvijača odstranite vijak s tečaja (slika 3), nato pa odstranite tečaj.
+1
+2
+(slika 1) (slika 2)
+1
+2
+(slika 3)
+C620A/C622A/C623A/C624A/C624B/C624W/C627A
+1. Monitor položite na mizo s sprednjo stranjo obrnjeno navzdol.
+2. Pritisnite gumb za sprostitev in snemite ročico/podstave z monitorja (slika 2).
+2
+1
+(slika 1) (slika 2)
+2-3Monitor ASUS LCD C Series
+Priporočamo, da na mizo razprostrete mehko krpo, da preprečite poškodbo 
+monitorja.
+• Komplet za stensko montažo VESA (100 x 100 mm) je naprodaj ločeno.
+• Uporabite lahko samo nosilce za stensko montažo z oznako UL z 
+minimalno težo/obremenitvijo 22,7 kg (velikost vijaka: M4 x 10 mm).
+2.3 Pritrjevanje/snemanje kompleta 
+MiniPC (C620A/C622A/C623A/
+C624A/C624B/C624W/C627A)
+Pritrjevanje kompleta MiniPC
+2
+1
+Snemanje kompleta MiniPC
+2
+1
+2-4 2. poglavje: Namestitev
+2.4 Prilagajanje monitorja
+• Za optimalen način gledanja priporočamo, da najprej pogledate v monitor z 
+obrazom, obrnjenim naravnost, nato pa prilagodite monitor do kota, ki vam je 
+najudobnejši.
+• Pri spreminjanju kota držite stojalo, da preprečite, da bi monitor padel.
+• C422A/C423A/C424A: priporočeni kot prilagoditve je od +20˚ do -5˚.
+• C620A/C622A/C623A/C624A/C624B/C624W: kot monitorja lahko prilagodite 
+od +35˚ do -5˚, omogoča pa tudi prilagoditev sukanja za 90˚ v levo ali desno. 
+Prilagodite lahko tudi višino monitorja v obsegu znotraj +/- 130 mm.
+• C627A: kot monitorja lahko prilagodite od +35˚ do -5˚, omogoča pa tudi 
+prilagoditev sukanja za 90˚ v levo ali desno. Prilagodite lahko tudi višino 
+monitorja v obsegu znotraj +/- 150 mm.
+90° 
+0° 
+90° 
+C4 Series
+-5° ~ +20°
+C6 Series
+-5° ~ +35°
+C6 Series
+-90° ~ +90°
+C6 Series
+150mm
+130mm
+(samo za C627A)
+ 
+Sukanje monitorja (C620A/C622A/C623A/C624A/C624B/C624W/C627A)
+1. Monitor dvignite do najvišjega položaja.
+2. Monitor nagnite do največjega možnega kota.
+3. Monitor zasukajte v smeri urnega kazalca/v obratni smeri urnega kazalca do 
+želenega kota.
+(Nagib)
+(Zasuk) (Prilagoditev višine)
+(Nagib)
+2-5Monitor ASUS LCD C Series
+Povsem normalno je, da se monitor med prilagajanjem kota gledanja rahlo 
+trese.
+2.5 Priključitev kablov
+Kable priključite z upoštevanjem spodnjih navodil:
+• Priključitev napajalnega kabla: en konec napajalnega kabla priključite 
+v vhodna vrata za izmenični tok na monitorju, drugi konec pa v električno 
+vtičnico. 
+• Postopek priključitve kabla VGA/DVI/DisplayPort/HDMI/mini DisplayPort: 
+a. en konec kabla VGA/DVI/DisplayPort/HDMI/mini DisplayPort priključite v 
+vrata VGA/DVI/DisplayPort/HDMI/mini DisplayPort na monitorju.
+b. Drugi konec kabla VGA/DVI/DisplayPort/HDMI/mini DisplayPort 
+priključite v vrata VGA/DVI/DisplayPort/HDMI/mini DisplayPort na 
+računalniku.
+c. Privijte vijaka, da pritrdite priključek VGA/DVI.
+2-6 2. poglavje: Namestitev
+• Postopek priključitve kabla za zvok: en konec kabla za zvok priključite v 
+vrata za vhod zvoka na monitorju, drugi konec pa v vrata za izhod zvoka na 
+računalniku.
+• Uporaba slušalk: ko je omogočen signal HDMI ali DisplayPort, priključite 
+konec z vtičem v priključek za slušalke na monitorju.
+• Uporaba vrat USB 2.0: manjši konec priloženega kabel USB 2.0 (vrste B) za 
+prenos v smeri navzgor priključite v vrata USB za prenos v smeri navzgor na 
+monitorju, večji konec (vrsta A) pa v vrata USB 2.0 na računalniku. Prepričajte 
+se, da je na računalniku nameščen najnovejši operacijski sistem Windows 7/
+Windows 8. S tem omogočite delovanje vrat USB na monitorju.
+• Uporaba vrat USB 3.0: manjši konec priloženega kabla USB 3.0 (vrste B) za 
+prenos v smeri navzgor priključite v vrata USB za prenos v smeri navzgor na 
+monitorju, večji konec (vrste A) pa v vrata USB 3.0 na računalniku. Prepričajte 
+se, da je na računalniku nameščen najnovejši operacijski sistem Windows 7/
+Windows 8.1/Windows 10. S tem omogočite delovanje vrat USB na monitorju.
+Ko so kabli priključeni, lahko na meniju OSD pod možnostjo Input 
+Select (Izbira vhoda) izberete želeni signal.
+2.6 Vklop monitorja
+Pritisnite gumb za vklop/izklop . Mesto gumba za vklop/izklop si lahko ogledate 
+na straneh od 1 do 2. Indikator vklopa/izklopa začne svetiti belo in kaže, da je 
+monitor VKLOPLJEN.
+3-1Monitor ASUS LCD C Series 
+3.1 Zaslonski meni OSD 
+3.1.1 Način konfiguriranja
+Scenery Mode
+Standard Mode
+Theater Mode
+Night View Mode
+sRGB Mode
+Reading Mode
+Darkroom Mode
+Splendid
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+1. Za prikaz menija OSD pritisnite kateri koli gumb (razen gumba za vklop/
+izklop).
+2. Za aktiviranje menija OSD pritisnite gumb za Meni .
+3. Za pomikanje med funkcijami pritisnite gumbe, prikazane na zaslonu. 
+Označite želeno funkcijo in pritisnite , da jo aktivirate. Če ima izbrana 
+funkcija podmeni, za pomikanje med funkcijami podmenija pritisnite 
+in znova . Označite želeno funkcijo podmenija in pritisnite , da jo 
+aktivirate. 
+4. Če želite spremeniti nastavitve izbrane funkcije, pritisnite in .
+5. Če želite zapreti in shraniti meni OSD, večkrat pritisnite ali , da meni OSD 
+izgine. Za prilagoditev drugih funkcij ponovite korake od 1 do 4.
+3-2 3. poglavje: Zaslonski meni OSD 
+3.1.2 Predstavitev funkcije OSD
+1. Splendid
+Ta funkcija vsebuje sedem do osem podfunkcij, ki jih lahko izberete po 
+svoji želji. Vsak način ima izbiro Reset (Ponastavi), ki omogoča ohranitev 
+nastavitve ali vrnitev v prednastavljeni način.
+Scenery Mode
+Standard Mode
+Theater Mode
+Night View Mode
+sRGB Mode
+Reading Mode
+Darkroom Mode
+Splendid
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+Scenery Mode
+Standard Mode
+Theater Mode
+Game Mode
+Night View Mode
+sRGB Mode
+Reading Mode
+Darkroom Mode
+Splendid
+ASUS C627A
+Standard Mode DisplayPort 2560 x 1440 @ 60Hz
+• Scenery Mode (Način pokrajine): najboljša izbira za pokrajinsko 
+fotografijo z video izboljšavo SplendidPlus.
+• Standard Mode (Standardni način): najboljša izbira za urejanje 
+dokumentov z video izboljšavo SplendidPlus.
+Način Standardno izpolnjuje zahteve Energy Star®.
+• Theater Mode (Način kinematografa): najboljša izbira za gledanje 
+filmov z video izboljšavo SplendidPlus.
+3-3Monitor ASUS LCD C Series 
+• Game Mode (Način igre) (samo za C624W/C627A): najboljša izbira za 
+igranje iger z video izboljšavo SplendidPlus.
+• Night View Mode (Način nočnega pogleda): najboljša izbira za igre ali 
+filme s temnimi prizori z video izboljšavo SplendidPlus.
+• sRGB Mode (Način sRGB): najboljša izbira za gledanje fotografij in 
+grafik na računalniku.
+• Reading Mode (Način branja): najboljša izbira za branje knjig.
+• Darkroom Mode (Način temne sobe): najboljša izbira za okolje s šibko 
+osvetlitvijo.
+• V načinu Standard mode (Standardni način) uporabnik ne more 
+konfigurirati naslednjih funkcij: Saturation (Nasičenost), Skin Tone 
+(Odtenek kože), Sharpness (Ostrina), ASCR.
+• V sRGB Mode (Način sRGB) uporabnik ne more konfigurirati naslednjih 
+funkcij: Brightness (Svetlost), Contrast (Kontrast), Saturation (Nasičenost), 
+Color Temp. (Barvna temperatura), Skin Tone (Odtenek kože), Sharpness 
+(Ostrina), ASCR.
+• V načinu Reading mode (Način branja) uporabnik ne more konfigurirati 
+naslednjih funkcij: Contrast (Kontrast), Saturation (Nasičenost), Color 
+Temp. (Barvna temperatura), Skin Tone (Odtenek kože), Sharpness 
+(Ostrina), ASCR.
+2. Blue Light Filter (Filter modre svetlobe)
+S to funkcijo lahko prilagodite raven filtra za modro svetlobo.
+Level 0
+Level 1
+Level 2
+Level 3
+Level 4
+Blue Light Filter
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+• Level 0 (Raven 0): ni spremembe.
+• Level 1~4 (Raven od 1 do 4): višja kot je raven, manj modre svetlobe je 
+razpršene. Ko je aktivna funkcija Blue Light Filter (Filter modre svetlobe), 
+se privzete nastavitve za Standard Mode (Standardni način) samodejno 
+uvozijo. Funkcijo Brightness (Svetlost) od ravni 1 do 3 lahko konfigurira 
+uporabnik. Raven 4 je optimizirana nastavitev. Skladna je s potrdilom 
+za nizko vrednost modre svetlobe TUV. Uporabnik ne more konfigurirati 
+funkcije Brightness (Svetlost).
+3-4 3. poglavje: Zaslonski meni OSD 
+Za zmanjšanje obremenitve oči preberite spodnje nasvete:
+• Če ste za monitorjem več ur, morate delo za nekaj časa prekiniti. 
+Priporočamo, da si po eni uri neprekinjenega dela z računalnikom 
+vzamete kratek odmor (vsaj pet minut). Več kratkih in pogostih odmorov je 
+učinkovitejših od enega daljšega.
+• Za zmanjšanje obremenitve oči in občutka suhosti morate občasno 
+odpočiti oči, in sicer tako, da usmerite pogled na oddaljene predmete.
+• Vaje za oči lahko pomagajo zmanjšati obremenitev oči. Te vaje pogosto 
+ponavljajte. Če v očeh še vedno čutite obremenitev, se obrnite na 
+zdravnika. Vaje za oči: (1) Ponavljanje gledanja gor in dol (2) Počasno 
+vrtenje oči (3) Premikanje oči diagonalno.
+• Visoke ravni modre svetlobe lahko povzročijo obremenitev oči in starostno 
+degeneracijo rumene pege. Filter za modro svetlobo lahko zmanjša 
+škodljivo modro svetlobo za 70% (največ), da se prepreči sindrom 
+računalniškega vida.
+3. Color (Barva) 
+Na tem meniju nastavite želeno barvno nastavitev. 
+Brightness
+Contrast
+Saturat ion
+Color Temp.
+Skin Tone 
+Color
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+• Brightness (Svetlost): obseg prilagoditve je od 0 do 100.
+• Contrast (Kontrast): obseg prilagoditve je od 0 do 100. 
+• Saturation (Nasičenost): obseg prilagoditve je od 0 do 100. 
+• Color Temp. (Barvna temperatura): vsebuje štiri načine, ki vključujejo 
+Cool (Hladno), Normal (Običajno), Warm (Toplo) in User Mode 
+(Uporabniški način).
+• Skin Tone (Odtenek kože): vsebuje tri barvne načine, ki vključujejo 
+Reddish (Rdečkasto), Natural (Naravno) in Yellowish (Rumenkasto).
+3-5Monitor ASUS LCD C Series 
+4. Image (Slika)
+Na te meniju lahko določite nastavitve, povezane s sliko.
+Sharpness
+Trace Free
+Aspect Control
+Viv idPixel
+ASCR
+Posit ion
+Focus
+Auto Adjust 
+Image
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+• Sharpness (Ostrina): obseg prilagoditve je od 0 do 100.
+• Trace Free: prilagodi odzivni čas monitorja.
+• Aspect Control (Nadzor stranic): prilagodi razmerje stranic na 
+nastavitev Full (Polno), 4:3, 1:1 (izbirno) ali OverScan (izbirno).
+Razmerje 4:3 je na voljo samo, če je vhodni vir v formatu 4:3. Možnost 
+OverScan je na voljo samo za vhodni vir HDMI ali za običajno časovno 
+usklajevanje.
+• VividPixel: izboljšuje obris prikazane slike na zaslonu in ustvari 
+kakovostne slike.
+• ASCR: vklopi/izklopi funkcijo ASCR (ASUS Smart Contrast Ratio).
+• Position (Položaj) (na voljo samo za vhod VGA): prilagodi vodoravni 
+položaj (H-Position) in navpični položaj (V-Position) slike. obseg 
+prilagoditve je od 0 do 100.
+• Focus (Fokus) (na voljo samo za vhod VGA): z ločeno prilagoditvijo 
+nastavitev (Phase (Stopnja)) in (Clock (Ura)) zmanjša šum v vodoravnih 
+in navpičnih vrsticah. obseg prilagoditve je od 0 do 100.
+• Možnost Phase (Stopnja) prilagodi stopnjo signala pikselske ure. Če je 
+nastavitev stopnje napačna, pride na zaslonu do motenj v vodoravnih 
+črtah.
+• Clock (Ura) (frekvenca slikovnih točk) nadzira število slikovnih točk, ki so 
+poskenirane pri enem vodoravnem potegu. Če frekvenca ni pravilna, so 
+na zaslonu vidne navpične črte, slika pa ni proporcionalna.
+• Auto Adjust. (Samodejna prilagoditev): samodejno prilagodi sliko na 
+njen optimalni položaj, uro in stopnjo (samo za način VGA).
+3-6 3. poglavje: Zaslonski meni OSD 
+5. Sound (Zvok)
+Na tem meniju lahko prilagodite izbire Volume (Glasnost), Mute (Nemo) in 
+Source (Vir).
+Volume
+Mute
+Source 
+Sound
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+• Volume (Glasnost): obseg prilagoditve je od 0 do 100.
+• Mute (Nemo): vklopi in izklopi zvok monitorja.
+• Source (Izvor): določi, iz katerega izvora prihaja zvok monitorja.
+6. Input Select (Izbira vhoda) 
+S to funkcijo lahko izberete želeni vhodni vir.
+VGA
+DVI
+HDMI
+DisplayPort 
+Input Select
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+DVI
+HDMI
+DisplayPort
+Mini DisplayPort 
+Input Select
+ASUS C627A
+Standard Mode DisplayPort 2560 x 1440 @ 60Hz
+3-7Monitor ASUS LCD C Series 
+7. System Setup (Nastavitev sistema)
+Omogoča prilagoditev sistema.
+Splendid Demo Mode
+ECO Mode
+USB Charging
+OSD Setup
+Language
+Key Lock
+Informat ion
+More 
+System Setup
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+• Splendid Demo Mode: razdeli zaslon na dva dela za primerjalni način 
+Splendid. (samo za Scenery mode (Način pokrajine))
+• ECO Mode: zmanjša porabo energije.
+• USB Charging (Polnjenje prek USB-ja) (samo za modele C422AQ/
+C422AQH/C423AQ/C424AQ/C620AQ/C622AQ/C622AQH/C623AQ/
+C623AQH/C623AQR/C624AQ/C624BQ/C624AQH/C624BQH/C627AQ): 
+* Izbira »On« (Vklopljeno) omogoča, da vrata USB za prenos v 
+smeri navzdol generirajo izhod z močjo 5 V/500 mA, ko je monitor 
+vklopljen ali v načinu pripravljenosti.
+* Izbira »Off« (Izklopljeno) omogoča, da vrata USB za prenos v 
+smeri navzdol generirajo izhod z močjo 5 V/500 mA samo, ko je 
+monitor vklopljen.
+• USB Charging (Polnjenje prek USB-ja) (samo za modele C624WQ): 
+* Če je izbrana možnost »On« (Vklopljeno), lahko odtočna vrata 
+USB ustvarijo 5V/2A ali 5V/900mA izhodne moči, ko je monitor 
+vklopljen ali v načinu pripravljenosti. V tabeli spodaj je prikazano, 
+ali je mogoče odtočna vrata USB uporabiti za polnjenje zunanje 
+naprave v različnih okoliščinah. 
+Odtočna vrata Stanje 
+monitorja
+Ko so s PC-jem 
+povezana protitočna 
+vrata ...
+Ko s PC-jem NISO 
+povezava protitočna 
+vrata ...
+ vrata 
+Vklopljeno Dovoljuje polnjenje Dovoljuje polnjenje
+Stanje 
+pripravljenosti Dovoljuje polnjenje Dovoljuje polnjenje
+ vrata
+Vklopljeno Dovoljuje polnjenje Ne dovoljuje polnjenja
+Stanje 
+pripravljenosti Dovoljuje polnjenje Ne dovoljuje polnjenja
+3-8 3. poglavje: Zaslonski meni OSD 
+* Če je izbrana možnost »Off« (Izklopljeno), lahko odtočna vrata 
+USB ustvarijo 5V/2A ali 5V/900mA izhodne moči le takrat, ko 
+je monitor vklopljen. V tabeli spodaj je prikazano, ali je mogoče 
+odtočna vrata USB uporabiti za polnjenje zunanje naprave v 
+različnih okoliščinah. 
+Odtočna vrata Stanje 
+monitorja
+Ko so s PC-jem 
+povezana protitočna 
+vrata ...
+Ko s PC-jem NISO 
+povezava protitočna 
+vrata ...
+ vrata 
+Vklopljeno Dovoljuje polnjenje Dovoljuje polnjenje
+Stanje 
+pripravljenosti Ne dovoljuje polnjenja Ne dovoljuje polnjenja
+ vrata
+Vklopljeno Dovoljuje polnjenje Ne dovoljuje polnjenja
+Stanje 
+pripravljenosti Ne dovoljuje polnjenja Ne dovoljuje polnjenja
+• OSD Setup (Nastavitev menija OSD): 
+* prilagodi časovno omejitev menija OSD od 10 do 120 sekund; 
+* omogoči ali onemogoči funkcijo DDC/CI;
+* prilagodi ozadje menija OSD od neprozornega do prozornega.
+• Language (Jezik): izbirate lahko med 21 jeziki, vključno z naslednjimi: 
+angleščina, francoščina, nemščina, italijanščina, španščina, 
+nizozemščina, portugalščina, ruščina, češčina, hrvaščina, poljščina, 
+romunščina, madžarščina, turščina, poenostavljena kitajščina, 
+tradicionalna kitajščina, japonščina, korejščina, tajščina, indonezijščina in 
+perzijščina. 
+• Key Lock (Zaklepanje tipk): onemogoči vse funkcijske tipke. Če želite 
+preklicati funkcijo zaklepanja tipk, pritisnite drugi gumb na desni in ga 
+pridržite več kot pet sekund.
+• Auto Source Detection (Samodejno zaznavanje vira) (samo za model 
+C624WQ/C627AQ): omogoči ali onemogoči funkcijo samodejnega 
+zaznavanja vira.
+• Information (Informacije): prikaže informacije o monitorju. 
+• Power Indicator (Indikator napajanja): vklopi/izklopi indikator LED 
+napajanja.
+• Human Sensor (Senzor za ljudi) (samo za model C623AQR): vklopi/
+izkopi funkcijo Human Sensor (Senzor za ljudi) in prilagodi njeno 
+občutljivost. Doseg delovanja je od 50 do 70 cm. Privzeta nastavitev je 
+»Off« (Izklopljeno). 
+* Low (Nizko): razdalja od senzorja je približno 50 cm.
+* Medium (Srednje): razdalja od senzorja je približno 60 cm.
+* High (Visoko): razdalja od senzorja je približno 70 cm.
+3-9Monitor ASUS LCD C Series 
+• Območje zaznavanja je lahko nekoliko drugačno, če uporabnik nosi 
+oblačila temnih ali svetlih barv. Če nosite črna ali druga temna oblačila, 
+nastavite občutljivost na vrednost High (Visoko).
+• Da preprečite motnje, v bližino Human Sensor (Senzorja za ljudi) ne 
+postavljajte nobenih predmetov.
+• Power Key Lock (Zaklepanje tipke za vklop): omogoči ali onemogoči 
+tipko za vklop.
+• All Reset (Ponastavi vse): »Yes« (Da) omogoča obnovitev privzetih 
+nastavitev.
+8. Shortcut (Bližnjica)
+Definira funkcije za gumba Shortcut 1 (Bližnjice 1) in Shortcut 2 (Bližnjice 2).
+Shortcut 1
+Shortcut 2
+ 
+Shortcut
+ASUS C622A
+Standard Mode VGA 1920 x 1080 @ 60Hz
+• Shortcut 1 (Bližnjica 1)/Shortcut 2 (Bližnjica 2): izbere funkcijo za 
+gumba Shortcut 1 (Bližnjice 1) in Shortcut 2 (Bližnjice 2).
+Ko je določena funkcija izbrana ali aktivirana, bližnjična tipka morda ne 
+bo podprta. Razpoložljive izbire funkcij za bližnjico: Blue Light Filter (Filter 
+modre svetlobe), Splendid, Brightness (Svetlost), Auto Adjust (Samodejna 
+prilagoditev), Contrast (Kontrast), Color Temp. (Barvna temperatura), 
+Volume (Glasnost).
+3-10 3. poglavje: Zaslonski meni OSD 
+3.2 Povzetek tehničnih podatkov
+C422A/C423A/C424A
+Vrsta zaslona TFT LCD
+Velikost zaslona C422AQ/C422AQE/C422AQH/C422AQHE: 
+21,5-palčni široki zaslon (16:9, 54,6-cm) 
+C423AQ/C423AQE: 23-palčni široki zaslon (16:9, 
+58,4-cm) 
+C424AQ/C424AQE: 23,8-palčni široki zaslon (16:9, 
+60,5 cm)
+Največja ločljivost C422AQ/C422AQE/C422AQH/C422AQHE: 
+1920 x 1080 
+C423AQ/C423AQE: 1920 x 1080 
+C424AQ/C424AQE: 1920 x 1080
+Slikovna točka C422AQ/C422AQE/C422AQH/C422AQHE: 
+0,248 mm x 0,248 mm 
+C423AQ/C423AQE: 0,2652 mm x 0,2652 mm 
+C424AQ/C424AQE: 0,2745 mm x 0,2745 mm
+Svetlost (značilna) 250 cd/m2
+Kontrastno razmerje 
+(značilno)
+1000:1
+Kontrastno razmerje 
+(največje)
+100000000:1 (z vklopljeno funkcijo ASCR)
+Kot gledanja (V/N) CR>10 178˚/178˚
+Barve na zaslonu 16,7 milijona
+Odzivni čas < 5 ms
+Video izboljšava SplendidPlus Da
+Izbira SplendidPlus 7 video prednastavljenih načinov
+Samodejna prilagoditev Da
+Izbira barvne temperature 4 barvne temperature
+Analogni vhod D-Sub
+Digitalni vhod DVI-D s HDCP, DisplayPort v1.2, HDMI (samo za 
+C422AQH/C422AQHE)
+Priključek za slušalke Da
+Vhod za zvok Da
+Zvočnik (vgrajeni) 2 W x 2 stereo, RMS
+Vrata USB 2.0 Prenos v smeri navzgor x 1, prenos v smeri navzdol 
+x 2 (samo za C422AQ/C423AQ/C424AQ)
+Vrata USB 3.0 Prenos v smeri navzgor x 1, prenos v smeri navzdol 
+x 2 (samo za C422AQH)
+Barve Črna
+Lučka LED napajanja Sveti belo (Vklopljen)/Oranžno (Način 
+pripravljenosti)
+Nagib +20˚~ -5˚
+Sukanje Ne
+Vrtenje Ne
+Prilagoditev višine Ne
+Ključavnica Kensington Da
+Vhodna izmenična napetost Izmenični tok: 100 do 240 V
+3-11Monitor ASUS LCD C Series 
+Poraba energije C422AQ/C422AQE/C422AQH/C422AQHE: 
+Vklopljen: < 21,09 W** (običajno), stanje 
+pripravljenosti: < 0,5 W (običajno), izklopljen: 0 W 
+(izključen) 
+C423AQ/C423AQE: Vklopljen: < 22 W** (običajno), 
+stanje pripravljenosti: < 0,5 W (običajno), izklopljen: 
+0 W (izključen) 
+C424AQ/C424AQE: Vklopljen: < 22,97 W** 
+(običajno), stanje pripravljenosti: < 0,5 W (običajno), 
+izklopljen: 0 W (izključen)
+Temperatura (delovna) 0˚C~40˚C
+Temperatura (mirovanje) -20˚C~+60˚C
+Mere (Š x V x G) s stojalom C422AQ/C422AQE/C422AQH/C422AQHE: 514 
+x 383 x 195 mm (naprava), 576 x 442 x 120 mm 
+(paket) 
+C423AQ/C423AQE: 548 x 403 x 195 mm (naprava), 
+617 x 119 x 462 mm (paket) 
+C424AQ/C424AQE: 562 x 406 x 195 mm (naprava), 
+632 x 127 x 465 mm (paket) 
+Teža (ocena) C422AQ/C422AQE/C422AQH/C422AQHE: 3,8 kg 
+(neto); 5,3 kg (bruto) 
+C423AQ/C423AQE: 4,3 kg (neto); 5,7 kg (bruto) 
+C424AQ/C424AQE: 4,3 kg (neto); 5,9 kg (bruto)
+Več jezikov 21 jezikov (angleščina, francoščina, nemščina, 
+italijanščina, španščina, nizozemščina, 
+portugalščina, ruščina, češčina, hrvaščina, 
+poljščina, romunščina, madžarščina, turščina, 
+poenostavljena kitajščina, tradicionalna kitajščina, 
+japonščina, korejščina, tajščina, indonezijščina in 
+perzijščina)
+Pripomočki Napajalni kabel, kabel DVI (dodaten), kabel 
+DisplayPort, kabel VGA, zvočni kabel, kabel USB 
+(samo za C422AQ/C422AQH/C423AQ/C424AQ), 
+vodnik za hitri začetek, garancijska kartica
+Skladnost in standardi UL/cUL, CB, CE, ErP, FCC, ISO9241-307, RCM, 
+VCCI, RoHS, Windows 7 & 8 WHQL, Energy Star®, 
+Flicker Free, Low blue Light, TUV-GS, TUV-Ergo, 
+CU, PSE, WEEE, EMC DoC, UkrSEPRO, MEPS, 
+NFPA99
+*Tehnični podatki se lahko spremenijo brez obvestila.
+**Meritev svetlosti zaslona 200 nitov brez povezave za zvok/USB/bralnik kartic.
+3-12 3. poglavje: Zaslonski meni OSD 
+C620A/C622A/C623A/C624A/C624B/C624W
+Vrsta zaslona TFT LCD
+Velikost zaslona C620AQ/C620AQE: 19,45-palčni široki zaslon (16:10, 
+49,4-cm) 
+C622AQ/C622AQE/C622AQH: 21,5-palčni široki 
+zaslon (16:9, 54,6-cm)
+C623AQ/C623AQE/C623AQR/C623AQH: 23-palčni 
+široki zaslon (16:9, 58,4-cm) 
+C624AQ/C624AQE/C624AQH: 23,8-palčni široki 
+zaslon (16:9, 60,5-cm) 
+C624BQ/C624BQH/C624WQ: 24-palčni široki zaslon 
+(16:10, 61,13 cm)
+Največja ločljivost C620AQ/C620AQE: 1440 x 900 
+C622AQ/C622AQE/C622AQH: 1920 x 1080 
+C623AQ/C623AQE/C623AQR/C623AQH: 1920 x 1080 
+C624AQ/C624AQE/C624AQH: 1920 x 1080 
+C624BQ/C624BQH/C624WQ: 1920 x 1200
+Slikovna točka C620AQ/C620AQE: 0,2907 mm x 0,2915 mm 
+C622AQ/C622AQE/C622AQH: 0,248 mm x 0,248 mm 
+C623AQ/C623AQE/C623AQR/C623AQH: 0,2652 mm x 
+0,2652 mm
+C624AQ/C624AQE/C624AQH: 0,2745 mm x 0,2745 mm 
+C624BQ/C624BQH/C624WQ: 0,270 mm x 0,270 mm
+Svetlost (značilna) C620AQ/C620AQE/C622AQ/C622AQE/C622AQH/
+C623AQ/C623AQE/C623AQR/C623AQH/C624AQ/
+C624AQE/C624AQH/C624BQ: 250 cd/m2
+C624BQH/C624WQ: 300 cd/m2
+Kontrastno razmerje 
+(značilno)
+1000:1
+Kontrastno razmerje 
+(največje)
+100000000:1 (z vklopljeno funkcijo ASCR)
+Kot gledanja (V/N) CR>10 178˚/178˚
+Barve na zaslonu 16,7 milijona
+Odzivni čas < 5 ms
+Video izboljšava SplendidPlus Da
+Izbira SplendidPlus 7 - 8 video prednastavljenih načinov
+Samodejna prilagoditev Da
+Izbira barvne temperature 4 barvne temperature
+Analogni vhod D-Sub
+Digitalni vhod DVI-D s HDCP, DisplayPort v1.2, HDMI (samo za 
+C622AQH/C623AQH/C624AQH/C624BQH/C624WQ)
+Priključek za slušalke Da
+Vhod za zvok Da
+Zvočnik (vgrajeni) 2 W x 2 stereo, RMS
+Vrata USB 2.0 C620AQ/C622AQ/C623AQ/C623AQR/C624AQ/
+C624BQ: Prenos v smeri navzgor x 1, prenos v smeri 
+navzdol x 2
+Vrata USB 3.0 C622AQH/C623AQH/C624AQH/C624BQH: Prenos v 
+smeri navzgor x 1, prenos v smeri navzdol x 2 
+C624WQ: Prenos v smeri navzgor x 1, prenos v smeri 
+navzdol x 4
+3-13Monitor ASUS LCD C Series 
+Barve Črna
+Lučka LED napajanja Sveti belo (Vklopljen)/Oranžno (Način pripravljenosti)
+Nagib +35˚~ -5˚
+Sukanje +90˚~ -90˚
+Vrtenje +90˚~ -90˚
+Prilagoditev višine 130 mm
+Ključavnica Kensington Da
+Vhodna izmenična napetost Izmenični tok: 100 do 240 V
+Poraba energije C620AQ/C620AQE: Vklopljen: < 15,74 W** 
+(običajno), stanje pripravljenosti: < 0,5 W (običajno), 
+izklopljen: 0 W (izključen) 
+C622AQ/C622AQE/C622AQH: Vklopljen: < 21,09 W** 
+(običajno), stanje pripravljenosti: < 0,5 W (običajno), 
+izklopljen: 0 W (izključen) 
+C623AQ/C623AQE/C623AQR/C623AQH: Vklopljen: 
+< 22 W** (običajno), stanje pripravljenosti: < 0,5 W 
+(običajno), izklopljen: 0 W (izključen) 
+C624AQ/C624AQE/C624AQH: Vklopljen: < 22,97 W** 
+(običajno), stanje pripravljenosti: < 0,5 W (običajno), 
+izklopljen: 0 W (izključen) 
+C624BQ/C624BQH: Vklopljen: < 25,4 W** (običajno), 
+stanje pripravljenosti: < 0,5 W (običajno), izklopljen: 0 
+W (izključen) 
+C624WQ: Vklopljen: < 13,3 W** (običajno), stanje 
+pripravljenosti: < 0,22 W (običajno), izklopljen: 0 W 
+(izključen)
+Temperatura (delovna) 0˚C~40˚C
+Temperatura (mirovanje) -20˚C~+60˚C
+Mere (Š x V x G) s stojalom C620AQ/C620AQE: 459 x 477 x 211 mm (najvišje), 
+459 x 347 x 211 mm (najnižje), 621 x 173 x 382 mm 
+(paket) 
+C622AQ/C622AQE/C622AQH: 514 x 477 x 211 mm 
+(najvišje), 514 x 347 x 211 mm (najnižje), 643 x 378 x 
+190 mm (paket) 
+C623AQ/C623AQE/C623AQR/C623AQH: 548 x 490 
+x 211 mm (najvišje), 548 x 360 x 211 mm (najnižje), 
+652 x 173 x 403 mm (paket) 
+C624AQ/C624AQE/C624AQH: 562 x 492 x 211 mm 
+(najvišje), 562 x 362 x 211 mm (najnižje), 660 x 180 x 
+420 mm (paket) 
+C624BQ/C624BQH: 561 x 511 x 211 mm (najvišje), 
+561 x 381 x 211 mm (najnižje), 662 x 179 x 454 mm 
+(paket) 
+C624WQ: 533 x 505 x 211 mm (najvišje), 533 x 375 x 
+211 mm (najnižje), 649 x 192 x 474 mm (paket)
+3-14 3. poglavje: Zaslonski meni OSD 
+Teža (ocena) C620AQ/C620AQE: 4,8 kg (neto); 6,4 kg (bruto) 
+C622AQ/C622AQE/C622AQH: 5,7 kg (neto); 7,2 kg 
+(bruto) 
+C623AQ/C623AQE/C623AQR/C623AQH: 5,7 kg 
+(neto); 7,3 kg (bruto) 
+C624AQ/C624AQE/C624AQH: 5,8 kg (neto); 7,9 kg 
+(bruto) 
+C624BQ/C624BQH: 6,2 kg (neto); 8,2 kg (bruto) 
+C624WQ: 6,1 kg (neto); 3,9 kg (brez stojala); 8,3 kg 
+(bruto)
+Več jezikov 21 jezikov (angleščina, francoščina, nemščina, 
+italijanščina, španščina, nizozemščina, portugalščina, 
+ruščina, češčina, hrvaščina, poljščina, romunščina, 
+madžarščina, turščina, poenostavljena kitajščina, 
+tradicionalna kitajščina, japonščina, korejščina, 
+tajščina, indonezijščina in perzijščina)
+Pripomočki Napajalni kabel, kabel DVI (dodaten), kabel HDMI 
+(dodaten), kabel DisplayPort, (dodaten) kabel VGA 
+(dodaten), zvočni kabel (dodaten), kabel USB 
+(samo za C620AQ/C622AQ/C623AQ/C623AQR/
+C624AQ/C624BQ/C624WQ), vodnik za hitri začetek, 
+garancijska kartica, Komplet MiniPC (dodaten)
+Skladnost in standardi UL/cUL, CB, CE, ErP, FCC, ISO9241-307, RCM, 
+VCCI, RoHS, Windows 7 & 8 & 10 WHQL, Energy 
+Star®, Flicker Free, Low blue Light, TUV-GS, TUV-
+Ergo, CU, PSE, WEEE, EMC DoC, UkrSEPRO, 
+MEPS, BSMI, NFPA99
+Le za C624WQ: CCC, CEL, PC Recycle, J-MOSS, KC, 
+KCC, e-Standby, TCO 8.0, ICE-3
+*Tehnični podatki se lahko spremenijo brez obvestila.
+**Meritev svetlosti zaslona 200 nitov brez povezave za zvok/USB/bralnik kartic.
+3-15Monitor ASUS LCD C Series 
+C627A
+Vrsta zaslona TFT LCD
+Velikost zaslona 27-palčni široki zaslon (16:9, 68,47-cm)
+Največja ločljivost 2560 x 1440
+Slikovna točka 0,2331 mm x 0,2331 mm
+Svetlost (značilna) 350 cd/m2
+Kontrastno razmerje 
+(značilno)
+1000:1
+Kontrastno razmerje 
+(največje)
+100.000.000:1 (z vklopljeno funkcijo ASCR)
+Kot gledanja (V/N) CR>10 178˚/178˚
+Barve na zaslonu 16,7 milijona
+Odzivni čas < 5 ms
+Video izboljšava SplendidPlus Da
+Izbira SplendidPlus 8 video prednastavljenih načinov
+Samodejna prilagoditev Da
+Izbira barvne temperature 4 barvne temperature
+Analogni vhod Ne
+Digitalni vhod DVI-D s HDCP, DisplayPort v1.2, HDMI, mini 
+DisplayPort
+Priključek za slušalke Da
+Vhod za zvok Da
+Zvočnik (vgrajeni) 2 W x 2 stereo, RMS
+Vrata USB 3.0 1 x za prenos v smeri navzgor, 4 x za prenos v smeri 
+navzdol
+Barve Črna
+Lučka LED napajanja Sveti belo (Vklopljen)/Oranžno (Način pripravljenosti)
+Nagib +35˚~ -5˚
+Sukanje +90˚~ -90˚
+Vrtenje +90˚~ -90˚
+Prilagoditev višine 150 mm
+Ključavnica Kensington Da
+Vhodna izmenična napetost Izmenični tok: 100 do 240 V
+Poraba energije Vklopljen: < 75 W** (običajno), stanje pripravljenosti: < 
+0,5 W (običajno), izklopljen: 0 W (izključen)
+Temperatura (delovna) 0˚C~40˚C
+Temperatura (mirovanje) -20˚C~+60˚C
+Mere (Š x V x G) brez stojala 615 x 372 x 51 mm
+Mere (Š x V x G) s stojalom 615 x 532 x 226 mm (najvišje), 
+615 x 382 x 226 mm (najnižje), 
+735 x 216 x 464 mm (paket)
+Teža (ocena) 7,7 kg (neto); 5 kg (brez stojala); 10,8 kg (bruto)
+Več jezikov 21 jezikov (angleščina, francoščina, nemščina, 
+italijanščina, španščina, nizozemščina, portugalščina, 
+ruščina, češčina, hrvaščina, poljščina, romunščina, 
+madžarščina, turščina, poenostavljena kitajščina, 
+tradicionalna kitajščina, japonščina, korejščina, tajščina, 
+indonezijščina in perzijščina)
+3-16 3. poglavje: Zaslonski meni OSD 
+Pripomočki Napajalni kabel, kabel DVI (dodaten), kabel HDMI, 
+kabel DisplayPort, kabel DisplayPort (iz Mini-DP v DP) 
+(dodaten), zvočni kabel, kabel USB, vodnik za hitri 
+začetek, garancijska kartica
+Skladnost in standardi UL/cUL, FCC, ICES-3, CB, CE, ErP, WEEE, TUV-GS, 
+TUV-Ergo, ISO 9241-307, UkrSEPRO, CU, CCC, CEL, 
+BSMI, RCM, MEPS, VCCI, PSE, PC Recycle, J-MOSS, 
+KC, KCC, e-Standby, Energy Star®, RoHs, Windows 
+7/8.1/10 WHQL, Flicker Free, Low Blue Light, NFPA99
+*Tehnični podatki se lahko spremenijo brez obvestila.
+**Meritev svetlosti zaslona 200 nitov brez povezave za zvok/USB/bralnik kartic.
+3-17Monitor ASUS LCD C Series 
+3.3 Odpravljanje težav 
+(Pogosta vprašanja)
+Težava Možna rešitev
+Lučka LED za vklop/izklop ni vklopljena • Pritisnite gumb , da preverite, ali je 
+monitor VKLOPLJEN.
+• Preverite, ali je napajalni kabel pravilno 
+priključen v monitor in električno vtičnico. 
+• Preverite, ali je stikalo za vklop 
+vklopljeno.
+Lučka LED sveti oranžno, na zaslonu pa 
+ni slike 
+• Preverite, ali sta monitor in računalnik 
+VKLOPLJENA.
+• Preverite, ali je signalni kabel pravilno 
+priključen v monitor in računalnik.
+• Preglejte, ali je katera od nožic na 
+signalnem kablu zvita.
+• Računalnik povežite z drugim 
+monitorjem, da preverite, ali računalnik 
+pravilno deluje.
+Zaslonska slika je presvetla ali pretemna • Prilagodite nastavitvi Contrast (Kontrast) 
+in Brightness (Svetlost) na meniju OSD.
+Slika na zaslonu ni centrirana ali pa ni 
+pravilne velikosti
+• Na meniju OSD prilagodite nastavitev 
+H-Position (Vodoravni položaj) ali 
+V-Position (Navpični položaj).
+Zaslonska slika migeta ali pa so na sliki 
+vidni valovi
+• Preverite, ali je signalni kabel pravilno 
+priključen v monitor in računalnik.
+• Premaknite električne naprave, ki lahko 
+povzročajo električne motnje.
+Na zaslonski sliki so barvne okvare (bela 
+ni videti bela)
+• Preglejte, ali je katera od nožic na 
+signalnem kablu zvita. 
+• Na meniju OSD izvedite funkcijo All 
+Reset (Ponastavi vse).
+• Na meniju OSD prilagodite barvne 
+nastavitve R/G/B ali izberite možnost 
+Color Temp. (Barvna temperatura).
+Slika na zaslonu je zamegljena ali 
+zabrisana
+• Prek menija OSD prilagodite kontrolnika 
+Phase (Stopnja) in Clock (Ura).
+Ni zvoka ali tih zvok • Preverite, ali je kabel HDMI/DisplayPort 
+pravilno priključen v monitor in 
+računalnik.
+• Prilagodite nastavitve glasnosti za 
+monitor in napravo HDMI/DisplayPort. 
+• Prepričajte se, da je gonilnik zvočne 
+kartice računalnika pravilno nameščen in 
+aktiviran.
+3-18 3. poglavje: Zaslonski meni OSD 
+3.4 Podprti operacijski načini
+C620A
+Frekvenca 
+ločljivosti
+Vodoravna 
+frekvenca (KHz)
+Navpična 
+frekvenca (Hz)
+Takt slikovnih točk 
+(MHz)
+640 x 480 31,47 (N) 59,94 (N) 25,18
+640 x 480 35,00 (N) 66,66 (N) 30,24
+640 x 480 37,87 (N) 72,82 (N) 31,5
+640 x 480 37,5 (N) 75,00 (N) 31,5
+720 x 400 31,47 (N) 70,08 (P) 28,32
+800 x 600 35,16 (P) 56,25 (P) 36,00
+800 x 600 37,88 (P) 60,32 (P) 40,00
+800 x 600 48,08 (P) 72,12 (P) 50,00
+800 x 600 46,86 (P) 75,00 (P) 49,50
+832 x 624 49,72 (P/N) 74,55 (P/N) 57,28
+1024 x 768 48,36 (N) 60,00 (N) 65,00
+1024 x 768 56,476 (N) 70,069 (N) 75,00
+1024 x 768 60,02 (N) 75,00 (N) 78,75
+1152 x 864 67,5 (P/N) 75,00 (P/N) 108
+1280 x 720 45,00 (P) 60,00 (N) 74,25
+1280 x 768 47,78 (P) 60,00 (N) 79,5
+1280 x 800 49,7 (P) 60,00 (N) 83,5
+1360 x 768 47,712 (P) 59,79 (P) 85,5
+1366 x 768 47,712 (P) 59,79 (P) 85,5
+1440 x 900 55,94 (N) 59,89 (P) 106,5
+* »P«/»N« pomeni »pozitivno«/»negativno« polarnost za vhodni H-sync/V-sync (vhodni čas).
+Ko monitor deluje v video načinu (t.j. ne prikazuje podatkov), so poleg videa standardne ločljivosti 
+podprti tudi naslednji načini visoke ločljivosti.
+Prednastavitev Ime 
+časovne 
+izbire
+Format 
+slikovne 
+točke
+Vodoravna 
+frekvenca 
+(kHz)
+Navpična 
+frekvenca 
+(Hz)
+Hitrost 
+slikovnih 
+točk (MHz)
+Zaslon 
+OSD
+1 480p 720 x 480 31,469 60 27 480p do 
+60 Hz
+2 720p60 1280 x 720 45 60 74,25 720p do 
+60 Hz
+3 576p 720 x 576 31,25 50 27 576p do 
+50 Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p do 
+50 Hz
+3-19Monitor ASUS LCD C Series 
+C422A/C622A/C423A/C623A/C424A/C624A
+Frekvenca 
+ločljivosti
+Vodoravna 
+frekvenca (KHz)
+Navpična 
+frekvenca (Hz)
+Takt slikovnih točk 
+(MHz)
+640 x 480 31,47 (N) 59,94 (N) 25,18
+640 x 480 35,00 (N) 66,66 (N) 30,24
+640 x 480 37,87 (N) 72,82 (N) 31,5
+640 x 480 37,5 (N) 75,00 (N) 31,5
+720 x 400 31,47 (N) 70,08 (P) 28,32
+800 x 600 35,16 (P) 56,25 (P) 36,00
+800 x 600 37,88 (P) 60,32 (P) 40,00
+800 x 600 48,08 (P) 72,12 (P) 50,00
+800 x 600 46,86 (P) 75,00 (P) 49,50
+832 x 624 49,72 (P/N) 74,55 (P/N) 57,28
+1024 x 768 48,36 (N) 60,00 (N) 65,00
+1024 x 768 56,476 (N) 70,069 (N) 75,00
+1024 x 768 60,02 (N) 75,00 (N) 78,75
+1152 x 864 67,5 (P/N) 75,00 (P/N) 108
+1280 x 720 45,00 (P) 60,00 (N) 74,25
+1280 x 768 47,78 (P) 60,00 (N) 79,5
+1280 x 800 49,7 (P) 60,00 (N) 83,5
+1280 x 960 60,00 (P) 60,00 (N) 108
+1280 x 1024 63,98 (P) 60,02 (N) 108
+1280 x 1024 79,98 (P) 75,02 (N) 135
+1360 x 768 47,712 (P) 59,79 (P) 85,5
+1366 x 768 47,712 (P) 59,79 (P) 85,5
+1440 x 900 55,94 (N) 59,89 (P) 106,5
+1600 x 1200 75,00 (P) 60,00 (P) 162
+1680 x 1050 65,29 (P) 60,00 (P) 146,25
+1920 x 1080 67,5 (P) 60,00 (P) 148,5
+* »P«/»N« pomeni »pozitivno«/»negativno« polarnost za vhodni H-sync/V-sync (vhodni čas).
+Ko monitor deluje v video načinu (t.j. ne prikazuje podatkov), so poleg videa standardne ločljivosti 
+podprti tudi naslednji načini visoke ločljivosti.
+Prednastavitev Ime 
+časovne 
+izbire
+Format 
+slikovne 
+točke
+Vodoravna 
+frekvenca 
+(kHz)
+Navpična 
+frekvenca 
+(Hz)
+Hitrost 
+slikovnih 
+točk (MHz)
+Zaslon 
+OSD
+1 480p 720 x 480 31,469 60 27 480p do 
+60 Hz
+2 720p60 1280 x 720 45 60 74,25 720p do 
+60 Hz
+3-20 3. poglavje: Zaslonski meni OSD 
+3 576p 720 x 576 31,25 50 27 576p do 
+50 Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p do 
+50 Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p do 
+60 Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p do 
+50 Hz
+C624B
+Frekvenca 
+ločljivosti
+Vodoravna 
+frekvenca (KHz)
+Navpična frekvenca 
+(Hz)
+Takt slikovnih točk 
+(MHz)
+640 x 480 31,47 (N) 59,94 (N) 25,18
+800 x 600 35,16 (P) 56,25 (P) 36
+800 x 600 37,88 (P) 60,32 (P) 40
+1024 x 768 48,36 (N) 60,00 (N) 65
+1280 x 960 60,00 (P) 60,00 (N) 108
+1280 x 1024 63,98 (P) 60,02 (P) 108
+1366 x 768 47,712 (P) 59,79 (P) 85,5
+1440 x 900 55,94 (N) 59,89 (P) 106,5
+1600 x 1200 75,00 (P) 60,00 (P) 162
+1680 x 1050 65,29 (N) 60,00 (P) 146,25
+1920 x 1080 67,5 (P) 60,00 (P) 148,5
+1920x1200 
+(zmanjšano 
+zamrzovanje)
+74,038 (P) 59,95 (N) 154
+* »P«/»N« pomeni »pozitivno«/»negativno« polarnost za vhodni H-sync/V-sync (vhodni čas). 
+* Načini, ki niso navedeni v tabeli, morda ne bodo podprti. Za optimalno ločljivost priporočamo, da 
+izberete način, ki je naveden v zgornji tabeli.
+* Ta monitor zagotavlja podporo za video vsebino v polni visoki ločljivosti (480p, 576p, 720p, 1080i/p) 
+z igralnih konzol, predvajalnikov DVD in drugi potrošniških video naprav prek priključka HDMI.
+Ko monitor deluje v video načinu (t.j. ne prikazuje podatkov), so poleg videa standardne ločljivosti 
+podprti tudi naslednji načini visoke ločljivosti.
+Prednastavitev Ime 
+časovne 
+izbire
+Format 
+slikovne 
+točke
+Vodoravna 
+frekvenca 
+(kHz)
+Navpična 
+frekvenca 
+(Hz)
+Hitrost 
+slikovnih 
+točk (MHz)
+Zaslon 
+OSD
+1 480p 720 x 480 31,469 60 27 480p do 
+60 Hz
+2 720p60 1280 x 720 45 60 74,25 720p do 
+60 Hz
+3 576p 720 x 576 31,25 50 27 576p do 
+50 Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p do 
+50 Hz
+5 1080p60 1920 x 1080 67,5 60 148,5 1080p do 
+60 Hz
+6 1080p50 1920 x 1080 56,25 50 148,5 1080p do 
+50 Hz
+3-21Monitor ASUS LCD C Series 
+C627A
+Frekvenca ločljivosti Vodoravna 
+frekvenca (KHz)
+Navpična frekvenca 
+(Hz)
+Takt slikovnih 
+točk (MHz)
+640 x 480 31,47 (N) 59,94 (N) 25,18
+640 x 480 35,00 (N) 66,66 (N) 30,24
+640 x 480 37,87 (N) 72,82 (N) 31,5
+640 x 480 37,5 (N) 75,00 (N) 31,5
+720 x 400 31,47 (N) 70,08 (P) 28,32
+800 x 600 35,16 (P) 56,25 (P) 36,00
+800 x 600 37,88 (P) 60,32 (P) 40,00
+800 x 600 46,86 (P) 75,00 (P) 49,50
+1024 x 768 48,36 (N) 60,00 (N) 65,00
+1024 x 768 56,476 (N) 70,069 (N) 75,00
+1024 x 768 60,02 (N) 75,00 (N) 78,75
+1152 x 864 67,5 (P/N) 75,00 (P/N) 108
+1280 x 720 45,00 (P) 60,00 (N) 74,25
+1280 x 768 47,78 (P) 60,00 (N) 79,5
+1280 x 800 49,7 (P) 60,00 (N) 83,5
+1280 x 960 60,00 (P) 60,00 (N) 108
+1280 x 1024 63,98 (P) 60,02 (N) 108
+1280 x 1024 79,98 (P) 75,02 (N) 135
+1366 x 768 47,712 (P) 59,79 (P) 85,5
+1440 x 900 55,94 (N) 59,89 (P) 106,5
+1600 x 1200 75,00 (P) 60,00 (P) 162
+1680 x 1050 65,29 (P) 60,00 (P) 146,25
+1920 x 1080 67,5 (P) 60,00 (P) 148,5
+1920x1200 
+(zmanjšano 
+zamrzovanje)
+74,038 (P) 59,95 (N) 154
+1920 x 1200 74,556 (N) 59,885 (P) 193,25
+2048 x 1152 
+(zmanjšano 
+zmrzovanje)
+70,99 (P) 59,9 (N) 156,75
+2560 x 1080 66,636 (P) 59,978 (N) 181,25
+2560 x 1440 88,787 (P) 59,951 (N) 241,5
+* »P«/»N« pomeni »pozitivno«/»negativno« polarnost za vhodni H-sync/V-sync (vhodni čas).
+Ko monitor deluje v video načinu (t.j. ne prikazuje podatkov), so poleg videa standardne ločljivosti 
+podprti tudi naslednji načini visoke ločljivosti.
+3-22 3. poglavje: Zaslonski meni OSD 
+Prednastavitev Ime 
+časovne 
+izbire
+Format 
+slikovne 
+točke
+Vodoravna 
+frekvenca 
+(kHz)
+Navpična 
+frekvenca 
+(Hz)
+Hitrost 
+slikovnih 
+točk 
+(MHz)
+Zaslon 
+OSD
+1 480p 720 x 480 31,469 60 27 480p do 
+60 Hz
+2 720p60 1280 x 720 45 60 74,25 720p do 
+60 Hz
+3 576p 720 x 576 31,25 50 27 576p do 
+50 Hz
+4 720p50 1280 x 720 37,5 50 74,25 720p do 
+50 Hz
+5 1080p60 1920 x 
+1080 67,5 60 148,5 1080p do 
+60 Hz
+6 1080p50 1920 x 
+1080 56,25 50 148,5 1080p do 
+50 Hz
+C624W
+Frekvenca ločljivosti Vodoravna 
+frekvenca (KHz)
+Navpična frekvenca 
+(Hz)
+Takt slikovnih 
+točk (MHz)
+640x480 31,47(N) 59,94(N) 25,18
+640x480 35,00(N) 66,66(N) 30,24
+640x480* 37,87(N) 72,82(N) 31,5
+640x480* 37,5(N) 75,00(N) 31,5
+720x400* 31,47(N) 70,08(P) 28,32
+800x600 35,16(P) 56,25(P) 36
+800x600 37,88(P) 60,32(P) 40
+800x600* 46,86(P) 75,00(P) 49,5
+832X624* 49,72(P/N) 74,55(P/N) 57,28
+1024x768 48,36(N) 60,00(N) 65
+1024x768 56,476(N) 70,069(N) 75
+1024x768* 60,02(N) 75,00(N) 78,75
+1152x864* 67,5(P/N) 75,00(P/N) 108
+1280x720 45,00(P) 60,00(N) 74,25
+1280x768 47,78(P) 60,00(N) 79,5
+1280x800 49,7(P) 60,00(N) 83,5
+1280x960 60,00(P) 60,00(N) 108
+1280x1024 63,98(P) 60,02(P) 108
+1280x1024* 79,98(P) 75,02(P) 135
+1366x768 47,712(P) 59,79(P) 85,5
+3-23Monitor ASUS LCD C Series 
+1440x900 55,94(N) 59,89(P) 106,5
+1600x1200 75,00(P) 60,00(P) 162
+1680x1050 65,29(N) 60,00(P) 146,25
+1920x1080 67,5(P) 60,00(P) 148,5
+1920x1200 
+(zmanjšano 
+zmrzovanje)
+74,038(P) 59,95(N) 154
+Ime časovne 
+izbire
+Format slikovne 
+točke
+Vodoravna 
+frekvenca (kHz)
+Navpična 
+frekvenca (Hz)
+Hitrost 
+slikovnih 
+točk (MHz)
+480p 720 x 480 31,469 60 27
+720p60 1280 x 720 45 60 74,25
+576p 720 x 576 31,25 50 27
+720p50 1280 x 720 37,5 50 74,25
+1080p60 1920 x 1080 67,5 60 148,5
+1080p50 1920 x 1080 56,25 50 148,5
+* To časovno usklajevanje ni podprto, ko je uporabljena funkcija OverScan.
+ Kazalo
+ Opombe
+ Varnostne informacije
+ Vzdrževanje in čiščenje
+ Takeback Services
+ 1. poglavje: Predstavitev izdelka
+ 1.1 Dobrodošli! 
+ 1.2 Vsebina paketa
+ 1.3 Predstavitev monitorja
+ 1.3.1 Pogled od spredaj
+ 1.3.2 Pogled od zadaj
+ 1.3.3 Funkcija QuickFit
+ 2. poglavje: Namestitev
+ 2.1 Pritrditev ročice/podstavka monitorja
+ 2.2 Odstranjevanje ročice/podstavka (za stensko montažo VESA)
+ 2.3 Pritrjevanje/snemanje kompleta MiniPC C620A/C622A/C623A/ C624A/C624B/C624C/C627A)
+ 2.4 Prilagajanje monitorja
+ 2.5 Priključitev kablov
+ 2.6 Vklop monitorja
+ 3. poglavje: Splošna navodila
+ 3.1 Zaslonski meni OSD 
+ 3.1.1 Način konfiguriranja
+ 3.1.2 Predstavitev funkcije OSD
+ 3.2 Povzetek tehničnih podatkov
+ 3.3 Odpravljanje težav (Pogosta vprašanja)
+ 3.4 Podprti operacijski načini

@@ -1,0 +1,1842 @@
+
+PG12071
+PG19489
+Manual electrónico
+Primeira edição / Julho de 2022
+2 Manual Electrónico do PC Portátil
+DIREITOS DE AUTOR
+Nenhuma parte deste manual, incluindo os produtos e software aqui descritos, pode ser reproduzida, 
+transmitida, transcrita, armazenada num sistema de recuperação, ou traduzida para outro idioma por 
+qualquer forma ou por quaisquer meios, excepto a documentação mantida pelo comprador como cópia 
+de segurança, sem o consentimento expresso e por escrito da ASUSTeK COMPUTER INC. (“ASUS”).
+A ASUS FORNECE ESTE MANUAL “TAL COMO ESTÁ” SEM QUALQUER TIPO DE GARANTIA QUER EXPRESSA 
+QUER IMPLÍCITA, INCLUINDO MAS NÃO LIMITADA ÀS GARANTIAS IMPLÍCITAS OU QUALIDADE OU 
+ADEQUABILIDADE PARA UM DETERMINADO FIM. EM CIRCUNSTÂNCIA ALGUMA PODE A ASUS, SEUS 
+DIRECTORES, OFICIAIS, EMPREGADOS OU AGENTES, SER RESPONSABILIZADA POR QUAISQUER DANOS 
+INDIRECTOS, ESPECIAIS, ACIDENTAIS OU CONSEQUENTES (INCLUINDO DANOS PELA PERDA DE LUCROS, 
+PERDA DE NEGÓCIO, PERDA DE UTILIZAÇÃO OU DE DADOS, INTERRUPÇÃO DA ACTIVIDADE, ETC.) 
+MESMO QUE A ASUS TENHA SIDO ALERTADA PARA A POSSIBILIDADE DE OCORRÊNCIA DE TAIS DANOS, 
+RESULTANTES DE QUALQUER DEFEITO OU ERRO NESTE MANUAL OU NO PRODUTO.
+Os nomes dos produtos e das empresas mencionados neste manual podem ou não ser marcas 
+registadas ou estarem protegidos por direitos de autor que pertencem às respectivas empresas. 
+Estes nomes são aqui utilizados apenas para fins de identificação ou explicação, para benefício dos 
+proprietários e sem qualquer intenção de violação dos direitos de autor.
+AS ESPECIFICAÇÕES E INFORMAÇÕES CONTIDAS NESTE MANUAL SÃO FORNECIDAS APENAS PARA 
+FINS INFORMATIVOS E ESTÃO SUJEITAS A ALTERAÇÃO EM QUALQUER ALTURA SEM AVISO PRÉVIO, 
+NÃO CONSTITUINDO QUALQUER OBRIGAÇÃO POR PARTE DA ASUS. A ASUS NÃO ASSUME QUALQUER 
+RESPONSABILIDADE POR QUAISQUER ERROS OU IMPRECISÕES QUE POSSAM APARECER NESTE MANUAL, 
+INCLUINDO OS PRODUTOS E SOFTWARE NELE DESCRITOS.
+Copyright © 2022 ASUSTeK COMPUTER INC. Reservados todos os direitos.
+LIMITAÇÃO DE RESPONSABILIDADE
+Podem haver situações em que devido a um erro da ASUS ou de terceiros, o utilizador tenha direito 
+a pedir à ASUS uma compensação por danos causados. Nesta situação, e independentemente da 
+compensação que possa pedir à ASUS, a ASUS apenas se compromete a compensar os ferimentos 
+causados (incluindo a morte) e os danos materiais a bens e a bens pessoais tangíveis; ou os danos 
+actuais ou directos resultantes da omissão ou falha em executar determinadas obrigações legais 
+obrigatórias no âmbito desta garantia e tendo como base o preço listado no contrato e relativo a cada 
+produto.
+A ASUS apenas se responsabiliza ou indemniza as perdas, os danos ou os pedidos feitos com base no 
+contrato, e pelos actos ilícitos ou violações nos termos desta garantia.
+Estes limites aplicam-se também aos fornecedores da ASUS e seus revendedores. Este é o limite máximo 
+de responsabilidade da ASUS; seus fornecedores e revendedores.
+EM CIRCUNSTÂNCIA ALGUMA PODE A ASUS SER RESPONSABILIZADA PELO SEGUINTE: (1) PEDIDOS DE 
+COMPENSAÇÃO DE TERCEIROS DEVIDO A DANOS; (2) PERDA OU DANOS SOFRIDOS EM TERMOS DOS 
+DADOS, OU (3) DANOS ESPECIAIS, ACIDENTAIS OU INDIRECTOS OU AINDA QUAISQUER CONSEQUÊNCIAS 
+DE CARÁCTER ECONÓMICO (INCLUINDO PERDA DE RECEITAS OU POUPANÇAS), MESMO QUE A ASUS, 
+SEUS FORNECEDORES OU REVENDEDORES TENHA SIDO INFORMADA DESTA POSSIBILIDADE.
+MANUTENÇÃO E ASSISTÊNCIA
+Visite o nosso website em https://www.asus.com/pt/support/.
+O MyASUS oferece diversas funções de suporte, incluindo resolução de problemas, otimização de 
+desempenho de produtos, integração de software ASUS, e ajuda a organizar a área de trabalho pessoal e 
+a aumentar o espaço de armazenamento. Para obter mais detalhes, visite 
+https://www.asus.com/pt/support/FAQ/1038301/.
+Manual Electrónico do PC Portátil 3
+Índice
+Acerca deste manual ................................................................................................7
+Convenções utilizadas neste manual ...................................................................... 8
+Ícones .................................................................................................................................. 8
+Tipografia........................................................................................................................... 8
+Precauções de segurança .......................................................................................9
+Utilizar o PC Portátil ....................................................................................................... 9
+Cuidados a ter com o PC Portátil .............................................................................. 10
+Eliminação correcta ....................................................................................................... 11
+Informações de segurança da bateria ..................................................................... 12
+Capítulo 1: Configuração do hardware
+Conheça o seu PC Portátil ......................................................................................16
+Vista frontal ....................................................................................................................... 16
+Vista superior.................................................................................................................... 22
+Vista inferior ...................................................................................................................... 23
+Vista direita ....................................................................................................................... 25
+Vista esquerda.................................................................................................................. 28
+Capítulo 2: Utilizar o PC Portátil
+Começar a utilizar ......................................................................................................30
+Carregar o seu PC Portátil ............................................................................................ 30
+Levante para abrir o ecrã ............................................................................................. 32
+Prima o botão ligar/desligar ....................................................................................... 32
+Gestos para o ecrã tátil e touchpad ....................................................................33
+Utilização de gestos no ecrã tátil .............................................................................. 33
+Utilização do touchpad ................................................................................................ 35
+Utilização do NumberPad ............................................................................................ 42
+Utilização do teclado ................................................................................................43
+Teclas de atalho ............................................................................................................... 43
+Teclas de Função ............................................................................................................. 44
+Teclas do Windows ......................................................................................................... 44
+Rodar o ecrã .................................................................................................................45
+4 Manual Electrónico do PC Portátil
+Capítulo 3: Trabalhar com Windows
+Começar de raiz ..........................................................................................................48
+Menu Iniciar (Start menu) .......................................................................................49
+Aplicações Windows .................................................................................................51
+Trabalhar com aplicações Windows ......................................................................... 52
+Personalização de aplicações Windows ................................................................. 52
+Vista de tarefas (Task View) ....................................................................................55
+Widgets .........................................................................................................................56
+Função Encaixar .........................................................................................................58
+Hotspot de encaixe ........................................................................................................ 58
+Action Center (Centro de Ação) ............................................................................60
+MyASUS Splendid ......................................................................................................62
+Configurar o ecrã OLED ...........................................................................................64
+Definição do Modo Escuro .......................................................................................... 64
+Desligar o ecrã quando não está a ser utilizado .................................................. 66
+Ajuste da luminosidade do ecrã ................................................................................ 68
+Ocultar automaticamente a barra de tarefas ....................................................... 70
+Configuração do Modo Escuro no Microsoft Office ........................................... 72
+Outros atalhos de teclado ......................................................................................73
+Ligação a redes sem fios .........................................................................................75
+Wi-Fi ..................................................................................................................................... 75
+Bluetooth ........................................................................................................................... 76
+Modo Avião ....................................................................................................................... 77
+Desligar o seu PC Portátil ........................................................................................78
+Colocar o PC Portátil em estado de suspensão ..............................................79
+Manual Electrónico do PC Portátil 5
+Capítulo 4: Autoteste de inicialização (POST)
+Autoteste de inicialização (POST) ........................................................................82
+Utilização do POST para aceder ao BIOS e à resolução de problemas ........ 82
+BIOS ................................................................................................................................82
+Aceder ao BIOS ................................................................................................................ 82
+Recuperação do seu sistema .................................................................................83
+Execução de uma opção de recuperação .............................................................. 84
+Sugestões e Perguntas frequentes 
+Sugestões úteis para seu o PC Portátil ...............................................................88
+Perguntas frequentes sobre hardware ..............................................................90
+Perguntas frequentes sobre software ................................................................93
+Anexos
+Conformidade do modem interno ........................................................................... 96
+Resumo............................................................................................................................... 96
+Declaração de compatibilidade de rede ................................................................ 97
+Equipamento sem voz .................................................................................................. 97
+Declaração relativa a interferências da FCC .......................................................... 100
+Aviso da FCC relativo à exposição a radiofrequência (RF) ............................... 101
+Informação de exposição a RF (SAR) ....................................................................... 101
+Avisos de segurança da UL .......................................................................................... 102
+Requisitos de segurança energética ........................................................................ 103
+Avisos sobre o sintonizador de TV ............................................................................ 103
+6 Manual Electrónico do PC Portátil
+Aviso do produto da Macrovision Corporation ................................................... 103
+Prevenção de perda de audição ................................................................................ 103
+Aviso sobre o revestimento ........................................................................................ 103
+Avisos nórdicos sobre lítio (para baterias de iões de lítio) ............................... 104
+Aprovação CTR 21 (para PC Portátil com modem incorporado) ................... 105
+Declaração de conformidade com a regulamentação 
+ambiental de produtos ................................................................................................. 107
+REACH e Artigo 33 UE ................................................................................................... 107
+RSP UE ................................................................................................................................. 107
+Reciclagem da ASUS/Serviços de devolução ....................................................... 108
+Diretiva “Conceção Ecológica” .................................................................................... 108
+Produto com certificação ENERGY STAR ................................................................ 109
+Produtos registados no programa EPEAT .............................................................. 109
+Licença de tipos de letra BIOS .................................................................................... 110
+Declaração de conformidade simplificada da UE ............................................... 111
+Aviso sobre rede Wi-Fi ................................................................................................... 112
+Informação de exposição a RF (SAR) ....................................................................... 112
+Manual Electrónico do PC Portátil 7
+Acerca deste manual
+Este manual fornece informações sobre as características do software e 
+hardware do seu PC Portátil, organizadas pelos seguintes capítulos:
+Capítulo 1: Configuração do hardware
+Este capítulo descreve os componentes do hardware do seu PC 
+Portátil.
+Capítulo 2: Utilização do seu PC Portátil
+Este capítulo mostra como utilizar as diferentes partes do seu PC 
+Portátil.
+Capítulo 3: Trabalhar com Windows
+Este capítulo fornece-lhe uma visão geral sobre a utilização do 
+Windows no seu PC Portátil.
+Capítulo 4: Autoteste de inicialização (POST)
+Este capítulo mostra como utilizar o arranque POST para alterar 
+as definições do seu PC Portátil.
+Sugestões e Perguntas frequentes
+Esta secção apresenta algumas sugestões recomendadas e 
+perguntas frequentes acerca de hardware e software que pode 
+consultar para a manutenção e resolução de problemas comuns 
+com o seu PC portátil. 
+Anexos
+Esta secção inclui avisos e procedimentos de segurança para o 
+seu PC Portátil.
+8 Manual Electrónico do PC Portátil
+Convenções utilizadas neste manual
+Para realçar informações importantes neste manual, são apresentadas 
+as seguintes mensagens:
+IMPORTANTE! Esta mensagem contém informações vitais que deverão 
+ser seguidas para executar uma tarefa. 
+NOTA: Esta mensagem contém informações e sugestões adicionais que 
+ajudam a executar tarefas.
+AVISO! Esta mensagem contém informações importantes que deverão 
+ser seguidas para sua segurança durante a execução de determinadas 
+tarefas e para evitar danos nos dados e componentes do seu PC Portátil. 
+Ícones
+Os ícones apresentados abaixo indicam qual o dispositivo que pode ser 
+utilizado para executar uma série de tarefas ou procedimentos no seu 
+PC Portátil.
+Tipografia
+Negrito = Indica um menu ou item que deve ser seleccionado.
+Itálico = Isto indica secções que pode consultar neste manual. 
+= Utilizar o ecrã táctil.
+= Utilizar o touchpad.
+= Utilizar o teclado.
+Manual Electrónico do PC Portátil 9
+Precauções de segurança
+Utilizar o PC Portátil
+Este PC Portátil deve ser utilizado em ambientes 
+com temperaturas entre os 5oC /41oF e 35oC /95oF.
+Consulte a placa de características existente na 
+parte inferior do PC Portátil e certifique-se de que o 
+seu transformador satisfaz os requisitos aí expressos.
+O PC Portátil poderá aquecer durante a utilização ou 
+durante o carregamento da bateria. Não coloque o 
+PC Portátil sobre os joelhos ou próximo de qualquer 
+parte do corpo para evitar ferimentos decorrentes 
+da exposição ao calor. Ao utilizar o seu PC Portátil, 
+não o coloque em superfícies que possam bloquear 
+as aberturas de ventilação.
+Não utilize cabos de alimentação, acessórios e 
+outros periféricos danificados com o seu PC Portátil.
+Enquanto o PC Portátil estiver ligado, não o 
+transporte nem tape com materiais que possam 
+reduzir a circulação de ar.
+Não coloque o PC Portátil em superfícies 
+desniveladas ou instáveis. 
+Pode colocar o seu PC Portátil em máquinas de 
+raio-x de aeroportos (utilizadas para itens colocados 
+em passadeiras rolantes), mas não o exponha a 
+detectores ou bastões magnéticos.
+Contacte a sua companhia aérea para conhecer os 
+serviços que podem ser utilizados durante o voo 
+e as restrições que devem ser cumpridas quando 
+utilizar o seu PC Portátil a bordo do avião.
+10 Manual Electrónico do PC Portátil
+Cuidados a ter com o PC Portátil
+Desligue o cabo de alimentação AC e retire a bateria 
+(se aplicável) antes de limpar o PC Portátil. Utilize 
+uma esponja de celulose ou pano de camurça 
+embebido com água tépida ou uma solução com 
+baixa concentração de detergente não abrasivo. 
+Remova qualquer humidade adicional do PC Portátil 
+com um pano seco. Para evitar curto-circuito ou 
+corrosão, mantenha quaisquer líquidos afastados 
+do chassis ou do teclado.
+Não utilize solventes fortes, tais como álcool, 
+diluentes, benzeno ou outros produtos químicos na 
+superfície ou próximo do PC Portátil.
+Não coloque objectos em cima do PC Portátil.
+Não exponha o PC Portátil a fortes campos 
+magnéticos ou eléctricos.
+Não utilize nem exponha o PC Portátil a líquidos, 
+chuva ou humidade. 
+Não exponha o PC Portátil a ambientes com pó.
+Manual Electrónico do PC Portátil 11
+Não utilize o PC Portátil próximo de fugas de gás.
+Para evitar a interferência de ondas 
+eletromagnéticas nos monitores, não coloque 
+dispositivos eletrónicos ativos perto do seu PC 
+Portátil.
+Não utilize este PC Notebook para a mineração 
+de criptomoeda (algo que consome uma grande 
+quantidade de eletricidade e tempo para a 
+obtenção de moeda virtual convertível) e/ou 
+atividades relacionadas.
+Eliminação correcta
+Não deite o PC Portátil no contentor do lixo. Este 
+produto foi concebido para permitir a reutilização 
+e reciclagem dos seus componentes. O símbolo do 
+caixote do lixo com uma cruz por cima indica que 
+o produto (equipamento eléctrico e electrónico, 
+e com baterias contendo mercúrio) não deve ser 
+colocado junto com o lixo doméstico. Consulte os 
+regulamentos locais relativamente à eliminação de 
+equipamentos electrónicos.
+Não deite a bateria no lixo municipal. O símbolo do 
+caixote com uma cruz por cima indica que a bateria 
+não deve ser colocada no lixo municipal.
+12 Manual Electrónico do PC Portátil
+Proteção da bateria
+• O carregamento frequente da bateria sob alta tensão pode 
+encurtar a durabilidade da bateria. Para proteger a bateria, 
+quando a mesma estiver totalmente carregada, o sistema pode 
+parar de carregar quando a carga estiver entre 90% e 100%.
+NOTA: A capacidade inicial de carregamento da bateria está 
+habitualmente definida entre 90% e 99%. O valor real pode variar 
+consoante os modelos.
+• O carregamento ou armazenamento da bateria a temperaturas 
+ambiente elevadas podem resultar em danos permanentes na 
+capacidade da bateria e encurtar rapidamente a sua durabilidade. 
+Se a temperatura da bateria for demasiado elevada, o sistema 
+pode reduzir a capacidade de carregamento da bateria ou até 
+interromper o carregamento para proteger a bateria.
+• A capacidade da bateria pode diminuir mesmo quando o 
+dispositivo está desligado e sem o transformador AC. Esta é 
+uma situação normal, pois o sistema continua a consumir uma 
+pequena quantidade de energia da bateria.
+Informações de segurança da bateria
+Manual Electrónico do PC Portátil 13
+Cuidados com a bateria básicos
+• Se não utilizar o seu dispositivo durante um longo período de 
+tempo, certifique-se de que carrega a bateria até 50% e, em 
+seguida, desligue o seu dispositivo e retire o transformador AC. 
+Recarregue a bateria até 50% a cada três meses para evitar a 
+descarga excessiva e danos na bateria.
+• Evite carregar a bateria a tensões elevadas durante um longo 
+período de tempo para prolongar a duração da bateria. Se utilizar 
+constantemente o cabo de alimentação com o seu dispositivo, 
+certifique-se de que descarrega a bateria até 50% pelo menos 
+uma vez a cada duas semanas. Também pode ajustar as definições 
+em Battery Health Charging no MyASUS para ajudar a prolongar 
+a bateria.
+• Recomendamos que guarde a sua bateria a temperaturas entre 
+5 °C e 35 °C com a energia a 50%. Também pode ajustar as 
+definições em Battery Health Charging no MyASUS para ajudar a 
+prolongar a bateria.
+• Não deixe a bateria em ambientes húmidos. A exposição a 
+ambientes húmidos pode acelerar a descarga excessiva da 
+bateria. Os locais com temperatura ambiente baixa podem 
+danificar os químicos no interior da bateria, enquanto as 
+temperaturas elevadas ou o sobreaquecimento podem resultar 
+no risco de explosão.
+• Não coloque o seu dispositivo ou bateria próximo de radiadores, 
+lareiras, fornos, aquecedores ou outras fontes de calor com 
+temperaturas superiores a 60 °C. O ambiente envolvente a 
+temperatura elevada pode resultar numa explosão ou fuga que 
+podem provocar um incêndio.
+14 Manual Electrónico do PC Portátil
+Manual Electrónico do PC Portátil 15
+Capítulo 1: 
+Configuração do hardware
+16 Manual Electrónico do PC Portátil
+Conheça o seu PC Portátil
+Vista frontal
+NOTA: O esquema do teclado poderá ser diferente de acordo com a 
+região ou país. O aspeto do computador portátil poderá variar de acordo 
+com o modelo do PC Portátil.
+Manual Electrónico do PC Portátil 17
+Microfones de matriz
+Os microfones de matriz incluem funcionalidades de 
+cancelamento de eco, de supressão de ruído e de formação de 
+feixe para um melhor reconhecimento de voz e gravação de 
+áudio.
+Indicador da câmara
+O indicador da câmara acende-se quando a câmara incorporada 
+está a ser utilizada.
+Câmara
+A câmara incorporada permite-lhe tirar fotografias ou gravar 
+vídeos utilizando o seu PC Portátil.
+Câmara de infravermelhos (IV)
+A câmara incorporada permite-lhe tirar fotografias ou gravar 
+vídeos utilizando o seu PC Portátil. A câmara de infravermelhos 
+(IV) também suporta o Windows Hello.
+NOTA: O LED vermelho de infravermelhos piscará durante a 
+leitura de dados antes de iniciar sessão com o reconhecimento 
+facial do Windows Hello.
+18 Manual Electrónico do PC Portátil
+Ecrã táctil ajustável em 360°
+O ecrã táctil do seu PC Portátil pode ser totalmente ajustado até 
+360°. Esta característica permite-lhe transformar rapidamente o 
+seu PC Portátil num tablet PC táctil.
+Este ecrã táctil de alta definição dispõe de excelentes 
+características de visualização de fotos, vídeos e outros ficheiros 
+multimédia no seu PC Portátil. Permite-lhe também controlar o 
+computador utilizando gestos tácteis.
+Declaração de isenção de responsabilidade: A exibição 
+prolongada de imagens estáticas ou de elevado contraste pode 
+originar a ocorrência de imagens persistentes ou imagens 
+residuais no ecrã OLED. O computador portátil ASUS com ecrã 
+OLED (em determinados modelos) minimiza a possibilidade de 
+ocorrência de imagens residuais definindo o Modo Escuro no 
+Windows 10 como padrão e reduzindo o tempo de inatividade 
+para desligar o ecrã. Recomendamos que utilize um protetor de 
+ecrã animado com fundo escuro e evite ajustar o brilho do ecrã 
+OLED para o nível máximo para prolongar o tempo de vida útil do 
+ecrã OLED.
+NOTA:
+• Para obter mais detalhes, consulte a secção Configurar o ecrã 
+OLED neste manual.
+• Para obter mais detalhes sobre como transformar o seu PC 
+portátil num tablet, consulte a secção Rodar o ecrã neste 
+manual.
+Manual Electrónico do PC Portátil 19
+Indicador de microfone desligado.
+Este indicador acende quando o microfone está desligado.
+Teclado
+O teclado QWERTY dispõe de um conjunto completo de teclas 
+com uma espessura confortável para escrita. Permite também 
+utilizar as teclas de função, proporciona o acesso rápido ao 
+Windows e controla outras funções de multimédia.
+NOTA: O esquema do teclado varia de acordo com o modelo ou 
+território.
+Indicador da tecla Capital Lock (Bloqueio de maiúsculas)
+Este indicador acende quando a função de bloqueio de 
+maiúsculas está ativada. A utilização do bloqueio de maiúsculas 
+permite-lhe escrever letras maiúsculas (ex.: A, B, C) utilizando o 
+teclado do PC Portátil.
+20 Manual Electrónico do PC Portátil
+Touchpad/NumberPad
+Permite alternar entre o touchpad e o NumberPad.
+O touchpad permite-lhe a utilização de multi-gestos para 
+navegar no ecrã, proporcionando uma experiência de utilizador 
+intuitiva. Este dispositivo simula também as funções de um rato 
+normal.
+NOTA: Para obter mais detalhes, consulte a secção Utilizar o 
+touchpad neste manual.
+O NumberPad permite a introdução de números.
+IMPORTANTE! Note que todas as versões do NumberPad são 
+suportadas apenas no mais recente sistema operativo Microsoft 
+Windows.
+NOTA: Para mais detalhes, consulte a secção Utilizar o NumberPad 
+neste manual.
+Sensor da luminosidade ambiente
+O sensor da luminosidade ambiente deteta a intensidade da 
+luminosidade ambiente no local onde se encontra. Permite que 
+o sistema ajuste automaticamente o brilho do ecrã, de acordo 
+com as condições da luminosidade ambiente do local.
+Sensor de luminosidade RGB
+O sensor de luminosidade RGB ajustará automaticamente 
+a temperatura da cor do ecrã de acordo com o nível de 
+luminosidade ambiente.
+Manual Electrónico do PC Portátil 21
+Sensor ToF
+O sensor ToF ativará automaticamente e iniciará sessão no 
+seu PC Portátil com o Windows Hello depois de detetar a sua 
+presença. O seu PC Portátil entrará em Suspensão quando 
+detetar a sua ausência.
+Indicador de câmara desligada
+Este indicador acende quando a câmara está desligada.
+Botão de energia
+Prima o botão de energia para ligar ou desligar o seu PC Portátil. 
+Também pode premir o botão de energia para colocar o seu PC 
+Portátil em suspensão ou hibernação e ativá-lo a partir do modo 
+de suspensão ou hibernação.
+Se o seu PC Portátil deixar de responder, mantenha premido o 
+botão de energia durante pelo menos dez (10) segundos até o 
+PC Portátil se desligar.
+Sensor de impressões digitais 
+Este sensor de impressões digitais incorporado captura a sua 
+impressão digital e utiliza-a como autenticação biométrica para 
+iniciar sessão no sistema do seu PC Portátil.
+22 Manual Electrónico do PC Portátil
+Vista superior
+Microfones de matriz
+Os microfones de matriz incluem funcionalidades de 
+cancelamento de eco, de supressão de ruído e de formação de 
+feixe para um melhor reconhecimento de voz e gravação de 
+áudio.
+Manual Electrónico do PC Portátil 23
+Vista inferior
+NOTA: O aspeto da vista inferior poderá ser diferente dependendo do 
+modelo.
+AVISO! O PC Portátil poderá aquecer durante a utilização ou durante o 
+carregamento da bateria. Não coloque o PC Portátil sobre os joelhos ou 
+próximo de qualquer parte do corpo para evitar ferimentos decorrentes 
+da exposição ao calor. Ao utilizar o seu PC Portátil, não o coloque em 
+superfícies que possam bloquear as aberturas de ventilação.
+IMPORTANTE! 
+• A duração da bateria varia de acordo com a utilização e as 
+especificações do PC Portátil. A bateria não pode ser desmontada.
+• Adquira componentes em revendedores autorizados para garantir 
+a máxima compatibilidade e fiabilidade. Consulte um centro de 
+assistência da ASUS ou um revendedor autorizado para obter 
+assistência relativa à desmontagem ou montagem adequada do 
+produto.
+24 Manual Electrónico do PC Portátil
+Aberturas para circulação do ar
+As aberturas para circulação do ar permitem a entrada de ar 
+fresco e a saída de ar quente do PC Portátil.
+AVISO! Para evitar o sobreaquecimento, certifique-se de que as 
+aberturas para circulação do ar não ficam obstruídas por papéis, 
+livros, roupa, cabos ou outros objetos.
+Altifalantes
+Os altifalantes incorporados permitem-lhe ouvir o som 
+diretamente a partir do seu PC Portátil. Todas as funcionalidades 
+de áudio são controladas por software.
+Manual Electrónico do PC Portátil 25
+Vista direita
+Indicadores de estado
+Os indicadores de estado ajudam a identificar o estado do 
+hardware do seu PC Portátil.
+ Indicador bicolor de carga da bateria
+ Este LED bicolor oferece uma indicação visual sobre 
+o estado de carga da bateria. Consulte a tabela que 
+se segue para mais detalhes:
+26 Manual Electrónico do PC Portátil
+ 
+Cor Estado
+Branco estático O PC Portátil está ligado a uma 
+fonte de alimentação e a carga 
+da bateria está entre 95% e 
+100%.
+Laranja estático O PC Portátil está ligado a uma 
+fonte de alimentação, está a 
+carregar a bateria e a carga da 
+bateria é inferior a 95%.
+Laranja 
+intermitente
+O PC Portátil está a funcionar no 
+modo de bateria e a carga da 
+bateria é inferior a 10%.
+Luzes desligadas O PC Portátil está a funcionar no 
+modo de bateria e a carga da 
+bateria encontra-se entre 10% e 
+100%.
+ Indicador de energia
+ O indicador de energia acende ao ligar o PC Portátil 
+e pisca lentamente quando o PC Portátil se encontra 
+em modo de suspensão.
+Ranhura de cartão microSD
+Esta ranhura do leitor de cartões de memória Flash incorporado 
+suporta cartões no formato microSD.
+Manual Electrónico do PC Portátil 27
+Porta Thunderbolt™ 4 com Power Delivery
+A porta Thunderbolt™ 4 é compatível com a norma USB Type-C® 
+e proporciona uma velocidade de transferência de dados de 
+até 40 Gbit/s para dispositivos Thunderbolt™ 4. Ligue o seu 
+Notebook PC a um monitor externo com DisplayPort, VGA, DVI 
+ou HDMI e desfrute da alta resolução oferecida pela tecnologia 
+Intel® Thunderbolt™. Ligue o transformador fornecido a esta 
+porta para carregar a bateria e alimentar o seu Notebook PC.
+NOTA: A velocidade de transferência desta porta poderá variar de 
+acordo com o modelo.
+AVISO! O transformador pode aquecer durante a utilização. 
+Certifique-se de que não cobre o transformador e afaste-o do seu 
+corpo enquanto estiver ligado a uma fonte de alimentação.
+IMPORTANTE!
+• O carregamento do PC Portátil através de uma fonte de 
+alimentação de baixa tensão poderá demorar mais tempo.
+• Para prevenir quaisquer danos, utilize apenas fontes de 
+alimentação de 20V/3,25A para carregar o seu PC Notebook, 
+com a porta combinada USB Power Delivery. Para mais 
+informações, consulte um centro de assistência técnica da 
+ASUS.
+Tomada para Auscultadores/Auriculares/Microfone
+Esta porta permite-lhe ligar altifalantes amplificados ou 
+auscultadores. Pode também utilizar esta porta para ligar os seus 
+auriculares ou um microfone externo.
+28 Manual Electrónico do PC Portátil
+Vista esquerda
+Porta combinada USB 3.2 Geração 2 Type-C®/ 
+DisplayPort/Power Delivery
+A porta USB 3.2 (Universal Serial Bus 3.2) Geração 2 Type-C® 
+oferece uma velocidade de transferência até 10 Gbit/s e é 
+retrocompatível com USB 2.0. Utilize um adaptador USB Type-C® 
+para ligar o seu PC Portátil a um dispositivo de visualização 
+externo. Ligue uma fonte de alimentação de 20V/3,25A para 
+carregar a bateria e fornecer energia ao seu PC Portátil.
+NOTA: A velocidade de transferência desta porta poderá variar de 
+acordo com o modelo.
+IMPORTANTE!
+• O carregamento do PC Portátil através de uma fonte de 
+alimentação de baixa tensão poderá demorar mais tempo.
+• Para prevenir quaisquer danos, utilize apenas fontes de 
+alimentação de 20V/3,25A para carregar o seu PC Notebook, 
+com a porta combinada USB Power Delivery. Para mais 
+informações, consulte um centro de assistência técnica da 
+ASUS.
+Manual Electrónico do PC Portátil 29
+Capítulo 2: 
+Utilizar o PC Portátil
+30 Manual Electrónico do PC Portátil
+IMPORTANTE!
+Informação sobre o adaptador de energia:
+• Tensão de entrada 100-240Vca
+• Frequência de entrada: 50-60Hz
+• Corrente de saída nominal: 3,25A (65W)
+• Tensão de saída nominal: 20V
+Carregue o PC Portátil durante 3 horas antes de utilizá-lo em 
+modo bateria pela primeira vez.
+NOTA: O adaptador de energia pode variar em aparência, dependendo 
+dos modelos e da sua região.
+Começar a utilizar
+Carregar o seu PC Portátil
+A. Ligue o cabo de alimentação CA ao adaptador CA/CC.
+B. Ligue o conetor de alimentação CC à porta de entrada do seu PC 
+Portátil (CC).
+C. Ligue o adaptador de energia CA a uma fonte de alimentação de 
+100V~240V.
+Manual Electrónico do PC Portátil 31
+IMPORTANTE!
+• Localize a etiqueta de classificação de entrada/saída no seu PC 
+Portátil e certifique-se de que corresponde à informação de 
+classificação de entrada/saída no seu adaptador de alimentação. 
+Alguns modelos de PC Portáteis podem ter várias correntes de saída 
+nominais com base no SKU disponível.
+• Certifique-se de que o seu PC portátil está ligado ao adaptador de 
+corrente antes de o ligar pela primeira vez. Ligue sempre o cabo de 
+alimentação a uma tomada de parede sem utilizar qualquer cabo de 
+extensão. Para sua segurança, ligue este dispositivo apenas a uma 
+tomada elétrica devidamente ligada à terra.
+• A tomada deve ser de fácil acesso e estar perto do seu PC Portátil.
+• Para desligar o seu PC Portátil da sua fonte de alimentação principal, 
+desligue-o da tomada de alimentação.
+AVISO!
+Leia as seguintes precauções para a bateria do seu PC Portátil:
+• Apenas técnicos autorizados pela ASUS devem remover a bateria de 
+dentro do dispositivo (apenas para baterias não removíveis).
+• A bateria usada neste dispositivo pode apresentar risco de incêndio 
+ou queimadura química se for removida ou desmontada.
+• Cumpra as instruções das etiquetas de aviso para sua segurança 
+pessoal.
+• Risco de explosão se a bateria for substituída por outra de tipo 
+incorreto.
+• Não deite para uma fonte de chamas.
+• Nunca tente colocar a bateria ou o PC Portátil em curto-circuito.
+• Nunca tente desmontar e remontar a bateria (apenas para bateria 
+não removível).
+• Deixe de usar em caso de fuga.
+• A bateria e os seus componentes devem ser reciclados ou eliminados 
+adequadamente.
+• Mantenha a bateria e outros pequenos componentes fora do alcance 
+das crianças.
+32 Manual Electrónico do PC Portátil
+Levante para abrir o ecrã
+Prima o botão ligar/desligar
+Manual Electrónico do PC Portátil 33
+Utilização de gestos no ecrã tátil
+Os gestos permitem-lhe iniciar programas e aceder às definições do seu 
+PC Portátil. As funções podem ser ativadas utilizando os gestos manuais 
+no ecrã tátil do seu PC portátil.
+Gestos para o ecrã tátil e touchpad
+Os gestos permitem-lhe iniciar programas e aceder às definições do 
+seu PC Portátil. Consulte as seguintes ilustrações quando utilizar gestos 
+manuais no seu ecrã tátil e touchpad.
+NOTA: As seguintes capturas de ecrã são apenas para referência. A 
+aparência do ecrã tátil pode variar de acordo com o modelo.
+Toque/Duplo toque Prima sem soltar
+• Toque numa aplicação para 
+a selecionar.
+• Toque duas vezes numa 
+aplicação para a lançar.
+Prima sem soltar para abrir o 
+menu do botão direito do rato.
+34 Manual Electrónico do PC Portátil
+Ampliar Reduzir
+Afaste os dois dedos no ecrã tátil. Junte os dois dedos no ecrã tátil.
+Deslizar de dedos Arrastar
+Deslize o dedo para cima e para 
+baixo e deslize o dedo para 
+deslocar o ecrã para a esquerda ou 
+para a direita.
+• Arraste para criar uma 
+caixa de seleção em torno 
+de vários itens.
+• Arraste e largue para criar 
+uma caixa de seleção em 
+torno de vários itens.
+Manual Electrónico do PC Portátil 35
+Utilização do touchpad
+Movimento do ponteiro
+Pode tocar em qualquer ponto do touchpad para ativar o respetivo 
+ponteiro e depois deslizar com o dedo no touchpad para movimentar o 
+ponteiro no ecrã.
+Deslizar horizontalmente
+Deslizar verticalmente
+Deslizar diagonalmente
+36 Manual Electrónico do PC Portátil
+Gestos com um dedo
+Toque/Duplo toque
+• Toque numa aplicação para a selecionar.
+• Toque duas vezes numa aplicação para a lançar.
+Arrastar e largar
+Toque duas vezes num item e em seguida faça deslizar o mesmo dedo 
+sem o levantar do touchpad. Para colocar o item no seu novo local, 
+levante o dedo do touchpad.
+Manual Electrónico do PC Portátil 37
+Clique com o botão esquerdo 
+do rato
+Clique com o botão direito 
+do rato
+• Clique numa aplicação 
+para a selecionar.
+• Faça duplo clique numa 
+aplicação para a lançar.
+Clique neste botão para abrir o 
+menu com o botão direito do rato.
+NOTA: As áreas dentro da linha pontilhada representam as localizações 
+do botão esquerdo e do botão direito do rato no touchpad.
+Gestos com dois dedos
+Tocar
+Toque com dois dedos no touchpad para simular a função de clique 
+com o botão direito.
+38 Manual Electrónico do PC Portátil
+Deslocamento com dois dedos 
+(para cima/baixo)
+Deslocamento com dois dedos 
+(esquerda/direita)
+Faça deslizar dois dedos para se 
+deslocar para cima ou para baixo.
+Faça deslizar dois dedos para se 
+deslocar para a esquerda ou para a 
+direita.
+Reduzir Ampliar
+Junte os dois dedos no touchpad. Afaste os dois dedos no touchpad.
+Manual Electrónico do PC Portátil 39
+Arrastar e largar
+Selecione um item e prima o botão esquerdo sem o soltar. Com o outro 
+dedo, deslize sobre o touchpad para arrastar o item, levante o dedo do 
+botão para soltar o item.
+Gestos com três dedos
+Tocar
+Toque com três dedos no touchpad para iniciar a função que 
+selecionou em Definições.
+40 Manual Electrónico do PC Portátil
+Percorrer para a esquerda/direita
+Se abriu várias aplicações, percorra com três dedos para a esquerda ou 
+para a direita para alternar entre estas aplicações.
+Percorrer para cima Percorrer para baixo
+Percorra para cima para ver 
+uma descrição geral de todas as 
+aplicações abertas atualmente.
+Percorra para baixo para exibir o 
+ambiente de trabalho.
+Manual Electrónico do PC Portátil 41
+Gestos de quatro dedos
+Tocar
+Toque com quatro dedos no touchpad para iniciar a função que 
+selecionou em Definições.
+42 Manual Electrónico do PC Portátil
+Utilização do NumberPad
+IMPORTANTE! Note que todas as versões do NumberPad são suportadas 
+apenas no mais recente sistema operativo Microsoft Windows.
+NOTA: Para usar a função % e =, defina o idioma de teclado para inglês.
+• Prima sem soltar durante um segundo para 
+alternar entre teclas numéricas e touchpad.
+• Toque em para ajustar o brilho do NumberPad.
+• Prima sem soltar e depois deslize para qualquer 
+lugar no NumberPad para iniciar a Calculadora do 
+Windows.
+Manual Electrónico do PC Portátil 43
+Utilização do teclado
+Liga ou desliga o altifalante
+Baixa o volume do altifalante
+Aumenta o volume do altifalante
+Diminui o brilho do ecrã
+Aumenta o brilho do ecrã
+Ativa ou desativa o touchpad
+Ajusta a luminosidade do teclado retroiluminado
+Alterna o modo de exibição
+NOTA: Certifique-se de que o segundo ecrã está ligado 
+ao seu PC Portátil.
+Teclas de atalho
+As teclas de atalho no teclado do seu PC Portátil podem acionar os 
+seguintes comandos:
+44 Manual Electrónico do PC Portátil
+Teclas do Windows
+Existem duas teclas especiais do Windows no teclado do seu PC Portátil, 
+utilizadas como se segue:
+Inicia o menu Iniciar
+Exibe o menu pendente*
+* Em alguns modelos
+Teclas de Função
+Prima para ativar ou desativar o recurso de teclas de 
+função. Quando o recurso de teclas de função está ativado, também 
+pode aceder às teclas de atalho premindo a tecla em conjunto 
+com as teclas da fila superior.
+Liga ou desliga o microfone
+Liga ou desliga a câmara
+Ativa a ferramenta de captura de ecrã
+Inicia o MyASUS
+Manual Electrónico do PC Portátil 45
+Rodar o ecrã
+O monitor do PC Portátil pode ser ajustado até 360 graus. Pode ajustar 
+o monitor como ilustrado abaixo.
+Modo de PC Portátil
+Ajustável em 360 graus
+NOTA: As instruções servem apenas como referência.
+46 Manual Electrónico do PC Portátil
+Modo Tenda
+Modo Suporte
+Modo tablet
+NOTA: A rotação do ecrã para o modo Suporte, Tenda e Tablet desativará 
+o teclado e o touchpad.
+Manual Electrónico do PC Portátil 47
+Capítulo 3:
+Trabalhar com Windows
+48 Manual Electrónico do PC Portátil
+Começar de raiz
+Quando inicia o seu PC Portátil pela primeira vez, aparece uma série 
+de ecrãs que irão guiá-lo na configuração do seu sistema operativo 
+Windows.
+Para iniciar o seu PC Portátil pela primeira vez:
+1. Prima o botão Ligar/Desligar para ligar ou desligar o seu 
+PC Portátil. Aguarde alguns minutos até aparecer o ecrã de 
+configuração.
+2. No ecrã de configuração, escolha a sua região e um idioma para 
+usar no seu PC Portátil.
+3. Leia com atenção o Contrato de Licença. Selecione Accept 
+(Aceitar).
+4. Siga as instruções no ecrã para configurar os seguintes itens de 
+base:
+• Personalizar (Personalize)
+• Aceder à Internet (Get online)
+• Definições (Settings)
+• A sua conta (Account)
+5. Depois de configurar os itens de base, o Windows prossegue 
+para a instalação das suas aplicações e definições preferidas. 
+Certifique-se de que o seu PC Portátil está ligado durante o 
+processo de configuração.
+6. Depois de concluído o processo de configuração, aparece o 
+ambiente de trabalho.
+NOTA: As capturas de ecrã deste capítulo são apenas para referência.
+Manual Electrónico do PC Portátil 49
+Menu Iniciar (Start menu)
+O menu Iniciar é a porta principal para os programas, aplicações 
+Windows, pastas e definições do seu PC Portátil.
+Pode usar o menu Iniciar para realizar as seguintes atividades comuns:
+• Iniciar programas ou aplicações Windows
+• Abrir programas ou aplicações Windows comumente usados
+• Ajustar as definições do PC Portátil
+• Obter ajuda com o sistema operativo Windows
+• Desligar o seu PC Portátil
+• Desligar-se do Windows ou mudar de conta de utilizador
+Alterar definições de conta, bloquear ou sair da sua conta
+Abrir o menu Iniciar 
+(Start menu)
+Iniciar vista de tarefas 
+(Task View)
+Desligar, reiniciar ou 
+colocar o PC Portátil em 
+estado de suspensão
+Iniciar uma aplicação a partir da 
+barra de tarefas
+Iniciar uma aplicação a partir do menu Iniciar (Start menu)
+Iniciar uma pesquisa
+Iniciar Widgets
+50 Manual Electrónico do PC Portátil
+Lançamento do menu Iniciar (Start menu)
+Toque no ícone Iniciar no seu ambiente de 
+trabalho.
+Posicione o ponteiro do rato sobre o ícone Iniciar 
+no seu ambiente de trabalho e clique no mesmo.
+Prima a tecla do logótipo do Windows no seu 
+teclado.
+Abertura de programas a partir do menu Iniciar (Start 
+menu)
+Uma das utilizações mais comuns do menu Iniciar é a abertura de 
+programas instalados no seu PC Portátil.
+Toque no programa para o lançar.
+Posicione o ponteiro do rato sobre o programa e clique 
+para o lançar.
+Utilize as setas do teclado para navegar pelos 
+programas. Prima para o lançar.
+NOTA: Selecione All apps (Todas as aplicações) para exibir uma lista 
+completa de programas e pastas no seu PC Portátil por ordem alfabética.
+Manual Electrónico do PC Portátil 51
+Aplicações Windows
+Estas são aplicações localizadas no menu Iniciar e exibidas em formato 
+de mosaico para fácil acesso.
+NOTA: Algumas aplicações Windows requerem que inicie sessão na sua 
+conta Microsoft antes de serem totalmente lançadas.
+52 Manual Electrónico do PC Portátil
+Trabalhar com aplicações Windows
+Personalização de aplicações Windows
+Pode deslocar, afixar ou remover aplicações na barra de tarefas a partir 
+do menu Iniciar, seguindo as etapas em baixo:
+Lançamento de aplicações Windows a partir do menu Iniciar 
+(Start menu)
+Toque na aplicação para a lançar.
+Posicione o ponteiro do rato sobre a aplicação e clique 
+para a lançar.
+Utilize as setas do teclado para navegar pelas 
+aplicações. Prima para lançar uma aplicação.
+Deslocar aplicações
+Prima na aplicação sem soltar, e arraste e largue-a num 
+novo local.
+Posicione o ponteiro do rato sobre a aplicação, em 
+seguida arraste e largue a aplicação num local novo.
+Manual Electrónico do PC Portátil 53
+Remover aplicações
+Prima na aplicação sem soltar, e toque em Unpin from 
+Start (Remover de Iniciar).
+Posicione o ponteiro do rato sobre a aplicação e clique 
+com o botão direito, em seguida clique em Unpin from 
+Start (Remover de Iniciar).
+Utilize as setas do teclado para navegar até a aplicação. 
+Prima ou (nos modelos 
+selecionados), depois selecione Unpin from Start 
+(Remover de Iniciar).
+54 Manual Electrónico do PC Portátil
+Afixar mais aplicações no menu Iniciar (Start menu)
+A partir de All apps (Todas as aplicações), prima sem 
+soltar a aplicação que pretende adicionar ao menu 
+Iniciar e, em seguida, prima Pin to Start (Afixar em 
+Iniciar).
+Em All apps (Todas as aplicações), posicione o ponteiro 
+do rato sobre a aplicação que pretende adicionar ao 
+menu Iniciar e clique com o botão direito. Em seguida, 
+clique em Pin to Start (Afixar em Iniciar).
+Em All apps (Todas as aplicações), prima ou 
+ (nos modelos selecionados) na aplicação 
+que pretende adicionar ao menu Iniciar. Em seguida, 
+selecione Pin to Start (Afixar em Iniciar).
+Afixar aplicações na barra de tarefas
+Prima na aplicação sem soltar, e toque em Pin to 
+taskbar (Afixar na Barra de Tarefas).
+Posicione o ponteiro do rato sobre a aplicação e clique 
+com o botão direito, em seguida clique em Pin to 
+taskbar (Afixar na Barra de Tarefas).
+Utilize as setas do teclado para navegar até a aplicação. 
+Prima ou (nos modelos 
+selecionados), depois selecione Pin to taskbar (Afixar 
+na Barra de Tarefas).
+Manual Electrónico do PC Portátil 55
+Vista de tarefas (Task View)
+Alterne rapidamente entre aplicações e programas abertos usando 
+a função Vista de tarefas. Também pode usá-la para alternar entre 
+ambientes de trabalho.
+Lançamento da Vista de tarefas (Task View)
+Toque no ícone na barra de tarefas.
+Posicione o ponteiro do rato sobre o ícone na barra 
+de tarefas e clique no mesmo.
+Prima no seu teclado.
+56 Manual Electrónico do PC Portátil
+Widgets
+Pode lançar Widgets para acesso rápido a informações importantes.
+Lançamento de Widgets
+Toque no ícone na barra de tarefas.
+Posicione o ponteiro do rato sobre o ícone na barra 
+de tarefas e clique no mesmo.
+Prima no seu teclado.
+Manual Electrónico do PC Portátil 57
+Personalização de Widgets
+ou
+Clique/Toque no ícone e selecione Manage interests 
+(Gerir interesses) para alterar o conteúdo que aparece 
+nos Widgets.
+58 Manual Electrónico do PC Portátil
+Função Encaixar
+A função Encaixar exibe aplicações lado a lado, permitindo que trabalhe 
+ou alterne entre aplicações.
+Hotspot de encaixe
+Pode arrastar e largar aplicações para estes hotspots para encaixá-las no 
+lugar.
+Manual Electrónico do PC Portátil 59
+Utilização da função Encaixar
+ou
+1. Abra a aplicação que pretende encaixar.
+2. Arraste a barra de título da sua aplicação e solte a 
+aplicação para a margem do ecrã onde encaixar.
+3. Inicie outra aplicação e repita os passos acima para 
+capturar outra aplicação.
+1. Abra a aplicação que pretende encaixar.
+2. Prima a tecla sem soltar, e use as setas do 
+teclado para encaixar a aplicação.
+3. Inicie outra aplicação e repita os passos acima para 
+capturar outra aplicação.
+60 Manual Electrónico do PC Portátil
+Action Center (Centro de Ação)
+O Action Center (Centro de Ação) consolida as notificações das 
+aplicações e apresenta um único lugar onde pode interagir com os 
+mesmos. Também tem uma secção de Ações Rápidas muito útil.
+Lançamento de Ações Rápidas (Launching Quick Actions)
+Toque nos ícones de estado na barra de tarefas.
+Posicione o ponteiro do rato sobre os ícones de estado 
+na barra de tarefas e clique no ícone.
+Prima no seu teclado.
+Manual Electrónico do PC Portátil 61
+Lançamento de Notificações
+Toque na data e hora na barra de tarefas.
+Posicione o ponteiro do rato sobre a data e hora na barra 
+de tarefas e clique.
+Prima no seu teclado.
+62 Manual Electrónico do PC Portátil
+MyASUS Splendid
+O MyASUS Splendid garante que todos os ecrãs ASUS apresentem cores 
+idênticas e precisas. Pode selecionar Vivid, Eye Care, ou Modo Manual 
+ao lado do Modo Normal para ajustar as definições do visor.
+• Normal Mode (Modo Normal): Através da correção da 
+temperatura Gama e Cor, a imagem do painel é a mais próxima 
+possível do que o seu olho consegue ver naturalmente. Para 
+modelos com painel OLED, este modo está em conformidade 
+com a certificação TÜV Low Blue Light.
+• Vivid Mode (Modo Vivid): Este modo permite ajustar a saturação 
+da imagem, tornando-a mais vívida e vibrante.
+• Manual Mode (Modo Manual): Este modo permite-lhe ajustar 
+o valor da temperatura da cor às suas necessidades pessoais, 
+variando entre -50 e +50.
+• Eye Care Mode (Modo Eye Care): Este modo reduz a emissão de 
+luz azul em até 30%, ajudando a proteger os seus olhos.
+ Nível 1-5: Quanto maior o nível, mais reduzida é a emissão de 
+luz azul. Para modelo com painel LCD, o nível 5 é a definição 
+otimizada e está em conformidade com a certificação TÜV Low 
+Blue Light.
+NOTA: Ative o HDR em Settings (Definições) > System (Sistema) > 
+Display (Visualização) para uma melhor experiência de visualização com 
+o seu painel OLED (em modelos selecionados). Está em conformidade 
+com a certificação TÜV Flicker Free.
+Manual Electrónico do PC Portátil 63
+Consulte as seguintes dicas para aliviar a tensão ocular:
+• Tire algum tempo para se afastar do ecrã se trabalhar durante 
+várias horas seguidas. É aconselhável fazer pequenos intervalos 
+(pelo menos 5 minutos) após cerca de 1 hora de trabalho 
+contínuo no computador. Fazer pausas curtas e frequentes é mais 
+eficaz do que uma pausa longa.
+• Para minimizar a tensão e a secura dos olhos, ajude-os a 
+descansar de vez em quando, concentrando-se em objetos que 
+estejam longe.
+• Repita os seguintes exercícios para reduzir a tensão ocular:
+(1) Olhe para cima e para baixo repetidamente
+(2) Role lentamente os olhos
+(3) Mova os seus olhos na diagonal
+ Se a tensão ocular persistir, consulte um médico.
+• A luz azul de alta intensidade pode causar tensão ocular e DMRI 
+(Degeneração Macular Relacionada com a Idade). O filtro de 
+luz azul reduz em 30% (máx.) a luz azul nociva para evitar a SVC 
+(Síndrome Visual do Computador).
+64 Manual Electrónico do PC Portátil
+Configurar o ecrã OLED
+Para garantir o máximo do seu ecrã OLED (nos modelos selecionados), 
+existem várias definições que recomendamos. Essas definições ajudam 
+a otimizar a experiência visual, maximizar a vida útil da bateria e 
+prolongar a vida útil do seu PC Portátil ASUS.
+Definição do Modo Escuro
+O Modo Escuro está ativado por defeito. Para verificar ou ajustar as 
+definições:
+1. Start menu (Inicie o menu Iniciar).
+2. Clique/Toque em Settings (Definições) e selecione 
+Personalization (Personalização).
+Manual Electrónico do PC Portátil 65
+3. Selecione o separador Colors (Cores) para ver as opções.
+66 Manual Electrónico do PC Portátil
+Desligar o ecrã quando não está a ser utilizado
+Certifique-se de que configura o seu ecrã para se desligar 
+automaticamente quando não estiver a ser utilizado. Para verificar ou 
+ajustar as definições:
+1. Start menu (Inicie o menu Iniciar).
+2. Clique/Toque em Settings (Definições) e selecione System 
+(Sistema).
+Manual Electrónico do PC Portátil 67
+3. Selecione o separador Power & battery (Alimentação e bateria) 
+para visualizar as opções.
+68 Manual Electrónico do PC Portátil
+Ajuste da luminosidade do ecrã
+Recomenda-se ativar uma proteção de ecrã animada com fundo escuro 
+e evitar definir o ecrã OLED com o brilho máximo para prolongar a sua 
+vida útil. Para verificar ou ajustar as definições:
+1. Start menu (Inicie o menu Iniciar).
+2. Clique/Toque em Settings (Definições) e selecione 
+Personalization (Personalização).
+Manual Electrónico do PC Portátil 69
+3. Selecione o separador Lock screen (Ecrã de bloqueio) e, em 
+seguida, selecione Screen saver (Proteção de ecrã) para ver as 
+opções.
+70 Manual Electrónico do PC Portátil
+Ocultar automaticamente a barra de tarefas
+Para evitar a exibição da barra de tarefas no seu ecrã OLED durante um 
+período prolongado, certifique-se de que a barra de tarefas é ocultada 
+automaticamente. Para ajustar as definições:
+1. Start menu (Inicie o menu Iniciar).
+2. Clique/Toque em Settings (Definições) e selecione 
+Personalization (Personalização).
+Manual Electrónico do PC Portátil 71
+3. Selecione o separador Taskbar (Barra de tarefas) e em 
+seguida ative Automatically hide the taskbar (Ocultar 
+automaticamente a barra de tarefas).
+72 Manual Electrónico do PC Portátil
+1. Inicie uma aplicação Microsoft Office, e em seguida clique/toque 
+em File (Ficheiro) > Account (Conta).
+2. Selecione Dark Gray (Cinzento escuro) em Office Theme (Tema 
+do Office). O tema será aplicado a todas as aplicações Microsoft.
+Configuração do Modo Escuro no Microsoft 
+Office
+Manual Electrónico do PC Portátil 73
+Outros atalhos de teclado
+Utilizando o teclado, os seguintes atalhos também podem ajudá-lo a 
+iniciar aplicações e navegar pelo Windows.
+Inicia o Start menu (Menu Iniciar) 
+Inicia o Action Center (Centro de Ação) 
+Inicia o ambiente de trabalho
+Inicia o File Explorer (Explorador de Ficheiros)
+Inicia Settings (Configurações) 
+Inicia o painel Connect (Ligar) 
+Ativa o Ecrã de Bloqueio
+Minimiza todas as janelas atualmente ativas
+74 Manual Electrónico do PC Portátil
+Inicia a Search (Pesquisa) 
+Inicia o painel Project (Projeto) 
+Abre a janela Run (Executar) 
+Abre Accessibility (Acessibilidade) 
+Abre o menu de contexto do botão Iniciar
+Lança o ícone da lupa e amplia o ecrã
+Reduz o ecrã
+Manual Electrónico do PC Portátil 75
+Ligação a redes sem fios
+Wi-Fi
+Aceda a e-mails, navegue na Internet e partilhe aplicações através de 
+sites de redes sociais utilizando a ligação Wi-Fi do seu PC Portátil.
+IMPORTANTE! O Airplane mode (Modo Avião) desativa esta 
+funcionalidade. Certifique-se de que o Airplane mode (Modo Avião) está 
+desligado antes de ativar a ligação Wi-Fi do seu PC Portátil.
+Ligação Wi-Fi
+Ligue o seu PC Portátil a uma rede Wi-Fi, seguindo estas etapas:
+ou
+1. Abra o Action Center (Centro de Ação) a partir da 
+barra de tarefas.
+2. Clique/Toque no ícone Wi-Fi para ativar o Wi-Fi.
+3. Selecione um ponto de acesso a partir da lista de 
+ligações Wi-Fi disponíveis.
+4. Selecione Connect (Ligar) para iniciar a ligação de 
+rede.
+NOTA: Pode ser-lhe solicitado que digite uma chave de 
+segurança para ativar a ligação Wi-Fi.
+76 Manual Electrónico do PC Portátil
+ou
+1. Iniciar Settings (Definições) no menu Iniciar (Start 
+menu).
+2. Selecione Bluetooth & device (Bluetooth 
+e dispositivos) > Add device (Adicionar 
+dispositivo) para procurar dispositivos compatíveis 
+com Bluetooth.
+3. Selecione um dispositivo da lista para emparelhar o 
+seu PC Portátil com o dispositivo.
+NOTA: Para alguns dispositivos compatíveis com 
+Bluetooth, pode ser-lhe solicitado digitar o código de 
+acesso do seu PC Portátil.
+Bluetooth
+Utilize a função de Bluetooth para facilitar a transferência de dados sem 
+fio com outros dispositivos compatíveis com Bluetooth.
+IMPORTANTE! O Airplane mode (Modo Avião) desativa esta 
+funcionalidade. Certifique-se de que o Airplane mode (Modo Avião) está 
+desligado antes de ativar a ligação Bluetooth do seu PC Portátil.
+Emparelhamento com outros dispositivos compatíveis com 
+o Bluetooth
+Tem de emparelhar o seu PC Portátil com outros dispositivos 
+compatíveis com Bluetooth para permitir a transferência de dados. 
+Ligue os seus dispositivos seguindo as etapas abaixo:
+Manual Electrónico do PC Portátil 77
+Modo Avião
+O modo Avião desativa a comunicação sem fios, permitindo-lhe utilizar 
+o seu PC Portátil em segurança enquanto está a voar.
+NOTA: Entre em contacto com a sua companhia aérea para saber mais 
+sobre os serviços de bordo relacionados que podem ser usados e as 
+restrições que devem ser cumpridas ao usar o seu PC Portátil a bordo.
+Ligar/Desligar o modo Avião
+ou
+1. Abra o Action Center (Centro de Ação) a partir 
+da barra de tarefas.
+2. Clique/Toque no ícone Airplane mode (Modo 
+Avião) para ativar ou desativar o modo Avião.
+78 Manual Electrónico do PC Portátil
+Desligar o seu PC Portátil
+Pode desligar o seu PC Portátil seguindo um dos procedimentos abaixo:
+ou
+• Abra o menu Iniciar, depois selecione > Shut 
+down (Encerrar) para efetuar um encerramento 
+normal.
+• No ecrã de início de sessão, selecione > Shut 
+down (Encerrar).
+• Prima para lançar Encerrar o 
+Windows. Selecione Shut down (Encerrar) na 
+lista pendente e, em seguida, selecione OK.
+• Se o seu PC Portátil não responder, mantenha 
+premido o botão de energia durante pelo menos 
+dez (10) segundos até o PC Portátil se desligar.
+Manual Electrónico do PC Portátil 79
+Colocar o PC Portátil em estado de 
+suspensão
+Para colocar o seu PC Portátil em estado de suspensão:
+ou
+• Abra o menu Iniciar, depois selecione > Sleep 
+(Suspensão) para colocar o seu PC Portátil em 
+estado de suspensão.
+• No ecrã de início de sessão, selecione > Sleep 
+(Suspensão).
+Prima para lançar Encerrar o Windows. 
+Selecione Sleep (Suspensão) na lista pendente e, em 
+seguida, selecione OK.
+NOTA: Também pode colocar o seu PC Portátil no modo Suspensão 
+pressionando uma vez o botão de Ligar/Desligar.
+80 Manual Electrónico do PC Portátil
+Manual Electrónico do PC Portátil 81
+Capítulo 4:
+Autoteste de inicialização 
+(POST)
+82 Manual Electrónico do PC Portátil
+Autoteste de inicialização (POST)
+O POST (Autoteste de inicialização) consiste numa série de testes de 
+diagnóstico controlados por software que são executados quando liga 
+ou reinicia o seu PC Portátil. O software que controla o POST é instalado 
+enquanto parte permanente da arquitetura do PC Portátil.
+Utilização do POST para aceder ao BIOS e à 
+resolução de problemas
+Durante o POST, pode aceder às definições do BIOS ou executar opções 
+de resolução de problemas utilizando as teclas de função do PC Portátil. 
+Pode consultar as informações que se seguem para obter mais detalhes.
+BIOS
+O BIOS (Basic Input and Output System) armazena as definições de 
+hardware do sistema que são necessárias para a inicialização do sistema 
+no PC Portátil.
+As definições por defeito do BIOS aplicam-se à maioria das condições 
+do seu PC Portátil. Não altere as definições por defeito do BIOS, exceto 
+nas seguintes circunstâncias:
+• Uma mensagem de erro aparece no ecrã durante o arranque do 
+sistema e solicita que execute a configuração do BIOS.
+• Foi instalado um novo componente de sistema que requer mais 
+definições ou atualizações do BIOS.
+AVISO! O uso de definições inadequadas do BIOS pode resultar 
+em instabilidade do sistema ou falha do arranque. Recomendamos 
+fortemente que altere as definições do BIOS apenas com a ajuda de 
+pessoal de assistência formado.
+Aceder ao BIOS
+Reinicie o seu PC Portátil e prima durante o POST.
+Manual Electrónico do PC Portátil 83
+Recuperação do seu sistema
+A utilização de opções de recuperação no seu PC Portátil permite 
+restaurar o sistema para o seu estado original ou simplesmente atualizar 
+as suas definições para ajudar a melhorar o desempenho.
+IMPORTANTE!
+• Faça backup de todos os seus ficheiros de dados antes de ativar 
+qualquer opção de recuperação no seu PC Portátil.
+• Anote definições personalizadas importantes, como definições de 
+rede, nomes de utilizador e palavras-passe, para evitar perda de 
+dados.
+• Certifique-se de que o seu PC Portátil está ligado a uma fonte de 
+alimentação antes de reiniciar o seu sistema.
+O Windows permite-lhe fazer qualquer uma das seguintes opções de 
+recuperação:
+• Keep my files (Manter os meus ficheiros) - Esta opção permite-
+lhe atualizar o seu PC Portátil sem afetar os ficheiros pessoais 
+(fotografias, música, vídeos, documentos).
+ Utilizando esta opção, pode restaurar o seu PC Portátil de acordo 
+com as suas definições por defeito e excluir outras aplicações 
+instaladas.
+• Remove everything (Remover tudo) - Esta opção restabelece as 
+configurações de fábrica do seu PC Portátil. Tem de fazer backup 
+dos seus dados antes de ativar esta opção.
+84 Manual Electrónico do PC Portátil
+• Advanced startup (Arranque avançado) - A utilização desta 
+opção permite-lhe executar outras opções avançadas de 
+recuperação no seu PC Portátil, como por exemplo:
+- Utilizar uma unidade USB, ligação de rede ou DVD de 
+recuperação do Windows para iniciar o seu PC Portátil.
+- Utilizar a Troubleshoot (Resolução de problemas) 
+para ativar qualquer uma dessas opções avançadas 
+de recuperação: Reparação no Arranque, Desinstalar 
+atualizações, Definições de Arranque, Definições de 
+Firmware UEFI, Linha de Comandos, Restauro do Sistema, e 
+System Image Recovery.
+Execução de uma opção de recuperação
+Consulte os seguintes passos se quiser aceder a qualquer uma das 
+opções de recuperação disponíveis para o seu computador portátil e 
+utilizá-la.
+1. Inicie Settings (Definições) e selecione System (Sistema) > 
+Recovery (Recuperação).
+Manual Electrónico do PC Portátil 85
+2. Selecione a opção de recuperação que gostaria de ativar.
+86 Manual Electrónico do PC Portátil
+Manual Electrónico do PC Portátil 87
+Sugestões e Perguntas 
+frequentes 
+88 Manual Electrónico do PC Portátil
+Sugestões úteis para seu o PC Portátil
+De seguida apresentamos algumas sugestões que pode seguir 
+para ajudar a maximizar a utilização do seu PC Portátil, manter o 
+desempenho do sistema e assegurar que todos os seus dados estão 
+seguros:
+• Atualize o Windows periodicamente para se certificar de que 
+as suas aplicações possuem as definições de segurança mais 
+recentes.
+• Atualize o MyASUS para garantir que possui as definições mais 
+recentes para aplicações, controladores e utilitários exclusivos da 
+ASUS.
+• Utilize um software antivírus para proteger os seus dados e 
+mantenha-o sempre atualizado.
+• A não ser que seja absolutamente necessário, evite forçar o 
+encerramento do seu PC Portátil.
+• Efetue sempre uma cópia de segurança dos seus dados e 
+certifique-se de que cria uma cópia de segurança dos dados 
+numa unidade de armazenamento externa.
+• Se não utilizar o seu PC Portátil durante um longo período de 
+tempo, certifique-se de que carrega a bateria até 50% e, em 
+seguida, desligue o seu PC Portátil e retire o transformador AC.
+• Se utilizar constantemente o cabo de alimentação com o seu PC 
+Portátil, defina Battery Health Charging para Modo equilibrado 
+no MyASUS.
+Manual Electrónico do PC Portátil 89
+• Desligue todos os dispositivos externos e certifique-se de que 
+tem os seguintes itens antes de proceder à reposição do seu PC 
+Portátil:
+- Chave de produto dos seus sistemas operativos e de outras 
+aplicações instaladas
+- Cópia de segurança dos dados
+- ID e palavra-passe de início de sessão
+- Informações da ligação à Internet
+• Visite o nosso site de suporte para a resolução de problemas e 
+encontre algumas das perguntas mais frequências em 
+https://www.asus.com/pt/support.
+90 Manual Electrónico do PC Portátil
+Perguntas frequentes sobre hardware
+1. Aparece um ponto negro, ou por vezes um ponto colorido, no 
+ecrã quando ligo o PC Portátil. O que devo fazer?
+Apesar de estes pontos aparecerem normalmente no ecrã, estes 
+não irão afetar o seu sistema. Se o incidente persistir e vier mais 
+tarde a afetar o desempenho do sistema, consulte um Centro de 
+assistência ASUS autorizado.
+2. O meu painel de visualização apresenta cor e brilho 
+irregulares. Como posso resolver esta situação?
+A cor e o brilho do seu painel de visualização poderão ser 
+afetados pelo ângulo e posição atuais do seu PC Portátil. O 
+brilho e os tons de cor do seu PC Portátil podem também variar 
+consoante o modelo. Pode utilizar as teclas de função ou as 
+definições de visualização do seu sistema operativo para ajustar a 
+aparência do seu painel de visualização.
+3. Como posso maximizar a duração da bateria do meu PC 
+Portátil?
+Pode tentar efetuar uma das seguintes ações:
+• Utilize as teclas de função para ajustar o brilho do ecrã.
+• Se não estiver a utilizar uma ligação Wi-Fi, mude o seu 
+sistema para Airplane mode (Modo de voo).
+• Desligue dispositivos USB que não estejam a ser utilizados.
+• Feche aplicações que não está a utilizar, especialmente as 
+que ocupem muita memória de sistema.
+Manual Electrónico do PC Portátil 91
+4. O LED indicador da bateria não acende. Qual é o problema?
+• Verifique se o transformador e a bateria estão colocados 
+corretamente. Pode também desligar o transformador ou 
+a bateria, aguardar um minuto, e voltar a ligar à tomada 
+elétrica e ao PC Portátil.
+• Se o problema persistir, contacte o seu Centro de assistência 
+ASUS local para obter assistência.
+5. Por que motivo o touchpad não funciona?
+Prima para ativar o touchpad.
+6. Por que motivo não consigo ouvir qualquer som dos 
+altifalantes de áudio do meu PC Portátil quando reproduzo 
+ficheiros de áudio e vídeo?
+Pode tentar efetuar uma das seguintes ações:
+• Prima para aumentar o volume do altifalante.
+• Verifique se não desativou o som dos altifalantes.
+• Verifique se existe uma ficha de auscultadores ligada ao seu 
+PC Portátil e remova-a.
+92 Manual Electrónico do PC Portátil
+7. O que devo fazer se perder o transformador do meu PC 
+Portátil ou se a bateria deixar de funcionar?
+Contacte o seu Centro de assistência ASUS local para obter 
+assistência.
+8. Não consigo teclar corretamente no meu PC Portátil porque o 
+cursor não para de se mover. O que devo fazer?
+Certifique-se de que não existe nada que esteja a tocar ou a 
+premir acidentalmente o touchpad quando tenta utilizar o 
+teclado. Pode desativar o touchpad premindo .
+Manual Electrónico do PC Portátil 93
+Perguntas frequentes sobre software
+1. Quando ligo o meu PC Portátil, o indicador de energia 
+acende, mas o ecrã continua apagado. Como posso resolver 
+esta situação?
+Pode tentar efetuar uma das seguintes ações:
+• Force o encerramento do seu PC portátil premindo o 
+botão de energia durante, pelo menos, dez (10) segundos. 
+Verifique se o transformador e a bateria estão inseridos 
+corretamente e ligue o PC portátil.
+• Se o problema persistir, contacte o seu Centro de assistência 
+ASUS local para obter assistência.
+2. O que devo fazer quando a seguinte mensagem for exibida 
+no ecrã: "Remove disks or other media. Press any key to 
+restart." (Remover discos ou outro suporte. Prima qualquer 
+tecla para reiniciar.)?
+Pode tentar efetuar uma das seguintes ações:
+• Remova todos os dispositivos USB ligados e reinicie o PC 
+portátil.
+• Remova o disco ótico do interior da unidade ótica e reinicie.
+• Se o problema ainda persistir, o seu PC portátil poderá ter 
+um problema no espaço de armazenamento. Contacte o seu 
+Centro de assistência ASUS local para obter assistência.
+94 Manual Electrónico do PC Portátil
+3. O PC portátil arranca mais lentamente do que o normal e 
+o sistema operativo está lento. Como posso resolver esta 
+situação?
+Elimine as aplicações que instalou recentemente ou que não 
+estavam incluídas no pacote do seu sistema operativo e reinicie o 
+sistema.
+4. O meu PC portátil não arranca. Como posso resolver esta 
+situação?
+Pode tentar efetuar uma das seguintes ações:
+• Remova todos os dispositivos ligados ao PC portátil e 
+reinicie o sistema.
+• Se o problema persistir, contacte o seu Centro de assistência 
+ASUS local para obter assistência.
+5. Por que motivo não consigo ativar o meu PC portátil a partir 
+do modo de suspensão ou hibernação?
+• Tem de premir o botão de energia para regressar ao último 
+estado de funcionamento.
+• O seu sistema poderá ter consumido toda a energia da 
+bateria. Ligue o transformador ao seu PC portátil e a uma 
+tomada elétrica e prima o botão de energia.
+Manual Electrónico do PC Portátil 95
+Anexos
+96 Manual Electrónico do PC Portátil
+Conformidade do modem interno
+O modelo de PC Portátil com modem interno está em conformidade com as 
+normas JATE (Japão), FCC (EUA, Canadá, Coreia, Taiwan), e CTR 21. O modem 
+interno foi aprovado para ligação pan-europeia de um único terminal à rede 
+telefónica pública comutada (RTPC) nos termos da Decisão 98/482/CE. No entanto, 
+devido às diferenças existentes entre as RTPC dos diversos países, a aprovação 
+não garante incondicionalmente, por si só, um funcionamento correto em todos 
+os pontos terminais da rede da RTPC. Em caso de problemas, deverá contactar, em 
+primeiro lugar, o fornecedor do equipamento.
+Resumo
+No dia 4 de agosto de 1998, a Decisão do Conselho Europeu relativa à norma 
+CTR 21 foi publicada no Jornal Oficial da UE. A norma CTR 21 aplica-se a todo o 
+equipamento terminal sem voz com marcação DTMF, cuja função é ser ligado a 
+uma RTPC (Rede telefónica pública comutada) analógica.
+CTR 21 (Common Technical Regulation, Regulamento técnico comum) para os 
+requisitos de anexo para a ligação às redes telefónicas públicas comutadas do 
+equipamento terminal (excluindo o equipamento terminal que suporta o serviço 
+telefónico com voz), no qual o endereçamento de rede, caso seja fornecido, é 
+realizado por sinalização de multifrequência dupla.
+Manual Electrónico do PC Portátil 97
+Declaração de compatibilidade de rede
+Declaração a ser efetuada pelo fabricante ao Organismo notificado e ao 
+fornecedor: "Esta declaração indica as redes com as quais o equipamento 
+foi concebido para funcionar e quaisquer redes notificadas com as quais o 
+equipamento pode ter dificuldades de comunicação".
+Declaração a ser efetuada pelo fabricante ao utilizador: "Esta declaração indica as 
+redes com as quais o equipamento foi concebido para funcionar e quaisquer redes 
+notificadas com as quais o equipamento pode ter dificuldades de comunicação. 
+O fabricante deverá também associar uma declaração para clarificar onde a 
+compatibilidade de rede está dependente de comutação entre definições físicas 
+e de software. É também aconselhável que o utilizador contacte o revendedor se 
+desejar utilizar o equipamento noutra rede."
+Até ao momento, o Organismo notificado da CETECOM emitiu várias aprovações 
+pan-europeias utilizando a CTR 21. Como resultado, surgiram os primeiros 
+modems europeus que não necessitam de aprovações individuais para cada país 
+europeu.
+Equipamento sem voz
+Os atendedores de chamadas e os telefones com alta-voz podem também ser 
+elegíveis como modems, faxes, marcadores automáticos e sistemas de alarme. 
+Está excluído o equipamento no qual a qualidade de voz de emissor-recetor 
+é controlada por normas (por exemplo, os telefones fixos e em alguns países 
+também os telefones sem fios).
+98 Manual Electrónico do PC Portátil
+Esta tabela mostra os países que estão actualmente em 
+conformidade com a norma CTR21.
+País Aplicada Mais testes
+Áustria1 Sim Não 
+Bélgica Sim Não 
+República Checa Não Não aplicável 
+Dinamarca1 Sim Sim 
+Finlândia Sim Não 
+França Sim Não 
+Alemanha Sim Não
+Grécia Sim Não 
+Hungria Não Não aplicável 
+Islândia Sim Não 
+Irlanda Sim Não 
+Itália Ainda pendente Ainda pendente 
+Israel Não Não 
+Liechtenstein Sim Não 
+Luxemburgo Sim Não 
+Países Baixos1 Sim Sim 
+Noruega Sim Não 
+Polónia Não Não aplicável 
+Portugal Não Não aplicável 
+Espanha Não Não aplicável 
+Suécia Sim Não 
+Suíça Sim Não 
+Reino Unido Sim Não 
+Manual Electrónico do PC Portátil 99
+Esta informação foi copiada da CETECOM e é fornecida sem qualquer 
+compromisso. Para obter atualizações desta tabela, pode visitar 
+http://www.cetecom.de/technologies/ctr_21.html.
+1 Os requisitos nacionais apenas se aplicam se o equipamento puder utilizar 
+marcação por impulso (os fabricantes podem referir que o equipamento apenas 
+suporta sinalização DTMF, o que tornaria supérfluos quaisquer testes adicionais).
+Nos Países Baixos é necessário realizar testes adicionais para ligações de série e 
+funções de ID do autor da chamada.
+http://www.cetecom.de/technologies/ctr_21.html
+100 Manual Electrónico do PC Portátil
+Declaração relativa a interferências da FCC
+Este dispositivo está em conformidade com as normas da FCC, secção 15. O 
+funcionamento está sujeito às duas seguintes condições:
+• Este dispositivo não pode provocar interferências perigosas.
+• Este dispositivo tem de aceitar qualquer interferência recebida, incluindo 
+interferências que possam dar origem a um funcionamento indesejado.
+Este equipamento foi testado e concluiu-se que está em conformidade com 
+os limites estabelecidos para dispositivos digitais de classe B, de acordo com a 
+parte 15 das normas da Comissão Federal para as Comunicações (FCC). Estes 
+limites foram concebidos para disponibilizar uma proteção razoável contra 
+interferências perigosas em instalações residenciais. Este equipamento gera, 
+utiliza e pode irradiar energia de frequência de rádio e, se não for instalado e 
+utilizado de acordo com as instruções, pode provocar interferências perigosas 
+nas comunicações de rádio. Contudo, não há qualquer garantia de que as 
+interferências possam ocorrer numa instalação particular. Se este equipamento 
+provocar interferências perigosas na receção de rádio ou de televisão, o que pode 
+ser determinado desligando e voltando a ligar o equipamento, o utilizador é 
+encorajado a tentar corrigir a interferência através de uma ou mais das seguintes 
+medidas:
+• Reorientar ou recolocar a antena recetora.
+• Aumentar a separação existente entre o equipamento e o recetor.
+• Ligar o equipamento a uma tomada num circuito diferente daquele a que 
+o recetor está ligado.
+• Procurar um fornecedor ou um técnico de televisão/rádio com experiência.
+AVISO! A utilização de um cabo de alimentação do tipo blindado é necessária para 
+ficar em conformidade com os limites de emissões da FCC e para evitar interferências 
+na receção da televisão e do rádio mais próximos. É essencial utilizar apenas o cabo de 
+alimentação fornecido. Utilizar apenas cabos blindados para ligar dispositivos de I/O 
+a este equipamento. O utilizador é avisado de que as alterações ou modificações que 
+não tenham sido expressamente aprovadas pela parte responsável pela conformidade, 
+podem anular a autorização de utilização do equipamento.
+(Reeditado a partir do Código de Regulamentos Federais N.º 47 (Code of Federal 
+Regulations #47), parte 15.193, 1993. Washington DC: Gabinete do Registo 
+Federal, Arquivos Nacionais e Administração de Registos, Gabinete de Impressão 
+do Governo dos EUA.)
+Manual Electrónico do PC Portátil 101
+Aviso da FCC relativo à exposição a 
+radiofrequência (RF)
+AVISO! Quaisquer alterações ou modificações não expressamente aprovadas pela 
+entidade responsável pela conformidade podem anular a autorização do utilizador 
+para operar o equipamento. 
+Este equipamento está em conformidade com os limites de exposição à radiação 
+definidos pela FCC relativamente a um ambiente não controlado. Para manter 
+o cumprimento dos requisitos de conformidade de exposição a RF da FCC, 
+evitar o contacto direto com a antena transmissora durante as transmissões. Os 
+utilizadores finais devem seguir as instruções de funcionamento específicas para 
+assegurar a conformidade de exposição a RF.
+Informação de exposição a RF (SAR)
+Este dispositivo cumpre os requisitos governamentais para exposição a ondas de 
+rádio. Este dispositivo foi concebido e produzido de forma a não exceder os limites 
+de emissões para exposição a energia de radiofrequência (RF) estabelecidos pela 
+Comissão Federal para as Comunicações do Governo dos EUA.
+A norma de exposição para dispositivos sem fios utiliza uma unidade de medição 
+conhecida como Taxa de absorção específica, ou SAR. O limite de SAR estabelecido 
+pela FCC é de 1,6 W/kg. Os testes de SAR são realizados utilizando posições de 
+utilização comuns aceites pela FCC, com o dispositivo a transmitir ao nível de 
+potência mais elevado em todas as bandas de frequência testadas.
+102 Manual Electrónico do PC Portátil
+Avisos de segurança da UL
+Necessário para a UL 1459, que abrange o equipamento de telecomunicações 
+(telefone) destinado a ser ligado eletricamente a uma rede de telecomunicações 
+que tenha uma tensão de serviço com ligação à terra que não exceda o pico de 
+200 V, 300 V pico a pico e 105 V rms, e instalada ou utilizada em conformidade 
+com o Código Elétrico Nacional (NFPA 70).
+Ao utilizar o modem do PC Portátil, as precauções de segurança básicas devem ser 
+sempre respeitadas, para reduzir o risco de incêndio, choque elétrico e lesões nas 
+pessoas, incluindo as seguintes:
+• NÃO utilizar o PC Portátil perto da água, por exemplo, perto de uma 
+banheira, lavatório, lava-loiças ou numa lavandaria, numa cave molhada ou 
+perto de uma piscina.
+• NÃO utilizar o PC Portátil durante uma tempestade elétrica. Poderá haver o 
+risco remoto de ocorrer um choque elétrico resultante de um trovão.
+• NÃO utilizar o PC Portátil nas proximidades de uma fuga de gás.
+Necessário para a UL 1642, que abrange as baterias de lítio principais (não-
+recarregáveis) e as baterias de lítio secundárias (recarregáveis) para utilização 
+como fontes de alimentação nos produtos. Estas baterias contêm lítio metálico 
+ou uma liga de lítio, ou um ião de lítio, e podem consistir numa única célula 
+eletroquímica ou em duas ou mais células ligadas em série, paralelas ou ambos, 
+que convertam energia química em energia elétrica através de uma reação 
+química irreversível ou reversível.
+• NÃO deitar a bateria do PC Portátil num fogo, porque pode explodir. 
+Verificar os códigos locais para saber se há instruções especiais relativas 
+à eliminação, para reduzir o risco de lesões nas pessoas devido a fogo ou 
+explosões.
+• NÃO utilizar os transformadores de alimentação ou as baterias de outros 
+dispositivos, para reduzir o risco de ocorrência de lesões físicas devido 
+a fogo ou explosões. Utilizar apenas transformadores de alimentação 
+certificados pela UL ou baterias fornecidas pelo fabricante ou por 
+revendedores autorizados.
+Manual Electrónico do PC Portátil 103
+Requisitos de segurança energética
+Os produtos que disponham de potências nominais até 6 A e pesem mais de 3 kg 
+têm de utilizar cabos de alimentação aprovados superiores ou iguais a: H05VV-F, 
+3 G, 0,75 mm2 ou H05VV-F, 2 G, 0,75 mm2.
+Avisos sobre o sintonizador de TV
+Nota para o instalador do sistema de TV por cabo - O sistema de distribuição por 
+cabo deverá ter ligação à terra de acordo com o ANSI/NFPA 70, o Código Elétrico 
+Nacional (NEC), em especial a secção 820.93, Ligação à terra de escudo condutor 
+de um cabo coaxial – a instalação deverá incluir a ligação do núcleo do cabo 
+coaxial à terra na entrada do edifício.
+Aviso do produto da Macrovision Corporation
+Este produto incorpora tecnologia de proteção dos direitos de autor que é 
+protegida por reivindicações de método de determinadas patentes dos EUA e por 
+outros direitos de propriedade intelectual da Macrovision Corporation e de outros 
+detentores de direitos. A utilização desta tecnologia de proteção dos direitos de 
+autor tem de ser autorizada pela Macrovision Corporation e destina-se apenas à 
+utilização doméstica e a outras utilizações de visualização limitadas, a menos que 
+seja autorizado de outro modo pela Macrovision Corporation. A engenharia inversa 
+ou a desmontagem é proibida.
+Prevenção de perda de audição
+Para evitar possíveis danos auditivos, não utilize níveis de volume 
+elevados durante longos períodos.
+Aviso sobre o revestimento
+IMPORTANTE! Para oferecer isolamento elétrico e manter a segurança, foi aplicado 
+um revestimento para isolar o chassis do PC Portátil, exceto nas partes laterais, onde 
+se localizam as portas de I/O.
+104 Manual Electrónico do PC Portátil
+Avisos nórdicos sobre lítio (para baterias de iões 
+de lítio)
+CAUTION! Danger of explosion if battery is incorrectly replaced. Replace only with 
+the same or equivalent type recommended by the manufacturer. Dispose of used 
+batteries according to the manufacturer’s instructions. (English)
+ATTENZIONE! Rischio di esplosione della batteria se sostituita in modo errato. 
+Sostituire la batteria con un una di tipo uguale o equivalente consigliata dalla 
+fabbrica. Non disperdere le batterie nell’ambiente. (Italiano)
+VORSICHT! Explosionsgefahr bei unsachgemäßen Austausch der Batterie. Ersatz 
+nur durch denselben oder einem vom Hersteller empfohlenem ähnlichen Typ. 
+Entsorgung gebrauchter Batterien nach Angaben des Herstellers. (Deutsch)
+ADVARSELI! Lithiumbatteri - Eksplosionsfare ved fejlagtig håndtering. Udskiftning 
+må kun ske med batteri af samme fabrikat og type. Levér det brugte batteri 
+tilbage til leverandøren. (Dansk)
+VARNING! Explosionsfara vid felaktigt batteribyte. Använd samma batterityp eller 
+en ekvivalent typ som rekommenderas av apparattillverkaren. Kassera använt 
+batteri enligt fabrikantens instruktion. (Svenska)
+VAROITUS! Paristo voi räjähtää, jos se on virheellisesti asennettu. Vaihda paristo 
+ainoastaan laitevalmistajan sousittelemaan tyyppiin. Hävitä käytetty paristo 
+valmistagan ohjeiden mukaisesti. (Suomi)
+ATTENTION! Danger d’explosion si la batterie n’est pas correctement remplacée. 
+Remplacer uniquement avec une batterie de type semblable ou équivalent, 
+recommandée par le fabricant. Jeter les batteries usagées conformément aux 
+instructions du fabricant. (Français)
+ADVARSEL! Eksplosjonsfare ved feilaktig skifte av batteri. Benytt samme 
+batteritype eller en tilsvarende type anbefalt av apparatfabrikanten. Brukte 
+batterier kasseres i henhold til fabrikantens instruksjoner. (Norsk)
+(日本語)
+ВНИМАНИЕ! При замене аккумулятора на аккумулятор иного типа возможно 
+его возгорание. Утилизируйте аккумулятор в соответствии с инструкциями 
+производителя. (Pyccкий)
+Manual Electrónico do PC Portátil 105
+Aprovação CTR 21 (para PC Portátil com modem 
+incorporado)
+Dansk
+Nederlands
+English
+Suomi
+Français
+106 Manual Electrónico do PC Portátil
+Deutsch
+Ελληνικά
+Italiano
+Português
+Español
+Svenska
+Manual Electrónico do PC Portátil 107
+Declaração de conformidade com a 
+regulamentação ambiental de produtos
+A ASUS rege-se pelo conceito do design ecológico na produção dos seus 
+produtos e garante que todas as etapas do ciclo de vida do produto ASUS estão 
+de acordo com as normas ambientais a nível global. Além disso, a ASUS revela as 
+informações relevantes de acordo com os requisitos regulamentares.
+Consulte a página http://csr.asus.com/Compliance.htm para obter informações 
+relativas aos requisitos regulamentares respeitados pela ASUS.
+REACH e Artigo 33 UE
+De acordo com o quadro regulamentar REACH (Registro, Avaliação, Autorização e 
+Restrição de Químicos), publicamos as substâncias químicas incluídas nos nossos 
+produtos no website ASUS REACH em http://csr.asus.com/english/REACH.htm.
+RSP UE
+Este produto está em conformidade com a Diretiva RSP da UE. Para mais detalhes, 
+consulte http://csr.asus.com/english/article.aspx?id=35.
+http://csr.asus.com/Compliance.htm
+http://csr.asus.com/english/REACH.htm
+http://csr.asus.com/english/article.aspx?id=35.
+108 Manual Electrónico do PC Portátil
+Reciclagem da ASUS/Serviços de devolução
+Os programas de reciclagem e de devolução da ASUS resultam do nosso 
+compromisso para elevar os padrões de proteção do nosso ambiente. Oferecemos 
+soluções para que possa reciclar de forma responsável os nossos produtos, 
+baterias e outros componentes, assim como os materiais de embalagem.
+Visite a página http://csr.asus.com/english/Takeback.htm para obter informações 
+relativas ao processo de reciclagem em diferentes regiões.
+Diretiva “Conceção Ecológica”
+A União Europeia anunciou a criação de um quadro para a definição de requisitos 
+de conceção ecológica de produtos que consomem energia (2009/125/CE). As 
+medidas específicas implementadas destinam-se a melhorar o desempenho 
+ambiental de produtos específicos ou de vários tipos de produtos. A ASUS 
+disponibiliza informações sobre os produtos no website CSR. É possível encontrar 
+mais informações em https://csr.asus.com/english/article.aspx?id=1555.
+http://csr.asus.com/english/Takeback.htm
+https://csr.asus.com/english/article.aspx?id=1555.
+Manual Electrónico do PC Portátil 109
+Produtos registados no programa EPEAT
+As informações ambientais fundamentais de produtos ASUS registados no 
+programa EPEAT (Ferramenta de Avaliação Ambiental de Produtos Eletrónicos) 
+são divulgadas publicamente em https://csr.asus.com/english/article.aspx?id=41. 
+Pode encontrar mais informações sobre o programa EPEAT e obter orientações 
+para compras de produtos em www.epeat.net.
+Produto com certificação ENERGY STAR
+ENERGY STAR é um programa conjunto da Agência de Proteção 
+Ambiental dos EUA e do Departamento de Energia dos EUA, que 
+nos ajuda a poupar dinheiro e a proteger o meio ambiente através 
+de produtos e práticas energeticamente eficientes.
+Todos os produtos ASUS com logótipo ENERGY STAR cumprem a norma ENERGY 
+STAR e a função de gestão de energia está ativada por predefinição. O monitor 
+entrará automaticamente em modo de suspensão após 10 minutos de inatividade. 
+O computador entrará automaticamente em modo de suspensão após 30 minutos 
+de inatividade. Para ativar o computador, clique no rato, pressione qualquer tecla 
+do teclado ou pressione o botão de energia. 
+Para informações mais detalhadas sobre a gestão de energia e os seus benefícios 
+para o ambiente, visite http://www.energystar.gov/powermanagement. Além 
+disso, visite http://www.energystar.gov para obter informações detalhadas sobre 
+o programa conjunto ENERGY STAR.
+NOTA: A certificação Energy Star NÃO é suportada em sistemas operativos baseados 
+em FreeDOS e Linux.
+https://csr.asus.com/english/article.aspx?id=41.
+www.epeat.net
+110 Manual Electrónico do PC Portátil
+Licença de tipos de letra BIOS
+Copyright © 2022 The Android Open Source Project
+Licenciado ao abrigo da licença Apache, Versão 2.0 (a “Licença”); este ficheiro 
+apenas poderá ser utilizado em conformidade com a Licença. Pode obter uma 
+cópia da Licença em http://www.apache.org/licenses/LICENSE-2.0.
+A menos que seja exigido pela legislação aplicável ou acordado por escrito, 
+o software distribuído ao abrigo da Licença é distribuído “TAL COMO ESTÁ”, 
+SEM GARANTIAS OU QUAISQUER CONDIÇÕES, sejam as mesmas expressas ou 
+implícitas.
+Consulte na Licença os termos específicos que determinam permissões e 
+limitações ao abrigo da Licença.
+Manual Electrónico do PC Portátil 111
+Declaração de conformidade simplificada da UE
+A ASUSTek Computer Inc. declara que este dispositivo está em conformidade com 
+os requisitos essenciais e outras disposições relevantes da Diretiva 2014/53/UE. O 
+texto integral da declaração de conformidade da UE está disponível em 
+https://www.asus.com/support/.
+A utilização das frequências WiFi de 5150 a 5350 MHz é restrita a ambientes 
+interiores nos países apresentados na tabela:
+AT BE BG CZ DK EE FR
+DE IS IE IT EL ES CY
+LV LI LT LU HU MT NL
+NO PL PT RO SI SK TR
+FI SE CH HR UK(NI)
+a. Dispositivos Wi-Fi 6E de interior de baixa potência (LPI): 
+O dispositivo restringe-se à utilização em locais interiores apenas quando 
+funcionar na gama de frequências de 5945 a 6425 MHz na Bélgica (BE), 
+Bulgária (BG), Chipre (CY), República Checa (CZ), Estónia (EE), França (FR), 
+Islândia (IS), Irlanda (IE), Lituânia (LT), Alemanha (DE), Países Baixos (NL), 
+Espanha (ES).
+b. Dispositivos Wi-Fi 6E de muito baixa potência (VLP) (dispositivos portáteis): 
+Não é permitida a utilização do dispositivo em veículos aéreos não 
+tripulados (UAS) quando o mesmo funcionar na gama de frequências de 
+5945 a 6425 MHz na Bélgica (BE), Bulgária (BG), Chipre (CY), República 
+Checa (CZ), Estónia (EE), França (FR), Islândia (IS), Irlanda (IE), Lituânia (LT), 
+Alemanha (DE), Países Baixos (NL), Espanha (ES).
+112 Manual Electrónico do PC Portátil
+Informação de exposição a RF (SAR)
+Este dispositivo cumpre os requisitos da UE (2014/53/UE) relativos a limitação de 
+exposição do público em geral a campos eletromagnéticos, visando a proteção da 
+saúde.
+Os limites são definidos no âmbito de recomendações pormenorizadas, visando 
+a proteção do público em geral. Estas recomendações foram desenvolvidas e 
+verificadas por organizações científicas independentes, através de avaliações 
+regulares e minuciosas de estudos científicos. A unidade de medição utilizada 
+para o limite recomendado pelo Conselho Europeu para os dispositivos móveis é 
+conhecida como Taxa de absorção específica (SAR), sendo o limite SAR de 2.0  
+W/kg com uma média de 10 gramas de tecido do corpo. Está em conformidade 
+com os requisitos da Comissão Internacional de Proteção contra Radiação 
+Ionizante (ICNIRP).
+Para a utilização junto ao corpo, este dispositivo foi submetido a testes e verificou-
+se estar em conformidade com as diretivas de exposição da ICNIRP e as normas 
+europeias EN 50566 e EN 62209-2. A taxa SAR é quantificada com o dispositivo 
+em contacto direto com o corpo enquanto transmite ao nível de potência mais 
+elevado certificado em todas as bandas de frequência do dispositivo móvel.
+Deverá ser mantida uma distância mínima de separação de 1 cm entre o corpo do 
+utilizador e o dispositivo, incluindo a antena, durante a utilização do mesmo junto 
+ao corpo para cumprir os requisitos relativos a exposição de RF na Europa.
+Aviso sobre rede Wi-Fi
+IMPORTANTE! A placa de rede Wi-Fi 6E está disponível em alguns modelos. A 
+conetividade da banda Wi-Fi 6E pode variar de acordo com a regulamentação e 
+certificação de cada país/região.
+ Acerca deste manual
+ Convenções utilizadas neste manual
+ Ícones
+ Tipografia
+ Precauções de segurança
+ Utilizar o PC Portátil
+ Cuidados a ter com o PC Portátil
+ Eliminação correcta
+ Informações de segurança da bateria
+ Capítulo 1: Configuração do hardware
+ Conheça o seu PC Portátil
+ Vista frontal
+ Vista superior
+ Vista inferior
+ Vista direita
+ Vista esquerda
+ Capítulo 2: Utilizar o PC Portátil
+ Começar a utilizar
+ Carregar o seu PC Portátil
+ Levante para abrir o ecrã
+ Prima o botão ligar/desligar
+ Gestos para o ecrã tátil e touchpad
+ Utilização de gestos no ecrã tátil
+ Utilização do touchpad
+ Utilização do NumberPad
+ Utilização do teclado
+ Teclas de atalho
+ Teclas de Função
+ Teclas do Windows
+ Rodar o ecrã
+ Capítulo 3: Trabalhar com Windows
+ Começar de raiz
+ Menu Iniciar (Start menu)
+ Aplicações Windows
+ Trabalhar com aplicações Windows
+ Personalização de aplicações Windows
+ Vista de tarefas (Task View)
+ Widgets
+ Função Encaixar
+ Hotspot de encaixe
+ Action Center (Centro de Ação)
+ MyASUS Splendid
+ Configurar o ecrã OLED
+ Definição do Modo Escuro
+ Desligar o ecrã quando não está a ser utilizado
+ Ajuste da luminosidade do ecrã
+ Ocultar automaticamente a barra de tarefas
+ Configuração do Modo Escuro no Microsoft Office
+ Outros atalhos de teclado
+ Ligação a redes sem fios
+ Wi-Fi
+ Bluetooth
+ Modo Avião
+ Desligar o seu PC Portátil
+ Colocar o PC Portátil em estado de suspensão
+ Capítulo 4: Autoteste de inicialização (POST)
+ Autoteste de inicialização (POST)
+ Utilização do POST para aceder ao BIOS e à resolução de problemas
+ BIOS
+ Aceder ao BIOS
+ Recuperação do seu sistema
+ Execução de uma opção de recuperação
+ Sugestões e Perguntas frequentes 
+ Sugestões úteis para seu o PC Portátil
+ Perguntas frequentes sobre hardware
+ Perguntas frequentes sobre software
+ Anexos
+ Conformidade do modem interno
+ Resumo
+ Declaração de compatibilidade de rede
+ Equipamento sem voz
+ Declaração relativa a interferências da FCC
+ Aviso da FCC relativo à exposição a radiofrequência (RF)
+ Informação de exposição a RF (SAR)
+ Avisos de segurança da UL
+ Requisitos de segurança energética
+ Avisos sobre o sintonizador de TV
+ Aviso do produto da Macrovision Corporation
+ Prevenção de perda de audição
+ Aviso sobre o revestimento
+ Avisos nórdicos sobre lítio (para baterias de iões de lítio)
+ Aprovação CTR 21 (para PC Portátil com modem incorporado)
+ Declaração de conformidade com a regulamentação ambiental de produtos
+ REACH e Artigo 33 UE
+ RSP UE
+ Reciclagem da ASUS/Serviços de devolução
+ Diretiva “Conceção Ecológica”
+ Produto com certificação ENERGY STAR
+ Produtos registados no programa EPEAT
+ Licença de tipos de letra BIOS
+ Declaração de conformidade simplificada da UE
+ Aviso sobre rede Wi-Fi
+ Informação de exposição a RF (SAR)
