@@ -267,10 +267,111 @@ def init_task_context(ctx):
 
     elif task == "Risk Indicator Extraction":
         ctx.keyConsiderations = getKeyConsiderations()
-        
+
+
+def _select_workflow_mode():
+    return OptionSelector(
+        options={
+            "single": "單階段（舊版相容）",
+            "multi": "多階段（依序串接多個任務）",
+        },
+        question="請選擇任務編排方式：",
+        default="single",
+    ).proc()
+
+
+def _select_single_task(options):
+    return OptionSelector(options=options, question="請選擇一個任務：").proc()
+
+
+def _select_stage_input_source(stage_index, stages):
+    if stage_index == 1:
+        return "original"
+
+    source_mode = OptionSelector(
+        options={
+            "previous": "使用前一階段輸出（預設）",
+            "original": "使用原文",
+            "stage_name": "指定既有某一階段輸出",
+        },
+        question=f"請選擇第 {stage_index} 階段輸入來源(input_from)：",
+        default="previous",
+    ).proc()
+
+    if source_mode != "stage_name":
+        return source_mode
+
+    stage_options = {
+        s["name"]: f"task_key={s.get('task_key', '')}"
+        for s in stages
+    }
+    return OptionSelector(
+        options=stage_options,
+        question=f"請選擇第 {stage_index} 階段要引用的 stage 輸出：",
+    ).proc()
+
+
+def _build_multistage_tasks(options, max_stages=8):
+    stages = []
+    stage_index = 1
+
+    while True:
+        selected_task = OptionSelector(
+            options=options,
+            question=f"請選擇第 {stage_index} 階段任務：",
+        ).proc()
+        stages.append(
+            {
+                "name": f"stage_{stage_index}",
+                "task_key": selected_task,
+                "input_from": _select_stage_input_source(stage_index, stages),
+                "persist_output": "always",
+            }
+        )
+
+        if stage_index >= max_stages:
+            print(f"⚠️ 已達互動式上限 {max_stages} 階段，將自動完成設定。")
+            break
+
+        next_action = OptionSelector(
+            options={
+                "add": "新增下一階段",
+                "done": "完成階段設定",
+            },
+            question="是否繼續新增下一階段？",
+            default=("add" if stage_index == 1 else "done"),
+        ).proc()
+        if next_action == "done":
+            break
+        stage_index += 1
+
+    # 僅最後一階段視為最終輸出，其餘保留中間結果以利除錯與追蹤
+    stages[-1]["persist_output"] = "final"
+    return stages
+
+
+def _apply_multistage_to_ctx(ctx, stages):
+    ctx.stages = stages
+    ctx.task = stages[0]["task_key"]
+    print("✅ 已建立多階段任務流程：")
+    for i, stage in enumerate(stages, start=1):
+        print(
+            f"  Stage {i}: task_key={stage['task_key']}, "
+            f"input_from={stage['input_from']}, persist={stage['persist_output']}"
+        )
+
+
 def set_task(ctx):
     options = {k: v["CT_name"] for k, v in taskSetting.items()}
-    ctx.task = OptionSelector(options=options, question="請選擇一個任務：").proc()
+    workflow_mode = _select_workflow_mode()
+
+    if workflow_mode == "single":
+        ctx.task = _select_single_task(options)
+        init_task_context(ctx)
+        return ctx.task
+
+    stages = _build_multistage_tasks(options=options, max_stages=8)
+    _apply_multistage_to_ctx(ctx, stages)
     init_task_context(ctx)
     return ctx.task
 

@@ -15,6 +15,7 @@
   - `original`: 使用原文
   - `previous`: 使用前一階段輸出
   - `<stage_name>`: 使用指定階段輸出
+  - 互動式多階段 builder 亦支援上述三種輸入來源（可指定 stage 名稱）
 - `persist_output`: 輸出保存策略
   - `final`（預設）：只存最後階段
   - `always`：一定保存
