@@ -209,3 +209,55 @@
 > `stage.name` **可以**等於 `taskSetting` 的 key（寫法 C），  
 > 但更推薦用 `task_key`（寫法 A），可讀性和可維護性更好。  
 > 路由時也建議 `route_map` value 使用 `taskSetting` key（`route_value_mode: task_key`）。
+
+---
+
+## 8) YAML 設定速查（推薦實務寫法）
+
+雖然上面示例多以 JSON 呈現，實務上你在本專案通常會寫成 YAML。
+
+### 8.1 三階段範例（PDF 清整 → 翻譯 → 摘要）
+
+```yaml
+defaults:
+  input_from: original
+  persist_output: never
+  max_attempts: 2
+
+stages:
+  - name: pdf_opt
+    task_key: "PDF OPT-Instruction First"
+    input_from: original
+    persist_output: always
+
+  - name: en_to_zh
+    task_key: "Translation-toTWZH"
+    input_from: previous
+    persist_output: never
+
+  - name: summarize
+    task_key: "Summary-toTWZH"
+    input_from: previous
+    persist_output: final
+```
+
+### 8.2 `persist_output` 建議
+
+- `always`：這一階段一定保留（適合關鍵中間態，像分類、清整、翻譯）。  
+- `never`：不保留到最終持久化輸出（節省空間、減少中間檔）。  
+- `final`：只在此階段是最後階段時保留（最常用於最終任務節點）。  
+
+### 8.3 多階段輸出命名（目前行為）
+
+1. **最終輸出檔**：仍保留來源子目錄結構，檔名會帶上任務後綴。  
+2. **中間 `_stage_merges` 輸出**：也會盡量保留相對父層子目錄，避免不同來源資料夾混在一起。  
+3. `_stage_merges` 內每個階段檔名格式：
+   - `NN_<stage_name>_<task_key>.txt`（有 `task_key`）
+   - `NN_<stage_name>.txt`（無 `task_key`）
+4. 另會輸出 `manifest.json`，記錄各 stage 的 index/name/task_key/input_from/persist_output/merged_file/pieces。  
+
+### 8.4 常見調整情境
+
+- **不想保留翻譯中間態**：把該 stage 設 `persist_output: never`。  
+- **想保留清整與翻譯供除錯**：這兩階段都設 `always`，摘要保留 `final`。  
+- **長任務名怕檔名過長**：系統會自動做安全化與長度保護（截斷 + hash）。  

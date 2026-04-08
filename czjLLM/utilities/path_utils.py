@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 from typing import Any, Dict, Iterable, Optional
 import re
+import hashlib
 from utils.utilities_path import DirReplace, MKDIR, getMFNFromFN
 
 def init_project_root(target="PackageImport.py", max_levels=10):
@@ -28,6 +29,43 @@ def llm_channel_dir(base_dir: Path, channel: str, variant: str = "") -> Path:
 def _norm(p):  # 小工具：正規化路徑（大小寫無關、分隔一致）
     return os.path.normcase(os.path.normpath(p)) if p else ""
 
+def get_relative_parent_path(file_path: str, root_dir: str) -> str:
+    """
+    取得 file_path 相對於 root_dir 的父層路徑。
+    - 若 file_path 不在 root_dir 之下，回傳空字串
+    - 若檔案位於 root_dir 根層，回傳空字串
+    """
+    root_dir = str(root_dir or "").strip()
+    if not root_dir:
+        return ""
+    try:
+        root_abs = os.path.abspath(root_dir)
+        file_abs = os.path.abspath(file_path)
+        if os.path.commonpath([root_abs, file_abs]) != root_abs:
+            return ""
+        rel_file = os.path.relpath(file_abs, root_abs)
+    except Exception:
+        return ""
+    rel_parent = os.path.dirname(rel_file).strip()
+    if not rel_parent or rel_parent in {".", os.curdir}:
+        return ""
+    return rel_parent
+
+def safe_task_suffix(task: str, max_len: int = 96) -> str:
+    """
+    任務名安全化 + 長度保護：
+    - 移除非法字元
+    - 空白轉底線
+    - 超長時截斷並附加 hash，避免檔名過長
+    """
+    cleaned = re.sub(r'[\\/:*?"<>|]+', "_", str(task or "")).strip()
+    cleaned = re.sub(r"\s+", "_", cleaned).strip("._") or "result"
+    if len(cleaned) <= max_len:
+        return cleaned
+    digest = hashlib.sha1(cleaned.encode("utf-8")).hexdigest()[:10]
+    head_len = max(16, max_len - 11)  # 保留 "_" + 10碼 hash
+    return f"{cleaned[:head_len]}_{digest}"
+
 def get_combined_result_path(temp_txt_path: str, ctx) -> str:
     """
     以你原本邏輯為主，但：
@@ -40,7 +78,7 @@ def get_combined_result_path(temp_txt_path: str, ctx) -> str:
     #print("[gcrp] ctx.temp_txt_finished_dir=", getattr(ctx,"temp_txt_finished_dir", None))
     main = getMFNFromFN(temp_txt_path)
     task = str(getattr(ctx, "task", "result"))
-    safe_task = re.sub(r'[\\/:*?"<>|]+', "_", task).strip() or "result"
+    safe_task = safe_task_suffix(task, max_len=96)
 
     file_path = _norm(temp_txt_path)
     src_dir   = _norm(getattr(ctx, "temp_txt_dir", ""))
@@ -101,4 +139,3 @@ def get_combined_result_path_old(temp_txt_path: str, ctx) -> str:
     )
     result_path = os.path.splitext(result_path)[0] + f"_{ctx.task}.txt"
     return result_path
-

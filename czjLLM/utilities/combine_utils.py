@@ -362,12 +362,11 @@ def combine_api_finished_item(item: str, ctx) -> str:
     base_out = Path(base_out)
     
     # 2) 用 prompt 根去計算 item 的「相對子路徑」
+    from czjLLM.utilities.path_utils import get_relative_parent_path, safe_task_suffix
+
     prompt_root = Path(getattr(ctx, "prompt_dir", "")).resolve()
-    try:
-        rel = Path(item).resolve().relative_to(prompt_root)  # e.g. "cache/excel_input_45_90233bc9"
-        mirror_parent = rel.parent                           # e.g. "cache"
-    except Exception:
-        mirror_parent = Path("")
+    rel_parent = get_relative_parent_path(str(Path(item).resolve()), str(prompt_root))
+    mirror_parent = Path(rel_parent) if rel_parent else Path("")
     
     # 3) 如果 base_out 的最後一段與 mirror_parent 的第一段相同，就把 mirror_parent 的第一段去掉，避免重複
     mp_parts = list(mirror_parent.parts)
@@ -379,7 +378,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
     
     # 4) 檔名
     main_name = Path(item).name
-    task_name = str(getattr(ctx, "task", "result")).replace(os.sep, "_")
+    task_name = safe_task_suffix(str(getattr(ctx, "task", "result")), max_len=96)
     out_path = dest_dir / f"{main_name}_{task_name}.txt"
     # JSON 合併修補（如有指定 to json format，且目前仍為字串拼接型態）
     if "to json format" in str(getattr(ctx, "task", "")).lower() and not (json_mode and json_rows):
