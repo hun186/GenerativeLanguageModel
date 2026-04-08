@@ -8,6 +8,26 @@
 >
 > 補充：多階段啟動時，`yaml` 可不填 `task`；程式會自動用第一個 stage 推導相容值。
 
+### 建議檔名與放置位置（YAML）
+
+1. **啟動 YAML（主設定）**  
+   - 放在：`czjLLM/yaml/`  
+   - 例如：`czjLLM/yaml/multi_stage_test_run.yaml`
+2. **階段 YAML（stage workflow）**  
+   - 放在：`czjLLM/stage_configs/`  
+   - 例如：`czjLLM/stage_configs/multi_stage_pdf_en2zh_summary.yaml`
+3. 主設定 YAML 內可用 `stage_config_path`（或你目前專案使用的等價欄位）指向 stage workflow 檔案。
+
+### 啟動指令（範例）
+
+> 以下以專案根目錄為目前工作路徑示意：
+
+```bash
+python -m czjLLM.czjLLM_TextProcessing --config czjLLM/yaml/multi_stage_test_run.yaml
+```
+
+若你是用現有專案腳本（例如批次或你既有 CLI 包裝），則把主設定 YAML 路徑改成同樣指向 `czjLLM/yaml/...` 即可。
+
 - `name`: 階段名稱（不可重複）
 - `task`: 該階段要給 LLM 的任務描述
 - `task_key`: 從 `taskSetting` 字典取任務內容（可替代 `task`）
