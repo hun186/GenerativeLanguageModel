@@ -164,38 +164,39 @@ def clean_path_end_chars(path: str) -> str:
     if not isinstance(path, str) or path == "":
         return path  # 原樣返回
 
-    if os.name == "nt":
-        P = PureWindowsPath
-        import ntpath as op
-        rstrip_chars = ' .\\/'  # 只在 Windows 修剪
-    else:
-        P = PurePosixPath
-        import posixpath as op
-        rstrip_chars = ''       # POSIX 不修剪 segment 尾端
+    # 統一分隔符，讓 mixed separator（/、\）可跨平台處理
+    unified = path.replace("\\", "/")
 
-    p = P(path)
-    drive = getattr(p, "drive", "")
-    root  = p.root  # POSIX: '/' 或 ''；Windows: '\\' 或 ''
+    # 保留 Windows drive prefix（例如 C:）
+    m = re.match(r"^[A-Za-z]:", unified)
+    drive = m.group(0) if m else ""
+    rest = unified[len(drive):]
+
+    has_root = rest.startswith("/")
+    rest = rest.lstrip("/")
 
     parts = []
-    for seg in p.parts:
-        # 跳過前綴（drive/root）與空/單點段
-        if seg in (drive, root) or seg in ("", "."):
+    for seg in rest.split("/"):
+        if seg in ("", "."):
             continue
-        parts.append(seg.rstrip(rstrip_chars) if rstrip_chars else seg)
+        cleaned_seg = seg.rstrip(" .")
+        if cleaned_seg in ("", "."):
+            continue
+        parts.append(cleaned_seg)
 
-    tail = op.join(*parts) if parts else ""
+    tail = "/".join(parts)
 
-    # 保留前綴（磁碟＋根 或 POSIX 的根）
-    prefix = f"{drive}{root}" if (drive or root) else ""
-
-    if prefix:
-        cleaned = op.join(prefix, tail) if tail else prefix
+    if drive and has_root:
+        cleaned = f"{drive}/{tail}" if tail else f"{drive}/"
+    elif drive:
+        cleaned = f"{drive}/{tail}" if tail else drive
+    elif has_root:
+        cleaned = f"/{tail}" if tail else "/"
     else:
         cleaned = tail
 
-    # 正規化（posixpath/ntpath 各自處理；POSIX 會保留 '//' 的特殊語意）
-    return op.normpath(cleaned)
+    cleaned = cleaned.replace("/", os.path.sep)
+    return os.path.normpath(cleaned)
 
 def ShortenFN(FN):
     #LeftFNLen = min(100,len(getPathFromFN(FN)))

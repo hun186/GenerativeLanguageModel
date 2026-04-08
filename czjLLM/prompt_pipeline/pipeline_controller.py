@@ -1494,26 +1494,16 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     old_task = getattr(ctx, "task", "")
     try:
         if stage_defs:
-            stage_task_chain: list[str] = []
-            for s in stage_defs:
-                key = _compact_stage_key_for_output(
-                    str(getattr(s, "task_key", "")).strip(),
-                    str(getattr(s, "name", "")).strip(),
+            final_stage = stage_defs[-1]
+            final_task = final_stage.task
+            if isinstance(final_task, Mapping):
+                ctx.task = (
+                    str(final_task.get("CT_name", "")).strip()
+                    or str(final_stage.task_key).strip()
+                    or final_stage.name
                 )
-                if key:
-                    stage_task_chain.append(key)
-            if stage_task_chain:
-                ctx.task = "_".join(stage_task_chain)
             else:
-                final_task = stage_defs[-1].task
-                if isinstance(final_task, Mapping):
-                    ctx.task = (
-                        str(final_task.get("CT_name", "")).strip()
-                        or str(stage_defs[-1].task_key).strip()
-                        or stage_defs[-1].name
-                    )
-                else:
-                    ctx.task = final_task
+                ctx.task = str(final_task).strip() or str(final_stage.task_key).strip() or final_stage.name
         for item in prompt_items:
             todo_files = [str(x) for x in _root_txt_files(ops.join(item, "TODO"))]
             if not todo_files:
