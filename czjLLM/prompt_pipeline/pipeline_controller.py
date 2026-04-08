@@ -30,6 +30,7 @@ from czjLLM.prompt_pipeline.llm_caller import CallLLMAPI
 from czjLLM.prompt_pipeline.debug_snapshot import build_debug_snapshot
 from czjLLM.prompt_pipeline.stage_runtime import (
     ChunkStageRuntime,
+    should_persist_output,
 )
 from czjLLM.prompt_pipeline.stage_orchestrator import (
     execute_stage_round as _execute_stage_round,
@@ -1107,6 +1108,25 @@ def _sanitize_file_component(text: str) -> str:
     return re.sub(r"[^0-9A-Za-z._-]+", "-", str(text or "")).strip("-._") or "na"
 
 
+def _compact_stage_key_for_output(task_key: str, stage_name: str = "") -> str:
+    """
+    將 stage 的 task_key 精簡成較短、仍具可讀性的輸出片段，避免最終檔名過長。
+    規則：
+    1) 優先使用 task_key，若空則回退 stage_name
+    2) 若含有 '-'（常用於「主標籤-補充說明」），僅取 '-' 前段
+    3) 將連續空白收斂為單一空白
+    4) 避免單段過長，最多保留 32 字元
+    """
+    raw = str(task_key or "").strip() or str(stage_name or "").strip()
+    if not raw:
+        return "stage"
+    head = raw.split("-", 1)[0].strip()
+    compact = re.sub(r"\s+", " ", head).strip()
+    if not compact:
+        compact = re.sub(r"\s+", " ", raw).strip()
+    return compact[:32].strip() or "stage"
+
+
 def _stage_todo_dir(item: str, stage_name: str) -> str:
     return os.path.join(item, "TODO", _sanitize_stage_name(stage_name))
 
@@ -1417,25 +1437,32 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     stage_merge_root = ops.join(stage_merge_base, "_stage_merges", main_name)
     MKDIR(stage_merge_root)
     stage_manifest: list[dict] = []
+    last_stage_name = stage_defs[-1].name if stage_defs else ""
     for idx, stage in enumerate(stage_defs, start=1):
+        should_merge = should_persist_output(stage, last_stage_name=last_stage_name)
+        merged_file = ""
         merged_parts: list[str] = []
-        for item in sorted(prompt_items):
-            src_dir = _snapshot_dir(item, stage.name)
-            if not os.path.isdir(src_dir):
-                continue
-            for fp in sorted(ops.list_paths(src_dir)):
-                if fp.lower().endswith(".txt") and os.path.isfile(fp):
-                    with open(fp, "r", encoding="utf-8") as f:
-                        merged_parts.append(f.read())
-        safe_stage_name = _sanitize_file_component(stage.name)
-        safe_stage_key = _sanitize_file_component(getattr(stage, "task_key", ""))
-        stage_merged_name = f"{idx:02d}_{safe_stage_name}"
-        if safe_stage_key != "na":
-            stage_merged_name = f"{stage_merged_name}_{safe_stage_key}"
-        stage_merged_fn = ops.join(stage_merge_root, f"{stage_merged_name}.txt")
-        with open(stage_merged_fn, "w", encoding="utf-8") as f:
-            f.write("\n".join(merged_parts))
-        print(f"[stage:{stage.name}] 🧩 合併完成，輸出：{stage_merged_fn}（pieces={len(merged_parts)}）")
+        if should_merge:
+            for item in sorted(prompt_items):
+                src_dir = _snapshot_dir(item, stage.name)
+                if not os.path.isdir(src_dir):
+                    continue
+                for fp in sorted(ops.list_paths(src_dir)):
+                    if fp.lower().endswith(".txt") and os.path.isfile(fp):
+                        with open(fp, "r", encoding="utf-8") as f:
+                            merged_parts.append(f.read())
+            safe_stage_name = _sanitize_file_component(stage.name)
+            safe_stage_key = _sanitize_file_component(getattr(stage, "task_key", ""))
+            stage_merged_name = f"{idx:02d}_{safe_stage_name}"
+            if safe_stage_key != "na":
+                stage_merged_name = f"{stage_merged_name}_{safe_stage_key}"
+            stage_merged_fn = ops.join(stage_merge_root, f"{stage_merged_name}.txt")
+            with open(stage_merged_fn, "w", encoding="utf-8") as f:
+                f.write("\n".join(merged_parts))
+            merged_file = os.path.basename(stage_merged_fn)
+            print(f"[stage:{stage.name}] 🧩 合併完成，輸出：{stage_merged_fn}（pieces={len(merged_parts)}）")
+        else:
+            print(f"[stage:{stage.name}] ⏭️ 依 persist_output={stage.persist_output} 跳過 stage 合併輸出")
         stage_manifest.append(
             {
                 "index": idx,
@@ -1443,7 +1470,8 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 "task_key": stage.task_key,
                 "input_from": stage.input_from,
                 "persist_output": stage.persist_output,
-                "merged_file": os.path.basename(stage_merged_fn),
+                "merged": should_merge,
+                "merged_file": merged_file,
                 "pieces": len(merged_parts),
             }
         )
@@ -1468,7 +1496,10 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         if stage_defs:
             stage_task_chain: list[str] = []
             for s in stage_defs:
-                key = str(getattr(s, "task_key", "")).strip() or str(getattr(s, "name", "")).strip()
+                key = _compact_stage_key_for_output(
+                    str(getattr(s, "task_key", "")).strip(),
+                    str(getattr(s, "name", "")).strip(),
+                )
                 if key:
                     stage_task_chain.append(key)
             if stage_task_chain:
