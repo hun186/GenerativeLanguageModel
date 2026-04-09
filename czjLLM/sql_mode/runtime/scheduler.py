@@ -35,6 +35,33 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
         main_file_name=main_name,
     )
 
+    # mock 模式：直接建立單一 TODO prompt，跳過切片/模板互動流程
+    if bool(getattr(ctx, "mock_llm_mode", False)):
+        item_dir = os.path.join(ctx.prompt_dir, f"mock_{main_name}")
+        todo_dir = os.path.join(item_dir, "TODO")
+        os.makedirs(todo_dir, exist_ok=True)
+        prompt_fn = os.path.join(todo_dir, f"{main_name}_0001.txt")
+        with open(prompt_fn, "w", encoding="utf-8") as fp:
+            fp.write(text or "")
+
+        total_chunks = 1
+        comb_back_fn = get_combined_result_path(temp_txt_path, row_ctx)
+        registry.add(item_dir, pk, temp_txt_path, comb_back_fn)
+
+        def _on_add_row(d):
+            d["rows"].setdefault(pk, {
+                "item_dir": item_dir,
+                "temp_txt": temp_txt_path,
+                "total": 0, "done": 0, "status": "in_progress"
+            })
+            d["rows"][pk]["total"] = total_chunks
+            d["queue"]["pending"] += total_chunks
+
+        meter_update(meter_fn, _on_add_row)
+        meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({"last_progress_ts": time.time()}))
+        tlog(f"[sched-mock] pk={pk} added, chunks={total_chunks}, dir={os.path.basename(item_dir)}")
+        return total_chunks
+
     # 讓模板/切片在 row_ctx 上跑（不會動到共享 ctx）
     try:
         faulthandler.dump_traceback(file=getattr(ctx, "_faulthandler_fp", None) or sys.stderr)

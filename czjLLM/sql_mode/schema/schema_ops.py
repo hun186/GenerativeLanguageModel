@@ -15,7 +15,35 @@ def ensure_main_schema(ctx, adapter, columns_in_src: List[str], cfg: dict):
     if ctx.target_table != ctx.sql_table:
         adapter.ensure_table(ctx.target_table, ctx.primary_key)
 
-    need_cols: List[Tuple[str, str]] = [(ctx.output_col, "NVARCHAR(MAX)")]
+    output_cols = []
+    if isinstance(getattr(ctx, "output_cols", None), list) and ctx.output_cols:
+        output_cols.extend([str(c).strip() for c in ctx.output_cols if str(c).strip()])
+    else:
+        output_cols.append(str(ctx.output_col).strip())
+
+    for rule in (getattr(ctx, "sql_writeback_rules", None) or []):
+        if isinstance(rule, dict):
+            c = str(rule.get("output_col", "")).strip()
+            if c:
+                output_cols.append(c)
+
+    if bool(getattr(ctx, "sql_expand_json_to_columns", False)):
+        raw = getattr(ctx, "allowed_output_fields", None)
+        if isinstance(raw, (list, tuple)):
+            prefix = str(getattr(ctx, "sql_expand_json_prefix", "") or "").strip()
+            for c in raw:
+                name = str(c).strip()
+                if name:
+                    output_cols.append(f"{prefix}{name}" if prefix else name)
+
+    seen = set()
+    dedup_cols = []
+    for c in output_cols:
+        if c and c not in seen:
+            seen.add(c)
+            dedup_cols.append(c)
+
+    need_cols: List[Tuple[str, str]] = [(c, "NVARCHAR(MAX)") for c in dedup_cols]
     if getattr(ctx, "record_update_time", False):
         need_cols.append(("update_time", "DATETIME"))
 

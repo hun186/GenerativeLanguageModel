@@ -243,15 +243,16 @@ class ExcelSink:
                 print("在write_main，找不到定位列 → 不寫入")
                 return  # 找不到就略過
 
-            # 確保欄位型別正確
-            self._ensure_text_col(self.df, self.ctx.output_col)
+            value_map = result_text if isinstance(result_text, dict) else {self.ctx.output_col: result_text}
+            for col in value_map.keys():
+                self._ensure_text_col(self.df, col)
             if getattr(self.ctx, "record_update_time", False):
                 self._ensure_dt_col(self.df, "update_time")
-    
-    
+
             # 寫所有同鍵列（扇出）
             for row_idx in row_idxs:
-                self.df.at[row_idx, self.ctx.output_col] = result_text
+                for col, val in value_map.items():
+                    self.df.at[row_idx, col] = val
                 if getattr(self.ctx, "record_update_time", False) and update_time:
                     if isinstance(update_time, str) and update_time.startswith("'"):
                         update_time = update_time.lstrip("'")
