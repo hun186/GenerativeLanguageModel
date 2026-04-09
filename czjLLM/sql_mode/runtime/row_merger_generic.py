@@ -15,6 +15,7 @@ from czjLLM.prompt_pipeline.pipeline_controller import (
 )
 from czjLLM.utilities.path_utils import get_combined_result_path
 from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
+from .multistage_writeback import resolve_writeback_payload
 #from czjLLM.prompt_pipeline.pipeline_controller import meter_update  # 檔頭若尚未 import
 
 
@@ -46,6 +47,96 @@ def _counts(item_dir):
     runn = os.path.join(item_dir, "RUNNING")
     succ = os.path.join(item_dir, "Success")
     return len(OSWALK(todo)), len(OSWALK(runn)), len(OSWALK(succ))
+
+
+
+def _as_db_text(value):
+    """資料庫主欄位一律寫入文字；dict/list 轉 JSON 字串。"""
+    if isinstance(value, str):
+        return value
+    if value is None:
+        return ""
+    try:
+        return json.dumps(value, ensure_ascii=False)
+    except Exception:
+        return str(value)
+
+
+
+def _build_writeback_values(ctx, comb_back_fn: str, combined_text: str):
+    """回傳 (write_map, flatten_text, source_logs)。"""
+    rules = getattr(ctx, "sql_writeback_rules", None)
+    write_map = {}
+    source_logs = []
+
+    if isinstance(rules, list) and rules:
+        flatten_idx = int(getattr(ctx, "sql_flatten_writeback_rule", 0) or 0)
+        flatten_text = combined_text
+        for idx, rule in enumerate(rules):
+            if not isinstance(rule, dict):
+                continue
+            out_col = str(rule.get("output_col", "")).strip()
+            if not out_col:
+                continue
+            mode = str(rule.get("source", rule.get("sql_writeback_source", "combined")) or "combined").strip().lower()
+            stage = rule.get("stage", rule.get("sql_writeback_stage", None))
+
+            class _RuleCtx:
+                def __init__(self, base):
+                    self.__dict__.update(getattr(base, "__dict__", {}))
+            rule_ctx = _RuleCtx(ctx)
+            rule_ctx.sql_writeback_source = mode
+            rule_ctx.sql_writeback_stage = stage
+
+            wb = resolve_writeback_payload(rule_ctx, comb_back_fn, combined_text)
+            write_map[out_col] = _as_db_text(wb.main_payload)
+            source_logs.append(f"{out_col}<-{wb.source}")
+            if idx == flatten_idx:
+                flatten_text = write_map[out_col]
+
+        if write_map:
+            return write_map, flatten_text, source_logs
+
+    wb = resolve_writeback_payload(ctx, comb_back_fn, combined_text)
+    primary_col = str(getattr(ctx, "output_col", "LLM_result") or "LLM_result")
+    write_map[primary_col] = _as_db_text(wb.main_payload)
+    source_logs.append(f"{primary_col}<-{wb.source}")
+    return write_map, write_map[primary_col], source_logs
+
+
+
+def _expand_json_columns(ctx, source_text: str) -> dict:
+    """依設定將 JSON 物件 key 展開為主表欄位（供資料庫查詢）。"""
+    if not bool(getattr(ctx, "sql_expand_json_to_columns", False)):
+        return {}
+    try:
+        data = json.loads(source_text)
+    except Exception:
+        return {}
+
+    if isinstance(data, list):
+        # 常見輸出為 list[dict]，先取第一筆代表（可配合 merge_slices 先整併）
+        data = next((x for x in data if isinstance(x, dict)), {})
+    if not isinstance(data, dict):
+        return {}
+
+    allow = getattr(ctx, "allowed_output_fields", None)
+    if isinstance(allow, (list, tuple)) and allow:
+        allow_set = {str(k).strip() for k in allow if str(k).strip()}
+    else:
+        allow_set = None
+
+    prefix = str(getattr(ctx, "sql_expand_json_prefix", "") or "").strip()
+    out = {}
+    for k, v in data.items():
+        key = str(k).strip()
+        if not key:
+            continue
+        if allow_set is not None and key not in allow_set:
+            continue
+        col = f"{prefix}{key}" if prefix else key
+        out[col] = _as_db_text(v)
+    return out
 
 def _all_slices_done(item_dir, meta=None):
     t, r, s = _counts(item_dir)
@@ -169,18 +260,12 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     with open(comb_back_fn, "r", encoding="utf-8") as fp:
                         result_text = fp.read()
 
-                    payload = None
+                    write_map, flatten_source_text, source_logs = _build_writeback_values(ctx, comb_back_fn, result_text)
+
                     try:
-                        data = json.loads(result_text)
-                        # 預設：不啟用 → 直接沿用原資料
-                        payload = data
-                    
-                        # 啟用且「是 list[dict]」才做合併
-                        #print(f"for comb_back_fn {comb_back_fn}, ctx is {ctx}")
-                        #print(f"for comb_back_fn {comb_back_fn}, should_merge_slices(ctx) is {should_merge_slices(ctx)}")
+                        data = json.loads(flatten_source_text)
                         if should_merge_slices(ctx) and isinstance(data, list) and all(isinstance(x, dict) for x in data):
-                            #print(f"running merge_dict_slices_audited, for comb_back_fn {comb_back_fn}")
-                            payload, report = merge_dict_slices_audited(
+                            merged_payload, report = merge_dict_slices_audited(
                                 data,
                                 conflict_policy=getattr(ctx, "merge_conflict_policy", "prefer_left"),
                                 dedup_lists=bool(getattr(ctx, "merge_dedup_lists", False)),
@@ -188,8 +273,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 logger=(tlog if getattr(ctx, "merge_log_changes", True) else None),
                                 max_log=int(getattr(ctx, "merge_max_log", 10)),
                             )
-                    
-                            # （可選）若要偵測「合併確實帶來改變」才落檔紀錄：
+                            flatten_source_text = _as_db_text(merged_payload)
                             if getattr(ctx, "merge_log_to_file", False) and report.get("changed"):
                                 try:
                                     log_fn = getattr(ctx, "merge_log_file", "merge_dict_slices_audited.log")
@@ -197,19 +281,20 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                         fp.write(f"[{datetime.now().isoformat(timespec='seconds')}] pk={pk} counts={report.get('counts')}\n")
                                         for s in report.get("samples", []):
                                             fp.write(f"  {s['action']} @{s['path']} → {s['chosen']} | L={s['left_short']} | R={s['right_short']}\n")
-                                except Exception as _:
+                                except Exception:
                                     pass
-                    
                     except Exception:
-                        # 非 JSON：用原字串
-                        payload = result_text
-                    except Exception:
-                        payload = result_text  # 不是 JSON 就原樣寫
-                        
+                        pass
+
+                    expanded_cols = _expand_json_columns(ctx, flatten_source_text)
+                    if expanded_cols:
+                        write_map.update(expanded_cols)
+                        source_logs.append(f"expand_json:{len(expanded_cols)}cols")
+
                     update_time = (datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                    if ctx.record_update_time else None)
-                    #sink.write_main(pk, result_text, update_time)
-                    sink.write_main(pk, payload, update_time)
+                    sink.write_main(pk, write_map, update_time)
+                    tlog(f"📝 writeback source for pk={pk}: {'; '.join(source_logs)}")
 
                     if getattr(ctx, "flatten_json_output", False):
                         raw_fields = getattr(ctx, "allowed_output_fields", None)
@@ -221,7 +306,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                             allowed_fields = None
 
                         try:
-                            result_list = extract_json_list_for_flatten(result_text, allowed_fields)
+                            result_list = extract_json_list_for_flatten(flatten_source_text, allowed_fields)
                         except Exception as ex:
                             tlog_warn(f"⚠️ 解析展平欄位失敗（pk={pk}）：{ex}")
                             result_list = None
@@ -275,130 +360,14 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
 
 def row_merger_watchdog_generic_OLD_1027(ctx, registry, meter_fn, stop_event, sink,
                                 scan_interval=0.2, done_q=None):
-    sink.open()
-    try:
-        while True:
-            items_map = registry.list_items()
-            if not items_map and stop_event.is_set():
-                break
-
-            progressed = False
-            for item_dir, meta in list(items_map.items()):
-                pk = meta["pk"]
-                temp_txt = meta["temp_txt"]
-                comb_back_fn = meta["CombBackFN"]
-                
-                if not row_is_ready(item_dir):
-                    continue
-
-                # 合併檔產出（與舊版相同）
-                try:
-                    todo_dir = os.path.join(item_dir, "TODO")
-                    succ_dir = os.path.join(item_dir, "Success")
-                    try:
-                        tlog(f"🧩 merge check: {os.path.basename(item_dir)} "
-                             f"TODO={len(OSWALK(todo_dir))}, Success={len(OSWALK(succ_dir))}")
-                    except Exception:
-                        pass
-                    combine_api_finished_item(item_dir, ctx)
-                except Exception as e:
-                    tlog_warn(f"ℹ️ 合併提示（pk={pk}）：{e}")
-
-                #CombBackFN = get_combined_result_path(temp_txt, ctx)
-                #print("CombBackFN from get_combined_result_path",CombBackFN)
-                #if not os.path.isfile(CombBackFN):
-                #    continue
-
-                #try:
-                #    with open(CombBackFN, "r", encoding="utf-8") as fp:
-                #        result_text = fp.read()
-                #print("comb_back_fn in row_merger",comb_back_fn)
-                if not os.path.isfile(comb_back_fn):
-                    continue
-            
-                try:
-                    with open(comb_back_fn, "r", encoding="utf-8") as fp:
-                        result_text = fp.read()
-                    update_time = (datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                                   if ctx.record_update_time else None)
-
-                    # 1) 主表寫回（含 per-row commit）
-                    sink.write_main(pk, result_text, update_time)
-                    # 2) 子表展平（需要時；每批也 commit）
-                    if getattr(ctx, "flatten_json_output", False):
-                        # --- 正規化 allowed_output_fields，過濾 None / 空白 / 非字串 ---
-                        raw_fields = getattr(ctx, "allowed_output_fields", None)
-                        if isinstance(raw_fields, (list, tuple)):
-                            allowed_fields = [
-                                str(f).strip()
-                                for f in raw_fields
-                                if f is not None and str(f).strip() != ""
-                            ]
-                            if not allowed_fields:
-                                allowed_fields = None  # 空清單等同「不限制欄位」
-                        else:
-                            allowed_fields = None  # 非 list/tuple 時一律交由 extractor 決定
-                        # --- 做展平（以正規化後的欄位清單）---
-                        try:
-                            result_list = extract_json_list_for_flatten(result_text, allowed_fields)
-                        except Exception as ex:
-                            tlog_warn(f"⚠️ 解析展平欄位失敗（pk={pk}）：{ex}")
-                            result_list = None
-
-                        if result_list:
-                            sink.ensure_flatten_schema(allowed_fields)
-
-                            # 只有在「主鍵 != 輸入欄」且用戶要求另存 raw input 時才取 input 值
-                            wants_raw = bool(getattr(ctx, "save_raw_input_when_flatten", False))
-                            #print("wants_raw",wants_raw)
-                            needs_raw_input = wants_raw and (getattr(ctx, "primary_key", None) != getattr(ctx, "input_col", None))
-                            #print("needs_raw_input",needs_raw_input)
-                            sub_input_col = getattr(ctx, "subtable_input_col", None) if needs_raw_input else None
-                            #print("in row_merger_generic, sub_input_col",sub_input_col)
-                            #print("primary key",getattr(ctx, "primary_key", None))
-                            input_val = sink.fetch_input(pk) if needs_raw_input else None
-                            try:
-                                sink.write_flatten(
-                                    pk, result_list,
-                                    save_raw_input=needs_raw_input,
-                                    input_col=sub_input_col,     # 可能為 None → 下游會略過
-                                    input_value=input_val,
-                                )
-                            except Exception as ex:
-                                tlog_warn(f"⚠️ 子表寫回失敗（pk={pk}）：{ex}")
-
-                    # 3) 先回報完成與釋放背壓
-                    registry.remove(item_dir)
-                    if done_q is not None:
-                        try: done_q.put_nowait(1)
-                        except Exception: pass
-                    try:
-                        meter_update(meter_fn,
-                            lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update({"status":"merged"}))
-                    except Exception:
-                        pass
-
-                    # 4) 最後才做備份（慢 I/O 不卡住進度與背壓）
-                    try:
-                        des = DirReplace(temp_txt, ctx.llm_source_dir, ctx.llm_source_backup_dir)
-                        MKDIR(getPathFromFN(des))
-                        safe_move(temp_txt, des)
-                    except Exception as ex:
-                        tlog_warn(f"⚠️ 備份原始 txt 失敗（pk={pk}）：{ex}")
-
-                    tlog(f"✅ 逐列合併並寫回完成：{pk}")
-                    meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({"last_progress_ts": time.time()}))
-                    progressed = True
-                except Exception as e:
-                    tlog_warn(f"Row Merger 寫回失敗 pk={pk}: {e}")
-                    #with open("ERROR.txt","at") as f:
-                    #    f.write(e)
-                    #print("sleep 10 secs to debug")
-                    #time.sleep(10)
-                    raise Exception
-
-            if not progressed:
-                time.sleep(scan_interval)
-    finally:
-        try: sink.close()
-        except Exception: pass
+    """舊入口統一導向新實作，避免新舊路徑行為分岔。"""
+    tlog("♻️ row_merger_watchdog_generic_OLD_1027 已導向新版本 row_merger_watchdog_generic")
+    return row_merger_watchdog_generic(
+        ctx=ctx,
+        registry=registry,
+        meter_fn=meter_fn,
+        stop_event=stop_event,
+        sink=sink,
+        scan_interval=scan_interval,
+        done_q=done_q,
+    )

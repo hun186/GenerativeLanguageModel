@@ -210,3 +210,96 @@
 > `stage.name` **可以**等於 `taskSetting` 的 key（寫法 C），  
 > 但更推薦用 `task_key`（寫法 A），可讀性和可維護性更好。  
 > 路由時也建議 `route_map` value 使用 `taskSetting` key（`route_value_mode: task_key`）。
+
+---
+
+## 8) SQL / ES 多階段寫回建議（新增）
+
+當 `mode=sql` 或 `mode=es` 並啟用多階段時，可用以下參數控制「寫回主欄位」與「JSON flatten」採用哪個階段輸出：
+
+- `sql_writeback_source`
+  - `combined`（預設）：沿用舊行為，使用 combine 最終檔
+  - `stage`：改用指定 stage 的 merged 檔內容
+- `sql_writeback_stage`
+  - 可填 stage `name`、`task_key`，或 1-based 階段序號（例如 `2`）
+
+範例（寫回第 2 階段）：
+
+```yaml
+mode: sql
+stages:
+  - name: route
+    task_key: 分類判定
+    persist_output: always
+  - name: extract
+    task_key: 事件抽取
+    persist_output: always
+  - name: final
+    task_key: 最終整併
+    persist_output: final
+
+sql_writeback_source: stage
+sql_writeback_stage: extract
+```
+
+> 若找不到對應 stage 或 manifest，系統會自動回退到 `combined`，確保不影響既有流程。
+
+### 8.1 進階：同一列同時寫回多個 stage 到不同 output 欄位
+
+若你要「中間 stage + 最終 stage」都保留到 SQL / SQLite / Excel 主表，可使用：
+
+```yaml
+output_col: OPA_final
+sql_writeback_rules:
+  - output_col: OPA_route
+    source: stage
+    stage: route
+  - output_col: OPA_extract
+    source: stage
+    stage: extract
+  - output_col: OPA_final
+    source: combined
+
+# flatten 預設跟第 1 條 rule；可改為第 2 條（0-based）
+sql_flatten_writeback_rule: 1
+```
+
+說明：
+- `output_col` 仍是主輸出欄位（也作為 pending 判斷欄位）。
+- `sql_writeback_rules` 會額外把對應來源寫到多個欄位；系統會自動補目標表欄位。
+- 適用於遠端 SQL Server 與本地 SQLite（`mode: sql`），以及使用 ExcelSink 的表格寫回流程。
+
+
+### 8.2 JSON key 直接落主表欄位（便於 SQL 查詢）
+
+若你的輸出 JSON 主要是給後續資料庫查詢使用，可開啟：
+
+```yaml
+sql_expand_json_to_columns: true
+# sql_expand_json_prefix: json_   # 可選：避免撞欄位
+```
+
+行為：
+- 會將 `sql_flatten_writeback_rule` 指向來源中的 JSON 物件 key 展開成主表欄位值。
+- 只會展開 `allowed_output_fields` 列出的欄位（若有設定）。
+- 系統會自動補齊主表欄位（搭配 schema ensure）。
+
+### 8.3 整體收斂（新舊路徑一致）
+
+- 舊版 `row_merger_watchdog_generic_OLD_1027` 已導向新版 `row_merger_watchdog_generic`，避免新舊邏輯分岔。
+- CSV/Excel/SQL sink 的 `write_main()` 現在都可接受 `dict`（多欄位寫回），以對齊 `sql_writeback_rules` 輸出。
+
+### 8.4 Mock LLM 模式（無模型也可跑 SQLite 多階段 E2E）
+
+```yaml
+model_spec: mock-local
+mock_llm_mode: true
+```
+
+- `mock_llm_mode=true` 時，`call_llm_api()` 不會打模型端點，會直接把 TODO 產生對應 Success（路由任務輸出 `{"route":"org"}`，抽取任務輸出依 `allowed_output_fields` 產生 mock JSON）。
+- 適合做流程驗證：切片 → stage dispatch → combine → writeback/flatten/分欄。
+
+可直接參考：
+- `czjLLM/yaml/sqlite_json_multistage_mock.yaml`
+- `czjLLM/yaml/sqlite_json_multistage_prod_template.yaml`
+- `czjLLM/yaml/sqlserver_multistage_prod_template.yaml`

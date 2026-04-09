@@ -46,3 +46,52 @@ def upsert_single_value(ctx, cursor, pk, result, is_sqlite, update_time=None):
                 VALUES ({', '.join(['?'] * len(insert_cols))})
             """
             cursor.execute(insert_sql, insert_vals)
+
+
+def upsert_multi_values(ctx, cursor, pk, result_map: dict, is_sqlite, update_time=None):
+    """一次 upsert 多個輸出欄位（for multi-stage writeback rules）。"""
+    if not isinstance(result_map, dict) or not result_map:
+        return
+    cols = [str(k).strip() for k in result_map.keys() if str(k).strip()]
+    if not cols:
+        return
+
+    if is_sqlite:
+        insert_cols = [ctx.primary_key] + cols
+        vals = [pk] + [result_map[c] for c in cols]
+        if ctx.record_update_time:
+            insert_cols.append("update_time")
+            vals.append(update_time)
+        set_clause = ", ".join([f"{quote_column(c)} = excluded.{quote_column(c)}" for c in cols])
+        if ctx.record_update_time:
+            set_clause += ", update_time = excluded.update_time"
+        insert_sql = f"""
+            INSERT INTO {quote_column(ctx.target_table)} ({', '.join(quote_column(c) for c in insert_cols)})
+            VALUES ({', '.join(['?'] * len(insert_cols))})
+            ON CONFLICT({quote_column(ctx.primary_key)}) DO UPDATE SET {set_clause}
+        """
+        cursor.execute(insert_sql, vals)
+    else:
+        set_expr = ", ".join([f"{quote_column(c)} = ?" for c in cols])
+        params = [result_map[c] for c in cols]
+        if ctx.record_update_time:
+            set_expr += ", update_time = ?"
+            params.append(update_time)
+        update_sql = f"""
+            UPDATE {quote_column(ctx.target_table)}
+            SET {set_expr}
+            WHERE {quote_column(ctx.primary_key)} = ?
+        """
+        cursor.execute(update_sql, params + [pk])
+
+        if cursor.rowcount == 0:
+            insert_cols = [ctx.primary_key] + cols
+            insert_vals = [pk] + [result_map[c] for c in cols]
+            if ctx.record_update_time:
+                insert_cols.append("update_time")
+                insert_vals.append(update_time)
+            insert_sql = f"""
+                INSERT INTO {quote_column(ctx.target_table)} ({', '.join(quote_column(c) for c in insert_cols)})
+                VALUES ({', '.join(['?'] * len(insert_cols))})
+            """
+            cursor.execute(insert_sql, insert_vals)

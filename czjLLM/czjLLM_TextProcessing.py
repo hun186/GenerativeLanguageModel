@@ -147,6 +147,8 @@ if __name__ == '__main__':
             ctx.stages = stage_cfg
     elif stage_cfg_inline:
         ctx.stages = stage_cfg_inline
+    # mock LLM 模式：無模型環境可做 E2E 流程驗證
+    ctx.mock_llm_mode = bool(get_param("mock_llm_mode", False))
     #print("ctx in main",ctx)
     # txt 模式：處理所有 .txt
     if mode == "txt":

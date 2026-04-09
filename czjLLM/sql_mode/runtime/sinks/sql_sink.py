@@ -7,7 +7,7 @@ import sqlite3, pyodbc
     #quote_column,
 #)
 from czjLLM.sql_utils.writer import flatten_row_based_json_array_to_subtable
-from czjLLM.sql_utils.row_utils import upsert_single_value
+from czjLLM.sql_utils.row_utils import upsert_single_value, upsert_multi_values
 from czjLLM.sql_utils.common import quote_column
 from ...schema.schema_ops import ensure_flatten_schema as ensure_flatten_schema_op
 
@@ -33,11 +33,25 @@ class SqlSink:
         self.cursor = self.conn.cursor()
 
     def write_main(self, pk, result_text, update_time=None):
-        # 舉例：沿用你原本 upsert_single_value 內的 SQL
-        #print("result_text in write_main",result_text)
-        upsert_single_value(self.ctx, self.cursor, pk, result_text,
-                            is_sqlite=self.is_sqlite, update_time=update_time)
-        # 關鍵：每筆後就 commit，避免長交易持有鎖
+        # 支援單欄位字串（舊行為）與多欄位 dict（multi-stage writeback rules）
+        if isinstance(result_text, dict):
+            upsert_multi_values(
+                self.ctx,
+                self.cursor,
+                pk,
+                result_text,
+                is_sqlite=self.is_sqlite,
+                update_time=update_time,
+            )
+        else:
+            upsert_single_value(
+                self.ctx,
+                self.cursor,
+                pk,
+                result_text,
+                is_sqlite=self.is_sqlite,
+                update_time=update_time,
+            )
         self.conn.commit()
 
     # ★ 這裡接上你原本的自動建/補子表 schema

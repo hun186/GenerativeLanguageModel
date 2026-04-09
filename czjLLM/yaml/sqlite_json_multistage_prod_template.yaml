@@ -1,0 +1,39 @@
+# 正式上線模板：SQLite 多階段 SQL
+mode: sql
+channel: sql_cache
+model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4   # TODO: 改成你實際可用模型
+mock_llm_mode: false
+
+input_col: <INPUT_COL>
+output_col: <OUTPUT_COL>
+record_update_time: true
+sql_config_file: czjLLM/config_sql/<YOUR_SQLITE_CONFIG>.py
+
+flatten_json_output: true
+allowed_output_fields:
+  - inputName
+  - formalName
+  - functionalDomain
+  - keyFunctions
+save_raw_input_when_flatten: true
+sql_expand_json_to_columns: true
+# sql_expand_json_prefix: json_
+
+stages:
+  - name: route
+    task: <ROUTE_TASK>
+    input_from: original
+    persist_output: always
+  - name: extract
+    task: <EXTRACT_TASK>
+    input_from: original
+    persist_output: final
+
+sql_writeback_rules:
+  - output_col: <ROUTE_OUTPUT_COL>
+    source: stage
+    stage: route
+  - output_col: <OUTPUT_COL>
+    source: stage
+    stage: extract
+sql_flatten_writeback_rule: 1

@@ -141,12 +141,16 @@ class CsvSink:
             idxs = self._find_row_indices(pk)
             if not idxs:
                 return
-            _ensure_text_col(self.df, self.ctx.output_col)
+
+            value_map = result_text if isinstance(result_text, dict) else {self.ctx.output_col: result_text}
+            for col in value_map.keys():
+                _ensure_text_col(self.df, col)
             if getattr(self.ctx, "record_update_time", False):
                 _ensure_text_col(self.df, "update_time")
 
             for i in idxs:
-                self.df.at[i, self.ctx.output_col] = result_text
+                for col, val in value_map.items():
+                    self.df.at[i, col] = val
                 if getattr(self.ctx, "record_update_time", False) and update_time:
                     if isinstance(update_time, str) and update_time.startswith("'"):
                         update_time = update_time.lstrip("'")

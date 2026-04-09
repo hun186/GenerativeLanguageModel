@@ -511,6 +511,8 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             for pf, item_dir in batch:
                 out_fn = _to_success(pf)  # RUNNING → Success（用兄弟目錄推導，別用字串 replace）
                 job_spec = deepcopy(ctx.model_spec)  # ★ 每個 job 拿各自副本
+                if bool(getattr(ctx, "mock_llm_mode", False)):
+                    job_spec["mock_llm_mode"] = True
                 DTBJobs.append(PromptAPIPipeline(
                     task=ctx.task,
                     promptFile=pf,
@@ -1592,7 +1594,48 @@ def process_prompt_and_merge_OLD(ctx, file_path):
     return CombBackFN
 
 
+def _mock_llm_text(task_text: str, content: str, ctx) -> str:
+    """本地 mock LLM：在無模型環境下提供可重現輸出，供 E2E 驗證。"""
+    task_l = str(task_text or "").lower()
+    if any(k in task_l for k in ["route", "分類", "classify"]):
+        return json.dumps({"route": "org"}, ensure_ascii=False)
+
+    fields = getattr(ctx, "allowed_output_fields", None)
+    if isinstance(fields, (list, tuple)) and fields:
+        payload = {str(f): f"mock_{str(f)}" for f in fields if str(f).strip()}
+        if payload:
+            return json.dumps(payload, ensure_ascii=False)
+    # fallback
+    return json.dumps({"mock_result": content[:120]}, ensure_ascii=False)
+
+
+def _run_mock_llm_api(itemList, ctx, allow_to_retry=True, task_override: str | None = None):
+    for item in itemList:
+        todo_dir = os.path.join(item, "TODO")
+        for promptFile in _root_txt_files(todo_dir):
+            pf = str(promptFile)
+            out_fn = pf.replace("TODO", "Success")
+            MKDIR(getPathFromFN(out_fn))
+            try:
+                with open(pf, mode='rt', encoding='utf-8') as fp:
+                    content = fp.read()
+            except Exception:
+                content = ""
+            task_text = task_override if task_override is not None else getattr(ctx, "task", "")
+            out_text = _mock_llm_text(task_text, content, ctx)
+            with open(out_fn, mode='wt', encoding='utf-8') as fw:
+                fw.write(out_text)
+            try:
+                safe_unlink(pf)
+            except Exception:
+                pass
+    return []
+
+
 def call_llm_api(itemList, ctx, allow_to_retry=True, PGMSubDir="", task_override: str | None = None):
+    if bool(getattr(ctx, "mock_llm_mode", False)):
+        return _run_mock_llm_api(itemList, ctx, allow_to_retry=allow_to_retry, task_override=task_override)
+
     ArtCost = dict()
     DTBJobs_Retry = []
     def create_jobs(item,model_spec):
@@ -1605,7 +1648,11 @@ def call_llm_api(itemList, ctx, allow_to_retry=True, PGMSubDir="", task_override
             max_tokens=ctx.max_tokens,
             #On_Premises=ctx.on_premises,
             allow_to_retry=allow_to_retry,
-            model_spec=model_spec,
+            model_spec=(
+                dict(deepcopy(model_spec), mock_llm_mode=True)
+                if bool(getattr(ctx, "mock_llm_mode", False))
+                else model_spec
+            ),
             PGMSubDir=ctx.PGMSubDir,
         ) for promptFile in _root_txt_files(TodoSubDir)]
 
@@ -1698,6 +1745,20 @@ class PromptAPIPipeline:
         print("輸入prompt檔案",self.promptFile)
         print("輸出儲存檔案",self.OutputSaveFN)
 
+    def _is_mock_mode(self) -> bool:
+        model_name = str(self.model_spec.get("model_name", "") or "").lower()
+        if model_name.startswith("mock"):
+            return True
+        return bool(self.model_spec.get("mock_llm_mode", False))
+
+    def _build_mock_output(self) -> str:
+        task_l = str(self.task or "").lower()
+        if any(k in task_l for k in ["route", "分類", "classify"]):
+            return json.dumps({"route": "org"}, ensure_ascii=False)
+        if "to json" in task_l:
+            return json.dumps({"mock_result": (self.content or "")[:120]}, ensure_ascii=False)
+        return f"mock_result: {(self.content or '')[:120]}"
+
     def proc(self):
         print("="*50)
     
@@ -1718,6 +1779,31 @@ class PromptAPIPipeline:
         print("allow_to_retry is ", self.allow_to_retry)
     
         try:
+            # mock 模式：不進 LLM 呼叫，直接產生可驗證輸出
+            if self._is_mock_mode():
+                retMES = self._build_mock_output()
+                if self.OutputSaveFN != "":
+                    MKDIR(os.path.dirname(self.OutputSaveFN))
+                    tmp_fn = self.OutputSaveFN + ".tmp"
+                    with open(tmp_fn, mode='wt', encoding='utf-8') as fp:
+                        fp.write(retMES)
+                        fp.flush()
+                        os.fsync(fp.fileno())
+                    os.replace(tmp_fn, self.OutputSaveFN)
+                    if self.removeFinPromptFile and self.promptFile:
+                        safe_unlink(self.promptFile)
+                ok = bool(retMES)
+                err = ""
+                ret_dict = {
+                    "promptFile": self.promptFile,
+                    "outputSaveFN": self.OutputSaveFN,
+                    "output": retMES,
+                    "cost": 0.0,
+                    "ok": ok,
+                    "error": err,
+                }
+                return ret_dict
+
             # 1) 選 base_url
             base_url = select_idle_ollama_url(self.model_spec["base_url"], PGMSubDir=self.PGMSubDir)
             self.model_spec["base_url"] = base_url

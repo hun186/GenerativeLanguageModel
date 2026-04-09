@@ -12,6 +12,24 @@ from czjLLM.sql_mode.adapters.mssql_adapter import MSSQLAdapter
 from czjLLM.sql_mode.schema.schema_ops import ensure_main_schema, ensure_flatten_schema
 from czjLLM.sql_mode.schema.common_flatten_policy import ensure_common_flatten_policy
 
+
+def _normalize_writeback_rules(get_param):
+    rules = get_param("sql_writeback_rules", None)
+    out = []
+    if not isinstance(rules, list):
+        return out
+    for item in rules:
+        if not isinstance(item, dict):
+            continue
+        col = str(item.get("output_col", "")).strip()
+        if not col:
+            continue
+        src = str(item.get("source", "combined") or "combined").strip().lower()
+        if src not in {"combined", "stage"}:
+            src = "combined"
+        out.append({"output_col": col, "source": src, "stage": item.get("stage", None)})
+    return out
+
 def resolve_connection(ctx, get_param, args):
     policy = NonInteractivePolicy(args) if args.config else InteractivePolicy()
     sql_cfg = load_sql_cfg(ctx, get_param, args, policy)
@@ -52,6 +70,18 @@ def choose_columns_and_io_cols(ctx, get_param, adapter, sql_cfg, args):
         ).proc()
 
     ctx.output_col = get_param("output_col", sql_cfg.get("output_col", ""))  
+    if isinstance(ctx.output_col, list):
+        ctx.output_cols = [str(c).strip() for c in ctx.output_col if str(c).strip()]
+        ctx.output_col = ctx.output_cols[0] if ctx.output_cols else ""
+    else:
+        ctx.output_cols = [str(ctx.output_col).strip()] if str(ctx.output_col).strip() else []
+
+    ctx.sql_writeback_rules = _normalize_writeback_rules(get_param)
+    for r in ctx.sql_writeback_rules:
+        c = r.get("output_col")
+        if c and c not in ctx.output_cols:
+            ctx.output_cols.append(c)
+
     if not ctx.output_col:
         default_out = f"{ctx.input_col}_result"
         ctx.output_col = input(f"💾 請輸入輸出欄位名稱（預設為 {default_out}）：").strip() or default_out
@@ -147,11 +177,12 @@ def maybe_reset_output_col(ctx, is_sqlite, sql_cfg, columns, args):
             reset_output_col_with_backup(ctx, is_sqlite)
 
 def build_pending_iter(adapter, ctx):
-    # 可視情況把 fetch_size 做成 config
+    # 以第一個輸出欄位作為 pending 判斷主欄（其餘欄位可由 sql_writeback_rules 擴充寫入）
+    output_cols = getattr(ctx, "output_cols", None) or [ctx.output_col]
     return adapter.select_pending_rows(
         src_table=ctx.sql_table, tgt_table=ctx.target_table,
         pk=ctx.primary_key, input_col=ctx.input_col,
-        output_cols=[ctx.output_col],
+        output_cols=output_cols,
         record_update_time=ctx.record_update_time,
         fetch_size=500
     )

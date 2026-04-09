@@ -1,0 +1,41 @@
+# 無模型環境可跑的 SQLite 多階段 E2E（mock LLM）
+mode: sql
+channel: excel_source
+model_spec: mock-local
+mock_llm_mode: true
+task: Translation-toEN
+
+input_col: File
+output_col: File_result
+record_update_time: true
+sql_config_file: czjLLM/config_sql/akconfig_local_file_test_multistage.py
+
+flatten_json_output: true
+allowed_output_fields:
+  - inputName
+  - formalName
+  - functionalDomain
+  - keyFunctions
+save_raw_input_when_flatten: true
+sql_expand_json_to_columns: true
+
+stages:
+  - name: route
+    task: |
+      你是分類器。請判斷此文本是否屬於「組織實體介紹」。
+      只輸出 JSON：{"route":"org"} 或 {"route":"other"}
+    input_from: original
+    persist_output: always
+  - name: extract
+    task: Organization Profile Analyzer to json format
+    input_from: original
+    persist_output: final
+
+sql_writeback_rules:
+  - output_col: File_route
+    source: stage
+    stage: route
+  - output_col: File_result
+    source: stage
+    stage: extract
+sql_flatten_writeback_rule: 1

@@ -195,6 +195,15 @@ def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None,
     ctx.model_spec_name = model_spec_name or set_model_spec()
     ctx.model_spec = modelSetting.get(ctx.model_spec_name)
     ensure_merge_defaults(ctx)
+    if ctx.model_spec is None and str(ctx.model_spec_name).startswith("mock"):
+        ctx.model_spec = {
+            "model_name": str(ctx.model_spec_name),
+            "base_url": [],
+            "api_key": "mock",
+            "num_ctx": 8192,
+            "on_premises": False,
+            "nProcess": 1,
+        }
     if ctx.model_spec is None:
         raise ValueError(f"❌ 找不到模型設定: {ctx.model_spec_name}")
 
