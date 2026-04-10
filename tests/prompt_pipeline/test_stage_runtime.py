@@ -39,6 +39,18 @@ def test_normalize_stages_rejects_empty_stages():
         normalize_stages({"stages": []})
 
 
+def test_normalize_stages_rejects_duplicate_stage_names():
+    with pytest.raises(ValueError, match="stage name 不可重複"):
+        normalize_stages(
+            {
+                "stages": [
+                    {"name": "route", "prompt": "分類"},
+                    {"name": "route", "prompt": "抽取"},
+                ]
+            }
+        )
+
+
 def test_build_chunk_stage_runtime_initializes_pending_matrix():
     stages = [StageDefinition(name="extract", task="抽取"), StageDefinition(name="classify", task="分類")]
     runtime = build_chunk_stage_runtime(["c1", "c2"], stages)
