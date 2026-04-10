@@ -86,7 +86,7 @@ if __name__ == '__main__':
             task_key = str(first.get("task_key", "")).strip()
             if task_key:
                 return task_key
-            task = str(first.get("task", "")).strip()
+            task = str(first.get("prompt", first.get("task", ""))).strip()
             if task.startswith("@taskSetting:"):
                 return task.split(":", 1)[1].strip()
             return task or None

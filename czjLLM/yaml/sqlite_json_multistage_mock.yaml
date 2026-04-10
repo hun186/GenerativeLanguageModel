@@ -21,13 +21,13 @@ sql_expand_json_to_columns: true
 
 stages:
   - name: route
-    task: |
+    prompt: |
       你是分類器。請判斷此文本是否屬於「組織實體介紹」。
       只輸出 JSON：{"route":"org"} 或 {"route":"other"}
     input_from: original
     persist_output: always
   - name: extract
-    task: Organization Profile Analyzer to json format
+    task_key: Organization Profile Analyzer to json format
     input_from: original
     persist_output: final
 

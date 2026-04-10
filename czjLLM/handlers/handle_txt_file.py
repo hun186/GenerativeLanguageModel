@@ -8,6 +8,8 @@ from czjLLM.prompt_pipeline.prompt_generator import process_file_to_prompt
 from czjLLM.prompt_pipeline.pipeline_controller import process_prompt_and_merge
 from czjLLM.job_manager.job_config import showTemplate
 from czjLLM.job_manager.job_config import LLMJobConfig
+from czjLLM.job_manager.job_config import resolve_task_spec
+from czjLLM.job_manager.job_config import task_template_preview
 
 from czjLLM.cli_tools.cli_utils import print_cli_usage_hint
 from utils.utilities import countdown_pause
@@ -39,7 +41,13 @@ def handle_single_input_file(
     #print("file name in handle_single_input_file",file)
     # 只在第一個檔案顯示範本＋倒數
     if not getattr(ctx, "shown_template", False):
-        showTemplate(task=ctx.task)
+        task_pool = getattr(ctx, "taskSetting", None)
+        task_kind, task_spec = resolve_task_spec(ctx.task, task_pool=task_pool)
+        if task_kind == "named":
+            showTemplate(task=ctx.task)
+        else:
+            preview = task_template_preview(task_spec)
+            tlog(f"ℹ️ 自訂任務（非 taskSetting 鍵值），預覽內容：{str(preview)[:200]}")
         countdown_pause(pause_seconds)
         ctx.shown_template = True
 

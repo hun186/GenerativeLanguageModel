@@ -13,7 +13,7 @@ def test_handle_single_input_file_happy_path(monkeypatch, tmp_path):
     # 準備假 ctx
     class Ctx: pass
     ctx = Ctx()
-    ctx.task = "demo-task"
+    ctx.task = "Summary-toTWZH"
     ctx.llm_source_dir = str(tmp_path / "src")
     ctx.llm_source_backup_dir = str(tmp_path / "bak")
     ctx.prompt_dir = str(tmp_path / "prompts")
@@ -76,7 +76,7 @@ def test_handle_single_input_file_defer_merge(monkeypatch, tmp_path):
     """defer_merge=True 時，應在顯示樣板/倒數後提前返回，不進行合併與搬移。"""
     class Ctx: pass
     ctx = Ctx()
-    ctx.task = "demo-task"
+    ctx.task = "Summary-toTWZH"
     ctx.llm_source_dir = str(tmp_path / "src")
     ctx.llm_source_backup_dir = str(tmp_path / "bak")
     ctx.prompt_dir = str(tmp_path / "prompts")
@@ -99,6 +99,34 @@ def test_handle_single_input_file_defer_merge(monkeypatch, tmp_path):
     assert flags["paused"] == [5]
     assert not flags["merged"]
     assert not flags["moved"]
+
+
+@pytest.mark.unit
+def test_handle_single_input_file_freeform_task_skips_template_preview(monkeypatch, tmp_path):
+    """task 不是 taskSetting 鍵值時，不應中斷流程。"""
+    class Ctx: pass
+    ctx = Ctx()
+    ctx.task = "你是分類器，只輸出 JSON"
+    ctx.llm_source_dir = str(tmp_path / "src")
+    ctx.llm_source_backup_dir = str(tmp_path / "bak")
+    ctx.prompt_dir = str(tmp_path / "prompts")
+    os.makedirs(ctx.llm_source_dir, exist_ok=True)
+
+    f = tmp_path / "src" / "in.txt"
+    f.write_text("content")
+
+    flags = {"show_called": 0, "paused": [], "logs": []}
+
+    monkeypatch.setattr(mod, "process_file_to_prompt", lambda *a, **k: None)
+    monkeypatch.setattr(mod, "showTemplate", lambda **k: flags.__setitem__("show_called", flags["show_called"] + 1))
+    monkeypatch.setattr(mod, "countdown_pause", lambda s: flags["paused"].append(s))
+    monkeypatch.setattr(mod, "tlog", lambda s: flags["logs"].append(s))
+
+    mod.handle_single_input_file(str(f), ctx, pause_seconds=2, defer_merge=True)
+
+    assert flags["show_called"] == 0
+    assert flags["paused"] == [2]
+    assert any("自訂任務" in x for x in flags["logs"])
 
 
 @pytest.mark.unit
