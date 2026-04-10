@@ -1149,6 +1149,50 @@ def _sync_stage_todo_to_root(item: str, stage_name: str, ops: MergeOps):
         shutil.copy2(src_fp, dst_fp)
 
 
+def _success_txt_signature_map(item: str) -> dict[str, tuple[int, int]]:
+    """回傳 root Success 內 txt 的輕量簽章：{檔名: (mtime_ns, size)}。"""
+    succ_dir = os.path.join(item, "Success")
+    out: dict[str, tuple[int, int]] = {}
+    if not os.path.isdir(succ_dir):
+        return out
+    for fp in Path(succ_dir).glob("*.txt"):
+        if not fp.is_file():
+            continue
+        try:
+            st = fp.stat()
+            out[fp.name] = (int(st.st_mtime_ns), int(st.st_size))
+        except Exception:
+            continue
+    return out
+
+
+def _copy_stage_success_delta(item: str, stage_name: str, before_sig: dict[str, tuple[int, int]]):
+    """
+    僅將「本 stage 執行後新增/更新」的 Success txt 複製到 stage snapshot，
+    避免把前一 stage 的舊輸出混入當前 stage。
+    """
+    snap_dir = _snapshot_dir(item, stage_name)
+    MKDIR(snap_dir)
+    _clear_txt_files(snap_dir, MergeOps())
+
+    succ_dir = os.path.join(item, "Success")
+    if not os.path.isdir(succ_dir):
+        return
+
+    for fp in sorted(Path(succ_dir).glob("*.txt")):
+        if not fp.is_file():
+            continue
+        try:
+            st = fp.stat()
+            now_sig = (int(st.st_mtime_ns), int(st.st_size))
+        except Exception:
+            continue
+        prev_sig = before_sig.get(fp.name)
+        if prev_sig == now_sig:
+            continue
+        shutil.copy2(str(fp), os.path.join(snap_dir, fp.name))
+
+
 def _root_txt_files(dir_path: str) -> list[Path]:
     p = Path(dir_path)
     if not p.is_dir():
@@ -1418,10 +1462,11 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"[stage:{job.stage_name}] ▶ 開始處理輸入單位(input_unit): {Path(job.chunk_id).name}")
         _prepare_todo_for_stage(job.chunk_id, job.stage_name, job.stage_task)
         _sync_stage_todo_to_root(job.chunk_id, job.stage_name, ops)
+        before_success_sig = _success_txt_signature_map(job.chunk_id)
         _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=True, task_override=job.stage_task)
         _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=False, task_override=job.stage_task)
         # 保存本階段 Success 作為後續 stage 可引用輸入
-        _copy_txts(ops.join(job.chunk_id, "Success"), _snapshot_dir(job.chunk_id, job.stage_name))
+        _copy_stage_success_delta(job.chunk_id, job.stage_name, before_success_sig)
         todo_files = [str(x) for x in _root_txt_files(ops.join(job.chunk_id, "TODO"))]
         if todo_files:
             return {"ok": False, "error": f"todo_remaining:{len(todo_files)}"}
