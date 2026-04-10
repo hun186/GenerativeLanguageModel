@@ -12,22 +12,42 @@ class WritebackPayload:
     source: str
 
 
-def _iter_manifest_candidates(combined_path: str) -> list[str]:
+def _iter_manifest_candidates(combined_path: str, ctx: Any | None = None) -> list[str]:
     """嘗試在 finished/cache 區域附近尋找 multistage manifest。"""
     out: list[str] = []
+
+    search_roots: list[str] = []
+
+    def _add_root(path: str) -> None:
+        p = str(path or "").strip()
+        if not p:
+            return
+        abs_p = os.path.abspath(p)
+        if abs_p not in search_roots:
+            search_roots.append(abs_p)
+
+    # 1) 由 combined 輸出檔一路向上找（維持原行為）
     base_dir = os.path.dirname(os.path.abspath(combined_path))
     cur = base_dir
     for _ in range(4):
-        stage_root = os.path.join(cur, "_stage_merges")
+        _add_root(cur)
+        parent = os.path.dirname(cur)
+        if parent == cur:
+            break
+        cur = parent
+
+    # 2) 額外參考 ctx（SQL 多執行緒下 combined 與 stage_merge 可能不在同一樹）
+    if ctx is not None:
+        for key in ("temp_txt_finished_dir", "llm_source_finished_dir", "prompt_dir"):
+            _add_root(getattr(ctx, key, ""))
+
+    for root in search_roots:
+        stage_root = os.path.join(root, "_stage_merges")
         if os.path.isdir(stage_root):
             for name in os.listdir(stage_root):
                 cand = os.path.join(stage_root, name, "manifest.json")
                 if os.path.isfile(cand):
                     out.append(cand)
-        parent = os.path.dirname(cur)
-        if parent == cur:
-            break
-        cur = parent
     # 新到舊排序
     out.sort(key=lambda p: os.path.getmtime(p), reverse=True)
     return out
@@ -103,7 +123,7 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
             payload = combined_text
         return WritebackPayload(main_payload=payload, main_text=combined_text, flatten_text=combined_text, source="combined")
 
-    manifests = _iter_manifest_candidates(combined_path)
+    manifests = _iter_manifest_candidates(combined_path, ctx=ctx)
     if not manifests:
         try:
             payload = json.loads(combined_text)

@@ -76,3 +76,34 @@ def test_resolve_writeback_payload_falls_back_when_stage_not_found(tmp_path):
 
     assert out.source == "combined(fallback:no_matching_stage_manifest)"
     assert out.main_payload == [{"route": "org"}]
+
+
+def test_resolve_writeback_payload_finds_manifest_from_ctx_finished_dir(tmp_path):
+    # combined 結果在 workpool 路徑，manifest 則在 finished 路徑（兩者非祖先關係）
+    combined_path = tmp_path / "workpool" / "sql_cache" / "cache" / "rowC_task.txt"
+    combined_path.parent.mkdir(parents=True)
+    combined_path.write_text('[{"route":"org"}]', encoding="utf-8")
+
+    finished_dir = tmp_path / "llm_finished" / "cache"
+    _write_manifest(
+        finished_dir / "_stage_merges" / "rowC",
+        source="rowC",
+        stages=[
+            {"name": "route", "merged": True, "merged_file": "01_route.txt"},
+            {"name": "extract", "merged": True, "merged_file": "02_extract.txt"},
+        ],
+        files={
+            "01_route.txt": '[{"route":"org"}]',
+            "02_extract.txt": '[{"inputName":"OK_FROM_CTX_FINISHED"}]',
+        },
+    )
+
+    ctx = SimpleNamespace(
+        sql_writeback_source="stage",
+        sql_writeback_stage="extract",
+        llm_source_finished_dir=str(finished_dir),
+    )
+    out = resolve_writeback_payload(ctx, str(combined_path), combined_path.read_text(encoding="utf-8"))
+
+    assert out.source == "stage:extract"
+    assert out.main_payload == [{"inputName": "OK_FROM_CTX_FINISHED"}]

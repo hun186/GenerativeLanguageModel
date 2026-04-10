@@ -587,3 +587,35 @@ def test_multistage_stage1_bootstrap_ignores_nested_stage_todo(tmp_path):
     stage1_records = [x for x in records if x[0] == "PDF OPT-Instruction First"]
     assert stage1_records
     assert all("STALE_NESTED" not in txt for _, txt in stage1_records)
+
+
+@pytest.mark.unit
+def test_process_prompt_and_merge_raises_when_explicit_stages_parse_fails(tmp_path, monkeypatch):
+    root = tmp_path / "root"
+    main = "in_stage_err"
+    item = root / main
+    (item / "TODO").mkdir(parents=True)
+    (item / "Success").mkdir(parents=True)
+    (item / "TODO" / "0.txt").write_text("x", encoding="utf-8")
+
+    ops = pc.MergeOps(
+        list_paths=lambda p: [str(x) for x in Path(p).rglob("*.txt")] if Path(p).exists() else [],
+        get_parent=lambda fn: str(Path(fn).parent),
+        call_llm=lambda *a, **k: None,
+        combine=lambda item_dir, _ctx: str(Path(item_dir) / "combined.out.txt"),
+        join=lambda *p: str(Path(*p)),
+    )
+    ctx = DummyCtx(
+        prompt_dir=str(root),
+        main_file_name=main,
+        task="legacy-task",
+        stages=[{"name": "route", "prompt": "p1"}, {"name": "extract", "task_key": "k2"}],
+    )
+
+    def _boom(_ctx):
+        raise ValueError("bad stage cfg")
+
+    monkeypatch.setattr(pc, "resolve_pipeline_stages", _boom)
+
+    with pytest.raises(RuntimeError, match="多階段設定解析失敗"):
+        pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)

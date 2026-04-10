@@ -1588,7 +1588,15 @@ def process_prompt_and_merge(ctx, file_path: str, ops: MergeOps | None = None) -
     ops = ops or MergeOps()
     try:
         stages = resolve_pipeline_stages(ctx)
-    except Exception:
+    except Exception as e:
+        # 若使用者有明確配置多階段，解析失敗時不可靜默降級為單階段，
+        # 否則會出現「看似成功但只跑第一段」的隱性錯誤。
+        has_explicit_stages = bool(getattr(ctx, "stages", None))
+        task_cfg = getattr(ctx, "task_config", None)
+        if not has_explicit_stages and isinstance(task_cfg, dict):
+            has_explicit_stages = "stages" in task_cfg
+        if has_explicit_stages:
+            raise RuntimeError(f"多階段設定解析失敗，已停止執行：{e}") from e
         stages = []
     if len(stages) > 1:
         return process_prompt_and_merge_multistage(ctx, file_path=file_path, ops=ops)
