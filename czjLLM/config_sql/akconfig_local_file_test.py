@@ -1,7 +1,7 @@
 # akconfig.py
 
 # 服务器信息
-server = 'GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/DFPreambleCols_df_ALL_Law.sql3'
+server = 'czjLLM/LLMSourcePool/excel_source/DFPreambleCols_df_ALL_Law.sql3'
 
 # 数据库和表信息
 table_name = 'sampleSrc'
