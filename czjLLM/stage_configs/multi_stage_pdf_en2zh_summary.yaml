@@ -9,15 +9,21 @@ stages:
     task_key: "PDF OPT-Instruction First"
     input_from: original
     persist_output: always
-
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
+    
   # Stage 2: 英文翻繁中
   - name: en_to_zh
     task_key: "Translation-toTWZH"
     input_from: previous
     persist_output: never
-
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
+    
   # Stage 3: 中文摘要（接續 stage2 產出）
   - name: summarize
     task_key: "Summary-toTWZH"
     input_from: previous
     persist_output: final
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
