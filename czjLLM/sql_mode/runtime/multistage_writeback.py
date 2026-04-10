@@ -33,6 +33,27 @@ def _iter_manifest_candidates(combined_path: str) -> list[str]:
     return out
 
 
+def _load_stage_defs(manifest_path: str) -> list[dict]:
+    try:
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest = json.load(f)
+    except Exception:
+        return []
+    stage_defs = manifest.get("stages") if isinstance(manifest, dict) else None
+    return stage_defs if isinstance(stage_defs, list) else []
+
+
+def _manifest_source(manifest_path: str) -> str:
+    try:
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest = json.load(f)
+    except Exception:
+        return ""
+    if isinstance(manifest, dict):
+        return str(manifest.get("source", "") or "").strip()
+    return ""
+
+
 def _select_stage(stage_defs: list[dict], stage_selector: Any) -> Optional[dict]:
     if not stage_defs:
         return None
@@ -90,40 +111,49 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
             payload = combined_text
         return WritebackPayload(main_payload=payload, main_text=combined_text, flatten_text=combined_text, source="combined(fallback:no_manifest)")
 
-    manifest_path = manifests[0]
-    try:
-        with open(manifest_path, "r", encoding="utf-8") as f:
-            manifest = json.load(f)
-    except Exception:
-        manifest = {}
-    stage_defs = manifest.get("stages") if isinstance(manifest, dict) else None
-    if not isinstance(stage_defs, list):
-        stage_defs = []
+    selector = getattr(ctx, "sql_writeback_stage", None)
 
-    selected = _select_stage(stage_defs, getattr(ctx, "sql_writeback_stage", None))
-    if not selected:
+    # 優先順序：
+    # 1) manifest.source 可對上 combined 檔名（避免誤抓其他 row 的 manifest）
+    # 2) 能成功選到 stage 且讀到 stage merged_file
+    combined_stem = os.path.splitext(os.path.basename(os.path.abspath(combined_path)))[0]
+    candidates: list[str] = []
+    for mp in manifests:
+        src = _manifest_source(mp)
+        if src and src in combined_stem:
+            candidates.append(mp)
+    for mp in manifests:
+        if mp not in candidates:
+            candidates.append(mp)
+
+    for manifest_path in candidates:
+        stage_defs = _load_stage_defs(manifest_path)
+        selected = _select_stage(stage_defs, selector)
+        if not selected:
+            continue
+        stage_text = _read_stage_text(manifest_path, selected)
+        if stage_text is None:
+            continue
+
         try:
-            payload = json.loads(combined_text)
+            payload = json.loads(stage_text)
         except Exception:
-            payload = combined_text
-        return WritebackPayload(main_payload=payload, main_text=combined_text, flatten_text=combined_text, source="combined(fallback:no_stage)")
-
-    stage_text = _read_stage_text(manifest_path, selected)
-    if stage_text is None:
-        try:
-            payload = json.loads(combined_text)
-        except Exception:
-            payload = combined_text
-        return WritebackPayload(main_payload=payload, main_text=combined_text, flatten_text=combined_text, source="combined(fallback:no_stage_file)")
+            payload = stage_text
+        stage_name = str(selected.get("name", "")).strip() or "stage"
+        return WritebackPayload(
+            main_payload=payload,
+            main_text=stage_text,
+            flatten_text=stage_text,
+            source=f"stage:{stage_name}",
+        )
 
     try:
-        payload = json.loads(stage_text)
+        payload = json.loads(combined_text)
     except Exception:
-        payload = stage_text
-    stage_name = str(selected.get("name", "")).strip() or "stage"
+        payload = combined_text
     return WritebackPayload(
         main_payload=payload,
-        main_text=stage_text,
-        flatten_text=stage_text,
-        source=f"stage:{stage_name}",
+        main_text=combined_text,
+        flatten_text=combined_text,
+        source="combined(fallback:no_matching_stage_manifest)",
     )
