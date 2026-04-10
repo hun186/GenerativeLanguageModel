@@ -211,6 +211,25 @@
 > 但更推薦用 `task_key`（寫法 A），可讀性和可維護性更好。  
 > 路由時也建議 `route_map` value 使用 `taskSetting` key（`route_value_mode: task_key`）。
 
+### 寫法 D：`prompt`（自訂提詞文字）與 `task_key`（任務鍵值）混用
+
+```yaml
+stages:
+  - name: route
+    prompt: |
+      你是分類器。請判斷此文本是否屬於「組織實體介紹」。
+      只輸出 JSON：{"route":"org"} 或 {"route":"other"}
+  - name: extract
+    task_key: Organization Profile Analyzer to json format
+```
+
+- `prompt`：這一階段直接使用你給的文字當「任務模板」來源。  
+- `task_key`：這一階段改由 `taskSetting[task_key]` 解析模板。  
+- YAML 的 `|` 是 **多行字串語法**，不是程式指令；會把換行保留在字串內容中。
+
+> 補充：多階段執行時，`ctx.task` 會在呼叫該階段時暫時覆寫為「該階段實際 task（prompt 或 taskSetting 解析後內容）」，  
+> 該階段完成後再還原，避免污染其他階段與全域狀態。
+
 ---
 
 ## 8) SQL / ES 多階段寫回建議（新增）

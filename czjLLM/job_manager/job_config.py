@@ -657,6 +657,17 @@ def showTemplate(task=None):
             print(f"已載入特殊翻譯對照表字典，DETAIL_EXT_TRANS_Rule為{DETAIL_EXT_TRANS_Rule}")
             countdown_pause(15)
 
+def resolve_task_spec(task, task_pool=None):
+    """
+    回傳 (task_kind, spec):
+    - task_kind = "named"：task 是既有 taskSetting 鍵值
+    - task_kind = "freeform"：task 是自訂 prompt/其他內容
+    """
+    pool = task_pool if isinstance(task_pool, Mapping) else taskSetting
+    if isinstance(task, str) and task in pool:
+        return "named", pool[task]
+    return "freeform", task
+
 
 def task_template_preview(task_or_spec) -> str:
     """回傳任務 template 可讀字串，支援 task key 或 task dict。"""

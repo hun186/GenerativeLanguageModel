@@ -9,7 +9,7 @@ VALID_ROUTE_VALUE_MODE = {"task_key", "task"}
 
 
 def _normalize_stage_item(item: Any, index: int, defaults: dict[str, Any]) -> dict[str, Any]:
-    # 最短寫法：直接給 task 字串
+    # 最短寫法：直接給 prompt/task 字串
     if isinstance(item, str):
         return {
             "name": f"stage_{index + 1}",
@@ -21,21 +21,22 @@ def _normalize_stage_item(item: Any, index: int, defaults: dict[str, Any]) -> di
     if not isinstance(item, dict):
         raise TypeError(f"不支援的 stage 型別: {type(item)!r}")
 
-    # shorthand: {"translate": "翻成中文"} => name/task
-    if "task" not in item and len(item) == 1 and "name" not in item:
+    # shorthand: {"translate": "翻成中文"} => name/prompt(task)
+    if "task" not in item and "prompt" not in item and len(item) == 1 and "name" not in item:
         k, v = next(iter(item.items()))
         if isinstance(v, str):
-            item = {"name": k, "task": v}
+            item = {"name": k, "prompt": v}
 
     name = str(item.get("name", "")).strip() or f"stage_{index + 1}"
-    raw_task = item.get("task", "")
+    # 多階段語意上更貼近 prompt，優先讀 prompt，並向下相容 task。
+    raw_task = item.get("prompt", item.get("task", ""))
     task = raw_task if isinstance(raw_task, Mapping) else str(raw_task).strip()
     task_key = str(item.get("task_key", defaults.get("task_key", ""))).strip()
     if not task and not task_key and "name" in item:
         # 允許用 stage name 對映 taskSetting key（由 orchestrator 解析）
         task_key = name
     if not task and not task_key:
-        raise ValueError(f"Stage {index + 1} 缺少 task 或 task_key")
+        raise ValueError(f"Stage {index + 1} 缺少 prompt/task 或 task_key")
 
     input_from = str(
         item.get("input_from", item.get("from", defaults.get("input_from", "original")))

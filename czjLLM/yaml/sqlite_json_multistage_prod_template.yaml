@@ -21,11 +21,11 @@ sql_expand_json_to_columns: true
 
 stages:
   - name: route
-    task: <ROUTE_TASK>
+    prompt: <ROUTE_PROMPT>
     input_from: original
     persist_output: always
   - name: extract
-    task: <EXTRACT_TASK>
+    task_key: <EXTRACT_TASK_KEY>
     input_from: original
     persist_output: final
 

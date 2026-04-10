@@ -17,6 +17,14 @@ def test_normalize_human_stage_spec_supports_defaults_and_alias():
     assert out[1]["input_from"] == "previous"
     assert out[1]["persist_output"] == "always"
 
+def test_normalize_human_stage_spec_supports_prompt_alias():
+    out = normalize_human_stage_spec(
+        {"stages": [{"name": "route", "prompt": "請分類", "input_from": "original"}]}
+    )
+    assert out[0]["name"] == "route"
+    assert out[0]["task"] == "請分類"
+    assert out[0]["task_key"] == ""
+
 
 def test_normalize_human_stage_spec_supports_shorthand_dict():
     out = normalize_human_stage_spec({"stages": [{"translate": "翻成中文"}]})
