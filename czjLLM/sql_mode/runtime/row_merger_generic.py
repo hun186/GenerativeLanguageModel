@@ -1,5 +1,5 @@
 # sql_mode/runtime/row_merger_generic.py
-import os, time, json
+import os, time, json, shutil
 from datetime import datetime
 from typing import Iterable, Tuple, Any, Optional, List, Dict
 
@@ -342,6 +342,13 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                         MKDIR(getPathFromFN(des)); safe_move(temp_txt, des)
                     except Exception as ex:
                         tlog_warn(f"⚠️ 備份原始 txt 失敗（pk={pk}）：{ex}")
+
+                    # 清理此列 prompt 工作目錄，避免 cache/Success 殘留 0.txt
+                    if bool(getattr(ctx, "cleanup_prompt_item_after_writeback", True)):
+                        try:
+                            shutil.rmtree(item_dir, ignore_errors=True)
+                        except Exception as ex:
+                            tlog_warn(f"⚠️ 清理 prompt cache 失敗（pk={pk}）：{ex}")
 
                     tlog(f"✅ 逐列合併並寫回完成：{pk}")
                     progressed = True
