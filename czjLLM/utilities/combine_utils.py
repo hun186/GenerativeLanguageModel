@@ -6,6 +6,7 @@ import json
 from opencc import OpenCC
 import shutil
 import re
+import hashlib
 from typing import List, Dict, Any, Tuple, Optional
 try:
     from utils.utilities_path import OSWALK
@@ -270,6 +271,21 @@ def _p(s):
     s_str = str(s_str)
     return Path(s_str) if s_str.strip() else None
 
+def _safe_task_suffix(task: str, max_len: int = 96) -> str:
+    """
+    產生可安全放入檔名的任務後綴：
+    - 移除 Windows/一般檔名非法字元
+    - 將空白與換行壓成底線
+    - 過長時截斷並加 hash，避免路徑過長
+    """
+    cleaned = re.sub(r'[\\/:*?"<>|]+', "_", str(task or "")).strip()
+    cleaned = re.sub(r"\s+", "_", cleaned).strip("._") or "result"
+    if len(cleaned) <= max_len:
+        return cleaned
+    digest = hashlib.sha1(cleaned.encode("utf-8")).hexdigest()[:10]
+    head_len = max(16, max_len - 11)  # 保留 "_" + 10 碼 hash
+    return f"{cleaned[:head_len]}_{digest}"
+
 
 def combine_api_finished_item(item: str, ctx) -> str:
     print(f"{item} is finished calling API, start to combine returned result.")
@@ -379,7 +395,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
     
     # 4) 檔名
     main_name = Path(item).name
-    task_name = str(getattr(ctx, "task", "result")).replace(os.sep, "_")
+    task_name = _safe_task_suffix(getattr(ctx, "task", "result"), max_len=96)
     out_path = dest_dir / f"{main_name}_{task_name}.txt"
     # JSON 合併修補（如有指定 to json format，且目前仍為字串拼接型態）
     if "to json format" in str(getattr(ctx, "task", "")).lower() and not (json_mode and json_rows):
