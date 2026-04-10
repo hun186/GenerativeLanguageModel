@@ -85,6 +85,25 @@ def append_no_think_if_applicable(
     return content if _has_no_think_suffix(content, suffix) else (content.rstrip() + "\n" + suffix)
 
 
+def _render_raw_task_prompt(task_text: str, content: str) -> str:
+    """
+    當 ctx.task 不是 taskSetting key（例如 multi-stage 直接給 prompt 字串）時，
+    以「原樣提示詞 + 內容」方式產生 prompt，避免 KeyError 中斷切片流程。
+    - 若 task_text 含 {content}，則以 format_map 注入。
+    - 否則預設以兩行分隔拼接。
+    """
+    base = str(task_text or "").strip()
+    if not base:
+        return content
+
+    if "{content}" in base:
+        try:
+            return base.format_map({"content": content})
+        except Exception:
+            # 格式化失敗（例如未轉義的大括號）時回退穩健拼接
+            pass
+    return f"{base}\n\n{content}"
+
 
 def generate_prompt(content="",
                     keyConsiderations="",
@@ -143,6 +162,14 @@ class PromptGenerator:
             print("⚠️ generate_prompt: content 為空，請確認是否為預期行為。")
 
         task = self.ctx.task
+        if task not in taskSetting:
+            prompt = _render_raw_task_prompt(str(task or ""), content)
+            return append_no_think_if_applicable(
+                prompt,
+                getattr(self.ctx, "model_spec_name", "") or "",
+                enabled=(not self.ctx.think_mode),
+            )
+
         template_function = taskSetting[task]["template"]
         source_code = inspect.getsource(template_function)
 
