@@ -465,8 +465,13 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                     tlog("  ↳ RUNNING top: " + ", ".join(brief))
         
             last_report = now
-        # 放寬退出條件：registry 清空 或（finished ≥ dispatched 且 running == 0）皆可作為 C 的後備
-        exit_ok = A and B and D and (C or (finished >= dispatched and running == 0))
+        # 放寬退出條件：
+        # - 一般情境：仍優先依 p_done（D）判斷完成列數
+        # - 多階段/特殊寫回：有時 done_q 不會回補 p_done，會導致 D 卡住在 0
+        #   此時若 producer 已完成、queue 已清空、registry 已 drained（或 finished>=dispatched 且 running=0）
+        #   即可視為已完成，避免主流程無限等待。
+        progress_done_or_drained = D or (C and B)
+        exit_ok = A and B and progress_done_or_drained and (C or (finished >= dispatched and running == 0))
 
         if exit_ok:
             break
