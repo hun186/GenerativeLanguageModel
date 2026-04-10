@@ -20,6 +20,8 @@ class StageDefinition:
     route_map: dict[str, str] | None = None  # key -> task template
     route_value_mode: str = "task_key"  # task_key | task
     retry_source_on_route_miss: bool = False
+    debug_print_llm_io: bool = False      # 是否印出送 LLM 與回傳內容
+    debug_print_max_chars: int = 2000     # debug 輸出最大字元（避免洗版）
 
 
 @dataclass
@@ -96,6 +98,10 @@ def _as_stage_definition(item: Any, index: int) -> StageDefinition:
         route_map = item.get("route_map")
         route_value_mode = str(item.get("route_value_mode", "task_key")).strip() or "task_key"
         retry_source_on_route_miss = bool(item.get("retry_source_on_route_miss", False))
+        debug_print_llm_io = bool(item.get("debug_print_llm_io", False))
+        debug_print_max_chars = int(item.get("debug_print_max_chars", 2000) or 2000)
+        if debug_print_max_chars < 200:
+            debug_print_max_chars = 200
         if not task and not task_key:
             raise ValueError(f"Stage {index + 1} 缺少 task 或 task_key")
         return StageDefinition(
@@ -109,6 +115,8 @@ def _as_stage_definition(item: Any, index: int) -> StageDefinition:
             route_map=route_map if isinstance(route_map, dict) else None,
             route_value_mode=route_value_mode,
             retry_source_on_route_miss=retry_source_on_route_miss,
+            debug_print_llm_io=debug_print_llm_io,
+            debug_print_max_chars=debug_print_max_chars,
         )
     raise TypeError(f"不支援的 stage 型別: {type(item)!r}")
 

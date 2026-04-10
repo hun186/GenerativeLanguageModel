@@ -27,6 +27,8 @@
   - `task_key`（預設）：把 value 當 `taskSetting` key
   - `task`：把 value 當完整 task/prompt 文字
 - `retry_source_on_route_miss`: 路由值不在 `route_map` 時，是否回退重跑 `route_by` 階段
+- `debug_print_llm_io`: 是否印出該 stage「送往 LLM 的 prompt」與「LLM 回傳內容」（預設 `false`）
+- `debug_print_max_chars`: 啟用 `debug_print_llm_io` 時，每段輸出最多顯示字元數（預設 `2000`）
 
 ---
 
