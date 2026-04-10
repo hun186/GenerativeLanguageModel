@@ -51,6 +51,8 @@ def _normalize_stage_item(item: Any, index: int, defaults: dict[str, Any]) -> di
     retry_source_on_route_miss = bool(
         item.get("retry_source_on_route_miss", defaults.get("retry_source_on_route_miss", False))
     )
+    debug_print_llm_io = bool(item.get("debug_print_llm_io", defaults.get("debug_print_llm_io", False)))
+    debug_print_max_chars = int(item.get("debug_print_max_chars", defaults.get("debug_print_max_chars", 2000)) or 2000)
 
     if persist_output not in VALID_PERSIST:
         raise ValueError(f"Stage {name} persist_output 不合法: {persist_output}")
@@ -72,6 +74,8 @@ def _normalize_stage_item(item: Any, index: int, defaults: dict[str, Any]) -> di
         "route_map": route_map or {},
         "route_value_mode": route_value_mode,
         "retry_source_on_route_miss": retry_source_on_route_miss,
+        "debug_print_llm_io": debug_print_llm_io,
+        "debug_print_max_chars": debug_print_max_chars,
     }
 
 
