@@ -1215,6 +1215,35 @@ def _root_txt_files(dir_path: str) -> list[Path]:
     return [x for x in sorted(p.glob("*.txt")) if x.is_file()]
 
 
+def _preview_text_for_debug(text: str, max_chars: int) -> str:
+    value = str(text or "")
+    if len(value) <= max_chars:
+        return value
+    return f"{value[:max_chars]}\n...<truncated {len(value) - max_chars} chars>"
+
+
+def _print_stage_llm_io_debug(item: str, stage_name: str, max_chars: int, mode: str):
+    """
+    mode:
+      - prompt: 印出該 stage 送往 LLM 的 TODO 內容
+      - output: 印出該 stage LLM 寫回 Success 的內容
+    """
+    target_dir = os.path.join(item, "TODO" if mode == "prompt" else "Success")
+    title = "送往LLM(Prompt)" if mode == "prompt" else "LLM輸出(Output)"
+    files = _root_txt_files(target_dir)
+    if not files:
+        print(f"[stage:{stage_name}] 🪵 debug {title}: 無 .txt 可顯示（dir={target_dir}）")
+        return
+    for fp in files:
+        try:
+            with open(fp, "r", encoding="utf-8") as f:
+                body = f.read()
+        except Exception as ex:
+            print(f"[stage:{stage_name}] 🪵 debug {title}: 讀取失敗 {fp.name}: {ex}")
+            continue
+        print(f"[stage:{stage_name}] 🪵 debug {title} file={fp.name}\n{_preview_text_for_debug(body, max_chars)}")
+
+
 def _append_resume_log(ctx, message: str):
     prompt_dir = getattr(ctx, "prompt_dir", "") if ctx is not None else ""
     if not prompt_dir:
@@ -1474,9 +1503,24 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"[stage:{job.stage_name}] ▶ 開始處理輸入單位(input_unit): {Path(job.chunk_id).name}")
         _prepare_todo_for_stage(job.chunk_id, job.stage_name, job.stage_task)
         _sync_stage_todo_to_root(job.chunk_id, job.stage_name, ops)
+        stage_def = stage_map[job.stage_name]
+        if stage_def.debug_print_llm_io:
+            _print_stage_llm_io_debug(
+                item=job.chunk_id,
+                stage_name=job.stage_name,
+                max_chars=stage_def.debug_print_max_chars,
+                mode="prompt",
+            )
         before_success_sig = _success_txt_signature_map(job.chunk_id)
         _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=True, task_override=job.stage_task)
         _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=False, task_override=job.stage_task)
+        if stage_def.debug_print_llm_io:
+            _print_stage_llm_io_debug(
+                item=job.chunk_id,
+                stage_name=job.stage_name,
+                max_chars=stage_def.debug_print_max_chars,
+                mode="output",
+            )
         # 保存本階段 Success 作為後續 stage 可引用輸入
         _copy_stage_success_delta(job.chunk_id, job.stage_name, before_success_sig)
         todo_files = [str(x) for x in _root_txt_files(ops.join(job.chunk_id, "TODO"))]
