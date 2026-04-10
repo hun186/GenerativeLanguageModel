@@ -12,4 +12,4 @@ stage_config_file: czjLLM/stage_configs/multi_stage_pdf_en2zh_summary.yaml
 # 多階段模式可不填 task（啟動時會自動從第一個 stage 推導）
 
 # 模型設定名稱（請依你環境可用模型調整）
-model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
+model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
