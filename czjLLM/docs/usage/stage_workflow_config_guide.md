@@ -263,6 +263,19 @@ sql_writeback_stage: extract
 
 > 若找不到對應 stage 或 manifest，系統會自動回退到 `combined`，確保不影響既有流程。
 
+### SQL 多階段偵錯提示（2026-04）
+
+- 若主表日誌出現  
+  `combined(fallback:no_manifest;multistage_configured)`  
+  代表你**有設定 `stages`**，但寫回階段找不到 `_stage_merges/.../manifest.json`。  
+- 這通常表示執行路徑沒有真正產生 multi-stage manifest（例如實際僅跑單階段），可先用此訊號快速判斷「第二階段未落地」。
+
+### SQL/SQLite 多階段執行說明（stream consumer）
+
+- 當 `mode: sql` 且 `stages` 數量大於 1，consumer 會改走 `process_prompt_and_merge()` 的多階段路徑，逐列執行 stage pipeline，產生 `_stage_merges/.../manifest.json` 後再交由寫回邏輯選擇 stage 來源。  
+- 若你希望寫回後自動清掉 prompt cache（避免 `cache/.../Success/0.txt` 殘留），可保留預設：  
+  `cleanup_prompt_item_after_writeback: true`
+
 ### 8.1 進階：同一列同時寫回多個 stage 到不同 output 欄位
 
 若你要「中間 stage + 最終 stage」都保留到 SQL / SQLite / Excel 主表，可使用：

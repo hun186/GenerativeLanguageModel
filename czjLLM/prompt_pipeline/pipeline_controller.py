@@ -426,6 +426,17 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
     _os.environ.setdefault("DISABLE_INNER_TQDM", "1")
 
     try:
+        try:
+            stage_defs = resolve_pipeline_stages(ctx)
+        except Exception:
+            stage_defs = []
+        multistage_mode = len(stage_defs) > 1
+        if multistage_mode:
+            try:
+                tlog("[consumer] multistage mode enabled (SQL/Table stream will run process_prompt_and_merge per row)")
+            except Exception:
+                pass
+
         tlog(f"[consumer] using meter: {meter_fn}")  # 診斷：應與 orchestrator 印出的路徑一致
         print("meter_fn in llm_stream_consumer",meter_fn)
         #did_recover = False  # ← 新增：只復原一次
@@ -469,6 +480,87 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
 
             items_map = registry.list_items()
             item_dirs = list(items_map.keys())
+
+            if multistage_mode:
+                runnable = []
+                for item_dir, meta in items_map.items():
+                    try:
+                        todo_dir = os.path.join(item_dir, "TODO")
+                        n_todo = len(OSWALK(todo_dir)) if os.path.isdir(todo_dir) else 0
+                    except Exception:
+                        n_todo = 0
+                    if n_todo > 0:
+                        runnable.append((item_dir, meta, n_todo))
+
+                if not runnable:
+                    if stop_event.is_set():
+                        break
+                    time.sleep(0.1)
+                    continue
+
+                for item_dir, meta, n_sched in runnable:
+                    count_by_item_sched = Counter({item_dir: n_sched})
+                    try:
+                        meter_update(meter_fn, lambda d: _meter_on_dispatch(d, items_map, count_by_item_sched, n_sched))
+                        _bump(ctx)
+                    except Exception as ex:
+                        tlog_warn(f"⚠️ multistage meter_on_dispatch 失敗：{ex}")
+
+                    try:
+                        CONSUMER_STATE["last_dispatch_ts"] = time.monotonic()
+                    except Exception:
+                        pass
+
+                    temp_txt = str(meta.get("temp_txt", "") or "")
+                    row_main = Path(temp_txt).stem if temp_txt else Path(item_dir).name
+
+                    class _RowCtx:
+                        def __init__(self, base):
+                            self.__dict__.update(getattr(base, "__dict__", {}))
+
+                    row_ctx = _RowCtx(ctx)
+                    row_ctx.main_file_name = row_main
+                    if temp_txt:
+                        row_ctx.current_file = temp_txt
+
+                    done_count = 0
+                    requeue_count = n_sched
+                    try:
+                        process_prompt_and_merge(row_ctx, file_path=(temp_txt or row_main))
+                        todo_dir = os.path.join(item_dir, "TODO")
+                        n_todo_after = len(OSWALK(todo_dir)) if os.path.isdir(todo_dir) else 0
+                        done_count = max(0, n_sched - n_todo_after)
+                        requeue_count = max(0, n_sched - done_count)
+                    except Exception as ex:
+                        tlog_warn(f"❌ multistage row 執行失敗 item={os.path.basename(item_dir)}: {ex}")
+
+                    count_by_item_done = Counter({item_dir: done_count}) if done_count > 0 else Counter()
+                    count_by_item_requeued = Counter({item_dir: requeue_count}) if requeue_count > 0 else Counter()
+                    try:
+                        meter_update(
+                            meter_fn,
+                            lambda d: _meter_on_finish_batch_v2(
+                                d,
+                                items_map,
+                                count_by_item_done=count_by_item_done,
+                                n_done=done_count,
+                                count_by_item_requeued=count_by_item_requeued,
+                                n_requeued=requeue_count,
+                            ),
+                        )
+                        _bump(ctx)
+                    except Exception as ex:
+                        tlog_warn(f"⚠️ multistage meter_on_finish 失敗：{ex}")
+
+                try:
+                    meter_update(meter_fn, lambda d: d.setdefault("consumer", {}).update({
+                        "alive": True, "last_round_ts": time.time()
+                    }))
+                    _bump(ctx)
+                except Exception:
+                    pass
+                time.sleep(0.01)
+                continue
             
             # ★ 啟動後第一次迴圈：復原 RUNNING → TODO
             #if not did_recover:
