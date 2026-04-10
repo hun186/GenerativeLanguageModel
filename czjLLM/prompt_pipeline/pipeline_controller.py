@@ -1217,6 +1217,8 @@ def _root_txt_files(dir_path: str) -> list[Path]:
 
 def _preview_text_for_debug(text: str, max_chars: int) -> str:
     value = str(text or "")
+    if max_chars <= 0:
+        return value
     if len(value) <= max_chars:
         return value
     return f"{value[:max_chars]}\n...<truncated {len(value) - max_chars} chars>"
