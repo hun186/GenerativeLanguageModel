@@ -469,7 +469,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
 
             items_map = registry.list_items()
             item_dirs = list(items_map.keys())
-            
+
             # ★ 啟動後第一次迴圈：復原 RUNNING → TODO
             #if not did_recover:
             #    recover_running_to_todo(item_dirs)

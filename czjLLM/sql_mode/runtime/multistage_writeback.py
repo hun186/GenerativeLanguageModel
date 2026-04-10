@@ -12,6 +12,23 @@ class WritebackPayload:
     source: str
 
 
+def _has_explicit_multistage(ctx: Any | None) -> bool:
+    """判斷是否有明確配置多階段（stages>=2）。"""
+    if ctx is None:
+        return False
+    stages = getattr(ctx, "stages", None)
+    if isinstance(stages, list):
+        return len(stages) > 1
+    if isinstance(stages, dict):
+        raw = stages.get("stages")
+        return isinstance(raw, list) and len(raw) > 1
+    task_cfg = getattr(ctx, "task_config", None)
+    if isinstance(task_cfg, dict):
+        raw = task_cfg.get("stages")
+        return isinstance(raw, list) and len(raw) > 1
+    return False
+
+
 def _iter_manifest_candidates(combined_path: str, ctx: Any | None = None) -> list[str]:
     """嘗試在 finished/cache 區域附近尋找 multistage manifest。"""
     out: list[str] = []
@@ -129,7 +146,10 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
             payload = json.loads(combined_text)
         except Exception:
             payload = combined_text
-        return WritebackPayload(main_payload=payload, main_text=combined_text, flatten_text=combined_text, source="combined(fallback:no_manifest)")
+        fallback_source = "combined(fallback:no_manifest)"
+        if _has_explicit_multistage(ctx):
+            fallback_source = "combined(fallback:no_manifest;multistage_configured)"
+        return WritebackPayload(main_payload=payload, main_text=combined_text, flatten_text=combined_text, source=fallback_source)
 
     selector = getattr(ctx, "sql_writeback_stage", None)
 
