@@ -1246,10 +1246,15 @@ def _print_stage_llm_io_debug(item: str, stage_name: str, max_chars: int, mode: 
       - output: 印出該 stage LLM 寫回 Success 的內容
     """
     target_dir = os.path.join(item, "TODO" if mode == "prompt" else "Success")
+    stage_dir = _stage_todo_dir(item, stage_name) if mode == "prompt" else ""
     title = "送往LLM(Prompt)" if mode == "prompt" else "LLM輸出(Output)"
     files = _root_txt_files(target_dir)
+    # prompt debug 優先讀 root TODO；若在 race/清理時機下為空，回退讀 stage 專屬 TODO
+    if (not files) and stage_dir:
+        files = _root_txt_files(stage_dir)
     if not files:
-        print(f"[stage:{stage_name}] 🪵 debug {title}: 無 .txt 可顯示（dir={target_dir}）")
+        extra = f", stage_dir={stage_dir}" if stage_dir else ""
+        print(f"[stage:{stage_name}] 🪵 debug {title}: 無 .txt 可顯示（dir={target_dir}{extra}）")
         return
     for fp in files:
         try:
@@ -1935,6 +1940,11 @@ class PromptAPIPipeline:
     def show(self,):
         print("輸入prompt檔案",self.promptFile)
         print("輸出儲存檔案",self.OutputSaveFN)
+        if self.debug_print_llm_io:
+            print(
+                "[llm-io] 送往LLM(Prompt) [preflight]\n"
+                f"{_preview_text_for_debug(self.content, self.debug_print_max_chars)}"
+            )
 
     def _is_mock_mode(self) -> bool:
         model_name = str(self.model_spec.get("model_name", "") or "").lower()
