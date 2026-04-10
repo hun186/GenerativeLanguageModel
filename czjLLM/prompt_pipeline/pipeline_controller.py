@@ -1028,7 +1028,15 @@ def _collect_prompt_items(prompt_dir: str, main_name: str, ops: MergeOps) -> lis
     return sorted(set(prompt_items))
 
 
-def _call_llm_with_task_override(ops: MergeOps, items: list[str], ctx, allow_to_retry: bool, task_override):
+def _call_llm_with_task_override(
+    ops: MergeOps,
+    items: list[str],
+    ctx,
+    allow_to_retry: bool,
+    task_override,
+    debug_print_llm_io: bool = False,
+    debug_print_max_chars: int = 2000,
+):
     """
     相容舊介面：
     - 新版 call_llm 可吃 task_override 參數
@@ -1055,7 +1063,14 @@ def _call_llm_with_task_override(ops: MergeOps, items: list[str], ctx, allow_to_
             effective_task = str(task_override.get("CT_name", "")).strip() or str(task_override)
 
     try:
-        return ops.call_llm(items, ctx, allow_to_retry=allow_to_retry, task_override=effective_task)
+        return ops.call_llm(
+            items,
+            ctx,
+            allow_to_retry=allow_to_retry,
+            task_override=effective_task,
+            debug_print_llm_io=debug_print_llm_io,
+            debug_print_max_chars=debug_print_max_chars,
+        )
     except TypeError:
         old_task = getattr(ctx, "task", "")
         try:
@@ -1514,8 +1529,24 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 mode="prompt",
             )
         before_success_sig = _success_txt_signature_map(job.chunk_id)
-        _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=True, task_override=job.stage_task)
-        _call_llm_with_task_override(ops, [job.chunk_id], ctx, allow_to_retry=False, task_override=job.stage_task)
+        _call_llm_with_task_override(
+            ops,
+            [job.chunk_id],
+            ctx,
+            allow_to_retry=True,
+            task_override=job.stage_task,
+            debug_print_llm_io=stage_def.debug_print_llm_io,
+            debug_print_max_chars=stage_def.debug_print_max_chars,
+        )
+        _call_llm_with_task_override(
+            ops,
+            [job.chunk_id],
+            ctx,
+            allow_to_retry=False,
+            task_override=job.stage_task,
+            debug_print_llm_io=stage_def.debug_print_llm_io,
+            debug_print_max_chars=stage_def.debug_print_max_chars,
+        )
         if stage_def.debug_print_llm_io:
             _print_stage_llm_io_debug(
                 item=job.chunk_id,
@@ -1778,7 +1809,15 @@ def _run_mock_llm_api(itemList, ctx, allow_to_retry=True, task_override: str | N
     return []
 
 
-def call_llm_api(itemList, ctx, allow_to_retry=True, PGMSubDir="", task_override: str | None = None):
+def call_llm_api(
+    itemList,
+    ctx,
+    allow_to_retry=True,
+    PGMSubDir="",
+    task_override: str | None = None,
+    debug_print_llm_io: bool = False,
+    debug_print_max_chars: int = 2000,
+):
     if bool(getattr(ctx, "mock_llm_mode", False)):
         return _run_mock_llm_api(itemList, ctx, allow_to_retry=allow_to_retry, task_override=task_override)
 
@@ -1800,6 +1839,8 @@ def call_llm_api(itemList, ctx, allow_to_retry=True, PGMSubDir="", task_override
                 else model_spec
             ),
             PGMSubDir=ctx.PGMSubDir,
+            debug_print_llm_io=debug_print_llm_io,
+            debug_print_max_chars=debug_print_max_chars,
         ) for promptFile in _root_txt_files(TodoSubDir)]
 
     if ctx.mp_for_all_call:
@@ -1843,6 +1884,8 @@ class PromptAPIPipeline:
                  #model_spec = dict(),
                  include_think = False,
                  PGMSubDir = "",
+                 debug_print_llm_io: bool = False,
+                 debug_print_max_chars: int = 2000,
                  
                  ):
         self.task = task
@@ -1858,6 +1901,8 @@ class PromptAPIPipeline:
         self.max_tokens = max_tokens
         #self.On_Premises = On_Premises
         self.allow_to_retry = allow_to_retry
+        self.debug_print_llm_io = bool(debug_print_llm_io)
+        self.debug_print_max_chars = int(debug_print_max_chars)
         
         # 1) 拿到規格的「私有」副本
         spec = deepcopy(model_spec) if model_spec else {}
@@ -1922,6 +1967,11 @@ class PromptAPIPipeline:
                 print(f"{self.content[-100:]}")
         else:
             print(f"Calling LLM API for promptFile: {self.promptFile}")
+        if self.debug_print_llm_io:
+            print(
+                "[llm-io] 送往LLM(Prompt)\n"
+                f"{_preview_text_for_debug(self.content, self.debug_print_max_chars)}"
+            )
         print("allow_to_retry is ", self.allow_to_retry)
     
         try:
@@ -1979,6 +2029,11 @@ class PromptAPIPipeline:
     
             # 4) 取出結果並清理
             retMES = response.choices[0].message.content
+            if self.debug_print_llm_io:
+                print(
+                    "[llm-io] LLM輸出(Output)\n"
+                    f"{_preview_text_for_debug(retMES, self.debug_print_max_chars)}"
+                )
     
             if self.include_think == False:
                 retMES = re.sub(r'<think>.*?</think>', '', retMES, flags=re.DOTALL)
