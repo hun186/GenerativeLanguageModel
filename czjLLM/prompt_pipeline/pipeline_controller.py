@@ -1492,20 +1492,36 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         )
     print(f"[multistage] 🗂️ 已輸出 stage 清單：{manifest_path}")
 
+    def _infer_combine_task_name(stage_obj, stage_task):
+        """為最終 combine 輸出推導可讀且穩定的 task 名稱（避免整段 prompt 當檔名）。"""
+        if isinstance(stage_task, Mapping):
+            return (
+                str(stage_task.get("CT_name", "")).strip()
+                or str(getattr(stage_obj, "task_key", "")).strip()
+                or str(getattr(stage_obj, "name", "")).strip()
+                or "stage"
+            )
+
+        task_text = str(stage_task or "").strip()
+        task_key = str(getattr(stage_obj, "task_key", "")).strip()
+        stage_name = str(getattr(stage_obj, "name", "")).strip() or "stage"
+        if task_key:
+            return task_key
+
+        # freeform prompt：優先用 stage 名稱，避免把整段 prompt 直接塞進檔名。
+        if task_text.startswith("@taskSetting:"):
+            return task_text.split(":", 1)[1].strip() or stage_name
+        if task_text and task_text in taskSetting:
+            return task_text
+        return f"prompt_{stage_name}"
+
     comb_back_fn = ""
     old_task = getattr(ctx, "task", "")
     try:
         if stage_defs:
             final_stage = stage_defs[-1]
             final_task = final_stage.task
-            if isinstance(final_task, Mapping):
-                ctx.task = (
-                    str(final_task.get("CT_name", "")).strip()
-                    or str(final_stage.task_key).strip()
-                    or final_stage.name
-                )
-            else:
-                ctx.task = str(final_task).strip() or str(final_stage.task_key).strip() or final_stage.name
+            ctx.task = _infer_combine_task_name(final_stage, final_task)
         for item in prompt_items:
             todo_files = [str(x) for x in _root_txt_files(ops.join(item, "TODO"))]
             if not todo_files:

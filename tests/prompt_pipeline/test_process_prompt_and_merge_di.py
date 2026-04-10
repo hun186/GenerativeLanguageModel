@@ -299,6 +299,33 @@ def test_multistage_final_combine_uses_safe_task_name_when_stage_task_is_mapping
 
 
 @pytest.mark.unit
+def test_multistage_final_combine_uses_stage_name_for_freeform_prompt(tmp_path):
+    root = tmp_path / "root"
+    main = "mstage_prompt"
+    item = root / f"{main}_a"
+    mapping = {
+        str(root): [str(item / "TODO" / "1.txt")],
+        str(item / "TODO"): [],
+    }
+    ops = FakeOps(mapping)
+    ctx = DummyCtx(
+        prompt_dir=str(root),
+        main_file_name=main,
+        task="legacy-task",
+        stages=[
+            {"name": "route", "prompt": "你是分類器，只輸出 JSON"},
+            {"name": "extract", "prompt": "請抽取欄位"},
+        ],
+    )
+
+    out = pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    assert ops.calls["combine_task"] == ["prompt_extract"]
+    assert ctx.task == "legacy-task"
+    assert out == str(item / "combined.out.txt")
+
+
+@pytest.mark.unit
 def test_multistage_nonfirst_stage_todo_is_rendered_with_stage_template(tmp_path):
     root = tmp_path / "root"
     main = "stage_prompt"
