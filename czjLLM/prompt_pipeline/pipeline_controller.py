@@ -426,6 +426,17 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
     _os.environ.setdefault("DISABLE_INNER_TQDM", "1")
 
     try:
+        try:
+            stage_defs = resolve_pipeline_stages(ctx)
+        except Exception:
+            stage_defs = []
+        multistage_mode = len(stage_defs) > 1
+        if multistage_mode:
+            try:
+                tlog("[consumer] multistage mode enabled (SQL/Table stream will run process_prompt_and_merge per row)")
+            except Exception:
+                pass
+
         tlog(f"[consumer] using meter: {meter_fn}")  # 診斷：應與 orchestrator 印出的路徑一致
         print("meter_fn in llm_stream_consumer",meter_fn)
         #did_recover = False  # ← 新增：只復原一次
