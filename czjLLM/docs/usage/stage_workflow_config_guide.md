@@ -270,9 +270,10 @@ sql_writeback_stage: extract
   代表你**有設定 `stages`**，但寫回階段找不到 `_stage_merges/.../manifest.json`。  
 - 這通常表示執行路徑沒有真正產生 multi-stage manifest（例如實際僅跑單階段），可先用此訊號快速判斷「第二階段未落地」。
 
-### SQL/SQLite 多階段執行說明（stream consumer）
+### SQL/SQLite 多階段執行說明（重用 txt merge 流程）
 
-- 當 `mode: sql` 且 `stages` 數量大於 1，consumer 會改走 `process_prompt_and_merge()` 的多階段路徑，逐列執行 stage pipeline，產生 `_stage_merges/.../manifest.json` 後再交由寫回邏輯選擇 stage 來源。  
+- 當 `mode: sql` 且 `stages` 數量大於 1，scheduler 會先完成切片後，直接呼叫 `process_prompt_and_merge()`（與 txt 模式同一套多階段 merge 邏輯）執行該列，再交由 row_merger 寫回。  
+- 這樣可以避免在 `llm_stream_consumer` 另維護一套多階段派工分支，降低維護複雜度。若要臨時關閉可設定：`sql_enable_multistage_stream: false`。
 - 若你希望寫回後自動清掉 prompt cache（避免 `cache/.../Success/0.txt` 殘留），可保留預設：  
   `cleanup_prompt_item_after_writeback: true`
 
