@@ -33,12 +33,15 @@ stages:
       只輸出 JSON：{"route":"org"} 或 {"route":"other"}
     input_from: original
     persist_output: always
-
+    debug_print_llm_io: true
+    debug_print_max_chars: 4000
+    
   - name: extract
     task_key: Organization Profile Analyzer to json format
     input_from: original
     persist_output: final
-
+    debug_print_llm_io: true
+    
 # 多欄位寫回（同時保留 route 與主要結果）
 sql_writeback_rules:
   - output_col: File_route
