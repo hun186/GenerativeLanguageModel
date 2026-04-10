@@ -1572,13 +1572,32 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             return task_text
         return f"prompt_{stage_name}"
 
+    def _infer_multistage_combine_task_name(stage_objs) -> str:
+        """
+        多階段輸出檔名：優先以每段 task_key（無則 stage 名稱）組成可讀短名。
+        例：PDF OPT-Instruction First / Translation-toTWZH / Summary-toTWZH
+        -> PDF OPT_Translation_Summary
+        """
+        parts: list[str] = []
+        for s in stage_objs or []:
+            part = _compact_stage_key_for_output(
+                getattr(s, "task_key", ""),
+                getattr(s, "name", ""),
+            )
+            if part:
+                parts.append(part)
+        if parts:
+            return "_".join(parts)
+        if stage_objs:
+            last = stage_objs[-1]
+            return _infer_combine_task_name(last, getattr(last, "task", ""))
+        return "stage"
+
     comb_back_fn = ""
     old_task = getattr(ctx, "task", "")
     try:
         if stage_defs:
-            final_stage = stage_defs[-1]
-            final_task = final_stage.task
-            ctx.task = _infer_combine_task_name(final_stage, final_task)
+            ctx.task = _infer_multistage_combine_task_name(stage_defs)
         for item in prompt_items:
             todo_files = [str(x) for x in _root_txt_files(ops.join(item, "TODO"))]
             if not todo_files:

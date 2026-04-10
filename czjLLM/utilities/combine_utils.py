@@ -287,6 +287,23 @@ def _safe_task_suffix(task: str, max_len: int = 96) -> str:
     return f"{cleaned[:head_len]}_{digest}"
 
 
+def _resolve_task_suffix_for_filename(ctx) -> str:
+    """
+    依執行模式決定輸出檔名的任務後綴長度：
+    - SQL 模式預設較短（避免 CT_name 過長造成路徑冗長）
+    - 其餘模式維持較寬鬆長度
+    - 可用 ctx.task_filename_max_len 覆蓋
+    """
+    mode = str(getattr(ctx, "mode", "") or "").strip().lower()
+    default_max_len = 32 if mode == "sql" else 96
+    try:
+        max_len = int(getattr(ctx, "task_filename_max_len", default_max_len) or default_max_len)
+    except Exception:
+        max_len = default_max_len
+    max_len = max(16, min(max_len, 128))
+    return _safe_task_suffix(getattr(ctx, "task", "result"), max_len=max_len)
+
+
 def combine_api_finished_item(item: str, ctx) -> str:
     print(f"{item} is finished calling API, start to combine returned result.")
     item_p = Path(item)
@@ -395,7 +412,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
     
     # 4) 檔名
     main_name = Path(item).name
-    task_name = _safe_task_suffix(getattr(ctx, "task", "result"), max_len=96)
+    task_name = _resolve_task_suffix_for_filename(ctx)
     out_path = dest_dir / f"{main_name}_{task_name}.txt"
     # JSON 合併修補（如有指定 to json format，且目前仍為字串拼接型態）
     if "to json format" in str(getattr(ctx, "task", "")).lower() and not (json_mode and json_rows):
