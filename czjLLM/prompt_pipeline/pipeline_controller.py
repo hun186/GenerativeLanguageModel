@@ -1144,6 +1144,10 @@ def _stage_todo_dir(item: str, stage_name: str) -> str:
     return os.path.join(item, "TODO", _sanitize_stage_name(stage_name))
 
 
+def _snapshot_dir(item: str, name: str) -> str:
+    return os.path.join(item, "_stage_outputs", name)
+
+
 def _sync_stage_todo_to_root(item: str, stage_name: str, ops: MergeOps):
     root_todo = os.path.join(item, "TODO")
     stage_dir = _stage_todo_dir(item, stage_name)
@@ -1393,9 +1397,6 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     print(f"  - source_slices(total txt): {total_segments}")
     print(f"  - stages: {[s.name for s in stage_defs]}")
     print("=" * 50)
-
-    def _snapshot_dir(item: str, name: str) -> str:
-        return os.path.join(item, "_stage_outputs", name)
 
     def _copy_txts(src_dir: str, dst_dir: str):
         MKDIR(dst_dir)
