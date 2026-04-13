@@ -113,17 +113,23 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
 
     total_chunks = len(OSWALK(todo_dir))
 
+    # 先以 row_ctx 推導預期合併輸出路徑（單階段/多階段都會用到）
+    comb_back_fn = get_combined_result_path(temp_txt_path, row_ctx)
+
     # SQL 多階段：直接重用 txt 的 process_prompt_and_merge 邏輯先完成 LLM + 合併，
     # consumer 只需維持原有單階段行為（此列不再進 pending queue）。
     if run_sql_multistage:
         try:
-            process_prompt_and_merge(row_ctx, file_path=temp_txt_path)
+            merged_out = process_prompt_and_merge(row_ctx, file_path=temp_txt_path)
+            # 多階段的最終檔名可能與 get_combined_result_path() 不同（依 stage 組合命名），
+            # 優先用實際回傳的合併路徑，避免 row_merger 找不到成品而停滯。
+            if merged_out and os.path.isfile(str(merged_out)):
+                comb_back_fn = str(merged_out)
         except Exception as ex:
             tlog_warn(f"❌ SQL 多階段執行失敗（pk={pk}）：{ex}")
             return 0
 
     # 註冊給 row_merger（合併檔路徑用 row_ctx 算，不會串線）
-    comb_back_fn = get_combined_result_path(temp_txt_path, row_ctx)
     registry.add(item_dir, pk, temp_txt_path, comb_back_fn)
 
     def _on_add_row(d):
