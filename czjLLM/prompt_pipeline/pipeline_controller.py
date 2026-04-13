@@ -1073,12 +1073,21 @@ def _call_llm_with_task_override(
             debug_print_max_chars=debug_print_max_chars,
         )
     except TypeError:
-        old_task = getattr(ctx, "task", "")
+        # 兼容舊版 call_llm：先嘗試移除 debug 參數，但保留 task_override。
         try:
-            ctx.task = effective_task
-            return ops.call_llm(items, ctx, allow_to_retry=allow_to_retry)
-        finally:
-            ctx.task = old_task
+            return ops.call_llm(
+                items,
+                ctx,
+                allow_to_retry=allow_to_retry,
+                task_override=effective_task,
+            )
+        except TypeError:
+            old_task = getattr(ctx, "task", "")
+            try:
+                ctx.task = effective_task
+                return ops.call_llm(items, ctx, allow_to_retry=allow_to_retry)
+            finally:
+                ctx.task = old_task
 
 
 def _build_stage_prompt_text(stage_task, content: str, ctx) -> str:

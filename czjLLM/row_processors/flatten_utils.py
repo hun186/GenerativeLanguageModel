@@ -50,7 +50,11 @@ def extract_json_list_for_flatten(result, allowed_fields=None):
         
         if isinstance(result, str):
             result = json.loads(result)
-        assert isinstance(result, list)
+        # 允許 dict 直接展平成單筆，避免 source 設到 object JSON 時整批掉空。
+        if isinstance(result, dict):
+            result = [result]
+        if not isinstance(result, list):
+            raise TypeError(f"expect list/dict JSON, got {type(result).__name__}")
         
         cleaned = []
 

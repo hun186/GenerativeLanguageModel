@@ -30,3 +30,8 @@ def test_allowed_fields_empty_list_behaves_as_no_filter():
     # 注意：allowed_fields=[] 在函式中視為 False，故相當於不過濾
     out = extract_json_list_for_flatten(data, allowed_fields=[])
     assert out == data
+
+def test_dict_input_is_wrapped_as_single_row():
+    data = {"inputName": "國科會", "formalName": "國家科學及技術委員會"}
+    out = extract_json_list_for_flatten(data, allowed_fields=["inputName", "formalName"])
+    assert out == [{"inputName": "國科會", "formalName": "國家科學及技術委員會"}]

@@ -77,6 +77,12 @@ def choose_columns_and_io_cols(ctx, get_param, adapter, sql_cfg, args):
         ctx.output_cols = [str(ctx.output_col).strip()] if str(ctx.output_col).strip() else []
 
     ctx.sql_writeback_rules = _normalize_writeback_rules(get_param)
+    # 指定「哪一條 writeback rule」作為 flatten / expand JSON 的來源（0-based）
+    # 例如 sql_flatten_writeback_rule: 1 代表使用第 2 條規則。
+    try:
+        ctx.sql_flatten_writeback_rule = int(get_param("sql_flatten_writeback_rule", 0) or 0)
+    except Exception:
+        ctx.sql_flatten_writeback_rule = 0
     for r in ctx.sql_writeback_rules:
         c = r.get("output_col")
         if c and c not in ctx.output_cols:
