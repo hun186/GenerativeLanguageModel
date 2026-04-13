@@ -258,7 +258,9 @@ def test_multistage_process_runs_stage_tasks_and_combines(tmp_path):
     assert called_tasks.count("抽取") == 4
     assert called_tasks.count("分類") == 4
     assert ops.calls["combine"] == [str(item_a), str(item_b)]
-    assert ops.calls["combine_task"] == ["分類", "分類"]
+    # 多階段最終 combine 名稱已改為「由 stage key/name 組成」，
+    # 不再直接使用最後一段 task 文字。
+    assert ops.calls["combine_task"] == ["extract_classify", "extract_classify"]
     assert ctx.task == "legacy-task"
     assert out == str(item_b / "combined.out.txt")
 
@@ -292,8 +294,8 @@ def test_multistage_final_combine_uses_safe_task_name_when_stage_task_is_mapping
     called_tasks = [c[2] for c in ops.calls["call_llm"]]
     assert called_tasks.count("抽取") == 2
     assert called_tasks.count("summarize") == 2
-    # 最終 combine 階段的 ctx.task 需是安全文字，而非 mapping repr
-    assert ops.calls["combine_task"] == ["以繁體中文摘要"]
+    # 多階段最終 combine 名稱已改為「由 stage key/name 組成」。
+    assert ops.calls["combine_task"] == ["extract_summarize"]
     assert ctx.task == "legacy-task"
     assert out == str(item / "combined.out.txt")
 
@@ -320,7 +322,7 @@ def test_multistage_final_combine_uses_stage_name_for_freeform_prompt(tmp_path):
 
     out = pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
 
-    assert ops.calls["combine_task"] == ["prompt_extract"]
+    assert ops.calls["combine_task"] == ["route_extract"]
     assert ctx.task == "legacy-task"
     assert out == str(item / "combined.out.txt")
 

@@ -40,6 +40,8 @@ def test_normalize_human_stage_spec_supports_shorthand_dict():
             "route_map": {},
             "route_value_mode": "task_key",
             "retry_source_on_route_miss": False,
+            "debug_print_llm_io": False,
+            "debug_print_max_chars": 2000,
         }
     ]
 
