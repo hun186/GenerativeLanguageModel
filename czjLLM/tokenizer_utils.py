@@ -31,13 +31,21 @@ class TokenizerWrapper:
         return os.path.join(self.base_path, "deepseek_v3_tokenizer")
 
 
-    def tokenize(self, text: str, adjust: bool = True, max_tokens: int = None, debug: bool = False) -> dict:
+    def tokenize(
+        self,
+        text: str,
+        adjust: bool = True,
+        max_tokens: int = None,
+        debug: bool = False,
+        verbose: bool = True,
+    ) -> dict:
         max_tokens = max_tokens or self.max_tokens
         nTokensToWrap = int(self.max_input_tokens * (max_tokens / 4096)) if adjust else self.max_input_tokens
-    
-        print(f"📦 tokenizer path: {self.model_dir}")
-        print(f"🧠 task: {self.task}")
-        print(f"🔢 max tokens to wrap: {nTokensToWrap}")
+
+        if verbose:
+            print(f"📦 tokenizer path: {self.model_dir}")
+            print(f"🧠 task: {self.task}")
+            print(f"🔢 max tokens to wrap: {nTokensToWrap}")
     
         tokensWrap = tokenization_wrap(
             context=text,
@@ -47,8 +55,9 @@ class TokenizerWrapper:
             nTokensToWrap=nTokensToWrap
         )
     
-        print(f"✅ ctxCut token lens: {[len(x) for x in tokensWrap['ctxCut']]}")
-        print(f"✅ ReTks token lens: {[len(x) for x in tokensWrap['ReTks']]}")
+        if verbose:
+            print(f"✅ ctxCut token lens: {[len(x) for x in tokensWrap['ctxCut']]}")
+            print(f"✅ ReTks token lens: {[len(x) for x in tokensWrap['ReTks']]}")
         return tokensWrap
 
 

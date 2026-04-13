@@ -153,6 +153,24 @@ def _all_slices_done(item_dir, meta=None):
     return cond
 
 
+def _ready_for_writeback(item_dir, meta=None):
+    """
+    判斷是否可進入寫回：
+    1) 一般路徑：沿用 TODO/RUNNING/Success 計數規則。
+    2) SQL 多階段直跑路徑：若已經有 CombBackFN 成品檔，允許直接寫回
+       （此時 Success 可能已被搬移/清理成 0，不能再卡在 _all_slices_done）。
+    """
+    if _all_slices_done(item_dir, meta):
+        return True
+    try:
+        comb_back_fn = (meta or {}).get("CombBackFN")
+        if comb_back_fn and os.path.isfile(comb_back_fn):
+            return True
+    except Exception:
+        pass
+    return False
+
+
 def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 scan_interval=0.5, done_q=None):
     # 只在 TODO/Success 計數有變化時才印一次
@@ -248,7 +266,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 #_log_state_once(item_dir)
                 # 只記錄狀態，但「沒全部完成」就跳過
                 _log_state_once(item_dir)
-                if not _all_slices_done(item_dir, meta):
+                if not _ready_for_writeback(item_dir, meta):
                     continue
 
                 # ← 這裡不再一律呼叫 combine_api_finished_item，改用解析策略

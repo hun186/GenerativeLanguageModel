@@ -49,6 +49,7 @@ from czjLLM.job_manager.end_point_manager import select_model
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.logging_utils import CostLog
+from czjLLM.tokenizer_utils import TokenizerWrapper
 #from czjLLM.utilities.logging_utils import log_error
 from utils.utilities_path import OSWALK
 from utils.utilities_path import getPathFromFN
@@ -1460,9 +1461,47 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         for fp in _root_txt_files(src_dir):
             shutil.copy2(str(fp), os.path.join(dst_dir, fp.name))
 
+    def _write_original_snapshot_from_source(item: str) -> bool:
+        """
+        嘗試直接以原始檔案重切片，保存純內容快照，避免把第一階段 prompt 模板誤當成 original。
+        只有在切片數量與 root TODO 完全一致時才覆蓋快照；否則回退舊行為。
+        """
+        root_files = _root_txt_files(ops.join(item, "TODO"))
+        if not root_files:
+            return False
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                source_text = f.read()
+            tokenizer = TokenizerWrapper(
+                model_name=getattr(ctx, "model_spec_name", ""),
+                task=getattr(ctx, "task", ""),
+            )
+            chunks = tokenizer.tokenize(
+                text=source_text,
+                adjust=True,
+                max_tokens=getattr(ctx, "max_tokens", 12000),
+                verbose=False,
+            )
+            src_chunks = list(chunks.get("ctxCut", []))
+        except Exception:
+            return False
+
+        if len(src_chunks) != len(root_files):
+            return False
+
+        snap_dir = _snapshot_dir(item, "original")
+        MKDIR(snap_dir)
+        _clear_txt_files(snap_dir, ops)
+        for fp, chunk_text in zip(root_files, src_chunks):
+            dst_fp = os.path.join(snap_dir, fp.name)
+            with open(dst_fp, "w", encoding="utf-8") as f:
+                f.write(chunk_text)
+        return True
+
     # 先保存 original（第一次切片後的 TODO 內容）
     for item in prompt_items:
-        _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
+        if not _write_original_snapshot_from_source(item):
+            _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
 
     def _prepare_todo_for_stage(item: str, stage_name: str, stage_task):
         stage_def = stage_map[stage_name]
