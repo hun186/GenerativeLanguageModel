@@ -246,13 +246,14 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 #    continue
 
                 #_log_state_once(item_dir)
-                # 只記錄狀態，但「沒全部完成」就跳過
+                # 只記錄狀態；若已存在合併檔，優先直接寫回（避免多階段已完成但 TODO/Success 計數不同步造成卡住）
                 _log_state_once(item_dir)
-                if not _all_slices_done(item_dir, meta):
-                    continue
-
-                # ← 這裡不再一律呼叫 combine_api_finished_item，改用解析策略
-                comb_back_fn = _resolve_combined_path(item_dir, meta, ctx, temp_txt)
+                comb_back_fn = meta.get("CombBackFN") if isinstance(meta, dict) else None
+                if not (comb_back_fn and os.path.isfile(comb_back_fn)):
+                    if not _all_slices_done(item_dir, meta):
+                        continue
+                    # ← 這裡不再一律呼叫 combine_api_finished_item，改用解析策略
+                    comb_back_fn = _resolve_combined_path(item_dir, meta, ctx, temp_txt)
                 if not comb_back_fn or not os.path.isfile(comb_back_fn):
                     continue  # 沒合併檔就等下一輪
 
