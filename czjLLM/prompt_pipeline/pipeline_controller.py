@@ -1642,18 +1642,20 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             print(f"[stage:{stage.name}] 🧩 合併完成，輸出：{stage_merged_fn}（pieces={len(merged_parts)}）")
         else:
             print(f"[stage:{stage.name}] ⏭️ 依 persist_output={stage.persist_output} 跳過 stage 合併輸出")
-        stage_manifest.append(
-            {
-                "index": idx,
-                "name": stage.name,
-                "task_key": stage.task_key,
-                "input_from": stage.input_from,
-                "persist_output": stage.persist_output,
-                "merged": should_merge,
-                "merged_file": merged_file,
-                "pieces": len(merged_parts),
-            }
-        )
+        stage_entry = {
+            "index": idx,
+            "name": stage.name,
+            "input_from": stage.input_from,
+            "persist_output": stage.persist_output,
+            "merged": should_merge,
+            "merged_file": merged_file,
+            "pieces": len(merged_parts),
+        }
+        if str(stage.task_key).strip():
+            stage_entry["task_key"] = stage.task_key
+        if isinstance(stage.task, str) and stage.task.strip() and not str(stage.task_key).strip():
+            stage_entry["prompt"] = stage.task
+        stage_manifest.append(stage_entry)
 
     manifest_path = ops.join(stage_merge_root, "manifest.json")
     with open(manifest_path, "w", encoding="utf-8") as f:
