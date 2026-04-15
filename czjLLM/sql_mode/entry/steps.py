@@ -30,6 +30,62 @@ def _normalize_writeback_rules(get_param):
         out.append({"output_col": col, "source": src, "stage": item.get("stage", None)})
     return out
 
+def _normalize_flatten_writeback_rules(get_param, writeback_rules):
+    """
+    支援多來源 flatten：
+    - 新參數：sql_flatten_writeback_rules: [{writeback_rule, enabled, allowed_output_fields, save_raw_input_when_flatten}, ...]
+    - 舊參數：sql_flatten_writeback_rule: <int>
+    """
+    cfg = get_param("sql_flatten_writeback_rules", None)
+    out = []
+
+    if isinstance(cfg, list):
+        for item in cfg:
+            if not isinstance(item, dict):
+                continue
+            try:
+                idx = int(
+                    item.get(
+                        "writeback_rule",
+                        item.get("rule_idx", item.get("sql_flatten_writeback_rule", 0)),
+                    )
+                    or 0
+                )
+            except Exception:
+                idx = 0
+            if idx < 0:
+                idx = 0
+            enabled = bool(item.get("enabled", True))
+            allowed = item.get("allowed_output_fields", None)
+            if isinstance(allowed, (list, tuple)):
+                allowed = [str(x).strip() for x in allowed if str(x).strip()]
+            else:
+                allowed = None
+            out.append(
+                {
+                    "writeback_rule": idx,
+                    "enabled": enabled,
+                    "allowed_output_fields": allowed,
+                    "save_raw_input_when_flatten": item.get("save_raw_input_when_flatten", None),
+                }
+            )
+
+    if out:
+        return out
+
+    # backward-compatible：若未提供新參數，退回舊單一來源設定
+    try:
+        idx = int(get_param("sql_flatten_writeback_rule", 0) or 0)
+    except Exception:
+        idx = 0
+    if idx < 0:
+        idx = 0
+
+    # 若沒有 writeback rules，保留舊行為（以主輸出欄位為來源）
+    if not writeback_rules:
+        return [{"writeback_rule": 0, "enabled": True}]
+    return [{"writeback_rule": idx, "enabled": True}]
+
 def resolve_connection(ctx, get_param, args):
     policy = NonInteractivePolicy(args) if args.config else InteractivePolicy()
     sql_cfg = load_sql_cfg(ctx, get_param, args, policy)
@@ -83,6 +139,7 @@ def choose_columns_and_io_cols(ctx, get_param, adapter, sql_cfg, args):
         ctx.sql_flatten_writeback_rule = int(get_param("sql_flatten_writeback_rule", 0) or 0)
     except Exception:
         ctx.sql_flatten_writeback_rule = 0
+    ctx.sql_flatten_writeback_rules = _normalize_flatten_writeback_rules(get_param, ctx.sql_writeback_rules)
     for r in ctx.sql_writeback_rules:
         c = r.get("output_col")
         if c and c not in ctx.output_cols:

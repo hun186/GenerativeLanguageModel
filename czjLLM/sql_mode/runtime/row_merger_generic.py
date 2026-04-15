@@ -138,6 +138,91 @@ def _expand_json_columns(ctx, source_text: str) -> dict:
         out[col] = _as_db_text(v)
     return out
 
+def _resolve_flatten_targets(ctx, write_map: dict, default_source_text: str) -> list[dict]:
+    """
+    回傳多來源 flatten 目標，每個元素包含：
+      - output_col
+      - source_text
+      - allowed_fields
+      - save_raw_input
+      - subtable_name
+    """
+    if not bool(getattr(ctx, "flatten_json_output", False)):
+        return []
+
+    rules = getattr(ctx, "sql_writeback_rules", None) or []
+    rule_output_cols = []
+    for r in rules:
+        if isinstance(r, dict):
+            c = str(r.get("output_col", "")).strip()
+            if c:
+                rule_output_cols.append(c)
+
+    cfg_targets = getattr(ctx, "sql_flatten_writeback_rules", None)
+    targets = []
+
+    if isinstance(cfg_targets, list) and cfg_targets:
+        default_allowed_raw = getattr(ctx, "allowed_output_fields", None)
+        if isinstance(default_allowed_raw, (list, tuple)):
+            default_allowed_fields = [str(f).strip() for f in default_allowed_raw if str(f).strip()]
+            if not default_allowed_fields:
+                default_allowed_fields = None
+        else:
+            default_allowed_fields = None
+        for item in cfg_targets:
+            if not isinstance(item, dict):
+                continue
+            if not bool(item.get("enabled", True)):
+                continue
+            try:
+                idx = int(item.get("writeback_rule", 0) or 0)
+            except Exception:
+                idx = 0
+            if idx < 0:
+                idx = 0
+            out_col = rule_output_cols[idx] if idx < len(rule_output_cols) else str(getattr(ctx, "output_col", "") or "")
+            source_text = write_map.get(out_col, default_source_text)
+            allowed = item.get("allowed_output_fields", None)
+            if isinstance(allowed, (list, tuple)):
+                allowed_fields = [str(f).strip() for f in allowed if str(f).strip()]
+                if not allowed_fields:
+                    allowed_fields = None
+            else:
+                # 相容舊行為：若未在 rule 內指定，沿用全域 allowed_output_fields
+                allowed_fields = default_allowed_fields
+            save_raw = item.get("save_raw_input_when_flatten", getattr(ctx, "save_raw_input_when_flatten", False))
+            targets.append(
+                {
+                    "output_col": out_col,
+                    "source_text": source_text,
+                    "allowed_fields": allowed_fields,
+                    "save_raw_input": bool(save_raw),
+                    "subtable_name": f"{ctx.target_table}_{out_col}_flattened",
+                }
+            )
+        # 若明確提供新參數，回傳其結果（可為空，代表全部關閉）
+        return targets
+
+    # backward-compatible：單一來源
+    raw_fields = getattr(ctx, "allowed_output_fields", None)
+    if isinstance(raw_fields, (list, tuple)):
+        allowed_fields = [str(f).strip() for f in raw_fields if f is not None and str(f).strip() != ""]
+        if not allowed_fields:
+            allowed_fields = None
+    else:
+        allowed_fields = None
+
+    out_col = str(getattr(ctx, "output_col", "LLM_result") or "LLM_result")
+    return [
+        {
+            "output_col": out_col,
+            "source_text": default_source_text,
+            "allowed_fields": allowed_fields,
+            "save_raw_input": bool(getattr(ctx, "save_raw_input_when_flatten", False)),
+            "subtable_name": f"{ctx.target_table}_{out_col}_flattened",
+        }
+    ]
+
 def _all_slices_done(item_dir, meta=None):
     t, r, s = _counts(item_dir)
     # 若能從 meta 帶入期望切片數（例如 produce_rows 時存的 chunks），再加一道保險
@@ -297,34 +382,45 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     sink.write_main(pk, write_map, update_time)
                     tlog(f"📝 writeback source for pk={pk}: {'; '.join(source_logs)}")
 
-                    if getattr(ctx, "flatten_json_output", False):
-                        raw_fields = getattr(ctx, "allowed_output_fields", None)
-                        if isinstance(raw_fields, (list, tuple)):
-                            allowed_fields = [str(f).strip() for f in raw_fields if f is not None and str(f).strip() != ""]
-                            if not allowed_fields:
-                                allowed_fields = None
-                        else:
-                            allowed_fields = None
-
+                    flatten_targets = _resolve_flatten_targets(ctx, write_map, flatten_source_text)
+                    for ft in flatten_targets:
                         try:
-                            result_list = extract_json_list_for_flatten(flatten_source_text, allowed_fields)
+                            result_list = extract_json_list_for_flatten(ft["source_text"], ft["allowed_fields"])
                         except Exception as ex:
-                            tlog_warn(f"⚠️ 解析展平欄位失敗（pk={pk}）：{ex}")
+                            tlog_warn(f"⚠️ 解析展平欄位失敗（pk={pk}, col={ft['output_col']}）：{ex}")
                             result_list = None
 
-                        if result_list:
-                            sink.ensure_flatten_schema(allowed_fields)
-                            wants_raw = bool(getattr(ctx, "save_raw_input_when_flatten", False))
+                        if not result_list:
+                            continue
+                        old_ctx = sink.ctx
+                        class _FlattenCtx:
+                            def __init__(self, base, **overrides):
+                                self.__dict__.update(getattr(base, "__dict__", {}))
+                                self.__dict__.update(overrides)
+                        sink.ctx = _FlattenCtx(
+                            old_ctx,
+                            output_col=ft["output_col"],
+                            subtable_name=ft["subtable_name"],
+                            allowed_output_fields=ft["allowed_fields"] or [],
+                            save_raw_input_when_flatten=ft["save_raw_input"],
+                        )
+                        try:
+                            sink.ensure_flatten_schema(ft["allowed_fields"])
+                            wants_raw = bool(ft["save_raw_input"])
                             needs_raw_input = wants_raw and (getattr(ctx, "primary_key", None) != getattr(ctx, "input_col", None))
                             sub_input_col = getattr(ctx, "subtable_input_col", None) if needs_raw_input else None
                             input_val = sink.fetch_input(pk) if needs_raw_input else None
-                            try:
-                                sink.write_flatten(pk, result_list,
-                                                   save_raw_input=needs_raw_input,
-                                                   input_col=sub_input_col,
-                                                   input_value=input_val)
-                            except Exception as ex:
-                                tlog_warn(f"⚠️ 子表寫回失敗（pk={pk}）：{ex}")
+                            sink.write_flatten(
+                                pk,
+                                result_list,
+                                save_raw_input=needs_raw_input,
+                                input_col=sub_input_col,
+                                input_value=input_val,
+                            )
+                        except Exception as ex:
+                            tlog_warn(f"⚠️ 子表寫回失敗（pk={pk}, col={ft['output_col']}）：{ex}")
+                        finally:
+                            sink.ctx = old_ctx
 
                     # 完成後收尾
                     registry.remove(item_dir)

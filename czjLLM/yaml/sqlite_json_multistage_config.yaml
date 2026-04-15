@@ -54,3 +54,12 @@ sql_writeback_rules:
 
 # flatten 來源：第 2 條 rule（0-based index=1）=> File_result
 sql_flatten_writeback_rule: 1
+
+# 若要多來源 flatten（各自開關/欄位），改用以下設定（優先於 sql_flatten_writeback_rule）
+# sql_flatten_writeback_rules:
+#   - writeback_rule: 0
+#     enabled: true
+#     allowed_output_fields: [route]
+#   - writeback_rule: 1
+#     enabled: true
+#     allowed_output_fields: [inputName, formalName, functionalDomain, keyFunctions]
