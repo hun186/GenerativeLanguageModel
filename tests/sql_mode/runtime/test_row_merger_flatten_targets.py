@@ -1,6 +1,9 @@
 from types import SimpleNamespace
 
-from czjLLM.sql_mode.runtime.row_merger_generic import _resolve_flatten_targets
+from czjLLM.sql_mode.runtime.row_merger_generic import (
+    _resolve_flatten_targets,
+    _process_flatten_target,
+)
 
 
 def test_resolve_flatten_targets_supports_multi_rules():
@@ -83,3 +86,36 @@ def test_resolve_flatten_targets_respects_all_rules_disabled():
     targets = _resolve_flatten_targets(ctx, {"File_result": '[{"formalName":"ACME"}]'}, '[{"formalName":"ACME"}]')
 
     assert targets == []
+
+
+def test_process_flatten_target_creates_schema_even_when_source_not_json():
+    class DummySink:
+        def __init__(self):
+            self.ctx = SimpleNamespace()
+            self.schema_calls = []
+            self.write_calls = []
+
+        def ensure_flatten_schema(self, allowed_fields=None):
+            self.schema_calls.append(allowed_fields)
+
+        def fetch_input(self, pk):
+            return None
+
+        def write_flatten(self, *args, **kwargs):
+            self.write_calls.append((args, kwargs))
+
+    ctx = SimpleNamespace(primary_key="id", input_col="File", subtable_input_col="File")
+    sink = DummySink()
+    ft = {
+        "output_col": "File_route",
+        "subtable_name": "sampleSRC_LLM_File_route_flattened",
+        "allowed_fields": ["route"],
+        "save_raw_input": False,
+        "source_text": "not-json",
+    }
+
+    wrote = _process_flatten_target(ctx, sink, "pk-1", ft)
+
+    assert wrote is False
+    assert sink.schema_calls == [["route"]]
+    assert sink.write_calls == []
