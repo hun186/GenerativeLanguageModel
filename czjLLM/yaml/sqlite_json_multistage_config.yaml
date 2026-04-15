@@ -10,16 +10,16 @@ record_update_time: true
 sql_config_file: czjLLM/config_sql/akconfig_local_file_test_multistage.py
 
 # flatten 設定（多階段測試建議先開）
-flatten_json_output: true
-allowed_output_fields:
-  - inputName
-  - formalName
-  - functionalDomain
-  - keyFunctions
-save_raw_input_when_flatten: true
+#flatten_json_output: true
+#allowed_output_fields:
+#  - inputName
+#  - formalName
+#  - functionalDomain
+#  - keyFunctions
+#save_raw_input_when_flatten: true
 
 # 將 JSON key 展開為主表欄位（可直接 SQL 查詢/篩選）
-sql_expand_json_to_columns: true
+#sql_expand_json_to_columns: true
 # 若要加前綴（避免撞欄位）可開，例如：json_
 # sql_expand_json_prefix: json_
 
@@ -33,15 +33,15 @@ stages:
       只輸出 JSON：{"route":"org"} 或 {"route":"other"}
     input_from: original
     persist_output: always
-    debug_print_llm_io: true
-    debug_print_max_chars: -1
+    #debug_print_llm_io: true
+    #debug_print_max_chars: -1
 
   - name: extract
     task_key: Organization Profile Analyzer to json format
     input_from: original
     persist_output: final
-    debug_print_llm_io: true
-    debug_print_max_chars: -1
+    #debug_print_llm_io: true
+    #debug_print_max_chars: -1
 
 # 多欄位寫回（同時保留 route 與主要結果）
 sql_writeback_rules:
@@ -53,13 +53,13 @@ sql_writeback_rules:
     stage: extract
 
 # flatten 來源：第 2 條 rule（0-based index=1）=> File_result
-sql_flatten_writeback_rule: 1
+#sql_flatten_writeback_rule: 1
 
 # 若要多來源 flatten（各自開關/欄位），改用以下設定（優先於 sql_flatten_writeback_rule）
-# sql_flatten_writeback_rules:
-#   - writeback_rule: 0
-#     enabled: true
-#     allowed_output_fields: [route]
-#   - writeback_rule: 1
-#     enabled: true
-#     allowed_output_fields: [inputName, formalName, functionalDomain, keyFunctions]
+sql_flatten_writeback_rules:
+  - writeback_rule: 0
+    enabled: true
+    allowed_output_fields: [route]
+  - writeback_rule: 1
+    enabled: true
+    allowed_output_fields: [inputName, formalName, functionalDomain, keyFunctions]
