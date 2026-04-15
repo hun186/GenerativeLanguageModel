@@ -304,6 +304,24 @@ sql_flatten_writeback_rule: 1
 - `sql_writeback_rules` 會額外把對應來源寫到多個欄位；系統會自動補目標表欄位。
 - 適用於遠端 SQL Server 與本地 SQLite（`mode: sql`），以及使用 ExcelSink 的表格寫回流程。
 
+若要「多個來源各自 flatten（可各自關閉、各自欄位）」可改用：
+
+```yaml
+sql_flatten_writeback_rules:
+  - writeback_rule: 0
+    enabled: true
+    allowed_output_fields: [route]
+  - writeback_rule: 1
+    enabled: true
+    allowed_output_fields: [inputName, formalName, functionalDomain, keyFunctions]
+    save_raw_input_when_flatten: true
+```
+
+補充：
+- `writeback_rule` 是 `sql_writeback_rules` 的 0-based index。
+- 若同時提供舊參數 `sql_flatten_writeback_rule` 與新參數 `sql_flatten_writeback_rules`，會優先使用新參數。
+- 每個 flatten 來源會寫入對應子表：`{target_table}_{output_col}_flattened`。
+
 
 ### 8.2 JSON key 直接落主表欄位（便於 SQL 查詢）
 

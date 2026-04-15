@@ -58,3 +58,32 @@ def test_choose_columns_fallback_sql_flatten_writeback_rule_to_zero_on_bad_value
     choose_columns_and_io_cols(ctx, get_param, adapter, sql_cfg, args)
 
     assert ctx.sql_flatten_writeback_rule == 0
+
+
+def test_choose_columns_loads_sql_flatten_writeback_rules_multi_config():
+    ctx = SimpleNamespace(primary_key="index", sql_table="sampleSrc", target_table="sampleSRC_LLM")
+    adapter = _AdapterStub()
+    sql_cfg = {}
+    args = SimpleNamespace(config="dummy.yaml")
+    get_param = _build_get_param(
+        {
+            "input_col": "File",
+            "output_col": "File_result",
+            "record_update_time": False,
+            "sql_writeback_rules": [
+                {"output_col": "File_route", "source": "stage", "stage": "route"},
+                {"output_col": "File_result", "source": "stage", "stage": "extract"},
+            ],
+            "sql_flatten_writeback_rules": [
+                {"writeback_rule": 0, "enabled": False},
+                {"writeback_rule": 1, "enabled": True, "allowed_output_fields": ["formalName"]},
+            ],
+        }
+    )
+
+    choose_columns_and_io_cols(ctx, get_param, adapter, sql_cfg, args)
+
+    assert isinstance(ctx.sql_flatten_writeback_rules, list)
+    assert len(ctx.sql_flatten_writeback_rules) == 2
+    assert ctx.sql_flatten_writeback_rules[1]["writeback_rule"] == 1
+    assert ctx.sql_flatten_writeback_rules[1]["allowed_output_fields"] == ["formalName"]
