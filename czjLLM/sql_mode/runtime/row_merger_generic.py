@@ -223,6 +223,67 @@ def _resolve_flatten_targets(ctx, write_map: dict, default_source_text: str) -> 
         }
     ]
 
+
+def _process_flatten_target(ctx, sink, pk, ft: dict) -> bool:
+    """
+    單一 flatten target 寫回流程。
+    回傳 True 代表有成功寫入展平列；False 代表僅完成 schema 或略過寫入。
+    """
+    old_ctx = sink.ctx
+
+    class _FlattenCtx:
+        def __init__(self, base, **overrides):
+            self.__dict__.update(getattr(base, "__dict__", {}))
+            self.__dict__.update(overrides)
+
+    sink.ctx = _FlattenCtx(
+        old_ctx,
+        output_col=ft["output_col"],
+        subtable_name=ft["subtable_name"],
+        allowed_output_fields=ft["allowed_fields"] or [],
+        save_raw_input_when_flatten=ft["save_raw_input"],
+    )
+    try:
+        # 即使沒有可展平列，也先建立對應子表，避免「rule 啟用但子表不存在」。
+        sink.ensure_flatten_schema(ft["allowed_fields"])
+    finally:
+        sink.ctx = old_ctx
+
+    try:
+        result_list = extract_json_list_for_flatten(ft["source_text"], ft["allowed_fields"])
+    except Exception as ex:
+        tlog_warn(f"⚠️ 解析展平欄位失敗（pk={pk}, col={ft['output_col']}）：{ex}")
+        result_list = None
+
+    if not result_list:
+        return False
+
+    sink.ctx = _FlattenCtx(
+        old_ctx,
+        output_col=ft["output_col"],
+        subtable_name=ft["subtable_name"],
+        allowed_output_fields=ft["allowed_fields"] or [],
+        save_raw_input_when_flatten=ft["save_raw_input"],
+    )
+    try:
+        wants_raw = bool(ft["save_raw_input"])
+        needs_raw_input = wants_raw and (getattr(ctx, "primary_key", None) != getattr(ctx, "input_col", None))
+        sub_input_col = getattr(ctx, "subtable_input_col", None) if needs_raw_input else None
+        input_val = sink.fetch_input(pk) if needs_raw_input else None
+        sink.write_flatten(
+            pk,
+            result_list,
+            save_raw_input=needs_raw_input,
+            input_col=sub_input_col,
+            input_value=input_val,
+        )
+        return True
+    except Exception as ex:
+        tlog_warn(f"⚠️ 子表寫回失敗（pk={pk}, col={ft['output_col']}）：{ex}")
+        return False
+    finally:
+        sink.ctx = old_ctx
+
 def _all_slices_done(item_dir, meta=None):
     t, r, s = _counts(item_dir)
     # 若能從 meta 帶入期望切片數（例如 produce_rows 時存的 chunks），再加一道保險
@@ -384,43 +445,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
 
                     flatten_targets = _resolve_flatten_targets(ctx, write_map, flatten_source_text)
                     for ft in flatten_targets:
-                        try:
-                            result_list = extract_json_list_for_flatten(ft["source_text"], ft["allowed_fields"])
-                        except Exception as ex:
-                            tlog_warn(f"⚠️ 解析展平欄位失敗（pk={pk}, col={ft['output_col']}）：{ex}")
-                            result_list = None
-
-                        if not result_list:
-                            continue
-                        old_ctx = sink.ctx
-                        class _FlattenCtx:
-                            def __init__(self, base, **overrides):
-                                self.__dict__.update(getattr(base, "__dict__", {}))
-                                self.__dict__.update(overrides)
-                        sink.ctx = _FlattenCtx(
-                            old_ctx,
-                            output_col=ft["output_col"],
-                            subtable_name=ft["subtable_name"],
-                            allowed_output_fields=ft["allowed_fields"] or [],
-                            save_raw_input_when_flatten=ft["save_raw_input"],
-                        )
-                        try:
-                            sink.ensure_flatten_schema(ft["allowed_fields"])
-                            wants_raw = bool(ft["save_raw_input"])
-                            needs_raw_input = wants_raw and (getattr(ctx, "primary_key", None) != getattr(ctx, "input_col", None))
-                            sub_input_col = getattr(ctx, "subtable_input_col", None) if needs_raw_input else None
-                            input_val = sink.fetch_input(pk) if needs_raw_input else None
-                            sink.write_flatten(
-                                pk,
-                                result_list,
-                                save_raw_input=needs_raw_input,
-                                input_col=sub_input_col,
-                                input_value=input_val,
-                            )
-                        except Exception as ex:
-                            tlog_warn(f"⚠️ 子表寫回失敗（pk={pk}, col={ft['output_col']}）：{ex}")
-                        finally:
-                            sink.ctx = old_ctx
+                        _process_flatten_target(ctx, sink, pk, ft)
 
                     # 完成後收尾
                     registry.remove(item_dir)
