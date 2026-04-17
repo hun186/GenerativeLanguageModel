@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from czjLLM.sql_mode.entry.steps import choose_columns_and_io_cols
+from czjLLM.sql_mode.entry.steps import choose_columns_and_io_cols, configure_flatten_options
 
 
 class _AdapterStub:
@@ -87,3 +87,43 @@ def test_choose_columns_loads_sql_flatten_writeback_rules_multi_config():
     assert len(ctx.sql_flatten_writeback_rules) == 2
     assert ctx.sql_flatten_writeback_rules[1]["writeback_rule"] == 1
     assert ctx.sql_flatten_writeback_rules[1]["allowed_output_fields"] == ["formalName"]
+
+
+def test_configure_flatten_options_auto_enables_when_any_rule_enabled():
+    ctx = SimpleNamespace(
+        flatten_json_output=False,
+        allowed_output_fields=None,
+        save_raw_input_when_flatten=False,
+        sql_flatten_writeback_rules=[
+            {"writeback_rule": 0, "enabled": False},
+            {"writeback_rule": 1, "enabled": True},
+        ],
+        input_col="File",
+        primary_key="index",
+    )
+    args = SimpleNamespace(config="dummy.yaml")
+    get_param = _build_get_param({})
+
+    configure_flatten_options(ctx, get_param, args)
+
+    assert ctx.flatten_json_output is True
+
+
+def test_configure_flatten_options_keeps_disabled_when_all_rules_disabled():
+    ctx = SimpleNamespace(
+        flatten_json_output=False,
+        allowed_output_fields=None,
+        save_raw_input_when_flatten=False,
+        sql_flatten_writeback_rules=[
+            {"writeback_rule": 0, "enabled": False},
+            {"writeback_rule": 1, "enabled": False},
+        ],
+        input_col="File",
+        primary_key="index",
+    )
+    args = SimpleNamespace(config="dummy.yaml")
+    get_param = _build_get_param({})
+
+    configure_flatten_options(ctx, get_param, args)
+
+    assert ctx.flatten_json_output is False
