@@ -86,6 +86,17 @@ def _normalize_flatten_writeback_rules(get_param, writeback_rules):
         return [{"writeback_rule": 0, "enabled": True}]
     return [{"writeback_rule": idx, "enabled": True}]
 
+def _has_enabled_flatten_writeback_rules(ctx) -> bool:
+    rules = getattr(ctx, "sql_flatten_writeback_rules", None)
+    if not isinstance(rules, list):
+        return False
+    for item in rules:
+        if not isinstance(item, dict):
+            continue
+        if bool(item.get("enabled", True)):
+            return True
+    return False
+
 def resolve_connection(ctx, get_param, args):
     policy = NonInteractivePolicy(args) if args.config else InteractivePolicy()
     sql_cfg = load_sql_cfg(ctx, get_param, args, policy)
@@ -176,6 +187,8 @@ def configure_flatten_options(ctx, get_param, args):
     ctx.allowed_output_fields    = get_param("allowed_output_fields", getattr(ctx, "allowed_output_fields", None))
     #ctx.save_raw_output_when_flatten = get_param("save_raw_output_when_flatten", getattr(ctx, "save_raw_output_when_flatten", False))
     ctx.save_raw_input_when_flatten  = get_param("save_raw_input_when_flatten", getattr(ctx, "save_raw_input_when_flatten", False))
+    if not bool(ctx.flatten_json_output) and _has_enabled_flatten_writeback_rules(ctx):
+        ctx.flatten_json_output = True
     #print("args.config in configure_flatten_options", args.config)
     #print("ctx",ctx)
     # 只有在 CLI 模式下才詢問JSON展平
