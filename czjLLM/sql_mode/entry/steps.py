@@ -61,12 +61,16 @@ def _normalize_flatten_writeback_rules(get_param, writeback_rules):
                 allowed = [str(x).strip() for x in allowed if str(x).strip()]
             else:
                 allowed = None
+            save_raw = item.get(
+                "save_raw_input_when_flatten",
+                item.get("flatten_store_input_col", item.get("save_input_col_when_flatten", None)),
+            )
             out.append(
                 {
                     "writeback_rule": idx,
                     "enabled": enabled,
                     "allowed_output_fields": allowed,
-                    "save_raw_input_when_flatten": item.get("save_raw_input_when_flatten", None),
+                    "save_raw_input_when_flatten": save_raw,
                 }
             )
 
@@ -183,10 +187,20 @@ def choose_columns_and_io_cols(ctx, get_param, adapter, sql_cfg, args):
     return columns
 
 def configure_flatten_options(ctx, get_param, args):
+    default_save_raw = True if bool(getattr(ctx, "is_sqlite", False)) else False
     ctx.flatten_json_output      = get_param("flatten_json_output", getattr(ctx, "flatten_json_output", None))
     ctx.allowed_output_fields    = get_param("allowed_output_fields", getattr(ctx, "allowed_output_fields", None))
     #ctx.save_raw_output_when_flatten = get_param("save_raw_output_when_flatten", getattr(ctx, "save_raw_output_when_flatten", False))
-    ctx.save_raw_input_when_flatten  = get_param("save_raw_input_when_flatten", getattr(ctx, "save_raw_input_when_flatten", False))
+    ctx.save_raw_input_when_flatten  = get_param(
+        "save_raw_input_when_flatten",
+        get_param(
+            "flatten_store_input_col",
+            get_param(
+                "save_input_col_when_flatten",
+                getattr(ctx, "save_raw_input_when_flatten", default_save_raw),
+            ),
+        ),
+    )
     if not bool(ctx.flatten_json_output) and _has_enabled_flatten_writeback_rules(ctx):
         ctx.flatten_json_output = True
     #print("args.config in configure_flatten_options", args.config)
@@ -200,7 +214,11 @@ def configure_flatten_options(ctx, get_param, args):
             ctx.allowed_output_fields = [s.strip() for s in raw.split(",") if s.strip()]
         if ctx.flatten_json_output:
             #ctx.save_raw_output_when_flatten = (input("📦 子表是否同時保留原始 JSON 輸出？(y/N)：").strip().lower()=="y")
-            ctx.save_raw_input_when_flatten  = (input("📦 子表是否保留原始輸入？(y/N)：").strip().lower()=="y")
+            if bool(getattr(ctx, "is_sqlite", False)):
+                user_in = input("📦 子表是否保留原始輸入？(Y/n)：").strip().lower()
+                ctx.save_raw_input_when_flatten = (user_in != "n")
+            else:
+                ctx.save_raw_input_when_flatten = (input("📦 子表是否保留原始輸入？(y/N)：").strip().lower() == "y")
 
     # 若主鍵就是輸入欄，展平時不再另存 raw input 欄位（PK 就是原始輸入）
     #print("in configure_flatten_options,ctx",ctx)
