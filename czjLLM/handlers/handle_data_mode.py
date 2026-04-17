@@ -53,6 +53,7 @@ class Backend:
 # ---------- SQL Backend ----------
 def _sql_resolve(ctx, get_param, args):
     adapter, is_sqlite, sql_cfg = resolve_connection(ctx, get_param, args)
+    ctx.is_sqlite = bool(is_sqlite)
     return {
         "adapter": adapter,
         "is_sqlite": is_sqlite,

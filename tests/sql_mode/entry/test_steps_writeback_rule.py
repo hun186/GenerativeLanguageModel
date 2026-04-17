@@ -89,6 +89,30 @@ def test_choose_columns_loads_sql_flatten_writeback_rules_multi_config():
     assert ctx.sql_flatten_writeback_rules[1]["allowed_output_fields"] == ["formalName"]
 
 
+def test_choose_columns_loads_flatten_store_input_col_alias_in_rule():
+    ctx = SimpleNamespace(primary_key="index", sql_table="sampleSrc", target_table="sampleSRC_LLM")
+    adapter = _AdapterStub()
+    sql_cfg = {}
+    args = SimpleNamespace(config="dummy.yaml")
+    get_param = _build_get_param(
+        {
+            "input_col": "File",
+            "output_col": "File_result",
+            "record_update_time": False,
+            "sql_writeback_rules": [
+                {"output_col": "File_result", "source": "stage", "stage": "extract"},
+            ],
+            "sql_flatten_writeback_rules": [
+                {"writeback_rule": 0, "enabled": True, "flatten_store_input_col": False},
+            ],
+        }
+    )
+
+    choose_columns_and_io_cols(ctx, get_param, adapter, sql_cfg, args)
+
+    assert ctx.sql_flatten_writeback_rules[0]["save_raw_input_when_flatten"] is False
+
+
 def test_configure_flatten_options_auto_enables_when_any_rule_enabled():
     ctx = SimpleNamespace(
         flatten_json_output=False,
@@ -127,3 +151,35 @@ def test_configure_flatten_options_keeps_disabled_when_all_rules_disabled():
     configure_flatten_options(ctx, get_param, args)
 
     assert ctx.flatten_json_output is False
+
+
+def test_configure_flatten_options_defaults_save_raw_input_true_for_sqlite():
+    ctx = SimpleNamespace(
+        is_sqlite=True,
+        flatten_json_output=True,
+        allowed_output_fields=None,
+        input_col="File",
+        primary_key="index",
+    )
+    args = SimpleNamespace(config="dummy.yaml")
+    get_param = _build_get_param({})
+
+    configure_flatten_options(ctx, get_param, args)
+
+    assert ctx.save_raw_input_when_flatten is True
+
+
+def test_configure_flatten_options_accepts_flatten_store_input_col_alias():
+    ctx = SimpleNamespace(
+        is_sqlite=True,
+        flatten_json_output=True,
+        allowed_output_fields=None,
+        input_col="File",
+        primary_key="index",
+    )
+    args = SimpleNamespace(config="dummy.yaml")
+    get_param = _build_get_param({"flatten_store_input_col": False})
+
+    configure_flatten_options(ctx, get_param, args)
+
+    assert ctx.save_raw_input_when_flatten is False

@@ -88,6 +88,23 @@ def test_resolve_flatten_targets_respects_all_rules_disabled():
     assert targets == []
 
 
+def test_resolve_flatten_targets_supports_rule_save_input_alias():
+    ctx = SimpleNamespace(
+        flatten_json_output=True,
+        target_table="sampleSRC_LLM",
+        output_col="File_result",
+        save_raw_input_when_flatten=False,
+        allowed_output_fields=["formalName"],
+        sql_writeback_rules=[{"output_col": "File_result", "source": "combined"}],
+        sql_flatten_writeback_rules=[{"writeback_rule": 0, "enabled": True, "flatten_store_input_col": True}],
+    )
+
+    targets = _resolve_flatten_targets(ctx, {"File_result": '[{"formalName":"ACME"}]'}, '[{"formalName":"ACME"}]')
+
+    assert len(targets) == 1
+    assert targets[0]["save_raw_input"] is True
+
+
 def test_process_flatten_target_creates_schema_even_when_source_not_json():
     class DummySink:
         def __init__(self):
@@ -119,3 +136,48 @@ def test_process_flatten_target_creates_schema_even_when_source_not_json():
     assert wrote is False
     assert sink.schema_calls == [["route"]]
     assert sink.write_calls == []
+
+
+def test_process_flatten_target_uses_input_col_when_rule_enables_raw_input():
+    class DummySink:
+        def __init__(self):
+            self.ctx = SimpleNamespace()
+            self.schema_calls = []
+            self.write_calls = []
+            self.fetch_calls = []
+
+        def ensure_flatten_schema(self, allowed_fields=None):
+            self.schema_calls.append(allowed_fields)
+
+        def fetch_input(self, pk):
+            self.fetch_calls.append(pk)
+            return "RAW-INPUT"
+
+        def write_flatten(self, *args, **kwargs):
+            self.write_calls.append((args, kwargs))
+
+    ctx = SimpleNamespace(
+        primary_key="id",
+        input_col="File",
+        save_raw_input_when_flatten=False,
+        subtable_input_col=None,
+    )
+    sink = DummySink()
+    ft = {
+        "output_col": "File_result",
+        "subtable_name": "sampleSRC_LLM_File_result_flattened",
+        "allowed_fields": ["formalName"],
+        "save_raw_input": True,
+        "source_text": '[{"formalName":"ACME"}]',
+    }
+
+    wrote = _process_flatten_target(ctx, sink, "pk-1", ft)
+
+    assert wrote is True
+    assert sink.schema_calls == [["formalName"]]
+    assert sink.fetch_calls == ["pk-1"]
+    assert len(sink.write_calls) == 1
+    _, kwargs = sink.write_calls[0]
+    assert kwargs["save_raw_input"] is True
+    assert kwargs["input_col"] == "File"
+    assert kwargs["input_value"] == "RAW-INPUT"

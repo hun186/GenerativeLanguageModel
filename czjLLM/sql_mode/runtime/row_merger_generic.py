@@ -190,7 +190,13 @@ def _resolve_flatten_targets(ctx, write_map: dict, default_source_text: str) -> 
             else:
                 # 相容舊行為：若未在 rule 內指定，沿用全域 allowed_output_fields
                 allowed_fields = default_allowed_fields
-            save_raw = item.get("save_raw_input_when_flatten", getattr(ctx, "save_raw_input_when_flatten", False))
+            save_raw = item.get(
+                "save_raw_input_when_flatten",
+                item.get(
+                    "flatten_store_input_col",
+                    item.get("save_input_col_when_flatten", getattr(ctx, "save_raw_input_when_flatten", False)),
+                ),
+            )
             targets.append(
                 {
                     "output_col": out_col,
@@ -267,8 +273,14 @@ def _process_flatten_target(ctx, sink, pk, ft: dict) -> bool:
     )
     try:
         wants_raw = bool(ft["save_raw_input"])
-        needs_raw_input = wants_raw and (getattr(ctx, "primary_key", None) != getattr(ctx, "input_col", None))
-        sub_input_col = getattr(ctx, "subtable_input_col", None) if needs_raw_input else None
+        input_col_name = getattr(ctx, "input_col", None)
+        has_input_col = isinstance(input_col_name, str) and bool(input_col_name.strip())
+        needs_raw_input = (
+            wants_raw
+            and has_input_col
+            and (getattr(ctx, "primary_key", None) != input_col_name)
+        )
+        sub_input_col = input_col_name if needs_raw_input else None
         input_val = sink.fetch_input(pk) if needs_raw_input else None
         sink.write_flatten(
             pk,
