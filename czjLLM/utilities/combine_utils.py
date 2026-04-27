@@ -270,6 +270,31 @@ def _p(s):
     s_str = str(s_str)
     return Path(s_str) if s_str.strip() else None
 
+def _try_parse_json_chunk(text: str):
+    """
+    嘗試把單一切片解析為 JSON（僅接受 dict / list）。
+    支援常見 fenced code block（```json ... ```）包裹格式。
+    回傳 (ok, obj_or_none)。
+    """
+    candidates = [text]
+
+    stripped = text.strip()
+    if stripped.startswith("```") and stripped.endswith("```"):
+        lines = stripped.splitlines()
+        if len(lines) >= 3:
+            inner = "\n".join(lines[1:-1]).strip()
+            if inner:
+                candidates.append(inner)
+
+    for c in candidates:
+        try:
+            obj = json.loads(c)
+            if isinstance(obj, (dict, list)):
+                return True, obj
+        except Exception:
+            pass
+    return False, None
+
 
 def combine_api_finished_item(item: str, ctx) -> str:
     print(f"{item} is finished calling API, start to combine returned result.")
@@ -277,23 +302,33 @@ def combine_api_finished_item(item: str, ctx) -> str:
     suc_dir = item_p / "Success"
 
     chunks: list[str] = []
+    has_json_like_chunk = False
+    has_strict_non_json_chunk = False
     for fp in sorted(OSWALK(str(suc_dir))):
         #print("fp adding in combine_utils",fp)
         p = Path(fp)
         text = p.read_text(encoding="utf-8")
         #print("text",text)
-        if OpenCC("s2twp").convert(text.lstrip()).startswith("無主題相關內容"):
+        text_lstrip = text.lstrip()
+        if OpenCC("s2twp").convert(text_lstrip).startswith("無主題相關內容"):
             continue
 
+        ok_json, obj = _try_parse_json_chunk(text)
+        if ok_json:
+            has_json_like_chunk = True
+        else:
+            has_strict_non_json_chunk = True
+
         try:
-            obj = json.loads(text)
+            if not ok_json:
+                raise ValueError("chunk is not valid json payload")
             if isinstance(obj, dict):
                 obj = [obj]
             elif not isinstance(obj, list):
                 raise ValueError("不支援的 JSON 結構")
             chunks.append(json.dumps(obj, ensure_ascii=False, indent=2) + "\n")
         except Exception as e:
-            if "to json format" in str(getattr(ctx, "task", "")).lower():
+            if text_lstrip.startswith("{") or text_lstrip.startswith("[") or text_lstrip.startswith("```"):
                 print(f"❌ 解析 JSON 失敗（跳過格式補正）：{p}，錯誤：{e}")
             chunks.append(text if text.endswith("\n") else text + "\n")
     #print("chunks",chunks)
@@ -364,7 +399,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
     task_name = str(getattr(ctx, "task", "result")).replace(os.sep, "_")
     out_path = dest_dir / f"{main_name}_{task_name}.txt"
     # JSON 合併修補（如有指定 to json format）
-    if "to json format" in str(getattr(ctx, "task", "")).lower():
+    if has_json_like_chunk and not has_strict_non_json_chunk:
         fixed, err = combine_json_return(combined_text, dictListForced=True)
         combined_text = fixed
         if err:
