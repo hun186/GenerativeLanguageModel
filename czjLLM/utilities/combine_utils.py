@@ -277,13 +277,28 @@ def combine_api_finished_item(item: str, ctx) -> str:
     suc_dir = item_p / "Success"
 
     chunks: list[str] = []
+    has_json_like_chunk = False
+    has_strict_non_json_chunk = False
     for fp in sorted(OSWALK(str(suc_dir))):
         #print("fp adding in combine_utils",fp)
         p = Path(fp)
         text = p.read_text(encoding="utf-8")
         #print("text",text)
-        if OpenCC("s2twp").convert(text.lstrip()).startswith("無主題相關內容"):
+        text_lstrip = text.lstrip()
+        if OpenCC("s2twp").convert(text_lstrip).startswith("無主題相關內容"):
             continue
+
+        # 多階段情境下，即使整體 task 名稱含 "to json format"，也可能夾雜
+        # route 之類的純代碼輸出（如 "org"/"other"）。此時不能硬做 JSON 合併。
+        looks_like_json = (
+            text_lstrip.startswith("{")
+            or text_lstrip.startswith("[")
+            or text_lstrip.startswith("```")
+        )
+        if looks_like_json:
+            has_json_like_chunk = True
+        else:
+            has_strict_non_json_chunk = True
 
         try:
             obj = json.loads(text)
@@ -293,7 +308,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
                 raise ValueError("不支援的 JSON 結構")
             chunks.append(json.dumps(obj, ensure_ascii=False, indent=2) + "\n")
         except Exception as e:
-            if "to json format" in str(getattr(ctx, "task", "")).lower():
+            if looks_like_json:
                 print(f"❌ 解析 JSON 失敗（跳過格式補正）：{p}，錯誤：{e}")
             chunks.append(text if text.endswith("\n") else text + "\n")
     #print("chunks",chunks)
@@ -364,7 +379,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
     task_name = str(getattr(ctx, "task", "result")).replace(os.sep, "_")
     out_path = dest_dir / f"{main_name}_{task_name}.txt"
     # JSON 合併修補（如有指定 to json format）
-    if "to json format" in str(getattr(ctx, "task", "")).lower():
+    if has_json_like_chunk and not has_strict_non_json_chunk:
         fixed, err = combine_json_return(combined_text, dictListForced=True)
         combined_text = fixed
         if err:
