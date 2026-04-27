@@ -24,7 +24,7 @@ from pathlib import Path
 import faulthandler
 
 #from czjLLM.prompt_pipeline.result_handler import PromptResultHandler
-from czjLLM.prompt_pipeline.prompt_generator import generate_prompt
+from czjLLM.prompt_pipeline.prompt_generator import generate_prompt, _render_raw_task_prompt
 from czjLLM.taskConfig import taskSetting
 from czjLLM.prompt_pipeline.llm_caller import CallLLMAPI
 from czjLLM.prompt_pipeline.debug_snapshot import build_debug_snapshot
@@ -1117,7 +1117,25 @@ def _build_stage_prompt_text(stage_task, content: str, ctx) -> str:
             task=task_name,
             think_mode=getattr(ctx, "think_mode", True),
         )
-    return content
+    # 支援 multi-stage 直接填入 prompt 字串（非 taskSetting key）
+    return _render_raw_task_prompt(task_name, content)
+
+
+def _read_stage_snapshot_output(item: str, stage_name: str) -> str:
+    """
+    讀取某 stage snapshot 內容，回傳依檔名排序後的合併文字。
+    給 stage runtime 存為 outputs_by_stage，以供後續 route_by 判斷。
+    """
+    snap_dir = _snapshot_dir(item, stage_name)
+    if not os.path.isdir(snap_dir):
+        return ""
+    parts: list[str] = []
+    for fp in _root_txt_files(snap_dir):
+        try:
+            parts.append(fp.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+    return "\n".join(parts).strip()
 
 
 def _count_txt_files(dir_path: str, ops: MergeOps) -> int:
@@ -1608,11 +1626,12 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             )
         # 保存本階段 Success 作為後續 stage 可引用輸入
         _copy_stage_success_delta(job.chunk_id, job.stage_name, before_success_sig)
+        stage_output_text = _read_stage_snapshot_output(job.chunk_id, job.stage_name)
         todo_files = [str(x) for x in _root_txt_files(ops.join(job.chunk_id, "TODO"))]
         if todo_files:
             return {"ok": False, "error": f"todo_remaining:{len(todo_files)}"}
         print(f"[stage:{job.stage_name}] ✅ 完成輸入單位(input_unit): {Path(job.chunk_id).name}")
-        return {"ok": True}
+        return {"ok": True, "output": stage_output_text}
 
     run_stage_pipeline(ctx, runtime, runner, max_rounds=max_rounds)
 
