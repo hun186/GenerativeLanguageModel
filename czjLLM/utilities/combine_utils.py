@@ -317,6 +317,9 @@ def combine_api_finished_item(item: str, ctx) -> str:
     for fp in sorted(OSWALK(str(suc_dir))):
         p = Path(fp)
         text = p.read_text(encoding="utf-8")
+        if not text or not text.strip():
+            # 有些 provider/重試流程會留下空白成功檔，避免誤判成 JSON 壞檔
+            continue
         if OpenCC("s2twp").convert(text.lstrip()).startswith("無主題相關內容"):
             continue
 
@@ -349,6 +352,9 @@ def combine_api_finished_item(item: str, ctx) -> str:
             combined_text = json.dumps(json_rows, ensure_ascii=False, indent=2)
     else:
         combined_text = "".join(text_chunks)
+        if json_mode and not combined_text.strip():
+            # JSON 任務在全部分片都空白時，輸出合法空陣列，避免後續寫回/flatten 解析失敗
+            combined_text = "[]"
 
     # === 安全地決定輸出目錄（不要出現前導斜線） ===
     # 優先 llm_source_finished_dir，其次 llm_source_dir；都沒有就用 item 的上層

@@ -88,6 +88,35 @@ def test_router_workflow_can_route_task_and_retry_source_on_route_miss():
     assert report["final"]["finished_chunks"] == 1
 
 
+def test_router_workflow_accepts_route_output_with_punctuation_and_case():
+    ctx = Ctx(
+        stages=[
+            {"name": "route", "task": "分類", "persist_output": "always"},
+            {
+                "name": "apply_template",
+                "task": "fallback",
+                "route_by": "route",
+                "route_map": {"org": "套用ORG模板", "other": "套用OTHER模板"},
+                "route_value_mode": "task",
+                "retry_source_on_route_miss": True,
+                "max_attempts": 2,
+            },
+        ]
+    )
+    runtime = so.init_chunk_stage_runtime(ctx, ["c1"])
+    called_tasks = []
+
+    def runner(job, _ctx, _input_text):
+        called_tasks.append(job.stage_task)
+        if job.stage_name == "route":
+            return {"ok": True, "output": "ORG。 這是一段補充"}
+        return {"ok": True, "output": "完成"}
+
+    report = so.run_stage_pipeline(ctx, runtime, runner, max_rounds=4, original_inputs={"c1": "原文"})
+    assert called_tasks == ["分類", "套用ORG模板"]
+    assert report["final"]["finished_chunks"] == 1
+
+
 def test_router_route_map_can_use_tasksetting_key_by_default():
     @dataclass
     class CtxRouteWithTaskSetting:

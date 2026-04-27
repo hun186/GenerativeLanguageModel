@@ -54,3 +54,15 @@ def test_json_slices_merge_dicts_when_merge_enabled(tmp_path):
     assert data["title"] == "A"
     assert data["score"] == 1
     assert data["extra"] == 2
+
+
+def test_json_mode_ignores_blank_success_files_and_returns_empty_array(tmp_path):
+    ctx = _build_ctx(tmp_path, task="to json format", merge_slices=False)
+    item = tmp_path / "PromptRoot" / "jobC"
+    suc = item / "Success"
+    suc.mkdir(parents=True, exist_ok=True)
+    (suc / "0.txt").write_text("", encoding="utf-8")
+    (suc / "1.txt").write_text("   \n", encoding="utf-8")
+
+    out = combine_api_finished_item(str(item), ctx)
+    assert open(out, "r", encoding="utf-8").read().strip() == "[]"

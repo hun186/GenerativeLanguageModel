@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from collections.abc import Mapping
 from typing import Any
@@ -289,8 +290,42 @@ def resolve_stage_task(
     """
     if not stage.route_map:
         return stage.task, None
-    route_key = outputs_by_stage.get(stage.route_by, "")
-    if route_key in stage.route_map:
+    route_key_raw = outputs_by_stage.get(stage.route_by, "")
+
+    def _route_candidates(value: object) -> list[str]:
+        text = str(value or "").strip()
+        if not text:
+            return []
+        # 1) 原字串（完整匹配）
+        out = [text]
+        # 2) 常見分類器輸出會帶句尾符號（org. / other。 / `org`）
+        stripped = text.strip("`'\"[](){}<>,.;:!?，。！？；：")
+        if stripped and stripped not in out:
+            out.append(stripped)
+        # 3) 常見分類器會附註說明，保留第一個 token 嘗試匹配
+        first = stripped.split()[0] if stripped.split() else ""
+        if first and first not in out:
+            out.append(first)
+        # 3.5) 若第一個 token 仍帶標點，擷取英數底線分類碼（如：ORG。說明）
+        m = re.search(r"[A-Za-z_][A-Za-z0-9_]*", stripped)
+        if m:
+            lex = m.group(0)
+            if lex not in out:
+                out.append(lex)
+        # 4) 大小寫不一致時，嘗試 lower（例如 ORG）
+        lower_keys = [x.lower() for x in list(out)]
+        for x in lower_keys:
+            if x and x not in out:
+                out.append(x)
+        return out
+
+    route_key = ""
+    for cand in _route_candidates(route_key_raw):
+        if cand in stage.route_map:
+            route_key = cand
+            break
+
+    if route_key:
         mapped = str(stage.route_map[route_key])
         if mapped.startswith("@taskSetting:"):
             key = mapped.split(":", 1)[1].strip()
@@ -302,4 +337,4 @@ def resolve_stage_task(
                 return str(task_setting[mapped]), None
             return "", f"task_key_missing:{mapped}"
         return mapped, None
-    return stage.task, f"route_miss:{stage.route_by}:{route_key}"
+    return stage.task, f"route_miss:{stage.route_by}:{str(route_key_raw or '').strip()}"
