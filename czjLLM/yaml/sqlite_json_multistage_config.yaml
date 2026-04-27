@@ -23,27 +23,74 @@ sql_config_file: czjLLM/config_sql/akconfig_local_file_test_multistage.py
 # 若要加前綴（避免撞欄位）可開，例如：json_
 # sql_expand_json_prefix: json_
 
-# 多階段流程（保留必要兩段：route + extract）
-# - route: 用 prompt（直接寫指令）
-# - extract: 用 task_key（對映 taskSetting 既有任務）
+# 多階段流程（route + extract + audit_json）
+# - route: 用 prompt 做分類，輸出固定代碼（org / other）
+# - extract: 用 route_map 切到不同任務（主結果）
+# - audit_json: 再做一個 JSON 分流結果（用來驗證多來源 flatten）
+#   - org   -> 既有 taskSetting 任務（組織抽取）
+#   - other -> 輕量 fallback 任務（避免把非組織文本硬抽成組織 JSON）
 stages:
   - name: route
     prompt: |
       你是分類器。請判斷此文本是否屬於「組織實體介紹」。
-      只輸出 JSON：[{"route":"org"}] 或 [{"route":"other"}]
+      請只輸出一個代碼：org 或 other。
+      禁止輸出 JSON、禁止解釋。
     input_from: original
     persist_output: always
+    max_attempts: 3
     #debug_print_llm_io: true
     #debug_print_max_chars: -1
 
   - name: extract
     task_key: Organization Profile Analyzer to json format
     input_from: original
+    route_by: route
+    route_map:
+      org: "@taskSetting:Organization Profile Analyzer to json format"
+      other: |
+        你是 JSON 回覆器。該文本不是組織實體介紹，請回傳：
+        [{
+          "route": "other",
+          "inputName": "",
+          "formalName": "",
+          "functionalDomain": "",
+          "keyFunctions": [],
+          "skipReason": "not_an_organization_profile"
+        }]
+    route_value_mode: task
+    retry_source_on_route_miss: true
     persist_output: final
     #debug_print_llm_io: true
     #debug_print_max_chars: -1
 
-# 多欄位寫回（同時保留 route 與主要結果）
+  - name: audit_json
+    task: |
+      你是 JSON 回覆器。請回傳：
+      [{"route":"unknown","auditTag":"unknown","auditVersion":"v1"}]
+    input_from: original
+    route_by: route
+    route_map:
+      org: |
+        你是 JSON 回覆器。該文本屬於組織實體介紹，請回傳：
+        [{
+          "route": "org",
+          "auditTag": "org_profile_path",
+          "auditVersion": "v1"
+        }]
+      other: |
+        你是 JSON 回覆器。該文本不屬於組織實體介紹，請回傳：
+        [{
+          "route": "other",
+          "auditTag": "non_org_path",
+          "auditVersion": "v1"
+        }]
+    route_value_mode: task
+    retry_source_on_route_miss: true
+    persist_output: always
+    #debug_print_llm_io: true
+    #debug_print_max_chars: -1
+
+# 多欄位寫回（同時保留 route、主要結果與 audit_json）
 sql_writeback_rules:
   - output_col: File_route
     source: stage
@@ -51,15 +98,23 @@ sql_writeback_rules:
   - output_col: File_result
     source: stage
     stage: extract
+  - output_col: File_audit_json
+    source: stage
+    stage: audit_json
 
 # flatten 來源：第 2 條 rule（0-based index=1）=> File_result
 #sql_flatten_writeback_rule: 1
 
 # 若要多來源 flatten（各自開關/欄位），改用以下設定（優先於 sql_flatten_writeback_rule）
+# 這裡示範同時 flatten 第 2 與第 3 條 writeback（驗證多個 JSON 來源）
 sql_flatten_writeback_rules:
   - writeback_rule: 0
-    enabled: true
-    allowed_output_fields: [route]
+    enabled: false   # route stage 輸出純代碼（org/other），不做 JSON flatten
   - writeback_rule: 1
     enabled: true
-    allowed_output_fields: [inputName, formalName, functionalDomain, keyFunctions]
+    flatten_store_input_col: true
+    allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunctions, skipReason]
+  - writeback_rule: 2
+    enabled: true
+    flatten_store_input_col: false
+    allowed_output_fields: [route, auditTag, auditVersion]
