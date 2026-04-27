@@ -270,6 +270,31 @@ def _p(s):
     s_str = str(s_str)
     return Path(s_str) if s_str.strip() else None
 
+def _try_parse_json_chunk(text: str):
+    """
+    嘗試把單一切片解析為 JSON（僅接受 dict / list）。
+    支援常見 fenced code block（```json ... ```）包裹格式。
+    回傳 (ok, obj_or_none)。
+    """
+    candidates = [text]
+
+    stripped = text.strip()
+    if stripped.startswith("```") and stripped.endswith("```"):
+        lines = stripped.splitlines()
+        if len(lines) >= 3:
+            inner = "\n".join(lines[1:-1]).strip()
+            if inner:
+                candidates.append(inner)
+
+    for c in candidates:
+        try:
+            obj = json.loads(c)
+            if isinstance(obj, (dict, list)):
+                return True, obj
+        except Exception:
+            pass
+    return False, None
+
 
 def combine_api_finished_item(item: str, ctx) -> str:
     print(f"{item} is finished calling API, start to combine returned result.")
@@ -288,27 +313,22 @@ def combine_api_finished_item(item: str, ctx) -> str:
         if OpenCC("s2twp").convert(text_lstrip).startswith("無主題相關內容"):
             continue
 
-        # 多階段情境下，即使整體 task 名稱含 "to json format"，也可能夾雜
-        # route 之類的純代碼輸出（如 "org"/"other"）。此時不能硬做 JSON 合併。
-        looks_like_json = (
-            text_lstrip.startswith("{")
-            or text_lstrip.startswith("[")
-            or text_lstrip.startswith("```")
-        )
-        if looks_like_json:
+        ok_json, obj = _try_parse_json_chunk(text)
+        if ok_json:
             has_json_like_chunk = True
         else:
             has_strict_non_json_chunk = True
 
         try:
-            obj = json.loads(text)
+            if not ok_json:
+                raise ValueError("chunk is not valid json payload")
             if isinstance(obj, dict):
                 obj = [obj]
             elif not isinstance(obj, list):
                 raise ValueError("不支援的 JSON 結構")
             chunks.append(json.dumps(obj, ensure_ascii=False, indent=2) + "\n")
         except Exception as e:
-            if looks_like_json:
+            if text_lstrip.startswith("{") or text_lstrip.startswith("[") or text_lstrip.startswith("```"):
                 print(f"❌ 解析 JSON 失敗（跳過格式補正）：{p}，錯誤：{e}")
             chunks.append(text if text.endswith("\n") else text + "\n")
     #print("chunks",chunks)

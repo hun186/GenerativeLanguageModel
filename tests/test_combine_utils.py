@@ -68,3 +68,24 @@ def test_combine_api_finished_item_skips_json_merge_for_mixed_json_and_plain_chu
     out_fn = combine_api_finished_item(str(item_dir), ctx)
     text = Path(out_fn).read_text(encoding="utf-8")
     assert '[\n  {\n    "route": "org"\n  }\n]\nother' in text
+
+
+def test_combine_api_finished_item_does_not_treat_non_json_fence_as_json(tmp_path: Path):
+    prompt_root = tmp_path / "prompt"
+    item_dir = prompt_root / "cache" / "row_4"
+    success_dir = item_dir / "Success"
+    success_dir.mkdir(parents=True)
+    (success_dir / "0.txt").write_text("```python\nprint('hi')\n```\n", encoding="utf-8")
+
+    out_root = tmp_path / "finished"
+    ctx = _Ctx(
+        task="any task",
+        prompt_dir=str(prompt_root),
+        llm_source_finished_dir=str(out_root),
+        debug=True,
+    )
+
+    out_fn = combine_api_finished_item(str(item_dir), ctx)
+    text = Path(out_fn).read_text(encoding="utf-8")
+    assert "```python" in text
+    assert "print('hi')" in text
