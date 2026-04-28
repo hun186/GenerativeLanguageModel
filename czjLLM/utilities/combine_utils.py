@@ -19,6 +19,7 @@ except Exception as ex:
     print(ex)
 
 from json_repair import repair_json
+from czjLLM.utilities.json_text_utils import strip_markdown_code_fence
 
 import re
 
@@ -116,7 +117,7 @@ def robust_merge_json_lists(raw: str) -> str:
     """
 
     # 移除 ```json 與 ``` 標記（常見於 LLM 回傳或 Markdown 格式）
-    raw = raw.replace("```json", "").replace("```", "").strip()
+    raw = strip_markdown_code_fence(raw)
 
     # 使用正則擷取所有類似 [ ... ] 的 JSON 陣列（允許跨多行）
     #parts = re.findall(r'\[.*?\]', raw, re.DOTALL) #re.findall(r'\[.*?\]', raw, re.DOTALL) 使用了非貪婪匹配 .*?，但遇到巢狀結構（例如 [ 裡還有 [）時，正則無法處理嵌套配對，因此會提前結束。
@@ -209,7 +210,7 @@ def combine_json_return(json_content,NoNestedList=True,dictListForced=True):
     #json_content_res = json_content.replace(
     #    "```json\n","").replace("```\n","").replace("\n]\n[",",")
     # 移除 markdown 包裝（```json）
-    json_content_res = json_content.replace("```json\n", "").replace("```\n", "").strip()
+    json_content_res = strip_markdown_code_fence(json_content)
     #print("json_content_res b4",json_content_res)
     # 🧹 Step 1: 移除每段陣列中 `,]` 結尾，改為 `]`
     # 🔁 Step 2: 將多段 array 合併：例如 `][`、`] [`, `]\n[` 等轉為 `,`

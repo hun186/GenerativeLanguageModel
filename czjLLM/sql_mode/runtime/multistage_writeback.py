@@ -2,6 +2,7 @@ import json
 import os
 from dataclasses import dataclass
 from typing import Any, Optional
+from czjLLM.utilities.json_text_utils import loads_json_flexible
 
 
 @dataclass
@@ -10,7 +11,6 @@ class WritebackPayload:
     main_text: str
     flatten_text: str
     source: str
-
 
 def _has_explicit_multistage(ctx: Any | None) -> bool:
     """判斷是否有明確配置多階段（stages>=2）。"""
@@ -135,7 +135,7 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
     source_mode = str(getattr(ctx, "sql_writeback_source", "combined") or "combined").strip().lower()
     if source_mode != "stage":
         try:
-            payload = json.loads(combined_text)
+            payload = loads_json_flexible(combined_text)
         except Exception:
             payload = combined_text
         return WritebackPayload(main_payload=payload, main_text=combined_text, flatten_text=combined_text, source="combined")
@@ -143,7 +143,7 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
     manifests = _iter_manifest_candidates(combined_path, ctx=ctx)
     if not manifests:
         try:
-            payload = json.loads(combined_text)
+            payload = loads_json_flexible(combined_text)
         except Exception:
             payload = combined_text
         fallback_source = "combined(fallback:no_manifest)"
@@ -176,7 +176,7 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
             continue
 
         try:
-            payload = json.loads(stage_text)
+            payload = loads_json_flexible(stage_text)
         except Exception:
             payload = stage_text
         stage_name = str(selected.get("name", "")).strip() or "stage"
@@ -188,7 +188,7 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
         )
 
     try:
-        payload = json.loads(combined_text)
+        payload = loads_json_flexible(combined_text)
     except Exception:
         payload = combined_text
     return WritebackPayload(
