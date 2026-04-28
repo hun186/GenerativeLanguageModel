@@ -241,6 +241,8 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
         if stage_text is None and not selector_token:
             stage_text = _read_stage_snapshot_text(manifest_path, selected, ctx=ctx)
         if stage_text is None:
+            stage_text = _read_stage_snapshot_text(manifest_path, selected, ctx=ctx)
+        if stage_text is None:
             continue
 
         try:
