@@ -7,6 +7,7 @@ import re
 import json
 import atexit
 import time
+from czjLLM.utilities.json_text_utils import loads_json_flexible_deep
 
 # 與其他 sink 保持一致的 logging helper（如果找不到模組會 fallback 到 print）
 try:
@@ -98,12 +99,10 @@ class ESSink:
 
     def _maybe_parse_json(self, payload):
         if isinstance(payload, str):
-            s = payload.strip()
-            if s and s[0] in "{[":
-                try:
-                    return json.loads(s)
-                except Exception:
-                    pass
+            try:
+                return loads_json_flexible_deep(payload)
+            except Exception:
+                pass
         return payload
     
 

@@ -10,6 +10,18 @@ MULTIDIM_EXTRACTION_Rule = """
 6. 不可輸出包含 XX、00、— 的日期。  
 7. 若圖片說明、攝影署名、圖片來源、版權標記與正文衝突，一律以正文為準。  
 8. 若為了補齊欄位而必須猜測，則不得補齊，應保守留空。  
+9. 最終輸出必須是「可直接解析的 JSON」，不得使用程式碼區塊（```json）包裹。  
+10. 禁止把整個 JSON 物件再包成字串（例如 `\"{...}\"`）。  
+11. 禁止添加任何未在【輸出結構】定義中的外層包裝鍵。  
+
+【規則衝突優先序（請先執行）】
+A. 若不同章節規則衝突，優先順序為：
+   1) 整體原則
+   2) 日期與時間判讀（含相對日期）
+   3) 證據片段規則（evidence_snippets）
+   4) 各欄位專屬規則（Event / Impact / Timeline / source / locations 等）
+B. 任何情況下都不得違反「不得臆測、不得改寫 evidence、無法判定即保守留空」三原則。
+C. 先選 evidence_snippets，再生成 Event_Summary / Event / Impact / Event_Timeline；若 evidence 不足，應先回補 evidence，不得先編寫結論。
 
 【規則衝突優先序（請先執行）】
 A. 若不同章節規則衝突，優先順序為：
@@ -625,6 +637,14 @@ b.每段獨立紀錄均符合「單一結構化紀錄」的定義。
     "importance_score": 84
   }
 }]
+
+【輸出格式防呆（必須遵守）】
+1. 只允許輸出 JSON 陣列本體：`[ {...} ]`。  
+2. 不得輸出任何外層包裝物件（例如 `{ "result": ... }`、`{ "data": ... }`）。  
+3. 不得輸出字串化 JSON：  
+   - 錯誤：`[{ "payload": "{\"article_title\":\"...\"}" }]`  
+   - 正確：`[{ "article_title":"..." }]`  
+4. `Event`、`importance`、`Person`、`Involved_Parties`、`Impact`、`Event_Timeline`、`evidence_snippets` 必須保持原生 JSON 型別（object/array），不得轉成字串。  
 """
 
 USE_MAINFILE_HINT = False  # True 就會加那一行，False 就隱藏
