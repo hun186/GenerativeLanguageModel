@@ -180,3 +180,21 @@ def test_resolve_pipeline_stages_can_bind_tasksetting_keys():
 
     stages = so.resolve_pipeline_stages(CtxTaskSetting())
     assert [s.task for s in stages] == ["請輸出A/B/C", "請依分類套模板", "同名對映任務"]
+
+
+def test_resolve_pipeline_stages_preserves_tasksetting_mapping_entry():
+    @dataclass
+    class CtxTaskSetting:
+        stages: list[dict] = field(default_factory=lambda: [{"name": "extract", "task_key": "模板套用"}])
+        taskSetting: dict = field(
+            default_factory=lambda: {
+                "模板套用": {
+                    "CT_name": "測試模板",
+                    "template": lambda content: f"模板前綴:{content}",
+                }
+            }
+        )
+
+    stages = so.resolve_pipeline_stages(CtxTaskSetting())
+    assert isinstance(stages[0].task, dict)
+    assert callable(stages[0].task["template"])

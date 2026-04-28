@@ -10,6 +10,7 @@ from czjLLM.prompt_pipeline.stage_runtime import (
     is_chunk_finished,
     normalize_stages,
     resolve_stage_input,
+    resolve_stage_task,
     should_persist_output,
     summarize_runtime,
 )
@@ -156,3 +157,19 @@ def test_should_persist_output_policy():
     assert should_persist_output(s_final, last_stage_name="s3") is False
     assert should_persist_output(s_always, last_stage_name="s2") is True
     assert should_persist_output(s_never, last_stage_name="s2") is False
+
+
+def test_resolve_stage_task_task_key_mode_preserves_tasksetting_mapping():
+    stage = StageDefinition(
+        name="extract",
+        task="fallback",
+        route_by="route",
+        route_map={"org": "模板A"},
+        route_value_mode="task_key",
+    )
+    outputs = {"route": "org"}
+    task_setting = {"模板A": {"CT_name": "模板A", "template": lambda content: f"A:{content}"}}
+    task, err = resolve_stage_task(stage, outputs, task_setting=task_setting)
+    assert err is None
+    assert isinstance(task, dict)
+    assert callable(task["template"])

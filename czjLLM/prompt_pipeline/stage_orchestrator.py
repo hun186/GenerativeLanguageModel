@@ -47,6 +47,11 @@ def resolve_pipeline_stages(ctx) -> list[StageDefinition]:
     if not isinstance(task_setting, Mapping):
         return stages
 
+    def _resolve_task_setting_entry(entry):
+        if isinstance(entry, Mapping):
+            return entry
+        return str(entry or "").strip()
+
     resolved: list[StageDefinition] = []
     for stage in stages:
         task_text = stage.task
@@ -55,16 +60,16 @@ def resolve_pipeline_stages(ctx) -> list[StageDefinition]:
         # 1) 明確指定 task_key
         if task_key:
             mapped = task_setting.get(task_key, task_text)
-            task_text = mapped if isinstance(mapped, Mapping) else str(mapped).strip()
+            task_text = _resolve_task_setting_entry(mapped)
         # 2) task 為 @taskSetting:key 形式
         elif isinstance(task_text, str) and task_text.startswith("@taskSetting:"):
             key = task_text.split(":", 1)[1].strip()
             mapped = task_setting.get(key, "")
-            task_text = mapped if isinstance(mapped, Mapping) else str(mapped).strip()
+            task_text = _resolve_task_setting_entry(mapped)
         # 3) 若 task 留空，預設用 stage.name 對映 taskSetting
         elif not task_text:
             mapped = task_setting.get(stage.name, "")
-            task_text = mapped if isinstance(mapped, Mapping) else str(mapped).strip()
+            task_text = _resolve_task_setting_entry(mapped)
 
         if not task_text:
             raise ValueError(f"Stage '{stage.name}' 無法從 taskSetting 解析 task")
