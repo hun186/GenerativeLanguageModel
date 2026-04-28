@@ -107,3 +107,44 @@ def test_resolve_writeback_payload_finds_manifest_from_ctx_finished_dir(tmp_path
 
     assert out.source == "stage:extract"
     assert out.main_payload == [{"inputName": "OK_FROM_CTX_FINISHED"}]
+
+
+def test_resolve_writeback_payload_reads_stage_snapshot_when_merged_file_missing(tmp_path):
+    # 模擬 extract persist_output=final 且非最後一段：manifest 中 merged_file 為空
+    combined_path = tmp_path / "workpool" / "sql_cache" / "cache" / "rowD_task.txt"
+    combined_path.parent.mkdir(parents=True)
+    combined_path.write_text('[{"fallback":"combined"}]', encoding="utf-8")
+
+    finished_dir = tmp_path / "llm_finished" / "cache"
+    _write_manifest(
+        finished_dir / "_stage_merges" / "rowD",
+        source="rowD",
+        stages=[
+            {"name": "route", "merged": True, "merged_file": "01_route.txt"},
+            {"name": "extract", "merged": False, "merged_file": ""},
+            {"name": "audit_json", "merged": True, "merged_file": "03_audit_json.txt"},
+        ],
+        files={
+            "01_route.txt": '[{"route":"other"}]',
+            "03_audit_json.txt": '[{"route":"other","auditTag":"non_org_path"}]',
+        },
+    )
+
+    prompt_dir = tmp_path / "workpool" / "sql_cache" / "Prompt" / "cache"
+    snap_dir = prompt_dir / "rowD" / "_stage_outputs" / "extract"
+    snap_dir.mkdir(parents=True, exist_ok=True)
+    (snap_dir / "0.txt").write_text(
+        '[{"route":"other","inputName":"","skipReason":"not_an_organization_profile"}]',
+        encoding="utf-8",
+    )
+
+    ctx = SimpleNamespace(
+        sql_writeback_source="stage",
+        sql_writeback_stage="extract",
+        llm_source_finished_dir=str(finished_dir),
+        prompt_dir=str(prompt_dir),
+    )
+    out = resolve_writeback_payload(ctx, str(combined_path), combined_path.read_text(encoding="utf-8"))
+
+    assert out.source == "stage:extract"
+    assert out.main_payload == [{"route": "other", "inputName": "", "skipReason": "not_an_organization_profile"}]

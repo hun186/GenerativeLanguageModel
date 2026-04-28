@@ -122,6 +122,62 @@ def _read_stage_text(manifest_path: str, stage_info: dict) -> Optional[str]:
         return f.read()
 
 
+def _read_stage_snapshot_text(manifest_path: str, stage_info: dict, ctx: Any | None = None) -> Optional[str]:
+    """
+    當 stage 沒有 merged_file（例如 persist_output=final 但非最後一段）時，
+    退回讀取 item/_stage_outputs/<stage>/ 內容，避免誤回退到 combined_text。
+    """
+    stage_name = str(stage_info.get("name", "") or "").strip()
+    if not stage_name:
+        return None
+
+    source_name = _manifest_source(manifest_path)
+    if not source_name:
+        return None
+
+    roots: list[str] = []
+    for key in ("prompt_dir", "temp_txt_dir", "work_pool_root"):
+        p = str(getattr(ctx, key, "") or "").strip() if ctx is not None else ""
+        if p:
+            roots.append(os.path.abspath(p))
+
+    # 補充：由 manifest 推導 finished/cache，再對應到 workpool prompt/cache
+    # .../LLMSourcePool_Finished/sql_cache/cache/_stage_merges/<source>/manifest.json
+    # -> .../WorkPool_czjLLM/sql_cache/Prompt/cache/<source>/_stage_outputs/<stage>
+    try:
+        manifest_abs = os.path.abspath(manifest_path)
+        parts = manifest_abs.replace("\\", "/").split("/")
+        if "_stage_merges" in parts:
+            idx = parts.index("_stage_merges")
+            before = parts[:idx]  # .../<...>/cache
+            if before and before[-1] == "cache":
+                prompt_cache = before[:-1] + ["Prompt", "cache"]
+                roots.append(os.path.abspath("/".join(prompt_cache)))
+    except Exception:
+        pass
+
+    seen = set()
+    for root in roots:
+        if root in seen:
+            continue
+        seen.add(root)
+        snap_dir = os.path.join(root, source_name, "_stage_outputs", stage_name)
+        if not os.path.isdir(snap_dir):
+            continue
+        parts = []
+        for fn in sorted(os.listdir(snap_dir)):
+            if not fn.lower().endswith(".txt"):
+                continue
+            fp = os.path.join(snap_dir, fn)
+            if not os.path.isfile(fp):
+                continue
+            with open(fp, "r", encoding="utf-8") as f:
+                parts.append(f.read())
+        if parts:
+            return "\n".join(parts)
+    return None
+
+
 def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> WritebackPayload:
     """
     SQL/ES 模式共用：決定主欄位與 flatten 應使用哪份內容。
@@ -172,6 +228,8 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
         if not selected:
             continue
         stage_text = _read_stage_text(manifest_path, selected)
+        if stage_text is None:
+            stage_text = _read_stage_snapshot_text(manifest_path, selected, ctx=ctx)
         if stage_text is None:
             continue
 
