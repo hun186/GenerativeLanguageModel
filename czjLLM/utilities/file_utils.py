@@ -7,7 +7,8 @@ def _ensure_dir(path: str):
     return path
 
 def save_text_as_temp_file(text: str, base_dir: str, index: int,
-                           *, prefix: str = "excel_input", ext: str = ".txt") -> str:
+                           *, prefix: str = "excel_input", ext: str = ".txt",
+                           row_key: object | None = None) -> str:
     """
     在 base_dir 產生唯一檔名並寫入文字：
     - 會先建立 base_dir（避免 FileNotFoundError）
@@ -24,7 +25,21 @@ def save_text_as_temp_file(text: str, base_dir: str, index: int,
     except Exception:
         h = uuid.uuid4().hex[:8]
 
-    filename = os.path.join(base_dir, f"{prefix}_{index}_{h}{ext}")
+    safe_row_key = ""
+    if row_key is not None:
+        try:
+            raw = str(row_key).strip()
+            if raw:
+                safe = "".join(ch if (ch.isalnum() or ch in ("-", "_")) else "_" for ch in raw)
+                safe_row_key = safe[:64]
+        except Exception:
+            safe_row_key = ""
+
+    name_parts = [prefix, str(index)]
+    if safe_row_key:
+        name_parts.append(safe_row_key)
+    name_parts.append(h)
+    filename = os.path.join(base_dir, f"{'_'.join(name_parts)}{ext}")
 
     # 極端情況下父目錄可能被外部刪掉，這裡加一次重試
     for attempt in (1, 2):
