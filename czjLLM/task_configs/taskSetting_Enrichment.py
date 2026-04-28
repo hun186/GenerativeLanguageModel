@@ -10,6 +10,18 @@ MULTIDIM_EXTRACTION_Rule = """
 6. 不可輸出包含 XX、00、— 的日期。  
 7. 若圖片說明、攝影署名、圖片來源、版權標記與正文衝突，一律以正文為準。  
 8. 若為了補齊欄位而必須猜測，則不得補齊，應保守留空。  
+9. 最終輸出必須是「可直接解析的 JSON」，不得使用程式碼區塊（```json）包裹。  
+10. 禁止把整個 JSON 物件再包成字串（例如 `\"{...}\"`）。  
+11. 禁止添加任何未在【輸出結構】定義中的外層包裝鍵。  
+
+【規則衝突優先序（請先執行）】
+A. 若不同章節規則衝突，優先順序為：
+   1) 整體原則
+   2) 日期與時間判讀（含相對日期）
+   3) 證據片段規則（evidence_snippets）
+   4) 各欄位專屬規則（Event / Impact / Timeline / source / locations 等）
+B. 任何情況下都不得違反「不得臆測、不得改寫 evidence、無法判定即保守留空」三原則。
+C. 先選 evidence_snippets，再生成 Event_Summary / Event / Impact / Event_Timeline；若 evidence 不足，應先回補 evidence，不得先編寫結論。
 
 ================================================================================
 【日期與時間判讀（核心規則）】
@@ -75,19 +87,20 @@ MULTIDIM_EXTRACTION_Rule = """
 
 在「已確定年份或年月」但缺少完整年月日時，請依下列規則標準化：  
 - 僅有「年」：  
-  - time_iso = "YYYY-01-01"  
-  - time_precision = "year"  
+  - date_iso = "YYYY-01-01"  
+  - date_precision = "year"  
 - 僅有「年 + 月」：  
-  - time_iso = "YYYY-MM-01"  
-  - time_precision = "month"  
+  - date_iso = "YYYY-MM-01"  
+  - date_precision = "month"  
 - 有「年 + 月 + 日」：  
-  - time_iso = "YYYY-MM-DD"  
-  - time_precision = "day"  
+  - date_iso = "YYYY-MM-DD"  
+  - date_precision = "day"  
 - 無法判斷：  
-  - time_iso = null  
-  - time_precision = "unknown"  
+  - date_iso = null  
+  - date_precision = "unknown"  
 
 Event_Timeline 中的 `date_iso` 與 `date_precision` 亦遵守相同邏輯。
+Event 欄位中的 `time_iso` / `time_precision` 僅用於時間（HH:mm）或文本明確給出的事件時間，不可與日期欄位混用。
 
 ================================================================================
 【相對日期回填規則】
@@ -286,7 +299,7 @@ Event_Timeline 中的 `date_iso` 與 `date_precision` 亦遵守相同邏輯。
 三、報告 / 統計 / 聲明 / 裁定 類事件
 - 若文章核心是某機構發布報告、公布數據、作出估計、發表統計、作出裁定或判定，優先抽為：  
   - `subject` = 發布、報告、估計、裁定的機構 / 主體  
-  - `action` = 发布报告 / 公布 / 指出 / 估计 / 预测 / 裁定 / 判定  
+  - `action` = 發布報告 / 公布 / 指出 / 估計 / 預測 / 裁定 / 判定  
   - `object` = 報告、統計結果、估計內容、裁定對象或案件本身  
 - 不應優先使用過度口語、過度引述式動詞（如「表示」「说」），若有更具體的制度性動作可用，應優先使用後者。  
 
@@ -404,6 +417,10 @@ Event_Timeline 中的 `date_iso` 與 `date_precision` 亦遵守相同邏輯。
 ================================================================================
 【證據片段規則（evidence_snippets）】
 
+適用範圍說明（避免衝突）：
+- 本章為「一般新聞文本」的預設規則。  
+- 若文本符合下方【結構化紀錄證據片段特別處理規則】的判定條件，則以特別處理規則優先，本章僅保留不衝突的共通約束（如：逐字擷取、不可臆測）。  
+
 1. 基本要求
 - 每一筆 evidence_snippets.text 必須直接從輸入原文逐字擷取，不得改寫。  
 - 對一般新聞文本：每個事件最多擷取 8 段；一般新聞建議 5–7 段。  
@@ -469,7 +486,7 @@ Event_Timeline 中的 `date_iso` 與 `date_precision` 亦遵守相同邏輯。
 - 70–84：相關但支撐力中等，通常需搭配其他證據才完整。  
 - 低於 70：原則上不納入。  
 - 純背景句或延伸說明句，不得高於直接主事件句或重大數字句。  
-- 禁止所有 evidence 使用相同分數；至少必須出現 3 個不同分數層級。  
+- 禁止所有 evidence 使用相同分數；當 evidence_snippets 數量 ≥ 3 時，至少應出現 3 個不同分數層級。  
 
 對逐條收錄模式：  
 - confidence 代表該條目作為檢索與回查依據的可用程度，不是主事件重要性排序。  
@@ -503,6 +520,14 @@ Event_Timeline 中的 `date_iso` 與 `date_precision` 亦遵守相同邏輯。
 【結構化紀錄證據片段特別處理規則】
 當輸入文本明確呈現為「結構化紀錄」（例如：key-value、CSV、JSON、表格、日誌行等）時，請依下列步驟處理evidence_snippets：
 
+0. 與一般 evidence 規則的關係（衝突解消）
+- 本章屬於 evidence_snippets 的「特例覆寫規則」。  
+- 一旦命中結構化紀錄條件，本章優先於【證據片段規則（evidence_snippets）】中的段數配額、類型配額與一般新聞選句策略。  
+- 仍必須遵守的共通底線：  
+  - `text` 逐字擷取，不得改寫  
+  - 無法判定時保守處理，不得臆測  
+  - 不得混用不同獨立紀錄為同一片段  
+
 1.先判斷該段落是否為單一結構化紀錄
 - 特徵：出現「欄位名稱：值」或「欄位名稱=值」或「欄位名,值」的成對模式，且同一行/段落內出現多個欄位。
 - 若整段文字只有一組關聯的欄位集合（例如船艦AIS一筆資料），則將該整段視為**一個證據單元**。
@@ -516,7 +541,7 @@ b.每段獨立紀錄均符合「單一結構化紀錄」的定義。
 
 3.字數與信心度
 - 單段文字上限仍為280字；若單一紀錄超過此長度，則**優先保留前280個字**，並在`confidence`中標註為80（表示因長度截斷而信心稍降）。
-- 否則給予高信心度（90-96），因為該片段直接支撐所有後續欄位（Event、Event_Timeline`Impact等）。
+- 否則給予高信心度（90-96），因為該片段直接支撐所有後續欄位（Event、Event_Timeline、Impact 等）。
 
 4.其他規則仍適用
 - `char_start/char_end`、`sentence_index`、`paragraph_id`、`source_id`若無法精確判定可填`null`。
@@ -603,6 +628,14 @@ b.每段獨立紀錄均符合「單一結構化紀錄」的定義。
     "importance_score": 84
   }
 }]
+
+【輸出格式防呆（必須遵守）】
+1. 只允許輸出 JSON 陣列本體：`[ {...} ]`。  
+2. 不得輸出任何外層包裝物件（例如 `{ "result": ... }`、`{ "data": ... }`）。  
+3. 不得輸出字串化 JSON：  
+   - 錯誤：`[{ "payload": "{\"article_title\":\"...\"}" }]`  
+   - 正確：`[{ "article_title":"..." }]`  
+4. `Event`、`importance`、`Person`、`Involved_Parties`、`Impact`、`Event_Timeline`、`evidence_snippets` 必須保持原生 JSON 型別（object/array），不得轉成字串。  
 """
 
 USE_MAINFILE_HINT = False  # True 就會加那一行，False 就隱藏

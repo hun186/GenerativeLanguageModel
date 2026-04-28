@@ -2,7 +2,7 @@ import json
 from czjLLM.sql_utils.schema_manager import ensure_subtable_exists
 from czjLLM.sql_utils.column_utils import ensure_sql_columns_exist
 from czjLLM.job_manager.console_ui import tlog_warn
-from czjLLM.utilities.json_text_utils import loads_json_flexible
+from czjLLM.utilities.json_text_utils import loads_json_flexible_deep
 
 def auto_setup_subtable_if_needed(ctx, cursor, is_sqlite=False):
     if not hasattr(ctx, "subtable_name") or not ctx.subtable_name:
@@ -50,7 +50,7 @@ def extract_json_list_for_flatten(result, allowed_fields=None):
     try:
         
         if isinstance(result, str):
-            result = loads_json_flexible(result)
+            result = loads_json_flexible_deep(result)
         # 允許 dict 直接展平成單筆，避免 source 設到 object JSON 時整批掉空。
         if isinstance(result, dict):
             result = [result]

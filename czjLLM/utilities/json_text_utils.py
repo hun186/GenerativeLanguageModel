@@ -36,3 +36,27 @@ def loads_json_flexible(raw: Any) -> Any:
         if cleaned == raw:
             raise
         return json.loads(cleaned)
+
+
+def loads_json_flexible_deep(raw: Any, max_depth: int = 3) -> Any:
+    """
+    深層容錯 JSON 解析：
+    - 先做 loads_json_flexible
+    - 若結果仍是「看起來像 JSON 的字串」，再遞迴解析（最多 max_depth 層）
+    用於處理模型回傳「JSON 字串包 JSON」的情境。
+    """
+    val = raw
+    for _ in range(max(1, int(max_depth))):
+        parsed = loads_json_flexible(val)
+        if not isinstance(parsed, str):
+            return parsed
+        text = parsed.strip()
+        if not text:
+            return parsed
+        # 只在看起來像 JSON 或 fenced JSON 時繼續嘗試，避免誤解析一般文字
+        is_fenced = bool(_FENCED_JSON_RE.match(text))
+        looks_json = text[:1] in "{[\""
+        if not (is_fenced or looks_json):
+            return parsed
+        val = parsed
+    return val
