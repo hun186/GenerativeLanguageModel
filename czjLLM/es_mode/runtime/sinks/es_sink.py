@@ -115,6 +115,34 @@ class ESSink:
         if isinstance(payload, (list, dict)):
             return payload if len(payload) > 0 else None
         return payload
+
+    def _unwrap_self_wrapped_output(self, payload):
+        """
+        修復模型偶發回傳的「自包裝」結構：
+        - {"<output_col>": "<json_string>"}
+        - {"<output_col>": [...]}
+        - [ {"<output_col>": "..."} ] (單元素包裝)
+        """
+        out_key = str(self.output_col or "").strip()
+        if not out_key:
+            return payload
+
+        cur = payload
+        for _ in range(3):
+            changed = False
+            if isinstance(cur, dict) and out_key in cur:
+                # 只在「單鍵」或明顯自包裝時解包，避免誤傷正常欄位
+                if len(cur) == 1:
+                    cur = self._maybe_parse_json(cur.get(out_key))
+                    changed = True
+            elif isinstance(cur, list) and len(cur) == 1 and isinstance(cur[0], dict):
+                first = cur[0]
+                if out_key in first and len(first) == 1:
+                    cur = self._maybe_parse_json(first.get(out_key))
+                    changed = True
+            if not changed:
+                break
+        return cur
     
     
     def _normalize_event_payload(self, payload: any):
@@ -405,7 +433,8 @@ class ESSink:
     
         # 1) 解析
         payload = self._maybe_parse_json(result_text)
-    
+        payload = self._unwrap_self_wrapped_output(payload)
+
         # 2) 事件正規化（僅指定欄位）
         if str(self.output_col) in ("multidim_event_json", "llm_result_json"):
             payload = self._normalize_event_payload_v2(payload)  # 或你的 _normalize_event_payload

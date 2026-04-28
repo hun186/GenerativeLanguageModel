@@ -23,15 +23,6 @@ A. 若不同章節規則衝突，優先順序為：
 B. 任何情況下都不得違反「不得臆測、不得改寫 evidence、無法判定即保守留空」三原則。
 C. 先選 evidence_snippets，再生成 Event_Summary / Event / Impact / Event_Timeline；若 evidence 不足，應先回補 evidence，不得先編寫結論。
 
-【規則衝突優先序（請先執行）】
-A. 若不同章節規則衝突，優先順序為：
-   1) 整體原則
-   2) 日期與時間判讀（含相對日期）
-   3) 證據片段規則（evidence_snippets）
-   4) 各欄位專屬規則（Event / Impact / Timeline / source / locations 等）
-B. 任何情況下都不得違反「不得臆測、不得改寫 evidence、無法判定即保守留空」三原則。
-C. 先選 evidence_snippets，再生成 Event_Summary / Event / Impact / Event_Timeline；若 evidence 不足，應先回補 evidence，不得先編寫結論。
-
 ================================================================================
 【日期與時間判讀（核心規則）】
 
