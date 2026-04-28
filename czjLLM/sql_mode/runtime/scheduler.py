@@ -24,7 +24,7 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
     fin_dir  = os.path.join(ctx.llm_source_finished_dir, "cache")
 
     # 產原始臨時檔
-    temp_txt_path = save_text_as_temp_file(text=text, base_dir=temp_dir, index=idx)
+    temp_txt_path = save_text_as_temp_file(text=text, base_dir=temp_dir, index=idx, row_key=pk)
     main_name = getMFNFromFN(temp_txt_path)
 
     # 👉 這裡用 Overlay：只覆寫會被模板/切片讀到的變動欄位
