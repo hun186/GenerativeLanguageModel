@@ -286,7 +286,8 @@ def find_item_dir_for(ctx, main_file_name: str) -> str:
         parts = getPathFromFN(f).split("/")
         if parts[-1] in ["TODO", "Success"]:
             parent = "/".join(parts[:-1])
-            if main_file_name in parent:
+            parent_name = Path(parent).name
+            if parent_name == main_file_name or parent_name.startswith(f"{main_file_name}_"):
                 candidates.append(parent)
     uniq = list(set(candidates))
     if not uniq:
@@ -1018,13 +1019,15 @@ def _collect_prompt_items(prompt_dir: str, main_name: str, ops: MergeOps) -> lis
             idx = parts.index("TODO")
             if idx > 0:
                 item_dir = str(Path(*parts[:idx]))
-                if main_name in item_dir:
+                item_name = Path(item_dir).name
+                if item_name == main_name or item_name.startswith(f"{main_name}_"):
                     prompt_items.append(item_dir)
         elif "Success" in parts:
             idx = parts.index("Success")
             if idx > 0:
                 item_dir = str(Path(*parts[:idx]))
-                if main_name in item_dir:
+                item_name = Path(item_dir).name
+                if item_name == main_name or item_name.startswith(f"{main_name}_"):
                     prompt_items.append(item_dir)
     return sorted(set(prompt_items))
 
