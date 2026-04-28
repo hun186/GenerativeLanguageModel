@@ -9,26 +9,54 @@ EPSILON_EXPLORE = 0.1      # ε-greedy：有 10% 機率嘗試任意節點，避�
 JITTER = 0.05              # 破平手用的微小抖動，避免所有人都選到同一台
 LOCK_TIMEOUT = 5.0         # 取得檔案鎖的等候上限秒數
 LOCK_SLEEP = 0.05          # 等鎖時的 sleep 間隔
+LOCK_STALE_SECS = float(os.getenv("CZJ_LOCK_STALE_SECS", "600"))  # 預設 600 秒，長任務較不易誤判 stale
 
 
 def _lock_path(json_path: str) -> str:
     return json_path + ".lock"
 
-def _acquire_file_lock(lock_path: str, timeout: float = LOCK_TIMEOUT):
-    """最簡單的跨程序鎖法：用『獨佔建立 lock 檔』。在 Windows 也可用。"""
+def _acquire_file_lock(lock_path: str, timeout: float = LOCK_TIMEOUT, stale: float = LOCK_STALE_SECS):
+    """最簡單的跨程序鎖法：用『獨佔建立 lock 檔』。
+
+    強化：若 lock 檔明顯過舊（例如前次程序被強制中斷）就自動回收，
+    避免整個排程因僵死 lock 永久卡住。
+    """
     start = time.time()
+    lock_dir = os.path.dirname(lock_path) or "."
+    os.makedirs(lock_dir, exist_ok=True)
     while True:
         try:
             # 'x' 模式：若已存在會丟 FileExistsError
             f = open(lock_path, "x")
             return f  # 用 caller 的 finally 去 close+unlink
         except FileExistsError:
+            # lock 檔存在：若過舊視為殭屍鎖，嘗試回收
+            try:
+                age = time.time() - os.path.getmtime(lock_path)
+                if age > stale:
+                    os.remove(lock_path)
+                    continue
+            except FileNotFoundError:
+                # 競態：別人剛好刪掉，直接重試
+                continue
+            except OSError:
+                # 可能被另一程序占用，走一般等待流程
+                pass
             if time.time() - start > timeout:
-                # 超時直接拋錯，避免死等
-                raise TimeoutError(f"Timeout acquiring lock: {lock_path}")
+                # 若鎖非 stale 但長時間拿不到，回報明確錯誤，避免無鎖寫入破壞負載統計
+                try:
+                    age = time.time() - os.path.getmtime(lock_path)
+                except OSError:
+                    age = None
+                age_text = f"{age:.2f}s" if isinstance(age, (int, float)) else "unknown"
+                raise TimeoutError(
+                    f"Timeout acquiring lock: {lock_path} (age={age_text}, stale_after={stale}s)"
+                )
             time.sleep(LOCK_SLEEP)
 
 def _release_file_lock(lock_fp, lock_path: str):
+    if lock_fp is None:
+        return
     try:
         lock_fp.close()
     except Exception:
