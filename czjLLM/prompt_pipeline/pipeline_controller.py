@@ -1468,6 +1468,33 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     runtime = init_chunk_stage_runtime(ctx, prompt_items)
     stage_defs = resolve_pipeline_stages(ctx)
     stage_map = {s.name: s for s in stage_defs}
+    stage_order = [s.name for s in stage_defs]
+    forced_stage_names: set[str] = set()
+    for _rule in (getattr(ctx, "sql_writeback_rules", None) or []):
+        if not isinstance(_rule, dict):
+            continue
+        if str(_rule.get("source", _rule.get("sql_writeback_source", "")) or "").strip().lower() != "stage":
+            continue
+        forced = str(_rule.get("stage", _rule.get("sql_writeback_stage", "")) or "").strip()
+        if forced:
+            forced_stage_names.add(forced)
+
+    last_stage_name = stage_order[-1] if stage_order else ""
+    for s in stage_defs:
+        if str(getattr(s, "persist_output", "")).strip().lower() != "final":
+            continue
+        if s.name == last_stage_name:
+            continue
+        if s.name in forced_stage_names:
+            print(
+                f"ℹ️ [stage:{s.name}] persist_output=final 且非最後一段；"
+                "因 sql_writeback_rules 引用此 stage，將強制輸出 merged 檔。"
+            )
+        else:
+            print(
+                f"⚠️ [stage:{s.name}] persist_output=final 但非最後一段，"
+                "不會產生 stage merged 檔。若需供寫回/追蹤，請改成 always 或在 sql_writeback_rules 指定 source=stage。"
+            )
     shown_stage_tasks: set[str] = set()
     total_segments = 0
     for item in prompt_items:
@@ -1648,8 +1675,9 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     MKDIR(stage_merge_root)
     stage_manifest: list[dict] = []
     last_stage_name = stage_defs[-1].name if stage_defs else ""
+
     for idx, stage in enumerate(stage_defs, start=1):
-        should_merge = should_persist_output(stage, last_stage_name=last_stage_name)
+        should_merge = should_persist_output(stage, last_stage_name=last_stage_name) or (stage.name in forced_stage_names)
         merged_file = ""
         merged_parts: list[str] = []
         if should_merge:

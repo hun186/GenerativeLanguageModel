@@ -208,6 +208,7 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
         return WritebackPayload(main_payload=payload, main_text=combined_text, flatten_text=combined_text, source=fallback_source)
 
     selector = getattr(ctx, "sql_writeback_stage", None)
+    selector_token = str(selector or "").strip()
 
     # 優先順序：
     # 1) manifest.source 可對上 combined 檔名（避免誤抓其他 row 的 manifest）
@@ -227,7 +228,18 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
         selected = _select_stage(stage_defs, selector)
         if not selected:
             continue
+        # Runtime assert:
+        # 若 writeback 明確指定 stage（selector 非空），該 stage 必須有 merged_file，
+        # 否則直接報錯中止，避免默默回退導致寫入錯資料。
+        if selector_token and not str(selected.get("merged_file", "") or "").strip():
+            stage_name = str(selected.get("name", "")).strip() or selector_token
+            raise RuntimeError(
+                f"sql_writeback_rules 指定 stage:{stage_name}，但 manifest 缺少 merged_file。"
+                "請將該 stage 設為 persist_output=always，或確認強制 merge 生效。"
+            )
         stage_text = _read_stage_text(manifest_path, selected)
+        if stage_text is None and not selector_token:
+            stage_text = _read_stage_snapshot_text(manifest_path, selected, ctx=ctx)
         if stage_text is None:
             stage_text = _read_stage_snapshot_text(manifest_path, selected, ctx=ctx)
         if stage_text is None:

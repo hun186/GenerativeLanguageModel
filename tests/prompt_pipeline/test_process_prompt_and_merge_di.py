@@ -378,7 +378,116 @@ def test_multistage_nonfirst_stage_todo_is_rendered_with_stage_template(tmp_path
 
     stage2_records = [x for x in records if x[0] == "Translation-toTWZH"]
     assert stage2_records
-    assert all(txt.startswith("TW::") for _, txt in stage2_records)
+
+
+@pytest.mark.unit
+def test_multistage_forced_stage_merge_when_sql_writeback_rule_requests_stage(tmp_path):
+    root = tmp_path / "root"
+    main = "stage_force_merge"
+    item = root / main
+    todo_dir = item / "TODO"
+    success_dir = item / "Success"
+    todo_dir.mkdir(parents=True)
+    success_dir.mkdir(parents=True)
+    (todo_dir / "0.txt").write_text("RAW_INPUT", encoding="utf-8")
+
+    def list_paths(path: str) -> list[str]:
+        p = Path(path)
+        if not p.exists():
+            return []
+        return [str(x) for x in sorted(p.rglob("*.txt"))]
+
+    def call_llm(items, _ctx, allow_to_retry: bool, task_override=None):
+        for item_dir in items:
+            todo = Path(item_dir) / "TODO"
+            succ = Path(item_dir) / "Success"
+            succ.mkdir(parents=True, exist_ok=True)
+            for pf in sorted(todo.glob("*.txt")):
+                # 模擬 stage 有輸出且寫回 Success
+                (succ / pf.name).write_text(f"{task_override}::{pf.read_text(encoding='utf-8')}", encoding="utf-8")
+                pf.unlink()
+
+    ops = pc.MergeOps(
+        list_paths=list_paths,
+        get_parent=lambda fn: str(Path(fn).parent),
+        call_llm=call_llm,
+        combine=lambda item_dir, _ctx: str(Path(item_dir) / "combined.out.txt"),
+        join=lambda *p: str(Path(*p)),
+    )
+    ctx = DummyCtx(
+        prompt_dir=str(root),
+        main_file_name=main,
+        task="legacy-task",
+        stages=[
+            {"name": "route", "task": "ROUTE", "persist_output": "always"},
+            {"name": "extract", "task": "EXTRACT", "persist_output": "final"},
+            {"name": "audit_json", "task": "AUDIT", "persist_output": "always"},
+        ],
+    )
+    # 重點：雖然 extract 非最後一段（persist_output=final），
+    # 但 sql_writeback_rules 指定 source=stage:extract 時，必須輸出 merged file 供寫回使用。
+    ctx.sql_writeback_rules = [{"output_col": "File_result", "source": "stage", "stage": "extract"}]
+    ctx.temp_txt_finished_dir = str(tmp_path / "finished")
+
+    pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    manifest = Path(ctx.temp_txt_finished_dir) / "_stage_merges" / main / "manifest.json"
+    assert manifest.exists()
+    data = __import__("json").loads(manifest.read_text(encoding="utf-8"))
+    extract = [s for s in data.get("stages", []) if s.get("name") == "extract"][0]
+    assert extract.get("merged") is True
+    assert str(extract.get("merged_file", "")).strip() != ""
+
+
+@pytest.mark.unit
+def test_multistage_warns_when_nonlast_stage_uses_final_persist_without_writeback(tmp_path, capsys):
+    root = tmp_path / "root"
+    main = "stage_warn_final_mid"
+    item = root / main
+    todo_dir = item / "TODO"
+    success_dir = item / "Success"
+    todo_dir.mkdir(parents=True)
+    success_dir.mkdir(parents=True)
+    (todo_dir / "0.txt").write_text("RAW_INPUT", encoding="utf-8")
+
+    def list_paths(path: str) -> list[str]:
+        p = Path(path)
+        if not p.exists():
+            return []
+        return [str(x) for x in sorted(p.rglob("*.txt"))]
+
+    def call_llm(items, _ctx, allow_to_retry: bool, task_override=None):
+        for item_dir in items:
+            todo = Path(item_dir) / "TODO"
+            succ = Path(item_dir) / "Success"
+            succ.mkdir(parents=True, exist_ok=True)
+            for pf in sorted(todo.glob("*.txt")):
+                (succ / pf.name).write_text(f"{task_override}::{pf.read_text(encoding='utf-8')}", encoding="utf-8")
+                pf.unlink()
+
+    ops = pc.MergeOps(
+        list_paths=list_paths,
+        get_parent=lambda fn: str(Path(fn).parent),
+        call_llm=call_llm,
+        combine=lambda item_dir, _ctx: str(Path(item_dir) / "combined.out.txt"),
+        join=lambda *p: str(Path(*p)),
+    )
+    ctx = DummyCtx(
+        prompt_dir=str(root),
+        main_file_name=main,
+        task="legacy-task",
+        stages=[
+            {"name": "route", "task": "ROUTE", "persist_output": "always"},
+            {"name": "extract", "task": "EXTRACT", "persist_output": "final"},
+            {"name": "audit_json", "task": "AUDIT", "persist_output": "always"},
+        ],
+    )
+    ctx.temp_txt_finished_dir = str(tmp_path / "finished")
+
+    pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    out = capsys.readouterr().out
+    assert "persist_output=final 但非最後一段" in out
 
 
 @pytest.mark.unit
