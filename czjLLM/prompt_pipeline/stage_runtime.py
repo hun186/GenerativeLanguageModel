@@ -281,13 +281,18 @@ def should_persist_output(stage: StageDefinition, last_stage_name: str) -> bool:
 def resolve_stage_task(
     stage: StageDefinition,
     outputs_by_stage: dict[str, str],
-    task_setting: dict[str, str] | None = None,
-) -> tuple[str, str | None]:
+    task_setting: dict[str, Any] | None = None,
+) -> tuple[Any, str | None]:
     """
     回傳 (task, err)
     - 無 route_map 時回傳原 task
     - 有 route_map 時用 route_by 對應輸出決定 task
     """
+    def _resolve_task_setting_entry(entry: Any) -> Any:
+        if isinstance(entry, Mapping):
+            return entry
+        return str(entry or "").strip()
+
     if not stage.route_map:
         return stage.task, None
     route_key_raw = outputs_by_stage.get(stage.route_by, "")
@@ -330,11 +335,11 @@ def resolve_stage_task(
         if mapped.startswith("@taskSetting:"):
             key = mapped.split(":", 1)[1].strip()
             if task_setting and key in task_setting:
-                return str(task_setting[key]), None
+                return _resolve_task_setting_entry(task_setting[key]), None
             return "", f"task_key_missing:{key}"
         if stage.route_value_mode == "task_key":
             if task_setting and mapped in task_setting:
-                return str(task_setting[mapped]), None
+                return _resolve_task_setting_entry(task_setting[mapped]), None
             return "", f"task_key_missing:{mapped}"
         return mapped, None
     return stage.task, f"route_miss:{stage.route_by}:{str(route_key_raw or '').strip()}"
