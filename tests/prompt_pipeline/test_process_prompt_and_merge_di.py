@@ -1,10 +1,12 @@
 # tests/test_process_prompt_and_merge_di.py
+import os
 from dataclasses import dataclass
 from pathlib import Path
 import pytest
 
 # 假設目標函式在這個模組底下
 import czjLLM.prompt_pipeline.pipeline_controller as pc
+import czjLLM.utilities.env_overrides as env_utils
 
 @dataclass
 class DummyCtx:
@@ -47,6 +49,38 @@ class FakeOps(pc.MergeOps):
         self.calls["combine_task"].append(getattr(ctx, "task", None))
         # 直接回傳一個假路徑；也可以寫檔到 tmp_path
         return self._combine_return or str(Path(item_dir) / "combined.out.txt")
+
+
+@pytest.mark.unit
+def test_resolve_llm_debug_flags_uses_stage_defaults_when_env_missing(monkeypatch):
+    monkeypatch.setattr(env_utils, "_ENV_FILE_LOADED", True)
+    monkeypatch.delenv("CZJLLM_DEBUG_PRINT_LLM_IO", raising=False)
+    monkeypatch.delenv("CZJLLM_DEBUG_PRINT_MAX_CHARS", raising=False)
+    enabled, max_chars = pc._resolve_llm_debug_flags(stage_debug_enabled=False, stage_debug_max_chars=2000)
+    assert enabled is False
+    assert max_chars == 2000
+
+
+@pytest.mark.unit
+def test_resolve_llm_debug_flags_allows_env_override(monkeypatch):
+    monkeypatch.setattr(env_utils, "_ENV_FILE_LOADED", True)
+    monkeypatch.setenv("CZJLLM_DEBUG_PRINT_LLM_IO", "true")
+    monkeypatch.setenv("CZJLLM_DEBUG_PRINT_MAX_CHARS", "-1")
+    enabled, max_chars = pc._resolve_llm_debug_flags(stage_debug_enabled=False, stage_debug_max_chars=2000)
+    assert enabled is True
+    assert max_chars == -1
+
+
+@pytest.mark.unit
+def test_env_file_priority(monkeypatch, tmp_path):
+    (tmp_path / ".env").write_text("X=base\n", encoding="utf-8")
+    (tmp_path / ".env.dev").write_text("X=dev\n", encoding="utf-8")
+    (tmp_path / ".env.local").write_text("X=local\n", encoding="utf-8")
+    monkeypatch.setenv("CZJLLM_ENV", "dev")
+    monkeypatch.delenv("X", raising=False)
+    monkeypatch.setattr(env_utils, "_ENV_FILE_LOADED", False)
+    env_utils.load_czjllm_env_files_once(base_dir=str(tmp_path))
+    assert os.environ.get("X") == "local"
 
 @pytest.mark.unit
 def test_merge_happy_path_no_todo(tmp_path):

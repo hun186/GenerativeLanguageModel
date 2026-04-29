@@ -49,6 +49,7 @@ from czjLLM.job_manager.end_point_manager import select_model
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.logging_utils import CostLog
+from czjLLM.utilities.env_overrides import env_bool, env_int, load_czjllm_env_files_once
 from czjLLM.tokenizer_utils import TokenizerWrapper
 #from czjLLM.utilities.logging_utils import log_error
 from utils.utilities_path import OSWALK
@@ -1270,6 +1271,15 @@ def _preview_text_for_debug(text: str, max_chars: int) -> str:
     return f"{value[:max_chars]}\n...<truncated {len(value) - max_chars} chars>"
 
 
+def _resolve_llm_debug_flags(stage_debug_enabled: bool, stage_debug_max_chars: int) -> tuple[bool, int]:
+    load_czjllm_env_files_once()
+    env_debug = env_bool("CZJLLM_DEBUG_PRINT_LLM_IO")
+    env_max = env_int("CZJLLM_DEBUG_PRINT_MAX_CHARS")
+    enabled = stage_debug_enabled if env_debug is None else env_debug
+    max_chars = stage_debug_max_chars if env_max is None else env_max
+    return bool(enabled), int(max_chars)
+
+
 def _print_stage_llm_io_debug(item: str, stage_name: str, max_chars: int, mode: str):
     """
     mode:
@@ -1621,11 +1631,15 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         _prepare_todo_for_stage(job.chunk_id, job.stage_name, job.stage_task)
         _sync_stage_todo_to_root(job.chunk_id, job.stage_name, ops)
         stage_def = stage_map[job.stage_name]
-        if stage_def.debug_print_llm_io:
+        debug_enabled, debug_max_chars = _resolve_llm_debug_flags(
+            stage_debug_enabled=stage_def.debug_print_llm_io,
+            stage_debug_max_chars=stage_def.debug_print_max_chars,
+        )
+        if debug_enabled:
             _print_stage_llm_io_debug(
                 item=job.chunk_id,
                 stage_name=job.stage_name,
-                max_chars=stage_def.debug_print_max_chars,
+                max_chars=debug_max_chars,
                 mode="prompt",
             )
         before_success_sig = _success_txt_signature_map(job.chunk_id)
@@ -1635,8 +1649,8 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             ctx,
             allow_to_retry=True,
             task_override=job.stage_task,
-            debug_print_llm_io=stage_def.debug_print_llm_io,
-            debug_print_max_chars=stage_def.debug_print_max_chars,
+            debug_print_llm_io=debug_enabled,
+            debug_print_max_chars=debug_max_chars,
         )
         _call_llm_with_task_override(
             ops,
@@ -1644,14 +1658,14 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             ctx,
             allow_to_retry=False,
             task_override=job.stage_task,
-            debug_print_llm_io=stage_def.debug_print_llm_io,
-            debug_print_max_chars=stage_def.debug_print_max_chars,
+            debug_print_llm_io=debug_enabled,
+            debug_print_max_chars=debug_max_chars,
         )
-        if stage_def.debug_print_llm_io:
+        if debug_enabled:
             _print_stage_llm_io_debug(
                 item=job.chunk_id,
                 stage_name=job.stage_name,
-                max_chars=stage_def.debug_print_max_chars,
+                max_chars=debug_max_chars,
                 mode="output",
             )
         # 保存本階段 Success 作為後續 stage 可引用輸入
