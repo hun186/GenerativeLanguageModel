@@ -29,6 +29,11 @@
 - `retry_source_on_route_miss`: 路由值不在 `route_map` 時，是否回退重跑 `route_by` 階段
 - `debug_print_llm_io`: 是否印出該 stage「送往 LLM 的 prompt」與「LLM 回傳內容」（預設 `false`）
 - `debug_print_max_chars`: 啟用 `debug_print_llm_io` 時，每段輸出最多顯示字元數（預設 `2000`；設定 `0` 或負數代表完整輸出）
+  - 也可用 env 檔／環境變數全域覆蓋（適合臨時 debug，不改 YAML）：
+    - `CZJLLM_DEBUG_PRINT_LLM_IO=true|false`
+    - `CZJLLM_DEBUG_PRINT_MAX_CHARS=<int>`
+    - `CZJLLM_ENV=<name>` 時會額外讀取 `.env.<name>`
+  - env 檔優先序（低→高）：`.env` → `.env.<CZJLLM_ENV>` → `.env.local` → 系統環境變數（最高）
 
 ---
 
