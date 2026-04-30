@@ -181,14 +181,31 @@ def _read_stage_snapshot_text(manifest_path: str, stage_info: dict, ctx: Any | N
 
 
 
+def _needs_stage_manifest_lookup(ctx: Any | None) -> bool:
+    """是否應啟用 manifest 重試（多階段或已配置 stage 寫回）。"""
+    if ctx is None:
+        return False
+    if _has_explicit_multistage(ctx):
+        return True
+    rules = getattr(ctx, "sql_writeback_rules", None)
+    if isinstance(rules, list):
+        for rule in rules:
+            if not isinstance(rule, dict):
+                continue
+            mode = str(rule.get("source", rule.get("sql_writeback_source", "combined")) or "combined").strip().lower()
+            if mode == "stage":
+                return True
+    return False
+
+
 def _manifest_retry_params(ctx: Any | None) -> tuple[int, float]:
     """回傳 manifest 尋找重試參數：(attempts, sleep_seconds)。"""
     attempts = 1
     sleep_sec = 0.0
     try:
-        if ctx is not None and _has_explicit_multistage(ctx):
-            attempts = int(getattr(ctx, "manifest_lookup_attempts", 4) or 4)
-            sleep_ms = int(getattr(ctx, "manifest_lookup_sleep_ms", 250) or 250)
+        if _needs_stage_manifest_lookup(ctx):
+            attempts = int(getattr(ctx, "manifest_lookup_attempts", 12) or 12)
+            sleep_ms = int(getattr(ctx, "manifest_lookup_sleep_ms", 300) or 300)
             sleep_sec = max(sleep_ms, 0) / 1000.0
     except Exception:
         attempts, sleep_sec = 1, 0.0
@@ -210,6 +227,9 @@ def _find_manifests_with_retry(combined_path: str, ctx: Any | None = None) -> li
             time.sleep(sleep_sec)
     return []
 
+
+
+
 def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> WritebackPayload:
     """
     SQL/ES 模式共用：決定主欄位與 flatten 應使用哪份內容。
@@ -230,14 +250,10 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
 
     manifests = _find_manifests_with_retry(combined_path, ctx=ctx)
     if not manifests:
-        try:
-            payload = loads_json_flexible_deep(combined_text)
-        except Exception:
-            payload = combined_text
-        fallback_source = "combined(fallback:no_manifest)"
-        if _has_explicit_multistage(ctx):
-            fallback_source = "combined(fallback:no_manifest;multistage_configured)"
-        return WritebackPayload(main_payload=payload, main_text=combined_text, flatten_text=combined_text, source=fallback_source)
+        raise RuntimeError(
+            "stage 寫回模式找不到 _stage_merges/manifest.json；已中止寫回以避免誤寫。"
+            "請檢查 stage merge 輸出路徑與 manifest 落盤時序。"
+        )
 
     selector = getattr(ctx, "sql_writeback_stage", None)
     selector_token = str(selector or "").strip()
@@ -289,13 +305,8 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
             source=f"stage:{stage_name}",
         )
 
-    try:
-        payload = loads_json_flexible_deep(combined_text)
-    except Exception:
-        payload = combined_text
-    return WritebackPayload(
-        main_payload=payload,
-        main_text=combined_text,
-        flatten_text=combined_text,
-        source="combined(fallback:no_matching_stage_manifest)",
+    stage_hint = selector_token or "<last merged stage>"
+    raise RuntimeError(
+        f"stage 寫回模式找不到可用 stage 輸出（selector={stage_hint}）；已中止寫回以避免誤寫。"
+        "請檢查 sql_writeback_rules.stage 設定與 stage merge 產物。"
     )

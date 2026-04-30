@@ -59,7 +59,7 @@ def test_resolve_writeback_payload_prefers_manifest_source_match(tmp_path):
     assert out.main_payload == [{"inputName": "RIGHT"}]
 
 
-def test_resolve_writeback_payload_falls_back_when_stage_not_found(tmp_path):
+def test_resolve_writeback_payload_raises_when_stage_not_found(tmp_path):
     combined_path = tmp_path / "cache" / "rowX_task.txt"
     combined_path.parent.mkdir(parents=True)
     combined_text = '[{"route":"org"}]'
@@ -73,10 +73,8 @@ def test_resolve_writeback_payload_falls_back_when_stage_not_found(tmp_path):
     )
 
     ctx = SimpleNamespace(sql_writeback_source="stage", sql_writeback_stage="extract")
-    out = resolve_writeback_payload(ctx, str(combined_path), combined_text)
-
-    assert out.source == "combined(fallback:no_matching_stage_manifest)"
-    assert out.main_payload == [{"route": "org"}]
+    with pytest.raises(RuntimeError, match="找不到可用 stage 輸出"):
+        resolve_writeback_payload(ctx, str(combined_path), combined_text)
 
 
 def test_resolve_writeback_payload_finds_manifest_from_ctx_finished_dir(tmp_path):
