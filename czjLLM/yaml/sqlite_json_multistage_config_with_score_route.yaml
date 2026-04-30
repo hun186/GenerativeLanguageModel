@@ -27,6 +27,8 @@ stages:
     input_from: original
     persist_output: always
     max_attempts: 3
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
 
   - name: route
     input_from: original
@@ -45,15 +47,16 @@ stages:
     retry_source_on_route_miss: true
     persist_output: always
     max_attempts: 3
-
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
+    
   - name: extract
     task_key: Organization Profile Analyzer to json format
     input_from: original
     route_by: route
     route_map:
       org: 
-        task: |
-          "@taskSetting:Organization Profile Analyzer to json format"
+        task: "@taskSetting:Organization Profile Analyzer to json format"
         input_col: Text
         input_from: original
       other: 
@@ -71,7 +74,9 @@ stages:
     route_value_mode: task
     retry_source_on_route_miss: true
     persist_output: final
-
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
+    
   - name: audit_json
     task: |
       你是 JSON 回覆器。請回傳：
@@ -96,7 +101,9 @@ stages:
     route_value_mode: task
     retry_source_on_route_miss: true
     persist_output: always
-
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
+    
 # 多欄位寫回（同時保留 score_route、route、主要結果與 audit_json）
 sql_writeback_rules:
   - output_col: File_score_route
