@@ -1,0 +1,16 @@
+# czjLLM/config_sql/akconfig_test_SRP.py
+
+# 服务器信息
+server = '192.168.0.136'
+username = 'sa'
+password = '@k05sys g3'
+
+# 数据库和表信息
+database_name = 'Test_SRP'
+table_name = 'Table_SRP'
+primary_key = 'Auto'
+
+target_table = 'Table_SRP_LLM_result'
+
+reset_output = False          # True 或 False，控制是否重設欄位，如果無此項設定，會進行互動詢問。
+reset_confirm_code = "12345"  # 自動跳過驗證碼用，建議搭配 reset_output= True 一起使用
