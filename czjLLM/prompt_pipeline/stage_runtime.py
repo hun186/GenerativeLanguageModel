@@ -92,7 +92,8 @@ def _as_stage_definition(item: Any, index: int) -> StageDefinition:
         task = raw_task if isinstance(raw_task, Mapping) else str(raw_task).strip()
         task_key = str(item.get("task_key", "")).strip()
         name = str(item.get("name", "")).strip() or f"stage_{index + 1}"
-        input_from = str(item.get("input_from", "original")).strip() or "original"
+        input_from_raw = item.get("input_from", "original")
+        input_from = "" if input_from_raw is None else str(input_from_raw).strip()
         persist_output = str(item.get("persist_output", "final")).strip() or "final"
         max_attempts = int(item.get("max_attempts", 2) or 2)
         route_by = str(item.get("route_by", "")).strip()
@@ -251,9 +252,12 @@ def resolve_stage_input(
     決定某階段的輸入來源：
     - original: 使用原文
     - previous: 使用前一階段輸出（沒有就 fallback 原文）
+    - none / 空字串: 不帶入來源文字（僅送出模板）
     - <stage_name>: 使用指定階段輸出（沒有就 fallback 原文）
     """
     source = stage.input_from
+    if source in {"", "none", "null"}:
+        return ""
     if source == "original":
         return original_text
     if source == "previous":
@@ -331,7 +335,15 @@ def resolve_stage_task(
             break
 
     if route_key:
-        mapped = str(stage.route_map[route_key])
+        mapped_raw = stage.route_map[route_key]
+        if isinstance(mapped_raw, Mapping):
+            mapped_task = mapped_raw.get("task", mapped_raw.get("prompt", mapped_raw.get("template", "")))
+            if mapped_task == "":
+                return mapped_raw, None
+            mapped = str(mapped_task).strip()
+        else:
+            mapped = str(mapped_raw).strip()
+
         if mapped.startswith("@taskSetting:"):
             key = mapped.split(":", 1)[1].strip()
             if task_setting and key in task_setting:
@@ -341,5 +353,9 @@ def resolve_stage_task(
             if task_setting and mapped in task_setting:
                 return _resolve_task_setting_entry(task_setting[mapped]), None
             return "", f"task_key_missing:{mapped}"
+        if isinstance(mapped_raw, Mapping):
+            out = dict(mapped_raw)
+            out["task"] = mapped
+            return out, None
         return mapped, None
     return stage.task, f"route_miss:{stage.route_by}:{str(route_key_raw or '').strip()}"
