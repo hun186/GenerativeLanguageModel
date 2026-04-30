@@ -138,6 +138,14 @@ def _expand_json_columns(ctx, source_text: str) -> dict:
         out[col] = _as_db_text(v)
     return out
 
+
+
+def _build_flatten_subtable_name(ctx, output_col: str) -> str:
+    target = str(getattr(ctx, "target_table", "") or "").strip()
+    if target:
+        return f"{target}_{output_col}_flattened"
+    return f"{output_col}_flattened"
+
 def _resolve_flatten_targets(ctx, write_map: dict, default_source_text: str) -> list[dict]:
     """
     回傳多來源 flatten 目標，每個元素包含：
@@ -203,7 +211,7 @@ def _resolve_flatten_targets(ctx, write_map: dict, default_source_text: str) -> 
                     "source_text": source_text,
                     "allowed_fields": allowed_fields,
                     "save_raw_input": bool(save_raw),
-                    "subtable_name": f"{ctx.target_table}_{out_col}_flattened",
+                    "subtable_name": _build_flatten_subtable_name(ctx, out_col),
                 }
             )
         # 若明確提供新參數，回傳其結果（可為空，代表全部關閉）
@@ -225,7 +233,7 @@ def _resolve_flatten_targets(ctx, write_map: dict, default_source_text: str) -> 
             "source_text": default_source_text,
             "allowed_fields": allowed_fields,
             "save_raw_input": bool(getattr(ctx, "save_raw_input_when_flatten", False)),
-            "subtable_name": f"{ctx.target_table}_{out_col}_flattened",
+            "subtable_name": _build_flatten_subtable_name(ctx, out_col),
         }
     ]
 
