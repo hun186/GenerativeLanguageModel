@@ -146,7 +146,11 @@ def _build_flatten_subtable_name(ctx, output_col: str) -> str:
         target = str(getattr(ctx, "main_sheet_name", "") or "").strip()
     if not target:
         target = "LLM_result"
-    return f"{target}_{output_col}_flattened"
+
+    normalized_output_col = str(output_col or "").strip()
+    if target and normalized_output_col.startswith(f"{target}_"):
+        return f"{normalized_output_col}_flattened"
+    return f"{target}_{normalized_output_col}_flattened"
 
 def _resolve_flatten_targets(ctx, write_map: dict, default_source_text: str) -> list[dict]:
     """
