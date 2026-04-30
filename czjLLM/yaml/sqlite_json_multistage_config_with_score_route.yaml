@@ -29,19 +29,18 @@ stages:
     max_attempts: 3
 
   - name: route
-    task: |
-      你是分類器。請判斷此文本是否屬於「組織實體介紹」。
-      請只輸出一個代碼：org 或 other。
-      禁止輸出 JSON、禁止解釋。
     input_from: original
     route_by: score_route
     route_map:
-      high: |
-        你是分類器。請判斷此文本是否屬於「組織實體介紹」。
-        請只輸出一個代碼：org 或 other。
-        禁止輸出 JSON、禁止解釋。
-      low: |
-        other
+      high: 
+        task: |
+          你是分類器。請判斷此文本是否屬於「組織實體介紹」。
+          請只輸出一個代碼：org 或 other。
+          禁止輸出 JSON、禁止解釋。
+        input_from: original
+      low: 
+        task: |
+          只要輸出：低分不做分類
     route_value_mode: task
     retry_source_on_route_miss: true
     persist_output: always
@@ -52,17 +51,23 @@ stages:
     input_from: original
     route_by: route
     route_map:
-      org: "@taskSetting:Organization Profile Analyzer to json format"
-      other: |
-        你是 JSON 回覆器。該文本不是組織實體介紹，請回傳：
-        [{
-          "route": "other",
-          "inputName": "",
-          "formalName": "",
-          "functionalDomain": "",
-          "keyFunctions": [],
-          "skipReason": "not_an_organization_profile"
-        }]
+      org: 
+        task: |
+          "@taskSetting:Organization Profile Analyzer to json format"
+        input_col: Text
+        input_from: original
+      other: 
+        task: |
+          你是 JSON 回覆器。該文本不是組織實體介紹，請回傳：
+          [{
+            "route": "other",
+            "inputName": "",
+            "formalName": "",
+            "functionalDomain": "",
+            "keyFunctions": [],
+            "skipReason": "not_an_organization_profile"
+          }]
+        input_from: none
     route_value_mode: task
     retry_source_on_route_miss: true
     persist_output: final
@@ -71,18 +76,18 @@ stages:
     task: |
       你是 JSON 回覆器。請回傳：
       [{"route":"unknown","auditTag":"unknown","auditVersion":"v1"}]
-    input_from: original
+    input_from: none
     route_by: route
     route_map:
       org: |
-        你是 JSON 回覆器。該文本屬於組織實體介紹，請回傳：
+        你是 JSON 回覆器。請回傳：
         [{
           "route": "org",
           "auditTag": "org_profile_path",
           "auditVersion": "v1"
         }]
       other: |
-        你是 JSON 回覆器。該文本不屬於組織實體介紹，請回傳：
+        你是 JSON 回覆器。請回傳：
         [{
           "route": "other",
           "auditTag": "non_org_path",

@@ -46,14 +46,14 @@ stages:
     route_by: route
     route_map:
       zh: |
-        你是 JSON 回覆器。該文本為中文路徑，請回傳：
+        你是 JSON 回覆器。請回傳：
         [{
           "route": "zh",
           "auditTag": "zh_org_profile_path",
           "auditVersion": "v1"
         }]
       non_zh: |
-        你是 JSON 回覆器。該文本為非中文路徑（略過抽取），請回傳：
+        你是 JSON 回覆器。請回傳：
         [{
           "route": "non_zh",
           "auditTag": "non_zh_skip_path",
