@@ -8,10 +8,10 @@ output_col: OPA2
 primary_key: Auto
 record_update_time: true
 
-input_excel_file: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName.xlsx
-output_excel_file: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName_with_result.xlsx
-llm_source_backup_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/excel_source
-llm_source_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source
+input_excel_file: czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName.xlsx
+output_excel_file: czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName_with_result.xlsx
+llm_source_backup_dir: czjLLM/LLMSourcePool_origin_backup/excel_source
+llm_source_dir: czjLLM/LLMSourcePool/excel_source
 
 # flatten 設定（多階段測試建議先開）
 flatten_json_output: true
@@ -59,7 +59,7 @@ stages:
         }]
     route_value_mode: task
     retry_source_on_route_miss: true
-    persist_output: final
+    persist_output: always
 
   - name: audit_json
     task: |
