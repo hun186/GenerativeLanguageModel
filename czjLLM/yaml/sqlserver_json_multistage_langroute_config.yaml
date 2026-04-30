@@ -1,0 +1,91 @@
+# SQL Server 多階段測試（語種路由 -> 條件抽取 -> audit）
+mode: sql
+channel: sql_cache
+model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+
+# I/O（沿用 sqlite_json_multistage_config.yaml 的欄位與寫回策略）
+input_col: TEXT
+output_col: Text_result
+record_update_time: true
+sql_config_file: czjLLM/config_sql/akconfig_test_SRP.py
+
+stages:
+  - name: route
+    prompt: |
+      你是語種分類器。請判斷此文本的主要語種是否為中文。
+      請只輸出一個代碼：zh 或 non_zh。
+      禁止輸出 JSON、禁止解釋。
+    input_from: original
+    persist_output: always
+    max_attempts: 3
+
+  - name: extract
+    task: |
+      你是 JSON 回覆器。若非中文文本，請回傳：
+      [{
+        "route": "non_zh",
+        "skipReason": "not_chinese"
+      }]
+    input_from: original
+    route_by: route
+    route_map:
+      zh: "@taskSetting:Organization Profile Analyzer to json format"
+      non_zh: |
+        你是 JSON 回覆器。若非中文文本，請回傳：
+        [{
+          "route": "non_zh",
+          "skipReason": "not_chinese"
+        }]
+    route_value_mode: task
+    retry_source_on_route_miss: true
+    persist_output: final
+
+  - name: audit_json
+    task: |
+      你是 JSON 回覆器。請回傳：
+      [{"route":"unknown","auditTag":"unknown","auditVersion":"v1"}]
+    input_from: original
+    route_by: route
+    route_map:
+      zh: |
+        你是 JSON 回覆器。該文本為中文路徑，請回傳：
+        [{
+          "route": "zh",
+          "auditTag": "zh_org_profile_path",
+          "auditVersion": "v1"
+        }]
+      non_zh: |
+        你是 JSON 回覆器。該文本為非中文路徑（略過抽取），請回傳：
+        [{
+          "route": "non_zh",
+          "auditTag": "non_zh_skip_path",
+          "auditVersion": "v1"
+        }]
+    route_value_mode: task
+    retry_source_on_route_miss: true
+    persist_output: always
+
+# 多欄位寫回（與 sqlite 範例一致：route + 主結果 + audit）
+sql_writeback_rules:
+  - output_col: File_route
+    source: stage
+    stage: route
+  - output_col: Text_result
+    source: stage
+    stage: extract
+  - output_col: File_audit_json
+    source: stage
+    stage: audit_json
+
+# 多來源 flatten（與 sqlite 範例一致）
+sql_flatten_writeback_rules:
+  - writeback_rule: 0
+    enabled: false   # route stage 輸出純代碼，不做 JSON flatten
+  - writeback_rule: 1
+    enabled: true
+    flatten_store_input_col: true
+    allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunctions, skipReason]
+  - writeback_rule: 2
+    enabled: true
+    flatten_store_input_col: false
+    allowed_output_fields: [route, auditTag, auditVersion]
