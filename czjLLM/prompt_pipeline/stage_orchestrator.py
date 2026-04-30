@@ -139,14 +139,20 @@ def execute_stage_round(
             continue
 
         chunk_runtime.mark_started(job.stage_name)
+
+        effective_input_from = stage_def.input_from
+        if isinstance(effective_task, dict):
+            route_input_from_raw = effective_task.get("input_from", effective_task.get("from", effective_input_from))
+            effective_input_from = "" if route_input_from_raw is None else str(route_input_from_raw).strip()
+
         routed_job = type(job)(
             chunk_id=job.chunk_id,
             stage_name=job.stage_name,
             stage_task=effective_task,
-            input_from=job.input_from,
+            input_from=effective_input_from,
         )
         input_text = resolve_stage_input(
-            stage=stage_def,
+            stage=type(stage_def)(**{**stage_def.__dict__, "input_from": effective_input_from}),
             stage_order=stage_order,
             outputs_by_stage=chunk_stage_outputs,
             original_text=original_text,

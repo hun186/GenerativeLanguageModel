@@ -1110,6 +1110,18 @@ def _build_stage_prompt_text(stage_task, content: str, ctx) -> str:
                 if "keyConsiderations" in str(tpl):
                     kwargs["keyConsiderations"] = getattr(ctx, "keyConsiderations", "")
                 return tpl(**kwargs)
+        mapped_task = stage_task.get("task", stage_task.get("prompt", ""))
+        if isinstance(mapped_task, str) and mapped_task.strip():
+            task_name = mapped_task.strip()
+            if task_name in taskSetting:
+                return generate_prompt(
+                    content=content,
+                    keyConsiderations=getattr(ctx, "keyConsiderations", ""),
+                    MainFileName=getattr(ctx, "main_file_name", ""),
+                    task=task_name,
+                    think_mode=getattr(ctx, "think_mode", True),
+                )
+            return _render_raw_task_prompt(task_name, content)
         return content
 
     task_name = str(stage_task or "").strip()
@@ -1597,7 +1609,9 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
             return  # 已有 TODO，不覆蓋
 
-        if stage_def.input_from == "original":
+        if stage_def.input_from in {"", "none", "null"}:
+            src_dir = ""
+        elif stage_def.input_from == "original":
             src_dir = _snapshot_dir(item, "original")
         elif stage_def.input_from == "previous":
             idx = [s.name for s in stage_defs].index(stage_name)
@@ -1605,6 +1619,16 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             src_dir = _snapshot_dir(item, prev_name)
         else:
             src_dir = _snapshot_dir(item, stage_def.input_from)
+
+        if stage_def.input_from in {"", "none", "null"}:
+            MKDIR(todo_dir)
+            _clear_txt_files(todo_dir, ops)
+            for fp in _root_txt_files(root_todo_dir):
+                prompt_text = _build_stage_prompt_text(stage_task, "", ctx)
+                dst_fp = os.path.join(todo_dir, fp.name)
+                with open(dst_fp, "w", encoding="utf-8") as f:
+                    f.write(prompt_text)
+            return
 
         if not os.path.isdir(src_dir):
             return
