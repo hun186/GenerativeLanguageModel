@@ -20,12 +20,6 @@ stages:
     max_attempts: 3
 
   - name: extract
-    task: |
-      你是 JSON 回覆器。若非中文文本，請回傳：
-      [{
-        "route": "non_zh",
-        "skipReason": "not_chinese"
-      }]
     input_from: original
     route_by: route
     route_map:
@@ -41,9 +35,6 @@ stages:
     persist_output: final
 
   - name: audit_json
-    task: |
-      你是 JSON 回覆器。請回傳：
-      [{"route":"unknown","auditTag":"unknown","auditVersion":"v1"}]
     input_from: original
     route_by: route
     route_map:
@@ -67,13 +58,13 @@ stages:
 
 # 多欄位寫回（與 sqlite 範例一致：route + 主結果 + audit）
 sql_writeback_rules:
-  - output_col: File_route
+  - output_col: Text_route
     source: stage
     stage: route
   - output_col: Text_result
     source: stage
     stage: extract
-  - output_col: File_audit_json
+  - output_col: Text_audit_json
     source: stage
     stage: audit_json
 
