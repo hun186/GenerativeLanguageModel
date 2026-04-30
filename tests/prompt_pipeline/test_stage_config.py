@@ -42,6 +42,7 @@ def test_normalize_human_stage_spec_supports_shorthand_dict():
             "retry_source_on_route_miss": False,
             "debug_print_llm_io": False,
             "debug_print_max_chars": 2000,
+            "input_col": "",
         }
     ]
 
@@ -74,3 +75,8 @@ def test_normalize_human_stage_spec_allows_task_key_without_task():
     out = normalize_human_stage_spec({"stages": [{"name": "分類判定", "task_key": "分類判定"}]})
     assert out[0]["task"] == ""
     assert out[0]["task_key"] == "分類判定"
+
+
+def test_normalize_human_stage_spec_preserves_stage_input_col():
+    out = normalize_human_stage_spec({"stages": [{"name": "route", "prompt": "請分類", "input_col": "SUBJ"}]})
+    assert out[0]["input_col"] == "SUBJ"
