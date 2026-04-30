@@ -125,10 +125,18 @@ def resolve_tabular_paths(ctx, get_param, args) -> Tuple[str, str]:
     預設 output = input + '_with_result' + ext
     """
     # 先看 config 顯式設定
-    #input_path = get_param("input_excel_file") or get_param("input_csv_file")
-    #output_path = get_param("output_excel_file") or get_param("output_csv_file")
-    input_path = get_param("current_input_path")
-    output_path = get_param("current_output_path")
+    # 優先採用新欄位 current_input_path/current_output_path，
+    # 但仍向下相容舊欄位 input_excel_file/output_excel_file (含 csv)
+    input_path = (
+        get_param("current_input_path")
+        or get_param("input_excel_file")
+        or get_param("input_csv_file")
+    )
+    output_path = (
+        get_param("current_output_path")
+        or get_param("output_excel_file")
+        or get_param("output_csv_file")
+    )
     if not input_path:
         base_dir = os.path.join(ctx.llm_source_dir)
         MKDIR(base_dir)
