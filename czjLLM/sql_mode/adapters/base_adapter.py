@@ -10,8 +10,8 @@ class DBAdapter(AbstractContextManager):
                             src_table: str, tgt_table: str,
                             pk: str, input_col: str, output_cols: List[str],
                             record_update_time: bool,
-                            fetch_size: int = 500) -> Iterable[Tuple[Any, str]]:
+                            fetch_size: int = 500,
+                            extra_input_cols: Optional[List[str]] = None) -> Iterable[Tuple[Any, str]]:
         ...
     def close(self): ...
     def __exit__(self, exc_type, exc, tb): self.close()
-

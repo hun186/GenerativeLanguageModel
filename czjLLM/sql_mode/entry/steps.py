@@ -295,10 +295,18 @@ def maybe_reset_output_col(ctx, is_sqlite, sql_cfg, columns, args):
 def build_pending_iter(adapter, ctx):
     # 以第一個輸出欄位作為 pending 判斷主欄（其餘欄位可由 sql_writeback_rules 擴充寫入）
     output_cols = getattr(ctx, "output_cols", None) or [ctx.output_col]
+    stage_extra_cols = []
+    for s in (getattr(ctx, "stages", None) or []):
+        if isinstance(s, dict):
+            col = str(s.get("input_col", "")).strip()
+            if col:
+                stage_extra_cols.append(col)
+    extra_input_cols = sorted(set(stage_extra_cols))
     return adapter.select_pending_rows(
         src_table=ctx.sql_table, tgt_table=ctx.target_table,
         pk=ctx.primary_key, input_col=ctx.input_col,
         output_cols=output_cols,
         record_update_time=ctx.record_update_time,
-        fetch_size=500
+        fetch_size=500,
+        extra_input_cols=extra_input_cols,
     )
