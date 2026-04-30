@@ -142,9 +142,11 @@ def _expand_json_columns(ctx, source_text: str) -> dict:
 
 def _build_flatten_subtable_name(ctx, output_col: str) -> str:
     target = str(getattr(ctx, "target_table", "") or "").strip()
-    if target:
-        return f"{target}_{output_col}_flattened"
-    return f"{output_col}_flattened"
+    if not target:
+        target = str(getattr(ctx, "main_sheet_name", "") or "").strip()
+    if not target:
+        target = "LLM_result"
+    return f"{target}_{output_col}_flattened"
 
 def _resolve_flatten_targets(ctx, write_map: dict, default_source_text: str) -> list[dict]:
     """
