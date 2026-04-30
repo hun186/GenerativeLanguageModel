@@ -19,7 +19,7 @@ from .multistage_writeback import resolve_writeback_payload
 #from czjLLM.prompt_pipeline.pipeline_controller import meter_update  # 檔頭若尚未 import
 
 DEFAULT_MAIN_SHEET_NAME = "LLM_result"
-DEFAULT_OUTPUT_COL_NAME = "LLM_output_json"
+DEFAULT_OUTPUT_COL_NAME = "LLM_output"
 
 
 

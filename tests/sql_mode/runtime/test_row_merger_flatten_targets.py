@@ -114,8 +114,8 @@ def test_resolve_flatten_targets_uses_distinct_default_output_col_name():
     targets = _resolve_flatten_targets(ctx, {}, '[{"formalName":"ACME"}]')
 
     assert len(targets) == 1
-    assert targets[0]["output_col"] == "LLM_output_json"
-    assert targets[0]["subtable_name"] == "LLM_result_LLM_output_json_flattened"
+    assert targets[0]["output_col"] == "LLM_output"
+    assert targets[0]["subtable_name"] == "LLM_result_LLM_output_flattened"
 
 def test_resolve_flatten_targets_uses_global_allowed_fields_when_rule_not_set():
     ctx = SimpleNamespace(
