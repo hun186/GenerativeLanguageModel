@@ -8,8 +8,8 @@ output_col: OPA2
 primary_key: Auto
 record_update_time: true
 
-input_excel_file: czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName.xlsx
-output_excel_file: czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName_with_result.xlsx
+input_excel_file: czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName_part.xlsx
+output_excel_file: czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName_part_with_result.xlsx
 llm_source_backup_dir: czjLLM/LLMSourcePool_origin_backup/excel_source
 llm_source_dir: czjLLM/LLMSourcePool/excel_source
 
