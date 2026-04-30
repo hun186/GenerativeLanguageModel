@@ -119,7 +119,7 @@ def test_resolve_flatten_targets_uses_distinct_default_output_col_name():
 
 
 
-def test_resolve_flatten_targets_sanitizes_long_excel_sheet_names():
+def test_resolve_flatten_targets_keeps_full_name_for_non_excel_sinks():
     ctx = SimpleNamespace(
         flatten_json_output=True,
         target_table="LLM_result",
@@ -137,7 +137,35 @@ def test_resolve_flatten_targets_sanitizes_long_excel_sheet_names():
     )
 
     assert len(targets) == 1
-    assert targets[0]["subtable_name"] == "LLM_result_OPA2_audit_json_flat"
+    assert targets[0]["subtable_name"] == "LLM_result_OPA2_audit_json_flattened"
+
+
+
+def test_resolve_flatten_targets_sql_sink_name_not_truncated_to_31_chars():
+    ctx = SimpleNamespace(
+        flatten_json_output=True,
+        mode="sql",
+        target_table="sampleSRC_LLM",
+        output_col="OPA2_audit_json_extremely_long_suffix",
+        save_raw_input_when_flatten=False,
+        allowed_output_fields=["route"],
+        sql_writeback_rules=[
+            {"output_col": "OPA2_audit_json_extremely_long_suffix", "source": "combined"}
+        ],
+        sql_flatten_writeback_rules=[{"writeback_rule": 0, "enabled": True}],
+    )
+
+    targets = _resolve_flatten_targets(
+        ctx,
+        {"OPA2_audit_json_extremely_long_suffix": '[{"route":"other"}]'},
+        '[{"route":"other"}]',
+    )
+
+    assert len(targets) == 1
+    # SQL/SQLite 沒有 Excel 的 31 字限制，應保留完整 subtable 名。
+    assert targets[0]["subtable_name"] == (
+        "sampleSRC_LLM_OPA2_audit_json_extremely_long_suffix_flattened"
+    )
 
 def test_resolve_flatten_targets_uses_global_allowed_fields_when_rule_not_set():
     ctx = SimpleNamespace(
