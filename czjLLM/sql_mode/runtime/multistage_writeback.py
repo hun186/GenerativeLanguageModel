@@ -204,8 +204,8 @@ def _manifest_retry_params(ctx: Any | None) -> tuple[int, float]:
     sleep_sec = 0.0
     try:
         if _needs_stage_manifest_lookup(ctx):
-            attempts = int(getattr(ctx, "manifest_lookup_attempts", 12) or 12)
-            sleep_ms = int(getattr(ctx, "manifest_lookup_sleep_ms", 300) or 300)
+            attempts = int(getattr(ctx, "manifest_lookup_attempts", 60) or 60)
+            sleep_ms = int(getattr(ctx, "manifest_lookup_sleep_ms", 500) or 500)
             sleep_sec = max(sleep_ms, 0) / 1000.0
     except Exception:
         attempts, sleep_sec = 1, 0.0
