@@ -17,7 +17,7 @@ from czjLLM.handlers.handle_txt_file import handle_single_input_file  # 延用�
 #from czjLLM.prompt_pipeline.pipeline_controller import get_combined_result_path
 from czjLLM.utilities.path_utils import get_combined_result_path
 
-def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
+def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, source_inputs: dict[str, str] | None = None):
     """切片 -> 建 TODO -> 登錄 registry 與 meter（使用 per-row ctx overlay，避免 deepcopy/Queue 錯誤）"""
 
     temp_dir = os.path.join(ctx.llm_source_dir, "cache")
@@ -34,6 +34,7 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
         temp_txt_finished_dir=fin_dir,
         main_file_name=main_name,
     )
+    row_ctx.stage_source_inputs = source_inputs or {}
 
     # mock 模式：直接建立單一 TODO prompt，跳過切片/模板互動流程
     if bool(getattr(ctx, "mock_llm_mode", False)):

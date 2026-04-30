@@ -35,7 +35,12 @@ def produce_rows(
     if total_rows is not None:
         tlog(f"[producer] will iterate {total_rows} rows")
 
-    for idx, (pk, text) in enumerate(rows_for_count):
+    for idx, row in enumerate(rows_for_count):
+        if len(row) >= 3:
+            pk, text, source_inputs = row[0], row[1], row[2]
+        else:
+            pk, text = row[0], row[1]
+            source_inputs = None
         seen += 1
 
         if stop_event.is_set():
@@ -81,7 +86,7 @@ def produce_rows(
         )
 
         try:
-            schedule_one_row(ctx, registry, meter_fn, idx, pk, text)
+            schedule_one_row(ctx, registry, meter_fn, idx, pk, text, source_inputs=source_inputs)
             scheduled += 1
             # ★新增：每送一列即回報游標/送件數
             try:

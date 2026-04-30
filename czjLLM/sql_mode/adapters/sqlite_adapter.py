@@ -53,10 +53,13 @@ class SQLiteAdapter(DBAdapter):
                             src_table: str, tgt_table: str,
                             pk: str, input_col: str, output_cols: List[str],
                             record_update_time: bool,
-                            fetch_size: int = 500) -> Iterable[Tuple[Any, str]]:
+                            fetch_size: int = 500,
+                            extra_input_cols: List[str] | None = None) -> Iterable[Tuple[Any, str]]:
         out_col = output_cols[0]
+        extra_input_cols = [c for c in (extra_input_cols or []) if c and c != input_col]
+        select_cols = [f"src.{Q(pk)}", f"src.{Q(input_col)}"] + [f"src.{Q(c)}" for c in extra_input_cols]
         sql = f"""
-        SELECT src.{Q(pk)}, src.{Q(input_col)}
+        SELECT {", ".join(select_cols)}
         FROM {Q(src_table)} AS src
         LEFT JOIN {Q(tgt_table)} AS tgt
           ON src.{Q(pk)} = tgt.{Q(pk)}
@@ -70,4 +73,8 @@ class SQLiteAdapter(DBAdapter):
             if not rows:
                 break
             for r in rows:
-                yield (r[0], "" if r[1] is None else str(r[1]))
+                text = "" if r[1] is None else str(r[1])
+                extras = {}
+                for i, c in enumerate(extra_input_cols, start=2):
+                    extras[c] = "" if r[i] is None else str(r[i])
+                yield (r[0], text, extras)

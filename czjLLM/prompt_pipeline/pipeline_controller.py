@@ -1573,6 +1573,19 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         stage_def = stage_map[stage_name]
         todo_dir = _stage_todo_dir(item, stage_name)
         root_todo_dir = ops.join(item, "TODO")
+        stage_cfg = next((s for s in (getattr(ctx, "stages", None) or []) if isinstance(s, dict) and s.get("name") == stage_name), {})
+        stage_input_col = str(stage_cfg.get("input_col", "")).strip() if isinstance(stage_cfg, dict) else ""
+        stage_source_inputs = getattr(ctx, "stage_source_inputs", {}) or {}
+        if stage_input_col and stage_input_col in stage_source_inputs:
+            src_text = str(stage_source_inputs.get(stage_input_col, "") or "")
+            MKDIR(todo_dir)
+            _clear_txt_files(todo_dir, ops)
+            for fp in _root_txt_files(root_todo_dir):
+                prompt_text = _build_stage_prompt_text(stage_task, src_text, ctx)
+                dst_fp = os.path.join(todo_dir, fp.name)
+                with open(dst_fp, "w", encoding="utf-8") as f:
+                    f.write(prompt_text)
+            return
         if (
             stage_name == stage_defs[0].name
             and stage_def.input_from == "original"
