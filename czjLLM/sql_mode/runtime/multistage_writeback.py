@@ -59,14 +59,24 @@ def _iter_manifest_candidates(combined_path: str, ctx: Any | None = None) -> lis
         for key in ("temp_txt_finished_dir", "llm_source_finished_dir", "prompt_dir"):
             _add_root(getattr(ctx, key, ""))
 
+    def _collect_stage_root(stage_root: str) -> None:
+        if not os.path.isdir(stage_root):
+            return
+        for name in os.listdir(stage_root):
+            cand = os.path.join(stage_root, name, "manifest.json")
+            if os.path.isfile(cand):
+                out.append(cand)
+
     for root in search_roots:
-        stage_root = os.path.join(root, "_stage_merges")
-        if os.path.isdir(stage_root):
-            for name in os.listdir(stage_root):
-                cand = os.path.join(stage_root, name, "manifest.json")
-                if os.path.isfile(cand):
-                    out.append(cand)
-    # 新到舊排序
+        _collect_stage_root(os.path.join(root, "_stage_merges"))
+
+        # 某些執行路徑會把 stage manifest 寫在 <root>/cache/_stage_merges。
+        _collect_stage_root(os.path.join(root, "cache", "_stage_merges"))
+
+        # 另有路徑會落在 <root>/Prompt/cache/_stage_merges（table/sql 都可能出現）。
+        _collect_stage_root(os.path.join(root, "Prompt", "cache", "_stage_merges"))
+    # 去重後依修改時間新到舊排序
+    out = list(dict.fromkeys(out))
     out.sort(key=lambda p: os.path.getmtime(p), reverse=True)
     return out
 
