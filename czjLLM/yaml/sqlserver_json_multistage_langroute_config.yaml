@@ -42,7 +42,7 @@ stages:
     debug_print_max_chars: -1
 
   - name: audit_json
-    input_from: original
+    input_from: none
     route_by: route
     route_map:
       zh: |
