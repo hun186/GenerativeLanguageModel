@@ -8,7 +8,7 @@ password = '@k05sys g3'
 # 数据库和表信息
 database_name = 'Test_SRP'
 table_name = 'Table_SRP'
-primary_key = 'Auto'
+primary_key = 'AUTO'
 
 target_table = 'Table_SRP_LLM_result'
 
