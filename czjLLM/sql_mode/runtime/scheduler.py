@@ -65,7 +65,10 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
     mode = str(getattr(ctx, "mode", "") or "").strip().lower()
     stages = getattr(ctx, "stages", None)
     has_multistage = isinstance(stages, list) and len(stages) > 1
-    run_sql_multistage = (mode == "sql") and bool(getattr(ctx, "sql_enable_multistage_stream", True)) and has_multistage
+    # `mode: table`（Excel/CSV sink）與 `mode: sql` 都共用此排程器；
+    # 若限定 sql 才走 multistage，table 會只執行單階段流程，
+    # 導致 stage writeback 找不到 _stage_merges/manifest.json。
+    run_stream_multistage = (mode in {"sql", "table"}) and bool(getattr(ctx, "sql_enable_multistage_stream", True)) and has_multistage
 
     # 讓模板/切片在 row_ctx 上跑（不會動到共享 ctx）
     try:
@@ -116,9 +119,9 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
     # 先以 row_ctx 推導預期合併輸出路徑（單階段/多階段都會用到）
     comb_back_fn = get_combined_result_path(temp_txt_path, row_ctx)
 
-    # SQL 多階段：直接重用 txt 的 process_prompt_and_merge 邏輯先完成 LLM + 合併，
+    # SQL/Table 多階段：直接重用 txt 的 process_prompt_and_merge 邏輯先完成 LLM + 合併，
     # consumer 只需維持原有單階段行為（此列不再進 pending queue）。
-    if run_sql_multistage:
+    if run_stream_multistage:
         try:
             merged_out = process_prompt_and_merge(row_ctx, file_path=temp_txt_path)
             # 多階段的最終檔名可能與 get_combined_result_path() 不同（依 stage 組合命名），
@@ -126,7 +129,7 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
             if merged_out and os.path.isfile(str(merged_out)):
                 comb_back_fn = str(merged_out)
         except Exception as ex:
-            tlog_warn(f"❌ SQL 多階段執行失敗（pk={pk}）：{ex}")
+            tlog_warn(f"❌ 多階段執行失敗（pk={pk}, mode={mode})：{ex}")
             return 0
 
     # 註冊給 row_merger（合併檔路徑用 row_ctx 算，不會串線）
@@ -139,8 +142,8 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
             "total": 0, "done": 0, "status": "in_progress"
         })
         d["rows"][pk]["total"] = total_chunks
-        # SQL 多階段已在 schedule 階段完成 LLM，不放入 consumer pending queue。
-        d["queue"]["pending"] += (0 if run_sql_multistage else total_chunks)
+        # SQL/Table 多階段已在 schedule 階段完成 LLM，不放入 consumer pending queue。
+        d["queue"]["pending"] += (0 if run_stream_multistage else total_chunks)
 
     meter_update(meter_fn, _on_add_row)
     meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({"last_progress_ts": time.time()}))
