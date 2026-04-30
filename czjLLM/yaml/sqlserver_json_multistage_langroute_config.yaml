@@ -29,6 +29,7 @@ stages:
       zh:
         task: "@taskSetting:Organization Profile Analyzer to json format"
         input_from: original
+        input_col: TEXT
       non_zh:
         task: |
           你是 JSON 回覆器。請回傳：
