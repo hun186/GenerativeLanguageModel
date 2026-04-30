@@ -179,6 +179,73 @@ def _read_stage_snapshot_text(manifest_path: str, stage_info: dict, ctx: Any | N
     return None
 
 
+def _read_stage_snapshot_text_without_manifest(combined_path: str, stage_name: str, ctx: Any | None = None) -> Optional[str]:
+    """
+    當 manifest 尚未落盤時，直接從 *_stage_outputs* 回讀指定 stage 內容。
+    僅用於已明確指定 stage（selector 非空）情境，以避免誤判來源。
+    """
+    token = str(stage_name or "").strip()
+    if not token:
+        return None
+
+    roots: list[str] = []
+    for key in ("prompt_dir", "temp_txt_dir", "work_pool_root"):
+        p = str(getattr(ctx, key, "") or "").strip() if ctx is not None else ""
+        if p:
+            roots.append(os.path.abspath(p))
+
+    # 由 combined 路徑推導對應 prompt/cache 根目錄
+    try:
+        cabs = os.path.abspath(combined_path)
+        parts = cabs.replace("\\", "/").split("/")
+        if "cache" in parts:
+            idx = len(parts) - 1 - parts[::-1].index("cache")
+            before = parts[:idx]
+            roots.append(os.path.abspath("/".join(before + ["Prompt", "cache"])))
+    except Exception:
+        pass
+
+    # 從 combined 檔名猜測 source 名稱（如 rowA_task -> rowA）
+    stem = os.path.splitext(os.path.basename(os.path.abspath(combined_path)))[0]
+    source_hints: list[str] = []
+    for sep in ("_task", "__", "_prompt", "_"):
+        if sep in stem:
+            source_hints.append(stem.split(sep, 1)[0].strip())
+    source_hints.append(stem)
+
+    # 候選 source: 先猜測，再掃描目錄
+    candidates: list[tuple[float, str]] = []
+    seen = set()
+    for root in roots:
+        if root in seen or not os.path.isdir(root):
+            continue
+        seen.add(root)
+        for src in source_hints:
+            if not src:
+                continue
+            cand = os.path.join(root, src, "_stage_outputs", token)
+            if os.path.isdir(cand):
+                candidates.append((os.path.getmtime(cand), cand))
+        for name in os.listdir(root):
+            cand = os.path.join(root, name, "_stage_outputs", token)
+            if os.path.isdir(cand):
+                candidates.append((os.path.getmtime(cand), cand))
+
+    for _, snap_dir in sorted(candidates, key=lambda x: x[0], reverse=True):
+        parts = []
+        for fn in sorted(os.listdir(snap_dir)):
+            if not fn.lower().endswith(".txt"):
+                continue
+            fp = os.path.join(snap_dir, fn)
+            if not os.path.isfile(fp):
+                continue
+            with open(fp, "r", encoding="utf-8") as f:
+                parts.append(f.read())
+        if parts:
+            return "\n".join(parts)
+    return None
+
+
 
 
 def _needs_stage_manifest_lookup(ctx: Any | None) -> bool:
@@ -204,8 +271,8 @@ def _manifest_retry_params(ctx: Any | None) -> tuple[int, float]:
     sleep_sec = 0.0
     try:
         if _needs_stage_manifest_lookup(ctx):
-            attempts = int(getattr(ctx, "manifest_lookup_attempts", 12) or 12)
-            sleep_ms = int(getattr(ctx, "manifest_lookup_sleep_ms", 300) or 300)
+            attempts = int(getattr(ctx, "manifest_lookup_attempts", 60) or 60)
+            sleep_ms = int(getattr(ctx, "manifest_lookup_sleep_ms", 500) or 500)
             sleep_sec = max(sleep_ms, 0) / 1000.0
     except Exception:
         attempts, sleep_sec = 1, 0.0
@@ -249,14 +316,27 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
         return WritebackPayload(main_payload=payload, main_text=combined_text, flatten_text=combined_text, source="combined")
 
     manifests = _find_manifests_with_retry(combined_path, ctx=ctx)
+    selector = getattr(ctx, "sql_writeback_stage", None)
+    selector_token = str(selector or "").strip()
     if not manifests:
+        # 根治：當 manifest 尚未落盤時，允許從 row snapshot 直接讀取指定 stage。
+        if selector_token:
+            stage_text = _read_stage_snapshot_text_without_manifest(combined_path, selector_token, ctx=ctx)
+            if stage_text is not None:
+                try:
+                    payload = loads_json_flexible_deep(stage_text)
+                except Exception:
+                    payload = stage_text
+                return WritebackPayload(
+                    main_payload=payload,
+                    main_text=stage_text,
+                    flatten_text=stage_text,
+                    source=f"stage:{selector_token}",
+                )
         raise RuntimeError(
             "stage 寫回模式找不到 _stage_merges/manifest.json；已中止寫回以避免誤寫。"
             "請檢查 stage merge 輸出路徑與 manifest 落盤時序。"
         )
-
-    selector = getattr(ctx, "sql_writeback_stage", None)
-    selector_token = str(selector or "").strip()
 
     # 優先順序：
     # 1) manifest.source 可對上 combined 檔名（避免誤抓其他 row 的 manifest）
