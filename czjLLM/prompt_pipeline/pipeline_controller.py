@@ -1587,6 +1587,10 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         root_todo_dir = ops.join(item, "TODO")
         stage_cfg = next((s for s in (getattr(ctx, "stages", None) or []) if isinstance(s, dict) and s.get("name") == stage_name), {})
         stage_input_col = str(stage_cfg.get("input_col", "")).strip() if isinstance(stage_cfg, dict) else ""
+        if isinstance(stage_task, Mapping):
+            route_input_col_raw = stage_task.get("input_col", stage_task.get("from_col", stage_input_col))
+            stage_input_col = "" if route_input_col_raw is None else str(route_input_col_raw).strip()
+
         stage_source_inputs = getattr(ctx, "stage_source_inputs", {}) or {}
         if stage_input_col and stage_input_col in stage_source_inputs:
             src_text = str(stage_source_inputs.get(stage_input_col, "") or "")
