@@ -126,6 +126,28 @@ def resolve_connection(ctx, get_param, args):
 
 def choose_columns_and_io_cols(ctx, get_param, adapter, sql_cfg, args):
     columns = adapter.list_columns(ctx.sql_table)
+    col_lut = {}
+    ambiguous_keys = set()
+    for c in columns:
+        key = str(c).strip().lower()
+        if key in col_lut and col_lut[key] != c:
+            ambiguous_keys.add(key)
+        else:
+            col_lut[key] = c
+
+    def _normalize_col_name(name: str) -> str:
+        if not isinstance(name, str):
+            return name
+        raw = name.strip()
+        if not raw:
+            return raw
+        key = raw.lower()
+        # 若資料表中同時存在僅大小寫不同的欄位名稱，避免自動映射造成誤判。
+        if key in ambiguous_keys:
+            return raw
+        return col_lut.get(key, raw)
+
+    ctx.primary_key = _normalize_col_name(ctx.primary_key)
 
     if ctx.primary_key not in columns:
         ctx.primary_key = OptionSelector(
@@ -133,14 +155,14 @@ def choose_columns_and_io_cols(ctx, get_param, adapter, sql_cfg, args):
         ).proc()
         
         
-    ctx.input_col = get_param("input_col", sql_cfg.get("input_col", ""))
+    ctx.input_col = _normalize_col_name(get_param("input_col", sql_cfg.get("input_col", "")))
     if ctx.input_col not in columns:
         ctx.input_col = OptionSelector(
             options={col: "" for col in columns},
             question="📝 請選擇輸入欄位："
         ).proc()
 
-    ctx.output_col = get_param("output_col", sql_cfg.get("output_col", ""))  
+    ctx.output_col = _normalize_col_name(get_param("output_col", sql_cfg.get("output_col", "")))
     if isinstance(ctx.output_col, list):
         ctx.output_cols = [str(c).strip() for c in ctx.output_col if str(c).strip()]
         ctx.output_col = ctx.output_cols[0] if ctx.output_cols else ""
