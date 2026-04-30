@@ -71,7 +71,9 @@ def resolve_pipeline_stages(ctx) -> list[StageDefinition]:
             mapped = task_setting.get(stage.name, "")
             task_text = _resolve_task_setting_entry(mapped)
 
-        if not task_text:
+        # 允許「純路由階段」不提供預設 task：
+        # 該階段會在執行時由 route_map + route_by 動態決定 task。
+        if not task_text and not stage.route_map:
             raise ValueError(f"Stage '{stage.name}' 無法從 taskSetting 解析 task")
         resolved.append(replace(stage, task=task_text))
 
