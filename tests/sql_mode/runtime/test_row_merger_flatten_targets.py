@@ -97,6 +97,26 @@ def test_resolve_flatten_targets_avoids_double_prefix_when_output_col_already_pr
     assert len(targets) == 1
     assert targets[0]["subtable_name"] == "LLM_result_OPA2_flattened"
 
+
+
+def test_resolve_flatten_targets_uses_distinct_default_output_col_name():
+    ctx = SimpleNamespace(
+        flatten_json_output=True,
+        target_table="",
+        main_sheet_name="",
+        output_col="",
+        save_raw_input_when_flatten=False,
+        allowed_output_fields=["formalName"],
+        sql_writeback_rules=[],
+        sql_flatten_writeback_rules=None,
+    )
+
+    targets = _resolve_flatten_targets(ctx, {}, '[{"formalName":"ACME"}]')
+
+    assert len(targets) == 1
+    assert targets[0]["output_col"] == "LLM_output_json"
+    assert targets[0]["subtable_name"] == "LLM_result_LLM_output_json_flattened"
+
 def test_resolve_flatten_targets_uses_global_allowed_fields_when_rule_not_set():
     ctx = SimpleNamespace(
         flatten_json_output=True,
