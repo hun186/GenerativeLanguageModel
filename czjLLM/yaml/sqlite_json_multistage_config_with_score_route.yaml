@@ -1,0 +1,123 @@
+# SQLite 多階段測試（mode=sql）- 雙路由版本（先看 InfoScoreSum，再做組織分類）
+mode: sql
+channel: excel_source
+model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+
+# I/O
+input_col: File
+output_col: File_result
+record_update_time: true
+sql_config_file: czjLLM/config_sql/akconfig_local_file_test_multistage.py
+
+# 多階段流程（score_route + route + extract + audit_json）
+# - score_route: 讀取 InfoScoreSum，判斷是否 > 300，輸出 high / low
+# - route: 當 score_route=high 時，再判斷是否為組織實體介紹（org / other）；
+#          當 score_route=low 時直接輸出 other
+# - extract: 用 route_map 切到不同任務（主結果）
+# - audit_json: 額外輸出路徑審計 JSON
+stages:
+  - name: score_route
+    prompt: |
+      你是分類器。輸入內容是數值分數（InfoScoreSum）。
+      請判斷是否大於 300。
+      若大於 300，請只輸出：high
+      若小於或等於 300，請只輸出：low
+      禁止輸出 JSON、禁止解釋。
+    input_col: InfoScoreSum
+    input_from: original
+    persist_output: always
+    max_attempts: 3
+
+  - name: route
+    task: |
+      你是分類器。請判斷此文本是否屬於「組織實體介紹」。
+      請只輸出一個代碼：org 或 other。
+      禁止輸出 JSON、禁止解釋。
+    input_from: original
+    route_by: score_route
+    route_map:
+      high: |
+        你是分類器。請判斷此文本是否屬於「組織實體介紹」。
+        請只輸出一個代碼：org 或 other。
+        禁止輸出 JSON、禁止解釋。
+      low: |
+        other
+    route_value_mode: task
+    retry_source_on_route_miss: true
+    persist_output: always
+    max_attempts: 3
+
+  - name: extract
+    task_key: Organization Profile Analyzer to json format
+    input_from: original
+    route_by: route
+    route_map:
+      org: "@taskSetting:Organization Profile Analyzer to json format"
+      other: |
+        你是 JSON 回覆器。該文本不是組織實體介紹，請回傳：
+        [{
+          "route": "other",
+          "inputName": "",
+          "formalName": "",
+          "functionalDomain": "",
+          "keyFunctions": [],
+          "skipReason": "not_an_organization_profile"
+        }]
+    route_value_mode: task
+    retry_source_on_route_miss: true
+    persist_output: final
+
+  - name: audit_json
+    task: |
+      你是 JSON 回覆器。請回傳：
+      [{"route":"unknown","auditTag":"unknown","auditVersion":"v1"}]
+    input_from: original
+    route_by: route
+    route_map:
+      org: |
+        你是 JSON 回覆器。該文本屬於組織實體介紹，請回傳：
+        [{
+          "route": "org",
+          "auditTag": "org_profile_path",
+          "auditVersion": "v1"
+        }]
+      other: |
+        你是 JSON 回覆器。該文本不屬於組織實體介紹，請回傳：
+        [{
+          "route": "other",
+          "auditTag": "non_org_path",
+          "auditVersion": "v1"
+        }]
+    route_value_mode: task
+    retry_source_on_route_miss: true
+    persist_output: always
+
+# 多欄位寫回（同時保留 score_route、route、主要結果與 audit_json）
+sql_writeback_rules:
+  - output_col: File_score_route
+    source: stage
+    stage: score_route
+  - output_col: File_route
+    source: stage
+    stage: route
+  - output_col: File_result
+    source: stage
+    stage: extract
+  - output_col: File_audit_json
+    source: stage
+    stage: audit_json
+
+# 若要多來源 flatten（各自開關/欄位）
+sql_flatten_writeback_rules:
+  - writeback_rule: 0
+    enabled: false   # score_route 輸出 high/low，不做 JSON flatten
+  - writeback_rule: 1
+    enabled: false   # route 輸出 org/other，不做 JSON flatten
+  - writeback_rule: 2
+    enabled: true
+    flatten_store_input_col: true
+    allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunctions, skipReason]
+  - writeback_rule: 3
+    enabled: true
+    flatten_store_input_col: false
+    allowed_output_fields: [route, auditTag, auditVersion]
