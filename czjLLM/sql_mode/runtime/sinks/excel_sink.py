@@ -415,7 +415,8 @@ class ExcelSink:
         if self._debug: self._log("✅ 主表落盤完成。")
     
     def _flush_sub(self, force: bool=False):
-        if not self._dirty_sub and not force:
+        # 僅在有髒資料時落盤，避免 close(force=True) 以錯誤 sheet 名重覆寫入。
+        if not self._dirty_sub:
             return
         if self.sub_df is None or not self._is_xlsx(self.output_path) or not getattr(self.ctx, "flatten_json_output", False):
             self._dirty_sub = False

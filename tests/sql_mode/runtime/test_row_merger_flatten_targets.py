@@ -55,6 +55,118 @@ def test_resolve_flatten_targets_fallback_to_single_source():
     assert targets[0]["allowed_fields"] == ["formalName"]
 
 
+
+
+def test_resolve_flatten_targets_uses_llm_result_prefix_when_target_table_empty():
+    ctx = SimpleNamespace(
+        flatten_json_output=True,
+        target_table="",
+        main_sheet_name="LLM_result",
+        output_col="OPA2",
+        save_raw_input_when_flatten=False,
+        allowed_output_fields=["formalName"],
+        sql_writeback_rules=[{"output_col": "OPA2", "source": "combined"}],
+        sql_flatten_writeback_rules=[{"writeback_rule": 0, "enabled": True}],
+    )
+
+    targets = _resolve_flatten_targets(ctx, {"OPA2": '[{"formalName":"ACME"}]'}, '[{"formalName":"ACME"}]')
+
+    assert len(targets) == 1
+    assert targets[0]["subtable_name"] == "LLM_result_OPA2_flattened"
+
+
+
+def test_resolve_flatten_targets_avoids_double_prefix_when_output_col_already_prefixed():
+    ctx = SimpleNamespace(
+        flatten_json_output=True,
+        target_table="",
+        main_sheet_name="LLM_result",
+        output_col="LLM_result_OPA2",
+        save_raw_input_when_flatten=False,
+        allowed_output_fields=["formalName"],
+        sql_writeback_rules=[{"output_col": "LLM_result_OPA2", "source": "combined"}],
+        sql_flatten_writeback_rules=[{"writeback_rule": 0, "enabled": True}],
+    )
+
+    targets = _resolve_flatten_targets(
+        ctx,
+        {"LLM_result_OPA2": '[{"formalName":"ACME"}]'},
+        '[{"formalName":"ACME"}]',
+    )
+
+    assert len(targets) == 1
+    assert targets[0]["subtable_name"] == "LLM_result_OPA2_flattened"
+
+
+
+def test_resolve_flatten_targets_uses_distinct_default_output_col_name():
+    ctx = SimpleNamespace(
+        flatten_json_output=True,
+        target_table="",
+        main_sheet_name="",
+        output_col="",
+        save_raw_input_when_flatten=False,
+        allowed_output_fields=["formalName"],
+        sql_writeback_rules=[],
+        sql_flatten_writeback_rules=None,
+    )
+
+    targets = _resolve_flatten_targets(ctx, {}, '[{"formalName":"ACME"}]')
+
+    assert len(targets) == 1
+    assert targets[0]["output_col"] == "LLM_output"
+    assert targets[0]["subtable_name"] == "LLM_result_LLM_output_flattened"
+
+
+
+def test_resolve_flatten_targets_keeps_full_name_for_non_excel_sinks():
+    ctx = SimpleNamespace(
+        flatten_json_output=True,
+        target_table="LLM_result",
+        output_col="OPA2_audit_json",
+        save_raw_input_when_flatten=False,
+        allowed_output_fields=["route", "auditTag", "auditVersion"],
+        sql_writeback_rules=[{"output_col": "OPA2_audit_json", "source": "combined"}],
+        sql_flatten_writeback_rules=[{"writeback_rule": 0, "enabled": True}],
+    )
+
+    targets = _resolve_flatten_targets(
+        ctx,
+        {"OPA2_audit_json": '[{"route":"other","auditTag":"x","auditVersion":"v1"}]'},
+        '[{"route":"other","auditTag":"x","auditVersion":"v1"}]',
+    )
+
+    assert len(targets) == 1
+    assert targets[0]["subtable_name"] == "LLM_result_OPA2_audit_json_flattened"
+
+
+
+def test_resolve_flatten_targets_sql_sink_name_not_truncated_to_31_chars():
+    ctx = SimpleNamespace(
+        flatten_json_output=True,
+        mode="sql",
+        target_table="sampleSRC_LLM",
+        output_col="OPA2_audit_json_extremely_long_suffix",
+        save_raw_input_when_flatten=False,
+        allowed_output_fields=["route"],
+        sql_writeback_rules=[
+            {"output_col": "OPA2_audit_json_extremely_long_suffix", "source": "combined"}
+        ],
+        sql_flatten_writeback_rules=[{"writeback_rule": 0, "enabled": True}],
+    )
+
+    targets = _resolve_flatten_targets(
+        ctx,
+        {"OPA2_audit_json_extremely_long_suffix": '[{"route":"other"}]'},
+        '[{"route":"other"}]',
+    )
+
+    assert len(targets) == 1
+    # SQL/SQLite 沒有 Excel 的 31 字限制，應保留完整 subtable 名。
+    assert targets[0]["subtable_name"] == (
+        "sampleSRC_LLM_OPA2_audit_json_extremely_long_suffix_flattened"
+    )
+
 def test_resolve_flatten_targets_uses_global_allowed_fields_when_rule_not_set():
     ctx = SimpleNamespace(
         flatten_json_output=True,

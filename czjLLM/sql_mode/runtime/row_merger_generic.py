@@ -18,7 +18,8 @@ from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
 from .multistage_writeback import resolve_writeback_payload
 #from czjLLM.prompt_pipeline.pipeline_controller import meter_update  # 檔頭若尚未 import
 
-
+DEFAULT_MAIN_SHEET_NAME = "LLM_result"
+DEFAULT_OUTPUT_COL_NAME = "LLM_output"
 
 '''
 def _extract_json_list(result_text: str, allowed_fields: Optional[List[str]]) -> List[Dict[str, Any]]:
@@ -98,7 +99,7 @@ def _build_writeback_values(ctx, comb_back_fn: str, combined_text: str):
             return write_map, flatten_text, source_logs
 
     wb = resolve_writeback_payload(ctx, comb_back_fn, combined_text)
-    primary_col = str(getattr(ctx, "output_col", "LLM_result") or "LLM_result")
+    primary_col = str(getattr(ctx, "output_col", DEFAULT_OUTPUT_COL_NAME) or DEFAULT_OUTPUT_COL_NAME)
     write_map[primary_col] = _as_db_text(wb.main_payload)
     source_logs.append(f"{primary_col}<-{wb.source}")
     return write_map, write_map[primary_col], source_logs
@@ -137,6 +138,26 @@ def _expand_json_columns(ctx, source_text: str) -> dict:
         col = f"{prefix}{key}" if prefix else key
         out[col] = _as_db_text(v)
     return out
+
+
+
+def _build_flatten_subtable_name(ctx, output_col: str) -> str:
+    normalized_output_col = str(output_col or "").strip() or DEFAULT_OUTPUT_COL_NAME
+
+    target = str(getattr(ctx, "target_table", "") or "").strip()
+    if not target:
+        target = str(getattr(ctx, "main_sheet_name", "") or "").strip()
+        if not target:
+            target = DEFAULT_MAIN_SHEET_NAME
+    if not target:
+        # 最後才回退到主輸出欄名，避免把 LLM_result 當成跨情境的硬編碼預設。
+        target = str(getattr(ctx, "output_col", "") or "").strip()
+
+    if not target:
+        return f"{normalized_output_col}_flattened"
+    if normalized_output_col == target or normalized_output_col.startswith(f"{target}_"):
+        return f"{normalized_output_col}_flattened"
+    return f"{target}_{normalized_output_col}_flattened"
 
 def _resolve_flatten_targets(ctx, write_map: dict, default_source_text: str) -> list[dict]:
     """
@@ -203,7 +224,7 @@ def _resolve_flatten_targets(ctx, write_map: dict, default_source_text: str) -> 
                     "source_text": source_text,
                     "allowed_fields": allowed_fields,
                     "save_raw_input": bool(save_raw),
-                    "subtable_name": f"{ctx.target_table}_{out_col}_flattened",
+                    "subtable_name": _build_flatten_subtable_name(ctx, out_col),
                 }
             )
         # 若明確提供新參數，回傳其結果（可為空，代表全部關閉）
@@ -218,14 +239,14 @@ def _resolve_flatten_targets(ctx, write_map: dict, default_source_text: str) -> 
     else:
         allowed_fields = None
 
-    out_col = str(getattr(ctx, "output_col", "LLM_result") or "LLM_result")
+    out_col = str(getattr(ctx, "output_col", DEFAULT_OUTPUT_COL_NAME) or DEFAULT_OUTPUT_COL_NAME)
     return [
         {
             "output_col": out_col,
             "source_text": default_source_text,
             "allowed_fields": allowed_fields,
             "save_raw_input": bool(getattr(ctx, "save_raw_input_when_flatten", False)),
-            "subtable_name": f"{ctx.target_table}_{out_col}_flattened",
+            "subtable_name": _build_flatten_subtable_name(ctx, out_col),
         }
     ]
 
@@ -252,6 +273,8 @@ def _process_flatten_target(ctx, sink, pk, ft: dict) -> bool:
     try:
         # 即使沒有可展平列，也先建立對應子表，避免「rule 啟用但子表不存在」。
         sink.ensure_flatten_schema(ft["allowed_fields"])
+        # Excel 會在 ensure_flatten_schema 內做 sheet 名 sanitize；後續寫入需使用同名。
+        ft["subtable_name"] = getattr(sink.ctx, "subtable_name", ft["subtable_name"])
     finally:
         sink.ctx = old_ctx
 
