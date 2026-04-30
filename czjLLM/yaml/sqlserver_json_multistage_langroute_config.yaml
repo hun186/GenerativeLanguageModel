@@ -18,6 +18,9 @@ stages:
     input_from: original
     persist_output: always
     max_attempts: 3
+    input_col: SUBJ
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
 
   - name: extract
     input_from: original
@@ -33,6 +36,8 @@ stages:
     route_value_mode: task
     retry_source_on_route_miss: true
     persist_output: final
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
 
   - name: audit_json
     input_from: original
@@ -55,6 +60,8 @@ stages:
     route_value_mode: task
     retry_source_on_route_miss: true
     persist_output: always
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
 
 # 多欄位寫回（與 sqlite 範例一致：route + 主結果 + audit）
 sql_writeback_rules:
