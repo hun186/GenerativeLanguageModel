@@ -1,27 +1,113 @@
-allowed_output_fields:
-- inputName
-- formalName
-- functionalDomain
-- administrativeLevel
-- parentUnit
-- administrativeDivision
-- organizationType
-- keyFunctions
-- affiliatedNationOrRegion
-- locatedCountryOrRegion
-- affNationLangs
-- description
-channel: excel_source
-flatten_json_output: true
-input_col: UserChiName
-input_excel_file: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName.xlsx
-llm_source_backup_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/excel_source
-llm_source_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source
+# Excel 多階段測試（mode=table）
 mode: table
+channel: excel_source
 model_spec: qwen3:32b-ctx-32k-premises-q4
+
+# I/O
+input_col: UserChiName
 output_col: OPA2
-output_excel_file: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName_with_result.xlsx
 primary_key: Auto
 record_update_time: true
+
+input_excel_file: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName.xlsx
+output_excel_file: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName_with_result.xlsx
+llm_source_backup_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/excel_source
+llm_source_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source
+
+# flatten 設定（多階段測試建議先開）
+flatten_json_output: true
 save_raw_input_when_flatten: true
-task: Organization Profile Analyzer to json format
+allowed_output_fields:
+  - inputName
+  - formalName
+  - functionalDomain
+  - administrativeLevel
+  - parentUnit
+  - administrativeDivision
+  - organizationType
+  - keyFunctions
+  - affiliatedNationOrRegion
+  - locatedCountryOrRegion
+  - affNationLangs
+  - description
+
+# 多階段流程（route + extract + audit_json）
+stages:
+  - name: route
+    prompt: |
+      你是分類器。請判斷此文本是否屬於「組織實體介紹」。
+      請只輸出一個代碼：org 或 other。
+      禁止輸出 JSON、禁止解釋。
+    input_from: original
+    persist_output: always
+    max_attempts: 3
+
+  - name: extract
+    task_key: Organization Profile Analyzer to json format
+    input_from: original
+    route_by: route
+    route_map:
+      org: "@taskSetting:Organization Profile Analyzer to json format"
+      other: |
+        你是 JSON 回覆器。該文本不是組織實體介紹，請回傳：
+        [{
+          "route": "other",
+          "inputName": "",
+          "formalName": "",
+          "functionalDomain": "",
+          "keyFunctions": [],
+          "skipReason": "not_an_organization_profile"
+        }]
+    route_value_mode: task
+    retry_source_on_route_miss: true
+    persist_output: final
+
+  - name: audit_json
+    task: |
+      你是 JSON 回覆器。請回傳：
+      [{"route":"unknown","auditTag":"unknown","auditVersion":"v1"}]
+    input_from: original
+    route_by: route
+    route_map:
+      org: |
+        你是 JSON 回覆器。該文本屬於組織實體介紹，請回傳：
+        [{
+          "route": "org",
+          "auditTag": "org_profile_path",
+          "auditVersion": "v1"
+        }]
+      other: |
+        你是 JSON 回覆器。該文本不屬於組織實體介紹，請回傳：
+        [{
+          "route": "other",
+          "auditTag": "non_org_path",
+          "auditVersion": "v1"
+        }]
+    route_value_mode: task
+    retry_source_on_route_miss: true
+    persist_output: always
+
+# 多欄位寫回（同時保留 route、主要結果與 audit_json）
+sql_writeback_rules:
+  - output_col: OPA2_route
+    source: stage
+    stage: route
+  - output_col: OPA2
+    source: stage
+    stage: extract
+  - output_col: OPA2_audit_json
+    source: stage
+    stage: audit_json
+
+# 多來源 flatten（各自開關/欄位）
+sql_flatten_writeback_rules:
+  - writeback_rule: 0
+    enabled: false
+  - writeback_rule: 1
+    enabled: true
+    flatten_store_input_col: true
+    allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunctions, skipReason]
+  - writeback_rule: 2
+    enabled: true
+    flatten_store_input_col: false
+    allowed_output_fields: [route, auditTag, auditVersion]

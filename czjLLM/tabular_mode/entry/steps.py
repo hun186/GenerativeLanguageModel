@@ -54,6 +54,67 @@ def _is_empty(v) -> bool:
         return v.strip().lower() in {"", "nan", "none", "null"}
     return False
 
+def _normalize_writeback_rules(get_param):
+    rules = get_param("sql_writeback_rules", None)
+    out = []
+    if not isinstance(rules, list):
+        return out
+    for item in rules:
+        if not isinstance(item, dict):
+            continue
+        col = str(item.get("output_col", "")).strip()
+        if not col:
+            continue
+        src = str(item.get("source", "combined") or "combined").strip().lower()
+        if src not in {"combined", "stage"}:
+            src = "combined"
+        out.append({"output_col": col, "source": src, "stage": item.get("stage", None)})
+    return out
+
+
+def _normalize_flatten_writeback_rules(get_param, writeback_rules):
+    cfg = get_param("sql_flatten_writeback_rules", None)
+    out = []
+
+    if isinstance(cfg, list):
+        for item in cfg:
+            if not isinstance(item, dict):
+                continue
+            try:
+                idx = int(item.get("writeback_rule", item.get("rule_idx", item.get("sql_flatten_writeback_rule", 0))) or 0)
+            except Exception:
+                idx = 0
+            if idx < 0:
+                idx = 0
+            enabled = bool(item.get("enabled", True))
+            allowed = item.get("allowed_output_fields", None)
+            if isinstance(allowed, (list, tuple)):
+                allowed = [str(x).strip() for x in allowed if str(x).strip()]
+            else:
+                allowed = None
+            save_raw = item.get("save_raw_input_when_flatten", item.get("flatten_store_input_col", item.get("save_input_col_when_flatten", None)))
+            out.append({
+                "writeback_rule": idx,
+                "enabled": enabled,
+                "allowed_output_fields": allowed,
+                "save_raw_input_when_flatten": save_raw,
+            })
+
+    if out:
+        return out
+
+    try:
+        idx = int(get_param("sql_flatten_writeback_rule", 0) or 0)
+    except Exception:
+        idx = 0
+    if idx < 0:
+        idx = 0
+
+    if not writeback_rules:
+        return [{"writeback_rule": 0, "enabled": True}]
+    return [{"writeback_rule": idx, "enabled": True}]
+
+
 
 # ---------------------------
 # 1) 路徑解析（互動選檔）
@@ -125,8 +186,25 @@ def choose_columns_common(ctx, input_path: str, get_param, args) -> List[str]:
             default="row_id"
         ).proc()
 
-    # output_col
+    # output_col + multi-stage writeback rules
     ctx.output_col = get_param("output_col")
+    if isinstance(ctx.output_col, list):
+        ctx.output_cols = [str(c).strip() for c in ctx.output_col if str(c).strip()]
+        ctx.output_col = ctx.output_cols[0] if ctx.output_cols else ""
+    else:
+        ctx.output_cols = [str(ctx.output_col).strip()] if str(ctx.output_col).strip() else []
+
+    ctx.sql_writeback_rules = _normalize_writeback_rules(get_param)
+    try:
+        ctx.sql_flatten_writeback_rule = int(get_param("sql_flatten_writeback_rule", 0) or 0)
+    except Exception:
+        ctx.sql_flatten_writeback_rule = 0
+    ctx.sql_flatten_writeback_rules = _normalize_flatten_writeback_rules(get_param, ctx.sql_writeback_rules)
+    for r in ctx.sql_writeback_rules:
+        c = r.get("output_col")
+        if c and c not in ctx.output_cols:
+            ctx.output_cols.append(c)
+
     if not ctx.output_col:
         default_out = f"{ctx.input_col}_result"
         ctx.output_col = input(f"💾 請輸入輸出欄位（預設 {default_out}）：").strip() or default_out
@@ -227,16 +305,19 @@ def ensure_schemas_tabular(ctx, input_path: str, output_path: str, fmt: str) -> 
                     df["row_id"] = range(len(df))
                     changed = True
 
-    # 輸出欄位（盡量 string/object）
-    out_col = ctx.output_col
-    if out_col not in df.columns:
-        try:
-            df[out_col] = pd.Series([pd.NA] * len(df), dtype="string")
-        except Exception:
-            df[out_col] = df[out_col].astype("object")
-        changed = True
-    else:
-        if str(df[out_col].dtype) not in ("string", "object"):
+    # 輸出欄位（支援 multi-stage writeback rules）
+    output_cols = list(dict.fromkeys([c for c in (getattr(ctx, "output_cols", None) or []) if c]))
+    if not output_cols:
+        output_cols = [ctx.output_col]
+
+    for out_col in output_cols:
+        if out_col not in df.columns:
+            try:
+                df[out_col] = pd.Series([pd.NA] * len(df), dtype="string")
+            except Exception:
+                df[out_col] = pd.Series([None] * len(df), dtype="object")
+            changed = True
+        elif str(df[out_col].dtype) not in ("string", "object"):
             try:
                 df[out_col] = df[out_col].astype("string")
             except Exception:

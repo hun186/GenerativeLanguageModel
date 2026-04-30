@@ -87,14 +87,16 @@ class CSVSink:
             if not idxs:
                 return
 
-            # 確保欄型
-            self._ensure_text_col(self.df, self.ctx.output_col)
+            value_map = result_text if isinstance(result_text, dict) else {self.ctx.output_col: result_text}
+            for col in value_map.keys():
+                self._ensure_text_col(self.df, col)
             if getattr(self.ctx, "record_update_time", False):
                 self._ensure_text_col(self.df, "update_time")
 
             # 寫入（扇出到所有同鍵列）
             for i in idxs:
-                self.df.at[i, self.ctx.output_col] = str(result_text)
+                for col, val in value_map.items():
+                    self.df.at[i, col] = str(val)
 
                 if getattr(self.ctx, "record_update_time", False) and update_time:
                     # CSV 用「字串」存時間，避免 NaT/float 衝突
