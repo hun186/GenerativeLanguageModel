@@ -305,13 +305,47 @@ def _resolve_task_suffix_for_filename(ctx) -> str:
     return _safe_task_suffix(getattr(ctx, "task", "result"), max_len=max_len)
 
 
+
+
+def _should_parse_as_json_task(task_text: str) -> bool:
+    """
+    判斷任務是否應視為 JSON 任務。
+
+    避免把「禁止輸出 JSON」這類文字誤判為 JSON 任務。
+    """
+    normalized = str(task_text or "").strip().lower()
+    if not normalized:
+        return False
+
+    negative_hints = (
+        "禁止輸出 json",
+        "不要輸出 json",
+        "do not output json",
+        "without json",
+    )
+    if any(h in normalized for h in negative_hints):
+        return False
+
+    positive_hints = (
+        "to json format",
+        "json 回覆",
+        "json回复",
+        "請回傳：[",
+        "请回传：[",
+        "請回傳json",
+        "請輸出json",
+        "output json",
+        "return json",
+    )
+    return any(h in normalized for h in positive_hints)
+
 def combine_api_finished_item(item: str, ctx) -> str:
     print(f"{item} is finished calling API, start to combine returned result.")
     item_p = Path(item)
     suc_dir = item_p / "Success"
 
-    task_text = str(getattr(ctx, "task", "")).lower()
-    json_mode = ("json" in task_text) or ("to json format" in task_text)
+    task_text = str(getattr(ctx, "task", ""))
+    json_mode = _should_parse_as_json_task(task_text)
     text_chunks: list[str] = []
     json_rows: list[dict] = []
 
@@ -335,7 +369,16 @@ def combine_api_finished_item(item: str, ctx) -> str:
                     continue
                 raise ValueError("不支援的 JSON 結構")
             except Exception as e:
-                print(f"❌ 解析 JSON 失敗（將以純文字串接回退）：{p}，錯誤：{e}")
+                has_multistage = False
+                try:
+                    stages = getattr(ctx, "stages", None)
+                    has_multistage = isinstance(stages, list) and len(stages) > 1
+                except Exception:
+                    has_multistage = False
+                if has_multistage:
+                    print(f"⚠️ JSON 解析失敗（multistage 將改由 stage 輸出寫回，可忽略）：{p}，錯誤：{e}")
+                else:
+                    print(f"❌ 解析 JSON 失敗（將以純文字串接回退）：{p}，錯誤：{e}")
         text_chunks.append(text if text.endswith("\n") else text + "\n")
 
     if json_mode and json_rows:
