@@ -105,6 +105,10 @@ class LLMJobConfig:
         self.output_col = ""
         self.record_update_time = None
         self.sql_config_file = ""
+        # SQL / Table writeback 相關預設值（避免多模式共用流程缺屬性）
+        self.sql_table = ""
+        self.target_table = ""
+        self.primary_key = ""
         self.flatten_json_output = False
         self.allowed_output_fields = []  # 允許從 JSON 中展平的欄位名稱
         self.save_raw_input_when_flatten = None  # 展平時仍備查存入原始欄位輸入
