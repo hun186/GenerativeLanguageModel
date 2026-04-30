@@ -28,7 +28,8 @@ stages:
     route_map:
       zh: "@taskSetting:Organization Profile Analyzer to json format"
       non_zh: |
-        你是 JSON 回覆器。若非中文文本，請回傳：
+        你是嚴格 JSON 回覆器。此路由代表「非中文」，必須略過抽取。
+        僅允許輸出以下 JSON（不可新增/刪除/改名任何欄位，不可輸出其他文字）：
         [{
           "route": "non_zh",
           "skipReason": "not_chinese"

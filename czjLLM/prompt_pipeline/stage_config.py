@@ -38,9 +38,8 @@ def _normalize_stage_item(item: Any, index: int, defaults: dict[str, Any]) -> di
     if not task and not task_key:
         raise ValueError(f"Stage {index + 1} 缺少 prompt/task 或 task_key")
 
-    input_from = str(
-        item.get("input_from", item.get("from", defaults.get("input_from", "original")))
-    ).strip() or "original"
+    input_from_raw = item.get("input_from", item.get("from", defaults.get("input_from", "original")))
+    input_from = "" if input_from_raw is None else str(input_from_raw).strip()
     persist_output = str(
         item.get("persist_output", item.get("persist", defaults.get("persist_output", "final")))
     ).strip() or "final"
