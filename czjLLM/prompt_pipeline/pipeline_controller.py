@@ -1583,6 +1583,11 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
 
     def _prepare_todo_for_stage(item: str, stage_name: str, stage_task):
         stage_def = stage_map[stage_name]
+        effective_input_from = stage_def.input_from
+        if isinstance(stage_task, Mapping):
+            override_input_from = stage_task.get("input_from")
+            if override_input_from is not None:
+                effective_input_from = str(override_input_from).strip()
         todo_dir = _stage_todo_dir(item, stage_name)
         root_todo_dir = ops.join(item, "TODO")
         stage_cfg = next((s for s in (getattr(ctx, "stages", None) or []) if isinstance(s, dict) and s.get("name") == stage_name), {})
@@ -1604,7 +1609,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             return
         if (
             stage_name == stage_defs[0].name
-            and stage_def.input_from == "original"
+            and effective_input_from == "original"
             and len(_root_txt_files(root_todo_dir)) > 0
         ):
             MKDIR(todo_dir)
@@ -1613,18 +1618,18 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
             return  # 已有 TODO，不覆蓋
 
-        if stage_def.input_from in {"", "none", "null"}:
+        if effective_input_from in {"", "none", "null"}:
             src_dir = ""
-        elif stage_def.input_from == "original":
+        elif effective_input_from == "original":
             src_dir = _snapshot_dir(item, "original")
-        elif stage_def.input_from == "previous":
+        elif effective_input_from == "previous":
             idx = [s.name for s in stage_defs].index(stage_name)
             prev_name = stage_defs[idx - 1].name if idx > 0 else "original"
             src_dir = _snapshot_dir(item, prev_name)
         else:
-            src_dir = _snapshot_dir(item, stage_def.input_from)
+            src_dir = _snapshot_dir(item, effective_input_from)
 
-        if stage_def.input_from in {"", "none", "null"}:
+        if effective_input_from in {"", "none", "null"}:
             MKDIR(todo_dir)
             _clear_txt_files(todo_dir, ops)
             for fp in _root_txt_files(root_todo_dir):
