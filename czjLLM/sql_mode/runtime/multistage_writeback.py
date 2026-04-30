@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from dataclasses import dataclass
 from typing import Any, Optional
 from czjLLM.utilities.json_text_utils import loads_json_flexible_deep
@@ -178,6 +179,37 @@ def _read_stage_snapshot_text(manifest_path: str, stage_info: dict, ctx: Any | N
     return None
 
 
+
+
+def _manifest_retry_params(ctx: Any | None) -> tuple[int, float]:
+    """回傳 manifest 尋找重試參數：(attempts, sleep_seconds)。"""
+    attempts = 1
+    sleep_sec = 0.0
+    try:
+        if ctx is not None and _has_explicit_multistage(ctx):
+            attempts = int(getattr(ctx, "manifest_lookup_attempts", 4) or 4)
+            sleep_ms = int(getattr(ctx, "manifest_lookup_sleep_ms", 250) or 250)
+            sleep_sec = max(sleep_ms, 0) / 1000.0
+    except Exception:
+        attempts, sleep_sec = 1, 0.0
+    return max(attempts, 1), max(sleep_sec, 0.0)
+
+
+def _find_manifests_with_retry(combined_path: str, ctx: Any | None = None) -> list[str]:
+    """
+    尋找 manifests，必要時短暫重試。
+
+    原因：多階段流程下，manifest 可能在合併後極短時間才落盤。
+    """
+    attempts, sleep_sec = _manifest_retry_params(ctx)
+    for i in range(attempts):
+        manifests = _iter_manifest_candidates(combined_path, ctx=ctx)
+        if manifests:
+            return manifests
+        if i < attempts - 1 and sleep_sec > 0:
+            time.sleep(sleep_sec)
+    return []
+
 def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> WritebackPayload:
     """
     SQL/ES 模式共用：決定主欄位與 flatten 應使用哪份內容。
@@ -196,7 +228,7 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
             payload = combined_text
         return WritebackPayload(main_payload=payload, main_text=combined_text, flatten_text=combined_text, source="combined")
 
-    manifests = _iter_manifest_candidates(combined_path, ctx=ctx)
+    manifests = _find_manifests_with_retry(combined_path, ctx=ctx)
     if not manifests:
         try:
             payload = loads_json_flexible_deep(combined_text)

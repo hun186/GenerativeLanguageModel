@@ -33,8 +33,16 @@ class ExcelSink:
         self.sub_df: Optional[pd.DataFrame] = None
 
         self._flatten_ready_sig = None
-        self.flush_main_every = max(int(flush_main_every or 1), 1)
-        self.flush_sub_every  = max(int(flush_sub_every  or 1), 1)
+        cfg_main = getattr(ctx, "excel_flush_main_every", None)
+        cfg_sub = getattr(ctx, "excel_flush_sub_every", None)
+        has_multistage = bool(getattr(ctx, "stages", None))
+
+        # 多階段長流程預設改為每列落盤，避免中途終止時看起來「完全沒寫入」
+        default_main = 1 if has_multistage else flush_main_every
+        default_sub = 1 if has_multistage else flush_sub_every
+
+        self.flush_main_every = max(int(cfg_main or default_main or 1), 1)
+        self.flush_sub_every  = max(int(cfg_sub or default_sub or 1), 1)
 
         self._dirty_main = False
         self._dirty_sub  = False
@@ -63,8 +71,8 @@ class ExcelSink:
             f"子表每 {self.flush_sub_every} 筆落盤（或 close 時統一寫入）。"
         )
         self._log(
-            "   若需要即時落盤，可設 flush_main_every=1 / flush_sub_every=1，"
-            "或在程式適當時機呼叫 sink.flush_all()。"
+            "   可用 yaml 設定 excel_flush_main_every / excel_flush_sub_every 覆寫；"
+            "若為 multistage 未指定時預設每列落盤。"
         )
         
     def _ensure_text_col(self, df, col):
