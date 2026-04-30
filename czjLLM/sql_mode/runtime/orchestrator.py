@@ -40,7 +40,8 @@ def make_sink(ctx, is_sqlite):
     mode = getattr(ctx, "mode", "")
     if mode == "table":                        # Excel/CSV 模式
         # 需要 ctx.output_excel_file 已在前面 workflow 設定好
-        return ExcelSink(ctx, main_path=ctx.output_excel_file,main_sheet = "LLM_result")
+        main_sheet = getattr(ctx, "main_sheet_name", None) or "LLM_result"
+        return ExcelSink(ctx, main_path=ctx.output_excel_file,main_sheet=main_sheet)
     else:                                      # 預設 SQL
         return SqlSink(ctx, is_sqlite=is_sqlite)
     
