@@ -1,8 +1,7 @@
 # Excel 多階段測試（mode=table）
 mode: table
 channel: excel_source
-model_spec: qwen3:32b-ctx-32k-premises-q4
-
+model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
 # I/O
 input_col: UserChiName
 output_col: OPA2
