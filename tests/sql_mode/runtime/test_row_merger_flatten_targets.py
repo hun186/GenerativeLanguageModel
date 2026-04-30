@@ -117,6 +117,28 @@ def test_resolve_flatten_targets_uses_distinct_default_output_col_name():
     assert targets[0]["output_col"] == "LLM_output"
     assert targets[0]["subtable_name"] == "LLM_result_LLM_output_flattened"
 
+
+
+def test_resolve_flatten_targets_sanitizes_long_excel_sheet_names():
+    ctx = SimpleNamespace(
+        flatten_json_output=True,
+        target_table="LLM_result",
+        output_col="OPA2_audit_json",
+        save_raw_input_when_flatten=False,
+        allowed_output_fields=["route", "auditTag", "auditVersion"],
+        sql_writeback_rules=[{"output_col": "OPA2_audit_json", "source": "combined"}],
+        sql_flatten_writeback_rules=[{"writeback_rule": 0, "enabled": True}],
+    )
+
+    targets = _resolve_flatten_targets(
+        ctx,
+        {"OPA2_audit_json": '[{"route":"other","auditTag":"x","auditVersion":"v1"}]'},
+        '[{"route":"other","auditTag":"x","auditVersion":"v1"}]',
+    )
+
+    assert len(targets) == 1
+    assert targets[0]["subtable_name"] == "LLM_result_OPA2_audit_json_flat"
+
 def test_resolve_flatten_targets_uses_global_allowed_fields_when_rule_not_set():
     ctx = SimpleNamespace(
         flatten_json_output=True,

@@ -21,6 +21,15 @@ from .multistage_writeback import resolve_writeback_payload
 DEFAULT_MAIN_SHEET_NAME = "LLM_result"
 DEFAULT_OUTPUT_COL_NAME = "LLM_output"
 
+INVALID_SHEET_CHARS = set(':\/?!*[]')
+
+def _sanitize_sheet_name(name: str) -> str:
+    if not name:
+        return "flattened"
+    cleaned = "".join(ch for ch in name if ch not in INVALID_SHEET_CHARS).strip().strip("'")
+    return (cleaned or "flattened")[:31]
+
+
 
 
 '''
@@ -156,10 +165,10 @@ def _build_flatten_subtable_name(ctx, output_col: str) -> str:
         target = str(getattr(ctx, "output_col", "") or "").strip()
 
     if not target:
-        return f"{normalized_output_col}_flattened"
+        return _sanitize_sheet_name(f"{normalized_output_col}_flattened")
     if normalized_output_col == target or normalized_output_col.startswith(f"{target}_"):
-        return f"{normalized_output_col}_flattened"
-    return f"{target}_{normalized_output_col}_flattened"
+        return _sanitize_sheet_name(f"{normalized_output_col}_flattened")
+    return _sanitize_sheet_name(f"{target}_{normalized_output_col}_flattened")
 
 def _resolve_flatten_targets(ctx, write_map: dict, default_source_text: str) -> list[dict]:
     """
