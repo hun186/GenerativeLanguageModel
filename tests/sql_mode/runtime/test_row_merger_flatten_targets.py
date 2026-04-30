@@ -61,6 +61,7 @@ def test_resolve_flatten_targets_uses_llm_result_prefix_when_target_table_empty(
     ctx = SimpleNamespace(
         flatten_json_output=True,
         target_table="",
+        main_sheet_name="LLM_result",
         output_col="OPA2",
         save_raw_input_when_flatten=False,
         allowed_output_fields=["formalName"],

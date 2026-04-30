@@ -141,14 +141,18 @@ def _expand_json_columns(ctx, source_text: str) -> dict:
 
 
 def _build_flatten_subtable_name(ctx, output_col: str) -> str:
+    normalized_output_col = str(output_col or "").strip() or "LLM_result"
+
     target = str(getattr(ctx, "target_table", "") or "").strip()
     if not target:
         target = str(getattr(ctx, "main_sheet_name", "") or "").strip()
     if not target:
-        target = "LLM_result"
+        # 最後才回退到主輸出欄名，避免把 LLM_result 當成跨情境的硬編碼預設。
+        target = str(getattr(ctx, "output_col", "") or "").strip()
 
-    normalized_output_col = str(output_col or "").strip()
-    if target and normalized_output_col.startswith(f"{target}_"):
+    if not target:
+        return f"{normalized_output_col}_flattened"
+    if normalized_output_col == target or normalized_output_col.startswith(f"{target}_"):
         return f"{normalized_output_col}_flattened"
     return f"{target}_{normalized_output_col}_flattened"
 
