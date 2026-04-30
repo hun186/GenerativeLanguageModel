@@ -451,6 +451,15 @@ def smart_detect_path(PGMSubDir, path):
     alt_path = os.path.join(PGMSubDir, path)
     if os.path.isfile(alt_path):
         return alt_path
+    # 若 path 已含專案根目錄名稱（例如在專案根下又寫了 "GenerativeLanguageModel/..."），
+    # 會造成重複拼接：<PGMSubDir>/GenerativeLanguageModel/...，此處自動去重再嘗試一次。
+    project_name = os.path.basename(os.path.normpath(PGMSubDir or ""))
+    normalized_path = path.replace("\\", "/")
+    if project_name and normalized_path.startswith(project_name + "/"):
+        trimmed_rel = normalized_path[len(project_name) + 1:]
+        trimmed_path = os.path.join(PGMSubDir, trimmed_rel)
+        if os.path.isfile(trimmed_path):
+            return trimmed_path
     return None
 
 
