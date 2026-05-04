@@ -17,6 +17,17 @@ from czjLLM.prompt_pipeline.stage_runtime import (
     summarize_runtime,
 )
 
+def _stage_task_debug_preview(task: object, max_len: int = 300) -> str:
+    if isinstance(task, Mapping):
+        task_text = str(task.get("task", ""))
+        preview = f"<mapping> keys={sorted(task.keys())} task={task_text!r}"
+    else:
+        preview = str(task)
+    preview = preview.replace("\n", "\\n")
+    if len(preview) > max_len:
+        return preview[:max_len] + "...<truncated>"
+    return preview
+
 
 @dataclass
 class StageRoundResult:
@@ -118,6 +129,11 @@ def execute_stage_round(
         original_text = original_inputs.get(job.chunk_id, "")
         stage_def = stage_map[job.stage_name]
         effective_task, route_err = resolve_stage_task(stage_def, chunk_stage_outputs, task_setting=task_setting)
+        if stage_def.debug_print_llm_io:
+            print(
+                f"[stage:{job.stage_name}] 🔎 resolved task preview: "
+                f"{_stage_task_debug_preview(effective_task)}"
+            )
         if route_err:
             # 路由鍵無法匹配：可選擇回退重跑來源 stage
             if stage_def.retry_source_on_route_miss and stage_def.route_by in chunk_runtime.stages:
