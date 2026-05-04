@@ -15,6 +15,13 @@ output_excel_file: czjLLM/LLMSourcePool/excel_source/LLMInput_UnitName_part_with
 llm_source_backup_dir: czjLLM/LLMSourcePool_origin_backup/excel_source
 llm_source_dir: czjLLM/LLMSourcePool/excel_source
 
+# 工作表與展平子表設定
+# - main_sheet_name: 主結果寫回工作表（預設是 LLM_result）
+# - 多來源 flatten（extract + audit_json）時，建議不要固定 subtable_name，
+#   讓系統依各 output_col 自動產生：
+#   LLM_result_File_result_flattened / LLM_result_File_audit_json_flattened
+main_sheet_name: LLM_result
+
 # 多階段流程（score_route + route + extract + audit_json）
 # - score_route: 讀取 InfoScoreSum，判斷是否 > 300，輸出 high / low
 # - route: 當 score_route=high 時，再判斷是否為組織實體介紹（org / other）；
