@@ -24,6 +24,31 @@ from ...sql_mode.entry.steps import configure_flatten_options as _configure_flat
 # ---------------------------
 # Helpers
 # ---------------------------
+
+
+def _get_input_sheet_name(ctx, get_param):
+    sheet = get_param("source_sheet_name") or getattr(ctx, "source_sheet_name", None)
+    if isinstance(sheet, str):
+        sheet = sheet.strip()
+    if not sheet:
+        sheet = None
+    setattr(ctx, "source_sheet_name", sheet)
+    return sheet
+
+
+def _get_output_sheet_name(ctx, get_param=None):
+    """
+    輸出工作表名稱（target_sheet_name）。
+    """
+    cfg_target = get_param("target_sheet_name") if get_param else None
+    sheet = cfg_target or getattr(ctx, "target_sheet_name", None) or "LLM_result"
+    if isinstance(sheet, str):
+        sheet = sheet.strip() or "LLM_result"
+    else:
+        sheet = "LLM_result"
+    setattr(ctx, "target_sheet_name", sheet)
+    return sheet
+
 def _fmt_from_path(p: str) -> str:
     p = (p or "").lower()
     return "csv" if p.endswith(".csv") else "excel"
@@ -170,7 +195,8 @@ def resolve_tabular_paths(ctx, get_param, args) -> Tuple[str, str]:
 # 2) 選欄（input / output / pk / update_time）
 # ---------------------------
 def choose_columns_common(ctx, input_path: str, get_param, args) -> List[str]:
-    df_src = read_dataframe(input_path, nrows=2)
+    sheet_name = _get_input_sheet_name(ctx, get_param)
+    df_src = read_dataframe(input_path, nrows=2, sheet_name=sheet_name)
     columns = list(df_src.columns)
 
     # input_col
@@ -279,7 +305,7 @@ def ensure_schemas_tabular(ctx, input_path: str, output_path: str, fmt: str) -> 
     """
     output_exists = os.path.isfile(output_path)
     path = output_path if output_exists else input_path
-    df = read_dataframe(path)
+    df = read_dataframe(path, sheet_name=getattr(ctx, "input_sheet_name", None))
 
     changed = False
 
@@ -294,7 +320,7 @@ def ensure_schemas_tabular(ctx, input_path: str, output_path: str, fmt: str) -> 
     else:
         if pk_name not in df.columns:
             try:
-                src_df = read_dataframe(input_path)
+                src_df = read_dataframe(input_path, sheet_name=getattr(ctx, "input_sheet_name", None))
                 if pk_name in src_df.columns:
                     df[pk_name] = src_df[pk_name].reset_index(drop=True)
                     changed = True
@@ -353,20 +379,19 @@ def ensure_schemas_tabular(ctx, input_path: str, output_path: str, fmt: str) -> 
 
     # 主表工作表名（Excel）
     if fmt == "excel":
-        main_sheet = getattr(ctx, "main_sheet_name", None) or "LLM_result"
-        setattr(ctx, "main_sheet_name", main_sheet)
+        main_sheet = _get_output_sheet_name(ctx)
 
     # ---- 寫回 ----
     if not output_exists:
         backup_table_file(input_path)
         if fmt == "excel":
-            write_dataframe_sheet(df, output_path, sheet_name=ctx.main_sheet_name, index=False)
+            write_dataframe_sheet(df, output_path, sheet_name=ctx.output_sheet_name, index=False)
         else:
             write_dataframe(df, output_path, index=False)
     else:
         if changed:
             if fmt == "excel":
-                write_dataframe_sheet(df, output_path, sheet_name=ctx.main_sheet_name, index=False)
+                write_dataframe_sheet(df, output_path, sheet_name=ctx.output_sheet_name, index=False)
             else:
                 write_dataframe(df, output_path, index=False)
 
@@ -406,14 +431,14 @@ def maybe_reset_output_tabular(ctx, input_path: str, output_path: str, fmt: str,
         # 僅重設主表工作表
         try:
             xls = pd.ExcelFile(output_path)
-            sheet_name = getattr(ctx, "main_sheet_name", None) or "LLM_result"
+            sheet_name = _get_output_sheet_name(ctx)
             if sheet_name not in xls.sheet_names:
                 # 找不到就退而讀預設
-                df = read_dataframe(output_path)
+                df = read_dataframe(output_path, sheet_name=_get_output_sheet_name(ctx))
             else:
                 df = xls.parse(sheet_name)
         except Exception:
-            df = read_dataframe(output_path)
+            df = read_dataframe(output_path, sheet_name=_get_output_sheet_name(ctx))
 
         if ctx.output_col in df.columns:
             df[ctx.output_col] = ""
@@ -425,9 +450,9 @@ def maybe_reset_output_tabular(ctx, input_path: str, output_path: str, fmt: str,
                 pass
 
         backup_table_file(output_path)
-        write_dataframe_sheet(df, output_path, sheet_name=getattr(ctx, "main_sheet_name", "LLM_result"), index=False)
+        write_dataframe_sheet(df, output_path, sheet_name=_get_output_sheet_name(ctx), index=False)
     else:
-        df = read_dataframe(output_path if os.path.isfile(output_path) else input_path)
+        df = read_dataframe(output_path if os.path.isfile(output_path) else input_path, sheet_name=(_get_output_sheet_name(ctx) if os.path.isfile(output_path) else getattr(ctx, "input_sheet_name", None)))
         if ctx.output_col in df.columns:
             df[ctx.output_col] = ""
         if getattr(ctx, "record_update_time", False) and "update_time" in df.columns:
@@ -450,7 +475,7 @@ def build_pending_iter_tabular(ctx, input_path: str, output_path: str, fmt: str)
     """
     output_exists = os.path.isfile(output_path)
     path = output_path if output_exists else input_path
-    df = read_dataframe(path).reset_index(drop=True)
+    df = read_dataframe(path, sheet_name=(_get_output_sheet_name(ctx) if path == output_path else getattr(ctx, "input_sheet_name", None))).reset_index(drop=True)
 
     # 主鍵欄位
     pk_col = getattr(ctx, "primary_key", None) or "row_id"
@@ -477,7 +502,7 @@ def build_pending_iter_tabular(ctx, input_path: str, output_path: str, fmt: str)
     # 初跑：把 schema 落到 output（保留 Excel 其他 sheet）
     if path != output_path:
         if fmt == "excel":
-            main_sheet = getattr(ctx, "main_sheet_name", None) or "LLM_result"
+            main_sheet = _get_output_sheet_name(ctx)
             write_dataframe_sheet(df, output_path, sheet_name=main_sheet, index=False)
         else:
             write_dataframe(df, output_path, index=False)
