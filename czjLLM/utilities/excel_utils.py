@@ -7,7 +7,7 @@ import json
 from typing import Optional
 from openpyxl import load_workbook
 
-def read_dataframe(file_path: str, nrows: int = None, table_name: str = None) -> pd.DataFrame:
+def read_dataframe(file_path: str, nrows: int = None, table_name: str = None, sheet_name: str = None) -> pd.DataFrame:
     """
     根據副檔名自動判斷檔案格式並讀取資料，支援：
     - .xlsx / .xls
@@ -23,7 +23,14 @@ def read_dataframe(file_path: str, nrows: int = None, table_name: str = None) ->
 
     try:
         if ext in [".xlsx", ".xls"]:
-            df = pd.read_excel(file_path, nrows=nrows)
+            if sheet_name:
+                print(f"📑 指定讀取工作表：{sheet_name}")
+                df = pd.read_excel(file_path, sheet_name=sheet_name, nrows=nrows)
+            else:
+                xls = pd.ExcelFile(file_path)
+                first_sheet = xls.sheet_names[0] if xls.sheet_names else "Sheet1"
+                print(f"⚠️ 未設定 source_sheet_name，改讀第一個工作表：{first_sheet}")
+                df = pd.read_excel(file_path, sheet_name=first_sheet, nrows=nrows)
 
         elif ext == ".csv":
             try:

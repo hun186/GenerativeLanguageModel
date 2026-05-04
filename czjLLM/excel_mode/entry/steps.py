@@ -15,6 +15,30 @@ import pandas as pd
 import math
 
 
+
+def _get_input_sheet_name(ctx, get_param):
+    sheet = get_param("source_sheet_name") or getattr(ctx, "source_sheet_name", None)
+    if isinstance(sheet, str):
+        sheet = sheet.strip()
+    if not sheet:
+        sheet = None
+    setattr(ctx, "source_sheet_name", sheet)
+    return sheet
+
+
+def _get_output_sheet_name(ctx, get_param=None):
+    """
+    輸出工作表名稱（target_sheet_name）。
+    """
+    cfg_target = get_param("target_sheet_name") if get_param else None
+    sheet = cfg_target or getattr(ctx, "target_sheet_name", None) or "LLM_result"
+    if isinstance(sheet, str):
+        sheet = sheet.strip() or "LLM_result"
+    else:
+        sheet = "LLM_result"
+    setattr(ctx, "target_sheet_name", sheet)
+    return sheet
+
 # ---------------------------
 # 1) 選檔 + 輸出路徑
 # ---------------------------
@@ -64,7 +88,8 @@ def choose_columns(ctx, input_path: str, get_param, args) -> List[str]:
     會寫入：ctx.input_col, ctx.output_col, ctx.record_update_time
     """
     # 如果已有結果檔，優先看結果檔（便於續跑）
-    df_src = read_dataframe(input_path, nrows=2)
+    sheet_name = _get_input_sheet_name(ctx, get_param)
+    df_src = read_dataframe(input_path, nrows=2, sheet_name=sheet_name)
     columns = list(df_src.columns)
 
     ctx.input_col = get_param("input_col")
@@ -120,7 +145,7 @@ def ensure_schemas(ctx, input_path: str, output_path: str) -> None:
     output_exists = os.path.isfile(output_path)
     # 續跑用 output，初跑用 input
     path = output_path if output_exists else input_path
-    df = read_dataframe(path)
+    df = read_dataframe(path, sheet_name=getattr(ctx, "input_sheet_name", None))
 
     changed = False
 
@@ -137,7 +162,7 @@ def ensure_schemas(ctx, input_path: str, output_path: str) -> None:
         # 使用者指定的主鍵欄位必須存在於 output；若不在，嘗試從 input 補回（按列序對齊）
         if pk_name not in df.columns:
             try:
-                src_df = read_dataframe(input_path)
+                src_df = read_dataframe(input_path, sheet_name=getattr(ctx, "input_sheet_name", None))
                 if pk_name in src_df.columns:
                     # 依列序補回（reset_index 保持對齊）
                     df[pk_name] = src_df[pk_name].reset_index(drop=True)
@@ -196,8 +221,7 @@ def ensure_schemas(ctx, input_path: str, output_path: str) -> None:
             write_dataframe(df, output_path, index=False)
     '''
     # 建議統一主表工作表名
-    main_sheet = getattr(ctx, "main_sheet_name", None) or "LLM_result"
-    setattr(ctx, "main_sheet_name", main_sheet)
+    main_sheet = _get_output_sheet_name(ctx)
     
     # ---- 寫回 ----
     if not output_exists:
@@ -220,7 +244,7 @@ def _reset_excel_output_with_backup(ctx, output_path: str) -> None:
     if not os.path.isfile(output_path):
         return
     backup_table_file(output_path)
-    df = read_dataframe(output_path)
+    df = read_dataframe(output_path, sheet_name=_get_output_sheet_name(ctx))
     if ctx.output_col in df.columns:
         df[ctx.output_col] = ""
     if ctx.record_update_time and "update_time" in df.columns:
@@ -269,7 +293,7 @@ def build_pending_iter(ctx, input_path: str, output_path: str) -> Iterable:
     """
     # 1) 以 output 為準（續跑），沒有就用 input
     path = output_path if os.path.isfile(output_path) else input_path
-    df = read_dataframe(path)
+    df = read_dataframe(path, sheet_name=(_get_output_sheet_name(ctx) if path == output_path else getattr(ctx, "input_sheet_name", None)))
 
     # 2) 主鍵欄位就緒（找不到就建立 row_id）
     pk_col = getattr(ctx, "primary_key", None) or "row_id"

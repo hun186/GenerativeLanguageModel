@@ -361,3 +361,47 @@ mock_llm_mode: true
 - `czjLLM/yaml/sqlite_json_multistage_mock.yaml`
 - `czjLLM/yaml/sqlite_json_multistage_prod_template.yaml`
 - `czjLLM/yaml/sqlserver_multistage_prod_template.yaml`
+
+---
+
+## 8) SQL 模式 / Excel 模式：來源與目標設定（source/target 命名）
+
+為了避免 `input/output`、`main_sheet` 等名稱混淆，建議在表格型流程統一使用：
+
+- `source_*`：讀取來源
+- `target_*`：寫回目標
+
+### Excel / Table（CSV, XLSX）常用欄位
+
+- `source_sheet_name`：來源工作表名稱（讀取用）
+  - 若未設定且檔案是 Excel，系統會讀第一個工作表，並在終端機印出警告。
+- `target_sheet_name`：結果寫回工作表名稱（寫入用）
+  - 未設定時預設 `LLM_result`。
+- `input_col`：來源文字欄位
+- `output_col`：LLM 輸出欄位
+- `primary_key`：主鍵欄位（可用 `row_id`）
+
+### SQL 模式常用欄位（語意對照）
+
+- `source`：來源資料（來源資料庫/資料表）
+- `target`：寫回目標（目標資料庫/資料表）
+- `input_col` / `output_col` / `primary_key`：欄位層設定
+
+> 建議：若專案同時有 SQL 與 Excel 流程，命名層次盡量一致：
+> - 資料來源/目標用 `source` / `target`
+> - 欄位名才用 `input_col` / `output_col`
+
+### Excel 範例（推薦）
+
+```yaml
+mode: table
+input_excel_file: czjLLM/LLMSourcePool/excel_source/demo.xlsx
+output_excel_file: czjLLM/LLMSourcePool/excel_source/demo_with_result.xlsx
+
+source_sheet_name: RawData
+target_sheet_name: LLM_result
+
+input_col: File
+output_col: File_result
+primary_key: row_id
+```
