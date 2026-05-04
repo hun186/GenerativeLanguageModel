@@ -146,7 +146,7 @@ def _build_flatten_subtable_name(ctx, output_col: str) -> str:
 
     target = str(getattr(ctx, "target_table", "") or "").strip()
     if not target:
-        target = str(getattr(ctx, "main_sheet_name", "") or "").strip()
+        target = str(getattr(ctx, "target_sheet_name", "") or "").strip()
         if not target:
             target = DEFAULT_MAIN_SHEET_NAME
     if not target:
