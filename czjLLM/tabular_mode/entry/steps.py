@@ -497,6 +497,16 @@ def build_pending_iter_tabular(ctx, input_path: str, output_path: str, fmt: str)
             text = row.get(in_col, None)
             if _is_empty(text):
                 continue
+
+            # 提供整列來源欄位給多階段 stage.input_col / route_map.input_col 使用
+            # （例如 score_route 讀 InfoScoreSum，而主 input_col 仍是 File）
+            source_inputs = {}
+            for col in df.columns:
+                try:
+                    source_inputs[str(col)] = "" if _is_empty(row.get(col, None)) else str(row.get(col, ""))
+                except Exception:
+                    source_inputs[str(col)] = ""
+
             seen.add(pk)
-            yield (pk, str(text))
+            yield (pk, str(text), source_inputs)
     return _gen()
