@@ -379,7 +379,7 @@ def ensure_schemas_tabular(ctx, input_path: str, output_path: str, fmt: str) -> 
 
     # 主表工作表名（Excel）
     if fmt == "excel":
-        main_sheet = _get_output_sheet_name(ctx, get_param)
+        main_sheet = _get_output_sheet_name(ctx)
 
     # ---- 寫回 ----
     if not output_exists:
