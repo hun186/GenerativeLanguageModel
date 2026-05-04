@@ -1597,11 +1597,15 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             stage_input_col = "" if route_input_col_raw is None else str(route_input_col_raw).strip()
 
         stage_source_inputs = getattr(ctx, "stage_source_inputs", {}) or {}
+        anchor_files = _root_txt_files(root_todo_dir)
+        if not anchor_files:
+            # 在多階段中，前一階段可能已清空 root TODO；此時回退用 original 快照作為切片錨點。
+            anchor_files = _root_txt_files(_snapshot_dir(item, "original"))
         if stage_input_col and stage_input_col in stage_source_inputs:
             src_text = str(stage_source_inputs.get(stage_input_col, "") or "")
             MKDIR(todo_dir)
             _clear_txt_files(todo_dir, ops)
-            for fp in _root_txt_files(root_todo_dir):
+            for fp in anchor_files:
                 prompt_text = _build_stage_prompt_text(stage_task, src_text, ctx)
                 dst_fp = os.path.join(todo_dir, fp.name)
                 with open(dst_fp, "w", encoding="utf-8") as f:
@@ -1632,7 +1636,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         if effective_input_from in {"", "none", "null"}:
             MKDIR(todo_dir)
             _clear_txt_files(todo_dir, ops)
-            for fp in _root_txt_files(root_todo_dir):
+            for fp in anchor_files:
                 prompt_text = _build_stage_prompt_text(stage_task, "", ctx)
                 dst_fp = os.path.join(todo_dir, fp.name)
                 with open(dst_fp, "w", encoding="utf-8") as f:
