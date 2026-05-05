@@ -671,6 +671,58 @@ taskSetting_ANKInt = {
             f"{content}"
         )
     },
+    "Stock-Group-Classification": {
+        "CT_name": "台股族群雙層分類",
+        "InputCutLen": 2000,
+        "template": lambda content: (
+            f"請根據輸入的股票名稱或相關資訊，判斷該股票最適合的「主族群 (group)」與「次族群 (subgroup)」。\n\n"
+    
+            "【分類規則】\n"
+            "1. 主族群 (group) 必須從以下選擇一個：\n"
+            "- AI光通訊\n"
+            "- AI晶片\n"
+            "- AI伺服器\n"
+            "- AI PCB\n"
+            "- AI網通\n"
+            "- AI記憶體\n"
+            "- 電源散熱\n"
+            "- 半導體\n"
+            "- 材料\n"
+            "- 金融\n"
+            "- 傳產\n"
+            "- 其他\n\n"
+    
+            "2. 次族群 (subgroup) 請具體描述產業位置，例如：\n"
+            "- 光纖元件\n"
+            "- 雷射 / 磊晶\n"
+            "- CPO封裝\n"
+            "- GPU供應鏈\n"
+            "- 伺服器代工\n"
+            "- PCB載板\n"
+            "- 網通設備\n"
+            "- 記憶體製造\n"
+            "- 散熱模組\n"
+            "- 電源供應\n"
+            "- 化工材料\n"
+            "- 銀行 / 保險\n\n"
+    
+            "3. 如果無法判斷，請輸出：\n"
+            "group = 其他\n"
+            "subgroup = 未分類\n\n"
+    
+            "【輸出格式要求】\n"
+            "請只輸出 JSON，不要有任何說明或多餘文字。\n\n"
+    
+            "格式如下：\n"
+            "{\n"
+            '  "group": "...",\n'
+            '  "subgroup": "..."\n'
+            "}\n\n"
+    
+            "☆下列為輸入任務文本：\n"
+            f"{content}"
+        )
+    },
     "Summary-toTWZH":{
         "CT_name":"以繁體中文摘要",
         "InputCutLen":100*1000, #sample:(Input EN 2703-> TWZH 4101)
