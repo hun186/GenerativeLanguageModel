@@ -118,7 +118,14 @@ def select_idle_ollama_url(base_urls, PGMSubDir: str = ""):
     if isinstance(base_urls, str):
         base_urls = [base_urls]
     load_file = os.path.join(PGMSubDir, "logs", "base_url_load.json")
-    lock_fp = _acquire_file_lock(_lock_path(load_file))
+    lock_fp = None
+    try:
+        lock_fp = _acquire_file_lock(_lock_path(load_file))
+    except TimeoutError as ex:
+        # 降級策略：避免因負載統計鎖競爭導致整個 LLM 呼叫失敗
+        chosen = random.choice(base_urls)
+        print(f"⚠️ base_url 負載鎖逾時，改用降級隨機選擇: {chosen} ({ex})")
+        return chosen
     try:
         state = _load_state(load_file, base_urls)
         now_ts = _now()
@@ -168,7 +175,13 @@ def release_url_load(base_url: str, PGMSubDir: str = ""):
     即使忘了呼叫，租約也會在 LEASE_SECS 後自動失效，避免計數漂移。
     """
     load_file = os.path.join(PGMSubDir, "logs", "base_url_load.json")
-    lock_fp = _acquire_file_lock(_lock_path(load_file))
+    lock_fp = None
+    try:
+        lock_fp = _acquire_file_lock(_lock_path(load_file))
+    except TimeoutError as ex:
+        # 釋放鎖失敗不阻斷主流程；租約也會靠 TTL 自動過期。
+        print(f"⚠️ release_url_load 略過（鎖逾時）: {ex}")
+        return
     try:
         if not os.path.exists(load_file):
             return

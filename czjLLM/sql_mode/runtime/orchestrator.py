@@ -113,7 +113,17 @@ def _is_reg_drained(reg) -> bool:
         st = reg.stats()  # 期待 {'pending':..,'running':..,'finished':..,'dispatched':..}
         return st.get('pending', 0) == 0 and st.get('running', 0) == 0
     except Exception:
-        return bool(getattr(reg, 'empty', lambda: True)())
+        try:
+            if hasattr(reg, "empty"):
+                return bool(reg.empty())
+        except Exception:
+            pass
+        try:
+            items = reg.list_items() if hasattr(reg, "list_items") else {}
+            return len(items or {}) == 0
+        except Exception:
+            # 保守：無法判斷時視為尚未 drained，避免過早收尾/錯誤觀測。
+            return False
 
 
 def _dir_file_count(p: str) -> int:
