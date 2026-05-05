@@ -1,0 +1,85 @@
+# 台股族群雙層分類（Excel 批次）
+mode: table
+channel: excel_source
+model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+
+# I/O
+input_col: name
+output_col: stock_group_json
+primary_key: symbol
+record_update_time: true
+
+input_excel_file: czjLLM/LLMSourcePool/excel_source/tw_stock_llm_datasource_excel/tw_stock_llm_source.xlsx
+output_excel_file: czjLLM/LLMSourcePool/excel_source/tw_stock_llm_datasource_excel/tw_stock_llm_source_with_group.xlsx
+llm_source_backup_dir: czjLLM/LLMSourcePool_origin_backup/excel_source
+llm_source_dir: czjLLM/LLMSourcePool/excel_source
+
+# JSON 攤平成欄位（group / subgroup）
+flatten_json_output: true
+save_raw_input_when_flatten: true
+allowed_output_fields:
+  - group
+  - subgroup
+
+# 單階段分類
+stages:
+  - name: classify
+    prompt: |
+      請根據輸入的股票名稱或相關資訊，判斷該股票最適合的「主族群 (group)」與「次族群 (subgroup)」。
+
+      【分類規則】
+      1. 主族群 (group) 必須從以下選擇一個：
+      - AI光通訊
+      - AI晶片
+      - AI伺服器
+      - AI PCB
+      - AI網通
+      - AI記憶體
+      - 電源散熱
+      - 半導體
+      - 材料
+      - 金融
+      - 傳產
+      - 其他
+
+      2. 次族群 (subgroup) 請具體描述產業位置，例如：
+      - 光纖元件
+      - 雷射 / 磊晶
+      - CPO封裝
+      - GPU供應鏈
+      - 伺服器代工
+      - PCB載板
+      - 網通設備
+      - 記憶體製造
+      - 散熱模組
+      - 電源供應
+      - 化工材料
+      - 銀行 / 保險
+
+      3. 如果無法判斷，請輸出：
+      group = 其他
+      subgroup = 未分類
+
+      【輸出格式要求】
+      請只輸出 JSON，不要有任何說明或多餘文字。
+
+      格式如下：
+      {
+        "group": "...",
+        "subgroup": "..."
+      }
+    input_from: original
+    persist_output: always
+    max_attempts: 3
+
+# 將結果寫回，並攤平 group / subgroup 到新欄位
+sql_writeback_rules:
+  - output_col: stock_group_json
+    source: stage
+    stage: classify
+
+sql_flatten_writeback_rules:
+  - writeback_rule: 0
+    enabled: true
+    flatten_store_input_col: true
+    allowed_output_fields: [group, subgroup]
