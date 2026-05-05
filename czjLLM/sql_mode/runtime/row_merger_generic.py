@@ -339,6 +339,8 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
     # 只在 TODO/Success 計數有變化時才印一次
     if not hasattr(row_merger_watchdog_generic, "_last_state"):
         row_merger_watchdog_generic._last_state = {}
+    if not hasattr(row_merger_watchdog_generic, "_stage_wait_logged"):
+        row_merger_watchdog_generic._stage_wait_logged = set()
 
     def _log_state_once(item_dir):
         todo_dir = os.path.join(item_dir, "TODO")
@@ -511,6 +513,17 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     progressed = True
 
                 except Exception as e:
+                    msg = str(e)
+                    if "stage 寫回模式找不到可用 stage 輸出" in msg:
+                        wait_key = (item_dir, pk)
+                        if wait_key not in row_merger_watchdog_generic._stage_wait_logged:
+                            tlog(
+                                f"⏳ Row Merger 等待 stage merged 輸出（pk={pk}，stage selector 尚未可用），"
+                                "下一輪會自動重試。"
+                            )
+                            row_merger_watchdog_generic._stage_wait_logged.add(wait_key)
+                        continue
+                    row_merger_watchdog_generic._stage_wait_logged.discard((item_dir, pk))
                     tlog_warn(f"Row Merger 寫回失敗 pk={pk}: {e}")
                     # 不要 raise；下一輪會再試
                     continue
