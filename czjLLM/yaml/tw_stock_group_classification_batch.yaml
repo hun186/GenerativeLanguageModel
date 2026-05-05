@@ -76,7 +76,9 @@ stages:
     input_from: original
     persist_output: always
     max_attempts: 3
-
+    debug_print_llm_io: false
+    #debug_print_max_chars: -1
+    
 # 將結果寫回，並攤平 group / subgroup 到新欄位
 sql_writeback_rules:
   - output_col: stock_group_json
