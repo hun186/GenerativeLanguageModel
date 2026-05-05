@@ -499,13 +499,64 @@ def build_pending_iter_tabular(ctx, input_path: str, output_path: str, fmt: str)
         else:
             df["update_time"] = ""
 
+    # 續跑：若 input 有新列但 output 尚未同步，將新主鍵補進待處理主表
+    needs_persist = (path != output_path)
+    if output_exists and os.path.isfile(input_path):
+        try:
+            src_df = read_dataframe(input_path, sheet_name=getattr(ctx, "input_sheet_name", None)).reset_index(drop=True)
+            if pk_col in src_df.columns:
+                src_df = src_df.copy()
+                src_df["_merge_pk"] = src_df[pk_col].astype(str)
+                df["_merge_pk"] = df[pk_col].astype(str)
+                existing_pks = set(df["_merge_pk"].tolist())
+                missing_src = src_df[~src_df["_merge_pk"].isin(existing_pks)].drop(columns=["_merge_pk"])
+                df = df.drop(columns=["_merge_pk"])
+                if not missing_src.empty:
+                    for c in df.columns:
+                        if c not in missing_src.columns:
+                            missing_src[c] = pd.NA if c != out_col else ""
+                    for c in missing_src.columns:
+                        if c not in df.columns:
+                            df[c] = pd.NA
+                    missing_src = missing_src[df.columns]
+                    if out_col in missing_src.columns:
+                        missing_src[out_col] = ""
+                    df = pd.concat([df, missing_src], ignore_index=True)
+                    needs_persist = True
+                    print(f"🔄 偵測到 input 新增 {len(missing_src)} 筆主鍵，已補入 output 主表待處理清單。")
+        except Exception as ex:
+            tlog_warn(f"⚠️ 同步 input 新主鍵至 output 失敗：{ex}")
+
     # 初跑：把 schema 落到 output（保留 Excel 其他 sheet）
-    if path != output_path:
+    if needs_persist:
         if fmt == "excel":
             main_sheet = _get_output_sheet_name(ctx)
             write_dataframe_sheet(df, output_path, sheet_name=main_sheet, index=False)
         else:
             write_dataframe(df, output_path, index=False)
+
+    # 先做一次統計，避免「總列數」與「待處理列數」混淆
+    total_rows = len(df)
+    pending_unique = 0
+    pending_rows = 0
+    seen_probe = set()
+    for _, row in df.iterrows():
+        pk = row.get(pk_col, None)
+        if _is_empty(pk):
+            continue
+        outv = row.get(out_col, None)
+        text = row.get(in_col, None)
+        if (not _is_empty(outv)) or _is_empty(text):
+            continue
+        pending_rows += 1
+        if pk not in seen_probe:
+            pending_unique += 1
+            seen_probe.add(pk)
+
+    print(
+        f"📊 主表總列數：{total_rows}；待處理列數：{pending_rows}；"
+        f"待派工主鍵數（去重後）：{pending_unique}"
+    )
 
     # 產生器（重複主鍵只派一次）
     seen = set()
