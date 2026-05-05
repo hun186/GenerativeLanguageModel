@@ -14,6 +14,10 @@ output_excel_file: czjLLM/LLMSourcePool/excel_source/tw_stock_llm_datasource_exc
 llm_source_backup_dir: czjLLM/LLMSourcePool_origin_backup/excel_source
 llm_source_dir: czjLLM/LLMSourcePool/excel_source
 
+# Excel 工作表設定（與 sqlite/table 慣例一致）
+source_sheet_name: tw_stock_llm_source
+target_sheet_name: LLM_result
+
 # JSON 攤平成欄位（group / subgroup）
 flatten_json_output: true
 save_raw_input_when_flatten: true

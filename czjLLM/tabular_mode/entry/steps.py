@@ -385,13 +385,13 @@ def ensure_schemas_tabular(ctx, input_path: str, output_path: str, fmt: str) -> 
     if not output_exists:
         backup_table_file(input_path)
         if fmt == "excel":
-            write_dataframe_sheet(df, output_path, sheet_name=ctx.output_sheet_name, index=False)
+            write_dataframe_sheet(df, output_path, sheet_name=main_sheet, index=False)
         else:
             write_dataframe(df, output_path, index=False)
     else:
         if changed:
             if fmt == "excel":
-                write_dataframe_sheet(df, output_path, sheet_name=ctx.output_sheet_name, index=False)
+                write_dataframe_sheet(df, output_path, sheet_name=main_sheet, index=False)
             else:
                 write_dataframe(df, output_path, index=False)
 
