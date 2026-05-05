@@ -77,13 +77,25 @@ def produce_rows(
                 pass
             continue
 
-        producer_backpressure_wait(
-            ctx=ctx, low=low, meter_fn=meter_fn, stop_event=stop_event,
-            consumer_thread=consumer, registry=registry,
-            soft_timeout=getattr(ctx, "bp_soft_timeout", 30.0),
-            hard_timeout=getattr(ctx, "bp_hard_timeout", 120.0),
-            sleep_step=0.05,
-        )
+        try:
+            producer_backpressure_wait(
+                ctx=ctx, low=low, meter_fn=meter_fn, stop_event=stop_event,
+                consumer_thread=consumer, registry=registry,
+                soft_timeout=getattr(ctx, "bp_soft_timeout", 30.0),
+                hard_timeout=getattr(ctx, "bp_hard_timeout", 120.0),
+                sleep_step=0.05,
+            )
+        except Exception as e:
+            tlog_warn(f"[producer] backpressure wait 例外，略過此列 pk={pk}: {e!r}")
+            try:
+                meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
+                    "cursor": seen, "enq": scheduled, "producer_alive": True,
+                    "last_progress_ts": time.time(),
+                    "last_error": f"backpressure:{type(e).__name__}"
+                }))
+            except Exception:
+                pass
+            continue
 
         try:
             schedule_one_row(ctx, registry, meter_fn, idx, pk, text, source_inputs=source_inputs)
