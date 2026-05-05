@@ -385,6 +385,26 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
             source=f"stage:{stage_name}",
         )
 
+    # 單階段 + 指定 stage 時，允許以 combined 作為最終保底來源。
+    # 原因：單階段流程可能不會產生獨立 merged_file/manifest，但 combined 內容即為該 stage 輸出。
+    if selector_token:
+        stage_cfg = getattr(ctx, "stages", None)
+        if isinstance(stage_cfg, list) and len(stage_cfg) == 1:
+            only = stage_cfg[0] if isinstance(stage_cfg[0], dict) else {}
+            only_name = str(only.get("name", "")).strip()
+            only_task_key = str(only.get("task_key", "")).strip()
+            if selector_token in {only_name, only_task_key, "1"}:
+                try:
+                    payload = loads_json_flexible_deep(combined_text)
+                except Exception:
+                    payload = combined_text
+                return WritebackPayload(
+                    main_payload=payload,
+                    main_text=combined_text,
+                    flatten_text=combined_text,
+                    source=f"combined:fallback:{selector_token}",
+                )
+
     stage_hint = selector_token or "<last merged stage>"
     raise RuntimeError(
         f"stage 寫回模式找不到可用 stage 輸出（selector={stage_hint}）；已中止寫回以避免誤寫。"
