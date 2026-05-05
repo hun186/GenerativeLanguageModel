@@ -13,21 +13,31 @@ class WritebackPayload:
     flatten_text: str
     source: str
 
+
+
+def _get_configured_stages(ctx: Any | None) -> list[dict]:
+    """統一擷取設定中的 stages（支援 ctx.stages / ctx.task_config.stages）。"""
+    if ctx is None:
+        return []
+    raw = getattr(ctx, "stages", None)
+    if isinstance(raw, list):
+        return [x for x in raw if isinstance(x, dict)]
+    if isinstance(raw, dict):
+        vals = raw.get("stages")
+        if isinstance(vals, list):
+            return [x for x in vals if isinstance(x, dict)]
+    task_cfg = getattr(ctx, "task_config", None)
+    if isinstance(task_cfg, dict):
+        vals = task_cfg.get("stages")
+        if isinstance(vals, list):
+            return [x for x in vals if isinstance(x, dict)]
+    return []
+
 def _has_explicit_multistage(ctx: Any | None) -> bool:
     """判斷是否有明確配置多階段（stages>=2）。"""
     if ctx is None:
         return False
-    stages = getattr(ctx, "stages", None)
-    if isinstance(stages, list):
-        return len(stages) > 1
-    if isinstance(stages, dict):
-        raw = stages.get("stages")
-        return isinstance(raw, list) and len(raw) > 1
-    task_cfg = getattr(ctx, "task_config", None)
-    if isinstance(task_cfg, dict):
-        raw = task_cfg.get("stages")
-        return isinstance(raw, list) and len(raw) > 1
-    return False
+    return len(_get_configured_stages(ctx)) > 1
 
 
 def _iter_manifest_candidates(combined_path: str, ctx: Any | None = None) -> list[str]:
@@ -388,12 +398,18 @@ def resolve_writeback_payload(ctx, combined_path: str, combined_text: str) -> Wr
     # 單階段 + 指定 stage 時，允許以 combined 作為最終保底來源。
     # 原因：單階段流程可能不會產生獨立 merged_file/manifest，但 combined 內容即為該 stage 輸出。
     if selector_token:
-        stage_cfg = getattr(ctx, "stages", None)
-        if isinstance(stage_cfg, list) and len(stage_cfg) == 1:
-            only = stage_cfg[0] if isinstance(stage_cfg[0], dict) else {}
+        stage_cfg = _get_configured_stages(ctx)
+        if len(stage_cfg) == 1:
+            only = stage_cfg[0]
             only_name = str(only.get("name", "")).strip()
             only_task_key = str(only.get("task_key", "")).strip()
-            if selector_token in {only_name, only_task_key, "1"}:
+            token_norm = selector_token.casefold()
+            candidates = {"1"}
+            if only_name:
+                candidates.add(only_name.casefold())
+            if only_task_key:
+                candidates.add(only_task_key.casefold())
+            if token_norm in candidates:
                 try:
                     payload = loads_json_flexible_deep(combined_text)
                 except Exception:
