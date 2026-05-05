@@ -72,6 +72,7 @@ stages:
         "group": "...",
         "subgroup": "..."
       }
+      輸入股票：
     input_from: original
     persist_output: always
     max_attempts: 3
