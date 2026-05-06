@@ -41,8 +41,8 @@ stages:
     input_from: original
     persist_output: always
     max_attempts: 3
-    debug_print_llm_io: true
-    debug_print_max_chars: -1
+    #debug_print_llm_io: true
+    #debug_print_max_chars: -1
 
   - name: route
     input_from: original
@@ -62,8 +62,8 @@ stages:
     retry_source_on_route_miss: true
     persist_output: always
     max_attempts: 3
-    debug_print_llm_io: true
-    debug_print_max_chars: -1
+    #debug_print_llm_io: true
+    #debug_print_max_chars: -1
 
   - name: extract
     task_key: Organization Profile Analyzer to json format
@@ -89,8 +89,8 @@ stages:
     route_value_mode: task
     retry_source_on_route_miss: true
     persist_output: final
-    debug_print_llm_io: true
-    debug_print_max_chars: -1
+    #debug_print_llm_io: true
+    #debug_print_max_chars: -1
 
   - name: audit_json
     task: |
