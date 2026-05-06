@@ -210,12 +210,14 @@ class PromptGenerator:
 
 
 def process_file_to_prompt(file_path, ctx, adjust=True):
-    print(f"Start to run process_file_to_prompt for {file_path}")
+    quiet = bool(getattr(ctx, "suppress_prompt_diagnostics", False))
+    if not quiet:
+        print(f"Start to run process_file_to_prompt for {file_path}")
     MainFileName = getMFNFromFN(file_path)
     with open(file_path, 'rt', encoding='utf-8') as fp:
         content = fp.read()
     tokenizer = TokenizerWrapper(model_name=ctx.model_spec_name, task=ctx.task)
-    chunks = tokenizer.tokenize(text=content, adjust=adjust, max_tokens=ctx.max_tokens)
+    chunks = tokenizer.tokenize(text=content, adjust=adjust, max_tokens=ctx.max_tokens, quiet=quiet)
 
     ctx.current_file = file_path
     if ctx.llm_source_dir == "":
