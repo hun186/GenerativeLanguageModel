@@ -4,7 +4,7 @@ from czjLLM.utilities.atomic_io import atomic_write_json
 
 # ==== 參數可按需調整 ====
 LEASE_SECS = 300           # 單次派工的租約秒數，超時會自動釋放（防 crash 不釋放）
-STALE_RESET_SECS = 420    # 若某節點很久沒更新，視為過期，重置負載（最後自動救）
+STALE_RESET_SECS = float(os.getenv("CZJ_BASE_URL_LOAD_STALE_SECS", "1200"))  # 負載資訊 20 分鐘未更新就視為卡住並釋放未完成租約
 EPSILON_EXPLORE = 0.1      # ε-greedy：有 10% 機率嘗試任意節點，避免永久飢餓
 JITTER = 0.05              # 破平手用的微小抖動，避免所有人都選到同一台
 LOCK_TIMEOUT = 5.0         # 取得檔案鎖的等候上限秒數
@@ -100,11 +100,18 @@ def _cleanup_and_count(state: dict, url: str, now_ts: float) -> int:
     rec["leases"] = leases
     return len(leases)
 
-def _reset_if_stale(rec: dict, now_ts: float):
-    """長時間沒更新（可能因當機留下高負載數），就把負載重置。"""
+def _reset_if_stale(rec: dict, now_ts: float) -> bool:
+    """長時間沒更新（可能因當機留下高負載數），就把負載重置。
+
+    base_url_load.json 是平衡派工的共享狀態；若 last_update 超過
+    STALE_RESET_SECS 都沒有刷新，代表前一輪派工可能卡死或程序已中斷。
+    此時主動清空未完成 leases，讓後續 select_idle_ollama_url 可以繼續派新 job。
+    """
     if now_ts - float(rec.get("last_update", 0.0)) > STALE_RESET_SECS:
         rec["leases"] = []
         rec["last_update"] = now_ts
+        return True
+    return False
 
 def select_idle_ollama_url(base_urls, PGMSubDir: str = ""):
     """
@@ -133,7 +140,11 @@ def select_idle_ollama_url(base_urls, PGMSubDir: str = ""):
         # 先做清理與重置
         loads = {}
         for url in base_urls:
-            _reset_if_stale(state[url], now_ts)
+            if _reset_if_stale(state[url], now_ts):
+                print(
+                    f"⚠️ base_url 負載資訊超過 {int(STALE_RESET_SECS)} 秒未更新，"
+                    f"已釋放未完成租約以解除可能卡死: {url}"
+                )
             loads[url] = _cleanup_and_count(state, url, now_ts)
 
         # ε-greedy：一定機率隨機探索，避免某節點永遠得不到新任務

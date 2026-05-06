@@ -1,5 +1,20 @@
 # Infrastructure runtime settings
 
+## Base URL load stale timeout (`CZJ_BASE_URL_LOAD_STALE_SECS`)
+
+`czjLLM/infrastructure/ollama_lb.py` 的 `base_url_load.json` 會記錄每個 base_url 的派工租約與最後更新時間。
+若某個節點的 `last_update` 超過此 timeout 都沒有刷新，系統會判定該節點的負載資訊可能卡住，並在下一次選擇 base_url 前清空未完成租約，讓新的 job 可以繼續派發。
+
+- 預設值是 `1200` 秒（20 分鐘）
+- 可用環境變數 `CZJ_BASE_URL_LOAD_STALE_SECS` 覆蓋
+
+範例：
+
+```bash
+export CZJ_BASE_URL_LOAD_STALE_SECS=1200
+python your_entry.py
+```
+
 ## Lock stale timeout (`CZJ_LOCK_STALE_SECS`)
 
 `czjLLM/infrastructure/ollama_lb.py` 的檔案鎖會使用：
