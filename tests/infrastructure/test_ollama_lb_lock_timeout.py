@@ -54,6 +54,37 @@ def test_select_idle_ollama_url_resets_stale_load_state(tmp_path, monkeypatch):
     assert state["http://b/v1"]["last_update"] == 2_300.0
 
 
+def test_select_idle_ollama_url_keeps_state_when_any_url_recently_updated(tmp_path, monkeypatch):
+    load_file = tmp_path / "logs" / "base_url_load.json"
+    active_lease_on_old_url = 9_999.0
+    atomic_write_json(
+        load_file,
+        {
+            "http://a/v1": {
+                "leases": [active_lease_on_old_url],
+                "last_update": 1_000.0,
+            },
+            "http://b/v1": {"leases": [], "last_update": 2_200.0},
+        },
+    )
+    monkeypatch.setattr(ollama_lb, "STALE_RESET_SECS", 1_200.0)
+    monkeypatch.setattr(ollama_lb, "_now", lambda: 2_300.0)
+    monkeypatch.setattr(ollama_lb, "EPSILON_EXPLORE", 0.0)
+    monkeypatch.setattr(ollama_lb, "JITTER", 0.0)
+    monkeypatch.setattr(ollama_lb.random, "random", lambda: 0.5)
+    monkeypatch.setattr(ollama_lb.random, "choice", lambda xs: xs[0])
+
+    picked = ollama_lb.select_idle_ollama_url(
+        ["http://a/v1", "http://b/v1"], PGMSubDir=str(tmp_path)
+    )
+
+    assert picked == "http://b/v1"
+    state = __import__("json").loads(load_file.read_text(encoding="utf-8"))
+    assert active_lease_on_old_url in state["http://a/v1"]["leases"]
+    assert state["http://a/v1"]["last_update"] == 1_000.0
+    assert state["http://b/v1"]["last_update"] == 2_300.0
+
+
 def test_select_idle_ollama_url_keeps_fresh_load_state(tmp_path, monkeypatch):
     load_file = tmp_path / "logs" / "base_url_load.json"
     active_lease = 2_000.0
