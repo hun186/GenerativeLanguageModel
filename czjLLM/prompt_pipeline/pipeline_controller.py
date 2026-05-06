@@ -136,18 +136,65 @@ CONSUMER_STATE = {
     "pool_alive": False,       # 是否有活著的 worker（粗略）
 }
 
-def run_round(jobs, n_proc: int):
+class BatchRunTimeout(RuntimeError):
+    """Raised when a consumer batch exceeds its wall-clock timeout."""
+
+    def __init__(self, timeout_sec: float, finished: int, total: int):
+        super().__init__(
+            f"LLM batch timed out after {timeout_sec:.0f}s "
+            f"(finished={finished}/{total})"
+        )
+        self.timeout_sec = float(timeout_sec)
+        self.finished = int(finished)
+        self.total = int(total)
+
+
+def _run_prompt_job(job):
+    """Top-level multiprocessing target so PromptAPIPipeline jobs remain picklable."""
+    return job.proc()
+
+
+def _round_timeout_from_jobs(jobs, explicit_timeout=None) -> float:
+    if explicit_timeout is not None:
+        try:
+            return max(1.0, float(explicit_timeout))
+        except Exception:
+            pass
+
+    try:
+        env_timeout = os.getenv("CZJLLM_LLM_ROUND_TIMEOUT_SEC")
+        if env_timeout:
+            return max(1.0, float(env_timeout))
+    except Exception:
+        pass
+
+    # Default below the 10-minute watchdog threshold, so a wedged pool unwinds
+    # before the main watchdog starts repeatedly dumping stacks.
+    return 480.0
+
+
+def run_round(jobs, n_proc: int, timeout_sec: float | None = None):
     """
-    最小保險絲：根據 n_proc 與 jobs 數量決定單工或多程序。
-    - 單工：同步逐一跑（避免進入死池時整批卡住）
-    - 多工：交由 multicoreJob，但用 try/except 保護；失敗時回傳空結果讓上層下一輪重試
+    Run one consumer batch with a hard wall-clock timeout.
+
+    The old multicoreJob path could block forever if a worker/API call wedged,
+    leaving files in RUNNING and queue.running non-zero indefinitely.  This
+    implementation keeps the single-process path unchanged, but wraps the
+    multiprocessing path in async results so the parent can terminate the pool
+    and let the caller requeue unfinished RUNNING files.
     """
     use_mp = (n_proc > 1) and (len(jobs) > 1)
+    timeout_sec = _round_timeout_from_jobs(jobs, timeout_sec)
     CONSUMER_STATE["pool_alive"] = False
+    CONSUMER_STATE["last_round_timed_out"] = False
 
     if not use_mp:
         out = []
-        for j in jobs:
+        deadline = _time.monotonic() + timeout_sec
+        for idx, j in enumerate(jobs, start=1):
+            if _time.monotonic() > deadline:
+                CONSUMER_STATE["last_round_timed_out"] = True
+                raise BatchRunTimeout(timeout_sec, len(out), len(jobs))
             try:
                 out.append(j.proc())
                 CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
@@ -155,17 +202,40 @@ def run_round(jobs, n_proc: int):
                 tlog_warn(f"[single] worker error: {ex}")
         return out
 
-    # 多程序路徑：仍沿用現有 multicoreJob（最小入侵）
+    pool = None
+    results = []
     try:
         CONSUMER_STATE["pool_alive"] = True
-        res = multicoreJob(DTBJobs=jobs, nProcess=n_proc, ShuffleJobs=False).run()
-        CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
-        return res
+        pool = multiprocessing.Pool(processes=min(int(n_proc), len(jobs)))
+        async_results = [pool.apply_async(_run_prompt_job, (job,)) for job in jobs]
+        pool.close()
+
+        deadline = _time.monotonic() + timeout_sec
+        for ar in async_results:
+            remain = deadline - _time.monotonic()
+            if remain <= 0:
+                raise multiprocessing.TimeoutError()
+            results.append(ar.get(timeout=remain))
+            CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
+
+        pool.join()
+        return results
+    except multiprocessing.TimeoutError as e:
+        CONSUMER_STATE["last_round_timed_out"] = True
+        if pool is not None:
+            try:
+                pool.terminate()
+            except Exception:
+                pass
+            try:
+                pool.join()
+            except Exception:
+                pass
+        raise BatchRunTimeout(timeout_sec, len(results), len(jobs)) from e
     except Exception as e:
-        tlog_warn(f"[mp] Pool error: {e}; will retry next round")
-        return []
+        tlog_warn(f"[mp] Pool error: {e}; caller will requeue this round")
+        raise
     finally:
-        # 粗略偵測仍有無存活的 child（可能因平臺差異不準，但足夠觸發保險絲邏輯）
         try:
             CONSUMER_STATE["pool_alive"] = any(p.is_alive() for p in multiprocessing.active_children())
         except Exception:
@@ -389,9 +459,11 @@ def _ensure_in_todo(pf_any: str) -> str:
     
 def recover_running_to_todo(item_dirs):
     """
-    僅在流程「啟動前」呼叫一次：
-    將前次異常留下的 RUNNING/* 移回 TODO/*，讓它們能被重新排程。
+    將 RUNNING/* 移回 TODO/*，讓它們能被重新排程。
+
+    回傳實際退回的切片數；舊呼叫端可忽略回傳值。
     """
+    moved = 0
     for item_dir in item_dirs:
         run  = Path(item_dir) / "RUNNING"
         todo = Path(item_dir) / "TODO"
@@ -406,12 +478,14 @@ def recover_running_to_todo(item_dirs):
             dst.parent.mkdir(parents=True, exist_ok=True)
             try:
                 os.replace(str(p), str(dst))  # 原子搬移
+                moved += 1
             except FileNotFoundError:
                 # 另一個程序可能已處理，略過即可
                 pass
             except PermissionError:
                 # 偶發網路磁碟忙碌，可視需要加上短暫重試
                 pass
+    return moved
                 
 def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                         stop_event: threading.Event,
@@ -449,9 +523,20 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                 try:
                     items_map = registry.list_items()
                     item_dirs = list(items_map.keys())
-                    recover_running_to_todo(item_dirs)   # 你的舊工具函式，或實作將 RUNNING 檔移回 TODO
-                    meter_update(meter_fn, lambda d: d.setdefault("consumer", {}).update({"last_dispatch_ts": time.time()}))
-                    tlog_warn("[consumer] restart_event 收到 → 已復原 RUNNING→TODO，繼續派工")
+                    n_requeued = recover_running_to_todo(item_dirs)
+                    def _mark_restart_requeue(d, _n=n_requeued):
+                        q = d.setdefault("queue", {})
+                        if _n:
+                            q["running"] = max(0, int(q.get("running", 0) or 0) - int(_n))
+                            q["pending"] = int(q.get("pending", 0) or 0) + int(_n)
+                        cons = d.setdefault("consumer", {})
+                        cons.update({
+                            "last_dispatch_ts": time.time(),
+                            "last_restart_requeued": int(_n),
+                            "last_restart_requeued_ts": time.time(),
+                        })
+                    meter_update(meter_fn, _mark_restart_requeue)
+                    tlog_warn(f"[consumer] restart_event 收到 → 已復原 RUNNING→TODO {n_requeued} 個切片，繼續派工")
                 except Exception as ex:
                     tlog_warn(f"[consumer] restart 恢復失敗：{ex}")
                 finally:
@@ -545,11 +630,24 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                 time.sleep(0.2)
                 continue
 
+            round_timed_out = False
             try:
-                MPresult = run_round(DTBJobs, ctx.n_process)
+                MPresult = run_round(
+                    DTBJobs,
+                    ctx.n_process,
+                    timeout_sec=getattr(ctx, "llm_round_timeout_sec", None),
+                )
+            except BatchRunTimeout as ex:
+                round_timed_out = True
+                MPresult = []
+                tlog_warn(
+                    f"⏱️ LLM 批次超時：{ex}；將本輪仍在 RUNNING 的切片退回 TODO，避免派工永久卡住。"
+                )
             except Exception as ex:
-                # 不讓整輪報廢；下一輪再吃
-                tlog_warn(f"❌ run_round 例外：{ex}")
+                # 不讓整輪報廢；把本輪仍在 RUNNING 的切片退回 TODO，下一輪再吃。
+                round_timed_out = True
+                MPresult = []
+                tlog_warn(f"❌ run_round 例外：{ex}；將本輪 RUNNING 切片退回 TODO 後重試")
                 #MPresult = []
                 
             # ---- 2.5) 以「實際完成」回報（檔案是否仍存在於 TODO）
@@ -591,8 +689,23 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     # ✅ 成功：Success 存在
                     done.append((pf, item))
                 elif os.path.exists(pf):
-                    # ✅ 仍在 RUNNING：表示這輪可能還沒寫完/或 job 卡住
-                    still_running.append((pf, item))
+                    if round_timed_out or restart_event.is_set():
+                        # 批次已被硬超時中止（或 watchdog 要求熱重啟）：
+                        # 把仍卡在 RUNNING 的切片原子移回 TODO，並回補 meter，
+                        # 下一輪可重新派工，不會永遠顯示 queue.running > 0。
+                        try:
+                            todo_dst = _to_todo(pf)
+                            os.replace(pf, todo_dst)
+                        except FileNotFoundError:
+                            pass
+                        except Exception as ex:
+                            tlog_warn(f"⚠️ RUNNING→TODO 退回失敗：{pf}: {ex}")
+                            still_running.append((pf, item))
+                            continue
+                        requeued.append((pf, item))
+                    else:
+                        # ✅ 仍在 RUNNING：表示這輪可能還沒寫完/或 job 卡住
+                        still_running.append((pf, item))
                 elif os.path.exists(todo):
                     # ✅ 退回 TODO（例如 retry/split 或 exception 退回）：要把 pending 加回來
                     requeued.append((pf, item))
