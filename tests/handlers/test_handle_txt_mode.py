@@ -130,6 +130,45 @@ def test_handle_single_input_file_freeform_task_skips_template_preview(monkeypat
 
 
 @pytest.mark.unit
+def test_handle_single_input_file_ctx_overlay_shows_template_once(monkeypatch, tmp_path):
+    """Row-scoped overlays should share the one-time template display flag."""
+    from czjLLM.job_manager.job_config import CtxOverlay
+
+    class Ctx: pass
+    base_ctx = Ctx()
+    base_ctx.task = "你是分類器，只輸出 JSON"
+    base_ctx.taskSetting = {}
+    base_ctx.llm_source_dir = str(tmp_path / "src")
+    base_ctx.llm_source_backup_dir = str(tmp_path / "bak")
+    base_ctx.prompt_dir = str(tmp_path / "prompts")
+    os.makedirs(base_ctx.llm_source_dir, exist_ok=True)
+
+    f1 = tmp_path / "src" / "row1.txt"
+    f2 = tmp_path / "src" / "row2.txt"
+    f1.write_text("row1")
+    f2.write_text("row2")
+
+    logs = []
+    paused = []
+    suppress_flags = []
+
+    def fake_process(_file, ctx, adjust=True):
+        suppress_flags.append(getattr(ctx, "suppress_prompt_diagnostics", None))
+
+    monkeypatch.setattr(mod, "process_file_to_prompt", fake_process)
+    monkeypatch.setattr(mod, "tlog", lambda s: logs.append(s))
+    monkeypatch.setattr(mod, "countdown_pause", lambda s: paused.append(s))
+
+    mod.handle_single_input_file(str(f1), CtxOverlay(base_ctx), pause_seconds=2, defer_merge=True)
+    mod.handle_single_input_file(str(f2), CtxOverlay(base_ctx), pause_seconds=2, defer_merge=True)
+
+    assert len(logs) == 1
+    assert paused == [2]
+    assert base_ctx.shown_template is True
+    assert suppress_flags == [False, True]
+
+
+@pytest.mark.unit
 def test_handle_txt_mode_flow_and_first_pause(monkeypatch, tmp_path):
     """應列出 .txt 並依序處理；第一個檔案 pause_seconds=10，其餘為 0；最後清空空目錄。"""
     # 假檔案清單（含非 .txt）

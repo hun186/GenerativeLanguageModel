@@ -524,6 +524,8 @@ def ShowStepCostTime(start_time, JobName = ""):
 
 
 def countdown_pause(seconds):
+    if seconds <= 0:
+        return
     for i in range(seconds, 0, -1):
         print(f"\r倒數 {i} 秒... (按 Enter 鍵略過)", end="")
         sys.stdout.flush()  # 確保馬上顯示輸出
