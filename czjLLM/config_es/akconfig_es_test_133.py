@@ -30,24 +30,6 @@ only_selected = False
 
 # （可選）更多條件，使用原生 ES DSL 子句
 # 會與 only_selected 以 AND 併入 bool.filter
-# 個人篩選（可選）：會與 pending_filters / only_selected 以 AND 合併；
-# 下列備註、股名、代號、清單條件彼此採 OR，命中任一個就納入待處理。
-# personal_filters = {
-#     # 備註關鍵字篩選（可自訂 note_fields 對應實際欄位）
-#     # "note_keywords": ["追蹤", "重要"],
-#     # "note_fields": ["userNote", "rawInfo.remark"],
-#
-#     # 股名 / 代號篩選（可自訂欄位；代號會自動嘗試 .keyword 精確比對）
-#     # "stock_names": ["台積電", "聯發科"],
-#     # "stock_codes": ["2330", "2454"],
-#     # "stock_name_fields": ["rawInfo.stockName", "companyName"],
-#     # "stock_code_fields": ["rawInfo.stockCode", "ticker"],
-#
-#     # 清單篩選：簡單清單會用股名+代號欄位 OR 搜尋；也可指定 field/fields/values。
-#     # "list_filter": ["2330", "台積電"],
-#     # "list_filter": {"field": "rawInfo.stockCode", "values": ["2330", "2454"], "exact": True},
-# }
-
 pending_filters = [
     # 例：高價值
     # {"term": {"ai.classLabels.highValue": True}},

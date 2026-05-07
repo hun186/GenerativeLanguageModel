@@ -963,158 +963,11 @@ class ElasticsearchAdapter:
             request_timeout=rt,
         )
 
-    def _as_non_empty_list(self, value: Any) -> List[str]:
-        """將字串/清單/tuple/set 正規化為去空白且不重複的字串清單。"""
-        if value is None:
-            return []
-        if isinstance(value, str):
-            raw_values = re.split(r"[,，;；\n\r\t]+", value)
-        elif isinstance(value, (list, tuple, set)):
-            raw_values = []
-            for item in value:
-                raw_values.extend(self._as_non_empty_list(item))
-        else:
-            raw_values = [value]
-
-        values: List[str] = []
-        seen = set()
-        for item in raw_values:
-            text = str(item).strip()
-            if not text or text in seen:
-                continue
-            values.append(text)
-            seen.add(text)
-        return values
-
-    def _field_variants_for_exact_match(self, field: str) -> List[str]:
-        """回傳精確比對欄位與常見 keyword 子欄位，避免呼叫端必須知道 mapping 細節。"""
-        if not field:
-            return []
-        fields = [field]
-        if not field.endswith(".keyword") and not field.endswith(".raw"):
-            fields.append(f"{field}.keyword")
-        return fields
-
-    def _terms_or_match_clause(self, fields: List[str], values: List[str], *, exact: bool) -> Optional[dict]:
-        """建立任一欄位命中任一值的 OR 查詢。"""
-        values = self._as_non_empty_list(values)
-        fields = self._as_non_empty_list(fields)
-        if not values or not fields:
-            return None
-
-        should = []
-        for field in fields:
-            if exact:
-                for variant in self._field_variants_for_exact_match(field):
-                    should.append({"terms": {variant: values}})
-            for value in values:
-                should.append({"match_phrase": {field: value}})
-
-        if not should:
-            return None
-        return {"bool": {"should": should, "minimum_should_match": 1}}
-
-    def _list_filter_clause(self, spec: Any, default_fields: List[str]) -> Optional[dict]:
-        """
-        建立清單篩選條件。
-
-        支援兩種設定：
-        - list_filter: ["2330", "台積電"]  # 用預設股名/代號欄位 OR 搜尋
-        - list_filter: {"fields": ["rawInfo.stockCode"], "values": ["2330"], "exact": True}
-        """
-        if not spec:
-            return None
-
-        clauses = []
-        specs = spec if isinstance(spec, list) and all(isinstance(x, dict) for x in spec) else [spec]
-        for item in specs:
-            if isinstance(item, dict):
-                fields = item.get("fields") or item.get("field") or default_fields
-                values = item.get("values") or item.get("value") or item.get("items")
-                exact = bool(item.get("exact", True))
-            else:
-                fields = default_fields
-                values = item
-                exact = True
-            clause = self._terms_or_match_clause(fields, values, exact=exact)
-            if clause:
-                clauses.append(clause)
-
-        if not clauses:
-            return None
-        if len(clauses) == 1:
-            return clauses[0]
-        return {"bool": {"should": clauses, "minimum_should_match": 1}}
-
-    def _build_personal_filter_clause(self) -> Optional[dict]:
-        """
-        組個人篩選條件：備註關鍵字、股名、代號，以及任意清單篩選。
-
-        可在 ES config 使用 personal_filters dict，或使用向後相容的 top-level keys：
-        note_keywords、stock_names、stock_codes、list_filter。所有個人條件彼此以 OR 合併，
-        再與 pending_filters / only_selected 以 AND 合併。
-        """
-        pf = self.cfg.get("personal_filters") or {}
-        if pf is True:
-            pf = {}
-        if not isinstance(pf, dict):
-            pf = {"list_filter": pf}
-
-        note_fields = self._as_non_empty_list(
-            pf.get("note_fields") or self.cfg.get("note_fields") or [
-                "note", "notes", "remark", "remarks", "comment", "comments", "memo",
-                "personalNote", "personal_note", "userNote", "user_note",
-                "rawInfo.note", "rawInfo.remark", "rawInfo.memo",
-            ]
-        )
-        stock_name_fields = self._as_non_empty_list(
-            pf.get("stock_name_fields") or self.cfg.get("stock_name_fields") or [
-                "stockName", "stock_name", "securityName", "security_name",
-                "companyName", "company_name", "rawInfo.stockName",
-                "rawInfo.securityName", "rawInfo.companyName",
-            ]
-        )
-        stock_code_fields = self._as_non_empty_list(
-            pf.get("stock_code_fields") or self.cfg.get("stock_code_fields") or [
-                "stockCode", "stock_code", "ticker", "symbol", "securityCode", "security_code",
-                "companyCode", "company_code", "rawInfo.stockCode", "rawInfo.ticker",
-                "rawInfo.symbol", "rawInfo.securityCode",
-            ]
-        )
-        stock_fields = self._as_non_empty_list(
-            pf.get("stock_fields") or self.cfg.get("stock_fields") or stock_name_fields + stock_code_fields
-        )
-
-        clauses = []
-        note_keywords = pf.get("note_keywords") or pf.get("note_keyword") or self.cfg.get("note_keywords")
-        stock_names = pf.get("stock_names") or pf.get("stock_name") or self.cfg.get("stock_names")
-        stock_codes = pf.get("stock_codes") or pf.get("stock_code") or self.cfg.get("stock_codes")
-        list_filter = pf.get("list_filter") or pf.get("list") or self.cfg.get("list_filter")
-
-        note_clause = self._terms_or_match_clause(note_fields, note_keywords, exact=False)
-        if note_clause:
-            clauses.append(note_clause)
-        name_clause = self._terms_or_match_clause(stock_name_fields, stock_names, exact=False)
-        if name_clause:
-            clauses.append(name_clause)
-        code_clause = self._terms_or_match_clause(stock_code_fields, stock_codes, exact=True)
-        if code_clause:
-            clauses.append(code_clause)
-        list_clause = self._list_filter_clause(list_filter, stock_fields)
-        if list_clause:
-            clauses.append(list_clause)
-
-        if not clauses:
-            return None
-        return {"bool": {"should": clauses, "minimum_should_match": 1}}
-
     def _build_pending_filters(self) -> list:
         """
         從 cfg 組 pending 過濾條件：
         - cfg["pending_filters"] 可是 list（原生 ES 子句）或 dict（會轉成 term）
         - cfg["only_selected"] 為 True 時，自動加 {"term":{"selectedMessage": True}}
-        - cfg["personal_filters"] / note_keywords / stock_names / stock_codes / list_filter
-          會轉成個人 OR 篩選，再與其他 filter 條件 AND 合併
         """
         #print("****************self.cfg for es adapter",self.cfg)
         filters = []
@@ -1127,10 +980,6 @@ class ElasticsearchAdapter:
 
         if self.cfg.get("only_selected", False):
             filters.append({"term": {"selectedMessage": True}})
-
-        personal_clause = self._build_personal_filter_clause()
-        if personal_clause:
-            filters.append(personal_clause)
         return filters
 
     # ✅ 新增：支援 with 语法
