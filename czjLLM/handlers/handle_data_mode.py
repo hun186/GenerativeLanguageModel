@@ -218,6 +218,10 @@ def _es_sink(ctx, env):
         "channel":       getattr(ctx, "channel", None),
         "source":        getattr(ctx, "source", None),
         "task":          getattr(ctx, "task", None),
+        "output_profile": getattr(ctx, "output_profile", None),
+        "pipeline_name":  getattr(ctx, "pipeline_name", None),
+        "pipeline_version": (getattr(ctx, "stage_cfg", None) or {}).get("version"),
+        "pipeline_enabled": bool((getattr(ctx, "stage_cfg", None) or {}).get("enabled", False)),
         # "force_reason" 讓 _build_meta() 依 rerun 條件自動組合
     }
 

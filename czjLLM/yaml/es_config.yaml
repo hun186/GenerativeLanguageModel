@@ -9,6 +9,21 @@ mode: es
 #model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
 model_spec: nemotron-3-super:latest-ctx-128k-premises-q4
 output_col: multidim_event_json
+# output_profile 只控制 ES sink 寫回前的 payload 正規化，不是多階段 route 本身。
+# - auto: 舊相容；本檔 output_col=multidim_event_json，因此有效行為會推斷為 multidim_event
+# - none/json/text: 泛用任務，不做事件欄位正規化
+# - multidim_event: 多維事件任務，補齊時間欄位與 ES-friendly 結構
+# 詳細說明見 docs/es_mode/output_profile_and_pipeline.md。
+output_profile: auto
+# pipeline_name 可標記此 YAML 所代表的資料處理流路，會寫入 <output_col>_meta。
+pipeline_name: multidim_event_extraction
+
+# stage_cfg 可承接 SQL/Excel/TXT 類似的多階段 stages 設定；
+# 完整 ES 範例見 yaml/es_json_multistage_langroute_config.yaml。
+stage_cfg:
+  enabled: false
+  name: single_stage
+  stages: []
 primary_key: _id
 #task: News-FacetTop10-Map-to json format
 task: InfoExtraction-MultiDim-SQLFriendly-to json format

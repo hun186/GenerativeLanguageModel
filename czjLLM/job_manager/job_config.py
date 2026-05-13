@@ -102,6 +102,9 @@ class LLMJobConfig:
         self.output_excel_file = ""
         self.input_col = ""
         self.output_col = ""
+        self.output_profile = "auto"
+        self.pipeline_name = ""
+        self.stage_cfg = {}
         self.record_update_time = None
         self.sql_config_file = ""
         self.flatten_json_output = False
