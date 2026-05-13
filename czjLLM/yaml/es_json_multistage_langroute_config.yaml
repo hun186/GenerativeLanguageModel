@@ -5,7 +5,7 @@
 # 直接使用既有多階段語意的 stage_cfg / stages 命名，供未來 multistage executor 使用。
 mode: es
 channel: unspecified_channel
-model_spec: nemotron-3-super:latest-ctx-128k-premises-q4
+model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
 es_config_file: czjLLM/config_es/akconfig_es_test_133.py
 
 input_col: rawInfo.content
@@ -13,9 +13,9 @@ primary_key: _id
 record_update_time: true
 
 # 目前實際會跑的單階段相容欄位：讀 input_col → 跑此 task → 寫 output_col。
-task: InfoExtraction-MultiDim-SQLFriendly-to json format
-output_col: multidim_event_json
-output_profile: auto
+#task: InfoExtraction-MultiDim-SQLFriendly-to json format
+#output_col: multidim_event_json
+#output_profile: auto
 
 # 以下是未來 multistage executor 要使用的 stages 宣告；目前只會正規化成 ctx.stage_cfg。
 stage_cfg:
@@ -37,7 +37,7 @@ stage_cfg:
         請只輸出一個代碼：zh 或 non_zh。
         禁止輸出 JSON、禁止解釋。
       input_from: original
-      input_col: ${input_col}
+      input_col: rawInfo.content
       output_col: route_lang_json
       output_profile: text
       route_field: route
@@ -49,9 +49,9 @@ stage_cfg:
       debug_print_max_chars: -1
       es:
         # 未來 multistage executor 可用這些欄位為 route stage 選擇不同 index/mapping。
-        src_index: ${es_src_index}
-        tgt_index: ${es_tgt_index}
-        mapping_file: czjLLM/config_es/schemas/route-lang-mapping.yaml
+        src_index: srp_test
+        tgt_index: srp_test
+        #mapping_file: czjLLM/config_es/schemas/route-lang-mapping.yaml
 
     - name: extract
       input_from: original
@@ -61,12 +61,12 @@ stage_cfg:
           # 雙軌之一：沿用既有 taskSetting template。
           task: "@taskSetting:InfoExtraction-MultiDim-SQLFriendly-to json format"
           input_from: original
-          input_col: ${input_col}
+          input_col: rawInfo.content
           output_col: multidim_event_json
           output_profile: multidim_event
           es:
-            src_index: ${es_src_index}
-            tgt_index: ${es_tgt_index}
+            src_index: srp_test
+            tgt_index: srp_test
             mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
         non_zh:
           # 雙軌之二：直接在 YAML 內寫 prompt/template；input_from: none 表示不串接原文。
@@ -74,7 +74,7 @@ stage_cfg:
             你是 JSON 回覆器。請回傳：
             [{"route":"non_zh","skipReason":"not_chinese"}]
           input_from: none
-          input_col: ${input_col}
+          input_col: rawInfo.content
           output_col: llm_result_json
           output_profile: json
           es:
@@ -135,5 +135,5 @@ stage_cfg:
 
   stage_outputs:
     keep_intermediate: false
-    meta_field: ${output_col}_meta
-    final_output_col: ${output_col}
+    meta_field: multidim_event_json_meta
+    final_output_col: multidim_event_json
