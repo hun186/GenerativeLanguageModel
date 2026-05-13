@@ -17,5 +17,7 @@ def test_multistage_langroute_example_documents_current_single_stage_runtime():
     assert "尚未真正執行 router/routes" in text
     assert "實際執行仍使用下方 task/output_col/output_profile" in text
     assert "task: InfoExtraction-MultiDim-SQLFriendly-to json format" in text
+    assert "task: QA 會從 taskSetting 取 QA template" in text
+    assert "template_function(content=...)" in text
     assert "output_col: multidim_event_json" in text
     assert "stage_cfg:" in text

@@ -183,6 +183,12 @@ stage_cfg:
 
 也就是說，目前不會真的先跑 `router`，也不會依 `routes.zh` / `routes.en` / `routes.mixed` / `routes.fallback` 分支執行不同 stage。
 
+範例中的 `router.task: QA` 是給未來 executor 的宣告，不會被現有 runner 執行。未來 executor 若執行這個 stage，語意應與現有 prompt 流程一致：
+
+1. 用 `task: QA` 到 `taskSetting` 找 `QA` 任務。
+2. 讀取該 stage 的 `input_col`（例如 `${input_col}` 展開成 `rawInfo.content`）所指向的 ES 欄位值。
+3. 將欄位值作為 `content` 參數呼叫 `QA` 的 `template_function(content=...)`。目前 `QA` template 本身只回傳原始 `content`，所以若要 router 輸出 `{"route": ...}`，未來還需要搭配專用 routing prompt/task 或在 executor 對 QA 輸入包裝明確路由指令。
+
 這份 YAML 的 `stage_cfg` 區塊現在有兩個用途：
 
 1. **先把未來的多階段路由 DSL 固定下來**：包含 `router`、`routes`、各 route 的 `stages`、每個 stage 的 `output_col` / `output_profile`。

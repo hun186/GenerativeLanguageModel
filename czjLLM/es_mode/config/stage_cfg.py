@@ -145,6 +145,11 @@ def _stage_es_options(stage: Mapping[str, Any]) -> Dict[str, Any]:
         )
         if stage.get(key) is not None
     }
+    # Older design notes used a generic ``input`` key.  Preserve that YAML
+    # shape by exposing it to ES bindings as ``input_col``; the full stage_cfg
+    # is still deep-copied unchanged for future executors that inspect it.
+    if "input_col" not in direct and stage.get("input") is not None:
+        direct["input_col"] = stage.get("input")
     nested = stage.get("es") if isinstance(stage.get("es"), Mapping) else {}
     return {**direct, **dict(nested)}
 

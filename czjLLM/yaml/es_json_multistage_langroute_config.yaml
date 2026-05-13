@@ -23,11 +23,14 @@ stage_cfg:
   version: v0.1
 
   # router 階段只負責判斷路由，不應寫入最終 output_col。
+  # 注意：現有 ES runner 尚未執行這個 router；未來 executor 執行時，
+  # task: QA 會從 taskSetting 取 QA template，讀取 input_col 指向的 ES 欄位值，
+  # 再把該值以 content 參數傳入 template_function(content=...)。
   router:
     name: language_route
     task: QA
     level: document
-    input: ${input_col}
+    input_col: ${input_col}
     output_col: route_lang_json
     output_profile: json
     # router 結果只供後續路由判斷時，可不寫回 ES。
@@ -47,7 +50,7 @@ stage_cfg:
       stages:
         - name: zh_extraction
           task: InfoExtraction-MultiDim-SQLFriendly-to json format
-          input: ${input_col}
+          input_col: ${input_col}
           output_col: multidim_event_json
           output_profile: multidim_event
           write_output: true
@@ -60,7 +63,7 @@ stage_cfg:
       stages:
         - name: en_extraction
           task: InfoExtraction-MultiDim-SQLFriendly-to json format
-          input: ${input_col}
+          input_col: ${input_col}
           output_col: multidim_event_json
           output_profile: multidim_event
           write_output: true
@@ -73,7 +76,7 @@ stage_cfg:
       stages:
         - name: mixed_extraction
           task: InfoExtraction-MultiDim-SQLFriendly-to json format
-          input: ${input_col}
+          input_col: ${input_col}
           output_col: multidim_event_json
           output_profile: multidim_event
           write_output: true
@@ -85,7 +88,7 @@ stage_cfg:
       stages:
         - name: generic_answer
           task: QA
-          input: ${input_col}
+          input_col: ${input_col}
           output_col: llm_result_json
           output_profile: json
           write_output: true

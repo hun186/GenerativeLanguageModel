@@ -94,6 +94,7 @@ def test_collect_stage_es_bindings_reads_route_stage_index_mapping_options():
                             "stages": [
                                 {
                                     "name": "extract_zh",
+                                    "input": "rawInfo.content",
                                     "output_col": "zh_result_json",
                                     "output_profile": "json",
                                     "es": {
@@ -121,6 +122,7 @@ def test_collect_stage_es_bindings_reads_route_stage_index_mapping_options():
     assert bindings[0]["write_output"] is False
     assert bindings[1]["route"] == "zh"
     assert bindings[1]["stage_name"] == "extract_zh"
+    assert bindings[1]["input_col"] == "rawInfo.content"
     assert bindings[1]["src_index"] == "zh-source"
     assert bindings[1]["tgt_index"] == "zh-result"
     assert bindings[1]["mapping_file"] == "zh.yaml"
