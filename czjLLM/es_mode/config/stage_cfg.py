@@ -142,6 +142,17 @@ def _stage_es_options(stage: Mapping[str, Any]) -> Dict[str, Any]:
             "write_output",
             "write_meta",
             "persist_output",
+            "task",
+            "prompt",
+            "input_from",
+            "route_by",
+            "route_field",
+            "allowed_routes",
+            "route_value_mode",
+            "retry_source_on_route_miss",
+            "max_attempts",
+            "debug_print_llm_io",
+            "debug_print_max_chars",
         )
         if stage.get(key) is not None
     }
@@ -163,9 +174,10 @@ def collect_stage_es_bindings(
     """Collect per-stage ES index/mapping declarations without executing them.
 
     This is the bridge needed by the future ES multistage executor: each returned
-    binding says which stage wants which source/target index, output field,
-    output profile, and mapping file.  Missing indexes are filled from the
-    current adapter-level defaults.
+    binding says which stage or route branch wants which source/target index,
+    output field, output profile, mapping file, and executor-facing options
+    such as ``task``/``prompt``, ``input_from``, retry, and debug flags.
+    Missing indexes are filled from the current adapter-level defaults.
     """
     if not isinstance(stage_cfg, Mapping):
         return []
@@ -178,12 +190,18 @@ def collect_stage_es_bindings(
 
     bindings: List[Dict[str, Any]] = []
 
-    def visit(stage: Any, route: Optional[str] = None, role: str = "stage") -> None:
+    def visit(
+        stage: Any,
+        route: Optional[str] = None,
+        role: str = "stage",
+        inherited: Optional[Mapping[str, Any]] = None,
+        fallback_name: Optional[str] = None,
+    ) -> None:
         if not isinstance(stage, Mapping):
             return
-        opts = {**root_defaults, **_stage_es_options(stage)}
+        opts = {**root_defaults, **dict(inherited or {}), **_stage_es_options(stage)}
         binding = {
-            "stage_name": stage.get("name") or stage.get("task") or role,
+            "stage_name": stage.get("name") or fallback_name or stage.get("task") or role,
             "route": route,
             "role": role,
             **{k: v for k, v in opts.items() if v is not None},
@@ -191,6 +209,20 @@ def collect_stage_es_bindings(
         # Keep only stages that actually declare or inherit ES sink/index/write info.
         if any(k in binding for k in ("src_index", "tgt_index", "output_col", "mapping_file", "write_output")):
             bindings.append(binding)
+
+        route_map = stage.get("route_map")
+        if isinstance(route_map, Mapping):
+            parent_opts = _stage_es_options(stage)
+            parent_name = stage.get("name") or role
+            for route_name, branch_cfg in route_map.items():
+                if isinstance(branch_cfg, Mapping):
+                    visit(
+                        branch_cfg,
+                        route=str(route_name),
+                        role="route_map",
+                        inherited=parent_opts,
+                        fallback_name=f"{parent_name}:{route_name}",
+                    )
 
     router = stage_cfg.get("router")
     if isinstance(router, Mapping):

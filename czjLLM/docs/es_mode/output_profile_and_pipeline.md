@@ -181,20 +181,28 @@ stage_cfg:
 → 將 stage_cfg.name/version/enabled 等資訊寫入 <output_col>_meta
 ```
 
-也就是說，目前不會真的先跑 `router`，也不會依 `routes.zh` / `routes.en` / `routes.mixed` / `routes.fallback` 分支執行不同 stage。
+也就是說，目前不會真的先跑 `stages`，也不會依 `route_map.zh` / `route_map.non_zh` / `route_map.fallback` 分支執行不同 stage。
 
-範例中的 `router.task: QA` 是給未來 executor 的宣告，不會被現有 runner 執行。未來 executor 若執行這個 stage，語意應與現有 prompt 流程一致：
+範例中的 stage `task` / `prompt` 是給未來 executor 的宣告，不會被現有 runner 執行。未來 executor 若執行這些 stage，語意應與現有 prompt 流程一致：
 
-1. 用 `task: QA` 到 `taskSetting` 找 `QA` 任務。
-2. 讀取該 stage 的 `input_col`（例如 `${input_col}` 展開成 `rawInfo.content`）所指向的 ES 欄位值。
-3. 將欄位值作為 `content` 參數呼叫 `QA` 的 `template_function(content=...)`。目前 `QA` template 本身只回傳原始 `content`，所以若要 router 輸出 `{"route": ...}`，未來還需要搭配專用 routing prompt/task 或在 executor 對 QA 輸入包裝明確路由指令。
+1. 若 `task` 使用 `@taskSetting:<task name>`，到 `taskSetting` 找對應任務 template；若 stage 使用 `prompt: |` 或 inline `task: |`，直接使用 YAML 內的提示模板。
+2. 依 `input_from` 決定是否串接文字：`original` 讀取該 stage 的 `input_col`（例如 `${input_col}` 展開成 `rawInfo.content`）所指向的 ES 欄位值；`none` 則不串接原文，適合固定 JSON 回覆器或 audit stage。
+3. 將欄位值作為 `content` 參數呼叫 taskSetting template，或把它組裝進 YAML prompt 後送 LLM。
+
+這份 YAML 也示範與 SQL multistage/langroute 相同的輔助欄位：
+
+- `max_attempts`：某 stage LLM 輸出失敗或驗證不過時，未來 executor 可重試的次數。
+- `debug_print_llm_io` / `debug_print_max_chars`：debug 模式下印出已組裝完成、即將送到 LLM 的 prompt / I/O，`-1` 表示不截斷。
+- `persist_output`：描述 stage 結果在 pipeline context / stage outputs 中保存的策略，例如 `always` 或 `final`。
+- `write_output`：ES 寫入層是否把該 stage 主輸出寫回 ES；可與 `persist_output` 分開控制。
+- `route_value_mode: task`：當一個 stage 使用 `route_by: route` 時，表示用 `route` stage 的 LLM/task 輸出值（例如 `zh` 或 `non_zh`）當 route key 去查 `route_map`。如果未來 executor 的預設就是讀前一 routing stage 的輸出值，可以不設定；範例保留它是為了讓 routing value 來源不含糊。
 
 這份 YAML 的 `stage_cfg` 區塊現在有兩個用途：
 
-1. **先把未來的多階段路由 DSL 固定下來**：包含 `router`、`routes`、各 route 的 `stages`、每個 stage 的 `output_col` / `output_profile`。
+1. **先把未來的多階段路由 DSL 固定下來**：包含 `stages`、`route_by`、`route_map`、每個 stage / route branch 的 `output_col` / `output_profile`。
 2. **先把未來的 ES index/mapping 宣告放到每個 stage**：例如每個 stage 的 `es.src_index`、`es.tgt_index`、`es.mapping_file`。這些可由 `collect_stage_es_bindings(stage_cfg, ...)` 收集，但目前尚未由 executor 套用。
 
-因此，這份 YAML 目前的價值是「宣告與驗證未來多階段 ES 設計形狀」，同時仍可用單階段欄位跑舊流程；真正 router/routes 執行與逐 stage index/mapping 套用，是下一步 executor 工作。
+因此，這份 YAML 目前的價值是「宣告與驗證未來多階段 ES 設計形狀」，同時仍可用單階段欄位跑舊流程；真正 stages/route_map 執行與逐 stage index/mapping 套用，是下一步 executor 工作。
 
 
 ## 9. 每個 stage 是否一定要寫入 ES？
