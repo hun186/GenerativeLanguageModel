@@ -1,0 +1,139 @@
+# ES 多階段智慧路由設定範例（對齊 SQL/Excel 的 multistage/langroute 設定方向）
+# 目前這份檔案是「多階段路由設計樣板 + 單階段相容執行設定」。
+# 重要：現有 ES runner 尚未真正執行 stages/route_map；它只會讀入 stage_cfg 並寫入 metadata。
+# 實際執行仍使用下方 task/output_col/output_profile 這組單階段相容欄位。
+# 直接使用既有多階段語意的 stage_cfg / stages 命名，供未來 multistage executor 使用。
+mode: es
+channel: unspecified_channel
+model_spec: nemotron-3-super:latest-ctx-128k-premises-q4
+es_config_file: czjLLM/config_es/akconfig_es_test_133.py
+
+input_col: rawInfo.content
+primary_key: _id
+record_update_time: true
+
+# 目前實際會跑的單階段相容欄位：讀 input_col → 跑此 task → 寫 output_col。
+task: InfoExtraction-MultiDim-SQLFriendly-to json format
+output_col: multidim_event_json
+output_profile: auto
+
+# 以下是未來 multistage executor 要使用的 stages 宣告；目前只會正規化成 ctx.stage_cfg。
+stage_cfg:
+  name: es_json_multistage_langroute
+  version: v0.2
+  default_route: fallback
+
+  # ES 版刻意對齊 SQL multistage/langroute 的欄位：
+  # - prompt：直接在 YAML 內寫提詞模板。
+  # - task: "@taskSetting:..."：從 taskSetting 取既有 template。
+  # - input_from：決定是否串接 original / 前一階段 / 不串接文字。
+  # - max_attempts：未來 executor 可用來控制單一 stage 重試次數。
+  # - debug_print_llm_io/debug_print_max_chars：未來 executor 可用來印出組裝後送 LLM 的 prompt。
+  # 注意：現有 ES runner 尚未執行這些 stage；下列內容目前只會被保存到 ctx.stage_cfg。
+  stages:
+    - name: route
+      prompt: |
+        你是語種分類器。請判斷此 ES 文件主要語種是否為中文。
+        請只輸出一個代碼：zh 或 non_zh。
+        禁止輸出 JSON、禁止解釋。
+      input_from: original
+      input_col: ${input_col}
+      output_col: route_lang_json
+      output_profile: text
+      route_field: route
+      allowed_routes: [zh, non_zh, fallback]
+      persist_output: always
+      write_output: false
+      max_attempts: 3
+      debug_print_llm_io: true
+      debug_print_max_chars: -1
+      es:
+        # 未來 multistage executor 可用這些欄位為 route stage 選擇不同 index/mapping。
+        src_index: ${es_src_index}
+        tgt_index: ${es_tgt_index}
+        mapping_file: czjLLM/config_es/schemas/route-lang-mapping.yaml
+
+    - name: extract
+      input_from: original
+      route_by: route
+      route_map:
+        zh:
+          # 雙軌之一：沿用既有 taskSetting template。
+          task: "@taskSetting:InfoExtraction-MultiDim-SQLFriendly-to json format"
+          input_from: original
+          input_col: ${input_col}
+          output_col: multidim_event_json
+          output_profile: multidim_event
+          es:
+            src_index: ${es_src_index}
+            tgt_index: ${es_tgt_index}
+            mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
+        non_zh:
+          # 雙軌之二：直接在 YAML 內寫 prompt/template；input_from: none 表示不串接原文。
+          task: |
+            你是 JSON 回覆器。請回傳：
+            [{"route":"non_zh","skipReason":"not_chinese"}]
+          input_from: none
+          input_col: ${input_col}
+          output_col: llm_result_json
+          output_profile: json
+          es:
+            src_index: ${es_src_index}
+            tgt_index: generic-result-index
+            mapping_file: czjLLM/config_es/schemas/generic-json-mapping.yaml
+        fallback:
+          task: |
+            你是 JSON 回覆器。請回傳：
+            [{"route":"fallback","skipReason":"route_miss"}]
+          input_from: none
+          output_col: llm_result_json
+          output_profile: json
+      # route_value_mode: task 表示以 route_by 指定 stage 的 LLM/task 輸出值作為 route key。
+      # 若未來 executor 預設就是讀取前一 stage 的輸出值，可省略；範例保留以避免歧義。
+      route_value_mode: task
+      retry_source_on_route_miss: true
+      persist_output: final
+      write_output: true
+      max_attempts: 2
+      debug_print_llm_io: true
+      debug_print_max_chars: -1
+
+    - name: audit_json
+      task: |
+        你是 JSON 回覆器。請回傳：
+        [{"route":"unknown","auditTag":"unknown","auditVersion":"v1"}]
+      input_from: none
+      route_by: route
+      route_map:
+        zh:
+          task: |
+            你是 JSON 回覆器。請回傳：
+            [{
+              "route": "zh",
+              "auditTag": "zh_multidim_extraction_path",
+              "auditVersion": "v1"
+            }]
+          input_from: none
+        non_zh:
+          task: |
+            你是 JSON 回覆器。請回傳：
+            [{
+              "route": "non_zh",
+              "auditTag": "non_zh_skip_path",
+              "auditVersion": "v1"
+            }]
+          input_from: none
+      route_value_mode: task
+      retry_source_on_route_miss: true
+      persist_output: always
+      write_output: false
+      max_attempts: 2
+      debug_print_llm_io: true
+      debug_print_max_chars: -1
+      output_col: route_audit_json
+      output_profile: json
+
+  stage_outputs:
+    keep_intermediate: false
+    meta_field: ${output_col}_meta
+    final_output_col: ${output_col}

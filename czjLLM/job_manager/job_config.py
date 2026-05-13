@@ -4,7 +4,6 @@ from pathlib import Path
 import re
 from colorama import Fore#, Back, Style
 import inspect
-from collections.abc import Mapping
 import importlib.util
 import yaml
 import math
@@ -103,12 +102,11 @@ class LLMJobConfig:
         self.output_excel_file = ""
         self.input_col = ""
         self.output_col = ""
+        self.output_profile = "auto"
+        self.pipeline_name = ""
+        self.stage_cfg = {}
         self.record_update_time = None
         self.sql_config_file = ""
-        # SQL / Table writeback 相關預設值（避免多模式共用流程缺屬性）
-        self.sql_table = ""
-        self.target_table = ""
-        self.primary_key = ""
         self.flatten_json_output = False
         self.allowed_output_fields = []  # 允許從 JSON 中展平的欄位名稱
         self.save_raw_input_when_flatten = None  # 展平時仍備查存入原始欄位輸入
@@ -126,7 +124,6 @@ class LLMJobConfig:
         self.load_low_watermark = 8
         self.load_high_watermark = 20
         self.per_round_limit = 128
-        self.resume_policy = "resume"
     def __repr__(self):
         return "no show temp"
     def __repr__pending(self):
@@ -199,15 +196,12 @@ def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None,
     ctx.model_spec_name = model_spec_name or set_model_spec()
     ctx.model_spec = modelSetting.get(ctx.model_spec_name)
     ensure_merge_defaults(ctx)
-    if ctx.model_spec is None and str(ctx.model_spec_name).startswith("mock"):
-        ctx.model_spec = {
-            "model_name": str(ctx.model_spec_name),
-            "base_url": [],
-            "api_key": "mock",
-            "num_ctx": 8192,
-            "on_premises": False,
-            "nProcess": 1,
-        }
+
+    if merge_slices is None:
+        # 僅呼叫讓它修改 ctx，別把回傳值塞進 merge_slices
+        set_merge_spec(ctx)
+    else:
+        ctx.merge_slices = bool(merge_slices)
     if ctx.model_spec is None:
         raise ValueError(f"❌ 找不到模型設定: {ctx.model_spec_name}")
 
@@ -219,22 +213,6 @@ def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None,
     
     # 任務
     ctx.task = task_name or set_task(ctx)
-    # 讓多階段 orchestrator 可直接取用既有任務字典
-    ctx.taskSetting = taskSetting
-
-    def _task_is_json_like(task: str) -> bool:
-        task_l = str(task or "").lower()
-        return ("json" in task_l) or ("dict" in task_l) or ("結構化" in task_l)
-
-    if merge_slices is None:
-        if _task_is_json_like(ctx.task):
-            # 僅 JSON/結構化任務才詢問切片合併設定
-            set_merge_spec(ctx)
-        else:
-            ctx.merge_slices = False
-            print("切片合併：略過（目前任務非 JSON/字典輸出導向）")
-    else:
-        ctx.merge_slices = bool(merge_slices)
 
     # 頻道（txt 模式才有）
     if ctx.mode == "txt":
@@ -280,111 +258,10 @@ def init_task_context(ctx):
 
     elif task == "Risk Indicator Extraction":
         ctx.keyConsiderations = getKeyConsiderations()
-
-
-def _select_workflow_mode():
-    return OptionSelector(
-        options={
-            "single": "單階段（舊版相容）",
-            "multi": "多階段（依序串接多個任務）",
-        },
-        question="請選擇任務編排方式：",
-        default="single",
-    ).proc()
-
-
-def _select_single_task(options):
-    return OptionSelector(options=options, question="請選擇一個任務：").proc()
-
-
-def _select_stage_input_source(stage_index, stages):
-    if stage_index == 1:
-        return "original"
-
-    source_mode = OptionSelector(
-        options={
-            "previous": "使用前一階段輸出（預設）",
-            "original": "使用原文",
-            "stage_name": "指定既有某一階段輸出",
-        },
-        question=f"請選擇第 {stage_index} 階段輸入來源(input_from)：",
-        default="previous",
-    ).proc()
-
-    if source_mode != "stage_name":
-        return source_mode
-
-    stage_options = {
-        s["name"]: f"task_key={s.get('task_key', '')}"
-        for s in stages
-    }
-    return OptionSelector(
-        options=stage_options,
-        question=f"請選擇第 {stage_index} 階段要引用的 stage 輸出：",
-    ).proc()
-
-
-def _build_multistage_tasks(options, max_stages=8):
-    stages = []
-    stage_index = 1
-
-    while True:
-        selected_task = OptionSelector(
-            options=options,
-            question=f"請選擇第 {stage_index} 階段任務：",
-        ).proc()
-        stages.append(
-            {
-                "name": f"stage_{stage_index}",
-                "task_key": selected_task,
-                "input_from": _select_stage_input_source(stage_index, stages),
-                "persist_output": "always",
-            }
-        )
-
-        if stage_index >= max_stages:
-            print(f"⚠️ 已達互動式上限 {max_stages} 階段，將自動完成設定。")
-            break
-
-        next_action = OptionSelector(
-            options={
-                "add": "新增下一階段",
-                "done": "完成階段設定",
-            },
-            question="是否繼續新增下一階段？",
-            default=("add" if stage_index == 1 else "done"),
-        ).proc()
-        if next_action == "done":
-            break
-        stage_index += 1
-
-    # 僅最後一階段視為最終輸出，其餘保留中間結果以利除錯與追蹤
-    stages[-1]["persist_output"] = "final"
-    return stages
-
-
-def _apply_multistage_to_ctx(ctx, stages):
-    ctx.stages = stages
-    ctx.task = stages[0]["task_key"]
-    print("✅ 已建立多階段任務流程：")
-    for i, stage in enumerate(stages, start=1):
-        print(
-            f"  Stage {i}: task_key={stage['task_key']}, "
-            f"input_from={stage['input_from']}, persist={stage['persist_output']}"
-        )
-
-
+        
 def set_task(ctx):
     options = {k: v["CT_name"] for k, v in taskSetting.items()}
-    workflow_mode = _select_workflow_mode()
-
-    if workflow_mode == "single":
-        ctx.task = _select_single_task(options)
-        init_task_context(ctx)
-        return ctx.task
-
-    stages = _build_multistage_tasks(options=options, max_stages=8)
-    _apply_multistage_to_ctx(ctx, stages)
+    ctx.task = OptionSelector(options=options, question="請選擇一個任務：").proc()
     init_task_context(ctx)
     return ctx.task
 
@@ -651,7 +528,17 @@ def getTextClass(exclusive = False):
 def showTemplate(task=None):
     assert task in taskSetting,f"{task}不在taskSetting鍵值選項中！"
     print(f"{Fore.LIGHTYELLOW_EX}將執行任務{task}，template為{Fore.RESET}")
-    print(task_template_preview(task))
+    source = inspect.getsource(taskSetting[task]["template"])
+    varDic = globals().copy()
+    for var in varDic.keys():
+        if "_Rule" in var:
+            source = source.replace("{"+var+"}",varDic[var])
+    if task in ["CLASS EXT","CLASS Diff EXT"]:
+        global textClass
+        source = source.replace("{textClass}", f"{Fore.LIGHTGREEN_EX}{textClass}{Fore.RESET}")
+        if task == "CLASS Diff EXT":
+            global exclusiveTextClass
+            source = source.replace("{exclusiveTextClass}", f"{Fore.LIGHTYELLOW_EX}{exclusiveTextClass}{Fore.RESET}")
     if "Translation" in task:
         if os.path.isfile("GenerativeLanguageModel/czjLLM/pre_trans_ak.py"):
             from GenerativeLanguageModel.czjLLM.pre_trans_ak import pre_trans
@@ -660,56 +547,5 @@ def showTemplate(task=None):
             DETAIL_EXT_TRANS_Rule += f"特殊翻譯對照表字典如下 {pre_trans}"
             print(f"已載入特殊翻譯對照表字典，DETAIL_EXT_TRANS_Rule為{DETAIL_EXT_TRANS_Rule}")
             countdown_pause(15)
-
-def resolve_task_spec(task, task_pool=None):
-    """
-    回傳 (task_kind, spec):
-    - task_kind = "named"：task 是既有 taskSetting 鍵值
-    - task_kind = "freeform"：task 是自訂 prompt/其他內容
-    """
-    pool = task_pool if isinstance(task_pool, Mapping) else taskSetting
-    if isinstance(task, str) and task in pool:
-        return "named", pool[task]
-    return "freeform", task
-
-
-def task_template_preview(task_or_spec) -> str:
-    """回傳任務 template 可讀字串，支援 task key 或 task dict。"""
-    task_name = ""
-    spec = None
-    if isinstance(task_or_spec, str):
-        task_name = task_or_spec
-        spec = taskSetting.get(task_or_spec)
-    elif isinstance(task_or_spec, Mapping):
-        spec = task_or_spec
-        task_name = str(spec.get("CT_name", "")).strip()
-    if not isinstance(spec, Mapping):
-        return str(task_or_spec)
-
-    tpl = spec.get("template")
-    if not callable(tpl):
-        return str(spec)
-
-    try:
-        source = inspect.getsource(tpl)
-    except Exception:
-        compact = {}
-        for key in ("CT_name", "InputCutLen"):
-            if key in spec:
-                compact[key] = spec.get(key)
-        compact["template"] = "<callable>"
-        return str(compact)
-    varDic = globals().copy()
-    for var in varDic.keys():
-        if "_Rule" in var:
-            source = source.replace("{"+var+"}", varDic[var])
-    if task_name in ["CLASS EXT", "CLASS Diff EXT"]:
-        global textClass
-        source = source.replace("{textClass}", f"{Fore.LIGHTGREEN_EX}{textClass}{Fore.RESET}")
-        if task_name == "CLASS Diff EXT":
-            global exclusiveTextClass
-            source = source.replace("{exclusiveTextClass}", f"{Fore.LIGHTYELLOW_EX}{exclusiveTextClass}{Fore.RESET}")
-    try:
-        return source.strip().split('"template":')[1].strip()
-    except Exception:
-        return source.strip()
+    
+    print(source.strip().split('"template":')[1].strip())

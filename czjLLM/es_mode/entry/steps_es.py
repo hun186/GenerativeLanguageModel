@@ -9,6 +9,7 @@ from elasticsearch import Elasticsearch
 from utils.selector import OptionSelector
 
 from czjLLM.es_mode.config.config_loader_es import load_es_cfg, InteractivePolicy, NonInteractivePolicy
+from czjLLM.es_mode.config.stage_cfg import build_es_stage_cfg, stage_name_from_cfg
 #from czjLLM.es_mode.runtime.sinks.es_sink import ESSink
 
 from czjLLM.es_mode.adapters.elasticsearch_adapter import ElasticsearchAdapter
@@ -106,6 +107,11 @@ def resolve_es_connection(ctx, get_param, args):
         "id_col": es_cfg.get("id_col", getattr(ctx, "primary_key", "_id")),
         "input_col": es_cfg.get("input_col"),
         "output_col": es_cfg.get("output_col"),
+        "output_profile": es_cfg.get("output_profile", None),
+        "pipeline_name": es_cfg.get("pipeline_name", None),
+        "pipeline": es_cfg.get("pipeline", None),
+        "stages": es_cfg.get("stages", None),
+        "routes": es_cfg.get("routes", None),
         "reset_output": es_cfg.get("reset_output", None),
         "reset_confirm_code": es_cfg.get("reset_confirm_code", None),
         "es_apply_mapping": es_cfg.get("es_apply_mapping", None),
@@ -210,11 +216,27 @@ def choose_columns_es(ctx, env, get_param, args):
     ctx.primary_key = primary_key
     ctx.input_col = input_col
     ctx.output_col = output_col
+    ctx.output_profile = (
+        getattr(args, "output_profile", None)
+        or get_param("output_profile", es_cfg.get("output_profile", None))
+        or "auto"
+    )
+    ctx.stage_cfg = build_es_stage_cfg(get_param, es_cfg)
+    ctx.pipeline_name = (
+        getattr(args, "pipeline_name", None)
+        or stage_name_from_cfg(ctx.stage_cfg)
+        or get_param("pipeline_name", es_cfg.get("pipeline_name", None))
+        or None
+    )
 
     # ---------- 同步到 adapter.cfg（讓後續 build_pending_iter_es 直接使用） ----------
     es_cfg["id_col"]   = primary_key
     es_cfg["input_col"]  = input_col
     es_cfg["output_col"] = output_col
+    es_cfg["output_profile"] = ctx.output_profile
+    if ctx.pipeline_name:
+        es_cfg["pipeline_name"] = ctx.pipeline_name
+    es_cfg["stage_cfg"] = ctx.stage_cfg
     # 若你需要此時才決定 index 名稱，也可在這裡放：
     # es_cfg["src_index"] = es_cfg.get("src_index") or input("請輸入來源 index：").strip()
     # es_cfg["tgt_index"] = es_cfg.get("tgt_index") or es_cfg["src_index"]
@@ -341,6 +363,10 @@ def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns, index_name_hi
                 "channel":       {"type": "keyword"}, # 自定：任務 channel
                 "task":          {"type": "keyword"}, # 自定：任務名稱
                 "force_reason":  {"type": "keyword"}, # 自定：為何強制重跑
+                "output_profile": {"type": "keyword"}, # 自定：輸出/正規化 profile
+                "pipeline_name":  {"type": "keyword"}, # 自定：資料處理流路名稱
+                "pipeline_version": {"type": "keyword"}, # 自定：資料處理流路版本
+                "pipeline_enabled": {"type": "boolean"}, # 自定：是否啟用多階段流路
             }
             body = {"properties": {meta_field: node}}
             adapter.es.indices.put_mapping(index=tgt_index, body=body)  # type: ignore

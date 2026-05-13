@@ -7,7 +7,6 @@ import re
 import json
 import atexit
 import time
-from czjLLM.utilities.json_text_utils import loads_json_flexible_deep
 
 # 與其他 sink 保持一致的 logging helper（如果找不到模組會 fallback 到 print）
 try:
@@ -23,6 +22,31 @@ def _now_iso_utc() -> str:
 def _meta_field_from_cfg(cfg: dict, output_col: str) -> str:
     rr = (cfg.get("rerun") or {})
     return rr.get("meta_field") or f"{output_col}_meta"
+
+
+def _normalize_output_profile(value: Any) -> str:
+    """Normalize YAML/ctx output profile names to a small internal vocabulary."""
+    if value is None:
+        return "auto"
+    normalized = str(value).strip().lower().replace("-", "_").replace(" ", "_")
+    aliases = {
+        "": "auto",
+        "default": "auto",
+        "generic": "none",
+        "raw": "none",
+        "plain": "none",
+        "passthrough": "none",
+        "multi_dim_event": "multidim_event",
+        "multidim": "multidim_event",
+        "event": "multidim_event",
+    }
+    return aliases.get(normalized, normalized)
+
+
+def _infer_output_profile(output_col: Optional[str]) -> str:
+    """Backward-compatible inference for legacy ES configs."""
+    legacy_event_cols = {"multidim_event_json", "llm_result_json"}
+    return "multidim_event" if str(output_col) in legacy_event_cols else "none"
     
 class ESSink:
     """
@@ -57,6 +81,11 @@ class ESSink:
         self._buffer_bytes = 0                    # ✅ 累積近似大小
         self._last_flush_ts = datetime.datetime.now().timestamp()
         self._debug = bool(getattr(self.ctx, "debug_es_sink", False))
+        self.write_output = bool(getattr(ctx, "write_output", getattr(ctx, "es_write_output", True)))
+        profile_from_ctx = getattr(self.ctx, "output_profile", None)
+        self.output_profile = _normalize_output_profile(profile_from_ctx)
+        if self.output_profile == "auto":
+            self.output_profile = _infer_output_profile(self.output_col)
         # ✅ 內部快取：實際生效的欄位（可能是 output_col 或 output_col+"_json"）
         #self._effective_output_col = None
         
@@ -74,7 +103,7 @@ class ESSink:
             exists = self.es.indices.exists(index=self.index)
             if not exists:
                 tlog_warn(f"[ESSink] index '{self.index}' 不存在，後續 update 會做 upsert（視需求可先建立 index）。")
-            tlog(f"[ESSink] open: index={self.index}, output_col={self.output_col}, flush_every={self.flush_every}")
+            tlog(f"[ESSink] open: index={self.index}, output_col={self.output_col}, output_profile={self.output_profile}, write_output={self.write_output}, flush_every={self.flush_every}")
         except Exception as ex:
             tlog_warn(f"[ESSink] open 時發生例外：{ex}")
 
@@ -99,12 +128,32 @@ class ESSink:
 
     def _maybe_parse_json(self, payload):
         if isinstance(payload, str):
-            try:
-                return loads_json_flexible_deep(payload)
-            except Exception:
-                pass
+            s = payload.strip()
+            if s and s[0] in "{[":
+                try:
+                    return json.loads(s)
+                except Exception:
+                    pass
         return payload
     
+
+    def _normalize_payload_by_profile(self, payload):
+        """Apply the configured payload normalizer before writing to ES.
+
+        output_profile intentionally decouples ES field names from task-specific
+        payload handling.  This keeps legacy multidim_event_json behavior while
+        allowing YAML-driven generic ES tasks to write arbitrary JSON/text.
+        """
+        profile = _normalize_output_profile(getattr(self, "output_profile", "auto"))
+        if profile == "auto":
+            profile = _infer_output_profile(self.output_col)
+        if profile in ("none", "json", "text"):
+            return payload
+        if profile == "multidim_event":
+            return self._normalize_event_payload_v2(payload)
+        if self._debug:
+            tlog_warn(f"⚠️ ESSink: 未知 output_profile={profile!r}，略過任務特定正規化。")
+        return payload
 
     def _normalize_payload_for_es(self, payload):
         # 空字串 → None；空陣列/空物件 → None（避免 exists 為真卻是「空結果」）
@@ -115,34 +164,6 @@ class ESSink:
         if isinstance(payload, (list, dict)):
             return payload if len(payload) > 0 else None
         return payload
-
-    def _unwrap_self_wrapped_output(self, payload):
-        """
-        修復模型偶發回傳的「自包裝」結構：
-        - {"<output_col>": "<json_string>"}
-        - {"<output_col>": [...]}
-        - [ {"<output_col>": "..."} ] (單元素包裝)
-        """
-        out_key = str(self.output_col or "").strip()
-        if not out_key:
-            return payload
-
-        cur = payload
-        for _ in range(3):
-            changed = False
-            if isinstance(cur, dict) and out_key in cur:
-                # 只在「單鍵」或明顯自包裝時解包，避免誤傷正常欄位
-                if len(cur) == 1:
-                    cur = self._maybe_parse_json(cur.get(out_key))
-                    changed = True
-            elif isinstance(cur, list) and len(cur) == 1 and isinstance(cur[0], dict):
-                first = cur[0]
-                if out_key in first and len(first) == 1:
-                    cur = self._maybe_parse_json(first.get(out_key))
-                    changed = True
-            if not changed:
-                break
-        return cur
     
     
     def _normalize_event_payload(self, payload: any):
@@ -252,6 +273,15 @@ class ESSink:
         # 固定欄位
         meta["processed_at"]  = _now_iso_utc()
         meta["output_field"]  = self.output_col
+        if getattr(self, "output_profile", None):
+            meta["output_profile"] = self.output_profile
+        stage_cfg = getattr(self.ctx, "stage_cfg", None) or {}
+        if getattr(self.ctx, "pipeline_name", None):
+            meta.setdefault("pipeline_name", self.ctx.pipeline_name)
+        if isinstance(stage_cfg, dict) and stage_cfg:
+            if stage_cfg.get("version"):
+                meta.setdefault("pipeline_version", stage_cfg.get("version"))
+            meta.setdefault("pipeline_enabled", bool(stage_cfg.get("enabled", False)))
     
         # 來自任務/環境
         if getattr(self.ctx, "task", None):
@@ -431,13 +461,16 @@ class ESSink:
             tlog_warn("⚠️ ESSink.write_main: pk 為 None，略過寫入。")
             return
     
+        if not self.write_output:
+            if self._debug:
+                tlog(f"ℹ️ ESSink.write_main: write_output=False，略過 ES 文件寫入（pk={pk}）。")
+            return
+
         # 1) 解析
         payload = self._maybe_parse_json(result_text)
-        payload = self._unwrap_self_wrapped_output(payload)
-
-        # 2) 事件正規化（僅指定欄位）
-        if str(self.output_col) in ("multidim_event_json", "llm_result_json"):
-            payload = self._normalize_event_payload_v2(payload)  # 或你的 _normalize_event_payload
+    
+        # 2) 依 YAML/ctx output_profile 執行任務特定正規化；預設不改任意 JSON/text。
+        payload = self._normalize_payload_by_profile(payload)
     
         # 3) 空值歸一
         payload = self._normalize_payload_for_es(payload)

@@ -9,6 +9,7 @@ from ..sql_mode.runtime.orchestrator import run_pipeline
 from ..sql_mode.runtime.sinks.sql_sink import SqlSink
 from ..sql_mode.runtime.sinks.excel_sink import ExcelSink
 from ..tabular_mode.runtime.sinks.csv_sink import CSVSink
+from ..es_mode.runtime.sinks.es_sink import ESSink
 from ..prompt_pipeline.pipeline_controller import start_watchdogs
 #from czjLLM.tabular_mode.runtime.sinks.csv_sink import CSVSink  # 你的 CSVSink
 
@@ -34,7 +35,14 @@ from ..tabular_mode.entry.steps import (
 )
 
 # ---------- ES 版 steps ----------
-# 延遲匯入，避免在 sql/table 模式下強依賴 elasticsearch 套件
+from ..es_mode.entry.steps_es import (  # 假設你有類似 SQL 的 steps 模組
+    resolve_es_connection,           # ctx, get_param, args -> es_client, index
+    choose_columns_es,               # ctx, get_param, es_client, index, args -> columns
+    configure_flatten_es as cfg_es,  # ctx, get_param, args -> None
+    ensure_schemas_es as ensure_es,  # ctx, es_client, columns, index
+    maybe_reset_output_es as reset_es,# ctx, es_client, index, columns, args
+    build_pending_iter_es as build_es_iter,  # es_client, ctx
+)
 
 @dataclass(frozen=True)
 class Backend:
@@ -53,7 +61,6 @@ class Backend:
 # ---------- SQL Backend ----------
 def _sql_resolve(ctx, get_param, args):
     adapter, is_sqlite, sql_cfg = resolve_connection(ctx, get_param, args)
-    ctx.is_sqlite = bool(is_sqlite)
     return {
         "adapter": adapter,
         "is_sqlite": is_sqlite,
@@ -157,7 +164,6 @@ def _es_resolve_old(ctx, get_param, args):
     }
 
 def _es_resolve(ctx, get_param, args):
-    from ..es_mode.entry.steps_es import resolve_es_connection
     adapter, es_cfg = resolve_es_connection(ctx, get_param, args)
     return {"adapter": adapter, "es_cfg": es_cfg, "connection_ctx": adapter}
 
@@ -166,28 +172,18 @@ def _es_choose_old(ctx, env, get_param, args):
     return choose_columns_es(ctx, get_param, env["adapter"], args)
 
 def _es_choose(ctx, env, get_param, args):
-    from ..es_mode.entry.steps_es import choose_columns_es
     return choose_columns_es(ctx, env, get_param, args)
 
-
-def _es_configure(ctx, get_param, args):
-    from ..es_mode.entry.steps_es import configure_flatten_es as cfg_es
-    return cfg_es(ctx, get_param, args)
-
 def _es_ensure(ctx, env, columns):
-    from ..es_mode.entry.steps_es import ensure_schemas_es as ensure_es
     ensure_es(ctx, env["adapter"], columns, None)
 
 def _es_reset(ctx, env, columns, args):
-    from ..es_mode.entry.steps_es import maybe_reset_output_es as reset_es
     reset_es(ctx, env["adapter"], columns, args)
 
 def _es_build_iter(ctx, env):
-    from ..es_mode.entry.steps_es import build_pending_iter_es as build_es_iter
     return build_es_iter(env["adapter"], ctx)
 
 def _es_sink(ctx, env):
-    from ..es_mode.runtime.sinks.es_sink import ESSink
     adapter = env["adapter"]
     cfg = adapter.cfg
     rr = (cfg.get("rerun", {}) or {})
@@ -222,6 +218,10 @@ def _es_sink(ctx, env):
         "channel":       getattr(ctx, "channel", None),
         "source":        getattr(ctx, "source", None),
         "task":          getattr(ctx, "task", None),
+        "output_profile": getattr(ctx, "output_profile", None),
+        "pipeline_name":  getattr(ctx, "pipeline_name", None),
+        "pipeline_version": (getattr(ctx, "stage_cfg", None) or {}).get("version"),
+        "pipeline_enabled": bool((getattr(ctx, "stage_cfg", None) or {}).get("enabled", False)),
         # "force_reason" 讓 _build_meta() 依 rerun 條件自動組合
     }
 
@@ -235,7 +235,6 @@ def _es_sink(ctx, env):
     )
     
 def _es_sink_old(ctx, env):
-    from ..es_mode.runtime.sinks.es_sink import ESSink
     # 你的 ESSink 若需要 es_client/index，可從 adapter.es / adapter.cfg 取
     # 也可讓 ESSink 直接吃 adapter，統一介面
     return ESSink(
@@ -256,7 +255,7 @@ ES_BACKEND = Backend(
     name="es",
     resolve=_es_resolve,
     choose_columns=_es_choose,
-    configure_flatten=_es_configure,
+    configure_flatten=cfg_es,
     ensure_schemas=_es_ensure,
     maybe_reset_output=_es_reset,
     build_pending_iter=_es_build_iter,
