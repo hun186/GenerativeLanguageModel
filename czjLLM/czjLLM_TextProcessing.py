@@ -28,6 +28,28 @@ from czjLLM.handlers.handle_txt_file import handle_txt_mode
 #from sql_mode.entry.handle_tabular import handle_tabular_mode
 from czjLLM.handlers.handle_data_mode import handle_data_mode
 from czjLLM.handlers.handle_sql_to_excel import handle_sql_to_excel_mode
+
+
+def load_stage_cfg_preview(get_param, PGMSubDir):
+    """
+    預讀多階段設定，支援三種 YAML 入口：
+    - stage_config_file: 外部多階段設定檔
+    - stage_cfg: ES/跨模式建議使用的包裝式設定
+    - stages: 舊版直接宣告 stages list/dict
+    """
+    stage_cfg_file = get_param("stage_config_file")
+    if stage_cfg_file:
+        return load_config_from_file(PGMSubDir=PGMSubDir, config_path=stage_cfg_file)
+
+    stage_cfg_inline = get_param("stage_cfg")
+    if stage_cfg_inline:
+        return stage_cfg_inline
+
+    stages_inline = get_param("stages")
+    if stages_inline:
+        return stages_inline
+
+    return None
     
 if __name__ == '__main__':
 
@@ -113,13 +135,7 @@ if __name__ == '__main__':
 
 
     # 先預讀 stage 設定（若有）以便在未提供 task 時推導相容值
-    stage_cfg_inline = get_param("stages")
-    stage_cfg_file = get_param("stage_config_file")
-    stage_cfg_preview = None
-    if stage_cfg_file:
-        stage_cfg_preview = load_config_from_file(PGMSubDir=PGMSubDir, config_path=stage_cfg_file)
-    elif stage_cfg_inline:
-        stage_cfg_preview = stage_cfg_inline
+    stage_cfg_preview = load_stage_cfg_preview(get_param, PGMSubDir)
     task_hint = infer_multistage_task_hint(stage_cfg_preview)
 
     merge_slices_cfg = get_param("merge_slices")
@@ -136,17 +152,13 @@ if __name__ == '__main__':
         merge_slices=merge_slices_cfg,
         task_name=get_param("task") or task_hint
     )
-    # 多階段設定（可直接放在主 YAML 的 stages，或獨立 stage_config_file）
-    stage_cfg_inline = get_param("stages")
-    stage_cfg_file = get_param("stage_config_file")
-    if stage_cfg_file:
-        stage_cfg = stage_cfg_preview if stage_cfg_preview is not None else load_config_from_file(PGMSubDir=PGMSubDir, config_path=stage_cfg_file)
-        if isinstance(stage_cfg, dict):
-            ctx.stages = stage_cfg.get("stages", stage_cfg)
-        elif isinstance(stage_cfg, list):
-            ctx.stages = stage_cfg
-    elif stage_cfg_inline:
-        ctx.stages = stage_cfg_inline
+    # 多階段設定（可直接放在主 YAML 的 stage_cfg/stages，或獨立 stage_config_file）
+    if stage_cfg_preview:
+        ctx.stage_cfg = stage_cfg_preview
+        if isinstance(stage_cfg_preview, dict):
+            ctx.stages = stage_cfg_preview.get("stages", stage_cfg_preview)
+        elif isinstance(stage_cfg_preview, list):
+            ctx.stages = stage_cfg_preview
     # mock LLM 模式：無模型環境可做 E2E 流程驗證
     ctx.mock_llm_mode = bool(get_param("mock_llm_mode", False))
     #print("ctx in main",ctx)

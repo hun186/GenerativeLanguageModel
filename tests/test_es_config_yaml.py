@@ -24,3 +24,4 @@ def test_multistage_langroute_example_documents_current_single_stage_runtime():
     assert "route_value_mode: task" in text
     assert "output_col: multidim_event_json" in text
     assert "stage_cfg:" in text
+    assert "merge_slices: false" in text

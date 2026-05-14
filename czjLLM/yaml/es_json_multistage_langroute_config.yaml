@@ -12,6 +12,10 @@ input_col: rawInfo.content
 primary_key: _id
 record_update_time: true
 
+# 切片合併開關：false 表示不啟用切片結果合併，也不進入互動式「切片合併」詢問。
+# 若需要合併多個切片結果，可改成 true 並搭配 merge_* 細項設定。
+merge_slices: false
+
 # 目前實際會跑的單階段相容欄位：讀 input_col → 跑此 task → 寫 output_col。
 #task: InfoExtraction-MultiDim-SQLFriendly-to json format
 #output_col: multidim_event_json
