@@ -90,6 +90,14 @@ def resolve_es_connection(ctx, get_param, args):
     tgt_index = es_cfg.get("es_tgt_index", src_index)
 
     # 3. 建立 ElasticsearchAdapter（內部會自己建 client）
+    # 主 YAML 可覆寫 es_config_file 內的 rerun 設定，方便用 pipeline_hash
+    # 做測試重跑；其餘未覆寫欄位仍沿用 ES config。
+    base_rerun = es_cfg.get("rerun", {}) or {}
+    yaml_rerun = get_param("rerun", None)
+    if isinstance(yaml_rerun, dict):
+        rerun_cfg = {**base_rerun, **yaml_rerun}
+    else:
+        rerun_cfg = base_rerun
 
     adapter_cfg = {
         #"es_host": hosts,
@@ -124,8 +132,13 @@ def resolve_es_connection(ctx, get_param, args):
         "es_retry_on_timeout": es_cfg.get("es_retry_on_timeout", True),
         "es_prefetch_buffer": es_cfg.get("es_prefetch_buffer", 1000),
         "es_prefetch_first_timeout": es_cfg.get("es_prefetch_first_timeout", 20),
+        "es_writeback_rules": es_cfg.get("es_writeback_rules", None),
+        "es_output_mappings": es_cfg.get("es_output_mappings", None),
+        "es_payload_date_normalize_fields": es_cfg.get("es_payload_date_normalize_fields", None),
+        "es_flatten_writeback_rules": es_cfg.get("es_flatten_writeback_rules", None),
+        "flatten_json_output": es_cfg.get("flatten_json_output", None),
         # －－－－ 新增這三項：讓 Adapter 知道怎麼判斷需重跑 －－－－
-        "rerun": es_cfg.get("rerun", {}),                         # ★ 必傳
+        "rerun": rerun_cfg,                                      # ★ 必傳
         "fallback_date_field": es_cfg.get("fallback_date_field", "update_time_ai"),  # ★ 必傳
         "pk_keyword_suffix": es_cfg.get("pk_keyword_suffix", ".keyword"),            # 建議傳
     }
@@ -179,9 +192,12 @@ def choose_columns_es(ctx, env, get_param, args):
     #)
     #if not input_col:
     #    input_col = input("📝 請輸入輸入欄位 (預設 rawInfo.content)：").strip() or "rawInfo.content"
-    if "input_col" in es_cfg:
-        input_col = es_cfg["input_col"]
-    else:
+    input_col = (
+        getattr(args, "input_col", None)
+        or get_param("input_col", None)
+        or es_cfg.get("input_col")
+    )
+    if not input_col:
         input_col = input("📝 請輸入輸入欄位 (預設 rawInfo.content)：").strip() or "rawInfo.content"
     #print("input_col",input_col)
     # ---------- output_col ----------
@@ -192,9 +208,12 @@ def choose_columns_es(ctx, env, get_param, args):
     #if not output_col:
     #    default_out = f"{input_col}_LLM_result"
     #    output_col = input(f"💾 請輸入輸出欄位名稱（預設為 {default_out}）：").strip() or default_out
-    if "output_col" in es_cfg:
-        output_col = es_cfg["output_col"]
-    else:
+    output_col = (
+        getattr(args, "output_col", None)
+        or get_param("output_col", None)
+        or es_cfg.get("output_col")
+    )
+    if not output_col:
         default_out = f"{input_col}_LLM_result"
         output_col = input(f"💾 請輸入輸出欄位名稱（預設為 {default_out}）：").strip() or default_out
     # ---------- 檢查 input/output 是否相同 ----------
@@ -228,12 +247,38 @@ def choose_columns_es(ctx, env, get_param, args):
         or get_param("pipeline_name", es_cfg.get("pipeline_name", None))
         or None
     )
+    if isinstance(ctx.stage_cfg, dict) and ctx.stage_cfg.get("stages"):
+        ctx.stages = ctx.stage_cfg.get("stages")
+
+    # ES 多階段寫回規則沿用既有 row_merger 的 sql_writeback_rules 解析。
+    es_writeback_rules = get_param("es_writeback_rules", es_cfg.get("es_writeback_rules", [])) or []
+    if es_writeback_rules and not isinstance(es_writeback_rules, list):
+        es_writeback_rules = []
+    ctx.es_writeback_rules = es_writeback_rules
+    ctx.sql_writeback_rules = es_writeback_rules
+    ctx.es_payload_date_normalize_fields = get_param(
+        "es_payload_date_normalize_fields",
+        es_cfg.get("es_payload_date_normalize_fields", []),
+    ) or []
+    # ES 原生可保存 object/nested；避免 SQL/Table flatten 規則誤套到 ES。
+    ctx.flatten_json_output = False
+    ctx.sql_flatten_writeback_rules = []
+    ctx.es_flatten_writeback_rules = []
+
+    output_cols = []
+    for col in [output_col, *[r.get("output_col") for r in es_writeback_rules if isinstance(r, dict)]]:
+        if col and col not in output_cols:
+            output_cols.append(col)
+    ctx.output_cols = output_cols or [output_col]
 
     # ---------- 同步到 adapter.cfg（讓後續 build_pending_iter_es 直接使用） ----------
     es_cfg["id_col"]   = primary_key
     es_cfg["input_col"]  = input_col
     es_cfg["output_col"] = output_col
     es_cfg["output_profile"] = ctx.output_profile
+    es_cfg["output_cols"] = ctx.output_cols
+    es_cfg["es_writeback_rules"] = ctx.es_writeback_rules
+    es_cfg["es_payload_date_normalize_fields"] = ctx.es_payload_date_normalize_fields
     if ctx.pipeline_name:
         es_cfg["pipeline_name"] = ctx.pipeline_name
     es_cfg["stage_cfg"] = ctx.stage_cfg
@@ -243,7 +288,26 @@ def choose_columns_es(ctx, env, get_param, args):
 
     # ---------- 回傳給 ensure_schemas_es 的 columns（建議只補目標 index 的 output 欄位） ----------
     # 型別字串用簡單語義；ElasticsearchAdapter.ensure_columns 會把 "TEXT" 轉成 text+keyword
-    return [(output_col, "TEXT")]
+    type_map = {
+        "keyword": "keyword",
+        "text": "TEXT",
+        "nested": "NESTED",
+        "object": "OBJECT",
+        "date": "date",
+        "long": "long",
+        "double": "double",
+    }
+    columns = [(output_col, "TEXT")]
+    for rule in es_writeback_rules:
+        if not isinstance(rule, dict):
+            continue
+        col = rule.get("output_col")
+        if not col:
+            continue
+        typ = type_map.get(str(rule.get("output_type", "TEXT")).strip().lower(), "TEXT")
+        if (col, typ) not in columns:
+            columns.append((col, typ))
+    return columns
 
 def choose_columns_es_old(ctx, env, get_param, args) -> Dict[str, str]:
     """
