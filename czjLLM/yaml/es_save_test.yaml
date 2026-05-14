@@ -10,6 +10,8 @@ merge_max_log: 10
 mode: es
 model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
 output_col: multidim_event_json
+# 啟用舊版多維日期補欄（time_raw/time_iso/date_iso/precision 等）；任意任務可省略。
+es_payload_date_normalize_fields: [multidim_event_json]
 primary_key: uuid
 record_update_time: true
 task: QA
