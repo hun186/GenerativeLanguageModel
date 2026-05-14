@@ -9,6 +9,7 @@ import yaml
 import math
 import shutil
 import subprocess
+from collections.abc import Mapping
 
 from czjLLM.utilities.path_utils import llm_channel_dir
 
@@ -76,6 +77,55 @@ def load_es_config_from_file(config_path: str) -> dict:
     else:
         raise ValueError(f"❌ 不支援的設定檔副檔名：{ext}")
     
+
+def resolve_task_spec(task, task_pool=None):
+    """Classify whether ``task`` is a known task name or an inline task spec.
+
+    This exists because ``handle_txt_file`` already imports it before deciding
+    whether to call ``showTemplate`` for named tasks or to print an inline-task
+    preview.
+    """
+    pool = task_pool if isinstance(task_pool, Mapping) else taskSetting
+
+    if isinstance(task, str) and task in pool:
+        return "named", pool[task]
+    if isinstance(task, str) and task in taskSetting:
+        return "named", taskSetting[task]
+    return "custom", task
+
+
+def _preview_callable(func):
+    try:
+        return inspect.getsource(func).strip()
+    except (OSError, TypeError):
+        try:
+            return f"{getattr(func, '__name__', '<callable>')}{inspect.signature(func)}"
+        except (TypeError, ValueError):
+            return "<callable>"
+
+
+def task_template_preview(task, task_pool=None):
+    """Return text used only for diagnostic preview output.
+
+    ``pipeline_controller`` imports this function at module import time.  Keeping
+    it in ``job_config`` fixes that import path while preserving the previous
+    behavior of previewing a task mapping's ``template`` when one is present.
+    """
+    _kind, spec = resolve_task_spec(task, task_pool=task_pool)
+
+    if isinstance(spec, Mapping):
+        template = spec.get("template")
+        if callable(template):
+            return _preview_callable(template)
+        if template is not None:
+            return str(template)
+        return str(dict(spec))
+
+    if callable(spec):
+        return _preview_callable(spec)
+
+    return str(spec or "")
+
 class LLMJobConfig:
     def __init__(self):
         self.PGMSubDir = ""
