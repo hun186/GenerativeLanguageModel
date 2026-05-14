@@ -69,7 +69,11 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
     # `mode: table`（Excel/CSV sink）與 `mode: sql` 都共用此排程器；
     # 若限定 sql 才走 multistage，table 會只執行單階段流程，
     # 導致 stage writeback 找不到 _stage_merges/manifest.json。
-    run_stream_multistage = (mode in {"sql", "table"}) and bool(getattr(ctx, "sql_enable_multistage_stream", True)) and has_multistage
+    # SQL/Table/ES 都共用這個 scheduler + row_merger；多階段時必須在排程階段
+    # 直接重用 txt 的 process_prompt_and_merge() 跑完整 stage flow。
+    # 若 ES 留在一般 consumer 單階段路徑，consumer 只會執行 task_hint（通常是第 1 個
+    # route prompt），導致分類碼如 "zh" 被當成最終 output_col 寫回。
+    run_stream_multistage = (mode in {"sql", "table", "es"}) and bool(getattr(ctx, "sql_enable_multistage_stream", True)) and has_multistage
 
     # 讓模板/切片在 row_ctx 上跑（不會動到共享 ctx）
     try:
@@ -120,7 +124,7 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
     # 先以 row_ctx 推導預期合併輸出路徑（單階段/多階段都會用到）
     comb_back_fn = get_combined_result_path(temp_txt_path, row_ctx)
 
-    # SQL/Table 多階段：直接重用 txt 的 process_prompt_and_merge 邏輯先完成 LLM + 合併，
+    # SQL/Table/ES 多階段：直接重用 txt 的 process_prompt_and_merge 邏輯先完成 LLM + 合併，
     # consumer 只需維持原有單階段行為（此列不再進 pending queue）。
     if run_stream_multistage:
         try:
@@ -143,7 +147,7 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
             "total": 0, "done": 0, "status": "in_progress"
         })
         d["rows"][pk]["total"] = total_chunks
-        # SQL/Table 多階段已在 schedule 階段完成 LLM，不放入 consumer pending queue。
+        # SQL/Table/ES 多階段已在 schedule 階段完成 LLM，不放入 consumer pending queue。
         d["queue"]["pending"] += (0 if run_stream_multistage else total_chunks)
 
     meter_update(meter_fn, _on_add_row)

@@ -4,9 +4,8 @@
 ``infer_multistage_task_hint(stage_cfg)``: it is the YAML-declared stage flow,
 usually shaped as either a dict containing ``stages`` or a plain list of stages.
 
-This module deliberately does not execute stages yet.  It only normalizes the
-stage declaration so the future ES multistage executor can consume the same
-concept as other modes.
+This module normalizes the stage declaration so ES can share the same
+multi-stage scheduler/row-merger flow as SQL and table modes.
 """
 from __future__ import annotations
 
