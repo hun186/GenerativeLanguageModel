@@ -9,6 +9,8 @@ model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
 #model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
 #model_spec: nemotron-3-super:latest-ctx-128k-premises-q4
 output_col: multidim_event_json
+# 啟用舊版多維日期補欄（time_raw/time_iso/date_iso/precision 等）；任意任務可省略。
+es_payload_date_normalize_fields: [multidim_event_json]
 primary_key: _id
 #task: News-FacetTop10-Map-to json format
 task: InfoExtraction-MultiDim-SQLFriendly-to json format

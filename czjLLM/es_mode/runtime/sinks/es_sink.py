@@ -63,9 +63,118 @@ class ESSink:
         # ✅ meta_field 預設為 f"{output_col}_meta"
         self.meta_field: Optional[str] = meta_field or f"{self.output_col}_meta"
         self.meta_base: Dict[str, Any] = dict(meta_base or {})
+        self.writeback_rules = self._load_writeback_rules()
         
         atexit.register(self.flush_all)  # 程式結束時保底 flush
         #print("ctx in ESSink",self.ctx)
+
+
+    def _load_writeback_rules(self) -> Dict[str, Dict[str, Any]]:
+        """從 ctx.es_writeback_rules/sql_writeback_rules 建立 output_col -> rule 查表。"""
+        raw = getattr(self.ctx, "es_writeback_rules", None) or getattr(self.ctx, "sql_writeback_rules", None) or []
+        out: Dict[str, Dict[str, Any]] = {}
+        if isinstance(raw, list):
+            for item in raw:
+                if not isinstance(item, dict):
+                    continue
+                col = str(item.get("output_col", "")).strip()
+                if col:
+                    out[col] = dict(item)
+        return out
+
+    def _rule_for_output(self, output_col: str) -> Dict[str, Any]:
+        return self.writeback_rules.get(str(output_col), {})
+
+    def _index_for_output(self, output_col: str) -> str:
+        rule = self._rule_for_output(output_col)
+        return str(rule.get("index", rule.get("tgt_index", self.index)) or self.index)
+
+    def _meta_field_for_output(self, output_col: str) -> Optional[str]:
+        rule = self._rule_for_output(output_col)
+        if rule.get("write_meta", True) is False:
+            return None
+        if "meta_field" in rule:
+            mf = rule.get("meta_field")
+            return str(mf).strip() if mf else None
+        if output_col == self.output_col:
+            return self.meta_field
+        return f"{output_col}_meta"
+
+    def _should_apply_payload_date_normalization_for(self, output_col: str) -> bool:
+        """
+        Optional legacy payload date normalization.
+
+        This is off by default for arbitrary ES tasks. Enable it only for output
+        fields that use the legacy multidimensional date schema via either:
+        - rule.normalize_payload_dates: true
+        - ctx.es_payload_date_normalize_fields: ["output_field"]
+
+        """
+        rule = self._rule_for_output(output_col)
+        if "normalize_payload_dates" in rule:
+            return bool(rule.get("normalize_payload_dates"))
+        fields = getattr(self.ctx, "es_payload_date_normalize_fields", None)
+        if fields is None:
+            adapter = getattr(self.ctx, "_es_adapter", None)
+            cfg = (getattr(adapter, "cfg", {}) or {}) if adapter else {}
+            fields = cfg.get("es_payload_date_normalize_fields")
+
+        if isinstance(fields, (list, tuple, set)):
+            return output_col in {str(x) for x in fields}
+        if isinstance(fields, str) and fields.strip():
+            return output_col in {x.strip() for x in fields.split(",") if x.strip()}
+
+        return False
+
+    def _prepare_payload_for_output(self, output_col: str, result_text: Any):
+        payload = self._maybe_parse_json(result_text)
+        payload = self._unwrap_self_wrapped_output_for(output_col, payload)
+        if self._should_apply_payload_date_normalization_for(output_col):
+            payload = self._normalize_multidim_date_payload(payload)
+        return self._normalize_payload_for_es(payload)
+
+    def _unwrap_self_wrapped_output_for(self, output_col: str, payload):
+        old = self.output_col
+        try:
+            self.output_col = output_col
+            return self._unwrap_self_wrapped_output(payload)
+        finally:
+            self.output_col = old
+
+    def _build_meta_for_output(self, output_col: str) -> Optional[dict]:
+        old_output = self.output_col
+        old_meta = self.meta_field
+        try:
+            self.output_col = output_col
+            self.meta_field = self._meta_field_for_output(output_col)
+            return self._build_meta()
+        finally:
+            self.output_col = old_output
+            self.meta_field = old_meta
+
+    def _prepare_update_doc_for_output(self, output_col: str, payload: Any):
+        doc = {output_col: payload}
+        if getattr(self.ctx, "record_update_time", False):
+            ts = _now_iso_utc()
+            doc["update_time_ai"] = ts
+            if getattr(self.ctx, "update_time_inside_output", False):
+                if isinstance(payload, dict):
+                    payload.setdefault("update_time_ai", ts)
+                elif isinstance(payload, list):
+                    for it in payload:
+                        if isinstance(it, dict):
+                            it.setdefault("update_time_ai", ts)
+        meta_field = self._meta_field_for_output(output_col)
+        if meta_field:
+            meta = self._build_meta_for_output(output_col)
+            if meta:
+                doc[meta_field] = meta
+        return doc
+
+    def _enqueue_update(self, pk, index: str, doc: Dict[str, Any]) -> None:
+        item = {"_id": pk, "_index": index, "doc": doc}
+        self._buffer.append(item)
+        self._buffer_bytes += self._estimate_size(item)
 
     # -------- lifecycle --------
     def open(self):
@@ -145,66 +254,6 @@ class ESSink:
         return cur
     
     
-    def _normalize_event_payload(self, payload: any):
-        """只處理我們的 multidim_event_json 結構：補 date_raw / time_raw、正規化日期與粒度。"""
-        try:
-            if not isinstance(payload, list):
-                return payload
-            out = []
-            for item in payload:
-                if not isinstance(item, dict):
-                    out.append(item); continue
-    
-                item = dict(item)  # 淺複製
-    
-                # Event.time
-                ev = item.get("Event")
-                if isinstance(ev, dict):
-                    t = ev.get("time")
-                    if isinstance(t, str):
-                        ev.setdefault("time_raw", t)
-                        norm, prec = self._normalize_date_value(t)
-                        if prec:
-                            ev["time"] = norm
-                            ev["time_precision"] = prec
-                        else:
-                            # 解析失敗則保留 raw，讓 mapping 的 ignore_malformed 接住
-                            pass
-    
-                # date_range.start/end
-                dr = item.get("date_range")
-                if isinstance(dr, dict):
-                    for k in ("start", "end"):
-                        v = dr.get(k)
-                        if isinstance(v, str):
-                            dr.setdefault(f"{k}_raw", v)
-                            norm, prec = self._normalize_date_value(v)
-                            if prec:
-                                dr[k] = norm
-                                dr[f"{k}_precision"] = prec
-    
-                # Event_Timeline[].date
-                tl = item.get("Event_Timeline")
-                if isinstance(tl, list):
-                    new_tl = []
-                    for step in tl:
-                        if isinstance(step, dict):
-                            step = dict(step)
-                            dv = step.get("date")
-                            if isinstance(dv, str):
-                                step.setdefault("date_raw", dv)
-                                norm, prec = self._normalize_date_value(dv)
-                                if prec:
-                                    step["date"] = norm
-                                    step["date_precision"] = prec
-                        new_tl.append(step)
-                    item["Event_Timeline"] = new_tl
-    
-                out.append(item)
-            return out
-        except Exception:
-            return payload
-    
     # ---- 新增：解析日期字串，回傳 (iso_str, precision) ----
     def _normalize_date_value(self, s: str):
         """支援 YYYY-MM-DD / YYYY-MM / YYYY；其餘回傳 (None, None)。"""
@@ -238,8 +287,6 @@ class ESSink:
                 cur[k] = {}
             cur = cur[k]
         cur[path[-1]] = value
-    
-    # ---- 取代你舊的 _normalize_event_payload（不覆蓋 time/date）----
     
     def _build_meta(self) -> Optional[dict]:
         if not self.meta_field:
@@ -282,12 +329,14 @@ class ESSink:
         return {k: v for k, v in meta.items() if v is not None}
         #return meta
         
-    def _normalize_event_payload_v2(self, payload: any):
+    def _normalize_multidim_date_payload(self, payload: any):
         """
-        只處理我們的多維事件結構（list[dict]），
-        - Event.time 產出：Event.time_raw / Event.time_iso / Event.time_precision
-        - Event_Timeline[].date 產出：date_raw / date_iso / date_precision
-        - date_range.start/end 可選：加上 *_raw / *_precision（start/end 本身仍可留 date 類型）
+        處理舊版多維日期結構（list[dict]），不是通用 JSON transformer。
+        僅在 normalize_payload_dates / es_payload_date_normalize_fields 明確啟用時執行：
+        - payload["Event"].time 產出：time_raw / time_iso / time_precision
+        - payload["Event_Timeline"][].date 產出：date_raw / date_iso / date_precision
+        - date_range.start/end 產出 *_raw / *_precision，並把可解析值轉成 ISO 日期
+        目前僅解析 YYYY-MM-DD / YYYY-MM / YYYY。
         """
         try:
             if not isinstance(payload, list):
@@ -299,7 +348,7 @@ class ESSink:
                     out.append(item); continue
                 obj = dict(item)  # 淺拷貝
     
-                # --- Event.time -> 新三欄 ---
+                # --- legacy payload["Event"].time -> 新三欄 ---
                 ev = obj.get("Event")
                 if isinstance(ev, dict):
                     t = ev.get("time")
@@ -328,7 +377,7 @@ class ESSink:
                             # 若不想覆蓋，也可以另外寫入 k+"_iso"：
                             # self._setd(dr, [f"{k}_iso"], iso)
     
-                # --- Event_Timeline[].date -> 新三欄 ---
+                # --- legacy payload["Event_Timeline"][].date -> 新三欄 ---
                 tl = obj.get("Event_Timeline")
                 if isinstance(tl, list):
                     new_tl = []
@@ -363,7 +412,7 @@ class ESSink:
             doc["update_time_ai"] = ts  # 根層
     
             # ✅（可選）也寫到 output_col 內層
-            # 記得對應的 mapping 若要查 nested 內的時間，需在 multidim_event_json.properties.update_time_ai 定義成 date。
+            # 若要查 nested 內的時間，需在對應 output 欄位的 properties.update_time_ai 定義成 date。
             if getattr(self.ctx, "update_time_inside_output", False):
                 if isinstance(payload, dict):
                     payload.setdefault("update_time_ai", ts)
@@ -430,28 +479,39 @@ class ESSink:
         if pk is None:
             tlog_warn("⚠️ ESSink.write_main: pk 為 None，略過寫入。")
             return
-    
-        # 1) 解析
-        payload = self._maybe_parse_json(result_text)
-        payload = self._unwrap_self_wrapped_output(payload)
 
-        # 2) 事件正規化（僅指定欄位）
-        if str(self.output_col) in ("multidim_event_json", "llm_result_json"):
-            payload = self._normalize_event_payload_v2(payload)  # 或你的 _normalize_event_payload
-    
-        # 3) 空值歸一
-        payload = self._normalize_payload_for_es(payload)
-    
+        # 多階段 row_merger 會傳入 {output_col: payload_text, ...}；
+        # ES 在這裡把每個 output_col 依規則寫到同一或不同 index。
+        if isinstance(result_text, dict):
+            docs_by_index: Dict[str, Dict[str, Any]] = {}
+            for output_col, raw_payload in result_text.items():
+                output_col = str(output_col).strip()
+                if not output_col:
+                    continue
+                payload = self._prepare_payload_for_output(output_col, raw_payload)
+                if payload is None:
+                    if self._debug:
+                        tlog(f"ℹ️ ESSink.write_main: output_col={output_col} 規範化後為空，略過。")
+                    continue
+                idx = self._index_for_output(output_col)
+                docs_by_index.setdefault(idx, {}).update(self._prepare_update_doc_for_output(output_col, payload))
+
+            for idx, doc in docs_by_index.items():
+                self._enqueue_update(pk, idx, doc)
+            if docs_by_index:
+                self._maybe_flush()
+            return
+
+        payload = self._prepare_payload_for_output(self.output_col, result_text)
+
         # 🚫 規範化後為 None → 直接略過（避免 exists 誤判）
         if payload is None:
             if self._debug:
                 tlog("ℹ️ ESSink.write_main: 規範化後為空，略過寫入。")
             return
-    
-        doc = self._prepare_update_doc(payload)
-        item = {"_id": pk, "doc": doc}
-        self._buffer.append(item)
-        self._buffer_bytes += self._estimate_size(item)
+
+        doc = self._prepare_update_doc_for_output(self.output_col, payload)
+        self._enqueue_update(pk, self._index_for_output(self.output_col), doc)
 
         if self._debug:
             tlog(f"[ESSink] buffer size={len(self._buffer)}, bytes~={self._buffer_bytes} (limits: {self.flush_every} / {self.flush_bytes}B)")
@@ -484,7 +544,7 @@ class ESSink:
         actions_gen = (
             {
                 "_op_type": "update",
-                "_index": self.index,
+                "_index": item.get("_index", self.index),
                 "_id": item["_id"],
                 "doc": item["doc"],
                 "doc_as_upsert": True,

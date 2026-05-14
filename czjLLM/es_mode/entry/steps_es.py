@@ -17,6 +17,57 @@ from utils.ES_utils import get_es_client, apply_es_mapping
 
 _SENTINEL = object()
 
+
+def _normalize_es_writeback_rules(get_param):
+    """
+    正規化 ES 多階段寫回規則。
+    優先讀 es_writeback_rules；若未設定，沿用 sql_writeback_rules 以便共用現有 row_merger。
+    每條規則可含 output_col/source/stage/index/output_type/mapping_file/meta_field/normalize_payload_dates。
+    """
+    rules = get_param("es_writeback_rules", None)
+    if not isinstance(rules, list):
+        rules = get_param("sql_writeback_rules", None)
+    out = []
+    if not isinstance(rules, list):
+        return out
+    for item in rules:
+        if not isinstance(item, dict):
+            continue
+        col = str(item.get("output_col", "")).strip()
+        if not col:
+            continue
+        src = str(item.get("source", "combined") or "combined").strip().lower()
+        if src not in {"combined", "stage"}:
+            src = "combined"
+        rule = dict(item)
+        rule.update({"output_col": col, "source": src, "stage": item.get("stage", None)})
+        out.append(rule)
+    return out
+
+
+
+def _warn_ignored_es_flatten_config(get_param):
+    """
+    ES 原生支援 object/nested JSON，不需要 SQL/Table 的 flatten-to-subtable 寫回機制。
+    若設定檔仍帶入相關 key，明確忽略，避免 row_merger 誤呼叫 ESSink.write_flatten。
+    """
+    flatten_keys = (
+        "es_flatten_writeback_rules",
+        "sql_flatten_writeback_rules",
+        "es_flatten_json_output",
+        "flatten_json_output",
+        "es_flatten_writeback_rule",
+        "sql_flatten_writeback_rule",
+    )
+    present = [key for key in flatten_keys if get_param(key, None) is not None]
+    if present:
+        print(
+            "ℹ️ ES 模式已忽略 flatten 設定："
+            f"{present}。ES 可直接寫入 object/nested JSON；"
+            "請改用 es_writeback_rules + output_type/mapping_file 控制輸出。"
+        )
+
+
 # ---------- Resolve 連線 ----------
 def resolve_es_connection_old(ctx, get_param, args):
     """
@@ -173,9 +224,8 @@ def choose_columns_es(ctx, env, get_param, args):
     #)
     #if not input_col:
     #    input_col = input("📝 請輸入輸入欄位 (預設 rawInfo.content)：").strip() or "rawInfo.content"
-    if "input_col" in es_cfg:
-        input_col = es_cfg["input_col"]
-    else:
+    input_col = get_param("input_col", es_cfg.get("input_col"))
+    if not input_col:
         input_col = input("📝 請輸入輸入欄位 (預設 rawInfo.content)：").strip() or "rawInfo.content"
     #print("input_col",input_col)
     # ---------- output_col ----------
@@ -186,9 +236,8 @@ def choose_columns_es(ctx, env, get_param, args):
     #if not output_col:
     #    default_out = f"{input_col}_LLM_result"
     #    output_col = input(f"💾 請輸入輸出欄位名稱（預設為 {default_out}）：").strip() or default_out
-    if "output_col" in es_cfg:
-        output_col = es_cfg["output_col"]
-    else:
+    output_col = get_param("output_col", es_cfg.get("output_col"))
+    if not output_col:
         default_out = f"{input_col}_LLM_result"
         output_col = input(f"💾 請輸入輸出欄位名稱（預設為 {default_out}）：").strip() or default_out
     # ---------- 檢查 input/output 是否相同 ----------
@@ -200,6 +249,31 @@ def choose_columns_es(ctx, env, get_param, args):
         ).proc()
         if ok != "yes":
             output_col = input("🔁 請重新輸入輸出欄位名稱：").strip() or f"{input_col}_result"
+
+    # ---------- 多階段/多欄位寫回設定 ----------
+    # ES 使用自己的 es_writeback_rules 名稱；同時鏡射到 sql_writeback_rules，
+    # 以重用既有 row_merger 的多階段 stage selector。
+    ctx.es_writeback_rules = _normalize_es_writeback_rules(get_param)
+    ctx.sql_writeback_rules = ctx.es_writeback_rules
+    # ES 原生支援 JSON object/nested；不要啟用 SQL/Table 的 flatten-to-subtable 流程。
+    _warn_ignored_es_flatten_config(get_param)
+    ctx.sql_flatten_writeback_rules = []
+    ctx.sql_flatten_writeback_rule = 0
+
+    ctx.output_cols = [str(output_col).strip()] if str(output_col).strip() else []
+    for r in ctx.es_writeback_rules:
+        c = str(r.get("output_col", "")).strip()
+        if c and c not in ctx.output_cols:
+            ctx.output_cols.append(c)
+
+    ctx.es_output_mappings = get_param("es_output_mappings", es_cfg.get("es_output_mappings", None)) or []
+    ctx.es_payload_date_normalize_fields = get_param(
+        "es_payload_date_normalize_fields",
+        es_cfg.get("es_payload_date_normalize_fields", None),
+    )
+    ctx.flatten_json_output = False
+    ctx.allowed_output_fields = []
+    ctx.save_raw_input_when_flatten = False
 
     ctx.record_update_time = get_param("record_update_time")
     if ctx.record_update_time is None:
@@ -215,13 +289,23 @@ def choose_columns_es(ctx, env, get_param, args):
     es_cfg["id_col"]   = primary_key
     es_cfg["input_col"]  = input_col
     es_cfg["output_col"] = output_col
+    es_cfg["output_cols"] = ctx.output_cols
+    es_cfg["es_writeback_rules"] = ctx.es_writeback_rules
+    es_cfg["es_output_mappings"] = ctx.es_output_mappings
+    es_cfg["es_payload_date_normalize_fields"] = ctx.es_payload_date_normalize_fields
     # 若你需要此時才決定 index 名稱，也可在這裡放：
     # es_cfg["src_index"] = es_cfg.get("src_index") or input("請輸入來源 index：").strip()
     # es_cfg["tgt_index"] = es_cfg.get("tgt_index") or es_cfg["src_index"]
 
     # ---------- 回傳給 ensure_schemas_es 的 columns（建議只補目標 index 的 output 欄位） ----------
     # 型別字串用簡單語義；ElasticsearchAdapter.ensure_columns 會把 "TEXT" 轉成 text+keyword
-    return [(output_col, "TEXT")]
+    def _rule_type(col: str) -> str:
+        for r in ctx.es_writeback_rules:
+            if r.get("output_col") == col:
+                return str(r.get("output_type", r.get("type", "TEXT")) or "TEXT")
+        return str(get_param("es_output_type", "TEXT") or "TEXT")
+
+    return [(col, _rule_type(col)) for col in ctx.output_cols]
 
 def choose_columns_es_old(ctx, env, get_param, args) -> Dict[str, str]:
     """
@@ -288,71 +372,117 @@ def configure_flatten_es(ctx, get_param, args):
 
 # ---- 確保 schema（mapping）對齊 SQL ensure_schemas ----
 def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns, index_name_hint=None):
+    """
+    確保 ES index/mapping 可承接本次任務輸出。
+
+    支援三層設定：
+    1. 全域 mapping_file/es_apply_mapping：套用到預設 target index。
+    2. es_output_mappings：可宣告多個 index + mapping_file。
+    3. es_writeback_rules/sql_writeback_rules：逐輸出欄位指定 index/output_type/mapping_file/meta_field。
+    """
     # 1) 確保 index 存在
     adapter.ensure_table(adapter.cfg["src_index"])
     adapter.ensure_table(adapter.cfg["tgt_index"])
 
-    tgt_index  = adapter.cfg["tgt_index"]
-    out_field  = getattr(ctx, "output_col", "llm_result")                 # 主要輸出欄位
-    out_type   = getattr(ctx, "es_output_type", "NESTED").upper()         # "NESTED"/"OBJECT"
-
-    # 2) 若指定 mapping 檔，先交由 YAML 套用（只新增，不變更既有型別）
+    default_tgt = adapter.cfg["tgt_index"]
     es_apply_mapping = adapter.cfg.get("es_apply_mapping", False)
-    mapping_file     = adapter.cfg.get("mapping_file")
-    if es_apply_mapping and mapping_file:
-        try:
-            adapter.apply_mapping_file(tgt_index, mapping_file)
-        except Exception as ex:
-            print(f"⚠️ 套用 mapping 檔失敗（將退回最小化策略）：{ex}")
+    mapping_file = adapter.cfg.get("mapping_file")
 
-    # 3) output 欄位（最小化備援）：不存在才建 type
-    try:
-        node = adapter.get_field_mapping(tgt_index, out_field)
-        if node is None:
-            body = {"properties": {out_field: {"type": "nested"}}} \
-                   if out_type == "NESTED" else \
-                   {"properties": {out_field: {"type": "object"}}}
-            adapter.es.indices.put_mapping(index=tgt_index, body=body)  # type: ignore
-            print(f"✅ 已在 index='{tgt_index}' 新增欄位 '{out_field}'（type={out_type}）")
-        else:
-            cur = node.get("type", "object")
-            ok  = (out_type == "NESTED" and cur == "nested") or (out_type == "OBJECT" and cur in ["object", None])
-            if not ok:
-                print(f"⚠️ 欄位 '{out_field}' 型別為 {cur}，與期望 {out_type} 不符；請改用另一 output_col 或重建索引。")
-    except Exception as ex:
-        print(f"⚠️ 確認/建立 output 欄位映射時發生例外：{ex}")
-    # 4) meta 欄位（最小化備援）：不存在才建；存在則僅檢查型別，不改動
-    try:
-        rr = (adapter.cfg or {}).get("rerun") or {}
-        out_field  = getattr(ctx, "output_col", "llm_result")
-        meta_field = rr.get("meta_field") or getattr(ctx, "meta_field", None) or f"{out_field}_meta"
-        meta_type  = getattr(ctx, "es_meta_type", "OBJECT").upper()  # "OBJECT" / "NESTED"
-    
-        meta_node = adapter.get_field_mapping(tgt_index, meta_field)
-        if meta_node is None:
-            node = {"type": "nested"} if meta_type == "NESTED" else {"type": "object"}
-            # 🔽 一次放進常用子欄位（僅在「不存在」時建立）
-            node["properties"] = {
-                "processed_at":  {"type": "date"},    # ISO8601 (e.g. 2025-11-10T08:00:00Z)
-                "model_tag":     {"type": "keyword"},
-                "pipeline_hash": {"type": "keyword"},
-                #"model_spec":    {"type": "keyword"},
-                "source":        {"type": "keyword"}, # 自定：資料來源/任務來源
-                "channel":       {"type": "keyword"}, # 自定：任務 channel
-                "task":          {"type": "keyword"}, # 自定：任務名稱
-                "force_reason":  {"type": "keyword"}, # 自定：為何強制重跑
-            }
-            body = {"properties": {meta_field: node}}
-            adapter.es.indices.put_mapping(index=tgt_index, body=body)  # type: ignore
-            print(f"✅ 已在 index='{tgt_index}' 新增欄位 '{meta_field}'（type={node['type']}，含預設子欄位）")
-        else:
-            cur = meta_node.get("type", "object")
-            want_nested = (meta_type == "NESTED")
-            ok = (want_nested and cur == "nested") or (not want_nested and cur in ["object", None])
-            if not ok:
-                print(f"⚠️ meta 欄位 '{meta_field}' 型別為 {cur}，與期望 {meta_type} 不符；建議調整 YAML 或重建索引。")
-    except Exception as ex:
-        print(f"⚠️ 確認/建立 meta 欄位映射時發生例外：{ex}")
+    def _apply_mapping(idx: str, path: str | None, enabled: bool = True):
+        if not enabled or not path:
+            return
+        try:
+            adapter.apply_mapping_file(idx, path)
+        except Exception as ex:
+            print(f"⚠️ 套用 mapping 檔失敗 index={idx}, file={path}（將退回最小化策略）：{ex}")
+
+    # 2) 全域 mapping 檔
+    _apply_mapping(default_tgt, mapping_file, bool(es_apply_mapping and mapping_file))
+
+    # 3) 多 index mapping 檔
+    output_mappings = getattr(ctx, "es_output_mappings", None) or adapter.cfg.get("es_output_mappings") or []
+    if isinstance(output_mappings, dict):
+        output_mappings = [output_mappings]
+    for item in output_mappings:
+        if not isinstance(item, dict):
+            continue
+        idx = str(item.get("index", item.get("tgt_index", default_tgt)) or default_tgt)
+        adapter.ensure_table(idx)
+        _apply_mapping(idx, item.get("mapping_file"), bool(item.get("apply", True)))
+
+    rules = getattr(ctx, "es_writeback_rules", None) or getattr(ctx, "sql_writeback_rules", None) or []
+    if not isinstance(rules, list):
+        rules = []
+    rule_by_col = {str(r.get("output_col", "")).strip(): r for r in rules if isinstance(r, dict)}
+
+    output_cols = getattr(ctx, "output_cols", None) or [getattr(ctx, "output_col", "llm_result")]
+    if columns:
+        for col, _typ in columns:
+            if col not in output_cols:
+                output_cols.append(col)
+
+    def _node_for_type(output_type: str) -> dict:
+        t = str(output_type or "TEXT").strip().upper()
+        if t == "NESTED":
+            return {"type": "nested"}
+        if t in {"OBJECT", "JSON", "MAP"}:
+            return {"type": "object"}
+        if t in {"KEYWORD"}:
+            return {"type": "keyword"}
+        if t in {"DATE", "DATETIME", "TIMESTAMP"}:
+            return {"type": "date"}
+        if t in {"LONG", "INTEGER", "INT", "BIGINT"}:
+            return {"type": "long"}
+        if t in {"DOUBLE", "FLOAT", "NUMERIC", "DECIMAL"}:
+            return {"type": "double"}
+        return {"type": "text", "fields": {"keyword": {"type": "keyword"}}}
+
+    def _ensure_field(idx: str, field: str, node: dict):
+        try:
+            existing = adapter.get_field_mapping(idx, field)
+            if existing is None:
+                adapter.es.indices.put_mapping(index=idx, body={"properties": {field: node}})  # type: ignore
+                print(f"✅ 已在 index='{idx}' 新增欄位 '{field}'（type={node.get('type', 'object')}）")
+            else:
+                cur = existing.get("type", "object") if isinstance(existing, dict) else "object"
+                want = node.get("type", "object")
+                if cur != want and not (want == "object" and cur is None):
+                    print(f"⚠️ 欄位 '{field}' 目前 type={cur}，設定期望 type={want}；ES 無法直接改既有型別，請改欄位或重建索引。")
+        except Exception as ex:
+            print(f"⚠️ 確認/建立欄位映射失敗 index={idx}, field={field}: {ex}")
+
+    def _ensure_meta(idx: str, meta_field: str, meta_type: str = "OBJECT"):
+        if not meta_field:
+            return
+        node = {"type": "nested"} if str(meta_type).upper() == "NESTED" else {"type": "object"}
+        node["properties"] = {
+            "processed_at": {"type": "date"},
+            "model_tag": {"type": "keyword"},
+            "pipeline_hash": {"type": "keyword"},
+            "source": {"type": "keyword"},
+            "channel": {"type": "keyword"},
+            "task": {"type": "keyword"},
+            "output_field": {"type": "keyword"},
+            "force_reason": {"type": "keyword"},
+        }
+        _ensure_field(idx, meta_field, node)
+
+    # 4) 逐欄位最小 mapping 備援
+    for out_field in output_cols:
+        if not out_field:
+            continue
+        rule = rule_by_col.get(str(out_field), {})
+        idx = str(rule.get("index", rule.get("tgt_index", default_tgt)) or default_tgt)
+        adapter.ensure_table(idx)
+        _apply_mapping(idx, rule.get("mapping_file"), bool(rule.get("apply_mapping", bool(rule.get("mapping_file")))))
+        output_type = rule.get("output_type", rule.get("type", getattr(ctx, "es_output_type", "TEXT")))
+        _ensure_field(idx, str(out_field), _node_for_type(output_type))
+        meta_field = rule.get("meta_field")
+        if meta_field is None:
+            rr = (adapter.cfg or {}).get("rerun") or {}
+            meta_field = rr.get("meta_field") if str(out_field) == getattr(ctx, "output_col", "") else f"{out_field}_meta"
+        if rule.get("write_meta", True):
+            _ensure_meta(idx, str(meta_field), str(rule.get("meta_type", getattr(ctx, "es_meta_type", "OBJECT"))))
     
 # ---- 確保 schema（mapping）對齊 SQL ensure_schemas ----
 def ensure_schemas_es_old(ctx, adapter: ElasticsearchAdapter, columns: List[Tuple[str, str]], index_name_hint=None):
@@ -426,7 +556,8 @@ def maybe_reset_output_es(ctx, adapter: ElasticsearchAdapter, columns, args):
         f"{ctx.input_col}_LLM_result",   # e.g. 'rawInfo.content_LLM_result'
         "rawInfo.LLM_result",
     ]
-    fields_to_remove = [out_col] + legacy_fields
+    configured_outputs = [c for c in (getattr(ctx, "output_cols", None) or [out_col]) if c]
+    fields_to_remove = list(dict.fromkeys(configured_outputs + legacy_fields))
 
     # 4) 用 painless 一次移除多個欄位（存在才移除，不存在就略過）
     script_source = """
@@ -619,6 +750,23 @@ def _tap_progress(it, ctx):
         yield x
 # ---------- 建立 iterator ----------
 def build_pending_iter_es(adapter, ctx):
+    stage_extra_cols = []
+    for stage in (getattr(ctx, "stages", None) or []):
+        if isinstance(stage, dict):
+            col = str(stage.get("input_col", "")).strip()
+            if col and col != adapter.cfg.get("input_col"):
+                stage_extra_cols.append(col)
+            route_map = stage.get("route_map")
+            if isinstance(route_map, dict):
+                for route_item in route_map.values():
+                    if isinstance(route_item, dict):
+                        col = str(route_item.get("input_col", route_item.get("from_col", ""))).strip()
+                        if col and col != adapter.cfg.get("input_col"):
+                            stage_extra_cols.append(col)
+    # 這不是另一個 runtime input_col，而是把各 stage YAML 宣告的 input_col
+    # 預先掛到 adapter cfg，讓 adapter 單次 scan 時一併取回供 stage_source_inputs 使用。
+    adapter.cfg["stage_source_input_cols"] = sorted(set(stage_extra_cols))
+
     base = adapter.select_pending_rows(
         src_table=adapter.cfg["src_index"],
         tgt_table=adapter.cfg["tgt_index"],

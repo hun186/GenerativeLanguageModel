@@ -750,16 +750,24 @@ class ElasticsearchAdapter:
         record_update_time: bool,
         fetch_size: int = 500,
     ):
-        """以 helpers.scan 串流完整待處理集合（有 input、無有效 output）。"""
+        """
+        以 helpers.scan 串流完整待處理集合（有 input、無有效 output）。
+
+        input_col 是本列排程/切片的主文字來源。若多階段 YAML 的某些 stage
+        宣告不同 input_col，呼叫端會先把那些 dot-path 放到 cfg["stage_source_input_cols"]；
+        adapter 只負責把它們一併從 _source 取回並隨列回傳為 source_inputs，
+        讓後續 stage 可用不同來源文字組 prompt。
+        """
+        stage_source_input_cols = self.cfg.get("stage_source_input_cols", []) or []
         assert self.es is not None
     
         if src_table == tgt_table:
             # 單一 index：同文件包含 input/output
-            for item in self._scan_single_index_pending(src_table, pk, input_col, output_col, fetch_size):
+            for item in self._scan_single_index_pending(src_table, pk, input_col, output_col, fetch_size, stage_input_cols=stage_source_input_cols):
                 yield item
         else:
             # 來源/結果分離：src 提 id + input，tgt 用 mget 檢是否已有 output
-            for item in self._scan_dual_index_pending(src_table, tgt_table, pk, input_col, output_col, fetch_size):
+            for item in self._scan_dual_index_pending(src_table, tgt_table, pk, input_col, output_col, fetch_size, stage_input_cols=stage_source_input_cols):
                 yield item
     def _yield_pending_from_batch(
         self,
@@ -767,7 +775,7 @@ class ElasticsearchAdapter:
         tgt_index: str,
         pk: str,
         batch_ids: List[str],
-        batch_docs: Dict[str, str],
+        batch_docs: Dict[str, Any],
         output_col: str,
         request_timeout: int,
     ):
@@ -788,12 +796,16 @@ class ElasticsearchAdapter:
     
         for _id in batch_ids:
             if _id not in present:
-                yield (_id, batch_docs[_id])
+                doc_entry = batch_docs[_id]
+                if isinstance(doc_entry, tuple) and len(doc_entry) == 2:
+                    yield (_id, doc_entry[0], doc_entry[1])
+                else:
+                    yield (_id, doc_entry)
     
         batch_ids.clear()
         batch_docs.clear()
         
-    def _scan_single_index_pending(self, index, pk, input_col, output_col, fetch_size):
+    def _scan_single_index_pending(self, index, pk, input_col, output_col, fetch_size, stage_input_cols: List[str] | None = None):
         assert self.es is not None
         filters = self._build_pending_filters()
         rt = int(self.cfg.get("es_request_timeout", 60))
@@ -811,7 +823,8 @@ class ElasticsearchAdapter:
         mf = self._resolve_meta_field(output_col)  # ← 改這行
         
         # 組 _source 欄位清單：必帶 input/output；有 mf 再加；pk 不是 _id 也要加
-        src_fields = [input_col, output_col]
+        stage_input_cols = [c for c in (stage_input_cols or []) if c and c != input_col]
+        src_fields = [input_col, output_col] + stage_input_cols
         if mf:
             src_fields.append(mf)
         if pk != "_id":
@@ -819,6 +832,7 @@ class ElasticsearchAdapter:
         # 可選：也讓 _source 直接帶上日期欄位（保險起見）
         if fallback_date and fallback_date not in src_fields:
             src_fields.append(fallback_date)
+        src_fields = list(dict.fromkeys(src_fields))
         body = {
             "query": {
                 "bool": {
@@ -893,9 +907,10 @@ class ElasticsearchAdapter:
             if text is None or str(text).strip() == "": 
                 continue
     
-            yield (str(pk_val), str(text))
+            source_inputs = {c: _extract_by_path(src, c) for c in stage_input_cols}
+            yield (str(pk_val), str(text), source_inputs)
 
-    def _scan_dual_index_pending(self, src_index: str, tgt_index: str, pk: str, input_col: str, output_col: str, fetch_size: int):
+    def _scan_dual_index_pending(self, src_index: str, tgt_index: str, pk: str, input_col: str, output_col: str, fetch_size: int, stage_input_cols: List[str] | None = None):
         """
         src 用 scan 串流所有有 input 的文件；每批用 mget/search 檢查 tgt 是否已有「非空」output。
         對齊 pk == "_id" 與 pk != "_id" 兩種情況。
@@ -906,9 +921,12 @@ class ElasticsearchAdapter:
         keepalive = self.cfg.get("es_scroll_keepalive", "2m")
         batch_limit = int(fetch_size or 500)
     
+        stage_input_cols = [c for c in (stage_input_cols or []) if c and c != input_col]
+        src_fields = [input_col] + stage_input_cols + ([pk] if pk != "_id" else [])
+        src_fields = list(dict.fromkeys(src_fields))
         src_query = {
             "query": {"bool": {"must": [{"exists": {"field": input_col}}], "filter": filters}},
-            "_source": [input_col, pk] if pk != "_id" else [input_col],
+            "_source": src_fields,
             "track_total_hits": True
         }
     
@@ -924,7 +942,7 @@ class ElasticsearchAdapter:
         )
     
         batch_ids: List[str] = []
-        batch_docs: Dict[str, str] = {}
+        batch_docs: Dict[str, Any] = {}
 
         for hit in scan_iter:
             src = hit.get("_source", {}) or {}
@@ -941,7 +959,7 @@ class ElasticsearchAdapter:
                 continue
         
             batch_ids.append(key_val)               # ✅ 已是標準化後的字串
-            batch_docs[key_val] = str(text)
+            batch_docs[key_val] = (str(text), {c: _extract_by_path(src, c) for c in stage_input_cols})
         
             if len(batch_ids) >= batch_limit:
                 yield from self._yield_pending_from_batch(

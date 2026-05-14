@@ -1,0 +1,101 @@
+# Elasticsearch 多階段範例：語種路由 -> 條件抽取 -> audit
+# 重點：不再綁死特定分析任務；各階段 output/index/mapping 皆可由 YAML 控制。
+mode: es
+channel: es_multistage_cache
+model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+
+# 連線與基本 I/O；es_config_file 仍可放 hosts/auth/src_index/tgt_index/pending_filters 等低階設定。
+es_config_file: czjLLM/config_es/akconfig_es_test_133.py
+primary_key: _id
+input_col: rawInfo.content
+output_col: org_profile_result
+record_update_time: true
+
+# 若某些輸出使用舊版多維日期結構，需要日期欄位正規化，請明確列在這裡或在單一 rule 設 normalize_payload_dates: true。
+# 未設定時不做任何任務專屬轉換，LLM JSON 會原樣寫入。
+es_payload_date_normalize_fields: []
+
+# 可一次宣告多個 index 的 mapping 檔；不存在的 index 會先建立。
+# 也可在 es_writeback_rules 的單一 rule 指定 mapping_file。
+es_output_mappings:
+  - index: es_org_profile_results
+    mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
+    apply: false
+
+stages:
+  - name: route
+    prompt: |
+      你是語種分類器。請判斷此文本的主要語種是否為中文。
+      請只輸出一個代碼：zh 或 non_zh。
+      禁止輸出 JSON、禁止解釋。
+    input_from: original
+    input_col: rawInfo.subject
+    persist_output: always
+    max_attempts: 3
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
+
+  - name: extract
+    input_from: original
+    route_by: route
+    route_map:
+      zh:
+        task: "@taskSetting:Organization Profile Analyzer to json format"
+        input_from: original
+        input_col: rawInfo.content
+      non_zh:
+        task: |
+          你是 JSON 回覆器。請回傳：
+          [{"route":"non_zh","skipReason":"not_chinese"}]
+        input_from: none
+    route_value_mode: task
+    retry_source_on_route_miss: true
+    persist_output: final
+    max_attempts: 3
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
+
+  - name: audit_json
+    input_from: none
+    route_by: route
+    route_map:
+      zh:
+        task: |
+          你是 JSON 回覆器。請回傳：
+          [{"route":"zh","auditTag":"zh_org_profile_path","auditVersion":"v1"}]
+        input_from: none
+      non_zh:
+        task: |
+          你是 JSON 回覆器。請回傳：
+          [{"route":"non_zh","auditTag":"non_zh_skip_path","auditVersion":"v1"}]
+        input_from: none
+    route_value_mode: task
+    retry_source_on_route_miss: true
+    persist_output: always
+    max_attempts: 3
+    debug_print_llm_io: true
+    debug_print_max_chars: -1
+
+# ES 多欄位/多 index 寫回規則；同時會鏡射給既有 row_merger 使用。
+es_writeback_rules:
+  - output_col: org_profile_route
+    source: stage
+    stage: route
+    index: es_org_profile_results
+    output_type: keyword
+    write_meta: false
+
+  - output_col: org_profile_result
+    source: stage
+    stage: extract
+    index: es_org_profile_results
+    output_type: nested
+    meta_field: org_profile_result_meta
+    normalize_payload_dates: false
+
+  - output_col: org_profile_audit_json
+    source: stage
+    stage: audit_json
+    index: es_org_profile_audit
+    output_type: nested
+    meta_field: org_profile_audit_meta
