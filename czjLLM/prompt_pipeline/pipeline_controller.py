@@ -1162,27 +1162,38 @@ def _call_llm_with_task_override(
     """
     effective_task = task_override
     if isinstance(task_override, Mapping):
-        # worker job 需要可 pickle 的純文字 task；mapping(dict 含 lambda) 會在 MP 序列化時失敗
-        task_setting = getattr(ctx, "taskSetting", None)
-        if isinstance(task_setting, Mapping):
-            for k, v in task_setting.items():
+        # worker job 需要可 pickle 的純文字 task；mapping(dict 含 lambda) 會在 MP 序列化時失敗。
+        # 先找 ctx.taskSetting；若 ES/CLI ctx 沒帶 taskSetting，回退到全域 taskSetting。
+        task_pools = []
+        ctx_task_setting = getattr(ctx, "taskSetting", None)
+        if isinstance(ctx_task_setting, Mapping):
+            task_pools.append(ctx_task_setting)
+        if isinstance(taskSetting, Mapping) and taskSetting is not ctx_task_setting:
+            task_pools.append(taskSetting)
+
+        found_key = ""
+        ct_name = str(task_override.get("CT_name", "")).strip()
+        for pool in task_pools:
+            for k, v in pool.items():
                 if v is task_override:
-                    effective_task = str(k)
+                    found_key = str(k)
                     break
-            else:
-                ct_name = str(task_override.get("CT_name", "")).strip()
-                for k, v in task_setting.items():
-                    if isinstance(v, Mapping) and str(v.get("CT_name", "")).strip() == ct_name and ct_name:
-                        effective_task = str(k)
-                        break
-                else:
-                    mapped_task = task_override.get("task", task_override.get("prompt", task_override.get("template", "")))
-                    effective_task = str(mapped_task).strip() or ct_name or str(task_override)
+            if found_key:
+                break
+            for k, v in pool.items():
+                if isinstance(v, Mapping) and str(v.get("CT_name", "")).strip() == ct_name and ct_name:
+                    found_key = str(k)
+                    break
+            if found_key:
+                break
+
+        if found_key:
+            effective_task = found_key
         else:
             mapped_task = task_override.get("task", task_override.get("prompt", task_override.get("template", "")))
             effective_task = (
                 str(mapped_task).strip()
-                or str(task_override.get("CT_name", "")).strip()
+                or ct_name
                 or str(task_override)
             )
 
@@ -1787,6 +1798,9 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 for k in ("CT_name", "InputCutLen"):
                     if k in stage_task:
                         compact[k] = stage_task.get(k)
+                inline_task = stage_task.get("task", stage_task.get("prompt", ""))
+                if isinstance(inline_task, str) and inline_task.strip():
+                    compact["task"] = inline_task.strip()
                 if "template" in stage_task:
                     compact["template"] = "<callable>" if callable(stage_task.get("template")) else "<unavailable>"
                 return str(compact or {"task": "<mapping>"})

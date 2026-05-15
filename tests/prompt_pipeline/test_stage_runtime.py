@@ -173,3 +173,26 @@ def test_resolve_stage_task_task_key_mode_preserves_tasksetting_mapping():
     assert err is None
     assert isinstance(task, dict)
     assert callable(task["template"])
+
+
+def test_resolve_stage_task_tasksetting_marker_falls_back_to_global_tasksetting(monkeypatch):
+    import sys
+    import types
+
+    key = "UnitTest-Multidim-Task"
+    spec = {"CT_name": key, "template": lambda content: f"MULTIDIM:{content}"}
+    fake_task_config = types.ModuleType("czjLLM.taskConfig")
+    fake_task_config.taskSetting = {key: spec}
+    monkeypatch.setitem(sys.modules, "czjLLM.taskConfig", fake_task_config)
+    stage = StageDefinition(
+        name="extract",
+        task="fallback",
+        route_by="route",
+        route_map={"zh": {"task": f"@taskSetting:{key}", "input_from": "original"}},
+        route_value_mode="task",
+    )
+
+    task, err = resolve_stage_task(stage, {"route": "zh"}, task_setting=None)
+
+    assert err is None
+    assert task is spec
