@@ -37,6 +37,16 @@ def test_legacy_multidim_output_col_infers_event_profile():
     assert normalized[0]["Event"]["time_precision"] == "day"
 
 
+def test_generic_llm_result_json_auto_does_not_infer_event_profile():
+    sink = _sink(output_col="llm_result_json", output_profile="auto")
+    payload = [{"Event": {"time": "2025-01-02"}}]
+
+    normalized = sink._normalize_payload_by_profile(payload)
+
+    assert normalized == payload
+    assert "time_iso" not in normalized[0]["Event"]
+
+
 def test_explicit_multidim_event_profile_works_with_custom_output_col():
     sink = _sink(output_col="custom_events", output_profile="multidim_event")
     payload = [{"Event": {"time": "2025-01"}}]
@@ -45,6 +55,22 @@ def test_explicit_multidim_event_profile_works_with_custom_output_col():
 
     assert normalized[0]["Event"]["time_iso"] == "2025-01-01"
     assert normalized[0]["Event"]["time_precision"] == "month"
+
+
+def test_external_output_profile_plugin_can_transform_payload():
+    module = types.ModuleType("tests.fake_es_profile_plugin")
+
+    def register_output_profiles(registry):
+        registry.register("unit_upper", lambda payload, **kwargs: {"value": payload["value"].upper()})
+
+    module.register_output_profiles = register_output_profiles
+    sys.modules[module.__name__] = module
+    ctx = SimpleNamespace(output_profile="unit_upper", output_profile_plugins=[module.__name__])
+    sink = ESSink(ctx, es_client=None, index="test-index", output_col="plugin_json", flush_every=1000)
+
+    normalized = sink._normalize_payload_by_profile({"value": "ok"})
+
+    assert normalized == {"value": "OK"}
 
 
 def test_write_output_false_skips_buffering():

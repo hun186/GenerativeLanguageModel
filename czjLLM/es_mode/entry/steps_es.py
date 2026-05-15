@@ -116,6 +116,8 @@ def resolve_es_connection(ctx, get_param, args):
         "input_col": es_cfg.get("input_col"),
         "output_col": es_cfg.get("output_col"),
         "output_profile": es_cfg.get("output_profile", None),
+        "output_profile_plugins": es_cfg.get("output_profile_plugins", None),
+        "output_profiles": es_cfg.get("output_profiles", None),
         "pipeline_name": es_cfg.get("pipeline_name", None),
         "pipeline": es_cfg.get("pipeline", None),
         "stages": es_cfg.get("stages", None),
@@ -240,6 +242,9 @@ def choose_columns_es(ctx, env, get_param, args):
         or get_param("output_profile", es_cfg.get("output_profile", None))
         or "auto"
     )
+    ctx.output_profile_plugins = get_param("output_profile_plugins", es_cfg.get("output_profile_plugins", None))
+    ctx.output_profiles = get_param("output_profiles", es_cfg.get("output_profiles", None))
+    ctx.legacy_event_output_cols = get_param("legacy_event_output_cols", es_cfg.get("legacy_event_output_cols", None))
     ctx.stage_cfg = build_es_stage_cfg(get_param, es_cfg)
     ctx.pipeline_name = (
         getattr(args, "pipeline_name", None)
@@ -276,6 +281,9 @@ def choose_columns_es(ctx, env, get_param, args):
     es_cfg["input_col"]  = input_col
     es_cfg["output_col"] = output_col
     es_cfg["output_profile"] = ctx.output_profile
+    es_cfg["output_profile_plugins"] = ctx.output_profile_plugins
+    es_cfg["output_profiles"] = ctx.output_profiles
+    es_cfg["legacy_event_output_cols"] = ctx.legacy_event_output_cols
     es_cfg["output_cols"] = ctx.output_cols
     es_cfg["es_writeback_rules"] = ctx.es_writeback_rules
     es_cfg["es_payload_date_normalize_fields"] = ctx.es_payload_date_normalize_fields

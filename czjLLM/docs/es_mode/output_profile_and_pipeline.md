@@ -40,11 +40,28 @@ stage_cfg / stages 決定未來多階段/路由怎麼串
 
 | profile | 功能 |
 | --- | --- |
-| `auto` | 向後相容。若 `output_col` 是 `multidim_event_json` 或 `llm_result_json`，自動使用 `multidim_event`；否則等同 `none`。 |
+| `auto` | 向後相容。預設只會在 `output_col` 是明確事件欄位 `multidim_event_json` 時自動使用 `multidim_event`；`llm_result_json` 這類泛用欄位不再自動判為事件 profile，否則等同 `none`。 |
 | `none` | 不做任務特定 payload 正規化，適合一般文字、一般 JSON、分類、摘要、QA 等泛用任務。 |
 | `json` | 語意上標記為泛用 JSON 輸出；目前寫回前不做事件正規化。 |
 | `text` | 語意上標記為文字輸出；目前寫回前不做事件正規化。 |
 | `multidim_event` | 套用多維事件輸出的 ES-friendly 正規化，例如補 `Event.time_iso` / `Event.time_precision`、`Event_Timeline[].date_iso` 等欄位。 |
+
+Profile 的實際 payload transformer 目前已改由 `czjLLM.es_mode.output_profiles` registry 管理；`ESSink` 只負責解析 profile 名稱、取得 handler 並執行。內建的 `multidim_event` transformer 已從 sink 抽到 `czjLLM/es_mode/output_profiles/multidim_event.py`，未來新增 domain-specific profile 時，不需要再到 `ESSink` 裡新增 `if profile == ...` 分支。
+
+若要掛入外部 profile，可在執行 context/YAML 對應欄位提供 plugin 宣告，例如：
+
+```yaml
+output_profile_plugins:
+  - my_project.es_profiles.satellite_meta
+
+# 或用 name + transformer 直接宣告
+output_profiles:
+  satellite_meta:
+    transformer: my_project.es_profiles.satellite_meta:normalize_satellite_meta_payload
+    aliases: [satmeta]
+```
+
+外部 module 可提供 `register_output_profiles(registry)` 或 `register(registry)` 來註冊多個 profile；單一 transformer 則以 `module:function` 或 `module.function` 指定。
 
 ## 4. 現在跑 `es_config.yaml` 時的 `output_profile`
 
@@ -64,7 +81,7 @@ output_col = multidim_event_json
 → 寫回前套用多維事件 payload 正規化
 ```
 
-這保留早期 `multidim_event_json` 的行為，但不再把判斷硬寫死成「只有這個欄位名才能做事件正規化」。未來若想把事件結果寫到其他欄位，可以設定：
+這保留早期 `multidim_event_json` 的行為，但不再把判斷硬寫死成「只有這個欄位名才能做事件正規化」。`llm_result_json` 屬於泛用欄位，現在若使用 `output_profile: auto` 會等同 `none`，需要事件正規化時請明確設定 `output_profile: multidim_event`。未來若想把事件結果寫到其他欄位，可以設定：
 
 ```yaml
 output_col: custom_event_json

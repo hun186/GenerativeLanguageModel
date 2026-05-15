@@ -67,7 +67,7 @@ es_writeback_rules:
 | `date_range.start` / `date_range.end` | 補 `start_raw` / `end_raw` 與 `*_precision`，並把可解析值轉成 ISO 日期 | 方便 range 查詢；目前會覆寫 start/end 為 ISO 日期。 |
 | `Event_Timeline[].date` | 補 `date_raw`、`date_iso`、`date_precision` | 保留時間線原始字串，另提供 date mapping 可查的 ISO 欄位。 |
 
-目前只解析 `YYYY-MM-DD`、`YYYY-MM`、`YYYY` 三種格式；`YYYY-MM` 會補成該月 1 日，`YYYY` 會補成該年 1 月 1 日，並以 `time_precision` / `date_precision` 標示 `day`、`month`、`year`。因此它的泛用性是「中低」：適合舊版多維事件/時間線 schema，但不應預設套到任意任務。一般任務請讓 ES 直接保存 LLM JSON，若需要其他欄位轉換，應另外做可配置 transformer，而不是沿用這個舊版日期補欄。
+目前只解析 `YYYY-MM-DD`、`YYYY-MM`、`YYYY` 三種格式；`YYYY-MM` 會補成該月 1 日，`YYYY` 會補成該年 1 月 1 日，並以 `time_precision` / `date_precision` 標示 `day`、`month`、`year`。因此它的泛用性是「中低」：適合舊版多維事件/時間線 schema，但不應預設套到任意任務。一般任務請讓 ES 直接保存 LLM JSON，若需要其他欄位轉換，應透過 `output_profile_plugins` / `output_profiles` 註冊可配置 transformer，而不是沿用這個舊版日期補欄。
 
 若某些舊版多維日期輸出需要額外補 `*_raw` / `*_iso` / `*_precision`，可用下列參數明確啟用；預設不對任意任務做任務專屬轉換：
 
