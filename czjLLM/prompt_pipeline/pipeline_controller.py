@@ -1176,9 +1176,15 @@ def _call_llm_with_task_override(
                         effective_task = str(k)
                         break
                 else:
-                    effective_task = ct_name or str(task_override)
+                    mapped_task = task_override.get("task", task_override.get("prompt", task_override.get("template", "")))
+                    effective_task = str(mapped_task).strip() or ct_name or str(task_override)
         else:
-            effective_task = str(task_override.get("CT_name", "")).strip() or str(task_override)
+            mapped_task = task_override.get("task", task_override.get("prompt", task_override.get("template", "")))
+            effective_task = (
+                str(mapped_task).strip()
+                or str(task_override.get("CT_name", "")).strip()
+                or str(task_override)
+            )
 
     try:
         return ops.call_llm(

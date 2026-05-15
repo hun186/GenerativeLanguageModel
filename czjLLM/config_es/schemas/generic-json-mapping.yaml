@@ -1,0 +1,58 @@
+# Generic ES mapping for JSON/object writeback fields used by routed fallback stages.
+# The field name intentionally matches the ES multistage example's fallback output.
+properties:
+  llm_result_json:
+    type: nested
+    dynamic: true
+    properties:
+      route:
+        type: keyword
+      skipReason:
+        type: keyword
+      message:
+        type: text
+      value:
+        type: text
+
+  llm_result_json_meta:
+    type: object
+    properties:
+      processed_at:       { type: date }
+      model_tag:          { type: keyword }
+      pipeline_hash:      { type: keyword }
+      source:             { type: keyword }
+      channel:            { type: keyword }
+      task:               { type: keyword }
+      force_reason:       { type: keyword }
+      output_profile:     { type: keyword }
+      pipeline_name:      { type: keyword }
+      pipeline_version:   { type: keyword }
+      pipeline_enabled:   { type: boolean }
+
+  route_audit_json:
+    type: nested
+    dynamic: true
+    properties:
+      route:
+        type: keyword
+      auditTag:
+        type: keyword
+      auditVersion:
+        type: keyword
+      skipReason:
+        type: keyword
+
+  route_audit_json_meta:
+    type: object
+    properties:
+      processed_at:       { type: date }
+      model_tag:          { type: keyword }
+      pipeline_hash:      { type: keyword }
+      source:             { type: keyword }
+      channel:            { type: keyword }
+      task:               { type: keyword }
+      force_reason:       { type: keyword }
+      output_profile:     { type: keyword }
+      pipeline_name:      { type: keyword }
+      pipeline_version:   { type: keyword }
+      pipeline_enabled:   { type: boolean }
