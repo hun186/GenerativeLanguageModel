@@ -17,11 +17,48 @@ MULTIDIM_EXTRACTION_Rule = """
 【規則衝突優先序（請先執行）】
 A. 若不同章節規則衝突，優先順序為：
    1) 整體原則
-   2) 日期與時間判讀（含相對日期）
-   3) 證據片段規則（evidence_snippets）
-   4) 各欄位專屬規則（Event / Impact / Timeline / source / locations 等）
+   2) 事件聚合 / 拆分判斷（含查詢綜整與逐條收錄）
+   3) 日期與時間判讀（含相對日期）
+   4) 證據片段規則（evidence_snippets）
+   5) 各欄位專屬規則（Event / Impact / Timeline / source / locations 等）
 B. 任何情況下都不得違反「不得臆測、不得改寫 evidence、無法判定即保守留空」三原則。
 C. 先選 evidence_snippets，再生成 Event_Summary / Event / Impact / Event_Timeline；若 evidence 不足，應先回補 evidence，不得先編寫結論。
+
+================================================================================
+【事件聚合 / 拆分判斷（最高優先，避免 20B 模型碎片化）】
+
+本任務的預設目標是「整篇文本的多維事件分析」，不是逐句事件分類。
+在產生 JSON 物件數量前，必須先判斷文本是「同一主題的綜整事件」還是「多篇互不相關新聞」。
+
+一、同一主題綜整事件：原則上只輸出 1 個事件物件
+- 若文本是查詢綜整、情勢摘要、快報、條列式彙編、同一議題的多源資訊整理，且各條目共同指向同一區域、同一危機、同一政策議題或同一事件脈絡，必須視為「一個聚合事件」。
+- 即使其中包含多個行動、不同國家 / 機構、不同時間點，也不得把每一句或每一條拆成多個頂層事件物件。
+- 個別行動應放入同一物件的 `Event_Timeline`、`evidence_snippets`、`Involved_Parties`、`Impact`，而不是拆成多個 `multidim_event_json` 陣列元素。
+- 對「東亞區域安全 / 海空活動 / 國際回應」這類區域安全綜整，必須輸出 1 個聚合事件，`Event.subject/object/action/location/consequence` 應描述整體局勢。
+
+二、只有在互不相關或明確多主題清單時才拆成多個事件物件
+- 只有當同一輸入明確包含多篇彼此無共同主題、無共同時空脈絡、無共同因果鏈的獨立新聞時，才可輸出多個頂層事件物件。
+- 若文本明確呈現「十大熱點新聞」「每日多則新聞」「多主題快訊」「新聞排行榜」「不同領域要聞彙編」等互不相關清單，應視為多事件輸入：每則獨立新聞各輸出 1 個事件物件，且各自保有自己的 Event.consequence、Impact、Event_Timeline 與 evidence_snippets。
+- 不得僅因句子主體不同、地點不同、武器或單位不同，就拆成多個事件物件；必須先確認它們不是同一區域情勢、同一危機、同一政策議題或同一事件脈絡下的不同面向。
+- 不得為了貼近「誰做了什麼」而把同一綜整文本拆成逐句小事件。
+
+三、evidence_snippets 必須保留檢索可用性，不得因聚合而丟失原始條目
+- evidence_snippets 後續會作為其他代理人與資料庫檢索的回查依據；聚合事件只改變頂層事件物件數量，不得犧牲 evidence_snippets 的覆蓋率、原文逐字性與條目順序。
+- 對同一主題綜整事件：原文中每一條可獨立檢索的消息、來源陳述、風險 / 後果句，仍應依規則納入 evidence_snippets；不得只保留摘要句而省略細項。
+- 對多主題清單：每個事件物件的 evidence_snippets 只能放該則新聞自己的原文證據，不得把其他新聞條目的 evidence 混入。
+
+四、`Event.consequence` 必須是整體後果 / 風險 / 影響，不是單句內的立即反應
+- 對聚合事件，`Event.consequence` 應概括整篇文本直接支持的整體結果、風險或影響，例如局勢升高、誤判風險上升、航運 / 能源成本可能上升、人道運補延遲等。
+- 禁止把下列內容當作聚合事件的 `Event.consequence`：
+  - 單一行動的即時應對：如「航空自衛隊緊急升空應對」「韓國空軍緊急升空監控」「日本雷達全程監控」
+  - 單一事實或數值：如「最遠飛行距離約320公里」
+  - 單一裝備、地點或航跡描述
+- 上述即時應對或數值若重要，應放在 `Event_Timeline.description` 或 `evidence_snippets.text`，不得取代整體後果。
+- 若全文沒有明確後果，只能填 null；不得把反應動作硬填為後果。
+
+五、`整理時間 / 查詢時間 / 匯整時間` 不得覆蓋事件發生時間
+- 這些時間只能輔助判斷 article_date；不得被套用到每一條 `Event_Timeline.date_raw/date_iso`。
+- 條目本身有日期時使用條目日期；條目沒有事件日期時，`date_iso = null`、`date_precision = "unknown"`。
 
 ================================================================================
 【日期與時間判讀（核心規則）】
@@ -426,9 +463,10 @@ Event 欄位中的 `time_iso` / `time_precision` 僅用於時間（HH:mm）或�
 - 對一般新聞文本：每個事件最多擷取 8 段；一般新聞建議 5–7 段。  
 - 對逐條收錄模式：前述 8 段上限不適用。  
 - 對一般新聞文本，evidence_snippets 必須直接支撐 Event_Summary、Event、Impact、Event_Timeline 等主要欄位。  
-- 若同一篇文章明確包含 2 個以上彼此可區分的事件，應拆成多個事件物件輸出。  
+- 若同一篇文章明確包含 2 個以上彼此可區分且互不相關的事件，才可拆成多個事件物件輸出。  
+- 若多個條目共同構成同一主題綜整事件，不得拆成多個頂層事件物件；應用同一物件的 Event_Timeline / evidence_snippets 收納。  
 - 不同事件的 evidence_snippets 不得混用。  
-- 單篇文章最多輸出 5 個事件物件。  
+- 單篇文章最多輸出 5 個事件物件；但若原文明確為「十大熱點新聞 / 新聞排行榜 / 多主題要聞清單」，可依原文條目數最多輸出 10 個事件物件；同一主題綜整文本預設只輸出 1 個事件物件。  
 
 2. 抽取流程
 請先在心中完成以下步驟，再輸出 evidence_snippets：  
@@ -511,8 +549,11 @@ Event 欄位中的 `time_iso` / `time_precision` 僅用於時間（HH:mm）或�
   - 原始條目數不超過 40，必須全部納入。  
   - 原始條目數超過 40，才可依原文順序截斷為前 40 條。  
   - 不得任意跳選、不得重複、不得因重要性較低而省略。  
+  - 若各條目共同指向同一主題 / 同一區域情勢 / 同一危機脈絡，仍必須輸出 1 個聚合事件物件，不得逐條拆成多個頂層物件。  
+  - 若各條目是「十大熱點新聞 / 新聞排行榜 / 多主題要聞清單」這類互不相關新聞，則必須拆成多個頂層事件物件；每個事件物件只收自己的 evidence_snippets 與 Event.consequence。  
   - Event_Timeline 應優先逐條對應原始條目；若條目沒有自己的事件日期，不得把「整理時間」「查詢時間」「匯整時間」當成每條事件發生時間，date_iso 應保守填 null、date_precision 填 "unknown"，並在 description 保留該條原始行動。  
   - Event_Summary、core_entities、locations、Event.subject/object/action/consequence 只能使用已納入 evidence_snippets 的原文資訊；不得合併不同條目後新增原文未出現的裝備、部隊、地點、數量或回應方式。  
+  - Event.consequence 必須描述整體條目共同支撐的後果 / 風險 / 影響；不得填入單條消息的即時反應、單一飛行距離、監控動作或應對動作。  
 
 10. 最終檢查
 在輸出 evidence_snippets 前，必須逐項檢查：  
@@ -650,7 +691,7 @@ USE_MAINFILE_HINT = False  # True 就會加那一行，False 就隱藏
 taskSetting_Enrichment = {
     "InfoExtraction-MultiDim-SQLFriendly-to json format": {
         "CT_name": "多維度新聞事件分析與 SQL-friendly JSON 輸出",
-        "InputCutLen": 600,
+        "InputCutLen": 1200,
         "template": lambda content, MainFileName=None: (
             "你是一個專責「多維度事件分析」與「SQL-friendly JSON 輸出」的資訊抽取模型。\n"
             "任務是從輸入文本中抽取事件核心、人物、涉入單位、影響、時間序列與證據片段。\n"
