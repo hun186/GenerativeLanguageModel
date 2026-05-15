@@ -511,6 +511,8 @@ Event 欄位中的 `time_iso` / `time_precision` 僅用於時間（HH:mm）或�
   - 原始條目數不超過 40，必須全部納入。  
   - 原始條目數超過 40，才可依原文順序截斷為前 40 條。  
   - 不得任意跳選、不得重複、不得因重要性較低而省略。  
+  - Event_Timeline 應優先逐條對應原始條目；若條目沒有自己的事件日期，不得把「整理時間」「查詢時間」「匯整時間」當成每條事件發生時間，date_iso 應保守填 null、date_precision 填 "unknown"，並在 description 保留該條原始行動。  
+  - Event_Summary、core_entities、locations、Event.subject/object/action/consequence 只能使用已納入 evidence_snippets 的原文資訊；不得合併不同條目後新增原文未出現的裝備、部隊、地點、數量或回應方式。  
 
 10. 最終檢查
 在輸出 evidence_snippets 前，必須逐項檢查：  
