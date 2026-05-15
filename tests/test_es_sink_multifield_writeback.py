@@ -5,7 +5,11 @@ from types import SimpleNamespace
 
 
 def _load_es_sink_module(monkeypatch):
-    if importlib.util.find_spec("elasticsearch") is None:
+    try:
+        has_elasticsearch = importlib.util.find_spec("elasticsearch") is not None
+    except ValueError:
+        has_elasticsearch = "elasticsearch" in sys.modules
+    if not has_elasticsearch:
         fake_es = types.ModuleType("elasticsearch")
         fake_es.Elasticsearch = object
         fake_es.helpers = types.SimpleNamespace(bulk=lambda *args, **kwargs: (0, []))

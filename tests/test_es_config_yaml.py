@@ -27,4 +27,4 @@ def test_multistage_langroute_example_documents_stage_runtime_and_writeback():
     assert "output_profile: multidim_event" in text
     assert "mapping_file: czjLLM/config_es/schemas/generic-json-mapping.yaml" in text
     assert "stage_cfg:" in text
-    assert "merge_slices: false" in text
+    assert "merge_slices: true" in text

@@ -3,7 +3,6 @@ from typing import Any, Optional, List, Dict
 from elasticsearch import Elasticsearch, helpers
 import datetime
 from datetime import timezone
-import re
 import json
 import atexit
 import time
@@ -15,6 +14,10 @@ except Exception:
     def tlog(msg): print(msg)
     def tlog_warn(msg): print(msg)
 
+from ...output_profiles import get_default_registry, load_output_profile_plugins
+from ...output_profiles.multidim_event import normalize_multidim_event_payload
+from ...output_profiles.multidim_event import normalize_date_value
+
 def _now_iso_utc() -> str:
     # 例：'2025-10-22T13:37:43Z'（無微秒，最穩）
     return datetime.datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")       
@@ -25,28 +28,19 @@ def _meta_field_from_cfg(cfg: dict, output_col: str) -> str:
 
 
 def _normalize_output_profile(value: Any) -> str:
-    """Normalize YAML/ctx output profile names to a small internal vocabulary."""
-    if value is None:
-        return "auto"
-    normalized = str(value).strip().lower().replace("-", "_").replace(" ", "_")
-    aliases = {
-        "": "auto",
-        "default": "auto",
-        "generic": "none",
-        "raw": "none",
-        "plain": "none",
-        "passthrough": "none",
-        "multi_dim_event": "multidim_event",
-        "multidim": "multidim_event",
-        "event": "multidim_event",
-    }
-    return aliases.get(normalized, normalized)
+    """Normalize YAML/ctx output profile names via the profile registry."""
+    return get_default_registry().normalize_name(value)
 
 
-def _infer_output_profile(output_col: Optional[str]) -> str:
-    """Backward-compatible inference for legacy ES configs."""
-    legacy_event_cols = {"multidim_event_json", "llm_result_json"}
-    return "multidim_event" if str(output_col) in legacy_event_cols else "none"
+def _infer_output_profile(output_col: Optional[str], legacy_event_cols: Optional[List[str]] = None) -> str:
+    """Backward-compatible inference for legacy ES event configs.
+
+    Only the clearly event-specific multidim_event_json is inferred by default.
+    Generic names such as llm_result_json should set output_profile explicitly
+    when they need multidim_event normalization.
+    """
+    event_cols = set(legacy_event_cols or ["multidim_event_json"])
+    return "multidim_event" if str(output_col) in event_cols else "none"
     
 class ESSink:
     """
@@ -82,10 +76,10 @@ class ESSink:
         self._last_flush_ts = datetime.datetime.now().timestamp()
         self._debug = bool(getattr(self.ctx, "debug_es_sink", False))
         self.write_output = bool(getattr(ctx, "write_output", getattr(ctx, "es_write_output", True)))
+        load_output_profile_plugins(getattr(self.ctx, "output_profile_plugins", None))
+        load_output_profile_plugins(getattr(self.ctx, "output_profiles", None))
         profile_from_ctx = getattr(self.ctx, "output_profile", None)
-        self.output_profile = _normalize_output_profile(profile_from_ctx)
-        if self.output_profile == "auto":
-            self.output_profile = _infer_output_profile(self.output_col)
+        self.output_profile = self._resolve_output_profile(profile_from_ctx, self.output_col)
         # ✅ 內部快取：實際生效的欄位（可能是 output_col 或 output_col+"_json"）
         #self._effective_output_col = None
         
@@ -137,23 +131,26 @@ class ESSink:
         return payload
     
 
+    def _legacy_event_output_cols(self) -> List[str]:
+        cols = getattr(self.ctx, "legacy_event_output_cols", None)
+        if cols is None:
+            cols = ["multidim_event_json"]
+        return list(cols or [])
+
+    def _resolve_output_profile(self, profile: Any, output_col: Optional[str]) -> str:
+        profile_name = _normalize_output_profile(profile)
+        if profile_name == "auto":
+            profile_name = _infer_output_profile(output_col, self._legacy_event_output_cols())
+        return _normalize_output_profile(profile_name)
+
     def _normalize_payload_by_profile(self, payload):
         """Apply the configured payload normalizer before writing to ES.
 
         output_profile intentionally decouples ES field names from task-specific
-        payload handling.  This keeps legacy multidim_event_json behavior while
-        allowing YAML-driven generic ES tasks to write arbitrary JSON/text.
+        payload handling. Profile behavior is resolved through the output profile
+        registry so domain-specific transformers can live outside ESSink.
         """
-        profile = _normalize_output_profile(getattr(self, "output_profile", "auto"))
-        if profile == "auto":
-            profile = _infer_output_profile(self.output_col)
-        if profile in ("none", "json", "text"):
-            return payload
-        if profile == "multidim_event":
-            return self._normalize_event_payload_v2(payload)
-        if self._debug:
-            tlog_warn(f"⚠️ ESSink: 未知 output_profile={profile!r}，略過任務特定正規化。")
-        return payload
+        return self._normalize_payload_with_profile(payload, getattr(self, "output_profile", "auto"), self.output_col)
 
     def _normalize_payload_for_es(self, payload):
         # 空字串 → None；空陣列/空物件 → None（避免 exists 為真卻是「空結果」）
@@ -228,20 +225,8 @@ class ESSink:
     
     # ---- 新增：解析日期字串，回傳 (iso_str, precision) ----
     def _normalize_date_value(self, s: str):
-        """支援 YYYY-MM-DD / YYYY-MM / YYYY；其餘回傳 (None, None)。"""
-        if not isinstance(s, str):
-            return (None, None)
-        t = s.strip()
-        # YYYY-MM-DD
-        if re.match(r"^\d{4}-\d{2}-\d{2}$", t):
-            return (t, "day")
-        # YYYY-MM -> YYYY-MM-01
-        if re.match(r"^\d{4}-\d{2}$", t):
-            return (t + "-01", "month")
-        # YYYY -> YYYY-01-01
-        if re.match(r"^\d{4}$", t):
-            return (t + "-01-01", "year")
-        return (None, None)
+        """Backward-compatible wrapper for the multidim_event profile date helper."""
+        return normalize_date_value(s)
     
     # ---- 取值工具：支援 dict.get 深層賦值 ----
     def _getd(self, d, path, default=None):
@@ -313,75 +298,8 @@ class ESSink:
         #return meta
         
     def _normalize_event_payload_v2(self, payload: any):
-        """
-        只處理我們的多維事件結構（list[dict]），
-        - Event.time 產出：Event.time_raw / Event.time_iso / Event.time_precision
-        - Event_Timeline[].date 產出：date_raw / date_iso / date_precision
-        - date_range.start/end 可選：加上 *_raw / *_precision（start/end 本身仍可留 date 類型）
-        """
-        try:
-            if not isinstance(payload, list):
-                return payload
-    
-            out = []
-            for item in payload:
-                if not isinstance(item, dict):
-                    out.append(item); continue
-                obj = dict(item)  # 淺拷貝
-    
-                # --- Event.time -> 新三欄 ---
-                ev = obj.get("Event")
-                if isinstance(ev, dict):
-                    t = ev.get("time")
-                    if isinstance(t, str):
-                        # 保留原字面
-                        ev.setdefault("time_raw", t)
-                        iso, prec = self._normalize_date_value(t)
-                        if iso:
-                            ev["time_iso"] = iso
-                            ev["time_precision"] = prec
-                        # 不覆蓋原本的 ev["time"]，你也可以選擇刪掉 ev["time"]：
-                        # ev.pop("time", None)
-    
-                # --- date_range.start / end -> 可加 raw/precision（可選）---
-                dr = obj.get("date_range")
-                if isinstance(dr, dict):
-                    for k in ("start", "end"):
-                        v = dr.get(k)
-                        if isinstance(v, str):
-                            dr.setdefault(f"{k}_raw", v)
-                            iso, prec = self._normalize_date_value(v)
-                            if iso:
-                                # 如果你想保留 start/end 是 date 類型，直接覆蓋為 iso
-                                dr[k] = iso
-                                dr[f"{k}_precision"] = prec
-                            # 若不想覆蓋，也可以另外寫入 k+"_iso"：
-                            # self._setd(dr, [f"{k}_iso"], iso)
-    
-                # --- Event_Timeline[].date -> 新三欄 ---
-                tl = obj.get("Event_Timeline")
-                if isinstance(tl, list):
-                    new_tl = []
-                    for step in tl:
-                        if isinstance(step, dict):
-                            step = dict(step)
-                            dv = step.get("date")
-                            if isinstance(dv, str):
-                                step.setdefault("date_raw", dv)
-                                iso, prec = self._normalize_date_value(dv)
-                                if iso:
-                                    step["date_iso"] = iso
-                                    step["date_precision"] = prec
-                                # 同理你也可以刪掉原本的 step["date"]
-                                # step.pop("date", None)
-                        new_tl.append(step)
-                    obj["Event_Timeline"] = new_tl
-    
-                out.append(obj)
-            return out
-        except Exception:
-            # 出錯就原樣返回，避免中斷
-            return payload
+        """Backward-compatible wrapper for the multidim_event profile transformer."""
+        return normalize_multidim_event_payload(payload)
         
  
     def _prepare_update_doc(self, payload: Any, save_raw_input: bool = False,
@@ -459,19 +377,22 @@ class ESSink:
     def _profile_for_output_col(self, output_col: str, rule: Optional[dict] = None) -> str:
         """Resolve the output profile for a single ES writeback field."""
         if isinstance(rule, dict) and rule.get("output_profile") is not None:
-            return _normalize_output_profile(rule.get("output_profile"))
+            return self._resolve_output_profile(rule.get("output_profile"), output_col)
         if output_col == self.output_col:
-            return _normalize_output_profile(getattr(self, "output_profile", "auto"))
-        return _infer_output_profile(output_col)
+            return self._resolve_output_profile(getattr(self, "output_profile", "auto"), output_col)
+        return self._resolve_output_profile("auto", output_col)
 
     def _normalize_payload_with_profile(self, payload: Any, profile: str, output_col: str) -> Any:
-        profile = _normalize_output_profile(profile)
-        if profile == "auto":
-            profile = _infer_output_profile(output_col)
-        if profile in ("none", "json", "text"):
-            return payload
-        if profile == "multidim_event":
-            return self._normalize_event_payload_v2(payload)
+        profile = self._resolve_output_profile(profile, output_col)
+        registry = get_default_registry()
+        if registry.has(profile):
+            return registry.normalize_payload(
+                profile,
+                payload,
+                ctx=self.ctx,
+                output_col=output_col,
+                sink=self,
+            )
         if self._debug:
             tlog_warn(f"⚠️ ESSink: 未知 output_profile={profile!r}，略過任務特定正規化。")
         return payload
