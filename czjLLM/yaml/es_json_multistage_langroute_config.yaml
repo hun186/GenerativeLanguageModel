@@ -10,9 +10,13 @@ input_col: rawInfo.content
 primary_key: _id
 record_update_time: true
 
-# 切片合併開關：false 表示不啟用切片結果合併，也不進入互動式「切片合併」詢問。
-# 若需要合併多個切片結果，可改成 true 並搭配 merge_* 細項設定。
+# 切片合併開關：ES 多階段抽取仍可能因 InputCutLen 產生多個切片；
+# 需啟用合併，避免只把單一切片或未整併的 stage 片段寫回主欄位。
 merge_slices: true
+merge_conflict_policy: prefer_left
+merge_dedup_lists: true
+merge_log_changes: true
+merge_max_log: 10
 
 # 測試重跑開關：覆寫 es_config_file 內的 rerun.pipeline_hash。
 # 若同一批 ES 文件已用舊 hash 寫過結果，改這個值即可讓 pending query 再挑出來重跑。
@@ -166,6 +170,9 @@ es_writeback_rules:
     meta_field: multidim_event_json_meta
     mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
     normalize_payload_dates: true
+    meta_base:
+      task: InfoExtraction-MultiDim-SQLFriendly-to json format
+      stage: extract
 
   - output_col: route_audit_json
     source: stage
@@ -175,3 +182,6 @@ es_writeback_rules:
     output_profile: json
     meta_field: route_audit_json_meta
     mapping_file: czjLLM/config_es/schemas/generic-json-mapping.yaml
+    meta_base:
+      task: route_audit_json
+      stage: audit_json
