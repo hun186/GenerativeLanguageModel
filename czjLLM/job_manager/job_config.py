@@ -131,6 +131,9 @@ class LLMJobConfig:
         self.PGMSubDir = ""
         self.mode = ""
         self.task = "Summary-toTWZH"
+        # 統一把全域 taskSetting 掛到 ctx，讓 ES/SQL/Table/TXT 與 row-scoped
+        # CtxOverlay 都透過同一個 ctx.taskSetting 解析 @taskSetting。
+        self.taskSetting = taskSetting
         #self.textclass_tuple = None
         self.textClass = ""
         self.exclusiveTextClass = ""
@@ -262,6 +265,8 @@ def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None,
     ctx.load_high_watermark = 10*ctx.n_process
     
     # 任務
+    # LLMJobConfig.__init__ 已設定；這裡再次刷新，避免測試或外部載入流程替換 taskSetting 後 ctx 仍保留舊引用。
+    ctx.taskSetting = taskSetting
     ctx.task = task_name or set_task(ctx)
 
     # 頻道（txt 模式才有）
