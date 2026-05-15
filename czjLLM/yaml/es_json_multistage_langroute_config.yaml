@@ -12,7 +12,7 @@ record_update_time: true
 
 # 切片合併開關：false 表示不啟用切片結果合併，也不進入互動式「切片合併」詢問。
 # 若需要合併多個切片結果，可改成 true 並搭配 merge_* 細項設定。
-merge_slices: false
+merge_slices: true
 
 # 測試重跑開關：覆寫 es_config_file 內的 rerun.pipeline_hash。
 # 若同一批 ES 文件已用舊 hash 寫過結果，改這個值即可讓 pending query 再挑出來重跑。
