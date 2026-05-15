@@ -456,6 +456,121 @@ class ESSink:
             self._last_flush_ts = now
             self._buffer_bytes = 0
             
+    def _profile_for_output_col(self, output_col: str, rule: Optional[dict] = None) -> str:
+        """Resolve the output profile for a single ES writeback field."""
+        if isinstance(rule, dict) and rule.get("output_profile") is not None:
+            return _normalize_output_profile(rule.get("output_profile"))
+        if output_col == self.output_col:
+            return _normalize_output_profile(getattr(self, "output_profile", "auto"))
+        return _infer_output_profile(output_col)
+
+    def _normalize_payload_with_profile(self, payload: Any, profile: str, output_col: str) -> Any:
+        profile = _normalize_output_profile(profile)
+        if profile == "auto":
+            profile = _infer_output_profile(output_col)
+        if profile in ("none", "json", "text"):
+            return payload
+        if profile == "multidim_event":
+            return self._normalize_event_payload_v2(payload)
+        if self._debug:
+            tlog_warn(f"⚠️ ESSink: 未知 output_profile={profile!r}，略過任務特定正規化。")
+        return payload
+
+    def _build_meta_for_field(self, output_col: str, profile: str, meta_base: Optional[dict] = None) -> Optional[dict]:
+        old_output_col = self.output_col
+        old_profile = self.output_profile
+        old_meta_base = self.meta_base
+        try:
+            self.output_col = output_col
+            self.output_profile = profile
+            self.meta_base = dict(meta_base or {})
+            return self._build_meta()
+        finally:
+            self.output_col = old_output_col
+            self.output_profile = old_profile
+            self.meta_base = old_meta_base
+
+    def _prepare_update_doc_for_field(
+        self,
+        output_col: str,
+        payload: Any,
+        *,
+        profile: str,
+        meta_field: Optional[str],
+        meta_base: Optional[dict] = None,
+        write_meta: bool = True,
+    ) -> dict:
+        doc = {output_col: payload}
+
+        if getattr(self.ctx, "record_update_time", False):
+            ts = _now_iso_utc()
+            doc["update_time_ai"] = ts
+            if getattr(self.ctx, "update_time_inside_output", False):
+                if isinstance(payload, dict):
+                    payload.setdefault("update_time_ai", ts)
+                elif isinstance(payload, list):
+                    for it in payload:
+                        if isinstance(it, dict):
+                            it.setdefault("update_time_ai", ts)
+
+        if write_meta and meta_field:
+            meta = self._build_meta_for_field(output_col, profile, meta_base=meta_base)
+            if meta:
+                doc[meta_field] = meta
+        return doc
+
+    def _iter_multifield_write_docs(self, result_map: dict) -> list[dict]:
+        rules = getattr(self.ctx, "es_writeback_rules", None) or []
+        if not isinstance(rules, list) or not rules:
+            return []
+
+        docs: list[dict] = []
+        for rule in rules:
+            if not isinstance(rule, dict):
+                continue
+            output_col = str(rule.get("output_col", "") or "").strip()
+            if not output_col or output_col not in result_map:
+                continue
+            raw_payload = self._maybe_parse_json(result_map.get(output_col))
+            profile = self._profile_for_output_col(output_col, rule)
+            payload = self._normalize_payload_with_profile(raw_payload, profile, output_col)
+            payload = self._normalize_payload_for_es(payload)
+            if payload is None:
+                if self._debug:
+                    tlog(f"ℹ️ ESSink.write_main: 欄位 {output_col} 規範化後為空，略過寫入。")
+                continue
+            meta_field = rule.get("meta_field")
+            if meta_field is None:
+                meta_field = f"{output_col}_meta"
+            meta_field = str(meta_field or "").strip() or None
+            doc = self._prepare_update_doc_for_field(
+                output_col,
+                payload,
+                profile=profile,
+                meta_field=meta_field,
+                meta_base=rule.get("meta_base") if isinstance(rule.get("meta_base"), dict) else None,
+                write_meta=bool(rule.get("write_meta", True)),
+            )
+            docs.append({"_id": None, "_index": str(rule.get("index") or self.index), "doc": doc})
+        # Backward-compatible fallback: if callers pass a dict without a matching
+        # es_writeback_rules entry, write the primary output column as before.
+        if not docs and self.output_col in result_map:
+            raw_payload = self._maybe_parse_json(result_map.get(self.output_col))
+            profile = self._profile_for_output_col(self.output_col, None)
+            payload = self._normalize_payload_with_profile(raw_payload, profile, self.output_col)
+            payload = self._normalize_payload_for_es(payload)
+            if payload is not None:
+                doc = self._prepare_update_doc_for_field(
+                    self.output_col,
+                    payload,
+                    profile=profile,
+                    meta_field=self.meta_field,
+                    meta_base=self.meta_base,
+                    write_meta=bool(self.meta_field),
+                )
+                docs.append({"_id": None, "_index": self.index, "doc": doc})
+        return docs
+
     def write_main(self, pk, result_text: Any, update_time: Optional[str] = None):
         if pk is None:
             tlog_warn("⚠️ ESSink.write_main: pk 為 None，略過寫入。")
@@ -465,6 +580,18 @@ class ESSink:
             if self._debug:
                 tlog(f"ℹ️ ESSink.write_main: write_output=False，略過 ES 文件寫入（pk={pk}）。")
             return
+
+        if isinstance(result_text, dict):
+            docs = self._iter_multifield_write_docs(result_text)
+            if docs:
+                for item in docs:
+                    item["_id"] = pk
+                    self._buffer.append(item)
+                    self._buffer_bytes += self._estimate_size(item)
+                if self._debug:
+                    tlog(f"[ESSink] multifield buffer size={len(self._buffer)}, bytes~={self._buffer_bytes}")
+                self._maybe_flush()
+                return
 
         # 1) 解析
         payload = self._maybe_parse_json(result_text)
@@ -482,7 +609,7 @@ class ESSink:
             return
     
         doc = self._prepare_update_doc(payload)
-        item = {"_id": pk, "doc": doc}
+        item = {"_id": pk, "_index": self.index, "doc": doc}
         self._buffer.append(item)
         self._buffer_bytes += self._estimate_size(item)
 
@@ -517,7 +644,7 @@ class ESSink:
         actions_gen = (
             {
                 "_op_type": "update",
-                "_index": self.index,
+                "_index": item.get("_index", self.index),
                 "_id": item["_id"],
                 "doc": item["doc"],
                 "doc_as_upsert": True,

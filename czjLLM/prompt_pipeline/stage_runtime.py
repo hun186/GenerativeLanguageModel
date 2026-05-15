@@ -297,6 +297,17 @@ def resolve_stage_task(
             return entry
         return str(entry or "").strip()
 
+    def _effective_task_setting(explicit: dict[str, Any] | None) -> dict[str, Any] | None:
+        if isinstance(explicit, dict) and explicit:
+            return explicit
+        try:
+            from czjLLM.taskConfig import taskSetting as global_task_setting
+        except Exception:
+            return explicit if isinstance(explicit, dict) else None
+        return global_task_setting if isinstance(global_task_setting, dict) else None
+
+    task_setting = _effective_task_setting(task_setting)
+
     if not stage.route_map:
         return stage.task, None
     route_key_raw = outputs_by_stage.get(stage.route_by, "")

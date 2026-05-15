@@ -1162,23 +1162,40 @@ def _call_llm_with_task_override(
     """
     effective_task = task_override
     if isinstance(task_override, Mapping):
-        # worker job 需要可 pickle 的純文字 task；mapping(dict 含 lambda) 會在 MP 序列化時失敗
-        task_setting = getattr(ctx, "taskSetting", None)
-        if isinstance(task_setting, Mapping):
-            for k, v in task_setting.items():
+        # worker job 需要可 pickle 的純文字 task；mapping(dict 含 lambda) 會在 MP 序列化時失敗。
+        # 先找 ctx.taskSetting；若 ES/CLI ctx 沒帶 taskSetting，回退到全域 taskSetting。
+        task_pools = []
+        ctx_task_setting = getattr(ctx, "taskSetting", None)
+        if isinstance(ctx_task_setting, Mapping):
+            task_pools.append(ctx_task_setting)
+        if isinstance(taskSetting, Mapping) and taskSetting is not ctx_task_setting:
+            task_pools.append(taskSetting)
+
+        found_key = ""
+        ct_name = str(task_override.get("CT_name", "")).strip()
+        for pool in task_pools:
+            for k, v in pool.items():
                 if v is task_override:
-                    effective_task = str(k)
+                    found_key = str(k)
                     break
-            else:
-                ct_name = str(task_override.get("CT_name", "")).strip()
-                for k, v in task_setting.items():
-                    if isinstance(v, Mapping) and str(v.get("CT_name", "")).strip() == ct_name and ct_name:
-                        effective_task = str(k)
-                        break
-                else:
-                    effective_task = ct_name or str(task_override)
+            if found_key:
+                break
+            for k, v in pool.items():
+                if isinstance(v, Mapping) and str(v.get("CT_name", "")).strip() == ct_name and ct_name:
+                    found_key = str(k)
+                    break
+            if found_key:
+                break
+
+        if found_key:
+            effective_task = found_key
         else:
-            effective_task = str(task_override.get("CT_name", "")).strip() or str(task_override)
+            mapped_task = task_override.get("task", task_override.get("prompt", task_override.get("template", "")))
+            effective_task = (
+                str(mapped_task).strip()
+                or ct_name
+                or str(task_override)
+            )
 
     try:
         return ops.call_llm(
@@ -1207,37 +1224,58 @@ def _call_llm_with_task_override(
                 ctx.task = old_task
 
 
+def _ctx_task_pool(ctx):
+    pool = getattr(ctx, "taskSetting", None)
+    return pool if isinstance(pool, Mapping) else taskSetting
+
+
+def _render_task_mapping_prompt(task_spec: Mapping, content: str, ctx) -> str:
+    tpl = task_spec.get("template")
+    if callable(tpl):
+        try:
+            return tpl(content=content)
+        except TypeError:
+            kwargs = {"content": content}
+            if "MainFileName" in str(tpl):
+                kwargs["MainFileName"] = getattr(ctx, "main_file_name", "")
+            if "keyConsiderations" in str(tpl):
+                kwargs["keyConsiderations"] = getattr(ctx, "keyConsiderations", "")
+            return tpl(**kwargs)
+    mapped_task = task_spec.get("task", task_spec.get("prompt", ""))
+    if isinstance(mapped_task, str) and mapped_task.strip():
+        mapped_name = mapped_task.strip()
+        pool = _ctx_task_pool(ctx)
+        if isinstance(pool, Mapping) and mapped_name in pool and pool[mapped_name] is not task_spec:
+            nested_spec = pool[mapped_name]
+            if isinstance(nested_spec, Mapping):
+                return _render_task_mapping_prompt(nested_spec, content, ctx)
+            return _render_raw_task_prompt(str(nested_spec or "").strip(), content)
+        if mapped_name in taskSetting and taskSetting[mapped_name] is not task_spec:
+            return generate_prompt(
+                content=content,
+                keyConsiderations=getattr(ctx, "keyConsiderations", ""),
+                MainFileName=getattr(ctx, "main_file_name", ""),
+                task=mapped_name,
+                think_mode=getattr(ctx, "think_mode", True),
+            )
+        return _render_raw_task_prompt(mapped_name, content)
+    return content
+
+
 def _build_stage_prompt_text(stage_task, content: str, ctx) -> str:
     """
     將 stage task 套用到文字內容，產生真正要放入 TODO 的 prompt 文字。
     """
+    task_pool = _ctx_task_pool(ctx)
     if isinstance(stage_task, Mapping):
-        tpl = stage_task.get("template")
-        if callable(tpl):
-            try:
-                return tpl(content=content)
-            except TypeError:
-                kwargs = {"content": content}
-                if "MainFileName" in str(tpl):
-                    kwargs["MainFileName"] = getattr(ctx, "main_file_name", "")
-                if "keyConsiderations" in str(tpl):
-                    kwargs["keyConsiderations"] = getattr(ctx, "keyConsiderations", "")
-                return tpl(**kwargs)
-        mapped_task = stage_task.get("task", stage_task.get("prompt", ""))
-        if isinstance(mapped_task, str) and mapped_task.strip():
-            task_name = mapped_task.strip()
-            if task_name in taskSetting:
-                return generate_prompt(
-                    content=content,
-                    keyConsiderations=getattr(ctx, "keyConsiderations", ""),
-                    MainFileName=getattr(ctx, "main_file_name", ""),
-                    task=task_name,
-                    think_mode=getattr(ctx, "think_mode", True),
-                )
-            return _render_raw_task_prompt(task_name, content)
-        return content
+        return _render_task_mapping_prompt(stage_task, content, ctx)
 
     task_name = str(stage_task or "").strip()
+    if task_name and isinstance(task_pool, Mapping) and task_name in task_pool:
+        task_spec = task_pool[task_name]
+        if isinstance(task_spec, Mapping):
+            return _render_task_mapping_prompt(task_spec, content, ctx)
+        return _render_raw_task_prompt(str(task_spec or "").strip(), content)
     if task_name and task_name in taskSetting:
         return generate_prompt(
             content=content,
@@ -1781,6 +1819,9 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 for k in ("CT_name", "InputCutLen"):
                     if k in stage_task:
                         compact[k] = stage_task.get(k)
+                inline_task = stage_task.get("task", stage_task.get("prompt", ""))
+                if isinstance(inline_task, str) and inline_task.strip():
+                    compact["task"] = inline_task.strip()
                 if "template" in stage_task:
                     compact["template"] = "<callable>" if callable(stage_task.get("template")) else "<unavailable>"
                 return str(compact or {"task": "<mapping>"})

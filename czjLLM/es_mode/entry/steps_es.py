@@ -391,6 +391,23 @@ def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns, index_name_hi
         except Exception as ex:
             print(f"⚠️ 套用 mapping 檔失敗（將退回最小化策略）：{ex}")
 
+    # 多欄位 ES writeback 可在各 rule 指定 mapping_file。這裡逐一套用，
+    # 讓 extract/audit/fallback 等不同輸出欄位都能在寫入前取得正確 mapping。
+    if es_apply_mapping:
+        applied_rule_mappings = {str(mapping_file or "").strip()} if mapping_file else set()
+        for rule in (getattr(ctx, "es_writeback_rules", None) or []):
+            if not isinstance(rule, dict):
+                continue
+            rule_mapping = str(rule.get("mapping_file", "") or "").strip()
+            if not rule_mapping or rule_mapping in applied_rule_mappings:
+                continue
+            rule_index = str(rule.get("index", "") or tgt_index).strip() or tgt_index
+            try:
+                adapter.apply_mapping_file(rule_index, rule_mapping)
+                applied_rule_mappings.add(rule_mapping)
+            except Exception as ex:
+                print(f"⚠️ 套用 writeback rule mapping 檔失敗（{rule_mapping}）：{ex}")
+
     # 3) output 欄位（最小化備援）：不存在才建 type
     try:
         node = adapter.get_field_mapping(tgt_index, out_field)
