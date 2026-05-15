@@ -142,7 +142,7 @@ stage_cfg:
       route_value_mode: task
       retry_source_on_route_miss: true
       persist_output: always
-      write_output: false
+      write_output: true
       max_attempts: 2
       debug_print_llm_io: true
       debug_print_max_chars: -1
