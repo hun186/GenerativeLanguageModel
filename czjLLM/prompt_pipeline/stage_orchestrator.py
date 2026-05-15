@@ -128,6 +128,7 @@ def execute_stage_round(
         chunk_stage_outputs = stage_outputs.setdefault(job.chunk_id, {})
         original_text = original_inputs.get(job.chunk_id, "")
         stage_def = stage_map[job.stage_name]
+        chunk_runtime.mark_started(job.stage_name)
         effective_task, route_err = resolve_stage_task(stage_def, chunk_stage_outputs, task_setting=task_setting)
         if stage_def.debug_print_llm_io:
             print(
@@ -135,8 +136,10 @@ def execute_stage_round(
                 f"{_stage_task_debug_preview(effective_task)}"
             )
         if route_err:
-            # 路由鍵無法匹配：可選擇回退重跑來源 stage
-            if stage_def.retry_source_on_route_miss and stage_def.route_by in chunk_runtime.stages:
+            # 只有 route key 無法匹配時才回退重跑 route_by 來源 stage；
+            # taskSetting 缺漏等配置錯誤不應造成 route stage 反覆重跑。
+            should_retry_source = route_err.startswith("route_miss:")
+            if should_retry_source and stage_def.retry_source_on_route_miss and stage_def.route_by in chunk_runtime.stages:
                 chunk_runtime.mark_failed(stage_def.route_by, route_err)
                 chunk_stage_outputs.pop(stage_def.route_by, None)
             chunk_runtime.mark_failed(job.stage_name, route_err)
@@ -154,7 +157,6 @@ def execute_stage_round(
             )
             continue
 
-        chunk_runtime.mark_started(job.stage_name)
 
         effective_input_from = stage_def.input_from
         if isinstance(effective_task, dict):

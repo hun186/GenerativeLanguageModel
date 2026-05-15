@@ -162,6 +162,7 @@ es_writeback_rules:
     stage: extract
     index: srp_test
     output_type: nested
+    output_profile: multidim_event
     meta_field: multidim_event_json_meta
     mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
     normalize_payload_dates: true
@@ -171,4 +172,6 @@ es_writeback_rules:
     stage: audit_json
     index: srp_test
     output_type: nested
+    output_profile: json
     meta_field: route_audit_json_meta
+    mapping_file: czjLLM/config_es/schemas/generic-json-mapping.yaml

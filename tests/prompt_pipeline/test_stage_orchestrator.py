@@ -198,3 +198,41 @@ def test_resolve_pipeline_stages_preserves_tasksetting_mapping_entry():
     stages = so.resolve_pipeline_stages(CtxTaskSetting())
     assert isinstance(stages[0].task, dict)
     assert callable(stages[0].task["template"])
+
+
+def test_tasksetting_missing_does_not_retry_route_stage():
+    @dataclass
+    class CtxMissingTaskSetting:
+        stages: list[dict] = field(
+            default_factory=lambda: [
+                {"name": "route", "task": "分類"},
+                {
+                    "name": "extract",
+                    "task": "fallback",
+                    "route_by": "route",
+                    "route_map": {"zh": {"task": "@taskSetting:MissingUnitTask"}},
+                    "route_value_mode": "task",
+                    "retry_source_on_route_miss": True,
+                    "max_attempts": 2,
+                },
+            ]
+        )
+        taskSetting: dict = field(default_factory=dict)
+
+    ctx = CtxMissingTaskSetting()
+    runtime = so.init_chunk_stage_runtime(ctx, ["c1"])
+    called_stages = []
+
+    def runner(job, _ctx, _input_text):
+        called_stages.append(job.stage_name)
+        if job.stage_name == "route":
+            return {"ok": True, "output": "zh"}
+        return {"ok": True, "output": "should_not_run"}
+
+    report = so.run_stage_pipeline(ctx, runtime, runner, max_rounds=5, original_inputs={"c1": "原文"})
+
+    assert called_stages == ["route"]
+    assert runtime["c1"].stages["route"].state == "success"
+    assert runtime["c1"].stages["extract"].state == "error"
+    assert "task_key_missing:MissingUnitTask" in runtime["c1"].stages["extract"].last_error
+    assert report["final"]["finished_chunks"] == 0
