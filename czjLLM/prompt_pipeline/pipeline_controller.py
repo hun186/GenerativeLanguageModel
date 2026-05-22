@@ -12,8 +12,6 @@ import threading
 #import queue
 from collections import Counter
 from datetime import datetime
-import multiprocessing
-import time as _time
 #import sqlite3
 #import pyodbc
 import shutil
@@ -69,6 +67,11 @@ from czjLLM.infrastructure.ollama_lb import select_idle_ollama_url,release_url_l
 #from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
 #from czjLLM.utilities.path_utils import get_combined_result_path
 from czjLLM.job_manager.console_ui import  tlog_warn
+from czjLLM.prompt_pipeline.round_runner import (
+    BatchRunTimeout,
+    CONSUMER_STATE,
+    run_round,
+)
 
 def _canon_path(p: str) -> str:
     # 轉絕對路徑 + 正規化分隔 + Windows 大小寫無關
@@ -128,119 +131,6 @@ def meter_path_init(ctx):
     atomic_write_json(fn, init)
     return fn
 
-
-# ── 供 watchdog 觀察的最小狀態（不鎖，僅追蹤心跳/派工時間）
-#
-CONSUMER_STATE = {
-    "last_dispatch_ts": 0.0,   # 上次成功取回結果或派工的時間（monotonic）
-    "pool_alive": False,       # 是否有活著的 worker（粗略）
-}
-
-class BatchRunTimeout(RuntimeError):
-    """Raised when a consumer batch exceeds its wall-clock timeout."""
-
-    def __init__(self, timeout_sec: float, finished: int, total: int):
-        super().__init__(
-            f"LLM batch timed out after {timeout_sec:.0f}s "
-            f"(finished={finished}/{total})"
-        )
-        self.timeout_sec = float(timeout_sec)
-        self.finished = int(finished)
-        self.total = int(total)
-
-
-def _run_prompt_job(job):
-    """Top-level multiprocessing target so PromptAPIPipeline jobs remain picklable."""
-    return job.proc()
-
-
-def _round_timeout_from_jobs(jobs, explicit_timeout=None) -> float:
-    if explicit_timeout is not None:
-        try:
-            return max(1.0, float(explicit_timeout))
-        except Exception:
-            pass
-
-    try:
-        env_timeout = os.getenv("CZJLLM_LLM_ROUND_TIMEOUT_SEC")
-        if env_timeout:
-            return max(1.0, float(env_timeout))
-    except Exception:
-        pass
-
-    # Default below the 10-minute watchdog threshold, so a wedged pool unwinds
-    # before the main watchdog starts repeatedly dumping stacks.
-    return 480.0
-
-
-def run_round(jobs, n_proc: int, timeout_sec: float | None = None):
-    """
-    Run one consumer batch with a hard wall-clock timeout.
-
-    The old multicoreJob path could block forever if a worker/API call wedged,
-    leaving files in RUNNING and queue.running non-zero indefinitely.  This
-    implementation keeps the single-process path unchanged, but wraps the
-    multiprocessing path in async results so the parent can terminate the pool
-    and let the caller requeue unfinished RUNNING files.
-    """
-    use_mp = (n_proc > 1) and (len(jobs) > 1)
-    timeout_sec = _round_timeout_from_jobs(jobs, timeout_sec)
-    CONSUMER_STATE["pool_alive"] = False
-    CONSUMER_STATE["last_round_timed_out"] = False
-
-    if not use_mp:
-        out = []
-        deadline = _time.monotonic() + timeout_sec
-        for idx, j in enumerate(jobs, start=1):
-            if _time.monotonic() > deadline:
-                CONSUMER_STATE["last_round_timed_out"] = True
-                raise BatchRunTimeout(timeout_sec, len(out), len(jobs))
-            try:
-                out.append(j.proc())
-                CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
-            except Exception as ex:
-                tlog_warn(f"[single] worker error: {ex}")
-        return out
-
-    pool = None
-    results = []
-    try:
-        CONSUMER_STATE["pool_alive"] = True
-        pool = multiprocessing.Pool(processes=min(int(n_proc), len(jobs)))
-        async_results = [pool.apply_async(_run_prompt_job, (job,)) for job in jobs]
-        pool.close()
-
-        deadline = _time.monotonic() + timeout_sec
-        for ar in async_results:
-            remain = deadline - _time.monotonic()
-            if remain <= 0:
-                raise multiprocessing.TimeoutError()
-            results.append(ar.get(timeout=remain))
-            CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
-
-        pool.join()
-        return results
-    except multiprocessing.TimeoutError as e:
-        CONSUMER_STATE["last_round_timed_out"] = True
-        if pool is not None:
-            try:
-                pool.terminate()
-            except Exception:
-                pass
-            try:
-                pool.join()
-            except Exception:
-                pass
-        raise BatchRunTimeout(timeout_sec, len(results), len(jobs)) from e
-    except Exception as e:
-        tlog_warn(f"[mp] Pool error: {e}; caller will requeue this round")
-        raise
-    finally:
-        try:
-            CONSUMER_STATE["pool_alive"] = any(p.is_alive() for p in multiprocessing.active_children())
-        except Exception:
-            CONSUMER_STATE["pool_alive"] = False
-            
 
 def meter_init(meter_fn, ctx, low=None, high=None):
     low  = low  if low  is not None else getattr(ctx, "n_process", 4) * 2
