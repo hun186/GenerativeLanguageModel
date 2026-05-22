@@ -1,6 +1,0 @@
-channel: News_Map
-llm_source_backup_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/News_Map
-llm_source_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/News_Map
-mode: txt
-model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
-task: News-FacetTop10-Map-to json format

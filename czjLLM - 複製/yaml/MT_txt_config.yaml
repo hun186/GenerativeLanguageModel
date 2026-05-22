@@ -1,5 +1,0 @@
-channel: 對照辭典
-flatten_json_output: false
-mode: txt
-model_spec: qwen3:32b-ctx-32k-premises-q4
-task: MDT Term Extraction to json format

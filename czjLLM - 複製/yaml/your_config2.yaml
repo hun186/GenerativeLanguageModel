@@ -1,8 +1,0 @@
-channel: excel_source
-input_col: Eng
-input_excel_file: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/LLMInput_with_result.xlsx
-mode: excel
-model_spec: qwen3:32b-ctx-4k-premises-q4
-output_col: 再翻回中文
-output_excel_file: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/LLMInput_with_result_again
-task: Translation-toTWZH

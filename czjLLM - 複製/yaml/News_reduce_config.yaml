@@ -1,6 +1,0 @@
-channel: News_Reduce
-llm_source_backup_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/News_Reduce
-llm_source_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/News_Reduce
-mode: txt
-model_spec: gpt-oss:latest-ctx-144k-premises-MXFP4
-task: News-FacetTop10-Reduce-to json format

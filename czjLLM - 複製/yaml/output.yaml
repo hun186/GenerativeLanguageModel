@@ -1,8 +1,0 @@
-channel: excel_source
-input_col: 內容
-input_excel_file: GenerativeLanguageModel/czjLLM/LLMSourcePool/excel_source/LLMInput.xlsx
-mode: excel
-model_spec: qwen3:32b-ctx-4k-premises-q4
-output_col: eng
-output_excel_file: output.xlsx
-task: Translation-toEN

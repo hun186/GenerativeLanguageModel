@@ -1,6 +1,0 @@
-channel: 對照辭典
-llm_source_backup_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/對照辭典
-llm_source_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool/對照辭典
-mode: txt
-model_spec: qwen3:32b-ctx-32k-premises-q4
-task: Organization Profile Analyzer to json format
