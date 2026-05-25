@@ -3,8 +3,8 @@
 # 指定各 stage 的寫回欄位。
 mode: es
 channel: unspecified_channel
-#model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
-model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
+#model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
 es_config_file: czjLLM/config_es/akconfig_es_test_133.py
 
 input_col: rawInfo.content
