@@ -764,3 +764,30 @@ def test_process_prompt_and_merge_raises_when_explicit_stages_parse_fails(tmp_pa
 
     with pytest.raises(RuntimeError, match="多階段設定解析失敗"):
         pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+
+def test_process_prompt_and_merge_uses_stage_flow_for_explicit_single_stage(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline import pipeline_controller as pc
+
+    ctx = SimpleNamespace(
+        prompt_dir=str(tmp_path / "prompt"),
+        main_file_name="row1",
+        task="legacy",
+        stages=[{"name": "extract", "task": "ExtractTask"}],
+        taskSetting={},
+    )
+    src = tmp_path / "row1.txt"
+    src.write_text("input", encoding="utf-8")
+    calls = {"multi": 0}
+
+    def _fake_multistage(_ctx, file_path, ops=None, max_rounds=20):
+        calls["multi"] += 1
+        return "merged.txt"
+
+    monkeypatch.setattr(pc, "process_prompt_and_merge_multistage", _fake_multistage)
+
+    out = pc.process_prompt_and_merge(ctx, str(src))
+
+    assert out == "merged.txt"
+    assert calls["multi"] == 1

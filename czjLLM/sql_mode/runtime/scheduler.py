@@ -17,6 +17,31 @@ from czjLLM.handlers.handle_txt_file import handle_single_input_file  # 延用�
 #from czjLLM.prompt_pipeline.pipeline_controller import get_combined_result_path
 from czjLLM.utilities.path_utils import get_combined_result_path
 
+
+def _explicit_stage_flow(ctx) -> list[dict]:
+    """Return explicitly configured pipeline stages, if any.
+
+    ``resolve_pipeline_stages(ctx)`` intentionally turns a plain ``ctx.task`` into
+    a one-stage pipeline for compatibility.  The scheduler needs a stricter
+    signal so ES/SQL/Table configs that explicitly declare even a single stage
+    still run through the stage-aware path, while ordinary single-task jobs keep
+    the legacy consumer path.
+    """
+    stages = getattr(ctx, "stages", None)
+    return stages if isinstance(stages, list) and len(stages) > 0 else []
+
+
+def _stage_task_hint(stage: dict) -> str:
+    if not isinstance(stage, dict):
+        return ""
+    task = stage.get("prompt", stage.get("task", stage.get("task_key", "")))
+    if not isinstance(task, str):
+        return ""
+    task = task.strip()
+    if task.startswith("@taskSetting:"):
+        return task.split(":", 1)[1].strip()
+    return task
+
 def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, source_inputs: dict[str, str] | None = None):
     """切片 -> 建 TODO -> 登錄 registry 與 meter（使用 per-row ctx overlay，避免 deepcopy/Queue 錯誤）"""
 
@@ -64,8 +89,8 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
         return total_chunks
 
     mode = str(getattr(ctx, "mode", "") or "").strip().lower()
-    stages = getattr(ctx, "stages", None)
-    has_multistage = isinstance(stages, list) and len(stages) > 1
+    explicit_stages = _explicit_stage_flow(ctx)
+    has_stage_flow = bool(explicit_stages)
     # `mode: table`（Excel/CSV sink）與 `mode: sql` 都共用此排程器；
     # 若限定 sql 才走 multistage，table 會只執行單階段流程，
     # 導致 stage writeback 找不到 _stage_merges/manifest.json。
@@ -73,7 +98,16 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
     # 直接重用 txt 的 process_prompt_and_merge() 跑完整 stage flow。
     # 若 ES 留在一般 consumer 單階段路徑，consumer 只會執行 task_hint（通常是第 1 個
     # route prompt），導致分類碼如 "zh" 被當成最終 output_col 寫回。
-    run_stream_multistage = (mode in {"sql", "table", "es"}) and bool(getattr(ctx, "sql_enable_multistage_stream", True)) and has_multistage
+    run_stream_multistage = (mode in {"sql", "table", "es"}) and bool(getattr(ctx, "sql_enable_multistage_stream", True)) and has_stage_flow
+
+    # When the YAML declares stages explicitly, the first prompt files must be
+    # generated with the first stage's task.  Otherwise a single-stage ES flow
+    # can accidentally use the global/default ctx.task and later write a result
+    # that does not correspond to the selected rawInfo.content.
+    if has_stage_flow:
+        first_stage_task = _stage_task_hint(explicit_stages[0])
+        if first_stage_task:
+            row_ctx.task = first_stage_task
 
     # 讓模板/切片在 row_ctx 上跑（不會動到共享 ctx）
     try:

@@ -1509,6 +1509,10 @@ def _apply_resume_policy_single_stage(policy: str, prompt_items: list[str], ops:
         _log_resume_before_after(item, before_counts, after_counts, ctx=ctx)
 
 
+def _has_explicit_stage_flow(ctx) -> bool:
+    stages = getattr(ctx, "stages", None)
+    return isinstance(stages, list) and len(stages) > 0
+
 def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | None = None, max_rounds: int = 20) -> str:
     """
     多階段版本：
@@ -1918,7 +1922,7 @@ def process_prompt_and_merge(ctx, file_path: str, ops: MergeOps | None = None) -
         if has_explicit_stages:
             raise RuntimeError(f"多階段設定解析失敗，已停止執行：{e}") from e
         stages = []
-    if len(stages) > 1:
+    if len(stages) > 1 or (len(stages) == 1 and _has_explicit_stage_flow(ctx)):
         return process_prompt_and_merge_multistage(ctx, file_path=file_path, ops=ops)
 
     main_name = getattr(ctx, "main_file_name", Path(file_path).stem)
