@@ -59,10 +59,16 @@ stage_cfg:
       output_col: multidim_event_json
       output_profile: multidim_event
       es:
-        src_index: srp_test
-        tgt_index: srp_test
+        src_index: fishing_test
+        tgt_index: fishing_test
         mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
-
+      retry_source_on_route_miss: true
+      persist_output: final
+      write_output: true
+      max_attempts: 2
+      debug_print_llm_io: true
+      debug_print_max_chars: -1
+      
   stage_outputs:
     keep_intermediate: false
     meta_field: multidim_event_json_meta
@@ -74,7 +80,7 @@ es_writeback_rules:
   - output_col: multidim_event_json
     source: stage
     stage: extract
-    index: srp_test
+    index: fishing_test
     output_type: nested
     output_profile: multidim_event
     meta_field: multidim_event_json_meta
