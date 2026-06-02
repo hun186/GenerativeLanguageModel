@@ -1,0 +1,85 @@
+# ES 多階段智慧路由設定範例（對齊 SQL/Excel 的 multistage/langroute 設定方向）
+# 這份檔案會實際執行 route -> extract -> audit_json，並用 es_writeback_rules
+# 指定各 stage 的寫回欄位。
+mode: es
+channel: unspecified_channel
+model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
+#model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+es_config_file: czjLLM/config_es/akconfig_es_fishing.py
+
+input_col: rawInfo.content
+primary_key: _id
+record_update_time: true
+
+# 切片合併開關：ES 多階段抽取仍可能因 InputCutLen 產生多個切片；
+# 需啟用合併，避免只把單一切片或未整併的 stage 片段寫回主欄位。
+merge_slices: true
+merge_conflict_policy: prefer_left
+merge_dedup_lists: true
+merge_log_changes: true
+merge_max_log: 10
+
+# 測試重跑開關：覆寫 es_config_file 內的 rerun.pipeline_hash。
+# 若同一批 ES 文件已用舊 hash 寫過結果，改這個值即可讓 pending query 再挑出來重跑。
+# 測完若不想再強制重跑，可改回正式版本號或移除此段，改用 es_config_file 的 rerun 設定。
+rerun:
+  enable: true
+  pipeline_hash: v3.2.2-es-multistage-rerun-test
+  force_if_missing_meta: true
+  fallback_date_field: update_time_ai
+  required_output_checks:
+    - path: Event_Timeline.date_iso
+      validator: date
+      format: yyyy-MM-dd
+      min_valid_count: 1
+      relative_to_output: true
+
+# 主要輸出欄位：多階段 ES 會由 es_writeback_rules 指定寫回 extract stage；
+# 若未設定 es_writeback_rules，row_merger 會退回 combined 輸出。
+output_col: multidim_event_json
+output_profile: multidim_event
+
+# 以下 stages 會由 ES/SQL/Table 共用的多階段 scheduler 執行。
+stage_cfg:
+  name: es_json_multistage_langroute
+  version: v0.2
+  default_route: fallback
+
+  # ES 版刻意對齊 SQL multistage/langroute 的欄位：
+  # - prompt：直接在 YAML 內寫提詞模板。
+  # - task: "@taskSetting:..."：從 taskSetting 取既有 template。
+  # - input_from：決定是否串接 original / 前一階段 / 不串接文字。
+  # - max_attempts：控制單一 stage 重試次數。
+  # - debug_print_llm_io/debug_print_max_chars：印出組裝後送 LLM 的 prompt。
+  stages:
+    - name: extract
+      task: "@taskSetting:InfoExtraction-MultiDim-SQLFriendly-to json format"
+      input_from: original
+      input_col: rawInfo.content
+      output_col: multidim_event_json
+      output_profile: multidim_event
+      es:
+        src_index: srp_test
+        tgt_index: srp_test
+        mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
+
+  stage_outputs:
+    keep_intermediate: false
+    meta_field: multidim_event_json_meta
+    final_output_col: multidim_event_json
+
+# ES 多階段寫回：最終主欄位應取 extract stage，而不是 route 的 zh/non_zh 或 audit stage。
+# 這些規則會鏡射到既有 row_merger 的 stage 寫回解析。
+es_writeback_rules:
+  - output_col: multidim_event_json
+    source: stage
+    stage: extract
+    index: srp_test
+    output_type: nested
+    output_profile: multidim_event
+    meta_field: multidim_event_json_meta
+    mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
+    normalize_payload_dates: true
+    meta_base:
+      task: InfoExtraction-MultiDim-SQLFriendly-to json format
+      stage: extract

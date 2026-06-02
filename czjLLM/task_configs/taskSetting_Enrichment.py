@@ -825,5 +825,19 @@ taskSetting_Enrichment = {
             + "☆下列為輸入任務文本：\n"
             + f"{content}"
         )
-    }
+    },
+    "InfoExtraction-MultiDim-Compact-SQLFriendly-to json format": {
+        "CT_name": "多維度新聞事件分析與 SQL-friendly JSON 輸出",
+        "InputCutLen": 25,
+        "template": lambda content, MainFileName=None: (
+            "你是一個專責「多維度事件分析」與「SQL-friendly JSON 輸出」的資訊抽取模型。\n"
+            "任務是從輸入文本中抽取事件核心、人物、涉入單位、影響、時間序列與證據片段。\n"
+            "請依以下規則輸出，禁止加入額外說明、分析、推論、感想或模型自介。"
+            f"{MULTIDIM_EXTRACTION_Rule}"
+            + (f"主檔名為「{removeStrSuffix(MainFileName,'_tika')}」，可用於輔助分析article_title。\n"
+               if USE_MAINFILE_HINT and MainFileName else "")
+            + "☆下列為輸入任務文本：\n"
+            + f"{content}"
+        )
+    },
 }
