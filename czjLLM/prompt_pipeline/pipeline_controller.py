@@ -8,6 +8,7 @@ import re
 import json
 import hashlib
 import time
+import uuid
 import threading
 #import queue
 from collections import Counter
@@ -117,15 +118,21 @@ class ItemsRegistry:
 
 def meter_path_init(ctx):
     """
-    建議：檔名含 session 起始時間避免不同程序互蓋。
+    建議：檔名含 session 起始時間、pid 與短 UUID，避免不同主程序互蓋。
+
+    Watchdog 的「多久沒有分片完成」判斷只應觀察本主程序自己的
+    meter。若自動排程在同一秒啟動多個主程序，單靠秒級 timestamp
+    可能產生相同檔名，導致 completed/pending/running 互相污染並誤判。
     """
     if not hasattr(ctx, "session_start_ts"):
         ctx.session_start_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    if not hasattr(ctx, "session_run_id"):
+        ctx.session_run_id = f"{os.getpid()}_{uuid.uuid4().hex[:8]}"
     #base_dir = getattr(ctx, "meter_dir", getattr(ctx, "llm_source_dir", "."))
     base_dir = getattr(ctx, "meter_dir", getattr(ctx, "PGMSubDir", "."))
     base_dir = os.path.join(base_dir,"logs")
     os.makedirs(base_dir, exist_ok=True)
-    fn = os.path.join(base_dir, f"loadmeter_{ctx.session_start_ts}.json")
+    fn = os.path.join(base_dir, f"loadmeter_{ctx.session_start_ts}_{ctx.session_run_id}.json")
     # 初始內容
     init = {"rows": {}, "queue": {"pending": 0, "running": 0}}
     atomic_write_json(fn, init)
@@ -137,6 +144,8 @@ def meter_init(meter_fn, ctx, low=None, high=None):
     high = high if high is not None else getattr(ctx, "n_process", 4) * 3
     data = {
         "session_id": getattr(ctx, "session_start_ts", ""),
+        "session_run_id": getattr(ctx, "session_run_id", ""),
+        "pid": os.getpid(),
         "created_at": datetime.now().isoformat(timespec="seconds"),
         "thresholds": {"low": low, "high": high},
         "workers": {"n_process": getattr(ctx, "n_process", 4)},
@@ -733,6 +742,11 @@ def _es_heartbeat_loop(adapter, interval_sec=60):
 def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60,
                     stacks_path="stacks.log", meter_fn=None, restart_cb=None):
     stacks_file = open(stacks_path, "a", buffering=1, encoding="utf-8")
+    no_chunk_threshold_sec = float(getattr(ctx, "no_chunk_complete_timeout_sec", 5 * 60 * 60) or 0)
+    fatal_on_no_chunk = bool(getattr(ctx, "fatal_on_no_chunk_stall", True))
+    last_completed = None
+    last_completed_change_ts = time.time()
+    no_chunk_stall_reported = False
     try:
         faulthandler.enable()
     except Exception:
@@ -757,6 +771,37 @@ def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60,
 
             pending = int(q.get("pending", 0) or 0)
             running = int(q.get("running", 0) or 0)
+            completed = int(q.get("completed", 0) or 0)
+
+            if last_completed is None or completed != last_completed:
+                last_completed = completed
+                last_completed_change_ts = now
+                no_chunk_stall_reported = False
+            elif (
+                no_chunk_threshold_sec > 0
+                and (pending + running) > 0
+                and (now - last_completed_change_ts) >= no_chunk_threshold_sec
+                and not no_chunk_stall_reported
+            ):
+                msg = (
+                    f"[watchdog][FATAL] {int(now - last_completed_change_ts)} 秒沒有任何分片完成 "
+                    f"(threshold={int(no_chunk_threshold_sec)}s, pending={pending}, "
+                    f"running={running}, completed={completed}, pid={os.getpid()}, meter={meter_fn})；"
+                    "終止主程序以避免排程堆積耗盡記憶體。"
+                )
+                print(msg, flush=True)
+                try:
+                    stacks_file.write(f"\n{datetime.now().isoformat()} {msg}\n")
+                    faulthandler.dump_traceback(file=stacks_file)
+                except Exception as e:
+                    print(f"[watchdog] fatal stall log/dump 例外: {e}", flush=True)
+                no_chunk_stall_reported = True
+                if fatal_on_no_chunk:
+                    try:
+                        stacks_file.flush()
+                    except Exception:
+                        pass
+                    os._exit(2)
 
             # --- 2) 組合多個「最近活動時間」 ---
             last_doc = getattr(ctx, "last_progress_ts", None)  # 文件級
