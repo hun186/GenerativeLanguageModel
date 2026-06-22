@@ -739,6 +739,26 @@ class ElasticsearchAdapter:
 
     # --- ES 版本的 pending 擷取 --------------------------------------------
 
+    def is_row_pending(self, *, tgt_table: str, pk: str, pk_value: Any, output_cols: List[str]) -> bool:
+        if self.es is None:
+            raise RuntimeError("Elasticsearch client 尚未連線")
+        output_col = output_cols[0] if output_cols else self.cfg.get("output_col")
+        if isinstance(output_col, (list, tuple)):
+            output_col = output_col[0] if output_col else None
+        if not output_col:
+            return True
+        key_val = _norm_scalar(pk_value)
+        if key_val is None:
+            return False
+        present = self._bulk_check_present_nonempty(
+            tgt_index=tgt_table,
+            pk=pk,
+            ids=[key_val],
+            output_col=str(output_col),
+            request_timeout=int(self.cfg.get("es_request_timeout", 60)),
+        )
+        return key_val not in present
+
     def select_pending_rows(
         self,
         *,
@@ -758,6 +778,8 @@ class ElasticsearchAdapter:
         adapter 只負責把它們一併從 _source 取回並隨列回傳為 source_inputs，
         讓後續 stage 可用不同來源文字組 prompt。
         """
+        if isinstance(output_col, (list, tuple)):
+            output_col = output_col[0] if output_col else ""
         stage_source_input_cols = self.cfg.get("stage_source_input_cols", []) or []
         assert self.es is not None
     

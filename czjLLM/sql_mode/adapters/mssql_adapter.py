@@ -49,6 +49,17 @@ class MSSQLAdapter(DBAdapter):
                 self.cur.execute(f"ALTER TABLE {Q(table)} ADD {Q(col)} {ctype}")
         self.conn.commit()
 
+    def is_row_pending(self, *, tgt_table: str, pk: str, pk_value: Any, output_cols: List[str]) -> bool:
+        out_col = output_cols[0]
+        sql = f"""
+        SELECT TOP 1 1
+        FROM {Q(tgt_table)}
+        WHERE {Q(pk)} = ?
+          AND ({Q(out_col)} IS NOT NULL AND LTRIM(RTRIM({Q(out_col)})) <> '')
+        """
+        self.cur.execute(sql, (pk_value,))
+        return self.cur.fetchone() is None
+
     def select_pending_rows(self, *,
                             src_table: str, tgt_table: str,
                             pk: str, input_col: str, output_cols: List[str],

@@ -9,6 +9,29 @@ from .workers import outstanding_now
 from .scheduler import schedule_one_row
 
 
+def _still_pending_before_dispatch(ctx, pk: Any) -> bool:
+    """Recheck remote SQL/ES state immediately before slicing/dispatching a row.
+
+    Scheduled runs can overlap.  The initial pending iterator may have selected a
+    row that another main process finishes before this producer reaches it.
+    Returning False skips slicing and parallel dispatch for that stale row.
+    """
+    adapter = getattr(ctx, "_pending_adapter", None)
+    if adapter is None or not hasattr(adapter, "is_row_pending"):
+        return True
+    output_cols = getattr(ctx, "output_cols", None) or [getattr(ctx, "output_col", "")]
+    try:
+        return bool(adapter.is_row_pending(
+            tgt_table=getattr(ctx, "_pending_tgt_table", getattr(ctx, "target_table", None)),
+            pk=getattr(ctx, "primary_key", ""),
+            pk_value=pk,
+            output_cols=output_cols,
+        ))
+    except Exception as e:
+        tlog_warn(f"[producer] pending recheck 失敗 pk={pk}: {e!r}；保守繼續排程。")
+        return True
+
+
 def produce_rows(
     ctx,
     rows_for_count: Iterable[Tuple[Any, str]],
@@ -98,6 +121,28 @@ def produce_rows(
             continue
 
         try:
+            if not _still_pending_before_dispatch(ctx, pk):
+                tlog(f"[producer] pk={pk} 已由其他程序完成，略過本次切片/派工。")
+                try: p_sched.update(1)
+                except Exception: pass
+                if gui:
+                    try: gui.inc_sched(1)
+                    except Exception: pass
+                if p_done is not None:
+                    try: p_done.update(1)
+                    except Exception: pass
+                    if gui:
+                        try: gui.inc_done(1)
+                        except Exception: pass
+                try:
+                    meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
+                        "cursor": seen, "enq": scheduled, "producer_alive": True,
+                        "last_progress_ts": time.time(), "last_skip_reason": "already_completed"
+                    }))
+                except Exception:
+                    pass
+                continue
+
             schedule_one_row(ctx, registry, meter_fn, idx, pk, text, source_inputs=source_inputs)
             scheduled += 1
             # ★新增：每送一列即回報游標/送件數

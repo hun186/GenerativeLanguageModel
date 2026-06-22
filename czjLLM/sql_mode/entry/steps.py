@@ -293,6 +293,8 @@ def maybe_reset_output_col(ctx, is_sqlite, sql_cfg, columns, args):
             reset_output_col_with_backup(ctx, is_sqlite)
 
 def build_pending_iter(adapter, ctx):
+    ctx._pending_adapter = adapter
+    ctx._pending_tgt_table = ctx.target_table
     # 以第一個輸出欄位作為 pending 判斷主欄（其餘欄位可由 sql_writeback_rules 擴充寫入）
     output_cols = getattr(ctx, "output_cols", None) or [ctx.output_col]
     stage_extra_cols = []

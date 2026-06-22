@@ -734,6 +734,8 @@ def _tap_progress(it, ctx):
         yield x
 # ---------- 建立 iterator ----------
 def build_pending_iter_es(adapter, ctx):
+    ctx._pending_adapter = adapter
+    ctx._pending_tgt_table = adapter.cfg["tgt_index"]
     base = adapter.select_pending_rows(
         src_table=adapter.cfg["src_index"],
         tgt_table=adapter.cfg["tgt_index"],
