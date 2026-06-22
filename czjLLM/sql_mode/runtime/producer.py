@@ -9,6 +9,38 @@ from .workers import outstanding_now
 from .scheduler import schedule_one_row
 
 
+def _row_still_pending(ctx, pk) -> bool:
+    """真正切片前重新確認遠端 SQL/ES 來源仍未完成，避免排程重疊造成重複計算。"""
+    adapter = getattr(ctx, "_source_adapter", None)
+    mode = str(getattr(ctx, "mode", "")).lower()
+    if adapter is None or mode not in {"sql", "es"}:
+        return True
+    try:
+        if mode == "es":
+            cfg = getattr(adapter, "cfg", {}) or {}
+            return bool(adapter.is_row_pending(
+                src_table=cfg.get("src_index"),
+                tgt_table=cfg.get("tgt_index") or cfg.get("src_index"),
+                pk=getattr(ctx, "primary_key", cfg.get("pk_field", "_id")),
+                pk_value=pk,
+                input_col=getattr(ctx, "input_col", cfg.get("input_col")),
+                output_col=getattr(ctx, "output_col", cfg.get("output_col", "LLM_result")),
+            ))
+        return bool(adapter.is_row_pending(
+            src_table=getattr(ctx, "sql_table"),
+            tgt_table=getattr(ctx, "target_table", getattr(ctx, "sql_table", None)),
+            pk=getattr(ctx, "primary_key"),
+            pk_value=pk,
+            input_col=getattr(ctx, "input_col"),
+            output_cols=[getattr(ctx, "output_col")],
+        ))
+    except AttributeError:
+        return True
+    except Exception as ex:
+        tlog_warn(f"[producer] 重新確認列狀態失敗 pk={pk}: {ex!r}；保守繼續排程。")
+        return True
+
+
 def produce_rows(
     ctx,
     rows_for_count: Iterable[Tuple[Any, str]],
@@ -79,6 +111,28 @@ def produce_rows(
             hard_timeout=getattr(ctx, "bp_hard_timeout", 120.0),
             sleep_step=0.05,
         )
+
+        if not _row_still_pending(ctx, pk):
+            tlog(f"[producer] pk={pk} 已由其他程序完成，略過切片與派工。")
+            try: p_sched.update(1)
+            except Exception: pass
+            if gui:
+                try: gui.inc_sched(1)
+                except Exception: pass
+            if p_done is not None:
+                try: p_done.update(1)
+                except Exception: pass
+                if gui:
+                    try: gui.inc_done(1)
+                    except Exception: pass
+            try:
+                meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
+                    "cursor": seen, "enq": scheduled, "producer_alive": True,
+                    "last_progress_ts": time.time(), "last_skipped_pk": str(pk)
+                }))
+            except Exception:
+                pass
+            continue
 
         try:
             schedule_one_row(ctx, registry, meter_fn, idx, pk, text)

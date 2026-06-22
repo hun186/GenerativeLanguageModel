@@ -963,6 +963,73 @@ class ElasticsearchAdapter:
             request_timeout=rt,
         )
 
+    def is_row_pending(self, *, src_table: str, tgt_table: str, pk: str, pk_value,
+                       input_col: str, output_col: str) -> bool:
+        """重新查詢單一文件是否仍未完成；供真正切片前避免排程重複計算。"""
+        assert self.es is not None
+        pk_value = _norm_scalar(pk_value)
+        if pk_value is None:
+            return False
+
+        try:
+            if src_table == tgt_table:
+                if pk == "_id":
+                    hit = self.es.get(index=src_table, id=pk_value, ignore=[404])
+                    if not hit or not hit.get("found", False):
+                        return False
+                else:
+                    res = self.es.search(
+                        index=src_table,
+                        body={
+                            "query": {"term": {pk: pk_value}},
+                            "_source": [input_col, output_col, pk],
+                            "size": 1,
+                        },
+                        request_timeout=int(self.cfg.get("es_request_timeout", 60)),
+                    )
+                    hits = res.get("hits", {}).get("hits", [])
+                    if not hits:
+                        return False
+                    hit = hits[0]
+                src = hit.get("_source", {}) or {}
+                text = _extract_by_path(src, input_col)
+                if isinstance(text, list):
+                    text = text[0] if text else None
+                return bool(text is not None and str(text).strip()) and not self._is_fresh_output(src, output_col)
+
+            # dual index：來源仍有 input，且目標沒有新鮮 output。
+            if pk == "_id":
+                src_hit = self.es.get(index=src_table, id=pk_value, ignore=[404])
+                if not src_hit or not src_hit.get("found", False):
+                    return False
+                src = src_hit.get("_source", {}) or {}
+            else:
+                res = self.es.search(
+                    index=src_table,
+                    body={"query": {"term": {pk: pk_value}}, "_source": [input_col, pk], "size": 1},
+                    request_timeout=int(self.cfg.get("es_request_timeout", 60)),
+                )
+                hits = res.get("hits", {}).get("hits", [])
+                if not hits:
+                    return False
+                src = hits[0].get("_source", {}) or {}
+            text = _extract_by_path(src, input_col)
+            if isinstance(text, list):
+                text = text[0] if text else None
+            if text is None or str(text).strip() == "":
+                return False
+            present = self._bulk_check_present_nonempty(
+                tgt_index=tgt_table,
+                pk=pk,
+                ids=[pk_value],
+                output_col=output_col,
+                request_timeout=int(self.cfg.get("es_request_timeout", 60)),
+            )
+            return pk_value not in present
+        except Exception as ex:
+            print(f"[WARN] is_row_pending failed for pk={pk_value}: {ex}", flush=True)
+            return True
+
     def _build_pending_filters(self) -> list:
         """
         從 cfg 組 pending 過濾條件：

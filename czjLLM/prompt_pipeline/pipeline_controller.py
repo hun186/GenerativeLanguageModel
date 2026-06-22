@@ -8,6 +8,7 @@ import re
 import json
 import time
 import threading
+import uuid
 #import queue
 from collections import Counter
 from datetime import datetime
@@ -97,17 +98,29 @@ class ItemsRegistry:
 
 def meter_path_init(ctx):
     """
-    建議：檔名含 session 起始時間避免不同程序互蓋。
+    建立本主程序專屬的 meter 檔。
+
+    last_slice_completed_ts 是「單一主程序 / 單一 meter」的進度訊號；
+    因此檔名除了啟動時間外，也加入 pid 與短 UUID，避免多個排程主程序
+    在同一秒啟動時共用同一個 loadmeter 檔而互相干擾 watchdog 判定。
     """
     if not hasattr(ctx, "session_start_ts"):
         ctx.session_start_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    if not hasattr(ctx, "session_id"):
+        ctx.session_id = f"{ctx.session_start_ts}_pid{os.getpid()}_{uuid.uuid4().hex[:8]}"
     #base_dir = getattr(ctx, "meter_dir", getattr(ctx, "llm_source_dir", "."))
     base_dir = getattr(ctx, "meter_dir", getattr(ctx, "PGMSubDir", "."))
     base_dir = os.path.join(base_dir,"logs")
     os.makedirs(base_dir, exist_ok=True)
-    fn = os.path.join(base_dir, f"loadmeter_{ctx.session_start_ts}.json")
+    fn = os.path.join(base_dir, f"loadmeter_{ctx.session_id}.json")
     # 初始內容
-    init = {"rows": {}, "queue": {"pending": 0, "running": 0}}
+    init = {
+        "session_id": ctx.session_id,
+        "session_start_ts": ctx.session_start_ts,
+        "owner_pid": os.getpid(),
+        "rows": {},
+        "queue": {"pending": 0, "running": 0},
+    }
     atomic_write_json(fn, init)
     return fn
 
@@ -159,11 +172,14 @@ def meter_init(meter_fn, ctx, low=None, high=None):
     low  = low  if low  is not None else getattr(ctx, "n_process", 4) * 2
     high = high if high is not None else getattr(ctx, "n_process", 4) * 3
     data = {
-        "session_id": getattr(ctx, "session_start_ts", ""),
+        "session_id": getattr(ctx, "session_id", getattr(ctx, "session_start_ts", "")),
+        "session_start_ts": getattr(ctx, "session_start_ts", ""),
+        "owner_pid": os.getpid(),
         "created_at": datetime.now().isoformat(timespec="seconds"),
         "thresholds": {"low": low, "high": high},
         "workers": {"n_process": getattr(ctx, "n_process", 4)},
         "queue": {"pending": 0, "running": 0, "completed": 0},
+        "consumer": {"last_slice_completed_ts": time.time()},
         "rows": {}  # pk -> {"item_dir":..., "temp_txt":..., "total":0, "done":0, "status":"pending"}
     }
     #_meter_write_atomic(meter_fn, data)
@@ -663,6 +679,10 @@ def _meter_on_finish_batch_v2(d, items_map,
     q["running"] = max(0, int(q.get("running", 0)) - (n_done + n_requeued))
     q["completed"] = int(q.get("completed", 0)) + n_done
     q["pending"] = int(q.get("pending", 0)) + n_requeued
+    if n_done:
+        cons = d.setdefault("consumer", {})
+        cons["last_slice_completed_ts"] = time.time()
+        cons["last_slice_completed_count"] = int(q.get("completed", 0))
 
     rows = d.setdefault("rows", {})
 
@@ -692,8 +712,48 @@ def _es_heartbeat_loop(adapter, interval_sec=60):
             print(f"[watchdog] ES ping 例外: {e}", flush=True)
         time.sleep(interval_sec)
 
+def _slice_completion_stall_status(meter_data, now, threshold_sec):
+    """
+    判斷「有未完成切片，但太久沒有任何切片完成」是否成立。
+
+    這個條件刻意只看 last_slice_completed_ts，而不是整份文件的總耗時：
+    - 超長文件如果持續有小分片完成，last_slice_completed_ts 會被刷新，不會觸發。
+    - 只有 pending/running 仍存在且超過 threshold_sec 完全沒有切片完成時才觸發。
+    回傳 (should_terminate, details)。
+    """
+    if not isinstance(meter_data, dict):
+        meter_data = {}
+
+    q = meter_data.get("queue", {}) if isinstance(meter_data.get("queue", {}), dict) else {}
+    consumer = meter_data.get("consumer", {}) if isinstance(meter_data.get("consumer", {}), dict) else {}
+
+    pending = int(q.get("pending", 0) or 0)
+    running = int(q.get("running", 0) or 0)
+    completed = int(q.get("completed", 0) or 0)
+    outstanding = pending + running
+
+    last_slice_done = consumer.get("last_slice_completed_ts")
+    if not isinstance(last_slice_done, (int, float)) or last_slice_done <= 0:
+        # meter_init 會建立 last_slice_completed_ts；這裡只是保守 fallback。
+        last_slice_done = now
+
+    idle_seconds = max(0.0, float(now) - float(last_slice_done))
+    should_terminate = outstanding > 0 and idle_seconds > float(threshold_sec)
+
+    return should_terminate, {
+        "pending": pending,
+        "running": running,
+        "completed": completed,
+        "outstanding": outstanding,
+        "last_slice_completed_ts": float(last_slice_done),
+        "idle_seconds": idle_seconds,
+        "threshold_sec": float(threshold_sec),
+    }
+
+
 def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60,
-                    stacks_path="stacks.log", meter_fn=None, restart_cb=None):
+                    stacks_path="stacks.log", meter_fn=None, restart_cb=None,
+                    slice_completion_stall_threshold_sec=18000):
     stacks_file = open(stacks_path, "a", buffering=1, encoding="utf-8")
     try:
         faulthandler.enable()
@@ -719,6 +779,39 @@ def _stall_watchdog(ctx, adapter, idle_threshold_sec=600, interval_sec=60,
 
             pending = int(q.get("pending", 0) or 0)
             running = int(q.get("running", 0) or 0)
+            completed = int(q.get("completed", 0) or 0)
+
+            # --- 1.5) 長時間沒有任何切片完成：記錄警告、dump stacks，並終止主程序 ---
+            slice_stalled, stall_info = _slice_completion_stall_status(
+                m, now, slice_completion_stall_threshold_sec
+            )
+            if slice_stalled:
+                msg = (
+                    f"[watchdog] CRITICAL: {int(stall_info['threshold_sec'])} 秒內沒有任何切片完成；"
+                    f"queue(pending={pending}, running={running}, completed={completed})。"
+                    "如果超長文件仍有分片持續完成，此計時器會被刷新，不會觸發；"
+                    "目前判定為完全沒有分片完成，將傾印 stacks 並終止主程序，避免排程堆積耗盡記憶體。"
+                )
+                print(msg, flush=True)
+                try:
+                    stacks_file.write(f"{datetime.now().isoformat(timespec='seconds')} {msg}\n")
+                    faulthandler.dump_traceback(file=stacks_file)
+                except Exception as e:
+                    print(f"[watchdog] critical dump 例外: {e}", flush=True)
+                try:
+                    meter_update(meter_fn, lambda d: d.setdefault("watchdog", {}).update({
+                        "terminated": True,
+                        "reason": "slice_completion_stall",
+                        "terminated_at": datetime.now().isoformat(timespec="seconds"),
+                        "idle_seconds": stall_info["idle_seconds"],
+                        "last_slice_completed_ts": stall_info["last_slice_completed_ts"],
+                        "pending": pending,
+                        "running": running,
+                        "completed": completed,
+                    }))
+                except Exception:
+                    pass
+                os._exit(2)
 
             # --- 2) 組合多個「最近活動時間」 ---
             last_doc = getattr(ctx, "last_progress_ts", None)  # 文件級
@@ -867,7 +960,8 @@ def start_watchdogs(ctx, adapter=None, *,
                     stall_interval_sec=60, 
                     stacks_path=None,
                     meter_fn=None,
-                    restart_cb=None):
+                    restart_cb=None,
+                    slice_completion_stall_threshold_sec=None):
     """
     從 controller 啟動所有 watchdog。
     - ctx: 需要 last_progress_ts（orchestrator 每前進一次要更新）
@@ -884,6 +978,11 @@ def start_watchdogs(ctx, adapter=None, *,
     if stacks_path is None:
         stacks_path = os.path.join(getattr(ctx, "work_dir", "."), "stacks.log")
 
+    if slice_completion_stall_threshold_sec is None:
+        slice_completion_stall_threshold_sec = float(
+            getattr(ctx, "slice_completion_stall_threshold_sec", 5 * 60 * 60)
+        )
+
     # 進度停滯偵測（所有 backend 都適用）
     threading.Thread(
         target=_stall_watchdog,
@@ -892,7 +991,8 @@ def start_watchdogs(ctx, adapter=None, *,
                     interval_sec=stall_interval_sec,
                     stacks_path=stacks_path,
                     meter_fn=meter_fn,
-                    restart_cb=restart_cb),
+                    restart_cb=restart_cb,
+                    slice_completion_stall_threshold_sec=slice_completion_stall_threshold_sec),
         daemon=True
     ).start()
 

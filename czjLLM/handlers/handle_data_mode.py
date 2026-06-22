@@ -292,6 +292,7 @@ def handle_data_mode(ctx, get_param, args):
         ctx._es_adapter = env.get("adapter")
     else:
         ctx._es_adapter = None
+    ctx._source_adapter = env.get("adapter") if backend.name in {"sql", "es"} else None
 
     def _run():
         cols = backend.choose_columns(ctx, env, get_param, args)

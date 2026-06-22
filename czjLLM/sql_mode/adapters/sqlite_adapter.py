@@ -71,3 +71,20 @@ class SQLiteAdapter(DBAdapter):
                 break
             for r in rows:
                 yield (r[0], "" if r[1] is None else str(r[1]))
+
+    def is_row_pending(self, *, src_table: str, tgt_table: str, pk: str, pk_value,
+                       input_col: str, output_cols: List[str]) -> bool:
+        """重新查詢單一列是否仍未完成；供真正切片前避免排程重複計算。"""
+        out_col = output_cols[0]
+        sql = f"""
+        SELECT 1
+        FROM {Q(src_table)} AS src
+        LEFT JOIN {Q(tgt_table)} AS tgt
+          ON src.{Q(pk)} = tgt.{Q(pk)}
+        WHERE src.{Q(pk)} = ?
+          AND (tgt.{Q(out_col)} IS NULL OR TRIM(tgt.{Q(out_col)}) = '')
+          AND (src.{Q(input_col)} IS NOT NULL AND TRIM(src.{Q(input_col)}) <> '')
+        LIMIT 1
+        """
+        self.cur.execute(sql, (pk_value,))
+        return self.cur.fetchone() is not None
