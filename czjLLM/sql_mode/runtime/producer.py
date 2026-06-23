@@ -1,5 +1,9 @@
 # sql_mode/runtime/producer.py
+import json
+import os
 import time
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Iterable, Tuple, Any, Optional
 
 from czjLLM.job_manager.console_ui import tlog_warn,tlog
@@ -7,6 +11,84 @@ from czjLLM.prompt_pipeline.pipeline_controller import producer_backpressure_wai
 from czjLLM.prompt_pipeline.pipeline_controller import meter_update
 from .workers import outstanding_now
 from .scheduler import schedule_one_row
+
+
+_PENDING_SKIP_LOG_MAX_BYTES = 30 * 1024 * 1024
+
+
+def _pending_skip_log_path(ctx) -> Path:
+    configured = getattr(ctx, "pending_recheck_skip_log_path", None)
+    if configured:
+        return Path(configured)
+    base_dir = Path(getattr(ctx, "PGMSubDir", ".") or ".")
+    return base_dir / "logs" / "pending_recheck_skips.log"
+
+
+def _pending_skip_log_max_bytes(ctx) -> int:
+    raw = getattr(ctx, "pending_recheck_skip_log_max_bytes", _PENDING_SKIP_LOG_MAX_BYTES)
+    try:
+        value = int(raw)
+    except (TypeError, ValueError):
+        value = _PENDING_SKIP_LOG_MAX_BYTES
+    return max(value, 1024)
+
+
+def _trim_log_to_half_if_needed(path: Path, max_bytes: int) -> None:
+    if not path.exists() or path.stat().st_size <= max_bytes:
+        return
+
+    keep_bytes = max(max_bytes // 2, 1)
+    with path.open("rb") as fp:
+        fp.seek(0, os.SEEK_END)
+        size = fp.tell()
+        fp.seek(max(size - keep_bytes, 0), os.SEEK_SET)
+        data = fp.read()
+
+    first_newline = data.find(b"\n")
+    if first_newline >= 0 and first_newline + 1 < len(data):
+        data = data[first_newline + 1:]
+
+    with path.open("wb") as fp:
+        fp.write(data)
+
+
+def _task_json_name(ctx) -> str:
+    for attr in (
+        "task_json_name",
+        "task_json",
+        "json_config_file",
+        "sql_config_file",
+        "es_config_file",
+        "config_file",
+        "config_path",
+        "task",
+        "pipeline_name",
+    ):
+        value = getattr(ctx, attr, None)
+        if value:
+            return Path(str(value)).name
+    return "unknown"
+
+
+def _record_pending_skip(ctx, pk: Any) -> None:
+    path = _pending_skip_log_path(ctx)
+    max_bytes = _pending_skip_log_max_bytes(ctx)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    _trim_log_to_half_if_needed(path, max_bytes)
+
+    record = {
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "pid": os.getpid(),
+        "task_json": _task_json_name(ctx),
+        "pk": str(pk),
+        "target": getattr(ctx, "_pending_tgt_table", getattr(ctx, "target_table", None)),
+        "output_cols": getattr(ctx, "output_cols", None) or [getattr(ctx, "output_col", "")],
+        "adapter": getattr(getattr(ctx, "_pending_adapter", None), "__class__", type(None)).__name__,
+        "reason": "already_completed",
+    }
+    with path.open("a", encoding="utf-8") as fp:
+        fp.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
+    _trim_log_to_half_if_needed(path, max_bytes)
 
 
 def _announce_pending_recheck_if_enabled(ctx) -> bool:
@@ -165,6 +247,10 @@ def produce_rows(
                     if gui:
                         try: gui.inc_done(1)
                         except Exception: pass
+                try:
+                    _record_pending_skip(ctx, pk)
+                except Exception as e:
+                    tlog_warn(f"[producer] pending skip log 寫入失敗 pk={pk}: {e!r}")
                 try:
                     meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
                         "cursor": seen, "enq": scheduled, "producer_alive": True,

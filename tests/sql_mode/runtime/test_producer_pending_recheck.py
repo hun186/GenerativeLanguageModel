@@ -1,3 +1,5 @@
+import json
+import os
 from types import SimpleNamespace
 
 import pytest
@@ -97,7 +99,7 @@ def test_produce_rows_announces_recheck_before_first_row(monkeypatch):
     assert any("will iterate 0 rows；pending recheck=enabled" in m for m in messages)
 
 
-def test_produce_rows_warns_and_records_when_recheck_skips_completed_row(monkeypatch):
+def test_produce_rows_warns_and_records_when_recheck_skips_completed_row(monkeypatch, tmp_path):
     warnings = []
     progress_updates = []
     monkeypatch.setattr(producer, "tlog", lambda _msg: None)
@@ -117,11 +119,14 @@ def test_produce_rows_warns_and_records_when_recheck_skips_completed_row(monkeyp
 
     monkeypatch.setattr(producer, "meter_update", _capture_meter)
 
+    skip_log = tmp_path / "pending_recheck_skips.log"
     ctx = SimpleNamespace(
         _pending_adapter=_AdapterStub(pending=False),
         _pending_tgt_table="target_table",
         primary_key="id",
         output_cols=["result"],
+        sql_config_file="/configs/task_a.json",
+        pending_recheck_skip_log_path=str(skip_log),
     )
 
     scheduled = producer.produce_rows(
@@ -143,3 +148,27 @@ def test_produce_rows_warns_and_records_when_recheck_skips_completed_row(monkeyp
         update.get("last_skip_reason") == "already_completed" and update.get("last_skip_pk") == "pk-1"
         for update in progress_updates
     )
+    rows = [json.loads(line) for line in skip_log.read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 1
+    assert rows[0]["pid"] == os.getpid()
+    assert rows[0]["task_json"] == "task_a.json"
+    assert rows[0]["pk"] == "pk-1"
+    assert rows[0]["reason"] == "already_completed"
+
+
+def test_pending_skip_log_trims_to_half_when_over_limit(tmp_path):
+    log_path = tmp_path / "pending_recheck_skips.log"
+    log_path.write_text("old-1\n" + ("x" * 1400) + "\nold-2\n", encoding="utf-8")
+    ctx = SimpleNamespace(
+        pending_recheck_skip_log_path=str(log_path),
+        pending_recheck_skip_log_max_bytes=1024,
+        sql_config_file="task_b.json",
+    )
+
+    producer._record_pending_skip(ctx, "pk-2")
+
+    data = log_path.read_bytes()
+    assert len(data) <= 1024
+    assert b"old-1" not in data
+    assert b'"pk": "pk-2"' in data
+    assert b'"task_json": "task_b.json"' in data
