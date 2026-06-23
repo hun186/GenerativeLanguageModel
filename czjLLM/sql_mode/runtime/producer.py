@@ -7,29 +7,11 @@ from czjLLM.prompt_pipeline.pipeline_controller import producer_backpressure_wai
 from czjLLM.prompt_pipeline.pipeline_controller import meter_update
 from .workers import outstanding_now
 from .scheduler import schedule_one_row
-
-
-def _still_pending_before_dispatch(ctx, pk: Any) -> bool:
-    """Recheck remote SQL/ES state immediately before slicing/dispatching a row.
-
-    Scheduled runs can overlap.  The initial pending iterator may have selected a
-    row that another main process finishes before this producer reaches it.
-    Returning False skips slicing and parallel dispatch for that stale row.
-    """
-    adapter = getattr(ctx, "_pending_adapter", None)
-    if adapter is None or not hasattr(adapter, "is_row_pending"):
-        return True
-    output_cols = getattr(ctx, "output_cols", None) or [getattr(ctx, "output_col", "")]
-    try:
-        return bool(adapter.is_row_pending(
-            tgt_table=getattr(ctx, "_pending_tgt_table", getattr(ctx, "target_table", None)),
-            pk=getattr(ctx, "primary_key", ""),
-            pk_value=pk,
-            output_cols=output_cols,
-        ))
-    except Exception as e:
-        tlog_warn(f"[producer] pending recheck 失敗 pk={pk}: {e!r}；保守繼續排程。")
-        return True
+from .pending_recheck import (
+    announce_pending_recheck_if_enabled,
+    record_pending_skip,
+    still_pending_before_dispatch,
+)
 
 
 def produce_rows(
@@ -55,8 +37,11 @@ def produce_rows(
     except TypeError:
         total_rows = None
 
+    recheck_enabled = announce_pending_recheck_if_enabled(ctx)
+
     if total_rows is not None:
-        tlog(f"[producer] will iterate {total_rows} rows")
+        suffix = "；pending recheck=enabled" if recheck_enabled else ""
+        tlog(f"[producer] will iterate {total_rows} rows{suffix}")
 
     for idx, row in enumerate(rows_for_count):
         if len(row) >= 3:
@@ -121,8 +106,11 @@ def produce_rows(
             continue
 
         try:
-            if not _still_pending_before_dispatch(ctx, pk):
-                tlog(f"[producer] pk={pk} 已由其他程序完成，略過本次切片/派工。")
+            if not still_pending_before_dispatch(ctx, pk):
+                tlog_warn(
+                    f"[producer] pending recheck 命中：pk={pk} 已由其他程序完成，"
+                    "略過本次切片/派工以節省算力。"
+                )
                 try: p_sched.update(1)
                 except Exception: pass
                 if gui:
@@ -135,9 +123,14 @@ def produce_rows(
                         try: gui.inc_done(1)
                         except Exception: pass
                 try:
+                    record_pending_skip(ctx, pk)
+                except Exception as e:
+                    tlog_warn(f"[producer] pending skip log 寫入失敗 pk={pk}: {e!r}")
+                try:
                     meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
                         "cursor": seen, "enq": scheduled, "producer_alive": True,
-                        "last_progress_ts": time.time(), "last_skip_reason": "already_completed"
+                        "last_progress_ts": time.time(),
+                        "last_skip_reason": "already_completed", "last_skip_pk": pk
                     }))
                 except Exception:
                     pass
