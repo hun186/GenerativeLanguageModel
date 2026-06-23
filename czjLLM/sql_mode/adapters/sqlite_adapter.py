@@ -2,6 +2,7 @@
 import sqlite3
 from typing import Iterable, List, Tuple, Any
 from .base_adapter import DBAdapter
+from czjLLM.common.pending_conditions import build_any_output_missing_condition
 
 def Q(name: str) -> str:
     return f'"{name}"'  # SQLite 使用雙引號
@@ -9,6 +10,9 @@ def Q(name: str) -> str:
 def _normalize_type(t: str) -> str:
     # SQLite 寛鬆型別：一律用 TEXT，避免跨 DB 型別不一致
     return "TEXT"
+
+def _trim_expr(expr: str) -> str:
+    return f'TRIM({expr})'
 
 class SQLiteAdapter(DBAdapter):
     def __init__(self, cfg: dict):
@@ -50,16 +54,16 @@ class SQLiteAdapter(DBAdapter):
         self.conn.commit()
 
     def is_row_pending(self, *, tgt_table: str, pk: str, pk_value: Any, output_cols: List[str]) -> bool:
-        out_col = output_cols[0]
+        pending_condition = build_any_output_missing_condition(output_cols, Q, _trim_expr, prefix="")
         sql = f"""
-        SELECT 1
+        SELECT CASE WHEN ({pending_condition}) THEN 1 ELSE 0 END
         FROM {Q(tgt_table)}
         WHERE {Q(pk)} = ?
-          AND ({Q(out_col)} IS NOT NULL AND TRIM({Q(out_col)}) <> '')
         LIMIT 1
         """
         self.cur.execute(sql, (pk_value,))
-        return self.cur.fetchone() is None
+        row = self.cur.fetchone()
+        return True if row is None else bool(row[0])
 
     def select_pending_rows(self, *,
                             src_table: str, tgt_table: str,
@@ -67,7 +71,6 @@ class SQLiteAdapter(DBAdapter):
                             record_update_time: bool,
                             fetch_size: int = 500,
                             extra_input_cols: List[str] | None = None) -> Iterable[Tuple[Any, str]]:
-        out_col = output_cols[0]
         extra_input_cols = [c for c in (extra_input_cols or []) if c and c != input_col]
         select_cols = [f"src.{Q(pk)}", f"src.{Q(input_col)}"] + [f"src.{Q(c)}" for c in extra_input_cols]
         sql = f"""
@@ -75,7 +78,7 @@ class SQLiteAdapter(DBAdapter):
         FROM {Q(src_table)} AS src
         LEFT JOIN {Q(tgt_table)} AS tgt
           ON src.{Q(pk)} = tgt.{Q(pk)}
-        WHERE (tgt.{Q(out_col)} IS NULL OR TRIM(tgt.{Q(out_col)}) = '')
+        WHERE ({build_any_output_missing_condition(output_cols, Q, _trim_expr)})
           AND (src.{Q(input_col)} IS NOT NULL AND TRIM(src.{Q(input_col)}) <> '')
         """
         self.cur.execute(sql)
