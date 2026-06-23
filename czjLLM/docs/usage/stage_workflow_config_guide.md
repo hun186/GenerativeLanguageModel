@@ -386,6 +386,8 @@ mock_llm_mode: true
 - `source`：來源資料（來源資料庫/資料表）
 - `target`：寫回目標（目標資料庫/資料表）
 - `input_col` / `output_col` / `primary_key`：欄位層設定
+- `pending_recheck_shuffle_block_size`：可選；producer 讀到 pending 序列後，保留外部區塊順序、只在每個區塊內亂數重排。建議值如 `20`，可降低多主程序同順序掃描時的同步重複計算。
+- `pending_recheck_shuffle_seed`：可選；設定後區塊內亂排可重現，便於測試與比對 log。
 
 > 建議：若專案同時有 SQL 與 Excel 流程，命名層次盡量一致：
 > - 資料來源/目標用 `source` / `target`
