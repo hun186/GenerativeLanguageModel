@@ -13,6 +13,13 @@ from czjLLM.job_manager.job_config import resolve_task_spec
 from czjLLM.job_manager.job_config import task_template_preview
 
 from czjLLM.cli_tools.cli_utils import print_cli_usage_hint
+from czjLLM.prompt_pipeline.pending_central import (
+    is_running,
+    mark_not_running,
+    mark_running,
+    order_rows_avoiding_running,
+    record_adjustment,
+)
 from utils.utilities import countdown_pause
 from utils.utilities import tlog
 from utils.utilities_path import OSWALK
@@ -127,8 +134,25 @@ def handle_txt_mode(ctx, args):
     if not args.config:
         print_cli_usage_hint(ctx)
     all_files = [f for f in OSWALK(ctx.llm_source_dir) if os.path.splitext(f)[1].lower() == ".txt"]
+    ordered_rows = order_rows_avoiding_running(ctx, [(file, file) for file in all_files])
+    deferred_running_rows = []
+    fallback_running_phase = False
     first = True
-    for file in tqdm(all_files, desc=Fore.LIGHTGREEN_EX + "📁 檔案處理進度" + Style.RESET_ALL, ncols=80):
+    idx = 0
+    while idx < len(ordered_rows):
+        file, _ = ordered_rows[idx]
+        idx += 1
+        if (not fallback_running_phase) and is_running(ctx, file):
+            record_adjustment(ctx, "txt_defer_running", pk=file, deferred_count=len(deferred_running_rows) + 1)
+            deferred_running_rows.append((file, file))
+            if idx >= len(ordered_rows) and deferred_running_rows:
+                ordered_rows = deferred_running_rows
+                deferred_running_rows = []
+                idx = 0
+                fallback_running_phase = True
+                record_adjustment(ctx, "txt_fallback_revisit_running", deferred=len(ordered_rows))
+            continue
+
         print(f"\n🔄 正在處理檔案：{file}")
         if first:
             pause_seconds = 10
@@ -136,5 +160,12 @@ def handle_txt_mode(ctx, args):
             first = False
         else:
             pause_seconds = 0
-        handle_single_input_file(file, ctx, pause_seconds=pause_seconds)
+        mark_running(ctx, file)
+        record_adjustment(ctx, "txt_mark_running_before_dispatch", pk=file)
+        try:
+            handle_single_input_file(file, ctx, pause_seconds=pause_seconds)
+            mark_not_running(ctx, file, state="completed")
+        except Exception:
+            mark_not_running(ctx, file, state="failed_released")
+            raise
     remove_empty_dirs(ctx.prompt_dir)
