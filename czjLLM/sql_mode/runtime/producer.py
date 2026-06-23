@@ -1,4 +1,5 @@
 # sql_mode/runtime/producer.py
+import random
 import time
 from typing import Iterable, Tuple, Any, Optional
 
@@ -12,6 +13,64 @@ from .pending_recheck import (
     record_pending_skip,
     still_pending_before_dispatch,
 )
+
+
+def _get_positive_int(ctx, *names: str, default: int = 0) -> int:
+    for name in names:
+        raw = getattr(ctx, name, None)
+        if raw is None:
+            continue
+        try:
+            value = int(raw)
+        except (TypeError, ValueError):
+            continue
+        if value > 0:
+            return value
+    return default
+
+
+def _maybe_block_shuffle_rows(ctx, rows_for_count):
+    """Keep outer block order stable while shuffling rows inside each block.
+
+    This reduces lock-step duplication when multiple producer processes read the
+    same pending sequence, without globally randomizing the workload order.
+    Disabled by default; enable with one of:
+      - pending_recheck_shuffle_block_size: 20
+      - producer_shuffle_block_size: 20
+    Optional deterministic seed:
+      - pending_recheck_shuffle_seed: 1234
+      - producer_shuffle_seed: 1234
+    """
+    block_size = _get_positive_int(
+        ctx,
+        "pending_recheck_shuffle_block_size",
+        "producer_shuffle_block_size",
+        default=0,
+    )
+    if block_size <= 1:
+        return rows_for_count
+
+    rows = list(rows_for_count)
+    if len(rows) <= 1:
+        return rows
+
+    seed = getattr(
+        ctx,
+        "pending_recheck_shuffle_seed",
+        getattr(ctx, "producer_shuffle_seed", None),
+    )
+    rng = random.Random(seed) if seed is not None else random.Random()
+    shuffled = []
+    for start in range(0, len(rows), block_size):
+        block = rows[start:start + block_size]
+        rng.shuffle(block)
+        shuffled.extend(block)
+
+    tlog(
+        "[producer] pending recheck block shuffle enabled: "
+        f"rows={len(rows)}, block_size={block_size}, blocks={(len(rows) + block_size - 1) // block_size}"
+    )
+    return shuffled
 
 
 def produce_rows(
@@ -32,6 +91,7 @@ def produce_rows(
     """
     scheduled = 0
     seen = 0
+    rows_for_count = _maybe_block_shuffle_rows(ctx, rows_for_count)
     try:
         total_rows = len(rows_for_count)  # 若是 list 可取得，generator 會丟 TypeError
     except TypeError:

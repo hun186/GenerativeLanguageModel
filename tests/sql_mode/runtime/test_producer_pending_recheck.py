@@ -159,6 +159,57 @@ def test_produce_rows_warns_and_records_when_recheck_skips_completed_row(monkeyp
     assert rows[0]["reason"] == "already_completed"
 
 
+def test_block_shuffle_preserves_outer_block_order_and_shuffles_inside_blocks():
+    rows = [(f"pk-{i}", f"text-{i}") for i in range(10)]
+    ctx = SimpleNamespace(
+        pending_recheck_shuffle_block_size=4,
+        pending_recheck_shuffle_seed=7,
+    )
+
+    shuffled = producer._maybe_block_shuffle_rows(ctx, rows)
+
+    assert set(shuffled[:4]) == set(rows[:4])
+    assert set(shuffled[4:8]) == set(rows[4:8])
+    assert set(shuffled[8:]) == set(rows[8:])
+    assert shuffled != rows
+
+
+def test_produce_rows_uses_block_shuffle_before_dispatch(monkeypatch):
+    dispatched = []
+    monkeypatch.setattr(producer, "tlog", lambda _msg: None)
+    monkeypatch.setattr(producer, "outstanding_now", lambda _meter_fn: 0)
+    monkeypatch.setattr(producer, "producer_backpressure_wait", lambda **_kwargs: None)
+    monkeypatch.setattr(producer, "still_pending_before_dispatch", lambda _ctx, _pk: True)
+    monkeypatch.setattr(producer, "meter_update", lambda *_args, **_kwargs: None)
+
+    def _record_schedule(_ctx, _registry, _meter_fn, _idx, pk, _text, source_inputs=None):
+        dispatched.append(pk)
+
+    monkeypatch.setattr(producer, "schedule_one_row", _record_schedule)
+
+    rows = [(f"pk-{i}", f"text-{i}") for i in range(8)]
+    ctx = SimpleNamespace(
+        pending_recheck_shuffle_block_size=4,
+        pending_recheck_shuffle_seed=7,
+    )
+
+    scheduled = producer.produce_rows(
+        ctx=ctx,
+        rows_for_count=rows,
+        registry=None,
+        meter_fn="meter.json",
+        low=0,
+        stop_event=_StopEventStub(),
+        consumer=None,
+        p_sched=_ProgressStub(),
+    )
+
+    assert scheduled == len(rows)
+    assert set(dispatched[:4]) == {f"pk-{i}" for i in range(4)}
+    assert set(dispatched[4:]) == {f"pk-{i}" for i in range(4, 8)}
+    assert dispatched != [f"pk-{i}" for i in range(8)]
+
+
 def test_pending_skip_log_trims_to_half_when_over_limit(tmp_path):
     log_path = tmp_path / "pending_recheck_skips.log"
     log_path.write_text("old-1\n" + ("x" * 1400) + "\nold-2\n", encoding="utf-8")

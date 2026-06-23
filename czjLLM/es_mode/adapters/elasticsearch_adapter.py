@@ -5,6 +5,8 @@ import json
 import re
 from datetime import datetime
 
+from czjLLM.common.pending_conditions import clean_output_cols
+
 try:
     # 官方 7.x 客戶端
     from elasticsearch import Elasticsearch, helpers  # type: ignore
@@ -432,12 +434,44 @@ class ElasticsearchAdapter:
         mf = rr.get("meta_field")
         return mf or (f"{output_col}_meta" if output_col else None)
     
+    def _resolve_output_cols(self, output_col: Any = None, output_cols: Any = None) -> List[str]:
+        raw = output_cols
+        if raw is None:
+            raw = self.cfg.get("output_cols")
+        if raw is None:
+            raw = output_col
+        if raw is None:
+            raw = self.cfg.get("output_col")
+        if isinstance(raw, (list, tuple)):
+            return clean_output_cols(list(raw))
+        return clean_output_cols([raw])
+
+    def _output_meta_fields(self, output_cols: List[str]) -> List[str]:
+        fields = []
+        for col in output_cols:
+            mf = self._resolve_meta_field(col)
+            if mf:
+                fields.append(mf)
+        return list(dict.fromkeys(fields))
+
+    def _is_fresh_outputs_all(self, src: dict, output_cols: List[str]) -> bool:
+        cols = self._resolve_output_cols(output_cols=output_cols)
+        if not cols:
+            return False
+        return all(self._is_fresh_output(src, col) for col in cols)
+
+    def _is_pending_by_outputs(self, src: dict, output_cols: List[str]) -> bool:
+        return not self._is_fresh_outputs_all(src, output_cols)
+
     def _bulk_check_present_nonempty(
         self, *, tgt_index: str, pk: str, ids: List[str],
-        output_col: str, request_timeout: int,
+        output_col: Any = None, output_cols: Any = None, request_timeout: int,
     ) -> set:
         assert self.es is not None
         present = set()
+        output_cols_resolved = self._resolve_output_cols(output_col=output_col, output_cols=output_cols)
+        if not output_cols_resolved:
+            return present
         if not ids:
             return present
         
@@ -460,7 +494,7 @@ class ElasticsearchAdapter:
                 src = d.get("_source", {}) or {}
                 #val = _extract_by_path(src, output_col)
                 #if _is_non_empty_deep(val):
-                if self._is_fresh_output(src, output_col):
+                if self._is_fresh_outputs_all(src, output_cols_resolved):
                     # ✅ 放入 present 前也標準化，避免 _id 型態不一
                     present.add(_norm_scalar(d.get("_id")))
             return present
@@ -476,12 +510,9 @@ class ElasticsearchAdapter:
         term_field = pk_keyword if has_keyword else pk
 
         rr = (self.cfg or {}).get("rerun") or {}
-        mf = self._resolve_meta_field(output_col)
         fallback_date = rr.get("fallback_date_field") or self.cfg.get("fallback_date_field") or "update_time_ai"
 
-        src_fields = [pk, output_col]
-        if mf:
-            src_fields.append(mf)
+        src_fields = [pk] + output_cols_resolved + self._output_meta_fields(output_cols_resolved)
         if fallback_date:
             src_fields.append(fallback_date)
         # 去重
@@ -502,7 +533,7 @@ class ElasticsearchAdapter:
                 #val = _extract_by_path(src, output_col)
                 #if _is_non_empty_deep(val):
                 #    key_val = _extract_by_path(src, pk)
-                if self._is_fresh_output(src, output_col):
+                if self._is_fresh_outputs_all(src, output_cols_resolved):
                     key_val = _extract_by_path(src, pk)
                     key_val = _norm_scalar(key_val)     # ✅ 放入前標準化
                     if key_val is not None:
@@ -742,10 +773,8 @@ class ElasticsearchAdapter:
     def is_row_pending(self, *, tgt_table: str, pk: str, pk_value: Any, output_cols: List[str]) -> bool:
         if self.es is None:
             raise RuntimeError("Elasticsearch client 尚未連線")
-        output_col = output_cols[0] if output_cols else self.cfg.get("output_col")
-        if isinstance(output_col, (list, tuple)):
-            output_col = output_col[0] if output_col else None
-        if not output_col:
+        output_cols_resolved = self._resolve_output_cols(output_cols=output_cols)
+        if not output_cols_resolved:
             return True
         key_val = _norm_scalar(pk_value)
         if key_val is None:
@@ -754,7 +783,7 @@ class ElasticsearchAdapter:
             tgt_index=tgt_table,
             pk=pk,
             ids=[key_val],
-            output_col=str(output_col),
+            output_cols=output_cols_resolved,
             request_timeout=int(self.cfg.get("es_request_timeout", 60)),
         )
         return key_val not in present
@@ -766,8 +795,9 @@ class ElasticsearchAdapter:
         tgt_table: str,
         pk: str,
         input_col: str,
-        output_col: str,
-        record_update_time: bool,
+        output_col: Any = None,
+        output_cols: Any = None,
+        record_update_time: bool = False,
         fetch_size: int = 500,
     ):
         """
@@ -778,18 +808,17 @@ class ElasticsearchAdapter:
         adapter 只負責把它們一併從 _source 取回並隨列回傳為 source_inputs，
         讓後續 stage 可用不同來源文字組 prompt。
         """
-        if isinstance(output_col, (list, tuple)):
-            output_col = output_col[0] if output_col else ""
+        output_cols_resolved = self._resolve_output_cols(output_col=output_col, output_cols=output_cols)
         stage_source_input_cols = self.cfg.get("stage_source_input_cols", []) or []
         assert self.es is not None
     
         if src_table == tgt_table:
             # 單一 index：同文件包含 input/output
-            for item in self._scan_single_index_pending(src_table, pk, input_col, output_col, fetch_size, stage_input_cols=stage_source_input_cols):
+            for item in self._scan_single_index_pending(src_table, pk, input_col, output_cols_resolved, fetch_size, stage_input_cols=stage_source_input_cols):
                 yield item
         else:
             # 來源/結果分離：src 提 id + input，tgt 用 mget 檢是否已有 output
-            for item in self._scan_dual_index_pending(src_table, tgt_table, pk, input_col, output_col, fetch_size, stage_input_cols=stage_source_input_cols):
+            for item in self._scan_dual_index_pending(src_table, tgt_table, pk, input_col, output_cols_resolved, fetch_size, stage_input_cols=stage_source_input_cols):
                 yield item
     def _yield_pending_from_batch(
         self,
@@ -798,7 +827,7 @@ class ElasticsearchAdapter:
         pk: str,
         batch_ids: List[str],
         batch_docs: Dict[str, Any],
-        output_col: str,
+        output_cols: Any,
         request_timeout: int,
     ):
         """
@@ -812,7 +841,7 @@ class ElasticsearchAdapter:
             tgt_index=tgt_index,
             pk=pk,
             ids=batch_ids,
-            output_col=output_col,
+            output_cols=output_cols,
             request_timeout=request_timeout,
         )
     
@@ -827,28 +856,23 @@ class ElasticsearchAdapter:
         batch_ids.clear()
         batch_docs.clear()
         
-    def _scan_single_index_pending(self, index, pk, input_col, output_col, fetch_size, stage_input_cols: List[str] | None = None):
+    def _scan_single_index_pending(self, index, pk, input_col, output_cols, fetch_size, stage_input_cols: List[str] | None = None):
         assert self.es is not None
+        output_cols_resolved = self._resolve_output_cols(output_cols=output_cols)
         filters = self._build_pending_filters()
         rt = int(self.cfg.get("es_request_timeout", 60))
         keepalive = self.cfg.get("es_scroll_keepalive", "2m")
         
-        needs_rerun = self._needs_rerun_clause(index, output_col)
+        needs_rerun_clauses = [c for c in (self._needs_rerun_clause(index, col) for col in output_cols_resolved) if c]
         
         # ★ 取得備援日期欄位（你在 cfg 或 rerun 內放的）
         rr = (self.cfg or {}).get("rerun") or {}
         fallback_date = rr.get("fallback_date_field") \
                          or self.cfg.get("fallback_date_field") \
                          or "update_time_ai"
-        # 先安全取得 meta_field（可能為 None）
-        #mf = (self.cfg.get("rerun") or {}).get("meta_field")
-        mf = self._resolve_meta_field(output_col)  # ← 改這行
-        
-        # 組 _source 欄位清單：必帶 input/output；有 mf 再加；pk 不是 _id 也要加
+        # 組 _source 欄位清單：必帶 input/output；有 meta 再加；pk 不是 _id 也要加
         stage_input_cols = [c for c in (stage_input_cols or []) if c and c != input_col]
-        src_fields = [input_col, output_col] + stage_input_cols
-        if mf:
-            src_fields.append(mf)
+        src_fields = [input_col] + output_cols_resolved + self._output_meta_fields(output_cols_resolved) + stage_input_cols
         if pk != "_id":
             src_fields.append(pk)
         # 可選：也讓 _source 直接帶上日期欄位（保險起見）
@@ -861,8 +885,8 @@ class ElasticsearchAdapter:
                     "must":   [{"exists": {"field": input_col}}],
                     "filter": filters,
                     "should": [
-                        {"bool": {"must_not": [{"exists": {"field": output_col}}]}},  # 沒輸出
-                        *([needs_rerun] if needs_rerun else [])
+                        *[{"bool": {"must_not": [{"exists": {"field": col}}]}} for col in output_cols_resolved],
+                        *needs_rerun_clauses
                     ],
                     "minimum_should_match": 1
                 }
@@ -908,7 +932,8 @@ class ElasticsearchAdapter:
         
             if not printed:
                 print("[DEBUG] sample _id:", hit.get("_id"))
-                print("[DEBUG] has output?", output_col.split(".")[0] in (src or {}))
+                first_output_col = output_cols_resolved[0] if output_cols_resolved else ""
+                print("[DEBUG] has output?", first_output_col.split(".")[0] in (src or {}))
                 print("[DEBUG] update_time_ai:", src.get("update_time_ai"))  # ← 現在會有值
                 printed = True
                 
@@ -921,7 +946,7 @@ class ElasticsearchAdapter:
             #if _is_non_empty_deep(outv):
             #    continue
             # 先在客戶端過濾「已完成且新鮮」——改成檢查新鮮度，而不是僅檢查非空
-            if self._is_fresh_output(src, output_col):
+            if not self._is_pending_by_outputs(src, output_cols_resolved):
                 continue
     
             text = _extract_by_path(src, input_col)
@@ -932,12 +957,13 @@ class ElasticsearchAdapter:
             source_inputs = {c: _extract_by_path(src, c) for c in stage_input_cols}
             yield (str(pk_val), str(text), source_inputs)
 
-    def _scan_dual_index_pending(self, src_index: str, tgt_index: str, pk: str, input_col: str, output_col: str, fetch_size: int, stage_input_cols: List[str] | None = None):
+    def _scan_dual_index_pending(self, src_index: str, tgt_index: str, pk: str, input_col: str, output_cols: Any, fetch_size: int, stage_input_cols: List[str] | None = None):
         """
         src 用 scan 串流所有有 input 的文件；每批用 mget/search 檢查 tgt 是否已有「非空」output。
         對齊 pk == "_id" 與 pk != "_id" 兩種情況。
         """
         assert self.es is not None
+        output_cols_resolved = self._resolve_output_cols(output_cols=output_cols)
         filters = self._build_pending_filters()
         rt = int(self.cfg.get("es_request_timeout", 60))
         keepalive = self.cfg.get("es_scroll_keepalive", "2m")
@@ -989,7 +1015,7 @@ class ElasticsearchAdapter:
                     pk=pk,
                     batch_ids=batch_ids,
                     batch_docs=batch_docs,
-                    output_col=output_col,
+                    output_cols=output_cols_resolved,
                     request_timeout=rt,
                 )
                 
@@ -999,7 +1025,7 @@ class ElasticsearchAdapter:
             pk=pk,
             batch_ids=batch_ids,
             batch_docs=batch_docs,
-            output_col=output_col,
+            output_cols=output_cols_resolved,
             request_timeout=rt,
         )
 

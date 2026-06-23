@@ -48,4 +48,4 @@ source = ["czjLLM"]
 fail_under = 70
 
 [project.optional-dependencies]
-test = ["pytest>=7.4", "pytest-dotenv>=0.5.2"]
+test = ["pytest>=7.4", "pytest-dotenv>=0.5.2", "colorama>=0.4.6"]
