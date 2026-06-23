@@ -13,6 +13,14 @@ from .pending_recheck import (
     record_pending_skip,
     still_pending_before_dispatch,
 )
+from czjLLM.prompt_pipeline.pending_central import (
+    finalize_scheduled,
+    is_running,
+    mark_not_running,
+    mark_running,
+    order_rows_avoiding_running,
+    record_adjustment,
+)
 
 
 def _get_positive_int(ctx, *names: str, default: int = 0) -> int:
@@ -92,6 +100,8 @@ def produce_rows(
     scheduled = 0
     seen = 0
     rows_for_count = _maybe_block_shuffle_rows(ctx, rows_for_count)
+    rows_for_count = order_rows_avoiding_running(ctx, rows_for_count)
+    scheduled_pks = []
     try:
         total_rows = len(rows_for_count)  # 若是 list 可取得，generator 會丟 TypeError
     except TypeError:
@@ -103,13 +113,33 @@ def produce_rows(
         suffix = "；pending recheck=enabled" if recheck_enabled else ""
         tlog(f"[producer] will iterate {total_rows} rows{suffix}")
 
-    for idx, row in enumerate(rows_for_count):
+    fallback_running_phase = False
+    deferred_running_rows = []
+    idx = 0
+    while idx < len(rows_for_count):
+        row = rows_for_count[idx]
+        idx += 1
         if len(row) >= 3:
             pk, text, source_inputs = row[0], row[1], row[2]
         else:
             pk, text = row[0], row[1]
             source_inputs = None
         seen += 1
+
+        if (not fallback_running_phase) and is_running(ctx, pk):
+            record_adjustment(ctx, "defer_running", pk=pk, deferred_count=len(deferred_running_rows) + 1)
+            deferred_running_rows.append(row)
+            if idx >= len(rows_for_count) and deferred_running_rows:
+                rows_for_count = deferred_running_rows
+                deferred_running_rows = []
+                idx = 0
+                fallback_running_phase = True
+                record_adjustment(ctx, "fallback_revisit_running", deferred=len(rows_for_count))
+                tlog(
+                    "[producer] pending running console: all non-running rows scanned; "
+                    f"revisit deferred running rows={len(rows_for_count)}"
+                )
+            continue
 
         if stop_event.is_set():
             tlog_warn("produce_rows: stop_event set，提前結束排程。")
@@ -184,6 +214,7 @@ def produce_rows(
                         except Exception: pass
                 try:
                     record_pending_skip(ctx, pk)
+                    mark_not_running(ctx, pk, state="completed")
                 except Exception as e:
                     tlog_warn(f"[producer] pending skip log 寫入失敗 pk={pk}: {e!r}")
                 try:
@@ -196,7 +227,10 @@ def produce_rows(
                     pass
                 continue
 
-            schedule_one_row(ctx, registry, meter_fn, idx, pk, text, source_inputs=source_inputs)
+            mark_running(ctx, pk)
+            record_adjustment(ctx, "mark_running_before_dispatch", pk=pk)
+            schedule_one_row(ctx, registry, meter_fn, idx - 1, pk, text, source_inputs=source_inputs)
+            scheduled_pks.append(pk)
             scheduled += 1
             # ★新增：每送一列即回報游標/送件數
             try:
@@ -239,6 +273,8 @@ def produce_rows(
             tlog_warn(f"[producer] drain 超時，仍有 outstanding={out}；強制返回")
             break
         time.sleep(0.1)
+
+    finalize_scheduled(ctx, scheduled_pks, pending_check=still_pending_before_dispatch)
 
     tlog(f"[producer] 已送出 {scheduled} 列，outstanding={outstanding_now(meter_fn)}")
 
