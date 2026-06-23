@@ -4,8 +4,8 @@ channel: sql_cache
 model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
 
 # I/O（沿用 sqlite_json_multistage_config.yaml 的欄位與寫回策略）
-input_col: TEXT
-output_col: Text_result
+input_col: activity_description
+output_col: activity_description_result
 record_update_time: true
 sql_config_file: czjLLM/config_sql/akconfig_test_SRP.py
 
@@ -18,9 +18,9 @@ stages:
     input_from: original
     persist_output: always
     max_attempts: 3
-    input_col: SUBJ
-    debug_print_llm_io: true
-    debug_print_max_chars: -1
+    input_col: vessel_names
+    #debug_print_llm_io: true
+    #debug_print_max_chars: -1
 
   - name: extract
     input_from: original
@@ -29,18 +29,18 @@ stages:
       zh:
         task: "@taskSetting:Organization Profile Analyzer to json format"
         input_from: original
-        input_col: TEXT
+        input_col: activity_description
       non_zh:
         task: |
           你是 JSON 回覆器。請回傳：
           [{"route":"non_zh","skipReason":"not_chinese"}]
         input_from: none
-        input_col: TEXT
+        input_col: activity_description
     route_value_mode: task
     retry_source_on_route_miss: true
     persist_output: final
-    debug_print_llm_io: true
-    debug_print_max_chars: -1
+    #debug_print_llm_io: true
+    #debug_print_max_chars: -1
 
   - name: audit_json
     task: |
@@ -70,18 +70,18 @@ stages:
     route_value_mode: task
     retry_source_on_route_miss: true
     persist_output: always
-    debug_print_llm_io: true
-    debug_print_max_chars: -1
+    #debug_print_llm_io: true
+    #debug_print_max_chars: -1
 
 # 多欄位寫回（與 sqlite 範例一致：route + 主結果 + audit）
 sql_writeback_rules:
-  - output_col: Text_route
+  - output_col: activity_description_route
     source: stage
     stage: route
-  - output_col: Text_result
+  - output_col: activity_description_result
     source: stage
     stage: extract
-  - output_col: Text_audit_json
+  - output_col: activity_description_audit_json
     source: stage
     stage: audit_json
 
