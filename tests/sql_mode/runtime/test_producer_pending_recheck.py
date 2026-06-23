@@ -7,7 +7,7 @@ import pytest
 pytest.importorskip("colorama")
 pytest.importorskip("yaml")
 
-from czjLLM.sql_mode.runtime import producer
+from czjLLM.sql_mode.runtime import pending_recheck, producer
 
 
 class _AdapterStub:
@@ -22,7 +22,7 @@ class _AdapterStub:
 
 def test_pending_recheck_announces_activation_once(monkeypatch):
     messages = []
-    monkeypatch.setattr(producer, "tlog", messages.append)
+    monkeypatch.setattr(pending_recheck, "tlog", messages.append)
 
     adapter = _AdapterStub(pending=True)
     ctx = SimpleNamespace(
@@ -32,8 +32,8 @@ def test_pending_recheck_announces_activation_once(monkeypatch):
         output_cols=["result"],
     )
 
-    assert producer._still_pending_before_dispatch(ctx, "pk-1") is True
-    assert producer._still_pending_before_dispatch(ctx, "pk-2") is True
+    assert pending_recheck.still_pending_before_dispatch(ctx, "pk-1") is True
+    assert pending_recheck.still_pending_before_dispatch(ctx, "pk-2") is True
 
     activation_messages = [m for m in messages if "pending recheck 自動啟用" in m]
     assert len(activation_messages) == 1
@@ -44,7 +44,7 @@ def test_pending_recheck_announces_activation_once(monkeypatch):
 
 def test_pending_recheck_debug_logs_each_state(monkeypatch):
     messages = []
-    monkeypatch.setattr(producer, "tlog", messages.append)
+    monkeypatch.setattr(pending_recheck, "tlog", messages.append)
 
     adapter = _AdapterStub(pending=False)
     ctx = SimpleNamespace(
@@ -55,7 +55,7 @@ def test_pending_recheck_debug_logs_each_state(monkeypatch):
         debug_pending_recheck=True,
     )
 
-    assert producer._still_pending_before_dispatch(ctx, "pk-1") is False
+    assert pending_recheck.still_pending_before_dispatch(ctx, "pk-1") is False
 
     assert any("pending recheck pk=pk-1 state=already_completed" in m for m in messages)
 
@@ -72,6 +72,7 @@ class _StopEventStub:
 
 def test_produce_rows_announces_recheck_before_first_row(monkeypatch):
     messages = []
+    monkeypatch.setattr(pending_recheck, "tlog", messages.append)
     monkeypatch.setattr(producer, "tlog", messages.append)
     monkeypatch.setattr(producer, "outstanding_now", lambda _meter_fn: 0)
     monkeypatch.setattr(producer, "meter_update", lambda *_args, **_kwargs: None)
@@ -165,7 +166,7 @@ def test_pending_skip_log_trims_to_half_when_over_limit(tmp_path):
         sql_config_file="task_b.json",
     )
 
-    producer._record_pending_skip(ctx, "pk-2")
+    pending_recheck.record_pending_skip(ctx, "pk-2")
 
     data = log_path.read_bytes()
     assert len(data) <= 1024
