@@ -113,6 +113,19 @@ STUB IMPLEMENTATION
 
 ---
 
+# 環境安裝與測試前置作業（Environment Setup）
+
+在執行任何 pytest、API 啟動或功能驗證前，必須先確認已安裝專案相依套件。
+
+請在專案根目錄執行：
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+---
+
 # 驗證原則（Verification Requirements）
 
 任務完成前必須提供驗證證據。
