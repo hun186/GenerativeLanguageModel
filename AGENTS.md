@@ -329,7 +329,7 @@ python -m pip install -r requirements.txt
 
 ## 專案概覽
 
-- 本專案是以 Python 為主的多來源文件／表格資料處理與 LLM 多階段分析框架，支援 Excel、CSV、TXT、SQL / SQL Server、SQLite 與 Elasticsearch 等輸入來源。
+- 本專案czjLLM子模組是以 Python 為主的多來源文件／表格資料處理與 LLM 多階段分析框架，支援 Excel、CSV、TXT、SQL / SQL Server、SQLite 與 Elasticsearch 等輸入來源。
 - 核心流程包含：資料讀取、列資料前處理、prompt / task 設定、多階段 pipeline、LLM 呼叫、結果合併、JSON flatten 與匯出。
 - 主要設定檔分散於 `yaml/`、`config/`、`config_sql/`、`config_es/`、`stage_configs/`、`task_configs/`、`modelConfig.py` 與 `model_configs/`。
 - 多階段 pipeline 主要在 `pipeline/`；各資料來源模式分別在 `excel_mode/`、`csv_mode/`、`sql_mode/`、`es_mode/`、`tabular_mode/`。
