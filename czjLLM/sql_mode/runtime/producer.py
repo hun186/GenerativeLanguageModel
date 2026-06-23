@@ -19,14 +19,30 @@ def _still_pending_before_dispatch(ctx, pk: Any) -> bool:
     adapter = getattr(ctx, "_pending_adapter", None)
     if adapter is None or not hasattr(adapter, "is_row_pending"):
         return True
+
+    if not getattr(ctx, "_pending_recheck_announced", False):
+        source_kind = adapter.__class__.__name__
+        tlog(
+            "[producer] pending recheck 啟用：每列切片/派工前會再次查詢遠端 SQL/ES 狀態；"
+            f"若 pk 已完成會略過。adapter={source_kind}"
+        )
+        try:
+            setattr(ctx, "_pending_recheck_announced", True)
+        except Exception:
+            pass
+
     output_cols = getattr(ctx, "output_cols", None) or [getattr(ctx, "output_col", "")]
     try:
-        return bool(adapter.is_row_pending(
+        is_pending = bool(adapter.is_row_pending(
             tgt_table=getattr(ctx, "_pending_tgt_table", getattr(ctx, "target_table", None)),
             pk=getattr(ctx, "primary_key", ""),
             pk_value=pk,
             output_cols=output_cols,
         ))
+        if getattr(ctx, "debug_pending_recheck", False):
+            state = "pending" if is_pending else "already_completed"
+            tlog(f"[producer] pending recheck pk={pk} state={state}")
+        return is_pending
     except Exception as e:
         tlog_warn(f"[producer] pending recheck 失敗 pk={pk}: {e!r}；保守繼續排程。")
         return True
