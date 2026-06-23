@@ -316,67 +316,93 @@ STUB IMPLEMENTATION
 
 ## 專案概覽
 
-- 本專案是 FastAPI + Elasticsearch 的 RAG / agent 系統。
-- API 與 HTTP endpoint 主要在 `api/`。
-- Agent、retrieval、evidence 主要在 `agent/`；資料匯入與 ETL 主要在 `data_ingestion/`。
-- 設定檔主要在 `config/`。
-- 測試主要在 `tests/`。
+- 本專案是以 Python 為主的多來源文件／表格資料處理與 LLM 多階段分析框架，支援 Excel、CSV、TXT、SQL / SQL Server、SQLite 與 Elasticsearch 等輸入來源。
+- 核心流程包含：資料讀取、列資料前處理、prompt / task 設定、多階段 pipeline、LLM 呼叫、結果合併、JSON flatten 與匯出。
+- 主要設定檔分散於 `yaml/`、`config/`、`config_sql/`、`config_es/`、`stage_configs/`、`task_configs/`、`modelConfig.py` 與 `model_configs/`。
+- 多階段 pipeline 主要在 `pipeline/`；各資料來源模式分別在 `excel_mode/`、`csv_mode/`、`sql_mode/`、`es_mode/`、`tabular_mode/`。
+- LLM / Ollama / OpenAI 相容服務與併發派工相關邏輯主要在 `infrastructure/`、`prompt_pipeline/`、`job_manager/` 與 `model_configs/`。
+- 通用工具函式主要在 `utilities/`、`sql_utils/`、`cli_tools/`、`row_processors/` 與 `handlers/`。
+- 專案目前不是 FastAPI web app；不要套用其他專案的 `api/`、dashboard、Swagger、Editor 表單等假設。
 
 ## 開發流程
 
 所有功能開發遵循：
 
 1. 需求分析
-2. 架構分析
-3. API / Domain 設計
-4. Backend 實作
-5. Frontend 實作
-6. 驗證
+2. 架構與資料流分析
+3. YAML / Python 設定契約確認
+4. 資料來源模式或 pipeline 介面設計
+5. 實作與最小範圍整合
+6. 驗證（pytest、CLI dry run、小樣本資料或純函式測試）
 7. 記憶更新
 
-禁止直接修改前端來掩蓋後端未完成問題。
+禁止直接修改輸出格式或設定範例來掩蓋 pipeline、資料讀取或 LLM 呼叫邏輯未完成問題。
 
 禁止以 mock data 宣稱功能完成。
 
 除非明確標註：
 STUB IMPLEMENTATION
+
 ## 優先工作路徑
 
 | 任務類型 | 優先查看 |
 | --- | --- |
-| Chat completion / 對話 API | `api/routers/chat.py`, `api/services/sessions.py`, `agent/` |
-| FastAPI app 啟動、middleware、路由掛載 | `api/main.py`, `api/routers/` |
-| Elasticsearch 查詢、證據整理 | `agent/es/`, `agent/data_agent/` |
-| SQL Server 匯入 Elasticsearch | `data_ingestion/sql_to_es/ingest_sql.py`, `config/sql_import/` |
-| Excel 匯入 SQL Server | `data_ingestion/excel_to_sql/`, `config/excel_to_sql/` |
-| Excel 匯入監控 dashboard | `data_ingestion/excel_to_sql/dashboard.py`, `api/routers/excel_to_sql.py`, `api/static/excel_to_sql_dashboard.html` |
-| Word / DOCX 匯出 | `api/services/export_word_service.py`, `api/core/presenters/docx/` |
-| Editor 表單與稽核 | `api/routers/editor.py`, `api/services/editor_form_config.py`, `api/services/editor_audit.py`, `config/editor_form.default.json` |
+| 多階段 pipeline、階段流程、doc type aware extraction | `pipeline/pipeline_controller.py`, `pipeline/pipeline_config.py`, `pipeline/pipeline_context.py`, `pipeline/steps/`, `pipeline/config/` |
+| 多階段結果合併策略 | `pipeline/merge/`, `pipeline/merge/merge_selector.py`, `pipeline/merge/base_strategy.py` |
+| Prompt pipeline、LLM client、呼叫封裝 | `prompt_pipeline/`, `czjLLM_utils.py`, `modelConfig.py`, `model_configs/` |
+| Ollama / OpenAI 相容端點、負載平衡、runtime 基礎設施 | `infrastructure/`, `job_manager/`, `env_examples/czjllm.env.example` |
+| Excel 輸入模式 | `excel_mode/`, `yaml/excel_config.yaml`, `yaml/excel_json_multistage_config_with_score_route.yaml` |
+| CSV / 一般表格輸入模式 | `csv_mode/`, `tabular_mode/`, `yaml/csv_config.yaml` |
+| TXT / 文件輸入模式 | `handlers/handle_txt_file.py`, `yaml/txt_config.yaml`, `multi_stage.md` |
+| SQL / SQLite / SQL Server 輸入與匯出 | `sql_mode/`, `sql_utils/`, `handlers/handle_sql_to_excel.py`, `handlers/export_sql_to_excel.py`, `config_sql/`, `yaml/sql_config.yaml`, `yaml/sqlite_json_config.yaml`, `yaml/sqlserver_multistage_prod_template.yaml` |
+| Elasticsearch 模式與設定 | `es_mode/`, `config_es/`, `yaml/es_*.yaml`, `docs/usage/es_multistage_config_guide.md` |
+| row processor、JSON flatten、欄位展平匯出 | `row_processors/`, `row_processors/json_flatten_export_cli.py`, `utilities/json_text_utils.py` |
+| YAML / task / stage 設定調整 | `yaml/`, `task_configs/`, `stage_configs/`, `config/`, `docs/usage/` |
+| Tokenizer 相關 | `tokenizers/` |
+| 文件與流程圖 | `docs/`, `openai.md`, `multi_stage.md` |
 
 ## 降低 token 用量的搜尋原則
 
-- 除非任務明確要求，避免掃描或讀取 `data/`；此目錄包含大量資料檔。
-- 除非任務明確要求，避免修改 vendored Swagger UI 靜態檔：`api/static/swagger-*`、`api/static/oauth2-redirect.html`。
-- 檔名含 `複製` 的檔案通常是舊備份或重構前版本；除非任務明確要求，不要作為主要修改目標。
-- 優先用 `rg` / `rg --files` 限定目錄搜尋，例如：`rg "pattern" api agent tests`。
+- 除非任務明確要求，避免掃描或讀取大型資料、備份或輸出目錄，例如：`data/`、`TestDoc_origin_backup/`、`.audit/`、`es_mode/runtime/`、`sql_mode/runtime/`。
+- 除非任務明確要求，不要讀取 tokenizer 大檔：`tokenizers/**/tokenizer.json`。
+- 檔名含 `複製`、`backup`、`before`、`Fake_No_Use` 的檔案通常是舊備份、重構前版本或測試用設定；除非任務明確要求，不要作為主要修改目標。
+- 優先用 `rg` / `rg --files` 限定目錄搜尋，例如：`rg "pattern" pipeline sql_mode es_mode utilities`。
+- 尋找設定範例時，優先查看 `yaml/`、`config_sql/`、`config_es/`、`env_examples/` 與 `docs/usage/`，不要一次展開整個專案。
 - 不要使用 `ls -R` 或 `grep -R`。
 
-## 常用測試指令
+## 常用測試與驗證指令
+
+目前專案未固定提供單一測試入口；依修改範圍選擇最小可行驗證：
 
 ```bash
-pytest tests
+python -m pytest
 ```
 
-Excel 匯入與 dashboard 相關：
+若只改單一模組或新增測試，優先執行相關測試檔：
 
 ```bash
-pytest tests/test_excel_to_sql_dashboard_static.py tests/test_dashboard_filters.py tests/test_ingest_diagnostics.py tests/test_ingest_insert_fallback.py tests/test_audit.py tests/test_sql_utils.py
+python -m pytest <test_file_or_test_dir>
+```
+
+語法層級快速檢查可用：
+
+```bash
+python -m compileall <changed_python_path>
+```
+
+CLI / 設定相關修改，優先以小樣本或 dry-run 類方式驗證對應 entry / CLI，例如：
+
+```bash
+python -m row_processors.json_flatten_export_cli --help
 ```
 
 ## 修改規範
 
-- 優先做小範圍修改，避免跨多個不相關模組重構。
-- API response shape 或前端 dashboard 行為改變時，請同步補測試或更新既有測試。
-- 不要把密碼、token、私有連線資訊寫死到程式碼或文件。
-- Python import 不要包在 try/except 裡。
-- 修改靜態 web UI 且可執行時，若環境允許請截圖驗證。
+- 優先做小範圍修改，避免跨多個不相關資料模式或 pipeline 階段重構。
+- 修改 YAML 設定 schema、輸出 JSON shape、欄位命名或 merge strategy 時，請同步更新文件或範例設定，並補充最小驗證。
+- 不要把 API key、token、密碼、私有 endpoint、資料庫連線字串或本機絕對路徑寫死到程式碼、YAML、文件或 `.codex/` 記憶檔。
+- Python import 不要包在 try/except 裡；若需相容套件路徑，優先整理 import path 或集中於既有啟動流程處理。
+- 修改會產生檔案輸出的流程時，優先使用 `utilities/atomic_io.py` 或既有原子寫入工具，避免半成品輸出。
+- 修改多階段 pipeline 時，注意 `pipeline/pipeline_types.py` 的資料型別與各 `pipeline/steps/` 的輸入輸出契約。
+- 修改 SQL / ES 模式時，不要假設外部服務在本機可用；若無法連線驗證，需提供不依賴外部服務的替代檢查。
+- 若任務涉及 LLM 服務，預設外部模型端點可能不可用；優先驗證 prompt 組裝、設定解析、錯誤處理與純函式邏輯。
