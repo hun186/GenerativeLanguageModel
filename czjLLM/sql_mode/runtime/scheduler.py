@@ -6,6 +6,7 @@ from typing import Any
 from copy import deepcopy
 import faulthandler
 import threading
+import uuid
 from utils.utilities_path import safe_move, MKDIR, getPathFromFN
 
 from czjLLM.prompt_pipeline.pipeline_controller import find_item_dir_for, meter_update, process_prompt_and_merge
@@ -48,8 +49,23 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
     temp_dir = os.path.join(ctx.llm_source_dir, "cache")
     fin_dir  = os.path.join(ctx.llm_source_finished_dir, "cache")
 
-    # 產原始臨時檔
-    temp_txt_path = save_text_as_temp_file(text=text, base_dir=temp_dir, index=idx, row_key=pk)
+    # 產原始臨時檔。檔名必須包含本次程序的唯一命名空間，否則兩個主程序
+    # 同時掃到同一批 pending rows 時，會用相同 idx/pk/content hash 產生同一路徑，
+    # 進而共用/清理彼此的 TODO、Success、stage merge 快照，造成多欄位寫回缺欄。
+    run_id = getattr(ctx, "_scheduler_run_id", None)
+    if not run_id:
+        run_id = f"p{os.getpid()}_{int(time.time() * 1000)}_{uuid.uuid4().hex[:8]}"
+        try:
+            setattr(ctx, "_scheduler_run_id", run_id)
+        except Exception:
+            pass
+    temp_txt_path = save_text_as_temp_file(
+        text=text,
+        base_dir=temp_dir,
+        index=idx,
+        row_key=pk,
+        prefix=f"excel_input_{run_id}",
+    )
     main_name = getMFNFromFN(temp_txt_path)
 
     # 👉 這裡用 Overlay：只覆寫會被模板/切片讀到的變動欄位
