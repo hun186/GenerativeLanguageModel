@@ -9,6 +9,26 @@ from .workers import outstanding_now
 from .scheduler import schedule_one_row
 
 
+def _announce_pending_recheck_if_enabled(ctx) -> bool:
+    """Log once when a SQL/ES adapter can recheck pending state before dispatch."""
+    adapter = getattr(ctx, "_pending_adapter", None)
+    if adapter is None or not hasattr(adapter, "is_row_pending"):
+        return False
+
+    if not getattr(ctx, "_pending_recheck_announced", False):
+        source_kind = adapter.__class__.__name__
+        tlog(
+            "[producer] pending recheck 自動啟用：偵測到遠端 SQL/ES adapter，"
+            "每列切片/派工前會再次確認目標列/doc 是否仍未完成；"
+            f"若 pk 已完成會略過。adapter={source_kind}"
+        )
+        try:
+            setattr(ctx, "_pending_recheck_announced", True)
+        except Exception:
+            pass
+    return True
+
+
 def _still_pending_before_dispatch(ctx, pk: Any) -> bool:
     """Recheck remote SQL/ES state immediately before slicing/dispatching a row.
 
@@ -16,17 +36,22 @@ def _still_pending_before_dispatch(ctx, pk: Any) -> bool:
     row that another main process finishes before this producer reaches it.
     Returning False skips slicing and parallel dispatch for that stale row.
     """
-    adapter = getattr(ctx, "_pending_adapter", None)
-    if adapter is None or not hasattr(adapter, "is_row_pending"):
+    if not _announce_pending_recheck_if_enabled(ctx):
         return True
+
+    adapter = getattr(ctx, "_pending_adapter")
     output_cols = getattr(ctx, "output_cols", None) or [getattr(ctx, "output_col", "")]
     try:
-        return bool(adapter.is_row_pending(
+        is_pending = bool(adapter.is_row_pending(
             tgt_table=getattr(ctx, "_pending_tgt_table", getattr(ctx, "target_table", None)),
             pk=getattr(ctx, "primary_key", ""),
             pk_value=pk,
             output_cols=output_cols,
         ))
+        if getattr(ctx, "debug_pending_recheck", False):
+            state = "pending" if is_pending else "already_completed"
+            tlog(f"[producer] pending recheck pk={pk} state={state}")
+        return is_pending
     except Exception as e:
         tlog_warn(f"[producer] pending recheck 失敗 pk={pk}: {e!r}；保守繼續排程。")
         return True
@@ -55,8 +80,11 @@ def produce_rows(
     except TypeError:
         total_rows = None
 
+    recheck_enabled = _announce_pending_recheck_if_enabled(ctx)
+
     if total_rows is not None:
-        tlog(f"[producer] will iterate {total_rows} rows")
+        suffix = "；pending recheck=enabled" if recheck_enabled else ""
+        tlog(f"[producer] will iterate {total_rows} rows{suffix}")
 
     for idx, row in enumerate(rows_for_count):
         if len(row) >= 3:
@@ -122,7 +150,10 @@ def produce_rows(
 
         try:
             if not _still_pending_before_dispatch(ctx, pk):
-                tlog(f"[producer] pk={pk} 已由其他程序完成，略過本次切片/派工。")
+                tlog_warn(
+                    f"[producer] pending recheck 命中：pk={pk} 已由其他程序完成，"
+                    "略過本次切片/派工以節省算力。"
+                )
                 try: p_sched.update(1)
                 except Exception: pass
                 if gui:
@@ -137,7 +168,8 @@ def produce_rows(
                 try:
                     meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
                         "cursor": seen, "enq": scheduled, "producer_alive": True,
-                        "last_progress_ts": time.time(), "last_skip_reason": "already_completed"
+                        "last_progress_ts": time.time(),
+                        "last_skip_reason": "already_completed", "last_skip_pk": pk
                     }))
                 except Exception:
                     pass
