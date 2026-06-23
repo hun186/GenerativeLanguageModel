@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -72,8 +72,10 @@ def record_pending_skip(ctx, pk: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     trim_log_to_half_if_needed(path, max_bytes)
 
+    local_now = datetime.now().astimezone()
     record = {
-        "ts": datetime.now(timezone.utc).isoformat(),
+        "ts": local_now.isoformat(),
+        "timezone": local_now.tzname(),
         "pid": os.getpid(),
         "task_json": task_json_name(ctx),
         "pk": str(pk),

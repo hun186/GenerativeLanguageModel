@@ -152,6 +152,8 @@ def test_produce_rows_warns_and_records_when_recheck_skips_completed_row(monkeyp
     rows = [json.loads(line) for line in skip_log.read_text(encoding="utf-8").splitlines()]
     assert len(rows) == 1
     assert rows[0]["pid"] == os.getpid()
+    assert rows[0]["ts"]
+    assert "timezone" in rows[0]
     assert rows[0]["task_json"] == "task_a.json"
     assert rows[0]["pk"] == "pk-1"
     assert rows[0]["reason"] == "already_completed"
