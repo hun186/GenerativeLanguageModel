@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import time
+from datetime import datetime
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, BinaryIO, Iterable, Sequence
@@ -95,8 +96,10 @@ def record_adjustment(ctx, event: str, pk: Any | None = None, **extra: Any) -> N
     max_bytes = _adjust_log_max_bytes(ctx)
     path.parent.mkdir(parents=True, exist_ok=True)
     _trim_log_to_half_if_needed(path, max_bytes)
+    local_now = datetime.now().astimezone()
     record = {
-        "ts": time.time(),
+        "ts": local_now.isoformat(),
+        "timezone": local_now.tzname(),
         "event": event,
         "pid": os.getpid(),
         "mode": getattr(ctx, "mode", None),
@@ -110,6 +113,26 @@ def record_adjustment(ctx, event: str, pk: Any | None = None, **extra: Any) -> N
         fp.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
     _trim_log_to_half_if_needed(path, max_bytes)
 
+
+def _pid_is_alive(pid: Any) -> bool:
+    try:
+        pid_int = int(pid)
+    except (TypeError, ValueError):
+        return True
+    if pid_int <= 0:
+        return False
+    if pid_int == os.getpid():
+        return True
+    try:
+        os.kill(pid_int, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    except OSError:
+        # Windows may report an OSError for an invalid/non-running process.
+        return False
+    return True
 
 def _ttl_seconds(ctx) -> float:
     raw = getattr(ctx, "pending_running_console_ttl_seconds", DEFAULT_TTL_SECONDS)
@@ -200,6 +223,9 @@ def _prune(data: dict, ttl: float) -> None:
         except Exception:
             ts = 0.0
         if ts and now - ts > ttl:
+            running.pop(key, None)
+            continue
+        if not _pid_is_alive(rec.get("pid")):
             running.pop(key, None)
 
 
