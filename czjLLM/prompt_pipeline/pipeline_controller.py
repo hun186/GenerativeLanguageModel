@@ -112,6 +112,11 @@ class ItemsRegistry:
         with self.lock:
             return self._items.get(item_dir)
 
+    def update(self, item_dir, **fields):
+        with self.lock:
+            if item_dir in self._items:
+                self._items[item_dir].update(fields)
+
     def remove(self, item_dir):
         with self.lock:
             self._items.pop(item_dir, None)
@@ -1886,6 +1891,37 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             indent=2,
         )
     print(f"[multistage] 🗂️ 已輸出 stage 清單：{manifest_path}")
+
+    stage_writeback_rules = [
+        rule for rule in (getattr(ctx, "sql_writeback_rules", None) or [])
+        if isinstance(rule, dict)
+        and str(rule.get("source", rule.get("sql_writeback_source", "")) or "").strip().lower() == "stage"
+    ]
+    # Stage writeback can use _stage_merges/manifest.json, but keep the legacy
+    # final prompt combine enabled by default because existing SQL multistage
+    # deployments may rely on its side effects/output path.  Operators can opt
+    # into skipping it with multistage_stage_writeback_skip_final_combine=True.
+    skip_final_combine = bool(stage_writeback_rules) and bool(
+        getattr(ctx, "multistage_stage_writeback_skip_final_combine", False)
+    )
+    if skip_final_combine:
+        marker_parts = []
+        for entry in stage_manifest:
+            merged_file = str(entry.get("merged_file", "") or "").strip()
+            if not merged_file:
+                continue
+            merged_path = ops.join(stage_merge_root, merged_file)
+            if os.path.isfile(merged_path):
+                with open(merged_path, "r", encoding="utf-8") as f:
+                    marker_parts.append(f.read())
+        final_marker_fn = ops.join(stage_merge_root, f"{main_name}_multistage_combined.txt")
+        with open(final_marker_fn, "w", encoding="utf-8") as f:
+            f.write("\n".join(marker_parts))
+        print(
+            "[multistage] ↪ 偵測到 stage SQL writeback rules，"
+            f"跳過最終 prompt combine，使用 stage manifest marker：{final_marker_fn}"
+        )
+        return final_marker_fn
 
     def _infer_combine_task_name(stage_obj, stage_task):
         """為最終 combine 輸出推導可讀且穩定的 task 名稱（避免整段 prompt 當檔名）。"""
