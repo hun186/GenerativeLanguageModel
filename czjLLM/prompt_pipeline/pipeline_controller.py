@@ -406,17 +406,56 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
     _os.environ.setdefault("TQDM_DISABLE", "1")
     _os.environ.setdefault("DISABLE_INNER_TQDM", "1")
 
+    round_timed_out = False
+    MPresult = []
+    ok_prompt_files = set()
+
     try:
         try:
             stage_defs = resolve_pipeline_stages(ctx)
         except Exception:
             stage_defs = []
-        multistage_mode = len(stage_defs) > 1
-        if multistage_mode:
+            
+        #multistage_mode = len(stage_defs) > 1
+        
+        stage_writeback_rules = [
+            r for r in (
+                getattr(ctx, "es_writeback_rules", None)
+                or getattr(ctx, "sql_writeback_rules", None)
+                or []
+            )
+            if isinstance(r, dict)
+            and str(r.get("source", "")).strip().lower() == "stage"
+        ]
+        
+        has_stage_cfg = isinstance(getattr(ctx, "stage_cfg", None), dict)
+        
+        stage_managed_mode = (
+            len(stage_defs) > 1
+            or bool(stage_writeback_rules)
+            or has_stage_cfg
+        )
+        
+        if stage_managed_mode:
             try:
-                tlog("[consumer] multistage mode enabled (SQL/Table stream will run process_prompt_and_merge per row)")
+                tlog("[consumer] stage-managed mode enabled; consumer will not pick TODO files")
+                
+        #if multistage_mode:
+        #    try:
+        #        tlog("[consumer] multistage mode enabled; consumer will not pick TODO files because process_prompt_and_merge handles stages per row")
             except Exception:
                 pass
+        
+            try:
+                meter_update(meter_fn, lambda d: d.setdefault("consumer", {}).update({
+                    "alive": False,
+                    "disabled_for_multistage": True,
+                    "disabled_ts": time.time(),
+                }))
+            except Exception:
+                pass
+        
+            return
 
         tlog(f"[consumer] using meter: {meter_fn}")  # 診斷：應與 orchestrator 印出的路徑一致
         print("meter_fn in llm_stream_consumer",meter_fn)
@@ -541,6 +580,13 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     ctx.n_process,
                     timeout_sec=getattr(ctx, "llm_round_timeout_sec", None),
                 )
+                ok_prompt_files = set()
+                
+                for ret in MPresult or []:
+                    if isinstance(ret, dict) and ret.get("ok"):
+                        pf0 = str(ret.get("prompt_file", ""))
+                        if pf0:
+                            ok_prompt_files.add(_canon_path(pf0))
             except BatchRunTimeout as ex:
                 round_timed_out = True
                 MPresult = []
@@ -614,8 +660,12 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     # ✅ 退回 TODO（例如 retry/split 或 exception 退回）：要把 pending 加回來
                     requeued.append((pf, item))
                 else:
-                    # 檔案消失：避免 running 永遠扣不回，保守視為 done
-                    done.append((pf, item))
+                    if _canon_path(pf) in ok_prompt_files:
+                        # worker 明確成功，只是 RUNNING 檔已被 proc/merge 移除
+                        done.append((pf, item))
+                    else:
+                        tlog_warn(f"[consumer] prompt vanished but worker not ok; keep running: {pf}")
+                        still_running.append((pf, item))
             
             n_done = len(done)
             n_requeued = len(requeued)
@@ -1901,9 +1951,10 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     # final prompt combine enabled by default because existing SQL multistage
     # deployments may rely on its side effects/output path.  Operators can opt
     # into skipping it with multistage_stage_writeback_skip_final_combine=True.
-    skip_final_combine = bool(stage_writeback_rules) and bool(
-        getattr(ctx, "multistage_stage_writeback_skip_final_combine", False)
-    )
+    #skip_final_combine = bool(stage_writeback_rules) and bool(
+    #    getattr(ctx, "multistage_stage_writeback_skip_final_combine", False)
+    #)
+    skip_final_combine = bool(stage_writeback_rules)
     if skip_final_combine:
         marker_parts = []
         for entry in stage_manifest:

@@ -28,9 +28,31 @@ class BatchRunTimeout(RuntimeError):
         self.total = int(total)
 
 
+def _normalize_job_result(job, raw):
+    prompt_file = getattr(job, "promptFile", "")
+
+    if isinstance(raw, dict):
+        ok = bool(raw.get("ok"))
+        error = str(raw.get("error", ""))
+        output = raw.get("output")
+    else:
+        ok = bool(raw)
+        error = ""
+        output = None
+
+    return {
+        "prompt_file": prompt_file,
+        "ok": ok,
+        "error": error,
+        "output": output,
+        "raw": raw,
+    }
+
+
 def _run_prompt_job(job):
     """Top-level multiprocessing target so PromptAPIPipeline jobs remain picklable."""
-    return job.proc()
+    raw = job.proc()
+    return _normalize_job_result(job, raw)
 
 
 def _round_timeout_from_jobs(jobs, explicit_timeout=None) -> float:
@@ -65,10 +87,18 @@ def run_round(jobs, n_proc: int, timeout_sec: float | None = None):
                 CONSUMER_STATE["last_round_timed_out"] = True
                 raise BatchRunTimeout(timeout_sec, len(out), len(jobs))
             try:
-                out.append(j.proc())
+                raw = j.proc()
+                out.append(_normalize_job_result(j, raw))
                 CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
             except Exception as ex:
                 tlog_warn(f"[single] worker error: {ex}")
+                out.append({
+                    "prompt_file": getattr(j, "promptFile", ""),
+                    "ok": False,
+                    "error": str(ex),
+                    "output": None,
+                    "raw": None,
+                })
         return out
 
     pool = None
