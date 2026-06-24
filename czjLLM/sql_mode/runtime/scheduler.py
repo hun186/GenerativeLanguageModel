@@ -174,22 +174,6 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
     # 先以 row_ctx 推導預期合併輸出路徑（單階段/多階段都會用到）
     comb_back_fn = get_combined_result_path(temp_txt_path, row_ctx)
 
-    # SQL/Table/ES 多階段：直接重用 txt 的 process_prompt_and_merge 邏輯先完成 LLM + 合併，
-    # consumer 只需維持原有單階段行為（此列不再進 pending queue）。
-    if run_stream_multistage:
-        try:
-            merged_out = process_prompt_and_merge(row_ctx, file_path=temp_txt_path)
-            # 多階段的最終檔名可能與 get_combined_result_path() 不同（依 stage 組合命名），
-            # 優先用實際回傳的合併路徑，避免 row_merger 找不到成品而停滯。
-            if merged_out and os.path.isfile(str(merged_out)):
-                comb_back_fn = str(merged_out)
-        except Exception as ex:
-            tlog_warn(f"❌ 多階段執行失敗（pk={pk}, mode={mode})：{ex}")
-            return 0
-
-    # 註冊給 row_merger（合併檔路徑用 row_ctx 算，不會串線）
-    registry.add(item_dir, pk, temp_txt_path, comb_back_fn)
-
     def _on_add_row(d):
         d["rows"].setdefault(pk, {
             "item_dir": item_dir,
@@ -200,10 +184,36 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
         # SQL/Table/ES 多階段已在 schedule 階段完成 LLM，不放入 consumer pending queue。
         d["queue"]["pending"] += (0 if run_stream_multistage else total_chunks)
 
+    # 註冊給 row_merger（合併檔路徑用 row_ctx 算，不會串線）。
+    # 多階段同步執行 LLM 時必須先註冊，否則 producer 正在跑 LLM 的期間
+    # registry 會呈現 empty，watchdog / orchestrator 可能誤判沒有可寫回工作；
+    # 同時若 combine 途中刪除 prompt item 目錄，row_merger 仍可用後續更新的
+    # CombBackFN 寫回 SQL。
+    registry.add(item_dir, pk, temp_txt_path, comb_back_fn)
     meter_update(meter_fn, _on_add_row)
     meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({"last_progress_ts": time.time()}))
+    tlog(f"[sched] pk={pk} registered, chunks={total_chunks}, dir={os.path.basename(item_dir)}")
 
-    tlog(f"[sched] pk={pk} added, chunks={total_chunks}, dir={os.path.basename(item_dir)}")
+    # SQL/Table/ES 多階段：直接重用 txt 的 process_prompt_and_merge 邏輯先完成 LLM + 合併，
+    # consumer 只需維持原有單階段行為（此列不再進 pending queue）。
+    if run_stream_multistage:
+        try:
+            merged_out = process_prompt_and_merge(row_ctx, file_path=temp_txt_path)
+            # 多階段的最終檔名可能與 get_combined_result_path() 不同（依 stage 組合命名），
+            # 優先用實際回傳的合併路徑，避免 row_merger 找不到成品而停滯。
+            if merged_out and os.path.isfile(str(merged_out)):
+                comb_back_fn = str(merged_out)
+                if hasattr(registry, "update"):
+                    registry.update(item_dir, CombBackFN=comb_back_fn)
+            tlog(f"[sched] pk={pk} multistage completed, chunks={total_chunks}, dir={os.path.basename(item_dir)}")
+        except Exception as ex:
+            try:
+                registry.remove(item_dir)
+            except Exception:
+                pass
+            tlog_warn(f"❌ 多階段執行失敗（pk={pk}, mode={mode})：{ex}")
+            return 0
+
     return total_chunks
     
 def schedule_one_row_OLD_1027(ctx, registry, meter_fn, idx: int, pk: Any, text: str):

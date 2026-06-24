@@ -44,3 +44,10 @@
 - 主要修改內容：`pending_central._pid_is_alive` 在 Windows 改用 Kernel32 `OpenProcess` + `GetLastError` + `GetExitCodeProcess` 檢查 process 是否仍為 `STILL_ACTIVE`，不再使用 `os.kill(pid, 0)`；非 Windows 路徑保留 `os.kill(pid, 0)` 並增加防禦性例外處理。
 - 驗證結果：`python -m compileall czjLLM/prompt_pipeline/pending_central.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py tests/sql_mode/runtime/test_producer_pending_recheck.py` 通過可執行測試（7 passed，1 skipped）；依專案要求先執行 requirements 安裝但 GitHub dependency 仍受 proxy 403 限制。
 - 重要結論：Windows dead pid pruning 不能使用 `os.kill(pid, 0)`；需透過 Win32 process handle API 或 fail-open，避免 liveness probe 影響主流程排程。
+
+## 2026-06-24 multistage stream pre-registers row merger work
+
+- 任務目的：修正 SQL multistage stream 每次只跑一列、多階段完成後未回存 SQL，且 pending running console 只看到 `mark_running_before_dispatch` 沒有 release 的問題。使用者 log 顯示多階段 LLM 已完成並輸出 `_stage_merges`，但過程中 watchdog 一直看到 `reg_empty=True`，代表 row merger 從未取得可寫回工作。
+- 主要修改內容：`ItemsRegistry` 新增 thread-safe `update()`；`schedule_one_row` 在 multistage 同步呼叫 LLM 前就先註冊 row merger item 並更新 meter，避免 LLM 執行期間 registry 為空；多階段合併完成後再以實際 `CombBackFN` 更新 registry，讓 row merger 可用成品路徑寫回 SQL。若多階段失敗，會移除預註冊 item，避免殘留。
+- 驗證結果：`python -m compileall czjLLM/sql_mode/runtime/scheduler.py czjLLM/prompt_pipeline/pipeline_controller.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py tests/sql_mode/runtime/test_producer_pending_recheck.py` 通過可執行測試（7 passed，1 skipped）；requirements 安裝仍受 GitHub dependency proxy 403 限制。
+- 重要結論：SQL/Table/ES multistage stream 的 LLM 是在 producer/scheduler 內同步執行，必須在執行前先讓 registry 非空，否則 row merger/orchestrator 無法觀察該列，完成後也不會寫回 SQL。
