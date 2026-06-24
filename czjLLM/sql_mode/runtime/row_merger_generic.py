@@ -425,6 +425,9 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             for item_dir, meta in list(items_map.items()):
                 pk = meta["pk"]; temp_txt = meta["temp_txt"]
 
+                if isinstance(meta, dict) and meta.get("status") == "scheduling_multistage":
+                    continue
+
                 #if not row_is_ready(item_dir):
                 #    _log_state_once(item_dir)
                 #    continue

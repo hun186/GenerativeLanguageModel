@@ -51,3 +51,10 @@
 - 主要修改內容：`ItemsRegistry` 新增 thread-safe `update()`；`schedule_one_row` 在 multistage 同步呼叫 LLM 前就先註冊 row merger item 並更新 meter，避免 LLM 執行期間 registry 為空；多階段合併完成後再以實際 `CombBackFN` 更新 registry，讓 row merger 可用成品路徑寫回 SQL。若多階段失敗，會移除預註冊 item，避免殘留。
 - 驗證結果：`python -m compileall czjLLM/sql_mode/runtime/scheduler.py czjLLM/prompt_pipeline/pipeline_controller.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py tests/sql_mode/runtime/test_producer_pending_recheck.py` 通過可執行測試（7 passed，1 skipped）；requirements 安裝仍受 GitHub dependency proxy 403 限制。
 - 重要結論：SQL/Table/ES multistage stream 的 LLM 是在 producer/scheduler 內同步執行，必須在執行前先讓 registry 非空，否則 row merger/orchestrator 無法觀察該列，完成後也不會寫回 SQL。
+
+## 2026-06-24 defer row merger until multistage ready
+
+- 任務目的：修正 multistage 預註冊後 row merger 在 stage 尚未完成時就觀察/嘗試處理 item，導致 console 出現多個 `prepare_env` / multiprocessing spawn，最後 Windows child process `DuplicateHandle` 發生 `PermissionError: [WinError 5] 存取被拒`。
+- 主要修改內容：`schedule_one_row` 對 SQL/Table/ES multistage 預註冊 item 後標記 `status="scheduling_multistage"`；多階段合併完成並更新 `CombBackFN` 後改為 `status="ready_for_writeback"`。`row_merger_watchdog_generic` 看到 `scheduling_multistage` 會先跳過，保留 registry 非空給 orchestrator 觀察，但不提前合併/寫回。
+- 驗證結果：`python -m compileall czjLLM/sql_mode/runtime/scheduler.py czjLLM/sql_mode/runtime/row_merger_generic.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py tests/sql_mode/runtime/test_producer_pending_recheck.py` 通過可執行測試（7 passed，1 skipped）；requirements 安裝仍受 GitHub dependency proxy 403 限制。
+- 重要結論：multistage 預註冊只應用於防止 `reg_empty=True`，不應讓 row merger 在 stage runtime 尚未完成時讀取 `TODO/Success` 或嘗試合併；需以 registry status 分隔「已註冊」與「可寫回」。

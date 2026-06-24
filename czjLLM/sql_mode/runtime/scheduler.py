@@ -190,6 +190,8 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
     # 同時若 combine 途中刪除 prompt item 目錄，row_merger 仍可用後續更新的
     # CombBackFN 寫回 SQL。
     registry.add(item_dir, pk, temp_txt_path, comb_back_fn)
+    if run_stream_multistage and hasattr(registry, "update"):
+        registry.update(item_dir, status="scheduling_multistage")
     meter_update(meter_fn, _on_add_row)
     meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({"last_progress_ts": time.time()}))
     tlog(f"[sched] pk={pk} registered, chunks={total_chunks}, dir={os.path.basename(item_dir)}")
@@ -205,6 +207,8 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
                 comb_back_fn = str(merged_out)
                 if hasattr(registry, "update"):
                     registry.update(item_dir, CombBackFN=comb_back_fn)
+            if hasattr(registry, "update"):
+                registry.update(item_dir, status="ready_for_writeback")
             tlog(f"[sched] pk={pk} multistage completed, chunks={total_chunks}, dir={os.path.basename(item_dir)}")
         except Exception as ex:
             try:
