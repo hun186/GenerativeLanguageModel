@@ -3,6 +3,7 @@ import os, time, json, shutil
 from datetime import datetime
 from typing import Iterable, Tuple, Any, Optional, List, Dict
 
+from czjLLM.prompt_pipeline.pending_central import mark_not_running, record_adjustment
 from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from czjLLM.utilities.combine_utils import merge_dict_slices
 from czjLLM.utilities.combine_utils import merge_dict_slices_audited
@@ -485,6 +486,11 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                         _process_flatten_target(ctx, sink, pk, ft)
 
                     # 完成後收尾
+                    try:
+                        mark_not_running(ctx, pk, state="writeback_completed")
+                        record_adjustment(ctx, "writeback_completed_release", pk=pk)
+                    except Exception as ex:
+                        tlog_warn(f"⚠️ pending running console 釋放失敗（pk={pk}）：{ex}")
                     registry.remove(item_dir)
                     if done_q is not None:
                         try: done_q.put_nowait(1)

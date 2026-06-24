@@ -112,6 +112,11 @@ class ItemsRegistry:
         with self.lock:
             return self._items.get(item_dir)
 
+    def update(self, item_dir, **fields):
+        with self.lock:
+            if item_dir in self._items:
+                self._items[item_dir].update(fields)
+
     def remove(self, item_dir):
         with self.lock:
             self._items.pop(item_dir, None)
