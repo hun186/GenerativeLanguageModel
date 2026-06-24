@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import ctypes
 import json
 import os
 import time
+from datetime import datetime
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, BinaryIO, Iterable, Sequence
@@ -95,8 +97,10 @@ def record_adjustment(ctx, event: str, pk: Any | None = None, **extra: Any) -> N
     max_bytes = _adjust_log_max_bytes(ctx)
     path.parent.mkdir(parents=True, exist_ok=True)
     _trim_log_to_half_if_needed(path, max_bytes)
+    local_now = datetime.now().astimezone()
     record = {
-        "ts": time.time(),
+        "ts": local_now.isoformat(),
+        "timezone": local_now.tzname(),
         "event": event,
         "pid": os.getpid(),
         "mode": getattr(ctx, "mode", None),
@@ -110,6 +114,53 @@ def record_adjustment(ctx, event: str, pk: Any | None = None, **extra: Any) -> N
         fp.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
     _trim_log_to_half_if_needed(path, max_bytes)
 
+
+def _pid_is_alive(pid: Any) -> bool:
+    try:
+        pid_int = int(pid)
+    except (TypeError, ValueError):
+        return True
+    if pid_int <= 0:
+        return False
+    if pid_int == os.getpid():
+        return True
+
+    if os.name == "nt":
+        # os.kill(pid, 0) can raise SystemError on Windows in some Python builds
+        # (for example WinError 87 with an exception set).  Query the process
+        # handle directly instead, and fail open on unexpected API errors so a
+        # liveness probe never crashes producer startup.
+        try:
+            kernel32 = ctypes.windll.kernel32
+            process_query_limited_information = 0x1000
+            still_active = 259
+            handle = kernel32.OpenProcess(process_query_limited_information, False, pid_int)
+            if not handle:
+                error = int(kernel32.GetLastError())
+                # ERROR_INVALID_PARAMETER / ERROR_NOT_FOUND mean the process no
+                # longer exists.  Other failures (for example access denied)
+                # are treated as alive so pruning remains conservative.
+                return error not in {87, 1168}
+            exit_code = ctypes.c_ulong()
+            ok = kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code))
+            kernel32.CloseHandle(handle)
+            if not ok:
+                return True
+            return exit_code.value == still_active
+        except Exception:
+            return True
+
+    try:
+        os.kill(pid_int, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    except OSError:
+        return False
+    except Exception:
+        return True
+    return True
 
 def _ttl_seconds(ctx) -> float:
     raw = getattr(ctx, "pending_running_console_ttl_seconds", DEFAULT_TTL_SECONDS)
@@ -200,6 +251,9 @@ def _prune(data: dict, ttl: float) -> None:
         except Exception:
             ts = 0.0
         if ts and now - ts > ttl:
+            running.pop(key, None)
+            continue
+        if not _pid_is_alive(rec.get("pid")):
             running.pop(key, None)
 
 

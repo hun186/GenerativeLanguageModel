@@ -229,9 +229,21 @@ def produce_rows(
 
             mark_running(ctx, pk)
             record_adjustment(ctx, "mark_running_before_dispatch", pk=pk)
-            schedule_one_row(ctx, registry, meter_fn, idx - 1, pk, text, source_inputs=source_inputs)
-            scheduled_pks.append(pk)
-            scheduled += 1
+            scheduled_chunks = schedule_one_row(ctx, registry, meter_fn, idx - 1, pk, text, source_inputs=source_inputs)
+            try:
+                scheduled_chunk_count = int(scheduled_chunks or 0)
+            except (TypeError, ValueError):
+                scheduled_chunk_count = 0
+            if scheduled_chunk_count > 0:
+                scheduled_pks.append(pk)
+                scheduled += 1
+            else:
+                mark_not_running(ctx, pk, state="schedule_noop")
+                record_adjustment(ctx, "schedule_noop_release", pk=pk)
+                tlog_warn(
+                    f"[producer] schedule_one_row 未建立可執行任務 pk={pk}；"
+                    "已釋放 pending running console 標記，避免其他程序持續延後。"
+                )
             # ★新增：每送一列即回報游標/送件數
             try:
                 meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
@@ -241,6 +253,11 @@ def produce_rows(
             except Exception:
                 pass
         except Exception as e:
+            try:
+                mark_not_running(ctx, pk, state="schedule_error")
+                record_adjustment(ctx, "schedule_error_release", pk=pk, error=repr(e))
+            except Exception:
+                pass
             tlog_warn(f"[producer] schedule_one_row 失敗 pk={pk}: {e!r}")
             continue
 
