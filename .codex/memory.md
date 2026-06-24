@@ -30,3 +30,10 @@
 - 主要修改內容：`record_adjustment` 現在寫入本地時區 `ts` 與 `timezone`；producer 只在 `schedule_one_row` 回傳正數 chunk 時納入 scheduled，回傳 0/None/非數值或例外時會釋放 running console 標記並寫入 `schedule_noop_release` / `schedule_error_release`。
 - 驗證結果：`python -m compileall czjLLM/prompt_pipeline/pending_central.py czjLLM/sql_mode/runtime/producer.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py tests/sql_mode/runtime/test_producer_pending_recheck.py` 通過可執行測試（部分測試因缺少 optional dependency 仍被既有 `pytest.importorskip` skip）。
 - 重要結論：pending running console 不再因切片/排程未產生任務而永久保留 running 狀態；調整記錄 log 可直接以當地時間比對 pending recheck skip log。
+
+## 2026-06-24 pending running console release on writeback and stale pid prune
+
+- 任務目的：追查使用者回報套用前次修正後仍出現 pending rows 被撈到但後續批次被 running console 延後/結束的情況；使用者提供的 `pending_running_console.json` 顯示已完成或舊程序的 pk 仍停留在 `running`。
+- 主要修改內容：pending running console 在讀取時會同步清除已不存在 pid 的 running 紀錄；row merger 在 SQL/Table/ES 寫回成功後會呼叫 `mark_not_running(..., state="writeback_completed")` 並記錄 `writeback_completed_release`，讓跨程序 pending 協調以「真正寫回完成」作為釋放點，而不是只依 producer 收尾。
+- 驗證結果：`python -m compileall czjLLM/prompt_pipeline/pending_central.py czjLLM/sql_mode/runtime/row_merger_generic.py czjLLM/sql_mode/runtime/producer.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py tests/sql_mode/runtime/test_producer_pending_recheck.py` 通過可執行測試（5 passed，1 skipped）。
+- 重要結論：前次只處理 schedule no-op/exception，未處理「成功寫回後釋放 running」與「舊 pid 殘留」；這兩者會讓後續程序看到 deferred running rows，造成可用 pending rows 逐步被誤延後。

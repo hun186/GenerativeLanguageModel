@@ -114,6 +114,26 @@ def record_adjustment(ctx, event: str, pk: Any | None = None, **extra: Any) -> N
     _trim_log_to_half_if_needed(path, max_bytes)
 
 
+def _pid_is_alive(pid: Any) -> bool:
+    try:
+        pid_int = int(pid)
+    except (TypeError, ValueError):
+        return True
+    if pid_int <= 0:
+        return False
+    if pid_int == os.getpid():
+        return True
+    try:
+        os.kill(pid_int, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    except OSError:
+        # Windows may report an OSError for an invalid/non-running process.
+        return False
+    return True
+
 def _ttl_seconds(ctx) -> float:
     raw = getattr(ctx, "pending_running_console_ttl_seconds", DEFAULT_TTL_SECONDS)
     try:
@@ -203,6 +223,9 @@ def _prune(data: dict, ttl: float) -> None:
         except Exception:
             ts = 0.0
         if ts and now - ts > ttl:
+            running.pop(key, None)
+            continue
+        if not _pid_is_alive(rec.get("pid")):
             running.pop(key, None)
 
 
