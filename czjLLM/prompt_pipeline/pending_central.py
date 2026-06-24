@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ctypes
 import json
 import os
 import time
@@ -123,6 +124,32 @@ def _pid_is_alive(pid: Any) -> bool:
         return False
     if pid_int == os.getpid():
         return True
+
+    if os.name == "nt":
+        # os.kill(pid, 0) can raise SystemError on Windows in some Python builds
+        # (for example WinError 87 with an exception set).  Query the process
+        # handle directly instead, and fail open on unexpected API errors so a
+        # liveness probe never crashes producer startup.
+        try:
+            kernel32 = ctypes.windll.kernel32
+            process_query_limited_information = 0x1000
+            still_active = 259
+            handle = kernel32.OpenProcess(process_query_limited_information, False, pid_int)
+            if not handle:
+                error = int(kernel32.GetLastError())
+                # ERROR_INVALID_PARAMETER / ERROR_NOT_FOUND mean the process no
+                # longer exists.  Other failures (for example access denied)
+                # are treated as alive so pruning remains conservative.
+                return error not in {87, 1168}
+            exit_code = ctypes.c_ulong()
+            ok = kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code))
+            kernel32.CloseHandle(handle)
+            if not ok:
+                return True
+            return exit_code.value == still_active
+        except Exception:
+            return True
+
     try:
         os.kill(pid_int, 0)
     except ProcessLookupError:
@@ -130,8 +157,9 @@ def _pid_is_alive(pid: Any) -> bool:
     except PermissionError:
         return True
     except OSError:
-        # Windows may report an OSError for an invalid/non-running process.
         return False
+    except Exception:
+        return True
     return True
 
 def _ttl_seconds(ctx) -> float:

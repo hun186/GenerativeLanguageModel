@@ -99,3 +99,54 @@ def test_running_console_prunes_dead_pid(tmp_path, monkeypatch):
     assert pending_central.is_running(ctx, "pk-dead") is False
     data = json.loads(console_path.read_text(encoding="utf-8"))
     assert data["running"] == {}
+
+
+def test_pid_liveness_uses_windows_api_without_os_kill(tmp_path, monkeypatch):
+    calls = {"kill": 0, "open": 0}
+
+    class _Kernel32:
+        def OpenProcess(self, _access, _inherit, pid):
+            calls["open"] += 1
+            assert pid == 12345
+            return 100
+
+        def GetLastError(self):
+            return 0
+
+        def GetExitCodeProcess(self, _handle, exit_code_ptr):
+            exit_code_ptr._obj.value = 259
+            return 1
+
+        def CloseHandle(self, _handle):
+            return 1
+
+    class _Windll:
+        kernel32 = _Kernel32()
+
+    def _unexpected_kill(_pid, _sig):
+        calls["kill"] += 1
+        raise SystemError("os.kill should not be used on Windows")
+
+    monkeypatch.setattr(pending_central.os, "name", "nt")
+    monkeypatch.setattr(pending_central.os, "kill", _unexpected_kill)
+    monkeypatch.setattr(pending_central.ctypes, "windll", _Windll(), raising=False)
+
+    assert pending_central._pid_is_alive(12345) is True
+    assert calls == {"kill": 0, "open": 1}
+
+
+def test_pid_liveness_windows_invalid_parameter_means_dead(monkeypatch):
+    class _Kernel32:
+        def OpenProcess(self, _access, _inherit, _pid):
+            return 0
+
+        def GetLastError(self):
+            return 87
+
+    class _Windll:
+        kernel32 = _Kernel32()
+
+    monkeypatch.setattr(pending_central.os, "name", "nt")
+    monkeypatch.setattr(pending_central.ctypes, "windll", _Windll(), raising=False)
+
+    assert pending_central._pid_is_alive(12345) is False

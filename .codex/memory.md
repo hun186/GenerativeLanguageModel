@@ -37,3 +37,10 @@
 - 主要修改內容：pending running console 在讀取時會同步清除已不存在 pid 的 running 紀錄；row merger 在 SQL/Table/ES 寫回成功後會呼叫 `mark_not_running(..., state="writeback_completed")` 並記錄 `writeback_completed_release`，讓跨程序 pending 協調以「真正寫回完成」作為釋放點，而不是只依 producer 收尾。
 - 驗證結果：`python -m compileall czjLLM/prompt_pipeline/pending_central.py czjLLM/sql_mode/runtime/row_merger_generic.py czjLLM/sql_mode/runtime/producer.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py tests/sql_mode/runtime/test_producer_pending_recheck.py` 通過可執行測試（5 passed，1 skipped）。
 - 重要結論：前次只處理 schedule no-op/exception，未處理「成功寫回後釋放 running」與「舊 pid 殘留」；這兩者會讓後續程序看到 deferred running rows，造成可用 pending rows 逐步被誤延後。
+
+## 2026-06-24 Windows pid liveness probe fix
+
+- 任務目的：修正前次新增的 dead pid prune 在 Windows producer-thread 啟動時呼叫 `os.kill(pid, 0)` 觸發 `SystemError: <class 'OSError'> returned a result with an exception set` / WinError 87，導致 producer 還沒排程就中止。
+- 主要修改內容：`pending_central._pid_is_alive` 在 Windows 改用 Kernel32 `OpenProcess` + `GetLastError` + `GetExitCodeProcess` 檢查 process 是否仍為 `STILL_ACTIVE`，不再使用 `os.kill(pid, 0)`；非 Windows 路徑保留 `os.kill(pid, 0)` 並增加防禦性例外處理。
+- 驗證結果：`python -m compileall czjLLM/prompt_pipeline/pending_central.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py tests/sql_mode/runtime/test_producer_pending_recheck.py` 通過可執行測試（7 passed，1 skipped）；依專案要求先執行 requirements 安裝但 GitHub dependency 仍受 proxy 403 限制。
+- 重要結論：Windows dead pid pruning 不能使用 `os.kill(pid, 0)`；需透過 Win32 process handle API 或 fail-open，避免 liveness probe 影響主流程排程。
