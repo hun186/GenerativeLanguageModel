@@ -58,3 +58,17 @@
 - 主要修改內容：`schedule_one_row` 對 SQL/Table/ES multistage 預註冊 item 後標記 `status="scheduling_multistage"`；多階段合併完成並更新 `CombBackFN` 後改為 `status="ready_for_writeback"`。`row_merger_watchdog_generic` 看到 `scheduling_multistage` 會先跳過，保留 registry 非空給 orchestrator 觀察，但不提前合併/寫回。
 - 驗證結果：`python -m compileall czjLLM/sql_mode/runtime/scheduler.py czjLLM/sql_mode/runtime/row_merger_generic.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py tests/sql_mode/runtime/test_producer_pending_recheck.py` 通過可執行測試（7 passed，1 skipped）；requirements 安裝仍受 GitHub dependency proxy 403 限制。
 - 重要結論：multistage 預註冊只應用於防止 `reg_empty=True`，不應讓 row merger 在 stage runtime 尚未完成時讀取 `TODO/Success` 或嘗試合併；需以 registry status 分隔「已註冊」與「可寫回」。
+
+## 2026-06-24 skip final combine for stage SQL writeback
+
+- 任務目的：修正 SQL multistage 在 stage 都完成、manifest 已輸出後，卡在 `is finished calling API, start to combine returned result.`，接著 Windows multiprocessing child `DuplicateHandle` 發生 `PermissionError: [WinError 5]`，導致未進入 row merger SQL 寫回。
+- 主要修改內容：`process_prompt_and_merge_multistage` 偵測到 `sql_writeback_rules` 使用 `source=stage` 時，預設跳過最後的 prompt item `combine_api_finished_item`，改在 `_stage_merges/<main_name>/` 產生輕量 marker 檔並直接回傳；row merger 後續仍透過 marker 路徑尋找 manifest，依 stage writeback rules 讀取 route/extract/audit_json stage merged output 寫回 SQL。
+- 驗證結果：`python -m compileall czjLLM/prompt_pipeline/pipeline_controller.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py tests/sql_mode/runtime/test_producer_pending_recheck.py` 通過可執行測試（7 passed，1 skipped）；requirements 安裝仍受 GitHub dependency proxy 403 限制。
+- 重要結論：當 SQL 寫回來源全由 stage merged output 決定時，不需要再對 prompt item 做最終 combine；跳過該步可避免 Windows multiprocessing/spawn 收尾問題，並讓 scheduler 取得可供 row merger 定位 manifest 的 `CombBackFN`。
+
+## 2026-06-24 final combine skip changed to opt-in
+
+- 任務目的：回應使用者質疑「原本未改 final combine 也可正常跑完，原因會是這裡嗎？」；重新檢視後確認不應把 final combine 預設視為根因，也不應預設改變既有 SQL multistage 行為。
+- 主要修改內容：`multistage_stage_writeback_skip_final_combine` 改為 opt-in；即使偵測到 `sql_writeback_rules source=stage`，預設仍保留 legacy final prompt combine。只有使用者明確設定 `multistage_stage_writeback_skip_final_combine=True` 時才跳過 final combine 並使用 stage manifest marker。
+- 驗證結果：`python -m compileall czjLLM/prompt_pipeline/pipeline_controller.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py tests/sql_mode/runtime/test_producer_pending_recheck.py` 通過可執行測試（7 passed，1 skipped）；requirements 安裝仍受 GitHub dependency proxy 403 限制。
+- 重要結論：final combine 可能只是錯誤最後可見位置，不一定是根因；在未完全確認前，避免預設改變既有可正常執行的 combine 流程。
