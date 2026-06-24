@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import time
+from datetime import datetime
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, BinaryIO, Iterable, Sequence
@@ -95,8 +96,10 @@ def record_adjustment(ctx, event: str, pk: Any | None = None, **extra: Any) -> N
     max_bytes = _adjust_log_max_bytes(ctx)
     path.parent.mkdir(parents=True, exist_ok=True)
     _trim_log_to_half_if_needed(path, max_bytes)
+    local_now = datetime.now().astimezone()
     record = {
-        "ts": time.time(),
+        "ts": local_now.isoformat(),
+        "timezone": local_now.tzname(),
         "event": event,
         "pid": os.getpid(),
         "mode": getattr(ctx, "mode", None),

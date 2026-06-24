@@ -1,3 +1,4 @@
+import json
 from types import SimpleNamespace
 
 from czjLLM.prompt_pipeline import pending_central
@@ -49,3 +50,20 @@ def test_order_rows_records_adjustment_log(tmp_path):
     log_path = tmp_path / "logs" / "pending_running_console_adjustments.log"
     assert log_path.exists()
     assert '"event": "initial_reorder"' in log_path.read_text(encoding="utf-8")
+
+
+def test_adjustment_log_uses_local_iso_timestamp(tmp_path):
+    ctx = SimpleNamespace(
+        PGMSubDir=str(tmp_path),
+        _pending_tgt_table="target",
+        pending_running_console_enabled=True,
+    )
+
+    pending_central.record_adjustment(ctx, "unit_test_event", pk="pk-1")
+
+    log_path = tmp_path / "logs" / "pending_running_console_adjustments.log"
+    rows = [json.loads(line) for line in log_path.read_text(encoding="utf-8").splitlines()]
+    assert rows[0]["event"] == "unit_test_event"
+    assert isinstance(rows[0]["ts"], str)
+    assert "T" in rows[0]["ts"]
+    assert "timezone" in rows[0]
