@@ -1,12 +1,16 @@
 from __future__ import annotations
 
-import fcntl
 import json
 import os
 import time
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Any, BinaryIO, Iterable, Sequence
+
+if os.name == "nt":
+    import msvcrt
+else:
+    import fcntl
 
 
 
@@ -115,29 +119,51 @@ def _ttl_seconds(ctx) -> float:
         return float(DEFAULT_TTL_SECONDS)
 
 
+def _lock_file(lock_fp: BinaryIO) -> None:
+    if os.name == "nt":
+        lock_fp.seek(0)
+        msvcrt.locking(lock_fp.fileno(), msvcrt.LK_LOCK, 1)
+        return
+    fcntl.flock(lock_fp.fileno(), fcntl.LOCK_EX)
+
+
+def _unlock_file(lock_fp: BinaryIO) -> None:
+    if os.name == "nt":
+        lock_fp.seek(0)
+        msvcrt.locking(lock_fp.fileno(), msvcrt.LK_UNLCK, 1)
+        return
+    fcntl.flock(lock_fp.fileno(), fcntl.LOCK_UN)
+
+
 @contextmanager
 def _locked_json(path: Path):
     path.parent.mkdir(parents=True, exist_ok=True)
     lock_path = path.with_suffix(path.suffix + ".lock")
-    with lock_path.open("a+") as lock_fp:
-        fcntl.flock(lock_fp.fileno(), fcntl.LOCK_EX)
-        data = {"version": 1, "running": {}}
-        if path.exists():
-            try:
-                with path.open("r", encoding="utf-8") as fp:
-                    loaded = json.load(fp)
-                if isinstance(loaded, dict):
-                    data.update(loaded)
-                    if not isinstance(data.get("running"), dict):
-                        data["running"] = {}
-            except Exception:
-                data = {"version": 1, "running": {}}
-        yield data
-        tmp = path.with_suffix(path.suffix + f".{os.getpid()}.tmp")
-        with tmp.open("w", encoding="utf-8") as fp:
-            json.dump(data, fp, ensure_ascii=False, indent=2, sort_keys=True, default=str)
-        os.replace(tmp, path)
-        fcntl.flock(lock_fp.fileno(), fcntl.LOCK_UN)
+    with lock_path.open("a+b") as lock_fp:
+        lock_fp.seek(0, os.SEEK_END)
+        if lock_fp.tell() == 0:
+            lock_fp.write(b"\0")
+            lock_fp.flush()
+        _lock_file(lock_fp)
+        try:
+            data = {"version": 1, "running": {}}
+            if path.exists():
+                try:
+                    with path.open("r", encoding="utf-8") as fp:
+                        loaded = json.load(fp)
+                    if isinstance(loaded, dict):
+                        data.update(loaded)
+                        if not isinstance(data.get("running"), dict):
+                            data["running"] = {}
+                except Exception:
+                    data = {"version": 1, "running": {}}
+            yield data
+            tmp = path.with_suffix(path.suffix + f".{os.getpid()}.tmp")
+            with tmp.open("w", encoding="utf-8") as fp:
+                json.dump(data, fp, ensure_ascii=False, indent=2, sort_keys=True, default=str)
+            os.replace(tmp, path)
+        finally:
+            _unlock_file(lock_fp)
 
 
 def _target(ctx) -> str:
