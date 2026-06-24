@@ -226,3 +226,37 @@ def test_pending_skip_log_trims_to_half_when_over_limit(tmp_path):
     assert b"old-1" not in data
     assert b'"pk": "pk-2"' in data
     assert b'"task_json": "task_b.json"' in data
+
+
+def test_produce_rows_releases_running_when_schedule_returns_zero(monkeypatch, tmp_path):
+    warnings = []
+    monkeypatch.setattr(producer, "tlog", lambda _msg: None)
+    monkeypatch.setattr(producer, "tlog_warn", warnings.append)
+    monkeypatch.setattr(producer, "outstanding_now", lambda _meter_fn: 0)
+    monkeypatch.setattr(producer, "producer_backpressure_wait", lambda **_kwargs: None)
+    monkeypatch.setattr(producer, "still_pending_before_dispatch", lambda _ctx, _pk: True)
+    monkeypatch.setattr(producer, "meter_update", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(producer, "schedule_one_row", lambda *_args, **_kwargs: 0)
+
+    ctx = SimpleNamespace(
+        PGMSubDir=str(tmp_path),
+        _pending_tgt_table="target_table",
+        pending_running_console_enabled=True,
+    )
+
+    scheduled = producer.produce_rows(
+        ctx=ctx,
+        rows_for_count=[("pk-1", "text")],
+        registry=None,
+        meter_fn="meter.json",
+        low=0,
+        stop_event=_StopEventStub(),
+        consumer=None,
+        p_sched=_ProgressStub(),
+    )
+
+    assert scheduled == 0
+    assert producer.is_running(ctx, "pk-1") is False
+    assert any("未建立可執行任務 pk=pk-1" in m for m in warnings)
+    log_text = (tmp_path / "logs" / "pending_running_console_adjustments.log").read_text(encoding="utf-8")
+    assert '"event": "schedule_noop_release"' in log_text
