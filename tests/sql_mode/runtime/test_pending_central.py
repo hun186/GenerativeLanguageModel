@@ -150,3 +150,64 @@ def test_pid_liveness_windows_invalid_parameter_means_dead(monkeypatch):
     monkeypatch.setattr(pending_central.ctypes, "windll", _Windll(), raising=False)
 
     assert pending_central._pid_is_alive(12345) is False
+
+
+def test_mark_not_running_retains_recent_finished_for_one_hour_by_default(tmp_path):
+    ctx = SimpleNamespace(
+        PGMSubDir=str(tmp_path),
+        _pending_tgt_table="target",
+        pending_running_console_enabled=True,
+    )
+
+    pending_central.mark_running(ctx, "pk-1")
+    pending_central.mark_not_running(ctx, "pk-1", state="completed")
+
+    console_path = tmp_path / "logs" / "pending_running_console.json"
+    data = json.loads(console_path.read_text(encoding="utf-8"))
+    assert "target|pk-1" in data["last_finished"]
+    assert data["last_finished"]["target|pk-1"]["state"] == "completed"
+
+
+def test_last_finished_prunes_older_than_retention(tmp_path):
+    ctx = SimpleNamespace(
+        PGMSubDir=str(tmp_path),
+        _pending_tgt_table="target",
+        pending_running_console_enabled=True,
+        pending_running_console_finished_retention_seconds=3600,
+    )
+    console_path = tmp_path / "logs" / "pending_running_console.json"
+    console_path.parent.mkdir(parents=True, exist_ok=True)
+    console_path.write_text(json.dumps({
+        "version": 1,
+        "running": {},
+        "last_finished": {
+            "target|old": {"state": "completed", "pk": "old", "updated_ts": 1},
+            "target|recent": {
+                "state": "completed",
+                "pk": "recent",
+                "updated_ts": pending_central.time.time(),
+            },
+        },
+    }), encoding="utf-8")
+
+    pending_central.mark_running(ctx, "pk-new")
+
+    data = json.loads(console_path.read_text(encoding="utf-8"))
+    assert "target|old" not in data["last_finished"]
+    assert "target|recent" in data["last_finished"]
+
+
+def test_corrupt_console_file_is_rebuilt(tmp_path):
+    ctx = SimpleNamespace(
+        PGMSubDir=str(tmp_path),
+        _pending_tgt_table="target",
+        pending_running_console_enabled=True,
+    )
+    console_path = tmp_path / "logs" / "pending_running_console.json"
+    console_path.parent.mkdir(parents=True, exist_ok=True)
+    console_path.write_text("{not-valid-json", encoding="utf-8")
+
+    pending_central.mark_running(ctx, "pk-1")
+
+    data = json.loads(console_path.read_text(encoding="utf-8"))
+    assert data["running"]["target|pk-1"]["state"] == "running"

@@ -24,6 +24,7 @@ def tlog_warn(message):
     print(message)
 
 DEFAULT_TTL_SECONDS = 24 * 60 * 60
+DEFAULT_FINISHED_RETENTION_SECONDS = 60 * 60
 ADJUST_LOG_MAX_BYTES = 30 * 1024 * 1024
 
 
@@ -170,6 +171,18 @@ def _ttl_seconds(ctx) -> float:
         return float(DEFAULT_TTL_SECONDS)
 
 
+def _finished_retention_seconds(ctx) -> float:
+    raw = getattr(
+        ctx,
+        "pending_running_console_finished_retention_seconds",
+        DEFAULT_FINISHED_RETENTION_SECONDS,
+    )
+    try:
+        return max(float(raw), 0.0)
+    except (TypeError, ValueError):
+        return float(DEFAULT_FINISHED_RETENTION_SECONDS)
+
+
 def _lock_file(lock_fp: BinaryIO) -> None:
     if os.name == "nt":
         lock_fp.seek(0)
@@ -206,6 +219,8 @@ def _locked_json(path: Path):
                         data.update(loaded)
                         if not isinstance(data.get("running"), dict):
                             data["running"] = {}
+                        if not isinstance(data.get("last_finished"), dict):
+                            data["last_finished"] = {}
                 except Exception:
                     data = {"version": 1, "running": {}}
             yield data
@@ -242,7 +257,7 @@ def _row_pk(row: Sequence[Any]) -> Any:
     return row[0]
 
 
-def _prune(data: dict, ttl: float) -> None:
+def _prune(data: dict, ttl: float, finished_retention: float | None = None) -> None:
     now = time.time()
     running = data.setdefault("running", {})
     for key, rec in list(running.items()):
@@ -256,13 +271,24 @@ def _prune(data: dict, ttl: float) -> None:
         if not _pid_is_alive(rec.get("pid")):
             running.pop(key, None)
 
+    if finished_retention is None:
+        return
+    last_finished = data.setdefault("last_finished", {})
+    for key, rec in list(last_finished.items()):
+        try:
+            ts = float(rec.get("updated_ts", 0) or 0)
+        except Exception:
+            ts = 0.0
+        if not ts or now - ts > finished_retention:
+            last_finished.pop(key, None)
+
 
 def is_running(ctx, pk: Any) -> bool:
     if not _enabled(ctx):
         return False
     path = _console_path(ctx)
     with _locked_json(path) as data:
-        _prune(data, _ttl_seconds(ctx))
+        _prune(data, _ttl_seconds(ctx), _finished_retention_seconds(ctx))
         rec = data.get("running", {}).get(_key(ctx, pk))
         return bool(rec and rec.get("state") == "running")
 
@@ -273,7 +299,7 @@ def mark_running(ctx, pk: Any) -> None:
     path = _console_path(ctx)
     now = time.time()
     with _locked_json(path) as data:
-        _prune(data, _ttl_seconds(ctx))
+        _prune(data, _ttl_seconds(ctx), _finished_retention_seconds(ctx))
         data.setdefault("running", {})[_key(ctx, pk)] = {
             "state": "running",
             "pk": str(pk),
@@ -290,7 +316,7 @@ def mark_not_running(ctx, pk: Any, state: str = "completed") -> None:
         return
     path = _console_path(ctx)
     with _locked_json(path) as data:
-        _prune(data, _ttl_seconds(ctx))
+        _prune(data, _ttl_seconds(ctx), _finished_retention_seconds(ctx))
         data.setdefault("running", {}).pop(_key(ctx, pk), None)
         data.setdefault("last_finished", {})[_key(ctx, pk)] = {
             "state": state,
@@ -308,7 +334,7 @@ def order_rows_avoiding_running(ctx, rows: Iterable[Sequence[Any]]) -> list[Sequ
         return rows
     path = _console_path(ctx)
     with _locked_json(path) as data:
-        _prune(data, _ttl_seconds(ctx))
+        _prune(data, _ttl_seconds(ctx), _finished_retention_seconds(ctx))
         running = data.get("running", {})
         cold: list[Sequence[Any]] = []
         hot: list[Sequence[Any]] = []

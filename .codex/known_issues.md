@@ -64,3 +64,19 @@ Open
 狀態：Open
 
 負責人：-
+
+## pytest producer pending recheck skipped without PyYAML
+
+首次發現：2026-06-25
+
+問題：執行 `python -m pytest -rs tests/sql_mode/runtime/test_producer_pending_recheck.py` 時，測試檔透過 `pytest.importorskip("yaml")` 因目前環境缺少 `yaml` / PyYAML 而全部 skip，pytest 回傳 exit code 5。
+
+影響：本次只能以 `test_pending_central.py` 覆蓋 pending console 純函式與檔案行為；producer pending recheck 整合測試需在 PyYAML 可用環境執行。
+
+暫時解法：在可完整安裝 requirements 的環境安裝 PyYAML 後重跑該測試；目前 requirements 安裝仍受 GitHub dependency proxy 403 限制。
+
+根本原因：目前容器依賴不完整，且完整 requirements 安裝受外部網路限制。
+
+狀態：Open
+
+負責人：-
