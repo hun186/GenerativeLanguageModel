@@ -33,11 +33,14 @@
 - `pending_running_console_enabled`：是否啟用，預設 `True`。
 - `pending_running_console_path`：自訂中控臺 JSON 檔路徑。
 - `pending_running_console_ttl_seconds`：running 狀態 TTL，預設 24 小時；超過 TTL 的 stale running record 會被清除。
+- `pending_running_console_finished_retention_seconds`：`last_finished` 最近完成/釋放紀錄保留秒數，預設 1 小時；設為 `0` 代表下一次讀寫中控臺時立即清掉舊完成紀錄。
 
 中控臺使用檔鎖保護讀寫，主要記錄：
 
-- `running`：目前被標記為 running 的 target + pk/file。
-- `last_finished`：最近釋放的項目與釋放狀態，方便觀察。
+- `running`：目前被標記為 running 的 target + pk/file；這是跨程序排序與派工前 running 比對的主要依據。
+- `last_finished`：最近釋放的項目與釋放狀態，只供短期觀察與除錯，不參與是否派工的核心判斷；預設只保留 1 小時，避免幾萬筆長時間執行後 JSON 無限制膨脹。
+
+因此，`pending_running_console.json` 不是長期歷史資料庫。它是短期、可重建的跨程序中控檔：真正的「是否已完成」仍以 SQL/ES/table/TXT 輸出目標與 pending recheck 為準。
 
 ## 中控臺調整 log
 
@@ -52,7 +55,7 @@
 可用 ctx 屬性調整：
 
 - `pending_running_console_log_path`：自訂調整 log 路徑。
-- `pending_running_console_log_max_bytes`：調整 log 最大大小，預設 30 MB；超過時保留後半段。
+- `pending_running_console_log_max_bytes`：調整 log 最大大小，預設 30 MB；超過上限時從最舊內容開始裁掉，保留約後半段較新的 JSONL。
 
 常見事件：
 
@@ -103,13 +106,15 @@ TXT mode 沒有 SQL/ES adapter，因此中控臺以檔案路徑作為 pk：
 - 中控臺即使判定 running，也不會永久跳過；只會延後，等其他非 running 項目都掃過後再回頭處理。
 - Pending recheck 若判定已完成，才會真的跳過本次派工。
 
-## 故障與 stale 狀態
+## 故障、損毀與 stale 狀態
 
-如果主程序崩潰，可能留下 running 狀態。中控臺會透過 TTL 清除 stale record。若系統中某些工作時間可能超過預設 24 小時，應調大：
+如果主程序崩潰，可能留下 running 狀態。中控臺會透過 TTL 與 dead pid probe 清除 stale running record。若系統中某些工作時間可能超過預設 24 小時，應調大：
 
 ```python
 ctx.pending_running_console_ttl_seconds = 48 * 60 * 60
 ```
+
+如果 `pending_running_console.json` 在執行中損毀或被截斷，下一次讀取失敗時會以空的 `{version, running}` 結構重建。影響是損毀到重建這段短時間內，跨程序 running 比對可能暫時失效，其他程序可能短暫無法避開同一 row/file；但後續 producer 重新 `mark_running` 後，中控臺會恢復作用。是否真的要派工仍會再經 pending recheck 確認。
 
 也可以在排查時直接檢查：
 

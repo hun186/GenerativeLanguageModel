@@ -72,3 +72,10 @@
 - 主要修改內容：`multistage_stage_writeback_skip_final_combine` 改為 opt-in；即使偵測到 `sql_writeback_rules source=stage`，預設仍保留 legacy final prompt combine。只有使用者明確設定 `multistage_stage_writeback_skip_final_combine=True` 時才跳過 final combine 並使用 stage manifest marker。
 - 驗證結果：`python -m compileall czjLLM/prompt_pipeline/pipeline_controller.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py tests/sql_mode/runtime/test_producer_pending_recheck.py` 通過可執行測試（7 passed，1 skipped）；requirements 安裝仍受 GitHub dependency proxy 403 限制。
 - 重要結論：final combine 可能只是錯誤最後可見位置，不一定是根因；在未完全確認前，避免預設改變既有可正常執行的 combine 流程。
+
+## 2026-06-25 pending running console retention and README
+
+- 任務目的：確認並落實 pending running console 的短期中控定位，避免 `pending_running_console.json` 因大量 completed / released 紀錄長期累積而膨脹，並補充 README 說明檔。
+- 主要修改內容：`pending_central.py` 新增 `pending_running_console_finished_retention_seconds`，預設只保留 `last_finished` 1 小時；`pending_running_console_adjustments.log` 保持 30 MB 上限、超過時保留較新的後半段；補充 JSON 中控檔損毀後會以空結構重建的測試與文件說明。
+- 驗證結果：`python -m compileall czjLLM/prompt_pipeline/pending_central.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py` 通過 10 tests；`python -m pytest -rs tests/sql_mode/runtime/test_producer_pending_recheck.py` 因目前環境缺少 `yaml` 套件而全部 skip（requirements 安裝仍受 GitHub dependency proxy 403 限制）。
+- 重要結論：`pending_running_console.json` 是可重建的跨程序短期協調檔，不是長期歷史資料庫；真正完成判斷仍依 pending recheck 與輸出目標狀態。
