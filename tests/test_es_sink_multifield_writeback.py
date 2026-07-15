@@ -96,3 +96,31 @@ def test_es_sink_resolves_business_key_to_real_es_id_before_bulk(monkeypatch):
     assert captured["actions"][0]["_id"] == "real-es-doc-id"
     assert captured["actions"][0]["doc"]["main_result"] == {"ok": True}
     assert captured["actions"][0]["doc"]["sha1"] == "business-key-1"
+
+
+def test_es_sink_bulk_errors_raise_and_keep_buffer(monkeypatch):
+    fake_es = types.ModuleType("elasticsearch")
+    fake_es.Elasticsearch = object
+
+    def fake_bulk(es, actions, **kwargs):
+        list(actions)
+        return 0, [{"update": {"status": 400, "error": {"type": "document_parsing_exception"}}}]
+
+    fake_es.helpers = types.SimpleNamespace(bulk=fake_bulk)
+    monkeypatch.setitem(sys.modules, "elasticsearch", fake_es)
+    sys.modules.pop("czjLLM.es_mode.runtime.sinks.es_sink", None)
+    mod = importlib.import_module("czjLLM.es_mode.runtime.sinks.es_sink")
+
+    ctx = SimpleNamespace(output_col="main_result", output_profile="json", es_refresh_after_flush=False)
+    sink = mod.ESSink(ctx, DummyES(), index="docs", output_col="main_result", flush_every=999)
+    sink.write_main("doc-1", {"ok": True})
+
+    try:
+        sink.flush_all()
+    except RuntimeError as exc:
+        assert "ESSink bulk update failed" in str(exc)
+    else:
+        raise AssertionError("Expected RuntimeError for ES bulk errors")
+
+    assert len(sink._buffer) == 1
+    sink._buffer.clear()

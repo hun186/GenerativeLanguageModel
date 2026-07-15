@@ -20,6 +20,20 @@ def normalize_date_value(value: str) -> Tuple[Optional[str], Optional[str]]:
     return (None, None)
 
 
+def _clean_list_of_objects(value: Any) -> list:
+    """Return only object entries accepted by ES nested/object-array mappings."""
+    if value is None:
+        return []
+    if isinstance(value, dict):
+        return [value]
+    if not isinstance(value, list):
+        return []
+    return [entry for entry in value if isinstance(entry, dict)]
+
+
+def _clean_object(value: Any) -> dict:
+    return value if isinstance(value, dict) else {}
+
 def normalize_multidim_event_payload(payload: Any, **_: Any) -> Any:
     """Normalize legacy multidimensional event payloads before ES writeback.
 
@@ -38,6 +52,17 @@ def normalize_multidim_event_payload(payload: Any, **_: Any) -> Any:
                 out.append(item)
                 continue
             obj = dict(item)
+
+            # ES mapping declares these fields as nested/object structures.  LLM
+            # output may contain nulls or scalar placeholders; sending those values
+            # causes document_parsing_exception even though the bulk request itself
+            # is accepted.  Normalize invalid structural values before writeback.
+            for key in ("Person", "Involved_Parties", "Impact", "Event_Timeline", "evidence_snippets"):
+                if key in obj:
+                    obj[key] = _clean_list_of_objects(obj.get(key))
+            for key in ("Event", "importance", "date_range"):
+                if key in obj:
+                    obj[key] = _clean_object(obj.get(key))
 
             event = obj.get("Event")
             if isinstance(event, dict):

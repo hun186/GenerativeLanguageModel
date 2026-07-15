@@ -80,3 +80,29 @@ def test_write_output_false_skips_buffering():
     sink.write_main(pk="doc-1", result_text='{"x": 1}')
 
     assert sink._buffer == []
+
+
+def test_multidim_event_profile_drops_invalid_nested_placeholders():
+    sink = _sink(output_col="multidim_event_json", output_profile="multidim_event")
+    payload = [{
+        "Event": None,
+        "Involved_Parties": [None, "", {"party_name": "WIPO", "party_role": "org"}],
+        "Impact": "",
+        "Event_Timeline": [{"date": "2025-01"}, None],
+        "evidence_snippets": None,
+    }]
+
+    normalized = sink._normalize_payload_by_profile(payload)
+
+    assert normalized[0]["Event"] == {}
+    assert normalized[0]["Involved_Parties"] == [{"party_name": "WIPO", "party_role": "org"}]
+    assert normalized[0]["Impact"] == []
+    assert normalized[0]["Event_Timeline"] == [
+        {
+            "date": "2025-01",
+            "date_raw": "2025-01",
+            "date_iso": "2025-01-01",
+            "date_precision": "month",
+        }
+    ]
+    assert normalized[0]["evidence_snippets"] == []

@@ -657,8 +657,12 @@ class ESSink:
     
             if errors:
                 print(f"❌ bulk 有錯（僅示範前 3 筆）：{errors[:3]}")
-            else:
-                print(f"💾 bulk 成功筆數：{success}")
+                raise RuntimeError(f"ESSink bulk update failed: {errors[:3]}")
+
+            print(f"💾 bulk 成功筆數：{success}")
+            self._buffer.clear()
+            self._buffer_bytes = 0
+            self._last_flush_ts = time.time()
     
             # 二擇一即可，不必再呼叫一次 refresh
             # try: self.es.indices.refresh(index=self.index)
@@ -666,8 +670,7 @@ class ESSink:
     
         except Exception as ex:
             print(f"⚠️ ESSink._flush 例外：{ex}")
-        finally:
-            self._buffer.clear()
+            raise
 
     def flush_all(self):
         self._flush()

@@ -107,3 +107,10 @@
 - 主要修改內容：在 `ESSink` flush ES bulk update 前，若 ES 設定的 `id_col` 不是 `_id`，先用 `id_col`/keyword 欄位解析實際 Elasticsearch `_id`，再送出 bulk update，避免把 business key 當成 `_id` 造成 ES 成功 upsert 到另一份新文件而原文件未更新；並在 upsert fallback 時把 business key 寫入 doc。
 - 驗證結果：依專案規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/es_mode/runtime/sinks/es_sink.py czjLLM/prompt_pipeline/runtime_support czjLLM/prompt_pipeline/pipeline_controller.py` 通過，以及 `python -m pytest tests/test_es_sink_multifield_writeback.py tests/prompt_pipeline/test_extracted_helpers.py tests/sql_mode/runtime/test_pending_central.py` 共 15 tests 通過。
 - 重要結論：ES `helpers.bulk(update)` 的成功筆數只代表 update/upsert request 被 ES 接受；若 `_id` 用錯，仍可能寫到新文件而不是使用者查詢的來源文件。ES 模式使用非 `_id` business key 時，sink 必須先解析真實 `_id`。
+
+## 2026-07-15 ES bulk parsing errors surfaced and payload normalization
+
+- 任務目的：回應 ES 寫回後出現 `document_parsing_exception`，錯誤指出 `multidim_event_json.Involved_Parties` mapping 期待 object/nested，但收到具體非物件值；確認這是實際 ES 寫入錯誤，不應被當成成功完成。
+- 主要修改內容：`multidim_event` output profile 會在寫回前清理 ES nested/object 欄位，將 `Person`、`Involved_Parties`、`Impact`、`Event_Timeline`、`evidence_snippets` 中的 `null`/scalar placeholder 移除或轉為空陣列，並將 `Event`、`importance`、`date_range` 的非 object 值轉為空物件；`ESSink._flush` 遇到 bulk errors 時改為 raise `RuntimeError` 且保留 buffer，避免 row merger 在 ES 拒寫時仍標記逐列寫回完成。
+- 驗證結果：依專案規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/es_mode/output_profiles/multidim_event.py czjLLM/es_mode/runtime/sinks/es_sink.py` 通過，以及 `python -m pytest tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/prompt_pipeline/test_extracted_helpers.py tests/sql_mode/runtime/test_pending_central.py` 共 23 tests 通過。
+- 重要結論：先前 bulk error 是有問題的真實拒寫，不是可忽略 warning；修正後若 ES mapping 仍拒寫，流程會保留待寫 buffer 並把錯誤往上拋，避免假成功。
