@@ -100,3 +100,10 @@
 - 主要修改內容：新增 `czjLLM/prompt_pipeline/runtime_support/` package，並將 `load_meter.py`、`prompt_queue.py`、`watchdogs.py` 移入該 package；`pipeline_controller.py` 改由 `runtime_support` 匯入並繼續 re-export helper 名稱。
 - 驗證結果：`python -m compileall czjLLM/prompt_pipeline` 通過；`python -m pytest tests/prompt_pipeline/test_extracted_helpers.py` 通過 3 tests；`python -m pytest tests/sql_mode/runtime/test_pending_central.py` 通過 10 tests；requirements 安裝仍受 proxy 403 限制。
 - 重要結論：prompt pipeline 根目錄不再新增三個 runtime helper 檔，相關 helper 集中於 `runtime_support/`，定位方式更清楚。
+
+## 2026-07-15 ES writeback business-key update fix
+
+- 任務目的：修正 prompt pipeline runtime helper 移入 `runtime_support/` 後使用者回測發現 ES 模式顯示 `bulk 成功筆數`，但查詢原 ES 文件時未看到欄位寫回；Excel 與 SQLite 模式正常。
+- 主要修改內容：在 `ESSink` flush ES bulk update 前，若 ES 設定的 `id_col` 不是 `_id`，先用 `id_col`/keyword 欄位解析實際 Elasticsearch `_id`，再送出 bulk update，避免把 business key 當成 `_id` 造成 ES 成功 upsert 到另一份新文件而原文件未更新；並在 upsert fallback 時把 business key 寫入 doc。
+- 驗證結果：依專案規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/es_mode/runtime/sinks/es_sink.py czjLLM/prompt_pipeline/runtime_support czjLLM/prompt_pipeline/pipeline_controller.py` 通過，以及 `python -m pytest tests/test_es_sink_multifield_writeback.py tests/prompt_pipeline/test_extracted_helpers.py tests/sql_mode/runtime/test_pending_central.py` 共 15 tests 通過。
+- 重要結論：ES `helpers.bulk(update)` 的成功筆數只代表 update/upsert request 被 ES 接受；若 `_id` 用錯，仍可能寫到新文件而不是使用者查詢的來源文件。ES 模式使用非 `_id` business key 時，sink 必須先解析真實 `_id`。
