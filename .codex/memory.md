@@ -79,3 +79,24 @@
 - 主要修改內容：`pending_central.py` 新增 `pending_running_console_finished_retention_seconds`，預設只保留 `last_finished` 1 小時；`pending_running_console_adjustments.log` 保持 30 MB 上限、超過時保留較新的後半段；補充 JSON 中控檔損毀後會以空結構重建的測試與文件說明。
 - 驗證結果：`python -m compileall czjLLM/prompt_pipeline/pending_central.py` 通過；`python -m pytest tests/sql_mode/runtime/test_pending_central.py` 通過 10 tests；`python -m pytest -rs tests/sql_mode/runtime/test_producer_pending_recheck.py` 因目前環境缺少 `yaml` 套件而全部 skip（requirements 安裝仍受 GitHub dependency proxy 403 限制）。
 - 重要結論：`pending_running_console.json` 是可重建的跨程序短期協調檔，不是長期歷史資料庫；真正完成判斷仍依 pending recheck 與輸出目標狀態。
+
+## 2026-07-14 large file split candidate audit
+
+- 任務目的：盤點專案中較肥大的 Python 程式檔，找出後續可拆分的重構候選。
+- 主要修改內容：新增 `docs/maintenance/large_file_split_candidates.md`，列出前 10 個拆分候選、粗略行數、拆分理由與建議拆分方向。
+- 驗證結果：以 Python 腳本掃描 `.py` 檔行數並用 AST 檢視主要大型模組的 top-level function/class 分布；本次未改 runtime code。
+- 重要結論：最優先拆分目標是 `czjLLM/prompt_pipeline/pipeline_controller.py` 與 `czjLLM/utilities/combine_utils.py`；大型 task config 與疑似備份/legacy 檔案應低優先或先確認使用狀態。
+
+## 2026-07-15 prompt pipeline extraction refactor
+
+- 任務目的：依 `docs/maintenance/large_file_split_candidates.md` 開始對肥大程式檔進行拆檔重構，優先處理最大檔 `czjLLM/prompt_pipeline/pipeline_controller.py`。
+- 主要修改內容：將 ItemsRegistry/load meter/lock/file cleanup/item lookup helper 抽到 `czjLLM/prompt_pipeline/load_meter.py`；將 TODO/RUNNING/Success 檔案佇列 helper 抽到 `czjLLM/prompt_pipeline/prompt_queue.py`；將 stall watchdog 與 ES heartbeat watchdog 抽到 `czjLLM/prompt_pipeline/watchdogs.py`；`pipeline_controller.py` 改為相容 re-export/import，保留既有 import 路徑。
+- 驗證結果：`python -m compileall czjLLM/prompt_pipeline` 通過；新增 `tests/prompt_pipeline/test_extracted_helpers.py` 並通過 3 tests；`python -m pytest tests/sql_mode/runtime/test_pending_central.py` 通過 10 tests；依專案規範先執行 requirements 安裝，但受 GitHub/pip proxy 403 與缺少 runtime dependency 限制，`tests/prompt_pipeline/test_process_prompt_and_merge_di.py` 仍因缺少 `tqdm` 無法收集。
+- 重要結論：本次為 extraction-only 拆檔，未變更 public API、prompt dispatch 語意或 meter JSON shape；`pipeline_controller.py` 行數由約 2,971 降至約 2,447。
+
+## 2026-07-15 prompt pipeline runtime support grouping
+
+- 任務目的：回應「拆分後同一子目錄檔案越來越多」的維護性問題，將前次抽出的 prompt pipeline runtime helper 再依功能集中到子目錄。
+- 主要修改內容：新增 `czjLLM/prompt_pipeline/runtime_support/` package，並將 `load_meter.py`、`prompt_queue.py`、`watchdogs.py` 移入該 package；`pipeline_controller.py` 改由 `runtime_support` 匯入並繼續 re-export helper 名稱。
+- 驗證結果：`python -m compileall czjLLM/prompt_pipeline` 通過；`python -m pytest tests/prompt_pipeline/test_extracted_helpers.py` 通過 3 tests；`python -m pytest tests/sql_mode/runtime/test_pending_central.py` 通過 10 tests；requirements 安裝仍受 proxy 403 限制。
+- 重要結論：prompt pipeline 根目錄不再新增三個 runtime helper 檔，相關 helper 集中於 `runtime_support/`，定位方式更清楚。

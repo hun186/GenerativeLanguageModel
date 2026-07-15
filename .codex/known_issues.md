@@ -80,3 +80,19 @@ Open
 狀態：Open
 
 負責人：-
+
+## prompt pipeline DI test collection blocked by missing tqdm after requirements install failure
+
+首次發現：2026-07-15
+
+問題：執行 `python -m pytest tests/prompt_pipeline/test_process_prompt_and_merge_di.py tests/sql_mode/runtime/test_pending_central.py` 時，`tests/prompt_pipeline/test_process_prompt_and_merge_di.py` import `czjLLM.prompt_pipeline.pipeline_controller` 失敗，原因為目前環境缺少 `tqdm`。依專案規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但安裝流程仍因 proxy 對 PyPI/GitHub tunnel 回傳 403 而失敗。
+
+影響：本次無法在目前容器收集/執行依賴完整 runtime package 的 prompt pipeline DI 測試；只能以 `compileall`、新拆出 helper 的單元測試、以及不依賴缺失套件的 pending central 測試驗證。
+
+暫時解法：在可安裝完整 requirements 的環境重跑 `python -m pytest tests/prompt_pipeline/test_process_prompt_and_merge_di.py tests/sql_mode/runtime/test_pending_central.py`；目前容器先以 `python -m compileall czjLLM/prompt_pipeline` 與 `python -m pytest tests/prompt_pipeline/test_extracted_helpers.py tests/sql_mode/runtime/test_pending_central.py` 替代。
+
+根本原因：目前容器無法透過 proxy 取得部分 PyPI/GitHub dependency，且環境未預裝 `tqdm`。
+
+狀態：Open
+
+負責人：-
