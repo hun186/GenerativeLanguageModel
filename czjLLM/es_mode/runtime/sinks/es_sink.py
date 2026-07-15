@@ -74,6 +74,7 @@ class ESSink:
         self._buffer: List[Dict[str, Any]] = []
         self._buffer_bytes = 0                    # ✅ 累積近似大小
         self._last_flush_ts = datetime.datetime.now().timestamp()
+        self._resolved_doc_id_cache: Dict[str, Optional[str]] = {}
         self._debug = bool(getattr(self.ctx, "debug_es_sink", False))
         self.write_output = bool(getattr(ctx, "write_output", getattr(ctx, "es_write_output", True)))
         load_output_profile_plugins(getattr(self.ctx, "output_profile_plugins", None))
@@ -119,6 +120,84 @@ class ESSink:
             return v
         except Exception:
             return None
+
+    def _es_id_col(self) -> str:
+        adapter = getattr(self.ctx, "_es_adapter", None)
+        cfg = getattr(adapter, "cfg", None) or getattr(self.ctx, "cfg", None) or {}
+        return str(cfg.get("id_col") or getattr(self.ctx, "primary_key", "_id") or "_id")
+
+    def _pk_term_field(self, id_col: str, index: str) -> str:
+        adapter = getattr(self.ctx, "_es_adapter", None)
+        cfg = getattr(adapter, "cfg", None) or {}
+        suffix = cfg.get("pk_keyword_suffix", ".keyword")
+        try:
+            mapping = adapter.get_field_mapping(index, id_col) if adapter is not None else None
+            has_keyword = isinstance(mapping, dict) and "fields" in mapping and "keyword" in mapping["fields"]
+        except Exception:
+            has_keyword = False
+        return f"{id_col}{suffix}" if has_keyword else id_col
+
+    def _resolve_doc_id_for_update(self, logical_id: Any, index: str) -> str:
+        """Return the concrete Elasticsearch ``_id`` for an update action.
+
+        ES mode may configure ``id_col`` to a business key stored in ``_source``.
+        The row scheduler then passes that business key as ``pk``.  A bulk
+        ``update`` action, however, always targets Elasticsearch ``_id``.  If we
+        send the business key as ``_id``, ES reports a successful upsert while
+        the original document remains unchanged.  Resolve the real ``_id`` first
+        so same-index writeback mutates the source document.
+        """
+        doc_id = str(logical_id)
+        id_col = self._es_id_col()
+        if id_col == "_id":
+            return doc_id
+
+        cache_key = f"{index}\0{id_col}\0{doc_id}"
+        if cache_key in self._resolved_doc_id_cache:
+            cached = self._resolved_doc_id_cache[cache_key]
+            return cached or doc_id
+
+        term_field = self._pk_term_field(id_col, index)
+        try:
+            res = self.es.search(
+                index=index,
+                body={
+                    "query": {"term": {term_field: doc_id}},
+                    "_source": False,
+                    "size": 2,
+                },
+                request_timeout=int(getattr(self.ctx, "es_request_timeout", 60)),
+            )
+            hits = res.get("hits", {}).get("hits", [])
+            if hits:
+                resolved = str(hits[0].get("_id"))
+                if len(hits) > 1:
+                    tlog_warn(
+                        f"⚠️ ESSink: id_col={id_col!r} value={doc_id!r} 命中多筆文件，"
+                        f"將更新第一筆 _id={resolved!r}。"
+                    )
+                self._resolved_doc_id_cache[cache_key] = resolved
+                return resolved
+        except Exception as ex:
+            tlog_warn(f"⚠️ ESSink: 無法以 {id_col}={doc_id!r} 解析 ES _id，改用原值更新：{ex}")
+
+        self._resolved_doc_id_cache[cache_key] = None
+        return doc_id
+
+    def _build_update_action(self, item: Dict[str, Any]) -> Dict[str, Any]:
+        index = item.get("_index", self.index)
+        logical_id = item["_id"]
+        action = {
+            "_op_type": "update",
+            "_index": index,
+            "_id": self._resolve_doc_id_for_update(logical_id, index),
+            "doc": item["doc"],
+            "doc_as_upsert": True,
+        }
+        id_col = self._es_id_col()
+        if id_col != "_id" and isinstance(action["doc"], dict):
+            action["doc"].setdefault(id_col, str(logical_id))
+        return action
 
     def _maybe_parse_json(self, payload):
         if isinstance(payload, str):
@@ -562,16 +641,7 @@ class ESSink:
         if not self._buffer:
             return
     
-        actions_gen = (
-            {
-                "_op_type": "update",
-                "_index": item.get("_index", self.index),
-                "_id": item["_id"],
-                "doc": item["doc"],
-                "doc_as_upsert": True,
-            }
-            for item in self._buffer
-        )
+        actions_gen = (self._build_update_action(item) for item in self._buffer)
     
         try:
             # ✅ 只有在 debug 下才轉 list（避免平時多一份記憶體拷貝）
@@ -587,8 +657,12 @@ class ESSink:
     
             if errors:
                 print(f"❌ bulk 有錯（僅示範前 3 筆）：{errors[:3]}")
-            else:
-                print(f"💾 bulk 成功筆數：{success}")
+                raise RuntimeError(f"ESSink bulk update failed: {errors[:3]}")
+
+            print(f"💾 bulk 成功筆數：{success}")
+            self._buffer.clear()
+            self._buffer_bytes = 0
+            self._last_flush_ts = time.time()
     
             # 二擇一即可，不必再呼叫一次 refresh
             # try: self.es.indices.refresh(index=self.index)
@@ -596,8 +670,7 @@ class ESSink:
     
         except Exception as ex:
             print(f"⚠️ ESSink._flush 例外：{ex}")
-        finally:
-            self._buffer.clear()
+            raise
 
     def flush_all(self):
         self._flush()
