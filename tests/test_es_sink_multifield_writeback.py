@@ -55,3 +55,44 @@ def test_es_sink_multifield_writeback_uses_rule_indexes_and_meta(monkeypatch):
     assert by_index["main-index"]["main_result"] == [{"x": 1}]
     assert by_index["main-index"]["main_meta"]["output_field"] == "main_result"
     sink._buffer.clear()
+
+
+def test_es_sink_resolves_business_key_to_real_es_id_before_bulk(monkeypatch):
+    captured = {}
+    fake_es = types.ModuleType("elasticsearch")
+    fake_es.Elasticsearch = object
+
+    def fake_bulk(es, actions, **kwargs):
+        captured["actions"] = list(actions)
+        return len(captured["actions"]), []
+
+    fake_es.helpers = types.SimpleNamespace(bulk=fake_bulk)
+    monkeypatch.setitem(sys.modules, "elasticsearch", fake_es)
+    sys.modules.pop("czjLLM.es_mode.runtime.sinks.es_sink", None)
+    mod = importlib.import_module("czjLLM.es_mode.runtime.sinks.es_sink")
+
+    class SearchES(DummyES):
+        def search(self, index, body, request_timeout=None):
+            captured["search"] = {"index": index, "body": body, "request_timeout": request_timeout}
+            return {"hits": {"hits": [{"_id": "real-es-doc-id"}]}}
+
+    adapter = SimpleNamespace(
+        cfg={"id_col": "sha1", "pk_keyword_suffix": ".keyword"},
+        get_field_mapping=lambda index, field: {"fields": {"keyword": {}}},
+    )
+    ctx = SimpleNamespace(
+        output_col="main_result",
+        output_profile="json",
+        es_refresh_after_flush=False,
+        es_request_timeout=12,
+        _es_adapter=adapter,
+    )
+    sink = mod.ESSink(ctx, SearchES(), index="docs", output_col="main_result", flush_every=999)
+
+    sink.write_main("business-key-1", {"ok": True})
+    sink.flush_all()
+
+    assert captured["search"]["body"]["query"] == {"term": {"sha1.keyword": "business-key-1"}}
+    assert captured["actions"][0]["_id"] == "real-es-doc-id"
+    assert captured["actions"][0]["doc"]["main_result"] == {"ok": True}
+    assert captured["actions"][0]["doc"]["sha1"] == "business-key-1"
