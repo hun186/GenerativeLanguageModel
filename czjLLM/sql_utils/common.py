@@ -6,6 +6,7 @@ def quote_column(col: str) -> str:
     return f"[{col.strip()}]"
 
 def safe_sql_value(val):
+    import json
     import math
     if val is None:
         return ""
@@ -14,7 +15,11 @@ def safe_sql_value(val):
     if isinstance(val, str) and val.strip().lower() in ["nan", "none"]:
         return ""
     if isinstance(val, list):
+        if any(isinstance(v, (dict, list)) for v in val):
+            return json.dumps(val, ensure_ascii=False)
         return ", ".join(str(v) for v in val)
+    if isinstance(val, dict):
+        return json.dumps(val, ensure_ascii=False)
     return val
 
 def get_sql_driver_name():
