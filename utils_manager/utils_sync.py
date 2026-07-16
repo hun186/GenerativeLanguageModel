@@ -229,15 +229,33 @@ def sync_shared_utils(
 # ---------- 設定檔解析 ----------
 def resolve_config_path(config_arg: str, ctx: PathContext) -> Path:
     p = Path(config_arg)
-    if p.is_absolute() and p.exists():
-        return p
+    if p.is_absolute():
+        if p.exists():
+            return p
+        raise FileNotFoundError(f"找不到設定檔：{config_arg}\n已嘗試：\n{p}")
 
-    candidates = [
-        Path(os.getcwd()) / config_arg,   # 目前工作目錄
-        ctx.app_root / config_arg,        # ✅ App 根（GenerativeLanguageModel）
-        ctx.caller_dir / config_arg,      # 呼叫端模組旁
-        ctx.project_root / config_arg,    # 專案根
+    search_roots = [
+        Path(os.getcwd()),        # 目前工作目錄，最先尊重使用者輸入路徑
+        ctx.app_root,             # ✅ App 根（GenerativeLanguageModel）
+        ctx.caller_dir,           # 呼叫端模組旁
+        ctx.project_root,         # 專案根
     ]
+    candidates: List[Path] = []
+    seen: set[Path] = set()
+    config_parts = p.parts
+    should_try_yaml_subdir = not config_parts or config_parts[0] != "yaml"
+
+    def add_candidate(path: Path) -> None:
+        normalized = path.resolve(strict=False)
+        if normalized not in seen:
+            seen.add(normalized)
+            candidates.append(path)
+
+    for root in search_roots:
+        add_candidate(root / p)
+        if should_try_yaml_subdir:
+            add_candidate(root / "yaml" / p)
+
     for c in candidates:
         try_print = c.relative_to(ctx.project_root) if c.is_absolute() else c
         #print("paths_to_try", try_print)
