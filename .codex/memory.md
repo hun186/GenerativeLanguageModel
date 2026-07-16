@@ -135,3 +135,10 @@
 - 主要修改內容：在 consumer stage-managed 判斷旁補充註解，說明根因不是 scheduler 的 `ctx.stages` helper，而是 `llm_stream_consumer` 曾把任意 `ctx.stage_cfg` dict（包含 `{}` 或 `enabled=false/name=single_stage` 相容 metadata）當成 stage-managed 訊號；新增測試確認 `{}` 與 compatibility-only stage_cfg 都不會宣告 flow。
 - 驗證結果：requirements 安裝仍受 GitHub dependency `peft` proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/pipeline_controller.py czjLLM/prompt_pipeline/runtime_support/stage_mode.py czjLLM/sql_mode/runtime/scheduler.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_consumer_stage_managed_mode.py tests/prompt_pipeline/test_extracted_helpers.py tests/sql_mode/runtime/test_pending_central.py` 共 17 tests 通過。
 - 重要結論：舊 helper 對 `ctx.stages` 的判斷本身沒有把 plain single task 誤判；漏判發生在另一條 consumer disabled 條件 `has_stage_cfg = isinstance(ctx.stage_cfg, dict)`，空 dict 也會成立，導致舊單階段 consumer 被停用。
+
+## 2026-07-16 single-stage vs multistage YAML guide
+
+- 任務目的：依使用者要求新增說明文件，整理舊版單階段 YAML 與新版多階段 YAML 的寫法注意事項與流程原理。
+- 主要修改內容：新增 `docs/usage/single_stage_vs_multistage_yaml_guide.md`，涵蓋 ES、SQL/SQLite、Excel/CSV table、TXT 的舊單階段範例、新版多階段範例、stage-managed 判斷規則、legacy consumer 流程、多階段 manifest/writeback 流程與常見問題。
+- 驗證結果：以 Python 腳本檢查文件存在、標題與必要章節（舊版單階段 YAML 寫法、新版多階段 YAML 寫法、多階段流程原理、寫法注意事項）皆存在；本次僅新增文件，未執行 pytest。
+- 重要結論：文件明確說明舊單階段應省略 `stage_cfg` / `stages` / `task_config.stages`，不要用空設定表示單階段；新版即使只有一個明確 stage，也會走 stage-managed path。
