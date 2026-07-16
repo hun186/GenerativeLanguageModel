@@ -1,5 +1,7 @@
 import json
 import os
+import threading
+import time
 from types import SimpleNamespace
 
 import pytest
@@ -260,3 +262,59 @@ def test_produce_rows_releases_running_when_schedule_returns_zero(monkeypatch, t
     assert any("未建立可執行任務 pk=pk-1" in m for m in warnings)
     log_text = (tmp_path / "logs" / "pending_running_console_adjustments.log").read_text(encoding="utf-8")
     assert '"event": "schedule_noop_release"' in log_text
+
+
+def test_produce_rows_parallelizes_stream_multistage_rows_with_bound(monkeypatch):
+    active = 0
+    max_active = 0
+    calls = []
+    lock = threading.Lock()
+
+    monkeypatch.setattr(producer, "tlog", lambda _msg: None)
+    monkeypatch.setattr(producer, "outstanding_now", lambda _meter_fn: 0)
+    monkeypatch.setattr(producer, "producer_backpressure_wait", lambda **_kwargs: None)
+    monkeypatch.setattr(producer, "still_pending_before_dispatch", lambda _ctx, _pk: True)
+    monkeypatch.setattr(producer, "meter_update", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(producer, "mark_running", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(producer, "mark_not_running", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(producer, "record_adjustment", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(producer, "finalize_scheduled", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(producer, "is_running", lambda *_args, **_kwargs: False)
+    monkeypatch.setattr(producer, "order_rows_avoiding_running", lambda _ctx, rows: list(rows))
+
+    def _slow_schedule(_ctx, _registry, _meter_fn, _idx, pk, _text, source_inputs=None):
+        nonlocal active, max_active
+        with lock:
+            active += 1
+            max_active = max(max_active, active)
+            calls.append(("start", pk, active))
+        time.sleep(0.05)
+        with lock:
+            calls.append(("end", pk, active))
+            active -= 1
+        return 1
+
+    monkeypatch.setattr(producer, "schedule_one_row", _slow_schedule)
+
+    ctx = SimpleNamespace(
+        mode="sql",
+        sql_enable_multistage_stream=True,
+        stages=[{"name": "extract", "task": "demo"}],
+        n_process=4,
+        multistage_row_parallelism=2,
+    )
+
+    scheduled = producer.produce_rows(
+        ctx=ctx,
+        rows_for_count=[(f"pk-{i}", f"text-{i}") for i in range(5)],
+        registry=None,
+        meter_fn="meter.json",
+        low=0,
+        stop_event=_StopEventStub(),
+        consumer=None,
+        p_sched=_ProgressStub(),
+    )
+
+    assert scheduled == 5
+    assert max_active == 2
+    assert len([event for event in calls if event[0] == "start"]) == 5

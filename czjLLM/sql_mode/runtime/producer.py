@@ -1,11 +1,13 @@
 # sql_mode/runtime/producer.py
 import random
 import time
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from typing import Iterable, Tuple, Any, Optional
 
 from czjLLM.job_manager.console_ui import tlog_warn,tlog
 from czjLLM.prompt_pipeline.pipeline_controller import producer_backpressure_wait
 from czjLLM.prompt_pipeline.pipeline_controller import meter_update
+from czjLLM.prompt_pipeline.runtime_support.stage_mode import explicit_stage_flow
 from .workers import outstanding_now
 from .scheduler import schedule_one_row
 from .pending_recheck import (
@@ -81,6 +83,61 @@ def _maybe_block_shuffle_rows(ctx, rows_for_count):
     return shuffled
 
 
+def _stream_multistage_enabled(ctx) -> bool:
+    mode = str(getattr(ctx, "mode", "") or "").strip().lower()
+    return (
+        mode in {"sql", "table", "es"}
+        and bool(getattr(ctx, "sql_enable_multistage_stream", True))
+        and bool(explicit_stage_flow(ctx))
+    )
+
+
+def _endpoint_pool_parallelism(ctx) -> int:
+    """Return the same endpoint-pool-derived budget used by legacy LLM rounds."""
+    try:
+        n_process = int(getattr(ctx, "n_process", 0) or 0)
+    except (TypeError, ValueError):
+        n_process = 0
+    if n_process > 0:
+        return n_process
+
+    model_spec = getattr(ctx, "model_spec", {}) or {}
+    base_urls = model_spec.get("base_url") if isinstance(model_spec, dict) else None
+    if isinstance(base_urls, str):
+        return 1
+    if isinstance(base_urls, (list, tuple, set)):
+        endpoint_count = len([url for url in base_urls if url])
+        if endpoint_count > 0:
+            return endpoint_count * 2 if bool(getattr(ctx, "on_premises", True)) else endpoint_count
+    return 1
+
+
+def _multistage_row_parallelism(ctx) -> int:
+    """Return bounded row/doc-level parallelism for stream multistage scheduling.
+
+    Explicit config wins:
+      - multistage_row_parallelism
+      - sql_multistage_row_parallelism
+      - stream_multistage_row_parallelism
+
+    Without explicit config, reuse the endpoint-pool-derived ctx.n_process budget
+    used by legacy single-stage LLM rounds. Do not infer GPU count from the
+    producer host because stream jobs usually call Ollama/OpenAI-compatible APIs
+    that may run on a different machine than the dispatcher.
+    """
+    configured = _get_positive_int(
+        ctx,
+        "multistage_row_parallelism",
+        "sql_multistage_row_parallelism",
+        "stream_multistage_row_parallelism",
+        default=0,
+    )
+    if configured > 0:
+        return configured
+
+    return _endpoint_pool_parallelism(ctx)
+
+
 def produce_rows(
     ctx,
     rows_for_count: Iterable[Tuple[Any, str]],
@@ -113,94 +170,144 @@ def produce_rows(
         suffix = "；pending recheck=enabled" if recheck_enabled else ""
         tlog(f"[producer] will iterate {total_rows} rows{suffix}")
 
-    fallback_running_phase = False
-    deferred_running_rows = []
-    idx = 0
-    while idx < len(rows_for_count):
-        row = rows_for_count[idx]
-        idx += 1
-        if len(row) >= 3:
-            pk, text, source_inputs = row[0], row[1], row[2]
+    row_parallelism = _multistage_row_parallelism(ctx) if _stream_multistage_enabled(ctx) else 1
+    executor = None
+    in_flight = set()
+    if row_parallelism > 1:
+        executor = ThreadPoolExecutor(max_workers=row_parallelism, thread_name_prefix="multistage-row")
+        tlog(f"[producer] multistage row/doc parallelism enabled: max_workers={row_parallelism}")
+
+    def _complete_future(fut):
+        pk_done = None
+        try:
+            pk_done, scheduled_ok = fut.result()
+            return bool(scheduled_ok), pk_done
+        except Exception as e:
+            tlog_warn(f"[producer] multistage row future failed: {e!r}")
+            return False, pk_done
+
+    def _drain_completed(block: bool = False):
+        nonlocal scheduled
+        if not in_flight:
+            return
+        done = set()
+        if block:
+            done, _pending = wait(in_flight, return_when=FIRST_COMPLETED)
         else:
-            pk, text = row[0], row[1]
-            source_inputs = None
-        seen += 1
-
-        if (not fallback_running_phase) and is_running(ctx, pk):
-            record_adjustment(ctx, "defer_running", pk=pk, deferred_count=len(deferred_running_rows) + 1)
-            deferred_running_rows.append(row)
-            if idx >= len(rows_for_count) and deferred_running_rows:
-                rows_for_count = deferred_running_rows
-                deferred_running_rows = []
-                idx = 0
-                fallback_running_phase = True
-                record_adjustment(ctx, "fallback_revisit_running", deferred=len(rows_for_count))
-                tlog(
-                    "[producer] pending running console: all non-running rows scanned; "
-                    f"revisit deferred running rows={len(rows_for_count)}"
-                )
-            continue
-
-        if stop_event.is_set():
-            tlog_warn("produce_rows: stop_event set，提前結束排程。")
-            # ★新增：提前結束也要回報目前游標；不要把 prod_done 設 True
-            try:
-                meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
-                    "cursor": seen, "enq": scheduled, "producer_alive": False,
-                    "last_progress_ts": time.time(), "prod_done": False
-                }))
-            except Exception:
-                pass
-            break
-
-        if not text:
+            done = {fut for fut in in_flight if fut.done()}
+        for fut in done:
+            in_flight.discard(fut)
+            scheduled_ok, pk_done = _complete_future(fut)
+            if scheduled_ok:
+                scheduled += 1
+                if pk_done is not None:
+                    scheduled_pks.append(pk_done)
             try: p_sched.update(1)
             except Exception: pass
             if gui:
                 try: gui.inc_sched(1)
                 except Exception: pass
+
+    def _schedule_row(pk, text, source_inputs, row_idx_for_schedule, cursor_seen):
+        if not still_pending_before_dispatch(ctx, pk):
+            tlog_warn(
+                f"[producer] pending recheck 命中：pk={pk} 已由其他程序完成，"
+                "略過本次切片/派工以節省算力。"
+            )
             if p_done is not None:
                 try: p_done.update(1)
                 except Exception: pass
                 if gui:
                     try: gui.inc_done(1)
                     except Exception: pass
-            # ★新增：空列也更新游標，避免 watchdog 判定「長時間無進度」
+            try:
+                record_pending_skip(ctx, pk)
+                mark_not_running(ctx, pk, state="completed")
+            except Exception as e:
+                tlog_warn(f"[producer] pending skip log 寫入失敗 pk={pk}: {e!r}")
             try:
                 meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
-                    "cursor": seen, "enq": scheduled, "producer_alive": True,
-                    "last_progress_ts": time.time()
-                }))
-            except Exception:
-                pass
-            continue
-
-        try:
-            producer_backpressure_wait(
-                ctx=ctx, low=low, meter_fn=meter_fn, stop_event=stop_event,
-                consumer_thread=consumer, registry=registry,
-                soft_timeout=getattr(ctx, "bp_soft_timeout", 30.0),
-                hard_timeout=getattr(ctx, "bp_hard_timeout", 120.0),
-                sleep_step=0.05,
-            )
-        except Exception as e:
-            tlog_warn(f"[producer] backpressure wait 例外，略過此列 pk={pk}: {e!r}")
-            try:
-                meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
-                    "cursor": seen, "enq": scheduled, "producer_alive": True,
+                    "cursor": cursor_seen, "enq": scheduled, "producer_alive": True,
                     "last_progress_ts": time.time(),
-                    "last_error": f"backpressure:{type(e).__name__}"
+                    "last_skip_reason": "already_completed", "last_skip_pk": pk
                 }))
             except Exception:
                 pass
-            continue
+            return pk, False
 
         try:
-            if not still_pending_before_dispatch(ctx, pk):
+            mark_running(ctx, pk)
+            record_adjustment(ctx, "mark_running_before_dispatch", pk=pk)
+            scheduled_chunks = schedule_one_row(
+                ctx, registry, meter_fn, row_idx_for_schedule, pk, text, source_inputs=source_inputs
+            )
+            try:
+                scheduled_chunk_count = int(scheduled_chunks or 0)
+            except (TypeError, ValueError):
+                scheduled_chunk_count = 0
+            if scheduled_chunk_count <= 0:
+                mark_not_running(ctx, pk, state="schedule_noop")
+                record_adjustment(ctx, "schedule_noop_release", pk=pk)
                 tlog_warn(
-                    f"[producer] pending recheck 命中：pk={pk} 已由其他程序完成，"
-                    "略過本次切片/派工以節省算力。"
+                    f"[producer] schedule_one_row 未建立可執行任務 pk={pk}；"
+                    "已釋放 pending running console 標記，避免其他程序持續延後。"
                 )
+                return pk, False
+            return pk, True
+        except Exception as e:
+            try:
+                mark_not_running(ctx, pk, state="schedule_error")
+                record_adjustment(ctx, "schedule_error_release", pk=pk, error=repr(e))
+            except Exception:
+                pass
+            tlog_warn(f"[producer] schedule_one_row 失敗 pk={pk}: {e!r}")
+            return pk, False
+
+    fallback_running_phase = False
+    deferred_running_rows = []
+    idx = 0
+    try:
+        while idx < len(rows_for_count):
+            _drain_completed(block=False)
+            while executor is not None and len(in_flight) >= row_parallelism and not stop_event.is_set():
+                _drain_completed(block=True)
+            row = rows_for_count[idx]
+            idx += 1
+            if len(row) >= 3:
+                pk, text, source_inputs = row[0], row[1], row[2]
+            else:
+                pk, text = row[0], row[1]
+                source_inputs = None
+            seen += 1
+
+            if (not fallback_running_phase) and is_running(ctx, pk):
+                record_adjustment(ctx, "defer_running", pk=pk, deferred_count=len(deferred_running_rows) + 1)
+                deferred_running_rows.append(row)
+                if idx >= len(rows_for_count) and deferred_running_rows:
+                    rows_for_count = deferred_running_rows
+                    deferred_running_rows = []
+                    idx = 0
+                    fallback_running_phase = True
+                    record_adjustment(ctx, "fallback_revisit_running", deferred=len(rows_for_count))
+                    tlog(
+                        "[producer] pending running console: all non-running rows scanned; "
+                        f"revisit deferred running rows={len(rows_for_count)}"
+                    )
+                continue
+
+            if stop_event.is_set():
+                tlog_warn("produce_rows: stop_event set，提前結束排程。")
+                # ★新增：提前結束也要回報目前游標；不要把 prod_done 設 True
+                try:
+                    meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
+                        "cursor": seen, "enq": scheduled, "producer_alive": False,
+                        "last_progress_ts": time.time(), "prod_done": False
+                    }))
+                except Exception:
+                    pass
+                break
+
+            if not text:
                 try: p_sched.update(1)
                 except Exception: pass
                 if gui:
@@ -212,65 +319,66 @@ def produce_rows(
                     if gui:
                         try: gui.inc_done(1)
                         except Exception: pass
-                try:
-                    record_pending_skip(ctx, pk)
-                    mark_not_running(ctx, pk, state="completed")
-                except Exception as e:
-                    tlog_warn(f"[producer] pending skip log 寫入失敗 pk={pk}: {e!r}")
+                # ★新增：空列也更新游標，避免 watchdog 判定「長時間無進度」
                 try:
                     meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
                         "cursor": seen, "enq": scheduled, "producer_alive": True,
-                        "last_progress_ts": time.time(),
-                        "last_skip_reason": "already_completed", "last_skip_pk": pk
+                        "last_progress_ts": time.time()
                     }))
                 except Exception:
                     pass
                 continue
 
-            mark_running(ctx, pk)
-            record_adjustment(ctx, "mark_running_before_dispatch", pk=pk)
-            scheduled_chunks = schedule_one_row(ctx, registry, meter_fn, idx - 1, pk, text, source_inputs=source_inputs)
             try:
-                scheduled_chunk_count = int(scheduled_chunks or 0)
-            except (TypeError, ValueError):
-                scheduled_chunk_count = 0
-            if scheduled_chunk_count > 0:
-                scheduled_pks.append(pk)
-                scheduled += 1
-            else:
-                mark_not_running(ctx, pk, state="schedule_noop")
-                record_adjustment(ctx, "schedule_noop_release", pk=pk)
-                tlog_warn(
-                    f"[producer] schedule_one_row 未建立可執行任務 pk={pk}；"
-                    "已釋放 pending running console 標記，避免其他程序持續延後。"
+                producer_backpressure_wait(
+                    ctx=ctx, low=low, meter_fn=meter_fn, stop_event=stop_event,
+                    consumer_thread=consumer, registry=registry,
+                    soft_timeout=getattr(ctx, "bp_soft_timeout", 30.0),
+                    hard_timeout=getattr(ctx, "bp_hard_timeout", 120.0),
+                    sleep_step=0.05,
                 )
+            except Exception as e:
+                tlog_warn(f"[producer] backpressure wait 例外，略過此列 pk={pk}: {e!r}")
+                try:
+                    meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
+                        "cursor": seen, "enq": scheduled, "producer_alive": True,
+                        "last_progress_ts": time.time(),
+                        "last_error": f"backpressure:{type(e).__name__}"
+                    }))
+                except Exception:
+                    pass
+                continue
+
+            if executor is not None:
+                in_flight.add(executor.submit(_schedule_row, pk, text, source_inputs, idx - 1, seen))
+            else:
+                pk_done, scheduled_ok = _schedule_row(pk, text, source_inputs, idx - 1, seen)
+                if scheduled_ok:
+                    scheduled_pks.append(pk_done)
+                    scheduled += 1
+                try: p_sched.update(1)
+                except Exception: pass
+                if gui:
+                    try: gui.inc_sched(1)
+                    except Exception: pass
+
             # ★新增：每送一列即回報游標/送件數
             try:
                 meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
-                    "cursor": seen, "enq": scheduled, "producer_alive": True,
+                    "cursor": seen, "enq": scheduled + len(in_flight), "producer_alive": True,
                     "last_progress_ts": time.time()
                 }))
             except Exception:
                 pass
-        except Exception as e:
-            try:
-                mark_not_running(ctx, pk, state="schedule_error")
-                record_adjustment(ctx, "schedule_error_release", pk=pk, error=repr(e))
-            except Exception:
-                pass
-            tlog_warn(f"[producer] schedule_one_row 失敗 pk={pk}: {e!r}")
-            continue
 
-        
-
-        try: p_sched.update(1)
-        except Exception: pass
-        if gui:
-            try: gui.inc_sched(1)
-            except Exception: pass
-
-        while not stop_event.is_set() and outstanding_now(meter_fn) > low:
-            time.sleep(0.05)
+            while not stop_event.is_set() and outstanding_now(meter_fn) > low:
+                _drain_completed(block=False)
+                time.sleep(0.05)
+    finally:
+        while in_flight:
+            _drain_completed(block=True)
+        if executor is not None:
+            executor.shutdown(wait=True)
 
     # ===== 收尾等待 =====
     soft = getattr(ctx, "producer_drain_soft", 30.0)
