@@ -222,6 +222,44 @@ class ESSink:
             profile_name = _infer_output_profile(output_col, self._legacy_event_output_cols())
         return _normalize_output_profile(profile_name)
 
+
+    def _unwrap_output_col_envelope(self, payload: Any, output_col: Optional[str]) -> Any:
+        """Remove legacy single-stage ES envelopes before profile normalization.
+
+        The legacy row merger always passes a dict keyed by ``output_col`` into
+        ``ESSink.write_main``.  For JSON tasks, older single-stage combine paths
+        can already return an object shaped like ``{output_col: [...]}``.  If the
+        sink writes that value directly, ES receives
+        ``output_col.output_col`` and any inner JSON strings stay escaped.  Treat
+        a single-key self envelope as transport metadata and unwrap it.
+        """
+        col = str(output_col or "").strip()
+        for _ in range(3):
+            parsed = self._maybe_parse_json(payload)
+            if parsed is not payload:
+                payload = parsed
+                continue
+            if col and isinstance(payload, dict) and set(payload.keys()) == {col}:
+                payload = payload.get(col)
+                continue
+            break
+
+        if isinstance(payload, list):
+            normalized_items = []
+            changed = False
+            for item in payload:
+                parsed = self._maybe_parse_json(item)
+                if parsed is not item:
+                    changed = True
+                if isinstance(parsed, list):
+                    normalized_items.extend(parsed)
+                    changed = True
+                else:
+                    normalized_items.append(parsed)
+            if changed:
+                return normalized_items
+        return payload
+
     def _normalize_payload_by_profile(self, payload):
         """Apply the configured payload normalizer before writing to ES.
 
@@ -532,6 +570,7 @@ class ESSink:
             if not output_col or output_col not in result_map:
                 continue
             raw_payload = self._maybe_parse_json(result_map.get(output_col))
+            raw_payload = self._unwrap_output_col_envelope(raw_payload, output_col)
             profile = self._profile_for_output_col(output_col, rule)
             payload = self._normalize_payload_with_profile(raw_payload, profile, output_col)
             payload = self._normalize_payload_for_es(payload)
@@ -556,6 +595,7 @@ class ESSink:
         # es_writeback_rules entry, write the primary output column as before.
         if not docs and self.output_col in result_map:
             raw_payload = self._maybe_parse_json(result_map.get(self.output_col))
+            raw_payload = self._unwrap_output_col_envelope(raw_payload, self.output_col)
             profile = self._profile_for_output_col(self.output_col, None)
             payload = self._normalize_payload_with_profile(raw_payload, profile, self.output_col)
             payload = self._normalize_payload_for_es(payload)
@@ -595,6 +635,7 @@ class ESSink:
 
         # 1) 解析
         payload = self._maybe_parse_json(result_text)
+        payload = self._unwrap_output_col_envelope(payload, self.output_col)
     
         # 2) 依 YAML/ctx output_profile 執行任務特定正規化；預設不改任意 JSON/text。
         payload = self._normalize_payload_by_profile(payload)
