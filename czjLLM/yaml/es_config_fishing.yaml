@@ -25,3 +25,18 @@ merge_log_changes: true               # 合併有變化才印 log
 merge_max_log: 10                     # 最多列出幾筆差異樣本
 merge_log_to_file: true              # 是否落檔
 merge_log_file: merge_dict_slices_audited.log
+
+# 測試重跑開關：覆寫 es_config_file 內的 rerun.pipeline_hash。
+# 若同一批 ES 文件已用舊 hash 寫過結果，改這個值即可讓 pending query 再挑出來重跑。
+# 測完若不想再強制重跑，可改回正式版本號或移除此段，改用 es_config_file 的 rerun 設定。
+rerun:
+  enable: true
+  pipeline_hash: v3.2.2-es-multistage-rerun-test
+  force_if_missing_meta: true
+  fallback_date_field: update_time_ai
+  required_output_checks:
+    - path: Event_Timeline.date_iso
+      validator: date
+      format: yyyy-MM-dd
+      min_valid_count: 1
+      relative_to_output: true
