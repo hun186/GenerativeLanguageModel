@@ -142,3 +142,31 @@
 - 主要修改內容：新增 `docs/usage/single_stage_vs_multistage_yaml_guide.md`，涵蓋 ES、SQL/SQLite、Excel/CSV table、TXT 的舊單階段範例、新版多階段範例、stage-managed 判斷規則、legacy consumer 流程、多階段 manifest/writeback 流程與常見問題。
 - 驗證結果：以 Python 腳本檢查文件存在、標題與必要章節（舊版單階段 YAML 寫法、新版多階段 YAML 寫法、多階段流程原理、寫法注意事項）皆存在；本次僅新增文件，未執行 pytest。
 - 重要結論：文件明確說明舊單階段應省略 `stage_cfg` / `stages` / `task_config.stages`，不要用空設定表示單階段；新版即使只有一個明確 stage，也會走 stage-managed path。
+
+## 2026-07-16 Windows LLM round executor and multidim timeline backfill
+
+- 任務目的：修正 ES 單階段/stream 執行時，LLM 成功後進入 combine/writeback 階段可能在 Windows multiprocessing spawn 出現 `PermissionError: [WinError 5] 存取被拒`，以及 `required_output_check` 因 `multidim_event_json.Event_Timeline.date_iso` 缺失而持續判定未完成的問題。
+- 主要修改內容：`prompt_pipeline.round_runner` 在 Windows 預設改用 thread pool 執行平行 LLM round，避免 multiprocessing spawn 需要 DuplicateHandle；保留 POSIX multiprocessing 預設，並可用 `CZJLLM_LLM_ROUND_EXECUTOR=threads|processes` 明確覆寫。`multidim_event` ES output profile 會在 `Event_Timeline` 缺少有效 `date_iso` 時，以合法 `article_date_iso` / `Event.time` 補一筆 timeline 節點，讓 ES required output recheck 能辨識已完成輸出。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py czjLLM/es_mode/output_profiles/multidim_event.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 24 tests 通過。
+- 重要結論：Windows/Anaconda 長批次不適合在互動式 stream consumer 中預設使用 multiprocessing 子程序派 LLM call；網路 I/O 型 LLM 呼叫用 thread pool 可保留並行且避開 Windows handle duplication 權限錯誤。對 multidim_event，若模型回傳已有文章日期但漏掉 Event_Timeline，寫回前應以正規化補齊必要日期欄位，避免 pending recheck 反覆重跑同一文件。
+
+## 2026-07-16 ES rerun required-check scope correction
+
+- 任務目的：回應使用者指出前次「用 article_date_iso / Event.time 回補 Event_Timeline.date_iso」可能影響抽取語意；重新釐清 ES 單階段與多階段重跑差異。
+- 主要修改內容：移除前次 `multidim_event` output profile 對缺失 `Event_Timeline` 的語意性回補，保留既有只針對已存在 `Event_Timeline[].date` 做格式正規化的行為；將 ES `required_output_checks` 改為只在 `rerun.enable=true` 時參與 fresh/pending 判斷，若需在 rerun 關閉時仍強制檢查，可明確設定 `required_output_checks_apply_without_rerun=true`。
+- 驗證結果：依規範先執行 requirements 安裝，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/es_mode/adapters/elasticsearch_adapter.py czjLLM/es_mode/output_profiles/multidim_event.py czjLLM/prompt_pipeline/round_runner.py` 通過，以及 `python -m pytest tests/es_mode_test_elasticsearch_pending_multicol.py tests/prompt_pipeline/test_round_runner_smoke.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 27 tests 通過。
+- 重要結論：`required_output_checks` 是「是否視為需要重跑」的條件，不應透過寫回正規化偽造/補足 LLM 未抽出的事件時間線。多階段 YAML 之所以可控，是因其明確覆寫 `rerun.pipeline_hash` / checks；舊單階段 YAML 若未覆寫 `rerun`，會繼承 `es_config_file` 的 rerun 設定，包含 required checks，因此可能比預期更積極重跑。
+
+## 2026-07-16 LLM round executor fallback narrowed
+
+- 任務目的：回應使用者擔心「Windows 預設改 thread pool」方向過大；重新釐清多階段任務沒問題、掛掉的是舊單階段 consumer 的 `run_round` 路徑。
+- 主要修改內容：將 `round_runner` 從「Windows 預設 thread pool」改為「預設維持歷史 multiprocessing；只有未強制指定 executor、且 Windows multiprocessing round 實際遇到 PermissionError / WinError 5 / DuplicateHandle 時，才重試該單階段 round 的 thread pool fallback」。`CZJLLM_LLM_ROUND_EXECUTOR=threads` 仍可主動使用 thread pool；`CZJLLM_LLM_ROUND_EXECUTOR=processes` 會停用 fallback 以利診斷。
+- 驗證結果：依規範先執行 requirements 安裝，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 29 tests 通過。
+- 重要結論：多階段 stream 主要在 scheduler 階段同步執行，不走 `llm_stream_consumer -> run_round` 這條 legacy consumer 派工路徑；因此不應預設改變 Windows executor。保留 multiprocessing 預設並只在單階段 round 觸發 WinError 5 時 fallback，可降低行為變更範圍。
+
+## 2026-07-16 LLM round executor rollback for diagnostics
+
+- 任務目的：依使用者要求，先拿掉 LLM round 多 executor / thread fallback 邏輯，讓單階段任務回到原本 multiprocessing 路徑，以便使用者重跑並收集更直接的錯誤資訊。
+- 主要修改內容：移除 `round_runner.py` 的 thread pool import、executor mode helper、Windows handle error detector、threaded runner 與 fallback；`run_round` 回復為 `n_proc>1` 時只使用 `multiprocessing.Pool`。同步移除 thread/fallback 相關測試，保留單程序成功與 timeout 測試。
+- 驗證結果：依規範先執行 requirements 安裝，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 26 tests 通過。
+- 重要結論：目前暫不對 LLM round executor 做行為變更；若使用者重跑後提供更完整單階段 crash stack / pool 狀態 / consumer log，再依證據決定是否修正 multiprocessing 使用方式、consumer lifecycle 或 row merger/combiner 路徑。

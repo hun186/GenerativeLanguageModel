@@ -672,6 +672,10 @@ class ElasticsearchAdapter:
         檢查 output_col 內是否滿足必要 key 條件。
         規則預設：每個 check 至少找到 1 個合法值（min_valid_count=1）。
         """
+        rr = (self.cfg or {}).get("rerun") or {}
+        if not rr.get("enable") and not (self.cfg or {}).get("required_output_checks_apply_without_rerun", False):
+            return True
+
         checks = self._get_required_output_checks(output_col)
         if not checks:
             return True
