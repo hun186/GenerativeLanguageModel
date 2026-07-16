@@ -16,3 +16,39 @@ def test_es_requires_all_outputs_to_be_fresh_for_completed_row():
 
     assert adapter._is_fresh_outputs_all({"route": "zh", "result": [{"x": 1}], "audit": [{"x": 1}]}, ["route", "result", "audit"])
     assert not adapter._is_fresh_outputs_all({"route": "zh", "result": [{"x": 1}]}, ["route", "result", "audit"])
+
+
+def test_required_output_checks_are_skipped_when_rerun_disabled():
+    adapter = ElasticsearchAdapter({
+        "output_col": "multidim_event_json",
+        "rerun": {
+            "enable": False,
+            "required_output_checks": [{
+                "path": "Event_Timeline.date_iso",
+                "validator": "date",
+                "format": "yyyy-MM-dd",
+            }],
+        },
+    })
+
+    assert adapter._is_fresh_output({"multidim_event_json": [{"Event_Summary": "ok"}]}, "multidim_event_json")
+
+
+def test_required_output_checks_apply_when_rerun_enabled():
+    adapter = ElasticsearchAdapter({
+        "output_col": "multidim_event_json",
+        "rerun": {
+            "enable": True,
+            "required_output_checks": [{
+                "path": "Event_Timeline.date_iso",
+                "validator": "date",
+                "format": "yyyy-MM-dd",
+            }],
+        },
+    })
+
+    assert not adapter._is_fresh_output({"multidim_event_json": [{"Event_Summary": "ok"}]}, "multidim_event_json")
+    assert adapter._is_fresh_output(
+        {"multidim_event_json": [{"Event_Timeline": [{"date_iso": "2026-06-11"}]}]},
+        "multidim_event_json",
+    )

@@ -18,7 +18,8 @@ def test_run_round_single_process_success_updates_state():
 
     out = run_round(jobs, n_proc=1, timeout_sec=5)
 
-    assert out == [1, 2, 3]
+    assert [item["raw"] for item in out] == [1, 2, 3]
+    assert all(item["ok"] for item in out)
     assert CONSUMER_STATE["pool_alive"] is False
     assert CONSUMER_STATE["last_dispatch_ts"] > 0
 
