@@ -10,6 +10,7 @@ import uuid
 from utils.utilities_path import safe_move, MKDIR, getPathFromFN
 
 from czjLLM.prompt_pipeline.pipeline_controller import find_item_dir_for, meter_update, process_prompt_and_merge
+from czjLLM.prompt_pipeline.runtime_support.stage_mode import explicit_stage_flow
 from czjLLM.utilities.file_utils import save_text_as_temp_file
 from utils.utilities_path import getMFNFromFN, OSWALK
 from czjLLM.job_manager.console_ui import tlog, tlog_warn
@@ -17,6 +18,7 @@ from czjLLM.job_manager.job_config import CtxOverlay
 from czjLLM.handlers.handle_txt_file import handle_single_input_file  # 延用現有函式
 #from czjLLM.prompt_pipeline.pipeline_controller import get_combined_result_path
 from czjLLM.utilities.path_utils import get_combined_result_path
+
 
 
 def _explicit_stage_flow(ctx) -> list[dict]:
@@ -28,8 +30,7 @@ def _explicit_stage_flow(ctx) -> list[dict]:
     still run through the stage-aware path, while ordinary single-task jobs keep
     the legacy consumer path.
     """
-    stages = getattr(ctx, "stages", None)
-    return stages if isinstance(stages, list) and len(stages) > 0 else []
+    return explicit_stage_flow(ctx)
 
 
 def _stage_task_hint(stage: dict) -> str:

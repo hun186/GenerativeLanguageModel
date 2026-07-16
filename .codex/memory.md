@@ -114,3 +114,24 @@
 - 主要修改內容：`multidim_event` output profile 會在寫回前清理 ES nested/object 欄位，將 `Person`、`Involved_Parties`、`Impact`、`Event_Timeline`、`evidence_snippets` 中的 `null`/scalar placeholder 移除或轉為空陣列，並將 `Event`、`importance`、`date_range` 的非 object 值轉為空物件；`ESSink._flush` 遇到 bulk errors 時改為 raise `RuntimeError` 且保留 buffer，避免 row merger 在 ES 拒寫時仍標記逐列寫回完成。
 - 驗證結果：依專案規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/es_mode/output_profiles/multidim_event.py czjLLM/es_mode/runtime/sinks/es_sink.py` 通過，以及 `python -m pytest tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/prompt_pipeline/test_extracted_helpers.py tests/sql_mode/runtime/test_pending_central.py` 共 23 tests 通過。
 - 重要結論：先前 bulk error 是有問題的真實拒寫，不是可忽略 warning；修正後若 ES mapping 仍拒寫，流程會保留待寫 buffer 並把錯誤往上拋，避免假成功。
+
+## 2026-07-16 legacy ES single-stage YAML writeback compatibility
+
+- 任務目的：修正舊版 ES 單階段 YAML（無 `stage_cfg.stages` / `es_writeback_rules`，僅有 `task`、`input_col`、`output_col`）在新版多階段支援後，LLM 計算完成但 consumer/row merger 無法正常走舊式寫回流程的問題。
+- 主要修改內容：新增 stage-managed 判斷 helper，只有 `stage_cfg` 明確啟用或宣告 `stages` / `steps` / `routes` / `router` 時才停用一般 stream consumer；ES 初始化產生的相容 `stage_cfg: {enabled: false, name: single_stage}` 不再被誤判為多階段管理模式。
+- 驗證結果：依規範先執行 requirements 安裝，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/pipeline_controller.py czjLLM/prompt_pipeline/runtime_support/stage_mode.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_consumer_stage_managed_mode.py tests/prompt_pipeline/test_extracted_helpers.py tests/sql_mode/runtime/test_pending_central.py` 共 15 tests 通過。
+- 重要結論：舊版 ES 單階段 YAML 應保留 legacy consumer + combined output 寫回路徑；新版即使只有一個明確 stage，只要 YAML 有宣告 stage flow 或 stage writeback rules，仍會走 stage-managed path。SQL/SQLite/Excel 若未宣告 stage flow，同樣不應受空 `stage_cfg` metadata 影響。
+
+## 2026-07-16 single-stage SQL SQLite Table TXT stage-flow audit
+
+- 任務目的：回覆並驗證舊版 SQL、SQLite、Excel/CSV table、TXT 單階段任務是否會像 ES 舊 YAML 一樣被新版多階段判斷誤導。
+- 主要修改內容：將「明確 stage flow」判斷集中到 `prompt_pipeline/runtime_support/stage_mode.py`，同時供 stream scheduler 與 prompt final merge 使用；判斷只接受 `ctx.stages` 或 `ctx.task_config.stages`，不會把一般 `ctx.task` 單階段任務升級成 stage-managed。新增測試覆蓋 SQL/SQLite/table 舊單階段與 TXT 舊單階段/新版 task_config.stages。
+- 驗證結果：依規範再次執行 requirements 安裝，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/pipeline_controller.py czjLLM/prompt_pipeline/runtime_support/stage_mode.py czjLLM/sql_mode/runtime/scheduler.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_consumer_stage_managed_mode.py tests/prompt_pipeline/test_extracted_helpers.py tests/sql_mode/runtime/test_pending_central.py` 共 17 tests 通過。
+- 重要結論：SQL/SQLite/table 舊單階段沒有 `ctx.stages` / `task_config.stages` 時會走 legacy consumer + combined writeback；TXT 舊單階段也不會走 multistage final merge。若新版 YAML 明確宣告單一 stage，則仍會走 stage-managed path，這是預期行為。
+
+## 2026-07-16 legacy single-stage misdetection root-cause clarification
+
+- 任務目的：釐清為何既有 scheduler 已有 `ctx.stages` list 判斷，舊單階段仍會被誤判為 stage-managed。
+- 主要修改內容：在 consumer stage-managed 判斷旁補充註解，說明根因不是 scheduler 的 `ctx.stages` helper，而是 `llm_stream_consumer` 曾把任意 `ctx.stage_cfg` dict（包含 `{}` 或 `enabled=false/name=single_stage` 相容 metadata）當成 stage-managed 訊號；新增測試確認 `{}` 與 compatibility-only stage_cfg 都不會宣告 flow。
+- 驗證結果：requirements 安裝仍受 GitHub dependency `peft` proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/pipeline_controller.py czjLLM/prompt_pipeline/runtime_support/stage_mode.py czjLLM/sql_mode/runtime/scheduler.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_consumer_stage_managed_mode.py tests/prompt_pipeline/test_extracted_helpers.py tests/sql_mode/runtime/test_pending_central.py` 共 17 tests 通過。
+- 重要結論：舊 helper 對 `ctx.stages` 的判斷本身沒有把 plain single task 誤判；漏判發生在另一條 consumer disabled 條件 `has_stage_cfg = isinstance(ctx.stage_cfg, dict)`，空 dict 也會成立，導致舊單階段 consumer 被停用。

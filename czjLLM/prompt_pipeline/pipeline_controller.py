@@ -90,6 +90,10 @@ from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     pick_and_claim_next_prompts,
     recover_running_to_todo,
 )
+from czjLLM.prompt_pipeline.runtime_support.stage_mode import (
+    explicit_stage_flow as _explicit_stage_flow,
+    stage_cfg_declares_flow as _stage_cfg_declares_flow,
+)
 from czjLLM.prompt_pipeline.runtime_support.watchdogs import (
     _es_heartbeat_loop,
     _stall_watchdog,
@@ -128,6 +132,8 @@ def pick_next_prompts(item_dirs, per_round_limit=128):
                 return batch
     return batch
 '''
+
+
 def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                         stop_event: threading.Event,
                         restart_event: threading.Event,   # ★ 新增
@@ -165,12 +171,16 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             and str(r.get("source", "")).strip().lower() == "stage"
         ]
         
-        has_stage_cfg = isinstance(getattr(ctx, "stage_cfg", None), dict)
+        # Do not repeat the old bug here: ES entry setup may attach an empty
+        # or compatibility-only stage_cfg (for example name=single_stage,
+        # enabled=False) even when the YAML is a legacy single-task job.  Only
+        # a stage_cfg that declares runnable flow should disable this consumer.
+        stage_cfg_has_flow = _stage_cfg_declares_flow(getattr(ctx, "stage_cfg", None))
         
         stage_managed_mode = (
             len(stage_defs) > 1
             or bool(stage_writeback_rules)
-            or has_stage_cfg
+            or stage_cfg_has_flow
         )
         
         if stage_managed_mode:
@@ -1086,8 +1096,7 @@ def _apply_resume_policy_single_stage(policy: str, prompt_items: list[str], ops:
 
 
 def _has_explicit_stage_flow(ctx) -> bool:
-    stages = getattr(ctx, "stages", None)
-    return isinstance(stages, list) and len(stages) > 0
+    return bool(_explicit_stage_flow(ctx))
 
 def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | None = None, max_rounds: int = 20) -> str:
     """
