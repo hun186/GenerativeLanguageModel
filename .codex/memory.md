@@ -60,3 +60,17 @@
 - 主要修改內容：`ESSink` 新增單欄位 self-envelope unwrap 與內層 JSON 字串解析；在單欄位、multi-field rule fallback 與直接 payload 寫回路徑中，於 output profile 正規化前移除傳輸包裝，讓單階段與多階段寫回都得到相同的事件 payload shape。
 - 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/es_mode/runtime/sinks/es_sink.py` 通過，以及 `python -m pytest tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py` 共 15 tests 通過。
 - 重要結論：修正點放在 ES sink 寫回前的 payload normalization boundary，不改變 LLM 抽取、slice merge 或多階段 scheduler；若 payload 不是單鍵同名 envelope，會維持原內容不被任意 unwrap。
+
+## 2026-07-16 ES rerun configuration diagnostics
+
+- 任務目的：降低 ES 單階段 / 多階段 YAML 與 `es_config_file` 同時存在 `rerun` 設定時，因隱性繼承或覆寫造成使用者誤判 pending / 重跑行為的風險。
+- 主要修改內容：新增 `czjLLM/es_mode/config/rerun_logging.py`，集中處理 ES rerun 淺層合併診斷；`resolve_es_connection()` 在建立 adapter 前輸出醒目的 rerun 來源、覆寫 key、繼承 key、僅主 YAML key 與生效設定摘要，並提示 `enable=true` 會讓 meta / pipeline_hash / force_since / required checks 影響既有 output 是否重新 pending。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/es_mode/entry/steps_es.py czjLLM/es_mode/config/rerun_logging.py` 通過，以及 `python -m pytest tests/es_mode/test_steps_es_rerun_logging.py tests/es_mode_test_elasticsearch_pending_multicol.py` 共 6 passed、2 warnings。
+- 重要結論：ES rerun 合併規則仍維持既有行為（主 YAML 同名 key 覆寫 `es_config_file.rerun`，未覆寫 key 會繼承），本次只增加終端機可見診斷，不改變 pending 判斷語意。
+
+## 2026-07-16 SQL Server flatten nested JSON binding fix
+
+- 任務目的：協助使用者測試 SQL Server 模式舊單任務 YAML 時，排查 `子表寫回失敗 ... Invalid parameter type ... param-type=dict` 問題。
+- 主要修改內容：`safe_sql_value()` 現在會將 dict 與含巢狀 dict/list 的 list 序列化為 JSON 字串後再交給 SQL / ODBC 綁定，保留純 scalar list 以逗號串接的舊行為；新增單元測試覆蓋 dict、list[dict] 與 scalar list。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/sql_utils/common.py czjLLM/sql_utils/writer.py` 通過，以及 `python -m pytest tests/sql_utils/test_common_safe_sql_value.py` 共 3 passed。嘗試執行 `python -m pytest tests/sql_utils/test_common_safe_sql_value.py tests/sql_mode/runtime/test_row_merger_flatten_targets.py` 時，因目前環境缺少 PyYAML 且 requirements 安裝失敗，`test_row_merger_flatten_targets.py` collection 被 `ModuleNotFoundError: No module named 'yaml'` 阻擋。
+- 重要結論：使用者 YAML 若啟用 flatten，MultiDim 任務輸出中的 `Event` / `Person` / `Impact` 等欄位可能是 dict/list；這些欄位不應直接傳給 pyodbc，而應以 JSON 字串保存到子表欄位。若不需要子表展平，可在 YAML 明確設定 `flatten_json_output: false` 並移除/關閉 flatten 規則。

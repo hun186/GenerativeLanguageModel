@@ -9,6 +9,7 @@ from elasticsearch import Elasticsearch
 from utils.selector import OptionSelector
 
 from czjLLM.es_mode.config.config_loader_es import load_es_cfg, InteractivePolicy, NonInteractivePolicy
+from czjLLM.es_mode.config.rerun_logging import log_rerun_config, resolve_rerun_config
 from czjLLM.es_mode.config.stage_cfg import build_es_stage_cfg, stage_name_from_cfg
 #from czjLLM.es_mode.runtime.sinks.es_sink import ESSink
 
@@ -17,6 +18,7 @@ from czjLLM.es_mode.adapters.elasticsearch_adapter import ElasticsearchAdapter
 from utils.ES_utils import get_es_client, apply_es_mapping
 
 _SENTINEL = object()
+
 
 # ---------- Resolve 連線 ----------
 def resolve_es_connection_old(ctx, get_param, args):
@@ -92,12 +94,8 @@ def resolve_es_connection(ctx, get_param, args):
     # 3. 建立 ElasticsearchAdapter（內部會自己建 client）
     # 主 YAML 可覆寫 es_config_file 內的 rerun 設定，方便用 pipeline_hash
     # 做測試重跑；其餘未覆寫欄位仍沿用 ES config。
-    base_rerun = es_cfg.get("rerun", {}) or {}
-    yaml_rerun = get_param("rerun", None)
-    if isinstance(yaml_rerun, dict):
-        rerun_cfg = {**base_rerun, **yaml_rerun}
-    else:
-        rerun_cfg = base_rerun
+    rerun_cfg, rerun_diagnostics = resolve_rerun_config(es_cfg, get_param)
+    log_rerun_config(rerun_cfg, rerun_diagnostics)
 
     adapter_cfg = {
         #"es_host": hosts,
@@ -770,5 +768,3 @@ def build_pending_iter_es(adapter, ctx):
         ),
         ctx
     )
-
-
