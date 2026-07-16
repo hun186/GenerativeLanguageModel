@@ -281,6 +281,7 @@ sql_writeback_stage: extract
 
 - 當 `mode: sql` 且 `stages` 數量大於 1，scheduler 會先完成切片後，直接呼叫 `process_prompt_and_merge()`（與 txt 模式同一套多階段 merge 邏輯）執行該列，再交由 row_merger 寫回。  
 - 這樣可以避免在 `llm_stream_consumer` 另維護一套多階段派工分支，降低維護複雜度。若要臨時關閉可設定：`sql_enable_multistage_stream: false`。
+- Stream 多階段支援 row/doc 層級的有界並行：producer 會依 `multistage_row_parallelism` / `sql_multistage_row_parallelism` / `stream_multistage_row_parallelism` 設定上限；若未設定，預設沿用既有單階段 LLM round 使用的 `ctx.n_process`；此值在初始化時會依可用 `base_url` endpoint pool 推導（on-premises 為可用 endpoint 數 × 2），而每次 LLM 呼叫仍會透過 `select_idle_ollama_url()` 從同一個 base_url pool 做租約式負載平衡。因多數部署是呼叫 Ollama / OpenAI-compatible API，派工主程式所在機器不一定看得到模型服務所在 GPU，因此不再用本機 GPU 數自動推估。若要覆寫遠端模型服務可承受的 row/doc 並行量，請明確設定其中一個平行度參數。此上限是為了避免一次送出過多長任務導致模型端排隊與 timeout。
 - 若你希望寫回後自動清掉 prompt cache（避免 `cache/.../Success/0.txt` 殘留），可保留預設：  
   `cleanup_prompt_item_after_writeback: true`
 
