@@ -74,3 +74,10 @@
 - 主要修改內容：`safe_sql_value()` 現在會將 dict 與含巢狀 dict/list 的 list 序列化為 JSON 字串後再交給 SQL / ODBC 綁定，保留純 scalar list 以逗號串接的舊行為；新增單元測試覆蓋 dict、list[dict] 與 scalar list。
 - 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/sql_utils/common.py czjLLM/sql_utils/writer.py` 通過，以及 `python -m pytest tests/sql_utils/test_common_safe_sql_value.py` 共 3 passed。嘗試執行 `python -m pytest tests/sql_utils/test_common_safe_sql_value.py tests/sql_mode/runtime/test_row_merger_flatten_targets.py` 時，因目前環境缺少 PyYAML 且 requirements 安裝失敗，`test_row_merger_flatten_targets.py` collection 被 `ModuleNotFoundError: No module named 'yaml'` 阻擋。
 - 重要結論：使用者 YAML 若啟用 flatten，MultiDim 任務輸出中的 `Event` / `Person` / `Impact` 等欄位可能是 dict/list；這些欄位不應直接傳給 pyodbc，而應以 JSON 字串保存到子表欄位。若不需要子表展平，可在 YAML 明確設定 `flatten_json_output: false` 並移除/關閉 flatten 規則。
+
+## 2026-07-16 config YAML subdirectory fallback
+
+- 任務目的：讓 `--config sqlserver_json_singlestage_in_multistage.yaml` 這類只輸入檔名的 CLI 呼叫，能在原始輸入路徑找不到時自動搜尋常用 `yaml/` 子目錄。
+- 主要修改內容：`resolve_config_path()` 現在先保留原有相對路徑優先順序（cwd、app root、caller dir、project root），並在每個搜尋根目錄後追加 `yaml/<config>` fallback；候選路徑會去重，避免錯誤訊息列出重複嘗試路徑；若使用者已輸入 `yaml/...` 則不再產生 `yaml/yaml/...`。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall utils_manager/utils_sync.py` 通過，以及 `python -m pytest tests/utils_manager/test_utils_sync_config_path.py` 共 3 passed、1 warning。
+- 重要結論：設定檔解析仍最先尊重使用者輸入的路徑；只有找不到時才搜尋 `yaml/` fallback，符合既有 CLI 行為並改善 bare filename 的可用性。
