@@ -53,3 +53,10 @@
 - 主要修改內容：`_multistage_row_parallelism()` 未明確設定時改為復用 `ctx.n_process`，此值在初始化時已由可用 `base_url` endpoint pool 推導；若測試或特殊流程沒有 `ctx.n_process`，則由 `ctx.model_spec["base_url"]` pool 大小推導保底值。
 - 驗證結果：執行 requirements 安裝仍受 GitHub `peft` dependency proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/sql_mode/runtime/producer.py` 通過，以及 `python -m pytest tests/sql_mode/runtime/test_producer_multistage_parallelism.py tests/sql_mode/runtime/test_producer_pending_recheck.py tests/sql_mode/runtime/test_pending_central.py` 共 13 passed、1 skipped。
 - 重要結論：row/doc 層級 multistage 並行量現在直接復用既有 endpoint pool / `ctx.n_process` 派工容量；每次 LLM 呼叫仍由 `select_idle_ollama_url()` 在 base_url pool 中做租約式負載平衡。
+
+## 2026-07-16 ES single-stage self-envelope writeback fix
+
+- 任務目的：修正 ES 單階段 `multidim_event_json` 寫回時，LLM/合併產物若已包成 `{output_col: [...]}`，再經 row_merger 以同名欄位傳入 ESSink 後形成 `multidim_event_json.multidim_event_json` 且內層 JSON 字串未解析的問題。
+- 主要修改內容：`ESSink` 新增單欄位 self-envelope unwrap 與內層 JSON 字串解析；在單欄位、multi-field rule fallback 與直接 payload 寫回路徑中，於 output profile 正規化前移除傳輸包裝，讓單階段與多階段寫回都得到相同的事件 payload shape。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/es_mode/runtime/sinks/es_sink.py` 通過，以及 `python -m pytest tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py` 共 15 tests 通過。
+- 重要結論：修正點放在 ES sink 寫回前的 payload normalization boundary，不改變 LLM 抽取、slice merge 或多階段 scheduler；若 payload 不是單鍵同名 envelope，會維持原內容不被任意 unwrap。

@@ -1,4 +1,5 @@
 import sys
+import json
 import types
 from types import SimpleNamespace
 
@@ -106,3 +107,16 @@ def test_multidim_event_profile_drops_invalid_nested_placeholders():
         }
     ]
     assert normalized[0]["evidence_snippets"] == []
+
+
+def test_single_stage_self_envelope_is_unwrapped_before_es_writeback():
+    sink = _sink(output_col="multidim_event_json", output_profile="multidim_event")
+    inner = {"Event": {"time": "2026-06-08"}, "Event_Timeline": [{"date": "2026-06-08"}]}
+    envelope = {"multidim_event_json": [json.dumps(inner, ensure_ascii=False)]}
+
+    sink.write_main("doc-1", {"multidim_event_json": json.dumps(envelope, ensure_ascii=False)})
+
+    doc = sink._buffer[0]["doc"]
+    assert set(doc["multidim_event_json"][0].keys()) != {"multidim_event_json"}
+    assert doc["multidim_event_json"][0]["Event"]["time_iso"] == "2026-06-08"
+    assert doc["multidim_event_json"][0]["Event_Timeline"][0]["date_iso"] == "2026-06-08"
