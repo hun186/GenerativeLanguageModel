@@ -318,6 +318,36 @@ task_config:
 
 可以。`merge_slices` 是切片結果合併策略，不等於多階段。舊單階段可用它將多個 slice 的 JSON dict/list 合併後再寫回主 `output_col`。
 
+### `merge_slices` 會合併哪些東西？會不會把同一個 JSON list 內的多筆資料合成一筆？
+
+`merge_slices` 只處理「同一筆來源資料因 `InputCutLen` / chunking 被切成多個 prompt slice」後，**不同 slice 成功輸出之間**的合併；它不是用來合併同一個 LLM 回覆 JSON list 裡的多個實體。
+
+行為準則如下：
+
+- 若單一成功 slice 回傳 `[{...}, {...}]`，系統會保留為 list，讓後續主欄位寫回或 JSON flatten 可以保存所有 dict。
+- 只有實際存在兩個以上成功 JSON slice 時，才會把多個 slice 的 dict/list 結果送進 `merge_dict_slices_audited()` 做跨 slice 合併。
+- `merge_conflict_policy` 只在跨 slice 合併時處理同名 scalar 欄位衝突；預設 `prefer_left` 代表保留較早 slice 的值，`prefer_right` 則保留較晚 slice 的值。
+- `merge_dedup_lists` 只在跨 slice 合併時處理 list 欄位去重，不會把 list 裡的多個 dict 實體壓成單一 dict。
+
+例如單任務 YAML：
+
+```yaml
+task: Organization Profile Analyzer to json format
+merge_slices: true
+allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunctions]
+```
+
+若某一個 LLM 成功輸出是：
+
+```json
+[
+  {"inputName": "海巡署", "formalName": "中華民國行政院海巡署"},
+  {"inputName": "警政署", "formalName": "中華民國行政院警政署"}
+]
+```
+
+合併後仍應是兩筆 list item；它們代表同一個 slice 內抽出的兩個組織實體，不是兩個互相衝突的 slice dict。
+
 ### 新版只有一個 stage 也算多階段嗎？
 
 如果 YAML 明確宣告 `stage_cfg.stages` / `stages` / `task_config.stages`，即使只有一個 stage，也會走 stage-managed path。這是預期行為，因為使用者已明確要求 stage runtime 與 stage writeback 語意。

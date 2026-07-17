@@ -81,3 +81,18 @@
 - 主要修改內容：`resolve_config_path()` 現在先保留原有相對路徑優先順序（cwd、app root、caller dir、project root），並在每個搜尋根目錄後追加 `yaml/<config>` fallback；候選路徑會去重，避免錯誤訊息列出重複嘗試路徑；若使用者已輸入 `yaml/...` 則不再產生 `yaml/yaml/...`。
 - 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall utils_manager/utils_sync.py` 通過，以及 `python -m pytest tests/utils_manager/test_utils_sync_config_path.py` 共 3 passed、1 warning。
 - 重要結論：設定檔解析仍最先尊重使用者輸入的路徑；只有找不到時才搜尋 `yaml/` fallback，符合既有 CLI 行為並改善 bare filename 的可用性。
+
+## 2026-07-16 single-stage JSON list preservation with merge_slices
+
+- 任務目的：修正單任務 YAML 在 `merge_slices: true` 時，若單一 LLM 成功輸出本身就是含兩筆以上 dict 的 JSON list，合併結果被 `merge_dict_slices_audited()` 壓成單一 dict，導致只保留第一筆組織資料的問題。
+- 主要修改內容：`combine_api_finished_item()` 新增 JSON slice 計數；只有實際存在兩個以上成功 JSON slice 時才套用 slice-level dict merge。單一成功 slice 若回傳多筆 dict list，會維持 list 寫回，以便 SQL flatten / writeback 可保存全部項目。新增回歸測試覆蓋 `merge_slices=True` 且單一 JSON list 含「海巡署 / 警政署」兩筆資料時，輸出仍為兩筆 list。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/utilities/combine_utils.py tests/test_combine_json_slice_merge.py` 通過，以及 `python -m pytest tests/test_combine_json_slice_merge.py` 共 4 passed、1 warning。
+- 重要結論：`merge_slices` 應只合併多個切片之間的 dict 結果，不應把同一個 LLM 輸出 JSON list 內的多個實體誤視為多個切片並合成單一 dict。
+
+
+## 2026-07-17 merge_slices documentation clarification
+
+- 任務目的：回應使用者指出 `merge_slices` 是關鍵且容易產生疑義的程式邏輯，需確認並補足說明文件。
+- 主要修改內容：在 `docs/usage/single_stage_vs_multistage_yaml_guide.md` 補充 `merge_slices` 的語意：只做跨 prompt slice 合併，不會把單一 LLM 回覆 JSON list 內的多個 dict 實體壓成一筆；並在 SQL Server 單任務 YAML 範例旁加註同一原則。
+- 驗證結果：執行 `python -m compileall czjLLM/utilities/combine_utils.py tests/test_combine_json_slice_merge.py` 通過，以及 `python -m pytest tests/test_combine_json_slice_merge.py` 共 4 passed、1 warning。
+- 重要結論：文件現在明確區分「跨 slice 合併」與「單一 JSON list 內多實體保留」，避免使用 `merge_slices: true` 時誤解輸出 shape。

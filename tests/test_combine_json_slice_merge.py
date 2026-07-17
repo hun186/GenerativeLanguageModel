@@ -1,7 +1,29 @@
 import json
+import sys
+import types
 from types import SimpleNamespace
 
+
+class _OpenCC:
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def convert(self, text):
+        return text
+
+
+sys.modules.setdefault("opencc", types.SimpleNamespace(OpenCC=_OpenCC))
+sys.modules.setdefault("json_repair", types.SimpleNamespace(repair_json=lambda text, **kwargs: text))
+
+import czjLLM.utilities.combine_utils as combine_utils
 from czjLLM.utilities.combine_utils import combine_api_finished_item
+
+
+def _oswalk(path):
+    return [str(p) for p in sorted(__import__("pathlib").Path(path).rglob("*")) if p.is_file()]
+
+
+combine_utils.OSWALK = _oswalk
 
 
 def _build_ctx(tmp_path, *, task: str, merge_slices: bool):
@@ -66,3 +88,25 @@ def test_json_mode_ignores_blank_success_files_and_returns_empty_array(tmp_path)
 
     out = combine_api_finished_item(str(item), ctx)
     assert open(out, "r", encoding="utf-8").read().strip() == "[]"
+
+
+def test_json_single_slice_list_preserved_when_merge_enabled(tmp_path):
+    ctx = _build_ctx(tmp_path, task="to json format", merge_slices=True)
+    item = tmp_path / "PromptRoot" / "jobD"
+    suc = item / "Success"
+    suc.mkdir(parents=True, exist_ok=True)
+    (suc / "0.txt").write_text(
+        json.dumps(
+            [
+                {"inputName": "海巡署", "formalName": "中華民國行政院海巡署"},
+                {"inputName": "警政署", "formalName": "中華民國行政院警政署"},
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    out = combine_api_finished_item(str(item), ctx)
+    data = json.loads(open(out, "r", encoding="utf-8").read())
+    assert isinstance(data, list)
+    assert [x["inputName"] for x in data] == ["海巡署", "警政署"]
