@@ -138,3 +138,10 @@
 - 主要修改內容：`run_round()` 新增 `debug_enabled` 參數；legacy consumer 從 `ctx.llm_round_debug` 傳入，主程式會讀取 YAML 的 `llm_round_debug`。保留 `CZJLLM_LLM_ROUND_DEBUG=1` 作為臨時環境變數診斷方式。文件 `docs/usage/single_stage_vs_multistage_yaml_guide.md` 新增 legacy LLM round debug 說明與 YAML 範例。
 - 驗證結果：依規範先執行 requirements 安裝但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py czjLLM/prompt_pipeline/pipeline_controller.py czjLLM/czjLLM_TextProcessing.py czjLLM/job_manager/job_config.py tests/prompt_pipeline/test_round_runner_smoke.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 32 tests 通過。
 - 重要結論：`llm_round_debug: true` 只開啟 legacy consumer round-level 診斷輸出，不改 prompt、LLM 輸出或寫回格式；一般任務可省略。
+
+## 2026-07-17 Windows legacy spawn-overlap thread fallback
+
+- 任務目的：使用者提供 Windows 舊單階段 ES YAML 與 Linux 對照 log；Windows 在第一輪完成後看到 `active_children=1` 並進入 pre-Pool reap，後續不像 Linux 能快速維持多個 pending/running 任務，疑似序列安全路徑造成吞吐停滯或看似自行停止。
+- 主要修改內容：`czjLLM/prompt_pipeline/round_runner.py` 保留 Windows pre-Pool join/reap；若仍有 active multiprocessing child，不再把該 round 改成完全序列，而是使用 `ThreadPoolExecutor` 執行本 round 的 `PromptAPIPipeline.proc()`，避開 Windows spawn/DuplicateHandle，同時保留 LLM API I/O 併發。非 Windows 與 join/reap 後 child 清空的 Windows round 仍走原 multiprocessing Pool。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` clone 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py tests/prompt_pipeline/test_round_runner_smoke.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py` 共 8 passed、1 warning。
+- 重要結論：此修正不是把 Windows 全面改成 thread pool；只有在已觀測到 spawn overlap 風險且 short reap 無法清空 active child 時，才對該 round 使用 thread fallback。這符合使用者 log 顯示的實際觸發點，也避免序列 fallback 讓單階段 ES 批次看起來停住。

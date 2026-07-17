@@ -48,3 +48,9 @@
 - 決策：Windows spawn-overlap join/reap timeout 與 fallback 不再提供一般操作環境變數；使用內建 0.75 秒與自動安全路徑，僅保留既有 `CZJLLM_LLM_ROUND_DEBUG=1` 做必要診斷。
 - 理由：這是 runtime 保護與程式調優，不是任務語意設定；暴露過多環境變數會增加操作負擔與誤設定風險。
 - 後果：操作人員不需要知道或調整 spawn-overlap 參數；若觸發保護，終端會顯示提示。若未來需要調整 timeout，應由程式碼或更集中化的 runtime policy 管理。
+
+## 2026-07-17 Windows spawn-overlap fallback uses threads instead of serial
+
+- 決策：Windows legacy single-stage `run_round()` 在建立新 multiprocessing Pool 前若偵測到 active child，仍先做內建 short join/reap；若 child 仍未清空，不再序列化整個 round，而是僅該 round 使用 thread pool fallback。
+- 理由：使用者最新 Windows vs Linux log 顯示，Linux 可快速排入多個任務並用 multiprocessing worker 並行；Windows 在 active child 安全路徑若改序列，會使任務吞吐接近停滯。LLM API 呼叫為 I/O-bound，thread pool 可避開 Windows spawn handle 問題並保留多 endpoint/多 prompt 併發。
+- 後果：此行為仍是窄範圍 fallback：非 Windows、單程序、或 Windows join/reap 後 active child 清空時不受影響；只有已命中 spawn overlap 風險時才使用 threads。

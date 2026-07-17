@@ -75,7 +75,7 @@ def test_debug_round_message_includes_exception_details():
     assert "error_repr=PermissionError" in message
 
 
-def test_windows_spawn_overlap_fallback_runs_round_serially_when_join_cannot_clear(monkeypatch):
+def test_windows_spawn_overlap_fallback_runs_round_with_threads_when_join_cannot_clear(monkeypatch):
     import czjLLM.prompt_pipeline.round_runner as rr
 
     monkeypatch.setattr(rr.sys, "platform", "win32")
@@ -87,6 +87,28 @@ def test_windows_spawn_overlap_fallback_runs_round_serially_when_join_cannot_cle
     assert [item["raw"] for item in out] == [1, 2]
 
 
+def test_windows_spawn_overlap_thread_fallback_preserves_concurrency(monkeypatch):
+    import czjLLM.prompt_pipeline.round_runner as rr
+
+    monkeypatch.setattr(rr.sys, "platform", "win32")
+    monkeypatch.setattr(rr, "_active_children_count", lambda: 1)
+    monkeypatch.setattr(rr, "_join_existing_children_once", lambda timeout_sec: 1)
+    started = []
+
+    def slow(value):
+        started.append(value)
+        time.sleep(0.2)
+        return value
+
+    jobs = [_Job(lambda i=i: slow(i)) for i in range(4)]
+    t0 = time.monotonic()
+    out = run_round(jobs, n_proc=4, timeout_sec=5)
+
+    assert [item["raw"] for item in out] == [0, 1, 2, 3]
+    assert len(started) == 4
+    assert time.monotonic() - t0 < 0.6
+
+
 def test_windows_spawn_overlap_join_clear_allows_pool(monkeypatch):
     import czjLLM.prompt_pipeline.round_runner as rr
 
@@ -94,4 +116,4 @@ def test_windows_spawn_overlap_join_clear_allows_pool(monkeypatch):
     monkeypatch.setattr(rr, "_active_children_count", lambda: 1)
     monkeypatch.setattr(rr, "_join_existing_children_once", lambda timeout_sec: 0)
 
-    assert rr._should_run_serial_to_avoid_windows_spawn_overlap() is False
+    assert rr._should_use_thread_pool_to_avoid_windows_spawn_overlap() is False
