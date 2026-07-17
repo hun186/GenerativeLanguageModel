@@ -99,6 +99,25 @@ merge_log_file: merge_dict_slices_audited.log
 5. row merger 讀 combined output，必要時依 `merge_slices` 合併 list of dict slices。
 6. `ESSink.write_main()` 寫回 `output_col`；若 `record_update_time: true`，也寫入 `update_time_ai` / meta 相關欄位。
 
+#### Legacy LLM round debug 診斷
+
+舊版單階段 consumer 的每一輪 LLM 派工可啟用 round-level debug。這個 debug 只用來診斷 legacy consumer 的 multiprocessing / Windows spawn / Pool 建立狀態，不會改變任務 prompt、LLM 輸出或寫回格式。
+
+可在 YAML 中設定：
+
+```yaml
+# 只在需要診斷 legacy single-stage LLM round 時啟用；一般任務可省略。
+llm_round_debug: true
+```
+
+也可用環境變數臨時啟用：
+
+```cmd
+set CZJLLM_LLM_ROUND_DEBUG=1
+```
+
+啟用後會在終端輸出 `[round-debug]` 區塊，包含 platform、pid、thread、multiprocessing start method、active children、n_process、job sample 與例外資訊。一般操作人員不需要啟用；遇到 Windows `spawn` / `DuplicateHandle` / `EOFError` 類問題時再開啟即可。Windows spawn-overlap 的安全保護是系統內建邏輯，不需要額外 YAML 或環境變數設定。
+
 ### SQL / SQLite 單階段範例
 
 SQL Server 與 SQLite 共用 SQL mode；SQLite 通常由 `server` 或 config 指向 `.sqlite` / `.db` 檔案。

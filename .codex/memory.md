@@ -110,3 +110,31 @@
 - 主要修改內容：撤回 Windows 預設 thread pool 的行為變更，`run_round()` 回到所有平台平行 round 預設使用 multiprocessing；新增 `CZJLLM_LLM_ROUND_DEBUG=1` 診斷開關，會在 multiprocessing pool 建立前後、join 後、timeout 或 exception 時輸出平台、PID、start method、active children、n_proc、jobs、pool processes、worker target 與 prompt job sample，協助比對 Windows crash 前後狀態。
 - 驗證結果：依規範先執行 requirements 安裝，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py tests/prompt_pipeline/test_round_runner_smoke.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 30 tests 通過。
 - 重要結論：下一步建議請使用者在 Windows 以 `set CZJLLM_LLM_ROUND_DEBUG=1` 後重跑同一 YAML，保留從 `[round-debug] phase=before_pool` 到 crash 的完整 log，以確認是 pool 建立、apply_async job pickle、child import、或 combine/writeback 期間的子程序 handle 重建問題。
+
+## 2026-07-17 Windows legacy single-stage active-child fallback
+
+- 任務目的：根據使用者提供的 `CZJLLM_LLM_ROUND_DEBUG=1` log 進一步縮小 Windows 單階段 crash 原因；log 顯示 crash 前只有 `phase=before_pool`，未到 `after_pool_created`，且建立新 Pool 前 `active_children=1`、`thread=consumer-thread`、start method 為 `spawn`。
+- 主要修改內容：保留 multiprocessing 預設，不改 `CZJLLM_LLM_ROUND_EXECUTOR`；新增 Windows 專用保護：若 legacy single-stage round 準備建立 Pool 前偵測到既有 multiprocessing child，該 round 改為序列執行，避免在 Windows spawn / DuplicateHandle 狀態重疊時建立新 Pool。後續已改為內建安全路徑，不再要求操作人員設定環境變數。
+- 驗證結果：依規範先執行 requirements 安裝但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py tests/prompt_pipeline/test_round_runner_smoke.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 32 tests 通過。
+- 重要結論：多階段 YAML 正常是因為它走 SQL/ES/Table 共用 multistage scheduler / row-level path，不走 legacy consumer 的 `run_round()` Pool；舊單階段 YAML 會在 consumer thread 中用 `multiprocessing.Pool` 做 round-level dispatch，因此 Windows spawn overlap 只暴露在舊路徑。
+
+## 2026-07-17 Windows spawn-overlap pre-Pool reap tuning
+
+- 任務目的：回應使用者希望直接調優 legacy multiprocessing 路徑，而不是遇到 active child 就立刻降低為序列執行；同時說明為何以前 multiprocessing 正常、近期才出現問題。
+- 主要修改內容：Windows legacy single-stage round 在建立新 Pool 前若發現 `active_children > 0`，會先短暫 `join()` 既有 child 嘗試回收已結束或即將結束的子程序；只有 join 後仍有 active child，才對該 round 啟用序列 fallback。pre-Pool join/reap 等待秒數內建為 0.75 秒，不需操作人員設定。
+- 驗證結果：依規範先執行 requirements 安裝但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py tests/prompt_pipeline/test_round_runner_smoke.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 33 tests 通過。
+- 重要結論：推測近期才出現的關鍵差異不是 multiprocessing 本身，而是舊單階段 stream 現在 consumer / row-merger / producer 以多執行緒協作、第一輪成功與合併寫回可和下一輪 Pool 建立重疊；Windows spawn 對既有 child handle / preparation pipe 狀態較敏感，因此在 active child 尚未完全回收時建立新 Pool 會出現 EOF / DuplicateHandle。
+
+## 2026-07-17 Windows spawn-overlap operator-facing simplification
+
+- 任務目的：回應使用者擔心專案設定越來越多、操作人員難掌握；將 Windows spawn overlap 調優改為系統內建邏輯，而非要求使用者設定環境變數。
+- 主要修改內容：移除 `CZJLLM_WINDOWS_SPAWN_OVERLAP_JOIN_TIMEOUT_SEC` 與 `CZJLLM_WINDOWS_SPAWN_OVERLAP_FALLBACK` 操作參數；保留內建 0.75 秒 pre-Pool join/reap，若仍有 active child 則自動序列執行該 round，並在畫面印出提示「automatic safety path; no operator setting is required」。
+- 驗證結果：依規範先執行 requirements 安裝但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py tests/prompt_pipeline/test_round_runner_smoke.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 32 tests 通過。
+- 重要結論：此類 Windows runtime 保護屬系統自我修復邏輯，不應暴露為一般操作設定；操作人員只需看到終端提示，知道本 round 已自動避開 Windows spawn overlap。
+
+## 2026-07-17 LLM round debug YAML setting documentation
+
+- 任務目的：回應使用者詢問 `CZJLLM_LLM_ROUND_DEBUG=1` 的作用、是否有說明檔，以及能否用 YAML 設定。
+- 主要修改內容：`run_round()` 新增 `debug_enabled` 參數；legacy consumer 從 `ctx.llm_round_debug` 傳入，主程式會讀取 YAML 的 `llm_round_debug`。保留 `CZJLLM_LLM_ROUND_DEBUG=1` 作為臨時環境變數診斷方式。文件 `docs/usage/single_stage_vs_multistage_yaml_guide.md` 新增 legacy LLM round debug 說明與 YAML 範例。
+- 驗證結果：依規範先執行 requirements 安裝但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py czjLLM/prompt_pipeline/pipeline_controller.py czjLLM/czjLLM_TextProcessing.py czjLLM/job_manager/job_config.py tests/prompt_pipeline/test_round_runner_smoke.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 32 tests 通過。
+- 重要結論：`llm_round_debug: true` 只開啟 legacy consumer round-level 診斷輸出，不改 prompt、LLM 輸出或寫回格式；一般任務可省略。

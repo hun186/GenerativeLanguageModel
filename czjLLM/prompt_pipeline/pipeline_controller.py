@@ -326,6 +326,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     DTBJobs,
                     ctx.n_process,
                     timeout_sec=getattr(ctx, "llm_round_timeout_sec", None),
+                    debug_enabled=getattr(ctx, "llm_round_debug", None),
                 )
                 ok_prompt_files = set()
                 

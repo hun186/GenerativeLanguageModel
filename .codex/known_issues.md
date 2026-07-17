@@ -128,3 +128,51 @@ Open
 狀態：Open
 
 負責人：-
+
+## Windows legacy single-stage Pool creation with existing active child
+
+首次發現：2026-07-17
+
+問題：使用者 debug log 顯示 Windows 舊單階段在 `run_round()` 建立新 multiprocessing Pool 前輸出 `active_children=1`，接著未出現 `after_pool_created` 就在子程序 spawn 階段發生 `EOFError: Ran out of input` 與 `PermissionError: [WinError 5] DuplicateHandle`。
+
+影響：問題集中於 legacy single-stage consumer 的 round-level multiprocessing Pool 建立階段；多階段 YAML 因走 scheduler path，不會觸發同一段 Pool 建立邏輯。
+
+暫時解法：已新增 Windows active-child fallback：當建立新 Pool 前仍有 active multiprocessing child 時，該 round 序列執行以避開 spawn overlap。若需更深入診斷，保留 `CZJLLM_LLM_ROUND_DEBUG=1` 觀察訊息即可。
+
+根本原因：待完全釐清；目前證據指向 Windows spawn 在 consumer thread 中建立新 Pool 時，與既有 child process / handle 狀態重疊，導致 preparation pipe EOF 或 DuplicateHandle 權限錯誤。
+
+狀態：Mitigated with targeted fallback
+
+負責人：-
+
+## Windows legacy Pool overlap tuning notes
+
+首次發現：2026-07-17
+
+問題：直接序列 fallback 可避免 crash，但可能過早犧牲 Windows 舊單階段 round-level multiprocessing 並行。
+
+影響：若 active child 只是剛結束但尚未被回收，立即序列化會降低吞吐，不是最佳調優。
+
+暫時解法：目前採 pre-Pool join/reap：先短暫等待並回收既有 child；只有仍未清空時才序列執行該 round，join 等待值改為系統內建。
+
+根本原因：仍待 Windows 實機長批次確認；目前證據支持 active child / spawn overlap 是直接觸發條件。
+
+狀態：Mitigated with preflight reap
+
+負責人：-
+
+## Windows spawn-overlap settings removed from operator surface
+
+首次發現：2026-07-17
+
+問題：前一版把 Windows spawn-overlap join timeout / fallback 做成環境變數，可能增加操作人員負擔。
+
+影響：操作人員需要理解過多 runtime 細節，且可能誤關閉保護。
+
+暫時解法：已改為內建 0.75 秒 pre-Pool join/reap 與自動 fallback；畫面提示即可，不需設定額外環境變數。
+
+根本原因：runtime 保護邏輯不應外露為一般任務設定。
+
+狀態：Resolved
+
+負責人：-
