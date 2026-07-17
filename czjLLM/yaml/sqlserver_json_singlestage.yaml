@@ -1,0 +1,30 @@
+# sqlserver_json_singlestage.yaml
+# SQL Server 單階段 in 多階段格式
+mode: sql
+channel: sql_cache
+model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+
+# I/O（沿用 sqlite_json_multistage_config.yaml 的欄位與寫回策略）
+input_col: activity_description
+output_col: activity_description_result
+primary_key: hash_value
+record_update_time: true
+save_raw_input_when_flatten: true
+sql_config_file: czjLLM/config_sql/akconfig_test_SRP.py
+#task: InfoExtraction-MultiDim-SQLFriendly-to json format
+task: Organization Profile Analyzer to json format
+allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunctions]
+record_update_time: true
+
+
+# 自動套用 mapping（僅新增欄位，不會改既有型別）
+#mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
+
+merge_slices: false
+
+#merge_conflict_policy: prefer_left  # or prefer_right
+#merge_dedup_lists: true               # 合併 list 時是否去重
+merge_log_changes: true               # 合併有變化才印 log
+merge_max_log: 10                     # 最多列出幾筆差異樣本
+merge_log_to_file: true              # 是否落檔
+merge_log_file: merge_dict_slices_audited.log

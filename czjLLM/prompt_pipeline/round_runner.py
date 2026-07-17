@@ -164,7 +164,7 @@ def _join_existing_children_once(timeout_sec: float) -> int | None:
             tlog_warn(f"⚠️ Windows spawn overlap preflight: child join failed: {exc!r}")
     return _active_children_count()
 
-
+'''
 def _should_use_thread_pool_to_avoid_windows_spawn_overlap() -> bool:
     if not sys.platform.startswith("win"):
         return False
@@ -178,8 +178,35 @@ def _should_use_thread_pool_to_avoid_windows_spawn_overlap() -> bool:
     )
     remaining = _join_existing_children_once(WINDOWS_SPAWN_OVERLAP_JOIN_TIMEOUT_SEC)
     return bool(remaining and remaining > 0)
+'''
 
+def _should_use_thread_pool_to_avoid_windows_spawn_overlap() -> bool:
+    if not sys.platform.startswith("win"):
+        return False
 
+    count = _active_children_count()
+    if not count:
+        return False
+
+    tlog_warn(
+        "⚠️ Windows legacy LLM round found existing multiprocessing children "
+        f"before creating a new Pool (active_children={count}); "
+        "attempting a short built-in join/reap first."
+    )
+
+    remaining = _join_existing_children_once(
+        WINDOWS_SPAWN_OVERLAP_JOIN_TIMEOUT_SEC
+    )
+
+    tlog_warn(
+        "⚠️ Windows 本輪曾偵測到 multiprocessing child；"
+        f"join/reap 後 remaining={remaining}。"
+        "為避免 Windows handle cleanup race，本輪固定改用 ThreadPool。"
+    )
+
+    # 重點：只要本輪曾看到 active child，就不要立刻再 spawn 新 Pool。
+    return True
+    
 
 def _run_round_threads(jobs, n_proc: int, timeout_sec: float):
     results = []

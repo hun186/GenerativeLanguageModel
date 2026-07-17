@@ -25,6 +25,7 @@ merge_log_changes: true               # 合併有變化才印 log
 merge_max_log: 10                     # 最多列出幾筆差異樣本
 merge_log_to_file: true              # 是否落檔
 merge_log_file: merge_dict_slices_audited.log
+llm_round_debug: true
 
 # 測試重跑開關：覆寫 es_config_file 內的 rerun.pipeline_hash。
 # 若同一批 ES 文件已用舊 hash 寫過結果，改這個值即可讓 pending query 再挑出來重跑。
