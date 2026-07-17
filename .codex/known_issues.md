@@ -96,3 +96,83 @@ Open
 狀態：Open
 
 負責人：-
+
+## Windows multiprocessing DuplicateHandle in legacy single-stage LLM round
+
+首次發現：2026-07-17
+
+問題：Windows 執行舊版單階段 YAML（例如 ES mode）時，legacy consumer 的 `run_round()` 使用 `multiprocessing.Pool`；在 spawn 子程序階段可能於 `multiprocessing.connection.rebuild_pipe_connection()` / `_winapi.DuplicateHandle()` 觸發 `PermissionError: [WinError 5] 存取被拒`。
+
+影響：LLM API 已回傳成功後，合併/寫回階段可能因 worker pool crash 而中斷；Linux fork-based 執行路徑未重現。
+
+暫時解法：此方向已被後續「debug-first rollback」取代；目前不再預設改用 thread pool，改以 `CZJLLM_LLM_ROUND_DEBUG=1` 先收集 multiprocessing 診斷。
+
+根本原因：Windows multiprocessing spawn 需要 pickle job 與 duplicate IPC handle；在使用者環境中該 handle duplication 被 OS / 權限 / 安全軟體或父子程序狀態阻擋。LLM API round 為 I/O-bound，無需依賴多程序 CPU 平行。
+
+狀態：Superseded by debug-first investigation
+
+負責人：-
+
+## Windows legacy single-stage WinError 5 root-cause investigation pending
+
+首次發現：2026-07-17
+
+問題：使用者指出 Windows 舊版單階段任務過去也使用 multiprocessing 並未發生 `PermissionError: [WinError 5]`，近期修改後才出現；因此目前不能直接判定 multiprocessing 本身就是根因。
+
+影響：若只改用 thread pool 可能掩蓋真正原因，例如 pool lifecycle、job pickling payload、child import side effect、parent process handle state、watchdog/consumer 重啟流程或安全軟體互動。
+
+暫時解法：已撤回 Windows 預設 thread pool 行為，新增 `CZJLLM_LLM_ROUND_DEBUG=1` 診斷；請在 Windows 以同一 YAML 重跑並保留完整 `[round-debug]` log、crash stack、第一輪/第幾輪發生、`n_process`、Python/conda 版本與是否在同一 cmd 視窗連續重跑。
+
+根本原因：待釐清。
+
+狀態：Open
+
+負責人：-
+
+## Windows legacy single-stage Pool creation with existing active child
+
+首次發現：2026-07-17
+
+問題：使用者 debug log 顯示 Windows 舊單階段在 `run_round()` 建立新 multiprocessing Pool 前輸出 `active_children=1`，接著未出現 `after_pool_created` 就在子程序 spawn 階段發生 `EOFError: Ran out of input` 與 `PermissionError: [WinError 5] DuplicateHandle`。
+
+影響：問題集中於 legacy single-stage consumer 的 round-level multiprocessing Pool 建立階段；多階段 YAML 因走 scheduler path，不會觸發同一段 Pool 建立邏輯。
+
+暫時解法：已新增 Windows active-child fallback：當建立新 Pool 前仍有 active multiprocessing child 時，該 round 序列執行以避開 spawn overlap。若需更深入診斷，保留 `CZJLLM_LLM_ROUND_DEBUG=1` 觀察訊息即可。
+
+根本原因：待完全釐清；目前證據指向 Windows spawn 在 consumer thread 中建立新 Pool 時，與既有 child process / handle 狀態重疊，導致 preparation pipe EOF 或 DuplicateHandle 權限錯誤。
+
+狀態：Mitigated with targeted fallback
+
+負責人：-
+
+## Windows legacy Pool overlap tuning notes
+
+首次發現：2026-07-17
+
+問題：直接序列 fallback 可避免 crash，但可能過早犧牲 Windows 舊單階段 round-level multiprocessing 並行。
+
+影響：若 active child 只是剛結束但尚未被回收，立即序列化會降低吞吐，不是最佳調優。
+
+暫時解法：目前採 pre-Pool join/reap：先短暫等待並回收既有 child；只有仍未清空時才序列執行該 round，join 等待值改為系統內建。
+
+根本原因：仍待 Windows 實機長批次確認；目前證據支持 active child / spawn overlap 是直接觸發條件。
+
+狀態：Mitigated with preflight reap
+
+負責人：-
+
+## Windows spawn-overlap settings removed from operator surface
+
+首次發現：2026-07-17
+
+問題：前一版把 Windows spawn-overlap join timeout / fallback 做成環境變數，可能增加操作人員負擔。
+
+影響：操作人員需要理解過多 runtime 細節，且可能誤關閉保護。
+
+暫時解法：已改為內建 0.75 秒 pre-Pool join/reap 與自動 fallback；畫面提示即可，不需設定額外環境變數。
+
+根本原因：runtime 保護邏輯不應外露為一般任務設定。
+
+狀態：Resolved
+
+負責人：-
