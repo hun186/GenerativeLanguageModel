@@ -1,12 +1,9 @@
 import multiprocessing
 import os
+import platform
 import time as _time
 
-try:
-    from czjLLM.job_manager.console_ui import tlog_warn
-except Exception:
-    def tlog_warn(msg):
-        print(msg)
+from czjLLM.prompt_pipeline.pending_central import tlog_warn
 
 
 CONSUMER_STATE = {
@@ -72,6 +69,61 @@ def _round_timeout_from_jobs(jobs, explicit_timeout=None) -> float:
     return 480.0
 
 
+def _llm_round_debug_enabled() -> bool:
+    value = (os.getenv("CZJLLM_LLM_ROUND_DEBUG") or "").strip().lower()
+    return value in {"1", "true", "yes", "on", "debug"}
+
+
+def _safe_start_method() -> str:
+    try:
+        return multiprocessing.get_start_method(allow_none=True) or "default"
+    except Exception as exc:
+        return f"unavailable:{exc!r}"
+
+
+def _safe_active_children_count() -> str:
+    try:
+        return str(len(multiprocessing.active_children()))
+    except Exception as exc:
+        return f"unavailable:{exc!r}"
+
+
+def _job_debug_summary(jobs, limit: int = 5) -> str:
+    parts = []
+    for job in list(jobs)[:limit]:
+        cls = job.__class__
+        prompt_file = getattr(job, "promptFile", "")
+        parts.append(f"{cls.__module__}.{cls.__qualname__}(promptFile={prompt_file!r})")
+    if len(jobs) > limit:
+        parts.append(f"...(+{len(jobs) - limit} more)")
+    return "; ".join(parts)
+
+
+def _debug_round_message(jobs, n_proc: int, timeout_sec: float, phase: str, error=None) -> str:
+    lines = [
+        f"[round-debug] phase={phase}",
+        f"  platform={platform.platform()}",
+        f"  pid={os.getpid()}",
+        f"  multiprocessing_start_method={_safe_start_method()}",
+        f"  active_children={_safe_active_children_count()}",
+        f"  n_proc={n_proc}",
+        f"  jobs={len(jobs)}",
+        f"  pool_processes={min(int(n_proc), len(jobs)) if jobs else 0}",
+        f"  timeout_sec={timeout_sec}",
+        f"  worker_target={_run_prompt_job.__module__}.{_run_prompt_job.__qualname__}",
+        f"  job_samples={_job_debug_summary(jobs)}",
+    ]
+    if error is not None:
+        lines.append(f"  error_type={type(error).__module__}.{type(error).__qualname__}")
+        lines.append(f"  error_repr={error!r}")
+    return "\n".join(lines)
+
+
+def _debug_round(jobs, n_proc: int, timeout_sec: float, phase: str, error=None) -> None:
+    if _llm_round_debug_enabled():
+        tlog_warn(_debug_round_message(jobs, n_proc, timeout_sec, phase, error=error))
+
+
 def run_round(jobs, n_proc: int, timeout_sec: float | None = None):
     """Run one consumer batch with a hard wall-clock timeout."""
     use_mp = (n_proc > 1) and (len(jobs) > 1)
@@ -104,8 +156,10 @@ def run_round(jobs, n_proc: int, timeout_sec: float | None = None):
     pool = None
     results = []
     try:
+        _debug_round(jobs, n_proc, timeout_sec, "before_pool")
         CONSUMER_STATE["pool_alive"] = True
         pool = multiprocessing.Pool(processes=min(int(n_proc), len(jobs)))
+        _debug_round(jobs, n_proc, timeout_sec, "after_pool_created")
         async_results = [pool.apply_async(_run_prompt_job, (job,)) for job in jobs]
         pool.close()
 
@@ -118,6 +172,7 @@ def run_round(jobs, n_proc: int, timeout_sec: float | None = None):
             CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
 
         pool.join()
+        _debug_round(jobs, n_proc, timeout_sec, "after_pool_join")
         return results
     except multiprocessing.TimeoutError:
         CONSUMER_STATE["last_round_timed_out"] = True
@@ -125,11 +180,14 @@ def run_round(jobs, n_proc: int, timeout_sec: float | None = None):
         if pool is not None:
             pool.terminate()
             pool.join()
-        raise BatchRunTimeout(timeout_sec, finished, len(jobs))
-    except Exception:
+        ex = BatchRunTimeout(timeout_sec, finished, len(jobs))
+        _debug_round(jobs, n_proc, timeout_sec, "timeout", error=ex)
+        raise ex
+    except Exception as ex:
         if pool is not None:
             pool.terminate()
             pool.join()
+        _debug_round(jobs, n_proc, timeout_sec, "exception", error=ex)
         raise
     finally:
         CONSUMER_STATE["pool_alive"] = False
