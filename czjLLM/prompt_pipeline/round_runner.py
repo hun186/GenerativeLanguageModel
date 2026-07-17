@@ -1,3 +1,4 @@
+import concurrent.futures
 import multiprocessing
 import os
 import platform
@@ -164,7 +165,7 @@ def _join_existing_children_once(timeout_sec: float) -> int | None:
     return _active_children_count()
 
 
-def _should_run_serial_to_avoid_windows_spawn_overlap() -> bool:
+def _should_use_thread_pool_to_avoid_windows_spawn_overlap() -> bool:
     if not sys.platform.startswith("win"):
         return False
     count = _active_children_count()
@@ -178,6 +179,30 @@ def _should_run_serial_to_avoid_windows_spawn_overlap() -> bool:
     remaining = _join_existing_children_once(WINDOWS_SPAWN_OVERLAP_JOIN_TIMEOUT_SEC)
     return bool(remaining and remaining > 0)
 
+
+
+def _run_round_threads(jobs, n_proc: int, timeout_sec: float):
+    results = []
+    max_workers = max(1, min(int(n_proc), len(jobs)))
+    deadline = _time.monotonic() + timeout_sec
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(_run_prompt_job, job) for job in jobs]
+        for fut in futures:
+            remain = deadline - _time.monotonic()
+            if remain <= 0:
+                CONSUMER_STATE["last_round_timed_out"] = True
+                for pending in futures[len(results):]:
+                    pending.cancel()
+                raise BatchRunTimeout(timeout_sec, len(results), len(jobs))
+            try:
+                results.append(fut.result(timeout=remain))
+                CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
+            except concurrent.futures.TimeoutError as exc:
+                CONSUMER_STATE["last_round_timed_out"] = True
+                for pending in futures[len(results):]:
+                    pending.cancel()
+                raise BatchRunTimeout(timeout_sec, len(results), len(jobs)) from exc
+    return results
 
 def _run_round_serial(jobs, timeout_sec: float):
     out = []
@@ -212,15 +237,15 @@ def run_round(jobs, n_proc: int, timeout_sec: float | None = None, debug_enabled
     if not use_mp:
         return _run_round_serial(jobs, timeout_sec)
 
-    if _should_run_serial_to_avoid_windows_spawn_overlap():
+    if _should_use_thread_pool_to_avoid_windows_spawn_overlap():
         tlog_warn(
             "⚠️ Windows legacy LLM round still has active multiprocessing children "
-            "after the built-in pre-Pool join/reap; running this round serially to avoid spawn "
-            "EOFError/WinError 5 during DuplicateHandle. This is an automatic safety path; "
-            "no operator setting is required."
+            "after the built-in pre-Pool join/reap; running this round with a thread pool to avoid spawn "
+            "EOFError/WinError 5 during DuplicateHandle while preserving LLM I/O concurrency. "
+            "This is an automatic safety path; no operator setting is required."
         )
-        _debug_round(jobs, n_proc, timeout_sec, "windows_spawn_overlap_serial_fallback", debug_enabled=debug_enabled)
-        return _run_round_serial(jobs, timeout_sec)
+        _debug_round(jobs, n_proc, timeout_sec, "windows_spawn_overlap_thread_fallback", debug_enabled=debug_enabled)
+        return _run_round_threads(jobs, n_proc, timeout_sec)
 
     pool = None
     results = []

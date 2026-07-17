@@ -176,3 +176,19 @@ Open
 狀態：Resolved
 
 負責人：-
+
+## Windows legacy single-stage serial fallback too conservative
+
+首次發現：2026-07-17
+
+問題：Windows 舊單階段 ES YAML 在第一輪 LLM 完成後，`run_round()` 建立下一輪 Pool 前偵測到 `active_children=1`。原本 short join/reap 後若 child 仍存在會把該 round 改成序列執行；使用者提供 log 顯示這會使 Windows 無法像 Linux 一樣快速累積多個 pending/running 任務，體感像流程自行停止。
+
+影響：雖可避開 Windows spawn/DuplicateHandle 風險，但大批次舊單階段任務吞吐可能大幅下降，且下一輪多個 prompt 不會平行呼叫遠端 LLM API。
+
+暫時解法：已改為在 active child 無法清空時使用 thread pool fallback，而不是序列 fallback；這保留 LLM API I/O 併發並避開 Windows multiprocessing spawn overlap。
+
+根本原因：Windows spawn 對既有 child process / handle 狀態敏感；但 LLM API 呼叫本身是 I/O-bound，可用 thread pool 在此特定安全路徑保留併發。
+
+狀態：Mitigated with targeted thread fallback
+
+負責人：-
