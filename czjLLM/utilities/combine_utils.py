@@ -20,6 +20,13 @@ except Exception as ex:
 
 from json_repair import repair_json
 from czjLLM.utilities.json_text_utils import strip_markdown_code_fence
+from czjLLM.utilities.fs_safe import (
+    path_diagnostic,
+    safe_atomic_write_text,
+    safe_mkdir,
+    safe_read_text,
+    safe_rmtree,
+)
 
 import re
 
@@ -340,7 +347,653 @@ def _should_parse_as_json_task(task_text: str) -> bool:
     return any(h in normalized for h in positive_hints)
 
 def combine_api_finished_item(item: str, ctx) -> str:
-    print(f"{item} is finished calling API, start to combine returned result.")
+    import json
+    import os
+    import threading
+    import time
+    import traceback
+    from pathlib import Path
+
+    call_id = (
+        f"{os.getpid()}-"
+        f"{threading.get_ident()}-"
+        f"{time.time_ns()}"
+    )
+
+    stage = "entry"
+    item_p = Path(item)
+    suc_dir = item_p / "Success"
+    out_path = None
+
+    def checkpoint(name: str, **values) -> None:
+        details = ", ".join(
+            f"{key}={value!r}"
+            for key, value in values.items()
+        )
+
+        print(
+            f"[combine-step] "
+            f"id={call_id}, "
+            f"stage={name}"
+            + (f", {details}" if details else ""),
+            flush=True,
+        )
+
+    def path_len(path) -> int:
+        try:
+            return len(os.path.abspath(os.fspath(path)))
+        except Exception:
+            return -1
+
+    try:
+        checkpoint(
+            "entry",
+            module_file=__file__,
+            function_file=(
+                combine_api_finished_item.__code__.co_filename
+            ),
+            function_line=(
+                combine_api_finished_item.__code__.co_firstlineno
+            ),
+            pid=os.getpid(),
+            thread=threading.current_thread().name,
+            item=str(item_p),
+            item_length=path_len(item_p),
+        )
+
+        # -------------------------------------------------
+        # 1. 任務模式
+        # -------------------------------------------------
+        stage = "resolve-task-mode"
+
+        task_text = str(getattr(ctx, "task", ""))
+
+        checkpoint(
+            "before-detect-json-mode",
+            task=task_text,
+        )
+
+        json_mode = _should_parse_as_json_task(task_text)
+
+        checkpoint(
+            "after-detect-json-mode",
+            json_mode=json_mode,
+        )
+
+        text_chunks: list[str] = []
+        json_rows: list[dict] = []
+        json_slice_count = 0
+
+        # -------------------------------------------------
+        # 2. 列出 Success 檔案
+        # -------------------------------------------------
+        stage = "list-success-files"
+
+        checkpoint(
+            "before-oswalk",
+            success_dir=str(suc_dir),
+            success_dir_length=path_len(suc_dir),
+            success_dir_exists=suc_dir.exists(),
+        )
+
+        success_files = sorted(OSWALK(str(suc_dir)))
+
+        checkpoint(
+            "after-oswalk",
+            count=len(success_files),
+            files=success_files,
+        )
+
+        # 每次函式只建立一次 converter，避免每個分片重建。
+        stage = "create-opencc"
+
+        checkpoint("before-opencc-create")
+
+        converter = OpenCC("s2twp")
+
+        checkpoint("after-opencc-create")
+
+        # -------------------------------------------------
+        # 3. 讀取並解析 Success 分片
+        # -------------------------------------------------
+        for index, fp in enumerate(success_files):
+            p = Path(fp)
+
+            stage = f"read-success-file-{index}"
+
+            checkpoint(
+                "before-read",
+                index=index,
+                path=str(p),
+                path_length=path_len(p),
+                exists=p.exists(),
+            )
+
+            text = safe_read_text(
+                p,
+                encoding="utf-8",
+                logger=print,
+            )
+
+            checkpoint(
+                "after-read",
+                index=index,
+                chars=len(text),
+            )
+
+            if not text or not text.strip():
+                checkpoint(
+                    "skip-empty-file",
+                    index=index,
+                )
+                continue
+
+            # 暫時保留 OpenCC，但明確印出前後位置。
+            stage = f"opencc-convert-{index}"
+
+            checkpoint(
+                "before-opencc-convert",
+                index=index,
+            )
+
+            converted_prefix = converter.convert(
+                text.lstrip()
+            )
+
+            checkpoint(
+                "after-opencc-convert",
+                index=index,
+                converted_chars=len(converted_prefix),
+            )
+
+            if converted_prefix.startswith(
+                "無主題相關內容"
+            ):
+                checkpoint(
+                    "skip-no-topic",
+                    index=index,
+                )
+                continue
+
+            if json_mode:
+                stage = f"parse-json-{index}"
+
+                checkpoint(
+                    "before-json-loads",
+                    index=index,
+                )
+
+                try:
+                    obj = json.loads(text)
+
+                    checkpoint(
+                        "after-json-loads",
+                        index=index,
+                        obj_type=type(obj).__name__,
+                    )
+
+                    if isinstance(obj, dict):
+                        json_rows.append(obj)
+                        json_slice_count += 1
+                        continue
+
+                    if isinstance(obj, list):
+                        dict_rows = [
+                            row
+                            for row in obj
+                            if isinstance(row, dict)
+                        ]
+
+                        json_rows.extend(dict_rows)
+
+                        if dict_rows:
+                            json_slice_count += 1
+
+                        continue
+
+                    raise ValueError(
+                        "不支援的 JSON 結構："
+                        f"{type(obj).__name__}"
+                    )
+
+                except Exception as ex:
+                    has_multistage = False
+
+                    try:
+                        stages = getattr(ctx, "stages", None)
+                        has_multistage = (
+                            isinstance(stages, list)
+                            and len(stages) > 1
+                        )
+                    except Exception:
+                        has_multistage = False
+
+                    if has_multistage:
+                        print(
+                            "⚠️ JSON 解析失敗"
+                            "（multistage 將改由 stage 輸出寫回，"
+                            "可忽略）："
+                            f"{p}，錯誤：{ex}",
+                            flush=True,
+                        )
+                    else:
+                        print(
+                            "❌ 解析 JSON 失敗"
+                            "（將以純文字串接回退）："
+                            f"{p}，錯誤：{ex}",
+                            flush=True,
+                        )
+
+            text_chunks.append(
+                text if text.endswith("\n")
+                else text + "\n"
+            )
+
+        # -------------------------------------------------
+        # 4. 合併分片
+        # -------------------------------------------------
+        stage = "merge-slices"
+
+        checkpoint(
+            "before-merge-slices",
+            json_mode=json_mode,
+            json_rows=len(json_rows),
+            json_slice_count=json_slice_count,
+            text_chunks=len(text_chunks),
+            merge_slices=should_merge_slices(ctx),
+        )
+
+        if json_mode and json_rows:
+            if (
+                should_merge_slices(ctx)
+                and json_slice_count > 1
+            ):
+                checkpoint(
+                    "before-audited-dict-merge",
+                )
+
+                merged_obj, _report = (
+                    merge_dict_slices_audited(
+                        json_rows,
+                        conflict_policy=str(
+                            getattr(
+                                ctx,
+                                "merge_conflict_policy",
+                                "prefer_left",
+                            )
+                        ),
+                        dedup_lists=bool(
+                            getattr(
+                                ctx,
+                                "merge_dedup_lists",
+                                True,
+                            )
+                        ),
+                        audit=bool(
+                            getattr(
+                                ctx,
+                                "merge_log_changes",
+                                True,
+                            )
+                        ),
+                        logger=(
+                            print
+                            if bool(
+                                getattr(
+                                    ctx,
+                                    "merge_log_changes",
+                                    True,
+                                )
+                            )
+                            else None
+                        ),
+                        max_log=int(
+                            getattr(
+                                ctx,
+                                "merge_max_log",
+                                10,
+                            )
+                        ),
+                    )
+                )
+
+                checkpoint(
+                    "after-audited-dict-merge",
+                )
+
+                combined_text = json.dumps(
+                    merged_obj,
+                    ensure_ascii=False,
+                    indent=2,
+                )
+
+            else:
+                combined_text = json.dumps(
+                    json_rows,
+                    ensure_ascii=False,
+                    indent=2,
+                )
+
+        else:
+            combined_text = "".join(text_chunks)
+
+            if json_mode and not combined_text.strip():
+                combined_text = "[]"
+
+        checkpoint(
+            "after-merge-slices",
+            combined_chars=len(combined_text),
+        )
+
+        # -------------------------------------------------
+        # 5. 決定輸出位置
+        # -------------------------------------------------
+        stage = "resolve-output-root"
+
+        checkpoint("before-resolve-output-root")
+
+        base_out = (
+            _p(
+                getattr(
+                    ctx,
+                    "temp_txt_finished_dir",
+                    None,
+                )
+            )
+            or _p(
+                getattr(
+                    ctx,
+                    "llm_source_finished_dir",
+                    None,
+                )
+            )
+            or _p(
+                getattr(
+                    ctx,
+                    "llm_source_dir",
+                    None,
+                )
+            )
+            or item_p.parent
+        )
+
+        base_out = Path(base_out)
+
+        checkpoint(
+            "after-resolve-output-root",
+            base_out=str(base_out),
+            base_out_length=path_len(base_out),
+        )
+
+        stage = "resolve-relative-output-path"
+
+        prompt_dir_value = getattr(
+            ctx,
+            "prompt_dir",
+            "",
+        )
+
+        checkpoint(
+            "before-resolve-prompt-root",
+            prompt_dir=str(prompt_dir_value),
+        )
+
+        prompt_root = Path(
+            prompt_dir_value
+        ).resolve()
+
+        try:
+            rel = item_p.resolve().relative_to(
+                prompt_root
+            )
+            mirror_parent = rel.parent
+        except Exception as ex:
+            checkpoint(
+                "relative-path-fallback",
+                error=repr(ex),
+            )
+            mirror_parent = Path("")
+
+        mp_parts = list(mirror_parent.parts)
+
+        if (
+            mp_parts
+            and base_out.name.lower()
+            == mp_parts[0].lower()
+        ):
+            mp_parts = mp_parts[1:]
+
+        dest_dir = base_out / Path(*mp_parts)
+
+        checkpoint(
+            "resolved-dest-dir",
+            mirror_parent=str(mirror_parent),
+            dest_dir=str(dest_dir),
+            dest_dir_length=path_len(dest_dir),
+        )
+
+        # -------------------------------------------------
+        # 6. 建立輸出目錄
+        # -------------------------------------------------
+        stage = "create-output-directory"
+
+        checkpoint(
+            "before-safe-mkdir",
+            dest_dir=str(dest_dir),
+        )
+
+        safe_mkdir(
+            dest_dir,
+            logger=print,
+        )
+
+        checkpoint(
+            "after-safe-mkdir",
+            dest_dir_exists=dest_dir.exists(),
+        )
+
+        # -------------------------------------------------
+        # 7. 組合輸出檔名
+        # -------------------------------------------------
+        stage = "resolve-output-file"
+
+        main_name = item_p.name
+        task_name = _resolve_task_suffix_for_filename(
+            ctx
+        )
+
+        out_path = (
+            dest_dir
+            / f"{main_name}_{task_name}.txt"
+        )
+
+        checkpoint(
+            "resolved-output-file",
+            main_name=main_name,
+            task_name=task_name,
+            out_path=str(out_path),
+            out_path_length=path_len(out_path),
+        )
+
+        # -------------------------------------------------
+        # 8. JSON 回退修補
+        # -------------------------------------------------
+        stage = "repair-json-output"
+
+        if (
+            "to json format" in task_text.lower()
+            and not (json_mode and json_rows)
+        ):
+            checkpoint(
+                "before-combine-json-return",
+            )
+
+            fixed, err = combine_json_return(
+                combined_text,
+                dictListForced=True,
+            )
+
+            combined_text = fixed
+
+            checkpoint(
+                "after-combine-json-return",
+                has_error=bool(err),
+                combined_chars=len(combined_text),
+            )
+
+            if err:
+                logs_dir = (
+                    Path(
+                        getattr(
+                            ctx,
+                            "PGMSubDir",
+                            "",
+                        )
+                    )
+                    / "logs"
+                )
+
+                safe_mkdir(
+                    logs_dir,
+                    logger=print,
+                )
+
+                MPlogger(
+                    str(logs_dir),
+                    logFile=(
+                        "FailToCombineJsonResult.log"
+                    ),
+                ).logW(
+                    MES=(
+                        f"When combining {out_path} "
+                        "json format, the following "
+                        f"error occurs:\n{err}\n"
+                    )
+                )
+
+        # -------------------------------------------------
+        # 9. 寫出正式結果
+        # -------------------------------------------------
+        stage = "write-output"
+
+        checkpoint(
+            "before-atomic-write",
+            out_path=str(out_path),
+            out_path_length=path_len(out_path),
+            combined_chars=len(combined_text),
+        )
+
+        safe_atomic_write_text(
+            out_path,
+            combined_text,
+            encoding="utf-8",
+            logger=print,
+        )
+
+        checkpoint(
+            "after-atomic-write",
+            out_path_exists=out_path.exists(),
+        )
+
+        # -------------------------------------------------
+        # 10. 清除工作目錄
+        # -------------------------------------------------
+        stage = "cleanup-work-directory"
+
+        debug_enabled = bool(
+            getattr(ctx, "debug", False)
+        )
+
+        checkpoint(
+            "before-cleanup-check",
+            debug=debug_enabled,
+            item_is_dir=item_p.is_dir(),
+        )
+
+        if not debug_enabled and item_p.is_dir():
+            checkpoint(
+                "before-safe-rmtree",
+                item=str(item_p),
+                item_length=path_len(item_p),
+            )
+
+            cleanup_ok = safe_rmtree(
+                item_p,
+                logger=print,
+                raise_on_failure=False,
+            )
+
+            checkpoint(
+                "after-safe-rmtree",
+                cleanup_ok=cleanup_ok,
+                item_exists=item_p.exists(),
+            )
+
+            if not cleanup_ok:
+                print(
+                    "⚠️ 輸出已成功寫入，但工作目錄"
+                    "暫時無法刪除："
+                    f"{item_p}",
+                    flush=True,
+                )
+
+        stage = "finished"
+
+        checkpoint(
+            "finished",
+            out_path=str(out_path),
+        )
+
+        print(
+            "CombBackFN",
+            out_path,
+            flush=True,
+        )
+
+        return str(out_path)
+
+    except BaseException as ex:
+        print(
+            "\n[COMBINE-FATAL]\n"
+            f"id={call_id}\n"
+            f"stage={stage}\n"
+            f"pid={os.getpid()}\n"
+            f"thread="
+            f"{threading.current_thread().name}\n"
+            f"type={type(ex).__module__}."
+            f"{type(ex).__qualname__}\n"
+            f"repr={ex!r}\n"
+            f"item={str(item_p)!r}\n"
+            f"out_path="
+            f"{str(out_path) if out_path else None!r}\n"
+            f"traceback:\n"
+            f"{traceback.format_exc()}",
+            flush=True,
+        )
+
+        raise
+        
+def combine_api_finished_item_0717(item: str, ctx) -> str:
+    import inspect
+    import os
+    import threading
+
+    print(
+        "\n[COMBINE-CODE-LOCATION]\n"
+        f"module_file={__file__!r}\n"
+        f"function_file={combine_api_finished_item.__code__.co_filename!r}\n"
+        f"function_line={combine_api_finished_item.__code__.co_firstlineno}\n"
+        f"pid={os.getpid()}\n"
+        f"thread={threading.current_thread().name}",
+        flush=True,
+    )
+
+    print(
+        f"{item} is finished calling API, "
+        "start to combine returned result.",
+        flush=True,
+    )
+    
     item_p = Path(item)
     suc_dir = item_p / "Success"
 
@@ -352,7 +1005,12 @@ def combine_api_finished_item(item: str, ctx) -> str:
 
     for fp in sorted(OSWALK(str(suc_dir))):
         p = Path(fp)
-        text = p.read_text(encoding="utf-8")
+        #text = p.read_text(encoding="utf-8")
+        text = safe_read_text(
+            p,
+            encoding="utf-8",
+            logger=print,
+        )
         if not text or not text.strip():
             # 有些 provider/重試流程會留下空白成功檔，避免誤判成 JSON 壞檔
             continue
@@ -463,7 +1121,11 @@ def combine_api_finished_item(item: str, ctx) -> str:
         mp_parts = mp_parts[1:]
     
     dest_dir = base_out / Path(*mp_parts)
-    dest_dir.mkdir(parents=True, exist_ok=True)
+    #dest_dir.mkdir(parents=True, exist_ok=True)
+    safe_mkdir(
+        dest_dir,
+        logger=print,
+    )
     
     # 4) 檔名
     main_name = Path(item).name
@@ -480,68 +1142,32 @@ def combine_api_finished_item(item: str, ctx) -> str:
                 MES=f"When combining {out_path} json format, the following error occurs:\n{err}\n"
             )
 
-    out_path.write_text(combined_text, encoding="utf-8")
+    #out_path.write_text(combined_text, encoding="utf-8")
+    safe_atomic_write_text(
+        out_path,
+        combined_text,
+        encoding="utf-8",
+        logger=print,
+    )
     #print("item_p",item_p)
     #print("base_out",base_out)
     #print("out_path",out_path)
     if not getattr(ctx, "debug", False) and item_p.is_dir():
-        shutil.rmtree(item_p)
-
+        #shutil.rmtree(item_p)
+        cleanup_ok = safe_rmtree(
+            item_p,
+            logger=print,
+            raise_on_failure=False,
+        )
+        
+        if not cleanup_ok:
+            print(
+                "⚠️ 輸出已成功寫入，但工作目錄暫時無法刪除："
+                f"{item_p}",
+                flush=True,
+            )
     print("CombBackFN", out_path)
     return str(out_path)
-
-def combine_api_finished_item_OLD(item, ctx):
-    print(f"{item} is finished calling API, start to combine returned result.")
-    SucSubdir = os.path.join(item,"Success")
-    combined_text = ""
-    for file in sorted(OSWALK(SucSubdir)):
-        with open(file,'rt',encoding='utf-8') as fp:
-            fpCTX = fp.read()
-            #if OpenCC("s2twp").convert(fpCTX.rstrip()) in [
-                    #"無主題相關內容","無主題相關內容。"]:
-            if OpenCC("s2twp").convert(fpCTX.lstrip()).startswith("無主題相關內容"):
-                continue
-            
-            try:
-                json_obj = json.loads(fpCTX)
-                # 如果是一筆 dict，就包成 list
-                if isinstance(json_obj, dict):
-                    json_obj = [json_obj]
-                elif isinstance(json_obj, list):
-                    pass  # 結構正確，維持原樣
-                else:
-                    raise ValueError("不支援的 JSON 結構")
-            
-                # 加進去合併清單
-                combined_text += json.dumps(json_obj, ensure_ascii=False, indent=2) + "\n"
-            except Exception as e:
-                if "to json format" in ctx.task.lower():
-                    print(f"❌ 解析 JSON 失敗（跳過格式補正）：{file}，錯誤：{e}")
-                # 如果不是 JSON 結構就維持原來的加法
-                if fpCTX and not fpCTX.endswith("\n"):
-                    fpCTX += "\n"
-                combined_text += fpCTX
-
-    CombBackFN = DirReplace(
-        FilePath=item + f"_{ctx.task}.txt",
-        SrcDir=ctx.prompt_dir,
-        DesDir=ctx.llm_source_finished_dir
-    )
-    print("CombBackFN",CombBackFN)
-    if "to json format" in ctx.task.lower():
-        #dictListForced = True if "RAG Chunk" in TASK else False
-        dictListForced = True
-        combined_text,error_mes = combine_json_return(combined_text,dictListForced=dictListForced)
-        if error_mes != "":
-            MES = f"When combining {CombBackFN} json format, the following error occurs:\n{error_mes}\n"
-            MPlogger(logSubDir=os.path.join(ctx.PGMSubDir,"logs"),logFile="FailToCombineJsonResult.log").logW(MES=MES)
-    MKDIR(getPathFromFN(CombBackFN))
-    with open(CombBackFN,'wt',encoding='utf-8') as fp:
-        fp.write(combined_text)
-    if ctx.debug == False:
-        if os.path.isdir(item):
-            shutil.rmtree(item)
-    return CombBackFN
     
 def run_merge_for(ctx, job_dir: str, registry=None) -> bool:
     finished_root = (

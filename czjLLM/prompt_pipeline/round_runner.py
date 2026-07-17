@@ -208,6 +208,7 @@ def _should_use_thread_pool_to_avoid_windows_spawn_overlap() -> bool:
     return True
     
 
+
 def _run_round_threads(jobs, n_proc: int, timeout_sec: float):
     results = []
     max_workers = max(1, min(int(n_proc), len(jobs)))
@@ -254,6 +255,7 @@ def _run_round_serial(jobs, timeout_sec: float):
     return out
 
 
+'''
 def run_round(jobs, n_proc: int, timeout_sec: float | None = None, debug_enabled=None):
     """Run one consumer batch with a hard wall-clock timeout."""
     use_mp = (n_proc > 1) and (len(jobs) > 1)
@@ -310,5 +312,143 @@ def run_round(jobs, n_proc: int, timeout_sec: float | None = None, debug_enabled
             pool.join()
         _debug_round(jobs, n_proc, timeout_sec, "exception", error=ex, debug_enabled=debug_enabled)
         raise
+    finally:
+        CONSUMER_STATE["pool_alive"] = False
+'''
+def run_round(
+    jobs,
+    n_proc: int,
+    timeout_sec: float | None = None,
+    debug_enabled=None,
+):
+    """Run one consumer batch with a hard wall-clock timeout."""
+
+    use_parallel = (n_proc > 1) and (len(jobs) > 1)
+    timeout_sec = _round_timeout_from_jobs(jobs, timeout_sec)
+
+    CONSUMER_STATE["pool_alive"] = False
+    CONSUMER_STATE["last_round_timed_out"] = False
+
+    # 單一工作不需要建立 executor
+    if not use_parallel:
+        return _run_round_serial(jobs, timeout_sec)
+
+    # Windows 的工作主要是遠端 LLM HTTP I/O，
+    # 固定使用 ThreadPool，完全避免 multiprocessing spawn、
+    # DuplicateHandle、active_children 與 child.join 問題。
+    if sys.platform.startswith("win"):
+        tlog_warn(
+            "ℹ️ Windows legacy LLM round uses ThreadPoolExecutor "
+            f"(jobs={len(jobs)}, workers={min(int(n_proc), len(jobs))})"
+        )
+
+        _debug_round(
+            jobs,
+            n_proc,
+            timeout_sec,
+            "windows_thread_pool",
+            debug_enabled=debug_enabled,
+        )
+
+        return _run_round_threads(jobs, n_proc, timeout_sec)
+
+    # Linux / POSIX 保留 multiprocessing Pool
+    pool = None
+    results = []
+
+    try:
+        _debug_round(
+            jobs,
+            n_proc,
+            timeout_sec,
+            "before_pool",
+            debug_enabled=debug_enabled,
+        )
+
+        CONSUMER_STATE["pool_alive"] = True
+
+        pool = multiprocessing.Pool(
+            processes=min(int(n_proc), len(jobs))
+        )
+
+        _debug_round(
+            jobs,
+            n_proc,
+            timeout_sec,
+            "after_pool_created",
+            debug_enabled=debug_enabled,
+        )
+
+        async_results = [
+            pool.apply_async(_run_prompt_job, (job,))
+            for job in jobs
+        ]
+
+        pool.close()
+
+        deadline = _time.monotonic() + timeout_sec
+
+        for ar in async_results:
+            remain = deadline - _time.monotonic()
+
+            if remain <= 0:
+                raise multiprocessing.TimeoutError()
+
+            results.append(ar.get(timeout=remain))
+            CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
+
+        pool.join()
+
+        _debug_round(
+            jobs,
+            n_proc,
+            timeout_sec,
+            "after_pool_join",
+            debug_enabled=debug_enabled,
+        )
+
+        return results
+
+    except multiprocessing.TimeoutError:
+        CONSUMER_STATE["last_round_timed_out"] = True
+        finished = len(results)
+
+        if pool is not None:
+            pool.terminate()
+            pool.join()
+
+        ex = BatchRunTimeout(
+            timeout_sec,
+            finished,
+            len(jobs),
+        )
+
+        _debug_round(
+            jobs,
+            n_proc,
+            timeout_sec,
+            "timeout",
+            error=ex,
+            debug_enabled=debug_enabled,
+        )
+
+        raise ex
+
+    except Exception as ex:
+        if pool is not None:
+            pool.terminate()
+            pool.join()
+
+        _debug_round(
+            jobs,
+            n_proc,
+            timeout_sec,
+            "exception",
+            error=ex,
+            debug_enabled=debug_enabled,
+        )
+
+        raise
+
     finally:
         CONSUMER_STATE["pool_alive"] = False

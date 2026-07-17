@@ -1,10 +1,12 @@
 import os
 import multiprocessing as mp
+'''
 try:
     mp.set_start_method("spawn", force=True)
 except RuntimeError as ex:
     print(ex)
     pass
+'''
 import threading
 import subprocess
 import numpy as np
@@ -405,6 +407,23 @@ class multicoreJob:
         return nProcessSPC
             
     def run(self):
+    
+        import traceback
+        
+        print(
+            "\n[MP-POOL-CREATE]\n"
+            f"pid={os.getpid()}\n"
+            f"ppid={os.getppid()}\n"
+            f"thread={threading.current_thread().name}\n"
+            f"platform={platform.system()}\n"
+            f"start_method={mp.get_start_method(allow_none=True)}\n"
+            f"nProcess={self.nProcess}\n"
+            f"jobs={len(DTBJobs)}\n"
+            f"active_children={len(mp.active_children())}\n"
+            f"stack:\n{''.join(traceback.format_stack(limit=12))}",
+            flush=True,
+        )
+
         DTBJobs = self.DTBJobs
         method = self.method
         if len(DTBJobs) == 0:
@@ -447,6 +466,7 @@ class multicoreJob:
                   "in the multiprocess procedure!"
                   ).replace("\n",""))
             print("="*50)
+            '''
             #pool = mp.Pool(self.nProcess)
             pool = mp.Pool(
                 processes=self.nProcess,
@@ -464,7 +484,71 @@ class multicoreJob:
                 #res = pool.starmap(Launcher, tqdm.tqdm(DTBJobs, total=len(DTBJobs)))
             pool.close()
             pool.join()
-
+            '''
+            mp_ctx = mp.get_context("spawn") if os.name == "nt" else mp.get_context()
+            
+            pool = None
+            
+            try:
+                pool = mp_ctx.Pool(
+                    processes=self.nProcess,
+                    initializer=_mp_init_logging,
+                    initargs=(self.log_queue,),
+                )
+            
+                DTBJobsWithMethod = [
+                    (job, method)
+                    for job in DTBJobs
+                ]
+            
+                print(
+                    f"There are totally {len(DTBJobsWithMethod)} Jobs.",
+                    flush=True,
+                )
+            
+                if not self.SafeMode:
+                    result_iter = pool.istarmap(
+                        Launcher,
+                        DTBJobsWithMethod,
+                        chunksize=1,
+                    )
+            
+                    res = list(
+                        tqdm.tqdm(
+                            result_iter,
+                            total=len(DTBJobsWithMethod),
+                        )
+                    )
+                else:
+                    res = pool.starmap(
+                        Launcher,
+                        DTBJobsWithMethod,
+                    )
+            
+                pool.close()
+                pool.join()
+                print(
+                    "\n[MP-POOL-JOINED]\n"
+                    f"pid={os.getpid()}\n"
+                    f"active_children={len(mp.active_children())}",
+                    flush=True,
+                )
+                pool = None
+            
+            except BaseException:
+                if pool is not None:
+                    try:
+                        pool.terminate()
+                    except Exception:
+                        pass
+            
+                    try:
+                        pool.join()
+                    except Exception:
+                        pass
+            
+                raise
+    
         return res
 
 class CommandExecutor:

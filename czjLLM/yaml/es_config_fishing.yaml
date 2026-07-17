@@ -2,6 +2,8 @@ channel: unspecified_channel
 input_col: rawInfo.content
 llm_source_backup_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/unspecified_channel
 llm_source_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLMSourcePool/unspecified_channel
+#llm_source_backup_dir: D:/czjw/LLMSourcePool_origin_backup/unspecified_channel
+#llm_source_dir: D:/czjw/LLMSourcePool/unspecified_channel
 es_config_file: czjLLM/config_es/akconfig_es_fishing.py
 mode: es
 model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
@@ -17,7 +19,7 @@ record_update_time: true
 #es_apply_mapping: True
 #mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
 
-merge_slices: true
+merge_slices: false
 
 #merge_conflict_policy: prefer_left  # or prefer_right
 #merge_dedup_lists: true               # 合併 list 時是否去重
