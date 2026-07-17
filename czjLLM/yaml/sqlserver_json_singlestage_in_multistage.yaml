@@ -19,6 +19,8 @@ allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunct
 # 自動套用 mapping（僅新增欄位，不會改既有型別）
 #mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
 
+# merge_slices 是「跨 prompt slice」合併；單一 LLM 回覆若本身是多筆 dict 的 JSON list，
+# 會保留為 list 供主欄位寫回 / flatten，不會被壓成單一 dict。
 merge_slices: true
 
 #merge_conflict_policy: prefer_left  # or prefer_right

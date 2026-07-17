@@ -348,6 +348,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
     json_mode = _should_parse_as_json_task(task_text)
     text_chunks: list[str] = []
     json_rows: list[dict] = []
+    json_slice_count = 0
 
     for fp in sorted(OSWALK(str(suc_dir))):
         p = Path(fp)
@@ -363,9 +364,13 @@ def combine_api_finished_item(item: str, ctx) -> str:
                 obj = json.loads(text)
                 if isinstance(obj, dict):
                     json_rows.append(obj)
+                    json_slice_count += 1
                     continue
                 if isinstance(obj, list):
-                    json_rows.extend([x for x in obj if isinstance(x, dict)])
+                    dict_rows = [x for x in obj if isinstance(x, dict)]
+                    json_rows.extend(dict_rows)
+                    if dict_rows:
+                        json_slice_count += 1
                     continue
                 raise ValueError("不支援的 JSON 結構")
             except Exception as e:
@@ -382,7 +387,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
         text_chunks.append(text if text.endswith("\n") else text + "\n")
 
     if json_mode and json_rows:
-        if should_merge_slices(ctx):
+        if should_merge_slices(ctx) and json_slice_count > 1:
             merged_obj, _report = merge_dict_slices_audited(
                 json_rows,
                 conflict_policy=str(getattr(ctx, "merge_conflict_policy", "prefer_left")),
