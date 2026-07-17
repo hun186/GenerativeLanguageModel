@@ -27,7 +27,7 @@
 
 - 任務目的：回應使用者擔心「Windows 預設改 thread pool」方向過大；重新釐清多階段任務沒問題、掛掉的是舊單階段 consumer 的 `run_round` 路徑。
 - 主要修改內容：將 `round_runner` 從「Windows 預設 thread pool」改為「預設維持歷史 multiprocessing；只有未強制指定 executor、且 Windows multiprocessing round 實際遇到 PermissionError / WinError 5 / DuplicateHandle 時，才重試該單階段 round 的 thread pool fallback」。`CZJLLM_LLM_ROUND_EXECUTOR=threads` 仍可主動使用 thread pool；`CZJLLM_LLM_ROUND_EXECUTOR=processes` 會停用 fallback 以利診斷。
-- 驗證結果：依規範先執行 requirements 安裝，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 29 tests 通過。
+- 驗證結果：依規範先執行 requirements 安裝，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 30 tests 通過。
 - 重要結論：多階段 stream 主要在 scheduler 階段同步執行，不走 `llm_stream_consumer -> run_round` 這條 legacy consumer 派工路徑；因此不應預設改變 Windows executor。保留 multiprocessing 預設並只在單階段 round 觸發 WinError 5 時 fallback，可降低行為變更範圍。
 ## 2026-07-16 LLM round executor rollback for diagnostics
 
@@ -96,3 +96,17 @@
 - 主要修改內容：在 `docs/usage/single_stage_vs_multistage_yaml_guide.md` 補充 `merge_slices` 的語意：只做跨 prompt slice 合併，不會把單一 LLM 回覆 JSON list 內的多個 dict 實體壓成一筆；並在 SQL Server 單任務 YAML 範例旁加註同一原則。
 - 驗證結果：執行 `python -m compileall czjLLM/utilities/combine_utils.py tests/test_combine_json_slice_merge.py` 通過，以及 `python -m pytest tests/test_combine_json_slice_merge.py` 共 4 passed、1 warning。
 - 重要結論：文件現在明確區分「跨 slice 合併」與「單一 JSON list 內多實體保留」，避免使用 `merge_slices: true` 時誤解輸出 shape。
+
+## 2026-07-17 Windows legacy single-stage LLM round executor fix
+
+- 任務目的：修正 Windows 執行舊版單階段 ES YAML 時，legacy consumer 在 `run_round()` 使用 multiprocessing spawn 可能於子程序重建 pipe handle 時觸發 `PermissionError: [WinError 5] DuplicateHandle`，導致已完成 LLM 回覆後無法穩定進入合併/寫回流程。
+- 主要修改內容：`czjLLM/prompt_pipeline/round_runner.py` 將 legacy 單階段 consumer 的平行 LLM round executor 抽成 processes / threads 兩條路徑；Windows 未明確指定時預設使用 thread pool，避免 spawn / DuplicateHandle；Linux 與其他平台預設保留 multiprocessing。可用 `CZJLLM_LLM_ROUND_EXECUTOR=processes` 強制回到舊 multiprocessing 診斷，也可用 `threads` 主動指定 thread pool。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py tests/prompt_pipeline/test_round_runner_smoke.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 30 tests 通過。
+- 重要結論：此修正只影響 legacy single-stage consumer 的每輪 LLM API 呼叫派工；多階段 stream scheduler 與 Linux 預設行為不變。Windows 下 LLM API 呼叫屬 I/O-bound，thread pool 可保留 endpoint 並行且避開 multiprocessing handle 權限問題。
+
+## 2026-07-17 Windows legacy single-stage debug-first rollback
+
+- 任務目的：回應使用者指出舊版單階段任務過去使用 multiprocessing 並未在 Windows 發生 `WinError 5`，因此不應先直接改 Windows executor 預設，而應先釐清近期程式變更造成的 pool / spawn / handle 狀態差異。
+- 主要修改內容：撤回 Windows 預設 thread pool 的行為變更，`run_round()` 回到所有平台平行 round 預設使用 multiprocessing；新增 `CZJLLM_LLM_ROUND_DEBUG=1` 診斷開關，會在 multiprocessing pool 建立前後、join 後、timeout 或 exception 時輸出平台、PID、start method、active children、n_proc、jobs、pool processes、worker target 與 prompt job sample，協助比對 Windows crash 前後狀態。
+- 驗證結果：依規範先執行 requirements 安裝，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py tests/prompt_pipeline/test_round_runner_smoke.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_sink_output_profile.py tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_pending_central.py` 共 30 tests 通過。
+- 重要結論：下一步建議請使用者在 Windows 以 `set CZJLLM_LLM_ROUND_DEBUG=1` 後重跑同一 YAML，保留從 `[round-debug] phase=before_pool` 到 crash 的完整 log，以確認是 pool 建立、apply_async job pickle、child import、或 combine/writeback 期間的子程序 handle 重建問題。

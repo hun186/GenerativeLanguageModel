@@ -96,3 +96,35 @@ Open
 狀態：Open
 
 負責人：-
+
+## Windows multiprocessing DuplicateHandle in legacy single-stage LLM round
+
+首次發現：2026-07-17
+
+問題：Windows 執行舊版單階段 YAML（例如 ES mode）時，legacy consumer 的 `run_round()` 使用 `multiprocessing.Pool`；在 spawn 子程序階段可能於 `multiprocessing.connection.rebuild_pipe_connection()` / `_winapi.DuplicateHandle()` 觸發 `PermissionError: [WinError 5] 存取被拒`。
+
+影響：LLM API 已回傳成功後，合併/寫回階段可能因 worker pool crash 而中斷；Linux fork-based 執行路徑未重現。
+
+暫時解法：此方向已被後續「debug-first rollback」取代；目前不再預設改用 thread pool，改以 `CZJLLM_LLM_ROUND_DEBUG=1` 先收集 multiprocessing 診斷。
+
+根本原因：Windows multiprocessing spawn 需要 pickle job 與 duplicate IPC handle；在使用者環境中該 handle duplication 被 OS / 權限 / 安全軟體或父子程序狀態阻擋。LLM API round 為 I/O-bound，無需依賴多程序 CPU 平行。
+
+狀態：Superseded by debug-first investigation
+
+負責人：-
+
+## Windows legacy single-stage WinError 5 root-cause investigation pending
+
+首次發現：2026-07-17
+
+問題：使用者指出 Windows 舊版單階段任務過去也使用 multiprocessing 並未發生 `PermissionError: [WinError 5]`，近期修改後才出現；因此目前不能直接判定 multiprocessing 本身就是根因。
+
+影響：若只改用 thread pool 可能掩蓋真正原因，例如 pool lifecycle、job pickling payload、child import side effect、parent process handle state、watchdog/consumer 重啟流程或安全軟體互動。
+
+暫時解法：已撤回 Windows 預設 thread pool 行為，新增 `CZJLLM_LLM_ROUND_DEBUG=1` 診斷；請在 Windows 以同一 YAML 重跑並保留完整 `[round-debug]` log、crash stack、第一輪/第幾輪發生、`n_process`、Python/conda 版本與是否在同一 cmd 視窗連續重跑。
+
+根本原因：待釐清。
+
+狀態：Open
+
+負責人：-
