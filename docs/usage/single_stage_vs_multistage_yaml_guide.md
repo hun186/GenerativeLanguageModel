@@ -370,3 +370,7 @@ allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunct
 ### 新版只有一個 stage 也算多階段嗎？
 
 如果 YAML 明確宣告 `stage_cfg.stages` / `stages` / `task_config.stages`，即使只有一個 stage，也會走 stage-managed path。這是預期行為，因為使用者已明確要求 stage runtime 與 stage writeback 語意。
+
+#### Debug 功能集中說明
+
+`llm_round_debug`、`combine_debug` 與多階段 `debug_print_llm_io` 的使用方式、功能範圍與注意事項已集中整理於 `docs/usage/debug_features.md`。正式長批次建議預設關閉 debug；需要診斷 Windows legacy round、combine 分片合併或 stage LLM I/O 時，再依該文件開啟對應 YAML key 或環境變數。
