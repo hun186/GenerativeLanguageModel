@@ -2,7 +2,8 @@ channel: 辭典測試
 llm_source_backup_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool_origin_backup/辭典測試
 llm_source_dir: GenerativeLanguageModel/czjLLM/LLMSourcePool/辭典測試
 mode: txt
-model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+#model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
 task: Organization Profile Analyzer to json format
 merge_slices: false
 debug_print_llm_io: true
