@@ -66,3 +66,9 @@
 - 決策：LLM audit 不再解析模型名稱中的 `ctx-<N>k` 作為 context window；只接受端點 response extension、Ollama `/api/show` metadata 或明確 model config 欄位。
 - 理由：模型顯示名稱可能與實際 runtime `num_ctx` 不一致，用名稱推估會造成截斷風險判斷不穩定。OpenAI-compatible chat completion `usage` 可提供 token usage，但通常不提供 context window，因此需把 token usage 與 context metadata 視為不同來源。
 - 後果：若模型端點無法提供 metadata、且本地 model config 也未明確設定 context，CSV 會將 context limit 標記為 unknown，不計算比例與耗盡 flag；這比猜測名稱更安全。
+
+## 2026-07-20 use Ollama ps active context for usage ratio
+
+- 決策：Context usage ratio 的 Ollama 分母改用 `/api/ps` active model context，而不是 `/api/show` model capability context。
+- 理由：`ollama ps` 的 `CONTEXT` 欄代表目前載入模型實際使用的 context；`/api/show` 可能回傳模型最大能力（例如 131072），會低估使用率並掩蓋截斷風險。
+- 後果：若模型尚未載入或 `/api/ps` 無 context 欄位，audit/terminal log 會 fallback 到明確 `model_spec` 或 unknown，不再用 model capability 假裝 runtime context。
