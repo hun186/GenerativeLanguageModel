@@ -48,6 +48,7 @@ from czjLLM.job_manager.end_point_manager import select_model
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.logging_utils import CostLog
+from czjLLM.utilities.llm_call_audit import log_llm_call
 from czjLLM.utilities.env_overrides import env_bool, env_int, load_czjllm_env_files_once
 from czjLLM.tokenizer_utils import TokenizerWrapper
 #from czjLLM.utilities.logging_utils import log_error
@@ -1697,6 +1698,8 @@ def call_llm_api(
             PGMSubDir=ctx.PGMSubDir,
             debug_print_llm_io=debug_print_llm_io,
             debug_print_max_chars=debug_print_max_chars,
+            audit_run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+            audit_path=getattr(ctx, "llm_call_audit_path", ""),
         ) for promptFile in _root_txt_files(TodoSubDir)]
 
     if ctx.mp_for_all_call:
@@ -1742,6 +1745,8 @@ class PromptAPIPipeline:
                  PGMSubDir = "",
                  debug_print_llm_io: bool = False,
                  debug_print_max_chars: int = 2000,
+                 audit_run_id: str = "",
+                 audit_path: str = "",
                  
                  ):
         self.task = task
@@ -1759,6 +1764,8 @@ class PromptAPIPipeline:
         self.allow_to_retry = allow_to_retry
         self.debug_print_llm_io = bool(debug_print_llm_io)
         self.debug_print_max_chars = int(debug_print_max_chars)
+        self.audit_run_id = audit_run_id
+        self.audit_path = audit_path
         
         # 1) 拿到規格的「私有」副本
         spec = deepcopy(model_spec) if model_spec else {}
@@ -1874,6 +1881,17 @@ class PromptAPIPipeline:
                 max_tokens=self.max_tokens,
                 model_spec=self.model_spec
             )
+            log_llm_call(
+                audit_path=self.audit_path,
+                run_id=self.audit_run_id,
+                task=self.task,
+                prompt_file=self.promptFile,
+                model_spec=self.model_spec,
+                response=response,
+                max_tokens=self.max_tokens,
+                cost_twd=cost,
+                ok=True,
+            )
     
             # 3) token 警告
             if response.usage.completion_tokens >= self.max_tokens:
@@ -1939,6 +1957,18 @@ class PromptAPIPipeline:
     
             print(f"When run PromptAPIPipeline, the following error occurs for promptFile {self.promptFile}:\n {ex}")
             print(f"self.model_spec:{self.model_spec}")
+            log_llm_call(
+                audit_path=self.audit_path,
+                run_id=self.audit_run_id,
+                task=self.task,
+                prompt_file=self.promptFile,
+                model_spec=self.model_spec,
+                response=None,
+                max_tokens=self.max_tokens,
+                cost_twd=cost,
+                ok=False,
+                error=str(ex),
+            )
     
         finally:
             try:
@@ -2078,6 +2108,18 @@ class PromptAPIPipeline:
                 cost = 0
             print(f"When run PromptAPIPipeline, the following error occurs for promptFile {self.promptFile}:\n {ex}")
             print(f"self.model_spec:{self.model_spec}")
+            log_llm_call(
+                audit_path=self.audit_path,
+                run_id=self.audit_run_id,
+                task=self.task,
+                prompt_file=self.promptFile,
+                model_spec=self.model_spec,
+                response=None,
+                max_tokens=self.max_tokens,
+                cost_twd=cost,
+                ok=False,
+                error=str(ex),
+            )
             #countdown_pause(30)
             
         finally:
