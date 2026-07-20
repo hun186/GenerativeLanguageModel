@@ -179,6 +179,7 @@ class LLMJobConfig:
         self.per_round_limit = 128
         self.llm_round_debug = None
         self.combine_debug = False
+        self.mp_pool_create_debug = False
         self.debug_print_llm_io = False
         self.debug_print_max_chars = 2000
         self.llm_call_audit_run_id = ""
