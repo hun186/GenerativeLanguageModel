@@ -30,8 +30,8 @@ def _truthy_debug_flag(value):
     return str(value).strip().lower() in {"1", "true", "yes", "y", "on", "debug"}
 
 
-def _mp_pool_create_debug_enabled(explicit=None):
-    env_value = os.environ.get("CZJLLM_MP_POOL_CREATE_DEBUG")
+def _mp_debug_enabled(explicit=None):
+    env_value = os.environ.get("CZJLLM_MP_DEBUG")
     if env_value is not None:
         return _truthy_debug_flag(env_value)
     return _truthy_debug_flag(explicit)
@@ -309,7 +309,7 @@ class multicoreJob:
                  ShuffleJobs = True,
                  SafeMode = False,
                  log_queue=None,
-                 mp_pool_create_debug=None):  # ★ 新增：子程序輸出要丟的 Queue
+                 mp_debug=None):  # ★ 新增：子程序輸出要丟的 Queue
         if DTBJobs is None:
             DTBJobs = []
         if ShuffleJobs == True:
@@ -333,7 +333,7 @@ class multicoreJob:
             self.nProcess = nProcess
         self.SafeMode = SafeMode
         self.log_queue = log_queue   # ★ 存起來，給 Pool initializer 用
-        self.mp_pool_create_debug = mp_pool_create_debug
+        self.mp_debug = mp_debug
         #print("self.log_queue",self.log_queue)
         
     def logW(MES=None, logFile="mp_processing_log.txt"):
@@ -426,7 +426,7 @@ class multicoreJob:
     def run(self):
     
         DTBJobs = self.DTBJobs
-        if _mp_pool_create_debug_enabled(self.mp_pool_create_debug):
+        if _mp_debug_enabled(self.mp_debug):
             import traceback
             print(
                 "\n[MP-POOL-CREATE]\n"
@@ -544,12 +544,13 @@ class multicoreJob:
             
                 pool.close()
                 pool.join()
-                print(
-                    "\n[MP-POOL-JOINED]\n"
-                    f"pid={os.getpid()}\n"
-                    f"active_children={len(mp.active_children())}",
-                    flush=True,
-                )
+                if _mp_debug_enabled(self.mp_debug):
+                    print(
+                        "\n[MP-POOL-JOINED]\n"
+                        f"pid={os.getpid()}\n"
+                        f"active_children={len(mp.active_children())}",
+                        flush=True,
+                    )
                 pool = None
             
             except BaseException:

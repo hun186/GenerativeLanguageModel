@@ -164,7 +164,7 @@ if __name__ == '__main__':
     ctx.mock_llm_mode = bool(get_param("mock_llm_mode", False))
     ctx.llm_round_debug = get_param("llm_round_debug", None)
     ctx.combine_debug = get_param("combine_debug", False)
-    ctx.mp_pool_create_debug = get_param("mp_pool_create_debug", False)
+    ctx.mp_debug = get_param("mp_debug", False)
     ctx.debug_print_llm_io = bool(get_param("debug_print_llm_io", False))
     ctx.debug_print_max_chars = int(get_param("debug_print_max_chars", 2000) or 2000)
     for _k, _v in create_llm_call_audit_run(PGMSubDir=PGMSubDir).items():

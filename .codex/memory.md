@@ -66,12 +66,12 @@
 - 驗證結果：requirements 安裝仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證包含 `python -m compileall czjLLM/utilities/llm_call_audit.py czjLLM/prompt_pipeline/llm_caller.py` 通過，以及模擬 response.usage 時 CSV 欄位 `token_usage_source=llm_api_usage`。
 - 重要結論：目前 audit 不使用本地 tokenizer 計算 input/output token；若相容端點沒有回傳 `usage`，token 欄位會是 0 並標記 `unavailable`，避免產生不準的本地估算。
 
-## 2026-07-20 MP Pool create debug YAML switch
+## 2026-07-20 MP tool debug YAML switch
 
-- 任務目的：使用者提供 `[MP-POOL-CREATE]` 平行化診斷訊息洗版範例，要求改為可由 YAML 控制的開關。
-- 主要修改內容：`utils.MP_utils.multicoreJob` 新增 `mp_pool_create_debug` 參數與 `CZJLLM_MP_POOL_CREATE_DEBUG` 臨時環境變數覆寫；預設不再列印 `[MP-POOL-CREATE]` stack，`czjLLM_TextProcessing` 讀取 YAML 頂層 `mp_pool_create_debug` 並由 legacy LLM API 呼叫路徑傳入 `multicoreJob`。同步更新 debug 功能文件。
-- 驗證結果：依規範先執行 requirements 安裝，但 GitHub `peft` dependency proxy 403 失敗；替代驗證包含 `python -m compileall utils/MP_utils.py czjLLM/prompt_pipeline/pipeline_controller.py czjLLM/czjLLM_TextProcessing.py czjLLM/job_manager/job_config.py` 通過，以及靜態 marker 檢查通過。`python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py -q` 仍因既有 Windows spawn-overlap 測試預期失敗，與本次 MP pool create debug 開關無直接關聯。
-- 重要結論：正式批次可省略 `mp_pool_create_debug` 以避免 `[MP-POOL-CREATE]` 洗版；需要追查 process / start method / active children / stack 時，於 YAML 設 `mp_pool_create_debug: true` 或臨時設定 `CZJLLM_MP_POOL_CREATE_DEBUG=1`。
+- 任務目的：使用者提供 `[MP-POOL-CREATE] / [MP-POOL-JOINED]` 平行化診斷訊息洗版範例，要求改為可由 YAML 控制的開關。
+- 主要修改內容：`utils.MP_utils.multicoreJob` 新增 `mp_debug` 參數與 `CZJLLM_MP_DEBUG` 臨時環境變數覆寫；預設不再列印 `[MP-POOL-CREATE] / [MP-POOL-JOINED]` 診斷訊息，`czjLLM_TextProcessing` 讀取 YAML 頂層 `mp_debug` 並由 legacy LLM API 呼叫路徑傳入 `multicoreJob`。同步更新 debug 功能文件。
+- 驗證結果：依規範先執行 requirements 安裝，但 GitHub `peft` dependency proxy 403 失敗；替代驗證包含 `python -m compileall utils/MP_utils.py czjLLM/prompt_pipeline/pipeline_controller.py czjLLM/czjLLM_TextProcessing.py czjLLM/job_manager/job_config.py` 通過，以及靜態 marker 檢查通過。`python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py -q` 仍因既有 Windows spawn-overlap 測試預期失敗，與本次 MP tool debug 開關無直接關聯。
+- 重要結論：正式批次可省略 `mp_debug` 以避免 `[MP-POOL-CREATE] / [MP-POOL-JOINED]` 洗版；需要追查 process / start method / active children / stack 時，於 YAML 設 `mp_debug: true` 或臨時設定 `CZJLLM_MP_DEBUG=1`。
 
 ## Archived History
 
