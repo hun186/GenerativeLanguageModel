@@ -181,6 +181,9 @@ class LLMJobConfig:
         self.combine_debug = False
         self.debug_print_llm_io = False
         self.debug_print_max_chars = 2000
+        self.llm_call_audit_run_id = ""
+        self.llm_call_audit_path = ""
+        self.llm_call_audit_xlsx_path = ""
     def __repr__(self):
         return "no show temp"
     def __repr__pending(self):
