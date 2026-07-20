@@ -159,3 +159,10 @@
 - 主要修改內容：調整 `combine_api_finished_item()`，讓大量 `[combine-step]` checkpoint 仍受 `combine_debug` / `CZJLLM_COMBINE_DEBUG` 控制，但 `CombBackFN` 單行輸出固定保留。同步更新 debug 集中說明與 combine 測試預期。
 - 驗證結果：依規範重跑 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證包含 `python -m compileall czjLLM/utilities/combine_utils.py tests/test_combine_json_slice_merge.py` 通過，以及 `python -m pytest tests/test_combine_json_slice_merge.py` 共 6 passed、1 warning。
 - 重要結論：正式批次預設只會保留單行 `CombBackFN` 與必要警告；需要完整 combine trace 時才開 `combine_debug`。
+
+## 2026-07-20 SQLite / Excel legacy single-stage compatibility YAMLs
+
+- 任務目的：為舊版單任務設定檔相容性驗測補齊 SQLite 與 Excel 對照 YAML，並從既有多階段設定中提取核心 `extract` 組織抽取任務，讓 ES / SQL Server / SQLite / Excel 單階段驗測標準一致。
+- 主要修改內容：新增 `czjLLM/yaml/sqlite_json_singlestage_in_multistage.yaml`，沿用 SQLite 多階段 `mode=sql`、`File` -> `File_result` 與 `akconfig_local_file_test_multistage.py`，但移除 route / audit_json，只保留 `Organization Profile Analyzer to json format` 舊版單任務核心。新增 `czjLLM/yaml/excel_json_singlestage_in_multistage.yaml`，沿用 Excel 多階段來源/輸出檔案與 target sheet，並使用多階段 org extract 路徑實際的 `Text` 欄位作為單階段輸入。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代檢查執行 `python -m compileall czjLLM/yaml` 通過。嘗試用 PyYAML 解析新增 YAML 時，因目前環境缺少 `yaml` / PyYAML 而失敗，需在完整 requirements 可安裝環境重跑 YAML parse / CLI dry run。
+- 重要結論：本次只新增相容性測試設定檔，不改 runtime 程式碼、API contract 或資料流；Excel 單階段設定刻意使用 `Text` 而非全域多階段 `input_col: File`，以對齊多階段 extract/org 路徑真正送入 LLM 的欄位。
