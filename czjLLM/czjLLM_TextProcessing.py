@@ -28,6 +28,7 @@ from czjLLM.handlers.handle_txt_file import handle_txt_mode
 #from sql_mode.entry.handle_tabular import handle_tabular_mode
 from czjLLM.handlers.handle_data_mode import handle_data_mode
 from czjLLM.handlers.handle_sql_to_excel import handle_sql_to_excel_mode
+from czjLLM.utilities.llm_call_audit import create_llm_call_audit_run
 
 
 def load_stage_cfg_preview(get_param, PGMSubDir):
@@ -165,6 +166,8 @@ if __name__ == '__main__':
     ctx.combine_debug = get_param("combine_debug", False)
     ctx.debug_print_llm_io = bool(get_param("debug_print_llm_io", False))
     ctx.debug_print_max_chars = int(get_param("debug_print_max_chars", 2000) or 2000)
+    for _k, _v in create_llm_call_audit_run(PGMSubDir=PGMSubDir).items():
+        setattr(ctx, _k, _v)
     #print("ctx in main",ctx)
     # txt 模式：處理所有 .txt
     if mode == "txt":

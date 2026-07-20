@@ -37,6 +37,7 @@ from czjLLM.prompt_pipeline.prompt_generator import (
     should_disable_think,
     append_no_think_if_applicable,
 )
+from czjLLM.utilities.llm_call_audit import resolve_context_limit
 
 
 # ===== httpx 客戶端工廠 =====
@@ -202,6 +203,18 @@ def CallLLMAPI(
     tps = (total_tks / elapsed) if elapsed > 0 else float(total_tks)
 
     cost_twd = _estimate_cost_twd(response, model=model)
+    context_limit, context_source = resolve_context_limit(model_spec, response=response)
+    if context_limit > 0:
+        context_pct = (float(total_tks) / float(context_limit)) * 100.0
+        token_line = (
+            f"Tokens(API) In/Out: {p_tks}/{c_tks}  |  Total: {total_tks}"
+            f"  |  Context: {context_pct:.2f}% ({total_tks}/{context_limit}, {context_source})"
+        )
+    else:
+        token_line = (
+            f"Tokens(API) In/Out: {p_tks}/{c_tks}  |  Total: {total_tks}"
+            "  |  Context: unknown"
+        )
 
     # 簡潔日誌
     tlog(
@@ -209,7 +222,7 @@ def CallLLMAPI(
             [
                 "~" * 50,
                 f"模型：{model}  |  端點：{base_url}",
-                f"Tokens  In/Out: {p_tks}/{c_tks}  |  Total: {total_tks}",
+                token_line,
                 f"耗時：{elapsed:.2f}s  |  處理速率：{tps:.2f} tok/s",
                 f"新臺幣成本（估）：{cost_twd:.3f} 元",
             ]
