@@ -192,3 +192,19 @@ Open
 狀態：Mitigated with targeted thread fallback
 
 負責人：-
+
+## YAML parse validation blocked by missing PyYAML after requirements install failure
+
+首次發現：2026-07-20
+
+問題：嘗試以 `python - <<'PY' ... import yaml ... PY` 解析新增 YAML 設定檔時，因目前環境缺少 `yaml` / PyYAML 而失敗；依專案規範先執行 requirements 安裝也因 GitHub `peft` dependency proxy 403 失敗。
+
+影響：目前容器無法直接完成 YAML parse / CLI dry run 等依賴 PyYAML 的設定檔驗證；只能做檔案層級與不依賴 PyYAML 的替代檢查。
+
+暫時解法：在可完整安裝 requirements 的環境重跑 YAML parse 或實際 CLI dry run；目前先以 `python -m compileall czjLLM/yaml` 作為不依賴外部套件的替代檢查。
+
+根本原因：目前環境缺少 PyYAML，且 requirements 安裝受外部 GitHub proxy 403 限制。
+
+狀態：Open
+
+負責人：-
