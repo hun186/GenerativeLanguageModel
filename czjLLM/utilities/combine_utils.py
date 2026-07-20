@@ -346,6 +346,24 @@ def _should_parse_as_json_task(task_text: str) -> bool:
     )
     return any(h in normalized for h in positive_hints)
 
+def _truthy_debug_flag(value) -> bool:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    if isinstance(value, (int, float)):
+        return bool(value)
+    return str(value).strip().lower() in {"1", "true", "yes", "on", "debug"}
+
+
+def _combine_step_debug_enabled(ctx) -> bool:
+    """Return whether verbose [combine-step] checkpoint logs should be printed."""
+    env_value = os.getenv("CZJLLM_COMBINE_DEBUG")
+    if env_value is not None:
+        return _truthy_debug_flag(env_value)
+    return _truthy_debug_flag(getattr(ctx, "combine_debug", False))
+
+
 def combine_api_finished_item(item: str, ctx) -> str:
     import json
     import os
@@ -365,7 +383,12 @@ def combine_api_finished_item(item: str, ctx) -> str:
     suc_dir = item_p / "Success"
     out_path = None
 
+    combine_step_debug = _combine_step_debug_enabled(ctx)
+
     def checkpoint(name: str, **values) -> None:
+        if not combine_step_debug:
+            return
+
         details = ", ".join(
             f"{key}={value!r}"
             for key, value in values.items()

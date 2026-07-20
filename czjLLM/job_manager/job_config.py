@@ -178,6 +178,7 @@ class LLMJobConfig:
         self.load_high_watermark = 20
         self.per_round_limit = 128
         self.llm_round_debug = None
+        self.combine_debug = False
     def __repr__(self):
         return "no show temp"
     def __repr__pending(self):

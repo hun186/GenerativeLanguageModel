@@ -162,6 +162,7 @@ if __name__ == '__main__':
     # mock LLM 模式：無模型環境可做 E2E 流程驗證
     ctx.mock_llm_mode = bool(get_param("mock_llm_mode", False))
     ctx.llm_round_debug = get_param("llm_round_debug", None)
+    ctx.combine_debug = get_param("combine_debug", False)
     #print("ctx in main",ctx)
     # txt 模式：處理所有 .txt
     if mode == "txt":

@@ -110,3 +110,32 @@ def test_json_single_slice_list_preserved_when_merge_enabled(tmp_path):
     data = json.loads(open(out, "r", encoding="utf-8").read())
     assert isinstance(data, list)
     assert [x["inputName"] for x in data] == ["海巡署", "警政署"]
+
+
+def test_combine_step_checkpoints_are_quiet_by_default(tmp_path, capsys):
+    ctx = _build_ctx(tmp_path, task="to json format", merge_slices=False)
+    ctx.combine_debug = False
+    item = tmp_path / "PromptRoot" / "jobQuiet"
+    suc = item / "Success"
+    suc.mkdir(parents=True, exist_ok=True)
+    (suc / "0.txt").write_text(json.dumps([{"id": 1}], ensure_ascii=False), encoding="utf-8")
+
+    out = combine_api_finished_item(str(item), ctx)
+    captured = capsys.readouterr()
+    assert out
+    assert "[combine-step]" not in captured.out
+    assert "CombBackFN" in captured.out
+
+
+def test_combine_step_debug_can_be_enabled_by_yaml_flag(tmp_path, capsys):
+    ctx = _build_ctx(tmp_path, task="to json format", merge_slices=False)
+    ctx.combine_debug = True
+    item = tmp_path / "PromptRoot" / "jobVerbose"
+    suc = item / "Success"
+    suc.mkdir(parents=True, exist_ok=True)
+    (suc / "0.txt").write_text(json.dumps([{"id": 1}], ensure_ascii=False), encoding="utf-8")
+
+    combine_api_finished_item(str(item), ctx)
+    captured = capsys.readouterr()
+    assert "[combine-step]" in captured.out
+    assert "CombBackFN" in captured.out

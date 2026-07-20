@@ -145,3 +145,17 @@
 - 主要修改內容：`czjLLM/prompt_pipeline/round_runner.py` 保留 Windows pre-Pool join/reap；若仍有 active multiprocessing child，不再把該 round 改成完全序列，而是使用 `ThreadPoolExecutor` 執行本 round 的 `PromptAPIPipeline.proc()`，避開 Windows spawn/DuplicateHandle，同時保留 LLM API I/O 併發。非 Windows 與 join/reap 後 child 清空的 Windows round 仍走原 multiprocessing Pool。
 - 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` clone 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/prompt_pipeline/round_runner.py tests/prompt_pipeline/test_round_runner_smoke.py` 通過，以及 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py` 共 8 passed、1 warning。
 - 重要結論：此修正不是把 Windows 全面改成 thread pool；只有在已觀測到 spawn overlap 風險且 short reap 無法清空 active child 時，才對該 round 使用 thread fallback。這符合使用者 log 顯示的實際觸發點，也避免序列 fallback 讓單階段 ES 批次看起來停住。
+
+## 2026-07-17 combine debug YAML switch and debug docs
+
+- 任務目的：使用者指出 `combine_api_finished_item()` 先前為 debug 加入大量 `[combine-step]` / `CombBackFN` 訊息，問題修好後仍洗版；需要改成可由 YAML 開啟，並集中整理 debug 功能文件。
+- 主要修改內容：新增 `combine_debug` YAML/ctx 開關與 `CZJLLM_COMBINE_DEBUG` 臨時環境變數覆寫；預設關閉 combine checkpoint，但依使用者回饋保留單行 `CombBackFN` 診斷列，並保留 JSON 解析失敗、修復失敗、清理失敗等重要警告。新增 `docs/usage/debug_features.md` 集中說明 `llm_round_debug`、`combine_debug`、`debug_print_llm_io` / `debug_print_max_chars` 的用途、範例與注意事項，並在 single-stage vs multistage guide 加入口徑。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` clone 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/utilities/combine_utils.py czjLLM/czjLLM_TextProcessing.py czjLLM/job_manager/job_config.py tests/test_combine_json_slice_merge.py` 通過，以及 `python -m pytest tests/test_combine_json_slice_merge.py` 共 6 passed。另執行 `python -m pytest tests/test_combine_json_slice_merge.py tests/prompt_pipeline/test_round_runner_smoke.py` 時，combine 測試已通過，但既有 round_runner Windows spawn-overlap 測試 `test_windows_spawn_overlap_join_clear_allows_pool` 失敗，與本次 combine debug 修改無直接關聯。
+- 重要結論：正式批次可省略 `combine_debug` 以避免大量 `[combine-step]` 訊息干擾進度列；單行 `CombBackFN` 會保留。需要定位分片合併、輸出路徑或工作目錄清理問題時，再於 YAML 設定 `combine_debug: true` 或臨時設定 `CZJLLM_COMBINE_DEBUG=1`。
+
+## 2026-07-17 CombBackFN single-line diagnostic retained
+
+- 任務目的：使用者回饋 `CombBackFN` 只有一行可以保留，前次把它也納入 `combine_debug` gating 過度安靜。
+- 主要修改內容：調整 `combine_api_finished_item()`，讓大量 `[combine-step]` checkpoint 仍受 `combine_debug` / `CZJLLM_COMBINE_DEBUG` 控制，但 `CombBackFN` 單行輸出固定保留。同步更新 debug 集中說明與 combine 測試預期。
+- 驗證結果：依規範重跑 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證包含 `python -m compileall czjLLM/utilities/combine_utils.py tests/test_combine_json_slice_merge.py` 通過，以及 `python -m pytest tests/test_combine_json_slice_merge.py` 共 6 passed、1 warning。
+- 重要結論：正式批次預設只會保留單行 `CombBackFN` 與必要警告；需要完整 combine trace 時才開 `combine_debug`。
