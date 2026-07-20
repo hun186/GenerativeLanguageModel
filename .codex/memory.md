@@ -166,3 +166,10 @@
 - 主要修改內容：新增 `czjLLM/yaml/sqlite_json_singlestage_in_multistage.yaml`，沿用 SQLite 多階段 `mode=sql`、`File` -> `File_result` 與 `akconfig_local_file_test_multistage.py`，但移除 route / audit_json，只保留 `Organization Profile Analyzer to json format` 舊版單任務核心。新增 `czjLLM/yaml/excel_json_singlestage_in_multistage.yaml`，沿用 Excel 多階段來源/輸出檔案與 target sheet，並使用多階段 org extract 路徑實際的 `Text` 欄位作為單階段輸入。
 - 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，但 GitHub dependency `peft` 仍受 proxy 403 限制；替代檢查執行 `python -m compileall czjLLM/yaml` 通過。嘗試用 PyYAML 解析新增 YAML 時，因目前環境缺少 `yaml` / PyYAML 而失敗，需在完整 requirements 可安裝環境重跑 YAML parse / CLI dry run。
 - 重要結論：本次只新增相容性測試設定檔，不改 runtime 程式碼、API contract 或資料流；Excel 單階段設定刻意使用 `Text` 而非全域多階段 `input_col: File`，以對齊多階段 extract/org 路徑真正送入 LLM 的欄位。
+
+## 2026-07-20 txt single-stage LLM IO debug flags
+
+- 任務目的：釐清並修正 txt 模式單階段 YAML 頂層 `debug_print_llm_io` / `debug_print_max_chars` 未印出 LLM I/O 的問題。
+- 主要修改內容：`czjLLM/czjLLM_TextProcessing.py` 會把 YAML 頂層 debug flags 載入 `ctx`；`LLMJobConfig` 新增同名預設值；`process_prompt_and_merge()` 的 legacy single-stage 路徑在兩輪 LLM call 時會把 `ctx.debug_print_llm_io` / `ctx.debug_print_max_chars` 傳入 `call_llm_api()`，多階段仍維持各 stage 設定可覆寫。
+- 驗證結果：依規範先執行 requirements 安裝，但 GitHub `peft` dependency clone 仍受 proxy 403 限制；替代驗證 `python -m compileall czjLLM/prompt_pipeline/pipeline_controller.py czjLLM/job_manager/job_config.py czjLLM/czjLLM_TextProcessing.py tests/prompt_pipeline/test_process_prompt_and_merge_di.py` 通過。嘗試執行 `python -m pytest tests/prompt_pipeline/test_process_prompt_and_merge_di.py -q` 時，因目前環境缺少 `tqdm` 且 requirements 安裝失敗而在 collection 階段失敗。
+- 重要結論：使用者提供的 YAML 寫法本身可視為合理；原程式只有多階段 stage path 會讀取該 debug 設定，單階段 legacy path 未轉傳，現已補齊。

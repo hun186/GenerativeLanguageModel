@@ -163,6 +163,8 @@ if __name__ == '__main__':
     ctx.mock_llm_mode = bool(get_param("mock_llm_mode", False))
     ctx.llm_round_debug = get_param("llm_round_debug", None)
     ctx.combine_debug = get_param("combine_debug", False)
+    ctx.debug_print_llm_io = bool(get_param("debug_print_llm_io", False))
+    ctx.debug_print_max_chars = int(get_param("debug_print_max_chars", 2000) or 2000)
     #print("ctx in main",ctx)
     # txt 模式：處理所有 .txt
     if mode == "txt":
