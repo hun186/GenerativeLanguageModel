@@ -1706,7 +1706,7 @@ def call_llm_api(
         DTBJobs = []
         for item in itemList:
             DTBJobs.extend(create_jobs(item,ctx.model_spec))
-        MPresult = multicoreJob(DTBJobs=DTBJobs, nProcess=ctx.n_process, ShuffleJobs=False).run()
+        MPresult = multicoreJob(DTBJobs=DTBJobs, nProcess=ctx.n_process, ShuffleJobs=False, mp_debug=getattr(ctx, "mp_debug", False)).run()
         #if MPresult:
         #    responseList, costList, DTBJobs_Retry = zip(*MPresult)
         #    CostLog(PGMSubDir = PGMSubDir, costList=costList, mode="AllArt")
@@ -1720,7 +1720,7 @@ def call_llm_api(
     else:
         for item in tqdm(itemList, desc="LLM API呼叫之文章物件數完成度", ascii=False, ncols=75):
             DTBJobs = create_jobs(item,ctx.model_spec)
-            MPresult = multicoreJob(DTBJobs=DTBJobs, nProcess=ctx.n_process, ShuffleJobs=False).run()
+            MPresult = multicoreJob(DTBJobs=DTBJobs, nProcess=ctx.n_process, ShuffleJobs=False, mp_debug=getattr(ctx, "mp_debug", False)).run()
             if MPresult:
                 responseList, costList, item_retry = zip(*MPresult)
                 ArtCost = CostLog(ArtCost=ArtCost, item=item, costList=costList, mode="singleArt")

@@ -208,3 +208,19 @@ Open
 狀態：Open
 
 負責人：-
+
+## round_runner Windows spawn-overlap smoke test expectation mismatch
+
+首次發現：2026-07-20
+
+問題：執行 `python -m pytest tests/prompt_pipeline/test_round_runner_smoke.py -q` 時，`test_windows_spawn_overlap_join_clear_allows_pool` 失敗；目前實作在 Windows 偵測到曾有 active child 時，即使 short join/reap 後 remaining=0，也固定使用 ThreadPool 以避免 handle cleanup race，但測試仍期待回傳 False。
+
+影響：目前容器可收集並執行該測試檔，但此既有測試預期與目前 runtime policy 不一致，導致整檔 pytest 失敗；與本次 `mp_debug` 診斷輸出開關無直接關聯。
+
+暫時解法：本次使用 `compileall` 與靜態 marker 檢查驗證 MP tool debug 開關；後續應依目前 Windows fallback 決策更新測試預期，或重新調整 runtime policy。
+
+根本原因：測試仍保留較早的「join/reap 清空後可走 multiprocessing Pool」預期，但目前實作採更保守的「本輪曾有 active child 就使用 ThreadPool」策略。
+
+狀態：Open
+
+負責人：-

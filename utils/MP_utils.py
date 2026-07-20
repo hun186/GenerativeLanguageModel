@@ -21,6 +21,21 @@ import platform
 from platform import python_version
 import math
 
+
+def _truthy_debug_flag(value):
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    return str(value).strip().lower() in {"1", "true", "yes", "y", "on", "debug"}
+
+
+def _mp_debug_enabled(explicit=None):
+    env_value = os.environ.get("CZJLLM_MP_DEBUG")
+    if env_value is not None:
+        return _truthy_debug_flag(env_value)
+    return _truthy_debug_flag(explicit)
+
 '''
 try:
     import utils.utilities
@@ -293,7 +308,8 @@ class multicoreJob:
                  nProcess=1,
                  ShuffleJobs = True,
                  SafeMode = False,
-                 log_queue=None):  # ★ 新增：子程序輸出要丟的 Queue
+                 log_queue=None,
+                 mp_debug=None):  # ★ 新增：子程序輸出要丟的 Queue
         if DTBJobs is None:
             DTBJobs = []
         if ShuffleJobs == True:
@@ -317,6 +333,7 @@ class multicoreJob:
             self.nProcess = nProcess
         self.SafeMode = SafeMode
         self.log_queue = log_queue   # ★ 存起來，給 Pool initializer 用
+        self.mp_debug = mp_debug
         #print("self.log_queue",self.log_queue)
         
     def logW(MES=None, logFile="mp_processing_log.txt"):
@@ -408,23 +425,23 @@ class multicoreJob:
             
     def run(self):
     
-        import traceback
-        
-        print(
-            "\n[MP-POOL-CREATE]\n"
-            f"pid={os.getpid()}\n"
-            f"ppid={os.getppid()}\n"
-            f"thread={threading.current_thread().name}\n"
-            f"platform={platform.system()}\n"
-            f"start_method={mp.get_start_method(allow_none=True)}\n"
-            f"nProcess={self.nProcess}\n"
-            f"jobs={len(DTBJobs)}\n"
-            f"active_children={len(mp.active_children())}\n"
-            f"stack:\n{''.join(traceback.format_stack(limit=12))}",
-            flush=True,
-        )
-
         DTBJobs = self.DTBJobs
+        if _mp_debug_enabled(self.mp_debug):
+            import traceback
+            print(
+                "\n[MP-POOL-CREATE]\n"
+                f"pid={os.getpid()}\n"
+                f"ppid={os.getppid()}\n"
+                f"thread={threading.current_thread().name}\n"
+                f"platform={platform.system()}\n"
+                f"start_method={mp.get_start_method(allow_none=True)}\n"
+                f"nProcess={self.nProcess}\n"
+                f"jobs={len(DTBJobs)}\n"
+                f"active_children={len(mp.active_children())}\n"
+                f"stack:\n{''.join(traceback.format_stack(limit=12))}",
+                flush=True,
+            )
+
         method = self.method
         if len(DTBJobs) == 0:
             print("="*50)
@@ -527,12 +544,13 @@ class multicoreJob:
             
                 pool.close()
                 pool.join()
-                print(
-                    "\n[MP-POOL-JOINED]\n"
-                    f"pid={os.getpid()}\n"
-                    f"active_children={len(mp.active_children())}",
-                    flush=True,
-                )
+                if _mp_debug_enabled(self.mp_debug):
+                    print(
+                        "\n[MP-POOL-JOINED]\n"
+                        f"pid={os.getpid()}\n"
+                        f"active_children={len(mp.active_children())}",
+                        flush=True,
+                    )
                 pool = None
             
             except BaseException:
