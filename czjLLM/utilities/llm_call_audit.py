@@ -28,10 +28,14 @@ _FIELDS = [
     "input_tokens",
     "output_tokens",
     "total_tokens",
+    "token_usage_source",
     "context_limit_tokens",
     "context_limit_source",
     "context_usage_ratio",
     "context_exhausted",
+    "context_remaining_tokens",
+    "max_output_tokens",
+    "effective_output_token_budget",
     "max_tokens",
     "cost_twd",
     "ok",
@@ -97,12 +101,20 @@ def log_llm_call(
     spec = dict(model_spec or {})
     model = str(spec.get("model_name") or spec.get("model") or "")
     usage = getattr(response, "usage", None)
+    token_usage_source = "llm_api_usage" if usage else "unavailable"
     input_tokens = _int_attr(usage, "prompt_tokens")
     output_tokens = _int_attr(usage, "completion_tokens")
     total_tokens = _int_attr(usage, "total_tokens") or input_tokens + output_tokens
     context_limit, context_source = resolve_context_limit(spec, response=response)
     ratio = (float(total_tokens) / float(context_limit)) if context_limit > 0 else 0.0
     context_exhausted = bool(context_limit > 0 and total_tokens >= context_limit)
+    max_output_tokens = int(max_tokens or 0)
+    context_remaining = max(context_limit - total_tokens, 0) if context_limit > 0 else 0
+    effective_output_budget = (
+        min(max_output_tokens, context_remaining)
+        if max_output_tokens > 0 and context_limit > 0
+        else max_output_tokens
+    )
     row = {
         "timestamp": datetime.now().isoformat(timespec="seconds"),
         "run_id": run_id or "",
@@ -113,11 +125,15 @@ def log_llm_call(
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
         "total_tokens": total_tokens,
+        "token_usage_source": token_usage_source,
         "context_limit_tokens": context_limit,
         "context_limit_source": context_source,
         "context_usage_ratio": f"{ratio:.6f}" if context_limit > 0 else "",
         "context_exhausted": "YES" if context_exhausted else "NO",
-        "max_tokens": int(max_tokens or 0),
+        "context_remaining_tokens": context_remaining,
+        "max_output_tokens": max_output_tokens,
+        "effective_output_token_budget": effective_output_budget,
+        "max_tokens": max_output_tokens,
         "cost_twd": f"{float(cost_twd or 0):.6f}",
         "ok": "YES" if ok else "NO",
         "error": str(error or ""),

@@ -207,12 +207,12 @@ def CallLLMAPI(
     if context_limit > 0:
         context_pct = (float(total_tks) / float(context_limit)) * 100.0
         token_line = (
-            f"Tokens  In/Out: {p_tks}/{c_tks}  |  Total: {total_tks}"
+            f"Tokens(API) In/Out: {p_tks}/{c_tks}  |  Total: {total_tks}"
             f"  |  Context: {context_pct:.2f}% ({total_tks}/{context_limit}, {context_source})"
         )
     else:
         token_line = (
-            f"Tokens  In/Out: {p_tks}/{c_tks}  |  Total: {total_tks}"
+            f"Tokens(API) In/Out: {p_tks}/{c_tks}  |  Total: {total_tks}"
             "  |  Context: unknown"
         )
 
