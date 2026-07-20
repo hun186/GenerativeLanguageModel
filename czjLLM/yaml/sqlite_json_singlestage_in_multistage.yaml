@@ -1,0 +1,29 @@
+# sqlite_json_singlestage_in_multistage.yaml
+# SQLite 單階段 in 多階段格式相容性測試
+# 對照來源：sqlite_json_multistage_config.yaml 的核心 extract 階段
+mode: sql
+channel: excel_source
+model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+
+# I/O（沿用 SQLite 多階段測試的來源欄位與寫回欄位）
+input_col: File
+output_col: File_result
+record_update_time: true
+save_raw_input_when_flatten: true
+sql_config_file: czjLLM/config_sql/akconfig_local_file_test_multistage.py
+
+# 舊版單任務核心：提取多階段 extract 階段中的主抽取任務，
+# 不包含 route / audit_json，以便與 SQL Server 單階段相容性測試用同一組織抽取任務比較。
+task: Organization Profile Analyzer to json format
+allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunctions]
+
+# merge_slices 是「跨 prompt slice」合併；單一 LLM 回覆若本身是多筆 dict 的 JSON list，
+# 會保留為 list 供主欄位寫回 / flatten，不會被壓成單一 dict。
+merge_slices: true
+
+#merge_conflict_policy: prefer_left  # or prefer_right
+#merge_dedup_lists: true               # 合併 list 時是否去重
+merge_log_changes: true               # 合併有變化才印 log
+merge_max_log: 10                     # 最多列出幾筆差異樣本
+merge_log_to_file: true               # 是否落檔
+merge_log_file: merge_dict_slices_audited.log
