@@ -1557,8 +1557,30 @@ def process_prompt_and_merge(ctx, file_path: str, ops: MergeOps | None = None) -
     _apply_resume_policy_single_stage(resume_policy, prompt_items, ops, ctx=ctx)
 
     # 2) 呼叫 LLM（兩輪：允許重試 / 不允許重試）
-    ops.call_llm(prompt_items, ctx, allow_to_retry=True)
-    ops.call_llm(prompt_items, ctx, allow_to_retry=False)
+    # 單階段（legacy）也支援 YAML 頂層 debug_print_llm_io /
+    # debug_print_max_chars；多階段則由各 stage definition 覆寫。
+    debug_enabled, debug_max_chars = _resolve_llm_debug_flags(
+        stage_debug_enabled=bool(getattr(ctx, "debug_print_llm_io", False)),
+        stage_debug_max_chars=int(getattr(ctx, "debug_print_max_chars", 2000) or 2000),
+    )
+    _call_llm_with_task_override(
+        ops,
+        prompt_items,
+        ctx,
+        allow_to_retry=True,
+        task_override=None,
+        debug_print_llm_io=debug_enabled,
+        debug_print_max_chars=debug_max_chars,
+    )
+    _call_llm_with_task_override(
+        ops,
+        prompt_items,
+        ctx,
+        allow_to_retry=False,
+        task_override=None,
+        debug_print_llm_io=debug_enabled,
+        debug_print_max_chars=debug_max_chars,
+    )
 
     # 3) 合併已完成者；若尚有 TODO，僅列印提示
     comb_back_fn = ""

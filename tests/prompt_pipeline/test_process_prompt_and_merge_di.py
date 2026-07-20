@@ -82,6 +82,43 @@ def test_env_file_priority(monkeypatch, tmp_path):
     env_utils.load_czjllm_env_files_once(base_dir=str(tmp_path))
     assert os.environ.get("X") == "local"
 
+
+
+@pytest.mark.unit
+def test_single_stage_passes_ctx_llm_debug_flags_to_call_llm(tmp_path):
+    root = tmp_path / "root"
+    main = "debug_single"
+    todo_file = root / main / "TODO" / "a.txt"
+    mapping = {
+        str(root): [str(todo_file)],
+        str(root / main / "TODO"): [],
+    }
+
+    class DebugOps(FakeOps):
+        def _fake_call_llm(self, items, ctx, allow_to_retry: bool, **kwargs):
+            self.calls["call_llm"].append((tuple(items), allow_to_retry, kwargs))
+
+    ops = DebugOps(mapping)
+    ctx = DummyCtx(prompt_dir=str(root), main_file_name=main)
+    ctx.debug_print_llm_io = True
+    ctx.debug_print_max_chars = -1
+
+    pc.process_prompt_and_merge(ctx, file_path=str(tmp_path / "src" / f"{main}.txt"), ops=ops)
+
+    assert ops.calls["call_llm"] == [
+        (((str(root / main)),), True, {
+            "task_override": None,
+            "debug_print_llm_io": True,
+            "debug_print_max_chars": -1,
+        }),
+        (((str(root / main)),), False, {
+            "task_override": None,
+            "debug_print_llm_io": True,
+            "debug_print_max_chars": -1,
+        }),
+    ]
+
+
 @pytest.mark.unit
 def test_merge_happy_path_no_todo(tmp_path):
     # 目錄佈局（邏輯上）

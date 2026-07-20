@@ -179,6 +179,8 @@ class LLMJobConfig:
         self.per_round_limit = 128
         self.llm_round_debug = None
         self.combine_debug = False
+        self.debug_print_llm_io = False
+        self.debug_print_max_chars = 2000
     def __repr__(self):
         return "no show temp"
     def __repr__pending(self):
