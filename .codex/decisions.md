@@ -54,3 +54,15 @@
 - 決策：Windows legacy single-stage `run_round()` 在建立新 multiprocessing Pool 前若偵測到 active child，仍先做內建 short join/reap；若 child 仍未清空，不再序列化整個 round，而是僅該 round 使用 thread pool fallback。
 - 理由：使用者最新 Windows vs Linux log 顯示，Linux 可快速排入多個任務並用 multiprocessing worker 並行；Windows 在 active child 安全路徑若改序列，會使任務吞吐接近停滯。LLM API 呼叫為 I/O-bound，thread pool 可避開 Windows spawn handle 問題並保留多 endpoint/多 prompt 併發。
 - 後果：此行為仍是窄範圍 fallback：非 Windows、單程序、或 Windows join/reap 後 active child 清空時不受影響；只有已命中 spawn overlap 風險時才使用 threads。
+
+## 2026-07-20 audit LLM context usage as per-run CSV
+
+- 決策：以每次 `czjLLM_TextProcessing` 啟動建立一個 append-only CSV 檔，記錄所有 `PromptAPIPipeline` 實際 LLM 呼叫的 token usage 與 context 使用率；不把欄位寫回業務輸出表格/SQL/ES。
+- 理由：使用者需要的是執行層面的總表與截斷風險診斷，而不是改變任務結果 schema。CSV 可跨 txt/table/sql/es 共用，且在 multiprocessing / thread fallback 中易於追加。
+- 後果：每次啟動會多產生 `logs/llm_call_audit/` 下的一個 CSV；若外部 LLM 相容端點未回傳 usage，token 欄位會記為 0，需由端點補回 usage 才能計算比例。
+
+## 2026-07-20 do not infer context from model names
+
+- 決策：LLM audit 不再解析模型名稱中的 `ctx-<N>k` 作為 context window；只接受端點 response extension、Ollama `/api/show` metadata 或明確 model config 欄位。
+- 理由：模型顯示名稱可能與實際 runtime `num_ctx` 不一致，用名稱推估會造成截斷風險判斷不穩定。OpenAI-compatible chat completion `usage` 可提供 token usage，但通常不提供 context window，因此需把 token usage 與 context metadata 視為不同來源。
+- 後果：若模型端點無法提供 metadata、且本地 model config 也未明確設定 context，CSV 會將 context limit 標記為 unknown，不計算比例與耗盡 flag；這比猜測名稱更安全。
