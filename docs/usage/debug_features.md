@@ -8,6 +8,7 @@
 | --- | --- | --- | --- | --- |
 | Legacy LLM round debug | `llm_round_debug` | `CZJLLM_LLM_ROUND_DEBUG` | 關閉 | 診斷舊單階段 consumer 的 multiprocessing / Pool / Windows spawn 狀態 |
 | Combine step debug | `combine_debug` | `CZJLLM_COMBINE_DEBUG` | 關閉 | 顯示 `combine_api_finished_item()` 合併分片、輸出路徑、清理工作目錄的逐步 checkpoint（`CombBackFN` 一行仍固定保留） |
+| Multiprocessing Pool create debug | `mp_pool_create_debug` | `CZJLLM_MP_POOL_CREATE_DEBUG` | 關閉 | 顯示 `[MP-POOL-CREATE]` Pool 建立診斷，包含 pid、平台、start method、job 數、active children 與 stack |
 | Stage LLM I/O debug | stage 內 `debug_print_llm_io`、`debug_print_max_chars` | `CZJLLM_DEBUG_PRINT_LLM_IO`、`CZJLLM_DEBUG_PRINT_MAX_CHARS` | 關閉 / 2000 字 | 顯示多階段送入 LLM 的 prompt 與 LLM 回傳內容 |
 
 > 注意：環境變數適合臨時診斷；YAML 適合把某次任務的 debug 設定和任務設定一起保存。若同時設定，對應功能通常以環境變數作臨時覆寫。
@@ -73,6 +74,37 @@ CZJLLM_COMBINE_DEBUG=1 python -m czjLLM.czjLLM_TextProcessing --config czjLLM/ya
 - `combine_debug` 不等同於既有 `ctx.debug`。既有 `debug=True` 在部分流程會保留工作目錄避免 row merger 接手前被刪除；`combine_debug` 只控制是否列印 verbose 訊息。
 - 環境變數 `CZJLLM_COMBINE_DEBUG` 可臨時覆寫 YAML，接受 `1/true/yes/on/debug` 等 truthy 值。
 
+## Multiprocessing Pool create debug
+
+### 用途
+
+`mp_pool_create_debug` 控制 `utils.MP_utils.multicoreJob.run()` 在建立或執行 multiprocessing job 前是否列印 `[MP-POOL-CREATE]` 診斷區塊。此訊息原本會固定輸出；現在預設關閉，避免正式批次洗版。
+
+啟用後會輸出：
+
+- 目前 process id、parent process id 與 thread name。
+- 作業系統平台與 multiprocessing start method。
+- 本輪 `nProcess`、job 數與 active child process 數量。
+- 觸發 `multicoreJob.run()` 的 stack trace。
+
+### YAML 範例
+
+```yaml
+mp_pool_create_debug: true
+```
+
+### 環境變數範例
+
+```bash
+CZJLLM_MP_POOL_CREATE_DEBUG=1 python -m czjLLM.czjLLM_TextProcessing --config czjLLM/yaml/txt_config.yaml
+```
+
+### 注意事項
+
+- 此開關只控制 `[MP-POOL-CREATE]` 診斷輸出，不改變平行化策略、prompt、LLM 回覆、合併結果或寫回格式。
+- YAML 頂層 `mp_pool_create_debug: true` 會由 `czjLLM_TextProcessing` 載入到 `ctx`，並傳給 legacy LLM API 呼叫路徑的 `multicoreJob`。
+- 環境變數 `CZJLLM_MP_POOL_CREATE_DEBUG` 可臨時覆寫 YAML，接受 `1/true/yes/y/on/debug` 等 truthy 值。
+
 ## Stage LLM I/O debug
 
 ### 用途
@@ -112,6 +144,7 @@ python -m czjLLM.czjLLM_TextProcessing --config czjLLM/yaml/excel_json_multistag
 ## 建議排查流程
 
 1. 若懷疑 Windows legacy single-stage Pool / worker 問題：先開 `llm_round_debug: true`。
-2. 若 LLM 已成功回傳但合併路徑、分片讀取或輸出檔名異常：開 `combine_debug: true`。
-3. 若懷疑 stage prompt 組裝、input binding 或模型回覆內容不如預期：只在目標 stage 開 `debug_print_llm_io: true`，並設定合理的 `debug_print_max_chars`。
-4. 問題確認後請關閉 debug，避免正式長批次洗版。
+2. 若需要追查 `multicoreJob.run()` Pool 建立當下的 process / stack 狀態：開 `mp_pool_create_debug: true`。
+3. 若 LLM 已成功回傳但合併路徑、分片讀取或輸出檔名異常：開 `combine_debug: true`。
+4. 若懷疑 stage prompt 組裝、input binding 或模型回覆內容不如預期：只在目標 stage 開 `debug_print_llm_io: true`，並設定合理的 `debug_print_max_chars`。
+5. 問題確認後請關閉 debug，避免正式長批次洗版。
