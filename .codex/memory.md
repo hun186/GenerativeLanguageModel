@@ -76,3 +76,10 @@
 ## Archived History
 
 - `memory.md-20260720-111619.md`：於 2026-07-20 11:16:19 UTC 濃縮前保存完整 `.codex/memory.md` 歷史，涵蓋 2026-06-23 至 2026-07-20 多筆任務紀錄。
+
+## 2026-07-21 LLM audit elapsed/time rate fields
+
+- 任務目的：依使用者要求，將終端已顯示的 LLM 呼叫「耗時」與「處理速率」同步加入 audit CSV 與 Excel 總表。
+- 主要修改內容：`CallLLMAPI()` 會把每次呼叫計算出的 elapsed seconds 與 tokens/sec 附加在 response 物件上；`llm_call_audit.log_llm_call()` 新增 `elapsed_seconds` 與 `processing_tps` 欄位，CSV append 與同步產生的 `.xlsx` 都會包含這兩欄。
+- 驗證結果：依規範先執行 requirements 安裝，但 GitHub `peft` dependency clone 仍受 proxy 403 限制；替代驗證包含 `python -m compileall czjLLM/utilities/llm_call_audit.py czjLLM/prompt_pipeline/llm_caller.py` 通過，以及以 `importlib.util.spec_from_file_location` 載入 audit helper，模擬 response usage 後確認 CSV 與 XLSX 皆含 `elapsed_seconds=2.50`、`processing_tps=60.00`。
+- 重要結論：audit 的耗時與處理速率沿用實際 LLM API 呼叫流程內已計算並顯示於終端的數值，不改任務輸出 schema。
