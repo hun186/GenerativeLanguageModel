@@ -111,3 +111,17 @@
 - 主要修改內容：pending recheck 啟用訊息新增 target table 與 output_cols；`still_pending_before_dispatch()` 會統計 checked/pending/already_completed/errors，並預設列印前 10 筆 pending / already_completed 狀態（可用 `pending_recheck_log_first: 0` 關閉，或 `debug_pending_recheck: true` 全量列印）；producer 收尾列印 summary。
 - 驗證結果：requirements 安裝仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證 `python -m compileall czjLLM/sql_mode/adapters/sqlite_adapter.py czjLLM/sql_mode/runtime/pending_recheck.py czjLLM/sql_mode/runtime/producer.py tests/sql_mode/runtime/test_sqlite_adapter_threading.py` 通過，`python -m pytest tests/sql_mode/runtime/test_sqlite_adapter_threading.py -q` 通過。`python -m pytest -rs tests/sql_mode/runtime/test_producer_pending_recheck.py -q` 因目前環境缺少 PyYAML 而全檔 skip / exit code 5，屬既有限制。
 - 重要結論：從使用者 log 看，沒有再出現 SQLite thread ownership error，表示前一修正避免了原本的 recheck 例外；但因未列印每列 state，無法判定是 recheck 判斷為 pending、還是初始 pending SELECT 仍選出已完成 rows。本次新增 observability 後，下次 log 可直接看 `pk=... state=already_completed` 是否命中，以及 summary 的 skipped/error 數。
+
+## 2026-07-21 distinguish dispatch vs finalize pending recheck
+
+- 任務目的：使用者提供 log 顯示 `pending recheck pk=... state=already_completed` 出現在多階段完成後，詢問是否真的省到算力，或只是最後才 recheck。
+- 主要修改內容：將 dispatch-time pending recheck（切片/派工前，會省 LLM 算力）與 pending-running console finalize recheck（排程完成後清理中控狀態，不省算力）分開統計與列印。producer 現先列印 `pending recheck dispatch summary`，再執行 finalize cleanup，最後列印 `pending running finalize recheck summary`；finalize 預設不再輸出 per-pk `pending recheck` 行，避免誤判為省算力。
+- 驗證結果：requirements 安裝仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證 `python -m compileall czjLLM/sql_mode/adapters/sqlite_adapter.py czjLLM/sql_mode/runtime/pending_recheck.py czjLLM/sql_mode/runtime/producer.py tests/sql_mode/runtime/test_sqlite_adapter_threading.py` 通過，`python -m pytest tests/sql_mode/runtime/test_sqlite_adapter_threading.py -q` 通過。`python -m pytest -rs tests/sql_mode/runtime/test_producer_pending_recheck.py -q` 因缺少 PyYAML 全檔 skip / exit code 5。
+- 重要結論：使用者該段 log 的前三筆 dispatch recheck 均為 `state=pending`，所以派工前沒有跳過任何 row，沒有省到主要 LLM 算力；最後出現的 `already_completed` 是 finalize cleanup 檢查，發生在多階段已完成後，不代表省算力。
+
+## 2026-07-21 concurrent CMD pending running wait
+
+- 任務目的：使用者同時開兩個 CMD 跑同一 SQLite multistage 任務，第二視窗雖偵測到 `pending running console enabled: defer running rows=3 after non-running rows=0`，但立刻 fallback revisit 並三列 dispatch recheck 都是 `pending`，因此仍重複跑 LLM。
+- 主要修改內容：當 producer 發現所有候選 rows 都已由其他程序標記 running 時，不再立即 revisit 排程；新增 `_wait_before_revisiting_all_running_rows()`，預設最多等待 120 秒、每 1 秒輪詢 pending running console，待 running 全清後再額外等待 3 秒讓 SQLite writeback 可見，最後才 fallback revisit 並由 dispatch pending recheck 決定是否 skip。可用 `pending_running_all_deferred_wait_seconds`、`pending_running_poll_seconds`、`pending_running_clear_grace_seconds` 調整。
+- 驗證結果：requirements 安裝仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證 `python -m compileall czjLLM/sql_mode/adapters/sqlite_adapter.py czjLLM/sql_mode/runtime/pending_recheck.py czjLLM/sql_mode/runtime/producer.py tests/sql_mode/runtime/test_sqlite_adapter_threading.py` 通過，`python -m pytest tests/sql_mode/runtime/test_sqlite_adapter_threading.py -q` 通過。`python -m pytest -rs tests/sql_mode/runtime/test_producer_pending_recheck.py -q` 因缺少 PyYAML 全檔 skip / exit code 5。
+- 重要結論：使用者兩個視窗的既有 log 中，兩邊 dispatch-time pending recheck 都是 `state=pending`，所以沒有省到主要 LLM 算力；根因是第二視窗知道 rows 正在 running，卻立即 fallback revisit。修正後第二視窗會先等待第一視窗完成/寫回，再 recheck，理論上更容易看到 dispatch `already_completed` 並節省算力。

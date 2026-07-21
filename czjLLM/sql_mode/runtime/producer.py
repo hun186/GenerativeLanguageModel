@@ -15,6 +15,7 @@ from .pending_recheck import (
     pending_recheck_stats,
     record_pending_skip,
     still_pending_before_dispatch,
+    still_pending_for_running_finalize,
 )
 from czjLLM.prompt_pipeline.pending_central import (
     finalize_scheduled,
@@ -33,6 +34,20 @@ def _get_positive_int(ctx, *names: str, default: int = 0) -> int:
             continue
         try:
             value = int(raw)
+        except (TypeError, ValueError):
+            continue
+        if value > 0:
+            return value
+    return default
+
+
+def _get_positive_float(ctx, *names: str, default: float = 0.0) -> float:
+    for name in names:
+        raw = getattr(ctx, name, None)
+        if raw is None:
+            continue
+        try:
+            value = float(raw)
         except (TypeError, ValueError):
             continue
         if value > 0:
@@ -82,6 +97,56 @@ def _maybe_block_shuffle_rows(ctx, rows_for_count):
         f"rows={len(rows)}, block_size={block_size}, blocks={(len(rows) + block_size - 1) // block_size}"
     )
     return shuffled
+
+
+def _wait_before_revisiting_all_running_rows(ctx, rows, stop_event) -> None:
+    wait_seconds = _get_positive_float(
+        ctx,
+        "pending_running_all_deferred_wait_seconds",
+        "pending_running_wait_seconds",
+        default=120.0,
+    )
+    if wait_seconds <= 0 or not rows:
+        return
+
+    poll_seconds = _get_positive_float(
+        ctx,
+        "pending_running_poll_seconds",
+        default=1.0,
+    )
+    clear_grace_seconds = _get_positive_float(
+        ctx,
+        "pending_running_clear_grace_seconds",
+        default=3.0,
+    )
+    deadline = time.time() + wait_seconds
+    row_count = len(rows)
+    tlog(
+        "[producer] pending running console: all candidate rows are already running; "
+        f"wait up to {wait_seconds:.1f}s before fallback revisit. rows={row_count}"
+    )
+
+    while not stop_event.is_set() and time.time() < deadline:
+        running_count = sum(1 for row in rows if is_running(ctx, row[0]))
+        if running_count <= 0:
+            if clear_grace_seconds > 0:
+                tlog(
+                    "[producer] pending running console: running rows cleared; "
+                    f"wait {clear_grace_seconds:.1f}s for DB writeback visibility before recheck."
+                )
+                end_grace = time.time() + clear_grace_seconds
+                while not stop_event.is_set() and time.time() < end_grace:
+                    time.sleep(min(0.2, max(end_grace - time.time(), 0)))
+            return
+        sleep_for = min(poll_seconds, max(deadline - time.time(), 0))
+        if sleep_for > 0:
+            time.sleep(sleep_for)
+
+    if not stop_event.is_set():
+        tlog_warn(
+            "[producer] pending running console: all-running wait timed out; "
+            "fallback revisit will rely on dispatch pending recheck and may duplicate work if peer is still running."
+        )
 
 
 def _stream_multistage_enabled(ctx) -> bool:
@@ -285,6 +350,7 @@ def produce_rows(
                 record_adjustment(ctx, "defer_running", pk=pk, deferred_count=len(deferred_running_rows) + 1)
                 deferred_running_rows.append(row)
                 if idx >= len(rows_for_count) and deferred_running_rows:
+                    _wait_before_revisiting_all_running_rows(ctx, deferred_running_rows, stop_event)
                     rows_for_count = deferred_running_rows
                     deferred_running_rows = []
                     idx = 0
@@ -400,7 +466,23 @@ def produce_rows(
             break
         time.sleep(0.1)
 
-    finalize_scheduled(ctx, scheduled_pks, pending_check=still_pending_before_dispatch)
+    if recheck_enabled:
+        stats = pending_recheck_stats(ctx)
+        tlog(
+            "[producer] pending recheck dispatch summary: "
+            f"checked={stats['checked']}, pending={stats['pending']}, "
+            f"already_completed={stats['already_completed']}, errors={stats['errors']}"
+        )
+
+    finalize_scheduled(ctx, scheduled_pks, pending_check=still_pending_for_running_finalize)
+
+    if recheck_enabled:
+        finalize_stats = pending_recheck_stats(ctx, scope="finalize")
+        tlog(
+            "[producer] pending running finalize recheck summary: "
+            f"checked={finalize_stats['checked']}, pending={finalize_stats['pending']}, "
+            f"already_completed={finalize_stats['already_completed']}, errors={finalize_stats['errors']}"
+        )
 
     if recheck_enabled:
         stats = pending_recheck_stats(ctx)

@@ -89,12 +89,17 @@ def record_pending_skip(ctx, pk: Any) -> None:
     trim_log_to_half_if_needed(path, max_bytes)
 
 
-def _bump_recheck_stat(ctx, name: str) -> int:
-    stats = getattr(ctx, "_pending_recheck_stats", None)
+def _stats_attr(scope: str) -> str:
+    return "_pending_recheck_stats" if scope == "dispatch" else f"_pending_recheck_{scope}_stats"
+
+
+def _bump_recheck_stat(ctx, name: str, *, scope: str = "dispatch") -> int:
+    attr = _stats_attr(scope)
+    stats = getattr(ctx, attr, None)
     if not isinstance(stats, dict):
         stats = {"checked": 0, "pending": 0, "already_completed": 0, "errors": 0}
         try:
-            setattr(ctx, "_pending_recheck_stats", stats)
+            setattr(ctx, attr, stats)
         except Exception:
             pass
     stats[name] = int(stats.get(name, 0) or 0) + 1
@@ -109,8 +114,8 @@ def _get_recheck_log_limit(ctx) -> int:
         return 10
 
 
-def pending_recheck_stats(ctx) -> dict:
-    stats = getattr(ctx, "_pending_recheck_stats", None)
+def pending_recheck_stats(ctx, *, scope: str = "dispatch") -> dict:
+    stats = getattr(ctx, _stats_attr(scope), None)
     if not isinstance(stats, dict):
         return {"checked": 0, "pending": 0, "already_completed": 0, "errors": 0}
     return {
@@ -143,7 +148,13 @@ def announce_pending_recheck_if_enabled(ctx) -> bool:
     return True
 
 
-def still_pending_before_dispatch(ctx, pk: Any) -> bool:
+def still_pending_before_dispatch(
+    ctx,
+    pk: Any,
+    *,
+    stats_scope: str = "dispatch",
+    log_state: bool = True,
+) -> bool:
     """Recheck remote SQL/ES state immediately before slicing/dispatching a row."""
     if not announce_pending_recheck_if_enabled(ctx):
         return True
@@ -157,21 +168,38 @@ def still_pending_before_dispatch(ctx, pk: Any) -> bool:
             pk_value=pk,
             output_cols=output_cols,
         ))
-        _bump_recheck_stat(ctx, "checked")
+        _bump_recheck_stat(ctx, "checked", scope=stats_scope)
         state = "pending" if is_pending else "already_completed"
-        current_count = _bump_recheck_stat(ctx, state)
-        if getattr(ctx, "debug_pending_recheck", False) or current_count <= _get_recheck_log_limit(ctx):
-            tlog(f"[producer] pending recheck pk={pk} state={state}")
+        current_count = _bump_recheck_stat(ctx, state, scope=stats_scope)
+        if log_state and (
+            getattr(ctx, "debug_pending_recheck", False)
+            or current_count <= _get_recheck_log_limit(ctx)
+        ):
+            phase = "" if stats_scope == "dispatch" else f" phase={stats_scope}"
+            tlog(f"[producer] pending recheck{phase} pk={pk} state={state}")
         return is_pending
     except Exception as e:
         # Fail open for availability: if the remote completion state cannot be
         # confirmed, treat the row/doc as still pending instead of skipping it.
         # This may do duplicate work, but avoids losing a row because a best-effort
         # recheck failed.
-        _bump_recheck_stat(ctx, "checked")
-        _bump_recheck_stat(ctx, "errors")
+        _bump_recheck_stat(ctx, "checked", scope=stats_scope)
+        _bump_recheck_stat(ctx, "errors", scope=stats_scope)
         tlog_warn(
             f"[producer] pending recheck 失敗 pk={pk}: {e!r}；"
             "無法確認是否已完成，保守視為仍待處理並繼續排程。"
         )
         return True
+
+
+def still_pending_for_running_finalize(ctx, pk: Any) -> bool:
+    """Recheck completion only for pending-running console cleanup after scheduling.
+
+    This does not save LLM compute; dispatch-time rechecks are counted separately.
+    """
+    return still_pending_before_dispatch(
+        ctx,
+        pk,
+        stats_scope="finalize",
+        log_state=bool(getattr(ctx, "debug_pending_recheck_finalize", False)),
+    )
