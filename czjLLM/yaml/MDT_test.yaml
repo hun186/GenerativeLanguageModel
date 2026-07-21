@@ -7,5 +7,6 @@ model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
 task: MDT Term Extraction to json format
 #task: Translation-toEN
 merge_slices: false
-debug_print_llm_io: true
-debug_print_max_chars: -1
+#debug_print_llm_io: true
+#debug_print_max_chars: -1
+#mp_debug: true

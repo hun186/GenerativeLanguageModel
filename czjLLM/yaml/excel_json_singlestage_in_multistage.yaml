@@ -6,9 +6,9 @@ channel: excel_source
 model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
 
 # I/O（沿用 Excel 多階段測試的來源/輸出與備份目錄規範）
-# 多階段 extract 階段的 org 路徑實際使用 Text 欄位作為 LLM 輸入，
-# 因此單階段相容性測試也使用 Text，讓核心抽取任務的輸入與多階段 org 路徑一致。
-input_col: Text
+# 多階段 extract 階段的 org 路徑實際使用 File 欄位作為 LLM 輸入，
+# 因此單階段相容性測試也使用 File，讓核心抽取任務的輸入與多階段 org 路徑一致。
+input_col: File
 output_col: File_result
 primary_key: Auto
 record_update_time: true

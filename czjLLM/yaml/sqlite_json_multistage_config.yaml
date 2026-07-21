@@ -1,7 +1,7 @@
 # SQLite 多階段測試（mode=sql）
 mode: sql
 channel: excel_source
-model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
 
 # I/O
 input_col: File
