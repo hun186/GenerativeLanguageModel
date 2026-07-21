@@ -484,6 +484,14 @@ def produce_rows(
             f"already_completed={finalize_stats['already_completed']}, errors={finalize_stats['errors']}"
         )
 
+    if recheck_enabled:
+        stats = pending_recheck_stats(ctx)
+        tlog(
+            "[producer] pending recheck summary: "
+            f"checked={stats['checked']}, pending={stats['pending']}, "
+            f"already_completed={stats['already_completed']}, errors={stats['errors']}"
+        )
+
     tlog(f"[producer] 已送出 {scheduled} 列，outstanding={outstanding_now(meter_fn)}")
 
     # ★ 事後健檢：未被 stop_event 中斷、卻未遍歷完 rows_for_count → 明確告警
