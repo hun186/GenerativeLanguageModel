@@ -12,6 +12,7 @@ from .workers import outstanding_now
 from .scheduler import schedule_one_row
 from .pending_recheck import (
     announce_pending_recheck_if_enabled,
+    pending_recheck_stats,
     record_pending_skip,
     still_pending_before_dispatch,
 )
@@ -400,6 +401,14 @@ def produce_rows(
         time.sleep(0.1)
 
     finalize_scheduled(ctx, scheduled_pks, pending_check=still_pending_before_dispatch)
+
+    if recheck_enabled:
+        stats = pending_recheck_stats(ctx)
+        tlog(
+            "[producer] pending recheck summary: "
+            f"checked={stats['checked']}, pending={stats['pending']}, "
+            f"already_completed={stats['already_completed']}, errors={stats['errors']}"
+        )
 
     tlog(f"[producer] 已送出 {scheduled} 列，outstanding={outstanding_now(meter_fn)}")
 
