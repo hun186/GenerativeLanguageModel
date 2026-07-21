@@ -23,6 +23,7 @@ from .runtime.workers import start_workers, progress_drain#, outstanding_now
 #from .runtime.scheduler import schedule_one_row
 from .runtime.teardown import shutdown
 from .runtime.producer import produce_rows
+from .runtime.pending_recheck import emit_pending_recheck_completion_summary
 '''
 def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
     from handlers.handle_txt_file import handle_single_input_file  # 延用現有函式
@@ -204,5 +205,11 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool):
         bar_refresh_stop=bar_refresh_stop,
     )
     _stop_mp_log_listener(mp_log_q, mp_listener_stop, mp_listener)
-    
+
+    emit_pending_recheck_completion_summary(
+        ctx,
+        total_rows=processable,
+        scheduled_rows=getattr(p_sched, "n", None),
+        done_rows=getattr(p_done, "n", None),
+    )
     tlog_ok("🎉 資料處理完成！")
