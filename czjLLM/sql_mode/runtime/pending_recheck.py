@@ -203,3 +203,60 @@ def still_pending_for_running_finalize(ctx, pk: Any) -> bool:
         stats_scope="finalize",
         log_state=bool(getattr(ctx, "debug_pending_recheck_finalize", False)),
     )
+
+
+def _format_pending_recheck_completion_summary(
+    ctx,
+    *,
+    total_rows: int | None = None,
+    scheduled_rows: int | None = None,
+    done_rows: int | None = None,
+) -> list[str]:
+    dispatch = pending_recheck_stats(ctx)
+    finalize = pending_recheck_stats(ctx, scope="finalize")
+    if dispatch["checked"] <= 0 and finalize["checked"] <= 0:
+        return []
+
+    lines = ["📌 pending recheck 最終摘要："]
+    if total_rows is not None:
+        lines.append(f"  - 候選總列數：{int(total_rows)}")
+    lines.append(
+        "  - 派工前重查："
+        f"checked={dispatch['checked']}, "
+        f"仍需處理/已送出={dispatch['pending']}, "
+        f"已完成跳過={dispatch['already_completed']}, "
+        f"errors={dispatch['errors']}"
+    )
+    if scheduled_rows is not None:
+        lines.append(f"  - producer 實際送出列數：{int(scheduled_rows)}")
+    if finalize["checked"] > 0:
+        lines.append(
+            "  - 收尾 running 清理重查："
+            f"checked={finalize['checked']}, "
+            f"仍未完成={finalize['pending']}, "
+            f"已完成={finalize['already_completed']}, "
+            f"errors={finalize['errors']}"
+        )
+    if done_rows is not None:
+        lines.append(f"  - 完成進度列數：{int(done_rows)}")
+    lines.append(
+        "  - 說明：派工前 pending 代表當下仍需處理，不是佇列卡住；"
+        "派工前 already_completed 才是本輪因已完成而跳過。"
+    )
+    return lines
+
+
+def emit_pending_recheck_completion_summary(
+    ctx,
+    *,
+    total_rows: int | None = None,
+    scheduled_rows: int | None = None,
+    done_rows: int | None = None,
+) -> None:
+    for line in _format_pending_recheck_completion_summary(
+        ctx,
+        total_rows=total_rows,
+        scheduled_rows=scheduled_rows,
+        done_rows=done_rows,
+    ):
+        tlog(line)

@@ -125,3 +125,10 @@
 - 主要修改內容：當 producer 發現所有候選 rows 都已由其他程序標記 running 時，不再立即 revisit 排程；新增 `_wait_before_revisiting_all_running_rows()`，預設最多等待 120 秒、每 1 秒輪詢 pending running console，待 running 全清後再額外等待 3 秒讓 SQLite writeback 可見，最後才 fallback revisit 並由 dispatch pending recheck 決定是否 skip。可用 `pending_running_all_deferred_wait_seconds`、`pending_running_poll_seconds`、`pending_running_clear_grace_seconds` 調整。
 - 驗證結果：requirements 安裝仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證 `python -m compileall czjLLM/sql_mode/adapters/sqlite_adapter.py czjLLM/sql_mode/runtime/pending_recheck.py czjLLM/sql_mode/runtime/producer.py tests/sql_mode/runtime/test_sqlite_adapter_threading.py` 通過，`python -m pytest tests/sql_mode/runtime/test_sqlite_adapter_threading.py -q` 通過。`python -m pytest -rs tests/sql_mode/runtime/test_producer_pending_recheck.py -q` 因缺少 PyYAML 全檔 skip / exit code 5。
 - 重要結論：使用者兩個視窗的既有 log 中，兩邊 dispatch-time pending recheck 都是 `state=pending`，所以沒有省到主要 LLM 算力；根因是第二視窗知道 rows 正在 running，卻立即 fallback revisit。修正後第二視窗會先等待第一視窗完成/寫回，再 recheck，理論上更容易看到 dispatch `already_completed` 並節省算力。
+
+## 2026-07-21 pending recheck final summary before completion
+
+- 任務目的：回應使用者指出多執行緒終端輸出會讓 pending recheck 重要訊息彼此覆蓋、難以判讀，要求在 `🎉 資料處理完成！` 前加入整理摘要。
+- 主要修改內容：新增 pending recheck 完成摘要 formatter / emitter，於 SQL runtime orchestrator 收尾後、完成訊息前輸出候選總列數、派工前 checked / pending / already_completed / errors、producer 實際送出列數、finalize running 清理重查統計與「pending 不是佇列卡住、already_completed 才是已完成跳過」說明；同步套用舊 `orchestrator_good_move_down.py` 收尾路徑。
+- 驗證結果：依規範先執行 requirements 安裝，但 GitHub `peft` dependency clone 仍受 proxy 403 限制；替代驗證 `python -m compileall czjLLM/sql_mode/runtime/pending_recheck.py czjLLM/sql_mode/runtime/orchestrator.py czjLLM/sql_mode/orchestrator_good_move_down.py tests/sql_mode/runtime/test_pending_recheck_summary.py` 通過，且 `python -m pytest tests/sql_mode/runtime/test_pending_recheck_summary.py -q` 通過。
+- 重要結論：新增摘要只讀取既有 recheck stats，不改派工、跳過、合併或寫回語意。
