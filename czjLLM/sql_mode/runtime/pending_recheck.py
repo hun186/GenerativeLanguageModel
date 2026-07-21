@@ -128,5 +128,12 @@ def still_pending_before_dispatch(ctx, pk: Any) -> bool:
             tlog(f"[producer] pending recheck pk={pk} state={state}")
         return is_pending
     except Exception as e:
-        tlog_warn(f"[producer] pending recheck 失敗 pk={pk}: {e!r}；保守繼續排程。")
+        # Fail open for availability: if the remote completion state cannot be
+        # confirmed, treat the row/doc as still pending instead of skipping it.
+        # This may do duplicate work, but avoids losing a row because a best-effort
+        # recheck failed.
+        tlog_warn(
+            f"[producer] pending recheck 失敗 pk={pk}: {e!r}；"
+            "無法確認是否已完成，保守視為仍待處理並繼續排程。"
+        )
         return True
