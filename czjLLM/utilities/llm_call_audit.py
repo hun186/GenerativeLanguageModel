@@ -37,6 +37,8 @@ _FIELDS = [
     "max_output_tokens",
     "effective_output_token_budget",
     "max_tokens",
+    "elapsed_seconds",
+    "processing_tps",
     "cost_twd",
     "ok",
     "error",
@@ -94,6 +96,8 @@ def log_llm_call(
     cost_twd: float = 0.0,
     ok: bool = True,
     error: str = "",
+    elapsed_seconds: float | None = None,
+    processing_tps: float | None = None,
 ) -> None:
     """Append one LLM call row. Missing usage/context fields are recorded as 0/blank."""
     if not audit_path:
@@ -115,6 +119,8 @@ def log_llm_call(
         if max_output_tokens > 0 and context_limit > 0
         else max_output_tokens
     )
+    elapsed_value = _float_or_attr(response, "_czjllm_elapsed_seconds", elapsed_seconds)
+    tps_value = _float_or_attr(response, "_czjllm_processing_tps", processing_tps)
     row = {
         "timestamp": datetime.now().isoformat(timespec="seconds"),
         "run_id": run_id or "",
@@ -134,6 +140,8 @@ def log_llm_call(
         "max_output_tokens": max_output_tokens,
         "effective_output_token_budget": effective_output_budget,
         "max_tokens": max_output_tokens,
+        "elapsed_seconds": f"{elapsed_value:.2f}" if elapsed_value > 0 else "",
+        "processing_tps": f"{tps_value:.2f}" if tps_value > 0 else "",
         "cost_twd": f"{float(cost_twd or 0):.6f}",
         "ok": "YES" if ok else "NO",
         "error": str(error or ""),
@@ -298,6 +306,16 @@ def _int_attr(obj: Any, name: str) -> int:
         return int(getattr(obj, name, 0) or 0)
     except Exception:
         return 0
+
+
+def _float_or_attr(obj: Any, name: str, fallback: float | None = None) -> float:
+    try:
+        value = getattr(obj, name, None) if obj is not None else None
+        if value is None:
+            value = fallback
+        return float(value or 0.0)
+    except Exception:
+        return 0.0
 
 
 def _context_from_model_spec(spec: Mapping[str, Any]) -> int:

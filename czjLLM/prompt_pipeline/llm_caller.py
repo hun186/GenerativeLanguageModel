@@ -202,6 +202,12 @@ def CallLLMAPI(
     p_tks, c_tks, total_tks = _calc_token_stats(response)
     tps = (total_tks / elapsed) if elapsed > 0 else float(total_tks)
 
+    try:
+        setattr(response, "_czjllm_elapsed_seconds", elapsed)
+        setattr(response, "_czjllm_processing_tps", tps)
+    except Exception:
+        pass
+
     cost_twd = _estimate_cost_twd(response, model=model)
     context_limit, context_source = resolve_context_limit(model_spec, response=response)
     if context_limit > 0:
