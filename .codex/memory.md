@@ -104,3 +104,10 @@
 - 主要修改內容：`SQLiteAdapter.connect()` 回到 SQLite 預設 thread ownership；`SQLiteAdapter.is_row_pending()` 對 file-backed SQLite 改用短生命週期 independent connection 執行 pending recheck，使 producer worker thread 不會碰到主 iterator connection。`:memory:` 測試/特殊情境保留原連線 fallback。
 - 驗證結果：requirements 安裝仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證 `python -m compileall czjLLM/sql_mode/adapters/sqlite_adapter.py czjLLM/sql_mode/runtime/pending_recheck.py tests/sql_mode/runtime/test_sqlite_adapter_threading.py` 通過，`python -m pytest tests/sql_mode/runtime/test_sqlite_adapter_threading.py -q` 通過。
 - 重要結論：在修正前，SQLite pending recheck 因 thread ownership 例外確實會 fail-open，導致可能重複派工與算力浪費；修正後 file-backed SQLite 的 pending recheck 不再依賴跨 thread 共用連線，應可正常判斷已完成 row 並略過。
+
+## 2026-07-21 pending recheck observability for SQLite rerun
+
+- 任務目的：使用者提供 SQLite multistage rerun log，詢問 pending recheck 是否有發揮作用；現有 log 只顯示 recheck enabled 與 scheduled，無法直接看出每個 pk 的 recheck 結果。
+- 主要修改內容：pending recheck 啟用訊息新增 target table 與 output_cols；`still_pending_before_dispatch()` 會統計 checked/pending/already_completed/errors，並預設列印前 10 筆 pending / already_completed 狀態（可用 `pending_recheck_log_first: 0` 關閉，或 `debug_pending_recheck: true` 全量列印）；producer 收尾列印 summary。
+- 驗證結果：requirements 安裝仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證 `python -m compileall czjLLM/sql_mode/adapters/sqlite_adapter.py czjLLM/sql_mode/runtime/pending_recheck.py czjLLM/sql_mode/runtime/producer.py tests/sql_mode/runtime/test_sqlite_adapter_threading.py` 通過，`python -m pytest tests/sql_mode/runtime/test_sqlite_adapter_threading.py -q` 通過。`python -m pytest -rs tests/sql_mode/runtime/test_producer_pending_recheck.py -q` 因目前環境缺少 PyYAML 而全檔 skip / exit code 5，屬既有限制。
+- 重要結論：從使用者 log 看，沒有再出現 SQLite thread ownership error，表示前一修正避免了原本的 recheck 例外；但因未列印每列 state，無法判定是 recheck 判斷為 pending、還是初始 pending SELECT 仍選出已完成 rows。本次新增 observability 後，下次 log 可直接看 `pk=... state=already_completed` 是否命中，以及 summary 的 skipped/error 數。
