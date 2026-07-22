@@ -44,11 +44,35 @@ def _stage_task_hint(stage: dict) -> str:
         return task.split(":", 1)[1].strip()
     return task
 
+
+def _todo_txt_count(todo_dir: str | None) -> int:
+    if not todo_dir or not os.path.isdir(todo_dir):
+        return 0
+    return sum(
+        1
+        for fp in OSWALK(todo_dir)
+        if str(fp).lower().endswith(".txt") and os.path.isfile(fp)
+    )
+
+
+def _prompt_wait_seconds(ctx) -> float:
+    raw = getattr(ctx, "schedule_todo_wait_seconds", None)
+    if raw is None:
+        raw = getattr(ctx, "sql_schedule_todo_wait_seconds", 30.0)
+    try:
+        return max(0.0, float(raw))
+    except (TypeError, ValueError):
+        return 30.0
+
 def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, source_inputs: dict[str, str] | None = None):
     """切片 -> 建 TODO -> 登錄 registry 與 meter（使用 per-row ctx overlay，避免 deepcopy/Queue 錯誤）"""
 
     temp_dir = os.path.join(ctx.llm_source_dir, "cache")
     fin_dir  = os.path.join(ctx.llm_source_finished_dir, "cache")
+
+    if not str(text or "").strip():
+        tlog_warn(f"⚠️ 輸入內容為空白，未建立 TODO（pk={pk}）。")
+        return 0
 
     # 產原始臨時檔。檔名必須包含本次程序的唯一命名空間，否則兩個主程序
     # 同時掃到同一批 pending rows 時，會用相同 idx/pk/content hash 產生同一路徑，
@@ -156,21 +180,28 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
     item_dir = None
     todo_dir = None
     t0 = time.time()
-    while time.time() - t0 < 10.0:
+    todo_wait_seconds = _prompt_wait_seconds(ctx)
+    while time.time() - t0 < todo_wait_seconds:
         try:
             item_dir = find_item_dir_for(row_ctx, main_name)
             todo_dir = os.path.join(item_dir, "TODO")
-            if os.path.isdir(todo_dir) and len(OSWALK(todo_dir)) > 0:
+            if _todo_txt_count(todo_dir) > 0:
                 break
         except Exception:
             pass
         time.sleep(0.1)
 
-    if not item_dir or not os.path.isdir(todo_dir) or len(OSWALK(todo_dir)) == 0:
-        tlog_warn(f"❌ TODO 未產生或為空（{main_name} / pk={pk}），略過此列以避免卡死。")
+    todo_count = _todo_txt_count(todo_dir)
+    if not item_dir or not os.path.isdir(todo_dir) or todo_count == 0:
+        temp_size = os.path.getsize(temp_txt_path) if os.path.isfile(temp_txt_path) else -1
+        tlog_warn(
+            f"❌ TODO 未產生或為空（{main_name} / pk={pk}），略過此列以避免卡死。"
+            f" wait={todo_wait_seconds:.1f}s, input_chars={len(text or '')}, temp_size={temp_size}, "
+            f"item_dir={item_dir or '<not-found>'}"
+        )
         return 0
 
-    total_chunks = len(OSWALK(todo_dir))
+    total_chunks = todo_count
 
     # 先以 row_ctx 推導預期合併輸出路徑（單階段/多階段都會用到）
     comb_back_fn = get_combined_result_path(temp_txt_path, row_ctx)
@@ -248,7 +279,7 @@ def schedule_one_row_OLD_1027(ctx, registry, meter_fn, idx: int, pk: Any, text: 
         try:
             item_dir = find_item_dir_for(row_ctx, row_ctx.main_file_name)
             todo_dir = os.path.join(item_dir, "TODO")
-            if os.path.isdir(todo_dir) and len(OSWALK(todo_dir)) > 0:
+            if _todo_txt_count(todo_dir) > 0:
                 break
         except Exception:
             pass
