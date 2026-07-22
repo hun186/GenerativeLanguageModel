@@ -132,3 +132,10 @@
 - 主要修改內容：新增 pending recheck 完成摘要 formatter / emitter，於 SQL runtime orchestrator 收尾後、完成訊息前輸出候選總列數、派工前 checked / pending / already_completed / errors、producer 實際送出列數、finalize running 清理重查統計與「pending 不是佇列卡住、already_completed 才是已完成跳過」說明；同步套用舊 `orchestrator_good_move_down.py` 收尾路徑。
 - 驗證結果：依規範先執行 requirements 安裝，但 GitHub `peft` dependency clone 仍受 proxy 403 限制；替代驗證 `python -m compileall czjLLM/sql_mode/runtime/pending_recheck.py czjLLM/sql_mode/runtime/orchestrator.py czjLLM/sql_mode/orchestrator_good_move_down.py tests/sql_mode/runtime/test_pending_recheck_summary.py` 通過，且 `python -m pytest tests/sql_mode/runtime/test_pending_recheck_summary.py -q` 通過。
 - 重要結論：新增摘要只讀取既有 recheck stats，不改派工、跳過、合併或寫回語意。
+
+## 2026-07-21 ES stream TODO empty diagnostics and wait tuning
+
+- 任務目的：回應使用者在兩個 CMD 同時跑同一個 ES 模式任務時，看到多筆 `TODO 未產生或為空`，釐清是否正常並降低共享/遠端磁碟或慢速 prompt 產生造成的誤判跳過。
+- 主要修改內容：`schedule_one_row()` 現在先把空白輸入列視為明確 noop，不再混同為 TODO 產生失敗；等待 TODO 檔案出現的時間由固定 10 秒改為可設定的 `schedule_todo_wait_seconds` / `sql_schedule_todo_wait_seconds`，預設 30 秒，並在失敗訊息加入 wait、input_chars、temp_size 與 item_dir 以利判讀。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證 `python -m compileall czjLLM/sql_mode/runtime/scheduler.py` 通過。嘗試執行 `python -m pytest tests/sql_mode/runtime/test_scheduler_multistage_combback_path.py -q` 時，因目前環境缺少 `yaml` 且 requirements 安裝失敗而在 collection 階段失敗。
+- 重要結論：`merge check ... TODO=0, Success=0` 在 LLM 已 claim 到 RUNNING 時可短暫出現，不一定異常；但 `❌ TODO 未產生或為空` 代表 scheduler 在切片/產 prompt 後找不到可執行 prompt，不應頻繁出現，若不是空白輸入或外部檔案系統延遲，就需要追查 prompt 寫入失敗、路徑/權限或欄位內容。
