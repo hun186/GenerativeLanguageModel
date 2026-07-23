@@ -39,6 +39,20 @@ def resolve_rerun_config(es_cfg: Dict[str, Any], get_param) -> Tuple[Dict[str, A
     return rerun_cfg, diagnostics
 
 
+def _pipeline_hash_source(diagnostics: Dict[str, Any]) -> str:
+    overridden = diagnostics.get("overridden_keys") or []
+    inherited = diagnostics.get("inherited_keys") or []
+    yaml_only = diagnostics.get("yaml_only_keys") or []
+
+    if "pipeline_hash" in overridden:
+        return "主 YAML rerun.pipeline_hash（覆寫 es_config_file.rerun.pipeline_hash）"
+    if "pipeline_hash" in yaml_only:
+        return "主 YAML rerun.pipeline_hash"
+    if "pipeline_hash" in inherited or diagnostics.get("base_has_rerun"):
+        return "es_config_file.rerun.pipeline_hash"
+    return "未知來源"
+
+
 def log_rerun_config(rerun_cfg: Dict[str, Any], diagnostics: Dict[str, Any]) -> None:
     if not rerun_cfg and not diagnostics.get("base_has_rerun") and not diagnostics.get("yaml_has_rerun"):
         return
@@ -67,6 +81,14 @@ def log_rerun_config(rerun_cfg: Dict[str, Any], diagnostics: Dict[str, Any]) -> 
         print("生效 rerun 摘要：")
         for key in sorted(rerun_cfg.keys()):
             print(f"  - {key}: {summarize_rerun_value(rerun_cfg[key])}")
+
+    if rerun_cfg.get("pipeline_hash"):
+        source = _pipeline_hash_source(diagnostics)
+        print("⚠️  pipeline_hash 已啟用：")
+        print(f"  - 來源：{source}")
+        print(f"  - 生效值：{summarize_rerun_value(rerun_cfg.get('pipeline_hash'))}")
+        print("  - 作用：寫回 ES meta.pipeline_hash，並在 pending / fresh 檢查時比對既有 output 的 hash。")
+        print("  - 風險：若值與既有 output meta 不一致，該文件會被視為需重跑；請只在 pipeline/prompt/輸出契約變更或刻意重跑時調整。")
 
     if rerun_cfg.get("enable"):
         print("提示：enable=true 時，缺 meta、pipeline_hash 不合、force_since、required_output_checks 等都可能讓既有 output 重新進入 pending。")

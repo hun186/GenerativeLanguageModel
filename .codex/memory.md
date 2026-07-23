@@ -146,3 +146,10 @@
 - 主要修改內容：`build_es_adapter_config()` 與 `build_pending_iter_es()` 的 `es_prefetch_buffer` fallback 改為 `0`；所有 `czjLLM/config_es/akconfig_es*.py` 範例設定同步改為 `es_prefetch_buffer = 0`；`czjLLM/docs/usage/es_multistage_config_guide.md` 新增 ES prefetch 設定說明、適用情境與觀察重點。
 - 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證 `python -m compileall czjLLM/es_mode/entry/steps_es.py czjLLM/config_es` 通過，且靜態檢查確認 entry fallback 與 ES config 範例皆使用 `es_prefetch_buffer=0`。
 - 重要結論：LLM-heavy ES 任務的瓶頸通常是 LLM API/推論而非 ES 取件；多程序協作或 rerun 任務預設關閉 prefetch 可降低 stale pending snapshot、重複派工與共享 Prompt cache 壓力。若 ES pending query 本身成為瓶頸，可由 YAML/ES config 明確設小 buffer（例如 5、20、50）試用。
+
+## 2026-07-23 ES pipeline_hash rerun warning and docs
+
+- 任務目的：降低 ES mode `rerun.pipeline_hash` 被誤用造成既有 output 反覆進 pending / rerun 且操作人員不易判斷原因的風險。
+- 主要修改內容：ES rerun startup log 在偵測到有效 `pipeline_hash` 時，會額外提示來源（主 YAML、es_config_file，或 YAML 覆寫 config）、生效值、會寫回 ES meta 並參與 pending/fresh hash 比對，以及 hash 與既有 output meta 不一致會導致重跑的風險；新增 `docs/usage/es_pipeline_hash_rerun.md` 說明安全使用方式與排查方向。
+- 驗證結果：依規範先執行 requirements 安裝，但 GitHub `peft` dependency clone 仍受 proxy 403 限制；替代與目標驗證 `python -m compileall czjLLM/es_mode/config/rerun_logging.py` 通過，`python -m pytest tests/es_mode/test_steps_es_rerun_logging.py -q` 通過（僅有既有 pytest unknown config option warning）。
+- 重要結論：`pipeline_hash` 仍維持 operator-provided 版本標記，不改變 rerun 判斷語意；本次只加強啟動時可觀測性與文件化，避免靜默反覆重跑。

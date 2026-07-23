@@ -54,4 +54,8 @@ def test_log_rerun_config_warns_about_source_and_effective_settings(capsys):
     assert "覆寫 key：pipeline_hash" in out
     assert "繼承 key：enable, force_since, required_output_checks" in out
     assert "- required_output_checks: list[1]" in out
+    assert "pipeline_hash 已啟用" in out
+    assert "來源：主 YAML rerun.pipeline_hash（覆寫 es_config_file.rerun.pipeline_hash）" in out
+    assert "寫回 ES meta.pipeline_hash" in out
+    assert "若值與既有 output meta 不一致" in out
     assert "既有 output 重新進入 pending" in out
