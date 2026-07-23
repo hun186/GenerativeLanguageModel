@@ -72,3 +72,9 @@
 - 決策：Context usage ratio 的 Ollama 分母改用 `/api/ps` active model context，而不是 `/api/show` model capability context。
 - 理由：`ollama ps` 的 `CONTEXT` 欄代表目前載入模型實際使用的 context；`/api/show` 可能回傳模型最大能力（例如 131072），會低估使用率並掩蓋截斷風險。
 - 後果：若模型尚未載入或 `/api/ps` 無 context 欄位，audit/terminal log 會 fallback 到明確 `model_spec` 或 unknown，不再用 model capability 假裝 runtime context。
+
+## 2026-07-23 ES prefetch disabled by default for LLM-heavy workloads
+
+- 決策：ES mode 的 `es_prefetch_buffer` 預設改為 `0`（關閉預取）；需要時由 YAML 或 `config_es` 明確設定小 buffer。
+- 理由：使用者在同一台機器開兩個 CMD 跑同一 ES LLM 任務時，`es_prefetch_buffer: 0` 可消除大量 `TODO 未產生或為空` 訊息。此類 LLM-heavy pipeline 的主要瓶頸通常是模型推論/遠端 LLM API，而非 ES 取件；大型 prefetch buffer 會讓多程序各自持有舊 pending snapshot，放大重複派工與共享 Prompt cache 壓力。
+- 後果：預設 ES stream 較重視跨程序穩定性與 pending recheck 收斂；若 ES 查詢/scroll 明顯慢到讓 LLM endpoint 閒置，操作者可明確設定 `es_prefetch_buffer: 5`、`20` 或 `50` 做吞吐測試。

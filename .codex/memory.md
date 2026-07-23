@@ -139,3 +139,10 @@
 - 主要修改內容：`schedule_one_row()` 現在先把空白輸入列視為明確 noop，不再混同為 TODO 產生失敗；等待 TODO 檔案出現的時間由固定 10 秒改為可設定的 `schedule_todo_wait_seconds` / `sql_schedule_todo_wait_seconds`，預設 30 秒，並在失敗訊息加入 wait、input_chars、temp_size 與 item_dir 以利判讀。
 - 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證 `python -m compileall czjLLM/sql_mode/runtime/scheduler.py` 通過。嘗試執行 `python -m pytest tests/sql_mode/runtime/test_scheduler_multistage_combback_path.py -q` 時，因目前環境缺少 `yaml` 且 requirements 安裝失敗而在 collection 階段失敗。
 - 重要結論：`merge check ... TODO=0, Success=0` 在 LLM 已 claim 到 RUNNING 時可短暫出現，不一定異常；但 `❌ TODO 未產生或為空` 代表 scheduler 在切片/產 prompt 後找不到可執行 prompt，不應頻繁出現，若不是空白輸入或外部檔案系統延遲，就需要追查 prompt 寫入失敗、路徑/權限或欄位內容。
+
+## 2026-07-23 ES prefetch default disabled
+
+- 任務目的：使用者確認在 ES YAML 加入 `es_prefetch_buffer: 0` 後，雙 CMD 同跑 ES 任務時大量 `TODO 未產生或為空` 訊息消失，要求將預設改為關閉並補充文件說明。
+- 主要修改內容：`build_es_adapter_config()` 與 `build_pending_iter_es()` 的 `es_prefetch_buffer` fallback 改為 `0`；所有 `czjLLM/config_es/akconfig_es*.py` 範例設定同步改為 `es_prefetch_buffer = 0`；`czjLLM/docs/usage/es_multistage_config_guide.md` 新增 ES prefetch 設定說明、適用情境與觀察重點。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證 `python -m compileall czjLLM/es_mode/entry/steps_es.py czjLLM/config_es` 通過，且靜態檢查確認 entry fallback 與 ES config 範例皆使用 `es_prefetch_buffer=0`。
+- 重要結論：LLM-heavy ES 任務的瓶頸通常是 LLM API/推論而非 ES 取件；多程序協作或 rerun 任務預設關閉 prefetch 可降低 stale pending snapshot、重複派工與共享 Prompt cache 壓力。若 ES pending query 本身成為瓶頸，可由 YAML/ES config 明確設小 buffer（例如 5、20、50）試用。

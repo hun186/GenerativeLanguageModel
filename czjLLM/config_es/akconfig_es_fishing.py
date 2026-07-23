@@ -55,7 +55,7 @@ pending_filters = [
 #es_max_retries = 3               # timeout/瞬斷時重試次數
 #es_retry_on_timeout = True       # 逾時自動重試
 
-es_prefetch_buffer = 1000           # 0 = 關閉預取
+es_prefetch_buffer = 0              # 預設關閉；LLM-heavy/多程序協作較穩定，必要時可設 5~50 試用
 es_prefetch_first_timeout = 8      # 首批最大等待秒數
 
 rerun = {
