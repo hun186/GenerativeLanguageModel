@@ -1,5 +1,4 @@
-# sqlserver_json_singlestage_in_multistage.yaml
-# SQL Server 單階段 in 多階段格式
+# SQL Server 多階段測試（語種路由 -> 條件抽取 -> audit）
 mode: sql
 channel: sql_cache
 model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
@@ -7,25 +6,31 @@ model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
 # I/O（沿用 sqlite_json_multistage_config.yaml 的欄位與寫回策略）
 input_col: activity_description
 output_col: activity_description_result
-primary_key: hash_value
 record_update_time: true
-save_raw_input_when_flatten: true
 sql_config_file: czjLLM/config_sql/akconfig_test_SRP.py
-#task: InfoExtraction-MultiDim-SQLFriendly-to json format
-task: Organization Profile Analyzer to json format
-record_update_time: true
-allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunctions]
 
-# 自動套用 mapping（僅新增欄位，不會改既有型別）
-#mapping_file: czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
+stages:
 
-# merge_slices 是「跨 prompt slice」合併；單一 LLM 回覆若本身是多筆 dict 的 JSON list，
-# 會保留為 list 供主欄位寫回 / flatten，不會被壓成單一 dict。
-merge_slices: true
+  - name: extract
+    input_from: original
+    route_by: route
+    task: "@taskSetting:Organization Profile Analyzer to json format"
+    input_from: original
+    input_col: activity_description
+    retry_source_on_route_miss: true
+    persist_output: final
+    #debug_print_llm_io: true
+    #debug_print_max_chars: -1
 
-#merge_conflict_policy: prefer_left  # or prefer_right
-#merge_dedup_lists: true               # 合併 list 時是否去重
-merge_log_changes: true               # 合併有變化才印 log
-merge_max_log: 10                     # 最多列出幾筆差異樣本
-merge_log_to_file: true              # 是否落檔
-merge_log_file: merge_dict_slices_audited.log
+# 多欄位寫回（與 sqlite 範例一致：route + 主結果 + audit）
+sql_writeback_rules:
+  - output_col: activity_description_result
+    source: stage
+    stage: extract
+
+# 多來源 flatten（與 sqlite 範例一致）
+sql_flatten_writeback_rules:
+  - writeback_rule: 0
+    enabled: true
+    flatten_store_input_col: true
+    allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunctions, skipReason]
