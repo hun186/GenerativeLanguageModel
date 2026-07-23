@@ -20,6 +20,42 @@ ES 模式現在可比照 SQL/Table 多階段流程，用 YAML 控制任務流路
 python -m czjLLM.czjLLM_TextProcessing --config yaml/es_multistage_langroute_config.yaml
 ```
 
+## ES prefetch 設定與建議
+
+`es_prefetch_buffer` 控制 ES pending iterator 是否用背景 thread 預先讀取候選文件：
+
+```yaml
+# 預設：關閉預取，使用直通 iterator
+es_prefetch_buffer: 0
+```
+
+- `0` 或小於 `0`：關閉預取，producer 需要下一筆時才從 ES iterator 取件。
+- 正整數：啟用預取，背景 thread 最多先把指定數量的 pending docs 放入本機 queue，例如 `5`、`20`、`50`。
+
+對 LLM-heavy 任務（每列 LLM 呼叫通常需數秒以上）而言，整體瓶頸多半是 LLM 運算或遠端模型 API，而不是 ES 取件。因此預設關閉 prefetch，讓跨程序 pending 協作、dispatch-time pending recheck 與 ES 寫回可見性更容易收斂。尤其在同一台機器開多個 CMD/terminal 跑同一個 ES 任務檔時，大型 prefetch buffer 可能讓多個程序各自先拿到同一批舊 pending snapshot，增加重複派工、共享 Prompt cache 壓力，並放大 `TODO 未產生或為空` 這類排程競態訊息。
+
+建議使用情境：
+
+| 情境 | 建議 |
+| --- | --- |
+| LLM 每列需數秒以上、單機多視窗協作、共享 `WorkPool_czjLLM` / `Prompt/cache` | 維持 `es_prefetch_buffer: 0` |
+| ES pending query 很慢，但 LLM endpoint 常閒置 | 試用小 buffer，例如 `es_prefetch_buffer: 5` 或 `20` |
+| 單一程序、ES 在遠端 WAN、首批或下一批 pending 常等待很久 | 可逐步試 `20`、`50`，並觀察吞吐是否真的改善 |
+| 多程序同跑同一批 ES rerun 任務 | 避免大型 buffer（例如 `1000`），優先使用 `0` 或很小的值 |
+
+觀察重點：
+
+1. 若關閉 prefetch 後 LLM endpoint 仍持續有工作、總處理時間沒有明顯變慢，表示 ES 取件不是瓶頸，應維持關閉。
+2. 若終端反覆出現 `[prefetch] 首批 > ... 未到` 或 `[prefetch] 等下一批...`，且 LLM endpoint 明顯閒置，才考慮開小 buffer。
+3. 若多視窗同跑時出現大量 `TODO 未產生或為空`，先關閉 prefetch，並可搭配：
+
+```yaml
+schedule_todo_wait_seconds: 120
+pending_recheck_shuffle_block_size: 20
+```
+
+`schedule_todo_wait_seconds` 用於排除共享磁碟/目錄可見性延遲；`pending_recheck_shuffle_block_size` 可降低多個 producer 以相同順序掃描 pending docs 時的 lock-step 碰撞。
+
 
 ## `input_col` 與 stage 額外輸入欄位
 

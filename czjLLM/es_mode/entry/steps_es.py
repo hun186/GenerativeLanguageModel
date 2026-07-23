@@ -130,7 +130,7 @@ def resolve_es_connection(ctx, get_param, args):
         "es_scroll_keepalive": es_cfg.get("es_scroll_keepalive", "2m"),
         "es_max_retries": es_cfg.get("es_max_retries", 3),
         "es_retry_on_timeout": es_cfg.get("es_retry_on_timeout", True),
-        "es_prefetch_buffer": es_cfg.get("es_prefetch_buffer", 1000),
+        "es_prefetch_buffer": es_cfg.get("es_prefetch_buffer", 0),
         "es_prefetch_first_timeout": es_cfg.get("es_prefetch_first_timeout", 20),
         "es_writeback_rules": es_cfg.get("es_writeback_rules", None),
         "es_output_mappings": es_cfg.get("es_output_mappings", None),
@@ -745,7 +745,7 @@ def build_pending_iter_es(adapter, ctx):
     )
 
     cfg = getattr(adapter, "cfg", {})
-    buf      = int(cfg.get("es_prefetch_buffer",        getattr(ctx, "es_prefetch_buffer", 1000)))
+    buf      = int(cfg.get("es_prefetch_buffer",        getattr(ctx, "es_prefetch_buffer", 0)))
     first_to = int(cfg.get("es_prefetch_first_timeout", 20))
     hb       = int(cfg.get("es_prefetch_heartbeat",     30))
     fallback = bool(cfg.get("es_prefetch_fallback",     True))
