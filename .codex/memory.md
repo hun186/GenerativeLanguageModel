@@ -153,3 +153,10 @@
 - 主要修改內容：ES rerun startup log 在偵測到有效 `pipeline_hash` 時，會額外提示來源（主 YAML、es_config_file，或 YAML 覆寫 config）、生效值、會寫回 ES meta 並參與 pending/fresh hash 比對，以及 hash 與既有 output meta 不一致會導致重跑的風險；新增 `docs/usage/es_pipeline_hash_rerun.md` 說明安全使用方式與排查方向。
 - 驗證結果：依規範先執行 requirements 安裝，但 GitHub `peft` dependency clone 仍受 proxy 403 限制；替代與目標驗證 `python -m compileall czjLLM/es_mode/config/rerun_logging.py` 通過，`python -m pytest tests/es_mode/test_steps_es_rerun_logging.py -q` 通過（僅有既有 pytest unknown config option warning）。
 - 重要結論：`pipeline_hash` 仍維持 operator-provided 版本標記，不改變 rerun 判斷語意；本次只加強啟動時可觀測性與文件化，避免靜默反覆重跑。
+
+## 2026-07-24 Excel single-stage YAML converted to one-stage multistage format
+
+- 任務目的：將 `czjLLM/yaml/excel_json_singlestage_in_multistage.yaml` 從舊版頂層單階段 `task` 寫法轉為只有一個 `extract` stage 的多階段格式。
+- 主要修改內容：保留原 Excel I/O、模型、merge 與 audit merge log 設定；新增單一 `stages` 區塊、`sql_writeback_rules` 與 `sql_flatten_writeback_rules`，讓 `File_result` 由 `extract` stage 寫回，並沿用原 allowed output fields。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證包含 `python -m compileall czjLLM/yaml` 通過。嘗試以 PyYAML 解析 YAML 時，因目前環境缺少 `yaml` / PyYAML 且 requirements 安裝失敗而無法執行。
+- 重要結論：此變更只調整 YAML 設定格式，不改 Python 程式、API contract 或核心 pipeline 行為。
