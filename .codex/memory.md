@@ -167,3 +167,10 @@
 - 主要修改內容：`czjLLM/yaml/sqlite_json_singlestage.yaml` 與 `czjLLM/yaml/sqlite_json_singlestage_in_multistage.yaml` 移除舊版頂層 `task` / `allowed_output_fields` 寫法，改用單一 `stages[].name=extract`、`@taskSetting:Organization Profile Analyzer to json format`、`sql_writeback_rules` 與 `sql_flatten_writeback_rules` 保留原 File_result 寫回與 flatten 欄位契約。
 - 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，仍因 GitHub `peft` dependency proxy 403 失敗；嘗試以 PyYAML 解析 YAML 時因目前環境缺少 `yaml` 模組失敗；替代驗證以 Python 靜態檢查確認兩個 YAML 皆只有一個 extract stage、已移除 legacy 頂層 task、保留 taskSetting reference、stage writeback 與 flatten rule。
 - 重要結論：此變更只調整設定檔格式，不新增 mock / stub，也不改 pipeline 程式邏輯。
+
+## 2026-07-24 SQLite single-stage YAML format split
+
+- 任務目的：依使用者要求，讓 `sqlite_json_singlestage.yaml` 使用舊版單階段格式，並保留 `sqlite_json_singlestage_in_multistage.yaml` 作為只有一個 stage 的多階段格式。
+- 主要修改內容：`czjLLM/yaml/sqlite_json_singlestage.yaml` 移除 `stages`、`sql_writeback_rules` 與 `sql_flatten_writeback_rules`，改回 legacy single-stage 的 `task` + `allowed_output_fields` schema；`czjLLM/yaml/sqlite_json_singlestage_in_multistage.yaml` 維持單一 `extract` stage 的多階段 schema。
+- 驗證結果：依規範先執行 requirements 安裝，但 GitHub `peft` dependency clone 仍受 proxy 403 限制；替代驗證以 Python 文字檢查確認 legacy 檔不含 `stages:` 且含 `task` / `allowed_output_fields`，in-multistage 檔仍含 `stages:`。
+- 重要結論：兩個 SQLite 範例現在可分別覆蓋舊單階段 path 與 single-stage-in-multistage path，便於比較兩條執行路徑的相容性。
