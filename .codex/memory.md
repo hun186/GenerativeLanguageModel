@@ -160,3 +160,10 @@
 - 主要修改內容：保留原 Excel I/O、模型、merge 與 audit merge log 設定；新增單一 `stages` 區塊、`sql_writeback_rules` 與 `sql_flatten_writeback_rules`，讓 `File_result` 由 `extract` stage 寫回，並沿用原 allowed output fields。
 - 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證包含 `python -m compileall czjLLM/yaml` 通過。嘗試以 PyYAML 解析 YAML 時，因目前環境缺少 `yaml` / PyYAML 且 requirements 安裝失敗而無法執行。
 - 重要結論：此變更只調整 YAML 設定格式，不改 Python 程式、API contract 或核心 pipeline 行為。
+
+## 2026-07-24 SQLite single-stage YAML converted to one-stage multistage format
+
+- 任務目的：依使用者要求，將 SQLite JSON single-stage 相容性 YAML 改寫為「只有一個 extract stage」的多階段格式。
+- 主要修改內容：`czjLLM/yaml/sqlite_json_singlestage.yaml` 與 `czjLLM/yaml/sqlite_json_singlestage_in_multistage.yaml` 移除舊版頂層 `task` / `allowed_output_fields` 寫法，改用單一 `stages[].name=extract`、`@taskSetting:Organization Profile Analyzer to json format`、`sql_writeback_rules` 與 `sql_flatten_writeback_rules` 保留原 File_result 寫回與 flatten 欄位契約。
+- 驗證結果：依規範先執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，仍因 GitHub `peft` dependency proxy 403 失敗；嘗試以 PyYAML 解析 YAML 時因目前環境缺少 `yaml` 模組失敗；替代驗證以 Python 靜態檢查確認兩個 YAML 皆只有一個 extract stage、已移除 legacy 頂層 task、保留 taskSetting reference、stage writeback 與 flatten rule。
+- 重要結論：此變更只調整設定檔格式，不新增 mock / stub，也不改 pipeline 程式邏輯。

@@ -1,4 +1,4 @@
-# sqlite_json_singlestage_in_multistage.yaml
+# sqlite_json_singlestage.yaml
 # SQLite 單階段 in 多階段格式相容性測試
 # 對照來源：sqlite_json_multistage_config.yaml 的核心 extract 階段
 mode: sql
@@ -12,13 +12,34 @@ record_update_time: true
 save_raw_input_when_flatten: true
 sql_config_file: czjLLM/config_sql/akconfig_local_file_test_multistage.py
 
-# 舊版單任務核心：提取多階段 extract 階段中的主抽取任務，
+# 單階段 in 多階段格式：只保留一個 extract stage。
+# 任務核心與舊版單階段寫法相同，提取多階段 extract 階段中的主抽取任務，
 # 不包含 route / audit_json，以便與 SQL Server 單階段相容性測試用同一組織抽取任務比較。
-task: Organization Profile Analyzer to json format
-allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunctions]
+stages:
+  - name: extract
+    task_key: Organization Profile Analyzer to json format
+    task: "@taskSetting:Organization Profile Analyzer to json format"
+    input_col: File
+    input_from: original
+    persist_output: final
+    #debug_print_llm_io: true
+    #debug_print_max_chars: -1
 
+# 多欄位寫回：只有 extract 一個 stage 寫回舊版單階段的 output_col。
+sql_writeback_rules:
+  - output_col: File_result
+    source: stage
+    stage: extract
+
+# 多來源 flatten：沿用舊版單階段 allowed_output_fields。
 # merge_slices 是「跨 prompt slice」合併；單一 LLM 回覆若本身是多筆 dict 的 JSON list，
 # 會保留為 list 供主欄位寫回 / flatten，不會被壓成單一 dict。
+sql_flatten_writeback_rules:
+  - writeback_rule: 0
+    enabled: true
+    flatten_store_input_col: true
+    allowed_output_fields: [route, inputName, formalName, functionalDomain, keyFunctions]
+
 merge_slices: true
 
 #merge_conflict_policy: prefer_left  # or prefer_right
