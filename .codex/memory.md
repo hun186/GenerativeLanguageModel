@@ -174,3 +174,10 @@
 - 主要修改內容：`czjLLM/yaml/sqlite_json_singlestage.yaml` 移除 `stages`、`sql_writeback_rules` 與 `sql_flatten_writeback_rules`，改回 legacy single-stage 的 `task` + `allowed_output_fields` schema；`czjLLM/yaml/sqlite_json_singlestage_in_multistage.yaml` 維持單一 `extract` stage 的多階段 schema。
 - 驗證結果：依規範先執行 requirements 安裝，但 GitHub `peft` dependency clone 仍受 proxy 403 限制；替代驗證以 Python 文字檢查確認 legacy 檔不含 `stages:` 且含 `task` / `allowed_output_fields`，in-multistage 檔仍含 `stages:`。
 - 重要結論：兩個 SQLite 範例現在可分別覆蓋舊單階段 path 與 single-stage-in-multistage path，便於比較兩條執行路徑的相容性。
+
+## 2026-07-28 oversized combine utility split
+
+- 任務目的：檢查活躍 Python 單檔大小，優先重構專案 backlog 已標記且達 2,853 行的 `czjLLM/utilities/combine_utils.py`。
+- 主要修改內容：將 JSON parsing/repair/combine helpers 拆至 `utilities/json_combining.py`，將 dict slice merge strategies 拆至 `utilities/slice_merge.py`；舊模組以 re-export 保持相容，並移除 1,380 行只供手動執行的大型內嵌範例，使主要檔案降至約 1,070 行。
+- 驗證結果：依規範執行 requirements 安裝，但 GitHub `peft` clone 仍受 proxy 403 限制；現有環境中 `python -m pytest tests/test_combine_json_slice_merge.py -q` 為 6 passed，且三個拆分模組的 `compileall` 與 `git diff --check` 通過。
+- 重要結論：本次不改公開函式簽章、JSON 輸出 shape 或 slice merge policy；後續可再針對仍逾千行的 combine filesystem orchestration 做第二階段拆分。
