@@ -78,3 +78,9 @@
 - 決策：ES mode 的 `es_prefetch_buffer` 預設改為 `0`（關閉預取）；需要時由 YAML 或 `config_es` 明確設定小 buffer。
 - 理由：使用者在同一台機器開兩個 CMD 跑同一 ES LLM 任務時，`es_prefetch_buffer: 0` 可消除大量 `TODO 未產生或為空` 訊息。此類 LLM-heavy pipeline 的主要瓶頸通常是模型推論/遠端 LLM API，而非 ES 取件；大型 prefetch buffer 會讓多程序各自持有舊 pending snapshot，放大重複派工與共享 Prompt cache 壓力。
 - 後果：預設 ES stream 較重視跨程序穩定性與 pending recheck 收斂；若 ES 查詢/scroll 明顯慢到讓 LLM endpoint 閒置，操作者可明確設定 `es_prefetch_buffer: 5`、`20` 或 `50` 做吞吐測試。
+
+## 2026-07-28 keep combine_utils as a compatibility facade
+
+- 決策：拆分肥大的 `combine_utils.py` 時保留原模組作相容 facade，以 re-export 維持 `combine_json_return`、JSON parsing helpers 與 slice merge helpers 的既有 import contract。
+- 理由：prompt pipeline、result handler、SQL row merger 與外部使用者可能直接從舊路徑 import；一次更改所有呼叫端會放大低價值風險。
+- 後果：新功能應直接放入 focused module；舊路徑仍可使用，但 `combine_utils.py` 不再承擔 JSON parsing 與 merge strategy 的實作。
