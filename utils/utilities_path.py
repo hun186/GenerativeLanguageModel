@@ -1,8 +1,6 @@
 import os
-import sys
 import re 
 import shutil
-from pathlib import PureWindowsPath, PurePosixPath
 try:
     from utils.MP_utils import MPlogger
 except:
@@ -123,35 +121,6 @@ def clean_path_end_chars_OLD(path):
     # 使用作業系統適合的分隔符重新組合路徑
     cleaned_path = os.path.join(*cleaned_parts)
     return cleaned_path
-'''
-
-'''
-def clean_path_end_chars_OLD_2(path: str) -> str:
-    """
-    安全清理路徑：
-    - 保留磁碟根 (例如 D:\) 或 UNC 前綴 (\\server\share\)
-    - 僅修剪中間段落尾端的空白與點（Windows 不允許尾點/空白）
-    - 不會把 'D:\...' 變成 'D:...'
-    - 回傳 OS 正規化後的字串
-    """
-    if sys.platform.startswith("win"):
-        P = PureWindowsPath
-    else:
-        P = PurePosixPath
-
-    p = P(path)
-    drive = p.drive    # 例: 'D:' 或 '\\\\server\\share'
-    root  = p.root     # 例: '\\' 或 '/' 或 對 UNC 也是 '\\'
-
-    # 只處理中間段落，不動 drive/root
-    mid_parts = [seg.rstrip(' .\\/') for seg in p.parts
-                 if seg not in (drive, root) and seg not in ('', '.')]
-
-    tail = os.path.join(*mid_parts) if mid_parts else ''
-    prefix = (drive + root) if (drive or root) else ''
-
-    cleaned = os.path.join(prefix, tail) if prefix else tail
-    return os.path.normpath(cleaned)
 '''
 
 def clean_path_end_chars(path: str) -> str:
