@@ -10,6 +10,20 @@
 
 ## Recent Changes
 
+## 2026-07-28 remove unused clean_path_end_chars_OLD_2 block
+
+- 任務目的：依使用者後續指示確認 `clean_path_end_chars_OLD_2` 是否仍被使用，若未使用則刪除。
+- 主要修改內容：全專案搜尋確認該名稱只存在於三引號舊程式碼字串與先前記憶紀錄，因此刪除整個舊程式碼字串，並移除僅由該字串提及的 `sys`、`PureWindowsPath`、`PurePosixPath` imports；目前啟用的 `clean_path_end_chars` 不變。
+- 驗證結果：`python -Werror -m py_compile utils/utilities_path.py`、`python -m compileall -q utils/utilities_path.py` 與舊名稱/unused import 靜態檢查通過。`python -m pytest tests/test_paths.py -q` 因 requirements 無法完整安裝、環境缺少 `numpy` 而在 collection 階段停止；requirements 安裝仍受 GitHub `peft` proxy 403 限制。
+- 重要結論：未使用的保存字串已直接移除，不再需要以 raw string 壓制警告，也減少無效 imports。
+
+## 2026-07-28 utilities_path invalid escape warning cleanup
+
+- 任務目的：依使用者要求保留 `clean_path_end_chars_OLD_2` 舊程式碼字串，同時消除其中 `\)` 無效跳脫造成的 Python `SyntaxWarning`。
+- 主要修改內容：將包住舊程式碼的三引號字串改為 raw string，未變更目前啟用的 path utility 行為。
+- 驗證結果：依規範執行 pip upgrade 與 requirements 安裝，但 GitHub `peft` clone 仍受 proxy 403 限制；替代驗證 `python -Werror -m py_compile utils/utilities_path.py` 通過。全套 pytest collect 仍因缺少 `tqdm` 停止，並保留缺少 `pytest-dotenv` 所造成的既有 `env_files` 警告。
+- 重要結論：原本的 `\)` `SyntaxWarning` 已消除；變更只影響未執行的舊程式碼保存字串如何被 Python parser 解讀。
+
 ## 2026-07-20 txt single-stage LLM IO debug flags
 
 - 任務目的：釐清並修正 txt 模式單階段 YAML 頂層 `debug_print_llm_io` / `debug_print_max_chars` 未印出 LLM I/O 的問題。
