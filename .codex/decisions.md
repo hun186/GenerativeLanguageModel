@@ -84,3 +84,9 @@
 - 決策：拆分肥大的 `combine_utils.py` 時保留原模組作相容 facade，以 re-export 維持 `combine_json_return`、JSON parsing helpers 與 slice merge helpers 的既有 import contract。
 - 理由：prompt pipeline、result handler、SQL row merger 與外部使用者可能直接從舊路徑 import；一次更改所有呼叫端會放大低價值風險。
 - 後果：新功能應直接放入 focused module；舊路徑仍可使用，但 `combine_utils.py` 不再承擔 JSON parsing 與 merge strategy 的實作。
+
+## 2026-07-28 split Elasticsearch policy behind existing adapter
+
+- 決策：保留 `ElasticsearchAdapter` 與所有既有方法名稱，透過 focused mixin 抽離 freshness/rerun policy，另將純 value helpers 獨立成無 ES client 依賴的模組。
+- 理由：adapter 原檔超過 1100 行且混合連線、mapping、掃描、文件值處理與 rerun policy；以繼承組合保留外部介面，可降低跨 ES entry/runtime 呼叫端改動風險。
+- 後果：新增 policy 時應放入 `pending_policy.py`，通用文件值處理放入 `value_helpers.py`；adapter 主檔專注 ES I/O 與 orchestration。

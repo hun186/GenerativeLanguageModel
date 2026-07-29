@@ -195,3 +195,11 @@
 - 主要修改內容：將 JSON parsing/repair/combine helpers 拆至 `utilities/json_combining.py`，將 dict slice merge strategies 拆至 `utilities/slice_merge.py`；舊模組以 re-export 保持相容，並移除 1,380 行只供手動執行的大型內嵌範例，使主要檔案降至約 1,070 行。
 - 驗證結果：依規範執行 requirements 安裝，但 GitHub `peft` clone 仍受 proxy 403 限制；現有環境中 `python -m pytest tests/test_combine_json_slice_merge.py -q` 為 6 passed，且三個拆分模組的 `compileall` 與 `git diff --check` 通過。
 - 重要結論：本次不改公開函式簽章、JSON 輸出 shape 或 slice merge policy；後續可再針對仍逾千行的 combine filesystem orchestration 做第二階段拆分。
+
+## 2026-07-28 Elasticsearch adapter single-file split
+
+- 任務目的：盤點活躍 Python 單檔大小，針對超過千行的 Elasticsearch adapter 進行低風險拆分。
+- 主要修改內容：將 output completeness、freshness、rerun query policy 抽至 `es_mode/adapters/pending_policy.py` mixin，將 dotted-path、巢狀 list、日期與 scalar 正規化純函式抽至 `value_helpers.py`；`ElasticsearchAdapter` 保留既有公開類別與方法契約，主檔由 1110 行降至 658 行。
+- 驗證結果：requirements 安裝仍因 GitHub `peft` dependency proxy 403 失敗；替代及目標驗證 `python -m py_compile ...` 與 `python -m pytest tests/es_mode_test_elasticsearch_pending_multicol.py tests/test_es_multistage_flex.py -q` 通過（4 tests passed）。
+- 重要結論：此次只重整模組邊界，不更動 ES 查詢、pending 判定或外部 import contract；後續可用相同 facade/mixin 手法評估 `steps_es.py`。
+- 補充驗證：擴大 ES 相關目標測試至 config/stage/rerun logging，共 15 tests passed；另以 `python -m compileall -q czjLLM/es_mode/adapters` 驗證拆分後整個 adapters package。
