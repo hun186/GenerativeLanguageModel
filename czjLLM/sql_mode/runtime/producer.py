@@ -475,6 +475,10 @@ def produce_rows(
         )
 
     finalize_scheduled(ctx, scheduled_pks, pending_check=still_pending_for_running_finalize)
+    try:
+        ctx._pending_recheck_scheduled_pks = tuple(scheduled_pks)
+    except Exception:
+        pass
 
     if recheck_enabled:
         finalize_stats = pending_recheck_stats(ctx, scope="finalize")

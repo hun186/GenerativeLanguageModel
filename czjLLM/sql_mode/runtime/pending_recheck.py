@@ -205,6 +205,25 @@ def still_pending_for_running_finalize(ctx, pk: Any) -> bool:
     )
 
 
+def recheck_scheduled_after_writeback(ctx) -> dict:
+    """Verify scheduled rows after merger/writeback shutdown has completed."""
+    scheduled_pks = getattr(ctx, "_pending_recheck_scheduled_pks", None)
+    if not scheduled_pks:
+        return pending_recheck_stats(ctx, scope="completion")
+
+    # This is the authoritative completion check.  The earlier ``finalize``
+    # check only releases pending-running coordination state and can race with
+    # the last writeback even after the queue meter reaches zero.
+    for pk in scheduled_pks:
+        still_pending_before_dispatch(
+            ctx,
+            pk,
+            stats_scope="completion",
+            log_state=False,
+        )
+    return pending_recheck_stats(ctx, scope="completion")
+
+
 def _format_pending_recheck_completion_summary(
     ctx,
     *,
@@ -214,7 +233,8 @@ def _format_pending_recheck_completion_summary(
 ) -> list[str]:
     dispatch = pending_recheck_stats(ctx)
     finalize = pending_recheck_stats(ctx, scope="finalize")
-    if dispatch["checked"] <= 0 and finalize["checked"] <= 0:
+    completion = pending_recheck_stats(ctx, scope="completion")
+    if dispatch["checked"] <= 0 and finalize["checked"] <= 0 and completion["checked"] <= 0:
         return []
 
     lines = ["📌 pending recheck 最終摘要："]
@@ -231,17 +251,25 @@ def _format_pending_recheck_completion_summary(
         lines.append(f"  - producer 實際送出列數：{int(scheduled_rows)}")
     if finalize["checked"] > 0:
         lines.append(
-            "  - 收尾 running 清理重查："
+            "  - running 中控清理快照（可能早於最後寫回）："
             f"checked={finalize['checked']}, "
             f"仍未完成={finalize['pending']}, "
             f"已完成={finalize['already_completed']}, "
             f"errors={finalize['errors']}"
         )
+    if completion["checked"] > 0:
+        lines.append(
+            "  - 寫回完成後最終重查："
+            f"checked={completion['checked']}, "
+            f"仍未完成={completion['pending']}, "
+            f"已完成={completion['already_completed']}, "
+            f"errors={completion['errors']}"
+        )
     if done_rows is not None:
         lines.append(f"  - 完成進度列數：{int(done_rows)}")
     lines.append(
         "  - 說明：派工前 pending 代表當下仍需處理，不是佇列卡住；"
-        "派工前 already_completed 才是本輪因已完成而跳過。"
+        "running 中控清理只是過程快照；是否完成請以寫回完成後最終重查為準。"
     )
     return lines
 
