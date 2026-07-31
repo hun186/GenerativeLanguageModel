@@ -34,6 +34,12 @@ def test_format_completion_summary_explains_dispatch_pending_and_skips(monkeypat
             "already_completed": 237,
             "errors": 0,
         },
+        _pending_recheck_completion_stats={
+            "checked": 237,
+            "pending": 0,
+            "already_completed": 237,
+            "errors": 0,
+        },
     )
 
     lines = pending_recheck._format_pending_recheck_completion_summary(
@@ -48,8 +54,30 @@ def test_format_completion_summary_explains_dispatch_pending_and_skips(monkeypat
     assert "候選總列數：482" in rendered
     assert "仍需處理/已送出=237" in rendered
     assert "已完成跳過=6" in rendered
-    assert "收尾 running 清理重查" in rendered
+    assert "running 中控清理快照（可能早於最後寫回）" in rendered
+    assert "寫回完成後最終重查" in rendered
     assert "派工前 pending 代表當下仍需處理，不是佇列卡住" in rendered
+
+
+def test_recheck_scheduled_after_writeback_records_authoritative_state(monkeypatch):
+    pending_recheck = _load_pending_recheck_module(monkeypatch)
+
+    class Adapter:
+        def is_row_pending(self, **kwargs):
+            return kwargs["pk_value"] == 12
+
+    ctx = SimpleNamespace(
+        _pending_adapter=Adapter(),
+        _pending_tgt_table="target",
+        primary_key="id",
+        output_col="result",
+        _pending_recheck_scheduled_pks=(11, 12),
+        _pending_recheck_announced=True,
+    )
+
+    stats = pending_recheck.recheck_scheduled_after_writeback(ctx)
+
+    assert stats == {"checked": 2, "pending": 1, "already_completed": 1, "errors": 0}
 
 
 def test_format_completion_summary_silent_without_recheck_stats(monkeypatch):

@@ -27,7 +27,10 @@ from .workers import consumer_restart_cb
 
 from .teardown import shutdown
 from .producer import produce_rows
-from .pending_recheck import emit_pending_recheck_completion_summary
+from .pending_recheck import (
+    emit_pending_recheck_completion_summary,
+    recheck_scheduled_after_writeback,
+)
 
 from .sinks.sql_sink import SqlSink
 from .sinks.excel_sink import ExcelSink
@@ -505,10 +508,17 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         bar_refresh_stop=bar_refresh_stop,
     )
 
+    completion = recheck_scheduled_after_writeback(ctx)
     emit_pending_recheck_completion_summary(
         ctx,
         total_rows=total_rows,
         scheduled_rows=getattr(p_sched, "n", None),
         done_rows=getattr(p_done, "n", None),
     )
-    tlog_ok("🎉 資料處理完成！")
+    if completion["pending"] or completion["errors"]:
+        tlog_warn(
+            "⚠️ 資料處理流程已結束，但寫回完成後重查仍有 "
+            f"pending={completion['pending']}, errors={completion['errors']}；請勿視為全部完成。"
+        )
+    else:
+        tlog_ok("🎉 資料處理完成！")
