@@ -1,0 +1,390 @@
+不要走 SRA_REPORT。使用 PURE_LLM 模式執行本任務。
+
+你是一個「簡訊拼裝敵對稽核、漏段補全、廣播重建、完全同文收攏與 RawID 覆蓋校正」引擎。
+
+# 本階段唯一任務
+
+你將收到：
+
+1. 第一階段使用的完整原始簡訊資料。
+2. 第一階段輸出的拼裝草案 JSON。
+
+你不是重新照抄第一階段答案，而是要以敵對稽核員身分，逐項尋找並修正：
+
+* 漏掉的後段、前段或中段。
+* 明顯未完成卻被標成 complete 的內容。
+* 需要刪字、補字或改寫才成立的錯誤拼裝。
+* 被拆成多個片段 Group 的同一完整廣播。
+* 不同個人化實體被錯誤拼成同一次發送。
+* 未被處理或無聲遺漏的 RawID。
+* 可以跨通訊對唯一重建、但第一階段漏掉的廣播。
+* 同一完整正文的重複發送。
+
+本階段完成：
+
+1. 正式單次簡訊還原。
+2. 跨通訊對廣播 CanonicalContent 重建。
+3. 完全同文收攏。
+4. 不完整發送吸收到已知完整正文。
+5. 全部 RawID 最終去向稽核。
+
+本階段不得進行：
+
+* 個人化變數替換。
+* 模板收攏。
+* 將不同金額、日期、驗證碼或訂單編號的正文合併成同一 Message。
+
+最終只能輸出一個合法 JSON 物件，不得輸出 Markdown、程式碼區塊、分析過程、前言、結語或任何 JSON 以外的文字。
+
+# 一、輸入資料使用原則
+
+1. 原始簡訊資料是最高優先證據。
+2. 第一階段 JSON 只是待稽核草案，不是既定事實。
+3. 必須重新核對每個 OrderedRawIDs 與原始 SMSContent。
+4. 不得因第一階段 Confidence 高就跳過檢查。
+5. 第一階段遺漏的 RawID 必須重新搜尋可能歸屬。
+6. 若第一階段結果與原始資料衝突，以原始資料為準。
+
+# 二、敵對稽核固定順序
+
+必須依序執行：
+
+1. 逐一核對全部 DraftOccurrences。
+2. 檢查 RecoveredContent 是否為原始 SMSContent 直接串接。
+3. 否決需要刪字、補字、修正或消除重疊才能成立的候選。
+4. 搜尋是否有未使用片段可補全 incomplete 或假 complete。
+5. 檢查交錯簡訊及競爭配法。
+6. 搜尋跨通訊對廣播的前段、中段、後段互補鏈。
+7. 建立正式完整 Occurrences。
+8. 將完全相同的完整 RecoveredContent 收攏為一個 Message。
+9. 將已知完整內容的重複前段、中段、後段列為 covered incomplete，不另建 Message。
+10. 將仍無法可靠處理的片段列入 UnresolvedOccurrences。
+11. 為每個原始 RawID 建立最終 RawIDDisposition。
+12. 執行最終 coverage audit。
+
+# 三、直接串接驗證
+
+正式 RecoveredContent 必須能由證據 RawID 的 SMSContent 依指定順序直接串接。
+
+不得：
+
+* 補標點。
+* 刪除重複詞語。
+* 修正錯字或數字。
+* 合併重疊片段後去掉其中一份。
+* 依常識補出缺失句子。
+* 使用摘要或模板文字取代原文。
+
+若直接串接結果為：
+
+「繳費成功，金額新臺幣980元，交易序號P元，交易序號P009799203。」
+
+不得自行改成：
+
+「繳費成功，金額新臺幣980元，交易序號P009799203。」
+
+該候選必須被否決，並重新尋找其他片段。
+
+# 四、漏段與假完整檢查
+
+任何內容在成為正式 Message 前，必須檢查：
+
+1. 結尾是否停在未完成詞語。
+2. 是否仍需要動詞、受詞、補語、金額尾端、網址尾端或代碼尾端。
+3. 原始資料中是否存在可直接續接的片段。
+4. 是否有一段被第一階段忽略，但能補全現有內容。
+5. 是否只是完整廣播的前段、中段或後段。
+
+例如：
+
+「重要通知：本服務將於今晚十時進行系統升級，期間部分查詢、付款與會員功能可能暫停，完成後將自動恢復，請提前保存資料並避免重」
+
+明顯未完成。若原始資料存在：
+
+「複操作。請留意公告。」
+
+必須補入後才可建立 complete Message。
+
+# 五、交錯簡訊與重要實體
+
+遇到多則交錯簡訊時，優先判斷：
+
+1. 文字邊界是否直接銜接。
+2. 金額、驗證碼、卡號末碼、訂單編號、交易序號是否相容。
+3. Channel、Address、時間是否提供輔助區分。
+4. 是否存在另一組更自然且不需改字的配法。
+
+不得將不同通訊對的下列資料補成同一次實際發送：
+
+* 驗證碼或一次性密碼。
+* 金額。
+* 卡號或帳號末碼。
+* 交易序號、訂單編號或案件編號。
+* 日期、時間、地點或網址，若差異會改變事件。
+* 姓名或其他個人化欄位。
+* 成功、失敗、取消、改期等結果。
+* 行動要求。
+
+若同一正文句型只有個人化變數不同，必須保留為不同 Message，交由第三階段模板收攏。
+
+# 六、廣播重建
+
+## 6.1 廣播候選
+
+若下列特徵同時出現多項，應重新檢查是否可建立廣播：
+
+* 相同或高度重疊片段出現在不同 Address2。
+* 片段集中於相近時段或同一批次。
+* 前段、中段、後段在不同通訊對之間互補。
+* 文字順序唯一且直接銜接。
+* 沒有重要個人化實體衝突。
+
+Address1、Address2、Channel 不同不得直接阻止廣播重建。
+
+## 6.2 重複片段不是完整廣播
+
+相同片段出現在多人，只能證明它具有廣播特徵，不代表該片段本身完整。
+
+例如：
+
+* 「防詐提醒：政府機關不會要求」
+* 「操作提款機或提供驗證碼，」
+* 「接獲可疑電話請撥一六五查證。」
+
+應嘗試重建：
+
+「防詐提醒：政府機關不會要求操作提款機或提供驗證碼，接獲可疑電話請撥一六五查證。」
+
+不得將三個片段各自輸出成三個正式 Message。
+
+## 6.3 CanonicalContent 條件
+
+只有下列條件全部成立時，才可建立跨通訊對 CanonicalContent：
+
+1. 每一段文字都直接來自原始 SMSContent。
+2. 片段順序唯一且自然。
+3. 不需補字、刪字或改寫。
+4. 至少有兩個不同通訊對提供互補或重複支持。
+5. 沒有重要個人化實體衝突。
+6. 不存在另一種同樣合理的完整內容。
+
+若沒有任何單一通訊對包含全部片段，但多個通訊對能共同支持唯一完整內容，可以建立正式 Message：
+
+* RecoveredContent 使用 CanonicalContent。
+* IsBroadcastLike 為 true。
+* ConfirmedOccurrenceCount 可以為 0。
+* CoveredIncompleteOccurrenceCount 計入可可靠辨識的部分發送數。
+* Occurrences 可以為空陣列。
+* BroadcastEvidenceGroups 必須保留足以支持完整文字順序的代表性證據。
+
+# 七、正式 Occurrence
+
+每一個 Occurrence 代表一次可可靠辨識的實際完整發送。
+
+Occurrences 中只放：
+
+* 單段完整發送。
+* 同一實際發送中可直接還原的多段完整發送。
+
+不同 Address2 的片段不得被描述為同一個實際 Occurrence。
+
+跨通訊對互補只放入 BroadcastEvidenceGroups。
+
+每個 Occurrence 的 RawIDs 必須：
+
+1. 全部真實存在於原始資料。
+2. 依實際文字拼接順序排列。
+3. 不得混入其他發送的 RawID。
+4. 不得只保留形成正文所需 RawID 的一部分。
+
+# 八、完全同文收攏
+
+完成還原後，才對完整 RecoveredContent 進行完全同文收攏。
+
+可正規化：
+
+* 前後空白。
+* 換行。
+* 連續空白。
+* 全形與半形空白。
+* 不影響語意的標點間距。
+* Unicode 等價字元。
+
+不得因 Address1、Address2、Channel、BoxNo、時間或收件者不同而重複建立相同完整正文的 Message。
+
+只能對完整正文收攏。
+
+不得對單獨前段、中段或後段進行同文收攏。
+
+每一種逐字完整正文只建立一個 Message。
+
+# 九、CoveredIncompleteOccurrenceCount
+
+若某些部分片段已明確屬於某個完整 Message，但不足以形成完整實際 Occurrence，可以作為 covered incomplete：
+
+* 完整內容的前段。
+* 完整內容的中段。
+* 完整內容的後段。
+* 同一廣播的重複部分片段。
+
+這些片段：
+
+1. 不得另建正式 Message。
+2. 不得加入 ConfirmedOccurrenceCount。
+3. 可以增加 CoveredIncompleteOccurrenceCount。
+4. 其 RawID 必須在 RawIDDisposition 中標記 covered_incomplete 或 broadcast_evidence。
+
+# 十、ReviewRequired
+
+下列 Message 必須 ReviewRequired=true：
+
+* 跨通訊對重建且順序證據並非完全一致。
+* 內容涉及金額、驗證碼、交易序號等高風險實體，且曾存在競爭配法。
+* 第一階段與第二階段結果不同。
+* 時間順序與語意順序不同，且缺乏其他支持。
+* Address 或 Channel 大幅不一致，且文字銜接不是唯一。
+* Confidence 低於 0.85。
+
+下列情況不得建立正式完整 Message，應放入 UnresolvedOccurrences：
+
+* 需要補字、刪字或改寫才能完整。
+* 存在兩種以上同樣合理的正文。
+* 只有主題相似，文字無法直接銜接。
+* 重要個人化實體可能衝突。
+* 仍明顯缺少必要片段。
+
+# 十一、輸出結構
+
+最外層輸出一個 JSON 物件：
+
+{
+  "Messages": [
+    {
+      "MessageID": "MSG000001",
+      "Address1": "來源端代表值；無法唯一時為 null",
+      "Address1Values": [],
+      "RecoveredContent": "已確認的完整原文",
+      "IsBroadcastLike": false,
+      "BroadcastReason": null,
+      "ConfirmedOccurrenceCount": 1,
+      "CoveredIncompleteOccurrenceCount": 0,
+      "Confidence": 0.93,
+      "ReviewRequired": false,
+      "ReviewReason": null,
+      "Occurrences": [
+        {
+          "OccurrenceID": "MSG000001-OCC001",
+          "Address2": "目的端識別資訊",
+          "StartTime": "2026-07-20T08:00:05",
+          "EndTime": "2026-07-20T08:00:09",
+          "AssemblyStatus": "complete",
+          "RawIDs": [
+            "RawID-1",
+            "RawID-2"
+          ],
+          "BoxNos": [],
+          "Channels": []
+        }
+      ],
+      "BroadcastEvidenceGroups": []
+    }
+  ],
+  "UnresolvedOccurrences": [
+    {
+      "UnresolvedOccurrenceID": "UNR000001",
+      "RawIDs": [
+        "RawID-X"
+      ],
+      "RecoveredFragment": "原始片段直接串接或單段原文",
+      "PossibleRole": "possible_end",
+      "CandidateMessageIDs": [],
+      "Confidence": 0.55,
+      "ReviewReason": "存在兩種合理前段，無法唯一判定"
+    }
+  ],
+  "RawIDDisposition": [
+    {
+      "RawID": "RawID-1",
+      "FinalStatus": "official_occurrence",
+      "MessageID": "MSG000001",
+      "OccurrenceID": "MSG000001-OCC001",
+      "EvidenceGroupID": null,
+      "UnresolvedOccurrenceID": null
+    }
+  ],
+  "AuditSummary": {
+    "InputRawIDCount": 0,
+    "OfficialOccurrenceRawIDCount": 0,
+    "BroadcastEvidenceRawIDCount": 0,
+    "CoveredIncompleteRawIDCount": 0,
+    "UnresolvedRawIDCount": 0,
+    "AllRawIDsAccountedFor": true,
+    "CorrectedDraftOccurrenceCount": 0,
+    "RejectedDraftOccurrenceCount": 0,
+    "Warnings": []
+  }
+}
+
+BroadcastEvidenceGroups 的格式：
+
+{
+  "EvidenceGroupID": "MSG000007-BE001",
+  "EvidenceType": "cross_pair_complement",
+  "RawIDs": [
+    "前段 RawID",
+    "中段 RawID",
+    "後段 RawID"
+  ],
+  "SupportedContent": "由這組證據直接支持的文字",
+  "Note": "不同通訊對共同支持 CanonicalContent；不是同一次實際發送"
+}
+
+EvidenceType 只可使用：
+
+* complete_occurrence_support
+* cross_pair_complement
+* duplicate_fragment_support
+
+RawIDDisposition.FinalStatus 只可使用：
+
+* official_occurrence
+* broadcast_evidence
+* covered_incomplete
+* unresolved
+
+# 十二、計數規則
+
+1. ConfirmedOccurrenceCount 等於 Occurrences 的實際數量。
+2. CoveredIncompleteOccurrenceCount 等於已被完整正文可靠涵蓋、但不構成完整 Occurrence 的不同發送數。
+3. 不得把 BroadcastEvidenceGroups 的筆數直接當成 ConfirmedOccurrenceCount。
+4. 無法可靠計數時，寧可保守少計，不得為了填數字犧牲正文正確性。
+5. 同一 RawID 不得重複計入兩種 FinalStatus。
+
+# 十三、輸出前最終稽核
+
+輸出前逐項檢查：
+
+1. 是否重新查看原始資料，而不是照抄第一階段。
+2. 每個正式 RecoveredContent 是否可由證據 RawID 直接支持。
+3. 是否存在刪字、補字、修正、消除重疊後才成立的錯誤拼裝。
+4. 是否將停在未完成詞語的內容錯標完整。
+5. 是否漏掉可直接補全既有內容的片段。
+6. 是否將一則完整訂單通知拆成前段 Message 與後段 Message。
+7. 是否將防詐等廣播的前、中、後段分別輸出。
+8. 是否漏掉跨通訊對唯一可重建的廣播。
+9. 是否把不同驗證碼、金額、訂單號或序號拼成同一次發送。
+10. 是否只對完整正文進行同文收攏。
+11. 每個 Message 的 Occurrences 是否都是真實完整發送。
+12. 跨通訊對證據是否只放入 BroadcastEvidenceGroups。
+13. 已被完整內容吸收的部分片段是否沒有另建 Message。
+14. 每個輸入 RawID 是否在 RawIDDisposition 中恰好出現一次。
+15. RawIDDisposition 是否與 Messages、BroadcastEvidenceGroups 及 UnresolvedOccurrences 一致。
+16. AuditSummary 是否與輸出一致。
+17. JSON 是否可由標準 JSON Parser 直接解析。
+18. 是否完全沒有輸出 JSON 以外的文字。
+
+以下依序提供：
+
+【原始簡訊資料】
+
+【第一階段輸出的 JSON】
