@@ -1,0 +1,7 @@
+task: "SMS integration to JSON format"
+
+merge_slices: true
+merge_dedup_lists: false
+merge_conflict_policy: prefer_left
+merge_log_changes: true
+merge_max_log: 20
