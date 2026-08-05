@@ -90,9 +90,3 @@
 - 決策：保留 `ElasticsearchAdapter` 與所有既有方法名稱，透過 focused mixin 抽離 freshness/rerun policy，另將純 value helpers 獨立成無 ES client 依賴的模組。
 - 理由：adapter 原檔超過 1100 行且混合連線、mapping、掃描、文件值處理與 rerun policy；以繼承組合保留外部介面，可降低跨 ES entry/runtime 呼叫端改動風險。
 - 後果：新增 policy 時應放入 `pending_policy.py`，通用文件值處理放入 `value_helpers.py`；adapter 主檔專注 ES I/O 與 orchestration。
-
-## 2026-08-05 class-tree CSV ownership moves to classifier runtime config
-
-- 決策：階層式文本分類專案應擁有執行期所需的類別關係 CSV；TACA 保留為拓撲編輯、匯製與可視化工具，不再作為分類專案執行期預設依賴。
-- 理由：`../TACA/...` sibling path 讓乾淨 checkout、CI、容器與其他開發機不可重現，且模糊了「編輯工具」與「分類 runtime config」的模組邊界。
-- 後果：短期可保留 legacy TACA fallback；中期需新增 class-tree root 設定與 project-local `config/class_trees/default/`；長期移除對 sibling TACA checkout 的隱含依賴。

@@ -30,7 +30,6 @@ from utils.df_utils import dfOutputer
 from utils.df_utils import dfAppendToXLS
 from utils.df_utils import dfListToXLS
 from utils.TCF_utils import datasetDirOutputDirPickers
-from utils.class_tree_paths import resolve_class_tree_files
 
 from DatasetConverter.EXTConverter.ExtractionRule import ExtractionRuleDict
 from BertScript.ClassTable import ClassTable
@@ -100,7 +99,7 @@ def getSrcFromFileName(FileName, LabelList):
 '''
 class NewestModelMainFileNamePickers:
     def proc(OldOutputDir=None):
-        r = re.compile(r"^model\\.ckpt-\\d+.*$")
+        r = re.compile("^model\.ckpt-\d+.*$")
         ModelMFN = sorted(set([
             ".".join(x.split(".")[0:2]) for x in list(filter(r.match, A))]))[-1]
         MES = f"Using the model {ModelMFN} in {OldOutputDir} to transferring training."
@@ -262,11 +261,6 @@ class RANDLoader:
 
 def CheckDatasetFiles(BertDatasetSubDir="./"):
     res = {}
-    if BertDatasetSubDir is None:
-        for setType in ["train", "test", "dev"]:
-            res[f"<missing dataset dir>/{setType}.tsv"] = False
-        return res
-
     for setType in ["train","test","dev"]:
         FullPath = os.path.join(BertDatasetSubDir,f"{setType}.tsv")
         res[FullPath] = os.path.isfile(FullPath)
@@ -302,10 +296,7 @@ class RawAndPredictionMerger:
         print("self.args is {}".format(self.args))
         
     def GetInfoScoreTable(self,):
-        TreeBaseFNList = resolve_class_tree_files(
-            ["TopicTree.csv", "TopicTree_AK4.csv"],
-            class_tree_root=getattr(self.args, "ClassTreeRoot", None),
-        )
+        TreeBaseFNList = ["TopicTree.csv","TopicTree_AK4.csv"]
         tpcTree = LoadTree(TreeBaseFNList)
         InfoScoreTable = BuildInfoScoreTable(tpcTree = tpcTree)
         return InfoScoreTable
