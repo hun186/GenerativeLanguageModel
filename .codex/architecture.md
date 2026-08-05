@@ -51,3 +51,9 @@
 - `es_mode/adapters/pending_policy.py` 以 mixin 集中 output completeness、required checks、freshness/rerun 與 bulk presence policy。
 - `es_mode/adapters/value_helpers.py` 提供不依賴 ES client 的文件 dotted-path traversal、nested list flatten、日期驗證及 identifier 正規化。
 - `ElasticsearchAdapter` 繼承 policy mixin，因此既有呼叫端仍由原 class/path 使用所有方法，不需改 API contract。
+
+## 2026-08-05 TACA boundary direction for class-tree CSVs
+
+- TACA should be treated as the topology authoring / visualization tool, while this text classification project should own the runtime class-tree CSV configuration it consumes.
+- Recommended target layout is project-local `config/class_trees/default/TopicTree.csv`, `TopicTree_AK4.csv`, and related edge files, with a temporary legacy fallback to `../TACA/DB/ZMRAND/Imported/` only for migration.
+- Runtime loaders should eventually resolve class-tree files from explicit config, then project-local defaults, then legacy TACA fallback; missing files should raise an actionable error listing searched paths.
