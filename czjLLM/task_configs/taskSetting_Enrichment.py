@@ -13,131 +13,229 @@ MULTIDIM_EXTRACTION_Rule = """
 9. 最終輸出必須是「可直接解析的 JSON」，不得使用程式碼區塊（```json）包裹。  
 10. 禁止把整個 JSON 物件再包成字串（例如 `\"{...}\"`）。  
 11. 禁止添加任何未在【輸出結構】定義中的外層包裝鍵。  
+12. 每個頂層 JSON 物件代表「一篇文章或一個彼此不可分割的同主題分析單元」；不得把同一篇文章中的每個子事件拆成不同頂層物件。  
+13. `Event` 必須永遠是 JSON 陣列；即使只有一個事件，也必須輸出 `[{"event_id":"E1", ...}]`，不得退化成單一 object。  
+14. 每個 `Event` 必須具有結構性識別碼 `event_id`，依原文首次出現的核心事件順序編為 `"E1"`, `"E2"`, `"E3"`...；此 ID 只是同一頂層物件內的關聯鍵，不屬於文本事實，因此不得省略。  
+15. `Person`、`Involved_Parties`、`Impact`、`Event_Timeline`、`evidence_snippets` 每筆都必須具有 `event_ids` 陣列，只能引用同一頂層物件中實際存在的 `Event.event_id`；可同時引用多個事件。若無法可靠歸屬任何事件，填 `[]`，不得猜測。  
 
 【規則衝突優先序（請先執行）】
 A. 若不同章節規則衝突，優先順序為：
    1) 整體原則
-   2) 事件聚合 / 拆分判斷（含查詢綜整與逐條收錄）
+   2) 事件層級 / 聚合 / 拆分與 event_id 關聯規則（含查詢綜整與逐條收錄）
    3) 日期與時間判讀（含相對日期）
    4) 證據片段規則（evidence_snippets）
    5) 各欄位專屬規則（Event / Impact / Timeline / source / locations 等）
 B. 任何情況下都不得違反「不得臆測、不得改寫 evidence、無法判定即保守留空」三原則。
-C. 先選 evidence_snippets，再生成 Event_Summary / Event / Impact / Event_Timeline；若 evidence 不足，應先回補 evidence，不得先編寫結論。
+C. 先判斷頂層分析單元與候選 Event 邊界並配置 `event_id`（此階段只做結構分段，不得補寫文本未支持的內容），再選 evidence_snippets 並標註 `event_ids`；最後才生成 Event_Summary / Event / Person / Impact / Event_Timeline 等內容。若 evidence 不足，應先回補 evidence，不得先編寫結論。
 
 ================================================================================
-【事件聚合 / 拆分判斷（最高優先，避免 20B 模型碎片化）】
+【事件層級 / 聚合 / 拆分判斷（最高優先，避免 20B 模型碎片化）】
 
-本任務的預設目標是「整篇文本的多維事件分析」，不是逐句事件分類。
-在產生 JSON 物件數量前，必須先判斷文本是「同一主題的綜整事件」還是「多篇互不相關新聞」。
+本任務有兩個不同層級，必須嚴格區分：
+- 頂層 JSON 物件：代表一篇文章或一個同主題、同脈絡的分析單元。
+- `Event[]`：代表該頂層分析單元內可獨立辨識、可由 evidence 直接支持的核心子事件。
 
-一、同一主題綜整事件：原則上只輸出 1 個事件物件
-- 若文本是查詢綜整、情勢摘要、快報、條列式彙編、同一議題的多源資訊整理，且各條目共同指向同一區域、同一危機、同一政策議題或同一事件脈絡，必須視為「一個聚合事件」。
-- 即使其中包含多個行動、不同國家 / 機構、不同時間點，也不得把每一句或每一條拆成多個頂層事件物件。
-- 個別行動應放入同一物件的 `Event_Timeline`、`evidence_snippets`、`Involved_Parties`、`Impact`，而不是拆成多個 `multidim_event_json` 陣列元素。
-- 對「東亞區域安全 / 海空活動 / 國際回應」這類區域安全綜整，必須輸出 1 個聚合事件，`Event.subject/object/action/location/consequence` 應描述整體局勢。
+不得把「頂層物件是否拆分」與「Event[] 是否包含多筆」混為一談。
 
-二、只有在互不相關或明確多主題清單時才拆成多個事件物件
-- 只有當同一輸入明確包含多篇彼此無共同主題、無共同時空脈絡、無共同因果鏈的獨立新聞時，才可輸出多個頂層事件物件。
-- 若文本明確呈現「十大熱點新聞」「每日多則新聞」「多主題快訊」「新聞排行榜」「不同領域要聞彙編」等互不相關清單，應視為多事件輸入：每則獨立新聞各輸出 1 個事件物件，且各自保有自己的 Event.consequence、Impact、Event_Timeline 與 evidence_snippets。
-- 不得僅因句子主體不同、地點不同、武器或單位不同，就拆成多個事件物件；必須先確認它們不是同一區域情勢、同一危機、同一政策議題或同一事件脈絡下的不同面向。
-- 不得為了貼近「誰做了什麼」而把同一綜整文本拆成逐句小事件。
+一、頂層物件的聚合 / 拆分
+- 若文本是同一篇文章、查詢綜整、情勢摘要、快報、條列式彙編或同一議題的多源資訊整理，且各條目共同指向同一區域、同一危機、同一政策議題、同一因果鏈或同一事件脈絡，原則上只輸出 1 個頂層 JSON 物件。
+- 即使其中包含不同國家 / 機構、不同時間點、不同地點或多個具體行動，也不得因此拆成多個 `multidim_event_json` 陣列元素；這些內容應在同一頂層物件內由 `Event[]`、`Event_Timeline[]`、`Person[]`、`Involved_Parties[]`、`Impact[]`、`evidence_snippets[]` 表達。
+- 只有當同一輸入明確包含多篇彼此無共同主題、無共同時空脈絡、無共同因果鏈的獨立新聞時，才可輸出多個頂層 JSON 物件。
+- 若文本明確呈現「十大熱點新聞」「每日多則新聞」「多主題快訊」「新聞排行榜」「不同領域要聞彙編」等互不相關清單，可依每則獨立新聞拆成不同頂層 JSON 物件。
+- 不得僅因句子主體不同、地點不同、武器或單位不同，就拆成不同頂層物件。
 
-三、evidence_snippets 必須保留檢索可用性，不得因聚合而丟失原始條目
-- evidence_snippets 後續會作為其他代理人與資料庫檢索的回查依據；聚合事件只改變頂層事件物件數量，不得犧牲 evidence_snippets 的覆蓋率、原文逐字性與條目順序。
-- 對同一主題綜整事件：原文中每一條可獨立檢索的消息、來源陳述、風險 / 後果句，仍應依規則納入 evidence_snippets；不得只保留摘要句而省略細項。
-- 對多主題清單：每個事件物件的 evidence_snippets 只能放該則新聞自己的原文證據，不得把其他新聞條目的 evidence 混入。
+二、同一頂層物件內的 `Event[]` 子事件拆分
+- `Event` 必須是陣列；每個可獨立成立的核心事件各輸出 1 個 Event object。
+- 每個 Event 必須能由至少 1 筆 `evidence_snippets` 直接支持，且可合理回答「誰 / 什麼主體 → 做了什麼 → 對誰 / 對什麼」或其他可獨立成立的制度性、政策性、軍事性、經濟性、法律性事件。
+- 同一主題下若確有多個不同的核心行動，可輸出多個 Event，例如：
+  - E1：某軍事單位宣布或實施軍演
+  - E2：另一機關公布偵獲結果
+  - E3：第三方政府採取實質應對措施
+  但三者若屬同一篇區域安全情勢文章，仍保留在同一頂層物件中。
+- 不得逐句碎片化。下列情況原則上不另建 Event：
+  - 同一核心行動的重述、改寫或補充數字
+  - 同一事件的單純時間進展，可由 `Event_Timeline` 表達
+  - 單純引述、評論、態度或背景介紹，且未形成新的實質行動
+  - 裝備、航跡、距離、數量等細節，若只是既有 Event 的屬性或證據
+  - 圖說、攝影署名、版權資訊
+- 若多個句子其實描述同一主體、同一核心行動及同一事件目的，只是時間、數量或描述角度不同，應合併為同一 Event，細節放入 Timeline / evidence，不得為每句建立 E1、E2、E3。
+- 一般新聞或一般情勢文章通常應維持少量核心 Event；應以「可檢索、可驗證、具分析價值」為拆分標準，而不是句子數量。
 
-四、`Event.consequence` 必須是整體後果 / 風險 / 影響，不是單句內的立即反應
-- 對聚合事件，`Event.consequence` 應概括整篇文本直接支持的整體結果、風險或影響，例如局勢升高、誤判風險上升、航運 / 能源成本可能上升、人道運補延遲等。
-- 禁止把下列內容當作聚合事件的 `Event.consequence`：
-  - 單一行動的即時應對：如「航空自衛隊緊急升空應對」「韓國空軍緊急升空監控」「日本雷達全程監控」
-  - 單一事實或數值：如「最遠飛行距離約320公里」
-  - 單一裝備、地點或航跡描述
-- 上述即時應對或數值若重要，應放在 `Event_Timeline.description` 或 `evidence_snippets.text`，不得取代整體後果。
-- 若全文沒有明確後果，只能填 null；不得把反應動作硬填為後果。
+三、`event_id` 規則
+- 每個頂層物件內的 Event 依原文首次出現的核心事件順序編號：`E1`, `E2`, `E3`...
+- `event_id` 必須唯一且不可重複。
+- 不得使用原文中的編號、日期、人物名稱或其他可能變動的內容作為 `event_id`。
+- 若只有一個 Event，仍必須使用 `"event_id": "E1"`。
+- `event_id` 為結構性關聯鍵，不是從原文抽出的事實，因此不受「原文沒有就不得生成」限制。
 
-五、`整理時間 / 查詢時間 / 匯整時間` 不得覆蓋事件發生時間
-- 這些時間只能輔助判斷 article_date；不得被套用到每一條 `Event_Timeline.date_raw/date_iso`。
+四、`event_ids` 關聯規則
+- `Person.event_ids`：列出該人物的行動、發言、角色或關係直接涉及的 Event。
+- `Involved_Parties.event_ids`：列出該單位 / 國家 / 組織直接參與或被涉及的 Event。
+- `Impact.event_ids`：列出該影響直接由哪些 Event 造成、觸發或共同構成；跨事件影響可同時填多個 ID。
+- `Event_Timeline.event_ids`：列出該時間節點是在描述哪些 Event 的發展。
+- `evidence_snippets.event_ids`：列出該原文證據直接支持哪些 Event；同一片段可同時支持多個 Event，不需複製相同 evidence。
+- 若某筆資料只屬整篇文章的共同背景，無法可靠歸屬特定 Event，`event_ids = []`。
+- 所有 `event_ids` 只能引用同一頂層物件中存在的 `Event.event_id`，禁止出現 dangling reference，例如 Event 只有 E1、E2 卻引用 E3。
+- `event_ids` 不得重複，例如禁止 `["E1","E1"]`。
+
+五、evidence_snippets 必須保留檢索可用性
+- evidence_snippets 後續會作為其他代理人與資料庫檢索的回查依據；Event 拆分不得犧牲 evidence_snippets 的覆蓋率、原文逐字性與條目順序。
+- 對同一主題綜整事件：原文中每一條依 evidence 模式規則應保留的消息、來源陳述、風險 / 後果句，仍應納入 evidence_snippets。
+- 每個 Event 至少必須有 1 筆 evidence_snippets，其 `event_ids` 包含該 Event 的 `event_id`；若找不到任何直接證據，該 Event 不得建立。
+- 對多主題清單而拆成多個頂層物件時，每個頂層物件的 evidence_snippets 只能放該則新聞自己的原文證據，不得混入其他新聞條目。
+
+六、`Event.consequence` 與跨事件 Impact
+- `Event[i].consequence` 只描述可直接歸因於該 Event 的結果、風險或影響，不得把其他 Event 的後果硬塞進來。
+- 若影響是多個 Event 共同造成的整體結果，優先放入 `Impact[]`，並以 `event_ids` 同時關聯相關 Event。
+- 單一行動的即時應對、單一數值、單一裝備、地點或航跡描述，若本身未形成獨立後果，應放在 `Event_Timeline.description` 或 `evidence_snippets.text`。
+- 若原文沒有明確後果，`Event.consequence = null`；不得把反應動作硬填為後果。
+
+七、`整理時間 / 查詢時間 / 匯整時間` 不得覆蓋事件發生時間
+- 這些時間只能輔助判斷 article_date；不得被套用到每一條 `Event_Timeline.time_raw/time_iso`。
 - 條目本身有日期時使用條目日期；條目沒有事件日期時，`date_iso = null`、`date_precision = "unknown"`。
 
 ================================================================================
 【日期與時間判讀（核心規則）】
 
-一、民國年轉換  
-- 若出現「114 年 01 月 01 日」→ 西元 = 民國年 + 1911 → 2025-01-01。  
-- 精度（precision） = "day"。  
+一、核心時間模型
+- `Event.time_iso` 與 `Event_Timeline.time_iso` 均使用同一套時間模型，可保存：
+  - 秒：`YYYY-MM-DDTHH:mm:ss`
+  - 分：`YYYY-MM-DDTHH:mm:00`
+  - 時：`YYYY-MM-DDTHH:00:00`
+  - 日：`YYYY-MM-DD`
+  - 月：以該月 1 日表示，例如 `2026-08-01`
+  - 年：以該年 1 月 1 日表示，例如 `2026-01-01`
+- 若原文明確提供時區或 UTC offset，可保留於 ISO datetime，例如：
+  - `2026-08-18T08:42:00+08:00`
+  - `2026-08-18T00:42:00Z`
+- 不得僅依地點、國家、常識或模型知識自行補時區。
+- 若原文有明確時刻但缺少可安全依附的日期：
+  - `time_raw` 保留原始時刻
+  - `time_iso = null`
+  - `time_precision` 仍依原文明確程度填 `"second"`、`"minute"` 或 `"hour"`
+- 若日期與時刻都無法安全判斷，`time_iso = null`、`time_precision = "unknown"`。
 
-二、可被視為「日期」的來源（必要條件）  
-僅當文本中出現下列任一情況時，才允許將內容視為日期：  
-- 含有「年／月／日」字樣  
-- 含有明顯年月日分隔符號（如「-」「/」）  
-- 含有「期間、起、至、起迄、某日、前一日、本月、當月、本年、去年、前年、今年、同年」等日期語氣詞  
+二、time_precision 唯一允許值
+`time_precision` 只能是：
+- `"second"`：精確到秒
+- `"minute"`：精確到分
+- `"hour"`：精確到時
+- `"day"`：精確到日
+- `"month"`：精確到月
+- `"year"`：精確到年
+- `"unknown"`：無法可靠判定
 
-若未出現任何上述語氣，不得將任何純數字視為日期。
+三、民國年轉換
+- 若出現「114 年 01 月 01 日」→ 西元 = 民國年 + 1911 → `2025-01-01`。
+- 精度 = `"day"`。
+- 若同一字面另有明確時刻，例如「114 年 01 月 01 日 08 時 42 分」：
+  - `time_iso = "2025-01-01T08:42:00"`
+  - `time_precision = "minute"`
+  - 若原文明示時區，再附加相應 offset；不得自行補時區。
 
-三、四位數（如 0504、0724、0842）的判讀優先序  
-四位數可能同時代表日期或時間，請依下列順序判斷：  
+四、可被視為「日期」的來源（必要條件）
+僅當文本中出現下列任一情況時，才允許將內容視為日期：
+- 含有「年／月／日」字樣
+- 含有明顯年月日分隔符號（如「-」「/」）
+- 含有「期間、起、至、起迄、某日、前一日、本月、當月、本年、去年、前年、今年、同年」等日期語氣詞
 
-【1】若四位數附近（前後約 10–15 個字）出現「時間語氣」 → 必定為「時間」  
-時間語氣包含（但不限於）：  
-- 「時」「時許」「時起」「時左右」「約」「約在」  
-- 「分」「分鐘後」  
-- 「今日」「本日」「當日」「凌晨」「清晨」「上午」「下午」「晚間」  
-- 常與時間搭配的動作或場景：偵獲、觀測、升空、通報、航跡、速度、雷達等  
-→ 在此情況下，四位數必須視為 HHmm，不得推導任何日期。  
+若未出現任何上述日期語氣或可依附日期，不得將純數字硬解讀成日期。
 
-【2】若四位數附近出現「日期語氣」 → 才可能視為 MMDD  
-- 僅在同一語境中明確指向某月某日時，才可視為日期。  
-- 仍須檢查本文是否已存在其他明確日期（見下一條）。  
+五、四位數（如 0504、0724、0842）的判讀優先序
+四位數可能同時代表日期或時間，請依下列順序判斷：
 
-【3】若全文已有「唯一且明確日期」  
-例如標題為「114 年 01 月 01 日情勢摘要」。  
-→ 文中所有四位數（0504、0724、0842）一律視為該日內的時間，不得另建新日期。  
+【1】若四位數附近（前後約 10–15 個字）出現「時間語氣」 → 視為 HHmm
+時間語氣包含（但不限於）：
+- 「時」「時許」「時起」「時左右」「約」「約在」
+- 「分」「分鐘後」
+- 「凌晨」「清晨」「上午」「下午」「晚間」
+- 常與時間搭配的動作或場景：偵獲、觀測、升空、通報、航跡、速度、雷達等
 
-【4】若無時間語氣、無日期語氣、無其他參照 → 視為無法判定  
-→ 採取保守策略：  
-- date_iso = null  
-- date_precision = "unknown"  
-- time_iso = null（除非可合理視為 HHmm 時間）  
+例如：
+- `0504` → 05:04，精度為 `"minute"`
+- 若同一事件可安全確定日期為 `2026-08-18`：
+  - `time_iso = "2026-08-18T05:04:00"`
+  - `time_precision = "minute"`
+- 若日期無法安全確定：
+  - `time_raw = "0504"`
+  - `time_iso = null`
+  - `time_precision = "minute"`
 
-四、HHmm 時間標準化  
-當四位數被判斷為時間時：  
-- time_raw = 原始字面（例如 "0504"）  
-- time_iso = "05:04"  
-- time_precision = "minute"  
+【2】若四位數附近出現明確「日期語氣」 → 才可能視為 MMDD
+- 僅在同一語境中明確指向某月某日時，才可視為日期。
+- 仍須檢查本文是否已有其他唯一且明確日期或年份。
 
-五、Event_Timeline 中日期與時間的關聯  
-- 若本文中有明確的單一日期，則該日期可作為該篇事件時間軸的日期基準：  
-  - Event_Timeline 中所有與該日相關的時間，date_iso 皆為同一天。  
-- 時間相關內容應寫入 description，如：「05:04 起空偵站掌握對岸活動跡象」。  
-- 禁止將「0504」誤判為「2025-05-04」。  
+【3】若全文已有「唯一且明確日期」
+例如標題為「114 年 01 月 01 日情勢摘要」。
+→ 文中具有時間語境的 0504、0724、0842 應視為該日內的 HHmm：
+- `0504` → `2025-01-01T05:04:00`
+- `0724` → `2025-01-01T07:24:00`
+- `0842` → `2025-01-01T08:42:00`
+除非原文另有明確證據指出其為日期，不得建立 05-04、07-24、08-42 等日期。
 
-六、保守策略  
-若存在任何可能誤判的情況，請優先採取保守作法：  
-- date_iso = null  
-- time_iso = null  
-- date_precision / time_precision = "unknown"  
-不得自行猜測或補齊年月日。
+【4】若無時間語氣、無日期語氣、無其他參照
+→ 視為無法判定：
+- `time_iso = null`
+- `time_precision = "unknown"`
+
+六、一般時刻標準化
+- 「8時」→ 若日期可安全確定：`T08:00:00`，`time_precision = "hour"`
+- 「8時42分」→ 若日期可安全確定：`T08:42:00`，`time_precision = "minute"`
+- 「8時42分15秒」→ 若日期可安全確定：`T08:42:15`，`time_precision = "second"`
+- 「上午 / 下午 / 晚間」只能在原文明確足以換算為 24 小時制時使用；若字面仍有歧義，應保留 `time_raw` 並採保守策略。
+- `time_raw` 必須保留原始時間字面，不得只留下標準化結果。
+
+七、Event 與 Event_Timeline 的時間關聯
+- `Event.time_*`：描述該核心 Event 最具代表性的發生、開始、生效、發布、事故或行動時間。
+- `Event_Timeline.time_*`：描述 Event 發展過程中的各個時間節點。
+- 同一 Event 可以只有一個 `Event.time_iso`，並由多筆 `Event_Timeline` 保存更細的先後節點。
+- 若本文有唯一且明確日期，可作為同一事件中「只有時刻、沒有重複寫日期」之 Timeline 節點的日期基準，但必須確認該節點確實屬於該日。
+- 禁止把 `0504` 在時間語境下誤判為 `YYYY-05-04`。
+
+八、時區規則
+- 只有文本明示時區、UTC、GMT、offset 或等價資訊時，才可在 `time_iso` 中附加時區。
+- 若原文只寫「08:42」而未明示時區，不得僅因事件發生地位於某國就自行補 offset。
+- 在時區未明示的情況下，如日期與時刻本身可安全確定，仍可輸出不帶 offset 的 local datetime；`time_raw` 必須保留原字面，避免把未明示時區誤當成文本事實。
+
+九、保守策略
+若存在任何可能誤判的情況：
+- 優先保留 `time_raw`
+- `time_iso = null`
+- `time_precision` 依「已知精度」填值；只有連精度本身也無法判斷時才填 `"unknown"`
+- 不得自行猜測或補齊日期、時刻或時區。
 
 ================================================================================
 【日期回填規則】
 
-在「已確定年份或年月」但缺少完整年月日時，請依下列規則標準化：  
-- 僅有「年」：  
-  - date_iso = "YYYY-01-01"  
-  - date_precision = "year"  
-- 僅有「年 + 月」：  
-  - date_iso = "YYYY-MM-01"  
-  - date_precision = "month"  
-- 有「年 + 月 + 日」：  
-  - date_iso = "YYYY-MM-DD"  
-  - date_precision = "day"  
-- 無法判斷：  
-  - date_iso = null  
-  - date_precision = "unknown"  
+在「已確定年份或年月」但缺少完整年月日時，對 `Event.time_iso` 與 `Event_Timeline.time_iso` 依下列規則標準化：
+- 僅有「年」：
+  - `time_iso = "YYYY-01-01"`
+  - `time_precision = "year"`
+- 僅有「年 + 月」：
+  - `time_iso = "YYYY-MM-01"`
+  - `time_precision = "month"`
+- 有「年 + 月 + 日」：
+  - `time_iso = "YYYY-MM-DD"`
+  - `time_precision = "day"`
+- 有「年 + 月 + 日 + 時」：
+  - `time_iso = "YYYY-MM-DDTHH:00:00"`
+  - `time_precision = "hour"`
+- 有「年 + 月 + 日 + 時 + 分」：
+  - `time_iso = "YYYY-MM-DDTHH:mm:00"`
+  - `time_precision = "minute"`
+- 有「年 + 月 + 日 + 時 + 分 + 秒」：
+  - `time_iso = "YYYY-MM-DDTHH:mm:ss"`
+  - `time_precision = "second"`
+- 原文明示時區時，可在 datetime 後附加 offset / `Z`。
+- 無法安全補齊必要的日期部分時：
+  - `time_iso = null`
+  - `time_raw` 保留原始字面
+  - `time_precision` 依實際已知精度填寫
 
-Event_Timeline 中的 `date_iso` 與 `date_precision` 亦遵守相同邏輯。
-Event 欄位中的 `time_iso` / `time_precision` 僅用於時間（HH:mm）或文本明確給出的事件時間，不可與日期欄位混用。
+注意：
+- 「補 01」只用於表示 year / month precision 的索引標準化，不代表原文真的指出 1 月 1 日或每月 1 日。
+- 不得為了組成 datetime 而自行猜測缺失的年、月、日。
+- `article_date_iso` 仍是文章層級日期，只使用 `YYYY-MM-DD`，不升級為 datetime。
 
 ================================================================================
 【相對日期回填規則】
@@ -184,7 +282,7 @@ Event 欄位中的 `time_iso` / `time_precision` 僅用於時間（HH:mm）或�
 
 - 不得僅因出現「今年」「本月」「當年」等字樣就憑空補年份；必須先有可明確依附的文章年份或事件年份。  
 
-- Event.time_iso、Event_Timeline.date_iso、article_date_iso 的相對日期判讀，均遵守本規則。
+- Event.time_iso、Event_Timeline.time_iso、article_date_iso 的相對日期判讀，均遵守本規則。
 
 ================================================================================
 【文章層級日期（article_date_iso）規則】
@@ -193,7 +291,7 @@ Event 欄位中的 `time_iso` / `time_precision` 僅用於時間（HH:mm）或�
 
 取得優先順序如下：  
 1. 若標題或開頭段落中出現「唯一且明確」的年月日，且可判定為本報導日期 → 以此作為 article_date_iso。  
-2. 否則，若 Event_Timeline 中只有一個 date_precision = "day" 的 date_iso → 以該日作為 article_date_iso。  
+2. 否則，若 Event_Timeline 中只有一個可明確代表文章主日期的 `time_iso`（precision 可為 second/minute/hour/day），→ 取其日期部分 `YYYY-MM-DD` 作為 article_date_iso。  
 3. 若僅有年或年月，依【日期回填規則】轉成 YYYY-01-01 或 YYYY-MM-01 後填入。  
 4. 若存在多個不同日期且無法合理判定哪一個代表整篇文章 → article_date_iso = null。  
 
@@ -318,6 +416,8 @@ Event 欄位中的 `time_iso` / `time_precision` 僅用於時間（HH:mm）或�
 ================================================================================
 【Event.subject / object / action 抽取規則】
 
+以下規則對 `Event[]` 中每一筆 Event 分別適用；不得用整篇文章的籠統描述取代可明確辨識的子事件。
+
 `Event.subject`、`Event.action`、`Event.object` 應盡量形成：
 
 「誰 → 做了什麼 → 對誰 / 對什麼」
@@ -422,8 +522,24 @@ Event 欄位中的 `time_iso` / `time_precision` 僅用於時間（HH:mm）或�
 ================================================================================
 【重要執行順序】
 
-在生成 Event、Person、Impact、Event_Timeline、Event_Summary 等欄位之前，必須先完成 evidence_snippets 的選取與排序。  
-所有事件抽取與摘要應優先依據 evidence_snippets 中的內容，避免生成未被 evidence 支撐的資訊。  
+Step 0：先判斷輸入應形成幾個頂層分析單元。  
+
+Step 1：在每個頂層物件內，只依原文辨識「候選核心 Event 邊界」，並依首次出現順序配置 E1、E2、E3...；此階段只做結構分段，不得補寫原文未支持的 Event 內容。  
+
+Step 2：依 evidence 模式規則完成 evidence_snippets 的選取 / 逐條保留 / 完整紀錄保留，並為每筆 evidence 標註 `event_ids`。  
+
+Step 3：每個 Event 必須只根據其關聯 evidence 生成 subject / object / action / time / location / consequence / relation / source。若某候選 Event 無任何直接 evidence，刪除該 Event，並重新連續編號。  
+
+Step 4：再生成 Person、Involved_Parties、Impact、Event_Timeline，並逐筆填入 `event_ids`。  
+
+Step 5：最後生成 Event_Summary、facet、core_entities、locations、importance 等文章層級欄位。  
+
+Step 6：輸出前執行關聯完整性檢查：
+- 每個 Event.event_id 唯一且連續。
+- 每個 Event 至少有 1 筆 evidence_snippets.event_ids 引用它。
+- 所有 event_ids 都能在同一頂層物件的 Event[] 找到對應 event_id。
+- 不得有不存在的 event_id、重複 ID 或跨頂層物件引用。
+- 所有事件抽取與摘要仍必須由 evidence 支撐，不得因建立關聯鍵而放寬「不得臆測」原則。  
 
 ================================================================================
 【Impact 與 Event.consequence 保真規則】
@@ -625,28 +741,24 @@ C. 結構化紀錄模式
 
 - 每一筆 evidence_snippets.text 必須直接從輸入原文逐字擷取，不得改寫。
 
-- 每個事件最多擷取 8 段；
-  一般新聞建議 5–7 段。
+- 每個 Event 最多關聯 8 段 evidence；只有一個 Event 的一般新聞，整體仍建議 5–7 段。
+- 多 Event 文章應以「足以覆蓋各核心 Event」為優先，不必為每個 Event 機械式湊滿 5–7 段。
+- 同一 evidence 若同時直接支持多個 Event，應在同一筆 `event_ids` 中列出多個 ID，不得只為了關聯而複製相同 evidence。
 
 - evidence_snippets 必須直接支撐：
   - Event_Summary
-  - Event
+  - Event[]
   - Impact
   - Event_Timeline
 
-- 若同一篇文章明確包含 2 個以上彼此可區分且互不相關的事件，才可拆成多個事件物件輸出。
+- 同一篇、同一主題文章可在同一頂層物件內包含 2 個以上可明確區分的 `Event[]` 子事件；不得因 Event 增加就拆成不同頂層物件。
 
-- 若多個條目共同構成同一主題綜整事件，不得拆成多個頂層事件物件；應使用同一物件的 Event_Timeline / evidence_snippets 收納。
+- 只有輸入本身包含彼此互不相關的獨立新聞時，才拆成多個頂層 JSON 物件。
 
-- 不同事件的 evidence_snippets 不得混用。
+- 每個 Event 至少必須有 1 筆 evidence 的 `event_ids` 引用它；不同 Event 的證據歸屬必須以 event_ids 明確標示，不得無標記混用。
 
-- 單篇文章最多輸出 5 個事件物件；
-  但若原文明確為：
-  - 十大熱點新聞
-  - 新聞排行榜
-  - 多主題要聞清單
-
-  則可依原文條目數最多輸出 10 個事件物件。
+- 一般新聞 / 一般情勢文章的 `Event[]` 應維持核心化，建議 1–5 個；若超過 5 個，必須再次檢查是否把同一事件的時間進展、重述、數值細節或評論錯拆成獨立 Event。
+- 「十大熱點新聞」「新聞排行榜」「多主題要聞清單」若彼此互不相關，應優先拆成不同頂層 JSON 物件，而不是把所有新聞塞進同一 Event[]。
 
 2. 抽取流程
 
@@ -722,7 +834,7 @@ Step 5：
 ================================================================================
 【輸出結構】
 
-最終輸出必須是一個 JSON 陣列，通常只有一個物件，例如：
+最終輸出必須是一個 JSON 陣列，通常只有一個頂層物件，例如：
 
 [{
   "article_title": "文章標題",
@@ -733,27 +845,31 @@ Step 5：
   "core_entities": ["United States", "China"],
   "locations": ["Washington D.C., United States", "Beijing, China"],
 
-  "Event_Summary": "一句到三句話摘要文章核心。",
+  "Event_Summary": "一句到三句話摘要整個頂層分析單元的核心；若有多個 Event，應綜整其共同主題與主要發展。",
 
-  "Event": {
-    "subject": "行動發起者、執行者、主導者或制度性程序的主體；若主體不明且事件核心是文件本身，可退而填文件名稱",
-    "object": "行動直接作用、影響、處理、表決、發布、簽署或通過的對象；若無明確對象可為 null",
-    "aspect": "面向（政治、經濟、社會、災害等）",
-    "medium": "涉及物/媒介（石油、建築、媒體、平台、法案、條約、決議等）",
-    "action": "最能代表事件核心的具體動作，如通過、發布、簽署、撤離、進口、攻擊、援助、制裁、裁定、估計等",
+  "Event": [
+    {
+      "event_id": "E1",
+      "subject": "此子事件的行動發起者、執行者、主導者或制度性程序的主體；若主體不明且事件核心是文件本身，可退而填文件名稱",
+      "object": "此子事件的行動直接作用、影響、處理、表決、發布、簽署或通過的對象；若無明確對象可為 null",
+      "aspect": "面向（政治、經濟、社會、災害等）",
+      "medium": "涉及物/媒介（石油、建築、媒體、平台、法案、條約、決議等）",
+      "action": "最能代表此子事件核心的具體動作，如通過、發布、簽署、撤離、進口、攻擊、援助、制裁、裁定、估計等",
 
-    "time_raw": "文本中出現的原始時間字面（如：2025年2月、9月底、去年、今年9月20日）",
-    "time_iso": "標準化日期（僅允許 YYYY-MM-DD；若僅有年/月，須依日期回填規則；相對日期僅可在有明確依附年份時回填；無法判斷時為 null）",
-    "time_precision": "\"day\" | \"month\" | \"year\" | \"unknown\"",
+      "time_raw": "文本中的原始日期/時刻字面，例如：2025年2月、8月18日上午8時42分、0504、去年、今年9月20日；必須保留原始表述",
+      "time_iso": "標準化事件時間。可為 YYYY-MM-DD、YYYY-MM-DDTHH:00:00、YYYY-MM-DDTHH:mm:00、YYYY-MM-DDTHH:mm:ss；原文明示時區時可附 offset/Z；若只有時刻但缺少可安全依附日期則為 null",
+      "time_precision": "\"second\" | \"minute\" | \"hour\" | \"day\" | \"month\" | \"year\" | \"unknown\"",
 
-    "location": "事件發生或主要影響的地點描述（可較口語；若原文僅提供機構場域，也可保守填機構名稱）",
-    "consequence": "事件後果/影響；可摘要但不得改變原文中的數字、條件、時態與因果方向",
-    "relation": "涉及的其他人物、單位或國家關係",
-    "source": "新聞報導來源、報導機構、發布機構或報導者；不得填入圖片署名、圖說或版權標記"
-  },
+      "location": "此子事件發生或主要影響的地點描述（可較口語；若原文僅提供機構場域，也可保守填機構名稱）",
+      "consequence": "可直接歸因於此子事件的後果/影響；可摘要但不得改變原文中的數字、條件、時態與因果方向",
+      "relation": "此子事件涉及的其他人物、單位或國家關係",
+      "source": "此子事件的新聞報導來源、報導機構、發布機構或報導者；不得填入圖片署名、圖說或版權標記"
+    }
+  ],
 
   "Person": [
     {
+      "event_ids": ["E1"],
       "name": "人物名稱",
       "role": "身份/職位/關係",
       "action": "該人物的主要動作或經歷",
@@ -764,25 +880,34 @@ Step 5：
   ],
 
   "Involved_Parties": [
-    {"party_name": "名稱", "party_role": "身份/角色"}
+    {
+      "event_ids": ["E1"],
+      "party_name": "名稱",
+      "party_role": "身份/角色"
+    }
   ],
 
   "Impact": [
-    {"impact_description": "事件影響描述；可摘要但不得改變原文中的數字、條件、時態、概率與生效邏輯"}
+    {
+      "event_ids": ["E1", "E2"],
+      "impact_description": "事件影響描述；可摘要但不得改變原文中的數字、條件、時態、概率與生效邏輯"
+    }
   ],
 
   "Event_Timeline": [
     {
-      "date_raw": "原始字面（如：2025年9月、9/29、去年9月）",
-      "date_iso": "標準化為 YYYY-MM-DD；僅有年/月時依規則回填 01 為日；無法判斷時為 null",
-      "date_precision": "\"day\" | \"month\" | \"year\" | \"unknown\"",
+      "event_ids": ["E1"],
+      "time_raw": "原始日期/時刻字面，例如：2025年9月、9/29、上午8時42分、0504、去年9月",
+      "time_iso": "標準化時間；可為 YYYY-MM-DD 或含時分秒的 ISO datetime；若只有時刻但缺少可安全依附日期則為 null",
+      "time_precision": "\"second\" | \"minute\" | \"hour\" | \"day\" | \"month\" | \"year\" | \"unknown\"",
       "description": "該時間點或期間的事件內容描述"
     }
   ],
 
   "evidence_snippets": [
     {
-      "text": "與本事件高度相關的原文片段（請逐字擷取，最大 280 字）",
+      "event_ids": ["E1"],
+      "text": "與一個或多個 Event 高度相關的原文片段（請逐字擷取，最大 280 字）",
       "char_start": 123,
       "char_end": 256,
       "paragraph_id": "段落或小節識別（若能判斷，否則可為空字串或 null）",
@@ -807,7 +932,10 @@ Step 5：
 3. 不得輸出字串化 JSON：  
    - 錯誤：`[{ "payload": "{\"article_title\":\"...\"}" }]`  
    - 正確：`[{ "article_title":"..." }]`  
-4. `Event`、`importance`、`Person`、`Involved_Parties`、`Impact`、`Event_Timeline`、`evidence_snippets` 必須保持原生 JSON 型別（object/array），不得轉成字串。  
+4. `Event` 必須保持原生 JSON array；`Person`、`Involved_Parties`、`Impact`、`Event_Timeline`、`evidence_snippets` 也必須是 array；`importance` 必須是 object，不得轉成字串。  
+5. 即使只有一個事件，`Event` 也必須是陣列，例如 `"Event":[{"event_id":"E1", ...}]`，不得輸出 `"Event": {...}`。  
+6. `Person`、`Involved_Parties`、`Impact`、`Event_Timeline`、`evidence_snippets` 的每個元素都必須包含 `event_ids` 陣列；若無法歸屬填 `[]`。  
+7. 所有 `event_ids` 必須能在同一頂層物件的 `Event[].event_id` 中找到對應值。  
 """
 
 USE_MAINFILE_HINT = False  # True 就會加那一行，False 就隱藏
