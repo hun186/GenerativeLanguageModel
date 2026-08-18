@@ -1,6 +1,5 @@
 # 建議檔名：config_es/schemas/InfoExtraction-MultiDim-mapping.yaml
 # 用法：在 akconfig_es_test.py 設定 mapping_file 指到本檔
-# 注意：此 mapping 針對 ES 7.x（單一 type）
 
 properties:
   multidim_event_json:
@@ -41,7 +40,9 @@ properties:
             ignore_malformed: true
 
       Event:
+        type: nested
         properties:
+          event_id:    { type: keyword }
           subject:     { type: keyword }
           object:      { type: keyword }
           aspect:      { type: keyword }
@@ -51,10 +52,10 @@ properties:
           # ✅ 新三欄：標準化日期 / 原始字面 / 精度
           time_iso:
             type: date
-            format: yyyy-MM-dd
+            format: strict_date_optional_time||yyyy-MM-dd
             ignore_malformed: true
           time_raw:        { type: keyword }     # 或 text，依查詢需求
-          time_precision:  { type: keyword }     # "day" | "month" | "year" | "unknown"
+          time_precision: { type: keyword }  # "second" | "minute" | "hour" | "day" | "month" | "year" | "unknown"
 
           location:    { type: keyword }
           consequence: { type: text }
@@ -64,6 +65,7 @@ properties:
       Person:
         type: nested
         properties:
+          event_ids:    { type: keyword }
           name:     { type: keyword }
           role:     { type: keyword }
           action:   { type: text }
@@ -74,30 +76,35 @@ properties:
       Involved_Parties:
         type: nested
         properties:
+          event_ids:    { type: keyword }
           party_name: { type: keyword }
           party_role: { type: keyword }
 
       Impact:
         type: nested
         properties:
+          event_ids:    { type: keyword }
           impact_description: { type: text }
 
       Event_Timeline:
         type: nested
         properties:
-          # ✅ 新三欄：同 Event 的時間拆分
-          date_iso:
+          event_ids: { type: keyword }
+      
+          time_iso:
             type: date
-            format: yyyy-MM-dd
+            format: strict_date_optional_time||yyyy-MM-dd
             ignore_malformed: true
-          date_raw:        { type: keyword }
-          date_precision:  { type: keyword }     # "day" | "month" | "year" | "unknown"
-
+      
+          time_raw:       { type: keyword }
+          time_precision: { type: keyword }  # "second" | "minute" | "hour" | "day" | "month" | "year" | "unknown"
+      
           description: { type: text }
 
       evidence_snippets:
         type: nested
         properties:
+          event_ids:    { type: keyword }
           text:           { type: text }
           source_id:      { type: keyword }
           char_start:     { type: integer }
