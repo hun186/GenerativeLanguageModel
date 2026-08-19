@@ -12,13 +12,17 @@ common_api_key = (
 modelSetting_ANKInt = {}
 
 models = [
-    ("qwen3:32b", [4, 8, 16, 32, 64, 128], {
+    #("qwen3:32b", [4, 8, 16, 32, 64, 128], {
+    #    16: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
+    #    32: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
+    #}),
+    #("qwen3:30b-a3b", [4, 8, 16, 32, 64, 128], {
+    #    16: {"nProcess": 4},
+    #    32: {"nProcess": 4},
+    #}),
+    ("qwen3.8:latest", [4, 8, 16, 32, 64, 128], {
         16: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
         32: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
-    }),
-    ("qwen3:30b-a3b", [4, 8, 16, 32, 64, 128], {
-        16: {"nProcess": 4},
-        32: {"nProcess": 4},
     }),
     ("gpt-oss:latest", [4, 8, 16, 32, 64, 128], {
         32: {"nProcess": 4},

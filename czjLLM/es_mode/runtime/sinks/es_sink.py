@@ -15,8 +15,6 @@ except Exception:
     def tlog_warn(msg): print(msg)
 
 from ...output_profiles import get_default_registry, load_output_profile_plugins
-from ...output_profiles.multidim_event import normalize_multidim_event_payload
-from ...output_profiles.multidim_event import normalize_date_value
 
 def _now_iso_utc() -> str:
     # 例：'2025-10-22T13:37:43Z'（無微秒，最穩）
@@ -32,15 +30,9 @@ def _normalize_output_profile(value: Any) -> str:
     return get_default_registry().normalize_name(value)
 
 
-def _infer_output_profile(output_col: Optional[str], legacy_event_cols: Optional[List[str]] = None) -> str:
-    """Backward-compatible inference for legacy ES event configs.
-
-    Only the clearly event-specific multidim_event_json is inferred by default.
-    Generic names such as llm_result_json should set output_profile explicitly
-    when they need multidim_event normalization.
-    """
-    event_cols = set(legacy_event_cols or ["multidim_event_json"])
-    return "multidim_event" if str(output_col) in event_cols else "none"
+def _infer_output_profile(output_col: Optional[str]) -> str:
+    """Infer the current multidim_event profile only for multidim_event_json."""
+    return "multidim_event" if str(output_col) == "multidim_event_json" else "none"
     
 class ESSink:
     """
@@ -210,23 +202,17 @@ class ESSink:
         return payload
     
 
-    def _legacy_event_output_cols(self) -> List[str]:
-        cols = getattr(self.ctx, "legacy_event_output_cols", None)
-        if cols is None:
-            cols = ["multidim_event_json"]
-        return list(cols or [])
-
     def _resolve_output_profile(self, profile: Any, output_col: Optional[str]) -> str:
         profile_name = _normalize_output_profile(profile)
         if profile_name == "auto":
-            profile_name = _infer_output_profile(output_col, self._legacy_event_output_cols())
+            profile_name = _infer_output_profile(output_col)
         return _normalize_output_profile(profile_name)
 
 
     def _unwrap_output_col_envelope(self, payload: Any, output_col: Optional[str]) -> Any:
-        """Remove legacy single-stage ES envelopes before profile normalization.
+        """Remove a single-key output-column transport envelope before profile normalization.
 
-        The legacy row merger always passes a dict keyed by ``output_col`` into
+        Some execution paths pass a dict keyed by ``output_col`` into
         ``ESSink.write_main``.  For JSON tasks, older single-stage combine paths
         can already return an object shaped like ``{output_col: [...]}``.  If the
         sink writes that value directly, ES receives
@@ -279,71 +265,6 @@ class ESSink:
             return payload if len(payload) > 0 else None
         return payload
     
-    
-    def _normalize_event_payload(self, payload: any):
-        """只處理我們的 multidim_event_json 結構：補 date_raw / time_raw、正規化日期與粒度。"""
-        try:
-            if not isinstance(payload, list):
-                return payload
-            out = []
-            for item in payload:
-                if not isinstance(item, dict):
-                    out.append(item); continue
-    
-                item = dict(item)  # 淺複製
-    
-                # Event.time
-                ev = item.get("Event")
-                if isinstance(ev, dict):
-                    t = ev.get("time")
-                    if isinstance(t, str):
-                        ev.setdefault("time_raw", t)
-                        norm, prec = self._normalize_date_value(t)
-                        if prec:
-                            ev["time"] = norm
-                            ev["time_precision"] = prec
-                        else:
-                            # 解析失敗則保留 raw，讓 mapping 的 ignore_malformed 接住
-                            pass
-    
-                # date_range.start/end
-                dr = item.get("date_range")
-                if isinstance(dr, dict):
-                    for k in ("start", "end"):
-                        v = dr.get(k)
-                        if isinstance(v, str):
-                            dr.setdefault(f"{k}_raw", v)
-                            norm, prec = self._normalize_date_value(v)
-                            if prec:
-                                dr[k] = norm
-                                dr[f"{k}_precision"] = prec
-    
-                # Event_Timeline[].date
-                tl = item.get("Event_Timeline")
-                if isinstance(tl, list):
-                    new_tl = []
-                    for step in tl:
-                        if isinstance(step, dict):
-                            step = dict(step)
-                            dv = step.get("date")
-                            if isinstance(dv, str):
-                                step.setdefault("date_raw", dv)
-                                norm, prec = self._normalize_date_value(dv)
-                                if prec:
-                                    step["date"] = norm
-                                    step["date_precision"] = prec
-                        new_tl.append(step)
-                    item["Event_Timeline"] = new_tl
-    
-                out.append(item)
-            return out
-        except Exception:
-            return payload
-    
-    # ---- 新增：解析日期字串，回傳 (iso_str, precision) ----
-    def _normalize_date_value(self, s: str):
-        """Backward-compatible wrapper for the multidim_event profile date helper."""
-        return normalize_date_value(s)
     
     # ---- 取值工具：支援 dict.get 深層賦值 ----
     def _getd(self, d, path, default=None):
@@ -414,11 +335,6 @@ class ESSink:
         return {k: v for k, v in meta.items() if v is not None}
         #return meta
         
-    def _normalize_event_payload_v2(self, payload: any):
-        """Backward-compatible wrapper for the multidim_event profile transformer."""
-        return normalize_multidim_event_payload(payload)
-        
- 
     def _prepare_update_doc(self, payload: Any, save_raw_input: bool = False,
                             input_col: Optional[str] = None, input_value: Any = None):
         doc = {self.output_col: payload}
@@ -667,6 +583,12 @@ class ESSink:
             tlog_warn("⚠️ ESSink.write_flatten: pk 為 None，略過寫入。")
             return
         payload = json_array or []
+        payload = self._normalize_payload_by_profile(payload)
+        payload = self._normalize_payload_for_es(payload)
+        if payload is None:
+            if self._debug:
+                tlog("ℹ️ ESSink.write_flatten: 規範化後為空，略過寫入。")
+            return
         doc = self._prepare_update_doc(payload, save_raw_input=save_raw_input, input_col=input_col, input_value=input_value)
         item = {"_id": pk, "doc": doc}
         self._buffer.append(item)

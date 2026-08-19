@@ -220,7 +220,7 @@ class ElasticsearchPendingPolicyMixin:
         """
         從 cfg/rerun 讀取必要輸出欄位檢查設定。
         支援：
-          - 字串寫法: "Event_Timeline.date_iso"
+          - 字串寫法: "Event_Timeline.time_iso"
           - dict 寫法: {"path": "...", "validator": "date", ...}
         預設 path 視為相對於 output_col。
         """

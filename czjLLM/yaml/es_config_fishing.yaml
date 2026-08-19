@@ -7,7 +7,8 @@ llm_source_dir: D:/shared/TopicClassification/GenerativeLanguageModel/czjLLM/LLM
 es_config_file: czjLLM/config_es/akconfig_es_fishing.py
 mode: es
 #model_spec: gpt-oss:120b-ctx-32k-premises-MXFP4
-model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+#model_spec: gpt-oss:latest-ctx-32k-premises-MXFP4
+model_spec: qwen3.8:latest-ctx-128k-premises-q4
 output_col: multidim_event_json
 # 啟用舊版多維日期補欄（time_raw/time_iso/date_iso/precision 等）；任意任務可省略。
 es_payload_date_normalize_fields: [multidim_event_json]
@@ -27,7 +28,9 @@ merge_log_changes: true               # 合併有變化才印 log
 merge_max_log: 10                     # 最多列出幾筆差異樣本
 merge_log_to_file: true              # 是否落檔
 merge_log_file: merge_dict_slices_audited.log
-llm_round_debug: false
+#llm_round_debug: true
+debug_print_llm_io: true
+debug_print_max_chars: -1
 
 es_prefetch_buffer: 0
 

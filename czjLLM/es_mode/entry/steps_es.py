@@ -440,6 +440,8 @@ def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns, index_name_hi
         meta_node = adapter.get_field_mapping(tgt_index, meta_field)
         if meta_node is None:
             node = {"type": "nested"} if meta_type == "NESTED" else {"type": "object"}
+            # meta_base / plugin 可帶額外追蹤資訊；保留在 _source，但不讓未知 meta 動態擴張 mapping。
+            node["dynamic"] = False
             # 🔽 一次放進常用子欄位（僅在「不存在」時建立）
             node["properties"] = {
                 "processed_at":  {"type": "date"},    # ISO8601 (e.g. 2025-11-10T08:00:00Z)
@@ -450,6 +452,7 @@ def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns, index_name_hi
                 "channel":       {"type": "keyword"}, # 自定：任務 channel
                 "task":          {"type": "keyword"}, # 自定：任務名稱
                 "force_reason":  {"type": "keyword"}, # 自定：為何強制重跑
+                "output_field":   {"type": "keyword"}, # 實際寫回欄位名稱
                 "output_profile": {"type": "keyword"}, # 自定：輸出/正規化 profile
                 "pipeline_name":  {"type": "keyword"}, # 自定：資料處理流路名稱
                 "pipeline_version": {"type": "keyword"}, # 自定：資料處理流路版本
