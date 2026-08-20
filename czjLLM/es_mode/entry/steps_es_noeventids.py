@@ -444,6 +444,11 @@ def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns, index_name_hi
             node["properties"] = {
                 "processed_at":  {"type": "date"},    # ISO8601 (e.g. 2025-11-10T08:00:00Z)
                 "model_tag":     {"type": "keyword"},
+                "model_name":    {"type": "keyword"},
+                "base_url_alias":{"type": "keyword"},
+                "num_ctx":       {"type": "integer"},
+                "temperature":   {"type": "float"},
+                "model_version": {"type": "keyword"},
                 "pipeline_hash": {"type": "keyword"},
                 #"model_spec":    {"type": "keyword"},
                 "source":        {"type": "keyword"}, # 自定：資料來源/任務來源

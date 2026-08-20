@@ -90,3 +90,27 @@
 - 決策：保留 `ElasticsearchAdapter` 與所有既有方法名稱，透過 focused mixin 抽離 freshness/rerun policy，另將純 value helpers 獨立成無 ES client 依賴的模組。
 - 理由：adapter 原檔超過 1100 行且混合連線、mapping、掃描、文件值處理與 rerun policy；以繼承組合保留外部介面，可降低跨 ES entry/runtime 呼叫端改動風險。
 - 後果：新增 policy 時應放入 `pending_policy.py`，通用文件值處理放入 `value_helpers.py`；adapter 主檔專注 ES I/O 與 orchestration。
+
+## 2026-08-20 narrowly normalize observed multidim field aliases
+
+- 決策：multidim event profile 僅針對已觀察且無歧義的 `Event.constance` 拼字錯誤，於嚴格 schema 驗證前正規化為 `Event.consequence`；不開放任意未知欄位，也不在 alias/canonical 值衝突時自行選值。
+- 理由：LLM 即使 prompt 明確仍可能偶發偏離輸出 schema；此別名語意與目標欄位唯一且可無損修復，而放寬 ES dynamic/schema 驗證會污染 mapping。
+- 後果：此類單一拼字錯誤可正常寫回；其他未知欄位或衝突資料仍會被拒絕，Row Merger 相同錯誤改為週期性提示而非高速洗版。
+
+## 2026-08-20 do not normalize LLM schema-adherence failures
+
+- 決策：撤回同日 `constance -> consequence` 的欄位別名正規化；LLM 產生 unknown field 時保留為可觀測的 schema failure。Row Merger 對這類確定性錯誤跳過本輪寫入、釋放本輪 registry/running 狀態，讓缺少輸出的文件在下次執行重新分析。
+- 理由：即使拼字修復語意明確，下游自動修復仍會提高表面寫回成功率，進而掩蓋模型的 schema adherence 問題，造成 LLM 效能與品質評估偏樂觀。
+- 後果：錯誤資料不會污染 ES mapping，也不會在同一 watchdog 內無限重試洗版；該筆不會被視為成功寫回，最終 pending recheck 仍可反映失敗，下一次批次再嘗試。
+
+## 2026-08-20 schema failure evidence uses the bounded adjustment JSONL
+
+- 決策：Row Merger schema failure 使用既有 pending-running adjustment JSONL 保存結構化事件，並由 `record_adjustment()` 回傳路徑供終端提示；不另建第二套無上限 error log。
+- 理由：既有 adjustment log 已包含時間、pid、mode、task、target 且具大小上限裁切；追加 error、output profile/column 與 combined artifact path 即足以改善模型與 prompt，同時避免重複日誌系統與敏感原文落盤。
+- 後果：使用者能從終端直接定位稽核檔；即使 running 狀態釋放失敗，稽核寫入仍會獨立嘗試。若 pending console logging 被明確停用，終端會提示未保存紀錄。
+
+## 2026-08-20 allowlist ES model metadata and redact at sink boundary
+
+- 決策：ES model metadata 採 allowlist，而不是只 blacklist `api_key`。允許 model name、endpoint alias、context、temperature、version；禁止完整 model spec、實際 base URL 與所有 credential-like values。sink writeback boundary 再執行遞迴防禦性清理。
+- 理由：credential 可能從 ctx、rerun config、plugin meta_base 或字串化 dict 進入；只修正單一 `model_tag` 建構點不足以保證後續 plugin 不再洩漏。
+- 後果：需要識別 endpoint 時必須配置非敏感 `base_url_alias`；實際 URL 不再保存於分析 metadata。歷史資料需另行清理，不能由一般分析批次靜默修改。

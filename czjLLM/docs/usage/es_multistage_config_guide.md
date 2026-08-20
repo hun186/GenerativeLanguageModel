@@ -120,6 +120,12 @@ es_writeback_rules:
 
 `Event` 從 `object` 改成 `nested` 屬於既有欄位型別變更，不能直接更新既有 index。上線時應建立套用新 mapping 的 index、reindex 舊資料，再切換 alias；若舊資料仍是單一 `Event` object 或沒有 `event_id` / `event_ids`，必須先轉換或重新抽取，不能只靠 reindex 自動補出關聯。
 
+## ES 模型 metadata 安全契約
+
+寫回 `<output_col>_meta` 時，只允許保存非敏感模型辨識資訊：`model_tag`、`model_name`、`base_url_alias`、`num_ctx`、`temperature` 與 `model_version`。其中 `base_url_alias` 是操作端提供的非敏感 endpoint pool 名稱，不是實際 URL。
+
+完整 `model_spec`、`base_url`、`api_key`、access token、Authorization header、password、client secret 或 private key 不得寫入 Elasticsearch。即使 plugin / `meta_base` 誤帶 credential-like key，sink 仍會在寫回前遞迴移除。舊資料若已含憑證，程式更新不會自動刪除既有 `_source`；必須先撤銷／輪替憑證，再以 `_update_by_query` 移除敏感欄位或重建安全 index。
+
 ## 舊版多維日期正規化（僅供舊 schema）
 
 這個功能只服務舊版「多維日期」輸出結構，不是 ES 多階段框架的通用必備步驟。它會在寫回前掃描每筆 list item 中既定欄位，將可辨識的日期字串補成較適合 ES date 查詢與保留原文的欄位：

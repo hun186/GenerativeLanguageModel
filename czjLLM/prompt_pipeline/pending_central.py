@@ -91,9 +91,10 @@ def _trim_log_to_half_if_needed(path: Path, max_bytes: int) -> None:
         fp.write(data)
 
 
-def record_adjustment(ctx, event: str, pk: Any | None = None, **extra: Any) -> None:
+def record_adjustment(ctx, event: str, pk: Any | None = None, **extra: Any) -> Path | None:
+    """Append one structured coordination/audit event and return its log path."""
     if not _enabled(ctx):
-        return
+        return None
     path = _adjust_log_path(ctx)
     max_bytes = _adjust_log_max_bytes(ctx)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -114,6 +115,7 @@ def record_adjustment(ctx, event: str, pk: Any | None = None, **extra: Any) -> N
     with path.open("a", encoding="utf-8") as fp:
         fp.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
     _trim_log_to_half_if_needed(path, max_bytes)
+    return path
 
 
 def _pid_is_alive(pid: Any) -> bool:

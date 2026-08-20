@@ -224,3 +224,45 @@ Open
 狀態：Open
 
 負責人：-
+
+## 2026-08-20 dependency install recheck for ES multidim typo fix
+
+問題：依專案規範執行 `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`，requirements 仍在 GitHub `peft` clone 階段收到 CONNECT tunnel 403。
+
+影響：本次無法以重新安裝的完整 requirements 環境執行全套測試；目標測試可在現有環境執行。
+
+替代驗證：目標 pytest 2 passed，並完成變更模組 compileall 與 git diff whitespace 檢查。
+
+狀態：Open；與既有 requirements / GitHub proxy 限制相同，未發現新的程式依賴問題。
+
+## 2026-08-20 Row Merger schema-failure integration test collection dependencies
+
+問題：執行 `python -m pytest tests/sql_mode/runtime/test_row_merger_schema_failure.py tests/sql_mode/runtime/test_row_merger_combined_ready.py -q` 時，現有環境先因缺少 PyYAML、其後依賴鏈缺少 numpy 而無法收集；requirements 安裝仍在 GitHub `peft` clone 遭 proxy 403 阻擋。
+
+影響：目前容器無法執行 Row Merger 完整 import path 的新增整合測試。
+
+替代驗證：直接載入 multidim profile 驗證 strict rejection，並以 compileall 與 diff check 驗證程式；新增整合測試供依賴完整環境執行。
+
+狀態：Open；屬既有 requirements 安裝限制。
+
+## 2026-08-20 dependency install recheck for schema failure audit
+
+問題：依規範再次執行 requirements 安裝，仍於 GitHub `peft` clone 遭 CONNECT tunnel 403。
+
+影響：無法在目前容器重跑依賴完整 runtime import chain 的 Row Merger 整合測試。
+
+替代驗證：不依賴外部套件的 adjustment JSONL pytest 1 passed，並完成 compileall 與 diff check。
+
+狀態：Open；同既有外部 proxy 限制。
+
+## Existing ES documents may contain historical model credentials
+
+首次確認：2026-08-20
+
+問題：舊版 `_short_tag_from_spec()` 會對 dict `model_spec` 直接 `str()`，因此歷史 `<output_col>_meta.model_tag` 可能包含 API key 與實際 base URL。
+
+影響：程式修正只保護後續寫回，不會自動刪除既有 ES `_source` 或外部 log/chat 中的值。
+
+處理：立即撤銷／輪替已暴露 credential；盤點相關 index，使用受控 `_update_by_query` 移除/重建 metadata，或 reindex 到安全 mapping。清理前限制 index 與 snapshot 存取。
+
+狀態：Open，需由 ES 操作端完成歷史資料清理。
