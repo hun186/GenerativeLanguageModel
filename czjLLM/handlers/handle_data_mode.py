@@ -184,25 +184,23 @@ def _es_build_iter(ctx, env):
     return build_es_iter(env["adapter"], ctx)
 
 def _es_sink(ctx, env):
+    from czjLLM.es_mode.model_metadata import safe_model_metadata, safe_model_tag
+
     adapter = env["adapter"]
     cfg = adapter.cfg
     rr = (cfg.get("rerun", {}) or {})
 
-    # --- 萃取較短的 model_tag（保留你的智慧取法） ---
-    def _short_tag_from_spec(spec: str) -> str:
-        if not spec:
-            return ""
-        s = str(spec)
-        for sep in ["premises", "MXFP", "@", "#"]:
-            if sep in s:
-                s = s.split(sep, 1)[0].rstrip("-_")
-        # 例：gpt-oss:latest-ctx-32k-premises-MXFP4 -> gpt-oss:latest-ctx-32k
-        return s
-
-    # 1) 先用 rerun.model_tag，其次 ctx.model_tag，再次從 ctx.model_spec 推短標
-    model_tag = rr.get("model_tag") \
-        or getattr(ctx, "model_tag", None) \
-        or (_short_tag_from_spec(getattr(ctx, "model_spec", "")) or None)
+    model_spec = getattr(ctx, "model_spec", None)
+    model_tag = safe_model_tag(
+        rr.get("model_tag") or getattr(ctx, "model_tag", None),
+        fallback_spec=model_spec,
+    )
+    model_meta = safe_model_metadata(
+        model_spec,
+        base_url_alias=getattr(ctx, "base_url_alias", None),
+        temperature=getattr(ctx, "temperature", None),
+        model_version=getattr(ctx, "model_version", None),
+    )
 
     # 2) pipeline_hash 維持以 rerun 為準（若無可再考慮自動推）
     pipeline_hash = rr.get("pipeline_hash")
@@ -213,8 +211,8 @@ def _es_sink(ctx, env):
     # 4) 初始 meta_base（其餘欄位交由 ESSink._build_meta() 自動補齊）
     meta_base = {
         "model_tag":     model_tag,                          # ← 你的智慧取法保留
+        **model_meta,
         "pipeline_hash": pipeline_hash,
-        #"model_spec":    getattr(ctx, "model_spec", None),   # 完整模型名便於稽核
         "channel":       getattr(ctx, "channel", None),
         "source":        getattr(ctx, "source", None),
         "task":          getattr(ctx, "task", None),

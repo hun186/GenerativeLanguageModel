@@ -335,6 +335,19 @@ def _all_slices_done(item_dir, meta=None):
     return cond
 
 
+def _is_terminal_schema_writeback_error(exc: Exception) -> bool:
+    """Return whether retrying the unchanged result cannot make it valid.
+
+    Keep this deliberately narrow: transport/ES availability errors must stay
+    retryable, while an output-profile unknown-field rejection is a property of
+    the completed LLM payload and will be identical on every watchdog scan.
+    """
+    return (
+        isinstance(exc, ValueError)
+        and "contains fields not present in the current schema" in str(exc)
+    )
+
+
 def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 scan_interval=0.5, done_q=None):
     # 只在 TODO/Success 計數有變化時才印一次
@@ -342,6 +355,14 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
         row_merger_watchdog_generic._last_state = {}
     if not hasattr(row_merger_watchdog_generic, "_stage_wait_logged"):
         row_merger_watchdog_generic._stage_wait_logged = set()
+    # A completed result that deterministically fails schema validation is
+    # revisited on every watchdog scan.  Keep retry semantics (an operator may
+    # repair the file), but do not print the identical error several times per
+    # second.  A periodic reminder preserves observability for long runs.
+    failure_log_state = {}
+    failure_log_interval = max(
+        1.0, float(getattr(ctx, "row_merger_failure_log_interval", 60.0) or 60.0)
+    )
 
     def _log_state_once(item_dir):
         todo_dir = os.path.join(item_dir, "TODO")
@@ -533,7 +554,66 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                             row_merger_watchdog_generic._stage_wait_logged.add(wait_key)
                         continue
                     row_merger_watchdog_generic._stage_wait_logged.discard((item_dir, pk))
-                    tlog_warn(f"Row Merger 寫回失敗 pk={pk}: {e}")
+                    if _is_terminal_schema_writeback_error(e):
+                        try:
+                            mark_not_running(ctx, pk, state="writeback_failed_schema")
+                        except Exception as ex:
+                            tlog_warn(f"⚠️ schema 失敗狀態釋放異常（pk={pk}）：{ex}")
+                        schema_log_path = None
+                        try:
+                            schema_log_path = record_adjustment(
+                                ctx,
+                                "writeback_failed_schema_release",
+                                pk=pk,
+                                error=msg,
+                                output_col=getattr(ctx, "output_col", None),
+                                output_profile=getattr(ctx, "output_profile", None),
+                                combined_result_path=comb_back_fn,
+                            )
+                        except Exception as ex:
+                            tlog_warn(f"⚠️ schema 失敗稽核紀錄寫入異常（pk={pk}）：{ex}")
+                        log_hint = (
+                            f"；錯誤紀錄已保存於 {schema_log_path}"
+                            if schema_log_path is not None
+                            else "；未啟用或未能寫入 schema 失敗稽核紀錄"
+                        )
+                        tlog_warn(
+                            f"Row Merger 略過本輪寫回 pk={pk}: {e}；"
+                            "已釋放執行狀態，資料保持 pending，下一次執行會重新拉取並分析"
+                            f"{log_hint}。"
+                        )
+                        registry.remove(item_dir)
+                        if done_q is not None:
+                            try:
+                                done_q.put_nowait(1)
+                            except Exception:
+                                pass
+                        try:
+                            meter_update(
+                                meter_fn,
+                                lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update(
+                                    {"status": "writeback_failed_schema"}
+                                ),
+                            )
+                            meter_update(
+                                meter_fn,
+                                lambda d: d.setdefault("progress", {}).update(
+                                    {"last_progress_ts": time.time()}
+                                ),
+                            )
+                        except Exception:
+                            pass
+                        progressed = True
+                        continue
+                    now = time.monotonic()
+                    failure_key = (item_dir, str(e))
+                    last_logged = failure_log_state.get(failure_key)
+                    if last_logged is None or now - last_logged >= failure_log_interval:
+                        tlog_warn(
+                            f"Row Merger 寫回失敗 pk={pk}: {e} "
+                            f"（相同錯誤最多每 {failure_log_interval:g} 秒提示一次）"
+                        )
+                        failure_log_state[failure_key] = now
                     # 不要 raise；下一輪會再試
                     continue
 

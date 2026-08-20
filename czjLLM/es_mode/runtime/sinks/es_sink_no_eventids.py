@@ -15,6 +15,7 @@ except Exception:
     def tlog_warn(msg): print(msg)
 
 from ...output_profiles import get_default_registry, load_output_profile_plugins
+from ...model_metadata import safe_model_tag, strip_sensitive_metadata
 from ...output_profiles.multidim_event import normalize_multidim_event_payload
 from ...output_profiles.multidim_event import normalize_date_value
 
@@ -371,7 +372,7 @@ class ESSink:
         rr = (getattr(self.ctx, "_es_adapter", None).cfg.get("rerun", {}) 
               if getattr(self.ctx, "_es_adapter", None) else {})
     
-        meta = dict(self.meta_base or {})
+        meta = strip_sensitive_metadata(dict(self.meta_base or {}))
         # 固定欄位
         meta["processed_at"]  = _now_iso_utc()
         meta["output_field"]  = self.output_col
@@ -388,8 +389,6 @@ class ESSink:
         # 來自任務/環境
         if getattr(self.ctx, "task", None):
             meta.setdefault("task", self.ctx.task)
-        #if getattr(self.ctx, "model_spec", None):
-        #    meta.setdefault("model_spec", self.ctx.model_spec)
         if getattr(self.ctx, "channel", None):
             meta.setdefault("channel", self.ctx.channel)
         if getattr(self.ctx, "source", None):
@@ -397,7 +396,7 @@ class ESSink:
     
         # 來自 rerun 設定
         if rr.get("model_tag"):
-            meta.setdefault("model_tag", rr.get("model_tag"))
+            meta.setdefault("model_tag", safe_model_tag(rr.get("model_tag")))
         if rr.get("pipeline_hash"):
             meta.setdefault("pipeline_hash", rr.get("pipeline_hash"))
     
@@ -411,7 +410,11 @@ class ESSink:
             if rr.get("pipeline_hash"):     reason.append("pipeline_hash_mismatch")
             if reason:
                 meta["force_reason"] = ",".join(reason)
-        return {k: v for k, v in meta.items() if v is not None}
+        if "model_tag" in meta:
+            meta["model_tag"] = safe_model_tag(
+                meta.get("model_tag"), fallback_spec=getattr(self.ctx, "model_spec", None)
+            )
+        return {k: v for k, v in strip_sensitive_metadata(meta).items() if v is not None}
         #return meta
         
     def _normalize_event_payload_v2(self, payload: any):

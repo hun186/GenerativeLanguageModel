@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 from czjLLM.common.pending_conditions import clean_output_cols
+from czjLLM.es_mode.model_metadata import safe_model_tag
 from .value_helpers import (
     deep_collect_by_path as _deep_collect_by_path,
     extract_by_path as _extract_by_path,
@@ -138,7 +139,7 @@ class ElasticsearchPendingPolicyMixin:
         #meta      = rr.get("meta_field") or f"{output_col}_meta"  # e.g. "multidim_event_json_meta"
         meta      = self._resolve_meta_field(output_col)  # ← 統一來源
         #print("meta",meta)
-        tag       = rr.get("model_tag")
+        tag       = safe_model_tag(rr.get("model_tag"))
         pipe      = rr.get("pipeline_hash")
         since     = rr.get("force_since")
         stale_days= rr.get("stale_after_days")
@@ -313,7 +314,7 @@ class ElasticsearchPendingPolicyMixin:
             return True
 
         meta_field = self._resolve_meta_field(output_col)  # ← 關鍵
-        tag        = rr.get("model_tag")
+        tag        = safe_model_tag(rr.get("model_tag"))
         pipe       = rr.get("pipeline_hash")
         since      = rr.get("force_since")
         stale_days = rr.get("stale_after_days")

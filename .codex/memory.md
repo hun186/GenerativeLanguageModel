@@ -91,3 +91,31 @@
 ## Archived History
 
 - `.codex/archive/memory-20260729-094054.md`：2026-07-29 濃縮前全文，涵蓋先前 27 筆日期工作紀錄；以 active memory 結構與保留最近 10 筆摘要完成驗證。
+
+## 2026-08-20 ES multidim `constance` typo recovery and Row Merger log throttling
+
+- 任務目的：釐清偶發 `Event[].constance` 導致 ES Row Merger 無限重試與終端洗版，並提供不中斷正常資料處理的窄範圍修正。
+- 主要修改內容：multidim event output profile 在嚴格 schema 驗證前，將已觀察到且語意唯一的 LLM 拼字錯誤 `constance` 正規化為 `consequence`；若兩欄同時存在且內容衝突則仍拒絕寫回，避免靜默覆蓋。Row Merger 保留可修復檔案的重試語意，但相同錯誤預設最多每 60 秒提示一次，避免每 0.5 秒洗版。
+- 驗證結果：requirements 安裝仍因 GitHub `peft` clone proxy 403 失敗；替代驗證 `python -m pytest tests/es_mode/test_multidim_event_field_aliases.py -q` 通過（2 passed），`python -m compileall -q czjLLM/es_mode/output_profiles/multidim_event.py czjLLM/sql_mode/runtime/row_merger_generic.py` 與 `git diff --check` 通過。
+- 重要結論：問題不是新 ES mapping 隨機拒絕正常欄位，而是 LLM 偶發產生 schema 外的拼錯欄名；舊 watchdog 對確定性驗證錯誤沒有退避，因此同一完成檔每輪都重試並阻塞該列完成。此已知拼字現在可無損修復，其他未知欄位仍維持嚴格拒絕。
+
+## 2026-08-20 preserve LLM schema failures for quality evaluation
+
+- 任務目的：依使用者回饋撤回 `constance -> consequence` 自動修復，避免下游正規化掩蓋 LLM schema adherence 失敗並扭曲模型分析品質評估。
+- 主要修改內容：multidim profile 恢復完整嚴格驗證，不再改寫 `constance`。Row Merger 將明確的 unknown-field schema 錯誤視為本輪不可恢復：記錄 `writeback_failed_schema`、釋放 pending-running 狀態、移出本輪 registry、保留來源資料且不寫回 ES；因輸出欄仍缺失，下一次執行會依既有 pending 機制重新拉取與分析。其他 ES/transport 類錯誤仍維持重試。
+- 驗證結果：requirements 安裝仍因 GitHub `peft` proxy 403 失敗；現有環境也缺少 PyYAML/numpy，目標整合 pytest 在 collection 階段受阻。替代驗證以標準函式庫直接載入 multidim profile，確認 `constance` 仍拋出 unknown-field ValueError；變更檔案 compileall 與 `git diff --check` 通過。完整環境用整合測試另驗證 registry release、failure state、done signal 與來源檔保留。
+- 重要結論：schema adherence failure 不應被靜默修正；跳過指的是跳過本輪 ES 寫入與 watchdog 內重試，不是把該文件標成業務完成。最終 pending recheck 仍會顯示未完成，下一次執行會重跑。
+
+## 2026-08-20 persist and surface Row Merger schema failure evidence
+
+- 任務目的：確定性 schema 錯誤除跳過本輪寫回外，必須明確提示操作人員並保存結構化紀錄，供後續改善 prompt、模型與 schema adherence。
+- 主要修改內容：`record_adjustment()` 現在回傳實際 JSONL log 路徑；Row Merger 對 `writeback_failed_schema_release` 保存 pk、錯誤訊息、output column/profile 與 combined result artifact path，並在終端警告中直接顯示紀錄位置。running 狀態釋放與稽核寫入分開處理，避免釋放失敗連帶漏記 schema error。
+- 驗證結果：requirements 安裝仍因 GitHub `peft` proxy 403 失敗；`python -m pytest tests/prompt_pipeline/test_pending_adjustment_log.py -q` 通過（1 passed），變更檔案 compileall 與 `git diff --check` 通過。
+- 重要結論：schema failure 不保存原始文章或模型憑證，只保存改善分析所需的結構化錯誤 metadata 與本機 artifact 路徑；終端可直接引導操作人員找到 bounded adjustment JSONL。
+
+## 2026-08-20 prevent credentials in ES model metadata
+
+- 任務目的：修正 ES `<output_col>_meta.model_tag` 將完整 `model_spec` 字串化、連帶把 API key 寫入 `_source` 的安全問題。
+- 主要修改內容：新增 model metadata 安全邊界，只允許 `model_name`、非敏感 `base_url_alias`、`num_ctx`、`temperature`、`model_version`；`model_tag` 若收到 dict 或 dict 字串只取 model name。ES sink 在最終寫回前遞迴移除 model_spec、實際 base URL 與 credential-like keys，並遮蔽 credential/JWT-like 字串；rerun query tag 同樣安全化。mapping 與文件新增 allowlisted 欄位。另移除 repository 內發現的硬編碼 token，改從 `CZJLLM_ANKINT_API_KEY` 讀取。
+- 驗證結果：requirements 安裝仍受 GitHub `peft` proxy 403 限制；`python -m pytest tests/es_mode/test_safe_model_metadata.py tests/prompt_pipeline/test_pending_adjustment_log.py -q` 通過（4 passed），相關 Python compileall、已知 JWT 字串掃描及 `git diff --check` 通過。
+- 重要結論：實際 endpoint URL 與 API credential 只供 runtime client 使用，不屬於分析結果 metadata；既有 ES `_source` 內已洩漏的 token 不會因程式更新自動消失，必須輪替並清理舊資料。

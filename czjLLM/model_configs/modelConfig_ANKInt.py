@@ -1,13 +1,11 @@
 #model_configs/modelConfig_ANKInt.py
+import os
+
 common_base_urls = [
     "http://192.168.0.134:11435/v1",  #為了控出一個給ollma持續使用，可mark，以便代理人開發期間運用。
     "http://192.168.0.134:11436/v1"
 ]
-common_api_key = (
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
-    "eyJpZCI6IjIyYzIzYWVkLWM4YzktNGZhYS1hNGRkLTg1NGNlZDg0YTE3ZCJ9."
-    "zP5xKqCemX2J3GFra03jMYPngipCbCUfFfIUyO96JOQ"
-)
+common_api_key = os.getenv("CZJLLM_ANKINT_API_KEY", "EMPTY")
 
 modelSetting_ANKInt = {}
 

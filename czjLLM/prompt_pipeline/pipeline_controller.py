@@ -2371,7 +2371,7 @@ def json_format_caller(content,
         task=task,
         removeFinPromptFile=True,
         max_tokens=max_tokens,
-        #model_spec = {'api_key':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIyYzIzYWVkLWM4YzktNGZhYS1hNGRkLTg1NGNlZDg0YTE3ZCJ9.zP5xKqCemX2J3GFra03jMYPngipCbCUfFfIUyO96JOQ'},
+        # model_spec credentials must come from environment-backed model config.
         #On_Premises=On_Premises,  # 視是否使用本地模型
         model_spec=model_spec
     ).proc()

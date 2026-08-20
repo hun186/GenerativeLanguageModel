@@ -19,6 +19,11 @@ properties:
     properties:
       processed_at:       { type: date }
       model_tag:          { type: keyword }
+      model_name:         { type: keyword }
+      base_url_alias:     { type: keyword }
+      num_ctx:            { type: integer }
+      temperature:        { type: float }
+      model_version:      { type: keyword }
       pipeline_hash:      { type: keyword }
       source:             { type: keyword }
       channel:            { type: keyword }
@@ -47,6 +52,11 @@ properties:
     properties:
       processed_at:       { type: date }
       model_tag:          { type: keyword }
+      model_name:         { type: keyword }
+      base_url_alias:     { type: keyword }
+      num_ctx:            { type: integer }
+      temperature:        { type: float }
+      model_version:      { type: keyword }
       pipeline_hash:      { type: keyword }
       source:             { type: keyword }
       channel:            { type: keyword }
