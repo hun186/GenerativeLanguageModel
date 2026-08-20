@@ -10,6 +10,13 @@
 
 ## Recent Changes
 
+## 2026-08-20 multidimensional-event ES mapping documentation sync
+
+- 任務目的：同步 `taskSetting_Enrichment.py` 已採用的新 ES 多維事件 mapping 說明，特別是 nested `Event` 與 `event_id` / `event_ids` 關聯。
+- 主要修改內容：更新 ES output profile 與多階段設定指南，說明目前 schema、時間欄位、應用層參照驗證、雙層 nested query、dynamic policy，以及既有 index 需重建/reindex 的遷移限制；舊版 `Event_Timeline.date_*` 日期正規化另標示為 legacy。
+- 驗證結果：`git diff --check` 通過；以 Python 標準函式庫文字斷言核對 mapping 與文件的必要欄位、nested 型別及關聯說明通過；文件舊欄位搜尋確認僅保留於明確標示的 legacy 說明。
+- 重要結論：`Event.event_id` 與各 `event_ids` 是應用層關聯，不是 ES 外鍵；mapping 保存型別，`multidim_event` profile 驗證 ID 唯一性與參照存在性，task prompt 另要求每個事件具 evidence 關聯。
+
 ## 2026-07-29 authoritative post-writeback pending recheck
 
 - 任務目的：釐清完成進度已達 10/10 時，收尾摘要仍顯示 `仍未完成=1` 卻接著宣告完成的矛盾訊息。

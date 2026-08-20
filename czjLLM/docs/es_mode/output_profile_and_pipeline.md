@@ -44,7 +44,7 @@ stage_cfg / stages 決定未來多階段/路由怎麼串
 | `none` | 不做任務特定 payload 正規化，適合一般文字、一般 JSON、分類、摘要、QA 等泛用任務。 |
 | `json` | 語意上標記為泛用 JSON 輸出；目前寫回前不做事件正規化。 |
 | `text` | 語意上標記為文字輸出；目前寫回前不做事件正規化。 |
-| `multidim_event` | 套用多維事件輸出的 ES-friendly 正規化，例如補 `Event.time_iso` / `Event.time_precision`、`Event_Timeline[].date_iso` 等欄位。 |
+| `multidim_event` | 驗證並正規化目前的多維事件 schema：保留 `Event[]`、`Event.event_id` 與各關聯陣列的 `event_ids`，並只對已解析完成的 `Event.time_iso` / `Event_Timeline[].time_iso` 做格式正規化。它不再支援舊版單一 `Event` object 或 `Event_Timeline[].date_*` 欄位。 |
 
 Profile 的實際 payload transformer 目前已改由 `czjLLM.es_mode.output_profiles` registry 管理；`ESSink` 只負責解析 profile 名稱、取得 handler 並執行。內建的 `multidim_event` transformer 已從 sink 抽到 `czjLLM/es_mode/output_profiles/multidim_event.py`，未來新增 domain-specific profile 時，不需要再到 `ESSink` 裡新增 `if profile == ...` 分支。
 
@@ -158,6 +158,39 @@ adapter.cfg["tgt_index"]
 → apply_mapping_file(tgt_index, mapping_file)
 → 確保 output_col / meta 欄位存在
 ```
+
+目前 `InfoExtraction-MultiDim-mapping.yaml` 對應 `taskSetting_Enrichment.py` 的事件關聯結構，重點如下：
+
+- `multidim_event_json` 是 `nested`；其中 `Event` 也明確是 `nested`，且即使只有一個事件，payload 仍必須使用 JSON array。
+- 每個 `Event` 必須有同一頂層分析物件內唯一的 `event_id`（例如 `E1`、`E2`）。
+- `Person`、`Involved_Parties`、`Impact`、`Event_Timeline`、`evidence_snippets` 的每筆元素都以 `event_ids` keyword array 關聯一個或多個 `Event.event_id`；無法可靠歸屬時使用空陣列。
+- `Event_Timeline` 的目前時間欄位是 `time_iso`、`time_raw`、`time_precision`，不再是舊版的 `date_iso`、`date_raw`、`date_precision`。
+- `Event.time_iso` 與 `Event_Timeline.time_iso` 接受 `strict_date_optional_time||yyyy-MM-dd`；文章層級的 `article_date_iso` 仍限定 `yyyy-MM-dd`。
+- `multidim_event_json.dynamic` 是 `strict`，未宣告欄位會被 ES 拒絕；`multidim_event_json_meta.dynamic` 是 `false`，未宣告 metadata 可保留於 `_source`，但不建立索引欄位。
+
+`event_ids` 是應用層的關聯鍵，不是 Elasticsearch 外鍵。`multidim_event` output profile 會在寫回前檢查 ID 唯一性及禁止 dangling reference；`taskSetting_Enrichment.py` 另要求每個事件至少有一筆 evidence 關聯；mapping 則負責保存與查詢型別。因為 `Event` 位於另一層 nested path，查詢事件內容時必須使用完整 nested path，例如：
+
+```json
+{
+  "query": {
+    "nested": {
+      "path": "multidim_event_json",
+      "query": {
+        "nested": {
+          "path": "multidim_event_json.Event",
+          "query": {
+            "term": {
+              "multidim_event_json.Event.event_id": "E1"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+既有 index 若已把 `multidim_event_json.Event` 建成 `object`，Elasticsearch 無法就地改成 `nested`；必須建立套用新 mapping 的 index 並 reindex。只更新 mapping 檔不會改變既有 index 的欄位型別。
 
 若要擴充成多階段，每個 stage 應可以宣告自己的 ES 寫入位置與 mapping，例如：
 

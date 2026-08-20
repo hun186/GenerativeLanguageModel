@@ -93,7 +93,34 @@ es_writeback_rules:
 4. 若沒有 mapping 檔，會依 `output_type` 建立最小 mapping。
 5. Elasticsearch 不能直接改既有欄位型別；若現有型別與 YAML 期望不同，請換欄位名稱或重建 index。
 
-## 可選的舊版多維日期正規化
+## 目前多維事件 mapping 與 `event_id` 關聯
+
+`taskSetting_Enrichment.py` 目前使用 `config_es/schemas/InfoExtraction-MultiDim-mapping.yaml` 所描述的事件關聯 schema：
+
+| 路徑 | ES 型別 | 契約 |
+| --- | --- | --- |
+| `multidim_event_json` | `nested` | 一篇來源文件可保存多個頂層分析物件。 |
+| `multidim_event_json.Event` | `nested` | 必須是 array；每筆含唯一的 keyword `event_id`。 |
+| `Person[].event_ids` | `keyword` array | 關聯人物所涉及的 `Event.event_id`。 |
+| `Involved_Parties[].event_ids` | `keyword` array | 關聯單位、國家或組織所涉及的事件。 |
+| `Impact[].event_ids` | `keyword` array | 關聯造成或共同構成該影響的事件。 |
+| `Event_Timeline[].event_ids` | `keyword` array | 關聯該時間節點所描述的事件。 |
+| `evidence_snippets[].event_ids` | `keyword` array | 關聯原文片段直接支持的事件。 |
+
+所有 `event_ids` 只能引用同一個 `multidim_event_json` 元素內實際存在的 `Event.event_id`；可以同時引用多個事件，無法可靠歸屬時則是 `[]`。這個參照完整性由 `multidim_event` output profile 在寫回前驗證，ES mapping 本身不會提供外鍵約束。`taskSetting_Enrichment.py` 另要求每個 `Event` 至少被一筆 `evidence_snippets.event_ids` 引用，避免建立沒有原文證據的事件。
+
+目前 Event 與時間線統一使用下列時間欄位：
+
+| 路徑 | 欄位 |
+| --- | --- |
+| `Event[]` | `time_iso`、`time_raw`、`time_precision` |
+| `Event_Timeline[]` | `time_iso`、`time_raw`、`time_precision` |
+
+請勿再輸出舊版 `Event_Timeline.date_iso` / `date_raw` / `date_precision`。`time_iso` mapping 接受完整 ISO datetime 或 `YYYY-MM-DD`；`article_date_iso` 則保持文章層級的 `YYYY-MM-DD`。`multidim_event_json` 設為 `dynamic: strict`，因此欄位拼錯或沿用舊欄位會在 ES 寫入時直接失敗。
+
+`Event` 從 `object` 改成 `nested` 屬於既有欄位型別變更，不能直接更新既有 index。上線時應建立套用新 mapping 的 index、reindex 舊資料，再切換 alias；若舊資料仍是單一 `Event` object 或沒有 `event_id` / `event_ids`，必須先轉換或重新抽取，不能只靠 reindex 自動補出關聯。
+
+## 舊版多維日期正規化（僅供舊 schema）
 
 這個功能只服務舊版「多維日期」輸出結構，不是 ES 多階段框架的通用必備步驟。它會在寫回前掃描每筆 list item 中既定欄位，將可辨識的日期字串補成較適合 ES date 查詢與保留原文的欄位：
 
@@ -103,7 +130,7 @@ es_writeback_rules:
 | `date_range.start` / `date_range.end` | 補 `start_raw` / `end_raw` 與 `*_precision`，並把可解析值轉成 ISO 日期 | 方便 range 查詢；目前會覆寫 start/end 為 ISO 日期。 |
 | `Event_Timeline[].date` | 補 `date_raw`、`date_iso`、`date_precision` | 保留時間線原始字串，另提供 date mapping 可查的 ISO 欄位。 |
 
-目前只解析 `YYYY-MM-DD`、`YYYY-MM`、`YYYY` 三種格式；`YYYY-MM` 會補成該月 1 日，`YYYY` 會補成該年 1 月 1 日，並以 `time_precision` / `date_precision` 標示 `day`、`month`、`year`。因此它的泛用性是「中低」：適合舊版多維事件/時間線 schema，但不應預設套到任意任務。一般任務請讓 ES 直接保存 LLM JSON，若需要其他欄位轉換，應透過 `output_profile_plugins` / `output_profiles` 註冊可配置 transformer，而不是沿用這個舊版日期補欄。
+目前只解析 `YYYY-MM-DD`、`YYYY-MM`、`YYYY` 三種格式；`YYYY-MM` 會補成該月 1 日，`YYYY` 會補成該年 1 月 1 日，並以 `time_precision` / `date_precision` 標示 `day`、`month`、`year`。因此它的泛用性是「中低」，只適合仍採舊版多維事件/時間線 schema 的任務。現在的 `taskSetting_Enrichment.py` 與 `multidim_event` output profile 不會從 `time_raw` 推論日期，也不接受舊版 `Event_Timeline.date_*`；它們要求 task 直接產生已解析的 `time_iso` / `time_raw` / `time_precision`。一般任務請讓 ES 直接保存 LLM JSON；若需要其他欄位轉換，應透過 `output_profile_plugins` / `output_profiles` 註冊可配置 transformer，而不是沿用這個舊版日期補欄。
 
 若某些舊版多維日期輸出需要額外補 `*_raw` / `*_iso` / `*_precision`，可用下列參數明確啟用；預設不對任意任務做任務專屬轉換：
 
@@ -118,4 +145,4 @@ es_payload_date_normalize_fields:
 normalize_payload_dates: true
 ```
 
-若不設定上述參數，ES sink 只會解析 JSON 並原樣寫入，不會因欄位名稱套用任何特定任務邏輯。既有多維事件萃取 YAML（例如 `es_config.yaml`）已加入 `es_payload_date_normalize_fields: [multidim_event_json]`，因此原本的日期補欄流程會繼續生效。
+若不設定上述參數，ES sink 只會解析 JSON 並原樣寫入，不會因欄位名稱套用舊版日期補欄。對目前的新 schema，應使用 `output_profile: multidim_event` 進行結構、時間格式與 event reference 驗證；不要再啟用舊版 `normalize_payload_dates` 轉換。
