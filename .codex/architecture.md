@@ -20,6 +20,13 @@
 - The producer can now keep multiple row/doc scheduling jobs in flight via a bounded thread pool when explicit stage flow is enabled. The default bound reuses `ctx.n_process`, the endpoint-pool-derived budget already used by legacy single-stage LLM rounds; when `ctx.n_process` is unavailable it falls back to the available `model_spec.base_url` pool size. The dispatcher intentionally does not infer GPU count from the local host because Ollama/OpenAI-compatible model APIs may run on remote machines.
 - Operators may override the bound with `multistage_row_parallelism`, `sql_multistage_row_parallelism`, or `stream_multistage_row_parallelism`; the explicit value should be set conservatively according to the model service capacity to avoid model-side queueing.
 
+## 2026-08-21 independent slice-level dispatch budget
+
+- `czjLLM/prompt_pipeline/dispatch_parallelism.py` 獨立解析 prompt slice worker budget，不與 SQL/Table/ES producer 的 row/doc worker budget 混為同一個設定。
+- `call_llm_api()` 在建立一批 TODO slice jobs 後，使用 `multistage_slice_parallelism`（相容 alias: `llm_slice_parallelism`, `slice_parallelism`）限制 worker；未設定時回退既有 `ctx.n_process`。
+- 因此 ES/SQL/Table 多階段可在批次尾端只剩長 doc 時繼續將該 doc 的多個 slice 分散到 endpoint pool；後續 stage 若只生成單一 prompt，仍是不可再拆的單 job barrier。
+- Parallelism 政策的預設資料來源是 model profile：`initialize_config()` 優先將 `n_process` / 相容 `nProcess` 投影成 `ctx.n_process`，未配置才自動推導；slice 可另用 model-level `slice_parallelism` 覆寫。任務/YAML 參數只作為更高優先序的單次 override。
+
 ## 2026-07-20 per-run LLM call audit
 
 - `czjLLM.czjLLM_TextProcessing` 啟動後會建立一次性的 LLM call audit run metadata，掛在 `ctx.llm_call_audit_run_id` 與 `ctx.llm_call_audit_path`。

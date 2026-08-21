@@ -21,6 +21,7 @@ from utils.utilities_path import getSubdirectory
 
 from GenerativeLanguageModel.czjLLM.taskConfig import taskSetting
 from GenerativeLanguageModel.czjLLM.modelConfig import modelSetting
+from czjLLM.prompt_pipeline.dispatch_parallelism import configured_model_process_parallelism
 
 #DEFAULT_MODEL = 'qwen3:32b-ctx-32k-premises-q4'
 #DEFAULT_MODEL = 'gpt-oss:latest-ctx-32k-premises-MXFP4'
@@ -268,7 +269,10 @@ def initialize_config(PGMSubDir, mode="txt", channel=None, model_spec_name=None,
 
     ctx.max_tokens = ctx.model_spec.get("num_ctx", 8192) // 2
     ctx.on_premises = ctx.model_spec.get("on_premises", True)
-    ctx.n_process = set_nProcess(ctx.on_premises, ctx.model_spec["base_url"])
+    ctx.n_process = (
+        configured_model_process_parallelism(ctx.model_spec)
+        or set_nProcess(ctx.on_premises, ctx.model_spec["base_url"])
+    )
     ctx.load_low_watermark = 4*ctx.n_process
     ctx.load_high_watermark = 10*ctx.n_process
     

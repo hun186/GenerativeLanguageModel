@@ -6,6 +6,8 @@
 
 ## Recent Changes
 
+- 2026-08-21：併行調校以 model profile 為預設操作面，避免每份 ES YAML 重複設定；支援 `n_process` 與舊 `nProcess`，slice 特別需求用 `slice_parallelism`。YAML 只保留高優先序 task override。
+- 2026-08-21：doc/row 併行度與 prompt slice 併行度分開設定；新設定未出現時回退 `ctx.n_process` 以保持相容，實際 worker 數不超過本批 job 數。
 - 2026-08-20：`merge_slices` 的 audited merge 結果必須成為相同 source 的權威主欄位 writeback payload，不可只供 flatten 使用；multidim profile 用 `[merged article record]` 保持 ES array contract，generic profile 寫 merged object。
 - 2026-08-20：多切片 merge audit 的觀測單位是 completed item，而不是 writeback attempt；同一 item 因暫時性 sink failure 重試時仍重新計算 merge，但終端只輸出第一次 conflict audit。
 - 2026-08-20：output profile transformer 的資料格式／schema 拒絕以 `OutputProfileValidationError` 跨 sink 傳遞；Row Merger 依型別終止本輪，不再靠列舉錯誤字串。網路、ES 與其他 writeback errors 不包裝，仍可重試。

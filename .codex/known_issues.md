@@ -1,5 +1,25 @@
 # 已知問題（Known Issues）
 
+## 2026-08-21 dependency install recheck for model-profile parallelism
+
+問題：依規範重新執行 pip upgrade 與 requirements 安裝，在 GitHub `peft` clone 階段仍收到 CONNECT tunnel 403。
+
+影響：無法在完整 requirements 環境執行全套測試。
+
+替代驗證：執行無第三方相依的 parallelism policy 單元測試、changed modules compileall 與 diff check。
+
+狀態：Open；與既有 requirements / GitHub proxy 限制相同。
+
+## 2026-08-21 dependency install recheck for slice-tail parallelism
+
+問題：依規範執行 pip upgrade 與 requirements 安裝，仍在 GitHub `peft` clone 階段收到 CONNECT tunnel 403。
+
+影響：無法在完整 requirements 環境執行全套測試，但新增 slice parallelism policy 是無第三方相依的純函式。
+
+替代驗證：執行目標單元測試、compileall 與 diff whitespace check。
+
+狀態：Open；與既有 requirements / GitHub proxy 限制相同。
+
 ## 2026-08-20 Row Merger validation test dependency recheck
 
 問題：requirements 安裝因 GitHub CONNECT tunnel 403 無法 clone `peft`；目標 Row Merger pytest 又因環境缺少 PyYAML 在 collection 階段停止。
