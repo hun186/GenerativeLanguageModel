@@ -60,6 +60,7 @@ from utils.utilities_path import MKDIR
 from utils.utilities import flattenList
 from utils.utilities import tlog
 from utils.MP_utils import multicoreJob
+from czjLLM.prompt_pipeline.dispatch_parallelism import resolve_slice_parallelism
 
 from czjLLM.infrastructure.ollama_lb import select_idle_ollama_url,release_url_load
 
@@ -1706,7 +1707,12 @@ def call_llm_api(
         DTBJobs = []
         for item in itemList:
             DTBJobs.extend(create_jobs(item,ctx.model_spec))
-        MPresult = multicoreJob(DTBJobs=DTBJobs, nProcess=ctx.n_process, ShuffleJobs=False, mp_debug=getattr(ctx, "mp_debug", False)).run()
+        slice_workers = resolve_slice_parallelism(ctx, len(DTBJobs))
+        print(
+            "[llm-dispatch] slice-level parallelism: "
+            f"jobs={len(DTBJobs)}, workers={slice_workers}"
+        )
+        MPresult = multicoreJob(DTBJobs=DTBJobs, nProcess=slice_workers, ShuffleJobs=False, mp_debug=getattr(ctx, "mp_debug", False)).run()
         #if MPresult:
         #    responseList, costList, DTBJobs_Retry = zip(*MPresult)
         #    CostLog(PGMSubDir = PGMSubDir, costList=costList, mode="AllArt")
@@ -1720,7 +1726,12 @@ def call_llm_api(
     else:
         for item in tqdm(itemList, desc="LLM API呼叫之文章物件數完成度", ascii=False, ncols=75):
             DTBJobs = create_jobs(item,ctx.model_spec)
-            MPresult = multicoreJob(DTBJobs=DTBJobs, nProcess=ctx.n_process, ShuffleJobs=False, mp_debug=getattr(ctx, "mp_debug", False)).run()
+            slice_workers = resolve_slice_parallelism(ctx, len(DTBJobs))
+            print(
+                "[llm-dispatch] slice-level parallelism: "
+                f"jobs={len(DTBJobs)}, workers={slice_workers}"
+            )
+            MPresult = multicoreJob(DTBJobs=DTBJobs, nProcess=slice_workers, ShuffleJobs=False, mp_debug=getattr(ctx, "mp_debug", False)).run()
             if MPresult:
                 responseList, costList, item_retry = zip(*MPresult)
                 ArtCost = CostLog(ArtCost=ArtCost, item=item, costList=costList, mode="singleArt")

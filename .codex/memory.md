@@ -10,6 +10,20 @@
 
 ## Recent Changes
 
+## 2026-08-21 model-profile-driven parallelism follow-up
+
+- 任務目的：避免為每份 ES YAML 增加 row/slice 併行參數，將預設自動政策與手動調整收旂到 model profile。
+- 主要修改內容：`initialize_config()` 現在優先採用 model spec 的 `n_process` / 現有 `nProcess`，未指定才依 endpoint/GPU 規則自動計算；slice worker 優先序改為任務 override、model profile `slice_parallelism`、`ctx.n_process`。YAML 仍可 override 但不再建議為必填。
+- 驗證結果：目標 parallelism pytest 通過，compileall 與 diff check 通過；requirements 安裝仍因 GitHub `peft` CONNECT tunnel 403 失敗。
+- 重要結論：現有 ANKInt model profile 的 `nProcess` 以前在 `initialize_config()` 會被自動計算值覆蓋，現已成為真正生效的模型層調校值；新設定建議用 snake_case。
+
+## 2026-08-21 independent prompt-slice tail parallelism
+
+- 任務目的：解決 ES 批次尾端只剩一份超長 doc 時，doc-level worker 已空閒但切片並行度無法獨立調整的算力浪費。
+- 主要修改內容：新增獨立 `multistage_slice_parallelism` / `llm_slice_parallelism` / `slice_parallelism` 解析，每批 prompt slice 依可用 job 數限制 worker，並輸出實際 jobs/workers 診斷。未設定時保留 `ctx.n_process` 原行為。新增 ES/SQL/table/TXT 共用路徑與單 job stage barrier 說明。
+- 驗證結果：`tests/prompt_pipeline/test_dispatch_parallelism.py` 4 passed；變更 Python compileall 與 `git diff --check` 通過。requirements 安裝仍因 GitHub `peft` CONNECT tunnel 403 失敗。
+- 重要結論：doc-level 與 slice-level 併行度必須分開；若後續 stage 本質上只有一個合併 prompt，則 worker 設定無法將單次 LLM call 再拆到多張 GPU。
+
 ## 2026-08-21 migrate legacy ES timeline rerun checks
 
 - 任務目的：將仍沿用舊 `Event_Timeline.date_iso` 契約的 ES YAML 與對應 `config_es` runtime 設定同步到現行 timeline schema。

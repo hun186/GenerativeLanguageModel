@@ -36,8 +36,10 @@ def _load_producer_module():
     _stub_module(
         "czjLLM.sql_mode.runtime.pending_recheck",
         announce_pending_recheck_if_enabled=lambda _ctx: False,
+        pending_recheck_stats=lambda _ctx: {},
         record_pending_skip=lambda *_args, **_kwargs: None,
         still_pending_before_dispatch=lambda *_args, **_kwargs: True,
+        still_pending_for_running_finalize=lambda *_args, **_kwargs: True,
     )
     _stub_module(
         "czjLLM.prompt_pipeline.pending_central",
