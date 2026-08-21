@@ -69,11 +69,11 @@ rerun = {
     "required_output_checks": [
         {
             # 可寫相對 output_col 的路徑（預設 relative_to_output=True）
-            "path": "Event_Timeline.date_iso",
+            "path": "Event_Timeline.time_iso",
     
-            # 驗證器：日期格式 yyyy-MM-dd
+            # 驗證器：目前 time_iso 為 ISO 8601 datetime
             "validator": "date",
-            "format": "yyyy-MM-dd",
+            "format": "iso8601",
     
             # 至少要找到幾個合法值（預設 1）
             "min_valid_count": 1,
