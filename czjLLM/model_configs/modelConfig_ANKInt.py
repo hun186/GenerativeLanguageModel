@@ -18,6 +18,10 @@ models = [
     #    16: {"nProcess": 4},
     #    32: {"nProcess": 4},
     #}),
+    ("qwen3.6:latest", [4, 8, 16, 32, 64, 128], {
+        16: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
+        32: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
+    }),
     ("qwen3.8:latest", [4, 8, 16, 32, 64, 128], {
         16: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
         32: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
