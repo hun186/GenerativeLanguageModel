@@ -10,6 +10,20 @@
 
 ## Recent Changes
 
+## 2026-08-21 migrate legacy ES timeline rerun checks
+
+- 任務目的：將仍沿用舊 `Event_Timeline.date_iso` 契約的 ES YAML 與對應 `config_es` runtime 設定同步到現行 timeline schema。
+- 主要修改內容：3 份活躍 ES YAML 與 5 份對應 ES Python 設定的 `required_output_checks` 改查 `Event_Timeline.time_iso`，日期格式由只接受純日期的 `yyyy-MM-dd` 改為符合目前輸出 timestamp 的 `iso8601`；歷史備份、舊 no-event-ids schema 與 Kibana 歷史診斷不改寫。
+- 驗證結果：以 Python AST 驗證 5 份 Python 設定可解析且 rerun check 均為 `time_iso` + `iso8601`；以 Ruby YAML parser 解析並驗證 3 份 YAML 的 check 組合；實際 helper 驗證 ISO timestamp 可通過；changed Python compileall、stale active-config 搜尋與 diff check 通過。目前 Python 環境仍缺 PyYAML，與既有 dependency install 限制相同。
+- 重要結論：必要欄位檢查必須與目前 `InfoExtraction-MultiDim-mapping.yaml` 的 `Event_Timeline.time_iso` 及 `strict_date_optional_time||yyyy-MM-dd` 契約同步，否則成功寫回的文件仍會永久被判定 pending。
+
+## 2026-08-21 ES rerun required-output diagnosis
+
+- 任務目的：釐清已有多維事件輸出與最新 processing meta 的 ES 文件為何仍在每輪全部重跑。
+- 主要結論：生效的 `required_output_checks` 檢查 `Event_Timeline.date_iso`，但目前多維事件輸出契約與實際文件使用 `Event_Timeline.time_iso`；因此收集不到任何值，`min_valid_count=1` 永遠不成立，freshness 判斷每次都回傳 false。即使改成 `time_iso`，現有值是 ISO 8601 timestamp，仍不可搭配只接受純 `yyyy-MM-dd` 的 validator format，應使用 `iso8601` / `strict_date_optional_time`。`force_reason` 是 sink 依「有哪些 rerun 選項被設定」產生的摘要，不代表該文件本次實際命中了列出的每個原因。
+- 驗證結果：以純函式檢查確認 dotted-path collector 對範例 shape 的 `date_iso` 回傳空集合、對 `time_iso` 能取值；日期 validator 對 timestamp + `yyyy-MM-dd` 回傳 false，對 timestamp + `iso8601` 回傳 true。另以程式碼靜態核對確認 required check 失敗會直接把 output 判為不新鮮。
+- 建議設定：將 check path 改成 `Event_Timeline.time_iso` 並將 format 改成 `iso8601`；若不是每篇文章都保證存在絕對時間，則移除該 required check，避免無可正規化時間的合法文章永久 pending。
+
 ## 2026-08-20 apply slice merge to authoritative writeback payload
 
 - 任務目的：追查大量 scalar conflict 背後的合併是否真的寫回，而不只抑制重複 log。
