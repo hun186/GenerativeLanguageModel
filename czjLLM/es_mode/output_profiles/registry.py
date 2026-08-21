@@ -8,6 +8,14 @@ from typing import Any, Callable, Dict, Iterable, Mapping, Optional
 Transformer = Callable[..., Any]
 
 
+class OutputProfileValidationError(ValueError):
+    """A payload was rejected deterministically by its output profile."""
+
+    def __init__(self, profile: str, message: str) -> None:
+        self.profile = profile
+        super().__init__(message)
+
+
 class OutputProfileRegistry:
     """Small registry that decouples profile names from transformer code."""
 
@@ -48,7 +56,15 @@ class OutputProfileRegistry:
         transformer = self.get(name)
         if transformer is None:
             return payload
-        return transformer(payload, **kwargs)
+        try:
+            return transformer(payload, **kwargs)
+        except OutputProfileValidationError:
+            raise
+        except (TypeError, ValueError) as exc:
+            # Profile validation is deterministic for an unchanged completed
+            # payload.  Preserve the original text while giving orchestration a
+            # reliable type that cannot be confused with transport failures.
+            raise OutputProfileValidationError(self.normalize_name(name), str(exc)) from exc
 
 
 _DEFAULT_REGISTRY = OutputProfileRegistry()

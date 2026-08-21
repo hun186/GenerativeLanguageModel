@@ -1,5 +1,15 @@
 # 已知問題（Known Issues）
 
+## 2026-08-20 Row Merger validation test dependency recheck
+
+問題：requirements 安裝因 GitHub CONNECT tunnel 403 無法 clone `peft`；目標 Row Merger pytest 又因環境缺少 PyYAML 在 collection 階段停止。
+
+影響：無法在此容器完成整合測試，但不是本次程式碼執行失敗。
+
+替代驗證：用 output profile registry 實際驗證 missing `Event` 與 month precision payload 均產生新的 typed validation exception，並執行 compileall 與 diff check。
+
+狀態：Open；需在可完整安裝 requirements 的環境重跑目標 pytest。
+
 ## <問題名稱>
 
 首次發現：

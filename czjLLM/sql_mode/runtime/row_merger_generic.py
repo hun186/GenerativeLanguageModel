@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Iterable, Tuple, Any, Optional, List, Dict
 
 from czjLLM.prompt_pipeline.pending_central import mark_not_running, record_adjustment
+from czjLLM.es_mode.output_profiles import OutputProfileValidationError
 from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from czjLLM.utilities.combine_utils import merge_dict_slices
 from czjLLM.utilities.combine_utils import merge_dict_slices_audited
@@ -62,6 +63,35 @@ def _as_db_text(value):
         return json.dumps(value, ensure_ascii=False)
     except Exception:
         return str(value)
+
+
+def _slice_merge_writeback_value(ctx, output_col: str, merged_payload: dict) -> str:
+    """Serialize a slice merge using the selected output field's contract.
+
+    The multidimensional-event profile stores an array of article-level
+    records, while the generic SQL/tabular contract stores the merged object.
+    """
+    profile = getattr(ctx, "output_profile", None)
+    for rule in (getattr(ctx, "sql_writeback_rules", None) or []):
+        if isinstance(rule, dict) and str(rule.get("output_col", "")).strip() == output_col:
+            profile = rule.get("output_profile", profile)
+            break
+    profile_name = str(profile or "auto").strip().lower().replace("-", "_")
+    is_multidim = profile_name in {"multidim_event", "multi_dim_event", "multidim", "event"}
+    if profile_name == "auto":
+        is_multidim = output_col.strip().lower() == "multidim_event_json"
+    return _as_db_text([merged_payload] if is_multidim else merged_payload)
+
+
+def _apply_slice_merge_to_write_map(ctx, write_map: dict, source_text: str, merged_payload: dict) -> list[str]:
+    """Replace writeback values sourced from the slice list with its merge."""
+    updated = []
+    for output_col, value in list(write_map.items()):
+        if value != source_text:
+            continue
+        write_map[output_col] = _slice_merge_writeback_value(ctx, output_col, merged_payload)
+        updated.append(output_col)
+    return updated
 
 
 
@@ -342,7 +372,8 @@ def _is_terminal_schema_writeback_error(exc: Exception) -> bool:
     retryable, while an output-profile unknown-field rejection is a property of
     the completed LLM payload and will be identical on every watchdog scan.
     """
-    return (
+    return isinstance(exc, OutputProfileValidationError) or (
+        # Compatibility for sinks/plugins that still raise the former error.
         isinstance(exc, ValueError)
         and "contains fields not present in the current schema" in str(exc)
     )
@@ -360,6 +391,10 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
     # repair the file), but do not print the identical error several times per
     # second.  A periodic reminder preserves observability for long runs.
     failure_log_state = {}
+    # Slice conflicts describe the completed artifact, not a writeback attempt.
+    # If a retryable sink error keeps this item in the registry, recompute the
+    # merge as needed but do not print the same audit block on every scan.
+    merge_log_emitted_items = set()
     failure_log_interval = max(
         1.0, float(getattr(ctx, "row_merger_failure_log_interval", 60.0) or 60.0)
     )
@@ -472,16 +507,30 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     write_map, flatten_source_text, source_logs = _build_writeback_values(ctx, comb_back_fn, result_text)
 
                     try:
+                        slice_source_text = flatten_source_text
                         data = json.loads(flatten_source_text)
                         if should_merge_slices(ctx) and isinstance(data, list) and all(isinstance(x, dict) for x in data):
+                            merge_logger = None
+                            if (
+                                getattr(ctx, "merge_log_changes", True)
+                                and item_dir not in merge_log_emitted_items
+                            ):
+                                merge_logger = tlog
                             merged_payload, report = merge_dict_slices_audited(
                                 data,
                                 conflict_policy=getattr(ctx, "merge_conflict_policy", "prefer_left"),
                                 dedup_lists=bool(getattr(ctx, "merge_dedup_lists", False)),
                                 audit=True,
-                                logger=(tlog if getattr(ctx, "merge_log_changes", True) else None),
+                                logger=merge_logger,
                                 max_log=int(getattr(ctx, "merge_max_log", 10)),
                             )
+                            if merge_logger is not None:
+                                merge_log_emitted_items.add(item_dir)
+                            merged_columns = _apply_slice_merge_to_write_map(
+                                ctx, write_map, slice_source_text, merged_payload
+                            )
+                            if merged_columns:
+                                source_logs.append(f"slice_merge:{','.join(merged_columns)}")
                             flatten_source_text = _as_db_text(merged_payload)
                             if getattr(ctx, "merge_log_to_file", False) and report.get("changed"):
                                 try:
@@ -516,6 +565,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     except Exception as ex:
                         tlog_warn(f"⚠️ pending running console 釋放失敗（pk={pk}）：{ex}")
                     registry.remove(item_dir)
+                    merge_log_emitted_items.discard(item_dir)
                     if done_q is not None:
                         try: done_q.put_nowait(1)
                         except Exception: pass
@@ -583,6 +633,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                             f"{log_hint}。"
                         )
                         registry.remove(item_dir)
+                        merge_log_emitted_items.discard(item_dir)
                         if done_q is not None:
                             try:
                                 done_q.put_nowait(1)

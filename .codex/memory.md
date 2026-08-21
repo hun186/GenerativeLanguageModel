@@ -10,6 +10,27 @@
 
 ## Recent Changes
 
+## 2026-08-20 apply slice merge to authoritative writeback payload
+
+- 任務目的：追查大量 scalar conflict 背後的合併是否真的寫回，而不只抑制重複 log。
+- 主要修改內容：確認 Row Merger 原本只把 `merge_dict_slices_audited()` 結果交給 flatten／欄位展開，`write_map` 仍保存未合併的 slice list；現改為將 merge 結果同步回填到實際 writeback source 欄位。multidim event 依 schema 保持最外層 array、內含一筆合併後 article record；generic JSON 寫入合併後 object；不相干的其他 writeback rule 不會被覆寫。
+- 驗證結果：新增 helper contract tests 與 retry sink assertion，確認 generic 寫回取得 merged object、multidim 寫回取得 `[merged object]`、其他 rule 保持原值；compileall 與 diff check 通過。完整 pytest 仍因 requirements proxy 403／缺少 PyYAML 無法 collection。
+- 重要結論：這是實際 bug，不只是 log 太多。舊流程雖計算並顯示 `scalar_conflict → left`，但主欄位送進 sink 的仍是未合併 slice list，因此 log 所宣告的取捨沒有成為權威寫回值，且各 slice 會被逐筆 schema 驗證而放大 missing `Event` 等錯誤。
+
+## 2026-08-20 Row Merger slice-conflict audit de-duplication
+
+- 任務目的：依使用者指正，將「schema failure 收斂」與終端主要洗版來源 `[merge] scalar_conflict` 分開處理。
+- 主要修改內容：Row Merger 對同一個 completed item 的多切片 merge audit 僅在第一次合併嘗試輸出；若 ES／SQL 暫時寫回失敗而 watchdog 重試，仍重新計算相同 merge 結果，但不再重印 scalar conflict、list dedup 與 merge summary。不同 item 仍各自保留第一次 audit，`merge_log_to_file` 行為不變。
+- 驗證結果：新增 retry-once sink 測試，模擬第一次暫時性寫回失敗、第二次成功，斷言 merge 執行兩次但 scalar-conflict log 只出現一次；完成 compileall、去重路徑靜態斷言與 diff check。完整 pytest 仍受既有 PyYAML／requirements 安裝限制而無法 collection。
+- 重要結論：多切片 scalar conflict 本身是 merge policy 正常解決左右值差異的 audit，不是 schema error；真正的洗版原因是同一 item 在寫回未完成時被 watchdog 重跑，連帶重印同一份 merge audit。前一版 schema typed failure 只處理其中「schema 拒絕導致重試」的一條路徑，本次才直接封住 merge audit 的重複輸出。
+
+## 2026-08-20 Row Merger multidim validation washout completion
+
+- 任務目的：核對舊版相同 ES schema 錯誤每 0.5 秒重試、重印 merge audit 與寫回錯誤的洗版問題，並確認使用者提供的 missing `Event`、month precision 錯誤也被涵蓋。
+- 主要修改內容：output profile registry 將 transformer 的 `TypeError` / `ValueError` 統一標記為 `OutputProfileValidationError`；Row Merger 將此明確型別視為確定性 schema failure，第一次失敗即記錄稽核、釋放 running、移出本輪 registry，避免 watchdog 再次合併及印出相同內容。保留舊 unknown-field 訊息判斷供相容 sink 使用。
+- 驗證結果：requirements 安裝仍因 GitHub CONNECT tunnel 403 無法取得 `peft`；目標 pytest 因缺少 PyYAML 無法 collect。替代驗證以兩個實際 payload 分別觸發 missing `Event` 與 month precision，確認 registry 均拋出 `OutputProfileValidationError`；變更檔 compileall 與 `git diff --check` 通過。
+- 重要結論：先前修正只完整終止 unknown-field 類型；使用者貼出的另外兩種 validation error 仍會每分鐘提示且每次 scan 重印 merge audit。此次改成依錯誤型別判斷後，所有 output-profile schema validation failure 都會在本輪第一次失敗時收斂，但 transport/ES availability 錯誤仍保留週期重試。
+
 ## 2026-08-20 multidimensional-event ES mapping documentation sync
 
 - 任務目的：同步 `taskSetting_Enrichment.py` 已採用的新 ES 多維事件 mapping 說明，特別是 nested `Event` 與 `event_id` / `event_ids` 關聯。

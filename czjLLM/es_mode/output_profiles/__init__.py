@@ -1,6 +1,7 @@
 """ES output profile transformer registry."""
 
 from .registry import (
+    OutputProfileValidationError,
     OutputProfileRegistry,
     get_default_registry,
     load_output_profile_plugins,
@@ -8,6 +9,7 @@ from .registry import (
 )
 
 __all__ = [
+    "OutputProfileValidationError",
     "OutputProfileRegistry",
     "get_default_registry",
     "load_output_profile_plugins",
