@@ -14,7 +14,11 @@ except Exception:
     def tlog(msg): print(msg)
     def tlog_warn(msg): print(msg)
 
-from ...output_profiles import get_default_registry, load_output_profile_plugins
+from ...output_profiles import (
+    OutputProfileValidationError,
+    get_default_registry,
+    load_output_profile_plugins,
+)
 from ...model_metadata import safe_model_tag, strip_sensitive_metadata
 
 def _now_iso_utc() -> str:
@@ -603,15 +607,40 @@ class ESSink:
         return
 
     # -------- flush / bulk --------
+    @staticmethod
+    def _bulk_error_is_permanent(error_item: Dict[str, Any]) -> bool:
+        """Return whether retrying the unchanged ES update cannot succeed."""
+        detail = error_item.get("update", {}) if isinstance(error_item, dict) else {}
+        error = detail.get("error", {}) if isinstance(detail, dict) else {}
+        error_type = str(error.get("type", "")) if isinstance(error, dict) else ""
+        caused_by = error.get("caused_by", {}) if isinstance(error, dict) else {}
+        caused_by_type = str(caused_by.get("type", "")) if isinstance(caused_by, dict) else ""
+        return str(detail.get("status", "")) == "400" and (
+            error_type in {"document_parsing_exception", "mapper_parsing_exception"}
+            or caused_by_type in {"illegal_argument_exception", "mapper_parsing_exception"}
+        )
+
+    @staticmethod
+    def _bulk_error_summary(error_item: Dict[str, Any]) -> str:
+        detail = error_item.get("update", {}) if isinstance(error_item, dict) else {}
+        error = detail.get("error", {}) if isinstance(detail, dict) else {}
+        reason = str(error.get("reason", "unknown ES bulk error")) if isinstance(error, dict) else str(error)
+        if len(reason) > 500:
+            reason = f"{reason[:497]}..."
+        return (
+            f"index={detail.get('_index')!r}, id={detail.get('_id')!r}, "
+            f"status={detail.get('status')!r}, type={error.get('type') if isinstance(error, dict) else None!r}, "
+            f"reason={reason}"
+        )
+
     def _flush(self):
         if not self._buffer:
             return
-    
-        actions_gen = (self._build_update_action(item) for item in self._buffer)
-    
+
         try:
-            # ✅ 只有在 debug 下才轉 list（避免平時多一份記憶體拷貝）
-            actions = list(actions_gen) if self._debug else actions_gen
+            # Materialize once so successful actions can be removed while only
+            # genuinely retryable failures remain buffered.
+            actions = [self._build_update_action(item) for item in self._buffer]
             if self._debug:
                 tlog(f"[ESSink] flushing {len(actions)} actions to index {self.index}")
     
@@ -622,8 +651,24 @@ class ESSink:
                 self.es.indices.refresh(index=self.index)
     
             if errors:
-                print(f"❌ bulk 有錯（僅示範前 3 筆）：{errors[:3]}")
-                raise RuntimeError(f"ESSink bulk update failed: {errors[:3]}")
+                permanent = [item for item in errors if self._bulk_error_is_permanent(item)]
+                retryable_keys = {
+                    (str(item.get("update", {}).get("_index")), str(item.get("update", {}).get("_id")))
+                    for item in errors
+                    if isinstance(item, dict) and not self._bulk_error_is_permanent(item)
+                }
+                self._buffer = [
+                    item for item, action in zip(self._buffer, actions)
+                    if (str(action.get("_index")), str(action.get("_id"))) in retryable_keys
+                ]
+                self._buffer_bytes = sum(self._estimate_size(item) for item in self._buffer)
+                summaries = "; ".join(self._bulk_error_summary(item) for item in errors[:3])
+                if permanent and len(permanent) == len(errors):
+                    raise OutputProfileValidationError(
+                        getattr(self, "output_profile", "es_mapping"),
+                        f"ES mapping rejected {len(permanent)} update(s): {summaries}",
+                    )
+                raise RuntimeError(f"ESSink bulk update failed ({len(errors)} action(s)): {summaries}")
 
             print(f"💾 bulk 成功筆數：{success}")
             self._buffer.clear()
@@ -634,8 +679,7 @@ class ESSink:
             # try: self.es.indices.refresh(index=self.index)
             # except Exception: pass
     
-        except Exception as ex:
-            print(f"⚠️ ESSink._flush 例外：{ex}")
+        except Exception:
             raise
 
     def flush_all(self):

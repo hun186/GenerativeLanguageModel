@@ -296,3 +296,23 @@ Open
 處理：立即撤銷／輪替已暴露 credential；盤點相關 index，使用受控 `_update_by_query` 移除/重建 metadata，或 reindex 到安全 mapping。清理前限制 index 與 snapshot 存取。
 
 狀態：Open，需由 ES 操作端完成歷史資料清理。
+
+## 2026-08-26 dependency install recheck for ES mapping retry-loop fix
+
+問題：依規範執行 pip upgrade 與 requirements 安裝，`peft` GitHub clone 仍遭 CONNECT tunnel 403；現有環境亦缺少 PyYAML。
+
+影響：Row Merger schema-failure 整合測試無法 collection。
+
+替代驗證：ESSink 目標 pytest 3 passed，並完成相關 Python compileall 與 diff check。
+
+狀態：Open；屬既有外部 proxy／依賴環境限制。
+
+## 2026-08-26 dependency install recheck for consequence type validation
+
+問題：requirements 安裝再次於 GitHub `peft` clone 遭 CONNECT tunnel 403。
+
+影響：無法建立完整相依環境執行全套測試。
+
+替代驗證：不依賴外部服務的目標 pytest 3 passed，並完成 compileall 與 diff check。
+
+狀態：Open；同既有外部 proxy 限制。
