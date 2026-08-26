@@ -118,3 +118,14 @@
 - 決策：ES model metadata 採 allowlist，而不是只 blacklist `api_key`。允許 model name、endpoint alias、context、temperature、version；禁止完整 model spec、實際 base URL 與所有 credential-like values。sink writeback boundary 再執行遞迴防禦性清理。
 - 理由：credential 可能從 ctx、rerun config、plugin meta_base 或字串化 dict 進入；只修正單一 `model_tag` 建構點不足以保證後續 plugin 不再洩漏。
 - 後果：需要識別 endpoint 時必須配置非敏感 `base_url_alias`；實際 URL 不再保存於分析 metadata。歷史資料需另行清理，不能由一般分析批次靜默修改。
+
+## 2026-08-26 ES mapping 400 is a terminal writeback attempt
+
+- 決策：`document_parsing_exception` / `mapper_parsing_exception` 類 HTTP 400 視為「對未變更 payload 不可重試」；不在 ESSink 內自動 stringify object，也不修改 index mapping。
+- 理由：範例中 `multidim_event_json.Event.consequence` 已 mapping 為 `text`，payload 卻是 object；重送同一 action 不可能成功，且保留 buffer 會在每輪再累積相同 action並洗版。
+- 後果：該輪釋放 running 並保持文件 pending，後續應修正 LLM schema（若 consequence 應為字串）或以新 index/reindex 修正 mapping（若 consequence 應為 object）。暫時性 ES 錯誤仍保留於 buffer 重試。
+
+## 2026-08-26 reject structured Event.consequence before ES I/O
+
+- 決策：不 stringify、flatten 或搬移 LLM 誤放到 `Event.consequence` 的 object；在 output profile boundary 直接拒絕非 string/null 值。
+- 理由：object 的 `impact_description` / `event_ids` shape 表示模型混淆 `Event.consequence` 與 `Impact[]`，自動轉換會掩蓋 schema adherence 品質且可能錯誤改變事件歸屬。

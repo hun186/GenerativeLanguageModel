@@ -98,13 +98,18 @@ def test_es_sink_resolves_business_key_to_real_es_id_before_bulk(monkeypatch):
     assert captured["actions"][0]["doc"]["sha1"] == "business-key-1"
 
 
-def test_es_sink_bulk_errors_raise_and_keep_buffer(monkeypatch):
+def test_es_sink_mapping_errors_are_terminal_and_removed_from_buffer(monkeypatch):
     fake_es = types.ModuleType("elasticsearch")
     fake_es.Elasticsearch = object
 
     def fake_bulk(es, actions, **kwargs):
         list(actions)
-        return 0, [{"update": {"status": 400, "error": {"type": "document_parsing_exception"}}}]
+        return 0, [{"update": {
+            "_index": "docs",
+            "_id": "doc-1",
+            "status": 400,
+            "error": {"type": "document_parsing_exception", "reason": "Expected text but found START_OBJECT"},
+        }}]
 
     fake_es.helpers = types.SimpleNamespace(bulk=fake_bulk)
     monkeypatch.setitem(sys.modules, "elasticsearch", fake_es)
@@ -117,10 +122,10 @@ def test_es_sink_bulk_errors_raise_and_keep_buffer(monkeypatch):
 
     try:
         sink.flush_all()
-    except RuntimeError as exc:
-        assert "ESSink bulk update failed" in str(exc)
+    except mod.OutputProfileValidationError as exc:
+        assert "ES mapping rejected 1 update(s)" in str(exc)
+        assert "Expected text but found START_OBJECT" in str(exc)
     else:
         raise AssertionError("Expected RuntimeError for ES bulk errors")
 
-    assert len(sink._buffer) == 1
-    sink._buffer.clear()
+    assert sink._buffer == []

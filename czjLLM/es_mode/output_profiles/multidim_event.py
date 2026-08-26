@@ -242,6 +242,13 @@ def normalize_multidim_event_payload(payload: Any, **_: Any) -> Any:
             valid_event_ids.add(event_id)
             event["event_id"] = event_id
             _validate_time_fields(event, epath)
+            # The ES contract maps consequence as text.  Validate it at the
+            # profile boundary so an LLM that accidentally emits an Impact-like
+            # object is reported as a schema-adherence failure before bulk I/O.
+            if "consequence" in event:
+                event["consequence"] = _validate_optional_string(
+                    event.get("consequence"), f"{epath}.consequence"
+                )
             normalized_events.append(event)
         item["Event"] = normalized_events
 

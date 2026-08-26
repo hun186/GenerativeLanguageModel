@@ -64,3 +64,12 @@
 - `czjLLM/es_mode/model_metadata.py` 是 runtime model spec 與 ES metadata 之間的 allowlist/redaction boundary。
 - `handlers.handle_data_mode._es_sink()` 只從 `ctx.model_spec` 投影安全欄位；兩個 ES sink 在 `_build_meta()` 最終寫回邊界再次遞迴移除 credential/model_spec/實際 endpoint URL，形成 defense in depth。
 - pending/rerun policy 使用同一 `safe_model_tag()`，避免 rerun ES query 再帶入字串化 credential。
+
+## 2026-08-26 ES bulk failure classification boundary
+
+- `ESSink._flush()` 現在以單次 materialized actions 對照 bulk errors：成功 action 立即離開 buffer、可重試錯誤保留、ES mapping/parsing 400 永久錯誤移除。
+- 永久 mapping rejection 轉為既有 `OutputProfileValidationError` 契約，讓 Row Merger 使用現有 terminal schema failure 流程釋放 row 狀態，避免相同 completed artifact 在 watchdog 中無限重送。
+
+## 2026-08-26 multidim scalar type validation
+
+- `multidim_event` output profile 在 ES sink 前強制 `Event[].consequence` 為 string 或 null，與 prompt 及 ES text mapping 對齊；結構化跨事件影響仍應放入 `Impact[]`。
