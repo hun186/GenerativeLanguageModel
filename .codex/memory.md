@@ -101,3 +101,11 @@
 - 主要修改內容：程式內 prompt/schema 明確定義 `Event.consequence` 為文字或 null；multidim output profile 現在於 ES bulk 前驗證此欄型別，Impact-like object 會成為可定位的 schema-adherence failure，不再等 ES mapping 400 才發現。
 - 驗證結果：`tests/es_mode/test_multidim_event_field_types.py` 3 passed；變更 Python compileall 與 `git diff --check` 通過。requirements 安裝仍受 GitHub CONNECT tunnel 403 限制。
 - 重要結論：範例 payload 把應屬 `Impact[]` 的 `{impact_description, event_ids}` object 放進文字欄 `Event.consequence`，主要是 LLM schema adherence / 欄位歸屬品質錯誤；先前 profile 僅檢查欄名與時間，未檢查 consequence 型別，屬應用端防線缺口。
+
+## 2026-09-01 restore LLM call audit rows in legacy consumer
+
+- 任務目的：修復任務正常完成但 `logs/llm_call_audit` CSV/XLSX 只有標題、沒有呼叫條目的回歸。
+- 根本原因：啟動流程雖將 audit run id/path 存入 `ctx`，stage-managed `call_llm_api()` 也會傳入 worker，但 legacy `llm_stream_consumer()` 建立 `PromptAPIPipeline` 時遺漏這兩個欄位；`log_llm_call()` 因空 `audit_path` 直接返回。
+- 主要修改：集中由 `_llm_call_audit_kwargs()` 複製每次執行的 audit metadata，legacy consumer 與 stage-managed worker factory 均使用；JSON repair 與 split retry 子呼叫也繼承相同 run/path，避免後續 LLM 呼叫脫離總表。
+- 驗證結果：`tests/prompt_pipeline/test_llm_call_audit.py` 2 passed；變更檔 compileall 與 `git diff --check` 通過。requirements 安裝仍在 GitHub `peft` clone 遭 CONNECT tunnel 403，使用不依賴該套件的目標測試完成替代驗證。
+- 重要結論：只建立 header 不代表 audit writer 故障；所有 multiprocessing/thread worker job 必須明確攜帶 parent context 的 audit run id/path。

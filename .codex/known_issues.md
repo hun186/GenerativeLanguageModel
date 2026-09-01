@@ -316,3 +316,13 @@ Open
 替代驗證：不依賴外部服務的目標 pytest 3 passed，並完成 compileall 與 diff check。
 
 狀態：Open；同既有外部 proxy 限制。
+
+## 2026-09-01 dependency install recheck for LLM audit propagation fix
+
+問題：依專案規範執行 pip upgrade 與 requirements 安裝，`peft` GitHub clone 仍遭 CONNECT tunnel 403。
+
+影響：無法在新建完整相依環境執行全套測試。
+
+替代驗證：不載入專案重型 utilities dependency chain 的目標 audit pytest 2 passed，並完成變更檔 compileall 與 diff check。
+
+狀態：Open；同既有外部 proxy 限制。

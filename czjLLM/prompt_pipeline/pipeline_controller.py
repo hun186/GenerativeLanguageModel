@@ -315,6 +315,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     #model_spec=ctx.model_spec,
                     model_spec=job_spec,           # ★ 用副本，不要用 ctx.model_spec 本體
                     PGMSubDir=ctx.PGMSubDir,
+                    **_llm_call_audit_kwargs(ctx),
                 ))
 
             dispatched_n = len(DTBJobs)
@@ -1667,6 +1668,14 @@ def _run_mock_llm_api(itemList, ctx, allow_to_retry=True, task_override: str | N
     return []
 
 
+def _llm_call_audit_kwargs(ctx) -> dict[str, str]:
+    """Copy the per-run audit destination into every worker job."""
+    return {
+        "audit_run_id": str(getattr(ctx, "llm_call_audit_run_id", "") or ""),
+        "audit_path": str(getattr(ctx, "llm_call_audit_path", "") or ""),
+    }
+
+
 def call_llm_api(
     itemList,
     ctx,
@@ -1699,8 +1708,7 @@ def call_llm_api(
             PGMSubDir=ctx.PGMSubDir,
             debug_print_llm_io=debug_print_llm_io,
             debug_print_max_chars=debug_print_max_chars,
-            audit_run_id=getattr(ctx, "llm_call_audit_run_id", ""),
-            audit_path=getattr(ctx, "llm_call_audit_path", ""),
+            **_llm_call_audit_kwargs(ctx),
         ) for promptFile in _root_txt_files(TodoSubDir)]
 
     if ctx.mp_for_all_call:
@@ -2210,6 +2218,8 @@ class PromptAPIPipeline:
                     MainFileName=MainFileName,
                     max_tokens=self.max_tokens,
                     model_spec=self.model_spec,
+                    audit_run_id=self.audit_run_id,
+                    audit_path=self.audit_path,
                     #no_think = should_disable_think(self.model_spec["model_name"])
                     )
                 json.loads(retMES_rep)
@@ -2348,7 +2358,10 @@ class PromptAPIPipeline:
                     removeFinPromptFile=True,
                     max_tokens=self.max_tokens,
                     #On_Premises=self.On_Premises,
-                    allow_to_retry=False  # 不允許再次重試
+                    allow_to_retry=False,  # 不允許再次重試
+                    model_spec=self.model_spec,
+                    audit_run_id=self.audit_run_id,
+                    audit_path=self.audit_path,
                     )
                 )
         
@@ -2365,6 +2378,8 @@ def json_format_caller(content,
                        MainFileName="",
                        model_spec=dict(),
                        max_tokens=8*1024, #切片結果合併後的json可能會很長，
+                       audit_run_id: str = "",
+                       audit_path: str = "",
                        #nothink = True
                        ):
     #content = preprocess(content)  # 可選擇加入你的前處理函式
@@ -2396,7 +2411,9 @@ def json_format_caller(content,
         task=task,
         removeFinPromptFile=True,
         max_tokens=max_tokens,
-        model_spec=model_spec
+        model_spec=model_spec,
+        audit_run_id=audit_run_id,
+        audit_path=audit_path,
     ).proc()
     
     if not ret or not ret.get("ok"):
