@@ -5,7 +5,7 @@
 #es_index = 'news_test'
 #es_user = ''
 #es_pass = ''
-es_host = 'https://192.168.0.133:9001'
+es_host = 'https://192.168.0.134:9001'
 es_index = 'news_test'
 es_user = 'SRA'
 es_pass = 'AAEAAWVsYXN0aWMv'
