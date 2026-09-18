@@ -83,10 +83,19 @@ def _slice_merge_writeback_value(ctx, output_col: str, merged_payload: dict) -> 
     return _as_db_text([merged_payload] if is_multidim else merged_payload)
 
 
-def _apply_slice_merge_to_write_map(ctx, write_map: dict, source_text: str, merged_payload: dict) -> list[str]:
+def _apply_slice_merge_to_write_map(
+    ctx,
+    write_map: dict,
+    source_text: str,
+    merged_payload: dict,
+    output_cols: Optional[Iterable[str]] = None,
+) -> list[str]:
     """Replace writeback values sourced from the slice list with its merge."""
+    allowed_cols = set(output_cols) if output_cols is not None else None
     updated = []
     for output_col, value in list(write_map.items()):
+        if allowed_cols is not None and output_col not in allowed_cols:
+            continue
         if value != source_text:
             continue
         write_map[output_col] = _slice_merge_writeback_value(ctx, output_col, merged_payload)
@@ -94,12 +103,43 @@ def _apply_slice_merge_to_write_map(ctx, write_map: dict, source_text: str, merg
     return updated
 
 
+def _apply_premerged_combined_slice_merge(ctx, write_map: dict, write_sources: dict) -> list[str]:
+    """Apply the output contract to dicts already merged by the combiner.
+
+    Only values resolved from the structured ``combined`` source qualify.  A
+    stage-specific dict remains untouched so its output profile can reject an
+    invalid top-level shape rather than having Row Merger silently repair it.
+    """
+    updated = []
+    for output_col, source in write_sources.items():
+        if source != "combined" or output_col not in write_map:
+            continue
+        source_text = write_map[output_col]
+        try:
+            payload = json.loads(source_text)
+        except Exception:
+            continue
+        if not isinstance(payload, dict):
+            continue
+        updated.extend(
+            _apply_slice_merge_to_write_map(
+                ctx,
+                write_map,
+                source_text,
+                payload,
+                output_cols=[output_col],
+            )
+        )
+    return updated
+
+
 
 def _build_writeback_values(ctx, comb_back_fn: str, combined_text: str):
-    """回傳 (write_map, flatten_text, source_logs)。"""
+    """回傳 (write_map, flatten_text, source_logs, write_sources)。"""
     rules = getattr(ctx, "sql_writeback_rules", None)
     write_map = {}
     source_logs = []
+    write_sources = {}
 
     if isinstance(rules, list) and rules:
         flatten_idx = int(getattr(ctx, "sql_flatten_writeback_rule", 0) or 0)
@@ -122,18 +162,20 @@ def _build_writeback_values(ctx, comb_back_fn: str, combined_text: str):
 
             wb = resolve_writeback_payload(rule_ctx, comb_back_fn, combined_text)
             write_map[out_col] = _as_db_text(wb.main_payload)
+            write_sources[out_col] = wb.source
             source_logs.append(f"{out_col}<-{wb.source}")
             if idx == flatten_idx:
                 flatten_text = write_map[out_col]
 
         if write_map:
-            return write_map, flatten_text, source_logs
+            return write_map, flatten_text, source_logs, write_sources
 
     wb = resolve_writeback_payload(ctx, comb_back_fn, combined_text)
     primary_col = str(getattr(ctx, "output_col", DEFAULT_OUTPUT_COL_NAME) or DEFAULT_OUTPUT_COL_NAME)
     write_map[primary_col] = _as_db_text(wb.main_payload)
+    write_sources[primary_col] = wb.source
     source_logs.append(f"{primary_col}<-{wb.source}")
-    return write_map, write_map[primary_col], source_logs
+    return write_map, write_map[primary_col], source_logs, write_sources
 
 
 
@@ -504,7 +546,9 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     with open(comb_back_fn, "r", encoding="utf-8") as fp:
                         result_text = fp.read()
 
-                    write_map, flatten_source_text, source_logs = _build_writeback_values(ctx, comb_back_fn, result_text)
+                    write_map, flatten_source_text, source_logs, write_sources = _build_writeback_values(
+                        ctx, comb_back_fn, result_text
+                    )
 
                     try:
                         slice_source_text = flatten_source_text
@@ -541,6 +585,14 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                             fp.write(f"  {s['action']} @{s['path']} → {s['chosen']} | L={s['left_short']} | R={s['right_short']}\n")
                                 except Exception:
                                     pass
+                        elif should_merge_slices(ctx) and isinstance(data, dict):
+                            merged_columns = _apply_premerged_combined_slice_merge(
+                                ctx, write_map, write_sources
+                            )
+                            if merged_columns:
+                                source_logs.append(
+                                    f"slice_merge_premerged:{','.join(merged_columns)}"
+                                )
                     except Exception:
                         pass
 
