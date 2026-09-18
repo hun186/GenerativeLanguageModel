@@ -1,7 +1,7 @@
 #akconfig_es_test.py
 # Elasticsearch 設定
 #es_host = 'http://localhost:9200'
-es_host = 'https://192.168.0.133:9001'
+es_host = 'https://192.168.0.134:9001'
 es_index = 'fishing_test'
 es_user = 'SRA'
 es_pass = 'AAEAAWVsYXN0aWMv'
