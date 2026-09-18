@@ -153,7 +153,7 @@ if file/TXT sink:
     file/artifact output path
 ```
 
-Codex must verify the exact current Row Merger call paths, but the architecture should preserve this boundary unless repository evidence proves otherwise.
+Phase 0 source inspection confirmed this boundary for the live SQL/table/ES paths: Row Merger remains writeback coordination outside the source-agnostic Reduction Core.
 
 #### Support priority by source type
 
@@ -768,9 +768,7 @@ reduction:
     - semantic_llm
 ```
 
-A grouped source may later form multiple logical work units, for example one collection per date. This syntax is provisional; Phase 0 must first identify the correct source/scheduler integration seam.
-
-These names are provisional. Codex must first map existing config-loading conventions and determine the least disruptive schema.
+A grouped source may later form multiple logical work units, for example one collection per date. The YAML above is intentionally illustrative: PR C owns the exact reduction config parser/validation shape, and PR F/G own the exact collection/source fields after binding them to the live scheduler and source adapters.
 
 ## 6. Backward-compatibility contract
 
@@ -789,32 +787,13 @@ Golden compatibility requirements:
 
 ## 7. Delivery phases
 
-### Phase 0 — Repository-wide architecture inventory and contract freeze
+### Phase 0 — Repository-wide architecture inventory and contract freeze — **COMPLETE**
 
 No production changes.
 
-Codex must map:
-- every caller of `combine_api_finished_item()`;
-- every use of `merge_slices`, `enable_slice_merge`, and `merge_strategy`;
-- existing JSON-list concatenation paths;
-- all multi-stage configuration and scheduler paths;
-- stage barriers and stage output manifests;
-- `pipeline/merge/` responsibilities and active usage;
-- output-profile resolution and plugin loading;
-- token counting/context-budget utilities;
-- retry, job-state, cleanup, and resume semantics;
-- SQL/ES/file source enumeration and the safest way to snapshot a multi-document collection;
-- existing row/document identity, source version/fingerprint, and grouping semantics;
-- all tests that characterize combine/merge behavior.
+Phase 0 source inspection established the live combine/writeback boundaries, separated experimental `pipeline/merge/` from the production runtime, confirmed the Row Merger and Output Profile boundaries, identified the need for a small `Executable` worker contract, promoted shared `ExecutionBudget` ahead of fan-out, and required immutable Collection Manifest plus aggregate-output idempotency.
 
-Deliver:
-- current-state data-flow diagrams;
-- boundary table;
-- compatibility matrix;
-- risk register;
-- proposed package/module locations;
-- finalized v1 config contract;
-- test plan.
+The remaining configuration and API details are intentionally assigned to their owning implementation PRs rather than left as architecture-review blockers.
 
 ### Phase 1 — Reducer Registry + legacy adapters
 
@@ -1183,37 +1162,44 @@ Capture current behavior before routing changes:
 - Intermediate artifacts must use existing atomic I/O utilities where possible and follow bounded retention/GC policy.
 - Secrets/endpoints must not be persisted in reducer audits or project memory.
 
-## 12. Open questions for Codex architecture review
+## 12. Implementation questions by owning PR
 
-1. Where is the lowest-risk integration seam: inside `combine_api_finished_item()`, immediately before it, or through a new facade it delegates to?
-2. Which existing JSON-list combination behavior is relied upon externally and must be captured as golden tests?
-3. Is `pipeline/merge/` actively used by the same runtime path as `prompt_pipeline`, or is it a separate/experimental pipeline?
-4. How should reducer plugin loading align with output-profile plugin loading without creating circular dependencies?
-5. What token-counting utility is authoritative for adaptive stop decisions?
-6. Where should round manifests/intermediate artifacts live so SQL/ES/TXT modes can resume safely?
-7. How should job cancellation and pending/running state interact with nested reduction rounds?
-8. Should a semantic reducer reuse the current task/stage model or use a dedicated reducer task declaration?
-9. How can hierarchical reduction reuse existing slice parallelism without nested oversubscription?
-10. What is the minimal generic contract for structured identifiers/references without overengineering a graph framework?
-11. Can the existing stage runner/configuration be reused as the Worker Executor for a ReductionStage, or is a minimal executable adapter needed?
-12. Which v1 nesting restrictions should be enforced so mini-pipeline workers remain useful without creating a recursive workflow engine?
-13. What is the safest source-layer seam for resolving and snapshotting a Collection Manifest across ES, SQL, and file modes?
-14. Which source identity/version fields are stable enough to support deterministic collection retry/resume?
-15. Should collection outputs write to a new aggregate sink/document identity, or can current writeback abstractions represent one-output-per-group cleanly?
-16. Should bounded nested reduction (for oversized documents inside a collection) be enabled in the first collection release or only designed into the execution context for a later PR?
-17. Where exactly should SQL/ES Row Merger/writeback coordination sit relative to the source-agnostic Reduction Core, and which current call paths must remain untouched?
-18. What is the minimal file/TXT collection adapter worth supporting without recreating database-grade claim/retry/grouping semantics in the filesystem layer?
-19. What stable aggregate-output identity/idempotency key should be used across retry, resume, and ambiguous sink failures?
-20. Which existing metadata fields can carry pipeline/prompt/reducer lineage without duplicating the current output-meta mechanism?
-21. What partial-failure policy belongs in generic Reduction Policy versus task-specific configuration?
-22. What ordering guarantees can SQL, ES, and file adapters provide, and how should reducers declare ordering requirements?
-23. Which event/publish/ingest timestamp and timezone/watermark semantics should collection adapters expose for time-window aggregation?
-24. How should a shared execution budget integrate with current n_process, slice_parallelism, endpoint scheduling, and nested ReductionStages?
-25. Which intermediate artifacts are required for resume/audit and which can be garbage-collected safely?
-26. What minimal quality/coverage metric hook should exist without creating a generic evaluation framework in v1?
-27. How can future member-level result caching reuse source fingerprints and worker configuration without changing Reducer interfaces?
-28. What reducer/schema contract-version fields are needed so old intermediate artifacts cannot be silently consumed by incompatible reducer code?
-29. Should aggregate outputs be valid members of later collections by default, and what lineage metadata is required for daily->weekly->monthly aggregation?
+Phase 0 is complete. The following questions are deliberately deferred to the implementation PR that owns the relevant contract; they are **not architecture-plan merge blockers** unless implementation proves a contradiction with the boundaries above.
+
+### PR A — compatibility characterization
+- Which externally relied-on JSON-list/single-slice/malformed/empty behaviors require golden fixtures beyond the cases already enumerated?
+- Which duplicated combine/writeback invocation surfaces need independent characterization?
+
+### PR B/C — contracts, registry, and opt-in config
+- What is the smallest integration facade around `combine_api_finished_item()` that preserves legacy imports while enabling explicit reduction routing?
+- How should reducer plugin loading mirror Output Profile plugin conventions without creating circular dependencies?
+- What exact YAML/ctx names and validation errors best match existing configuration conventions?
+
+### PR D/E — hierarchical controller and ExecutionBudget
+- Which existing token/context utility should be authoritative for adaptive stop decisions when a worker mini-pipeline changes models?
+- How should cancellation interact with in-flight synchronous HTTP calls?
+- How should current `n_process`, `nProcess`, slice parallelism, row/document workers, and endpoint scheduling project into the shared budget?
+- Which round artifacts are mandatory checkpoints versus disposable intermediates?
+
+### PR F/G — Logical Work Unit, Collection Manifest, and SQL/ES productionization
+- Which SQL and ES identity/version fields are stable enough for deterministic snapshot/retry semantics?
+- What exact half-open window/timezone/watermark fields should each source adapter expose?
+- What destination table/index/document shape should first-class aggregate outputs use?
+- What uniqueness/upsert mechanism should implement the stable `aggregate_output_id`?
+- What is the smallest useful TXT/file collection adapter without recreating database-grade claim/retry/grouping semantics?
+
+### PR H/I/J — deterministic, semantic, and relational reducers
+- What deterministic clustering/ranking primitives should ship first?
+- Should semantic reducer prompts reuse Task declarations, reducer-specific declarations, or both via adapters?
+- What minimal generic identifier/reference mapping supports structured relational reduction without becoming a graph framework?
+- What quality/coverage metrics are useful as optional hooks without becoming a generic evaluation platform?
+
+### PR K/L — bounded PipelineRef nesting and operations
+- Whether bounded nested reduction is enabled immediately or only after the non-nested `PipelineRef` path is proven.
+- What operational retention/TTL defaults are required for resume, audit, troubleshooting, and GC?
+- What member-result cache/reuse policy is worthwhile after source/reducer contract fingerprints are stable?
+- What reducer/schema compatibility policy is needed before reusing old intermediate artifacts?
+- What lineage fields are mandatory when aggregate outputs become members of daily→weekly→monthly→quarterly collections?
 
 ## 13. Definition of success
 
