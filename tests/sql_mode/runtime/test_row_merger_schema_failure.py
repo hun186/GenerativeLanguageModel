@@ -57,6 +57,21 @@ class _RetryOnceSink:
         return None
 
 
+class _CaptureMultidimSink:
+    def __init__(self):
+        self.write_maps = []
+
+    def open(self):
+        return None
+
+    def write_main(self, pk, write_map, update_time=None):
+        normalize_multidim_event_payload(json.loads(write_map["multidim_event_json"]))
+        self.write_maps.append(dict(write_map))
+
+    def close(self):
+        return None
+
+
 def test_constance_remains_an_invalid_schema_field():
     payload = [{
         "article_date_iso": None,
@@ -203,6 +218,83 @@ def test_slice_merge_result_is_used_for_multidim_main_writeback():
 
     assert updated == ["multidim_event_json"]
     assert json.loads(write_map["multidim_event_json"]) == [{"article_title": "left"}]
+
+
+def test_premerged_combined_dict_uses_multidim_writeback_contract(tmp_path: Path, monkeypatch):
+    item_dir = tmp_path / "prompt_item"
+    item_dir.mkdir()
+    source_txt = tmp_path / "source.txt"
+    source_txt.write_text("article", encoding="utf-8")
+    premerged = {
+        "article_title": "left",
+        "article_date_iso": None,
+        "article_date_precision": "unknown",
+        "Event": [],
+    }
+    combined = tmp_path / "combined.txt"
+    combined.write_text(json.dumps(premerged), encoding="utf-8")
+    registry = _Registry(
+        str(item_dir),
+        {"pk": "doc-premerged", "temp_txt": str(source_txt), "CombBackFN": str(combined)},
+    )
+    monkeypatch.setattr(merger_module, "mark_not_running", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(merger_module, "record_adjustment", lambda *_args, **_kwargs: None)
+    sink = _CaptureMultidimSink()
+    ctx = SimpleNamespace(
+        output_col="multidim_event_json",
+        output_profile="multidim_event",
+        record_update_time=False,
+        flatten_json_output=False,
+        enable_slice_merge=True,
+        cleanup_prompt_item_after_writeback=False,
+        llm_source_dir=str(tmp_path),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+    )
+
+    merger_module.row_merger_watchdog_generic(
+        ctx=ctx,
+        registry=registry,
+        meter_fn=lambda *_: None,
+        stop_event=SimpleNamespace(is_set=lambda: True),
+        sink=sink,
+        scan_interval=0.001,
+    )
+
+    assert json.loads(sink.write_maps[0]["multidim_event_json"]) == [premerged]
+
+
+def test_premerged_combined_dict_remains_object_for_generic_json():
+    premerged = {"article_title": "left", "Event": []}
+    write_map = {"result_json": json.dumps(premerged)}
+    ctx = SimpleNamespace(output_profile="json", sql_writeback_rules=[])
+
+    updated = merger_module._apply_premerged_combined_slice_merge(
+        ctx, write_map, {"result_json": "combined"}
+    )
+
+    decoded = json.loads(write_map["result_json"])
+    assert updated == ["result_json"]
+    assert decoded == premerged
+    assert not isinstance(decoded, list)
+
+
+def test_premerged_stage_dict_is_not_repaired_as_combined_output():
+    invalid_stage_payload = {"article_title": "stage emitted the wrong outer shape"}
+    write_map = {"multidim_event_json": json.dumps(invalid_stage_payload)}
+    ctx = SimpleNamespace(output_profile="multidim_event", sql_writeback_rules=[])
+
+    updated = merger_module._apply_premerged_combined_slice_merge(
+        ctx, write_map, {"multidim_event_json": "stage:extract"}
+    )
+
+    assert updated == []
+    assert json.loads(write_map["multidim_event_json"]) == invalid_stage_payload
+    try:
+        normalize_multidim_event_payload(json.loads(write_map["multidim_event_json"]))
+    except ValueError as exc:
+        assert "must be a JSON array; got dict" in str(exc)
+    else:
+        raise AssertionError("an invalid stage-specific dict must remain rejectable")
 
 
 def test_slice_merge_does_not_overwrite_unrelated_writeback_rule():
