@@ -78,6 +78,82 @@ This is a separate semantic domain and must not be silently replaced by the new 
 
 Reducer profiles should follow the same spirit but must not absorb output-profile responsibility.
 
+
+### 3.5 Source-agnostic Reduction Core and source-specific runtime boundaries
+
+The **Reduction Engine core must remain source-agnostic**.
+
+Reducer profiles, reduction controllers, worker execution, hierarchical rounds, and reducer results should operate on logical items, payloads, provenance, and execution context. They must not contain source-specific branches such as:
+
+```python
+if ctx.mode == "es":
+    ...
+elif ctx.mode == "sql":
+    ...
+elif ctx.mode == "txt":
+    ...
+```
+
+Source-specific responsibilities belong outside the Reduction Core.
+
+Conceptually:
+
+```text
+TXT / SQL / ES / other source
+        ↓
+Source / Collection Adapter
+        ↓
+Logical Work Unit / Collection Manifest
+        ↓
+ReductionStage / Reduction Core
+        ↓
+Final Result
+        ↓
+Sink / Writeback Adapter
+```
+
+#### Row Merger boundary
+
+Existing Row Merger logic is primarily a database-oriented writeback coordination layer for SQL/ES-style records/documents. It must **not** become a required dependency of the Reduction Engine.
+
+The intended direction is:
+
+```text
+Reduction Engine
+    ↓
+final reduced result
+    ↓
+if SQL/ES sink:
+    Row Merger / database writeback coordination
+
+if file/TXT sink:
+    file/artifact output path
+```
+
+Codex must verify the exact current Row Merger call paths, but the architecture should preserve this boundary unless repository evidence proves otherwise.
+
+#### Support priority by source type
+
+Single-document hierarchical reduction should remain usable across supported input modes, including TXT/file, SQL, and ES.
+
+However, **multi-document Collection Aggregation should be productionized first for database-backed sources**, especially SQL and Elasticsearch, because they naturally provide stable record identity, query/filter semantics, grouping, pagination, and writeback support.
+
+Recommended priority:
+
+1. **SQL / Elasticsearch**
+   - first-class Collection Manifest resolution;
+   - query/group-based aggregation;
+   - retry/resume against stable member identity;
+   - aggregate output writeback.
+
+2. **TXT / file sources**
+   - keep the Reduction Core usable;
+   - support single-document hierarchical reduction fully;
+   - optionally support explicit/folder-snapshot collection manifests;
+   - do not build a second database-like filesystem job-management system merely to achieve parity with SQL/ES.
+
+This is a prioritization and boundary rule, not a hard architectural exclusion. File-based collection support may grow later if a real use case justifies it.
+
 ## 4. Proposed conceptual model
 
 ### 4.1 Logical Work Unit, Input Collection, and Collection Manifest
@@ -537,6 +613,8 @@ Initial acceptance case:
 - a fixed collection of small documents can be mapped independently and reduced into one output;
 - retry uses the same members rather than re-querying a moving source set.
 
+Production priority for Collection Manifest integration is **SQL and Elasticsearch first**. File/TXT support may initially be limited to explicit or folder-snapshotted manifests and must not drive a database-like filesystem scheduler redesign.
+
 Phase 4 does not yet require advanced ranking or a new generalized job scheduler.
 
 ### Phase 5 — Composite deterministic reducers
@@ -778,6 +856,8 @@ Capture current behavior before routing changes:
 14. Which source identity/version fields are stable enough to support deterministic collection retry/resume?
 15. Should collection outputs write to a new aggregate sink/document identity, or can current writeback abstractions represent one-output-per-group cleanly?
 16. Should bounded nested reduction (for oversized documents inside a collection) be enabled in the first collection release or only designed into the execution context for a later PR?
+17. Where exactly should SQL/ES Row Merger/writeback coordination sit relative to the source-agnostic Reduction Core, and which current call paths must remain untouched?
+18. What is the minimal file/TXT collection adapter worth supporting without recreating database-grade claim/retry/grouping semantics in the filesystem layer?
 
 ## 13. Definition of success
 
@@ -787,6 +867,8 @@ The project is successful when:
 - advanced tasks can select richer reducers;
 - a stage can perform adaptive multi-round reduction;
 - a stable collection of multiple documents can be treated as one logical work unit and produce one aggregate output;
+- the same Reduction Core works independently of TXT/SQL/ES source mode, while source-specific collection discovery and writeback remain adapters outside the core;
+- SQL/ES can receive first-class collection production support without forcing equivalent database-style orchestration onto TXT/file mode;
 - multidim/global relational outputs can be reduced without local-ID collisions;
 - output profiles remain the final validation boundary;
 - multi-stage orchestration remains clear and unchanged in meaning;
