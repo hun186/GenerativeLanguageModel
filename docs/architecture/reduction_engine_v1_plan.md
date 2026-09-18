@@ -145,6 +145,89 @@ ReducerResult(
 
 Exact type and serialization contract must be decided after repository-wide analysis.
 
+### 4.5 ReductionStage and Worker Executor
+
+The architecture should support both of these practical compositions without introducing arbitrary mutual recursion:
+
+1. a normal pipeline stage may internally perform one or many reduction rounds;
+2. each chunk processed inside a reduction round may itself require more than one ordinary processing step.
+
+Do **not** model this as unrestricted:
+
+`Stage -> Reducer -> Stage -> Reducer -> ...`
+
+That would turn the Reduction Engine into a general recursive workflow engine and greatly complicate cancellation, retry scope, progress accounting, artifact naming, resume, concurrency budgeting, and cycle detection.
+
+Instead introduce a constrained execution boundary:
+
+```text
+ReductionStage
+    =
+Reduction Controller
++ Worker Executor
++ Reducer Profile
+```
+
+The **Worker Executor** answers:
+
+> What work should be performed independently for each chunk in this round?
+
+A worker may be:
+
+- a single existing task/prompt execution;
+- a reference to a small existing stage sequence / mini-pipeline.
+
+Conceptually:
+
+```text
+Pipeline
+  |
+  +-- ordinary Stage
+  |
+  +-- ReductionStage
+  |     |
+  |     +-- Controller
+  |     |     +-- round 1
+  |     |     +-- round 2
+  |     |     +-- ...
+  |     |
+  |     +-- Worker Executor
+  |     |     +-- Single Task
+  |     |     +-- PipelineRef / Mini Pipeline
+  |     |
+  |     +-- Reducer Profile
+  |
+  +-- ordinary Stage
+```
+
+This gives the useful effect of both “Stage contains reducer” and “reducer contains multiple stages” while keeping a single orchestration direction.
+
+For example, a hierarchical summarization round could execute for each chunk:
+
+```text
+summary
+-> fact/entity preservation check
+-> cleanup
+-> chunk result
+```
+
+and then reduce all chunk results into the round output.
+
+A later round may choose a different worker pipeline or reducer profile.
+
+#### v1 nesting guard
+
+To keep v1 reviewable and safe:
+
+- a `ReductionStage` worker may execute a single task or an ordinary mini-pipeline;
+- arbitrary recursive `ReductionStage -> PipelineRef -> ReductionStage -> ...` nesting is **not** required;
+- the implementation should explicitly reject cycles/self-reference;
+- if nested reduction is ever enabled, it should have a small explicit maximum nesting depth and shared concurrency budget.
+
+Codex must determine whether the existing stage abstractions can serve as the worker executor directly or whether a minimal `Executable` / adapter protocol is needed.
+
+The goal is maximum practical composition with minimum orchestration complexity, not a replacement for a general DAG/workflow engine.
+
 ## 5. Configuration direction
 
 Do not break existing configuration.
@@ -361,20 +444,25 @@ reduction:
 
 Final exact schema should be decided after Phase 0 analysis.
 
-### Phase 7 — Multi-stage integration and round-aware profiles
+### Phase 7 — Multi-stage integration, ReductionStage, and round-aware workers
 
-Goal: let any stage choose a reduction policy while preserving stage semantics.
+Goal: let any stage choose a reduction policy while preserving stage semantics, and allow each reduction round to execute either a single task or an ordinary mini-pipeline per chunk.
 
 Support:
 - no reducer;
 - one-pass reducer;
-- hierarchical reducer inside one stage;
+- hierarchical reducer inside one `ReductionStage`;
 - reducer profile changing by round;
+- worker task/prompt changing by round;
+- worker `PipelineRef` / mini-pipeline where compatible with existing stage execution;
 - reducer output feeding the next explicit business stage.
 
-Critical rule:
-- **rounds remain internal to a stage**;
-- existing stage manifests/writeback selectors must not mistake rounds for additional stages.
+Critical rules:
+- **rounds remain internal to a ReductionStage**;
+- existing stage manifests/writeback selectors must not mistake rounds for additional stages;
+- the Reduction Engine is not an arbitrary recursive workflow engine;
+- v1 must reject cycles/self-reference and need not support nested ReductionStages inside worker pipelines;
+- worker execution and reduction rounds must share the existing concurrency/model budget rather than create nested uncontrolled pools.
 
 ### Phase 8 — Production hardening and operational visibility
 
@@ -481,6 +569,8 @@ Capture current behavior before routing changes:
 8. Should a semantic reducer reuse the current task/stage model or use a dedicated reducer task declaration?
 9. How can hierarchical reduction reuse existing slice parallelism without nested oversubscription?
 10. What is the minimal generic contract for structured identifiers/references without overengineering a graph framework?
+11. Can the existing stage runner/configuration be reused as the Worker Executor for a ReductionStage, or is a minimal executable adapter needed?
+12. Which v1 nesting restrictions should be enforced so mini-pipeline workers remain useful without creating a recursive workflow engine?
 
 ## 13. Definition of success
 
@@ -492,6 +582,7 @@ The project is successful when:
 - multidim/global relational outputs can be reduced without local-ID collisions;
 - output profiles remain the final validation boundary;
 - multi-stage orchestration remains clear and unchanged in meaning;
+- a ReductionStage can use either a single task or an ordinary mini-pipeline as its per-chunk worker without requiring arbitrary Stage/Reducer recursion;
 - new reducers can be added through a registry/plugin contract rather than by editing a central `if task == ...` block.
 
 ## 14. Recommended immediate next action
