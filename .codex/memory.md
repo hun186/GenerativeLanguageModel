@@ -109,3 +109,12 @@
 - 主要修改：集中由 `_llm_call_audit_kwargs()` 複製每次執行的 audit metadata，legacy consumer 與 stage-managed worker factory 均使用；JSON repair 與 split retry 子呼叫也繼承相同 run/path，避免後續 LLM 呼叫脫離總表。
 - 驗證結果：`tests/prompt_pipeline/test_llm_call_audit.py` 2 passed；變更檔 compileall 與 `git diff --check` 通過。requirements 安裝仍在 GitHub `peft` clone 遭 CONNECT tunnel 403，使用不依賴該套件的目標測試完成替代驗證。
 - 重要結論：只建立 header 不代表 audit writer 故障；所有 multiprocessing/thread worker job 必須明確攜帶 parent context 的 audit run id/path。
+
+## 2026-09-18 authoritative premerged multidim writeback
+
+- 任務目的：修正多切片 JSON 已由 `combine_api_finished_item()` 合併成 dict 後，Row Merger 因只處理 `list[dict]` 而略過 multidim 最外層 array 契約的寫回失敗。
+- 主要修改內容：Row Merger 現在保留每個 writeback 欄位由 `resolve_writeback_payload()` 回傳的結構化 source；僅對 `source == "combined"` 的 premerged dict 重用既有 `_apply_slice_merge_to_write_map()`／output-profile serializer。multidim 寫入 `[dict]`，generic JSON 維持 dict，`stage:*` dict 不會被此 workaround 修復，仍交由 profile validation 拒絕。上游 combine 與 scalar-conflict policy 未更動。
+- Regression coverage：保留既有 list merge contract，新增 authoritative combined dict 的 Row Merger/capture sink regression、generic object contract，以及 stage-specific invalid dict 仍可被 multidim validator 拒絕的測試。
+- 驗證結果：`tests/test_combine_json_slice_merge.py` 6 passed；changed Python `compileall` 與 `git diff --check` 通過。Row Merger 目標測試在 collection 階段因缺少 PyYAML 失敗；test-only PyYAML shim 後又確認缺少 OpenCC，屬 requirements 未完整安裝的環境限制而非 test assertion failure。
+- 環境限制：`python -m pip install -r requirements.txt` 仍因 GitHub `peft` clone 遭 proxy `CONNECT tunnel failed, response 403` 而失敗；`pip --upgrade` 亦無法連 index，但現有 pip 已安裝。
+- 記憶維護：`.codex/known_issues.md` 超過 20 個工作紀錄區塊，已依規範濃縮；完整歷史保存於 `.codex/archive/known_issues-20260918-000000.md`。
