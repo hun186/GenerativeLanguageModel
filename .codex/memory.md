@@ -118,3 +118,12 @@
 - 驗證結果：`tests/test_combine_json_slice_merge.py` 6 passed；changed Python `compileall` 與 `git diff --check` 通過。Row Merger 目標測試在 collection 階段因缺少 PyYAML 失敗；test-only PyYAML shim 後又確認缺少 OpenCC，屬 requirements 未完整安裝的環境限制而非 test assertion failure。
 - 環境限制：`python -m pip install -r requirements.txt` 仍因 GitHub `peft` clone 遭 proxy `CONNECT tunnel failed, response 403` 而失敗；`pip --upgrade` 亦無法連 index，但現有 pip 已安裝。
 - 記憶維護：`.codex/known_issues.md` 超過 20 個工作紀錄區塊，已依規範濃縮；完整歷史保存於 `.codex/archive/known_issues-20260918-000000.md`。
+
+## 2026-09-18 Reduction Engine repository-wide architecture review v2
+
+- 任務目的：以 `main@c834959d8482e96ab3e815278aec2137952df8d7` 實際 source path 重新審查 Reduction Engine，僅產出 implementation-ready 設計，不修改 runtime。
+- 主要結論：live reduction 是 `combine_api_finished_item()`／`slice_merge` 與 prompt-pipeline stage snapshot concat；`pipeline/merge` 是含 placeholder/TODO 的分離 skeleton，不能作 production core。Row Merger 維持 SQL/table/ES 下游 writeback boundary，Output Profile 維持最終嚴格驗證。
+- 規劃內容：新增未實作的 `czjLLM/reduction/` package proposal、最小 protocol、exact opt-in YAML、immutable Collection Manifest、stable aggregate identity、shared Execution Budget、state machine、collection lifecycle、三類 acceptance design、golden matrix 與 12-PR roadmap。
+- 相容決策：沒有 `reduction` block 時完全繞過新路由；第一個 implementation PR 仍為 Characterization / Golden Tests，production behavior change=NO。
+- 驗證：documentation-only allowlist、source symbol/path 靜態核對、敏感字串檢查及 `git diff --check`；未執行 runtime pytest，因本任務不含 production code 且既有 requirements 安裝受 proxy 403 限制。
+- 環境註記：指定 starting plan commit `eaaf89e...` 與 draft plan 不存在於 supplied clone；GitHub fetch 被 proxy 403 阻擋，因此 v2 由 authoritative main baseline 重建，已在 plan 的 open questions 明示需由 PR reviewer 比對 draft。

@@ -73,3 +73,12 @@
 ## 2026-08-26 multidim scalar type validation
 
 - `multidim_event` output profile 在 ES sink 前強制 `Event[].consequence` 為 string 或 null，與 prompt 及 ES text mapping 對齊；結構化跨事件影響仍應放入 `Impact[]`。
+
+## 2026-09-18 Reduction Engine v1 planned architecture (design only)
+
+- 尚未實作。規劃新增 source-agnostic `czjLLM/reduction/`，以 Controller + Executable adapter + Reducer Profile 構成 ReductionStage；round 保持 business Stage 內部狀態。
+- 現行 production combine 仍為 `utilities/combine_utils.py` + `slice_merge.py`；`prompt_pipeline` 是 live multistage runtime；`pipeline/merge` 是分離 skeleton，不合併成同一 abstraction。
+- Row Merger 保持 SQL/table/ES sink 前的 source selection／flatten／retry／writeback coordinator，不成為 Reduction Core dependency。Output Profile 保持最後 strict transform/validation boundary。
+- Collection 由 source adapter 建 immutable manifest，再形成 Logical Work Unit；core 不判斷 SQL/ES/TXT。Aggregate output 以 manifest/scope、pipeline/task、reduction config 與 output contract fingerprint 形成 stable upsert identity。
+- Nested work 共用 root Execution Budget；限制 depth、拒絕 cycle/self-reference，child 不得另建 uncontrolled pool。
+- 詳細 contract、module layout、lifecycle 與 roadmap 見 `docs/architecture/reduction_engine_v1_plan.md`。

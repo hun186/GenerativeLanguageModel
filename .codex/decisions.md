@@ -129,3 +129,11 @@
 
 - 決策：不 stringify、flatten 或搬移 LLM 誤放到 `Event.consequence` 的 object；在 output profile boundary 直接拒絕非 string/null 值。
 - 理由：object 的 `impact_description` / `event_ids` shape 表示模型混淆 `Event.consequence` 與 `Impact[]`，自動轉換會掩蓋 schema adherence 品質且可能錯誤改變事件歸屬。
+
+## 2026-09-18 Reduction Engine v1 Phase 0 design decisions
+
+- 決策（規劃、尚未實作）：缺少或停用 `reduction` 設定時完整保留 legacy combine routing；先以 golden tests 固定行為，再新增 legacy reducer adapters。
+- 決策（規劃、尚未實作）：`pipeline/merge` skeleton 不作 Reduction Engine 基底；新 core 使用小型 Reducer／Executable protocol，現有 Task 與 bounded PipelineRef 透過 adapter 接入。
+- 決策（規劃、尚未實作）：Reduction Core source-agnostic；Collection/window/order 在 source adapter，Row Merger 與 sink idempotent upsert 在下游，Output Profile 是 final validation boundary。
+- 決策（規劃、尚未實作）：Collection Manifest immutable/versioned；late arrival 建 successor；v1 可全量重算但保留 member/executable fingerprint 供未來 reuse/incremental。
+- 決策（規劃、尚未實作）：Shared Execution Budget 是 collection/semantic/nesting 前置 PR；round 不是 Stage，nesting hard max 2 且拒絕 cycle/self-reference。
