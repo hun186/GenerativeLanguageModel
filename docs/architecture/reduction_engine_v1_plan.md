@@ -216,7 +216,17 @@ The exact representation must be decided after repository analysis, but the cont
 - audit/provenance showing which source members produced the output;
 - stable membership across hierarchical rounds;
 - optional source version/fingerprint information when available;
+- stable ordering metadata where a reducer depends on source order;
+- a collection version / parent-manifest relationship so future late-arriving or incremental updates can be represented without redefining the entire model;
+- aggregation-window metadata (for example event time vs publish time vs ingest time, timezone, and watermark/cutoff policy) owned by the collection/source layer rather than the reducer;
 - no secret query credentials persisted into manifests.
+
+The first release may recompute a collection from a new snapshot rather than perform true incremental aggregation. However, the manifest identity model should not block a future lineage such as:
+
+```text
+daily-news v1 -> members through 18:00
+daily-news v2 -> parent=v1 + late-arriving members through 23:59
+```
 
 The initial implementation does **not** require a full new scheduler/job model. A Collection Manifest may be introduced as an input/adaptor contract first, then integrated more deeply with SQL/ES grouping later.
 
@@ -246,6 +256,21 @@ GROUP BY report_date
 ```
 
 Reducer code should consume logical items/provenance, not hard-code that all items came from one file's slice directory.
+
+#### Aggregate-of-aggregates
+
+A collection member does not have to be a raw source document. It may also be a versioned aggregate artifact produced by an earlier pipeline.
+
+This enables higher-level aggregation without a separate architecture:
+
+```text
+daily briefings
+-> weekly major developments
+-> monthly situation summary
+-> quarterly report
+```
+
+The Reduction Engine should therefore preserve enough artifact identity, provenance, and contract/version metadata for an aggregate result to become a later collection member safely. v1 does not need to implement every multi-level reporting workflow, but the Logical Work Unit contract must not assume members are always raw documents.
 
 ### 4.2 Reducer Profile
 
@@ -411,6 +436,123 @@ Collection ReductionStage
 Codex must determine whether the existing stage abstractions can serve as the worker executor directly or whether a minimal `Executable` / adapter protocol is needed.
 
 The goal is maximum practical composition with minimum orchestration complexity, not a replacement for a general DAG/workflow engine.
+
+### 4.7 Cross-cutting execution, identity, quality, and lifecycle contracts
+
+The Reduction Engine introduces workflows where the same logical work unit may span many workers, rounds, retries, and sinks. Several contracts should therefore be designed before implementation even if some advanced capabilities are deferred.
+
+#### Idempotency and aggregate output identity
+
+Retries must not create duplicate aggregate outputs after an ambiguous writeback result.
+
+A stable aggregate identity should be derivable from explicit business scope and versioned execution inputs, for example conceptually:
+
+```text
+aggregation scope
++ collection/work-unit identity
++ task/pipeline version
++ reduction config fingerprint
+-> aggregate output key
+```
+
+The exact formula belongs to Phase 0 design. Do not use unstable runtime values such as PID, temporary path, or wall-clock execution time as the sole identity.
+
+#### Pipeline / prompt / reducer lineage
+
+Final and intermediate aggregate artifacts should be able to record non-secret lineage such as:
+
+- source collection/work-unit version;
+- pipeline/task version or configuration fingerprint;
+- reducer profile name and reducer-contract version;
+- prompt/template fingerprint where relevant;
+- model metadata already allowed by current output metadata policy;
+- parent aggregate identity for aggregate-of-aggregates.
+
+This should extend or reuse existing metadata mechanisms where possible instead of inventing a parallel provenance system.
+
+#### Partial-failure policy
+
+A collection may contain hundreds or thousands of members and some workers may fail. Whether an aggregate is allowed to continue must be explicit policy rather than reducer guesswork.
+
+Candidate policy concepts:
+
+- `require_all`;
+- minimum success ratio;
+- minimum success count;
+- allowed failure classes;
+- `allow_partial_with_warning`.
+
+If a partial collection result is accepted, the final provenance/audit must record that the result was produced from an incomplete member set.
+
+#### Ordering contract
+
+Reducers differ in ordering semantics. Examples:
+
+- translation/text concat requires stable order;
+- entity union generally does not;
+- ranking intentionally changes order.
+
+Reducer metadata/protocol should be able to declare concepts such as:
+
+- `requires_stable_order`;
+- `preserves_order`;
+- `reorders_by_policy`.
+
+Source/Collection Adapters must provide stable source ordering when required, rather than relying on incidental SQL/ES/filesystem enumeration order.
+
+#### Shared Execution Budget
+
+Nesting depth alone is not enough to control work. A collection may fan out into documents, each document into slices, and each round into semantic-reducer calls.
+
+The execution tree should inherit a shared budget concept that may cover:
+
+- maximum active LLM calls;
+- per-model / per-endpoint concurrency;
+- slice workers;
+- reduction workers;
+- nested reduction depth;
+- optional token/cost budget.
+
+Child workers borrow from the parent budget; they must not create independent uncontrolled pools.
+
+#### Intermediate artifact retention and garbage collection
+
+Hierarchical and collection reduction may generate many manifests, round outputs, chunk outputs, and audits.
+
+The architecture should define retention policy concepts such as:
+
+- keep final only;
+- keep failed/interrupted artifacts;
+- keep all artifacts in debug mode;
+- TTL / garbage-collection policy;
+- pinned artifacts required for resume or audit.
+
+Use existing atomic I/O primitives where possible.
+
+#### Quality / coverage hook (extension point)
+
+Size convergence is not equivalent to information quality. A 50,000-token source can be reduced below a target while losing required entities, sections, or evidence.
+
+v1 does not need a universal quality scorer, but the controller/result contract should leave an extension point for task-specific metrics such as:
+
+- required-section coverage;
+- entity/evidence retention;
+- citation/provenance coverage;
+- schema completeness;
+- task-specific acceptance checks.
+
+Quality checks should be explicit policy/hooks, not hidden heuristics inside generic reducers.
+
+#### Cache / reuse hook (extension point)
+
+Collection aggregation should eventually be able to reuse document-level intermediate results when the source member and worker pipeline have not changed.
+
+A future cache key may combine source fingerprint/version with worker/pipeline configuration fingerprint. v1 does not need to implement a global cache, but worker/result contracts should not require recomputation by design.
+
+#### Reducer / schema contract versioning (extension point)
+
+Structured reducers and their intermediate artifacts will evolve. Reducer profiles should have an explicit contract/version concept so incompatible old intermediate artifacts can be rejected or migrated rather than silently consumed by newer code.
+
 
 ## 5. Configuration direction
 
@@ -607,7 +749,11 @@ Implement/design:
 - adapter path for query-resolved collections whose membership is snapshotted before execution;
 - provenance/member identity contract;
 - collection-level input ordering where meaningful;
-- deterministic retry/resume against the same manifest.
+- deterministic retry/resume against the same manifest;
+- collection version / parent-manifest lineage;
+- aggregation-window/timezone/watermark semantics;
+- stable ordering when required;
+- idempotent aggregate-output identity contract.
 
 Initial acceptance case:
 - a fixed collection of small documents can be mapped independently and reduced into one output;
@@ -709,10 +855,13 @@ Add:
 - collection member counts and manifest identity in audit/provenance;
 - bounded audit logs;
 - clear stop reason (`target_reached`, `max_rounds`, `stalled`, `error`);
-- failure/retry semantics;
+- failure/retry and partial-success semantics;
+- idempotent aggregate writeback behavior;
 - cancellation behavior;
-- cleanup/retention policy for intermediate artifacts;
-- concurrency limits for nested map/reduce so hierarchical/collection reduction cannot oversubscribe GPUs/endpoints;
+- cleanup/retention/GC policy for intermediate artifacts;
+- shared execution-budget enforcement across document, slice, reduction, and nested workers;
+- optional cache/reuse integration for unchanged member-level results;
+- lineage/version metadata and aggregate-of-aggregates provenance;
 - end-to-end ES/SQL/file regression tests.
 
 ## 8. Multidimensional-event problem as acceptance case, not architecture driver
@@ -768,10 +917,14 @@ today's 643 news documents
 
 Assertions:
 - collection membership is fixed for the run even if new matching documents arrive later;
-- retry/resume reuses the same manifest;
+- aggregation-window/timezone/watermark semantics are explicit;
+- retry/resume reuses the same manifest and aggregate identity;
+- a later snapshot can form a versioned successor collection without mutating the already-running manifest;
 - every aggregate output preserves source-member provenance;
 - deterministic reducers can shrink the candidate set before any semantic LLM reducer;
 - the final Top-K count is a task policy, not hard-coded into the engine;
+- partial member failures follow explicit policy and are visible in provenance;
+- source ordering is deterministic when the selected worker/reducer requires it;
 - a collection member may eventually use bounded document-level hierarchical reduction if the member itself is oversized;
 - collection-level and document-level reductions share concurrency and nesting budgets;
 - the output profile validates the one final collection result exactly once.
@@ -812,7 +965,12 @@ Capture current behavior before routing changes:
 ### Collection tests
 - fixed explicit collection -> one output;
 - query collection membership snapshot;
-- retry/resume uses identical manifest membership;
+- collection version / parent-manifest lineage;
+- aggregation-window/timezone/watermark boundary behavior;
+- retry/resume uses identical manifest membership and aggregate identity;
+- idempotent writeback after ambiguous/retried completion;
+- full-success vs allowed-partial vs rejected-partial policy;
+- stable ordering when required by reducer contract;
 - provenance contains all selected member IDs without leaking secrets;
 - deterministic dedup/rank/top-k composition;
 - bounded document-level reduction inside a collection worker where enabled.
@@ -835,7 +993,10 @@ Capture current behavior before routing changes:
 - Nested reduction concurrency must respect existing model/slice parallelism controls.
 - Collection membership must be snapshotted before processing; a running job must not silently absorb newly arriving source members.
 - Collection manifests must preserve provenance without persisting credentials or secret source configuration.
-- Intermediate artifacts must use existing atomic I/O utilities where possible.
+- Aggregation-window/timezone semantics must be explicit for time-based collections; reducers must not silently redefine source membership.
+- Partial-success output must be explicit and auditable.
+- Aggregate writeback must be idempotent enough that retry cannot silently create duplicate logical outputs.
+- Intermediate artifacts must use existing atomic I/O utilities where possible and follow bounded retention/GC policy.
 - Secrets/endpoints must not be persisted in reducer audits or project memory.
 
 ## 12. Open questions for Codex architecture review
@@ -858,6 +1019,17 @@ Capture current behavior before routing changes:
 16. Should bounded nested reduction (for oversized documents inside a collection) be enabled in the first collection release or only designed into the execution context for a later PR?
 17. Where exactly should SQL/ES Row Merger/writeback coordination sit relative to the source-agnostic Reduction Core, and which current call paths must remain untouched?
 18. What is the minimal file/TXT collection adapter worth supporting without recreating database-grade claim/retry/grouping semantics in the filesystem layer?
+19. What stable aggregate-output identity/idempotency key should be used across retry, resume, and ambiguous sink failures?
+20. Which existing metadata fields can carry pipeline/prompt/reducer lineage without duplicating the current output-meta mechanism?
+21. What partial-failure policy belongs in generic Reduction Policy versus task-specific configuration?
+22. What ordering guarantees can SQL, ES, and file adapters provide, and how should reducers declare ordering requirements?
+23. Which event/publish/ingest timestamp and timezone/watermark semantics should collection adapters expose for time-window aggregation?
+24. How should a shared execution budget integrate with current n_process, slice_parallelism, endpoint scheduling, and nested ReductionStages?
+25. Which intermediate artifacts are required for resume/audit and which can be garbage-collected safely?
+26. What minimal quality/coverage metric hook should exist without creating a generic evaluation framework in v1?
+27. How can future member-level result caching reuse source fingerprints and worker configuration without changing Reducer interfaces?
+28. What reducer/schema contract-version fields are needed so old intermediate artifacts cannot be silently consumed by incompatible reducer code?
+29. Should aggregate outputs be valid members of later collections by default, and what lineage metadata is required for daily->weekly->monthly aggregation?
 
 ## 13. Definition of success
 
@@ -874,6 +1046,12 @@ The project is successful when:
 - multi-stage orchestration remains clear and unchanged in meaning;
 - a ReductionStage can use either a single task or an ordinary mini-pipeline as its per-chunk worker without requiring arbitrary Stage/Reducer recursion;
 - bounded nested reduction can be introduced without redesign when a collection member itself is oversized;
+- retries/resume do not create duplicate logical aggregate outputs;
+- time-window collections have explicit window/timezone/watermark semantics;
+- partial collection results, when allowed, are explicitly marked and auditable;
+- aggregate artifacts can become versioned inputs to higher-level aggregation without losing provenance;
+- execution budgets and artifact-retention policies prevent nested workloads from growing without bound;
+- quality, cache/reuse, and reducer/schema-version hooks can be added without redesigning the core interfaces;
 - new reducers can be added through a registry/plugin contract rather than by editing a central `if task == ...` block.
 
 ## 14. Recommended immediate next action
@@ -887,7 +1065,12 @@ First run a repository-wide Codex analysis against this exact baseline and this 
 - test files to add/modify;
 - per-phase PR boundaries;
 - dependency graph between phases;
-- collection/source membership snapshot design;
-- bounded nesting/concurrency-budget design;
+- collection/source membership snapshot and aggregation-window design;
+- aggregate idempotency/output-identity design;
+- partial-failure and ordering contracts;
+- lineage/version metadata design;
+- bounded nesting/shared execution-budget design;
+- intermediate artifact retention/GC design;
+- extension points for quality checks, member-result reuse, and reducer/schema contract versioning;
 - rollback points;
 - explicit non-goals.
