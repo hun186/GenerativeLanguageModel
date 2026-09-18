@@ -29,3 +29,18 @@
 - [x] 第一階段拆分 `czjLLM/utilities/combine_utils.py`：JSON parsing/repair 與 audited slice merge strategy 已移至 focused modules，舊路徑保留 re-export；prompt result filesystem orchestration 可於後續第二階段再拆。
 - [ ] 評估 `utils/utilities.py` 是否仍為活躍依賴；若是，逐步改為 focused utility modules 並保留 re-export 過渡層。
 - [x] 已拆分 `czjLLM/es_mode/adapters/elasticsearch_adapter.py` 的 freshness/rerun policy 與 value helpers；`czjLLM/es_mode/entry/steps_es.py` 仍可後續獨立評估。
+
+## 2026-09-19 Reduction Engine v1 implementation sequence
+
+- [ ] PR A — Characterization / Golden Tests（production behavior change: NO）
+- [ ] PR B — Contracts, Reducer Registry, legacy adapters
+- [ ] PR C — Strict config + opt-in single-pass routing
+- [ ] PR D — Hierarchical Controller + atomic checkpoints
+- [ ] PR E — Shared Execution Budget
+- [ ] PR F — Logical Work Unit + immutable Collection Manifest
+- [ ] PR G — SQL/ES Collection Adapters + idempotent aggregate upsert
+- [ ] PR H — Deterministic composite reducers
+- [ ] PR I — Semantic reducer
+- [ ] PR J — Structured relational reducer
+- [ ] PR K — ReductionStage + bounded PipelineRef nesting
+- [ ] PR L — Retention/GC/cache integration points/production hardening

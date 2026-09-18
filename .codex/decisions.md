@@ -129,3 +129,13 @@
 
 - 決策：不 stringify、flatten 或搬移 LLM 誤放到 `Event.consequence` 的 object；在 output profile boundary 直接拒絕非 string/null 值。
 - 理由：object 的 `impact_description` / `event_ids` shape 表示模型混淆 `Event.consequence` 與 `Impact[]`，自動轉換會掩蓋 schema adherence 品質且可能錯誤改變事件歸屬。
+
+## 2026-09-19 Reduction Engine v1 planning decisions
+
+- 決策：`czjLLM/pipeline/merge/` 不作為 Reduction Engine foundation；live combine/writeback 路徑以 source inspection 結果為準。
+- 決策：Reduction Worker 不直接採整個 business-stage abstraction，改用小型 `Executable` contract，透過 Task/PipelineRef adapters 重用既有 runtime。
+- 決策：Shared `ExecutionBudget` 是 collection/semantic/nested reduction 的前置條件，不延後到 hardening。
+- 決策：Collection Manifest 與既有 stage manifest 分離；前者是 immutable identity/provenance contract，後者維持 execution artifact。
+- 決策：Row Merger 保持 SQL/table/ES writeback coordinator，不進入 generic Reduction Core；Output Profile 維持 final strict validation boundary。
+- 決策：collection aggregate creation 必須有 stable logical aggregate identity（例如 `aggregate_output_id`）與 idempotent sink upsert；既有 row/document update key 不視為足夠。
+- 決策：PR A Characterization / Golden Tests 為第一個 implementation PR，且不得改變 production behavior。

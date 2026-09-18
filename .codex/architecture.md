@@ -73,3 +73,14 @@
 ## 2026-08-26 multidim scalar type validation
 
 - `multidim_event` output profile 在 ES sink 前強制 `Event[].consequence` 為 string 或 null，與 prompt 及 ES text mapping 對齊；結構化跨事件影響仍應放入 `Impact[]`。
+
+## 2026-09-19 planned Reduction Engine v1 architecture
+
+- 狀態：planned/approved architecture only；尚未實作。
+- 新核心預計集中於 `czjLLM/reduction/`，包含 contracts/config/registry/engine/controllers/policies/execution budget/artifacts/executables/work units/manifests/reducers 與 source/sink adapters。
+- Reduction Core 僅接觸 logical items、provenance、contracts 與 execution context；SQL/ES/TXT collection discovery 與 writeback 透過 adapters 隔離。
+- `combine_utils.py`、`slice_merge.py`、live prompt-pipeline controller、Row Merger 保留 compatibility facade；`pipeline/merge/` 不納入 live Reduction Engine foundation。
+- Worker 執行採 `Executable` 抽象，至少涵蓋 Task adapter 與 bounded PipelineRef adapter；Reduction Round 不等於 business Stage。
+- Shared `ExecutionBudget` 必須先於 collection fan-out、semantic reducer fan-out 與 nested ReductionStage，且 child worker 不可另開不受控 pool。
+- Collection Manifest 為 immutable/versioned contract，包含 stable member identity、ordering/window/watermark、lineage、contract version；aggregate output 使用 stable derived identity 與 idempotent sink upsert。
+- SQL/Elasticsearch 為 multi-document collection 第一批 production targets；TXT/file 保留完整 single-document hierarchical reduction，collection 僅做 constrained manifest/adaptor。

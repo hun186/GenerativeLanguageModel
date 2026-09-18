@@ -118,3 +118,12 @@
 - 驗證結果：`tests/test_combine_json_slice_merge.py` 6 passed；changed Python `compileall` 與 `git diff --check` 通過。Row Merger 目標測試在 collection 階段因缺少 PyYAML 失敗；test-only PyYAML shim 後又確認缺少 OpenCC，屬 requirements 未完整安裝的環境限制而非 test assertion failure。
 - 環境限制：`python -m pip install -r requirements.txt` 仍因 GitHub `peft` clone 遭 proxy `CONNECT tunnel failed, response 403` 而失敗；`pip --upgrade` 亦無法連 index，但現有 pip 已安裝。
 - 記憶維護：`.codex/known_issues.md` 超過 20 個工作紀錄區塊，已依規範濃縮；完整歷史保存於 `.codex/archive/known_issues-20260918-000000.md`。
+
+## 2026-09-19 Reduction Engine Phase 0 reconciliation
+
+- 任務目的：將 Codex Phase 0 在隔離 checkout 中驗證的 Reduction Engine 架構 findings，合回真正 PR #177 的 authoritative plan，而不是以 reconstructed plan 取代原稿。
+- 權威基線：`main @ c834959d8482e96ab3e815278aec2137952df8d7`；PR branch 起點為 `plan/reduction-engine-v1 @ eaaf89e131ed814dddc6813beb8d3839fc47b587`。
+- 已確認 live combine 仍以 `combine_api_finished_item()` 為核心；`czjLLM/pipeline/merge/` 為與 live TXT/SQL/ES runtime 分離的 skeleton，不作 Reduction Engine foundation。
+- 架構定案：Reduction Core 維持 source-agnostic；Row Merger 留在 SQL/table/ES writeback 邊界；Output Profile 與 Reducer Profile 分離；worker 採小型 `Executable` contract + Task/PipelineRef adapters，而不是直接依賴整個 business-stage runtime。
+- 執行順序修正：Shared `ExecutionBudget` 提前成為 collection/semantic/nested fan-out 的 prerequisite；Collection Manifest 使用獨立 immutable contract；aggregate creation 使用 stable `aggregate_output_id`/idempotent upsert，而非只依賴既有 row/document update identity。
+- 下一個 production-facing 工作仍是 PR A Characterization / Golden Tests，且 production behavior change = NO。
