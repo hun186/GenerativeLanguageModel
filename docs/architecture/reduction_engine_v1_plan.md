@@ -25,16 +25,21 @@ The same gap also limits future hierarchical aggregation such as:
 
 `10000 pages -> slice summaries -> 50 pages -> re-slice/reduce -> 10 pages -> re-slice/reduce -> 2 pages`
 
-The target is therefore **not a multidim-only reducer**. The target is an extensible Reduction Engine that preserves current simple reducers while enabling task-specific, structured, semantic, and adaptive hierarchical reduction.
+A second major use case is **multi-document aggregation**, where a floating set of source documents must be treated as one logical input and produce one output, for example:
+
+`all news for one day -> deduplicate/cluster/rank -> select Top 10 -> summarize -> one daily briefing`
+
+The target is therefore **not a multidim-only reducer** and not only a single-document reducer. The target is an extensible Reduction Engine that preserves current simple reducers while enabling task-specific, structured, semantic, adaptive hierarchical, and collection-level reduction.
 
 ## 2. Core architectural principle
 
-Keep four concerns separate:
+Keep five concerns separate:
 
-1. **Stage / task orchestration** — what business operation runs next.
-2. **Map / slice execution** — how an input is divided and processed in parallel.
-3. **Reduction Engine** — how N slice/stage-local outputs become a smaller/global result, potentially over multiple rounds.
-4. **Output Profile** — how the final result is normalized/validated/serialized for a sink.
+1. **Logical Work Unit / Aggregation Scope** — what source members belong to one requested output.
+2. **Stage / task orchestration** — what business operation runs next.
+3. **Map / slice execution** — how an input is divided and processed in parallel.
+4. **Reduction Engine** — how N local outputs become a smaller/global result, potentially over multiple rounds.
+5. **Output Profile** — how the final result is normalized/validated/serialized for a sink.
 
 A reduction **round is not a stage**. A multi-stage pipeline may contain a stage whose internal reduction controller performs one or many rounds.
 
@@ -75,7 +80,98 @@ Reducer profiles should follow the same spirit but must not absorb output-profil
 
 ## 4. Proposed conceptual model
 
-### 4.1 Reducer Profile
+### 4.1 Logical Work Unit, Input Collection, and Collection Manifest
+
+The Reduction Engine should operate on a generic **logical work unit** rather than assume that every job is exactly one source document.
+
+A logical work unit may represent:
+
+- one record;
+- one document;
+- one document split into many chunks;
+- one explicit collection of documents;
+- one query-defined collection whose membership is snapshotted at job start;
+- one previous stage/reduction output.
+
+The key contract is:
+
+> one logical work unit owns one aggregation scope and produces one logical output for that scope.
+
+This unifies both:
+
+```text
+single long document
+-> chunks
+-> reduction
+-> one output
+```
+
+and:
+
+```text
+N source documents
+-> document-level workers
+-> cross-document reduction
+-> one output
+```
+
+#### Collection Manifest
+
+A multi-document aggregation job must not continuously change membership while it is running. A query such as “today's news” may match more documents as new content arrives, so the job should snapshot membership into a stable Collection Manifest before reduction begins.
+
+Candidate manifest information:
+
+```json
+{
+  "collection_id": "daily-news-2026-09-18",
+  "source_kind": "elasticsearch",
+  "created_at": "...",
+  "query_fingerprint": "...",
+  "members": [
+    {"id": "doc-a", "version": "..."},
+    {"id": "doc-b", "version": "..."}
+  ]
+}
+```
+
+The exact representation must be decided after repository analysis, but the contract should support:
+
+- deterministic retry and resume;
+- audit/provenance showing which source members produced the output;
+- stable membership across hierarchical rounds;
+- optional source version/fingerprint information when available;
+- no secret query credentials persisted into manifests.
+
+The initial implementation does **not** require a full new scheduler/job model. A Collection Manifest may be introduced as an input/adaptor contract first, then integrated more deeply with SQL/ES grouping later.
+
+#### Collection formation modes
+
+The architecture should leave room for:
+
+- **explicit collection** — caller supplies a fixed list of members;
+- **query collection** — resolve a query once, then snapshot members;
+- **grouped collection** — form one work unit per group key such as date/category/customer/report batch.
+
+Examples:
+
+```text
+date=2026-09-18
+-> 643 news documents
+-> one daily-hot-topics work unit
+-> one briefing output
+```
+
+or:
+
+```text
+GROUP BY report_date
+-> one collection per date
+-> one aggregate output per date
+```
+
+Reducer code should consume logical items/provenance, not hard-code that all items came from one file's slice directory.
+
+### 4.2 Reducer Profile
 
 A Reducer Profile answers:
 
@@ -94,7 +190,7 @@ Future profiles:
 - `semantic_llm`
 - `composite`
 
-### 4.2 Reduction Controller
+### 4.3 Reduction Controller
 
 A Reduction Controller answers:
 
@@ -106,7 +202,7 @@ Initial controllers:
 - `fixed_rounds` — deterministic N-round operation.
 - `adaptive_hierarchical` — continue while deterministic stop criteria are not met.
 
-### 4.3 Reduction Policy
+### 4.4 Reduction Policy
 
 Policy controls orchestration rather than task semantics:
 
@@ -120,7 +216,7 @@ Policy controls orchestration rather than task semantics:
 - persistence/resume policy;
 - optional reducer changes by round.
 
-### 4.4 Reducer Result
+### 4.5 Reducer Result
 
 Reducers should return a structured result rather than a naked payload.
 
@@ -145,7 +241,7 @@ ReducerResult(
 
 Exact type and serialization contract must be decided after repository-wide analysis.
 
-### 4.5 ReductionStage and Worker Executor
+### 4.6 ReductionStage and Worker Executor
 
 The architecture should support both of these practical compositions without introducing arbitrary mutual recursion:
 
@@ -220,9 +316,21 @@ A later round may choose a different worker pipeline or reducer profile.
 To keep v1 reviewable and safe:
 
 - a `ReductionStage` worker may execute a single task or an ordinary mini-pipeline;
-- arbitrary recursive `ReductionStage -> PipelineRef -> ReductionStage -> ...` nesting is **not** required;
-- the implementation should explicitly reject cycles/self-reference;
-- if nested reduction is ever enabled, it should have a small explicit maximum nesting depth and shared concurrency budget.
+- arbitrary recursive `ReductionStage -> PipelineRef -> ReductionStage -> ...` nesting is **not** a goal;
+- the architecture must carry an explicit reduction-depth / execution-budget context from the beginning;
+- the implementation must reject cycles/self-reference;
+- the first implementation may default to no nested ReductionStage workers, but the contract should support a **small bounded depth** (for example depth 2) without redesign;
+- any enabled nested reduction must share the parent concurrency/model budget rather than opening uncontrolled nested pools.
+
+A real bounded-nesting use case is collection aggregation where each member document may itself be oversized:
+
+```text
+Collection ReductionStage
+  -> Worker Pipeline per document
+       -> bounded document-level hierarchical ReductionStage
+  -> document-level compact outputs
+  -> collection-level dedup/cluster/rank/top-k reducer
+```
 
 Codex must determine whether the existing stage abstractions can serve as the worker executor directly or whether a minimal `Executable` / adapter protocol is needed.
 
@@ -284,6 +392,29 @@ reduction:
     max_tokens: 3000
 ```
 
+Collection-level conceptual example:
+
+```yaml
+collection:
+  id: daily-news-2026-09-18
+  source: elasticsearch
+  snapshot_membership: true
+  group_by: null
+
+reduction:
+  controller: single_pass
+  profile: composite
+  steps:
+    - dedup
+    - cluster
+    - rank
+    - top_k:
+        k: 10
+    - semantic_llm
+```
+
+A grouped source may later form multiple logical work units, for example one collection per date. This syntax is provisional; Phase 0 must first identify the correct source/scheduler integration seam.
+
 These names are provisional. Codex must first map existing config-loading conventions and determine the least disruptive schema.
 
 ## 6. Backward-compatibility contract
@@ -317,6 +448,8 @@ Codex must map:
 - output-profile resolution and plugin loading;
 - token counting/context-budget utilities;
 - retry, job-state, cleanup, and resume semantics;
+- SQL/ES/file source enumeration and the safest way to snapshot a multi-document collection;
+- existing row/document identity, source version/fingerprint, and grouping semantics;
 - all tests that characterize combine/merge behavior.
 
 Deliver:
@@ -387,20 +520,43 @@ Required scenario:
 - if reduced result still exceeds target, re-slice the reduced result and repeat;
 - terminate when target reached or stop guard fires.
 
-### Phase 4 — Composite deterministic reducers
+### Phase 4 — Logical Work Unit and Collection Manifest foundation
 
-Goal: make reducers reusable building blocks.
+Goal: support “many source documents -> one logical output” without forcing an immediate rewrite of the scheduler.
+
+Implement/design:
+- logical work-unit / aggregation-scope contract;
+- stable Collection Manifest;
+- explicit fixed-member collections;
+- adapter path for query-resolved collections whose membership is snapshotted before execution;
+- provenance/member identity contract;
+- collection-level input ordering where meaningful;
+- deterministic retry/resume against the same manifest.
+
+Initial acceptance case:
+- a fixed collection of small documents can be mapped independently and reduced into one output;
+- retry uses the same members rather than re-querying a moving source set.
+
+Phase 4 does not yet require advanced ranking or a new generalized job scheduler.
+
+### Phase 5 — Composite deterministic reducers
+
+Goal: make reducers reusable building blocks for both single-document and collection-level aggregation.
 
 Candidates:
 - `entity_union`;
 - exact/canonical dedup helpers;
 - configurable list union;
 - field-aware scalar policies;
+- `group_by`;
+- `dedup`;
+- `rank`;
+- `top_k`;
 - `composite` reducer pipeline.
 
 No LLM reducer is required yet.
 
-### Phase 5 — Semantic LLM reducer
+### Phase 6 — Semantic LLM reducer
 
 Goal: permit a reduction round itself to invoke an LLM for global consolidation.
 
@@ -412,7 +568,9 @@ Requirements:
 - deterministic outer controller remains responsible for stop decisions;
 - semantic reducer failure must not silently fall back to unsafe structural merge unless configured.
 
-### Phase 6 — Structured relational reducer
+This phase enables collection-level final synthesis such as a daily Top-10 briefing after deterministic candidate reduction.
+
+### Phase 7 — Structured relational reducer
 
 Goal: support globally coherent structured outputs that contain local identifiers and cross references.
 
@@ -444,7 +602,7 @@ reduction:
 
 Final exact schema should be decided after Phase 0 analysis.
 
-### Phase 7 — Multi-stage integration, ReductionStage, and round-aware workers
+### Phase 8 — Multi-stage integration, ReductionStage, bounded nested reduction, and round-aware workers
 
 Goal: let any stage choose a reduction policy while preserving stage semantics, and allow each reduction round to execute either a single task or an ordinary mini-pipeline per chunk.
 
@@ -455,25 +613,28 @@ Support:
 - reducer profile changing by round;
 - worker task/prompt changing by round;
 - worker `PipelineRef` / mini-pipeline where compatible with existing stage execution;
-- reducer output feeding the next explicit business stage.
+- reducer output feeding the next explicit business stage;
+- bounded nested reduction where a collection member's worker pipeline must first reduce an oversized document.
 
 Critical rules:
 - **rounds remain internal to a ReductionStage**;
 - existing stage manifests/writeback selectors must not mistake rounds for additional stages;
 - the Reduction Engine is not an arbitrary recursive workflow engine;
-- v1 must reject cycles/self-reference and need not support nested ReductionStages inside worker pipelines;
-- worker execution and reduction rounds must share the existing concurrency/model budget rather than create nested uncontrolled pools.
+- cycles/self-reference are invalid;
+- nesting depth is explicit and small;
+- worker execution and reduction rounds share the existing concurrency/model budget rather than create nested uncontrolled pools.
 
-### Phase 8 — Production hardening and operational visibility
+### Phase 9 — Production hardening and operational visibility
 
 Add:
 - metrics for rounds/chunks/tokens/reduction ratio;
+- collection member counts and manifest identity in audit/provenance;
 - bounded audit logs;
 - clear stop reason (`target_reached`, `max_rounds`, `stalled`, `error`);
 - failure/retry semantics;
 - cancellation behavior;
 - cleanup/retention policy for intermediate artifacts;
-- concurrency limits for nested map/reduce so hierarchical reduction cannot oversubscribe GPUs/endpoints;
+- concurrency limits for nested map/reduce so hierarchical/collection reduction cannot oversubscribe GPUs/endpoints;
 - end-to-end ES/SQL/file regression tests.
 
 ## 8. Multidimensional-event problem as acceptance case, not architecture driver
@@ -486,7 +647,7 @@ The current multidim failure demonstrates why the engine is needed:
 
 However, do not solve v1 by placing multidim-specific branches inside generic combine code.
 
-Use it as an acceptance test for Phase 6:
+Use it as an acceptance test for Phase 7:
 - two or more slices may each contain local `E1`;
 - final output contains globally unique canonical event IDs;
 - every reference resolves;
@@ -507,6 +668,37 @@ Assertions:
 - no unbounded recursion;
 - process can resume from a completed intermediate round when supported;
 - final output enters the next stage/output path exactly once.
+
+## 9.1 Multi-document collection aggregation acceptance case
+
+A second reference scenario should cover:
+
+`all source documents matching one aggregation scope -> one aggregate output`
+
+Example:
+
+```text
+today's 643 news documents
+-> snapshot Collection Manifest
+-> per-document compact analysis
+-> dedup / cluster related coverage
+-> rank candidate hot topics
+-> top_k(10)
+-> semantic final synthesis
+-> one "daily Top 10 news" output
+```
+
+Assertions:
+- collection membership is fixed for the run even if new matching documents arrive later;
+- retry/resume reuses the same manifest;
+- every aggregate output preserves source-member provenance;
+- deterministic reducers can shrink the candidate set before any semantic LLM reducer;
+- the final Top-K count is a task policy, not hard-coded into the engine;
+- a collection member may eventually use bounded document-level hierarchical reduction if the member itself is oversized;
+- collection-level and document-level reductions share concurrency and nesting budgets;
+- the output profile validates the one final collection result exactly once.
+
+This use case should guide Phase 4-6 design, but it must not force a “news-specific” reducer into the generic engine.
 
 ## 10. Testing strategy
 
@@ -539,11 +731,20 @@ Capture current behavior before routing changes:
 - cancellation;
 - resume.
 
+### Collection tests
+- fixed explicit collection -> one output;
+- query collection membership snapshot;
+- retry/resume uses identical manifest membership;
+- provenance contains all selected member IDs without leaking secrets;
+- deterministic dedup/rank/top-k composition;
+- bounded document-level reduction inside a collection worker where enabled.
+
 ### Integration tests
 - legacy single-stage;
 - explicit multi-stage;
 - SQL/ES row-merger source resolution;
 - hierarchical summary;
+- multi-document collection aggregation;
 - structured relational multidim.
 
 ## 11. Safety and failure semantics
@@ -554,6 +755,8 @@ Capture current behavior before routing changes:
 - Semantic repair/consolidation must be explicit and auditable.
 - No infinite hierarchical recursion.
 - Nested reduction concurrency must respect existing model/slice parallelism controls.
+- Collection membership must be snapshotted before processing; a running job must not silently absorb newly arriving source members.
+- Collection manifests must preserve provenance without persisting credentials or secret source configuration.
 - Intermediate artifacts must use existing atomic I/O utilities where possible.
 - Secrets/endpoints must not be persisted in reducer audits or project memory.
 
@@ -571,6 +774,10 @@ Capture current behavior before routing changes:
 10. What is the minimal generic contract for structured identifiers/references without overengineering a graph framework?
 11. Can the existing stage runner/configuration be reused as the Worker Executor for a ReductionStage, or is a minimal executable adapter needed?
 12. Which v1 nesting restrictions should be enforced so mini-pipeline workers remain useful without creating a recursive workflow engine?
+13. What is the safest source-layer seam for resolving and snapshotting a Collection Manifest across ES, SQL, and file modes?
+14. Which source identity/version fields are stable enough to support deterministic collection retry/resume?
+15. Should collection outputs write to a new aggregate sink/document identity, or can current writeback abstractions represent one-output-per-group cleanly?
+16. Should bounded nested reduction (for oversized documents inside a collection) be enabled in the first collection release or only designed into the execution context for a later PR?
 
 ## 13. Definition of success
 
@@ -579,10 +786,12 @@ The project is successful when:
 - simple tasks stay simple and cheap;
 - advanced tasks can select richer reducers;
 - a stage can perform adaptive multi-round reduction;
+- a stable collection of multiple documents can be treated as one logical work unit and produce one aggregate output;
 - multidim/global relational outputs can be reduced without local-ID collisions;
 - output profiles remain the final validation boundary;
 - multi-stage orchestration remains clear and unchanged in meaning;
 - a ReductionStage can use either a single task or an ordinary mini-pipeline as its per-chunk worker without requiring arbitrary Stage/Reducer recursion;
+- bounded nested reduction can be introduced without redesign when a collection member itself is oversized;
 - new reducers can be added through a registry/plugin contract rather than by editing a central `if task == ...` block.
 
 ## 14. Recommended immediate next action
@@ -596,5 +805,7 @@ First run a repository-wide Codex analysis against this exact baseline and this 
 - test files to add/modify;
 - per-phase PR boundaries;
 - dependency graph between phases;
+- collection/source membership snapshot design;
+- bounded nesting/concurrency-budget design;
 - rollback points;
 - explicit non-goals.
