@@ -5,6 +5,8 @@ import queue
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 import czjLLM.sql_mode.runtime.row_merger_generic as merger_module
 from czjLLM.es_mode.output_profiles import OutputProfileValidationError
 from czjLLM.es_mode.output_profiles.multidim_event import normalize_multidim_event_payload
@@ -289,12 +291,11 @@ def test_premerged_stage_dict_is_not_repaired_as_combined_output():
 
     assert updated == []
     assert json.loads(write_map["multidim_event_json"]) == invalid_stage_payload
-    try:
+    with pytest.raises(
+        TypeError,
+        match=r"multidim_event_json must be a JSON array; got dict",
+    ):
         normalize_multidim_event_payload(json.loads(write_map["multidim_event_json"]))
-    except ValueError as exc:
-        assert "must be a JSON array; got dict" in str(exc)
-    else:
-        raise AssertionError("an invalid stage-specific dict must remain rejectable")
 
 
 def test_slice_merge_does_not_overwrite_unrelated_writeback_rule():
