@@ -1,8 +1,9 @@
 # Reduction Engine v1 — Architecture and Incremental Delivery Plan
 
-Status: Draft for repository-wide Codex architecture review  
+Status: **Implementation-ready v1.0 architecture plan — Phase 0 reconciled**  
 Baseline: `c834959d8482e96ab3e815278aec2137952df8d7` (`main`)  
-Scope: design only; no production behavior changes in this branch
+Scope: design only; no production behavior changes in this branch  
+Phase 0 reconciliation basis: authoritative PR #177 plan + source-backed Codex review findings
 
 ## 1. Why this project exists
 
@@ -43,6 +44,21 @@ Keep five concerns separate:
 
 A reduction **round is not a stage**. A multi-stage pipeline may contain a stage whose internal reduction controller performs one or many rounds.
 
+### 2.1 Phase 0 source-backed findings now treated as design constraints
+
+Repository inspection confirmed the following points and they are no longer open architectural guesses:
+
+- `combine_api_finished_item()` is the live authoritative slice combiner. Compatibility work must preserve its observed text ordering, one-level JSON-list flattening, conditional audited dict merge, malformed-JSON fallback, and single-slice versus multi-slice envelope behavior.
+- legacy TXT execution still uses filesystem-backed TODO/RUNNING/Success artifacts and the live combiner after LLM execution; v1 should integrate around this path rather than redesign it.
+- SQL/table processing shares scheduler, registry, Row Merger, and sink/writeback coordination; Elasticsearch reuses this family of runtime paths and adds strict Output Profile validation plus ES persistence.
+- `czjLLM/pipeline/merge/` is a disconnected/experimental skeleton relative to the live TXT/SQL/ES runtime. It is not the Reduction Engine foundation and must remain separate unless a later dedicated cleanup proves otherwise.
+- current business-stage execution is too stateful to serve directly as the generic reduction worker. Reduction v1 should use a small `Executable` contract with adapters for a single task and a bounded `PipelineRef`.
+- existing stage manifests are execution artifacts, not immutable collection identity. Collection Manifest requires a distinct contract with stable membership, fingerprints/versions, ordering, lineage, contract version, and atomic persistence.
+- current `n_process`, `nProcess`, slice-level workers, row/document workers, and endpoint concurrency do not form one inherited budget. Shared `ExecutionBudget` is a prerequisite before collection fan-out and semantic/nested reduction.
+- existing SQL/ES row/document update identity does not solve aggregate creation idempotency. Collection outputs need a derived stable `aggregate_output_id` (or equivalent) and idempotent sink upsert semantics.
+
+These findings refine the draft without changing its original goals: legacy behavior remains authoritative unless a task explicitly opts into the Reduction Engine.
+
 ## 3. Existing boundaries that must be preserved
 
 ### 3.1 Legacy combine path
@@ -68,9 +84,16 @@ These functions should initially be wrapped/adapted, not rewritten.
 
 ### 3.3 Existing doc-type merge strategies
 
-`czjLLM/pipeline/merge/` already contains `BaseMergeStrategy` and doc-type-specific strategies selected by `merge_selector.py`.
+`czjLLM/pipeline/merge/` contains `BaseMergeStrategy` and doc-type-specific strategy skeletons, but Phase 0 source inspection found this package disconnected from the live TXT/SQL/ES runtime and containing placeholder/TODO-oriented paths.
 
-This is a separate semantic domain and must not be silently replaced by the new Reduction Engine. The Codex review must determine whether these strategies should remain internal to the existing pipeline, become adapters into the Reduction Engine later, or share a low-level protocol without changing behavior.
+Decision for v1:
+
+- do **not** use `pipeline/merge/` as the Reduction Engine foundation;
+- do not silently retrofit or delete it in Reduction Engine PRs;
+- keep it separate from the production reduction package;
+- if useful logic is discovered later, reuse it only through an explicit adapter or low-level helper after independent verification.
+
+This avoids conflating similarly named but operationally separate “merge” concepts.
 
 ### 3.4 Output Profile
 
@@ -433,7 +456,22 @@ Collection ReductionStage
   -> collection-level dedup/cluster/rank/top-k reducer
 ```
 
-Codex must determine whether the existing stage abstractions can serve as the worker executor directly or whether a minimal `Executable` / adapter protocol is needed.
+Phase 0 resolved this question: the existing business-stage abstraction should **not** directly serve as the generic Reduction Worker Executor because it owns stage snapshots, barriers, retry/writeback state, and business-stage identity.
+
+Reduction v1 should instead introduce a small execution contract, conceptually:
+
+```python
+class Executable(Protocol):
+    def run(self, item, context):
+        ...
+```
+
+with repository-consistent adapters such as:
+
+- `TaskExecutable` — execute one task/prompt using the existing LLM runtime;
+- `PipelineRefExecutable` — execute a bounded ordinary mini-pipeline through existing stage machinery without exposing stage internals to the Reduction Core.
+
+The exact method signature may change during PR B/K implementation, but the dependency direction is fixed: Reduction Core depends on the small executable contract, not on the entire stage runtime.
 
 The goal is maximum practical composition with minimum orchestration complexity, not a replacement for a general DAG/workflow engine.
 
@@ -554,11 +592,110 @@ A future cache key may combine source fingerprint/version with worker/pipeline c
 Structured reducers and their intermediate artifacts will evolve. Reducer profiles should have an explicit contract/version concept so incompatible old intermediate artifacts can be rejected or migrated rather than silently consumed by newer code.
 
 
+### 4.8 Concrete package ownership for v1
+
+The implementation should converge on a focused source-agnostic package:
+
+```text
+czjLLM/reduction/
+  contracts.py
+  config.py
+  registry.py
+  engine.py
+  controllers.py
+  policies.py
+  execution_budget.py
+  artifacts.py
+  executables.py
+  work_units.py
+  manifests.py
+  reducers/
+    legacy.py
+    deterministic.py
+    semantic.py
+    relational.py
+  adapters/
+    collections_sql.py
+    collections_es.py
+    collections_files.py
+    output_profiles.py
+    writeback.py
+```
+
+Exact file splitting may be compressed if implementation proves some modules too small, but ownership boundaries should remain:
+
+- core contracts/controllers/reducers contain no SQL/ES/TXT branching;
+- collection adapters own source-specific membership resolution;
+- Output Profile integration remains an adapter/final validation boundary;
+- Row Merger/writeback integration remains outside the reducer implementations;
+- `combine_utils.py`, `slice_merge.py`, the live prompt-pipeline controller, and Row Merger remain compatibility facades during migration;
+- `pipeline/merge/` remains outside this package.
+
+### 4.9 Minimal implementation contracts
+
+The first implementation PRs should converge on small contracts equivalent to:
+
+```python
+class Reducer(Protocol):
+    profile: str
+    contract_version: str
+    requires_stable_order: bool
+    preserves_order: bool
+
+    def reduce(self, items, context) -> ReducerResult: ...
+
+@dataclass
+class ReducerResult:
+    payload: object
+    profile: str
+    contract_version: str
+    warnings: list[str]
+    provenance: dict
+    metrics: dict
+
+class ReductionController(Protocol):
+    def next_action(self, result, context) -> str: ...
+
+class Executable(Protocol):
+    def run(self, item, context): ...
+
+@dataclass(frozen=True)
+class CollectionManifest:
+    collection_id: str
+    collection_version: str
+    contract_version: str
+    source_kind: str
+    members: tuple
+    scope_fingerprint: str
+    ordering: object | None
+    window: object | None
+    parent_manifest_id: str | None
+
+class ExecutionBudget(Protocol):
+    def acquire(self, resource_kind, amount=1): ...
+    def release(self, lease): ...
+```
+
+Additional planned contracts include `LogicalWorkUnit`, `CollectionMember`, `ReductionPolicy`, `ReductionContext`, `ReductionStage`, `TaskExecutable`, `PipelineRefExecutable`, and artifact/checkpoint identity.
+
+These are architectural contracts, not implemented APIs. PR B must finalize exact Python typing against repository conventions before any routing changes.
+
 ## 5. Configuration direction
 
 Do not break existing configuration.
 
-If no new reduction config is present, existing behavior must remain unchanged.
+If no new reduction config is present, existing behavior must remain unchanged. `reduction.enabled: false` should likewise preserve the legacy path.
+
+Phase 0 also resolves these validation rules:
+
+- explicit new Reduction Engine routing is opt-in; never infer it from task shape;
+- legacy `merge_slices` remains authoritative for legacy tasks;
+- a configuration that simultaneously requests legacy `merge_slices` semantics and an incompatible explicit `reduction` profile must fail validation rather than silently reconcile the two;
+- self-referential/cyclic `PipelineRef` is invalid;
+- v1 nesting depth is explicitly bounded (target maximum depth 2 unless implementation evidence requires a stricter first release);
+- child executors may not create independent concurrency pools outside the inherited `ExecutionBudget`;
+- query/group collections require deterministic member identity and ordering whenever the selected reducer declares stable-order requirements;
+- stale reducer/schema contract versions are invalid for resume/cache reuse unless an explicit compatible migration exists.
 
 Candidate opt-in syntax:
 
@@ -738,7 +875,23 @@ Required scenario:
 - if reduced result still exceeds target, re-slice the reduced result and repeat;
 - terminate when target reached or stop guard fires.
 
-### Phase 4 — Logical Work Unit and Collection Manifest foundation
+### Phase 4 — Shared Execution Budget
+
+Goal: establish one inherited concurrency/resource budget before collection fan-out or nested semantic work is introduced.
+
+Implement/design:
+- shared lease/token budget across row/document workers, prompt slices, reduction workers, nested ReductionStages, and semantic reducer calls;
+- adapters from current `n_process` / `nProcess` / `slice_parallelism` / endpoint scheduling into one parent budget;
+- child execution borrows capacity from the parent instead of creating independent pools;
+- explicit nesting-depth accounting;
+- cancellation-safe lease release;
+- diagnostics showing requested versus granted concurrency.
+
+Exit criteria:
+- no collection or nested reducer can multiply existing worker pools without going through the shared budget;
+- legacy tasks with no reduction config preserve existing effective parallelism.
+
+### Phase 5 — Logical Work Unit and Collection Manifest foundation
 
 Goal: support “many source documents -> one logical output” without forcing an immediate rewrite of the scheduler.
 
@@ -763,7 +916,7 @@ Production priority for Collection Manifest integration is **SQL and Elasticsear
 
 Phase 4 does not yet require advanced ranking or a new generalized job scheduler.
 
-### Phase 5 — Composite deterministic reducers
+### Phase 6 — Composite deterministic reducers
 
 Goal: make reducers reusable building blocks for both single-document and collection-level aggregation.
 
@@ -780,7 +933,7 @@ Candidates:
 
 No LLM reducer is required yet.
 
-### Phase 6 — Semantic LLM reducer
+### Phase 7 — Semantic LLM reducer
 
 Goal: permit a reduction round itself to invoke an LLM for global consolidation.
 
@@ -794,7 +947,7 @@ Requirements:
 
 This phase enables collection-level final synthesis such as a daily Top-10 briefing after deterministic candidate reduction.
 
-### Phase 7 — Structured relational reducer
+### Phase 8 — Structured relational reducer
 
 Goal: support globally coherent structured outputs that contain local identifiers and cross references.
 
@@ -826,7 +979,7 @@ reduction:
 
 Final exact schema should be decided after Phase 0 analysis.
 
-### Phase 8 — Multi-stage integration, ReductionStage, bounded nested reduction, and round-aware workers
+### Phase 9 — Multi-stage integration, ReductionStage, bounded nested reduction, and round-aware workers
 
 Goal: let any stage choose a reduction policy while preserving stage semantics, and allow each reduction round to execute either a single task or an ordinary mini-pipeline per chunk.
 
@@ -848,7 +1001,7 @@ Critical rules:
 - nesting depth is explicit and small;
 - worker execution and reduction rounds share the existing concurrency/model budget rather than create nested uncontrolled pools.
 
-### Phase 9 — Production hardening and operational visibility
+### Phase 10 — Production hardening and operational visibility
 
 Add:
 - metrics for rounds/chunks/tokens/reduction ratio;
@@ -929,7 +1082,38 @@ Assertions:
 - collection-level and document-level reductions share concurrency and nesting budgets;
 - the output profile validates the one final collection result exactly once.
 
-This use case should guide Phase 4-6 design, but it must not force a “news-specific” reducer into the generic engine.
+This use case should guide Phase 5-7 design, but it must not force a “news-specific” reducer into the generic engine.
+
+## 9.2 Implementation PR roadmap after this plan merges
+
+Phase 0 remains documentation-only. The implementation sequence should be split into small PRs with explicit rollback boundaries:
+
+1. **PR A — Characterization / Golden Tests**  
+   Production behavior change: **NO**. Freeze current combine, malformed/empty handling, single-vs-multi-slice envelopes, stage-source writeback, Row Merger, and Output Profile behavior before routing changes.
+2. **PR B — Contracts, Reducer Registry, and legacy adapters**  
+   Introduce source-agnostic contracts and wrap existing concat/list/deep-merge behavior without changing defaults.
+3. **PR C — Strict configuration and opt-in single-pass routing**  
+   Add explicit `reduction` parsing/validation; no-config tasks remain on the legacy path.
+4. **PR D — Hierarchical Controller and atomic checkpoints**  
+   Add deterministic multi-round text reduction, stop guards, restartable round artifacts, and metrics.
+5. **PR E — Shared Execution Budget**  
+   Unify inherited concurrency limits before collection fan-out, semantic reducer fan-out, or bounded nested reduction.
+6. **PR F — Logical Work Unit and immutable Collection Manifest**  
+   Add stable collection identity, member snapshots, ordering/window metadata, lineage, and contract versioning.
+7. **PR G — SQL/ES Collection Adapters and idempotent aggregate upsert**  
+   Productionize query/group collections for database-backed sources and introduce stable `aggregate_output_id` (or equivalent).
+8. **PR H — Deterministic composite reducers**  
+   Add reusable dedup/group/union/rank/top-k building blocks.
+9. **PR I — Semantic reducer**  
+   Reuse existing model/client/audit infrastructure under the inherited ExecutionBudget.
+10. **PR J — Structured relational reducer**  
+    Add local namespaces, reference remapping, integrity checks, provenance, and canonical ID assignment.
+11. **PR K — ReductionStage and bounded PipelineRef nesting**  
+    Add Task/PipelineRef executables and explicitly bounded nested reduction using shared budget/depth/cycle checks.
+12. **PR L — Retention, GC, cache/reuse integration points, and production hardening**  
+    Finalize operational retention, observability, cancellation, audit bounding, and end-to-end source/sink coverage.
+
+**Characterization / Golden Tests remains the mandatory first implementation PR.** No production refactor should precede PR A because current combine/writeback ownership crosses multiple live runtime surfaces.
 
 ## 10. Testing strategy
 
@@ -1056,21 +1240,10 @@ The project is successful when:
 
 ## 14. Recommended immediate next action
 
-Do **not** start Phase 1 implementation yet.
+Phase 0 repository-wide architecture analysis is now reconciled into this authoritative PR #177 plan.
 
-First run a repository-wide Codex analysis against this exact baseline and this document. Codex should challenge the assumptions, identify hidden call paths and compatibility constraints, and revise this plan into an implementation-ready v1.0 with:
-- concrete module/file names;
-- exact config compatibility rules;
-- migration sequence;
-- test files to add/modify;
-- per-phase PR boundaries;
-- dependency graph between phases;
-- collection/source membership snapshot and aggregation-window design;
-- aggregate idempotency/output-identity design;
-- partial-failure and ordering contracts;
-- lineage/version metadata design;
-- bounded nesting/shared execution-budget design;
-- intermediate artifact retention/GC design;
-- extension points for quality checks, member-result reuse, and reducer/schema contract versioning;
-- rollback points;
-- explicit non-goals.
+After this documentation PR is reviewed and merged, begin **PR A — Characterization / Golden Tests** with **no production behavior change**.
+
+Do not begin Reduction Engine routing, collection fan-out, semantic reduction, or structured relational implementation before those golden tests freeze the current live contracts.
+
+The remaining open questions in Section 12 are implementation-detail decisions to resolve in their owning PRs; they are not blockers to merging this architecture plan unless review identifies a contradiction with current source behavior.
