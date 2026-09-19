@@ -6,6 +6,7 @@
 
 ## Recent Changes
 
+- 2026-09-19：PR B 僅凍結 Reducer boundary；registry 與 legacy adapters 保持 source-agnostic 且 inactive。Deep merge 委派既有 audited utility，dedup/conflict policy 為 reducer instance 的明確選項，不統一或改寫現有 caller defaults；production opt-in routing 留待 PR C。
 - 2026-08-21：併行調校以 model profile 為預設操作面，避免每份 ES YAML 重複設定；支援 `n_process` 與舊 `nProcess`，slice 特別需求用 `slice_parallelism`。YAML 只保留高優先序 task override。
 - 2026-08-21：doc/row 併行度與 prompt slice 併行度分開設定；新設定未出現時回退 `ctx.n_process` 以保持相容，實際 worker 數不超過本批 job 數。
 - 2026-08-20：`merge_slices` 的 audited merge 結果必須成為相同 source 的權威主欄位 writeback payload，不可只供 flatten 使用；multidim profile 用 `[merged article record]` 保持 ES array contract，generic profile 寫 merged object。

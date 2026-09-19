@@ -76,7 +76,7 @@
 
 ## 2026-09-19 planned Reduction Engine v1 architecture
 
-- 狀態：planned/approved architecture only；尚未實作。
+- 狀態：整體 v1 architecture 已規劃核准；PR B reducer foundation 已實作，其餘 production routing 與後續元件仍未實作。
 - 新核心預計集中於 `czjLLM/reduction/`，包含 contracts/config/registry/engine/controllers/policies/execution budget/artifacts/executables/work units/manifests/reducers 與 source/sink adapters。
 - Reduction Core 僅接觸 logical items、provenance、contracts 與 execution context；SQL/ES/TXT collection discovery 與 writeback 透過 adapters 隔離。
 - `combine_utils.py`、`slice_merge.py`、live prompt-pipeline controller、Row Merger 保留 compatibility facade；`pipeline/merge/` 不納入 live Reduction Engine foundation。
@@ -84,3 +84,10 @@
 - Shared `ExecutionBudget` 必須先於 collection fan-out、semantic reducer fan-out 與 nested ReductionStage，且 child worker 不可另開不受控 pool。
 - Collection Manifest 為 immutable/versioned contract，包含 stable member identity、ordering/window/watermark、lineage、contract version；aggregate output 使用 stable derived identity 與 idempotent sink upsert。
 - SQL/Elasticsearch 為 multi-document collection 第一批 production targets；TXT/file 保留完整 single-document hierarchical reduction，collection 僅做 constrained manifest/adaptor。
+
+## 2026-09-19 Reduction Engine PR B inactive foundation
+
+- `czjLLM/reduction/contracts.py` 定義 source-agnostic `Reducer` protocol 與 structured `ReducerResult`；不依賴 SQL、ES、filesystem、business Stage、Output Profile、LLM 或 config parser。
+- `czjLLM/reduction/registry.py` 是獨立 reducer profile registry，提供 canonical names、aliases、lookup 與 builtins；它不依賴 ES Output Profile registry。
+- `czjLLM/reduction/reducers/legacy.py` 提供已準備文字的 concat、單層 dict-only JSON list concat，以及委派既有 `utilities.slice_merge` 的 audited deep merge。
+- 此 package 尚未被 production runtime import；combine/Row Merger/YAML routing 維持原路徑，PR C 才擁有 explicit opt-in integration。
