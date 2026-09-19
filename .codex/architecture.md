@@ -104,3 +104,8 @@
 - `czjLLM/reduction/hierarchical.py` 是 text-only execution facade。它接受 already-prepared initial items 與狹窄的 `next_round_items(previous_payload, next_round_index)` callback，不擁有 source discovery、business Stage、worker pool 或 LLM runtime。
 - `czjLLM/reduction/artifacts.py` 以 deterministic input/policy fingerprints 建立 stable run key。每輪先 atomic write payload、後 atomic write checkpoint JSON commit marker；resume 僅接受 contiguous、contract-compatible、payload hash 與 parent chain 均有效的 completed rounds。
 - PR D1 未接入 `combine_api_finished_item()`，也未擴充 production YAML；PR C `single_pass` routing/config 保持唯一 production contract。Production text-round adapter 與 hierarchical routing 留待 PR D2。
+
+## 2026-09-19 Reduction Engine PR D1 hosted-review identity corrective
+
+- Checkpointed `reduce_hierarchical_text()` now requires a caller-owned non-blank `execution_fingerprint`. Stable run identity and compatibility metadata include it alongside input, controller/policy, profile, reducer contract, and checkpoint contract identities.
+- D1 does not inspect callbacks, model names, prompts, tokenizer/runtime settings, context, source type, or Python object identity. The caller must deterministically fingerprint every external execution semantic that can affect future round construction/output; PR D2 will own derivation from its normalized adapter/runtime contract.

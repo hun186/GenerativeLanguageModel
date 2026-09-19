@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import asdict, dataclass
 from typing import Any, Mapping, Optional, Protocol
 
@@ -10,6 +11,14 @@ STOP_TARGET_REACHED = "target_reached"
 STOP_FIXED_ROUNDS_COMPLETE = "fixed_rounds_complete"
 STOP_MAX_ROUNDS = "max_rounds"
 STOP_STALLED = "stalled"
+SUPPORTED_STOP_REASONS = frozenset(
+    {
+        STOP_TARGET_REACHED,
+        STOP_FIXED_ROUNDS_COMPLETE,
+        STOP_MAX_ROUNDS,
+        STOP_STALLED,
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -68,6 +77,10 @@ class AdaptiveHierarchicalController:
             self.min_reduction_ratio, (int, float)
         ):
             raise ValueError("min_reduction_ratio must be numeric")
+        if not math.isfinite(self.min_reduction_ratio) or not (
+            0 <= self.min_reduction_ratio <= 1
+        ):
+            raise ValueError("min_reduction_ratio must be finite and between 0 and 1")
 
     def decide(self, state: ControllerState) -> ControllerDecision:
         # Precedence is contractual: target, hard guard, then aggregate stall.

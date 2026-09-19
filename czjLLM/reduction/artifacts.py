@@ -4,15 +4,17 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Optional, Sequence, Tuple
 
+from czjLLM.reduction.controllers import SUPPORTED_STOP_REASONS
 from czjLLM.utilities.atomic_io import atomic_write_json
 from czjLLM.utilities.fs_safe import safe_atomic_write_text, safe_read_text
 
 
-CHECKPOINT_CONTRACT_VERSION = "1"
+CHECKPOINT_CONTRACT_VERSION = "2"
 
 
 class ReductionCheckpointError(RuntimeError):
@@ -48,12 +50,17 @@ def normalized_fingerprint(value: Mapping[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def derive_run_key(initial_input_fingerprint: str, policy_fingerprint: str) -> str:
+def derive_run_key(
+    initial_input_fingerprint: str,
+    policy_fingerprint: str,
+    execution_fingerprint: str,
+) -> str:
     return normalized_fingerprint(
         {
             "checkpoint_contract_version": CHECKPOINT_CONTRACT_VERSION,
             "initial_input_fingerprint": initial_input_fingerprint,
             "policy_fingerprint": policy_fingerprint,
+            "execution_fingerprint": execution_fingerprint,
         }
     )
 
@@ -80,6 +87,7 @@ class CheckpointStore:
         reducer_contract_version: str,
         policy_fingerprint: str,
         initial_input_fingerprint: str,
+        execution_fingerprint: str,
     ) -> None:
         self.root = Path(root)
         self.run_key = run_key
@@ -92,6 +100,7 @@ class CheckpointStore:
             "reducer_contract_version": reducer_contract_version,
             "policy_fingerprint": policy_fingerprint,
             "initial_input_fingerprint": initial_input_fingerprint,
+            "execution_fingerprint": execution_fingerprint,
         }
 
     @property
@@ -127,6 +136,59 @@ class CheckpointStore:
                     f"Incompatible {label}: {key} expected {expected!r}, "
                     f"found {value.get(key)!r}"
                 )
+
+    @staticmethod
+    def _validate_metrics(
+        value: Any, *, round_index: int, checkpoint_name: str
+    ) -> Mapping[str, Any]:
+        expected_keys = {
+            "round_index",
+            "input_item_count",
+            "input_character_count",
+            "output_character_count",
+            "previous_aggregate_output_character_count",
+            "reduction_ratio",
+        }
+        if not isinstance(value, dict) or set(value) != expected_keys:
+            raise CheckpointCorruptionError(
+                f"Invalid round metrics in {checkpoint_name}"
+            )
+        integer_fields = (
+            "round_index",
+            "input_item_count",
+            "input_character_count",
+            "output_character_count",
+        )
+        if any(type(value[field]) is not int for field in integer_fields):
+            raise CheckpointCorruptionError(
+                f"Invalid round metrics in {checkpoint_name}"
+            )
+        if (
+            value["round_index"] != round_index
+            or value["input_item_count"] < 0
+            or value["input_character_count"] < 0
+            or value["output_character_count"] <= 0
+        ):
+            raise CheckpointCorruptionError(
+                f"Invalid round metrics in {checkpoint_name}"
+            )
+        previous_chars = value["previous_aggregate_output_character_count"]
+        ratio = value["reduction_ratio"]
+        if round_index == 1:
+            valid_previous = previous_chars is None and ratio is None
+        else:
+            valid_previous = (
+                type(previous_chars) is int
+                and previous_chars > 0
+                and not isinstance(ratio, bool)
+                and isinstance(ratio, (int, float))
+                and math.isfinite(ratio)
+            )
+        if not valid_previous:
+            raise CheckpointCorruptionError(
+                f"Invalid round metrics in {checkpoint_name}"
+            )
+        return value
 
     def commit_round(
         self,
@@ -201,7 +263,8 @@ class CheckpointStore:
                     f"Broken checkpoint parent chain at {path.name}"
                 )
             payload_name = data.get("payload_artifact")
-            if not isinstance(payload_name, str) or Path(payload_name).name != payload_name:
+            expected_payload_name = f"round-{expected_index:04d}.payload.txt"
+            if payload_name != expected_payload_name:
                 raise CheckpointCorruptionError(
                     f"Invalid payload artifact in {path.name}"
                 )
@@ -219,7 +282,7 @@ class CheckpointStore:
                 )
             previous_fingerprint = actual_fingerprint
             terminal = data.get("terminal_stop_reason")
-            if terminal is not None and not isinstance(terminal, str):
+            if terminal is not None and terminal not in SUPPORTED_STOP_REASONS:
                 raise CheckpointCorruptionError(
                     f"Invalid terminal stop reason in {path.name}"
                 )
@@ -227,10 +290,19 @@ class CheckpointStore:
                 raise CheckpointCorruptionError(
                     f"Checkpoint exists after terminal round: {path.name}"
                 )
-            metrics = data.get("metrics")
-            if not isinstance(metrics, dict):
+            metrics = self._validate_metrics(
+                data.get("metrics"),
+                round_index=expected_index,
+                checkpoint_name=path.name,
+            )
+            expected_previous_chars = len(state.payload) if state is not None else None
+            if (
+                metrics["output_character_count"] != len(payload)
+                or metrics["previous_aggregate_output_character_count"]
+                != expected_previous_chars
+            ):
                 raise CheckpointCorruptionError(
-                    f"Invalid round metrics in {path.name}"
+                    f"Round metrics do not match payload chain in {path.name}"
                 )
             metrics_history.append(metrics)
             state = ResumeState(

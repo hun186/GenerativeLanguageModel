@@ -64,6 +64,7 @@ def reduce_hierarchical_text(
     registry: Optional[ReducerRegistry] = None,
     context: Optional[Mapping[str, object]] = None,
     checkpoint_root: Optional[str | Path] = None,
+    execution_fingerprint: Optional[str] = None,
 ) -> HierarchicalReductionResult:
     """Reduce prepared text items over deterministic, checkpointed rounds."""
 
@@ -89,7 +90,19 @@ def reduce_hierarchical_text(
     store = None
     resumed = None
     if checkpoint_root is not None:
-        run_key = derive_run_key(initial_fingerprint, policy_fingerprint)
+        if (
+            not isinstance(execution_fingerprint, str)
+            or not execution_fingerprint.strip()
+        ):
+            raise ValueError(
+                "execution_fingerprint is required and must be non-blank "
+                "when checkpointing is enabled"
+            )
+        run_key = derive_run_key(
+            initial_fingerprint,
+            policy_fingerprint,
+            execution_fingerprint,
+        )
         store = CheckpointStore(
             checkpoint_root,
             run_key=run_key,
@@ -98,6 +111,7 @@ def reduce_hierarchical_text(
             reducer_contract_version=reducer.contract_version,
             policy_fingerprint=policy_fingerprint,
             initial_input_fingerprint=initial_fingerprint,
+            execution_fingerprint=execution_fingerprint,
         )
         resumed = store.load_highest_completed()
         if resumed is not None and resumed.terminal_stop_reason is not None:

@@ -152,3 +152,9 @@
 - D1 text convergence 的權威 metric 是 Python Unicode character count，不以字元推估 token。stall 僅比較 previous aggregate output 與 current aggregate output；round 1 沒有 previous aggregate，因此不判 stall。
 - Completed checkpoint JSON 是 commit marker：payload 必須先原子落盤；orphan payload 可重建，但 committed metadata 的缺檔、hash 不符、版本/政策不相容或 round chain 破損必須明確失敗，不可降級成空 checkpoint。
 - D1 facade 刻意只接受 `concat_text` 與 narrow next-round callback；不引入 Executable/Stage/DAG、nested pool 或 production routing。D2 完成 runtime adapter 前不得開放 hierarchical YAML。
+
+## 2026-09-19 PR D1 hosted-review checkpoint identity corrective
+
+- 決策：D1 不從 callback source/object identity 或 runtime-specific fields 猜測 execution semantics；checkpoint caller 必須供應 deterministic `execution_fingerprint`，並對 prompt、reslicing、tokenizer/model/runtime 與 reducer context 等外部語意的版本化負責。
+- 理由：只以 input/controller/profile/reducer contract 建立 run key 會讓新版 round adapter 誤用舊 terminal checkpoint。Execution identity 同時參與 run key 與 persisted compatibility metadata，變更時建立獨立 run，竄改時明確拒絕。
+- 附帶 hardening：checkpoint contract v2 嚴格驗證 stop reason、精確 payload filename 與完整 round metrics；adaptive `min_reduction_ratio` 限制為 finite `[0, 1]`。
