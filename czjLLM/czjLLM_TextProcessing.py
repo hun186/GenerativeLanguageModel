@@ -153,6 +153,14 @@ if __name__ == '__main__':
         merge_slices=merge_slices_cfg,
         task_name=get_param("task") or task_hint
     )
+    # Project the root setting once for every TXT/Table/SQL/ES mode.  Strict
+    # normalization remains owned by the Reduction package and occurs before
+    # any combine work is scheduled.
+    from czjLLM.reduction.config import parse_reduction_config
+    ctx.reduction = parse_reduction_config(
+        get_param("reduction", None),
+        merge_slices=ctx.merge_slices,
+    )
     # 多階段設定（可直接放在主 YAML 的 stage_cfg/stages，或獨立 stage_config_file）
     if stage_cfg_preview:
         ctx.stage_cfg = stage_cfg_preview

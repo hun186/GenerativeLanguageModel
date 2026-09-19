@@ -91,3 +91,9 @@
 - `czjLLM/reduction/registry.py` 是獨立 reducer profile registry，提供 canonical names、aliases、lookup 與 builtins；它不依賴 ES Output Profile registry。
 - `czjLLM/reduction/reducers/legacy.py` 提供已準備文字的 concat、單層 dict-only JSON list concat，以及委派既有 `utilities.slice_merge` 的 audited deep merge。
 - 此 package 尚未被 production runtime import；combine/Row Merger/YAML routing 維持原路徑，PR C 才擁有 explicit opt-in integration。
+
+## 2026-09-19 Reduction Engine PR C routing boundary
+
+- Root task config 的 `reduction` 由 `czjLLM.reduction.config` 單一邊界正規化為 immutable `ReductionConfig`，並投影到所有 TXT/Table/SQL/ES 共用的 `LLMJobConfig.reduction`。
+- `combine_api_finished_item()` 保留 Success discovery、lexical ordering、filtering、JSON preparation、filesystem output 與 cleanup 所有權；僅在 `reduction.enabled=true` 時把 prepared logical items 交給 `reduce_single_pass()`，且只執行一個 reducer call。
+- 未設定 reduction 或 `enabled=false` 時不呼叫 reduction execution facade，繼續使用原 legacy combine/merge path。Row Merger 仍只消費 combined artifact，未新增 Registry invocation；Output Profile 仍是 writeback 後段的 final strict boundary。

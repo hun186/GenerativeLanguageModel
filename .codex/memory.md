@@ -150,3 +150,10 @@
 - Writeback 邊界：`combined` 與 `stage:<name>` 選取不同 artifact；malformed stage payload 保留為字串。既有 Row Merger regression 繼續凍結 generic combined dict、multidim combined `[dict]` wrapper、stage dict 不自動修復、retry recomputation 與 merge-audit 去重。
 - Output Profile 邊界：generic profile 保持 identity pass-through；multidim profile 仍嚴格拒絕缺 Event、錯誤型別/時間精度、重複或 unresolved event ID 與 object consequence，registry 統一拋出 `OutputProfileValidationError`。
 - 驗證：新增 dependency-light combine/slice/profile tests 29 passed；multi-stage source tests 7 passed（以 import-only package seam 避開缺少 optional runtime dependencies）；requirements 安裝仍因 pinned GitHub `peft` proxy CONNECT 403 失敗。
+
+## 2026-09-19 Reduction Engine PR C opt-in single-pass routing
+
+- 任務目的：在不改變預設 production behavior 的前提下，加入單一嚴格 `reduction` 設定邊界與三個 PR B reducer 的 explicit single-pass routing。
+- 主要修改內容：新增 immutable `ReductionConfig`、`ReductionConfigError`、嚴格 parser 與 `reduce_single_pass()` facade；root YAML 對 TXT/Table/SQL/ES 共用投影至 `ctx.reduction`，combine 只在 `enabled=true` 時將既有 prepared payload 送入 reducer。`merge_slices=true` 與 explicit reduction 互斥；deep-merge combine route 明確採 `dedup_lists=true` 等 caller-level compatibility defaults。
+- 驗證結果：`tests/reduction` 45 passed；PR A combine/slice-merge/output-profile characterization 29 passed；routing OFF spy 與三種 routing ON profile 均通過。Row Merger/multistage suite 因缺少 PyYAML 無法 collection；requirements 安裝仍因 pinned GitHub `peft` proxy 403 失敗。compileall、diff check 與 scope/import checks 通過。
+- 重要結論：Row Merger、multistage writeback、Output Profile、`pipeline/merge` 與 legacy slice merge utility 均未改動；hierarchical/controller framework 仍留待 PR D+。

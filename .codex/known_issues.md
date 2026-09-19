@@ -50,3 +50,7 @@
 ## Archived History
 
 - `.codex/archive/known_issues-20260918-000000.md` — archived 2026-09-18; complete pre-compaction history covering dependency installation, SQL/ES Row Merger collection limits, Windows multiprocessing investigation, metadata credential risk, and resolved/superseded notes.
+
+## 2026-09-19 Reduction Engine PR C environment verification
+
+- Requirements 安裝再次在 pinned GitHub `peft` clone 遭 proxy 403；Row Merger/multistage suite 因缺少 PyYAML 在 collection 停止。Reduction/PR A dependency-light suites、compileall 與 static checks 作為替代驗證。

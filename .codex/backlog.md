@@ -34,7 +34,7 @@
 
 - [x] PR A — Characterization / Golden Tests（production behavior change: NO）
 - [x] PR B — Contracts, Reducer Registry, legacy adapters（inactive foundation；production routing 留待 PR C）
-- [ ] PR C — Strict config + opt-in single-pass routing
+- [x] PR C — Strict config + opt-in single-pass routing
 - [ ] PR D — Hierarchical Controller + atomic checkpoints
 - [ ] PR E — Shared Execution Budget
 - [ ] PR F — Logical Work Unit + immutable Collection Manifest
