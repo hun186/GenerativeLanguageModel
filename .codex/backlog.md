@@ -32,7 +32,7 @@
 
 ## 2026-09-19 Reduction Engine v1 implementation sequence
 
-- [ ] PR A — Characterization / Golden Tests（production behavior change: NO）
+- [x] PR A — Characterization / Golden Tests（production behavior change: NO）
 - [ ] PR B — Contracts, Reducer Registry, legacy adapters
 - [ ] PR C — Strict config + opt-in single-pass routing
 - [ ] PR D — Hierarchical Controller + atomic checkpoints

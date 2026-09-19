@@ -127,3 +127,12 @@
 - 架構定案：Reduction Core 維持 source-agnostic；Row Merger 留在 SQL/table/ES writeback 邊界；Output Profile 與 Reducer Profile 分離；worker 採小型 `Executable` contract + Task/PipelineRef adapters，而不是直接依賴整個 business-stage runtime。
 - 執行順序修正：Shared `ExecutionBudget` 提前成為 collection/semantic/nested fan-out 的 prerequisite；Collection Manifest 使用獨立 immutable contract；aggregate creation 使用 stable `aggregate_output_id`/idempotent upsert，而非只依賴既有 row/document update identity。
 - 下一個 production-facing 工作仍是 PR A Characterization / Golden Tests，且 production behavior change = NO。
+
+## 2026-09-19 Reduction Engine PR A characterization
+
+- 任務目的：在導入 Reduction Engine routing 前，以 golden tests 凍結既有 combine、slice merge、multi-stage source resolution、Row Merger 與 Output Profile 邊界；production behavior change = NO。
+- 已凍結行為：文字切片採 Success 路徑字典序、逐非空切片補單一換行並略過 `無主題相關內容`；JSON 只保留 list 第一層的 dict，單一 dict/list 均輸出 list envelope，多個 JSON slice 在 merge 開啟時輸出 merged dict；valid + malformed 混合時只輸出已解析 rows，而全 malformed `return json` 回退原文字串。
+- Slice merge 相容陷阱：預設 `prefer_left`，空字串與 null 可由右值補入；list concat 可依 audited path 去重；type mismatch 固定保留左值。Audit tests 凍結 changed/counts/sample action/path/chosen 語意，不依賴完整 log 格式。
+- Writeback 邊界：`combined` 與 `stage:<name>` 選取不同 artifact；malformed stage payload 保留為字串。既有 Row Merger regression 繼續凍結 generic combined dict、multidim combined `[dict]` wrapper、stage dict 不自動修復、retry recomputation 與 merge-audit 去重。
+- Output Profile 邊界：generic profile 保持 identity pass-through；multidim profile 仍嚴格拒絕缺 Event、錯誤型別/時間精度、重複或 unresolved event ID 與 object consequence，registry 統一拋出 `OutputProfileValidationError`。
+- 驗證：新增 dependency-light combine/slice/profile tests 29 passed；multi-stage source tests 7 passed（以 import-only package seam 避開缺少 optional runtime dependencies）；requirements 安裝仍因 pinned GitHub `peft` proxy CONNECT 403 失敗。
