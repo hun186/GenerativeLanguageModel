@@ -157,3 +157,10 @@
 - 主要修改內容：新增 immutable `ReductionConfig`、`ReductionConfigError`、嚴格 parser 與 `reduce_single_pass()` facade；root YAML 對 TXT/Table/SQL/ES 共用投影至 `ctx.reduction`，combine 只在 `enabled=true` 時將既有 prepared payload 送入 reducer。`merge_slices=true` 與 explicit reduction 互斥；deep-merge combine route 明確採 `dedup_lists=true` 等 caller-level compatibility defaults。
 - 驗證結果：`tests/reduction` 45 passed；PR A combine/slice-merge/output-profile characterization 29 passed；routing OFF spy 與三種 routing ON profile 均通過。Row Merger/multistage suite 因缺少 PyYAML 無法 collection；requirements 安裝仍因 pinned GitHub `peft` proxy 403 失敗。compileall、diff check 與 scope/import checks 通過。
 - 重要結論：Row Merger、multistage writeback、Output Profile、`pipeline/merge` 與 legacy slice merge utility 均未改動；hierarchical/controller framework 仍留待 PR D+。
+
+## 2026-09-19 Reduction Engine PR C hosted-review corrective
+
+- 修正 explicit JSON reducer 在所有初次 `json.loads()` 失敗時過早拒絕輸入：現在先重用既有 `combine_json_return()` 修復 fallback text，再依單層 dict contract 準備 logical items；已有正常 JSON rows 時仍丟棄 malformed slice text。
+- explicit reducer 成功後的 payload 現為 combine phase 權威結果，不再進入 legacy `to json format` post-processing；legacy/no-reduction repair path 保持不變。
+- 新增 `docs/usage/reduction_single_pass.md`，只記錄 PR C opt-in、三個 profiles、deep-merge options 與 `merge_slices` mutual exclusion。
+- 驗證結果：`tests/reduction` 50 passed；PR A characterization 29 passed；corrective tests 覆蓋 fenced JSON list/deep merge、explicit text authority、legacy repair 與 valid+malformed mixing。Row Merger/multistage suite 仍因缺少 PyYAML 無法 collection，requirements 安裝仍受 pinned GitHub `peft` proxy 403 阻擋；compileall、diff check 與 protected-boundary checks 通過。

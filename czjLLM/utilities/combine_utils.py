@@ -430,9 +430,33 @@ def combine_api_finished_item(item: str, ctx) -> str:
                 reduction_items = text_chunks
             else:
                 if not json_rows and text_chunks:
-                    raise ValueError(
-                        "Explicit JSON reduction requires at least one valid JSON object"
+                    fallback_text = "".join(text_chunks)
+                    fixed, _repair_error = combine_json_return(
+                        fallback_text,
+                        dictListForced=True,
                     )
+                    try:
+                        repaired_payload = json.loads(fixed)
+                    except Exception as ex:
+                        raise ValueError(
+                            "Explicit JSON reduction could not repair fallback text "
+                            "into valid dictionary items"
+                        ) from ex
+
+                    if isinstance(repaired_payload, dict):
+                        json_rows = [repaired_payload]
+                    elif isinstance(repaired_payload, list):
+                        json_rows = [
+                            row
+                            for row in repaired_payload
+                            if isinstance(row, dict)
+                        ]
+
+                    if not json_rows:
+                        raise ValueError(
+                            "Explicit JSON reduction repair produced no valid "
+                            "dictionary items"
+                        )
                 reduction_items = json_rows
             reduction_result = reduce_single_pass(
                 reduction_items,
@@ -663,7 +687,8 @@ def combine_api_finished_item(item: str, ctx) -> str:
         stage = "repair-json-output"
 
         if (
-            "to json format" in task_text.lower()
+            not reduction_config.enabled
+            and "to json format" in task_text.lower()
             and not (json_mode and json_rows)
         ):
             checkpoint(

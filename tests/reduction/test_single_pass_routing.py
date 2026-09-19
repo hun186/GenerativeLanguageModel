@@ -112,6 +112,23 @@ def test_explicit_concat_json_list_preserves_one_level_order(tmp_path):
     assert json.loads(_read_output(item, ctx)) == [{"id": 1}, {"id": 2}]
 
 
+def test_explicit_concat_json_list_repairs_fenced_json_before_reduction(tmp_path):
+    ctx = _ctx(tmp_path, {"enabled": True, "profile": "concat_json_list"})
+    item = Path(ctx.prompt_dir) / "fenced-json-list"
+    _write(item, "0.txt", '```json\n[\n  {"id": 1},\n  {"id": 2}\n]\n```')
+
+    assert json.loads(_read_output(item, ctx)) == [{"id": 1}, {"id": 2}]
+
+
+def test_explicit_json_valid_rows_discard_malformed_fallback_text(tmp_path):
+    ctx = _ctx(tmp_path, {"enabled": True, "profile": "concat_json_list"})
+    item = Path(ctx.prompt_dir) / "valid-and-malformed"
+    _write(item, "0.txt", '[{"id": 1}]')
+    _write(item, "1.txt", "not-json")
+
+    assert json.loads(_read_output(item, ctx)) == [{"id": 1}]
+
+
 def test_explicit_deep_merge_runs_once_and_uses_combine_dedup_default(
     tmp_path, monkeypatch
 ):
@@ -134,6 +151,55 @@ def test_explicit_deep_merge_runs_once_and_uses_combine_dedup_default(
         "title": "left",
     }
     assert call_count == 1
+
+
+def test_explicit_deep_merge_repairs_fenced_json_and_keeps_dedup_default(tmp_path):
+    ctx = _ctx(tmp_path, {"enabled": True, "profile": "legacy_json_deep_merge"})
+    item = Path(ctx.prompt_dir) / "fenced-deep-merge"
+    _write(
+        item,
+        "0.txt",
+        '```json\n[{"values": [1], "left": true}, '
+        '{"values": [1, 2], "right": true}]\n```',
+    )
+
+    assert json.loads(_read_output(item, ctx)) == {
+        "values": [1, 2],
+        "left": True,
+        "right": True,
+    }
+
+
+def test_explicit_concat_text_bypasses_legacy_json_repair(tmp_path, monkeypatch):
+    ctx = _ctx(tmp_path, {"enabled": True, "profile": "concat_text"})
+    ctx.task = "summarize to json format"
+    item = Path(ctx.prompt_dir) / "authoritative-text"
+    _write(item, "0.txt", "ordinary text")
+
+    def fail_if_called(*args, **kwargs):
+        raise AssertionError("legacy JSON repair must not rewrite reducer output")
+
+    monkeypatch.setattr(combine_utils, "combine_json_return", fail_if_called)
+
+    assert _read_output(item, ctx) == "ordinary text\n"
+
+
+def test_legacy_route_still_repairs_fenced_json(tmp_path, monkeypatch):
+    ctx = _ctx(tmp_path)
+    ctx.task = "to json format"
+    item = Path(ctx.prompt_dir) / "legacy-fenced-json"
+    _write(item, "0.txt", '```json\n[{"id": 1}]\n```')
+    original = combine_utils.combine_json_return
+    calls = []
+
+    def spy(*args, **kwargs):
+        calls.append(args[0])
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(combine_utils, "combine_json_return", spy)
+
+    assert json.loads(_read_output(item, ctx)) == [{"id": 1}]
+    assert len(calls) == 1
 
 
 def test_deep_merge_explicit_options_map_to_reducer():
