@@ -15,6 +15,13 @@
 - 驗證結果：`tests/reduction` 19 passed；PR A combine/slice-merge/output-profile characterization 29 passed；compileall、`git diff --check`、production import/static scope search 通過。multistage/Row Merger tests 因缺少 PyYAML 無法 collection；requirements 安裝仍因 GitHub `peft` proxy 403 失敗。
 - 重要結論：PR B 只建立 inactive reducer socket；production combine、Row Merger、Output Profile 與 YAML routing 均未接入新 registry，opt-in routing 留待 PR C。
 
+## 2026-09-19 Reduction Engine PR B import verification corrective
+
+- 任務目的：明確驗證 `czjLLM.utilities` 的 focused re-export 不會破壞 public `merge_dict_slices` identity，且匯入新 Reduction package 不會載入 heavy `combine_utils` orchestration。
+- 主要修改內容：新增隔離 subprocess regression test；repository-wide import inspection 確認 production callers 皆直接 import `czjLLM.utilities.combine_utils`，沒有 production module 仰賴 package import 的隱含 side effect。
+- 驗證結果：Reduction tests 20 passed、PR A characterization 29 passed、compileall/diff/import-routing checks 通過。單獨安裝 PyYAML 仍因 package index proxy 403 失敗，因此 multistage/Row Merger suite 仍在缺少 `yaml` 時 collection 失敗。
+- 重要結論：`czjLLM/utilities/__init__.py` compatibility concern 已由 identity 與 clean-interpreter module-load assertions 覆蓋；未發現 P1 regression。
+
 ## 2026-08-21 model-profile-driven parallelism follow-up
 
 - 任務目的：避免為每份 ES YAML 增加 row/slice 併行參數，將預設自動政策與手動調整收旂到 model profile。

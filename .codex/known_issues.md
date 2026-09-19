@@ -4,7 +4,7 @@
 
 ### Requirements installation is blocked by the network proxy
 
-- **First confirmed:** 2026-06-24; repeatedly reproduced through 2026-09-18.
+- **First confirmed:** 2026-06-24; repeatedly reproduced through 2026-09-19.
 - `python -m pip install -r requirements.txt` cannot clone the pinned GitHub `peft` dependency because the HTTPS proxy returns `CONNECT tunnel failed, response 403`.
 - The incomplete environment commonly lacks PyYAML and sometimes other runtime dependencies, so tests importing the full SQL/ES pipeline can fail during collection rather than from application code.
 - Use dependency-light targeted tests, `compileall`, and `git diff --check` as alternative checks, then rerun affected integration/full-suite tests in an environment with the complete requirements.
@@ -38,6 +38,7 @@
 
 ## Recent Changes
 
+- **2026-09-19:** 單獨執行 `python -m pip install PyYAML` 也因 package index proxy 403 無法取得套件；PR B import corrective 因而仍無法收集 multistage/Row Merger regressions，改以 clean subprocess import test、dependency-light suites 與 static checks 驗證。
 - **2026-09-19:** PR B requirements 安裝仍在 pinned GitHub `peft` clone 遭遇 `CONNECT tunnel failed, response 403`；multistage/Row Merger tests 因缺少 PyYAML 無法 collection。Dependency-light reducer tests、PR A combine tests 與 static checks 通過。
 - **2026-09-18:** Requirements installation still fails at the GitHub `peft` clone with proxy 403; Row Merger regression collection consequently stops on missing PyYAML. Dependency-light combine tests and static checks remain available.
 - **2026-09-01:** LLM audit propagation work reconfirmed the same `peft` proxy limitation; targeted audit tests passed.
