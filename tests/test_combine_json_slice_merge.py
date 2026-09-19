@@ -16,7 +16,10 @@ sys.modules.setdefault("opencc", types.SimpleNamespace(OpenCC=_OpenCC))
 sys.modules.setdefault("json_repair", types.SimpleNamespace(repair_json=lambda text, **kwargs: text))
 
 import czjLLM.utilities.combine_utils as combine_utils
-from czjLLM.utilities.combine_utils import combine_api_finished_item
+from czjLLM.utilities.combine_utils import (
+    _should_parse_as_json_task,
+    combine_api_finished_item,
+)
 
 
 def _oswalk(path):
@@ -139,3 +142,121 @@ def test_combine_step_debug_can_be_enabled_by_yaml_flag(tmp_path, capsys):
     captured = capsys.readouterr()
     assert "[combine-step]" in captured.out
     assert "CombBackFN" in captured.out
+
+
+def _write_success(item, name, text):
+    success = item / "Success"
+    success.mkdir(parents=True, exist_ok=True)
+    (success / name).write_text(text, encoding="utf-8")
+
+
+def _read_combined(path):
+    return __import__("pathlib").Path(path).read_text(encoding="utf-8")
+
+
+def test_text_combine_freezes_lexical_order_newlines_and_mirrored_output_path(tmp_path):
+    ctx = _build_ctx(tmp_path, task="plain summary", merge_slices=False)
+    item = tmp_path / "PromptRoot" / "nested" / "article"
+    _write_success(item, "2.txt", "CCC")
+    _write_success(item, "10.txt", "BBB\n")
+    _write_success(item, "1.txt", "AAA")
+
+    out = combine_api_finished_item(str(item), ctx)
+
+    assert __import__("pathlib").Path(out) == (
+        tmp_path / "Finished" / "nested" / "article_plain_summary.txt"
+    )
+    assert _read_combined(out) == "AAA\nBBB\nCCC\n"
+
+
+def test_text_combine_skips_empty_and_no_topic_slices(tmp_path):
+    ctx = _build_ctx(tmp_path, task="plain summary", merge_slices=False)
+    item = tmp_path / "PromptRoot" / "article"
+    _write_success(item, "0.txt", "")
+    _write_success(item, "1.txt", "  \n")
+    _write_success(item, "2.txt", "無主題相關內容：略過這個切片")
+    _write_success(item, "3.txt", "kept")
+
+    assert _read_combined(combine_api_finished_item(str(item), ctx)) == "kept\n"
+
+
+def test_text_combine_all_empty_slices_produce_empty_file(tmp_path):
+    ctx = _build_ctx(tmp_path, task="plain summary", merge_slices=False)
+    item = tmp_path / "PromptRoot" / "article"
+    _write_success(item, "0.txt", "")
+    _write_success(item, "1.txt", "\n\t")
+
+    assert _read_combined(combine_api_finished_item(str(item), ctx)) == ""
+
+
+def test_json_single_dict_and_single_list_share_legacy_list_envelope(tmp_path):
+    ctx = _build_ctx(tmp_path, task="return json", merge_slices=True)
+    dict_item = tmp_path / "PromptRoot" / "dict"
+    list_item = tmp_path / "PromptRoot" / "list"
+    _write_success(dict_item, "0.txt", '{"id": 1}')
+    _write_success(list_item, "0.txt", '[{"id": 2}, {"id": 3}]')
+
+    assert json.loads(_read_combined(combine_api_finished_item(str(dict_item), ctx))) == [{"id": 1}]
+    assert json.loads(_read_combined(combine_api_finished_item(str(list_item), ctx))) == [
+        {"id": 2}, {"id": 3}
+    ]
+
+
+def test_json_concat_is_one_level_and_discards_non_dict_list_members(tmp_path):
+    ctx = _build_ctx(tmp_path, task="return json", merge_slices=False)
+    item = tmp_path / "PromptRoot" / "one-level"
+    _write_success(item, "0.txt", '[[{"nested": 0}], {"id": 1}, 9]')
+    _write_success(item, "1.txt", '[{"id": 2}]')
+
+    data = json.loads(_read_combined(combine_api_finished_item(str(item), ctx)))
+
+    assert data == [{"id": 1}, {"id": 2}]
+
+
+def test_json_mixed_dict_and_list_slices_preserve_file_order(tmp_path):
+    ctx = _build_ctx(tmp_path, task="return json", merge_slices=False)
+    item = tmp_path / "PromptRoot" / "mixed-shapes"
+    _write_success(item, "0.txt", '{"id": 1}')
+    _write_success(item, "1.txt", '[{"id": 2}, {"id": 3}]')
+
+    assert json.loads(_read_combined(combine_api_finished_item(str(item), ctx))) == [
+        {"id": 1}, {"id": 2}, {"id": 3}
+    ]
+
+
+def test_json_malformed_only_falls_back_to_exact_text_for_return_json(tmp_path, capsys):
+    ctx = _build_ctx(tmp_path, task="return json", merge_slices=False)
+    item = tmp_path / "PromptRoot" / "malformed"
+    _write_success(item, "0.txt", '{"broken":')
+    _write_success(item, "1.txt", "not-json\n")
+
+    result = _read_combined(combine_api_finished_item(str(item), ctx))
+
+    assert result == '{"broken":\nnot-json\n'
+    assert "將以純文字串接回退" in capsys.readouterr().out
+
+
+def test_json_mixed_valid_and_malformed_silently_keeps_only_valid_rows(tmp_path):
+    ctx = _build_ctx(tmp_path, task="return json", merge_slices=False)
+    item = tmp_path / "PromptRoot" / "partially-malformed"
+    _write_success(item, "0.txt", '[{"id": 1}]')
+    _write_success(item, "1.txt", "not-json")
+
+    assert json.loads(_read_combined(combine_api_finished_item(str(item), ctx))) == [{"id": 1}]
+
+
+def test_multistage_malformed_json_changes_warning_not_combined_artifact(tmp_path, capsys):
+    ctx = _build_ctx(tmp_path, task="return json", merge_slices=False)
+    ctx.stages = [{"name": "extract"}, {"name": "summarize"}]
+    item = tmp_path / "PromptRoot" / "multistage-malformed"
+    _write_success(item, "0.txt", "not-json")
+
+    assert _read_combined(combine_api_finished_item(str(item), ctx)) == "not-json\n"
+    assert "multistage 將改由 stage 輸出寫回" in capsys.readouterr().out
+
+
+def test_json_task_detection_freezes_positive_and_negative_hints():
+    for hint in ("output json", "return json", "請回傳JSON"):
+        assert _should_parse_as_json_task(hint) is True
+    for hint in ("禁止輸出 JSON", "不要輸出 JSON", "do not output json", "without json"):
+        assert _should_parse_as_json_task(hint) is False

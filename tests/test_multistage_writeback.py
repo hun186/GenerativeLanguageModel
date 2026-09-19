@@ -165,3 +165,34 @@ def test_resolve_writeback_payload_uses_snapshot_when_manifest_not_ready(tmp_pat
     out = resolve_writeback_payload(ctx, str(combined_path), combined_path.read_text(encoding="utf-8"))
     assert out.source == "stage:extract"
     assert out.main_payload == [{"inputName": "SNAPSHOT_OK"}]
+
+
+def test_combined_source_uses_combined_artifact_and_preserves_dict_shape(tmp_path):
+    combined_path = tmp_path / "row_combined.txt"
+    combined_path.write_text('{"artifact":"combined"}', encoding="utf-8")
+    ctx = SimpleNamespace(sql_writeback_source="combined")
+
+    out = resolve_writeback_payload(ctx, str(combined_path), combined_path.read_text(encoding="utf-8"))
+
+    assert out.source == "combined"
+    assert out.main_payload == {"artifact": "combined"}
+    assert out.main_text == '{"artifact":"combined"}'
+
+
+def test_stage_source_preserves_malformed_stage_text_instead_of_combined_payload(tmp_path):
+    combined_path = tmp_path / "cache" / "row_stage.txt"
+    combined_path.parent.mkdir(parents=True)
+    combined_path.write_text('{"artifact":"combined"}', encoding="utf-8")
+    _write_manifest(
+        tmp_path / "_stage_merges" / "row_stage",
+        source="row_stage",
+        stages=[{"name": "extract", "merged": True, "merged_file": "01_extract.txt"}],
+        files={"01_extract.txt": "malformed stage payload"},
+    )
+    ctx = SimpleNamespace(sql_writeback_source="stage", sql_writeback_stage="extract")
+
+    out = resolve_writeback_payload(ctx, str(combined_path), combined_path.read_text(encoding="utf-8"))
+
+    assert out.source == "stage:extract"
+    assert out.main_payload == "malformed stage payload"
+    assert out.main_text == "malformed stage payload"
