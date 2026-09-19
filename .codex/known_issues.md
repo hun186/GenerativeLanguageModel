@@ -38,6 +38,7 @@
 
 ## Recent Changes
 
+- **2026-09-19:** PR B requirements 安裝仍在 pinned GitHub `peft` clone 遭遇 `CONNECT tunnel failed, response 403`；multistage/Row Merger tests 因缺少 PyYAML 無法 collection。Dependency-light reducer tests、PR A combine tests 與 static checks 通過。
 - **2026-09-18:** Requirements installation still fails at the GitHub `peft` clone with proxy 403; Row Merger regression collection consequently stops on missing PyYAML. Dependency-light combine tests and static checks remain available.
 - **2026-09-01:** LLM audit propagation work reconfirmed the same `peft` proxy limitation; targeted audit tests passed.
 - **2026-08-26:** ES mapping retry-loop and consequence validation work reconfirmed the dependency limitation; dependency-light ESSink/profile tests passed.

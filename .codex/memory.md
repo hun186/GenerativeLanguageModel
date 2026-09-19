@@ -8,6 +8,13 @@
 - LLM call audit 會在每次 `czjLLM_TextProcessing` 啟動時建立 CSV/XLSX，token usage 來源為 LLM API response usage，context 使用率優先使用 Ollama `/api/ps` active context。
 - requirements 安裝在目前環境仍受 GitHub `peft` dependency proxy 403 限制，需用 compileall、靜態檢查與可收集的目標 pytest 作替代驗證。
 
+## 2026-09-19 Reduction Engine PR B foundation
+
+- 任務目的：建立尚未接入 production routing 的 source-agnostic reducer contract、獨立 registry，以及 text concat、JSON-list concat、legacy JSON deep merge adapters。
+- 主要修改內容：新增 `czjLLM/reduction/` 的 `Reducer` / `ReducerResult`、builtin registry 與三個 reducer；deep merge 直接委派 `utilities.slice_merge.merge_dict_slices_audited()`，並明確保留 conflict/dedup 選項。`utilities/__init__.py` 改從 focused `slice_merge` re-export 同一函式，避免載入 reducer 時連帶要求 filesystem/OpenCC orchestration dependency。
+- 驗證結果：`tests/reduction` 19 passed；PR A combine/slice-merge/output-profile characterization 29 passed；compileall、`git diff --check`、production import/static scope search 通過。multistage/Row Merger tests 因缺少 PyYAML 無法 collection；requirements 安裝仍因 GitHub `peft` proxy 403 失敗。
+- 重要結論：PR B 只建立 inactive reducer socket；production combine、Row Merger、Output Profile 與 YAML routing 均未接入新 registry，opt-in routing 留待 PR C。
+
 ## 2026-08-21 model-profile-driven parallelism follow-up
 
 - 任務目的：避免為每份 ES YAML 增加 row/slice 併行參數，將預設自動政策與手動調整收旂到 model profile。
