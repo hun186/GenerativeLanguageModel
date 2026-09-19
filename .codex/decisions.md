@@ -145,3 +145,10 @@
 
 - reduction 必須明確 `enabled: true` 才啟用；mapping 缺少 enabled 視為 inactive，但所有 supplied keys/types 仍嚴格驗證。PR C 只接受 `single_pass` 與三個 PR B profiles，且與 legacy `merge_slices=true` 互斥。
 - explicit `legacy_json_deep_merge` 在 combine boundary 使用 caller compatibility defaults（`prefer_left`、`dedup_lists=true`、audit enabled、10 samples），不改寫 reducer/low-level utility 各自既有的 `dedup_lists=false` default。
+
+## 2026-09-19 Reduction Engine PR D1 decisions
+
+- `ReducerResult.changed` 保留各 reducer 的 local observational semantics；hierarchical controller 不讀取它作 stop、stall、convergence 或 max-round 判斷。
+- D1 text convergence 的權威 metric 是 Python Unicode character count，不以字元推估 token。stall 僅比較 previous aggregate output 與 current aggregate output；round 1 沒有 previous aggregate，因此不判 stall。
+- Completed checkpoint JSON 是 commit marker：payload 必須先原子落盤；orphan payload 可重建，但 committed metadata 的缺檔、hash 不符、版本/政策不相容或 round chain 破損必須明確失敗，不可降級成空 checkpoint。
+- D1 facade 刻意只接受 `concat_text` 與 narrow next-round callback；不引入 Executable/Stage/DAG、nested pool 或 production routing。D2 完成 runtime adapter 前不得開放 hierarchical YAML。

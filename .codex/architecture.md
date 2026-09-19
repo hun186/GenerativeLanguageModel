@@ -97,3 +97,10 @@
 - Root task config 的 `reduction` 由 `czjLLM.reduction.config` 單一邊界正規化為 immutable `ReductionConfig`，並投影到所有 TXT/Table/SQL/ES 共用的 `LLMJobConfig.reduction`。
 - `combine_api_finished_item()` 保留 Success discovery、lexical ordering、filtering、JSON preparation、filesystem output 與 cleanup 所有權；僅在 `reduction.enabled=true` 時把 prepared logical items 交給 `reduce_single_pass()`，且只執行一個 reducer call。
 - 未設定 reduction 或 `enabled=false` 時不呼叫 reduction execution facade，繼續使用原 legacy combine/merge path。Row Merger 仍只消費 combined artifact，未新增 Registry invocation；Output Profile 仍是 writeback 後段的 final strict boundary。
+
+## 2026-09-19 Reduction Engine PR D1 controller core
+
+- `czjLLM/reduction/controllers.py` 定義 source-agnostic `fixed_rounds` 與 `adaptive_hierarchical` 決策；adaptive 僅以相鄰兩輪 aggregate Unicode character count 計算收斂，決策優先序為 target、max-round guard、stall。
+- `czjLLM/reduction/hierarchical.py` 是 text-only execution facade。它接受 already-prepared initial items 與狹窄的 `next_round_items(previous_payload, next_round_index)` callback，不擁有 source discovery、business Stage、worker pool 或 LLM runtime。
+- `czjLLM/reduction/artifacts.py` 以 deterministic input/policy fingerprints 建立 stable run key。每輪先 atomic write payload、後 atomic write checkpoint JSON commit marker；resume 僅接受 contiguous、contract-compatible、payload hash 與 parent chain 均有效的 completed rounds。
+- PR D1 未接入 `combine_api_finished_item()`，也未擴充 production YAML；PR C `single_pass` routing/config 保持唯一 production contract。Production text-round adapter 與 hierarchical routing 留待 PR D2。

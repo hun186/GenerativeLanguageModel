@@ -8,7 +8,11 @@ from typing import Any, Iterable, Mapping, Optional, Protocol, Tuple
 
 @dataclass(frozen=True)
 class ReducerResult:
-    """The payload and stable metadata returned by a reducer."""
+    """The payload and stable metadata returned by a reducer.
+
+    ``changed`` is reducer-local observational metadata.  Controllers must use
+    their own deterministic metrics rather than treating it as convergence.
+    """
 
     payload: Any
     profile: str
