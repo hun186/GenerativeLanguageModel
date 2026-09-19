@@ -42,6 +42,8 @@ from czjLLM.utilities.slice_merge import (
     merge_dict_slices_audited,
     should_merge_slices,
 )
+from czjLLM.reduction.config import ReductionConfig, parse_reduction_config
+from czjLLM.reduction.engine import reduce_single_pass
 
 def _p(s):
     """接受 str / Path / 任何 PathLike。空字串或 None 則回傳 None。"""
@@ -205,6 +207,15 @@ def combine_api_finished_item(item: str, ctx) -> str:
         stage = "resolve-task-mode"
 
         task_text = str(getattr(ctx, "task", ""))
+        raw_reduction = getattr(ctx, "reduction", None)
+        reduction_config = (
+            raw_reduction
+            if isinstance(raw_reduction, ReductionConfig)
+            else parse_reduction_config(
+                raw_reduction,
+                merge_slices=should_merge_slices(ctx),
+            )
+        )
 
         checkpoint(
             "before-detect-json-mode",
@@ -212,6 +223,13 @@ def combine_api_finished_item(item: str, ctx) -> str:
         )
 
         json_mode = _should_parse_as_json_task(task_text)
+        reduction_json_mode = reduction_config.enabled and reduction_config.profile in {
+            "concat_json_list",
+            "legacy_json_deep_merge",
+        }
+        parse_as_json = reduction_json_mode or (
+            not reduction_config.enabled and json_mode
+        )
 
         checkpoint(
             "after-detect-json-mode",
@@ -313,7 +331,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
                 )
                 continue
 
-            if json_mode:
+            if parse_as_json:
                 stage = f"parse-json-{index}"
 
                 checkpoint(
@@ -401,7 +419,57 @@ def combine_api_finished_item(item: str, ctx) -> str:
             merge_slices=should_merge_slices(ctx),
         )
 
-        if json_mode and json_rows:
+        if reduction_config.enabled:
+            print(
+                "[reduction] enabled=true "
+                f"controller={reduction_config.controller} "
+                f"profile={reduction_config.profile}",
+                flush=True,
+            )
+            if reduction_config.profile == "concat_text":
+                reduction_items = text_chunks
+            else:
+                if not json_rows and text_chunks:
+                    fallback_text = "".join(text_chunks)
+                    fixed, _repair_error = combine_json_return(
+                        fallback_text,
+                        dictListForced=True,
+                    )
+                    try:
+                        repaired_payload = json.loads(fixed)
+                    except Exception as ex:
+                        raise ValueError(
+                            "Explicit JSON reduction could not repair fallback text "
+                            "into valid dictionary items"
+                        ) from ex
+
+                    if isinstance(repaired_payload, dict):
+                        json_rows = [repaired_payload]
+                    elif isinstance(repaired_payload, list):
+                        json_rows = [
+                            row
+                            for row in repaired_payload
+                            if isinstance(row, dict)
+                        ]
+
+                    if not json_rows:
+                        raise ValueError(
+                            "Explicit JSON reduction repair produced no valid "
+                            "dictionary items"
+                        )
+                reduction_items = json_rows
+            reduction_result = reduce_single_pass(
+                reduction_items,
+                reduction_config,
+                context={"combine_item": str(item_p)},
+            )
+            payload = reduction_result.payload
+            combined_text = (
+                payload
+                if isinstance(payload, str)
+                else json.dumps(payload, ensure_ascii=False, indent=2)
+            )
+        elif json_mode and json_rows:
             if (
                 should_merge_slices(ctx)
                 and json_slice_count > 1
@@ -619,7 +687,8 @@ def combine_api_finished_item(item: str, ctx) -> str:
         stage = "repair-json-output"
 
         if (
-            "to json format" in task_text.lower()
+            not reduction_config.enabled
+            and "to json format" in task_text.lower()
             and not (json_mode and json_rows)
         ):
             checkpoint(

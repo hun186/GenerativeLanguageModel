@@ -140,3 +140,8 @@
 - 決策：Row Merger 保持 SQL/table/ES writeback coordinator，不進入 generic Reduction Core；Output Profile 維持 final strict validation boundary。
 - 決策：collection aggregate creation 必須有 stable logical aggregate identity（例如 `aggregate_output_id`）與 idempotent sink upsert；既有 row/document update key 不視為足夠。
 - 決策：PR A Characterization / Golden Tests 為第一個 implementation PR，且不得改變 production behavior。
+
+## 2026-09-19 Reduction Engine PR C decisions
+
+- reduction 必須明確 `enabled: true` 才啟用；mapping 缺少 enabled 視為 inactive，但所有 supplied keys/types 仍嚴格驗證。PR C 只接受 `single_pass` 與三個 PR B profiles，且與 legacy `merge_slices=true` 互斥。
+- explicit `legacy_json_deep_merge` 在 combine boundary 使用 caller compatibility defaults（`prefer_left`、`dedup_lists=true`、audit enabled、10 samples），不改寫 reducer/low-level utility 各自既有的 `dedup_lists=false` default。

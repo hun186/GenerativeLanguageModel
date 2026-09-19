@@ -143,6 +143,8 @@ class LLMJobConfig:
         self.model_spec_name = "gpt-oss:latest-ctx-32k-premises-MXFP4"
         self.model_spec = {}
         self.merge_slices = False
+        # Explicit opt-in only; normalized after the root config is loaded.
+        self.reduction = None
         self.prompt_dir = "Prompt"
         self.llm_source_dir = ""
         self.llm_source_backup_dir = ""
