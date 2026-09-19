@@ -164,3 +164,19 @@
 - explicit reducer 成功後的 payload 現為 combine phase 權威結果，不再進入 legacy `to json format` post-processing；legacy/no-reduction repair path 保持不變。
 - 新增 `docs/usage/reduction_single_pass.md`，只記錄 PR C opt-in、三個 profiles、deep-merge options 與 `merge_slices` mutual exclusion。
 - 驗證結果：`tests/reduction` 50 passed；PR A characterization 29 passed；corrective tests 覆蓋 fenced JSON list/deep merge、explicit text authority、legacy repair 與 valid+malformed mixing。Row Merger/multistage suite 仍因缺少 PyYAML 無法 collection，requirements 安裝仍受 pinned GitHub `peft` proxy 403 阻擋；compileall、diff check 與 protected-boundary checks 通過。
+
+## 2026-09-19 Reduction Engine PR D1 controller core and checkpoints
+
+- 任務目的：在不接入 production combine/YAML 的邊界內，建立 source-agnostic text hierarchical controller、deterministic character convergence、atomic completed-round checkpoints 與 strict resume validation。
+- 主要修改：新增 `fixed_rounds` / `adaptive_hierarchical` policies、text-only hierarchical facade、narrow next-round prepared-items callback，以及 stable input/policy fingerprints。checkpoint 先 atomic write payload、再以 atomic JSON 作 completed commit marker；resume 驗證 manifest/contract、contiguous rounds、payload hash 與 parent chain。
+- 契約結論：`ReducerResult.changed` 僅是 reducer-local observation，controller 完全不使用；adaptive stall 比較 previous/current aggregate output character count，round 1 不判 stall；`max_rounds` 與 `stalled` 回傳最後有效輸出及 warning。
+- 驗證結果：`tests/reduction` 73 passed；PR A compatibility guards 29 passed；hierarchical focused suite 23 passed；Reduction/tests compileall 與 `git diff --check` 通過。requirements 安裝仍因 pinned GitHub `peft` dependency 遭 proxy 403 失敗，與既有 known issue 相同。
+- 範圍結論：PR D1 core 完成但整體 PR D milestone 尚未完成；production `combine_api_finished_item()` 與 YAML 仍只支援 PR C `single_pass`。Production text-round adapter/routing 保留給 PR D2，完成後才進入 PR E。
+
+## 2026-09-19 Reduction Engine PR D1 hosted-review corrective
+
+- 任務目的：修正 PR #182 checkpoint identity 未涵蓋外部 next-round adapter/context semantics，可能靜默回傳 stale terminal checkpoint 的 P1 問題。
+- 主要修改：checkpoint mode 強制 caller 提供 non-blank `execution_fingerprint`，納入 stable run key 並保存於 manifest/round compatibility metadata；in-memory controller usage 不受影響。D1 不理解或推導 model/prompt/tokenizer/source/runtime 語意，PR D2 caller 將由 normalized adapter contract 產生此 identity。
+- Adjacent hardening：checkpoint contract 升為 v2；strict 驗證 supported terminal reasons、exact round payload filename、完整 typed/finite metrics；invalid restored metrics 統一為 `CheckpointCorruptionError`；adaptive ratio 限制 finite `[0,1]`。
+- 驗證：focused hierarchical tests 35 passed、全 `tests/reduction` 85 passed、PR A compatibility guards 29 passed；compileall 與 diff check 通過。requirements 安裝仍因 pinned GitHub `peft` clone 遭 proxy 403 失敗，與既有 known issue 相同。
+- 範圍：production combine/config/YAML、Row Merger、Output Profile、SQL/ES、business Stage 與 worker pools 均未修改；PR D2 仍負責 production text-round adapter/routing。

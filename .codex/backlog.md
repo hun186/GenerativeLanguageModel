@@ -36,7 +36,9 @@
 - [x] PR B — Contracts, Reducer Registry, legacy adapters（inactive foundation；production routing 留待 PR C）
 - [x] PR C — Strict config + opt-in single-pass routing
   - [x] Hosted-review corrective: repair fallback precedes explicit JSON reduction, explicit reducer output bypasses legacy post-processing, and root schema usage is documented.
-- [ ] PR D — Hierarchical Controller + atomic checkpoints
+- [ ] PR D — Hierarchical reduction milestone
+  - [x] PR D1 — source-agnostic text controller core + completed-round atomic checkpoints
+  - [ ] PR D2 — production text-round runtime adapter + hierarchical routing/config（完成後才進入 PR E）
 - [ ] PR E — Shared Execution Budget
 - [ ] PR F — Logical Work Unit + immutable Collection Manifest
 - [ ] PR G — SQL/ES Collection Adapters + idempotent aggregate upsert
