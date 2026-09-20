@@ -1,4 +1,4 @@
-"""Strict PR C configuration boundary for opt-in reduction."""
+"""Strict production configuration boundary for opt-in reduction."""
 
 from __future__ import annotations
 
@@ -6,6 +6,11 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any, Mapping, Optional
 
+from czjLLM.reduction.controllers import (
+    AdaptiveHierarchicalController,
+    FixedRoundsController,
+    ReductionController,
+)
 from czjLLM.reduction.registry import ReducerRegistry, get_default_registry
 
 
@@ -13,7 +18,12 @@ class ReductionConfigError(ValueError):
     """Raised when an explicit reduction configuration is invalid."""
 
 
-_TOP_LEVEL_KEYS = frozenset({"enabled", "profile", "controller", "options"})
+_TOP_LEVEL_KEYS = frozenset(
+    {"enabled", "profile", "controller", "options", "controller_options", "runtime"}
+)
+_SUPPORTED_CONTROLLERS = frozenset(
+    {"single_pass", "fixed_rounds", "adaptive_hierarchical"}
+)
 _SUPPORTED_PROFILES = frozenset(
     {"concat_text", "concat_json_list", "legacy_json_deep_merge"}
 )
@@ -35,6 +45,20 @@ class ReductionConfig:
     options: Mapping[str, Any] = field(
         default_factory=lambda: MappingProxyType({})
     )
+    controller_options: Mapping[str, Any] = field(
+        default_factory=lambda: MappingProxyType({})
+    )
+    runtime: Mapping[str, Any] = field(
+        default_factory=lambda: MappingProxyType({})
+    )
+
+    def build_controller(self) -> ReductionController:
+        """Build the already-validated D1 controller for hierarchical routing."""
+        if self.controller == "fixed_rounds":
+            return FixedRoundsController(**dict(self.controller_options))
+        if self.controller == "adaptive_hierarchical":
+            return AdaptiveHierarchicalController(**dict(self.controller_options))
+        raise ReductionConfigError("single_pass does not use a hierarchical controller")
 
 
 def _unexpected_keys(raw: Mapping[str, Any], allowed: frozenset[str], label: str) -> None:
@@ -74,6 +98,61 @@ def _validate_options(profile: Optional[str], raw: Any) -> Mapping[str, Any]:
     return MappingProxyType(options)
 
 
+def _validate_controller_options(controller: str, raw: Any) -> Mapping[str, Any]:
+    if raw is None:
+        raw = {}
+    if not isinstance(raw, Mapping):
+        raise ReductionConfigError("reduction.controller_options must be a mapping")
+    values = dict(raw)
+    if controller == "single_pass":
+        if values:
+            raise ReductionConfigError(
+                "reduction.controller_options must be absent or empty for single_pass"
+            )
+        return MappingProxyType({})
+
+    required = (
+        {"rounds"}
+        if controller == "fixed_rounds"
+        else {"target_max_chars", "max_rounds", "min_reduction_ratio"}
+    )
+    _unexpected_keys(values, frozenset(required), "reduction controller option")
+    missing = sorted(required - set(values))
+    if missing:
+        raise ReductionConfigError(
+            "Missing reduction.controller_options key(s): " + ", ".join(missing)
+        )
+    try:
+        if controller == "fixed_rounds":
+            FixedRoundsController(**values)
+        else:
+            AdaptiveHierarchicalController(**values)
+    except (TypeError, ValueError) as exc:
+        raise ReductionConfigError(f"Invalid reduction.controller_options: {exc}") from exc
+    return MappingProxyType(values)
+
+
+def _validate_runtime(controller: str, raw: Any) -> Mapping[str, Any]:
+    if raw is None:
+        raw = {}
+    if not isinstance(raw, Mapping):
+        raise ReductionConfigError("reduction.runtime must be a mapping")
+    values = dict(raw)
+    _unexpected_keys(values, frozenset({"round_task"}), "reduction runtime")
+    if controller == "single_pass":
+        if values:
+            raise ReductionConfigError(
+                "reduction.runtime must be absent or empty for single_pass"
+            )
+        return MappingProxyType({})
+    task = values.get("round_task")
+    if not isinstance(task, str) or not task.strip():
+        raise ReductionConfigError(
+            "reduction.runtime.round_task is required and must be a non-empty string"
+        )
+    return MappingProxyType({"round_task": task.strip()})
+
+
 def parse_reduction_config(
     raw: Any,
     *,
@@ -98,9 +177,10 @@ def parse_reduction_config(
         raise ReductionConfigError("reduction.enabled must be a boolean")
 
     controller = raw.get("controller", "single_pass")
-    if not isinstance(controller, str) or controller != "single_pass":
+    if not isinstance(controller, str) or controller not in _SUPPORTED_CONTROLLERS:
         raise ReductionConfigError(
-            "reduction.controller must be 'single_pass' in PR C"
+            "reduction.controller must be one of: "
+            + ", ".join(sorted(_SUPPORTED_CONTROLLERS))
         )
 
     profile_value = raw.get("profile")
@@ -118,6 +198,14 @@ def parse_reduction_config(
         )
 
     options = _validate_options(profile, raw.get("options", {}))
+    controller_options = _validate_controller_options(
+        controller, raw.get("controller_options", {})
+    )
+    runtime = _validate_runtime(controller, raw.get("runtime", {}))
+    if controller != "single_pass" and profile != "concat_text":
+        raise ReductionConfigError(
+            "hierarchical reduction controllers support profile concat_text only"
+        )
     if enabled and merge_slices:
         raise ReductionConfigError(
             "reduction.enabled=true is mutually exclusive with merge_slices=true"
@@ -128,4 +216,6 @@ def parse_reduction_config(
         profile=profile,
         controller=controller,
         options=options,
+        controller_options=controller_options,
+        runtime=runtime,
     )

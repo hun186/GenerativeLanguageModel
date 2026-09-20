@@ -109,3 +109,11 @@
 
 - Checkpointed `reduce_hierarchical_text()` now requires a caller-owned non-blank `execution_fingerprint`. Stable run identity and compatibility metadata include it alongside input, controller/policy, profile, reducer contract, and checkpoint contract identities.
 - D1 does not inspect callbacks, model names, prompts, tokenizer/runtime settings, context, source type, or Python object identity. The caller must deterministically fingerprint every external execution semantic that can affect future round construction/output; PR D2 will own derivation from its normalized adapter/runtime contract.
+
+## 2026-09-20 Reduction Engine PR D2 production text routing
+
+- `combine_api_finished_item()` retains Success discovery/filtering, lexical ordering, JSON repair preparation, final atomic write, and cleanup. At the existing explicit reduction branch, `single_pass` remains on the PR C facade while `fixed_rounds` and `adaptive_hierarchical` route prepared text into D1 `reduce_hierarchical_text()`.
+- Round 1 is the concat reduction of the already-produced top-level `Success/` map outputs. Only round 2 and later call `TextRoundRuntimeAdapter.next_round_items()`; consequently `fixed_rounds: 1` performs no new LLM call and `fixed_rounds: 2` performs exactly one reslice/map/reduce cycle.
+- `czjLLM/reduction/runtime_text.py` is the narrow production adapter: it copies the production context with the configured `round_task`, token-slices the prior aggregate with `TokenizerWrapper`, renders with `PromptGenerator`, and dispatches the isolated round workspace through `call_llm_api()`. It never calls `process_prompt_and_merge()` or combine, so reduction rounds cannot recurse into business-stage/combine orchestration.
+- Runtime work is isolated under `<item>/.reduction/runtime/round-NNNN/{TODO,Success}` and deterministically rebuilt when its round is uncommitted. Completed-round authority stays with D1 checkpoints under `<item>/.reduction/checkpoints/<run-key>`; normal combine cleanup and `debug=True` preservation semantics remain unchanged.
+- The adapter owns D1's execution fingerprint. Its versioned, secret-free semantics include round task/template and relevant prompt variables, tokenizer identity/input cut/max tokens, model identity and allowlisted generation settings, think mode, and mock/real mode. Credentials and raw endpoint URLs are excluded.
