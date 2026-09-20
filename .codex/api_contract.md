@@ -24,3 +24,35 @@
 
 - `reduce_hierarchical_text(..., checkpoint_root=..., execution_fingerprint=...)` requires a non-blank caller-owned execution fingerprint whenever checkpointing is enabled. In-memory execution without `checkpoint_root` does not require it.
 - Changing only this identity creates a distinct run key; the value is also persisted and strictly compatibility-validated. Callers must cover external deterministic round-builder and reducer-context semantics without placing secrets in the fingerprint.
+
+## 2026-09-20 Reduction Engine PR D2 production configuration
+
+Hierarchical text reduction is explicitly enabled with one of these strict root configurations:
+
+```yaml
+reduction:
+  enabled: true
+  profile: concat_text
+  controller: fixed_rounds
+  controller_options:
+    rounds: 2
+  runtime:
+    round_task: SUMMARY
+```
+
+```yaml
+reduction:
+  enabled: true
+  profile: concat_text
+  controller: adaptive_hierarchical
+  controller_options:
+    target_max_chars: 12000
+    max_rounds: 4
+    min_reduction_ratio: 0.10
+  runtime:
+    round_task: SUMMARY
+```
+
+- Hierarchical controllers accept only `concat_text` and require a non-empty `runtime.round_task`; unknown or missing controller/runtime fields are rejected. `single_pass` retains all three PR C profiles/options and rejects hierarchical-only settings rather than silently consuming them.
+- Fixed `rounds` is a positive integer. Adaptive target is a non-negative integer, max rounds is a positive integer, and ratio is finite in `[0,1]`. Explicit reduction remains mutually exclusive with `merge_slices=true`.
+- Round numbering follows D1: round 1 reduces existing initial map Success items; round 2 is the first new tokenizer/prompt/LLM map cycle.

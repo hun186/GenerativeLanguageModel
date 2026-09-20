@@ -44,6 +44,8 @@ from czjLLM.utilities.slice_merge import (
 )
 from czjLLM.reduction.config import ReductionConfig, parse_reduction_config
 from czjLLM.reduction.engine import reduce_single_pass
+from czjLLM.reduction.hierarchical import reduce_hierarchical_text
+from czjLLM.reduction.runtime_text import TextRoundRuntimeAdapter
 
 def _p(s):
     """接受 str / Path / 任何 PathLike。空字串或 None 則回傳 None。"""
@@ -458,11 +460,27 @@ def combine_api_finished_item(item: str, ctx) -> str:
                             "dictionary items"
                         )
                 reduction_items = json_rows
-            reduction_result = reduce_single_pass(
-                reduction_items,
-                reduction_config,
-                context={"combine_item": str(item_p)},
-            )
+            if reduction_config.controller == "single_pass":
+                reduction_result = reduce_single_pass(
+                    reduction_items,
+                    reduction_config,
+                    context={"combine_item": str(item_p)},
+                )
+            else:
+                adapter = TextRoundRuntimeAdapter(
+                    ctx=ctx,
+                    item_workspace=item_p,
+                    round_task=reduction_config.runtime["round_task"],
+                )
+                reduction_result = reduce_hierarchical_text(
+                    reduction_items,
+                    profile="concat_text",
+                    controller=reduction_config.build_controller(),
+                    next_round_items=adapter.next_round_items,
+                    context={"combine_item": str(item_p)},
+                    checkpoint_root=item_p / ".reduction" / "checkpoints",
+                    execution_fingerprint=adapter.execution_fingerprint(),
+                )
             payload = reduction_result.payload
             combined_text = (
                 payload

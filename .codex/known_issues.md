@@ -54,3 +54,13 @@
 ## 2026-09-19 Reduction Engine PR C environment verification
 
 - Requirements 安裝再次在 pinned GitHub `peft` clone 遭 proxy 403；Row Merger/multistage suite 因缺少 PyYAML 在 collection 停止。Reduction/PR A dependency-light suites、compileall 與 static checks 作為替代驗證。
+
+## 2026-09-20 Reduction Engine PR D2 environment verification
+
+- Required dependency installation was retried. `pip` itself was already present, but `python -m pip install -r requirements.txt` again failed while cloning pinned GitHub `peft` because the network proxy returned `CONNECT tunnel failed, response 403`.
+- Dependency-light Reduction and characterization suites remain the available validation path in this environment; no production bypass was added. The combined prompt-pipeline selection containing `test_prompt_pipeline.py` could not collect because `opencc` is absent after the blocked install; dependency-light dispatch/audit tests were run separately.
+
+## 2026-09-20 Reduction Engine PR D2 hosted-review corrective environment verification
+
+- Requirements installation was retried for the P1 corrective and remains blocked at the pinned GitHub `peft` clone by proxy `CONNECT tunnel failed, response 403`. The corrective therefore uses the required dependency-light regression suites without changing production dependency behavior.
+- The final two-pass retry/runtime-v2 corrective reconfirmed the same proxy failure. No dependency workaround was added; required dependency-light reduction, characterization, prompt dispatch/audit, compile, and diff checks completed successfully.

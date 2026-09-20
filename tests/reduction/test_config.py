@@ -58,11 +58,7 @@ def test_reduction_must_be_a_mapping(raw):
         ({"enabled": True, "profile": "unknown"}, "Unknown reduction profile"),
         (
             {"enabled": True, "profile": "concat_text", "controller": "mystery"},
-            "must be 'single_pass'",
-        ),
-        (
-            {"enabled": True, "profile": "concat_text", "controller": "fixed_rounds"},
-            "must be 'single_pass'",
+            "must be one of",
         ),
         ({"enabled": True, "profile": "concat_text", "rounds": []}, "Unsupported reduction key"),
         (
@@ -101,3 +97,86 @@ def test_disabled_reduction_does_not_conflict_with_legacy_merge_slices():
         {"enabled": False, "profile": "concat_text"},
         merge_slices=True,
     ).enabled is False
+
+
+def test_fixed_and_adaptive_hierarchical_configs_build_d1_controllers():
+    fixed = parse_reduction_config({
+        "enabled": True,
+        "profile": "concat_text",
+        "controller": "fixed_rounds",
+        "controller_options": {"rounds": 2},
+        "runtime": {"round_task": "SUMMARY"},
+    })
+    adaptive = parse_reduction_config({
+        "enabled": True,
+        "profile": "concat_text",
+        "controller": "adaptive_hierarchical",
+        "controller_options": {
+            "target_max_chars": 12000,
+            "max_rounds": 4,
+            "min_reduction_ratio": 0.1,
+        },
+        "runtime": {"round_task": "raw summary instruction"},
+    })
+
+    assert fixed.build_controller().rounds == 2
+    assert adaptive.build_controller().target_max_chars == 12000
+    assert fixed.runtime["round_task"] == "SUMMARY"
+
+
+@pytest.mark.parametrize("rounds", [0, -1, True, 1.5, "2"])
+def test_fixed_rounds_strictly_requires_positive_integer(rounds):
+    with pytest.raises(ReductionConfigError, match="fixed rounds"):
+        parse_reduction_config({
+            "enabled": True, "profile": "concat_text", "controller": "fixed_rounds",
+            "controller_options": {"rounds": rounds},
+            "runtime": {"round_task": "SUMMARY"},
+        })
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        {"target_max_chars": -1, "max_rounds": 2, "min_reduction_ratio": 0.1},
+        {"target_max_chars": True, "max_rounds": 2, "min_reduction_ratio": 0.1},
+        {"target_max_chars": 1, "max_rounds": 0, "min_reduction_ratio": 0.1},
+        {"target_max_chars": 1, "max_rounds": True, "min_reduction_ratio": 0.1},
+        {"target_max_chars": 1, "max_rounds": 2, "min_reduction_ratio": -0.1},
+        {"target_max_chars": 1, "max_rounds": 2, "min_reduction_ratio": float("inf")},
+    ],
+)
+def test_adaptive_options_reuse_strict_d1_validation(options):
+    with pytest.raises(ReductionConfigError, match="Invalid reduction.controller_options"):
+        parse_reduction_config({
+            "enabled": True, "profile": "concat_text",
+            "controller": "adaptive_hierarchical", "controller_options": options,
+            "runtime": {"round_task": "SUMMARY"},
+        })
+
+
+@pytest.mark.parametrize(
+    ("extra", "message"),
+    [
+        ({"controller_options": {"rounds": 2, "extra": 1}}, "Unsupported reduction controller option"),
+        ({"controller_options": {"rounds": 2}, "runtime": {"round_task": "SUMMARY", "extra": 1}}, "Unsupported reduction runtime"),
+        ({"controller_options": {"rounds": 2}}, "round_task is required"),
+    ],
+)
+def test_hierarchical_schema_rejects_missing_or_unknown_fields(extra, message):
+    raw = {"enabled": True, "profile": "concat_text", "controller": "fixed_rounds"}
+    raw.update(extra)
+    with pytest.raises(ReductionConfigError, match=message):
+        parse_reduction_config(raw)
+
+
+def test_hierarchical_rejects_json_profile_and_single_pass_rejects_runtime_settings():
+    with pytest.raises(ReductionConfigError, match="concat_text only"):
+        parse_reduction_config({
+            "enabled": True, "profile": "concat_json_list", "controller": "fixed_rounds",
+            "controller_options": {"rounds": 1}, "runtime": {"round_task": "SUMMARY"},
+        })
+    with pytest.raises(ReductionConfigError, match="absent or empty for single_pass"):
+        parse_reduction_config({
+            "enabled": True, "profile": "concat_text", "controller": "single_pass",
+            "runtime": {"round_task": "SUMMARY"},
+        })
