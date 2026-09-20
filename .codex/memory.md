@@ -82,3 +82,10 @@
 - `memory.md-20260920-013654.md` — complete project-memory history through PR D2 before this compaction.
 - `memory.md-20260826-041906.md` — earlier full project-memory snapshot.
 - `decisions.md-20260920-013654.md` — complete decision history through PR D2 before this compaction.
+
+### 2026-09-20 Post-PR-E offline production E2E gate
+
+- Added `e2e`/`live_llm` markers and a localhost `ThreadingHTTPServer` with deterministic prompt rules and concurrency/request recording.
+- Added production-boundary coverage for TXT filesystem IO, CSV `CSVSink`, file-backed SQLite pending selection plus `SqlSink`, real Elasticsearch adapter selection plus real `ESSink` for single/dual indexes, deterministic routing, and HTTP concurrency under `ExecutionBudget`.
+- ES replaces only scan/bulk storage transport with an in-memory dictionary. No GPU, remote LLM, MSSQL, ES server, credentials, internet, or PR F behavior is used.
+- Verification: requirements installation failed at pinned GitHub `peft` with proxy 403; this sandbox lacks normal runtime packages, so the E2E selection fails collection on missing `pandas`. The blocker is recorded in `known_issues.md`.

@@ -127,3 +127,8 @@
 - Local row/doc and slice desired maxima remain separate policies. Row orchestration only caps `ThreadPoolExecutor.max_workers` by budget capacity and holds no permits. Leaf leases wrap `multicoreJob` or legacy `run_round` creation through completion, preventing parent-waits-for-child deadlocks and bounding combined leaf execution.
 - D2 requires no separate integration because its adapter dispatches through `call_llm_api()`. Budget state/capacity remain outside `reduction-text-round-v2` execution fingerprints and checkpoint identity.
 - Scope is one application process/run. Cross-process, cross-machine, Redis, filesystem, GPU, and service-side scheduling remain outside this architecture.
+
+## 2026-09-20 Offline production E2E gate
+
+- Offline production regressions live under `tests/e2e/`. External boundaries are a standard-library localhost OpenAI-compatible server and an in-memory Elasticsearch scan/bulk store; SQLite and CSV use production adapters/sinks.
+- Canonical selection is `python -m pytest -q -m e2e`; `live_llm` is reserved for externally configured model/GPU tests.

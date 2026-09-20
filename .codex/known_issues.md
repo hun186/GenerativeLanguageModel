@@ -69,3 +69,9 @@
 
 - Required dependency installation was retried after upgrading/checking pip and again failed cloning pinned GitHub `peft` because the proxy returned `CONNECT tunnel failed, response 403`. No production dependency bypass was added.
 - Installed dependency-light suites remained usable: all required PR E reduction, dispatch, producer, D2, characterization, compileall, and diff checks passed. Pytest emitted the existing non-fatal warning that `env_files` is an unknown config option in this incomplete environment.
+
+## 2026-09-20 Offline E2E dependency blocker
+
+- The sandbox lacks `pandas`, `openai`, `elasticsearch`, `pyodbc`, PyYAML, and numpy. The required installation still stops at the pinned GitHub `peft` clone because the proxy returns 403, so `python -m pytest -q -m e2e` currently stops during collection on missing `pandas` here.
+- Once declared runtime dependencies are installed, the suite needs no remote infrastructure: LLM traffic is localhost-only, SQL is file-backed SQLite, and ES scan/bulk storage is in memory.
+- Status: open environment blocker; no application dependency bypass was introduced.
