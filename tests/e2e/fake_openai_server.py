@@ -15,6 +15,7 @@ class FakeOpenAIServer:
         self.active_requests = 0
         self.peak_active_requests = 0
         self.delay = 0.0
+        self._failure_rules: dict[str, dict[str, int]] = {}
         self._lock = threading.Lock()
         owner = self
 
@@ -30,13 +31,38 @@ class FakeOpenAIServer:
                     owner.peak_active_requests = max(
                         owner.peak_active_requests, owner.active_requests
                     )
-                    owner.requests.append({"body": body, "timestamp": time.monotonic()})
+                    record = {
+                        "body": body,
+                        "model": body.get("model"),
+                        "timestamp": time.monotonic(),
+                        "active_count": owner.active_requests,
+                        "status": None,
+                        "matched_rule": None,
+                    }
+                    owner.requests.append(record)
                 try:
                     if owner.delay:
                         time.sleep(owner.delay)
                     prompt = "\n".join(
                         str(message.get("content", "")) for message in body.get("messages", [])
                     )
+                    failure_status = None
+                    with owner._lock:
+                        for rule, state in owner._failure_rules.items():
+                            if rule in prompt and state["remaining"] > 0:
+                                state["remaining"] -= 1
+                                record["matched_rule"] = rule
+                                failure_status = state["status"]
+                                break
+                    if failure_status is not None:
+                        record["status"] = failure_status
+                        encoded = json.dumps({"error": {"message": "injected transient failure", "type": "server_error"}}).encode()
+                        self.send_response(failure_status)
+                        self.send_header("Content-Type", "application/json")
+                        self.send_header("Content-Length", str(len(encoded)))
+                        self.end_headers()
+                        self.wfile.write(encoded)
+                        return
                     match = re.search(r"ROW_ID=([A-Za-z0-9_-]+)", prompt)
                     if "E2E_ROUTE_FIN" in prompt:
                         content = "FIN"
@@ -59,6 +85,7 @@ class FakeOpenAIServer:
                         "usage": {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15},
                     }
                     encoded = json.dumps(payload).encode()
+                    record["status"] = 200
                     self.send_response(200)
                     self.send_header("Content-Type", "application/json")
                     self.send_header("Content-Length", str(len(encoded)))
@@ -81,6 +108,13 @@ class FakeOpenAIServer:
     def start(self):
         self.thread.start()
         return self
+
+    def fail_first(self, prompt_fragment: str, count: int = 1, status: int = 500) -> None:
+        """Fail the first ``count`` matching requests using a thread-safe keyed counter."""
+        if not prompt_fragment or count < 1:
+            raise ValueError("prompt_fragment and a positive count are required")
+        with self._lock:
+            self._failure_rules[prompt_fragment] = {"remaining": count, "status": status}
 
     def close(self):
         self.httpd.shutdown()

@@ -12,6 +12,7 @@ from czjLLM.es_mode.adapters.elasticsearch_adapter import ElasticsearchAdapter
 from czjLLM.es_mode.runtime.sinks.es_sink import ESSink
 from czjLLM.prompt_pipeline.pipeline_controller import PromptAPIPipeline
 from czjLLM.reduction.execution_budget import ExecutionBudget
+from czjLLM.prompt_pipeline.dispatch_parallelism import attach_execution_budget
 from czjLLM.sql_mode.adapters.sqlite_adapter import SQLiteAdapter
 from czjLLM.sql_mode.runtime.sinks.sql_sink import SqlSink
 from czjLLM.tabular_mode.runtime.sinks.csv_sink import CSVSink
@@ -130,3 +131,18 @@ def test_deterministic_route_and_round_responses(fake_openai):
     assert llm(fake_openai, "E2E_ROUTE_FIN") == "FIN"
     assert llm(fake_openai, "E2E_ROUTE_LEGAL") == "LEGAL"
     assert llm(fake_openai, "E2E_ROUND2 prepared-a\nprepared-b\n").startswith("REDUCED::")
+
+
+def test_openai_transport_retries_injected_transient_failure(fake_openai):
+    fake_openai.fail_first("E2E_RETRY", count=1)
+    assert llm(fake_openai, "E2E_RETRY ROW_ID=retry-001") == "RESULT::retry-001"
+    matching = [r for r in fake_openai.requests if "E2E_RETRY" in str(r["body"])]
+    assert [r["status"] for r in matching] == [500, 200]
+    assert all(r["matched_rule"] in {"E2E_RETRY", None} for r in matching)
+
+
+def test_derived_execution_budget_capacity_preserves_slice_width():
+    ctx = SimpleNamespace(n_process=2, slice_parallelism=8, model_spec={})
+    budget = attach_execution_budget(ctx)
+    assert budget.capacity == 8
+    assert budget.snapshot().in_use == 0

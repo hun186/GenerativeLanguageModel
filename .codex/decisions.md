@@ -61,3 +61,8 @@
 
 - Deterministic doubles remain at actual external boundaries: localhost HTTP implements `/v1/chat/completions`, while in-memory ES replaces only `helpers.scan` and `helpers.bulk`. Production `PromptAPIPipeline`/`CallLLMAPI`, `SQLiteAdapter`, `SqlSink`, `ElasticsearchAdapter`, `ESSink`, and `CSVSink` remain exercised.
 - `e2e` is separate from `live_llm` and is not conditional on GPU credentials. PR F remains unstarted.
+
+## 2026-09-20 PR #185 live safety corrective
+
+- Reachability never grants mutation permission. Live fixtures check explicit opt-in before configuration or client construction, validate dedicated namespaces before connecting, and clean only UUID-owned records.
+- `requirements-e2e.txt` is a dependency-light test install surface aligned with production pins; it excludes model-training dependencies and does not change production dependency semantics.

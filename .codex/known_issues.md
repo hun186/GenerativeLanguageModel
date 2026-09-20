@@ -75,3 +75,7 @@
 - The sandbox lacks `pandas`, `openai`, `elasticsearch`, `pyodbc`, PyYAML, and numpy. The required installation still stops at the pinned GitHub `peft` clone because the proxy returns 403, so `python -m pytest -q -m e2e` currently stops during collection on missing `pandas` here.
 - Once declared runtime dependencies are installed, the suite needs no remote infrastructure: LLM traffic is localhost-only, SQL is file-backed SQLite, and ES scan/bulk storage is in memory.
 - Status: open environment blocker; no application dependency bypass was introduced.
+
+## 2026-09-20 PR #185 corrective dependency verification
+
+- The dependency-light `python -m pip install -r requirements-e2e.txt` also cannot reach the configured package index in this sandbox (proxy 403 beginning with `colorama`), so offline E2E execution remains unavailable locally. This is broader than the pinned GitHub `peft` failure and requires hosted/self-hosted CI with package access.

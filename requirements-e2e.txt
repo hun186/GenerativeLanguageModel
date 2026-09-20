@@ -1,0 +1,10 @@
+# Dependency-light production E2E runtime. Keep versions aligned with requirements.txt.
+colorama==0.4.6
+elasticsearch<8
+httpx
+openai>=1.51,<2
+openpyxl
+pandas==2.0.1
+pyodbc
+PyYAML==6.0
+tqdm==4.65.0

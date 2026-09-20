@@ -132,3 +132,9 @@
 
 - Offline production regressions live under `tests/e2e/`. External boundaries are a standard-library localhost OpenAI-compatible server and an in-memory Elasticsearch scan/bulk store; SQLite and CSV use production adapters/sinks.
 - Canonical selection is `python -m pytest -q -m e2e`; `live_llm` is reserved for externally configured model/GPU tests.
+
+## 2026-09-20 PR #185 corrective test layers
+
+- Test layers are now explicit: ordinary focused tests; offline `e2e`; individually opted-in `live_llm`, `live_sql`, and `live_es`; and explicitly opted-in composite `live_e2e`.
+- Live mutation requires `CZJLLM_RUN_LIVE_E2E=1`, dedicated SQL names prefixed `czjllm_e2e_`, dedicated ES indexes prefixed `czjllm-e2e-`, unique run-owned IDs, and record/document-only cleanup.
+- CI separates focused and offline-E2E selections. Live selections are non-PR-only and require both explicit opt-in and service-specific configuration.

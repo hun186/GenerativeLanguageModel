@@ -34,8 +34,11 @@ testpaths = ["tests"]
 #addopts = "-q --maxfail=1 --disable-warnings"
 addopts = "-q --maxfail=1"
 markers = [
-  "e2e: complete offline production regression using localhost/in-memory external boundaries",
-  "live_llm: requires a real configured LLM/GPU service",
+  "e2e: deterministic offline production E2E",
+  "live_llm: real configured LLM/GPU endpoint",
+  "live_sql: real configured SQL test database/table",
+  "live_es: real configured Elasticsearch test index",
+  "live_e2e: explicitly enabled complete live production smoke",
   "integration: slow/integration tests",
   "windows_only: tests requiring Windows path semantics",
   "unit: fast unit tests",
