@@ -59,3 +59,7 @@
 
 - Required dependency installation was retried. `pip` itself was already present, but `python -m pip install -r requirements.txt` again failed while cloning pinned GitHub `peft` because the network proxy returned `CONNECT tunnel failed, response 403`.
 - Dependency-light Reduction and characterization suites remain the available validation path in this environment; no production bypass was added. The combined prompt-pipeline selection containing `test_prompt_pipeline.py` could not collect because `opencc` is absent after the blocked install; dependency-light dispatch/audit tests were run separately.
+
+## 2026-09-20 Reduction Engine PR D2 hosted-review corrective environment verification
+
+- Requirements installation was retried for the P1 corrective and remains blocked at the pinned GitHub `peft` clone by proxy `CONNECT tunnel failed, response 403`. The corrective therefore uses the required dependency-light regression suites without changing production dependency behavior.

@@ -4,19 +4,26 @@
 
 - 本專案是 Python 多來源文件／表格處理與 LLM 多階段分析框架；TXT/Table/SQL/ES 共用 prompt、LLM、combine 與 writeback 基礎設施。
 - `combine_api_finished_item()` 是 production 單一文件 Success slice 合併邊界；Row Merger 只負責下游協調，Output Profile 維持最終嚴格驗證。
-- Reduction Engine PR A-D 已完成：characterization、reducer contracts/registry、explicit single-pass routing，以及 production hierarchical text routing/checkpoints。PR E Shared ExecutionBudget 仍未實作。
+- Reduction Engine PR A-C 與 D1 已完成；D2 production hierarchical text routing 的兩項 P1 hosted-review corrective 已在本地實作，須待更新 hosted head review 後才視為 PR D merge-ready。PR E Shared ExecutionBudget 仍未實作。
 - Hierarchical round 1 直接 reduce 原始 Success map outputs；round 2+ 才經 tokenizer、configured round task prompt、LLM map 與 concat reducer。
 - Requirements 安裝在目前環境仍受 pinned GitHub `peft` proxy 403 限制；dependency-light pytest、compileall 與 diff checks 是可用替代驗證。
 
 ## Recent Changes
 
+### 2026-09-20 Reduction Engine PR D2 hosted-review corrective
+
+- 修正 row-scoped slot overlay 的 context isolation：移除 `copy.copy(ctx)`，改用 D2-local attribute view；`round_task` 與任何 derived-context writes 均不會修改 base ctx 或其 mutable override mapping。
+- 修正 post-initial concat preparation：LLM Success text 保留原內容，缺少尾端換行時補一個換行，已有換行不重複添加，避免多個 map outputs 被串成 `foobar`。
+- Regression coverage 包含 ordinary/slot-overlay context、success 與 tokenizer/prompt/dispatch failure、共享 base context 的雙 adapter 隔離、newline preservation，以及 fixed round-2 多輸出 boundary。
+- Requirements 安裝仍受 pinned GitHub `peft` proxy 403 阻擋。D2 config/runtime/routing focused tests 51 passed；全 `tests/reduction` 117 passed；PR A compatibility guards 29 passed；prompt dispatch/audit tests 11 passed；compileall 與 diff check 通過。PR E 與後續 roadmap 未引入。
+
 ### 2026-09-20 Reduction Engine PR D2 production hierarchical routing
 
 - 任務目的：把 D1 controller/checkpoint core 接入 production text combine path，完成 PR D，但不提前實作 PR E 或 collection/Stage 架構。
-- 主要修改：嚴格 `ReductionConfig` 新增 text-only `fixed_rounds` / `adaptive_hierarchical`、controller options 與必要 `runtime.round_task`；新增 versioned `TextRoundRuntimeAdapter`，以 copied context 執行 tokenizer → prompt → existing LLM dispatch，workspace 隔離在 `<item>/.reduction/runtime/`。Checkpoint root 為 `<item>/.reduction/checkpoints`。
+- 主要修改：嚴格 `ReductionConfig` 新增 text-only `fixed_rounds` / `adaptive_hierarchical`、controller options 與必要 `runtime.round_task`；新增 versioned `TextRoundRuntimeAdapter`，以 non-mutating context view 執行 tokenizer → prompt → existing LLM dispatch，workspace 隔離在 `<item>/.reduction/runtime/`。Checkpoint root 為 `<item>/.reduction/checkpoints`。
 - 契約結論：既有 Success outputs 完成 round 1，round 2 才第一次執行新 map；adapter 禁止呼叫 `process_prompt_and_merge()`/combine。Execution fingerprint 涵蓋 template/task context/tokenizer/model/generation/think/mock 語意，排除 credentials 與 raw endpoint URL。
 - 驗證結果：D2 focused tests 44 passed；全 `tests/reduction` 110 passed；PR A compatibility guards 29 passed；prompt dispatch/audit tests 11 passed；compileall 與 diff check 通過。Requirements 安裝因 pinned GitHub `peft` proxy 403 失敗；包含 `test_prompt_pipeline.py` 的選取因缺少 `opencc` 無法 collection。
-- 範圍結論：PR D1 + D2 完成；PR C single-pass、D1 decision/changed contracts、Row Merger、Output Profile、pipeline merge、SQL/ES collection formation、business stages 與 scheduler 未重新設計。PR E 保持 open。
+- 歷史範圍結論：首次實作當時視為 PR D1 + D2 完成；其後 hosted review 發現的兩項 P1 已由上方 corrective 修正，目前須待更新 hosted head review 才可視為 merge-ready。PR C single-pass 與其他 protected boundaries 未重新設計，PR E 保持 open。
 
 ### 2026-09-19 Reduction Engine PR D1 controller/checkpoint core
 

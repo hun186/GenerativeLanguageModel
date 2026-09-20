@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import copy
 import hashlib
 import inspect
 import json
@@ -17,6 +16,17 @@ TEXT_ROUND_RUNTIME_CONTRACT_VERSION = "reduction-text-round-v1"
 
 class TextRoundRuntimeError(RuntimeError):
     """A post-initial reduction map round did not complete."""
+
+
+class _RuntimeContextView:
+    """Non-mutating attribute overlay for one reduction map round."""
+
+    def __init__(self, base: Any, **overrides: Any) -> None:
+        self._base = base
+        self.__dict__.update(overrides)
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._base, name)
 
 
 _MODEL_SEMANTIC_KEYS = frozenset(
@@ -64,9 +74,7 @@ class TextRoundRuntimeAdapter:
         self._llm_dispatch = llm_dispatch
 
     def _derived_context(self) -> Any:
-        derived = copy.copy(self.ctx)
-        derived.task = self.round_task
-        return derived
+        return _RuntimeContextView(self.ctx, task=self.round_task)
 
     def fingerprint_metadata(self) -> Mapping[str, Any]:
         """Return allowlisted, deterministic semantics; credentials/URLs are excluded."""
@@ -229,4 +237,4 @@ class TextRoundRuntimeAdapter:
             raise TextRoundRuntimeError(
                 f"reduction round {next_round_index} produced an empty map result"
             )
-        return outputs
+        return [output if output.endswith("\n") else output + "\n" for output in outputs]

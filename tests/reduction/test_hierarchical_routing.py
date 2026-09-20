@@ -55,6 +55,16 @@ def test_fixed_round_two_invokes_exactly_one_map_cycle(tmp_path):
     assert FakeAdapter.calls == [("A\nB\n", 2)]
 
 
+def test_fixed_round_two_preserves_multiple_map_output_boundaries(tmp_path):
+    FakeAdapter.outputs = ["foo\n", "bar\n"]
+    ctx = _ctx(tmp_path, _hierarchical("fixed_rounds", {"rounds": 2}))
+    item = Path(ctx.prompt_dir) / "fixed-two-boundaries"
+    _write(item, "0.txt", "initial")
+
+    assert _read_output(item, ctx) == "foo\nbar\n"
+    assert FakeAdapter.calls == [("initial\n", 2)]
+
+
 def test_adaptive_target_at_round_one_skips_map(tmp_path):
     ctx = _ctx(tmp_path, _hierarchical("adaptive_hierarchical", {
         "target_max_chars": 10, "max_rounds": 3, "min_reduction_ratio": 0.1,

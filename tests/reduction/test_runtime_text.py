@@ -20,6 +20,24 @@ class FakeTokenizer:
         return {"ctxCut": list(self.chunks)}
 
 
+class OverlayLikeContext:
+    """Dependency-light double for CtxOverlay's slots and mutable overrides."""
+
+    __slots__ = ("_base", "_ov")
+
+    def __init__(self, base, **overrides):
+        object.__setattr__(self, "_base", base)
+        object.__setattr__(self, "_ov", dict(overrides))
+
+    def __getattr__(self, name):
+        if name in self._ov:
+            return self._ov[name]
+        return getattr(self._base, name)
+
+    def __setattr__(self, name, value):
+        self._ov[name] = value
+
+
 class RecordingGenerator:
     tasks = []
 
@@ -59,6 +77,16 @@ def _successful_dispatch(seen):
     return dispatch
 
 
+def _successful_dispatch_recording_task(seen):
+    dispatch_success = _successful_dispatch([])
+
+    def dispatch(items, ctx, **kwargs):
+        seen.append(ctx.task)
+        dispatch_success(items, ctx, **kwargs)
+
+    return dispatch
+
+
 def test_round_reslices_renders_and_collects_in_stable_lexical_order(tmp_path):
     RecordingGenerator.tasks.clear()
     seen = []
@@ -69,9 +97,102 @@ def test_round_reslices_renders_and_collects_in_stable_lexical_order(tmp_path):
         llm_dispatch=_successful_dispatch(seen),
     )
 
-    assert adapter.next_round_items("aggregate", 2) == ["out-0000", "out-0001"]
+    assert adapter.next_round_items("aggregate", 2) == ["out-0000\n", "out-0001\n"]
     assert seen == [("0000.txt", "ROUND TASK:part-b"), ("0001.txt", "ROUND TASK:part-a")]
     assert RecordingGenerator.tasks == ["ROUND TASK"]
+    assert ctx.task == "ORIGINAL"
+
+
+def test_output_newline_preparation_preserves_existing_content(tmp_path):
+    def dispatch(items, ctx, task_override=None):
+        root = Path(items[0])
+        outputs = ["foo", "bar\n"]
+        for prompt, output in zip(sorted((root / "TODO").glob("*.txt")), outputs):
+            (root / "Success" / prompt.name).write_text(output, encoding="utf-8")
+            prompt.unlink()
+
+    adapter = TextRoundRuntimeAdapter(
+        ctx=_ctx(), item_workspace=tmp_path, round_task="ROUND",
+        tokenizer_factory=FakeTokenizer, prompt_generator_factory=RecordingGenerator,
+        llm_dispatch=dispatch,
+    )
+
+    assert adapter.next_round_items("aggregate", 2) == ["foo\n", "bar\n"]
+
+
+def test_overlay_like_context_is_not_mutated_by_successful_round(tmp_path):
+    base = _ctx(task="BASE")
+    overlay = OverlayLikeContext(base, task="ROW TASK")
+    original_overrides = dict(overlay._ov)
+    seen_tasks = []
+
+    def dispatch(items, ctx, task_override=None):
+        seen_tasks.append(ctx.task)
+        _successful_dispatch([])(items, ctx, task_override=task_override)
+
+    adapter = TextRoundRuntimeAdapter(
+        ctx=overlay, item_workspace=tmp_path, round_task="ROUND TASK",
+        tokenizer_factory=FakeTokenizer, prompt_generator_factory=RecordingGenerator,
+        llm_dispatch=dispatch,
+    )
+
+    adapter.next_round_items("aggregate", 2)
+    assert seen_tasks == ["ROUND TASK"]
+    assert overlay.task == "ROW TASK"
+    assert overlay._ov == original_overrides
+    assert base.task == "BASE"
+
+
+@pytest.mark.parametrize("failure_stage", ["tokenizer", "prompt", "dispatch"])
+def test_original_task_is_unchanged_after_round_failure(tmp_path, failure_stage):
+    ctx = _ctx(task="ORIGINAL")
+
+    class FailingTokenizer(FakeTokenizer):
+        def tokenize(self, **kwargs):
+            raise RuntimeError("tokenizer failed")
+
+    class FailingGenerator(RecordingGenerator):
+        def build(self, content):
+            raise RuntimeError("prompt failed")
+
+    def failing_dispatch(*args, **kwargs):
+        raise RuntimeError("dispatch failed")
+
+    adapter = TextRoundRuntimeAdapter(
+        ctx=ctx,
+        item_workspace=tmp_path,
+        round_task="ROUND",
+        tokenizer_factory=FailingTokenizer if failure_stage == "tokenizer" else FakeTokenizer,
+        prompt_generator_factory=(
+            FailingGenerator if failure_stage == "prompt" else RecordingGenerator
+        ),
+        llm_dispatch=(
+            failing_dispatch if failure_stage == "dispatch" else _successful_dispatch([])
+        ),
+    )
+
+    with pytest.raises(TextRoundRuntimeError):
+        adapter.next_round_items("aggregate", 2)
+    assert ctx.task == "ORIGINAL"
+
+
+def test_adapters_with_same_base_context_do_not_cross_contaminate(tmp_path):
+    ctx = _ctx(task="ORIGINAL")
+    seen = []
+    first = TextRoundRuntimeAdapter(
+        ctx=ctx, item_workspace=tmp_path / "first", round_task="FIRST",
+        tokenizer_factory=FakeTokenizer, prompt_generator_factory=RecordingGenerator,
+        llm_dispatch=_successful_dispatch_recording_task(seen),
+    )
+    second = TextRoundRuntimeAdapter(
+        ctx=ctx, item_workspace=tmp_path / "second", round_task="SECOND",
+        tokenizer_factory=FakeTokenizer, prompt_generator_factory=RecordingGenerator,
+        llm_dispatch=_successful_dispatch_recording_task(seen),
+    )
+
+    first.next_round_items("aggregate", 2)
+    second.next_round_items("aggregate", 2)
+    assert seen == ["FIRST", "SECOND"]
     assert ctx.task == "ORIGINAL"
 
 
@@ -118,16 +239,19 @@ def test_fingerprint_is_deterministic_sensitive_and_secret_free(tmp_path):
     ).execution_fingerprint()
 
 
-def test_fingerprint_tracks_registered_template_and_tokenizer_cut_semantics(tmp_path):
-    ctx_one = _ctx(taskSetting={"REGISTERED": {"template": template_one, "InputCutLen": 100}})
-    ctx_two = _ctx(taskSetting={"REGISTERED": {"template": template_two, "InputCutLen": 100}})
-    ctx_cut = _ctx(taskSetting={"REGISTERED": {"template": template_one, "InputCutLen": 200}})
+def test_fingerprint_tracks_shared_production_task_pool_semantics(tmp_path):
+    # LLMJobConfig exposes the same repository task pool used by the production
+    # PromptGenerator/TokenizerWrapper. Keep that invariant explicit here rather
+    # than implying that the adapter injects a separate renderer task registry.
+    task_pool = {"REGISTERED": {"template": template_one, "InputCutLen": 100}}
+    ctx = _ctx(taskSetting=task_pool)
+    one = TextRoundRuntimeAdapter(ctx=ctx, item_workspace=tmp_path, round_task="REGISTERED")
+    one_fingerprint = one.execution_fingerprint()
 
-    one = TextRoundRuntimeAdapter(ctx=ctx_one, item_workspace=tmp_path, round_task="REGISTERED")
-    two = TextRoundRuntimeAdapter(ctx=ctx_two, item_workspace=tmp_path, round_task="REGISTERED")
-    cut = TextRoundRuntimeAdapter(ctx=ctx_cut, item_workspace=tmp_path, round_task="REGISTERED")
-    assert one.execution_fingerprint() != two.execution_fingerprint()
-    assert one.execution_fingerprint() != cut.execution_fingerprint()
+    task_pool["REGISTERED"] = {"template": template_two, "InputCutLen": 100}
+    assert one_fingerprint != one.execution_fingerprint()
+    task_pool["REGISTERED"] = {"template": template_one, "InputCutLen": 200}
+    assert one_fingerprint != one.execution_fingerprint()
 
 
 def test_runtime_source_has_no_recursive_orchestration_calls():

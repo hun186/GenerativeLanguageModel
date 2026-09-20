@@ -16,7 +16,8 @@
 ### 2026-09-20 Reduction Engine PR D2
 
 - Production hierarchical reduction reuses only `TokenizerWrapper`, `PromptGenerator`, and `call_llm_api()`; it must never call `process_prompt_and_merge()` or combine recursively.
-- `round_task` is applied to a copied context. Partial runtime workspaces are disposable; D1 completed checkpoints remain authoritative.
+- `round_task` is applied through a D2-local attribute view that delegates reads to the base context and keeps all writes local. `copy.copy()` is prohibited for this boundary because slot-based row overlays may share their mutable override dictionary. Partial runtime workspaces are disposable; D1 completed checkpoints remain authoritative.
+- Post-initial text outputs follow the same caller-owned preparation contract as round 1: preserve content and append a newline only when one is absent before handing items to `ConcatTextReducer`.
 - The versioned adapter fingerprint includes prompt/template, task context, tokenizer cut, model/generation, max-token, think, and mock semantics. It excludes secrets, credentials, raw endpoint URLs, paths, PIDs, timestamps, randomness, and object identity.
 - Hierarchical JSON, Shared ExecutionBudget, collection aggregation, composite/semantic reducers, and ReductionStage remain out of scope.
 
