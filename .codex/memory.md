@@ -107,3 +107,9 @@
 
 - Hosted run `35515118358` proved the isolated E2E install step and exposed collection-time `psutil`; the minimal E2E surface now includes `psutil`, `version_parser`, and the other direct packaged imports reached through `utils.utilities`/`MP_utils` (`GPUtil`, `humanize`, `python-dateutil`, `scipy`, `setproctitle`).
 - The isolated CI commands now scope collection and execution to `tests/e2e`, preventing unrelated repository tests from expanding the E2E dependency contract. Production-path E2E tests were not weakened or replaced.
+
+### 2026-09-20 PR #185 stale ES helper import corrective
+
+- Repository-wide call-site search found no invocation or re-export of `get_es_client` or `apply_es_mapping`; only stale imports existed in active `steps_es.py` and the unused `steps_es_noeventids.py` variant. Historical commit `4d9f8d5` already constructed `ElasticsearchAdapter(...).connect()` and invoked `adapter.apply_mapping_file(...)` without calling either imported helper.
+- Removed both stale imports. Added focused regressions for connection configuration propagation through `resolve_es_connection()` → `ElasticsearchAdapter.connect()` and configured JSON mapping application through `ensure_schemas_es()` → `adapter.apply_mapping_file()` → `indices.put_mapping()`, including preservation of output/meta fallback mapping.
+- No E2E acceptance test or ES connection/mapping behavior was weakened, and no PR F functionality was introduced.
