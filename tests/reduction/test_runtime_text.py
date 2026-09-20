@@ -6,6 +6,7 @@ import pytest
 
 import czjLLM.reduction.runtime_text as runtime_text
 from czjLLM.reduction.artifacts import derive_run_key
+from czjLLM.reduction.execution_budget import ExecutionBudget
 from czjLLM.reduction.runtime_text import (
     TEXT_ROUND_RUNTIME_CONTRACT_VERSION,
     TextRoundRuntimeAdapter,
@@ -104,6 +105,31 @@ def test_round_reslices_renders_and_collects_in_stable_lexical_order(tmp_path):
     assert seen == [("0000.txt", "ROUND TASK:part-b"), ("0001.txt", "ROUND TASK:part-a")]
     assert RecordingGenerator.tasks == ["ROUND TASK"]
     assert ctx.task == "ORIGINAL"
+
+
+def test_derived_context_inherits_root_execution_budget_identity(tmp_path):
+    budget = object()
+    adapter = TextRoundRuntimeAdapter(
+        ctx=_ctx(_execution_budget=budget), item_workspace=tmp_path,
+        round_task="ROUND", tokenizer_factory=FakeTokenizer,
+        prompt_generator_factory=RecordingGenerator,
+        llm_dispatch=_successful_dispatch([]),
+    )
+
+    assert adapter._derived_context()._execution_budget is budget
+
+
+def test_execution_budget_does_not_change_runtime_fingerprint(tmp_path):
+    first = TextRoundRuntimeAdapter(
+        ctx=_ctx(_execution_budget=ExecutionBudget(2)), item_workspace=tmp_path,
+        round_task="ROUND",
+    )
+    second = TextRoundRuntimeAdapter(
+        ctx=_ctx(_execution_budget=ExecutionBudget(8)), item_workspace=tmp_path,
+        round_task="ROUND",
+    )
+
+    assert first.execution_fingerprint() == second.execution_fingerprint()
 
 
 def test_output_newline_preparation_preserves_existing_content(tmp_path):

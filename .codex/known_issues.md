@@ -64,3 +64,8 @@
 
 - Requirements installation was retried for the P1 corrective and remains blocked at the pinned GitHub `peft` clone by proxy `CONNECT tunnel failed, response 403`. The corrective therefore uses the required dependency-light regression suites without changing production dependency behavior.
 - The final two-pass retry/runtime-v2 corrective reconfirmed the same proxy failure. No dependency workaround was added; required dependency-light reduction, characterization, prompt dispatch/audit, compile, and diff checks completed successfully.
+
+## 2026-09-20 Reduction Engine PR E environment verification
+
+- Required dependency installation was retried after upgrading/checking pip and again failed cloning pinned GitHub `peft` because the proxy returned `CONNECT tunnel failed, response 403`. No production dependency bypass was added.
+- Installed dependency-light suites remained usable: all required PR E reduction, dispatch, producer, D2, characterization, compileall, and diff checks passed. Pytest emitted the existing non-fatal warning that `env_files` is an unknown config option in this incomplete environment.

@@ -6,7 +6,7 @@
 - Row Merger remains downstream SQL/Table/ES writeback coordination, while Output Profile remains the final strict validation boundary. Reduction Core does not own either boundary.
 - Model metadata uses allowlisted non-secret identity fields; credentials and raw endpoint URLs must not enter persisted metadata or execution fingerprints.
 - LLM call auditing is per run. Token usage comes from API usage data; context limits come from response/runtime/model configuration, never inferred from display names.
-- Document/row concurrency and prompt-slice concurrency remain distinct. Shared cross-layer `ExecutionBudget` is deferred to PR E.
+- Document/row concurrency and prompt-slice concurrency remain distinct desired maxima；PR E Shared `ExecutionBudget` 提供第三個 process-local leaf execution hard ceiling。
 - Reduction v1 is incremental: source-agnostic reducers/controllers/checkpoints precede collection manifests and source adapters. Reduction rounds are not business Stages.
 - `ReducerResult.changed` remains reducer-local observation. D1 hierarchical decisions use Unicode character counts with target → max rounds → stall precedence.
 - Completed checkpoint JSON is the commit marker. Caller-owned deterministic execution identity participates in run keys and compatibility checks.
@@ -49,3 +49,10 @@
 
 - `decisions.md-20260920-013654.md` — complete pre-compaction decision history through PR D2.
 - Earlier archive references contained in that snapshot remain authoritative for older details.
+
+## 2026-09-20 Reduction Engine PR E
+
+- Preserve three distinct concepts: row/doc desired parallelism, slice desired parallelism, and one shared hard leaf-capacity ceiling. Compatibility capacity derives from the maximum configured desired width so a long document is not reduced from 8 slices to `ctx.n_process=2`.
+- Use a `threading.Condition` partial-grant lease rather than another scheduler. Leaf executors alone retain permits; orchestration threads are only count-capped, which avoids nested synchronous deadlock.
+- Keep the budget private on the root runtime context and let existing overlays delegate to it. Missing budgets preserve legacy external/test caller behavior rather than creating unrelated child budgets.
+- Do not include operational concurrency in D2 execution identity. No cross-process/global coordinator and no PR F+ executable/manifest/reducer work is introduced.
