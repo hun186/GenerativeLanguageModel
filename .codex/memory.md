@@ -102,3 +102,8 @@
 - Added production TXT handler, SQLite/ES `handle_data_mode`, budgeted production leaf dispatch at capacities 2 and derived 8, shared concurrent dispatch, and D2 localhost checkpoint/resume/invalidation coverage.
 - Hardened live SQL cleanup, added ES CA/verification support, and accurately classified direct live SQL/ES and composite checks as service/cross-service smokes.
 - No PR F functionality was introduced.
+
+### 2026-09-20 PR #185 hosted dependency convergence corrective
+
+- Hosted run `35515118358` proved the isolated E2E install step and exposed collection-time `psutil`; the minimal E2E surface now includes `psutil`, `version_parser`, and the other direct packaged imports reached through `utils.utilities`/`MP_utils` (`GPUtil`, `humanize`, `python-dateutil`, `scipy`, `setproctitle`).
+- The isolated CI commands now scope collection and execution to `tests/e2e`, preventing unrelated repository tests from expanding the E2E dependency contract. Production-path E2E tests were not weakened or replaced.

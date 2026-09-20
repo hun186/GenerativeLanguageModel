@@ -28,9 +28,9 @@ jobs:
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$PWD" >> "$GITHUB_ENV"
       - name: Prove offline E2E dependency completeness
-        run: python -m pytest --collect-only -q -m e2e
+        run: python -m pytest --collect-only -q tests/e2e -m e2e
       - name: Run offline production E2E gate
-        run: python -m pytest -q -m e2e --maxfail=1 --disable-warnings
+        run: python -m pytest -q tests/e2e -m e2e --maxfail=1 --disable-warnings
 
   unit-linux:
     if: ${{ false }}   # 暫停此 job

@@ -71,3 +71,7 @@
 
 - Direct adapter/sink and direct live-service CRUD tests are classified as focused boundary/service smokes, not application orchestration proof. Offline `handle_data_mode` and TXT handler tests are the authoritative production-path gate.
 - Production concurrency acceptance creates real TODO files and enters `call_llm_api`; tests must not manually lease permits around direct `PromptAPIPipeline` calls.
+
+## 2026-09-20 PR #185 E2E dependency convergence
+
+- `requirements-e2e.txt` follows imports reached by production paths under `tests/e2e`, not the full development/training environment. Collection is explicitly path-scoped before marker selection so unrelated tests cannot impose dependencies on the offline gate.
