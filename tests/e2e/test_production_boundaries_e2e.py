@@ -10,8 +10,7 @@ import pytest
 
 from czjLLM.es_mode.adapters.elasticsearch_adapter import ElasticsearchAdapter
 from czjLLM.es_mode.runtime.sinks.es_sink import ESSink
-from czjLLM.prompt_pipeline.pipeline_controller import PromptAPIPipeline
-from czjLLM.reduction.execution_budget import ExecutionBudget
+from czjLLM.prompt_pipeline.pipeline_controller import PromptAPIPipeline, call_llm_api
 from czjLLM.prompt_pipeline.dispatch_parallelism import attach_execution_budget
 from czjLLM.sql_mode.adapters.sqlite_adapter import SQLiteAdapter
 from czjLLM.sql_mode.runtime.sinks.sql_sink import SqlSink
@@ -114,17 +113,50 @@ def test_elasticsearch_real_adapter_and_sink(fake_openai, sink_ctx, monkeypatch,
         assert "analysis" not in store[src]["es-101"]
 
 
-def test_real_http_concurrency_obeys_execution_budget(fake_openai):
+def _dispatch_ctx(fake_openai, tmp_path, *, capacity=None, slice_parallelism=8):
+    values = dict(
+        task="E2E",
+        model_spec=fake_openai.model_spec,
+        model_spec_name="e2e-model",
+        removeFinPromptFile=True,
+        max_tokens=64,
+        PGMSubDir=str(tmp_path),
+        mp_for_all_call=True,
+        mp_debug=False,
+        n_process=2,
+        slice_parallelism=slice_parallelism,
+        llm_call_audit_run_id="",
+        llm_call_audit_path="",
+    )
+    if capacity is not None:
+        values["execution_budget_capacity"] = capacity
+    ctx = SimpleNamespace(**values)
+    attach_execution_budget(ctx)
+    return ctx
+
+
+def _todo_item(root, name, count):
+    item = root / name
+    (item / "TODO").mkdir(parents=True)
+    (item / "Success").mkdir()
+    for number in range(count):
+        (item / "TODO" / f"{number:04d}.txt").write_text(
+            f"ROW_ID={name}-{number}", encoding="utf-8"
+        )
+    return item
+
+
+def test_production_dispatch_http_concurrency_obeys_capacity_two(fake_openai, tmp_path):
     fake_openai.delay = 0.08
-    budget = ExecutionBudget(2)
-    def work(number):
-        with budget.lease(1):
-            return llm(fake_openai, f"ROW_ID=budget-{number}")
-    with ThreadPoolExecutor(max_workers=8) as pool:
-        results = list(pool.map(work, range(8)))
-    assert len(results) == 8
+    ctx = _dispatch_ctx(fake_openai, tmp_path, capacity=2)
+    item = _todo_item(tmp_path, "budget-two", 8)
+    call_llm_api([str(item)], ctx)
+    assert not list((item / "TODO").glob("*.txt"))
+    assert len(list((item / "Success").glob("*.txt"))) == 8
     assert fake_openai.peak_active_requests <= 2
-    assert budget.snapshot().in_use == 0
+    snapshot = ctx._execution_budget.snapshot()
+    assert snapshot.peak_in_use <= 2
+    assert snapshot.in_use == 0
 
 
 def test_deterministic_route_and_round_responses(fake_openai):
@@ -141,8 +173,25 @@ def test_openai_transport_retries_injected_transient_failure(fake_openai):
     assert all(r["matched_rule"] in {"E2E_RETRY", None} for r in matching)
 
 
-def test_derived_execution_budget_capacity_preserves_slice_width():
-    ctx = SimpleNamespace(n_process=2, slice_parallelism=8, model_spec={})
-    budget = attach_execution_budget(ctx)
+def test_production_dispatch_derived_capacity_eight_is_shared(fake_openai, tmp_path):
+    fake_openai.delay = 0.08
+    ctx = _dispatch_ctx(fake_openai, tmp_path, slice_parallelism=8)
+    budget = ctx._execution_budget
     assert budget.capacity == 8
+    first = _todo_item(tmp_path, "wide-a", 8)
+    call_llm_api([str(first)], ctx)
+    assert 2 < fake_openai.peak_active_requests <= 8
+
+    fake_openai.peak_active_requests = 0
+    second = _todo_item(tmp_path, "wide-b", 8)
+    third = _todo_item(tmp_path, "wide-c", 8)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [
+            pool.submit(call_llm_api, [str(second)], ctx),
+            pool.submit(call_llm_api, [str(third)], ctx),
+        ]
+        for future in futures:
+            future.result()
+    assert fake_openai.peak_active_requests <= 8
+    assert all(len(list((item / "Success").glob("*.txt"))) == 8 for item in (second, third))
     assert budget.snapshot().in_use == 0

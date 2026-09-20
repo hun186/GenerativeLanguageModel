@@ -95,3 +95,10 @@
 - Added all five marker contracts, strict live opt-in and namespace validation, UUID-owned SQL/ES cleanup, live LLM/SQL/ES/composite selections, deterministic keyed fake-HTTP failure injection, retry coverage, derived-capacity-8 policy coverage, and separated focused/offline/live CI steps.
 - Added `requirements-e2e.txt` without training-stack dependencies. Installation remains blocked by the sandbox package-index proxy; live selections cleanly skip without opt-in and live safety tests pass.
 - No PR F work-unit, manifest, reducer, or distributed-budget functionality was introduced.
+
+### 2026-09-20 PR #185 final production E2E corrective
+
+- Wired an isolated Linux offline-E2E CI job to install `requirements-e2e.txt`, collect the E2E selection, and execute it independently of the Git-pinned training stack.
+- Added production TXT handler, SQLite/ES `handle_data_mode`, budgeted production leaf dispatch at capacities 2 and derived 8, shared concurrent dispatch, and D2 localhost checkpoint/resume/invalidation coverage.
+- Hardened live SQL cleanup, added ES CA/verification support, and accurately classified direct live SQL/ES and composite checks as service/cross-service smokes.
+- No PR F functionality was introduced.

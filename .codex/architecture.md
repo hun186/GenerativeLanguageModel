@@ -138,3 +138,9 @@
 - Test layers are now explicit: ordinary focused tests; offline `e2e`; individually opted-in `live_llm`, `live_sql`, and `live_es`; and explicitly opted-in composite `live_e2e`.
 - Live mutation requires `CZJLLM_RUN_LIVE_E2E=1`, dedicated SQL names prefixed `czjllm_e2e_`, dedicated ES indexes prefixed `czjllm-e2e-`, unique run-owned IDs, and record/document-only cleanup.
 - CI separates focused and offline-E2E selections. Live selections are non-PR-only and require both explicit opt-in and service-specific configuration.
+
+## 2026-09-20 PR #185 final production-gate corrective
+
+- The authoritative offline gate has an isolated `offline-e2e` Linux CI job which installs only `requirements-e2e.txt`, proves collection in that clean environment, then executes `pytest -m e2e`; it does not first install the training/GPU requirements surface.
+- Offline acceptance now includes the TXT handler lifecycle, SQL and ES `handle_data_mode` backend orchestration, production `call_llm_api` leaf-budget dispatch, and D2 hierarchical combine/checkpoint resume over localhost HTTP.
+- The localhost 500→200 case validates OpenAI transport retry only. Focused D2 tests remain authoritative for the application two-pass `allow_to_retry=True` then `False` contract.

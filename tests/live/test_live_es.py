@@ -2,7 +2,8 @@ import pytest
 
 
 @pytest.mark.live_es
-def test_live_es_owned_document_round_trip(live_es_config, live_run_id):
+def test_live_es_service_owned_document_round_trip(live_es_config, live_run_id):
+    """Connectivity/storage smoke only; offline E2E owns adapter/sink coverage."""
     from elasticsearch import Elasticsearch
 
     kwargs = {}
@@ -10,6 +11,11 @@ def test_live_es_owned_document_round_trip(live_es_config, live_run_id):
     import os
     if os.getenv("LIVE_ES_USER") and os.getenv("LIVE_ES_PASS"):
         kwargs["http_auth"] = (os.environ["LIVE_ES_USER"], os.environ["LIVE_ES_PASS"])
+    verify = os.getenv("LIVE_ES_VERIFY_CERTS")
+    if verify is not None:
+        kwargs["verify_certs"] = verify.strip().lower() in {"1", "true", "yes", "on"}
+    if os.getenv("LIVE_ES_CA_CERTS"):
+        kwargs["ca_certs"] = os.environ["LIVE_ES_CA_CERTS"]
     client = Elasticsearch([live_es_config["LIVE_ES_URL"]], **kwargs)
     source = live_es_config["LIVE_ES_SOURCE_INDEX"]
     target = live_es_config["LIVE_ES_TARGET_INDEX"]

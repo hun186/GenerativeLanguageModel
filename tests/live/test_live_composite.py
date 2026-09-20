@@ -15,15 +15,17 @@ def test_live_llm_composite_protocol(live_llm_config, live_run_id, tmp_path):
 def test_live_sql_and_llm_owned_row_smoke(
     live_llm_config, live_sql_config, live_run_id, tmp_path
 ):
-    """Real SQL-owned row → real LLM → exact target PK, with owned cleanup."""
+    """Cross-service smoke, not proof of handle_data_mode orchestration."""
     import pyodbc
     from czjLLM.prompt_pipeline.pipeline_controller import PromptAPIPipeline
 
     source = live_sql_config["LIVE_SQL_SOURCE_TABLE"]
     target = live_sql_config["LIVE_SQL_TARGET_TABLE"]
-    conn = pyodbc.connect(live_sql_config["LIVE_SQL_CONN_STR"])
-    cur = conn.cursor()
+    conn = None
+    cur = None
     try:
+        conn = pyodbc.connect(live_sql_config["LIVE_SQL_CONN_STR"])
+        cur = conn.cursor()
         cur.execute(
             f"INSERT INTO [{source}] ([id], [body]) VALUES (?, ?)",
             live_run_id,
@@ -51,7 +53,9 @@ def test_live_sql_and_llm_owned_row_smoke(
         ).fetchone()
         assert written and str(written[0]).strip()
     finally:
-        cur.execute(f"DELETE FROM [{target}] WHERE [id] = ?", live_run_id)
-        cur.execute(f"DELETE FROM [{source}] WHERE [id] = ?", live_run_id)
-        conn.commit()
-        conn.close()
+        if cur is not None:
+            cur.execute(f"DELETE FROM [{target}] WHERE [id] = ?", live_run_id)
+            cur.execute(f"DELETE FROM [{source}] WHERE [id] = ?", live_run_id)
+        if conn is not None:
+            conn.commit()
+            conn.close()

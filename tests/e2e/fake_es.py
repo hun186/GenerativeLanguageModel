@@ -25,6 +25,8 @@ def merge(target, patch):
 class _Indices:
     def __init__(self, store): self.store = store
     def exists(self, index): return index in self.store
+    def create(self, index, **_kwargs): self.store.setdefault(index, {}); return {"acknowledged": True}
+    def put_mapping(self, index, body): return {"acknowledged": True}
     def refresh(self, index): return None
     def get_mapping(self, index): return {index: {"mappings": {"properties": {}}}}
 

@@ -66,3 +66,8 @@
 
 - Reachability never grants mutation permission. Live fixtures check explicit opt-in before configuration or client construction, validate dedicated namespaces before connecting, and clean only UUID-owned records.
 - `requirements-e2e.txt` is a dependency-light test install surface aligned with production pins; it excludes model-training dependencies and does not change production dependency semantics.
+
+## 2026-09-20 PR #185 final acceptance boundaries
+
+- Direct adapter/sink and direct live-service CRUD tests are classified as focused boundary/service smokes, not application orchestration proof. Offline `handle_data_mode` and TXT handler tests are the authoritative production-path gate.
+- Production concurrency acceptance creates real TODO files and enters `call_llm_api`; tests must not manually lease permits around direct `PromptAPIPipeline` calls.
