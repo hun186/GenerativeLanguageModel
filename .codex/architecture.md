@@ -76,7 +76,7 @@
 
 ## 2026-09-19 planned Reduction Engine v1 architecture
 
-- 狀態：整體 v1 architecture 已規劃核准；PR B reducer foundation 已實作，其餘 production routing 與後續元件仍未實作。
+- 狀態：此為歷史規劃摘要；PR A-E 現已實作，PR F 與後續 collection/reducer/stage 元件仍未實作。
 - 新核心預計集中於 `czjLLM/reduction/`，包含 contracts/config/registry/engine/controllers/policies/execution budget/artifacts/executables/work units/manifests/reducers 與 source/sink adapters。
 - Reduction Core 僅接觸 logical items、provenance、contracts 與 execution context；SQL/ES/TXT collection discovery 與 writeback 透過 adapters 隔離。
 - `combine_utils.py`、`slice_merge.py`、live prompt-pipeline controller、Row Merger 保留 compatibility facade；`pipeline/merge/` 不納入 live Reduction Engine foundation。
@@ -119,3 +119,11 @@
 - Runtime work is isolated under `<item>/.reduction/runtime/round-NNNN/{TODO,Success}` and deterministically rebuilt when its round is uncommitted. Completed-round authority stays with D1 checkpoints under `<item>/.reduction/checkpoints/<run-key>`; normal combine cleanup and `debug=True` preservation semantics remain unchanged.
 - The adapter owns D1's execution fingerprint. Its versioned, secret-free semantics include round task/template and relevant prompt variables, tokenizer identity/input cut/max tokens, model identity and allowlisted generation settings, think mode, and mock/real mode. Credentials and raw endpoint URLs are excluded.
 - Each post-initial map round preserves the established LLM retry contract by dispatching TODO work first with `allow_to_retry=true`, then dispatching only remaining TODO work with `allow_to_retry=false`; both passes remain one D1 reduction round. Adapter contract `reduction-text-round-v2` identifies the corrected context, newline, and retry execution semantics so v1 checkpoints cannot share the same execution fingerprint/run identity.
+
+## 2026-09-20 Reduction Engine PR E shared execution budget
+
+- `czjLLM/reduction/execution_budget.py` provides the source-agnostic, thread-safe `ExecutionBudget`; it is process-local runtime coordination, owns no pool/scheduler, and grants partial widths through a blocking `Condition` lease.
+- The root CLI runtime projects existing row/slice settings, resolves capacity, and attaches exactly one private `ctx._execution_budget`. `CtxOverlay` and D2 `_RuntimeContextView` inherit that same object through attribute fallback; external contexts without it retain legacy behavior.
+- Local row/doc and slice desired maxima remain separate policies. Row orchestration only caps `ThreadPoolExecutor.max_workers` by budget capacity and holds no permits. Leaf leases wrap `multicoreJob` or legacy `run_round` creation through completion, preventing parent-waits-for-child deadlocks and bounding combined leaf execution.
+- D2 requires no separate integration because its adapter dispatches through `call_llm_api()`. Budget state/capacity remain outside `reduction-text-round-v2` execution fingerprints and checkpoint identity.
+- Scope is one application process/run. Cross-process, cross-machine, Redis, filesystem, GPU, and service-side scheduling remain outside this architecture.

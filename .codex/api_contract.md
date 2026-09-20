@@ -56,3 +56,15 @@ reduction:
 - Hierarchical controllers accept only `concat_text` and require a non-empty `runtime.round_task`; unknown or missing controller/runtime fields are rejected. `single_pass` retains all three PR C profiles/options and rejects hierarchical-only settings rather than silently consuming them.
 - Fixed `rounds` is a positive integer. Adaptive target is a non-negative integer, max rounds is a positive integer, and ratio is finite in `[0,1]`. Explicit reduction remains mutually exclusive with `merge_slices=true`.
 - Round numbering follows D1: round 1 reduces existing initial map Success items; round 2 is the first new tokenizer/prompt/LLM map cycle.
+
+## 2026-09-20 Reduction Engine PR E execution capacity contract
+
+Production root configuration accepts one optional canonical setting:
+
+```yaml
+execution_budget_capacity: 8
+```
+
+- The value must be a positive integer; booleans, strings, zero, and negative values are rejected. Precedence is root/run explicit value, model-profile `execution_budget_capacity`, derived maximum of existing positive local process/row/slice settings, then `1`.
+- `ExecutionBudget(capacity).lease(requested)` requires a positive integer and yields `1..min(requested, available, capacity)` after blocking without busy-spinning when capacity is exhausted. The granted amount is always returned on scope exit, including exceptions.
+- This is a Python runtime/process-local contract, not a serialized business API or distributed coordination contract. Private budget state does not enter persisted configuration or D2 fingerprints.

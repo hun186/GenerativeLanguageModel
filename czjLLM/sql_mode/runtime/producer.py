@@ -8,6 +8,7 @@ from czjLLM.job_manager.console_ui import tlog_warn,tlog
 from czjLLM.prompt_pipeline.pipeline_controller import producer_backpressure_wait
 from czjLLM.prompt_pipeline.pipeline_controller import meter_update
 from czjLLM.prompt_pipeline.runtime_support.stage_mode import explicit_stage_flow
+from czjLLM.prompt_pipeline.dispatch_parallelism import cap_orchestration_workers
 from .workers import outstanding_now
 from .scheduler import schedule_one_row
 from .pending_recheck import (
@@ -237,11 +238,18 @@ def produce_rows(
         tlog(f"[producer] will iterate {total_rows} rows{suffix}")
 
     row_parallelism = _multistage_row_parallelism(ctx) if _stream_multistage_enabled(ctx) else 1
+    effective_row_parallelism = cap_orchestration_workers(ctx, row_parallelism)
     executor = None
     in_flight = set()
-    if row_parallelism > 1:
-        executor = ThreadPoolExecutor(max_workers=row_parallelism, thread_name_prefix="multistage-row")
-        tlog(f"[producer] multistage row/doc parallelism enabled: max_workers={row_parallelism}")
+    if effective_row_parallelism > 1:
+        executor = ThreadPoolExecutor(
+            max_workers=effective_row_parallelism,
+            thread_name_prefix="multistage-row",
+        )
+        tlog(
+            "[producer] multistage row/doc parallelism enabled: "
+            f"max_workers={effective_row_parallelism}"
+        )
 
     def _complete_future(fut):
         pk_done = None
@@ -335,7 +343,11 @@ def produce_rows(
     try:
         while idx < len(rows_for_count):
             _drain_completed(block=False)
-            while executor is not None and len(in_flight) >= row_parallelism and not stop_event.is_set():
+            while (
+                executor is not None
+                and len(in_flight) >= effective_row_parallelism
+                and not stop_event.is_set()
+            ):
                 _drain_completed(block=True)
             row = rows_for_count[idx]
             idx += 1

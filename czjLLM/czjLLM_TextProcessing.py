@@ -175,6 +175,22 @@ if __name__ == '__main__':
     ctx.mp_debug = get_param("mp_debug", False)
     ctx.debug_print_llm_io = bool(get_param("debug_print_llm_io", False))
     ctx.debug_print_max_chars = int(get_param("debug_print_max_chars", 2000) or 2000)
+    # Project concurrency policy before creating the one process-local runtime
+    # budget.  Child row/D2 context views inherit this private object.
+    for _key in (
+        "execution_budget_capacity",
+        "multistage_row_parallelism",
+        "sql_multistage_row_parallelism",
+        "stream_multistage_row_parallelism",
+        "multistage_slice_parallelism",
+        "llm_slice_parallelism",
+        "slice_parallelism",
+    ):
+        _value = get_param(_key, None)
+        if _value is not None:
+            setattr(ctx, _key, _value)
+    from czjLLM.prompt_pipeline.dispatch_parallelism import attach_execution_budget
+    attach_execution_budget(ctx)
     for _k, _v in create_llm_call_audit_run(PGMSubDir=PGMSubDir).items():
         setattr(ctx, _k, _v)
     #print("ctx in main",ctx)

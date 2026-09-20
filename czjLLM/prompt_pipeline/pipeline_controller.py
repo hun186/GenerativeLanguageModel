@@ -60,7 +60,10 @@ from utils.utilities_path import MKDIR
 from utils.utilities import flattenList
 from utils.utilities import tlog
 from utils.MP_utils import multicoreJob
-from czjLLM.prompt_pipeline.dispatch_parallelism import resolve_slice_parallelism
+from czjLLM.prompt_pipeline.dispatch_parallelism import (
+    lease_execution_workers,
+    resolve_slice_parallelism,
+)
 
 from czjLLM.infrastructure.ollama_lb import select_idle_ollama_url,release_url_load
 
@@ -325,12 +328,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
 
             round_timed_out = False
             try:
-                MPresult = run_round(
-                    DTBJobs,
-                    ctx.n_process,
-                    timeout_sec=getattr(ctx, "llm_round_timeout_sec", None),
-                    debug_enabled=getattr(ctx, "llm_round_debug", None),
-                )
+                MPresult = _run_legacy_leaf_round(ctx, DTBJobs)
                 ok_prompt_files = set()
                 
                 for ret in MPresult or []:
@@ -1676,6 +1674,29 @@ def _llm_call_audit_kwargs(ctx) -> dict[str, str]:
     }
 
 
+def _run_multicore_leaf_batch(ctx, jobs, desired_workers):
+    """Run one LLM leaf pool while holding exactly its granted permits."""
+    with lease_execution_workers(ctx, desired_workers) as granted_workers:
+        return multicoreJob(
+            DTBJobs=jobs,
+            nProcess=granted_workers,
+            ShuffleJobs=False,
+            mp_debug=getattr(ctx, "mp_debug", False),
+        ).run()
+
+
+def _run_legacy_leaf_round(ctx, jobs):
+    """Run one legacy streaming leaf round under the shared process budget."""
+    requested_workers = max(1, min(int(ctx.n_process), len(jobs)))
+    with lease_execution_workers(ctx, requested_workers) as granted_workers:
+        return run_round(
+            jobs,
+            granted_workers,
+            timeout_sec=getattr(ctx, "llm_round_timeout_sec", None),
+            debug_enabled=getattr(ctx, "llm_round_debug", None),
+        )
+
+
 def call_llm_api(
     itemList,
     ctx,
@@ -1720,7 +1741,7 @@ def call_llm_api(
             "[llm-dispatch] slice-level parallelism: "
             f"jobs={len(DTBJobs)}, workers={slice_workers}"
         )
-        MPresult = multicoreJob(DTBJobs=DTBJobs, nProcess=slice_workers, ShuffleJobs=False, mp_debug=getattr(ctx, "mp_debug", False)).run()
+        MPresult = _run_multicore_leaf_batch(ctx, DTBJobs, slice_workers)
         #if MPresult:
         #    responseList, costList, DTBJobs_Retry = zip(*MPresult)
         #    CostLog(PGMSubDir = PGMSubDir, costList=costList, mode="AllArt")
@@ -1739,7 +1760,7 @@ def call_llm_api(
                 "[llm-dispatch] slice-level parallelism: "
                 f"jobs={len(DTBJobs)}, workers={slice_workers}"
             )
-            MPresult = multicoreJob(DTBJobs=DTBJobs, nProcess=slice_workers, ShuffleJobs=False, mp_debug=getattr(ctx, "mp_debug", False)).run()
+            MPresult = _run_multicore_leaf_batch(ctx, DTBJobs, slice_workers)
             if MPresult:
                 responseList, costList, item_retry = zip(*MPresult)
                 ArtCost = CostLog(ArtCost=ArtCost, item=item, costList=costList, mode="singleArt")

@@ -4,11 +4,18 @@
 
 - 本專案是 Python 多來源文件／表格處理與 LLM 多階段分析框架；TXT/Table/SQL/ES 共用 prompt、LLM、combine 與 writeback 基礎設施。
 - `combine_api_finished_item()` 是 production 單一文件 Success slice 合併邊界；Row Merger 只負責下游協調，Output Profile 維持最終嚴格驗證。
-- Reduction Engine PR A-C 與 D1 已完成；D2 production hierarchical text routing 的兩項 P1 hosted-review corrective 已在本地實作，須待更新 hosted head review 後才視為 PR D merge-ready。PR E Shared ExecutionBudget 仍未實作。
+- Reduction Engine PR A-E 已完成；D2 production hierarchical text routing 保持 `reduction-text-round-v2` 契約，PR E 已加入 process-local Shared ExecutionBudget。PR F 與後續 roadmap 仍未實作。
 - Hierarchical round 1 直接 reduce 原始 Success map outputs；round 2+ 才經 tokenizer、configured round task prompt、LLM map 與 concat reducer。
 - Requirements 安裝在目前環境仍受 pinned GitHub `peft` proxy 403 限制；dependency-light pytest、compileall 與 diff checks 是可用替代驗證。
 
 ## Recent Changes
+
+### 2026-09-20 Reduction Engine PR E shared execution budget
+
+- Added a source-agnostic process-local `ExecutionBudget` with strict positive-int validation, blocking partial leases, exact finally-release, immutable snapshots, and peak-use observation. Root/run capacity precedence is explicit root, explicit model profile, maximum existing desired process/row/slice width, then 1.
+- Root CLI creates one private budget after concurrency projection. `call_llm_api()` and legacy streaming `run_round()` lease only around leaf pools; multistage row orchestration caps thread count without retaining permits. D2 context fallback shares root identity and fingerprints remain capacity-independent.
+- Local row and slice policies remain intact; a 2-process/8-slice long document retains capacity 8, while concurrent leaf batches share that ceiling. Scope remains one process; PR F and later roadmap work are not implemented.
+- Verification: PR E focused selection 33 passed; all `tests/reduction` 139 passed; dispatch policy 17 passed; producer parallelism 4 passed; D2 runtime/routing 22 passed; compatibility characterization 29 passed; compileall and diff check passed. Requirements install remains blocked by pinned GitHub `peft` proxy 403.
 
 ### 2026-09-20 Reduction Engine PR D2 final hosted-review corrective
 
