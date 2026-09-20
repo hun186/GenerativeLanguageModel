@@ -79,3 +79,7 @@
 ## 2026-09-20 PR #185 corrective dependency verification
 
 - The dependency-light `python -m pip install -r requirements-e2e.txt` also cannot reach the configured package index in this sandbox (proxy 403 beginning with `colorama`), so offline E2E execution remains unavailable locally. This is broader than the pinned GitHub `peft` failure and requires hosted/self-hosted CI with package access.
+
+## 2026-09-20 Scheduler source-backup warning
+
+- Hosted offline ES scheduling logged a non-fatal source TXT backup warning for `/cache` after the affected row otherwise completed through LLM and ES writeback. It is not part of the headless-stdin failure and remains a follow-up only if it becomes a functional failure after countdown hardening.

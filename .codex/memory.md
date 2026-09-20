@@ -113,3 +113,8 @@
 - Repository-wide call-site search found no invocation or re-export of `get_es_client` or `apply_es_mapping`; only stale imports existed in active `steps_es.py` and the unused `steps_es_noeventids.py` variant. Historical commit `4d9f8d5` already constructed `ElasticsearchAdapter(...).connect()` and invoked `adapter.apply_mapping_file(...)` without calling either imported helper.
 - Removed both stale imports. Added focused regressions for connection configuration propagation through `resolve_es_connection()` → `ElasticsearchAdapter.connect()` and configured JSON mapping application through `ensure_schemas_es()` → `adapter.apply_mapping_file()` → `indices.put_mapping()`, including preservation of output/meta fallback mapping.
 - No E2E acceptance test or ES connection/mapping behavior was weakened, and no PR F functionality was introduced.
+
+### 2026-09-20 PR #185 headless countdown hardening
+
+- Hardened the shared `utils.utilities.countdown_pause()` CLI boundary: zero/negative durations, absent or non-TTY stdin, unsupported `fileno()`, and unsupported non-Windows `select` now return immediately without sleeping or failing row scheduling; selectable interactive terminals retain countdown and Enter-to-skip behavior.
+- Added focused regressions for absent, non-TTY, pseudofile stdin and the existing zero-second contract. Accepted TXT/SQL/ES, budget, D2, retry, and ES adapter/mapping tests remain unchanged.
