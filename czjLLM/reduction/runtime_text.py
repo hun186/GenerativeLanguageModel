@@ -11,7 +11,7 @@ from typing import Any, Callable, Mapping, Optional
 from czjLLM.utilities.fs_safe import safe_atomic_write_text, safe_read_text, safe_rmtree
 
 
-TEXT_ROUND_RUNTIME_CONTRACT_VERSION = "reduction-text-round-v1"
+TEXT_ROUND_RUNTIME_CONTRACT_VERSION = "reduction-text-round-v2"
 
 
 class TextRoundRuntimeError(RuntimeError):
@@ -215,12 +215,18 @@ class TextRoundRuntimeAdapter:
             from czjLLM.prompt_pipeline.pipeline_controller import call_llm_api
 
             dispatch = call_llm_api
-        try:
-            dispatch([str(round_dir)], derived, task_override=self.round_task)
-        except Exception as exc:
-            raise TextRoundRuntimeError(
-                f"LLM execution failed for reduction round {next_round_index}: {exc}"
-            ) from exc
+        for allow_to_retry in (True, False):
+            try:
+                dispatch(
+                    [str(round_dir)],
+                    derived,
+                    allow_to_retry=allow_to_retry,
+                    task_override=self.round_task,
+                )
+            except Exception as exc:
+                raise TextRoundRuntimeError(
+                    f"LLM execution failed for reduction round {next_round_index}: {exc}"
+                ) from exc
 
         remaining = sorted(path.name for path in todo_dir.glob("*.txt"))
         if remaining:

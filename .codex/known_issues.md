@@ -63,3 +63,4 @@
 ## 2026-09-20 Reduction Engine PR D2 hosted-review corrective environment verification
 
 - Requirements installation was retried for the P1 corrective and remains blocked at the pinned GitHub `peft` clone by proxy `CONNECT tunnel failed, response 403`. The corrective therefore uses the required dependency-light regression suites without changing production dependency behavior.
+- The final two-pass retry/runtime-v2 corrective reconfirmed the same proxy failure. No dependency workaround was added; required dependency-light reduction, characterization, prompt dispatch/audit, compile, and diff checks completed successfully.

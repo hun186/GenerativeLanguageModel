@@ -10,6 +10,13 @@
 
 ## Recent Changes
 
+### 2026-09-20 Reduction Engine PR D2 final hosted-review corrective
+
+- 恢復 production 單階段既有的兩階段 LLM retry 契約：同一個 `next_round_items()` 先以 `allow_to_retry=True` dispatch，再以 `False` dispatch 剩餘 TODO，之後才判定 incomplete；兩次 dispatch 仍只是一個 D1 map round。
+- `TEXT_ROUND_RUNTIME_CONTRACT_VERSION` 升為 `reduction-text-round-v2`，使 context isolation/newline/retry 語意與 pre-corrective v1 產生不同 execution fingerprint 與 D1 run identity；未修改 D1 checkpoint contract/version，也不遷移 v1 D2 checkpoints。
+- Retry regression 驗證 call order、兩次 `task_override`、first-pass 成功項目不重跑、second-pass transient recovery、第二次後仍 incomplete 的明確失敗、context isolation 與兩次完成結果的 newline preparation。Fingerprint regression 驗證 v2 metadata、v1/v2 fingerprint 與 run key 不同。
+- 驗證：D2 focused 54 passed；retry-specific 2 passed；runtime-v2 fingerprint-specific 1 passed；全 `tests/reduction` 120 passed；PR A compatibility 29 passed；prompt dispatch/audit 11 passed；compileall 與 diff check 通過。Requirements 安裝仍受 pinned GitHub `peft` proxy 403 阻擋。PR D/D2 保持 awaiting hosted-head review，PR E 與後續 roadmap 未引入。
+
 ### 2026-09-20 Reduction Engine PR D2 hosted-review corrective
 
 - 修正 row-scoped slot overlay 的 context isolation：移除 `copy.copy(ctx)`，改用 D2-local attribute view；`round_task` 與任何 derived-context writes 均不會修改 base ctx 或其 mutable override mapping。

@@ -4,7 +4,10 @@ from types import SimpleNamespace
 
 import pytest
 
+import czjLLM.reduction.runtime_text as runtime_text
+from czjLLM.reduction.artifacts import derive_run_key
 from czjLLM.reduction.runtime_text import (
+    TEXT_ROUND_RUNTIME_CONTRACT_VERSION,
     TextRoundRuntimeAdapter,
     TextRoundRuntimeError,
 )
@@ -68,7 +71,7 @@ def _ctx(**overrides):
 
 
 def _successful_dispatch(seen):
-    def dispatch(items, ctx, task_override=None):
+    def dispatch(items, ctx, allow_to_retry=True, task_override=None):
         root = Path(items[0])
         seen.extend((p.name, p.read_text(encoding="utf-8")) for p in sorted((root / "TODO").glob("*.txt")))
         for prompt in sorted((root / "TODO").glob("*.txt"), reverse=True):
@@ -104,7 +107,7 @@ def test_round_reslices_renders_and_collects_in_stable_lexical_order(tmp_path):
 
 
 def test_output_newline_preparation_preserves_existing_content(tmp_path):
-    def dispatch(items, ctx, task_override=None):
+    def dispatch(items, ctx, allow_to_retry=True, task_override=None):
         root = Path(items[0])
         outputs = ["foo", "bar\n"]
         for prompt, output in zip(sorted((root / "TODO").glob("*.txt")), outputs):
@@ -126,7 +129,7 @@ def test_overlay_like_context_is_not_mutated_by_successful_round(tmp_path):
     original_overrides = dict(overlay._ov)
     seen_tasks = []
 
-    def dispatch(items, ctx, task_override=None):
+    def dispatch(items, ctx, allow_to_retry=True, task_override=None):
         seen_tasks.append(ctx.task)
         _successful_dispatch([])(items, ctx, task_override=task_override)
 
@@ -137,7 +140,7 @@ def test_overlay_like_context_is_not_mutated_by_successful_round(tmp_path):
     )
 
     adapter.next_round_items("aggregate", 2)
-    assert seen_tasks == ["ROUND TASK"]
+    assert seen_tasks == ["ROUND TASK", "ROUND TASK"]
     assert overlay.task == "ROW TASK"
     assert overlay._ov == original_overrides
     assert base.task == "BASE"
@@ -192,8 +195,57 @@ def test_adapters_with_same_base_context_do_not_cross_contaminate(tmp_path):
 
     first.next_round_items("aggregate", 2)
     second.next_round_items("aggregate", 2)
-    assert seen == ["FIRST", "SECOND"]
+    assert seen == ["FIRST", "FIRST", "SECOND", "SECOND"]
     assert ctx.task == "ORIGINAL"
+
+
+def test_two_pass_retry_dispatches_in_order_with_round_task(tmp_path):
+    calls = []
+
+    def dispatch(items, ctx, allow_to_retry=True, task_override=None):
+        root = Path(items[0])
+        todo = sorted((root / "TODO").glob("*.txt"))
+        calls.append((allow_to_retry, task_override, ctx.task, [p.name for p in todo]))
+        if allow_to_retry:
+            completed = todo[:1]
+        else:
+            completed = todo
+        for prompt in completed:
+            (root / "Success" / prompt.name).write_text(
+                f"pass-{prompt.stem}", encoding="utf-8"
+            )
+            prompt.unlink()
+
+    ctx = _ctx(task="ORIGINAL")
+    adapter = TextRoundRuntimeAdapter(
+        ctx=ctx, item_workspace=tmp_path, round_task="ROUND",
+        tokenizer_factory=FakeTokenizer, prompt_generator_factory=RecordingGenerator,
+        llm_dispatch=dispatch,
+    )
+
+    assert adapter.next_round_items("aggregate", 2) == ["pass-0000\n", "pass-0001\n"]
+    assert calls == [
+        (True, "ROUND", "ROUND", ["0000.txt", "0001.txt"]),
+        (False, "ROUND", "ROUND", ["0001.txt"]),
+    ]
+    assert ctx.task == "ORIGINAL"
+
+
+def test_two_pass_retry_raises_only_after_second_incomplete_dispatch(tmp_path):
+    calls = []
+
+    def dispatch(items, ctx, allow_to_retry=True, task_override=None):
+        calls.append((allow_to_retry, task_override))
+
+    adapter = TextRoundRuntimeAdapter(
+        ctx=_ctx(), item_workspace=tmp_path, round_task="ROUND",
+        tokenizer_factory=FakeTokenizer, prompt_generator_factory=RecordingGenerator,
+        llm_dispatch=dispatch,
+    )
+
+    with pytest.raises(TextRoundRuntimeError, match="TODO remains"):
+        adapter.next_round_items("aggregate", 2)
+    assert calls == [(True, "ROUND"), (False, "ROUND")]
 
 
 def test_incomplete_map_fails_and_stale_uncommitted_workspace_is_rebuilt(tmp_path):
@@ -237,6 +289,28 @@ def test_fingerprint_is_deterministic_sensitive_and_secret_free(tmp_path):
     assert first.execution_fingerprint() == TextRoundRuntimeAdapter(
         ctx=credential_change, item_workspace=tmp_path, round_task="raw task"
     ).execution_fingerprint()
+
+
+def test_runtime_v2_contract_changes_execution_fingerprint(monkeypatch, tmp_path):
+    adapter = TextRoundRuntimeAdapter(
+        ctx=_ctx(), item_workspace=tmp_path, round_task="raw task"
+    )
+    metadata = adapter.fingerprint_metadata()
+    assert TEXT_ROUND_RUNTIME_CONTRACT_VERSION == "reduction-text-round-v2"
+    assert metadata["contract_version"] == "reduction-text-round-v2"
+    v2_fingerprint = adapter.execution_fingerprint()
+
+    monkeypatch.setattr(
+        runtime_text,
+        "TEXT_ROUND_RUNTIME_CONTRACT_VERSION",
+        "reduction-text-round-v1",
+    )
+    v1_fingerprint = adapter.execution_fingerprint()
+
+    assert v2_fingerprint != v1_fingerprint
+    assert derive_run_key("input", "policy", v2_fingerprint) != derive_run_key(
+        "input", "policy", v1_fingerprint
+    )
 
 
 def test_fingerprint_tracks_shared_production_task_pool_semantics(tmp_path):
