@@ -79,3 +79,8 @@
 ## 2026-09-20 Remove stale ES_utils dependency
 
 - ES client creation belongs to `resolve_es_connection` plus `ElasticsearchAdapter.connect`; predefined and per-writeback mapping application belongs to `ensure_schemas_es` plus `ElasticsearchAdapter.apply_mapping_file`. The missing `utils.ES_utils` import had no caller and is not a compatibility API or pip dependency.
+
+## 2026-09-21 Preserve hierarchical item workspaces after combine
+
+- The combine boundary owns legacy cleanup, but checkpoint-backed hierarchical execution requires the original prepared Success inputs and item-local D1/D2 state for stable run-key lookup and terminal resume. Cleanup is therefore skipped only for enabled normalized controllers `fixed_rounds` and `adaptive_hierarchical`.
+- Checkpoint location, identity, format, atomic commit semantics, runtime layout, and execution fingerprints are unchanged. No partial GC policy is introduced.

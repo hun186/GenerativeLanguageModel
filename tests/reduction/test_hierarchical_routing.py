@@ -19,6 +19,13 @@ class FakeAdapter:
 
     def next_round_items(self, payload, round_index):
         self.calls.append((payload, round_index))
+        runtime_dir = (
+            Path(self.kwargs["item_workspace"])
+            / ".reduction"
+            / "runtime"
+            / f"round-{round_index:04d}"
+        )
+        runtime_dir.mkdir(parents=True, exist_ok=True)
         return list(self.outputs)
 
 
@@ -98,3 +105,36 @@ def test_terminal_checkpoint_resume_and_fingerprint_invalidation(tmp_path):
     FakeAdapter.outputs = ["changed"]
     assert _read_output(item, ctx) == "changed"
     assert len(FakeAdapter.calls) == 2
+
+
+def test_hierarchical_debug_false_preserves_resume_workspace(tmp_path):
+    ctx = _ctx(tmp_path, _hierarchical("fixed_rounds", {"rounds": 2}))
+    ctx.debug = False
+    item = Path(ctx.prompt_dir) / "production-resume"
+    _write(item, "0.txt", "A")
+    _write(item, "1.txt", "B")
+
+    assert _read_output(item, ctx) == "short"
+    assert item.is_dir()
+    assert (item / "Success" / "0.txt").is_file()
+    assert (item / "Success" / "1.txt").is_file()
+    assert (item / ".reduction" / "checkpoints").is_dir()
+    assert (item / ".reduction" / "runtime" / "round-0002").is_dir()
+    assert len(FakeAdapter.calls) == 1
+
+    assert _read_output(item, ctx) == "short"
+    assert len(FakeAdapter.calls) == 1
+    assert item.is_dir()
+
+
+def test_single_pass_debug_false_keeps_historical_cleanup(tmp_path):
+    ctx = _ctx(
+        tmp_path,
+        {"enabled": True, "profile": "concat_text", "controller": "single_pass"},
+    )
+    ctx.debug = False
+    item = Path(ctx.prompt_dir) / "single-pass-cleanup"
+    _write(item, "0.txt", "A")
+
+    assert _read_output(item, ctx) == "A\n"
+    assert not item.exists()
