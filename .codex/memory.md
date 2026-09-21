@@ -118,3 +118,9 @@
 
 - Hardened the shared `utils.utilities.countdown_pause()` CLI boundary: zero/negative durations, absent or non-TTY stdin, unsupported `fileno()`, and unsupported non-Windows `select` now return immediately without sleeping or failing row scheduling; selectable interactive terminals retain countdown and Enter-to-skip behavior.
 - Added focused regressions for absent, non-TTY, pseudofile stdin and the existing zero-second contract. Accepted TXT/SQL/ES, budget, D2, retry, and ES adapter/mapping tests remain unchanged.
+
+### 2026-09-20 PR #185 ES value-boundary diagnostics
+
+- Hosted run `35521017153` proved both ES row identities traverse selection, scheduling, localhost HTTP, combine, and ESSink writeback; the remaining failure is value fidelity rather than identity or mapping.
+- Added ordered diagnostics without production changes: expected PK/value mapping, fake HTTP assistant content, production combined artifacts, deep-copied ESSink bulk actions, and final in-memory ES values. Each layer now asserts the same exact mapping and reports its actual mapping at the first divergence.
+- The countdown, scheduler, combiner, ESSink, fake response rules, and fake ES merge behavior remain unchanged; `/cache` backup remains a separate non-fatal follow-up. No PR F functionality was introduced.

@@ -76,6 +76,7 @@ class FakeOpenAIServer:
                         content = f"RESULT::{match.group(1)}"
                     else:
                         content = "MOCK_RESPONSE"
+                    record["response_content"] = content
                     payload = {
                         "id": "chatcmpl-test",
                         "object": "chat.completion",
