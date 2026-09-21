@@ -136,3 +136,9 @@
 - Hosted run `35616315448` exposed that successful production combine cleanup deleted D2 runtime and committed checkpoints under the item workspace, preventing terminal resume with `debug=False`.
 - Updated only the cleanup predicate so enabled `fixed_rounds`/`adaptive_hierarchical` workspaces survive; inactive and `single_pass` debug-false cleanup remains historical.
 - Added focused debug-false characterization proving initial Success, runtime, checkpoints, and terminal resume survive without a second map call, plus a single-pass cleanup non-regression. No checkpoint semantics, location, fingerprint, PR L retention policy, or PR F functionality changed.
+
+### 2026-09-21 PR #185 deterministic ExecutionBudget E2E assertions
+
+- Hosted run `35620840169` showed derived capacity and requested leaf width were both 8 while localhost HTTP overlap peaked at 2 because pre-HTTP endpoint load-lock work can stagger workers.
+- Corrected only E2E assertions: production capacity-2 now requires snapshot `(capacity=2, peak_in_use=2, in_use=0)`; derived/shared capacity-8 requires `(8, 8, 0)` after the first and concurrent phases. HTTP concurrency remains an upper-bound safety assertion only.
+- Removed the timing-dependent HTTP lower bound without changing server delay or any production budget, dispatch, pool, load-balancing, D2, or PR F behavior.

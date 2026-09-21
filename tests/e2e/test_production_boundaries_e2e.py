@@ -155,7 +155,8 @@ def test_production_dispatch_http_concurrency_obeys_capacity_two(fake_openai, tm
     assert len(list((item / "Success").glob("*.txt"))) == 8
     assert fake_openai.peak_active_requests <= 2
     snapshot = ctx._execution_budget.snapshot()
-    assert snapshot.peak_in_use <= 2
+    assert snapshot.capacity == 2
+    assert snapshot.peak_in_use == 2
     assert snapshot.in_use == 0
 
 
@@ -180,7 +181,11 @@ def test_production_dispatch_derived_capacity_eight_is_shared(fake_openai, tmp_p
     assert budget.capacity == 8
     first = _todo_item(tmp_path, "wide-a", 8)
     call_llm_api([str(first)], ctx)
-    assert 2 < fake_openai.peak_active_requests <= 8
+    first_snapshot = budget.snapshot()
+    assert first_snapshot.capacity == 8
+    assert first_snapshot.peak_in_use == 8
+    assert first_snapshot.in_use == 0
+    assert fake_openai.peak_active_requests <= 8
 
     fake_openai.peak_active_requests = 0
     second = _todo_item(tmp_path, "wide-b", 8)
@@ -192,6 +197,9 @@ def test_production_dispatch_derived_capacity_eight_is_shared(fake_openai, tmp_p
         ]
         for future in futures:
             future.result()
-    assert fake_openai.peak_active_requests <= 8
     assert all(len(list((item / "Success").glob("*.txt"))) == 8 for item in (second, third))
-    assert budget.snapshot().in_use == 0
+    concurrent_snapshot = budget.snapshot()
+    assert concurrent_snapshot.capacity == 8
+    assert concurrent_snapshot.peak_in_use == 8
+    assert concurrent_snapshot.in_use == 0
+    assert fake_openai.peak_active_requests <= 8
