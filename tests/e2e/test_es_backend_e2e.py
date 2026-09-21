@@ -99,11 +99,14 @@ def test_handle_data_mode_es_backend_runs_production_scheduler(
     )
     data_handler.handle_data_mode(ctx, get_param, args)
 
-    expected_values = {
+    expected_llm_values = {
         "es-e2e-001": "RESULT::es-e2e-001",
         "es-e2e-002": "RESULT::es-e2e-002",
     }
-    expected = set(expected_values)
+    expected_combined_values = {
+        key: value + "\n" for key, value in expected_llm_values.items()
+    }
+    expected = set(expected_llm_values)
     requested = {
         marker
         for request in fake_openai.requests
@@ -119,7 +122,9 @@ def test_handle_data_mode_es_backend_runs_production_scheduler(
         for marker in expected
         if f"ROW_ID={marker}" in str(request["body"]) and request.get("status") == 200
     }
-    assert llm_responses == expected_values, f"LLM boundary mismatch: {llm_responses!r}"
+    assert llm_responses == expected_llm_values, (
+        f"LLM boundary mismatch: {llm_responses!r}"
+    )
 
     combined_values = {}
     finished_root = Path(ctx.llm_source_finished_dir)
@@ -134,7 +139,7 @@ def test_handle_data_mode_es_backend_runs_production_scheduler(
             f"{[str(path) for path in matches]!r}"
         )
         combined_values[marker] = matches[0].read_text(encoding="utf-8")
-    assert combined_values == expected_values, (
+    assert combined_values == expected_combined_values, (
         f"combine boundary mismatch: {combined_values!r}"
     )
 
@@ -143,11 +148,15 @@ def test_handle_data_mode_es_backend_runs_production_scheduler(
         for action in bulk_actions
         if str(action.get("_id")) in expected
     }
-    assert bulk_values == expected_values, f"ESSink bulk boundary mismatch: {bulk_values!r}"
+    assert bulk_values == expected_combined_values, (
+        f"ESSink bulk boundary mismatch: {bulk_values!r}"
+    )
 
     stored_values = {
         marker: store["czjllm-e2e-records"][marker].get("analysis")
         for marker in expected
     }
-    assert stored_values == expected_values, f"final ES store mismatch: {stored_values!r}"
+    assert stored_values == expected_combined_values, (
+        f"final ES store mismatch: {stored_values!r}"
+    )
     assert ctx._execution_budget.snapshot().in_use == 0

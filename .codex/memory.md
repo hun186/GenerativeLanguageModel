@@ -124,3 +124,9 @@
 - Hosted run `35521017153` proved both ES row identities traverse selection, scheduling, localhost HTTP, combine, and ESSink writeback; the remaining failure is value fidelity rather than identity or mapping.
 - Added ordered diagnostics without production changes: expected PK/value mapping, fake HTTP assistant content, production combined artifacts, deep-copied ESSink bulk actions, and final in-memory ES values. Each layer now asserts the same exact mapping and reports its actual mapping at the first divergence.
 - The countdown, scheduler, combiner, ESSink, fake response rules, and fake ES merge behavior remain unchanged; `/cache` backup remains a separate non-fatal follow-up. No PR F functionality was introduced.
+
+### 2026-09-21 PR #185 prepared-text E2E contract correction
+
+- Hosted diagnostic run `35559731083` localized ES value divergence to the established text combine boundary: raw `RESULT::<pk>` becomes prepared `RESULT::<pk>\n`; identity and raw LLM response contracts passed.
+- Corrected only production-orchestration test expectations: ES retains separate exact raw-LLM and combined/bulk/stored mappings, while SQL writeback expects the same prepared trailing newline. No actual value is stripped or normalized, and permanent boundary diagnostics remain.
+- Classified the finding as a test-contract mismatch, not a production defect. The production combiner/reducer, Row Merger, sinks, fake services, countdown, and all PR A-E behavior remain unchanged; no PR F functionality was introduced.

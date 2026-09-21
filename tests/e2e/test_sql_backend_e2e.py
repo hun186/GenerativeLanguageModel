@@ -87,5 +87,5 @@ def test_handle_data_mode_sql_backend_runs_production_scheduler(
         if f"ROW_ID={marker}" in str(request["body"])
     }
     assert set(adapter.selected) == requested == set(written)
-    assert written == {key: f"RESULT::{key}" for key in expected}
+    assert written == {key: f"RESULT::{key}\n" for key in expected}
     assert ctx._execution_budget.snapshot().in_use == 0
