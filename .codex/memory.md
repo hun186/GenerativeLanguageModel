@@ -142,3 +142,9 @@
 - Hosted run `35620840169` showed derived capacity and requested leaf width were both 8 while localhost HTTP overlap peaked at 2 because pre-HTTP endpoint load-lock work can stagger workers.
 - Corrected only E2E assertions: production capacity-2 now requires snapshot `(capacity=2, peak_in_use=2, in_use=0)`; derived/shared capacity-8 requires `(8, 8, 0)` after the first and concurrent phases. HTTP concurrency remains an upper-bound safety assertion only.
 - Removed the timing-dependent HTTP lower bound without changing server delay or any production budget, dispatch, pool, load-balancing, D2, or PR F behavior.
+
+### 2026-09-22 PR #185 SQL resolver seam correction
+
+- Hosted run `35626496688` exposed an E2E fixture defect: replacing `handle_data_mode.resolve_connection` bypassed production initialization of `sql_table`, `primary_key`, `target_table`, `sqlite_path`, and `sql_connection_string`.
+- Narrowed the seam to `sql_steps.load_sql_cfg` and the `sql_steps.SQLiteAdapter` constructor factory. The real imported `resolve_connection()` now performs SQLite detection, context initialization, adapter construction, and connection entry while the recording subclass still observes selected PKs.
+- Removed manual SQLite context setup from the test and added stable post-resolution assertions. No SQL production, scheduler, sink, pending-recheck, budget, D2, or PR F behavior changed.

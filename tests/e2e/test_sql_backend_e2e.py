@@ -8,6 +8,7 @@ from czjLLM.handlers import handle_data_mode as data_handler
 from czjLLM.job_manager.job_config import LLMJobConfig
 from czjLLM.prompt_pipeline.dispatch_parallelism import attach_execution_budget
 from czjLLM.sql_mode.adapters.sqlite_adapter import SQLiteAdapter
+from czjLLM.sql_mode.entry import steps as sql_steps
 
 
 pytestmark = pytest.mark.e2e
@@ -40,11 +41,18 @@ def test_handle_data_mode_sql_backend_runs_production_scheduler(
         "primary_key": "id", "input_col": "body", "output_col": "analysis",
         "reset_output": False,
     }
-    adapter = RecordingSQLiteAdapter(cfg)
+    created = {}
+
+    def adapter_factory(adapter_cfg):
+        adapter = RecordingSQLiteAdapter(adapter_cfg)
+        created["adapter"] = adapter
+        return adapter
+
+    monkeypatch.setattr(sql_steps, "SQLiteAdapter", adapter_factory)
     monkeypatch.setattr(
-        data_handler,
-        "resolve_connection",
-        lambda ctx, get_param, args: (adapter, True, cfg),
+        sql_steps,
+        "load_sql_cfg",
+        lambda ctx, get_param, args, policy: cfg,
     )
 
     ctx = LLMJobConfig()
@@ -58,8 +66,6 @@ def test_handle_data_mode_sql_backend_runs_production_scheduler(
     ctx.llm_source_dir = str(tmp_path / "work")
     ctx.llm_source_finished_dir = str(tmp_path / "finished")
     ctx.log_dir = str(tmp_path / "logs")
-    ctx.sqlite_path = str(db)
-    ctx.is_sqlite = True
     ctx.n_process = 2
     ctx.slice_parallelism = 2
     ctx.schedule_todo_wait_seconds = 5
@@ -76,6 +82,13 @@ def test_handle_data_mode_sql_backend_runs_production_scheduler(
     }
     get_param = lambda name, default=None: params.get(name, default)
     data_handler.handle_data_mode(ctx, get_param, SimpleNamespace(config="offline-e2e"))
+    adapter = created["adapter"]
+
+    assert ctx.sql_table == "source"
+    assert ctx.target_table == "results"
+    assert ctx.primary_key == "id"
+    assert ctx.sqlite_path == str(db)
+    assert ctx.sql_connection_string is None
 
     with sqlite3.connect(db) as conn:
         written = dict(conn.execute("SELECT id, analysis FROM results"))
