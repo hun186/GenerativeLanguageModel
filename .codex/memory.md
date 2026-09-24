@@ -148,3 +148,9 @@
 - Hosted run `35626496688` exposed an E2E fixture defect: replacing `handle_data_mode.resolve_connection` bypassed production initialization of `sql_table`, `primary_key`, `target_table`, `sqlite_path`, and `sql_connection_string`.
 - Narrowed the seam to `sql_steps.load_sql_cfg` and the `sql_steps.SQLiteAdapter` constructor factory. The real imported `resolve_connection()` now performs SQLite detection, context initialization, adapter construction, and connection entry while the recording subclass still observes selected PKs.
 - Removed manual SQLite context setup from the test and added stable post-resolution assertions. No SQL production, scheduler, sink, pending-recheck, budget, D2, or PR F behavior changed.
+
+### 2026-09-24 PR #185 TXT cleanup-contract correction
+
+- Hosted run `35724737347` showed the production TXT lifecycle completed through localhost HTTP, Success, combine, and the final artifact; the remaining assertion incorrectly expected the non-hierarchical debug-false item workspace to survive normal cleanup.
+- Added an observation-only `MergeOps.combine` wrapper that records empty TODO and populated Success state immediately before delegating unchanged to the real `combine_api_finished_item()` implementation.
+- The E2E now explicitly uses `debug=False` and requires the final artifact, source backup/removal, released execution budget, and deleted temporary item workspace. No production cleanup, combine, TXT, D2, or PR F behavior changed.
