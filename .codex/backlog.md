@@ -40,7 +40,7 @@
   - [x] PR D1 — source-agnostic text controller core + completed-round atomic checkpoints
   - [x] PR D2 — production text-round runtime adapter + hierarchical routing/config
 - [x] PR E — Shared Execution Budget（process-local root ownership、leaf-only leases、row executor cap）
-- [ ] PR F — Logical Work Unit + immutable Collection Manifest
+- [ ] PR F — Logical Work Unit + immutable Collection Manifest（implementation + dependency-light tests complete; hosted offline E2E acceptance pending）
 - [ ] PR G — SQL/ES Collection Adapters + idempotent aggregate upsert
 - [ ] PR H — Deterministic composite reducers
 - [ ] PR I — Semantic reducer

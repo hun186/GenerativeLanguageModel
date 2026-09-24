@@ -4,11 +4,25 @@
 
 - 本專案是 Python 多來源文件／表格處理與 LLM 多階段分析框架；TXT/Table/SQL/ES 共用 prompt、LLM、combine 與 writeback 基礎設施。
 - `combine_api_finished_item()` 是 production 單一文件 Success slice 合併邊界；Row Merger 只負責下游協調，Output Profile 維持最終嚴格驗證。
-- Reduction Engine PR A-E 已完成；D2 production hierarchical text routing 保持 `reduction-text-round-v2` 契約，PR E 已加入 process-local Shared ExecutionBudget。PR F 與後續 roadmap 仍未實作。
+- Reduction Engine PR A-E 已完成；PR F 已實作 immutable Logical Work Unit / Collection Manifest contract，等待 hosted offline E2E 驗證。PR G 與後續 roadmap 仍未實作。
 - Hierarchical round 1 直接 reduce 原始 Success map outputs；round 2+ 才經 tokenizer、configured round task prompt、LLM map 與 concat reducer。
 - Requirements 安裝在目前環境仍受 pinned GitHub `peft` proxy 403 限制；dependency-light pytest、compileall 與 diff checks 是可用替代驗證。
 
 ## Recent Changes
+
+### 2026-09-24 Reduction Engine PR F identity safety corrective
+
+- `logical_id` 與 `collection_id` 現在共用既有 credential-text/JWT detection，拒絕明顯 secret-bearing identity；不套用 provenance key substring 規則，因此 `secretariat-analysis-v2` 等正常 business ID 仍有效。
+- Identity 穩定性仍由 caller/source adapter 的語意保證；core 不產生 object/random/PID/time identity，也不推測一般日期、數字、host/session 字樣。Provenance 則維持已知 runtime key 與 secret-bearing key/value 的結構化拒絕。
+- Contract version、schema、canonical fingerprint fields/algorithm、ordering、immutability 與 reconstruction 全部不變；PR G 仍未實作。Corrected hosted-head E2E 尚待 CI 驗證。
+- 驗證：focused collection tests 34 passed；完整 `tests/reduction` 175 passed；compileall 與 `git diff --check` passed。Requirements install 仍受 pinned GitHub dependency proxy 403 阻擋；corrected hosted head 的 13-case offline E2E 尚待 Actions 驗證。
+
+### 2026-09-24 Reduction Engine PR F collection identity contracts
+
+- 新增 source-independent `LogicalWorkUnit` 與 `CollectionManifest` v1；caller 必須提供穩定 unit/collection identity，manifest 保留 caller-supplied unit order，ordered units、payload 與安全 provenance 都參與 normalized-JSON SHA-256 fingerprint。
+- 所有巢狀 JSON values 在建構時 defensive-freeze（mapping proxy + tuple），序列化回傳 detached structures；strict reconstruction 驗證 exact schema、contract version、duplicate unit IDs 與 persisted fingerprint，不生成、修復或重排 identity。
+- Provenance 拒絕 credential/model-spec/raw endpoint 與 timestamp/host/PID/session/temp-path 等 runtime identity 欄位。Collection Manifest 與 business stage manifest 維持分離；沒有 SQL/ES adapter、aggregate writeback、production route 或 reducer expansion。
+- 驗證：focused collection tests 27 passed；完整 `tests/reduction` 168 passed；compileall 與 `git diff --check` passed。完整 requirements 安裝仍被 GitHub proxy 403 阻擋，offline E2E collect/run 因缺少 PyYAML 無法在本機執行，須由 hosted CI 完成。
 
 ### 2026-09-20 Reduction Engine PR E shared execution budget
 

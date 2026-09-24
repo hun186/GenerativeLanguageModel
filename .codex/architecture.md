@@ -149,3 +149,17 @@
 
 - Successful `fixed_rounds` and `adaptive_hierarchical` combines retain the complete item workspace under `<item>/`, including initial `Success` inputs, `.reduction/runtime`, and `.reduction/checkpoints`, because all three participate in deterministic terminal resume.
 - Historical cleanup remains unchanged for inactive and `single_pass` reduction when `debug=False`; retention/GC remains deferred to PR L.
+
+## 2026-09-24 Reduction Engine PR F collection identity layer
+
+- `czjLLM/reduction/collection.py` owns the source-independent collection envelope. `LogicalWorkUnit` carries an explicit stable logical ID, reducer-facing JSON payload, and safe provenance. `CollectionManifest` carries contract version `1`, a distinct collection ID, the caller-ordered unit tuple, collection provenance, and its normalized-JSON SHA-256 fingerprint.
+- Construction recursively validates and freezes JSON values as mapping proxies/tuples, breaking caller aliases. Canonical serialization returns detached ordinary dict/list/scalar values; reconstruction requires the exact schema and validates the persisted fingerprint.
+- Collection Manifest is immutable identity/provenance and is intentionally separate from the existing business-stage manifest, which remains execution artifact/state. Manifest construction neither imports nor invokes SQL, Elasticsearch, Row Merger, LLM runtime, reducers, stages, or sinks.
+- Fingerprint semantics include version, collection ID, ordered complete unit mappings (unit ID, payload, provenance), and manifest provenance. Timestamps, host/process/thread/session identity, temporary paths, credentials, raw endpoint URLs, transport objects, and random/runtime-generated identifiers are not accepted as provenance inputs.
+- PR G remains responsible for SQL/ES adapters, collection queries, aggregate upsert/writeback, config, and production routing; none are active in PR F.
+
+## 2026-09-24 Reduction Engine PR F identity validation corrective
+
+- Logical and collection identities remain caller-owned stable semantic strings; reduction core never generates them from object identity, random UUIDs, PID, or time. Core validation rejects obvious credential text, JWT-like values, raw URLs, temporary paths, control characters, and blank/untrimmed values without guessing whether ordinary dates, numbers, or words such as `host`/`session` are runtime-derived.
+- Provenance has the stronger structural policy: known runtime/nondeterministic keys and secret-bearing keys or values are rejected recursively. Identity values intentionally do not use provenance's key-name substring policy, so benign IDs such as `secretariat-analysis-v2` remain valid.
+- This pre-merge tightening retains collection manifest contract version `1` and does not change serialization fields, normalized-JSON SHA-256 inputs/algorithm, ordering, duplicate handling, or nested immutability.
