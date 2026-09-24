@@ -88,3 +88,4 @@
 
 - The required `pip`/requirements setup was retried. `requirements.txt` again failed while cloning the pinned GitHub `peft` revision because the proxy returned HTTP 403; no dependency bypass was added.
 - Dependency-light PR F tests, all reduction tests, compileall, and diff checks pass. Offline E2E collection and execution stop during import because PyYAML is absent after the blocked installation; hosted CI with the declared E2E dependencies must provide the 13-case acceptance result.
+- PR F identity-safety corrective 再次執行 requirements setup，仍在 pinned GitHub `peft` clone 遭 proxy HTTP 403；focused 34 tests、全 reduction 175 tests 與 static checks 通過，corrected head 的 offline E2E 必須由 hosted Actions 重跑。

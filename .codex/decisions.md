@@ -92,3 +92,9 @@
 - Payload is identity-relevant because changing reducer-facing work changes the collection contract. Unit and collection provenance are also identity-relevant, but accept only JSON-compatible, non-secret, non-runtime metadata. Nested state is recursively frozen rather than relying on `frozen=True` alone.
 - Persist exact canonical fields and validate fingerprints on reconstruction. Unknown/missing fields, incompatible versions, malformed IDs, unsupported values, duplicates, and corruption fail explicitly; no identity generation, schema repair, ordering repair, or fingerprint repair is allowed.
 - The collection manifest is not a business-stage manifest or execution state. PR F adds no Executable/Stage abstraction and no PR G+ adapter, sink, routing, or reducer behavior.
+
+## 2026-09-24 Reduction Engine PR F identity safety corrective
+
+- Reuse the existing credential-text and JWT patterns for both logical and collection IDs. Do not apply provenance key substring checks to free-form identity values: obvious credential syntax is rejected, while benign semantic IDs containing words such as `secretariat`, dates, `host`, or `session` remain permitted.
+- Stability is a caller/source-adapter contract rather than a heuristic classifier. Core does not generate identities from random/runtime state; provenance retains separate recursive structural rejection of known nondeterministic keys.
+- Keep manifest v1 because this is a pre-merge validation tightening. Fingerprint schema and algorithm remain unchanged.

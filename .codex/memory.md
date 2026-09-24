@@ -10,6 +10,13 @@
 
 ## Recent Changes
 
+### 2026-09-24 Reduction Engine PR F identity safety corrective
+
+- `logical_id` 與 `collection_id` 現在共用既有 credential-text/JWT detection，拒絕明顯 secret-bearing identity；不套用 provenance key substring 規則，因此 `secretariat-analysis-v2` 等正常 business ID 仍有效。
+- Identity 穩定性仍由 caller/source adapter 的語意保證；core 不產生 object/random/PID/time identity，也不推測一般日期、數字、host/session 字樣。Provenance 則維持已知 runtime key 與 secret-bearing key/value 的結構化拒絕。
+- Contract version、schema、canonical fingerprint fields/algorithm、ordering、immutability 與 reconstruction 全部不變；PR G 仍未實作。Corrected hosted-head E2E 尚待 CI 驗證。
+- 驗證：focused collection tests 34 passed；完整 `tests/reduction` 175 passed；compileall 與 `git diff --check` passed。Requirements install 仍受 pinned GitHub dependency proxy 403 阻擋；corrected hosted head 的 13-case offline E2E 尚待 Actions 驗證。
+
 ### 2026-09-24 Reduction Engine PR F collection identity contracts
 
 - 新增 source-independent `LogicalWorkUnit` 與 `CollectionManifest` v1；caller 必須提供穩定 unit/collection identity，manifest 保留 caller-supplied unit order，ordered units、payload 與安全 provenance 都參與 normalized-JSON SHA-256 fingerprint。

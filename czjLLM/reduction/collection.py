@@ -72,6 +72,10 @@ def _validate_identity(value: Any, field_name: str) -> str:
         raise CollectionManifestValidationError(
             f"{field_name} must not contain control characters"
         )
+    if _CREDENTIAL_TEXT_RE.search(value) or _JWT_LIKE_RE.search(value):
+        raise CollectionManifestValidationError(
+            f"{field_name} must not contain credential-like text or a JWT-like value"
+        )
     if _RAW_URL_RE.match(value) or value.startswith(("/tmp/", "\\tmp\\")):
         raise CollectionManifestValidationError(
             f"{field_name} must be a logical identity, not a raw URL or temporary path"

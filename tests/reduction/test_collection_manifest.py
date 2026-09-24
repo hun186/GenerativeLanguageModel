@@ -55,6 +55,38 @@ def test_invalid_logical_identity_is_rejected(identity):
         unit(identity)
 
 
+@pytest.mark.parametrize(
+    "identity",
+    [
+        "api_key=secret-token",
+        "Bearer secret-token",
+        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signatureABC",
+    ],
+)
+def test_credential_or_jwt_logical_identity_is_rejected(identity):
+    with pytest.raises(CollectionManifestValidationError, match="logical_id.*credential|JWT"):
+        unit(identity)
+
+
+@pytest.mark.parametrize(
+    "identity",
+    [
+        "password=hunter2",
+        "Bearer secret-token",
+        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signatureABC",
+    ],
+)
+def test_credential_or_jwt_collection_identity_is_rejected(identity):
+    with pytest.raises(CollectionManifestValidationError, match="collection_id.*credential|JWT"):
+        manifest(collection_id=identity)
+
+
+def test_benign_secret_word_in_logical_identity_is_accepted():
+    work = unit("secretariat-analysis-v2")
+
+    assert work.logical_id == "secretariat-analysis-v2"
+
+
 def test_manifest_preserves_explicit_caller_order():
     units = [unit("b"), unit("a")]
     value = manifest(units)
