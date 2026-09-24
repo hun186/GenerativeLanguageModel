@@ -84,3 +84,11 @@
 
 - The combine boundary owns legacy cleanup, but checkpoint-backed hierarchical execution requires the original prepared Success inputs and item-local D1/D2 state for stable run-key lookup and terminal resume. Cleanup is therefore skipped only for enabled normalized controllers `fixed_rounds` and `adaptive_hierarchical`.
 - Checkpoint location, identity, format, atomic commit semantics, runtime layout, and execution fingerprints are unchanged. No partial GC policy is introduced.
+
+## 2026-09-24 Reduction Engine PR F immutable collection contracts
+
+- Preserve three separate identifiers: `collection_id` names the stable aggregate namespace, each `LogicalWorkUnit.logical_id` names one member, and `CollectionManifest.fingerprint` identifies the full ordered semantic contract. Duplicate unit IDs fail rather than deduplicate.
+- Preserve caller-supplied order and include it in the fingerprint; core code must not guess SQL/ES ordering or silently sort. Future adapters own their source-specific canonical ordering and identity mapping.
+- Payload is identity-relevant because changing reducer-facing work changes the collection contract. Unit and collection provenance are also identity-relevant, but accept only JSON-compatible, non-secret, non-runtime metadata. Nested state is recursively frozen rather than relying on `frozen=True` alone.
+- Persist exact canonical fields and validate fingerprints on reconstruction. Unknown/missing fields, incompatible versions, malformed IDs, unsupported values, duplicates, and corruption fail explicitly; no identity generation, schema repair, ordering repair, or fingerprint repair is allowed.
+- The collection manifest is not a business-stage manifest or execution state. PR F adds no Executable/Stage abstraction and no PR G+ adapter, sink, routing, or reducer behavior.

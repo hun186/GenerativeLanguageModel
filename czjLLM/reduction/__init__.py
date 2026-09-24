@@ -1,6 +1,13 @@
 """Reduction Engine contracts, strict config, and one-pass routing."""
 
 from .config import ReductionConfig, ReductionConfigError, parse_reduction_config
+from .collection import (
+    COLLECTION_MANIFEST_CONTRACT_VERSION,
+    CollectionManifest,
+    CollectionManifestError,
+    CollectionManifestValidationError,
+    LogicalWorkUnit,
+)
 from .contracts import Reducer, ReducerResult
 from .engine import reduce_single_pass
 from .controllers import AdaptiveHierarchicalController, FixedRoundsController
@@ -14,6 +21,11 @@ from .registry import (
 
 __all__ = [
     "Reducer",
+    "COLLECTION_MANIFEST_CONTRACT_VERSION",
+    "CollectionManifest",
+    "CollectionManifestError",
+    "CollectionManifestValidationError",
+    "LogicalWorkUnit",
     "ReductionConfig",
     "ReductionConfigError",
     "ReducerRegistry",

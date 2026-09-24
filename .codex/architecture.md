@@ -149,3 +149,11 @@
 
 - Successful `fixed_rounds` and `adaptive_hierarchical` combines retain the complete item workspace under `<item>/`, including initial `Success` inputs, `.reduction/runtime`, and `.reduction/checkpoints`, because all three participate in deterministic terminal resume.
 - Historical cleanup remains unchanged for inactive and `single_pass` reduction when `debug=False`; retention/GC remains deferred to PR L.
+
+## 2026-09-24 Reduction Engine PR F collection identity layer
+
+- `czjLLM/reduction/collection.py` owns the source-independent collection envelope. `LogicalWorkUnit` carries an explicit stable logical ID, reducer-facing JSON payload, and safe provenance. `CollectionManifest` carries contract version `1`, a distinct collection ID, the caller-ordered unit tuple, collection provenance, and its normalized-JSON SHA-256 fingerprint.
+- Construction recursively validates and freezes JSON values as mapping proxies/tuples, breaking caller aliases. Canonical serialization returns detached ordinary dict/list/scalar values; reconstruction requires the exact schema and validates the persisted fingerprint.
+- Collection Manifest is immutable identity/provenance and is intentionally separate from the existing business-stage manifest, which remains execution artifact/state. Manifest construction neither imports nor invokes SQL, Elasticsearch, Row Merger, LLM runtime, reducers, stages, or sinks.
+- Fingerprint semantics include version, collection ID, ordered complete unit mappings (unit ID, payload, provenance), and manifest provenance. Timestamps, host/process/thread/session identity, temporary paths, credentials, raw endpoint URLs, transport objects, and random/runtime-generated identifiers are not accepted as provenance inputs.
+- PR G remains responsible for SQL/ES adapters, collection queries, aggregate upsert/writeback, config, and production routing; none are active in PR F.
