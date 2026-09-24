@@ -82,3 +82,75 @@
 - `memory.md-20260920-013654.md` — complete project-memory history through PR D2 before this compaction.
 - `memory.md-20260826-041906.md` — earlier full project-memory snapshot.
 - `decisions.md-20260920-013654.md` — complete decision history through PR D2 before this compaction.
+
+### 2026-09-20 Post-PR-E offline production E2E gate
+
+- Added `e2e`/`live_llm` markers and a localhost `ThreadingHTTPServer` with deterministic prompt rules and concurrency/request recording.
+- Added production-boundary coverage for TXT filesystem IO, CSV `CSVSink`, file-backed SQLite pending selection plus `SqlSink`, real Elasticsearch adapter selection plus real `ESSink` for single/dual indexes, deterministic routing, and HTTP concurrency under `ExecutionBudget`.
+- ES replaces only scan/bulk storage transport with an in-memory dictionary. No GPU, remote LLM, MSSQL, ES server, credentials, internet, or PR F behavior is used.
+- Verification: requirements installation failed at pinned GitHub `peft` with proxy 403; this sandbox lacks normal runtime packages, so the E2E selection fails collection on missing `pandas`. The blocker is recorded in `known_issues.md`.
+
+### 2026-09-20 PR #185 corrective — offline/live layers and safety
+
+- Added all five marker contracts, strict live opt-in and namespace validation, UUID-owned SQL/ES cleanup, live LLM/SQL/ES/composite selections, deterministic keyed fake-HTTP failure injection, retry coverage, derived-capacity-8 policy coverage, and separated focused/offline/live CI steps.
+- Added `requirements-e2e.txt` without training-stack dependencies. Installation remains blocked by the sandbox package-index proxy; live selections cleanly skip without opt-in and live safety tests pass.
+- No PR F work-unit, manifest, reducer, or distributed-budget functionality was introduced.
+
+### 2026-09-20 PR #185 final production E2E corrective
+
+- Wired an isolated Linux offline-E2E CI job to install `requirements-e2e.txt`, collect the E2E selection, and execute it independently of the Git-pinned training stack.
+- Added production TXT handler, SQLite/ES `handle_data_mode`, budgeted production leaf dispatch at capacities 2 and derived 8, shared concurrent dispatch, and D2 localhost checkpoint/resume/invalidation coverage.
+- Hardened live SQL cleanup, added ES CA/verification support, and accurately classified direct live SQL/ES and composite checks as service/cross-service smokes.
+- No PR F functionality was introduced.
+
+### 2026-09-20 PR #185 hosted dependency convergence corrective
+
+- Hosted run `35515118358` proved the isolated E2E install step and exposed collection-time `psutil`; the minimal E2E surface now includes `psutil`, `version_parser`, and the other direct packaged imports reached through `utils.utilities`/`MP_utils` (`GPUtil`, `humanize`, `python-dateutil`, `scipy`, `setproctitle`).
+- The isolated CI commands now scope collection and execution to `tests/e2e`, preventing unrelated repository tests from expanding the E2E dependency contract. Production-path E2E tests were not weakened or replaced.
+
+### 2026-09-20 PR #185 stale ES helper import corrective
+
+- Repository-wide call-site search found no invocation or re-export of `get_es_client` or `apply_es_mapping`; only stale imports existed in active `steps_es.py` and the unused `steps_es_noeventids.py` variant. Historical commit `4d9f8d5` already constructed `ElasticsearchAdapter(...).connect()` and invoked `adapter.apply_mapping_file(...)` without calling either imported helper.
+- Removed both stale imports. Added focused regressions for connection configuration propagation through `resolve_es_connection()` → `ElasticsearchAdapter.connect()` and configured JSON mapping application through `ensure_schemas_es()` → `adapter.apply_mapping_file()` → `indices.put_mapping()`, including preservation of output/meta fallback mapping.
+- No E2E acceptance test or ES connection/mapping behavior was weakened, and no PR F functionality was introduced.
+
+### 2026-09-20 PR #185 headless countdown hardening
+
+- Hardened the shared `utils.utilities.countdown_pause()` CLI boundary: zero/negative durations, absent or non-TTY stdin, unsupported `fileno()`, and unsupported non-Windows `select` now return immediately without sleeping or failing row scheduling; selectable interactive terminals retain countdown and Enter-to-skip behavior.
+- Added focused regressions for absent, non-TTY, pseudofile stdin and the existing zero-second contract. Accepted TXT/SQL/ES, budget, D2, retry, and ES adapter/mapping tests remain unchanged.
+
+### 2026-09-20 PR #185 ES value-boundary diagnostics
+
+- Hosted run `35521017153` proved both ES row identities traverse selection, scheduling, localhost HTTP, combine, and ESSink writeback; the remaining failure is value fidelity rather than identity or mapping.
+- Added ordered diagnostics without production changes: expected PK/value mapping, fake HTTP assistant content, production combined artifacts, deep-copied ESSink bulk actions, and final in-memory ES values. Each layer now asserts the same exact mapping and reports its actual mapping at the first divergence.
+- The countdown, scheduler, combiner, ESSink, fake response rules, and fake ES merge behavior remain unchanged; `/cache` backup remains a separate non-fatal follow-up. No PR F functionality was introduced.
+
+### 2026-09-21 PR #185 prepared-text E2E contract correction
+
+- Hosted diagnostic run `35559731083` localized ES value divergence to the established text combine boundary: raw `RESULT::<pk>` becomes prepared `RESULT::<pk>\n`; identity and raw LLM response contracts passed.
+- Corrected only production-orchestration test expectations: ES retains separate exact raw-LLM and combined/bulk/stored mappings, while SQL writeback expects the same prepared trailing newline. No actual value is stripped or normalized, and permanent boundary diagnostics remain.
+- Classified the finding as a test-contract mismatch, not a production defect. The production combiner/reducer, Row Merger, sinks, fake services, countdown, and all PR A-E behavior remain unchanged; no PR F functionality was introduced.
+
+### 2026-09-21 PR #185 hierarchical cleanup ownership corrective
+
+- Hosted run `35616315448` exposed that successful production combine cleanup deleted D2 runtime and committed checkpoints under the item workspace, preventing terminal resume with `debug=False`.
+- Updated only the cleanup predicate so enabled `fixed_rounds`/`adaptive_hierarchical` workspaces survive; inactive and `single_pass` debug-false cleanup remains historical.
+- Added focused debug-false characterization proving initial Success, runtime, checkpoints, and terminal resume survive without a second map call, plus a single-pass cleanup non-regression. No checkpoint semantics, location, fingerprint, PR L retention policy, or PR F functionality changed.
+
+### 2026-09-21 PR #185 deterministic ExecutionBudget E2E assertions
+
+- Hosted run `35620840169` showed derived capacity and requested leaf width were both 8 while localhost HTTP overlap peaked at 2 because pre-HTTP endpoint load-lock work can stagger workers.
+- Corrected only E2E assertions: production capacity-2 now requires snapshot `(capacity=2, peak_in_use=2, in_use=0)`; derived/shared capacity-8 requires `(8, 8, 0)` after the first and concurrent phases. HTTP concurrency remains an upper-bound safety assertion only.
+- Removed the timing-dependent HTTP lower bound without changing server delay or any production budget, dispatch, pool, load-balancing, D2, or PR F behavior.
+
+### 2026-09-22 PR #185 SQL resolver seam correction
+
+- Hosted run `35626496688` exposed an E2E fixture defect: replacing `handle_data_mode.resolve_connection` bypassed production initialization of `sql_table`, `primary_key`, `target_table`, `sqlite_path`, and `sql_connection_string`.
+- Narrowed the seam to `sql_steps.load_sql_cfg` and the `sql_steps.SQLiteAdapter` constructor factory. The real imported `resolve_connection()` now performs SQLite detection, context initialization, adapter construction, and connection entry while the recording subclass still observes selected PKs.
+- Removed manual SQLite context setup from the test and added stable post-resolution assertions. No SQL production, scheduler, sink, pending-recheck, budget, D2, or PR F behavior changed.
+
+### 2026-09-24 PR #185 TXT cleanup-contract correction
+
+- Hosted run `35724737347` showed the production TXT lifecycle completed through localhost HTTP, Success, combine, and the final artifact; the remaining assertion incorrectly expected the non-hierarchical debug-false item workspace to survive normal cleanup.
+- Added an observation-only `MergeOps.combine` wrapper that records empty TODO and populated Success state immediately before delegating unchanged to the real `combine_api_finished_item()` implementation.
+- The E2E now explicitly uses `debug=False` and requires the final artifact, source backup/removal, released execution budget, and deleted temporary item workspace. No production cleanup, combine, TXT, D2, or PR F behavior changed.

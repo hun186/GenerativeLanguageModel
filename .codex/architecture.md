@@ -127,3 +127,25 @@
 - Local row/doc and slice desired maxima remain separate policies. Row orchestration only caps `ThreadPoolExecutor.max_workers` by budget capacity and holds no permits. Leaf leases wrap `multicoreJob` or legacy `run_round` creation through completion, preventing parent-waits-for-child deadlocks and bounding combined leaf execution.
 - D2 requires no separate integration because its adapter dispatches through `call_llm_api()`. Budget state/capacity remain outside `reduction-text-round-v2` execution fingerprints and checkpoint identity.
 - Scope is one application process/run. Cross-process, cross-machine, Redis, filesystem, GPU, and service-side scheduling remain outside this architecture.
+
+## 2026-09-20 Offline production E2E gate
+
+- Offline production regressions live under `tests/e2e/`. External boundaries are a standard-library localhost OpenAI-compatible server and an in-memory Elasticsearch scan/bulk store; SQLite and CSV use production adapters/sinks.
+- Canonical selection is `python -m pytest -q -m e2e`; `live_llm` is reserved for externally configured model/GPU tests.
+
+## 2026-09-20 PR #185 corrective test layers
+
+- Test layers are now explicit: ordinary focused tests; offline `e2e`; individually opted-in `live_llm`, `live_sql`, and `live_es`; and explicitly opted-in composite `live_e2e`.
+- Live mutation requires `CZJLLM_RUN_LIVE_E2E=1`, dedicated SQL names prefixed `czjllm_e2e_`, dedicated ES indexes prefixed `czjllm-e2e-`, unique run-owned IDs, and record/document-only cleanup.
+- CI separates focused and offline-E2E selections. Live selections are non-PR-only and require both explicit opt-in and service-specific configuration.
+
+## 2026-09-20 PR #185 final production-gate corrective
+
+- The authoritative offline gate has an isolated `offline-e2e` Linux CI job which installs only `requirements-e2e.txt`, proves collection in that clean environment, then executes `pytest -m e2e`; it does not first install the training/GPU requirements surface.
+- Offline acceptance now includes the TXT handler lifecycle, SQL and ES `handle_data_mode` backend orchestration, production `call_llm_api` leaf-budget dispatch, and D2 hierarchical combine/checkpoint resume over localhost HTTP.
+- The localhost 500→200 case validates OpenAI transport retry only. Focused D2 tests remain authoritative for the application two-pass `allow_to_retry=True` then `False` contract.
+
+## 2026-09-21 Hierarchical checkpoint workspace ownership
+
+- Successful `fixed_rounds` and `adaptive_hierarchical` combines retain the complete item workspace under `<item>/`, including initial `Success` inputs, `.reduction/runtime`, and `.reduction/checkpoints`, because all three participate in deterministic terminal resume.
+- Historical cleanup remains unchanged for inactive and `single_pass` reduction when `debug=False`; retention/GC remains deferred to PR L.

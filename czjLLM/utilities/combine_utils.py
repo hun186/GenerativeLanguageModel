@@ -788,14 +788,24 @@ def combine_api_finished_item(item: str, ctx) -> str:
         debug_enabled = bool(
             getattr(ctx, "debug", False)
         )
+        hierarchical_resume_workspace = (
+            reduction_config.enabled
+            and reduction_config.controller
+            in {"fixed_rounds", "adaptive_hierarchical"}
+        )
 
         checkpoint(
             "before-cleanup-check",
             debug=debug_enabled,
             item_is_dir=item_p.is_dir(),
+            hierarchical_resume_workspace=hierarchical_resume_workspace,
         )
 
-        if not debug_enabled and item_p.is_dir():
+        if (
+            not debug_enabled
+            and item_p.is_dir()
+            and not hierarchical_resume_workspace
+        ):
             checkpoint(
                 "before-safe-rmtree",
                 item=str(item_p),

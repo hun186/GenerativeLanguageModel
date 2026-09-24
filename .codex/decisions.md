@@ -56,3 +56,31 @@
 - Use a `threading.Condition` partial-grant lease rather than another scheduler. Leaf executors alone retain permits; orchestration threads are only count-capped, which avoids nested synchronous deadlock.
 - Keep the budget private on the root runtime context and let existing overlays delegate to it. Missing budgets preserve legacy external/test caller behavior rather than creating unrelated child budgets.
 - Do not include operational concurrency in D2 execution identity. No cross-process/global coordinator and no PR F+ executable/manifest/reducer work is introduced.
+
+## 2026-09-20 Post-PR-E offline production regression boundary
+
+- Deterministic doubles remain at actual external boundaries: localhost HTTP implements `/v1/chat/completions`, while in-memory ES replaces only `helpers.scan` and `helpers.bulk`. Production `PromptAPIPipeline`/`CallLLMAPI`, `SQLiteAdapter`, `SqlSink`, `ElasticsearchAdapter`, `ESSink`, and `CSVSink` remain exercised.
+- `e2e` is separate from `live_llm` and is not conditional on GPU credentials. PR F remains unstarted.
+
+## 2026-09-20 PR #185 live safety corrective
+
+- Reachability never grants mutation permission. Live fixtures check explicit opt-in before configuration or client construction, validate dedicated namespaces before connecting, and clean only UUID-owned records.
+- `requirements-e2e.txt` is a dependency-light test install surface aligned with production pins; it excludes model-training dependencies and does not change production dependency semantics.
+
+## 2026-09-20 PR #185 final acceptance boundaries
+
+- Direct adapter/sink and direct live-service CRUD tests are classified as focused boundary/service smokes, not application orchestration proof. Offline `handle_data_mode` and TXT handler tests are the authoritative production-path gate.
+- Production concurrency acceptance creates real TODO files and enters `call_llm_api`; tests must not manually lease permits around direct `PromptAPIPipeline` calls.
+
+## 2026-09-20 PR #185 E2E dependency convergence
+
+- `requirements-e2e.txt` follows imports reached by production paths under `tests/e2e`, not the full development/training environment. Collection is explicitly path-scoped before marker selection so unrelated tests cannot impose dependencies on the offline gate.
+
+## 2026-09-20 Remove stale ES_utils dependency
+
+- ES client creation belongs to `resolve_es_connection` plus `ElasticsearchAdapter.connect`; predefined and per-writeback mapping application belongs to `ensure_schemas_es` plus `ElasticsearchAdapter.apply_mapping_file`. The missing `utils.ES_utils` import had no caller and is not a compatibility API or pip dependency.
+
+## 2026-09-21 Preserve hierarchical item workspaces after combine
+
+- The combine boundary owns legacy cleanup, but checkpoint-backed hierarchical execution requires the original prepared Success inputs and item-local D1/D2 state for stable run-key lookup and terminal resume. Cleanup is therefore skipped only for enabled normalized controllers `fixed_rounds` and `adaptive_hierarchical`.
+- Checkpoint location, identity, format, atomic commit semantics, runtime layout, and execution fingerprints are unchanged. No partial GC policy is introduced.
