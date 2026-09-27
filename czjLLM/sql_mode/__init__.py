@@ -1,10 +1,19 @@
-# re-export 常用入口，讓外部程式碼可維持簡潔匯入
-from .config.config_loader import load_sql_cfg, InteractivePolicy, NonInteractivePolicy
-from .runtime.orchestrator import run_pipeline
+"""SQL mode public facade (imports are lazy so focused adapters stay lightweight)."""
 
-# 若外部偶爾會自己 new adapter，可選擇 re-export
-from .adapters.sqlite_adapter import SQLiteAdapter
-from .adapters.mssql_adapter import MSSQLAdapter
+def __getattr__(name):
+    if name in {"load_sql_cfg", "InteractivePolicy", "NonInteractivePolicy"}:
+        from .config import config_loader
+        return getattr(config_loader, name)
+    if name == "run_pipeline":
+        from .runtime.orchestrator import run_pipeline
+        return run_pipeline
+    if name == "SQLiteAdapter":
+        from .adapters.sqlite_adapter import SQLiteAdapter
+        return SQLiteAdapter
+    if name == "MSSQLAdapter":
+        from .adapters.mssql_adapter import MSSQLAdapter
+        return MSSQLAdapter
+    raise AttributeError(name)
 
 __all__ = [
     "run_pipeline",

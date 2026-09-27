@@ -168,3 +168,10 @@
 - Hosted run `35724737347` showed the production TXT lifecycle completed through localhost HTTP, Success, combine, and the final artifact; the remaining assertion incorrectly expected the non-hierarchical debug-false item workspace to survive normal cleanup.
 - Added an observation-only `MergeOps.combine` wrapper that records empty TODO and populated Success state immediately before delegating unchanged to the real `combine_api_finished_item()` implementation.
 - The E2E now explicitly uses `debug=False` and requires the final artifact, source backup/removal, released execution budget, and deleted temporary item workspace. No production cleanup, combine, TXT, D2, or PR F behavior changed.
+
+### 2026-09-24 Reduction Engine PR G collection adapters and aggregate upsert
+
+- Added explicit SQL and Elasticsearch collection snapshot adapters. SQL keys use type-tagged stable scalar identities; ES defaults to `_id`; both canonicalize member order using configured fields plus logical-ID tie-breaking, support safe source versions, deterministic grouping, and optional semantic half-open windows.
+- Added strict atomic manifest save/load plus aggregate-output contract v1. Output identity hashes contract version, collection ID, manifest fingerprint, and caller output key. Dedicated SQLite and ES sinks use primary-key conflict upsert and ES `update`/`doc_as_upsert`, respectively; retrying a committed operation reuses one logical output.
+- Existing Row Merger, pending-row selection, ordinary ESSink, reducers, and Output Profile behavior were not repurposed. Aggregate payloads are explicitly documented as already final/validated; PR H reducers remain unimplemented.
+- Verification: focused reduction/SQL/ES collection selection passed 185 tests. Requirements installation remains blocked by the known GitHub proxy 403; broader SQL/ES collection stopped on missing numpy and offline E2E remains a hosted gate.

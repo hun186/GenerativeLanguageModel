@@ -98,3 +98,11 @@
 - Reuse the existing credential-text and JWT patterns for both logical and collection IDs. Do not apply provenance key substring checks to free-form identity values: obvious credential syntax is rejected, while benign semantic IDs containing words such as `secretariat`, dates, `host`, or `session` remain permitted.
 - Stability is a caller/source-adapter contract rather than a heuristic classifier. Core does not generate identities from random/runtime state; provenance retains separate recursive structural rejection of known nondeterministic keys.
 - Keep manifest v1 because this is a pre-merge validation tightening. Fingerprint schema and algorithm remain unchanged.
+
+## 2026-09-24 Reduction Engine PR G
+
+- Membership is resolved once. Retry consumes the immutable persisted manifest and never silently re-queries; a new explicit snapshot is the only way to include source changes.
+- SQL stable IDs are lossless-enough type-tagged scalar strings (`str:`, `int:`, `bool:`, deterministic float hex, bytes hex); NULL/empty/unsupported values fail. ES defaults to `_id`, with an explicit source path override. Explicit versions are safe provenance only and are never synthesized from snapshot time.
+- Adapters sort by configured stable order values and logical-ID tie-breaker, or logical ID alone. Group IDs are base collection namespace plus canonical normalized-JSON group hash; explanatory values remain provenance and NULL group values fail.
+- Aggregate contract v1 keeps collection namespace, manifest snapshot, and output namespace distinct. SQLite uses a PK plus `ON CONFLICT DO UPDATE`, after a lineage-conflict check inside `BEGIN IMMEDIATE`; ES uses deterministic `_id` with `update` and `doc_as_upsert=true`.
+- Aggregate sinks expect an Output-Profile-validated final payload; they do not introduce validation. Row Merger and existing source-row sinks remain separate. PR H composite reducers are intentionally not implemented.

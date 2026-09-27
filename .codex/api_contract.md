@@ -68,3 +68,12 @@ execution_budget_capacity: 8
 - The value must be a positive integer; booleans, strings, zero, and negative values are rejected. Precedence is root/run explicit value, model-profile `execution_budget_capacity`, derived maximum of existing positive local process/row/slice settings, then `1`.
 - `ExecutionBudget(capacity).lease(requested)` requires a positive integer and yields `1..min(requested, available, capacity)` after blocking without busy-spinning when capacity is exhausted. The granted amount is always returned on scope exit, including exceptions.
 - This is a Python runtime/process-local contract, not a serialized business API or distributed coordination contract. Private budget state does not enter persisted configuration or D2 fingerprints.
+
+## 2026-09-24 Reduction Engine PR G Python contracts
+
+- `SQLCollectionQuery(sql, parameters, member_id_field, payload_fields, version_field=None, group_fields=(), order_fields=())` describes an explicit parameterized membership query.
+- `SQLCollectionAdapter(adapter, source_alias=...).snapshot(collection_id=..., query=..., window=None)` executes once and returns a deterministic tuple of immutable manifests.
+- `ElasticsearchCollectionAdapter(adapter, source_alias=..., scan=None).snapshot(...)` composes a connected production adapter; `_id` is the default identity and transport injection exists only at the external scan seam.
+- `CollectionManifestStore.save(path, manifest)` atomically persists canonical mapping; `load(path)` strictly reconstructs and verifies it without source fallback.
+- `AggregateOutput(manifest, output_key, payload, provenance=None)` expects a final/validated payload. `derive_aggregate_output_id()` hashes aggregate contract v1, collection ID, manifest fingerprint, and output key.
+- `SQLiteAggregateSink.ensure_schema()/upsert(output)` and `ElasticsearchAggregateSink.upsert(output)` are dedicated first-class aggregate persistence APIs.
