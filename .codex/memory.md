@@ -2,128 +2,169 @@
 
 ## Current Summary
 
-- 本專案是 Python 多來源資料處理與 LLM 多階段分析框架，核心包含資料讀取、prompt/task 設定、多階段 pipeline、LLM 呼叫、結果合併、JSON flatten 與匯出。
-- SQL / Table / ES stream 多階段會在 scheduler 階段重用 `process_prompt_and_merge()` 產生 stage merge / manifest，再由 row_merger 寫回。
-- 舊單階段 legacy consumer 仍使用 TODO/RUNNING/Success 佇列與 `run_round()` multiprocessing；新版明確 stage flow 會走 stage-managed / scheduler path。
-- LLM call audit 會在每次 `czjLLM_TextProcessing` 啟動時建立 CSV/XLSX，token usage 來源為 LLM API response usage，context 使用率優先使用 Ollama `/api/ps` active context。
-- requirements 安裝在目前環境仍受 GitHub `peft` dependency proxy 403 限制，需用 compileall、靜態檢查與可收集的目標 pytest 作替代驗證。
+- 本專案是 Python 多來源文件／表格處理與 LLM 多階段分析框架；TXT/Table/SQL/ES 共用 prompt、LLM、combine 與 writeback 基礎設施。
+- `combine_api_finished_item()` 是 production 單一文件 Success slice 合併邊界；Row Merger 只負責下游協調，Output Profile 維持最終嚴格驗證。
+- Reduction Engine PR A-E 已完成；PR F 已實作 immutable Logical Work Unit / Collection Manifest contract，等待 hosted offline E2E 驗證。PR G 與後續 roadmap 仍未實作。
+- Hierarchical round 1 直接 reduce 原始 Success map outputs；round 2+ 才經 tokenizer、configured round task prompt、LLM map 與 concat reducer。
+- Requirements 安裝在目前環境仍受 pinned GitHub `peft` proxy 403 限制；dependency-light pytest、compileall 與 diff checks 是可用替代驗證。
 
-## 2026-08-21 model-profile-driven parallelism follow-up
+## Recent Changes
 
-- 任務目的：避免為每份 ES YAML 增加 row/slice 併行參數，將預設自動政策與手動調整收旂到 model profile。
-- 主要修改內容：`initialize_config()` 現在優先採用 model spec 的 `n_process` / 現有 `nProcess`，未指定才依 endpoint/GPU 規則自動計算；slice worker 優先序改為任務 override、model profile `slice_parallelism`、`ctx.n_process`。YAML 仍可 override 但不再建議為必填。
-- 驗證結果：目標 parallelism pytest 通過，compileall 與 diff check 通過；requirements 安裝仍因 GitHub `peft` CONNECT tunnel 403 失敗。
-- 重要結論：現有 ANKInt model profile 的 `nProcess` 以前在 `initialize_config()` 會被自動計算值覆蓋，現已成為真正生效的模型層調校值；新設定建議用 snake_case。
+### 2026-09-24 Reduction Engine PR F identity safety corrective
 
-## 2026-08-21 independent prompt-slice tail parallelism
+- `logical_id` 與 `collection_id` 現在共用既有 credential-text/JWT detection，拒絕明顯 secret-bearing identity；不套用 provenance key substring 規則，因此 `secretariat-analysis-v2` 等正常 business ID 仍有效。
+- Identity 穩定性仍由 caller/source adapter 的語意保證；core 不產生 object/random/PID/time identity，也不推測一般日期、數字、host/session 字樣。Provenance 則維持已知 runtime key 與 secret-bearing key/value 的結構化拒絕。
+- Contract version、schema、canonical fingerprint fields/algorithm、ordering、immutability 與 reconstruction 全部不變；PR G 仍未實作。Corrected hosted-head E2E 尚待 CI 驗證。
+- 驗證：focused collection tests 34 passed；完整 `tests/reduction` 175 passed；compileall 與 `git diff --check` passed。Requirements install 仍受 pinned GitHub dependency proxy 403 阻擋；corrected hosted head 的 13-case offline E2E 尚待 Actions 驗證。
 
-- 任務目的：解決 ES 批次尾端只剩一份超長 doc 時，doc-level worker 已空閒但切片並行度無法獨立調整的算力浪費。
-- 主要修改內容：新增獨立 `multistage_slice_parallelism` / `llm_slice_parallelism` / `slice_parallelism` 解析，每批 prompt slice 依可用 job 數限制 worker，並輸出實際 jobs/workers 診斷。未設定時保留 `ctx.n_process` 原行為。新增 ES/SQL/table/TXT 共用路徑與單 job stage barrier 說明。
-- 驗證結果：`tests/prompt_pipeline/test_dispatch_parallelism.py` 4 passed；變更 Python compileall 與 `git diff --check` 通過。requirements 安裝仍因 GitHub `peft` CONNECT tunnel 403 失敗。
-- 重要結論：doc-level 與 slice-level 併行度必須分開；若後續 stage 本質上只有一個合併 prompt，則 worker 設定無法將單次 LLM call 再拆到多張 GPU。
+### 2026-09-24 Reduction Engine PR F collection identity contracts
 
-## 2026-08-21 migrate legacy ES timeline rerun checks
+- 新增 source-independent `LogicalWorkUnit` 與 `CollectionManifest` v1；caller 必須提供穩定 unit/collection identity，manifest 保留 caller-supplied unit order，ordered units、payload 與安全 provenance 都參與 normalized-JSON SHA-256 fingerprint。
+- 所有巢狀 JSON values 在建構時 defensive-freeze（mapping proxy + tuple），序列化回傳 detached structures；strict reconstruction 驗證 exact schema、contract version、duplicate unit IDs 與 persisted fingerprint，不生成、修復或重排 identity。
+- Provenance 拒絕 credential/model-spec/raw endpoint 與 timestamp/host/PID/session/temp-path 等 runtime identity 欄位。Collection Manifest 與 business stage manifest 維持分離；沒有 SQL/ES adapter、aggregate writeback、production route 或 reducer expansion。
+- 驗證：focused collection tests 27 passed；完整 `tests/reduction` 168 passed；compileall 與 `git diff --check` passed。完整 requirements 安裝仍被 GitHub proxy 403 阻擋，offline E2E collect/run 因缺少 PyYAML 無法在本機執行，須由 hosted CI 完成。
 
-- 任務目的：將仍沿用舊 `Event_Timeline.date_iso` 契約的 ES YAML 與對應 `config_es` runtime 設定同步到現行 timeline schema。
-- 主要修改內容：3 份活躍 ES YAML 與 5 份對應 ES Python 設定的 `required_output_checks` 改查 `Event_Timeline.time_iso`，日期格式由只接受純日期的 `yyyy-MM-dd` 改為符合目前輸出 timestamp 的 `iso8601`；歷史備份、舊 no-event-ids schema 與 Kibana 歷史診斷不改寫。
-- 驗證結果：以 Python AST 驗證 5 份 Python 設定可解析且 rerun check 均為 `time_iso` + `iso8601`；以 Ruby YAML parser 解析並驗證 3 份 YAML 的 check 組合；實際 helper 驗證 ISO timestamp 可通過；changed Python compileall、stale active-config 搜尋與 diff check 通過。目前 Python 環境仍缺 PyYAML，與既有 dependency install 限制相同。
-- 重要結論：必要欄位檢查必須與目前 `InfoExtraction-MultiDim-mapping.yaml` 的 `Event_Timeline.time_iso` 及 `strict_date_optional_time||yyyy-MM-dd` 契約同步，否則成功寫回的文件仍會永久被判定 pending。
+### 2026-09-20 Reduction Engine PR E shared execution budget
 
-## 2026-08-21 ES rerun required-output diagnosis
+- Added a source-agnostic process-local `ExecutionBudget` with strict positive-int validation, blocking partial leases, exact finally-release, immutable snapshots, and peak-use observation. Root/run capacity precedence is explicit root, explicit model profile, maximum existing desired process/row/slice width, then 1.
+- Root CLI creates one private budget after concurrency projection. `call_llm_api()` and legacy streaming `run_round()` lease only around leaf pools; multistage row orchestration caps thread count without retaining permits. D2 context fallback shares root identity and fingerprints remain capacity-independent.
+- Local row and slice policies remain intact; a 2-process/8-slice long document retains capacity 8, while concurrent leaf batches share that ceiling. Scope remains one process; PR F and later roadmap work are not implemented.
+- Verification: PR E focused selection 33 passed; all `tests/reduction` 139 passed; dispatch policy 17 passed; producer parallelism 4 passed; D2 runtime/routing 22 passed; compatibility characterization 29 passed; compileall and diff check passed. Requirements install remains blocked by pinned GitHub `peft` proxy 403.
 
-- 任務目的：釐清已有多維事件輸出與最新 processing meta 的 ES 文件為何仍在每輪全部重跑。
-- 主要結論：生效的 `required_output_checks` 檢查 `Event_Timeline.date_iso`，但目前多維事件輸出契約與實際文件使用 `Event_Timeline.time_iso`；因此收集不到任何值，`min_valid_count=1` 永遠不成立，freshness 判斷每次都回傳 false。即使改成 `time_iso`，現有值是 ISO 8601 timestamp，仍不可搭配只接受純 `yyyy-MM-dd` 的 validator format，應使用 `iso8601` / `strict_date_optional_time`。`force_reason` 是 sink 依「有哪些 rerun 選項被設定」產生的摘要，不代表該文件本次實際命中了列出的每個原因。
-- 驗證結果：以純函式檢查確認 dotted-path collector 對範例 shape 的 `date_iso` 回傳空集合、對 `time_iso` 能取值；日期 validator 對 timestamp + `yyyy-MM-dd` 回傳 false，對 timestamp + `iso8601` 回傳 true。另以程式碼靜態核對確認 required check 失敗會直接把 output 判為不新鮮。
-- 建議設定：將 check path 改成 `Event_Timeline.time_iso` 並將 format 改成 `iso8601`；若不是每篇文章都保證存在絕對時間，則移除該 required check，避免無可正規化時間的合法文章永久 pending。
+### 2026-09-20 Reduction Engine PR D2 final hosted-review corrective
 
-## 2026-08-20 apply slice merge to authoritative writeback payload
+- 恢復 production 單階段既有的兩階段 LLM retry 契約：同一個 `next_round_items()` 先以 `allow_to_retry=True` dispatch，再以 `False` dispatch 剩餘 TODO，之後才判定 incomplete；兩次 dispatch 仍只是一個 D1 map round。
+- `TEXT_ROUND_RUNTIME_CONTRACT_VERSION` 升為 `reduction-text-round-v2`，使 context isolation/newline/retry 語意與 pre-corrective v1 產生不同 execution fingerprint 與 D1 run identity；未修改 D1 checkpoint contract/version，也不遷移 v1 D2 checkpoints。
+- Retry regression 驗證 call order、兩次 `task_override`、first-pass 成功項目不重跑、second-pass transient recovery、第二次後仍 incomplete 的明確失敗、context isolation 與兩次完成結果的 newline preparation。Fingerprint regression 驗證 v2 metadata、v1/v2 fingerprint 與 run key 不同。
+- 驗證：D2 focused 54 passed；retry-specific 2 passed；runtime-v2 fingerprint-specific 1 passed；全 `tests/reduction` 120 passed；PR A compatibility 29 passed；prompt dispatch/audit 11 passed；compileall 與 diff check 通過。Requirements 安裝仍受 pinned GitHub `peft` proxy 403 阻擋。PR D/D2 保持 awaiting hosted-head review，PR E 與後續 roadmap 未引入。
 
-- 任務目的：追查大量 scalar conflict 背後的合併是否真的寫回，而不只抑制重複 log。
-- 主要修改內容：確認 Row Merger 原本只把 `merge_dict_slices_audited()` 結果交給 flatten／欄位展開，`write_map` 仍保存未合併的 slice list；現改為將 merge 結果同步回填到實際 writeback source 欄位。multidim event 依 schema 保持最外層 array、內含一筆合併後 article record；generic JSON 寫入合併後 object；不相干的其他 writeback rule 不會被覆寫。
-- 驗證結果：新增 helper contract tests 與 retry sink assertion，確認 generic 寫回取得 merged object、multidim 寫回取得 `[merged object]`、其他 rule 保持原值；compileall 與 diff check 通過。完整 pytest 仍因 requirements proxy 403／缺少 PyYAML 無法 collection。
-- 重要結論：這是實際 bug，不只是 log 太多。舊流程雖計算並顯示 `scalar_conflict → left`，但主欄位送進 sink 的仍是未合併 slice list，因此 log 所宣告的取捨沒有成為權威寫回值，且各 slice 會被逐筆 schema 驗證而放大 missing `Event` 等錯誤。
+### 2026-09-20 Reduction Engine PR D2 hosted-review corrective
 
-## 2026-08-20 Row Merger slice-conflict audit de-duplication
+- 修正 row-scoped slot overlay 的 context isolation：移除 `copy.copy(ctx)`，改用 D2-local attribute view；`round_task` 與任何 derived-context writes 均不會修改 base ctx 或其 mutable override mapping。
+- 修正 post-initial concat preparation：LLM Success text 保留原內容，缺少尾端換行時補一個換行，已有換行不重複添加，避免多個 map outputs 被串成 `foobar`。
+- Regression coverage 包含 ordinary/slot-overlay context、success 與 tokenizer/prompt/dispatch failure、共享 base context 的雙 adapter 隔離、newline preservation，以及 fixed round-2 多輸出 boundary。
+- Requirements 安裝仍受 pinned GitHub `peft` proxy 403 阻擋。D2 config/runtime/routing focused tests 51 passed；全 `tests/reduction` 117 passed；PR A compatibility guards 29 passed；prompt dispatch/audit tests 11 passed；compileall 與 diff check 通過。PR E 與後續 roadmap 未引入。
 
-- 任務目的：依使用者指正，將「schema failure 收斂」與終端主要洗版來源 `[merge] scalar_conflict` 分開處理。
-- 主要修改內容：Row Merger 對同一個 completed item 的多切片 merge audit 僅在第一次合併嘗試輸出；若 ES／SQL 暫時寫回失敗而 watchdog 重試，仍重新計算相同 merge 結果，但不再重印 scalar conflict、list dedup 與 merge summary。不同 item 仍各自保留第一次 audit，`merge_log_to_file` 行為不變。
-- 驗證結果：新增 retry-once sink 測試，模擬第一次暫時性寫回失敗、第二次成功，斷言 merge 執行兩次但 scalar-conflict log 只出現一次；完成 compileall、去重路徑靜態斷言與 diff check。完整 pytest 仍受既有 PyYAML／requirements 安裝限制而無法 collection。
-- 重要結論：多切片 scalar conflict 本身是 merge policy 正常解決左右值差異的 audit，不是 schema error；真正的洗版原因是同一 item 在寫回未完成時被 watchdog 重跑，連帶重印同一份 merge audit。前一版 schema typed failure 只處理其中「schema 拒絕導致重試」的一條路徑，本次才直接封住 merge audit 的重複輸出。
+### 2026-09-20 Reduction Engine PR D2 production hierarchical routing
 
-## 2026-08-20 Row Merger multidim validation washout completion
+- 任務目的：把 D1 controller/checkpoint core 接入 production text combine path，完成 PR D，但不提前實作 PR E 或 collection/Stage 架構。
+- 主要修改：嚴格 `ReductionConfig` 新增 text-only `fixed_rounds` / `adaptive_hierarchical`、controller options 與必要 `runtime.round_task`；新增 versioned `TextRoundRuntimeAdapter`，以 non-mutating context view 執行 tokenizer → prompt → existing LLM dispatch，workspace 隔離在 `<item>/.reduction/runtime/`。Checkpoint root 為 `<item>/.reduction/checkpoints`。
+- 契約結論：既有 Success outputs 完成 round 1，round 2 才第一次執行新 map；adapter 禁止呼叫 `process_prompt_and_merge()`/combine。Execution fingerprint 涵蓋 template/task context/tokenizer/model/generation/think/mock 語意，排除 credentials 與 raw endpoint URL。
+- 驗證結果：D2 focused tests 44 passed；全 `tests/reduction` 110 passed；PR A compatibility guards 29 passed；prompt dispatch/audit tests 11 passed；compileall 與 diff check 通過。Requirements 安裝因 pinned GitHub `peft` proxy 403 失敗；包含 `test_prompt_pipeline.py` 的選取因缺少 `opencc` 無法 collection。
+- 歷史範圍結論：首次實作當時視為 PR D1 + D2 完成；其後 hosted review 發現的兩項 P1 已由上方 corrective 修正，目前須待更新 hosted head review 才可視為 merge-ready。PR C single-pass 與其他 protected boundaries 未重新設計，PR E 保持 open。
 
-- 任務目的：核對舊版相同 ES schema 錯誤每 0.5 秒重試、重印 merge audit 與寫回錯誤的洗版問題，並確認使用者提供的 missing `Event`、month precision 錯誤也被涵蓋。
-- 主要修改內容：output profile registry 將 transformer 的 `TypeError` / `ValueError` 統一標記為 `OutputProfileValidationError`；Row Merger 將此明確型別視為確定性 schema failure，第一次失敗即記錄稽核、釋放 running、移出本輪 registry，避免 watchdog 再次合併及印出相同內容。保留舊 unknown-field 訊息判斷供相容 sink 使用。
-- 驗證結果：requirements 安裝仍因 GitHub CONNECT tunnel 403 無法取得 `peft`；目標 pytest 因缺少 PyYAML 無法 collect。替代驗證以兩個實際 payload 分別觸發 missing `Event` 與 month precision，確認 registry 均拋出 `OutputProfileValidationError`；變更檔 compileall 與 `git diff --check` 通過。
-- 重要結論：先前修正只完整終止 unknown-field 類型；使用者貼出的另外兩種 validation error 仍會每分鐘提示且每次 scan 重印 merge audit。此次改成依錯誤型別判斷後，所有 output-profile schema validation failure 都會在本輪第一次失敗時收斂，但 transport/ES availability 錯誤仍保留週期重試。
+### 2026-09-19 Reduction Engine PR D1 controller/checkpoint core
 
-## 2026-08-20 multidimensional-event ES mapping documentation sync
+- 建立 fixed/adaptive controllers、text-only facade、Unicode-character convergence、atomic completed-round checkpoints，以及 strict resume validation。
+- Hosted corrective 強制 checkpoint caller 提供 deterministic execution fingerprint，並將 checkpoint contract 升至 v2。
+- D1 本身不接 production config/combine；該責任已由 D2 完成。
 
-- 任務目的：同步 `taskSetting_Enrichment.py` 已採用的新 ES 多維事件 mapping 說明，特別是 nested `Event` 與 `event_id` / `event_ids` 關聯。
-- 主要修改內容：更新 ES output profile 與多階段設定指南，說明目前 schema、時間欄位、應用層參照驗證、雙層 nested query、dynamic policy，以及既有 index 需重建/reindex 的遷移限制；舊版 `Event_Timeline.date_*` 日期正規化另標示為 legacy。
-- 驗證結果：`git diff --check` 通過；以 Python 標準函式庫文字斷言核對 mapping 與文件的必要欄位、nested 型別及關聯說明通過；文件舊欄位搜尋確認僅保留於明確標示的 legacy 說明。
-- 重要結論：`Event.event_id` 與各 `event_ids` 是應用層關聯，不是 ES 外鍵；mapping 保存型別，`multidim_event` profile 驗證 ID 唯一性與參照存在性，task prompt 另要求每個事件具 evidence 關聯。
+### 2026-09-19 Reduction Engine PR C single-pass routing
 
-## 2026-07-29 authoritative post-writeback pending recheck
+- 新增 immutable strict `ReductionConfig`、三個 explicit single-pass profiles 與 combine-boundary opt-in routing；inactive behavior 不變。
+- Hosted corrective 確保 JSON repair 在 reducer 前執行，explicit reducer output 不再進 legacy JSON post-processing。
 
-- 任務目的：釐清完成進度已達 10/10 時，收尾摘要仍顯示 `仍未完成=1` 卻接著宣告完成的矛盾訊息。
-- 主要修改內容：producer 保存本輪實際派工 pk；orchestrator 在 merger/writeback shutdown 完成後逐筆執行權威最終重查。原 finalize 數字改稱「running 中控清理快照」，明示可能早於最後寫回；最終仍有 pending 或 recheck error 時不再印出成功慶祝訊息，而是警告不可視為全部完成。
-- 驗證結果：requirements 安裝仍因 GitHub `peft` dependency proxy 403 失敗；替代驗證 `python -m pytest tests/sql_mode/runtime/test_pending_recheck_summary.py -q`（3 passed）與 `python -m compileall -q czjLLM/sql_mode/runtime/pending_recheck.py czjLLM/sql_mode/runtime/producer.py czjLLM/sql_mode/runtime/orchestrator.py` 通過。
-- 重要結論：舊 `仍未完成=1` 是 writeback 尚在進行時的協調狀態快照，不足以判定最終失敗；新摘要以 shutdown 後資料來源重查結果作完成判定。
+### 2026-09-19 Reduction Engine PR A/B foundation
 
+- PR A 凍結 Success lexical ordering、text/JSON combine、slice merge、Row Merger 與 Output Profile behavior。
+- PR B 建立 source-agnostic reducer contracts、registry、concat text/list 與 legacy deep-merge adapters，並維持 lightweight import boundary。
 
-## 2026-07-28 remove unused clean_path_end_chars_OLD_2 block
+### 2026-09-18 authoritative premerged multidim writeback
 
-- 任務目的：依使用者後續指示確認 `clean_path_end_chars_OLD_2` 是否仍被使用，若未使用則刪除。
-- 主要修改內容：全專案搜尋確認該名稱只存在於三引號舊程式碼字串與先前記憶紀錄，因此刪除整個舊程式碼字串，並移除僅由該字串提及的 `sys`、`PureWindowsPath`、`PurePosixPath` imports；目前啟用的 `clean_path_end_chars` 不變。
-- 驗證結果：`python -Werror -m py_compile utils/utilities_path.py`、`python -m compileall -q utils/utilities_path.py` 與舊名稱/unused import 靜態檢查通過。`python -m pytest tests/test_paths.py -q` 因 requirements 無法完整安裝、環境缺少 `numpy` 而在 collection 階段停止；requirements 安裝仍受 GitHub `peft` proxy 403 限制。
-- 重要結論：未使用的保存字串已直接移除，不再需要以 raw string 壓制警告，也減少無效 imports。
+- Row Merger 保留 resolved structured source；authoritative combined dict 可正確套用 generic/multidim serialization，而 stage-specific invalid dict 仍由 profile 拒絕。
 
-## 2026-08-26 ES mapping rejection retry-loop fix
+### 2026-09-01 LLM call audit propagation
 
-- 任務目的：處理 ES 欄位 mapping 已是 `text`、但 LLM 結果送入 object 時的確定性 400 錯誤與終端洗版。
-- 主要修改內容：ESSink 將 `document_parsing_exception` / `mapper_parsing_exception` 類 400 判定為不可重試的 schema writeback failure，從 buffer 移除已成功及永久失敗 action，只保留可重試失敗；錯誤摘要限制長度且不在 sink 重複 print。Row Merger 透過既有 `OutputProfileValidationError` 終止同一 completed item 的 watchdog 重試、釋放 running 狀態並保持資料 pending。
-- 驗證結果：`tests/test_es_sink_multifield_writeback.py` 3 passed；目標 Python compileall 與 `git diff --check` 通過。含 Row Merger 的整合測試因 requirements 安裝受 GitHub proxy 403、環境缺少 PyYAML 而無法收集。
-- 重要結論：此修正停止無效重試與洗版，但不會把 object 強制轉成文字或修改既有 ES mapping；資料契約仍需由 mapping 或輸出 schema 擇一校正。
+- Legacy consumer 與 stage-managed workers 共用 audit metadata propagation；JSON repair/split retry 子呼叫也保留同一 run/path。
 
-## Memory Compaction 2026-08-26
+### 2026-08-20 to 2026-08-26 merge and ES validation
 
-- `.codex/memory.md` 因累積超過 20 個日期工作區塊而濃縮；濃縮前全文保存於 `.codex/archive/memory.md-20260826-041906.md`。
-- Active memory 保留 Current Summary、最近 10 筆歷史與本次紀錄；以檔案存在、日期區塊計數及 Markdown 內容檢查驗證。
+- Audited merge 結果成為 authoritative writeback payload，retry 不重複輸出同一 item 的 merge audit。
+- Output-profile validation errors 結束本輪確定性重試；ES mapping 400 不再無限重送。`Event.consequence` object 在 ES I/O 前被拒絕。
+
+### 2026-07-17 to 2026-08-21 runtime stability
+
+- Windows legacy pool overlap 以 short reap/thread fallback 緩解；LLM audit、active context metadata、independent slice parallelism、model-profile defaults 與 ES prefetch-off policy 已落地。
+
+### 2026-09-20 Memory Compaction
+
+- `.codex/memory.md` 與 `.codex/decisions.md` 因超過 20 個日期／工作區塊而依規範濃縮。
+- 濃縮前全文分別保存於 `.codex/archive/memory.md-20260920-013654.md` 與 `.codex/archive/decisions.md-20260920-013654.md`；以 heading count、檔案存在與 diff check 驗證。
 
 ## Archived History
 
-- `memory.md-20260826-041906.md`：2026-08-26 濃縮前完整 Project Memory。
+- `memory.md-20260920-013654.md` — complete project-memory history through PR D2 before this compaction.
+- `memory.md-20260826-041906.md` — earlier full project-memory snapshot.
+- `decisions.md-20260920-013654.md` — complete decision history through PR D2 before this compaction.
 
-## 2026-08-26 Event.consequence LLM quality diagnosis and pre-write validation
+### 2026-09-20 Post-PR-E offline production E2E gate
 
-- 任務目的：確認 `Event.consequence` object 是否為 LLM 輸出品質問題，並補足寫回前型別防線。
-- 主要修改內容：程式內 prompt/schema 明確定義 `Event.consequence` 為文字或 null；multidim output profile 現在於 ES bulk 前驗證此欄型別，Impact-like object 會成為可定位的 schema-adherence failure，不再等 ES mapping 400 才發現。
-- 驗證結果：`tests/es_mode/test_multidim_event_field_types.py` 3 passed；變更 Python compileall 與 `git diff --check` 通過。requirements 安裝仍受 GitHub CONNECT tunnel 403 限制。
-- 重要結論：範例 payload 把應屬 `Impact[]` 的 `{impact_description, event_ids}` object 放進文字欄 `Event.consequence`，主要是 LLM schema adherence / 欄位歸屬品質錯誤；先前 profile 僅檢查欄名與時間，未檢查 consequence 型別，屬應用端防線缺口。
+- Added `e2e`/`live_llm` markers and a localhost `ThreadingHTTPServer` with deterministic prompt rules and concurrency/request recording.
+- Added production-boundary coverage for TXT filesystem IO, CSV `CSVSink`, file-backed SQLite pending selection plus `SqlSink`, real Elasticsearch adapter selection plus real `ESSink` for single/dual indexes, deterministic routing, and HTTP concurrency under `ExecutionBudget`.
+- ES replaces only scan/bulk storage transport with an in-memory dictionary. No GPU, remote LLM, MSSQL, ES server, credentials, internet, or PR F behavior is used.
+- Verification: requirements installation failed at pinned GitHub `peft` with proxy 403; this sandbox lacks normal runtime packages, so the E2E selection fails collection on missing `pandas`. The blocker is recorded in `known_issues.md`.
 
-## 2026-09-01 restore LLM call audit rows in legacy consumer
+### 2026-09-20 PR #185 corrective — offline/live layers and safety
 
-- 任務目的：修復任務正常完成但 `logs/llm_call_audit` CSV/XLSX 只有標題、沒有呼叫條目的回歸。
-- 根本原因：啟動流程雖將 audit run id/path 存入 `ctx`，stage-managed `call_llm_api()` 也會傳入 worker，但 legacy `llm_stream_consumer()` 建立 `PromptAPIPipeline` 時遺漏這兩個欄位；`log_llm_call()` 因空 `audit_path` 直接返回。
-- 主要修改：集中由 `_llm_call_audit_kwargs()` 複製每次執行的 audit metadata，legacy consumer 與 stage-managed worker factory 均使用；JSON repair 與 split retry 子呼叫也繼承相同 run/path，避免後續 LLM 呼叫脫離總表。
-- 驗證結果：`tests/prompt_pipeline/test_llm_call_audit.py` 2 passed；變更檔 compileall 與 `git diff --check` 通過。requirements 安裝仍在 GitHub `peft` clone 遭 CONNECT tunnel 403，使用不依賴該套件的目標測試完成替代驗證。
-- 重要結論：只建立 header 不代表 audit writer 故障；所有 multiprocessing/thread worker job 必須明確攜帶 parent context 的 audit run id/path。
+- Added all five marker contracts, strict live opt-in and namespace validation, UUID-owned SQL/ES cleanup, live LLM/SQL/ES/composite selections, deterministic keyed fake-HTTP failure injection, retry coverage, derived-capacity-8 policy coverage, and separated focused/offline/live CI steps.
+- Added `requirements-e2e.txt` without training-stack dependencies. Installation remains blocked by the sandbox package-index proxy; live selections cleanly skip without opt-in and live safety tests pass.
+- No PR F work-unit, manifest, reducer, or distributed-budget functionality was introduced.
 
-## 2026-09-18 authoritative premerged multidim writeback
+### 2026-09-20 PR #185 final production E2E corrective
 
-- 任務目的：修正多切片 JSON 已由 `combine_api_finished_item()` 合併成 dict 後，Row Merger 因只處理 `list[dict]` 而略過 multidim 最外層 array 契約的寫回失敗。
-- 主要修改內容：Row Merger 現在保留每個 writeback 欄位由 `resolve_writeback_payload()` 回傳的結構化 source；僅對 `source == "combined"` 的 premerged dict 重用既有 `_apply_slice_merge_to_write_map()`／output-profile serializer。multidim 寫入 `[dict]`，generic JSON 維持 dict，`stage:*` dict 不會被此 workaround 修復，仍交由 profile validation 拒絕。上游 combine 與 scalar-conflict policy 未更動。
-- Regression coverage：保留既有 list merge contract，新增 authoritative combined dict 的 Row Merger/capture sink regression、generic object contract，以及 stage-specific invalid dict 仍可被 multidim validator 拒絕的測試。
-- 驗證結果：`tests/test_combine_json_slice_merge.py` 6 passed；changed Python `compileall` 與 `git diff --check` 通過。Row Merger 目標測試在 collection 階段因缺少 PyYAML 失敗；test-only PyYAML shim 後又確認缺少 OpenCC，屬 requirements 未完整安裝的環境限制而非 test assertion failure。
-- 環境限制：`python -m pip install -r requirements.txt` 仍因 GitHub `peft` clone 遭 proxy `CONNECT tunnel failed, response 403` 而失敗；`pip --upgrade` 亦無法連 index，但現有 pip 已安裝。
-- 記憶維護：`.codex/known_issues.md` 超過 20 個工作紀錄區塊，已依規範濃縮；完整歷史保存於 `.codex/archive/known_issues-20260918-000000.md`。
+- Wired an isolated Linux offline-E2E CI job to install `requirements-e2e.txt`, collect the E2E selection, and execute it independently of the Git-pinned training stack.
+- Added production TXT handler, SQLite/ES `handle_data_mode`, budgeted production leaf dispatch at capacities 2 and derived 8, shared concurrent dispatch, and D2 localhost checkpoint/resume/invalidation coverage.
+- Hardened live SQL cleanup, added ES CA/verification support, and accurately classified direct live SQL/ES and composite checks as service/cross-service smokes.
+- No PR F functionality was introduced.
 
-## 2026-09-19 Reduction Engine Phase 0 reconciliation
+### 2026-09-20 PR #185 hosted dependency convergence corrective
 
-- 任務目的：將 Codex Phase 0 在隔離 checkout 中驗證的 Reduction Engine 架構 findings，合回真正 PR #177 的 authoritative plan，而不是以 reconstructed plan 取代原稿。
-- 權威基線：`main @ c834959d8482e96ab3e815278aec2137952df8d7`；PR branch 起點為 `plan/reduction-engine-v1 @ eaaf89e131ed814dddc6813beb8d3839fc47b587`。
-- 已確認 live combine 仍以 `combine_api_finished_item()` 為核心；`czjLLM/pipeline/merge/` 為與 live TXT/SQL/ES runtime 分離的 skeleton，不作 Reduction Engine foundation。
-- 架構定案：Reduction Core 維持 source-agnostic；Row Merger 留在 SQL/table/ES writeback 邊界；Output Profile 與 Reducer Profile 分離；worker 採小型 `Executable` contract + Task/PipelineRef adapters，而不是直接依賴整個 business-stage runtime。
-- 執行順序修正：Shared `ExecutionBudget` 提前成為 collection/semantic/nested fan-out 的 prerequisite；Collection Manifest 使用獨立 immutable contract；aggregate creation 使用 stable `aggregate_output_id`/idempotent upsert，而非只依賴既有 row/document update identity。
-- 下一個 production-facing 工作仍是 PR A Characterization / Golden Tests，且 production behavior change = NO。
+- Hosted run `35515118358` proved the isolated E2E install step and exposed collection-time `psutil`; the minimal E2E surface now includes `psutil`, `version_parser`, and the other direct packaged imports reached through `utils.utilities`/`MP_utils` (`GPUtil`, `humanize`, `python-dateutil`, `scipy`, `setproctitle`).
+- The isolated CI commands now scope collection and execution to `tests/e2e`, preventing unrelated repository tests from expanding the E2E dependency contract. Production-path E2E tests were not weakened or replaced.
+
+### 2026-09-20 PR #185 stale ES helper import corrective
+
+- Repository-wide call-site search found no invocation or re-export of `get_es_client` or `apply_es_mapping`; only stale imports existed in active `steps_es.py` and the unused `steps_es_noeventids.py` variant. Historical commit `4d9f8d5` already constructed `ElasticsearchAdapter(...).connect()` and invoked `adapter.apply_mapping_file(...)` without calling either imported helper.
+- Removed both stale imports. Added focused regressions for connection configuration propagation through `resolve_es_connection()` → `ElasticsearchAdapter.connect()` and configured JSON mapping application through `ensure_schemas_es()` → `adapter.apply_mapping_file()` → `indices.put_mapping()`, including preservation of output/meta fallback mapping.
+- No E2E acceptance test or ES connection/mapping behavior was weakened, and no PR F functionality was introduced.
+
+### 2026-09-20 PR #185 headless countdown hardening
+
+- Hardened the shared `utils.utilities.countdown_pause()` CLI boundary: zero/negative durations, absent or non-TTY stdin, unsupported `fileno()`, and unsupported non-Windows `select` now return immediately without sleeping or failing row scheduling; selectable interactive terminals retain countdown and Enter-to-skip behavior.
+- Added focused regressions for absent, non-TTY, pseudofile stdin and the existing zero-second contract. Accepted TXT/SQL/ES, budget, D2, retry, and ES adapter/mapping tests remain unchanged.
+
+### 2026-09-20 PR #185 ES value-boundary diagnostics
+
+- Hosted run `35521017153` proved both ES row identities traverse selection, scheduling, localhost HTTP, combine, and ESSink writeback; the remaining failure is value fidelity rather than identity or mapping.
+- Added ordered diagnostics without production changes: expected PK/value mapping, fake HTTP assistant content, production combined artifacts, deep-copied ESSink bulk actions, and final in-memory ES values. Each layer now asserts the same exact mapping and reports its actual mapping at the first divergence.
+- The countdown, scheduler, combiner, ESSink, fake response rules, and fake ES merge behavior remain unchanged; `/cache` backup remains a separate non-fatal follow-up. No PR F functionality was introduced.
+
+### 2026-09-21 PR #185 prepared-text E2E contract correction
+
+- Hosted diagnostic run `35559731083` localized ES value divergence to the established text combine boundary: raw `RESULT::<pk>` becomes prepared `RESULT::<pk>\n`; identity and raw LLM response contracts passed.
+- Corrected only production-orchestration test expectations: ES retains separate exact raw-LLM and combined/bulk/stored mappings, while SQL writeback expects the same prepared trailing newline. No actual value is stripped or normalized, and permanent boundary diagnostics remain.
+- Classified the finding as a test-contract mismatch, not a production defect. The production combiner/reducer, Row Merger, sinks, fake services, countdown, and all PR A-E behavior remain unchanged; no PR F functionality was introduced.
+
+### 2026-09-21 PR #185 hierarchical cleanup ownership corrective
+
+- Hosted run `35616315448` exposed that successful production combine cleanup deleted D2 runtime and committed checkpoints under the item workspace, preventing terminal resume with `debug=False`.
+- Updated only the cleanup predicate so enabled `fixed_rounds`/`adaptive_hierarchical` workspaces survive; inactive and `single_pass` debug-false cleanup remains historical.
+- Added focused debug-false characterization proving initial Success, runtime, checkpoints, and terminal resume survive without a second map call, plus a single-pass cleanup non-regression. No checkpoint semantics, location, fingerprint, PR L retention policy, or PR F functionality changed.
+
+### 2026-09-21 PR #185 deterministic ExecutionBudget E2E assertions
+
+- Hosted run `35620840169` showed derived capacity and requested leaf width were both 8 while localhost HTTP overlap peaked at 2 because pre-HTTP endpoint load-lock work can stagger workers.
+- Corrected only E2E assertions: production capacity-2 now requires snapshot `(capacity=2, peak_in_use=2, in_use=0)`; derived/shared capacity-8 requires `(8, 8, 0)` after the first and concurrent phases. HTTP concurrency remains an upper-bound safety assertion only.
+- Removed the timing-dependent HTTP lower bound without changing server delay or any production budget, dispatch, pool, load-balancing, D2, or PR F behavior.
+
+### 2026-09-22 PR #185 SQL resolver seam correction
+
+- Hosted run `35626496688` exposed an E2E fixture defect: replacing `handle_data_mode.resolve_connection` bypassed production initialization of `sql_table`, `primary_key`, `target_table`, `sqlite_path`, and `sql_connection_string`.
+- Narrowed the seam to `sql_steps.load_sql_cfg` and the `sql_steps.SQLiteAdapter` constructor factory. The real imported `resolve_connection()` now performs SQLite detection, context initialization, adapter construction, and connection entry while the recording subclass still observes selected PKs.
+- Removed manual SQLite context setup from the test and added stable post-resolution assertions. No SQL production, scheduler, sink, pending-recheck, budget, D2, or PR F behavior changed.
+
+### 2026-09-24 PR #185 TXT cleanup-contract correction
+
+- Hosted run `35724737347` showed the production TXT lifecycle completed through localhost HTTP, Success, combine, and the final artifact; the remaining assertion incorrectly expected the non-hierarchical debug-false item workspace to survive normal cleanup.
+- Added an observation-only `MergeOps.combine` wrapper that records empty TODO and populated Success state immediately before delegating unchanged to the real `combine_api_finished_item()` implementation.
+- The E2E now explicitly uses `debug=False` and requires the final artifact, source backup/removal, released execution budget, and deleted temporary item workspace. No production cleanup, combine, TXT, D2, or PR F behavior changed.

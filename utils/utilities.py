@@ -526,6 +526,23 @@ def ShowStepCostTime(start_time, JobName = ""):
 def countdown_pause(seconds):
     if seconds <= 0:
         return
+
+    # Interactive countdown is a CLI convenience.  Batch workers, containers,
+    # services, and pytest commonly expose no stdin or a redirected pseudofile
+    # whose ``fileno`` cannot be selected.  Those environments must never make
+    # the first scheduled row fail or wait through the UX countdown.
+    stdin = getattr(sys, "stdin", None)
+    if stdin is None:
+        return
+    try:
+        if not stdin.isatty():
+            return
+        stdin.fileno()
+        if not IsWindows():
+            select.select([stdin], [], [], 0)
+    except (AttributeError, OSError, TypeError, ValueError):
+        return
+
     for i in range(seconds, 0, -1):
         print(f"\r倒數 {i} 秒... (按 Enter 鍵略過)", end="")
         sys.stdout.flush()  # 確保馬上顯示輸出
@@ -537,8 +554,15 @@ def countdown_pause(seconds):
                 return
         else:
             # 非 Windows 系統使用 select 模組
-            if select.select([sys.stdin], [], [], 1)[0]:
-                input()  # 等待 Enter 鍵被按下
+            try:
+                ready = select.select([stdin], [], [], 1)[0]
+            except (OSError, TypeError, ValueError):
+                return
+            if ready:
+                try:
+                    input()  # 等待 Enter 鍵被按下
+                except (EOFError, OSError):
+                    return
                 print("\r倒數被略過")
                 return
         time.sleep(1)

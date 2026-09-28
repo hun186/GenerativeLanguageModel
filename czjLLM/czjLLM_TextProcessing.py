@@ -153,6 +153,14 @@ if __name__ == '__main__':
         merge_slices=merge_slices_cfg,
         task_name=get_param("task") or task_hint
     )
+    # Project the root setting once for every TXT/Table/SQL/ES mode.  Strict
+    # normalization remains owned by the Reduction package and occurs before
+    # any combine work is scheduled.
+    from czjLLM.reduction.config import parse_reduction_config
+    ctx.reduction = parse_reduction_config(
+        get_param("reduction", None),
+        merge_slices=ctx.merge_slices,
+    )
     # 多階段設定（可直接放在主 YAML 的 stage_cfg/stages，或獨立 stage_config_file）
     if stage_cfg_preview:
         ctx.stage_cfg = stage_cfg_preview
@@ -167,6 +175,22 @@ if __name__ == '__main__':
     ctx.mp_debug = get_param("mp_debug", False)
     ctx.debug_print_llm_io = bool(get_param("debug_print_llm_io", False))
     ctx.debug_print_max_chars = int(get_param("debug_print_max_chars", 2000) or 2000)
+    # Project concurrency policy before creating the one process-local runtime
+    # budget.  Child row/D2 context views inherit this private object.
+    for _key in (
+        "execution_budget_capacity",
+        "multistage_row_parallelism",
+        "sql_multistage_row_parallelism",
+        "stream_multistage_row_parallelism",
+        "multistage_slice_parallelism",
+        "llm_slice_parallelism",
+        "slice_parallelism",
+    ):
+        _value = get_param(_key, None)
+        if _value is not None:
+            setattr(ctx, _key, _value)
+    from czjLLM.prompt_pipeline.dispatch_parallelism import attach_execution_budget
+    attach_execution_budget(ctx)
     for _k, _v in create_llm_call_audit_run(PGMSubDir=PGMSubDir).items():
         setattr(ctx, _k, _v)
     #print("ctx in main",ctx)

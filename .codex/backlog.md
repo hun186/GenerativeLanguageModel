@@ -32,12 +32,15 @@
 
 ## 2026-09-19 Reduction Engine v1 implementation sequence
 
-- [ ] PR A — Characterization / Golden Tests（production behavior change: NO）
-- [ ] PR B — Contracts, Reducer Registry, legacy adapters
-- [ ] PR C — Strict config + opt-in single-pass routing
-- [ ] PR D — Hierarchical Controller + atomic checkpoints
-- [ ] PR E — Shared Execution Budget
-- [ ] PR F — Logical Work Unit + immutable Collection Manifest
+- [x] PR A — Characterization / Golden Tests（production behavior change: NO）
+- [x] PR B — Contracts, Reducer Registry, legacy adapters（inactive foundation；production routing 留待 PR C）
+- [x] PR C — Strict config + opt-in single-pass routing
+  - [x] Hosted-review corrective: repair fallback precedes explicit JSON reduction, explicit reducer output bypasses legacy post-processing, and root schema usage is documented.
+- [x] PR D — Hierarchical reduction milestone
+  - [x] PR D1 — source-agnostic text controller core + completed-round atomic checkpoints
+  - [x] PR D2 — production text-round runtime adapter + hierarchical routing/config
+- [x] PR E — Shared Execution Budget（process-local root ownership、leaf-only leases、row executor cap）
+- [ ] PR F — Logical Work Unit + immutable Collection Manifest（implementation + dependency-light tests complete; hosted offline E2E acceptance pending）
 - [ ] PR G — SQL/ES Collection Adapters + idempotent aggregate upsert
 - [ ] PR H — Deterministic composite reducers
 - [ ] PR I — Semantic reducer

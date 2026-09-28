@@ -1,8 +1,11 @@
 import importlib.util
 import sys
+import threading
 import types
 from pathlib import Path
 from types import SimpleNamespace
+
+from czjLLM.reduction.execution_budget import ExecutionBudget
 
 
 def _stub_module(name, **attrs):
@@ -98,3 +101,32 @@ def test_multistage_parallelism_prefers_explicit_override():
     )
 
     assert producer._multistage_row_parallelism(ctx) == 3
+
+
+def test_actual_row_executor_is_capped_without_consuming_leaf_permits(monkeypatch):
+    seen = []
+
+    class RecordingExecutor:
+        def __init__(self, max_workers, thread_name_prefix):
+            seen.append((max_workers, thread_name_prefix))
+
+        def shutdown(self, wait):
+            assert wait is True
+
+    monkeypatch.setattr(producer, "ThreadPoolExecutor", RecordingExecutor)
+    ctx = SimpleNamespace(
+        mode="sql",
+        stages=[{"name": "one"}],
+        sql_enable_multistage_stream=True,
+        multistage_row_parallelism=8,
+        n_process=8,
+        _execution_budget=ExecutionBudget(2),
+    )
+    progress = SimpleNamespace(update=lambda *_args: None)
+
+    assert producer.produce_rows(
+        ctx, [], registry=object(), meter_fn="unused", low=0,
+        stop_event=threading.Event(), consumer=None, p_sched=progress,
+    ) == 0
+    assert seen == [(2, "multistage-row")]
+    assert ctx._execution_budget.snapshot().in_use == 0

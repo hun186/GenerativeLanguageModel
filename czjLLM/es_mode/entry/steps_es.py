@@ -15,8 +15,6 @@ from czjLLM.es_mode.config.stage_cfg import build_es_stage_cfg, stage_name_from_
 
 from czjLLM.es_mode.adapters.elasticsearch_adapter import ElasticsearchAdapter
 
-from utils.ES_utils import get_es_client, apply_es_mapping
-
 _SENTINEL = object()
 
 
