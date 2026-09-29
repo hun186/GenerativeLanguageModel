@@ -24,14 +24,18 @@ class AggregateTransport:
         self.documents = {}
 
     def update(self, *, index, id, body):
+        assert "ctx.op == 'create'" in body["script"]["source"]
         params = body["script"]["params"]
         existing = self.documents.get((index, id))
-        if existing is not None and any(
-            existing[field] != params[field]
-            for field in ("collection_id", "manifest_fingerprint", "output_key")
-        ):
-            raise ValueError("aggregate lineage conflict")
-        self.documents[(index, id)] = params["document"]
+        incoming = params["document"]
+        lineage = (
+            "aggregate_output_id", "aggregate_output_contract_version",
+            "collection_id", "manifest_fingerprint", "output_key",
+        )
+        if existing is not None:
+            if any(field not in existing or existing[field] != incoming[field] for field in lineage):
+                raise ValueError("aggregate lineage conflict")
+        self.documents[(index, id)] = incoming
         return {"result": "updated", "_id": id}
 
 
@@ -84,7 +88,17 @@ def test_es_collection_snapshot_atomic_aggregate_retry_and_conflict():
     sink = ElasticsearchAggregateSink(transport, index="aggregates")
     sink.upsert(output); sink.upsert(output)
     assert list(transport.documents) == [("aggregates", output.aggregate_output_id)]
+    assert transport.documents[("aggregates", output.aggregate_output_id)] == output.to_mapping()
 
-    transport.documents[("aggregates", output.aggregate_output_id)]["collection_id"] = "conflict"
+    incomplete = output.to_mapping()
+    incomplete.pop("aggregate_output_id")
+    transport.documents[("aggregates", output.aggregate_output_id)] = incomplete
+    with pytest.raises(ValueError, match="lineage conflict"):
+        sink.upsert(output)
+    assert transport.documents[("aggregates", output.aggregate_output_id)] == incomplete
+
+    incompatible = output.to_mapping()
+    incompatible["aggregate_output_contract_version"] = "incompatible"
+    transport.documents[("aggregates", output.aggregate_output_id)] = incompatible
     with pytest.raises(ValueError, match="lineage conflict"):
         sink.upsert(output)

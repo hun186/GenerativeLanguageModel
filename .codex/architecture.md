@@ -176,3 +176,7 @@
 - Both source adapters share source-independent typed scalar ordering rather than serialized/repr ordering. Caller-supplied group-field order is semantic, and group fields are encoded as field/value records so source schema names never become provenance-control keys.
 - ES aggregate persistence is a single Elasticsearch 7 scripted-upsert operation: an empty source is populated, identical lineage is updated idempotently, and incompatible lineage throws at the atomic update boundary. It does not perform GET-then-update.
 - Two marker-scoped offline E2E cases now exercise real PR G adapters/contracts/sinks; SQLite is file-backed and ES substitutes only scan/update transport behavior.
+
+## 2026-09-29 ES aggregate create/update authority
+
+- Elasticsearch update context is authoritative: `ctx.op == 'create'` writes the canonical aggregate document. Any other operation is an existing document and must pass complete five-field lineage validation inside the same Painless scripted update before replacement.

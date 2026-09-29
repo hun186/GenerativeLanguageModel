@@ -113,3 +113,7 @@
 - Source field vocabulary must remain data. Ordered field/value records solve reserved provenance-name collisions without weakening PR F validation.
 - ES custom identity normalization is strict and type-tagged. ES lineage integrity belongs in the atomic scripted update itself rather than a race-prone client GET check.
 - Aggregate output contract stays at version `1`; identity inputs remain contract version, collection ID, manifest fingerprint, and output key. Payload remains excluded.
+
+## 2026-09-29 ES create detection corrective
+
+- Application-field presence is not a creation signal. Scripted upsert branches on Elasticsearch's `ctx.op == 'create'`; every pre-existing deterministic ID, including manually indexed or legacy incomplete documents, must pass full lineage validation and is never silently repaired.

@@ -97,3 +97,7 @@
 ## 2026-09-29 PR G corrective environment verification
 
 - Requirements installation remains blocked at the pinned GitHub `peft` clone by proxy HTTP 403. Dependency-light reduction and focused SQL/ES tests pass, and the two new PR G E2E tests pass directly; the complete hosted E2E count/result remains required before PR G is marked complete.
+
+## 2026-09-29 final PR G corrective environment verification
+
+- Requirements installation remains blocked by proxy HTTP 403 at pinned `peft`. All dependency-light required suites and focused PR G E2E pass locally; authoritative full 15-case E2E still requires hosted CI.

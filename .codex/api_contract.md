@@ -84,3 +84,7 @@ execution_budget_capacity: 8
 - Group provenance is `group: [{"field": <source-name>, "value": <source-value>}, ...]` in caller-supplied group-field order. The same ordered data drives group ID hashing.
 - A custom ES identity is type-tagged (`str:`, `int:`, `bool:`, `float:`) and rejects empty/null/structured/non-finite values. Default ES `_id` remains its native non-empty string.
 - `ElasticsearchAggregateSink.upsert()` uses Elasticsearch 7 `scripted_upsert`; its write-boundary script compares `collection_id`, `manifest_fingerprint`, and `output_key` before replacing document fields.
+
+## 2026-09-29 ES existing-document lineage guard
+
+- Existing aggregate documents must contain identical `aggregate_output_id`, `aggregate_output_contract_version`, `collection_id`, `manifest_fingerprint`, and `output_key`. Missing, null, or different values are conflicts; only `ctx.op == 'create'` bypasses existing-lineage comparison.

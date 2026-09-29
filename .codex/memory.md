@@ -182,3 +182,9 @@
 - Group provenance now stores caller-ordered `[{"field": ..., "value": ...}]` entries, keeping reserved-looking source names such as `created_at`, `timestamp`, and `host` out of provenance key vocabulary while preserving them in group identity.
 - Custom ES member IDs now accept only type-tagged non-empty strings, integers, booleans, and finite floats. ES aggregate writes now use one scripted upsert whose Painless lineage guard rejects conflicting collection/fingerprint/output-key metadata atomically.
 - Added two offline `e2e` cases for actual PR G SQL and ES production classes; the local PR G E2E file passes 2 tests. Expanded hosted collection is expected to be 15, but PR G remains pending until the corrected hosted head reports the authoritative count/result.
+
+### 2026-09-29 PR G final ES create/update corrective
+
+- ES scripted aggregate upsert now treats only Elasticsearch's `ctx.op == 'create'` as document creation. Every existing deterministic `_id` must contain and exactly match aggregate output ID, aggregate contract version, collection ID, manifest fingerprint, and output key before payload/provenance replacement.
+- Missing, null, or incompatible existing lineage raises an aggregate-lineage conflict at the atomic update boundary; missing `aggregate_output_id` is never repaired or mistaken for creation.
+- Verification: reduction 178 passed; focused SQL/ES 15 passed; focused PR G E2E 2 passed; compileall and diff check passed. Full hosted 15-case E2E remains required before PR G completion.

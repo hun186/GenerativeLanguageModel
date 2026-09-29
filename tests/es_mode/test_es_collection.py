@@ -10,14 +10,18 @@ class FakeES:
     def __init__(self): self.documents = {}
     def update(self, *, index, id, body):
         assert body["scripted_upsert"] is True
+        assert "ctx.op == 'create'" in body["script"]["source"]
         params = body["script"]["params"]
         existing = self.documents.get((index, id))
-        if existing is not None and any(
-            existing[field] != params[field]
-            for field in ("collection_id", "manifest_fingerprint", "output_key")
-        ):
-            raise ValueError("aggregate lineage conflict")
-        self.documents[(index, id)] = params["document"]
+        incoming = params["document"]
+        lineage = (
+            "aggregate_output_id", "aggregate_output_contract_version",
+            "collection_id", "manifest_fingerprint", "output_key",
+        )
+        if existing is not None:
+            if any(field not in existing or existing[field] != incoming[field] for field in lineage):
+                raise ValueError("aggregate lineage conflict")
+        self.documents[(index, id)] = incoming
         return {"_id": id}
 
 
@@ -88,7 +92,7 @@ def test_es_aggregate_retry_reuses_same_document_id():
     client = FakeES(); sink = ElasticsearchAggregateSink(client, index="aggregates")
     sink.upsert(output); sink.upsert(output)
     assert list(client.documents) == [("aggregates", output.aggregate_output_id)]
-    assert client.documents[("aggregates", output.aggregate_output_id)]["manifest_fingerprint"] == manifest.fingerprint
+    assert client.documents[("aggregates", output.aggregate_output_id)] == output.to_mapping()
 
 
 def test_es_aggregate_rejects_conflicting_persisted_lineage_atomically():
@@ -100,3 +104,19 @@ def test_es_aggregate_rejects_conflicting_persisted_lineage_atomically():
     }
     with pytest.raises(ValueError, match="lineage conflict"):
         ElasticsearchAggregateSink(client, index="aggregates").upsert(output)
+
+
+@pytest.mark.parametrize(
+    "missing_field",
+    ["aggregate_output_id", "aggregate_output_contract_version", "manifest_fingerprint"],
+)
+def test_es_aggregate_rejects_incomplete_existing_lineage(missing_field):
+    manifest = snapshot([hit("1", "A")])[0]
+    output = AggregateOutput(manifest, "daily-summary", {"answer": 1})
+    client = FakeES()
+    incomplete = output.to_mapping()
+    incomplete.pop(missing_field)
+    client.documents[("aggregates", output.aggregate_output_id)] = incomplete
+    with pytest.raises(ValueError, match="lineage conflict"):
+        ElasticsearchAggregateSink(client, index="aggregates").upsert(output)
+    assert client.documents[("aggregates", output.aggregate_output_id)] == incomplete

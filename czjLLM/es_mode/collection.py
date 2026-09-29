@@ -113,17 +113,24 @@ class ElasticsearchAggregateSink:
                 "script": {
                     "lang": "painless",
                     "source": (
-                        "if (ctx._source.containsKey('aggregate_output_id')) { "
-                        "if (ctx._source.collection_id != params.collection_id || "
-                        "ctx._source.manifest_fingerprint != params.manifest_fingerprint || "
-                        "ctx._source.output_key != params.output_key) { "
-                        "throw new IllegalArgumentException('aggregate lineage conflict'); } } "
-                        "ctx._source.putAll(params.document);"
+                        "if (ctx.op == 'create') { "
+                        "ctx._source.putAll(params.document); "
+                        "} else { "
+                        "if (!ctx._source.containsKey('aggregate_output_id') || "
+                        "!ctx._source.containsKey('aggregate_output_contract_version') || "
+                        "!ctx._source.containsKey('collection_id') || "
+                        "!ctx._source.containsKey('manifest_fingerprint') || "
+                        "!ctx._source.containsKey('output_key') || "
+                        "ctx._source.aggregate_output_id != params.document.aggregate_output_id || "
+                        "ctx._source.aggregate_output_contract_version != "
+                        "params.document.aggregate_output_contract_version || "
+                        "ctx._source.collection_id != params.document.collection_id || "
+                        "ctx._source.manifest_fingerprint != params.document.manifest_fingerprint || "
+                        "ctx._source.output_key != params.document.output_key) { "
+                        "throw new IllegalArgumentException('aggregate lineage conflict'); } "
+                        "ctx._source.putAll(params.document); }"
                     ),
                     "params": {
-                        "collection_id": output.collection_id,
-                        "manifest_fingerprint": output.manifest_fingerprint,
-                        "output_key": output.output_key,
                         "document": document,
                     },
                 },
