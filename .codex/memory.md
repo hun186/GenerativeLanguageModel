@@ -168,3 +168,23 @@
 - Hosted run `35724737347` showed the production TXT lifecycle completed through localhost HTTP, Success, combine, and the final artifact; the remaining assertion incorrectly expected the non-hierarchical debug-false item workspace to survive normal cleanup.
 - Added an observation-only `MergeOps.combine` wrapper that records empty TODO and populated Success state immediately before delegating unchanged to the real `combine_api_finished_item()` implementation.
 - The E2E now explicitly uses `debug=False` and requires the final artifact, source backup/removal, released execution budget, and deleted temporary item workspace. No production cleanup, combine, TXT, D2, or PR F behavior changed.
+
+### 2026-09-24 Reduction Engine PR G collection adapters and aggregate upsert
+
+- Added explicit SQL and Elasticsearch collection snapshot adapters. SQL keys use type-tagged stable scalar identities; ES defaults to `_id`; both canonicalize member order using configured fields plus logical-ID tie-breaking, support safe source versions, deterministic grouping, and optional semantic half-open windows.
+- Added strict atomic manifest save/load plus aggregate-output contract v1. Output identity hashes contract version, collection ID, manifest fingerprint, and caller output key. Dedicated SQLite and ES sinks use primary-key conflict upsert and ES `update`/`doc_as_upsert`, respectively; retrying a committed operation reuses one logical output.
+- Existing Row Merger, pending-row selection, ordinary ESSink, reducers, and Output Profile behavior were not repurposed. Aggregate payloads are explicitly documented as already final/validated; PR H reducers remain unimplemented.
+- Verification: focused reduction/SQL/ES collection selection passed 185 tests. Requirements installation remains blocked by the known GitHub proxy 403; broader SQL/ES collection stopped on missing numpy and offline E2E remains a hosted gate.
+
+### 2026-09-29 PR G hosted-review corrective
+
+- Replaced SQL string-key and ES `repr()` ordering with one typed semantic scalar key: bool, numeric (native integer/finite-float order), string, then bytes, followed by logical-ID tie-breaking. Numeric ranks 2 and 10 now remain 2, 10 under shuffled retrieval.
+- Group provenance now stores caller-ordered `[{"field": ..., "value": ...}]` entries, keeping reserved-looking source names such as `created_at`, `timestamp`, and `host` out of provenance key vocabulary while preserving them in group identity.
+- Custom ES member IDs now accept only type-tagged non-empty strings, integers, booleans, and finite floats. ES aggregate writes now use one scripted upsert whose Painless lineage guard rejects conflicting collection/fingerprint/output-key metadata atomically.
+- Added two offline `e2e` cases for actual PR G SQL and ES production classes; the local PR G E2E file passes 2 tests. Expanded hosted collection is expected to be 15, but PR G remains pending until the corrected hosted head reports the authoritative count/result.
+
+### 2026-09-29 PR G final ES create/update corrective
+
+- ES scripted aggregate upsert now treats only Elasticsearch's `ctx.op == 'create'` as document creation. Every existing deterministic `_id` must contain and exactly match aggregate output ID, aggregate contract version, collection ID, manifest fingerprint, and output key before payload/provenance replacement.
+- Missing, null, or incompatible existing lineage raises an aggregate-lineage conflict at the atomic update boundary; missing `aggregate_output_id` is never repaired or mistaken for creation.
+- Verification: reduction 178 passed; focused SQL/ES 15 passed; focused PR G E2E 2 passed; compileall and diff check passed. Full hosted 15-case E2E remains required before PR G completion.

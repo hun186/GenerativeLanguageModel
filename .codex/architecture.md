@@ -163,3 +163,20 @@
 - Logical and collection identities remain caller-owned stable semantic strings; reduction core never generates them from object identity, random UUIDs, PID, or time. Core validation rejects obvious credential text, JWT-like values, raw URLs, temporary paths, control characters, and blank/untrimmed values without guessing whether ordinary dates, numbers, or words such as `host`/`session` are runtime-derived.
 - Provenance has the stronger structural policy: known runtime/nondeterministic keys and secret-bearing keys or values are rejected recursively. Identity values intentionally do not use provenance's key-name substring policy, so benign IDs such as `secretariat-analysis-v2` remain valid.
 - This pre-merge tightening retains collection manifest contract version `1` and does not change serialization fields, normalized-JSON SHA-256 inputs/algorithm, ordering, duplicate handling, or nested immutability.
+
+## 2026-09-24 PR G collection source/sink boundaries
+
+- `reduction/aggregate.py` is source-independent: atomic strict manifest persistence, semantic half-open window normalization, deterministic aggregate identity, and immutable aggregate lineage record.
+- `sql_mode/collection.py` owns parameterized query materialization, SQL key conversion, ordering/group formation, and dedicated SQLite aggregate-table upsert. It does not call or alter `select_pending_rows()`.
+- `es_mode/collection.py` composes an already configured/connected `ElasticsearchAdapter`, resolves a query exactly once, forms canonical manifests, and persists aggregate documents through a dedicated ES update/upsert boundary.
+- Data flow is source query → immutable `CollectionManifest` → future source-independent reduction → already Output-Profile-validated `AggregateOutput` → source-specific aggregate sink. Row Merger remains the ordinary one-row/one-result coordinator.
+
+## 2026-09-29 PR G corrective boundaries
+
+- Both source adapters share source-independent typed scalar ordering rather than serialized/repr ordering. Caller-supplied group-field order is semantic, and group fields are encoded as field/value records so source schema names never become provenance-control keys.
+- ES aggregate persistence is a single Elasticsearch 7 scripted-upsert operation: an empty source is populated, identical lineage is updated idempotently, and incompatible lineage throws at the atomic update boundary. It does not perform GET-then-update.
+- Two marker-scoped offline E2E cases now exercise real PR G adapters/contracts/sinks; SQLite is file-backed and ES substitutes only scan/update transport behavior.
+
+## 2026-09-29 ES aggregate create/update authority
+
+- Elasticsearch update context is authoritative: `ctx.op == 'create'` writes the canonical aggregate document. Any other operation is an existing document and must pass complete five-field lineage validation inside the same Painless scripted update before replacement.

@@ -68,3 +68,23 @@ execution_budget_capacity: 8
 - The value must be a positive integer; booleans, strings, zero, and negative values are rejected. Precedence is root/run explicit value, model-profile `execution_budget_capacity`, derived maximum of existing positive local process/row/slice settings, then `1`.
 - `ExecutionBudget(capacity).lease(requested)` requires a positive integer and yields `1..min(requested, available, capacity)` after blocking without busy-spinning when capacity is exhausted. The granted amount is always returned on scope exit, including exceptions.
 - This is a Python runtime/process-local contract, not a serialized business API or distributed coordination contract. Private budget state does not enter persisted configuration or D2 fingerprints.
+
+## 2026-09-24 Reduction Engine PR G Python contracts
+
+- `SQLCollectionQuery(sql, parameters, member_id_field, payload_fields, version_field=None, group_fields=(), order_fields=())` describes an explicit parameterized membership query.
+- `SQLCollectionAdapter(adapter, source_alias=...).snapshot(collection_id=..., query=..., window=None)` executes once and returns a deterministic tuple of immutable manifests.
+- `ElasticsearchCollectionAdapter(adapter, source_alias=..., scan=None).snapshot(...)` composes a connected production adapter; `_id` is the default identity and transport injection exists only at the external scan seam.
+- `CollectionManifestStore.save(path, manifest)` atomically persists canonical mapping; `load(path)` strictly reconstructs and verifies it without source fallback.
+- `AggregateOutput(manifest, output_key, payload, provenance=None)` expects a final/validated payload. `derive_aggregate_output_id()` hashes aggregate contract v1, collection ID, manifest fingerprint, and output key.
+- `SQLiteAggregateSink.ensure_schema()/upsert(output)` and `ElasticsearchAggregateSink.upsert(output)` are dedicated first-class aggregate persistence APIs.
+
+## 2026-09-29 PR G corrective contract details
+
+- `deterministic_scalar_order_key(value)` orders booleans first, integers/finite floats together by numeric value, strings lexically, then bytes lexically; null, non-finite floats, and structured values fail. Adapters append logical ID as the final tie-breaker.
+- Group provenance is `group: [{"field": <source-name>, "value": <source-value>}, ...]` in caller-supplied group-field order. The same ordered data drives group ID hashing.
+- A custom ES identity is type-tagged (`str:`, `int:`, `bool:`, `float:`) and rejects empty/null/structured/non-finite values. Default ES `_id` remains its native non-empty string.
+- `ElasticsearchAggregateSink.upsert()` uses Elasticsearch 7 `scripted_upsert`; its write-boundary script compares `collection_id`, `manifest_fingerprint`, and `output_key` before replacing document fields.
+
+## 2026-09-29 ES existing-document lineage guard
+
+- Existing aggregate documents must contain identical `aggregate_output_id`, `aggregate_output_contract_version`, `collection_id`, `manifest_fingerprint`, and `output_key`. Missing, null, or different values are conflicts; only `ctx.op == 'create'` bypasses existing-lineage comparison.

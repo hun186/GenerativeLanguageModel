@@ -9,6 +9,15 @@ from .collection import (
     LogicalWorkUnit,
 )
 from .contracts import Reducer, ReducerResult
+from .aggregate import (
+    AGGREGATE_OUTPUT_CONTRACT_VERSION,
+    AggregateOutput,
+    CollectionManifestStore,
+    derive_aggregate_output_id,
+    deterministic_scalar_order_key,
+    canonical_group_entries,
+    normalize_collection_window,
+)
 from .engine import reduce_single_pass
 from .controllers import AdaptiveHierarchicalController, FixedRoundsController
 from .hierarchical import reduce_hierarchical_text
@@ -21,11 +30,14 @@ from .registry import (
 
 __all__ = [
     "Reducer",
+    "AGGREGATE_OUTPUT_CONTRACT_VERSION",
+    "AggregateOutput",
     "COLLECTION_MANIFEST_CONTRACT_VERSION",
     "CollectionManifest",
     "CollectionManifestError",
     "CollectionManifestValidationError",
     "LogicalWorkUnit",
+    "CollectionManifestStore",
     "ReductionConfig",
     "ReductionConfigError",
     "ReducerRegistry",
@@ -36,6 +48,10 @@ __all__ = [
     "parse_reduction_config",
     "reduce_single_pass",
     "reduce_hierarchical_text",
+    "derive_aggregate_output_id",
+    "deterministic_scalar_order_key",
+    "canonical_group_entries",
+    "normalize_collection_window",
     "register_builtin_reducers",
     "register_reducer",
 ]
