@@ -14,6 +14,8 @@ from .aggregate import (
     AggregateOutput,
     CollectionManifestStore,
     derive_aggregate_output_id,
+    deterministic_scalar_order_key,
+    canonical_group_entries,
     normalize_collection_window,
 )
 from .engine import reduce_single_pass
@@ -47,6 +49,8 @@ __all__ = [
     "reduce_single_pass",
     "reduce_hierarchical_text",
     "derive_aggregate_output_id",
+    "deterministic_scalar_order_key",
+    "canonical_group_entries",
     "normalize_collection_window",
     "register_builtin_reducers",
     "register_reducer",

@@ -175,3 +175,10 @@
 - Added strict atomic manifest save/load plus aggregate-output contract v1. Output identity hashes contract version, collection ID, manifest fingerprint, and caller output key. Dedicated SQLite and ES sinks use primary-key conflict upsert and ES `update`/`doc_as_upsert`, respectively; retrying a committed operation reuses one logical output.
 - Existing Row Merger, pending-row selection, ordinary ESSink, reducers, and Output Profile behavior were not repurposed. Aggregate payloads are explicitly documented as already final/validated; PR H reducers remain unimplemented.
 - Verification: focused reduction/SQL/ES collection selection passed 185 tests. Requirements installation remains blocked by the known GitHub proxy 403; broader SQL/ES collection stopped on missing numpy and offline E2E remains a hosted gate.
+
+### 2026-09-29 PR G hosted-review corrective
+
+- Replaced SQL string-key and ES `repr()` ordering with one typed semantic scalar key: bool, numeric (native integer/finite-float order), string, then bytes, followed by logical-ID tie-breaking. Numeric ranks 2 and 10 now remain 2, 10 under shuffled retrieval.
+- Group provenance now stores caller-ordered `[{"field": ..., "value": ...}]` entries, keeping reserved-looking source names such as `created_at`, `timestamp`, and `host` out of provenance key vocabulary while preserving them in group identity.
+- Custom ES member IDs now accept only type-tagged non-empty strings, integers, booleans, and finite floats. ES aggregate writes now use one scripted upsert whose Painless lineage guard rejects conflicting collection/fingerprint/output-key metadata atomically.
+- Added two offline `e2e` cases for actual PR G SQL and ES production classes; the local PR G E2E file passes 2 tests. Expanded hosted collection is expected to be 15, but PR G remains pending until the corrected hosted head reports the authoritative count/result.

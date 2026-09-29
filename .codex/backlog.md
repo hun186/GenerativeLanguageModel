@@ -47,3 +47,8 @@
 - [ ] PR J — Structured relational reducer
 - [ ] PR K — ReductionStage + bounded PipelineRef nesting
 - [ ] PR L — Retention/GC/cache integration points/production hardening
+
+## 2026-09-29 PR G hosted acceptance
+
+- [ ] Confirm corrected PR #187 hosted head collects 15 E2E cases (original 13 plus two PR G cases) and passes the full offline E2E workflow; only then mark PR G complete.
+- [ ] PR H remains deliberately unstarted.

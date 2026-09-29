@@ -170,3 +170,9 @@
 - `sql_mode/collection.py` owns parameterized query materialization, SQL key conversion, ordering/group formation, and dedicated SQLite aggregate-table upsert. It does not call or alter `select_pending_rows()`.
 - `es_mode/collection.py` composes an already configured/connected `ElasticsearchAdapter`, resolves a query exactly once, forms canonical manifests, and persists aggregate documents through a dedicated ES update/upsert boundary.
 - Data flow is source query → immutable `CollectionManifest` → future source-independent reduction → already Output-Profile-validated `AggregateOutput` → source-specific aggregate sink. Row Merger remains the ordinary one-row/one-result coordinator.
+
+## 2026-09-29 PR G corrective boundaries
+
+- Both source adapters share source-independent typed scalar ordering rather than serialized/repr ordering. Caller-supplied group-field order is semantic, and group fields are encoded as field/value records so source schema names never become provenance-control keys.
+- ES aggregate persistence is a single Elasticsearch 7 scripted-upsert operation: an empty source is populated, identical lineage is updated idempotently, and incompatible lineage throws at the atomic update boundary. It does not perform GET-then-update.
+- Two marker-scoped offline E2E cases now exercise real PR G adapters/contracts/sinks; SQLite is file-backed and ES substitutes only scan/update transport behavior.

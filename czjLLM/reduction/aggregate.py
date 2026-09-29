@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 from czjLLM.utilities.atomic_io import atomic_write_json
 
@@ -21,6 +22,40 @@ from .collection import (
 
 
 AGGREGATE_OUTPUT_CONTRACT_VERSION = "1"
+
+
+def deterministic_scalar_order_key(value: Any) -> tuple[int, Any]:
+    """Return a total, semantic key for supported JSON/SQL scalar values.
+
+    Booleans, numbers, strings, and bytes occupy distinct deterministic type
+    domains. Integers and finite floats share the numeric domain so their
+    natural numeric order is retained. Null and structured values are not
+    meaningful explicit order values and therefore fail rather than falling
+    back to representation ordering.
+    """
+    if isinstance(value, bool):
+        return (0, int(value))
+    if isinstance(value, int):
+        return (1, value)
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise ValueError("order values must not contain NaN or Infinity")
+        return (1, value)
+    if isinstance(value, str):
+        return (2, value)
+    if isinstance(value, bytes):
+        return (3, value)
+    raise ValueError(f"unsupported non-scalar order value: {type(value).__name__}")
+
+
+def canonical_group_entries(
+    fields: Sequence[str], values: Sequence[Any],
+) -> list[dict[str, Any]]:
+    """Represent ordered source field/value pairs without dynamic provenance keys."""
+    return [
+        {"field": field, "value": value}
+        for field, value in zip(fields, values)
+    ]
 
 
 def normalize_collection_window(window: Mapping[str, Any]) -> dict[str, Any]:

@@ -77,3 +77,10 @@ execution_budget_capacity: 8
 - `CollectionManifestStore.save(path, manifest)` atomically persists canonical mapping; `load(path)` strictly reconstructs and verifies it without source fallback.
 - `AggregateOutput(manifest, output_key, payload, provenance=None)` expects a final/validated payload. `derive_aggregate_output_id()` hashes aggregate contract v1, collection ID, manifest fingerprint, and output key.
 - `SQLiteAggregateSink.ensure_schema()/upsert(output)` and `ElasticsearchAggregateSink.upsert(output)` are dedicated first-class aggregate persistence APIs.
+
+## 2026-09-29 PR G corrective contract details
+
+- `deterministic_scalar_order_key(value)` orders booleans first, integers/finite floats together by numeric value, strings lexically, then bytes lexically; null, non-finite floats, and structured values fail. Adapters append logical ID as the final tie-breaker.
+- Group provenance is `group: [{"field": <source-name>, "value": <source-value>}, ...]` in caller-supplied group-field order. The same ordered data drives group ID hashing.
+- A custom ES identity is type-tagged (`str:`, `int:`, `bool:`, `float:`) and rejects empty/null/structured/non-finite values. Default ES `_id` remains its native non-empty string.
+- `ElasticsearchAggregateSink.upsert()` uses Elasticsearch 7 `scripted_upsert`; its write-boundary script compares `collection_id`, `manifest_fingerprint`, and `output_key` before replacing document fields.

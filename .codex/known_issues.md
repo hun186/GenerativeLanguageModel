@@ -93,3 +93,7 @@
 ## 2026-09-24 PR G environment verification
 
 - Requirements installation again failed cloning pinned GitHub `peft` through the proxy (HTTP 403). Focused dependency-light collection tests pass; broad SQL/ES regression collection stops on missing `numpy`, and the offline E2E gate must run in hosted CI. No runtime dependency bypass was introduced.
+
+## 2026-09-29 PR G corrective environment verification
+
+- Requirements installation remains blocked at the pinned GitHub `peft` clone by proxy HTTP 403. Dependency-light reduction and focused SQL/ES tests pass, and the two new PR G E2E tests pass directly; the complete hosted E2E count/result remains required before PR G is marked complete.

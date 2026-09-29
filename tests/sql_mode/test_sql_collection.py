@@ -1,4 +1,5 @@
 import json
+import math
 import sqlite3
 
 import pytest
@@ -45,11 +46,50 @@ def test_sql_incidental_order_grouping_duplicates_and_changed_payload(tmp_path):
     grouped_query = SQLCollectionQuery("SELECT id,text,revision,day,rank FROM source", (), "id", ("text",), group_fields=("day",))
     grouped = source.snapshot(collection_id="daily", query=grouped_query)
     assert len(grouped) == 2 and all(m.provenance["group"] for m in grouped)
+    assert grouped[0].provenance["group"][0]["field"] == "day"
     adapter.conn.execute("UPDATE source SET text='different' WHERE id=1"); adapter.conn.commit()
     assert source.snapshot(collection_id="all", query=query())[0].fingerprint != asc.fingerprint
     adapter.conn.execute("INSERT INTO source VALUES (1,'duplicate',9,'2026-09-25',1)"); adapter.conn.commit()
     with pytest.raises(ValueError, match="duplicate"):
         source.snapshot(collection_id="all", query=query())
+    adapter.close()
+
+
+def test_sql_numeric_semantic_order_and_reserved_group_field_names(tmp_path):
+    path = tmp_path / "db.sqlite"
+    connection = sqlite3.connect(path)
+    connection.execute("CREATE TABLE source (id INTEGER, text TEXT, rank INTEGER, created_at TEXT, timestamp TEXT)")
+    connection.executemany(
+        "INSERT INTO source VALUES (?, ?, ?, ?, ?)",
+        [(1, "ten", 10, "2026-09-27", "morning"), (2, "two", 2, "2026-09-27", "morning")],
+    )
+    connection.commit(); connection.close()
+    adapter = SQLiteAdapter({"server": str(path)}).connect()
+    source = SQLCollectionAdapter(adapter, source_alias="safe")
+    spec = SQLCollectionQuery(
+        "SELECT id,text,rank,created_at,timestamp FROM source ORDER BY id DESC",
+        (), "id", ("text", "rank"), group_fields=("created_at", "timestamp"), order_fields=("rank",),
+    )
+    first = source.snapshot(collection_id="daily", query=spec)[0]
+    assert [unit.payload["rank"] for unit in first.units] == [2, 10]
+    assert list(first.provenance["group"]) == [
+        {"field": "created_at", "value": "2026-09-27"},
+        {"field": "timestamp", "value": "morning"},
+    ]
+    reverse = SQLCollectionQuery(
+        "SELECT id,text,rank,created_at,timestamp FROM source ORDER BY id ASC",
+        (), "id", ("text", "rank"), group_fields=("created_at", "timestamp"), order_fields=("rank",),
+    )
+    assert source.snapshot(collection_id="daily", query=reverse)[0].fingerprint == first.fingerprint
+    adapter.close()
+
+
+def test_sql_stable_id_rejects_non_finite_float(tmp_path):
+    path = tmp_path / "db.sqlite"; setup_db(path)
+    adapter = SQLiteAdapter({"server": str(path)}).connect()
+    with pytest.raises(ValueError, match="NaN or Infinity"):
+        from czjLLM.sql_mode.collection import _stable_scalar
+        _stable_scalar(math.inf, "SQL stable member ID")
     adapter.close()
 
 

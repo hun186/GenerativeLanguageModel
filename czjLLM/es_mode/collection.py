@@ -2,19 +2,35 @@
 
 from __future__ import annotations
 
+import math
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
 from czjLLM.es_mode.adapters.value_helpers import extract_by_path
 from czjLLM.reduction import (
-    AggregateOutput, CollectionManifest, LogicalWorkUnit, normalize_collection_window,
+    AggregateOutput, CollectionManifest, LogicalWorkUnit, canonical_group_entries,
+    deterministic_scalar_order_key, normalize_collection_window,
 )
 from czjLLM.reduction.artifacts import normalized_fingerprint
 
 
-def _identity(value: Any) -> str:
-    if value is None or str(value).strip() == "":
-        raise ValueError("Elasticsearch stable member identity must not be empty")
-    return str(value)
+def _identity(value: Any, *, default_es_id: bool) -> str:
+    if default_es_id:
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("Elasticsearch _id must be a non-empty string")
+        return value
+    if isinstance(value, bool):
+        return f"bool:{str(value).lower()}"
+    if isinstance(value, int):
+        return f"int:{value}"
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise ValueError("Elasticsearch stable member identity must be finite")
+        return f"float:{value.hex()}"
+    if isinstance(value, str) and value:
+        return f"str:{value}"
+    raise ValueError(
+        "Elasticsearch custom stable member identity must be a non-empty scalar"
+    )
 
 
 class ElasticsearchCollectionAdapter:
@@ -38,12 +54,15 @@ class ElasticsearchCollectionAdapter:
             from czjLLM.es_mode.adapters.elasticsearch_adapter import helpers
             scan = helpers.scan
         hits = list(scan(client=self.adapter.es, index=index, query=dict(query)))
-        grouped: dict[tuple[Any, ...], list[tuple[tuple[str, ...], LogicalWorkUnit]]] = {}
+        grouped: dict[
+            tuple[Any, ...],
+            list[tuple[tuple[tuple[int, Any], ...], LogicalWorkUnit]],
+        ] = {}
         for hit in hits:
             source = hit.get("_source") or {}
             def get(path: str) -> Any:
                 return hit.get(path) if path.startswith("_") else extract_by_path(source, path)
-            logical_id = _identity(get(identity_path))
+            logical_id = _identity(get(identity_path), default_es_id=identity_path == "_id")
             payload = {path: get(path) for path in payload_paths}
             provenance: dict[str, Any] = {"source_alias": self.source_alias}
             if version_path:
@@ -56,17 +75,19 @@ class ElasticsearchCollectionAdapter:
             group = tuple(get(path) for path in group_paths)
             if group_paths and any(value is None for value in group):
                 raise ValueError("Elasticsearch group paths must not contain null")
-            ordering = tuple(repr(get(path)) for path in order_paths) + (logical_id,)
+            ordering = tuple(
+                deterministic_scalar_order_key(get(path)) for path in order_paths
+            ) + ((4, logical_id),)
             grouped.setdefault(group, []).append((ordering, unit))
         if not group_paths:
             grouped.setdefault((), [])
         result = []
         for values, entries in grouped.items():
             entries.sort(key=lambda item: item[0])
-            group = dict(zip(group_paths, values))
+            group = canonical_group_entries(group_paths, values)
             provenance: dict[str, Any] = {"source_alias": self.source_alias}
             cid = collection_id
-            if group:
+            if group_paths:
                 provenance["group"] = group
                 cid = f"{collection_id}:group:{normalized_fingerprint({'group': group})}"
             if window is not None:
@@ -87,5 +108,25 @@ class ElasticsearchAggregateSink:
         return self.client.update(
             index=self.index,
             id=output.aggregate_output_id,
-            body={"doc": document, "doc_as_upsert": True},
+            body={
+                "scripted_upsert": True,
+                "script": {
+                    "lang": "painless",
+                    "source": (
+                        "if (ctx._source.containsKey('aggregate_output_id')) { "
+                        "if (ctx._source.collection_id != params.collection_id || "
+                        "ctx._source.manifest_fingerprint != params.manifest_fingerprint || "
+                        "ctx._source.output_key != params.output_key) { "
+                        "throw new IllegalArgumentException('aggregate lineage conflict'); } } "
+                        "ctx._source.putAll(params.document);"
+                    ),
+                    "params": {
+                        "collection_id": output.collection_id,
+                        "manifest_fingerprint": output.manifest_fingerprint,
+                        "output_key": output.output_key,
+                        "document": document,
+                    },
+                },
+                "upsert": {},
+            },
         )

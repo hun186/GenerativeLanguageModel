@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import json
+import math
 import sqlite3
 from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
 
 from czjLLM.reduction import (
-    AggregateOutput, CollectionManifest, LogicalWorkUnit, normalize_collection_window,
+    AggregateOutput, CollectionManifest, LogicalWorkUnit, canonical_group_entries,
+    deterministic_scalar_order_key, normalize_collection_window,
 )
 from czjLLM.reduction.artifacts import normalized_fingerprint
 
@@ -21,6 +23,8 @@ def _stable_scalar(value: Any, label: str) -> str:
     if isinstance(value, int):
         return f"int:{value}"
     if isinstance(value, float):
+        if not math.isfinite(value):
+            raise ValueError(f"{label} must not be NaN or Infinity")
         return f"float:{value.hex()}"
     if isinstance(value, str):
         return f"str:{value}"
@@ -29,8 +33,8 @@ def _stable_scalar(value: Any, label: str) -> str:
     raise ValueError(f"{label} must be a stable SQL scalar")
 
 
-def _group_collection_id(base: str, group: Mapping[str, Any]) -> str:
-    return f"{base}:group:{normalized_fingerprint({'group': dict(group)})}"
+def _group_collection_id(base: str, group: Sequence[Mapping[str, Any]]) -> str:
+    return f"{base}:group:{normalized_fingerprint({'group': list(group)})}"
 
 
 @dataclass(frozen=True)
@@ -95,11 +99,16 @@ class SQLCollectionAdapter:
 
         manifests = []
         for group_key, entries in groups.items():
-            entries.sort(key=lambda item: tuple(_stable_scalar(v, "order value") for v in item[0]))
-            group = dict(zip(query.group_fields, group_key))
+            entries.sort(
+                key=lambda item: tuple(
+                    deterministic_scalar_order_key(value) for value in item[0][:-1]
+                )
+                + ((4, item[0][-1]),)
+            )
+            group = canonical_group_entries(query.group_fields, group_key)
             provenance: dict[str, Any] = {"source_alias": self.source_alias}
             current_id = collection_id
-            if group:
+            if query.group_fields:
                 provenance["group"] = group
                 current_id = _group_collection_id(collection_id, group)
             if window is not None:
