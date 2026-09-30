@@ -34,11 +34,20 @@ def test_mapping_without_enabled_is_valid_but_inactive():
         ("concat_text", "concat_text"),
         ("json-list-concat", "concat_json_list"),
         ("legacy deep merge", "legacy_json_deep_merge"),
+        ("deduplicate", "dedup"),
+        ("group-by", "group"),
+        ("union", "entity_union"),
+        ("rank", "rank"),
+        ("top-k", "top_k"),
+        ("composite", "composite"),
     ],
 )
 def test_enabled_profiles_and_aliases_are_canonicalized(value, canonical):
+    required_options = {"group": {"by": ["id"]}, "rank": {"score_path": "score"},
+                        "top_k": {"k": 1}, "composite": {"steps": [{"profile": "dedup"}]}}
     config = parse_reduction_config(
-        {"enabled": True, "profile": value, "controller": "single_pass"}
+        {"enabled": True, "profile": value, "controller": "single_pass",
+         "options": required_options.get(canonical, {})}
     )
 
     assert config.enabled is True
@@ -175,6 +184,55 @@ def test_hierarchical_rejects_json_profile_and_single_pass_rejects_runtime_setti
             "enabled": True, "profile": "concat_json_list", "controller": "fixed_rounds",
             "controller_options": {"rounds": 1}, "runtime": {"round_task": "SUMMARY"},
         })
+
+
+@pytest.mark.parametrize(("profile", "options"), [
+    ("dedup", {"key_paths": ["id", "source.name"]}),
+    ("group", {"by": ["day", "category"]}),
+    ("entity_union", {"key_paths": ["id"]}),
+    ("rank", {"score_path": "metrics.score", "descending": False}),
+    ("top_k", {"k": 10}),
+])
+def test_pr_h_valid_options_are_normalized(profile, options):
+    config = parse_reduction_config({"enabled": True, "profile": profile, "options": options})
+    assert config.profile == profile
+
+
+@pytest.mark.parametrize(("profile", "options"), [
+    ("group", {}), ("rank", {}), ("top_k", {}),
+    ("top_k", {"k": True}), ("top_k", {"k": 0}),
+    ("rank", {"score_path": "score", "descending": 1}),
+    ("dedup", {"key_paths": [""]}), ("group", {"by": "day"}),
+    ("dedup", {"extra": True}),
+])
+def test_pr_h_invalid_options_are_rejected(profile, options):
+    with pytest.raises(ReductionConfigError):
+        parse_reduction_config({"enabled": True, "profile": profile, "options": options})
+
+
+def test_composite_schema_nested_unknown_and_future_profiles_rejected():
+    for steps in ([], [{"profile": "composite", "options": {"steps": []}}],
+                  [{"profile": "unknown"}], [{"profile": "semantic_llm"}],
+                  [{"profile": "structured_relational"}], [{"options": {}}],
+                  [{"profile": "dedup", "unexpected": 1}], ["dedup"]):
+        with pytest.raises(ReductionConfigError):
+            parse_reduction_config({"enabled": True, "profile": "composite", "options": {"steps": steps}})
+
+
+def test_composite_config_is_deeply_immutable_and_detached():
+    raw = {"enabled": True, "profile": "composite", "options": {"steps": [
+        {"profile": "top_k", "options": {"k": 1}}
+    ]}}
+    config = parse_reduction_config(raw)
+    raw["options"]["steps"][0]["options"]["k"] = 999
+    assert config.options["steps"][0]["options"]["k"] == 1
+    with pytest.raises(TypeError): config.options["steps"][0]["options"]["k"] = 2
+
+
+def test_pr_h_profiles_remain_single_pass_only():
+    with pytest.raises(ReductionConfigError, match="concat_text only"):
+        parse_reduction_config({"enabled": True, "profile": "dedup", "controller": "fixed_rounds",
+                                "controller_options": {"rounds": 1}, "runtime": {"round_task": "x"}})
     with pytest.raises(ReductionConfigError, match="absent or empty for single_pass"):
         parse_reduction_config({
             "enabled": True, "profile": "concat_text", "controller": "single_pass",

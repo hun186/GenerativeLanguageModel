@@ -188,3 +188,10 @@
 - ES scripted aggregate upsert now treats only Elasticsearch's `ctx.op == 'create'` as document creation. Every existing deterministic `_id` must contain and exactly match aggregate output ID, aggregate contract version, collection ID, manifest fingerprint, and output key before payload/provenance replacement.
 - Missing, null, or incompatible existing lineage raises an aggregate-lineage conflict at the atomic update boundary; missing `aggregate_output_id` is never repaired or mistaken for creation.
 - Verification: reduction 178 passed; focused SQL/ES 15 passed; focused PR G E2E 2 passed; compileall and diff check passed. Full hosted 15-case E2E remains required before PR G completion.
+
+### 2026-09-30 Reduction Engine PR H deterministic composite reducers
+
+- Added strict, exact, source-independent dedup/group/entity-union/rank/top-k reducers and a non-recursive sequential composite, with canonical JSON validation, mapping-only dotted paths, stable ordering rules, bounded metrics/audit, and central fresh configured construction.
+- Extended strict deeply immutable single-pass configuration, normal registry discovery/aliases, focused reducer/config/registry/engine tests, and one manifest-to-composite-to-idempotent-SQLite E2E. PR G is confirmed merged/accepted; PR I/J/K/L remain unimplemented.
+- Verification results are recorded after final local runs below; hosted 16-case acceptance remains required before checking off PR H.
+- Local verification: `tests/reduction` passed 228 tests; focused collection aggregate E2E passed 3 tests including PR H. Full E2E collection remains locally blocked by missing PyYAML after the required requirements install failed at the proxy-blocked pinned `peft` clone. Compile/diff results follow in the final task record.

@@ -9,7 +9,10 @@ from types import SimpleNamespace
 import pytest
 
 from czjLLM.es_mode.collection import ElasticsearchAggregateSink, ElasticsearchCollectionAdapter
-from czjLLM.reduction import AggregateOutput, CollectionManifestStore
+from czjLLM.reduction import (
+    AggregateOutput, CollectionManifest, CollectionManifestStore, LogicalWorkUnit,
+    parse_reduction_config, reduce_single_pass,
+)
 from czjLLM.sql_mode.adapters.sqlite_adapter import SQLiteAdapter
 from czjLLM.sql_mode.collection import SQLCollectionAdapter, SQLCollectionQuery, SQLiteAggregateSink
 
@@ -102,3 +105,27 @@ def test_es_collection_snapshot_atomic_aggregate_retry_and_conflict():
     transport.documents[("aggregates", output.aggregate_output_id)] = incompatible
     with pytest.raises(ValueError, match="lineage conflict"):
         sink.upsert(output)
+
+
+def test_deterministic_composite_manifest_to_idempotent_sqlite_aggregate(tmp_path):
+    manifest = CollectionManifest("ranked-entities", (
+        LogicalWorkUnit("a-first", {"id": "a", "score": 2}),
+        LogicalWorkUnit("a-duplicate", {"id": "a", "score": 99}),
+        LogicalWorkUnit("b", {"id": "b", "score": 10}),
+        LogicalWorkUnit("c", {"id": "c", "score": 10}),
+    ))
+    config = parse_reduction_config({"enabled": True, "profile": "composite", "options": {"steps": [
+        {"profile": "dedup", "options": {"key_paths": ["id"]}},
+        {"profile": "rank", "options": {"score_path": "score"}},
+        {"profile": "top_k", "options": {"k": 2}},
+    ]}})
+    payloads = [unit.to_mapping()["payload"] for unit in manifest.units]
+    first = reduce_single_pass(payloads, config); retry = reduce_single_pass(payloads, config)
+    assert first.payload == retry.payload == [{"id": "b", "score": 10}, {"id": "c", "score": 10}]
+
+    connection = sqlite3.connect(tmp_path / "composite.sqlite")
+    sink = SQLiteAggregateSink(connection); sink.ensure_schema()
+    output = AggregateOutput(manifest, "top-two", first.payload)
+    sink.upsert(output); sink.upsert(AggregateOutput(manifest, "top-two", retry.payload))
+    assert connection.execute("SELECT COUNT(*) FROM collection_aggregates").fetchone() == (1,)
+    connection.close()

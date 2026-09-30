@@ -10,6 +10,8 @@ from czjLLM.reduction.reducers import (
     ConcatJsonListReducer,
     ConcatTextReducer,
     LegacyJsonDeepMergeReducer,
+    CompositeReducer, DedupReducer, EntityUnionReducer, GroupReducer, RankReducer,
+    TopKReducer,
 )
 
 
@@ -62,6 +64,12 @@ def register_builtin_reducers(registry: ReducerRegistry) -> None:
         ConcatJsonListReducer(),
         aliases=("json_list_concat",),
     )
+    registry.register("dedup", DedupReducer(), aliases=("deduplicate", "exact_dedup"))
+    registry.register("group", GroupReducer(), aliases=("group_by",))
+    registry.register("entity_union", EntityUnionReducer(), aliases=("union", "exact_union"))
+    registry.register("rank", RankReducer())
+    registry.register("top_k", TopKReducer(), aliases=("topk", "top-k"))
+    registry.register("composite", CompositeReducer())
     registry.register(
         "legacy_json_deep_merge",
         LegacyJsonDeepMergeReducer(),

@@ -25,8 +25,10 @@ _SUPPORTED_CONTROLLERS = frozenset(
     {"single_pass", "fixed_rounds", "adaptive_hierarchical"}
 )
 _SUPPORTED_PROFILES = frozenset(
-    {"concat_text", "concat_json_list", "legacy_json_deep_merge"}
+    {"concat_text", "concat_json_list", "legacy_json_deep_merge", "dedup",
+     "group", "entity_union", "rank", "top_k", "composite"}
 )
+_COMPOSITE_STEP_PROFILES = _SUPPORTED_PROFILES - {"composite"}
 _DEEP_MERGE_OPTION_KEYS = frozenset(
     {"conflict_policy", "dedup_lists", "audit_enabled", "max_audit_samples"}
 )
@@ -76,7 +78,14 @@ def _validate_options(profile: Optional[str], raw: Any) -> Mapping[str, Any]:
         raise ReductionConfigError("reduction.options must be a mapping")
 
     options = dict(raw)
-    allowed = _DEEP_MERGE_OPTION_KEYS if profile == "legacy_json_deep_merge" else frozenset()
+    allowed_by_profile = {
+        "legacy_json_deep_merge": _DEEP_MERGE_OPTION_KEYS,
+        "dedup": frozenset({"key_paths"}), "group": frozenset({"by"}),
+        "entity_union": frozenset({"key_paths"}),
+        "rank": frozenset({"score_path", "descending"}),
+        "top_k": frozenset({"k"}), "composite": frozenset({"steps"}),
+    }
+    allowed = allowed_by_profile.get(profile, frozenset())
     _unexpected_keys(options, allowed, "reduction option")
 
     if "conflict_policy" in options:
@@ -95,6 +104,55 @@ def _validate_options(profile: Optional[str], raw: Any) -> Mapping[str, Any]:
             raise ReductionConfigError(
                 "reduction.options.max_audit_samples must be a non-negative integer"
             )
+    def paths(name: str, required: bool = False) -> tuple[str, ...]:
+        value = options.get(name)
+        if value is None and not required:
+            return ()
+        if not isinstance(value, (list, tuple)) or not value:
+            raise ReductionConfigError(f"reduction.options.{name} must be a non-empty sequence")
+        result = []
+        for path in value:
+            if not isinstance(path, str) or not path or any(not part for part in path.split(".")):
+                raise ReductionConfigError(f"reduction.options.{name} contains an invalid path")
+            result.append(path)
+        return tuple(result)
+
+    if profile in {"dedup", "entity_union"} and "key_paths" in options:
+        options["key_paths"] = paths("key_paths")
+    if profile == "group":
+        options["by"] = paths("by", required=True)
+    if profile == "rank":
+        score_path = options.get("score_path")
+        if not isinstance(score_path, str) or not score_path or any(not p for p in score_path.split(".")):
+            raise ReductionConfigError("reduction.options.score_path is required and must be a valid path")
+        if "descending" in options and type(options["descending"]) is not bool:
+            raise ReductionConfigError("reduction.options.descending must be a boolean")
+    if profile == "top_k":
+        if type(options.get("k")) is not int or options["k"] <= 0:
+            raise ReductionConfigError("reduction.options.k must be a positive integer")
+    if profile == "composite":
+        steps = options.get("steps")
+        if not isinstance(steps, (list, tuple)) or not steps:
+            raise ReductionConfigError("reduction.options.steps must be a non-empty sequence")
+        normalized = []
+        registry = get_default_registry()
+        for index, step in enumerate(steps):
+            if not isinstance(step, Mapping):
+                raise ReductionConfigError(f"composite step {index} must be a mapping")
+            _unexpected_keys(step, frozenset({"profile", "options"}), f"composite step {index}")
+            if "profile" not in step:
+                raise ReductionConfigError(f"composite step {index} requires profile")
+            name = step["profile"]
+            if not isinstance(name, str) or not name.strip():
+                raise ReductionConfigError(f"composite step {index} profile must be a non-empty string")
+            canonical = registry.normalize_name(name)
+            if canonical == "composite":
+                raise ReductionConfigError("nested composite reducers are not supported")
+            if canonical not in _COMPOSITE_STEP_PROFILES or not registry.has(canonical):
+                raise ReductionConfigError(f"Unknown composite step profile: {name!r}")
+            step_options = _validate_options(canonical, step.get("options", {}))
+            normalized.append(MappingProxyType({"profile": canonical, "options": step_options}))
+        options["steps"] = tuple(normalized)
     return MappingProxyType(options)
 
 

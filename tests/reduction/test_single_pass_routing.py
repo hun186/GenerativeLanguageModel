@@ -243,3 +243,21 @@ def test_deep_merge_explicit_options_map_to_reducer():
     assert longer.payload["title"] == "a much longer title"
     assert non_empty.payload["title"] == "right"
     assert no_dedup.audit["counts"]["list_dedup_removed"] == 0
+
+
+def test_configured_reducers_do_not_leak_between_calls():
+    items = [{"id": n, "score": n} for n in range(5)]
+    def run(k):
+        return reduce_single_pass(items, parse_reduction_config(
+            {"enabled": True, "profile": "top_k", "options": {"k": k}})).payload
+    assert run(1) == items[:1]
+    assert run(3) == items[:3]
+
+    def composite(k, descending):
+        return reduce_single_pass(items, parse_reduction_config({"enabled": True,
+            "profile": "composite", "options": {"steps": [
+                {"profile": "rank", "options": {"score_path": "score", "descending": descending}},
+                {"profile": "top_k", "options": {"k": k}},
+            ]}})).payload
+    assert composite(1, True) == [items[-1]]
+    assert composite(2, False) == items[:2]

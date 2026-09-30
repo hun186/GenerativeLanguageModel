@@ -101,3 +101,8 @@
 ## 2026-09-29 final PR G corrective environment verification
 
 - Requirements installation remains blocked by proxy HTTP 403 at pinned `peft`. All dependency-light required suites and focused PR G E2E pass locally; authoritative full 15-case E2E still requires hosted CI.
+
+## 2026-09-30 PR H environment and hosted acceptance
+
+- Required dependency installation still fails because the configured proxy returns HTTP 403 for the pinned GitHub `peft` clone. Installed dependency-light tests remain usable; no dependency bypass was introduced.
+- PR H must remain pending until hosted CI confirms the expanded 16-case offline E2E gate (the prior 15 plus one deterministic composite case).

@@ -41,7 +41,7 @@
   - [x] PR D2 — production text-round runtime adapter + hierarchical routing/config
 - [x] PR E — Shared Execution Budget（process-local root ownership、leaf-only leases、row executor cap）
 - [x] PR F — Logical Work Unit + immutable Collection Manifest
-- [ ] PR G — SQL/ES Collection Adapters + idempotent aggregate upsert（implementation and local focused tests complete; hosted offline E2E acceptance pending）
+- [x] PR G — SQL/ES Collection Adapters + idempotent aggregate upsert
 - [ ] PR H — Deterministic composite reducers
 - [ ] PR I — Semantic reducer
 - [ ] PR J — Structured relational reducer
@@ -50,5 +50,5 @@
 
 ## 2026-09-29 PR G hosted acceptance
 
-- [ ] Confirm corrected PR #187 hosted head collects 15 E2E cases (original 13 plus two PR G cases) and passes the full offline E2E workflow; only then mark PR G complete.
-- [ ] PR H remains deliberately unstarted.
+- [x] PR #187 hosted head collected and passed all 15 E2E cases.
+- [ ] PR H hosted acceptance: collect and pass 16 E2E cases (previous 15 plus one PR H case) before marking PR H complete.

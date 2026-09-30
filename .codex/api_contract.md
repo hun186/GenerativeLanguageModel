@@ -88,3 +88,10 @@ execution_budget_capacity: 8
 ## 2026-09-29 ES existing-document lineage guard
 
 - Existing aggregate documents must contain identical `aggregate_output_id`, `aggregate_output_contract_version`, `collection_id`, `manifest_fingerprint`, and `output_key`. Missing, null, or different values are conflicts; only `ctx.op == 'create'` bypasses existing-lineage comparison.
+
+## 2026-09-30 PR H deterministic reducer contract
+
+- New v1 canonical profiles and aliases: `dedup` (`deduplicate`, `exact_dedup`), `group` (`group_by`), `entity_union` (`union`, `exact_union`), `rank`, `top_k` (`topk`, `top-k`), and `composite`.
+- Options are strict: dedup/entity union accept optional non-empty `key_paths`; group requires non-empty `by`; rank requires `score_path` and optional boolean `descending` (default true); top-k requires positive integer `k`; composite requires non-empty mapping steps shaped exactly as `{profile, options?}`.
+- Group payload is an ordered list of `{key: [{path, value}, ...], items: [...]}`. Equality is canonical exact JSON equality; rank accepts finite non-boolean numbers and preserves stable input order for ties.
+- Composite allows local profiles only, rejects recursive composite, and is single-pass-only. Parsed paths and steps are recursively detached into tuples and read-only mappings.
