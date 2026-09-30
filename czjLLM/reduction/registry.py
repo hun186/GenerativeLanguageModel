@@ -65,9 +65,9 @@ def register_builtin_reducers(registry: ReducerRegistry) -> None:
         aliases=("json_list_concat",),
     )
     registry.register("dedup", DedupReducer(), aliases=("deduplicate", "exact_dedup"))
-    registry.register("group", GroupReducer(), aliases=("group_by",))
+    registry.register("group", GroupReducer._registry_prototype(), aliases=("group_by",))
     registry.register("entity_union", EntityUnionReducer(), aliases=("union", "exact_union"))
-    registry.register("rank", RankReducer())
+    registry.register("rank", RankReducer._registry_prototype())
     registry.register("top_k", TopKReducer(), aliases=("topk", "top-k"))
     registry.register("composite", CompositeReducer())
     registry.register(

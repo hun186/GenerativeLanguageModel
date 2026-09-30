@@ -238,3 +238,14 @@ def test_pr_h_profiles_remain_single_pass_only():
             "enabled": True, "profile": "concat_text", "controller": "single_pass",
             "runtime": {"round_task": "SUMMARY"},
         })
+
+
+@pytest.mark.parametrize(("profile", "options"), [
+    ("dedup", {"key_paths": [" "]}),
+    ("dedup", {"key_paths": [" .a"]}),
+    ("group", {"by": ["a. "]}),
+    ("rank", {"score_path": " "}),
+])
+def test_whitespace_only_path_components_are_rejected(profile, options):
+    with pytest.raises(ReductionConfigError, match="invalid path|valid path"):
+        parse_reduction_config({"enabled": True, "profile": profile, "options": options})

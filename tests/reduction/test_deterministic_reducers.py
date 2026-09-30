@@ -131,6 +131,33 @@ def test_composite_handoff_wraps_strings_and_mappings():
         assert capture.seen == [payload]
 
 
+def test_empty_and_nested_composites_fail_at_core_boundary():
+    with pytest.raises(DeterministicReducerError, match="at least one configured step"):
+        CompositeReducer().reduce([1])
+    configured = CompositeReducer((TopKReducer(1),))
+    with pytest.raises(DeterministicReducerError, match="nested composite"):
+        CompositeReducer((configured,))
+
+
+@pytest.mark.parametrize(
+    "construct",
+    [
+        lambda: DedupReducer((" ",)),
+        lambda: DedupReducer(("a. ",)),
+        lambda: GroupReducer(()),
+        lambda: GroupReducer(("a. ",)),
+        lambda: EntityUnionReducer((" ",)),
+        lambda: RankReducer(""),
+        lambda: RankReducer("score", descending=1),
+        lambda: TopKReducer(0),
+        lambda: TopKReducer(True),
+    ],
+)
+def test_direct_construction_rejects_malformed_configuration_before_input(construct):
+    with pytest.raises(DeterministicReducerError):
+        construct()
+
+
 def test_deterministic_module_is_source_and_model_independent():
     text = Path("czjLLM/reduction/reducers/deterministic.py").read_text(encoding="utf-8").lower()
     for forbidden in ("sql_mode", "es_mode", "sqliteadapter", "mssqladapter", "elasticsearchadapter", "sqlsink", "essink", "row_merger", "openai", "ollama", "callllmapi", "promptgenerator", "tokenizerwrapper"):

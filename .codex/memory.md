@@ -195,3 +195,9 @@
 - Extended strict deeply immutable single-pass configuration, normal registry discovery/aliases, focused reducer/config/registry/engine tests, and one manifest-to-composite-to-idempotent-SQLite E2E. PR G is confirmed merged/accepted; PR I/J/K/L remain unimplemented.
 - Verification results are recorded after final local runs below; hosted 16-case acceptance remains required before checking off PR H.
 - Local verification: `tests/reduction` passed 228 tests; focused collection aggregate E2E passed 3 tests including PR H. Full E2E collection remains locally blocked by missing PyYAML after the required requirements install failed at the proxy-blocked pinned `peft` clone. Compile/diff results follow in the final task record.
+
+### 2026-09-30 PR #188 public reducer fail-closed corrective
+
+- Public PR H parameterized reducers now validate paths/types at construction independent of input cardinality. The config boundary reuses the same path grammar, which rejects empty and wholly whitespace dotted components without stripping them.
+- Empty composite execution and direct nested composites fail explicitly in core. Internal group/rank/composite registry prototypes preserve discovery metadata but fail closed if executed unconfigured. PR I/J/K/L remain unimplemented.
+- Verification: `tests/reduction` 242 passed; focused collection aggregate E2E 3 passed; compileall and `git diff --check` passed. Hosted 16-case E2E remains required on the corrected PR #188 head.

@@ -52,3 +52,4 @@
 
 - [x] PR #187 hosted head collected and passed all 15 E2E cases.
 - [ ] PR H hosted acceptance: collect and pass 16 E2E cases (previous 15 plus one PR H case) before marking PR H complete.
+  - [x] PR #188 public reducer fail-closed corrective implemented and locally verified.

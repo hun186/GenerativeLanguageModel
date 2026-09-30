@@ -12,6 +12,10 @@ from czjLLM.reduction.controllers import (
     ReductionController,
 )
 from czjLLM.reduction.registry import ReducerRegistry, get_default_registry
+from czjLLM.reduction.reducers.deterministic import (
+    DeterministicReducerError,
+    validate_path,
+)
 
 
 class ReductionConfigError(ValueError):
@@ -112,7 +116,9 @@ def _validate_options(profile: Optional[str], raw: Any) -> Mapping[str, Any]:
             raise ReductionConfigError(f"reduction.options.{name} must be a non-empty sequence")
         result = []
         for path in value:
-            if not isinstance(path, str) or not path or any(not part for part in path.split(".")):
+            try:
+                validate_path(path, f"reduction.options.{name}")
+            except DeterministicReducerError:
                 raise ReductionConfigError(f"reduction.options.{name} contains an invalid path")
             result.append(path)
         return tuple(result)
@@ -123,7 +129,9 @@ def _validate_options(profile: Optional[str], raw: Any) -> Mapping[str, Any]:
         options["by"] = paths("by", required=True)
     if profile == "rank":
         score_path = options.get("score_path")
-        if not isinstance(score_path, str) or not score_path or any(not p for p in score_path.split(".")):
+        try:
+            validate_path(score_path, "reduction.options.score_path")
+        except DeterministicReducerError:
             raise ReductionConfigError("reduction.options.score_path is required and must be a valid path")
         if "descending" in options and type(options["descending"]) is not bool:
             raise ReductionConfigError("reduction.options.descending must be a boolean")

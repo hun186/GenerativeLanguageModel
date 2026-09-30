@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import math
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Iterable, Optional, Sequence
 
 from czjLLM.reduction.contracts import Reducer, ReducerResult
@@ -43,9 +43,22 @@ def canonical_json(value: Any) -> str:
 
 
 def validate_path(path: Any, label: str = "path") -> str:
-    if not isinstance(path, str) or not path or any(not part for part in path.split(".")):
+    if (
+        not isinstance(path, str)
+        or not path
+        or any(not part or not part.strip() for part in path.split("."))
+    ):
         raise DeterministicReducerError(f"{label} must be a non-empty dotted mapping path")
     return path
+
+
+def _validate_paths(paths: Any, label: str, *, required: bool = False) -> tuple[str, ...]:
+    if isinstance(paths, (str, bytes)) or not isinstance(paths, (list, tuple)):
+        raise DeterministicReducerError(f"{label} must be a sequence of dotted mapping paths")
+    normalized = tuple(validate_path(path, label) for path in paths)
+    if required and not normalized:
+        raise DeterministicReducerError(f"{label} must contain at least one path")
+    return normalized
 
 
 def get_path(value: Any, path: str) -> Any:
@@ -75,6 +88,9 @@ class DedupReducer:
     requires_stable_order: bool = True
     preserves_order: bool = True
 
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "key_paths", _validate_paths(self.key_paths, "key_paths"))
+
     def reduce(self, items: Iterable[Any], context: Optional[Mapping[str, Any]] = None) -> ReducerResult:
         del context
         prepared, output, seen = list(items), [], set()
@@ -94,6 +110,18 @@ class GroupReducer:
     contract_version: str = "1"
     requires_stable_order: bool = True
     preserves_order: bool = True
+    _allow_unconfigured: bool = field(default=False, repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self,
+            "by",
+            _validate_paths(self.by, "by", required=not self._allow_unconfigured),
+        )
+
+    @classmethod
+    def _registry_prototype(cls) -> "GroupReducer":
+        return cls(_allow_unconfigured=True)
 
     def reduce(self, items: Iterable[Any], context: Optional[Mapping[str, Any]] = None) -> ReducerResult:
         del context
@@ -119,6 +147,9 @@ class EntityUnionReducer:
     requires_stable_order: bool = True
     preserves_order: bool = True
 
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "key_paths", _validate_paths(self.key_paths, "key_paths"))
+
     def reduce(self, items: Iterable[Any], context: Optional[Mapping[str, Any]] = None) -> ReducerResult:
         del context
         prepared, entities = list(items), []
@@ -141,9 +172,21 @@ class RankReducer:
     contract_version: str = "1"
     requires_stable_order: bool = True
     preserves_order: bool = False
+    _allow_unconfigured: bool = field(default=False, repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        if not self._allow_unconfigured:
+            validate_path(self.score_path, "score_path")
+        if type(self.descending) is not bool:
+            raise DeterministicReducerError("descending must be a boolean")
+
+    @classmethod
+    def _registry_prototype(cls) -> "RankReducer":
+        return cls(_allow_unconfigured=True)
 
     def reduce(self, items: Iterable[Any], context: Optional[Mapping[str, Any]] = None) -> ReducerResult:
         del context
+        validate_path(self.score_path, "score_path")
         prepared = list(items)
         scored = []
         for item in prepared:
@@ -166,10 +209,12 @@ class TopKReducer:
     requires_stable_order: bool = True
     preserves_order: bool = True
 
-    def reduce(self, items: Iterable[Any], context: Optional[Mapping[str, Any]] = None) -> ReducerResult:
-        del context
+    def __post_init__(self) -> None:
         if type(self.k) is not int or self.k <= 0:
             raise DeterministicReducerError("top_k k must be a positive integer")
+
+    def reduce(self, items: Iterable[Any], context: Optional[Mapping[str, Any]] = None) -> ReducerResult:
+        del context
         prepared = list(items); output = prepared[:self.k]
         return ReducerResult(output, self.profile, self.contract_version, len(output) != len(prepared),
                              metrics={"input_count": len(prepared), "output_count": len(output), "dropped_count": len(prepared) - len(output), "k": self.k})
@@ -180,11 +225,19 @@ class CompositeReducer:
     contract_version = "1"
 
     def __init__(self, steps: Sequence[Reducer] = ()) -> None:
+        if isinstance(steps, (str, bytes)) or not isinstance(steps, (list, tuple)):
+            raise DeterministicReducerError("composite steps must be a sequence of reducers")
         self.steps = tuple(steps)
+        if any(getattr(step, "profile", None) == self.profile for step in self.steps):
+            raise DeterministicReducerError("nested composite reducers are not supported")
+        if any(not isinstance(getattr(step, "profile", None), str) for step in self.steps):
+            raise DeterministicReducerError("composite steps must be reducers with profiles")
         self.requires_stable_order = any(step.requires_stable_order for step in self.steps)
         self.preserves_order = all(step.preserves_order for step in self.steps)
 
     def reduce(self, items: Iterable[Any], context: Optional[Mapping[str, Any]] = None) -> ReducerResult:
+        if not self.steps:
+            raise DeterministicReducerError("composite requires at least one configured step")
         current = list(items); input_count = len(current); warnings = []; audit = []; changed = False; payload: Any = current
         for index, step in enumerate(self.steps):
             result = step.reduce(current, context=context)
