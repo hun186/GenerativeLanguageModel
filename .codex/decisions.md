@@ -117,3 +117,11 @@
 ## 2026-09-29 ES create detection corrective
 
 - Application-field presence is not a creation signal. Scripted upsert branches on Elasticsearch's `ctx.op == 'create'`; every pre-existing deterministic ID, including manually indexed or legacy incomplete documents, must pass full lineage validation and is never silently repaired.
+
+## 2026-09-30 Reduction Engine PR H
+
+- Deterministic means strict JSON validation and canonical sorted-key JSON equality, never fuzzy/case-folded/LLM/embedding semantics. Missing paths and malformed entities/scores fail rather than being guessed or discarded.
+- First occurrence is authoritative for exact dedup and entity union. Ranking uses Python's stable numeric sort without payload-hash tie breakers. Composite audit contains bounded per-step metadata, never intermediate payloads.
+- Configured reducers are fresh instances built centrally; registry entries remain discovery/default metadata and are never mutated. PR I/J/K/L remain unimplemented.
+- Public reducer construction is a fail-closed boundary, not merely a convenience behind strict YAML parsing. Registry prototypes are permitted only for discovery and must not execute successfully while unconfigured. Path grammar is shared with config validation and rejects wholly whitespace components without stripping caller keys.
+- Canonical reducer equality normalizes generic mappings and list/tuple containers to detached JSON-native dict/list structures before encoding. Do not require callers to thaw `LogicalWorkUnit.payload`, and do not mutate or replace retained first-occurrence values.

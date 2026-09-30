@@ -188,3 +188,22 @@
 - ES scripted aggregate upsert now treats only Elasticsearch's `ctx.op == 'create'` as document creation. Every existing deterministic `_id` must contain and exactly match aggregate output ID, aggregate contract version, collection ID, manifest fingerprint, and output key before payload/provenance replacement.
 - Missing, null, or incompatible existing lineage raises an aggregate-lineage conflict at the atomic update boundary; missing `aggregate_output_id` is never repaired or mistaken for creation.
 - Verification: reduction 178 passed; focused SQL/ES 15 passed; focused PR G E2E 2 passed; compileall and diff check passed. Full hosted 15-case E2E remains required before PR G completion.
+
+### 2026-09-30 Reduction Engine PR H deterministic composite reducers
+
+- Added strict, exact, source-independent dedup/group/entity-union/rank/top-k reducers and a non-recursive sequential composite, with canonical JSON validation, mapping-only dotted paths, stable ordering rules, bounded metrics/audit, and central fresh configured construction.
+- Extended strict deeply immutable single-pass configuration, normal registry discovery/aliases, focused reducer/config/registry/engine tests, and one manifest-to-composite-to-idempotent-SQLite E2E. PR G is confirmed merged/accepted; PR I/J/K/L remain unimplemented.
+- Verification results are recorded after final local runs below; hosted 16-case acceptance remains required before checking off PR H.
+- Local verification: `tests/reduction` passed 228 tests; focused collection aggregate E2E passed 3 tests including PR H. Full E2E collection remains locally blocked by missing PyYAML after the required requirements install failed at the proxy-blocked pinned `peft` clone. Compile/diff results follow in the final task record.
+
+### 2026-09-30 PR #188 public reducer fail-closed corrective
+
+- Public PR H parameterized reducers now validate paths/types at construction independent of input cardinality. The config boundary reuses the same path grammar, which rejects empty and wholly whitespace dotted components without stripping them.
+- Empty composite execution and direct nested composites fail explicitly in core. Internal group/rank/composite registry prototypes preserve discovery metadata but fail closed if executed unconfigured. PR I/J/K/L remain unimplemented.
+- Verification: `tests/reduction` 242 passed; focused collection aggregate E2E 3 passed; compileall and `git diff --check` passed. Hosted 16-case E2E remains required on the corrected PR #188 head.
+
+### 2026-09-30 PR #188 immutable payload compatibility corrective
+
+- Canonical deterministic JSON now uses one recursive validate-and-normalize boundary: mappings become detached dicts, list/tuple values become detached lists, scalars remain unchanged, and invalid keys/non-finite/unsupported values raise `DeterministicReducerError`.
+- PR H reducers and the production E2E now consume PR F immutable `LogicalWorkUnit.payload` values directly. Reducer outputs retain existing first-occurrence/reference behavior; Collection Manifest and Aggregate Output contracts remain version 1.
+- Verification: `tests/reduction` 249 passed. Focused E2E/static results are recorded after the final run; hosted 16-case acceptance remains required. PR I/J/K/L remain unimplemented.

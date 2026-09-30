@@ -180,3 +180,11 @@
 ## 2026-09-29 ES aggregate create/update authority
 
 - Elasticsearch update context is authoritative: `ctx.op == 'create'` writes the canonical aggregate document. Any other operation is an existing document and must pass complete five-field lineage validation inside the same Painless scripted update before replacement.
+
+## 2026-09-30 Reduction Engine PR H deterministic composite reducers
+
+- `reduction/reducers/deterministic.py` owns source-independent exact `dedup`, `group`, `entity_union`, numeric `rank`, `top_k`, and sequential `composite` reducers. They consume supplied JSON values only and do not alter collection membership or aggregate identity.
+- Dotted paths traverse mapping keys only. Composite steps hand list/tuple members forward, but wrap every other payload (including mappings and strings) as one item. Nested composites are rejected, and PR H profiles route through `single_pass` only; hierarchical controllers remain `concat_text` only.
+- `reduction/factory.py` is the single configured-reducer construction boundary. Composite ordering metadata derives from its configured steps.
+- PR #188 corrective keeps registry discovery prototypes separate from executable validity: required-option prototypes expose metadata only and fail on execution until configured. Public parameterized reducers validate configuration at construction, while zero-step composite execution and direct composite nesting fail in the reducer core.
+- PR #188 immutable-payload corrective places validation and JSON-native detachment in one reducer-local normalization boundary. Reducers retain original first-occurrence payload references; only equality/fingerprint material is detached, so PR F/PR G contracts and versions remain unchanged.

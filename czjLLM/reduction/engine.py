@@ -6,16 +6,8 @@ from typing import Any, Iterable, Mapping, Optional
 
 from czjLLM.reduction.config import ReductionConfig, ReductionConfigError
 from czjLLM.reduction.contracts import ReducerResult
-from czjLLM.reduction.reducers import LegacyJsonDeepMergeReducer
+from czjLLM.reduction.factory import build_configured_reducer
 from czjLLM.reduction.registry import ReducerRegistry, get_default_registry
-
-
-_COMBINE_DEEP_MERGE_DEFAULTS = {
-    "conflict_policy": "prefer_left",
-    "dedup_lists": True,
-    "audit_enabled": True,
-    "max_audit_samples": 10,
-}
 
 
 def reduce_single_pass(
@@ -35,15 +27,6 @@ def reduce_single_pass(
         raise ReductionConfigError("invalid single-pass reduction configuration")
 
     selected_registry = registry or get_default_registry()
-    registered = selected_registry.get(config.profile)
-    if registered is None:
-        raise ReductionConfigError(f"Unknown reduction profile: {config.profile!r}")
-
-    if config.profile == "legacy_json_deep_merge":
-        options = dict(_COMBINE_DEEP_MERGE_DEFAULTS)
-        options.update(config.options)
-        reducer = LegacyJsonDeepMergeReducer(**options)
-    else:
-        reducer = registered
+    reducer = build_configured_reducer(config.profile, config.options, selected_registry)
 
     return reducer.reduce(items, context=context)

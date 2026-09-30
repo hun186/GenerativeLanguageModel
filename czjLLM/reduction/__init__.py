@@ -9,6 +9,10 @@ from .collection import (
     LogicalWorkUnit,
 )
 from .contracts import Reducer, ReducerResult
+from .reducers import (
+    CompositeReducer, DedupReducer, DeterministicReducerError, EntityUnionReducer,
+    GroupReducer, RankReducer, TopKReducer,
+)
 from .aggregate import (
     AGGREGATE_OUTPUT_CONTRACT_VERSION,
     AggregateOutput,
@@ -42,6 +46,8 @@ __all__ = [
     "ReductionConfigError",
     "ReducerRegistry",
     "ReducerResult",
+    "CompositeReducer", "DedupReducer", "DeterministicReducerError",
+    "EntityUnionReducer", "GroupReducer", "RankReducer", "TopKReducer",
     "AdaptiveHierarchicalController",
     "FixedRoundsController",
     "get_default_registry",
