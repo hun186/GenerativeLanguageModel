@@ -119,7 +119,7 @@ def test_deterministic_composite_manifest_to_idempotent_sqlite_aggregate(tmp_pat
         {"profile": "rank", "options": {"score_path": "score"}},
         {"profile": "top_k", "options": {"k": 2}},
     ]}})
-    payloads = [unit.to_mapping()["payload"] for unit in manifest.units]
+    payloads = [unit.payload for unit in manifest.units]
     first = reduce_single_pass(payloads, config); retry = reduce_single_pass(payloads, config)
     assert first.payload == retry.payload == [{"id": "b", "score": 10}, {"id": "c", "score": 10}]
 

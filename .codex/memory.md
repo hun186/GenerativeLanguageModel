@@ -201,3 +201,9 @@
 - Public PR H parameterized reducers now validate paths/types at construction independent of input cardinality. The config boundary reuses the same path grammar, which rejects empty and wholly whitespace dotted components without stripping them.
 - Empty composite execution and direct nested composites fail explicitly in core. Internal group/rank/composite registry prototypes preserve discovery metadata but fail closed if executed unconfigured. PR I/J/K/L remain unimplemented.
 - Verification: `tests/reduction` 242 passed; focused collection aggregate E2E 3 passed; compileall and `git diff --check` passed. Hosted 16-case E2E remains required on the corrected PR #188 head.
+
+### 2026-09-30 PR #188 immutable payload compatibility corrective
+
+- Canonical deterministic JSON now uses one recursive validate-and-normalize boundary: mappings become detached dicts, list/tuple values become detached lists, scalars remain unchanged, and invalid keys/non-finite/unsupported values raise `DeterministicReducerError`.
+- PR H reducers and the production E2E now consume PR F immutable `LogicalWorkUnit.payload` values directly. Reducer outputs retain existing first-occurrence/reference behavior; Collection Manifest and Aggregate Output contracts remain version 1.
+- Verification: `tests/reduction` 249 passed. Focused E2E/static results are recorded after the final run; hosted 16-case acceptance remains required. PR I/J/K/L remain unimplemented.

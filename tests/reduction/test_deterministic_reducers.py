@@ -1,12 +1,16 @@
 import math
 from pathlib import Path
+from types import MappingProxyType
+from collections.abc import Mapping
 
 import pytest
 
 from czjLLM.reduction import (
     CompositeReducer, DedupReducer, DeterministicReducerError, EntityUnionReducer,
-    GroupReducer, RankReducer, TopKReducer, parse_reduction_config, reduce_single_pass,
+    GroupReducer, LogicalWorkUnit, RankReducer, TopKReducer,
+    parse_reduction_config, reduce_single_pass,
 )
+from czjLLM.reduction.reducers.deterministic import canonical_json
 
 
 def test_dedup_whole_value_is_exact_first_wins_and_ordered():
@@ -162,3 +166,73 @@ def test_deterministic_module_is_source_and_model_independent():
     text = Path("czjLLM/reduction/reducers/deterministic.py").read_text(encoding="utf-8").lower()
     for forbidden in ("sql_mode", "es_mode", "sqliteadapter", "mssqladapter", "elasticsearchadapter", "sqlsink", "essink", "row_merger", "openai", "ollama", "callllmapi", "promptgenerator", "tokenizerwrapper"):
         assert forbidden not in text
+
+
+def test_canonical_json_normalizes_immutable_mappings_tuples_and_key_order():
+    left = MappingProxyType({
+        "b": (MappingProxyType({"nested": 2}),),
+        "a": 1,
+    })
+    right = {"a": 1, "b": [{"nested": 2}]}
+
+    assert canonical_json(left) == canonical_json(right)
+    assert canonical_json({"a": 1, "b": 2}) == canonical_json(
+        MappingProxyType({"b": 2, "a": 1})
+    )
+
+
+@pytest.mark.parametrize(
+    "value",
+    [{1: "bad"}, float("nan"), float("inf"), object()],
+)
+def test_canonical_json_rejects_invalid_values_with_reducer_error(value):
+    with pytest.raises(DeterministicReducerError):
+        canonical_json(value)
+
+
+def test_pr_f_frozen_payloads_work_directly_across_exact_reducers():
+    first = LogicalWorkUnit(
+        "a",
+        {"id": "A", "meta": {"category": "x", "tags": ["one"]}, "score": 2},
+    )
+    duplicate = LogicalWorkUnit(
+        "a-duplicate",
+        {"score": 99, "meta": {"tags": ["one"], "category": "x"}, "id": "A"},
+    )
+    other = LogicalWorkUnit(
+        "b",
+        {"id": "B", "meta": {"category": "y", "tags": ["two"]}, "score": 10},
+    )
+    exact_copy = LogicalWorkUnit(
+        "a-copy",
+        {"id": "A", "meta": {"category": "x", "tags": ["one"]}, "score": 2},
+    )
+    assert isinstance(first.payload, Mapping)
+
+    assert DedupReducer().reduce([first.payload, exact_copy.payload]).payload == [first.payload]
+    assert DedupReducer(("meta",)).reduce(
+        [first.payload, duplicate.payload, other.payload]
+    ).payload == [first.payload, other.payload]
+
+    grouped = GroupReducer(("meta",)).reduce(
+        [first.payload, duplicate.payload, other.payload]
+    )
+    assert grouped.metrics["group_count"] == 2
+    assert grouped.payload[0]["items"] == [first.payload, duplicate.payload]
+
+    unioned = EntityUnionReducer().reduce(
+        [first.payload, exact_copy.payload, other.payload]
+    )
+    assert unioned.payload == [first.payload, other.payload]
+
+
+def test_composite_accepts_pr_f_immutable_payloads_directly():
+    units = (
+        LogicalWorkUnit("a", {"id": "A", "score": 2}),
+        LogicalWorkUnit("a-duplicate", {"id": "A", "score": 99}),
+        LogicalWorkUnit("b", {"id": "B", "score": 10}),
+        LogicalWorkUnit("c", {"id": "C", "score": 10}),
+    )
+    result = reduce_single_pass([unit.payload for unit in units], _config())
+
+    assert result.payload == [units[2].payload, units[3].payload]

@@ -15,7 +15,9 @@ class DeterministicReducerError(ValueError):
     """Raised when deterministic reducer input violates its strict contract."""
 
 
-def validate_json_value(value: Any, path: str = "value") -> Any:
+def normalize_json_value(value: Any, path: str = "value") -> Any:
+    """Validate and detach a value into JSON-native dictionaries and lists."""
+
     if value is None or isinstance(value, (str, bool, int)):
         return value
     if isinstance(value, float):
@@ -23,23 +25,34 @@ def validate_json_value(value: Any, path: str = "value") -> Any:
             raise DeterministicReducerError(f"{path} must not contain NaN/Infinity")
         return value
     if isinstance(value, Mapping):
+        normalized = {}
         for key, member in value.items():
             if not isinstance(key, str):
                 raise DeterministicReducerError(f"{path} mapping keys must be strings")
-            validate_json_value(member, f"{path}.{key}")
-        return value
+            normalized[key] = normalize_json_value(member, f"{path}.{key}")
+        return normalized
     if isinstance(value, (list, tuple)):
-        for index, member in enumerate(value):
-            validate_json_value(member, f"{path}[{index}]")
-        return value
+        return [
+            normalize_json_value(member, f"{path}[{index}]")
+            for index, member in enumerate(value)
+        ]
     raise DeterministicReducerError(
         f"{path} must contain only JSON-compatible values, not {type(value).__name__}"
     )
 
 
+def validate_json_value(value: Any, path: str = "value") -> Any:
+    """Validate a deterministic JSON value without mutating the caller's value."""
+
+    normalize_json_value(value, path)
+    return value
+
+
 def canonical_json(value: Any) -> str:
-    validate_json_value(value)
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    normalized = normalize_json_value(value)
+    return json.dumps(
+        normalized, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    )
 
 
 def validate_path(path: Any, label: str = "path") -> str:

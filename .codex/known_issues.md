@@ -107,3 +107,4 @@
 - Required dependency installation still fails because the configured proxy returns HTTP 403 for the pinned GitHub `peft` clone. Installed dependency-light tests remain usable; no dependency bypass was introduced.
 - PR H must remain pending until hosted CI confirms the expanded 16-case offline E2E gate (the prior 15 plus one deterministic composite case).
 - PR #188 corrective requirements installation was retried and remains blocked locally by the same proxy HTTP 403 on pinned `peft`; dependency-light reduction and focused collection aggregate E2E remain available.
+- PR #188 immutable-payload corrective still requires a fresh hosted 16-case offline E2E run; local dependency installation remains subject to the recorded pinned-`peft` proxy limitation.
