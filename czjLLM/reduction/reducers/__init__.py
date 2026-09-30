@@ -5,6 +5,10 @@ from .deterministic import (
     CompositeReducer, DedupReducer, DeterministicReducerError, EntityUnionReducer,
     GroupReducer, RankReducer, TopKReducer,
 )
+from .semantic import (
+    SemanticCallResult, SemanticLLMReducer, SemanticReducerError, SemanticRuntime,
+    semantic_content_envelope,
+)
 
 __all__ = [
     "ConcatJsonListReducer",
@@ -12,4 +16,6 @@ __all__ = [
     "LegacyJsonDeepMergeReducer",
     "CompositeReducer", "DedupReducer", "DeterministicReducerError",
     "EntityUnionReducer", "GroupReducer", "RankReducer", "TopKReducer",
+    "SemanticCallResult", "SemanticLLMReducer", "SemanticReducerError",
+    "SemanticRuntime", "semantic_content_envelope",
 ]

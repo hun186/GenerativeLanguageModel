@@ -108,3 +108,9 @@
 - PR H must remain pending until hosted CI confirms the expanded 16-case offline E2E gate (the prior 15 plus one deterministic composite case).
 - PR #188 corrective requirements installation was retried and remains blocked locally by the same proxy HTTP 403 on pinned `peft`; dependency-light reduction and focused collection aggregate E2E remain available.
 - PR #188 immutable-payload corrective still requires a fresh hosted 16-case offline E2E run; local dependency installation remains subject to the recorded pinned-`peft` proxy limitation.
+
+## 2026-09-30 PR I local environment
+
+- Full requirements installation remains blocked by proxy HTTP 403 cloning pinned `peft`; dependency-light E2E installation is also blocked reaching the package index. Reduction tests run, but focused production E2E cannot import `PromptGenerator` because `psutil` is unavailable. Hosted CI must run the 17-case gate; no semantic core fake replaces it.
+
+- This checkout has no configured Git remote, so the branch cannot be pushed and no hosted PR number, head, CI run ID, or hosted 17-case result can be obtained from this environment. PR metadata was prepared with `make_pr`; hosted acceptance remains pending.

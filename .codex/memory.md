@@ -207,3 +207,12 @@
 - Canonical deterministic JSON now uses one recursive validate-and-normalize boundary: mappings become detached dicts, list/tuple values become detached lists, scalars remain unchanged, and invalid keys/non-finite/unsupported values raise `DeterministicReducerError`.
 - PR H reducers and the production E2E now consume PR F immutable `LogicalWorkUnit.payload` values directly. Reducer outputs retain existing first-occurrence/reference behavior; Collection Manifest and Aggregate Output contracts remain version 1.
 - Verification: `tests/reduction` 249 passed. Focused E2E/static results are recorded after the final run; hosted 16-case acceptance remains required. PR I/J/K/L remain unimplemented.
+
+## 2026-09-30 Reduction Engine PR I semantic LLM reducer
+
+- Added source-independent `semantic_llm` v1 (`semantic` alias), task-only config, canonical ordered envelope, strict runtime protocol, and final-step composite support. It is prohibited from hierarchical controllers and has no fallback.
+- Added production adapter using task overlay, existing prompt/tokenizer/pipeline/audit stack, one-chunk fail-closed preflight, and inherited one-worker lease. Combine constructs it only for semantic configs.
+- PR H merged as PR #188 and hosted head passed all 16 E2E cases. PR I remains pending hosted 17-case acceptance; PR J/K/L remain unimplemented.
+- Verification: all `tests/reduction` passed locally (261 tests). Focused production E2E is present but local execution is blocked at missing `psutil` after dependency installs were denied by proxy.
+
+- This checkout has no configured Git remote, so the branch cannot be pushed and no hosted PR number, head, CI run ID, or hosted 17-case result can be obtained from this environment. PR metadata was prepared with `make_pr`; hosted acceptance remains pending.
