@@ -53,7 +53,7 @@
 - [x] PR #187 hosted head collected and passed all 15 E2E cases.
 - [x] PR #188 hosted head collected and passed all 16 E2E cases.
   - [x] PR #188 public reducer fail-closed corrective implemented and locally verified.
-  - [x] PR #188 immutable `LogicalWorkUnit.payload` canonicalization corrective implemented locally; fresh hosted 16-case acceptance remains pending.
+  - [x] PR #188 immutable `LogicalWorkUnit.payload` canonicalization corrective accepted; PR #188 merged after all 16 hosted E2E cases passed.
 
 ## 2026-09-30 Reduction Engine PR I
 
@@ -61,3 +61,7 @@
 - [ ] PR J — Structured relational reducer
 - [ ] PR K — ReductionStage + bounded PipelineRef nesting
 - [ ] PR L — Retention/GC/cache integration points/production hardening
+
+## 2026-09-30 PR #189 review corrective
+
+- [ ] PR I remains pending until the corrected PR #189 head passes all 17 hosted E2E cases.

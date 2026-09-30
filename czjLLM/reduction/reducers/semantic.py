@@ -58,11 +58,13 @@ class SemanticLLMReducer:
     def reduce(self, items: Iterable[Any], context: Optional[Mapping[str, Any]] = None) -> ReducerResult:
         if not self.task.strip():
             raise SemanticReducerError("semantic_llm requires a configured non-blank task")
+        prepared, content = semantic_content_envelope(items)
+        if not prepared:
+            raise SemanticReducerError("semantic_llm requires at least one input item")
         runtime = context.get("semantic_runtime") if isinstance(context, Mapping) else None
         if runtime is None or not callable(getattr(runtime, "execute", None)):
             raise SemanticReducerError("semantic_llm requires a semantic_runtime")
         try:
-            prepared, content = semantic_content_envelope(items)
             result = runtime.execute(task=self.task, content=content)
         except SemanticReducerError:
             raise

@@ -74,7 +74,7 @@ class SemanticLLMRuntimeAdapter:
         pipeline = pipeline_factory(
             task=task, content=prompt, OutputSaveFN="", allow_to_retry=False,
             max_tokens=derived.max_tokens, model_spec=derived.model_spec,
-            include_think=bool(getattr(derived, "think_mode", False)),
+            include_think=False,
             PGMSubDir=getattr(derived, "PGMSubDir", ""),
             audit_run_id=getattr(derived, "llm_call_audit_run_id", ""),
             audit_path=getattr(derived, "llm_call_audit_path", ""),

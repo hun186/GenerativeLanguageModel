@@ -131,3 +131,7 @@
 - Semantic v1 performs one call per invocation: no child pool, recursion, truncation, fan-out, or fallback. Ordered inputs use six-digit boundaries; non-strings use PR H canonical JSON.
 - Production reuses `PromptGenerator`, `TokenizerWrapper`, `PromptAPIPipeline`, shared leaf `ExecutionBudget`, and existing LLM audit through a non-mutating task overlay.
 - Scope is single-pass and composite-final only. PR J relational contracts, PR K nesting/stages, and PR L cache/retention remain unimplemented.
+
+## 2026-09-30 PR #189 response-cleanup corrective
+
+- Do not map `think_mode` to `include_think`: model thinking instructions and application-output cleanup are separate existing contracts. Semantic v1 keeps prompt rendering aware of `think_mode` and always uses the production-default think-tag cleanup. Zero evidence is not a valid semantic consolidation input.

@@ -63,6 +63,13 @@ def test_failures_are_explicit_and_never_fallback():
         reducer.reduce(["x"], {"semantic_runtime": Boom()})
 
 
+def test_empty_input_fails_before_runtime_execution():
+    runtime = Runtime()
+    with pytest.raises(SemanticReducerError, match="at least one input item"):
+        SemanticLLMReducer("TASK").reduce([], {"semantic_runtime": runtime})
+    assert runtime.calls == []
+
+
 def test_single_string_changed_is_observational():
     assert not SemanticLLMReducer("TASK").reduce(
         ["same"], {"semantic_runtime": Runtime("same")}

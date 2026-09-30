@@ -104,3 +104,8 @@ execution_budget_capacity: 8
 - Strict options schema is exactly `{task: <non-blank string>}`; supplied text is preserved. Model settings, URLs, keys, and generation kwargs are rejected as options.
 - Composite permits at most one semantic step and only in final position. Success returns a non-empty string, bounded character/count metrics, and safe task/model/cost observations.
 - Missing runtime, invalid input, multi-chunk prompt, failed runtime result, or blank output raises explicitly; no fallback exists.
+
+## 2026-09-30 PR #189 corrective
+
+- `semantic_llm` requires at least one input item; zero items raise `SemanticReducerError` without invoking `SemanticRuntime.execute`.
+- `think_mode` remains prompt-rendering context only. Semantic calls preserve `PromptAPIPipeline.include_think=False`, so internal `<think>` content is not part of the reducer payload.

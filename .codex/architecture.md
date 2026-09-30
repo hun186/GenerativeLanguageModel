@@ -194,3 +194,7 @@
 - `reducers/semantic.py` owns only the source/model-stack-independent `SemanticRuntime` protocol, deterministic item envelope, and fail-closed `SemanticLLMReducer` v1.
 - `runtime_semantic.py` is the production adapter: a task overlay feeds existing `PromptGenerator`, the final prompt is checked by `TokenizerWrapper`, and one `PromptAPIPipeline.proc()` call runs under `lease_execution_workers(ctx, 1)` with root audit identifiers.
 - Production combine constructs that adapter only for enabled single-pass `semantic_llm`, directly or as the final `composite` step. Hierarchical reduction and checkpoint identity remain unchanged.
+
+## 2026-09-30 PR #189 think-output corrective
+
+- Semantic task overlays continue to expose root `think_mode` to `PromptGenerator`, while `PromptAPIPipeline.include_think` remains independently `False` so normal response cleanup strips `<think>` blocks. Empty semantic collections fail before runtime execution.

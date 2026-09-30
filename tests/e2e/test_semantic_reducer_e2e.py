@@ -30,7 +30,9 @@ def test_semantic_composite_real_http_audit_budget_and_idempotent_sink(fake_open
         {"profile": "dedup", "options": {"key_paths": ["id"]}},
         {"profile": "rank", "options": {"score_path": "score"}},
         {"profile": "top_k", "options": {"k": 2}},
-        {"profile": "semantic_llm", "options": {"task": "E2E_SUMMARY\nBrief the selected items."}},
+        {"profile": "semantic_llm", "options": {
+            "task": "E2E_SEMANTIC_THINK\nE2E_SUMMARY\nBrief the selected items."
+        }},
     ]}})
     audit = tmp_path / "llm-audit.csv"
     budget = ExecutionBudget(1)
@@ -45,6 +47,8 @@ def test_semantic_composite_real_http_audit_budget_and_idempotent_sink(fake_open
         context={"semantic_runtime": SemanticLLMRuntimeAdapter(ctx=ctx)},
     )
     assert result.payload.startswith("SUMMARY::")
+    assert "<think>" not in result.payload
+    assert "internal reasoning" not in result.payload
     assert len(fake_openai.requests) == 1
     prompt = fake_openai.requests[0]["body"]["messages"][0]["content"]
     assert '"id":"b"' in prompt and '"id":"c"' in prompt and '"id":"a"' not in prompt

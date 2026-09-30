@@ -53,6 +53,19 @@ def test_overlay_prompt_preflight_pipeline_and_lease_without_root_mutation():
     assert "secret" not in repr(result)
 
 
+def test_think_mode_controls_prompt_context_not_pipeline_think_output():
+    @contextmanager
+    def lease(*_args):
+        yield 1
+
+    root = ctx()
+    root.think_mode = True
+    adapter(root, lease).execute(task="SUMMARY", content="items")
+
+    assert Generator.contexts[-1].think_mode is True
+    assert Pipeline.calls[-1]["include_think"] is False
+
+
 def test_oversized_prompt_fails_before_pipeline_or_lease():
     Tokenizer.chunks = ["one", "two"]
     Pipeline.calls.clear(); leased = []
