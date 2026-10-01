@@ -12,6 +12,7 @@ from czjLLM.reduction.reducers import (
     LegacyJsonDeepMergeReducer,
     CompositeReducer, DedupReducer, EntityUnionReducer, GroupReducer, RankReducer,
     TopKReducer,
+    SemanticLLMReducer,
 )
 
 
@@ -70,6 +71,7 @@ def register_builtin_reducers(registry: ReducerRegistry) -> None:
     registry.register("rank", RankReducer._registry_prototype())
     registry.register("top_k", TopKReducer(), aliases=("topk", "top-k"))
     registry.register("composite", CompositeReducer())
+    registry.register("semantic_llm", SemanticLLMReducer._registry_prototype(), aliases=("semantic",))
     registry.register(
         "legacy_json_deep_merge",
         LegacyJsonDeepMergeReducer(),

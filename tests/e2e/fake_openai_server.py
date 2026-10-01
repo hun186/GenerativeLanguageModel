@@ -70,6 +70,8 @@ class FakeOpenAIServer:
                         content = "LEGAL"
                     elif "E2E_ROUND2" in prompt:
                         content = "REDUCED::" + prompt[-24:].replace("\n", " ")
+                    elif "E2E_SEMANTIC_THINK" in prompt:
+                        content = "<think>internal reasoning</think>SUMMARY::selected-items"
                     elif "E2E_SUMMARY" in prompt:
                         content = "SUMMARY::" + prompt[-24:].replace("\n", " ")
                     elif match:

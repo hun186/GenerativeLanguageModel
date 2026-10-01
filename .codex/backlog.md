@@ -42,7 +42,7 @@
 - [x] PR E — Shared Execution Budget（process-local root ownership、leaf-only leases、row executor cap）
 - [x] PR F — Logical Work Unit + immutable Collection Manifest
 - [x] PR G — SQL/ES Collection Adapters + idempotent aggregate upsert
-- [ ] PR H — Deterministic composite reducers
+- [x] PR H — Deterministic composite reducers
 - [ ] PR I — Semantic reducer
 - [ ] PR J — Structured relational reducer
 - [ ] PR K — ReductionStage + bounded PipelineRef nesting
@@ -51,6 +51,21 @@
 ## 2026-09-29 PR G hosted acceptance
 
 - [x] PR #187 hosted head collected and passed all 15 E2E cases.
-- [ ] PR H hosted acceptance: collect and pass 16 E2E cases (previous 15 plus one PR H case) before marking PR H complete.
+- [x] PR #188 hosted head collected and passed all 16 E2E cases.
   - [x] PR #188 public reducer fail-closed corrective implemented and locally verified.
-  - [x] PR #188 immutable `LogicalWorkUnit.payload` canonicalization corrective implemented locally; fresh hosted 16-case acceptance remains pending.
+  - [x] PR #188 immutable `LogicalWorkUnit.payload` canonicalization corrective accepted; PR #188 merged after all 16 hosted E2E cases passed.
+
+## 2026-09-30 Reduction Engine PR I
+
+- [ ] PR I — Semantic reducer (implementation prepared; remains incomplete until hosted 17-case gate passes)
+- [ ] PR J — Structured relational reducer
+- [ ] PR K — ReductionStage + bounded PipelineRef nesting
+- [ ] PR L — Retention/GC/cache integration points/production hardening
+
+## 2026-09-30 PR #189 review corrective
+
+- [ ] PR I remains pending until the corrected PR #189 head passes all 17 hosted E2E cases.
+
+## 2026-10-01 PR #189 hosted corrective
+
+- [ ] Rerun the 17-case hosted E2E gate after correcting semantic user-message selection; run #428 collected 17 but failed the single semantic case on a test-only fixed-index assertion.

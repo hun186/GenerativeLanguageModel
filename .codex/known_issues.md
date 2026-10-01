@@ -105,6 +105,20 @@
 ## 2026-09-30 PR H environment and hosted acceptance
 
 - Required dependency installation still fails because the configured proxy returns HTTP 403 for the pinned GitHub `peft` clone. Installed dependency-light tests remain usable; no dependency bypass was introduced.
-- PR H must remain pending until hosted CI confirms the expanded 16-case offline E2E gate (the prior 15 plus one deterministic composite case).
+- PR #188 passed the expanded 16-case offline E2E gate and merged; PR H is complete.
 - PR #188 corrective requirements installation was retried and remains blocked locally by the same proxy HTTP 403 on pinned `peft`; dependency-light reduction and focused collection aggregate E2E remain available.
-- PR #188 immutable-payload corrective still requires a fresh hosted 16-case offline E2E run; local dependency installation remains subject to the recorded pinned-`peft` proxy limitation.
+- PR #188 immutable-payload corrective passed the hosted 16-case offline E2E gate and merged; only the recurring local pinned-`peft` proxy limitation remains relevant.
+
+## 2026-09-30 PR I local environment
+
+- Full requirements installation remains blocked by proxy HTTP 403 cloning pinned `peft`; dependency-light E2E installation is also blocked reaching the package index. Reduction tests run, but focused production E2E cannot import `PromptGenerator` because `psutil` is unavailable. Hosted CI must run the 17-case gate; no semantic core fake replaces it.
+
+- Existing PR #189 is the authoritative PR I review surface; its corrected hosted 17-case acceptance remains pending.
+
+## 2026-09-30 PR #189 corrective local verification
+
+- Full requirements installation remains locally blocked by proxy HTTP 403 while cloning pinned `peft`. This does not supersede authoritative hosted PR #189 state, where isolated E2E dependencies install successfully.
+
+## 2026-10-01 PR #189 hosted E2E assertion corrective
+
+- Hosted run #428 (`36690681140`) collected all 17 E2E cases and reached the semantic production request. Its semantic case failed only because the test inspected the fixed message index `0`, which is the existing system message; production sends the semantic prompt as the user-role message. The corrective selects exactly one `role == "user"` message and does not modify production code.

@@ -30,7 +30,7 @@ _SUPPORTED_CONTROLLERS = frozenset(
 )
 _SUPPORTED_PROFILES = frozenset(
     {"concat_text", "concat_json_list", "legacy_json_deep_merge", "dedup",
-     "group", "entity_union", "rank", "top_k", "composite"}
+     "group", "entity_union", "rank", "top_k", "composite", "semantic_llm"}
 )
 _COMPOSITE_STEP_PROFILES = _SUPPORTED_PROFILES - {"composite"}
 _DEEP_MERGE_OPTION_KEYS = frozenset(
@@ -66,6 +66,13 @@ class ReductionConfig:
             return AdaptiveHierarchicalController(**dict(self.controller_options))
         raise ReductionConfigError("single_pass does not use a hierarchical controller")
 
+    def contains_semantic_llm(self) -> bool:
+        if self.profile == "semantic_llm":
+            return True
+        return self.profile == "composite" and any(
+            step["profile"] == "semantic_llm" for step in self.options.get("steps", ())
+        )
+
 
 def _unexpected_keys(raw: Mapping[str, Any], allowed: frozenset[str], label: str) -> None:
     unexpected = sorted(set(raw) - allowed)
@@ -88,6 +95,7 @@ def _validate_options(profile: Optional[str], raw: Any) -> Mapping[str, Any]:
         "entity_union": frozenset({"key_paths"}),
         "rank": frozenset({"score_path", "descending"}),
         "top_k": frozenset({"k"}), "composite": frozenset({"steps"}),
+        "semantic_llm": frozenset({"task"}),
     }
     allowed = allowed_by_profile.get(profile, frozenset())
     _unexpected_keys(options, allowed, "reduction option")
@@ -138,6 +146,10 @@ def _validate_options(profile: Optional[str], raw: Any) -> Mapping[str, Any]:
     if profile == "top_k":
         if type(options.get("k")) is not int or options["k"] <= 0:
             raise ReductionConfigError("reduction.options.k must be a positive integer")
+    if profile == "semantic_llm":
+        task = options.get("task")
+        if not isinstance(task, str) or not task.strip():
+            raise ReductionConfigError("reduction.options.task is required and must be a non-blank string")
     if profile == "composite":
         steps = options.get("steps")
         if not isinstance(steps, (list, tuple)) or not steps:
@@ -160,6 +172,11 @@ def _validate_options(profile: Optional[str], raw: Any) -> Mapping[str, Any]:
                 raise ReductionConfigError(f"Unknown composite step profile: {name!r}")
             step_options = _validate_options(canonical, step.get("options", {}))
             normalized.append(MappingProxyType({"profile": canonical, "options": step_options}))
+        semantic_indexes = [i for i, step in enumerate(normalized) if step["profile"] == "semantic_llm"]
+        if len(semantic_indexes) > 1:
+            raise ReductionConfigError("semantic_llm may appear at most once in a composite")
+        if semantic_indexes and semantic_indexes[0] != len(normalized) - 1:
+            raise ReductionConfigError("semantic_llm must be the final composite step")
         options["steps"] = tuple(normalized)
     return MappingProxyType(options)
 

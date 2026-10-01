@@ -44,6 +44,7 @@ from czjLLM.utilities.slice_merge import (
 )
 from czjLLM.reduction.config import ReductionConfig, parse_reduction_config
 from czjLLM.reduction.engine import reduce_single_pass
+from czjLLM.reduction.runtime_semantic import SemanticLLMRuntimeAdapter
 from czjLLM.reduction.hierarchical import reduce_hierarchical_text
 from czjLLM.reduction.runtime_text import TextRoundRuntimeAdapter
 
@@ -461,10 +462,13 @@ def combine_api_finished_item(item: str, ctx) -> str:
                         )
                 reduction_items = json_rows
             if reduction_config.controller == "single_pass":
+                reducer_context = {"combine_item": str(item_p)}
+                if reduction_config.contains_semantic_llm():
+                    reducer_context["semantic_runtime"] = SemanticLLMRuntimeAdapter(ctx=ctx)
                 reduction_result = reduce_single_pass(
                     reduction_items,
                     reduction_config,
-                    context={"combine_item": str(item_p)},
+                    context=reducer_context,
                 )
             else:
                 adapter = TextRoundRuntimeAdapter(

@@ -8,6 +8,7 @@ from .config import ReductionConfigError
 from .reducers import (
     CompositeReducer, DedupReducer, EntityUnionReducer, GroupReducer,
     LegacyJsonDeepMergeReducer, RankReducer, TopKReducer,
+    SemanticLLMReducer,
 )
 from .registry import ReducerRegistry
 
@@ -27,6 +28,7 @@ def build_configured_reducer(profile: str, options: Mapping[str, Any], registry:
         "entity_union": lambda: EntityUnionReducer(tuple(options.get("key_paths", ()))),
         "rank": lambda: RankReducer(options["score_path"], options.get("descending", True)),
         "top_k": lambda: TopKReducer(options["k"]),
+        "semantic_llm": lambda: SemanticLLMReducer(options["task"]),
         "composite": lambda: CompositeReducer(tuple(
             build_configured_reducer(step["profile"], step["options"], registry, nested=True)
             for step in options["steps"]

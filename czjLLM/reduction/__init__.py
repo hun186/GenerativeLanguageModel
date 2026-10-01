@@ -12,6 +12,7 @@ from .contracts import Reducer, ReducerResult
 from .reducers import (
     CompositeReducer, DedupReducer, DeterministicReducerError, EntityUnionReducer,
     GroupReducer, RankReducer, TopKReducer,
+    SemanticCallResult, SemanticLLMReducer, SemanticReducerError, SemanticRuntime,
 )
 from .aggregate import (
     AGGREGATE_OUTPUT_CONTRACT_VERSION,
@@ -48,6 +49,7 @@ __all__ = [
     "ReducerResult",
     "CompositeReducer", "DedupReducer", "DeterministicReducerError",
     "EntityUnionReducer", "GroupReducer", "RankReducer", "TopKReducer",
+    "SemanticCallResult", "SemanticLLMReducer", "SemanticReducerError", "SemanticRuntime",
     "AdaptiveHierarchicalController",
     "FixedRoundsController",
     "get_default_registry",

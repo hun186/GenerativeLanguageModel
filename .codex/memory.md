@@ -193,17 +193,38 @@
 
 - Added strict, exact, source-independent dedup/group/entity-union/rank/top-k reducers and a non-recursive sequential composite, with canonical JSON validation, mapping-only dotted paths, stable ordering rules, bounded metrics/audit, and central fresh configured construction.
 - Extended strict deeply immutable single-pass configuration, normal registry discovery/aliases, focused reducer/config/registry/engine tests, and one manifest-to-composite-to-idempotent-SQLite E2E. PR G is confirmed merged/accepted; PR I/J/K/L remain unimplemented.
-- Verification results are recorded after final local runs below; hosted 16-case acceptance remains required before checking off PR H.
+- Historical local verification is recorded below; PR #188 later passed all 16 hosted E2E cases and PR H is complete.
 - Local verification: `tests/reduction` passed 228 tests; focused collection aggregate E2E passed 3 tests including PR H. Full E2E collection remains locally blocked by missing PyYAML after the required requirements install failed at the proxy-blocked pinned `peft` clone. Compile/diff results follow in the final task record.
 
 ### 2026-09-30 PR #188 public reducer fail-closed corrective
 
 - Public PR H parameterized reducers now validate paths/types at construction independent of input cardinality. The config boundary reuses the same path grammar, which rejects empty and wholly whitespace dotted components without stripping them.
 - Empty composite execution and direct nested composites fail explicitly in core. Internal group/rank/composite registry prototypes preserve discovery metadata but fail closed if executed unconfigured. PR I/J/K/L remain unimplemented.
-- Verification: `tests/reduction` 242 passed; focused collection aggregate E2E 3 passed; compileall and `git diff --check` passed. Hosted 16-case E2E remains required on the corrected PR #188 head.
+- Historical local verification: `tests/reduction` 242 passed; focused collection aggregate E2E 3 passed; compileall and `git diff --check` passed. PR #188 subsequently passed all 16 hosted E2E cases and merged.
 
 ### 2026-09-30 PR #188 immutable payload compatibility corrective
 
 - Canonical deterministic JSON now uses one recursive validate-and-normalize boundary: mappings become detached dicts, list/tuple values become detached lists, scalars remain unchanged, and invalid keys/non-finite/unsupported values raise `DeterministicReducerError`.
 - PR H reducers and the production E2E now consume PR F immutable `LogicalWorkUnit.payload` values directly. Reducer outputs retain existing first-occurrence/reference behavior; Collection Manifest and Aggregate Output contracts remain version 1.
-- Verification: `tests/reduction` 249 passed. Focused E2E/static results are recorded after the final run; hosted 16-case acceptance remains required. PR I/J/K/L remain unimplemented.
+- Historical local verification: `tests/reduction` 249 passed. PR #188 subsequently passed all 16 hosted E2E cases and merged; PR I/J/K/L were not part of that corrective.
+
+## 2026-09-30 Reduction Engine PR I semantic LLM reducer
+
+- Added source-independent `semantic_llm` v1 (`semantic` alias), task-only config, canonical ordered envelope, strict runtime protocol, and final-step composite support. It is prohibited from hierarchical controllers and has no fallback.
+- Added production adapter using task overlay, existing prompt/tokenizer/pipeline/audit stack, one-chunk fail-closed preflight, and inherited one-worker lease. Combine constructs it only for semantic configs.
+- PR H merged as PR #188 and hosted head passed all 16 E2E cases. PR I remains pending hosted 17-case acceptance; PR J/K/L remain unimplemented.
+- Verification: all `tests/reduction` passed locally (261 tests). Focused production E2E is present but local execution is blocked at missing `psutil` after dependency installs were denied by proxy.
+
+- PR I is tracked by existing PR #189. Its corrected head must collect and pass all 17 hosted E2E cases before PR I is marked complete.
+
+## 2026-09-30 PR #189 review corrective
+
+- Decoupled prompt `think_mode` from pipeline `include_think`: the overlay still gives `PromptGenerator` the root setting, while semantic output uses `include_think=False` and strips internal think blocks. Empty semantic input now fails before runtime/model execution.
+- Strengthened the existing seventeenth E2E case with a semantic-only fake-server think marker; E2E count remains 17. PR #189 remains pending corrected hosted acceptance; PR J/K/L remain unimplemented.
+- Corrective local verification: focused semantic tests 14 passed; complete reduction suite 263 passed; compileall and `git diff --check` passed. Focused semantic E2E remains locally blocked at `PromptGenerator` import because proxy-blocked requirements installation leaves `psutil` unavailable; hosted PR #189 is the authoritative E2E gate.
+
+## 2026-10-01 PR #189 hosted E2E assertion corrective
+
+- Hosted head `6798df8e40275a5e9983fc94f8175377a7f44b63` run #428 (`36690681140`) collected 17 E2E cases. The semantic payload and think-cleanup assertions passed; the case then failed because it read system message index `0` instead of selecting the semantic user message.
+- The test now identifies exactly one `role == "user"` message before checking deterministic Top-K content. No production code, semantic contract, E2E count, or PR J/K/L scope changed. PR I remains pending a fresh hosted 17-case pass.
+- Local corrective verification: `tests/reduction` passed 263 tests; compileall and `git diff --check` passed. Focused semantic E2E remains locally blocked before HTTP execution because proxy-blocked requirements installation leaves `psutil` unavailable; hosted isolated E2E dependencies are authoritative.

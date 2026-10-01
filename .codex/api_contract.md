@@ -97,3 +97,15 @@ execution_budget_capacity: 8
 - Composite allows local profiles only, rejects recursive composite, and is single-pass-only. Parsed paths and steps are recursively detached into tuples and read-only mappings.
 - PR #188 corrective: public reducer constructors validate parameter options without depending on input cardinality. Blank or whitespace-only dotted components are invalid without trimming/reinterpretation. The registry may retain metadata prototypes for required-option reducers, but prototype execution fails closed; an empty composite also fails on `reduce()`, and a nested composite fails at construction.
 - PR #188 immutable-payload corrective: canonical equality recursively detaches every supported `Mapping` to `dict` and every list/tuple to `list` before sorted-key JSON encoding. This accepts PR F `MappingProxyType`/tuple payloads directly while preserving strict string keys, finite numbers, and unsupported-object rejection.
+
+## 2026-09-30 Reduction `semantic_llm` v1
+
+- Canonical profile `semantic_llm` (alias `semantic`), contract version `1`, single-pass only.
+- Strict options schema is exactly `{task: <non-blank string>}`; supplied text is preserved. Model settings, URLs, keys, and generation kwargs are rejected as options.
+- Composite permits at most one semantic step and only in final position. Success returns a non-empty string, bounded character/count metrics, and safe task/model/cost observations.
+- Missing runtime, invalid input, multi-chunk prompt, failed runtime result, or blank output raises explicitly; no fallback exists.
+
+## 2026-09-30 PR #189 corrective
+
+- `semantic_llm` requires at least one input item; zero items raise `SemanticReducerError` without invoking `SemanticRuntime.execute`.
+- `think_mode` remains prompt-rendering context only. Semantic calls preserve `PromptAPIPipeline.include_think=False`, so internal `<think>` content is not part of the reducer payload.
