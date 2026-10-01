@@ -4,10 +4,17 @@ from __future__ import annotations
 
 from typing import Any, Callable, Mapping
 
-from czjLLM.reduction.execution import TaskCallResult
+from czjLLM.reduction.execution import TaskCallResult, _stable_semantics
 
 
 PROMPT_RENDERER_CONTRACT_VERSION = "stage-task-renderer-v1"
+TASK_RUNTIME_CONTRACT_VERSION = "production-task-runtime-v2"
+TOKENIZER_CONTRACT_VERSION = "tokenizer-wrapper-v1"
+_MODEL_SEMANTIC_KEYS = frozenset({
+    "model_name", "model", "model_version", "version", "temperature", "top_p",
+    "top_k", "seed", "repeat_penalty", "frequency_penalty", "presence_penalty",
+    "num_ctx", "context_window", "stop", "mock_llm_mode",
+})
 
 
 class ProductionTaskRuntime:
@@ -20,6 +27,65 @@ class ProductionTaskRuntime:
         self._pipeline_factory = pipeline_factory
         self._lease_factory = lease_factory
         self._renderer = renderer
+
+    def for_context(self, runtime_ctx: Any) -> "ProductionTaskRuntime":
+        """Bind one pipeline invocation to its authoritative effective task pool."""
+        return type(self)(runtime_ctx, tokenizer_factory=self._tokenizer_factory,
+                          pipeline_factory=self._pipeline_factory,
+                          lease_factory=self._lease_factory, renderer=self._renderer)
+
+    def _task_pool(self) -> Mapping[str, Any]:
+        pool = getattr(self.ctx, "taskSetting", None)
+        if isinstance(pool, Mapping):
+            return pool
+        if self._tokenizer_factory is not None or self._renderer is not None:
+            return {}
+        from czjLLM.taskConfig import taskSetting
+        return taskSetting
+
+    def _effective_task_spec(self, task: Any) -> Any:
+        if isinstance(task, Mapping):
+            return task
+        key = str(task or "").strip()
+        pool = self._task_pool()
+        return pool[key] if key and key in pool else task
+
+    def _resolved_task_semantics(self, task: Any, seen: frozenset[str] = frozenset()) -> Any:
+        spec = self._effective_task_spec(task)
+        if isinstance(spec, Mapping):
+            mapped = spec.get("task", spec.get("prompt", ""))
+            key = str(mapped or "").strip()
+            pool = self._task_pool()
+            if key and key in pool and key not in seen and pool[key] is not spec:
+                return {"spec": _stable_semantics(spec),
+                        "resolved_task": self._resolved_task_semantics(
+                            key, seen | {key}
+                        )}
+        return _stable_semantics(spec)
+
+    def effective_task_semantics(self, task: Any) -> Mapping[str, Any]:
+        return {"requested_task": _stable_semantics(task),
+                "effective_task_spec": self._resolved_task_semantics(task),
+                "effective_input_cut_len": self.effective_input_cut_len(task)}
+
+    def effective_input_cut_len(self, task: Any) -> int | None:
+        spec = self._effective_task_spec(task)
+        if isinstance(spec, Mapping) and type(spec.get("InputCutLen")) is int:
+            return spec["InputCutLen"]
+        if isinstance(spec, Mapping):
+            nested_key = str(spec.get("task", spec.get("prompt", "")) or "").strip()
+            nested = self._task_pool().get(nested_key) if nested_key else None
+            if isinstance(nested, Mapping) and type(nested.get("InputCutLen")) is int:
+                return nested["InputCutLen"]
+        if isinstance(getattr(self.ctx, "taskSetting", None), Mapping):
+            return 3000
+        if self._tokenizer_factory is None and self._renderer is None:
+            from czjLLM.taskConfig import taskSetting
+            key = _tokenizer_task(task)
+            global_spec = taskSetting.get(key)
+            if isinstance(global_spec, Mapping) and type(global_spec.get("InputCutLen")) is int:
+                return global_spec["InputCutLen"]
+        return 3000
 
     def execute(self, *, task: Any, content: str) -> TaskCallResult:
         if not isinstance(content, str):
@@ -38,8 +104,8 @@ class ProductionTaskRuntime:
             tokenizer_factory = TokenizerWrapper
         tokenizer = tokenizer_factory(model_name=self.ctx.model_spec_name, task=task_key,
                                       max_tokens=self.ctx.max_tokens)
-        if isinstance(task, Mapping) and type(task.get("InputCutLen")) is int:
-            tokenizer.max_input_tokens = task["InputCutLen"]
+        input_cut_len = self.effective_input_cut_len(task)
+        tokenizer.max_input_tokens = input_cut_len
         chunks = tokenizer.tokenize(text=prompt, adjust=True, max_tokens=self.ctx.max_tokens,
                                     quiet=True)["ctxCut"]
         if len(chunks) != 1 or chunks[0] != prompt:
@@ -72,12 +138,18 @@ class ProductionTaskRuntime:
 
     def fingerprint_metadata(self) -> Mapping[str, Any]:
         spec = getattr(self.ctx, "model_spec", {})
-        safe_keys = ("model_name", "temperature", "top_p", "seed", "frequency_penalty", "presence_penalty")
-        return {"runtime_contract_version": "production-task-runtime-v1",
+        safe_model = ({key: _stable_semantics(spec[key]) for key in sorted(spec)
+                       if key in _MODEL_SEMANTIC_KEYS} if isinstance(spec, Mapping) else {})
+        return {"runtime_contract_version": TASK_RUNTIME_CONTRACT_VERSION,
                 "prompt_renderer_contract_version": PROMPT_RENDERER_CONTRACT_VERSION,
-                "model": {key: spec[key] for key in safe_keys if isinstance(spec, Mapping) and key in spec},
+                "tokenizer_contract_version": TOKENIZER_CONTRACT_VERSION,
+                "model_spec_name": str(getattr(self.ctx, "model_spec_name", "") or ""),
+                "model": safe_model,
                 "max_tokens": getattr(self.ctx, "max_tokens", None),
-                "think_mode": bool(getattr(self.ctx, "think_mode", True))}
+                "think_mode": bool(getattr(self.ctx, "think_mode", True)),
+                "include_think": False,
+                "mock_llm_mode": bool(getattr(self.ctx, "mock_llm_mode", False) or
+                                      (isinstance(spec, Mapping) and spec.get("mock_llm_mode", False)))}
 
 
 def _tokenizer_task(task: Any) -> str:

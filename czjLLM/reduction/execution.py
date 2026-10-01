@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import copy
+import inspect
 from types import MappingProxyType
 from typing import Any, Mapping, Protocol
 
@@ -93,6 +95,10 @@ class TaskExecutable:
     executor_type: str = field(default="task", init=False)
     contract_version: str = field(default="reduction-task-executable-v1", init=False)
 
+    def __post_init__(self) -> None:
+        if isinstance(self.task, Mapping):
+            object.__setattr__(self, "task", copy.deepcopy(dict(self.task)))
+
     def execute(self, item: Any, context: ExecutionContext) -> ExecutableResult:
         if not isinstance(item, str):
             raise ExecutionError("TaskExecutable requires text input")
@@ -117,8 +123,13 @@ class TaskExecutable:
     def fingerprint_metadata(self, context: ExecutionContext) -> Mapping[str, Any]:
         runtime = context.task_runtime
         metadata = runtime.fingerprint_metadata() if runtime and callable(getattr(runtime, "fingerprint_metadata", None)) else {}
+        task_semantics = (
+            runtime.effective_task_semantics(self.task)
+            if runtime and callable(getattr(runtime, "effective_task_semantics", None))
+            else _stable_semantics(self.task)
+        )
         return {"executor_type": self.executor_type, "contract_version": self.contract_version,
-                "task": _stable_semantics(self.task), "runtime": dict(metadata)}
+                "task": task_semantics, "runtime": dict(metadata)}
 
 
 def _stable_semantics(value: Any) -> Any:
@@ -127,8 +138,13 @@ def _stable_semantics(value: Any) -> Any:
     if isinstance(value, (list, tuple)):
         return [_stable_semantics(v) for v in value]
     if callable(value):
-        return {"callable_module": getattr(value, "__module__", ""),
-                "callable_qualname": getattr(value, "__qualname__", getattr(value, "__name__", ""))}
+        semantic = {"callable_module": getattr(value, "__module__", ""),
+                    "callable_qualname": getattr(value, "__qualname__", getattr(value, "__name__", ""))}
+        try:
+            semantic["callable_source"] = inspect.getsource(value)
+        except (OSError, TypeError):
+            pass
+        return semantic
     if value is None or isinstance(value, (str, int, float, bool)):
         return value
     raise TypeError(f"unsupported fingerprint semantic value: {type(value).__name__}")

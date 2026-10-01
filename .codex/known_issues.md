@@ -134,3 +134,7 @@
 - Required setup was attempted. The configured package index and pinned GitHub `peft` clone were blocked by proxy HTTP 403; the environment also lacks `tqdm`, so the focused production HTTP K1 E2E cannot locally import the real tokenizer stack. Dependency-light reduction tests and compile checks remain available; hosted `offline-e2e` is the authoritative 19-case gate.
 - Windows self-hosted runners remain unprovisioned and outside the acceptance gate.
 - Hosted publication is also blocked in this environment: pushing `feat/reduction-stage-executables-k1` to `https://github.com/hun186/GenerativeLanguageModel.git` fails with `CONNECT tunnel failed, response 403`. Therefore no hosted PR number or fresh hosted run ID can be collected locally; retry push/PR creation and the 19-case gate from a network-enabled environment.
+
+## 2026-10-01 PR #191 corrective environment
+
+- The required requirements installation remains proxy-blocked at the pinned GitHub `peft` clone (HTTP tunnel 403). Dependency-light unit/regression checks run locally; the real-tokenizer K1 E2E and fresh hosted 19-case acceptance require the hosted environment.

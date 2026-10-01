@@ -29,6 +29,21 @@ class TokenizerRoundPreparer:
         if not isinstance(self.task, str) or not self.task.strip() or self.task != self.task.strip():
             raise ValueError("round preparer task must be non-blank without surrounding whitespace")
 
+    def _effective_input_cut_len(self, context: ExecutionContext) -> int:
+        ctx = context.runtime_ctx
+        pool = getattr(ctx, "taskSetting", None)
+        spec = pool.get(self.task) if isinstance(pool, Mapping) else None
+        if isinstance(spec, Mapping) and type(spec.get("InputCutLen")) is int:
+            return spec["InputCutLen"]
+        if isinstance(pool, Mapping):
+            return 3000
+        if self.tokenizer_factory is None:
+            from czjLLM.taskConfig import taskSetting
+            global_spec = taskSetting.get(self.task)
+            if isinstance(global_spec, Mapping) and type(global_spec.get("InputCutLen")) is int:
+                return global_spec["InputCutLen"]
+        return 3000
+
     def prepare(self, payload: str, round_index: int, context: ExecutionContext) -> Iterable[str]:
         if not isinstance(payload, str) or not payload.strip():
             raise ExecutionError("round preparer requires nonblank aggregate text")
@@ -41,8 +56,10 @@ class TokenizerRoundPreparer:
         if factory is None:
             from czjLLM.tokenizer_utils import TokenizerWrapper
             factory = TokenizerWrapper
-        chunks = factory(model_name=ctx.model_spec_name, task=self.task,
-                         max_tokens=ctx.max_tokens).tokenize(
+        tokenizer = factory(model_name=ctx.model_spec_name, task=self.task,
+                            max_tokens=ctx.max_tokens)
+        tokenizer.max_input_tokens = self._effective_input_cut_len(context)
+        chunks = tokenizer.tokenize(
                              text=payload, adjust=True, max_tokens=ctx.max_tokens, quiet=True)["ctxCut"]
         if not isinstance(chunks, (list, tuple)) or not chunks or any(
                 not isinstance(chunk, str) or not chunk.strip() for chunk in chunks):
@@ -52,8 +69,10 @@ class TokenizerRoundPreparer:
     def fingerprint_metadata(self, context: ExecutionContext) -> Mapping[str, Any]:
         ctx = context.runtime_ctx
         return {"type": "tokenizer", "contract_version": "reduction-tokenizer-round-preparer-v1",
+                "tokenizer_contract_version": "tokenizer-wrapper-v1",
                 "task": self.task, "model_name": getattr(ctx, "model_spec_name", None),
-                "max_tokens": getattr(ctx, "max_tokens", None)}
+                "max_tokens": getattr(ctx, "max_tokens", None),
+                "input_cut_len": self._effective_input_cut_len(context)}
 
 
 @dataclass(frozen=True)
@@ -69,6 +88,13 @@ class ReductionStageResult:
     audit: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
     provenance: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
     metrics: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
+
+    def __post_init__(self) -> None:
+        for name in ("audit", "provenance", "metrics"):
+            value = getattr(self, name)
+            if not isinstance(value, Mapping):
+                raise TypeError(f"ReductionStageResult.{name} must be a mapping")
+            object.__setattr__(self, name, MappingProxyType(dict(value)))
 
 
 @dataclass(frozen=True)
@@ -119,7 +145,10 @@ class ReductionStage:
             result = reduce_single_pass(initial_outputs, self.reduction,
                                         context=context.reducer_context)
             return self._result(result.payload, 1, "single_pass_complete", count, (),
-                                tuple(result.warnings), len(prepared))
+                                tuple(result.warnings), len(prepared),
+                                reducer_audit=result.audit,
+                                reducer_provenance=result.provenance,
+                                reducer_metrics=result.metrics)
 
         assert self.round_preparer is not None
         def next_round(payload: str, round_index: int) -> Iterable[str]:
@@ -135,13 +164,25 @@ class ReductionStage:
                             hierarchical.warnings, len(prepared))
 
     def _result(self, payload: Any, rounds: int, stop: str, count: int,
-                round_metrics: Tuple[RoundMetrics, ...], warnings: Tuple[str, ...], inputs: int) -> ReductionStageResult:
+                round_metrics: Tuple[RoundMetrics, ...], warnings: Tuple[str, ...], inputs: int,
+                *, reducer_audit: Mapping[str, Any] | None = None,
+                reducer_provenance: Mapping[str, Any] | None = None,
+                reducer_metrics: Mapping[str, Any] | None = None) -> ReductionStageResult:
         metrics = {"input_item_count": inputs, "worker_execution_count": count,
                    "round_count": rounds}
         if isinstance(payload, str):
             metrics["output_character_count"] = len(payload)
+        if reducer_metrics is not None:
+            metrics["reducer"] = dict(reducer_metrics)
+        audit = {"execution_fingerprint_contract": self.contract_version}
+        if reducer_audit is not None:
+            audit["reducer"] = dict(reducer_audit)
+        provenance = {}
+        if reducer_provenance is not None:
+            provenance["reducer"] = dict(reducer_provenance)
         return ReductionStageResult(payload, self.reduction.profile or "",
                                     self.reduction.controller, rounds, stop, count,
                                     tuple(round_metrics), tuple(warnings),
-                                    audit=MappingProxyType({"execution_fingerprint_contract": self.contract_version}),
+                                    audit=MappingProxyType(audit),
+                                    provenance=MappingProxyType(provenance),
                                     metrics=MappingProxyType(metrics))

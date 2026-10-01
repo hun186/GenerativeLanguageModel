@@ -84,3 +84,10 @@
   - [ ] PR K1 — Executable + non-nested ReductionStage/PipelineRef (implemented on feature branch; remains unchecked pending hosted review/19-case gate)
   - [ ] PR K2 — bounded nested reduction + depth/cycle guards
 - [ ] PR L — Retention/GC/cache integration points/production hardening
+
+## 2026-10-01 PR #191 corrective acceptance
+
+- [x] Previous hosted head `87428da5ec3316e08916c9bc6ca37f3579f2cc50`: run #434 / `36830720933` collected and passed 19/19 offline E2E cases.
+- [ ] PR K1 remains pending: review found effective-task/checkpoint identity, InputCutLen, metadata-preservation, and detachment gaps; the corrected head requires a fresh 19-case hosted gate.
+- [ ] PR K remains pending K2; K2 is not started by this corrective.
+- [ ] PR L remains unimplemented.

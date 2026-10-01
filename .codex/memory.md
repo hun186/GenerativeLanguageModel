@@ -252,3 +252,9 @@
 - K2 nesting/depth/cycle work and PR L caching/partial-success/retention remain unimplemented. Initial worker-map retry reuse is intentionally not promised.
 - Verification: required dependency setup failed at pinned GitHub `peft` with proxy 403; complete dependency-light reduction suite passed 319 (including 16 focused K1 contract tests); required prompt-pipeline regression selection passed 15. The production K1 E2E is present but locally blocked by missing `tqdm`; hosted CI must collect/run the expected 19 cases.
 - Publication attempt: local commit `222794fc8c1c831296b4d4e43e93d4177b9774b4` was created, but GitHub push/hosted PR/CI collection is blocked by the environment's HTTP 403 tunnel. No merge was attempted.
+
+## 2026-10-01 PR #191 K1 correctness corrective
+
+- Old hosted head `87428da5ec3316e08916c9bc6ca37f3579f2cc50` passed run #434 / `36830720933` with collect-only 19 and 19/19 offline E2E, but review found checkpoint-semantic and metadata-preservation gaps; that result applies only to the old head.
+- Corrected effective task/callable/model/tokenizer/InputCutLen fingerprints, bound StagePipeline task-pool consistency, PipelineRef target audit retention, single-pass reducer metadata retention, construction detachment, and ReductionStageResult mapping detachment without adding K2 nesting or PR L behavior.
+- Local verification: focused K1 contracts 30 passed; complete reduction suite 333 passed; required prompt-pipeline regression selection 15 passed. Requirements/E2E remain locally blocked by the recorded proxy dependency limitation; fresh hosted acceptance is pending.

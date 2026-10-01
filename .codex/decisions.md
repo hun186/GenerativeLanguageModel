@@ -153,3 +153,8 @@
 - Resolve the former PR-K nesting question conservatively: K1 proves direct PipelineRef-to-ordinary-stage-pipeline execution only. `ReductionStageExecutable`, ref chains, depth/stack guards, cycles, and raw-document nested reduction belong exclusively to K2.
 - Execution fingerprints contain task/pipeline/renderer/model-generation and round-preparer semantics, but exclude credentials, endpoint URLs, runtime reprs, timestamps, thread/process identity, and budget capacity.
 - Initial worker-map results are intentionally not checkpoint-cached or reused in K1; PR L owns member cache/retention policy.
+
+## 2026-10-01 PR #191 review corrective
+
+- Checkpoint safety requires fingerprinting effective rather than requested task semantics. Tokenizer `InputCutLen` and `model_spec_name` are semantic because they can change leaf acceptance and hierarchical chunk boundaries; budget capacity and credentials remain scheduling/secret data and are excluded.
+- Wrapper metadata is namespaced rather than flattened: PipelineRef retains target audit, and single-pass ReductionStage retains reducer audit/provenance/metrics. Hierarchical D1 metadata contracts are not redesigned.

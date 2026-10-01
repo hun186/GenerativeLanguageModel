@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
+import copy
 from types import MappingProxyType
 from typing import Any, Mapping
 
@@ -35,8 +36,22 @@ class StagePipelineExecutable:
         if type(self.max_rounds) is not int or self.max_rounds <= 0:
             raise ValueError("max_rounds must be a positive integer")
         from czjLLM.prompt_pipeline.stage_runtime import normalize_stages
-        normalized = tuple(normalize_stages(self.stages))
+        normalized = tuple(normalize_stages(copy.deepcopy(self.stages)))
         object.__setattr__(self, "stages", normalized)
+        if self.task_setting is not None:
+            object.__setattr__(self, "task_setting",
+                               MappingProxyType(copy.deepcopy(dict(self.task_setting))))
+
+    def _effective_task_pool(self, context: ExecutionContext) -> Mapping[str, Any]:
+        if self.task_setting is not None:
+            return self.task_setting
+        pool = getattr(context.runtime_ctx, "taskSetting", None)
+        if isinstance(pool, Mapping):
+            return pool
+        # The stage resolver has no task-pool override when the root does not
+        # expose one. The production leaf renderer retains its own established
+        # global fallback for raw tasks.
+        return MappingProxyType({})
 
     def execute(self, item: Any, context: ExecutionContext) -> ExecutableResult:
         if not isinstance(item, str):
@@ -49,14 +64,20 @@ class StagePipelineExecutable:
         # The production resolver accepts its public mapping schema (rather than
         # already-normalized StageDefinition objects), so adapt back without
         # changing or duplicating its state machine.
+        effective_pool = self._effective_task_pool(context)
         ctx = _PipelineContextView(
-            context.runtime_ctx, [dict(stage.__dict__) for stage in self.stages], self.task_setting
+            context.runtime_ctx, [copy.deepcopy(dict(stage.__dict__)) for stage in self.stages],
+            effective_pool,
         )
+        task_runtime = context.task_runtime
+        if task_runtime is not None and callable(getattr(task_runtime, "for_context", None)):
+            task_runtime = task_runtime.for_context(ctx)
+        leaf_context = replace(context, runtime_ctx=ctx, task_runtime=task_runtime)
         chunk_id = "reduction-worker-item"
         runtime = init_chunk_stage_runtime(ctx, [chunk_id])
         def runner(job, _ctx, input_text):
             try:
-                result = TaskExecutable(job.stage_task).execute(input_text, context)
+                result = TaskExecutable(job.stage_task).execute(input_text, leaf_context)
                 return {"ok": True, "output": result.output}
             except Exception as exc:
                 return {"ok": False, "error": str(exc)}
@@ -86,8 +107,14 @@ class StagePipelineExecutable:
         for stage in self.stages:
             stages.append(_stable_semantics(stage.__dict__))
         runtime = context.task_runtime
+        effective_pool = self._effective_task_pool(context)
+        if runtime is not None and callable(getattr(runtime, "for_context", None)):
+            runtime = runtime.for_context(_PipelineContextView(
+                context.runtime_ctx, [copy.deepcopy(dict(stage.__dict__)) for stage in self.stages],
+                effective_pool,
+            ))
         return {"executor_type": self.executor_type, "contract_version": self.contract_version,
-                "stages": stages, "task_setting": _stable_semantics(self.task_setting or {}),
+                "stages": stages, "task_setting": _stable_semantics(effective_pool),
                 "max_rounds": self.max_rounds,
                 "task_runtime": dict(runtime.fingerprint_metadata()) if runtime else {}}
 
@@ -116,7 +143,8 @@ class PipelineRefExecutable:
         fingerprint = normalized_fingerprint(self.fingerprint_metadata(context)["target"])
         return ExecutableResult(result.output, result.executor_type, result.contract_version,
                                 audit=MappingProxyType({"pipeline_ref": self.ref,
-                                                        "target_fingerprint": fingerprint}),
+                                                        "target_fingerprint": fingerprint,
+                                                        "target": result.audit}),
                                 provenance=result.provenance, metrics=result.metrics)
 
     def fingerprint_metadata(self, context: ExecutionContext) -> Mapping[str, Any]:

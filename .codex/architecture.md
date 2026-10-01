@@ -210,3 +210,8 @@
 - Reduction worker execution now depends on a small source-independent contract. Production task leaves reuse the authoritative stage prompt renderer, `TokenizerWrapper`, `PromptAPIPipeline`, and the root `ExecutionBudget`; exactly one permit surrounds only `proc()`.
 - Ordinary multi-stage workers adapt the existing in-memory `stage_orchestrator` and do not create business-stage snapshots, manifests, or writeback. `ReductionStage` owns parallel ordered mapping and reducer/controller calls without holding leaf permits.
 - Hierarchical round 1 reduces initial worker outputs; round 2+ deterministically tokenize the prior aggregate, run the same worker, and delegate stop/checkpoint behavior to D1. D1/D2 checkpoint formats and historical identities are unchanged.
+
+## 2026-10-01 PR #191 K1 semantic-identity corrective
+
+- One StagePipeline invocation now binds one effective task pool to stage resolution, leaf rendering/tokenization, and fingerprinting. The default is root `taskSetting`; an explicit detached override is bound through a production TaskRuntime context view.
+- Executable configuration is detached at construction. Callable references remain supported, while fingerprint input uses stable source text when inspectable and module/qualified name as the source-unavailable fallback.

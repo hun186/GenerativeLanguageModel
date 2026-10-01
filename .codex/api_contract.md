@@ -127,3 +127,8 @@ execution_budget_capacity: 8
 - `Executable.execute(item, ExecutionContext) -> ExecutableResult` is the source-independent worker boundary; result metadata is frozen and distinct from `ReducerResult`. `ExecutionContext` carries only the root runtime, TaskRuntime, local registry, and reducer context.
 - K1 exposes `TaskExecutable`, ordinary in-memory `StagePipelineExecutable`, and `PipelineRefExecutable`. A ref may resolve only directly to `StagePipelineExecutable`; nested refs and ReductionStage targets are rejected until K2.
 - `ReductionStage` consumes caller-prepared items, supports single-pass or existing hierarchical text reduction, and returns a frozen `ReductionStageResult`. Hierarchical stages require a `RoundPreparer`; the strict `parse_reduction_stage_config` does not require legacy D2 `runtime.round_task`.
+
+## 2026-10-01 PR #191 K1 fingerprint/metadata corrective
+
+- Production task identity now records the effective task specification from the same bound task pool used for rendering, its effective `InputCutLen`, callable source when available, tokenizer/model identity, the complete allowlisted D2 generation settings, mock/think modes, and the fixed `include_think=false` contract.
+- `PipelineRefExecutable` preserves target audit under `audit.target`; single-pass `ReductionStage` preserves reducer audit, provenance, and metrics under `reducer` namespaces. `ReductionStageResult` detaches its top-level metadata mappings.
