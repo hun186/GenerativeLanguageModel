@@ -65,3 +65,7 @@
 ## 2026-09-30 PR #189 review corrective
 
 - [ ] PR I remains pending until the corrected PR #189 head passes all 17 hosted E2E cases.
+
+## 2026-10-01 PR #189 hosted corrective
+
+- [ ] Rerun the 17-case hosted E2E gate after correcting semantic user-message selection; run #428 collected 17 but failed the single semantic case on a test-only fixed-index assertion.

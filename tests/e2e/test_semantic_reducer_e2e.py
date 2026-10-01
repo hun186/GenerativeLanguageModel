@@ -50,7 +50,15 @@ def test_semantic_composite_real_http_audit_budget_and_idempotent_sink(fake_open
     assert "<think>" not in result.payload
     assert "internal reasoning" not in result.payload
     assert len(fake_openai.requests) == 1
-    prompt = fake_openai.requests[0]["body"]["messages"][0]["content"]
+    messages = fake_openai.requests[0]["body"]["messages"]
+    assert {message.get("role") for message in messages} >= {"system", "user"}
+    user_messages = [
+        message["content"]
+        for message in messages
+        if message.get("role") == "user"
+    ]
+    assert len(user_messages) == 1
+    prompt = user_messages[0]
     assert '"id":"b"' in prompt and '"id":"c"' in prompt and '"id":"a"' not in prompt
     assert audit.exists() and "semantic-e2e" in audit.read_text(encoding="utf-8")
     snapshot = budget.snapshot()

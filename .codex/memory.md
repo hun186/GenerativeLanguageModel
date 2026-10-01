@@ -222,3 +222,9 @@
 - Decoupled prompt `think_mode` from pipeline `include_think`: the overlay still gives `PromptGenerator` the root setting, while semantic output uses `include_think=False` and strips internal think blocks. Empty semantic input now fails before runtime/model execution.
 - Strengthened the existing seventeenth E2E case with a semantic-only fake-server think marker; E2E count remains 17. PR #189 remains pending corrected hosted acceptance; PR J/K/L remain unimplemented.
 - Corrective local verification: focused semantic tests 14 passed; complete reduction suite 263 passed; compileall and `git diff --check` passed. Focused semantic E2E remains locally blocked at `PromptGenerator` import because proxy-blocked requirements installation leaves `psutil` unavailable; hosted PR #189 is the authoritative E2E gate.
+
+## 2026-10-01 PR #189 hosted E2E assertion corrective
+
+- Hosted head `6798df8e40275a5e9983fc94f8175377a7f44b63` run #428 (`36690681140`) collected 17 E2E cases. The semantic payload and think-cleanup assertions passed; the case then failed because it read system message index `0` instead of selecting the semantic user message.
+- The test now identifies exactly one `role == "user"` message before checking deterministic Top-K content. No production code, semantic contract, E2E count, or PR J/K/L scope changed. PR I remains pending a fresh hosted 17-case pass.
+- Local corrective verification: `tests/reduction` passed 263 tests; compileall and `git diff --check` passed. Focused semantic E2E remains locally blocked before HTTP execution because proxy-blocked requirements installation leaves `psutil` unavailable; hosted isolated E2E dependencies are authoritative.
