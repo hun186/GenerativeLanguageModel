@@ -113,7 +113,7 @@
 
 - Full requirements installation remains blocked by proxy HTTP 403 cloning pinned `peft`; dependency-light E2E installation is also blocked reaching the package index. Reduction tests run, but focused production E2E cannot import `PromptGenerator` because `psutil` is unavailable. Hosted CI must run the 17-case gate; no semantic core fake replaces it.
 
-- Existing PR #189 is the authoritative PR I review surface; its corrected hosted 17-case acceptance remains pending.
+- PR #189 subsequently passed the authoritative hosted 17/17 offline E2E gate and merged as `ea3f8b4436000cbc201cd63da2a2db3259b4ab5b`; it is no longer pending.
 
 ## 2026-09-30 PR #189 corrective local verification
 
@@ -122,3 +122,9 @@
 ## 2026-10-01 PR #189 hosted E2E assertion corrective
 
 - Hosted run #428 (`36690681140`) collected all 17 E2E cases and reached the semantic production request. Its semantic case failed only because the test inspected the fixed message index `0`, which is the existing system message; production sends the semantic prompt as the user-role message. The corrective selects exactly one `role == "user"` message and does not modify production code.
+
+## 2026-10-01 PR J local environment
+
+- PR #189 / PR I is complete: hosted offline E2E 17/17 passed and merge commit is `ea3f8b4436000cbc201cd63da2a2db3259b4ab5b`.
+- The recurring full `requirements.txt` pinned-`peft` proxy limitation remains historical/open. PR J's dependency-light reduction, Output Profile, and focused SQLite E2E checks run locally; fresh hosted 18-case acceptance is required before checking off PR J.
+- PR J setup retry: `python -m pip install --upgrade pip` found pip installed but the configured index was proxy-blocked; `python -m pip install -r requirements.txt` then failed cloning pinned `peft` with `CONNECT tunnel failed, response 403`. Consequently full `tests/e2e` collection stops at missing `yaml`; focused PR J E2E passes with installed dependencies, and hosted `offline-e2e` remains authoritative.

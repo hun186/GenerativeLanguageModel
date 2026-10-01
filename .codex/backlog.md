@@ -43,7 +43,7 @@
 - [x] PR F — Logical Work Unit + immutable Collection Manifest
 - [x] PR G — SQL/ES Collection Adapters + idempotent aggregate upsert
 - [x] PR H — Deterministic composite reducers
-- [ ] PR I — Semantic reducer
+- [x] PR I — Semantic reducer
 - [ ] PR J — Structured relational reducer
 - [ ] PR K — ReductionStage + bounded PipelineRef nesting
 - [ ] PR L — Retention/GC/cache integration points/production hardening
@@ -57,15 +57,21 @@
 
 ## 2026-09-30 Reduction Engine PR I
 
-- [ ] PR I — Semantic reducer (implementation prepared; remains incomplete until hosted 17-case gate passes)
+- [x] PR I — Semantic reducer (PR #189 merged; hosted offline E2E 17/17 PASS; merge `ea3f8b4436000cbc201cd63da2a2db3259b4ab5b`)
 - [ ] PR J — Structured relational reducer
 - [ ] PR K — ReductionStage + bounded PipelineRef nesting
 - [ ] PR L — Retention/GC/cache integration points/production hardening
 
 ## 2026-09-30 PR #189 review corrective
 
-- [ ] PR I remains pending until the corrected PR #189 head passes all 17 hosted E2E cases.
+- [x] PR #189 corrected head passed all 17 hosted E2E cases and merged as `ea3f8b4436000cbc201cd63da2a2db3259b4ab5b`.
 
 ## 2026-10-01 PR #189 hosted corrective
 
-- [ ] Rerun the 17-case hosted E2E gate after correcting semantic user-message selection; run #428 collected 17 but failed the single semantic case on a test-only fixed-index assertion.
+- [x] The corrected semantic user-message assertion passed the hosted 17/17 offline E2E gate before PR #189 merged.
+
+## 2026-10-01 Reduction Engine PR J
+
+- [ ] PR J — Structured relational reducer (implementation is local; remains unchecked until its hosted 18-case `offline-e2e` gate succeeds).
+- [ ] PR K — ReductionStage + bounded PipelineRef nesting (not implemented).
+- [ ] PR L — Retention/GC/cache integration points/production hardening (not implemented).

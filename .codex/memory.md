@@ -220,11 +220,26 @@
 ## 2026-09-30 PR #189 review corrective
 
 - Decoupled prompt `think_mode` from pipeline `include_think`: the overlay still gives `PromptGenerator` the root setting, while semantic output uses `include_think=False` and strips internal think blocks. Empty semantic input now fails before runtime/model execution.
-- Strengthened the existing seventeenth E2E case with a semantic-only fake-server think marker; E2E count remains 17. PR #189 remains pending corrected hosted acceptance; PR J/K/L remain unimplemented.
+- Strengthened the existing seventeenth E2E case with a semantic-only fake-server think marker; E2E count remains 17. At that historical checkpoint PR #189 awaited corrected hosted acceptance; it later passed 17/17 and merged. PR J/K/L were not part of that corrective.
 - Corrective local verification: focused semantic tests 14 passed; complete reduction suite 263 passed; compileall and `git diff --check` passed. Focused semantic E2E remains locally blocked at `PromptGenerator` import because proxy-blocked requirements installation leaves `psutil` unavailable; hosted PR #189 is the authoritative E2E gate.
 
 ## 2026-10-01 PR #189 hosted E2E assertion corrective
 
 - Hosted head `6798df8e40275a5e9983fc94f8175377a7f44b63` run #428 (`36690681140`) collected 17 E2E cases. The semantic payload and think-cleanup assertions passed; the case then failed because it read system message index `0` instead of selecting the semantic user message.
-- The test now identifies exactly one `role == "user"` message before checking deterministic Top-K content. No production code, semantic contract, E2E count, or PR J/K/L scope changed. PR I remains pending a fresh hosted 17-case pass.
+- The test now identifies exactly one `role == "user"` message before checking deterministic Top-K content. No production code, semantic contract, E2E count, or PR J/K/L scope changed. At that historical checkpoint PR I awaited a fresh hosted 17-case pass; it later passed 17/17 and merged.
 - Local corrective verification: `tests/reduction` passed 263 tests; compileall and `git diff --check` passed. Focused semantic E2E remains locally blocked before HTTP execution because proxy-blocked requirements installation leaves `psutil` unavailable; hosted isolated E2E dependencies are authoritative.
+
+## 2026-10-01 Reduction Engine PR J structured relational reducer
+
+- Authoritative baseline verified at PR #189 merge `ea3f8b4436000cbc201cd63da2a2db3259b4ab5b`; PR I passed hosted offline E2E 17/17 and is complete.
+- Added source-independent `structured_relational` v1 (`relational`) with strict deeply immutable config, public-constructor fail-closed validation, stable two-pass per-record namespace canonicalization, exact reference rewrite, full immutable remap provenance, bounded fingerprint audit/metrics, and fail-closed post-remap integrity verification.
+- Added focused coverage for malformed config/data, immutable PR F payloads, no mutation, deterministic order, multiple entity sets, no semantic consolidation, and unchanged multidimensional Output Profile compatibility. Added exactly one PR J E2E from immutable manifest payloads through reducer/profile/aggregate/SQLite idempotent retry.
+- PR J stays unchecked until fresh hosted `offline-e2e` collects and passes 18 cases. Composite/hierarchical relational execution, PR K, and PR L were not implemented; PR F/G v1 and PR I behavior remain unchanged.
+- Local verification after required setup attempt: `tests/reduction` 290 passed; Output Profile characterization 8 passed; focused PR J E2E 1 passed; compileall and `git diff --check` passed. Full local E2E collect/run is unavailable because blocked dependency installation leaves PyYAML absent; hosted CI must prove the expected 18/18 gate.
+
+## 2026-10-01 PR #190 strict relational configuration corrective
+
+- Existing PR #190 review identified three configuration-time ownership gaps on hosted head `8fd41c94fc92202f79763b621a00e0df29edc6af`: overlapping generated prefix namespaces, duplicate entity/reference endpoints, and exact entity/reference endpoint conflicts.
+- The shared constructor/parser validator now rejects those invalid configurations before input-dependent execution. Disjoint prefixes and shared collections with different fields remain valid; the two-pass reducer algorithm, post-remap defense, provenance/audit/metrics, PR F/G/I contracts, and PR J scope are unchanged.
+- PR J remains unchecked until a fresh corrected-head hosted `offline-e2e` run collects and passes all 18 cases. PR K/L remain unimplemented.
+- Corrective local verification: focused structured-relational tests 40 passed; complete reduction suite 303 passed; unchanged Output Profile characterization 8 passed; focused PR J E2E 1 passed; compileall and `git diff --check` passed.

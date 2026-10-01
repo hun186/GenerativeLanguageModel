@@ -198,3 +198,9 @@
 ## 2026-09-30 PR #189 think-output corrective
 
 - Semantic task overlays continue to expose root `think_mode` to `PromptGenerator`, while `PromptAPIPipeline.include_think` remains independently `False` so normal response cleanup strips `<think>` blocks. Empty semantic collections fail before runtime execution.
+
+## 2026-10-01 PR J structured relational reducer boundary
+
+- `reduction/reducers/structured_relational.py` owns strict configuration validation, one-level record flattening, two-pass local-ID canonicalization/reference rewriting, detached JSON output, complete remap provenance, and post-remap reducer-wide integrity checks.
+- Pass one assigns every ID using `(record_index, entity_set, local_id)` namespaces; pass two rewrites only configured entity/reference fields. Duplicate IDs inside one local namespace and dangling same-record references fail; duplicate local IDs across records deliberately become distinct canonical entities without semantic consolidation.
+- Registry/config/factory integration is generic and single-pass. Composite rejects this profile because child provenance is not propagated; hierarchical/checkpoint runtime remains `concat_text`-only and unchanged. The existing multidimensional Output Profile remains the downstream validation boundary and contains no global canonicalization logic.

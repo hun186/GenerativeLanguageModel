@@ -9,6 +9,7 @@ from .reducers import (
     CompositeReducer, DedupReducer, EntityUnionReducer, GroupReducer,
     LegacyJsonDeepMergeReducer, RankReducer, TopKReducer,
     SemanticLLMReducer,
+    StructuredRelationalReducer,
 )
 from .registry import ReducerRegistry
 
@@ -29,6 +30,7 @@ def build_configured_reducer(profile: str, options: Mapping[str, Any], registry:
         "rank": lambda: RankReducer(options["score_path"], options.get("descending", True)),
         "top_k": lambda: TopKReducer(options["k"]),
         "semantic_llm": lambda: SemanticLLMReducer(options["task"]),
+        "structured_relational": lambda: StructuredRelationalReducer(options["entity_sets"], options["references"]),
         "composite": lambda: CompositeReducer(tuple(
             build_configured_reducer(step["profile"], step["options"], registry, nested=True)
             for step in options["steps"]
