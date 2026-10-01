@@ -215,3 +215,7 @@
 
 - One StagePipeline invocation now binds one effective task pool to stage resolution, leaf rendering/tokenization, and fingerprinting. The default is root `taskSetting`; an explicit detached override is bound through a production TaskRuntime context view.
 - Executable configuration is detached at construction. Callable references remain supported, while fingerprint input uses stable source text when inspectable and module/qualified name as the source-unavailable fallback.
+
+## 2026-10-01 PR #191 final K1 task-pool consistency
+
+- K1 binds explicit, root, or established global task settings into one effective pool before stage execution. Route task keys, leaf rendering, token preflight, and checkpoint identity observe that same pool.

@@ -158,3 +158,7 @@
 
 - Checkpoint safety requires fingerprinting effective rather than requested task semantics. Tokenizer `InputCutLen` and `model_spec_name` are semantic because they can change leaf acceptance and hierarchical chunk boundaries; budget capacity and credentials remain scheduling/secret data and are excluded.
 - Wrapper metadata is namespaced rather than flattened: PipelineRef retains target audit, and single-pass ReductionStage retains reducer audit/provenance/metrics. Hierarchical D1 metadata contracts are not redesigned.
+
+## 2026-10-01 PR #191 final K1 corrective
+
+- Generic read-only mappings are first-class task pools. Nested task specs and `InputCutLen` share one bounded chain traversal; repeated keys terminate identity/preflight resolution without adding PipelineRef graph-cycle machinery.

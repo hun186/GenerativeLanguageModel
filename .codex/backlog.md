@@ -91,3 +91,9 @@
 - [ ] PR K1 remains pending: review found effective-task/checkpoint identity, InputCutLen, metadata-preservation, and detachment gaps; the corrected head requires a fresh 19-case hosted gate.
 - [ ] PR K remains pending K2; K2 is not started by this corrective.
 - [ ] PR L remains unimplemented.
+
+## 2026-10-01 PR #191 head 1e12ba review
+
+- [x] Hosted head `1e12ba005faceaf67169a55e6e77bf794a2d90f6`, CI #435 / `36891694196`: collect-only 19 and offline E2E 19/19 PASS.
+- [ ] K1 remains pending fresh corrected-head acceptance after MappingProxy routing, implicit-global identity, and nested InputCutLen review gaps.
+- [ ] PR K remains pending K2; PR L remains unimplemented.

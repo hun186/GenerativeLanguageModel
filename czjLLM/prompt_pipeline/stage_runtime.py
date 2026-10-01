@@ -285,7 +285,7 @@ def should_persist_output(stage: StageDefinition, last_stage_name: str) -> bool:
 def resolve_stage_task(
     stage: StageDefinition,
     outputs_by_stage: dict[str, str],
-    task_setting: dict[str, Any] | None = None,
+    task_setting: Mapping[str, Any] | None = None,
 ) -> tuple[Any, str | None]:
     """
     回傳 (task, err)
@@ -297,14 +297,14 @@ def resolve_stage_task(
             return entry
         return str(entry or "").strip()
 
-    def _effective_task_setting(explicit: dict[str, Any] | None) -> dict[str, Any] | None:
-        if isinstance(explicit, dict) and explicit:
+    def _effective_task_setting(explicit: Mapping[str, Any] | None) -> Mapping[str, Any] | None:
+        if isinstance(explicit, Mapping):
             return explicit
         try:
             from czjLLM.taskConfig import taskSetting as global_task_setting
         except Exception:
-            return explicit if isinstance(explicit, dict) else None
-        return global_task_setting if isinstance(global_task_setting, dict) else None
+            return explicit if isinstance(explicit, Mapping) else None
+        return global_task_setting if isinstance(global_task_setting, Mapping) else None
 
     task_setting = _effective_task_setting(task_setting)
 

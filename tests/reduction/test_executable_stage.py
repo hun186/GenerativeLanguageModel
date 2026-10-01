@@ -3,6 +3,11 @@ from __future__ import annotations
 from contextlib import contextmanager
 from dataclasses import FrozenInstanceError
 from types import MappingProxyType
+import ast
+import inspect
+import sys
+import textwrap
+import types
 from types import SimpleNamespace
 import time
 
@@ -157,7 +162,7 @@ def test_production_runtime_one_chunk_lease_and_include_think_cleanup():
         events.append(("lease-enter", requested)); yield 1; events.append(("lease-exit", requested))
     root = SimpleNamespace(model_spec_name="safe", model_spec={"model_name": "safe", "api_key": "secret",
                                                                "base_url": "https://private.invalid"},
-                           max_tokens=64, think_mode=True)
+                           max_tokens=64, think_mode=True, taskSetting={})
     runtime = ProductionTaskRuntime(root, tokenizer_factory=Tokenizer, pipeline_factory=Pipeline,
                                     lease_factory=lease,
                                     renderer=lambda task, content, render_ctx: f"think={render_ctx.think_mode}:{task}:{content}")
@@ -175,7 +180,8 @@ def test_production_runtime_oversized_preflight_fails_before_pipeline():
         def tokenize(self, **kwargs): return {"ctxCut": ["one", "two"]}
     called = []
     runtime = ProductionTaskRuntime(
-        SimpleNamespace(model_spec_name="safe", model_spec={"model_name": "safe"}, max_tokens=64),
+        SimpleNamespace(model_spec_name="safe", model_spec={"model_name": "safe"}, max_tokens=64,
+                        taskSetting={}),
         tokenizer_factory=Tokenizer, pipeline_factory=lambda **kwargs: called.append(kwargs),
         renderer=lambda task, content, ctx: content,
     )
@@ -383,3 +389,83 @@ def test_reduction_stage_result_detaches_mapping_fields():
     assert dict(result.audit) == {"a": 1}
     assert dict(result.provenance) == {"p": 2}
     assert dict(result.metrics) == {"m": 3}
+
+
+def test_absent_root_task_pool_binds_global_execution_and_fingerprint(monkeypatch):
+    global_pool = {"GLOBAL_SUMMARY": {"task": "A", "InputCutLen": 41}}
+    module = types.ModuleType("czjLLM.taskConfig")
+    module.taskSetting = global_pool
+    monkeypatch.setitem(sys.modules, "czjLLM.taskConfig", module)
+
+    class Tokenizer:
+        def __init__(self, **kwargs): self.max_input_tokens = 3000
+        def tokenize(self, **kwargs): return {"ctxCut": [kwargs["text"]]}
+    class Pipeline:
+        def __init__(self, **kwargs): self.kwargs = kwargs; self.model_spec = {"model_name": "safe"}
+        def proc(self): return {"ok": True, "output": self.kwargs["content"], "cost": 0}
+    @contextmanager
+    def lease(*args): yield 1
+    def renderer(task, content, render_ctx):
+        spec = render_ctx.taskSetting.get(task, task)
+        return f"{spec.get('task', spec) if isinstance(spec, dict) else spec}:{content}"
+
+    root = SimpleNamespace(model_spec_name="safe", model_spec={"model_name": "safe"},
+                           max_tokens=64, think_mode=True)
+    runtime = ProductionTaskRuntime(root, tokenizer_factory=Tokenizer,
+                                    pipeline_factory=Pipeline, lease_factory=lease,
+                                    renderer=renderer)
+    context = ExecutionContext(root, runtime)
+    pipeline = StagePipelineExecutable([{"name": "summary", "task": "GLOBAL_SUMMARY"}])
+    fingerprint_a = pipeline.fingerprint_metadata(context)
+    assert pipeline.execute("text", context).output == "A:text"
+
+    global_pool["GLOBAL_SUMMARY"] = {"task": "B", "InputCutLen": 42}
+    fingerprint_b = pipeline.fingerprint_metadata(context)
+    assert pipeline.execute("text", context).output == "B:text"
+    assert fingerprint_a != fingerprint_b
+
+
+def test_nested_input_cut_len_resolution_and_cycle_termination():
+    seen = []
+    class Tokenizer:
+        def __init__(self, **kwargs): self.max_input_tokens = 3000; seen.append(self)
+        def tokenize(self, **kwargs): return {"ctxCut": [kwargs["text"]]}
+    class Pipeline:
+        def __init__(self, **kwargs): self.model_spec = {"model_name": "safe"}
+        def proc(self): return {"ok": True, "output": "ok", "cost": 0}
+    @contextmanager
+    def lease(*args): yield 1
+    def make_runtime(cut):
+        root = SimpleNamespace(
+            model_spec_name="safe", model_spec={"model_name": "safe"}, max_tokens=64,
+            think_mode=True, taskSetting={
+                "outer": {"task": "middle"}, "middle": {"task": "final"},
+                "final": {"task": "prompt", "InputCutLen": cut},
+            },
+        )
+        return ProductionTaskRuntime(root, tokenizer_factory=Tokenizer,
+                                     pipeline_factory=Pipeline, lease_factory=lease,
+                                     renderer=lambda task, content, ctx: content)
+
+    first = make_runtime(777); second = make_runtime(888)
+    first.execute(task="outer", content="text")
+    assert seen[-1].max_input_tokens == 777
+    assert first.effective_task_semantics("outer")["effective_input_cut_len"] == 777
+    assert first.effective_task_semantics("outer") != second.effective_task_semantics("outer")
+
+    cyclic_root = SimpleNamespace(
+        taskSetting={"A": {"task": "B"}, "B": {"task": "A"}},
+        model_spec_name="safe", model_spec={"model_name": "safe"}, max_tokens=64,
+    )
+    cyclic = ProductionTaskRuntime(cyclic_root, tokenizer_factory=Tokenizer)
+    assert cyclic.effective_input_cut_len("A") == 3000
+    assert len(cyclic.effective_task_semantics("A")["effective_task_spec"]) == 2
+
+
+def test_reduction_stage_orchestration_never_leases_leaf_workers():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(ReductionStage.execute)))
+    calls = {node.func.id for node in ast.walk(tree)
+             if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)}
+    assert "cap_orchestration_workers" in calls
+    assert "ThreadPoolExecutor" in calls
+    assert "lease_execution_workers" not in calls

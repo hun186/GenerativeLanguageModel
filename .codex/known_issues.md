@@ -138,3 +138,7 @@
 ## 2026-10-01 PR #191 corrective environment
 
 - The required requirements installation remains proxy-blocked at the pinned GitHub `peft` clone (HTTP tunnel 403). Dependency-light unit/regression checks run locally; the real-tokenizer K1 E2E and fresh hosted 19-case acceptance require the hosted environment.
+
+## 2026-10-01 PR #191 final corrective environment
+
+- Required dependency installation remains blocked by the pinned GitHub `peft` proxy 403, so the focused production E2E requires hosted execution. This does not affect dependency-light K1 and prompt-stage regressions.

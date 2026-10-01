@@ -132,3 +132,7 @@ execution_budget_capacity: 8
 
 - Production task identity now records the effective task specification from the same bound task pool used for rendering, its effective `InputCutLen`, callable source when available, tokenizer/model identity, the complete allowlisted D2 generation settings, mock/think modes, and the fixed `include_think=false` contract.
 - `PipelineRefExecutable` preserves target audit under `audit.target`; single-pass `ReductionStage` preserves reducer audit, provenance, and metrics under `reducer` namespaces. `ReductionStageResult` detaches its top-level metadata mappings.
+
+## 2026-10-01 PR #191 final K1 task-pool corrective
+
+- Stage route task resolution accepts any `Mapping`, including detached `MappingProxyType`; absent pools retain global fallback. Production task resolution follows one cycle-safe task-spec chain for both fingerprint semantics and nearest `InputCutLen`.

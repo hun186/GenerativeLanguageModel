@@ -258,3 +258,9 @@
 - Old hosted head `87428da5ec3316e08916c9bc6ca37f3579f2cc50` passed run #434 / `36830720933` with collect-only 19 and 19/19 offline E2E, but review found checkpoint-semantic and metadata-preservation gaps; that result applies only to the old head.
 - Corrected effective task/callable/model/tokenizer/InputCutLen fingerprints, bound StagePipeline task-pool consistency, PipelineRef target audit retention, single-pass reducer metadata retention, construction detachment, and ReductionStageResult mapping detachment without adding K2 nesting or PR L behavior.
 - Local verification: focused K1 contracts 30 passed; complete reduction suite 333 passed; required prompt-pipeline regression selection 15 passed. Requirements/E2E remain locally blocked by the recorded proxy dependency limitation; fresh hosted acceptance is pending.
+
+## 2026-10-01 PR #191 final K1 task-pool corrective
+
+- Head `1e12ba005faceaf67169a55e6e77bf794a2d90f6` passed CI #435 / `36891694196` with 19/19 offline E2E, but review found MappingProxy route resolution, implicit-global execution/fingerprint, and nested InputCutLen mismatches; that green run is pre-corrective evidence only.
+- Corrected generic Mapping route pools, bound global fallback, shared cycle-safe nested task/InputCutLen traversal, and added a source/AST contract proving parent ReductionStage orchestration never leases leaf workers. K2 and PR L remain unimplemented.
+- Local verification: focused K1 33 passed; complete reduction suite 336 passed; prompt-stage selection 16 passed. Fresh hosted 19/19 acceptance remains required.

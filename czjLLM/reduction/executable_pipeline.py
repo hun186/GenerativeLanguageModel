@@ -48,9 +48,11 @@ class StagePipelineExecutable:
         pool = getattr(context.runtime_ctx, "taskSetting", None)
         if isinstance(pool, Mapping):
             return pool
-        # The stage resolver has no task-pool override when the root does not
-        # expose one. The production leaf renderer retains its own established
-        # global fallback for raw tasks.
+        runtime = context.task_runtime
+        if runtime is not None and callable(getattr(runtime, "effective_task_pool", None)):
+            pool = runtime.effective_task_pool()
+            if isinstance(pool, Mapping):
+                return pool
         return MappingProxyType({})
 
     def execute(self, item: Any, context: ExecutionContext) -> ExecutableResult:

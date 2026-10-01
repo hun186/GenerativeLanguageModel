@@ -38,10 +38,12 @@ class ProductionTaskRuntime:
         pool = getattr(self.ctx, "taskSetting", None)
         if isinstance(pool, Mapping):
             return pool
-        if self._tokenizer_factory is not None or self._renderer is not None:
-            return {}
         from czjLLM.taskConfig import taskSetting
         return taskSetting
+
+    def effective_task_pool(self) -> Mapping[str, Any]:
+        """Return the exact pool used by rendering, tokenization, and identity."""
+        return self._task_pool()
 
     def _effective_task_spec(self, task: Any) -> Any:
         if isinstance(task, Mapping):
@@ -50,18 +52,34 @@ class ProductionTaskRuntime:
         pool = self._task_pool()
         return pool[key] if key and key in pool else task
 
-    def _resolved_task_semantics(self, task: Any, seen: frozenset[str] = frozenset()) -> Any:
-        spec = self._effective_task_spec(task)
-        if isinstance(spec, Mapping):
-            mapped = spec.get("task", spec.get("prompt", ""))
+    def _task_resolution_chain(self, task: Any) -> tuple[Any, ...]:
+        """Follow renderer task mappings once per key and terminate on cycles."""
+        pool = self._task_pool()
+        current = task
+        seen: set[str] = set()
+        chain: list[Any] = []
+        while True:
+            if isinstance(current, str):
+                key = current.strip()
+                if not key or key not in pool or key in seen:
+                    chain.append(current)
+                    break
+                seen.add(key)
+                current = pool[key]
+                continue
+            chain.append(current)
+            if not isinstance(current, Mapping):
+                break
+            mapped = current.get("task", current.get("prompt", ""))
             key = str(mapped or "").strip()
-            pool = self._task_pool()
-            if key and key in pool and key not in seen and pool[key] is not spec:
-                return {"spec": _stable_semantics(spec),
-                        "resolved_task": self._resolved_task_semantics(
-                            key, seen | {key}
-                        )}
-        return _stable_semantics(spec)
+            if not key or key not in pool or key in seen or pool[key] is current:
+                break
+            seen.add(key)
+            current = pool[key]
+        return tuple(chain)
+
+    def _resolved_task_semantics(self, task: Any) -> Any:
+        return [_stable_semantics(spec) for spec in self._task_resolution_chain(task)]
 
     def effective_task_semantics(self, task: Any) -> Mapping[str, Any]:
         return {"requested_task": _stable_semantics(task),
@@ -69,22 +87,11 @@ class ProductionTaskRuntime:
                 "effective_input_cut_len": self.effective_input_cut_len(task)}
 
     def effective_input_cut_len(self, task: Any) -> int | None:
-        spec = self._effective_task_spec(task)
-        if isinstance(spec, Mapping) and type(spec.get("InputCutLen")) is int:
-            return spec["InputCutLen"]
-        if isinstance(spec, Mapping):
-            nested_key = str(spec.get("task", spec.get("prompt", "")) or "").strip()
-            nested = self._task_pool().get(nested_key) if nested_key else None
-            if isinstance(nested, Mapping) and type(nested.get("InputCutLen")) is int:
-                return nested["InputCutLen"]
+        for spec in self._task_resolution_chain(task):
+            if isinstance(spec, Mapping) and type(spec.get("InputCutLen")) is int:
+                return spec["InputCutLen"]
         if isinstance(getattr(self.ctx, "taskSetting", None), Mapping):
             return 3000
-        if self._tokenizer_factory is None and self._renderer is None:
-            from czjLLM.taskConfig import taskSetting
-            key = _tokenizer_task(task)
-            global_spec = taskSetting.get(key)
-            if isinstance(global_spec, Mapping) and type(global_spec.get("InputCutLen")) is int:
-                return global_spec["InputCutLen"]
         return 3000
 
     def execute(self, *, task: Any, content: str) -> TaskCallResult:
