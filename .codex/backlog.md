@@ -44,7 +44,7 @@
 - [x] PR G — SQL/ES Collection Adapters + idempotent aggregate upsert
 - [x] PR H — Deterministic composite reducers
 - [x] PR I — Semantic reducer
-- [ ] PR J — Structured relational reducer
+- [x] PR J — Structured relational reducer
 - [ ] PR K — ReductionStage + bounded PipelineRef nesting
 - [ ] PR L — Retention/GC/cache integration points/production hardening
 
@@ -75,3 +75,12 @@
 - [ ] PR J — Structured relational reducer (implementation is local; remains unchecked until its hosted 18-case `offline-e2e` gate succeeds).
 - [ ] PR K — ReductionStage + bounded PipelineRef nesting (not implemented).
 - [ ] PR L — Retention/GC/cache integration points/production hardening (not implemented).
+
+## 2026-10-01 Reduction Engine PR K split and hosted baseline
+
+- [x] PR I — Semantic reducer
+- [x] PR J — Structured relational reducer (PR #190 merged; hosted offline E2E 18/18 PASS; merge `673f14945a9348d462fe1152f7d53c7aba47497a`)
+- [ ] PR K — ReductionStage + bounded PipelineRef nesting
+  - [ ] PR K1 — Executable + non-nested ReductionStage/PipelineRef (implemented on feature branch; remains unchecked pending hosted review/19-case gate)
+  - [ ] PR K2 — bounded nested reduction + depth/cycle guards
+- [ ] PR L — Retention/GC/cache integration points/production hardening

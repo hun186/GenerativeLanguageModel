@@ -128,3 +128,9 @@
 - PR #189 / PR I is complete: hosted offline E2E 17/17 passed and merge commit is `ea3f8b4436000cbc201cd63da2a2db3259b4ab5b`.
 - The recurring full `requirements.txt` pinned-`peft` proxy limitation remains historical/open. PR J's dependency-light reduction, Output Profile, and focused SQLite E2E checks run locally; fresh hosted 18-case acceptance is required before checking off PR J.
 - PR J setup retry: `python -m pip install --upgrade pip` found pip installed but the configured index was proxy-blocked; `python -m pip install -r requirements.txt` then failed cloning pinned `peft` with `CONNECT tunnel failed, response 403`. Consequently full `tests/e2e` collection stops at missing `yaml`; focused PR J E2E passes with installed dependencies, and hosted `offline-e2e` remains authoritative.
+
+## 2026-10-01 PR K1 local environment
+
+- Required setup was attempted. The configured package index and pinned GitHub `peft` clone were blocked by proxy HTTP 403; the environment also lacks `tqdm`, so the focused production HTTP K1 E2E cannot locally import the real tokenizer stack. Dependency-light reduction tests and compile checks remain available; hosted `offline-e2e` is the authoritative 19-case gate.
+- Windows self-hosted runners remain unprovisioned and outside the acceptance gate.
+- Hosted publication is also blocked in this environment: pushing `feat/reduction-stage-executables-k1` to `https://github.com/hun186/GenerativeLanguageModel.git` fails with `CONNECT tunnel failed, response 403`. Therefore no hosted PR number or fresh hosted run ID can be collected locally; retry push/PR creation and the 19-case gate from a network-enabled environment.

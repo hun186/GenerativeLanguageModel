@@ -121,3 +121,9 @@ execution_budget_capacity: 8
 
 - Canonical-prefix namespaces must be pairwise disjoint for the unchanged `<prefix><positive decimal counter>` format. Equal prefixes overlap; a longer prefix also overlaps a shorter prefix when its remaining suffix is ASCII decimal digits beginning with `1`–`9`.
 - Entity endpoints `(collection_path, id_field)` and reference endpoints `(collection_path, field)` are each unique. An exact endpoint may not be owned by both categories; the same collection remains valid across distinct fields.
+
+## 2026-10-01 Reduction Engine PR K1 executable contracts
+
+- `Executable.execute(item, ExecutionContext) -> ExecutableResult` is the source-independent worker boundary; result metadata is frozen and distinct from `ReducerResult`. `ExecutionContext` carries only the root runtime, TaskRuntime, local registry, and reducer context.
+- K1 exposes `TaskExecutable`, ordinary in-memory `StagePipelineExecutable`, and `PipelineRefExecutable`. A ref may resolve only directly to `StagePipelineExecutable`; nested refs and ReductionStage targets are rejected until K2.
+- `ReductionStage` consumes caller-prepared items, supports single-pass or existing hierarchical text reduction, and returns a frozen `ReductionStageResult`. Hierarchical stages require a `RoundPreparer`; the strict `parse_reduction_stage_config` does not require legacy D2 `runtime.round_task`.

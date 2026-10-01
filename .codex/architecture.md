@@ -204,3 +204,9 @@
 - `reduction/reducers/structured_relational.py` owns strict configuration validation, one-level record flattening, two-pass local-ID canonicalization/reference rewriting, detached JSON output, complete remap provenance, and post-remap reducer-wide integrity checks.
 - Pass one assigns every ID using `(record_index, entity_set, local_id)` namespaces; pass two rewrites only configured entity/reference fields. Duplicate IDs inside one local namespace and dangling same-record references fail; duplicate local IDs across records deliberately become distinct canonical entities without semantic consolidation.
 - Registry/config/factory integration is generic and single-pass. Composite rejects this profile because child provenance is not propagated; hierarchical/checkpoint runtime remains `concat_text`-only and unchanged. The existing multidimensional Output Profile remains the downstream validation boundary and contains no global canonicalization logic.
+
+## 2026-10-01 Reduction Engine PR K1 executable foundation
+
+- Reduction worker execution now depends on a small source-independent contract. Production task leaves reuse the authoritative stage prompt renderer, `TokenizerWrapper`, `PromptAPIPipeline`, and the root `ExecutionBudget`; exactly one permit surrounds only `proc()`.
+- Ordinary multi-stage workers adapt the existing in-memory `stage_orchestrator` and do not create business-stage snapshots, manifests, or writeback. `ReductionStage` owns parallel ordered mapping and reducer/controller calls without holding leaf permits.
+- Hierarchical round 1 reduces initial worker outputs; round 2+ deterministically tokenize the prior aggregate, run the same worker, and delegate stop/checkpoint behavior to D1. D1/D2 checkpoint formats and historical identities are unchanged.

@@ -147,3 +147,9 @@
 
 - Reject canonical-prefix language overlap at construction/config parsing rather than waiting for cardinality-dependent post-remap collisions. Keep the existing post-remap global collision check as defense in depth and keep the generated-ID format unchanged.
 - Treat configured entity and reference field endpoints as exclusive ownership claims: duplicates within either category and exact cross-category conflicts are invalid. This removes multiple-writer ambiguity without banning legitimate distinct fields in one collection.
+
+## 2026-10-01 Reduction Engine PR K1 scope decision
+
+- Resolve the former PR-K nesting question conservatively: K1 proves direct PipelineRef-to-ordinary-stage-pipeline execution only. `ReductionStageExecutable`, ref chains, depth/stack guards, cycles, and raw-document nested reduction belong exclusively to K2.
+- Execution fingerprints contain task/pipeline/renderer/model-generation and round-preparer semantics, but exclude credentials, endpoint URLs, runtime reprs, timestamps, thread/process identity, and budget capacity.
+- Initial worker-map results are intentionally not checkpoint-cached or reused in K1; PR L owns member cache/retention policy.

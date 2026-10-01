@@ -243,3 +243,12 @@
 - The shared constructor/parser validator now rejects those invalid configurations before input-dependent execution. Disjoint prefixes and shared collections with different fields remain valid; the two-pass reducer algorithm, post-remap defense, provenance/audit/metrics, PR F/G/I contracts, and PR J scope are unchanged.
 - PR J remains unchecked until a fresh corrected-head hosted `offline-e2e` run collects and passes all 18 cases. PR K/L remain unimplemented.
 - Corrective local verification: focused structured-relational tests 40 passed; complete reduction suite 303 passed; unchanged Output Profile characterization 8 passed; focused PR J E2E 1 passed; compileall and `git diff --check` passed.
+
+## 2026-10-01 Reduction Engine PR K1 executable foundation
+
+- Authoritative baseline is PR #190 merge `673f14945a9348d462fe1152f7d53c7aba47497a`; its corrected hosted offline E2E gate passed 18/18, so PR J is complete.
+- Added frozen executable/context/task-call contracts, production one-chunk TaskRuntime, public production prompt-renderer delegation, ordinary in-memory stage-pipeline adapter, local direct-only PipelineRef registry, deterministic safe fingerprints, tokenizer round preparation, strict stage config, and ordered fail-closed ReductionStage single-pass/hierarchical execution.
+- K1 parent orchestration only caps thread width; leaf TaskExecutable owns the sole budget lease around `PromptAPIPipeline.proc()`. Existing stage state machine, reducers/controllers/checkpoints, PR F/G v1, PR I semantic behavior, and PR J relational behavior remain unchanged.
+- K2 nesting/depth/cycle work and PR L caching/partial-success/retention remain unimplemented. Initial worker-map retry reuse is intentionally not promised.
+- Verification: required dependency setup failed at pinned GitHub `peft` with proxy 403; complete dependency-light reduction suite passed 319 (including 16 focused K1 contract tests); required prompt-pipeline regression selection passed 15. The production K1 E2E is present but locally blocked by missing `tqdm`; hosted CI must collect/run the expected 19 cases.
+- Publication attempt: local commit `222794fc8c1c831296b4d4e43e93d4177b9774b4` was created, but GitHub push/hosted PR/CI collection is blocked by the environment's HTTP 403 tunnel. No merge was attempted.
