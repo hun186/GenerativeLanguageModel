@@ -43,6 +43,18 @@ def _spec_mapping(value: Any, keys: frozenset[str], label: str) -> Mapping[str, 
     return value
 
 
+def _generated_namespaces_overlap(left: str, right: str) -> bool:
+    """Return whether ``prefix + positive-decimal`` languages intersect."""
+    if left == right:
+        return True
+    for longer, shorter in ((left, right), (right, left)):
+        if longer.startswith(shorter):
+            suffix = longer[len(shorter):]
+            if suffix and all(character in "0123456789" for character in suffix) and suffix[0] in "123456789":
+                return True
+    return False
+
+
 def validate_structured_relational_options(options: Any) -> tuple[tuple[EntitySetSpec, ...], tuple[ReferenceSpec, ...]]:
     """Validate and detach the exact PR J options schema."""
     options = _spec_mapping(options, frozenset({"entity_sets", "references"}), "structured_relational options")
@@ -53,7 +65,7 @@ def validate_structured_relational_options(options: Any) -> tuple[tuple[EntitySe
         raise StructuredRelationalError("references must be a sequence")
 
     entities = []
-    names, prefixes = set(), set()
+    names, prefixes, entity_endpoints = set(), [], set()
     for index, raw in enumerate(raw_entities):
         raw = _spec_mapping(raw, frozenset({"name", "collection_path", "id_field", "canonical_prefix"}), f"entity_sets[{index}]")
         name = _text(raw["name"], f"entity_sets[{index}].name")
@@ -66,12 +78,25 @@ def validate_structured_relational_options(options: Any) -> tuple[tuple[EntitySe
         prefix = _text(raw["canonical_prefix"], f"entity_sets[{index}].canonical_prefix")
         if name in names:
             raise StructuredRelationalError(f"duplicate entity-set name: {name!r}")
-        if prefix in prefixes:
-            raise StructuredRelationalError(f"duplicate canonical prefix: {prefix!r}")
-        names.add(name); prefixes.add(prefix)
+        conflicting_prefix = next(
+            (existing for existing in prefixes if _generated_namespaces_overlap(prefix, existing)),
+            None,
+        )
+        if conflicting_prefix is not None:
+            raise StructuredRelationalError(
+                "overlapping canonical prefix namespaces: "
+                f"{conflicting_prefix!r} and {prefix!r}"
+            )
+        endpoint = (path, id_field)
+        if endpoint in entity_endpoints:
+            raise StructuredRelationalError(
+                f"duplicate entity endpoint: ({path!r}, {id_field!r})"
+            )
+        names.add(name); prefixes.append(prefix); entity_endpoints.add(endpoint)
         entities.append(EntitySetSpec(name, path, id_field, prefix))
 
     references = []
+    reference_endpoints = set()
     for index, raw in enumerate(raw_references):
         raw = _spec_mapping(raw, frozenset({"collection_path", "field", "target"}), f"references[{index}]")
         path = _text(raw["collection_path"], f"references[{index}].collection_path")
@@ -83,6 +108,17 @@ def validate_structured_relational_options(options: Any) -> tuple[tuple[EntitySe
         target = _text(raw["target"], f"references[{index}].target")
         if target not in names:
             raise StructuredRelationalError(f"unknown target entity set: {target!r}")
+        endpoint = (path, field_name)
+        if endpoint in reference_endpoints:
+            raise StructuredRelationalError(
+                f"duplicate reference endpoint: ({path!r}, {field_name!r})"
+            )
+        if endpoint in entity_endpoints:
+            raise StructuredRelationalError(
+                "entity/reference endpoint conflict: "
+                f"({path!r}, {field_name!r})"
+            )
+        reference_endpoints.add(endpoint)
         references.append(ReferenceSpec(path, field_name, target))
     return tuple(entities), tuple(references)
 

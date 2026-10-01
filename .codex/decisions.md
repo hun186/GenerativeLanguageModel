@@ -142,3 +142,8 @@
 - Use an explicit two-pass algorithm so references may precede entity collections in mapping order. Preserve only configured relationship semantics; unrelated strings and top-level business fields are never conflict-resolved or merged.
 - Complete remap provenance is mandatory, while audit stays bounded to a canonical-JSON SHA-256 fingerprint and counts. This is why `structured_relational` is rejected inside current composite execution rather than weakening provenance.
 - PR F/G manifest and aggregate contracts remain version `1`; aggregate ID derivation, adapters, and sinks are unchanged. PR I semantic behavior and D1/D2 hierarchical/checkpoint contracts are unchanged. PR K/L remain unimplemented.
+
+## 2026-10-01 PR #190 strict configuration corrective
+
+- Reject canonical-prefix language overlap at construction/config parsing rather than waiting for cardinality-dependent post-remap collisions. Keep the existing post-remap global collision check as defense in depth and keep the generated-ID format unchanged.
+- Treat configured entity and reference field endpoints as exclusive ownership claims: duplicates within either category and exact cross-category conflicts are invalid. This removes multiple-writer ambiguity without banning legitimate distinct fields in one collection.

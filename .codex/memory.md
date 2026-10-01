@@ -236,3 +236,10 @@
 - Added focused coverage for malformed config/data, immutable PR F payloads, no mutation, deterministic order, multiple entity sets, no semantic consolidation, and unchanged multidimensional Output Profile compatibility. Added exactly one PR J E2E from immutable manifest payloads through reducer/profile/aggregate/SQLite idempotent retry.
 - PR J stays unchecked until fresh hosted `offline-e2e` collects and passes 18 cases. Composite/hierarchical relational execution, PR K, and PR L were not implemented; PR F/G v1 and PR I behavior remain unchanged.
 - Local verification after required setup attempt: `tests/reduction` 290 passed; Output Profile characterization 8 passed; focused PR J E2E 1 passed; compileall and `git diff --check` passed. Full local E2E collect/run is unavailable because blocked dependency installation leaves PyYAML absent; hosted CI must prove the expected 18/18 gate.
+
+## 2026-10-01 PR #190 strict relational configuration corrective
+
+- Existing PR #190 review identified three configuration-time ownership gaps on hosted head `8fd41c94fc92202f79763b621a00e0df29edc6af`: overlapping generated prefix namespaces, duplicate entity/reference endpoints, and exact entity/reference endpoint conflicts.
+- The shared constructor/parser validator now rejects those invalid configurations before input-dependent execution. Disjoint prefixes and shared collections with different fields remain valid; the two-pass reducer algorithm, post-remap defense, provenance/audit/metrics, PR F/G/I contracts, and PR J scope are unchanged.
+- PR J remains unchecked until a fresh corrected-head hosted `offline-e2e` run collects and passes all 18 cases. PR K/L remain unimplemented.
+- Corrective local verification: focused structured-relational tests 40 passed; complete reduction suite 303 passed; unchanged Output Profile characterization 8 passed; focused PR J E2E 1 passed; compileall and `git diff --check` passed.

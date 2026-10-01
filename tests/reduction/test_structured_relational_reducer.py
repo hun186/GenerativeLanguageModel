@@ -5,7 +5,7 @@ import pytest
 
 from czjLLM.es_mode.output_profiles import get_default_registry as output_profiles
 from czjLLM.reduction import (
-    StructuredRelationalError, StructuredRelationalReducer,
+    ReductionConfigError, StructuredRelationalError, StructuredRelationalReducer,
     get_default_registry, parse_reduction_config, reduce_single_pass,
 )
 
@@ -66,6 +66,79 @@ def test_constructor_registry_metadata_and_config_are_fail_closed_and_immutable(
 def test_invalid_configuration_fails_during_parsing(options):
     with pytest.raises(Exception):
         parse_reduction_config({"enabled": True, "profile": "structured_relational", "options": options})
+
+
+def _entity(name, path, field, prefix):
+    return {"name": name, "collection_path": path, "id_field": field,
+            "canonical_prefix": prefix}
+
+
+@pytest.mark.parametrize("left,right", [("E", "E1"), ("E", "E12"),
+                                          ("E1", "E11"), ("REL", "REL9")])
+def test_overlapping_prefix_namespaces_fail_at_constructor_and_config(left, right):
+    entities = [_entity("left", "Left", "id", left),
+                _entity("right", "Right", "id", right)]
+    with pytest.raises(StructuredRelationalError, match="overlapping canonical prefix"):
+        StructuredRelationalReducer(entities, [])
+    with pytest.raises(ReductionConfigError, match="overlapping canonical prefix"):
+        parse_reduction_config({"enabled": True, "profile": "structured_relational",
+                                "options": {"entity_sets": entities, "references": []}})
+
+
+@pytest.mark.parametrize("left,right", [("E", "P"), ("E", "EVENT"),
+                                          ("E", "E0"), ("A_", "A1")])
+def test_disjoint_prefix_namespaces_remain_valid(left, right):
+    entities = [_entity("left", "Left", "id", left),
+                _entity("right", "Right", "id", right)]
+    direct = StructuredRelationalReducer(entities, [])
+    parsed = parse_reduction_config({"enabled": True, "profile": "structured_relational",
+                                     "options": {"entity_sets": entities, "references": []}})
+    assert len(direct.entity_sets) == len(parsed.options["entity_sets"]) == 2
+
+
+def test_duplicate_entity_endpoint_fails_at_constructor_and_config():
+    entities = [_entity("events_a", "Event", "event_id", "E"),
+                _entity("events_b", "Event", "event_id", "X")]
+    with pytest.raises(StructuredRelationalError, match="duplicate entity endpoint"):
+        StructuredRelationalReducer(entities, [])
+    with pytest.raises(ReductionConfigError, match="duplicate entity endpoint"):
+        parse_reduction_config({"enabled": True, "profile": "structured_relational",
+                                "options": {"entity_sets": entities, "references": []}})
+
+
+@pytest.mark.parametrize("targets", [("events", "events"), ("events", "incidents")])
+def test_duplicate_reference_endpoint_fails_for_same_or_different_targets(targets):
+    entities = [_entity("events", "Event", "event_id", "E"),
+                _entity("incidents", "Incident", "incident_id", "I")]
+    references = [{"collection_path": "Person", "field": "event_ids", "target": target}
+                  for target in targets]
+    with pytest.raises(StructuredRelationalError, match="duplicate reference endpoint"):
+        StructuredRelationalReducer(entities, references)
+    with pytest.raises(ReductionConfigError, match="duplicate reference endpoint"):
+        parse_reduction_config({"enabled": True, "profile": "structured_relational",
+                                "options": {"entity_sets": entities, "references": references}})
+
+
+def test_entity_reference_endpoint_conflict_fails_at_constructor_and_config():
+    entities = [_entity("events", "Event", "event_id", "E"),
+                _entity("people", "Person", "event_ids", "P")]
+    references = [{"collection_path": "Person", "field": "event_ids", "target": "events"}]
+    with pytest.raises(StructuredRelationalError, match="entity/reference endpoint conflict"):
+        StructuredRelationalReducer(entities, references)
+    with pytest.raises(ReductionConfigError, match="entity/reference endpoint conflict"):
+        parse_reduction_config({"enabled": True, "profile": "structured_relational",
+                                "options": {"entity_sets": entities, "references": references}})
+
+
+def test_shared_collection_with_distinct_entity_and_reference_fields_is_valid():
+    entities = [_entity("events", "Event", "event_id", "E"),
+                _entity("people", "Person", "person_id", "P")]
+    references = [{"collection_path": "Person", "field": "event_ids", "target": "events"}]
+    direct = StructuredRelationalReducer(entities, references)
+    parsed = parse_reduction_config({"enabled": True, "profile": "structured_relational",
+                                     "options": {"entity_sets": entities,
+                                                 "references": references}})
+    assert direct.references[0].field == parsed.options["references"][0]["field"] == "event_ids"
 
 
 def test_composite_and_hierarchical_use_are_rejected():
