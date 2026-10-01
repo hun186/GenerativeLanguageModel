@@ -135,3 +135,10 @@
 ## 2026-09-30 PR #189 response-cleanup corrective
 
 - Do not map `think_mode` to `include_think`: model thinking instructions and application-output cleanup are separate existing contracts. Semantic v1 keeps prompt rendering aware of `think_mode` and always uses the production-default think-tag cleanup. Zero evidence is not a valid semantic consolidation input.
+
+## 2026-10-01 Reduction Engine PR J
+
+- Relational v1 is structural, not semantic: every record owns an independent local namespace, so equal local IDs across records always receive distinct first-appearance canonical IDs. No fuzzy, text, embedding, or LLM consolidation occurs.
+- Use an explicit two-pass algorithm so references may precede entity collections in mapping order. Preserve only configured relationship semantics; unrelated strings and top-level business fields are never conflict-resolved or merged.
+- Complete remap provenance is mandatory, while audit stays bounded to a canonical-JSON SHA-256 fingerprint and counts. This is why `structured_relational` is rejected inside current composite execution rather than weakening provenance.
+- PR F/G manifest and aggregate contracts remain version `1`; aggregate ID derivation, adapters, and sinks are unchanged. PR I semantic behavior and D1/D2 hierarchical/checkpoint contracts are unchanged. PR K/L remain unimplemented.

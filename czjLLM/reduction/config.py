@@ -16,6 +16,9 @@ from czjLLM.reduction.reducers.deterministic import (
     DeterministicReducerError,
     validate_path,
 )
+from czjLLM.reduction.reducers.structured_relational import (
+    StructuredRelationalError, validate_structured_relational_options,
+)
 
 
 class ReductionConfigError(ValueError):
@@ -30,7 +33,8 @@ _SUPPORTED_CONTROLLERS = frozenset(
 )
 _SUPPORTED_PROFILES = frozenset(
     {"concat_text", "concat_json_list", "legacy_json_deep_merge", "dedup",
-     "group", "entity_union", "rank", "top_k", "composite", "semantic_llm"}
+     "group", "entity_union", "rank", "top_k", "composite", "semantic_llm",
+     "structured_relational"}
 )
 _COMPOSITE_STEP_PROFILES = _SUPPORTED_PROFILES - {"composite"}
 _DEEP_MERGE_OPTION_KEYS = frozenset(
@@ -96,6 +100,7 @@ def _validate_options(profile: Optional[str], raw: Any) -> Mapping[str, Any]:
         "rank": frozenset({"score_path", "descending"}),
         "top_k": frozenset({"k"}), "composite": frozenset({"steps"}),
         "semantic_llm": frozenset({"task"}),
+        "structured_relational": frozenset({"entity_sets", "references"}),
     }
     allowed = allowed_by_profile.get(profile, frozenset())
     _unexpected_keys(options, allowed, "reduction option")
@@ -150,6 +155,18 @@ def _validate_options(profile: Optional[str], raw: Any) -> Mapping[str, Any]:
         task = options.get("task")
         if not isinstance(task, str) or not task.strip():
             raise ReductionConfigError("reduction.options.task is required and must be a non-blank string")
+    if profile == "structured_relational":
+        try:
+            entities, references = validate_structured_relational_options(options)
+        except StructuredRelationalError as exc:
+            raise ReductionConfigError(f"Invalid structured_relational options: {exc}") from exc
+        options["entity_sets"] = tuple(MappingProxyType({
+            "name": item.name, "collection_path": item.collection_path,
+            "id_field": item.id_field, "canonical_prefix": item.canonical_prefix,
+        }) for item in entities)
+        options["references"] = tuple(MappingProxyType({
+            "collection_path": item.collection_path, "field": item.field, "target": item.target,
+        }) for item in references)
     if profile == "composite":
         steps = options.get("steps")
         if not isinstance(steps, (list, tuple)) or not steps:
@@ -168,6 +185,8 @@ def _validate_options(profile: Optional[str], raw: Any) -> Mapping[str, Any]:
             canonical = registry.normalize_name(name)
             if canonical == "composite":
                 raise ReductionConfigError("nested composite reducers are not supported")
+            if canonical == "structured_relational":
+                raise ReductionConfigError("structured_relational is not supported inside composite")
             if canonical not in _COMPOSITE_STEP_PROFILES or not registry.has(canonical):
                 raise ReductionConfigError(f"Unknown composite step profile: {name!r}")
             step_options = _validate_options(canonical, step.get("options", {}))

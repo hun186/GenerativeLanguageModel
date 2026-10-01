@@ -109,3 +109,10 @@ execution_budget_capacity: 8
 
 - `semantic_llm` requires at least one input item; zero items raise `SemanticReducerError` without invoking `SemanticRuntime.execute`.
 - `think_mode` remains prompt-rendering context only. Semantic calls preserve `PromptAPIPipeline.include_think=False`, so internal `<think>` content is not part of the reducer payload.
+
+## 2026-10-01 Reduction `structured_relational` v1
+
+- Canonical profile `structured_relational` (alias `relational`), contract version `1`, is top-level `single_pass` only and is rejected in composite and hierarchical configurations.
+- Options contain exactly `entity_sets` (required non-empty sequence of `{name, collection_path, id_field, canonical_prefix}`) and `references` (required sequence of `{collection_path, field, target}`); paths use mapping-only dotted traversal and ID/reference fields are direct member keys.
+- Each flattened record is a local namespace. Canonical IDs are assigned as `<unique-prefix><1-based entity-set counter>` in record/member first-appearance order; output is detached `list[dict]`, preserving records, members, and unrelated values.
+- Result provenance contains complete immutable `id_remap` records (`record_index`, `entity_set`, `local_id`, `canonical_id`). Audit exposes only remap count/fingerprint and spec counts; metrics expose record/entity/reference and rewrite counts.
