@@ -15,6 +15,7 @@ from czjLLM.reduction.execution import Executable, ExecutionContext, ExecutionEr
 from czjLLM.reduction.factory import build_configured_reducer
 from czjLLM.reduction.hierarchical import RoundMetrics, reduce_hierarchical_text
 from czjLLM.reduction.registry import get_default_registry
+from czjLLM.reduction.runtime_task import CONTENT_PREPARATION_CONTRACT_VERSION
 
 
 class RoundPreparer(Protocol):
@@ -77,6 +78,15 @@ class TokenizerRoundPreparer:
         ctx = context.runtime_ctx
         if ctx is None:
             raise ExecutionError("tokenizer round preparer requires runtime_ctx")
+        runtime = context.task_runtime
+        if runtime is not None and callable(getattr(runtime, "prepare_content_chunks", None)):
+            try:
+                chunks = runtime.prepare_content_chunks(task=self.task, content=payload)
+            except Exception as exc:
+                raise ExecutionError(f"round prompt-aware preparation failed: {exc}") from exc
+            if not chunks or any(not isinstance(chunk, str) or not chunk.strip() for chunk in chunks):
+                raise ExecutionError("round prompt-aware preparation returned invalid chunks")
+            return tuple(chunks)
         factory = self.tokenizer_factory
         if factory is None:
             from czjLLM.tokenizer_utils import TokenizerWrapper
@@ -95,8 +105,9 @@ class TokenizerRoundPreparer:
 
     def fingerprint_metadata(self, context: ExecutionContext) -> Mapping[str, Any]:
         ctx = context.runtime_ctx
-        return {"type": "tokenizer", "contract_version": "reduction-tokenizer-round-preparer-v2",
+        return {"type": "tokenizer", "contract_version": "reduction-tokenizer-round-preparer-v3",
                 "tokenizer_contract_version": "tokenizer-wrapper-v1",
+                "content_preparation_contract": CONTENT_PREPARATION_CONTRACT_VERSION,
                 "task": self.task, "model_name": getattr(ctx, "model_spec_name", None),
                 "max_tokens": getattr(ctx, "max_tokens", None),
                 "input_cut_len": effective_input_cut_len(

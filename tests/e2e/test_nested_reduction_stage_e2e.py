@@ -73,7 +73,11 @@ def test_bounded_nested_reduction_real_http_shared_budget(fake_openai, tmp_path)
     assert prompts.count("ROW_ID=first") > 1 and prompts.count("ROW_ID=second") > 1
     assert len(fake_openai.requests) > 4
     assert not list(tmp_path.glob("**/*stage*manifest*"))
-    assert not list(tmp_path.glob("**/*.{sqlite,csv,xlsx}"))
+    assert (tmp_path / "audit.csv").exists()
+    assert not list(tmp_path.glob("**/*.sqlite"))
+    assert not list(tmp_path.glob("**/*.db"))
+    assert not list(tmp_path.glob("**/*sql*output*"))
+    assert not list(tmp_path.glob("**/*es*output*"))
     snapshot = budget.snapshot()
     assert snapshot.in_use == 0 and snapshot.peak_in_use == 2
     assert snapshot.peak_in_use <= 2

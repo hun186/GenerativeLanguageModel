@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import FrozenInstanceError, replace
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Barrier, Lock
 from types import SimpleNamespace
+import time
+import hashlib
+import json
 
 import pytest
 
@@ -12,6 +17,7 @@ from czjLLM.reduction import (
     ReductionStageExecutable, StagePipelineExecutable, TaskCallResult, TaskExecutable,
     TokenizerInputPreparer, TokenizerRoundPreparer, parse_reduction_config,
     parse_reduction_stage_executable_config,
+    ProductionTaskRuntime, ReductionStageResult,
 )
 from czjLLM.reduction.config import ReductionConfigError
 
@@ -189,6 +195,119 @@ def test_input_and_round_preparers_share_effective_nested_boundary_and_fingerpri
     changed = context(pool=changed_pool, runtime=Runtime(changed_pool))
     assert initial.fingerprint_metadata(ctx) != initial.fingerprint_metadata(changed)
     assert rounds.fingerprint_metadata(ctx) != rounds.fingerprint_metadata(changed)
+
+
+class BoundaryTokenizer:
+    def __init__(self, **kwargs):
+        self.max_input_tokens = 3000
+
+    def tokenize(self, *, text, **kwargs):
+        width = self.max_input_tokens
+        return {"ctxCut": [text[index:index + width] for index in range(0, len(text), width)]}
+
+
+def prompt_aware_context(*, cut_len=12, prefix="PRE[", suffix="]POST"):
+    pool = {"summary": {"task": "prompt", "InputCutLen": cut_len}}
+    root = SimpleNamespace(
+        model_spec_name="model-a", max_tokens=64, taskSetting=pool,
+        model_spec={"model_name": "safe"}, think_mode=False,
+    )
+    renderer = lambda task, content, ctx: prefix + content + suffix
+    runtime = ProductionTaskRuntime(
+        root, tokenizer_factory=BoundaryTokenizer,
+        pipeline_factory=lambda **kwargs: (_ for _ in ()).throw(AssertionError("no LLM call")),
+        renderer=renderer,
+    )
+    return ExecutionContext(root, runtime), runtime
+
+
+def test_prompt_aware_initial_and_round_preparation_refine_and_preserve_source():
+    ctx, runtime = prompt_aware_context()
+    source = "abcdefghijklmnopqrstuvwx"
+    raw_candidates = runtime._tokenize(task="summary", text=source)
+    assert any(not runtime.preflight_task_content(
+        task="summary", content=candidate).fits_one_chunk for candidate in raw_candidates)
+
+    initial = tuple(TokenizerInputPreparer("summary").prepare(source, ctx))
+    rounds = tuple(TokenizerRoundPreparer("summary").prepare(source, 2, ctx))
+    assert "".join(initial) == source == "".join(rounds)
+    assert initial == rounds
+    assert len(initial) > len(raw_candidates)
+    assert all(runtime.preflight_task_content(
+        task="summary", content=chunk).fits_one_chunk for chunk in initial)
+
+
+def test_prompt_aware_preparation_rejects_impossible_overhead_before_llm():
+    ctx, _runtime = prompt_aware_context(cut_len=8, prefix="OVERHEAD-TOO-LONG[", suffix="]")
+    for prepare in (
+        lambda: TokenizerInputPreparer("summary").prepare("content", ctx),
+        lambda: TokenizerRoundPreparer("summary").prepare("content", 2, ctx),
+    ):
+        with pytest.raises(ExecutionError, match="prompt overhead exceeds"):
+            tuple(prepare())
+
+
+@pytest.mark.parametrize("checkpointed,expected_peak", [(True, 1), (False, 2)])
+def test_nested_checkpoint_lock_serializes_only_checkpointed_stage(
+        monkeypatch, tmp_path, checkpointed, expected_peak):
+    stage = ReductionStage(
+        TaskExecutable("summary"), reduction(), checkpoint_root=tmp_path if checkpointed else None
+    )
+    executable = ReductionStageExecutable(stage, IdentityInputPreparer())
+    state_lock = Lock()
+    rendezvous = Barrier(2) if not checkpointed else None
+    active = peak = 0
+
+    def instrumented_execute(self, items, execution_context):
+        nonlocal active, peak
+        if rendezvous is not None:
+            rendezvous.wait(timeout=2)
+        with state_lock:
+            active += 1
+            peak = max(peak, active)
+        time.sleep(.03)
+        with state_lock:
+            active -= 1
+        return ReductionStageResult(
+            payload="ok", profile="concat_text", controller="single_pass",
+            rounds_completed=1, stop_reason="done", worker_execution_count=1,
+        )
+
+    monkeypatch.setattr(ReductionStage, "execute", instrumented_execute)
+    root = context()
+    before = executable.fingerprint_metadata(root)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(lambda _: executable.execute("identical", root), range(2)))
+    after = executable.fingerprint_metadata(root)
+    assert [result.output for result in results] == ["ok", "ok"]
+    assert peak == expected_peak and active == 0
+    assert before == after
+
+
+def test_identical_checkpointed_nested_calls_leave_consistent_artifacts(tmp_path):
+    class RoundPreparer:
+        def prepare(self, payload, round_index, execution_context): return (payload,)
+        def fingerprint_metadata(self, execution_context): return {"preparer": "test-v1"}
+    stage = ReductionStage(
+        TaskExecutable("summary"),
+        reduction("fixed_rounds", controller_options={"rounds": 2}),
+        worker_parallelism=2, round_preparer=RoundPreparer(), checkpoint_root=tmp_path,
+    )
+    executable = ReductionStageExecutable(stage, IdentityInputPreparer())
+    root = context(runtime=Runtime())
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(lambda _: executable.execute("identical", root), range(2)))
+    assert results[0].output == results[1].output
+    checkpoints = sorted(tmp_path.glob("*/round-*.json"))
+    assert checkpoints
+    for checkpoint_path in checkpoints:
+        checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+        payload = checkpoint_path.with_name(checkpoint["payload_artifact"]).read_text(
+            encoding="utf-8"
+        )
+        assert hashlib.sha256(payload.encode("utf-8")).hexdigest() == checkpoint[
+            "output_fingerprint"
+        ]
 
 
 def test_stage_fingerprint_covers_semantics_not_operational_values(tmp_path):

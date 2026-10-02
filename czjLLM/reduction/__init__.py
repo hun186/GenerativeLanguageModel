@@ -32,7 +32,7 @@ from .execution import (
     ExecutionNestingState, TaskCallResult, TaskExecutable, TaskRuntime,
 )
 from .executable_pipeline import PipelineRefExecutable, StagePipelineExecutable
-from .runtime_task import ProductionTaskRuntime
+from .runtime_task import ProductionTaskRuntime, TaskPromptPreflight
 from .stage import ReductionStage, ReductionStageResult, RoundPreparer, TokenizerRoundPreparer
 from .nested_execution import (
     IdentityInputPreparer, InputPreparer, ReductionStageExecutable, TokenizerInputPreparer,
@@ -82,6 +82,7 @@ __all__ = [
     "ExecutionNestingState",
     "ExecutionError", "TaskCallResult", "TaskExecutable", "TaskRuntime",
     "PipelineRefExecutable", "StagePipelineExecutable", "ProductionTaskRuntime",
+    "TaskPromptPreflight",
     "ReductionStage", "ReductionStageResult", "RoundPreparer", "TokenizerRoundPreparer",
     "InputPreparer", "IdentityInputPreparer", "TokenizerInputPreparer",
     "ReductionStageExecutable", "ReductionStageConfig", "parse_reduction_stage_config",

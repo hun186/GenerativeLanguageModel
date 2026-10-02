@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from types import MappingProxyType
+from threading import Lock
 from typing import Any, Iterable, Mapping, Protocol
 
 from czjLLM.reduction.execution import (
     ExecutableResult, ExecutionContext, ExecutionError, TaskExecutable,
 )
 from czjLLM.reduction.stage import ReductionStage, effective_input_cut_len
+from czjLLM.reduction.runtime_task import CONTENT_PREPARATION_CONTRACT_VERSION
 
 
 class InputPreparer(Protocol):
@@ -32,7 +34,7 @@ class IdentityInputPreparer:
 class TokenizerInputPreparer:
     task: str
     tokenizer_factory: Any = field(default=None, repr=False, compare=False)
-    contract_version: str = field(default="reduction-tokenizer-input-preparer-v1", init=False)
+    contract_version: str = field(default="reduction-tokenizer-input-preparer-v2", init=False)
 
     def __post_init__(self) -> None:
         if not isinstance(self.task, str) or not self.task.strip() or self.task != self.task.strip():
@@ -46,6 +48,15 @@ class TokenizerInputPreparer:
         ctx = context.runtime_ctx
         if ctx is None:
             raise ExecutionError("tokenizer input preparer requires runtime_ctx")
+        runtime = context.task_runtime
+        if runtime is not None and callable(getattr(runtime, "prepare_content_chunks", None)):
+            try:
+                chunks = runtime.prepare_content_chunks(task=self.task, content=item)
+            except Exception as exc:
+                raise ExecutionError(f"input prompt-aware preparation failed: {exc}") from exc
+            if not chunks or any(not isinstance(chunk, str) or not chunk.strip() for chunk in chunks):
+                raise ExecutionError("input prompt-aware preparation returned invalid chunks")
+            return tuple(chunks)
         factory = self.tokenizer_factory
         if factory is None:
             from czjLLM.tokenizer_utils import TokenizerWrapper
@@ -68,6 +79,7 @@ class TokenizerInputPreparer:
             "type": "tokenizer",
             "contract_version": self.contract_version,
             "tokenizer_contract_version": "tokenizer-wrapper-v1",
+            "content_preparation_contract": CONTENT_PREPARATION_CONTRACT_VERSION,
             "task": self.task,
             "model_spec_name": getattr(ctx, "model_spec_name", None),
             "max_tokens": getattr(ctx, "max_tokens", None),
@@ -83,6 +95,9 @@ class ReductionStageExecutable:
     input_preparer: InputPreparer
     executor_type: str = field(default="reduction_stage", init=False)
     contract_version: str = field(default="reduction-stage-executable-v1", init=False)
+    _checkpoint_execution_lock: Any = field(
+        default_factory=Lock, init=False, repr=False, compare=False
+    )
 
     def __post_init__(self) -> None:
         from czjLLM.reduction.executable_pipeline import PipelineRefExecutable
@@ -103,7 +118,13 @@ class ReductionStageExecutable:
         prepared = list(self.input_preparer.prepare(item, nested_context))
         if not prepared:
             raise ExecutionError("nested ReductionStage input preparer returned no items")
-        result = self.stage.execute(prepared, nested_context)
+        if self.stage.checkpoint_root is None:
+            result = self.stage.execute(prepared, nested_context)
+        else:
+            # Operational K2 guard: no leaf lease is held during lock wait;
+            # the child stage acquires leaf permits only after entering here.
+            with self._checkpoint_execution_lock:
+                result = self.stage.execute(prepared, nested_context)
         audit = {
             "nested_reduction_depth": nested_context.nesting.nested_reduction_depth,
             "stop_reason": result.stop_reason,

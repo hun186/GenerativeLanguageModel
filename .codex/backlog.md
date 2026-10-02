@@ -105,3 +105,10 @@
 - [ ] PR K overall — remains open until K2 hosted acceptance.
 - [ ] PR L — retention/GC/cache integration and production hardening remain unimplemented.
 - PR L retains member-result caching, full member lineage aggregation, partial-success policies, cancellation, TTL, cleanup, and GC.
+
+## 2026-10-02 PR #192 rejected hosted head and corrective
+
+- [x] K1 — PR #191; CI #436 / `36895400626`; 19/19 PASS; merge `b74907c2b235bbace9afad4a5b9f676cb85e1748`.
+- [ ] K2 — PR #192 head `16487e4769e7d7fa4b1c7763c5efc25049460854`, CI #438 / `36964059859`, collected 20 but full gate FAILED in nested E2E: final task prompt exceeded one configured token chunk. Prompt-aware/checkpoint/audit-assertion corrective is pending fresh hosted acceptance.
+- [ ] PR K overall remains unchecked.
+- [ ] PR L remains unimplemented; finer per-run checkpoint coordination, caches, retention, GC, cancellation, partial success, and lineage aggregation remain out of K2 scope.
