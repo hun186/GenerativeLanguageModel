@@ -12,12 +12,52 @@ from czjLLM.reduction.artifacts import normalized_fingerprint
 from czjLLM.reduction.config import ReductionConfig
 from czjLLM.reduction.engine import reduce_single_pass
 from czjLLM.reduction.execution import Executable, ExecutionContext, ExecutionError, _stable_semantics
+from czjLLM.reduction.factory import build_configured_reducer
 from czjLLM.reduction.hierarchical import RoundMetrics, reduce_hierarchical_text
+from czjLLM.reduction.registry import get_default_registry
 
 
 class RoundPreparer(Protocol):
     def prepare(self, payload: str, round_index: int, context: ExecutionContext) -> Iterable[str]: ...
     def fingerprint_metadata(self, context: ExecutionContext) -> Mapping[str, Any]: ...
+
+
+def effective_input_cut_len(
+    task: Any, context: ExecutionContext, *, use_global_task_pool: bool = True
+) -> int:
+    """Resolve the tokenizer boundary shared by initial and round preparation."""
+    runtime = context.task_runtime
+    if runtime is not None and callable(getattr(runtime, "effective_input_cut_len", None)):
+        value = runtime.effective_input_cut_len(task)
+        if type(value) is int:
+            return value
+    pool = getattr(context.runtime_ctx, "taskSetting", None)
+    if not isinstance(pool, Mapping):
+        if not use_global_task_pool:
+            return 3000
+        from czjLLM.taskConfig import taskSetting
+        pool = taskSetting
+    current: Any = task
+    seen: set[str] = set()
+    while True:
+        if isinstance(current, str):
+            key = current.strip()
+            if not key or key not in pool or key in seen:
+                break
+            seen.add(key)
+            current = pool[key]
+        if not isinstance(current, Mapping):
+            break
+        value = current.get("InputCutLen")
+        if type(value) is int:
+            return value
+        mapped = current.get("task", current.get("prompt", ""))
+        key = str(mapped or "").strip()
+        if not key or key not in pool or key in seen or pool[key] is current:
+            break
+        seen.add(key)
+        current = pool[key]
+    return 3000
 
 
 @dataclass(frozen=True)
@@ -28,21 +68,6 @@ class TokenizerRoundPreparer:
     def __post_init__(self) -> None:
         if not isinstance(self.task, str) or not self.task.strip() or self.task != self.task.strip():
             raise ValueError("round preparer task must be non-blank without surrounding whitespace")
-
-    def _effective_input_cut_len(self, context: ExecutionContext) -> int:
-        ctx = context.runtime_ctx
-        pool = getattr(ctx, "taskSetting", None)
-        spec = pool.get(self.task) if isinstance(pool, Mapping) else None
-        if isinstance(spec, Mapping) and type(spec.get("InputCutLen")) is int:
-            return spec["InputCutLen"]
-        if isinstance(pool, Mapping):
-            return 3000
-        if self.tokenizer_factory is None:
-            from czjLLM.taskConfig import taskSetting
-            global_spec = taskSetting.get(self.task)
-            if isinstance(global_spec, Mapping) and type(global_spec.get("InputCutLen")) is int:
-                return global_spec["InputCutLen"]
-        return 3000
 
     def prepare(self, payload: str, round_index: int, context: ExecutionContext) -> Iterable[str]:
         if not isinstance(payload, str) or not payload.strip():
@@ -58,7 +83,9 @@ class TokenizerRoundPreparer:
             factory = TokenizerWrapper
         tokenizer = factory(model_name=ctx.model_spec_name, task=self.task,
                             max_tokens=ctx.max_tokens)
-        tokenizer.max_input_tokens = self._effective_input_cut_len(context)
+        tokenizer.max_input_tokens = effective_input_cut_len(
+            self.task, context, use_global_task_pool=self.tokenizer_factory is None
+        )
         chunks = tokenizer.tokenize(
                              text=payload, adjust=True, max_tokens=ctx.max_tokens, quiet=True)["ctxCut"]
         if not isinstance(chunks, (list, tuple)) or not chunks or any(
@@ -68,11 +95,13 @@ class TokenizerRoundPreparer:
 
     def fingerprint_metadata(self, context: ExecutionContext) -> Mapping[str, Any]:
         ctx = context.runtime_ctx
-        return {"type": "tokenizer", "contract_version": "reduction-tokenizer-round-preparer-v1",
+        return {"type": "tokenizer", "contract_version": "reduction-tokenizer-round-preparer-v2",
                 "tokenizer_contract_version": "tokenizer-wrapper-v1",
                 "task": self.task, "model_name": getattr(ctx, "model_spec_name", None),
                 "max_tokens": getattr(ctx, "max_tokens", None),
-                "input_cut_len": self._effective_input_cut_len(context)}
+                "input_cut_len": effective_input_cut_len(
+                    self.task, context, use_global_task_pool=self.tokenizer_factory is None
+                )}
 
 
 @dataclass(frozen=True)
@@ -104,7 +133,7 @@ class ReductionStage:
     worker_parallelism: int = 1
     round_preparer: RoundPreparer | None = None
     checkpoint_root: str | Path | None = None
-    contract_version: str = field(default="reduction-stage-v1", init=False)
+    contract_version: str = field(default="reduction-stage-v2", init=False)
 
     def __post_init__(self) -> None:
         if type(self.worker_parallelism) is not int or self.worker_parallelism <= 0:
@@ -116,10 +145,26 @@ class ReductionStage:
             raise ValueError("round_preparer is required only for hierarchical ReductionStage")
 
     def execution_fingerprint(self, context: ExecutionContext) -> str:
-        data = {"contract_version": self.contract_version,
-                "worker": self.worker.fingerprint_metadata(context),
-                "round_preparer": self.round_preparer.fingerprint_metadata(context) if self.round_preparer else None}
-        return normalized_fingerprint(_stable_semantics(data))
+        return normalized_fingerprint(_stable_semantics(self.fingerprint_metadata(context)))
+
+    def fingerprint_metadata(self, context: ExecutionContext) -> Mapping[str, Any]:
+        reducer = build_configured_reducer(
+            self.reduction.profile or "", self.reduction.options, get_default_registry()
+        )
+        return {
+            "contract_version": self.contract_version,
+            "reduction": {
+                "profile": self.reduction.profile,
+                "reducer_contract_version": reducer.contract_version,
+                "options": _stable_semantics(self.reduction.options),
+                "controller": self.reduction.controller,
+                "controller_options": _stable_semantics(self.reduction.controller_options),
+            },
+            "worker": self.worker.fingerprint_metadata(context),
+            "round_preparer": (
+                self.round_preparer.fingerprint_metadata(context) if self.round_preparer else None
+            ),
+        }
 
     def execute(self, items: Iterable[Any], context: ExecutionContext) -> ReductionStageResult:
         prepared = list(items)

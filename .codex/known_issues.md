@@ -142,3 +142,9 @@
 ## 2026-10-01 PR #191 final corrective environment
 
 - Required dependency installation remains blocked by the pinned GitHub `peft` proxy 403, so the focused production E2E requires hosted execution. This does not affect dependency-light K1 and prompt-stage regressions.
+# 2026-10-02 PR K2 local environment limitation
+
+- Required `python -m pip install --upgrade pip` completed, but `python -m pip install -r requirements.txt` remains blocked by the sandbox CONNECT proxy (HTTP 403 while cloning pinned GitHub `peft`).
+- Dependency-light K2/reduction/prompt tests run locally. The focused production K2 E2E cannot collect locally because the incomplete install leaves `psutil` unavailable while importing the real tokenizer production path; hosted `offline-e2e` must provide the fresh 20-case acceptance evidence.
+- Alternative validation: focused K2 unit suite, full reduction suite, prompt-pipeline regressions, compileall, and diff checks. No production behavior is replaced by a mock to hide this limitation.
+- This checkout has no configured `origin` repository, so `git push -u origin feat/reduction-stage-nesting-k2` fails before network/authentication and no hosted PR number or fresh CI run can be obtained from the container. PR metadata was prepared with `make_pr`; an environment with the repository remote must push the committed branch and run the 20-case gate.

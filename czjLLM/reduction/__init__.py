@@ -29,12 +29,18 @@ from .controllers import AdaptiveHierarchicalController, FixedRoundsController
 from .hierarchical import reduce_hierarchical_text
 from .execution import (
     Executable, ExecutableRegistry, ExecutableResult, ExecutionContext, ExecutionError,
-    TaskCallResult, TaskExecutable, TaskRuntime,
+    ExecutionNestingState, TaskCallResult, TaskExecutable, TaskRuntime,
 )
 from .executable_pipeline import PipelineRefExecutable, StagePipelineExecutable
 from .runtime_task import ProductionTaskRuntime
 from .stage import ReductionStage, ReductionStageResult, RoundPreparer, TokenizerRoundPreparer
-from .stage_config import ReductionStageConfig, parse_reduction_stage_config
+from .nested_execution import (
+    IdentityInputPreparer, InputPreparer, ReductionStageExecutable, TokenizerInputPreparer,
+)
+from .stage_config import (
+    ReductionStageConfig, parse_reduction_stage_config,
+    parse_reduction_stage_executable_config,
+)
 from .registry import (
     ReducerRegistry,
     get_default_registry,
@@ -73,8 +79,11 @@ __all__ = [
     "register_builtin_reducers",
     "register_reducer",
     "Executable", "ExecutableRegistry", "ExecutableResult", "ExecutionContext",
+    "ExecutionNestingState",
     "ExecutionError", "TaskCallResult", "TaskExecutable", "TaskRuntime",
     "PipelineRefExecutable", "StagePipelineExecutable", "ProductionTaskRuntime",
     "ReductionStage", "ReductionStageResult", "RoundPreparer", "TokenizerRoundPreparer",
-    "ReductionStageConfig", "parse_reduction_stage_config",
+    "InputPreparer", "IdentityInputPreparer", "TokenizerInputPreparer",
+    "ReductionStageExecutable", "ReductionStageConfig", "parse_reduction_stage_config",
+    "parse_reduction_stage_executable_config",
 ]

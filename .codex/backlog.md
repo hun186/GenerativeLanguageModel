@@ -97,3 +97,11 @@
 - [x] Hosted head `1e12ba005faceaf67169a55e6e77bf794a2d90f6`, CI #435 / `36891694196`: collect-only 19 and offline E2E 19/19 PASS.
 - [ ] K1 remains pending fresh corrected-head acceptance after MappingProxy routing, implicit-global identity, and nested InputCutLen review gaps.
 - [ ] PR K remains pending K2; PR L remains unimplemented.
+
+## 2026-10-02 PR K2 implementation state
+
+- [x] PR K1 — PR #191; hosted feature head `5632d16b4eb18eaad830f0b81c1a8356bbb8cbe2`; CI #436 / `36895400626`; offline E2E 19/19 PASS; merged as `b74907c2b235bbace9afad4a5b9f676cb85e1748`.
+- [ ] PR K2 — bounded nested reduction and depth/cycle guards are implemented locally; remains unchecked until a fresh hosted 20/20 offline-E2E gate succeeds.
+- [ ] PR K overall — remains open until K2 hosted acceptance.
+- [ ] PR L — retention/GC/cache integration and production hardening remain unimplemented.
+- PR L retains member-result caching, full member lineage aggregation, partial-success policies, cancellation, TTL, cleanup, and GC.
