@@ -169,3 +169,10 @@
 - Version prompt-aware preparation semantics in native preparer fingerprints; exclude source/prompt content and operational/secret values.
 - Serialize one checkpointed nested executable instance conservatively rather than changing D1 checkpoint schema, run keys, atomic ordering, D2 identity, or historical artifacts. Finer run-key coordination remains future work, not this K2 corrective.
 - Revert the unrelated K2 documentation compaction; keep only narrow append-only project status updates.
+
+## 2026-10-02 Reduction Engine PR L1
+
+- Persisted SQL/ES outputs remain reuse authority; no duplicate member-result file cache is introduced.
+- Semantic execution fingerprint extends destination freshness and is derived only from the established Executable metadata/normalized fingerprint machinery.
+- Structured recheck observability is part of L1. The legacy skip log remains alongside the bounded canonical JSONL event stream.
+- Optional caching for intentionally transient K2 outputs is deferred to L3 pending production evidence; K2 transient execution remains valid and non-persisted.

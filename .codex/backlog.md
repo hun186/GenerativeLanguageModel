@@ -112,3 +112,13 @@
 - [ ] K2 — PR #192 head `16487e4769e7d7fa4b1c7763c5efc25049460854`, CI #438 / `36964059859`, collected 20 but full gate FAILED in nested E2E: final task prompt exceeded one configured token chunk. Prompt-aware/checkpoint/audit-assertion corrective is pending fresh hosted acceptance.
 - [ ] PR K overall remains unchecked.
 - [ ] PR L remains unimplemented; finer per-run checkpoint coordination, caches, retention, GC, cancellation, partial success, and lineage aggregation remain out of K2 scope.
+
+## 2026-10-02 Reduction Engine K acceptance and L roadmap
+
+- [x] PR K1 — PR #191; CI #436 / `36895400626`; 19/19 PASS; merge `b74907c2b235bbace9afad4a5b9f676cb85e1748`.
+- [x] PR K2 — PR #192; accepted head `e2d61d88c74d4b6e46c59c1ad5e9797c5a8b1bb8`; CI #439 / `36969522652`; 20/20 PASS; merge `721f596001201562d833810fe568f696fd15d112`.
+- [x] PR K overall complete.
+- [x] PR L1 — persisted destination reuse, semantic freshness and pending-recheck observability implemented; hosted 21-case acceptance remains required.
+- [ ] PR L overall remains open.
+  - [ ] PR L2 — partial success, cancellation and collection/member observability.
+  - [ ] PR L3 — retention/TTL/GC and optional transient-cache hardening, only with production evidence.

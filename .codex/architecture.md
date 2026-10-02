@@ -226,3 +226,9 @@
 - Production initial and round preparation delegate to one prompt-aware `ProductionTaskRuntime` source-content splitter. It renders and tokenizes with the same authoritative preflight used by leaf execution; templates are never split or truncated.
 - A checkpointed `ReductionStageExecutable` serializes its complete child-stage call with a per-instance operational lock. Preparation occurs before the lock, no leaf permit is held while waiting, and non-checkpointed nested stages remain concurrent.
 - No workflow/DAG, partial-success, cache, retention, cancellation, TTL, GC, or member-lineage aggregation is introduced.
+
+## 2026-10-02 Reduction Engine PR L1 architecture
+
+- SQL target rows and Elasticsearch target documents remain the sole persisted member-result reuse authorities. Stage snapshots, manifests and merged files are run artifacts; D1 checkpoints are round-resume state; pending-running is current-work coordination.
+- Initial discovery and dispatch/completion recheck share destination-specific semantic freshness. SQL uses one condition builder plus one row decision contract; ES extends `ElasticsearchPendingPolicyMixin` rather than adding a parallel policy.
+- Collection adapters remain snapshot-only and may explicitly copy persisted derived payload fields plus an explicitly selected processing fingerprint into provenance. `source_version` and `execution_fingerprint` remain distinct identities.

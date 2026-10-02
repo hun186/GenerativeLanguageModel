@@ -110,6 +110,13 @@ def resolve_connection(ctx, get_param, args):
     ctx.sql_table    = sql_cfg.get("table_name") or input("📋 請輸入來源表名：").strip()
     ctx.primary_key  = sql_cfg.get("primary_key", "")
     ctx.target_table = sql_cfg.get("target_table") or ctx.sql_table
+    semantic = sql_cfg.get("semantic_freshness") or {}
+    expected = semantic.get("execution_fingerprint") or sql_cfg.get("expected_execution_fingerprint")
+    identity_column = semantic.get("processing_identity_column") or sql_cfg.get("processing_identity_column")
+    if expected and not identity_column:
+        raise ValueError("processing_identity_column is required when execution_fingerprint freshness is enabled")
+    ctx.expected_execution_fingerprint = expected
+    ctx.processing_identity_column = identity_column
 
     if is_sqlite_path(server):
         ctx.sqlite_path = server

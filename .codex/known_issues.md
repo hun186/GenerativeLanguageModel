@@ -155,3 +155,8 @@
 - Review found that concurrent identical inputs through one checkpointed nested executable could interleave D1 payload/checkpoint pair writes; K2 uses conservative per-instance serialization without changing D1/D2 formats.
 - The K2 E2E incorrectly treated expected `audit.csv`/`audit.xlsx` telemetry as forbidden business writeback; assertions are narrowed to actual sink artifacts.
 - The earlier K2 `.codex` compaction was out of scope and has been reverted. Fresh hosted 20/20 acceptance remains required.
+
+## 2026-10-02 PR L1 local environment
+
+- Required `python -m pip install --upgrade pip` / `python -m pip install -r requirements.txt` cannot complete because the environment's HTTP tunnel returns 403 while cloning pinned GitHub `peft`. Dependency-light focused tests and compileall remain the local alternative; hosted offline E2E is required for the full 21-case gate.
+- Consequently, local `tests/sql_mode` stops during collection on missing `numpy`, local `tests/es_mode` stops on missing `elasticsearch`, and the production L1 E2E cannot execute. `tests/sql_mode/test_sql_collection.py tests/es_mode/test_es_collection.py` also exposes a pre-existing SQL grouped collection expectation (`all` versus deterministic grouped collection ID) unrelated to L1. Hosted CI remains the authoritative 21-case acceptance gate.

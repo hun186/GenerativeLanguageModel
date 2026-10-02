@@ -150,3 +150,11 @@ execution_budget_capacity: 8
 - `ProductionTaskRuntime.preflight_task_content(task=, content=)` renders and tokenizes through the exact leaf preflight without an LLM call or budget lease. `prepare_content_chunks(task=, content=)` deterministically refines source-only fragments until each passes that preflight, preserves content/order, and fails if prompt overhead or a smallest usable fragment cannot fit.
 - `TokenizerInputPreparer` and `TokenizerRoundPreparer` delegate to that production surface when available; their fingerprints include `production-prompt-aware-split-v1`. Dependency-light custom runtimes retain the deterministic raw-tokenizer fallback.
 - One checkpointed `ReductionStageExecutable` instance serializes complete child-stage executions with an operational lock excluded from semantic identity. Non-checkpointed execution is not serialized.
+
+## 2026-10-02 PR L1 contracts
+
+- `ProcessingIdentity(contract_version="reduction-processing-identity-v1", execution_fingerprint=<full hash>)` is safe persisted identity; `executable_semantic_fingerprint(executable, context)` hashes normalized `Executable.fingerprint_metadata(context)`.
+- `PendingDecision(pending, reason, diagnostics)` is additive. Existing `is_row_pending(...) -> bool` remains; SQL/ES expose explanatory checking without raw payloads.
+- SQL strict freshness opts in with `semantic_freshness.execution_fingerprint` and explicit `semantic_freshness.processing_identity_column`. Without it, all output columns nonempty remains complete.
+- ES opts in with `rerun.execution_fingerprint`, stored as `<configured meta field>.execution_fingerprint`; all existing rerun criteria remain cumulative.
+- Recheck JSONL defaults to `logs/pending_recheck_events.jsonl`, bounded to 30 MB. Fingerprints in logs are display-only 12-character prefixes.

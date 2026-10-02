@@ -44,6 +44,7 @@ class SQLCollectionQuery:
     member_id_field: str
     payload_fields: Sequence[str]
     version_field: str | None = None
+    processing_identity_field: str | None = None
     group_fields: Sequence[str] = ()
     order_fields: Sequence[str] = ()
 
@@ -78,6 +79,8 @@ class SQLCollectionAdapter:
         required.add(query.member_id_field)
         if query.version_field:
             required.add(query.version_field)
+        if query.processing_identity_field:
+            required.add(query.processing_identity_field)
         missing = required - set(names)
         if missing:
             raise ValueError(f"SQL collection query did not select fields: {sorted(missing)}")
@@ -88,6 +91,8 @@ class SQLCollectionAdapter:
             provenance: dict[str, Any] = {"source_alias": self.source_alias}
             if query.version_field:
                 provenance["source_version"] = row[query.version_field]
+            if query.processing_identity_field:
+                provenance["processing_execution_fingerprint"] = row[query.processing_identity_field]
             unit = LogicalWorkUnit(logical_id, payload, provenance)
             group_key = tuple(row[field] for field in query.group_fields)
             if query.group_fields and any(value is None for value in group_key):

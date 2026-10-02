@@ -273,3 +273,12 @@
 - Review also found the identical-child-run checkpoint race, the overly broad CSV/XLSX assertion, and out-of-scope `.codex` compaction; compaction was reverted and K2 state is appended narrowly.
 - PR K2 and PR K remain unchecked pending fresh hosted 20/20 acceptance. PR L remains unimplemented.
 - Corrective local verification: focused K2 suite 24 passed; full reduction suite 360 passed; prompt-pipeline regressions 16 passed. The focused production E2E remains locally blocked by the proxy-incomplete environment (`tqdm` missing) and requires the fresh hosted gate.
+
+### 2026-10-02 Reduction Engine PR L1 persisted reuse/freshness/observability
+
+- Baseline `721f596001201562d833810fe568f696fd15d112` ancestry was verified before editing. Added opt-in SQL processing identity freshness with shared discovery/recheck semantics and atomic payload+fingerprint writeback; legacy all-output-nonempty behavior is unchanged.
+- Extended existing ES rerun freshness/meta with execution fingerprint while retaining cumulative model/pipeline/time/required-output rules. Added safe ProcessingIdentity and executable semantic fingerprint helper based on normalized Executable metadata.
+- Added structured PendingDecision reasons, bounded payload-free JSONL recheck events, additive per-reason/rate counters, expanded final summary, throttled GUI snapshots, explicit collection processing-identity provenance, and preserved the legacy skip log.
+- No member-result file cache/CachedExecutable, automatic K2 persistence, L2/L3 policy, checkpoint format, stage snapshot authority, or pending-running authority change was added.
+- Required dependency installation remains blocked by the pinned GitHub `peft` tunnel 403; focused verification results are recorded in the final task report after completion.
+- Verification: focused L1 tests 5 passed; pending/recheck selection 5 passed; complete reduction suite 361 passed; compileall and `git diff --check` passed. SQL suite collection is blocked by missing numpy and ES suite by missing elasticsearch after the required requirements install failed at the recorded proxy 403. Collection selection reached an existing unrelated SQL grouping expectation failure; focused L1 E2E cannot run locally with the incomplete dependency environment. Static E2E function count is 20 plus one existing parametrized variant, yielding expected hosted collect-only 21.

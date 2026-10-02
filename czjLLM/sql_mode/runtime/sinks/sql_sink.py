@@ -34,6 +34,13 @@ class SqlSink:
 
     def write_main(self, pk, result_text, update_time=None):
         # 支援單欄位字串（舊行為）與多欄位 dict（multi-stage writeback rules）
+        fingerprint = getattr(self.ctx, "expected_execution_fingerprint", None)
+        identity_column = getattr(self.ctx, "processing_identity_column", None)
+        if fingerprint and not identity_column:
+            raise ValueError("processing_identity_column is required for strict semantic freshness")
+        if fingerprint and isinstance(result_text, dict):
+            result_text = dict(result_text)
+            result_text[identity_column] = fingerprint
         if isinstance(result_text, dict):
             upsert_multi_values(
                 self.ctx,
@@ -44,14 +51,12 @@ class SqlSink:
                 update_time=update_time,
             )
         else:
-            upsert_single_value(
-                self.ctx,
-                self.cursor,
-                pk,
-                result_text,
-                is_sqlite=self.is_sqlite,
-                update_time=update_time,
-            )
+            if fingerprint:
+                upsert_multi_values(self.ctx, self.cursor, pk, {
+                    self.ctx.output_col: result_text, identity_column: fingerprint,
+                }, is_sqlite=self.is_sqlite, update_time=update_time)
+            else:
+                upsert_single_value(self.ctx, self.cursor, pk, result_text, is_sqlite=self.is_sqlite, update_time=update_time)
         self.conn.commit()
 
     # ★ 這裡接上你原本的自動建/補子表 schema

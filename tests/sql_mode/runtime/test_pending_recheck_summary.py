@@ -77,7 +77,9 @@ def test_recheck_scheduled_after_writeback_records_authoritative_state(monkeypat
 
     stats = pending_recheck.recheck_scheduled_after_writeback(ctx)
 
-    assert stats == {"checked": 2, "pending": 1, "already_completed": 1, "errors": 0}
+    assert {key: stats[key] for key in ("checked", "pending", "already_completed", "errors")} == {
+        "checked": 2, "pending": 1, "already_completed": 1, "errors": 0
+    }
 
 
 def test_format_completion_summary_silent_without_recheck_stats(monkeypatch):

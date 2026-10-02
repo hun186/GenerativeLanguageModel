@@ -30,6 +30,7 @@ from .hierarchical import reduce_hierarchical_text
 from .execution import (
     Executable, ExecutableRegistry, ExecutableResult, ExecutionContext, ExecutionError,
     ExecutionNestingState, TaskCallResult, TaskExecutable, TaskRuntime,
+    ProcessingIdentity, executable_semantic_fingerprint,
 )
 from .executable_pipeline import PipelineRefExecutable, StagePipelineExecutable
 from .runtime_task import ProductionTaskRuntime, TaskPromptPreflight
@@ -80,6 +81,7 @@ __all__ = [
     "register_reducer",
     "Executable", "ExecutableRegistry", "ExecutableResult", "ExecutionContext",
     "ExecutionNestingState",
+    "ProcessingIdentity", "executable_semantic_fingerprint",
     "ExecutionError", "TaskCallResult", "TaskExecutable", "TaskRuntime",
     "PipelineRefExecutable", "StagePipelineExecutable", "ProductionTaskRuntime",
     "TaskPromptPreflight",

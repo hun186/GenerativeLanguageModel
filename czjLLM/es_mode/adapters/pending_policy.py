@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 from czjLLM.common.pending_conditions import clean_output_cols
+from czjLLM.common.pending_decision import PendingDecision
 from czjLLM.es_mode.model_metadata import safe_model_tag
 from .value_helpers import (
     deep_collect_by_path as _deep_collect_by_path,
@@ -49,8 +50,32 @@ class ElasticsearchPendingPolicyMixin:
             return False
         return all(self._is_fresh_output(src, col) for col in cols)
 
+    def check_source_pending(self, src: dict, output_cols: List[str]) -> PendingDecision:
+        """Explain the cumulative policy used by initial discovery."""
+        cols = self._resolve_output_cols(output_cols=output_cols)
+        if not cols or any(not _is_non_empty_deep(_extract_by_path(src, col)) for col in cols):
+            return PendingDecision(True, "missing_output")
+        rr = (self.cfg or {}).get("rerun") or {}
+        expected = rr.get("execution_fingerprint")
+        for col in cols:
+            if not self._validate_required_output_checks(src, col):
+                return PendingDecision(True, "required_output_invalid")
+            meta_field = self._resolve_meta_field(col)
+            meta = _extract_by_path(src, meta_field) if meta_field else None
+            if expected:
+                persisted = _extract_by_path(meta, "execution_fingerprint") if meta else None
+                diagnostics = {"expected_execution_fingerprint": expected}
+                if not persisted:
+                    return PendingDecision(True, "missing_processing_identity", diagnostics)
+                if persisted != expected:
+                    diagnostics["persisted_execution_fingerprint"] = persisted
+                    return PendingDecision(True, "execution_fingerprint_mismatch", diagnostics)
+            if not self._is_fresh_output(src, col):
+                return PendingDecision(True, "stale_by_policy")
+        return PendingDecision(False, "fresh_completed")
+
     def _is_pending_by_outputs(self, src: dict, output_cols: List[str]) -> bool:
-        return not self._is_fresh_outputs_all(src, output_cols)
+        return self.check_source_pending(src, output_cols).pending
 
     def _bulk_check_present_nonempty(
         self, *, tgt_index: str, pk: str, ids: List[str],
@@ -132,7 +157,7 @@ class ElasticsearchPendingPolicyMixin:
 
     def _needs_rerun_clause(self, index: str, output_col: str) -> Optional[dict]:
         rr = (self.cfg or {}).get("rerun") or {}
-        if not rr.get("enable"):
+        if not rr.get("enable") and not rr.get("execution_fingerprint"):
             return None
         #print("rr in _needs_rerun_clause",rr)
         #print("-"*50)
@@ -141,6 +166,7 @@ class ElasticsearchPendingPolicyMixin:
         #print("meta",meta)
         tag       = safe_model_tag(rr.get("model_tag"))
         pipe      = rr.get("pipeline_hash")
+        execution_fingerprint = rr.get("execution_fingerprint")
         since     = rr.get("force_since")
         stale_days= rr.get("stale_after_days")
         force_if_missing_meta = rr.get("force_if_missing_meta", False)
@@ -163,6 +189,9 @@ class ElasticsearchPendingPolicyMixin:
         if pipe and meta:
             should.append({"bool":{"must":[{"exists":{"field":output_col}}],
                                    "must_not":[{"term":{f"{meta}.pipeline_hash.keyword":pipe}}]}})
+        if execution_fingerprint and meta:
+            should.append({"bool":{"must":[{"exists":{"field":output_col}}],
+                                   "must_not":[{"term":{f"{meta}.execution_fingerprint.keyword":execution_fingerprint}}]}})
 
         # B) 逾期（stale_days）
         if stale_days:
@@ -310,17 +339,23 @@ class ElasticsearchPendingPolicyMixin:
             return False
 
         rr = (self.cfg or {}).get("rerun") or {}
-        if not rr.get("enable"):
+        if not rr.get("enable") and not rr.get("execution_fingerprint"):
             return True
 
         meta_field = self._resolve_meta_field(output_col)  # ← 關鍵
         tag        = safe_model_tag(rr.get("model_tag"))
         pipe       = rr.get("pipeline_hash")
+        execution_fingerprint = rr.get("execution_fingerprint")
         since      = rr.get("force_since")
         stale_days = rr.get("stale_after_days")
         force_if_missing_meta = rr.get("force_if_missing_meta", False)
 
         meta = _extract_by_path(src, meta_field) if meta_field else None
+
+        if execution_fingerprint:
+            persisted = _extract_by_path(meta, "execution_fingerprint") if meta else None
+            if persisted != execution_fingerprint:
+                return False
 
         # 有 output 但缺 meta → 不新鮮（需重跑）
         if force_if_missing_meta and meta_field and meta is None:

@@ -323,22 +323,31 @@ class ElasticsearchAdapter(ElasticsearchPendingPolicyMixin):
     # --- ES 版本的 pending 擷取 --------------------------------------------
 
     def is_row_pending(self, *, tgt_table: str, pk: str, pk_value: Any, output_cols: List[str]) -> bool:
+        return self.check_row_pending(tgt_table=tgt_table, pk=pk, pk_value=pk_value, output_cols=output_cols).pending
+
+    def check_row_pending(self, *, tgt_table: str, pk: str, pk_value: Any, output_cols: List[str]):
         if self.es is None:
             raise RuntimeError("Elasticsearch client 尚未連線")
+        from czjLLM.common.pending_decision import PendingDecision
         output_cols_resolved = self._resolve_output_cols(output_cols=output_cols)
         if not output_cols_resolved:
-            return True
+            return PendingDecision(True, "missing_output")
         key_val = _norm_scalar(pk_value)
         if key_val is None:
-            return False
-        present = self._bulk_check_present_nonempty(
-            tgt_index=tgt_table,
-            pk=pk,
-            ids=[key_val],
-            output_cols=output_cols_resolved,
-            request_timeout=int(self.cfg.get("es_request_timeout", 60)),
-        )
-        return key_val not in present
+            return PendingDecision(False, "fresh_completed")
+        timeout = int(self.cfg.get("es_request_timeout", 60))
+        if pk == "_id":
+            response = self.es.mget(index=tgt_table, body={"ids": [key_val]}, request_timeout=timeout)
+            docs = response.get("docs", [])
+            if not docs or not docs[0].get("found"):
+                return PendingDecision(True, "row_missing")
+            return self.check_source_pending(docs[0].get("_source", {}) or {}, output_cols_resolved)
+        suffix = self.cfg.get("pk_keyword_suffix", ".keyword")
+        result = self.es.search(index=tgt_table, body={"query": {"term": {pk + suffix: key_val}}, "size": 1}, request_timeout=timeout)
+        hits = result.get("hits", {}).get("hits", [])
+        if not hits:
+            return PendingDecision(True, "row_missing")
+        return self.check_source_pending(hits[0].get("_source", {}) or {}, output_cols_resolved)
 
     def select_pending_rows(
         self,

@@ -128,3 +128,25 @@ logs/pending_running_console_adjustments.log
 1. 看 `pending_running_console_adjustments.log` 中 `initial_reorder`、`defer_running` 是否出現。
 2. 對照 `pending_recheck_skips.log`：若中控臺有效，重複派工應下降；若仍有大量 pending skip，代表多程序仍常讀到相同 pending 清單，可以調整 block shuffle 或排程間隔。
 3. 檢查 `pending_running_console.json` 是否有長期不釋放的 running 項目；若有，確認是否為超長任務或主程序異常中斷。
+
+## L1：持久化結果語意新鮮度與可觀測性
+
+SQL/ES 的目標 row/document 仍是唯一的跨執行 reuse authority；pending-running console 只協調「目前正在執行」，D1 checkpoint 只恢復 round，stage snapshots 只屬於當次執行。L1 沒有 member-result file cache，K2 未持久化的 nested output 下次仍會重算。
+
+`source_version` 回答來源 member 是否改變；`execution_fingerprint` 回答 prompt、task、model semantic config、pipeline/ReductionStage/nested reducer 等處理語意是否改變。兩者互不替代：任何一者依其 policy 改變都應重算，兩者均未變才可安全 reuse。
+
+SQL 以明確的 `semantic_freshness.execution_fingerprint` 與 `semantic_freshness.processing_identity_column` opt in。未設定 expected fingerprint 時，維持所有 output columns 非空即 complete 的舊行為；啟用後，output 非空但 identity 缺少或不相等皆 pending。result 與 identity 由同一 writeback transaction/commit 寫入，避免新 identity 配舊 payload。identity column 必須由 operator schema 明確提供，不會偷偷修改 schema。
+
+ES 延伸既有 `rerun` policy 的 `execution_fingerprint`，寫入既有 output meta；此條件與 `model_tag`、`pipeline_hash`、required-output、`stale_after_days`、`force_since` 累加，matching fingerprint 不會蓋過其他 stale policy。metadata 仍經現有 sanitization，不保存 credentials 或 endpoint。
+
+Canonical structured stream 預設為：
+
+```text
+{ctx.PGMSubDir}/logs/pending_recheck_events.jsonl
+```
+
+可用 `pending_recheck_event_log_path` 與 `pending_recheck_event_log_max_bytes` 覆寫；預設上限 30 MB，超限保留約後半段完整 JSONL records。fingerprint 只顯示 12 字元 prefix（比較仍使用全文），不記 raw input、prompt、LLM response、credential、connection string 或 URL。`pending_recheck_skips.log` 繼續產生，作為 legacy narrow compatibility log。
+
+穩定 reason codes 包含 `fresh_completed`、`missing_output`、`row_missing`、`missing_processing_identity`、`execution_fingerprint_mismatch`、`stale_by_policy`、`required_output_invalid`、`recheck_error_fail_open`，ES policy 可保留更具體的 model/pipeline/time reason。正常 missing-output 預設只計數；fresh skip、semantic stale、invalid output 與 fail-open error 一定寫 structured event。
+
+Stats 保留 `checked/pending/already_completed/errors`，並新增 `reasons`、`skip_rate`、`recheck_error_rate`、`semantic_stale_count`；dispatch/finalize/completion scope 分開。GUI 透過 multiprocessing event queue 接收 cumulative snapshot，預設每 100 checks 更新並在 final summary 強制更新；`Recheck Errors` 會直接出現在 compact section/log，不由 producer thread 操作 Tk widget。

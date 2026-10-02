@@ -8,6 +8,28 @@ import inspect
 from types import MappingProxyType
 from typing import Any, Mapping, Protocol
 
+from czjLLM.reduction.artifacts import normalized_fingerprint
+
+
+PROCESSING_IDENTITY_CONTRACT_VERSION = "reduction-processing-identity-v1"
+
+
+@dataclass(frozen=True)
+class ProcessingIdentity:
+    """Safe identity persisted beside a derived destination result."""
+
+    execution_fingerprint: str
+    contract_version: str = PROCESSING_IDENTITY_CONTRACT_VERSION
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.execution_fingerprint, str) or not self.execution_fingerprint.strip():
+            raise ValueError("execution_fingerprint must be non-blank")
+
+
+def executable_semantic_fingerprint(executable: "Executable", context: "ExecutionContext") -> str:
+    """Hash the established Executable semantic metadata contract."""
+    return normalized_fingerprint(_stable_semantics(executable.fingerprint_metadata(context)))
+
 
 class ExecutionError(RuntimeError):
     """An executable failed closed."""
