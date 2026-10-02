@@ -97,3 +97,18 @@
 - [x] Hosted head `1e12ba005faceaf67169a55e6e77bf794a2d90f6`, CI #435 / `36891694196`: collect-only 19 and offline E2E 19/19 PASS.
 - [ ] K1 remains pending fresh corrected-head acceptance after MappingProxy routing, implicit-global identity, and nested InputCutLen review gaps.
 - [ ] PR K remains pending K2; PR L remains unimplemented.
+
+## 2026-10-02 PR K2 implementation state
+
+- [x] PR K1 — PR #191; hosted feature head `5632d16b4eb18eaad830f0b81c1a8356bbb8cbe2`; CI #436 / `36895400626`; offline E2E 19/19 PASS; merged as `b74907c2b235bbace9afad4a5b9f676cb85e1748`.
+- [ ] PR K2 — bounded nested reduction and depth/cycle guards are implemented locally; remains unchecked until a fresh hosted 20/20 offline-E2E gate succeeds.
+- [ ] PR K overall — remains open until K2 hosted acceptance.
+- [ ] PR L — retention/GC/cache integration and production hardening remain unimplemented.
+- PR L retains member-result caching, full member lineage aggregation, partial-success policies, cancellation, TTL, cleanup, and GC.
+
+## 2026-10-02 PR #192 rejected hosted head and corrective
+
+- [x] K1 — PR #191; CI #436 / `36895400626`; 19/19 PASS; merge `b74907c2b235bbace9afad4a5b9f676cb85e1748`.
+- [ ] K2 — PR #192 head `16487e4769e7d7fa4b1c7763c5efc25049460854`, CI #438 / `36964059859`, collected 20 but full gate FAILED in nested E2E: final task prompt exceeded one configured token chunk. Prompt-aware/checkpoint/audit-assertion corrective is pending fresh hosted acceptance.
+- [ ] PR K overall remains unchecked.
+- [ ] PR L remains unimplemented; finer per-run checkpoint coordination, caches, retention, GC, cancellation, partial success, and lineage aggregation remain out of K2 scope.

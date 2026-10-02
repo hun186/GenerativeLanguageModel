@@ -264,3 +264,12 @@
 - Head `1e12ba005faceaf67169a55e6e77bf794a2d90f6` passed CI #435 / `36891694196` with 19/19 offline E2E, but review found MappingProxy route resolution, implicit-global execution/fingerprint, and nested InputCutLen mismatches; that green run is pre-corrective evidence only.
 - Corrected generic Mapping route pools, bound global fallback, shared cycle-safe nested task/InputCutLen traversal, and added a source/AST contract proving parent ReductionStage orchestration never leases leaf workers. K2 and PR L remain unimplemented.
 - Local verification: focused K1 33 passed; complete reduction suite 336 passed; prompt-stage selection 16 passed. Fresh hosted 19/19 acceptance remains required.
+
+### 2026-10-02 PR #192 K2 corrective pending
+
+- K1 is complete: PR #191, CI #436 / `36895400626`, hosted offline E2E 19/19 PASS, merge `b74907c2b235bbace9afad4a5b9f676cb85e1748`.
+- PR #192 K2 implements immutable depth/ref/cycle guards, bounded nested ReductionStage execution, and semantic fingerprints. Rejected hosted head `16487e4769e7d7fa4b1c7763c5efc25049460854`, CI #438 / `36964059859`, collected 20 E2E tests but failed the nested E2E because final rendered task prompts exceeded one configured token chunk.
+- Corrective work makes initial and later-round preparation use the production final-prompt preflight, serializes calls through one checkpointed nested executable instance, and distinguishes expected LLM audit files from business writeback artifacts.
+- Review also found the identical-child-run checkpoint race, the overly broad CSV/XLSX assertion, and out-of-scope `.codex` compaction; compaction was reverted and K2 state is appended narrowly.
+- PR K2 and PR K remain unchecked pending fresh hosted 20/20 acceptance. PR L remains unimplemented.
+- Corrective local verification: focused K2 suite 24 passed; full reduction suite 360 passed; prompt-pipeline regressions 16 passed. The focused production E2E remains locally blocked by the proxy-incomplete environment (`tqdm` missing) and requires the fresh hosted gate.

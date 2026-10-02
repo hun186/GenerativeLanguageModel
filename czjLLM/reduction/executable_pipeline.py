@@ -1,4 +1,4 @@
-"""K1 ordinary in-memory stage pipelines and deliberately non-nested refs."""
+"""Ordinary in-memory stage pipelines and bounded K2 pipeline references."""
 
 from __future__ import annotations
 
@@ -131,18 +131,25 @@ class PipelineRefExecutable:
         if not isinstance(self.ref, str) or not self.ref.strip() or self.ref != self.ref.strip():
             raise ValueError("pipeline ref must be non-blank without surrounding whitespace")
 
-    def _target(self, context: ExecutionContext) -> StagePipelineExecutable:
+    def _target(self, context: ExecutionContext):
         if context.executable_registry is None:
             raise ExecutionError("PipelineRefExecutable requires an executable registry")
         target = context.executable_registry.resolve(self.ref)
-        if not isinstance(target, StagePipelineExecutable):
-            raise ExecutionError("K1 PipelineRef targets must be ordinary StagePipelineExecutable instances")
+        from czjLLM.reduction.nested_execution import ReductionStageExecutable
+        if not isinstance(target, (StagePipelineExecutable, PipelineRefExecutable,
+                                   ReductionStageExecutable)):
+            raise ExecutionError(
+                "PipelineRef target must be StagePipelineExecutable, "
+                "PipelineRefExecutable, or ReductionStageExecutable"
+            )
         return target
 
     def execute(self, item: Any, context: ExecutionContext) -> ExecutableResult:
-        target = self._target(context)
-        result = target.execute(item, context)
-        fingerprint = normalized_fingerprint(self.fingerprint_metadata(context)["target"])
+        derived_context = context.push_pipeline_ref(self.ref)
+        target = self._target(derived_context)
+        result = target.execute(item, derived_context)
+        target_metadata = target.fingerprint_metadata(derived_context)
+        fingerprint = normalized_fingerprint(target_metadata)
         return ExecutableResult(result.output, result.executor_type, result.contract_version,
                                 audit=MappingProxyType({"pipeline_ref": self.ref,
                                                         "target_fingerprint": fingerprint,
@@ -150,6 +157,7 @@ class PipelineRefExecutable:
                                 provenance=result.provenance, metrics=result.metrics)
 
     def fingerprint_metadata(self, context: ExecutionContext) -> Mapping[str, Any]:
-        target = self._target(context)
+        derived_context = context.push_pipeline_ref(self.ref)
+        target = self._target(derived_context)
         return {"executor_type": self.executor_type, "contract_version": self.contract_version,
-                "ref": self.ref, "target": target.fingerprint_metadata(context)}
+                "ref": self.ref, "target": target.fingerprint_metadata(derived_context)}

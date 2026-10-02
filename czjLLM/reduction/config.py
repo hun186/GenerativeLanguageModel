@@ -77,6 +77,10 @@ class ReductionConfig:
             step["profile"] == "semantic_llm" for step in self.options.get("steps", ())
         )
 
+    def requires_semantic_runtime(self) -> bool:
+        """Whether execution depends on the PR I semantic LLM runtime."""
+        return self.contains_semantic_llm()
+
 
 def _unexpected_keys(raw: Mapping[str, Any], allowed: frozenset[str], label: str) -> None:
     unexpected = sorted(set(raw) - allowed)

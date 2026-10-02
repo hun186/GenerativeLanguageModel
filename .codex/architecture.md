@@ -219,3 +219,10 @@
 ## 2026-10-01 PR #191 final K1 task-pool consistency
 
 - K1 binds explicit, root, or established global task settings into one effective pool before stage execution. Route task keys, leaf rendering, token preflight, and checkpoint identity observe that same pool.
+
+## 2026-10-02 PR #192 K2 corrective architecture
+
+- K2 retains a hard maximum of one nested ReductionStage boundary and four active PipelineRef names, with immutable execution/fingerprint traversal state and explicit cycle failure.
+- Production initial and round preparation delegate to one prompt-aware `ProductionTaskRuntime` source-content splitter. It renders and tokenizes with the same authoritative preflight used by leaf execution; templates are never split or truncated.
+- A checkpointed `ReductionStageExecutable` serializes its complete child-stage call with a per-instance operational lock. Preparation occurs before the lock, no leaf permit is held while waiting, and non-checkpointed nested stages remain concurrent.
+- No workflow/DAG, partial-success, cache, retention, cancellation, TTL, GC, or member-lineage aggregation is introduced.

@@ -136,3 +136,17 @@ execution_budget_capacity: 8
 ## 2026-10-01 PR #191 final K1 task-pool corrective
 
 - Stage route task resolution accepts any `Mapping`, including detached `MappingProxyType`; absent pools retain global fallback. Production task resolution follows one cycle-safe task-spec chain for both fingerprint semantics and nearest `InputCutLen`.
+# 2026-10-02 Reduction Engine PR K2 bounded nesting contract
+
+- `ExecutionContext` adds an immutable `ExecutionNestingState`: nested-reduction depth starts at 0, permits a configured hard-v1 maximum of 0 or 1, and PipelineRef stacks permit 1..4 active names (default 4). Derived contexts are returned for every transition; callers cannot raise either hard limit.
+- `PipelineRefExecutable` resolves only `StagePipelineExecutable`, `PipelineRefExecutable`, or `ReductionStageExecutable`. Execution and fingerprint traversal share the same immutable push, self/indirect cycles fail with a bounded ref path, and a fifth active ref fails before target traversal.
+- `InputPreparer` exposes `prepare(item, context)` and `fingerprint_metadata(context)`. `IdentityInputPreparer` emits one item; `TokenizerInputPreparer` validates nonblank text and emits ordered chunks using the effective production `InputCutLen` without an LLM call or budget lease.
+- `ReductionStageExecutable` accepts one `ReductionStage` whose worker is a direct task or named PipelineRef plus one input preparer. It enters exactly one guarded nested boundary, rejects semantic/composite-semantic child reducers, and preserves child audit/provenance/metrics under bounded namespaces.
+- `parse_reduction_stage_executable_config()` is strict (`type`, `input_preparer`, `stage` only), delegates `stage` validation to `parse_reduction_stage_config()`, and does not own or populate a registry.
+- `ReductionStage.fingerprint_metadata()` is the canonical semantic identity surface. It covers stage contract, reducer profile/actual contract/options, controller/options, worker, and optional round preparer while excluding concurrency, budget, checkpoint path, endpoints, credentials, and runtime identity.
+
+## 2026-10-02 PR #192 prompt-aware preparation corrective
+
+- `ProductionTaskRuntime.preflight_task_content(task=, content=)` renders and tokenizes through the exact leaf preflight without an LLM call or budget lease. `prepare_content_chunks(task=, content=)` deterministically refines source-only fragments until each passes that preflight, preserves content/order, and fails if prompt overhead or a smallest usable fragment cannot fit.
+- `TokenizerInputPreparer` and `TokenizerRoundPreparer` delegate to that production surface when available; their fingerprints include `production-prompt-aware-split-v1`. Dependency-light custom runtimes retain the deterministic raw-tokenizer fallback.
+- One checkpointed `ReductionStageExecutable` instance serializes complete child-stage executions with an operational lock excluded from semantic identity. Non-checkpointed execution is not serialized.

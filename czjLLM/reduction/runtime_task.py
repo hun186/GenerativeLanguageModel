@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any, Callable, Mapping
 
 from czjLLM.reduction.execution import TaskCallResult, _stable_semantics
@@ -10,11 +11,21 @@ from czjLLM.reduction.execution import TaskCallResult, _stable_semantics
 PROMPT_RENDERER_CONTRACT_VERSION = "stage-task-renderer-v1"
 TASK_RUNTIME_CONTRACT_VERSION = "production-task-runtime-v2"
 TOKENIZER_CONTRACT_VERSION = "tokenizer-wrapper-v1"
+CONTENT_PREPARATION_CONTRACT_VERSION = "production-prompt-aware-split-v1"
 _MODEL_SEMANTIC_KEYS = frozenset({
     "model_name", "model", "model_version", "version", "temperature", "top_p",
     "top_k", "seed", "repeat_penalty", "frequency_penalty", "presence_penalty",
     "num_ctx", "context_window", "stop", "mock_llm_mode",
 })
+
+
+@dataclass(frozen=True)
+class TaskPromptPreflight:
+    """Bounded result from rendering and tokenizing one prospective task call."""
+
+    fits_one_chunk: bool
+    rendered_prompt: str
+    chunk_count: int
 
 
 class ProductionTaskRuntime:
@@ -94,7 +105,7 @@ class ProductionTaskRuntime:
             return 3000
         return 3000
 
-    def execute(self, *, task: Any, content: str) -> TaskCallResult:
+    def render_task_prompt(self, task: Any, content: str) -> str:
         if not isinstance(content, str):
             raise TypeError("production task runtime requires text content")
         renderer = self._renderer
@@ -104,19 +115,74 @@ class ProductionTaskRuntime:
         prompt = renderer(task, content, self.ctx)
         if not isinstance(prompt, str) or not prompt.strip():
             raise RuntimeError("task prompt rendering returned blank text")
-        task_key = _tokenizer_task(task)
+        return prompt
+
+    def _tokenize(self, *, task: Any, text: str) -> tuple[str, ...]:
         tokenizer_factory = self._tokenizer_factory
         if tokenizer_factory is None:
             from czjLLM.tokenizer_utils import TokenizerWrapper
             tokenizer_factory = TokenizerWrapper
-        tokenizer = tokenizer_factory(model_name=self.ctx.model_spec_name, task=task_key,
-                                      max_tokens=self.ctx.max_tokens)
-        input_cut_len = self.effective_input_cut_len(task)
-        tokenizer.max_input_tokens = input_cut_len
-        chunks = tokenizer.tokenize(text=prompt, adjust=True, max_tokens=self.ctx.max_tokens,
-                                    quiet=True)["ctxCut"]
-        if len(chunks) != 1 or chunks[0] != prompt:
+        tokenizer = tokenizer_factory(
+            model_name=self.ctx.model_spec_name, task=_tokenizer_task(task),
+            max_tokens=self.ctx.max_tokens,
+        )
+        tokenizer.max_input_tokens = self.effective_input_cut_len(task)
+        chunks = tokenizer.tokenize(
+            text=text, adjust=True, max_tokens=self.ctx.max_tokens, quiet=True
+        )["ctxCut"]
+        if not isinstance(chunks, (list, tuple)) or any(
+                not isinstance(chunk, str) for chunk in chunks):
+            raise RuntimeError("task tokenizer returned invalid chunks")
+        return tuple(chunks)
+
+    def preflight_task_content(self, *, task: Any, content: str) -> TaskPromptPreflight:
+        """Render and tokenize exactly as execute() does, without LLM work or a lease."""
+        prompt = self.render_task_prompt(task, content)
+        chunks = self._tokenize(task=task, text=prompt)
+        return TaskPromptPreflight(
+            fits_one_chunk=len(chunks) == 1 and chunks[0] == prompt,
+            rendered_prompt=prompt,
+            chunk_count=len(chunks),
+        )
+
+    def prepare_content_chunks(self, *, task: Any, content: str) -> tuple[str, ...]:
+        """Split source content until every exact rendered prompt passes preflight."""
+        if not isinstance(content, str):
+            raise TypeError("production content preparation requires text content")
+        if not content.strip():
+            raise RuntimeError("production content preparation requires nonblank text")
+        if not self.preflight_task_content(task=task, content="").fits_one_chunk:
+            raise RuntimeError("task prompt overhead exceeds configured one-chunk limit")
+
+        initial = self._tokenize(task=task, text=content)
+        # A tokenizer used for source preparation must be lossless. Fall back to
+        # refining the complete source rather than accepting a lossy boundary.
+        pending = list(initial) if initial and "".join(initial) == content and all(
+            chunk.strip() for chunk in initial
+        ) else [content]
+        accepted: list[str] = []
+        while pending:
+            candidate = pending.pop(0)
+            if self.preflight_task_content(task=task, content=candidate).fits_one_chunk:
+                accepted.append(candidate)
+                continue
+            split_at = _strict_source_split(candidate)
+            if split_at is None:
+                raise RuntimeError(
+                    "smallest usable source fragment exceeds configured one-chunk limit"
+                )
+            left, right = candidate[:split_at], candidate[split_at:]
+            pending[0:0] = [left, right]
+        if not accepted or "".join(accepted) != content or any(not chunk.strip() for chunk in accepted):
+            raise RuntimeError("prompt-aware content preparation did not preserve source content")
+        return tuple(accepted)
+
+    def execute(self, *, task: Any, content: str) -> TaskCallResult:
+        preflight = self.preflight_task_content(task=task, content=content)
+        prompt = preflight.rendered_prompt
+        if not preflight.fits_one_chunk:
             raise RuntimeError("final task prompt exceeds one configured token chunk")
+        task_key = _tokenizer_task(task)
         pipeline_factory = self._pipeline_factory
         if pipeline_factory is None:
             from czjLLM.prompt_pipeline.pipeline_controller import PromptAPIPipeline
@@ -157,6 +223,18 @@ class ProductionTaskRuntime:
                 "include_think": False,
                 "mock_llm_mode": bool(getattr(self.ctx, "mock_llm_mode", False) or
                                       (isinstance(spec, Mapping) and spec.get("mock_llm_mode", False)))}
+
+
+def _strict_source_split(content: str) -> int | None:
+    """Choose a deterministic split with two shorter, nonblank source fragments."""
+    if len(content) < 2:
+        return None
+    midpoint = len(content) // 2
+    indexes = sorted(range(1, len(content)), key=lambda index: (abs(index - midpoint), index))
+    for index in indexes:
+        if content[:index].strip() and content[index:].strip():
+            return index
+    return None
 
 
 def _tokenizer_task(task: Any) -> str:

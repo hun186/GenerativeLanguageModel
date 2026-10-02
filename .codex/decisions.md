@@ -162,3 +162,10 @@
 ## 2026-10-01 PR #191 final K1 corrective
 
 - Generic read-only mappings are first-class task pools. Nested task specs and `InputCutLen` share one bounded chain traversal; repeated keys terminate identity/preflight resolution without adding PipelineRef graph-cycle machinery.
+
+## 2026-10-02 PR #192 K2 corrective
+
+- Preserve K1 final-prompt fail-closed behavior and make both K2 tokenizer preparers delegate to that exact production rendering/tokenization boundary. Deterministically refine source content only; fail when prompt overhead or a smallest usable fragment cannot fit.
+- Version prompt-aware preparation semantics in native preparer fingerprints; exclude source/prompt content and operational/secret values.
+- Serialize one checkpointed nested executable instance conservatively rather than changing D1 checkpoint schema, run keys, atomic ordering, D2 identity, or historical artifacts. Finer run-key coordination remains future work, not this K2 corrective.
+- Revert the unrelated K2 documentation compaction; keep only narrow append-only project status updates.

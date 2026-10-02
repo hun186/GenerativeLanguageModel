@@ -14,6 +14,10 @@ from czjLLM.reduction.execution import TaskExecutable
 from czjLLM.reduction.executable_pipeline import PipelineRefExecutable
 from czjLLM.reduction.registry import get_default_registry
 from czjLLM.reduction.stage import TokenizerRoundPreparer
+from czjLLM.reduction.stage import ReductionStage
+from czjLLM.reduction.nested_execution import (
+    IdentityInputPreparer, ReductionStageExecutable, TokenizerInputPreparer,
+)
 
 
 @dataclass(frozen=True)
@@ -86,3 +90,34 @@ def parse_reduction_stage_config(raw: Any) -> ReductionStageConfig:
             raise ReductionConfigError("round_preparer.type must be tokenizer")
         preparer = TokenizerRoundPreparer(_strict_text(preparer_raw.get("task"), "round_preparer.task"))
     return ReductionStageConfig(worker, parallelism, reduction, preparer)
+
+
+def parse_reduction_stage_executable_config(raw: Any) -> ReductionStageExecutable:
+    """Strictly construct one bounded nested stage; registry ownership stays external."""
+    if not isinstance(raw, Mapping):
+        raise ReductionConfigError("reduction_stage executable must be a mapping")
+    _unexpected_keys(raw, frozenset({"type", "input_preparer", "stage"}),
+                     "reduction_stage executable")
+    if raw.get("type") != "reduction_stage":
+        raise ReductionConfigError("reduction_stage executable type must be reduction_stage")
+    preparer_raw = raw.get("input_preparer")
+    if not isinstance(preparer_raw, Mapping):
+        raise ReductionConfigError("input_preparer must be a mapping")
+    kind = preparer_raw.get("type")
+    if kind == "identity":
+        _unexpected_keys(preparer_raw, frozenset({"type"}), "input_preparer")
+        input_preparer = IdentityInputPreparer()
+    elif kind == "tokenizer":
+        _unexpected_keys(preparer_raw, frozenset({"type", "task"}), "input_preparer")
+        input_preparer = TokenizerInputPreparer(
+            _strict_text(preparer_raw.get("task"), "input_preparer.task")
+        )
+    else:
+        raise ReductionConfigError("input_preparer.type must be identity or tokenizer")
+    parsed = parse_reduction_stage_config(raw.get("stage"))
+    stage = ReductionStage(parsed.worker, parsed.reduction, parsed.worker_parallelism,
+                           parsed.round_preparer)
+    try:
+        return ReductionStageExecutable(stage, input_preparer)
+    except (TypeError, ValueError) as exc:
+        raise ReductionConfigError(str(exc)) from exc

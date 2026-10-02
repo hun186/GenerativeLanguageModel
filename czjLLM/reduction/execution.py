@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import copy
 import inspect
 from types import MappingProxyType
@@ -48,16 +48,75 @@ class TaskRuntime(Protocol):
 
 
 @dataclass(frozen=True)
+class ExecutionNestingState:
+    """Immutable K2 traversal guards with deliberately small v1 limits."""
+
+    nested_reduction_depth: int = 0
+    max_nested_reduction_depth: int = 1
+    pipeline_ref_stack: tuple[str, ...] = ()
+    max_pipeline_ref_depth: int = 4
+
+    def __post_init__(self) -> None:
+        if type(self.nested_reduction_depth) is not int or self.nested_reduction_depth < 0:
+            raise ValueError("nested_reduction_depth must be a non-negative integer")
+        if type(self.max_nested_reduction_depth) is not int or not 0 <= self.max_nested_reduction_depth <= 1:
+            raise ValueError("max_nested_reduction_depth must be 0 or 1")
+        if self.nested_reduction_depth > self.max_nested_reduction_depth:
+            raise ValueError("nested_reduction_depth exceeds configured maximum")
+        if not isinstance(self.pipeline_ref_stack, tuple) or any(
+                not isinstance(name, str) or not name.strip() or name != name.strip()
+                for name in self.pipeline_ref_stack):
+            raise ValueError("pipeline_ref_stack must contain non-blank ref names")
+        if len(set(self.pipeline_ref_stack)) != len(self.pipeline_ref_stack):
+            raise ValueError("pipeline_ref_stack must not contain a cycle")
+        if type(self.max_pipeline_ref_depth) is not int or not 1 <= self.max_pipeline_ref_depth <= 4:
+            raise ValueError("max_pipeline_ref_depth must be between 1 and 4")
+        if len(self.pipeline_ref_stack) > self.max_pipeline_ref_depth:
+            raise ValueError("pipeline_ref_stack exceeds configured maximum")
+
+    def enter_nested_reduction(self) -> "ExecutionNestingState":
+        next_depth = self.nested_reduction_depth + 1
+        if next_depth > self.max_nested_reduction_depth:
+            raise ExecutionError(
+                "nested ReductionStage depth exceeds max_nested_reduction_depth "
+                f"{self.max_nested_reduction_depth}"
+            )
+        return replace(self, nested_reduction_depth=next_depth)
+
+    def push_pipeline_ref(self, ref_name: str) -> "ExecutionNestingState":
+        if not isinstance(ref_name, str) or not ref_name.strip() or ref_name != ref_name.strip():
+            raise ExecutionError("pipeline ref name must be non-blank without surrounding whitespace")
+        path = self.pipeline_ref_stack + (ref_name,)
+        if ref_name in self.pipeline_ref_stack:
+            raise ExecutionError(f"pipeline ref cycle detected: {' -> '.join(path)}")
+        if len(path) > self.max_pipeline_ref_depth:
+            raise ExecutionError(
+                "pipeline ref depth exceeds max_pipeline_ref_depth "
+                f"{self.max_pipeline_ref_depth}: {' -> '.join(path)}"
+            )
+        return replace(self, pipeline_ref_stack=path)
+
+
+@dataclass(frozen=True)
 class ExecutionContext:
     runtime_ctx: Any = None
     task_runtime: TaskRuntime | None = None
     executable_registry: "ExecutableRegistry | None" = None
     reducer_context: Mapping[str, Any] = field(default_factory=_empty_mapping)
+    nesting: ExecutionNestingState = field(default_factory=ExecutionNestingState)
 
     def __post_init__(self) -> None:
         if not isinstance(self.reducer_context, Mapping):
             raise TypeError("ExecutionContext.reducer_context must be a mapping")
+        if not isinstance(self.nesting, ExecutionNestingState):
+            raise TypeError("ExecutionContext.nesting must be ExecutionNestingState")
         object.__setattr__(self, "reducer_context", MappingProxyType(dict(self.reducer_context)))
+
+    def enter_nested_reduction(self) -> "ExecutionContext":
+        return replace(self, nesting=self.nesting.enter_nested_reduction())
+
+    def push_pipeline_ref(self, ref_name: str) -> "ExecutionContext":
+        return replace(self, nesting=self.nesting.push_pipeline_ref(ref_name))
 
 
 class Executable(Protocol):
@@ -68,7 +127,7 @@ class Executable(Protocol):
 
 
 class ExecutableRegistry:
-    """Explicit, instance-local registry. K1 accepts ordinary pipelines only."""
+    """Explicit, instance-local executable registry."""
 
     def __init__(self, entries: Mapping[str, Executable] | None = None) -> None:
         self._entries: dict[str, Executable] = {}
