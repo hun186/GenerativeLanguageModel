@@ -1,6 +1,10 @@
 from dataclasses import dataclass, field
+from types import MappingProxyType
+import sys
+import types
 
 from czjLLM.prompt_pipeline import stage_orchestrator as so
+from czjLLM.prompt_pipeline.stage_runtime import StageDefinition, resolve_stage_task
 
 
 @dataclass
@@ -24,6 +28,22 @@ def test_execute_stage_round_returns_typed_result():
     assert result.dispatched_jobs == 1
     assert result.finished_chunks == 0
     assert result.pending_jobs == 1
+
+
+def test_route_task_key_uses_explicit_mapping_proxy_pool(monkeypatch):
+    stage = StageDefinition(
+        name="summary", task="fallback", route_by="route",
+        route_map={"FIN": "summary"}, route_value_mode="task_key",
+    )
+    explicit = MappingProxyType({"summary": "EXPLICIT"})
+    module = types.ModuleType("czjLLM.taskConfig")
+    module.taskSetting = {"summary": "GLOBAL"}
+    monkeypatch.setitem(sys.modules, "czjLLM.taskConfig", module)
+
+    task, error = resolve_stage_task(stage, {"route": "FIN"}, explicit)
+
+    assert error is None
+    assert task == "EXPLICIT"
 
 
 def test_run_stage_pipeline_report_shape():

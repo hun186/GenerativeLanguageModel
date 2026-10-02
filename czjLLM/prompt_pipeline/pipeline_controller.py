@@ -740,7 +740,7 @@ def _render_task_mapping_prompt(task_spec: Mapping, content: str, ctx) -> str:
     return content
 
 
-def _build_stage_prompt_text(stage_task, content: str, ctx) -> str:
+def render_stage_task_prompt(stage_task, content: str, ctx) -> str:
     """
     將 stage task 套用到文字內容，產生真正要放入 TODO 的 prompt 文字。
     """
@@ -764,6 +764,11 @@ def _build_stage_prompt_text(stage_task, content: str, ctx) -> str:
         )
     # 支援 multi-stage 直接填入 prompt 字串（非 taskSetting key）
     return _render_raw_task_prompt(task_name, content)
+
+
+def _build_stage_prompt_text(stage_task, content: str, ctx) -> str:
+    """Compatibility surface; delegate to the public authoritative renderer."""
+    return render_stage_task_prompt(stage_task, content, ctx)
 
 
 def _read_stage_snapshot_output(item: str, stage_name: str) -> str:

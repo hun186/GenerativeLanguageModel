@@ -204,3 +204,18 @@
 - `reduction/reducers/structured_relational.py` owns strict configuration validation, one-level record flattening, two-pass local-ID canonicalization/reference rewriting, detached JSON output, complete remap provenance, and post-remap reducer-wide integrity checks.
 - Pass one assigns every ID using `(record_index, entity_set, local_id)` namespaces; pass two rewrites only configured entity/reference fields. Duplicate IDs inside one local namespace and dangling same-record references fail; duplicate local IDs across records deliberately become distinct canonical entities without semantic consolidation.
 - Registry/config/factory integration is generic and single-pass. Composite rejects this profile because child provenance is not propagated; hierarchical/checkpoint runtime remains `concat_text`-only and unchanged. The existing multidimensional Output Profile remains the downstream validation boundary and contains no global canonicalization logic.
+
+## 2026-10-01 Reduction Engine PR K1 executable foundation
+
+- Reduction worker execution now depends on a small source-independent contract. Production task leaves reuse the authoritative stage prompt renderer, `TokenizerWrapper`, `PromptAPIPipeline`, and the root `ExecutionBudget`; exactly one permit surrounds only `proc()`.
+- Ordinary multi-stage workers adapt the existing in-memory `stage_orchestrator` and do not create business-stage snapshots, manifests, or writeback. `ReductionStage` owns parallel ordered mapping and reducer/controller calls without holding leaf permits.
+- Hierarchical round 1 reduces initial worker outputs; round 2+ deterministically tokenize the prior aggregate, run the same worker, and delegate stop/checkpoint behavior to D1. D1/D2 checkpoint formats and historical identities are unchanged.
+
+## 2026-10-01 PR #191 K1 semantic-identity corrective
+
+- One StagePipeline invocation now binds one effective task pool to stage resolution, leaf rendering/tokenization, and fingerprinting. The default is root `taskSetting`; an explicit detached override is bound through a production TaskRuntime context view.
+- Executable configuration is detached at construction. Callable references remain supported, while fingerprint input uses stable source text when inspectable and module/qualified name as the source-unavailable fallback.
+
+## 2026-10-01 PR #191 final K1 task-pool consistency
+
+- K1 binds explicit, root, or established global task settings into one effective pool before stage execution. Route task keys, leaf rendering, token preflight, and checkpoint identity observe that same pool.

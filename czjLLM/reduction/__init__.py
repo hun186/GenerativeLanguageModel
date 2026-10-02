@@ -27,6 +27,14 @@ from .aggregate import (
 from .engine import reduce_single_pass
 from .controllers import AdaptiveHierarchicalController, FixedRoundsController
 from .hierarchical import reduce_hierarchical_text
+from .execution import (
+    Executable, ExecutableRegistry, ExecutableResult, ExecutionContext, ExecutionError,
+    TaskCallResult, TaskExecutable, TaskRuntime,
+)
+from .executable_pipeline import PipelineRefExecutable, StagePipelineExecutable
+from .runtime_task import ProductionTaskRuntime
+from .stage import ReductionStage, ReductionStageResult, RoundPreparer, TokenizerRoundPreparer
+from .stage_config import ReductionStageConfig, parse_reduction_stage_config
 from .registry import (
     ReducerRegistry,
     get_default_registry,
@@ -64,4 +72,9 @@ __all__ = [
     "normalize_collection_window",
     "register_builtin_reducers",
     "register_reducer",
+    "Executable", "ExecutableRegistry", "ExecutableResult", "ExecutionContext",
+    "ExecutionError", "TaskCallResult", "TaskExecutable", "TaskRuntime",
+    "PipelineRefExecutable", "StagePipelineExecutable", "ProductionTaskRuntime",
+    "ReductionStage", "ReductionStageResult", "RoundPreparer", "TokenizerRoundPreparer",
+    "ReductionStageConfig", "parse_reduction_stage_config",
 ]

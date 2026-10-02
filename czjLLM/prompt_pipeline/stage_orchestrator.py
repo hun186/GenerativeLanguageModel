@@ -119,7 +119,7 @@ def execute_stage_round(
     original_inputs = original_inputs if original_inputs is not None else {}
     persisted_outputs = persisted_outputs if persisted_outputs is not None else {}
     task_setting = getattr(ctx, "taskSetting", None)
-    task_setting = task_setting if isinstance(task_setting, dict) else None
+    task_setting = task_setting if isinstance(task_setting, Mapping) else None
     stages = resolve_pipeline_stages(ctx)
     stage_order = [s.name for s in stages]
     stage_map = {s.name: s for s in stages}

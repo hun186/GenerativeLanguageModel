@@ -44,7 +44,7 @@
 - [x] PR G — SQL/ES Collection Adapters + idempotent aggregate upsert
 - [x] PR H — Deterministic composite reducers
 - [x] PR I — Semantic reducer
-- [ ] PR J — Structured relational reducer
+- [x] PR J — Structured relational reducer
 - [ ] PR K — ReductionStage + bounded PipelineRef nesting
 - [ ] PR L — Retention/GC/cache integration points/production hardening
 
@@ -75,3 +75,25 @@
 - [ ] PR J — Structured relational reducer (implementation is local; remains unchecked until its hosted 18-case `offline-e2e` gate succeeds).
 - [ ] PR K — ReductionStage + bounded PipelineRef nesting (not implemented).
 - [ ] PR L — Retention/GC/cache integration points/production hardening (not implemented).
+
+## 2026-10-01 Reduction Engine PR K split and hosted baseline
+
+- [x] PR I — Semantic reducer
+- [x] PR J — Structured relational reducer (PR #190 merged; hosted offline E2E 18/18 PASS; merge `673f14945a9348d462fe1152f7d53c7aba47497a`)
+- [ ] PR K — ReductionStage + bounded PipelineRef nesting
+  - [ ] PR K1 — Executable + non-nested ReductionStage/PipelineRef (implemented on feature branch; remains unchecked pending hosted review/19-case gate)
+  - [ ] PR K2 — bounded nested reduction + depth/cycle guards
+- [ ] PR L — Retention/GC/cache integration points/production hardening
+
+## 2026-10-01 PR #191 corrective acceptance
+
+- [x] Previous hosted head `87428da5ec3316e08916c9bc6ca37f3579f2cc50`: run #434 / `36830720933` collected and passed 19/19 offline E2E cases.
+- [ ] PR K1 remains pending: review found effective-task/checkpoint identity, InputCutLen, metadata-preservation, and detachment gaps; the corrected head requires a fresh 19-case hosted gate.
+- [ ] PR K remains pending K2; K2 is not started by this corrective.
+- [ ] PR L remains unimplemented.
+
+## 2026-10-01 PR #191 head 1e12ba review
+
+- [x] Hosted head `1e12ba005faceaf67169a55e6e77bf794a2d90f6`, CI #435 / `36891694196`: collect-only 19 and offline E2E 19/19 PASS.
+- [ ] K1 remains pending fresh corrected-head acceptance after MappingProxy routing, implicit-global identity, and nested InputCutLen review gaps.
+- [ ] PR K remains pending K2; PR L remains unimplemented.

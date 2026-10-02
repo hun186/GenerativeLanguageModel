@@ -147,3 +147,18 @@
 
 - Reject canonical-prefix language overlap at construction/config parsing rather than waiting for cardinality-dependent post-remap collisions. Keep the existing post-remap global collision check as defense in depth and keep the generated-ID format unchanged.
 - Treat configured entity and reference field endpoints as exclusive ownership claims: duplicates within either category and exact cross-category conflicts are invalid. This removes multiple-writer ambiguity without banning legitimate distinct fields in one collection.
+
+## 2026-10-01 Reduction Engine PR K1 scope decision
+
+- Resolve the former PR-K nesting question conservatively: K1 proves direct PipelineRef-to-ordinary-stage-pipeline execution only. `ReductionStageExecutable`, ref chains, depth/stack guards, cycles, and raw-document nested reduction belong exclusively to K2.
+- Execution fingerprints contain task/pipeline/renderer/model-generation and round-preparer semantics, but exclude credentials, endpoint URLs, runtime reprs, timestamps, thread/process identity, and budget capacity.
+- Initial worker-map results are intentionally not checkpoint-cached or reused in K1; PR L owns member cache/retention policy.
+
+## 2026-10-01 PR #191 review corrective
+
+- Checkpoint safety requires fingerprinting effective rather than requested task semantics. Tokenizer `InputCutLen` and `model_spec_name` are semantic because they can change leaf acceptance and hierarchical chunk boundaries; budget capacity and credentials remain scheduling/secret data and are excluded.
+- Wrapper metadata is namespaced rather than flattened: PipelineRef retains target audit, and single-pass ReductionStage retains reducer audit/provenance/metrics. Hierarchical D1 metadata contracts are not redesigned.
+
+## 2026-10-01 PR #191 final K1 corrective
+
+- Generic read-only mappings are first-class task pools. Nested task specs and `InputCutLen` share one bounded chain traversal; repeated keys terminate identity/preflight resolution without adding PipelineRef graph-cycle machinery.
