@@ -135,6 +135,23 @@ class ElasticsearchPendingPolicyMixin:
     def _is_pending_by_outputs(self, src: dict, output_cols: List[str]) -> bool:
         return self.check_source_pending(src, output_cols).pending
 
+    def _requires_python_freshness_scan(self, output_cols: List[str]) -> bool:
+        """Whether initial discovery must scan broadly and postfilter in Python."""
+        rr = (self.cfg or {}).get("rerun") or {}
+        checks_active = bool(rr.get("enable")) or bool(
+            (self.cfg or {}).get("required_output_checks_apply_without_rerun", False)
+        )
+        return checks_active and any(
+            self._get_required_output_checks(col) for col in self._resolve_output_cols(output_cols=output_cols)
+        )
+
+    def _required_output_source_fields(self, output_cols: List[str]) -> List[str]:
+        return list(dict.fromkeys(
+            check["full_path"]
+            for col in self._resolve_output_cols(output_cols=output_cols)
+            for check in self._get_required_output_checks(col)
+        ))
+
     def _bulk_check_present_nonempty(
         self, *, tgt_index: str, pk: str, ids: List[str],
         output_col: Any = None, output_cols: Any = None, request_timeout: int,
@@ -184,7 +201,8 @@ class ElasticsearchPendingPolicyMixin:
         rr = (self.cfg or {}).get("rerun") or {}
         fallback_date = rr.get("fallback_date_field") or self.cfg.get("fallback_date_field") or "update_time_ai"
 
-        src_fields = [pk] + output_cols_resolved + self._output_meta_fields(output_cols_resolved)
+        src_fields = (self._required_output_source_fields(output_cols_resolved) + [pk]
+                      + output_cols_resolved + self._output_meta_fields(output_cols_resolved))
         if fallback_date:
             src_fields.append(fallback_date)
         # 去重

@@ -289,3 +289,11 @@
 - Corrected production auto fingerprint binding through existing Executable semantics before discovery, SQL metadata-column collision/schema ownership, fixed GUI Recheck status without periodic log spam, actual producer dispatch accounting, and ES query/recheck semantic reason consistency.
 - Preserved destination authority, ProcessingIdentity/PendingDecision, atomic SQL stamping, ES rerun/meta policy, bounded structured events, legacy skip log, fail-open behavior, and all L1 scope exclusions. PR L1/L remain pending fresh hosted acceptance.
 - Corrective local verification: semantic-freshness/ES/auto-identity/GUI selection 19 passed; pending/recheck selection 12 passed; complete reduction suite 365 passed; compileall and diff check passed. Required install remains proxy-blocked; full SQL stops on missing numpy, full ES on missing elasticsearch, and focused production E2E on missing PyYAML. Hosted corrective 21-case evidence is still required.
+
+### 2026-10-03 PR #193 final L1 corrective
+
+- Pre-final-corrective hosted head `874dbc865c46a02b5ba76caebbac05b213f94c70`, CI #442 / `37080278738`, offline job `111079056066`, collected 21 and passed, but remains unaccepted.
+- Added narrow single-index ES broad-candidate/Python-postfilter mode for active required-output checks, retained optimized ordinary queries and dual-index bulk behavior, and kept no-eventids policy parity.
+- Removed `ctx.task` fallback from canonical/legacy recheck job identifiers; identifiers now use bounded config basenames/simple pipeline names or `unknown`, preventing raw prompt leakage without widening decision diagnostics.
+- PR L1 and PR L remain pending fresh hosted final-corrective acceptance; no L2/L3 or cache work was introduced.
+- Final-corrective local verification: ES/recheck/privacy focused selection 21 passed; broader recheck selection 14 passed; full reduction suite 365 passed; compileall and `git diff --check` passed. Full `tests/es_mode` remains environment-blocked at missing `elasticsearch` after required install failed on pinned `peft` proxy 403. E2E function count remains 20 plus the established parametrized case for hosted collect total 21.

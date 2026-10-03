@@ -425,6 +425,7 @@ class ElasticsearchAdapter(ElasticsearchPendingPolicyMixin):
         keepalive = self.cfg.get("es_scroll_keepalive", "2m")
         
         needs_rerun_clauses = [c for c in (self._needs_rerun_clause(index, col) for col in output_cols_resolved) if c]
+        python_freshness_scan = self._requires_python_freshness_scan(output_cols_resolved)
         
         # ★ 取得備援日期欄位（你在 cfg 或 rerun 內放的）
         rr = (self.cfg or {}).get("rerun") or {}
@@ -433,25 +434,29 @@ class ElasticsearchAdapter(ElasticsearchPendingPolicyMixin):
                          or "update_time_ai"
         # 組 _source 欄位清單：必帶 input/output；有 meta 再加；pk 不是 _id 也要加
         stage_input_cols = [c for c in (stage_input_cols or []) if c and c != input_col]
-        src_fields = [input_col] + output_cols_resolved + self._output_meta_fields(output_cols_resolved) + stage_input_cols
+        src_fields = ([input_col] + output_cols_resolved
+                      + self._required_output_source_fields(output_cols_resolved)
+                      + self._output_meta_fields(output_cols_resolved) + stage_input_cols)
         if pk != "_id":
             src_fields.append(pk)
         # 可選：也讓 _source 直接帶上日期欄位（保險起見）
         if fallback_date and fallback_date not in src_fields:
             src_fields.append(fallback_date)
         src_fields = list(dict.fromkeys(src_fields))
+        query_bool = {
+            "must": [{"exists": {"field": input_col}}],
+            "filter": filters,
+        }
+        if not python_freshness_scan:
+            query_bool.update({
+                "should": [
+                    *[{"bool": {"must_not": [{"exists": {"field": col}}]}} for col in output_cols_resolved],
+                    *needs_rerun_clauses,
+                ],
+                "minimum_should_match": 1,
+            })
         body = {
-            "query": {
-                "bool": {
-                    "must":   [{"exists": {"field": input_col}}],
-                    "filter": filters,
-                    "should": [
-                        *[{"bool": {"must_not": [{"exists": {"field": col}}]}} for col in output_cols_resolved],
-                        *needs_rerun_clauses
-                    ],
-                    "minimum_should_match": 1
-                }
-            },
+            "query": {"bool": query_bool},
             "_source": src_fields,
             # ★ 關鍵：用 docvalue_fields 拿到標準化的日期值（會出現在 hit['fields']）
             "docvalue_fields": [fallback_date] if fallback_date else [],

@@ -164,3 +164,8 @@ execution_budget_capacity: 8
 - `execution_fingerprint: auto` resolves through `executable_semantic_fingerprint(effective_executable, ExecutionContext)` once before pending discovery. Literal fingerprints remain supported as external overrides.
 - Strict SQL rejects processing-identity collisions with primary/input/output/writeback/expanded destinations and explicitly prepares the identity column as text.
 - ES configured semantic metadata is strict: missing model/pipeline metadata yields `missing_meta`; mismatches yield `model_tag_mismatch` or `pipeline_hash_mismatch`; execution identity retains its dedicated missing/mismatch reasons.
+
+## 2026-10-03 PR #193 final L1 corrective contracts
+
+- `_requires_python_freshness_scan(output_cols)` activates conservative single-index scanning for active required-output checks. The Python `PendingDecision` contract is authoritative; initial candidates must be a safe superset of Python-pending documents.
+- `task_json` in canonical and legacy recheck logs is a bounded safe job identifier: explicit config basename, simple pipeline name, or `unknown`. Raw task/prompt text is not an identifier source.

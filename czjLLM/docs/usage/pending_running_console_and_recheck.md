@@ -162,3 +162,13 @@ For ES, configured `model_tag`, `pipeline_hash`, and `execution_fingerprint` mak
 The Windows GUI has a fixed **Recheck Status** section; cumulative queue snapshots replace its displayed value without adding periodic text-log lines. Nonzero errors use warning coloring and log only the transition into an error state. Candidate progress remains separate from the actual count returned by the producer and shown as `producer 實際送出列數`.
 
 PR #193 head `cb12323d0a98ed6bf3eae28182758db24e72f0df`, CI #441 / `36973654548`, job `110732742876`, collected and passed 21/21 offline E2E cases. This is pre-corrective green evidence only: review subsequently found automatic fingerprint wiring, SQL identity collision/schema, persistent GUI status, dispatch-count reporting, and ES metadata-policy consistency gaps. PR L1 and PR L remain pending until a fresh corrective hosted gate passes.
+
+## L1 final corrective：ES Python freshness postfilter 與安全 job identifier
+
+當 single-index ES 啟用 `required_output_checks`（包含 nested/list traversal、date format、`min_valid_count` 等只能由既有 Python validator 精確表達的規則）時，初始查詢會保留 input/pending filters，但不再用 missing-output/rerun `should` 縮窄候選；scan 後由 `check_source_pending()` 作 authoritative postfilter。這可能掃描較多文件，但保證 Python 判定 pending 的文件不會在 discovery 被漏掉。沒有 Python-only validation 規則的普通工作仍使用既有 optimized `missing output OR rerun clause` query。Dual-index 原本即掃 source 並透過 target bulk freshness Python contract 判斷，維持不變。`pending_policy_no_eventids.py` 保持相同 mode 判定與 source-field contract。
+
+Discovery invariant 是：Python freshness 判為 pending 的 unchanged document 必須出現在初始 candidate set；optimized query 可以是 safe superset，因為 dispatch recheck 會跳過 false positive，但不得有 false negative。
+
+Canonical event 與 legacy skip log 的 `task_json` 現在只取明確 config/job path identifier 的 basename，或 bounded simple `pipeline_name`；structured/list/object values、control characters 與完整 directory path 不會輸出。它不再 fallback 到 `ctx.task` 或 prompt content；找不到安全 identifier 時使用 `unknown`。Decision diagnostic allowlist 未擴大。
+
+PR #193 pre-final-corrective head `874dbc865c46a02b5ba76caebbac05b213f94c70`, CI #442 / `37080278738`, offline job `111079056066` collected 21 and passed 21/21. This remains pre-final-corrective green evidence: review found single-index required-output false negatives and raw `ctx.task` diagnostic leakage risk. PR L1 and PR L remain pending a fresh final-corrective hosted gate.

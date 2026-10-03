@@ -128,3 +128,9 @@
 - [ ] PR L1 remains pending fresh corrective acceptance. Head `cb12323d0a98ed6bf3eae28182758db24e72f0df`, CI #441 / `36973654548`, job `110732742876` passed 21/21 but is pre-corrective evidence only.
 - [ ] Corrective gate must cover automatic Executable identity binding, SQL identity collision/schema ownership, persistent GUI status, actual producer dispatch reporting, and ES discovery/recheck policy consistency.
 - [ ] PR L overall remains pending; L2/L3 are not started.
+
+## 2026-10-03 PR #193 final corrective pending
+
+- [ ] PR L1 remains pending fresh final-corrective hosted acceptance. Pre-corrective head `874dbc865c46a02b5ba76caebbac05b213f94c70`, CI #442 / `37080278738`, offline job `111079056066`, collect 21, full gate PASS.
+- Review gaps corrected locally: ES required-output invalid documents could be excluded by the single-index initial query; canonical recheck identity could fall back to raw `ctx.task` prompt text.
+- [ ] PR L overall remains pending; L2/L3 remain unstarted.

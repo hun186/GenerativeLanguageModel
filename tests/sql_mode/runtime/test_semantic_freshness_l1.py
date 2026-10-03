@@ -123,3 +123,40 @@ def test_strict_schema_and_atomic_first_write_are_fresh_on_second_check(tmp_path
         'SELECT result, processing_fp FROM results WHERE id=?', ("one",)
     ).fetchone() == ("summary", "current")
     adapter.close()
+
+
+def test_recheck_logs_never_use_raw_task_prompt_as_identifier(tmp_path):
+    event_path = tmp_path / "events.jsonl"
+    skip_path = tmp_path / "skips.log"
+    ctx = SimpleNamespace(
+        task="SECRET RAW PROMPT\nwith sensitive instruction",
+        pending_recheck_event_log_path=str(event_path),
+        pending_recheck_skip_log_path=str(skip_path),
+        output_cols=["result"],
+    )
+    pending_recheck.record_pending_event(
+        ctx, "A", PendingDecision(False, "fresh_completed"))
+    pending_recheck.record_pending_event(
+        ctx, "B", PendingDecision(True, "execution_fingerprint_mismatch", {
+            "expected_execution_fingerprint": "a" * 64,
+            "persisted_execution_fingerprint": "b" * 64,
+        }))
+    pending_recheck.record_pending_skip(ctx, "A")
+    combined = event_path.read_text() + skip_path.read_text()
+    assert "SECRET RAW PROMPT" not in combined
+    assert all(json.loads(line)["task_json"] == "unknown"
+               for path in (event_path, skip_path) for line in path.read_text().splitlines())
+
+
+def test_recheck_identifier_uses_only_bounded_config_basename(tmp_path):
+    event_path = tmp_path / "events.jsonl"
+    ctx = SimpleNamespace(
+        config_path="/private/secret/path/job_config.json",
+        pending_recheck_event_log_path=str(event_path),
+        output_cols=["result"],
+    )
+    pending_recheck.record_pending_event(
+        ctx, "A", PendingDecision(False, "fresh_completed"))
+    text = event_path.read_text()
+    assert json.loads(text)["task_json"] == "job_config.json"
+    assert "/private/secret/path/" not in text

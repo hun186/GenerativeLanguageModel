@@ -238,3 +238,8 @@
 - Automatic persisted freshness binds once in `handle_data_mode` after effective columns/configuration and before schema/pending discovery. It uses K1/K2 Executable fingerprint metadata and supplies one exact full value to context, adapter, and sink.
 - SQL explicitly owns and validates its configured processing identity column; ES query and in-Python freshness share missing/mismatch semantics for configured semantic metadata.
 - Producer candidate progress is not dispatch count. The producer thread captures `produce_rows()`' actual return separately for the final summary.
+
+## 2026-10-03 PR #193 final L1 corrective
+
+- Single-index ES uses broad input/filter discovery plus authoritative Python postfilter only when active required-output semantics cannot be represented exactly in the optimized query. Ordinary jobs retain query-side narrowing; dual-index retains target bulk Python freshness checks.
+- Recheck event identity is diagnostics-only and comes from bounded explicit config basenames or a simple pipeline name, never `ctx.task`/prompt content.

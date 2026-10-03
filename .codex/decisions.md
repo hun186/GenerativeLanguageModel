@@ -182,3 +182,8 @@
 - Auto identity must be derived from the effective existing Executable contract, never from a separately maintained task/prompt hash. Bind once before discovery and reuse exactly through writeback.
 - An explicitly configured SQL identity column is safe schema metadata, but collision is a configuration error; silent renaming or payload overwrite is forbidden.
 - GUI snapshots replace a fixed status surface. Routine throttled updates do not append log history; only the error transition is emphasized.
+
+## 2026-10-03 PR #193 final L1 corrective
+
+- Prefer correctness over ES query optimization for Python-only required-output semantics. Broaden only explicit validation jobs and retain optimized discovery elsewhere.
+- Never fall back from a missing diagnostic job identifier to executable task/prompt content. Both canonical and legacy logs share the safe identifier helper.

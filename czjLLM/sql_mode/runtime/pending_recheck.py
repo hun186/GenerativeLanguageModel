@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import unicodedata
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -11,6 +12,7 @@ from czjLLM.job_manager.console_ui import tlog, tlog_warn
 
 PENDING_SKIP_LOG_MAX_BYTES = 30 * 1024 * 1024
 PENDING_EVENT_LOG_MAX_BYTES = 30 * 1024 * 1024
+JOB_IDENTIFIER_MAX_CHARS = 160
 SEMANTIC_STALE_REASONS = {
     "missing_processing_identity", "execution_fingerprint_mismatch",
     "stale_by_policy", "model_tag_mismatch", "pipeline_hash_mismatch",
@@ -102,7 +104,7 @@ def trim_log_to_half_if_needed(path: Path, max_bytes: int) -> None:
 
 
 def task_json_name(ctx) -> str:
-    for attr in (
+    path_attrs = (
         "task_json_name",
         "task_json",
         "json_config_file",
@@ -110,12 +112,27 @@ def task_json_name(ctx) -> str:
         "es_config_file",
         "config_file",
         "config_path",
-        "task",
-        "pipeline_name",
-    ):
+    )
+    for attr in path_attrs:
         value = getattr(ctx, attr, None)
-        if value:
-            return Path(str(value)).name
+        if not isinstance(value, (str, os.PathLike)):
+            continue
+        raw = os.fspath(value)
+        if not isinstance(raw, str):
+            continue
+        normalized = "".join(
+            ch for ch in raw if not unicodedata.category(ch).startswith("C")
+        ).strip()
+        if normalized:
+            return Path(normalized.replace("\\", "/")).name[:JOB_IDENTIFIER_MAX_CHARS] or "unknown"
+    pipeline_name = getattr(ctx, "pipeline_name", None)
+    if isinstance(pipeline_name, str):
+        normalized = "".join(
+            ch for ch in pipeline_name
+            if not unicodedata.category(ch).startswith("C") and ch not in "/\\"
+        ).strip()
+        if normalized:
+            return normalized[:JOB_IDENTIFIER_MAX_CHARS]
     return "unknown"
 
 
