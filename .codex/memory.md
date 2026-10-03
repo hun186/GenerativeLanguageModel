@@ -282,3 +282,10 @@
 - No member-result file cache/CachedExecutable, automatic K2 persistence, L2/L3 policy, checkpoint format, stage snapshot authority, or pending-running authority change was added.
 - Required dependency installation remains blocked by the pinned GitHub `peft` tunnel 403; focused verification results are recorded in the final task report after completion.
 - Verification: focused L1 tests 5 passed; pending/recheck selection 5 passed; complete reduction suite 361 passed; compileall and `git diff --check` passed. SQL suite collection is blocked by missing numpy and ES suite by missing elasticsearch after the required requirements install failed at the recorded proxy 403. Collection selection reached an existing unrelated SQL grouping expectation failure; focused L1 E2E cannot run locally with the incomplete dependency environment. Static E2E function count is 20 plus one existing parametrized variant, yielding expected hosted collect-only 21.
+
+### 2026-10-02 PR #193 L1 corrective
+
+- Pre-corrective hosted head `cb12323d0a98ed6bf3eae28182758db24e72f0df` passed CI #441 / `36973654548` and offline E2E 21/21 (job `110732742876`) but is not accepted.
+- Corrected production auto fingerprint binding through existing Executable semantics before discovery, SQL metadata-column collision/schema ownership, fixed GUI Recheck status without periodic log spam, actual producer dispatch accounting, and ES query/recheck semantic reason consistency.
+- Preserved destination authority, ProcessingIdentity/PendingDecision, atomic SQL stamping, ES rerun/meta policy, bounded structured events, legacy skip log, fail-open behavior, and all L1 scope exclusions. PR L1/L remain pending fresh hosted acceptance.
+- Corrective local verification: semantic-freshness/ES/auto-identity/GUI selection 19 passed; pending/recheck selection 12 passed; complete reduction suite 365 passed; compileall and diff check passed. Required install remains proxy-blocked; full SQL stops on missing numpy, full ES on missing elasticsearch, and focused production E2E on missing PyYAML. Hosted corrective 21-case evidence is still required.

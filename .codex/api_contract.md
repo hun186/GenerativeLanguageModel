@@ -158,3 +158,9 @@ execution_budget_capacity: 8
 - SQL strict freshness opts in with `semantic_freshness.execution_fingerprint` and explicit `semantic_freshness.processing_identity_column`. Without it, all output columns nonempty remains complete.
 - ES opts in with `rerun.execution_fingerprint`, stored as `<configured meta field>.execution_fingerprint`; all existing rerun criteria remain cumulative.
 - Recheck JSONL defaults to `logs/pending_recheck_events.jsonl`, bounded to 30 MB. Fingerprints in logs are display-only 12-character prefixes.
+
+## 2026-10-02 PR #193 L1 corrective contracts
+
+- `execution_fingerprint: auto` resolves through `executable_semantic_fingerprint(effective_executable, ExecutionContext)` once before pending discovery. Literal fingerprints remain supported as external overrides.
+- Strict SQL rejects processing-identity collisions with primary/input/output/writeback/expanded destinations and explicitly prepares the identity column as text.
+- ES configured semantic metadata is strict: missing model/pipeline metadata yields `missing_meta`; mismatches yield `model_tag_mismatch` or `pipeline_hash_mismatch`; execution identity retains its dedicated missing/mismatch reasons.

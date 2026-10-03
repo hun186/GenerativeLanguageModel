@@ -135,7 +135,7 @@ SQL/ES 的目標 row/document 仍是唯一的跨執行 reuse authority；pending
 
 `source_version` 回答來源 member 是否改變；`execution_fingerprint` 回答 prompt、task、model semantic config、pipeline/ReductionStage/nested reducer 等處理語意是否改變。兩者互不替代：任何一者依其 policy 改變都應重算，兩者均未變才可安全 reuse。
 
-SQL 以明確的 `semantic_freshness.execution_fingerprint` 與 `semantic_freshness.processing_identity_column` opt in。未設定 expected fingerprint 時，維持所有 output columns 非空即 complete 的舊行為；啟用後，output 非空但 identity 缺少或不相等皆 pending。result 與 identity 由同一 writeback transaction/commit 寫入，避免新 identity 配舊 payload。identity column 必須由 operator schema 明確提供，不會偷偷修改 schema。
+SQL 以明確的 `semantic_freshness.execution_fingerprint` 與 `semantic_freshness.processing_identity_column` opt in。未設定 expected fingerprint 時，維持所有 output columns 非空即 complete 的舊行為；啟用後，output 非空但 identity 缺少或不相等皆 pending。result 與 identity 由同一 writeback transaction/commit 寫入，避免新 identity 配舊 payload。identity column 必須在設定中明確命名；strict mode 會由既有 schema preparation 建立該明確宣告的文字欄位。
 
 ES 延伸既有 `rerun` policy 的 `execution_fingerprint`，寫入既有 output meta；此條件與 `model_tag`、`pipeline_hash`、required-output、`stale_after_days`、`force_since` 累加，matching fingerprint 不會蓋過其他 stale policy。metadata 仍經現有 sanitization，不保存 credentials 或 endpoint。
 
@@ -150,3 +150,15 @@ Canonical structured stream 預設為：
 穩定 reason codes 包含 `fresh_completed`、`missing_output`、`row_missing`、`missing_processing_identity`、`execution_fingerprint_mismatch`、`stale_by_policy`、`required_output_invalid`、`recheck_error_fail_open`，ES policy 可保留更具體的 model/pipeline/time reason。正常 missing-output 預設只計數；fresh skip、semantic stale、invalid output 與 fail-open error 一定寫 structured event。
 
 Stats 保留 `checked/pending/already_completed/errors`，並新增 `reasons`、`skip_rate`、`recheck_error_rate`、`semantic_stale_count`；dispatch/finalize/completion scope 分開。GUI 透過 multiprocessing event queue 接收 cumulative snapshot，預設每 100 checks 更新並在 final summary 強制更新；`Recheck Errors` 會直接出現在 compact section/log，不由 producer thread 操作 Tk widget。
+
+## L1 corrective：automatic semantic identity
+
+`execution_fingerprint: auto` is the normal Reduction Engine integration. After effective task/stage/model/reduction settings are available and before destination pending discovery, production constructs the effective existing `TaskExecutable` or `StagePipelineExecutable` (or uses an explicitly supplied K1/K2 executable), wraps row-level reduction/combine semantics, and calls `executable_semantic_fingerprint()`. The full result is bound once to the runtime context, source adapter policy, and writeback sink. A literal value remains an advanced externally managed override.
+
+For SQL, an explicitly configured `processing_identity_column` is schema-owned metadata: strict mode creates it as text alongside output columns. It must not collide case-insensitively with the primary key, input, outputs, writeback outputs, or expanded JSON destinations. Output and identity remain one committed write.
+
+For ES, configured `model_tag`, `pipeline_hash`, and `execution_fingerprint` make missing corresponding metadata stale. Query-side selection, bulk checks, dispatch recheck, and completion recheck therefore use equivalent criteria. Decisions expose stable specific reasons such as `missing_meta`, `model_tag_mismatch`, `pipeline_hash_mismatch`, `missing_processing_identity`, `execution_fingerprint_mismatch`, `stale_after_days`, and `force_since`.
+
+The Windows GUI has a fixed **Recheck Status** section; cumulative queue snapshots replace its displayed value without adding periodic text-log lines. Nonzero errors use warning coloring and log only the transition into an error state. Candidate progress remains separate from the actual count returned by the producer and shown as `producer 實際送出列數`.
+
+PR #193 head `cb12323d0a98ed6bf3eae28182758db24e72f0df`, CI #441 / `36973654548`, job `110732742876`, collected and passed 21/21 offline E2E cases. This is pre-corrective green evidence only: review subsequently found automatic fingerprint wiring, SQL identity collision/schema, persistent GUI status, dispatch-count reporting, and ES metadata-policy consistency gaps. PR L1 and PR L remain pending until a fresh corrective hosted gate passes.

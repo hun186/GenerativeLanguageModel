@@ -42,6 +42,10 @@ from .stage_config import (
     ReductionStageConfig, parse_reduction_stage_config,
     parse_reduction_stage_executable_config,
 )
+from .persisted_freshness import (
+    PersistedProcessingExecutable, bind_persisted_execution_fingerprint,
+    effective_persisted_executable,
+)
 from .registry import (
     ReducerRegistry,
     get_default_registry,
@@ -89,4 +93,6 @@ __all__ = [
     "InputPreparer", "IdentityInputPreparer", "TokenizerInputPreparer",
     "ReductionStageExecutable", "ReductionStageConfig", "parse_reduction_stage_config",
     "parse_reduction_stage_executable_config",
+    "PersistedProcessingExecutable", "bind_persisted_execution_fingerprint",
+    "effective_persisted_executable",
 ]

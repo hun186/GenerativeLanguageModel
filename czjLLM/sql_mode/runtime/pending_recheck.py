@@ -340,7 +340,7 @@ def _format_pending_recheck_completion_summary(
     lines.append(
         "  - 派工前重查："
         f"checked={dispatch['checked']}, "
-        f"仍需處理/已送出={dispatch['pending']}, "
+        f"需處理={dispatch['pending']}, "
         f"已完成跳過={dispatch['already_completed']}, "
         f"errors={dispatch['errors']}"
     )

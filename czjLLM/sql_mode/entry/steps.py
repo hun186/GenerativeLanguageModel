@@ -11,6 +11,7 @@ from czjLLM.sql_mode.adapters.sqlite_adapter import SQLiteAdapter
 from czjLLM.sql_mode.adapters.mssql_adapter import MSSQLAdapter
 from czjLLM.sql_mode.schema.schema_ops import ensure_main_schema, ensure_flatten_schema
 from czjLLM.sql_mode.schema.common_flatten_policy import ensure_common_flatten_policy
+from czjLLM.sql_mode.adapters.pending_freshness import validate_processing_identity_column
 
 
 def _normalize_writeback_rules(get_param):
@@ -100,6 +101,7 @@ def _has_enabled_flatten_writeback_rules(ctx) -> bool:
         if bool(item.get("enabled", True)):
             return True
     return False
+
 
 def resolve_connection(ctx, get_param, args):
     policy = NonInteractivePolicy(args) if args.config else InteractivePolicy()
@@ -265,6 +267,7 @@ def configure_flatten_options(ctx, get_param, args):
     
 def ensure_schemas(ctx, adapter, columns, is_sqlite, sql_cfg):
     # 主表/欄位
+    validate_processing_identity_column(ctx)
     ensure_main_schema(ctx, adapter, columns, sql_cfg)
     # 子表（若啟用展平）
     if getattr(ctx, "flatten_json_output", False):

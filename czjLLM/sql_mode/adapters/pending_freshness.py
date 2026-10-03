@@ -25,3 +25,22 @@ def build_pending_condition(output_cols, quote: Callable[[str], str], trim_expr,
         return missing, []
     expr = f"{prefix}{quote(column)}"
     return f"({missing}) OR ({expr} IS NULL OR {trim_expr(expr)} = '' OR {expr} <> ?)", [expected]
+
+
+def validate_processing_identity_column(ctx) -> None:
+    """Reject an explicit metadata column that could overwrite business data."""
+    identity = str(getattr(ctx, "processing_identity_column", "") or "").strip()
+    if not getattr(ctx, "expected_execution_fingerprint", None) or not identity:
+        return
+    protected = [getattr(ctx, "primary_key", ""), getattr(ctx, "input_col", "")]
+    protected.extend(getattr(ctx, "output_cols", None) or [getattr(ctx, "output_col", "")])
+    protected.extend(rule.get("output_col", "") for rule in (getattr(ctx, "sql_writeback_rules", None) or []) if isinstance(rule, dict))
+    if bool(getattr(ctx, "sql_expand_json_to_columns", False)):
+        prefix = str(getattr(ctx, "sql_expand_json_prefix", "") or "").strip()
+        for value in (getattr(ctx, "allowed_output_fields", None) or []):
+            name = str(value).strip()
+            if name:
+                protected.append(f"{prefix}{name}" if prefix else name)
+    normalized = {str(value).strip().casefold() for value in protected if str(value).strip()}
+    if identity.casefold() in normalized:
+        raise ValueError(f"processing_identity_column {identity!r} conflicts with a primary/input/output destination column")

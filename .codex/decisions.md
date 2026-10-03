@@ -176,3 +176,9 @@
 - Semantic execution fingerprint extends destination freshness and is derived only from the established Executable metadata/normalized fingerprint machinery.
 - Structured recheck observability is part of L1. The legacy skip log remains alongside the bounded canonical JSONL event stream.
 - Optional caching for intentionally transient K2 outputs is deferred to L3 pending production evidence; K2 transient execution remains valid and non-persisted.
+
+## 2026-10-02 PR #193 L1 corrective
+
+- Auto identity must be derived from the effective existing Executable contract, never from a separately maintained task/prompt hash. Bind once before discovery and reuse exactly through writeback.
+- An explicitly configured SQL identity column is safe schema metadata, but collision is a configuration error; silent renaming or payload overwrite is forbidden.
+- GUI snapshots replace a fixed status surface. Routine throttled updates do not append log history; only the error transition is emphasized.

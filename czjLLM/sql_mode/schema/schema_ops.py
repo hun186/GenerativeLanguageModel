@@ -4,7 +4,6 @@ from typing import List, Tuple
 # 仍沿用你既有工具；此步先包裝，不更動內部行為
 from czjLLM.sql_utils.column_utils import ensure_sql_columns_exist  # 仍可保留以後用
 from czjLLM.sql_utils.column_utils import reset_output_col_with_backup
-from czjLLM.row_processors.flatten_utils import auto_setup_subtable_if_needed
 
 def ensure_main_schema(ctx, adapter, columns_in_src: List[str], cfg: dict):
     """
@@ -44,6 +43,9 @@ def ensure_main_schema(ctx, adapter, columns_in_src: List[str], cfg: dict):
             dedup_cols.append(c)
 
     need_cols: List[Tuple[str, str]] = [(c, "NVARCHAR(MAX)") for c in dedup_cols]
+    identity_column = str(getattr(ctx, "processing_identity_column", "") or "").strip()
+    if getattr(ctx, "expected_execution_fingerprint", None) and identity_column:
+        need_cols.append((identity_column, "NVARCHAR(255)"))
     if getattr(ctx, "record_update_time", False):
         need_cols.append(("update_time", "DATETIME"))
 
@@ -53,6 +55,7 @@ def ensure_flatten_schema(ctx, cursor, is_sqlite: bool):
     """
     確保扁平化子表存在且欄位就緒（只做 DDL，不處理 DML）。
     """
+    from czjLLM.row_processors.flatten_utils import auto_setup_subtable_if_needed
     auto_setup_subtable_if_needed(ctx, cursor, is_sqlite)
     
 def maybe_reset_output(ctx, is_sqlite: bool):

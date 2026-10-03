@@ -336,10 +336,11 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
 
     # 8) 主回圈：排程所有列（改成執行緒，主線程負責收尾條件）
     producer_done_flag = threading.Event()
+    producer_result = {"scheduled": 0}
 
     def _producer_main():
         try:
-            produce_rows(
+            producer_result["scheduled"] = produce_rows(
                 ctx=ctx,
                 rows_for_count=rows_for_count,
                 registry=registry,
@@ -352,6 +353,7 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                 gui=gui,
                 p_done=p_done,   # 空字串時補完成條
             )
+            ctx._producer_actual_scheduled_rows = producer_result["scheduled"]
         finally:
             producer_done_flag.set()
 
@@ -512,7 +514,7 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     emit_pending_recheck_completion_summary(
         ctx,
         total_rows=total_rows,
-        scheduled_rows=getattr(p_sched, "n", None),
+        scheduled_rows=producer_result["scheduled"],
         done_rows=getattr(p_done, "n", None),
     )
     if completion["pending"] or completion["errors"]:
