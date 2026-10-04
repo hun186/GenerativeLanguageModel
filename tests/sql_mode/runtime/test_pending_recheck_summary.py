@@ -52,11 +52,26 @@ def test_format_completion_summary_explains_dispatch_pending_and_skips(monkeypat
     rendered = "\n".join(lines)
     assert "pending recheck 最終摘要" in rendered
     assert "候選總列數：482" in rendered
-    assert "仍需處理/已送出=237" in rendered
+    assert "需處理=237" in rendered
     assert "已完成跳過=6" in rendered
+    assert "producer 實際送出列數：237" in rendered
     assert "running 中控清理快照（可能早於最後寫回）" in rendered
     assert "寫回完成後最終重查" in rendered
     assert "派工前 pending 代表當下仍需處理，不是佇列卡住" in rendered
+
+
+def test_summary_keeps_candidate_progress_separate_from_actual_dispatch(monkeypatch):
+    pending_recheck = _load_pending_recheck_module(monkeypatch)
+    ctx = SimpleNamespace(_pending_recheck_stats={
+        "checked": 2, "pending": 1, "already_completed": 1, "errors": 0,
+        "reasons": {"fresh_completed": 1, "execution_fingerprint_mismatch": 1},
+    })
+    rendered = "\n".join(pending_recheck._format_pending_recheck_completion_summary(
+        ctx, total_rows=2, scheduled_rows=1, done_rows=2))
+    assert "候選總列數：2" in rendered
+    assert "fresh skip=1 (50.0%)" in rendered
+    assert "需處理=1" in rendered
+    assert "producer 實際送出列數：1" in rendered
 
 
 def test_recheck_scheduled_after_writeback_records_authoritative_state(monkeypatch):
@@ -77,7 +92,9 @@ def test_recheck_scheduled_after_writeback_records_authoritative_state(monkeypat
 
     stats = pending_recheck.recheck_scheduled_after_writeback(ctx)
 
-    assert stats == {"checked": 2, "pending": 1, "already_completed": 1, "errors": 0}
+    assert {key: stats[key] for key in ("checked", "pending", "already_completed", "errors")} == {
+        "checked": 2, "pending": 1, "already_completed": 1, "errors": 0
+    }
 
 
 def test_format_completion_summary_silent_without_recheck_stats(monkeypatch):

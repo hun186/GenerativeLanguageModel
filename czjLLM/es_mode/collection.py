@@ -45,6 +45,7 @@ class ElasticsearchCollectionAdapter:
         self, *, collection_id: str, index: str, query: Mapping[str, Any],
         identity_path: str = "_id", payload_paths: Sequence[str] = (),
         version_path: str | None = None, group_paths: Sequence[str] = (),
+        processing_identity_path: str | None = None,
         order_paths: Sequence[str] = (), window: Mapping[str, Any] | None = None,
     ) -> tuple[CollectionManifest, ...]:
         if self.adapter.es is None:
@@ -71,6 +72,8 @@ class ElasticsearchCollectionAdapter:
                 provenance["source_version"] = {
                     "seq_no": hit["_seq_no"], "primary_term": hit["_primary_term"]
                 }
+            if processing_identity_path:
+                provenance["processing_execution_fingerprint"] = get(processing_identity_path)
             unit = LogicalWorkUnit(logical_id, payload, provenance)
             group = tuple(get(path) for path in group_paths)
             if group_paths and any(value is None for value in group):

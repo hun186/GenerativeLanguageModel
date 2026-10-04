@@ -11,6 +11,7 @@ from czjLLM.sql_mode.adapters.sqlite_adapter import SQLiteAdapter
 from czjLLM.sql_mode.adapters.mssql_adapter import MSSQLAdapter
 from czjLLM.sql_mode.schema.schema_ops import ensure_main_schema, ensure_flatten_schema
 from czjLLM.sql_mode.schema.common_flatten_policy import ensure_common_flatten_policy
+from czjLLM.sql_mode.adapters.pending_freshness import validate_processing_identity_column
 
 
 def _normalize_writeback_rules(get_param):
@@ -101,6 +102,7 @@ def _has_enabled_flatten_writeback_rules(ctx) -> bool:
             return True
     return False
 
+
 def resolve_connection(ctx, get_param, args):
     policy = NonInteractivePolicy(args) if args.config else InteractivePolicy()
     sql_cfg = load_sql_cfg(ctx, get_param, args, policy)
@@ -110,6 +112,13 @@ def resolve_connection(ctx, get_param, args):
     ctx.sql_table    = sql_cfg.get("table_name") or input("📋 請輸入來源表名：").strip()
     ctx.primary_key  = sql_cfg.get("primary_key", "")
     ctx.target_table = sql_cfg.get("target_table") or ctx.sql_table
+    semantic = sql_cfg.get("semantic_freshness") or {}
+    expected = semantic.get("execution_fingerprint") or sql_cfg.get("expected_execution_fingerprint")
+    identity_column = semantic.get("processing_identity_column") or sql_cfg.get("processing_identity_column")
+    if expected and not identity_column:
+        raise ValueError("processing_identity_column is required when execution_fingerprint freshness is enabled")
+    ctx.expected_execution_fingerprint = expected
+    ctx.processing_identity_column = identity_column
 
     if is_sqlite_path(server):
         ctx.sqlite_path = server
@@ -258,6 +267,7 @@ def configure_flatten_options(ctx, get_param, args):
     
 def ensure_schemas(ctx, adapter, columns, is_sqlite, sql_cfg):
     # 主表/欄位
+    validate_processing_identity_column(ctx)
     ensure_main_schema(ctx, adapter, columns, sql_cfg)
     # 子表（若啟用展平）
     if getattr(ctx, "flatten_json_output", False):

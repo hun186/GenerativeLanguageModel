@@ -11,6 +11,7 @@ from ..sql_mode.runtime.sinks.excel_sink import ExcelSink
 from ..tabular_mode.runtime.sinks.csv_sink import CSVSink
 from ..es_mode.runtime.sinks.es_sink import ESSink
 from ..prompt_pipeline.pipeline_controller import start_watchdogs
+from ..reduction.persisted_freshness import bind_persisted_execution_fingerprint
 #from czjLLM.tabular_mode.runtime.sinks.csv_sink import CSVSink  # 你的 CSVSink
 
 # ---------- SQL 版 steps（沿用你現有的） ----------
@@ -294,6 +295,9 @@ def handle_data_mode(ctx, get_param, args):
     def _run():
         cols = backend.choose_columns(ctx, env, get_param, args)
         backend.configure_flatten(ctx, get_param, args)
+        adapter = env.get("adapter")
+        if adapter is not None:
+            bind_persisted_execution_fingerprint(ctx, adapter)
         backend.ensure_schemas(ctx, env, cols)
         backend.maybe_reset_output(ctx, env, cols, args)
         #print("ctx in handle_data_mode",ctx)

@@ -226,3 +226,20 @@
 - Production initial and round preparation delegate to one prompt-aware `ProductionTaskRuntime` source-content splitter. It renders and tokenizes with the same authoritative preflight used by leaf execution; templates are never split or truncated.
 - A checkpointed `ReductionStageExecutable` serializes its complete child-stage call with a per-instance operational lock. Preparation occurs before the lock, no leaf permit is held while waiting, and non-checkpointed nested stages remain concurrent.
 - No workflow/DAG, partial-success, cache, retention, cancellation, TTL, GC, or member-lineage aggregation is introduced.
+
+## 2026-10-02 Reduction Engine PR L1 architecture
+
+- SQL target rows and Elasticsearch target documents remain the sole persisted member-result reuse authorities. Stage snapshots, manifests and merged files are run artifacts; D1 checkpoints are round-resume state; pending-running is current-work coordination.
+- Initial discovery and dispatch/completion recheck share destination-specific semantic freshness. SQL uses one condition builder plus one row decision contract; ES extends `ElasticsearchPendingPolicyMixin` rather than adding a parallel policy.
+- Collection adapters remain snapshot-only and may explicitly copy persisted derived payload fields plus an explicitly selected processing fingerprint into provenance. `source_version` and `execution_fingerprint` remain distinct identities.
+
+## 2026-10-02 PR #193 L1 corrective architecture
+
+- Automatic persisted freshness binds once in `handle_data_mode` after effective columns/configuration and before schema/pending discovery. It uses K1/K2 Executable fingerprint metadata and supplies one exact full value to context, adapter, and sink.
+- SQL explicitly owns and validates its configured processing identity column; ES query and in-Python freshness share missing/mismatch semantics for configured semantic metadata.
+- Producer candidate progress is not dispatch count. The producer thread captures `produce_rows()`' actual return separately for the final summary.
+
+## 2026-10-03 PR #193 final L1 corrective
+
+- Single-index ES uses broad input/filter discovery plus authoritative Python postfilter only when active required-output semantics cannot be represented exactly in the optimized query. Ordinary jobs retain query-side narrowing; dual-index retains target bulk Python freshness checks.
+- Recheck event identity is diagnostics-only and comes from bounded explicit config basenames or a simple pipeline name, never `ctx.task`/prompt content.

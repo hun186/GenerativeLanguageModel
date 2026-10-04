@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import unicodedata
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -10,6 +11,13 @@ from typing import Any
 from czjLLM.job_manager.console_ui import tlog, tlog_warn
 
 PENDING_SKIP_LOG_MAX_BYTES = 30 * 1024 * 1024
+PENDING_EVENT_LOG_MAX_BYTES = 30 * 1024 * 1024
+JOB_IDENTIFIER_MAX_CHARS = 160
+SEMANTIC_STALE_REASONS = {
+    "missing_processing_identity", "execution_fingerprint_mismatch",
+    "stale_by_policy", "model_tag_mismatch", "pipeline_hash_mismatch",
+    "stale_after_days", "force_since", "required_output_invalid", "missing_meta",
+}
 
 
 def pending_skip_log_path(ctx) -> Path:
@@ -27,6 +35,53 @@ def pending_skip_log_max_bytes(ctx) -> int:
     except (TypeError, ValueError):
         value = PENDING_SKIP_LOG_MAX_BYTES
     return max(value, 1024)
+
+
+def pending_event_log_path(ctx) -> Path:
+    configured = getattr(ctx, "pending_recheck_event_log_path", None)
+    if configured:
+        return Path(configured)
+    return Path(getattr(ctx, "PGMSubDir", ".") or ".") / "logs" / "pending_recheck_events.jsonl"
+
+
+def pending_event_log_max_bytes(ctx) -> int:
+    try:
+        return max(int(getattr(ctx, "pending_recheck_event_log_max_bytes", PENDING_EVENT_LOG_MAX_BYTES)), 1024)
+    except (TypeError, ValueError):
+        return PENDING_EVENT_LOG_MAX_BYTES
+
+
+def _fingerprint_prefix(value: Any) -> str | None:
+    return str(value)[:12] if value else None
+
+
+def record_pending_event(ctx, pk: Any, decision, *, phase: str = "dispatch") -> None:
+    """Append one bounded, payload-free canonical diagnostic event."""
+    path = pending_event_log_path(ctx)
+    max_bytes = pending_event_log_max_bytes(ctx)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    trim_log_to_half_if_needed(path, max_bytes)
+    now = datetime.now().astimezone()
+    diagnostics = dict(getattr(decision, "diagnostics", {}) or {})
+    record = {
+        "ts": now.isoformat(), "timezone": now.tzname(), "phase": phase,
+        "mode": "es" if "elasticsearch" in getattr(getattr(ctx, "_pending_adapter", None), "__class__", type(None)).__name__.lower() else "sql",
+        "task_json": task_json_name(ctx),
+        "target": getattr(ctx, "_pending_tgt_table", getattr(ctx, "target_table", None)),
+        "pk": str(pk),
+        "adapter": getattr(getattr(ctx, "_pending_adapter", None), "__class__", type(None)).__name__,
+        "decision": "process" if decision.pending else "skip", "reason": decision.reason,
+        "output_cols": getattr(ctx, "output_cols", None) or [getattr(ctx, "output_col", "")],
+    }
+    for key in ("expected_execution_fingerprint", "persisted_execution_fingerprint"):
+        if diagnostics.get(key):
+            record[key] = _fingerprint_prefix(diagnostics[key])
+    secondary = diagnostics.get("secondary_reasons")
+    if secondary:
+        record["secondary_reasons"] = list(secondary)[:8]
+    with path.open("a", encoding="utf-8") as fp:
+        fp.write(json.dumps(record, ensure_ascii=False) + "\n")
+    trim_log_to_half_if_needed(path, max_bytes)
 
 
 def trim_log_to_half_if_needed(path: Path, max_bytes: int) -> None:
@@ -49,7 +104,7 @@ def trim_log_to_half_if_needed(path: Path, max_bytes: int) -> None:
 
 
 def task_json_name(ctx) -> str:
-    for attr in (
+    path_attrs = (
         "task_json_name",
         "task_json",
         "json_config_file",
@@ -57,12 +112,27 @@ def task_json_name(ctx) -> str:
         "es_config_file",
         "config_file",
         "config_path",
-        "task",
-        "pipeline_name",
-    ):
+    )
+    for attr in path_attrs:
         value = getattr(ctx, attr, None)
-        if value:
-            return Path(str(value)).name
+        if not isinstance(value, (str, os.PathLike)):
+            continue
+        raw = os.fspath(value)
+        if not isinstance(raw, str):
+            continue
+        normalized = "".join(
+            ch for ch in raw if not unicodedata.category(ch).startswith("C")
+        ).strip()
+        if normalized:
+            return Path(normalized.replace("\\", "/")).name[:JOB_IDENTIFIER_MAX_CHARS] or "unknown"
+    pipeline_name = getattr(ctx, "pipeline_name", None)
+    if isinstance(pipeline_name, str):
+        normalized = "".join(
+            ch for ch in pipeline_name
+            if not unicodedata.category(ch).startswith("C") and ch not in "/\\"
+        ).strip()
+        if normalized:
+            return normalized[:JOB_IDENTIFIER_MAX_CHARS]
     return "unknown"
 
 
@@ -117,13 +187,41 @@ def _get_recheck_log_limit(ctx) -> int:
 def pending_recheck_stats(ctx, *, scope: str = "dispatch") -> dict:
     stats = getattr(ctx, _stats_attr(scope), None)
     if not isinstance(stats, dict):
-        return {"checked": 0, "pending": 0, "already_completed": 0, "errors": 0}
-    return {
+        stats = {}
+    reasons = dict(stats.get("reasons", {}) or {})
+    result = {
         "checked": int(stats.get("checked", 0) or 0),
         "pending": int(stats.get("pending", 0) or 0),
         "already_completed": int(stats.get("already_completed", 0) or 0),
         "errors": int(stats.get("errors", 0) or 0),
+        "reasons": reasons,
     }
+    checked = result["checked"]
+    result["skip_rate"] = result["already_completed"] / checked if checked else 0.0
+    result["recheck_error_rate"] = result["errors"] / checked if checked else 0.0
+    result["semantic_stale_count"] = sum(int(reasons.get(k, 0) or 0) for k in SEMANTIC_STALE_REASONS)
+    return result
+
+
+def _bump_reason(ctx, reason: str, *, scope: str) -> None:
+    attr = _stats_attr(scope)
+    stats = getattr(ctx, attr, None)
+    if not isinstance(stats, dict):
+        _bump_recheck_stat(ctx, "checked", scope=scope)
+        stats = getattr(ctx, attr)
+        stats["checked"] -= 1
+    reasons = stats.setdefault("reasons", {})
+    reasons[reason] = int(reasons.get(reason, 0) or 0) + 1
+
+
+def _push_gui_stats(ctx, *, scope: str, final: bool = False) -> None:
+    if scope != "dispatch":
+        return
+    gui = getattr(ctx, "gui_handle", None)
+    stats = pending_recheck_stats(ctx, scope=scope)
+    every = max(int(getattr(ctx, "pending_recheck_gui_every", 100) or 100), 1)
+    if gui is not None and callable(getattr(gui, "update_recheck_stats", None)) and (final or stats["checked"] % every == 0):
+        gui.update_recheck_stats(stats)
 
 
 def announce_pending_recheck_if_enabled(ctx) -> bool:
@@ -162,15 +260,27 @@ def still_pending_before_dispatch(
     adapter = getattr(ctx, "_pending_adapter")
     output_cols = getattr(ctx, "output_cols", None) or [getattr(ctx, "output_col", "")]
     try:
-        is_pending = bool(adapter.is_row_pending(
+        checker = getattr(adapter, "check_row_pending", None)
+        decision = checker(
             tgt_table=getattr(ctx, "_pending_tgt_table", getattr(ctx, "target_table", None)),
             pk=getattr(ctx, "primary_key", ""),
             pk_value=pk,
             output_cols=output_cols,
-        ))
+        ) if callable(checker) else None
+        is_pending = bool(decision.pending) if decision is not None else bool(adapter.is_row_pending(
+            tgt_table=getattr(ctx, "_pending_tgt_table", getattr(ctx, "target_table", None)), pk=getattr(ctx, "primary_key", ""), pk_value=pk, output_cols=output_cols))
+        reason = decision.reason if decision is not None else ("missing_output" if is_pending else "fresh_completed")
         _bump_recheck_stat(ctx, "checked", scope=stats_scope)
         state = "pending" if is_pending else "already_completed"
         current_count = _bump_recheck_stat(ctx, state, scope=stats_scope)
+        _bump_reason(ctx, reason, scope=stats_scope)
+        _push_gui_stats(ctx, scope=stats_scope)
+        important = (not is_pending) or reason not in {"missing_output", "row_missing"}
+        if important or getattr(ctx, "debug_pending_recheck_events", False):
+            if decision is None:
+                from czjLLM.common.pending_decision import PendingDecision
+                decision = PendingDecision(is_pending, reason)
+            record_pending_event(ctx, pk, decision, phase=stats_scope)
         if log_state and (
             getattr(ctx, "debug_pending_recheck", False)
             or current_count <= _get_recheck_log_limit(ctx)
@@ -185,6 +295,10 @@ def still_pending_before_dispatch(
         # recheck failed.
         _bump_recheck_stat(ctx, "checked", scope=stats_scope)
         _bump_recheck_stat(ctx, "errors", scope=stats_scope)
+        _bump_reason(ctx, "recheck_error_fail_open", scope=stats_scope)
+        _push_gui_stats(ctx, scope=stats_scope)
+        from czjLLM.common.pending_decision import PendingDecision
+        record_pending_event(ctx, pk, PendingDecision(True, "recheck_error_fail_open"), phase=stats_scope)
         tlog_warn(
             f"[producer] pending recheck 失敗 pk={pk}: {e!r}；"
             "無法確認是否已完成，保守視為仍待處理並繼續排程。"
@@ -243,10 +357,17 @@ def _format_pending_recheck_completion_summary(
     lines.append(
         "  - 派工前重查："
         f"checked={dispatch['checked']}, "
-        f"仍需處理/已送出={dispatch['pending']}, "
+        f"需處理={dispatch['pending']}, "
         f"已完成跳過={dispatch['already_completed']}, "
         f"errors={dispatch['errors']}"
     )
+    lines.append(
+        f"  - fresh skip={dispatch['already_completed']} ({dispatch['skip_rate']:.1%}); "
+        f"semantic stale={dispatch['semantic_stale_count']}; "
+        f"recheck errors={dispatch['errors']} ({dispatch['recheck_error_rate']:.2%})"
+    )
+    if dispatch["reasons"]:
+        lines.append("  - reasons: " + ", ".join(f"{k}={v}" for k, v in sorted(dispatch["reasons"].items())))
     if scheduled_rows is not None:
         lines.append(f"  - producer 實際送出列數：{int(scheduled_rows)}")
     if finalize["checked"] > 0:
@@ -281,6 +402,7 @@ def emit_pending_recheck_completion_summary(
     scheduled_rows: int | None = None,
     done_rows: int | None = None,
 ) -> None:
+    _push_gui_stats(ctx, scope="dispatch", final=True)
     for line in _format_pending_recheck_completion_summary(
         ctx,
         total_rows=total_rows,

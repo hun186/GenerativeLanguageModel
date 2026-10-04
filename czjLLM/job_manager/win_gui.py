@@ -14,6 +14,24 @@ class _GuiEvents:
     LOG:       str = "log"
     CLOSE:     str = "close"
     SET_TOTAL: str = "set_total"
+    RECHECK:   str = "recheck"
+
+
+def format_recheck_stats(stats: dict) -> str:
+    checked = int(stats.get("checked", 0) or 0)
+    skipped = int(stats.get("already_completed", 0) or 0)
+    rate = skipped / checked if checked else 0.0
+    return (
+        "Pending Recheck\n"
+        f"Checked: {checked:,}   Skipped: {skipped:,} ({rate:.1%})   "
+        f"Need processing: {int(stats.get('pending', 0) or 0):,}\n"
+        f"Semantic stale: {int(stats.get('semantic_stale_count', 0) or 0):,}   "
+        f"Recheck Errors: {int(stats.get('errors', 0) or 0):,}"
+    )
+
+
+def recheck_status_is_error(stats: dict) -> bool:
+    return int(stats.get("errors", 0) or 0) > 0
 
 # ---------- 子行程：Tk 主迴圈 ----------
 
@@ -104,6 +122,8 @@ def _gui_proc_main(q: "mp.Queue", total: int, title: str):
     _tot = max(1, int(total))
     _done_cnt  = 0
     _sched_cnt = 0
+    _recheck_stats = {}
+    _recheck_error_visible = False
 
     # ---- ETA 估算狀態（指數平滑，降低抖動）----
     _t0 = None            # 開始時間（第一次排程/完成時啟動）
@@ -181,6 +201,11 @@ def _gui_proc_main(q: "mp.Queue", total: int, title: str):
     lbl_eta = ttk.Label(frm, foreground="#555")
     lbl_eta.pack(anchor="w", pady=(0, 8))
 
+    recheck_frame = ttk.LabelFrame(frm, text="Recheck Status", padding=(8, 5))
+    recheck_frame.pack(fill="x", pady=(0, 8))
+    lbl_recheck = ttk.Label(recheck_frame, text=format_recheck_stats({}), justify="left")
+    lbl_recheck.pack(anchor="w")
+
     _update_labels()
 
     txt = tk.Text(frm, height=15, wrap="word")
@@ -219,7 +244,7 @@ def _gui_proc_main(q: "mp.Queue", total: int, title: str):
 
     # 事件輪詢：全部在 Tk 主緒
     def poll():
-        nonlocal _tot, _done_cnt, _sched_cnt
+        nonlocal _tot, _done_cnt, _sched_cnt, _recheck_stats, _recheck_error_visible
         try:
             updated = False
             while True:
@@ -241,6 +266,16 @@ def _gui_proc_main(q: "mp.Queue", total: int, title: str):
                     append(str(payload))
                 elif evt == _GuiEvents.SET_TOTAL:
                     set_total(int(payload)); updated = True
+                elif evt == _GuiEvents.RECHECK:
+                    _recheck_stats = dict(payload or {})
+                    has_error = recheck_status_is_error(_recheck_stats)
+                    lbl_recheck.configure(
+                        text=format_recheck_stats(_recheck_stats),
+                        foreground="#b00020" if has_error else "#333333",
+                    )
+                    if has_error and not _recheck_error_visible:
+                        append(f"⚠️ Pending recheck errors: {_recheck_stats.get('errors', 0)}")
+                    _recheck_error_visible = has_error
                 elif evt == _GuiEvents.CLOSE:
                     _shutdown(); return
         except pyqueue.Empty:
@@ -269,6 +304,7 @@ class _GUIClient:
     def inc_done(self,  n: int = 1): self._q.put((_GuiEvents.INC_DONE,  n))
     def log(self, text: str):        self._q.put((_GuiEvents.LOG, text))
     def set_total(self, total: int): self._q.put((_GuiEvents.SET_TOTAL, int(total)))
+    def update_recheck_stats(self, stats: dict): self._q.put((_GuiEvents.RECHECK, dict(stats)))
 
     def close(self):
         try:

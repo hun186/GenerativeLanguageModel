@@ -169,3 +169,21 @@
 - Version prompt-aware preparation semantics in native preparer fingerprints; exclude source/prompt content and operational/secret values.
 - Serialize one checkpointed nested executable instance conservatively rather than changing D1 checkpoint schema, run keys, atomic ordering, D2 identity, or historical artifacts. Finer run-key coordination remains future work, not this K2 corrective.
 - Revert the unrelated K2 documentation compaction; keep only narrow append-only project status updates.
+
+## 2026-10-02 Reduction Engine PR L1
+
+- Persisted SQL/ES outputs remain reuse authority; no duplicate member-result file cache is introduced.
+- Semantic execution fingerprint extends destination freshness and is derived only from the established Executable metadata/normalized fingerprint machinery.
+- Structured recheck observability is part of L1. The legacy skip log remains alongside the bounded canonical JSONL event stream.
+- Optional caching for intentionally transient K2 outputs is deferred to L3 pending production evidence; K2 transient execution remains valid and non-persisted.
+
+## 2026-10-02 PR #193 L1 corrective
+
+- Auto identity must be derived from the effective existing Executable contract, never from a separately maintained task/prompt hash. Bind once before discovery and reuse exactly through writeback.
+- An explicitly configured SQL identity column is safe schema metadata, but collision is a configuration error; silent renaming or payload overwrite is forbidden.
+- GUI snapshots replace a fixed status surface. Routine throttled updates do not append log history; only the error transition is emphasized.
+
+## 2026-10-03 PR #193 final L1 corrective
+
+- Prefer correctness over ES query optimization for Python-only required-output semantics. Broaden only explicit validation jobs and retain optimized discovery elsewhere.
+- Never fall back from a missing diagnostic job identifier to executable task/prompt content. Both canonical and legacy logs share the safe identifier helper.

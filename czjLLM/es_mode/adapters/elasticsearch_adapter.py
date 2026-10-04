@@ -323,22 +323,31 @@ class ElasticsearchAdapter(ElasticsearchPendingPolicyMixin):
     # --- ES 版本的 pending 擷取 --------------------------------------------
 
     def is_row_pending(self, *, tgt_table: str, pk: str, pk_value: Any, output_cols: List[str]) -> bool:
+        return self.check_row_pending(tgt_table=tgt_table, pk=pk, pk_value=pk_value, output_cols=output_cols).pending
+
+    def check_row_pending(self, *, tgt_table: str, pk: str, pk_value: Any, output_cols: List[str]):
         if self.es is None:
             raise RuntimeError("Elasticsearch client 尚未連線")
+        from czjLLM.common.pending_decision import PendingDecision
         output_cols_resolved = self._resolve_output_cols(output_cols=output_cols)
         if not output_cols_resolved:
-            return True
+            return PendingDecision(True, "missing_output")
         key_val = _norm_scalar(pk_value)
         if key_val is None:
-            return False
-        present = self._bulk_check_present_nonempty(
-            tgt_index=tgt_table,
-            pk=pk,
-            ids=[key_val],
-            output_cols=output_cols_resolved,
-            request_timeout=int(self.cfg.get("es_request_timeout", 60)),
-        )
-        return key_val not in present
+            return PendingDecision(False, "fresh_completed")
+        timeout = int(self.cfg.get("es_request_timeout", 60))
+        if pk == "_id":
+            response = self.es.mget(index=tgt_table, body={"ids": [key_val]}, request_timeout=timeout)
+            docs = response.get("docs", [])
+            if not docs or not docs[0].get("found"):
+                return PendingDecision(True, "row_missing")
+            return self.check_source_pending(docs[0].get("_source", {}) or {}, output_cols_resolved)
+        suffix = self.cfg.get("pk_keyword_suffix", ".keyword")
+        result = self.es.search(index=tgt_table, body={"query": {"term": {pk + suffix: key_val}}, "size": 1}, request_timeout=timeout)
+        hits = result.get("hits", {}).get("hits", [])
+        if not hits:
+            return PendingDecision(True, "row_missing")
+        return self.check_source_pending(hits[0].get("_source", {}) or {}, output_cols_resolved)
 
     def select_pending_rows(
         self,
@@ -416,6 +425,7 @@ class ElasticsearchAdapter(ElasticsearchPendingPolicyMixin):
         keepalive = self.cfg.get("es_scroll_keepalive", "2m")
         
         needs_rerun_clauses = [c for c in (self._needs_rerun_clause(index, col) for col in output_cols_resolved) if c]
+        python_freshness_scan = self._requires_python_freshness_scan(output_cols_resolved)
         
         # ★ 取得備援日期欄位（你在 cfg 或 rerun 內放的）
         rr = (self.cfg or {}).get("rerun") or {}
@@ -424,25 +434,29 @@ class ElasticsearchAdapter(ElasticsearchPendingPolicyMixin):
                          or "update_time_ai"
         # 組 _source 欄位清單：必帶 input/output；有 meta 再加；pk 不是 _id 也要加
         stage_input_cols = [c for c in (stage_input_cols or []) if c and c != input_col]
-        src_fields = [input_col] + output_cols_resolved + self._output_meta_fields(output_cols_resolved) + stage_input_cols
+        src_fields = ([input_col] + output_cols_resolved
+                      + self._required_output_source_fields(output_cols_resolved)
+                      + self._output_meta_fields(output_cols_resolved) + stage_input_cols)
         if pk != "_id":
             src_fields.append(pk)
         # 可選：也讓 _source 直接帶上日期欄位（保險起見）
         if fallback_date and fallback_date not in src_fields:
             src_fields.append(fallback_date)
         src_fields = list(dict.fromkeys(src_fields))
+        query_bool = {
+            "must": [{"exists": {"field": input_col}}],
+            "filter": filters,
+        }
+        if not python_freshness_scan:
+            query_bool.update({
+                "should": [
+                    *[{"bool": {"must_not": [{"exists": {"field": col}}]}} for col in output_cols_resolved],
+                    *needs_rerun_clauses,
+                ],
+                "minimum_should_match": 1,
+            })
         body = {
-            "query": {
-                "bool": {
-                    "must":   [{"exists": {"field": input_col}}],
-                    "filter": filters,
-                    "should": [
-                        *[{"bool": {"must_not": [{"exists": {"field": col}}]}} for col in output_cols_resolved],
-                        *needs_rerun_clauses
-                    ],
-                    "minimum_should_match": 1
-                }
-            },
+            "query": {"bool": query_bool},
             "_source": src_fields,
             # ★ 關鍵：用 docvalue_fields 拿到標準化的日期值（會出現在 hit['fields']）
             "docvalue_fields": [fallback_date] if fallback_date else [],

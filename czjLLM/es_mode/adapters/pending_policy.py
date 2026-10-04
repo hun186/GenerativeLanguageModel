@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 from czjLLM.common.pending_conditions import clean_output_cols
+from czjLLM.common.pending_decision import PendingDecision
 from czjLLM.es_mode.model_metadata import safe_model_tag
 from .value_helpers import (
     deep_collect_by_path as _deep_collect_by_path,
@@ -49,8 +50,107 @@ class ElasticsearchPendingPolicyMixin:
             return False
         return all(self._is_fresh_output(src, col) for col in cols)
 
+    def _output_stale_reasons(self, src: dict, output_col: str) -> list[str]:
+        if not _is_non_empty_deep(_extract_by_path(src, output_col)):
+            return ["missing_output"]
+        if not self._validate_required_output_checks(src, output_col):
+            return ["required_output_invalid"]
+        rr = (self.cfg or {}).get("rerun") or {}
+        expected = rr.get("execution_fingerprint")
+        tag = safe_model_tag(rr.get("model_tag"))
+        pipeline_hash = rr.get("pipeline_hash")
+        if not rr.get("enable") and not expected:
+            return []
+        meta_field = self._resolve_meta_field(output_col)
+        meta = _extract_by_path(src, meta_field) if meta_field else None
+        reasons = []
+        if expected:
+            persisted = _extract_by_path(meta, "execution_fingerprint") if meta else None
+            reasons.append("missing_processing_identity" if not persisted else
+                           "execution_fingerprint_mismatch" if persisted != expected else "")
+        if tag:
+            persisted_tag = _extract_by_path(meta, "model_tag") if meta else None
+            reasons.append("missing_meta" if not persisted_tag else
+                           "model_tag_mismatch" if persisted_tag != tag else "")
+        if pipeline_hash:
+            persisted_pipeline = _extract_by_path(meta, "pipeline_hash") if meta else None
+            reasons.append("missing_meta" if not persisted_pipeline else
+                           "pipeline_hash_mismatch" if persisted_pipeline != pipeline_hash else "")
+        if rr.get("force_if_missing_meta") and meta_field and meta is None:
+            reasons.append("missing_meta")
+
+        processed_at = _extract_by_path(meta, "processed_at") if meta else None
+        if processed_at is None:
+            processed_at = _extract_by_path(src, "update_time_ai")
+        try:
+            processed_dt = datetime.fromisoformat(str(processed_at).replace("Z", "+00:00"))
+        except Exception:
+            processed_dt = None
+        stale_days = rr.get("stale_after_days")
+        if stale_days and processed_dt is not None:
+            try:
+                if processed_dt < datetime.now(timezone.utc) - timedelta(days=int(stale_days)):
+                    reasons.append("stale_after_days")
+            except (TypeError, ValueError):
+                pass
+        since = rr.get("force_since")
+        if since and processed_dt is not None:
+            try:
+                since_dt = datetime.fromisoformat(str(since).replace("Z", "+00:00"))
+                if processed_dt < since_dt:
+                    reasons.append("force_since")
+            except Exception:
+                pass
+        return list(dict.fromkeys(reason for reason in reasons if reason))
+
+    def check_source_pending(self, src: dict, output_cols: List[str]) -> PendingDecision:
+        """Explain the exact cumulative policy used by discovery and recheck."""
+        cols = self._resolve_output_cols(output_cols=output_cols)
+        reasons = []
+        for col in cols:
+            reasons.extend(self._output_stale_reasons(src, col))
+        reasons = list(dict.fromkeys(reasons or (["missing_output"] if not cols else [])))
+        if not reasons:
+            return PendingDecision(False, "fresh_completed")
+        primary = reasons[0]
+        diagnostics = {}
+        expected = ((self.cfg or {}).get("rerun") or {}).get("execution_fingerprint")
+        if primary in {"missing_processing_identity", "execution_fingerprint_mismatch"}:
+            diagnostics["expected_execution_fingerprint"] = expected
+            for col in cols:
+                meta = _extract_by_path(src, self._resolve_meta_field(col))
+                persisted = _extract_by_path(meta, "execution_fingerprint") if meta else None
+                matches_primary = (
+                    (primary == "missing_processing_identity" and not persisted) or
+                    (primary == "execution_fingerprint_mismatch" and persisted and persisted != expected)
+                )
+                if matches_primary:
+                    if persisted:
+                        diagnostics["persisted_execution_fingerprint"] = persisted
+                    break
+        if len(reasons) > 1:
+            diagnostics["secondary_reasons"] = reasons[1:8]
+        return PendingDecision(True, primary, diagnostics)
+
     def _is_pending_by_outputs(self, src: dict, output_cols: List[str]) -> bool:
-        return not self._is_fresh_outputs_all(src, output_cols)
+        return self.check_source_pending(src, output_cols).pending
+
+    def _requires_python_freshness_scan(self, output_cols: List[str]) -> bool:
+        """Whether initial discovery must scan broadly and postfilter in Python."""
+        rr = (self.cfg or {}).get("rerun") or {}
+        checks_active = bool(rr.get("enable")) or bool(
+            (self.cfg or {}).get("required_output_checks_apply_without_rerun", False)
+        )
+        return checks_active and any(
+            self._get_required_output_checks(col) for col in self._resolve_output_cols(output_cols=output_cols)
+        )
+
+    def _required_output_source_fields(self, output_cols: List[str]) -> List[str]:
+        return list(dict.fromkeys(
+            check["full_path"]
+            for col in self._resolve_output_cols(output_cols=output_cols)
+            for check in self._get_required_output_checks(col)
+        ))
 
     def _bulk_check_present_nonempty(
         self, *, tgt_index: str, pk: str, ids: List[str],
@@ -101,7 +201,8 @@ class ElasticsearchPendingPolicyMixin:
         rr = (self.cfg or {}).get("rerun") or {}
         fallback_date = rr.get("fallback_date_field") or self.cfg.get("fallback_date_field") or "update_time_ai"
 
-        src_fields = [pk] + output_cols_resolved + self._output_meta_fields(output_cols_resolved)
+        src_fields = (self._required_output_source_fields(output_cols_resolved) + [pk]
+                      + output_cols_resolved + self._output_meta_fields(output_cols_resolved))
         if fallback_date:
             src_fields.append(fallback_date)
         # 去重
@@ -132,7 +233,7 @@ class ElasticsearchPendingPolicyMixin:
 
     def _needs_rerun_clause(self, index: str, output_col: str) -> Optional[dict]:
         rr = (self.cfg or {}).get("rerun") or {}
-        if not rr.get("enable"):
+        if not rr.get("enable") and not rr.get("execution_fingerprint"):
             return None
         #print("rr in _needs_rerun_clause",rr)
         #print("-"*50)
@@ -141,6 +242,7 @@ class ElasticsearchPendingPolicyMixin:
         #print("meta",meta)
         tag       = safe_model_tag(rr.get("model_tag"))
         pipe      = rr.get("pipeline_hash")
+        execution_fingerprint = rr.get("execution_fingerprint")
         since     = rr.get("force_since")
         stale_days= rr.get("stale_after_days")
         force_if_missing_meta = rr.get("force_if_missing_meta", False)
@@ -163,6 +265,9 @@ class ElasticsearchPendingPolicyMixin:
         if pipe and meta:
             should.append({"bool":{"must":[{"exists":{"field":output_col}}],
                                    "must_not":[{"term":{f"{meta}.pipeline_hash.keyword":pipe}}]}})
+        if execution_fingerprint and meta:
+            should.append({"bool":{"must":[{"exists":{"field":output_col}}],
+                                   "must_not":[{"term":{f"{meta}.execution_fingerprint.keyword":execution_fingerprint}}]}})
 
         # B) 逾期（stale_days）
         if stale_days:
@@ -301,61 +406,4 @@ class ElasticsearchPendingPolicyMixin:
         return True
 
     def _is_fresh_output(self, src: dict, output_col: str) -> bool:
-        val = _extract_by_path(src, output_col)
-        if not _is_non_empty_deep(val):
-            return False
-
-        # ✅ 新增：必要欄位/格式檢查（不通過就視為不新鮮，需重跑）
-        if not self._validate_required_output_checks(src, output_col):
-            return False
-
-        rr = (self.cfg or {}).get("rerun") or {}
-        if not rr.get("enable"):
-            return True
-
-        meta_field = self._resolve_meta_field(output_col)  # ← 關鍵
-        tag        = safe_model_tag(rr.get("model_tag"))
-        pipe       = rr.get("pipeline_hash")
-        since      = rr.get("force_since")
-        stale_days = rr.get("stale_after_days")
-        force_if_missing_meta = rr.get("force_if_missing_meta", False)
-
-        meta = _extract_by_path(src, meta_field) if meta_field else None
-
-        # 有 output 但缺 meta → 不新鮮（需重跑）
-        if force_if_missing_meta and meta_field and meta is None:
-            return False
-
-        if tag and meta and _extract_by_path(meta, "model_tag") != tag:
-            return False
-        if pipe and meta and _extract_by_path(meta, "pipeline_hash") != pipe:
-            return False
-
-        # 日期新鮮度（若有）
-        def _older_than(cfg_days) -> bool:
-            # 以 processed_at 優先，再退回 update_time_ai
-            dt = _extract_by_path(meta, "processed_at") if meta else None
-            if dt is None:
-                dt = _extract_by_path(src, "update_time_ai")
-            try:
-                # 允許 ISO 8601；你的資料若是 epoch_ms，這裡可再加分支
-                dt = datetime.fromisoformat(str(dt).replace("Z","+00:00"))
-            except Exception:
-                return False
-            return dt < (datetime.now(timezone.utc) - timedelta(days=int(cfg_days)))
-
-        if stale_days and _older_than(stale_days):
-            return False
-
-        # force_since：結果若早於此時間 → 視為不新鮮（需重跑）
-        if since:
-            try:
-                since_dt = datetime.fromisoformat(since.replace("Z","+00:00"))
-                dt = _extract_by_path(meta, "processed_at") if meta else _extract_by_path(src, "update_time_ai")
-                dt = datetime.fromisoformat(str(dt).replace("Z","+00:00"))
-                if dt < since_dt:
-                    return False
-            except Exception:
-                pass
-
-        return True
+        return not self._output_stale_reasons(src, output_col)

@@ -94,6 +94,7 @@ def resolve_es_connection(ctx, get_param, args):
     # 做測試重跑；其餘未覆寫欄位仍沿用 ES config。
     rerun_cfg, rerun_diagnostics = resolve_rerun_config(es_cfg, get_param)
     log_rerun_config(rerun_cfg, rerun_diagnostics)
+    ctx.expected_execution_fingerprint = rerun_cfg.get("execution_fingerprint")
 
     adapter_cfg = {
         #"es_host": hosts,
@@ -448,6 +449,7 @@ def ensure_schemas_es(ctx, adapter: ElasticsearchAdapter, columns, index_name_hi
                 "temperature":   {"type": "float"},
                 "model_version": {"type": "keyword"},
                 "pipeline_hash": {"type": "keyword"},
+                "execution_fingerprint": {"type": "keyword"},
                 #"model_spec":    {"type": "keyword"},
                 "source":        {"type": "keyword"}, # 自定：資料來源/任務來源
                 "channel":       {"type": "keyword"}, # 自定：任務 channel

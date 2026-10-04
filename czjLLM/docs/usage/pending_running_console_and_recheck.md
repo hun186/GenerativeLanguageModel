@@ -128,3 +128,47 @@ logs/pending_running_console_adjustments.log
 1. 看 `pending_running_console_adjustments.log` 中 `initial_reorder`、`defer_running` 是否出現。
 2. 對照 `pending_recheck_skips.log`：若中控臺有效，重複派工應下降；若仍有大量 pending skip，代表多程序仍常讀到相同 pending 清單，可以調整 block shuffle 或排程間隔。
 3. 檢查 `pending_running_console.json` 是否有長期不釋放的 running 項目；若有，確認是否為超長任務或主程序異常中斷。
+
+## L1：持久化結果語意新鮮度與可觀測性
+
+SQL/ES 的目標 row/document 仍是唯一的跨執行 reuse authority；pending-running console 只協調「目前正在執行」，D1 checkpoint 只恢復 round，stage snapshots 只屬於當次執行。L1 沒有 member-result file cache，K2 未持久化的 nested output 下次仍會重算。
+
+`source_version` 回答來源 member 是否改變；`execution_fingerprint` 回答 prompt、task、model semantic config、pipeline/ReductionStage/nested reducer 等處理語意是否改變。兩者互不替代：任何一者依其 policy 改變都應重算，兩者均未變才可安全 reuse。
+
+SQL 以明確的 `semantic_freshness.execution_fingerprint` 與 `semantic_freshness.processing_identity_column` opt in。未設定 expected fingerprint 時，維持所有 output columns 非空即 complete 的舊行為；啟用後，output 非空但 identity 缺少或不相等皆 pending。result 與 identity 由同一 writeback transaction/commit 寫入，避免新 identity 配舊 payload。identity column 必須在設定中明確命名；strict mode 會由既有 schema preparation 建立該明確宣告的文字欄位。
+
+ES 延伸既有 `rerun` policy 的 `execution_fingerprint`，寫入既有 output meta；此條件與 `model_tag`、`pipeline_hash`、required-output、`stale_after_days`、`force_since` 累加，matching fingerprint 不會蓋過其他 stale policy。metadata 仍經現有 sanitization，不保存 credentials 或 endpoint。
+
+Canonical structured stream 預設為：
+
+```text
+{ctx.PGMSubDir}/logs/pending_recheck_events.jsonl
+```
+
+可用 `pending_recheck_event_log_path` 與 `pending_recheck_event_log_max_bytes` 覆寫；預設上限 30 MB，超限保留約後半段完整 JSONL records。fingerprint 只顯示 12 字元 prefix（比較仍使用全文），不記 raw input、prompt、LLM response、credential、connection string 或 URL。`pending_recheck_skips.log` 繼續產生，作為 legacy narrow compatibility log。
+
+穩定 reason codes 包含 `fresh_completed`、`missing_output`、`row_missing`、`missing_processing_identity`、`execution_fingerprint_mismatch`、`stale_by_policy`、`required_output_invalid`、`recheck_error_fail_open`，ES policy 可保留更具體的 model/pipeline/time reason。正常 missing-output 預設只計數；fresh skip、semantic stale、invalid output 與 fail-open error 一定寫 structured event。
+
+Stats 保留 `checked/pending/already_completed/errors`，並新增 `reasons`、`skip_rate`、`recheck_error_rate`、`semantic_stale_count`；dispatch/finalize/completion scope 分開。GUI 透過 multiprocessing event queue 接收 cumulative snapshot，預設每 100 checks 更新並在 final summary 強制更新；`Recheck Errors` 會直接出現在 compact section/log，不由 producer thread 操作 Tk widget。
+
+## L1 corrective：automatic semantic identity
+
+`execution_fingerprint: auto` is the normal Reduction Engine integration. After effective task/stage/model/reduction settings are available and before destination pending discovery, production constructs the effective existing `TaskExecutable` or `StagePipelineExecutable` (or uses an explicitly supplied K1/K2 executable), wraps row-level reduction/combine semantics, and calls `executable_semantic_fingerprint()`. The full result is bound once to the runtime context, source adapter policy, and writeback sink. A literal value remains an advanced externally managed override.
+
+For SQL, an explicitly configured `processing_identity_column` is schema-owned metadata: strict mode creates it as text alongside output columns. It must not collide case-insensitively with the primary key, input, outputs, writeback outputs, or expanded JSON destinations. Output and identity remain one committed write.
+
+For ES, configured `model_tag`, `pipeline_hash`, and `execution_fingerprint` make missing corresponding metadata stale. Query-side selection, bulk checks, dispatch recheck, and completion recheck therefore use equivalent criteria. Decisions expose stable specific reasons such as `missing_meta`, `model_tag_mismatch`, `pipeline_hash_mismatch`, `missing_processing_identity`, `execution_fingerprint_mismatch`, `stale_after_days`, and `force_since`.
+
+The Windows GUI has a fixed **Recheck Status** section; cumulative queue snapshots replace its displayed value without adding periodic text-log lines. Nonzero errors use warning coloring and log only the transition into an error state. Candidate progress remains separate from the actual count returned by the producer and shown as `producer 實際送出列數`.
+
+PR #193 head `cb12323d0a98ed6bf3eae28182758db24e72f0df`, CI #441 / `36973654548`, job `110732742876`, collected and passed 21/21 offline E2E cases. This is pre-corrective green evidence only: review subsequently found automatic fingerprint wiring, SQL identity collision/schema, persistent GUI status, dispatch-count reporting, and ES metadata-policy consistency gaps. PR L1 and PR L remain pending until a fresh corrective hosted gate passes.
+
+## L1 final corrective：ES Python freshness postfilter 與安全 job identifier
+
+當 single-index ES 啟用 `required_output_checks`（包含 nested/list traversal、date format、`min_valid_count` 等只能由既有 Python validator 精確表達的規則）時，初始查詢會保留 input/pending filters，但不再用 missing-output/rerun `should` 縮窄候選；scan 後由 `check_source_pending()` 作 authoritative postfilter。這可能掃描較多文件，但保證 Python 判定 pending 的文件不會在 discovery 被漏掉。沒有 Python-only validation 規則的普通工作仍使用既有 optimized `missing output OR rerun clause` query。Dual-index 原本即掃 source 並透過 target bulk freshness Python contract 判斷，維持不變。`pending_policy_no_eventids.py` 保持相同 mode 判定與 source-field contract。
+
+Discovery invariant 是：Python freshness 判為 pending 的 unchanged document 必須出現在初始 candidate set；optimized query 可以是 safe superset，因為 dispatch recheck 會跳過 false positive，但不得有 false negative。
+
+Canonical event 與 legacy skip log 的 `task_json` 現在只取明確 config/job path identifier 的 basename，或 bounded simple `pipeline_name`；structured/list/object values、control characters 與完整 directory path 不會輸出。它不再 fallback 到 `ctx.task` 或 prompt content；找不到安全 identifier 時使用 `unknown`。Decision diagnostic allowlist 未擴大。
+
+PR #193 pre-final-corrective head `874dbc865c46a02b5ba76caebbac05b213f94c70`, CI #442 / `37080278738`, offline job `111079056066` collected 21 and passed 21/21. This remains pre-final-corrective green evidence: review found single-index required-output false negatives and raw `ctx.task` diagnostic leakage risk. PR L1 and PR L remain pending a fresh final-corrective hosted gate.

@@ -84,6 +84,9 @@ class ESSink:
         # ✅ meta_field 預設為 f"{output_col}_meta"
         self.meta_field: Optional[str] = meta_field or f"{self.output_col}_meta"
         self.meta_base: Dict[str, Any] = dict(meta_base or {})
+        execution_fingerprint = getattr(ctx, "expected_execution_fingerprint", None)
+        if execution_fingerprint:
+            self.meta_base["execution_fingerprint"] = str(execution_fingerprint)
         
         atexit.register(self.flush_all)  # 程式結束時保底 flush
         #print("ctx in ESSink",self.ctx)
