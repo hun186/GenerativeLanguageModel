@@ -170,3 +170,14 @@
 
 - Required requirements installation remains blocked by the pinned GitHub `peft` HTTP tunnel 403. Dependency-light final-corrective tests are available; complete ES/reduction verification is attempted separately and hosted 21-case acceptance remains authoritative.
 - `python -m pytest -q tests/es_mode --maxfail=1` remains unable to collect `test_steps_es_adapter_replacements.py` because `elasticsearch` is unavailable after the proxy-blocked requirements install. Focused pure/fake-client ES freshness discovery tests pass and compileall is the local alternative.
+
+## 2026-10-04 PR L2a local environment limits
+
+- Required `python -m pip install --upgrade pip` could not reach the configured package index through the environment tunnel (HTTP 403 retries), though the existing pip remained usable.
+- Required `python -m pip install -r requirements.txt` again failed cloning pinned GitHub `peft` because the CONNECT tunnel returned HTTP 403. The dependency-light focused and regression suites run locally; the new production fake-OpenAI L2a E2E cannot start locally because the incomplete environment lacks `tqdm`. Fresh hosted `offline-e2e` is required for authoritative collect-only 22 and full 22/22 evidence.
+- Complete local E2E collect-only additionally stops while importing the ES boundary because PyYAML is absent. This is the same incomplete-install limitation; hosted CI remains the alternative verification.
+
+## 2026-10-04 PR #194 corrective local verification environment
+
+- Required dependency installation remains blocked by the CONNECT proxy (HTTP 403 cloning pinned GitHub `peft`). The existing L2a production E2E still cannot complete locally because the incomplete environment lacks `tqdm`; dependency-light corrective, reduction, and prompt suites remain available, and fresh hosted 22/22 is required.
+- Corrective publication cannot be performed from this checkout: no Git remote is configured, and direct `git ls-remote https://github.com/hun186/GenerativeLanguageModel.git refs/pull/194/head` fails with `CONNECT tunnel failed, response 403`. PR metadata can be updated locally, but pushing the corrective and collecting a new hosted head/run requires a network-enabled environment.

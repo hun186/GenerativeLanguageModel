@@ -187,3 +187,18 @@
 
 - Prefer correctness over ES query optimization for Python-only required-output semantics. Broaden only explicit validation jobs and retain optimized discovery elsewhere.
 - Never fall back from a missing diagnostic job identifier to executable task/prompt content. Both canonical and legacy logs share the safe identifier helper.
+
+## 2026-10-04 Reduction Engine PR L2a decisions
+
+- Keep `require_all` as the compatibility default; partial results are explicit opt-in only.
+- Recover only `ExecutionError` member failures. Always propagate `ExecutionCancelled`; propagate unexpected exceptions unchanged. Reducers never receive failed placeholders, and accepted successes retain caller input order.
+- Apply partial thresholds per batch/round and retain at most 100 safe member failure records without changing threshold semantics.
+- Preserve original manifest and aggregate identity; provenance, not manifest mutation, represents incomplete membership.
+- Include normalized failure policy in the stage semantic fingerprint and exclude cancellation because it is operational state.
+- Use cooperative cancellation, not forced HTTP/thread interruption. Drain running leaves to a safe state, cancel queued work best-effort, and do not hold parent budget leases while waiting.
+- Keep L2a source-independent. Production SQL/ES stop-event binding, structured production events/counters, and GUI/operator surfaces remain L2b.
+
+## 2026-10-04 PR #194 fatal exception corrective decision
+
+- The recoverability boundary is exception taxonomy, not executable location: only `ExecutionError` is a partial member failure. Preserve programmer/system fault identity before generic operational wrapping.
+- Keep the shared stage orchestrator's legacy three-argument/two-argument callback fallback unchanged. Use a private non-`ExecutionError` wrapper only for a real TypeError raised inside the three-argument reduction runner so it cannot trigger duplicate semantic execution.
