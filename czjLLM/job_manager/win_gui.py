@@ -15,6 +15,25 @@ class _GuiEvents:
     CLOSE:     str = "close"
     SET_TOTAL: str = "set_total"
     RECHECK:   str = "recheck"
+    REDUCTION: str = "reduction"
+
+
+def format_reduction_stats(stats: dict) -> str:
+    status = str(stats.get("run_status", "running") or "running").replace("_", " ").title()
+    return (
+        f"Stages: {int(stats.get('stages_completed', 0) or 0):,} / "
+        f"{int(stats.get('stages_started', 0) or 0):,}\n"
+        f"Members: {int(stats.get('members_succeeded', 0) or 0):,} / "
+        f"{int(stats.get('members_attempted', 0) or 0):,}   "
+        f"Failed: {int(stats.get('members_failed', 0) or 0):,}\n"
+        f"Partial accepted: {int(stats.get('partial_accepted', 0) or 0):,}   "
+        f"Rejected: {int(stats.get('partial_rejected', 0) or 0):,}\n"
+        f"Cancellation: {status}   Errors: {int(stats.get('stages_failed', 0) or 0):,}"
+    )
+
+
+def reduction_status_is_error(stats: dict) -> bool:
+    return int(stats.get("stages_failed", 0) or 0) > 0
 
 
 def format_recheck_stats(stats: dict) -> str:
@@ -63,7 +82,7 @@ def _enable_windows_dpi_awareness():
     except Exception:
         pass
 
-def _gui_proc_main(q: "mp.Queue", total: int, title: str):
+def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     """子行程內執行：所有 Tk 操作都在這裡，避免跨緒/跨行程錯誤。"""
     _enable_windows_dpi_awareness()
     try:
@@ -124,6 +143,7 @@ def _gui_proc_main(q: "mp.Queue", total: int, title: str):
     _sched_cnt = 0
     _recheck_stats = {}
     _recheck_error_visible = False
+    _reduction_stats = {}
 
     # ---- ETA 估算狀態（指數平滑，降低抖動）----
     _t0 = None            # 開始時間（第一次排程/完成時啟動）
@@ -206,6 +226,20 @@ def _gui_proc_main(q: "mp.Queue", total: int, title: str):
     lbl_recheck = ttk.Label(recheck_frame, text=format_recheck_stats({}), justify="left")
     lbl_recheck.pack(anchor="w")
 
+    reduction_frame = ttk.LabelFrame(frm, text="Reduction Status", padding=(8, 5))
+    reduction_frame.pack(fill="x", pady=(0, 8))
+    lbl_reduction = ttk.Label(reduction_frame, text=format_reduction_stats({}), justify="left")
+    lbl_reduction.pack(anchor="w")
+    cancel_status = ttk.Label(reduction_frame, text="Running")
+    cancel_status.pack(anchor="w")
+    def _request_cancel():
+        if not cancel_event.is_set():
+            cancel_event.set()
+        cancel_button.configure(state="disabled")
+        cancel_status.configure(text="Cancellation requested")
+    cancel_button = ttk.Button(reduction_frame, text="Cancel", command=_request_cancel)
+    cancel_button.pack(anchor="e")
+
     _update_labels()
 
     txt = tk.Text(frm, height=15, wrap="word")
@@ -244,7 +278,7 @@ def _gui_proc_main(q: "mp.Queue", total: int, title: str):
 
     # 事件輪詢：全部在 Tk 主緒
     def poll():
-        nonlocal _tot, _done_cnt, _sched_cnt, _recheck_stats, _recheck_error_visible
+        nonlocal _tot, _done_cnt, _sched_cnt, _recheck_stats, _recheck_error_visible, _reduction_stats
         try:
             updated = False
             while True:
@@ -276,6 +310,15 @@ def _gui_proc_main(q: "mp.Queue", total: int, title: str):
                     if has_error and not _recheck_error_visible:
                         append(f"⚠️ Pending recheck errors: {_recheck_stats.get('errors', 0)}")
                     _recheck_error_visible = has_error
+                elif evt == _GuiEvents.REDUCTION:
+                    _reduction_stats = dict(payload or {})
+                    lbl_reduction.configure(
+                        text=format_reduction_stats(_reduction_stats),
+                        foreground="#b00020" if reduction_status_is_error(_reduction_stats) else "#333333",
+                    )
+                    if _reduction_stats.get("run_status") == "cancelled":
+                        cancel_status.configure(text="Cancelled / safely drained")
+                        cancel_button.configure(state="disabled")
                 elif evt == _GuiEvents.CLOSE:
                     _shutdown(); return
         except pyqueue.Empty:
@@ -296,15 +339,20 @@ def _gui_proc_main(q: "mp.Queue", total: int, title: str):
 # ---------- 主行程：薄客戶端（丟訊息而已） ----------
 
 class _GUIClient:
-    def __init__(self, q: "mp.Queue", proc: "mp.Process"):
+    def __init__(self, q: "mp.Queue", proc: "mp.Process", cancel_event=None):
         self._q = q
         self._proc = proc
+        self._cancel_event = cancel_event
 
     def inc_sched(self, n: int = 1): self._q.put((_GuiEvents.INC_SCHED, n))
     def inc_done(self,  n: int = 1): self._q.put((_GuiEvents.INC_DONE,  n))
     def log(self, text: str):        self._q.put((_GuiEvents.LOG, text))
     def set_total(self, total: int): self._q.put((_GuiEvents.SET_TOTAL, int(total)))
     def update_recheck_stats(self, stats: dict): self._q.put((_GuiEvents.RECHECK, dict(stats)))
+    def update_reduction_stats(self, stats: dict, final: bool = False):
+        self._q.put((_GuiEvents.REDUCTION, dict(stats)))
+    def cancellation_requested(self) -> bool:
+        return bool(self._cancel_event is not None and self._cancel_event.is_set())
 
     def close(self):
         try:
@@ -321,9 +369,10 @@ def try_start_gui(total: int, title: str = "LLM 分析進度（Windows GUI）"):
     try:
         ctx = mp.get_context("spawn")  # Windows 安全模式
         q = ctx.Queue()
-        p = ctx.Process(target=_gui_proc_main, args=(q, int(total), title), daemon=False)
+        cancel_event = ctx.Event()
+        p = ctx.Process(target=_gui_proc_main, args=(q, cancel_event, int(total), title), daemon=False)
         p.start()
-        return _GUIClient(q, p)
+        return _GUIClient(q, p, cancel_event)
     except Exception as ex:
         #print(ex)
         return None

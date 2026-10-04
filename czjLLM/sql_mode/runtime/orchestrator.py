@@ -25,7 +25,7 @@ from .mp_logs import start_mp_log_listener, stop_mp_log_listener
 from .workers import start_workers, progress_drain
 from .workers import consumer_restart_cb
 
-from .teardown import shutdown
+from .teardown import finalize_gui, shutdown
 from .producer import produce_rows
 from .pending_recheck import (
     emit_pending_recheck_completion_summary,
@@ -34,6 +34,10 @@ from .pending_recheck import (
 
 from .sinks.sql_sink import SqlSink
 from .sinks.excel_sink import ExcelSink
+from czjLLM.reduction.production_control import (
+    ensure_execution_cancel_event, ensure_production_observer,
+    execution_cancel_requested, request_execution_cancel,
+)
 
 
 
@@ -188,6 +192,8 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     # 1) 取資料筆數（可改為估算節省記憶體）
     rows_for_count = list(pending_iter)
     processable = len(rows_for_count)
+    producer_stop_event = ensure_execution_cancel_event(ctx)
+    observer = ensure_production_observer(ctx)
 
     # 2) UI 準備
     gui, gui_sink, p_sched, p_done, restore_console = prepare_ui(ctx, processable)
@@ -306,7 +312,8 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     '''
     # 於 worker 啟動後建立 watchdog
     stop_event, consumer, merger = start_workers(ctx, registry, meter_fn, is_sqlite, done_q, sink=sink)
-    producer_stop_event = threading.Event()  # 🔸 producer 專屬
+    # Operator cancellation stops only producer scheduling.  Worker stop_event
+    # remains the teardown signal owned by start_workers()/shutdown().
     start_watchdogs(
         ctx,
         adapter=getattr(ctx, "_es_adapter", None),
@@ -373,6 +380,9 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
             return False
 
     while True:
+        if gui is not None and callable(getattr(gui, "cancellation_requested", None)):
+            if gui.cancellation_requested():
+                request_execution_cancel(ctx, source="gui")
         out_now = _get_outstanding(meter_fn)
         A = producer_done_flag.is_set()          # 產生端已跑完
         B = (out_now <= 0)                      # 無未完成（pending+running）
@@ -419,6 +429,8 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         
             # 目前 + 曾看過 的候選
             candidates = (set(job_dirs) | seen_job_dirs) - merged_jobs
+            if execution_cancel_requested(ctx):
+                candidates = set()
         
             for job_dir in sorted(candidates):
                 if not _can_combine(job_dir):
@@ -508,6 +520,7 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         merger_done=merger_done,
         refresher=refresher,
         bar_refresh_stop=bar_refresh_stop,
+        close_gui=False,
     )
 
     completion = recheck_scheduled_after_writeback(ctx)
@@ -517,10 +530,43 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         scheduled_rows=producer_result["scheduled"],
         done_rows=getattr(p_done, "n", None),
     )
-    if completion["pending"] or completion["errors"]:
+    # A request observed before authoritative post-writeback classification
+    # makes the run cancelled even when producer traversal had just finished.
+    # Requests made after this terminal transition cannot retroactively change it.
+    cancelled = execution_cancel_requested(ctx)
+    if cancelled:
+        ctx.run_status = "cancelled"
+        observer.emit("run_cancelled", {"attempted": processable,
+                      "succeeded": producer_result["scheduled"],
+                      "failed": max(0, processable - producer_result["scheduled"]),
+                      "stop_reason": "cancelled"})
+    elif completion["pending"] or completion["errors"]:
+        ctx.run_status = "failed"
+        observer.emit("run_failed", {"reason": "incomplete_writeback"})
         tlog_warn(
             "⚠️ 資料處理流程已結束，但寫回完成後重查仍有 "
             f"pending={completion['pending']}, errors={completion['errors']}；請勿視為全部完成。"
         )
     else:
+        ctx.run_status = "completed"
+        observer.emit("run_completed", {"attempted": processable,
+                      "succeeded": producer_result["scheduled"], "failed": 0})
         tlog_ok("🎉 資料處理完成！")
+    reduction_stats = observer.snapshot()
+    summary = (
+        "Reduction execution summary: "
+        f"candidate rows={processable}, scheduled={producer_result['scheduled']}, "
+        f"completed={getattr(p_done, 'n', 0)}, run status={ctx.run_status}, "
+        f"stages completed={reduction_stats['stages_completed']}, "
+        f"members attempted={reduction_stats['members_attempted']}, "
+        f"members failed={reduction_stats['members_failed']}, "
+        f"partial accepted={reduction_stats['partial_accepted']}"
+    )
+    if ctx.run_status == "cancelled":
+        summary += "; new scheduling cancelled, in-flight work safely drained; subset may be processed"
+    if ctx.run_status == "completed":
+        tlog(summary)
+    else:
+        tlog_warn(summary)
+    finalize_gui(gui=gui, gui_sink=gui_sink)
+    return producer_result["scheduled"]

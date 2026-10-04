@@ -146,3 +146,17 @@
 - [ ] PR L3 — retention / TTL / GC + optional transient-cache hardening
 
 L2a intentionally does not add production Cancel controls, GUI dashboards, production reduction JSONL logs, SQL/ES stop-event rebinding, retry/caches, retention/TTL/GC, distributed cancellation, hard HTTP termination, aggregate identity redesign, or manifest mutation.
+
+## 2026-10-04 Reduction roadmap after merged L2a
+
+- [x] PR L1 — persisted result reuse + semantic freshness + recheck observability
+- [x] PR L2a — partial-success + cooperative cancellation core
+  - Canonical PR #195; accepted head `f4ad4001f4498287799df3c89e90ff4a733dc572`; CI #448 / `37179982321`; offline job `111370415206`; collect 22; full PASS; merged as `c1f2f6974e88028eb3eb5b9b747fefeb8d6d5cf0` with verified/valid signature.
+  - PR #194 is historical, closed, unmerged, and superseded by PR #195.
+- [ ] PR L2b — production cancellation + run/member observability bridge (implemented locally; do not mark complete before fresh hosted acceptance and merge)
+- [ ] PR L3 — retention / TTL / GC + optional transient-cache hardening
+
+## 2026-10-04 PR #196 corrective acceptance
+
+- [ ] PR L2b remains open and unmerged. Hosted head `841f784ae38b34ccf28099bf7f630ff2c2d98b49`, CI #450 / `37182363233`, collected/passed 23 but is pre-corrective evidence because its L2b E2E did not exercise production `run_pipeline()` safe drain.
+- [ ] Require a new hosted head and fresh collect-only 23/full 23 PASS after the scheduler, Row Merger, GUI lifecycle, counters, privacy, and strengthened single production E2E corrective.

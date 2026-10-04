@@ -28,7 +28,8 @@ from .engine import reduce_single_pass
 from .controllers import AdaptiveHierarchicalController, FixedRoundsController
 from .hierarchical import reduce_hierarchical_text
 from .execution import (
-    CancellationSignal, EventCancellationSignal, Executable, ExecutableRegistry,
+    CancellationSignal, EventCancellationSignal, ExecutionObserver, NoOpExecutionObserver,
+    Executable, ExecutableRegistry,
     ExecutableResult, ExecutionCancelled, ExecutionContext, ExecutionError, NeverCancelled,
     ExecutionNestingState, TaskCallResult, TaskExecutable, TaskRuntime,
     ProcessingIdentity, executable_semantic_fingerprint,
@@ -56,6 +57,12 @@ from .registry import (
     get_default_registry,
     register_builtin_reducers,
     register_reducer,
+)
+from .production_control import (
+    ProductionExecutionObserver, build_production_execution_context,
+    ensure_execution_cancel_event, ensure_production_observer, execution_cancel_requested,
+    production_cancellation_signal, raise_if_execution_cancelled,
+    request_execution_cancel,
 )
 
 __all__ = [
@@ -92,6 +99,7 @@ __all__ = [
     "ExecutionNestingState",
     "ProcessingIdentity", "executable_semantic_fingerprint",
     "CancellationSignal", "NeverCancelled", "EventCancellationSignal",
+    "ExecutionObserver", "NoOpExecutionObserver",
     "ExecutionError", "ExecutionCancelled", "TaskCallResult", "TaskExecutable", "TaskRuntime",
     "PipelineRefExecutable", "StagePipelineExecutable", "ProductionTaskRuntime",
     "TaskPromptPreflight",
@@ -103,4 +111,9 @@ __all__ = [
     "parse_reduction_stage_executable_config",
     "PersistedProcessingExecutable", "bind_persisted_execution_fingerprint",
     "effective_persisted_executable",
+    "ProductionExecutionObserver", "build_production_execution_context",
+    "ensure_execution_cancel_event", "execution_cancel_requested",
+    "ensure_production_observer",
+    "production_cancellation_signal", "raise_if_execution_cancelled",
+    "request_execution_cancel",
 ]

@@ -15,6 +15,8 @@ class FakeOpenAIServer:
         self.active_requests = 0
         self.peak_active_requests = 0
         self.delay = 0.0
+        self.request_started = None
+        self.release_response = None
         self._failure_rules: dict[str, dict[str, int]] = {}
         self._lock = threading.Lock()
         owner = self
@@ -41,6 +43,10 @@ class FakeOpenAIServer:
                     }
                     owner.requests.append(record)
                 try:
+                    if owner.request_started is not None:
+                        owner.request_started.set()
+                    if owner.release_response is not None:
+                        owner.release_response.wait(timeout=10)
                     if owner.delay:
                         time.sleep(owner.delay)
                     prompt = "\n".join(

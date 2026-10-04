@@ -130,3 +130,21 @@ def test_actual_row_executor_is_capped_without_consuming_leaf_permits(monkeypatc
     ) == 0
     assert seen == [(2, "multistage-row")]
     assert ctx._execution_budget.snapshot().in_use == 0
+
+
+def test_cancelled_scheduler_releases_running_marker_without_teardown(monkeypatch):
+    from czjLLM.reduction.execution import ExecutionCancelled
+    states = []
+    monkeypatch.setattr(producer, "schedule_one_row",
+                        lambda *a, **k: (_ for _ in ()).throw(ExecutionCancelled("cancelled")))
+    monkeypatch.setattr(producer, "mark_not_running",
+                        lambda _ctx, _pk, state: states.append(state))
+    ctx = SimpleNamespace(mode="sql", stages=[{"name": "one"}],
+                          sql_enable_multistage_stream=True, n_process=1)
+    stop_event = threading.Event()
+    progress = SimpleNamespace(update=lambda *_args: None)
+    assert producer.produce_rows(ctx, [("pk", "text")], object(), "meter", 0,
+                                 stop_event, None, progress) == 0
+    assert states == ["cancelled"]
+    assert ctx._producer_cancelled is True
+    assert stop_event.is_set() is False

@@ -1,5 +1,21 @@
 # sql_mode/runtime/teardown.py
 from ...job_manager.console_ui import remove_log_sink
+
+
+def finalize_gui(*, gui, gui_sink) -> None:
+    """Close GUI after its authoritative terminal snapshot has been queued."""
+    try:
+        if gui_sink:
+            remove_log_sink(gui_sink)
+    except Exception:
+        pass
+    try:
+        if gui:
+            gui.close()
+    except Exception:
+        pass
+
+
 def shutdown(
     ctx,
     gui,
@@ -12,6 +28,7 @@ def shutdown(
     merger_done,
     refresher,
     bar_refresh_stop,
+    close_gui=True,
 ):
     """
     收尾所有前景/背景資源（不含 MP 日誌 listener；那個由呼叫端負責 stop）。
@@ -60,18 +77,8 @@ def shutdown(
         pass
 
     # 6) 移除 GUI sink、關 GUI、還原 console
-    try:
-        # 延遲 import，避免上層循環匯入
-        if gui_sink:
-            remove_log_sink(gui_sink)
-    except Exception:
-        pass
-
-    try:
-        if gui:
-            gui.close()
-    except Exception:
-        pass
+    if close_gui:
+        finalize_gui(gui=gui, gui_sink=gui_sink)
 
     try:
         if restore_console:
