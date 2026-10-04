@@ -307,10 +307,17 @@
 - Local verification: focused L2a unit suite 16 passed; complete `tests/reduction` passed; required prompt-pipeline selection 16 passed; collection/aggregate selection 40 passed. The required install is proxy-blocked and new production E2E is locally blocked by missing `tqdm`; hosted CI must provide collect 22 and 22/22 full E2E evidence. Compileall/diff checks are recorded after final verification.
 - Final local verification: focused L2a 16 passed; full reduction suite 381 passed; prompt regressions 16 passed; collection/aggregate regressions 40 passed; compileall and diff check passed. New L2a E2E execution is environment-blocked before HTTP by missing `tqdm`; complete E2E collect-only is blocked by missing PyYAML after the required proxy-blocked install.
 
-### 2026-10-04 PR #194 fatal exception corrective (pending fresh hosted acceptance)
+### 2026-10-04 PR #194 fatal exception corrective (historical; superseded by PR #195)
 
 - Previous hosted head `15dd713fd82ae761ee1f5886346006c268565c07` passed CI #445 / `37177234731`, offline job `111362291080`, collect 22 and full offline E2E PASS, but review found that TaskExecutable/StagePipeline converted programmer faults into recoverable member errors.
 - TaskExecutable now propagates TypeError/AssertionError/MemoryError. StagePipeline propagates assertions/memory errors and uses a private non-ExecutionError wrapper for task TypeError so the legacy runner-arity fallback cannot invoke it twice. Operational RuntimeError remains recoverable and cancellation remains distinct.
 - Focused corrective coverage uses real TaskExecutable and StagePipelineExecutable boundaries, proves one invocation for fatal pipeline TypeError, and proves ordinary operational failure can still produce an accepted partial result. PR #194 remains unmerged and L2a remains pending fresh corrective-head hosted 22/22 acceptance; L2b/L3 remain unstarted.
 - Corrective local verification: focused L2a 22 passed; full reduction suite 387 passed; prompt regressions 16 passed; compileall and diff check passed. Existing L2a E2E remains locally blocked at the production import path by missing `tqdm` after the proxy-blocked requirements install; fresh hosted corrective-head evidence remains required.
 - Publication check: this checkout has no configured remote and direct GitHub `ls-remote` is blocked by the CONNECT proxy with HTTP 403. Corrective PR #194 metadata was prepared, but no new hosted head/CI can be truthfully reported from this environment.
+
+### 2026-10-04 PR #195 canonical L2a superseding publication
+
+- PR #194 was closed without merge and explicitly superseded by PR #195 after the corrective was accidentally published as a new full L2a PR rather than pushed onto #194.
+- PR #195 is the canonical L2a PR. Its pre-document-cleanup hosted head `482b683f58a956b5b6dfc50600127bbc82be0e66` contains the complete L2a implementation plus the fatal-exception-boundary corrective.
+- Fresh CI #446 / `37179523777`, offline job `111369063184`, collected 22 E2E cases and completed the offline production gate successfully. Windows self-hosted 3.10/3.11 queues remain non-blocking under the established project rule.
+- PR #195 remains open/draft and unmerged. Only narrow current-state documentation cleanup follows; one final hosted 22/22 gate is required before explicit merge approval. L2b/L3 remain unstarted.
