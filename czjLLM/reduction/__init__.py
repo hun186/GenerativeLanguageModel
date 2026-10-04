@@ -27,6 +27,16 @@ from .aggregate import (
 from .engine import reduce_single_pass
 from .controllers import AdaptiveHierarchicalController, FixedRoundsController
 from .hierarchical import reduce_hierarchical_text
+from .retention import (
+    ArtifactLease,
+    ReductionArtifactKind,
+    ReductionRetentionPolicy,
+    RetentionCandidate,
+    RetentionReport,
+    cleanup_completed_transient_runtime,
+    parse_reduction_retention_policy,
+    run_reduction_retention,
+)
 from .execution import (
     CancellationSignal, EventCancellationSignal, ExecutionObserver, NoOpExecutionObserver,
     Executable, ExecutableRegistry,
@@ -89,6 +99,9 @@ __all__ = [
     "parse_reduction_config",
     "reduce_single_pass",
     "reduce_hierarchical_text",
+    "ArtifactLease", "ReductionArtifactKind", "ReductionRetentionPolicy",
+    "RetentionCandidate", "RetentionReport", "cleanup_completed_transient_runtime",
+    "parse_reduction_retention_policy", "run_reduction_retention",
     "derive_aggregate_output_id",
     "deterministic_scalar_order_key",
     "canonical_group_entries",

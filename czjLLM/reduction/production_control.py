@@ -24,6 +24,9 @@ _SAFE_FIELDS = frozenset({
     "collection_id", "manifest_fingerprint", "aggregate_output_id", "attempted",
     "succeeded", "failed", "success_ratio", "partial_result", "stop_reason",
     "cancel_source", "error_type", "reason", "job_id",
+    "scanned", "owned", "eligible", "deleted", "bytes_reclaimed",
+    "skipped_active", "skipped_young", "skipped_unowned", "skipped_invalid",
+    "budget_exhausted", "errors", "dry_run", "scan_limit_reached",
 })
 
 

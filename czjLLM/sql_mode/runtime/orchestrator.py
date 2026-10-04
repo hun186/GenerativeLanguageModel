@@ -38,6 +38,10 @@ from czjLLM.reduction.production_control import (
     ensure_execution_cancel_event, ensure_production_observer,
     execution_cancel_requested, request_execution_cancel,
 )
+from czjLLM.reduction.retention import (
+    parse_reduction_retention_policy,
+    run_reduction_retention,
+)
 
 
 
@@ -568,5 +572,23 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         tlog(summary)
     else:
         tlog_warn(summary)
+    # Bounded maintenance runs only after authoritative writeback classification
+    # and worker shutdown.  It is never allowed to change the user run result.
+    try:
+        raw_retention = getattr(ctx, "reduction_retention", None)
+        if raw_retention is None and isinstance(getattr(ctx, "cfg", None), dict):
+            raw_retention = ctx.cfg.get("reduction_retention")
+        retention_policy = parse_reduction_retention_policy(raw_retention)
+        prompt_root = getattr(ctx, "prompt_dir", None)
+        if retention_policy.enabled and prompt_root:
+            run_reduction_retention(
+                [prompt_root, *sorted(seen_job_dirs)], retention_policy, observer=observer
+            )
+    except Exception as retention_error:
+        observer.emit(
+            "reduction_retention_failed",
+            {"error_type": type(retention_error).__name__},
+        )
+        tlog_warn("⚠️ Reduction retention maintenance failed; persisted results remain successful.")
     finalize_gui(gui=gui, gui_sink=gui_sink)
     return producer_result["scheduled"]
