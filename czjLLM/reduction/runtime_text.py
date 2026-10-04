@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Any, Callable, Mapping, Optional
 
 from czjLLM.utilities.fs_safe import safe_atomic_write_text, safe_read_text, safe_rmtree
+from czjLLM.reduction.execution import ExecutionCancelled
+from czjLLM.reduction.production_control import raise_if_execution_cancelled
 
 
 TEXT_ROUND_RUNTIME_CONTRACT_VERSION = "reduction-text-round-v2"
@@ -147,12 +149,14 @@ class TextRoundRuntimeAdapter:
         return hashlib.sha256(encoded).hexdigest()
 
     def next_round_items(self, previous_payload: str, next_round_index: int) -> list[str]:
+        raise_if_execution_cancelled(self.ctx)
         if not isinstance(previous_payload, str) or not previous_payload.strip():
             raise TextRoundRuntimeError("previous aggregate must be non-empty text")
         if type(next_round_index) is not int or next_round_index < 2:
             raise TextRoundRuntimeError("runtime map rounds must have an index of at least 2")
 
         derived = self._derived_context()
+        raise_if_execution_cancelled(self.ctx)
         tokenizer_factory = self._tokenizer_factory
         if tokenizer_factory is None:
             from czjLLM.tokenizer_utils import TokenizerWrapper
@@ -176,6 +180,7 @@ class TextRoundRuntimeAdapter:
             ) from exc
         if not chunks or not all(isinstance(chunk, str) and chunk.strip() for chunk in chunks):
             raise TextRoundRuntimeError("tokenization produced no usable reduction chunks")
+        raise_if_execution_cancelled(self.ctx)
 
         round_dir = (
             self.item_workspace
@@ -196,6 +201,7 @@ class TextRoundRuntimeAdapter:
 
             prompt_generator_factory = PromptGenerator
         generator = prompt_generator_factory(derived)
+        raise_if_execution_cancelled(self.ctx)
         expected_names = []
         try:
             for index, chunk in enumerate(chunks):
@@ -216,6 +222,7 @@ class TextRoundRuntimeAdapter:
 
             dispatch = call_llm_api
         for allow_to_retry in (True, False):
+            raise_if_execution_cancelled(self.ctx)
             try:
                 dispatch(
                     [str(round_dir)],
@@ -223,11 +230,15 @@ class TextRoundRuntimeAdapter:
                     allow_to_retry=allow_to_retry,
                     task_override=self.round_task,
                 )
+            except ExecutionCancelled:
+                raise
             except Exception as exc:
                 raise TextRoundRuntimeError(
                     f"LLM execution failed for reduction round {next_round_index}: {exc}"
                 ) from exc
+            raise_if_execution_cancelled(self.ctx)
 
+        raise_if_execution_cancelled(self.ctx)
         remaining = sorted(path.name for path in todo_dir.glob("*.txt"))
         if remaining:
             raise TextRoundRuntimeError(
@@ -243,4 +254,5 @@ class TextRoundRuntimeAdapter:
             raise TextRoundRuntimeError(
                 f"reduction round {next_round_index} produced an empty map result"
             )
+        raise_if_execution_cancelled(self.ctx)
         return [output if output.endswith("\n") else output + "\n" for output in outputs]

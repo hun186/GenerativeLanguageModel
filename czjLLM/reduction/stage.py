@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
+from functools import wraps
 import math
 import re
 from types import MappingProxyType
@@ -94,6 +95,46 @@ class PartialSuccessRejectedError(ExecutionError):
             "partial success threshold not met "
             f"(attempted={attempted}, succeeded={succeeded}, failed={failed})"
         )
+
+
+def _observe_stage_execution(fn):
+    @wraps(fn)
+    def observed(self, items, context):
+        context.emit("reduction_stage_started", profile=self.reduction.profile,
+                     controller=self.reduction.controller)
+        try:
+            result = fn(self, items, context)
+        except ExecutionCancelled:
+            context.emit("reduction_stage_cancelled", profile=self.reduction.profile,
+                         controller=self.reduction.controller, stop_reason="cancelled")
+            raise
+        except PartialSuccessRejectedError as exc:
+            context.emit("reduction_partial_rejected", profile=self.reduction.profile,
+                         controller=self.reduction.controller, attempted=exc.attempted,
+                         succeeded=exc.succeeded, failed=exc.failed,
+                         success_ratio=exc.success_ratio, reason=exc.reason)
+            context.emit("reduction_stage_failed", profile=self.reduction.profile,
+                         controller=self.reduction.controller,
+                         error_type=type(exc).__name__, reason=exc.reason)
+            raise
+        except BaseException as exc:
+            context.emit("reduction_stage_failed", profile=self.reduction.profile,
+                         controller=self.reduction.controller,
+                         error_type=type(exc).__name__, reason="execution_error")
+            raise
+        context.emit("reduction_stage_completed", profile=result.profile,
+                     controller=result.controller, attempted=result.worker_attempt_count,
+                     succeeded=result.worker_success_count, failed=result.worker_failure_count,
+                     success_ratio=(result.worker_success_count / result.worker_attempt_count
+                                    if result.worker_attempt_count else 0.0),
+                     partial_result=result.partial_result, stop_reason=result.stop_reason)
+        if result.partial_result:
+            context.emit("reduction_partial_accepted", profile=result.profile,
+                         controller=result.controller, attempted=result.worker_attempt_count,
+                         succeeded=result.worker_success_count, failed=result.worker_failure_count,
+                         partial_result=True)
+        return result
+    return observed
 
 
 def effective_input_cut_len(
@@ -258,6 +299,7 @@ class ReductionStage:
             ),
         }
 
+    @_observe_stage_execution
     def execute(self, items: Iterable[Any], context: ExecutionContext) -> ReductionStageResult:
         context.raise_if_cancelled()
         prepared = list(items)
@@ -270,15 +312,18 @@ class ReductionStage:
                            exc: ExecutionError) -> None:
             nonlocal failures
             failures += 1
+            logical_id = getattr(value, "logical_id", None)
+            try:
+                logical_id = _validate_identity(logical_id, "logical_id")
+            except CollectionManifestValidationError:
+                logical_id = None
             if len(failure_details) < MAX_MEMBER_FAILURE_DETAILS:
-                logical_id = getattr(value, "logical_id", None)
-                try:
-                    logical_id = _validate_identity(logical_id, "logical_id")
-                except CollectionManifestValidationError:
-                    logical_id = None
                 failure_details.append(MemberFailureRecord(
                     round_index, input_index, logical_id, type(exc).__name__
                 ))
+            context.emit("reduction_member_failed", round_index=round_index,
+                         input_index=input_index, logical_id=logical_id,
+                         error_type=type(exc).__name__, reason="execution_error")
 
         def work(values: Iterable[Any], round_index: int) -> list[Any]:
             nonlocal attempts, successes
@@ -301,6 +346,14 @@ class ReductionStage:
                         raise
                     except ExecutionError as exc:
                         if self.failure_policy.mode == "require_all":
+                            logical_id = getattr(value, "logical_id", None)
+                            try:
+                                logical_id = _validate_identity(logical_id, "logical_id")
+                            except CollectionManifestValidationError:
+                                logical_id = None
+                            context.emit("reduction_member_failed", round_index=round_index,
+                                         input_index=index, logical_id=logical_id,
+                                         error_type=type(exc).__name__, reason="execution_error")
                             raise
                         record_failure(round_index, index, value, exc)
                     else:
@@ -329,6 +382,14 @@ class ReductionStage:
                                 raise
                             except ExecutionError as exc:
                                 if self.failure_policy.mode == "require_all":
+                                    logical_id = getattr(values[index], "logical_id", None)
+                                    try:
+                                        logical_id = _validate_identity(logical_id, "logical_id")
+                                    except CollectionManifestValidationError:
+                                        logical_id = None
+                                    context.emit("reduction_member_failed", round_index=round_index,
+                                                 input_index=index, logical_id=logical_id,
+                                                 error_type=type(exc).__name__, reason="execution_error")
                                     raise
                                 record_failure(round_index, index, values[index], exc)
                             else:

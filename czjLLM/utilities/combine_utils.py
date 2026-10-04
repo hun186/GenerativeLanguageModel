@@ -47,6 +47,7 @@ from czjLLM.reduction.engine import reduce_single_pass
 from czjLLM.reduction.runtime_semantic import SemanticLLMRuntimeAdapter
 from czjLLM.reduction.hierarchical import reduce_hierarchical_text
 from czjLLM.reduction.runtime_text import TextRoundRuntimeAdapter
+from czjLLM.reduction.production_control import raise_if_execution_cancelled
 
 def _p(s):
     """接受 str / Path / 任何 PathLike。空字串或 None 則回傳 None。"""
@@ -189,6 +190,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
             return -1
 
     try:
+        raise_if_execution_cancelled(ctx)
         checkpoint(
             "entry",
             module_file=__file__,
@@ -462,6 +464,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
                         )
                 reduction_items = json_rows
             if reduction_config.controller == "single_pass":
+                raise_if_execution_cancelled(ctx)
                 reducer_context = {"combine_item": str(item_p)}
                 if reduction_config.contains_semantic_llm():
                     reducer_context["semantic_runtime"] = SemanticLLMRuntimeAdapter(ctx=ctx)
@@ -470,6 +473,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
                     reduction_config,
                     context=reducer_context,
                 )
+                raise_if_execution_cancelled(ctx)
             else:
                 adapter = TextRoundRuntimeAdapter(
                     ctx=ctx,
@@ -484,7 +488,9 @@ def combine_api_finished_item(item: str, ctx) -> str:
                     context={"combine_item": str(item_p)},
                     checkpoint_root=item_p / ".reduction" / "checkpoints",
                     execution_fingerprint=adapter.execution_fingerprint(),
+                    cancellation_check=lambda: raise_if_execution_cancelled(ctx),
                 )
+                raise_if_execution_cancelled(ctx)
             payload = reduction_result.payload
             combined_text = (
                 payload

@@ -34,6 +34,10 @@ from .pending_recheck import (
 
 from .sinks.sql_sink import SqlSink
 from .sinks.excel_sink import ExcelSink
+from czjLLM.reduction.production_control import (
+    ensure_execution_cancel_event, ensure_production_observer,
+    execution_cancel_requested, request_execution_cancel,
+)
 
 
 
@@ -188,6 +192,8 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     # 1) 取資料筆數（可改為估算節省記憶體）
     rows_for_count = list(pending_iter)
     processable = len(rows_for_count)
+    producer_stop_event = ensure_execution_cancel_event(ctx)
+    observer = ensure_production_observer(ctx)
 
     # 2) UI 準備
     gui, gui_sink, p_sched, p_done, restore_console = prepare_ui(ctx, processable)
@@ -306,7 +312,8 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     '''
     # 於 worker 啟動後建立 watchdog
     stop_event, consumer, merger = start_workers(ctx, registry, meter_fn, is_sqlite, done_q, sink=sink)
-    producer_stop_event = threading.Event()  # 🔸 producer 專屬
+    # Operator cancellation stops only producer scheduling.  Worker stop_event
+    # remains the teardown signal owned by start_workers()/shutdown().
     start_watchdogs(
         ctx,
         adapter=getattr(ctx, "_es_adapter", None),
@@ -373,6 +380,9 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
             return False
 
     while True:
+        if gui is not None and callable(getattr(gui, "cancellation_requested", None)):
+            if gui.cancellation_requested():
+                request_execution_cancel(ctx, source="gui")
         out_now = _get_outstanding(meter_fn)
         A = producer_done_flag.is_set()          # 產生端已跑完
         B = (out_now <= 0)                      # 無未完成（pending+running）
@@ -517,10 +527,32 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
         scheduled_rows=producer_result["scheduled"],
         done_rows=getattr(p_done, "n", None),
     )
-    if completion["pending"] or completion["errors"]:
+    cancelled = bool(getattr(ctx, "_producer_cancelled", False))
+    if cancelled:
+        ctx.run_status = "cancelled"
+        observer.emit("run_cancelled", {"attempted": processable,
+                      "succeeded": producer_result["scheduled"],
+                      "failed": max(0, processable - producer_result["scheduled"]),
+                      "stop_reason": "cancelled"})
+        if gui is not None:
+            try: gui.update_reduction_stats({**dict(observer.snapshot()), "run_status": "cancelled"}, final=True)
+            except Exception: pass
+        tlog_warn(
+            "Reduction execution summary: "
+            f"candidate rows={processable}, scheduled={producer_result['scheduled']}, "
+            f"completed={getattr(p_done, 'n', 0)}, run status=cancelled; "
+            "new scheduling was cancelled and already-scheduled work safely drained."
+        )
+    elif completion["pending"] or completion["errors"]:
+        ctx.run_status = "incomplete"
+        observer.emit("run_failed", {"reason": "incomplete_writeback"})
         tlog_warn(
             "⚠️ 資料處理流程已結束，但寫回完成後重查仍有 "
             f"pending={completion['pending']}, errors={completion['errors']}；請勿視為全部完成。"
         )
     else:
+        ctx.run_status = "completed"
+        observer.emit("run_completed", {"attempted": processable,
+                      "succeeded": producer_result["scheduled"], "failed": 0})
         tlog_ok("🎉 資料處理完成！")
+    return producer_result["scheduled"]

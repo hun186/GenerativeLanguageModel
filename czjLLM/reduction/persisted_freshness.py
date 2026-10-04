@@ -71,12 +71,8 @@ def bind_persisted_execution_fingerprint(ctx: Any, adapter: Any) -> str | None:
     if not configured:
         return None
     if str(configured).strip().lower() == "auto":
-        runtime = ProductionTaskRuntime(ctx)
-        context = ExecutionContext(
-            runtime_ctx=ctx,
-            task_runtime=runtime,
-            executable_registry=getattr(ctx, "executable_registry", None),
-        )
+        from .production_control import build_production_execution_context
+        context = build_production_execution_context(ctx)
         expected = executable_semantic_fingerprint(effective_persisted_executable(ctx), context)
     else:
         expected = str(configured)

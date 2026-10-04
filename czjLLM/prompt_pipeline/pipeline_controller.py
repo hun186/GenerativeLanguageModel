@@ -1106,6 +1106,8 @@ def _has_explicit_stage_flow(ctx) -> bool:
     return bool(_explicit_stage_flow(ctx))
 
 def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | None = None, max_rounds: int = 20) -> str:
+    from czjLLM.reduction.production_control import raise_if_execution_cancelled
+    raise_if_execution_cancelled(ctx)
     """
     多階段版本：
     - 以 stage_runtime 的 chunk x stage 狀態驅動派工
@@ -1314,6 +1316,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         return preview
 
     def runner(job, _ctx, _input_text=None):
+        raise_if_execution_cancelled(ctx)
         if job.stage_name not in shown_stage_tasks:
             print(f"[stage:{job.stage_name}] 📝 使用任務：\n{_stage_task_debug_text(job.stage_task)}")
             shown_stage_tasks.add(job.stage_name)
@@ -1333,6 +1336,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 mode="prompt",
             )
         before_success_sig = _success_txt_signature_map(job.chunk_id)
+        raise_if_execution_cancelled(ctx)
         _call_llm_with_task_override(
             ops,
             [job.chunk_id],
@@ -1342,6 +1346,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             debug_print_llm_io=debug_enabled,
             debug_print_max_chars=debug_max_chars,
         )
+        raise_if_execution_cancelled(ctx)
         _call_llm_with_task_override(
             ops,
             [job.chunk_id],
@@ -1351,6 +1356,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             debug_print_llm_io=debug_enabled,
             debug_print_max_chars=debug_max_chars,
         )
+        raise_if_execution_cancelled(ctx)
         if debug_enabled:
             _print_stage_llm_io_debug(
                 item=job.chunk_id,
@@ -1368,6 +1374,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         return {"ok": True, "output": stage_output_text}
 
     run_stage_pipeline(ctx, runtime, runner, max_rounds=max_rounds)
+    raise_if_execution_cancelled(ctx)
 
     # 聚合每個 stage 的輸出，保留「全切片視角」的存檔，便於 stage-by-stage 追蹤。
     stage_merge_base = (
@@ -1533,6 +1540,8 @@ def process_prompt_and_merge(ctx, file_path: str, ops: MergeOps | None = None) -
     掃描 ctx.prompt_dir 找出含 main_file_name 的 TODO/Success 目錄父層，呼叫 LLM，完成則合併。
     回傳最後一次成功合併的檔名（若有多個 item，依序覆寫），若皆未完成則回傳空字串。
     """
+    from czjLLM.reduction.production_control import raise_if_execution_cancelled
+    raise_if_execution_cancelled(ctx)
     ops = ops or MergeOps()
     try:
         stages = resolve_pipeline_stages(ctx)
@@ -1578,6 +1587,7 @@ def process_prompt_and_merge(ctx, file_path: str, ops: MergeOps | None = None) -
         debug_print_llm_io=debug_enabled,
         debug_print_max_chars=debug_max_chars,
     )
+    raise_if_execution_cancelled(ctx)
     _call_llm_with_task_override(
         ops,
         prompt_items,
@@ -1587,6 +1597,7 @@ def process_prompt_and_merge(ctx, file_path: str, ops: MergeOps | None = None) -
         debug_print_llm_io=debug_enabled,
         debug_print_max_chars=debug_max_chars,
     )
+    raise_if_execution_cancelled(ctx)
 
     # 3) 合併已完成者；若尚有 TODO，僅列印提示
     comb_back_fn = ""

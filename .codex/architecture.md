@@ -257,3 +257,10 @@
 
 - Fatal programmer/system exceptions remain outside the recoverable member channel at both TaskExecutable and StagePipeline boundaries. StagePipeline wraps only a genuine task `TypeError` to distinguish it from the orchestrator's legacy runner-signature fallback; assertions and memory exhaustion propagate directly.
 - Normal production runtime/transport failures retain the established `ExecutionError` conversion and stage retry behavior before the outer ReductionStage may count one recoverable member failure. Cancellation remains its distinct `ExecutionCancelled` path.
+
+## 2026-10-04 PR L2b production cancellation and observability bridge
+
+- A run-scoped production control object owns a cooperative cancellation event distinct from the worker teardown event. Producer scheduling observes the former; consumer, merger, progress drain, and shutdown retain the latter.
+- SQL/Table/ES scheduling, legacy single/multistage calls, legacy combine reduction, TextRoundRuntimeAdapter, SemanticLLMRuntimeAdapter, and ReductionStage share the root cancellation intent. In-flight external calls reach their next safe boundary.
+- `ExecutionContext` carries inherited operational observer/tags. The canonical production context factory binds task runtime, registry, cancellation, observer, and detached tags without adding operational data to semantic fingerprints.
+- The production observer writes allowlisted bounded JSONL under `PGMSubDir/logs/reduction_execution_events.jsonl`, maintains lock-protected cumulative statistics, and sends snapshots to a separate GUI Reduction Status surface.

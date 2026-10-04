@@ -184,3 +184,10 @@ execution_budget_capacity: 8
 - `TaskExecutable` preserves `TypeError`, `AssertionError`, and `MemoryError` as fatal programmer/system faults; `KeyboardInterrupt` and `SystemExit` remain uncaught. These faults cannot enter the `ExecutionError`-only partial-success path.
 - Ordinary runtime/API failures, invalid or failed `TaskCallResult`, and blank task output remain `ExecutionError` and therefore remain eligible for opt-in per-member partial success.
 - A StagePipeline task `TypeError` crosses its legacy callback-arity boundary through a private non-`ExecutionError` fatal wrapper whose `__cause__` is the original `TypeError`; no two-argument compatibility retry occurs.
+
+## 2026-10-04 PR L2b operational contracts
+
+- Production cancellation helpers: `ensure_execution_cancel_event(ctx)`, `request_execution_cancel(ctx, source=...)`, `execution_cancel_requested(ctx)`, `production_cancellation_signal(ctx)`, and `raise_if_execution_cancelled(ctx)`. Sources normalize to `gui`, `external`, or `e2e`; the first request wins.
+- `build_production_execution_context()` is the canonical production Reduction `ExecutionContext` factory. Observer, tags, and cancellation remain excluded from executable semantic fingerprints.
+- Stable observer events are `reduction_stage_started`, `reduction_member_failed`, `reduction_partial_accepted`, `reduction_partial_rejected`, `reduction_stage_completed`, `reduction_stage_cancelled`, `reduction_stage_failed`, `cancellation_requested`, and terminal `run_*` events.
+- JSONL records are schema version 1 and payload-free. The default bound is 30 MiB with trim-to-half retention; L3 TTL/GC is not included.

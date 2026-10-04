@@ -5,6 +5,8 @@ from __future__ import annotations
 from typing import Any, Callable, Optional
 
 from czjLLM.reduction.reducers.semantic import SemanticCallResult, SemanticReducerError
+from czjLLM.reduction.execution import ExecutionCancelled
+from czjLLM.reduction.production_control import raise_if_execution_cancelled
 
 
 class SemanticRuntimeError(SemanticReducerError):
@@ -34,9 +36,11 @@ class SemanticLLMRuntimeAdapter:
         self._lease_factory = lease_factory
 
     def execute(self, *, task: str, content: str) -> SemanticCallResult:
+        raise_if_execution_cancelled(self.ctx)
         if not isinstance(task, str) or not task.strip():
             raise SemanticRuntimeError("semantic task must be non-blank")
         derived = _SemanticContextView(self.ctx, task)
+        raise_if_execution_cancelled(self.ctx)
         prompt_factory = self._prompt_generator_factory
         if prompt_factory is None:
             from czjLLM.prompt_pipeline.prompt_generator import PromptGenerator
@@ -62,6 +66,7 @@ class SemanticLLMRuntimeAdapter:
                 "semantic prompt exceeds one configured token chunk; apply deterministic "
                 "pre-reduction or another higher-level reduction strategy"
             )
+        raise_if_execution_cancelled(self.ctx)
 
         pipeline_factory = self._pipeline_factory
         if pipeline_factory is None:
@@ -82,8 +87,11 @@ class SemanticLLMRuntimeAdapter:
         try:
             with lease_factory(derived, 1):
                 response = pipeline.proc()
+        except ExecutionCancelled:
+            raise
         except Exception as exc:
             raise SemanticRuntimeError(f"semantic LLM execution failed: {exc}") from exc
+        raise_if_execution_cancelled(self.ctx)
         if not isinstance(response, dict) or not response.get("ok"):
             detail = response.get("error", "invalid runtime result") if isinstance(response, dict) else "invalid runtime result"
             raise SemanticRuntimeError(f"semantic LLM execution failed: {detail}")
@@ -92,5 +100,6 @@ class SemanticLLMRuntimeAdapter:
             raise SemanticRuntimeError("semantic LLM returned empty output")
         model_spec = getattr(pipeline, "model_spec", {})
         model_name = model_spec.get("model_name", "") if isinstance(model_spec, dict) else ""
+        raise_if_execution_cancelled(self.ctx)
         return SemanticCallResult(output=output, cost_twd=float(response.get("cost", 0) or 0),
                                   model_name=str(model_name or ""))
