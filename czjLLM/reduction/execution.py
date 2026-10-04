@@ -35,6 +35,35 @@ class ExecutionError(RuntimeError):
     """An executable failed closed."""
 
 
+class ExecutionCancelled(ExecutionError):
+    """Cooperative execution cancellation observed at a safe boundary."""
+
+    reason = "cancelled"
+    stop_reason = "cancelled"
+
+
+class CancellationSignal(Protocol):
+    def is_cancelled(self) -> bool: ...
+
+
+@dataclass(frozen=True)
+class NeverCancelled:
+    def is_cancelled(self) -> bool:
+        return False
+
+
+@dataclass(frozen=True)
+class EventCancellationSignal:
+    event: Any
+
+    def __post_init__(self) -> None:
+        if not callable(getattr(self.event, "is_set", None)):
+            raise TypeError("EventCancellationSignal requires an event-like is_set() object")
+
+    def is_cancelled(self) -> bool:
+        return bool(self.event.is_set())
+
+
 def _empty_mapping() -> Mapping[str, Any]:
     return MappingProxyType({})
 
@@ -126,12 +155,15 @@ class ExecutionContext:
     executable_registry: "ExecutableRegistry | None" = None
     reducer_context: Mapping[str, Any] = field(default_factory=_empty_mapping)
     nesting: ExecutionNestingState = field(default_factory=ExecutionNestingState)
+    cancellation: CancellationSignal = field(default_factory=NeverCancelled)
 
     def __post_init__(self) -> None:
         if not isinstance(self.reducer_context, Mapping):
             raise TypeError("ExecutionContext.reducer_context must be a mapping")
         if not isinstance(self.nesting, ExecutionNestingState):
             raise TypeError("ExecutionContext.nesting must be ExecutionNestingState")
+        if not callable(getattr(self.cancellation, "is_cancelled", None)):
+            raise TypeError("ExecutionContext.cancellation must implement is_cancelled()")
         object.__setattr__(self, "reducer_context", MappingProxyType(dict(self.reducer_context)))
 
     def enter_nested_reduction(self) -> "ExecutionContext":
@@ -139,6 +171,13 @@ class ExecutionContext:
 
     def push_pipeline_ref(self, ref_name: str) -> "ExecutionContext":
         return replace(self, nesting=self.nesting.push_pipeline_ref(ref_name))
+
+    def is_cancelled(self) -> bool:
+        return bool(self.cancellation.is_cancelled())
+
+    def raise_if_cancelled(self) -> None:
+        if self.is_cancelled():
+            raise ExecutionCancelled("execution cancelled")
 
 
 class Executable(Protocol):
@@ -181,6 +220,7 @@ class TaskExecutable:
             object.__setattr__(self, "task", copy.deepcopy(dict(self.task)))
 
     def execute(self, item: Any, context: ExecutionContext) -> ExecutableResult:
+        context.raise_if_cancelled()
         if not isinstance(item, str):
             raise ExecutionError("TaskExecutable requires text input")
         runtime = context.task_runtime
@@ -188,8 +228,16 @@ class TaskExecutable:
             raise ExecutionError("TaskExecutable requires a valid task runtime")
         try:
             result = runtime.execute(task=self.task, content=item)
+        except ExecutionCancelled:
+            raise
+        except (TypeError, AssertionError, MemoryError):
+            # Programmer/system faults are never recoverable member failures.
+            # In particular, do not let allow_partial absorb them after they
+            # have been relabelled as ExecutionError.
+            raise
         except Exception as exc:
             raise ExecutionError(f"task execution failed: {exc}") from exc
+        context.raise_if_cancelled()
         if not isinstance(result, TaskCallResult) or not result.ok:
             raise ExecutionError("task runtime returned a failed or invalid result")
         if not isinstance(result.output, str) or not result.output.strip():

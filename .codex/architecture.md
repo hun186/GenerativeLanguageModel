@@ -243,3 +243,17 @@
 
 - Single-index ES uses broad input/filter discovery plus authoritative Python postfilter only when active required-output semantics cannot be represented exactly in the optimized query. Ordinary jobs retain query-side narrowing; dual-index retains target bulk Python freshness checks.
 - Recheck event identity is diagnostics-only and comes from bounded explicit config basenames or a simple pipeline name, never `ctx.task`/prompt content.
+
+## 2026-10-04 PR L2a core architecture (pending hosted acceptance)
+
+- Reduction worker orchestration now uses an indexed bounded future window no wider than effective orchestration width. New work is submitted only after completion frees a slot; successful outputs are restored to original input order. No orchestration wait owns an `ExecutionBudget` leaf lease.
+- The default remains fail-fast `require_all`. Opt-in `allow_partial` absorbs only `ExecutionError`; `ExecutionCancelled` always aborts and unexpected programmer/system exceptions fail hard. Policy is evaluated independently for every worker batch, including later hierarchical rounds, and reducers consume successful outputs only.
+- Cancellation is inherited through immutable nested contexts and pipeline refs. Checks surround task calls, pipeline traversal, nested ReductionStage execution, worker submissions, reducers, round preparation/checkpoint commits, and final return. Completed prior checkpoints remain reusable; a cancelled incomplete round is not committed as terminal cancellation state.
+- Failure policy is semantic and participates in `reduction-stage-v3` fingerprints. Cancellation signal and current state are operational and excluded from fingerprints, processing identity, cache identity, and checkpoint keys.
+- Accepted partial collection output keeps the original immutable Collection Manifest and aggregate identity. Missing membership is represented in bounded ReductionStage provenance; no reduced-member manifest is synthesized. L2a adds no production GUI, JSONL event log, scheduler binding, or SQL/ES stop-event replacement.
+- D1 checkpoint schema is deliberately unchanged. A completed partial round is checkpointed under the policy-aware execution fingerprint, while detailed member-failure lineage remains in the outer result; a later process that resumes past that round cannot reconstruct its prior per-member details from the checkpoint alone.
+
+## 2026-10-04 PR #194 fatal exception boundary corrective
+
+- Fatal programmer/system exceptions remain outside the recoverable member channel at both TaskExecutable and StagePipeline boundaries. StagePipeline wraps only a genuine task `TypeError` to distinguish it from the orchestrator's legacy runner-signature fallback; assertions and memory exhaustion propagate directly.
+- Normal production runtime/transport failures retain the established `ExecutionError` conversion and stage retry behavior before the outer ReductionStage may count one recoverable member failure. Cancellation remains its distinct `ExecutionCancelled` path.

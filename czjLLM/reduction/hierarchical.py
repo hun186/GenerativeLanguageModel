@@ -65,10 +65,13 @@ def reduce_hierarchical_text(
     context: Optional[Mapping[str, object]] = None,
     checkpoint_root: Optional[str | Path] = None,
     execution_fingerprint: Optional[str] = None,
+    cancellation_check: Optional[Callable[[], None]] = None,
 ) -> HierarchicalReductionResult:
     """Reduce prepared text items over deterministic, checkpointed rounds."""
 
     prepared = list(initial_items)
+    check_cancel = cancellation_check or (lambda: None)
+    check_cancel()
     if not all(isinstance(item, str) for item in prepared):
         raise TypeError("hierarchical reduction requires prepared text items")
     selected_registry = registry or get_default_registry()
@@ -139,16 +142,19 @@ def reduce_hierarchical_text(
     while True:
         next_index = round_index + 1
         if previous_payload is not None:
+            check_cancel()
             prepared = list(next_round_items(previous_payload, next_index))
         if not all(isinstance(item, str) for item in prepared):
             raise TypeError("next_round_items must return prepared text items")
         input_fingerprint = text_sequence_fingerprint(prepared)
+        check_cancel()
         try:
             reducer_result = reducer.reduce(prepared, context=context)
         except Exception as exc:
             raise ReducerExecutionError(
                 f"Reducer failed in hierarchical round {next_index}: {exc}"
             ) from exc
+        check_cancel()
         payload = reducer_result.payload
         if not isinstance(payload, str):
             raise TypeError("hierarchical text reducer must return a text payload")
@@ -173,6 +179,7 @@ def reduce_hierarchical_text(
             ControllerState(next_index, len(payload), previous_chars, ratio)
         )
         if store is not None:
+            check_cancel()
             store.commit_round(
                 round_index=next_index,
                 payload=payload,
@@ -181,6 +188,7 @@ def reduce_hierarchical_text(
                 metrics=metrics.__dict__,
                 terminal_stop_reason=decision.stop_reason,
             )
+        check_cancel()
         metrics_history.append(metrics)
         round_index = next_index
         if not decision.continue_reduction:

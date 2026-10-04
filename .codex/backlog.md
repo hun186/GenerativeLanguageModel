@@ -113,7 +113,7 @@
 - [ ] PR K overall remains unchecked.
 - [ ] PR L remains unimplemented; finer per-run checkpoint coordination, caches, retention, GC, cancellation, partial success, and lineage aggregation remain out of K2 scope.
 
-## 2026-10-02 Reduction Engine K acceptance and L roadmap
+## 2026-10-02 Reduction Engine K acceptance and L roadmap (historical; superseded below)
 
 - [x] PR K1 — PR #191; CI #436 / `36895400626`; 19/19 PASS; merge `b74907c2b235bbace9afad4a5b9f676cb85e1748`.
 - [x] PR K2 — PR #192; accepted head `e2d61d88c74d4b6e46c59c1ad5e9797c5a8b1bb8`; CI #439 / `36969522652`; 20/20 PASS; merge `721f596001201562d833810fe568f696fd15d112`.
@@ -123,14 +123,26 @@
   - [ ] PR L2 — partial success, cancellation and collection/member observability.
   - [ ] PR L3 — retention/TTL/GC and optional transient-cache hardening, only with production evidence.
 
-## 2026-10-02 PR #193 pre-corrective hosted review
+## 2026-10-02 PR #193 pre-corrective hosted review (historical; superseded below)
 
 - [ ] PR L1 remains pending fresh corrective acceptance. Head `cb12323d0a98ed6bf3eae28182758db24e72f0df`, CI #441 / `36973654548`, job `110732742876` passed 21/21 but is pre-corrective evidence only.
 - [ ] Corrective gate must cover automatic Executable identity binding, SQL identity collision/schema ownership, persistent GUI status, actual producer dispatch reporting, and ES discovery/recheck policy consistency.
 - [ ] PR L overall remains pending; L2/L3 are not started.
 
-## 2026-10-03 PR #193 final corrective pending
+## 2026-10-03 PR #193 final corrective pending (historical; superseded below)
 
 - [ ] PR L1 remains pending fresh final-corrective hosted acceptance. Pre-corrective head `874dbc865c46a02b5ba76caebbac05b213f94c70`, CI #442 / `37080278738`, offline job `111079056066`, collect 21, full gate PASS.
 - Review gaps corrected locally: ES required-output invalid documents could be excluded by the single-index initial query; canonical recheck identity could fall back to raw `ctx.task` prompt text.
 - [ ] PR L overall remains pending; L2/L3 remain unstarted.
+
+## 2026-10-04 revised Reduction Engine roadmap
+
+- [x] PR K
+- [x] PR L1 — persisted result reuse + semantic freshness + recheck observability
+  - PR #193 accepted head `874ef7f8790d38c9c958dfdba0e5d020662da7eb`; CI #443 / `37120493902`; offline job `111195487211`; collect 21; 21/21 PASS; merged as `21038d2678290cd32730009f552809730722aab4` with verified/valid signature.
+- [ ] PR L2
+  - [ ] PR L2a — partial-success + cooperative cancellation core (current PR #194; pre-corrective head `15dd713fd82ae761ee1f5886346006c268565c07` passed CI #445 / `37177234731`, offline job `111362291080`, collect 22 and full PASS; remains pending fresh corrective-head acceptance and explicit merge approval)
+  - [ ] PR L2b — production cancellation + run/member observability bridge
+- [ ] PR L3 — retention / TTL / GC + optional transient-cache hardening
+
+L2a intentionally does not add production Cancel controls, GUI dashboards, production reduction JSONL logs, SQL/ES stop-event rebinding, retry/caches, retention/TTL/GC, distributed cancellation, hard HTTP termination, aggregate identity redesign, or manifest mutation.

@@ -8,9 +8,14 @@ from types import MappingProxyType
 from typing import Any, Mapping
 
 from czjLLM.reduction.execution import (
-    ExecutableResult, ExecutionContext, ExecutionError, TaskExecutable, _stable_semantics,
+    ExecutableResult, ExecutionCancelled, ExecutionContext, ExecutionError, TaskExecutable,
+    _stable_semantics,
 )
 from czjLLM.reduction.artifacts import normalized_fingerprint
+
+
+class _FatalStageRunnerError(RuntimeError):
+    """Bypass legacy runner-TypeError arity fallback for a real fatal fault."""
 
 
 class _PipelineContextView:
@@ -56,6 +61,7 @@ class StagePipelineExecutable:
         return MappingProxyType({})
 
     def execute(self, item: Any, context: ExecutionContext) -> ExecutableResult:
+        context.raise_if_cancelled()
         if not isinstance(item, str):
             raise ExecutionError("StagePipelineExecutable requires text input")
         if context.runtime_ctx is None:
@@ -78,14 +84,27 @@ class StagePipelineExecutable:
         chunk_id = "reduction-worker-item"
         runtime = init_chunk_stage_runtime(ctx, [chunk_id])
         def runner(job, _ctx, input_text):
+            leaf_context.raise_if_cancelled()
             try:
                 result = TaskExecutable(job.stage_task).execute(input_text, leaf_context)
+                leaf_context.raise_if_cancelled()
                 return {"ok": True, "output": result.output}
+            except ExecutionCancelled:
+                raise
+            except TypeError as exc:
+                # execute_stage_round treats TypeError as a legacy callback
+                # arity mismatch and invokes a two-argument fallback. Wrap a
+                # real task/runtime TypeError so it aborts without a duplicate
+                # semantic call while retaining the original as __cause__.
+                raise _FatalStageRunnerError("fatal stage runner TypeError") from exc
+            except (AssertionError, MemoryError):
+                raise
             except Exception as exc:
                 return {"ok": False, "error": str(exc)}
 
         report = run_stage_pipeline(ctx, runtime, runner, max_rounds=self.max_rounds,
                                     original_inputs={chunk_id: item})
+        context.raise_if_cancelled()
         stages = resolve_pipeline_stages(ctx)
         final = report["final"]
         states = runtime[chunk_id].stages
@@ -145,9 +164,11 @@ class PipelineRefExecutable:
         return target
 
     def execute(self, item: Any, context: ExecutionContext) -> ExecutableResult:
+        context.raise_if_cancelled()
         derived_context = context.push_pipeline_ref(self.ref)
         target = self._target(derived_context)
         result = target.execute(item, derived_context)
+        context.raise_if_cancelled()
         target_metadata = target.fingerprint_metadata(derived_context)
         fingerprint = normalized_fingerprint(target_metadata)
         return ExecutableResult(result.output, result.executor_type, result.contract_version,

@@ -114,6 +114,7 @@ class ReductionStageExecutable:
             raise TypeError("ReductionStageExecutable.input_preparer must implement InputPreparer")
 
     def execute(self, item: Any, context: ExecutionContext) -> ExecutableResult:
+        context.raise_if_cancelled()
         nested_context = context.enter_nested_reduction()
         prepared = list(self.input_preparer.prepare(item, nested_context))
         if not prepared:
@@ -125,6 +126,7 @@ class ReductionStageExecutable:
             # the child stage acquires leaf permits only after entering here.
             with self._checkpoint_execution_lock:
                 result = self.stage.execute(prepared, nested_context)
+        context.raise_if_cancelled()
         audit = {
             "nested_reduction_depth": nested_context.nesting.nested_reduction_depth,
             "stop_reason": result.stop_reason,

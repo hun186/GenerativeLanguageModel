@@ -2,16 +2,21 @@
 
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
+import math
+import re
 from types import MappingProxyType
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Protocol, Tuple
 
 from czjLLM.reduction.artifacts import normalized_fingerprint
+from czjLLM.reduction.collection import CollectionManifestValidationError, _validate_identity
 from czjLLM.reduction.config import ReductionConfig
 from czjLLM.reduction.engine import reduce_single_pass
-from czjLLM.reduction.execution import Executable, ExecutionContext, ExecutionError, _stable_semantics
+from czjLLM.reduction.execution import (
+    Executable, ExecutionCancelled, ExecutionContext, ExecutionError, _stable_semantics,
+)
 from czjLLM.reduction.factory import build_configured_reducer
 from czjLLM.reduction.hierarchical import RoundMetrics, reduce_hierarchical_text
 from czjLLM.reduction.registry import get_default_registry
@@ -21,6 +26,74 @@ from czjLLM.reduction.runtime_task import CONTENT_PREPARATION_CONTRACT_VERSION
 class RoundPreparer(Protocol):
     def prepare(self, payload: str, round_index: int, context: ExecutionContext) -> Iterable[str]: ...
     def fingerprint_metadata(self, context: ExecutionContext) -> Mapping[str, Any]: ...
+
+
+MAX_MEMBER_FAILURE_DETAILS = 100
+
+
+@dataclass(frozen=True)
+class PartialSuccessPolicy:
+    mode: str = "require_all"
+    min_success_count: int = 1
+    min_success_ratio: float = 0.0
+
+    def __post_init__(self) -> None:
+        if self.mode not in {"require_all", "allow_partial"}:
+            raise ValueError("failure policy mode must be require_all or allow_partial")
+        if type(self.min_success_count) is not int or self.min_success_count < 1:
+            raise ValueError("min_success_count must be an integer >= 1")
+        if type(self.min_success_ratio) not in {int, float}:
+            raise ValueError("min_success_ratio must be a finite number between 0 and 1")
+        ratio = float(self.min_success_ratio)
+        if not math.isfinite(ratio) or not 0.0 <= ratio <= 1.0:
+            raise ValueError("min_success_ratio must be a finite number between 0 and 1")
+        object.__setattr__(self, "min_success_ratio", ratio)
+
+    def to_mapping(self) -> dict[str, Any]:
+        return {"mode": self.mode, "min_success_count": self.min_success_count,
+                "min_success_ratio": self.min_success_ratio}
+
+
+@dataclass(frozen=True)
+class MemberFailureRecord:
+    round_index: int
+    input_index: int
+    logical_id: str | None
+    error_type: str
+    reason: str = "execution_error"
+
+    def __post_init__(self) -> None:
+        if type(self.round_index) is not int or self.round_index < 1:
+            raise ValueError("round_index must be an integer >= 1")
+        if type(self.input_index) is not int or self.input_index < 0:
+            raise ValueError("input_index must be a non-negative integer")
+        if self.logical_id is not None and not isinstance(self.logical_id, str):
+            raise TypeError("logical_id must be a string or None")
+        if not isinstance(self.error_type, str) or not re.fullmatch(
+            r"[A-Za-z_][A-Za-z0-9_]*", self.error_type
+        ):
+            raise ValueError("error_type must be a safe class name")
+        if self.reason != "execution_error":
+            raise ValueError("member failure reason must be execution_error")
+
+    def to_mapping(self) -> dict[str, Any]:
+        return {"round_index": self.round_index, "input_index": self.input_index,
+                "logical_id": self.logical_id, "error_type": self.error_type,
+                "reason": self.reason}
+
+
+class PartialSuccessRejectedError(ExecutionError):
+    reason = "partial_success_threshold_not_met"
+
+    def __init__(self, *, attempted: int, succeeded: int, failed: int) -> None:
+        self.attempted = attempted
+        self.succeeded = succeeded
+        self.failed = failed
+        self.success_ratio = succeeded / attempted if attempted else 0.0
+        super().__init__(
+            "partial success threshold not met "
+            f"(attempted={attempted}, succeeded={succeeded}, failed={failed})"
+        )
 
 
 def effective_input_cut_len(
@@ -128,6 +201,10 @@ class ReductionStageResult:
     audit: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
     provenance: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
     metrics: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
+    worker_attempt_count: int = 0
+    worker_success_count: int = 0
+    worker_failure_count: int = 0
+    partial_result: bool = False
 
     def __post_init__(self) -> None:
         for name in ("audit", "provenance", "metrics"):
@@ -144,13 +221,16 @@ class ReductionStage:
     worker_parallelism: int = 1
     round_preparer: RoundPreparer | None = None
     checkpoint_root: str | Path | None = None
-    contract_version: str = field(default="reduction-stage-v2", init=False)
+    failure_policy: PartialSuccessPolicy = field(default_factory=PartialSuccessPolicy)
+    contract_version: str = field(default="reduction-stage-v3", init=False)
 
     def __post_init__(self) -> None:
         if type(self.worker_parallelism) is not int or self.worker_parallelism <= 0:
             raise ValueError("worker_parallelism must be a positive integer")
         if not isinstance(self.reduction, ReductionConfig) or not self.reduction.enabled:
             raise ValueError("ReductionStage requires an enabled ReductionConfig")
+        if not isinstance(self.failure_policy, PartialSuccessPolicy):
+            raise TypeError("failure_policy must be PartialSuccessPolicy")
         hierarchical = self.reduction.controller != "single_pass"
         if hierarchical != (self.round_preparer is not None):
             raise ValueError("round_preparer is required only for hierarchical ReductionStage")
@@ -170,6 +250,7 @@ class ReductionStage:
                 "options": _stable_semantics(self.reduction.options),
                 "controller": self.reduction.controller,
                 "controller_options": _stable_semantics(self.reduction.controller_options),
+                "failure_policy": self.failure_policy.to_mapping(),
             },
             "worker": self.worker.fingerprint_metadata(context),
             "round_preparer": (
@@ -178,67 +259,192 @@ class ReductionStage:
         }
 
     def execute(self, items: Iterable[Any], context: ExecutionContext) -> ReductionStageResult:
+        context.raise_if_cancelled()
         prepared = list(items)
         if not prepared:
             raise ExecutionError("ReductionStage requires at least one prepared item")
-        count = 0
+        attempts = successes = failures = 0
+        failure_details: list[MemberFailureRecord] = []
 
-        def work(values: Iterable[Any]) -> list[Any]:
-            nonlocal count
+        def record_failure(round_index: int, input_index: int, value: Any,
+                           exc: ExecutionError) -> None:
+            nonlocal failures
+            failures += 1
+            if len(failure_details) < MAX_MEMBER_FAILURE_DETAILS:
+                logical_id = getattr(value, "logical_id", None)
+                try:
+                    logical_id = _validate_identity(logical_id, "logical_id")
+                except CollectionManifestValidationError:
+                    logical_id = None
+                failure_details.append(MemberFailureRecord(
+                    round_index, input_index, logical_id, type(exc).__name__
+                ))
+
+        def work(values: Iterable[Any], round_index: int) -> list[Any]:
+            nonlocal attempts, successes
             values = list(values)
+            if not values:
+                raise ExecutionError("ReductionStage worker batch must not be empty")
+            context.raise_if_cancelled()
             from czjLLM.prompt_pipeline.dispatch_parallelism import cap_orchestration_workers
-            width = cap_orchestration_workers(context.runtime_ctx, self.worker_parallelism)
+            width = min(len(values), cap_orchestration_workers(
+                context.runtime_ctx, self.worker_parallelism
+            ))
+            ordered: dict[int, Any] = {}
             if width == 1:
-                results = [self.worker.execute(value, context) for value in values]
+                for index, value in enumerate(values):
+                    context.raise_if_cancelled()
+                    attempts += 1
+                    try:
+                        result = self.worker.execute(value, context)
+                    except ExecutionCancelled:
+                        raise
+                    except ExecutionError as exc:
+                        if self.failure_policy.mode == "require_all":
+                            raise
+                        record_failure(round_index, index, value, exc)
+                    else:
+                        context.raise_if_cancelled()
+                        successes += 1
+                        ordered[index] = result.output
             else:
-                with ThreadPoolExecutor(max_workers=width) as pool:
-                    results = list(pool.map(lambda value: self.worker.execute(value, context), values))
-            count += len(results)
-            return [result.output for result in results]
+                pool = ThreadPoolExecutor(max_workers=width)
+                active: dict[Future[Any], int] = {}
+                next_index = 0
+                try:
+                    while next_index < width:
+                        context.raise_if_cancelled()
+                        future = pool.submit(self.worker.execute, values[next_index], context)
+                        active[future] = next_index
+                        attempts += 1
+                        next_index += 1
+                    while active:
+                        done, _ = wait(active, return_when=FIRST_COMPLETED)
+                        context.raise_if_cancelled()
+                        for future in done:
+                            index = active.pop(future)
+                            try:
+                                result = future.result()
+                            except ExecutionCancelled:
+                                raise
+                            except ExecutionError as exc:
+                                if self.failure_policy.mode == "require_all":
+                                    raise
+                                record_failure(round_index, index, values[index], exc)
+                            else:
+                                context.raise_if_cancelled()
+                                successes += 1
+                                ordered[index] = result.output
+                            if next_index < len(values):
+                                context.raise_if_cancelled()
+                                replacement = pool.submit(
+                                    self.worker.execute, values[next_index], context
+                                )
+                                active[replacement] = next_index
+                                attempts += 1
+                                next_index += 1
+                except Exception:
+                    for future in active:
+                        future.cancel()
+                    raise
+                finally:
+                    pool.shutdown(wait=True, cancel_futures=True)
+            context.raise_if_cancelled()
+            batch_succeeded = len(ordered)
+            batch_attempted = len(values)
+            batch_failed = batch_attempted - batch_succeeded
+            ratio = batch_succeeded / batch_attempted
+            if self.failure_policy.mode == "allow_partial" and (
+                batch_succeeded == 0
+                or batch_succeeded < self.failure_policy.min_success_count
+                or ratio < self.failure_policy.min_success_ratio
+            ):
+                raise PartialSuccessRejectedError(
+                    attempted=batch_attempted, succeeded=batch_succeeded, failed=batch_failed
+                )
+            return [ordered[index] for index in sorted(ordered)]
 
-        initial_outputs = work(prepared)
+        initial_outputs = work(prepared, 1)
         if self.reduction.controller == "single_pass":
+            context.raise_if_cancelled()
             result = reduce_single_pass(initial_outputs, self.reduction,
                                         context=context.reducer_context)
-            return self._result(result.payload, 1, "single_pass_complete", count, (),
+            context.raise_if_cancelled()
+            final = self._result(result.payload, 1, "single_pass_complete", attempts,
+                                successes, failures, failure_details, (),
                                 tuple(result.warnings), len(prepared),
                                 reducer_audit=result.audit,
                                 reducer_provenance=result.provenance,
                                 reducer_metrics=result.metrics)
+            context.raise_if_cancelled()
+            return final
 
         assert self.round_preparer is not None
         def next_round(payload: str, round_index: int) -> Iterable[str]:
-            return work(self.round_preparer.prepare(payload, round_index, context))
+            context.raise_if_cancelled()
+            values = self.round_preparer.prepare(payload, round_index, context)
+            return work(values, round_index)
         hierarchical = reduce_hierarchical_text(
             initial_outputs, profile=self.reduction.profile or "",
             controller=self.reduction.build_controller(), next_round_items=next_round,
             context=context.reducer_context, checkpoint_root=self.checkpoint_root,
             execution_fingerprint=self.execution_fingerprint(context),
+            cancellation_check=context.raise_if_cancelled,
         )
-        return self._result(hierarchical.payload, hierarchical.rounds_completed,
-                            hierarchical.stop_reason, count, hierarchical.round_metrics,
-                            hierarchical.warnings, len(prepared))
+        context.raise_if_cancelled()
+        final = self._result(hierarchical.payload, hierarchical.rounds_completed,
+                             hierarchical.stop_reason, attempts, successes, failures,
+                             failure_details, hierarchical.round_metrics,
+                             hierarchical.warnings, len(prepared))
+        context.raise_if_cancelled()
+        return final
 
-    def _result(self, payload: Any, rounds: int, stop: str, count: int,
+    def _result(self, payload: Any, rounds: int, stop: str, attempts: int,
+                successes: int, failures: int,
+                failure_details: list[MemberFailureRecord],
                 round_metrics: Tuple[RoundMetrics, ...], warnings: Tuple[str, ...], inputs: int,
                 *, reducer_audit: Mapping[str, Any] | None = None,
                 reducer_provenance: Mapping[str, Any] | None = None,
                 reducer_metrics: Mapping[str, Any] | None = None) -> ReductionStageResult:
-        metrics = {"input_item_count": inputs, "worker_execution_count": count,
-                   "round_count": rounds}
+        partial = failures > 0
+        ratio = successes / attempts if attempts else 0.0
+        metrics = {"input_item_count": inputs, "worker_execution_count": attempts,
+                   "worker_attempt_count": attempts, "worker_success_count": successes,
+                   "worker_failure_count": failures, "worker_success_ratio": ratio,
+                   "round_count": rounds, "partial_result": partial}
         if isinstance(payload, str):
             metrics["output_character_count"] = len(payload)
         if reducer_metrics is not None:
             metrics["reducer"] = dict(reducer_metrics)
-        audit = {"execution_fingerprint_contract": self.contract_version}
+        omitted = failures - len(failure_details)
+        audit = {"execution_fingerprint_contract": self.contract_version,
+                 "failure_policy": self.failure_policy.to_mapping(),
+                 "partial_result": partial, "failed_member_count": failures,
+                 "failure_details_recorded": len(failure_details),
+                 "failure_details_omitted": omitted}
         if reducer_audit is not None:
             audit["reducer"] = dict(reducer_audit)
         provenance = {}
         if reducer_provenance is not None:
             provenance["reducer"] = dict(reducer_provenance)
+        if partial:
+            provenance["partial_success"] = {
+                "incomplete": True, "attempted": attempts, "succeeded": successes,
+                "failed": failures, "success_ratio": ratio,
+                "failures": [item.to_mapping() for item in failure_details],
+                "failure_details_omitted": omitted,
+            }
+            warnings = tuple(warnings) + (
+                f"partial_success_accepted: succeeded={successes} "
+                f"attempted={attempts} failed={failures}",
+            )
         return ReductionStageResult(payload, self.reduction.profile or "",
-                                    self.reduction.controller, rounds, stop, count,
+                                    self.reduction.controller, rounds, stop, attempts,
                                     tuple(round_metrics), tuple(warnings),
                                     audit=MappingProxyType(audit),
                                     provenance=MappingProxyType(provenance),
-                                    metrics=MappingProxyType(metrics))
+                                    metrics=MappingProxyType(metrics),
+                                    worker_attempt_count=attempts,
+                                    worker_success_count=successes,
+                                    worker_failure_count=failures,
+                                    partial_result=partial)
