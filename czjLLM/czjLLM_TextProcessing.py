@@ -161,6 +161,8 @@ if __name__ == '__main__':
         get_param("reduction", None),
         merge_slices=ctx.merge_slices,
     )
+    from czjLLM.reduction.retention import project_reduction_retention_policy
+    project_reduction_retention_policy(ctx, get_param)
     # 多階段設定（可直接放在主 YAML 的 stage_cfg/stages，或獨立 stage_config_file）
     if stage_cfg_preview:
         ctx.stage_cfg = stage_cfg_preview

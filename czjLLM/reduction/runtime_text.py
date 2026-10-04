@@ -11,6 +11,11 @@ from typing import Any, Callable, Mapping, Optional
 from czjLLM.utilities.fs_safe import safe_atomic_write_text, safe_read_text, safe_rmtree
 from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.reduction.production_control import raise_if_execution_cancelled
+from czjLLM.reduction.retention import (
+    ArtifactLease,
+    ReductionArtifactKind,
+    write_artifact_marker,
+)
 
 
 TEXT_ROUND_RUNTIME_CONTRACT_VERSION = "reduction-text-round-v2"
@@ -194,65 +199,76 @@ class TextRoundRuntimeAdapter:
         success_dir = round_dir / "Success"
         todo_dir.mkdir(parents=True)
         success_dir.mkdir(parents=True)
-        width = max(4, len(str(len(chunks) - 1)))
-        prompt_generator_factory = self._prompt_generator_factory
-        if prompt_generator_factory is None:
-            from czjLLM.prompt_pipeline.prompt_generator import PromptGenerator
-
-            prompt_generator_factory = PromptGenerator
-        generator = prompt_generator_factory(derived)
-        raise_if_execution_cancelled(self.ctx)
-        expected_names = []
+        write_artifact_marker(
+            round_dir,
+            kind=ReductionArtifactKind.RUNTIME_ROUND,
+            artifact_id=round_dir.name,
+        )
+        runtime_lease = ArtifactLease(round_dir).acquire()
         try:
-            for index, chunk in enumerate(chunks):
-                name = f"{index:0{width}d}.txt"
-                expected_names.append(name)
-                safe_atomic_write_text(
-                    todo_dir / name, generator.build(chunk), encoding="utf-8"
-                )
-        except Exception as exc:
-            raise TextRoundRuntimeError(
-                f"prompt rendering failed for reduction round {next_round_index}: {exc}"
-            ) from exc
+            width = max(4, len(str(len(chunks) - 1)))
+            prompt_generator_factory = self._prompt_generator_factory
+            if prompt_generator_factory is None:
+                from czjLLM.prompt_pipeline.prompt_generator import PromptGenerator
 
-        dispatch = self._llm_dispatch
-        if dispatch is None:
-            # Lazy import avoids a combine_utils -> runtime -> pipeline -> combine_utils cycle.
-            from czjLLM.prompt_pipeline.pipeline_controller import call_llm_api
-
-            dispatch = call_llm_api
-        for allow_to_retry in (True, False):
+                prompt_generator_factory = PromptGenerator
+            generator = prompt_generator_factory(derived)
             raise_if_execution_cancelled(self.ctx)
+            expected_names = []
             try:
-                dispatch(
-                    [str(round_dir)],
-                    derived,
-                    allow_to_retry=allow_to_retry,
-                    task_override=self.round_task,
-                )
-            except ExecutionCancelled:
-                raise
+                for index, chunk in enumerate(chunks):
+                    name = f"{index:0{width}d}.txt"
+                    expected_names.append(name)
+                    safe_atomic_write_text(
+                        todo_dir / name, generator.build(chunk), encoding="utf-8"
+                    )
             except Exception as exc:
                 raise TextRoundRuntimeError(
-                    f"LLM execution failed for reduction round {next_round_index}: {exc}"
+                    f"prompt rendering failed for reduction round {next_round_index}: {exc}"
                 ) from exc
-            raise_if_execution_cancelled(self.ctx)
 
-        raise_if_execution_cancelled(self.ctx)
-        remaining = sorted(path.name for path in todo_dir.glob("*.txt"))
-        if remaining:
-            raise TextRoundRuntimeError(
-                f"incomplete reduction round {next_round_index}; TODO remains: {remaining}"
-            )
-        actual = sorted(path.name for path in success_dir.glob("*.txt"))
-        if actual != expected_names:
-            raise TextRoundRuntimeError(
-                f"reduction round {next_round_index} Success outputs do not match inputs"
-            )
-        outputs = [safe_read_text(success_dir / name, encoding="utf-8") for name in actual]
-        if not outputs or any(not output.strip() for output in outputs):
-            raise TextRoundRuntimeError(
-                f"reduction round {next_round_index} produced an empty map result"
-            )
-        raise_if_execution_cancelled(self.ctx)
-        return [output if output.endswith("\n") else output + "\n" for output in outputs]
+            dispatch = self._llm_dispatch
+            if dispatch is None:
+                # Lazy import avoids a combine_utils -> runtime -> pipeline -> combine_utils cycle.
+                from czjLLM.prompt_pipeline.pipeline_controller import call_llm_api
+
+                dispatch = call_llm_api
+            for allow_to_retry in (True, False):
+                raise_if_execution_cancelled(self.ctx)
+                runtime_lease.refresh()
+                try:
+                    dispatch(
+                        [str(round_dir)],
+                        derived,
+                        allow_to_retry=allow_to_retry,
+                        task_override=self.round_task,
+                    )
+                except ExecutionCancelled:
+                    raise
+                except Exception as exc:
+                    raise TextRoundRuntimeError(
+                        f"LLM execution failed for reduction round {next_round_index}: {exc}"
+                    ) from exc
+                raise_if_execution_cancelled(self.ctx)
+                runtime_lease.refresh()
+
+            raise_if_execution_cancelled(self.ctx)
+            remaining = sorted(path.name for path in todo_dir.glob("*.txt"))
+            if remaining:
+                raise TextRoundRuntimeError(
+                    f"incomplete reduction round {next_round_index}; TODO remains: {remaining}"
+                )
+            actual = sorted(path.name for path in success_dir.glob("*.txt"))
+            if actual != expected_names:
+                raise TextRoundRuntimeError(
+                    f"reduction round {next_round_index} Success outputs do not match inputs"
+                )
+            outputs = [safe_read_text(success_dir / name, encoding="utf-8") for name in actual]
+            if not outputs or any(not output.strip() for output in outputs):
+                raise TextRoundRuntimeError(
+                    f"reduction round {next_round_index} produced an empty map result"
+                )
+            raise_if_execution_cancelled(self.ctx)
+            return [output if output.endswith("\n") else output + "\n" for output in outputs]
+        finally:
+            runtime_lease.release()

@@ -113,6 +113,32 @@ class CheckpointStore:
             self._validate_compatibility(manifest, "run manifest")
             return
         atomic_write_json(str(self.manifest_path), self.expected)
+        # Import locally to keep checkpoint semantics independent of operational
+        # retention configuration.  Only newly initialized L3 runs are marked;
+        # legacy lookalikes are never auto-adopted.
+        from czjLLM.reduction.retention import (
+            ReductionArtifactKind,
+            write_artifact_marker,
+        )
+        write_artifact_marker(
+            self.run_dir,
+            kind=ReductionArtifactKind.CHECKPOINT_RUN,
+            artifact_id=self.run_key,
+        )
+
+    def touch_retention_marker(self) -> None:
+        """Refresh operational age without changing checkpoint identity."""
+        from czjLLM.reduction.retention import (
+            MARKER_NAME,
+            ReductionArtifactKind,
+            write_artifact_marker,
+        )
+        if (self.run_dir / MARKER_NAME).is_file():
+            write_artifact_marker(
+                self.run_dir,
+                kind=ReductionArtifactKind.CHECKPOINT_RUN,
+                artifact_id=self.run_key,
+            )
 
     @staticmethod
     def _read_json(path: Path) -> Mapping[str, Any]:
@@ -219,6 +245,7 @@ class CheckpointStore:
             "terminal_stop_reason": terminal_stop_reason,
         }
         atomic_write_json(str(checkpoint_path), checkpoint)
+        self.touch_retention_marker()
 
     def load_highest_completed(self) -> Optional[ResumeState]:
         self.initialize()

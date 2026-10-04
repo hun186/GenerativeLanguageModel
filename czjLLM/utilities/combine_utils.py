@@ -47,7 +47,14 @@ from czjLLM.reduction.engine import reduce_single_pass
 from czjLLM.reduction.runtime_semantic import SemanticLLMRuntimeAdapter
 from czjLLM.reduction.hierarchical import reduce_hierarchical_text
 from czjLLM.reduction.runtime_text import TextRoundRuntimeAdapter
-from czjLLM.reduction.production_control import raise_if_execution_cancelled
+from czjLLM.reduction.production_control import (
+    ensure_production_observer,
+    raise_if_execution_cancelled,
+)
+from czjLLM.reduction.retention import (
+    cleanup_completed_transient_runtime,
+    parse_reduction_retention_policy,
+)
 
 def _p(s):
     """接受 str / Path / 任何 PathLike。空字串或 None 則回傳 None。"""
@@ -788,6 +795,31 @@ def combine_api_finished_item(item: str, ctx) -> str:
             "after-atomic-write",
             out_path_exists=out_path.exists(),
         )
+
+        # Retention is best-effort maintenance and runs only after the final
+        # output is durable.  A cleanup error must not invalidate that result.
+        if reduction_config.enabled and reduction_config.controller in {
+            "fixed_rounds", "adaptive_hierarchical"
+        }:
+            raw_retention = getattr(ctx, "reduction_retention", None)
+            if raw_retention is None and isinstance(getattr(ctx, "cfg", None), dict):
+                raw_retention = ctx.cfg.get("reduction_retention")
+            try:
+                retention_policy = parse_reduction_retention_policy(raw_retention)
+                if retention_policy.enabled:
+                    cleanup_completed_transient_runtime(
+                        item_p,
+                        retention_policy,
+                        observer=ensure_production_observer(ctx),
+                    )
+            except Exception as retention_error:
+                try:
+                    ensure_production_observer(ctx).emit(
+                        "reduction_retention_failed", {"error_type": type(retention_error).__name__}
+                    )
+                except Exception:
+                    pass
+                print("⚠️ Reduction retention maintenance failed; final output is preserved.", flush=True)
 
         # -------------------------------------------------
         # 10. 清除工作目錄

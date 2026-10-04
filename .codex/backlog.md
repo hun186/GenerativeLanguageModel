@@ -160,3 +160,18 @@ L2a intentionally does not add production Cancel controls, GUI dashboards, produ
 
 - [ ] PR L2b remains open and unmerged. Hosted head `841f784ae38b34ccf28099bf7f630ff2c2d98b49`, CI #450 / `37182363233`, collected/passed 23 but is pre-corrective evidence because its L2b E2E did not exercise production `run_pipeline()` safe drain.
 - [ ] Require a new hosted head and fresh collect-only 23/full 23 PASS after the scheduler, Row Merger, GUI lifecycle, counters, privacy, and strengthened single production E2E corrective.
+
+## 2026-10-04 canonical L2b acceptance and L3 roadmap
+
+- [x] PR L1 — persisted result reuse + semantic freshness + recheck observability
+- [x] PR L2a — partial-success + cooperative cancellation core
+- [x] PR L2b — production cancellation + run/member observability bridge
+  - Canonical PR #197; accepted head `b0a14e2c855a28d7d44efe9edcfd587fd689e9c8`; CI #451 / `37186996174`; offline job `111390932764`; collect 23; full offline production gate PASS; merged as `47488c807924fafe71c4d53d1c2999bc4675464f` with verified/valid signature.
+  - PR #196 is historical, closed, unmerged, and superseded by PR #197.
+- [ ] PR L3 — retention / TTL / safe GC + transient-artifact hardening (implemented locally; remains incomplete pending fresh hosted 24-case acceptance and explicit merge approval)
+- [ ] PR L overall — remains incomplete until L3 receives fresh hosted acceptance and explicit merge approval.
+
+## 2026-10-04 PR #198 pre-corrective hosted evidence
+
+- [x] Pre-corrective hosted head `2071e80857b7184593002807b7a18eba76485204`, CI #453 / `37190651752`, offline job `111401921897`, collected 24 and passed the full offline gate.
+- [ ] This evidence is pre-corrective only. Root policy projection, bounded historical prompt-container discovery, and budgeted tombstone recovery require a new hosted head and fresh 24/24 acceptance before L3 or PR L may be marked complete.
