@@ -141,7 +141,7 @@
 - [x] PR L1 — persisted result reuse + semantic freshness + recheck observability
   - PR #193 accepted head `874ef7f8790d38c9c958dfdba0e5d020662da7eb`; CI #443 / `37120493902`; offline job `111195487211`; collect 21; 21/21 PASS; merged as `21038d2678290cd32730009f552809730722aab4` with verified/valid signature.
 - [ ] PR L2
-  - [ ] PR L2a — partial-success + cooperative cancellation core (current PR #194; pre-corrective head `15dd713fd82ae761ee1f5886346006c268565c07` passed CI #445 / `37177234731`, offline job `111362291080`, collect 22 and full PASS; remains pending fresh corrective-head acceptance and explicit merge approval)
+  - [ ] PR L2a — partial-success + cooperative cancellation core (canonical PR #195; PR #194 is closed/superseded. PR #195 head `482b683f58a956b5b6dfc50600127bbc82be0e66` passed CI #446 / `37179523777`, offline job `111369063184`, collect 22 and full PASS; remains pending final documentation-cleanup hosted acceptance and explicit merge approval)
   - [ ] PR L2b — production cancellation + run/member observability bridge
 - [ ] PR L3 — retention / TTL / GC + optional transient-cache hardening
 
