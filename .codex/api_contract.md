@@ -169,3 +169,12 @@ execution_budget_capacity: 8
 
 - `_requires_python_freshness_scan(output_cols)` activates conservative single-index scanning for active required-output checks. The Python `PendingDecision` contract is authoritative; initial candidates must be a safe superset of Python-pending documents.
 - `task_json` in canonical and legacy recheck logs is a bounded safe job identifier: explicit config basename, simple pipeline name, or `unknown`. Raw task/prompt text is not an identifier source.
+
+## 2026-10-04 PR L2a partial-success and cooperative-cancellation contract (pending hosted acceptance)
+
+- `ExecutionContext.cancellation` is a source-independent `CancellationSignal` and defaults to `NeverCancelled`; `EventCancellationSignal` accepts any event-like object with `is_set()`. `ExecutionCancelled` is an `ExecutionError` with stable `reason`/`stop_reason = "cancelled"` and is never a recoverable member failure.
+- `PartialSuccessPolicy` is immutable and strict: v1 modes are `require_all` (default) and `allow_partial`; acceptance requires both `success_count >= min_success_count` and `success_count / attempted_count >= min_success_ratio`, with at least one success. The ratio is finite in `[0, 1]`, count is at least one, and booleans are not numeric policy values.
+- `PartialSuccessRejectedError` exposes only `attempted`, `succeeded`, `failed`, `success_ratio`, and stable reason `partial_success_threshold_not_met`. `MemberFailureRecord` exposes only `round_index`, `input_index`, optional `logical_id`, safe `error_type`, and `reason = execution_error`.
+- `ReductionStageResult.worker_execution_count` retains its historical attempted-worker meaning. Additive fields explicitly expose attempt/success/failure counts and `partial_result`; metrics, audit, warning, and `partial_success` provenance expose bounded, payload-free outcome data. At most 100 individual failure records are retained and omitted count remains explicit.
+- Cancellation is cooperative: it prevents new work and semantic continuation, waits for already-running leaf work to reach a safe boundary, and does not terminate an in-flight external HTTP request.
+- D1 round checkpoint format remains unchanged: policy-aware fingerprints protect compatibility, but detailed failure lineage is an outer-result contract and is not reconstructed for rounds skipped during checkpoint resume.

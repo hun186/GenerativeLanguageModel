@@ -13,8 +13,7 @@ from czjLLM.reduction.config import (
 from czjLLM.reduction.execution import TaskExecutable
 from czjLLM.reduction.executable_pipeline import PipelineRefExecutable
 from czjLLM.reduction.registry import get_default_registry
-from czjLLM.reduction.stage import TokenizerRoundPreparer
-from czjLLM.reduction.stage import ReductionStage
+from czjLLM.reduction.stage import PartialSuccessPolicy, ReductionStage, TokenizerRoundPreparer
 from czjLLM.reduction.nested_execution import (
     IdentityInputPreparer, ReductionStageExecutable, TokenizerInputPreparer,
 )
@@ -26,6 +25,24 @@ class ReductionStageConfig:
     worker_parallelism: int
     reduction: ReductionConfig
     round_preparer: TokenizerRoundPreparer | None
+    failure_policy: PartialSuccessPolicy
+
+
+def _parse_failure_policy(raw: Any) -> PartialSuccessPolicy:
+    if raw is None:
+        return PartialSuccessPolicy()
+    if not isinstance(raw, Mapping):
+        raise ReductionConfigError("reduction.failure_policy must be a mapping")
+    _unexpected_keys(raw, frozenset({"mode", "min_success_count", "min_success_ratio"}),
+                     "reduction failure_policy")
+    try:
+        return PartialSuccessPolicy(
+            mode=raw.get("mode", "require_all"),
+            min_success_count=raw.get("min_success_count", 1),
+            min_success_ratio=raw.get("min_success_ratio", 0.0),
+        )
+    except (TypeError, ValueError) as exc:
+        raise ReductionConfigError(f"Invalid reduction.failure_policy: {exc}") from exc
 
 
 def _strict_text(value: Any, label: str) -> str:
@@ -57,7 +74,7 @@ def parse_reduction_stage_config(raw: Any) -> ReductionStageConfig:
     reduction_raw = raw.get("reduction")
     if not isinstance(reduction_raw, Mapping):
         raise ReductionConfigError("reduction_stage.reduction must be a mapping")
-    _unexpected_keys(reduction_raw, frozenset({"enabled", "profile", "controller", "options", "controller_options"}),
+    _unexpected_keys(reduction_raw, frozenset({"enabled", "profile", "controller", "options", "controller_options", "failure_policy"}),
                      "reduction_stage.reduction")
     enabled = reduction_raw.get("enabled", False)
     if enabled is not True:
@@ -77,6 +94,7 @@ def parse_reduction_stage_config(raw: Any) -> ReductionStageConfig:
         raise ReductionConfigError("hierarchical reduction controllers support profile concat_text only")
     reduction = ReductionConfig(True, profile, controller, options, controller_options,
                                 MappingProxyType({}))
+    failure_policy = _parse_failure_policy(reduction_raw.get("failure_policy"))
     preparer_raw = raw.get("round_preparer")
     if controller == "single_pass":
         if preparer_raw is not None:
@@ -89,7 +107,7 @@ def parse_reduction_stage_config(raw: Any) -> ReductionStageConfig:
         if preparer_raw.get("type") != "tokenizer":
             raise ReductionConfigError("round_preparer.type must be tokenizer")
         preparer = TokenizerRoundPreparer(_strict_text(preparer_raw.get("task"), "round_preparer.task"))
-    return ReductionStageConfig(worker, parallelism, reduction, preparer)
+    return ReductionStageConfig(worker, parallelism, reduction, preparer, failure_policy)
 
 
 def parse_reduction_stage_executable_config(raw: Any) -> ReductionStageExecutable:
@@ -115,8 +133,10 @@ def parse_reduction_stage_executable_config(raw: Any) -> ReductionStageExecutabl
     else:
         raise ReductionConfigError("input_preparer.type must be identity or tokenizer")
     parsed = parse_reduction_stage_config(raw.get("stage"))
-    stage = ReductionStage(parsed.worker, parsed.reduction, parsed.worker_parallelism,
-                           parsed.round_preparer)
+    stage = ReductionStage(
+        parsed.worker, parsed.reduction, parsed.worker_parallelism,
+        parsed.round_preparer, failure_policy=parsed.failure_policy,
+    )
     try:
         return ReductionStageExecutable(stage, input_preparer)
     except (TypeError, ValueError) as exc:

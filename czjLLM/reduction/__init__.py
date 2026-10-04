@@ -28,13 +28,18 @@ from .engine import reduce_single_pass
 from .controllers import AdaptiveHierarchicalController, FixedRoundsController
 from .hierarchical import reduce_hierarchical_text
 from .execution import (
-    Executable, ExecutableRegistry, ExecutableResult, ExecutionContext, ExecutionError,
+    CancellationSignal, EventCancellationSignal, Executable, ExecutableRegistry,
+    ExecutableResult, ExecutionCancelled, ExecutionContext, ExecutionError, NeverCancelled,
     ExecutionNestingState, TaskCallResult, TaskExecutable, TaskRuntime,
     ProcessingIdentity, executable_semantic_fingerprint,
 )
 from .executable_pipeline import PipelineRefExecutable, StagePipelineExecutable
 from .runtime_task import ProductionTaskRuntime, TaskPromptPreflight
-from .stage import ReductionStage, ReductionStageResult, RoundPreparer, TokenizerRoundPreparer
+from .stage import (
+    MAX_MEMBER_FAILURE_DETAILS, MemberFailureRecord, PartialSuccessPolicy,
+    PartialSuccessRejectedError, ReductionStage, ReductionStageResult, RoundPreparer,
+    TokenizerRoundPreparer,
+)
 from .nested_execution import (
     IdentityInputPreparer, InputPreparer, ReductionStageExecutable, TokenizerInputPreparer,
 )
@@ -86,10 +91,13 @@ __all__ = [
     "Executable", "ExecutableRegistry", "ExecutableResult", "ExecutionContext",
     "ExecutionNestingState",
     "ProcessingIdentity", "executable_semantic_fingerprint",
-    "ExecutionError", "TaskCallResult", "TaskExecutable", "TaskRuntime",
+    "CancellationSignal", "NeverCancelled", "EventCancellationSignal",
+    "ExecutionError", "ExecutionCancelled", "TaskCallResult", "TaskExecutable", "TaskRuntime",
     "PipelineRefExecutable", "StagePipelineExecutable", "ProductionTaskRuntime",
     "TaskPromptPreflight",
     "ReductionStage", "ReductionStageResult", "RoundPreparer", "TokenizerRoundPreparer",
+    "PartialSuccessPolicy", "PartialSuccessRejectedError", "MemberFailureRecord",
+    "MAX_MEMBER_FAILURE_DETAILS",
     "InputPreparer", "IdentityInputPreparer", "TokenizerInputPreparer",
     "ReductionStageExecutable", "ReductionStageConfig", "parse_reduction_stage_config",
     "parse_reduction_stage_executable_config",
