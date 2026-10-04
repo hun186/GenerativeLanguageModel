@@ -181,3 +181,15 @@
 
 - Required dependency installation remains blocked by the CONNECT proxy (HTTP 403 cloning pinned GitHub `peft`). The existing L2a production E2E still cannot complete locally because the incomplete environment lacks `tqdm`; dependency-light corrective, reduction, and prompt suites remain available, and fresh hosted 22/22 is required.
 - Corrective publication cannot be performed from this checkout: no Git remote is configured, and direct `git ls-remote https://github.com/hun186/GenerativeLanguageModel.git refs/pull/194/head` fails with `CONNECT tunnel failed, response 403`. PR metadata can be updated locally, but pushing the corrective and collecting a new hosted head/run requires a network-enabled environment.
+
+## 2026-10-04 PR L2b local environment
+
+- Required `pip install -r requirements.txt` remains blocked because the pinned GitHub `peft` clone receives proxy HTTP 403. Consequently SQL/prompt/E2E suites that import absent `tqdm`, `psutil`, or other dependencies cannot run locally. Dependency-light Reduction and GUI tests plus compileall/diff checks are the local alternatives; hosted offline E2E remains required.
+
+## 2026-10-04 PR #196 corrective local environment
+
+- The required dependency install is still blocked by proxy HTTP 403 for pinned GitHub `peft`; the strengthened production E2E and direct Row Merger suite cannot collect locally because PyYAML/tqdm remain unavailable. Focused dependency-light scheduler/producer tests cover the cancellation cleanup invariant pending hosted execution.
+
+## 2026-10-04 PR #196 publication limitation
+
+- This checkout has no configured Git remote, so the corrective commit cannot be pushed from the container and fresh hosted CI/head identifiers cannot be obtained here. The existing PR metadata was updated, but publication and hosted acceptance must occur from a checkout with the PR #196 remote branch configured.

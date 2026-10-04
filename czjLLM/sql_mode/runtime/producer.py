@@ -26,6 +26,8 @@ from czjLLM.prompt_pipeline.pending_central import (
     order_rows_avoiding_running,
     record_adjustment,
 )
+from czjLLM.reduction.execution import ExecutionCancelled
+from czjLLM.reduction.production_control import execution_cancel_requested
 
 
 def _get_positive_int(ctx, *names: str, default: int = 0) -> int:
@@ -223,6 +225,7 @@ def produce_rows(
     """
     scheduled = 0
     seen = 0
+    cancelled = execution_cancel_requested(ctx)
     rows_for_count = _maybe_block_shuffle_rows(ctx, rows_for_count)
     rows_for_count = order_rows_avoiding_running(ctx, rows_for_count)
     scheduled_pks = []
@@ -256,12 +259,14 @@ def produce_rows(
         try:
             pk_done, scheduled_ok = fut.result()
             return bool(scheduled_ok), pk_done
+        except ExecutionCancelled:
+            raise
         except Exception as e:
             tlog_warn(f"[producer] multistage row future failed: {e!r}")
             return False, pk_done
 
     def _drain_completed(block: bool = False):
-        nonlocal scheduled
+        nonlocal scheduled, cancelled
         if not in_flight:
             return
         done = set()
@@ -271,7 +276,11 @@ def produce_rows(
             done = {fut for fut in in_flight if fut.done()}
         for fut in done:
             in_flight.discard(fut)
-            scheduled_ok, pk_done = _complete_future(fut)
+            try:
+                scheduled_ok, pk_done = _complete_future(fut)
+            except ExecutionCancelled:
+                cancelled = True
+                continue
             if scheduled_ok:
                 scheduled += 1
                 if pk_done is not None:
@@ -328,10 +337,17 @@ def produce_rows(
                 )
                 return pk, False
             return pk, True
+        except ExecutionCancelled:
+            try:
+                mark_not_running(ctx, pk, state="cancelled")
+                record_adjustment(ctx, "cancelled_release", pk=pk)
+            finally:
+                raise
         except Exception as e:
             try:
                 mark_not_running(ctx, pk, state="schedule_error")
-                record_adjustment(ctx, "schedule_error_release", pk=pk, error=repr(e))
+                record_adjustment(ctx, "schedule_error_release", pk=pk,
+                                  error_type=type(e).__name__)
             except Exception:
                 pass
             tlog_warn(f"[producer] schedule_one_row 失敗 pk={pk}: {e!r}")
@@ -346,9 +362,12 @@ def produce_rows(
             while (
                 executor is not None
                 and len(in_flight) >= effective_row_parallelism
-                and not stop_event.is_set()
+                and not stop_event.is_set() and not execution_cancel_requested(ctx)
             ):
                 _drain_completed(block=True)
+            if execution_cancel_requested(ctx) or cancelled:
+                cancelled = True
+                break
             row = rows_for_count[idx]
             idx += 1
             if len(row) >= 3:
@@ -374,7 +393,8 @@ def produce_rows(
                     )
                 continue
 
-            if stop_event.is_set():
+            if stop_event.is_set() or execution_cancel_requested(ctx):
+                cancelled = cancelled or execution_cancel_requested(ctx)
                 tlog_warn("produce_rows: stop_event set，提前結束排程。")
                 # ★新增：提前結束也要回報目前游標；不要把 prod_done 設 True
                 try:
@@ -428,6 +448,9 @@ def produce_rows(
                     pass
                 continue
 
+            if execution_cancel_requested(ctx):
+                cancelled = True
+                break
             if executor is not None:
                 in_flight.add(executor.submit(_schedule_row, pk, text, source_inputs, idx - 1, seen))
             else:
@@ -450,9 +473,12 @@ def produce_rows(
             except Exception:
                 pass
 
-            while not stop_event.is_set() and outstanding_now(meter_fn) > low:
+            while (not stop_event.is_set() and not execution_cancel_requested(ctx)
+                   and outstanding_now(meter_fn) > low):
                 _drain_completed(block=False)
                 time.sleep(0.05)
+    except ExecutionCancelled:
+        cancelled = True
     finally:
         while in_flight:
             _drain_completed(block=True)
@@ -509,13 +535,18 @@ def produce_rows(
         )
 
     tlog(f"[producer] 已送出 {scheduled} 列，outstanding={outstanding_now(meter_fn)}")
+    try:
+        ctx._producer_cancelled = bool(cancelled)
+        ctx._producer_seen_rows = seen
+    except Exception:
+        pass
 
     # ★ 事後健檢：未被 stop_event 中斷、卻未遍歷完 rows_for_count → 明確告警
     #if (total_rows is not None) and (seen < total_rows) and (not stop_event.is_set()):
     #    tlog_warn(f"⚠️ producer 迴圈提前結束：僅處理 {seen}/{total_rows} 列；已成功排程 {scheduled} 列。"
     #              " 請檢查是否有早退條件（return/break/row_limit/backpressure）、或外部執行緒誤設 stop_event。")
     # ★新增：只有「真的跑完整個 rows_for_count」且未被 stop_event 打斷才標 prod_done=True
-    if (total_rows is None) or (seen >= total_rows and not stop_event.is_set()):
+    if not cancelled and ((total_rows is None) or (seen >= total_rows and not stop_event.is_set())):
         try:
             meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
                 "cursor": seen, "enq": scheduled, "producer_alive": False,
@@ -528,6 +559,7 @@ def produce_rows(
             meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
                 "cursor": seen, "enq": scheduled, "producer_alive": False,
                 "last_progress_ts": time.time(), "prod_done": False
+                , "cancelled": cancelled
             }))
         except Exception:
             pass

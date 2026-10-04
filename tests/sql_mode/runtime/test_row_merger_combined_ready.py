@@ -5,6 +5,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from czjLLM.sql_mode.runtime.row_merger_generic import row_merger_watchdog_generic
+from czjLLM.reduction.production_control import request_execution_cancel
 
 
 class _RegistryStub:
@@ -86,3 +87,41 @@ def test_row_merger_writes_when_combined_exists_even_if_todo_remaining(tmp_path:
     pk, write_map, _ = sink.writes[0]
     assert pk == 1
     assert write_map["File_result"] == json.dumps({"ok": True}, ensure_ascii=False)
+
+
+def test_cancelled_run_still_drains_existing_deterministic_combined_output(tmp_path: Path):
+    item_dir = tmp_path / "item"; item_dir.mkdir()
+    source = tmp_path / "src/cache/input.txt"; source.parent.mkdir(parents=True); source.write_text("raw")
+    combined = tmp_path / "out/result.txt"; combined.parent.mkdir(parents=True); combined.write_text("done")
+    registry = _RegistryStub(str(item_dir), {"pk": 7, "temp_txt": str(source), "CombBackFN": str(combined)})
+    sink = _SinkStub()
+    ctx = SimpleNamespace(output_col="File_result", record_update_time=False,
+                          flatten_json_output=False, cleanup_prompt_item_after_writeback=False,
+                          llm_source_dir=str(tmp_path / "src"), llm_source_backup_dir=str(tmp_path / "backup"),
+                          PGMSubDir=str(tmp_path), mode="sql")
+    request_execution_cancel(ctx, source="external")
+    row_merger_watchdog_generic(ctx, registry, lambda *_: None, _StopEventStub(True), sink,
+                                scan_interval=.01, done_q=None)
+    assert registry.removed and sink.writes[0][1]["File_result"] == "done"
+
+
+def test_cancelled_semantic_combine_is_released_without_write_or_spin(tmp_path: Path, monkeypatch):
+    import czjLLM.sql_mode.runtime.row_merger_generic as module
+    from czjLLM.reduction.execution import ExecutionCancelled
+    item_dir = tmp_path / "item"; (item_dir / "Success").mkdir(parents=True)
+    (item_dir / "Success/0.txt").write_text("finished leaf")
+    source = tmp_path / "src/cache/input.txt"; source.parent.mkdir(parents=True); source.write_text("raw")
+    registry = _RegistryStub(str(item_dir), {"pk": 8, "temp_txt": str(source), "CombBackFN": ""})
+    sink = _SinkStub(); states = []
+    monkeypatch.setattr(module, "combine_api_finished_item",
+                        lambda *a, **k: (_ for _ in ()).throw(ExecutionCancelled("cancelled")))
+    monkeypatch.setattr(module, "get_combined_result_path", lambda *a: str(tmp_path / "out/result.txt"))
+    monkeypatch.setattr(module, "mark_not_running", lambda _ctx, _pk, state: states.append(state))
+    monkeypatch.setattr(module, "record_adjustment", lambda *a, **k: None)
+    ctx = SimpleNamespace(output_col="File_result", record_update_time=False,
+                          flatten_json_output=False, cleanup_prompt_item_after_writeback=False,
+                          llm_source_dir=str(tmp_path / "src"), llm_source_backup_dir=str(tmp_path / "backup"))
+    row_merger_watchdog_generic(ctx, registry, lambda *_: None, _StopEventStub(True), sink,
+                                scan_interval=.01, done_q=None)
+    assert registry.removed and states == ["cancelled"] and sink.writes == []
+    assert (item_dir / "Success/0.txt").read_text() == "finished leaf"

@@ -46,6 +46,18 @@ class CancellationSignal(Protocol):
     def is_cancelled(self) -> bool: ...
 
 
+class ExecutionObserver(Protocol):
+    """Payload-free operational observer; never part of semantic identity."""
+
+    def emit(self, event: str, fields: Mapping[str, Any]) -> None: ...
+
+
+@dataclass(frozen=True)
+class NoOpExecutionObserver:
+    def emit(self, event: str, fields: Mapping[str, Any]) -> None:
+        return None
+
+
 @dataclass(frozen=True)
 class NeverCancelled:
     def is_cancelled(self) -> bool:
@@ -156,6 +168,8 @@ class ExecutionContext:
     reducer_context: Mapping[str, Any] = field(default_factory=_empty_mapping)
     nesting: ExecutionNestingState = field(default_factory=ExecutionNestingState)
     cancellation: CancellationSignal = field(default_factory=NeverCancelled)
+    observer: ExecutionObserver = field(default_factory=NoOpExecutionObserver)
+    observability_tags: Mapping[str, Any] = field(default_factory=_empty_mapping)
 
     def __post_init__(self) -> None:
         if not isinstance(self.reducer_context, Mapping):
@@ -164,7 +178,12 @@ class ExecutionContext:
             raise TypeError("ExecutionContext.nesting must be ExecutionNestingState")
         if not callable(getattr(self.cancellation, "is_cancelled", None)):
             raise TypeError("ExecutionContext.cancellation must implement is_cancelled()")
+        if not callable(getattr(self.observer, "emit", None)):
+            raise TypeError("ExecutionContext.observer must implement emit()")
+        if not isinstance(self.observability_tags, Mapping):
+            raise TypeError("ExecutionContext.observability_tags must be a mapping")
         object.__setattr__(self, "reducer_context", MappingProxyType(dict(self.reducer_context)))
+        object.__setattr__(self, "observability_tags", MappingProxyType(dict(self.observability_tags)))
 
     def enter_nested_reduction(self) -> "ExecutionContext":
         return replace(self, nesting=self.nesting.enter_nested_reduction())
@@ -178,6 +197,9 @@ class ExecutionContext:
     def raise_if_cancelled(self) -> None:
         if self.is_cancelled():
             raise ExecutionCancelled("execution cancelled")
+
+    def emit(self, event: str, **fields: Any) -> None:
+        self.observer.emit(event, {**self.observability_tags, **fields})
 
 
 class Executable(Protocol):

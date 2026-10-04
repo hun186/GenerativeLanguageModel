@@ -202,3 +202,15 @@
 
 - The recoverability boundary is exception taxonomy, not executable location: only `ExecutionError` is a partial member failure. Preserve programmer/system fault identity before generic operational wrapping.
 - Keep the shared stage orchestrator's legacy three-argument/two-argument callback fallback unchanged. Use a private non-`ExecutionError` wrapper only for a real TypeError raised inside the three-argument reduction runner so it cannot trigger duplicate semantic execution.
+
+## 2026-10-04 Reduction Engine PR L2b decisions
+
+- Operator cancellation is cooperative. Producer cancellation and worker teardown are different events: stop new scheduling without prematurely terminating consumer/merger or discarding writeback.
+- Already-running HTTP calls are not forcibly killed. ReductionStage, legacy reduction, and production multistage use one root intent; `ExecutionCancelled` is never a partial member failure.
+- Cancellation/observer state is operational and excluded from semantic fingerprints. Successful member activity uses stage counters; failure/partial/cancellation events are bounded and payload-free.
+- Recheck Status and Reduction Status remain separate observability surfaces. GUI Cancel uses process-safe IPC and the parent translates it into the root request.
+
+## 2026-10-04 PR #196 corrective decisions
+
+- Completed deterministic combine/writeback is safe-drain work and remains allowed after operator cancellation. New configured Reduction work continues to use the established cancellation boundary; semantic LLM continuation never starts after cancellation.
+- A cancellation request observed before post-writeback terminal classification yields `cancelled`, even if producer traversal just finished. A request after the authoritative completed transition does not retroactively change that result.

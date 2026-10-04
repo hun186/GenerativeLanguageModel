@@ -16,6 +16,7 @@ from czjLLM.prompt_pipeline.pipeline_controller import (
     combine_api_finished_item, row_is_ready, meter_update
 )
 from czjLLM.utilities.path_utils import get_combined_result_path
+from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
 from .multistage_writeback import resolve_writeback_payload
 #from czjLLM.prompt_pipeline.pipeline_controller import meter_update  # 檔頭若尚未 import
@@ -472,6 +473,8 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 out = combine_api_finished_item(item_dir, ctx)  # 若你的實作會回傳路徑
                 if out and os.path.isfile(out):
                     return out
+            except ExecutionCancelled:
+                raise
             except Exception as e:
                 tlog_warn(f"ℹ️ 合併提示（pk={meta.get('pk')}）：{e}")
         return None
@@ -507,6 +510,8 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 out = combine_api_finished_item(item_dir, overlay)
                 if out and os.path.isfile(out):
                     return out
+            except ExecutionCancelled:
+                raise
             except Exception as e:
                 tlog_warn(f"ℹ️ 合併提示（pk={meta.get('pk')}）：{e}")
     
@@ -538,7 +543,29 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     if not _all_slices_done(item_dir, meta):
                         continue
                     # ← 這裡不再一律呼叫 combine_api_finished_item，改用解析策略
-                    comb_back_fn = _resolve_combined_path(item_dir, meta, ctx, temp_txt)
+                    try:
+                        comb_back_fn = _resolve_combined_path(item_dir, meta, ctx, temp_txt)
+                    except ExecutionCancelled:
+                        # No incomplete writeback and no retry loop.  Preserve
+                        # artifacts, release only this run's coordination.
+                        try:
+                            mark_not_running(ctx, pk, state="cancelled")
+                            record_adjustment(ctx, "cancelled_release", pk=pk)
+                        except Exception:
+                            pass
+                        registry.remove(item_dir)
+                        merge_log_emitted_items.discard(item_dir)
+                        try:
+                            meter_update(
+                                meter_fn,
+                                lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update(
+                                    {"status": "cancelled"}
+                                ),
+                            )
+                        except Exception:
+                            pass
+                        progressed = True
+                        continue
                 if not comb_back_fn or not os.path.isfile(comb_back_fn):
                     continue  # 沒合併檔就等下一輪
 
