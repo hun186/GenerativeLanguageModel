@@ -143,6 +143,15 @@ execution_budget_capacity: 8
 - `InputPreparer` exposes `prepare(item, context)` and `fingerprint_metadata(context)`. `IdentityInputPreparer` emits one item; `TokenizerInputPreparer` validates nonblank text and emits ordered chunks using the effective production `InputCutLen` without an LLM call or budget lease.
 - `ReductionStageExecutable` accepts one `ReductionStage` whose worker is a direct task or named PipelineRef plus one input preparer. It enters exactly one guarded nested boundary, rejects semantic/composite-semantic child reducers, and preserves child audit/provenance/metrics under bounded namespaces.
 - `parse_reduction_stage_executable_config()` is strict (`type`, `input_preparer`, `stage` only), delegates `stage` validation to `parse_reduction_stage_config()`, and does not own or populate a registry.
+
+## 2026-10-04 Reduction retention operational contract
+
+- Top-level `reduction_retention` is parsed as frozen `ReductionRetentionPolicy`; default `enabled=false`. Defaults are terminal checkpoint 14 days, incomplete checkpoint 30 days, transient runtime 24 hours, successful transient cleanup enabled, 100 entries/1 GiB/10,000 scanned entries per sweep.
+- Unknown keys, non-bool booleans, non-finite or negative TTLs, and non-positive/non-integer bounds fail strictly. Incomplete TTL must be greater than or equal to terminal TTL.
+- `run_reduction_retention()` returns immutable bounded counts only. `dry_run=true` performs discovery, validation, classification and budget planning with zero filesystem mutation.
+- `.retention.json` schema v1 contains only schema, owner, kind, creation/touch UTC timestamps, and artifact ID. Retention settings and metadata are excluded from all semantic fingerprints and persisted identities.
+- Root `reduction_retention` is projected by the canonical CLI boundary to normalized `ctx.reduction_retention` before dispatch. `prompt_container_retention_root(path)` explicitly grants only immediate item-child discovery; plain paths remain item-root grants for compatibility.
+- Verifiable crash tombstones consume the same scan, entry, and byte budgets and contribute to `eligible`, `deleted`, and `bytes_reclaimed`; malformed identity stays in place and increments `skipped_invalid`.
 - `ReductionStage.fingerprint_metadata()` is the canonical semantic identity surface. It covers stage contract, reducer profile/actual contract/options, controller/options, worker, and optional round preparer while excluding concurrency, budget, checkpoint path, endpoints, credentials, and runtime identity.
 
 ## 2026-10-02 PR #192 prompt-aware preparation corrective

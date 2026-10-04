@@ -20,6 +20,7 @@ from czjLLM.reduction.controllers import (
     STOP_STALLED,
 )
 from czjLLM.reduction.registry import ReducerRegistry, get_default_registry
+from czjLLM.reduction.retention import ArtifactLease
 
 
 class HierarchicalReductionError(RuntimeError):
@@ -116,14 +117,21 @@ def reduce_hierarchical_text(
             initial_input_fingerprint=initial_fingerprint,
             execution_fingerprint=execution_fingerprint,
         )
-        resumed = store.load_highest_completed()
+        store.initialize()
+        execution_lease = ArtifactLease(store.run_dir).acquire()
+        try:
+            resumed = store.load_highest_completed()
+        except BaseException:
+            execution_lease.release()
+            raise
+        store.touch_retention_marker()
         if resumed is not None and resumed.terminal_stop_reason is not None:
             warning = (
                 (f"hierarchical reduction stopped safely: {resumed.terminal_stop_reason}",)
                 if resumed.terminal_stop_reason in {STOP_MAX_ROUNDS, STOP_STALLED}
                 else ()
             )
-            return HierarchicalReductionResult(
+            result = HierarchicalReductionResult(
                 resumed.payload,
                 canonical_profile,
                 resumed.round_index,
@@ -132,80 +140,93 @@ def reduce_hierarchical_text(
                 warning,
                 resumed.round_index,
             )
+            execution_lease.release()
+            return result
+    else:
+        execution_lease = None
 
-    round_index = resumed.round_index if resumed else 0
-    previous_payload = resumed.payload if resumed else None
-    parent_fingerprint = resumed.output_fingerprint if resumed else None
-    metrics_history = (
-        [RoundMetrics(**item) for item in resumed.metrics] if resumed else []
-    )
-    while True:
-        next_index = round_index + 1
-        if previous_payload is not None:
+    try:
+        round_index = resumed.round_index if resumed else 0
+        previous_payload = resumed.payload if resumed else None
+        parent_fingerprint = resumed.output_fingerprint if resumed else None
+        metrics_history = (
+            [RoundMetrics(**item) for item in resumed.metrics] if resumed else []
+        )
+        while True:
+            if execution_lease is not None:
+                execution_lease.refresh()
+            next_index = round_index + 1
+            if previous_payload is not None:
+                check_cancel()
+                prepared = list(next_round_items(previous_payload, next_index))
+            if not all(isinstance(item, str) for item in prepared):
+                raise TypeError("next_round_items must return prepared text items")
+            input_fingerprint = text_sequence_fingerprint(prepared)
             check_cancel()
-            prepared = list(next_round_items(previous_payload, next_index))
-        if not all(isinstance(item, str) for item in prepared):
-            raise TypeError("next_round_items must return prepared text items")
-        input_fingerprint = text_sequence_fingerprint(prepared)
-        check_cancel()
-        try:
-            reducer_result = reducer.reduce(prepared, context=context)
-        except Exception as exc:
-            raise ReducerExecutionError(
-                f"Reducer failed in hierarchical round {next_index}: {exc}"
-            ) from exc
-        check_cancel()
-        payload = reducer_result.payload
-        if not isinstance(payload, str):
-            raise TypeError("hierarchical text reducer must return a text payload")
-        if not payload.strip():
-            raise EmptyReductionResultError(
-                f"Reducer returned empty text in hierarchical round {next_index}"
-            )
+            try:
+                reducer_result = reducer.reduce(prepared, context=context)
+            except Exception as exc:
+                raise ReducerExecutionError(
+                    f"Reducer failed in hierarchical round {next_index}: {exc}"
+                ) from exc
+            check_cancel()
+            if execution_lease is not None:
+                execution_lease.refresh()
+            payload = reducer_result.payload
+            if not isinstance(payload, str):
+                raise TypeError("hierarchical text reducer must return a text payload")
+            if not payload.strip():
+                raise EmptyReductionResultError(
+                    f"Reducer returned empty text in hierarchical round {next_index}"
+                )
 
-        previous_chars = len(previous_payload) if previous_payload is not None else None
-        ratio = None
-        if previous_chars is not None:
-            ratio = (previous_chars - len(payload)) / previous_chars
-        metrics = RoundMetrics(
-            round_index=next_index,
-            input_item_count=len(prepared),
-            input_character_count=sum(len(item) for item in prepared),
-            output_character_count=len(payload),
-            previous_aggregate_output_character_count=previous_chars,
-            reduction_ratio=ratio,
-        )
-        decision = controller.decide(
-            ControllerState(next_index, len(payload), previous_chars, ratio)
-        )
-        if store is not None:
-            check_cancel()
-            store.commit_round(
+            previous_chars = len(previous_payload) if previous_payload is not None else None
+            ratio = None
+            if previous_chars is not None:
+                ratio = (previous_chars - len(payload)) / previous_chars
+            metrics = RoundMetrics(
                 round_index=next_index,
-                payload=payload,
-                parent_output_fingerprint=parent_fingerprint,
-                reducer_input_fingerprint=input_fingerprint,
-                metrics=metrics.__dict__,
-                terminal_stop_reason=decision.stop_reason,
+                input_item_count=len(prepared),
+                input_character_count=sum(len(item) for item in prepared),
+                output_character_count=len(payload),
+                previous_aggregate_output_character_count=previous_chars,
+                reduction_ratio=ratio,
             )
-        check_cancel()
-        metrics_history.append(metrics)
-        round_index = next_index
-        if not decision.continue_reduction:
-            assert decision.stop_reason is not None
-            warnings = (
-                (f"hierarchical reduction stopped safely: {decision.stop_reason}",)
-                if decision.stop_reason in {STOP_MAX_ROUNDS, STOP_STALLED}
-                else ()
+            decision = controller.decide(
+                ControllerState(next_index, len(payload), previous_chars, ratio)
             )
-            return HierarchicalReductionResult(
-                payload,
-                canonical_profile,
-                round_index,
-                decision.stop_reason,
-                tuple(metrics_history),
-                warnings,
-                resumed.round_index if resumed else 0,
-            )
-        previous_payload = payload
-        parent_fingerprint = text_fingerprint(payload)
+            if store is not None:
+                check_cancel()
+                store.commit_round(
+                    round_index=next_index,
+                    payload=payload,
+                    parent_output_fingerprint=parent_fingerprint,
+                    reducer_input_fingerprint=input_fingerprint,
+                    metrics=metrics.__dict__,
+                    terminal_stop_reason=decision.stop_reason,
+                )
+            check_cancel()
+            metrics_history.append(metrics)
+            round_index = next_index
+            if not decision.continue_reduction:
+                assert decision.stop_reason is not None
+                warnings = (
+                    (f"hierarchical reduction stopped safely: {decision.stop_reason}",)
+                    if decision.stop_reason in {STOP_MAX_ROUNDS, STOP_STALLED}
+                    else ()
+                )
+                result = HierarchicalReductionResult(
+                    payload,
+                    canonical_profile,
+                    round_index,
+                    decision.stop_reason,
+                    tuple(metrics_history),
+                    warnings,
+                    resumed.round_index if resumed else 0,
+                )
+                return result
+            previous_payload = payload
+            parent_fingerprint = text_fingerprint(payload)
+    finally:
+        if execution_lease is not None:
+            execution_lease.release()

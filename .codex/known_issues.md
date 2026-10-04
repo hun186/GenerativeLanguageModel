@@ -193,3 +193,8 @@
 ## 2026-10-04 PR #196 publication limitation
 
 - This checkout has no configured Git remote, so the corrective commit cannot be pushed from the container and fresh hosted CI/head identifiers cannot be obtained here. The existing PR metadata was updated, but publication and hosted acceptance must occur from a checkout with the PR #196 remote branch configured.
+
+## 2026-10-04 PR L3 local environment
+
+- Required requirements installation remains blocked by the network proxy returning HTTP 403 for the pinned GitHub `peft` clone. Dependency-light Reduction/retention tests run locally; suites importing unavailable `opencc`, `tqdm`, or PyYAML require hosted offline E2E.
+- GitHub network access is also proxy-blocked, so fresh hosted PR/CI identifiers cannot be observed from this container. The local baseline exactly matches verified merge `47488c807924fafe71c4d53d1c2999bc4675464f`.

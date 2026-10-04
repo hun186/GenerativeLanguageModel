@@ -269,3 +269,17 @@
 
 - Synchronous multistage cancellation removes only the current registry/meter coordination entry, propagates `ExecutionCancelled` to the producer, and retains TODO/Success/checkpoint artifacts for resume. Row Merger owns deterministic completion/writeback; semantic combine cancellation releases the row once without retry spinning.
 - Worker shutdown may retain the GUI until post-writeback completion recheck and the forced terminal observer snapshot finish; the existing `shutdown()` lifecycle remains authoritative for consumer/merger/drain/refresher teardown.
+
+## 2026-10-04 Reduction Engine PR L3 retention architecture
+
+- `reduction/retention.py` is the opt-in operational lifecycle boundary for newly marked checkpoint runs and runtime rounds only. Checkpoints remain authoritative resumable state; runtime rounds are reconstructable transient state.
+- Cross-process execution leases and GC claims use exclusive filesystem directories, bounded secret-free metadata, stale-expiry rechecks, and claim-before-delete. A verified same-parent tombstone rename removes the semantic live name before recursive deletion.
+- Discovery is bounded to explicitly supplied item roots and recognized `.reduction/{checkpoints,runtime}` direct children. Resolved containment and non-following symlink traversal are mandatory.
+- Production maintenance runs synchronously after writeback classification and worker shutdown. Successful hierarchical combine may clean owned runtime rounds only after atomic final-output write; checkpoints survive until their applicable TTL.
+- SQL/ES persisted results, AggregateOutput, Collection Manifest, final/source/backup files, logs, and legacy `_stage_outputs`/`_stage_merges` remain structurally outside L3 ownership.
+
+## 2026-10-04 PR #198 L3 corrective architecture
+
+- The canonical root CLI validates `reduction_retention` once into frozen `ctx.reduction_retention` before TXT/Table/SQL/ES scheduling; compatibility fallbacks are not the primary path and retention remains outside semantic identity.
+- Explicit prompt-container discovery covers exactly immediate non-symlink item children, so unscheduled historical items remain eligible without adding recursive WorkPool traversal. Container and artifact entries share the scan bound.
+- Crash tombstones require exact token/name/marker/kind/containment agreement and retained ownership metadata. Recovery shares ordinary entry/byte budgets and bounded reporting.

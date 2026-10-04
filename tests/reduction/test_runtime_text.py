@@ -272,6 +272,9 @@ def test_two_pass_retry_raises_only_after_second_incomplete_dispatch(tmp_path):
     with pytest.raises(TextRoundRuntimeError, match="TODO remains"):
         adapter.next_round_items("aggregate", 2)
     assert calls == [(True, "ROUND"), (False, "ROUND")]
+    runtime = tmp_path / ".reduction/runtime/round-0002"
+    assert (runtime / ".retention.json").is_file()
+    assert not (runtime / ".execution-lease").exists()
 
 
 def test_incomplete_map_fails_and_stale_uncommitted_workspace_is_rebuilt(tmp_path):

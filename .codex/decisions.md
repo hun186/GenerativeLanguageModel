@@ -214,3 +214,17 @@
 
 - Completed deterministic combine/writeback is safe-drain work and remains allowed after operator cancellation. New configured Reduction work continues to use the established cancellation boundary; semantic LLM continuation never starts after cancellation.
 - A cancellation request observed before post-writeback terminal classification yields `cancelled`, even if producer traversal just finished. A request after the authoritative completed transition does not retroactively change that result.
+
+## 2026-10-04 Reduction Engine PR L3 decisions
+
+- Filesystem GC is disabled by default, ownership-based, bounded, and conservative: unmarked legacy artifacts are never deleted, and malformed checkpoint state is retained rather than interpreted as deletion authority.
+- Retention is operational and excluded from semantic/checkpoint/processing/aggregate/manifest fingerprints. Incomplete checkpoints retain more resume value and therefore cannot have a shorter TTL than terminal checkpoints.
+- Committed checkpoints are authoritative resume state; runtime round directories are disposable reconstructable state. No second cross-run member cache is introduced; L1 persisted SQL/ES reuse remains authoritative.
+- Claim-before-delete plus a verified tombstone rename is required. Stale lease expiry removes only activity exclusion; independent ownership, identity, TTL, containment, symlink and budget checks still apply.
+- SQL/ES outputs, AggregateOutput, Collection Manifest, legacy stage artifacts, sources, backups, final outputs and logs are outside ownership. GC failure never invalidates an already-successful user result.
+
+## 2026-10-04 PR #198 corrective decisions
+
+- Distinguish explicit item-root grants from prompt-container grants. A container grant covers one child-item level, enabling historical cleanup without a recursive generic scanner.
+- Crash recovery is deletion, not an unlimited repair path. Verified tombstones obey the ordinary entry/byte budgets and reporting; ambiguous names or ownership mismatch fail closed.
+- A valid unmarked pre-L3 checkpoint remains resumable but permanently outside GC ownership. Loading or resuming it must not create a marker.
