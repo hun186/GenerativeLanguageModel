@@ -1,5 +1,13 @@
 # Reduction Engine v1 — Architecture and Incremental Delivery Plan
 
+> **Implementation status:** Reduction Engine v1 A–L is implemented on `main`
+> as of verified merge `fe93663dc06909652fb2c4bec32e98cbd8520989`. The final
+> closure audit identified a bounded-GC reporting blocker tracked in
+> `.codex/known_issues.md`, so release readiness awaits a separate corrective.
+> This document
+> remains the original architecture/delivery plan; current operator contracts
+> are documented in `docs/usage/reduction_engine_v1.md`.
+
 Status: **Implementation-ready v1.0 architecture plan — Phase 0 reconciled**  
 Baseline: `c834959d8482e96ab3e815278aec2137952df8d7` (`main`)  
 Scope: design only; no production behavior changes in this branch  

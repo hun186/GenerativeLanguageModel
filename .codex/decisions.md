@@ -1,5 +1,11 @@
 # Architecture Decisions
 
+## 2026-10-05 Reduction Engine v1 closure decision
+
+- Record Reduction Engine v1 A–L implementation complete at verified main merge `fe93663dc06909652fb2c4bec32e98cbd8520989`; canonical hosted acceptance is 24/24 offline E2E PASS. Older pending K/L entries are historical, not current state.
+- Treat bounded nesting (one ReductionStage level/four PipelineRefs), nested semantic prohibition, persisted SQL/ES reuse authority, and exclusion of legacy unmarked artifacts from GC as explicit v1 limits rather than missing features.
+- Keep this closure documentation-only. Potential transient caching, task-specific quality hooks, lineage ergonomics, generic legacy maintenance, and finer checkpoint coordination are separated as v1.1 candidates and must not alter v1 runtime contracts without focused evidence and review.
+
 ## Current Summary
 
 - `combine_utils.py` remains the compatibility facade and owns Success discovery, output placement, final writes, and cleanup; focused JSON/slice/reduction modules provide implementation seams.

@@ -1,8 +1,14 @@
 # Single-pass Reduction Engine configuration
 
-PR C supports explicit, single-pass reduction at the existing combine boundary.
+This guide covers explicit, single-pass reduction at the existing combine boundary.
 The Reduction Engine is opt-in: an absent `reduction` mapping or
 `enabled: false` uses the unchanged legacy routing path.
+
+> **Scope notice:** Reduction Engine v1 also implements hierarchical,
+> collection, semantic, structured-relational, nested execution, production
+> hardening, and retention contracts. See the consolidated
+> [Reduction Engine v1 guide](reduction_engine_v1.md). The single-pass schema
+> documented here still does not accept hierarchical-only options.
 
 ## Text concatenation
 
@@ -54,6 +60,7 @@ reduction:
   profile: legacy_json_deep_merge
 ```
 
-PR C supports only `controller: single_pass` and the three profiles shown
-above. Hierarchical controllers, repeated rounds, collection aggregation, and
-semantic reduction are not part of this configuration contract.
+This file intentionally illustrates the original three single-pass profiles.
+It is not an exhaustive list of v1 reducers. Hierarchical controllers and
+their round/runtime options remain outside the **single-pass** configuration
+shown here; use the consolidated guide for their current contracts.

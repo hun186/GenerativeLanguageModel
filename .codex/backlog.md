@@ -1,8 +1,43 @@
 # 待辦事項（Backlog）
 
+## Current Reduction Engine v1 status (2026-10-05)
+
+**Reduction Engine v1 A–L implementation roadmap = COMPLETE; release closure = BLOCKED by the L3 reporting issue below.** Authoritative implementation baseline: verified `main` merge `fe93663dc06909652fb2c4bec32e98cbd8520989`.
+
+- [x] PR A — Characterization / Golden Tests
+- [x] PR B — Contracts, Reducer Registry, legacy adapters
+- [x] PR C — Strict config + opt-in single-pass routing
+- [x] PR D — Hierarchical reduction
+  - [x] D1
+  - [x] D2
+- [x] PR E — Shared Execution Budget
+- [x] PR F — Logical Work Unit + immutable Collection Manifest
+- [x] PR G — SQL/ES Collection Adapters + idempotent aggregate upsert
+- [x] PR H — Deterministic composite reducers
+- [x] PR I — Semantic reducer
+- [x] PR J — Structured relational reducer
+- [x] PR K — ReductionStage + bounded PipelineRef nesting
+  - [x] K1
+  - [x] K2
+- [x] PR L — Production hardening
+  - [x] L1 — persisted reuse + freshness + recheck observability
+  - [x] L2a — partial success + cooperative cancellation
+  - [x] L2b — production cancellation + observability
+  - [x] L3 — retention / TTL / safe GC
+
+All unchecked K/L copies below are historical point-in-time records and are superseded by this status. Canonical L1–L3 evidence is in `.codex/memory.md`.
+
+## Future v1.1 candidates (not v1 blockers)
+
+- [ ] Evaluate optional transient semantic/member caching only with a distinct authority and privacy contract; persisted SQL/ES output remains v1 reuse authority.
+- [ ] Add task-specific quality/coverage hooks without creating a generic evaluation platform.
+- [ ] Consider aggregate-lineage convenience APIs beyond the complete v1 `AggregateOutput` payload lineage contract.
+- [ ] Consider explicit generic maintenance/migration tooling for legacy unmarked stage artifacts; v1 GC intentionally never adopts them.
+- [ ] Consider finer checkpoint coordination if production evidence justifies replacing conservative per-executable serialization.
+
 ## 高優先度
 
-- 
+- [ ] **Reduction Engine v1 closure blocker:** `run_reduction_retention()` stops candidate traversal as soon as the deletion budget is exhausted (`czjLLM/reduction/retention.py`, tombstone budget branch). An invalid tombstone later in filesystem iteration is counted as scanned but not `skipped_invalid`, contradicting `test_tombstone_recovery_identity_and_entry_budget` under Python 3.14. Fix runtime/report semantics in a separate corrective PR, then rerun the full 24-case hosted gate before declaring the closure release-ready.
 
 ## 中優先度
 

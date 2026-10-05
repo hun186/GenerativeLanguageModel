@@ -1,5 +1,14 @@
 # api contract
 
+## Current Reduction Engine v1 contract (2026-10-05)
+
+- Root `reduction` is opt-in and strictly accepts `enabled`, `profile`, `controller`, `options`, `controller_options`, and `runtime`. Explicit reduction is incompatible with `merge_slices=true`; absence preserves legacy behavior.
+- Controllers are `single_pass`, `fixed_rounds`, and `adaptive_hierarchical`. Hierarchical controllers require `profile: concat_text`, exact controller options, and `runtime.round_task`.
+- Canonical reducer profiles are `concat_text`, `concat_json_list`, `legacy_json_deep_merge`, `dedup`, `group`, `entity_union`, `rank`, `top_k`, `composite`, `semantic_llm`, and `structured_relational`; accepted aliases and exact examples are documented in `docs/usage/reduction_engine_v1.md`.
+- ReductionStage `failure_policy` accepts only `mode` (`require_all` default or `allow_partial`), `min_success_count`, and `min_success_ratio`. Failed members never enter reducers; only `ExecutionError` is recoverable.
+- Python collection APIs expose immutable `LogicalWorkUnit`, `CollectionManifest`, SQL/ES collection adapters, `AggregateOutput`, manifest persistence, and idempotent aggregate sinks. There is no general collection YAML surface.
+- Root `reduction_retention` is a separate operational policy and is disabled by default. Its exact TTL/budget fields are documented in `docs/usage/reduction_retention_l3.md` and do not enter semantic identity.
+
 
 ---
 

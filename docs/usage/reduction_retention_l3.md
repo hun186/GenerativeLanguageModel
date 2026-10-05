@@ -1,5 +1,9 @@
 # Reduction retention and safe GC (L3)
 
+This is the detailed retention contract. For lifecycle context and the rest of
+the operator surface, see the consolidated
+[Reduction Engine v1 guide](reduction_engine_v1.md).
+
 Reduction filesystem retention is opt-in operational maintenance. It does not
 participate in execution, processing, aggregate, manifest, or checkpoint
 fingerprints. Existing deployments perform no deletion unless enabled:

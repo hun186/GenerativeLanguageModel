@@ -1,5 +1,12 @@
 # 已知問題（Known Issues）
 
+## 2026-10-05 Reduction retention bounded-reporting blocker
+
+- On Python 3.14, `tests/reduction/test_retention_l3.py::test_tombstone_recovery_identity_and_entry_budget` deterministically fails: `RetentionReport.skipped_invalid` is 0 instead of 1.
+- Exact contract cause: `czjLLM/reduction/retention.py::run_reduction_retention` records all discovered entries in `scanned`, but `break`s traversal when the deletion entry/byte budget is reached. A malformed tombstone later in filesystem iteration is consequently never validated or reported.
+- Severity: release-readiness blocker for truthful bounded L3 GC reporting; ownership validation and the safe deletion bound still fail closed, so no unsafe deletion was observed.
+- Per closure-audit policy this documentation PR does not silently alter runtime behavior. A focused corrective PR must define continued reporting after budget exhaustion and pass local Reduction plus fresh hosted collect-only 24/full 24 gates.
+
 ## Current Summary
 
 ### Requirements installation is blocked by the network proxy

@@ -1,5 +1,14 @@
 # architecture
 
+## Current Reduction Engine v1 architecture (2026-10-05)
+
+- Reduction Engine v1 A–L implementation is present at verified main merge `fe93663dc06909652fb2c4bec32e98cbd8520989`; the production data flow is map or collection-member execution → reducer → optional hierarchical rounds → final result → optional persisted aggregate/writeback.
+- The source-agnostic core owns strict `ReductionConfig`, deterministic, semantic and structured-relational reducers, atomic hierarchical checkpoints, shared leaf execution budgets, executable stages, explicit partial success, and cooperative cancellation.
+- Collection boundaries use immutable ordered `LogicalWorkUnit` / `CollectionManifest` snapshots. SQL/ES adapters construct snapshots and aggregate sinks idempotently upsert `AggregateOutput` by deterministic `aggregate_output_id`; complete mappings support aggregate-of-aggregates lineage.
+- Persisted SQL/ES output is cross-run reuse authority. Runtime round workspaces are reconstructable, while committed checkpoints are resume authority.
+- Composition is deliberately bounded: one nested reduction level, at most four PipelineRef entries, cycle detection, and no semantic reducer inside a nested ReductionStage. This is not a generic DAG.
+- Production hardening supplies safe recheck/reduction events and counters, cooperative producer cancellation/safe drain, and disabled-by-default, ownership/lease-based bounded retention. Legacy unmarked and stage artifacts stay outside GC ownership.
+
 
 ---
 
