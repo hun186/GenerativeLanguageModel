@@ -37,7 +37,8 @@ from .sinks.excel_sink import ExcelSink
 from czjLLM.reduction.production_control import (
     ensure_execution_cancel_event, ensure_production_observer,
     execution_cancel_requested, finish_legacy_merge_item,
-    request_execution_cancel, try_begin_legacy_merge_item,
+    legacy_merge_item_completed, request_execution_cancel,
+    try_begin_legacy_merge_item,
 )
 from czjLLM.reduction.retention import (
     parse_reduction_retention_policy,
@@ -445,7 +446,10 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                 if not _can_combine(job_dir):
                     continue
                 if not try_begin_legacy_merge_item(ctx, job_dir):
-                    merged_jobs.add(job_dir)
+                    if legacy_merge_item_completed(ctx, job_dir):
+                        merged_jobs.add(job_dir)
+                    # If another path merely owns the active claim, leave this
+                    # candidate retryable in case that attempt later fails.
                     continue
                 observer.emit("legacy_merge_started", {})
                 try:
