@@ -12,6 +12,14 @@
 
 ## Recent Changes
 
+### 2026-10-06 Active project-memory compaction
+
+- Compacted `.codex/architecture.md`, `.codex/api_contract.md`, `.codex/known_issues.md`, `.codex/decisions.md`, and `.codex/backlog.md` because each exceeded the AGENTS.md threshold of 20 dated/work blocks.
+- Preserved each complete pre-compaction file first under `.codex/archive/*-20261006-134200.md`, then rewrote active files to current summaries, recent relevant changes, and archive references.
+- Preserved unresolved issues, open backlog items, current API contracts and still-effective architecture decisions. Superseded point-in-time PR status remains available in the archives.
+- Verification for this compaction is documentation-only: archive/source byte equality and active block-count checks are required locally from the constructed tree; the resulting PR head still requires fresh hosted 24-case acceptance and fresh Codex review before merge readiness.
+
+
 ### 2026-10-06 PR #200 fresh closure acceptance
 
 - Initial documentation reconciliation head `06f0c6b0a6443999a7241b6e5cce0736cde71d38` passed CI #462 / `37401880432`, offline job `112070871594`, collect 24 and full gate PASS / 100%.
