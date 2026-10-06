@@ -672,6 +672,13 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 ctx, write_map, write_sources
                             )
                             if merged_columns:
+                                # Stream multistage may have already performed
+                                # the legacy slice merge before Row Merger sees
+                                # CombBackFN. Account for that successful merge
+                                # here through the same run-scoped ownership
+                                # guard used by live/fallback merge paths.
+                                if _legacy_merge_begin(item_dir):
+                                    _legacy_merge_finish(item_dir, success=True)
                                 source_logs.append(
                                     f"slice_merge_premerged:{','.join(merged_columns)}"
                                 )

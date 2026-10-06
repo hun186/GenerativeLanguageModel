@@ -296,3 +296,48 @@ def test_row_merger_completion_blocks_fallback_reclaim(
     stats = ensure_production_observer(ctx).snapshot()
     assert stats["legacy_merges_started"] == 1
     assert stats["legacy_merges_completed"] == 1
+
+
+
+def test_premerged_combined_dict_emits_legacy_merge_telemetry(tmp_path: Path):
+    item_dir = tmp_path / "premerged-item"
+    item_dir.mkdir(parents=True)
+    source = tmp_path / "src/cache/premerged.txt"
+    source.parent.mkdir(parents=True)
+    source.write_text("raw", encoding="utf-8")
+    combined = tmp_path / "out/premerged-result.txt"
+    combined.parent.mkdir(parents=True)
+    combined.write_text(
+        json.dumps({"value": 7}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    registry = _RegistryStub(
+        str(item_dir),
+        {"pk": 12, "temp_txt": str(source), "CombBackFN": str(combined)},
+    )
+    sink = _SinkStub()
+    ctx = SimpleNamespace(
+        output_col="File_result",
+        record_update_time=False,
+        flatten_json_output=False,
+        cleanup_prompt_item_after_writeback=False,
+        llm_source_dir=str(tmp_path / "src"),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        PGMSubDir=str(tmp_path),
+        mode="es",
+        merge_slices=True,
+    )
+
+    row_merger_watchdog_generic(
+        ctx, registry, lambda *_: None, _StopEventStub(True), sink,
+        scan_interval=.01, done_q=None,
+    )
+
+    stats = ensure_production_observer(ctx).snapshot()
+    assert stats["activity_mode"] == "legacy_merge_slices"
+    assert stats["legacy_merges_started"] == 1
+    assert stats["legacy_merges_completed"] == 1
+    assert stats["legacy_merges_failed"] == 0
+    assert registry.removed and len(sink.writes) == 1
+    assert json.loads(sink.writes[0][1]["File_result"]) == {"value": 7}
