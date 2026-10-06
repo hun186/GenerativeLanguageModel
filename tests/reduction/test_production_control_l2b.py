@@ -9,7 +9,8 @@ from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.reduction.production_control import (
     build_production_execution_context, ensure_execution_cancel_event,
     ensure_production_observer, execution_cancel_requested,
-    request_execution_cancel,
+    finish_legacy_merge_item, request_execution_cancel,
+    try_begin_legacy_merge_item,
 )
 
 
@@ -171,3 +172,15 @@ def test_mode_transition_start_events_bypass_gui_throttle(tmp_path):
     assert len(reduction.gui_handle.snapshots) == before + 1
     assert reduction.gui_handle.snapshots[-1][0]["activity_mode"] == "reduction_stage"
     assert reduction.gui_handle.snapshots[-1][0]["stages_started"] == 1
+
+
+
+def test_legacy_merge_claim_is_shared_and_failure_releases_for_retry(tmp_path):
+    ctx = _ctx(tmp_path)
+    item = tmp_path / "item"
+    assert try_begin_legacy_merge_item(ctx, item) is True
+    assert try_begin_legacy_merge_item(ctx, item) is False
+    finish_legacy_merge_item(ctx, item, success=False)
+    assert try_begin_legacy_merge_item(ctx, item) is True
+    finish_legacy_merge_item(ctx, item, success=True)
+    assert try_begin_legacy_merge_item(ctx, item) is False

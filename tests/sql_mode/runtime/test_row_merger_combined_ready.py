@@ -7,6 +7,7 @@ from types import SimpleNamespace
 from czjLLM.sql_mode.runtime.row_merger_generic import row_merger_watchdog_generic
 from czjLLM.reduction.production_control import (
     ensure_production_observer, request_execution_cancel,
+    try_begin_legacy_merge_item,
 )
 
 
@@ -186,3 +187,112 @@ def test_row_merger_emits_legacy_merge_telemetry_on_actual_combine_path(
     assert stats["legacy_merges_completed"] == 1
     assert stats["legacy_merges_failed"] == 0
     assert registry.removed and len(sink.writes) == 1
+
+
+
+def test_row_merger_does_not_emit_legacy_telemetry_when_merge_slices_is_off(
+    tmp_path: Path, monkeypatch
+):
+    import czjLLM.sql_mode.runtime.row_merger_generic as module
+
+    item_dir = tmp_path / "plain-item"
+    success = item_dir / "Success"
+    success.mkdir(parents=True)
+    (success / "0.txt").write_text("done", encoding="utf-8")
+    source = tmp_path / "src/cache/plain.txt"
+    source.parent.mkdir(parents=True)
+    source.write_text("raw", encoding="utf-8")
+    combined = tmp_path / "out/plain-result.txt"
+
+    def _combine(_item_dir, _ctx):
+        combined.parent.mkdir(parents=True, exist_ok=True)
+        combined.write_text("done", encoding="utf-8")
+        return str(combined)
+
+    monkeypatch.setattr(module, "combine_api_finished_item", _combine)
+    monkeypatch.setattr(module, "get_combined_result_path", lambda *_a: str(combined))
+
+    registry = _RegistryStub(
+        str(item_dir),
+        {"pk": 10, "temp_txt": str(source), "CombBackFN": "", "chunks": 1},
+    )
+    sink = _SinkStub()
+    ctx = SimpleNamespace(
+        output_col="File_result",
+        record_update_time=False,
+        flatten_json_output=False,
+        cleanup_prompt_item_after_writeback=False,
+        llm_source_dir=str(tmp_path / "src"),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        PGMSubDir=str(tmp_path),
+        mode="sql",
+        merge_slices=False,
+    )
+
+    row_merger_watchdog_generic(
+        ctx, registry, lambda *_: None, _StopEventStub(True), sink,
+        scan_interval=.01, done_q=None,
+    )
+
+    stats = ensure_production_observer(ctx).snapshot()
+    assert stats["activity_mode"] == "inactive"
+    assert stats["legacy_merges_started"] == 0
+    assert stats["legacy_merges_completed"] == 0
+    assert stats["legacy_merges_failed"] == 0
+    assert registry.removed and len(sink.writes) == 1
+
+
+def test_row_merger_completion_blocks_fallback_reclaim(
+    tmp_path: Path, monkeypatch
+):
+    import czjLLM.sql_mode.runtime.row_merger_generic as module
+
+    item_dir = tmp_path / "shared-guard-item"
+    success = item_dir / "Success"
+    success.mkdir(parents=True)
+    (success / "0.txt").write_text(
+        json.dumps([{"value": 1}], ensure_ascii=False),
+        encoding="utf-8",
+    )
+    source = tmp_path / "src/cache/shared.txt"
+    source.parent.mkdir(parents=True)
+    source.write_text("raw", encoding="utf-8")
+    combined = tmp_path / "out/shared-result.txt"
+
+    def _combine(_item_dir, _ctx):
+        combined.parent.mkdir(parents=True, exist_ok=True)
+        combined.write_text(
+            json.dumps({"value": 1}, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        return str(combined)
+
+    monkeypatch.setattr(module, "combine_api_finished_item", _combine)
+    monkeypatch.setattr(module, "get_combined_result_path", lambda *_a: str(combined))
+
+    registry = _RegistryStub(
+        str(item_dir),
+        {"pk": 11, "temp_txt": str(source), "CombBackFN": "", "chunks": 1},
+    )
+    sink = _SinkStub()
+    ctx = SimpleNamespace(
+        output_col="File_result",
+        record_update_time=False,
+        flatten_json_output=False,
+        cleanup_prompt_item_after_writeback=False,
+        llm_source_dir=str(tmp_path / "src"),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        PGMSubDir=str(tmp_path),
+        mode="es",
+        merge_slices=True,
+    )
+
+    row_merger_watchdog_generic(
+        ctx, registry, lambda *_: None, _StopEventStub(True), sink,
+        scan_interval=.01, done_q=None,
+    )
+
+    assert try_begin_legacy_merge_item(ctx, str(item_dir)) is False
+    stats = ensure_production_observer(ctx).snapshot()
+    assert stats["legacy_merges_started"] == 1
+    assert stats["legacy_merges_completed"] == 1

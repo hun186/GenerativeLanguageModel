@@ -541,7 +541,12 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                         self.__dict__.update(kw)
     
                 overlay = _CtxOverlay(ctx, temp_txt_finished_dir=target_dir)
-                _legacy_merge_begin(item_dir)
+                legacy_claimed = _legacy_merge_begin(item_dir)
+                if should_merge_slices(ctx) and not legacy_claimed:
+                    # Another live path owns this legacy merge, or it already
+                    # completed. Wait for the shared artifact instead of
+                    # running the same merge twice.
+                    return None
                 out = combine_api_finished_item(item_dir, overlay)
                 if out and os.path.isfile(out):
                     _legacy_merge_finish(item_dir, success=True)
