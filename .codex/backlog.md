@@ -2,7 +2,7 @@
 
 ## Current Reduction Engine v1 status (2026-10-06)
 
-**Reduction Engine v1 A–L implementation roadmap = COMPLETE; the L3 release-audit reporting blocker is RESOLVED by PR #201.** Authoritative runtime baseline: verified `main` merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. This documentation closure still requires its own fresh hosted 24-case acceptance before merge.
+**Reduction Engine v1 = COMPLETE / RELEASE-READY.** A–L is complete and the L3 release-audit reporting blocker is resolved by PR #201. Authoritative runtime baseline: verified `main` merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. Documentation closure reconciliation head `06f0c6b0a6443999a7241b6e5cce0736cde71d38` passed fresh CI #462 / `37401880432`, offline job `112070871594`, collect 24 and full gate PASS / 100%. PR #200 remains unmerged pending fresh review and explicit merge approval.
 
 - [x] PR A — Characterization / Golden Tests
 - [x] PR B — Contracts, Reducer Registry, legacy adapters

@@ -374,6 +374,9 @@ PR #201 accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`
 passed CI #459 / `37399753801`, offline job `112064086574`, collect 24 and
 full gate PASS / 100%, then merged as verified/valid
 `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. The runtime release blocker is
-therefore resolved. The only remaining v1 closure step is fresh hosted 24-case
-acceptance of this documentation-only PR #200 head before merge; the other
-explicit limitations above do not contradict the bounded v1 contracts.
+therefore resolved. Documentation closure reconciliation head
+`06f0c6b0a6443999a7241b6e5cce0736cde71d38` subsequently passed fresh CI
+#462 / `37401880432`, offline job `112070871594`, collect 24 and full gate
+PASS / 100%. Reduction Engine v1 is therefore **COMPLETE / RELEASE-READY**.
+PR #200 remains unmerged pending fresh review and explicit merge approval; the
+other explicit limitations above do not contradict the bounded v1 contracts.

@@ -4,8 +4,11 @@
 > bounded-retention reporting corrective are implemented on `main` as of
 > verified merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. The blocker
 > identified by the closure audit was resolved by PR #201 and passed a fresh
-> hosted 24-case gate. PR #200 remains documentation/release closure only and
-> requires its own fresh hosted 24-case acceptance before merge. This document
+> hosted 24-case gate. PR #200 closure reconciliation head
+> `06f0c6b0a6443999a7241b6e5cce0736cde71d38` then passed CI #462 /
+> `37401880432`, offline job `112070871594`, collect 24 and full gate PASS /
+> 100%. Reduction Engine v1 is therefore COMPLETE / RELEASE-READY; PR #200
+> remains unmerged pending fresh review and explicit merge approval. This document
 > remains the original architecture/delivery plan; current operator contracts
 > are documented in `docs/usage/reduction_engine_v1.md`.
 
