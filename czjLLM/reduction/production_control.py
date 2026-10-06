@@ -120,6 +120,45 @@ def _initial_reduction_activity_mode(ctx: Any) -> str:
     return "inactive"
 
 
+def _legacy_merge_item_key(item_dir: Any) -> str:
+    return os.path.normcase(os.path.abspath(os.fspath(item_dir)))
+
+
+def try_begin_legacy_merge_item(ctx: Any, item_dir: Any) -> bool:
+    """Atomically claim one legacy merge item for this run.
+
+    Returns False while another path owns the same item or after it completed.
+    A failed attempt must call finish_legacy_merge_item(..., success=False) to
+    release the claim for a later retry.
+    """
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        items = state.setdefault("legacy_merge_items", {})
+        if items.get(key) in {"active", "completed"}:
+            return False
+        items[key] = "active"
+        return True
+
+
+def finish_legacy_merge_item(ctx: Any, item_dir: Any, *, success: bool) -> None:
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        items = state.setdefault("legacy_merge_items", {})
+        if success:
+            items[key] = "completed"
+        elif items.get(key) == "active":
+            items.pop(key, None)
+
+
+def legacy_merge_item_completed(ctx: Any, item_dir: Any) -> bool:
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        return state.setdefault("legacy_merge_items", {}).get(key) == "completed"
+
+
 def _safe_job_id(ctx: Any) -> str:
     for name in ("config_path", "config_file", "pipeline_name"):
         value = getattr(ctx, name, None)

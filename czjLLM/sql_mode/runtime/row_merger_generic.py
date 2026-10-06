@@ -17,7 +17,10 @@ from czjLLM.prompt_pipeline.pipeline_controller import (
 )
 from czjLLM.utilities.path_utils import get_combined_result_path
 from czjLLM.reduction.execution import ExecutionCancelled
-from czjLLM.reduction.production_control import ensure_production_observer
+from czjLLM.reduction.production_control import (
+    ensure_production_observer, finish_legacy_merge_item,
+    try_begin_legacy_merge_item,
+)
 from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
 from .multistage_writeback import resolve_writeback_payload
 #from czjLLM.prompt_pipeline.pipeline_controller import meter_update  # 檔頭若尚未 import
@@ -443,16 +446,22 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
     observer = ensure_production_observer(ctx)
 
     def _legacy_merge_begin(item_dir):
+        if not should_merge_slices(ctx):
+            return False
         if legacy_merge_telemetry_state.get(item_dir) == "completed":
             return False
-        if legacy_merge_telemetry_state.get(item_dir) != "started":
-            observer.emit("legacy_merge_started", {})
-            legacy_merge_telemetry_state[item_dir] = "started"
+        if legacy_merge_telemetry_state.get(item_dir) == "started":
+            return True
+        if not try_begin_legacy_merge_item(ctx, item_dir):
+            return False
+        observer.emit("legacy_merge_started", {})
+        legacy_merge_telemetry_state[item_dir] = "started"
         return True
 
     def _legacy_merge_finish(item_dir, *, success, reason="execution_error", error_type=None):
         if legacy_merge_telemetry_state.get(item_dir) != "started":
             return
+        finish_legacy_merge_item(ctx, item_dir, success=success)
         if success:
             observer.emit("legacy_merge_completed", {})
             legacy_merge_telemetry_state[item_dir] = "completed"
@@ -461,7 +470,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             if error_type:
                 fields["error_type"] = error_type
             observer.emit("legacy_merge_failed", fields)
-            legacy_merge_telemetry_state[item_dir] = "failed"
+            legacy_merge_telemetry_state.pop(item_dir, None)
 
     failure_log_interval = max(
         1.0, float(getattr(ctx, "row_merger_failure_log_interval", 60.0) or 60.0)

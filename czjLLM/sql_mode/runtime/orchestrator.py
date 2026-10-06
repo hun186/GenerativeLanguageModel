@@ -36,7 +36,8 @@ from .sinks.sql_sink import SqlSink
 from .sinks.excel_sink import ExcelSink
 from czjLLM.reduction.production_control import (
     ensure_execution_cancel_event, ensure_production_observer,
-    execution_cancel_requested, request_execution_cancel,
+    execution_cancel_requested, finish_legacy_merge_item,
+    request_execution_cancel, try_begin_legacy_merge_item,
 )
 from czjLLM.reduction.retention import (
     parse_reduction_retention_policy,
@@ -443,16 +444,22 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
             for job_dir in sorted(candidates):
                 if not _can_combine(job_dir):
                     continue
+                if not try_begin_legacy_merge_item(ctx, job_dir):
+                    merged_jobs.add(job_dir)
+                    continue
                 observer.emit("legacy_merge_started", {})
                 try:
                     merged_ok = run_merge_for(ctx, job_dir)  # 內部會呼叫 combine_api_finished_item（建議 debug=True、不刪資料夾）
                     if merged_ok is not False:
+                        finish_legacy_merge_item(ctx, job_dir, success=True)
                         merged_jobs.add(job_dir)
                         observer.emit("legacy_merge_completed", {})
                         tlog(f"🧩 已合併切片：{job_dir}")
                     else:
+                        finish_legacy_merge_item(ctx, job_dir, success=False)
                         observer.emit("legacy_merge_failed", {"reason": "no_output"})
                 except Exception as e:
+                    finish_legacy_merge_item(ctx, job_dir, success=False)
                     observer.emit(
                         "legacy_merge_failed",
                         {"error_type": type(e).__name__, "reason": "execution_error"},
