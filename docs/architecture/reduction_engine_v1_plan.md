@@ -1,10 +1,11 @@
 # Reduction Engine v1 — Architecture and Incremental Delivery Plan
 
-> **Implementation status:** Reduction Engine v1 A–L is implemented on `main`
-> as of verified merge `fe93663dc06909652fb2c4bec32e98cbd8520989`. The final
-> closure audit identified a bounded-GC reporting blocker tracked in
-> `.codex/known_issues.md`, so release readiness awaits a separate corrective.
-> This document
+> **Implementation status:** Reduction Engine v1 A–L plus the release-audit
+> bounded-retention reporting corrective are implemented on `main` as of
+> verified merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. The blocker
+> identified by the closure audit was resolved by PR #201 and passed a fresh
+> hosted 24-case gate. PR #200 remains documentation/release closure only and
+> requires its own fresh hosted 24-case acceptance before merge. This document
 > remains the original architecture/delivery plan; current operator contracts
 > are documented in `docs/usage/reduction_engine_v1.md`.
 

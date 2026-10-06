@@ -361,12 +361,19 @@ as follows:
 | generic maintenance/migration tools | future/v1.1 candidate | no legacy artifact adoption or general recursive cleanup |
 | finer shared-checkpoint coordination | future/v1.1 candidate | one nested checkpointed executable is conservatively serialized |
 
-Reduction Engine v1 A–L implementation is present at merge
-`fe93663dc06909652fb2c4bec32e98cbd8520989`. This closure audit found one
-release-readiness blocker in bounded retention reporting: once the deletion
-budget is exhausted, candidate traversal stops, so a later malformed tombstone
-can be included in `scanned` without being included in `skipped_invalid`.
-Deletion remains bounded/fail-closed, but the reporting regression must be
-corrected in a separate runtime PR and pass a fresh hosted 24-case gate before
-v1 is declared release-ready. The other explicit limitations above do not
-contradict the bounded v1 contracts.
+Reduction Engine v1 A–L implementation is present on `main`, and the
+bounded-retention reporting issue found by this closure audit was corrected by
+PR #201. The corrective uses a run-local `deletion_budget_exhausted` latch:
+after the deletion entry/byte budget is first exhausted, later candidates still
+run through validation/classification/counters, while no later deletion is
+allowed. Deterministic regressions cover both a malformed tombstone encountered
+after budget exhaustion and a smaller artifact encountered after a larger one
+exhausts the byte budget.
+
+PR #201 accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`
+passed CI #459 / `37399753801`, offline job `112064086574`, collect 24 and
+full gate PASS / 100%, then merged as verified/valid
+`91e39503c8e84d17752f9d26a23ff6b34db75b9e`. The runtime release blocker is
+therefore resolved. The only remaining v1 closure step is fresh hosted 24-case
+acceptance of this documentation-only PR #200 head before merge; the other
+explicit limitations above do not contradict the bounded v1 contracts.

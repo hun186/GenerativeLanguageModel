@@ -1,10 +1,10 @@
 # Architecture Decisions
 
-## 2026-10-05 Reduction Engine v1 closure decision
+## 2026-10-06 Reduction Engine v1 closure decision
 
-- Record Reduction Engine v1 A–L implementation complete at verified main merge `fe93663dc06909652fb2c4bec32e98cbd8520989`; canonical hosted acceptance is 24/24 offline E2E PASS. Older pending K/L entries are historical, not current state.
+- Record Reduction Engine v1 A–L implementation complete and the L3 release-audit corrective accepted at verified main merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. PR #201 accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef` passed CI #459 / `37399753801`, offline job `112064086574`, collect 24 and full 24/24 PASS. Older pending K/L entries are historical, not current state.
 - Treat bounded nesting (one ReductionStage level/four PipelineRefs), nested semantic prohibition, persisted SQL/ES reuse authority, and exclusion of legacy unmarked artifacts from GC as explicit v1 limits rather than missing features.
-- Keep this closure documentation-only. Potential transient caching, task-specific quality hooks, lineage ergonomics, generic legacy maintenance, and finer checkpoint coordination are separated as v1.1 candidates and must not alter v1 runtime contracts without focused evidence and review.
+- Keep PR #200 closure documentation-only. The #201 corrective establishes truthful bounded retention reporting; potential transient caching, task-specific quality hooks, lineage ergonomics, generic legacy maintenance, and finer checkpoint coordination remain v1.1 candidates and must not alter v1 runtime contracts without focused evidence and review.
 
 ## Current Summary
 

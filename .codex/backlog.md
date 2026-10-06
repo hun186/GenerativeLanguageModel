@@ -1,8 +1,8 @@
 # 待辦事項（Backlog）
 
-## Current Reduction Engine v1 status (2026-10-05)
+## Current Reduction Engine v1 status (2026-10-06)
 
-**Reduction Engine v1 A–L implementation roadmap = COMPLETE; release closure = BLOCKED by the L3 reporting issue below.** Authoritative implementation baseline: verified `main` merge `fe93663dc06909652fb2c4bec32e98cbd8520989`.
+**Reduction Engine v1 A–L implementation roadmap = COMPLETE; the L3 release-audit reporting blocker is RESOLVED by PR #201.** Authoritative runtime baseline: verified `main` merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. This documentation closure still requires its own fresh hosted 24-case acceptance before merge.
 
 - [x] PR A — Characterization / Golden Tests
 - [x] PR B — Contracts, Reducer Registry, legacy adapters
@@ -37,7 +37,7 @@ All unchecked K/L copies below are historical point-in-time records and are supe
 
 ## 高優先度
 
-- [ ] **Reduction Engine v1 closure blocker:** `run_reduction_retention()` stops candidate traversal as soon as the deletion budget is exhausted (`czjLLM/reduction/retention.py`, tombstone budget branch). An invalid tombstone later in filesystem iteration is counted as scanned but not `skipped_invalid`, contradicting `test_tombstone_recovery_identity_and_entry_budget` under Python 3.14. Fix runtime/report semantics in a separate corrective PR, then rerun the full 24-case hosted gate before declaring the closure release-ready.
+- [x] **Resolved — Reduction Engine v1 L3 bounded-reporting blocker:** PR #201 introduced a run-local `deletion_budget_exhausted` latch so candidates continue through validation/classification/counters after the deletion budget is exhausted while no later deletion is attempted. Accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid.
 
 ## 中優先度
 

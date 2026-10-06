@@ -1,11 +1,11 @@
 # 已知問題（Known Issues）
 
-## 2026-10-05 Reduction retention bounded-reporting blocker
+## 2026-10-05 Reduction retention bounded-reporting blocker — resolved 2026-10-06
 
-- On Python 3.14, `tests/reduction/test_retention_l3.py::test_tombstone_recovery_identity_and_entry_budget` deterministically fails: `RetentionReport.skipped_invalid` is 0 instead of 1.
-- Exact contract cause: `czjLLM/reduction/retention.py::run_reduction_retention` records all discovered entries in `scanned`, but `break`s traversal when the deletion entry/byte budget is reached. A malformed tombstone later in filesystem iteration is consequently never validated or reported.
-- Severity: release-readiness blocker for truthful bounded L3 GC reporting; ownership validation and the safe deletion bound still fail closed, so no unsafe deletion was observed.
-- Per closure-audit policy this documentation PR does not silently alter runtime behavior. A focused corrective PR must define continued reporting after budget exhaustion and pass local Reduction plus fresh hosted collect-only 24/full 24 gates.
+- Historical issue: on Python 3.14, `tests/reduction/test_retention_l3.py::test_tombstone_recovery_identity_and_entry_budget` exposed that a malformed tombstone appearing after deletion-budget exhaustion could be included in `scanned` without incrementing `skipped_invalid`.
+- Root cause: `czjLLM/reduction/retention.py::run_reduction_retention` stopped candidate traversal with `break` when the deletion entry/byte budget was reached. The safe deletion bound itself failed closed; no unsafe deletion was observed.
+- Corrective contract: PR #201 added a run-local `deletion_budget_exhausted` latch. After the first deletion-budget exhaustion, all later candidates still run through validation/classification/counters, but no later candidate may enter deletion. The added regressions also verify that byte-budget exhaustion cannot be followed by deleting a smaller artifact.
+- **Status: Resolved by PR #201.** Accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid.
 
 ## Current Summary
 

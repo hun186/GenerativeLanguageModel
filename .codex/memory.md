@@ -3,14 +3,20 @@
 ## Current Summary
 
 - This Python project processes TXT/Table/SQL/ES inputs through prompt, multistage, reduction, and writeback infrastructure.
-- **Reduction Engine v1 A–L implementation is complete; release closure is blocked by the L3 reporting issue recorded below.** Authoritative baseline is verified `main` merge `fe93663dc06909652fb2c4bec32e98cbd8520989` (canonical L3 PR #199).
-- Production offline E2E at that baseline collected 24 cases and passed 24/24 (100%). This documentation-only closure requires its own fresh hosted 24-case gate before merge.
+- **Reduction Engine v1 A–L implementation is complete. The L3 retention reporting release-audit corrective was accepted and merged through PR #201; the remaining work is documentation/release closure PR #200.** Authoritative runtime baseline is verified `main` merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`.
+- PR #201 authoritative evidence: accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid. This documentation-only closure still requires its own fresh hosted 24-case gate before merge.
 - L2a authoritative evidence: PR #195, accepted head `f4ad4001f4498287799df3c89e90ff4a733dc572`, CI #448 / `37179982321`, offline job `111370415206`, collect 22 and full PASS, merge `c1f2f6974e88028eb3eb5b9b747fefeb8d6d5cf0`, verified/valid signature. PR #194 is closed/unmerged/superseded.
 - Production operator cancellation is cooperative and distinct from worker teardown. It stops new scheduling and semantic continuation while allowing in-flight external calls and existing consumer/merger/writeback work to drain.
 - Production Reduction observability uses allowlisted bounded JSONL, lock-protected counters, and a separate Windows GUI Reduction Status panel.
 - Required dependency installation remains blocked by the pinned GitHub `peft` clone proxy 403. Dependency-light tests are locally available; hosted offline E2E is authoritative.
 
 ## Recent Changes
+
+### 2026-10-06 L3 release-audit corrective accepted
+
+- PR #201 corrected truthful bounded-retention reporting with the run-local `deletion_budget_exhausted` latch: after deletion budget exhaustion, validation/classification/counters continue and deletion stays disabled for the rest of the sweep.
+- Deterministic regressions cover a later malformed tombstone and the case where a large artifact exhausts the byte budget before a smaller candidate. Hosted acceptance: head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`, CI #459 / `37399753801`, offline job `112064086574`, collect 24, full gate PASS / 100%.
+- PR #201 merged as verified/valid `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. PR #200 is now the sole remaining Reduction Engine v1 closure work and must pass a fresh hosted 24-case gate on its updated documentation head before merge.
 
 ### 2026-10-05 Reduction Engine v1 closure audit
 
