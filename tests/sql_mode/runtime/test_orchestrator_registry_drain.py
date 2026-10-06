@@ -1,5 +1,7 @@
+from types import SimpleNamespace
+
 from czjLLM.sql_mode.runtime.orchestrator import (
-    _is_reg_drained, _registry_existing_combined_artifact,
+    _fallback_merge_enabled, _is_reg_drained, _registry_existing_combined_artifact,
 )
 
 
@@ -164,3 +166,13 @@ def test_fallback_registry_handoff_preserves_existing_authoritative_artifact(
     assert combine_utils.run_merge_for(ctx, job_dir, registry=registry) is True
     assert registry.get(job_dir)["CombBackFN"] == str(authoritative)
     assert registry.update_calls == []
+
+
+
+def test_fallback_merge_gate_honors_all_supported_slice_merge_aliases():
+    assert _fallback_merge_enabled(SimpleNamespace(merge_slices=True)) is True
+    assert _fallback_merge_enabled(SimpleNamespace(enable_slice_merge=True)) is True
+    assert _fallback_merge_enabled(SimpleNamespace(merge_strategy="dict_deep")) is True
+    assert _fallback_merge_enabled(SimpleNamespace(merge_strategy="slice_merge")) is True
+    assert _fallback_merge_enabled(SimpleNamespace(merge_strategy="on")) is True
+    assert _fallback_merge_enabled(SimpleNamespace()) is False

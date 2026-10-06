@@ -13,6 +13,7 @@ from czjLLM.prompt_pipeline.pipeline_controller import CONSUMER_STATE  # [ADD] �
 from czjLLM.prompt_pipeline.pipeline_controller import recover_running_to_todo  # ★ 新增：啟動時復原 RUNNING → TODO
 from czjLLM.prompt_pipeline.pipeline_controller import start_watchdogs
 from czjLLM.utilities.combine_utils import run_merge_for
+from czjLLM.utilities.slice_merge import should_merge_slices
 
 from .runtime_ui import prepare_ui, start_bar_refresher
 from ..metrics.metering import init_meter
@@ -191,6 +192,11 @@ def _can_combine(d: str) -> bool:
     run_cnt     = _dir_file_count(os.path.join(d, "RUNNING"))
     success_cnt = _dir_file_count(os.path.join(d, "Success"))
     return success_cnt > 0 and todo_cnt == 0 and run_cnt == 0
+
+
+def _fallback_merge_enabled(ctx) -> bool:
+    """Keep the post-drain fallback gate identical to execution semantics."""
+    return should_merge_slices(ctx)
 
 
 def _registry_existing_combined_artifact(registry, job_dir: str) -> str:
@@ -398,9 +404,8 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
 
     prod_th = threading.Thread(target=_producer_main, daemon=True, name="producer-thread")
     prod_th.start()
-    # ---- 合併設定：優先 ctx.merge_slices，其次 ctx.cfg['merge_slices']，預設 True ----
-    _cfg = getattr(ctx, "cfg", {}) or {}
-    MERGE_SLICES = bool(getattr(ctx, "merge_slices", _cfg.get("merge_slices", True)))
+    # ---- 合併設定：與實際 slice-merge execution 使用同一 canonical predicate ----
+    MERGE_SLICES = _fallback_merge_enabled(ctx)
     # 8.5) 完成條件守門：A+B+C+D 皆為 True 才能進入收尾
     total_rows = len(rows_for_count)
     last_report = 0.0
