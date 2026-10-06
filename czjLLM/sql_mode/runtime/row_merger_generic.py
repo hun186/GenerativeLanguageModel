@@ -549,7 +549,10 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     return None
                 out = combine_api_finished_item(item_dir, overlay)
                 if out and os.path.isfile(out):
-                    _legacy_merge_finish(item_dir, success=True)
+                    # Materializing the combined artifact is not necessarily
+                    # the legacy slice merge itself. Non-JSON-mode list[dict]
+                    # payloads are merged later in the writeback path, so keep
+                    # the shared claim active until that semantic merge finishes.
                     return out
                 _legacy_merge_finish(item_dir, success=False, reason="no_output")
             except ExecutionCancelled:
@@ -682,7 +685,21 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 source_logs.append(
                                     f"slice_merge_premerged:{','.join(merged_columns)}"
                                 )
-                    except Exception:
+                            elif legacy_merge_telemetry_state.get(item_dir) == "started":
+                                _legacy_merge_finish(
+                                    item_dir, success=False, reason="unsupported_payload"
+                                )
+                        elif legacy_merge_telemetry_state.get(item_dir) == "started":
+                            _legacy_merge_finish(
+                                item_dir, success=False, reason="unsupported_payload"
+                            )
+                    except Exception as merge_or_parse_error:
+                        if legacy_merge_telemetry_state.get(item_dir) == "started":
+                            _legacy_merge_finish(
+                                item_dir,
+                                success=False,
+                                error_type=type(merge_or_parse_error).__name__,
+                            )
                         pass
 
                     expanded_cols = _expand_json_columns(ctx, flatten_source_text)

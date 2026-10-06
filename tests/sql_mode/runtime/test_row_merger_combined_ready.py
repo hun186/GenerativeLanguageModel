@@ -341,3 +341,73 @@ def test_premerged_combined_dict_emits_legacy_merge_telemetry(tmp_path: Path):
     assert stats["legacy_merges_failed"] == 0
     assert registry.removed and len(sink.writes) == 1
     assert json.loads(sink.writes[0][1]["File_result"]) == {"value": 7}
+
+
+
+def test_list_dict_merge_failure_is_not_reported_as_completed(
+    tmp_path: Path, monkeypatch
+):
+    import czjLLM.sql_mode.runtime.row_merger_generic as module
+
+    item_dir = tmp_path / "list-failure-item"
+    success = item_dir / "Success"
+    success.mkdir(parents=True)
+    (success / "0.txt").write_text(
+        json.dumps([{"value": 1}, {"value": 2}], ensure_ascii=False),
+        encoding="utf-8",
+    )
+    source = tmp_path / "src/cache/list-failure.txt"
+    source.parent.mkdir(parents=True)
+    source.write_text("raw", encoding="utf-8")
+    combined = tmp_path / "out/list-failure-result.txt"
+
+    def _combine(_item_dir, _ctx):
+        combined.parent.mkdir(parents=True, exist_ok=True)
+        combined.write_text(
+            json.dumps([{"value": 1}, {"value": 2}], ensure_ascii=False),
+            encoding="utf-8",
+        )
+        return str(combined)
+
+    monkeypatch.setattr(module, "combine_api_finished_item", _combine)
+    monkeypatch.setattr(module, "get_combined_result_path", lambda *_a: str(combined))
+
+    def _fail_merge(*_args, **_kwargs):
+        raise RuntimeError("semantic slice merge failed")
+
+    monkeypatch.setattr(module, "merge_dict_slices_audited", _fail_merge)
+
+    registry = _RegistryStub(
+        str(item_dir),
+        {"pk": 13, "temp_txt": str(source), "CombBackFN": "", "chunks": 1},
+    )
+    sink = _SinkStub()
+    ctx = SimpleNamespace(
+        output_col="File_result",
+        record_update_time=False,
+        flatten_json_output=False,
+        cleanup_prompt_item_after_writeback=False,
+        llm_source_dir=str(tmp_path / "src"),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        PGMSubDir=str(tmp_path),
+        mode="es",
+        merge_slices=True,
+    )
+
+    row_merger_watchdog_generic(
+        ctx, registry, lambda *_: None, _StopEventStub(True), sink,
+        scan_interval=.01, done_q=None,
+    )
+
+    stats = ensure_production_observer(ctx).snapshot()
+    assert stats["legacy_merges_started"] == 1
+    assert stats["legacy_merges_completed"] == 0
+    assert stats["legacy_merges_failed"] == 1
+    # Existing fail-open writeback semantics remain unchanged; only telemetry
+    # authority is corrected.
+    assert registry.removed and len(sink.writes) == 1
+    assert json.loads(sink.writes[0][1]["File_result"]) == [
+        {"value": 1}, {"value": 2}
+    ]
+    # Failure releases the shared claim instead of leaving it permanently active.
+    assert try_begin_legacy_merge_item(ctx, str(item_dir)) is True
