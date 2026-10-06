@@ -453,7 +453,9 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                     continue
                 observer.emit("legacy_merge_started", {})
                 try:
-                    merged_ok = run_merge_for(ctx, job_dir)  # 內部會呼叫 combine_api_finished_item（建議 debug=True、不刪資料夾）
+                    merged_ok = run_merge_for(
+                        ctx, job_dir, registry=registry
+                    )  # fallback 成功時必須把實際 CombBackFN handoff 給仍存活的 registry row
                     if merged_ok is not False:
                         finish_legacy_merge_item(ctx, job_dir, success=True)
                         merged_jobs.add(job_dir)

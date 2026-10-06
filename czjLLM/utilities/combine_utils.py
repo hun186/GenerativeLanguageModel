@@ -1105,6 +1105,82 @@ def combine_api_finished_item_0717(item: str, ctx) -> str:
     print("CombBackFN", out_path)
     return str(out_path)
     
+def _publish_combined_path_to_registry(registry, job_dir: str, out_path: str) -> bool:
+    """Publish the actual combined artifact for a still-registered row.
+
+    Returns True when no live registry row needs the handoff or when the path is
+    verifiably published. A failed handoff keeps fallback ownership retryable
+    instead of marking an undiscoverable artifact as completed.
+    """
+    if registry is None:
+        return True
+
+    item_present = None
+    current = None
+    getter = getattr(registry, "get", None)
+    if callable(getter):
+        try:
+            current = getter(job_dir)
+            item_present = current is not None
+        except Exception:
+            pass
+    if item_present is None:
+        lister = getattr(registry, "list_items", None)
+        if callable(lister):
+            try:
+                items = lister() or {}
+                current = items.get(job_dir)
+                item_present = job_dir in items
+            except Exception:
+                pass
+    if item_present is False:
+        return True
+
+    published = False
+    updater = getattr(registry, "update", None)
+    if callable(updater):
+        try:
+            updater(job_dir, CombBackFN=str(out_path))
+            published = True
+        except Exception:
+            published = False
+    if not published:
+        for fn in ("update_item_meta", "set_item_meta", "update_item"):
+            method = getattr(registry, fn, None)
+            if not callable(method):
+                continue
+            try:
+                method(job_dir, {"CombBackFN": str(out_path)})
+                published = True
+            except Exception:
+                published = False
+            if published:
+                break
+    if not published:
+        return False
+
+    # Verify when the registry offers a readable view. This prevents a no-op
+    # updater from converting a still-live row into a permanently completed
+    # but undiscoverable fallback claim.
+    getter = getattr(registry, "get", None)
+    if callable(getter):
+        try:
+            meta = getter(job_dir)
+            if meta is not None:
+                return str(meta.get("CombBackFN", "")) == str(out_path)
+        except Exception:
+            return False
+    lister = getattr(registry, "list_items", None)
+    if callable(lister):
+        try:
+            items = lister() or {}
+            if job_dir in items:
+                return str(items[job_dir].get("CombBackFN", "")) == str(out_path)
+        except Exception:
+            return False
+    return True
+
+
 def run_merge_for(ctx, job_dir: str, registry=None) -> bool:
     finished_root = (
         getattr(ctx, "temp_txt_finished_dir", None)
@@ -1120,16 +1196,11 @@ def run_merge_for(ctx, job_dir: str, registry=None) -> bool:
     out_path = combine_api_finished_item(job_dir, overlay)
 
     ok = bool(out_path and os.path.isfile(out_path))
-    if ok and registry:
-        # 依你的 registry 介面調整方法名稱：
-        for fn in ("update_item_meta", "set_item_meta", "update_item"):
-            if hasattr(registry, fn):
-                try:
-                    getattr(registry, fn)(job_dir, {"CombBackFN": str(out_path)})
-                except Exception:
-                    pass
-                break
-    return ok
+    if not ok:
+        return False
+    return _publish_combined_path_to_registry(
+        registry, job_dir, str(out_path)
+    )
 '''
 def run_merge_for(ctx, job_dir: str) -> bool:
     finished_root = (
