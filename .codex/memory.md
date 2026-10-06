@@ -3,13 +3,43 @@
 ## Current Summary
 
 - This Python project processes TXT/Table/SQL/ES inputs through prompt, multistage, reduction, and writeback infrastructure.
-- Reduction Engine PR K, L1, L2a, and L2b are merged. L3 is implemented on the current feature branch but remains incomplete until fresh hosted 24-case acceptance and explicit merge approval.
+- **Reduction Engine v1 is COMPLETE / RELEASE-READY.** A–L is complete, the L3 retention reporting release-audit corrective was accepted and merged through PR #201, and the PR #200 documentation closure reconciliation head passed its fresh hosted 24-case gate. Authoritative runtime baseline is verified `main` merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; PR #200 remains unmerged pending fresh review and explicit merge approval.
+- PR #201 authoritative evidence: accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid. PR #200 release-state declaration head `8d283b369da2989535c109fa4f046b2c7ba57f31` passed CI #463 / `37402351444`, offline job `112072129880`, collect 24 and full gate PASS / 100%.
 - L2a authoritative evidence: PR #195, accepted head `f4ad4001f4498287799df3c89e90ff4a733dc572`, CI #448 / `37179982321`, offline job `111370415206`, collect 22 and full PASS, merge `c1f2f6974e88028eb3eb5b9b747fefeb8d6d5cf0`, verified/valid signature. PR #194 is closed/unmerged/superseded.
 - Production operator cancellation is cooperative and distinct from worker teardown. It stops new scheduling and semantic continuation while allowing in-flight external calls and existing consumer/merger/writeback work to drain.
 - Production Reduction observability uses allowlisted bounded JSONL, lock-protected counters, and a separate Windows GUI Reduction Status panel.
 - Required dependency installation remains blocked by the pinned GitHub `peft` clone proxy 403. Dependency-light tests are locally available; hosted offline E2E is authoritative.
 
 ## Recent Changes
+
+### 2026-10-06 Active project-memory compaction
+
+- Compacted `.codex/architecture.md`, `.codex/api_contract.md`, `.codex/known_issues.md`, `.codex/decisions.md`, and `.codex/backlog.md` because each exceeded the AGENTS.md threshold of 20 dated/work blocks.
+- Preserved each complete pre-compaction file first under `.codex/archive/*-20261006-134200.md`, then rewrote active files to current summaries, recent relevant changes, and archive references.
+- Preserved unresolved issues, open backlog items, current API contracts and still-effective architecture decisions. Superseded point-in-time PR status remains available in the archives.
+- Verification passed on compaction head `a795e8c2a632ebe4a329b27c489a1723820ca85a`: each new archive blob SHA exactly equals its pre-compaction source blob SHA (`architecture` `2575101c…`, `api_contract` `6df215ab…`, `known_issues` `07e77c6c…`, `decisions` `5674d347…`, `backlog` `8f549cf8…`). Active heading/work-block counts are architecture 8, api_contract 15, known_issues 10, decisions 7, and backlog 8, all below the >20-block compaction trigger. The follow-up evidence-only commit still requires fresh hosted 24-case acceptance and fresh Codex review before merge readiness.
+
+
+### 2026-10-06 PR #200 fresh closure acceptance
+
+- Initial documentation reconciliation head `06f0c6b0a6443999a7241b6e5cce0736cde71d38` passed CI #462 / `37401880432`, offline job `112070871594`, collect 24 and full gate PASS / 100%.
+- The release-state declaration was then recorded on head `8d283b369da2989535c109fa4f046b2c7ba57f31`; that exact head independently passed CI #463 / `37402351444`, offline job `112072129880`, collect 24 and full production E2E PASS / 100%.
+- Reduction Engine v1 may therefore be recorded as COMPLETE / RELEASE-READY. A later review/documentation wording correction must still pass its own fresh exact-head gate before PR #200 is merge-ready; explicit merge approval remains required.
+
+### 2026-10-06 L3 release-audit corrective accepted
+
+- PR #201 corrected truthful bounded-retention reporting with the run-local `deletion_budget_exhausted` latch: after deletion budget exhaustion, validation/classification/counters continue and deletion stays disabled for the rest of the sweep.
+- Deterministic regressions cover a later malformed tombstone and the case where a large artifact exhausts the byte budget before a smaller candidate. Hosted acceptance: head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`, CI #459 / `37399753801`, offline job `112064086574`, collect 24, full gate PASS / 100%.
+- PR #201 merged as verified/valid `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. PR #200 is now the sole remaining Reduction Engine v1 closure work and must pass a fresh hosted 24-case gate on its updated documentation head before merge.
+
+### 2026-10-05 Reduction Engine v1 closure audit
+
+- Audited production contracts and tests for configuration/reducers, hierarchical checkpoints, execution budget, collection/aggregate adapters, nested execution, persisted freshness, partial success, cancellation, observability, and retention. No production Python behavior was changed.
+- The audit found one release-readiness blocker: bounded GC breaks candidate traversal at its deletion budget, so a later invalid tombstone is scanned but omitted from `skipped_invalid`; the focused L3 regression fails on Python 3.14. A separate runtime corrective and fresh hosted gate are required before this closure may declare v1 release-ready.
+- Added the consolidated source-backed operator/developer guide and reconciled the implementation roadmap to A–L complete while keeping closure/release readiness explicitly blocked. Historical pending implementation claims below are superseded point-in-time records.
+- Canonical evidence (all merge signatures verified/valid): L1 PR #193, head `874ef7f8790d38c9c958dfdba0e5d020662da7eb`, CI #443 / `37120493902`, job `111195487211`, collect 21, merge `21038d2678290cd32730009f552809730722aab4`; L2a PR #195, head `f4ad4001f4498287799df3c89e90ff4a733dc572`, CI #448 / `37179982321`, job `111370415206`, collect 22, merge `c1f2f6974e88028eb3eb5b9b747fefeb8d6d5cf0`; L2b PR #197, head `b0a14e2c855a28d7d44efe9edcfd587fd689e9c8`, CI #451 / `37186996174`, job `111390932764`, collect 23, merge `47488c807924fafe71c4d53d1c2999bc4675464f`; L3 PR #199, head `ffccffe4d8d93a0e74bbc631ab3736c2d153b0d6`, CI #454 / `37210792470`, job `111461389202`, collect 24, merge `fe93663dc06909652fb2c4bec32e98cbd8520989`. Each full offline gate passed.
+- Replacement history: #194→#195, #196→#197, and #198→#199; replaced PRs are historical, closed, unmerged, and superseded.
+- Verification: dependency installation remains blocked by the pinned `peft` GitHub proxy 403. The focused config/stage/nesting parser suite passed (118 tests); the required full `tests/reduction` command stopped at the L3 reporting failure described above; all other Reduction tests passed when that single blocker regression was isolated. Compileall and `git diff --check` passed (compileall emitted one pre-existing invalid-escape SyntaxWarning in `job_manager/console_ui.py`).
 
 ### 2026-10-04 PR L2b implementation
 

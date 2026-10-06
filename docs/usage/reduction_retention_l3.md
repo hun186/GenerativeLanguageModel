@@ -1,5 +1,9 @@
 # Reduction retention and safe GC (L3)
 
+This is the detailed retention contract. For lifecycle context and the rest of
+the operator surface, see the consolidated
+[Reduction Engine v1 guide](reduction_engine_v1.md).
+
 Reduction filesystem retention is opt-in operational maintenance. It does not
 participate in execution, processing, aggregate, manifest, or checkpoint
 fingerprints. Existing deployments perform no deletion unless enabled:
@@ -21,6 +25,16 @@ The canonical CLI entry parses this root mapping once and attaches the frozen
 policy as `ctx.reduction_retention` before TXT/Table/SQL/ES work is scheduled.
 Invalid policy fails early; runtime maintenance consumes the normalized object.
 Retention remains outside every semantic fingerprint.
+
+When retention is enabled, `cleanup_transient_on_success: true` (the default)
+is a post-success fast path rather than a wait for
+`transient_runtime_ttl_hours`: after a successful hierarchical final write,
+`cleanup_completed_transient_runtime()` performs a bounded retention pass with
+the transient TTL replaced by zero, so eligible inactive runtime directories
+are immediately removable. Set `cleanup_transient_on_success: false` when
+successful runtime workspaces should instead remain subject to the configured
+transient TTL. Failed/incomplete leftovers continue to reach normal retention
+sweeps under the configured TTL.
 
 Unknown keys, non-boolean boolean fields, non-finite/negative TTLs, and
 non-positive/non-integer limits are rejected. Incomplete checkpoint TTL must be

@@ -1,5 +1,19 @@
 # Reduction Engine v1 — Architecture and Incremental Delivery Plan
 
+> **Implementation status:** Reduction Engine v1 A–L plus the release-audit
+> bounded-retention reporting corrective are implemented on `main` as of
+> verified merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. The blocker
+> identified by the closure audit was resolved by PR #201 and passed a fresh
+> hosted 24-case gate. PR #200 release-state declaration head
+> `8d283b369da2989535c109fa4f046b2c7ba57f31` then passed CI #463 /
+> `37402351444`, offline job `112072129880`, collect 24 and full gate PASS /
+> 100%. Reduction Engine v1 is therefore COMPLETE / RELEASE-READY. Any later
+> review/documentation wording correction still requires its own fresh exact-head
+> hosted gate before merge; PR #200 remains unmerged pending fresh review and
+> explicit merge approval. This document
+> remains the original architecture/delivery plan; current operator contracts
+> are documented in `docs/usage/reduction_engine_v1.md`.
+
 Status: **Implementation-ready v1.0 architecture plan — Phase 0 reconciled**  
 Baseline: `c834959d8482e96ab3e815278aec2137952df8d7` (`main`)  
 Scope: design only; no production behavior changes in this branch  
