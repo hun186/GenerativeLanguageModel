@@ -184,3 +184,22 @@ def test_legacy_merge_claim_is_shared_and_failure_releases_for_retry(tmp_path):
     assert try_begin_legacy_merge_item(ctx, item) is True
     finish_legacy_merge_item(ctx, item, success=True)
     assert try_begin_legacy_merge_item(ctx, item) is False
+
+
+
+@pytest.mark.parametrize(
+    ("attrs", "expected"),
+    [
+        ({"enable_slice_merge": True}, "legacy_merge_slices"),
+        ({"merge_strategy": "dict_deep"}, "legacy_merge_slices"),
+        ({"merge_strategy": "slice_merge"}, "legacy_merge_slices"),
+        ({"merge_strategy": "on"}, "legacy_merge_slices"),
+    ],
+)
+def test_initial_activity_mode_honors_all_supported_slice_merge_switches(
+    tmp_path, attrs, expected
+):
+    ctx = _ctx(tmp_path)
+    for name, value in attrs.items():
+        setattr(ctx, name, value)
+    assert ensure_production_observer(ctx).snapshot()["activity_mode"] == expected

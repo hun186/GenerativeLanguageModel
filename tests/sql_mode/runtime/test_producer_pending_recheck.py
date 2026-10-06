@@ -392,3 +392,39 @@ def test_parallel_recheck_gui_publication_is_serialized(monkeypatch):
     pending_recheck._push_gui_stats(ctx, scope="dispatch", final=True)
     assert [snapshot["checked"] for snapshot in gui.snapshots] == [1, 8]
     assert gui.snapshots[-1]["pending"] == 8
+
+
+
+def test_gui_delivery_failure_does_not_change_completed_pending_decision(monkeypatch):
+    warnings = []
+    monkeypatch.setattr(pending_recheck, "tlog_warn", warnings.append)
+
+    class BrokenGUI:
+        def update_recheck_stats(self, _stats):
+            raise RuntimeError("queue closed")
+
+    ctx = SimpleNamespace(
+        _pending_adapter=_AdapterStub(pending=False),
+        _pending_tgt_table="target_table",
+        primary_key="id",
+        output_cols=["result"],
+        gui_handle=BrokenGUI(),
+        pending_recheck_gui_every=100,
+        pending_recheck_gui_seconds=1.0,
+    )
+
+    assert pending_recheck.still_pending_before_dispatch(ctx, "pk-done") is False
+    stats = pending_recheck.pending_recheck_stats(ctx, scope="dispatch")
+    assert stats["checked"] == 1
+    assert stats["already_completed"] == 1
+    assert stats["pending"] == 0
+    assert stats["errors"] == 0
+    assert stats["reasons"]["fresh_completed"] == 1
+    assert len(warnings) == 1
+    assert "RuntimeError" in warnings[0]
+
+    # Repeated telemetry failures remain isolated and the one-time warning
+    # avoids turning a broken GUI queue into a hot log loop.
+    pending_recheck._push_gui_stats(ctx, scope="dispatch", final=True)
+    assert pending_recheck.pending_recheck_stats(ctx, scope="dispatch") == stats
+    assert len(warnings) == 1

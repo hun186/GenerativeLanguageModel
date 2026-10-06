@@ -262,12 +262,26 @@ def _push_gui_stats(ctx, *, scope: str, final: bool = False) -> None:
         if final or count_due or time_due:
             # Queue submission and timestamp update stay inside the same run-scoped
             # lock, so parallel producer workers cannot enqueue an older snapshot
-            # after a newer one or independently defeat the throttle.
-            gui.update_recheck_stats(stats)
+            # after a newer one or independently defeat the throttle. GUI delivery
+            # is observability-only: a broken/closed queue must never change the
+            # adapter's pending decision or abort scheduling.
             try:
-                setattr(ctx, "_pending_recheck_gui_last_push_monotonic", now)
-            except Exception:
-                pass
+                gui.update_recheck_stats(stats)
+            except Exception as exc:
+                if not getattr(ctx, "_pending_recheck_gui_error_logged", False):
+                    tlog_warn(
+                        "[producer] Recheck GUI 狀態更新失敗，已忽略；"
+                        f"error_type={type(exc).__name__}"
+                    )
+                    try:
+                        setattr(ctx, "_pending_recheck_gui_error_logged", True)
+                    except Exception:
+                        pass
+            finally:
+                try:
+                    setattr(ctx, "_pending_recheck_gui_last_push_monotonic", now)
+                except Exception:
+                    pass
 
 
 def announce_pending_recheck_if_enabled(ctx) -> bool:

@@ -16,6 +16,7 @@ from typing import Any, Mapping
 
 from .execution import EventCancellationSignal, ExecutionCancelled, ExecutionContext
 from .runtime_task import ProductionTaskRuntime
+from czjLLM.utilities.slice_merge import should_merge_slices
 
 _MAX_LOG_BYTES = 30 * 1024 * 1024
 _SAFE_SOURCES = frozenset({"gui", "external", "e2e"})
@@ -111,11 +112,7 @@ def _initial_reduction_activity_mode(ctx: Any) -> str:
         reduction_enabled = bool(getattr(raw_reduction, "enabled", False))
     if reduction_enabled:
         return "configured_reduction"
-    merge_slices = getattr(ctx, "merge_slices", None)
-    cfg = getattr(ctx, "cfg", None)
-    if merge_slices is None and isinstance(cfg, Mapping):
-        merge_slices = cfg.get("merge_slices", False)
-    if bool(merge_slices):
+    if should_merge_slices(ctx):
         return "legacy_merge_slices"
     return "inactive"
 
