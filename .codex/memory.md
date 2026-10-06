@@ -4,7 +4,7 @@
 
 - This Python project processes TXT/Table/SQL/ES inputs through prompt, multistage, reduction, and writeback infrastructure.
 - **Reduction Engine v1 is COMPLETE / RELEASE-READY.** A–L is complete, the L3 retention reporting release-audit corrective was accepted and merged through PR #201, and the PR #200 documentation closure reconciliation head passed its fresh hosted 24-case gate. Authoritative runtime baseline is verified `main` merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; PR #200 remains unmerged pending fresh review and explicit merge approval.
-- PR #201 authoritative evidence: accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid. PR #200 closure reconciliation head `06f0c6b0a6443999a7241b6e5cce0736cde71d38` passed CI #462 / `37401880432`, offline job `112070871594`, collect 24 and full gate PASS / 100%.
+- PR #201 authoritative evidence: accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid. PR #200 release-state declaration head `8d283b369da2989535c109fa4f046b2c7ba57f31` passed CI #463 / `37402351444`, offline job `112072129880`, collect 24 and full gate PASS / 100%.
 - L2a authoritative evidence: PR #195, accepted head `f4ad4001f4498287799df3c89e90ff4a733dc572`, CI #448 / `37179982321`, offline job `111370415206`, collect 22 and full PASS, merge `c1f2f6974e88028eb3eb5b9b747fefeb8d6d5cf0`, verified/valid signature. PR #194 is closed/unmerged/superseded.
 - Production operator cancellation is cooperative and distinct from worker teardown. It stops new scheduling and semantic continuation while allowing in-flight external calls and existing consumer/merger/writeback work to drain.
 - Production Reduction observability uses allowlisted bounded JSONL, lock-protected counters, and a separate Windows GUI Reduction Status panel.
@@ -14,9 +14,9 @@
 
 ### 2026-10-06 PR #200 fresh closure acceptance
 
-- Documentation closure reconciliation head `06f0c6b0a6443999a7241b6e5cce0736cde71d38` passed fresh CI #462 / `37401880432`.
-- Authoritative offline-e2e job `112070871594` collected 24 cases and completed the full production E2E gate successfully (100%).
-- Reduction Engine v1 may therefore be recorded as COMPLETE / RELEASE-READY. PR #200 itself remains unmerged until fresh review is complete and explicit merge approval is given.
+- Initial documentation reconciliation head `06f0c6b0a6443999a7241b6e5cce0736cde71d38` passed CI #462 / `37401880432`, offline job `112070871594`, collect 24 and full gate PASS / 100%.
+- The release-state declaration was then recorded on head `8d283b369da2989535c109fa4f046b2c7ba57f31`; that exact head independently passed CI #463 / `37402351444`, offline job `112072129880`, collect 24 and full production E2E PASS / 100%.
+- Reduction Engine v1 may therefore be recorded as COMPLETE / RELEASE-READY. A later review/documentation wording correction must still pass its own fresh exact-head gate before PR #200 is merge-ready; explicit merge approval remains required.
 
 ### 2026-10-06 L3 release-audit corrective accepted
 

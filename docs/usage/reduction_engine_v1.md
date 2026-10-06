@@ -333,10 +333,13 @@ destination result according to the applicable boundary.
 
 ## Security and privacy
 
-Execution fingerprints are hashes of normalized semantic configuration; they
-exclude credentials, endpoints, cancellation/observer objects, operational
-retention settings, raw prompts and source payloads. Retention markers and
-leases contain bounded operational ownership/identity/timestamps, not content.
+Execution fingerprints are hashes of normalized semantic configuration.
+Effective task and prompt semantics intentionally participate in that hash, so
+meaningful prompt changes invalidate persisted reuse. Fingerprint metadata does
+not persist plaintext prompts, credentials, raw endpoint URLs,
+cancellation/observer objects, operational retention settings, or source
+payloads. Retention markers and leases contain bounded operational
+ownership/identity/timestamps, not content.
 Observability events are allowlisted and payload-free. Collection manifests do
 contain the explicitly supplied member payload and provenance, so callers must
 not place credentials, private endpoints, prompts, or unrelated secrets in
@@ -374,9 +377,11 @@ PR #201 accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`
 passed CI #459 / `37399753801`, offline job `112064086574`, collect 24 and
 full gate PASS / 100%, then merged as verified/valid
 `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. The runtime release blocker is
-therefore resolved. Documentation closure reconciliation head
-`06f0c6b0a6443999a7241b6e5cce0736cde71d38` subsequently passed fresh CI
-#462 / `37401880432`, offline job `112070871594`, collect 24 and full gate
-PASS / 100%. Reduction Engine v1 is therefore **COMPLETE / RELEASE-READY**.
-PR #200 remains unmerged pending fresh review and explicit merge approval; the
-other explicit limitations above do not contradict the bounded v1 contracts.
+therefore resolved. The release-state declaration head
+`8d283b369da2989535c109fa4f046b2c7ba57f31` passed fresh CI #463 /
+`37402351444`, offline job `112072129880`, collect 24 and full gate PASS /
+100%. Reduction Engine v1 is therefore **COMPLETE / RELEASE-READY**. This
+follow-up only corrects review/documentation wording and still requires its own
+fresh exact-head hosted gate before merge. PR #200 remains unmerged pending
+fresh review and explicit merge approval; the other explicit limitations above
+do not contradict the bounded v1 contracts.
