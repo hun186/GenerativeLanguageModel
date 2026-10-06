@@ -17,7 +17,7 @@
 - Evaluated optional transient semantic/member caching after the v1 closure. Existing authorities already cover distinct retry scopes: persisted SQL/ES destination output is cross-run reuse authority and committed hierarchical checkpoints are resume authority.
 - No production evidence currently establishes enough duplicate same-semantics member/semantic execution within one run to justify a new cache, while disk/global caching would add a second result authority and a new source-derived data retention/privacy surface.
 - Decision: defer implementation. Reopen only with measured duplicate-call/cost evidence. Any future design must be opt-in, bounded, run-scoped, non-persistent by default, cache successful results only, remain outside semantic identity/authority, preserve cancellation/failure/observer semantics, and never persist source/prompt/output payloads merely to obtain cache hits.
-- Verification basis for this evaluation: source/contract review of `reduction/stage.py`, `execution.py`, `persisted_freshness.py`, `runtime_semantic.py`, semantic reducer tests, persisted processing-identity tests, and the v1 operator guide. No production Python behavior changed.
+- Verification basis for this evaluation: source/contract review of `czjLLM/reduction/stage.py`, `czjLLM/reduction/execution.py`, `czjLLM/reduction/persisted_freshness.py`, `czjLLM/reduction/runtime_semantic.py`, `czjLLM/reduction/reducers/semantic.py`, `tests/reduction/test_semantic_runtime.py`, `tests/reduction/test_semantic_reducer.py`, `tests/reduction/test_reduction_processing_identity_l1.py`, and the v1 operator guide. No production Python behavior changed.
 
 ### 2026-10-06 PR #200 merged closure
 

@@ -23,13 +23,13 @@ demonstrated production benefit.
 
 The evaluation reviewed the active contracts and implementation around:
 
-- `reduction/execution.py`: executable semantic fingerprints, execution
+- `czjLLM/reduction/execution.py`: executable semantic fingerprints, execution
   contexts, cancellation, observer and result contracts;
-- `reduction/stage.py`: member scheduling, ordering, partial success,
+- `czjLLM/reduction/stage.py`: member scheduling, ordering, partial success,
   cancellation, metrics and hierarchical continuation;
-- `reduction/persisted_freshness.py`: persisted SQL/ES processing identity and
+- `czjLLM/reduction/persisted_freshness.py`: persisted SQL/ES processing identity and
   cross-run freshness binding;
-- `reduction/runtime_semantic.py` and `reducers/semantic.py`: semantic LLM
+- `czjLLM/reduction/runtime_semantic.py` and `czjLLM/reduction/reducers/semantic.py`: semantic LLM
   call boundary and reducer contract;
 - semantic runtime/reducer tests and persisted processing-identity tests;
 - the v1 operator guide's retry/reuse authority table.
