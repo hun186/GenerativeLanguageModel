@@ -1,6 +1,8 @@
 import queue
 
-from czjLLM.job_manager.win_gui import _GUIClient, format_recheck_stats, recheck_status_is_error
+from czjLLM.job_manager.win_gui import (
+    _GUIClient, format_recheck_stats, format_recheck_summary, recheck_status_is_error,
+)
 
 
 class Proc:
@@ -38,3 +40,16 @@ def test_repeated_recheck_events_are_detached_cumulative_snapshots():
     client.update_recheck_stats({"checked": 2})
     assert events.get_nowait()[1] == {"checked": 1}
     assert events.get_nowait()[1] == {"checked": 2}
+
+
+
+def test_recheck_collapsed_header_summary_and_source_contract():
+    assert format_recheck_summary({
+        "checked": 79, "pending": 74, "already_completed": 5, "errors": 0,
+    }) == "Checked 79 · Need 74 · Skipped 5 · Errors 0"
+
+    import inspect
+    from czjLLM.job_manager import win_gui
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert "recheck_frame.pack_forget()" in source
+    assert "Recheck Status —" in source

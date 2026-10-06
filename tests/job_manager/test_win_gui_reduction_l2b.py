@@ -1,7 +1,8 @@
 from types import SimpleNamespace
 
 from czjLLM.job_manager.win_gui import (
-    _GUIClient, _GuiEvents, format_reduction_stats, reduction_status_is_error,
+    _GUIClient, _GuiEvents, format_reduction_stats, format_reduction_summary,
+    reduction_status_is_error,
 )
 
 
@@ -35,3 +36,28 @@ def test_terminal_snapshot_is_enqueued_before_close():
             (_GuiEvents.REDUCTION, {"run_status": status}),
             (_GuiEvents.CLOSE, None),
         ]
+
+
+
+def test_legacy_merge_status_is_mode_aware_and_collapsible():
+    stats = {
+        "activity_mode": "legacy_merge_slices",
+        "legacy_merges_started": 79,
+        "legacy_merges_completed": 74,
+        "legacy_merges_failed": 0,
+        "run_status": "running",
+    }
+    rendered = format_reduction_stats(stats)
+    assert "Mode: Legacy merge_slices" in rendered
+    assert "Merge attempts: 74 / 79" in rendered
+    assert "Stages: 0 / 0" not in rendered
+    assert format_reduction_summary(stats) == (
+        "Legacy merge_slices · Merged 74/79 · Errors 0"
+    )
+    assert reduction_status_is_error({**stats, "legacy_merges_failed": 1})
+
+    import inspect
+    from czjLLM.job_manager import win_gui
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert "reduction_frame.pack_forget()" in source
+    assert "cancel_button = ttk.Button(reduction_header" in source

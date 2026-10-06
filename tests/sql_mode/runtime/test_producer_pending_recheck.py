@@ -318,3 +318,35 @@ def test_produce_rows_parallelizes_stream_multistage_rows_with_bound(monkeypatch
     assert scheduled == 5
     assert max_active == 2
     assert len([event for event in calls if event[0] == "start"]) == 5
+
+
+
+def test_pending_recheck_gui_updates_first_check_and_slow_time_boundary(monkeypatch):
+    class GUI:
+        def __init__(self):
+            self.snapshots = []
+
+        def update_recheck_stats(self, stats):
+            self.snapshots.append(dict(stats))
+
+    times = iter((10.0, 10.1, 11.2))
+    monkeypatch.setattr(pending_recheck.time, "monotonic", lambda: next(times))
+    gui = GUI()
+    ctx = SimpleNamespace(
+        _pending_adapter=_AdapterStub(pending=True),
+        _pending_tgt_table="target_table",
+        primary_key="id",
+        output_cols=["result"],
+        gui_handle=gui,
+        pending_recheck_gui_every=100,
+        pending_recheck_gui_seconds=1.0,
+    )
+
+    assert pending_recheck.still_pending_before_dispatch(ctx, "pk-1") is True
+    assert [item["checked"] for item in gui.snapshots] == [1]
+
+    assert pending_recheck.still_pending_before_dispatch(ctx, "pk-2") is True
+    assert [item["checked"] for item in gui.snapshots] == [1]
+
+    assert pending_recheck.still_pending_before_dispatch(ctx, "pk-3") is True
+    assert [item["checked"] for item in gui.snapshots] == [1, 3]

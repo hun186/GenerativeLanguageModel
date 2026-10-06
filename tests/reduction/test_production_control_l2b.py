@@ -118,3 +118,24 @@ def test_cancellation_request_does_not_retroactively_change_terminal_completion(
     request_execution_cancel(ctx, source="external")
     assert ctx.run_status == "completed"
     assert observer.snapshot()["run_status"] == "completed"
+
+
+
+def test_legacy_merge_activity_is_distinct_from_reduction_stage_counters(tmp_path):
+    ctx = _ctx(tmp_path)
+    ctx.merge_slices = True
+    observer = ensure_production_observer(ctx)
+    assert observer.snapshot()["activity_mode"] == "legacy_merge_slices"
+
+    observer.emit("legacy_merge_started", {})
+    observer.emit("legacy_merge_completed", {})
+    observer.emit("legacy_merge_started", {})
+    observer.emit("legacy_merge_failed", {"reason": "no_output"})
+
+    stats = observer.snapshot()
+    assert stats["legacy_merges_started"] == 2
+    assert stats["legacy_merges_completed"] == 1
+    assert stats["legacy_merges_failed"] == 1
+    assert stats["stages_started"] == 0
+    assert stats["members_attempted"] == 0
+    assert stats["activity_mode"] == "legacy_merge_slices"
