@@ -1136,6 +1136,14 @@ def _publish_combined_path_to_registry(registry, job_dir: str, out_path: str) ->
     if item_present is False:
         return True
 
+    # Preserve an already-published authoritative artifact. This can be the
+    # multistage scheduler's final combined result; fallback output must never
+    # replace it merely because the row is still waiting on a slow sink.
+    if isinstance(current, dict):
+        existing = str(current.get("CombBackFN", "") or "")
+        if existing and os.path.isfile(existing):
+            return True
+
     published = False
     updater = getattr(registry, "update", None)
     if callable(updater):

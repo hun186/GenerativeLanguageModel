@@ -1,4 +1,6 @@
-from czjLLM.sql_mode.runtime.orchestrator import _is_reg_drained
+from czjLLM.sql_mode.runtime.orchestrator import (
+    _is_reg_drained, _registry_existing_combined_artifact,
+)
 
 
 class _RegistryWithListOnly:
@@ -97,3 +99,68 @@ def test_fallback_merge_does_not_report_success_when_live_registry_handoff_fails
     assert combine_utils.run_merge_for(
         ctx, job_dir, registry=BrokenRegistry()
     ) is False
+
+
+
+def test_registry_existing_combined_artifact_only_accepts_live_file(tmp_path):
+    job_dir = str(tmp_path / "job")
+    authoritative = tmp_path / "finished" / "multistage-final.txt"
+    authoritative.parent.mkdir(parents=True)
+    authoritative.write_text("marker", encoding="utf-8")
+
+    class Registry:
+        def __init__(self, path):
+            self.path = path
+
+        def get(self, item_dir):
+            if item_dir != job_dir:
+                return None
+            return {"CombBackFN": str(self.path)}
+
+    assert _registry_existing_combined_artifact(
+        Registry(authoritative), job_dir
+    ) == str(authoritative)
+    assert _registry_existing_combined_artifact(
+        Registry(tmp_path / "missing.txt"), job_dir
+    ) == ""
+
+
+def test_fallback_registry_handoff_preserves_existing_authoritative_artifact(
+    tmp_path, monkeypatch
+):
+    from types import SimpleNamespace
+    import czjLLM.utilities.combine_utils as combine_utils
+
+    job_dir = str(tmp_path / "job")
+    authoritative = tmp_path / "finished" / "multistage-marker.txt"
+    fallback = tmp_path / "finished" / "fallback-final-stage.txt"
+    authoritative.parent.mkdir(parents=True)
+    authoritative.write_text("multistage", encoding="utf-8")
+    fallback.write_text("fallback", encoding="utf-8")
+
+    class Registry:
+        def __init__(self):
+            self.items = {job_dir: {"CombBackFN": str(authoritative)}}
+            self.update_calls = []
+
+        def get(self, item_dir):
+            return self.items.get(item_dir)
+
+        def update(self, item_dir, **fields):
+            self.update_calls.append((item_dir, dict(fields)))
+            self.items[item_dir].update(fields)
+
+    registry = Registry()
+    ctx = SimpleNamespace(
+        temp_txt_finished_dir=str(tmp_path / "finished"),
+        llm_source_dir=str(tmp_path),
+    )
+    monkeypatch.setattr(
+        combine_utils,
+        "combine_api_finished_item",
+        lambda _job_dir, _ctx: str(fallback),
+    )
+
+    assert combine_utils.run_merge_for(ctx, job_dir, registry=registry) is True
+    assert registry.get(job_dir)["CombBackFN"] == str(authoritative)
+    assert registry.update_calls == []

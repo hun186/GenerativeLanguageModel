@@ -192,6 +192,28 @@ def _can_combine(d: str) -> bool:
     success_cnt = _dir_file_count(os.path.join(d, "Success"))
     return success_cnt > 0 and todo_cnt == 0 and run_cnt == 0
 
+
+def _registry_existing_combined_artifact(registry, job_dir: str) -> str:
+    """Return the live row's authoritative combined artifact when it exists."""
+    meta = None
+    getter = getattr(registry, "get", None)
+    if callable(getter):
+        try:
+            meta = getter(job_dir)
+        except Exception:
+            meta = None
+    if meta is None:
+        lister = getattr(registry, "list_items", None)
+        if callable(lister):
+            try:
+                meta = (lister() or {}).get(job_dir)
+            except Exception:
+                meta = None
+    if not isinstance(meta, dict):
+        return ""
+    path = str(meta.get("CombBackFN", "") or "")
+    return path if path and os.path.isfile(path) else ""
+
 # ===========================
 # 對外主函式：run_pipeline（精簡後）
 # ===========================
@@ -443,6 +465,12 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                 candidates = set()
         
             for job_dir in sorted(candidates):
+                # Scheduler/multistage may already have produced the
+                # authoritative row artifact and published it to the registry.
+                # Never let the post-drain fallback overwrite that handoff.
+                if _registry_existing_combined_artifact(registry, job_dir):
+                    merged_jobs.add(job_dir)
+                    continue
                 if not _can_combine(job_dir):
                     continue
                 if not try_begin_legacy_merge_item(ctx, job_dir):
