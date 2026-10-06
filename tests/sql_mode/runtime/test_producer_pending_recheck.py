@@ -350,3 +350,45 @@ def test_pending_recheck_gui_updates_first_check_and_slow_time_boundary(monkeypa
 
     assert pending_recheck.still_pending_before_dispatch(ctx, "pk-3") is True
     assert [item["checked"] for item in gui.snapshots] == [1, 3]
+
+
+
+def test_parallel_recheck_gui_publication_is_serialized(monkeypatch):
+    class GUI:
+        def __init__(self):
+            self.snapshots = []
+
+        def update_recheck_stats(self, stats):
+            self.snapshots.append(dict(stats))
+
+    monkeypatch.setattr(pending_recheck.time, "monotonic", lambda: 50.0)
+    gui = GUI()
+    ctx = SimpleNamespace(
+        _pending_adapter=_AdapterStub(pending=True),
+        _pending_tgt_table="target_table",
+        primary_key="id",
+        output_cols=["result"],
+        gui_handle=gui,
+        pending_recheck_gui_every=100,
+        pending_recheck_gui_seconds=1.0,
+    )
+
+    threads = [
+        threading.Thread(
+            target=pending_recheck.still_pending_before_dispatch,
+            args=(ctx, f"pk-{index}"),
+        )
+        for index in range(8)
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    # The first check publishes immediately. All other workers observe the
+    # timestamp written under the same run-scoped lock and cannot enqueue a
+    # stale/duplicate time-triggered snapshot.
+    assert [snapshot["checked"] for snapshot in gui.snapshots] == [1]
+    pending_recheck._push_gui_stats(ctx, scope="dispatch", final=True)
+    assert [snapshot["checked"] for snapshot in gui.snapshots] == [1, 8]
+    assert gui.snapshots[-1]["pending"] == 8

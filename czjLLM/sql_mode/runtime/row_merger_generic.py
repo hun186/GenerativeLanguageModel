@@ -17,6 +17,7 @@ from czjLLM.prompt_pipeline.pipeline_controller import (
 )
 from czjLLM.utilities.path_utils import get_combined_result_path
 from czjLLM.reduction.execution import ExecutionCancelled
+from czjLLM.reduction.production_control import ensure_production_observer
 from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
 from .multistage_writeback import resolve_writeback_payload
 #from czjLLM.prompt_pipeline.pipeline_controller import meter_update  # 檔頭若尚未 import
@@ -438,6 +439,30 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
     # If a retryable sink error keeps this item in the registry, recompute the
     # merge as needed but do not print the same audit block on every scan.
     merge_log_emitted_items = set()
+    legacy_merge_telemetry_state = {}
+    observer = ensure_production_observer(ctx)
+
+    def _legacy_merge_begin(item_dir):
+        if legacy_merge_telemetry_state.get(item_dir) == "completed":
+            return False
+        if legacy_merge_telemetry_state.get(item_dir) != "started":
+            observer.emit("legacy_merge_started", {})
+            legacy_merge_telemetry_state[item_dir] = "started"
+        return True
+
+    def _legacy_merge_finish(item_dir, *, success, reason="execution_error", error_type=None):
+        if legacy_merge_telemetry_state.get(item_dir) != "started":
+            return
+        if success:
+            observer.emit("legacy_merge_completed", {})
+            legacy_merge_telemetry_state[item_dir] = "completed"
+        else:
+            fields = {"reason": reason}
+            if error_type:
+                fields["error_type"] = error_type
+            observer.emit("legacy_merge_failed", fields)
+            legacy_merge_telemetry_state[item_dir] = "failed"
+
     failure_log_interval = max(
         1.0, float(getattr(ctx, "row_merger_failure_log_interval", 60.0) or 60.0)
     )
@@ -507,12 +532,18 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                         self.__dict__.update(kw)
     
                 overlay = _CtxOverlay(ctx, temp_txt_finished_dir=target_dir)
+                _legacy_merge_begin(item_dir)
                 out = combine_api_finished_item(item_dir, overlay)
                 if out and os.path.isfile(out):
+                    _legacy_merge_finish(item_dir, success=True)
                     return out
+                _legacy_merge_finish(item_dir, success=False, reason="no_output")
             except ExecutionCancelled:
                 raise
             except Exception as e:
+                _legacy_merge_finish(
+                    item_dir, success=False, error_type=type(e).__name__
+                )
                 tlog_warn(f"ℹ️ 合併提示（pk={meta.get('pk')}）：{e}")
     
         return None
@@ -581,20 +612,30 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                         slice_source_text = flatten_source_text
                         data = json.loads(flatten_source_text)
                         if should_merge_slices(ctx) and isinstance(data, list) and all(isinstance(x, dict) for x in data):
+                            _legacy_merge_begin(item_dir)
                             merge_logger = None
                             if (
                                 getattr(ctx, "merge_log_changes", True)
                                 and item_dir not in merge_log_emitted_items
                             ):
                                 merge_logger = tlog
-                            merged_payload, report = merge_dict_slices_audited(
-                                data,
-                                conflict_policy=getattr(ctx, "merge_conflict_policy", "prefer_left"),
-                                dedup_lists=bool(getattr(ctx, "merge_dedup_lists", False)),
-                                audit=True,
-                                logger=merge_logger,
-                                max_log=int(getattr(ctx, "merge_max_log", 10)),
-                            )
+                            try:
+                                merged_payload, report = merge_dict_slices_audited(
+                                    data,
+                                    conflict_policy=getattr(ctx, "merge_conflict_policy", "prefer_left"),
+                                    dedup_lists=bool(getattr(ctx, "merge_dedup_lists", False)),
+                                    audit=True,
+                                    logger=merge_logger,
+                                    max_log=int(getattr(ctx, "merge_max_log", 10)),
+                                )
+                            except Exception as merge_error:
+                                _legacy_merge_finish(
+                                    item_dir,
+                                    success=False,
+                                    error_type=type(merge_error).__name__,
+                                )
+                                raise
+                            _legacy_merge_finish(item_dir, success=True)
                             if merge_logger is not None:
                                 merge_log_emitted_items.add(item_dir)
                             merged_columns = _apply_slice_merge_to_write_map(

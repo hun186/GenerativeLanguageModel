@@ -195,7 +195,10 @@ class ProductionExecutionObserver:
             if event == "run_cancelled": self._stats["run_status"] = "cancelled"
             elif event == "run_completed" and self._stats["run_status"] == "running": self._stats["run_status"] = "completed"
             elif event == "run_failed": self._stats["run_status"] = "failed"
-            counter_only = event in {"reduction_member_attempted", "reduction_member_succeeded"}
+            counter_only = event in {
+                "reduction_member_attempted", "reduction_member_succeeded",
+                "legacy_merge_started", "legacy_merge_completed",
+            }
             if not counter_only:
                 path = self.path
                 path.parent.mkdir(parents=True, exist_ok=True)

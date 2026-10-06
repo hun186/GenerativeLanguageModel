@@ -14,8 +14,8 @@
 
 ### 2026-10-06 Windows GUI live observability / compact status fix
 
-- Fixed Recheck GUI freshness for slow SQL/ES jobs: the first dispatch recheck publishes immediately, then updates on either the existing count threshold or a default 1-second time threshold, with final forced delivery.
-- Made Reduction GUI mode-aware. `merge_slices=true` without ReductionStage now reports dedicated legacy merge attempt/completion/failure counters instead of misleading Stage/Member 0/0 values; observer activity mode is published as soon as the GUI exists.
+- Fixed Recheck GUI freshness for slow SQL/ES jobs: the first dispatch recheck publishes immediately, then updates on either the existing count threshold or a default 1-second time threshold, with final forced delivery. Run-scoped locking serializes cumulative stats plus time-based GUI publication under multistage row parallelism so snapshots cannot regress or defeat the throttle.
+- Made Reduction GUI mode-aware. `merge_slices=true` without ReductionStage now reports dedicated legacy merge attempt/completion/failure counters from the actual row-merger combine path (with the fallback sweep still covered) instead of misleading Stage/Member 0/0 values; observer activity-mode transitions force-publish to the GUI.
 - Recheck Status and Reduction Status are collapsible by default with one-line header summaries. The Reduction Cancel control remains visible while collapsed.
 - Regression coverage locks the first/time-based recheck snapshots, legacy merge observer counters, mode-aware formatting, and collapsible source contract.
 
