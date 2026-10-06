@@ -293,6 +293,25 @@ def test_budget_exhaustion_still_classifies_later_invalid_tombstone(tmp_path: Pa
     assert report.skipped_invalid == 1
 
 
+def test_byte_budget_exhaustion_blocks_later_smaller_deletes(tmp_path: Path):
+    large_item = tmp_path / "large"
+    small_item = tmp_path / "small"
+    large = _tombstone(large_item, "round-0002", "a" * 32, payload_size=2048)
+    small = _tombstone(small_item, "round-0003", "b" * 32)
+
+    report = run_reduction_retention(
+        [large_item, small_item],
+        replace(ReductionRetentionPolicy(enabled=True), max_delete_bytes_per_sweep=100),
+        now=lambda: NOW,
+    )
+
+    assert large.exists()
+    assert small.exists()
+    assert report.deleted == 0
+    assert report.eligible == 2
+    assert report.budget_exhausted
+
+
 def test_tombstone_recovery_obeys_byte_budget_and_dry_run(tmp_path: Path):
     item = tmp_path / "item"
     large = _tombstone(item, "round-0002", "a" * 32, payload_size=2048)
