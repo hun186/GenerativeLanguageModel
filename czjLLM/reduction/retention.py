@@ -452,6 +452,7 @@ def run_reduction_retention(
     current = now()
     planned_entries = 0
     planned_bytes = 0
+    deletion_budget_exhausted = False
     for path, parent, kind in candidates:
         if path.name.startswith(".gc-"):
             try:
@@ -460,9 +461,12 @@ def run_reduction_retention(
                 report = replace(report, skipped_invalid=report.skipped_invalid + 1)
                 continue
             report = replace(report, owned=report.owned + 1, eligible=report.eligible + 1)
+            if deletion_budget_exhausted:
+                continue
             if planned_entries >= policy.max_delete_entries_per_sweep or (
                 planned_bytes + size > policy.max_delete_bytes_per_sweep
             ):
+                deletion_budget_exhausted = True
                 report = replace(report, budget_exhausted=True)
                 continue
             planned_entries += 1
@@ -508,9 +512,12 @@ def run_reduction_retention(
         if _lease_is_active(path, current):
             report = replace(report, skipped_active=report.skipped_active + 1)
             continue
+        if deletion_budget_exhausted:
+            continue
         if planned_entries >= policy.max_delete_entries_per_sweep or (
             planned_bytes + size > policy.max_delete_bytes_per_sweep
         ):
+            deletion_budget_exhausted = True
             report = replace(report, budget_exhausted=True)
             continue
         planned_entries += 1
@@ -541,6 +548,7 @@ def run_reduction_retention(
             size2 = _tree_size(path)
             if planned_bytes - size + size2 > policy.max_delete_bytes_per_sweep:
                 shutil.rmtree(claim)
+                deletion_budget_exhausted = True
                 report = replace(report, budget_exhausted=True)
                 continue
             _remove_stale_lease(path, current)
