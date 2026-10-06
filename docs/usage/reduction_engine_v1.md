@@ -230,7 +230,9 @@ in v1; applications must explicitly construct and persist the snapshot.
 
 SQL/ES destination output is authoritative cross-run reuse state. Reduction
 does **not** use transient `.reduction/runtime` directories as a reusable result
-cache.
+cache. A post-v1 evaluation also deferred any second semantic/member result
+cache until measured production duplication justifies its operational and
+privacy cost; see [the v1.1 cache evaluation](../architecture/reduction_engine_v1_1_cache_evaluation.md).
 
 Persisted semantic processing identity is **opt-in**. If SQL
 `semantic_freshness.execution_fingerprint` or Elasticsearch
@@ -403,12 +405,13 @@ exhausts the byte budget.
 PR #201 accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`
 passed CI #459 / `37399753801`, offline job `112064086574`, collect 24 and
 full gate PASS / 100%, then merged as verified/valid
-`91e39503c8e84d17752f9d26a23ff6b34db75b9e`. The runtime release blocker is
-therefore resolved. The release-state declaration head
-`8d283b369da2989535c109fa4f046b2c7ba57f31` passed fresh CI #463 /
-`37402351444`, offline job `112072129880`, collect 24 and full gate PASS /
-100%. Reduction Engine v1 is therefore **COMPLETE / RELEASE-READY**. This
-follow-up only corrects review/documentation wording and still requires its own
-fresh exact-head hosted gate before merge. PR #200 remains unmerged pending
-fresh review and explicit merge approval; the other explicit limitations above
-do not contradict the bounded v1 contracts.
+`91e39503c8e84d17752f9d26a23ff6b34db75b9e`. The runtime release blocker was
+therefore resolved. PR #200 final accepted head
+`36a40eb37827e33545865203b079aefaab1ba1f4` then passed CI #467 /
+`37420475520`, offline job `112128483703`, collect 24 and full gate PASS /
+100%, with zero unresolved review threads and a fresh Codex review reporting no
+major issues. PR #200 merged as verified/valid
+`99d79676b16b7fed54f9cf6e701441db79846cea`. Reduction Engine v1 is therefore
+**COMPLETE / RELEASE-READY** on the authoritative `main` baseline; the explicit
+limitations above remain deliberate bounded contracts rather than release
+blockers.
