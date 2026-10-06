@@ -205,6 +205,7 @@ class ProductionExecutionObserver:
             self._gui_event_count += 1
             force = event in {
                 "cancellation_requested", "reduction_partial_rejected",
+                "reduction_stage_started", "legacy_merge_started",
                 "reduction_stage_failed", "legacy_merge_failed",
                 "run_completed", "run_cancelled", "run_failed",
             }
