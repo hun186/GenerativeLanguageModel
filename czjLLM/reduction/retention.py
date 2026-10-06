@@ -464,7 +464,7 @@ def run_reduction_retention(
                 planned_bytes + size > policy.max_delete_bytes_per_sweep
             ):
                 report = replace(report, budget_exhausted=True)
-                break
+                continue
             planned_entries += 1
             planned_bytes += size
             if not policy.dry_run:
@@ -512,7 +512,7 @@ def run_reduction_retention(
             planned_bytes + size > policy.max_delete_bytes_per_sweep
         ):
             report = replace(report, budget_exhausted=True)
-            break
+            continue
         planned_entries += 1
         planned_bytes += size
         if policy.dry_run:
@@ -542,7 +542,7 @@ def run_reduction_retention(
             if planned_bytes - size + size2 > policy.max_delete_bytes_per_sweep:
                 shutil.rmtree(claim)
                 report = replace(report, budget_exhausted=True)
-                break
+                continue
             _remove_stale_lease(path, current)
             claim_data = _read_json(claim / "claim.json")
             _delete_claimed(path, parent, token=claim_data["token"])
