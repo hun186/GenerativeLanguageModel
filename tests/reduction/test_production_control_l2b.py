@@ -139,3 +139,35 @@ def test_legacy_merge_activity_is_distinct_from_reduction_stage_counters(tmp_pat
     assert stats["stages_started"] == 0
     assert stats["members_attempted"] == 0
     assert stats["activity_mode"] == "legacy_merge_slices"
+
+
+
+def test_mode_transition_start_events_bypass_gui_throttle(tmp_path):
+    class GUI:
+        def __init__(self):
+            self.snapshots = []
+
+        def update_reduction_stats(self, stats, final=False):
+            self.snapshots.append((dict(stats), final))
+
+    legacy = _ctx(tmp_path / "legacy")
+    legacy.merge_slices = True
+    legacy.gui_handle = GUI()
+    legacy_observer = ensure_production_observer(legacy)
+    assert legacy_observer.publish_snapshot(force=True)
+    before = len(legacy.gui_handle.snapshots)
+    legacy_observer.emit("legacy_merge_started", {})
+    assert len(legacy.gui_handle.snapshots) == before + 1
+    assert legacy.gui_handle.snapshots[-1][0]["activity_mode"] == "legacy_merge_slices"
+    assert legacy.gui_handle.snapshots[-1][0]["legacy_merges_started"] == 1
+
+    reduction = _ctx(tmp_path / "reduction")
+    reduction.reduction = {"enabled": True, "profile": "concat_text"}
+    reduction.gui_handle = GUI()
+    reduction_observer = ensure_production_observer(reduction)
+    assert reduction_observer.publish_snapshot(force=True)
+    before = len(reduction.gui_handle.snapshots)
+    reduction_observer.emit("reduction_stage_started", {})
+    assert len(reduction.gui_handle.snapshots) == before + 1
+    assert reduction.gui_handle.snapshots[-1][0]["activity_mode"] == "reduction_stage"
+    assert reduction.gui_handle.snapshots[-1][0]["stages_started"] == 1
