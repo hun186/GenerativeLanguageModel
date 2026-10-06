@@ -302,12 +302,19 @@ transition. `ExecutionCancelled` is never treated as partial member failure.
 ## Observability
 
 Production exposes separate **Recheck Status** and **Reduction Status** views,
-allowlisted bounded JSONL events, and lock-protected safe counters. Events and
-counters contain identities, state and counts—not source/reducer payloads.
-The GUI **Cancel** control uses process-safe IPC to request root cooperative
-cancellation. That GUI surface is Windows-only; headless/non-Windows operation
-uses the execution cancellation contract and logs rather than promising the
-Windows panel.
+allowlisted bounded JSONL events, and lock-protected safe counters. Both Windows
+GUI sections are collapsible by default and retain a compact header summary when
+collapsed. The Cancel control remains visible in the Reduction header.
+
+Reduction status is mode-aware. A real `ReductionStage` reports stage/member
+counters; an explicit legacy `merge_slices` run reports separate legacy merge
+attempt/completion/failure counters instead of misleading `Stages: 0 / 0`.
+When neither path is active, the panel says that Reduction Engine is inactive.
+Events and counters contain identities, state and counts—not source/reducer
+payloads. The GUI **Cancel** control uses process-safe IPC to request root
+cooperative cancellation. That GUI surface is Windows-only; headless/non-Windows
+operation uses the execution cancellation contract and logs rather than
+promising the Windows panel.
 
 ## Retention and GC
 

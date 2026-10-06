@@ -12,6 +12,13 @@
 
 ## Recent Changes
 
+### 2026-10-06 Windows GUI live observability / compact status fix
+
+- Fixed Recheck GUI freshness for slow SQL/ES jobs: the first dispatch recheck publishes immediately, then updates on either the existing count threshold or a default 1-second time threshold, with final forced delivery.
+- Made Reduction GUI mode-aware. `merge_slices=true` without ReductionStage now reports dedicated legacy merge attempt/completion/failure counters instead of misleading Stage/Member 0/0 values; observer activity mode is published as soon as the GUI exists.
+- Recheck Status and Reduction Status are collapsible by default with one-line header summaries. The Reduction Cancel control remains visible while collapsed.
+- Regression coverage locks the first/time-based recheck snapshots, legacy merge observer counters, mode-aware formatting, and collapsible source contract.
+
 ### 2026-10-06 Active project-memory compaction
 
 - Compacted `.codex/architecture.md`, `.codex/api_contract.md`, `.codex/known_issues.md`, `.codex/decisions.md`, and `.codex/backlog.md` because each exceeded the AGENTS.md threshold of 20 dated/work blocks.
