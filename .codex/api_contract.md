@@ -36,6 +36,14 @@
 - `execution_fingerprint: auto` derives identity from effective Executable semantics. Omitting the option leaves no expected identity bound and legacy completeness/rerun rules continue to govern reuse.
 - Discovery and pre-dispatch/completion recheck share destination-specific freshness semantics. Recheck diagnostics are bounded and payload-free.
 
+### Transient semantic cache (v1.1 opt-in)
+
+- Root `reduction_transient_cache` is a separate operational policy and defaults to disabled. It accepts only `enabled`, `max_entries`, `max_output_characters`, and `max_total_output_characters`.
+- Enabled caching is root-run scoped and memory-only. It caches only successful semantic LLM outputs after normal prompt rendering and tokenizer preflight; failures and oversized outputs are not retained.
+- Concurrent misses for one key are per-key single-flight: one owner executes the external call, waiters poll cooperative cancellation, successful output is shared with current waiters, and owner failure releases waiters so one may retry.
+- Cache keys use SHA-256 of the exact rendered prompt plus the existing allowlisted production model/generation fingerprint metadata. Raw prompts, credentials and raw endpoint URLs are not stored in key metadata.
+- Cache hits incur zero new external-model cost. Persisted SQL/ES output remains cross-run reuse authority and committed checkpoints remain resume authority. Generic member-result caching is not part of this slice.
+
 ### Cancellation and observability
 
 - Production cancellation is cooperative. It stops new scheduling and semantic continuation but does not hard-kill an already-running external request; already-running deterministic safe-drain work may complete.
@@ -55,6 +63,10 @@
 - Persisted model metadata is allowlisted. Credential-like keys, actual endpoint URLs, API keys/tokens/passwords/private keys and raw model specs must not be written into ES metadata.
 
 ## Recent Changes
+
+### 2026-10-06 v1.1 transient semantic cache
+
+- Added the strict root operational policy and bounded memory-only semantic-call memo contract while preserving persisted freshness/checkpoint authority.
 
 ### 2026-10-06 Closure documentation corrections
 

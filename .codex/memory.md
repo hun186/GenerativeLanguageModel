@@ -3,14 +3,22 @@
 ## Current Summary
 
 - This Python project processes TXT/Table/SQL/ES inputs through prompt, multistage, reduction, and writeback infrastructure.
-- **Reduction Engine v1 is COMPLETE / RELEASE-READY.** A–L is complete, the L3 retention reporting release-audit corrective was accepted and merged through PR #201, and the PR #200 documentation closure reconciliation head passed its fresh hosted 24-case gate. Authoritative runtime baseline is verified `main` merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; PR #200 remains unmerged pending fresh review and explicit merge approval.
-- PR #201 authoritative evidence: accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid. PR #200 release-state declaration head `8d283b369da2989535c109fa4f046b2c7ba57f31` passed CI #463 / `37402351444`, offline job `112072129880`, collect 24 and full gate PASS / 100%.
+- **Reduction Engine v1 is COMPLETE / RELEASE-READY and closed on `main`.** A–L, PR #201's L3 reporting corrective and PR #200's documentation closure are merged. Authoritative v1 closure baseline is verified/valid `99d79676b16b7fed54f9cf6e701441db79846cea`.
+- PR #201 authoritative evidence: accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid. PR #200 final accepted head `36a40eb37827e33545865203b079aefaab1ba1f4` used exact-head offline-e2e success in CI #467 / `37420475520`, had zero unresolved threads and fresh Codex “no major issues”, then merged as verified/valid `99d79676b16b7fed54f9cf6e701441db79846cea`.
 - L2a authoritative evidence: PR #195, accepted head `f4ad4001f4498287799df3c89e90ff4a733dc572`, CI #448 / `37179982321`, offline job `111370415206`, collect 22 and full PASS, merge `c1f2f6974e88028eb3eb5b9b747fefeb8d6d5cf0`, verified/valid signature. PR #194 is closed/unmerged/superseded.
 - Production operator cancellation is cooperative and distinct from worker teardown. It stops new scheduling and semantic continuation while allowing in-flight external calls and existing consumer/merger/writeback work to drain.
 - Production Reduction observability uses allowlisted bounded JSONL, lock-protected counters, and a separate Windows GUI Reduction Status panel.
 - Required dependency installation remains blocked by the pinned GitHub `peft` clone proxy 403. Dependency-light tests are locally available; hosted offline E2E is authoritative.
 
 ## Recent Changes
+
+### 2026-10-06 Reduction v1.1 transient semantic-cache implementation
+
+- Started the first post-v1 follow-up from exact verified closure `main` `99d79676b16b7fed54f9cf6e701441db79846cea`.
+- Added a strict disabled-by-default root `reduction_transient_cache` policy and a bounded thread-safe run-scoped LRU for successful semantic-call results. Lookup happens only after normal prompt rendering/tokenizer preflight; keys store only a prompt SHA-256 plus existing allowlisted model semantics; cache hits report zero new model cost.
+- Initial implementation head `07f3451e796fb2131d2c793ec073ba6454627255` passed CI #470 / `37426073094`, offline job `112145905346`, collect 25 and full gate PASS / 100%. Codex exact-head review then raised P2 because concurrent identical misses could both execute before either result was cached.
+- Corrective implementation adds per-key single-flight: one owner performs the external call, waiters poll cooperative cancellation, successful output is shared with current waiters, and owner failure releases waiters so one may retry. The authoritative E2E now proves an overlapping concurrent duplicate produces only one pipeline call. Fresh exact-head hosted gate/review is required after this corrective.
+- Persisted SQL/ES output remains the cross-run reuse authority and committed checkpoints remain resume authority. Generic member-result caching is deliberately deferred.
 
 ### 2026-10-06 Active project-memory compaction
 

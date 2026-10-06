@@ -4,7 +4,7 @@
 
 - `combine_utils.py` remains the compatibility facade for Success discovery/output placement/final writes; Row Merger remains writeback coordination and Output Profile remains final strict schema validation.
 - Reduction is explicit opt-in and source-agnostic. Reduction rounds are not business Stages.
-- Persisted SQL/ES destination results remain the sole v1 cross-run member-result reuse authority. No duplicate transient member-result cache was introduced.
+- Persisted SQL/ES destination results remain the sole cross-run result reuse authority. v1.1 may use a non-authoritative run-scoped semantic-call memo, but no generic member-result cache is introduced.
 - Semantic processing identity is opt-in at persisted destination boundaries. `auto` derives from effective Executable semantics; prompt/task semantics affect the hash while plaintext prompts, secrets and operational state are excluded from persisted fingerprint metadata.
 - Caller-supplied collection ordering and immutable manifest identity are authoritative; aggregate sinks reject conflicting lineage.
 - Bounded composition is deliberate: one nested ReductionStage level, at most four active PipelineRef names, explicit cycle/depth failure, and no nested semantic reducer.
@@ -16,9 +16,14 @@
 - Committed checkpoints are resume authority, runtime round directories are reconstructable, and L1 persisted SQL/ES output remains cross-run reuse authority.
 - After deletion budget exhaustion, classification/reporting continues but deletion cannot resume later in the same sweep.
 - `cleanup_transient_on_success=true` is the default post-success fast path; retaining successful runtime workspaces for the transient TTL requires disabling that option.
-- Reduction Engine v1 A–L is complete. The L3 audit corrective is merged at verified `main` `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; PR #200 remains documentation-only and unmerged pending exact-head gate/review and explicit merge approval.
+- Reduction Engine v1 A–L is complete and the documentation closure is merged at verified `main` `99d79676b16b7fed54f9cf6e701441db79846cea`.
+- The v1.1 transient semantic cache is operational, disabled by default, memory-only and bounded. Lookup occurs only after normal render/tokenizer preflight; per-key single-flight coalesces concurrent identical misses and releases waiters for retry after owner failure. Its policy is excluded from semantic fingerprints and cannot become persisted reuse authority.
 
 ## Recent Changes
+
+### 2026-10-06 v1.1 cache decision
+
+- Choose a run-scoped semantic-call LRU as the first cache slice. Do not introduce cross-run cache persistence or generic member-result caching without a separate side-effect/authority/privacy design.
 
 ### 2026-10-06 Closure decision
 

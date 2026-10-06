@@ -72,6 +72,12 @@ from .registry import (
     register_builtin_reducers,
     register_reducer,
 )
+from .transient_cache import (
+    ReductionTransientCachePolicy, RunScopedSemanticCache,
+    clear_run_scoped_semantic_cache, ensure_run_scoped_semantic_cache,
+    parse_reduction_transient_cache_policy, project_reduction_transient_cache_policy,
+    semantic_call_cache_key,
+)
 from .production_control import (
     ProductionExecutionObserver, build_production_execution_context,
     ensure_execution_cancel_event, ensure_production_observer, execution_cancel_requested,
@@ -130,6 +136,10 @@ __all__ = [
     "parse_reduction_stage_executable_config",
     "PersistedProcessingExecutable", "bind_persisted_execution_fingerprint",
     "effective_persisted_executable",
+    "ReductionTransientCachePolicy", "RunScopedSemanticCache",
+    "parse_reduction_transient_cache_policy", "project_reduction_transient_cache_policy",
+    "ensure_run_scoped_semantic_cache", "clear_run_scoped_semantic_cache",
+    "semantic_call_cache_key",
     "ProductionExecutionObserver", "build_production_execution_context",
     "ensure_execution_cancel_event", "execution_cancel_requested",
     "ensure_production_observer",

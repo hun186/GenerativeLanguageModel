@@ -7,6 +7,9 @@ from typing import Any, Callable, Optional
 from czjLLM.reduction.reducers.semantic import SemanticCallResult, SemanticReducerError
 from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.reduction.production_control import raise_if_execution_cancelled
+from czjLLM.reduction.transient_cache import (
+    ensure_run_scoped_semantic_cache, semantic_call_cache_key,
+)
 
 
 class SemanticRuntimeError(SemanticReducerError):
@@ -68,38 +71,75 @@ class SemanticLLMRuntimeAdapter:
             )
         raise_if_execution_cancelled(self.ctx)
 
-        pipeline_factory = self._pipeline_factory
-        if pipeline_factory is None:
-            from czjLLM.prompt_pipeline.pipeline_controller import PromptAPIPipeline
-            pipeline_factory = PromptAPIPipeline
-        lease_factory = self._lease_factory
-        if lease_factory is None:
-            from czjLLM.prompt_pipeline.dispatch_parallelism import lease_execution_workers
-            lease_factory = lease_execution_workers
-        pipeline = pipeline_factory(
-            task=task, content=prompt, OutputSaveFN="", allow_to_retry=False,
-            max_tokens=derived.max_tokens, model_spec=derived.model_spec,
-            include_think=False,
-            PGMSubDir=getattr(derived, "PGMSubDir", ""),
-            audit_run_id=getattr(derived, "llm_call_audit_run_id", ""),
-            audit_path=getattr(derived, "llm_call_audit_path", ""),
-        )
+        cache = ensure_run_scoped_semantic_cache(self.ctx)
+        cache_key = None
+        cache_flight = None
+        cache_owner = False
+        if cache is not None:
+            cache_key = semantic_call_cache_key(self.ctx, prompt)
+            while True:
+                cached, cache_owner, cache_flight = cache.reserve(cache_key)
+                if cached is not None:
+                    raise_if_execution_cancelled(self.ctx)
+                    return cached
+                if cache_owner:
+                    break
+                assert cache_flight is not None
+                shared = cache.wait_for_flight(
+                    cache_flight, lambda: raise_if_execution_cancelled(self.ctx)
+                )
+                if shared is not None:
+                    raise_if_execution_cancelled(self.ctx)
+                    return shared
+                # The prior owner failed. Reserve again; exactly one waiter
+                # becomes the retry owner while the others join its flight.
+
         try:
-            with lease_factory(derived, 1):
-                response = pipeline.proc()
-        except ExecutionCancelled:
+            pipeline_factory = self._pipeline_factory
+            if pipeline_factory is None:
+                from czjLLM.prompt_pipeline.pipeline_controller import PromptAPIPipeline
+                pipeline_factory = PromptAPIPipeline
+            lease_factory = self._lease_factory
+            if lease_factory is None:
+                from czjLLM.prompt_pipeline.dispatch_parallelism import lease_execution_workers
+                lease_factory = lease_execution_workers
+            pipeline = pipeline_factory(
+                task=task, content=prompt, OutputSaveFN="", allow_to_retry=False,
+                max_tokens=derived.max_tokens, model_spec=derived.model_spec,
+                include_think=False,
+                PGMSubDir=getattr(derived, "PGMSubDir", ""),
+                audit_run_id=getattr(derived, "llm_call_audit_run_id", ""),
+                audit_path=getattr(derived, "llm_call_audit_path", ""),
+            )
+            try:
+                with lease_factory(derived, 1):
+                    response = pipeline.proc()
+            except ExecutionCancelled:
+                raise
+            except Exception as exc:
+                raise SemanticRuntimeError(f"semantic LLM execution failed: {exc}") from exc
+            raise_if_execution_cancelled(self.ctx)
+            if not isinstance(response, dict) or not response.get("ok"):
+                detail = response.get("error", "invalid runtime result") if isinstance(response, dict) else "invalid runtime result"
+                raise SemanticRuntimeError(f"semantic LLM execution failed: {detail}")
+            output = response.get("output")
+            if not isinstance(output, str) or not output.strip():
+                raise SemanticRuntimeError("semantic LLM returned empty output")
+            model_spec = getattr(pipeline, "model_spec", {})
+            model_name = model_spec.get("model_name", "") if isinstance(model_spec, dict) else ""
+            raise_if_execution_cancelled(self.ctx)
+            result = SemanticCallResult(
+                output=output,
+                cost_twd=float(response.get("cost", 0) or 0),
+                model_name=str(model_name or ""),
+            )
+            if cache is not None and cache_key is not None and cache_flight is not None:
+                cache.complete(cache_key, cache_flight, result)
+            return result
+        except BaseException:
+            if (
+                cache is not None and cache_owner
+                and cache_key is not None and cache_flight is not None
+            ):
+                cache.abort(cache_key, cache_flight)
             raise
-        except Exception as exc:
-            raise SemanticRuntimeError(f"semantic LLM execution failed: {exc}") from exc
-        raise_if_execution_cancelled(self.ctx)
-        if not isinstance(response, dict) or not response.get("ok"):
-            detail = response.get("error", "invalid runtime result") if isinstance(response, dict) else "invalid runtime result"
-            raise SemanticRuntimeError(f"semantic LLM execution failed: {detail}")
-        output = response.get("output")
-        if not isinstance(output, str) or not output.strip():
-            raise SemanticRuntimeError("semantic LLM returned empty output")
-        model_spec = getattr(pipeline, "model_spec", {})
-        model_name = model_spec.get("model_name", "") if isinstance(model_spec, dict) else ""
-        raise_if_execution_cancelled(self.ctx)
-        return SemanticCallResult(output=output, cost_twd=float(response.get("cost", 0) or 0),
-                                  model_name=str(model_name or ""))

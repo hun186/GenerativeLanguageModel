@@ -8,7 +8,7 @@
 - Row Merger remains downstream writeback coordination and Output Profile remains the final strict validation boundary. Reduction Core does not own either boundary.
 - ES connection/pending behavior is separated into adapter, pending-policy and value-helper boundaries. Model metadata persistence uses allowlisted non-secret fields; credentials and raw endpoint URLs are excluded.
 - Per-run LLM auditing records API usage tokens and context metadata from response/runtime/model sources. Context size is never guessed from a display name; CSV and XLSX artifacts are produced per run.
-- Reduction Engine v1 A–L plus the L3 release-audit corrective are present at verified `main` merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`.
+- Reduction Engine v1 A–L, the L3 release-audit corrective, and the documentation closure are present at verified `main` merge `99d79676b16b7fed54f9cf6e701441db79846cea`.
 - Reduction flow is map/member execution → reducer → optional hierarchical rounds → final result → optional persisted aggregate/writeback. The core owns strict config, deterministic/semantic/structured-relational reducers, atomic checkpoints, shared execution budget, executable stages, explicit partial success and cooperative cancellation.
 - Collection boundaries use immutable ordered `LogicalWorkUnit` / `CollectionManifest` snapshots. SQL/ES adapters build snapshots and idempotent aggregate sinks persist `AggregateOutput` using deterministic lineage identity.
 - Persisted SQL/ES destination output is cross-run reuse authority when semantic freshness is explicitly configured. Runtime round workspaces are reconstructable; committed checkpoints are resume authority.
@@ -17,13 +17,19 @@
 - Production observability uses payload-free bounded JSONL, cumulative counters and a separate Reduction Status surface. Operational observer/cancellation state is excluded from semantic fingerprints.
 - Retention is disabled by default, ownership/lease/claim based, bounded, symlink/containment guarded, and never adopts legacy unmarked artifacts. After deletion-budget exhaustion, later candidates still undergo validation/classification/counters but no further deletion is attempted.
 - Successful hierarchical final writes use `cleanup_transient_on_success: true` by default, which performs the post-success transient cleanup path with effective transient TTL zero. Set it false to retain successful runtime workspaces for `transient_runtime_ttl_hours`.
+- Reduction v1.1 introduces an optional run-scoped in-memory semantic-call LRU with per-key single-flight. It is disabled by default, performs normal render/tokenizer preflight before lookup, hashes prompt bytes plus allowlisted model semantics, coalesces concurrent identical misses while preserving cooperative cancellation/retry, and never replaces persisted SQL/ES reuse or checkpoint authority.
 
 ## Recent Changes
+
+### 2026-10-06 Reduction Engine v1.1 transient semantic cache
+
+- PR #200 completed the v1 documentation closure and merged as verified/valid `99d79676b16b7fed54f9cf6e701441db79846cea`.
+- The first v1.1 slice adds disabled-by-default, bounded run-scoped semantic-call memoization only; generic member-result caching remains deferred.
 
 ### 2026-10-06 Reduction Engine v1 closure
 
 - PR #201 corrected truthful bounded-retention reporting and merged as verified/valid `91e39503c8e84d17752f9d26a23ff6b34db75b9e`.
-- PR #200 reconciles the operator/developer documentation against that baseline and remains documentation-only.
+- PR #200 reconciled the operator/developer documentation and later merged as the verified/valid closure commit above.
 
 ### 2026-10-04 Production hardening
 

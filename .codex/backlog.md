@@ -2,9 +2,9 @@
 
 ## Current Summary
 
-**Reduction Engine v1 = COMPLETE / RELEASE-READY at the runtime/product-contract level.** A–L is complete and the L3 release-audit reporting blocker is resolved by PR #201. Authoritative runtime baseline: verified `main` merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`.
+**Reduction Engine v1 = COMPLETE / RELEASE-READY and fully closed on `main`.** A–L, the L3 audit corrective and PR #200 documentation closure are merged. Authoritative v1 closure baseline: verified `main` `99d79676b16b7fed54f9cf6e701441db79846cea`.
 
-PR #200 remains documentation-only and unmerged. Its current documentation head must receive a fresh exact-head hosted 24-case gate and fresh review after every corrective commit before it is marked merge-ready; explicit user merge approval is still required.
+Reduction v1.1 work may proceed only as bounded opt-in extensions that preserve the v1 authority, compatibility and privacy contracts.
 
 ### Reduction Engine v1 roadmap
 
@@ -25,7 +25,7 @@ PR #200 remains documentation-only and unmerged. Its current documentation head 
 
 ### Future v1.1 candidates — not v1 blockers
 
-- [ ] Evaluate optional transient semantic/member caching only with a distinct authority/privacy contract; persisted SQL/ES output remains v1 reuse authority.
+- [ ] **In progress:** optional transient caching. First slice implements only a disabled-by-default, run-scoped semantic-call LRU with a distinct authority/privacy contract; generic member-result caching remains deferred. Persisted SQL/ES output remains cross-run reuse authority.
 - [ ] Add task-specific quality/coverage hooks without creating a generic evaluation platform.
 - [ ] Consider aggregate-lineage convenience APIs beyond the complete v1 `AggregateOutput` payload lineage contract.
 - [ ] Consider explicit maintenance/migration tooling for legacy unmarked stage artifacts; v1 GC intentionally never adopts them.
@@ -42,7 +42,8 @@ PR #200 remains documentation-only and unmerged. Its current documentation head 
 - [x] L3 truthful bounded-reporting blocker resolved by PR #201.
 - [x] Accepted PR #201 head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid.
 - [x] PR #200 release-state declaration head `8d283b369da2989535c109fa4f046b2c7ba57f31` passed CI #463 / `37402351444`, offline job `112072129880`, collect 24 and full gate PASS / 100%.
-- [ ] PR #200 final merge readiness still depends on fresh exact-head gate/review after the latest documentation corrections and explicit merge approval.
+- [x] PR #200 final exact-head gate/review completed and the documentation closure merged as verified/valid `99d79676b16b7fed54f9cf6e701441db79846cea`.
+- [ ] v1.1 transient semantic-cache slice: initial head `07f3451e796fb2131d2c793ec073ba6454627255` passed CI #470 / `37426073094`, offline job `112145905346`, collect 25/full PASS, but Codex raised P2 concurrent-miss duplication. Per-key single-flight corrective is implemented; fresh exact-head hosted E2E/review remains required before merge readiness.
 
 ## Archived History
 

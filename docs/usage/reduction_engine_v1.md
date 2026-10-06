@@ -372,6 +372,14 @@ contain the explicitly supplied member payload and provenance, so callers must
 not place credentials, private endpoints, prompts, or unrelated secrets in
 either field and must protect manifest storage as source-derived data.
 
+## v1.1 optional run-scoped semantic cache
+
+A post-v1 opt-in optimization can memoize identical semantic LLM calls within
+one root run context. It is disabled by default, remains memory-only and
+non-authoritative, and performs normal prompt rendering/tokenizer preflight
+before lookup. Persisted SQL/ES output remains the cross-run reuse authority.
+See [Reduction v1.1 transient semantic-call cache](reduction_transient_cache_v1_1.md).
+
 ## Release audit: Definition of Success
 
 The source/test audit against the architecture plan classifies the v1 contract
@@ -384,7 +392,7 @@ as follows:
 | shared bounded execution | implemented | root `ExecutionBudget` and leaf-only leases |
 | collection identity and SQL/ES aggregation | implemented | immutable manifests, adapters, deterministic aggregate ID and idempotent sinks |
 | composable stage execution | implemented with explicit limitation | one nested reduction level, four-reference maximum, cycles guarded, nested semantic prohibited |
-| reuse/freshness | implemented with explicit limitation | authoritative persisted SQL/ES result reuse; no transient/global member cache |
+| reuse/freshness | implemented with explicit limitation | authoritative persisted SQL/ES result reuse; v1.1 may add only non-authoritative run-scoped optimizations |
 | failure/cancellation/observability | implemented | explicit partial policy, cooperative safe drain, bounded payload-free production events/counters |
 | lifecycle | implemented with explicit limitation | disabled-by-default ownership-based bounded GC; legacy unmarked/stage artifacts excluded |
 | universal quality/coverage scoring | future/v1.1 candidate | extension point only; task-specific scoring remains deliberately deferred |
@@ -400,6 +408,11 @@ allowed. Deterministic regressions cover both a malformed tombstone encountered
 after budget exhaustion and a smaller artifact encountered after a larger one
 exhausts the byte budget.
 
+PR #200 subsequently merged the closure documentation into verified/valid
+`main` as `99d79676b16b7fed54f9cf6e701441db79846cea`. The v1 closure is complete.
+The v1.1 cache described above is a separate, opt-in follow-up and does not
+change the v1 authority boundaries.
+
 PR #201 accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`
 passed CI #459 / `37399753801`, offline job `112064086574`, collect 24 and
 full gate PASS / 100%, then merged as verified/valid
@@ -407,8 +420,7 @@ full gate PASS / 100%, then merged as verified/valid
 therefore resolved. The release-state declaration head
 `8d283b369da2989535c109fa4f046b2c7ba57f31` passed fresh CI #463 /
 `37402351444`, offline job `112072129880`, collect 24 and full gate PASS /
-100%. Reduction Engine v1 is therefore **COMPLETE / RELEASE-READY**. This
-follow-up only corrects review/documentation wording and still requires its own
-fresh exact-head hosted gate before merge. PR #200 remains unmerged pending
-fresh review and explicit merge approval; the other explicit limitations above
-do not contradict the bounded v1 contracts.
+100%. Reduction Engine v1 is therefore **COMPLETE / RELEASE-READY**. PR #200
+then completed the documentation closure and merged as verified/valid
+`99d79676b16b7fed54f9cf6e701441db79846cea`. The other explicit limitations
+above do not contradict the bounded v1 contracts.
