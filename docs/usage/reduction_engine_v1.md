@@ -230,10 +230,31 @@ in v1; applications must explicitly construct and persist the snapshot.
 
 SQL/ES destination output is authoritative cross-run reuse state. Reduction
 does **not** use transient `.reduction/runtime` directories as a reusable result
-cache. The effective Executable metadata yields an execution fingerprint;
-writeback stores that processing identity beside the result. Discovery and the
-pre-dispatch recheck compare the expected identity and validate required
-outputs, preventing a stale discovery decision from being blindly reused.
+cache.
+
+Persisted semantic processing identity is **opt-in**. If SQL
+`semantic_freshness.execution_fingerprint` or Elasticsearch
+`rerun.execution_fingerprint` is omitted, no expected processing identity is
+bound and legacy output-completeness rules can reuse a nonempty persisted result
+even after task/prompt semantics change. Use `auto` to derive the identity from
+the effective Executable semantics; SQL also requires a nonconflicting
+`processing_identity_column`:
+
+```yaml
+# SQL
+semantic_freshness:
+  execution_fingerprint: auto
+  processing_identity_column: processing_fp
+
+# Elasticsearch
+rerun:
+  execution_fingerprint: auto
+```
+
+When enabled, writeback stores the processing identity beside the result and
+discovery plus the pre-dispatch recheck compare the expected identity while
+validating required outputs. An explicit literal fingerprint remains supported
+as an operator-supplied override.
 
 Elasticsearch additionally honors its existing rerun policy: missing output or
 required fields, missing/mismatched processing identity, `force_if_missing_meta`,
@@ -298,7 +319,13 @@ reduction_retention:
 ```
 
 When enabled, separate terminal-checkpoint, incomplete-checkpoint and transient
-runtime TTLs govern only L3-owned artifacts. Bounded scanning/deletion,
+runtime TTLs govern only L3-owned artifacts during normal sweeps. However,
+`cleanup_transient_on_success` defaults to `true`: after a successful
+hierarchical final write, eligible transient runtime directories are cleaned
+immediately by using an effective transient TTL of zero. Therefore
+`transient_runtime_ttl_hours` governs successful runtime artifacts only when
+`cleanup_transient_on_success: false`; otherwise it governs leftover runtime
+artifacts that reach normal retention sweeps. Bounded scanning/deletion,
 ownership markers, expiring execution leases, claim-and-tombstone deletion,
 containment checks, and symlink rejection make GC conservative. Incomplete
 checkpoint TTL cannot be shorter than terminal TTL. Legacy unmarked artifacts

@@ -26,6 +26,16 @@ policy as `ctx.reduction_retention` before TXT/Table/SQL/ES work is scheduled.
 Invalid policy fails early; runtime maintenance consumes the normalized object.
 Retention remains outside every semantic fingerprint.
 
+When retention is enabled, `cleanup_transient_on_success: true` (the default)
+is a post-success fast path rather than a wait for
+`transient_runtime_ttl_hours`: after a successful hierarchical final write,
+`cleanup_completed_transient_runtime()` performs a bounded retention pass with
+the transient TTL replaced by zero, so eligible inactive runtime directories
+are immediately removable. Set `cleanup_transient_on_success: false` when
+successful runtime workspaces should instead remain subject to the configured
+transient TTL. Failed/incomplete leftovers continue to reach normal retention
+sweeps under the configured TTL.
+
 Unknown keys, non-boolean boolean fields, non-finite/negative TTLs, and
 non-positive/non-integer limits are rejected. Incomplete checkpoint TTL must be
 at least the terminal checkpoint TTL. Zero TTL means immediately eligible only
