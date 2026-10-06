@@ -170,6 +170,10 @@ class ProductionExecutionObserver:
 
     def __post_init__(self) -> None:
         self._lock = threading.RLock()
+        # Serialize snapshot capture + GUI queue submission separately from
+        # counter mutation so concurrent forced publications cannot arrive
+        # out of order while slow IPC is in progress.
+        self._gui_publish_lock = threading.Lock()
         self._stats = {key: 0 for key in (
             "stages_started", "stages_completed", "stages_failed", "stages_cancelled",
             "members_attempted", "members_succeeded", "members_failed",
@@ -259,20 +263,25 @@ class ProductionExecutionObserver:
         gui = getattr(self.ctx, "gui_handle", None)
         if gui is None or not callable(getattr(gui, "update_reduction_stats", None)):
             return False
-        now = time.monotonic()
-        with self._lock:
-            if not force and self._gui_event_count < 20 and now - self._last_gui_publish < 0.25:
+        with self._gui_publish_lock:
+            now = time.monotonic()
+            with self._lock:
+                if (
+                    not force
+                    and self._gui_event_count < 20
+                    and now - self._last_gui_publish < 0.25
+                ):
+                    return False
+                snapshot = dict(self._stats)
+                self._gui_event_count = 0
+                self._last_gui_publish = now
+            try:
+                gui.update_reduction_stats(
+                    snapshot, final=force and snapshot["run_status"] != "running"
+                )
+                return True
+            except Exception:
                 return False
-            snapshot = dict(self._stats)
-            self._gui_event_count = 0
-            self._last_gui_publish = now
-        try:
-            gui.update_reduction_stats(
-                snapshot, final=force and snapshot["run_status"] != "running"
-            )
-            return True
-        except Exception:
-            return False
 
 
 def ensure_production_observer(ctx: Any) -> ProductionExecutionObserver:

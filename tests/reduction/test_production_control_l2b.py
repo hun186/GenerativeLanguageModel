@@ -203,3 +203,52 @@ def test_initial_activity_mode_honors_all_supported_slice_merge_switches(
     for name, value in attrs.items():
         setattr(ctx, name, value)
     assert ensure_production_observer(ctx).snapshot()["activity_mode"] == expected
+
+
+
+def test_forced_reduction_snapshots_cannot_arrive_out_of_order(tmp_path):
+    first_entered = threading.Event()
+    release_first = threading.Event()
+
+    class SlowFirstGUI:
+        def __init__(self):
+            self.snapshots = []
+            self.calls = 0
+            self.lock = threading.Lock()
+
+        def update_reduction_stats(self, stats, final=False):
+            with self.lock:
+                self.calls += 1
+                call = self.calls
+            if call == 1:
+                first_entered.set()
+                assert release_first.wait(timeout=2)
+            self.snapshots.append((dict(stats), final))
+
+    ctx = _ctx(tmp_path)
+    ctx.reduction = {"enabled": True, "profile": "concat_text"}
+    ctx.gui_handle = SlowFirstGUI()
+    observer = ensure_production_observer(ctx)
+
+    t1 = threading.Thread(
+        target=observer.emit, args=("reduction_stage_started", {})
+    )
+    t1.start()
+    assert first_entered.wait(timeout=2)
+
+    t2 = threading.Thread(
+        target=observer.emit, args=("reduction_stage_started", {})
+    )
+    t2.start()
+
+    # Give the second emitter a chance to update cumulative counters. Without
+    # serialized publication it can enqueue stages_started=2 before the first
+    # delayed stages_started=1 snapshot.
+    assert observer.snapshot()["stages_started"] == 2
+    release_first.set()
+    t1.join(timeout=2)
+    t2.join(timeout=2)
+    assert not t1.is_alive() and not t2.is_alive()
+
+    delivered = [item[0]["stages_started"] for item in ctx.gui_handle.snapshots]
+    assert delivered == [1, 2]
