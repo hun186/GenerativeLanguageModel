@@ -267,6 +267,32 @@ def test_tombstone_recovery_identity_and_entry_budget(tmp_path: Path):
     assert report.skipped_invalid == 1
 
 
+def test_budget_exhaustion_still_classifies_later_invalid_tombstone(tmp_path: Path):
+    first_item = tmp_path / "first"
+    second_item = tmp_path / "second"
+    invalid_item = tmp_path / "invalid"
+
+    first = _tombstone(first_item, "round-0002", "0" * 32)
+    second = _tombstone(second_item, "round-0003", "1" * 32)
+    malformed = _tombstone(invalid_item, "round-0004", "2" * 32)
+    malformed.rename(malformed.parent / f".gc-{'2' * 32}-wrong-name")
+    malformed = malformed.parent / f".gc-{'2' * 32}-wrong-name"
+
+    report = run_reduction_retention(
+        [first_item, second_item, invalid_item],
+        replace(ReductionRetentionPolicy(enabled=True), max_delete_entries_per_sweep=1),
+        now=lambda: NOW,
+    )
+
+    assert not first.exists()
+    assert second.exists()
+    assert malformed.exists()
+    assert report.deleted == 1
+    assert report.eligible == 2
+    assert report.budget_exhausted
+    assert report.skipped_invalid == 1
+
+
 def test_tombstone_recovery_obeys_byte_budget_and_dry_run(tmp_path: Path):
     item = tmp_path / "item"
     large = _tombstone(item, "round-0002", "a" * 32, payload_size=2048)
