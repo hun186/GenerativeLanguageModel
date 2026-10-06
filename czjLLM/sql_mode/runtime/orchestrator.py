@@ -202,6 +202,9 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
 
     # 2) UI 準備
     gui, gui_sink, p_sched, p_done, restore_console = prepare_ui(ctx, processable)
+    # The observer is created before the GUI. Publish once now so the fixed
+    # status section immediately shows the actual activity mode instead of 0/0.
+    observer.publish_snapshot(force=True)
     
     # 3) 計量器就緒
     registry, meter_fn, low, high = init_meter(ctx)
@@ -440,12 +443,20 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
             for job_dir in sorted(candidates):
                 if not _can_combine(job_dir):
                     continue
+                observer.emit("legacy_merge_started", {})
                 try:
                     merged_ok = run_merge_for(ctx, job_dir)  # 內部會呼叫 combine_api_finished_item（建議 debug=True、不刪資料夾）
                     if merged_ok is not False:
                         merged_jobs.add(job_dir)
+                        observer.emit("legacy_merge_completed", {})
                         tlog(f"🧩 已合併切片：{job_dir}")
+                    else:
+                        observer.emit("legacy_merge_failed", {"reason": "no_output"})
                 except Exception as e:
+                    observer.emit(
+                        "legacy_merge_failed",
+                        {"error_type": type(e).__name__, "reason": "execution_error"},
+                    )
                     tlog_warn(f"合併失敗（{job_dir}）：{e}")
 
         # 更新 C（若 registry 真的乾淨，就當作清空）

@@ -103,6 +103,23 @@ def _bounded(value: Any, limit: int = 160) -> Any:
     return text[:limit]
 
 
+def _initial_reduction_activity_mode(ctx: Any) -> str:
+    raw_reduction = getattr(ctx, "reduction", None)
+    if isinstance(raw_reduction, Mapping):
+        reduction_enabled = bool(raw_reduction.get("enabled", False))
+    else:
+        reduction_enabled = bool(getattr(raw_reduction, "enabled", False))
+    if reduction_enabled:
+        return "configured_reduction"
+    merge_slices = getattr(ctx, "merge_slices", None)
+    cfg = getattr(ctx, "cfg", None)
+    if merge_slices is None and isinstance(cfg, Mapping):
+        merge_slices = cfg.get("merge_slices", False)
+    if bool(merge_slices):
+        return "legacy_merge_slices"
+    return "inactive"
+
+
 def _safe_job_id(ctx: Any) -> str:
     for name in ("config_path", "config_file", "pipeline_name"):
         value = getattr(ctx, name, None)
@@ -121,7 +138,9 @@ class ProductionExecutionObserver:
             "stages_started", "stages_completed", "stages_failed", "stages_cancelled",
             "members_attempted", "members_succeeded", "members_failed",
             "partial_accepted", "partial_rejected", "cancellation_requested",
+            "legacy_merges_started", "legacy_merges_completed", "legacy_merges_failed",
         )}
+        self._stats["activity_mode"] = _initial_reduction_activity_mode(self.ctx)
         self._stats["run_status"] = "running"
         self._run_id = _bounded(
             getattr(self.ctx, "reduction_run_id", "") or uuid.uuid4().hex, 96
@@ -163,9 +182,16 @@ class ProductionExecutionObserver:
                 "reduction_partial_rejected": "partial_rejected", "cancellation_requested": "cancellation_requested",
                 "reduction_member_attempted": "members_attempted",
                 "reduction_member_succeeded": "members_succeeded",
+                "legacy_merge_started": "legacy_merges_started",
+                "legacy_merge_completed": "legacy_merges_completed",
+                "legacy_merge_failed": "legacy_merges_failed",
             }
             if event in updates:
                 self._stats[updates[event]] += 1
+            if event == "reduction_stage_started":
+                self._stats["activity_mode"] = "reduction_stage"
+            elif event.startswith("legacy_merge_"):
+                self._stats["activity_mode"] = "legacy_merge_slices"
             if event == "run_cancelled": self._stats["run_status"] = "cancelled"
             elif event == "run_completed" and self._stats["run_status"] == "running": self._stats["run_status"] = "completed"
             elif event == "run_failed": self._stats["run_status"] = "failed"
@@ -179,7 +205,8 @@ class ProductionExecutionObserver:
             self._gui_event_count += 1
             force = event in {
                 "cancellation_requested", "reduction_partial_rejected",
-                "reduction_stage_failed", "run_completed", "run_cancelled", "run_failed",
+                "reduction_stage_failed", "legacy_merge_failed",
+                "run_completed", "run_cancelled", "run_failed",
             }
         self.publish_snapshot(force=force)
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 import unicodedata
 from datetime import datetime
 from pathlib import Path
@@ -218,10 +219,28 @@ def _push_gui_stats(ctx, *, scope: str, final: bool = False) -> None:
     if scope != "dispatch":
         return
     gui = getattr(ctx, "gui_handle", None)
+    if gui is None or not callable(getattr(gui, "update_recheck_stats", None)):
+        return
     stats = pending_recheck_stats(ctx, scope=scope)
     every = max(int(getattr(ctx, "pending_recheck_gui_every", 100) or 100), 1)
-    if gui is not None and callable(getattr(gui, "update_recheck_stats", None)) and (final or stats["checked"] % every == 0):
+    try:
+        max_seconds = max(float(getattr(ctx, "pending_recheck_gui_seconds", 1.0) or 1.0), 0.1)
+    except (TypeError, ValueError):
+        max_seconds = 1.0
+    now = time.monotonic()
+    try:
+        last = float(getattr(ctx, "_pending_recheck_gui_last_push_monotonic", 0.0) or 0.0)
+    except (TypeError, ValueError):
+        last = 0.0
+    checked = stats["checked"]
+    count_due = checked <= 1 or checked % every == 0
+    time_due = last <= 0.0 or now - last >= max_seconds
+    if final or count_due or time_due:
         gui.update_recheck_stats(stats)
+        try:
+            setattr(ctx, "_pending_recheck_gui_last_push_monotonic", now)
+        except Exception:
+            pass
 
 
 def announce_pending_recheck_if_enabled(ctx) -> bool:
