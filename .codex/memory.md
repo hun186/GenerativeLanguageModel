@@ -101,3 +101,10 @@
 - Pre-corrective hosted head `2071e80857b7184593002807b7a18eba76485204`, CI #453 / `37190651752`, offline job `111401921897`, collect 24/full PASS is pre-corrective evidence only.
 - Corrected canonical root YAML projection, explicit one-level prompt-container discovery for unscheduled historical items, and exact/budgeted/reported crash-tombstone recovery. Added pre-L3 no-adoption, active/claim/stale-young lease, config/fingerprint, historical-item, symlink, and tombstone budget regressions while retaining one L3 E2E.
 - Local corrective verification: focused L3 12 passed; complete Reduction 405 passed; checkpoint/nested 59 passed; L1/L2 30 passed; prompt pipeline 16 passed; strengthened single L3 E2E passed. SQL runtime collection remains environment-limited by missing `tqdm` after the known proxy-blocked dependency install.
+
+
+### 2026-10-07 Windows GUI status panels side-by-side
+
+- Recheck Status and Reduction Status now share one equal-width horizontal status row instead of consuming separate vertical rows; both retain independent collapse/expand behavior, and Reduction keeps its always-visible Cancel control.
+- The change is layout-only: Recheck/Reduction data flow, counters, error presentation, cancellation semantics and observer contracts are unchanged.
+- Added a source-level GUI regression that requires one shared parent row, equal-weight columns, and left/right grid placement. Hosted exact-head acceptance and Codex review are pending for this branch.

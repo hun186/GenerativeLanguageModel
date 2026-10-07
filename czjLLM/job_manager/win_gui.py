@@ -286,16 +286,23 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     lbl_eta = ttk.Label(frm, foreground="#555")
     lbl_eta.pack(anchor="w", pady=(0, 8))
 
-    recheck_section = ttk.Frame(frm)
-    recheck_section.pack(fill="x", pady=(0, 4))
+    # Recheck / Reduction 都是短摘要＋可展開細節；並排可把垂直空間
+    # 留給主要執行日誌。兩欄等寬，展開狀態仍各自獨立。
+    status_row = ttk.Frame(frm)
+    status_row.pack(fill="x", pady=(0, 4))
+    status_row.columnconfigure(0, weight=1, uniform="status")
+    status_row.columnconfigure(1, weight=1, uniform="status")
+
+    recheck_section = ttk.Frame(status_row)
+    recheck_section.grid(row=0, column=0, sticky="nsew", padx=(0, 4))
     recheck_toggle = ttk.Button(recheck_section)
     recheck_toggle.pack(fill="x")
     recheck_frame = ttk.Frame(recheck_section, padding=(8, 5))
     lbl_recheck = ttk.Label(recheck_frame, text=format_recheck_stats({}), justify="left")
     lbl_recheck.pack(anchor="w")
 
-    reduction_section = ttk.Frame(frm)
-    reduction_section.pack(fill="x", pady=(0, 4))
+    reduction_section = ttk.Frame(status_row)
+    reduction_section.grid(row=0, column=1, sticky="nsew", padx=(4, 0))
     reduction_header = ttk.Frame(reduction_section)
     reduction_header.pack(fill="x")
     reduction_toggle = ttk.Button(reduction_header)
