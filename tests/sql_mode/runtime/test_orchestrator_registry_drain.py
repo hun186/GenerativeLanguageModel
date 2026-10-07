@@ -176,3 +176,57 @@ def test_fallback_merge_gate_honors_all_supported_slice_merge_aliases():
     assert _fallback_merge_enabled(SimpleNamespace(merge_strategy="slice_merge")) is True
     assert _fallback_merge_enabled(SimpleNamespace(merge_strategy="on")) is True
     assert _fallback_merge_enabled(SimpleNamespace()) is False
+
+
+
+def test_run_merge_for_transfers_active_claim_to_materialized_state(
+    tmp_path, monkeypatch
+):
+    import czjLLM.utilities.combine_utils as combine_utils
+    from czjLLM.reduction.production_control import (
+        ensure_production_observer, mark_legacy_merge_item_materialized,
+        try_begin_legacy_merge_item, try_resume_materialized_legacy_merge_item,
+    )
+
+    job_dir = str(tmp_path / "job-materialized")
+    out_path = tmp_path / "finished" / "materialized.txt"
+    out_path.parent.mkdir(parents=True)
+    out_path.write_text(
+        '[{"left": 1}, {"right": 2}]',
+        encoding="utf-8",
+    )
+
+    class Registry:
+        def __init__(self):
+            self.items = {job_dir: {"CombBackFN": ""}}
+
+        def get(self, item_dir):
+            return self.items.get(item_dir)
+
+        def update(self, item_dir, **fields):
+            self.items[item_dir].update(fields)
+
+    ctx = SimpleNamespace(
+        temp_txt_finished_dir=str(tmp_path / "finished"),
+        llm_source_dir=str(tmp_path),
+        PGMSubDir=str(tmp_path),
+        mode="es",
+        merge_slices=True,
+    )
+    registry = Registry()
+    observer = ensure_production_observer(ctx)
+
+    assert try_begin_legacy_merge_item(ctx, job_dir) is True
+    observer.emit("legacy_merge_started", {})
+    monkeypatch.setattr(
+        combine_utils,
+        "combine_api_finished_item",
+        lambda _job_dir, _ctx: str(out_path),
+    )
+
+    assert combine_utils.run_merge_for(ctx, job_dir, registry=registry) is True
+    assert registry.get(job_dir)["CombBackFN"] == str(out_path)
+    # Fallback materialization is not completion and can be adopted exactly
+    # once by Row Merger for the semantic merge.
+    assert observer.snapshot()["legacy_merges_completed"] == 0
+    assert try_resume_materialized_legacy_merge_item(ctx, job_dir) is True

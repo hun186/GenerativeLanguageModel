@@ -138,6 +138,30 @@ def try_begin_legacy_merge_item(ctx: Any, item_dir: Any) -> bool:
         return True
 
 
+def mark_legacy_merge_item_materialized(ctx: Any, item_dir: Any) -> bool:
+    """Transfer an active fallback claim to Row Merger without completing it."""
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        items = state.setdefault("legacy_merge_items", {})
+        if items.get(key) != "active":
+            return False
+        items[key] = "materialized"
+        return True
+
+
+def try_resume_materialized_legacy_merge_item(ctx: Any, item_dir: Any) -> bool:
+    """Atomically adopt a materialized fallback artifact for semantic merging."""
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        items = state.setdefault("legacy_merge_items", {})
+        if items.get(key) != "materialized":
+            return False
+        items[key] = "active"
+        return True
+
+
 def finish_legacy_merge_item(ctx: Any, item_dir: Any, *, success: bool) -> None:
     state = _state(ctx)
     key = _legacy_merge_item_key(item_dir)
@@ -145,7 +169,7 @@ def finish_legacy_merge_item(ctx: Any, item_dir: Any, *, success: bool) -> None:
         items = state.setdefault("legacy_merge_items", {})
         if success:
             items[key] = "completed"
-        elif items.get(key) == "active":
+        elif items.get(key) in {"active", "materialized"}:
             items.pop(key, None)
 
 

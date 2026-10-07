@@ -6,8 +6,8 @@ from types import SimpleNamespace
 
 from czjLLM.sql_mode.runtime.row_merger_generic import row_merger_watchdog_generic
 from czjLLM.reduction.production_control import (
-    ensure_production_observer, request_execution_cancel,
-    try_begin_legacy_merge_item,
+    ensure_production_observer, mark_legacy_merge_item_materialized,
+    request_execution_cancel, try_begin_legacy_merge_item,
 )
 
 
@@ -411,3 +411,56 @@ def test_list_dict_merge_failure_is_not_reported_as_completed(
     ]
     # Failure releases the shared claim instead of leaving it permanently active.
     assert try_begin_legacy_merge_item(ctx, str(item_dir)) is True
+
+
+
+def test_row_merger_adopts_fallback_materialized_claim_without_double_started(
+    tmp_path: Path,
+):
+    item_dir = tmp_path / "fallback-materialized-item"
+    item_dir.mkdir(parents=True)
+    source = tmp_path / "src/cache/fallback-materialized.txt"
+    source.parent.mkdir(parents=True)
+    source.write_text("raw", encoding="utf-8")
+    combined = tmp_path / "out/fallback-materialized-result.txt"
+    combined.parent.mkdir(parents=True)
+    combined.write_text(
+        json.dumps([{"left": 1}, {"right": 2}], ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    registry = _RegistryStub(
+        str(item_dir),
+        {"pk": 14, "temp_txt": str(source), "CombBackFN": str(combined)},
+    )
+    sink = _SinkStub()
+    ctx = SimpleNamespace(
+        output_col="File_result",
+        record_update_time=False,
+        flatten_json_output=False,
+        cleanup_prompt_item_after_writeback=False,
+        llm_source_dir=str(tmp_path / "src"),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        PGMSubDir=str(tmp_path),
+        mode="es",
+        merge_slices=True,
+    )
+
+    observer = ensure_production_observer(ctx)
+    assert try_begin_legacy_merge_item(ctx, str(item_dir)) is True
+    observer.emit("legacy_merge_started", {})
+    assert mark_legacy_merge_item_materialized(ctx, str(item_dir)) is True
+
+    row_merger_watchdog_generic(
+        ctx, registry, lambda *_: None, _StopEventStub(True), sink,
+        scan_interval=.01, done_q=None,
+    )
+
+    stats = observer.snapshot()
+    assert stats["legacy_merges_started"] == 1
+    assert stats["legacy_merges_completed"] == 1
+    assert stats["legacy_merges_failed"] == 0
+    assert registry.removed and len(sink.writes) == 1
+    assert json.loads(sink.writes[0][1]["File_result"]) == {
+        "left": 1, "right": 2
+    }

@@ -490,10 +490,10 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                         ctx, job_dir, registry=registry
                     )  # fallback 成功時必須把實際 CombBackFN handoff 給仍存活的 registry row
                     if merged_ok is not False:
-                        finish_legacy_merge_item(ctx, job_dir, success=True)
+                        # run_merge_for only materializes/publishes the artifact.
+                        # Row Merger owns semantic slice-merge completion.
                         merged_jobs.add(job_dir)
-                        observer.emit("legacy_merge_completed", {})
-                        tlog(f"🧩 已合併切片：{job_dir}")
+                        tlog(f"🧩 已產生切片合併素材，等待 Row Merger 完成語意合併：{job_dir}")
                     else:
                         finish_legacy_merge_item(ctx, job_dir, success=False)
                         observer.emit("legacy_merge_failed", {"reason": "no_output"})

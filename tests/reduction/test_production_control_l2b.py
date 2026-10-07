@@ -9,8 +9,9 @@ from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.reduction.production_control import (
     build_production_execution_context, ensure_execution_cancel_event,
     ensure_production_observer, execution_cancel_requested,
-    finish_legacy_merge_item, request_execution_cancel,
-    try_begin_legacy_merge_item,
+    finish_legacy_merge_item, legacy_merge_item_completed,
+    mark_legacy_merge_item_materialized, request_execution_cancel,
+    try_begin_legacy_merge_item, try_resume_materialized_legacy_merge_item,
 )
 
 
@@ -252,3 +253,29 @@ def test_forced_reduction_snapshots_cannot_arrive_out_of_order(tmp_path):
 
     delivered = [item[0]["stages_started"] for item in ctx.gui_handle.snapshots]
     assert delivered == [1, 2]
+
+
+
+def test_legacy_merge_materialized_handoff_is_adoptable_once(tmp_path):
+    ctx = _ctx(tmp_path)
+    item = tmp_path / "handoff-item"
+
+    assert try_begin_legacy_merge_item(ctx, item) is True
+    assert mark_legacy_merge_item_materialized(ctx, item) is True
+    assert try_begin_legacy_merge_item(ctx, item) is False
+    assert try_resume_materialized_legacy_merge_item(ctx, item) is True
+    assert try_resume_materialized_legacy_merge_item(ctx, item) is False
+
+    finish_legacy_merge_item(ctx, item, success=True)
+    assert legacy_merge_item_completed(ctx, item) is True
+    assert try_begin_legacy_merge_item(ctx, item) is False
+
+
+def test_failed_materialized_handoff_releases_claim(tmp_path):
+    ctx = _ctx(tmp_path)
+    item = tmp_path / "handoff-failure"
+
+    assert try_begin_legacy_merge_item(ctx, item) is True
+    assert mark_legacy_merge_item_materialized(ctx, item) is True
+    finish_legacy_merge_item(ctx, item, success=False)
+    assert try_begin_legacy_merge_item(ctx, item) is True

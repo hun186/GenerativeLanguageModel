@@ -19,7 +19,7 @@ from czjLLM.utilities.path_utils import get_combined_result_path
 from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.reduction.production_control import (
     ensure_production_observer, finish_legacy_merge_item,
-    try_begin_legacy_merge_item,
+    try_begin_legacy_merge_item, try_resume_materialized_legacy_merge_item,
 )
 from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
 from .multistage_writeback import resolve_writeback_payload
@@ -452,11 +452,16 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             return False
         if legacy_merge_telemetry_state.get(item_dir) == "started":
             return True
-        if not try_begin_legacy_merge_item(ctx, item_dir):
-            return False
-        observer.emit("legacy_merge_started", {})
-        legacy_merge_telemetry_state[item_dir] = "started"
-        return True
+        if try_begin_legacy_merge_item(ctx, item_dir):
+            observer.emit("legacy_merge_started", {})
+            legacy_merge_telemetry_state[item_dir] = "started"
+            return True
+        if try_resume_materialized_legacy_merge_item(ctx, item_dir):
+            # Fallback already emitted the single started event. Adopt its
+            # materialized artifact without double-counting the attempt.
+            legacy_merge_telemetry_state[item_dir] = "started"
+            return True
+        return False
 
     def _legacy_merge_finish(item_dir, *, success, reason="execution_error", error_type=None):
         if legacy_merge_telemetry_state.get(item_dir) != "started":

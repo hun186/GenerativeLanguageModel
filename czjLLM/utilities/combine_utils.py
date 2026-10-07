@@ -49,6 +49,8 @@ from czjLLM.reduction.hierarchical import reduce_hierarchical_text
 from czjLLM.reduction.runtime_text import TextRoundRuntimeAdapter
 from czjLLM.reduction.production_control import (
     ensure_production_observer,
+    finish_legacy_merge_item,
+    mark_legacy_merge_item_materialized,
     raise_if_execution_cancelled,
 )
 from czjLLM.reduction.retention import (
@@ -1206,9 +1208,20 @@ def run_merge_for(ctx, job_dir: str, registry=None) -> bool:
     ok = bool(out_path and os.path.isfile(out_path))
     if not ok:
         return False
-    return _publish_combined_path_to_registry(
+
+    materialized = False
+    if should_merge_slices(ctx):
+        # Make the ownership handoff visible before publishing CombBackFN so
+        # Row Merger can never observe the artifact while the shared claim is
+        # still owned by fallback as an opaque "active" operation.
+        materialized = mark_legacy_merge_item_materialized(ctx, job_dir)
+
+    published = _publish_combined_path_to_registry(
         registry, job_dir, str(out_path)
     )
+    if not published and materialized:
+        finish_legacy_merge_item(ctx, job_dir, success=False)
+    return published
 '''
 def run_merge_for(ctx, job_dir: str) -> bool:
     finished_root = (
