@@ -298,7 +298,9 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     recheck_toggle = ttk.Button(recheck_section)
     recheck_toggle.pack(fill="x")
     recheck_frame = ttk.Frame(recheck_section, padding=(8, 5))
-    lbl_recheck = ttk.Label(recheck_frame, text=format_recheck_stats({}), justify="left")
+    lbl_recheck = ttk.Label(
+        recheck_frame, text=format_recheck_stats({}), justify="left", wraplength=320
+    )
     lbl_recheck.pack(anchor="w")
 
     reduction_section = ttk.Frame(status_row)
@@ -314,8 +316,21 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     reduction_toggle = ttk.Button(reduction_header)
     reduction_toggle.pack(side="left", fill="x", expand=True)
     reduction_frame = ttk.Frame(reduction_section, padding=(8, 5))
-    lbl_reduction = ttk.Label(reduction_frame, text=format_reduction_stats({}), justify="left")
+    lbl_reduction = ttk.Label(
+        reduction_frame, text=format_reduction_stats({}), justify="left", wraplength=320
+    )
     lbl_reduction.pack(anchor="w")
+
+    def _resize_status_detail_wrap(event):
+        # Each status section owns half the row. Leave room for the inter-panel
+        # gutter and the detail-frame padding, then let long diagnostic lines
+        # wrap instead of disappearing beyond the visible column.
+        column_width = max(180, (int(event.width) - 8) // 2)
+        wrap = max(160, column_width - 24)
+        lbl_recheck.configure(wraplength=wrap)
+        lbl_reduction.configure(wraplength=wrap)
+
+    status_row.bind("<Configure>", _resize_status_detail_wrap)
 
     def _refresh_recheck_header():
         arrow = "▼" if _recheck_expanded else "▶"
