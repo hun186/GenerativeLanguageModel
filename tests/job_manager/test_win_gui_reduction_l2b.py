@@ -60,7 +60,7 @@ def test_legacy_merge_status_is_mode_aware_and_collapsible():
     from czjLLM.job_manager import win_gui
     source = inspect.getsource(win_gui._gui_proc_main)
     assert "reduction_frame.pack_forget()" in source
-    assert "cancel_button = ttk.Button(reduction_header" in source
+    assert "cancel_button = ttk.Button(reduction_controls" in source
 
 
 
@@ -76,5 +76,10 @@ def test_recheck_and_reduction_sections_share_one_equal_width_status_row():
     assert 'recheck_section.grid(row=0, column=0, sticky="nsew"' in source
     assert 'reduction_section = ttk.Frame(status_row)' in source
     assert 'reduction_section.grid(row=0, column=1, sticky="nsew"' in source
+    assert 'reduction_controls = ttk.Frame(reduction_header)' in source
+    assert source.index('reduction_controls.pack(side="right")') < source.index(
+        'reduction_toggle.pack(side="left", fill="x", expand=True)'
+    )
+    assert 'cancel_button = ttk.Button(reduction_controls' in source
     assert 'recheck_section.pack(fill="x"' not in source
     assert 'reduction_section.pack(fill="x"' not in source

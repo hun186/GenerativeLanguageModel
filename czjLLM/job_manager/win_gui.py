@@ -305,10 +305,14 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     reduction_section.grid(row=0, column=1, sticky="nsew", padx=(4, 0))
     reduction_header = ttk.Frame(reduction_section)
     reduction_header.pack(fill="x")
+    # 右側控制區先 pack，確保窄視窗／DPI scaling 下 Cancel 不會被
+    # 左側可伸展的摘要按鈕擠出可視範圍。
+    reduction_controls = ttk.Frame(reduction_header)
+    reduction_controls.pack(side="right")
+    cancel_status = ttk.Label(reduction_controls, text="Running")
+    cancel_status.pack(side="left", padx=(8, 6))
     reduction_toggle = ttk.Button(reduction_header)
     reduction_toggle.pack(side="left", fill="x", expand=True)
-    cancel_status = ttk.Label(reduction_header, text="Running")
-    cancel_status.pack(side="left", padx=(8, 6))
     reduction_frame = ttk.Frame(reduction_section, padding=(8, 5))
     lbl_reduction = ttk.Label(reduction_frame, text=format_reduction_stats({}), justify="left")
     lbl_reduction.pack(anchor="w")
@@ -352,7 +356,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         cancel_button.configure(state="disabled")
         cancel_status.configure(text="Cancellation requested")
 
-    cancel_button = ttk.Button(reduction_header, text="Cancel", command=_request_cancel)
+    cancel_button = ttk.Button(reduction_controls, text="Cancel", command=_request_cancel)
     cancel_button.pack(side="right")
     _refresh_recheck_header()
     _refresh_reduction_header()
