@@ -149,7 +149,7 @@ Canonical structured stream 預設為：
 
 穩定 reason codes 包含 `fresh_completed`、`missing_output`、`row_missing`、`missing_processing_identity`、`execution_fingerprint_mismatch`、`stale_by_policy`、`required_output_invalid`、`recheck_error_fail_open`，ES policy 可保留更具體的 model/pipeline/time reason。正常 missing-output 預設只計數；fresh skip、semantic stale、invalid output 與 fail-open error 一定寫 structured event。
 
-Stats 保留 `checked/pending/already_completed/errors`，並新增 `reasons`、`skip_rate`、`recheck_error_rate`、`semantic_stale_count`；dispatch/finalize/completion scope 分開。GUI 透過 multiprocessing event queue 接收 cumulative snapshot，預設每 100 checks 更新並在 final summary 強制更新；`Recheck Errors` 會直接出現在 compact section/log，不由 producer thread 操作 Tk widget。
+Stats 保留 `checked/pending/already_completed/errors`，並新增 `reasons`、`skip_rate`、`recheck_error_rate`、`semantic_stale_count`；dispatch/finalize/completion scope 分開。GUI 透過 multiprocessing event queue 接收 cumulative snapshot：第 1 次 check 立即送出，之後預設在每 100 checks **或**距上次 GUI 更新滿 1 秒時送出，final summary 強制更新。可用 `pending_recheck_gui_every` 與 `pending_recheck_gui_seconds` 調整；這個雙門檻避免高速任務 IPC 洪水，也避免低速任務長時間停在 0。`Recheck Errors` 會直接出現在 compact section/log，不由 producer thread 操作 Tk widget。
 
 ## L1 corrective：automatic semantic identity
 
@@ -159,7 +159,7 @@ For SQL, an explicitly configured `processing_identity_column` is schema-owned m
 
 For ES, configured `model_tag`, `pipeline_hash`, and `execution_fingerprint` make missing corresponding metadata stale. Query-side selection, bulk checks, dispatch recheck, and completion recheck therefore use equivalent criteria. Decisions expose stable specific reasons such as `missing_meta`, `model_tag_mismatch`, `pipeline_hash_mismatch`, `missing_processing_identity`, `execution_fingerprint_mismatch`, `stale_after_days`, and `force_since`.
 
-The Windows GUI has a fixed **Recheck Status** section; cumulative queue snapshots replace its displayed value without adding periodic text-log lines. Nonzero errors use warning coloring and log only the transition into an error state. Candidate progress remains separate from the actual count returned by the producer and shown as `producer 實際送出列數`.
+The Windows GUI has a collapsible **Recheck Status** section. Its collapsed header keeps a one-line cumulative summary (checked / need processing / skipped / errors), while expansion shows the detailed semantic-stale/error fields. Cumulative queue snapshots replace the displayed value without adding periodic text-log lines. Nonzero errors use warning coloring and log only the transition into an error state. Candidate progress remains separate from the actual count returned by the producer and shown as `producer 實際送出列數`.
 
 PR #193 head `cb12323d0a98ed6bf3eae28182758db24e72f0df`, CI #441 / `36973654548`, job `110732742876`, collected and passed 21/21 offline E2E cases. This is pre-corrective green evidence only: review subsequently found automatic fingerprint wiring, SQL identity collision/schema, persistent GUI status, dispatch-count reporting, and ES metadata-policy consistency gaps. PR L1 and PR L remain pending until a fresh corrective hosted gate passes.
 

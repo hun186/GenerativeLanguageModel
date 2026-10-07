@@ -13,6 +13,7 @@ from czjLLM.prompt_pipeline.pipeline_controller import CONSUMER_STATE  # [ADD] �
 from czjLLM.prompt_pipeline.pipeline_controller import recover_running_to_todo  # ★ 新增：啟動時復原 RUNNING → TODO
 from czjLLM.prompt_pipeline.pipeline_controller import start_watchdogs
 from czjLLM.utilities.combine_utils import run_merge_for
+from czjLLM.utilities.slice_merge import should_merge_slices
 
 from .runtime_ui import prepare_ui, start_bar_refresher
 from ..metrics.metering import init_meter
@@ -36,7 +37,9 @@ from .sinks.sql_sink import SqlSink
 from .sinks.excel_sink import ExcelSink
 from czjLLM.reduction.production_control import (
     ensure_execution_cancel_event, ensure_production_observer,
-    execution_cancel_requested, request_execution_cancel,
+    execution_cancel_requested, finish_legacy_merge_item,
+    legacy_merge_item_completed, legacy_merge_item_materialized,
+    request_execution_cancel, try_begin_legacy_merge_item,
 )
 from czjLLM.reduction.retention import (
     parse_reduction_retention_policy,
@@ -190,6 +193,50 @@ def _can_combine(d: str) -> bool:
     success_cnt = _dir_file_count(os.path.join(d, "Success"))
     return success_cnt > 0 and todo_cnt == 0 and run_cnt == 0
 
+
+def _fallback_merge_enabled(ctx) -> bool:
+    """Keep the post-drain fallback gate identical to execution semantics."""
+    return should_merge_slices(ctx)
+
+
+def _registry_item_present(registry, job_dir: str) -> bool:
+    getter = getattr(registry, "get", None)
+    if callable(getter):
+        try:
+            return getter(job_dir) is not None
+        except Exception:
+            pass
+    lister = getattr(registry, "list_items", None)
+    if callable(lister):
+        try:
+            return job_dir in (lister() or {})
+        except Exception:
+            pass
+    # Conservative fallback: unknown registry visibility means keep handoff.
+    return True
+
+
+def _registry_existing_combined_artifact(registry, job_dir: str) -> str:
+    """Return the live row's authoritative combined artifact when it exists."""
+    meta = None
+    getter = getattr(registry, "get", None)
+    if callable(getter):
+        try:
+            meta = getter(job_dir)
+        except Exception:
+            meta = None
+    if meta is None:
+        lister = getattr(registry, "list_items", None)
+        if callable(lister):
+            try:
+                meta = (lister() or {}).get(job_dir)
+            except Exception:
+                meta = None
+    if not isinstance(meta, dict):
+        return ""
+    path = str(meta.get("CombBackFN", "") or "")
+    return path if path and os.path.isfile(path) else ""
+
 # ===========================
 # 對外主函式：run_pipeline（精簡後）
 # ===========================
@@ -202,6 +249,9 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
 
     # 2) UI 準備
     gui, gui_sink, p_sched, p_done, restore_console = prepare_ui(ctx, processable)
+    # The observer is created before the GUI. Publish once now so the fixed
+    # status section immediately shows the actual activity mode instead of 0/0.
+    observer.publish_snapshot(force=True)
     
     # 3) 計量器就緒
     registry, meter_fn, low, high = init_meter(ctx)
@@ -371,9 +421,8 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
 
     prod_th = threading.Thread(target=_producer_main, daemon=True, name="producer-thread")
     prod_th.start()
-    # ---- 合併設定：優先 ctx.merge_slices，其次 ctx.cfg['merge_slices']，預設 True ----
-    _cfg = getattr(ctx, "cfg", {}) or {}
-    MERGE_SLICES = bool(getattr(ctx, "merge_slices", _cfg.get("merge_slices", True)))
+    # ---- 合併設定：與實際 slice-merge execution 使用同一 canonical predicate ----
+    MERGE_SLICES = _fallback_merge_enabled(ctx)
     # 8.5) 完成條件守門：A+B+C+D 皆為 True 才能進入收尾
     total_rows = len(rows_for_count)
     last_report = 0.0
@@ -438,14 +487,55 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                 candidates = set()
         
             for job_dir in sorted(candidates):
+                # Scheduler/multistage may already have produced the
+                # authoritative row artifact and published it to the registry.
+                # Never let the post-drain fallback overwrite that handoff.
+                if _registry_existing_combined_artifact(registry, job_dir):
+                    merged_jobs.add(job_dir)
+                    continue
                 if not _can_combine(job_dir):
                     continue
-                try:
-                    merged_ok = run_merge_for(ctx, job_dir)  # 內部會呼叫 combine_api_finished_item（建議 debug=True、不刪資料夾）
-                    if merged_ok is not False:
+                if not try_begin_legacy_merge_item(ctx, job_dir):
+                    if legacy_merge_item_completed(ctx, job_dir):
                         merged_jobs.add(job_dir)
-                        tlog(f"🧩 已合併切片：{job_dir}")
+                    # If another path merely owns the active claim, leave this
+                    # candidate retryable in case that attempt later fails.
+                    continue
+                observer.emit("legacy_merge_started", {})
+                try:
+                    merged_ok = run_merge_for(
+                        ctx, job_dir, registry=registry
+                    )  # fallback 成功時必須把實際 CombBackFN handoff 給仍存活的 registry row
+                    if merged_ok is not False:
+                        # run_merge_for only materializes/publishes the artifact.
+                        # Row Merger owns semantic slice-merge completion while
+                        # the registry row remains live. If another successful
+                        # writeback path already removed the row during fallback,
+                        # no Row Merger remains to adopt the materialized claim:
+                        # release ownership and close this fallback attempt as
+                        # superseded by the already-completed writeback.
+                        if (
+                            not _registry_item_present(registry, job_dir)
+                            and legacy_merge_item_materialized(ctx, job_dir)
+                        ):
+                            finish_legacy_merge_item(ctx, job_dir, success=False)
+                            observer.emit(
+                                "legacy_merge_completed",
+                                {"reason": "writeback_already_completed"},
+                            )
+                            tlog(f"🧩 fallback 合併已被既有成功寫回取代：{job_dir}")
+                        else:
+                            tlog(f"🧩 已產生切片合併素材，等待 Row Merger 完成語意合併：{job_dir}")
+                        merged_jobs.add(job_dir)
+                    else:
+                        finish_legacy_merge_item(ctx, job_dir, success=False)
+                        observer.emit("legacy_merge_failed", {"reason": "no_output"})
                 except Exception as e:
+                    finish_legacy_merge_item(ctx, job_dir, success=False)
+                    observer.emit(
+                        "legacy_merge_failed",
+                        {"error_type": type(e).__name__, "reason": "execution_error"},
+                    )
                     tlog_warn(f"合併失敗（{job_dir}）：{e}")
 
         # 更新 C（若 registry 真的乾淨，就當作清空）

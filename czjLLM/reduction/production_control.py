@@ -16,6 +16,7 @@ from typing import Any, Mapping
 
 from .execution import EventCancellationSignal, ExecutionCancelled, ExecutionContext
 from .runtime_task import ProductionTaskRuntime
+from czjLLM.utilities.slice_merge import should_merge_slices
 
 _MAX_LOG_BYTES = 30 * 1024 * 1024
 _SAFE_SOURCES = frozenset({"gui", "external", "e2e"})
@@ -103,6 +104,89 @@ def _bounded(value: Any, limit: int = 160) -> Any:
     return text[:limit]
 
 
+def _initial_reduction_activity_mode(ctx: Any) -> str:
+    raw_reduction = getattr(ctx, "reduction", None)
+    if isinstance(raw_reduction, Mapping):
+        reduction_enabled = bool(raw_reduction.get("enabled", False))
+    else:
+        reduction_enabled = bool(getattr(raw_reduction, "enabled", False))
+    if reduction_enabled:
+        return "configured_reduction"
+    if should_merge_slices(ctx):
+        return "legacy_merge_slices"
+    return "inactive"
+
+
+def _legacy_merge_item_key(item_dir: Any) -> str:
+    return os.path.normcase(os.path.abspath(os.fspath(item_dir)))
+
+
+def try_begin_legacy_merge_item(ctx: Any, item_dir: Any) -> bool:
+    """Atomically claim one legacy merge item for this run.
+
+    Returns False while another path owns/materialized the same item or after it completed.
+    A failed attempt must call finish_legacy_merge_item(..., success=False) to
+    release the claim for a later retry.
+    """
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        items = state.setdefault("legacy_merge_items", {})
+        if items.get(key) in {"active", "materialized", "completed"}:
+            return False
+        items[key] = "active"
+        return True
+
+
+def mark_legacy_merge_item_materialized(ctx: Any, item_dir: Any) -> bool:
+    """Transfer an active fallback claim to Row Merger without completing it."""
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        items = state.setdefault("legacy_merge_items", {})
+        if items.get(key) != "active":
+            return False
+        items[key] = "materialized"
+        return True
+
+
+def try_resume_materialized_legacy_merge_item(ctx: Any, item_dir: Any) -> bool:
+    """Atomically adopt a materialized fallback artifact for semantic merging."""
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        items = state.setdefault("legacy_merge_items", {})
+        if items.get(key) != "materialized":
+            return False
+        items[key] = "active"
+        return True
+
+
+def finish_legacy_merge_item(ctx: Any, item_dir: Any, *, success: bool) -> None:
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        items = state.setdefault("legacy_merge_items", {})
+        if success:
+            items[key] = "completed"
+        elif items.get(key) in {"active", "materialized"}:
+            items.pop(key, None)
+
+
+def legacy_merge_item_materialized(ctx: Any, item_dir: Any) -> bool:
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        return state.setdefault("legacy_merge_items", {}).get(key) == "materialized"
+
+
+def legacy_merge_item_completed(ctx: Any, item_dir: Any) -> bool:
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        return state.setdefault("legacy_merge_items", {}).get(key) == "completed"
+
+
 def _safe_job_id(ctx: Any) -> str:
     for name in ("config_path", "config_file", "pipeline_name"):
         value = getattr(ctx, name, None)
@@ -117,11 +201,17 @@ class ProductionExecutionObserver:
 
     def __post_init__(self) -> None:
         self._lock = threading.RLock()
+        # Serialize snapshot capture + GUI queue submission separately from
+        # counter mutation so concurrent forced publications cannot arrive
+        # out of order while slow IPC is in progress.
+        self._gui_publish_lock = threading.Lock()
         self._stats = {key: 0 for key in (
             "stages_started", "stages_completed", "stages_failed", "stages_cancelled",
             "members_attempted", "members_succeeded", "members_failed",
             "partial_accepted", "partial_rejected", "cancellation_requested",
+            "legacy_merges_started", "legacy_merges_completed", "legacy_merges_failed",
         )}
+        self._stats["activity_mode"] = _initial_reduction_activity_mode(self.ctx)
         self._stats["run_status"] = "running"
         self._run_id = _bounded(
             getattr(self.ctx, "reduction_run_id", "") or uuid.uuid4().hex, 96
@@ -163,13 +253,23 @@ class ProductionExecutionObserver:
                 "reduction_partial_rejected": "partial_rejected", "cancellation_requested": "cancellation_requested",
                 "reduction_member_attempted": "members_attempted",
                 "reduction_member_succeeded": "members_succeeded",
+                "legacy_merge_started": "legacy_merges_started",
+                "legacy_merge_completed": "legacy_merges_completed",
+                "legacy_merge_failed": "legacy_merges_failed",
             }
             if event in updates:
                 self._stats[updates[event]] += 1
+            if event == "reduction_stage_started":
+                self._stats["activity_mode"] = "reduction_stage"
+            elif event.startswith("legacy_merge_"):
+                self._stats["activity_mode"] = "legacy_merge_slices"
             if event == "run_cancelled": self._stats["run_status"] = "cancelled"
             elif event == "run_completed" and self._stats["run_status"] == "running": self._stats["run_status"] = "completed"
             elif event == "run_failed": self._stats["run_status"] = "failed"
-            counter_only = event in {"reduction_member_attempted", "reduction_member_succeeded"}
+            counter_only = event in {
+                "reduction_member_attempted", "reduction_member_succeeded",
+                "legacy_merge_started", "legacy_merge_completed",
+            }
             if not counter_only:
                 path = self.path
                 path.parent.mkdir(parents=True, exist_ok=True)
@@ -179,7 +279,9 @@ class ProductionExecutionObserver:
             self._gui_event_count += 1
             force = event in {
                 "cancellation_requested", "reduction_partial_rejected",
-                "reduction_stage_failed", "run_completed", "run_cancelled", "run_failed",
+                "reduction_stage_started", "legacy_merge_started",
+                "reduction_stage_failed", "legacy_merge_failed",
+                "run_completed", "run_cancelled", "run_failed",
             }
         self.publish_snapshot(force=force)
 
@@ -192,20 +294,25 @@ class ProductionExecutionObserver:
         gui = getattr(self.ctx, "gui_handle", None)
         if gui is None or not callable(getattr(gui, "update_reduction_stats", None)):
             return False
-        now = time.monotonic()
-        with self._lock:
-            if not force and self._gui_event_count < 20 and now - self._last_gui_publish < 0.25:
+        with self._gui_publish_lock:
+            now = time.monotonic()
+            with self._lock:
+                if (
+                    not force
+                    and self._gui_event_count < 20
+                    and now - self._last_gui_publish < 0.25
+                ):
+                    return False
+                snapshot = dict(self._stats)
+                self._gui_event_count = 0
+                self._last_gui_publish = now
+            try:
+                gui.update_reduction_stats(
+                    snapshot, final=force and snapshot["run_status"] != "running"
+                )
+                return True
+            except Exception:
                 return False
-            snapshot = dict(self._stats)
-            self._gui_event_count = 0
-            self._last_gui_publish = now
-        try:
-            gui.update_reduction_stats(
-                snapshot, final=force and snapshot["run_status"] != "running"
-            )
-            return True
-        except Exception:
-            return False
 
 
 def ensure_production_observer(ctx: Any) -> ProductionExecutionObserver:

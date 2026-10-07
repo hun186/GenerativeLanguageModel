@@ -17,6 +17,10 @@ from czjLLM.prompt_pipeline.pipeline_controller import (
 )
 from czjLLM.utilities.path_utils import get_combined_result_path
 from czjLLM.reduction.execution import ExecutionCancelled
+from czjLLM.reduction.production_control import (
+    ensure_production_observer, finish_legacy_merge_item,
+    try_begin_legacy_merge_item, try_resume_materialized_legacy_merge_item,
+)
 from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
 from .multistage_writeback import resolve_writeback_payload
 #from czjLLM.prompt_pipeline.pipeline_controller import meter_update  # 檔頭若尚未 import
@@ -438,6 +442,41 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
     # If a retryable sink error keeps this item in the registry, recompute the
     # merge as needed but do not print the same audit block on every scan.
     merge_log_emitted_items = set()
+    legacy_merge_telemetry_state = {}
+    observer = ensure_production_observer(ctx)
+
+    def _legacy_merge_begin(item_dir):
+        if not should_merge_slices(ctx):
+            return False
+        if legacy_merge_telemetry_state.get(item_dir) == "completed":
+            return False
+        if legacy_merge_telemetry_state.get(item_dir) == "started":
+            return True
+        if try_begin_legacy_merge_item(ctx, item_dir):
+            observer.emit("legacy_merge_started", {})
+            legacy_merge_telemetry_state[item_dir] = "started"
+            return True
+        if try_resume_materialized_legacy_merge_item(ctx, item_dir):
+            # Fallback already emitted the single started event. Adopt its
+            # materialized artifact without double-counting the attempt.
+            legacy_merge_telemetry_state[item_dir] = "started"
+            return True
+        return False
+
+    def _legacy_merge_finish(item_dir, *, success, reason="execution_error", error_type=None):
+        if legacy_merge_telemetry_state.get(item_dir) != "started":
+            return
+        finish_legacy_merge_item(ctx, item_dir, success=success)
+        if success:
+            observer.emit("legacy_merge_completed", {})
+            legacy_merge_telemetry_state[item_dir] = "completed"
+        else:
+            fields = {"reason": reason}
+            if error_type:
+                fields["error_type"] = error_type
+            observer.emit("legacy_merge_failed", fields)
+            legacy_merge_telemetry_state.pop(item_dir, None)
+
     failure_log_interval = max(
         1.0, float(getattr(ctx, "row_merger_failure_log_interval", 60.0) or 60.0)
     )
@@ -507,12 +546,26 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                         self.__dict__.update(kw)
     
                 overlay = _CtxOverlay(ctx, temp_txt_finished_dir=target_dir)
+                legacy_claimed = _legacy_merge_begin(item_dir)
+                if should_merge_slices(ctx) and not legacy_claimed:
+                    # Another live path owns this legacy merge, or it already
+                    # completed. Wait for the shared artifact instead of
+                    # running the same merge twice.
+                    return None
                 out = combine_api_finished_item(item_dir, overlay)
                 if out and os.path.isfile(out):
+                    # Materializing the combined artifact is not necessarily
+                    # the legacy slice merge itself. Non-JSON-mode list[dict]
+                    # payloads are merged later in the writeback path, so keep
+                    # the shared claim active until that semantic merge finishes.
                     return out
+                _legacy_merge_finish(item_dir, success=False, reason="no_output")
             except ExecutionCancelled:
                 raise
             except Exception as e:
+                _legacy_merge_finish(
+                    item_dir, success=False, error_type=type(e).__name__
+                )
                 tlog_warn(f"ℹ️ 合併提示（pk={meta.get('pk')}）：{e}")
     
         return None
@@ -581,20 +634,30 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                         slice_source_text = flatten_source_text
                         data = json.loads(flatten_source_text)
                         if should_merge_slices(ctx) and isinstance(data, list) and all(isinstance(x, dict) for x in data):
+                            _legacy_merge_begin(item_dir)
                             merge_logger = None
                             if (
                                 getattr(ctx, "merge_log_changes", True)
                                 and item_dir not in merge_log_emitted_items
                             ):
                                 merge_logger = tlog
-                            merged_payload, report = merge_dict_slices_audited(
-                                data,
-                                conflict_policy=getattr(ctx, "merge_conflict_policy", "prefer_left"),
-                                dedup_lists=bool(getattr(ctx, "merge_dedup_lists", False)),
-                                audit=True,
-                                logger=merge_logger,
-                                max_log=int(getattr(ctx, "merge_max_log", 10)),
-                            )
+                            try:
+                                merged_payload, report = merge_dict_slices_audited(
+                                    data,
+                                    conflict_policy=getattr(ctx, "merge_conflict_policy", "prefer_left"),
+                                    dedup_lists=bool(getattr(ctx, "merge_dedup_lists", False)),
+                                    audit=True,
+                                    logger=merge_logger,
+                                    max_log=int(getattr(ctx, "merge_max_log", 10)),
+                                )
+                            except Exception as merge_error:
+                                _legacy_merge_finish(
+                                    item_dir,
+                                    success=False,
+                                    error_type=type(merge_error).__name__,
+                                )
+                                raise
+                            _legacy_merge_finish(item_dir, success=True)
                             if merge_logger is not None:
                                 merge_log_emitted_items.add(item_dir)
                             merged_columns = _apply_slice_merge_to_write_map(
@@ -617,10 +680,49 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 ctx, write_map, write_sources
                             )
                             if merged_columns:
+                                # Stream multistage may have already performed
+                                # the legacy slice merge before Row Merger sees
+                                # CombBackFN. Account for that successful merge
+                                # here through the same run-scoped ownership
+                                # guard used by live/fallback merge paths.
+                                if _legacy_merge_begin(item_dir):
+                                    _legacy_merge_finish(item_dir, success=True)
                                 source_logs.append(
                                     f"slice_merge_premerged:{','.join(merged_columns)}"
                                 )
-                    except Exception:
+                            else:
+                                # A fallback may have materialized this artifact
+                                # before Row Merger knew whether the payload was
+                                # semantically mergeable. Adopt that handoff only
+                                # to close it as a failure; do not create a new
+                                # attempt for unrelated dict writeback.
+                                if (
+                                    legacy_merge_telemetry_state.get(item_dir) != "started"
+                                    and try_resume_materialized_legacy_merge_item(ctx, item_dir)
+                                ):
+                                    legacy_merge_telemetry_state[item_dir] = "started"
+                                if legacy_merge_telemetry_state.get(item_dir) == "started":
+                                    _legacy_merge_finish(
+                                        item_dir, success=False, reason="unsupported_payload"
+                                    )
+                        else:
+                            if (
+                                should_merge_slices(ctx)
+                                and legacy_merge_telemetry_state.get(item_dir) != "started"
+                                and try_resume_materialized_legacy_merge_item(ctx, item_dir)
+                            ):
+                                legacy_merge_telemetry_state[item_dir] = "started"
+                            if legacy_merge_telemetry_state.get(item_dir) == "started":
+                                _legacy_merge_finish(
+                                    item_dir, success=False, reason="unsupported_payload"
+                                )
+                    except Exception as merge_or_parse_error:
+                        if legacy_merge_telemetry_state.get(item_dir) == "started":
+                            _legacy_merge_finish(
+                                item_dir,
+                                success=False,
+                                error_type=type(merge_or_parse_error).__name__,
+                            )
                         pass
 
                     expanded_cols = _expand_json_columns(ctx, flatten_source_text)

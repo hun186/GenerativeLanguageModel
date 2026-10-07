@@ -9,7 +9,10 @@ from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.reduction.production_control import (
     build_production_execution_context, ensure_execution_cancel_event,
     ensure_production_observer, execution_cancel_requested,
+    finish_legacy_merge_item, legacy_merge_item_completed,
+    legacy_merge_item_materialized, mark_legacy_merge_item_materialized,
     request_execution_cancel,
+    try_begin_legacy_merge_item, try_resume_materialized_legacy_merge_item,
 )
 
 
@@ -118,3 +121,178 @@ def test_cancellation_request_does_not_retroactively_change_terminal_completion(
     request_execution_cancel(ctx, source="external")
     assert ctx.run_status == "completed"
     assert observer.snapshot()["run_status"] == "completed"
+
+
+
+def test_legacy_merge_activity_is_distinct_from_reduction_stage_counters(tmp_path):
+    ctx = _ctx(tmp_path)
+    ctx.merge_slices = True
+    observer = ensure_production_observer(ctx)
+    assert observer.snapshot()["activity_mode"] == "legacy_merge_slices"
+
+    observer.emit("legacy_merge_started", {})
+    observer.emit("legacy_merge_completed", {})
+    observer.emit("legacy_merge_started", {})
+    observer.emit("legacy_merge_failed", {"reason": "no_output"})
+
+    stats = observer.snapshot()
+    assert stats["legacy_merges_started"] == 2
+    assert stats["legacy_merges_completed"] == 1
+    assert stats["legacy_merges_failed"] == 1
+    assert stats["stages_started"] == 0
+    assert stats["members_attempted"] == 0
+    assert stats["activity_mode"] == "legacy_merge_slices"
+
+
+
+def test_mode_transition_start_events_bypass_gui_throttle(tmp_path):
+    class GUI:
+        def __init__(self):
+            self.snapshots = []
+
+        def update_reduction_stats(self, stats, final=False):
+            self.snapshots.append((dict(stats), final))
+
+    legacy = _ctx(tmp_path / "legacy")
+    legacy.merge_slices = True
+    legacy.gui_handle = GUI()
+    legacy_observer = ensure_production_observer(legacy)
+    assert legacy_observer.publish_snapshot(force=True)
+    before = len(legacy.gui_handle.snapshots)
+    legacy_observer.emit("legacy_merge_started", {})
+    assert len(legacy.gui_handle.snapshots) == before + 1
+    assert legacy.gui_handle.snapshots[-1][0]["activity_mode"] == "legacy_merge_slices"
+    assert legacy.gui_handle.snapshots[-1][0]["legacy_merges_started"] == 1
+
+    reduction = _ctx(tmp_path / "reduction")
+    reduction.reduction = {"enabled": True, "profile": "concat_text"}
+    reduction.gui_handle = GUI()
+    reduction_observer = ensure_production_observer(reduction)
+    assert reduction_observer.publish_snapshot(force=True)
+    before = len(reduction.gui_handle.snapshots)
+    reduction_observer.emit("reduction_stage_started", {})
+    assert len(reduction.gui_handle.snapshots) == before + 1
+    assert reduction.gui_handle.snapshots[-1][0]["activity_mode"] == "reduction_stage"
+    assert reduction.gui_handle.snapshots[-1][0]["stages_started"] == 1
+
+
+
+def test_legacy_merge_claim_is_shared_and_failure_releases_for_retry(tmp_path):
+    ctx = _ctx(tmp_path)
+    item = tmp_path / "item"
+    assert try_begin_legacy_merge_item(ctx, item) is True
+    assert try_begin_legacy_merge_item(ctx, item) is False
+    finish_legacy_merge_item(ctx, item, success=False)
+    assert try_begin_legacy_merge_item(ctx, item) is True
+    finish_legacy_merge_item(ctx, item, success=True)
+    assert try_begin_legacy_merge_item(ctx, item) is False
+
+
+
+@pytest.mark.parametrize(
+    ("attrs", "expected"),
+    [
+        ({"enable_slice_merge": True}, "legacy_merge_slices"),
+        ({"merge_strategy": "dict_deep"}, "legacy_merge_slices"),
+        ({"merge_strategy": "slice_merge"}, "legacy_merge_slices"),
+        ({"merge_strategy": "on"}, "legacy_merge_slices"),
+    ],
+)
+def test_initial_activity_mode_honors_all_supported_slice_merge_switches(
+    tmp_path, attrs, expected
+):
+    ctx = _ctx(tmp_path)
+    for name, value in attrs.items():
+        setattr(ctx, name, value)
+    assert ensure_production_observer(ctx).snapshot()["activity_mode"] == expected
+
+
+
+def test_forced_reduction_snapshots_cannot_arrive_out_of_order(tmp_path):
+    first_entered = threading.Event()
+    release_first = threading.Event()
+
+    class SlowFirstGUI:
+        def __init__(self):
+            self.snapshots = []
+            self.calls = 0
+            self.lock = threading.Lock()
+
+        def update_reduction_stats(self, stats, final=False):
+            with self.lock:
+                self.calls += 1
+                call = self.calls
+            if call == 1:
+                first_entered.set()
+                assert release_first.wait(timeout=2)
+            self.snapshots.append((dict(stats), final))
+
+    ctx = _ctx(tmp_path)
+    ctx.reduction = {"enabled": True, "profile": "concat_text"}
+    ctx.gui_handle = SlowFirstGUI()
+    observer = ensure_production_observer(ctx)
+
+    t1 = threading.Thread(
+        target=observer.emit, args=("reduction_stage_started", {})
+    )
+    t1.start()
+    assert first_entered.wait(timeout=2)
+
+    t2 = threading.Thread(
+        target=observer.emit, args=("reduction_stage_started", {})
+    )
+    t2.start()
+
+    # Give the second emitter a chance to update cumulative counters. Without
+    # serialized publication it can enqueue stages_started=2 before the first
+    # delayed stages_started=1 snapshot.
+    assert observer.snapshot()["stages_started"] == 2
+    release_first.set()
+    t1.join(timeout=2)
+    t2.join(timeout=2)
+    assert not t1.is_alive() and not t2.is_alive()
+
+    delivered = [item[0]["stages_started"] for item in ctx.gui_handle.snapshots]
+    assert delivered == [1, 2]
+
+
+
+def test_legacy_merge_materialized_handoff_is_adoptable_once(tmp_path):
+    ctx = _ctx(tmp_path)
+    item = tmp_path / "handoff-item"
+
+    assert try_begin_legacy_merge_item(ctx, item) is True
+    assert mark_legacy_merge_item_materialized(ctx, item) is True
+    assert try_begin_legacy_merge_item(ctx, item) is False
+    assert try_resume_materialized_legacy_merge_item(ctx, item) is True
+    assert try_resume_materialized_legacy_merge_item(ctx, item) is False
+
+    finish_legacy_merge_item(ctx, item, success=True)
+    assert legacy_merge_item_completed(ctx, item) is True
+    assert try_begin_legacy_merge_item(ctx, item) is False
+
+
+def test_failed_materialized_handoff_releases_claim(tmp_path):
+    ctx = _ctx(tmp_path)
+    item = tmp_path / "handoff-failure"
+
+    assert try_begin_legacy_merge_item(ctx, item) is True
+    assert mark_legacy_merge_item_materialized(ctx, item) is True
+    finish_legacy_merge_item(ctx, item, success=False)
+    assert try_begin_legacy_merge_item(ctx, item) is True
+
+
+
+def test_materialized_state_can_be_detected_and_released_when_consumer_disappears(
+    tmp_path,
+):
+    ctx = _ctx(tmp_path)
+    item = tmp_path / "vanished-row"
+
+    assert try_begin_legacy_merge_item(ctx, item) is True
+    assert mark_legacy_merge_item_materialized(ctx, item) is True
+    assert legacy_merge_item_materialized(ctx, item) is True
+
+    finish_legacy_merge_item(ctx, item, success=False)
+    assert legacy_merge_item_materialized(ctx, item) is False
+    assert try_begin_legacy_merge_item(ctx, item) is True

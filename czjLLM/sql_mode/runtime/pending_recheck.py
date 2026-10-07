@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 import os
+import threading
+import time
 import unicodedata
 from datetime import datetime
 from pathlib import Path
@@ -18,6 +20,19 @@ SEMANTIC_STALE_REASONS = {
     "stale_by_policy", "model_tag_mismatch", "pipeline_hash_mismatch",
     "stale_after_days", "force_since", "required_output_invalid", "missing_meta",
 }
+_RECHECK_LOCK_INIT = threading.Lock()
+
+
+def _recheck_stats_lock(ctx):
+    lock = getattr(ctx, "_pending_recheck_stats_lock", None)
+    if lock is not None:
+        return lock
+    with _RECHECK_LOCK_INIT:
+        lock = getattr(ctx, "_pending_recheck_stats_lock", None)
+        if lock is None:
+            lock = threading.RLock()
+            setattr(ctx, "_pending_recheck_stats_lock", lock)
+    return lock
 
 
 def pending_skip_log_path(ctx) -> Path:
@@ -164,16 +179,17 @@ def _stats_attr(scope: str) -> str:
 
 
 def _bump_recheck_stat(ctx, name: str, *, scope: str = "dispatch") -> int:
-    attr = _stats_attr(scope)
-    stats = getattr(ctx, attr, None)
-    if not isinstance(stats, dict):
-        stats = {"checked": 0, "pending": 0, "already_completed": 0, "errors": 0}
-        try:
-            setattr(ctx, attr, stats)
-        except Exception:
-            pass
-    stats[name] = int(stats.get(name, 0) or 0) + 1
-    return stats[name]
+    with _recheck_stats_lock(ctx):
+        attr = _stats_attr(scope)
+        stats = getattr(ctx, attr, None)
+        if not isinstance(stats, dict):
+            stats = {"checked": 0, "pending": 0, "already_completed": 0, "errors": 0}
+            try:
+                setattr(ctx, attr, stats)
+            except Exception:
+                pass
+        stats[name] = int(stats.get(name, 0) or 0) + 1
+        return stats[name]
 
 
 def _get_recheck_log_limit(ctx) -> int:
@@ -185,43 +201,87 @@ def _get_recheck_log_limit(ctx) -> int:
 
 
 def pending_recheck_stats(ctx, *, scope: str = "dispatch") -> dict:
-    stats = getattr(ctx, _stats_attr(scope), None)
-    if not isinstance(stats, dict):
-        stats = {}
-    reasons = dict(stats.get("reasons", {}) or {})
-    result = {
-        "checked": int(stats.get("checked", 0) or 0),
-        "pending": int(stats.get("pending", 0) or 0),
-        "already_completed": int(stats.get("already_completed", 0) or 0),
-        "errors": int(stats.get("errors", 0) or 0),
-        "reasons": reasons,
-    }
-    checked = result["checked"]
-    result["skip_rate"] = result["already_completed"] / checked if checked else 0.0
-    result["recheck_error_rate"] = result["errors"] / checked if checked else 0.0
-    result["semantic_stale_count"] = sum(int(reasons.get(k, 0) or 0) for k in SEMANTIC_STALE_REASONS)
-    return result
+    with _recheck_stats_lock(ctx):
+        stats = getattr(ctx, _stats_attr(scope), None)
+        if not isinstance(stats, dict):
+            stats = {}
+        reasons = dict(stats.get("reasons", {}) or {})
+        result = {
+            "checked": int(stats.get("checked", 0) or 0),
+            "pending": int(stats.get("pending", 0) or 0),
+            "already_completed": int(stats.get("already_completed", 0) or 0),
+            "errors": int(stats.get("errors", 0) or 0),
+            "reasons": reasons,
+        }
+        checked = result["checked"]
+        result["skip_rate"] = result["already_completed"] / checked if checked else 0.0
+        result["recheck_error_rate"] = result["errors"] / checked if checked else 0.0
+        result["semantic_stale_count"] = sum(
+            int(reasons.get(k, 0) or 0) for k in SEMANTIC_STALE_REASONS
+        )
+        return result
 
 
 def _bump_reason(ctx, reason: str, *, scope: str) -> None:
-    attr = _stats_attr(scope)
-    stats = getattr(ctx, attr, None)
-    if not isinstance(stats, dict):
-        _bump_recheck_stat(ctx, "checked", scope=scope)
-        stats = getattr(ctx, attr)
-        stats["checked"] -= 1
-    reasons = stats.setdefault("reasons", {})
-    reasons[reason] = int(reasons.get(reason, 0) or 0) + 1
+    with _recheck_stats_lock(ctx):
+        attr = _stats_attr(scope)
+        stats = getattr(ctx, attr, None)
+        if not isinstance(stats, dict):
+            _bump_recheck_stat(ctx, "checked", scope=scope)
+            stats = getattr(ctx, attr)
+            stats["checked"] -= 1
+        reasons = stats.setdefault("reasons", {})
+        reasons[reason] = int(reasons.get(reason, 0) or 0) + 1
 
 
 def _push_gui_stats(ctx, *, scope: str, final: bool = False) -> None:
     if scope != "dispatch":
         return
     gui = getattr(ctx, "gui_handle", None)
-    stats = pending_recheck_stats(ctx, scope=scope)
-    every = max(int(getattr(ctx, "pending_recheck_gui_every", 100) or 100), 1)
-    if gui is not None and callable(getattr(gui, "update_recheck_stats", None)) and (final or stats["checked"] % every == 0):
-        gui.update_recheck_stats(stats)
+    if gui is None or not callable(getattr(gui, "update_recheck_stats", None)):
+        return
+    with _recheck_stats_lock(ctx):
+        stats = pending_recheck_stats(ctx, scope=scope)
+        every = max(int(getattr(ctx, "pending_recheck_gui_every", 100) or 100), 1)
+        try:
+            max_seconds = max(
+                float(getattr(ctx, "pending_recheck_gui_seconds", 1.0) or 1.0), 0.1
+            )
+        except (TypeError, ValueError):
+            max_seconds = 1.0
+        now = time.monotonic()
+        try:
+            last = float(
+                getattr(ctx, "_pending_recheck_gui_last_push_monotonic", 0.0) or 0.0
+            )
+        except (TypeError, ValueError):
+            last = 0.0
+        checked = stats["checked"]
+        count_due = checked <= 1 or checked % every == 0
+        time_due = last <= 0.0 or now - last >= max_seconds
+        if final or count_due or time_due:
+            # Queue submission and timestamp update stay inside the same run-scoped
+            # lock, so parallel producer workers cannot enqueue an older snapshot
+            # after a newer one or independently defeat the throttle. GUI delivery
+            # is observability-only: a broken/closed queue must never change the
+            # adapter's pending decision or abort scheduling.
+            try:
+                gui.update_recheck_stats(stats)
+            except Exception as exc:
+                if not getattr(ctx, "_pending_recheck_gui_error_logged", False):
+                    tlog_warn(
+                        "[producer] Recheck GUI 狀態更新失敗，已忽略；"
+                        f"error_type={type(exc).__name__}"
+                    )
+                    try:
+                        setattr(ctx, "_pending_recheck_gui_error_logged", True)
+                    except Exception:
+                        pass
+            finally:
+                try:
+                    setattr(ctx, "_pending_recheck_gui_last_push_monotonic", now)
+                except Exception:
+                    pass
 
 
 def announce_pending_recheck_if_enabled(ctx) -> bool:
@@ -270,11 +330,12 @@ def still_pending_before_dispatch(
         is_pending = bool(decision.pending) if decision is not None else bool(adapter.is_row_pending(
             tgt_table=getattr(ctx, "_pending_tgt_table", getattr(ctx, "target_table", None)), pk=getattr(ctx, "primary_key", ""), pk_value=pk, output_cols=output_cols))
         reason = decision.reason if decision is not None else ("missing_output" if is_pending else "fresh_completed")
-        _bump_recheck_stat(ctx, "checked", scope=stats_scope)
-        state = "pending" if is_pending else "already_completed"
-        current_count = _bump_recheck_stat(ctx, state, scope=stats_scope)
-        _bump_reason(ctx, reason, scope=stats_scope)
-        _push_gui_stats(ctx, scope=stats_scope)
+        with _recheck_stats_lock(ctx):
+            _bump_recheck_stat(ctx, "checked", scope=stats_scope)
+            state = "pending" if is_pending else "already_completed"
+            current_count = _bump_recheck_stat(ctx, state, scope=stats_scope)
+            _bump_reason(ctx, reason, scope=stats_scope)
+            _push_gui_stats(ctx, scope=stats_scope)
         important = (not is_pending) or reason not in {"missing_output", "row_missing"}
         if important or getattr(ctx, "debug_pending_recheck_events", False):
             if decision is None:
@@ -293,10 +354,11 @@ def still_pending_before_dispatch(
         # confirmed, treat the row/doc as still pending instead of skipping it.
         # This may do duplicate work, but avoids losing a row because a best-effort
         # recheck failed.
-        _bump_recheck_stat(ctx, "checked", scope=stats_scope)
-        _bump_recheck_stat(ctx, "errors", scope=stats_scope)
-        _bump_reason(ctx, "recheck_error_fail_open", scope=stats_scope)
-        _push_gui_stats(ctx, scope=stats_scope)
+        with _recheck_stats_lock(ctx):
+            _bump_recheck_stat(ctx, "checked", scope=stats_scope)
+            _bump_recheck_stat(ctx, "errors", scope=stats_scope)
+            _bump_reason(ctx, "recheck_error_fail_open", scope=stats_scope)
+            _push_gui_stats(ctx, scope=stats_scope)
         from czjLLM.common.pending_decision import PendingDecision
         record_pending_event(ctx, pk, PendingDecision(True, "recheck_error_fail_open"), phase=stats_scope)
         tlog_warn(
