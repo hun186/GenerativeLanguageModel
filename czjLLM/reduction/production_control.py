@@ -132,7 +132,7 @@ def try_begin_legacy_merge_item(ctx: Any, item_dir: Any) -> bool:
     key = _legacy_merge_item_key(item_dir)
     with state["lock"]:
         items = state.setdefault("legacy_merge_items", {})
-        if items.get(key) in {"active", "completed"}:
+        if items.get(key) in {"active", "materialized", "completed"}:
             return False
         items[key] = "active"
         return True
