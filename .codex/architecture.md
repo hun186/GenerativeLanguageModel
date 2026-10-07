@@ -8,10 +8,10 @@
 - Row Merger remains downstream writeback coordination and Output Profile remains the final strict validation boundary. Reduction Core does not own either boundary.
 - ES connection/pending behavior is separated into adapter, pending-policy and value-helper boundaries. Model metadata persistence uses allowlisted non-secret fields; credentials and raw endpoint URLs are excluded.
 - Per-run LLM auditing records API usage tokens and context metadata from response/runtime/model sources. Context size is never guessed from a display name; CSV and XLSX artifacts are produced per run.
-- Reduction Engine v1 A–L plus the L3 release-audit corrective are present at verified `main` merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`.
+- Reduction Engine v1 A–L plus the L3 release-audit corrective and documentation closure are present at verified `main` merge `99d79676b16b7fed54f9cf6e701441db79846cea`.
 - Reduction flow is map/member execution → reducer → optional hierarchical rounds → final result → optional persisted aggregate/writeback. The core owns strict config, deterministic/semantic/structured-relational reducers, atomic checkpoints, shared execution budget, executable stages, explicit partial success and cooperative cancellation.
 - Collection boundaries use immutable ordered `LogicalWorkUnit` / `CollectionManifest` snapshots. SQL/ES adapters build snapshots and idempotent aggregate sinks persist `AggregateOutput` using deterministic lineage identity.
-- Persisted SQL/ES destination output is cross-run reuse authority when semantic freshness is explicitly configured. Runtime round workspaces are reconstructable; committed checkpoints are resume authority.
+- Persisted SQL/ES destination output is cross-run reuse authority when semantic freshness is explicitly configured. Runtime round workspaces are reconstructable; committed checkpoints are resume authority. A v1.1 evaluation deliberately deferred any second semantic/member result cache until measured duplicate-call evidence exists.
 - Composition is bounded, not a generic DAG: one nested ReductionStage level, at most four active PipelineRef names, cycle detection, and no semantic reducer in a nested ReductionStage.
 - Production cancellation is cooperative safe-drain. A run-scoped cancel intent stops new scheduling/semantic continuation while consumer/merger/writeback and already-running external calls reach safe boundaries.
 - Production observability uses payload-free bounded JSONL, cumulative counters and a separate Reduction Status surface. Operational observer/cancellation state is excluded from semantic fingerprints.
@@ -20,10 +20,15 @@
 
 ## Recent Changes
 
+### 2026-10-06 v1.1 cache-boundary evaluation
+
+- Reaffirmed a single authority per retry scope: persisted SQL/ES results for cross-run reuse and committed checkpoints for hierarchical resume.
+- Deferred transient semantic/member caching because current code/tests do not demonstrate a material duplicate-call workload. Any future cache must be opt-in, bounded, run-scoped, non-persistent by default, and operational rather than semantic authority.
+
 ### 2026-10-06 Reduction Engine v1 closure
 
 - PR #201 corrected truthful bounded-retention reporting and merged as verified/valid `91e39503c8e84d17752f9d26a23ff6b34db75b9e`.
-- PR #200 reconciles the operator/developer documentation against that baseline and remains documentation-only.
+- PR #200 reconciled the operator/developer documentation and merged as verified/valid `99d79676b16b7fed54f9cf6e701441db79846cea`.
 
 ### 2026-10-04 Production hardening
 

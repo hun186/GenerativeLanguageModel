@@ -3,14 +3,26 @@
 ## Current Summary
 
 - This Python project processes TXT/Table/SQL/ES inputs through prompt, multistage, reduction, and writeback infrastructure.
-- **Reduction Engine v1 is COMPLETE / RELEASE-READY.** A–L is complete, the L3 retention reporting release-audit corrective was accepted and merged through PR #201, and the PR #200 documentation closure reconciliation head passed its fresh hosted 24-case gate. Authoritative runtime baseline is verified `main` merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; PR #200 remains unmerged pending fresh review and explicit merge approval.
-- PR #201 authoritative evidence: accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid. PR #200 release-state declaration head `8d283b369da2989535c109fa4f046b2c7ba57f31` passed CI #463 / `37402351444`, offline job `112072129880`, collect 24 and full gate PASS / 100%.
+- **Reduction Engine v1 is COMPLETE / RELEASE-READY.** A–L is complete, the L3 retention reporting corrective was merged through PR #201, and the documentation/release closure was merged through PR #200. The verified Reduction v1 closure baseline is merge `99d79676b16b7fed54f9cf6e701441db79846cea`; current Hosted `main` before this reconciliation is `4a2eb27942d1bfda3ae845e877f5bac7d5df811c` after the later GUI observability/layout fixes.
+- PR #201 authoritative runtime evidence: accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid. PR #200 final accepted head `36a40eb37827e33545865203b079aefaab1ba1f4` passed CI #467 / `37420475520`, offline job `112128483703`, collect 24 and full gate PASS / 100%; zero unresolved review threads; fresh Codex review reported no major issues; merge `99d79676b16b7fed54f9cf6e701441db79846cea` is verified / valid.
 - L2a authoritative evidence: PR #195, accepted head `f4ad4001f4498287799df3c89e90ff4a733dc572`, CI #448 / `37179982321`, offline job `111370415206`, collect 22 and full PASS, merge `c1f2f6974e88028eb3eb5b9b747fefeb8d6d5cf0`, verified/valid signature. PR #194 is closed/unmerged/superseded.
 - Production operator cancellation is cooperative and distinct from worker teardown. It stops new scheduling and semantic continuation while allowing in-flight external calls and existing consumer/merger/writeback work to drain.
 - Production Reduction observability uses allowlisted bounded JSONL, lock-protected counters, and a separate Windows GUI Reduction Status panel.
 - Required dependency installation remains blocked by the pinned GitHub `peft` clone proxy 403. Dependency-light tests are locally available; hosted offline E2E is authoritative.
 
 ## Recent Changes
+
+### 2026-10-07 PR #202 current-main reconciliation corrective
+
+- Fresh Codex review of reconciliation head `345c8263052239e8a4d08b03aa377a554897869a` found that the v1 guide had lost current-main GUI observability guidance while replaying the cache-evaluation documentation.
+- Restored the accepted collapsible Recheck/Reduction sections, always-visible Reduction Cancel control, and mode-aware `ReductionStage` / legacy `merge_slices` / inactive explanations without changing runtime behavior.
+- The pre-corrective head's hosted `offline-e2e` success is historical evidence only; this corrective requires a new exact-head hosted gate and Codex review before merge readiness.
+
+### 2026-10-07 Windows GUI status panels side-by-side
+
+- Recheck Status and Reduction Status now share one equal-width horizontal status row instead of consuming separate vertical rows; both retain independent collapse/expand behavior, and Reduction keeps its always-visible Cancel control.
+- The change is layout-only: Recheck/Reduction data flow, counters, error presentation, cancellation semantics and observer contracts are unchanged.
+- Added a source-level GUI regression that requires one shared parent row, equal-weight columns, left/right grid placement, a right-side Reduction control container packed before the expandable summary so Cancel remains visible under the default window width / Windows DPI scaling, and responsive detail-label wrapping derived from the shared row width so expanded diagnostics remain readable at half width. Hosted exact-head acceptance and fresh Codex review are pending for this branch.
 
 ### 2026-10-06 Windows GUI live observability / compact status fix
 
@@ -19,25 +31,38 @@
 - Recheck Status and Reduction Status are collapsible by default with one-line header summaries. The Reduction Cancel control remains visible while collapsed. Reduction snapshot capture plus GUI queue submission is serialized by a dedicated publish lock so concurrent forced stage-start snapshots cannot arrive out of order while counter mutation remains independently lock-protected.
 - Regression coverage locks the first/time-based recheck snapshots, legacy merge observer counters, mode-aware formatting, and collapsible source contract.
 
+### 2026-10-06 v1.1 transient-cache evaluation
+
+- Evaluated optional transient semantic/member caching after the v1 closure. Existing authorities already cover distinct retry scopes: persisted SQL/ES destination output is cross-run reuse authority and committed hierarchical checkpoints are resume authority.
+- No production evidence currently establishes enough duplicate same-semantics member/semantic execution within one run to justify a new cache, while disk/global caching would add a second result authority and a new source-derived data retention/privacy surface.
+- Decision: defer implementation. Reopen only with measured duplicate-call/cost evidence. Any future design must be opt-in, bounded, run-scoped, non-persistent by default, cache successful results only, remain outside semantic identity/authority, preserve cancellation/failure/observer semantics, and never persist source/prompt/output payloads merely to obtain cache hits.
+- Verification basis for this evaluation: source/contract review of `czjLLM/reduction/stage.py`, `czjLLM/reduction/execution.py`, `czjLLM/reduction/persisted_freshness.py`, `czjLLM/reduction/runtime_semantic.py`, `czjLLM/reduction/reducers/semantic.py`, `tests/reduction/test_semantic_runtime.py`, `tests/reduction/test_semantic_reducer.py`, `tests/reduction/test_reduction_processing_identity_l1.py`, and the v1 operator guide. No production Python behavior changed.
+
+### 2026-10-06 PR #200 merged closure
+
+- Final accepted PR #200 head `36a40eb37827e33545865203b079aefaab1ba1f4` passed CI #467 / `37420475520`, offline job `112128483703`, collect 24 and full production E2E PASS / 100%.
+- Fresh Codex review on that exact head reported no major issues and unresolved review-thread count was zero.
+- PR #200 merged as verified/valid `99d79676b16b7fed54f9cf6e701441db79846cea`; this is the authoritative Reduction Engine v1 closure baseline.
+
 ### 2026-10-06 Active project-memory compaction
 
 - Compacted `.codex/architecture.md`, `.codex/api_contract.md`, `.codex/known_issues.md`, `.codex/decisions.md`, and `.codex/backlog.md` because each exceeded the AGENTS.md threshold of 20 dated/work blocks.
 - Preserved each complete pre-compaction file first under `.codex/archive/*-20261006-134200.md`, then rewrote active files to current summaries, recent relevant changes, and archive references.
 - Preserved unresolved issues, open backlog items, current API contracts and still-effective architecture decisions. Superseded point-in-time PR status remains available in the archives.
-- Verification passed on compaction head `a795e8c2a632ebe4a329b27c489a1723820ca85a`: each new archive blob SHA exactly equals its pre-compaction source blob SHA (`architecture` `2575101c…`, `api_contract` `6df215ab…`, `known_issues` `07e77c6c…`, `decisions` `5674d347…`, `backlog` `8f549cf8…`). Active heading/work-block counts are architecture 8, api_contract 15, known_issues 10, decisions 7, and backlog 8, all below the >20-block compaction trigger. The follow-up evidence-only commit still requires fresh hosted 24-case acceptance and fresh Codex review before merge readiness.
+- Verification passed on compaction head `a795e8c2a632ebe4a329b27c489a1723820ca85a`: each new archive blob SHA exactly equals its pre-compaction source blob SHA (`architecture` `2575101c…`, `api_contract` `6df215ab…`, `known_issues` `07e77c6c…`, `decisions` `5674d347…`, `backlog` `8f549cf8…`). Active heading/work-block counts are architecture 8, api_contract 15, known_issues 10, decisions 7, and backlog 8, all below the >20-block compaction trigger. The follow-up evidence-only head `36a40eb37827e33545865203b079aefaab1ba1f4` subsequently received fresh hosted 24-case acceptance and fresh Codex review, then merged through PR #200.
 
 
 ### 2026-10-06 PR #200 fresh closure acceptance
 
 - Initial documentation reconciliation head `06f0c6b0a6443999a7241b6e5cce0736cde71d38` passed CI #462 / `37401880432`, offline job `112070871594`, collect 24 and full gate PASS / 100%.
 - The release-state declaration was then recorded on head `8d283b369da2989535c109fa4f046b2c7ba57f31`; that exact head independently passed CI #463 / `37402351444`, offline job `112072129880`, collect 24 and full production E2E PASS / 100%.
-- Reduction Engine v1 may therefore be recorded as COMPLETE / RELEASE-READY. A later review/documentation wording correction must still pass its own fresh exact-head gate before PR #200 is merge-ready; explicit merge approval remains required.
+- Reduction Engine v1 was recorded as COMPLETE / RELEASE-READY. The later review/documentation corrections were accepted on exact head `36a40eb37827e33545865203b079aefaab1ba1f4` and merged through PR #200.
 
 ### 2026-10-06 L3 release-audit corrective accepted
 
 - PR #201 corrected truthful bounded-retention reporting with the run-local `deletion_budget_exhausted` latch: after deletion budget exhaustion, validation/classification/counters continue and deletion stays disabled for the rest of the sweep.
 - Deterministic regressions cover a later malformed tombstone and the case where a large artifact exhausts the byte budget before a smaller candidate. Hosted acceptance: head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`, CI #459 / `37399753801`, offline job `112064086574`, collect 24, full gate PASS / 100%.
-- PR #201 merged as verified/valid `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. PR #200 is now the sole remaining Reduction Engine v1 closure work and must pass a fresh hosted 24-case gate on its updated documentation head before merge.
+- PR #201 merged as verified/valid `91e39503c8e84d17752f9d26a23ff6b34db75b9e`. The remaining documentation closure subsequently passed its fresh exact-head gate/review and merged through PR #200 as `99d79676b16b7fed54f9cf6e701441db79846cea`.
 
 ### 2026-10-05 Reduction Engine v1 closure audit
 
@@ -101,10 +126,3 @@
 - Pre-corrective hosted head `2071e80857b7184593002807b7a18eba76485204`, CI #453 / `37190651752`, offline job `111401921897`, collect 24/full PASS is pre-corrective evidence only.
 - Corrected canonical root YAML projection, explicit one-level prompt-container discovery for unscheduled historical items, and exact/budgeted/reported crash-tombstone recovery. Added pre-L3 no-adoption, active/claim/stale-young lease, config/fingerprint, historical-item, symlink, and tombstone budget regressions while retaining one L3 E2E.
 - Local corrective verification: focused L3 12 passed; complete Reduction 405 passed; checkpoint/nested 59 passed; L1/L2 30 passed; prompt pipeline 16 passed; strengthened single L3 E2E passed. SQL runtime collection remains environment-limited by missing `tqdm` after the known proxy-blocked dependency install.
-
-
-### 2026-10-07 Windows GUI status panels side-by-side
-
-- Recheck Status and Reduction Status now share one equal-width horizontal status row instead of consuming separate vertical rows; both retain independent collapse/expand behavior, and Reduction keeps its always-visible Cancel control.
-- The change is layout-only: Recheck/Reduction data flow, counters, error presentation, cancellation semantics and observer contracts are unchanged.
-- Added a source-level GUI regression that requires one shared parent row, equal-weight columns, left/right grid placement, a right-side Reduction control container packed before the expandable summary so Cancel remains visible under the default window width / Windows DPI scaling, and responsive detail-label wrapping derived from the shared row width so expanded diagnostics remain readable at half width. Hosted exact-head acceptance and fresh Codex review are pending for this branch.

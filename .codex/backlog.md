@@ -2,9 +2,9 @@
 
 ## Current Summary
 
-**Reduction Engine v1 = COMPLETE / RELEASE-READY at the runtime/product-contract level.** A–L is complete and the L3 release-audit reporting blocker is resolved by PR #201. Authoritative runtime baseline: verified `main` merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`.
+**Reduction Engine v1 = COMPLETE / RELEASE-READY.** A–L is complete, the L3 release-audit reporting blocker was resolved by PR #201, and the documentation/release closure was merged by PR #200. Authoritative Reduction v1 closure baseline: verified merge `99d79676b16b7fed54f9cf6e701441db79846cea`; later Hosted `main` includes the accepted GUI observability/layout fixes through `4a2eb27942d1bfda3ae845e877f5bac7d5df811c`.
 
-PR #200 remains documentation-only and unmerged. Its current documentation head must receive a fresh exact-head hosted 24-case gate and fresh review after every corrective commit before it is marked merge-ready; explicit user merge approval is still required.
+PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079aefaab1ba1f4` passed CI #467 / `37420475520`, offline job `112128483703`, collect 24 and full gate PASS / 100%, with zero unresolved review threads and a fresh Codex review reporting no major issues.
 
 ### Reduction Engine v1 roadmap
 
@@ -25,7 +25,7 @@ PR #200 remains documentation-only and unmerged. Its current documentation head 
 
 ### Future v1.1 candidates — not v1 blockers
 
-- [ ] Evaluate optional transient semantic/member caching only with a distinct authority/privacy contract; persisted SQL/ES output remains v1 reuse authority.
+- [x] Evaluate optional transient semantic/member caching only with a distinct authority/privacy contract; **decision: defer implementation until production evidence shows material duplicate member/semantic execution. No persistent second cache is allowed; SQL/ES persisted output and committed checkpoints retain their existing authority.**
 - [ ] Add task-specific quality/coverage hooks without creating a generic evaluation platform.
 - [ ] Consider aggregate-lineage convenience APIs beyond the complete v1 `AggregateOutput` payload lineage contract.
 - [ ] Consider explicit maintenance/migration tooling for legacy unmarked stage artifacts; v1 GC intentionally never adopts them.
@@ -37,12 +37,18 @@ PR #200 remains documentation-only and unmerged. Its current documentation head 
 
 ## Recent Changes
 
+### 2026-10-06 v1.1 transient-cache evaluation
+
+- [x] Evaluated a second transient semantic/member cache against the current execution, checkpoint, persisted-freshness, cancellation and privacy contracts.
+- [x] Deferred implementation: current source/tests do not establish a material duplicate-call workload that justifies new cache semantics.
+- [x] Any future reconsideration requires production duplication/cost evidence and a bounded run-scoped privacy contract; disk/global persistence must not become a second reuse authority.
+
 ### 2026-10-06 Release-audit closure
 
 - [x] L3 truthful bounded-reporting blocker resolved by PR #201.
 - [x] Accepted PR #201 head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid.
 - [x] PR #200 release-state declaration head `8d283b369da2989535c109fa4f046b2c7ba57f31` passed CI #463 / `37402351444`, offline job `112072129880`, collect 24 and full gate PASS / 100%.
-- [ ] PR #200 final merge readiness still depends on fresh exact-head gate/review after the latest documentation corrections and explicit merge approval.
+- [x] PR #200 accepted head `36a40eb37827e33545865203b079aefaab1ba1f4`; CI #467 / `37420475520`; offline job `112128483703`; collect 24; full gate PASS / 100%; zero unresolved review threads; fresh Codex review reported no major issues; merged as verified/valid `99d79676b16b7fed54f9cf6e701441db79846cea`.
 
 ## Archived History
 
