@@ -12,6 +12,12 @@
 
 ## Recent Changes
 
+### 2026-10-07 PR #204 current-main reconciliation
+
+- Retargeted the task-specific Reduction quality-hook PR from the historical PR #202 stack onto current Hosted `main@43d9c43349a6b3309993ecb8ddb684cc0e36ecd9`.
+- Replayed only the quality-hook implementation/docs/tests onto the current main tree so later GUI observability/layout and PR #202 documentation corrections are preserved.
+- Historical acceptance on the old stacked head is non-authoritative after reconciliation; fresh exact-head hosted `offline-e2e` and Codex review are required before merge readiness.
+
 ### 2026-10-07 PR #202 current-main reconciliation corrective
 
 - Fresh Codex review of reconciliation head `345c8263052239e8a4d08b03aa377a554897869a` found that the v1 guide had lost current-main GUI observability guidance while replaying the cache-evaluation documentation.
@@ -30,6 +36,14 @@
 - Made Reduction GUI mode-aware. Legacy slice-merge activation and the post-drain fallback gate both use the same canonical `should_merge_slices()` predicate as execution (including `merge_slices`, `enable_slice_merge`, and supported `merge_strategy` aliases), then reports dedicated merge attempt/completion/failure counters from the actual row-merger combine path (with the fallback sweep still covered) instead of misleading Stage/Member 0/0 values; observer activity-mode transitions force-publish to the GUI. Orchestrator fallback merge success is conditional on publishing the actual combined artifact path back to any still-live registry row, preventing suffix/path mismatches from leaving a completed-but-undiscoverable claim that stalls Row Merger. A live registry row whose existing `CombBackFN` points to a real artifact is authoritative: fallback skips it and the registry handoff layer refuses to overwrite it, preserving multistage scheduler output while slow sink/writeback drains. Row Merger treats artifact materialization and semantic slice merge as distinct phases: fallback ownership transitions through a shared `materialized` handoff state before publishing `CombBackFN`, Row Merger atomically adopts that state without double-counting the started event, and legacy completion is emitted only after the actual `list[dict]` merge succeeds or a premerged dict is confirmed; merge/parse/handoff/unsupported-payload outcomes emit failure and release the shared claim, including fallback-only materialized artifacts that Row Merger cannot semantically merge. If the registry row disappears during fallback because another path already completed writeback, orchestrator releases the materialized ownership and closes the fallback attempt as superseded instead of leaving a permanent Merged 0/1 state. Legacy telemetry is gated on the real merge_slices switch, row-merger/fallback share one run-scoped claim so the same item cannot be merged or counted twice, failed claims are released for retry, and premerged multistage `CombBackFN` dict outputs are explicitly accounted when Row Merger confirms the combined-source writeback.
 - Recheck Status and Reduction Status are collapsible by default with one-line header summaries. The Reduction Cancel control remains visible while collapsed. Reduction snapshot capture plus GUI queue submission is serialized by a dedicated publish lock so concurrent forced stage-start snapshots cannot arrive out of order while counter mutation remains independently lock-protected.
 - Regression coverage locks the first/time-based recheck snapshots, legacy merge observer counters, mode-aware formatting, and collapsible source contract.
+
+### 2026-10-06 v1.1 final quality/coverage hook
+
+- Added `czjLLM/reduction/quality.py` with a narrow `QualityHook`, immutable payload-free `QualityAssessment`, and explicit quality error/rejection types.
+- `ReductionStage` now optionally evaluates exactly one caller-supplied hook after the final single-pass or hierarchical result. Accepted scalar metrics are nested under `metrics["quality"]`; audit records only acceptance, hook contract version, metric names and warning count. Rejection fails closed without putting payload text in the exception.
+- A configured hook's contract/version + safe semantic metadata participates in the stage execution fingerprint. With no hook configured, the fingerprint metadata shape remains unchanged.
+- No generic scorer registry, root YAML/config surface, model judge, UI, or persistent quality store was added.
+- Verification added to `tests/e2e/test_reduction_stage_e2e.py`: real HTTP quality-hook acceptance and rejection, fingerprint distinction, payload-free rejection, and execution-budget release. Hosted offline E2E acceptance is required on the PR exact head.
 
 ### 2026-10-06 v1.1 transient-cache evaluation
 

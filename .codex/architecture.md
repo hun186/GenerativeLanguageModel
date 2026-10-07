@@ -15,10 +15,16 @@
 - Composition is bounded, not a generic DAG: one nested ReductionStage level, at most four active PipelineRef names, cycle detection, and no semantic reducer in a nested ReductionStage.
 - Production cancellation is cooperative safe-drain. A run-scoped cancel intent stops new scheduling/semantic continuation while consumer/merger/writeback and already-running external calls reach safe boundaries.
 - Production observability uses payload-free bounded JSONL, cumulative counters and a separate Reduction Status surface. Operational observer/cancellation state is excluded from semantic fingerprints.
+- v1.1 adds one optional Python-only final-result quality/coverage hook at the `ReductionStage` boundary. The hook receives the final payload plus existing safe stage metadata, returns scalar quality metrics/warning codes or an explicit rejection, and contributes its semantic metadata to fingerprints without introducing a scorer registry/YAML platform.
 - Retention is disabled by default, ownership/lease/claim based, bounded, symlink/containment guarded, and never adopts legacy unmarked artifacts. After deletion-budget exhaustion, later candidates still undergo validation/classification/counters but no further deletion is attempted.
 - Successful hierarchical final writes use `cleanup_transient_on_success: true` by default, which performs the post-success transient cleanup path with effective transient TTL zero. Set it false to retain successful runtime workspaces for `transient_runtime_ttl_hours`.
 
 ## Recent Changes
+
+### 2026-10-06 v1.1 final quality/coverage hook
+
+- Added a single final-stage task-specific quality policy extension point rather than a generic evaluator framework.
+- No-hook behavior/fingerprint remains compatible; configured hook semantics are fingerprinted, accepted metrics are nested under result metrics/audit, and rejection is explicit.
 
 ### 2026-10-06 v1.1 cache-boundary evaluation
 

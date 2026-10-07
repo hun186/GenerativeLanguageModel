@@ -36,6 +36,15 @@
 - `execution_fingerprint: auto` derives identity from effective Executable semantics. Omitting the option leaves no expected identity bound and legacy completeness/rerun rules continue to govern reuse.
 - Discovery and pre-dispatch/completion recheck share destination-specific freshness semantics. Recheck diagnostics are bounded and payload-free.
 
+### Task-specific final quality/coverage hook
+
+- `ReductionStage` accepts an optional Python-only `quality_hook`; root YAML and the strict ReductionStage config parser do not expose a generic quality schema.
+- A hook implements `evaluate(payload, context, metrics, provenance) -> QualityAssessment` plus `fingerprint_metadata(context)` and a nonblank `contract_version`.
+- `QualityAssessment` contains only `accepted: bool`, safe lowercase metric keys with finite bool/int/float values, and safe lowercase warning codes. It does not persist source/prompt/output payloads.
+- Accepted assessments are nested under `ReductionStageResult.metrics["quality"]` and summarized payload-free in `audit["quality"]`. Rejected assessments raise `QualityCheckRejectedError`; ordinary hook execution failures raise `QualityCheckError`.
+- Hook semantic metadata enters the stage execution fingerprint only when a hook is configured; no-hook stage fingerprints remain unchanged.
+- The hook runs once against the final stage result after single-pass or hierarchical reduction. It is an application extension point, not a scorer registry or generic evaluation platform.
+
 ### Cancellation and observability
 
 - Production cancellation is cooperative. It stops new scheduling and semantic continuation but does not hard-kill an already-running external request; already-running deterministic safe-drain work may complete.
@@ -55,6 +64,10 @@
 - Persisted model metadata is allowlisted. Credential-like keys, actual endpoint URLs, API keys/tokens/passwords/private keys and raw model specs must not be written into ES metadata.
 
 ## Recent Changes
+
+### 2026-10-06 v1.1 final quality/coverage hook
+
+- Added the narrow Python-only final-result quality policy contract described above; it is explicit, fingerprinted, payload-minimizing, and outside root YAML.
 
 ### 2026-10-06 Closure documentation corrections
 
