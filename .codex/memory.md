@@ -12,6 +12,12 @@
 
 ## Recent Changes
 
+### 2026-10-07 PR #202 current-main reconciliation corrective
+
+- Fresh Codex review of reconciliation head `345c8263052239e8a4d08b03aa377a554897869a` found that the v1 guide had lost current-main GUI observability guidance while replaying the cache-evaluation documentation.
+- Restored the accepted collapsible Recheck/Reduction sections, always-visible Reduction Cancel control, and mode-aware `ReductionStage` / legacy `merge_slices` / inactive explanations without changing runtime behavior.
+- The pre-corrective head's hosted `offline-e2e` success is historical evidence only; this corrective requires a new exact-head hosted gate and Codex review before merge readiness.
+
 ### 2026-10-07 Windows GUI status panels side-by-side
 
 - Recheck Status and Reduction Status now share one equal-width horizontal status row instead of consuming separate vertical rows; both retain independent collapse/expand behavior, and Reduction keeps its always-visible Cancel control.
