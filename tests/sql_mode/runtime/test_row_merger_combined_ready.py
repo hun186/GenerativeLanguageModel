@@ -464,3 +464,52 @@ def test_row_merger_adopts_fallback_materialized_claim_without_double_started(
     assert json.loads(sink.writes[0][1]["File_result"]) == {
         "left": 1, "right": 2
     }
+
+
+
+def test_row_merger_releases_materialized_claim_for_unsupported_payload(
+    tmp_path: Path,
+):
+    item_dir = tmp_path / "fallback-unsupported-item"
+    item_dir.mkdir(parents=True)
+    source = tmp_path / "src/cache/fallback-unsupported.txt"
+    source.parent.mkdir(parents=True)
+    source.write_text("raw", encoding="utf-8")
+    combined = tmp_path / "out/fallback-unsupported-result.txt"
+    combined.parent.mkdir(parents=True)
+    combined.write_text(json.dumps([1, 2, 3]), encoding="utf-8")
+
+    registry = _RegistryStub(
+        str(item_dir),
+        {"pk": 15, "temp_txt": str(source), "CombBackFN": str(combined)},
+    )
+    sink = _SinkStub()
+    ctx = SimpleNamespace(
+        output_col="File_result",
+        record_update_time=False,
+        flatten_json_output=False,
+        cleanup_prompt_item_after_writeback=False,
+        llm_source_dir=str(tmp_path / "src"),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        PGMSubDir=str(tmp_path),
+        mode="es",
+        merge_slices=True,
+    )
+
+    observer = ensure_production_observer(ctx)
+    assert try_begin_legacy_merge_item(ctx, str(item_dir)) is True
+    observer.emit("legacy_merge_started", {})
+    assert mark_legacy_merge_item_materialized(ctx, str(item_dir)) is True
+
+    row_merger_watchdog_generic(
+        ctx, registry, lambda *_: None, _StopEventStub(True), sink,
+        scan_interval=.01, done_q=None,
+    )
+
+    stats = observer.snapshot()
+    assert stats["legacy_merges_started"] == 1
+    assert stats["legacy_merges_completed"] == 0
+    assert stats["legacy_merges_failed"] == 1
+    assert registry.removed and len(sink.writes) == 1
+    assert json.loads(sink.writes[0][1]["File_result"]) == [1, 2, 3]
+    assert try_begin_legacy_merge_item(ctx, str(item_dir)) is True

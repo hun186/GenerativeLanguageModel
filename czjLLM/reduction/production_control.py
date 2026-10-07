@@ -124,7 +124,7 @@ def _legacy_merge_item_key(item_dir: Any) -> str:
 def try_begin_legacy_merge_item(ctx: Any, item_dir: Any) -> bool:
     """Atomically claim one legacy merge item for this run.
 
-    Returns False while another path owns the same item or after it completed.
+    Returns False while another path owns/materialized the same item or after it completed.
     A failed attempt must call finish_legacy_merge_item(..., success=False) to
     release the claim for a later retry.
     """

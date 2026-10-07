@@ -690,14 +690,32 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 source_logs.append(
                                     f"slice_merge_premerged:{','.join(merged_columns)}"
                                 )
-                            elif legacy_merge_telemetry_state.get(item_dir) == "started":
+                            else:
+                                # A fallback may have materialized this artifact
+                                # before Row Merger knew whether the payload was
+                                # semantically mergeable. Adopt that handoff only
+                                # to close it as a failure; do not create a new
+                                # attempt for unrelated dict writeback.
+                                if (
+                                    legacy_merge_telemetry_state.get(item_dir) != "started"
+                                    and try_resume_materialized_legacy_merge_item(ctx, item_dir)
+                                ):
+                                    legacy_merge_telemetry_state[item_dir] = "started"
+                                if legacy_merge_telemetry_state.get(item_dir) == "started":
+                                    _legacy_merge_finish(
+                                        item_dir, success=False, reason="unsupported_payload"
+                                    )
+                        else:
+                            if (
+                                should_merge_slices(ctx)
+                                and legacy_merge_telemetry_state.get(item_dir) != "started"
+                                and try_resume_materialized_legacy_merge_item(ctx, item_dir)
+                            ):
+                                legacy_merge_telemetry_state[item_dir] = "started"
+                            if legacy_merge_telemetry_state.get(item_dir) == "started":
                                 _legacy_merge_finish(
                                     item_dir, success=False, reason="unsupported_payload"
                                 )
-                        elif legacy_merge_telemetry_state.get(item_dir) == "started":
-                            _legacy_merge_finish(
-                                item_dir, success=False, reason="unsupported_payload"
-                            )
                     except Exception as merge_or_parse_error:
                         if legacy_merge_telemetry_state.get(item_dir) == "started":
                             _legacy_merge_finish(
