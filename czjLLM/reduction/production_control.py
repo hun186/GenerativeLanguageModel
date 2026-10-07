@@ -173,6 +173,13 @@ def finish_legacy_merge_item(ctx: Any, item_dir: Any, *, success: bool) -> None:
             items.pop(key, None)
 
 
+def legacy_merge_item_materialized(ctx: Any, item_dir: Any) -> bool:
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        return state.setdefault("legacy_merge_items", {}).get(key) == "materialized"
+
+
 def legacy_merge_item_completed(ctx: Any, item_dir: Any) -> bool:
     state = _state(ctx)
     key = _legacy_merge_item_key(item_dir)

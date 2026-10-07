@@ -2,6 +2,7 @@ from types import SimpleNamespace
 
 from czjLLM.sql_mode.runtime.orchestrator import (
     _fallback_merge_enabled, _is_reg_drained, _registry_existing_combined_artifact,
+    _registry_item_present,
 )
 
 
@@ -230,3 +231,18 @@ def test_run_merge_for_transfers_active_claim_to_materialized_state(
     # once by Row Merger for the semantic merge.
     assert observer.snapshot()["legacy_merges_completed"] == 0
     assert try_resume_materialized_legacy_merge_item(ctx, job_dir) is True
+
+
+
+def test_registry_item_present_detects_removed_row():
+    class Registry:
+        def __init__(self):
+            self.items = {"job/a": {"CombBackFN": "x"}}
+
+        def get(self, item_dir):
+            return self.items.get(item_dir)
+
+    registry = Registry()
+    assert _registry_item_present(registry, "job/a") is True
+    registry.items.pop("job/a")
+    assert _registry_item_present(registry, "job/a") is False

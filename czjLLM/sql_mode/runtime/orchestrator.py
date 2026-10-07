@@ -38,8 +38,8 @@ from .sinks.excel_sink import ExcelSink
 from czjLLM.reduction.production_control import (
     ensure_execution_cancel_event, ensure_production_observer,
     execution_cancel_requested, finish_legacy_merge_item,
-    legacy_merge_item_completed, request_execution_cancel,
-    try_begin_legacy_merge_item,
+    legacy_merge_item_completed, legacy_merge_item_materialized,
+    request_execution_cancel, try_begin_legacy_merge_item,
 )
 from czjLLM.reduction.retention import (
     parse_reduction_retention_policy,
@@ -197,6 +197,23 @@ def _can_combine(d: str) -> bool:
 def _fallback_merge_enabled(ctx) -> bool:
     """Keep the post-drain fallback gate identical to execution semantics."""
     return should_merge_slices(ctx)
+
+
+def _registry_item_present(registry, job_dir: str) -> bool:
+    getter = getattr(registry, "get", None)
+    if callable(getter):
+        try:
+            return getter(job_dir) is not None
+        except Exception:
+            pass
+    lister = getattr(registry, "list_items", None)
+    if callable(lister):
+        try:
+            return job_dir in (lister() or {})
+        except Exception:
+            pass
+    # Conservative fallback: unknown registry visibility means keep handoff.
+    return True
 
 
 def _registry_existing_combined_artifact(registry, job_dir: str) -> str:
@@ -491,9 +508,25 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                     )  # fallback 成功時必須把實際 CombBackFN handoff 給仍存活的 registry row
                     if merged_ok is not False:
                         # run_merge_for only materializes/publishes the artifact.
-                        # Row Merger owns semantic slice-merge completion.
+                        # Row Merger owns semantic slice-merge completion while
+                        # the registry row remains live. If another successful
+                        # writeback path already removed the row during fallback,
+                        # no Row Merger remains to adopt the materialized claim:
+                        # release ownership and close this fallback attempt as
+                        # superseded by the already-completed writeback.
+                        if (
+                            not _registry_item_present(registry, job_dir)
+                            and legacy_merge_item_materialized(ctx, job_dir)
+                        ):
+                            finish_legacy_merge_item(ctx, job_dir, success=False)
+                            observer.emit(
+                                "legacy_merge_completed",
+                                {"reason": "writeback_already_completed"},
+                            )
+                            tlog(f"🧩 fallback 合併已被既有成功寫回取代：{job_dir}")
+                        else:
+                            tlog(f"🧩 已產生切片合併素材，等待 Row Merger 完成語意合併：{job_dir}")
                         merged_jobs.add(job_dir)
-                        tlog(f"🧩 已產生切片合併素材，等待 Row Merger 完成語意合併：{job_dir}")
                     else:
                         finish_legacy_merge_item(ctx, job_dir, success=False)
                         observer.emit("legacy_merge_failed", {"reason": "no_output"})
