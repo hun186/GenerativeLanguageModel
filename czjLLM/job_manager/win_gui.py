@@ -286,25 +286,51 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     lbl_eta = ttk.Label(frm, foreground="#555")
     lbl_eta.pack(anchor="w", pady=(0, 8))
 
-    recheck_section = ttk.Frame(frm)
-    recheck_section.pack(fill="x", pady=(0, 4))
+    # Recheck / Reduction 都是短摘要＋可展開細節；並排可把垂直空間
+    # 留給主要執行日誌。兩欄等寬，展開狀態仍各自獨立。
+    status_row = ttk.Frame(frm)
+    status_row.pack(fill="x", pady=(0, 4))
+    status_row.columnconfigure(0, weight=1, uniform="status")
+    status_row.columnconfigure(1, weight=1, uniform="status")
+
+    recheck_section = ttk.Frame(status_row)
+    recheck_section.grid(row=0, column=0, sticky="nsew", padx=(0, 4))
     recheck_toggle = ttk.Button(recheck_section)
     recheck_toggle.pack(fill="x")
     recheck_frame = ttk.Frame(recheck_section, padding=(8, 5))
-    lbl_recheck = ttk.Label(recheck_frame, text=format_recheck_stats({}), justify="left")
+    lbl_recheck = ttk.Label(
+        recheck_frame, text=format_recheck_stats({}), justify="left", wraplength=320
+    )
     lbl_recheck.pack(anchor="w")
 
-    reduction_section = ttk.Frame(frm)
-    reduction_section.pack(fill="x", pady=(0, 4))
+    reduction_section = ttk.Frame(status_row)
+    reduction_section.grid(row=0, column=1, sticky="nsew", padx=(4, 0))
     reduction_header = ttk.Frame(reduction_section)
     reduction_header.pack(fill="x")
+    # 右側控制區先 pack，確保窄視窗／DPI scaling 下 Cancel 不會被
+    # 左側可伸展的摘要按鈕擠出可視範圍。
+    reduction_controls = ttk.Frame(reduction_header)
+    reduction_controls.pack(side="right")
+    cancel_status = ttk.Label(reduction_controls, text="Running")
+    cancel_status.pack(side="left", padx=(8, 6))
     reduction_toggle = ttk.Button(reduction_header)
     reduction_toggle.pack(side="left", fill="x", expand=True)
-    cancel_status = ttk.Label(reduction_header, text="Running")
-    cancel_status.pack(side="left", padx=(8, 6))
     reduction_frame = ttk.Frame(reduction_section, padding=(8, 5))
-    lbl_reduction = ttk.Label(reduction_frame, text=format_reduction_stats({}), justify="left")
+    lbl_reduction = ttk.Label(
+        reduction_frame, text=format_reduction_stats({}), justify="left", wraplength=320
+    )
     lbl_reduction.pack(anchor="w")
+
+    def _resize_status_detail_wrap(event):
+        # Each status section owns half the row. Leave room for the inter-panel
+        # gutter and the detail-frame padding, then let long diagnostic lines
+        # wrap instead of disappearing beyond the visible column.
+        column_width = max(180, (int(event.width) - 8) // 2)
+        wrap = max(160, column_width - 24)
+        lbl_recheck.configure(wraplength=wrap)
+        lbl_reduction.configure(wraplength=wrap)
+
+    status_row.bind("<Configure>", _resize_status_detail_wrap)
 
     def _refresh_recheck_header():
         arrow = "▼" if _recheck_expanded else "▶"
@@ -345,7 +371,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         cancel_button.configure(state="disabled")
         cancel_status.configure(text="Cancellation requested")
 
-    cancel_button = ttk.Button(reduction_header, text="Cancel", command=_request_cancel)
+    cancel_button = ttk.Button(reduction_controls, text="Cancel", command=_request_cancel)
     cancel_button.pack(side="right")
     _refresh_recheck_header()
     _refresh_reduction_header()
