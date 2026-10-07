@@ -18,9 +18,60 @@ class _GuiEvents:
     REDUCTION: str = "reduction"
 
 
+def _reduction_mode(stats: dict) -> str:
+    return str(stats.get("activity_mode", "") or "").strip().lower()
+
+
+def format_reduction_summary(stats: dict) -> str:
+    mode = _reduction_mode(stats)
+    if mode == "legacy_merge_slices":
+        return (
+            "Legacy merge_slices · "
+            f"Merged {int(stats.get('legacy_merges_completed', 0) or 0):,}/"
+            f"{int(stats.get('legacy_merges_started', 0) or 0):,} · "
+            f"Errors {int(stats.get('legacy_merges_failed', 0) or 0):,}"
+        )
+    if mode == "inactive":
+        return "Reduction Engine inactive"
+    if mode == "configured_reduction":
+        return f"Configured reduction · {str(stats.get('run_status', 'running')).replace('_', ' ').title()}"
+    if mode == "reduction_stage":
+        return (
+            f"Stages {int(stats.get('stages_completed', 0) or 0):,}/"
+            f"{int(stats.get('stages_started', 0) or 0):,} · "
+            f"Members {int(stats.get('members_succeeded', 0) or 0):,}/"
+            f"{int(stats.get('members_attempted', 0) or 0):,} · "
+            f"Errors {int(stats.get('stages_failed', 0) or 0):,}"
+        )
+    return "Waiting for runtime status"
+
+
 def format_reduction_stats(stats: dict) -> str:
     status = str(stats.get("run_status", "running") or "running").replace("_", " ").title()
+    mode = _reduction_mode(stats)
+    if mode == "legacy_merge_slices":
+        failed = int(stats.get("legacy_merges_failed", 0) or 0)
+        return (
+            "Mode: Legacy merge_slices (ReductionStage not active)\n"
+            f"Merge attempts: {int(stats.get('legacy_merges_completed', 0) or 0):,} / "
+            f"{int(stats.get('legacy_merges_started', 0) or 0):,}   Failed: {failed:,}\n"
+            f"Cancellation: {status}   Errors: {failed:,}"
+        )
+    if mode == "inactive":
+        return (
+            "Reduction Engine: Not active\n"
+            "Legacy merge_slices: off\n"
+            f"Cancellation: {status}   Errors: 0"
+        )
+    mode_line = (
+        "Mode: Configured reduction"
+        if mode == "configured_reduction"
+        else "Mode: ReductionStage"
+        if mode == "reduction_stage"
+        else "Mode: Waiting for runtime status"
+    )
     return (
+        f"{mode_line}\n"
         f"Stages: {int(stats.get('stages_completed', 0) or 0):,} / "
         f"{int(stats.get('stages_started', 0) or 0):,}\n"
         f"Members: {int(stats.get('members_succeeded', 0) or 0):,} / "
@@ -33,7 +84,19 @@ def format_reduction_stats(stats: dict) -> str:
 
 
 def reduction_status_is_error(stats: dict) -> bool:
-    return int(stats.get("stages_failed", 0) or 0) > 0
+    return (
+        int(stats.get("stages_failed", 0) or 0) > 0
+        or int(stats.get("legacy_merges_failed", 0) or 0) > 0
+    )
+
+
+def format_recheck_summary(stats: dict) -> str:
+    return (
+        f"Checked {int(stats.get('checked', 0) or 0):,} · "
+        f"Need {int(stats.get('pending', 0) or 0):,} · "
+        f"Skipped {int(stats.get('already_completed', 0) or 0):,} · "
+        f"Errors {int(stats.get('errors', 0) or 0):,}"
+    )
 
 
 def format_recheck_stats(stats: dict) -> str:
@@ -144,6 +207,8 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     _recheck_stats = {}
     _recheck_error_visible = False
     _reduction_stats = {}
+    _recheck_expanded = False
+    _reduction_expanded = False
 
     # ---- ETA 估算狀態（指數平滑，降低抖動）----
     _t0 = None            # 開始時間（第一次排程/完成時啟動）
@@ -221,24 +286,95 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     lbl_eta = ttk.Label(frm, foreground="#555")
     lbl_eta.pack(anchor="w", pady=(0, 8))
 
-    recheck_frame = ttk.LabelFrame(frm, text="Recheck Status", padding=(8, 5))
-    recheck_frame.pack(fill="x", pady=(0, 8))
-    lbl_recheck = ttk.Label(recheck_frame, text=format_recheck_stats({}), justify="left")
+    # Recheck / Reduction 都是短摘要＋可展開細節；並排可把垂直空間
+    # 留給主要執行日誌。兩欄等寬，展開狀態仍各自獨立。
+    status_row = ttk.Frame(frm)
+    status_row.pack(fill="x", pady=(0, 4))
+    status_row.columnconfigure(0, weight=1, uniform="status")
+    status_row.columnconfigure(1, weight=1, uniform="status")
+
+    recheck_section = ttk.Frame(status_row)
+    recheck_section.grid(row=0, column=0, sticky="nsew", padx=(0, 4))
+    recheck_toggle = ttk.Button(recheck_section)
+    recheck_toggle.pack(fill="x")
+    recheck_frame = ttk.Frame(recheck_section, padding=(8, 5))
+    lbl_recheck = ttk.Label(
+        recheck_frame, text=format_recheck_stats({}), justify="left", wraplength=320
+    )
     lbl_recheck.pack(anchor="w")
 
-    reduction_frame = ttk.LabelFrame(frm, text="Reduction Status", padding=(8, 5))
-    reduction_frame.pack(fill="x", pady=(0, 8))
-    lbl_reduction = ttk.Label(reduction_frame, text=format_reduction_stats({}), justify="left")
+    reduction_section = ttk.Frame(status_row)
+    reduction_section.grid(row=0, column=1, sticky="nsew", padx=(4, 0))
+    reduction_header = ttk.Frame(reduction_section)
+    reduction_header.pack(fill="x")
+    # 右側控制區先 pack，確保窄視窗／DPI scaling 下 Cancel 不會被
+    # 左側可伸展的摘要按鈕擠出可視範圍。
+    reduction_controls = ttk.Frame(reduction_header)
+    reduction_controls.pack(side="right")
+    cancel_status = ttk.Label(reduction_controls, text="Running")
+    cancel_status.pack(side="left", padx=(8, 6))
+    reduction_toggle = ttk.Button(reduction_header)
+    reduction_toggle.pack(side="left", fill="x", expand=True)
+    reduction_frame = ttk.Frame(reduction_section, padding=(8, 5))
+    lbl_reduction = ttk.Label(
+        reduction_frame, text=format_reduction_stats({}), justify="left", wraplength=320
+    )
     lbl_reduction.pack(anchor="w")
-    cancel_status = ttk.Label(reduction_frame, text="Running")
-    cancel_status.pack(anchor="w")
+
+    def _resize_status_detail_wrap(event):
+        # Each status section owns half the row. Leave room for the inter-panel
+        # gutter and the detail-frame padding, then let long diagnostic lines
+        # wrap instead of disappearing beyond the visible column.
+        column_width = max(180, (int(event.width) - 8) // 2)
+        wrap = max(160, column_width - 24)
+        lbl_recheck.configure(wraplength=wrap)
+        lbl_reduction.configure(wraplength=wrap)
+
+    status_row.bind("<Configure>", _resize_status_detail_wrap)
+
+    def _refresh_recheck_header():
+        arrow = "▼" if _recheck_expanded else "▶"
+        recheck_toggle.configure(
+            text=f"{arrow} Recheck Status — {format_recheck_summary(_recheck_stats)}"
+        )
+
+    def _refresh_reduction_header():
+        arrow = "▼" if _reduction_expanded else "▶"
+        reduction_toggle.configure(
+            text=f"{arrow} Reduction Status — {format_reduction_summary(_reduction_stats)}"
+        )
+
+    def _toggle_recheck():
+        nonlocal _recheck_expanded
+        _recheck_expanded = not _recheck_expanded
+        if _recheck_expanded:
+            recheck_frame.pack(fill="x")
+        else:
+            recheck_frame.pack_forget()
+        _refresh_recheck_header()
+
+    def _toggle_reduction():
+        nonlocal _reduction_expanded
+        _reduction_expanded = not _reduction_expanded
+        if _reduction_expanded:
+            reduction_frame.pack(fill="x")
+        else:
+            reduction_frame.pack_forget()
+        _refresh_reduction_header()
+
+    recheck_toggle.configure(command=_toggle_recheck)
+    reduction_toggle.configure(command=_toggle_reduction)
+
     def _request_cancel():
         if not cancel_event.is_set():
             cancel_event.set()
         cancel_button.configure(state="disabled")
         cancel_status.configure(text="Cancellation requested")
-    cancel_button = ttk.Button(reduction_frame, text="Cancel", command=_request_cancel)
-    cancel_button.pack(anchor="e")
+
+    cancel_button = ttk.Button(reduction_controls, text="Cancel", command=_request_cancel)
+    cancel_button.pack(side="right")
+    _refresh_recheck_header()
+    _refresh_reduction_header()
 
     _update_labels()
 
@@ -307,6 +443,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                         text=format_recheck_stats(_recheck_stats),
                         foreground="#b00020" if has_error else "#333333",
                     )
+                    _refresh_recheck_header()
                     if has_error and not _recheck_error_visible:
                         append(f"⚠️ Pending recheck errors: {_recheck_stats.get('errors', 0)}")
                     _recheck_error_visible = has_error
@@ -316,6 +453,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                         text=format_reduction_stats(_reduction_stats),
                         foreground="#b00020" if reduction_status_is_error(_reduction_stats) else "#333333",
                     )
+                    _refresh_reduction_header()
                     if _reduction_stats.get("run_status") == "cancelled":
                         cancel_status.configure(text="Cancelled / safely drained")
                         cancel_button.configure(state="disabled")

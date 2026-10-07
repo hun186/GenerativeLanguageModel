@@ -2,7 +2,7 @@
 
 ## Current Summary
 
-**Reduction Engine v1 = COMPLETE / RELEASE-READY.** A–L is complete, the L3 release-audit reporting blocker was resolved by PR #201, and the documentation/release closure was merged by PR #200. Authoritative `main` baseline: verified merge `99d79676b16b7fed54f9cf6e701441db79846cea`.
+**Reduction Engine v1 = COMPLETE / RELEASE-READY.** A–L is complete, the L3 release-audit reporting blocker was resolved by PR #201, and the documentation/release closure was merged by PR #200. Authoritative Reduction v1 closure baseline: verified merge `99d79676b16b7fed54f9cf6e701441db79846cea`; later Hosted `main` includes the accepted GUI observability/layout fixes through `4a2eb27942d1bfda3ae845e877f5bac7d5df811c`.
 
 PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079aefaab1ba1f4` passed CI #467 / `37420475520`, offline job `112128483703`, collect 24 and full gate PASS / 100%, with zero unresolved review threads and a fresh Codex review reporting no major issues.
 
