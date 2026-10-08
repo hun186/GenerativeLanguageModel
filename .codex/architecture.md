@@ -7,7 +7,7 @@
 - `combine_utils.py` remains the compatibility boundary for Success discovery, output placement, final writes and legacy cleanup; JSON repair/combination and slice-merge logic live in focused modules.
 - Row Merger remains downstream writeback coordination and Output Profile remains the final strict validation boundary. Reduction Core does not own either boundary.
 - ES connection/pending behavior is separated into adapter, pending-policy and value-helper boundaries. Model metadata persistence uses allowlisted non-secret fields; credentials and raw endpoint URLs are excluded.
-- Per-run LLM auditing records API usage tokens and context metadata from response/runtime/model sources. Context size is never guessed from a display name; CSV and XLSX artifacts are produced per run.
+- Per-run LLM auditing records authoritative API usage tokens/context metadata plus optional local prompt-component token estimates. Context size is never guessed from a display name; CSV/XLSX artifacts are produced per run. The Windows GUI polls the current run CSV for a default-collapsed distribution view, while numeric-only prompt-component handoff metadata lives outside TODO/RUNNING so it cannot enter the prompt queue.
 - Reduction Engine v1 A–L plus the L3 release-audit corrective and documentation closure are present at verified `main` merge `99d79676b16b7fed54f9cf6e701441db79846cea`.
 - Reduction flow is map/member execution → reducer → optional hierarchical rounds → final result → optional persisted aggregate/writeback. The core owns strict config, deterministic/semantic/structured-relational reducers, atomic checkpoints, shared execution budget, executable stages, explicit partial success and cooperative cancellation.
 - Collection boundaries use immutable ordered `LogicalWorkUnit` / `CollectionManifest` snapshots. SQL/ES adapters build snapshots and idempotent aggregate sinks persist `AggregateOutput` using deterministic lineage identity.
@@ -20,6 +20,11 @@
 - Successful hierarchical final writes use `cleanup_transient_on_success: true` by default, which performs the post-success transient cleanup path with effective transient TTL zero. Set it false to retain successful runtime workspaces for `transient_runtime_ttl_hours`.
 
 ## Recent Changes
+
+### 2026-10-08 LLM token/context distribution observability
+
+- Added local task-text/template/rendered-prompt token estimates at prompt-generation time and keeps API usage authoritative for input/output/context occupancy. Multi-stage prompt replacement refreshes the numeric metadata for the actual dispatched prompt and clears stale metadata on count failure.
+- A daemon audit-reader thread inside the Windows GUI process checks the append-only per-run audit CSV at a throttled cadence and performs CSV parsing plus distribution calculation off the Tk event loop. Tk only consumes completed snapshots, preserving progress/log/Cancel responsiveness while rendering default-collapsed token/context plus prompt-backed Slice latency distributions.
 
 ### 2026-10-06 v1.1 final quality/coverage hook
 

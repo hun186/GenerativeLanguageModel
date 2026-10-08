@@ -8,6 +8,7 @@ from ..taskConfig import taskSetting
 import inspect
 
 from ..tokenizer_utils import TokenizerWrapper
+from ..utilities.llm_call_audit import clear_prompt_token_metadata, write_prompt_token_metadata
 from ..job_manager.job_config import LLMJobConfig
 from ..job_manager.job_config import getTextClass
 from ..job_manager.job_config import getKeyConsiderations
@@ -85,6 +86,25 @@ def append_no_think_if_applicable(
     return content if _has_no_think_suffix(content, suffix) else (content.rstrip() + "\n" + suffix)
 
 
+def finalize_llm_user_content(
+    content: str,
+    *,
+    model_spec=None,
+    model_name: str = "",
+    no_think_process: bool = True,
+) -> str:
+    """Apply the same runtime user-content suffix policy used at dispatch."""
+    spec = dict(model_spec or {})
+    effective_model = str(spec.get("model_name", model_name) or model_name or "")
+    override_suffix = spec.get("no_think_suffix", None)
+    return append_no_think_if_applicable(
+        content=content,
+        model_name=effective_model.lower(),
+        enabled=bool(no_think_process),
+        override_suffix=override_suffix,
+    )
+
+
 def _render_raw_task_prompt(task_text: str, content: str) -> str:
     """
     當 ctx.task 不是 taskSetting key（例如 multi-stage 直接給 prompt 字串）時，
@@ -144,6 +164,47 @@ def generate_prompt(content="",
     #print("prompt",prompt)
     # ✅ 在此統一處理 no_think 的後綴
     return prompt + "\n/no_think" if not think_mode else prompt
+
+def write_prompt_component_metrics(
+    prompt_file: str,
+    task_text: str,
+    rendered_prompt: str,
+    *,
+    tokenizer: TokenizerWrapper | None = None,
+    model_name: str = "",
+    model_spec=None,
+    no_think_process: bool = True,
+    task: str = "",
+    quiet: bool = False,
+):
+    """Refresh numeric prompt-component token metadata for the actual prompt.
+
+    Existing metadata is cleared first so a tokenizer/count failure leaves the
+    component metrics unknown instead of silently reusing stale stage values.
+    """
+    clear_prompt_token_metadata(prompt_file)
+    tokenizer = tokenizer or TokenizerWrapper(model_name=model_name, task=task)
+    try:
+        task_text_tokens = tokenizer.count_tokens(task_text)
+        finalized_prompt = finalize_llm_user_content(
+            rendered_prompt,
+            model_spec=model_spec,
+            model_name=model_name,
+            no_think_process=no_think_process,
+        )
+        rendered_prompt_tokens = tokenizer.count_tokens(finalized_prompt)
+        metadata = {
+            "task_text_tokens": task_text_tokens,
+            "rendered_prompt_tokens": rendered_prompt_tokens,
+            "template_tokens": max(rendered_prompt_tokens - task_text_tokens, 0),
+        }
+        write_prompt_token_metadata(prompt_file, **metadata)
+        return metadata
+    except Exception as exc:
+        if not quiet:
+            print(f"⚠️ prompt token component metrics unavailable: {type(exc).__name__}")
+        return None
+
 
 # 建立 module-level 記憶（若你後續要做跨段聚合可沿用）
 _input_memory = {}
@@ -227,15 +288,18 @@ def process_file_to_prompt(file_path, ctx, adjust=True):
     #print("ctx in process_file_to_prompt",ctx)
     for idx, CTXPiece in enumerate(chunks["ctxCut"]):
         #print("process_chunk_to_generate_prompt for i,CTXPiece",idx,CTXPiece)
-        process_chunk_to_generate_prompt(idx, CTXPiece, ctx)
+        process_chunk_to_generate_prompt(idx, CTXPiece, ctx, tokenizer=tokenizer)
         
-def process_chunk_to_generate_prompt(idx: int, ctx_piece: str, ctx: LLMJobConfig):
+def process_chunk_to_generate_prompt(idx: int, ctx_piece: str, ctx: LLMJobConfig, tokenizer: TokenizerWrapper | None = None):
     if not ctx_piece.strip():
         print(f"⚠️ 第 {idx} 段內容為空，跳過。")
         return
     #print("ctx in process_chunk_to_generate_prompt",ctx)
     generator = PromptGenerator(ctx)
     prompt = generator.build(content=ctx_piece)
+    tokenizer = tokenizer or TokenizerWrapper(
+        model_name=ctx.model_spec_name, task=ctx.task
+    )
     #print("ctx.current_file",ctx.current_file)
     #print("ctx.llm_source_dir",ctx.llm_source_dir)
     #print("ctx.prompt_dir",ctx.prompt_dir)
@@ -255,6 +319,16 @@ def process_chunk_to_generate_prompt(idx: int, ctx_piece: str, ctx: LLMJobConfig
             #print(f"Writting prompt: {prompt} to {todo_fn}")
             #print("todo_fn",{todo_fn})
             fp.write(prompt)
+        write_prompt_component_metrics(
+            todo_fn,
+            ctx_piece,
+            prompt,
+            tokenizer=tokenizer,
+            model_name=ctx.model_spec_name,
+            model_spec=getattr(ctx, "model_spec", None),
+            task=ctx.task,
+            quiet=bool(getattr(ctx, "suppress_prompt_diagnostics", False)),
+        )
     except Exception as e:
         print(f"❌ 寫入 {todo_fn} 失敗：{e}")
 

@@ -1,7 +1,11 @@
 # czjLLM/job_manager/win_gui.py
+import csv
+import math
+import os
 import sys
 import multiprocessing as mp
 import queue as pyqueue
+import threading
 from dataclasses import dataclass
 
 # 僅 Windows 啟用 GUI；其他平台回傳 None
@@ -16,7 +20,168 @@ class _GuiEvents:
     SET_TOTAL: str = "set_total"
     RECHECK:   str = "recheck"
     REDUCTION: str = "reduction"
+    AUDIT_PATH: str = "audit_path"
 
+
+
+_AUDIT_SERIES = (
+    ("input_tokens", "Input tokens", False),
+    ("output_tokens", "Output tokens", False),
+    ("template_tokens", "Template tokens", False),
+    ("task_text_tokens", "Task text tokens", False),
+    ("context_usage_ratio", "Context usage", True),
+    ("elapsed_seconds", "Slice latency", False),
+)
+
+
+def _audit_float(value):
+    try:
+        if value is None or str(value).strip() == "":
+            return None
+        parsed = float(value)
+        return parsed if math.isfinite(parsed) else None
+    except Exception:
+        return None
+
+
+def _audit_percentile(values, q: float) -> float:
+    ordered = sorted(float(v) for v in values)
+    if not ordered:
+        return 0.0
+    if len(ordered) == 1:
+        return ordered[0]
+    pos = min(max(float(q), 0.0), 1.0) * (len(ordered) - 1)
+    lo = int(math.floor(pos))
+    hi = int(math.ceil(pos))
+    if lo == hi:
+        return ordered[lo]
+    weight = pos - lo
+    return ordered[lo] * (1.0 - weight) + ordered[hi] * weight
+
+
+def _audit_metric_snapshot(values, bins: int = 24) -> dict:
+    vals = [float(v) for v in values if v is not None and math.isfinite(float(v))]
+    if not vals:
+        return {
+            "count": 0, "min": 0.0, "p50": 0.0, "p95": 0.0, "max": 0.0,
+            "mean": 0.0, "histogram": (),
+        }
+    lo, hi = min(vals), max(vals)
+    bucket_count = max(1, int(bins))
+    counts = [0] * bucket_count
+    if hi <= lo:
+        counts[0] = len(vals)
+    else:
+        span = hi - lo
+        for value in vals:
+            idx = min(bucket_count - 1, int(((value - lo) / span) * bucket_count))
+            counts[idx] += 1
+    return {
+        "count": len(vals),
+        "min": lo,
+        "p50": _audit_percentile(vals, 0.50),
+        "p95": _audit_percentile(vals, 0.95),
+        "max": hi,
+        "mean": sum(vals) / len(vals),
+        "histogram": tuple(counts),
+    }
+
+
+def load_llm_audit_distribution(audit_path: str) -> dict:
+    """Read one append-only audit CSV into payload-free numeric distributions."""
+    values = {name: [] for name, _, _ in _AUDIT_SERIES}
+    calls = 0
+    failures = 0
+    component_rows = 0
+    if not audit_path:
+        return {"calls": 0, "failures": 0, "component_rows": 0, "metrics": {
+            name: _audit_metric_snapshot(()) for name, _, _ in _AUDIT_SERIES
+        }}
+    try:
+        with open(audit_path, "r", newline="", encoding="utf-8") as fp:
+            for row in csv.DictReader(fp):
+                if not isinstance(row, dict):
+                    continue
+                calls += 1
+                if str(row.get("ok", "")).strip().upper() == "NO":
+                    failures += 1
+                has_components = False
+                usage_source = str(row.get("token_usage_source", "") or "").strip().lower()
+                has_api_usage = usage_source in {"", "llm_api_usage"}
+                for name, _, as_percent in _AUDIT_SERIES:
+                    # A failed call can have a known context limit but no API
+                    # usage. Do not turn that into a synthetic zero-token call.
+                    if name in {"input_tokens", "output_tokens", "context_usage_ratio"} and not has_api_usage:
+                        continue
+                    if name == "elapsed_seconds" and not str(row.get("prompt_file", "") or "").strip():
+                        # JSON repair and other direct calls are valid overall
+                        # audit rows, but they are not one filesystem-backed
+                        # source slice. Keep slice-latency distribution literal.
+                        continue
+                    parsed = _audit_float(row.get(name))
+                    if parsed is None:
+                        continue
+                    if as_percent:
+                        parsed *= 100.0
+                    values[name].append(parsed)
+                    if name in {"template_tokens", "task_text_tokens"}:
+                        has_components = True
+                if has_components:
+                    component_rows += 1
+    except (OSError, csv.Error, UnicodeError):
+        pass
+    return {
+        "calls": calls,
+        "failures": failures,
+        "component_rows": component_rows,
+        "metrics": {
+            name: _audit_metric_snapshot(values[name]) for name, _, _ in _AUDIT_SERIES
+        },
+    }
+
+
+def _fmt_audit_number(value: float) -> str:
+    value = float(value or 0.0)
+    if abs(value) >= 1_000_000:
+        return f"{value / 1_000_000:.1f}M"
+    if abs(value) >= 1_000:
+        return f"{value / 1_000:.1f}k"
+    return f"{value:.0f}"
+
+
+def format_llm_audit_summary(stats: dict) -> str:
+    calls = int(stats.get("calls", 0) or 0)
+    if calls <= 0:
+        return "No LLM calls yet"
+    metrics = stats.get("metrics", {}) or {}
+    context = metrics.get("context_usage_ratio", {}) or {}
+    input_stats = metrics.get("input_tokens", {}) or {}
+    output_stats = metrics.get("output_tokens", {}) or {}
+    latency = metrics.get("elapsed_seconds", {}) or {}
+    component_rows = int(stats.get("component_rows", 0) or 0)
+    context_text = (
+        f"Context P50 {float(context.get('p50', 0) or 0):.1f}% / "
+        f"P95 {float(context.get('p95', 0) or 0):.1f}%"
+        if int(context.get("count", 0) or 0) > 0 else "Context unknown"
+    )
+    latency_text = (
+        f"Latency P50/P95 {float(latency.get('p50', 0) or 0):.1f}/"
+        f"{float(latency.get('p95', 0) or 0):.1f}s"
+        if int(latency.get("count", 0) or 0) > 0 else "Latency unknown"
+    )
+    input_text = (
+        f"In P50 {_fmt_audit_number(input_stats.get('p50', 0))}"
+        if int(input_stats.get("count", 0) or 0) > 0 else "In unknown"
+    )
+    output_text = (
+        f"Out P50 {_fmt_audit_number(output_stats.get('p50', 0))}"
+        if int(output_stats.get("count", 0) or 0) > 0 else "Out unknown"
+    )
+    return (
+        f"Calls {calls:,} · {context_text} · "
+        f"{input_text} · {output_text} · "
+        f"{latency_text} · Components {component_rows:,}/{calls:,}"
+    )
 
 def _reduction_mode(stats: dict) -> str:
     return str(stats.get("activity_mode", "") or "").strip().lower()
@@ -145,6 +310,42 @@ def _enable_windows_dpi_awareness():
     except Exception:
         pass
 
+def _audit_reader_worker(path_queue, result_queue, stop_event, poll_interval: float = 1.0):
+    """Parse growing audit CSVs off the Tk event-loop thread."""
+    audit_path = ""
+    mtime_ns = None
+    while not stop_event.is_set():
+        try:
+            while True:
+                audit_path = str(path_queue.get_nowait() or "")
+                mtime_ns = None
+        except pyqueue.Empty:
+            pass
+
+        if audit_path:
+            try:
+                stat = os.stat(audit_path)
+                current_mtime = getattr(
+                    stat, "st_mtime_ns", int(stat.st_mtime * 1_000_000_000)
+                )
+            except OSError:
+                current_mtime = None
+            if current_mtime is not None and current_mtime != mtime_ns:
+                mtime_ns = current_mtime
+                stats = load_llm_audit_distribution(audit_path)
+                try:
+                    while True:
+                        result_queue.get_nowait()
+                except pyqueue.Empty:
+                    pass
+                try:
+                    result_queue.put_nowait(stats)
+                except pyqueue.Full:
+                    pass
+
+        stop_event.wait(max(0.05, float(poll_interval)))
+
+
 def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     """子行程內執行：所有 Tk 操作都在這裡，避免跨緒/跨行程錯誤。"""
     _enable_windows_dpi_awareness()
@@ -207,8 +408,21 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     _recheck_stats = {}
     _recheck_error_visible = False
     _reduction_stats = {}
+    _audit_stats = load_llm_audit_distribution("")
+    _audit_path = ""
+    _audit_path_queue = pyqueue.Queue(maxsize=2)
+    _audit_result_queue = pyqueue.Queue(maxsize=1)
+    _audit_reader_stop = threading.Event()
+    _audit_reader_thread = threading.Thread(
+        target=_audit_reader_worker,
+        args=(_audit_path_queue, _audit_result_queue, _audit_reader_stop),
+        name="llm-audit-gui-reader",
+        daemon=True,
+    )
+    _audit_reader_thread.start()
     _recheck_expanded = False
     _reduction_expanded = False
+    _audit_expanded = False
 
     # ---- ETA 估算狀態（指數平滑，降低抖動）----
     _t0 = None            # 開始時間（第一次排程/完成時啟動）
@@ -332,6 +546,100 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
 
     status_row.bind("<Configure>", _resize_status_detail_wrap)
 
+    # LLM token/context distributions are collapsed by default. The GUI reads
+    # the append-only audit CSV so worker execution does not need GUI coupling.
+    audit_section = ttk.Frame(frm)
+    audit_section.pack(fill="x", pady=(0, 4))
+    audit_toggle = ttk.Button(audit_section)
+    audit_toggle.pack(fill="x")
+    audit_frame = ttk.Frame(audit_section, padding=(8, 5))
+    audit_canvas = tk.Canvas(
+        audit_frame, height=230, highlightthickness=0, background="white"
+    )
+    audit_canvas.pack(fill="x", expand=True)
+
+    def _draw_audit_distribution():
+        audit_canvas.delete("all")
+        width = max(640, int(audit_canvas.winfo_width() or 640))
+        height = 230
+        metrics = (_audit_stats.get("metrics", {}) or {})
+        series = [
+            ("input_tokens", "Input", "#2f6fed"),
+            ("output_tokens", "Output", "#18864b"),
+            ("template_tokens", "Template", "#c46a00"),
+            ("task_text_tokens", "Task text", "#7a4cc2"),
+            ("context_usage_ratio", "Context %", "#b00020"),
+            ("elapsed_seconds", "Slice latency", "#6b7280"),
+        ]
+        cols = 3
+        cell_w = width / cols
+        cell_h = height / 2
+        for idx, (key, title, color) in enumerate(series):
+            row = idx // cols
+            col = idx % cols
+            x0 = col * cell_w + 10
+            y0 = row * cell_h + 8
+            x1 = (col + 1) * cell_w - 10
+            y1 = (row + 1) * cell_h - 12
+            snap = metrics.get(key, {}) or {}
+            count = int(snap.get("count", 0) or 0)
+            p50 = float(snap.get("p50", 0) or 0)
+            p95 = float(snap.get("p95", 0) or 0)
+            suffix = "%" if key == "context_usage_ratio" else "s" if key == "elapsed_seconds" else ""
+            audit_canvas.create_text(
+                x0, y0, anchor="nw", text=f"{title}  n={count:,}",
+                fill="#222222", font=("Segoe UI", 9, "bold")
+            )
+            percentile_text = (
+                (
+                    f"P50 {p50:.1f}{suffix}   P95 {p95:.1f}{suffix}   "
+                    f"max {float(snap.get('max', 0) or 0):.1f}{suffix}"
+                )
+                if count > 0
+                else "P50 unknown   P95 unknown   max unknown"
+            )
+            audit_canvas.create_text(
+                x0, y0 + 18, anchor="nw",
+                text=percentile_text,
+                fill="#555555", font=("Segoe UI", 8)
+            )
+            top = y0 + 40
+            bottom = y1
+            audit_canvas.create_line(x0, bottom, x1, bottom, fill="#dddddd")
+            histogram = tuple(snap.get("histogram", ()) or ())
+            peak = max(histogram) if histogram else 0
+            if peak <= 0 or len(histogram) < 2:
+                audit_canvas.create_text(
+                    (x0 + x1) / 2, (top + bottom) / 2,
+                    text="waiting for data", fill="#999999", font=("Segoe UI", 8)
+                )
+                continue
+            points = []
+            for bucket_idx, bucket_value in enumerate(histogram):
+                x = x0 + (x1 - x0) * bucket_idx / max(1, len(histogram) - 1)
+                y = bottom - (bottom - top) * float(bucket_value) / float(peak)
+                points.extend((x, y))
+            audit_canvas.create_line(*points, fill=color, width=2, smooth=True)
+
+    def _refresh_audit_header():
+        arrow = "▼" if _audit_expanded else "▶"
+        audit_toggle.configure(
+            text=f"{arrow} LLM Token / Context Distribution — {format_llm_audit_summary(_audit_stats)}"
+        )
+
+    def _toggle_audit():
+        nonlocal _audit_expanded
+        _audit_expanded = not _audit_expanded
+        if _audit_expanded:
+            audit_frame.pack(fill="x")
+            root.after_idle(_draw_audit_distribution)
+        else:
+            audit_frame.pack_forget()
+        _refresh_audit_header()
+
+    audit_toggle.configure(command=_toggle_audit)
+    _refresh_audit_header()
+
     def _refresh_recheck_header():
         arrow = "▼" if _recheck_expanded else "▶"
         recheck_toggle.configure(
@@ -401,6 +709,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         _update_labels()
 
     def _shutdown():
+        _audit_reader_stop.set()
         try:
             root.quit()
         except Exception:
@@ -415,6 +724,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     # 事件輪詢：全部在 Tk 主緒
     def poll():
         nonlocal _tot, _done_cnt, _sched_cnt, _recheck_stats, _recheck_error_visible, _reduction_stats
+        nonlocal _audit_stats, _audit_path
         try:
             updated = False
             while True:
@@ -457,10 +767,33 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                     if _reduction_stats.get("run_status") == "cancelled":
                         cancel_status.configure(text="Cancelled / safely drained")
                         cancel_button.configure(state="disabled")
+                elif evt == _GuiEvents.AUDIT_PATH:
+                    _audit_path = str(payload or "")
+                    try:
+                        while True:
+                            _audit_path_queue.get_nowait()
+                    except pyqueue.Empty:
+                        pass
+                    try:
+                        _audit_path_queue.put_nowait(_audit_path)
+                    except pyqueue.Full:
+                        pass
                 elif evt == _GuiEvents.CLOSE:
                     _shutdown(); return
         except pyqueue.Empty:
             pass
+
+        audit_updated = False
+        try:
+            while True:
+                _audit_stats = _audit_result_queue.get_nowait()
+                audit_updated = True
+        except pyqueue.Empty:
+            pass
+        if audit_updated:
+            _refresh_audit_header()
+            if _audit_expanded:
+                _draw_audit_distribution()
 
         if updated or _t0 is not None:
             _update_labels()
@@ -489,6 +822,8 @@ class _GUIClient:
     def update_recheck_stats(self, stats: dict): self._q.put((_GuiEvents.RECHECK, dict(stats)))
     def update_reduction_stats(self, stats: dict, final: bool = False):
         self._q.put((_GuiEvents.REDUCTION, dict(stats)))
+    def set_audit_path(self, audit_path: str):
+        self._q.put((_GuiEvents.AUDIT_PATH, str(audit_path or "")))
     def cancellation_requested(self) -> bool:
         return bool(self._cancel_event is not None and self._cancel_event.is_set())
 

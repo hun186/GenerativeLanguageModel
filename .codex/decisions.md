@@ -12,7 +12,7 @@
 - Operator cancellation is cooperative safe-drain. Producer cancellation and worker teardown are distinct; already-running HTTP calls are not forcibly killed.
 - Cancellation/observer/retention/concurrency settings are operational and excluded from semantic fingerprints.
 - A configured task-specific quality hook is semantic because it can accept/reject the final result; its contract/config metadata therefore participates in the stage execution fingerprint. No-hook fingerprints remain unchanged.
-- Recheck Status and Reduction Status are separate observability surfaces; diagnostic JSONL is bounded and payload-free.
+- Recheck Status and Reduction Status are separate observability surfaces; diagnostic JSONL is bounded and payload-free. LLM token/context distributions are a third default-collapsed GUI observability surface sourced from the run audit CSV, not a new execution authority.
 - Filesystem GC is disabled by default, ownership-based, bounded and conservative. Unmarked pre-L3 artifacts are never adopted; malformed state fails closed.
 - Committed checkpoints are resume authority, runtime round directories are reconstructable, and L1 persisted SQL/ES output remains cross-run reuse authority.
 - After deletion budget exhaustion, classification/reporting continues but deletion cannot resume later in the same sweep.
@@ -20,6 +20,13 @@
 - Reduction Engine v1 A–L is complete. The L3 audit corrective merged at `91e39503c8e84d17752f9d26a23ff6b34db75b9e`, and PR #200 documentation/release closure merged at verified `main` `99d79676b16b7fed54f9cf6e701441db79846cea`.
 
 ## Recent Changes
+
+### 2026-10-08 LLM audit GUI decision
+
+- Keep API-reported input/output usage authoritative; local tokenizer counts for task text/template overhead are observability estimates only.
+- Drive GUI distributions from the append-only audit CSV instead of sending per-call token/latency payloads over GUI IPC.
+- Keep prompt-component handoff numeric-only and outside TODO/RUNNING; every rendered multi-stage prompt refreshes its basename metadata, and refresh failure clears stale values rather than reusing them. Unavailable component metrics remain unknown rather than inferred from API totals.
+- Treat `elapsed_seconds` as per-slice LLM latency only when the audit row has a nonblank `prompt_file`; direct JSON repair calls remain valid audit rows but are not slice-latency samples.
 
 ### 2026-10-06 v1.1 quality-hook decision
 
