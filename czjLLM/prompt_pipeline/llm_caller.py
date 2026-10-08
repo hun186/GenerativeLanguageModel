@@ -33,10 +33,7 @@ except Exception:
 
 # ===== Qwen /no_think 能力整合 =====
 # 經由 prompt_generator 暴露的統一介面，不再硬寫 "qwen"
-from czjLLM.prompt_pipeline.prompt_generator import (
-    should_disable_think,
-    append_no_think_if_applicable,
-)
+from czjLLM.prompt_pipeline.prompt_generator import finalize_llm_user_content
 from czjLLM.utilities.llm_call_audit import resolve_context_limit
 
 
@@ -160,15 +157,13 @@ def CallLLMAPI(
     base_url = model_spec.get("base_url", base_url) or base_url
     api_key = model_spec.get("api_key", api_key) or api_key
 
-    # /no_think 覆寫（若非 None，會強制採用）
-    no_think_override = model_spec.get("no_think_suffix", None)
-
-    # 依能力表決定是否附加 /no_think（已支援 Qwen3 / Qwen2.5 / Qwen2 / 泛 qwen）
-    content = append_no_think_if_applicable(
-        content=content,
-        model_name=(model or "").lower(),
-        enabled=NoThinkProcess,
-        override_suffix=no_think_override,
+    # Finalize exactly the user content that will be dispatched. Audit
+    # prompt-component counting calls the same boundary to avoid drift.
+    content = finalize_llm_user_content(
+        content,
+        model_spec=model_spec,
+        model_name=model,
+        no_think_process=NoThinkProcess,
     )
 
     # 建立（或重用）http_client 與 OpenAI 客戶端

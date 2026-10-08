@@ -28,6 +28,10 @@ _FIELDS = [
     "input_tokens",
     "output_tokens",
     "total_tokens",
+    "task_text_tokens",
+    "template_tokens",
+    "rendered_prompt_tokens",
+    "prompt_component_token_source",
     "token_usage_source",
     "context_limit_tokens",
     "context_limit_source",
@@ -84,6 +88,83 @@ def create_llm_call_audit_run(PGMSubDir: str = "") -> dict[str, str]:
     }
 
 
+_PROMPT_TOKEN_META_SUFFIX = ".audit_tokens.json"
+
+
+def prompt_token_metadata_path(prompt_file: str) -> Path:
+    """Return metadata outside TODO/RUNNING so queue claiming never sees it."""
+    path = Path(str(prompt_file or ""))
+    if path.parent.name in {"TODO", "RUNNING", "Success"}:
+        audit_dir = path.parent.parent / ".llm_audit_tokens"
+        return audit_dir / f"{path.name}{_PROMPT_TOKEN_META_SUFFIX}"
+    return Path(str(prompt_file or "") + _PROMPT_TOKEN_META_SUFFIX)
+
+
+def clear_prompt_token_metadata(prompt_file: str) -> None:
+    """Remove stale numeric prompt-component metadata for a prompt basename."""
+    if not prompt_file:
+        return
+    try:
+        prompt_token_metadata_path(prompt_file).unlink()
+    except FileNotFoundError:
+        pass
+    except OSError:
+        pass
+
+
+def write_prompt_token_metadata(
+    prompt_file: str,
+    *,
+    task_text_tokens: int,
+    template_tokens: int,
+    rendered_prompt_tokens: int,
+    source: str = "local_tokenizer_no_special_tokens",
+) -> None:
+    """Persist numeric-only prompt component metadata next to a TODO prompt."""
+    if not prompt_file:
+        return
+    path = prompt_token_metadata_path(prompt_file)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "task_text_tokens": max(0, int(task_text_tokens or 0)),
+        "template_tokens": max(0, int(template_tokens or 0)),
+        "rendered_prompt_tokens": max(0, int(rendered_prompt_tokens or 0)),
+        "prompt_component_token_source": str(source or ""),
+    }
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    with tmp.open("w", encoding="utf-8") as fp:
+        json.dump(payload, fp, ensure_ascii=False, sort_keys=True)
+        fp.flush()
+        os.fsync(fp.fileno())
+    os.replace(tmp, path)
+
+
+def read_prompt_token_metadata(prompt_file: str) -> dict[str, Any]:
+    """Read numeric-only prompt component metadata; missing/invalid stays unknown."""
+    if not prompt_file:
+        return {}
+    path = prompt_token_metadata_path(prompt_file)
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        return {}
+    if not isinstance(raw, Mapping):
+        return {}
+    out: dict[str, Any] = {}
+    for key in ("task_text_tokens", "template_tokens", "rendered_prompt_tokens"):
+        value = raw.get(key)
+        try:
+            parsed = int(value)
+        except Exception:
+            continue
+        if parsed >= 0:
+            out[key] = parsed
+    source = raw.get("prompt_component_token_source")
+    if isinstance(source, str) and source:
+        out["prompt_component_token_source"] = source
+    return out
+
+
 def log_llm_call(
     *,
     audit_path: str | None,
@@ -98,6 +179,10 @@ def log_llm_call(
     error: str = "",
     elapsed_seconds: float | None = None,
     processing_tps: float | None = None,
+    task_text_tokens: int | None = None,
+    template_tokens: int | None = None,
+    rendered_prompt_tokens: int | None = None,
+    prompt_component_token_source: str = "",
 ) -> None:
     """Append one LLM call row. Missing usage/context fields are recorded as 0/blank."""
     if not audit_path:
@@ -131,6 +216,10 @@ def log_llm_call(
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
         "total_tokens": total_tokens,
+        "task_text_tokens": "" if task_text_tokens is None else max(0, int(task_text_tokens)),
+        "template_tokens": "" if template_tokens is None else max(0, int(template_tokens)),
+        "rendered_prompt_tokens": "" if rendered_prompt_tokens is None else max(0, int(rendered_prompt_tokens)),
+        "prompt_component_token_source": str(prompt_component_token_source or ""),
         "token_usage_source": token_usage_source,
         "context_limit_tokens": context_limit,
         "context_limit_source": context_source,

@@ -23,7 +23,7 @@ from pathlib import Path
 import faulthandler
 
 #from czjLLM.prompt_pipeline.result_handler import PromptResultHandler
-from czjLLM.prompt_pipeline.prompt_generator import generate_prompt, _render_raw_task_prompt
+from czjLLM.prompt_pipeline.prompt_generator import generate_prompt, _render_raw_task_prompt, write_prompt_component_metrics
 from czjLLM.taskConfig import taskSetting
 from czjLLM.prompt_pipeline.llm_caller import CallLLMAPI
 from czjLLM.prompt_pipeline.debug_snapshot import build_debug_snapshot
@@ -48,7 +48,7 @@ from czjLLM.job_manager.end_point_manager import select_model
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.logging_utils import CostLog
-from czjLLM.utilities.llm_call_audit import log_llm_call
+from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata
 from czjLLM.utilities.env_overrides import env_bool, env_int, load_czjllm_env_files_once
 from czjLLM.tokenizer_utils import TokenizerWrapper
 #from czjLLM.utilities.logging_utils import log_error
@@ -1220,6 +1220,21 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         if not _write_original_snapshot_from_source(item):
             _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
 
+    def _refresh_stage_prompt_metrics(root_todo_dir: str, filename: str, task_text: str, prompt_text: str):
+        # The worker claims root TODO/<basename> into RUNNING/<basename>.
+        # Refresh metadata against that logical prompt basename so every stage
+        # gets the metrics for the prompt actually dispatched.
+        logical_prompt = os.path.join(root_todo_dir, filename)
+        write_prompt_component_metrics(
+            logical_prompt,
+            task_text,
+            prompt_text,
+            model_name=getattr(ctx, "model_spec_name", "") or "",
+            model_spec=getattr(ctx, "model_spec", None),
+            task=str(getattr(ctx, "task", "") or ""),
+            quiet=bool(getattr(ctx, "suppress_prompt_diagnostics", False)),
+        )
+
     def _prepare_todo_for_stage(item: str, stage_name: str, stage_task):
         stage_def = stage_map[stage_name]
         effective_input_from = stage_def.input_from
@@ -1249,6 +1264,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 dst_fp = os.path.join(todo_dir, fp.name)
                 with open(dst_fp, "w", encoding="utf-8") as f:
                     f.write(prompt_text)
+                _refresh_stage_prompt_metrics(root_todo_dir, fp.name, src_text, prompt_text)
             return
         if (
             stage_name == stage_defs[0].name
@@ -1280,6 +1296,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 dst_fp = os.path.join(todo_dir, fp.name)
                 with open(dst_fp, "w", encoding="utf-8") as f:
                     f.write(prompt_text)
+                _refresh_stage_prompt_metrics(root_todo_dir, fp.name, "", prompt_text)
             return
 
         if not os.path.isdir(src_dir):
@@ -1297,6 +1314,9 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             dst_fp = os.path.join(todo_dir, os.path.basename(src_fp))
             with open(dst_fp, "w", encoding="utf-8") as f:
                 f.write(prompt_text)
+            _refresh_stage_prompt_metrics(
+                root_todo_dir, os.path.basename(src_fp), source_text, prompt_text
+            )
 
     def _stage_task_debug_text(stage_task) -> str:
         """優先顯示 template 原文；若無法取得則回退為精簡規格。"""
@@ -1822,6 +1842,7 @@ class PromptAPIPipeline:
         self.debug_print_max_chars = int(debug_print_max_chars)
         self.audit_run_id = audit_run_id
         self.audit_path = audit_path
+        self.audit_prompt_tokens = read_prompt_token_metadata(self.promptFile)
         
         # 1) 拿到規格的「私有」副本
         spec = deepcopy(model_spec) if model_spec else {}
@@ -1883,6 +1904,8 @@ class PromptAPIPipeline:
         err = ""
         ok = False
         base_url = None
+        response = None
+        llm_request_attempted = False
         DTBJobs_Retry = []
     
         if self.promptFile == "":
@@ -1932,23 +1955,12 @@ class PromptAPIPipeline:
                 self.model_spec["api_key"] = "ThisIsFakeKey"
     
             # 2) 呼叫 LLM
+            llm_request_attempted = True
             response, cost = CallLLMAPI(
                 self.content,
                 max_tokens=self.max_tokens,
                 model_spec=self.model_spec
             )
-            log_llm_call(
-                audit_path=self.audit_path,
-                run_id=self.audit_run_id,
-                task=self.task,
-                prompt_file=self.promptFile,
-                model_spec=self.model_spec,
-                response=response,
-                max_tokens=self.max_tokens,
-                cost_twd=cost,
-                ok=True,
-            )
-    
             # 3) token 警告
             if response.usage.completion_tokens >= self.max_tokens:
                 log_dir = "logs"
@@ -2013,25 +2025,41 @@ class PromptAPIPipeline:
     
             print(f"When run PromptAPIPipeline, the following error occurs for promptFile {self.promptFile}:\n {ex}")
             print(f"self.model_spec:{self.model_spec}")
-            log_llm_call(
-                audit_path=self.audit_path,
-                run_id=self.audit_run_id,
-                task=self.task,
-                prompt_file=self.promptFile,
-                model_spec=self.model_spec,
-                response=None,
-                max_tokens=self.max_tokens,
-                cost_twd=cost,
-                ok=False,
-                error=str(ex),
-            )
-    
         finally:
             try:
                 if base_url:
                     release_url_load(base_url, PGMSubDir=self.PGMSubDir)
             except Exception:
                 pass
+
+        # One row per actual LLM request. Defer audit until post-processing and
+        # persistence settle so a successful HTTP response followed by a local
+        # failure cannot create both success and failure rows.
+        if llm_request_attempted:
+            try:
+                log_llm_call(
+                    audit_path=self.audit_path,
+                    run_id=self.audit_run_id,
+                    task=self.task,
+                    prompt_file=self.promptFile,
+                    model_spec=self.model_spec,
+                    response=response,
+                    max_tokens=self.max_tokens,
+                    cost_twd=cost,
+                    ok=ok,
+                    error=err,
+                    task_text_tokens=self.audit_prompt_tokens.get("task_text_tokens"),
+                    template_tokens=self.audit_prompt_tokens.get("template_tokens"),
+                    rendered_prompt_tokens=self.audit_prompt_tokens.get("rendered_prompt_tokens"),
+                    prompt_component_token_source=self.audit_prompt_tokens.get(
+                        "prompt_component_token_source", ""
+                    ),
+                )
+            except Exception as audit_ex:
+                print(
+                    "⚠️ llm_call_audit write failed after request finalization: "
+                    f"{type(audit_ex).__name__}"
+                )
     
         # ====== 診斷：改成檢查 dict 可 pickle ======
         ret_dict = {

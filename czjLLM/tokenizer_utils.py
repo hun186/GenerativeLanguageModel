@@ -1,10 +1,32 @@
 import os
+import threading
 #from czjLLM.taskConfig import taskSetting
 from .taskConfig import taskSetting
 #from DatasetConverter.sampleHandler import tokenization_wrap
 from utils.utilities import tlog
 from utils.utilities_path import fileNameNormalizer
 from transformers import AutoTokenizer
+
+_TOKEN_COUNT_CACHE = {}
+_TOKEN_COUNT_LOCK = threading.Lock()
+
+
+def _load_count_tokenizer(model_dir: str):
+    """Load/cache the same local tokenizer tree used by normal chunking."""
+    key = fileNameNormalizer.proc(model_dir or "xlm-roberta-base")
+    if os.path.isdir(key):
+        for subdir, _, files in os.walk(key):
+            if "config.json" in files:
+                key = subdir
+                break
+    if not os.path.isdir(key):
+        key = "xlm-roberta-base"
+    with _TOKEN_COUNT_LOCK:
+        tokenizer = _TOKEN_COUNT_CACHE.get(key)
+        if tokenizer is None:
+            tokenizer = AutoTokenizer.from_pretrained(key, trust_remote_code=True)
+            _TOKEN_COUNT_CACHE[key] = tokenizer
+        return tokenizer
 
 class TokenizerWrapper:
     def __init__(self, model_name: str, task: str,
@@ -30,6 +52,18 @@ class TokenizerWrapper:
                 return os.path.join(self.base_path, folder)
         return os.path.join(self.base_path, "deepseek_v3_tokenizer")
 
+
+    def count_tokens(self, text: str) -> int:
+        """Count payload tokens without model-added special tokens.
+
+        This is used for prompt-component observability only. API-reported
+        prompt/completion usage remains authoritative for billed/runtime usage.
+        """
+        if not text:
+            return 0
+        tokenizer = _load_count_tokenizer(self.model_dir)
+        encoded = tokenizer(str(text), add_special_tokens=False)
+        return len(encoded.get("input_ids", []))
 
     def tokenize(
         self,

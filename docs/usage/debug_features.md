@@ -141,6 +141,27 @@ python -m czjLLM.czjLLM_TextProcessing --config czjLLM/yaml/excel_json_multistag
 - 開啟完整輸出（`debug_print_max_chars: -1`）時，長文件或大量 row/doc 會讓終端與 log 快速膨脹。
 - 此功能只用於觀察 prompt 組裝與回覆內容，不應用來替代正式輸出檔驗證。
 
+## Windows GUI：LLM Token / Context Distribution
+
+SQL / Table / ES 執行時的 Windows GUI 會顯示一個預設收合的 **LLM Token / Context Distribution** 區塊。這不是 debug 開關，不需要額外 YAML 設定；它直接讀取本次 run 的 `logs/llm_call_audit/llm_call_audit_<run_id>.csv`。
+
+展開後會顯示五組分布曲線與 `n / P50 / P95 / max`：
+
+- **Input**：LLM API 回報的 input/prompt tokens。
+- **Output**：LLM API 回報的 completion/output tokens。
+- **Template**：本地 tokenizer 估算的「rendered prompt − task text」模板／提示詞 overhead。
+- **Task text**：不含模板的任務文本切片 token 數，本地 tokenizer 計數。
+- **Context %**：既有 `context_usage_ratio`，以 API total tokens 相對已解析 context limit 計算。
+- **Slice latency**：有實際 `prompt_file` 的切片 LLM request `elapsed_seconds`；顯示每個切片推論／API 呼叫的耗時長尾，不混入 JSON repair 等沒有切片 prompt 檔的 direct call。
+
+注意：
+
+- Input / Output / Context 只採用 `token_usage_source=llm_api_usage` 的資料；API 未回報 usage 的失敗呼叫不會被當成 0-token 樣本。
+- Template / Task text 是觀測用本地 tokenizer 估算，不等於計費 token，也不取代 API usage。
+- 若某些 direct/retry 路徑沒有 prompt-component metadata，欄位保持未知；收合摘要會顯示 `Components n/Calls` 讓使用者知道覆蓋率。
+- GUI 的背景 audit reader 每秒最多檢查一次 CSV 是否有更新；整檔解析與 percentile/histogram 計算不在 Tk event loop 執行，Tk 只接收已完成的統計 snapshot。LLM worker 仍不傳遞 prompt/output 內容給 GUI。
+- 收合摘要可快速看 Context P50/P95、Input/Output P50 與 Slice latency P50/P95；若 Context P95 長期逼近 100%，應重新檢視模型 context limit、輸入切片上限與 output budget；若 latency P95 明顯高於 P50，則代表切片處理存在長尾，可再交叉比對 input/context 分布。
+
 ## 建議排查流程
 
 1. 若懷疑 Windows legacy single-stage Pool / worker 問題：先開 `llm_round_debug: true`。

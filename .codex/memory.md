@@ -3,14 +3,34 @@
 ## Current Summary
 
 - This Python project processes TXT/Table/SQL/ES inputs through prompt, multistage, reduction, and writeback infrastructure.
-- **Reduction Engine v1 is COMPLETE / RELEASE-READY.** A–L is complete, the L3 retention reporting corrective was merged through PR #201, and the documentation/release closure was merged through PR #200. The verified Reduction v1 closure baseline is merge `99d79676b16b7fed54f9cf6e701441db79846cea`; current Hosted `main` before this reconciliation is `4a2eb27942d1bfda3ae845e877f5bac7d5df811c` after the later GUI observability/layout fixes.
+- **Reduction Engine v1 is COMPLETE / RELEASE-READY.** A–L is complete; PR #202 documentation/cache-boundary evaluation and PR #204 task-specific quality hook are merged. Current Hosted `main` for this GUI work is verified merge `358a0b17a55fa38c4ed074e6245776a4624860ce`.
 - PR #201 authoritative runtime evidence: accepted head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid. PR #200 final accepted head `36a40eb37827e33545865203b079aefaab1ba1f4` passed CI #467 / `37420475520`, offline job `112128483703`, collect 24 and full gate PASS / 100%; zero unresolved review threads; fresh Codex review reported no major issues; merge `99d79676b16b7fed54f9cf6e701441db79846cea` is verified / valid.
 - L2a authoritative evidence: PR #195, accepted head `f4ad4001f4498287799df3c89e90ff4a733dc572`, CI #448 / `37179982321`, offline job `111370415206`, collect 22 and full PASS, merge `c1f2f6974e88028eb3eb5b9b747fefeb8d6d5cf0`, verified/valid signature. PR #194 is closed/unmerged/superseded.
 - Production operator cancellation is cooperative and distinct from worker teardown. It stops new scheduling and semantic continuation while allowing in-flight external calls and existing consumer/merger/writeback work to drain.
-- Production Reduction observability uses allowlisted bounded JSONL, lock-protected counters, and a separate Windows GUI Reduction Status panel.
+- Production Reduction observability uses allowlisted bounded JSONL, lock-protected counters, and a separate Windows GUI Reduction Status panel. Current GUI work adds a third default-collapsed LLM Token / Context Distribution panel backed by per-run `llm_call_audit`.
 - Required dependency installation remains blocked by the pinned GitHub `peft` clone proxy 403. Dependency-light tests are locally available; hosted offline E2E is authoritative.
 
 ## Recent Changes
+
+### 2026-10-08 Windows GUI LLM token/context distributions
+
+- Started from verified Hosted `main@358a0b17a55fa38c4ed074e6245776a4624860ce` after PR #204 merged.
+- Extended `llm_call_audit` with local `task_text_tokens`, `template_tokens`, `rendered_prompt_tokens` and a source marker. API-reported input/output/total/context usage remains authoritative; local prompt-component counts are explicitly observability estimates.
+- Prompt generation writes numeric-only component metadata outside TODO/RUNNING so queue claim/requeue cannot dispatch metadata as prompt work. Streaming workers read that metadata after TODO→RUNNING claim without depending on the original queue location.
+- Windows GUI receives only the run audit path, polls the append-only CSV when it changes, and exposes a default-collapsed `LLM Token / Context Distribution` panel with Input, Output, Template, Task text, Context %, and prompt-backed Slice latency curves plus P50/P95/max summaries.
+- Calls without API usage are excluded from API token/context distributions instead of appearing as synthetic zero-token calls; component coverage is shown separately. Direct calls without `prompt_file` (for example JSON repair) are excluded only from Slice latency so that chart remains a literal per-slice distribution.
+- Fresh Codex review on the first PR #207 head found a P2: multi-stage prompt replacement could reuse the initial sidecar. The corrective centralizes metric refresh, clears stale metadata before recounting, and refreshes metadata against every actually rendered stage prompt basename.
+- Fresh Codex review on the subsequent exact head found a second P2 in the collapsed summary: absent API usage could display as `In/Out P50 0`. The corrective now checks sample counts and renders `In unknown` / `Out unknown`, matching the distribution loader's no-synthetic-zero contract; regression coverage locks the outage/no-usage case.
+- Fresh Codex review on `54d718e68d0b52677f8fb23a37692bfb81eecf0f` found a third P2: full growing-CSV rescans and percentile sorting were running on the Tk event loop. The corrective moves audit parsing/calculation to a daemon reader thread and sends only completed snapshots back to Tk; regression coverage requires `_gui_proc_main` not to call `load_llm_audit_distribution()` directly and verifies loader execution on the worker thread.
+- Fresh Codex review on `626ff97741a1231d23281e31637ff3a87de4daaf` found a fourth P2: local rendered/template token counts could miss the runtime Qwen `/no_think` suffix added at dispatch. `finalize_llm_user_content()` is now the shared request-finalization boundary used by both `CallLLMAPI()` and prompt-component counting; regressions verify the runtime suffix is included.
+- Fresh Codex review on `538de5c906fb7d800ad667b3cafe34f0b143e20d` found a fifth P2: expanded charts still rendered empty metric percentiles as zero. The corrective now checks `count` and renders `P50/P95/max unknown` for empty series, matching the collapsed summary's unavailable-data semantics.
+- Fresh Codex review on `f1da49273394185661597641a6f77f29278b5843` found a sixth P2: one successful LLM request followed by local post-processing/persistence failure could emit both success and failure audit rows. `PromptAPIPipeline.proc()` now defers auditing until the final outcome and emits at most one row per attempted request, retaining API response usage/latency when a later local step fails.
+- Focused local clone/test execution is unavailable in this environment because GitHub DNS cannot resolve; fresh Hosted CI and Codex review are required before merge readiness.
+
+### 2026-10-08 PR #204 merged
+
+- Accepted exact head `48bcf602a527a28db5d6aba1fadf109136d74711` passed authoritative CI #511 / `37606218508`, offline job `112742220163`, collected 25 E2E cases and full gate PASS / 100%; fresh Codex review reported no major issues and unresolved threads were zero.
+- PR #204 merged as verified/valid `358a0b17a55fa38c4ed074e6245776a4624860ce`.
 
 ### 2026-10-07 PR #204 current-main reconciliation
 

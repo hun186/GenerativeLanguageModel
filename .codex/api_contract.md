@@ -45,6 +45,15 @@
 - Hook semantic metadata enters the stage execution fingerprint only when a hook is configured; no-hook stage fingerprints remain unchanged.
 - The hook runs once against the final stage result after single-pass or hierarchical reduction. It is an application extension point, not a scorer registry or generic evaluation platform.
 
+### Per-run LLM token/context audit
+
+- API-reported `input_tokens`, `output_tokens`, `total_tokens` and derived `context_usage_ratio` remain the authoritative runtime usage metrics when `token_usage_source=llm_api_usage`; failed/unreported calls must not be treated as synthetic zero-token usage.
+- Each actual LLM request emits at most one audit row. The row is written only after request post-processing/persistence settles; if a successful API response is followed by a local failure, the single row is `ok=NO` while retaining that response's API usage/latency instead of emitting a success+failure pair.
+- Prompt generation may additionally record `task_text_tokens`, `template_tokens`, `rendered_prompt_tokens`, and `prompt_component_token_source`. These are local tokenizer observability estimates, not billing/runtime usage authority.
+- `rendered_prompt_tokens` is counted after the same runtime user-content finalization used by `CallLLMAPI()` (including model-specific suffixes such as Qwen `/no_think`). `template_tokens` is the non-task-text finalized prompt overhead estimate (`rendered_prompt_tokens - task_text_tokens`, floored at zero). Missing component metadata stays blank rather than being guessed.
+- Prompt-component handoff is numeric-only and stored outside the TODO/RUNNING queue so queue claiming cannot dispatch metadata files as prompts. No source text, rendered prompt, credentials, or model output is copied into the handoff metadata.
+- Windows GUI distribution statistics read the current run's append-only audit CSV. `elapsed_seconds` is exposed as Slice latency only for filesystem-backed rows with a nonblank `prompt_file`; direct repair calls remain in overall audit totals but are excluded from the slice-latency distribution. GUI state does not participate in execution semantics or fingerprints.
+
 ### Cancellation and observability
 
 - Production cancellation is cooperative. It stops new scheduling and semantic continuation but does not hard-kill an already-running external request; already-running deterministic safe-drain work may complete.
@@ -64,6 +73,11 @@
 - Persisted model metadata is allowlisted. Credential-like keys, actual endpoint URLs, API keys/tokens/passwords/private keys and raw model specs must not be written into ES metadata.
 
 ## Recent Changes
+
+### 2026-10-08 LLM token/context GUI observability
+
+- Extended the per-run audit contract with local prompt-component token estimates while preserving API usage as authoritative token/context usage.
+- Added a default-collapsed Windows GUI distribution surface driven from the append-only audit CSV, including per-slice LLM latency P50/P95/max.
 
 ### 2026-10-06 v1.1 final quality/coverage hook
 

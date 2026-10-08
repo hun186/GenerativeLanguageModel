@@ -12,6 +12,10 @@ def prepare_ui(ctx, total_rows: int):
         add_log_sink(gui_sink)
         ctx.gui_handle = gui
         ctx.gui_sink = gui_sink
+        try:
+            gui.set_audit_path(getattr(ctx, "llm_call_audit_path", "") or "")
+        except Exception:
+            pass
 
     ret = setup_console_ui(total_rows)
 
