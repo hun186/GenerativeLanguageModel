@@ -26,7 +26,7 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 ### Future v1.1 candidates — not v1 blockers
 
 - [x] Evaluate optional transient semantic/member caching only with a distinct authority/privacy contract; **decision: defer implementation until production evidence shows material duplicate member/semantic execution. No persistent second cache is allowed; SQL/ES persisted output and committed checkpoints retain their existing authority.**
-- [ ] Add task-specific quality/coverage hooks without creating a generic evaluation platform.
+- [x] Add a narrow task-specific final-result quality/coverage hook without creating a generic evaluation platform. Python-only `QualityHook` / `QualityAssessment` attaches safe scalar metrics/warning codes, may reject a final result explicitly, and contributes semantic hook metadata to the execution fingerprint.
 - [ ] Consider aggregate-lineage convenience APIs beyond the complete v1 `AggregateOutput` payload lineage contract.
 - [ ] Consider explicit maintenance/migration tooling for legacy unmarked stage artifacts; v1 GC intentionally never adopts them.
 - [ ] Consider finer checkpoint coordination if production evidence justifies replacing conservative per-executable serialization.
@@ -36,6 +36,13 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 - [ ] Evaluate whether `utils/utilities.py` remains an active dependency; if so, progressively move responsibilities into focused utility modules while retaining compatibility re-exports.
 
 ## Recent Changes
+
+### 2026-10-06 v1.1 final quality/coverage hook
+
+- [x] Added one optional Python-only final-result `QualityHook` on `ReductionStage`; no scorer registry, YAML schema, UI, or persistence layer.
+- [x] Hook assessments expose only safe scalar metrics plus bounded warning codes; rejected results fail explicitly with `QualityCheckRejectedError`.
+- [x] Hook semantic metadata participates in execution fingerprints only when a hook is configured, preserving no-hook fingerprint compatibility.
+- [x] Extended the existing production ReductionStage E2E with real HTTP accepted/rejected quality-policy coverage; hosted acceptance is required before merge.
 
 ### 2026-10-06 v1.1 transient-cache evaluation
 

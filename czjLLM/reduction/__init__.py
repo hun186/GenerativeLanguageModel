@@ -50,6 +50,9 @@ from .execution import (
 )
 from .executable_pipeline import PipelineRefExecutable, StagePipelineExecutable
 from .runtime_task import ProductionTaskRuntime, TaskPromptPreflight
+from .quality import (
+    QualityAssessment, QualityCheckError, QualityCheckRejectedError, QualityHook,
+)
 from .stage import (
     MAX_MEMBER_FAILURE_DETAILS, MemberFailureRecord, PartialSuccessPolicy,
     PartialSuccessRejectedError, ReductionStage, ReductionStageResult, RoundPreparer,
@@ -122,6 +125,7 @@ __all__ = [
     "ExecutionError", "ExecutionCancelled", "TaskCallResult", "TaskExecutable", "TaskRuntime",
     "PipelineRefExecutable", "StagePipelineExecutable", "ProductionTaskRuntime",
     "TaskPromptPreflight",
+    "QualityAssessment", "QualityHook", "QualityCheckError", "QualityCheckRejectedError",
     "ReductionStage", "ReductionStageResult", "RoundPreparer", "TokenizerRoundPreparer",
     "PartialSuccessPolicy", "PartialSuccessRejectedError", "MemberFailureRecord",
     "MAX_MEMBER_FAILURE_DETAILS",

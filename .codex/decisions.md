@@ -11,6 +11,7 @@
 - `require_all` remains the compatibility default. Partial success is explicit opt-in and only `ExecutionError` is recoverable; cancellation and programmer/system faults propagate.
 - Operator cancellation is cooperative safe-drain. Producer cancellation and worker teardown are distinct; already-running HTTP calls are not forcibly killed.
 - Cancellation/observer/retention/concurrency settings are operational and excluded from semantic fingerprints.
+- A configured task-specific quality hook is semantic because it can accept/reject the final result; its contract/config metadata therefore participates in the stage execution fingerprint. No-hook fingerprints remain unchanged.
 - Recheck Status and Reduction Status are separate observability surfaces; diagnostic JSONL is bounded and payload-free.
 - Filesystem GC is disabled by default, ownership-based, bounded and conservative. Unmarked pre-L3 artifacts are never adopted; malformed state fails closed.
 - Committed checkpoints are resume authority, runtime round directories are reconstructable, and L1 persisted SQL/ES output remains cross-run reuse authority.
@@ -19,6 +20,12 @@
 - Reduction Engine v1 A–L is complete. The L3 audit corrective merged at `91e39503c8e84d17752f9d26a23ff6b34db75b9e`, and PR #200 documentation/release closure merged at verified `main` `99d79676b16b7fed54f9cf6e701441db79846cea`.
 
 ## Recent Changes
+
+### 2026-10-06 v1.1 quality-hook decision
+
+- Use one optional Python-only final-result hook on `ReductionStage`; do not add a universal quality scorer, registry, YAML schema, model judge, or UI.
+- Restrict returned assessment metadata to safe scalar metrics and warning codes. Payload inspection is transient inside caller hook code and is not copied into audit/metrics.
+- Rejection is explicit and fail-closed; hook metadata is semantic/fingerprinted because it can change acceptance.
 
 ### 2026-10-06 v1.1 transient-cache decision
 

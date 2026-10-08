@@ -287,6 +287,43 @@ placeholders are never passed to a reducer. Accepted partial output records
 counts plus bounded, payload-free failure provenance (at most 100 details) and
 an audit warning without changing the original manifest or aggregate identity.
 
+## Task-specific quality / coverage hook
+
+v1.1 exposes one deliberately narrow Python API on `ReductionStage` for
+task-specific final-result checks. It is not a universal scorer and is not
+available as a root YAML schema.
+
+A hook supplies a nonblank `contract_version`,
+`fingerprint_metadata(context)`, and:
+
+```python
+evaluate(
+    *,
+    payload,
+    context,
+    metrics,
+    provenance,
+) -> QualityAssessment
+```
+
+`QualityAssessment` contains only an `accepted` boolean, safe scalar
+bool/int/float metrics, and safe warning codes. Accepted metrics are nested
+under `ReductionStageResult.metrics["quality"]`; the audit records only the
+acceptance flag, hook contract version, metric names, and warning count. A
+rejected result raises `QualityCheckRejectedError` after all normal reduction
+work completes.
+
+Because a quality hook can change whether the final result is accepted, its
+contract/config semantics participate in the stage execution fingerprint.
+Stages without a hook retain their previous fingerprint metadata shape. Hook
+implementations may transiently inspect the final payload but should not return
+payload text, prompts, secrets, or private endpoints as quality metadata.
+
+This extension point is intended for checks such as required-section coverage,
+entity/evidence retention, citation/provenance coverage, schema completeness,
+or an application-specific acceptance threshold. It deliberately does not add
+a scorer registry, LLM judge framework, UI, or persistence layer.
+
 ## Cancellation
 
 Cancellation is cooperative safe-drain behavior:
@@ -396,7 +433,7 @@ as follows:
 | reuse/freshness | implemented with explicit limitation | authoritative persisted SQL/ES result reuse; no transient/global member cache |
 | failure/cancellation/observability | implemented | explicit partial policy, cooperative safe drain, bounded payload-free production events/counters |
 | lifecycle | implemented with explicit limitation | disabled-by-default ownership-based bounded GC; legacy unmarked/stage artifacts excluded |
-| universal quality/coverage scoring | future/v1.1 candidate | extension point only; task-specific scoring remains deliberately deferred |
+| task-specific quality/coverage checks | implemented with explicit limitation | one Python-only final-result `QualityHook`; safe scalar metrics/warning codes; no universal scorer/YAML platform |
 | generic maintenance/migration tools | future/v1.1 candidate | no legacy artifact adoption or general recursive cleanup |
 | finer shared-checkpoint coordination | future/v1.1 candidate | one nested checkpointed executable is conservatively serialized |
 

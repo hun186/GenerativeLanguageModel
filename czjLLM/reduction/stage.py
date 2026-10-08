@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from functools import wraps
 import math
 import re
@@ -20,6 +20,9 @@ from czjLLM.reduction.execution import (
 )
 from czjLLM.reduction.factory import build_configured_reducer
 from czjLLM.reduction.hierarchical import RoundMetrics, reduce_hierarchical_text
+from czjLLM.reduction.quality import (
+    QualityAssessment, QualityCheckError, QualityCheckRejectedError, QualityHook,
+)
 from czjLLM.reduction.registry import get_default_registry
 from czjLLM.reduction.runtime_task import CONTENT_PREPARATION_CONTRACT_VERSION
 
@@ -113,6 +116,11 @@ def _observe_stage_execution(fn):
                          controller=self.reduction.controller, attempted=exc.attempted,
                          succeeded=exc.succeeded, failed=exc.failed,
                          success_ratio=exc.success_ratio, reason=exc.reason)
+            context.emit("reduction_stage_failed", profile=self.reduction.profile,
+                         controller=self.reduction.controller,
+                         error_type=type(exc).__name__, reason=exc.reason)
+            raise
+        except (QualityCheckError, QualityCheckRejectedError) as exc:
             context.emit("reduction_stage_failed", profile=self.reduction.profile,
                          controller=self.reduction.controller,
                          error_type=type(exc).__name__, reason=exc.reason)
@@ -263,6 +271,7 @@ class ReductionStage:
     round_preparer: RoundPreparer | None = None
     checkpoint_root: str | Path | None = None
     failure_policy: PartialSuccessPolicy = field(default_factory=PartialSuccessPolicy)
+    quality_hook: QualityHook | None = field(default=None, repr=False, compare=False)
     contract_version: str = field(default="reduction-stage-v3", init=False)
 
     def __post_init__(self) -> None:
@@ -272,6 +281,14 @@ class ReductionStage:
             raise ValueError("ReductionStage requires an enabled ReductionConfig")
         if not isinstance(self.failure_policy, PartialSuccessPolicy):
             raise TypeError("failure_policy must be PartialSuccessPolicy")
+        if self.quality_hook is not None:
+            if not callable(getattr(self.quality_hook, "evaluate", None)) or not callable(
+                    getattr(self.quality_hook, "fingerprint_metadata", None)):
+                raise TypeError("quality_hook must implement evaluate() and fingerprint_metadata()")
+            version = getattr(self.quality_hook, "contract_version", None)
+            if not isinstance(version, str) or not re.fullmatch(
+                    r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}", version):
+                raise ValueError("quality_hook.contract_version must be a safe identifier")
         hierarchical = self.reduction.controller != "single_pass"
         if hierarchical != (self.round_preparer is not None):
             raise ValueError("round_preparer is required only for hierarchical ReductionStage")
@@ -283,7 +300,7 @@ class ReductionStage:
         reducer = build_configured_reducer(
             self.reduction.profile or "", self.reduction.options, get_default_registry()
         )
-        return {
+        metadata = {
             "contract_version": self.contract_version,
             "reduction": {
                 "profile": self.reduction.profile,
@@ -298,6 +315,15 @@ class ReductionStage:
                 self.round_preparer.fingerprint_metadata(context) if self.round_preparer else None
             ),
         }
+        if self.quality_hook is not None:
+            hook_metadata = self.quality_hook.fingerprint_metadata(context)
+            if not isinstance(hook_metadata, Mapping):
+                raise TypeError("quality_hook.fingerprint_metadata() must return a mapping")
+            metadata["quality_hook"] = {
+                "contract_version": self.quality_hook.contract_version,
+                "metadata": _stable_semantics(hook_metadata),
+            }
+        return metadata
 
     @_observe_stage_execution
     def execute(self, items: Iterable[Any], context: ExecutionContext) -> ReductionStageResult:
@@ -449,6 +475,7 @@ class ReductionStage:
                                 reducer_audit=result.audit,
                                 reducer_provenance=result.provenance,
                                 reducer_metrics=result.metrics)
+            final = self._apply_quality(final, context)
             context.raise_if_cancelled()
             return final
 
@@ -469,8 +496,55 @@ class ReductionStage:
                              hierarchical.stop_reason, attempts, successes, failures,
                              failure_details, hierarchical.round_metrics,
                              hierarchical.warnings, len(prepared))
+        final = self._apply_quality(final, context)
         context.raise_if_cancelled()
         return final
+
+    def _apply_quality(
+        self, result: ReductionStageResult, context: ExecutionContext
+    ) -> ReductionStageResult:
+        hook = self.quality_hook
+        if hook is None:
+            return result
+        context.raise_if_cancelled()
+        try:
+            assessment = hook.evaluate(
+                payload=result.payload,
+                context=context,
+                metrics=result.metrics,
+                provenance=result.provenance,
+            )
+        except ExecutionCancelled:
+            raise
+        except (TypeError, AssertionError, MemoryError):
+            raise
+        except Exception as exc:
+            # Hook code can inspect the final payload. Suppress the original
+            # exception chain so its message cannot leak payload/secrets into logs.
+            raise QualityCheckError(
+                f"quality hook execution failed: {type(exc).__name__}"
+            ) from None
+        if not isinstance(assessment, QualityAssessment):
+            raise QualityCheckError("quality hook returned an invalid assessment")
+        context.raise_if_cancelled()
+        if not assessment.accepted:
+            raise QualityCheckRejectedError(assessment)
+
+        metrics = dict(result.metrics)
+        metrics["quality"] = dict(assessment.metrics)
+        audit = dict(result.audit)
+        audit["quality"] = {
+            "accepted": True,
+            "contract_version": hook.contract_version,
+            "metric_names": tuple(assessment.metrics),
+            "warning_count": len(assessment.warnings),
+        }
+        return replace(
+            result,
+            warnings=tuple(result.warnings) + assessment.warnings,
+            audit=MappingProxyType(audit),
+            metrics=MappingProxyType(metrics),
+        )
 
     def _result(self, payload: Any, rounds: int, stop: str, attempts: int,
                 successes: int, failures: int,
