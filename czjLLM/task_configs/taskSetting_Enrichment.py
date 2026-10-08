@@ -1908,7 +1908,8 @@ USE_MAINFILE_HINT = False  # True 就會加那一行，False 就隱藏
 taskSetting_Enrichment = {
     "InfoExtraction-MultiDim-SQLFriendly-to json format": {
         "CT_name": "多維度新聞事件分析與 SQL-friendly JSON 輸出",
-        "InputCutLen": 2400,
+        #"InputCutLen": 2400,
+        "InputCutLen": 3600,
         "template": lambda content, MainFileName=None: (
             "你是一個專責「多維度事件分析」與「SQL-friendly JSON 輸出」的資訊抽取模型。\n"
             "任務是從輸入文本中抽取事件核心、人物、涉入單位、影響、時間序列與證據片段。\n"
