@@ -198,6 +198,28 @@ def _provider_cached_input_tokens(usage: Any) -> tuple[int | None, str]:
     return None, ""
 
 
+def relabel_prompt_token_stage(prompt_file: str, stage_identity: str) -> bool:
+    """Retag an unchanged staged prompt, preserving only existing numeric counts.
+
+    An original first-stage TODO prompt is copied without re-rendering; its
+    previously counted tokens remain valid, but its stage label must change.
+    Never create synthetic component counts if the original sidecar is absent.
+    """
+    metadata = read_prompt_token_metadata(prompt_file)
+    keys = ("task_text_tokens", "template_tokens", "rendered_prompt_tokens")
+    if not stage_identity or not all(key in metadata for key in keys):
+        return False
+    write_prompt_token_metadata(
+        prompt_file,
+        task_text_tokens=metadata["task_text_tokens"],
+        template_tokens=metadata["template_tokens"],
+        rendered_prompt_tokens=metadata["rendered_prompt_tokens"],
+        source=metadata.get("prompt_component_token_source", "local_tokenizer_no_special_tokens"),
+        stage_identity=stage_identity,
+    )
+    return True
+
+
 def log_llm_call(
     *,
     audit_path: str | None,
