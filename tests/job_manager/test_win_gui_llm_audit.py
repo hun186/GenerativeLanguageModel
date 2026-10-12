@@ -364,6 +364,10 @@ def test_audit_format_keeps_full_comma_grouped_values():
     assert _fmt_audit_number(82381.4) == "82,381.4"
     assert _fmt_audit_number(57597) == "57,597.0"
     assert _fmt_audit_number(12345678) == "12,345,678.0"
+    # Percentile interpolation can produce a binary 67.74999999999999.
+    assert _fmt_audit_number(67.74999999999999) == "67.8"
+    assert _fmt_audit_number(-67.74999999999999) == "-67.8"
+    assert _fmt_audit_number(2.25) == "2.3"
     stats = {"calls": 1, "component_rows": 1, "metrics": {
         "input_tokens": {"count": 1, "p50": 62811.5},
         "output_tokens": {"count": 1, "p50": 1234.5},
