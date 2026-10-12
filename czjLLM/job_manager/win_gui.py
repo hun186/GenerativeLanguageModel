@@ -404,13 +404,13 @@ def format_llm_audit_summary(stats: dict) -> str:
     latency = metrics.get("elapsed_seconds", {}) or {}
     component_rows = int(stats.get("component_rows", 0) or 0)
     context_text = (
-        f"Context P50 {float(context.get('p50', 0) or 0):,.1f}% / "
-        f"P95 {float(context.get('p95', 0) or 0):,.1f}%"
+        f"Context P50 {_fmt_audit_number(context.get('p50', 0))}% / "
+        f"P95 {_fmt_audit_number(context.get('p95', 0))}%"
         if int(context.get("count", 0) or 0) > 0 else "Context unknown"
     )
     latency_text = (
-        f"Slice time P50/P95 {float(latency.get('p50', 0) or 0):,.1f}/"
-        f"{float(latency.get('p95', 0) or 0):,.1f}s"
+        f"Slice time P50/P95 {_fmt_audit_number(latency.get('p50', 0))}/"
+        f"{_fmt_audit_number(latency.get('p95', 0))}s"
         if int(latency.get("count", 0) or 0) > 0 else "Slice time unknown"
     )
     template_text = (
