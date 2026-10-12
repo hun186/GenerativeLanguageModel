@@ -18,6 +18,10 @@ from czjLLM.prompt_pipeline.pipeline_controller import (
 from czjLLM.sql_mode.runtime.row_merger_generic import (
     _build_writeback_values, _resolve_flatten_targets,
 )
+from czjLLM.prompt_pipeline.slice_identity import (
+    digest_text, record_success_identity, record_split_identity, resolve_success_leaves,
+    valid_success,
+)
 
 
 _CONFIGS = (
@@ -158,6 +162,13 @@ def _stage_success(item, files):
     folder.mkdir(parents=True, exist_ok=True)
     for name, text in files.items():
         (folder / name).write_text(text, encoding="utf-8")
+        record_success_identity(
+            str(item / "TODO" / name), str(folder / name), "prompt:" + name, text,
+        )
+
+
+def _expected(item, names):
+    return {str(item): {name: digest_text("prompt:" + name) for name in names}}
 
 
 def test_all_stage_chunks_and_exact_snapshot_names_required_before_writeback(tmp_path):
@@ -169,7 +180,7 @@ def test_all_stage_chunks_and_exact_snapshot_names_required_before_writeback(tmp
         str(second): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")}),
     }
     items = [str(first), str(second)]
-    expected = {str(first): ("0.txt",), str(second): ("0.txt",)}
+    expected = {**_expected(first, ["0.txt"]), **_expected(second, ["0.txt"])}
     complete = {"final": {"finished_chunks": 2}}
     _require_complete_single_extract_stage(complete, runtime, items, expected)
 
@@ -187,7 +198,7 @@ def test_all_stage_chunks_and_exact_snapshot_names_required_before_writeback(tmp
     _require_complete_single_extract_stage(complete, runtime, items, expected)
     assert [fp.name for fp in (second / "_stage_outputs" / "extract").glob("*.txt")] == ["0.txt"]
     with pytest.raises(RuntimeError, match="missing or mismatched Success slice coverage"):
-        _require_complete_single_extract_stage(complete, runtime, items, {str(first): ()})
+        _require_complete_single_extract_stage(complete, runtime, items, {str(first): {}})
 
 
 def test_empty_stage_runtime_fails_closed(tmp_path):
@@ -201,10 +212,10 @@ def test_resume_collects_retained_and_new_slices_before_todo_pruning(tmp_path):
     _stage_success(item, {
         "0.txt": json.dumps({"inputName": "Prior", "keyFunctions": ["old"]}),
     })
-    (item / "TODO" / "0.txt").write_text("already done", encoding="utf-8")
-    (item / "TODO" / "1.txt").write_text("new request", encoding="utf-8")
+    (item / "TODO" / "0.txt").write_text("prompt:0.txt", encoding="utf-8")
+    (item / "TODO" / "1.txt").write_text("prompt:1.txt", encoding="utf-8")
     expected = _expected_single_extract_slice_files([str(item)])
-    assert expected[str(item)] == ("0.txt", "1.txt")
+    assert tuple(expected[str(item)]) == ("0.txt", "1.txt")
 
     # Both resume and smart_reset will skip previously completed TODO 0.txt.
     (item / "TODO" / "0.txt").unlink()
@@ -237,8 +248,8 @@ def test_resume_missing_retained_success_fails_before_snapshot_reconstruction(tm
     item = tmp_path / "row_failed_resume"
     (item / "TODO").mkdir(parents=True)
     _stage_success(item, {"0.txt": '{"inputName":"prior"}'})
-    (item / "TODO" / "0.txt").write_text("previously completed current input", encoding="utf-8")
-    (item / "TODO" / "1.txt").write_text("remaining", encoding="utf-8")
+    (item / "TODO" / "0.txt").write_text("prompt:0.txt", encoding="utf-8")
+    (item / "TODO" / "1.txt").write_text("prompt:1.txt", encoding="utf-8")
     expected = _expected_single_extract_slice_files([str(item)])
     (item / "Success" / "0.txt").unlink()
     _stage_success(item, {"1.txt": '{"formalName":"new"}'})
@@ -261,9 +272,9 @@ def test_expected_full_set_includes_running_slices_before_resume_recovery(tmp_pa
     (item / "RUNNING" / "1.txt").write_text("interrupted", encoding="utf-8")
     (item / "TODO" / "2.txt").write_text("pending", encoding="utf-8")
     expected = _expected_single_extract_slice_files([str(item)])
-    assert expected[str(item)] == ("1.txt", "2.txt")
+    assert tuple(expected[str(item)]) == ("1.txt", "2.txt")
     (item / "TODO" / "0.txt").write_text("current source includes completed member", encoding="utf-8")
-    assert _expected_single_extract_slice_files([str(item)])[str(item)] == (
+    assert tuple(_expected_single_extract_slice_files([str(item)])[str(item)]) == (
         "0.txt", "1.txt", "2.txt"
     )
 
@@ -273,14 +284,14 @@ def test_retokenized_shorter_source_ignores_orphan_success_from_older_layout(tmp
     todo = item / "TODO"
     todo.mkdir(parents=True)
     for name in ("0.txt", "1.txt"):
-        (todo / name).write_text("current prompt " + name, encoding="utf-8")
+        (todo / name).write_text("prompt:" + name, encoding="utf-8")
     _stage_success(item, {
         "0.txt": '{"current":["A"]}',
         "1.txt": '{"current":["B"]}',
         "2.txt": '{"stale":["must-not-write-back"]}',
     })
     expected = _expected_single_extract_slice_files([str(item)])
-    assert expected[str(item)] == ("0.txt", "1.txt")
+    assert tuple(expected[str(item)]) == ("0.txt", "1.txt")
 
     # Resume prunes current completed TODO but leaves historical Success 2.txt.
     for fp in todo.glob("*.txt"):
@@ -308,7 +319,7 @@ def test_orphan_success_alone_cannot_establish_current_slice_layout(tmp_path):
     (item / "TODO").mkdir(parents=True)
     _stage_success(item, {"0.txt": '{"previous":true}'})
     expected = _expected_single_extract_slice_files([str(item)])
-    assert expected[str(item)] == ()
+    assert expected[str(item)] == {}
     runtime = {
         str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")}),
     }
@@ -317,3 +328,114 @@ def test_orphan_success_alone_cannot_establish_current_slice_layout(tmp_path):
             {"final": {"finished_chunks": 1}}, runtime, [str(item)], expected,
         )
     assert not (item / "_stage_outputs" / "extract").exists()
+
+
+def test_resume_same_name_old_result_with_wrong_prompt_never_reused(tmp_path):
+    from czjLLM.prompt_pipeline.pipeline_controller import _drop_resumed_todo_by_success
+
+    item = tmp_path / "row_same_name"
+    todo = item / "TODO"
+    todo.mkdir(parents=True)
+    (todo / "0.txt").write_text("new source content", encoding="utf-8")
+    _stage_success(item, {"0.txt": '{"from_old_input":true}'})
+    # Even if Success has a newer timestamp, its stored prompt digest is old.
+    import os
+    os.utime(item / "Success" / "0.txt", None)
+    assert not valid_success(str(item), "0.txt", digest_text("new source content"))
+    assert _drop_resumed_todo_by_success(
+        str(item), require_prompt_identity=True,
+    ) == 0
+    assert (todo / "0.txt").exists()
+    runtime = {str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")})}
+    with pytest.raises(RuntimeError, match="Success slice coverage"):
+        _require_complete_single_extract_stage(
+            {"final": {"finished_chunks": 1}}, runtime, [str(item)],
+            _expected_single_extract_slice_files([str(item)]),
+        )
+
+
+def test_resume_same_prompt_and_matching_output_provenance_can_reuse(tmp_path):
+    from czjLLM.prompt_pipeline.pipeline_controller import _drop_resumed_todo_by_success
+
+    item = tmp_path / "row_matched"
+    todo = item / "TODO"
+    todo.mkdir(parents=True)
+    (todo / "0.txt").write_text("prompt:0.txt", encoding="utf-8")
+    _stage_success(item, {"0.txt": '{"valid":true}'})
+    expected = _expected_single_extract_slice_files([str(item)])
+    assert _drop_resumed_todo_by_success(
+        str(item), require_prompt_identity=True,
+    ) == 1
+    assert not (todo / "0.txt").exists()
+    runtime = {str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")})}
+    _require_complete_single_extract_stage(
+        {"final": {"finished_chunks": 1}}, runtime, [str(item)], expected,
+    )
+
+
+def test_success_output_tampering_invalidates_prompt_identity(tmp_path):
+    item = tmp_path / "row_tampered"
+    _stage_success(item, {"0.txt": '{"valid":true}'})
+    assert valid_success(str(item), "0.txt", digest_text("prompt:0.txt"))
+    (item / "Success" / "0.txt").write_text('{"tampered":true}', encoding="utf-8")
+    assert not valid_success(str(item), "0.txt", digest_text("prompt:0.txt"))
+
+
+def test_retry_split_children_replace_failed_parent_and_preserve_order(tmp_path):
+    item = tmp_path / "row_split"
+    (item / "TODO").mkdir(parents=True)
+    (item / "TODO" / "0.txt").write_text("original prompt", encoding="utf-8")
+    expected = _expected_single_extract_slice_files([str(item)])
+    record_split_identity(
+        str(item / "RUNNING" / "0.txt"), "original prompt",
+        [("0-0.txt", "prompt:0-0.txt"), ("0-1.txt", "prompt:0-1.txt")],
+    )
+    _stage_success(item, {
+        "0-0.txt": '{"parts":["first"]}',
+        "0-1.txt": '{"parts":["second"]}',
+    })
+    runtime = {str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")})}
+    _require_complete_single_extract_stage(
+        {"final": {"finished_chunks": 1}}, runtime, [str(item)], expected,
+    )
+    snapshot = sorted((item / "_stage_outputs" / "extract").glob("*.txt"))
+    assert [p.name for p in snapshot] == ["0-0.txt", "0-1.txt"]
+    merged = _merge_single_extract_stage_json_parts(
+        [p.read_text(encoding="utf-8") for p in snapshot],
+        SimpleNamespace(merge_log_changes=False, merge_dedup_lists=False),
+    )
+    assert json.loads(merged) == {"parts": ["first", "second"]}
+
+
+def test_missing_split_child_must_fail_closed(tmp_path):
+    item = tmp_path / "row_missing_child"
+    (item / "TODO").mkdir(parents=True)
+    (item / "TODO" / "0.txt").write_text("original prompt", encoding="utf-8")
+    record_split_identity(
+        str(item / "RUNNING" / "0.txt"), "original prompt",
+        [("0-0.txt", "prompt:0-0.txt"), ("0-1.txt", "prompt:0-1.txt")],
+    )
+    _stage_success(item, {"0-0.txt": '{"parts":["first"]}'})
+    runtime = {str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")})}
+    with pytest.raises(RuntimeError, match="Success slice coverage"):
+        _require_complete_single_extract_stage(
+            {"final": {"finished_chunks": 1}}, runtime, [str(item)],
+            _expected_single_extract_slice_files([str(item)]),
+        )
+    assert not (item / "_stage_outputs" / "extract").exists()
+
+
+def test_split_lineage_from_old_parent_prompt_is_not_current(tmp_path):
+    item = tmp_path / "row_old_split"
+    (item / "TODO").mkdir(parents=True)
+    (item / "TODO" / "0.txt").write_text("new input prompt", encoding="utf-8")
+    record_split_identity(
+        str(item / "RUNNING" / "0.txt"), "old input prompt",
+        [("0-0.txt", "prompt:0-0.txt"), ("0-1.txt", "prompt:0-1.txt")],
+    )
+    _stage_success(item, {
+        "0-0.txt": '{"parts":["old first"]}',
+        "0-1.txt": '{"parts":["old second"]}',
+    })
+    with pytest.raises(ValueError, match="missing or stale"):
+        resolve_success_leaves(str(item), "0.txt", digest_text("new input prompt"))
