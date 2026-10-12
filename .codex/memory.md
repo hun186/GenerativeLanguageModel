@@ -168,3 +168,11 @@
 - Small-sample guidance explicitly warns operators to prioritize percentiles over curve shape; no prompt/output payload is exposed.
 
 - Follow-up UX refinement: Template no longer occupies a histogram panel because YAML stage templates are typically fixed or near-fixed. The collapsed header now shows Template P50/P95; the former Template panel is Slice time, and the second row expands Task text / Context % across two columns. "Slice latency" was renamed "Slice time（切片耗時）" and explicitly means request-to-response elapsed time only, excluding queue, post-processing, merge/reduction, and output writes.
+
+### 2026-10-12 GUI throughput / axis follow-up (PR pending)
+
+- From verified Hosted main `6a7448a83bbf236bc4227c7f474c6b3fca4b53ec` (PR #208 merged), started `feat/gui-audit-throughput-axis-v1`. The only current open PRs at branch start were #203 (deferred), #160 and #34; there was no later open GUI PR.
+- Historical `processing_tps` is API `total_tokens / elapsed` and has zero-time fallback. Leave its field semantics unchanged. The GUI derives exact requested Total tok/s from API input+output over positive per-slice elapsed instead.
+- Provider cached prompt-token usage now has an explicit nullable audit field plus provenance, accepting explicitly reported zero. Only where absent, group by model/endpoint/task/stage and local token source, require two prior stable template-size samples (5% tolerance) and discount the presumed stable template floor by 50%. This is an explicitly uncertain heuristic, not proof of reused token prefix or provider cache hit.
+- Numeric local sidecars hold only token counts plus safe stage label; single-stage identity is the literal `single_stage`, not a task prompt. GUI reads CSV metadata only and plots 3+4 distribution charts with comma-grouped key x labels.
+- Scope closes at GUI improvement. Once review clean and exact-head offline-e2e passes, await explicit merge instruction; next authorized v1.1 work is narrow AggregateOutput lineage convenience APIs, not #203 cache prototype.
