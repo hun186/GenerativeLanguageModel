@@ -27,7 +27,7 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 
 - [x] Evaluate optional transient semantic/member caching only with a distinct authority/privacy contract; **decision: defer implementation until production evidence shows material duplicate member/semantic execution. No persistent second cache is allowed; SQL/ES persisted output and committed checkpoints retain their existing authority.**
 - [x] Add a narrow task-specific final-result quality/coverage hook without creating a generic evaluation platform. Python-only `QualityHook` / `QualityAssessment` attaches safe scalar metrics/warning codes, may reject a final result explicitly, and contributes semantic hook metadata to the execution fingerprint.
-- [ ] Consider aggregate-lineage convenience APIs beyond the complete v1 `AggregateOutput` payload lineage contract.
+- [x] Add narrow, read-only aggregate-lineage convenience APIs beyond the complete v1 `AggregateOutput` payload lineage contract (v1.1 PR pending Hosted exact-head CI and Codex review).
 - [ ] Consider explicit maintenance/migration tooling for legacy unmarked stage artifacts; v1 GC intentionally never adopts them.
 - [ ] Consider finer checkpoint coordination if production evidence justifies replacing conservative per-executable serialization.
 
@@ -63,6 +63,6 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 
 ### 2026-10-12 execution order / GUI follow-up
 
-- [ ] Review and land the standalone LLM audit GUI throughput/key-axis follow-up (work branch `feat/gui-audit-throughput-axis-v1`); do not merge without user approval. Exact-head offline-e2e and Codex clean review required.
-- [ ] After merge, begin narrow `AggregateOutput` lineage convenience APIs backed solely by the existing payload truth, not another lineage store/service.
+- [x] GUI throughput/key-axis PR #209 merged to Hosted main as verified/valid `584a4345fe198544eb198eda9d99c2d948ee01d0` after exact-head `offline-e2e`, focused GUI regression and Codex clean review.
+- [ ] Review and land the narrow v1.1 aggregate-lineage convenience API PR from `feat/reduction-v1-1-aggregate-lineage-helpers`; exact-head Hosted `offline-e2e` with focused tests and Codex clean required, user merge authorization required.
 - Keep #203 transient semantic cache prototype **deferred** until production duplication/cost evidence or explicit user direction.
