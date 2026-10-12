@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -70,17 +71,73 @@ def normalize_collection_window(window: Mapping[str, Any]) -> dict[str, Any]:
     return result
 
 
-def derive_aggregate_output_id(manifest: CollectionManifest, output_key: str) -> str:
-    """Return a portable deterministic ID for one logical manifest product."""
-    key = _validate_identity(output_key, "output_key")
+def _aggregate_id_from_fields(
+    collection_id: str, manifest_fingerprint: str, output_key: str,
+) -> str:
+    """Use the one canonical v1 aggregate identity algorithm everywhere."""
     return "aggregate-v1-" + normalized_fingerprint(
         {
             "aggregate_output_contract_version": AGGREGATE_OUTPUT_CONTRACT_VERSION,
-            "collection_id": manifest.collection_id,
-            "manifest_fingerprint": manifest.fingerprint,
-            "output_key": key,
+            "collection_id": collection_id,
+            "manifest_fingerprint": manifest_fingerprint,
+            "output_key": output_key,
         }
     )
+
+
+def derive_aggregate_output_id(manifest: CollectionManifest, output_key: str) -> str:
+    """Return a portable deterministic ID for one logical manifest product."""
+    key = _validate_identity(output_key, "output_key")
+    return _aggregate_id_from_fields(manifest.collection_id, manifest.fingerprint, key)
+
+
+_AGGREGATE_LINEAGE_FIELDS = (
+    "aggregate_output_contract_version", "aggregate_output_id",
+    "collection_id", "manifest_fingerprint", "output_key",
+)
+
+
+def extract_aggregate_lineage(value: AggregateOutput | Mapping[str, Any]) -> dict[str, str]:
+    """Read validated identity fields from a v1 aggregate or persisted mapping.
+
+    The canonical AggregateOutput mapping remains the only payload contract.
+    No payload, provenance, storage, or traversal is duplicated here. Without
+    the original CollectionManifest this checks internal ID consistency, not
+    that the manifest's contents exist or match its fingerprint.
+    """
+    record = value.to_mapping() if isinstance(value, AggregateOutput) else value
+    if not isinstance(record, Mapping):
+        raise CollectionManifestValidationError("aggregate lineage must be a mapping")
+    missing = set(_AGGREGATE_LINEAGE_FIELDS) - set(record)
+    if missing:
+        raise CollectionManifestValidationError(
+            f"aggregate lineage is missing required fields: {sorted(missing)}"
+        )
+    if record["aggregate_output_contract_version"] != AGGREGATE_OUTPUT_CONTRACT_VERSION:
+        raise CollectionManifestValidationError(
+            "unsupported aggregate output contract version"
+        )
+    collection_id = _validate_identity(record["collection_id"], "collection_id")
+    output_key = _validate_identity(record["output_key"], "output_key")
+    fingerprint = record["manifest_fingerprint"]
+    if not isinstance(fingerprint, str) or re.fullmatch(r"[0-9a-f]{64}", fingerprint) is None:
+        raise CollectionManifestValidationError(
+            "manifest_fingerprint must be a lowercase SHA-256 fingerprint"
+        )
+    aggregate_id = _validate_identity(record["aggregate_output_id"], "aggregate_output_id")
+    if aggregate_id != _aggregate_id_from_fields(collection_id, fingerprint, output_key):
+        raise CollectionManifestValidationError(
+            "aggregate_output_id does not match aggregate lineage"
+        )
+    return {field: record[field] for field in _AGGREGATE_LINEAGE_FIELDS}
+
+
+def same_aggregate_lineage(
+    left: AggregateOutput | Mapping[str, Any],
+    right: AggregateOutput | Mapping[str, Any],
+) -> bool:
+    """Compare validated aggregate identity, not output payload or freshness."""
+    return extract_aggregate_lineage(left) == extract_aggregate_lineage(right)
 
 
 @dataclass(frozen=True, init=False)
@@ -127,6 +184,10 @@ class AggregateOutput:
     def as_logical_work_unit_payload(self) -> dict[str, Any]:
         """Return complete lineage for a later aggregate-of-aggregates member."""
         return self.to_mapping()
+
+    def lineage_mapping(self) -> dict[str, str]:
+        """Return a validated payload-free projection of canonical v1 lineage."""
+        return extract_aggregate_lineage(self)
 
 
 class CollectionManifestStore:
