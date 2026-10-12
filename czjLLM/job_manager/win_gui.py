@@ -30,8 +30,172 @@ _AUDIT_SERIES = (
     ("template_tokens", "Template tokens", False),
     ("task_text_tokens", "Task text tokens", False),
     ("context_usage_ratio", "Context usage", True),
-    ("elapsed_seconds", "Slice latency", False),
+    ("elapsed_seconds", "Slice time", False),
 )
+
+
+_AUDIT_DISTRIBUTION_HELP = {
+    "input_tokens": (
+        "Input：每次 LLM request 由 API 回報的 prompt/input tokens，"
+        "代表實際送進模型的輸入 token。"
+    ),
+    "output_tokens": (
+        "Output：每次 LLM request 由 API 回報的 completion/output tokens，"
+        "代表模型實際輸出的 token。"
+    ),
+    "template_tokens": (
+        "Template：本地 tokenizer 估算的 finalized prompt tokens − task text tokens，"
+        "代表模板、指令、格式與 runtime suffix 等額外負擔；不是 API 計費 usage。"
+    ),
+    "task_text_tokens": (
+        "Task text：本地 tokenizer 估算的任務文本切片 token 數，不含模板。"
+    ),
+    "context_usage_ratio": (
+        "Context %：(API input tokens + output tokens) ÷ context limit × 100%。"
+        "越接近 100% 代表越逼近模型上下文上限。"
+    ),
+    "elapsed_seconds": (
+        "Slice time（切片耗時）：有 prompt_file 的切片 LLM request，"
+        "從真正送出 API 呼叫到取得模型回應的 elapsed_seconds。"
+        "不包含等待 worker/queue、response 後處理、merge/reduction 或輸出寫檔時間；"
+        "也不混入 JSON repair 等非切片 direct call。"
+    ),
+}
+
+
+def format_audit_distribution_help(metric_key: str = "") -> str:
+    """Human-readable explanation for the GUI distribution curves."""
+    general = (
+        "這是分布圖，不是時間序列。\n"
+        "橫向：指標值由低到高（最多 24 個區間）；縱向：落在各區間的樣本數。"
+        "曲線越高，表示該數值區間的樣本越集中。\n"
+        "每張小圖的高度都以自己的峰值正規化，所以不能拿不同小圖的線高互相比大小。\n"
+        "n = 有效樣本數；P50 = 中位數；P95 = 95% 樣本不超過此值；max = 最大值。"
+        "Template 通常在同一 YAML stage 內固定或近固定，因此只在標題摘要顯示 P50/P95，不另外畫曲線。"
+        "樣本很少時曲線形狀容易跳動，應優先看 P50 / P95 / max。"
+    )
+    detail = _AUDIT_DISTRIBUTION_HELP.get(str(metric_key or ""), "")
+    return f"{detail}\n\n{general}" if detail else general
+
+
+def _monitor_work_area_at(
+    pointer_x: int,
+    pointer_y: int,
+    fallback_x: int,
+    fallback_y: int,
+    fallback_width: int,
+    fallback_height: int,
+) -> tuple[int, int, int, int]:
+    """Return the Windows work area containing the pointer; fall back safely elsewhere."""
+    fallback = (
+        int(fallback_x),
+        int(fallback_y),
+        max(1, int(fallback_width)),
+        max(1, int(fallback_height)),
+    )
+    if not IS_WIN:
+        return fallback
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        class _POINT(ctypes.Structure):
+            _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+
+        class _RECT(ctypes.Structure):
+            _fields_ = [
+                ("left", ctypes.c_long),
+                ("top", ctypes.c_long),
+                ("right", ctypes.c_long),
+                ("bottom", ctypes.c_long),
+            ]
+
+        class _MONITORINFO(ctypes.Structure):
+            _fields_ = [
+                ("cbSize", wintypes.DWORD),
+                ("rcMonitor", _RECT),
+                ("rcWork", _RECT),
+                ("dwFlags", wintypes.DWORD),
+            ]
+
+        user32 = ctypes.windll.user32
+        user32.MonitorFromPoint.argtypes = [_POINT, wintypes.DWORD]
+        user32.MonitorFromPoint.restype = ctypes.c_void_p
+        user32.GetMonitorInfoW.argtypes = [ctypes.c_void_p, ctypes.POINTER(_MONITORINFO)]
+        user32.GetMonitorInfoW.restype = wintypes.BOOL
+
+        monitor = user32.MonitorFromPoint(
+            _POINT(int(pointer_x), int(pointer_y)),
+            2,  # MONITOR_DEFAULTTONEAREST
+        )
+        if not monitor:
+            return fallback
+        info = _MONITORINFO()
+        info.cbSize = ctypes.sizeof(_MONITORINFO)
+        if not user32.GetMonitorInfoW(monitor, ctypes.byref(info)):
+            return fallback
+        work = info.rcWork
+        width = max(1, int(work.right - work.left))
+        height = max(1, int(work.bottom - work.top))
+        return int(work.left), int(work.top), width, height
+    except Exception:
+        return fallback
+
+
+def _tooltip_screen_position(
+    pointer_x: int,
+    pointer_y: int,
+    tooltip_width: int,
+    tooltip_height: int,
+    screen_x: int,
+    screen_y: int,
+    screen_width: int,
+    screen_height: int,
+    *,
+    gap_x: int = 14,
+    gap_y: int = 16,
+) -> tuple[int, int]:
+    """Place a tooltip near the pointer while keeping it within virtual-screen bounds."""
+    left = int(screen_x)
+    top = int(screen_y)
+    right = left + max(1, int(screen_width))
+    bottom = top + max(1, int(screen_height))
+    width = max(1, int(tooltip_width))
+    height = max(1, int(tooltip_height))
+    px = int(pointer_x)
+    py = int(pointer_y)
+
+    x = px + int(gap_x)
+    if x + width > right:
+        x = px - width - int(gap_x)
+    y = py + int(gap_y)
+    if y + height > bottom:
+        y = py - height - int(gap_y)
+
+    max_x = max(left, right - width)
+    max_y = max(top, bottom - height)
+    return (
+        min(max(x, left), max_x),
+        min(max(y, top), max_y),
+    )
+
+
+def _tk_geometry_axis(
+    position: int,
+    window_size: int,
+    screen_origin: int,
+    screen_extent: int,
+) -> str:
+    """Convert an absolute virtual-desktop coordinate to Tk wm-geometry syntax."""
+    pos = int(position)
+    size = max(1, int(window_size))
+    origin = int(screen_origin)
+    extent = max(1, int(screen_extent))
+    if pos >= 0:
+        return f"+{pos:d}"
+    far_edge = origin + extent
+    edge_offset = max(0, int(far_edge - (pos + size)))
+    return f"-{edge_offset:d}"
 
 
 def _audit_float(value):
@@ -157,6 +321,7 @@ def format_llm_audit_summary(stats: dict) -> str:
     context = metrics.get("context_usage_ratio", {}) or {}
     input_stats = metrics.get("input_tokens", {}) or {}
     output_stats = metrics.get("output_tokens", {}) or {}
+    template_stats = metrics.get("template_tokens", {}) or {}
     latency = metrics.get("elapsed_seconds", {}) or {}
     component_rows = int(stats.get("component_rows", 0) or 0)
     context_text = (
@@ -165,9 +330,14 @@ def format_llm_audit_summary(stats: dict) -> str:
         if int(context.get("count", 0) or 0) > 0 else "Context unknown"
     )
     latency_text = (
-        f"Latency P50/P95 {float(latency.get('p50', 0) or 0):.1f}/"
+        f"Slice time P50/P95 {float(latency.get('p50', 0) or 0):.1f}/"
         f"{float(latency.get('p95', 0) or 0):.1f}s"
-        if int(latency.get("count", 0) or 0) > 0 else "Latency unknown"
+        if int(latency.get("count", 0) or 0) > 0 else "Slice time unknown"
+    )
+    template_text = (
+        f"Template P50/P95 {_fmt_audit_number(template_stats.get('p50', 0))}/"
+        f"{_fmt_audit_number(template_stats.get('p95', 0))}"
+        if int(template_stats.get("count", 0) or 0) > 0 else "Template unknown"
     )
     input_text = (
         f"In P50 {_fmt_audit_number(input_stats.get('p50', 0))}"
@@ -179,7 +349,7 @@ def format_llm_audit_summary(stats: dict) -> str:
     )
     return (
         f"Calls {calls:,} · {context_text} · "
-        f"{input_text} · {output_text} · "
+        f"{input_text} · {output_text} · {template_text} · "
         f"{latency_text} · Components {component_rows:,}/{calls:,}"
     )
 
@@ -552,31 +722,155 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     audit_section.pack(fill="x", pady=(0, 4))
     audit_toggle = ttk.Button(audit_section)
     audit_toggle.pack(fill="x")
+    audit_summary = ttk.Label(
+        audit_section,
+        text=format_llm_audit_summary(_audit_stats),
+        justify="left",
+        anchor="w",
+        wraplength=720,
+    )
+    audit_summary.pack(fill="x", padx=8, pady=(2, 3))
     audit_frame = ttk.Frame(audit_section, padding=(8, 5))
     audit_canvas = tk.Canvas(
         audit_frame, height=230, highlightthickness=0, background="white"
     )
     audit_canvas.pack(fill="x", expand=True)
+    _audit_tooltip = None
+    _audit_tooltip_key = None
+    _audit_chart_keys = (
+        "input_tokens", "output_tokens", "elapsed_seconds",
+        "task_text_tokens", "context_usage_ratio",
+    )
+
+    def _hide_audit_tooltip(_event=None):
+        nonlocal _audit_tooltip, _audit_tooltip_key
+        if _audit_tooltip is not None:
+            try:
+                _audit_tooltip.destroy()
+            except Exception:
+                pass
+        _audit_tooltip = None
+        _audit_tooltip_key = None
+
+    def _show_audit_tooltip(text: str, x_root: int, y_root: int, key: str):
+        nonlocal _audit_tooltip, _audit_tooltip_key
+        if _audit_tooltip is None:
+            _audit_tooltip = tk.Toplevel(root)
+            _audit_tooltip.overrideredirect(True)
+            try:
+                _audit_tooltip.attributes("-topmost", True)
+            except Exception:
+                pass
+            label = tk.Label(
+                _audit_tooltip,
+                text=text,
+                justify="left",
+                anchor="nw",
+                wraplength=520,
+                padx=10,
+                pady=8,
+                background="#fffbe6",
+                foreground="#222222",
+                relief="solid",
+                borderwidth=1,
+                font=("Segoe UI", 9),
+            )
+            label.pack()
+        elif _audit_tooltip_key != key:
+            children = _audit_tooltip.winfo_children()
+            if children:
+                children[0].configure(text=text)
+        _audit_tooltip_key = key
+        _audit_tooltip.update_idletasks()
+        tooltip_width = max(1, int(_audit_tooltip.winfo_reqwidth() or 1))
+        tooltip_height = max(1, int(_audit_tooltip.winfo_reqheight() or 1))
+        screen_x = int(root.winfo_vrootx() or 0)
+        screen_y = int(root.winfo_vrooty() or 0)
+        screen_width = max(1, int(root.winfo_vrootwidth() or root.winfo_screenwidth() or 1))
+        screen_height = max(1, int(root.winfo_vrootheight() or root.winfo_screenheight() or 1))
+        monitor_x, monitor_y, monitor_width, monitor_height = _monitor_work_area_at(
+            x_root,
+            y_root,
+            screen_x,
+            screen_y,
+            screen_width,
+            screen_height,
+        )
+        tooltip_x, tooltip_y = _tooltip_screen_position(
+            x_root,
+            y_root,
+            tooltip_width,
+            tooltip_height,
+            monitor_x,
+            monitor_y,
+            monitor_width,
+            monitor_height,
+        )
+        geometry_x = _tk_geometry_axis(
+            tooltip_x, tooltip_width, screen_x, screen_width
+        )
+        geometry_y = _tk_geometry_axis(
+            tooltip_y, tooltip_height, screen_y, screen_height
+        )
+        _audit_tooltip.geometry(f"{geometry_x}{geometry_y}")
+
+    def _audit_canvas_layout_width():
+        return max(640, int(audit_canvas.winfo_width() or 640))
+
+    def _audit_canvas_layout_height():
+        return max(230, int(audit_canvas.winfo_height() or 230))
+
+    def _audit_canvas_help(event):
+        width = _audit_canvas_layout_width()
+        height = _audit_canvas_layout_height()
+        row = 0 if float(event.y) < (height / 2.0) else 1
+        cols = 3 if row == 0 else 2
+        col = min(cols - 1, max(0, int(float(event.x) / max(width / cols, 1.0))))
+        idx = col if row == 0 else 3 + col
+        if idx >= len(_audit_chart_keys):
+            _hide_audit_tooltip()
+            return
+        key = _audit_chart_keys[idx]
+        _show_audit_tooltip(
+            format_audit_distribution_help(key),
+            event.x_root,
+            event.y_root,
+            key,
+        )
+
+    def _audit_header_help(event):
+        _show_audit_tooltip(
+            format_audit_distribution_help("template_tokens"),
+            event.x_root,
+            event.y_root,
+            "__general__",
+        )
+
+    audit_canvas.bind("<Motion>", _audit_canvas_help)
+    audit_canvas.bind("<Leave>", _hide_audit_tooltip)
+    audit_toggle.bind("<Enter>", _audit_header_help)
+    audit_toggle.bind("<Leave>", _hide_audit_tooltip)
+    audit_summary.bind("<Enter>", _audit_header_help)
+    audit_summary.bind("<Leave>", _hide_audit_tooltip)
 
     def _draw_audit_distribution():
         audit_canvas.delete("all")
-        width = max(640, int(audit_canvas.winfo_width() or 640))
-        height = 230
+        width = _audit_canvas_layout_width()
+        height = _audit_canvas_layout_height()
         metrics = (_audit_stats.get("metrics", {}) or {})
         series = [
             ("input_tokens", "Input", "#2f6fed"),
             ("output_tokens", "Output", "#18864b"),
-            ("template_tokens", "Template", "#c46a00"),
+            ("elapsed_seconds", "Slice time", "#6b7280"),
             ("task_text_tokens", "Task text", "#7a4cc2"),
             ("context_usage_ratio", "Context %", "#b00020"),
-            ("elapsed_seconds", "Slice latency", "#6b7280"),
         ]
-        cols = 3
-        cell_w = width / cols
         cell_h = height / 2
         for idx, (key, title, color) in enumerate(series):
-            row = idx // cols
-            col = idx % cols
+            row = 0 if idx < 3 else 1
+            cols = 3 if row == 0 else 2
+            col = idx if row == 0 else idx - 3
+            cell_w = width / cols
             x0 = col * cell_w + 10
             y0 = row * cell_h + 8
             x1 = (col + 1) * cell_w - 10
@@ -621,11 +915,21 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                 points.extend((x, y))
             audit_canvas.create_line(*points, fill=color, width=2, smooth=True)
 
+    def _audit_canvas_resized(_event=None):
+        if _audit_expanded:
+            root.after_idle(_draw_audit_distribution)
+
+    audit_canvas.bind("<Configure>", _audit_canvas_resized)
+
+    def _resize_audit_summary_wrap(event):
+        audit_summary.configure(wraplength=max(240, int(event.width) - 16))
+
+    audit_section.bind("<Configure>", _resize_audit_summary_wrap)
+
     def _refresh_audit_header():
         arrow = "▼" if _audit_expanded else "▶"
-        audit_toggle.configure(
-            text=f"{arrow} LLM Token / Context Distribution — {format_llm_audit_summary(_audit_stats)}"
-        )
+        audit_toggle.configure(text=f"{arrow} LLM Token / Context Distribution ⓘ")
+        audit_summary.configure(text=format_llm_audit_summary(_audit_stats))
 
     def _toggle_audit():
         nonlocal _audit_expanded
