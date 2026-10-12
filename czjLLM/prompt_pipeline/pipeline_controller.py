@@ -48,6 +48,10 @@ from czjLLM.job_manager.end_point_manager import select_model
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.slice_merge import merge_dict_slices_audited, should_merge_slices
+from czjLLM.prompt_pipeline.slice_identity import (
+    digest_text, record_split_identity, record_success_identity,
+    resolve_success_leaves, valid_success,
+)
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
 from czjLLM.utilities.env_overrides import env_bool, env_int, load_czjllm_env_files_once
@@ -985,7 +989,7 @@ def _print_resume_plan(policy: str, prompt_items: list[str], ops: MergeOps, ctx=
     print("=" * 50)
 
 
-def _drop_resumed_todo_by_success(item: str, ctx=None) -> int:
+def _drop_resumed_todo_by_success(item: str, ctx=None, *, require_prompt_identity=False) -> int:
     """
     resume/smart_reset 模式下，避免已成功切片重跑：
     - 只處理 root TODO/*.txt 與 root Success/*.txt
@@ -1013,8 +1017,15 @@ def _drop_resumed_todo_by_success(item: str, ctx=None) -> int:
         if succ_fp is None:
             continue
         try:
-            same_hash = (_file_sha1(succ_fp) == _file_sha1(todo_fp))
-            if same_hash or (succ_fp.stat().st_mtime >= todo_fp.stat().st_mtime):
+            if require_prompt_identity:
+                # Success stores an output; a basename or mtime cannot prove
+                # that output belongs to the current generated input prompt.
+                current_hash = digest_text(todo_fp.read_text(encoding="utf-8"))
+                reuse = valid_success(item, todo_fp.name, current_hash)
+            else:
+                same_hash = (_file_sha1(succ_fp) == _file_sha1(todo_fp))
+                reuse = same_hash or (succ_fp.stat().st_mtime >= todo_fp.stat().st_mtime)
+            if reuse:
                 todo_fp.unlink()
                 dropped += 1
         except FileNotFoundError:
@@ -1057,7 +1068,10 @@ def _log_resume_before_after(item: str, before: tuple[int, int, int], after: tup
     )
 
 
-def _apply_resume_policy_multistage(policy: str, prompt_items: list[str], ops: MergeOps, ctx=None):
+def _apply_resume_policy_multistage(
+    policy: str, prompt_items: list[str], ops: MergeOps, ctx=None,
+    *, require_prompt_identity=False,
+):
     """
     resume:
       - 回收 RUNNING 到 TODO，保留 Success
@@ -1079,7 +1093,9 @@ def _apply_resume_policy_multistage(policy: str, prompt_items: list[str], ops: M
             _clear_txt_files(ops.join(item, "Success"), ops)
             _append_resume_log(ctx, f"action=clear Success item={Path(item).name}")
         else:
-            _drop_resumed_todo_by_success(item, ctx=ctx)
+            _drop_resumed_todo_by_success(
+                item, ctx=ctx, require_prompt_identity=require_prompt_identity,
+            )
         if policy in {"smart_reset", "full_restart"}:
             for p in list(Path(item, "TODO").glob("*")):
                 if p.is_dir():
@@ -1121,54 +1137,58 @@ def _single_extract_stage_writeback_enabled(stage_defs, ctx) -> bool:
     )
 
 
-def _expected_single_extract_slice_files(prompt_items: list[str]) -> dict[str, tuple[str, ...]]:
-    """Capture current source slices before resume prunes completed TODO files.
+def _expected_single_extract_slice_files(prompt_items: list[str]) -> dict[str, dict[str, str]]:
+    """Freeze current member names and hashes before resume prunes TODO.
 
-    Prompt generation rewrites the current TODO slices. Historical Success
-    may include orphan outputs from older, longer tokenization; never infer
-    current slice membership from Success alone. RUNNING is included so a
-    recovered in-flight slice cannot silently disappear.
+    TODO takes precedence over RUNNING for same names. Historical Success
+    does not establish current input identity.
     """
-    return {
-        item: tuple(sorted({
-            fp.name
-            for directory in ("TODO", "RUNNING")
-            for fp in _root_txt_files(os.path.join(item, directory))
-        }))
-        for item in prompt_items
-    }
+    expected: dict[str, dict[str, str]] = {}
+    for item in prompt_items:
+        members: dict[str, str] = {}
+        for directory in ("RUNNING", "TODO"):
+            for fp in _root_txt_files(os.path.join(item, directory)):
+                members[fp.name] = digest_text(fp.read_text(encoding="utf-8"))
+        expected[item] = dict(sorted(members.items()))
+    return expected
 
 
 def _require_complete_single_extract_stage(report, runtime, prompt_items, expected_files) -> None:
-    """Validate current slice coverage, then rebuild extract snapshots.
+    """Check every current prompt or its verified recursive retry children.
 
-    Previously completed Success outputs from the *current* input layout are
-    reused, but orphaned files from old layouts must not be merged. First check
-    all rows without mutating files; only then materialize the selected slice
-    snapshots from retained + fresh Success outputs.
+    Both output and prompt SHA-256 hashes are verified. Any missing success,
+    stale same-name output, or incomplete split fails before snapshot creation.
     """
     finished = int((report.get("final") or {}).get("finished_chunks", 0))
     if not runtime or len(runtime) != len(prompt_items) or finished != len(runtime):
         raise RuntimeError("extract stage incomplete: not every input unit finished")
+    selected: dict[str, list[str]] = {}
     for item in prompt_items:
         chunk = runtime.get(item)
         status = chunk.stages.get("extract") if chunk is not None else None
         if status is None or status.state != "success":
             raise RuntimeError("extract stage incomplete: an input unit failed")
         expected = expected_files.get(item)
-        actual = {fp.name for fp in _root_txt_files(os.path.join(item, "Success"))}
-        if not expected or not set(expected).issubset(actual):
+        if not expected:
+            raise RuntimeError("extract stage incomplete: missing expected current input slices")
+        leaves: list[str] = []
+        try:
+            for name, prompt_hash in expected.items():
+                leaves.extend(resolve_success_leaves(item, name, prompt_hash))
+        except (ValueError, OSError) as exc:
             raise RuntimeError(
                 "extract stage incomplete: missing or mismatched Success slice coverage"
-            )
+            ) from exc
+        if len(leaves) != len(set(leaves)):
+            raise RuntimeError("extract stage incomplete: overlapping split lineage")
+        selected[item] = leaves
 
-    # Full current membership is known; ignore orphaned Success outputs from
-    # older layouts, even when they remain on disk for diagnostics or cleanup.
+    # All inputs validated before touching any stage snapshot.
     for item in prompt_items:
         snapshot = _snapshot_dir(item, "extract")
         MKDIR(snapshot)
         _clear_txt_files(snapshot, MergeOps())
-        for name in expected_files[item]:
+        for name in selected[item]:
             shutil.copy2(
                 os.path.join(item, "Success", name),
                 os.path.join(snapshot, name),
@@ -1233,16 +1253,17 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"⚠️ 未知 resume_policy={resume_policy}，將使用 resume")
         resume_policy = "resume"
     _print_resume_plan(resume_policy, prompt_items, ops, ctx=ctx)
-    # Must capture current TODO + RUNNING before resume/smart_reset removes
-    # completed TODO entries. Older Success-only outputs are not current slices.
+    stage_defs = resolve_pipeline_stages(ctx)
+    single_extract_stage_writeback = _single_extract_stage_writeback_enabled(stage_defs, ctx)
     expected_extract_files = _expected_single_extract_slice_files(prompt_items)
-    _apply_resume_policy_multistage(resume_policy, prompt_items, ops, ctx=ctx)
+    _apply_resume_policy_multistage(
+        resume_policy, prompt_items, ops, ctx=ctx,
+        require_prompt_identity=single_extract_stage_writeback,
+    )
 
     runtime = init_chunk_stage_runtime(ctx, prompt_items)
-    stage_defs = resolve_pipeline_stages(ctx)
     stage_map = {s.name: s for s in stage_defs}
     stage_order = [s.name for s in stage_defs]
-    single_extract_stage_writeback = _single_extract_stage_writeback_enabled(stage_defs, ctx)
     forced_stage_names: set[str] = set()
     for _rule in (getattr(ctx, "sql_writeback_rules", None) or []):
         if not isinstance(_rule, dict):
@@ -2062,6 +2083,10 @@ class PromptAPIPipeline:
                         fp.flush()
                         os.fsync(fp.fileno())
                     os.replace(tmp_fn, self.OutputSaveFN)
+                record_success_identity(
+                    self.promptFile, self.OutputSaveFN, self.content, retMES,
+                )
+
                     if self.removeFinPromptFile and self.promptFile:
                         safe_unlink(self.promptFile)
                 ok = bool(retMES)
@@ -2498,6 +2523,12 @@ class PromptAPIPipeline:
             with open(fn, "wt", encoding="utf-8") as fp:
                 fp.write(prompt)
     
+        record_split_identity(
+            self.promptFile, self.content,
+            [(Path(new_prompt_file_0).name, prompt_0),
+             (Path(new_prompt_file_1).name, prompt_1)],
+        )
+
         # ✅ 3) 刪掉「目前這筆」的 prompt 檔：它現在通常在 RUNNING
         # 目的：讓 consumer 能判定這筆已釋放（你後面會把它當 requeued）
         try:
