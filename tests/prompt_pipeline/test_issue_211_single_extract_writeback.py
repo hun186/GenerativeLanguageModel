@@ -11,6 +11,7 @@ import yaml
 from czjLLM.prompt_pipeline.pipeline_controller import (
     _merge_single_extract_stage_json_parts,
     _require_complete_single_extract_stage,
+    _expected_single_extract_slice_files,
     _single_extract_stage_writeback_enabled,
     process_prompt_and_merge_multistage,
 )
@@ -130,7 +131,7 @@ def test_stage_merge_wiring_is_narrow_to_single_extract_stage():
     source = inspect.getsource(process_prompt_and_merge_multistage)
     assert "_single_extract_stage_writeback_enabled(stage_defs, ctx)" in source
     assert "_require_complete_single_extract_stage(" in source
-    assert "expected_extract_files[job.chunk_id]" in source
+    assert "_expected_single_extract_slice_files(prompt_items)" in source
     assert "if single_extract_stage_writeback and stage.name" in source
     assert "_merge_single_extract_stage_json_parts(merged_parts, ctx)" in source
     assert 'stage_text = "\\n".join(merged_parts)' in source
@@ -153,8 +154,8 @@ def test_issue_211_guard_only_applies_to_single_extract_json_writeback(filename)
 
 
 def _stage_success(item, files):
-    folder = item / "_stage_outputs" / "extract"
-    folder.mkdir(parents=True)
+    folder = item / "Success"
+    folder.mkdir(parents=True, exist_ok=True)
     for name, text in files.items():
         (folder / name).write_text(text, encoding="utf-8")
 
@@ -179,16 +180,84 @@ def test_all_stage_chunks_and_exact_snapshot_names_required_before_writeback(tmp
         _require_complete_single_extract_stage(complete, runtime, items, expected)
     runtime[str(second)].stages["extract"].state = "success"
 
-    (second / "_stage_outputs" / "extract" / "0.txt").unlink()
-    with pytest.raises(RuntimeError, match="missing or mismatched slice snapshots"):
+    (second / "Success" / "0.txt").unlink()
+    with pytest.raises(RuntimeError, match="missing or mismatched Success slice coverage"):
         _require_complete_single_extract_stage(complete, runtime, items, expected)
     _stage_success(second, {"0.txt": '{"keyFunctions":["B"]}', "unexpected.txt": "{}"})
-    with pytest.raises(RuntimeError, match="missing or mismatched slice snapshots"):
+    with pytest.raises(RuntimeError, match="missing or mismatched Success slice coverage"):
         _require_complete_single_extract_stage(complete, runtime, items, expected)
-    with pytest.raises(RuntimeError, match="missing or mismatched slice snapshots"):
+    with pytest.raises(RuntimeError, match="missing or mismatched Success slice coverage"):
         _require_complete_single_extract_stage(complete, runtime, items, {str(first): ()})
 
 
 def test_empty_stage_runtime_fails_closed(tmp_path):
     with pytest.raises(RuntimeError, match="not every input unit finished"):
         _require_complete_single_extract_stage({"final": {"finished_chunks": 0}}, {}, [], {})
+
+
+def test_resume_collects_retained_and_new_slices_before_todo_pruning(tmp_path):
+    item = tmp_path / "row_resume"
+    (item / "TODO").mkdir(parents=True)
+    _stage_success(item, {
+        "0.txt": json.dumps({"inputName": "Prior", "keyFunctions": ["old"]}),
+    })
+    (item / "TODO" / "0.txt").write_text("already done", encoding="utf-8")
+    (item / "TODO" / "1.txt").write_text("new request", encoding="utf-8")
+    expected = _expected_single_extract_slice_files([str(item)])
+    assert expected[str(item)] == ("0.txt", "1.txt")
+
+    # Both resume and smart_reset will skip previously completed TODO 0.txt.
+    (item / "TODO" / "0.txt").unlink()
+    _stage_success(item, {
+        "1.txt": json.dumps({"formalName": "Completed", "keyFunctions": ["new"]}),
+    })
+    # The old delta snapshot contains only the new slice, missing 0.txt.
+    snapshot = item / "_stage_outputs" / "extract"
+    snapshot.mkdir(parents=True)
+    (snapshot / "1.txt").write_text('{"formalName":"Completed"}', encoding="utf-8")
+    runtime = {
+        str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")}),
+    }
+    _require_complete_single_extract_stage(
+        {"final": {"finished_chunks": 1}}, runtime, [str(item)], expected,
+    )
+    names = sorted(fp.name for fp in snapshot.glob("*.txt"))
+    assert names == ["0.txt", "1.txt"]
+    source = [fp.read_text(encoding="utf-8") for fp in sorted(snapshot.glob("*.txt"))]
+    result = json.loads(_merge_single_extract_stage_json_parts(source, SimpleNamespace(
+        merge_conflict_policy="prefer_left", merge_dedup_lists=False, merge_log_changes=False,
+    )))
+    assert result == {
+        "inputName": "Prior", "formalName": "Completed",
+        "keyFunctions": ["old", "new"],
+    }
+
+
+def test_resume_missing_retained_success_fails_before_snapshot_reconstruction(tmp_path):
+    item = tmp_path / "row_failed_resume"
+    (item / "TODO").mkdir(parents=True)
+    _stage_success(item, {"0.txt": '{"inputName":"prior"}'})
+    (item / "TODO" / "1.txt").write_text("remaining", encoding="utf-8")
+    expected = _expected_single_extract_slice_files([str(item)])
+    (item / "Success" / "0.txt").unlink()
+    _stage_success(item, {"1.txt": '{"formalName":"new"}'})
+    runtime = {
+        str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")}),
+    }
+    with pytest.raises(RuntimeError, match="Success slice coverage"):
+        _require_complete_single_extract_stage(
+            {"final": {"finished_chunks": 1}}, runtime, [str(item)], expected,
+        )
+    assert not (item / "_stage_outputs" / "extract").exists()
+
+
+def test_expected_full_set_includes_running_slices_before_resume_recovery(tmp_path):
+    item = tmp_path / "row_running"
+    (item / "TODO").mkdir(parents=True)
+    (item / "RUNNING").mkdir(parents=True)
+    (item / "Success").mkdir(parents=True)
+    (item / "Success" / "0.txt").write_text("completed", encoding="utf-8")
+    (item / "RUNNING" / "1.txt").write_text("interrupted", encoding="utf-8")
+    (item / "TODO" / "2.txt").write_text("pending", encoding="utf-8")
+    expected = _expected_single_extract_slice_files([str(item)])
+    assert expected[str(item)] == ("0.txt", "1.txt", "2.txt")
