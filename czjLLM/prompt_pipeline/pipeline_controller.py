@@ -2084,9 +2084,9 @@ class PromptAPIPipeline:
                         fp.flush()
                         os.fsync(fp.fileno())
                     os.replace(tmp_fn, self.OutputSaveFN)
-                record_success_identity(
-                    self.promptFile, self.OutputSaveFN, self.content, retMES,
-                )
+                    record_success_identity(
+                        self.promptFile, self.OutputSaveFN, self.content, retMES,
+                    )
 
                     if self.removeFinPromptFile and self.promptFile:
                         safe_unlink(self.promptFile)
@@ -2159,6 +2159,9 @@ class PromptAPIPipeline:
                     fp.flush()
                     os.fsync(fp.fileno())
                 os.replace(tmp_fn, self.OutputSaveFN)
+                record_success_identity(
+                    self.promptFile, self.OutputSaveFN, self.content, retMES,
+                )
     
                 if self.removeFinPromptFile and self.promptFile:
                     safe_unlink(self.promptFile)
