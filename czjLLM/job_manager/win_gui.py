@@ -31,6 +31,8 @@ _AUDIT_SERIES = (
     ("task_text_tokens", "Task text tokens", False),
     ("context_usage_ratio", "Context usage", True),
     ("elapsed_seconds", "Slice time", False),
+    ("total_tok_per_s", "Total tok/s", False),
+    ("effective_tok_per_s_est", "Effective tok/s (est.)", False),
 )
 
 
@@ -59,6 +61,20 @@ _AUDIT_DISTRIBUTION_HELP = {
         "從真正送出 API 呼叫到取得模型回應的 elapsed_seconds。"
         "不包含等待 worker/queue、response 後處理、merge/reduction 或輸出寫檔時間；"
         "也不混入 JSON repair 等非切片 direct call。"
+    ),
+    "total_tok_per_s": (
+        "Total tok/s：(API input tokens + output tokens) ÷ Slice time。"
+        "這是 observed request-level throughput，不區分 KV-cache / prefix cache 重用。"
+        "耗時包含網路、排程、TTFT 與生成；不是純 GPU kernel token/s。"
+    ),
+    "effective_tok_per_s_est": (
+        "Effective tok/s (est.)：(估算未快取 input tokens + output tokens) ÷ Slice time。"
+        "provider 回報 cached prompt/input tokens 時優先使用，包含明確的 0 hit。"
+        "否則同 model、endpoint、task、YAML stage 的模板需至少兩筆先前近似穩定樣本，"
+        "最多以模板 token 最小值的 50% 當作可能 cacheable proxy。"
+        "heuristic / estimated 不是 API cache-hit 真值；動態欄位、runtime suffix、"
+        "prefix、token boundary 和 provider policy 會影響準確度。"
+        "這仍是 observed request-level throughput，不是純 GPU token/s。"
     ),
 }
 
