@@ -199,7 +199,7 @@ def write_prompt_component_metrics(
             "rendered_prompt_tokens": rendered_prompt_tokens,
             "template_tokens": max(rendered_prompt_tokens - task_text_tokens, 0),
         }
-        write_prompt_token_metadata(prompt_file, stage_identity=stage_identity or task, **metadata)
+        write_prompt_token_metadata(prompt_file, stage_identity=stage_identity or "single_stage", **metadata)
         return metadata
     except Exception as exc:
         if not quiet:
@@ -328,7 +328,7 @@ def process_chunk_to_generate_prompt(idx: int, ctx_piece: str, ctx: LLMJobConfig
             model_name=ctx.model_spec_name,
             model_spec=getattr(ctx, "model_spec", None),
             task=ctx.task,
-            stage_identity=str(ctx.task or ""),
+            stage_identity="single_stage",
             quiet=bool(getattr(ctx, "suppress_prompt_diagnostics", False)),
         )
     except Exception as e:
