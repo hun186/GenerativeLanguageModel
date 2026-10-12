@@ -60,3 +60,9 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 ## Archived History
 
 - `.codex/archive/backlog.md-20261006-134200.md` — complete pre-compaction backlog/history through PR #200 head `39177737486a372f38e9b6d81563d6f14327459a`. Historical unchecked K/L entries in that archive are superseded by the completed roadmap above.
+
+### 2026-10-12 execution order / GUI follow-up
+
+- [ ] Review and land the standalone LLM audit GUI throughput/key-axis follow-up (work branch `feat/gui-audit-throughput-axis-v1`); do not merge without user approval. Exact-head offline-e2e and Codex clean review required.
+- [ ] After merge, begin narrow `AggregateOutput` lineage convenience APIs backed solely by the existing payload truth, not another lineage store/service.
+- Keep #203 transient semantic cache prototype **deferred** until production duplication/cost evidence or explicit user direction.
