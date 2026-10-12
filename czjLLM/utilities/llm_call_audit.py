@@ -214,7 +214,7 @@ def relabel_prompt_token_stage(prompt_file: str, stage_identity: str) -> bool:
         task_text_tokens=metadata["task_text_tokens"],
         template_tokens=metadata["template_tokens"],
         rendered_prompt_tokens=metadata["rendered_prompt_tokens"],
-        source=metadata.get("prompt_component_token_source", "local_tokenizer_no_special_tokens"),
+        source=metadata.get("prompt_component_token_source", ""),
         stage_identity=stage_identity,
     )
     return True
