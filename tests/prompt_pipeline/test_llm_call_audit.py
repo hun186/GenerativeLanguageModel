@@ -258,6 +258,19 @@ def test_original_first_stage_relabel_preserves_token_counts_and_privacy(tmp_pat
     assert relabel(str(missing), "yaml_stage_alpha") is False
     assert not _AUDIT.prompt_token_metadata_path(str(missing)).exists()
 
+    # A legacy numeric sidecar without a tokenizer source must remain unknown.
+    legacy = tmp_path / "TODO" / "legacy.txt"
+    legacy.write_text("legacy", encoding="utf-8")
+    legacy_sidecar = _AUDIT.prompt_token_metadata_path(str(legacy))
+    legacy_sidecar.parent.mkdir(parents=True, exist_ok=True)
+    legacy_sidecar.write_text(
+        '{"task_text_tokens": 4, "template_tokens": 5, "rendered_prompt_tokens": 9}',
+        encoding="utf-8",
+    )
+    assert relabel(str(legacy), "yaml_stage_alpha") is True
+    assert read_prompt_token_metadata(str(legacy))["stage_identity"] == "yaml_stage_alpha"
+    assert "prompt_component_token_source" not in read_prompt_token_metadata(str(legacy))
+
 
 def test_multistage_original_prompt_retags_before_early_return():
     from pathlib import Path
