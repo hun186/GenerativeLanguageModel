@@ -184,8 +184,8 @@ def test_all_stage_chunks_and_exact_snapshot_names_required_before_writeback(tmp
     with pytest.raises(RuntimeError, match="missing or mismatched Success slice coverage"):
         _require_complete_single_extract_stage(complete, runtime, items, expected)
     _stage_success(second, {"0.txt": '{"keyFunctions":["B"]}', "unexpected.txt": "{}"})
-    with pytest.raises(RuntimeError, match="missing or mismatched Success slice coverage"):
-        _require_complete_single_extract_stage(complete, runtime, items, expected)
+    _require_complete_single_extract_stage(complete, runtime, items, expected)
+    assert [fp.name for fp in (second / "_stage_outputs" / "extract").glob("*.txt")] == ["0.txt"]
     with pytest.raises(RuntimeError, match="missing or mismatched Success slice coverage"):
         _require_complete_single_extract_stage(complete, runtime, items, {str(first): ()})
 
@@ -237,6 +237,7 @@ def test_resume_missing_retained_success_fails_before_snapshot_reconstruction(tm
     item = tmp_path / "row_failed_resume"
     (item / "TODO").mkdir(parents=True)
     _stage_success(item, {"0.txt": '{"inputName":"prior"}'})
+    (item / "TODO" / "0.txt").write_text("previously completed current input", encoding="utf-8")
     (item / "TODO" / "1.txt").write_text("remaining", encoding="utf-8")
     expected = _expected_single_extract_slice_files([str(item)])
     (item / "Success" / "0.txt").unlink()
@@ -260,4 +261,59 @@ def test_expected_full_set_includes_running_slices_before_resume_recovery(tmp_pa
     (item / "RUNNING" / "1.txt").write_text("interrupted", encoding="utf-8")
     (item / "TODO" / "2.txt").write_text("pending", encoding="utf-8")
     expected = _expected_single_extract_slice_files([str(item)])
-    assert expected[str(item)] == ("0.txt", "1.txt", "2.txt")
+    assert expected[str(item)] == ("1.txt", "2.txt")
+    (item / "TODO" / "0.txt").write_text("current source includes completed member", encoding="utf-8")
+    assert _expected_single_extract_slice_files([str(item)])[str(item)] == (
+        "0.txt", "1.txt", "2.txt"
+    )
+
+
+def test_retokenized_shorter_source_ignores_orphan_success_from_older_layout(tmp_path):
+    item = tmp_path / "row_shortened"
+    todo = item / "TODO"
+    todo.mkdir(parents=True)
+    for name in ("0.txt", "1.txt"):
+        (todo / name).write_text("current prompt " + name, encoding="utf-8")
+    _stage_success(item, {
+        "0.txt": '{"current":["A"]}',
+        "1.txt": '{"current":["B"]}',
+        "2.txt": '{"stale":["must-not-write-back"]}',
+    })
+    expected = _expected_single_extract_slice_files([str(item)])
+    assert expected[str(item)] == ("0.txt", "1.txt")
+
+    # Resume prunes current completed TODO but leaves historical Success 2.txt.
+    for fp in todo.glob("*.txt"):
+        fp.unlink()
+    runtime = {
+        str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")}),
+    }
+    _require_complete_single_extract_stage(
+        {"final": {"finished_chunks": 1}}, runtime, [str(item)], expected,
+    )
+    snapshot = item / "_stage_outputs" / "extract"
+    actual = sorted(snapshot.glob("*.txt"))
+    assert [fp.name for fp in actual] == ["0.txt", "1.txt"]
+    merged = _merge_single_extract_stage_json_parts(
+        [fp.read_text(encoding="utf-8") for fp in actual],
+        SimpleNamespace(merge_conflict_policy="prefer_left", merge_log_changes=False),
+    )
+    assert json.loads(merged) == {"current": ["A", "B"]}
+    assert "stale" not in merged
+    assert (item / "Success" / "2.txt").exists()  # Do not destructively prune history.
+
+
+def test_orphan_success_alone_cannot_establish_current_slice_layout(tmp_path):
+    item = tmp_path / "row_no_current_source"
+    (item / "TODO").mkdir(parents=True)
+    _stage_success(item, {"0.txt": '{"previous":true}'})
+    expected = _expected_single_extract_slice_files([str(item)])
+    assert expected[str(item)] == ()
+    runtime = {
+        str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")}),
+    }
+    with pytest.raises(RuntimeError, match="Success slice coverage"):
+        _require_complete_single_extract_stage(
+            {"final": {"finished_chunks": 1}}, runtime, [str(item)], expected,
+        )
+    assert not (item / "_stage_outputs" / "extract").exists()
