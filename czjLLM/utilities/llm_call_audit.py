@@ -33,6 +33,9 @@ _FIELDS = [
     "rendered_prompt_tokens",
     "prompt_component_token_source",
     "token_usage_source",
+    "cached_input_tokens",
+    "cached_input_token_source",
+    "stage_identity",
     "context_limit_tokens",
     "context_limit_source",
     "context_usage_ratio",
@@ -119,6 +122,7 @@ def write_prompt_token_metadata(
     template_tokens: int,
     rendered_prompt_tokens: int,
     source: str = "local_tokenizer_no_special_tokens",
+    stage_identity: str = "",
 ) -> None:
     """Persist numeric-only prompt component metadata next to a TODO prompt."""
     if not prompt_file:
@@ -130,6 +134,7 @@ def write_prompt_token_metadata(
         "template_tokens": max(0, int(template_tokens or 0)),
         "rendered_prompt_tokens": max(0, int(rendered_prompt_tokens or 0)),
         "prompt_component_token_source": str(source or ""),
+        "stage_identity": str(stage_identity or ""),
     }
     tmp = path.with_suffix(path.suffix + ".tmp")
     with tmp.open("w", encoding="utf-8") as fp:
@@ -162,7 +167,35 @@ def read_prompt_token_metadata(prompt_file: str) -> dict[str, Any]:
     source = raw.get("prompt_component_token_source")
     if isinstance(source, str) and source:
         out["prompt_component_token_source"] = source
+    stage = raw.get("stage_identity")
+    if isinstance(stage, str) and stage:
+        out["stage_identity"] = stage
     return out
+
+
+def _provider_cached_input_tokens(usage: Any) -> tuple[int | None, str]:
+    """Read explicit provider-reported cache usage; a reported zero is valid."""
+    if usage is None:
+        return None, ""
+
+    def field(obj, key):
+        return obj.get(key) if isinstance(obj, Mapping) else getattr(obj, key, None)
+
+    for obj, key in (
+        (usage, "prompt_cache_hit_tokens"),
+        (field(usage, "prompt_tokens_details"), "cached_tokens"),
+        (field(usage, "input_tokens_details"), "cached_tokens"),
+    ):
+        raw = field(obj, key) if obj is not None else None
+        if raw is None or isinstance(raw, bool):
+            continue
+        try:
+            count = int(raw)
+        except (ValueError, TypeError, OverflowError):
+            continue
+        if count >= 0:
+            return count, "provider_usage"
+    return None, ""
 
 
 def log_llm_call(
@@ -183,6 +216,7 @@ def log_llm_call(
     template_tokens: int | None = None,
     rendered_prompt_tokens: int | None = None,
     prompt_component_token_source: str = "",
+    stage_identity: str = "",
 ) -> None:
     """Append one LLM call row. Missing usage/context fields are recorded as 0/blank."""
     if not audit_path:
@@ -194,6 +228,7 @@ def log_llm_call(
     input_tokens = _int_attr(usage, "prompt_tokens")
     output_tokens = _int_attr(usage, "completion_tokens")
     total_tokens = _int_attr(usage, "total_tokens") or input_tokens + output_tokens
+    cached_input_tokens, cached_source = _provider_cached_input_tokens(usage)
     context_limit, context_source = resolve_context_limit(spec, response=response)
     ratio = (float(total_tokens) / float(context_limit)) if context_limit > 0 else 0.0
     context_exhausted = bool(context_limit > 0 and total_tokens >= context_limit)
@@ -221,6 +256,9 @@ def log_llm_call(
         "rendered_prompt_tokens": "" if rendered_prompt_tokens is None else max(0, int(rendered_prompt_tokens)),
         "prompt_component_token_source": str(prompt_component_token_source or ""),
         "token_usage_source": token_usage_source,
+        "cached_input_tokens": "" if cached_input_tokens is None else cached_input_tokens,
+        "cached_input_token_source": cached_source,
+        "stage_identity": str(stage_identity or ""),
         "context_limit_tokens": context_limit,
         "context_limit_source": context_source,
         "context_usage_ratio": f"{ratio:.6f}" if context_limit > 0 else "",
