@@ -1122,17 +1122,17 @@ def _single_extract_stage_writeback_enabled(stage_defs, ctx) -> bool:
 
 
 def _expected_single_extract_slice_files(prompt_items: list[str]) -> dict[str, tuple[str, ...]]:
-    """Capture the full slice set *before* resume prunes completed TODO files.
+    """Capture current source slices before resume prunes completed TODO files.
 
-    Success is part of the authoritative slice set on resume/smart_reset.
-    RUNNING is also included before recovery turns it back into TODO.
-    A full_restart with only historical Success but no retried TODO will
-    fail closed rather than publish an incomplete replacement.
+    Prompt generation rewrites the current TODO slices. Historical Success
+    may include orphan outputs from older, longer tokenization; never infer
+    current slice membership from Success alone. RUNNING is included so a
+    recovered in-flight slice cannot silently disappear.
     """
     return {
         item: tuple(sorted({
             fp.name
-            for directory in ("TODO", "RUNNING", "Success")
+            for directory in ("TODO", "RUNNING")
             for fp in _root_txt_files(os.path.join(item, directory))
         }))
         for item in prompt_items
@@ -1140,12 +1140,12 @@ def _expected_single_extract_slice_files(prompt_items: list[str]) -> dict[str, t
 
 
 def _require_complete_single_extract_stage(report, runtime, prompt_items, expected_files) -> None:
-    """Validate every original slice, then rebuild extract snapshots from Success.
+    """Validate current slice coverage, then rebuild extract snapshots.
 
-    The legacy stage snapshot contains only *new* outputs; resume retains the
-    earlier, unchanged Success files.  Merging snapshots without rehydration
-    would silently drop those already-completed slices.  First check all rows
-    without mutating files; only then materialize the complete stage snapshots.
+    Previously completed Success outputs from the *current* input layout are
+    reused, but orphaned files from old layouts must not be merged. First check
+    all rows without mutating files; only then materialize the selected slice
+    snapshots from retained + fresh Success outputs.
     """
     finished = int((report.get("final") or {}).get("finished_chunks", 0))
     if not runtime or len(runtime) != len(prompt_items) or finished != len(runtime):
@@ -1156,20 +1156,23 @@ def _require_complete_single_extract_stage(report, runtime, prompt_items, expect
         if status is None or status.state != "success":
             raise RuntimeError("extract stage incomplete: an input unit failed")
         expected = expected_files.get(item)
-        actual = tuple(fp.name for fp in _root_txt_files(os.path.join(item, "Success")))
-        if not expected or actual != expected:
+        actual = {fp.name for fp in _root_txt_files(os.path.join(item, "Success"))}
+        if not expected or not set(expected).issubset(actual):
             raise RuntimeError(
                 "extract stage incomplete: missing or mismatched Success slice coverage"
             )
 
-    # No failed/partial member remains. Reconstruct the current aggregate
-    # source from *all* retained+fresh Success slices in deterministic order.
+    # Full current membership is known; ignore orphaned Success outputs from
+    # older layouts, even when they remain on disk for diagnostics or cleanup.
     for item in prompt_items:
         snapshot = _snapshot_dir(item, "extract")
         MKDIR(snapshot)
         _clear_txt_files(snapshot, MergeOps())
-        for fp in _root_txt_files(os.path.join(item, "Success")):
-            shutil.copy2(str(fp), os.path.join(snapshot, fp.name))
+        for name in expected_files[item]:
+            shutil.copy2(
+                os.path.join(item, "Success", name),
+                os.path.join(snapshot, name),
+            )
 
 
 def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
@@ -1230,8 +1233,8 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"⚠️ 未知 resume_policy={resume_policy}，將使用 resume")
         resume_policy = "resume"
     _print_resume_plan(resume_policy, prompt_items, ops, ctx=ctx)
-    # Must capture original TODO + retained Success + recovered RUNNING before
-    # resume/smart_reset drops successful TODO entries.
+    # Must capture current TODO + RUNNING before resume/smart_reset removes
+    # completed TODO entries. Older Success-only outputs are not current slices.
     expected_extract_files = _expected_single_extract_slice_files(prompt_items)
     _apply_resume_policy_multistage(resume_policy, prompt_items, ops, ctx=ctx)
 
