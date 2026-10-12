@@ -47,6 +47,7 @@ from czjLLM.job_manager.end_point_manager import select_model
 
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
+from czjLLM.utilities.slice_merge import merge_dict_slices_audited, should_merge_slices
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
 from czjLLM.utilities.env_overrides import env_bool, env_int, load_czjllm_env_files_once
@@ -1105,6 +1106,43 @@ def _apply_resume_policy_single_stage(policy: str, prompt_items: list[str], ops:
 def _has_explicit_stage_flow(ctx) -> bool:
     return bool(_explicit_stage_flow(ctx))
 
+def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
+    """Apply legacy JSON slice merge to one extract-stage writeback artifact.
+
+    Only called for the one-stage extract compatibility path with explicit
+    stage writeback and merge_slices enabled. Validate every slice before
+    materializing a stage manifest so malformed/partial input cannot silently
+    become a writeback-ready concatenation of JSON documents.
+    """
+    rows = []
+    for index, text in enumerate(parts):
+        try:
+            value = json.loads(text)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"extract stage JSON slice {index} is invalid") from exc
+        if isinstance(value, dict):
+            rows.append(value)
+        elif isinstance(value, list) and all(isinstance(row, dict) for row in value):
+            rows.extend(value)
+        else:
+            raise ValueError(f"extract stage JSON slice {index} must contain dicts")
+
+    if len(parts) == 1:
+        # Match legacy behavior: one JSON-list slice keeps its list envelope.
+        return parts[0]
+    if not rows:
+        return "[]"
+    merged, _report = merge_dict_slices_audited(
+        rows,
+        conflict_policy=str(getattr(ctx, "merge_conflict_policy", "prefer_left")),
+        dedup_lists=bool(getattr(ctx, "merge_dedup_lists", True)),
+        audit=bool(getattr(ctx, "merge_log_changes", True)),
+        logger=None,
+        max_log=int(getattr(ctx, "merge_max_log", 10)),
+    )
+    return json.dumps(merged, ensure_ascii=False, indent=2)
+
+
 def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | None = None, max_rounds: int = 20) -> str:
     from czjLLM.reduction.production_control import raise_if_execution_cancelled
     raise_if_execution_cancelled(ctx)
@@ -1431,8 +1469,26 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             if safe_stage_key != "na":
                 stage_merged_name = f"{stage_merged_name}_{safe_stage_key}"
             stage_merged_fn = ops.join(stage_merge_root, f"{stage_merged_name}.txt")
+            # For the legacy-compatible *single extract stage* only, a
+            # newline join is not valid JSON when multiple slices succeed.
+            # Existing genuine multistage stage outputs stay unchanged.
+            stage_writeback_for_extract = any(
+                isinstance(rule, dict)
+                and str(rule.get("source", rule.get("sql_writeback_source", "")) or "").strip().lower() == "stage"
+                and str(rule.get("stage", rule.get("sql_writeback_stage", "")) or "").strip() == stage.name
+                for rule in (getattr(ctx, "sql_writeback_rules", None) or [])
+            )
+            if (
+                len(stage_defs) == 1
+                and stage.name == "extract"
+                and stage_writeback_for_extract
+                and should_merge_slices(ctx)
+            ):
+                stage_text = _merge_single_extract_stage_json_parts(merged_parts, ctx)
+            else:
+                stage_text = "\n".join(merged_parts)
             with open(stage_merged_fn, "w", encoding="utf-8") as f:
-                f.write("\n".join(merged_parts))
+                f.write(stage_text)
             merged_file = os.path.basename(stage_merged_fn)
             print(f"[stage:{stage.name}] 🧩 合併完成，輸出：{stage_merged_fn}（pieces={len(merged_parts)}）")
         else:
