@@ -1121,8 +1121,32 @@ def _single_extract_stage_writeback_enabled(stage_defs, ctx) -> bool:
     )
 
 
+def _expected_single_extract_slice_files(prompt_items: list[str]) -> dict[str, tuple[str, ...]]:
+    """Capture the full slice set *before* resume prunes completed TODO files.
+
+    Success is part of the authoritative slice set on resume/smart_reset.
+    RUNNING is also included before recovery turns it back into TODO.
+    A full_restart with only historical Success but no retried TODO will
+    fail closed rather than publish an incomplete replacement.
+    """
+    return {
+        item: tuple(sorted({
+            fp.name
+            for directory in ("TODO", "RUNNING", "Success")
+            for fp in _root_txt_files(os.path.join(item, directory))
+        }))
+        for item in prompt_items
+    }
+
+
 def _require_complete_single_extract_stage(report, runtime, prompt_items, expected_files) -> None:
-    """Fail closed before writing any stage artifact for incomplete JSON work."""
+    """Validate every original slice, then rebuild extract snapshots from Success.
+
+    The legacy stage snapshot contains only *new* outputs; resume retains the
+    earlier, unchanged Success files.  Merging snapshots without rehydration
+    would silently drop those already-completed slices.  First check all rows
+    without mutating files; only then materialize the complete stage snapshots.
+    """
     finished = int((report.get("final") or {}).get("finished_chunks", 0))
     if not runtime or len(runtime) != len(prompt_items) or finished != len(runtime):
         raise RuntimeError("extract stage incomplete: not every input unit finished")
@@ -1132,13 +1156,20 @@ def _require_complete_single_extract_stage(report, runtime, prompt_items, expect
         if status is None or status.state != "success":
             raise RuntimeError("extract stage incomplete: an input unit failed")
         expected = expected_files.get(item)
-        actual = tuple(
-            path.name for path in _root_txt_files(_snapshot_dir(item, "extract"))
-        )
+        actual = tuple(fp.name for fp in _root_txt_files(os.path.join(item, "Success")))
         if not expected or actual != expected:
             raise RuntimeError(
-                "extract stage incomplete: missing or mismatched slice snapshots"
+                "extract stage incomplete: missing or mismatched Success slice coverage"
             )
+
+    # No failed/partial member remains. Reconstruct the current aggregate
+    # source from *all* retained+fresh Success slices in deterministic order.
+    for item in prompt_items:
+        snapshot = _snapshot_dir(item, "extract")
+        MKDIR(snapshot)
+        _clear_txt_files(snapshot, MergeOps())
+        for fp in _root_txt_files(os.path.join(item, "Success")):
+            shutil.copy2(str(fp), os.path.join(snapshot, fp.name))
 
 
 def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
@@ -1199,6 +1230,9 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"⚠️ 未知 resume_policy={resume_policy}，將使用 resume")
         resume_policy = "resume"
     _print_resume_plan(resume_policy, prompt_items, ops, ctx=ctx)
+    # Must capture original TODO + retained Success + recovered RUNNING before
+    # resume/smart_reset drops successful TODO entries.
+    expected_extract_files = _expected_single_extract_slice_files(prompt_items)
     _apply_resume_policy_multistage(resume_policy, prompt_items, ops, ctx=ctx)
 
     runtime = init_chunk_stage_runtime(ctx, prompt_items)
@@ -1206,7 +1240,6 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     stage_map = {s.name: s for s in stage_defs}
     stage_order = [s.name for s in stage_defs]
     single_extract_stage_writeback = _single_extract_stage_writeback_enabled(stage_defs, ctx)
-    expected_extract_files: dict[str, tuple[str, ...]] = {}
     forced_stage_names: set[str] = set()
     for _rule in (getattr(ctx, "sql_writeback_rules", None) or []):
         if not isinstance(_rule, dict):
@@ -1425,10 +1458,6 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"[stage:{job.stage_name}] ▶ 開始處理輸入單位(input_unit): {Path(job.chunk_id).name}")
         _prepare_todo_for_stage(job.chunk_id, job.stage_name, job.stage_task)
         _sync_stage_todo_to_root(job.chunk_id, job.stage_name, ops)
-        if single_extract_stage_writeback:
-            expected_extract_files[job.chunk_id] = tuple(
-                fp.name for fp in _root_txt_files(ops.join(job.chunk_id, "TODO"))
-            )
         stage_def = stage_map[job.stage_name]
         debug_enabled, debug_max_chars = _resolve_llm_debug_flags(
             stage_debug_enabled=stage_def.debug_print_llm_io,
