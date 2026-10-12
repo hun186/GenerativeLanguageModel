@@ -48,7 +48,7 @@ from czjLLM.job_manager.end_point_manager import select_model
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.logging_utils import CostLog
-from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata
+from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
 from czjLLM.utilities.env_overrides import env_bool, env_int, load_czjllm_env_files_once
 from czjLLM.tokenizer_utils import TokenizerWrapper
 #from czjLLM.utilities.logging_utils import log_error
@@ -1276,6 +1276,10 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             _clear_txt_files(todo_dir, ops)
             for fp in _root_txt_files(root_todo_dir):
                 shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
+                # The original first-stage prompt remains byte-identical, so
+                # preserve its existing numeric token counts, but relabel the
+                # copied dispatch's actual YAML stage before workers claim it.
+                relabel_prompt_token_stage(str(fp), stage_name)
             return  # 已有 TODO，不覆蓋
 
         if effective_input_from in {"", "none", "null"}:
