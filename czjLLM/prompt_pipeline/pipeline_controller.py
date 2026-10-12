@@ -1845,6 +1845,7 @@ def _run_mock_llm_api(itemList, ctx, allow_to_retry=True, task_override: str | N
             out_text = _mock_llm_text(task_text, content, ctx)
             with open(out_fn, mode='wt', encoding='utf-8') as fw:
                 fw.write(out_text)
+            record_success_identity(pf, out_fn, content, out_text)
             try:
                 safe_unlink(pf)
             except Exception:
