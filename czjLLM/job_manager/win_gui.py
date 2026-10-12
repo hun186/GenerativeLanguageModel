@@ -805,7 +805,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     audit_summary.pack(fill="x", padx=8, pady=(2, 3))
     audit_frame = ttk.Frame(audit_section, padding=(8, 5))
     audit_canvas = tk.Canvas(
-        audit_frame, height=300, highlightthickness=0, background="white"
+        audit_frame, height=340, highlightthickness=0, background="white"
     )
     audit_canvas.pack(fill="x", expand=True)
     _audit_tooltip = None
@@ -892,7 +892,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         return max(640, int(audit_canvas.winfo_width() or 640))
 
     def _audit_canvas_layout_height():
-        return max(300, int(audit_canvas.winfo_height() or 300))
+        return max(340, int(audit_canvas.winfo_height() or 340))
 
     def _audit_canvas_help(event):
         width = _audit_canvas_layout_width()
@@ -953,8 +953,19 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
             count = int(snap.get("count", 0) or 0)
             suffix = "%" if key == "context_usage_ratio" else "s" if key == "elapsed_seconds" else ""
             audit_canvas.create_text(
-                x0, y0, anchor="nw", text=f"{title}  n={count:,}",
+                x0, y0, anchor="nw", text=title,
                 fill="#222222", font=("Segoe UI", 9, "bold")
+            )
+            if key == "effective_tok_per_s_est":
+                provenance = (
+                    f"n={count:,}  API={int(_audit_stats.get('effective_provider_rows', 0) or 0):,}"
+                    f"  H={int(_audit_stats.get('effective_heuristic_rows', 0) or 0):,}"
+                )
+            else:
+                provenance = f"n={count:,}"
+            audit_canvas.create_text(
+                x0, y0 + 17, anchor="nw", text=provenance,
+                fill="#777777", font=("Segoe UI", 7),
             )
             if count:
                 entries = (
@@ -966,10 +977,10 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                 entries = ("P50 unknown", "P95 unknown", "max unknown")
             for line_idx, line in enumerate(entries):
                 audit_canvas.create_text(
-                    x0, y0 + 19 + line_idx * 14, anchor="nw",
+                    x0, y0 + 33 + line_idx * 14, anchor="nw",
                     text=line, fill="#555555", font=("Segoe UI", 8),
                 )
-            top = y0 + 64
+            top = y0 + 78
             bottom = max(top + 1, y1 - 18)
             audit_canvas.create_line(x0, bottom, x1, bottom, fill="#dddddd")
             histogram = tuple(snap.get("histogram", ()) or ())
