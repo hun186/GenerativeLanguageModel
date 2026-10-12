@@ -383,6 +383,41 @@ def test_audit_format_keeps_full_comma_grouped_values():
     assert "62.8k" not in summary
 
 
+
+def test_audit_summary_uses_decimal_safe_rounding_for_context_and_slice_time():
+    # Exercise the actual GUI header formatter, not just _fmt_audit_number.
+    stats = {"calls": 3, "component_rows": 0, "metrics": {
+        "context_usage_ratio": {"count": 3, "p50": 2.25, "p95": 67.74999999999999},
+        "elapsed_seconds": {"count": 3, "p50": 2.25, "p95": 67.74999999999999},
+    }}
+    summary = format_llm_audit_summary(stats)
+    assert "Context P50 2.3% / P95 67.8%" in summary
+    assert "Slice time P50/P95 2.3/67.8s" in summary
+    assert "2.2%" not in summary
+    assert "2.2/" not in summary
+
+
+def test_audit_summary_half_up_from_loaded_percentiles(tmp_path):
+    # Two real audit rows produce the 2.25 half-up boundary in both metrics.
+    audit_file = tmp_path / "rounding.csv"
+    fields = ["ok", "prompt_file", "token_usage_source", "input_tokens",
+              "output_tokens", "context_usage_ratio", "elapsed_seconds"]
+    with audit_file.open("w", encoding="utf-8", newline="") as fp:
+        writer = csv.DictWriter(fp, fieldnames=fields)
+        writer.writeheader()
+        writer.writerow(dict(ok="YES", prompt_file="slice-1.txt",
+                             token_usage_source="llm_api_usage",
+                             input_tokens="100", output_tokens="20",
+                             context_usage_ratio="0.02", elapsed_seconds="2.2"))
+        writer.writerow(dict(ok="YES", prompt_file="slice-2.txt",
+                             token_usage_source="llm_api_usage",
+                             input_tokens="100", output_tokens="20",
+                             context_usage_ratio="0.025", elapsed_seconds="2.3"))
+    summary = format_llm_audit_summary(load_llm_audit_distribution(str(audit_file)))
+    assert "Context P50 2.3%" in summary
+    assert "Slice time P50/P95 2.3/" in summary
+
+
 def test_axis_key_ticks_dedupe_and_avoid_overlaps():
     constant = {"count": 4, "min": 42, "p50": 42, "p95": 42, "max": 42}
     assert len(select_audit_axis_ticks(constant, 300)) == 1
