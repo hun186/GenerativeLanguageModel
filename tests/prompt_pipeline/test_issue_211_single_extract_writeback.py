@@ -323,7 +323,7 @@ def test_orphan_success_alone_cannot_establish_current_slice_layout(tmp_path):
     runtime = {
         str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")}),
     }
-    with pytest.raises(RuntimeError, match="Success slice coverage"):
+    with pytest.raises(RuntimeError, match="missing expected current input slices"):
         _require_complete_single_extract_stage(
             {"final": {"finished_chunks": 1}}, runtime, [str(item)], expected,
         )
