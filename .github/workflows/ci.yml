@@ -33,6 +33,8 @@ jobs:
         run: python -m pytest -q tests/e2e -m e2e --maxfail=1 --disable-warnings
       - name: Run focused LLM audit and GUI regression tests
         run: python -m pytest -q tests/job_manager/test_win_gui_llm_audit.py tests/prompt_pipeline/test_llm_call_audit.py --maxfail=1 --disable-warnings
+      - name: Run focused aggregate lineage regression tests
+        run: python -m pytest -q tests/reduction/test_aggregate_output.py tests/reduction/test_collection_manifest.py --maxfail=1 --disable-warnings
 
   unit-linux:
     if: ${{ false }}   # 暫停此 job
