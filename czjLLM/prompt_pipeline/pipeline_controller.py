@@ -1482,6 +1482,16 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"[stage:{job.stage_name}] ▶ 開始處理輸入單位(input_unit): {Path(job.chunk_id).name}")
         _prepare_todo_for_stage(job.chunk_id, job.stage_name, job.stage_task)
         _sync_stage_todo_to_root(job.chunk_id, job.stage_name, ops)
+        if single_extract_stage_writeback:
+            # Some stage configurations render their own prompt after the
+            # initial input was generated. Bind completed Success to the
+            # *dispatched* prompt, not the pre-stage template.
+            current = expected_extract_files[job.chunk_id]
+            for prompt_path in _root_txt_files(ops.join(job.chunk_id, "TODO")):
+                if prompt_path.name in current:
+                    current[prompt_path.name] = digest_text(
+                        prompt_path.read_text(encoding="utf-8")
+                    )
         stage_def = stage_map[job.stage_name]
         debug_enabled, debug_max_chars = _resolve_llm_debug_flags(
             stage_debug_enabled=stage_def.debug_print_llm_io,
