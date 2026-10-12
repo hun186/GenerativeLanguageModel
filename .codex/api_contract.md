@@ -28,6 +28,7 @@
 - Python collection APIs expose immutable `LogicalWorkUnit`, `CollectionManifest`, SQL/ES collection adapters, manifest persistence, `AggregateOutput`, and idempotent aggregate sinks. There is no general collection YAML surface.
 - Caller-supplied member ordering is authoritative and fingerprinted. Aggregate sinks reject conflicting lineage; existing ES documents require complete matching aggregate lineage before replacement.
 - Complete `AggregateOutput` mapping preserves lineage for aggregate-of-aggregates use.
+- Reduction v1.1 Python-only read conveniences: `AggregateOutput.lineage_mapping()`, `extract_aggregate_lineage(AggregateOutput | mapping)`, and `same_aggregate_lineage(left, right)`. Each projection contains only version/aggregate ID/collection ID/manifest fingerprint/output key and validates exact version, format, and ID derivation; malformed/inconsistent mappings raise rather than pretending to compare. A lineage match does not establish payload equality, original manifest authenticity or persisted freshness. Canonical `to_mapping()` remains the sole payload contract; SQL/ES sink authority is unchanged.
 
 ### Persisted reuse and semantic freshness
 
