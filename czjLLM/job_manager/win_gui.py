@@ -1,6 +1,7 @@
 # czjLLM/job_manager/win_gui.py
 import csv
 import math
+from decimal import Decimal, ROUND_HALF_UP
 import os
 import sys
 import multiprocessing as mp
@@ -382,8 +383,13 @@ def load_llm_audit_distribution(audit_path: str) -> dict:
 
 
 def _fmt_audit_number(value: float) -> str:
-    value = float(value or 0.0)
-    return f"{value:,.1f}"
+    # Normalize binary percentile-interpolation artifacts (e.g. 67.74999..)
+    # before decimal half-up rounding, preserving full comma-grouped digits.
+    number = float(value or 0.0)
+    if not math.isfinite(number):
+        return "unknown"
+    decimal_value = Decimal(format(number, ".15g"))
+    return f"{decimal_value.quantize(Decimal('0.1'), rounding=ROUND_HALF_UP):,.1f}"
 
 
 def format_llm_audit_summary(stats: dict) -> str:
