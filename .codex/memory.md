@@ -160,3 +160,11 @@
 - Pre-corrective hosted head `2071e80857b7184593002807b7a18eba76485204`, CI #453 / `37190651752`, offline job `111401921897`, collect 24/full PASS is pre-corrective evidence only.
 - Corrected canonical root YAML projection, explicit one-level prompt-container discovery for unscheduled historical items, and exact/budgeted/reported crash-tombstone recovery. Added pre-L3 no-adoption, active/claim/stale-young lease, config/fingerprint, historical-item, symlink, and tombstone budget regressions while retaining one L3 E2E.
 - Local corrective verification: focused L3 12 passed; complete Reduction 405 passed; checkpoint/nested 59 passed; L1/L2 30 passed; prompt pipeline 16 passed; strengthened single L3 E2E passed. SQL runtime collection remains environment-limited by missing `tqdm` after the known proxy-blocked dependency install.
+
+### 2026-10-08 GUI distribution hover help
+
+- Added `ⓘ` hover help for the Windows LLM Token / Context Distribution panel.
+- Header hover explains that the curves are normalized histogram outlines rather than time series; per-metric hover explains Input, Output, Template, Task text, Context %, and Slice latency semantics plus n/P50/P95/max.
+- Small-sample guidance explicitly warns operators to prioritize percentiles over curve shape; no prompt/output payload is exposed.
+
+- Follow-up UX refinement: Template no longer occupies a histogram panel because YAML stage templates are typically fixed or near-fixed. The collapsed header now shows Template P50/P95; the former Template panel is Slice time, and the second row expands Task text / Context % across two columns. "Slice latency" was renamed "Slice time（切片耗時）" and explicitly means request-to-response elapsed time only, excluding queue, post-processing, merge/reduction, and output writes.

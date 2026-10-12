@@ -8,7 +8,11 @@ from czjLLM.job_manager.win_gui import (
     _GUIClient,
     _GuiEvents,
     _audit_reader_worker,
+    _tooltip_screen_position,
+    _tk_geometry_axis,
+    _monitor_work_area_at,
     format_llm_audit_summary,
+    format_audit_distribution_help,
     load_llm_audit_distribution,
 )
 
@@ -56,7 +60,8 @@ def test_llm_audit_distribution_uses_api_usage_and_prompt_components(tmp_path):
     summary = format_llm_audit_summary(stats)
     assert "Calls 5" in summary
     assert "Context P50 50.0% / P95 72.5%" in summary
-    assert "Latency P50/P95 2.0/3.8s" in summary
+    assert "Template P50/P95 52/68" in summary
+    assert "Slice time P50/P95 2.0/3.8s" in summary
     assert "Components 4/5" in summary
 
 
@@ -77,9 +82,10 @@ def test_audit_distribution_panel_is_collapsed_by_default_and_draws_curves():
     assert 'audit_section = ttk.Frame(frm)' in source
     assert 'audit_toggle = ttk.Button(audit_section)' in source
     assert 'audit_frame.pack_forget()' in source
-    assert 'LLM Token / Context Distribution —' in source
+    assert 'LLM Token / Context Distribution ⓘ' in source
     assert 'audit_canvas = tk.Canvas(' in source
-    assert '("elapsed_seconds", "Slice latency"' in source
+    assert '("elapsed_seconds", "Slice time"' in source
+    assert '("template_tokens", "Template"' not in source
     assert 'audit_canvas.create_line(*points' in source
     assert 'elif evt == _GuiEvents.AUDIT_PATH:' in source
     assert 'target=_audit_reader_worker' in source
@@ -120,7 +126,7 @@ def test_llm_audit_summary_shows_unknown_without_api_usage(tmp_path):
     assert "In unknown" in summary
     assert "Out unknown" in summary
     assert "Context unknown" in summary
-    assert "Latency unknown" in summary
+    assert "Slice time unknown" in summary
     assert "In P50 0" not in summary
     assert "Out P50 0" not in summary
 
@@ -166,3 +172,186 @@ def test_expanded_audit_chart_renders_empty_percentiles_as_unknown():
     source = inspect.getsource(win_gui._gui_proc_main)
     assert 'else "P50 unknown   P95 unknown   max unknown"' in source
     assert "if count > 0" in source
+
+
+
+def test_audit_distribution_help_explains_histogram_semantics():
+    general = format_audit_distribution_help()
+    assert "不是時間序列" in general
+    assert "指標值由低到高" in general
+    assert "樣本數" in general
+    assert "峰值正規化" in general
+    assert "P50" in general and "P95" in general and "max" in general
+
+    context = format_audit_distribution_help("context_usage_ratio")
+    assert "Context %" in context
+    assert "context limit" in context
+    assert "100%" in context
+
+    latency = format_audit_distribution_help("elapsed_seconds")
+    assert "Slice time（切片耗時）" in latency
+    assert "prompt_file" in latency
+    assert "worker/queue" in latency
+    assert "merge/reduction" in latency
+    assert "JSON repair" in latency
+
+
+def test_audit_distribution_panel_binds_hover_help_tooltip():
+    from czjLLM.job_manager import win_gui
+
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert "LLM Token / Context Distribution ⓘ" in source
+    assert 'audit_canvas.bind("<Motion>", _audit_canvas_help)' in source
+    assert 'audit_canvas.bind("<Leave>", _hide_audit_tooltip)' in source
+    assert 'audit_toggle.bind("<Enter>", _audit_header_help)' in source
+    assert 'format_audit_distribution_help("template_tokens")' in source
+    assert "format_audit_distribution_help(key)" in source
+    assert 'audit_canvas.bind("<Configure>", _audit_canvas_resized)' in source
+    assert "root.after_idle(_draw_audit_distribution)" in source
+    assert "def _audit_canvas_layout_width():" in source
+    assert "width = _audit_canvas_layout_width()" in source
+    assert "tk.Toplevel(root)" in source
+
+
+
+def test_audit_distribution_layout_moves_slice_time_into_template_slot():
+    from czjLLM.job_manager import win_gui
+
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert '_audit_chart_keys = (' in source
+    assert '"input_tokens", "output_tokens", "elapsed_seconds",' in source
+    assert '"task_text_tokens", "context_usage_ratio",' in source
+    assert '("elapsed_seconds", "Slice time"' in source
+    assert '("template_tokens", "Template"' not in source
+    assert "cols = 3 if row == 0 else 2" in source
+
+
+
+def test_audit_header_help_reaches_template_definition():
+    from czjLLM.job_manager import win_gui
+
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert 'format_audit_distribution_help("template_tokens")' in source
+    assert '"template_tokens"' not in source.split("_audit_chart_keys = (", 1)[1].split(")", 1)[0]
+
+
+def test_audit_canvas_redraws_after_resize_when_expanded():
+    from czjLLM.job_manager import win_gui
+
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert 'def _audit_canvas_resized(_event=None):' in source
+    assert 'if _audit_expanded:' in source
+    assert 'root.after_idle(_draw_audit_distribution)' in source
+    assert 'audit_canvas.bind("<Configure>", _audit_canvas_resized)' in source
+
+
+
+def test_audit_summary_wraps_separately_from_toggle_title():
+    from czjLLM.job_manager import win_gui
+
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert "audit_summary = ttk.Label(" in source
+    assert 'audit_toggle.configure(text=f"{arrow} LLM Token / Context Distribution ⓘ")' in source
+    assert "audit_summary.configure(text=format_llm_audit_summary(_audit_stats))" in source
+    assert 'audit_section.bind("<Configure>", _resize_audit_summary_wrap)' in source
+    assert "wraplength=max(240, int(event.width) - 16)" in source
+    assert 'audit_summary.bind("<Enter>", _audit_header_help)' in source
+
+
+def test_audit_hover_uses_same_effective_width_as_drawing():
+    from czjLLM.job_manager import win_gui
+
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert "def _audit_canvas_layout_width():" in source
+    assert source.count("width = _audit_canvas_layout_width()") >= 2
+    assert "return max(640, int(audit_canvas.winfo_width() or 640))" in source
+
+
+
+def test_audit_hover_uses_same_effective_height_as_drawing():
+    from czjLLM.job_manager import win_gui
+
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert "def _audit_canvas_layout_height():" in source
+    assert source.count("height = _audit_canvas_layout_height()") >= 2
+    assert "return max(230, int(audit_canvas.winfo_height() or 230))" in source
+
+
+
+def test_audit_tooltip_geometry_supports_negative_screen_coordinates():
+    from czjLLM.job_manager import win_gui
+
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert "geometry_x = _tk_geometry_axis(" in source
+    assert "geometry_y = _tk_geometry_axis(" in source
+    assert '_audit_tooltip.geometry(f"{geometry_x}{geometry_y}")' in source
+    assert 'geometry(f"{tooltip_x:+d}{tooltip_y:+d}")' not in source
+
+
+
+def test_tooltip_screen_position_stays_within_virtual_screen():
+    # Near right/bottom edge: prefer left/up so the whole tooltip remains visible.
+    x, y = _tooltip_screen_position(
+        1910, 1070, 520, 220, 0, 0, 1920, 1080
+    )
+    assert x == 1376
+    assert y == 834
+    assert 0 <= x <= 1920 - 520
+    assert 0 <= y <= 1080 - 220
+
+    # Virtual desktop can extend left/up of the primary display.
+    x, y = _tooltip_screen_position(
+        -1900, -1050, 520, 220, -1920, -1080, 3840, 2160
+    )
+    assert -1920 <= x <= 1920 - 520
+    assert -1080 <= y <= 1080 - 220
+
+    # Oversized tooltip clamps to the virtual-screen origin instead of escaping.
+    x, y = _tooltip_screen_position(
+        100, 100, 3000, 2000, -100, -50, 800, 600
+    )
+    assert (x, y) == (-100, -50)
+
+
+def test_audit_tooltip_measures_and_clamps_before_geometry():
+    from czjLLM.job_manager import win_gui
+
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert "_audit_tooltip.update_idletasks()" in source
+    assert "_audit_tooltip.winfo_reqwidth()" in source
+    assert "_audit_tooltip.winfo_reqheight()" in source
+    assert "root.winfo_vrootx()" in source
+    assert "root.winfo_vrooty()" in source
+    assert "_tooltip_screen_position(" in source
+    assert "_tk_geometry_axis(" in source
+    assert '_audit_tooltip.geometry(f"{geometry_x}{geometry_y}")' in source
+
+
+
+def test_tk_geometry_axis_converts_negative_absolute_position_to_far_edge_offset():
+    # Tk interprets a negative wm-geometry coordinate as an offset from the
+    # right/bottom edge, not as an absolute negative virtual-desktop position.
+    assert _tk_geometry_axis(1376, 520, 0, 1920) == "+1376"
+    assert _tk_geometry_axis(-1800, 520, -1920, 3840) == "-3200"
+    assert _tk_geometry_axis(-1000, 220, -1080, 2160) == "-1860"
+
+
+
+def test_monitor_work_area_helper_falls_back_off_windows(monkeypatch):
+    from czjLLM.job_manager import win_gui
+
+    monkeypatch.setattr(win_gui, "IS_WIN", False)
+    assert _monitor_work_area_at(
+        1900, 100, -1920, 0, 3840, 1080
+    ) == (-1920, 0, 3840, 1080)
+
+
+def test_audit_tooltip_clamps_against_pointer_monitor_not_virtual_rectangle():
+    from czjLLM.job_manager import win_gui
+
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert "monitor_x, monitor_y, monitor_width, monitor_height = _monitor_work_area_at(" in source
+    assert "tooltip_width," in source and "tooltip_height," in source
+    assert "monitor_x," in source and "monitor_y," in source
+    assert "monitor_width," in source and "monitor_height," in source
+    assert "_tk_geometry_axis(" in source

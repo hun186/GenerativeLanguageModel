@@ -145,14 +145,14 @@ python -m czjLLM.czjLLM_TextProcessing --config czjLLM/yaml/excel_json_multistag
 
 SQL / Table / ES 執行時的 Windows GUI 會顯示一個預設收合的 **LLM Token / Context Distribution** 區塊。這不是 debug 開關，不需要額外 YAML 設定；它直接讀取本次 run 的 `logs/llm_call_audit/llm_call_audit_<run_id>.csv`。
 
-展開後會顯示五組分布曲線與 `n / P50 / P95 / max`：
+展開後會顯示五組分布曲線與 `n / P50 / P95 / max`；Template 改為標題列中的 compact `P50/P95` 摘要，不再單獨畫分布曲線：
 
 - **Input**：LLM API 回報的 input/prompt tokens。
 - **Output**：LLM API 回報的 completion/output tokens。
-- **Template**：本地 tokenizer 估算的「rendered prompt − task text」模板／提示詞 overhead。
+- **Template**：本地 tokenizer 估算的「rendered prompt − task text」模板／提示詞 overhead。由於同一 YAML stage 通常固定或近固定，GUI 僅在標題摘要顯示 Template P50/P95；multi-stage 或動態模板仍可能出現差異。由於同一 YAML stage 通常固定或近固定，GUI 僅在標題摘要顯示 Template P50/P95；multi-stage 或動態模板仍可能出現差異。
 - **Task text**：不含模板的任務文本切片 token 數，本地 tokenizer 計數。
 - **Context %**：既有 `context_usage_ratio`，以 API total tokens 相對已解析 context limit 計算。
-- **Slice latency**：有實際 `prompt_file` 的切片 LLM request `elapsed_seconds`；顯示每個切片推論／API 呼叫的耗時長尾，不混入 JSON repair 等沒有切片 prompt 檔的 direct call。
+- **Slice time（切片耗時）**：有實際 `prompt_file` 的切片 LLM request `elapsed_seconds`；從真正送出 API 呼叫到取得模型回應。它不包含等待 worker/queue、response 後處理、merge/reduction 或輸出寫檔時間，也不混入 JSON repair 等沒有切片 prompt 檔的 direct call。
 
 注意：
 
@@ -160,7 +160,8 @@ SQL / Table / ES 執行時的 Windows GUI 會顯示一個預設收合的 **LLM T
 - Template / Task text 是觀測用本地 tokenizer 估算，不等於計費 token，也不取代 API usage。
 - 若某些 direct/retry 路徑沒有 prompt-component metadata，欄位保持未知；收合摘要會顯示 `Components n/Calls` 讓使用者知道覆蓋率。
 - GUI 的背景 audit reader 每秒最多檢查一次 CSV 是否有更新；整檔解析與 percentile/histogram 計算不在 Tk event loop 執行，Tk 只接收已完成的統計 snapshot。LLM worker 仍不傳遞 prompt/output 內容給 GUI。
-- 收合摘要可快速看 Context P50/P95、Input/Output P50 與 Slice latency P50/P95；若 Context P95 長期逼近 100%，應重新檢視模型 context limit、輸入切片上限與 output budget；若 latency P95 明顯高於 P50，則代表切片處理存在長尾，可再交叉比對 input/context 分布。
+- 標題列有 `ⓘ` 提示；滑鼠停在標題可看整體分布圖說明，移到任一小圖會顯示該指標的浮動說明。曲線是 histogram 的平滑輪廓，不是時間序列：橫向代表指標值由低到高、縱向代表各區間樣本數；各小圖的高度以自身峰值正規化，不能跨圖比較線高。樣本數很少時應優先解讀 P50/P95/max，而不是曲線尖峰。
+- 收合摘要可快速看 Context P50/P95、Input/Output P50、Template P50/P95 與 Slice time P50/P95；若 Context P95 長期逼近 100%，應重新檢視模型 context limit、輸入切片上限與 output budget；若 Slice time P95 明顯高於 P50，則代表模型/API 回應存在長尾，可再交叉比對 input/context 分布。
 
 ## 建議排查流程
 
