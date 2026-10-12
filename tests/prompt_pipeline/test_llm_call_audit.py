@@ -155,3 +155,76 @@ def test_prompt_api_pipeline_emits_one_audit_row_per_request():
     assert "response=response" in source
     assert "ok=ok" in source
     assert "error=err" in source
+
+
+def test_provider_cached_usage_is_explicit_and_not_inferred(tmp_path):
+    import csv
+    from types import SimpleNamespace
+
+    audit = tmp_path / "cache.csv"
+    response = SimpleNamespace(
+        usage=SimpleNamespace(
+            prompt_tokens=120, completion_tokens=10, total_tokens=130,
+            prompt_tokens_details=SimpleNamespace(cached_tokens=40),
+        ), _czjllm_elapsed_seconds=2.5,
+    )
+    log_llm_call(audit_path=str(audit), run_id="run", prompt_file="p.txt",
+                 model_spec={"model_name": "unit-model", "num_ctx": 1024},
+                 response=response, stage_identity="stage-1")
+    with audit.open(newline="", encoding="utf-8") as fp:
+        rows = list(csv.DictReader(fp))
+    assert rows[0]["cached_input_tokens"] == "40"
+    assert rows[0]["cached_input_token_source"] == "provider_usage"
+    assert rows[0]["stage_identity"] == "stage-1"
+
+    no_cache_metadata = SimpleNamespace(
+        usage=SimpleNamespace(prompt_tokens=120, completion_tokens=10, total_tokens=130),
+        _czjllm_elapsed_seconds=1.0,
+    )
+    log_llm_call(audit_path=str(audit), run_id="run", prompt_file="p2.txt",
+                 model_spec={"model_name": "unit-model", "num_ctx": 1024},
+                 response=no_cache_metadata)
+    with audit.open(newline="", encoding="utf-8") as fp:
+        rows = list(csv.DictReader(fp))
+    assert rows[1]["cached_input_tokens"] == ""
+    assert rows[1]["cached_input_token_source"] == ""
+    assert rows[1]["stage_identity"] == ""
+
+
+def test_deepseek_cache_hit_and_provider_explicit_zero(tmp_path):
+    import csv
+    from types import SimpleNamespace
+
+    audit = tmp_path / "cache.csv"
+    for cached in (75, 0):
+        response = SimpleNamespace(
+            usage=SimpleNamespace(prompt_tokens=100, completion_tokens=20,
+                                  total_tokens=120, prompt_cache_hit_tokens=cached),
+            _czjllm_elapsed_seconds=2,
+        )
+        log_llm_call(audit_path=str(audit), run_id="run", prompt_file="p.txt",
+                     model_spec={"model_name": "unit-model", "num_ctx": 1024},
+                     response=response)
+    with audit.open(newline="", encoding="utf-8") as fp:
+        rows = list(csv.DictReader(fp))
+    assert [row["cached_input_tokens"] for row in rows] == ["75", "0"]
+    assert all(row["cached_input_token_source"] == "provider_usage" for row in rows)
+
+
+def test_stage_identity_remains_metadata_not_prompt_payload(tmp_path):
+    from pathlib import Path
+
+    prompt = tmp_path / "TODO" / "a.txt"
+    prompt.parent.mkdir(parents=True)
+    prompt.write_text("secret task prompt", encoding="utf-8")
+    write_prompt_token_metadata(
+        str(prompt), task_text_tokens=20, template_tokens=10,
+        rendered_prompt_tokens=30, stage_identity="classify",
+    )
+    sidecar = Path(str(prompt.parent.parent / ".llm_audit_tokens"
+                       / "a.txt.audit_tokens.json"))
+    raw = sidecar.read_text(encoding="utf-8")
+    assert "secret task prompt" not in raw
+    assert read_prompt_token_metadata(str(prompt))["stage_identity"] == "classify"
+    running = prompt.parent.parent / "RUNNING" / "a.txt"
+    assert read_prompt_token_metadata(str(running))["stage_identity"] == "classify"
