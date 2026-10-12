@@ -354,9 +354,12 @@ def load_llm_audit_distribution(audit_path: str) -> dict:
                         continue
                     group = (row.get("model", ""), row.get("base_url", ""),
                              row.get("task", ""), stage, source)
-                    prior = prior_templates.setdefault(group, [])
-                    if len(prior) >= 2:
-                        floor, ceiling = min(prior), max(prior)
+                    # Running floor/ceiling avoid O(n²) rescans on long jobs.
+                    prior = prior_templates.setdefault(
+                        group, {"count": 0, "min": template, "max": template}
+                    )
+                    if prior["count"] >= 2:
+                        floor, ceiling = prior["min"], prior["max"]
                         tolerance = max(1.0, floor * 0.05)
                         # Not token-level prefix proof. Require stable stage/size
                         # across prior requests; discount possible reusable floor.
@@ -365,7 +368,9 @@ def load_llm_audit_distribution(audit_path: str) -> dict:
                             estimated_input = task_tokens + max(0.0, template - possibly_cached)
                             values["effective_tok_per_s_est"].append((estimated_input + out) / elapsed)
                             heuristic_rows += 1
-                    prior.append(template)
+                    prior["count"] += 1
+                    prior["min"] = min(prior["min"], template)
+                    prior["max"] = max(prior["max"], template)
         except (OSError, csv.Error, UnicodeError):
             pass
     return {
