@@ -222,6 +222,39 @@ upsert key and rejects conflicting lineage. `AggregateOutput.to_mapping()` (or
 `as_logical_work_unit_payload()`) preserves complete lineage when an aggregate
 becomes a member of a later aggregate-of-aggregates.
 
+### v1.1 read-only aggregate lineage helpers
+
+The complete v1 `AggregateOutput.to_mapping()` schema remains the only
+canonical persisted aggregate payload. The following Python-only helpers
+project or compare the five identity fields without persisting another copy:
+
+```python
+from czjLLM.reduction import (
+    AggregateOutput, extract_aggregate_lineage, same_aggregate_lineage,
+)
+
+output = AggregateOutput(manifest, "daily-summary", validated_payload)
+identity = output.lineage_mapping()  # only version, ID, collection, fingerprint, key
+assert identity == extract_aggregate_lineage(output.to_mapping())
+assert same_aggregate_lineage(output, stored_aggregate_document)
+```
+
+`extract_aggregate_lineage(value)` accepts an `AggregateOutput` or a
+canonical persisted aggregate mapping (including the mapping carried as the
+payload of an aggregate-of-aggregates member). It checks the contract version,
+required identity fields, SHA-256 fingerprint format, and the deterministic
+aggregate ID derived from collection ID, manifest fingerprint, and output key.
+It fails closed on missing, malformed, unsupported, or inconsistent identities.
+`same_aggregate_lineage(left, right)` compares those validated fields and
+also raises on malformed inputs rather than reporting an untrustworthy mismatch.
+
+The returned mapping is detached and contains **no** `payload` or
+`provenance`. Comparison checks logical aggregate identity, **not** payload
+equality, manifest-content authenticity (which needs the original manifest),
+semantic freshness, or persisted sink state. This API neither traverses child
+aggregate trees nor adds a lineage database, YAML configuration, HTTP endpoint,
+new cache, or change to SQLite/Elasticsearch sink authority.
+
 These collection adapters, query specifications, manifest stores, and sinks
 are Python APIs. There is no equivalent general-purpose collection YAML schema
 in v1; applications must explicitly construct and persist the snapshot.
