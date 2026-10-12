@@ -393,13 +393,13 @@ def format_llm_audit_summary(stats: dict) -> str:
     latency = metrics.get("elapsed_seconds", {}) or {}
     component_rows = int(stats.get("component_rows", 0) or 0)
     context_text = (
-        f"Context P50 {float(context.get('p50', 0) or 0):.1f}% / "
-        f"P95 {float(context.get('p95', 0) or 0):.1f}%"
+        f"Context P50 {float(context.get('p50', 0) or 0):,.1f}% / "
+        f"P95 {float(context.get('p95', 0) or 0):,.1f}%"
         if int(context.get("count", 0) or 0) > 0 else "Context unknown"
     )
     latency_text = (
-        f"Slice time P50/P95 {float(latency.get('p50', 0) or 0):.1f}/"
-        f"{float(latency.get('p95', 0) or 0):.1f}s"
+        f"Slice time P50/P95 {float(latency.get('p50', 0) or 0):,.1f}/"
+        f"{float(latency.get('p95', 0) or 0):,.1f}s"
         if int(latency.get("count", 0) or 0) > 0 else "Slice time unknown"
     )
     template_text = (
@@ -800,7 +800,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     audit_summary.pack(fill="x", padx=8, pady=(2, 3))
     audit_frame = ttk.Frame(audit_section, padding=(8, 5))
     audit_canvas = tk.Canvas(
-        audit_frame, height=230, highlightthickness=0, background="white"
+        audit_frame, height=300, highlightthickness=0, background="white"
     )
     audit_canvas.pack(fill="x", expand=True)
     _audit_tooltip = None
@@ -808,6 +808,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     _audit_chart_keys = (
         "input_tokens", "output_tokens", "elapsed_seconds",
         "task_text_tokens", "context_usage_ratio",
+        "total_tok_per_s", "effective_tok_per_s_est",
     )
 
     def _hide_audit_tooltip(_event=None):
@@ -886,13 +887,13 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         return max(640, int(audit_canvas.winfo_width() or 640))
 
     def _audit_canvas_layout_height():
-        return max(230, int(audit_canvas.winfo_height() or 230))
+        return max(300, int(audit_canvas.winfo_height() or 300))
 
     def _audit_canvas_help(event):
         width = _audit_canvas_layout_width()
         height = _audit_canvas_layout_height()
         row = 0 if float(event.y) < (height / 2.0) else 1
-        cols = 3 if row == 0 else 2
+        cols = 3 if row == 0 else 4
         col = min(cols - 1, max(0, int(float(event.x) / max(width / cols, 1.0))))
         idx = col if row == 0 else 3 + col
         if idx >= len(_audit_chart_keys):
@@ -932,41 +933,39 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
             ("elapsed_seconds", "Slice time", "#6b7280"),
             ("task_text_tokens", "Task text", "#7a4cc2"),
             ("context_usage_ratio", "Context %", "#b00020"),
+            ("total_tok_per_s", "Total tok/s", "#007c91"),
+            ("effective_tok_per_s_est", "Effective tok/s (est.)", "#bd6d14"),
         ]
         cell_h = height / 2
         for idx, (key, title, color) in enumerate(series):
             row = 0 if idx < 3 else 1
-            cols = 3 if row == 0 else 2
+            cols = 3 if row == 0 else 4
             col = idx if row == 0 else idx - 3
             cell_w = width / cols
-            x0 = col * cell_w + 10
-            y0 = row * cell_h + 8
-            x1 = (col + 1) * cell_w - 10
-            y1 = (row + 1) * cell_h - 12
+            x0, y0 = col * cell_w + 8, row * cell_h + 6
+            x1, y1 = (col + 1) * cell_w - 8, (row + 1) * cell_h - 10
             snap = metrics.get(key, {}) or {}
             count = int(snap.get("count", 0) or 0)
-            p50 = float(snap.get("p50", 0) or 0)
-            p95 = float(snap.get("p95", 0) or 0)
             suffix = "%" if key == "context_usage_ratio" else "s" if key == "elapsed_seconds" else ""
             audit_canvas.create_text(
                 x0, y0, anchor="nw", text=f"{title}  n={count:,}",
                 fill="#222222", font=("Segoe UI", 9, "bold")
             )
-            percentile_text = (
-                (
-                    f"P50 {p50:.1f}{suffix}   P95 {p95:.1f}{suffix}   "
-                    f"max {float(snap.get('max', 0) or 0):.1f}{suffix}"
+            if count:
+                entries = (
+                    f"P50 {_fmt_audit_number(snap.get('p50', 0))}{suffix}",
+                    f"P95 {_fmt_audit_number(snap.get('p95', 0))}{suffix}",
+                    f"max {_fmt_audit_number(snap.get('max', 0))}{suffix}",
                 )
-                if count > 0
-                else "P50 unknown   P95 unknown   max unknown"
-            )
-            audit_canvas.create_text(
-                x0, y0 + 18, anchor="nw",
-                text=percentile_text,
-                fill="#555555", font=("Segoe UI", 8)
-            )
-            top = y0 + 40
-            bottom = y1
+            else:
+                entries = ("P50 unknown", "P95 unknown", "max unknown")
+            for line_idx, line in enumerate(entries):
+                audit_canvas.create_text(
+                    x0, y0 + 19 + line_idx * 14, anchor="nw",
+                    text=line, fill="#555555", font=("Segoe UI", 8),
+                )
+            top = y0 + 64
+            bottom = max(top + 1, y1 - 18)
             audit_canvas.create_line(x0, bottom, x1, bottom, fill="#dddddd")
             histogram = tuple(snap.get("histogram", ()) or ())
             peak = max(histogram) if histogram else 0
@@ -982,6 +981,13 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                 y = bottom - (bottom - top) * float(bucket_value) / float(peak)
                 points.extend((x, y))
             audit_canvas.create_line(*points, fill=color, width=2, smooth=True)
+            for tick in select_audit_axis_ticks(snap, x1 - x0, suffix):
+                tx = x0 + tick["x"]
+                audit_canvas.create_line(tx, bottom, tx, bottom + 3, fill="#aaaaaa")
+                audit_canvas.create_text(
+                    tx, bottom + 5, anchor="n", text=tick["label"],
+                    fill="#777777", font=("Segoe UI", 7),
+                )
 
     def _audit_canvas_resized(_event=None):
         if _audit_expanded:
