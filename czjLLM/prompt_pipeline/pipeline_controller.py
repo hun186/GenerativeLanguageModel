@@ -1106,6 +1106,41 @@ def _apply_resume_policy_single_stage(policy: str, prompt_items: list[str], ops:
 def _has_explicit_stage_flow(ctx) -> bool:
     return bool(_explicit_stage_flow(ctx))
 
+def _single_extract_stage_writeback_enabled(stage_defs, ctx) -> bool:
+    """Limit the legacy JSON-merge compatibility path to one extract stage."""
+    return (
+        len(stage_defs) == 1
+        and stage_defs[0].name == "extract"
+        and should_merge_slices(ctx)
+        and any(
+            isinstance(rule, dict)
+            and str(rule.get("source", rule.get("sql_writeback_source", "")) or "").strip().lower() == "stage"
+            and str(rule.get("stage", rule.get("sql_writeback_stage", "")) or "").strip() == "extract"
+            for rule in (getattr(ctx, "sql_writeback_rules", None) or [])
+        )
+    )
+
+
+def _require_complete_single_extract_stage(report, runtime, prompt_items, expected_files) -> None:
+    """Fail closed before writing any stage artifact for incomplete JSON work."""
+    finished = int((report.get("final") or {}).get("finished_chunks", 0))
+    if not runtime or len(runtime) != len(prompt_items) or finished != len(runtime):
+        raise RuntimeError("extract stage incomplete: not every input unit finished")
+    for item in prompt_items:
+        chunk = runtime.get(item)
+        status = chunk.stages.get("extract") if chunk is not None else None
+        if status is None or status.state != "success":
+            raise RuntimeError("extract stage incomplete: an input unit failed")
+        expected = expected_files.get(item)
+        actual = tuple(
+            path.name for path in _root_txt_files(_snapshot_dir(item, "extract"))
+        )
+        if not expected or actual != expected:
+            raise RuntimeError(
+                "extract stage incomplete: missing or mismatched slice snapshots"
+            )
+
+
 def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
     """Apply legacy JSON slice merge to one extract-stage writeback artifact.
 
@@ -1114,6 +1149,8 @@ def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
     materializing a stage manifest so malformed/partial input cannot silently
     become a writeback-ready concatenation of JSON documents.
     """
+    if not parts:
+        raise ValueError("extract stage JSON slices are missing")
     rows = []
     for index, text in enumerate(parts):
         try:
@@ -1168,6 +1205,8 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     stage_defs = resolve_pipeline_stages(ctx)
     stage_map = {s.name: s for s in stage_defs}
     stage_order = [s.name for s in stage_defs]
+    single_extract_stage_writeback = _single_extract_stage_writeback_enabled(stage_defs, ctx)
+    expected_extract_files: dict[str, tuple[str, ...]] = {}
     forced_stage_names: set[str] = set()
     for _rule in (getattr(ctx, "sql_writeback_rules", None) or []):
         if not isinstance(_rule, dict):
@@ -1386,6 +1425,10 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"[stage:{job.stage_name}] ▶ 開始處理輸入單位(input_unit): {Path(job.chunk_id).name}")
         _prepare_todo_for_stage(job.chunk_id, job.stage_name, job.stage_task)
         _sync_stage_todo_to_root(job.chunk_id, job.stage_name, ops)
+        if single_extract_stage_writeback:
+            expected_extract_files[job.chunk_id] = tuple(
+                fp.name for fp in _root_txt_files(ops.join(job.chunk_id, "TODO"))
+            )
         stage_def = stage_map[job.stage_name]
         debug_enabled, debug_max_chars = _resolve_llm_debug_flags(
             stage_debug_enabled=stage_def.debug_print_llm_io,
@@ -1436,8 +1479,12 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"[stage:{job.stage_name}] ✅ 完成輸入單位(input_unit): {Path(job.chunk_id).name}")
         return {"ok": True, "output": stage_output_text}
 
-    run_stage_pipeline(ctx, runtime, runner, max_rounds=max_rounds)
+    stage_report = run_stage_pipeline(ctx, runtime, runner, max_rounds=max_rounds)
     raise_if_execution_cancelled(ctx)
+    if single_extract_stage_writeback:
+        _require_complete_single_extract_stage(
+            stage_report, runtime, prompt_items, expected_extract_files,
+        )
 
     # 聚合每個 stage 的輸出，保留「全切片視角」的存檔，便於 stage-by-stage 追蹤。
     stage_merge_base = (
@@ -1472,18 +1519,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             # For the legacy-compatible *single extract stage* only, a
             # newline join is not valid JSON when multiple slices succeed.
             # Existing genuine multistage stage outputs stay unchanged.
-            stage_writeback_for_extract = any(
-                isinstance(rule, dict)
-                and str(rule.get("source", rule.get("sql_writeback_source", "")) or "").strip().lower() == "stage"
-                and str(rule.get("stage", rule.get("sql_writeback_stage", "")) or "").strip() == stage.name
-                for rule in (getattr(ctx, "sql_writeback_rules", None) or [])
-            )
-            if (
-                len(stage_defs) == 1
-                and stage.name == "extract"
-                and stage_writeback_for_extract
-                and should_merge_slices(ctx)
-            ):
+            if single_extract_stage_writeback and stage.name == "extract":
                 stage_text = _merge_single_extract_stage_json_parts(merged_parts, ctx)
             else:
                 stage_text = "\n".join(merged_parts)
