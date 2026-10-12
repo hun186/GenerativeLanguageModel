@@ -1220,7 +1220,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         if not _write_original_snapshot_from_source(item):
             _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
 
-    def _refresh_stage_prompt_metrics(root_todo_dir: str, filename: str, task_text: str, prompt_text: str):
+    def _refresh_stage_prompt_metrics(root_todo_dir: str, filename: str, task_text: str, prompt_text: str, stage_identity: str):
         # The worker claims root TODO/<basename> into RUNNING/<basename>.
         # Refresh metadata against that logical prompt basename so every stage
         # gets the metrics for the prompt actually dispatched.
@@ -1232,6 +1232,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             model_name=getattr(ctx, "model_spec_name", "") or "",
             model_spec=getattr(ctx, "model_spec", None),
             task=str(getattr(ctx, "task", "") or ""),
+            stage_identity=stage_identity,
             quiet=bool(getattr(ctx, "suppress_prompt_diagnostics", False)),
         )
 
@@ -1264,7 +1265,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 dst_fp = os.path.join(todo_dir, fp.name)
                 with open(dst_fp, "w", encoding="utf-8") as f:
                     f.write(prompt_text)
-                _refresh_stage_prompt_metrics(root_todo_dir, fp.name, src_text, prompt_text)
+                _refresh_stage_prompt_metrics(root_todo_dir, fp.name, src_text, prompt_text, stage_name)
             return
         if (
             stage_name == stage_defs[0].name
@@ -1296,7 +1297,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 dst_fp = os.path.join(todo_dir, fp.name)
                 with open(dst_fp, "w", encoding="utf-8") as f:
                     f.write(prompt_text)
-                _refresh_stage_prompt_metrics(root_todo_dir, fp.name, "", prompt_text)
+                _refresh_stage_prompt_metrics(root_todo_dir, fp.name, "", prompt_text, stage_name)
             return
 
         if not os.path.isdir(src_dir):
@@ -1315,7 +1316,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             with open(dst_fp, "w", encoding="utf-8") as f:
                 f.write(prompt_text)
             _refresh_stage_prompt_metrics(
-                root_todo_dir, os.path.basename(src_fp), source_text, prompt_text
+                root_todo_dir, os.path.basename(src_fp), source_text, prompt_text, stage_name
             )
 
     def _stage_task_debug_text(stage_task) -> str:
@@ -2054,6 +2055,7 @@ class PromptAPIPipeline:
                     prompt_component_token_source=self.audit_prompt_tokens.get(
                         "prompt_component_token_source", ""
                     ),
+                    stage_identity=self.audit_prompt_tokens.get("stage_identity", ""),
                 )
             except Exception as audit_ex:
                 print(
