@@ -143,25 +143,20 @@ python -m czjLLM.czjLLM_TextProcessing --config czjLLM/yaml/excel_json_multistag
 
 ## Windows GUI：LLM Token / Context Distribution
 
-SQL / Table / ES 執行時的 Windows GUI 會顯示一個預設收合的 **LLM Token / Context Distribution** 區塊。這不是 debug 開關，不需要額外 YAML 設定；它直接讀取本次 run 的 `logs/llm_call_audit/llm_call_audit_<run_id>.csv`。
+SQL / Table / ES 執行時，Windows GUI 會提供預設收合的 LLM Token / Context Distribution 區塊，讀取本次 run 的 `logs/llm_call_audit/llm_call_audit_<run_id>.csv`。背景 reader thread 解析 append-only CSV，Tk UI 僅接收計算完成的統計；不傳遞 prompt 或模型輸出內容。
 
-展開後會顯示五組分布曲線與 `n / P50 / P95 / max`；Template 改為標題列中的 compact `P50/P95` 摘要，不再單獨畫分布曲線：
+展開為 **上排 3 張、下排 4 張**分布圖，各圖顯示 `n / P50 / P95 / max`。x 軸選取 `min / P50 / P95 / max` 等重要數值，會去重並避免碰撞，窄視窗不保證四個標籤全部呈現。所有 token/throughput 類數值完整顯示千分位，不使用 k/M 縮寫；百分比保留 `%`，時間保留 `s`。Template 僅放標題 compact P50/P95：
 
-- **Input**：LLM API 回報的 input/prompt tokens。
-- **Output**：LLM API 回報的 completion/output tokens。
-- **Template**：本地 tokenizer 估算的「rendered prompt − task text」模板／提示詞 overhead。由於同一 YAML stage 通常固定或近固定，GUI 僅在標題摘要顯示 Template P50/P95；multi-stage 或動態模板仍可能出現差異。由於同一 YAML stage 通常固定或近固定，GUI 僅在標題摘要顯示 Template P50/P95；multi-stage 或動態模板仍可能出現差異。
-- **Task text**：不含模板的任務文本切片 token 數，本地 tokenizer 計數。
-- **Context %**：既有 `context_usage_ratio`，以 API total tokens 相對已解析 context limit 計算。
-- **Slice time（切片耗時）**：有實際 `prompt_file` 的切片 LLM request `elapsed_seconds`；從真正送出 API 呼叫到取得模型回應。它不包含等待 worker/queue、response 後處理、merge/reduction 或輸出寫檔時間，也不混入 JSON repair 等沒有切片 prompt 檔的 direct call。
+- 上排：**Input**（API input tokens）、**Output**（API completion tokens）、**Slice time**（真正送出切片 API request 到 response 的 elapsed_seconds）。
+- 下排：**Task text**（本地 tokenizer 任務本文）、**Context %**（API total tokens/context limit）、**Total tok/s**、**Effective tok/s (est.)**。
+- **Total tok/s** = `(API input_tokens + API output_tokens) / elapsed_seconds`，只納入 prompt_file 存在、API usage 已知且 elapsed > 0 的切片。既有 `processing_tps` 的來源是 API `total_tokens / elapsed_seconds`，零秒時有不同 fallback，因此保留舊欄位契約，GUI 依新明確公式計算。
+- **Effective tok/s (est.)**：若 provider usage 明確回報 `prompt_cache_hit_tokens`、`prompt_tokens_details.cached_tokens` 或 `input_tokens_details.cached_tokens`，用 `(input - cached + output) / elapsed`，包含 provider 明確回報 0 cached 的情況。CSV 記錄 `cached_input_tokens` 及 `cached_input_token_source=provider_usage`；無回報則保持空白，不把猜測偽裝成真值。
+- 無 provider cache truth 時，採保守 heuristic v1：需同一 `model / endpoint / task / stage_identity / local tokenizer source` 分組已有至少兩筆先前模板樣本、模板 token floor 與幅度在 5% 容差內，才以模板下界的最多 **50%** 估計可重用 token。使用 `(task_text_tokens + max(0, template_tokens - estimated_reusable) + output_tokens) / elapsed`。此值沒有 provider cache-hit 證據，不確保 prefix 完全相同、token boundary 對齊、provider 實際啟用 cache，也未偵測動態 runtime suffix；如證據不足便保持 unknown，不推測。
+- 首兩筆同群組呼叫未必能形成 heuristic；本地 task/template 數字與 API usage 來源不同，估值不是確切的硬體效能量測，亦非直接可比較的 GPU token/s。兩種 throughput 都是 **observed request-level throughput**，elapsed 包含網路往返、server 排程、TTFT 和生成時間。
 
-注意：
+**資料與安全契約**：數值 sidecar 位於 TODO/RUNNING 外側；新增 `stage_identity` 是單階段固定代碼或 YAML stage 名稱，絕不以原始 task prompt/payload 做身份值。GUI 不讀取 prompt 文件或輸出內容；與 API usage 不符、elapsed 無效、provider cached 欄位缺失或不合法時，禁止宣稱 cache-hit 真值。
 
-- Input / Output / Context 只採用 `token_usage_source=llm_api_usage` 的資料；API 未回報 usage 的失敗呼叫不會被當成 0-token 樣本。
-- Template / Task text 是觀測用本地 tokenizer 估算，不等於計費 token，也不取代 API usage。
-- 若某些 direct/retry 路徑沒有 prompt-component metadata，欄位保持未知；收合摘要會顯示 `Components n/Calls` 讓使用者知道覆蓋率。
-- GUI 的背景 audit reader 每秒最多檢查一次 CSV 是否有更新；整檔解析與 percentile/histogram 計算不在 Tk event loop 執行，Tk 只接收已完成的統計 snapshot。LLM worker 仍不傳遞 prompt/output 內容給 GUI。
-- 標題列有 `ⓘ` 提示；滑鼠停在標題可看整體分布圖說明，移到任一小圖會顯示該指標的浮動說明。曲線是 histogram 的平滑輪廓，不是時間序列：橫向代表指標值由低到高、縱向代表各區間樣本數；各小圖的高度以自身峰值正規化，不能跨圖比較線高。樣本數很少時應優先解讀 P50/P95/max，而不是曲線尖峰。
-- 收合摘要可快速看 Context P50/P95、Input/Output P50、Template P50/P95 與 Slice time P50/P95；若 Context P95 長期逼近 100%，應重新檢視模型 context limit、輸入切片上限與 output budget；若 Slice time P95 明顯高於 P50，則代表模型/API 回應存在長尾，可再交叉比對 input/context 分布。
+**閱讀方式**：分布圖不是時間序列。橫向為指標由小到大，縱向為樣本落入區間的數目，每張圖的峰值獨立正規化，不能比較不同圖的曲線高度。若樣本很少，優先看 P50/P95/max，不要過度解讀尖峰。標題 `ⓘ`、各小圖提供浮動說明；既有多螢幕 tooltip 位置校正與 resize redraw 保留。
 
 ## 建議排查流程
 

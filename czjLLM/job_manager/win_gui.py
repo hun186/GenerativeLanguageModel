@@ -1,6 +1,7 @@
 # czjLLM/job_manager/win_gui.py
 import csv
 import math
+from decimal import Decimal, ROUND_HALF_UP
 import os
 import sys
 import multiprocessing as mp
@@ -31,6 +32,8 @@ _AUDIT_SERIES = (
     ("task_text_tokens", "Task text tokens", False),
     ("context_usage_ratio", "Context usage", True),
     ("elapsed_seconds", "Slice time", False),
+    ("total_tok_per_s", "Total tok/s", False),
+    ("effective_tok_per_s_est", "Effective tok/s (est.)", False),
 )
 
 
@@ -59,6 +62,20 @@ _AUDIT_DISTRIBUTION_HELP = {
         "從真正送出 API 呼叫到取得模型回應的 elapsed_seconds。"
         "不包含等待 worker/queue、response 後處理、merge/reduction 或輸出寫檔時間；"
         "也不混入 JSON repair 等非切片 direct call。"
+    ),
+    "total_tok_per_s": (
+        "Total tok/s：(API input tokens + output tokens) ÷ Slice time。"
+        "這是 observed request-level throughput，不區分 KV-cache / prefix cache 重用。"
+        "耗時包含網路、排程、TTFT 與生成；不是純 GPU kernel token/s。"
+    ),
+    "effective_tok_per_s_est": (
+        "Effective tok/s (est.)：(估算未快取 input tokens + output tokens) ÷ Slice time。"
+        "provider 回報 cached prompt/input tokens 時優先使用，包含明確的 0 hit。"
+        "否則同 model、endpoint、task、YAML stage 的模板需至少兩筆先前近似穩定樣本，"
+        "最多以模板 token 最小值的 50% 當作可能 cacheable proxy。"
+        "heuristic / estimated 不是 API cache-hit 真值；動態欄位、runtime suffix、"
+        "prefix、token boundary 和 provider policy 會影響準確度。"
+        "這仍是 observed request-level throughput，不是純 GPU token/s。"
     ),
 }
 
@@ -251,66 +268,128 @@ def _audit_metric_snapshot(values, bins: int = 24) -> dict:
     }
 
 
+def select_audit_axis_ticks(snapshot: dict, plot_width: float, suffix: str = "") -> tuple[dict, ...]:
+    """Select min/P50/P95/max labels while avoiding duplicate/overlapping text."""
+    if int(snapshot.get("count", 0) or 0) <= 0:
+        return ()
+    lo, hi = float(snapshot["min"]), float(snapshot["max"])
+    width = max(1.0, float(plot_width))
+    if not math.isfinite(lo) or not math.isfinite(hi):
+        return ()
+    candidates = (("P50", float(snapshot["p50"])), ("P95", float(snapshot["p95"])),
+                  ("min", lo), ("max", hi))
+    accepted = []
+    for name, value in candidates:
+        if not math.isfinite(value):
+            continue
+        if any(abs(value - old["value"]) <= 1e-9 * max(1.0, abs(value)) for old in accepted):
+            continue
+        label = f"{name} {_fmt_audit_number(value)}{suffix}"
+        label_width = min(width, max(28.0, len(label) * 5.6))
+        fraction = min(1.0, max(0.0, (value - lo) / (hi - lo))) if hi > lo else 0.5
+        x = min(width - label_width / 2.0, max(label_width / 2.0, fraction * width))
+        if any(abs(x - old["x"]) < (label_width + old["width"]) / 2.0 + 5.0 for old in accepted):
+            continue
+        accepted.append({"name": name, "value": value, "label": label, "x": x, "width": label_width})
+    return tuple(sorted(accepted, key=lambda item: item["x"]))
+
+
 def load_llm_audit_distribution(audit_path: str) -> dict:
-    """Read one append-only audit CSV into payload-free numeric distributions."""
+    """Read the append-only numeric audit metadata; never read prompt/output payloads."""
     values = {name: [] for name, _, _ in _AUDIT_SERIES}
-    calls = 0
-    failures = 0
-    component_rows = 0
-    if not audit_path:
-        return {"calls": 0, "failures": 0, "component_rows": 0, "metrics": {
-            name: _audit_metric_snapshot(()) for name, _, _ in _AUDIT_SERIES
-        }}
-    try:
-        with open(audit_path, "r", newline="", encoding="utf-8") as fp:
-            for row in csv.DictReader(fp):
-                if not isinstance(row, dict):
-                    continue
-                calls += 1
-                if str(row.get("ok", "")).strip().upper() == "NO":
-                    failures += 1
-                has_components = False
-                usage_source = str(row.get("token_usage_source", "") or "").strip().lower()
-                has_api_usage = usage_source in {"", "llm_api_usage"}
-                for name, _, as_percent in _AUDIT_SERIES:
-                    # A failed call can have a known context limit but no API
-                    # usage. Do not turn that into a synthetic zero-token call.
-                    if name in {"input_tokens", "output_tokens", "context_usage_ratio"} and not has_api_usage:
+    calls = failures = component_rows = 0
+    provider_rows = heuristic_rows = 0
+    prior_templates = {}
+    if audit_path:
+        try:
+            with open(audit_path, "r", newline="", encoding="utf-8") as fp:
+                for row in csv.DictReader(fp):
+                    if not isinstance(row, dict):
                         continue
-                    if name == "elapsed_seconds" and not str(row.get("prompt_file", "") or "").strip():
-                        # JSON repair and other direct calls are valid overall
-                        # audit rows, but they are not one filesystem-backed
-                        # source slice. Keep slice-latency distribution literal.
+                    calls += 1
+                    if str(row.get("ok", "")).strip().upper() == "NO":
+                        failures += 1
+                    usage_source = str(row.get("token_usage_source", "") or "").strip().lower()
+                    has_api_usage = usage_source in {"", "llm_api_usage"}
+                    is_slice = bool(str(row.get("prompt_file", "") or "").strip())
+                    has_components = False
+                    for name, _, as_percent in _AUDIT_SERIES:
+                        if name in {"total_tok_per_s", "effective_tok_per_s_est"}:
+                            continue
+                        if name in {"input_tokens", "output_tokens", "context_usage_ratio"} and not has_api_usage:
+                            continue
+                        if name == "elapsed_seconds" and not is_slice:
+                            continue
+                        parsed = _audit_float(row.get(name))
+                        if parsed is None:
+                            continue
+                        values[name].append(parsed * 100.0 if as_percent else parsed)
+                        if name in {"template_tokens", "task_text_tokens"}:
+                            has_components = True
+                    if has_components:
+                        component_rows += 1
+
+                    # Derive directly from API In + Out; existing processing_tps
+                    # uses API total_tokens and has a different zero-time fallback.
+                    if not is_slice or usage_source != "llm_api_usage":
                         continue
-                    parsed = _audit_float(row.get(name))
-                    if parsed is None:
+                    elapsed = _audit_float(row.get("elapsed_seconds"))
+                    inp = _audit_float(row.get("input_tokens"))
+                    out = _audit_float(row.get("output_tokens"))
+                    if elapsed is None or elapsed <= 0 or inp is None or out is None or min(inp, out) < 0:
                         continue
-                    if as_percent:
-                        parsed *= 100.0
-                    values[name].append(parsed)
-                    if name in {"template_tokens", "task_text_tokens"}:
-                        has_components = True
-                if has_components:
-                    component_rows += 1
-    except (OSError, csv.Error, UnicodeError):
-        pass
+                    values["total_tok_per_s"].append((inp + out) / elapsed)
+                    cached = _audit_float(row.get("cached_input_tokens"))
+                    if (row.get("cached_input_token_source") == "provider_usage"
+                            and cached is not None and 0 <= cached <= inp):
+                        values["effective_tok_per_s_est"].append((inp - cached + out) / elapsed)
+                        provider_rows += 1
+                        continue
+
+                    task_tokens = _audit_float(row.get("task_text_tokens"))
+                    template = _audit_float(row.get("template_tokens"))
+                    stage = str(row.get("stage_identity", "") or "").strip()
+                    source = str(row.get("prompt_component_token_source", "") or "").strip()
+                    if (not stage or not source or task_tokens is None or template is None
+                            or min(task_tokens, template) < 0):
+                        continue
+                    group = (row.get("model", ""), row.get("base_url", ""),
+                             row.get("task", ""), stage, source)
+                    # Running floor/ceiling avoid O(n²) rescans on long jobs.
+                    prior = prior_templates.setdefault(
+                        group, {"count": 0, "min": template, "max": template}
+                    )
+                    if prior["count"] >= 2:
+                        floor, ceiling = prior["min"], prior["max"]
+                        tolerance = max(1.0, floor * 0.05)
+                        # Not token-level prefix proof. Require stable stage/size
+                        # across prior requests; discount possible reusable floor.
+                        if ceiling - floor <= tolerance and abs(template - floor) <= tolerance:
+                            possibly_cached = min(template, floor * 0.5)
+                            estimated_input = task_tokens + max(0.0, template - possibly_cached)
+                            values["effective_tok_per_s_est"].append((estimated_input + out) / elapsed)
+                            heuristic_rows += 1
+                    prior["count"] += 1
+                    prior["min"] = min(prior["min"], template)
+                    prior["max"] = max(prior["max"], template)
+        except (OSError, csv.Error, UnicodeError):
+            pass
     return {
-        "calls": calls,
-        "failures": failures,
-        "component_rows": component_rows,
-        "metrics": {
-            name: _audit_metric_snapshot(values[name]) for name, _, _ in _AUDIT_SERIES
-        },
+        "calls": calls, "failures": failures, "component_rows": component_rows,
+        "effective_provider_rows": provider_rows,
+        "effective_heuristic_rows": heuristic_rows,
+        "metrics": {name: _audit_metric_snapshot(values[name]) for name, _, _ in _AUDIT_SERIES},
     }
 
 
 def _fmt_audit_number(value: float) -> str:
-    value = float(value or 0.0)
-    if abs(value) >= 1_000_000:
-        return f"{value / 1_000_000:.1f}M"
-    if abs(value) >= 1_000:
-        return f"{value / 1_000:.1f}k"
-    return f"{value:.0f}"
+    # Normalize binary percentile-interpolation artifacts (e.g. 67.74999..)
+    # before decimal half-up rounding, preserving full comma-grouped digits.
+    number = float(value or 0.0)
+    if not math.isfinite(number):
+        return "unknown"
+    decimal_value = Decimal(format(number, ".15g"))
+    return f"{decimal_value.quantize(Decimal('0.1'), rounding=ROUND_HALF_UP):,.1f}"
 
 
 def format_llm_audit_summary(stats: dict) -> str:
@@ -325,13 +404,13 @@ def format_llm_audit_summary(stats: dict) -> str:
     latency = metrics.get("elapsed_seconds", {}) or {}
     component_rows = int(stats.get("component_rows", 0) or 0)
     context_text = (
-        f"Context P50 {float(context.get('p50', 0) or 0):.1f}% / "
-        f"P95 {float(context.get('p95', 0) or 0):.1f}%"
+        f"Context P50 {_fmt_audit_number(context.get('p50', 0))}% / "
+        f"P95 {_fmt_audit_number(context.get('p95', 0))}%"
         if int(context.get("count", 0) or 0) > 0 else "Context unknown"
     )
     latency_text = (
-        f"Slice time P50/P95 {float(latency.get('p50', 0) or 0):.1f}/"
-        f"{float(latency.get('p95', 0) or 0):.1f}s"
+        f"Slice time P50/P95 {_fmt_audit_number(latency.get('p50', 0))}/"
+        f"{_fmt_audit_number(latency.get('p95', 0))}s"
         if int(latency.get("count", 0) or 0) > 0 else "Slice time unknown"
     )
     template_text = (
@@ -732,7 +811,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     audit_summary.pack(fill="x", padx=8, pady=(2, 3))
     audit_frame = ttk.Frame(audit_section, padding=(8, 5))
     audit_canvas = tk.Canvas(
-        audit_frame, height=230, highlightthickness=0, background="white"
+        audit_frame, height=340, highlightthickness=0, background="white"
     )
     audit_canvas.pack(fill="x", expand=True)
     _audit_tooltip = None
@@ -740,6 +819,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     _audit_chart_keys = (
         "input_tokens", "output_tokens", "elapsed_seconds",
         "task_text_tokens", "context_usage_ratio",
+        "total_tok_per_s", "effective_tok_per_s_est",
     )
 
     def _hide_audit_tooltip(_event=None):
@@ -818,13 +898,13 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         return max(640, int(audit_canvas.winfo_width() or 640))
 
     def _audit_canvas_layout_height():
-        return max(230, int(audit_canvas.winfo_height() or 230))
+        return max(340, int(audit_canvas.winfo_height() or 340))
 
     def _audit_canvas_help(event):
         width = _audit_canvas_layout_width()
         height = _audit_canvas_layout_height()
         row = 0 if float(event.y) < (height / 2.0) else 1
-        cols = 3 if row == 0 else 2
+        cols = 3 if row == 0 else 4
         col = min(cols - 1, max(0, int(float(event.x) / max(width / cols, 1.0))))
         idx = col if row == 0 else 3 + col
         if idx >= len(_audit_chart_keys):
@@ -864,41 +944,50 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
             ("elapsed_seconds", "Slice time", "#6b7280"),
             ("task_text_tokens", "Task text", "#7a4cc2"),
             ("context_usage_ratio", "Context %", "#b00020"),
+            ("total_tok_per_s", "Total tok/s", "#007c91"),
+            ("effective_tok_per_s_est", "Effective tok/s (est.)", "#bd6d14"),
         ]
         cell_h = height / 2
         for idx, (key, title, color) in enumerate(series):
             row = 0 if idx < 3 else 1
-            cols = 3 if row == 0 else 2
+            cols = 3 if row == 0 else 4
             col = idx if row == 0 else idx - 3
             cell_w = width / cols
-            x0 = col * cell_w + 10
-            y0 = row * cell_h + 8
-            x1 = (col + 1) * cell_w - 10
-            y1 = (row + 1) * cell_h - 12
+            x0, y0 = col * cell_w + 8, row * cell_h + 6
+            x1, y1 = (col + 1) * cell_w - 8, (row + 1) * cell_h - 10
             snap = metrics.get(key, {}) or {}
             count = int(snap.get("count", 0) or 0)
-            p50 = float(snap.get("p50", 0) or 0)
-            p95 = float(snap.get("p95", 0) or 0)
             suffix = "%" if key == "context_usage_ratio" else "s" if key == "elapsed_seconds" else ""
             audit_canvas.create_text(
-                x0, y0, anchor="nw", text=f"{title}  n={count:,}",
+                x0, y0, anchor="nw", text=title,
                 fill="#222222", font=("Segoe UI", 9, "bold")
             )
-            percentile_text = (
-                (
-                    f"P50 {p50:.1f}{suffix}   P95 {p95:.1f}{suffix}   "
-                    f"max {float(snap.get('max', 0) or 0):.1f}{suffix}"
+            if key == "effective_tok_per_s_est":
+                provenance = (
+                    f"n={count:,}  API={int(_audit_stats.get('effective_provider_rows', 0) or 0):,}"
+                    f"  H={int(_audit_stats.get('effective_heuristic_rows', 0) or 0):,}"
                 )
-                if count > 0
-                else "P50 unknown   P95 unknown   max unknown"
-            )
+            else:
+                provenance = f"n={count:,}"
             audit_canvas.create_text(
-                x0, y0 + 18, anchor="nw",
-                text=percentile_text,
-                fill="#555555", font=("Segoe UI", 8)
+                x0, y0 + 17, anchor="nw", text=provenance,
+                fill="#777777", font=("Segoe UI", 7),
             )
-            top = y0 + 40
-            bottom = y1
+            if count:
+                entries = (
+                    f"P50 {_fmt_audit_number(snap.get('p50', 0))}{suffix}",
+                    f"P95 {_fmt_audit_number(snap.get('p95', 0))}{suffix}",
+                    f"max {_fmt_audit_number(snap.get('max', 0))}{suffix}",
+                )
+            else:
+                entries = ("P50 unknown", "P95 unknown", "max unknown")
+            for line_idx, line in enumerate(entries):
+                audit_canvas.create_text(
+                    x0, y0 + 33 + line_idx * 14, anchor="nw",
+                    text=line, fill="#555555", font=("Segoe UI", 8),
+                )
+            top = y0 + 78
+            bottom = max(top + 1, y1 - 18)
             audit_canvas.create_line(x0, bottom, x1, bottom, fill="#dddddd")
             histogram = tuple(snap.get("histogram", ()) or ())
             peak = max(histogram) if histogram else 0
@@ -914,6 +1003,13 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                 y = bottom - (bottom - top) * float(bucket_value) / float(peak)
                 points.extend((x, y))
             audit_canvas.create_line(*points, fill=color, width=2, smooth=True)
+            for tick in select_audit_axis_ticks(snap, x1 - x0, suffix):
+                tx = x0 + tick["x"]
+                audit_canvas.create_line(tx, bottom, tx, bottom + 3, fill="#aaaaaa")
+                audit_canvas.create_text(
+                    tx, bottom + 5, anchor="n", text=tick["label"],
+                    fill="#777777", font=("Segoe UI", 7),
+                )
 
     def _audit_canvas_resized(_event=None):
         if _audit_expanded:

@@ -103,3 +103,8 @@
 ## Archived History
 
 - `.codex/archive/api_contract.md-20261006-134200.md` — complete pre-compaction API/contract history through PR #200 head `39177737486a372f38e9b6d81563d6f14327459a`.
+
+### 2026-10-12 audit GUI throughput extension (pending review)
+
+- Optional per-call audit columns: `cached_input_tokens` (nullable), `cached_input_token_source` (either `provider_usage` or blank), and `stage_identity` (safe stage name or `single_stage`). No prompt/output payload is added to the audit handoff. Provider cache usage accepts an explicit zero but never infers a zero when metadata is absent.
+- Existing `processing_tps` remains API-total-based historical telemetry. GUI-only `total_tok_per_s` is derived from API input+output divided by strictly positive slice elapsed. GUI-only `effective_tok_per_s_est` uses provider-reported cached input when valid, otherwise a conservative, stage-isolated heuristic after repeated stable template-size evidence; estimate samples and provider samples are counted separately and absent evidence remains unknown.

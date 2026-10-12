@@ -48,7 +48,7 @@ from czjLLM.job_manager.end_point_manager import select_model
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.logging_utils import CostLog
-from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata
+from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
 from czjLLM.utilities.env_overrides import env_bool, env_int, load_czjllm_env_files_once
 from czjLLM.tokenizer_utils import TokenizerWrapper
 #from czjLLM.utilities.logging_utils import log_error
@@ -1220,7 +1220,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         if not _write_original_snapshot_from_source(item):
             _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
 
-    def _refresh_stage_prompt_metrics(root_todo_dir: str, filename: str, task_text: str, prompt_text: str):
+    def _refresh_stage_prompt_metrics(root_todo_dir: str, filename: str, task_text: str, prompt_text: str, stage_identity: str):
         # The worker claims root TODO/<basename> into RUNNING/<basename>.
         # Refresh metadata against that logical prompt basename so every stage
         # gets the metrics for the prompt actually dispatched.
@@ -1232,6 +1232,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             model_name=getattr(ctx, "model_spec_name", "") or "",
             model_spec=getattr(ctx, "model_spec", None),
             task=str(getattr(ctx, "task", "") or ""),
+            stage_identity=stage_identity,
             quiet=bool(getattr(ctx, "suppress_prompt_diagnostics", False)),
         )
 
@@ -1264,7 +1265,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 dst_fp = os.path.join(todo_dir, fp.name)
                 with open(dst_fp, "w", encoding="utf-8") as f:
                     f.write(prompt_text)
-                _refresh_stage_prompt_metrics(root_todo_dir, fp.name, src_text, prompt_text)
+                _refresh_stage_prompt_metrics(root_todo_dir, fp.name, src_text, prompt_text, stage_name)
             return
         if (
             stage_name == stage_defs[0].name
@@ -1275,6 +1276,10 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             _clear_txt_files(todo_dir, ops)
             for fp in _root_txt_files(root_todo_dir):
                 shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
+                # The original first-stage prompt remains byte-identical, so
+                # preserve its existing numeric token counts, but relabel the
+                # copied dispatch's actual YAML stage before workers claim it.
+                relabel_prompt_token_stage(str(fp), stage_name)
             return  # 已有 TODO，不覆蓋
 
         if effective_input_from in {"", "none", "null"}:
@@ -1296,7 +1301,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 dst_fp = os.path.join(todo_dir, fp.name)
                 with open(dst_fp, "w", encoding="utf-8") as f:
                     f.write(prompt_text)
-                _refresh_stage_prompt_metrics(root_todo_dir, fp.name, "", prompt_text)
+                _refresh_stage_prompt_metrics(root_todo_dir, fp.name, "", prompt_text, stage_name)
             return
 
         if not os.path.isdir(src_dir):
@@ -1315,7 +1320,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             with open(dst_fp, "w", encoding="utf-8") as f:
                 f.write(prompt_text)
             _refresh_stage_prompt_metrics(
-                root_todo_dir, os.path.basename(src_fp), source_text, prompt_text
+                root_todo_dir, os.path.basename(src_fp), source_text, prompt_text, stage_name
             )
 
     def _stage_task_debug_text(stage_task) -> str:
@@ -2054,6 +2059,7 @@ class PromptAPIPipeline:
                     prompt_component_token_source=self.audit_prompt_tokens.get(
                         "prompt_component_token_source", ""
                     ),
+                    stage_identity=self.audit_prompt_tokens.get("stage_identity", ""),
                 )
             except Exception as audit_ex:
                 print(

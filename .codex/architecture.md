@@ -64,3 +64,9 @@
 
 - `.codex/archive/architecture.md-20261006-134200.md` — complete pre-compaction architecture history through PR #200 head `39177737486a372f38e9b6d81563d6f14327459a`.
 - Historical point-in-time implementation notes that are superseded by the Current Summary remain traceable in that archive.
+
+### 2026-10-12 GUI request throughput observability (proposed)
+
+- The append-only audit schema can capture provider-reported cached input token counts, with a distinct source marker; missing provider cache metadata is unknown, not zero. Current `processing_tps` remains backward compatible; GUI derives `(input_tokens + output_tokens) / elapsed_seconds` for actual slice requests with positive elapsed.
+- Local token sidecars add only an allowlisted stage identity (never task/prompt payload). The GUI off-thread CSV reader computes cache-adjusted throughput from provider truth where present and an explicitly discounted stable-template-size proxy only after same-stage history exists; no new persistence, service, prompt transfer, or cache-hit truth source is created.
+- Histograms include collision-pruned min/P50/P95/max ticks and a 3+4 chart layout. Tk redraw and hover both use shared width/height bounds.
