@@ -13,6 +13,8 @@ from czjLLM.job_manager.win_gui import (
     _monitor_work_area_at,
     format_llm_audit_summary,
     format_audit_distribution_help,
+    select_audit_axis_ticks,
+    _fmt_audit_number,
     load_llm_audit_distribution,
 )
 
@@ -223,7 +225,7 @@ def test_audit_distribution_layout_moves_slice_time_into_template_slot():
     assert '"task_text_tokens", "context_usage_ratio",' in source
     assert '("elapsed_seconds", "Slice time"' in source
     assert '("template_tokens", "Template"' not in source
-    assert "cols = 3 if row == 0 else 2" in source
+    assert "cols = 3 if row == 0 else 4" in source
 
 
 
@@ -274,7 +276,7 @@ def test_audit_hover_uses_same_effective_height_as_drawing():
     source = inspect.getsource(win_gui._gui_proc_main)
     assert "def _audit_canvas_layout_height():" in source
     assert source.count("height = _audit_canvas_layout_height()") >= 2
-    assert "return max(230, int(audit_canvas.winfo_height() or 230))" in source
+    assert "return max(300, int(audit_canvas.winfo_height() or 300))" in source
 
 
 
@@ -355,3 +357,127 @@ def test_audit_tooltip_clamps_against_pointer_monitor_not_virtual_rectangle():
     assert "monitor_x," in source and "monitor_y," in source
     assert "monitor_width," in source and "monitor_height," in source
     assert "_tk_geometry_axis(" in source
+
+
+def test_audit_format_keeps_full_comma_grouped_values():
+    assert _fmt_audit_number(62811.5) == "62,811.5"
+    assert _fmt_audit_number(82381.4) == "82,381.4"
+    assert _fmt_audit_number(57597) == "57,597.0"
+    assert _fmt_audit_number(12345678) == "12,345,678.0"
+    stats = {"calls": 1, "component_rows": 1, "metrics": {
+        "input_tokens": {"count": 1, "p50": 62811.5},
+        "output_tokens": {"count": 1, "p50": 1234.5},
+        "template_tokens": {"count": 1, "p50": 82381.4, "p95": 82381.4},
+        "elapsed_seconds": {"count": 1, "p50": 75.4, "p95": 75.4},
+        "context_usage_ratio": {"count": 1, "p50": 49.2, "p95": 49.2},
+    }}
+    summary = format_llm_audit_summary(stats)
+    assert "62,811.5" in summary
+    assert "82,381.4" in summary
+    assert "1,234.5" in summary
+    assert "49.2%" in summary and "75.4s" in summary
+    assert "62.8k" not in summary
+
+
+def test_axis_key_ticks_dedupe_and_avoid_overlaps():
+    constant = {"count": 4, "min": 42, "p50": 42, "p95": 42, "max": 42}
+    assert len(select_audit_axis_ticks(constant, 300)) == 1
+    close = {"count": 20, "min": 100, "p50": 150,
+             "p95": 199, "max": 200}
+    ticks = select_audit_axis_ticks(close, 180)
+    assert 1 <= len(ticks) <= 4
+    assert any(item["name"] == "P50" for item in ticks)
+    for left, right in zip(ticks, ticks[1:]):
+        assert right["x"] - left["x"] >= (left["width"] + right["width"]) / 2 + 5
+    for tick in ticks:
+        assert 0 <= tick["x"] - tick["width"] / 2
+        assert tick["x"] + tick["width"] / 2 <= 180
+    broad = {"count": 10, "min": 0, "p50": 1000,
+             "p95": 8000, "max": 10000}
+    wide_ticks = select_audit_axis_ticks(broad, 800)
+    assert len(wide_ticks) == 4
+    assert any("10,000.0" in t["label"] for t in wide_ticks)
+
+
+def test_throughput_uses_api_in_plus_out_and_provider_cache_truth(tmp_path):
+    p = tmp_path / "audit.csv"
+    fields = ["ok", "prompt_file", "token_usage_source", "input_tokens",
+              "output_tokens", "total_tokens", "processing_tps", "elapsed_seconds",
+              "task_text_tokens", "template_tokens", "stage_identity",
+              "model", "base_url", "task", "prompt_component_token_source",
+              "cached_input_tokens", "cached_input_token_source"]
+    rows = [
+        dict(ok="YES", prompt_file="slice.txt", token_usage_source="llm_api_usage",
+             input_tokens="100", output_tokens="20", total_tokens="999",
+             processing_tps="999", elapsed_seconds="2",
+             cached_input_tokens="40", cached_input_token_source="provider_usage"),
+        dict(ok="YES", prompt_file="slice2.txt", token_usage_source="llm_api_usage",
+             input_tokens="100", output_tokens="20", elapsed_seconds="2",
+             cached_input_tokens="0", cached_input_token_source="provider_usage"),
+        dict(ok="NO", prompt_file="broken.txt", token_usage_source="unavailable",
+             input_tokens="0", output_tokens="0", elapsed_seconds="3"),
+        dict(ok="YES", prompt_file="zero.txt", token_usage_source="llm_api_usage",
+             input_tokens="100", output_tokens="20", elapsed_seconds="0"),
+        dict(ok="YES", prompt_file="", token_usage_source="llm_api_usage",
+             input_tokens="100", output_tokens="20", elapsed_seconds="1"),
+        dict(ok="YES", prompt_file="missing.txt", token_usage_source="llm_api_usage",
+             input_tokens="", output_tokens="20", elapsed_seconds="1"),
+    ]
+    with p.open("w", newline="", encoding="utf-8") as fp:
+        writer = csv.DictWriter(fp, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+    stats = load_llm_audit_distribution(str(p))
+    assert stats["metrics"]["total_tok_per_s"]["count"] == 2
+    assert stats["metrics"]["total_tok_per_s"]["p50"] == 60
+    assert stats["metrics"]["effective_tok_per_s_est"]["count"] == 2
+    assert stats["metrics"]["effective_tok_per_s_est"]["p50"] == 50
+    assert stats["effective_provider_rows"] == 2
+    assert stats["effective_heuristic_rows"] == 0
+
+
+def test_heuristic_requires_stage_history_and_never_claims_api_truth(tmp_path):
+    p = tmp_path / "stage.csv"
+    fields = ["ok", "prompt_file", "token_usage_source", "input_tokens",
+              "output_tokens", "elapsed_seconds", "task_text_tokens",
+              "template_tokens", "stage_identity", "model", "base_url",
+              "task", "prompt_component_token_source"]
+    base = dict(ok="YES", prompt_file="slice.txt", token_usage_source="llm_api_usage",
+                input_tokens="100", output_tokens="20", elapsed_seconds="2",
+                task_text_tokens="70", template_tokens="30", model="m",
+                base_url="endpoint", task="task", stage_identity="stage-A",
+                prompt_component_token_source="local_tokenizer_no_special_tokens")
+    rows = [dict(base) for _ in range(3)]
+    rows += [dict(base, stage_identity="stage-B"),
+             dict(base, stage_identity="", task_text_tokens="70"),
+             dict(base, stage_identity="stage-C", template_tokens="30"),
+             dict(base, stage_identity="stage-C", template_tokens="100"),
+             dict(base, stage_identity="stage-C", template_tokens="30")]
+    with p.open("w", newline="", encoding="utf-8") as fp:
+        writer = csv.DictWriter(fp, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+    stats = load_llm_audit_distribution(str(p))
+    assert stats["metrics"]["total_tok_per_s"]["count"] == len(rows)
+    assert stats["effective_provider_rows"] == 0
+    assert stats["effective_heuristic_rows"] == 1
+    assert stats["metrics"]["effective_tok_per_s_est"]["count"] == 1
+    # 50% of the stable 30-token template is a possible reuse proxy.
+    assert stats["metrics"]["effective_tok_per_s_est"]["p50"] == 52.5
+
+
+def test_throughput_gui_layout_and_tooltips_are_explicit():
+    from czjLLM.job_manager import win_gui
+    source = inspect.getsource(win_gui._gui_proc_main)
+    assert '"total_tok_per_s", "effective_tok_per_s_est"' in source
+    assert '"total_tok_per_s", "Total tok/s"' in source
+    assert '"effective_tok_per_s_est", "Effective tok/s (est.)"' in source
+    assert 'cols = 3 if row == 0 else 4' in source
+    assert 'select_audit_axis_ticks(snap, x1 - x0, suffix)' in source
+    assert 'audit_canvas.create_text(' in source
+    total_help = format_audit_distribution_help("total_tok_per_s")
+    effective_help = format_audit_distribution_help("effective_tok_per_s_est")
+    assert "observed request-level throughput" in total_help
+    assert "不是純 GPU" in total_help
+    assert "heuristic / estimated" in effective_help
+    assert "provider" in effective_help and "prefix" in effective_help
