@@ -62,7 +62,7 @@ def test_llm_audit_distribution_uses_api_usage_and_prompt_components(tmp_path):
     summary = format_llm_audit_summary(stats)
     assert "Calls 5" in summary
     assert "Context P50 50.0% / P95 72.5%" in summary
-    assert "Template P50/P95 52/68" in summary
+    assert "Template P50/P95 52.5/67.8" in summary
     assert "Slice time P50/P95 2.0/3.8s" in summary
     assert "Components 4/5" in summary
 
@@ -172,8 +172,8 @@ def test_expanded_audit_chart_renders_empty_percentiles_as_unknown():
     from czjLLM.job_manager import win_gui
 
     source = inspect.getsource(win_gui._gui_proc_main)
-    assert 'else "P50 unknown   P95 unknown   max unknown"' in source
-    assert "if count > 0" in source
+    assert 'entries = ("P50 unknown", "P95 unknown", "max unknown")' in source
+    assert "if count:" in source
 
 
 
@@ -276,7 +276,7 @@ def test_audit_hover_uses_same_effective_height_as_drawing():
     source = inspect.getsource(win_gui._gui_proc_main)
     assert "def _audit_canvas_layout_height():" in source
     assert source.count("height = _audit_canvas_layout_height()") >= 2
-    assert "return max(300, int(audit_canvas.winfo_height() or 300))" in source
+    assert "return max(340, int(audit_canvas.winfo_height() or 340))" in source
 
 
 
@@ -474,6 +474,8 @@ def test_throughput_gui_layout_and_tooltips_are_explicit():
     assert '"effective_tok_per_s_est", "Effective tok/s (est.)"' in source
     assert 'cols = 3 if row == 0 else 4' in source
     assert 'select_audit_axis_ticks(snap, x1 - x0, suffix)' in source
+    assert 'effective_provider_rows' in source
+    assert 'effective_heuristic_rows' in source
     assert 'audit_canvas.create_text(' in source
     total_help = format_audit_distribution_help("total_tok_per_s")
     effective_help = format_audit_distribution_help("effective_tok_per_s_est")
