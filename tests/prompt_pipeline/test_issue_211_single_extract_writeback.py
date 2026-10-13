@@ -620,3 +620,55 @@ def test_ancestor_survives_nested_split_crash_rolls_back_all_descendants(tmp_pat
     assert list((item / "_extract_slice_identity" / "splits").glob("*.json")) == []
     assert tuple(_expected_single_extract_slice_files([str(item)])[str(item)]) == ("0.txt",)
     reconcile_split_transitions(str(item))  # recovery remains idempotent
+
+
+def test_windows_crlf_success_file_matches_lf_prompt_output_provenance(tmp_path):
+    item = tmp_path / "row_windows_result"
+    (item / "TODO").mkdir(parents=True)
+    (item / "Success").mkdir()
+    prompt = "line one\nline two"
+    output = '{\n  "keyFunctions": ["A", "B"]\n}\n'
+    (item / "TODO" / "0.txt").write_bytes(prompt.replace("\n", "\r\n").encode())
+    result = item / "Success" / "0.txt"
+    result.write_bytes(output.replace("\n", "\r\n").encode())
+    record_success_identity(str(item / "TODO" / "0.txt"), str(result), prompt, output)
+    assert valid_success(str(item), "0.txt", digest_text(prompt))
+    assert digest_text(prompt) == digest_text(prompt.replace("\n", "\r\n"))
+    assert digest_text(output) == digest_text(output.replace("\n", "\r\n"))
+    assert digest_text(output) != digest_text(output + "changed")
+    expected = _expected_single_extract_slice_files([str(item)])
+    runtime = {str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")})}
+    _require_complete_single_extract_stage(
+        {"final": {"finished_chunks": 1}}, runtime, [str(item)], expected,
+    )
+
+
+def test_windows_crlf_queued_split_children_reconcile_without_false_tampering(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    children = [
+        ("0-0.txt", "first line\nsecond line"),
+        ("0-1.txt", "third line\nfourth line"),
+    ]
+    install_split_prompts(str(parent), "original prompt", children)
+    for name, text in children:
+        # Simulates content written with Windows text-mode translation.
+        (item / "TODO" / name).write_bytes(text.replace("\n", "\r\n").encode())
+    # Parent still exists: rollback hash-valid descendants and retain parent.
+    reconcile_split_transitions(str(item))
+    assert parent.is_file()
+    assert list((item / "TODO").glob("*.txt")) == []
+
+
+def test_windows_crlf_committed_split_remains_complete_and_recoverable(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    children = [
+        ("0-0.txt", "first line\nsecond line"),
+        ("0-1.txt", "third line\nfourth line"),
+    ]
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    for name, text in children:
+        (item / "TODO" / name).write_bytes(text.replace("\n", "\r\n").encode())
+    reconcile_split_transitions(str(item))
+    expected = _expected_single_extract_slice_files([str(item)])[str(item)]
+    assert expected == {name: digest_text(text) for name, text in children}
