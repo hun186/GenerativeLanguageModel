@@ -125,6 +125,59 @@ def install_split_prompts(
         _write_child_prompt(todo_dir / name, text)
 
 
+def _split_child_complete(
+    root: Path, name: str, prompt_hash: str, visited: frozenset[str] = frozenset(),
+) -> bool:
+    """Check a queued, successful, or recursively split child without mutating.
+
+    Committed nested retry splits replace their parent prompt. Reconciliation
+    must therefore accept verified descendants instead of requiring the direct
+    child basename in TODO, RUNNING, or Success.
+    """
+    if name in visited:
+        raise RuntimeError("cyclic extract split lineage")
+    if Path(name).name != name or not name.endswith(".txt"):
+        raise RuntimeError("invalid extract split child name")
+    visited = visited | {name}
+    queued = [
+        root / queue / name for queue in ("TODO", "RUNNING")
+        if (root / queue / name).is_file()
+    ]
+    for path in queued:
+        if hashlib.sha256(path.read_bytes()).hexdigest() != prompt_hash:
+            raise RuntimeError(
+                "changed extract split child prompt; manual recovery required"
+            )
+    if queued or valid_success(str(root), name, prompt_hash):
+        return True
+    nested = _read_record(_record_path(root, "splits", name))
+    if not nested:
+        return False
+    if (nested.get("version") != 1
+            or nested.get("parent_prompt_sha256") != prompt_hash):
+        raise RuntimeError("stale extract split descendant identity")
+    children = nested.get("children")
+    if not isinstance(children, list) or len(children) != 2:
+        raise RuntimeError("invalid extract split descendant lineage")
+    seen_children = set()
+    for child in children:
+        if not isinstance(child, dict):
+            raise RuntimeError("invalid extract split descendant")
+        child_name = child.get("name")
+        child_hash = child.get("prompt_sha256")
+        if (not isinstance(child_name, str)
+                or not child_name.startswith(Path(name).stem + "-")
+                or Path(child_name).name != child_name
+                or not child_name.endswith(".txt")
+                or not isinstance(child_hash, str) or len(child_hash) != 64
+                or child_name in seen_children):
+            raise RuntimeError("invalid extract split descendant identity")
+        seen_children.add(child_name)
+        if not _split_child_complete(root, child_name, child_hash, visited):
+            return False
+    return True
+
+
 def reconcile_split_transitions(item: str) -> None:
     """Roll back interrupted parent→child installs before queue resume.
 
@@ -170,8 +223,9 @@ def reconcile_split_transitions(item: str) -> None:
             for child_path in seen:
                 if hashlib.sha256(child_path.read_bytes()).hexdigest() != digest:
                     raise RuntimeError("changed extract split child prompt; manual recovery required")
-            # A verified Success is also one completed child.
-            complete = bool(seen) or valid_success(str(root), name, digest)
+            # A committed child may already have split into grandchildren.
+            # Inspect hash-bound descendant lineage without creating roots.
+            complete = _split_child_complete(root, name, digest)
             installed.append((seen, complete))
         if parent_exists:
             # Original still exists: prefer reprocessing it over a partial,
@@ -181,9 +235,10 @@ def reconcile_split_transitions(item: str) -> None:
                 for child_path in queued:
                     child_path.unlink()
             intent.unlink()
-        elif any(complete for _, complete in installed) and not all(
-            complete for _, complete in installed
-        ):
+        elif not all(complete for _, complete in installed):
+            # Even when BOTH children are missing (e.g. filesystem loss), the
+            # durable intent proves that this parent once had input content.
+            # Silently accepting zero descendants allows partial writeback.
             raise RuntimeError(
                 "extract split transition incomplete without recoverable parent"
             )
