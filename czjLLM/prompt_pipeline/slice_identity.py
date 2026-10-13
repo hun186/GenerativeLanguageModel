@@ -310,6 +310,55 @@ def reconcile_split_transitions(item: str) -> None:
             )
 
 
+def committed_split_parent_identities(item: str) -> dict[str, str]:
+    """Read top-level committed split identities, even with no queued leaves.
+
+    Used only for explicit full_restart: the caller must freshly render and
+    hash-match the original source before restoring any of these parents.
+    A historical Success-only split is never accepted for normal resume.
+    """
+    root = Path(item)
+    directory = _identity_dir(root, "splits")
+    if not directory.is_dir():
+        return {}
+    records: dict[str, dict] = {}
+    child_names: set[str] = set()
+    for path in sorted(directory.glob("*.txt.json")):
+        name = path.name[:-5]
+        if _record_path(root, "splits", name) != path:
+            raise RuntimeError("invalid full_restart split intent name")
+        record = _read_record(path)
+        children = record.get("children")
+        parent_hash = record.get("parent_prompt_sha256")
+        if (record.get("version") != 1 or not isinstance(parent_hash, str)
+                or len(parent_hash) != 64
+                or not isinstance(children, list) or len(children) != 2):
+            raise RuntimeError("invalid full_restart split intent")
+        seen = set()
+        for child in children:
+            if not isinstance(child, dict):
+                raise RuntimeError("invalid full_restart split child")
+            child_name, child_hash = child.get("name"), child.get("prompt_sha256")
+            if (not isinstance(child_name, str)
+                    or child_name in seen
+                    or not child_name.startswith(Path(name).stem + "-")
+                    or Path(child_name).name != child_name
+                    or not child_name.endswith(".txt")
+                    or not isinstance(child_hash, str) or len(child_hash) != 64):
+                raise RuntimeError("invalid full_restart split child identity")
+            seen.add(child_name)
+            child_names.add(child_name)
+        records[name] = record
+    roots: dict[str, str] = {}
+    for name, record in records.items():
+        if name in child_names:
+            continue  # nested split; its ancestor must be restored instead
+        if any((root / folder / name).is_file() for folder in ("TODO", "RUNNING")):
+            continue  # a live original prompt is already recoverable
+        roots[name] = record["parent_prompt_sha256"]
+    return dict(sorted(roots.items()))
+
+
 def restore_full_restart_parent(
     item: str, name: str, prompt: str, expected_hash: str,
 ) -> None:
