@@ -50,8 +50,8 @@ from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.slice_merge import merge_dict_slices_audited, should_merge_slices
 from czjLLM.prompt_pipeline.slice_identity import (
     digest_text, include_committed_split_roots, install_split_prompts,
-    reconcile_split_transitions, record_success_identity,
-    resolve_success_leaves, valid_success,
+    is_verified_queued_split_child, reconcile_split_transitions,
+    record_success_identity, resolve_success_leaves, valid_success,
 )
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
@@ -1405,9 +1405,18 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             MKDIR(todo_dir)
             _clear_txt_files(todo_dir, ops)
             for fp in anchor_files:
-                prompt_text = _build_stage_prompt_text(stage_task, src_text, ctx)
+                # A committed split's queued descendant is an already
+                # rendered fragment prompt. Replacing it with the complete
+                # SQL/Excel source destroys its verified split identity.
+                existing_text = fp.read_text(encoding="utf-8")
+                if single_extract_stage_writeback and is_verified_queued_split_child(
+                    item, fp.name, existing_text,
+                ):
+                    prompt_text = existing_text
+                else:
+                    prompt_text = _build_stage_prompt_text(stage_task, src_text, ctx)
                 dst_fp = os.path.join(todo_dir, fp.name)
-                with open(dst_fp, "w", encoding="utf-8") as f:
+                with open(dst_fp, "w", encoding="utf-8", newline="") as f:
                     f.write(prompt_text)
                 _refresh_stage_prompt_metrics(root_todo_dir, fp.name, src_text, prompt_text, stage_name)
             return
