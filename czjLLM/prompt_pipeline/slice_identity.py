@@ -14,7 +14,13 @@ from pathlib import Path
 
 
 def digest_text(text: str) -> str:
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+    """Hash decoded text with platform-independent line endings.
+
+    Files written in text mode on Windows may contain CRLF, while the LLM
+    returns LF strings. Normalize both sides before comparing identities.
+    """
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
 def _identity_dir(item: Path, kind: str) -> Path:
@@ -67,8 +73,8 @@ def valid_success(item: str, filename: str, prompt_hash: str) -> bool:
         return False
     path = root / "Success" / filename
     try:
-        output_hash = hashlib.sha256(path.read_bytes()).hexdigest()
-    except OSError:
+        output_hash = digest_text(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError):
         return False
     return record.get("output_sha256") == output_hash
 
@@ -98,7 +104,7 @@ def _write_child_prompt(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + "." + uuid.uuid4().hex + ".tmp")
     try:
-        with tmp.open("w", encoding="utf-8") as handle:
+        with tmp.open("w", encoding="utf-8", newline="") as handle:
             handle.write(text)
             handle.flush()
             os.fsync(handle.fileno())
@@ -144,7 +150,7 @@ def _split_child_complete(
         if (root / queue / name).is_file()
     ]
     for path in queued:
-        if hashlib.sha256(path.read_bytes()).hexdigest() != prompt_hash:
+        if digest_text(path.read_text(encoding="utf-8")) != prompt_hash:
             raise RuntimeError(
                 "changed extract split child prompt; manual recovery required"
             )
@@ -196,7 +202,7 @@ def _rollback_queued_descendants(
     for directory in ("TODO", "RUNNING"):
         file = root / directory / name
         if file.is_file():
-            if hashlib.sha256(file.read_bytes()).hexdigest() != prompt_hash:
+            if digest_text(file.read_text(encoding="utf-8")) != prompt_hash:
                 raise RuntimeError(
                     "changed extract split child prompt; manual recovery required"
                 )
@@ -271,7 +277,7 @@ def reconcile_split_transitions(item: str) -> None:
             queued = [root / folder / name for folder in ("TODO", "RUNNING")]
             seen = [p for p in queued if p.is_file()]
             for child_path in seen:
-                if hashlib.sha256(child_path.read_bytes()).hexdigest() != digest:
+                if digest_text(child_path.read_text(encoding="utf-8")) != digest:
                     raise RuntimeError("changed extract split child prompt; manual recovery required")
             # A committed child may already have split into grandchildren.
             # Inspect hash-bound descendant lineage without creating roots.
