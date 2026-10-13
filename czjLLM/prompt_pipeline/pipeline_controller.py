@@ -47,6 +47,14 @@ from czjLLM.job_manager.end_point_manager import select_model
 
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
+from czjLLM.utilities.slice_merge import merge_dict_slices_audited, should_merge_slices
+from czjLLM.prompt_pipeline.slice_identity import (
+    committed_split_parent_identities, digest_text,
+    include_committed_split_roots, install_split_prompts,
+    is_verified_queued_split_child, reconcile_split_transitions,
+    record_success_identity, resolve_success_leaves,
+    restore_full_restart_parent, valid_success,
+)
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
 from czjLLM.utilities.env_overrides import env_bool, env_int, load_czjllm_env_files_once
@@ -984,7 +992,7 @@ def _print_resume_plan(policy: str, prompt_items: list[str], ops: MergeOps, ctx=
     print("=" * 50)
 
 
-def _drop_resumed_todo_by_success(item: str, ctx=None) -> int:
+def _drop_resumed_todo_by_success(item: str, ctx=None, *, require_prompt_identity=False) -> int:
     """
     resume/smart_reset 模式下，避免已成功切片重跑：
     - 只處理 root TODO/*.txt 與 root Success/*.txt
@@ -1012,8 +1020,15 @@ def _drop_resumed_todo_by_success(item: str, ctx=None) -> int:
         if succ_fp is None:
             continue
         try:
-            same_hash = (_file_sha1(succ_fp) == _file_sha1(todo_fp))
-            if same_hash or (succ_fp.stat().st_mtime >= todo_fp.stat().st_mtime):
+            if require_prompt_identity:
+                # Success stores an output; a basename or mtime cannot prove
+                # that output belongs to the current generated input prompt.
+                current_hash = digest_text(todo_fp.read_text(encoding="utf-8"))
+                reuse = valid_success(item, todo_fp.name, current_hash)
+            else:
+                same_hash = (_file_sha1(succ_fp) == _file_sha1(todo_fp))
+                reuse = same_hash or (succ_fp.stat().st_mtime >= todo_fp.stat().st_mtime)
+            if reuse:
                 todo_fp.unlink()
                 dropped += 1
         except FileNotFoundError:
@@ -1056,7 +1071,10 @@ def _log_resume_before_after(item: str, before: tuple[int, int, int], after: tup
     )
 
 
-def _apply_resume_policy_multistage(policy: str, prompt_items: list[str], ops: MergeOps, ctx=None):
+def _apply_resume_policy_multistage(
+    policy: str, prompt_items: list[str], ops: MergeOps, ctx=None,
+    *, require_prompt_identity=False,
+):
     """
     resume:
       - 回收 RUNNING 到 TODO，保留 Success
@@ -1078,7 +1096,9 @@ def _apply_resume_policy_multistage(policy: str, prompt_items: list[str], ops: M
             _clear_txt_files(ops.join(item, "Success"), ops)
             _append_resume_log(ctx, f"action=clear Success item={Path(item).name}")
         else:
-            _drop_resumed_todo_by_success(item, ctx=ctx)
+            _drop_resumed_todo_by_success(
+                item, ctx=ctx, require_prompt_identity=require_prompt_identity,
+            )
         if policy in {"smart_reset", "full_restart"}:
             for p in list(Path(item, "TODO").glob("*")):
                 if p.is_dir():
@@ -1105,6 +1125,179 @@ def _apply_resume_policy_single_stage(policy: str, prompt_items: list[str], ops:
 def _has_explicit_stage_flow(ctx) -> bool:
     return bool(_explicit_stage_flow(ctx))
 
+def _single_extract_stage_writeback_enabled(stage_defs, ctx) -> bool:
+    """Limit the legacy JSON-merge compatibility path to one extract stage."""
+    return (
+        len(stage_defs) == 1
+        and stage_defs[0].name == "extract"
+        and should_merge_slices(ctx)
+        and any(
+            isinstance(rule, dict)
+            and str(rule.get("source", rule.get("sql_writeback_source", "")) or "").strip().lower() == "stage"
+            and str(rule.get("stage", rule.get("sql_writeback_stage", "")) or "").strip() == "extract"
+            for rule in (getattr(ctx, "sql_writeback_rules", None) or [])
+        )
+    )
+
+
+def _expected_single_extract_slice_files(prompt_items: list[str]) -> dict[str, dict[str, str]]:
+    """Freeze current member names and hashes before resume prunes TODO.
+
+    TODO takes precedence over RUNNING for same names. Historical Success
+    does not establish current input identity.
+    """
+    expected: dict[str, dict[str, str]] = {}
+    for item in prompt_items:
+        members: dict[str, str] = {}
+        for directory in ("RUNNING", "TODO"):
+            for fp in _root_txt_files(os.path.join(item, directory)):
+                members[fp.name] = digest_text(fp.read_text(encoding="utf-8"))
+        expected[item] = include_committed_split_roots(item, members)
+    return expected
+
+
+def _restore_single_extract_full_restart_parents(
+    prompt_items: list[str], ctx, stage_def,
+) -> None:
+    """Rebuild committed split roots *before* full_restart clears Success.
+
+    Stage-source SQL/Excel rows can reproduce the original dispatched parent
+    prompt. Verify its fingerprint first, and fail without deleting any
+    Success data if exact reconstruction is unavailable.
+    """
+    plans: list[tuple[str, str, str, str]] = []
+    configured = next(
+        (s for s in (getattr(ctx, "stages", None) or [])
+         if isinstance(s, dict) and s.get("name") == stage_def.name),
+        {},
+    )
+    input_col = str(configured.get("input_col") or getattr(ctx, "input_col", "") or "")
+    sources = getattr(ctx, "stage_source_inputs", None) or {}
+    for item in prompt_items:
+        expected = _expected_single_extract_slice_files([item])[item]
+        queued = {
+            fp.name
+            for subdir in ("TODO", "RUNNING")
+            for fp in _root_txt_files(os.path.join(item, subdir))
+        }
+        # Full restart is deliberately distinct from ordinary resume:
+        # a committed split can have *no* queued descendant once every
+        # child has finished. Read the durable top-level parent identities,
+        # but accept one only when the freshly rendered current source
+        # matches its exact saved prompt hash.
+        parents = committed_split_parent_identities(item)
+        for name, prompt_hash in expected.items():
+            if name not in queued and name not in parents:
+                raise RuntimeError("full_restart missing committed split parent identity")
+        for name, prompt_hash in parents.items():
+            if name in expected and expected[name] != prompt_hash:
+                raise RuntimeError("full_restart conflicting split parent identity")
+        for name, prompt_hash in {**expected, **parents}.items():
+            if name in queued:
+                continue
+            # Clear Success only *after* the original split parent can
+            # be reconstructed from a verified current source.
+            if not input_col or input_col not in sources:
+                raise RuntimeError(
+                    "full_restart cannot safely rebuild split parent: "
+                    "current stage source is missing"
+                )
+            reconstructed = _build_stage_prompt_text(
+                stage_def.task, str(sources[input_col] or ""), ctx,
+            )
+            if digest_text(reconstructed) != prompt_hash:
+                raise RuntimeError(
+                    "full_restart cannot safely rebuild split parent: "
+                    "source does not match the saved prompt identity"
+                )
+            plans.append((item, name, reconstructed, prompt_hash))
+
+    # Prevalidate every row before mutating any input queue or Success tree.
+    for item, name, reconstructed, prompt_hash in plans:
+        restore_full_restart_parent(item, name, reconstructed, prompt_hash)
+
+
+def _require_complete_single_extract_stage(report, runtime, prompt_items, expected_files) -> None:
+    """Check every current prompt or its verified recursive retry children.
+
+    Both output and prompt SHA-256 hashes are verified. Any missing success,
+    stale same-name output, or incomplete split fails before snapshot creation.
+    """
+    finished = int((report.get("final") or {}).get("finished_chunks", 0))
+    if not runtime or len(runtime) != len(prompt_items) or finished != len(runtime):
+        raise RuntimeError("extract stage incomplete: not every input unit finished")
+    selected: dict[str, list[str]] = {}
+    for item in prompt_items:
+        chunk = runtime.get(item)
+        status = chunk.stages.get("extract") if chunk is not None else None
+        if status is None or status.state != "success":
+            raise RuntimeError("extract stage incomplete: an input unit failed")
+        expected = expected_files.get(item)
+        if not expected:
+            raise RuntimeError("extract stage incomplete: missing expected current input slices")
+        leaves: list[str] = []
+        try:
+            for name, prompt_hash in expected.items():
+                leaves.extend(resolve_success_leaves(item, name, prompt_hash))
+        except (ValueError, OSError) as exc:
+            raise RuntimeError(
+                "extract stage incomplete: missing or mismatched Success slice coverage"
+            ) from exc
+        if len(leaves) != len(set(leaves)):
+            raise RuntimeError("extract stage incomplete: overlapping split lineage")
+        selected[item] = leaves
+
+    # All inputs validated before touching any stage snapshot.
+    for item in prompt_items:
+        snapshot = _snapshot_dir(item, "extract")
+        MKDIR(snapshot)
+        _clear_txt_files(snapshot, MergeOps())
+        for name in selected[item]:
+            shutil.copy2(
+                os.path.join(item, "Success", name),
+                os.path.join(snapshot, name),
+            )
+
+
+def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
+    """Apply legacy JSON slice merge to one extract-stage writeback artifact.
+
+    Only called for the one-stage extract compatibility path with explicit
+    stage writeback and merge_slices enabled. Validate every slice before
+    materializing a stage manifest so malformed/partial input cannot silently
+    become a writeback-ready concatenation of JSON documents.
+    """
+    if not parts:
+        raise ValueError("extract stage JSON slices are missing")
+    rows = []
+    for index, text in enumerate(parts):
+        try:
+            value = json.loads(text)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"extract stage JSON slice {index} is invalid") from exc
+        if isinstance(value, dict):
+            rows.append(value)
+        elif isinstance(value, list) and all(isinstance(row, dict) for row in value):
+            rows.extend(value)
+        else:
+            raise ValueError(f"extract stage JSON slice {index} must contain dicts")
+
+    if len(parts) == 1:
+        # Match legacy behavior: one JSON-list slice keeps its list envelope.
+        return parts[0]
+    if not rows:
+        return "[]"
+    merged, _report = merge_dict_slices_audited(
+        rows,
+        conflict_policy=str(getattr(ctx, "merge_conflict_policy", "prefer_left")),
+        dedup_lists=bool(getattr(ctx, "merge_dedup_lists", True)),
+        audit=bool(getattr(ctx, "merge_log_changes", True)),
+        logger=None,
+        max_log=int(getattr(ctx, "merge_max_log", 10)),
+    )
+    return json.dumps(merged, ensure_ascii=False, indent=2)
+
+
 def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | None = None, max_rounds: int = 20) -> str:
     from czjLLM.reduction.production_control import raise_if_execution_cancelled
     raise_if_execution_cancelled(ctx)
@@ -1124,10 +1317,30 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"⚠️ 未知 resume_policy={resume_policy}，將使用 resume")
         resume_policy = "resume"
     _print_resume_plan(resume_policy, prompt_items, ops, ctx=ctx)
-    _apply_resume_policy_multistage(resume_policy, prompt_items, ops, ctx=ctx)
+    stage_defs = resolve_pipeline_stages(ctx)
+    single_extract_stage_writeback = _single_extract_stage_writeback_enabled(stage_defs, ctx)
+    if single_extract_stage_writeback:
+        # Full restart must first regenerate completed split branches from
+        # the current source. Otherwise clearing Success loses their prompts.
+        if resume_policy == "full_restart":
+            _restore_single_extract_full_restart_parents(
+                prompt_items, ctx, stage_defs[0],
+            )
+        # Journal reconciliation must precede input-membership capture.
+        # An interrupted split can otherwise surface parent and children as
+        # independent roots and duplicate SQL/Excel writeback content.
+        for item in prompt_items:
+            reconcile_split_transitions(item)
+    expected_extract_files = (
+        _expected_single_extract_slice_files(prompt_items)
+        if single_extract_stage_writeback else {}
+    )
+    _apply_resume_policy_multistage(
+        resume_policy, prompt_items, ops, ctx=ctx,
+        require_prompt_identity=single_extract_stage_writeback,
+    )
 
     runtime = init_chunk_stage_runtime(ctx, prompt_items)
-    stage_defs = resolve_pipeline_stages(ctx)
     stage_map = {s.name: s for s in stage_defs}
     stage_order = [s.name for s in stage_defs]
     forced_stage_names: set[str] = set()
@@ -1261,9 +1474,18 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             MKDIR(todo_dir)
             _clear_txt_files(todo_dir, ops)
             for fp in anchor_files:
-                prompt_text = _build_stage_prompt_text(stage_task, src_text, ctx)
+                # A committed split's queued descendant is an already
+                # rendered fragment prompt. Replacing it with the complete
+                # SQL/Excel source destroys its verified split identity.
+                existing_text = fp.read_text(encoding="utf-8")
+                if single_extract_stage_writeback and is_verified_queued_split_child(
+                    item, fp.name, existing_text,
+                ):
+                    prompt_text = existing_text
+                else:
+                    prompt_text = _build_stage_prompt_text(stage_task, src_text, ctx)
                 dst_fp = os.path.join(todo_dir, fp.name)
-                with open(dst_fp, "w", encoding="utf-8") as f:
+                with open(dst_fp, "w", encoding="utf-8", newline="") as f:
                     f.write(prompt_text)
                 _refresh_stage_prompt_metrics(root_todo_dir, fp.name, src_text, prompt_text, stage_name)
             return
@@ -1348,6 +1570,16 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"[stage:{job.stage_name}] ▶ 開始處理輸入單位(input_unit): {Path(job.chunk_id).name}")
         _prepare_todo_for_stage(job.chunk_id, job.stage_name, job.stage_task)
         _sync_stage_todo_to_root(job.chunk_id, job.stage_name, ops)
+        if single_extract_stage_writeback:
+            # Some stage configurations render their own prompt after the
+            # initial input was generated. Bind completed Success to the
+            # *dispatched* prompt, not the pre-stage template.
+            current = expected_extract_files[job.chunk_id]
+            for prompt_path in _root_txt_files(ops.join(job.chunk_id, "TODO")):
+                if prompt_path.name in current:
+                    current[prompt_path.name] = digest_text(
+                        prompt_path.read_text(encoding="utf-8")
+                    )
         stage_def = stage_map[job.stage_name]
         debug_enabled, debug_max_chars = _resolve_llm_debug_flags(
             stage_debug_enabled=stage_def.debug_print_llm_io,
@@ -1398,8 +1630,12 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         print(f"[stage:{job.stage_name}] ✅ 完成輸入單位(input_unit): {Path(job.chunk_id).name}")
         return {"ok": True, "output": stage_output_text}
 
-    run_stage_pipeline(ctx, runtime, runner, max_rounds=max_rounds)
+    stage_report = run_stage_pipeline(ctx, runtime, runner, max_rounds=max_rounds)
     raise_if_execution_cancelled(ctx)
+    if single_extract_stage_writeback:
+        _require_complete_single_extract_stage(
+            stage_report, runtime, prompt_items, expected_extract_files,
+        )
 
     # 聚合每個 stage 的輸出，保留「全切片視角」的存檔，便於 stage-by-stage 追蹤。
     stage_merge_base = (
@@ -1431,8 +1667,15 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             if safe_stage_key != "na":
                 stage_merged_name = f"{stage_merged_name}_{safe_stage_key}"
             stage_merged_fn = ops.join(stage_merge_root, f"{stage_merged_name}.txt")
+            # For the legacy-compatible *single extract stage* only, a
+            # newline join is not valid JSON when multiple slices succeed.
+            # Existing genuine multistage stage outputs stay unchanged.
+            if single_extract_stage_writeback and stage.name == "extract":
+                stage_text = _merge_single_extract_stage_json_parts(merged_parts, ctx)
+            else:
+                stage_text = "\n".join(merged_parts)
             with open(stage_merged_fn, "w", encoding="utf-8") as f:
-                f.write("\n".join(merged_parts))
+                f.write(stage_text)
             merged_file = os.path.basename(stage_merged_fn)
             print(f"[stage:{stage.name}] 🧩 合併完成，輸出：{stage_merged_fn}（pieces={len(merged_parts)}）")
         else:
@@ -1698,8 +1941,9 @@ def _run_mock_llm_api(itemList, ctx, allow_to_retry=True, task_override: str | N
                 content = ""
             task_text = task_override if task_override is not None else getattr(ctx, "task", "")
             out_text = _mock_llm_text(task_text, content, ctx)
-            with open(out_fn, mode='wt', encoding='utf-8') as fw:
+            with open(out_fn, mode='wt', encoding='utf-8', newline='') as fw:
                 fw.write(out_text)
+            record_success_identity(pf, out_fn, content, out_text)
             try:
                 safe_unlink(pf)
             except Exception:
@@ -1933,11 +2177,15 @@ class PromptAPIPipeline:
                 if self.OutputSaveFN != "":
                     MKDIR(os.path.dirname(self.OutputSaveFN))
                     tmp_fn = self.OutputSaveFN + ".tmp"
-                    with open(tmp_fn, mode='wt', encoding='utf-8') as fp:
+                    with open(tmp_fn, mode='wt', encoding='utf-8', newline='') as fp:
                         fp.write(retMES)
                         fp.flush()
                         os.fsync(fp.fileno())
                     os.replace(tmp_fn, self.OutputSaveFN)
+                    record_success_identity(
+                        self.promptFile, self.OutputSaveFN, self.content, retMES,
+                    )
+
                     if self.removeFinPromptFile and self.promptFile:
                         safe_unlink(self.promptFile)
                 ok = bool(retMES)
@@ -2004,11 +2252,14 @@ class PromptAPIPipeline:
             if self.OutputSaveFN != "" and DTBJobs_Retry == [] and retMES != "":
                 MKDIR(os.path.dirname(self.OutputSaveFN))
                 tmp_fn = self.OutputSaveFN + ".tmp"
-                with open(tmp_fn, mode='wt', encoding='utf-8') as fp:
+                with open(tmp_fn, mode='wt', encoding='utf-8', newline='') as fp:
                     fp.write(retMES)
                     fp.flush()
                     os.fsync(fp.fileno())
                 os.replace(tmp_fn, self.OutputSaveFN)
+                record_success_identity(
+                    self.promptFile, self.OutputSaveFN, self.content, retMES,
+                )
     
                 if self.removeFinPromptFile and self.promptFile:
                     safe_unlink(self.promptFile)
@@ -2173,7 +2424,7 @@ class PromptAPIPipeline:
                 MKDIR(os.path.dirname(self.OutputSaveFN))
                 tmp_fn = self.OutputSaveFN + ".tmp"
                 #print(f"Start to run os.sync for tmp_fn {tmp_fn}")
-                with open(tmp_fn, mode='wt', encoding='utf-8') as fp:
+                with open(tmp_fn, mode='wt', encoding='utf-8', newline='') as fp:
                     fp.write(retMES)
                     fp.flush()
                     os.fsync(fp.fileno())  # 確保落地
@@ -2369,11 +2620,15 @@ class PromptAPIPipeline:
             task=self.task, MainFileName=MainFileName
         )
     
-        # ✅ 2) 新檔直接寫入 TODO，下一輪 consumer 才會 pick 到
-        for prompt, fn in [(prompt_0, new_prompt_file_0), (prompt_1, new_prompt_file_1)]:
-            with open(fn, "wt", encoding="utf-8") as fp:
-                fp.write(prompt)
-    
+        # Journal intent BEFORE either child is written. Each child is
+        # installed atomically, and the original parent is removed only once
+        # both children exist. Resume can roll back a partial transition.
+        install_split_prompts(
+            self.promptFile, self.content,
+            [(Path(new_prompt_file_0).name, prompt_0),
+             (Path(new_prompt_file_1).name, prompt_1)],
+        )
+
         # ✅ 3) 刪掉「目前這筆」的 prompt 檔：它現在通常在 RUNNING
         # 目的：讓 consumer 能判定這筆已釋放（你後面會把它當 requeued）
         try:

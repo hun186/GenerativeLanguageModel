@@ -23,6 +23,13 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 
 ## Open Follow-ups
 
+## Issue #211 multistage JSON writeback corrective (2026-10-12)
+
+- [ ] Review and land a narrowly scoped one-extract-stage `merge_slices: true` JSON stage writeback correction. Hosted main baseline is `c732991c8a1b612a0bcbd17c6c4db83e0a3bc0c8`; evidence: both Excel/SQLite example YAML configurations use `source: stage`, while the legacy stage artifact builder newline-joins individual JSON slices before Row Merger resolves them.
+- New branch `fix/issue-211-single-extract-slice-writeback` validates each stage JSON slice, uses existing audited dict merge semantics only for one `extract` stage with explicit writeback and slice merge, keeps one-slice envelopes, and refuses invalid/partial inputs; unrelated real multistage output behavior remains unchanged.
+- Focused tests cover both YAML configurations and actual stage-manifest to Row Merger resolution/flatten selection; Hosted `offline-e2e` must pass the new CI step and Codex must review exact head. No merge without explicit user authorization. Keep Issue #211 open until implementation is accepted.
+
+
 ### Future v1.1 candidates — not v1 blockers
 
 - [x] Evaluate optional transient semantic/member caching only with a distinct authority/privacy contract; **decision: defer implementation until production evidence shows material duplicate member/semantic execution. No persistent second cache is allowed; SQL/ES persisted output and committed checkpoints retain their existing authority.**
