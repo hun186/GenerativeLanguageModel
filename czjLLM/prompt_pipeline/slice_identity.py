@@ -372,7 +372,7 @@ def include_committed_split_roots(
     root = Path(item)
     intents = _identity_dir(root, "splits")
     if not intents.is_dir() or not current:
-        return dict(current)
+        return dict(sorted(current.items()))
     expected = dict(current)
     for path in sorted(
         intents.glob("*.txt.json"),
