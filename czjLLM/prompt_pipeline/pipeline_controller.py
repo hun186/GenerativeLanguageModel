@@ -1473,6 +1473,22 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             src_text = str(stage_source_inputs.get(stage_input_col, "") or "")
             MKDIR(todo_dir)
             _clear_txt_files(todo_dir, ops)
+            # In the scoped single-extract JSON writeback flow the producer
+            # already rendered each initial input slice using extract's task.
+            # Rerendering *every* slice from the entire primary SQL/Excel
+            # source collapses N distinct prompts to N full-row duplicates.
+            # Keep the original verified slice prompt and dispatch it once.
+            if (
+                single_extract_stage_writeback
+                and stage_name == stage_defs[0].name
+                and stage_input_col == str(getattr(ctx, "input_col", "") or "").strip()
+                and anchor_files
+                and all(fp.parent == Path(root_todo_dir) for fp in anchor_files)
+            ):
+                for fp in anchor_files:
+                    shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
+                    relabel_prompt_token_stage(str(fp), stage_name)
+                return
             for fp in anchor_files:
                 # A committed split's queued descendant is an already
                 # rendered fragment prompt. Replacing it with the complete
