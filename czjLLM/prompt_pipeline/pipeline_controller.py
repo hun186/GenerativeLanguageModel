@@ -1428,9 +1428,13 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 f.write(chunk_text)
         return True
 
-    # 先保存 original（第一次切片後的 TODO 內容）
+    # Keep whether "original" is genuine retokenized source material.
+    # Prompt-copy fallback must never be mistaken for raw input fragments.
+    source_slice_verified: dict[str, bool] = {}
     for item in prompt_items:
-        if not _write_original_snapshot_from_source(item):
+        from_source = _write_original_snapshot_from_source(item)
+        source_slice_verified[item] = from_source
+        if not from_source:
             _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
 
     def _refresh_stage_prompt_metrics(root_todo_dir: str, filename: str, task_text: str, prompt_text: str, stage_identity: str):
@@ -1485,9 +1489,44 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 and anchor_files
                 and all(fp.parent == Path(root_todo_dir) for fp in anchor_files)
             ):
+                # The generator used ctx.task; the orchestrator may resolve
+                # task_key over a different fallback task. Never silently
+                # reuse an initial prompt built from the wrong template.
+                initial_task = getattr(ctx, "task", "")
+                generated_task = (
+                    taskSetting.get(initial_task, initial_task)
+                    if isinstance(initial_task, str) else initial_task
+                )
+                if generated_task == stage_task:
+                    for fp in anchor_files:
+                        shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
+                        relabel_prompt_token_stage(str(fp), stage_name)
+                    return
+                # Re-render from the real verified per-slice raw input,
+                # not from the full row and not from copied prompt fallback.
+                if not source_slice_verified.get(item, False):
+                    raise RuntimeError(
+                        "extract stage task differs from generated slice task "
+                        "and original source slices cannot be verified"
+                    )
+                originals = Path(_snapshot_dir(item, "original"))
                 for fp in anchor_files:
-                    shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
-                    relabel_prompt_token_stage(str(fp), stage_name)
+                    raw_slice = originals / fp.name
+                    if not raw_slice.is_file():
+                        raise RuntimeError(
+                            "extract stage task mismatch with missing original input slice"
+                        )
+                    content_slice = raw_slice.read_text(encoding="utf-8")
+                    effective_prompt = _build_stage_prompt_text(
+                        stage_task, content_slice, ctx,
+                    )
+                    dst = os.path.join(todo_dir, fp.name)
+                    with open(dst, "w", encoding="utf-8", newline="") as handle:
+                        handle.write(effective_prompt)
+                    _refresh_stage_prompt_metrics(
+                        root_todo_dir, fp.name, content_slice,
+                        effective_prompt, stage_name,
+                    )
                 return
             for fp in anchor_files:
                 # A committed split's queued descendant is an already
