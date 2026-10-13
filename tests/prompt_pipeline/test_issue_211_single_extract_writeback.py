@@ -498,9 +498,7 @@ def test_committed_split_after_parent_unlink_keeps_both_children(tmp_path):
     parent.unlink()
     reconcile_split_transitions(str(item))
     expected = _expected_single_extract_slice_files([str(item)])[str(item)]
-    assert tuple(expected) == ("0-0.txt", "0-1.txt")
-    assert expected["0-0.txt"] == digest_text("first half prompt")
-    assert expected["0-1.txt"] == digest_text("second half prompt")
+    assert expected == {"0.txt": digest_text("original prompt")}
 
 
 def test_incomplete_committed_split_without_parent_fails_closed(tmp_path):
@@ -563,7 +561,7 @@ def test_nested_split_recovers_when_direct_child_is_replaced_by_grandchildren(tm
     assert not child.exists()
     reconcile_split_transitions(str(item))
     expected = _expected_single_extract_slice_files([str(item)])[str(item)]
-    assert tuple(expected) == ("0-0-0.txt", "0-0-1.txt", "0-1.txt")
+    assert expected == {"0.txt": digest_text("original prompt")}
     # Reconciliation is read-only for an already committed nested split.
     reconcile_split_transitions(str(item))
     assert tuple(_expected_single_extract_slice_files([str(item)])[str(item)]) == tuple(expected)
@@ -671,4 +669,100 @@ def test_windows_crlf_committed_split_remains_complete_and_recoverable(tmp_path)
         (item / "TODO" / name).write_bytes(text.replace("\n", "\r\n").encode())
     reconcile_split_transitions(str(item))
     expected = _expected_single_extract_slice_files([str(item)])[str(item)]
-    assert expected == {name: digest_text(text) for name, text in children}
+    assert expected == {"0.txt": digest_text("original prompt")}
+
+
+def test_committed_split_resume_includes_completed_success_sibling(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    done, pending = children
+    completed = item / "TODO" / done[0]
+    output = item / "Success" / done[0]
+    output.parent.mkdir(parents=True, exist_ok=True)
+    value = '{"parts":["first"]}'
+    output.write_text(value, encoding="utf-8")
+    record_success_identity(str(completed), str(output), done[1], value)
+    completed.unlink()
+    reconcile_split_transitions(str(item))
+    # The pending sibling is a live queue anchor for the entire parent, not
+    # just for itself. The completed sibling remains part of expected coverage.
+    expected = _expected_single_extract_slice_files([str(item)])
+    assert expected[str(item)] == {"0.txt": digest_text("original prompt")}
+    _stage_success(item, {"0-1.txt": '{"parts":["second"]}'})
+    # Override fixture digest to the actual split prompt.
+    record_success_identity(
+        str(item / "TODO" / pending[0]),
+        str(item / "Success" / pending[0]),
+        pending[1], '{"parts":["second"]}',
+    )
+    (item / "TODO" / pending[0]).unlink()
+    runtime = {str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")})}
+    _require_complete_single_extract_stage(
+        {"final": {"finished_chunks": 1}}, runtime, [str(item)], expected,
+    )
+    snapshot = item / "_stage_outputs" / "extract"
+    assert sorted(p.name for p in snapshot.glob("*.txt")) == ["0-0.txt", "0-1.txt"]
+    parts = [p.read_text(encoding="utf-8") for p in sorted(snapshot.glob("*.txt"))]
+    merged = _merge_single_extract_stage_json_parts(parts, SimpleNamespace(
+        merge_log_changes=False, merge_dedup_lists=False,
+    ))
+    assert json.loads(merged) == {"parts": ["first", "second"]}
+
+
+def test_nested_resume_includes_success_grandchild_and_sibling(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    child = item / "TODO" / "0-0.txt"
+    grandchildren = [
+        ("0-0-0.txt", "left quarter"),
+        ("0-0-1.txt", "right quarter"),
+    ]
+    install_split_prompts(str(child), "first half prompt", grandchildren)
+    child.unlink()
+
+    def finish(name, prompt, output):
+        todo = item / "TODO" / name
+        dest = item / "Success" / name
+        dest.parent.mkdir(exist_ok=True)
+        dest.write_text(output, encoding="utf-8")
+        record_success_identity(str(todo), str(dest), prompt, output)
+        todo.unlink()
+
+    finish("0-0-0.txt", "left quarter", '{"parts":["grandchild"]}')
+    finish("0-1.txt", "second half prompt", '{"parts":["sibling"]}')
+    reconcile_split_transitions(str(item))
+    expected = _expected_single_extract_slice_files([str(item)])
+    assert expected[str(item)] == {"0.txt": digest_text("original prompt")}
+    finish("0-0-1.txt", "right quarter", '{"parts":["pending"]}')
+    runtime = {str(item): SimpleNamespace(stages={"extract": SimpleNamespace(state="success")})}
+    _require_complete_single_extract_stage(
+        {"final": {"finished_chunks": 1}}, runtime, [str(item)], expected,
+    )
+    snapshot = item / "_stage_outputs" / "extract"
+    assert sorted(p.name for p in snapshot.glob("*.txt")) == [
+        "0-0-0.txt", "0-0-1.txt", "0-1.txt",
+    ]
+    parts = [p.read_text(encoding="utf-8") for p in sorted(snapshot.glob("*.txt"))]
+    merged = _merge_single_extract_stage_json_parts(parts, SimpleNamespace(
+        merge_log_changes=False, merge_dedup_lists=False,
+    ))
+    assert json.loads(merged) == {"parts": ["grandchild", "pending", "sibling"]}
+
+
+def test_unverified_success_only_old_split_is_not_source_membership(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    for name, prompt in children:
+        todo = item / "TODO" / name
+        dest = item / "Success" / name
+        dest.parent.mkdir(exist_ok=True)
+        dest.write_text('{"stale":"old"}', encoding="utf-8")
+        record_success_identity(str(todo), str(dest), prompt, '{"stale":"old"}')
+        todo.unlink()
+    (item / "TODO" / "1.txt").write_text("new independent source", encoding="utf-8")
+    reconcile_split_transitions(str(item))
+    expected = _expected_single_extract_slice_files([str(item)])
+    assert expected[str(item)] == {"1.txt": digest_text("new independent source")}
