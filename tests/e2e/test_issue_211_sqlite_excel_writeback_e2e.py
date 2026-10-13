@@ -157,3 +157,121 @@ def test_two_json_slices_write_one_valid_persisted_result(
     assert isinstance(output, str)
     assert json.loads(output) == {"keyFunctions": ["first", "second"]}
     assert ctx._execution_budget.snapshot().in_use == 0
+
+
+@pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite-resume", "excel-resume"])
+def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
+    backend, fake_openai, tmp_path,
+):
+    """Restart a real extract workspace with Success A + queued B.
+
+    Calls real localhost LLM client and the actual single-extract controller,
+    then the production writeback selector and physical sink for each backend.
+    This is a resume integration, distinct from the scheduler acceptance above.
+    """
+    from czjLLM.prompt_pipeline.pipeline_controller import (
+        PromptAPIPipeline, process_prompt_and_merge_multistage,
+    )
+    from czjLLM.prompt_pipeline.slice_identity import (
+        install_split_prompts, record_success_identity,
+    )
+    from czjLLM.sql_mode.runtime.row_merger_generic import _build_writeback_values
+    from czjLLM.sql_mode.runtime.sinks.excel_sink import ExcelSink
+    from czjLLM.sql_mode.runtime.sinks.sql_sink import SqlSink
+
+    ctx = _ctx(fake_openai, tmp_path, backend)
+    ctx.input_col = "body" if backend == "sql" else "File"
+    ctx.output_col = "analysis"
+    ctx.primary_key = "id"
+    ctx.record_update_time = False
+    ctx.flatten_json_output = False
+    ctx.sql_flatten_writeback_rules = [{"writeback_rule": 0, "enabled": False}]
+    ctx.stage_source_inputs = {ctx.input_col: _SOURCE}
+    ctx.main_file_name = "resume211"
+    ctx.temp_txt_finished_dir = str(tmp_path / "finished")
+    source = tmp_path / "resume211.txt"
+    source.write_text(_SOURCE, encoding="utf-8")
+    item = Path(ctx.prompt_dir) / "resume211"
+    running = item / "RUNNING"
+    running.mkdir(parents=True)
+    parent = running / "0.txt"
+    parent.write_text("E2E_JSON_RESPONSE " + _SOURCE, encoding="utf-8")
+    children = [("0-0.txt", "E2E_JSON_PART_A"), ("0-1.txt", "E2E_JSON_PART_B")]
+    install_split_prompts(str(parent), parent.read_text(encoding="utf-8"), children)
+    parent.unlink()
+
+    # First run was interrupted only *after* A reached authoritative Success.
+    complete_prompt = item / "TODO" / "0-0.txt"
+    success = item / "Success" / complete_prompt.name
+    success.parent.mkdir()
+    first = PromptAPIPipeline(
+        task="E2E_JSON_RESPONSE", content=complete_prompt.read_text(),
+        OutputSaveFN=str(success),
+        model_spec=fake_openai.model_spec,
+        PGMSubDir=str(tmp_path),
+    ).proc()
+    assert first["ok"], first
+    record_success_identity(
+        str(complete_prompt), str(success),
+        complete_prompt.read_text(encoding="utf-8"), first["output"],
+    )
+    complete_prompt.unlink()
+
+    before_restart = len(fake_openai.requests)
+    combined = process_prompt_and_merge_multistage(ctx, str(source))
+    assert Path(combined).is_file()
+    later = fake_openai.requests[before_restart:]
+    assert later, "resumed execution must call the provider for B"
+    assert all(
+        "E2E_JSON_PART_A" not in str(request["body"])
+        for request in later
+    ), "already successful sibling A must never be sent again"
+    assert any("E2E_JSON_PART_B" in str(request["body"]) for request in later)
+
+    # Resolve the real stage manifest/writeback selector (not a fixture JSON
+    # concatenation), then persist to a physical SQLite or Excel destination.
+    write_map, _flatten_source, _source_logs, write_sources = _build_writeback_values(
+        ctx, str(combined), Path(combined).read_text(encoding="utf-8"),
+    )
+    assert write_sources["analysis"] == "stage:extract"
+    assert json.loads(write_map["analysis"]) == {"keyFunctions": ["first", "second"]}
+
+    if backend == "sql":
+        path = tmp_path / "resume.sqlite"
+        with sqlite3.connect(path) as connection:
+            connection.execute("CREATE TABLE source (id TEXT PRIMARY KEY, body TEXT)")
+            connection.execute("CREATE TABLE results (id TEXT PRIMARY KEY, analysis TEXT)")
+            connection.execute("INSERT INTO source VALUES (?, ?)", ("row211", _SOURCE))
+        ctx.sqlite_path = str(path)
+        ctx.is_sqlite = True
+        ctx.sql_table = "source"
+        ctx.target_table = "results"
+        sink = SqlSink(ctx, is_sqlite=True)
+        sink.open()
+        try:
+            sink.write_main("row211", write_map["analysis"])
+        finally:
+            sink.close()
+        with sqlite3.connect(path) as connection:
+            row = connection.execute(
+                "SELECT analysis FROM results WHERE id = ?", ("row211",)
+            ).fetchone()
+        output = row[0] if row else None
+    else:
+        source_xlsx = tmp_path / "resume_source.xlsx"
+        target_xlsx = tmp_path / "resume_output.xlsx"
+        pd.DataFrame({"id": ["row211"], "File": [_SOURCE]}).to_excel(
+            source_xlsx, index=False,
+        )
+        sink = ExcelSink(
+            ctx, input_path=str(source_xlsx), output_path=str(target_xlsx),
+            main_sheet="LLM_result", flush_main_every=1,
+        )
+        sink.open()
+        try:
+            sink.write_main("row211", write_map["analysis"])
+        finally:
+            sink.close()
+        output = pd.read_excel(target_xlsx, sheet_name="LLM_result").loc[0, "analysis"]
+
+    assert json.loads(output) == {"keyFunctions": ["first", "second"]}
