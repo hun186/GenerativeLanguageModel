@@ -859,3 +859,112 @@ def test_full_restart_requires_source_before_success_cleanup(tmp_path):
         )
     assert (item / "TODO" / "0-0.txt").is_file()
     assert (item / "TODO" / "0-1.txt").is_file()
+
+
+def test_full_restart_all_success_split_restores_parent_with_no_todo(tmp_path, monkeypatch):
+    import czjLLM.prompt_pipeline.pipeline_controller as ctl
+
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    for name, prompt in children:
+        queued = item / "TODO" / name
+        result = item / "Success" / name
+        result.parent.mkdir(exist_ok=True)
+        result.write_text('{"completed":true}', encoding="utf-8")
+        record_success_identity(str(queued), str(result), prompt, '{"completed":true}')
+        queued.unlink()
+    assert not list((item / "TODO").glob("*.txt"))
+    assert ctl._expected_single_extract_slice_files([str(item)])[str(item)] == {}
+    ctx = SimpleNamespace(
+        stages=[{"name": "extract", "input_col": "File"}],
+        input_col="File", stage_source_inputs={"File": "original prompt"},
+    )
+    monkeypatch.setattr(ctl, "_build_stage_prompt_text", lambda task, content, cfg: content)
+    ctl._restore_single_extract_full_restart_parents(
+        [str(item)], ctx, SimpleNamespace(name="extract", task="ignored"),
+    )
+    assert (item / "TODO" / "0.txt").read_text() == "original prompt"
+    assert sorted(p.name for p in (item / "Success").glob("*.txt")) == [
+        "0-0.txt", "0-1.txt",
+    ]
+    reconcile_split_transitions(str(item))
+    assert sorted(p.name for p in (item / "TODO").glob("*.txt")) == ["0.txt"]
+    assert not list((item / "_extract_slice_identity" / "splits").glob("*.json"))
+    # Clear Success only after safe reconstruction; the root is now runnable.
+    ctl._clear_txt_files(str(item / "Success"), ctl.MergeOps())
+    assert not list((item / "Success").glob("*.txt"))
+    assert ctl._expected_single_extract_slice_files([str(item)])[str(item)] == {
+        "0.txt": digest_text("original prompt"),
+    }
+
+
+def test_full_restart_all_success_nested_split_only_restores_outer_parent(
+    tmp_path, monkeypatch,
+):
+    import czjLLM.prompt_pipeline.pipeline_controller as ctl
+    from czjLLM.prompt_pipeline.slice_identity import committed_split_parent_identities
+
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    child = item / "TODO" / "0-0.txt"
+    grandchildren = [
+        ("0-0-0.txt", "left quarter"),
+        ("0-0-1.txt", "right quarter"),
+    ]
+    install_split_prompts(str(child), "first half prompt", grandchildren)
+    child.unlink()
+    sources = [*grandchildren, children[1]]
+    for name, prompt in sources:
+        queued = item / "TODO" / name
+        dest = item / "Success" / name
+        dest.parent.mkdir(exist_ok=True)
+        dest.write_text('{"valid":true}', encoding="utf-8")
+        record_success_identity(str(queued), str(dest), prompt, '{"valid":true}')
+        queued.unlink()
+    assert committed_split_parent_identities(str(item)) == {
+        "0.txt": digest_text("original prompt"),
+    }
+    ctx = SimpleNamespace(
+        stages=[{"name": "extract", "input_col": "File"}],
+        input_col="File", stage_source_inputs={"File": "original prompt"},
+    )
+    monkeypatch.setattr(ctl, "_build_stage_prompt_text", lambda task, content, cfg: content)
+    ctl._restore_single_extract_full_restart_parents(
+        [str(item)], ctx, SimpleNamespace(name="extract", task="ignored"),
+    )
+    reconcile_split_transitions(str(item))
+    assert sorted(p.name for p in (item / "TODO").glob("*.txt")) == ["0.txt"]
+    assert not list((item / "_extract_slice_identity" / "splits").glob("*.json"))
+
+
+def test_full_restart_all_success_rejects_changed_source_without_deleting_results(
+    tmp_path, monkeypatch,
+):
+    import czjLLM.prompt_pipeline.pipeline_controller as ctl
+
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    for name, prompt in children:
+        queued = item / "TODO" / name
+        dest = item / "Success" / name
+        dest.parent.mkdir(exist_ok=True)
+        dest.write_text('{"old":true}', encoding="utf-8")
+        record_success_identity(str(queued), str(dest), prompt, '{"old":true}')
+        queued.unlink()
+    ctx = SimpleNamespace(
+        stages=[{"name": "extract", "input_col": "File"}],
+        input_col="File", stage_source_inputs={"File": "different source"},
+    )
+    monkeypatch.setattr(ctl, "_build_stage_prompt_text", lambda task, content, cfg: content)
+    with pytest.raises(RuntimeError, match="does not match"):
+        ctl._restore_single_extract_full_restart_parents(
+            [str(item)], ctx, SimpleNamespace(name="extract", task="ignored"),
+        )
+    assert not list((item / "TODO").glob("*.txt"))
+    assert sorted(p.name for p in (item / "Success").glob("*.txt")) == [
+        "0-0.txt", "0-1.txt",
+    ]
+    assert (item / "_extract_slice_identity" / "splits" / "0.txt.json").exists()
