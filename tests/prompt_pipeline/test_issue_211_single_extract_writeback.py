@@ -19,9 +19,9 @@ from czjLLM.sql_mode.runtime.row_merger_generic import (
     _build_writeback_values, _resolve_flatten_targets,
 )
 from czjLLM.prompt_pipeline.slice_identity import (
-    digest_text, install_split_prompts, reconcile_split_transitions,
-    record_success_identity, record_split_identity, resolve_success_leaves,
-    valid_success,
+    digest_text, install_split_prompts, is_verified_queued_split_child,
+    reconcile_split_transitions, record_success_identity, record_split_identity,
+    resolve_success_leaves, valid_success,
 )
 
 
@@ -766,3 +766,96 @@ def test_unverified_success_only_old_split_is_not_source_membership(tmp_path):
     reconcile_split_transitions(str(item))
     expected = _expected_single_extract_slice_files([str(item)])
     assert expected[str(item)] == {"1.txt": digest_text("new independent source")}
+
+
+def test_sql_resume_stage_preparation_must_preserve_existing_split_prompt(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    child = item / "TODO" / "0-1.txt"
+    assert is_verified_queued_split_child(str(item), child.name, child.read_text())
+    assert not is_verified_queued_split_child(str(item), "unrelated.txt", "full row prompt")
+    with pytest.raises(RuntimeError, match="current queued split child differs"):
+        is_verified_queued_split_child(str(item), child.name, "full database row")
+    # Actual stage-source branch must use the preserved fragment, not rebuild
+    # a full-source prompt for this already-split file.
+    src = inspect.getsource(process_prompt_and_merge_multistage)
+    assert "is_verified_queued_split_child(" in src
+    assert "prompt_text = existing_text" in src
+
+
+def test_full_restart_restores_original_split_parent_before_clearing_success(
+    tmp_path, monkeypatch,
+):
+    import czjLLM.prompt_pipeline.pipeline_controller as ctl
+
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    pending = item / "TODO" / "0-1.txt"
+    done = item / "TODO" / "0-0.txt"
+    output = item / "Success" / done.name
+    output.parent.mkdir()
+    output.write_text('{"parts":["old"]}', encoding="utf-8")
+    record_success_identity(str(done), str(output), "first half prompt", '{"parts":["old"]}')
+    done.unlink()
+    ctx = SimpleNamespace(
+        stages=[{"name": "extract", "input_col": "File"}],
+        input_col="File", stage_source_inputs={"File": "original prompt"},
+    )
+    monkeypatch.setattr(ctl, "_build_stage_prompt_text", lambda task, content, cfg: content)
+    ctl._restore_single_extract_full_restart_parents(
+        [str(item)], ctx, SimpleNamespace(name="extract", task="ignored"),
+    )
+    assert (item / "TODO" / "0.txt").read_text() == "original prompt"
+    assert output.is_file()  # not destructively cleared by prevalidation
+    reconcile_split_transitions(str(item))
+    assert sorted(p.name for p in (item / "TODO").glob("*.txt")) == ["0.txt"]
+    assert not (item / "_extract_slice_identity" / "splits" / "0.txt.json").exists()
+    assert output.is_file()  # actual full_restart policy owns Success cleanup
+
+
+def test_full_restart_rejects_unreconstructable_parent_without_data_loss(
+    tmp_path, monkeypatch,
+):
+    import czjLLM.prompt_pipeline.pipeline_controller as ctl
+
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    done = item / "TODO" / "0-0.txt"
+    output = item / "Success" / done.name
+    output.parent.mkdir()
+    output.write_text('{"parts":["old"]}', encoding="utf-8")
+    record_success_identity(str(done), str(output), "first half prompt", '{"parts":["old"]}')
+    done.unlink()
+    ctx = SimpleNamespace(
+        stages=[{"name": "extract", "input_col": "File"}],
+        input_col="File", stage_source_inputs={"File": "different current source"},
+    )
+    monkeypatch.setattr(ctl, "_build_stage_prompt_text", lambda task, content, cfg: content)
+    with pytest.raises(RuntimeError, match="does not match"):
+        ctl._restore_single_extract_full_restart_parents(
+            [str(item)], ctx, SimpleNamespace(name="extract", task="ignored"),
+        )
+    assert output.read_text() == '{"parts":["old"]}'
+    assert not (item / "TODO" / "0.txt").exists()
+    assert (item / "TODO" / "0-1.txt").exists()
+
+
+def test_full_restart_requires_source_before_success_cleanup(tmp_path):
+    import czjLLM.prompt_pipeline.pipeline_controller as ctl
+
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    ctx = SimpleNamespace(
+        stages=[{"name": "extract", "input_col": "File"}],
+        input_col="File", stage_source_inputs={},
+    )
+    with pytest.raises(RuntimeError, match="source is missing"):
+        ctl._restore_single_extract_full_restart_parents(
+            [str(item)], ctx, SimpleNamespace(name="extract", task="ignored"),
+        )
+    assert (item / "TODO" / "0-0.txt").is_file()
+    assert (item / "TODO" / "0-1.txt").is_file()
