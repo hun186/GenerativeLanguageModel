@@ -64,3 +64,8 @@
 
 - `.codex/archive/decisions.md-20261006-134200.md` — complete pre-compaction decision history through PR #200 head `39177737486a372f38e9b6d81563d6f14327459a`.
 - Earlier archive references remain preserved inside that snapshot.
+
+### 2026-10-13 Issue #211 SQL/Excel E2E test decision (PR #213, pending)
+
+- Mock only the external model HTTP response and initial tokenization cut boundaries; assert production scheduling, stage validation, merged stage writeback and physical SQLite/XLSX readback. Add explicit partial-resume case using persisted Success provenance and real remaining-leaf provider dispatch.
+- Preserve existing per-slice primary-input prompts during scoped single-extract stage preparation instead of rendering one full SQL/Excel row prompt for each slice. No change to alternate source-column routing.
