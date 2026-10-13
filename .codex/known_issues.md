@@ -50,3 +50,8 @@
 
 - `.codex/archive/known_issues.md-20261006-134200.md` — complete pre-compaction issue/environment history through PR #200 head `39177737486a372f38e9b6d81563d6f14327459a`.
 - `.codex/archive/known_issues-20260918-000000.md` — earlier pre-compaction history retained.
+
+### 2026-10-13 Issue #211 physical-backend follow-up (PR #213, pending)
+
+- A newly added full SQLite/Excel offline E2E revealed that the first extract-stage SQL/Table path may rerender a complete primary-input row into every already-tokenized slice, losing original slice membership. A narrowly scoped correction is proposed in PR #213; acceptance depends on its exact-head CI and review. The initial E2E fixture also disabled normal Success TODO cleanup and was corrected; do not interpret that fixture mistake as a separate production failure.
+- Windows self-hosted CI jobs have historically remained queued. The new tests run under the Linux `offline-e2e` job, including simulated CRLF coverage elsewhere; genuine Windows hardware/live model/database acceptance is not established.
