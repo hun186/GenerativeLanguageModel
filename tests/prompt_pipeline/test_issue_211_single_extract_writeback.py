@@ -534,3 +534,72 @@ def test_split_reconciliation_retries_parent_after_crash_without_persisting_prom
         for p in record_dir.rglob("*.json")
     )
     assert parent.is_file()
+
+
+def test_both_split_children_missing_with_no_parent_must_fail_closed(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    for name, _ in children:
+        (item / "TODO" / name).unlink()
+    # Another valid source root must not make loss of this subtree invisible.
+    (item / "TODO" / "1.txt").write_text("unrelated source", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="without recoverable parent"):
+        reconcile_split_transitions(str(item))
+    assert not (item / "_stage_outputs" / "extract").exists()
+    assert (item / "_extract_slice_identity" / "splits" / "0.txt.json").is_file()
+
+
+def test_nested_split_recovers_when_direct_child_is_replaced_by_grandchildren(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    child = item / "TODO" / "0-0.txt"
+    grandchildren = [
+        ("0-0-0.txt", "left quarter"), ("0-0-1.txt", "right quarter"),
+    ]
+    install_split_prompts(str(child), "first half prompt", grandchildren)
+    child.unlink()
+    assert not child.exists()
+    reconcile_split_transitions(str(item))
+    expected = _expected_single_extract_slice_files([str(item)])[str(item)]
+    assert tuple(expected) == ("0-0-0.txt", "0-0-1.txt", "0-1.txt")
+    # Reconciliation is read-only for an already committed nested split.
+    reconcile_split_transitions(str(item))
+    assert tuple(_expected_single_extract_slice_files([str(item)])[str(item)]) == tuple(expected)
+
+
+def test_nested_split_with_completed_success_grandchild_is_valid(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    child = item / "TODO" / "0-0.txt"
+    grandchildren = [
+        ("0-0-0.txt", "left quarter"), ("0-0-1.txt", "right quarter"),
+    ]
+    install_split_prompts(str(child), "first half prompt", grandchildren)
+    child.unlink()
+    completed = item / "TODO" / "0-0-0.txt"
+    output = item / "Success" / completed.name
+    output.parent.mkdir(parents=True)
+    output.write_text('{"ok":true}', encoding="utf-8")
+    record_success_identity(str(completed), str(output), "left quarter", '{"ok":true}')
+    completed.unlink()
+    reconcile_split_transitions(str(item))
+    assert (item / "TODO" / "0-0-1.txt").is_file()
+
+
+def test_nested_split_missing_grandchild_fails_closed(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    child = item / "TODO" / "0-0.txt"
+    grandchildren = [
+        ("0-0-0.txt", "left quarter"), ("0-0-1.txt", "right quarter"),
+    ]
+    install_split_prompts(str(child), "first half prompt", grandchildren)
+    child.unlink()
+    (item / "TODO" / "0-0-1.txt").unlink()
+    with pytest.raises(RuntimeError, match="without recoverable parent"):
+        reconcile_split_transitions(str(item))
+    assert (item / "_extract_slice_identity" / "splits" / "0.txt.json").exists()
