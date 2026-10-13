@@ -197,7 +197,7 @@ def test_all_stage_chunks_and_exact_snapshot_names_required_before_writeback(tmp
     _stage_success(second, {"0.txt": '{"keyFunctions":["B"]}', "unexpected.txt": "{}"})
     _require_complete_single_extract_stage(complete, runtime, items, expected)
     assert [fp.name for fp in (second / "_stage_outputs" / "extract").glob("*.txt")] == ["0.txt"]
-    with pytest.raises(RuntimeError, match="missing or mismatched Success slice coverage"):
+    with pytest.raises(RuntimeError, match="missing expected current input slices"):
         _require_complete_single_extract_stage(complete, runtime, items, {str(first): {}})
 
 
