@@ -310,6 +310,33 @@ def reconcile_split_transitions(item: str) -> None:
             )
 
 
+def is_verified_queued_split_child(item: str, filename: str, prompt: str) -> bool:
+    """Recognize a still-queued descendant of an existing split intent.
+
+    During resumed stage preparation this actual child prompt must be
+    dispatched unchanged, instead of rerendering the full database row.
+    Never trust its basename without matching the stored prompt digest.
+    """
+    root = Path(item)
+    directory = _identity_dir(root, "splits")
+    if not directory.is_dir():
+        return False
+    matched = False
+    for intent in directory.glob("*.txt.json"):
+        record = _read_record(intent)
+        if record.get("version") != 1:
+            continue
+        for child in record.get("children", ()):
+            if not isinstance(child, dict) or child.get("name") != filename:
+                continue
+            if child.get("prompt_sha256") != digest_text(prompt):
+                raise RuntimeError(
+                    "current queued split child differs from persisted lineage"
+                )
+            matched = True
+    return matched
+
+
 def include_committed_split_roots(
     item: str, current: dict[str, str],
 ) -> dict[str, str]:
