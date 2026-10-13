@@ -73,3 +73,8 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 - [x] GUI throughput/key-axis PR #209 merged to Hosted main as verified/valid `584a4345fe198544eb198eda9d99c2d948ee01d0` after exact-head `offline-e2e`, focused GUI regression and Codex clean review.
 - [ ] Review and land the narrow v1.1 aggregate-lineage convenience API PR from `feat/reduction-v1-1-aggregate-lineage-helpers`; exact-head Hosted `offline-e2e` with focused tests and Codex clean required, user merge authorization required.
 - Keep #203 transient semantic cache prototype **deferred** until production duplication/cost evidence or explicit user direction.
+
+### 2026-10-13 Issue #211 physical E2E follow-up
+
+- [ ] PR #213: accept exact-head Hosted offline E2E for SQLite+Excel two-slice JSON writeback and partial resume; complete Codex review and resolve all threads before requesting user merge authorization.
+- [ ] Separately smoke-test with real external LLM and existing Windows / database deployment when available; offline model stubs and deterministic cut boundaries are not a substitute for production validation.
