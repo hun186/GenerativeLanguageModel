@@ -49,8 +49,8 @@ from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.slice_merge import merge_dict_slices_audited, should_merge_slices
 from czjLLM.prompt_pipeline.slice_identity import (
-    digest_text, record_split_identity, record_success_identity,
-    resolve_success_leaves, valid_success,
+    digest_text, install_split_prompts, reconcile_split_transitions,
+    record_success_identity, resolve_success_leaves, valid_success,
 )
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
@@ -1255,6 +1255,12 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     _print_resume_plan(resume_policy, prompt_items, ops, ctx=ctx)
     stage_defs = resolve_pipeline_stages(ctx)
     single_extract_stage_writeback = _single_extract_stage_writeback_enabled(stage_defs, ctx)
+    if single_extract_stage_writeback:
+        # Journal reconciliation must precede input-membership capture.
+        # An interrupted split can otherwise surface parent and children as
+        # independent roots and duplicate SQL/Excel writeback content.
+        for item in prompt_items:
+            reconcile_split_transitions(item)
     expected_extract_files = _expected_single_extract_slice_files(prompt_items)
     _apply_resume_policy_multistage(
         resume_policy, prompt_items, ops, ctx=ctx,
@@ -2532,12 +2538,10 @@ class PromptAPIPipeline:
             task=self.task, MainFileName=MainFileName
         )
     
-        # ✅ 2) 新檔直接寫入 TODO，下一輪 consumer 才會 pick 到
-        for prompt, fn in [(prompt_0, new_prompt_file_0), (prompt_1, new_prompt_file_1)]:
-            with open(fn, "wt", encoding="utf-8") as fp:
-                fp.write(prompt)
-    
-        record_split_identity(
+        # Journal intent BEFORE either child is written. Each child is
+        # installed atomically, and the original parent is removed only once
+        # both children exist. Resume can roll back a partial transition.
+        install_split_prompts(
             self.promptFile, self.content,
             [(Path(new_prompt_file_0).name, prompt_0),
              (Path(new_prompt_file_1).name, prompt_1)],
