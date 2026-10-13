@@ -49,7 +49,8 @@ from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.slice_merge import merge_dict_slices_audited, should_merge_slices
 from czjLLM.prompt_pipeline.slice_identity import (
-    digest_text, include_committed_split_roots, install_split_prompts,
+    committed_split_parent_identities, digest_text,
+    include_committed_split_roots, install_split_prompts,
     is_verified_queued_split_child, reconcile_split_transitions,
     record_success_identity, resolve_success_leaves,
     restore_full_restart_parent, valid_success,
@@ -1179,11 +1180,23 @@ def _restore_single_extract_full_restart_parents(
             for subdir in ("TODO", "RUNNING")
             for fp in _root_txt_files(os.path.join(item, subdir))
         }
+        # Full restart is deliberately distinct from ordinary resume:
+        # a committed split can have *no* queued descendant once every
+        # child has finished. Read the durable top-level parent identities,
+        # but accept one only when the freshly rendered current source
+        # matches its exact saved prompt hash.
+        parents = committed_split_parent_identities(item)
         for name, prompt_hash in expected.items():
+            if name not in queued and name not in parents:
+                raise RuntimeError("full_restart missing committed split parent identity")
+        for name, prompt_hash in parents.items():
+            if name in expected and expected[name] != prompt_hash:
+                raise RuntimeError("full_restart conflicting split parent identity")
+        for name, prompt_hash in {**expected, **parents}.items():
             if name in queued:
                 continue
-            # This is a collapsed committed-split parent. Clearing the
-            # Success children before reconstructing it would lose input.
+            # Clear Success only *after* the original split parent can
+            # be reconstructed from a verified current source.
             if not input_col or input_col not in sources:
                 raise RuntimeError(
                     "full_restart cannot safely rebuild split parent: "
