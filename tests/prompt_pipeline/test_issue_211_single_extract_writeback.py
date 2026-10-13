@@ -19,7 +19,8 @@ from czjLLM.sql_mode.runtime.row_merger_generic import (
     _build_writeback_values, _resolve_flatten_targets,
 )
 from czjLLM.prompt_pipeline.slice_identity import (
-    digest_text, record_success_identity, record_split_identity, resolve_success_leaves,
+    digest_text, install_split_prompts, reconcile_split_transitions,
+    record_success_identity, record_split_identity, resolve_success_leaves,
     valid_success,
 )
 
@@ -439,3 +440,97 @@ def test_split_lineage_from_old_parent_prompt_is_not_current(tmp_path):
     })
     with pytest.raises(ValueError, match="missing or stale"):
         resolve_success_leaves(str(item), "0.txt", digest_text("new input prompt"))
+
+
+def _interrupted_split_setup(tmp_path):
+    item = tmp_path / "row_crash"
+    running = item / "RUNNING"
+    running.mkdir(parents=True)
+    parent = running / "0.txt"
+    parent.write_text("original prompt", encoding="utf-8")
+    children = [("0-0.txt", "first half prompt"), ("0-1.txt", "second half prompt")]
+    return item, parent, children
+
+
+def test_split_intent_precedes_partial_child_install_and_recovers(tmp_path, monkeypatch):
+    import czjLLM.prompt_pipeline.slice_identity as identity
+
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    real = identity._write_child_prompt
+    calls = []
+
+    def stop_after_first(path, text):
+        calls.append(path.name)
+        if len(calls) == 2:
+            raise RuntimeError("simulated process loss before second child")
+        real(path, text)
+
+    monkeypatch.setattr(identity, "_write_child_prompt", stop_after_first)
+    with pytest.raises(RuntimeError, match="simulated process loss"):
+        install_split_prompts(str(parent), "original prompt", children)
+    assert parent.exists()
+    assert (item / "TODO" / "0-0.txt").is_file()
+    assert not (item / "TODO" / "0-1.txt").exists()
+    assert (item / "_extract_slice_identity" / "splits" / "0.txt.json").exists()
+    reconcile_split_transitions(str(item))
+    assert parent.is_file()
+    assert not (item / "TODO" / "0-0.txt").exists()
+    assert not (item / "_extract_slice_identity" / "splits" / "0.txt.json").exists()
+    assert tuple(_expected_single_extract_slice_files([str(item)])[str(item)]) == ("0.txt",)
+
+
+def test_split_parent_and_both_children_before_unlink_recover_without_double_roots(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    assert parent.is_file()  # simulated crash immediately before parent unlink
+    assert sorted(p.name for p in (item / "TODO").glob("*.txt")) == [
+        "0-0.txt", "0-1.txt",
+    ]
+    reconcile_split_transitions(str(item))
+    assert parent.is_file()
+    assert list((item / "TODO").glob("*.txt")) == []
+    assert tuple(_expected_single_extract_slice_files([str(item)])[str(item)]) == ("0.txt",)
+
+
+def test_committed_split_after_parent_unlink_keeps_both_children(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    reconcile_split_transitions(str(item))
+    expected = _expected_single_extract_slice_files([str(item)])[str(item)]
+    assert tuple(expected) == ("0-0.txt", "0-1.txt")
+    assert expected["0-0.txt"] == digest_text("first half prompt")
+    assert expected["0-1.txt"] == digest_text("second half prompt")
+
+
+def test_incomplete_committed_split_without_parent_fails_closed(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    parent.unlink()
+    (item / "TODO" / "0-1.txt").unlink()
+    with pytest.raises(RuntimeError, match="without recoverable parent"):
+        reconcile_split_transitions(str(item))
+
+
+def test_split_reconciliation_refuses_to_delete_unrelated_changed_child(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    child = item / "TODO" / "0-0.txt"
+    child.write_text("unrelated newer prompt", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="changed extract split child"):
+        reconcile_split_transitions(str(item))
+    assert parent.is_file()
+    assert child.read_text(encoding="utf-8") == "unrelated newer prompt"
+
+
+def test_split_reconciliation_retries_parent_after_crash_without_persisting_prompts(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    reconcile_split_transitions(str(item))
+    record_dir = item / "_extract_slice_identity"
+    assert all(
+        "original prompt" not in p.read_text(encoding="utf-8")
+        and "first half prompt" not in p.read_text(encoding="utf-8")
+        for p in record_dir.rglob("*.json")
+    )
+    assert parent.is_file()
