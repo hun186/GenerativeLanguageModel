@@ -84,8 +84,9 @@ def _ctx(fake_openai, tmp_path, backend):
 
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
+@pytest.mark.parametrize("task_key_variant", [False, True], ids=["same-task", "task-key-override"])
 def test_two_json_slices_write_one_valid_persisted_result(
-    backend, fake_openai, tmp_path, monkeypatch,
+    backend, task_key_variant, fake_openai, tmp_path, monkeypatch,
 ):
     _force_two_source_slices(monkeypatch)
     # Avoid the interactive 10-second first-row pause, without bypassing the
@@ -101,6 +102,12 @@ def test_two_json_slices_write_one_valid_persisted_result(
     monkeypatch.setattr(scheduler, "handle_single_input_file", no_pause)
 
     ctx = _ctx(fake_openai, tmp_path, backend)
+    if task_key_variant:
+        # Initial slice generation sees the fallback task, while runtime
+        # resolves task_key to a different effective task. The stage must
+        # re-render EACH raw slice without collapsing it to one full row.
+        ctx.stages[0]["task_key"] = "E2E_JSON_EFFECTIVE"
+        ctx.taskSetting = {"E2E_JSON_EFFECTIVE": "E2E_JSON_EFFECTIVE_TASK"}
     params = {
         "input_col": "body" if backend == "sql" else "File",
         "output_col": "analysis",
@@ -143,6 +150,10 @@ def test_two_json_slices_write_one_valid_persisted_result(
                for prompt in requests), requests
     assert any("E2E_JSON_PART_B" in prompt and "E2E_JSON_PART_A" not in prompt
                for prompt in requests), requests
+
+    if task_key_variant:
+        assert all("E2E_JSON_EFFECTIVE_TASK" in prompt for prompt in requests)
+        assert all("E2E_JSON_RESPONSE" not in prompt for prompt in requests)
 
     if backend == "sql":
         with sqlite3.connect(db) as conn:
