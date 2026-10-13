@@ -61,7 +61,9 @@ def _ctx(fake_openai, tmp_path, backend):
     ctx.reduction = {"enabled": False, "profile": "concat_text"}
     ctx.merge_slices = True
     ctx.sql_enable_multistage_stream = True
-    ctx.removeFinPromptFile = False
+    # The real worker must consume TODO after a verified Success; retaining
+    # processed prompts makes stage runtime correctly report work outstanding.
+    ctx.removeFinPromptFile = True
     ctx.resume_policy = "resume"
     ctx.stages = [
         {
