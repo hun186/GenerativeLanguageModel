@@ -1551,12 +1551,39 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         ):
             MKDIR(todo_dir)
             _clear_txt_files(todo_dir, ops)
+            initial_task = getattr(ctx, "task", "")
+            generated_task = (
+                taskSetting.get(initial_task, initial_task)
+                if isinstance(initial_task, str) else initial_task
+            )
+            task_mismatch = (
+                single_extract_stage_writeback
+                and generated_task != stage_task
+            )
+            if task_mismatch and not source_slice_verified.get(item, False):
+                raise RuntimeError(
+                    "extract stage task differs from generated slice task "
+                    "and original source slices cannot be verified"
+                )
             for fp in _root_txt_files(root_todo_dir):
-                shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
-                # The original first-stage prompt remains byte-identical, so
-                # preserve its existing numeric token counts, but relabel the
-                # copied dispatch's actual YAML stage before workers claim it.
-                relabel_prompt_token_stage(str(fp), stage_name)
+                dst = os.path.join(todo_dir, fp.name)
+                if task_mismatch:
+                    raw = Path(_snapshot_dir(item, "original")) / fp.name
+                    if not raw.is_file():
+                        raise RuntimeError(
+                            "extract stage task mismatch with missing original input slice"
+                        )
+                    source_piece = raw.read_text(encoding="utf-8")
+                    effective = _build_stage_prompt_text(stage_task, source_piece, ctx)
+                    with open(dst, "w", encoding="utf-8", newline="") as handle:
+                        handle.write(effective)
+                    _refresh_stage_prompt_metrics(
+                        root_todo_dir, fp.name, source_piece, effective, stage_name,
+                    )
+                else:
+                    shutil.copy2(str(fp), dst)
+                    # Same effective task: preserve exact per-slice prompt.
+                    relabel_prompt_token_stage(str(fp), stage_name)
             return  # 已有 TODO，不覆蓋
 
         if effective_input_from in {"", "none", "null"}:
