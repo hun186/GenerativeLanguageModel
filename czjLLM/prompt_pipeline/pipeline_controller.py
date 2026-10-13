@@ -49,8 +49,9 @@ from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.slice_merge import merge_dict_slices_audited, should_merge_slices
 from czjLLM.prompt_pipeline.slice_identity import (
-    digest_text, install_split_prompts, reconcile_split_transitions,
-    record_success_identity, resolve_success_leaves, valid_success,
+    digest_text, include_committed_split_roots, install_split_prompts,
+    reconcile_split_transitions, record_success_identity,
+    resolve_success_leaves, valid_success,
 )
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
@@ -1149,7 +1150,7 @@ def _expected_single_extract_slice_files(prompt_items: list[str]) -> dict[str, d
         for directory in ("RUNNING", "TODO"):
             for fp in _root_txt_files(os.path.join(item, directory)):
                 members[fp.name] = digest_text(fp.read_text(encoding="utf-8"))
-        expected[item] = dict(sorted(members.items()))
+        expected[item] = include_committed_split_roots(item, members)
     return expected
 
 
