@@ -1262,7 +1262,10 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         # independent roots and duplicate SQL/Excel writeback content.
         for item in prompt_items:
             reconcile_split_transitions(item)
-    expected_extract_files = _expected_single_extract_slice_files(prompt_items)
+    expected_extract_files = (
+        _expected_single_extract_slice_files(prompt_items)
+        if single_extract_stage_writeback else {}
+    )
     _apply_resume_policy_multistage(
         resume_policy, prompt_items, ops, ctx=ctx,
         require_prompt_identity=single_extract_stage_writeback,
