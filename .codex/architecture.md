@@ -71,3 +71,8 @@
 - The append-only audit schema can capture provider-reported cached input token counts, with a distinct source marker; missing provider cache metadata is unknown, not zero. Current `processing_tps` remains backward compatible; GUI derives `(input_tokens + output_tokens) / elapsed_seconds` for actual slice requests with positive elapsed.
 - Local token sidecars add only an allowlisted stage identity (never task/prompt payload). The GUI off-thread CSV reader computes cache-adjusted throughput from provider truth where present and an explicitly discounted stable-template-size proxy only after same-stage history exists; no new persistence, service, prompt transfer, or cache-hit truth source is created.
 - Histograms include collision-pruned min/P50/P95/max ticks and a 3+4 chart layout. Tk redraw and hover both use shared width/height bounds.
+
+### 2026-10-13 Issue #211 E2E verification boundary (PR #213, pending)
+
+- SQL and Table input modes share the production scheduler, direct multistage extract processing, stage manifest, row merger and physical sink. A first extract stage using the same input column as the primary row can safely reuse already-rendered per-slice prompts rather than rerender the entire source once per slice. This preservation is scoped to single-extract JSON stage writeback; alternate input-column routing and genuine multistage behavior stay untouched.
+- New offline end-to-end tests use localhost fake OpenAI responses and deterministic cut positions, but real SQLite files, XLSX files, prompt queue and production writeback to verify output readback. No live provider/SQL Server is involved.
