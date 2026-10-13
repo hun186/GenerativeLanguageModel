@@ -310,6 +310,26 @@ def reconcile_split_transitions(item: str) -> None:
             )
 
 
+def restore_full_restart_parent(
+    item: str, name: str, prompt: str, expected_hash: str,
+) -> None:
+    """Durably reconstruct a committed parent before clearing Success.
+
+    The caller must derive `prompt` afresh from the current stage source;
+    matching the original parent fingerprint prevents substituting a stale
+    or different source for an already split input.
+    """
+    root = Path(item)
+    if digest_text(prompt) != expected_hash:
+        raise RuntimeError("full_restart source does not match split parent identity")
+    if not _record_path(root, "splits", name).is_file():
+        raise RuntimeError("full_restart missing parent split intent")
+    for folder in ("TODO", "RUNNING"):
+        if (root / folder / name).exists():
+            raise RuntimeError("full_restart original split parent already queued")
+    _write_child_prompt(root / "TODO" / name, prompt)
+
+
 def is_verified_queued_split_child(item: str, filename: str, prompt: str) -> bool:
     """Recognize a still-queued descendant of an existing split intent.
 
