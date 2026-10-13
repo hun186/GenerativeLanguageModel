@@ -603,3 +603,20 @@ def test_nested_split_missing_grandchild_fails_closed(tmp_path):
     with pytest.raises(RuntimeError, match="without recoverable parent"):
         reconcile_split_transitions(str(item))
     assert (item / "_extract_slice_identity" / "splits" / "0.txt.json").exists()
+
+
+def test_ancestor_survives_nested_split_crash_rolls_back_all_descendants(tmp_path):
+    item, parent, children = _interrupted_split_setup(tmp_path)
+    install_split_prompts(str(parent), "original prompt", children)
+    # Simulate a recovered ancestor RUNNING parent remaining on disk after
+    # the first child has already committed its own nested split.
+    child = item / "TODO" / "0-0.txt"
+    grandchildren = [("0-0-0.txt", "left quarter"), ("0-0-1.txt", "right quarter")]
+    install_split_prompts(str(child), "first half prompt", grandchildren)
+    child.unlink()
+    reconcile_split_transitions(str(item))
+    assert parent.is_file()
+    assert list((item / "TODO").glob("*.txt")) == []
+    assert list((item / "_extract_slice_identity" / "splits").glob("*.json")) == []
+    assert tuple(_expected_single_extract_slice_files([str(item)])[str(item)]) == ("0.txt",)
+    reconcile_split_transitions(str(item))  # recovery remains idempotent
