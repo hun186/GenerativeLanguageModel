@@ -51,7 +51,8 @@ from czjLLM.utilities.slice_merge import merge_dict_slices_audited, should_merge
 from czjLLM.prompt_pipeline.slice_identity import (
     digest_text, include_committed_split_roots, install_split_prompts,
     is_verified_queued_split_child, reconcile_split_transitions,
-    record_success_identity, resolve_success_leaves, valid_success,
+    record_success_identity, resolve_success_leaves,
+    restore_full_restart_parent, valid_success,
 )
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
@@ -1154,6 +1155,55 @@ def _expected_single_extract_slice_files(prompt_items: list[str]) -> dict[str, d
     return expected
 
 
+def _restore_single_extract_full_restart_parents(
+    prompt_items: list[str], ctx, stage_def,
+) -> None:
+    """Rebuild committed split roots *before* full_restart clears Success.
+
+    Stage-source SQL/Excel rows can reproduce the original dispatched parent
+    prompt. Verify its fingerprint first, and fail without deleting any
+    Success data if exact reconstruction is unavailable.
+    """
+    plans: list[tuple[str, str, str, str]] = []
+    configured = next(
+        (s for s in (getattr(ctx, "stages", None) or [])
+         if isinstance(s, dict) and s.get("name") == stage_def.name),
+        {},
+    )
+    input_col = str(configured.get("input_col") or getattr(ctx, "input_col", "") or "")
+    sources = getattr(ctx, "stage_source_inputs", None) or {}
+    for item in prompt_items:
+        expected = _expected_single_extract_slice_files([item])[item]
+        queued = {
+            fp.name
+            for subdir in ("TODO", "RUNNING")
+            for fp in _root_txt_files(os.path.join(item, subdir))
+        }
+        for name, prompt_hash in expected.items():
+            if name in queued:
+                continue
+            # This is a collapsed committed-split parent. Clearing the
+            # Success children before reconstructing it would lose input.
+            if not input_col or input_col not in sources:
+                raise RuntimeError(
+                    "full_restart cannot safely rebuild split parent: "
+                    "current stage source is missing"
+                )
+            reconstructed = _build_stage_prompt_text(
+                stage_def.task, str(sources[input_col] or ""), ctx,
+            )
+            if digest_text(reconstructed) != prompt_hash:
+                raise RuntimeError(
+                    "full_restart cannot safely rebuild split parent: "
+                    "source does not match the saved prompt identity"
+                )
+            plans.append((item, name, reconstructed, prompt_hash))
+
+    # Prevalidate every row before mutating any input queue or Success tree.
+    for item, name, reconstructed, prompt_hash in plans:
+        restore_full_restart_parent(item, name, reconstructed, prompt_hash)
+
+
 def _require_complete_single_extract_stage(report, runtime, prompt_items, expected_files) -> None:
     """Check every current prompt or its verified recursive retry children.
 
@@ -1257,6 +1307,12 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     stage_defs = resolve_pipeline_stages(ctx)
     single_extract_stage_writeback = _single_extract_stage_writeback_enabled(stage_defs, ctx)
     if single_extract_stage_writeback:
+        # Full restart must first regenerate completed split branches from
+        # the current source. Otherwise clearing Success loses their prompts.
+        if resume_policy == "full_restart":
+            _restore_single_extract_full_restart_parents(
+                prompt_items, ctx, stage_defs[0],
+            )
         # Journal reconciliation must precede input-membership capture.
         # An interrupted split can otherwise surface parent and children as
         # independent roots and duplicate SQL/Excel writeback content.
