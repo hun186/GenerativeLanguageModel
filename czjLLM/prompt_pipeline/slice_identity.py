@@ -93,6 +93,102 @@ def record_split_identity(
     )
 
 
+def _write_child_prompt(path: Path, text: str) -> None:
+    """Install one split child atomically after durable parent intent."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + "." + uuid.uuid4().hex + ".tmp")
+    try:
+        with tmp.open("w", encoding="utf-8") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp, path)
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
+def install_split_prompts(
+    prompt_file: str, prompt: str, children: list[tuple[str, str]],
+) -> None:
+    """Write split intent first, then both children; parent remains recoverable.
+
+    Caller may unlink the original parent only after both atomic installs
+    return. On a crash with the parent still queued, reconciliation discards
+    partial descendants and safely retries the original.
+    """
+    file = Path(prompt_file)
+    if file.parent.name not in {"TODO", "RUNNING"}:
+        raise ValueError("split parent must be a queued prompt")
+    record_split_identity(prompt_file, prompt, children)
+    todo_dir = file.parent.parent / "TODO"
+    for name, text in children:
+        _write_child_prompt(todo_dir / name, text)
+
+
+def reconcile_split_transitions(item: str) -> None:
+    """Roll back interrupted parent→child installs before queue resume.
+
+    Never leave both a recoverable parent and its partly/fully installed
+    children as independent TODO roots. The intent record is installed first,
+    so crashes at any child write or before parent unlink can be recovered.
+    A missing parent with incomplete child set is an error, not a partial
+    aggregate. No Success output or prompt content is deleted.
+    """
+    root = Path(item)
+    directory = _identity_dir(root, "splits")
+    if not directory.is_dir():
+        return
+    for intent in sorted(directory.glob("*.txt.json")):
+        parent_name = intent.name[:-5]  # remove only the .json extension
+        if _record_path(root, "splits", parent_name) != intent:
+            raise RuntimeError("invalid extract split intent path")
+        data = _read_record(intent)
+        children = data.get("children")
+        if (data.get("version") != 1 or not isinstance(children, list)
+                or len(children) != 2):
+            raise RuntimeError("invalid or incomplete extract split transition")
+        names = []
+        for child in children:
+            if not isinstance(child, dict):
+                raise RuntimeError("invalid extract split child metadata")
+            name, digest = child.get("name"), child.get("prompt_sha256")
+            if (not isinstance(name, str) or Path(name).name != name
+                    or not name.startswith(Path(parent_name).stem + "-")
+                    or not name.endswith(".txt") or not isinstance(digest, str)
+                    or len(digest) != 64):
+                raise RuntimeError("invalid extract split child identity")
+            names.append((name, digest))
+        if names[0][0] == names[1][0]:
+            raise RuntimeError("duplicate extract split children")
+
+        parent_exists = any((root / folder / parent_name).is_file()
+                            for folder in ("TODO", "RUNNING"))
+        installed = []
+        for name, digest in names:
+            queued = [root / folder / name for folder in ("TODO", "RUNNING")]
+            seen = [p for p in queued if p.is_file()]
+            for child_path in seen:
+                if hashlib.sha256(child_path.read_bytes()).hexdigest() != digest:
+                    raise RuntimeError("changed extract split child prompt; manual recovery required")
+            # A verified Success is also one completed child.
+            complete = bool(seen) or valid_success(str(root), name, digest)
+            installed.append((seen, complete))
+        if parent_exists:
+            # Original still exists: prefer reprocessing it over a partial,
+            # uncertain descendant graph. Delete only hash-matched queued
+            # children, then clear the intent LAST for repeatable recovery.
+            for queued, _ in installed:
+                for child_path in queued:
+                    child_path.unlink()
+            intent.unlink()
+        elif any(complete for _, complete in installed) and not all(
+            complete for _, complete in installed
+        ):
+            raise RuntimeError(
+                "extract split transition incomplete without recoverable parent"
+            )
+
+
 def resolve_success_leaves(
     item: str, filename: str, prompt_hash: str, visited: set[str] | None = None,
 ) -> list[str]:
