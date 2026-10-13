@@ -310,6 +310,72 @@ def reconcile_split_transitions(item: str) -> None:
             )
 
 
+def include_committed_split_roots(
+    item: str, current: dict[str, str],
+) -> dict[str, str]:
+    """Restore a verified committed split's original root into coverage.
+
+    Current TODO/RUNNING contains only unfinished descendants. A sibling
+    already moved to Success must still be included, but stale Success alone
+    cannot establish current membership. Anchor each committed split to at
+    least one *current queued* descendant and verify its two child branches.
+    Collapse nested splits deepest-first so the outer root covers the entire
+    lineage without double-counting descendants.
+    """
+    root = Path(item)
+    intents = _identity_dir(root, "splits")
+    if not intents.is_dir() or not current:
+        return dict(current)
+    expected = dict(current)
+    for path in sorted(
+        intents.glob("*.txt.json"),
+        key=lambda p: (-p.name[:-9].count("-"), p.name),
+    ):
+        parent = path.name[:-5]
+        # A queued parent is still the source of truth, so ignore its
+        # uncommitted child tree (reconciliation should clear that intent).
+        if any((root / folder / parent).is_file() for folder in ("TODO", "RUNNING")):
+            continue
+        record = _read_record(path)
+        if record.get("version") != 1:
+            raise RuntimeError("invalid committed extract split identity")
+        parent_hash = record.get("parent_prompt_sha256")
+        children = record.get("children")
+        if (not isinstance(parent_hash, str) or len(parent_hash) != 64
+                or not isinstance(children, list) or len(children) != 2):
+            raise RuntimeError("invalid committed extract split lineage")
+        child_pairs = []
+        for child in children:
+            if not isinstance(child, dict):
+                raise RuntimeError("invalid committed extract split child")
+            name, child_hash = child.get("name"), child.get("prompt_sha256")
+            if (not isinstance(name, str) or not name.startswith(Path(parent).stem + "-")
+                    or Path(name).name != name or not name.endswith(".txt")
+                    or not isinstance(child_hash, str) or len(child_hash) != 64):
+                raise RuntimeError("invalid committed extract split child")
+            child_pairs.append((name, child_hash))
+        if child_pairs[0][0] == child_pairs[1][0]:
+            raise RuntimeError("duplicate committed extract split children")
+        # Only a queue descendant anchors a lineage to this current work.
+        # It may already have been collapsed to an intermediate split root.
+        descendants = [
+            key for key in expected
+            if any(key == name or key.startswith(Path(name).stem + "-")
+                   for name, _ in child_pairs)
+        ]
+        if not descendants:
+            continue
+        for name, child_hash in child_pairs:
+            if not _split_child_complete(root, name, child_hash):
+                raise RuntimeError("incomplete committed extract split branch")
+        for key in descendants:
+            expected.pop(key)
+        if parent in expected:
+            raise RuntimeError("overlapping committed extract split roots")
+        expected[parent] = parent_hash
+    return dict(sorted(expected.items()))
+
+
 def resolve_success_leaves(
     item: str, filename: str, prompt_hash: str, visited: set[str] | None = None,
 ) -> list[str]:
