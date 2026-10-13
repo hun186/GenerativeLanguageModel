@@ -1859,7 +1859,7 @@ def _run_mock_llm_api(itemList, ctx, allow_to_retry=True, task_override: str | N
                 content = ""
             task_text = task_override if task_override is not None else getattr(ctx, "task", "")
             out_text = _mock_llm_text(task_text, content, ctx)
-            with open(out_fn, mode='wt', encoding='utf-8') as fw:
+            with open(out_fn, mode='wt', encoding='utf-8', newline='') as fw:
                 fw.write(out_text)
             record_success_identity(pf, out_fn, content, out_text)
             try:
@@ -2095,7 +2095,7 @@ class PromptAPIPipeline:
                 if self.OutputSaveFN != "":
                     MKDIR(os.path.dirname(self.OutputSaveFN))
                     tmp_fn = self.OutputSaveFN + ".tmp"
-                    with open(tmp_fn, mode='wt', encoding='utf-8') as fp:
+                    with open(tmp_fn, mode='wt', encoding='utf-8', newline='') as fp:
                         fp.write(retMES)
                         fp.flush()
                         os.fsync(fp.fileno())
@@ -2170,7 +2170,7 @@ class PromptAPIPipeline:
             if self.OutputSaveFN != "" and DTBJobs_Retry == [] and retMES != "":
                 MKDIR(os.path.dirname(self.OutputSaveFN))
                 tmp_fn = self.OutputSaveFN + ".tmp"
-                with open(tmp_fn, mode='wt', encoding='utf-8') as fp:
+                with open(tmp_fn, mode='wt', encoding='utf-8', newline='') as fp:
                     fp.write(retMES)
                     fp.flush()
                     os.fsync(fp.fileno())
@@ -2342,7 +2342,7 @@ class PromptAPIPipeline:
                 MKDIR(os.path.dirname(self.OutputSaveFN))
                 tmp_fn = self.OutputSaveFN + ".tmp"
                 #print(f"Start to run os.sync for tmp_fn {tmp_fn}")
-                with open(tmp_fn, mode='wt', encoding='utf-8') as fp:
+                with open(tmp_fn, mode='wt', encoding='utf-8', newline='') as fp:
                     fp.write(retMES)
                     fp.flush()
                     os.fsync(fp.fileno())  # 確保落地
