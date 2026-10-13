@@ -178,6 +178,56 @@ def _split_child_complete(
     return True
 
 
+def _rollback_queued_descendants(
+    root: Path, name: str, prompt_hash: str,
+    visited: frozenset[str] = frozenset(),
+) -> tuple[list[Path], list[Path]]:
+    """Collect and validate every queued descendant before any rollback.
+
+    The original parent remains recoverable. Remove nested descendants as
+    well as direct children to prevent partial retry trees becoming roots.
+    Successful output artifacts are never deleted.
+    """
+    if name in visited or Path(name).name != name or not name.endswith(".txt"):
+        raise RuntimeError("invalid or cyclic extract split rollback")
+    visited = visited | {name}
+    queued: list[Path] = []
+    intents: list[Path] = []
+    for directory in ("TODO", "RUNNING"):
+        file = root / directory / name
+        if file.is_file():
+            if hashlib.sha256(file.read_bytes()).hexdigest() != prompt_hash:
+                raise RuntimeError(
+                    "changed extract split child prompt; manual recovery required"
+                )
+            queued.append(file)
+    intent = _record_path(root, "splits", name)
+    if intent.is_file():
+        record = _read_record(intent)
+        if (record.get("version") != 1
+                or record.get("parent_prompt_sha256") != prompt_hash):
+            raise RuntimeError("stale extract split rollback identity")
+        children = record.get("children")
+        if not isinstance(children, list) or len(children) != 2:
+            raise RuntimeError("invalid extract split rollback lineage")
+        child_names: set[str] = set()
+        for child in children:
+            if not isinstance(child, dict):
+                raise RuntimeError("invalid extract split rollback child")
+            cn, ch = child.get("name"), child.get("prompt_sha256")
+            if (not isinstance(cn, str) or cn in child_names
+                    or not cn.startswith(Path(name).stem + "-")
+                    or Path(cn).name != cn or not cn.endswith(".txt")
+                    or not isinstance(ch, str) or len(ch) != 64):
+                raise RuntimeError("invalid extract split rollback child identity")
+            child_names.add(cn)
+            q, i = _rollback_queued_descendants(root, cn, ch, visited)
+            queued.extend(q)
+            intents.extend(i)
+        intents.append(intent)
+    return queued, intents
+
+
 def reconcile_split_transitions(item: str) -> None:
     """Roll back interrupted parent→child installs before queue resume.
 
@@ -228,12 +278,22 @@ def reconcile_split_transitions(item: str) -> None:
             complete = _split_child_complete(root, name, digest)
             installed.append((seen, complete))
         if parent_exists:
-            # Original still exists: prefer reprocessing it over a partial,
-            # uncertain descendant graph. Delete only hash-matched queued
-            # children, then clear the intent LAST for repeatable recovery.
-            for queued, _ in installed:
-                for child_path in queued:
-                    child_path.unlink()
+            # Validate the *entire* queued descendant tree before deletion.
+            # A child may have committed a nested split before its ancestor
+            # parent was recovered. Keeping grandchildren as fresh roots
+            # would otherwise duplicate the original source.
+            queued_descendants: list[Path] = []
+            nested_intents: list[Path] = []
+            for name, digest in names:
+                queued, intents = _rollback_queued_descendants(root, name, digest)
+                queued_descendants.extend(queued)
+                nested_intents.extend(intents)
+            # Delete descendants deepest-first and the parent intent LAST;
+            # if recovery crashes, the original queued parent remains.
+            for file in queued_descendants:
+                file.unlink(missing_ok=True)
+            for nested in nested_intents:
+                nested.unlink(missing_ok=True)
             intent.unlink()
         elif not all(complete for _, complete in installed):
             # Even when BOTH children are missing (e.g. filesystem loss), the
