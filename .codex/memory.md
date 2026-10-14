@@ -226,3 +226,11 @@
 - Correctives: pipeline_controller now fingerprints effective task + keyConsiderations, think_mode, main_file_name, initial task in both dispatch and resume validation; task_fingerprint hashes varnames, argument counts, flags, cellvars and exception table; globals/locals/vars/eval/exec/__import__ namespace lookups explicitly fail closed.
 - Expanded real-controller SQLite/Excel acceptance verifies all-Success context drift rejection with no stale LLM calls, while same-line callable parameter changes and dynamic-lookup attempts are regression tested.
 - Corrective commits 9c9c22b (ABI/dynamic), d7846ba (renderer context), f546c12 (tests). Previous exact-head 6a88d44 Linux offline-e2e SUCCESS, but NEW exact-head Hosted CI and fresh Codex review still required. No merge without user authorization.
+
+
+### 2026-10-14 PR #213 third Codex round / task-setting aliases and callable state (pending CI)
+- Exact-head d48011a Codex found P1 missing transitive ctx.taskSetting alias target identity and P2 missing mutable function attributes (function self-reference case).
+- Controller now mirrors actual renderer task pool precedence and resolves only reachable task mappings/aliases, including fallback global task entries. Circular alias references fail closed, without executing templates or hashing the entire task pool.
+- Fingerprint includes function/partial custom __dict__ attributes; self-reference is recursion-guarded and changing template.prefix changes the hash.
+- Added real-controller SQLite/Excel acceptance for all-Success alias target and callable attribute drift with zero provider calls and unchanged stored Success; unit tests cover transitive chains and cyclic aliases.
+- Corrective commits ea9715b (callable attrs), a8901d9 (task alias resolution), b2665a6 (regressions). Prior exact-head d48011a E2E gate SUCCESS, but new exact-head CI and Codex review are still unaccepted. Do not merge without authorization.
