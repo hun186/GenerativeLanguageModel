@@ -23,6 +23,14 @@ def _code_signature(code: types.CodeType, active):
         "consts": [_stable(v, active) for v in code.co_consts],
         "names": list(code.co_names),
         "freevars": list(code.co_freevars),
+        "cellvars": list(code.co_cellvars),
+        "varnames": list(code.co_varnames),
+        "argcount": code.co_argcount,
+        "posonlyargcount": code.co_posonlyargcount,
+        "kwonlyargcount": code.co_kwonlyargcount,
+        "nlocals": code.co_nlocals,
+        "flags": code.co_flags,
+        "exceptiontable": getattr(code, "co_exceptiontable", b"").hex(),
     }
 
 
@@ -97,6 +105,11 @@ def _stable_composite(value, active):
                 # Traverse ONLY referenced symbols, never the entire module
                 # namespace. Unsupported dynamic globals fail closed.
                 globals_used[name] = _stable(value.__globals__[name], active)
+            elif name in {"globals", "locals", "vars", "eval", "exec", "__import__"}:
+                # These builtins can resolve arbitrary namespace members not
+                # visible in static LOAD_GLOBAL instructions. Reject reuse
+                # rather than fingerprint a misleading incomplete dependency.
+                raise ValueError(f"dynamic task template namespace access: {name}")
             elif hasattr(builtins, name):
                 # Stable builtin identity; shadowing it with a module global
                 # on a subsequent run will change the fingerprint.
