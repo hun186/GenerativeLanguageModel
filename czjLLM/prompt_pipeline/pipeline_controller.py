@@ -849,6 +849,11 @@ def _snapshot_dir(item: str, name: str) -> str:
     return os.path.join(item, "_stage_outputs", name)
 
 
+def _original_source_manifest_path(item: str) -> Path:
+    """Durable *hash-only* source identity outside resettable stage snapshots."""
+    return Path(item) / "_extract_slice_identity" / "source" / "original.json"
+
+
 def _sync_stage_todo_to_root(item: str, stage_name: str, ops: MergeOps):
     root_todo = os.path.join(item, "TODO")
     stage_dir = _stage_todo_dir(item, stage_name)
@@ -1402,7 +1407,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         """
         root_files = _root_txt_files(ops.join(item, "TODO"))
         snapshot_dir = Path(_snapshot_dir(item, "original"))
-        manifest_path = snapshot_dir / "_source_slice_provenance.json"
+        manifest_path = _original_source_manifest_path(item)
         try:
             with open(file_path, "r", encoding="utf-8") as handle:
                 source_text = handle.read()
@@ -1453,6 +1458,22 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 )
             )
             if valid:
+                if not snapshot_dir.exists() and resume_policy in {"smart_reset", "full_restart"}:
+                    # The reset intentionally removed volatile stage snapshots,
+                    # not the durable hash-only identity. Reconstitute raw
+                    # fragments solely from source parts verified above.
+                    MKDIR(str(snapshot_dir))
+                    for name, part in zip(names, source_parts):
+                        dest = snapshot_dir / name
+                        staged = snapshot_dir / (name + ".pending")
+                        try:
+                            with open(staged, "w", encoding="utf-8", newline="") as handle:
+                                handle.write(str(part))
+                                handle.flush()
+                                os.fsync(handle.fileno())
+                            os.replace(staged, dest)
+                        finally:
+                            staged.unlink(missing_ok=True)
                 valid = all(
                     (snapshot_dir / name).is_file()
                     and digest_text((snapshot_dir / name).read_text(encoding="utf-8")) == part_hashes[index]
@@ -1469,6 +1490,12 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         # First attempt: all original prompts must still be queued and the
         # full mapping is captured BEFORE any first-stage LLM call.
         if len(source_parts) != len(root_files):
+            if single_extract_stage_writeback and _root_txt_files(
+                ops.join(item, "Success")
+            ):
+                raise RuntimeError(
+                    "cannot reconstruct all source slices for partial Success without provenance"
+                )
             return False
 
         names = [fp.name for fp in root_files]
@@ -1504,7 +1531,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         from_source = _write_original_snapshot_from_source(item)
         source_slice_verified[item] = from_source
         if not from_source:
-            marker = Path(_snapshot_dir(item, "original")) / "_source_slice_provenance.json"
+            marker = _original_source_manifest_path(item)
             if not marker.exists():
                 _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
 
@@ -1516,9 +1543,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         for item in prompt_items:
             if not source_slice_verified.get(item, False):
                 continue
-            manifest = robust_json_read(
-                os.path.join(_snapshot_dir(item, "original"), "_source_slice_provenance.json")
-            )
+            manifest = robust_json_read(str(_original_source_manifest_path(item)))
             dispatched = manifest.get("dispatch_sha256", {})
             if not dispatched:
                 continue
@@ -1770,9 +1795,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             # Bind to the actually dispatched prompt, and durably retain the
             # complete original membership even after Success prunes TODO.
             current = expected_extract_files[job.chunk_id]
-            raw_manifest = os.path.join(
-                _snapshot_dir(job.chunk_id, "original"), "_source_slice_provenance.json",
-            )
+            raw_manifest = str(_original_source_manifest_path(job.chunk_id))
             record = robust_json_read(raw_manifest) if source_slice_verified.get(job.chunk_id) else {}
             all_sent = dict(record.get("dispatch_sha256", {}))
             for prompt_path in _root_txt_files(ops.join(job.chunk_id, "TODO")):
