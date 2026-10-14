@@ -212,3 +212,10 @@
 - `task_fingerprint.py` now **always** includes function bytecode/constants/freevars even when source is available. Regression: same-line lambdas with identical qualname/source but different literal constants must hash differently.
 - `pipeline_controller.py` now checks all existing queued prompt SHA-256 values against persisted dispatch SHA-256 *before* modifying expected membership or committing any updated manifest; mismatch fails closed instead of mixing old Success A with changed B. Full restart, which deliberately invalidates old lineage, is handled separately. Parameterized SQLite/Excel `resume`/`smart_reset` integration cases inject changed B rendering with A in Success, assert zero new external-model requests and unchanged durable dispatch manifest.
 - Exact-head CI and fresh Codex review remain outstanding; user has NOT approved a merge.
+
+
+### 2026-10-14 PR #213 referenced-global semantic fingerprint P1 (pending review)
+- Initial P1 on 7be1881: only global symbol names were recorded, so changes to module prompt rules, flags and helpers could incorrectly preserve Success.
+- Current fix fingerprints only global names that code actually loads (including nested code), their values and transitive helper functions, with recursion guards and stable builtin identities. Unsupported/unbound dynamic dependencies fail closed. Raw rule text and prompts are never written to provenance; hashing does not execute templates.
+- Added SQLite/Excel real-controller A-success/B-TODO and all-Success global-change rejection coverage, plus unit regressions for global string/flag/helper changes, nested loads, cycles and separate Python processes. Existing sink readback, smart_reset, full_restart, and normal multistage checks remain in the test file.
+- Implementation commit 6047981 and regression commit b7dc84d. New exact-head Hosted CI and Codex review remain to be accepted. Previous Windows self-hosted jobs remained queued. Do not merge without user authorization.
