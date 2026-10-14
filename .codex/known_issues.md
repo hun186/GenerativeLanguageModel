@@ -71,3 +71,8 @@
 - P1: Callable task mapping string representations depend on memory address, causing invalid `stage_task_sha256` across Python process restarts. Proposed deterministic semantic task fingerprint with callable source and stable task fields; test stable recreated function objects and config edits.
 - P1: Issue #211 raw-source manifest accidentally affected ordinary multistage restarts after source changes. Proposed bypass of the guarded manifest path and refreshed original snapshot/fallback for non-single-extract stages, with resume/reset E2E.
 - Neither has exact-head CI SUCCESS or Clean Review yet; do not merge.
+
+### 2026-10-14 two latest P1s awaiting independent validation (PR #213)
+- P1 task fingerprint omission: different same-line lambdas had same inspect.getsource/module/qualname and no included bytecode when source existed. Corrective always hashes code and consts.
+- P1 dispatch provenance overwrite: resumed B could replace its already persisted prompt hash, silently mixing distinct prompts/results. Corrective validates all existing SHA-256s before any mutation and fails closed on drift (except deliberate full_restart).
+- Both are fixed on the PR branch but NOT YET verified by exact-head CI/Codex; main remains unchanged.
