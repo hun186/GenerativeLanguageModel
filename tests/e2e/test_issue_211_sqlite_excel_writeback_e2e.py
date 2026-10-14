@@ -288,3 +288,132 @@ def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
         output = pd.read_excel(target_xlsx, sheet_name="LLM_result").loc[0, "analysis"]
 
     assert json.loads(output) == {"keyFunctions": ["first", "second"]}
+
+
+@pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
+def test_task_key_override_recovers_completed_original_slice(
+    backend, fake_openai, tmp_path, monkeypatch,
+):
+    """Crash after the original A/B manifest was committed, finish only B.
+
+    This exercises the actual extract controller, persisted raw/dispatch
+    provenance, real localhost HTTP calls, and the respective physical sink.
+    A is already committed in Success, not in TODO when the second run starts.
+    """
+    from czjLLM.prompt_pipeline import pipeline_controller as controller
+    from czjLLM.prompt_pipeline.pipeline_controller import PromptAPIPipeline
+    from czjLLM.prompt_pipeline.slice_identity import record_success_identity
+    from czjLLM.sql_mode.runtime.row_merger_generic import _build_writeback_values
+    from czjLLM.sql_mode.runtime.sinks.excel_sink import ExcelSink
+    from czjLLM.sql_mode.runtime.sinks.sql_sink import SqlSink
+
+    _force_two_source_slices(monkeypatch)
+    ctx = _ctx(fake_openai, tmp_path, backend)
+    ctx.input_col = "body" if backend == "sql" else "File"
+    ctx.output_col = "analysis"
+    ctx.primary_key = "id"
+    ctx.record_update_time = False
+    ctx.flatten_json_output = False
+    ctx.stage_source_inputs = {}  # Original-input route, not source-input override
+    ctx.sql_flatten_writeback_rules = [{"writeback_rule": 0, "enabled": False}]
+    ctx.stages[0]["task_key"] = "E2E_JSON_EFFECTIVE"
+    ctx.taskSetting = {"E2E_JSON_EFFECTIVE": "E2E_JSON_EFFECTIVE_TASK"}
+    ctx.main_file_name = "rawresume211"
+    ctx.temp_txt_finished_dir = str(tmp_path / "finished")
+
+    source = tmp_path / "rawresume211.txt"
+    source.write_text(_SOURCE, encoding="utf-8")
+    item = Path(ctx.prompt_dir) / source.stem
+    todo = item / "TODO"
+    todo.mkdir(parents=True)
+    for i, part in enumerate(("E2E_JSON_PART_A", "E2E_JSON_PART_B")):
+        (todo / f"{i}.txt").write_text(
+            f"E2E_JSON_RESPONSE\\n\\n{part}", encoding="utf-8",
+        )
+
+    # Simulate a process interruption at the LLM boundary, AFTER the real
+    # pipeline prepared effective-task prompts and committed raw provenance.
+    def crash_before_dispatch(*_args, **_kwargs):
+        raise RuntimeError("injected-after-stage-preparation")
+
+    with monkeypatch.context() as interrupted:
+        interrupted.setattr(controller, "_call_llm_with_task_override", crash_before_dispatch)
+        with pytest.raises(RuntimeError, match="injected-after-stage-preparation"):
+            controller.process_prompt_and_merge_multistage(ctx, str(source))
+
+    saved = item / "_stage_outputs" / "original" / "_source_slice_provenance.json"
+    evidence = json.loads(saved.read_text(encoding="utf-8"))
+    assert evidence["names"] == ["0.txt", "1.txt"]
+    assert set(evidence["dispatch_sha256"]) == {"0.txt", "1.txt"}
+
+    first_prompt = todo / "0.txt"
+    assert "E2E_JSON_EFFECTIVE_TASK" in first_prompt.read_text(encoding="utf-8")
+    first_output = item / "Success" / first_prompt.name
+    first_output.parent.mkdir(exist_ok=True)
+    first = PromptAPIPipeline(
+        task="E2E_JSON_EFFECTIVE_TASK", content=first_prompt.read_text(encoding="utf-8"),
+        OutputSaveFN=str(first_output), model_spec=fake_openai.model_spec,
+        PGMSubDir=str(tmp_path),
+    ).proc()
+    assert first["ok"], first
+    record_success_identity(
+        str(first_prompt), str(first_output),
+        first_prompt.read_text(encoding="utf-8"), first["output"],
+    )
+    first_prompt.unlink()
+
+    before_resume = len(fake_openai.requests)
+    result_marker = controller.process_prompt_and_merge_multistage(ctx, str(source))
+    assert Path(result_marker).is_file()
+    additional = fake_openai.requests[before_resume:]
+    assert additional and all("E2E_JSON_PART_A" not in str(req["body"]) for req in additional)
+    assert all("E2E_JSON_EFFECTIVE_TASK" in str(req["body"]) for req in additional)
+    assert any("E2E_JSON_PART_B" in str(req["body"]) for req in additional)
+
+    values, _flatten, _source_log, selected = _build_writeback_values(
+        ctx, str(result_marker), Path(result_marker).read_text(encoding="utf-8"),
+    )
+    assert selected["analysis"] == "stage:extract"
+    assert json.loads(values["analysis"]) == {"keyFunctions": ["first", "second"]}
+
+    if backend == "sql":
+        db = tmp_path / "rawresume.sqlite"
+        with sqlite3.connect(db) as con:
+            con.execute("CREATE TABLE source (id TEXT PRIMARY KEY, body TEXT)")
+            con.execute("CREATE TABLE results (id TEXT PRIMARY KEY, analysis TEXT)")
+            con.execute("INSERT INTO source VALUES (?, ?)", ("row211", _SOURCE))
+        ctx.sqlite_path = str(db)
+        ctx.is_sqlite = True
+        ctx.sql_table, ctx.target_table = "source", "results"
+        sink = SqlSink(ctx, is_sqlite=True)
+        sink.open()
+        try:
+            sink.write_main("row211", values["analysis"])
+        finally:
+            sink.close()
+        with sqlite3.connect(db) as con:
+            written = con.execute("SELECT analysis FROM results WHERE id = ?", ("row211",)).fetchone()[0]
+    else:
+        workbook = tmp_path / "rawresume_input.xlsx"
+        output_book = tmp_path / "rawresume_output.xlsx"
+        pd.DataFrame({"id": ["row211"], "File": [_SOURCE]}).to_excel(workbook, index=False)
+        sink = ExcelSink(
+            ctx, input_path=str(workbook), output_path=str(output_book),
+            main_sheet="LLM_result", flush_main_every=1,
+        )
+        sink.open()
+        try:
+            sink.write_main("row211", values["analysis"])
+        finally:
+            sink.close()
+        written = pd.read_excel(output_book, sheet_name="LLM_result").loc[0, "analysis"]
+
+    assert json.loads(written) == {"keyFunctions": ["first", "second"]}
+
+    # Mutating the source after verified Success A must not reuse the prior
+    # full-source snapshot. The actual controller fails before any LLM call.
+    source.write_text(_SOURCE + " CHANGED", encoding="utf-8")
+    count = len(fake_openai.requests)
+    with pytest.raises(RuntimeError, match="source-slice provenance"):
+        controller.process_prompt_and_merge_multistage(ctx, str(source))
+    assert len(fake_openai.requests) == count
