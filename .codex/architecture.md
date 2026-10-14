@@ -76,3 +76,9 @@
 
 - SQL and Table input modes share the production scheduler, direct multistage extract processing, stage manifest, row merger and physical sink. A first extract stage using the same input column as the primary row can safely reuse already-rendered per-slice prompts rather than rerender the entire source once per slice. This preservation is scoped to single-extract JSON stage writeback; alternate input-column routing and genuine multistage behavior stay untouched.
 - New offline end-to-end tests use localhost fake OpenAI responses and deterministic cut positions, but real SQLite files, XLSX files, prompt queue and production writeback to verify output readback. No live provider/SQL Server is involved.
+
+### 2026-10-14 partial extract resume authoritative source snapshots (PR #213 pending)
+
+- For the single-extract JSON stage writeback path, the first unpruned input queue establishes the ordered raw-source-slice-to-filename mapping. A durable SHA-256-only provenance manifest in the original snapshot folder records both source/slice identities and actual dispatched prompt hashes with an effective stage-task digest.
+- Later partial resumes reconstruct source slices and verify the existing complete snapshot, even after Success removes A from TODO. Completed members' recorded dispatch hashes reenter the final mandatory Success validation; partial or stale source and stage-task changes fail closed. Verified split child TODO prompts can survive original snapshot validation without being falsely treated as new raw slices.
+- No second cache, alternative source of model results or changed public output schema was introduced. Scope remains strictly the original single extract / SQLite-Excel writeback flow.
