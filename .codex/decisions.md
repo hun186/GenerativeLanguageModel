@@ -69,3 +69,8 @@
 
 - Mock only the external model HTTP response and initial tokenization cut boundaries; assert production scheduling, stage validation, merged stage writeback and physical SQLite/XLSX readback. Add explicit partial-resume case using persisted Success provenance and real remaining-leaf provider dispatch.
 - Preserve existing per-slice primary-input prompts during scoped single-extract stage preparation instead of rendering one full SQL/Excel row prompt for each slice. No change to alternate source-column routing.
+
+### 2026-10-14 extract partial-resume provenance (PR #213 pending)
+
+- Prefer one persisted, source-bound original input-slice identity over reassigning raw chunks to whatever TODO files happen to remain after interrupted processing. Treat source SHA, ordered chunk fingerprints, saved filenames and dispatched prompt/stage identity together as the reuse contract; stale or ambiguous evidence must reject writeback.
+- Preserve committed retry child prompts by verifying split lineage; do not rerender the parent source as a child's independent prompt.
