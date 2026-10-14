@@ -1393,49 +1393,113 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             shutil.copy2(str(fp), os.path.join(dst_dir, fp.name))
 
     def _write_original_snapshot_from_source(item: str) -> bool:
-        """
-        嘗試直接以原始檔案重切片，保存純內容快照，避免把第一階段 prompt 模板誤當成 original。
-        只有在切片數量與 root TODO 完全一致時才覆蓋快照；否則回退舊行為。
+        """Build or validate durable raw slices for effective-task rerendering.
+
+        A partial resume can have only B in TODO after A reached Success.
+        Preserve the A/B source-to-basename mapping recorded *before* dispatch;
+        do not remap a surviving B to source chunk A or turn prompt copies
+        into trusted source fragments.
         """
         root_files = _root_txt_files(ops.join(item, "TODO"))
-        if not root_files:
-            return False
+        snapshot_dir = Path(_snapshot_dir(item, "original"))
+        manifest_path = snapshot_dir / "_source_slice_provenance.json"
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                source_text = f.read()
+            with open(file_path, "r", encoding="utf-8") as handle:
+                source_text = handle.read()
             tokenizer = TokenizerWrapper(
                 model_name=getattr(ctx, "model_spec_name", ""),
                 task=getattr(ctx, "task", ""),
             )
             chunks = tokenizer.tokenize(
-                text=source_text,
-                adjust=True,
+                text=source_text, adjust=True,
                 max_tokens=getattr(ctx, "max_tokens", 12000),
             )
-            src_chunks = list(chunks.get("ctxCut", []))
+            source_parts = list(chunks.get("ctxCut", []))
         except Exception:
+            if single_extract_stage_writeback and manifest_path.exists():
+                raise RuntimeError("cannot verify saved raw slices against current source")
             return False
 
-        if len(src_chunks) != len(root_files):
+        if not source_parts:
+            return False
+        source_hash = digest_text(source_text)
+        part_hashes = [digest_text(str(part)) for part in source_parts]
+        todo_names = {fp.name for fp in root_files}
+
+        if manifest_path.exists():
+            # A saved snapshot is authoritative only if current source and
+            # EVERY on-disk raw slice still match the committed identity.
+            # Never silently overwrite a stale manifest or adopt a prompt
+            # copy as a raw source slice on resume.
+            saved = robust_json_read(str(manifest_path))
+            names = saved.get("names") if isinstance(saved, dict) else None
+            valid = (
+                isinstance(saved, dict)
+                and saved.get("version") == 1
+                and saved.get("source_sha256") == source_hash
+                and isinstance(names, list)
+                and len(names) == len(source_parts)
+                and len(set(names)) == len(names)
+                and all(isinstance(name, str) and name.endswith(".txt")
+                        and Path(name).name == name for name in names)
+                and saved.get("part_sha256") == part_hashes
+                and todo_names.issubset(set(names))
+            )
+            if valid:
+                valid = all(
+                    (snapshot_dir / name).is_file()
+                    and digest_text((snapshot_dir / name).read_text(encoding="utf-8")) == part_hashes[index]
+                    for index, name in enumerate(names)
+                )
+            if not valid:
+                if single_extract_stage_writeback:
+                    raise RuntimeError(
+                        "saved original source-slice provenance mismatches current source or queue"
+                    )
+                return False
+            return True
+
+        # First attempt: all original prompts must still be queued and the
+        # full mapping is captured BEFORE any first-stage LLM call.
+        if len(source_parts) != len(root_files):
             return False
 
-        snap_dir = _snapshot_dir(item, "original")
-        MKDIR(snap_dir)
-        _clear_txt_files(snap_dir, ops)
-        for fp, chunk_text in zip(root_files, src_chunks):
-            dst_fp = os.path.join(snap_dir, fp.name)
-            with open(dst_fp, "w", encoding="utf-8") as f:
-                f.write(chunk_text)
+        names = [fp.name for fp in root_files]
+        MKDIR(str(snapshot_dir))
+        _clear_txt_files(str(snapshot_dir), ops)
+        for name, text_piece in zip(names, source_parts):
+            dst = snapshot_dir / name
+            # Per-file temp + replace ensures a crashed first attempt cannot
+            # expose truncated raw fragments with an apparently valid manifest.
+            staged = snapshot_dir / (name + ".pending")
+            try:
+                with open(staged, "w", encoding="utf-8", newline="") as handle:
+                    handle.write(str(text_piece))
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                os.replace(staged, dst)
+            finally:
+                if staged.exists():
+                    staged.unlink()
+        atomic_write_json(
+            str(manifest_path),
+            {"version": 1, "source_sha256": source_hash,
+             "names": names, "part_sha256": part_hashes},
+        )
         return True
 
-    # Keep whether "original" is genuine retokenized source material.
-    # Prompt-copy fallback must never be mistaken for raw input fragments.
+    # Raw-source snapshots remain valid when some prompts have moved from
+    # TODO into Success. Only fall back to copied prompt snapshots for old
+    # non-source flows; a persisted provenance manifest is never overwritten
+    # with prompt text merely because the current TODO count is smaller.
     source_slice_verified: dict[str, bool] = {}
     for item in prompt_items:
         from_source = _write_original_snapshot_from_source(item)
         source_slice_verified[item] = from_source
         if not from_source:
-            _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
+            marker = Path(_snapshot_dir(item, "original")) / "_source_slice_provenance.json"
+            if not marker.exists():
+                _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
 
     def _refresh_stage_prompt_metrics(root_todo_dir: str, filename: str, task_text: str, prompt_text: str, stage_identity: str):
         # The worker claims root TODO/<basename> into RUNNING/<basename>.
