@@ -87,7 +87,8 @@ def _stable_composite(value, active):
     if isinstance(value, functools.partial):
         return {"partial": _stable(value.func, active),
                 "args": _stable(value.args, active),
-                "keywords": _stable(value.keywords or {}, active)}
+                "keywords": _stable(value.keywords or {}, active),
+                "attributes": _stable(getattr(value, "__dict__", {}), active)}
     if inspect.isfunction(value):
         try:
             source = textwrap.dedent(inspect.getsource(value)).strip()
@@ -125,6 +126,11 @@ def _stable_composite(value, active):
             "kwdefaults": _stable(value.__kwdefaults__, active),
             "closure": closure,
             "globals": globals_used,
+            # Function objects can carry prompt-affecting mutable attributes.
+            # Even a self-reference via template.prefix is covered: the
+            # top-level function serializes __dict__, recursion uses a
+            # stable back-edge and cannot suppress changed prefix values.
+            "attributes": _stable(value.__dict__, active),
         }
     raise ValueError(f"unsupported task identity type: {type(value).__name__}")
 
