@@ -1501,6 +1501,37 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             if not marker.exists():
                 _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
 
+    # Recover the full frozen input identity after a partial resume. A verified
+    # Success A no longer has a TODO file, but it still belongs to this
+    # extract's A+B source. The dispatch hashes were committed before the LLM
+    # call, and source-slice hashes were just independently revalidated.
+    if single_extract_stage_writeback:
+        for item in prompt_items:
+            if not source_slice_verified.get(item, False):
+                continue
+            manifest = robust_json_read(
+                os.path.join(_snapshot_dir(item, "original"), "_source_slice_provenance.json")
+            )
+            dispatched = manifest.get("dispatch_sha256", {})
+            if not dispatched:
+                continue
+            expected_stage = digest_text(str(stage_defs[0].task))
+            if manifest.get("stage_task_sha256") != expected_stage:
+                raise RuntimeError(
+                    "extract stage task changed since partial Success; "
+                    "explicit full_restart is required"
+                )
+            allowed = set(manifest.get("names", ()))
+            if not isinstance(dispatched, dict) or not set(dispatched).issubset(allowed):
+                raise RuntimeError("invalid saved extract dispatch provenance")
+            for name, recorded_hash in dispatched.items():
+                if not isinstance(recorded_hash, str) or len(recorded_hash) != 64:
+                    raise RuntimeError("invalid saved extract dispatch digest")
+                if name not in expected_extract_files[item]:
+                    # Completed members remain mandatory; the final Success
+                    # coverage gate verifies prompt AND output SHA-256.
+                    expected_extract_files[item][name] = recorded_hash
+
     def _refresh_stage_prompt_metrics(root_todo_dir: str, filename: str, task_text: str, prompt_text: str, stage_identity: str):
         # The worker claims root TODO/<basename> into RUNNING/<basename>.
         # Refresh metadata against that logical prompt basename so every stage
@@ -1717,15 +1748,24 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         _prepare_todo_for_stage(job.chunk_id, job.stage_name, job.stage_task)
         _sync_stage_todo_to_root(job.chunk_id, job.stage_name, ops)
         if single_extract_stage_writeback:
-            # Some stage configurations render their own prompt after the
-            # initial input was generated. Bind completed Success to the
-            # *dispatched* prompt, not the pre-stage template.
+            # Bind to the actually dispatched prompt, and durably retain the
+            # complete original membership even after Success prunes TODO.
             current = expected_extract_files[job.chunk_id]
+            raw_manifest = os.path.join(
+                _snapshot_dir(job.chunk_id, "original"), "_source_slice_provenance.json",
+            )
+            record = robust_json_read(raw_manifest) if source_slice_verified.get(job.chunk_id) else {}
+            all_sent = dict(record.get("dispatch_sha256", {}))
             for prompt_path in _root_txt_files(ops.join(job.chunk_id, "TODO")):
+                prompt_hash = digest_text(prompt_path.read_text(encoding="utf-8"))
                 if prompt_path.name in current:
-                    current[prompt_path.name] = digest_text(
-                        prompt_path.read_text(encoding="utf-8")
-                    )
+                    current[prompt_path.name] = prompt_hash
+                if record and prompt_path.name in record.get("names", []):
+                    all_sent[prompt_path.name] = prompt_hash
+            if record:
+                record["dispatch_sha256"] = all_sent
+                record["stage_task_sha256"] = digest_text(str(stage_defs[0].task))
+                atomic_write_json(raw_manifest, record)
         stage_def = stage_map[job.stage_name]
         debug_enabled, debug_max_chars = _resolve_llm_debug_flags(
             stage_debug_enabled=stage_def.debug_print_llm_io,
