@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -25,6 +26,19 @@ from czjLLM.sql_mode.entry import steps as sql_steps
 pytestmark = pytest.mark.e2e
 
 _SOURCE = "E2E_JSON_SPLIT_INPUT should be processed in two different segments"
+
+# Real callable-task dependencies used for persisted-stage fingerprint tests.
+_E2E_GLOBAL_PROMPT_RULE = "E2E_JSON_EFFECTIVE_TASK"
+_E2E_GLOBAL_FLAG = False
+
+
+def _e2e_global_helper(content):
+    return content
+
+
+def _e2e_global_template(content):
+    return (_E2E_GLOBAL_PROMPT_RULE + "\n"
+            + (_e2e_global_helper(content) if _E2E_GLOBAL_FLAG else content))
 
 
 def _force_two_source_slices(monkeypatch):
@@ -292,7 +306,7 @@ def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
-@pytest.mark.parametrize("resume_case", ["accept", "reject-stale-source", "reject-drifted-prompt"])
+@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper"])
 def test_task_key_override_recovers_completed_original_slice(
     backend, resume_policy, resume_case, fake_openai, tmp_path, monkeypatch,
 ):
@@ -321,6 +335,11 @@ def test_task_key_override_recovers_completed_original_slice(
     ctx.sql_flatten_writeback_rules = [{"writeback_rule": 0, "enabled": False}]
     ctx.stages[0]["task_key"] = "E2E_JSON_EFFECTIVE"
     ctx.taskSetting = {"E2E_JSON_EFFECTIVE": "E2E_JSON_EFFECTIVE_TASK"}
+    if resume_case in {"accept-global", "reject-drifted-global", "reject-drifted-helper"}:
+        ctx.taskSetting["E2E_JSON_EFFECTIVE"] = {
+            "CT_name": "E2E callable global dependency",
+            "template": _e2e_global_template,
+        }
     ctx.main_file_name = "rawresume211"
     ctx.temp_txt_finished_dir = str(tmp_path / "finished")
 
@@ -399,6 +418,25 @@ def test_task_key_override_recovers_completed_original_slice(
         assert first_output.is_file()
         return
 
+    if resume_case in {"reject-drifted-global", "reject-drifted-helper"}:
+        # A is Success; B is TODO. Refuse changed semantics before any LLM
+        # dispatch or durable provenance overwrite.
+        with monkeypatch.context() as drift:
+            if resume_case == "reject-drifted-global":
+                drift.setattr(sys.modules[__name__], "_E2E_GLOBAL_PROMPT_RULE",
+                              "E2E_JSON_EFFECTIVE_TASK CHANGED")
+            else:
+                drift.setattr(sys.modules[__name__], "_e2e_global_helper",
+                              lambda content: "CHANGED " + content)
+            calls_before = len(fake_openai.requests)
+            prior = saved.read_bytes()
+            with pytest.raises(RuntimeError, match="extract stage task changed"):
+                controller.process_prompt_and_merge_multistage(ctx, str(source))
+            assert len(fake_openai.requests) == calls_before
+            assert saved.read_bytes() == prior
+            assert first_output.is_file()
+        return
+
     before_resume = len(fake_openai.requests)
     result_marker = controller.process_prompt_and_merge_multistage(ctx, str(source))
     assert Path(result_marker).is_file()
@@ -469,6 +507,19 @@ def test_task_key_override_recovers_completed_original_slice(
         ctx, str(reused_marker), Path(reused_marker).read_text(encoding="utf-8"),
     )
     assert json.loads(reused_values["analysis"]) == {"keyFunctions": ["first", "second"]}
+
+    if resume_case == "accept-global":
+        # With every leaf already Success and no TODO, reject stale outputs
+        # even though smart_reset otherwise requires ZERO provider calls.
+        with monkeypatch.context() as drift:
+            drift.setattr(sys.modules[__name__], "_E2E_GLOBAL_FLAG", True)
+            calls_before = len(fake_openai.requests)
+            with pytest.raises(RuntimeError, match="extract stage task changed"):
+                controller.process_prompt_and_merge_multistage(ctx, str(source))
+            assert len(fake_openai.requests) == calls_before
+            assert completed_before == {
+                x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
+            }
 
     # A full restart with a modified source must fail BEFORE removing Success.
     ctx.resume_policy = "full_restart"
@@ -587,3 +638,84 @@ def test_same_line_lambda_templates_bind_bytecode_constants_to_task_identity():
     assert left.__code__.co_code == right.__code__.co_code
     assert left.__code__.co_consts != right.__code__.co_consts
     assert fingerprint_task({"template": left}) != fingerprint_task({"template": right})
+
+
+def test_task_fingerprint_tracks_globals_flags_and_transitive_helpers():
+    from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
+
+    source = """
+RULE = 'first'
+FLAG = False
+def helper(text):
+    return 'A' + text
+def template(content):
+    return RULE + (helper(content) if FLAG else content)
+"""
+    namespace = {"__name__": "e2e_semantics"}
+    exec(source, namespace)
+    task = {"template": namespace["template"]}
+    first = fingerprint_task(task)
+    namespace["RULE"] = "second"
+    second = fingerprint_task(task)
+    namespace["FLAG"] = True
+    third = fingerprint_task(task)
+    exec("def helper(text): return 'B' + text", namespace)
+    fourth = fingerprint_task(task)
+    assert len({first, second, third, fourth}) == 4
+
+    same = {"__name__": "e2e_semantics"}
+    exec(source, same)
+    same["RULE"] = "second"
+    same["FLAG"] = True
+    exec("def helper(text): return 'B' + text", same)
+    assert fourth == fingerprint_task({"template": same["template"]})
+
+
+def test_task_fingerprint_nested_global_and_cycle_and_fail_closed():
+    from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
+
+    scope = {"__name__": "e2e_semantics"}
+    exec("""
+WORD = 'first'
+def template(content):
+    return ''.join([WORD for _ in range(2)]) + content
+""", scope)
+    before = fingerprint_task(scope["template"])
+    scope["WORD"] = "second"
+    assert fingerprint_task(scope["template"]) != before
+
+    exec("""
+def first(x):
+    return second(x - 1) if x > 0 else 0
+def second(x):
+    return first(x - 1) if x > 0 else 0
+""", scope)
+    assert len(fingerprint_task(scope["first"])) == 64
+
+    exec("DYNAMIC = object()\ndef unsafe(content): return str(DYNAMIC) + content", scope)
+    with pytest.raises(ValueError, match="unsupported task identity type"):
+        fingerprint_task({"template": scope["unsafe"]})
+
+
+def test_task_fingerprint_is_stable_in_separate_python_processes():
+    import subprocess
+    from pathlib import Path
+
+    project_root = Path(__file__).resolve().parents[2]
+    script = """
+from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
+RULE = 'same'
+FLAG = True
+def helper(content):
+    return content.upper()
+def template(content):
+    return RULE + (helper(content) if FLAG else content)
+print(fingerprint_task({'template': template}))
+"""
+    hashes = [
+        subprocess.check_output([sys.executable, "-c", script], cwd=project_root,
+                                text=True).strip()
+        for _ in range(2)
+    ]
+    assert hashes[0] == hashes[1]
+    assert len(hashes[0]) == 64
