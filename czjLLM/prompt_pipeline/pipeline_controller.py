@@ -48,6 +48,7 @@ from czjLLM.job_manager.end_point_manager import select_model
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.slice_merge import merge_dict_slices_audited, should_merge_slices
+from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
 from czjLLM.prompt_pipeline.slice_identity import (
     committed_split_parent_identities, digest_text,
     include_committed_split_roots, install_split_prompts,
@@ -1658,7 +1659,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             dispatched = manifest.get("dispatch_sha256", {})
             if not dispatched:
                 continue
-            expected_stage = digest_text(str(stage_defs[0].task))
+            expected_stage = fingerprint_task(stage_defs[0].task)
             if manifest.get("stage_task_sha256") != expected_stage:
                 if resume_policy != "full_restart":
                     raise RuntimeError(
@@ -1941,7 +1942,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                     all_sent[prompt_path.name] = prompt_hash
             if record:
                 record["dispatch_sha256"] = all_sent
-                record["stage_task_sha256"] = digest_text(str(stage_defs[0].task))
+                record["stage_task_sha256"] = fingerprint_task(stage_defs[0].task)
                 atomic_write_json(raw_manifest, record)
         stage_def = stage_map[job.stage_name]
         debug_enabled, debug_max_chars = _resolve_llm_debug_flags(
