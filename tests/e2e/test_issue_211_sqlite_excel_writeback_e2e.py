@@ -291,8 +291,9 @@ def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
 
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
+@pytest.mark.parametrize("tamper_before_resume", [False, True], ids=["resume", "reject-stale-source"])
 def test_task_key_override_recovers_completed_original_slice(
-    backend, fake_openai, tmp_path, monkeypatch,
+    backend, tamper_before_resume, fake_openai, tmp_path, monkeypatch,
 ):
     """Crash after the original A/B manifest was committed, finish only B.
 
@@ -328,7 +329,7 @@ def test_task_key_override_recovers_completed_original_slice(
     todo.mkdir(parents=True)
     for i, part in enumerate(("E2E_JSON_PART_A", "E2E_JSON_PART_B")):
         (todo / f"{i}.txt").write_text(
-            f"E2E_JSON_RESPONSE\\n\\n{part}", encoding="utf-8",
+            f"E2E_JSON_RESPONSE\n\n{part}", encoding="utf-8",
         )
 
     # Simulate a process interruption at the LLM boundary, AFTER the real
@@ -361,6 +362,15 @@ def test_task_key_override_recovers_completed_original_slice(
         first_prompt.read_text(encoding="utf-8"), first["output"],
     )
     first_prompt.unlink()
+
+    if tamper_before_resume:
+        # Same tokenizer chunks but different source SHA: no stale success reuse.
+        source.write_text(_SOURCE + " CHANGED", encoding="utf-8")
+        before_resume = len(fake_openai.requests)
+        with pytest.raises(RuntimeError, match="source-slice provenance"):
+            controller.process_prompt_and_merge_multistage(ctx, str(source))
+        assert len(fake_openai.requests) == before_resume
+        return
 
     before_resume = len(fake_openai.requests)
     result_marker = controller.process_prompt_and_merge_multistage(ctx, str(source))
@@ -410,10 +420,3 @@ def test_task_key_override_recovers_completed_original_slice(
 
     assert json.loads(written) == {"keyFunctions": ["first", "second"]}
 
-    # Mutating the source after verified Success A must not reuse the prior
-    # full-source snapshot. The actual controller fails before any LLM call.
-    source.write_text(_SOURCE + " CHANGED", encoding="utf-8")
-    count = len(fake_openai.requests)
-    with pytest.raises(RuntimeError, match="source-slice provenance"):
-        controller.process_prompt_and_merge_multistage(ctx, str(source))
-    assert len(fake_openai.requests) == count
