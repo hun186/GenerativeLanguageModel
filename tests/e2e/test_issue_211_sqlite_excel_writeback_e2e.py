@@ -428,3 +428,53 @@ def test_task_key_override_recovers_completed_original_slice(
 
     assert json.loads(written) == {"keyFunctions": ["first", "second"]}
 
+
+    # A+B are now entirely in Success, with zero root TODO. A smart reset
+    # must reconstruct the stage output, NOT invoke the model or replace the
+    # accepted Success files with nondeterministic new ones.
+    assert not list(todo.glob("*.txt"))
+    ctx.resume_policy = "smart_reset"
+    completed_before = {
+        x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
+    }
+    calls_before = len(fake_openai.requests)
+    reused_marker = controller.process_prompt_and_merge_multistage(ctx, str(source))
+    assert Path(reused_marker).is_file()
+    assert len(fake_openai.requests) == calls_before
+    assert completed_before == {
+        x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
+    }
+    reused_values, *_ = _build_writeback_values(
+        ctx, str(reused_marker), Path(reused_marker).read_text(encoding="utf-8"),
+    )
+    assert json.loads(reused_values["analysis"]) == {"keyFunctions": ["first", "second"]}
+
+    # A full restart with a modified source must fail BEFORE removing Success.
+    ctx.resume_policy = "full_restart"
+    source.write_text(_SOURCE + " CHANGED", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="original source has changed"):
+        controller.process_prompt_and_merge_multistage(ctx, str(source))
+    assert completed_before == {
+        x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
+    }
+    source.write_text(_SOURCE, encoding="utf-8")
+
+    # An explicit full restart may change task_key: it must recompute both
+    # source slices using the new effective task and replace old results,
+    # rather than rejecting the stale dispatch/task metadata after deletion.
+    if resume_policy == "resume":
+        ctx.stages[0]["task_key"] = "E2E_RESTART_TASK"
+        ctx.taskSetting["E2E_RESTART_TASK"] = "E2E_JSON_NEW_TASK"
+        calls_before = len(fake_openai.requests)
+        restarted = controller.process_prompt_and_merge_multistage(ctx, str(source))
+        assert Path(restarted).is_file()
+        fresh = fake_openai.requests[calls_before:]
+        assert len(fresh) == 2, fresh
+        assert all("E2E_JSON_NEW_TASK" in str(x["body"]) for x in fresh)
+        assert any("E2E_JSON_PART_A" in str(x["body"]) for x in fresh)
+        assert any("E2E_JSON_PART_B" in str(x["body"]) for x in fresh)
+        new_values, *_ = _build_writeback_values(
+            ctx, str(restarted), Path(restarted).read_text(encoding="utf-8"),
+        )
+        assert json.loads(new_values["analysis"]) == {"keyFunctions": ["first", "second"]}
+
