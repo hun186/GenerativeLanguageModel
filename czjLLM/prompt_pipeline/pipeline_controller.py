@@ -1785,6 +1785,26 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
 
     def runner(job, _ctx, _input_text=None):
         raise_if_execution_cancelled(ctx)
+        if (
+            single_extract_stage_writeback
+            and resume_policy in {"resume", "smart_reset"}
+            and not _root_txt_files(ops.join(job.chunk_id, "TODO"))
+            and expected_extract_files.get(job.chunk_id)
+        ):
+            # A fully completed input has no pending prompts. smart_reset
+            # deletes stage snapshots but intentionally keeps Success: do not
+            # regenerate original slices as TODO and call the provider again.
+            # Verify every saved output's prompt/output fingerprint, including
+            # any recursively split descendants, before the final coverage
+            # gate reconstructs the extract snapshot for stage writeback.
+            for name, prompt_hash in expected_extract_files[job.chunk_id].items():
+                try:
+                    resolve_success_leaves(job.chunk_id, name, prompt_hash)
+                except (ValueError, OSError) as exc:
+                    raise RuntimeError(
+                        "cannot reuse completed extract: invalid Success identity"
+                    ) from exc
+            return {"ok": True, "output": ""}
         if job.stage_name not in shown_stage_tasks:
             print(f"[stage:{job.stage_name}] 📝 使用任務：\n{_stage_task_debug_text(job.stage_task)}")
             shown_stage_tasks.add(job.stage_name)
