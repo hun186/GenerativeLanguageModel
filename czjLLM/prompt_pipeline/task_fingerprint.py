@@ -63,7 +63,11 @@ def _stable(value):
         return {
             "function": f"{value.__module__}:{value.__qualname__}",
             "source": source,
-            "code": None if source is not None else _code_signature(value.__code__),
+            # Source introspection can return an entire assignment line for
+            # multiple lambdas. Equal source/module/qualname does not imply
+            # equal behavior; always bind the callable's actual bytecode,
+            # nested constants and referenced names into the identity.
+            "code": _code_signature(value.__code__),
             "defaults": _stable(value.__defaults__),
             "kwdefaults": _stable(value.__kwdefaults__),
             "closure": closure,
