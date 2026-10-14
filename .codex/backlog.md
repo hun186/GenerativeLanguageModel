@@ -78,3 +78,8 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 
 - [ ] PR #213: accept exact-head Hosted offline E2E for SQLite+Excel two-slice JSON writeback and partial resume; complete Codex review and resolve all threads before requesting user merge authorization.
 - [ ] Separately smoke-test with real external LLM and existing Windows / database deployment when available; offline model stubs and deterministic cut boundaries are not a substitute for production validation.
+
+### 2026-10-14 PR #213 acceptance gate
+
+- [ ] Confirm Hosted exact-head offline E2E and focused Issue #211 suite pass after durable A+B source/dispatch snapshot restoration, including SQLite/Excel task_key override, B-only resume, tampered-source refusal and verified nested retry descendants.
+- [ ] Request and complete fresh Codex exact-head review, resolve all findings; report Windows self-hosted queue honestly. Await explicit user `merge` authorization.
