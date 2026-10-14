@@ -1303,6 +1303,90 @@ def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
     return json.dumps(merged, ensure_ascii=False, indent=2)
 
 
+def _rebuild_full_restart_from_verified_source(
+    prompt_items: list[str], ctx, file_path: str, stage_def,
+) -> set[str]:
+    """Prepare current task prompts before destructive full_restart cleanup.
+
+    For workspaces with durable original-source provenance, the entire
+    current source must still match its saved A/B boundaries. Unlike resume,
+    an explicit full restart is allowed to change the effective extract task;
+    old Success and dispatch fingerprints are no longer reusable.
+    """
+    plans: list[tuple[str, Path, dict, list[tuple[str, str]]]] = []
+    for item in prompt_items:
+        marker = _original_source_manifest_path(item)
+        if not marker.exists():
+            continue
+        saved = robust_json_read(str(marker))
+        names = saved.get("names") if isinstance(saved, dict) else None
+        parts_hash = saved.get("part_sha256") if isinstance(saved, dict) else None
+        if not (
+            isinstance(saved, dict) and saved.get("version") == 1
+            and isinstance(names, list) and len(names) > 0
+            and len(set(names)) == len(names)
+            and all(isinstance(n, str) and n.endswith(".txt")
+                    and Path(n).name == n for n in names)
+            and isinstance(parts_hash, list) and len(parts_hash) == len(names)
+        ):
+            raise RuntimeError("full_restart invalid saved original source identity")
+        try:
+            source = Path(file_path).read_text(encoding="utf-8")
+            pieces = list(TokenizerWrapper(
+                model_name=getattr(ctx, "model_spec_name", ""),
+                task=getattr(ctx, "task", ""),
+            ).tokenize(
+                text=source, adjust=True,
+                max_tokens=getattr(ctx, "max_tokens", 12000),
+            ).get("ctxCut", []))
+        except (OSError, UnicodeError, ValueError) as exc:
+            raise RuntimeError("full_restart cannot verify current raw input") from exc
+        if (
+            saved.get("source_sha256") != digest_text(source)
+            or len(pieces) != len(names)
+            or [digest_text(str(part)) for part in pieces] != parts_hash
+        ):
+            raise RuntimeError(
+                "full_restart original source has changed; keep old Success"
+            )
+        rebuilt = [
+            (name, _build_stage_prompt_text(stage_def.task, str(piece), ctx))
+            for name, piece in zip(names, pieces)
+        ]
+        plans.append((item, marker, saved, rebuilt))
+
+    # The plan for every affected item is fully validated before changing a
+    # single Success file or existing TODO. Keep the original queue usable
+    # until each new prompt has been staged and fsynced.
+    for item, marker, saved, rebuilt in plans:
+        todo_dir = Path(item) / "TODO"
+        todo_dir.mkdir(parents=True, exist_ok=True)
+        stage_dir = Path(item) / "_extract_slice_identity" / "restart_staging" / uuid.uuid4().hex
+        stage_dir.mkdir(parents=True, exist_ok=False)
+        try:
+            for name, prompt in rebuilt:
+                file = stage_dir / name
+                with file.open("w", encoding="utf-8", newline="") as handle:
+                    handle.write(prompt)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+            for fp in _root_txt_files(str(todo_dir)):
+                fp.unlink()
+            for name, _prompt in rebuilt:
+                os.replace(stage_dir / name, todo_dir / name)
+        finally:
+            shutil.rmtree(stage_dir, ignore_errors=True)
+        # All retried descendants belonged to the previous task. Their
+        # old intent is not a valid lineage for fresh original source roots.
+        split_dir = Path(item) / "_extract_slice_identity" / "splits"
+        if split_dir.is_dir():
+            shutil.rmtree(split_dir)
+        saved.pop("dispatch_sha256", None)
+        saved.pop("stage_task_sha256", None)
+        atomic_write_json(str(marker), saved)
+    return {item for item, _marker, _saved, _rebuilt in plans}
+
+
 def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | None = None, max_rounds: int = 20) -> str:
     from czjLLM.reduction.production_control import raise_if_execution_cancelled
     raise_if_execution_cancelled(ctx)
@@ -1328,9 +1412,14 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         # Full restart must first regenerate completed split branches from
         # the current source. Otherwise clearing Success loses their prompts.
         if resume_policy == "full_restart":
-            _restore_single_extract_full_restart_parents(
-                prompt_items, ctx, stage_defs[0],
+            restored = _rebuild_full_restart_from_verified_source(
+                prompt_items, ctx, file_path, stage_defs[0],
             )
+            remaining = [item for item in prompt_items if item not in restored]
+            if remaining:
+                _restore_single_extract_full_restart_parents(
+                    remaining, ctx, stage_defs[0],
+                )
         # Journal reconciliation must precede input-membership capture.
         # An interrupted split can otherwise surface parent and children as
         # independent roots and duplicate SQL/Excel writeback content.
@@ -1549,10 +1638,14 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 continue
             expected_stage = digest_text(str(stage_defs[0].task))
             if manifest.get("stage_task_sha256") != expected_stage:
-                raise RuntimeError(
-                    "extract stage task changed since partial Success; "
-                    "explicit full_restart is required"
-                )
+                if resume_policy != "full_restart":
+                    raise RuntimeError(
+                        "extract stage task changed since partial Success; "
+                        "explicit full_restart is required"
+                    )
+                # Explicit full_restart has already rebuilt every current
+                # input prompt, and must not resurrect old Success coverage.
+                dispatched = {}
             allowed = set(manifest.get("names", ()))
             if not isinstance(dispatched, dict) or not set(dispatched).issubset(allowed):
                 raise RuntimeError("invalid saved extract dispatch provenance")
