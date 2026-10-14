@@ -292,9 +292,9 @@ def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
-@pytest.mark.parametrize("tamper_before_resume", [False, True], ids=["accept", "reject-stale-source"])
+@pytest.mark.parametrize("resume_case", ["accept", "reject-stale-source", "reject-drifted-prompt"])
 def test_task_key_override_recovers_completed_original_slice(
-    backend, resume_policy, tamper_before_resume, fake_openai, tmp_path, monkeypatch,
+    backend, resume_policy, resume_case, fake_openai, tmp_path, monkeypatch,
 ):
     """Crash after the original A/B manifest was committed, finish only B.
 
@@ -369,13 +369,34 @@ def test_task_key_override_recovers_completed_original_slice(
         assert saved.is_file()
         assert len(list((item / "_stage_outputs" / "original").glob("*.txt"))) == 2
 
-    if tamper_before_resume:
+    if resume_case == "reject-stale-source":
         # Same tokenizer chunks but different source SHA: no stale success reuse.
         source.write_text(_SOURCE + " CHANGED", encoding="utf-8")
         before_resume = len(fake_openai.requests)
         with pytest.raises(RuntimeError, match="source-slice provenance"):
             controller.process_prompt_and_merge_multistage(ctx, str(source))
         assert len(fake_openai.requests) == before_resume
+        return
+
+    if resume_case == "reject-drifted-prompt":
+        # A has already succeeded and the saved dispatch fingerprint binds
+        # B as well. Inject a deterministic renderer drift after stage
+        # preparation; no B request or provenance overwrite is permissible.
+        old_evidence = saved.read_bytes()
+        calls_before = len(fake_openai.requests)
+        original_render = controller._build_stage_prompt_text
+
+        def drifted_renderer(task, raw, runtime_ctx):
+            rendered = original_render(task, raw, runtime_ctx)
+            return rendered + "\\nCORRUPTED" if raw == "E2E_JSON_PART_B" else rendered
+
+        with monkeypatch.context() as patch:
+            patch.setattr(controller, "_build_stage_prompt_text", drifted_renderer)
+            with pytest.raises(RuntimeError, match="extract dispatch prompt changed"):
+                controller.process_prompt_and_merge_multistage(ctx, str(source))
+        assert saved.read_bytes() == old_evidence
+        assert len(fake_openai.requests) == calls_before
+        assert first_output.is_file()
         return
 
     before_resume = len(fake_openai.requests)
@@ -554,3 +575,15 @@ def test_regular_multistage_input_snapshot_ignores_stale_single_extract_manifest
     assert (snapshot / "0.txt").read_text(encoding="utf-8") == "E2E_JSON_PART_A"
     assert (snapshot / "1.txt").read_text(encoding="utf-8") == "E2E_JSON_PART_B"
     assert json.loads(stale.read_text())["source_sha256"] == "0" * 64
+
+
+def test_same_line_lambda_templates_bind_bytecode_constants_to_task_identity():
+    from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
+
+    # inspect.getsource() returns the same *assignment line* for both
+    # lambdas, and their module and qualname are likewise identical.
+    left, right = (lambda content: "LEFT " + content), (lambda content: "RIGHT " + content)
+    assert left.__qualname__ == right.__qualname__
+    assert left.__code__.co_code == right.__code__.co_code
+    assert left.__code__.co_consts != right.__code__.co_consts
+    assert fingerprint_task({"template": left}) != fingerprint_task({"template": right})
