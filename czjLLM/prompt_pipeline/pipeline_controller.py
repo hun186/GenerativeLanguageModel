@@ -1520,6 +1520,22 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         part_hashes = [digest_text(str(part)) for part in source_parts]
         todo_names = {fp.name for fp in root_files}
 
+        if not single_extract_stage_writeback:
+            # The durable hash-only source manifest is solely for Issue #211's
+            # single-extract writeback path. Normal multistage jobs must follow
+            # their pre-existing source snapshot lifecycle; a stale marker left
+            # by a previous run must never pin them to old stage inputs.
+            if len(source_parts) != len(root_files):
+                return False
+            MKDIR(str(snapshot_dir))
+            _clear_txt_files(str(snapshot_dir), ops)
+            for fp, part in zip(root_files, source_parts):
+                with (snapshot_dir / fp.name).open(
+                    "w", encoding="utf-8", newline=""
+                ) as handle:
+                    handle.write(str(part))
+            return True
+
         if manifest_path.exists():
             # A saved snapshot is authoritative only if current source and
             # EVERY on-disk raw slice still match the committed identity.
@@ -1621,7 +1637,13 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         source_slice_verified[item] = from_source
         if not from_source:
             marker = _original_source_manifest_path(item)
-            if not marker.exists():
+            if not single_extract_stage_writeback:
+                # Non-single-extract multistage inputs may have been freshly
+                # regenerated with different counts or changed source.
+                # Never let an unrelated legacy marker suppress fallback.
+                _clear_txt_files(_snapshot_dir(item, "original"), ops)
+                _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
+            elif not marker.exists():
                 _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
 
     # Recover the full frozen input identity after a partial resume. A verified
