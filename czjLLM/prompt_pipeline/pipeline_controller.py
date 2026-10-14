@@ -780,6 +780,24 @@ def _build_stage_prompt_text(stage_task, content: str, ctx) -> str:
     return render_stage_task_prompt(stage_task, content, ctx)
 
 
+def _extract_stage_provenance_fingerprint(stage_task, ctx) -> str:
+    """Bind the scoped extract's task AND prompt-affecting renderer context.
+
+    Even when every source slice is already Success, a changed renderer
+    configuration must invalidate cached output *before* the zero-TODO
+    fast path. The manifest stores only this digest, never prompt contents.
+    """
+    return fingerprint_task({
+        "stage_task": stage_task,
+        "render_context": {
+            "keyConsiderations": getattr(ctx, "keyConsiderations", ""),
+            "think_mode": getattr(ctx, "think_mode", True),
+            "main_file_name": getattr(ctx, "main_file_name", ""),
+            "initial_task": getattr(ctx, "task", ""),
+        },
+    })
+
+
 def _read_stage_snapshot_output(item: str, stage_name: str) -> str:
     """
     讀取某 stage snapshot 內容，回傳依檔名排序後的合併文字。
@@ -1659,7 +1677,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             dispatched = manifest.get("dispatch_sha256", {})
             if not dispatched:
                 continue
-            expected_stage = fingerprint_task(stage_defs[0].task)
+            expected_stage = _extract_stage_provenance_fingerprint(stage_defs[0].task, ctx)
             if manifest.get("stage_task_sha256") != expected_stage:
                 if resume_policy != "full_restart":
                     raise RuntimeError(
@@ -1962,7 +1980,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                     all_sent[name] = prompt_hash
             if record:
                 record["dispatch_sha256"] = all_sent
-                record["stage_task_sha256"] = fingerprint_task(stage_defs[0].task)
+                record["stage_task_sha256"] = _extract_stage_provenance_fingerprint(stage_defs[0].task, ctx)
                 atomic_write_json(raw_manifest, record)
         stage_def = stage_map[job.stage_name]
         debug_enabled, debug_max_chars = _resolve_llm_debug_flags(
