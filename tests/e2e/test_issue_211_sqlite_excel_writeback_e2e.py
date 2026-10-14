@@ -41,6 +41,13 @@ def _e2e_global_template(content):
             + (_e2e_global_helper(content) if _E2E_GLOBAL_FLAG else content))
 
 
+def _e2e_attribute_template(content):
+    return _e2e_attribute_template.prefix + "\n" + content
+
+
+_e2e_attribute_template.prefix = "E2E_JSON_EFFECTIVE_TASK"
+
+
 def _force_two_source_slices(monkeypatch):
     """Fix just the input split boundary so this acceptance always has 2 slices.
 
@@ -306,7 +313,7 @@ def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
-@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper"])
+@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "accept-alias", "accept-attribute", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper"])
 def test_task_key_override_recovers_completed_original_slice(
     backend, resume_policy, resume_case, fake_openai, tmp_path, monkeypatch,
 ):
@@ -339,6 +346,15 @@ def test_task_key_override_recovers_completed_original_slice(
         ctx.taskSetting["E2E_JSON_EFFECTIVE"] = {
             "CT_name": "E2E callable global dependency",
             "template": _e2e_global_template,
+        }
+    if resume_case == "accept-alias":
+        ctx.taskSetting = {
+            "E2E_JSON_EFFECTIVE": {"task": "E2E_ALIAS"},
+            "E2E_ALIAS": {"template": _e2e_global_template},
+        }
+    elif resume_case == "accept-attribute":
+        ctx.taskSetting = {
+            "E2E_JSON_EFFECTIVE": {"template": _e2e_attribute_template},
         }
     ctx.main_file_name = "rawresume211"
     ctx.temp_txt_finished_dir = str(tmp_path / "finished")
@@ -537,6 +553,24 @@ def test_task_key_override_recovers_completed_original_slice(
                 assert completed_before == {
                     x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
                 }
+
+    if resume_case in {"accept-alias", "accept-attribute"}:
+        # No outstanding TODO: a transitive task registry edit or mutable
+        # template attribute must invalidate old Success without dispatch.
+        with monkeypatch.context() as drift:
+            if resume_case == "accept-alias":
+                drift.setitem(ctx.taskSetting, "E2E_ALIAS",
+                              {"template": lambda content: "CHANGED " + content})
+            else:
+                drift.setattr(_e2e_attribute_template, "prefix",
+                              "E2E_JSON_EFFECTIVE_TASK CHANGED")
+            calls_before = len(fake_openai.requests)
+            with pytest.raises(RuntimeError, match="extract stage task changed"):
+                controller.process_prompt_and_merge_multistage(ctx, str(source))
+            assert len(fake_openai.requests) == calls_before
+            assert completed_before == {
+                x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
+            }
 
     # A full restart with a modified source must fail BEFORE removing Success.
     ctx.resume_policy = "full_restart"
@@ -761,3 +795,35 @@ def test_dynamic_namespace_task_lookup_fails_closed(body):
     exec("def template(content):\n    " + body, namespace)
     with pytest.raises(ValueError, match="dynamic task template namespace access"):
         fingerprint_task({"template": namespace["template"]})
+
+
+def test_callable_state_and_transitive_task_alias_change_fingerprint():
+    from czjLLM.prompt_pipeline.pipeline_controller import (
+        _extract_stage_provenance_fingerprint,
+    )
+    from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
+
+    def render(content):
+        return render.prefix + content
+    render.prefix = "A"
+    before = fingerprint_task({"template": render})
+    render.prefix = "B"
+    assert fingerprint_task({"template": render}) != before
+
+    alias_target = {"template": render}
+    pool = {"E2E_ALIAS": alias_target}
+    ctx = SimpleNamespace(taskSetting=pool, keyConsiderations="", think_mode=True,
+                          main_file_name="row211", task="DEFAULT")
+    spec = {"task": "E2E_ALIAS"}
+    original = _extract_stage_provenance_fingerprint(spec, ctx)
+    alias_target["template"] = lambda content: "NEW " + content
+    assert original != _extract_stage_provenance_fingerprint(spec, ctx)
+    pool["E2E_ALIAS"] = {"task": "E2E_OTHER"}
+    pool["E2E_OTHER"] = {"template": render}
+    changed = _extract_stage_provenance_fingerprint(spec, ctx)
+    render.prefix = "C"
+    assert changed != _extract_stage_provenance_fingerprint(spec, ctx)
+
+    pool["E2E_OTHER"] = spec  # a task alias cycle fails safely
+    with pytest.raises(ValueError, match="cyclic extract task-setting aliases"):
+        _extract_stage_provenance_fingerprint(spec, ctx)
