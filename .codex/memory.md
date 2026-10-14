@@ -219,3 +219,10 @@
 - Current fix fingerprints only global names that code actually loads (including nested code), their values and transitive helper functions, with recursion guards and stable builtin identities. Unsupported/unbound dynamic dependencies fail closed. Raw rule text and prompts are never written to provenance; hashing does not execute templates.
 - Added SQLite/Excel real-controller A-success/B-TODO and all-Success global-change rejection coverage, plus unit regressions for global string/flag/helper changes, nested loads, cycles and separate Python processes. Existing sink readback, smart_reset, full_restart, and normal multistage checks remain in the test file.
 - Implementation commit 6047981 and regression commit b7dc84d. New exact-head Hosted CI and Codex review remain to be accepted. Previous Windows self-hosted jobs remained queued. Do not merge without user authorization.
+
+
+### 2026-10-14 PR #213 second Codex round / 2 P1 + 1 P2 (pending new CI)
+- Fresh Codex review of 6a88d44 reported P1 all-Success reuse missing renderer context, P1 callable parameter ABI omissions, and P2 dynamic globals()/eval() namespace access.
+- Correctives: pipeline_controller now fingerprints effective task + keyConsiderations, think_mode, main_file_name, initial task in both dispatch and resume validation; task_fingerprint hashes varnames, argument counts, flags, cellvars and exception table; globals/locals/vars/eval/exec/__import__ namespace lookups explicitly fail closed.
+- Expanded real-controller SQLite/Excel acceptance verifies all-Success context drift rejection with no stale LLM calls, while same-line callable parameter changes and dynamic-lookup attempts are regression tested.
+- Corrective commits 9c9c22b (ABI/dynamic), d7846ba (renderer context), f546c12 (tests). Previous exact-head 6a88d44 Linux offline-e2e SUCCESS, but NEW exact-head Hosted CI and fresh Codex review still required. No merge without user authorization.
