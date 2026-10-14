@@ -193,3 +193,9 @@
 - Single extract final Success-coverage now includes completed original members from the verified manifest; it does not drop previously successful A when only B remains queued. Stage/task changes or modified source fail closed rather than silently combine stale results. Nested split children retain their verified queued prompt identity.
 - Added physical SQLite/Excel interruption-resume and stale-source rejection E2E with localhost fake OpenAI; first attempt is intentionally interrupted after the real stage prepares prompt provenance, then A is completed, leaving only B to dispatch on restart.
 - Validation of latest exact head remains pending. Linux CI for prior `1ae2c8e` passed, but does not validate this corrective. Keep PR #213 OPEN and request fresh Codex review before any merge authorization.
+
+### 2026-10-14 PR #213 smart-reset provenance fix (pending exact-head acceptance)
+
+- Codex's new P1 on `a42c5ff` identified that `smart_reset` deletes `_stage_outputs`, including the earlier raw-source provenance manifest, before a B-only resumed input can restore completed A coverage.
+- Moved the SHA-256-only manifest to `_extract_slice_identity/source/original.json` (outside resettable stage snapshots). On explicit `smart_reset`, retokenize current original source and verify its full hash, ordered per-slice hashes and durable identity before reconstructing missing transient raw-source snapshots. On ordinary `resume`, missing/corrupt snapshots fail closed instead of being silently replaced. On legacy partial Success with no durable manifest, reject incomplete source-to-TODO mapping rather than dropping A.
+- Added parameterized SQLite and Excel E2E for `resume` and `smart_reset`, each both happy-path Success-A/TODO-B and changed-source refusal. PR remains OPEN pending new exact-head CI and Codex; do not merge without user authorization.
