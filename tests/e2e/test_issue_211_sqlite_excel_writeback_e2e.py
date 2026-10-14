@@ -478,3 +478,79 @@ def test_task_key_override_recovers_completed_original_slice(
         )
         assert json.loads(new_values["analysis"]) == {"keyFunctions": ["first", "second"]}
 
+
+
+def _callable_task_factory(phrase):
+    # Separate function objects (different Python memory addresses) with
+    # identical source + captured semantic value have identical identities.
+    return lambda content: f"{phrase}\\n\\n{content}"
+
+
+def test_callable_task_identity_is_stable_across_instances_and_detects_changes():
+    from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
+
+    first = _callable_task_factory("E2E_JSON_EFFECTIVE_TASK")
+    fresh_process_equivalent = _callable_task_factory("E2E_JSON_EFFECTIVE_TASK")
+    changed = _callable_task_factory("E2E_OTHER_TASK")
+    assert repr(first) != repr(fresh_process_equivalent)
+    old_style = str({"task": "E2E_JSON_RESPONSE", "template": first})
+    new_style = str({"task": "E2E_JSON_RESPONSE", "template": fresh_process_equivalent})
+    assert old_style != new_style
+    saved_hash = fingerprint_task({"task": "E2E_JSON_RESPONSE", "template": first})
+    assert saved_hash == fingerprint_task({
+        "template": fresh_process_equivalent, "task": "E2E_JSON_RESPONSE",
+    })
+    assert saved_hash != fingerprint_task({
+        "task": "E2E_JSON_RESPONSE", "template": changed,
+    })
+    assert saved_hash != fingerprint_task({
+        "task": "DIFFERENT_CONFIG", "template": fresh_process_equivalent,
+    })
+
+
+@pytest.mark.parametrize("policy", ["resume", "smart_reset", "full_restart"])
+def test_regular_multistage_input_snapshot_ignores_stale_single_extract_manifest(
+    policy, fake_openai, tmp_path, monkeypatch,
+):
+    from czjLLM.prompt_pipeline import pipeline_controller as controller
+
+    _force_two_source_slices(monkeypatch)
+    ctx = _ctx(fake_openai, tmp_path, "table")
+    ctx.stages = [
+        {"name": "prepare", "task": "E2E_JSON_RESPONSE", "input_from": "original"},
+        {"name": "summarize", "task": "E2E_JSON_RESPONSE", "input_from": "original"},
+    ]
+    ctx.sql_writeback_rules = []  # genuine multistage, not scoped single extract
+    ctx.resume_policy = policy
+    ctx.main_file_name = "ordinary-stage"
+    source = tmp_path / "ordinary-stage.txt"
+    source.write_text(_SOURCE, encoding="utf-8")
+    item = Path(ctx.prompt_dir) / source.stem
+    todo = item / "TODO"
+    todo.mkdir(parents=True)
+    for i, part in enumerate(("E2E_JSON_PART_A", "E2E_JSON_PART_B")):
+        (todo / f"{i}.txt").write_text(
+            f"E2E_JSON_RESPONSE\\n\\n{part}", encoding="utf-8",
+        )
+
+    snapshot = item / "_stage_outputs" / "original"
+    snapshot.mkdir(parents=True)
+    (snapshot / "0.txt").write_text("STALE OLD SOURCE", encoding="utf-8")
+    stale = item / "_extract_slice_identity" / "source" / "original.json"
+    stale.parent.mkdir(parents=True)
+    stale.write_text(json.dumps({
+        "version": 1, "source_sha256": "0" * 64,
+        "names": ["0.txt", "1.txt"], "part_sha256": ["0" * 64, "0" * 64],
+    }), encoding="utf-8")
+
+    def stop_after_preparation(*_args, **_kwargs):
+        raise RuntimeError("captured-new-stage-preparation")
+
+    with monkeypatch.context() as active:
+        active.setattr(controller, "_call_llm_with_task_override", stop_after_preparation)
+        with pytest.raises(RuntimeError, match="captured-new-stage-preparation"):
+            controller.process_prompt_and_merge_multistage(ctx, str(source))
+
+    assert (snapshot / "0.txt").read_text(encoding="utf-8") == "E2E_JSON_PART_A"
+    assert (snapshot / "1.txt").read_text(encoding="utf-8") == "E2E_JSON_PART_B"
+    assert json.loads(stale.read_text())["source_sha256"] == "0" * 64
