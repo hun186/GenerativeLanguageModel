@@ -60,3 +60,8 @@
 
 - Codex P1 found at prior `1ae2c8e`: partial extract resume with a distinct task_key could reject valid durable raw snapshots when only a subset of TODO remained. Current PR branch proposes durable source/provenance verification and full Success membership recovery. Exact-head CI plus fresh Codex review are mandatory before declaring fixed.
 - Existing legacy resumed workspaces without durable raw-source provenance may conservatively fail closed for task-key-overridden extract rather than guessing which raw source segment a lone child/remaining prompt represents. Full restart or explicit recreation is the safe fallback.
+
+### 2026-10-14 new smart_reset Codex finding addressed but not yet accepted (PR #213)
+
+- Finding: storing source provenance under `_stage_outputs/original` loses it on `smart_reset`, causing incomplete Success coverage and potentially partial SQL/Excel writes. Fix moved hash-only manifest outside resettable snapshots, with source-verified regeneration and fail-closed handling of legacy missing provenance.
+- Correctness proof still pending on latest exact branch head. Previous green CI for `a42c5ff` did NOT cover the fix. Windows self-hosted runners may remain queued.
