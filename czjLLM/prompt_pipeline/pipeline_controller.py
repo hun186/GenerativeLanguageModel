@@ -1443,7 +1443,14 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 and all(isinstance(name, str) and name.endswith(".txt")
                         and Path(name).name == name for name in names)
                 and saved.get("part_sha256") == part_hashes
-                and todo_names.issubset(set(names))
+                and all(
+                    name in set(names)
+                    or is_verified_queued_split_child(
+                        item, name,
+                        (Path(item) / "TODO" / name).read_text(encoding="utf-8"),
+                    )
+                    for name in todo_names
+                )
             )
             if valid:
                 valid = all(
@@ -1606,6 +1613,12 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                     )
                 originals = Path(_snapshot_dir(item, "original"))
                 for fp in anchor_files:
+                    if is_verified_queued_split_child(
+                        item, fp.name, fp.read_text(encoding="utf-8"),
+                    ):
+                        shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
+                        relabel_prompt_token_stage(str(fp), stage_name)
+                        continue
                     raw_slice = originals / fp.name
                     if not raw_slice.is_file():
                         raise RuntimeError(
@@ -1663,6 +1676,12 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             for fp in _root_txt_files(root_todo_dir):
                 dst = os.path.join(todo_dir, fp.name)
                 if task_mismatch:
+                    if is_verified_queued_split_child(
+                        item, fp.name, fp.read_text(encoding="utf-8"),
+                    ):
+                        shutil.copy2(str(fp), dst)
+                        relabel_prompt_token_stage(str(fp), stage_name)
+                        continue
                     raw = Path(_snapshot_dir(item, "original")) / fp.name
                     if not raw.is_file():
                         raise RuntimeError(
