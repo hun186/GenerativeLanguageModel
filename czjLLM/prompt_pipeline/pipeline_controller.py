@@ -780,6 +780,54 @@ def _build_stage_prompt_text(stage_task, content: str, ctx) -> str:
     return render_stage_task_prompt(stage_task, content, ctx)
 
 
+def _extract_renderer_task_dependencies(stage_task, ctx):
+    """Resolve only entries the renderer can actually reach, without rendering.
+
+    Stage task mappings can be aliases. Hashing just {"task": "alias"} misses
+    changed ctx.taskSetting["alias"] (and any further alias mapping). Mirror
+    _render_task_mapping_prompt's lookup precedence and stop on cycles.
+    """
+    pool = _ctx_task_pool(ctx)
+    seen = set()
+
+    def mapping_dependency(spec):
+        if id(spec) in seen:
+            raise ValueError("cyclic extract task-setting aliases")
+        seen.add(id(spec))
+        try:
+            if callable(spec.get("template")):
+                return {"mapping": spec, "mode": "callable"}
+            mapped = spec.get("task", spec.get("prompt", ""))
+            if isinstance(mapped, str) and mapped.strip():
+                name = mapped.strip()
+                if isinstance(pool, Mapping) and name in pool and pool[name] is not spec:
+                    nested = pool[name]
+                    if isinstance(nested, Mapping):
+                        return {"mapping": spec, "alias": name,
+                                "resolved": mapping_dependency(nested)}
+                    return {"mapping": spec, "alias": name,
+                            "raw": str(nested or "").strip()}
+                if name in taskSetting and taskSetting[name] is not spec:
+                    return {"mapping": spec, "global_key": name,
+                            "global_setting": taskSetting[name]}
+            return {"mapping": spec}
+        finally:
+            seen.remove(id(spec))
+
+    if isinstance(stage_task, Mapping):
+        return mapping_dependency(stage_task)
+
+    name = str(stage_task or "").strip()
+    if name and isinstance(pool, Mapping) and name in pool:
+        spec = pool[name]
+        if isinstance(spec, Mapping):
+            return {"key": name, "resolved": mapping_dependency(spec)}
+        return {"key": name, "raw": str(spec or "").strip()}
+    if name and name in taskSetting:
+        return {"key": name, "global_setting": taskSetting[name]}
+    return {"raw": name}
+
+
 def _extract_stage_provenance_fingerprint(stage_task, ctx) -> str:
     """Bind the scoped extract's task AND prompt-affecting renderer context.
 
@@ -789,6 +837,7 @@ def _extract_stage_provenance_fingerprint(stage_task, ctx) -> str:
     """
     return fingerprint_task({
         "stage_task": stage_task,
+        "renderer_dependencies": _extract_renderer_task_dependencies(stage_task, ctx),
         "render_context": {
             "keyConsiderations": getattr(ctx, "keyConsiderations", ""),
             "think_mode": getattr(ctx, "think_mode", True),
