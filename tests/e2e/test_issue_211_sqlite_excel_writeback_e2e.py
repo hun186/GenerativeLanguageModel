@@ -291,9 +291,10 @@ def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
 
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
-@pytest.mark.parametrize("tamper_before_resume", [False, True], ids=["resume", "reject-stale-source"])
+@pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
+@pytest.mark.parametrize("tamper_before_resume", [False, True], ids=["accept", "reject-stale-source"])
 def test_task_key_override_recovers_completed_original_slice(
-    backend, tamper_before_resume, fake_openai, tmp_path, monkeypatch,
+    backend, resume_policy, tamper_before_resume, fake_openai, tmp_path, monkeypatch,
 ):
     """Crash after the original A/B manifest was committed, finish only B.
 
@@ -310,6 +311,7 @@ def test_task_key_override_recovers_completed_original_slice(
 
     _force_two_source_slices(monkeypatch)
     ctx = _ctx(fake_openai, tmp_path, backend)
+    ctx.resume_policy = resume_policy
     ctx.input_col = "body" if backend == "sql" else "File"
     ctx.output_col = "analysis"
     ctx.primary_key = "id"
@@ -342,7 +344,7 @@ def test_task_key_override_recovers_completed_original_slice(
         with pytest.raises(RuntimeError, match="injected-after-stage-preparation"):
             controller.process_prompt_and_merge_multistage(ctx, str(source))
 
-    saved = item / "_stage_outputs" / "original" / "_source_slice_provenance.json"
+    saved = item / "_extract_slice_identity" / "source" / "original.json"
     evidence = json.loads(saved.read_text(encoding="utf-8"))
     assert evidence["names"] == ["0.txt", "1.txt"]
     assert set(evidence["dispatch_sha256"]) == {"0.txt", "1.txt"}
@@ -363,6 +365,10 @@ def test_task_key_override_recovers_completed_original_slice(
     )
     first_prompt.unlink()
 
+    if resume_policy == "smart_reset":
+        assert saved.is_file()
+        assert len(list((item / "_stage_outputs" / "original").glob("*.txt"))) == 2
+
     if tamper_before_resume:
         # Same tokenizer chunks but different source SHA: no stale success reuse.
         source.write_text(_SOURCE + " CHANGED", encoding="utf-8")
@@ -375,6 +381,8 @@ def test_task_key_override_recovers_completed_original_slice(
     before_resume = len(fake_openai.requests)
     result_marker = controller.process_prompt_and_merge_multistage(ctx, str(source))
     assert Path(result_marker).is_file()
+    assert saved.is_file()
+    assert json.loads(saved.read_text(encoding="utf-8"))["names"] == ["0.txt", "1.txt"]
     additional = fake_openai.requests[before_resume:]
     assert additional and all("E2E_JSON_PART_A" not in str(req["body"]) for req in additional)
     assert all("E2E_JSON_EFFECTIVE_TASK" in str(req["body"]) for req in additional)
