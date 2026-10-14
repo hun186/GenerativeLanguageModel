@@ -1933,13 +1933,33 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             current = expected_extract_files[job.chunk_id]
             raw_manifest = str(_original_source_manifest_path(job.chunk_id))
             record = robust_json_read(raw_manifest) if source_slice_verified.get(job.chunk_id) else {}
-            all_sent = dict(record.get("dispatch_sha256", {}))
-            for prompt_path in _root_txt_files(ops.join(job.chunk_id, "TODO")):
-                prompt_hash = digest_text(prompt_path.read_text(encoding="utf-8"))
-                if prompt_path.name in current:
-                    current[prompt_path.name] = prompt_hash
-                if record and prompt_path.name in record.get("names", []):
-                    all_sent[prompt_path.name] = prompt_hash
+            previous = record.get("dispatch_sha256", {}) if record else {}
+            if not isinstance(previous, dict):
+                raise RuntimeError("invalid persisted extract dispatch provenance")
+            all_sent = dict(previous)
+            pending = _root_txt_files(ops.join(job.chunk_id, "TODO"))
+            actual = {
+                prompt_path.name: digest_text(
+                    prompt_path.read_text(encoding="utf-8")
+                ) for prompt_path in pending
+            }
+            # A source/task-identical partial resume may only dispatch the
+            # *same* input for a previously recorded logical slice. Otherwise
+            # a regenerated/corrupted/nondeterministic TODO can silently mix
+            # A's old Success with a semantically different B.
+            if resume_policy != "full_restart":
+                for name, prompt_hash in actual.items():
+                    saved_hash = previous.get(name)
+                    if saved_hash is not None and saved_hash != prompt_hash:
+                        raise RuntimeError(
+                            "extract dispatch prompt changed since previous "
+                            "attempt: refuse mixed-identity partial writeback"
+                        )
+            for name, prompt_hash in actual.items():
+                if name in current:
+                    current[name] = prompt_hash
+                if record and name in record.get("names", []):
+                    all_sent[name] = prompt_hash
             if record:
                 record["dispatch_sha256"] = all_sent
                 record["stage_task_sha256"] = fingerprint_task(stage_defs[0].task)
