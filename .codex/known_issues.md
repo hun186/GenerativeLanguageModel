@@ -65,3 +65,9 @@
 
 - Finding: storing source provenance under `_stage_outputs/original` loses it on `smart_reset`, causing incomplete Success coverage and potentially partial SQL/Excel writes. Fix moved hash-only manifest outside resettable snapshots, with source-verified regeneration and fail-closed handling of legacy missing provenance.
 - Correctness proof still pending on latest exact branch head. Previous green CI for `a42c5ff` did NOT cover the fix. Windows self-hosted runners may remain queued.
+
+### 2026-10-14 latest Codex P1s awaiting verification (PR #213)
+
+- P1: Callable task mapping string representations depend on memory address, causing invalid `stage_task_sha256` across Python process restarts. Proposed deterministic semantic task fingerprint with callable source and stable task fields; test stable recreated function objects and config edits.
+- P1: Issue #211 raw-source manifest accidentally affected ordinary multistage restarts after source changes. Proposed bypass of the guarded manifest path and refreshed original snapshot/fallback for non-single-extract stages, with resume/reset E2E.
+- Neither has exact-head CI SUCCESS or Clean Review yet; do not merge.
