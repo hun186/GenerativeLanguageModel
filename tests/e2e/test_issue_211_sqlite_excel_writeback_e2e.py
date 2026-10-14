@@ -306,7 +306,7 @@ def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
-@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper"])
+@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper"])
 def test_task_key_override_recovers_completed_original_slice(
     backend, resume_policy, resume_case, fake_openai, tmp_path, monkeypatch,
 ):
@@ -521,6 +521,23 @@ def test_task_key_override_recovers_completed_original_slice(
                 x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
             }
 
+    if resume_case == "accept-context":
+        # Same effective task, same A/B Success, but renderer options changed.
+        # The all-Success fast path must refuse cache reuse without an LLM call.
+        for field, replacement in (
+            ("keyConsiderations", "ADDED_CONTEXT_FOR_NEW_PROMPT"),
+            ("think_mode", not bool(getattr(ctx, "think_mode", True))),
+        ):
+            with monkeypatch.context() as drift:
+                drift.setattr(ctx, field, replacement)
+                calls_before = len(fake_openai.requests)
+                with pytest.raises(RuntimeError, match="extract stage task changed"):
+                    controller.process_prompt_and_merge_multistage(ctx, str(source))
+                assert len(fake_openai.requests) == calls_before
+                assert completed_before == {
+                    x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
+                }
+
     # A full restart with a modified source must fail BEFORE removing Success.
     ctx.resume_policy = "full_restart"
     source.write_text(_SOURCE + " CHANGED", encoding="utf-8")
@@ -719,3 +736,28 @@ print(fingerprint_task({'template': template}))
     ]
     assert hashes[0] == hashes[1]
     assert len(hashes[0]) == 64
+
+
+def test_callable_keyword_abi_changes_identity_even_with_same_line_lambdas():
+    from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
+
+    # The renderer calls template(content=...). Identical bytecode with a
+    # different parameter name is not interchangeable at that call site.
+    first, second = (lambda content: content), (lambda text: text)
+    assert first.__code__.co_code == second.__code__.co_code
+    assert first.__code__.co_varnames != second.__code__.co_varnames
+    assert fingerprint_task({"template": first}) != fingerprint_task({"template": second})
+
+
+@pytest.mark.parametrize("body", [
+    'return globals()["RULE"] + content',
+    'return eval("RULE") + content',
+    'return locals()["content"] + content',
+])
+def test_dynamic_namespace_task_lookup_fails_closed(body):
+    from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
+
+    namespace = {"__name__": "dynamic_task", "RULE": "safe"}
+    exec("def template(content):\n    " + body, namespace)
+    with pytest.raises(ValueError, match="dynamic task template namespace access"):
+        fingerprint_task({"template": namespace["template"]})
