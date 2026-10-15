@@ -835,9 +835,21 @@ def _extract_stage_provenance_fingerprint(stage_task, ctx) -> str:
     configuration must invalidate cached output *before* the zero-TODO
     fast path. The manifest stores only this digest, never prompt contents.
     """
+    model_spec = getattr(ctx, "model_spec", None)
+    if model_spec is None:
+        model_spec = {}
+    if not isinstance(model_spec, Mapping):
+        raise ValueError("extract model_spec must be a mapping for provenance")
     return fingerprint_task({
         "stage_task": stage_task,
         "renderer_dependencies": _extract_renderer_task_dependencies(stage_task, ctx),
+        # CallLLMAPI finalizes the dispatched user prompt using these values.
+        # Persist only their combined digest, NEVER model_spec (API credentials).
+        # Include them even for the zero-TODO all-Success resume fast path.
+        "dispatch_finalization": {
+            "model_name": str(model_spec.get("model_name", "") or ""),
+            "no_think_suffix": model_spec.get("no_think_suffix"),
+        },
         "render_context": {
             "keyConsiderations": getattr(ctx, "keyConsiderations", ""),
             "think_mode": getattr(ctx, "think_mode", True),
