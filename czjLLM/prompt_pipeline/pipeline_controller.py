@@ -2071,13 +2071,32 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             # a regenerated/corrupted/nondeterministic TODO can silently mix
             # A's old Success with a semantically different B.
             if resume_policy != "full_restart":
+                baseline = record.get("initial_prompt_sha256", {}) if record else {}
                 for name, prompt_hash in actual.items():
                     saved_hash = previous.get(name)
-                    if saved_hash is not None and saved_hash != prompt_hash:
-                        raise RuntimeError(
-                            "extract dispatch prompt changed since previous "
-                            "attempt: refuse mixed-identity partial writeback"
-                        )
+                    if saved_hash is not None:
+                        if saved_hash != prompt_hash:
+                            raise RuntimeError(
+                                "extract dispatch prompt changed since previous "
+                                "attempt: refuse mixed-identity partial writeback"
+                            )
+                    elif record and name in record.get("names", ()):
+                        # Never grant a previously undispatched original TODO
+                        # its first trusted hash merely because its basename
+                        # belongs to a verified source-slice manifest.
+                        baseline_hash = baseline.get(name) if isinstance(baseline, dict) else None
+                        if not isinstance(baseline_hash, str) or len(baseline_hash) != 64:
+                            raise RuntimeError("missing initial extract queued prompt provenance")
+                        if prompt_hash != baseline_hash:
+                            source = Path(_snapshot_dir(job.chunk_id, "original")) / name
+                            if not source.is_file() or prompt_hash != digest_text(
+                                _build_stage_prompt_text(
+                                    job.stage_task, source.read_text(encoding="utf-8"), ctx,
+                                )
+                            ):
+                                raise RuntimeError(
+                                    "extract first dispatch prompt differs from verified source"
+                                )
             for name, prompt_hash in actual.items():
                 if name in current:
                     current[name] = prompt_hash
