@@ -313,7 +313,7 @@ def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
-@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "accept-alias", "accept-attribute", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper"])
+@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "accept-alias", "accept-attribute", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper", "reject-drifted-finalization"])
 def test_task_key_override_recovers_completed_original_slice(
     backend, resume_policy, resume_case, fake_openai, tmp_path, monkeypatch,
 ):
@@ -453,6 +453,22 @@ def test_task_key_override_recovers_completed_original_slice(
             assert first_output.is_file()
         return
 
+    if resume_case == "reject-drifted-finalization":
+        # A has already succeeded, B is TODO. The HTTP boundary appends
+        # /no_think based on model_spec: changed runtime finalization must be
+        # rejected before B dispatch and before the manifest is overwritten.
+        prior = saved.read_bytes()
+        with monkeypatch.context() as drift:
+            drift.setitem(ctx.model_spec, "model_name", "qwen3-changed-model")
+            drift.setitem(ctx.model_spec, "no_think_suffix", "/no_think")
+            calls_before = len(fake_openai.requests)
+            with pytest.raises(RuntimeError, match="extract stage task changed"):
+                controller.process_prompt_and_merge_multistage(ctx, str(source))
+            assert len(fake_openai.requests) == calls_before
+            assert saved.read_bytes() == prior
+            assert first_output.is_file()
+        return
+
     before_resume = len(fake_openai.requests)
     result_marker = controller.process_prompt_and_merge_multistage(ctx, str(source))
     assert Path(result_marker).is_file()
@@ -546,6 +562,23 @@ def test_task_key_override_recovers_completed_original_slice(
         ):
             with monkeypatch.context() as drift:
                 drift.setattr(ctx, field, replacement)
+                calls_before = len(fake_openai.requests)
+                with pytest.raises(RuntimeError, match="extract stage task changed"):
+                    controller.process_prompt_and_merge_multistage(ctx, str(source))
+                assert len(fake_openai.requests) == calls_before
+                assert completed_before == {
+                    x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
+                }
+
+    if resume_case == "accept-context":
+        # The real CallLLMAPI user-content finalizer is model-dependent even
+        # when stage rendering and all persisted Success prompts are unchanged.
+        for key, replacement in (
+            ("model_name", "qwen3-changed-model"),
+            ("no_think_suffix", "/no_think"),
+        ):
+            with monkeypatch.context() as drift:
+                drift.setitem(ctx.model_spec, key, replacement)
                 calls_before = len(fake_openai.requests)
                 with pytest.raises(RuntimeError, match="extract stage task changed"):
                     controller.process_prompt_and_merge_multistage(ctx, str(source))
@@ -795,6 +828,27 @@ def test_dynamic_namespace_task_lookup_fails_closed(body):
     exec("def template(content):\n    " + body, namespace)
     with pytest.raises(ValueError, match="dynamic task template namespace access"):
         fingerprint_task({"template": namespace["template"]})
+
+
+def test_slotted_bound_template_fails_closed_even_without_dict():
+    from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
+
+    class SlottedTemplate:
+        __slots__ = ("prefix",)
+
+        def __init__(self):
+            self.prefix = "BEFORE"
+
+        def render(self, content):
+            return self.prefix + content
+
+    receiver = SlottedTemplate()
+    assert not hasattr(receiver, "__dict__")
+    with pytest.raises(ValueError, match="bound task templates"):
+        fingerprint_task({"template": receiver.render})
+    receiver.prefix = "AFTER"
+    with pytest.raises(ValueError, match="bound task templates"):
+        fingerprint_task({"template": receiver.render})
 
 
 def test_callable_state_and_transitive_task_alias_change_fingerprint():
