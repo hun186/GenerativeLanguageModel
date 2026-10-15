@@ -312,6 +312,91 @@ def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
 
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
+@pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
+@pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
+@pytest.mark.parametrize("scenario", ["changed-todo", "missing-baseline", "untampered"])
+def test_first_dispatch_identity_survives_crash_after_source_manifest(
+    backend, resume_policy, scenario, fake_openai, tmp_path, monkeypatch,
+):
+    """Do not adopt an arbitrary TODO after source commit but before dispatch.
+
+    The real controller snapshots verified source A/B, then injected failure
+    occurs immediately AFTER the durable original.json atomic write and before
+    _prepare_todo_for_stage or any LLM dispatch. Recovery must validate the
+    original queued prompt hashes, or fail closed on absent legacy baselines.
+    """
+    from czjLLM.prompt_pipeline import pipeline_controller as controller
+
+    _force_two_source_slices(monkeypatch)
+    ctx = _ctx(fake_openai, tmp_path, backend)
+    ctx.input_col = "body" if backend == "sql" else "File"
+    ctx.output_col = "analysis"
+    ctx.primary_key = "id"
+    ctx.record_update_time = False
+    ctx.flatten_json_output = False
+    ctx.stage_source_inputs = {}
+    ctx.sql_flatten_writeback_rules = [{"writeback_rule": 0, "enabled": False}]
+    ctx.stages[0]["task_key"] = "E2E_JSON_EFFECTIVE"
+    ctx.taskSetting = {"E2E_JSON_EFFECTIVE": "E2E_JSON_EFFECTIVE_TASK"}
+    ctx.main_file_name = "initial211"
+    ctx.temp_txt_finished_dir = str(tmp_path / "finished")
+    source = tmp_path / "initial211.txt"
+    source.write_text(_SOURCE, encoding="utf-8")
+    item = Path(ctx.prompt_dir) / source.stem
+    todo = item / "TODO"
+    todo.mkdir(parents=True)
+    for i, part in enumerate(("E2E_JSON_PART_A", "E2E_JSON_PART_B")):
+        (todo / f"{i}.txt").write_text(
+            f"E2E_JSON_RESPONSE\\n\\n{part}".replace("\\n", "\n"), encoding="utf-8",
+        )
+    saved = item / "_extract_slice_identity" / "source" / "original.json"
+    real_write = controller.atomic_write_json
+
+    def stop_after_source_manifest(path, payload, *args, **kwargs):
+        result = real_write(path, payload, *args, **kwargs)
+        if Path(path) == saved and "dispatch_sha256" not in payload:
+            raise RuntimeError("injected-after-first-source-manifest")
+        return result
+
+    with monkeypatch.context() as crash:
+        crash.setattr(controller, "atomic_write_json", stop_after_source_manifest)
+        with pytest.raises(RuntimeError, match="injected-after-first-source-manifest"):
+            controller.process_prompt_and_merge_multistage(ctx, str(source))
+
+    baseline = json.loads(saved.read_text(encoding="utf-8"))
+    assert baseline["names"] == ["0.txt", "1.txt"]
+    assert set(baseline["initial_prompt_sha256"]) == {"0.txt", "1.txt"}
+    assert "dispatch_sha256" not in baseline
+    assert not fake_openai.requests
+    old_manifest = saved.read_bytes()
+    if scenario == "changed-todo":
+        (todo / "1.txt").write_text(
+            "CORRUPTED FIRST DISPATCH PROMPT", encoding="utf-8",
+        )
+    elif scenario == "missing-baseline":
+        baseline.pop("initial_prompt_sha256")
+        real_write(str(saved), baseline)
+        old_manifest = saved.read_bytes()
+    ctx.resume_policy = resume_policy
+    if scenario == "untampered":
+        merged = controller.process_prompt_and_merge_multistage(ctx, str(source))
+        assert Path(merged).is_file()
+        assert len(fake_openai.requests) >= 2
+        assert set(json.loads(saved.read_text(encoding="utf-8"))["dispatch_sha256"]) == {
+            "0.txt", "1.txt",
+        }
+    else:
+        expected_error = (
+            "saved initial extract queued prompt changed"
+            if scenario == "changed-todo"
+            else "missing initial extract queued prompt provenance"
+        )
+        with pytest.raises(RuntimeError, match=expected_error):
+            controller.process_prompt_and_merge_multistage(ctx, str(source))
+        assert saved.read_bytes() == old_manifest
+        assert not fake_openai.requests
+
+
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
 @pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "accept-alias", "accept-attribute", "accept-metadata", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper", "reject-drifted-finalization", "reject-drifted-metadata"])
 def test_task_key_override_recovers_completed_original_slice(
