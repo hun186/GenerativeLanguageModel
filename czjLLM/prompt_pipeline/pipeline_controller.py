@@ -830,20 +830,18 @@ def _extract_renderer_task_dependencies(stage_task, ctx):
     return {"raw": name}
 
 
-def _extract_global_risk_fallback(renderer_dependencies, ctx):
-    """Bind the actual interactive fallback used by global risk templates.
+def _extract_global_prompt_fallback(renderer_dependencies, ctx):
+    """Fingerprint implicit global inputs that generate_prompt actually reads.
 
-    generate_prompt() checks the template's source and invokes
-    getKeyConsiderations() when ctx.keyConsiderations is empty. That getter
-    reads job_config's process-global keyConsiderations and may prompt for it.
-    A persisted resume fingerprint MUST NOT call an interactive getter or hash
-    the empty ctx placeholder in place of the resolved prompt criterion.
+    The legacy generate_prompt() routine chooses MainFileName first, then risk
+    criteria (from ctx or the interactive process-global fallback), and only
+    then the CLASS EXT / CLASS Diff EXT branches. Do not call input() as part
+    of resume verification; missing process-global values must fail closed.
     """
-    if getattr(ctx, "keyConsiderations", "") != "":
-        return None
     dependency = renderer_dependencies
     while isinstance(dependency, Mapping):
         if "global_setting" in dependency:
+            task_name = dependency.get("global_key", dependency.get("key", ""))
             setting = dependency["global_setting"]
             template = setting.get("template") if isinstance(setting, Mapping) else None
             if not callable(template):
@@ -854,22 +852,37 @@ def _extract_global_risk_fallback(renderer_dependencies, ctx):
                 raise ValueError(
                     "cannot verify global extract task prompt fallback"
                 ) from exc
-            # Mirror generate_prompt() precedence: MainFileName takes priority
-            # over a risk criterion if both phrases occur in template source.
-            if (
-                "主檔名" not in source
-                and ("風險關注指標" in source or "風險等級與說明" in source)
-            ):
+            # Match generate_prompt's mutually exclusive source/branch order.
+            if "主檔名" in source:
+                return None
+            if "風險關注指標" in source or "風險等級與說明" in source:
+                if getattr(ctx, "keyConsiderations", "") != "":
+                    return None
                 resolved = getattr(_job_config, "keyConsiderations", None)
                 if not isinstance(resolved, str) or not resolved:
                     raise ValueError(
                         "unresolved risk criteria fallback; provide explicit "
                         "ctx.keyConsiderations before extract resume"
                     )
+                return {"keyConsiderations": resolved}
+            if task_name in {"CLASS EXT", "CLASS Diff EXT"}:
+                text_class = getattr(_job_config, "textClass", None)
+                if not isinstance(text_class, str):
+                    raise ValueError(
+                        "unresolved classification criteria fallback: textClass"
+                    )
+                resolved = {"textClass": text_class}
+                if task_name == "CLASS Diff EXT":
+                    excluded = getattr(_job_config, "exclusiveTextClass", None)
+                    if not isinstance(excluded, str):
+                        raise ValueError(
+                            "unresolved classification criteria fallback: exclusiveTextClass"
+                        )
+                    resolved["exclusiveTextClass"] = excluded
                 return resolved
+            return None
         dependency = dependency.get("resolved")
     return None
-
 
 def _extract_stage_provenance_fingerprint(stage_task, ctx) -> str:
     """Bind the scoped extract's task AND prompt-affecting renderer context.
@@ -889,7 +902,7 @@ def _extract_stage_provenance_fingerprint(stage_task, ctx) -> str:
         "renderer_dependencies": renderer_dependencies,
         # Hash only the resolved fallback criterion for global risk templates.
         # Never persist the raw criteria or invoke interactive input() here.
-        "resolved_risk_fallback": _extract_global_risk_fallback(
+        "resolved_global_prompt_inputs": _extract_global_prompt_fallback(
             renderer_dependencies, ctx,
         ),
         # CallLLMAPI finalizes the dispatched user prompt using these values.
@@ -1546,6 +1559,10 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         # Full restart must first regenerate completed split branches from
         # the current source. Otherwise clearing Success loses their prompts.
         if resume_policy == "full_restart":
+            # The later resume-policy step would otherwise move stale RUNNING
+            # prompts into TODO *after* the fresh source prompts were staged,
+            # overwriting them via os.replace(). Recover the queue first.
+            recover_running_to_todo(prompt_items)
             restored = _rebuild_full_restart_from_verified_source(
                 prompt_items, ctx, file_path, stage_defs[0],
             )
@@ -1729,8 +1746,15 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                     raise RuntimeError("invalid saved original prompt provenance")
                 for index, name in enumerate(names):
                     queued = Path(item) / "TODO" / name
-                    if name in prior_dispatch or not queued.is_file():
+                    if name in prior_dispatch:
                         continue
+                    if not queued.is_file():
+                        # A verified source member with no dispatch record
+                        # cannot vanish: otherwise the surviving subset could
+                        # be merged as a complete SQLite/Excel result.
+                        raise RuntimeError(
+                            "missing undispatched extract source member: " + name
+                        )
                     initial_hash = initial_prompts.get(name)
                     if not isinstance(initial_hash, str) or len(initial_hash) != 64:
                         raise RuntimeError(
