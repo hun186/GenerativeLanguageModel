@@ -346,7 +346,7 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
     todo.mkdir(parents=True)
     for i, part in enumerate(("E2E_JSON_PART_A", "E2E_JSON_PART_B")):
         (todo / f"{i}.txt").write_text(
-            f"E2E_JSON_RESPONSE\\n\\n{part}", encoding="utf-8",
+            f"E2E_JSON_RESPONSE\n\n{part}", encoding="utf-8",
         )
     saved = item / "_extract_slice_identity" / "source" / "original.json"
     real_write = controller.atomic_write_json
@@ -396,6 +396,7 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
         assert not fake_openai.requests
 
 
+@pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
 @pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "accept-alias", "accept-attribute", "accept-metadata", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper", "reject-drifted-finalization", "reject-drifted-metadata"])
 def test_task_key_override_recovers_completed_original_slice(
