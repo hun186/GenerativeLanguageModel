@@ -53,6 +53,17 @@ def _e2e_risk_fallback_template(keyConsiderations, content):
     return "E2E_JSON_EFFECTIVE_TASK\n" + keyConsiderations + "\n" + content
 
 
+def _e2e_class_template(textClass, content):
+    return "E2E_JSON_EFFECTIVE_TASK\n" + textClass + "\n" + content
+
+
+def _e2e_class_diff_template(textClass, exclusiveTextClass, content):
+    return (
+        "E2E_JSON_EFFECTIVE_TASK\n" + textClass
+        + "\n" + exclusiveTextClass + "\n" + content
+    )
+
+
 def _force_two_source_slices(monkeypatch):
     """Fix just the input split boundary so this acceptance always has 2 slices.
 
@@ -318,7 +329,7 @@ def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
-@pytest.mark.parametrize("scenario", ["changed-todo", "missing-baseline", "untampered"])
+@pytest.mark.parametrize("scenario", ["changed-todo", "missing-todo", "missing-baseline", "untampered"])
 def test_first_dispatch_identity_survives_crash_after_source_manifest(
     backend, resume_policy, scenario, fake_openai, tmp_path, monkeypatch,
 ):
@@ -377,6 +388,8 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
         (todo / "1.txt").write_text(
             "CORRUPTED FIRST DISPATCH PROMPT", encoding="utf-8",
         )
+    elif scenario == "missing-todo":
+        (todo / "1.txt").unlink()
     elif scenario == "missing-baseline":
         baseline.pop("initial_prompt_sha256")
         real_write(str(saved), baseline)
@@ -393,6 +406,8 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
         expected_error = (
             "saved initial extract queued prompt changed"
             if scenario == "changed-todo"
+            else "missing undispatched extract source member"
+            if scenario == "missing-todo"
             else "missing initial extract queued prompt provenance"
         )
         with pytest.raises(RuntimeError, match=expected_error):
@@ -403,7 +418,7 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
-@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "accept-alias", "accept-attribute", "accept-metadata", "accept-risk-fallback", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper", "reject-drifted-finalization", "reject-drifted-metadata", "reject-drifted-risk-fallback"])
+@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "accept-alias", "accept-attribute", "accept-metadata", "accept-risk-fallback", "accept-class-fallback", "accept-class-diff-fallback", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper", "reject-drifted-finalization", "reject-drifted-metadata", "reject-drifted-risk-fallback", "reject-drifted-class-fallback", "reject-drifted-class-diff-fallback"])
 def test_task_key_override_recovers_completed_original_slice(
     backend, resume_policy, resume_case, fake_openai, tmp_path, monkeypatch,
 ):
@@ -457,6 +472,23 @@ def test_task_key_override_recovers_completed_original_slice(
             "template": _e2e_risk_fallback_template,
         })
         monkeypatch.setattr(job_config, "keyConsiderations", "E2E_RISK_A", raising=False)
+    if resume_case in {
+        "accept-class-fallback", "reject-drifted-class-fallback",
+        "accept-class-diff-fallback", "reject-drifted-class-diff-fallback",
+    }:
+        from czjLLM.job_manager import job_config
+
+        is_diff = "diff" in resume_case
+        class_task = "CLASS Diff EXT" if is_diff else "CLASS EXT"
+        ctx.stages[0]["task_key"] = ""
+        ctx.stages[0]["task"] = class_task
+        ctx.taskSetting = {}
+        monkeypatch.setitem(controller.taskSetting, class_task, {
+            "CT_name": "E2E classification criteria",
+            "template": _e2e_class_diff_template if is_diff else _e2e_class_template,
+        })
+        monkeypatch.setattr(job_config, "textClass", "E2E_CLASS_A", raising=False)
+        monkeypatch.setattr(job_config, "exclusiveTextClass", "E2E_EXCLUDED_A", raising=False)
     ctx.main_file_name = "rawresume211"
     ctx.temp_txt_finished_dir = str(tmp_path / "finished")
 
@@ -568,6 +600,21 @@ def test_task_key_override_recovers_completed_original_slice(
             assert len(fake_openai.requests) == calls_before
             assert saved.read_bytes() == prior
             assert first_output.is_file()
+        return
+
+    if resume_case in {"reject-drifted-class-fallback", "reject-drifted-class-diff-fallback"}:
+        from czjLLM.job_manager import job_config
+
+        baseline = saved.read_bytes()
+        calls_before = len(fake_openai.requests)
+        field = "exclusiveTextClass" if "diff" in resume_case else "textClass"
+        with monkeypatch.context() as drift:
+            drift.setattr(job_config, field, "CHANGED_CLASS_CRITERIA")
+            with pytest.raises(RuntimeError, match="extract stage task changed"):
+                controller.process_prompt_and_merge_multistage(ctx, str(source))
+        assert saved.read_bytes() == baseline
+        assert len(fake_openai.requests) == calls_before
+        assert first_output.is_file()
         return
 
     if resume_case == "reject-drifted-risk-fallback":
@@ -717,6 +764,20 @@ def test_task_key_override_recovers_completed_original_slice(
                 assert completed_before == {
                     x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
                 }
+
+    if resume_case in {"accept-class-fallback", "accept-class-diff-fallback"}:
+        from czjLLM.job_manager import job_config
+
+        field = "exclusiveTextClass" if "diff" in resume_case else "textClass"
+        with monkeypatch.context() as drift:
+            drift.setattr(job_config, field, "CHANGED_CLASS_CRITERIA")
+            calls_before = len(fake_openai.requests)
+            with pytest.raises(RuntimeError, match="extract stage task changed"):
+                controller.process_prompt_and_merge_multistage(ctx, str(source))
+            assert len(fake_openai.requests) == calls_before
+            assert completed_before == {
+                x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
+            }
 
     if resume_case == "accept-risk-fallback":
         from czjLLM.job_manager import job_config
