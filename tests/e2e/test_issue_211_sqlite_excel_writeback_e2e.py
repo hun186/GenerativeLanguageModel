@@ -417,6 +417,68 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
 
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
+def test_full_restart_replaces_stale_running_with_fresh_risk_prompt(
+    backend, fake_openai, tmp_path, monkeypatch,
+):
+    """A RUNNING prompt from the former criterion cannot overwrite restart TODO."""
+    from czjLLM.job_manager import job_config
+    from czjLLM.prompt_pipeline import pipeline_controller as controller
+
+    _force_two_source_slices(monkeypatch)
+    ctx = _ctx(fake_openai, tmp_path, backend)
+    ctx.input_col = "body" if backend == "sql" else "File"
+    ctx.output_col = "analysis"
+    ctx.primary_key = "id"
+    ctx.record_update_time = False
+    ctx.flatten_json_output = False
+    ctx.stage_source_inputs = {}
+    ctx.sql_flatten_writeback_rules = [{"writeback_rule": 0, "enabled": False}]
+    ctx.stages[0]["task_key"] = ""
+    ctx.stages[0]["task"] = "E2E_RISK_FALLBACK"
+    ctx.taskSetting = {}
+    monkeypatch.setitem(controller.taskSetting, "E2E_RISK_FALLBACK", {
+        "template": _e2e_risk_fallback_template,
+    })
+    monkeypatch.setattr(job_config, "keyConsiderations", "E2E_RISK_OLD", raising=False)
+    ctx.main_file_name = "restart211"
+    ctx.temp_txt_finished_dir = str(tmp_path / "finished")
+    source = tmp_path / "restart211.txt"
+    source.write_text(_SOURCE, encoding="utf-8")
+    item = Path(ctx.prompt_dir) / source.stem
+    todo = item / "TODO"
+    todo.mkdir(parents=True)
+    for i, part in enumerate(("E2E_JSON_PART_A", "E2E_JSON_PART_B")):
+        (todo / f"{i}.txt").write_text(
+            f"E2E_JSON_RESPONSE\n\n{part}", encoding="utf-8",
+        )
+
+    def crash_before_dispatch(*_args, **_kwargs):
+        raise RuntimeError("injected-after-stage-preparation")
+
+    with monkeypatch.context() as interruption:
+        interruption.setattr(controller, "_call_llm_with_task_override", crash_before_dispatch)
+        with pytest.raises(RuntimeError, match="injected-after-stage-preparation"):
+            controller.process_prompt_and_merge_multistage(ctx, str(source))
+
+    running = item / "RUNNING"
+    running.mkdir(exist_ok=True)
+    old = (todo / "0.txt").read_text(encoding="utf-8")
+    assert "E2E_RISK_OLD" in old
+    (todo / "0.txt").rename(running / "0.txt")
+    assert (running / "0.txt").read_text(encoding="utf-8") == old
+
+    ctx.resume_policy = "full_restart"
+    monkeypatch.setattr(job_config, "keyConsiderations", "E2E_RISK_NEW")
+    marker = controller.process_prompt_and_merge_multistage(ctx, str(source))
+    assert Path(marker).is_file()
+    assert not list(running.glob("*.txt"))
+    assert len(fake_openai.requests) >= 2
+    bodies = [str(request["body"]) for request in fake_openai.requests]
+    assert all("E2E_RISK_NEW" in body for body in bodies)
+    assert all("E2E_RISK_OLD" not in body for body in bodies)
+
+
+@pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
 @pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "accept-alias", "accept-attribute", "accept-metadata", "accept-risk-fallback", "accept-class-fallback", "accept-class-diff-fallback", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper", "reject-drifted-finalization", "reject-drifted-metadata", "reject-drifted-risk-fallback", "reject-drifted-class-fallback", "reject-drifted-class-diff-fallback"])
 def test_task_key_override_recovers_completed_original_slice(
@@ -1158,3 +1220,37 @@ def test_global_risk_fallback_uses_resolved_value_not_empty_context(monkeypatch)
             controller._extract_stage_provenance_fingerprint("E2E_RISK_FALLBACK", ctx)
 
 
+
+
+def test_global_classification_fallback_uses_resolved_values(monkeypatch):
+    from czjLLM.job_manager import job_config
+    from czjLLM.prompt_pipeline import pipeline_controller as controller
+
+    monkeypatch.setitem(controller.taskSetting, "CLASS EXT", {
+        "template": _e2e_class_template,
+    })
+    monkeypatch.setitem(controller.taskSetting, "CLASS Diff EXT", {
+        "template": _e2e_class_diff_template,
+    })
+    ctx = SimpleNamespace(
+        taskSetting={}, keyConsiderations="", think_mode=True,
+        main_file_name="row211", task="E2E_JSON_RESPONSE",
+    )
+    monkeypatch.setattr(job_config, "textClass", "BEFORE", raising=False)
+    monkeypatch.setattr(job_config, "exclusiveTextClass", "EXCLUDED_BEFORE", raising=False)
+
+    basic = controller._extract_stage_provenance_fingerprint("CLASS EXT", ctx)
+    diff = controller._extract_stage_provenance_fingerprint("CLASS Diff EXT", ctx)
+    monkeypatch.setattr(job_config, "exclusiveTextClass", "EXCLUDED_AFTER")
+    assert basic == controller._extract_stage_provenance_fingerprint("CLASS EXT", ctx)
+    assert diff != controller._extract_stage_provenance_fingerprint("CLASS Diff EXT", ctx)
+
+    monkeypatch.setattr(job_config, "textClass", "AFTER")
+    assert basic != controller._extract_stage_provenance_fingerprint("CLASS EXT", ctx)
+    monkeypatch.delattr(job_config, "textClass")
+    with pytest.raises(ValueError, match="unresolved classification criteria fallback: textClass"):
+        controller._extract_stage_provenance_fingerprint("CLASS EXT", ctx)
+    monkeypatch.setattr(job_config, "textClass", "RESTORED", raising=False)
+    monkeypatch.delattr(job_config, "exclusiveTextClass")
+    with pytest.raises(ValueError, match="unresolved classification criteria fallback: exclusiveTextClass"):
+        controller._extract_stage_provenance_fingerprint("CLASS Diff EXT", ctx)
