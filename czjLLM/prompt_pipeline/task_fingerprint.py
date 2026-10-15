@@ -121,6 +121,12 @@ def _stable_composite(value, active):
                 raise ValueError(f"unbound task template global: {name}")
         return {
             "function": f"{value.__module__}:{value.__qualname__}",
+            # Unlike __dict__, intrinsic function metadata can be reassigned
+            # and can affect rendered prompts (template.__doc__, etc.).
+            # Unsupported annotation objects fail closed, never silently reuse.
+            "name": value.__name__,
+            "doc": _stable(value.__doc__, active),
+            "annotations": _stable(value.__annotations__, active),
             "source": source,
             # Same-line lambdas may share source and qualname, but not code.
             "code": _code_signature(value.__code__, active),
