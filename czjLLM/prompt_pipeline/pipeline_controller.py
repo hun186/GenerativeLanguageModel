@@ -1463,6 +1463,11 @@ def _rebuild_full_restart_from_verified_source(
             shutil.rmtree(split_dir)
         saved.pop("dispatch_sha256", None)
         saved.pop("stage_task_sha256", None)
+        # Full restart intentionally replaces every original TODO prompt;
+        # reset its pre-dispatch identity to the newly verified source render.
+        saved["initial_prompt_sha256"] = {
+            name: digest_text(prompt) for name, prompt in rebuilt
+        }
         atomic_write_json(str(marker), saved)
     return {item for item, _marker, _saved, _rebuilt in plans}
 
@@ -1664,6 +1669,37 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                     and digest_text((snapshot_dir / name).read_text(encoding="utf-8")) == part_hashes[index]
                     for index, name in enumerate(names)
                 )
+            if valid and resume_policy != "full_restart":
+                # A crash can occur after committing the source manifest but
+                # before the runner records any dispatch_sha256. Do not adopt
+                # the first matching-name TODO as trusted without validating
+                # the prompt bytes committed at the source boundary.
+                prior_dispatch = saved.get("dispatch_sha256", {})
+                initial_prompts = saved.get("initial_prompt_sha256", {})
+                if not isinstance(prior_dispatch, dict) or not isinstance(initial_prompts, dict):
+                    raise RuntimeError("invalid saved original prompt provenance")
+                for index, name in enumerate(names):
+                    queued = Path(item) / "TODO" / name
+                    if name in prior_dispatch or not queued.is_file():
+                        continue
+                    initial_hash = initial_prompts.get(name)
+                    if not isinstance(initial_hash, str) or len(initial_hash) != 64:
+                        raise RuntimeError(
+                            "missing initial extract queued prompt provenance; full_restart required"
+                        )
+                    observed = digest_text(queued.read_text(encoding="utf-8"))
+                    if observed != initial_hash:
+                        # An interrupted task override may already have
+                        # replaced the generator's prompt with a deterministic
+                        # stage prompt before the first dispatch manifest write.
+                        # Accept only exact rerendering from verified raw input.
+                        expected = _build_stage_prompt_text(
+                            stage_defs[0].task, str(source_parts[index]), ctx,
+                        )
+                        if observed != digest_text(expected):
+                            raise RuntimeError(
+                                "saved initial extract queued prompt changed since source snapshot"
+                            )
             if not valid:
                 if single_extract_stage_writeback:
                     raise RuntimeError(
@@ -1700,10 +1736,18 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             finally:
                 if staged.exists():
                     staged.unlink()
+        # Persist first-queued prompt hashes in the SAME atomic transaction
+        # as source membership. A crash before the first dispatch fingerprint
+        # can then never adopt a tampered TODO as its original identity.
+        initial_prompts = {
+            fp.name: digest_text(fp.read_text(encoding="utf-8"))
+            for fp in root_files
+        }
         atomic_write_json(
             str(manifest_path),
             {"version": 1, "source_sha256": source_hash,
-             "names": names, "part_sha256": part_hashes},
+             "names": names, "part_sha256": part_hashes,
+             "initial_prompt_sha256": initial_prompts},
         )
         return True
 
