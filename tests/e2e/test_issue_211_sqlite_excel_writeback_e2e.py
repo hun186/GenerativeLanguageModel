@@ -312,7 +312,6 @@ def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
 
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
-@pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
 @pytest.mark.parametrize("scenario", ["changed-todo", "missing-baseline", "untampered"])
 def test_first_dispatch_identity_survives_crash_after_source_manifest(
@@ -347,7 +346,7 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
     todo.mkdir(parents=True)
     for i, part in enumerate(("E2E_JSON_PART_A", "E2E_JSON_PART_B")):
         (todo / f"{i}.txt").write_text(
-            f"E2E_JSON_RESPONSE\\n\\n{part}".replace("\\n", "\n"), encoding="utf-8",
+            f"E2E_JSON_RESPONSE\\n\\n{part}", encoding="utf-8",
         )
     saved = item / "_extract_slice_identity" / "source" / "original.json"
     real_write = controller.atomic_write_json
