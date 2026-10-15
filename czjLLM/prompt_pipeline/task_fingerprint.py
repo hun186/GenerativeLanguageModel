@@ -69,9 +69,11 @@ def _stable(value, active=None):
         finally:
             active.remove(id(value))
     if inspect.ismethod(value):
-        if getattr(value.__self__, "__dict__", {}):
-            raise ValueError("stateful bound task templates cannot be fingerprinted")
-        return _stable(value.__func__, active)
+        # A receiver may have mutable __slots__, class attributes, descriptors,
+        # or external state even without an instance __dict__. Hashing just
+        # __func__ silently reuses prompts after that state changes. Refuse
+        # bound templates; callers can supply an explicit standalone function.
+        raise ValueError("bound task templates cannot be fingerprinted safely")
     raise ValueError(f"unsupported task identity type: {type(value).__name__}")
 
 
