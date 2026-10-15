@@ -48,6 +48,11 @@ def _e2e_attribute_template(content):
 _e2e_attribute_template.prefix = "E2E_JSON_EFFECTIVE_TASK"
 
 
+def _e2e_risk_fallback_template(keyConsiderations, content):
+    # This source string triggers generate_prompt's 風險關注指標 fallback.
+    return "E2E_JSON_EFFECTIVE_TASK\n" + keyConsiderations + "\n" + content
+
+
 def _force_two_source_slices(monkeypatch):
     """Fix just the input split boundary so this acceptance always has 2 slices.
 
@@ -398,7 +403,7 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
-@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "accept-alias", "accept-attribute", "accept-metadata", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper", "reject-drifted-finalization", "reject-drifted-metadata"])
+@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "accept-alias", "accept-attribute", "accept-metadata", "accept-risk-fallback", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper", "reject-drifted-finalization", "reject-drifted-metadata", "reject-drifted-risk-fallback"])
 def test_task_key_override_recovers_completed_original_slice(
     backend, resume_policy, resume_case, fake_openai, tmp_path, monkeypatch,
 ):
@@ -441,6 +446,17 @@ def test_task_key_override_recovers_completed_original_slice(
         ctx.taskSetting = {
             "E2E_JSON_EFFECTIVE": {"template": _e2e_attribute_template},
         }
+    if resume_case in {"accept-risk-fallback", "reject-drifted-risk-fallback"}:
+        from czjLLM.job_manager import job_config
+
+        ctx.stages[0]["task_key"] = ""
+        ctx.stages[0]["task"] = "E2E_RISK_FALLBACK"
+        ctx.taskSetting = {}
+        monkeypatch.setitem(controller.taskSetting, "E2E_RISK_FALLBACK", {
+            "CT_name": "E2E risk criteria",
+            "template": _e2e_risk_fallback_template,
+        })
+        monkeypatch.setattr(job_config, "keyConsiderations", "E2E_RISK_A", raising=False)
     ctx.main_file_name = "rawresume211"
     ctx.temp_txt_finished_dir = str(tmp_path / "finished")
 
@@ -552,6 +568,22 @@ def test_task_key_override_recovers_completed_original_slice(
             assert len(fake_openai.requests) == calls_before
             assert saved.read_bytes() == prior
             assert first_output.is_file()
+        return
+
+    if resume_case == "reject-drifted-risk-fallback":
+        # A is Success and B TODO. The risk criterion came from
+        # getKeyConsiderations(), not ctx.keyConsiderations (still empty).
+        from czjLLM.job_manager import job_config
+
+        prior = saved.read_bytes()
+        before = len(fake_openai.requests)
+        with monkeypatch.context() as drift:
+            drift.setattr(job_config, "keyConsiderations", "E2E_RISK_B")
+            with pytest.raises(RuntimeError, match="extract stage task changed"):
+                controller.process_prompt_and_merge_multistage(ctx, str(source))
+        assert saved.read_bytes() == prior
+        assert len(fake_openai.requests) == before
+        assert first_output.is_file()
         return
 
     if resume_case == "reject-drifted-metadata":
@@ -685,6 +717,19 @@ def test_task_key_override_recovers_completed_original_slice(
                 assert completed_before == {
                     x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
                 }
+
+    if resume_case == "accept-risk-fallback":
+        from czjLLM.job_manager import job_config
+
+        with monkeypatch.context() as drift:
+            drift.setattr(job_config, "keyConsiderations", "E2E_RISK_B")
+            before = len(fake_openai.requests)
+            with pytest.raises(RuntimeError, match="extract stage task changed"):
+                controller.process_prompt_and_merge_multistage(ctx, str(source))
+            assert len(fake_openai.requests) == before
+            assert completed_before == {
+                x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
+            }
 
     if resume_case == "accept-metadata":
         # All source slices are already Success (zero TODO): function intrinsic
@@ -1017,3 +1062,38 @@ def test_callable_state_and_transitive_task_alias_change_fingerprint():
     pool["E2E_OTHER"] = spec  # a task alias cycle fails safely
     with pytest.raises(ValueError, match="cyclic extract task-setting aliases"):
         _extract_stage_provenance_fingerprint(spec, ctx)
+
+
+def test_global_risk_fallback_uses_resolved_value_not_empty_context(monkeypatch):
+    from czjLLM.job_manager import job_config
+    from czjLLM.prompt_pipeline import pipeline_controller as controller
+
+    monkeypatch.setitem(controller.taskSetting, "E2E_RISK_FALLBACK", {
+        "template": _e2e_risk_fallback_template,
+    })
+    ctx = SimpleNamespace(
+        taskSetting={}, keyConsiderations="", think_mode=True,
+        main_file_name="row211", task="E2E_JSON_RESPONSE",
+    )
+    with monkeypatch.context() as criterion:
+        criterion.setattr(job_config, "keyConsiderations", "FIRST", raising=False)
+        first = controller._extract_stage_provenance_fingerprint("E2E_RISK_FALLBACK", ctx)
+        criterion.setattr(job_config, "keyConsiderations", "SECOND")
+        assert first != controller._extract_stage_provenance_fingerprint(
+            "E2E_RISK_FALLBACK", ctx,
+        )
+        # Explicit criteria takes precedence over the interactive getter.
+        ctx.keyConsiderations = "EXPLICIT"
+        explicit = controller._extract_stage_provenance_fingerprint(
+            "E2E_RISK_FALLBACK", ctx,
+        )
+        criterion.setattr(job_config, "keyConsiderations", "THIRD")
+        assert explicit == controller._extract_stage_provenance_fingerprint(
+            "E2E_RISK_FALLBACK", ctx,
+        )
+        ctx.keyConsiderations = ""
+        criterion.delattr(job_config, "keyConsiderations")
+        with pytest.raises(ValueError, match="unresolved risk criteria fallback"):
+            controller._extract_stage_provenance_fingerprint("E2E_RISK_FALLBACK", ctx)
+
+
