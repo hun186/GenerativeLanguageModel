@@ -313,7 +313,7 @@ def test_interrupted_split_resumes_only_missing_sibling_and_persists_both(
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
-@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "accept-alias", "accept-attribute", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper", "reject-drifted-finalization"])
+@pytest.mark.parametrize("resume_case", ["accept", "accept-global", "accept-context", "accept-alias", "accept-attribute", "accept-metadata", "reject-stale-source", "reject-drifted-prompt", "reject-drifted-global", "reject-drifted-helper", "reject-drifted-finalization", "reject-drifted-metadata"])
 def test_task_key_override_recovers_completed_original_slice(
     backend, resume_policy, resume_case, fake_openai, tmp_path, monkeypatch,
 ):
@@ -352,7 +352,7 @@ def test_task_key_override_recovers_completed_original_slice(
             "E2E_JSON_EFFECTIVE": {"task": "E2E_ALIAS"},
             "E2E_ALIAS": {"template": _e2e_global_template},
         }
-    elif resume_case == "accept-attribute":
+    elif resume_case in {"accept-attribute", "accept-metadata", "reject-drifted-metadata"}:
         ctx.taskSetting = {
             "E2E_JSON_EFFECTIVE": {"template": _e2e_attribute_template},
         }
@@ -469,6 +469,20 @@ def test_task_key_override_recovers_completed_original_slice(
             assert first_output.is_file()
         return
 
+    if resume_case == "reject-drifted-metadata":
+        # A succeeded while B remains TODO. The prompt callable references
+        # mutable intrinsic metadata not stored inside function.__dict__.
+        previous = saved.read_bytes()
+        calls_before = len(fake_openai.requests)
+        with monkeypatch.context() as drift:
+            drift.setattr(_e2e_attribute_template, "__doc__", "new prompt metadata")
+            with pytest.raises(RuntimeError, match="extract stage task changed"):
+                controller.process_prompt_and_merge_multistage(ctx, str(source))
+        assert saved.read_bytes() == previous
+        assert len(fake_openai.requests) == calls_before
+        assert first_output.is_file()
+        return
+
     before_resume = len(fake_openai.requests)
     result_marker = controller.process_prompt_and_merge_multistage(ctx, str(source))
     assert Path(result_marker).is_file()
@@ -579,6 +593,24 @@ def test_task_key_override_recovers_completed_original_slice(
         ):
             with monkeypatch.context() as drift:
                 drift.setitem(ctx.model_spec, key, replacement)
+                calls_before = len(fake_openai.requests)
+                with pytest.raises(RuntimeError, match="extract stage task changed"):
+                    controller.process_prompt_and_merge_multistage(ctx, str(source))
+                assert len(fake_openai.requests) == calls_before
+                assert completed_before == {
+                    x.name: x.read_bytes() for x in (item / "Success").glob("*.txt")
+                }
+
+    if resume_case == "accept-metadata":
+        # All source slices are already Success (zero TODO): function intrinsic
+        # metadata drift must invalidate reuse before any request or overwrite.
+        for attribute, replacement in (
+            ("__doc__", "new prompt doc"),
+            ("__annotations__", {"content": "changed"}),
+            ("__name__", "different_template_name"),
+        ):
+            with monkeypatch.context() as drift:
+                drift.setattr(_e2e_attribute_template, attribute, replacement)
                 calls_before = len(fake_openai.requests)
                 with pytest.raises(RuntimeError, match="extract stage task changed"):
                     controller.process_prompt_and_merge_multistage(ctx, str(source))
@@ -849,6 +881,25 @@ def test_slotted_bound_template_fails_closed_even_without_dict():
     receiver.prefix = "AFTER"
     with pytest.raises(ValueError, match="bound task templates"):
         fingerprint_task({"template": receiver.render})
+
+
+def test_mutable_intrinsic_function_metadata_changes_task_fingerprint():
+    from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
+
+    def template(content):
+        return template.__doc__ + content
+
+    template.__doc__ = "BEFORE"
+    template.__annotations__ = {"content": "str"}
+    first = fingerprint_task({"template": template})
+    template.__doc__ = "AFTER"
+    second = fingerprint_task({"template": template})
+    assert first != second
+    template.__annotations__ = {"content": "other"}
+    third = fingerprint_task({"template": template})
+    assert second != third
+    template.__name__ = "changed_name"
+    assert third != fingerprint_task({"template": template})
 
 
 def test_callable_state_and_transitive_task_alias_change_fingerprint():
