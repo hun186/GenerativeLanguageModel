@@ -7,6 +7,7 @@ import re
 #import random
 import json
 import hashlib
+import inspect
 import time
 import uuid
 import threading
@@ -40,6 +41,7 @@ from czjLLM.prompt_pipeline.stage_orchestrator import (
     update_chunk_stage_runtime as _update_chunk_stage_runtime,
 )
 from czjLLM.utilities.atomic_io import atomic_write_json, robust_json_read
+from czjLLM.job_manager import job_config as _job_config
 from czjLLM.job_manager.job_config import LLMJobConfig, task_template_preview
 #from czjLLM.job_manager.end_point_manager import get_available_end_points
 from czjLLM.job_manager.end_point_manager import select_model
@@ -828,6 +830,47 @@ def _extract_renderer_task_dependencies(stage_task, ctx):
     return {"raw": name}
 
 
+def _extract_global_risk_fallback(renderer_dependencies, ctx):
+    """Bind the actual interactive fallback used by global risk templates.
+
+    generate_prompt() checks the template's source and invokes
+    getKeyConsiderations() when ctx.keyConsiderations is empty. That getter
+    reads job_config's process-global keyConsiderations and may prompt for it.
+    A persisted resume fingerprint MUST NOT call an interactive getter or hash
+    the empty ctx placeholder in place of the resolved prompt criterion.
+    """
+    if getattr(ctx, "keyConsiderations", "") != "":
+        return None
+    dependency = renderer_dependencies
+    while isinstance(dependency, Mapping):
+        if "global_setting" in dependency:
+            setting = dependency["global_setting"]
+            template = setting.get("template") if isinstance(setting, Mapping) else None
+            if not callable(template):
+                raise ValueError("global extract task has no fingerprintable template")
+            try:
+                source = inspect.getsource(template)
+            except (OSError, TypeError) as exc:
+                raise ValueError(
+                    "cannot verify global extract task prompt fallback"
+                ) from exc
+            # Mirror generate_prompt() precedence: MainFileName takes priority
+            # over a risk criterion if both phrases occur in template source.
+            if (
+                "主檔名" not in source
+                and ("風險關注指標" in source or "風險等級與說明" in source)
+            ):
+                resolved = getattr(_job_config, "keyConsiderations", None)
+                if not isinstance(resolved, str) or not resolved:
+                    raise ValueError(
+                        "unresolved risk criteria fallback; provide explicit "
+                        "ctx.keyConsiderations before extract resume"
+                    )
+                return resolved
+        dependency = dependency.get("resolved")
+    return None
+
+
 def _extract_stage_provenance_fingerprint(stage_task, ctx) -> str:
     """Bind the scoped extract's task AND prompt-affecting renderer context.
 
@@ -840,9 +883,15 @@ def _extract_stage_provenance_fingerprint(stage_task, ctx) -> str:
         model_spec = {}
     if not isinstance(model_spec, Mapping):
         raise ValueError("extract model_spec must be a mapping for provenance")
+    renderer_dependencies = _extract_renderer_task_dependencies(stage_task, ctx)
     return fingerprint_task({
         "stage_task": stage_task,
-        "renderer_dependencies": _extract_renderer_task_dependencies(stage_task, ctx),
+        "renderer_dependencies": renderer_dependencies,
+        # Hash only the resolved fallback criterion for global risk templates.
+        # Never persist the raw criteria or invoke interactive input() here.
+        "resolved_risk_fallback": _extract_global_risk_fallback(
+            renderer_dependencies, ctx,
+        ),
         # CallLLMAPI finalizes the dispatched user prompt using these values.
         # Persist only their combined digest, NEVER model_spec (API credentials).
         # Include them even for the zero-TODO all-Success resume fast path.
