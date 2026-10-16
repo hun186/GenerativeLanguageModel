@@ -40,6 +40,7 @@ from czjLLM.utilities.json_combining import (
 from czjLLM.utilities.slice_merge import (
     merge_dict_slices,
     merge_dict_slices_audited,
+    is_multidim_event_slice_merge,
     should_merge_slices,
 )
 from czjLLM.reduction.config import ReductionConfig, parse_reduction_config
@@ -556,6 +557,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
                                 10,
                             )
                         ),
+                        multidim_event=is_multidim_event_slice_merge(ctx),
                     )
                 )
 
@@ -991,6 +993,7 @@ def combine_api_finished_item_0717(item: str, ctx) -> str:
                 audit=bool(getattr(ctx, "merge_log_changes", True)),
                 logger=print if bool(getattr(ctx, "merge_log_changes", True)) else None,
                 max_log=int(getattr(ctx, "merge_max_log", 10)),
+                multidim_event=is_multidim_event_slice_merge(ctx),
             )
             combined_text = json.dumps(merged_obj, ensure_ascii=False, indent=2)
         else:
