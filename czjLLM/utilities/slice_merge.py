@@ -15,6 +15,119 @@ def should_merge_slices(ctx) -> bool:
         (getattr(ctx, "merge_strategy", "").lower() in {"dict_deep", "slice_merge", "on"})
     )
 
+def is_multidim_event_slice_merge(ctx) -> bool:
+    """Restrict event-ID reconciliation to the explicit ES article contract.
+
+    In auto mode only the multidim_event_json field selects this contract.
+    Other JSON arrays, including no-event-IDs profiles, keep legacy behavior.
+    """
+    profiles = {"multidim_event", "multi_dim_event", "multidim", "event"}
+    fields = {"multidim_event_json"}
+    rules = (
+        getattr(ctx, "es_writeback_rules", None)
+        or getattr(ctx, "sql_writeback_rules", None)
+        or []
+    )
+    candidates = []
+    if isinstance(rules, list):
+        for rule in rules:
+            if isinstance(rule, dict):
+                candidates.append((
+                    rule.get("output_col"),
+                    rule.get("output_profile", getattr(ctx, "output_profile", None)),
+                ))
+    if not candidates:
+        candidates = [(
+            getattr(ctx, "output_col", None),
+            getattr(ctx, "output_profile", None),
+        )]
+    for field, profile in candidates:
+        name = str(profile or "auto").strip().lower().replace("-", "_")
+        if name in profiles:
+            return True
+        if name in {"auto", "default"} and str(field or "").strip().lower() in fields:
+            return True
+    return False
+
+
+def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
+    """Assign globally unique IDs before concatenating independently named events.
+
+    LLM slices independently start numbering E1/E2. Never remap a collision
+    without also changing the SAME slice's event_ids references. Existing
+    event labels, future-slice labels, and first occurrence are preserved.
+    A duplicate ID *inside* one slice is ambiguous and must fail closed.
+    """
+    from copy import deepcopy
+
+    reserved = {
+        event["event_id"].strip()
+        for item in items
+        for event in (item.get("Event") if isinstance(item.get("Event"), list) else [])
+        if isinstance(event, dict)
+        and isinstance(event.get("event_id"), str)
+        and event["event_id"].strip()
+    }
+    assigned = set()
+    next_id = 1
+    out = []
+    linked_fields = (
+        "Person", "Involved_Parties", "Impact", "Event_Timeline", "evidence_snippets",
+    )
+
+    for index, original in enumerate(items):
+        item = deepcopy(original)
+        events = item.get("Event")
+        replacements = {}
+        within_slice = set()
+        if isinstance(events, list):
+            for event in events:
+                if not isinstance(event, dict):
+                    continue  # The strict output profile rejects malformed Event rows.
+                old = event.get("event_id")
+                if not isinstance(old, str) or not old.strip():
+                    continue  # Do not manufacture missing IDs.
+                old = old.strip()
+                if old in within_slice:
+                    raise ValueError(
+                        f"multidim Event duplicate event_id {old!r} inside slice {index}"
+                    )
+                within_slice.add(old)
+                if old in assigned:
+                    while f"E{next_id}" in reserved or f"E{next_id}" in assigned:
+                        next_id += 1
+                    new = f"E{next_id}"
+                    next_id += 1
+                    replacements[old] = new
+                    event["event_id"] = new
+                    assigned.add(new)
+                else:
+                    event["event_id"] = old
+                    assigned.add(old)
+
+        if replacements:
+            def update_refs(value):
+                if isinstance(value, list):
+                    for entry in value:
+                        update_refs(entry)
+                elif isinstance(value, dict):
+                    ids = value.get("event_ids")
+                    if isinstance(ids, list):
+                        value["event_ids"] = [
+                            replacements.get(eid, eid) if isinstance(eid, str) else eid
+                            for eid in ids
+                        ]
+                    for key, entry in value.items():
+                        if key != "event_ids":
+                            update_refs(entry)
+
+            for name in linked_fields:
+                if name in item:
+                    update_refs(item[name])
+        out.append(item)
+    return out
+
+
 def merge_dict_slices(dict_list: List[Dict[str, Any]]) -> Dict[str, Any]:
     """將多個切片（list[dict]）深度合併成單一 dict。
     規則：
@@ -51,6 +164,7 @@ def merge_dict_slices_audited(
     #logger: Optional[callable] = None,           # 例如 tlog_warn
     logger: Optional[callable] = print,
     max_log: int = 10,                           # 最多列出幾筆細節
+    multidim_event: bool = False,                # ES article Event/event_ids reconciliation
 ) -> Tuple[dict, Dict[str, Any]]:
     """
     與 merge_dict_slices 規則相同，但產出審計報告：
@@ -162,6 +276,9 @@ def merge_dict_slices_audited(
         return ({}, {"changed": False, "counts": {}, "samples": []})
 
     #print("input dict_list in merge_dict_slices_audited",dict_list)
+
+    if multidim_event:
+        dict_list = _reconcile_multidim_event_slice_ids(dict_list)
 
     agg: Dict[str, Any] = {}
     for d in dict_list:
