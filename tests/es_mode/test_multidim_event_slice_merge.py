@@ -220,6 +220,34 @@ def test_multi_rule_profile_uses_actual_selected_flatten_column():
     assert is_multidim_event_slice_merge(ctx, output_col=selected)
 
 
+def test_mixed_profile_stage_defers_merge_until_per_field_writeback():
+    from czjLLM.prompt_pipeline.pipeline_controller import (
+        _merge_single_extract_stage_json_parts,
+    )
+    from czjLLM.utilities.slice_merge import needs_per_output_slice_merge
+
+    ctx = SimpleNamespace(
+        output_col="generic_json",
+        output_profile="none",
+        merge_log_changes=False,
+        es_writeback_rules=[
+            {"output_col": "generic_json", "source": "stage", "stage": "extract",
+             "output_profile": "none"},
+            {"output_col": "multidim_event_json", "source": "stage", "stage": "extract",
+             "output_profile": "multidim_event"},
+        ],
+    )
+    assert needs_per_output_slice_merge(ctx, source="stage")
+    rows = [
+        json.dumps([_article("E1", action="first")], ensure_ascii=False),
+        json.dumps([_article("E1", action="second")], ensure_ascii=False),
+    ]
+    pending = json.loads(_merge_single_extract_stage_json_parts(rows, ctx))
+    assert isinstance(pending, list) and len(pending) == 2
+    assert [r["Event"][0]["event_id"] for r in pending] == ["E1", "E1"]
+    # The Row Merger uses the raw list to make distinct profile-bound outputs.
+
+
 def test_original_generic_contract_never_renumbers_events():
     x = _article("E1", action="one")
     y = _article("E1", action="two")
@@ -249,7 +277,8 @@ def test_multidim_single_chunk_nested_impact_normalizes_without_remapping():
     assert normalize_multidim_event_payload([item])[0]["Impact"][0]["event_ids"] == ["E1"]
 
 
-def test_actual_row_merger_writes_two_e1_slices_via_es_profile(tmp_path):
+@pytest.mark.parametrize("flatten_idx", [None, 0, 1], ids=["single", "generic", "strict"])
+def test_actual_row_merger_writes_two_e1_slices_via_es_profile(tmp_path, flatten_idx):
     """Exercise production watchdog and production ES profile without a live ES server."""
     from czjLLM.sql_mode.runtime.row_merger_generic import row_merger_watchdog_generic
 
@@ -275,7 +304,11 @@ def test_actual_row_merger_writes_two_e1_slices_via_es_profile(tmp_path):
 
         def write_main(self, pk, value, update_time=None):
             serialized = value["multidim_event_json"]
-            self.docs.append((pk, normalize_multidim_event_payload(json.loads(serialized))))
+            self.docs.append((
+                pk,
+                normalize_multidim_event_payload(json.loads(serialized)),
+                json.loads(value["generic_json"]) if "generic_json" in value else None,
+            ))
 
     item = tmp_path / "item"
     (item / "Success").mkdir(parents=True)
@@ -310,6 +343,16 @@ def test_actual_row_merger_writes_two_e1_slices_via_es_profile(tmp_path):
         llm_source_dir=str(tmp_path / "src"),
         llm_source_backup_dir=str(tmp_path / "backup"),
     )
+    if flatten_idx is not None:
+        ctx.output_col = "generic_json"
+        ctx.output_profile = "none"
+        ctx.sql_flatten_writeback_rule = flatten_idx
+        ctx.sql_writeback_rules = [
+            {"output_col": "generic_json", "source": "combined",
+             "output_profile": "none"},
+            {"output_col": "multidim_event_json", "source": "combined",
+             "output_profile": "multidim_event"},
+        ]
     row_merger_watchdog_generic(
         ctx, registry, lambda *_: None,
         SimpleNamespace(is_set=lambda: True),
@@ -317,7 +360,10 @@ def test_actual_row_merger_writes_two_e1_slices_via_es_profile(tmp_path):
     )
     assert registry.removed
     assert len(sink.docs) == 1
-    pk, docs = sink.docs[0]
+    pk, docs, generic = sink.docs[0]
     assert pk == "sample-id"
     assert [e["event_id"] for e in docs[0]["Event"]] == ["E1", "E2"]
+    if flatten_idx is not None:
+        assert isinstance(generic, dict)
+        assert [e["event_id"] for e in generic["Event"]] == ["E1", "E1"]
     assert [r["event_ids"] for r in docs[0]["Impact"]] == [["E1"], ["E2"]]
