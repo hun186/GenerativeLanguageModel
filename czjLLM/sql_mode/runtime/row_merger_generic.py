@@ -72,20 +72,8 @@ def _as_db_text(value):
 
 
 def _slice_merge_writeback_value(ctx, output_col: str, merged_payload: dict) -> str:
-    """Serialize a slice merge using the selected output field's contract.
-
-    The multidimensional-event profile stores an array of article-level
-    records, while the generic SQL/tabular contract stores the merged object.
-    """
-    profile = getattr(ctx, "output_profile", None)
-    for rule in (getattr(ctx, "sql_writeback_rules", None) or []):
-        if isinstance(rule, dict) and str(rule.get("output_col", "")).strip() == output_col:
-            profile = rule.get("output_profile", profile)
-            break
-    profile_name = str(profile or "auto").strip().lower().replace("-", "_")
-    is_multidim = profile_name in {"multidim_event", "multi_dim_event", "multidim", "event"}
-    if profile_name == "auto":
-        is_multidim = output_col.strip().lower() == "multidim_event_json"
+    """Serialize one field under its own output profile, never a sibling's."""
+    is_multidim = is_multidim_event_slice_merge(ctx, output_col=output_col)
     return _as_db_text([merged_payload] if is_multidim else merged_payload)
 
 
@@ -95,16 +83,39 @@ def _apply_slice_merge_to_write_map(
     source_text: str,
     merged_payload: dict,
     output_cols: Optional[Iterable[str]] = None,
+    *,
+    source_slices: Optional[list[dict]] = None,
+    primary_multidim: bool = False,
 ) -> list[str]:
-    """Replace writeback values sourced from the slice list with its merge."""
+    """Merge every output column under its own semantic profile.
+
+    Several output columns may consume the same source list yet require
+    independent (generic vs Event-with-references) merge contracts. A single
+    shared merged dict can neither safely feed both nor preserve all IDs.
+    """
     allowed_cols = set(output_cols) if output_cols is not None else None
+    cached_payloads = {primary_multidim: merged_payload}
     updated = []
     for output_col, value in list(write_map.items()):
         if allowed_cols is not None and output_col not in allowed_cols:
             continue
         if value != source_text:
             continue
-        write_map[output_col] = _slice_merge_writeback_value(ctx, output_col, merged_payload)
+        multidim = is_multidim_event_slice_merge(ctx, output_col=output_col)
+        if source_slices is not None and multidim not in cached_payloads:
+            candidate, _ = merge_dict_slices_audited(
+                source_slices,
+                conflict_policy=getattr(ctx, "merge_conflict_policy", "prefer_left"),
+                dedup_lists=bool(getattr(ctx, "merge_dedup_lists", False)),
+                audit=False,
+                logger=None,
+                multidim_event=multidim,
+            )
+            cached_payloads[multidim] = candidate
+        output_payload = cached_payloads.get(multidim, merged_payload)
+        write_map[output_col] = _slice_merge_writeback_value(
+            ctx, output_col, output_payload,
+        )
         updated.append(output_col)
     return updated
 
@@ -658,6 +669,14 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 and item_dir not in merge_log_emitted_items
                             ):
                                 merge_logger = tlog
+                            selected_col = _selected_slice_merge_output_col(
+                                ctx, write_map, slice_source_text,
+                            )
+                            selected_multidim = (
+                                is_multidim_event_slice_merge(
+                                    ctx, output_col=selected_col,
+                                ) if selected_col is not None else False
+                            )
                             try:
                                 merged_payload, report = merge_dict_slices_audited(
                                     data,
@@ -666,14 +685,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                     audit=True,
                                     logger=merge_logger,
                                     max_log=int(getattr(ctx, "merge_max_log", 10)),
-                                    multidim_event=(
-                                        (selected_col := _selected_slice_merge_output_col(
-                                            ctx, write_map, slice_source_text,
-                                        )) is not None
-                                        and is_multidim_event_slice_merge(
-                                            ctx, output_col=selected_col,
-                                        )
-                                    ),
+                                    multidim_event=selected_multidim,
                                 )
                             except Exception as merge_error:
                                 _legacy_merge_finish(
@@ -682,12 +694,21 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                     error_type=type(merge_error).__name__,
                                 )
                                 raise
+                            try:
+                                merged_columns = _apply_slice_merge_to_write_map(
+                                    ctx, write_map, slice_source_text, merged_payload,
+                                    source_slices=data,
+                                    primary_multidim=selected_multidim,
+                                )
+                            except Exception as merge_error:
+                                _legacy_merge_finish(
+                                    item_dir, success=False,
+                                    error_type=type(merge_error).__name__,
+                                )
+                                raise
                             _legacy_merge_finish(item_dir, success=True)
                             if merge_logger is not None:
                                 merge_log_emitted_items.add(item_dir)
-                            merged_columns = _apply_slice_merge_to_write_map(
-                                ctx, write_map, slice_source_text, merged_payload
-                            )
                             if merged_columns:
                                 source_logs.append(f"slice_merge:{','.join(merged_columns)}")
                             flatten_source_text = _as_db_text(merged_payload)
