@@ -64,6 +64,10 @@ def _e2e_class_diff_template(textClass, exclusiveTextClass, content):
     )
 
 
+def _e2e_interactive_template(content):
+    return "E2E_INTERACTIVE_TASK\\n" + input("interactive criterion: ") + content
+
+
 def _force_two_source_slices(monkeypatch):
     """Fix just the input split boundary so this acceptance always has 2 slices.
 
@@ -414,6 +418,91 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
             controller.process_prompt_and_merge_multistage(ctx, str(source))
         assert saved.read_bytes() == old_manifest
         assert not fake_openai.requests
+
+
+@pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
+def test_full_restart_rejects_interactive_callable_before_mutating_queue(
+    backend, fake_openai, tmp_path, monkeypatch,
+):
+    """A new input()-using template must fail before old RUNNING is touched."""
+    import builtins
+
+    from czjLLM.prompt_pipeline import pipeline_controller as controller
+    from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
+
+    def nested(content):
+        def ask():
+            return input("criterion: ")
+        return ask() + content
+
+    for task_template in (_e2e_interactive_template, nested):
+        with pytest.raises(ValueError, match="interactive task template builtin"):
+            fingerprint_task({"template": task_template})
+
+    _force_two_source_slices(monkeypatch)
+    ctx = _ctx(fake_openai, tmp_path, backend)
+    ctx.input_col = "body" if backend == "sql" else "File"
+    ctx.output_col = "analysis"
+    ctx.primary_key = "id"
+    ctx.record_update_time = False
+    ctx.flatten_json_output = False
+    ctx.stage_source_inputs = {}
+    ctx.sql_flatten_writeback_rules = [{"writeback_rule": 0, "enabled": False}]
+    ctx.stages[0]["task_key"] = "E2E_JSON_EFFECTIVE"
+    ctx.taskSetting = {"E2E_JSON_EFFECTIVE": "E2E_JSON_EFFECTIVE_TASK"}
+    ctx.main_file_name = "interactive211"
+    ctx.temp_txt_finished_dir = str(tmp_path / "finished")
+    source = tmp_path / "interactive211.txt"
+    source.write_text(_SOURCE, encoding="utf-8")
+    item = Path(ctx.prompt_dir) / source.stem
+    todo = item / "TODO"
+    todo.mkdir(parents=True)
+    for i, part in enumerate(("E2E_JSON_PART_A", "E2E_JSON_PART_B")):
+        (todo / f"{i}.txt").write_text(
+            f"E2E_JSON_RESPONSE\\n\\n{part}", encoding="utf-8",
+        )
+
+    def crash_before_dispatch(*_args, **_kwargs):
+        raise RuntimeError("injected-after-stage-preparation")
+
+    with monkeypatch.context() as stop:
+        stop.setattr(controller, "_call_llm_with_task_override", crash_before_dispatch)
+        with pytest.raises(RuntimeError, match="injected-after-stage-preparation"):
+            controller.process_prompt_and_merge_multistage(ctx, str(source))
+
+    manifest = item / "_extract_slice_identity" / "source" / "original.json"
+    saved_manifest = manifest.read_bytes()
+    running = item / "RUNNING"
+    running.mkdir(exist_ok=True)
+    (todo / "0.txt").rename(running / "0.txt")
+    snapshot = {
+        str(p): p.read_bytes()
+        for d in (todo, running, item / "Success")
+        if d.exists() for p in d.glob("*.txt")
+    }
+    ctx.taskSetting["E2E_JSON_EFFECTIVE"] = {
+        "template": _e2e_interactive_template,
+    }
+    ctx.resume_policy = "full_restart"
+    input_calls = []
+
+    def forbidden_input(*args, **kwargs):
+        input_calls.append((args, kwargs))
+        raise AssertionError("input() invoked during full_restart")
+
+    with monkeypatch.context() as guard:
+        guard.setattr(builtins, "input", forbidden_input)
+        with pytest.raises(ValueError, match="interactive task template builtin"):
+            controller.process_prompt_and_merge_multistage(ctx, str(source))
+
+    assert not input_calls
+    assert not fake_openai.requests
+    assert manifest.read_bytes() == saved_manifest
+    assert {
+        str(p): p.read_bytes()
+        for d in (todo, running, item / "Success")
+        if d.exists() for p in d.glob("*.txt")
+    } == snapshot
 
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
