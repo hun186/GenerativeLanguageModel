@@ -50,3 +50,29 @@
 
 - `.codex/archive/known_issues.md-20261006-134200.md` — complete pre-compaction issue/environment history through PR #200 head `39177737486a372f38e9b6d81563d6f14327459a`.
 - `.codex/archive/known_issues-20260918-000000.md` — earlier pre-compaction history retained.
+
+### 2026-10-13 Issue #211 physical-backend follow-up (PR #213, pending)
+
+- A newly added full SQLite/Excel offline E2E revealed that the first extract-stage SQL/Table path may rerender a complete primary-input row into every already-tokenized slice, losing original slice membership. A narrowly scoped correction is proposed in PR #213; acceptance depends on its exact-head CI and review. The initial E2E fixture also disabled normal Success TODO cleanup and was corrected; do not interpret that fixture mistake as a separate production failure.
+- Windows self-hosted CI jobs have historically remained queued. The new tests run under the Linux `offline-e2e` job, including simulated CRLF coverage elsewhere; genuine Windows hardware/live model/database acceptance is not established.
+
+### 2026-10-14 PR #213 corrective review and CI pending
+
+- Codex P1 found at prior `1ae2c8e`: partial extract resume with a distinct task_key could reject valid durable raw snapshots when only a subset of TODO remained. Current PR branch proposes durable source/provenance verification and full Success membership recovery. Exact-head CI plus fresh Codex review are mandatory before declaring fixed.
+- Existing legacy resumed workspaces without durable raw-source provenance may conservatively fail closed for task-key-overridden extract rather than guessing which raw source segment a lone child/remaining prompt represents. Full restart or explicit recreation is the safe fallback.
+
+### 2026-10-14 new smart_reset Codex finding addressed but not yet accepted (PR #213)
+
+- Finding: storing source provenance under `_stage_outputs/original` loses it on `smart_reset`, causing incomplete Success coverage and potentially partial SQL/Excel writes. Fix moved hash-only manifest outside resettable snapshots, with source-verified regeneration and fail-closed handling of legacy missing provenance.
+- Correctness proof still pending on latest exact branch head. Previous green CI for `a42c5ff` did NOT cover the fix. Windows self-hosted runners may remain queued.
+
+### 2026-10-14 latest Codex P1s awaiting verification (PR #213)
+
+- P1: Callable task mapping string representations depend on memory address, causing invalid `stage_task_sha256` across Python process restarts. Proposed deterministic semantic task fingerprint with callable source and stable task fields; test stable recreated function objects and config edits.
+- P1: Issue #211 raw-source manifest accidentally affected ordinary multistage restarts after source changes. Proposed bypass of the guarded manifest path and refreshed original snapshot/fallback for non-single-extract stages, with resume/reset E2E.
+- Neither has exact-head CI SUCCESS or Clean Review yet; do not merge.
+
+### 2026-10-14 two latest P1s awaiting independent validation (PR #213)
+- P1 task fingerprint omission: different same-line lambdas had same inspect.getsource/module/qualname and no included bytecode when source existed. Corrective always hashes code and consts.
+- P1 dispatch provenance overwrite: resumed B could replace its already persisted prompt hash, silently mixing distinct prompts/results. Corrective validates all existing SHA-256s before any mutation and fails closed on drift (except deliberate full_restart).
+- Both are fixed on the PR branch but NOT YET verified by exact-head CI/Codex; main remains unchanged.

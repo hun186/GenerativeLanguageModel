@@ -7,6 +7,7 @@ import re
 #import random
 import json
 import hashlib
+import inspect
 import time
 import uuid
 import threading
@@ -40,6 +41,7 @@ from czjLLM.prompt_pipeline.stage_orchestrator import (
     update_chunk_stage_runtime as _update_chunk_stage_runtime,
 )
 from czjLLM.utilities.atomic_io import atomic_write_json, robust_json_read
+from czjLLM.job_manager import job_config as _job_config
 from czjLLM.job_manager.job_config import LLMJobConfig, task_template_preview
 #from czjLLM.job_manager.end_point_manager import get_available_end_points
 from czjLLM.job_manager.end_point_manager import select_model
@@ -48,6 +50,7 @@ from czjLLM.job_manager.end_point_manager import select_model
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.slice_merge import merge_dict_slices_audited, should_merge_slices
+from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
 from czjLLM.prompt_pipeline.slice_identity import (
     committed_split_parent_identities, digest_text,
     include_committed_split_roots, install_split_prompts,
@@ -779,6 +782,145 @@ def _build_stage_prompt_text(stage_task, content: str, ctx) -> str:
     return render_stage_task_prompt(stage_task, content, ctx)
 
 
+def _extract_renderer_task_dependencies(stage_task, ctx):
+    """Resolve only entries the renderer can actually reach, without rendering.
+
+    Stage task mappings can be aliases. Hashing just {"task": "alias"} misses
+    changed ctx.taskSetting["alias"] (and any further alias mapping). Mirror
+    _render_task_mapping_prompt's lookup precedence and stop on cycles.
+    """
+    pool = _ctx_task_pool(ctx)
+    seen = set()
+
+    def mapping_dependency(spec):
+        if id(spec) in seen:
+            raise ValueError("cyclic extract task-setting aliases")
+        seen.add(id(spec))
+        try:
+            if callable(spec.get("template")):
+                return {"mapping": spec, "mode": "callable"}
+            mapped = spec.get("task", spec.get("prompt", ""))
+            if isinstance(mapped, str) and mapped.strip():
+                name = mapped.strip()
+                if isinstance(pool, Mapping) and name in pool and pool[name] is not spec:
+                    nested = pool[name]
+                    if isinstance(nested, Mapping):
+                        return {"mapping": spec, "alias": name,
+                                "resolved": mapping_dependency(nested)}
+                    return {"mapping": spec, "alias": name,
+                            "raw": str(nested or "").strip()}
+                if name in taskSetting and taskSetting[name] is not spec:
+                    return {"mapping": spec, "global_key": name,
+                            "global_setting": taskSetting[name]}
+            return {"mapping": spec}
+        finally:
+            seen.remove(id(spec))
+
+    if isinstance(stage_task, Mapping):
+        return mapping_dependency(stage_task)
+
+    name = str(stage_task or "").strip()
+    if name and isinstance(pool, Mapping) and name in pool:
+        spec = pool[name]
+        if isinstance(spec, Mapping):
+            return {"key": name, "resolved": mapping_dependency(spec)}
+        return {"key": name, "raw": str(spec or "").strip()}
+    if name and name in taskSetting:
+        return {"key": name, "global_setting": taskSetting[name]}
+    return {"raw": name}
+
+
+def _extract_global_prompt_fallback(renderer_dependencies, ctx):
+    """Fingerprint implicit global inputs that generate_prompt actually reads.
+
+    The legacy generate_prompt() routine chooses MainFileName first, then risk
+    criteria (from ctx or the interactive process-global fallback), and only
+    then the CLASS EXT / CLASS Diff EXT branches. Do not call input() as part
+    of resume verification; missing process-global values must fail closed.
+    """
+    dependency = renderer_dependencies
+    while isinstance(dependency, Mapping):
+        if "global_setting" in dependency:
+            task_name = dependency.get("global_key", dependency.get("key", ""))
+            setting = dependency["global_setting"]
+            template = setting.get("template") if isinstance(setting, Mapping) else None
+            if not callable(template):
+                raise ValueError("global extract task has no fingerprintable template")
+            try:
+                source = inspect.getsource(template)
+            except (OSError, TypeError) as exc:
+                raise ValueError(
+                    "cannot verify global extract task prompt fallback"
+                ) from exc
+            # Match generate_prompt's mutually exclusive source/branch order.
+            if "主檔名" in source:
+                return None
+            if "風險關注指標" in source or "風險等級與說明" in source:
+                if getattr(ctx, "keyConsiderations", "") != "":
+                    return None
+                resolved = getattr(_job_config, "keyConsiderations", None)
+                if not isinstance(resolved, str) or not resolved:
+                    raise ValueError(
+                        "unresolved risk criteria fallback; provide explicit "
+                        "ctx.keyConsiderations before extract resume"
+                    )
+                return {"keyConsiderations": resolved}
+            if task_name in {"CLASS EXT", "CLASS Diff EXT"}:
+                text_class = getattr(_job_config, "textClass", None)
+                if not isinstance(text_class, str):
+                    raise ValueError(
+                        "unresolved classification criteria fallback: textClass"
+                    )
+                resolved = {"textClass": text_class}
+                if task_name == "CLASS Diff EXT":
+                    excluded = getattr(_job_config, "exclusiveTextClass", None)
+                    if not isinstance(excluded, str):
+                        raise ValueError(
+                            "unresolved classification criteria fallback: exclusiveTextClass"
+                        )
+                    resolved["exclusiveTextClass"] = excluded
+                return resolved
+            return None
+        dependency = dependency.get("resolved")
+    return None
+
+def _extract_stage_provenance_fingerprint(stage_task, ctx) -> str:
+    """Bind the scoped extract's task AND prompt-affecting renderer context.
+
+    Even when every source slice is already Success, a changed renderer
+    configuration must invalidate cached output *before* the zero-TODO
+    fast path. The manifest stores only this digest, never prompt contents.
+    """
+    model_spec = getattr(ctx, "model_spec", None)
+    if model_spec is None:
+        model_spec = {}
+    if not isinstance(model_spec, Mapping):
+        raise ValueError("extract model_spec must be a mapping for provenance")
+    renderer_dependencies = _extract_renderer_task_dependencies(stage_task, ctx)
+    return fingerprint_task({
+        "stage_task": stage_task,
+        "renderer_dependencies": renderer_dependencies,
+        # Hash only the resolved fallback criterion for global risk templates.
+        # Never persist the raw criteria or invoke interactive input() here.
+        "resolved_global_prompt_inputs": _extract_global_prompt_fallback(
+            renderer_dependencies, ctx,
+        ),
+        # CallLLMAPI finalizes the dispatched user prompt using these values.
+        # Persist only their combined digest, NEVER model_spec (API credentials).
+        # Include them even for the zero-TODO all-Success resume fast path.
+        "dispatch_finalization": {
+            "model_name": str(model_spec.get("model_name", "") or ""),
+            "no_think_suffix": model_spec.get("no_think_suffix"),
+        },
+        "render_context": {
+            "keyConsiderations": getattr(ctx, "keyConsiderations", ""),
+            "think_mode": getattr(ctx, "think_mode", True),
+            "main_file_name": getattr(ctx, "main_file_name", ""),
+            "initial_task": getattr(ctx, "task", ""),
+        },
+    })
+
+
 def _read_stage_snapshot_output(item: str, stage_name: str) -> str:
     """
     讀取某 stage snapshot 內容，回傳依檔名排序後的合併文字。
@@ -847,6 +989,11 @@ def _stage_todo_dir(item: str, stage_name: str) -> str:
 
 def _snapshot_dir(item: str, name: str) -> str:
     return os.path.join(item, "_stage_outputs", name)
+
+
+def _original_source_manifest_path(item: str) -> Path:
+    """Durable *hash-only* source identity outside resettable stage snapshots."""
+    return Path(item) / "_extract_slice_identity" / "source" / "original.json"
 
 
 def _sync_stage_todo_to_root(item: str, stage_name: str, ops: MergeOps):
@@ -1298,6 +1445,95 @@ def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
     return json.dumps(merged, ensure_ascii=False, indent=2)
 
 
+def _rebuild_full_restart_from_verified_source(
+    prompt_items: list[str], ctx, file_path: str, stage_def,
+) -> set[str]:
+    """Prepare current task prompts before destructive full_restart cleanup.
+
+    For workspaces with durable original-source provenance, the entire
+    current source must still match its saved A/B boundaries. Unlike resume,
+    an explicit full restart is allowed to change the effective extract task;
+    old Success and dispatch fingerprints are no longer reusable.
+    """
+    plans: list[tuple[str, Path, dict, list[tuple[str, str]]]] = []
+    for item in prompt_items:
+        marker = _original_source_manifest_path(item)
+        if not marker.exists():
+            continue
+        saved = robust_json_read(str(marker))
+        names = saved.get("names") if isinstance(saved, dict) else None
+        parts_hash = saved.get("part_sha256") if isinstance(saved, dict) else None
+        if not (
+            isinstance(saved, dict) and saved.get("version") == 1
+            and isinstance(names, list) and len(names) > 0
+            and len(set(names)) == len(names)
+            and all(isinstance(n, str) and n.endswith(".txt")
+                    and Path(n).name == n for n in names)
+            and isinstance(parts_hash, list) and len(parts_hash) == len(names)
+        ):
+            raise RuntimeError("full_restart invalid saved original source identity")
+        try:
+            source = Path(file_path).read_text(encoding="utf-8")
+            pieces = list(TokenizerWrapper(
+                model_name=getattr(ctx, "model_spec_name", ""),
+                task=getattr(ctx, "task", ""),
+            ).tokenize(
+                text=source, adjust=True,
+                max_tokens=getattr(ctx, "max_tokens", 12000),
+            ).get("ctxCut", []))
+        except (OSError, UnicodeError, ValueError) as exc:
+            raise RuntimeError("full_restart cannot verify current raw input") from exc
+        if (
+            saved.get("source_sha256") != digest_text(source)
+            or len(pieces) != len(names)
+            or [digest_text(str(part)) for part in pieces] != parts_hash
+        ):
+            raise RuntimeError(
+                "full_restart original source has changed; keep old Success"
+            )
+        rebuilt = [
+            (name, _build_stage_prompt_text(stage_def.task, str(piece), ctx))
+            for name, piece in zip(names, pieces)
+        ]
+        plans.append((item, marker, saved, rebuilt))
+
+    # The plan for every affected item is fully validated before changing a
+    # single Success file or existing TODO. Keep the original queue usable
+    # until each new prompt has been staged and fsynced.
+    for item, marker, saved, rebuilt in plans:
+        todo_dir = Path(item) / "TODO"
+        todo_dir.mkdir(parents=True, exist_ok=True)
+        stage_dir = Path(item) / "_extract_slice_identity" / "restart_staging" / uuid.uuid4().hex
+        stage_dir.mkdir(parents=True, exist_ok=False)
+        try:
+            for name, prompt in rebuilt:
+                file = stage_dir / name
+                with file.open("w", encoding="utf-8", newline="") as handle:
+                    handle.write(prompt)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+            for fp in _root_txt_files(str(todo_dir)):
+                fp.unlink()
+            for name, _prompt in rebuilt:
+                os.replace(stage_dir / name, todo_dir / name)
+        finally:
+            shutil.rmtree(stage_dir, ignore_errors=True)
+        # All retried descendants belonged to the previous task. Their
+        # old intent is not a valid lineage for fresh original source roots.
+        split_dir = Path(item) / "_extract_slice_identity" / "splits"
+        if split_dir.is_dir():
+            shutil.rmtree(split_dir)
+        saved.pop("dispatch_sha256", None)
+        saved.pop("stage_task_sha256", None)
+        # Full restart intentionally replaces every original TODO prompt;
+        # reset its pre-dispatch identity to the newly verified source render.
+        saved["initial_prompt_sha256"] = {
+            name: digest_text(prompt) for name, prompt in rebuilt
+        }
+        atomic_write_json(str(marker), saved)
+    return {item for item, _marker, _saved, _rebuilt in plans}
+
+
 def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | None = None, max_rounds: int = 20) -> str:
     from czjLLM.reduction.production_control import raise_if_execution_cancelled
     raise_if_execution_cancelled(ctx)
@@ -1320,12 +1556,27 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     stage_defs = resolve_pipeline_stages(ctx)
     single_extract_stage_writeback = _single_extract_stage_writeback_enabled(stage_defs, ctx)
     if single_extract_stage_writeback:
+        # No single-extract policy may render prompts or reconcile/move queue
+        # files until its effective renderer is proven fingerprintable. Fresh
+        # and resume paths can also hit input(), open(), breakpoint(), or
+        # untracked globals before the later first-dispatch provenance write.
+        # This is a read-only preflight for resume, smart_reset, full_restart.
+        _extract_stage_provenance_fingerprint(stage_defs[0].task, ctx)
         # Full restart must first regenerate completed split branches from
         # the current source. Otherwise clearing Success loses their prompts.
         if resume_policy == "full_restart":
-            _restore_single_extract_full_restart_parents(
-                prompt_items, ctx, stage_defs[0],
+            # The later resume-policy step would otherwise move stale RUNNING
+            # prompts into TODO *after* the fresh source prompts were staged,
+            # overwriting them via os.replace(). Recover the queue first.
+            recover_running_to_todo(prompt_items)
+            restored = _rebuild_full_restart_from_verified_source(
+                prompt_items, ctx, file_path, stage_defs[0],
             )
+            remaining = [item for item in prompt_items if item not in restored]
+            if remaining:
+                _restore_single_extract_full_restart_parents(
+                    remaining, ctx, stage_defs[0],
+                )
         # Journal reconciliation must precede input-membership capture.
         # An interrupted split can otherwise surface parent and children as
         # independent roots and duplicate SQL/Excel writeback content.
@@ -1393,45 +1644,243 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             shutil.copy2(str(fp), os.path.join(dst_dir, fp.name))
 
     def _write_original_snapshot_from_source(item: str) -> bool:
-        """
-        嘗試直接以原始檔案重切片，保存純內容快照，避免把第一階段 prompt 模板誤當成 original。
-        只有在切片數量與 root TODO 完全一致時才覆蓋快照；否則回退舊行為。
+        """Build or validate durable raw slices for effective-task rerendering.
+
+        A partial resume can have only B in TODO after A reached Success.
+        Preserve the A/B source-to-basename mapping recorded *before* dispatch;
+        do not remap a surviving B to source chunk A or turn prompt copies
+        into trusted source fragments.
         """
         root_files = _root_txt_files(ops.join(item, "TODO"))
-        if not root_files:
-            return False
+        snapshot_dir = Path(_snapshot_dir(item, "original"))
+        manifest_path = _original_source_manifest_path(item)
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                source_text = f.read()
+            with open(file_path, "r", encoding="utf-8") as handle:
+                source_text = handle.read()
             tokenizer = TokenizerWrapper(
                 model_name=getattr(ctx, "model_spec_name", ""),
                 task=getattr(ctx, "task", ""),
             )
             chunks = tokenizer.tokenize(
-                text=source_text,
-                adjust=True,
+                text=source_text, adjust=True,
                 max_tokens=getattr(ctx, "max_tokens", 12000),
             )
-            src_chunks = list(chunks.get("ctxCut", []))
+            source_parts = list(chunks.get("ctxCut", []))
         except Exception:
+            if single_extract_stage_writeback and manifest_path.exists():
+                raise RuntimeError("cannot verify saved raw slices against current source")
             return False
 
-        if len(src_chunks) != len(root_files):
+        if not source_parts:
+            return False
+        source_hash = digest_text(source_text)
+        part_hashes = [digest_text(str(part)) for part in source_parts]
+        todo_names = {fp.name for fp in root_files}
+
+        if not single_extract_stage_writeback:
+            # The durable hash-only source manifest is solely for Issue #211's
+            # single-extract writeback path. Normal multistage jobs must follow
+            # their pre-existing source snapshot lifecycle; a stale marker left
+            # by a previous run must never pin them to old stage inputs.
+            if len(source_parts) != len(root_files):
+                return False
+            MKDIR(str(snapshot_dir))
+            _clear_txt_files(str(snapshot_dir), ops)
+            for fp, part in zip(root_files, source_parts):
+                with (snapshot_dir / fp.name).open(
+                    "w", encoding="utf-8", newline=""
+                ) as handle:
+                    handle.write(str(part))
+            return True
+
+        if manifest_path.exists():
+            # A saved snapshot is authoritative only if current source and
+            # EVERY on-disk raw slice still match the committed identity.
+            # Never silently overwrite a stale manifest or adopt a prompt
+            # copy as a raw source slice on resume.
+            saved = robust_json_read(str(manifest_path))
+            names = saved.get("names") if isinstance(saved, dict) else None
+            valid = (
+                isinstance(saved, dict)
+                and saved.get("version") == 1
+                and saved.get("source_sha256") == source_hash
+                and isinstance(names, list)
+                and len(names) == len(source_parts)
+                and len(set(names)) == len(names)
+                and all(isinstance(name, str) and name.endswith(".txt")
+                        and Path(name).name == name for name in names)
+                and saved.get("part_sha256") == part_hashes
+                and all(
+                    name in set(names)
+                    or is_verified_queued_split_child(
+                        item, name,
+                        (Path(item) / "TODO" / name).read_text(encoding="utf-8"),
+                    )
+                    for name in todo_names
+                )
+            )
+            if valid:
+                if not snapshot_dir.exists() and resume_policy in {"smart_reset", "full_restart"}:
+                    # The reset intentionally removed volatile stage snapshots,
+                    # not the durable hash-only identity. Reconstitute raw
+                    # fragments solely from source parts verified above.
+                    MKDIR(str(snapshot_dir))
+                    for name, part in zip(names, source_parts):
+                        dest = snapshot_dir / name
+                        staged = snapshot_dir / (name + ".pending")
+                        try:
+                            with open(staged, "w", encoding="utf-8", newline="") as handle:
+                                handle.write(str(part))
+                                handle.flush()
+                                os.fsync(handle.fileno())
+                            os.replace(staged, dest)
+                        finally:
+                            staged.unlink(missing_ok=True)
+                valid = all(
+                    (snapshot_dir / name).is_file()
+                    and digest_text((snapshot_dir / name).read_text(encoding="utf-8")) == part_hashes[index]
+                    for index, name in enumerate(names)
+                )
+            if valid and resume_policy != "full_restart":
+                # A crash can occur after committing the source manifest but
+                # before the runner records any dispatch_sha256. Do not adopt
+                # the first matching-name TODO as trusted without validating
+                # the prompt bytes committed at the source boundary.
+                prior_dispatch = saved.get("dispatch_sha256", {})
+                initial_prompts = saved.get("initial_prompt_sha256", {})
+                if not isinstance(prior_dispatch, dict) or not isinstance(initial_prompts, dict):
+                    raise RuntimeError("invalid saved original prompt provenance")
+                for index, name in enumerate(names):
+                    queued = Path(item) / "TODO" / name
+                    if name in prior_dispatch:
+                        continue
+                    if not queued.is_file():
+                        # A verified source member with no dispatch record
+                        # cannot vanish: otherwise the surviving subset could
+                        # be merged as a complete SQLite/Excel result.
+                        raise RuntimeError(
+                            "missing undispatched extract source member: " + name
+                        )
+                    initial_hash = initial_prompts.get(name)
+                    if not isinstance(initial_hash, str) or len(initial_hash) != 64:
+                        raise RuntimeError(
+                            "missing initial extract queued prompt provenance; full_restart required"
+                        )
+                    observed = digest_text(queued.read_text(encoding="utf-8"))
+                    if observed != initial_hash:
+                        # An interrupted task override may already have
+                        # replaced the generator's prompt with a deterministic
+                        # stage prompt before the first dispatch manifest write.
+                        # Accept only exact rerendering from verified raw input.
+                        expected = _build_stage_prompt_text(
+                            stage_defs[0].task, str(source_parts[index]), ctx,
+                        )
+                        if observed != digest_text(expected):
+                            raise RuntimeError(
+                                "saved initial extract queued prompt changed since source snapshot"
+                            )
+            if not valid:
+                if single_extract_stage_writeback:
+                    raise RuntimeError(
+                        "saved original source-slice provenance mismatches current source or queue"
+                    )
+                return False
+            return True
+
+        # First attempt: all original prompts must still be queued and the
+        # full mapping is captured BEFORE any first-stage LLM call.
+        if len(source_parts) != len(root_files):
+            if single_extract_stage_writeback and _root_txt_files(
+                ops.join(item, "Success")
+            ):
+                raise RuntimeError(
+                    "cannot reconstruct all source slices for partial Success without provenance"
+                )
             return False
 
-        snap_dir = _snapshot_dir(item, "original")
-        MKDIR(snap_dir)
-        _clear_txt_files(snap_dir, ops)
-        for fp, chunk_text in zip(root_files, src_chunks):
-            dst_fp = os.path.join(snap_dir, fp.name)
-            with open(dst_fp, "w", encoding="utf-8") as f:
-                f.write(chunk_text)
+        names = [fp.name for fp in root_files]
+        MKDIR(str(snapshot_dir))
+        _clear_txt_files(str(snapshot_dir), ops)
+        for name, text_piece in zip(names, source_parts):
+            dst = snapshot_dir / name
+            # Per-file temp + replace ensures a crashed first attempt cannot
+            # expose truncated raw fragments with an apparently valid manifest.
+            staged = snapshot_dir / (name + ".pending")
+            try:
+                with open(staged, "w", encoding="utf-8", newline="") as handle:
+                    handle.write(str(text_piece))
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                os.replace(staged, dst)
+            finally:
+                if staged.exists():
+                    staged.unlink()
+        # Persist first-queued prompt hashes in the SAME atomic transaction
+        # as source membership. A crash before the first dispatch fingerprint
+        # can then never adopt a tampered TODO as its original identity.
+        initial_prompts = {
+            fp.name: digest_text(fp.read_text(encoding="utf-8"))
+            for fp in root_files
+        }
+        atomic_write_json(
+            str(manifest_path),
+            {"version": 1, "source_sha256": source_hash,
+             "names": names, "part_sha256": part_hashes,
+             "initial_prompt_sha256": initial_prompts},
+        )
         return True
 
-    # 先保存 original（第一次切片後的 TODO 內容）
+    # Raw-source snapshots remain valid when some prompts have moved from
+    # TODO into Success. Only fall back to copied prompt snapshots for old
+    # non-source flows; a persisted provenance manifest is never overwritten
+    # with prompt text merely because the current TODO count is smaller.
+    source_slice_verified: dict[str, bool] = {}
     for item in prompt_items:
-        if not _write_original_snapshot_from_source(item):
-            _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
+        from_source = _write_original_snapshot_from_source(item)
+        source_slice_verified[item] = from_source
+        if not from_source:
+            marker = _original_source_manifest_path(item)
+            if not single_extract_stage_writeback:
+                # Non-single-extract multistage inputs may have been freshly
+                # regenerated with different counts or changed source.
+                # Never let an unrelated legacy marker suppress fallback.
+                _clear_txt_files(_snapshot_dir(item, "original"), ops)
+                _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
+            elif not marker.exists():
+                _copy_root_todo_txts(ops.join(item, "TODO"), _snapshot_dir(item, "original"))
+
+    # Recover the full frozen input identity after a partial resume. A verified
+    # Success A no longer has a TODO file, but it still belongs to this
+    # extract's A+B source. The dispatch hashes were committed before the LLM
+    # call, and source-slice hashes were just independently revalidated.
+    if single_extract_stage_writeback:
+        for item in prompt_items:
+            if not source_slice_verified.get(item, False):
+                continue
+            manifest = robust_json_read(str(_original_source_manifest_path(item)))
+            dispatched = manifest.get("dispatch_sha256", {})
+            if not dispatched:
+                continue
+            expected_stage = _extract_stage_provenance_fingerprint(stage_defs[0].task, ctx)
+            if manifest.get("stage_task_sha256") != expected_stage:
+                if resume_policy != "full_restart":
+                    raise RuntimeError(
+                        "extract stage task changed since partial Success; "
+                        "explicit full_restart is required"
+                    )
+                # Explicit full_restart has already rebuilt every current
+                # input prompt, and must not resurrect old Success coverage.
+                dispatched = {}
+            allowed = set(manifest.get("names", ()))
+            if not isinstance(dispatched, dict) or not set(dispatched).issubset(allowed):
+                raise RuntimeError("invalid saved extract dispatch provenance")
+            for name, recorded_hash in dispatched.items():
+                if not isinstance(recorded_hash, str) or len(recorded_hash) != 64:
+                    raise RuntimeError("invalid saved extract dispatch digest")
+                if name not in expected_extract_files[item]:
+                    # Completed members remain mandatory; the final Success
+                    # coverage gate verifies prompt AND output SHA-256.
+                    expected_extract_files[item][name] = recorded_hash
 
     def _refresh_stage_prompt_metrics(root_todo_dir: str, filename: str, task_text: str, prompt_text: str, stage_identity: str):
         # The worker claims root TODO/<basename> into RUNNING/<basename>.
@@ -1473,6 +1922,63 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             src_text = str(stage_source_inputs.get(stage_input_col, "") or "")
             MKDIR(todo_dir)
             _clear_txt_files(todo_dir, ops)
+            # In the scoped single-extract JSON writeback flow the producer
+            # already rendered each initial input slice using extract's task.
+            # Rerendering *every* slice from the entire primary SQL/Excel
+            # source collapses N distinct prompts to N full-row duplicates.
+            # Keep the original verified slice prompt and dispatch it once.
+            if (
+                single_extract_stage_writeback
+                and stage_name == stage_defs[0].name
+                and stage_input_col == str(getattr(ctx, "input_col", "") or "").strip()
+                and anchor_files
+                and all(fp.parent == Path(root_todo_dir) for fp in anchor_files)
+            ):
+                # The generator used ctx.task; the orchestrator may resolve
+                # task_key over a different fallback task. Never silently
+                # reuse an initial prompt built from the wrong template.
+                initial_task = getattr(ctx, "task", "")
+                generated_task = (
+                    taskSetting.get(initial_task, initial_task)
+                    if isinstance(initial_task, str) else initial_task
+                )
+                if generated_task == stage_task:
+                    for fp in anchor_files:
+                        shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
+                        relabel_prompt_token_stage(str(fp), stage_name)
+                    return
+                # Re-render from the real verified per-slice raw input,
+                # not from the full row and not from copied prompt fallback.
+                if not source_slice_verified.get(item, False):
+                    raise RuntimeError(
+                        "extract stage task differs from generated slice task "
+                        "and original source slices cannot be verified"
+                    )
+                originals = Path(_snapshot_dir(item, "original"))
+                for fp in anchor_files:
+                    if is_verified_queued_split_child(
+                        item, fp.name, fp.read_text(encoding="utf-8"),
+                    ):
+                        shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
+                        relabel_prompt_token_stage(str(fp), stage_name)
+                        continue
+                    raw_slice = originals / fp.name
+                    if not raw_slice.is_file():
+                        raise RuntimeError(
+                            "extract stage task mismatch with missing original input slice"
+                        )
+                    content_slice = raw_slice.read_text(encoding="utf-8")
+                    effective_prompt = _build_stage_prompt_text(
+                        stage_task, content_slice, ctx,
+                    )
+                    dst = os.path.join(todo_dir, fp.name)
+                    with open(dst, "w", encoding="utf-8", newline="") as handle:
+                        handle.write(effective_prompt)
+                    _refresh_stage_prompt_metrics(
+                        root_todo_dir, fp.name, content_slice,
+                        effective_prompt, stage_name,
+                    )
+                return
             for fp in anchor_files:
                 # A committed split's queued descendant is an already
                 # rendered fragment prompt. Replacing it with the complete
@@ -1496,12 +2002,45 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         ):
             MKDIR(todo_dir)
             _clear_txt_files(todo_dir, ops)
+            initial_task = getattr(ctx, "task", "")
+            generated_task = (
+                taskSetting.get(initial_task, initial_task)
+                if isinstance(initial_task, str) else initial_task
+            )
+            task_mismatch = (
+                single_extract_stage_writeback
+                and generated_task != stage_task
+            )
+            if task_mismatch and not source_slice_verified.get(item, False):
+                raise RuntimeError(
+                    "extract stage task differs from generated slice task "
+                    "and original source slices cannot be verified"
+                )
             for fp in _root_txt_files(root_todo_dir):
-                shutil.copy2(str(fp), os.path.join(todo_dir, fp.name))
-                # The original first-stage prompt remains byte-identical, so
-                # preserve its existing numeric token counts, but relabel the
-                # copied dispatch's actual YAML stage before workers claim it.
-                relabel_prompt_token_stage(str(fp), stage_name)
+                dst = os.path.join(todo_dir, fp.name)
+                if task_mismatch:
+                    if is_verified_queued_split_child(
+                        item, fp.name, fp.read_text(encoding="utf-8"),
+                    ):
+                        shutil.copy2(str(fp), dst)
+                        relabel_prompt_token_stage(str(fp), stage_name)
+                        continue
+                    raw = Path(_snapshot_dir(item, "original")) / fp.name
+                    if not raw.is_file():
+                        raise RuntimeError(
+                            "extract stage task mismatch with missing original input slice"
+                        )
+                    source_piece = raw.read_text(encoding="utf-8")
+                    effective = _build_stage_prompt_text(stage_task, source_piece, ctx)
+                    with open(dst, "w", encoding="utf-8", newline="") as handle:
+                        handle.write(effective)
+                    _refresh_stage_prompt_metrics(
+                        root_todo_dir, fp.name, source_piece, effective, stage_name,
+                    )
+                else:
+                    shutil.copy2(str(fp), dst)
+                    # Same effective task: preserve exact per-slice prompt.
+                    relabel_prompt_token_stage(str(fp), stage_name)
             return  # 已有 TODO，不覆蓋
 
         if effective_input_from in {"", "none", "null"}:
@@ -1564,6 +2103,26 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
 
     def runner(job, _ctx, _input_text=None):
         raise_if_execution_cancelled(ctx)
+        if (
+            single_extract_stage_writeback
+            and resume_policy in {"resume", "smart_reset"}
+            and not _root_txt_files(ops.join(job.chunk_id, "TODO"))
+            and expected_extract_files.get(job.chunk_id)
+        ):
+            # A fully completed input has no pending prompts. smart_reset
+            # deletes stage snapshots but intentionally keeps Success: do not
+            # regenerate original slices as TODO and call the provider again.
+            # Verify every saved output's prompt/output fingerprint, including
+            # any recursively split descendants, before the final coverage
+            # gate reconstructs the extract snapshot for stage writeback.
+            for name, prompt_hash in expected_extract_files[job.chunk_id].items():
+                try:
+                    resolve_success_leaves(job.chunk_id, name, prompt_hash)
+                except (ValueError, OSError) as exc:
+                    raise RuntimeError(
+                        "cannot reuse completed extract: invalid Success identity"
+                    ) from exc
+            return {"ok": True, "output": ""}
         if job.stage_name not in shown_stage_tasks:
             print(f"[stage:{job.stage_name}] 📝 使用任務：\n{_stage_task_debug_text(job.stage_task)}")
             shown_stage_tasks.add(job.stage_name)
@@ -1571,15 +2130,61 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         _prepare_todo_for_stage(job.chunk_id, job.stage_name, job.stage_task)
         _sync_stage_todo_to_root(job.chunk_id, job.stage_name, ops)
         if single_extract_stage_writeback:
-            # Some stage configurations render their own prompt after the
-            # initial input was generated. Bind completed Success to the
-            # *dispatched* prompt, not the pre-stage template.
+            # Bind to the actually dispatched prompt, and durably retain the
+            # complete original membership even after Success prunes TODO.
             current = expected_extract_files[job.chunk_id]
-            for prompt_path in _root_txt_files(ops.join(job.chunk_id, "TODO")):
-                if prompt_path.name in current:
-                    current[prompt_path.name] = digest_text(
-                        prompt_path.read_text(encoding="utf-8")
-                    )
+            raw_manifest = str(_original_source_manifest_path(job.chunk_id))
+            record = robust_json_read(raw_manifest) if source_slice_verified.get(job.chunk_id) else {}
+            previous = record.get("dispatch_sha256", {}) if record else {}
+            if not isinstance(previous, dict):
+                raise RuntimeError("invalid persisted extract dispatch provenance")
+            all_sent = dict(previous)
+            pending = _root_txt_files(ops.join(job.chunk_id, "TODO"))
+            actual = {
+                prompt_path.name: digest_text(
+                    prompt_path.read_text(encoding="utf-8")
+                ) for prompt_path in pending
+            }
+            # A source/task-identical partial resume may only dispatch the
+            # *same* input for a previously recorded logical slice. Otherwise
+            # a regenerated/corrupted/nondeterministic TODO can silently mix
+            # A's old Success with a semantically different B.
+            if resume_policy != "full_restart":
+                baseline = record.get("initial_prompt_sha256", {}) if record else {}
+                for name, prompt_hash in actual.items():
+                    saved_hash = previous.get(name)
+                    if saved_hash is not None:
+                        if saved_hash != prompt_hash:
+                            raise RuntimeError(
+                                "extract dispatch prompt changed since previous "
+                                "attempt: refuse mixed-identity partial writeback"
+                            )
+                    elif record and name in record.get("names", ()):
+                        # Never grant a previously undispatched original TODO
+                        # its first trusted hash merely because its basename
+                        # belongs to a verified source-slice manifest.
+                        baseline_hash = baseline.get(name) if isinstance(baseline, dict) else None
+                        if not isinstance(baseline_hash, str) or len(baseline_hash) != 64:
+                            raise RuntimeError("missing initial extract queued prompt provenance")
+                        if prompt_hash != baseline_hash:
+                            source = Path(_snapshot_dir(job.chunk_id, "original")) / name
+                            if not source.is_file() or prompt_hash != digest_text(
+                                _build_stage_prompt_text(
+                                    job.stage_task, source.read_text(encoding="utf-8"), ctx,
+                                )
+                            ):
+                                raise RuntimeError(
+                                    "extract first dispatch prompt differs from verified source"
+                                )
+            for name, prompt_hash in actual.items():
+                if name in current:
+                    current[name] = prompt_hash
+                if record and name in record.get("names", []):
+                    all_sent[name] = prompt_hash
+            if record:
+                record["dispatch_sha256"] = all_sent
+                record["stage_task_sha256"] = _extract_stage_provenance_fingerprint(stage_defs[0].task, ctx)
+                atomic_write_json(raw_manifest, record)
         stage_def = stage_map[job.stage_name]
         debug_enabled, debug_max_chars = _resolve_llm_debug_flags(
             stage_debug_enabled=stage_def.debug_print_llm_io,

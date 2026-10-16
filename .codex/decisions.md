@@ -64,3 +64,13 @@
 
 - `.codex/archive/decisions.md-20261006-134200.md` — complete pre-compaction decision history through PR #200 head `39177737486a372f38e9b6d81563d6f14327459a`.
 - Earlier archive references remain preserved inside that snapshot.
+
+### 2026-10-13 Issue #211 SQL/Excel E2E test decision (PR #213, pending)
+
+- Mock only the external model HTTP response and initial tokenization cut boundaries; assert production scheduling, stage validation, merged stage writeback and physical SQLite/XLSX readback. Add explicit partial-resume case using persisted Success provenance and real remaining-leaf provider dispatch.
+- Preserve existing per-slice primary-input prompts during scoped single-extract stage preparation instead of rendering one full SQL/Excel row prompt for each slice. No change to alternate source-column routing.
+
+### 2026-10-14 extract partial-resume provenance (PR #213 pending)
+
+- Prefer one persisted, source-bound original input-slice identity over reassigning raw chunks to whatever TODO files happen to remain after interrupted processing. Treat source SHA, ordered chunk fingerprints, saved filenames and dispatched prompt/stage identity together as the reuse contract; stale or ambiguous evidence must reject writeback.
+- Preserve committed retry child prompts by verifying split lineage; do not rerender the parent source as a child's independent prompt.

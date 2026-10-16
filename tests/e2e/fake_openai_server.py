@@ -70,7 +70,11 @@ class FakeOpenAIServer:
                         self.wfile.write(encoded)
                         return
                     match = re.search(r"ROW_ID=([A-Za-z0-9_-]+)", prompt)
-                    if "E2E_ROUTE_FIN" in prompt:
+                    if "E2E_JSON_PART_A" in prompt and "E2E_JSON_PART_B" not in prompt:
+                        content = json.dumps({"keyFunctions": ["first"]})
+                    elif "E2E_JSON_PART_B" in prompt and "E2E_JSON_PART_A" not in prompt:
+                        content = json.dumps({"keyFunctions": ["second"]})
+                    elif "E2E_ROUTE_FIN" in prompt:
                         content = "FIN"
                     elif "E2E_ROUTE_LEGAL" in prompt:
                         content = "LEGAL"

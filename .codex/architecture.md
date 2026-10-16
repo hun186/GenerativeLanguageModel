@@ -71,3 +71,19 @@
 - The append-only audit schema can capture provider-reported cached input token counts, with a distinct source marker; missing provider cache metadata is unknown, not zero. Current `processing_tps` remains backward compatible; GUI derives `(input_tokens + output_tokens) / elapsed_seconds` for actual slice requests with positive elapsed.
 - Local token sidecars add only an allowlisted stage identity (never task/prompt payload). The GUI off-thread CSV reader computes cache-adjusted throughput from provider truth where present and an explicitly discounted stable-template-size proxy only after same-stage history exists; no new persistence, service, prompt transfer, or cache-hit truth source is created.
 - Histograms include collision-pruned min/P50/P95/max ticks and a 3+4 chart layout. Tk redraw and hover both use shared width/height bounds.
+
+### 2026-10-13 Issue #211 E2E verification boundary (PR #213, pending)
+
+- SQL and Table input modes share the production scheduler, direct multistage extract processing, stage manifest, row merger and physical sink. A first extract stage using the same input column as the primary row can safely reuse already-rendered per-slice prompts rather than rerender the entire source once per slice. This preservation is scoped to single-extract JSON stage writeback; alternate input-column routing and genuine multistage behavior stay untouched.
+- New offline end-to-end tests use localhost fake OpenAI responses and deterministic cut positions, but real SQLite files, XLSX files, prompt queue and production writeback to verify output readback. No live provider/SQL Server is involved.
+
+### 2026-10-14 partial extract resume authoritative source snapshots (PR #213 pending)
+
+- For the single-extract JSON stage writeback path, the first unpruned input queue establishes the ordered raw-source-slice-to-filename mapping. A durable SHA-256-only provenance manifest in the original snapshot folder records both source/slice identities and actual dispatched prompt hashes with an effective stage-task digest.
+- Later partial resumes reconstruct source slices and verify the existing complete snapshot, even after Success removes A from TODO. Completed members' recorded dispatch hashes reenter the final mandatory Success validation; partial or stale source and stage-task changes fail closed. Verified split child TODO prompts can survive original snapshot validation without being falsely treated as new raw slices.
+- No second cache, alternative source of model results or changed public output schema was introduced. Scope remains strictly the original single extract / SQLite-Excel writeback flow.
+
+### 2026-10-14 resilient single-extract source identity for smart_reset (PR #213)
+
+- Hash-only raw source and dispatch provenance lives under `<item>/_extract_slice_identity/source/original.json`, not `_stage_outputs`, because `smart_reset` intentionally deletes all stage snapshots. Full raw-source fragments can be safely regenerated only after validating the source hash, ordered part hashes, and original filename mapping. These regenerated texts remain transient in `_stage_outputs/original`.
+- The existing success and split identity directories remain authoritative for completed/retried prompts. When partial source membership cannot be verified, reject writeback rather than silently omitting Success siblings.
