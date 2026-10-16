@@ -41,6 +41,7 @@ from czjLLM.utilities.slice_merge import (
     merge_dict_slices,
     merge_dict_slices_audited,
     is_multidim_event_slice_merge,
+    needs_per_output_slice_merge,
     should_merge_slices,
 )
 from czjLLM.reduction.config import ReductionConfig, parse_reduction_config
@@ -510,6 +511,7 @@ def combine_api_finished_item(item: str, ctx) -> str:
             if (
                 should_merge_slices(ctx)
                 and json_slice_count > 1
+                and not needs_per_output_slice_merge(ctx, source="combined")
             ):
                 checkpoint(
                     "before-audited-dict-merge",
@@ -985,7 +987,11 @@ def combine_api_finished_item_0717(item: str, ctx) -> str:
         text_chunks.append(text if text.endswith("\n") else text + "\n")
 
     if json_mode and json_rows:
-        if should_merge_slices(ctx) and json_slice_count > 1:
+        if (
+            should_merge_slices(ctx)
+            and json_slice_count > 1
+            and not needs_per_output_slice_merge(ctx, source="combined")
+        ):
             merged_obj, _report = merge_dict_slices_audited(
                 json_rows,
                 conflict_policy=str(getattr(ctx, "merge_conflict_policy", "prefer_left")),
