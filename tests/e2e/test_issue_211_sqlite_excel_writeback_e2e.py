@@ -68,6 +68,15 @@ def _e2e_interactive_template(content):
     return "E2E_INTERACTIVE_TASK\n" + input("interactive criterion: ") + content
 
 
+def _e2e_open_template(content):
+    return "E2E_OPEN_TASK\\n" + open("/missing/external/prompt.txt").read() + content
+
+
+def _e2e_breakpoint_template(content):
+    breakpoint()
+    return "E2E_BREAKPOINT_TASK\\n" + content
+
+
 def _force_two_source_slices(monkeypatch):
     """Fix just the input split boundary so this acceptance always has 2 slices.
 
@@ -421,8 +430,13 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
 
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
+@pytest.mark.parametrize(
+    "unsafe_template",
+    [_e2e_interactive_template, _e2e_open_template, _e2e_breakpoint_template],
+    ids=["input", "open", "breakpoint"],
+)
 def test_full_restart_rejects_interactive_callable_before_mutating_queue(
-    backend, fake_openai, tmp_path, monkeypatch,
+    backend, unsafe_template, fake_openai, tmp_path, monkeypatch,
 ):
     """A new input()-using template must fail before old RUNNING is touched."""
     import builtins
@@ -435,9 +449,16 @@ def test_full_restart_rejects_interactive_callable_before_mutating_queue(
             return input("criterion: ")
         return ask() + content
 
-    for task_template in (_e2e_interactive_template, nested):
-        with pytest.raises(ValueError, match="interactive task template builtin"):
+    for task_template in (_e2e_interactive_template, nested, _e2e_open_template, _e2e_breakpoint_template):
+        with pytest.raises(
+            ValueError, match="(interactive|effectful) task template builtin"
+        ):
             fingerprint_task({"template": task_template})
+    # The common argument-derived builtins are still permitted, so pure
+    # templates do not lose prompt reuse in existing resume flows.
+    def deterministic(content):
+        return str(len(content)) + "-" + str(sorted([3, 1, 2])) + content
+    assert len(fingerprint_task({"template": deterministic})) == 64
 
     _force_two_source_slices(monkeypatch)
     ctx = _ctx(fake_openai, tmp_path, backend)
@@ -481,7 +502,7 @@ def test_full_restart_rejects_interactive_callable_before_mutating_queue(
         if d.exists() for p in d.glob("*.txt")
     }
     ctx.taskSetting["E2E_JSON_EFFECTIVE"] = {
-        "template": _e2e_interactive_template,
+        "template": unsafe_template,
     }
     ctx.resume_policy = "full_restart"
     input_calls = []
@@ -492,7 +513,7 @@ def test_full_restart_rejects_interactive_callable_before_mutating_queue(
 
     with monkeypatch.context() as guard:
         guard.setattr(builtins, "input", forbidden_input)
-        with pytest.raises(ValueError, match="interactive task template builtin"):
+        with pytest.raises(ValueError, match="(interactive|effectful) task template builtin"):
             controller.process_prompt_and_merge_multistage(ctx, str(source))
 
     assert not input_calls
