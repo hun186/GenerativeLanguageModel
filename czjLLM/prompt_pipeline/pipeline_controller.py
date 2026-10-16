@@ -50,7 +50,8 @@ from czjLLM.job_manager.end_point_manager import select_model
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.slice_merge import (
-    merge_dict_slices_audited, is_multidim_event_slice_merge, should_merge_slices,
+    merge_dict_slices_audited, is_multidim_event_slice_merge,
+    needs_per_output_slice_merge, should_merge_slices,
 )
 from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
 from czjLLM.prompt_pipeline.slice_identity import (
@@ -1436,6 +1437,11 @@ def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
         return parts[0]
     if not rows:
         return "[]"
+    if needs_per_output_slice_merge(ctx, source="stage"):
+        # One stage artifact cannot simultaneously represent generic Event IDs
+        # and rewritten strict references. Keep the original slice records for
+        # Row Merger's per-destination semantic merge.
+        return json.dumps(rows, ensure_ascii=False, indent=2)
     merged, _report = merge_dict_slices_audited(
         rows,
         conflict_policy=str(getattr(ctx, "merge_conflict_policy", "prefer_left")),
