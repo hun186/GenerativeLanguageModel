@@ -432,8 +432,8 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 @pytest.mark.parametrize(
     "unsafe_template",
-    [_e2e_interactive_template, _e2e_open_template, _e2e_breakpoint_template],
-    ids=["input", "open", "breakpoint"],
+    [_e2e_interactive_template, _e2e_open_template, _e2e_breakpoint_template, None],
+    ids=["input", "open", "breakpoint", "custom-builtin-len"],
 )
 def test_full_restart_rejects_interactive_callable_before_mutating_queue(
     backend, unsafe_template, fake_openai, tmp_path, monkeypatch,
@@ -459,6 +459,26 @@ def test_full_restart_rejects_interactive_callable_before_mutating_queue(
     def deterministic(content):
         return str(len(content)) + "-" + str(sorted([3, 1, 2])) + content
     assert len(fingerprint_task({"template": deterministic})) == 64
+
+    if unsafe_template is None:
+        # Plugin loaders may exec functions with their own __builtins__
+        # mapping. The function's real len can be replaced at runtime even
+        # though process-wide builtins.len remains unchanged.
+        namespace = {
+            "__name__": "e2e_noncanonical_builtins",
+            "__builtins__": dict(vars(builtins)),
+        }
+        exec(
+            'def render(content):\\n'
+            '    return "E2E_JSON_EFFECTIVE_TASK" + str(len(content)) + content',
+            namespace,
+        )
+        unsafe_template = namespace["render"]
+        initial_fingerprint = fingerprint_task({"template": unsafe_template})
+        assert len(initial_fingerprint) == 64
+        namespace["__builtins__"]["len"] = lambda content: 1000
+        with pytest.raises(ValueError, match="noncanonical task template builtin binding: len"):
+            fingerprint_task({"template": unsafe_template})
 
     _force_two_source_slices(monkeypatch)
     ctx = _ctx(fake_openai, tmp_path, backend)
@@ -513,7 +533,12 @@ def test_full_restart_rejects_interactive_callable_before_mutating_queue(
 
     with monkeypatch.context() as guard:
         guard.setattr(builtins, "input", forbidden_input)
-        with pytest.raises(ValueError, match="(interactive|effectful) task template builtin"):
+        expected = (
+            "noncanonical task template builtin binding"
+            if unsafe_template.__module__ == "e2e_noncanonical_builtins"
+            else "(interactive|effectful) task template builtin"
+        )
+        with pytest.raises(ValueError, match=expected):
             controller.process_prompt_and_merge_multistage(ctx, str(source))
 
     assert not input_calls
