@@ -86,6 +86,75 @@ def test_repeated_id_within_one_slice_remains_schema_error():
         merge_dict_slices_audited([row], multidim_event=True, logger=None)
 
 
+def test_dangling_reference_is_never_made_valid_by_generated_event_id():
+    left = _article("E1", action="first")
+    right = _article("E1", action="second")
+    # The second slice's E2 is not declared by its Event; the writeback
+    # must keep rejecting this dangling foreign key even after renumbering.
+    right["Person"][0]["event_ids"] = ["E2"]
+    merged, _ = merge_dict_slices_audited(
+        [left, right], multidim_event=True, logger=None,
+    )
+    assert [e["event_id"] for e in merged["Event"]] == ["E1", "E3"]
+    with pytest.raises(ValueError, match="references missing Event.event_id 'E2'"):
+        normalize_multidim_event_payload([merged])
+
+
+def test_whitespace_reference_follows_its_own_remapped_slice_event():
+    left = _article("E1", action="first")
+    right = _article(" E1 ", action="second")
+    right["Person"][0]["event_ids"] = [" E1 "]
+    merged, _ = merge_dict_slices_audited(
+        [left, right], multidim_event=True, logger=None,
+    )
+    assert [e["event_id"] for e in merged["Event"]] == ["E1", "E2"]
+    assert [row["event_ids"] for row in merged["Person"]] == [["E1"], ["E2"]]
+    normalize_multidim_event_payload([merged])
+
+
+def test_stage_source_preserves_multidim_array_envelope():
+    from czjLLM.prompt_pipeline.pipeline_controller import (
+        _merge_single_extract_stage_json_parts,
+    )
+    source = [
+        json.dumps([_article("E1", action="first")], ensure_ascii=False),
+        json.dumps([_article("E1", action="second")], ensure_ascii=False),
+    ]
+    ctx = SimpleNamespace(
+        output_col="multidim_event_json",
+        output_profile="multidim_event",
+        merge_log_changes=False,
+    )
+    result = json.loads(_merge_single_extract_stage_json_parts(source, ctx))
+    assert isinstance(result, list) and len(result) == 1
+    validated = normalize_multidim_event_payload(result)
+    assert [row["event_id"] for row in validated[0]["Event"]] == ["E1", "E2"]
+
+
+def test_multi_rule_profile_uses_actual_selected_flatten_column():
+    from czjLLM.sql_mode.runtime.row_merger_generic import (
+        _selected_slice_merge_output_col,
+    )
+    raw = ' [{"Event": [{"event_id": "E1"}]}] '
+    ctx = SimpleNamespace(
+        output_col="generic_json",
+        output_profile="none",
+        sql_writeback_rules=[
+            {"output_col": "generic_json", "output_profile": "none"},
+            {"output_col": "multidim_event_json", "output_profile": "multidim_event"},
+        ],
+        sql_flatten_writeback_rule=0,
+    )
+    write_map = {"generic_json": raw, "multidim_event_json": raw}
+    selected = _selected_slice_merge_output_col(ctx, write_map, raw)
+    assert selected == "generic_json"
+    assert not is_multidim_event_slice_merge(ctx, output_col=selected)
+    ctx.sql_flatten_writeback_rule = 1
+    selected = _selected_slice_merge_output_col(ctx, write_map, raw)
+    assert selected == "multidim_event_json"
+    assert is_multidim_event_slice_merge(ctx, output_col=selected)
+
+
 def test_original_generic_contract_never_renumbers_events():
     x = _article("E1", action="one")
     y = _article("E1", action="two")
