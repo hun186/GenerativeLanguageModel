@@ -465,7 +465,7 @@ def test_fresh_first_dispatch_preflights_before_todo_or_manifest_mutation(
     todo.mkdir(parents=True)
     for i, fragment in enumerate(("E2E_JSON_PART_A", "E2E_JSON_PART_B")):
         (todo / f"{i}.txt").write_text(
-            f"E2E_JSON_RESPONSE\\n\\n{fragment}", encoding="utf-8",
+            f"E2E_JSON_RESPONSE\n\n{fragment}", encoding="utf-8",
         )
     queued_before = {str(path): path.read_bytes() for path in todo.glob("*.txt")}
     manifest = item / "_extract_slice_identity" / "source" / "original.json"
