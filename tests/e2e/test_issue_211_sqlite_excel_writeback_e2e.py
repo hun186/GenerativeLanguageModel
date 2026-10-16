@@ -417,6 +417,95 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
 
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
+@pytest.mark.parametrize(
+    "class_task,missing_field",
+    [("CLASS EXT", "textClass"), ("CLASS Diff EXT", "exclusiveTextClass")],
+)
+def test_full_restart_missing_class_criteria_fails_before_interactive_render(
+    backend, class_task, missing_field, fake_openai, tmp_path, monkeypatch,
+):
+    """Offline restart must not call input() or mutate queue on missing globals."""
+    import builtins
+
+    from czjLLM.job_manager import job_config
+    from czjLLM.prompt_pipeline import pipeline_controller as controller
+
+    _force_two_source_slices(monkeypatch)
+    ctx = _ctx(fake_openai, tmp_path, backend)
+    ctx.input_col = "body" if backend == "sql" else "File"
+    ctx.output_col = "analysis"
+    ctx.primary_key = "id"
+    ctx.record_update_time = False
+    ctx.flatten_json_output = False
+    ctx.stage_source_inputs = {}
+    ctx.sql_flatten_writeback_rules = [{"writeback_rule": 0, "enabled": False}]
+    ctx.stages[0]["task_key"] = ""
+    ctx.stages[0]["task"] = class_task
+    ctx.taskSetting = {}
+    monkeypatch.setitem(controller.taskSetting, class_task, {
+        "template": (
+            _e2e_class_diff_template if class_task == "CLASS Diff EXT"
+            else _e2e_class_template
+        ),
+    })
+    monkeypatch.setattr(job_config, "textClass", "SAFE_CLASS_A", raising=False)
+    monkeypatch.setattr(job_config, "exclusiveTextClass", "SAFE_EXCLUDE_A", raising=False)
+    ctx.main_file_name = "classrestart211"
+    ctx.temp_txt_finished_dir = str(tmp_path / "finished")
+    source = tmp_path / "classrestart211.txt"
+    source.write_text(_SOURCE, encoding="utf-8")
+    item = Path(ctx.prompt_dir) / source.stem
+    todo = item / "TODO"
+    todo.mkdir(parents=True)
+    for i, part in enumerate(("E2E_JSON_PART_A", "E2E_JSON_PART_B")):
+        (todo / f"{i}.txt").write_text(
+            f"E2E_JSON_RESPONSE\\n\\n{part}", encoding="utf-8",
+        )
+
+    def crash_before_dispatch(*_args, **_kwargs):
+        raise RuntimeError("injected-after-stage-preparation")
+
+    with monkeypatch.context() as stop:
+        stop.setattr(controller, "_call_llm_with_task_override", crash_before_dispatch)
+        with pytest.raises(RuntimeError, match="injected-after-stage-preparation"):
+            controller.process_prompt_and_merge_multistage(ctx, str(source))
+
+    manifest = item / "_extract_slice_identity" / "source" / "original.json"
+    saved_manifest = manifest.read_bytes()
+    running = item / "RUNNING"
+    running.mkdir(exist_ok=True)
+    (todo / "0.txt").rename(running / "0.txt")
+    queued_before = {
+        str(path): path.read_bytes()
+        for directory in (todo, running, item / "Success")
+        if directory.exists()
+        for path in directory.glob("*.txt")
+    }
+    monkeypatch.delattr(job_config, missing_field)
+    ctx.resume_policy = "full_restart"
+    input_calls = []
+
+    def forbidden_input(*args, **kwargs):
+        input_calls.append((args, kwargs))
+        raise AssertionError("unexpected interactive input on offline restart")
+
+    with monkeypatch.context() as guard:
+        guard.setattr(builtins, "input", forbidden_input)
+        with pytest.raises(ValueError, match="unresolved classification criteria fallback"):
+            controller.process_prompt_and_merge_multistage(ctx, str(source))
+
+    assert not input_calls
+    assert not fake_openai.requests
+    assert manifest.read_bytes() == saved_manifest
+    assert {
+        str(path): path.read_bytes()
+        for directory in (todo, running, item / "Success")
+        if directory.exists()
+        for path in directory.glob("*.txt")
+    } == queued_before
+
+
+@pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
 def test_full_restart_replaces_stale_running_with_fresh_risk_prompt(
     backend, fake_openai, tmp_path, monkeypatch,
 ):
