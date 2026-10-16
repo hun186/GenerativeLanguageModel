@@ -92,12 +92,77 @@ def test_dangling_reference_is_never_made_valid_by_generated_event_id():
     # The second slice's E2 is not declared by its Event; the writeback
     # must keep rejecting this dangling foreign key even after renumbering.
     right["Person"][0]["event_ids"] = ["E2"]
-    merged, _ = merge_dict_slices_audited(
-        [left, right], multidim_event=True, logger=None,
+    with pytest.raises(ValueError, match="slice 1 Person references missing local Event.event_id 'E2'"):
+        merge_dict_slices_audited(
+            [left, right], multidim_event=True, logger=None,
+        )
+
+
+def test_dangling_reference_cannot_be_rescued_by_event_in_another_slice():
+    left = _article("E1", action="first")
+    left["Person"][0]["event_ids"] = ["E2"]  # Missing locally.
+    right = _article("E1", action="second")
+    right["Event"].append({
+        "event_id": "E2", "subject": "UNODC", "action": "third",
+        "time_raw": "2020", "time_iso": "2020-01-01", "time_precision": "year",
+    })
+    with pytest.raises(ValueError, match="slice 0 Person references missing local Event.event_id 'E2'"):
+        merge_dict_slices_audited(
+            [left, right], multidim_event=True, logger=None,
+        )
+
+
+def test_single_writeback_rule_selects_profile_over_generic_default():
+    ctx = SimpleNamespace(
+        output_col="raw",
+        output_profile="none",
+        es_writeback_rules=[{
+            "output_col": "multidim_event_json",
+            "output_profile": "multidim_event",
+        }],
     )
-    assert [e["event_id"] for e in merged["Event"]] == ["E1", "E3"]
-    with pytest.raises(ValueError, match="references missing Event.event_id 'E2'"):
-        normalize_multidim_event_payload([merged])
+    assert is_multidim_event_slice_merge(ctx)
+    # Explicit output selection is still authoritative in the per-field writer.
+    assert is_multidim_event_slice_merge(ctx, output_col="multidim_event_json")
+    assert not is_multidim_event_slice_merge(ctx, output_col="raw")
+
+
+def test_each_shared_source_field_gets_independent_profile_merge():
+    from czjLLM.sql_mode.runtime.row_merger_generic import (
+        _apply_slice_merge_to_write_map,
+        _slice_merge_writeback_value,
+    )
+    left = _article("E1", action="first")
+    right = _article("E1", action="second")
+    slices = [left, right]
+    raw = json.dumps(slices, ensure_ascii=False)
+    ctx = SimpleNamespace(
+        output_col="generic_json",
+        output_profile="none",
+        sql_writeback_rules=[
+            {"output_col": "generic_json", "output_profile": "none"},
+            {"output_col": "multidim_event_json", "output_profile": "multidim_event"},
+        ],
+        merge_dedup_lists=True,
+    )
+    for primary_multidim in (False, True):
+        primary, _ = merge_dict_slices_audited(
+            slices, multidim_event=primary_multidim, logger=None,
+        )
+        # Both output columns consume the exact same source JSON.
+        mapped = {"generic_json": raw, "multidim_event_json": raw}
+        updated = _apply_slice_merge_to_write_map(
+            ctx, mapped, raw, primary, source_slices=slices,
+            primary_multidim=primary_multidim,
+        )
+        assert updated == ["generic_json", "multidim_event_json"]
+        generic = json.loads(mapped["generic_json"])
+        strict = json.loads(mapped["multidim_event_json"])
+        assert isinstance(generic, dict)
+        assert [row["event_id"] for row in generic["Event"]] == ["E1", "E1"]
+        assert [row["event_id"] for row in strict[0]["Event"]] == ["E1", "E2"]
+        normalize_multidim_event_payload(strict)
+        assert _slice_merge_writeback_value(ctx, "multidim_event_json", strict[0]) == mapped["multidim_event_json"]
 
 
 def test_whitespace_reference_follows_its_own_remapped_slice_event():
