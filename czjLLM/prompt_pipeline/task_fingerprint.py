@@ -104,6 +104,11 @@ def _stable_composite(value, active):
             }
         globals_used = {}
         for name in sorted(_global_names(value.__code__)):
+            if name == "input":
+                # Interactive prompts are external, unrecorded dependencies.
+                # Refuse them even when shadowed by a module global, and
+                # before full_restart modifies any RUNNING/TODO/Success files.
+                raise ValueError("interactive task template builtin is unsupported: input")
             if name in value.__globals__:
                 # Traverse ONLY referenced symbols, never the entire module
                 # namespace. Unsupported dynamic globals fail closed.
