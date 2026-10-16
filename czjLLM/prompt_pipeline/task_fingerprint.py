@@ -134,6 +134,17 @@ def _stable_composite(value, active):
                 raise ValueError(f"dynamic task template namespace access: {name}")
             elif hasattr(builtins, name):
                 builtin = getattr(builtins, name)
+                # Function bytecode resolves LOAD_GLOBAL via the callable's
+                # own __builtins__, NOT necessarily the process-wide module.
+                # An exec/plugin loader can supply a mutable mapping where
+                # "len" or another allowlisted name has different behavior.
+                # Refuse noncanonical builtin bindings instead of treating
+                # changed external prompt semantics as the same task.
+                namespace = getattr(value, "__builtins__", None)
+                if type(namespace) is not dict or namespace.get(name) is not builtin:
+                    raise ValueError(
+                        f"noncanonical task template builtin binding: {name}"
+                    )
                 # A builtin such as open(), breakpoint(), or print() may read
                 # external state, block, or have side effects during rendering.
                 # Unknown builtins therefore fail closed. Exception classes
