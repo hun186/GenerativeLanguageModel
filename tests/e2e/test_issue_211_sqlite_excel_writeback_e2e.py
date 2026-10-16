@@ -469,7 +469,7 @@ def test_full_restart_rejects_interactive_callable_before_mutating_queue(
             "__builtins__": dict(vars(builtins)),
         }
         exec(
-            'def render(content):\\n'
+            'def render(content):\n'
             '    return "E2E_JSON_EFFECTIVE_TASK" + str(len(content)) + content',
             namespace,
         )
