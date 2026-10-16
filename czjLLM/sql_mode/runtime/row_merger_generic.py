@@ -140,6 +140,22 @@ def _apply_premerged_combined_slice_merge(ctx, write_map: dict, write_sources: d
 
 
 
+def _selected_slice_merge_output_col(ctx, write_map: dict, source_text: str) -> Optional[str]:
+    """Match Row Merger's selected flatten input, including multi-rule order."""
+    rules = getattr(ctx, "sql_writeback_rules", None)
+    if isinstance(rules, list) and rules:
+        index = int(getattr(ctx, "sql_flatten_writeback_rule", 0) or 0)
+        if 0 <= index < len(rules) and isinstance(rules[index], dict):
+            name = str(rules[index].get("output_col", "") or "").strip()
+            if name and write_map.get(name) == source_text:
+                return name
+        # An invalid selector uses the raw combined fallback in
+        # _build_writeback_values. No output profile can be inferred safely.
+        return None
+    name = str(getattr(ctx, "output_col", DEFAULT_OUTPUT_COL_NAME) or DEFAULT_OUTPUT_COL_NAME)
+    return name if write_map.get(name) == source_text else None
+
+
 def _build_writeback_values(ctx, comb_back_fn: str, combined_text: str):
     """回傳 (write_map, flatten_text, source_logs, write_sources)。"""
     rules = getattr(ctx, "sql_writeback_rules", None)
@@ -650,7 +666,14 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                     audit=True,
                                     logger=merge_logger,
                                     max_log=int(getattr(ctx, "merge_max_log", 10)),
-                                    multidim_event=is_multidim_event_slice_merge(ctx),
+                                    multidim_event=(
+                                        (selected_col := _selected_slice_merge_output_col(
+                                            ctx, write_map, slice_source_text,
+                                        )) is not None
+                                        and is_multidim_event_slice_merge(
+                                            ctx, output_col=selected_col,
+                                        )
+                                    ),
                                 )
                             except Exception as merge_error:
                                 _legacy_merge_finish(
