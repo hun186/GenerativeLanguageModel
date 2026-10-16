@@ -248,6 +248,48 @@ def test_mixed_profile_stage_defers_merge_until_per_field_writeback():
     # The Row Merger uses the raw list to make distinct profile-bound outputs.
 
 
+@pytest.mark.parametrize("source", ["combined", "stage"])
+def test_omitted_secondary_es_profile_infers_multidim_without_primary_leak(source):
+    from czjLLM.utilities.slice_merge import needs_per_output_slice_merge
+    from czjLLM.prompt_pipeline.pipeline_controller import (
+        _merge_single_extract_stage_json_parts,
+    )
+    ctx = SimpleNamespace(
+        output_col="generic_json",
+        output_profile="none",
+        merge_log_changes=False,
+        es_writeback_rules=[
+            {"output_col": "generic_json", "source": source, "output_profile": "none"},
+            {"output_col": "multidim_event_json", "source": source},
+        ],
+    )
+    assert not is_multidim_event_slice_merge(ctx, output_col="generic_json")
+    assert is_multidim_event_slice_merge(ctx, output_col="multidim_event_json")
+    assert needs_per_output_slice_merge(ctx, source=source)
+    if source == "stage":
+        parts = [
+            json.dumps([_article("E1", action="first")]),
+            json.dumps([_article("E1", action="second")]),
+        ]
+        result = json.loads(_merge_single_extract_stage_json_parts(parts, ctx))
+        assert len(result) == 2
+        assert [row["Event"][0]["event_id"] for row in result] == ["E1", "E1"]
+    # An explicit non-multidim override must defeat the auto inference.
+    ctx.es_writeback_rules[-1]["output_profile"] = "none"
+    assert not is_multidim_event_slice_merge(ctx, output_col="multidim_event_json")
+    assert not needs_per_output_slice_merge(ctx, source=source)
+
+
+def test_single_implicit_es_rule_can_override_unrelated_primary_field():
+    ctx = SimpleNamespace(
+        output_col="raw", output_profile="none",
+        es_writeback_rules=[{"output_col": "multidim_event_json"}],
+    )
+    assert is_multidim_event_slice_merge(ctx)
+    assert is_multidim_event_slice_merge(ctx, output_col="multidim_event_json")
+    assert not is_multidim_event_slice_merge(ctx, output_col="raw")
+
+
 def test_original_generic_contract_never_renumbers_events():
     x = _article("E1", action="one")
     y = _article("E1", action="two")
