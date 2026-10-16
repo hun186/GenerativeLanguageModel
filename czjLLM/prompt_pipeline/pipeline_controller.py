@@ -1556,13 +1556,12 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
     stage_defs = resolve_pipeline_stages(ctx)
     single_extract_stage_writeback = _single_extract_stage_writeback_enabled(stage_defs, ctx)
     if single_extract_stage_writeback:
-        # Full restart re-renders prompts before the normal resume fingerprint
-        # check. Resolve implicit global criteria NOW, while source, TODO,
-        # RUNNING, Success, and durable manifests remain untouched. Never
-        # invoke getTextClass()/getKeyConsiderations() via input() in an
-        # unattended restart with missing classification/risk criteria.
-        if resume_policy == "full_restart":
-            _extract_stage_provenance_fingerprint(stage_defs[0].task, ctx)
+        # No single-extract policy may render prompts or reconcile/move queue
+        # files until its effective renderer is proven fingerprintable. Fresh
+        # and resume paths can also hit input(), open(), breakpoint(), or
+        # untracked globals before the later first-dispatch provenance write.
+        # This is a read-only preflight for resume, smart_reset, full_restart.
+        _extract_stage_provenance_fingerprint(stage_defs[0].task, ctx)
         # Full restart must first regenerate completed split branches from
         # the current source. Otherwise clearing Success loses their prompts.
         if resume_policy == "full_restart":
