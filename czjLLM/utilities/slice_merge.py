@@ -15,39 +15,42 @@ def should_merge_slices(ctx) -> bool:
         (getattr(ctx, "merge_strategy", "").lower() in {"dict_deep", "slice_merge", "on"})
     )
 
-def is_multidim_event_slice_merge(ctx) -> bool:
-    """Restrict event-ID reconciliation to the explicit ES article contract.
+def is_multidim_event_slice_merge(ctx, output_col=None) -> bool:
+    """Resolve the profile of the ACTUAL selected output, not any other rule.
 
-    In auto mode only the multidim_event_json field selects this contract.
-    Other JSON arrays, including no-event-IDs profiles, keep legacy behavior.
+    A multi-field job may have generic JSON alongside multidim_event_json.
+    Never rewrite generic Event values merely because another field happens
+    to opt into the strict multidimensional-event profile.
     """
-    profiles = {"multidim_event", "multi_dim_event", "multidim", "event"}
-    fields = {"multidim_event_json"}
-    rules = (
-        getattr(ctx, "es_writeback_rules", None)
-        or getattr(ctx, "sql_writeback_rules", None)
-        or []
+    profile_aliases = {"multidim_event", "multi_dim_event", "multidim", "event"}
+    selected = str(output_col or getattr(ctx, "output_col", "") or "").strip()
+    rules = []
+    for key in ("es_writeback_rules", "sql_writeback_rules"):
+        group = getattr(ctx, key, None) or []
+        if isinstance(group, list):
+            rules.extend(rule for rule in group if isinstance(rule, dict))
+    if not selected:
+        names = {str(rule.get("output_col", "") or "").strip()
+                 for rule in rules if str(rule.get("output_col", "") or "").strip()}
+        if len(names) == 1:
+            selected = next(iter(names))
+    if not selected:
+        return False
+
+    matching = [
+        rule for rule in rules
+        if str(rule.get("output_col", "") or "").strip() == selected
+    ]
+    profile = (
+        matching[0].get("output_profile", getattr(ctx, "output_profile", None))
+        if matching else getattr(ctx, "output_profile", None)
     )
-    candidates = []
-    if isinstance(rules, list):
-        for rule in rules:
-            if isinstance(rule, dict):
-                candidates.append((
-                    rule.get("output_col"),
-                    rule.get("output_profile", getattr(ctx, "output_profile", None)),
-                ))
-    if not candidates:
-        candidates = [(
-            getattr(ctx, "output_col", None),
-            getattr(ctx, "output_profile", None),
-        )]
-    for field, profile in candidates:
-        name = str(profile or "auto").strip().lower().replace("-", "_")
-        if name in profiles:
-            return True
-        if name in {"auto", "default"} and str(field or "").strip().lower() in fields:
-            return True
-    return False
+    profile_name = str(profile or "auto").strip().lower().replace("-", "_")
+    return (
+        profile_name in profile_aliases
+        or (profile_name in {"auto", "default"}
+            and selected.lower() == "multidim_event_json")
+    )
 
 
 def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
@@ -60,20 +63,37 @@ def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
     """
     from copy import deepcopy
 
-    reserved = {
-        event["event_id"].strip()
-        for item in items
-        for event in (item.get("Event") if isinstance(item.get("Event"), list) else [])
-        if isinstance(event, dict)
-        and isinstance(event.get("event_id"), str)
-        and event["event_id"].strip()
-    }
-    assigned = set()
-    next_id = 1
-    out = []
     linked_fields = (
         "Person", "Involved_Parties", "Impact", "Event_Timeline", "evidence_snippets",
     )
+    reserved = set()
+
+    def reserve_references(value):
+        if isinstance(value, list):
+            for entry in value:
+                reserve_references(entry)
+        elif isinstance(value, dict):
+            ids = value.get("event_ids")
+            if isinstance(ids, list):
+                reserved.update(eid.strip() for eid in ids if isinstance(eid, str)
+                                and eid.strip())
+            for key, entry in value.items():
+                if key != "event_ids":
+                    reserve_references(entry)
+
+    for item in items:
+        events = item.get("Event")
+        if isinstance(events, list):
+            for event in events:
+                if isinstance(event, dict) and isinstance(event.get("event_id"), str):
+                    reserved.add(event["event_id"].strip())
+        for name in linked_fields:
+            if name in item:
+                reserve_references(item[name])
+
+    assigned = set()
+    next_id = 1
+    out = []
 
     for index, original in enumerate(items):
         item = deepcopy(original)
@@ -114,7 +134,8 @@ def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
                     ids = value.get("event_ids")
                     if isinstance(ids, list):
                         value["event_ids"] = [
-                            replacements.get(eid, eid) if isinstance(eid, str) else eid
+                            replacements.get(eid.strip(), eid.strip())
+                            if isinstance(eid, str) else eid
                             for eid in ids
                         ]
                     for key, entry in value.items():
