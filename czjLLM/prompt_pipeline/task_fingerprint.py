@@ -17,6 +17,20 @@ import types
 from collections.abc import Mapping
 
 
+# Only known deterministic, argument-derived builtins are safe to fingerprint
+# by name. Effectful facilities (open, input, breakpoint, print), namespace
+# mutation/introspection, environment access and process-specific identity
+# must never be treated as invariant dependencies across worker restarts.
+_SAFE_BUILTIN_NAMES = frozenset({
+    "abs", "all", "any", "bin", "bool", "bytes", "chr", "complex",
+    "dict", "divmod", "enumerate", "filter", "float", "format",
+    "frozenset", "hex", "int", "isinstance", "issubclass", "len",
+    "list", "map", "max", "min", "oct", "ord", "pow", "range",
+    "reversed", "round", "set", "slice", "sorted", "str", "sum",
+    "tuple", "zip",
+})
+
+
 def _code_signature(code: types.CodeType, active):
     return {
         "bytecode": code.co_code.hex(),
@@ -119,8 +133,16 @@ def _stable_composite(value, active):
                 # rather than fingerprint a misleading incomplete dependency.
                 raise ValueError(f"dynamic task template namespace access: {name}")
             elif hasattr(builtins, name):
-                # Stable builtin identity; shadowing it with a module global
-                # on a subsequent run will change the fingerprint.
+                builtin = getattr(builtins, name)
+                # A builtin such as open(), breakpoint(), or print() may read
+                # external state, block, or have side effects during rendering.
+                # Unknown builtins therefore fail closed. Exception classes
+                # are stable constructors usable by deterministic helpers.
+                if not (
+                    name in _SAFE_BUILTIN_NAMES
+                    or (inspect.isclass(builtin) and issubclass(builtin, BaseException))
+                ):
+                    raise ValueError(f"effectful task template builtin is unsupported: {name}")
                 globals_used[name] = {"builtin": name}
             else:
                 raise ValueError(f"unbound task template global: {name}")
