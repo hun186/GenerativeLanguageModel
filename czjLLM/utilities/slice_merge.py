@@ -60,6 +60,34 @@ def is_multidim_event_slice_merge(ctx, output_col=None) -> bool:
     )
 
 
+def needs_per_output_slice_merge(ctx, *, source: str = "combined") -> bool:
+    """Keep raw chunk provenance for differently profiled same-source fields.
+
+    A combiner cannot premerge one dict and later reconstruct distinct
+    generic and strict Event references. Defer that mixed-mode merge to
+    Row Merger, which serializes every target under its own profile.
+    """
+    rules = getattr(ctx, "es_writeback_rules", None) or getattr(
+        ctx, "sql_writeback_rules", None
+    ) or []
+    if not isinstance(rules, list):
+        return False
+    kinds = set()
+    for rule in rules:
+        if not isinstance(rule, dict):
+            continue
+        selected_source = str(
+            rule.get("source", rule.get("sql_writeback_source", "combined"))
+            or "combined"
+        ).strip().lower()
+        if selected_source != source:
+            continue
+        col = str(rule.get("output_col", "") or "").strip()
+        if col:
+            kinds.add(is_multidim_event_slice_merge(ctx, output_col=col))
+    return kinds == {False, True}
+
+
 def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
     """Assign globally unique IDs before concatenating independently named events.
 
