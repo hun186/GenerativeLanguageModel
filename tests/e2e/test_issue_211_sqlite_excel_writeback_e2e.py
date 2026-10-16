@@ -430,13 +430,73 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
 
 
 @pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
+@pytest.mark.parametrize("resume_policy", ["resume", "smart_reset"])
+@pytest.mark.parametrize(
+    "unsafe_template",
+    [_e2e_interactive_template, _e2e_open_template, _e2e_breakpoint_template],
+    ids=["input", "open", "breakpoint"],
+)
+def test_fresh_first_dispatch_preflights_before_todo_or_manifest_mutation(
+    backend, resume_policy, unsafe_template, fake_openai, tmp_path, monkeypatch,
+):
+    """New SQLite/Excel extract refuses effectful templates before first render."""
+    import builtins
+
+    from czjLLM.prompt_pipeline import pipeline_controller as controller
+
+    _force_two_source_slices(monkeypatch)
+    ctx = _ctx(fake_openai, tmp_path, backend)
+    ctx.input_col = "body" if backend == "sql" else "File"
+    ctx.output_col = "analysis"
+    ctx.primary_key = "id"
+    ctx.record_update_time = False
+    ctx.flatten_json_output = False
+    ctx.stage_source_inputs = {}
+    ctx.sql_flatten_writeback_rules = [{"writeback_rule": 0, "enabled": False}]
+    ctx.stages[0]["task_key"] = "E2E_JSON_EFFECTIVE"
+    ctx.taskSetting = {"E2E_JSON_EFFECTIVE": {"template": unsafe_template}}
+    ctx.main_file_name = "freshunsafe211"
+    ctx.temp_txt_finished_dir = str(tmp_path / "finished")
+    ctx.resume_policy = resume_policy
+    source = tmp_path / "freshunsafe211.txt"
+    source.write_text(_SOURCE, encoding="utf-8")
+    item = Path(ctx.prompt_dir) / source.stem
+    todo = item / "TODO"
+    todo.mkdir(parents=True)
+    for i, fragment in enumerate(("E2E_JSON_PART_A", "E2E_JSON_PART_B")):
+        (todo / f"{i}.txt").write_text(
+            f"E2E_JSON_RESPONSE\\n\\n{fragment}", encoding="utf-8",
+        )
+    queued_before = {str(path): path.read_bytes() for path in todo.glob("*.txt")}
+    manifest = item / "_extract_slice_identity" / "source" / "original.json"
+    input_calls = []
+
+    def forbidden_input(*args, **kwargs):
+        input_calls.append((args, kwargs))
+        raise AssertionError("fresh unsafe template tried to prompt")
+
+    with monkeypatch.context() as guard:
+        guard.setattr(builtins, "input", forbidden_input)
+        with pytest.raises(ValueError, match="(interactive|effectful) task template builtin"):
+            controller.process_prompt_and_merge_multistage(ctx, str(source))
+
+    assert not input_calls
+    assert not fake_openai.requests
+    assert not manifest.exists()
+    assert {str(path): path.read_bytes() for path in todo.glob("*.txt")} == queued_before
+    assert not list((item / "RUNNING").glob("*.txt"))
+    assert not list((item / "Success").glob("*.txt"))
+
+
+@pytest.mark.parametrize("backend", ["sql", "table"], ids=["sqlite", "excel"])
+@pytest.mark.parametrize("resume_policy", ["resume", "smart_reset", "full_restart"])
 @pytest.mark.parametrize(
     "unsafe_template",
     [_e2e_interactive_template, _e2e_open_template, _e2e_breakpoint_template, None],
     ids=["input", "open", "breakpoint", "custom-builtin-len"],
 )
 def test_full_restart_rejects_interactive_callable_before_mutating_queue(
-    backend, unsafe_template, fake_openai, tmp_path, monkeypatch,
+    backend, resume_policy, unsafe_template, fake_openai, tmp_path, monkeypatch,
 ):
     """Effectful builtin templates fail before any full_restart queue mutation."""
     import builtins
@@ -524,7 +584,7 @@ def test_full_restart_rejects_interactive_callable_before_mutating_queue(
     ctx.taskSetting["E2E_JSON_EFFECTIVE"] = {
         "template": unsafe_template,
     }
-    ctx.resume_policy = "full_restart"
+    ctx.resume_policy = resume_policy
     input_calls = []
 
     def forbidden_input(*args, **kwargs):
