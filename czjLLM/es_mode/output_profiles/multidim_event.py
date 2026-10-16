@@ -253,7 +253,18 @@ def normalize_multidim_event_payload(payload: Any, **_: Any) -> Any:
         item["Event"] = normalized_events
 
         for field_name, allowed_fields in _LINKED_FIELDS.items():
-            rows = _validate_object_list(item.get(field_name, []), path=f"{path}.{field_name}")
+            raw_rows = item.get(field_name, [])
+            if field_name == "Impact" and isinstance(raw_rows, list):
+                # Some LLMs wrap Impact rows in one additional list level.
+                # Flatten only that unambiguous container; never fabricate or
+                # discard event_ids, and let the strict validator reject any
+                # remaining malformed objects or unsupported nesting.
+                raw_rows = [
+                    entry
+                    for group in raw_rows
+                    for entry in (group if isinstance(group, list) else [group])
+                ]
+            rows = _validate_object_list(raw_rows, path=f"{path}.{field_name}")
             normalized_rows: List[Dict[str, Any]] = []
             for row_index, row in enumerate(rows):
                 rpath = f"{path}.{field_name}[{row_index}]"
