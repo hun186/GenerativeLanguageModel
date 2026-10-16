@@ -459,7 +459,7 @@ def test_full_restart_missing_class_criteria_fails_before_interactive_render(
     todo.mkdir(parents=True)
     for i, part in enumerate(("E2E_JSON_PART_A", "E2E_JSON_PART_B")):
         (todo / f"{i}.txt").write_text(
-            f"E2E_JSON_RESPONSE\\n\\n{part}", encoding="utf-8",
+            f"E2E_JSON_RESPONSE\n\n{part}", encoding="utf-8",
         )
 
     def crash_before_dispatch(*_args, **_kwargs):
