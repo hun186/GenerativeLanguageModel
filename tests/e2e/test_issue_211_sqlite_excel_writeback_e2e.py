@@ -69,12 +69,12 @@ def _e2e_interactive_template(content):
 
 
 def _e2e_open_template(content):
-    return "E2E_OPEN_TASK\\n" + open("/missing/external/prompt.txt").read() + content
+    return "E2E_OPEN_TASK\n" + open("/missing/external/prompt.txt").read() + content
 
 
 def _e2e_breakpoint_template(content):
     breakpoint()
-    return "E2E_BREAKPOINT_TASK\\n" + content
+    return "E2E_BREAKPOINT_TASK\n" + content
 
 
 def _force_two_source_slices(monkeypatch):
@@ -438,7 +438,7 @@ def test_first_dispatch_identity_survives_crash_after_source_manifest(
 def test_full_restart_rejects_interactive_callable_before_mutating_queue(
     backend, unsafe_template, fake_openai, tmp_path, monkeypatch,
 ):
-    """A new input()-using template must fail before old RUNNING is touched."""
+    """Effectful builtin templates fail before any full_restart queue mutation."""
     import builtins
 
     from czjLLM.prompt_pipeline import pipeline_controller as controller
