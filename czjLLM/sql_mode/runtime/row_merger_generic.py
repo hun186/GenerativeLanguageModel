@@ -9,6 +9,7 @@ from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from czjLLM.utilities.combine_utils import merge_dict_slices
 from czjLLM.utilities.combine_utils import merge_dict_slices_audited
 from czjLLM.utilities.combine_utils import should_merge_slices
+from czjLLM.utilities.slice_merge import is_multidim_event_slice_merge
 from utils.utilities_path import OSWALK, DirReplace, MKDIR, getPathFromFN
 from utils.utilities_path import safe_move
 
@@ -649,6 +650,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                     audit=True,
                                     logger=merge_logger,
                                     max_log=int(getattr(ctx, "merge_max_log", 10)),
+                                    multidim_event=is_multidim_event_slice_merge(ctx),
                                 )
                             except Exception as merge_error:
                                 _legacy_merge_finish(
