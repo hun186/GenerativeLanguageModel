@@ -45,13 +45,22 @@ def is_multidim_event_slice_merge(ctx, output_col=None) -> bool:
         return False
 
     matching = [
-        rule for rule in rules
-        if str(rule.get("output_col", "") or "").strip() == selected
+        (rule, kind)
+        for kind in ("es_writeback_rules", "sql_writeback_rules")
+        for rule in (getattr(ctx, kind, None) or [])
+        if isinstance(rule, dict)
+        and str(rule.get("output_col", "") or "").strip() == selected
     ]
-    profile = (
-        matching[0].get("output_profile", getattr(ctx, "output_profile", None))
-        if matching else getattr(ctx, "output_profile", None)
-    )
+    profile = getattr(ctx, "output_profile", None)
+    if matching:
+        rule, kind = matching[0]
+        if rule.get("output_profile") is not None:
+            profile = rule["output_profile"]
+        elif kind == "es_writeback_rules" and selected != default_col:
+            # ESSink._profile_for_output_col uses auto, NOT the primary
+            # output profile, for a secondary ES rule with no explicit
+            # profile. In particular multidim_event_json is inferred here.
+            profile = "auto"
     profile_name = str(profile or "auto").strip().lower().replace("-", "_")
     return (
         profile_name in profile_aliases
