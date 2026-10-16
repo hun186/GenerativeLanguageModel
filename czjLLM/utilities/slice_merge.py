@@ -23,17 +23,24 @@ def is_multidim_event_slice_merge(ctx, output_col=None) -> bool:
     to opt into the strict multidimensional-event profile.
     """
     profile_aliases = {"multidim_event", "multi_dim_event", "multidim", "event"}
-    selected = str(output_col or getattr(ctx, "output_col", "") or "").strip()
+    default_col = str(getattr(ctx, "output_col", "") or "").strip()
+    selected = str(output_col or "").strip()
     rules = []
     for key in ("es_writeback_rules", "sql_writeback_rules"):
         group = getattr(ctx, key, None) or []
         if isinstance(group, list):
             rules.extend(rule for rule in group if isinstance(rule, dict))
+    names = {
+        str(rule.get("output_col", "") or "").strip()
+        for rule in rules if str(rule.get("output_col", "") or "").strip()
+    }
     if not selected:
-        names = {str(rule.get("output_col", "") or "").strip()
-                 for rule in rules if str(rule.get("output_col", "") or "").strip()}
-        if len(names) == 1:
-            selected = next(iter(names))
+        # A single explicit writeback rule overrides a generic primary column.
+        # Ambiguous multi-rule setups must select a REAL destination rather
+        # than globally upgrading an unrelated source field.
+        selected = next(iter(names)) if len(names) == 1 else default_col
+        if len(names) > 1 and selected not in names:
+            return False
     if not selected:
         return False
 
@@ -90,6 +97,39 @@ def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
         for name in linked_fields:
             if name in item:
                 reserve_references(item[name])
+
+    # The strict article profile never permits an event_ids link to an event
+    # defined only by another chunk. Validate each chunk independently BEFORE
+    # any rename, otherwise a dangling reference may accidentally resolve
+    # to an unrelated event from a later chunk.
+    def check_linked_ids(value, declared, slice_index, field):
+        if isinstance(value, list):
+            for entry in value:
+                check_linked_ids(entry, declared, slice_index, field)
+        elif isinstance(value, dict):
+            ids = value.get("event_ids")
+            if isinstance(ids, list):
+                for event_id in ids:
+                    if (isinstance(event_id, str) and event_id.strip()
+                            and event_id.strip() not in declared):
+                        raise ValueError(
+                            f"multidim slice {slice_index} {field} references "
+                            f"missing local Event.event_id {event_id.strip()!r}"
+                        )
+            for key, entry in value.items():
+                if key != "event_ids":
+                    check_linked_ids(entry, declared, slice_index, field)
+
+    for slice_index, item in enumerate(items):
+        declared = {
+            event["event_id"].strip()
+            for event in (item.get("Event") if isinstance(item.get("Event"), list) else [])
+            if isinstance(event, dict) and isinstance(event.get("event_id"), str)
+            and event["event_id"].strip()
+        }
+        for name in linked_fields:
+            if name in item:
+                check_linked_ids(item[name], declared, slice_index, name)
 
     assigned = set()
     next_id = 1
