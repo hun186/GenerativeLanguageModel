@@ -49,7 +49,9 @@ from czjLLM.job_manager.end_point_manager import select_model
 
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
-from czjLLM.utilities.slice_merge import merge_dict_slices_audited, should_merge_slices
+from czjLLM.utilities.slice_merge import (
+    merge_dict_slices_audited, is_multidim_event_slice_merge, should_merge_slices,
+)
 from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
 from czjLLM.prompt_pipeline.slice_identity import (
     committed_split_parent_identities, digest_text,
@@ -1441,6 +1443,7 @@ def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
         audit=bool(getattr(ctx, "merge_log_changes", True)),
         logger=None,
         max_log=int(getattr(ctx, "merge_max_log", 10)),
+        multidim_event=is_multidim_event_slice_merge(ctx),
     )
     return json.dumps(merged, ensure_ascii=False, indent=2)
 
