@@ -1445,7 +1445,10 @@ def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
         max_log=int(getattr(ctx, "merge_max_log", 10)),
         multidim_event=is_multidim_event_slice_merge(ctx),
     )
-    return json.dumps(merged, ensure_ascii=False, indent=2)
+    # Stage-sourced writeback is not wrapped by Row Merger's combined-source
+    # compatibility path. Preserve the ES article array envelope here.
+    payload = [merged] if is_multidim_event_slice_merge(ctx) else merged
+    return json.dumps(payload, ensure_ascii=False, indent=2)
 
 
 def _rebuild_full_restart_from_verified_source(
