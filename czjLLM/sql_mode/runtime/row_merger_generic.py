@@ -9,7 +9,7 @@ from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from czjLLM.utilities.combine_utils import merge_dict_slices
 from czjLLM.utilities.combine_utils import merge_dict_slices_audited
 from czjLLM.utilities.combine_utils import should_merge_slices
-from czjLLM.utilities.slice_merge import is_multidim_event_slice_merge
+from czjLLM.utilities.slice_merge import is_multidim_event_slice_merge, needs_per_output_slice_merge
 from utils.utilities_path import OSWALK, DirReplace, MKDIR, getPathFromFN
 from utils.utilities_path import safe_move
 
@@ -118,6 +118,58 @@ def _apply_slice_merge_to_write_map(
         )
         updated.append(output_col)
     return updated
+
+
+def _merge_deferred_writeback_sources(
+    ctx, write_map: dict, write_sources: dict,
+) -> list[str]:
+    """Finish all deferred mixed-profile sources, not just the flatten source.
+
+    The selected flatten field is historically merged earlier; other stage or
+    combined sources may remain as unmerged chunk arrays. Group by resolved
+    source identity AND actual source text so two unrelated stages cannot
+    accidentally have their result records combined. Every destination gets
+    its own profile-specific merge before the sink sees any update.
+    """
+    if not should_merge_slices(ctx):
+        return []
+    groups = {}
+    for output_col, raw_text in list(write_map.items()):
+        origin = str(write_sources.get(output_col, "") or "")
+        source_kind = origin.split(":", 1)[0]
+        if source_kind not in {"stage", "combined"}:
+            continue
+        if not needs_per_output_slice_merge(ctx, source=source_kind):
+            continue
+        groups.setdefault((origin, raw_text), []).append(output_col)
+
+    changed = []
+    for (_origin, source_text), output_cols in groups.items():
+        try:
+            rows = json.loads(source_text)
+        except (TypeError, ValueError):
+            continue
+        if not (isinstance(rows, list) and len(rows) > 1
+                and all(isinstance(row, dict) for row in rows)):
+            continue
+        first_col = output_cols[0]
+        is_multidim = is_multidim_event_slice_merge(ctx, output_col=first_col)
+        # Compute the first profile and derive the other destinations from
+        # the SAME original rows, never from a previously remapped dict.
+        merged, _ = merge_dict_slices_audited(
+            rows,
+            conflict_policy=getattr(ctx, "merge_conflict_policy", "prefer_left"),
+            dedup_lists=bool(getattr(ctx, "merge_dedup_lists", False)),
+            audit=False,
+            logger=None,
+            multidim_event=is_multidim,
+        )
+        changed.extend(_apply_slice_merge_to_write_map(
+            ctx, write_map, source_text, merged,
+            output_cols=output_cols, source_slices=rows,
+            primary_multidim=is_multidim,
+        ))
+    return changed
 
 
 def _apply_premerged_combined_slice_merge(ctx, write_map: dict, write_sources: dict) -> list[str]:
@@ -770,6 +822,19 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 error_type=type(merge_or_parse_error).__name__,
                             )
                         pass
+
+                    # A job can defer one stage source while the flatten
+                    # selector points to a different combined/stage source.
+                    # Repair every unprocessed mixed-profile source BEFORE
+                    # constructing any sink write document; errors fail
+                    # closed rather than silently persisting chunk-local E1s.
+                    deferred_cols = _merge_deferred_writeback_sources(
+                        ctx, write_map, write_sources,
+                    )
+                    if deferred_cols:
+                        source_logs.append(
+                            f"slice_merge_deferred:{','.join(deferred_cols)}"
+                        )
 
                     expanded_cols = _expand_json_columns(ctx, flatten_source_text)
                     if expanded_cols:
