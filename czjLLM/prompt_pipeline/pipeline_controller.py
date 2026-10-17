@@ -51,7 +51,8 @@ from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
 from czjLLM.utilities.slice_merge import (
     merge_dict_slices_audited, is_multidim_event_slice_merge,
-    needs_per_output_slice_merge, should_merge_slices,
+    is_multidim_event_source_merge, needs_per_output_slice_merge,
+    should_merge_slices,
 )
 from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
 from czjLLM.prompt_pipeline.slice_identity import (
@@ -1449,11 +1450,11 @@ def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
         audit=bool(getattr(ctx, "merge_log_changes", True)),
         logger=None,
         max_log=int(getattr(ctx, "merge_max_log", 10)),
-        multidim_event=is_multidim_event_slice_merge(ctx),
+        multidim_event=is_multidim_event_source_merge(ctx, source="stage"),
     )
     # Stage-sourced writeback is not wrapped by Row Merger's combined-source
     # compatibility path. Preserve the ES article array envelope here.
-    payload = [merged] if is_multidim_event_slice_merge(ctx) else merged
+    payload = [merged] if is_multidim_event_source_merge(ctx, source="stage") else merged
     return json.dumps(payload, ensure_ascii=False, indent=2)
 
 
