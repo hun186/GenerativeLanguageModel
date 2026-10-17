@@ -280,6 +280,56 @@ def test_omitted_secondary_es_profile_infers_multidim_without_primary_leak(sourc
     assert not needs_per_output_slice_merge(ctx, source=source)
 
 
+@pytest.mark.parametrize("implicit_profile", [True, False])
+def test_source_consumer_not_primary_field_controls_strict_premerge(implicit_profile):
+    from czjLLM.utilities.slice_merge import (
+        is_multidim_event_source_merge,
+        needs_per_output_slice_merge,
+    )
+    from czjLLM.prompt_pipeline.pipeline_controller import (
+        _merge_single_extract_stage_json_parts,
+    )
+
+    strict_rule = {"output_col": "multidim_event_json", "source": "combined"}
+    if not implicit_profile:
+        strict_rule["output_profile"] = "multidim_event"
+
+    ctx = SimpleNamespace(
+        output_col="generic_json",
+        output_profile="none",
+        merge_log_changes=False,
+        es_writeback_rules=[
+            {"output_col": "generic_json", "source": "stage",
+             "stage": "extract", "output_profile": "none"},
+            strict_rule,
+        ],
+    )
+    assert not needs_per_output_slice_merge(ctx, source="combined")
+    assert not needs_per_output_slice_merge(ctx, source="stage")
+    assert is_multidim_event_source_merge(ctx, source="combined")
+    assert not is_multidim_event_source_merge(ctx, source="stage")
+    assert not is_multidim_event_slice_merge(ctx)
+
+    first = _article("E1", action="first")
+    second = _article("E1", action="second")
+    parts = [json.dumps([first]), json.dumps([second])]
+
+    # Stage output consumes generic profile; its duplicate IDs are unchanged.
+    stage = json.loads(_merge_single_extract_stage_json_parts(parts, ctx))
+    assert isinstance(stage, dict)
+    assert [event["event_id"] for event in stage["Event"]] == ["E1", "E1"]
+
+    # Combined uses the strict consumer's actual profile, not ctx.output_col.
+    merged, _ = merge_dict_slices_audited(
+        [first, second],
+        multidim_event=is_multidim_event_source_merge(ctx, source="combined"),
+        logger=None,
+    )
+    validated = normalize_multidim_event_payload([merged])
+    assert [event["event_id"] for event in validated[0]["Event"]] == ["E1", "E2"]
+    assert [row["event_ids"] for row in validated[0]["Person"]] == [["E1"], ["E2"]]
+
+
 def test_single_implicit_es_rule_can_override_unrelated_primary_field():
     ctx = SimpleNamespace(
         output_col="raw", output_profile="none",
