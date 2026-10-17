@@ -747,8 +747,21 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 )
                                 raise
                             try:
+                                # A different stage can coincidentally have
+                                # identical JSON text. Match its RESOLVED
+                                # source identity as well as text, otherwise
+                                # selecting one flatten rule would rewrite
+                                # an unrelated source's output too early.
+                                selected_origin = write_sources.get(selected_col)
+                                primary_output_cols = [
+                                    col for col, raw in write_map.items()
+                                    if raw == slice_source_text
+                                    and (selected_origin is None
+                                         or write_sources.get(col) == selected_origin)
+                                ]
                                 merged_columns = _apply_slice_merge_to_write_map(
                                     ctx, write_map, slice_source_text, merged_payload,
+                                    output_cols=primary_output_cols,
                                     source_slices=data,
                                     primary_multidim=selected_multidim,
                                 )
