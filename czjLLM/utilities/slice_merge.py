@@ -97,6 +97,37 @@ def needs_per_output_slice_merge(ctx, *, source: str = "combined") -> bool:
     return kinds == {False, True}
 
 
+def is_multidim_event_source_merge(ctx, *, source: str = "combined") -> bool:
+    """Pick the profile from the consumer(s) of THIS materialized source.
+
+    The legacy combiner has no output column argument. In jobs with different
+    stage and combined destinations, using ctx.output_col could silently
+    apply the stage's generic contract to the combined strict ES payload.
+    Mixed consumers defer merging via needs_per_output_slice_merge().
+    """
+    rules = getattr(ctx, "es_writeback_rules", None) or getattr(
+        ctx, "sql_writeback_rules", None
+    ) or []
+    if not isinstance(rules, list) or not rules:
+        return is_multidim_event_slice_merge(ctx)
+    kinds = set()
+    for rule in rules:
+        if not isinstance(rule, dict):
+            continue
+        selected_source = str(
+            rule.get("source", rule.get("sql_writeback_source", "combined"))
+            or "combined"
+        ).strip().lower()
+        if selected_source != source:
+            continue
+        col = str(rule.get("output_col", "") or "").strip()
+        if col:
+            kinds.add(is_multidim_event_slice_merge(ctx, output_col=col))
+    # Unconsumed source or conflicting consumers must not be pre-merged
+    # as though one particular destination's contract were authoritative.
+    return kinds == {True}
+
+
 def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
     """Assign globally unique IDs before concatenating independently named events.
 
