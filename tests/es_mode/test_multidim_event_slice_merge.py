@@ -369,6 +369,111 @@ def test_multidim_single_chunk_nested_impact_normalizes_without_remapping():
     assert normalize_multidim_event_payload([item])[0]["Impact"][0]["event_ids"] == ["E1"]
 
 
+@pytest.mark.parametrize("flatten_rule", [0, 1, 2])
+def test_row_merger_merges_unselected_deferred_stage_per_destination(
+    tmp_path, monkeypatch, flatten_rule,
+):
+    """A different flatten source cannot skip a deferred stage's E1 repair."""
+    from czjLLM.sql_mode.runtime import row_merger_generic as merger
+    from czjLLM.sql_mode.runtime.multistage_writeback import WritebackPayload
+    from czjLLM.utilities.slice_merge import needs_per_output_slice_merge
+
+    stage_slices = [_article("E1", action="A"), _article("E1", action="B")]
+    stage_text = json.dumps(stage_slices, ensure_ascii=False)
+    combined_dict = {"status": "combined aggregate"}
+    combined_text = json.dumps(combined_dict, ensure_ascii=False)
+
+    class Registry:
+        removed = False
+
+        def list_items(self):
+            return {} if self.removed else {str(item): meta}
+
+        def remove(self, path):
+            assert path == str(item)
+            self.removed = True
+
+    class ValidatingSink:
+        def __init__(self):
+            self.docs = []
+
+        def open(self):
+            pass
+
+        def close(self):
+            pass
+
+        def write_main(self, pk, write_map, update_time=None):
+            assert pk == "id-two-sources"
+            assert json.loads(write_map["combined_json"]) == combined_dict
+            generic = json.loads(write_map["stage_generic_json"])
+            strict = normalize_multidim_event_payload(
+                json.loads(write_map["multidim_event_json"])
+            )
+            assert isinstance(generic, dict)
+            assert [x["event_id"] for x in generic["Event"]] == ["E1", "E1"]
+            assert [x["event_id"] for x in strict[0]["Event"]] == ["E1", "E2"]
+            assert [x["event_ids"] for x in strict[0]["Person"]] == [["E1"], ["E2"]]
+            self.docs.append((generic, strict))
+
+    item = tmp_path / "item"
+    success = item / "Success"
+    success.mkdir(parents=True)
+    (success / "0.txt").write_text("done", encoding="utf-8")
+    (success / "1.txt").write_text("done", encoding="utf-8")
+    root = tmp_path / "source"
+    root.mkdir()
+    src = root / "input.txt"
+    src.write_text("source", encoding="utf-8")
+    result_file = tmp_path / "finished" / "combined.txt"
+    result_file.parent.mkdir()
+    result_file.write_text(combined_text, encoding="utf-8")
+
+    meta = {"pk": "id-two-sources", "temp_txt": str(src),
+            "CombBackFN": str(result_file)}
+    ctx = SimpleNamespace(
+        task="InfoExtraction-MultiDim-SQLFriendly-to_json_format",
+        output_col="combined_json", output_profile="none",
+        merge_slices=True, merge_dedup_lists=True, merge_log_changes=False,
+        record_update_time=False, flatten_json_output=False,
+        cleanup_prompt_item_after_writeback=False,
+        llm_source_dir=str(root),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        sql_flatten_writeback_rule=flatten_rule,
+        sql_writeback_rules=[
+            {"output_col": "combined_json", "source": "combined",
+             "output_profile": "none"},
+            {"output_col": "stage_generic_json", "source": "stage",
+             "stage": "extract", "output_profile": "none"},
+            {"output_col": "multidim_event_json", "source": "stage",
+             "stage": "extract", "output_profile": "multidim_event"},
+        ],
+    )
+    assert needs_per_output_slice_merge(ctx, source="stage")
+
+    def fake_resolve(rule_ctx, path, text):
+        if rule_ctx.sql_writeback_source == "stage":
+            return WritebackPayload(
+                main_payload=stage_slices, main_text=stage_text,
+                flatten_text=stage_text, source="stage:extract",
+            )
+        return WritebackPayload(
+            main_payload=combined_dict, main_text=combined_text,
+            flatten_text=combined_text, source="combined",
+        )
+
+    monkeypatch.setattr(merger, "resolve_writeback_payload", fake_resolve)
+    sink = ValidatingSink()
+    reg = Registry()
+    merger.row_merger_watchdog_generic(
+        ctx, reg, lambda *_: None,
+        SimpleNamespace(is_set=lambda: True), sink,
+        scan_interval=0.01,
+    )
+    assert reg.removed
+    assert len(sink.docs) == 1
+
+
 @pytest.mark.parametrize("flatten_idx", [None, 0, 1], ids=["single", "generic", "strict"])
 def test_actual_row_merger_writes_two_e1_slices_via_es_profile(tmp_path, flatten_idx):
     """Exercise production watchdog and production ES profile without a live ES server."""
