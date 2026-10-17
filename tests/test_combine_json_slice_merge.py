@@ -81,6 +81,49 @@ def test_json_slices_merge_dicts_when_merge_enabled(tmp_path):
     assert data["extra"] == 2
 
 
+def test_combiner_uses_actual_combined_consumer_not_primary_stage_profile(tmp_path):
+    from czjLLM.es_mode.output_profiles.multidim_event import (
+        normalize_multidim_event_payload,
+    )
+
+    ctx = _build_ctx(tmp_path, task="to json format", merge_slices=True)
+    ctx.output_col = "generic_json"
+    ctx.output_profile = "none"
+    ctx.es_writeback_rules = [
+        {"output_col": "generic_json", "source": "stage",
+         "stage": "extract", "output_profile": "none"},
+        # Missing profile: ESSink infers strict multi-dimensional Event JSON.
+        {"output_col": "multidim_event_json", "source": "combined"},
+    ]
+    item = tmp_path / "PromptRoot" / "different-source-contracts"
+    suc = item / "Success"
+    suc.mkdir(parents=True, exist_ok=True)
+    for i, action in enumerate(("first", "second")):
+        obj = {
+            "article_title": "Two slice test",
+            "article_date_iso": "2020-01-01",
+            "article_date_precision": "year",
+            "Event": [{
+                "event_id": "E1", "action": action, "time_raw": "2020",
+                "time_iso": "2020-01-01", "time_precision": "year",
+            }],
+            "Person": [{"event_ids": ["E1"], "name": action}],
+        }
+        (suc / f"{i}.txt").write_text(
+            json.dumps([obj], ensure_ascii=False), encoding="utf-8",
+        )
+    out = combine_api_finished_item(str(item), ctx)
+    merged = json.loads(open(out, "r", encoding="utf-8").read())
+    # Combined is a dict at the compatibility boundary. Row Merger wraps it
+    # into an ES article array for the combined-source strict destination.
+    assert isinstance(merged, dict)
+    validated = normalize_multidim_event_payload([merged])
+    assert [event["event_id"] for event in validated[0]["Event"]] == ["E1", "E2"]
+    assert [person["event_ids"] for person in validated[0]["Person"]] == [
+        ["E1"], ["E2"],
+    ]
+
+
 def test_json_mode_ignores_blank_success_files_and_returns_empty_array(tmp_path):
     ctx = _build_ctx(tmp_path, task="to json format", merge_slices=False)
     item = tmp_path / "PromptRoot" / "jobC"

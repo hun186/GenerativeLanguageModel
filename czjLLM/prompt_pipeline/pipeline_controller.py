@@ -49,7 +49,11 @@ from czjLLM.job_manager.end_point_manager import select_model
 
 from czjLLM.utilities.combine_utils import combine_api_finished_item
 from czjLLM.utilities.combine_utils import combine_json_return
-from czjLLM.utilities.slice_merge import merge_dict_slices_audited, should_merge_slices
+from czjLLM.utilities.slice_merge import (
+    merge_dict_slices_audited, is_multidim_event_slice_merge,
+    is_multidim_event_source_merge, needs_per_output_slice_merge,
+    should_merge_slices,
+)
 from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
 from czjLLM.prompt_pipeline.slice_identity import (
     committed_split_parent_identities, digest_text,
@@ -1434,6 +1438,11 @@ def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
         return parts[0]
     if not rows:
         return "[]"
+    if needs_per_output_slice_merge(ctx, source="stage"):
+        # One stage artifact cannot simultaneously represent generic Event IDs
+        # and rewritten strict references. Keep the original slice records for
+        # Row Merger's per-destination semantic merge.
+        return json.dumps(rows, ensure_ascii=False, indent=2)
     merged, _report = merge_dict_slices_audited(
         rows,
         conflict_policy=str(getattr(ctx, "merge_conflict_policy", "prefer_left")),
@@ -1441,8 +1450,12 @@ def _merge_single_extract_stage_json_parts(parts: list[str], ctx) -> str:
         audit=bool(getattr(ctx, "merge_log_changes", True)),
         logger=None,
         max_log=int(getattr(ctx, "merge_max_log", 10)),
+        multidim_event=is_multidim_event_source_merge(ctx, source="stage"),
     )
-    return json.dumps(merged, ensure_ascii=False, indent=2)
+    # Stage-sourced writeback is not wrapped by Row Merger's combined-source
+    # compatibility path. Preserve the ES article array envelope here.
+    payload = [merged] if is_multidim_event_source_merge(ctx, source="stage") else merged
+    return json.dumps(payload, ensure_ascii=False, indent=2)
 
 
 def _rebuild_full_restart_from_verified_source(

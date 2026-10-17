@@ -9,6 +9,7 @@ from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from czjLLM.utilities.combine_utils import merge_dict_slices
 from czjLLM.utilities.combine_utils import merge_dict_slices_audited
 from czjLLM.utilities.combine_utils import should_merge_slices
+from czjLLM.utilities.slice_merge import is_multidim_event_slice_merge, needs_per_output_slice_merge
 from utils.utilities_path import OSWALK, DirReplace, MKDIR, getPathFromFN
 from utils.utilities_path import safe_move
 
@@ -71,20 +72,8 @@ def _as_db_text(value):
 
 
 def _slice_merge_writeback_value(ctx, output_col: str, merged_payload: dict) -> str:
-    """Serialize a slice merge using the selected output field's contract.
-
-    The multidimensional-event profile stores an array of article-level
-    records, while the generic SQL/tabular contract stores the merged object.
-    """
-    profile = getattr(ctx, "output_profile", None)
-    for rule in (getattr(ctx, "sql_writeback_rules", None) or []):
-        if isinstance(rule, dict) and str(rule.get("output_col", "")).strip() == output_col:
-            profile = rule.get("output_profile", profile)
-            break
-    profile_name = str(profile or "auto").strip().lower().replace("-", "_")
-    is_multidim = profile_name in {"multidim_event", "multi_dim_event", "multidim", "event"}
-    if profile_name == "auto":
-        is_multidim = output_col.strip().lower() == "multidim_event_json"
+    """Serialize one field under its own output profile, never a sibling's."""
+    is_multidim = is_multidim_event_slice_merge(ctx, output_col=output_col)
     return _as_db_text([merged_payload] if is_multidim else merged_payload)
 
 
@@ -94,18 +83,93 @@ def _apply_slice_merge_to_write_map(
     source_text: str,
     merged_payload: dict,
     output_cols: Optional[Iterable[str]] = None,
+    *,
+    source_slices: Optional[list[dict]] = None,
+    primary_multidim: bool = False,
 ) -> list[str]:
-    """Replace writeback values sourced from the slice list with its merge."""
+    """Merge every output column under its own semantic profile.
+
+    Several output columns may consume the same source list yet require
+    independent (generic vs Event-with-references) merge contracts. A single
+    shared merged dict can neither safely feed both nor preserve all IDs.
+    """
     allowed_cols = set(output_cols) if output_cols is not None else None
+    cached_payloads = {primary_multidim: merged_payload}
     updated = []
     for output_col, value in list(write_map.items()):
         if allowed_cols is not None and output_col not in allowed_cols:
             continue
         if value != source_text:
             continue
-        write_map[output_col] = _slice_merge_writeback_value(ctx, output_col, merged_payload)
+        multidim = is_multidim_event_slice_merge(ctx, output_col=output_col)
+        if source_slices is not None and multidim not in cached_payloads:
+            candidate, _ = merge_dict_slices_audited(
+                source_slices,
+                conflict_policy=getattr(ctx, "merge_conflict_policy", "prefer_left"),
+                dedup_lists=bool(getattr(ctx, "merge_dedup_lists", False)),
+                audit=False,
+                logger=None,
+                multidim_event=multidim,
+            )
+            cached_payloads[multidim] = candidate
+        output_payload = cached_payloads.get(multidim, merged_payload)
+        write_map[output_col] = _slice_merge_writeback_value(
+            ctx, output_col, output_payload,
+        )
         updated.append(output_col)
     return updated
+
+
+def _merge_deferred_writeback_sources(
+    ctx, write_map: dict, write_sources: dict,
+) -> list[str]:
+    """Finish all deferred mixed-profile sources, not just the flatten source.
+
+    The selected flatten field is historically merged earlier; other stage or
+    combined sources may remain as unmerged chunk arrays. Group by resolved
+    source identity AND actual source text so two unrelated stages cannot
+    accidentally have their result records combined. Every destination gets
+    its own profile-specific merge before the sink sees any update.
+    """
+    if not should_merge_slices(ctx):
+        return []
+    groups = {}
+    for output_col, raw_text in list(write_map.items()):
+        origin = str(write_sources.get(output_col, "") or "")
+        source_kind = origin.split(":", 1)[0]
+        if source_kind not in {"stage", "combined"}:
+            continue
+        if not needs_per_output_slice_merge(ctx, source=source_kind):
+            continue
+        groups.setdefault((origin, raw_text), []).append(output_col)
+
+    changed = []
+    for (_origin, source_text), output_cols in groups.items():
+        try:
+            rows = json.loads(source_text)
+        except (TypeError, ValueError):
+            continue
+        if not (isinstance(rows, list) and len(rows) > 1
+                and all(isinstance(row, dict) for row in rows)):
+            continue
+        first_col = output_cols[0]
+        is_multidim = is_multidim_event_slice_merge(ctx, output_col=first_col)
+        # Compute the first profile and derive the other destinations from
+        # the SAME original rows, never from a previously remapped dict.
+        merged, _ = merge_dict_slices_audited(
+            rows,
+            conflict_policy=getattr(ctx, "merge_conflict_policy", "prefer_left"),
+            dedup_lists=bool(getattr(ctx, "merge_dedup_lists", False)),
+            audit=False,
+            logger=None,
+            multidim_event=is_multidim,
+        )
+        changed.extend(_apply_slice_merge_to_write_map(
+            ctx, write_map, source_text, merged,
+            output_cols=output_cols, source_slices=rows,
+            primary_multidim=is_multidim,
+        ))
+    return changed
 
 
 def _apply_premerged_combined_slice_merge(ctx, write_map: dict, write_sources: dict) -> list[str]:
@@ -137,6 +201,22 @@ def _apply_premerged_combined_slice_merge(ctx, write_map: dict, write_sources: d
         )
     return updated
 
+
+
+def _selected_slice_merge_output_col(ctx, write_map: dict, source_text: str) -> Optional[str]:
+    """Match Row Merger's selected flatten input, including multi-rule order."""
+    rules = getattr(ctx, "sql_writeback_rules", None)
+    if isinstance(rules, list) and rules:
+        index = int(getattr(ctx, "sql_flatten_writeback_rule", 0) or 0)
+        if 0 <= index < len(rules) and isinstance(rules[index], dict):
+            name = str(rules[index].get("output_col", "") or "").strip()
+            if name and write_map.get(name) == source_text:
+                return name
+        # An invalid selector uses the raw combined fallback in
+        # _build_writeback_values. No output profile can be inferred safely.
+        return None
+    name = str(getattr(ctx, "output_col", DEFAULT_OUTPUT_COL_NAME) or DEFAULT_OUTPUT_COL_NAME)
+    return name if write_map.get(name) == source_text else None
 
 
 def _build_writeback_values(ctx, comb_back_fn: str, combined_text: str):
@@ -641,6 +721,14 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 and item_dir not in merge_log_emitted_items
                             ):
                                 merge_logger = tlog
+                            selected_col = _selected_slice_merge_output_col(
+                                ctx, write_map, slice_source_text,
+                            )
+                            selected_multidim = (
+                                is_multidim_event_slice_merge(
+                                    ctx, output_col=selected_col,
+                                ) if selected_col is not None else False
+                            )
                             try:
                                 merged_payload, report = merge_dict_slices_audited(
                                     data,
@@ -649,6 +737,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                     audit=True,
                                     logger=merge_logger,
                                     max_log=int(getattr(ctx, "merge_max_log", 10)),
+                                    multidim_event=selected_multidim,
                                 )
                             except Exception as merge_error:
                                 _legacy_merge_finish(
@@ -657,12 +746,34 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                     error_type=type(merge_error).__name__,
                                 )
                                 raise
+                            try:
+                                # A different stage can coincidentally have
+                                # identical JSON text. Match its RESOLVED
+                                # source identity as well as text, otherwise
+                                # selecting one flatten rule would rewrite
+                                # an unrelated source's output too early.
+                                selected_origin = write_sources.get(selected_col)
+                                primary_output_cols = [
+                                    col for col, raw in write_map.items()
+                                    if raw == slice_source_text
+                                    and (selected_origin is None
+                                         or write_sources.get(col) == selected_origin)
+                                ]
+                                merged_columns = _apply_slice_merge_to_write_map(
+                                    ctx, write_map, slice_source_text, merged_payload,
+                                    output_cols=primary_output_cols,
+                                    source_slices=data,
+                                    primary_multidim=selected_multidim,
+                                )
+                            except Exception as merge_error:
+                                _legacy_merge_finish(
+                                    item_dir, success=False,
+                                    error_type=type(merge_error).__name__,
+                                )
+                                raise
                             _legacy_merge_finish(item_dir, success=True)
                             if merge_logger is not None:
                                 merge_log_emitted_items.add(item_dir)
-                            merged_columns = _apply_slice_merge_to_write_map(
-                                ctx, write_map, slice_source_text, merged_payload
-                            )
                             if merged_columns:
                                 source_logs.append(f"slice_merge:{','.join(merged_columns)}")
                             flatten_source_text = _as_db_text(merged_payload)
@@ -724,6 +835,19 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 error_type=type(merge_or_parse_error).__name__,
                             )
                         pass
+
+                    # A job can defer one stage source while the flatten
+                    # selector points to a different combined/stage source.
+                    # Repair every unprocessed mixed-profile source BEFORE
+                    # constructing any sink write document; errors fail
+                    # closed rather than silently persisting chunk-local E1s.
+                    deferred_cols = _merge_deferred_writeback_sources(
+                        ctx, write_map, write_sources,
+                    )
+                    if deferred_cols:
+                        source_logs.append(
+                            f"slice_merge_deferred:{','.join(deferred_cols)}"
+                        )
 
                     expanded_cols = _expand_json_columns(ctx, flatten_source_text)
                     if expanded_cols:
