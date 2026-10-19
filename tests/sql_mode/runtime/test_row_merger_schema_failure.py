@@ -232,6 +232,76 @@ def test_invalid_local_event_link_is_terminal_without_recombining(tmp_path: Path
     assert not dest.exists()
 
 
+def test_postdrain_fallback_releases_bad_local_event_link_once(tmp_path: Path, monkeypatch):
+    import czjLLM.sql_mode.runtime.orchestrator as orchestrator
+    from czjLLM.utilities.slice_merge import MultidimEventReferenceError
+
+    root = tmp_path / "unwriteable-row"
+    success = root / "Success"
+    success.mkdir(parents=True)
+    (success / "0.txt").write_text("cached model answer", encoding="utf-8")
+    source = tmp_path / "raw" / "input.txt"
+    source.parent.mkdir()
+    source.write_text("untouched", encoding="utf-8")
+    missing_combined = tmp_path / "finished" / "combined.txt"
+    meta = {
+        "pk": "fallback-missing-E3", "temp_txt": str(source),
+        "CombBackFN": str(missing_combined),
+    }
+    registry = _Registry(str(root), meta)
+    released, audits, meter_events, warnings = [], [], [], []
+    monkeypatch.setattr(
+        orchestrator, "mark_not_running",
+        lambda _ctx, pk, state: released.append((pk, state)),
+    )
+    monkeypatch.setattr(
+        orchestrator, "record_adjustment",
+        lambda _ctx, event, pk=None, **kw:
+            audits.append((event, pk, kw)) or (tmp_path / "audit.jsonl"),
+    )
+    monkeypatch.setattr(
+        orchestrator, "meter_update",
+        lambda path, callback: (
+            meter_events.append(path),
+            callback({"rows": {}, "progress": {}}),
+        ),
+    )
+    monkeypatch.setattr(orchestrator, "tlog_warn", warnings.append)
+
+    done_q = queue.Queue()
+    ctx = SimpleNamespace(
+        output_col="multidim_event_json", output_profile="multidim_event",
+    )
+    exc = MultidimEventReferenceError(
+        "multidim slice 2 Involved_Parties references missing local Event.event_id 'E3'"
+    )
+    assert orchestrator._release_terminal_fallback_merge_error(
+        ctx, registry, str(root), exc,
+        meter_fn="meter.json", done_q=done_q,
+    )
+    assert registry.removed
+    assert released == [("fallback-missing-E3", "writeback_failed_schema")]
+    assert audits[0][:2] == (
+        "writeback_failed_schema_release", "fallback-missing-E3",
+    )
+    assert audits[0][2]["combined_result_path"] == str(missing_combined)
+    assert done_q.get_nowait() == 1
+    assert len(meter_events) == 2
+    assert len(warnings) == 1 and "pending" in warnings[0]
+    assert source.read_text(encoding="utf-8") == "untouched"
+    assert (success / "0.txt").exists()
+    assert not missing_combined.exists()
+
+    # The other owner may have removed this registry row already. Never
+    # emit a duplicate completion/audit or touch the preserved source.
+    assert not orchestrator._release_terminal_fallback_merge_error(
+        ctx, registry, str(root), exc,
+        meter_fn="meter.json", done_q=done_q,
+    )
+    assert len(released) == len(audits) == 1
+    assert done_q.empty()
+
+
 def test_chunk_local_reference_error_class_is_terminal_but_es_transport_is_not():
     from czjLLM.utilities.slice_merge import MultidimEventReferenceError
     invalid = MultidimEventReferenceError(
