@@ -617,3 +617,149 @@ def test_slice_merge_does_not_overwrite_unrelated_writeback_rule():
 
     assert json.loads(write_map["merged_result"]) == {"score": 85}
     assert json.loads(write_map["route"]) == {"route": "news"}
+
+def test_deferred_es_ack_must_precede_row_release_and_source_cleanup(
+    tmp_path: Path, monkeypatch,
+):
+    """An enqueued ES row is not completed until the bulk response succeeds."""
+    item_dir = tmp_path / "item"
+    success = item_dir / "Success"
+    success.mkdir(parents=True)
+    (success / "0.txt").write_text("cached response", encoding="utf-8")
+    source = tmp_path / "raw" / "original.txt"
+    source.parent.mkdir()
+    source.write_text("original source", encoding="utf-8")
+    combined = tmp_path / "result.json"
+    combined.write_text('{"ok": true}', encoding="utf-8")
+    registry = _Registry(
+        str(item_dir),
+        {"pk": "doc-ack", "temp_txt": str(source), "CombBackFN": str(combined)},
+    )
+    acknowledgements = []
+    releases = []
+
+    class DeferredESSink:
+        persisted = False
+        write_count = 0
+
+        def open(self):
+            pass
+
+        def close(self):
+            pass
+
+        def write_main(self, pk, write_map, update_time=None):
+            assert pk == "doc-ack"
+            self.write_count += 1
+            assert not releases
+
+        def confirm_writeback(self):
+            acknowledgements.append("attempt")
+            if len(acknowledgements) == 1:
+                assert source.exists()
+                assert (success / "0.txt").exists()
+                assert releases == []
+                raise RuntimeError("transient ES bulk outage")
+            self.persisted = True
+
+    sink = DeferredESSink()
+
+    def record_release(_ctx, pk, state):
+        assert sink.persisted, "completion must follow ES acknowledgement"
+        releases.append((pk, state))
+
+    monkeypatch.setattr(merger_module, "mark_not_running", record_release)
+    monkeypatch.setattr(
+        merger_module, "record_adjustment",
+        lambda *_args, **_kwargs: tmp_path / "adjustments.jsonl",
+    )
+    ctx = SimpleNamespace(
+        output_col="multidim_event_json", record_update_time=False,
+        flatten_json_output=False, merge_slices=False,
+        llm_source_dir=str(source.parent),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        cleanup_prompt_item_after_writeback=False,
+        row_merger_failure_log_interval=60,
+    )
+    done_q = queue.Queue()
+    merger_module.row_merger_watchdog_generic(
+        ctx, registry, lambda *_args: None,
+        SimpleNamespace(is_set=lambda: True),
+        sink, scan_interval=0.001, done_q=done_q,
+    )
+    assert len(acknowledgements) == sink.write_count == 2
+    assert releases == [("doc-ack", "writeback_completed")]
+    assert done_q.get_nowait() == 1 and done_q.empty()
+    assert registry.removed
+    assert (success / "0.txt").exists()
+    assert (tmp_path / "backup" / "original.txt").read_text(encoding="utf-8") == "original source"
+
+
+def test_es_ack_schema_failure_preserves_pending_source_and_success(
+    tmp_path: Path, monkeypatch,
+):
+    item_dir = tmp_path / "item"
+    success = item_dir / "Success"
+    success.mkdir(parents=True)
+    (success / "0.txt").write_text("cached response", encoding="utf-8")
+    source = tmp_path / "raw" / "original.txt"
+    source.parent.mkdir()
+    source.write_text("original source", encoding="utf-8")
+    combined = tmp_path / "result.json"
+    combined.write_text('{"ok": true}', encoding="utf-8")
+    registry = _Registry(
+        str(item_dir),
+        {"pk": "doc-rejected", "temp_txt": str(source), "CombBackFN": str(combined)},
+    )
+    releases = []
+    events = []
+
+    class RejectedESSink:
+        calls = 0
+
+        def open(self):
+            pass
+
+        def close(self):
+            pass
+
+        def write_main(self, pk, write_map, update_time=None):
+            self.calls += 1
+
+        def confirm_writeback(self):
+            raise OutputProfileValidationError(
+                "multidim_event", "ES mapping rejected 1 update(s)",
+            )
+
+    sink = RejectedESSink()
+    monkeypatch.setattr(
+        merger_module, "mark_not_running",
+        lambda _ctx, pk, state: releases.append((pk, state)),
+    )
+    monkeypatch.setattr(
+        merger_module, "record_adjustment",
+        lambda _ctx, event, pk=None, **_kwargs: (
+            events.append((event, pk)) or tmp_path / "adjustments.jsonl"
+        ),
+    )
+    ctx = SimpleNamespace(
+        output_col="multidim_event_json", output_profile="multidim_event",
+        merge_slices=False, record_update_time=False,
+        flatten_json_output=False, llm_source_dir=str(source.parent),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        cleanup_prompt_item_after_writeback=True,
+    )
+    done_q = queue.Queue()
+    merger_module.row_merger_watchdog_generic(
+        ctx, registry, lambda *_args: None,
+        SimpleNamespace(is_set=lambda: True),
+        sink, scan_interval=0.001, done_q=done_q,
+    )
+    assert sink.calls == 1
+    assert releases == [("doc-rejected", "writeback_failed_schema")]
+    assert events == [("writeback_failed_schema_release", "doc-rejected")]
+    assert done_q.get_nowait() == 1 and done_q.empty()
+    assert source.read_text(encoding="utf-8") == "original source"
+    assert (success / "0.txt").exists()
+    assert combined.exists()
+    assert not (tmp_path / "backup" / "original.txt").exists()
