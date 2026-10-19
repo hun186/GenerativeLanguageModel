@@ -15,7 +15,7 @@ from czjLLM.prompt_pipeline.pipeline_controller import recover_running_to_todo  
 from czjLLM.prompt_pipeline.pipeline_controller import start_watchdogs
 from czjLLM.utilities.combine_utils import run_merge_for
 from czjLLM.utilities.slice_merge import (
-    MultidimEventReferenceError, should_merge_slices,
+    MultidimEventSchemaError, should_merge_slices,
 )
 from czjLLM.prompt_pipeline.pending_central import mark_not_running, record_adjustment
 
@@ -611,7 +611,7 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                     else:
                         finish_legacy_merge_item(ctx, job_dir, success=False)
                         observer.emit("legacy_merge_failed", {"reason": "no_output"})
-                except MultidimEventReferenceError as e:
+                except MultidimEventSchemaError as e:
                     # Keep the shared claim non-retryable BEFORE releasing
                     # registry ownership. Releasing as success=False here
                     # would let a concurrently polling Row Merger reclaim

@@ -157,9 +157,18 @@ def test_schema_failure_releases_row_for_next_run(tmp_path: Path, monkeypatch):
     assert source_txt.exists(), "failed rows must remain pending rather than be backed up"
 
 
-def test_invalid_local_event_link_is_terminal_without_recombining(tmp_path: Path, monkeypatch):
-    """An unchanged completed input cannot spin on the same bad Event FK."""
-    from czjLLM.utilities.slice_merge import MultidimEventReferenceError
+@pytest.mark.parametrize("error_type", ["reference", "importance"])
+def test_invalid_local_event_link_is_terminal_without_recombining(
+    tmp_path: Path, monkeypatch, error_type,
+):
+    """Completed malformed article slices cannot spin on unchanged Success."""
+    from czjLLM.utilities.slice_merge import (
+        MultidimEventReferenceError, MultidimEventSchemaError,
+    )
+    error_class = (
+        MultidimEventReferenceError if error_type == "reference"
+        else MultidimEventSchemaError
+    )
 
     item_dir = tmp_path / "item"
     success = item_dir / "Success"
@@ -180,9 +189,10 @@ def test_invalid_local_event_link_is_terminal_without_recombining(tmp_path: Path
 
     def always_fails(_item_dir, _ctx):
         combine_calls.append(_item_dir)
-        raise MultidimEventReferenceError(
-            "multidim slice 2 Involved_Parties references "
-            "missing local Event.event_id 'E3'"
+        raise error_class(
+            "multidim slice 2 importance.coverage must be integer or null"
+            if error_type == "importance"
+            else "multidim slice 2 Involved_Parties references missing local Event.event_id 'E3'"
         )
 
     class Sink:

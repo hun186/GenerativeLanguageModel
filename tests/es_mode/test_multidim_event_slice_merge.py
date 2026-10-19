@@ -44,6 +44,191 @@ def _article(event_id, *, action, impact_nested=False):
     }
 
 
+@pytest.mark.parametrize(
+    "left_date,left_precision,right_date,right_precision,policy,expected",
+    [
+        (None, "unknown", "1982-12-10", "day", "prefer_left", (None, "unknown")),
+        ("1982-12-10", "day", None, "unknown", "prefer_left", ("1982-12-10", "day")),
+        (None, "unknown", "1982-12-10", "day", "prefer_right", ("1982-12-10", "day")),
+        ("1982-12-10", "unknown", "1982-12-10", "day",
+         "prefer_left", ("1982-12-10", "day")),
+        ("1982-12-10", "day", "1982-12-10", "unknown",
+         "prefer_left", ("1982-12-10", "day")),
+        ("1982-12-10", "day", "1994-11-16", "day",
+         "prefer_left", ("1982-12-10", "day")),
+    ],
+)
+def test_article_date_and_precision_merge_as_source_pair(
+    left_date, left_precision, right_date, right_precision, policy, expected,
+):
+    left = _article("E1", action="articles")
+    right = _article("E1", action="annex")
+    left.update(article_date_iso=left_date, article_date_precision=left_precision)
+    right.update(article_date_iso=right_date, article_date_precision=right_precision)
+    original = deepcopy([left, right])
+    merged, report = merge_dict_slices_audited(
+        [left, right], conflict_policy=policy, multidim_event=True,
+        logger=None,
+    )
+    assert (merged["article_date_iso"], merged["article_date_precision"]) == expected
+    assert normalize_multidim_event_payload([merged])[0]["article_date_precision"] == expected[1]
+    assert [left, right] == original
+    assert report["changed"]
+
+
+def test_invalid_pairs_cannot_cross_assemble_a_valid_looking_article_date():
+    left = _article("E1", action="one")
+    right = _article("E1", action="two")
+    left.update(article_date_iso=None, article_date_precision="day")
+    right.update(article_date_iso="1982-12-10", article_date_precision="unknown")
+    merged, _ = merge_dict_slices_audited(
+        [left, right], multidim_event=True, logger=None,
+    )
+    assert (merged["article_date_iso"], merged["article_date_precision"]) == (None, "day")
+    with pytest.raises(ValueError, match="null article_date_iso requires"):
+        normalize_multidim_event_payload([merged])
+
+
+def test_incomplete_source_date_pairs_cannot_cross_assemble_valid_metadata():
+    left = _article("E1", action="one")
+    right = _article("E1", action="two")
+    del left["article_date_precision"]
+    del right["article_date_iso"]
+    left["article_date_iso"] = "1982-12-10"
+    right["article_date_precision"] = "day"
+    merged, _ = merge_dict_slices_audited(
+        [left, right], multidim_event=True, logger=None,
+    )
+    assert "article_date_iso" not in merged
+    assert "article_date_precision" not in merged
+    with pytest.raises(ValueError, match="article_date_iso and article_date_precision"):
+        normalize_multidim_event_payload([merged])
+
+
+def test_incomplete_only_date_fields_are_audited_even_for_single_slice():
+    row = _article("E1", action="only")
+    del row["article_date_precision"]
+    original = deepcopy(row)
+    merged, report = merge_dict_slices_audited(
+        [row], multidim_event=True, logger=None,
+    )
+    assert "article_date_iso" not in merged
+    assert "article_date_precision" not in merged
+    assert report["changed"] is True
+    assert any(
+        x["action"] == "article_date_pair_incomplete"
+        and "article_date_iso" in x["left_short"]
+        for x in report["samples"]
+    )
+    with pytest.raises(ValueError, match="article_date_iso and article_date_precision"):
+        normalize_multidim_event_payload([merged])
+    assert row == original
+
+
+def test_article_date_trailing_whitespace_respects_same_es_normalization():
+    left = _article("E1", action="one")
+    right = _article("E1", action="two")
+    left.update(article_date_iso=" 1982-12-10 ", article_date_precision="day")
+    right.update(article_date_iso=None, article_date_precision="unknown")
+    merged, _ = merge_dict_slices_audited(
+        [left, right], multidim_event=True, logger=None,
+    )
+    assert merged["article_date_iso"] == "1982-12-10"
+    assert merged["article_date_precision"] == "day"
+    assert normalize_multidim_event_payload([merged])[0]["article_date_iso"] == "1982-12-10"
+    assert left["article_date_iso"] == " 1982-12-10 "  # Do not mutate Success.
+
+
+def test_invalid_article_date_pairs_are_not_silently_inferred():
+    left = _article("E1", action="one")
+    right = _article("E1", action="two")
+    left.update(article_date_iso="1982-12-10", article_date_precision="unknown")
+    right.update(article_date_iso="1994-11-16", article_date_precision="unknown")
+    merged, _ = merge_dict_slices_audited(
+        [left, right], multidim_event=True, logger=None,
+    )
+    with pytest.raises(ValueError, match="non-null article_date_iso"):
+        normalize_multidim_event_payload([merged])
+
+
+def test_generic_json_merge_does_not_apply_strict_article_date_pair_policy():
+    left = _article("E1", action="one")
+    right = _article("E1", action="two")
+    left.update(article_date_iso=None, article_date_precision="unknown")
+    right.update(article_date_iso="1982-12-10", article_date_precision="day")
+    merged, _ = merge_dict_slices_audited([left, right], logger=None)
+    assert merged["article_date_iso"] == "1982-12-10"
+    assert merged["article_date_precision"] == "unknown"
+
+
+@pytest.mark.parametrize(
+    "form,invalid", [
+        ("flat", True), ("flat", 85.0), ("flat", "85"),
+        ("nested", True), ("nested", 85.0),
+    ],
+)
+def test_invalid_importance_scores_in_later_slice_are_rejected_before_merge(
+    form, invalid,
+):
+    from czjLLM.utilities.slice_merge import MultidimEventSchemaError
+
+    left = _article("E1", action="first")
+    right = _article("E1", action="second")
+    if form == "flat":
+        left["coverage"] = 85
+        right["coverage"] = invalid
+    else:
+        left["importance"] = {"coverage": 85}
+        right["importance"] = {"coverage": invalid}
+    originals = deepcopy([left, right])
+    with pytest.raises(
+        MultidimEventSchemaError,
+        match=r"multidim slice 1 (?:article|importance).coverage must be integer or null",
+    ):
+        merge_dict_slices_audited(
+            [left, right], multidim_event=True, logger=None,
+        )
+    assert [left, right] == originals
+
+
+def test_same_slice_flat_and_nested_score_conflict_cannot_disappear_on_merge():
+    from czjLLM.utilities.slice_merge import MultidimEventSchemaError
+
+    first = _article("E1", action="first")
+    second = _article("E1", action="second")
+    first["importance"] = {"coverage": 85}
+    second["importance"] = {"coverage": 80}
+    second["coverage"] = 85
+    # Naive deep merge (prefer_left) would produce importance.coverage=85,
+    # coverage=85 and incorrectly make slice 2's conflicting values disappear.
+    with pytest.raises(
+        MultidimEventSchemaError, match="slice 1 importance.coverage conflicts",
+    ):
+        merge_dict_slices_audited(
+            [first, second], multidim_event=True, logger=None,
+        )
+
+
+def test_importance_object_type_mismatch_not_hidden_by_later_slice():
+    from czjLLM.utilities.slice_merge import MultidimEventSchemaError
+
+    first = _article("E1", action="first")
+    second = _article("E1", action="second")
+    first["importance"] = None
+    second["importance"] = {"coverage": 85}
+    with pytest.raises(MultidimEventSchemaError, match="slice 0 importance must be object"):
+        merge_dict_slices_audited([first, second], multidim_event=True, logger=None)
+
+
+def test_original_generic_slice_merge_does_not_get_strict_importance_validation():
+    first = _article("E1", action="first")
+    second = _article("E1", action="second")
+    first["coverage"] = 85
+    second["coverage"] = True
+    merged, _ = merge_dict_slices_audited([first, second], logger=None)
+    assert merged["coverage"] == 85
+
+
 def test_two_independent_e1_events_relabel_linked_references_and_normalize_impact():
     left = _article("E1", action="publish report", impact_nested=True)
     right = _article("E1", action="interview experts", impact_nested=True)

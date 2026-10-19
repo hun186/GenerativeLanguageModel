@@ -210,6 +210,42 @@ def _validate_object_list(value: Any, *, path: str) -> List[Dict[str, Any]]:
     return [dict(_require_object(row, f"{path}[{i}]")) for i, row in enumerate(rows)]
 
 
+def _normalize_flat_importance_fields(item: Dict[str, Any], path: str) -> None:
+    """Relocate unmistakably misnested importance metrics, without data loss.
+
+    Some LLMs emit the five documented importance scores at article top level
+    instead of inside the importance object. Exact-name keys are structurally
+    safe to relocate; conflicting nested values must fail validation instead
+    of guessing which independent score is correct.
+    """
+    flattened = set(item).intersection(_IMPORTANCE_FIELDS)
+    if not flattened:
+        return
+    existing = item.get("importance", {})
+    importance = dict(_require_object(existing, f"{path}.importance"))
+    for key in sorted(flattened):
+        value = item[key]
+        # Python equates True with 1 and 85.0 with 85. Validate BOTH
+        # representations before comparison, never hide a malformed nested
+        # score by replacing it with an equal-looking flat value.
+        if value is not None and (not isinstance(value, int) or isinstance(value, bool)):
+            raise TypeError(f"{path}.importance.{key} must be integer or null")
+        if key in importance:
+            original = importance[key]
+            if original is not None and (
+                not isinstance(original, int) or isinstance(original, bool)
+            ):
+                raise TypeError(f"{path}.importance.{key} must be integer or null")
+            if original != value:
+                raise ValueError(
+                    f"{path}.importance.{key} conflicts with flattened {key!r} score"
+                )
+        importance[key] = value
+    for key in flattened:
+        del item[key]
+    item["importance"] = importance
+
+
 def normalize_multidim_event_payload(payload: Any, **_: Any) -> Any:
     items = _require_list(payload, "multidim_event_json")
     out: List[Dict[str, Any]] = []
@@ -217,6 +253,7 @@ def normalize_multidim_event_payload(payload: Any, **_: Any) -> Any:
     for block_index, raw_item in enumerate(items):
         path = f"multidim_event_json[{block_index}]"
         item = dict(_require_object(raw_item, path))
+        _normalize_flat_importance_fields(item, path)
         _reject_unknown_fields(item, _TOP_LEVEL_FIELDS, path)
         _validate_article_date(item, path)
 

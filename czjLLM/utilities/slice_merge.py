@@ -1,6 +1,7 @@
 """Strategies for merging dictionary results produced by document slices."""
 
 import json
+from datetime import date
 from typing import Any, Dict, List, Optional, Tuple
 
 
@@ -128,13 +129,57 @@ def is_multidim_event_source_merge(ctx, *, source: str = "combined") -> bool:
     return kinds == {True}
 
 
-class MultidimEventReferenceError(ValueError):
-    """Non-retryable semantic error in a completed multidim article slice.
+class MultidimEventSchemaError(ValueError):
+    """Non-retryable malformed completed multidim source-slice JSON.
 
-    Unlike transport errors, repeating the same merge over unchanged Success
-    files cannot fix a missing local event link or duplicate local event ID.
-    The caller must preserve input artifacts and release the pending row.
+    Repeating the same cached Success slices cannot fix semantic schema
+    defects. Keep ES pending and preserve original artifacts for reanalysis.
     """
+
+
+class MultidimEventReferenceError(MultidimEventSchemaError):
+    """Specialized terminal error for invalid local Event ID relationships."""
+
+
+def _validate_multidim_source_importance(items: List[dict]) -> None:
+    """Reject malformed scores BEFORE generic deep merge can erase them.
+
+    A type-mismatch merge can keep integer coverage=1 and drop later
+    coverage=True or coverage=1.0; strict ES profile validation after the
+    merge then never sees the invalid source data. Validate each independently
+    generated original slice, both flat and nested score representations.
+    """
+    score_keys = {
+        "coverage", "novelty", "impact", "credibility", "importance_score",
+    }
+    for index, item in enumerate(items):
+        sources = [("article", item)]
+        if "importance" in item:
+            nested = item["importance"]
+            if not isinstance(nested, dict):
+                raise MultidimEventSchemaError(
+                    f"multidim slice {index} importance must be object"
+                )
+            sources.append(("importance", nested))
+        for scope, values in sources:
+            for key in score_keys.intersection(values):
+                value = values[key]
+                if value is not None and (
+                    not isinstance(value, int) or isinstance(value, bool)
+                ):
+                    raise MultidimEventSchemaError(
+                        f"multidim slice {index} {scope}.{key} must be integer or null"
+                    )
+        # The ES output normalizer rejects conflicting flat/nested scores;
+        # validate per original slice too, before deep merge can discard a
+        # contradictory representation and manufacture agreement.
+        if "importance" in item:
+            for key in score_keys.intersection(item).intersection(nested):
+                if item[key] != nested[key]:
+                    raise MultidimEventSchemaError(
+                        f"multidim slice {index} importance.{key} conflicts "
+                        f"with flattened {key!r} score"
+                    )
 
 
 def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
@@ -293,6 +338,49 @@ def merge_dict_slices(dict_list: List[Dict[str, Any]]) -> Dict[str, Any]:
     return agg
 
 
+def _select_coherent_article_date_pair(items: List[dict], conflict_policy: str):
+    """Select atomic source-backed metadata under existing merge precedence.
+
+    Prefer a valid pair from one LLM slice, including conservative null/unknown.
+    Never promote a later treaty/event date merely because it is non-null.
+    If EVERY complete pair is invalid, return one whole invalid source pair
+    so the strict output profile can reject it; do not cross-assemble a
+    new, accidentally valid date/precision from separate malformed slices.
+    An incomplete-only input returns None, handled as absent metadata.
+    """
+    complete = []
+    valid = []
+    for item in items:
+        if "article_date_iso" not in item or "article_date_precision" not in item:
+            continue
+        raw_value = item["article_date_iso"]
+        precision = item["article_date_precision"]
+        complete.append((raw_value, precision))
+        if raw_value is None:
+            if precision == "unknown":
+                valid.append((None, "unknown"))
+            continue
+        if not isinstance(raw_value, str):
+            continue
+        value = raw_value.strip()  # Match strict ES _normalize_date_only.
+        if not (len(value) == 10 and value[4] == "-" and value[7] == "-"
+                and precision in {"day", "month", "year"}):
+            continue
+        try:
+            parsed = date.fromisoformat(value)
+        except ValueError:
+            continue
+        if (precision == "month" and parsed.day != 1) or (
+            precision == "year" and (parsed.month != 1 or parsed.day != 1)
+        ):
+            continue
+        valid.append((value, precision))
+    candidates = valid or complete
+    if not candidates:
+        return None
+    return candidates[-1] if conflict_policy == "prefer_right" else candidates[0]
+
+
 def merge_dict_slices_audited(
     dict_list: List[dict],
     *,
@@ -416,14 +504,47 @@ def merge_dict_slices_audited(
     #print("input dict_list in merge_dict_slices_audited",dict_list)
 
     if multidim_event:
+        _validate_multidim_source_importance(dict_list)
         dict_list = _reconcile_multidim_event_slice_ids(dict_list)
 
+    article_date_pair = (
+        _select_coherent_article_date_pair(dict_list, conflict_policy)
+        if multidim_event else None
+    )
     agg: Dict[str, Any] = {}
     for d in dict_list:
         if isinstance(d, dict):
             agg = _merge(agg, d, [])
 
-    changed = any(v > 0 for v in counts.values())
+    date_pair_adjusted = False
+    if article_date_pair is not None:
+        current = (agg.get("article_date_iso"), agg.get("article_date_precision"))
+        if current != article_date_pair:
+            _log_sample(
+                "article_date_pair", "article_date_iso/article_date_precision",
+                "other", current, article_date_pair,
+            )
+            agg["article_date_iso"], agg["article_date_precision"] = article_date_pair
+            date_pair_adjusted = True
+    elif multidim_event:
+        # No single source had BOTH fields; never let the generic merge
+        # synthesize missing publication metadata across different slices.
+        present = {
+            field: agg[field]
+            for field in ("article_date_iso", "article_date_precision")
+            if field in agg
+        }
+        if present:
+            _log_sample(
+                "article_date_pair_incomplete",
+                "article_date_iso/article_date_precision",
+                "other", present, "removed (no complete source pair)",
+            )
+            date_pair_adjusted = True
+        agg.pop("article_date_iso", None)
+        agg.pop("article_date_precision", None)
+
+    changed = any(v > 0 for v in counts.values()) or date_pair_adjusted
     report = {"changed": changed, "counts": counts, "samples": samples}
 
     # 可選：總結性 log

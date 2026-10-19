@@ -156,6 +156,40 @@ def test_invalid_local_event_links_report_one_concise_schema_error(tmp_path, cap
     assert [x.name for x in sorted(success.glob("*.txt"))] == ["0.txt", "1.txt"]
 
 
+def test_bad_score_in_later_chunk_stops_real_combiner_without_console_storm(
+    tmp_path, capsys,
+):
+    import pytest
+    from czjLLM.utilities.slice_merge import MultidimEventSchemaError
+
+    ctx = _build_ctx(tmp_path, task="to json format", merge_slices=True)
+    ctx.output_col = "multidim_event_json"
+    ctx.output_profile = "multidim_event"
+    item = tmp_path / "PromptRoot" / "invalid-flat-score"
+    success = item / "Success"
+    success.mkdir(parents=True, exist_ok=True)
+    for index, score in enumerate((85, True)):
+        fragment = {
+            "article_date_iso": None,
+            "article_date_precision": "unknown",
+            "coverage": score,
+            "Event": [{
+                "event_id": "E1", "time_raw": None,
+                "time_iso": None, "time_precision": "unknown",
+            }],
+        }
+        (success / f"{index}.txt").write_text(
+            json.dumps([fragment], ensure_ascii=False), encoding="utf-8",
+        )
+    with pytest.raises(MultidimEventSchemaError, match="slice 1 article.coverage"):
+        combine_api_finished_item(str(item), ctx)
+    output = capsys.readouterr().out
+    assert output.count("[COMBINE-SCHEMA]") == 1
+    assert "[COMBINE-FATAL]" not in output
+    assert "Traceback (most recent call last)" not in output
+    assert [x.name for x in sorted(success.glob("*.txt"))] == ["0.txt", "1.txt"]
+
+
 def test_json_mode_ignores_blank_success_files_and_returns_empty_array(tmp_path):
     ctx = _build_ctx(tmp_path, task="to json format", merge_slices=False)
     item = tmp_path / "PromptRoot" / "jobC"

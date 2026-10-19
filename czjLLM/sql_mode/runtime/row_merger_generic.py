@@ -10,7 +10,7 @@ from czjLLM.utilities.combine_utils import merge_dict_slices
 from czjLLM.utilities.combine_utils import merge_dict_slices_audited
 from czjLLM.utilities.combine_utils import should_merge_slices
 from czjLLM.utilities.slice_merge import (
-    MultidimEventReferenceError, is_multidim_event_slice_merge,
+    MultidimEventReferenceError, MultidimEventSchemaError, is_multidim_event_slice_merge,
     needs_per_output_slice_merge,
 )
 from utils.utilities_path import OSWALK, DirReplace, MKDIR, getPathFromFN
@@ -503,7 +503,7 @@ def _is_terminal_schema_writeback_error(exc: Exception) -> bool:
     retryable, while an output-profile unknown-field rejection is a property of
     the completed LLM payload and will be identical on every watchdog scan.
     """
-    return isinstance(exc, (OutputProfileValidationError, MultidimEventReferenceError)) or (
+    return isinstance(exc, (OutputProfileValidationError, MultidimEventSchemaError)) or (
         # Compatibility for sinks/plugins that still raise the former error.
         isinstance(exc, ValueError)
         and "contains fields not present in the current schema" in str(exc)
@@ -550,7 +550,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
     def _legacy_merge_finish(item_dir, *, success, reason="execution_error", error_type=None):
         if legacy_merge_telemetry_state.get(item_dir) != "started":
             return
-        if not success and error_type == MultidimEventReferenceError.__name__:
+        if not success and error_type in {MultidimEventSchemaError.__name__, MultidimEventReferenceError.__name__}:
             # A deterministic source-slice FK failure cannot be repaired by
             # retrying the same Success files. Keep the shared merge claim
             # terminal BEFORE the outer handler removes the registry item:
@@ -573,7 +573,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
 
     def _release_terminal_schema_failure(item_dir, pk, exc, combined_path):
         """Fail completed invalid article once; preserve Success and ES pending."""
-        if isinstance(exc, MultidimEventReferenceError):
+        if isinstance(exc, MultidimEventSchemaError):
             mark_legacy_merge_item_terminal(ctx, item_dir)
         msg = str(exc)
         try:
@@ -705,13 +705,13 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 _legacy_merge_finish(item_dir, success=False, reason="no_output")
             except ExecutionCancelled:
                 raise
-            except MultidimEventReferenceError:
+            except MultidimEventSchemaError as schema_error:
                 # Deterministic local Event FK failures must reach the
                 # terminal-schema handler. Repeated attempts on unchanged
                 # Success artifacts flood the console and waste a hot loop.
                 _legacy_merge_finish(
                     item_dir, success=False,
-                    error_type=MultidimEventReferenceError.__name__,
+                    error_type=type(schema_error).__name__,
                 )
                 raise
             except Exception as e:
@@ -750,7 +750,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     # ← 這裡不再一律呼叫 combine_api_finished_item，改用解析策略
                     try:
                         comb_back_fn = _resolve_combined_path(item_dir, meta, ctx, temp_txt)
-                    except MultidimEventReferenceError as e:
+                    except MultidimEventSchemaError as e:
                         _release_terminal_schema_failure(
                             item_dir, pk, e, comb_back_fn,
                         )
@@ -912,7 +912,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 success=False,
                                 error_type=type(merge_or_parse_error).__name__,
                             )
-                        if isinstance(merge_or_parse_error, MultidimEventReferenceError):
+                        if isinstance(merge_or_parse_error, MultidimEventSchemaError):
                             # Do not silently continue with unreconciled JSON.
                             raise
                         pass
