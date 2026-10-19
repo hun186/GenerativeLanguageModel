@@ -132,7 +132,7 @@ def try_begin_legacy_merge_item(ctx: Any, item_dir: Any) -> bool:
     key = _legacy_merge_item_key(item_dir)
     with state["lock"]:
         items = state.setdefault("legacy_merge_items", {})
-        if items.get(key) in {"active", "materialized", "completed"}:
+        if items.get(key) in {"active", "materialized", "completed", "terminal"}:
             return False
         items[key] = "active"
         return True
@@ -171,6 +171,23 @@ def finish_legacy_merge_item(ctx: Any, item_dir: Any, *, success: bool) -> None:
             items[key] = "completed"
         elif items.get(key) in {"active", "materialized"}:
             items.pop(key, None)
+
+
+def mark_legacy_merge_item_terminal(ctx: Any, item_dir: Any) -> None:
+    """Permanently block another merge claim for this failed item *in this run*.
+
+    A completed article with invalid chunk-local Event references must not be
+    retried on unchanged Success files. Unlike success=True, the 'terminal'
+    state is explicitly NOT a successful merge. The next run uses a new
+    execution-control context and may analyze its still-pending ES row again.
+    Mark this while holding the shared claim, BEFORE registry removal.
+    """
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        items = state.setdefault("legacy_merge_items", {})
+        if items.get(key) == "active":
+            items[key] = "terminal"
 
 
 def legacy_merge_item_materialized(ctx: Any, item_dir: Any) -> bool:
