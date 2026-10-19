@@ -295,27 +295,31 @@ def merge_dict_slices(dict_list: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 def _select_coherent_article_date_pair(items: List[dict], conflict_policy: str):
-    """Use date and precision from ONE LLM slice, never two independent slices.
+    """Select atomic source-backed metadata under existing merge precedence.
 
-    Preserve an internally consistent source-slice pair under the existing
-    left/right precedence (including null/unknown). A later slice may mistake
-    an EVENT date (e.g. treaty signature) for the ARTICLE publication date:
-    do not automatically elevate known dates over conservative unknowns.
-    If no source slice provides a valid pair, return None and let the strict
-    ES profile reject the malformed result (rather than fabricate precision).
+    Prefer a valid pair from one LLM slice, including conservative null/unknown.
+    Never promote a later treaty/event date merely because it is non-null.
+    If EVERY complete pair is invalid, return one whole invalid source pair
+    so the strict output profile can reject it; do not cross-assemble a
+    new, accidentally valid date/precision from separate malformed slices.
+    An incomplete-only input returns None, handled as absent metadata.
     """
+    complete = []
     valid = []
     for item in items:
         if "article_date_iso" not in item or "article_date_precision" not in item:
             continue
-        value = item["article_date_iso"]
+        raw_value = item["article_date_iso"]
         precision = item["article_date_precision"]
-        if value is None:
+        complete.append((raw_value, precision))
+        if raw_value is None:
             if precision == "unknown":
                 valid.append((None, "unknown"))
             continue
-        if not (isinstance(value, str) and len(value) == 10
-                and value[4] == "-" and value[7] == "-"
+        if not isinstance(raw_value, str):
+            continue
+        value = raw_value.strip()  # Match strict ES _normalize_date_only.
+        if not (len(value) == 10 and value[4] == "-" and value[7] == "-"
                 and precision in {"day", "month", "year"}):
             continue
         try:
@@ -327,9 +331,10 @@ def _select_coherent_article_date_pair(items: List[dict], conflict_policy: str):
         ):
             continue
         valid.append((value, precision))
-    if not valid:
+    candidates = valid or complete
+    if not candidates:
         return None
-    return valid[-1] if conflict_policy == "prefer_right" else valid[0]
+    return candidates[-1] if conflict_policy == "prefer_right" else candidates[0]
 
 
 def merge_dict_slices_audited(
@@ -474,6 +479,11 @@ def merge_dict_slices_audited(
                 "other", current, article_date_pair,
             )
             agg["article_date_iso"], agg["article_date_precision"] = article_date_pair
+    elif multidim_event:
+        # No single slice supplied BOTH fields: the generic scalar merge may
+        # have cross-assembled them. Omit both so the ES schema fails closed.
+        agg.pop("article_date_iso", None)
+        agg.pop("article_date_precision", None)
 
     changed = any(v > 0 for v in counts.values()) or (
         article_date_pair is not None
