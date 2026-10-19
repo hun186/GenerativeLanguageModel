@@ -477,6 +477,13 @@ def _process_flatten_target(ctx, sink, pk, ft: dict) -> bool:
         return True
     except Exception as ex:
         tlog_warn(f"⚠️ 子表寫回失敗（pk={pk}, col={ft['output_col']}）：{ex}")
+        # A buffered ES flatten write may already have crossed a bulk flush
+        # threshold and been rejected. Swallowing that failure would let the
+        # next confirm_writeback() succeed on an empty buffer and falsely mark
+        # the whole row complete. Keep other sink types' legacy best-effort
+        # flatten behavior unchanged.
+        if callable(getattr(sink, "confirm_writeback", None)):
+            raise
         return False
     finally:
         sink.ctx = old_ctx
