@@ -132,7 +132,7 @@ def try_begin_legacy_merge_item(ctx: Any, item_dir: Any) -> bool:
     key = _legacy_merge_item_key(item_dir)
     with state["lock"]:
         items = state.setdefault("legacy_merge_items", {})
-        if items.get(key) in {"active", "materialized", "completed"}:
+        if items.get(key) in {"active", "materialized", "completed", "terminal"}:
             return False
         items[key] = "active"
         return True
@@ -167,10 +167,30 @@ def finish_legacy_merge_item(ctx: Any, item_dir: Any, *, success: bool) -> None:
     key = _legacy_merge_item_key(item_dir)
     with state["lock"]:
         items = state.setdefault("legacy_merge_items", {})
+        if items.get(key) == "terminal":
+            # An in-flight owner cannot turn a terminally invalid row into a
+            # successful merge after the other owner has rejected its payload.
+            return
         if success:
             items[key] = "completed"
         elif items.get(key) in {"active", "materialized"}:
             items.pop(key, None)
+
+
+def mark_legacy_merge_item_terminal(ctx: Any, item_dir: Any) -> None:
+    """Block merge claims for this invalid article for the rest of this run.
+
+    Deterministic chunk-local Event FK failures may arise while actively
+    merging, after a previously successful merge of a DIFFERENT source, or
+    on a deferred source where no legacy claim was acquired at all.
+    Therefore terminalize even absent/previously completed claims under the
+    shared lock. This is NOT successful writeback; another run has new state
+    and can reanalyze its still-pending ES source.
+    """
+    state = _state(ctx)
+    key = _legacy_merge_item_key(item_dir)
+    with state["lock"]:
+        state.setdefault("legacy_merge_items", {})[key] = "terminal"
 
 
 def legacy_merge_item_materialized(ctx: Any, item_dir: Any) -> bool:

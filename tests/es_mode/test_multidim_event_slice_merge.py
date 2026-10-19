@@ -474,6 +474,100 @@ def test_row_merger_merges_unselected_deferred_stage_per_destination(
     assert len(sink.docs) == 1
 
 
+def test_deferred_invalid_stage_reference_blocks_fallback_reclaim(tmp_path, monkeypatch):
+    """Mixed stage references can fail outside direct legacy merge guards."""
+    import queue
+    from czjLLM.sql_mode.runtime import row_merger_generic as merger
+    from czjLLM.sql_mode.runtime.multistage_writeback import WritebackPayload
+    from czjLLM.reduction.production_control import (
+        finish_legacy_merge_item, try_begin_legacy_merge_item,
+    )
+
+    stage_parts = [_article("E1", action="first"), _article("E1", action="second")]
+    stage_parts[1]["Person"][0]["event_ids"] = ["E3"]
+    stage_text = json.dumps(stage_parts)
+    combined_text = json.dumps({"status": "previously combined"})
+    item = tmp_path / "item"
+    success = item / "Success"
+    success.mkdir(parents=True)
+    (success / "0.txt").write_text("preserved answer", encoding="utf-8")
+    source = tmp_path / "input.txt"
+    source.write_text("preserved input", encoding="utf-8")
+    output = tmp_path / "combined.json"
+    output.write_text(combined_text, encoding="utf-8")
+    claims_at_removal, writes, releases, audits = [], [], [], []
+
+    class Registry:
+        removed = False
+        def list_items(self):
+            return {} if self.removed else {str(item): meta}
+        def remove(self, path):
+            assert path == str(item)
+            claims_at_removal.append(try_begin_legacy_merge_item(ctx, path))
+            self.removed = True
+
+    meta = {"pk": "bad-stage-fk", "temp_txt": str(source),
+            "CombBackFN": str(output)}
+    ctx = SimpleNamespace(
+        output_col="combined_json", output_profile="none",
+        merge_slices=True, merge_log_changes=False,
+        record_update_time=False, flatten_json_output=False,
+        llm_source_dir=str(tmp_path), llm_source_backup_dir=str(tmp_path / "backup"),
+        sql_flatten_writeback_rule=0,
+        sql_writeback_rules=[
+            {"output_col": "combined_json", "source": "combined", "output_profile": "none"},
+            {"output_col": "stage_generic_json", "source": "stage",
+             "stage": "extract", "output_profile": "none"},
+            {"output_col": "multidim_event_json", "source": "stage",
+             "stage": "extract", "output_profile": "multidim_event"},
+        ],
+    )
+
+    def resolve(rule_ctx, path, text):
+        if rule_ctx.sql_writeback_source == "stage":
+            return WritebackPayload(
+                main_payload=stage_parts, main_text=stage_text,
+                flatten_text=stage_text, source="stage:extract",
+            )
+        return WritebackPayload(
+            main_payload={"status": "previously combined"},
+            main_text=combined_text, flatten_text=combined_text,
+            source="combined",
+        )
+
+    class Sink:
+        def open(self): pass
+        def close(self): pass
+        def write_main(self, *_args, **_kwargs): writes.append(True)
+
+    monkeypatch.setattr(merger, "resolve_writeback_payload", resolve)
+    monkeypatch.setattr(merger, "mark_not_running",
+                        lambda _ctx, pk, state: releases.append((pk, state)))
+    monkeypatch.setattr(merger, "record_adjustment",
+                        lambda _ctx, event, pk=None, **kw:
+                            audits.append((event, pk, kw)) or None)
+    done_q = queue.Queue()
+    registry = Registry()
+    merger.row_merger_watchdog_generic(
+        ctx, registry, lambda *_: None,
+        SimpleNamespace(is_set=lambda: True), Sink(),
+        scan_interval=0.001, done_q=done_q,
+    )
+
+    assert registry.removed and not writes
+    assert claims_at_removal == [False]
+    assert releases == [("bad-stage-fk", "writeback_failed_schema")]
+    assert len(audits) == 1
+    assert "E3" in audits[0][2]["error"]
+    assert done_q.get_nowait() == 1 and done_q.empty()
+    finish_legacy_merge_item(ctx, str(item), success=False)
+    finish_legacy_merge_item(ctx, str(item), success=True)
+    assert not try_begin_legacy_merge_item(ctx, str(item))
+    assert try_begin_legacy_merge_item(SimpleNamespace(), str(item))
+    assert source.read_text(encoding="utf-8") == "preserved input"
+    assert (success / "0.txt").exists() and output.exists()
+
+
 @pytest.mark.parametrize("flatten_idx", [None, 0, 1], ids=["single", "generic", "strict"])
 def test_actual_row_merger_writes_two_e1_slices_via_es_profile(tmp_path, flatten_idx):
     """Exercise production watchdog and production ES profile without a live ES server."""

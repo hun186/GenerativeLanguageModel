@@ -9,7 +9,10 @@ from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from czjLLM.utilities.combine_utils import merge_dict_slices
 from czjLLM.utilities.combine_utils import merge_dict_slices_audited
 from czjLLM.utilities.combine_utils import should_merge_slices
-from czjLLM.utilities.slice_merge import is_multidim_event_slice_merge, needs_per_output_slice_merge
+from czjLLM.utilities.slice_merge import (
+    MultidimEventReferenceError, is_multidim_event_slice_merge,
+    needs_per_output_slice_merge,
+)
 from utils.utilities_path import OSWALK, DirReplace, MKDIR, getPathFromFN
 from utils.utilities_path import safe_move
 
@@ -20,7 +23,8 @@ from czjLLM.utilities.path_utils import get_combined_result_path
 from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.reduction.production_control import (
     ensure_production_observer, finish_legacy_merge_item,
-    try_begin_legacy_merge_item, try_resume_materialized_legacy_merge_item,
+    mark_legacy_merge_item_terminal, try_begin_legacy_merge_item,
+    try_resume_materialized_legacy_merge_item,
 )
 from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
 from .multistage_writeback import resolve_writeback_payload
@@ -499,7 +503,7 @@ def _is_terminal_schema_writeback_error(exc: Exception) -> bool:
     retryable, while an output-profile unknown-field rejection is a property of
     the completed LLM payload and will be identical on every watchdog scan.
     """
-    return isinstance(exc, OutputProfileValidationError) or (
+    return isinstance(exc, (OutputProfileValidationError, MultidimEventReferenceError)) or (
         # Compatibility for sinks/plugins that still raise the former error.
         isinstance(exc, ValueError)
         and "contains fields not present in the current schema" in str(exc)
@@ -546,6 +550,12 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
     def _legacy_merge_finish(item_dir, *, success, reason="execution_error", error_type=None):
         if legacy_merge_telemetry_state.get(item_dir) != "started":
             return
+        if not success and error_type == MultidimEventReferenceError.__name__:
+            # A deterministic source-slice FK failure cannot be repaired by
+            # retrying the same Success files. Keep the shared merge claim
+            # terminal BEFORE the outer handler removes the registry item:
+            # otherwise fallback can reclaim it and count this failure twice.
+            mark_legacy_merge_item_terminal(ctx, item_dir)
         finish_legacy_merge_item(ctx, item_dir, success=success)
         if success:
             observer.emit("legacy_merge_completed", {})
@@ -560,6 +570,59 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
     failure_log_interval = max(
         1.0, float(getattr(ctx, "row_merger_failure_log_interval", 60.0) or 60.0)
     )
+
+    def _release_terminal_schema_failure(item_dir, pk, exc, combined_path):
+        """Fail completed invalid article once; preserve Success and ES pending."""
+        if isinstance(exc, MultidimEventReferenceError):
+            mark_legacy_merge_item_terminal(ctx, item_dir)
+        msg = str(exc)
+        try:
+            mark_not_running(ctx, pk, state="writeback_failed_schema")
+        except Exception as ex:
+            tlog_warn(f"⚠️ schema 失敗狀態釋放異常（pk={pk}）：{ex}")
+        schema_log_path = None
+        try:
+            schema_log_path = record_adjustment(
+                ctx, "writeback_failed_schema_release", pk=pk,
+                error=msg,
+                output_col=getattr(ctx, "output_col", None),
+                output_profile=getattr(ctx, "output_profile", None),
+                combined_result_path=combined_path,
+            )
+        except Exception as ex:
+            tlog_warn(f"⚠️ schema 失敗稽核紀錄寫入異常（pk={pk}）：{ex}")
+        log_hint = (
+            f"；錯誤紀錄已保存於 {schema_log_path}"
+            if schema_log_path is not None
+            else "；未啟用或未能寫入 schema 失敗稽核紀錄"
+        )
+        tlog_warn(
+            f"Row Merger 略過本輪寫回 pk={pk}: {exc}；"
+            "已釋放執行狀態，資料保持 pending，下一次執行會重新拉取並分析"
+            f"{log_hint}。"
+        )
+        registry.remove(item_dir)
+        merge_log_emitted_items.discard(item_dir)
+        if done_q is not None:
+            try:
+                done_q.put_nowait(1)
+            except Exception:
+                pass
+        try:
+            meter_update(
+                meter_fn,
+                lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update(
+                    {"status": "writeback_failed_schema"}
+                ),
+            )
+            meter_update(
+                meter_fn,
+                lambda d: d.setdefault("progress", {}).update(
+                    {"last_progress_ts": time.time()}
+                ),
+            )
+        except Exception:
+            pass
 
     def _log_state_once(item_dir):
         todo_dir = os.path.join(item_dir, "TODO")
@@ -642,6 +705,15 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 _legacy_merge_finish(item_dir, success=False, reason="no_output")
             except ExecutionCancelled:
                 raise
+            except MultidimEventReferenceError:
+                # Deterministic local Event FK failures must reach the
+                # terminal-schema handler. Repeated attempts on unchanged
+                # Success artifacts flood the console and waste a hot loop.
+                _legacy_merge_finish(
+                    item_dir, success=False,
+                    error_type=MultidimEventReferenceError.__name__,
+                )
+                raise
             except Exception as e:
                 _legacy_merge_finish(
                     item_dir, success=False, error_type=type(e).__name__
@@ -678,6 +750,12 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     # ← 這裡不再一律呼叫 combine_api_finished_item，改用解析策略
                     try:
                         comb_back_fn = _resolve_combined_path(item_dir, meta, ctx, temp_txt)
+                    except MultidimEventReferenceError as e:
+                        _release_terminal_schema_failure(
+                            item_dir, pk, e, comb_back_fn,
+                        )
+                        progressed = True
+                        continue
                     except ExecutionCancelled:
                         # No incomplete writeback and no retry loop.  Preserve
                         # artifacts, release only this run's coordination.
@@ -834,6 +912,9 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 success=False,
                                 error_type=type(merge_or_parse_error).__name__,
                             )
+                        if isinstance(merge_or_parse_error, MultidimEventReferenceError):
+                            # Do not silently continue with unreconciled JSON.
+                            raise
                         pass
 
                     # A job can defer one stage source while the flatten
@@ -910,55 +991,9 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                         continue
                     row_merger_watchdog_generic._stage_wait_logged.discard((item_dir, pk))
                     if _is_terminal_schema_writeback_error(e):
-                        try:
-                            mark_not_running(ctx, pk, state="writeback_failed_schema")
-                        except Exception as ex:
-                            tlog_warn(f"⚠️ schema 失敗狀態釋放異常（pk={pk}）：{ex}")
-                        schema_log_path = None
-                        try:
-                            schema_log_path = record_adjustment(
-                                ctx,
-                                "writeback_failed_schema_release",
-                                pk=pk,
-                                error=msg,
-                                output_col=getattr(ctx, "output_col", None),
-                                output_profile=getattr(ctx, "output_profile", None),
-                                combined_result_path=comb_back_fn,
-                            )
-                        except Exception as ex:
-                            tlog_warn(f"⚠️ schema 失敗稽核紀錄寫入異常（pk={pk}）：{ex}")
-                        log_hint = (
-                            f"；錯誤紀錄已保存於 {schema_log_path}"
-                            if schema_log_path is not None
-                            else "；未啟用或未能寫入 schema 失敗稽核紀錄"
+                        _release_terminal_schema_failure(
+                            item_dir, pk, e, comb_back_fn,
                         )
-                        tlog_warn(
-                            f"Row Merger 略過本輪寫回 pk={pk}: {e}；"
-                            "已釋放執行狀態，資料保持 pending，下一次執行會重新拉取並分析"
-                            f"{log_hint}。"
-                        )
-                        registry.remove(item_dir)
-                        merge_log_emitted_items.discard(item_dir)
-                        if done_q is not None:
-                            try:
-                                done_q.put_nowait(1)
-                            except Exception:
-                                pass
-                        try:
-                            meter_update(
-                                meter_fn,
-                                lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update(
-                                    {"status": "writeback_failed_schema"}
-                                ),
-                            )
-                            meter_update(
-                                meter_fn,
-                                lambda d: d.setdefault("progress", {}).update(
-                                    {"last_progress_ts": time.time()}
-                                ),
-                            )
-                        except Exception:
-                            pass
                         progressed = True
                         continue
                     now = time.monotonic()

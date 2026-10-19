@@ -42,6 +42,7 @@ from czjLLM.utilities.slice_merge import (
     merge_dict_slices_audited,
     is_multidim_event_slice_merge,
     is_multidim_event_source_merge,
+    MultidimEventReferenceError,
     needs_per_output_slice_merge,
     should_merge_slices,
 )
@@ -896,6 +897,16 @@ def combine_api_finished_item(item: str, ctx) -> str:
         return str(out_path)
 
     except BaseException as ex:
+        if isinstance(ex, MultidimEventReferenceError):
+            # This is a completed LLM slice with an invalid Event reference,
+            # not a crash that benefits from a full repeated traceback.
+            # Row Merger handles it as terminal and saves a durable audit.
+            print(
+                f"[COMBINE-SCHEMA] stage={stage} "
+                f"item={item_p} error={ex}",
+                flush=True,
+            )
+            raise
         print(
             "\n[COMBINE-FATAL]\n"
             f"id={call_id}\n"

@@ -9,11 +9,15 @@ import os, time, faulthandler, sys
 import multiprocessing as mp
 from czjLLM.job_manager.console_ui import tlog, tlog_ok, tlog_warn
 from czjLLM.prompt_pipeline.pipeline_controller import meter_read  # 讀進度計量檔
+from czjLLM.prompt_pipeline.pipeline_controller import meter_update
 from czjLLM.prompt_pipeline.pipeline_controller import CONSUMER_STATE  # [ADD] 觀察 last_dispatch_ts
 from czjLLM.prompt_pipeline.pipeline_controller import recover_running_to_todo  # ★ 新增：啟動時復原 RUNNING → TODO
 from czjLLM.prompt_pipeline.pipeline_controller import start_watchdogs
 from czjLLM.utilities.combine_utils import run_merge_for
-from czjLLM.utilities.slice_merge import should_merge_slices
+from czjLLM.utilities.slice_merge import (
+    MultidimEventReferenceError, should_merge_slices,
+)
+from czjLLM.prompt_pipeline.pending_central import mark_not_running, record_adjustment
 
 from .runtime_ui import prepare_ui, start_bar_refresher
 from ..metrics.metering import init_meter
@@ -39,6 +43,7 @@ from czjLLM.reduction.production_control import (
     ensure_execution_cancel_event, ensure_production_observer,
     execution_cancel_requested, finish_legacy_merge_item,
     legacy_merge_item_completed, legacy_merge_item_materialized,
+    mark_legacy_merge_item_terminal,
     request_execution_cancel, try_begin_legacy_merge_item,
 )
 from czjLLM.reduction.retention import (
@@ -236,6 +241,82 @@ def _registry_existing_combined_artifact(registry, job_dir: str) -> str:
         return ""
     path = str(meta.get("CombBackFN", "") or "")
     return path if path and os.path.isfile(path) else ""
+
+def _release_terminal_fallback_merge_error(
+    ctx, registry, job_dir, exc, *, meter_fn=None, done_q=None,
+) -> bool:
+    """Release an unwriteable fallback row once without deleting its Success.
+
+    Post-drain fallback is a second owner of combine_api_finished_item.
+    A completed chunk with a missing local Event FK cannot be corrected by
+    rerunning the same bytes. Keep ES pending and input/cache untouched.
+    """
+    meta = None
+    getter = getattr(registry, "get", None)
+    if callable(getter):
+        try:
+            meta = getter(job_dir)
+        except Exception:
+            pass
+    if not isinstance(meta, dict):
+        try:
+            meta = (registry.list_items() or {}).get(job_dir)
+        except Exception:
+            meta = None
+    if not isinstance(meta, dict) or meta.get("pk") is None:
+        # Row Merger might already have removed a completed row. Avoid a
+        # duplicate completion signal when there is no live registry item.
+        return False
+
+    pk = meta["pk"]
+    try:
+        mark_not_running(ctx, pk, state="writeback_failed_schema")
+    except Exception as release_error:
+        tlog_warn(f"⚠️ fallback schema 失敗狀態釋放異常（pk={pk}）：{release_error}")
+
+    log_path = None
+    try:
+        log_path = record_adjustment(
+            ctx, "writeback_failed_schema_release", pk=pk,
+            error=str(exc),
+            output_col=getattr(ctx, "output_col", None),
+            output_profile=getattr(ctx, "output_profile", None),
+            combined_result_path=meta.get("CombBackFN"),
+        )
+    except Exception as audit_error:
+        tlog_warn(f"⚠️ fallback schema 稽核紀錄寫入異常（pk={pk}）：{audit_error}")
+
+    # Never delete or rewrite the original input, cached Success slices, or
+    # the ES document; only release this in-process scheduling reference.
+    registry.remove(job_dir)
+    if done_q is not None:
+        try:
+            done_q.put_nowait(1)
+        except Exception:
+            pass
+    if meter_fn is not None:
+        try:
+            meter_update(
+                meter_fn,
+                lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update(
+                    {"status": "writeback_failed_schema"}
+                ),
+            )
+            meter_update(
+                meter_fn,
+                lambda d: d.setdefault("progress", {}).update(
+                    {"last_progress_ts": time.time()}
+                ),
+            )
+        except Exception:
+            pass
+    hint = f"；錯誤紀錄已保存於 {log_path}" if log_path else ""
+    tlog_warn(
+        f"fallback 合併略過本輪寫回 pk={pk}: {exc}；"
+        f"資料保持 pending，下次執行可重新分析{hint}。"
+    )
+    return True
+
 
 # ===========================
 # 對外主函式：run_pipeline（精簡後）
@@ -530,6 +611,22 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                     else:
                         finish_legacy_merge_item(ctx, job_dir, success=False)
                         observer.emit("legacy_merge_failed", {"reason": "no_output"})
+                except MultidimEventReferenceError as e:
+                    # Keep the shared claim non-retryable BEFORE releasing
+                    # registry ownership. Releasing as success=False here
+                    # would let a concurrently polling Row Merger reclaim
+                    # unchanged Success files and count the error twice.
+                    mark_legacy_merge_item_terminal(ctx, job_dir)
+                    observer.emit(
+                        "legacy_merge_failed",
+                        {"error_type": type(e).__name__,
+                         "reason": "invalid_local_event_references"},
+                    )
+                    merged_jobs.add(job_dir)
+                    _release_terminal_fallback_merge_error(
+                        ctx, registry, job_dir, e,
+                        meter_fn=meter_fn, done_q=done_q,
+                    )
                 except Exception as e:
                     finish_legacy_merge_item(ctx, job_dir, success=False)
                     observer.emit(
