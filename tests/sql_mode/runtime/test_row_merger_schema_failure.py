@@ -212,12 +212,30 @@ def test_invalid_local_event_link_is_terminal_without_recombining(tmp_path: Path
         llm_source_dir=str(tmp_path / "raw"),
         llm_source_backup_dir=str(tmp_path / "backup"),
     )
+    # Race the fallback claimant against Row Merger's registry.remove().
+    # The Row Merger must still own a 'terminal' claim at this boundary.
+    from czjLLM.reduction.production_control import (
+        finish_legacy_merge_item, try_begin_legacy_merge_item,
+    )
+    claim_attempts = []
+    old_remove = registry.remove
+
+    def racing_remove(path):
+        claim_attempts.append(try_begin_legacy_merge_item(ctx, path))
+        old_remove(path)
+
+    registry.remove = racing_remove
     done_q = queue.Queue()
     merger_module.row_merger_watchdog_generic(
         ctx, registry, lambda *_: None,
         SimpleNamespace(is_set=lambda: True),
         Sink(), scan_interval=0.001, done_q=done_q,
     )
+    assert claim_attempts == [False], "fallback must not reclaim before removal"
+    # Even a late error cleanup must not reopen a terminal failure in this run.
+    finish_legacy_merge_item(ctx, str(item_dir), success=False)
+    assert not try_begin_legacy_merge_item(ctx, str(item_dir))
+    assert try_begin_legacy_merge_item(SimpleNamespace(), str(item_dir))
     assert len(combine_calls) == 1, "avoid watchdog retry storms"
     assert not sink_calls
     assert registry.removed
