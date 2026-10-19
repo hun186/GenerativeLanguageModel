@@ -250,6 +250,74 @@ def test_invalid_local_event_link_is_terminal_without_recombining(tmp_path: Path
     assert not dest.exists()
 
 
+def test_row_merger_direct_json_merge_retains_terminal_claim_until_removal(
+    tmp_path: Path, monkeypatch,
+):
+    """The direct JSON merge error must not race post-drain fallback either."""
+    from czjLLM.reduction.production_control import (
+        try_begin_legacy_merge_item,
+    )
+
+    item_dir = tmp_path / "item"
+    item_dir.mkdir()
+    source = tmp_path / "source.txt"
+    source.write_text("source text", encoding="utf-8")
+    combined = tmp_path / "merged.json"
+    combined.write_text(json.dumps([{
+        "Event": [{"event_id": "E1"}],
+        "Person": [{"event_ids": ["E3"], "name": "wrong reference"}],
+    }]), encoding="utf-8")
+    registry = _Registry(
+        str(item_dir),
+        {"pk": "direct-invalid-fk", "temp_txt": str(source),
+         "CombBackFN": str(combined)},
+    )
+    claims_at_removal, sink_writes = [], []
+    original_remove = registry.remove
+
+    def removal_with_fallback_probe(path):
+        claims_at_removal.append(try_begin_legacy_merge_item(ctx, path))
+        original_remove(path)
+
+    registry.remove = removal_with_fallback_probe
+    monkeypatch.setattr(merger_module, "mark_not_running", lambda *_a, **_k: None)
+    monkeypatch.setattr(merger_module, "record_adjustment", lambda *_a, **_k: None)
+
+    class Sink:
+        def open(self):
+            pass
+
+        def close(self):
+            pass
+
+        def write_main(self, *_a, **_k):
+            sink_writes.append(True)
+
+    ctx = SimpleNamespace(
+        output_col="multidim_event_json",
+        output_profile="multidim_event",
+        merge_slices=True,
+        record_update_time=False,
+        flatten_json_output=False,
+        merge_log_changes=False,
+        cleanup_prompt_item_after_writeback=False,
+        llm_source_dir=str(tmp_path),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+    )
+    done_q = queue.Queue()
+    merger_module.row_merger_watchdog_generic(
+        ctx, registry, lambda *_: None,
+        SimpleNamespace(is_set=lambda: True),
+        Sink(), scan_interval=0.001, done_q=done_q,
+    )
+    assert registry.removed
+    assert claims_at_removal == [False]
+    assert sink_writes == []
+    assert done_q.get_nowait() == 1 and done_q.empty()
+    assert source.exists() and combined.exists()
+    assert not try_begin_legacy_merge_item(ctx, str(item_dir))
+
+
 def test_postdrain_fallback_releases_bad_local_event_link_once(tmp_path: Path, monkeypatch):
     import czjLLM.sql_mode.runtime.orchestrator as orchestrator
     from czjLLM.utilities.slice_merge import MultidimEventReferenceError
