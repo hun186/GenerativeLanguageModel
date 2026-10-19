@@ -45,3 +45,9 @@
 - Fix a1eaf744 ensures both flat and existing nested score representations individually satisfy integer-or-null (not bool, float, string, list) BEFORE any equality/conflict check or relocation. Structural relocation remains lossless and conflicting legitimate integer values are still rejected.
 - Regression 66ec0a2 tests True vs 1, False vs 0, float vs int, string vs int and valid int vs bad bool.
 - Exact-head Hosted CI and Codex review must be rerun on the new head. Review threads will be resolved only after responding with fix evidence. Not merged.
+
+### PR #216 third Codex review corrective (2026-10-19)
+
+- Review of interim head a08f334b41 discovered P2 #4312663810: when no slice contained BOTH article_date fields, strict merger removed cross-assembled/incomplete metadata, but did not set report.changed or include an audit sample. In single-slice invalid cases the merge therefore mutated the result silently and audit logger could suppress the correction.
+- Fix 73075f1 records an explicit article_date_pair_incomplete audit sample with the removed fields and sets changed=true whenever those fields were present; no fabricated date, strict ES still rejects missing required pair. Test 94369af checks real strict merge of a single incomplete article and asserts changed/audit/strict rejection without modifying original Success content.
+- Fresh exact HEAD CI + Codex review required; no merge or real ES acceptance yet.
