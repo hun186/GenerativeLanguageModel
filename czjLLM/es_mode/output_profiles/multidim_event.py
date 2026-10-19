@@ -225,10 +225,21 @@ def _normalize_flat_importance_fields(item: Dict[str, Any], path: str) -> None:
     importance = dict(_require_object(existing, f"{path}.importance"))
     for key in sorted(flattened):
         value = item[key]
-        if key in importance and importance[key] != value:
-            raise ValueError(
-                f"{path}.importance.{key} conflicts with flattened {key!r} score"
-            )
+        # Python equates True with 1 and 85.0 with 85. Validate BOTH
+        # representations before comparison, never hide a malformed nested
+        # score by replacing it with an equal-looking flat value.
+        if value is not None and (not isinstance(value, int) or isinstance(value, bool)):
+            raise TypeError(f"{path}.importance.{key} must be integer or null")
+        if key in importance:
+            original = importance[key]
+            if original is not None and (
+                not isinstance(original, int) or isinstance(original, bool)
+            ):
+                raise TypeError(f"{path}.importance.{key} must be integer or null")
+            if original != value:
+                raise ValueError(
+                    f"{path}.importance.{key} conflicts with flattened {key!r} score"
+                )
         importance[key] = value
     for key in flattened:
         del item[key]
