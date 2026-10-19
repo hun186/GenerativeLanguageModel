@@ -32,3 +32,9 @@
 - `.codex/archive/memory.md-20261019-before-pr216.md`: immutable full previous memory snapshot (70,905 characters) through PR #215 review, including all prior commit IDs, exact CI results, corrected and pending statuses as they were known at their respective times. Do not interpret obsolete "pending" statements in the archive as current Hosted PR status.
 - Existing prior compaction archive references are preserved in that snapshot and under `.codex/archive/`.
 - 2026-10-19 compaction performed because active memory exceeded 40 KB; no previous history was discarded, only moved to archive.
+
+### PR #216 first Codex review corrections (2026-10-19)
+
+- First formal Codex review of early head 6c69a8bcff found P1 #4312588912: if all source date/precision pairs were invalid, independent generic scalar merging could accidentally synthesize a valid pair from parts of distinct malformed slices. It also found P2 #4312588916: date with legal surrounding whitespace was rejected as a candidate even though strict output profile trims it.
+- Fix 850e548 updates the strict-only pair selector to return a whole unmodified INVALID pair from one original slice when none is valid, so ES explicitly rejects it, or removes both assembled fields if no source had a complete pair. Valid ISO dates are trimmed exactly as the output profile permits. Conservative null/unknown remains valid and precedence unchanged; no event-derived publication date.
+- Regression e216734 covers invalid cross-composed pairs, incomplete-only pairs, and legal whitespace in complete valid pairs, including no mutation of cached slices. Latest exact-HEAD Hosted CI and fresh Codex review required; do not claim pass or merge without explicit authorization.
