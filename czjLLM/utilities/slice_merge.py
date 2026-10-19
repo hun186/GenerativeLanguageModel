@@ -129,13 +129,47 @@ def is_multidim_event_source_merge(ctx, *, source: str = "combined") -> bool:
     return kinds == {True}
 
 
-class MultidimEventReferenceError(ValueError):
-    """Non-retryable semantic error in a completed multidim article slice.
+class MultidimEventSchemaError(ValueError):
+    """Non-retryable malformed completed multidim source-slice JSON.
 
-    Unlike transport errors, repeating the same merge over unchanged Success
-    files cannot fix a missing local event link or duplicate local event ID.
-    The caller must preserve input artifacts and release the pending row.
+    Repeating the same cached Success slices cannot fix semantic schema
+    defects. Keep ES pending and preserve original artifacts for reanalysis.
     """
+
+
+class MultidimEventReferenceError(MultidimEventSchemaError):
+    """Specialized terminal error for invalid local Event ID relationships."""
+
+
+def _validate_multidim_source_importance(items: List[dict]) -> None:
+    """Reject malformed scores BEFORE generic deep merge can erase them.
+
+    A type-mismatch merge can keep integer coverage=1 and drop later
+    coverage=True or coverage=1.0; strict ES profile validation after the
+    merge then never sees the invalid source data. Validate each independently
+    generated original slice, both flat and nested score representations.
+    """
+    score_keys = {
+        "coverage", "novelty", "impact", "credibility", "importance_score",
+    }
+    for index, item in enumerate(items):
+        sources = [("article", item)]
+        if "importance" in item:
+            nested = item["importance"]
+            if not isinstance(nested, dict):
+                raise MultidimEventSchemaError(
+                    f"multidim slice {index} importance must be object"
+                )
+            sources.append(("importance", nested))
+        for scope, values in sources:
+            for key in score_keys.intersection(values):
+                value = values[key]
+                if value is not None and (
+                    not isinstance(value, int) or isinstance(value, bool)
+                ):
+                    raise MultidimEventSchemaError(
+                        f"multidim slice {index} {scope}.{key} must be integer or null"
+                    )
 
 
 def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
@@ -460,6 +494,7 @@ def merge_dict_slices_audited(
     #print("input dict_list in merge_dict_slices_audited",dict_list)
 
     if multidim_event:
+        _validate_multidim_source_importance(dict_list)
         dict_list = _reconcile_multidim_event_slice_ids(dict_list)
 
     article_date_pair = (
