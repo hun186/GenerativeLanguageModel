@@ -471,6 +471,7 @@ def merge_dict_slices_audited(
         if isinstance(d, dict):
             agg = _merge(agg, d, [])
 
+    date_pair_adjusted = False
     if article_date_pair is not None:
         current = (agg.get("article_date_iso"), agg.get("article_date_precision"))
         if current != article_date_pair:
@@ -479,17 +480,26 @@ def merge_dict_slices_audited(
                 "other", current, article_date_pair,
             )
             agg["article_date_iso"], agg["article_date_precision"] = article_date_pair
+            date_pair_adjusted = True
     elif multidim_event:
-        # No single slice supplied BOTH fields: the generic scalar merge may
-        # have cross-assembled them. Omit both so the ES schema fails closed.
+        # No single source had BOTH fields; never let the generic merge
+        # synthesize missing publication metadata across different slices.
+        present = {
+            field: agg[field]
+            for field in ("article_date_iso", "article_date_precision")
+            if field in agg
+        }
+        if present:
+            _log_sample(
+                "article_date_pair_incomplete",
+                "article_date_iso/article_date_precision",
+                "other", present, "removed (no complete source pair)",
+            )
+            date_pair_adjusted = True
         agg.pop("article_date_iso", None)
         agg.pop("article_date_precision", None)
 
-    changed = any(v > 0 for v in counts.values()) or (
-        article_date_pair is not None
-        and (agg.get("article_date_iso"), agg.get("article_date_precision"))
-        != (dict_list[0].get("article_date_iso"), dict_list[0].get("article_date_precision"))
-    )
+    changed = any(v > 0 for v in counts.values()) or date_pair_adjusted
     report = {"changed": changed, "counts": counts, "samples": samples}
 
     # 可選：總結性 log
