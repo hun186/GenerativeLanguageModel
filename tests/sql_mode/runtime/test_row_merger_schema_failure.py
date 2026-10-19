@@ -157,6 +157,93 @@ def test_schema_failure_releases_row_for_next_run(tmp_path: Path, monkeypatch):
     assert source_txt.exists(), "failed rows must remain pending rather than be backed up"
 
 
+def test_invalid_local_event_link_is_terminal_without_recombining(tmp_path: Path, monkeypatch):
+    """An unchanged completed input cannot spin on the same bad Event FK."""
+    from czjLLM.utilities.slice_merge import MultidimEventReferenceError
+
+    item_dir = tmp_path / "item"
+    success = item_dir / "Success"
+    success.mkdir(parents=True)
+    (success / "0.txt").write_text("cached fragment 0", encoding="utf-8")
+    (success / "1.txt").write_text("cached fragment 1", encoding="utf-8")
+    source_txt = tmp_path / "raw" / "document.txt"
+    source_txt.parent.mkdir()
+    source_txt.write_text("original document", encoding="utf-8")
+    dest = tmp_path / "finished" / "merged.txt"
+    dest.parent.mkdir()
+    registry = _Registry(
+        str(item_dir),
+        {"pk": "invalid-local-fk", "temp_txt": str(source_txt),
+         "CombBackFN": str(dest), "chunks": 2},
+    )
+    combine_calls, releases, audits, sink_calls = [], [], [], []
+
+    def always_fails(_item_dir, _ctx):
+        combine_calls.append(_item_dir)
+        raise MultidimEventReferenceError(
+            "multidim slice 2 Involved_Parties references "
+            "missing local Event.event_id 'E3'"
+        )
+
+    class Sink:
+        def open(self):
+            pass
+
+        def close(self):
+            pass
+
+        def write_main(self, *_args, **_kwargs):
+            sink_calls.append(True)
+
+    monkeypatch.setattr(merger_module, "combine_api_finished_item", always_fails)
+    monkeypatch.setattr(
+        merger_module, "mark_not_running",
+        lambda _ctx, pk, state: releases.append((pk, state)),
+    )
+    monkeypatch.setattr(
+        merger_module, "record_adjustment",
+        lambda _ctx, event, pk=None, **extra:
+            audits.append((event, pk, extra)) or (tmp_path / "adjustments.jsonl"),
+    )
+    ctx = SimpleNamespace(
+        output_col="multidim_event_json", output_profile="multidim_event",
+        merge_slices=True, record_update_time=False,
+        flatten_json_output=False,
+        llm_source_dir=str(tmp_path / "raw"),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+    )
+    done_q = queue.Queue()
+    merger_module.row_merger_watchdog_generic(
+        ctx, registry, lambda *_: None,
+        SimpleNamespace(is_set=lambda: True),
+        Sink(), scan_interval=0.001, done_q=done_q,
+    )
+    assert len(combine_calls) == 1, "avoid watchdog retry storms"
+    assert not sink_calls
+    assert registry.removed
+    assert releases == [("invalid-local-fk", "writeback_failed_schema")]
+    assert [(event, pk) for event, pk, _ in audits] == [
+        ("writeback_failed_schema_release", "invalid-local-fk")
+    ]
+    assert audits[0][2]["combined_result_path"] == str(dest)
+    assert done_q.get_nowait() == 1
+    assert source_txt.read_text(encoding="utf-8") == "original document"
+    assert len(list(success.glob("*.txt"))) == 2
+    assert not dest.exists()
+
+
+def test_chunk_local_reference_error_class_is_terminal_but_es_transport_is_not():
+    from czjLLM.utilities.slice_merge import MultidimEventReferenceError
+    invalid = MultidimEventReferenceError(
+        "multidim slice 3 evidence_snippets references "
+        "missing local Event.event_id 'T1'"
+    )
+    assert merger_module._is_terminal_schema_writeback_error(invalid)
+    assert not merger_module._is_terminal_schema_writeback_error(
+        RuntimeError("temporary ES connection refused")
+    )
+
+
 def test_slice_conflict_audit_is_logged_once_across_writeback_retry(tmp_path: Path, monkeypatch):
     item_dir = tmp_path / "prompt_item"
     item_dir.mkdir()
