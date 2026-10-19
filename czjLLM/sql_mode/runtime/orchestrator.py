@@ -43,6 +43,7 @@ from czjLLM.reduction.production_control import (
     ensure_execution_cancel_event, ensure_production_observer,
     execution_cancel_requested, finish_legacy_merge_item,
     legacy_merge_item_completed, legacy_merge_item_materialized,
+    mark_legacy_merge_item_terminal,
     request_execution_cancel, try_begin_legacy_merge_item,
 )
 from czjLLM.reduction.retention import (
@@ -611,20 +612,21 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                         finish_legacy_merge_item(ctx, job_dir, success=False)
                         observer.emit("legacy_merge_failed", {"reason": "no_output"})
                 except MultidimEventReferenceError as e:
-                    finish_legacy_merge_item(ctx, job_dir, success=False)
+                    # Keep the shared claim non-retryable BEFORE releasing
+                    # registry ownership. Releasing as success=False here
+                    # would let a concurrently polling Row Merger reclaim
+                    # unchanged Success files and count the error twice.
+                    mark_legacy_merge_item_terminal(ctx, job_dir)
                     observer.emit(
                         "legacy_merge_failed",
                         {"error_type": type(e).__name__,
                          "reason": "invalid_local_event_references"},
                     )
-                    # This fallback can own the merge before Row Merger sees
-                    # it. Terminalize the live registry item here as well;
-                    # do not leave it to be repeatedly retried by fallback.
+                    merged_jobs.add(job_dir)
                     _release_terminal_fallback_merge_error(
                         ctx, registry, job_dir, e,
                         meter_fn=meter_fn, done_q=done_q,
                     )
-                    merged_jobs.add(job_dir)
                 except Exception as e:
                     finish_legacy_merge_item(ctx, job_dir, success=False)
                     observer.emit(
