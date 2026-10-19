@@ -128,6 +128,15 @@ def is_multidim_event_source_merge(ctx, *, source: str = "combined") -> bool:
     return kinds == {True}
 
 
+class MultidimEventReferenceError(ValueError):
+    """Non-retryable semantic error in a completed multidim article slice.
+
+    Unlike transport errors, repeating the same merge over unchanged Success
+    files cannot fix a missing local event link or duplicate local event ID.
+    The caller must preserve input artifacts and release the pending row.
+    """
+
+
 def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
     """Assign globally unique IDs before concatenating independently named events.
 
@@ -180,7 +189,7 @@ def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
                 for event_id in ids:
                     if (isinstance(event_id, str) and event_id.strip()
                             and event_id.strip() not in declared):
-                        raise ValueError(
+                        raise MultidimEventReferenceError(
                             f"multidim slice {slice_index} {field} references "
                             f"missing local Event.event_id {event_id.strip()!r}"
                         )
@@ -217,7 +226,7 @@ def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
                     continue  # Do not manufacture missing IDs.
                 old = old.strip()
                 if old in within_slice:
-                    raise ValueError(
+                    raise MultidimEventReferenceError(
                         f"multidim Event duplicate event_id {old!r} inside slice {index}"
                     )
                 within_slice.add(old)
