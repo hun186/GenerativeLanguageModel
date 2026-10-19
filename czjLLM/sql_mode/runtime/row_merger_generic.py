@@ -573,6 +573,8 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
 
     def _release_terminal_schema_failure(item_dir, pk, exc, combined_path):
         """Fail completed invalid article once; preserve Success and ES pending."""
+        if isinstance(exc, MultidimEventReferenceError):
+            mark_legacy_merge_item_terminal(ctx, item_dir)
         msg = str(exc)
         try:
             mark_not_running(ctx, pk, state="writeback_failed_schema")
