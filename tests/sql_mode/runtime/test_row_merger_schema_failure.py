@@ -920,3 +920,42 @@ def test_es_buffer_discarded_when_write_main_flush_itself_raises(
     )
     assert attempts == ["doc", "doc"] and discarded == ["doc"]
     assert releases == [("doc", "writeback_completed")]
+
+@pytest.mark.parametrize("es_ack_required", [True, False])
+def test_flatten_write_failure_propagates_for_buffered_es_only(
+    tmp_path: Path, monkeypatch, es_ack_required,
+):
+    """A threshold flush HTTP 400 must not be hidden before row confirmation."""
+    error = OutputProfileValidationError(
+        "multidim_event", "ES mapping rejected 1 flatten update(s)",
+    )
+    monkeypatch.setattr(
+        merger_module, "extract_json_list_for_flatten",
+        lambda *_args: [{"value": 123}],
+    )
+    initial_ctx = SimpleNamespace(output_col="multidim_event_json")
+
+    class FlattenSink:
+        def __init__(self):
+            self.ctx = initial_ctx
+
+        def ensure_flatten_schema(self, _allowed):
+            pass
+
+        def write_flatten(self, *_args, **_kwargs):
+            raise error
+
+    sink = FlattenSink()
+    if es_ack_required:
+        sink.confirm_writeback = lambda: None
+    ft = {
+        "output_col": "multidim_event_json", "subtable_name": "details",
+        "source_text": '[{"value":123}]', "allowed_fields": ["value"],
+        "save_raw_input": False,
+    }
+    if es_ack_required:
+        with pytest.raises(OutputProfileValidationError, match="flatten update"):
+            merger_module._process_flatten_target(initial_ctx, sink, "doc", ft)
+    else:
+        assert not merger_module._process_flatten_target(initial_ctx, sink, "doc", ft)
+    assert sink.ctx is initial_ctx
