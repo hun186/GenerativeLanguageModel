@@ -170,6 +170,16 @@ def _validate_multidim_source_importance(items: List[dict]) -> None:
                     raise MultidimEventSchemaError(
                         f"multidim slice {index} {scope}.{key} must be integer or null"
                     )
+        # The ES output normalizer rejects conflicting flat/nested scores;
+        # validate per original slice too, before deep merge can discard a
+        # contradictory representation and manufacture agreement.
+        if "importance" in item:
+            for key in score_keys.intersection(item).intersection(nested):
+                if item[key] != nested[key]:
+                    raise MultidimEventSchemaError(
+                        f"multidim slice {index} importance.{key} conflicts "
+                        f"with flattened {key!r} score"
+                    )
 
 
 def _reconcile_multidim_event_slice_ids(items: List[dict]) -> List[dict]:
