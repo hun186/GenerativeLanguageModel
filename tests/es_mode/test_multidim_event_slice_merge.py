@@ -161,6 +161,56 @@ def test_generic_json_merge_does_not_apply_strict_article_date_pair_policy():
     assert merged["article_date_precision"] == "unknown"
 
 
+@pytest.mark.parametrize(
+    "form,invalid", [
+        ("flat", True), ("flat", 85.0), ("flat", "85"),
+        ("nested", True), ("nested", 85.0),
+    ],
+)
+def test_invalid_importance_scores_in_later_slice_are_rejected_before_merge(
+    form, invalid,
+):
+    from czjLLM.utilities.slice_merge import MultidimEventSchemaError
+
+    left = _article("E1", action="first")
+    right = _article("E1", action="second")
+    if form == "flat":
+        left["coverage"] = 85
+        right["coverage"] = invalid
+    else:
+        left["importance"] = {"coverage": 85}
+        right["importance"] = {"coverage": invalid}
+    originals = deepcopy([left, right])
+    with pytest.raises(
+        MultidimEventSchemaError,
+        match=r"multidim slice 1 (?:article|importance).coverage must be integer or null",
+    ):
+        merge_dict_slices_audited(
+            [left, right], multidim_event=True, logger=None,
+        )
+    assert [left, right] == originals
+
+
+def test_importance_object_type_mismatch_not_hidden_by_later_slice():
+    from czjLLM.utilities.slice_merge import MultidimEventSchemaError
+
+    first = _article("E1", action="first")
+    second = _article("E1", action="second")
+    first["importance"] = None
+    second["importance"] = {"coverage": 85}
+    with pytest.raises(MultidimEventSchemaError, match="slice 0 importance must be object"):
+        merge_dict_slices_audited([first, second], multidim_event=True, logger=None)
+
+
+def test_original_generic_slice_merge_does_not_get_strict_importance_validation():
+    first = _article("E1", action="first")
+    second = _article("E1", action="second")
+    first["coverage"] = 85
+    second["coverage"] = True
+    merged, _ = merge_dict_slices_audited([first, second], logger=None)
+    assert merged["coverage"] == 85
+
+
 def test_two_independent_e1_events_relabel_linked_references_and_normalize_impact():
     left = _article("E1", action="publish report", impact_nested=True)
     right = _article("E1", action="interview experts", impact_nested=True)
