@@ -944,6 +944,14 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     for ft in flatten_targets:
                         _process_flatten_target(ctx, sink, pk, ft)
 
+                    # ES write_main may only buffer an update. Do not release
+                    # pending status, move source input or prune Success until
+                    # all actions for this row have received a bulk response.
+                    # Other sinks retain their existing completion contract.
+                    confirm_writeback = getattr(sink, "confirm_writeback", None)
+                    if callable(confirm_writeback):
+                        confirm_writeback()
+
                     # 完成後收尾
                     try:
                         mark_not_running(ctx, pk, state="writeback_completed")
