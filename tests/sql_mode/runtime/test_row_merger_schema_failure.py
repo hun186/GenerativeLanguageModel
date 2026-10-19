@@ -763,3 +763,160 @@ def test_es_ack_schema_failure_preserves_pending_source_and_success(
     assert (success / "0.txt").exists()
     assert combined.exists()
     assert not (tmp_path / "backup" / "original.txt").exists()
+
+def test_failed_es_row_buffer_never_contaminates_later_row(
+    tmp_path: Path, monkeypatch,
+):
+    """One row's rejected actions must never be attributed to another row."""
+    entries = {}
+    for name in ("A", "B"):
+        item = tmp_path / name
+        (item / "Success").mkdir(parents=True)
+        (item / "Success" / "0.txt").write_text("cached", encoding="utf-8")
+        source = tmp_path / "raw" / f"{name}.txt"
+        source.parent.mkdir(exist_ok=True)
+        source.write_text(f"original {name}", encoding="utf-8")
+        combined = tmp_path / f"combined-{name}.json"
+        combined.write_text('{"ok": true}', encoding="utf-8")
+        entries[str(item)] = {
+            "pk": name, "temp_txt": str(source), "CombBackFN": str(combined),
+        }
+
+    class Registry:
+        def list_items(self):
+            return dict(entries)
+
+        def remove(self, item):
+            entries.pop(item)
+
+    released, calls, discarded = [], [], []
+
+    class RowBufferedSink:
+        def __init__(self):
+            self.buffer = []
+            self.a_attempts = 0
+
+        def open(self):
+            pass
+
+        def close(self):
+            assert self.buffer == []
+
+        def write_main(self, pk, write_map, update_time=None):
+            self.buffer.append(pk)
+            assert len(self.buffer) == 1, "prior failed row remained in buffer"
+
+        def confirm_writeback(self):
+            pk = self.buffer[0]
+            calls.append(pk)
+            if pk == "A":
+                self.a_attempts += 1
+                if self.a_attempts == 1:
+                    raise RuntimeError("transient ES 429")
+                raise OutputProfileValidationError(
+                    "multidim_event", "ES mapping rejected 1 update(s): HTTP 400",
+                )
+            assert pk == "B"
+            self.buffer.clear()
+
+        def discard_unacknowledged_writeback(self):
+            discarded.extend(self.buffer)
+            self.buffer.clear()
+
+    monkeypatch.setattr(
+        merger_module, "mark_not_running",
+        lambda _ctx, pk, state: released.append((pk, state)),
+    )
+    monkeypatch.setattr(
+        merger_module, "record_adjustment",
+        lambda *_args, **_kwargs: tmp_path / "audit.jsonl",
+    )
+    ctx = SimpleNamespace(
+        output_col="multidim_event_json", output_profile="multidim_event",
+        merge_slices=False, record_update_time=False,
+        flatten_json_output=False,
+        llm_source_dir=str(tmp_path / "raw"),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        cleanup_prompt_item_after_writeback=True,
+        row_merger_failure_log_interval=60,
+    )
+    done_q = queue.Queue()
+    merger_module.row_merger_watchdog_generic(
+        ctx, Registry(), lambda *_args: None,
+        SimpleNamespace(is_set=lambda: True),
+        RowBufferedSink(), scan_interval=0.001, done_q=done_q,
+    )
+    assert calls == ["A", "B", "A"]
+    assert discarded == ["A", "A"]
+    assert released == [("B", "writeback_completed"), ("A", "writeback_failed_schema")]
+    assert done_q.qsize() == 2
+    assert (tmp_path / "raw" / "A.txt").exists()
+    assert (tmp_path / "A" / "Success" / "0.txt").exists()
+    assert not (tmp_path / "raw" / "B.txt").exists()
+    assert (tmp_path / "backup" / "B.txt").exists()
+
+
+def test_es_buffer_discarded_when_write_main_flush_itself_raises(
+    tmp_path: Path, monkeypatch,
+):
+    """The size-triggered flush can fail before confirm_writeback()."""
+    item = tmp_path / "item"
+    item.mkdir()
+    source = tmp_path / "raw" / "doc.txt"
+    source.parent.mkdir()
+    source.write_text("keep", encoding="utf-8")
+    combined = tmp_path / "combined.json"
+    combined.write_text('{"ok": true}', encoding="utf-8")
+    registry = _Registry(
+        str(item), {"pk": "doc", "temp_txt": str(source), "CombBackFN": str(combined)},
+    )
+    attempts, discarded, releases = [], [], []
+
+    class AutoFlushingSink:
+        def __init__(self):
+            self.buffer = []
+
+        def open(self):
+            pass
+
+        def close(self):
+            assert self.buffer == []
+
+        def write_main(self, pk, write_map, update_time=None):
+            self.buffer.append(pk)
+            assert len(self.buffer) == 1
+            attempts.append(pk)
+            if len(attempts) == 1:
+                raise RuntimeError("size-triggered bulk transport failure")
+
+        def confirm_writeback(self):
+            assert len(attempts) == 2
+            self.buffer.clear()
+
+        def discard_unacknowledged_writeback(self):
+            discarded.extend(self.buffer)
+            self.buffer.clear()
+
+    monkeypatch.setattr(
+        merger_module, "mark_not_running",
+        lambda _ctx, pk, state: releases.append((pk, state)),
+    )
+    monkeypatch.setattr(
+        merger_module, "record_adjustment",
+        lambda *_args, **_kwargs: tmp_path / "audit.jsonl",
+    )
+    ctx = SimpleNamespace(
+        output_col="multidim_event_json", merge_slices=False,
+        record_update_time=False, flatten_json_output=False,
+        llm_source_dir=str(source.parent),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        cleanup_prompt_item_after_writeback=False,
+        row_merger_failure_log_interval=60,
+    )
+    merger_module.row_merger_watchdog_generic(
+        ctx, registry, lambda *_args: None,
+        SimpleNamespace(is_set=lambda: True),
+        AutoFlushingSink(), scan_interval=0.001,
+    )
+    assert attempts == ["doc", "doc"] and discarded == ["doc"]
+    assert releases == [("doc", "writeback_completed")]
