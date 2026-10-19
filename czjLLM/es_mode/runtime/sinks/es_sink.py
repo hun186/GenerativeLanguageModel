@@ -618,10 +618,10 @@ class ESSink:
         error_type = str(error.get("type", "")) if isinstance(error, dict) else ""
         caused_by = error.get("caused_by", {}) if isinstance(error, dict) else {}
         caused_by_type = str(caused_by.get("type", "")) if isinstance(caused_by, dict) else ""
-        return str(detail.get("status", "")) == "400" and (
-            error_type in {"document_parsing_exception", "mapper_parsing_exception"}
-            or caused_by_type in {"illegal_argument_exception", "mapper_parsing_exception"}
-        )
+        # HTTP 400 is a deterministic request/mapping rejection for the
+        # unchanged bulk action, including strict_dynamic_mapping_exception
+        # and top-level illegal_argument_exception. 429/5xx remain retryable.
+        return str(detail.get("status", "")) == "400"
 
     @staticmethod
     def _bulk_error_summary(error_item: Dict[str, Any]) -> str:
@@ -666,7 +666,10 @@ class ESSink:
                 ]
                 self._buffer_bytes = sum(self._estimate_size(item) for item in self._buffer)
                 summaries = "; ".join(self._bulk_error_summary(item) for item in errors[:3])
-                if permanent and len(permanent) == len(errors):
+                if permanent:
+                    # Row Merger sends only one row's actions per confirmation.
+                    # Any permanent failure makes the whole row terminal,
+                    # including a mixed 400 + 429 multi-index response.
                     raise OutputProfileValidationError(
                         getattr(self, "output_profile", "es_mapping"),
                         f"ES mapping rejected {len(permanent)} update(s): {summaries}",
@@ -697,3 +700,15 @@ class ESSink:
         This does not force search visibility; refresh is a separate policy.
         """
         self.flush_all()
+
+
+    def discard_unacknowledged_writeback(self):
+        """Discard failed queued actions; Row Merger replays the retained source.
+
+        The Row Merger serially confirms every row before processing the next,
+        so the buffer cannot contain an unrelated row at this boundary. A
+        failed bulk may have applied some idempotent updates already; the
+        preserved source/result artifacts are the replay authority.
+        """
+        self._buffer.clear()
+        self._buffer_bytes = 0
