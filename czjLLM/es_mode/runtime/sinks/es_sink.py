@@ -687,3 +687,13 @@ class ESSink:
 
     def flush_all(self):
         self._flush()
+
+    def confirm_writeback(self):
+        """Wait for ES bulk acknowledgement before releasing a completed row.
+
+        write_main() only enqueues while thresholds are unmet. Row Merger must
+        not mark a row complete or delete its Success/source artifacts until
+        the queued update has been accepted (or a failure was raised).
+        This does not force search visibility; refresh is a separate policy.
+        """
+        self.flush_all()
