@@ -105,6 +105,26 @@ def test_incomplete_source_date_pairs_cannot_cross_assemble_valid_metadata():
         normalize_multidim_event_payload([merged])
 
 
+def test_incomplete_only_date_fields_are_audited_even_for_single_slice():
+    row = _article("E1", action="only")
+    del row["article_date_precision"]
+    original = deepcopy(row)
+    merged, report = merge_dict_slices_audited(
+        [row], multidim_event=True, logger=None,
+    )
+    assert "article_date_iso" not in merged
+    assert "article_date_precision" not in merged
+    assert report["changed"] is True
+    assert any(
+        x["action"] == "article_date_pair_incomplete"
+        and "article_date_iso" in x["left_short"]
+        for x in report["samples"]
+    )
+    with pytest.raises(ValueError, match="article_date_iso and article_date_precision"):
+        normalize_multidim_event_payload([merged])
+    assert row == original
+
+
 def test_article_date_trailing_whitespace_respects_same_es_normalization():
     left = _article("E1", action="one")
     right = _article("E1", action="two")
