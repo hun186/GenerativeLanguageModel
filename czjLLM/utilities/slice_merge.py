@@ -297,9 +297,10 @@ def merge_dict_slices(dict_list: List[Dict[str, Any]]) -> Dict[str, Any]:
 def _select_coherent_article_date_pair(items: List[dict], conflict_policy: str):
     """Use date and precision from ONE LLM slice, never two independent slices.
 
-    Prefer a complete and internally consistent stated date over null/unknown.
-    When multiple valid dates disagree, retain the established scalar
-    left/right precedence; do not guess dates from textual context.
+    Preserve an internally consistent source-slice pair under the existing
+    left/right precedence (including null/unknown). A later slice may mistake
+    an EVENT date (e.g. treaty signature) for the ARTICLE publication date:
+    do not automatically elevate known dates over conservative unknowns.
     If no source slice provides a valid pair, return None and let the strict
     ES profile reject the malformed result (rather than fabricate precision).
     """
@@ -328,9 +329,7 @@ def _select_coherent_article_date_pair(items: List[dict], conflict_policy: str):
         valid.append((value, precision))
     if not valid:
         return None
-    known = [pair for pair in valid if pair[0] is not None]
-    candidates = known or valid
-    return candidates[-1] if conflict_policy == "prefer_right" else candidates[0]
+    return valid[-1] if conflict_policy == "prefer_right" else valid[0]
 
 
 def merge_dict_slices_audited(
