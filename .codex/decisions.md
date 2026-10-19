@@ -74,3 +74,8 @@
 
 - Prefer one persisted, source-bound original input-slice identity over reassigning raw chunks to whatever TODO files happen to remain after interrupted processing. Treat source SHA, ordered chunk fingerprints, saved filenames and dispatched prompt/stage identity together as the reuse contract; stale or ambiguous evidence must reject writeback.
 - Preserve committed retry child prompts by verifying split lineage; do not rerender the parent source as a child's independent prompt.
+
+### 2026-10-19 multidim Event output schema correction policy (PR #216)
+- For cross-slice metadata, treat article_date_iso and article_date_precision as ONE atomic source-provenance pair; never compose a date from one slice with a precision from another. Preserve existing scalar conflict preference and conservative unknown/null instead of favoring a date merely because it exists in a later slice. Treaty/event signing dates are not document publication metadata without explicit source evidence.
+- ES strict multidim output contract may perform lossless shape normalization of the five explicitly documented importance score keys found at top-level, but never recompute a score, silently overwrite conflicting existing nested values or allow unknown keys. Generic JSON processing remains unchanged.
+- Retain strict fail-closed Event local links and schema errors, requiring bounded real ES acceptance after unit/CI and code review.
