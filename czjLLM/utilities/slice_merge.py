@@ -1,6 +1,7 @@
 """Strategies for merging dictionary results produced by document slices."""
 
 import json
+from datetime import date
 from typing import Any, Dict, List, Optional, Tuple
 
 
@@ -293,6 +294,45 @@ def merge_dict_slices(dict_list: List[Dict[str, Any]]) -> Dict[str, Any]:
     return agg
 
 
+def _select_coherent_article_date_pair(items: List[dict], conflict_policy: str):
+    """Use date and precision from ONE LLM slice, never two independent slices.
+
+    Prefer a complete and internally consistent stated date over null/unknown.
+    When multiple valid dates disagree, retain the established scalar
+    left/right precedence; do not guess dates from textual context.
+    If no source slice provides a valid pair, return None and let the strict
+    ES profile reject the malformed result (rather than fabricate precision).
+    """
+    valid = []
+    for item in items:
+        if "article_date_iso" not in item or "article_date_precision" not in item:
+            continue
+        value = item["article_date_iso"]
+        precision = item["article_date_precision"]
+        if value is None:
+            if precision == "unknown":
+                valid.append((None, "unknown"))
+            continue
+        if not (isinstance(value, str) and len(value) == 10
+                and value[4] == "-" and value[7] == "-"
+                and precision in {"day", "month", "year"}):
+            continue
+        try:
+            parsed = date.fromisoformat(value)
+        except ValueError:
+            continue
+        if (precision == "month" and parsed.day != 1) or (
+            precision == "year" and (parsed.month != 1 or parsed.day != 1)
+        ):
+            continue
+        valid.append((value, precision))
+    if not valid:
+        return None
+    known = [pair for pair in valid if pair[0] is not None]
+    candidates = known or valid
+    return candidates[-1] if conflict_policy == "prefer_right" else candidates[0]
+
+
 def merge_dict_slices_audited(
     dict_list: List[dict],
     *,
@@ -418,12 +458,29 @@ def merge_dict_slices_audited(
     if multidim_event:
         dict_list = _reconcile_multidim_event_slice_ids(dict_list)
 
+    article_date_pair = (
+        _select_coherent_article_date_pair(dict_list, conflict_policy)
+        if multidim_event else None
+    )
     agg: Dict[str, Any] = {}
     for d in dict_list:
         if isinstance(d, dict):
             agg = _merge(agg, d, [])
 
-    changed = any(v > 0 for v in counts.values())
+    if article_date_pair is not None:
+        current = (agg.get("article_date_iso"), agg.get("article_date_precision"))
+        if current != article_date_pair:
+            _log_sample(
+                "article_date_pair", "article_date_iso/article_date_precision",
+                "other", current, article_date_pair,
+            )
+            agg["article_date_iso"], agg["article_date_precision"] = article_date_pair
+
+    changed = any(v > 0 for v in counts.values()) or (
+        article_date_pair is not None
+        and (agg.get("article_date_iso"), agg.get("article_date_precision"))
+        != (dict_list[0].get("article_date_iso"), dict_list[0].get("article_date_precision"))
+    )
     report = {"changed": changed, "counts": counts, "samples": samples}
 
     # 可選：總結性 log
