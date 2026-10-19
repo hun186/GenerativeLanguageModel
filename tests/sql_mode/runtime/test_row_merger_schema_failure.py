@@ -302,6 +302,63 @@ def test_postdrain_fallback_releases_bad_local_event_link_once(tmp_path: Path, m
     assert done_q.empty()
 
 
+def test_terminal_fallback_claim_stays_blocked_during_registry_removal(tmp_path: Path, monkeypatch):
+    """The Row Merger must not claim the same invalid slices during cleanup."""
+    from czjLLM.reduction.production_control import (
+        finish_legacy_merge_item,
+        mark_legacy_merge_item_terminal,
+        try_begin_legacy_merge_item,
+    )
+    import czjLLM.sql_mode.runtime.orchestrator as orchestrator
+    from czjLLM.utilities.slice_merge import MultidimEventReferenceError
+
+    item = str(tmp_path / "item")
+    source = tmp_path / "input.txt"
+    source.write_text("keep me", encoding="utf-8")
+
+    class RacingRegistry:
+        removed = False
+        overlap_claims = []
+
+        def get(self, path):
+            return {"pk": "racing-invalid-event", "temp_txt": str(source)} if not self.removed else None
+
+        def list_items(self):
+            return {} if self.removed else {
+                item: {"pk": "racing-invalid-event", "temp_txt": str(source)}
+            }
+
+        def remove(self, path):
+            assert path == item
+            # Simulate a concurrently polling Row Merger at the exact
+            # boundary before the fallback registry item disappears.
+            self.overlap_claims.append(try_begin_legacy_merge_item(ctx, item))
+            self.removed = True
+
+    registry = RacingRegistry()
+    ctx = SimpleNamespace(output_col="multidim_event_json", output_profile="multidim_event")
+    assert try_begin_legacy_merge_item(ctx, item)
+    error = MultidimEventReferenceError(
+        "multidim slice 1 evidence_snippets references missing local Event.event_id 'T1'"
+    )
+    monkeypatch.setattr(orchestrator, "mark_not_running", lambda *_a, **_k: None)
+    monkeypatch.setattr(orchestrator, "record_adjustment", lambda *_a, **_k: None)
+    monkeypatch.setattr(orchestrator, "tlog_warn", lambda *_a, **_k: None)
+
+    mark_legacy_merge_item_terminal(ctx, item)
+    assert orchestrator._release_terminal_fallback_merge_error(
+        ctx, registry, item, error,
+    )
+    assert registry.overlap_claims == [False]
+    # Another owner cannot release the terminal claim with success=False.
+    finish_legacy_merge_item(ctx, item, success=False)
+    assert not try_begin_legacy_merge_item(ctx, item)
+    assert source.read_text(encoding="utf-8") == "keep me"
+
+    # ES remains pending for later reanalysis; a NEW run has a fresh claim.
+    assert try_begin_legacy_merge_item(SimpleNamespace(), item)
+
+
 def test_chunk_local_reference_error_class_is_terminal_but_es_transport_is_not():
     from czjLLM.utilities.slice_merge import MultidimEventReferenceError
     invalid = MultidimEventReferenceError(
