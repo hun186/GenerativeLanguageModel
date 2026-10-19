@@ -124,6 +124,38 @@ def test_combiner_uses_actual_combined_consumer_not_primary_stage_profile(tmp_pa
     ]
 
 
+def test_invalid_local_event_links_report_one_concise_schema_error(tmp_path, capsys):
+    import pytest
+    from czjLLM.utilities.slice_merge import MultidimEventReferenceError
+
+    ctx = _build_ctx(tmp_path, task="to json format", merge_slices=True)
+    ctx.output_col = "multidim_event_json"
+    ctx.output_profile = "multidim_event"
+    item = tmp_path / "PromptRoot" / "invalid-event-link"
+    success = item / "Success"
+    success.mkdir(parents=True, exist_ok=True)
+    good = {
+        "Event": [{"event_id": "E1"}],
+        "Person": [{"name": "A", "event_ids": ["E1"]}],
+    }
+    bad = {
+        "Event": [{"event_id": "E1"}],
+        "evidence_snippets": [{"text": "a citation", "event_ids": ["T1"]}],
+    }
+    for index, fragment in enumerate((good, bad)):
+        (success / f"{index}.txt").write_text(
+            json.dumps([fragment], ensure_ascii=False), encoding="utf-8",
+        )
+    with pytest.raises(MultidimEventReferenceError, match="missing local Event.event_id 'T1'"):
+        combine_api_finished_item(str(item), ctx)
+    output = capsys.readouterr().out
+    assert output.count("[COMBINE-SCHEMA]") == 1
+    assert "missing local Event.event_id 'T1'" in output
+    assert "[COMBINE-FATAL]" not in output
+    assert "Traceback (most recent call last)" not in output
+    assert [x.name for x in sorted(success.glob("*.txt"))] == ["0.txt", "1.txt"]
+
+
 def test_json_mode_ignores_blank_success_files_and_returns_empty_array(tmp_path):
     ctx = _build_ctx(tmp_path, task="to json format", merge_slices=False)
     item = tmp_path / "PromptRoot" / "jobC"
