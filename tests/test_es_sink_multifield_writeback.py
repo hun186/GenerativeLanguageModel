@@ -129,3 +129,30 @@ def test_es_sink_mapping_errors_are_terminal_and_removed_from_buffer(monkeypatch
         raise AssertionError("Expected RuntimeError for ES bulk errors")
 
     assert sink._buffer == []
+
+def test_es_sink_explicit_ack_flushes_buffered_update(monkeypatch):
+    """write_main enqueues; explicit confirmation must send the ES bulk."""
+    mod = _load_es_sink_module(monkeypatch)
+    captured = []
+
+    def bulk(_es, actions, **_kwargs):
+        captured.extend(actions)
+        return len(captured), []
+
+    monkeypatch.setattr(mod.helpers, "bulk", bulk)
+    ctx = SimpleNamespace(
+        output_col="multidim_event_json", output_profile="json",
+        es_refresh_after_flush=False, es_flush_secs=3600,
+    )
+    sink = mod.ESSink(
+        ctx, DummyES(), index="docs",
+        output_col="multidim_event_json", flush_every=1000,
+    )
+    sink.write_main("doc-1", '{"ok": true}')
+    assert len(sink._buffer) == 1
+    assert not captured, "ES has not yet acknowledged any bulk write"
+    sink.confirm_writeback()
+    assert len(captured) == 1
+    assert captured[0]["_id"] == "doc-1"
+    assert captured[0]["doc"]["multidim_event_json"] == {"ok": True}
+    assert sink._buffer == []
