@@ -38,3 +38,10 @@
 - First formal Codex review of early head 6c69a8bcff found P1 #4312588912: if all source date/precision pairs were invalid, independent generic scalar merging could accidentally synthesize a valid pair from parts of distinct malformed slices. It also found P2 #4312588916: date with legal surrounding whitespace was rejected as a candidate even though strict output profile trims it.
 - Fix 850e548 updates the strict-only pair selector to return a whole unmodified INVALID pair from one original slice when none is valid, so ES explicitly rejects it, or removes both assembled fields if no source had a complete pair. Valid ISO dates are trimmed exactly as the output profile permits. Conservative null/unknown remains valid and precedence unchanged; no event-derived publication date.
 - Regression e216734 covers invalid cross-composed pairs, incomplete-only pairs, and legal whitespace in complete valid pairs, including no mutation of cached slices. Latest exact-HEAD Hosted CI and fresh Codex review required; do not claim pass or merge without explicit authorization.
+
+### PR #216 second Codex review corrective (2026-10-19)
+
+- Review of interim head d325dcf7b4 found P2 #4312618204: nested importance.coverage=True with flat coverage=1 (or 85.0 vs 85) can pass equality and be silently overwritten, hiding invalid original nested type before validation.
+- Fix a1eaf744 ensures both flat and existing nested score representations individually satisfy integer-or-null (not bool, float, string, list) BEFORE any equality/conflict check or relocation. Structural relocation remains lossless and conflicting legitimate integer values are still rejected.
+- Regression 66ec0a2 tests True vs 1, False vs 0, float vs int, string vs int and valid int vs bad bool.
+- Exact-head Hosted CI and Codex review must be rerun on the new head. Review threads will be resolved only after responding with fix evidence. Not merged.
