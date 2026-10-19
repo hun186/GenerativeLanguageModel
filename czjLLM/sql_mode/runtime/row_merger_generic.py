@@ -23,7 +23,8 @@ from czjLLM.utilities.path_utils import get_combined_result_path
 from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.reduction.production_control import (
     ensure_production_observer, finish_legacy_merge_item,
-    try_begin_legacy_merge_item, try_resume_materialized_legacy_merge_item,
+    mark_legacy_merge_item_terminal, try_begin_legacy_merge_item,
+    try_resume_materialized_legacy_merge_item,
 )
 from czjLLM.row_processors.flatten_utils import extract_json_list_for_flatten
 from .multistage_writeback import resolve_writeback_payload
@@ -549,6 +550,12 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
     def _legacy_merge_finish(item_dir, *, success, reason="execution_error", error_type=None):
         if legacy_merge_telemetry_state.get(item_dir) != "started":
             return
+        if not success and error_type == MultidimEventReferenceError.__name__:
+            # A deterministic source-slice FK failure cannot be repaired by
+            # retrying the same Success files. Keep the shared merge claim
+            # terminal BEFORE the outer handler removes the registry item:
+            # otherwise fallback can reclaim it and count this failure twice.
+            mark_legacy_merge_item_terminal(ctx, item_dir)
         finish_legacy_merge_item(ctx, item_dir, success=success)
         if success:
             observer.emit("legacy_merge_completed", {})
