@@ -89,6 +89,21 @@ def test_invalid_flat_score_types_still_fail_closed(invalid):
         normalize_multidim_event_payload(payload)
 
 
+@pytest.mark.parametrize(
+    "nested,flat", [(True, 1), (85.0, 85), (False, 0), ("85", 85), (85, True)],
+)
+def test_equal_looking_invalid_nested_and_flat_scores_do_not_escape_type_validation(
+    nested, flat,
+):
+    payload = _payload(None)
+    payload[0].update({
+        "importance": {"coverage": nested},
+        "coverage": flat,
+    })
+    with pytest.raises(TypeError, match="importance.coverage must be integer or null"):
+        normalize_multidim_event_payload(payload)
+
+
 def test_unknown_extra_field_still_rejected_when_flat_scores_present():
     payload = _payload(None)
     payload[0].update({"coverage": 85, "unsupported_score": 23})
