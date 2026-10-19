@@ -191,6 +191,24 @@ def test_invalid_importance_scores_in_later_slice_are_rejected_before_merge(
     assert [left, right] == originals
 
 
+def test_same_slice_flat_and_nested_score_conflict_cannot_disappear_on_merge():
+    from czjLLM.utilities.slice_merge import MultidimEventSchemaError
+
+    first = _article("E1", action="first")
+    second = _article("E1", action="second")
+    first["importance"] = {"coverage": 85}
+    second["importance"] = {"coverage": 80}
+    second["coverage"] = 85
+    # Naive deep merge (prefer_left) would produce importance.coverage=85,
+    # coverage=85 and incorrectly make slice 2's conflicting values disappear.
+    with pytest.raises(
+        MultidimEventSchemaError, match="slice 1 importance.coverage conflicts",
+    ):
+        merge_dict_slices_audited(
+            [first, second], multidim_event=True, logger=None,
+        )
+
+
 def test_importance_object_type_mismatch_not_hidden_by_later_slice():
     from czjLLM.utilities.slice_merge import MultidimEventSchemaError
 
