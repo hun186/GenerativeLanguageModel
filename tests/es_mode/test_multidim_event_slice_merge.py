@@ -44,6 +44,60 @@ def _article(event_id, *, action, impact_nested=False):
     }
 
 
+@pytest.mark.parametrize(
+    "left_date,left_precision,right_date,right_precision,policy,expected",
+    [
+        (None, "unknown", "1982-12-10", "day", "prefer_left", (None, "unknown")),
+        ("1982-12-10", "day", None, "unknown", "prefer_left", ("1982-12-10", "day")),
+        (None, "unknown", "1982-12-10", "day", "prefer_right", ("1982-12-10", "day")),
+        ("1982-12-10", "unknown", "1982-12-10", "day",
+         "prefer_left", ("1982-12-10", "day")),
+        ("1982-12-10", "day", "1982-12-10", "unknown",
+         "prefer_left", ("1982-12-10", "day")),
+        ("1982-12-10", "day", "1994-11-16", "day",
+         "prefer_left", ("1982-12-10", "day")),
+    ],
+)
+def test_article_date_and_precision_merge_as_source_pair(
+    left_date, left_precision, right_date, right_precision, policy, expected,
+):
+    left = _article("E1", action="articles")
+    right = _article("E1", action="annex")
+    left.update(article_date_iso=left_date, article_date_precision=left_precision)
+    right.update(article_date_iso=right_date, article_date_precision=right_precision)
+    original = deepcopy([left, right])
+    merged, report = merge_dict_slices_audited(
+        [left, right], conflict_policy=policy, multidim_event=True,
+        logger=None,
+    )
+    assert (merged["article_date_iso"], merged["article_date_precision"]) == expected
+    assert normalize_multidim_event_payload([merged])[0]["article_date_precision"] == expected[1]
+    assert [left, right] == original
+    assert report["changed"]
+
+
+def test_invalid_article_date_pairs_are_not_silently_inferred():
+    left = _article("E1", action="one")
+    right = _article("E1", action="two")
+    left.update(article_date_iso="1982-12-10", article_date_precision="unknown")
+    right.update(article_date_iso="1994-11-16", article_date_precision="unknown")
+    merged, _ = merge_dict_slices_audited(
+        [left, right], multidim_event=True, logger=None,
+    )
+    with pytest.raises(ValueError, match="non-null article_date_iso"):
+        normalize_multidim_event_payload([merged])
+
+
+def test_generic_json_merge_does_not_apply_strict_article_date_pair_policy():
+    left = _article("E1", action="one")
+    right = _article("E1", action="two")
+    left.update(article_date_iso=None, article_date_precision="unknown")
+    right.update(article_date_iso="1982-12-10", article_date_precision="day")
+    merged, _ = merge_dict_slices_audited([left, right], logger=None)
+    assert merged["article_date_iso"] == "1982-12-10"
+    assert merged["article_date_precision"] == "unknown"
+
+
 def test_two_independent_e1_events_relabel_linked_references_and_normalize_impact():
     left = _article("E1", action="publish report", impact_nested=True)
     right = _article("E1", action="interview experts", impact_nested=True)
