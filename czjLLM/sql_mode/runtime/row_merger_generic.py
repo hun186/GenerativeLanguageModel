@@ -477,6 +477,13 @@ def _process_flatten_target(ctx, sink, pk, ft: dict) -> bool:
         return True
     except Exception as ex:
         tlog_warn(f"⚠️ 子表寫回失敗（pk={pk}, col={ft['output_col']}）：{ex}")
+        # A buffered ES flatten write may already have crossed a bulk flush
+        # threshold and been rejected. Swallowing that failure would let the
+        # next confirm_writeback() succeed on an empty buffer and falsely mark
+        # the whole row complete. Keep other sink types' legacy best-effort
+        # flatten behavior unchanged.
+        if callable(getattr(sink, "confirm_writeback", None)):
+            raise
         return False
     finally:
         sink.ctx = old_ctx
@@ -732,6 +739,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             progressed = False
             for item_dir, meta in list(items_map.items()):
                 pk = meta["pk"]; temp_txt = meta["temp_txt"]
+                writeback_started = False
 
                 if isinstance(meta, dict) and meta.get("status") == "scheduling_multistage":
                     continue
@@ -937,12 +945,21 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
 
                     update_time = (datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                    if ctx.record_update_time else None)
+                    writeback_started = True
                     sink.write_main(pk, write_map, update_time)
                     tlog(f"📝 writeback source for pk={pk}: {'; '.join(source_logs)}")
 
                     flatten_targets = _resolve_flatten_targets(ctx, write_map, flatten_source_text)
                     for ft in flatten_targets:
                         _process_flatten_target(ctx, sink, pk, ft)
+
+                    # ES write_main may only buffer an update. Do not release
+                    # pending status, move source input or prune Success until
+                    # all actions for this row have received a bulk response.
+                    # Other sinks retain their existing completion contract.
+                    confirm_writeback = getattr(sink, "confirm_writeback", None)
+                    if callable(confirm_writeback):
+                        confirm_writeback()
 
                     # 完成後收尾
                     try:
@@ -979,6 +996,22 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     progressed = True
 
                 except Exception as e:
+                    if writeback_started:
+                        # A failed bulk may still have queued retryable actions.
+                        # No later row may inherit them: replay this row from
+                        # its untouched source/Success on the next attempt.
+                        discard = getattr(sink, "discard_unacknowledged_writeback", None)
+                        if callable(discard):
+                            try:
+                                discard()
+                            except Exception as cleanup_error:
+                                tlog_warn(
+                                    f"Row Merger failed to discard buffered ES actions "
+                                    f"(pk={pk}): {cleanup_error}"
+                                )
+                                # Do not write a different row using an unknown
+                                # buffer. Surface failure instead of misattributing.
+                                raise
                     msg = str(e)
                     if "stage 寫回模式找不到可用 stage 輸出" in msg:
                         wait_key = (item_dir, pk)

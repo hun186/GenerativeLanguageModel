@@ -38,7 +38,7 @@ jobs:
       - name: Run issue 211 single-extract JSON writeback regressions
         run: python -m pytest -q tests/prompt_pipeline/test_issue_211_single_extract_writeback.py tests/test_multistage_writeback.py tests/test_combine_json_slice_merge.py tests/sql_mode/runtime/test_row_merger_flatten_targets.py --maxfail=1 --disable-warnings
       - name: Run ES multidimensional-event split writeback regressions
-        run: python -m pytest -q tests/es_mode/test_multidim_event_slice_merge.py tests/es_mode/test_multidim_event_field_types.py tests/sql_mode/runtime/test_row_merger_schema_failure.py --maxfail=1 --disable-warnings
+        run: python -m pytest -q tests/es_mode/test_multidim_event_slice_merge.py tests/es_mode/test_multidim_event_field_types.py tests/sql_mode/runtime/test_row_merger_schema_failure.py tests/test_es_sink_multifield_writeback.py --maxfail=1 --disable-warnings
 
   unit-linux:
     if: ${{ false }}   # 暫停此 job

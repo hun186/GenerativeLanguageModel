@@ -114,3 +114,9 @@
 - Strict ES multidim output_profile still requires exactly article_date_iso (date or null) and article_date_precision (day/month/year/unknown) as a coherent pair; null requires unknown and non-null cannot have unknown. For multidim sliced merge only, source-consistent pairs are selected atomically under existing left/right policy. No inference of publication date from Event_Timeline or signature/event dates.
 - On strict profile normalization only, exact top-level keys coverage/novelty/impact/credibility/importance_score may be moved losslessly into importance; a conflicting nested duplicate is an error, and allowed value type is integer or null, not bool/float/string. Unexpected other fields still fail closed. Generic JSON / alternate output profiles are unchanged.
 - Existing audit and writeback metadata behavior, Event/event_ids referential integrity, pending status and original Success retention are unchanged.
+
+
+### 2026-10-19 ES per-row bulk acknowledgement (proposed new PR)
+- `ESSink.write_main()` / `write_flatten()` can enqueue bulk updates without sending them immediately. In the Row Merger path, `ESSink.confirm_writeback()` explicitly drains that buffer and propagates bulk failures before source input, successful slices, or pending/completion bookkeeping can be finalized.
+- For an acknowledged ES bulk, search-based pending discovery may still require an index refresh; the confirmation contract does not force refresh or prove an entire batch is complete.
+- Other sink types retain their previous behavior; this change must be validated by exact-head CI and external ES readback before release.

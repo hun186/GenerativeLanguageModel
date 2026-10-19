@@ -83,3 +83,10 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 
 - [ ] Confirm Hosted exact-head offline E2E and focused Issue #211 suite pass after durable A+B source/dispatch snapshot restoration, including SQLite/Excel task_key override, B-only resume, tampered-source refusal and verified nested retry descendants.
 - [ ] Request and complete fresh Codex exact-head review, resolve all findings; report Windows self-hosted queue honestly. Await explicit user `merge` authorization.
+
+
+### 2026-10-19 post-PR #216 ES production acceptance
+- [ ] Validate proposed ES buffered-write acknowledgement PR at its exact head with Hosted offline E2E and fresh Codex review; do not merge without user authorization.
+- [ ] Confirm locally deployed Windows executable commit includes merged #216 before touching real rows; stop/restart old process safely after in-flight work has drained.
+- [ ] Controlled 1–3 item ES/Ollama acceptance including known date/importance failures, Event ID uniqueness, linked IDs, stored ES readback, pending/completion state, and immutable raw Success artifacts on rejection.
+- [ ] Only after live acceptance, characterize bulk completion timing, pending failure counts and model token cost before resuming 37,286 candidate items. ES search refresh visibility and exact target index/key must be verified separately from bulk acknowledgement.

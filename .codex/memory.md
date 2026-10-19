@@ -11,9 +11,9 @@
 - Live Windows Ollama + internal ES are not available to Hosted CI, so production acceptance needs 1-3 controlled row tests; never claim an offline pass establishes successful live persistence.
 - Required full requirements install may be constrained by pinned GitHub peft clone proxy 403; targeted Hosted offline dependencies are authoritative when configured and validated.
 
-## Active Work — 2026-10-19 PR #216
+## PR #216 implementation/review history (superseded by merged main)
 
-- Branch `fix/es-article-date-and-importance-shape-20261019` is an UNMERGED proposal. A user's fresh 37,286-row ES production log showed two distinct strict schema errors after the earlier operational retry mitigation:
+- Branch `fix/es-article-date-and-importance-shape-20261019` was merged into main on 2026-10-19 (details in current status below). A user's fresh 37,286-row ES production log showed two distinct strict schema errors after the earlier operational retry mitigation:
   1. `non-null article_date_iso cannot use precision='unknown'` — independently merging article_date_iso and article_date_precision after a left unknown vs right day conflict created mismatched metadata. For treaty/convention excerpts, a known treaty signature date (1982-12-10) is NOT necessarily the document publication date; do not promote inferred event dates to article dates.
   2. `contains fields not present in current schema: ['coverage','credibility','impact','importance_score','novelty']` — these are the current profile's sanctioned `importance` child keys incorrectly emitted at article root, not arbitrary unknown fields.
 - Change in `czjLLM/utilities/slice_merge.py`: only for strict multidim_event slice reconciliation, select article_date_iso AND article_date_precision from the same internally consistent source-slice pair; honor existing prefer_left / prefer_right precedence, including null/unknown; never derive missing dates, reject if no valid source pair through existing strict output profile. Generic JSON merging unchanged. Log audit `article_date_pair` if selected pair replaces an inconsistent independent merge.
@@ -59,3 +59,21 @@
 - Regression ad9f8a1 verifies later invalid flat/nested values and container types cannot disappear under merge, generic merge stays generic. Regression 7b9bfa9 tests one-shot Row Merger status for both E3 reference and invalid score; production-like JSON combine regression proves concise COMBINE-SCHEMA and preservation.
 - Proactive refinement e95604f validates per-slice contradictory flat vs nested values before different slices can make the final merged representation accidentally agree. Regression aa3a0f7 checks this exact source conflict.
 - Latest exact-head Hosted CI and fresh Codex review required. PR is open and must NOT be merged without explicit user authorization. No live ES acceptance claimed.
+
+
+## Current Hosted Status — 2026-10-19 (supersedes PR #216 pending notes above)
+
+- Hosted `main` is `8dfbdabdee3e15654a29e4020b0b1aa704b04362`, PR #216 merged 2026-10-19 (accepted head `5eb44a5cf93b8b71c875129f26b9c43c7ab7598d`). All five PR #216 review threads resolved. Linux offline-e2e succeeded at exact accepted head; Windows 3.10/3.11 self-hosted jobs remained queued at verification. Post-merge main Push CI `39243409973` has a successful offline-e2e job, while Windows remains queued, so the overall workflow is not green.
+- New follow-up branch `fix/es-writeback-ack-before-row-cleanup-20261019` targets a separately identified safety issue: `ESSink.write_main()` can buffer updates below flush thresholds, while Row Merger currently marks the document complete, archives its source and prunes Success BEFORE ES bulk has acknowledged the buffered update. Subsequent flush failure can leave completion accounting ahead of actual ES state. This is a code-level risk, not proof it occurred in production.
+- Proposed fix: `ESSink.confirm_writeback()` drains the ES pending bulk; Row Merger invokes this capability after all row writes and before status release/source backup/Success cleanup. Explicit success is an ES bulk acknowledgment, not an immediate search refresh. Non-ES sinks keep their existing behavior. Error propagates to existing schema/transport failure policy; source and Success stay available for retry or pending.
+- Regression tests cover delayed acknowledgment (including one transport failure), terminal ES mapping rejection without accidental cleanup, and explicit buffered ESSink flush. Hosted exact-head CI and Codex review required for this NEW PR; it remains unmerged until explicit authorization. Do not claim live Windows/ES/Ollama acceptance.
+- Next: verify 1–3 real ES documents including previously problematic IDs, check source provenance and exact deployed executable revision, ES stored payload, pending/completion state and audits, and only then consider resuming a 37,286-item batch.
+
+### PR #217 first Codex review follow-up (2026-10-19)
+- First exact-head review `98ae6aeb6ab5aea0fb4e18615ef71b1dafaac8fb` found P1 #4313694330 and P2 #4313694341/#4313694349. A failed row A's retained bulk actions can be accidentally flushed/attributed to later row B; repeated 429 errors duplicate actions; some deterministic HTTP 400 variants were classified retryable.
+- Corrective: once any ES write or confirmation fails, discard that Row Merger sink's unacknowledged buffer so the preserved source and Success can be replayed cleanly. The serial per-row acknowledgment invariant means the buffer has only the current row's actions at that boundary. Also handles errors raised inside write_main's threshold flush. All HTTP 400 bulk responses are terminal (including mixed 400/429 actions for a single row); 429/5xx remain retryable.
+- Added targeted regression for A/B isolation, pre-confirm flush exceptions, 400 variants, and 429 replay. Pending new exact-head Hosted CI + fresh Codex review + thread resolution. No merge or live ES success claimed.
+
+### PR #217 second Codex P1 (2026-10-19)
+- On exact head `58c69006855f811a27dbc4b335d1cd2ad55700d9`, Codex P1 #4313781359 found that `_process_flatten_target()` swallowed ESSink.write_flatten() threshold-triggered HTTP 400 failures. The bulk buffer could be cleared by the terminal failure while subsequent confirm_writeback() returned success, incorrectly finalizing the row.
+- Proposed corrective: for sinks offering the explicit ES `confirm_writeback` handshake, propagate flatten write exceptions into Row Merger's normal schema/transport error path before finalization; other sink types keep best-effort legacy flatten semantics. Regression checks both ES and non-ES behavior and context restoration. Fresh exact-head CI + Codex review required before resolve/merge.
