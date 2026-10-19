@@ -732,6 +732,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             progressed = False
             for item_dir, meta in list(items_map.items()):
                 pk = meta["pk"]; temp_txt = meta["temp_txt"]
+                writeback_started = False
 
                 if isinstance(meta, dict) and meta.get("status") == "scheduling_multistage":
                     continue
@@ -937,6 +938,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
 
                     update_time = (datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                    if ctx.record_update_time else None)
+                    writeback_started = True
                     sink.write_main(pk, write_map, update_time)
                     tlog(f"📝 writeback source for pk={pk}: {'; '.join(source_logs)}")
 
@@ -987,6 +989,22 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     progressed = True
 
                 except Exception as e:
+                    if writeback_started:
+                        # A failed bulk may still have queued retryable actions.
+                        # No later row may inherit them: replay this row from
+                        # its untouched source/Success on the next attempt.
+                        discard = getattr(sink, "discard_unacknowledged_writeback", None)
+                        if callable(discard):
+                            try:
+                                discard()
+                            except Exception as cleanup_error:
+                                tlog_warn(
+                                    f"Row Merger failed to discard buffered ES actions "
+                                    f"(pk={pk}): {cleanup_error}"
+                                )
+                                # Do not write a different row using an unknown
+                                # buffer. Surface failure instead of misattributing.
+                                raise
                     msg = str(e)
                     if "stage 寫回模式找不到可用 stage 輸出" in msg:
                         wait_key = (item_dir, pk)
