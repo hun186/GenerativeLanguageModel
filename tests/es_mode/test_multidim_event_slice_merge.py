@@ -76,6 +76,49 @@ def test_article_date_and_precision_merge_as_source_pair(
     assert report["changed"]
 
 
+def test_invalid_pairs_cannot_cross_assemble_a_valid_looking_article_date():
+    left = _article("E1", action="one")
+    right = _article("E1", action="two")
+    left.update(article_date_iso=None, article_date_precision="day")
+    right.update(article_date_iso="1982-12-10", article_date_precision="unknown")
+    merged, _ = merge_dict_slices_audited(
+        [left, right], multidim_event=True, logger=None,
+    )
+    assert (merged["article_date_iso"], merged["article_date_precision"]) == (None, "day")
+    with pytest.raises(ValueError, match="null article_date_iso requires"):
+        normalize_multidim_event_payload([merged])
+
+
+def test_incomplete_source_date_pairs_cannot_cross_assemble_valid_metadata():
+    left = _article("E1", action="one")
+    right = _article("E1", action="two")
+    del left["article_date_precision"]
+    del right["article_date_iso"]
+    left["article_date_iso"] = "1982-12-10"
+    right["article_date_precision"] = "day"
+    merged, _ = merge_dict_slices_audited(
+        [left, right], multidim_event=True, logger=None,
+    )
+    assert "article_date_iso" not in merged
+    assert "article_date_precision" not in merged
+    with pytest.raises(ValueError, match="article_date_iso and article_date_precision"):
+        normalize_multidim_event_payload([merged])
+
+
+def test_article_date_trailing_whitespace_respects_same_es_normalization():
+    left = _article("E1", action="one")
+    right = _article("E1", action="two")
+    left.update(article_date_iso=" 1982-12-10 ", article_date_precision="day")
+    right.update(article_date_iso=None, article_date_precision="unknown")
+    merged, _ = merge_dict_slices_audited(
+        [left, right], multidim_event=True, logger=None,
+    )
+    assert merged["article_date_iso"] == "1982-12-10"
+    assert merged["article_date_precision"] == "day"
+    assert normalize_multidim_event_payload([merged])[0]["article_date_iso"] == "1982-12-10"
+    assert left["article_date_iso"] == " 1982-12-10 "  # Do not mutate Success.
+
+
 def test_invalid_article_date_pairs_are_not_silently_inferred():
     left = _article("E1", action="one")
     right = _article("E1", action="two")
