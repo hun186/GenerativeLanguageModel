@@ -90,3 +90,5 @@
 - Next development is isolated from pinned acceptance main: read-only per-run/history JSON report CLI built on QualityTailReader/QualityAccumulator and atomic_io, no new quality log, no LLM/network/DB. Includes explicit low-sample/unknown-denominator and concurrent-tail warnings. Unit/Hosted CI and Codex acceptance pending; do not merge automatically.
 
 - First PR #219 Codex exact-head review found P2: complete malformed JSONL rows were silently skipped, making offline report look complete. Fix now tracks `QualityTailReader.skipped_corrupt_lines` across polling/reset, surfaces degraded report status + count, with focused regression. Fresh Hosted CI/Codex review remain required.
+
+- Latest PR #219 Codex found P2 for unsupported complete event records and same-file rewritten contents when current size >= prior read offset; corrected QualityTailReader to distinguish duplicates from invalid schema and to reset generation on inode or bounded committed head/tail change. Added offline tests for both. Hosted CI failed in prior heads with job-log API 404 BlobNotFound; cause not proven; must re-run/inspect exact head before marking accepted.

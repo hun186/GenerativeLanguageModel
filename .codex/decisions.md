@@ -90,3 +90,5 @@
 - Preserve tomorrow's real acceptance baseline on merged #218 main; new work belongs in separate unmerged branch. Implement offline quality history/export as a read-only projection of the single existing JSONL event authority rather than introducing another log writer or shadow counters. A denominator below 30 is advisory only; it does not gate acceptance, and unknown stays null.
 
 - Corrupt newline-complete JSONL lines are surfaced as a degraded completeness warning, not silently absorbed into a successful report or counted in quality denominators. This change is read-only, backward compatible for old reader clients, and explicitly observable in offline reports.
+
+- Incremental quality reader retains O(1) bounded reread on each poll (first/last 512 committed bytes), detecting common in-place rewrites/rotation while preserving large log performance; avoids mislabeling valid repeated event IDs as malformed. If an adversarial rewrite changes only unmonitored interior bytes, offline reports cannot prove integrity and need a separate durable manifest/hash contract, not a made-up success signal.

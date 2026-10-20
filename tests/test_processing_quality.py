@@ -136,3 +136,13 @@ def test_unacknowledged_sinks_do_not_report_durable_success():
     fragment = code[confirmation:event]
     assert fragment.count("if callable(confirm_writeback):") == 2
     assert 'if callable(confirm_writeback):\n                        try:' in fragment
+
+
+def test_quality_tail_reader_does_not_count_valid_duplicate_as_corruption(tmp_path):
+    path = tmp_path / "quality.jsonl"
+    rec = {"schema_version": 1, "event_id": "same",
+           "event": "slice_json_validation", "code": "JSON_VALID"}
+    path.write_text(json.dumps(rec) + "\n" + json.dumps(rec) + "\n", encoding="utf-8")
+    reader = QualityTailReader(str(path))
+    assert reader.poll()[1]["events"] == 1
+    assert reader.skipped_corrupt_lines == 0

@@ -115,3 +115,5 @@
 - The offline report is an observational read of a possibly active stream, not a transactionally consistent snapshot. Incomplete trailing JSONL records are excluded; corrupt complete lines are skipped by the existing reader. Read-only report is not proof of bulk durable ES search visibility. Windows self-hosted CI may remain queued.
 
 - New offline quality report flags truncated/in-flight tail and complete corrupt JSONL lines separately. It does not reconstruct discarded payloads or validate syntactically correct unknown-schema events; audited denominators may be incomplete when the corruption flag is nonzero.
+
+- Codex review after first corruption fix identified two P2 in PR #219: JSON-valid but event-schema-invalid rows remained silent; rapid truncate+rewrite could regrow beyond old offset and retain stale counters. This revision counts invalid-schema lines, keeps true duplicate-ID suppression, resets on inode or consumed-head/tail mismatches, with offline regression for both same-inode rewrite and atomic replacement. Bounded edge fingerprints are not tamper-proof against adversarial interior rewrites.

@@ -165,6 +165,10 @@ class QualityAccumulator:
                 self._writeback_confirmed.add(doc)
         return True
 
+    def has_event_id(self, event_id: object) -> bool:
+        """True only for a previously accepted event; duplicates aren't corruption."""
+        return isinstance(event_id, str) and event_id in self._event_ids
+
     def snapshot(self) -> dict:
         validations = self._json_valid + self._json_invalid
         repairs = self._repair_success + self._repair_failure
@@ -188,29 +192,61 @@ class QualityAccumulator:
 
 
 class QualityTailReader:
-    """Incrementally parse complete JSONL lines; never block the Tk UI thread."""
+    """Incrementally parse complete JSONL lines; never block the Tk UI thread.
+
+    A same-path file may be rotated/replaced between polls. Besides its size and
+    inode, check bounded fingerprints of previously consumed head/tail bytes.
+    This detects in-place truncate+rewrite even after it regrows past offset,
+    without rereading a potentially large historical stream each GUI tick.
+    """
+    _FINGERPRINT_BYTES = 512
+
     def __init__(self, path: str = ""):
         self.path = str(path or "")
         self.offset = 0
         self.accumulator = QualityAccumulator()
         self.skipped_corrupt_lines = 0
+        self._file_identity = None
+        self._committed_head = b""
+        self._committed_tail = b""
+
+    def _reset(self) -> None:
+        self.offset = 0
+        self.accumulator = QualityAccumulator()
+        self.skipped_corrupt_lines = 0
+        self._file_identity = None
+        self._committed_head = b""
+        self._committed_tail = b""
+
+    def _fingerprints(self, fp, offset: int) -> tuple[bytes, bytes]:
+        if offset <= 0:
+            return b"", b""
+        span = min(offset, self._FINGERPRINT_BYTES)
+        fp.seek(0)
+        head = fp.read(span)
+        fp.seek(offset - span)
+        tail = fp.read(span)
+        return head, tail
 
     def poll(self) -> tuple[bool, dict]:
         if not self.path:
             return False, self.accumulator.snapshot()
         try:
-            size = os.path.getsize(self.path)
-        except OSError:
-            return False, self.accumulator.snapshot()
-        if size < self.offset:
-            self.offset = 0
-            self.accumulator = QualityAccumulator()
-            self.skipped_corrupt_lines = 0
-        if size == self.offset:
-            return False, self.accumulator.snapshot()
-        changed = False
-        try:
             with open(self.path, "rb") as fp:
+                stat = os.fstat(fp.fileno())
+                identity = (stat.st_dev, stat.st_ino)
+                size = stat.st_size
+                if self._file_identity is not None:
+                    if (identity != self._file_identity or size < self.offset
+                            or self._fingerprints(fp, self.offset) != (
+                                self._committed_head, self._committed_tail)):
+                        # Existing offset no longer points into the same input
+                        # generation; a size-only check misses fast rewrites.
+                        self._reset()
+                if size == self.offset:
+                    self._file_identity = identity
+                    return False, self.accumulator.snapshot()
+                changed = False
                 fp.seek(self.offset)
                 while True:
                     line = fp.readline()
@@ -225,7 +261,16 @@ class QualityTailReader:
                     except (UnicodeDecodeError, ValueError):
                         self.skipped_corrupt_lines += 1
                         continue
-                    changed = self.accumulator.add(parsed) or changed
+                    if self.accumulator.add(parsed):
+                        changed = True
+                    elif not self.accumulator.has_event_id(
+                            parsed.get("event_id") if isinstance(parsed, dict) else None):
+                        # Syntactically valid JSON can still be unsupported
+                        # as a quality event (schema, missing ID, bad code).
+                        self.skipped_corrupt_lines += 1
+                self._file_identity = identity
+                self._committed_head, self._committed_tail = self._fingerprints(
+                    fp, self.offset)
+                return changed, self.accumulator.snapshot()
         except OSError:
             return False, self.accumulator.snapshot()
-        return changed, self.accumulator.snapshot()

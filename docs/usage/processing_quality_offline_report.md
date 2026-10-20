@@ -23,3 +23,5 @@ A partial trailing JSONL record is ignored until complete, and reported as incom
 Confirmed writeback applies only to explicit Sink acknowledgement (currently ES bulk, not ES read-after-refresh). A missing confirmation for Excel/CSV is **unknown**, not failed. A document-schema pending percentage only covers observed, decided documents, not all scheduled documents.
 
 The user must still perform a small real Windows + LLM + ES acceptance run for merged PR #218. Keep this new report PR unmerged while using the pinned #218 merge commit for that acceptance.
+
+The quality tail reader also counts **schema-invalid but JSON-decodable complete lines** as degraded, while duplicate event IDs remain deduplicated without being labeled corrupt. For replaced files the reader resets when the inode changes, processed prefix/tail changes, or the file shrinks. This lightweight bounded fingerprint detects common truncate+rewrite patterns but is not a cryptographic guarantee against a same-size rewrite that leaves both sampled ends unchanged.

@@ -137,3 +137,80 @@ def test_reader_corruption_counter_resets_on_truncation(tmp_path):
     path.write_bytes(b"")
     reader.poll()
     assert reader.skipped_corrupt_lines == 0
+
+
+def test_valid_json_invalid_event_schema_is_flagged_not_ignored(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261020-222222-9.csv"
+    _emit(audit, event="slice_json_validation", code="JSON_VALID",
+          scope="slice", outcome="valid")
+    path = quality_event_path(str(audit))
+    with path.open("ab") as fp:
+        for record in (
+            {"schema_version": 7, "event_id": "x", "event": "slice_json_repair", "code": "JSON_REPAIR_FAILED"},
+            {"schema_version": 1, "event": "slice_json_repair", "code": "JSON_REPAIR_FAILED"},
+            {"schema_version": 1, "event_id": "y", "event": "invented", "code": "JSON_VALID"},
+            {"schema_version": 1, "event_id": "z", "event": "slice_json_repair", "code": "BAD_CODE"},
+            ["valid JSON but not a quality event"],
+        ):
+            fp.write(json.dumps(record).encode("utf-8") + b"\n")
+    report = report_for_audit(audit)["run"]
+    assert report["state"] == "degraded_corrupt_lines"
+    assert report["skipped_corrupt_complete_lines"] == 5
+    assert report["metrics"]["events"] == 1
+    assert report["metrics"]["slice_validation_attempts"] == 1
+
+
+def test_duplicate_event_id_remains_deduplicated_not_corruption(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261020-222222-3.csv"
+    _emit(audit, event="slice_json_validation", code="JSON_VALID",
+          scope="slice", outcome="valid")
+    path = quality_event_path(str(audit))
+    line = path.read_bytes()
+    with path.open("ab") as fp:
+        fp.write(line)
+    report = report_for_audit(audit)["run"]
+    assert report["state"] == "observed"
+    assert report["skipped_corrupt_complete_lines"] == 0
+    assert report["metrics"]["events"] == 1
+
+
+def test_fast_inplace_rewrite_longer_than_last_offset_resets_reader(tmp_path):
+    from czjLLM.utilities.processing_quality import QualityTailReader
+    path = tmp_path / "quality.jsonl"
+    first = {
+        "schema_version": 1, "event_id": "first",
+        "event": "slice_json_validation", "code": "JSON_SYNTAX_INVALID",
+    }
+    second = {
+        "schema_version": 1, "event_id": "second",
+        "event": "slice_json_validation", "code": "JSON_VALID",
+    }
+    path.write_text(json.dumps(first) + "\n", encoding="utf-8")
+    reader = QualityTailReader(str(path))
+    assert reader.poll()[1]["slice_initial_invalid"] == 1
+    offset = reader.offset
+    # Replacement is already larger than the consumed offset at next poll.
+    path.write_text(json.dumps(second) + "\n" + (" " * offset), encoding="utf-8")
+    assert path.stat().st_size >= offset
+    _, snapshot = reader.poll()
+    assert snapshot["slice_initial_invalid"] == 0
+    assert snapshot["slice_validation_attempts"] == 1
+
+
+def test_atomic_replacement_equal_or_larger_resets_reader(tmp_path):
+    from czjLLM.utilities.processing_quality import QualityTailReader
+    path = tmp_path / "quality.jsonl"
+    rec = lambda event_id, code: json.dumps({
+        "schema_version": 1, "event_id": event_id,
+        "event": "slice_json_validation", "code": code,
+    }) + "\n"
+    path.write_text(rec("a", "JSON_SYNTAX_INVALID"), encoding="utf-8")
+    reader = QualityTailReader(str(path))
+    reader.poll()
+    size = reader.offset
+    temp = tmp_path / "replacement.jsonl"
+    temp.write_text(rec("b", "JSON_VALID") + " " * size, encoding="utf-8")
+    temp.replace(path)
+    assert path.stat().st_size >= size
+    assert reader.poll()[1]["slice_initial_invalid"] == 0
+    assert reader.poll()[1]["slice_validation_attempts"] == 1
