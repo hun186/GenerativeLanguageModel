@@ -92,3 +92,6 @@
 ### 2026-10-20 Processing Quality observation boundary (PR #218)
 - `czjLLM/utilities/processing_quality.py` defines a quality event stream adjacent to the per-run LLM call-audit CSV. `handle_json_output` emits slice-first-pass JSON and JSON-repair decisions. Row Merger emits terminal document schema rejection and successful writeback decisions only after the configured sink's confirmation.
 - `QualityTailReader` incrementally reads complete JSONL lines off the Tk thread; `win_gui.py` displays an independent collapsed Processing Quality summary and type counts instead of mixing with the LLM Token/Context histogram. No source payload is stored.
+
+### 2026-10-20 offline read-only quality report (separate PR)
+- `cli_tools.processing_quality_report` reads only one existing run-scoped quality JSONL or enumerates a bounded history in its existing audit directory via `QualityTailReader` / `QualityAccumulator`. No new event producer/storage or runtime/GUI/prompt/sink mutation. Optional summary file uses `utilities.atomic_io.atomic_write_json`.

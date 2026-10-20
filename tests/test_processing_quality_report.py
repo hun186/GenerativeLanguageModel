@@ -1,0 +1,111 @@
+"""Offline quality report contract: no LLM, DB, or audit mutations."""
+import json
+
+import pytest
+
+from czjLLM.cli_tools.processing_quality_report import (
+    main, report_for_audit, report_history, summarize_quality_stream,
+)
+from czjLLM.utilities.processing_quality import emit_quality_event, quality_event_path
+
+
+def _emit(audit, *, event, code, scope, outcome, doc=""):
+    emit_quality_event(
+        str(audit), run_id=audit.stem, event=event, code=code, scope=scope,
+        outcome=outcome, document_id=doc,
+    )
+
+
+def test_observed_denominators_do_not_conflate_repair_and_schema(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261020-000001-1.csv"
+    _emit(audit, event="slice_json_validation", code="JSON_SYNTAX_INVALID",
+          scope="slice", outcome="rejected")
+    _emit(audit, event="slice_json_repair", code="JSON_REPAIR_SUCCEEDED",
+          scope="slice", outcome="repaired")
+    _emit(audit, event="document_schema_rejected", code="SCHEMA_OTHER",
+          scope="document", outcome="pending", doc="pk-1")
+    _emit(audit, event="document_writeback_confirmed", code="WRITEBACK_CONFIRMED",
+          scope="document", outcome="confirmed", doc="pk-1")
+    content = quality_event_path(str(audit)).read_bytes()
+    report = report_for_audit(audit)
+    stats = report["run"]["metrics"]
+    assert stats["slice_initial_invalid_pct"] == 100.0
+    assert stats["repair_success_pct"] == 100.0
+    assert stats["documents_schema_pending"] == 0
+    assert stats["documents_writeback_confirmed"] == 1
+    assert "small observed denominator" in report["run"]["sample_advisories"]["repair_success_pct"]
+    assert "observed events only" in report["denominator_contract"]
+    assert quality_event_path(str(audit)).read_bytes() == content
+    assert "pk-1" not in json.dumps(report)
+
+
+def test_missing_run_is_not_falsely_reported_as_zero(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261020-000001-1.csv"
+    with pytest.raises(FileNotFoundError):
+        report_for_audit(audit)
+    with pytest.raises(ValueError, match="expected"):
+        report_for_audit(tmp_path / "unrelated.csv")
+
+
+def test_empty_file_is_unknown_not_zero_percent(tmp_path):
+    path = tmp_path / "processing_quality_events_test.jsonl"
+    path.write_bytes(b"")
+    report = summarize_quality_stream(path)
+    assert report["state"] == "no_valid_events"
+    assert report["metrics"]["slice_initial_invalid_pct"] is None
+    assert report["metrics"]["document_schema_reject_pct"] is None
+    assert len(report["sample_advisories"]) == 3
+
+
+def test_partial_last_line_is_not_counted(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261020-000001-1.csv"
+    _emit(audit, event="slice_json_validation", code="JSON_VALID",
+          scope="slice", outcome="valid")
+    path = quality_event_path(str(audit))
+    with path.open("ab") as fp:
+        fp.write(b'{"schema_version":1,"event_id":"truncated')
+    report = report_for_audit(audit)["run"]
+    assert report["state"] == "incomplete_tail"
+    assert report["metrics"]["events"] == 1
+    assert report["incomplete_or_concurrent_append"] is True
+
+
+def test_history_is_run_isolated_ordered_and_bounded(tmp_path):
+    early = tmp_path / "llm_call_audit_20261019-111111-1.csv"
+    late = tmp_path / "llm_call_audit_20261020-111111-1.csv"
+    _emit(early, event="slice_json_validation", code="JSON_SYNTAX_INVALID",
+          scope="slice", outcome="rejected")
+    _emit(late, event="slice_json_validation", code="JSON_VALID",
+          scope="slice", outcome="valid")
+    report = report_history(tmp_path, limit=1)
+    assert report["available_run_files"] == 2
+    assert report["selected_run_files"] == 1
+    assert "20261020" in report["runs"][0]["log_file"]
+    assert report["runs"][0]["metrics"]["slice_initial_invalid"] == 0
+    assert report_history(tmp_path, limit=20)["runs"][1]["metrics"]["slice_initial_invalid"] == 1
+    with pytest.raises(ValueError, match="limit"):
+        report_history(tmp_path, limit=101)
+
+
+def test_cli_exports_atomically_without_rewriting_jsonl(tmp_path, capsys):
+    audit = tmp_path / "llm_call_audit_20261020-111111-7.csv"
+    _emit(audit, event="slice_json_validation", code="JSON_VALID",
+          scope="slice", outcome="valid")
+    path = quality_event_path(str(audit))
+    original = path.read_bytes()
+    output = tmp_path / "report.json"
+    assert main(["--audit-path", str(audit), "--output", str(output)]) == 0
+    result = json.loads(output.read_text(encoding="utf-8"))
+    assert result["run"]["metrics"]["events"] == 1
+    assert json.loads(capsys.readouterr().out)["mode"] == "single_run"
+    assert path.read_bytes() == original
+
+
+def test_history_empty_and_reject_log_as_report_destination(tmp_path):
+    assert report_history(tmp_path)["runs"] == []
+    audit = tmp_path / "llm_call_audit_20261020-111111-7.csv"
+    _emit(audit, event="slice_json_validation", code="JSON_VALID",
+          scope="slice", outcome="valid")
+    with pytest.raises(SystemExit) as exc:
+        main(["--audit-path", str(audit), "--output", str(quality_event_path(str(audit)))])
+    assert exc.value.code == 2

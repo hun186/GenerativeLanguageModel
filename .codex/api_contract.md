@@ -129,3 +129,7 @@
 
 ### 2026-10-20 PR #218 acknowledgment caveat
 - `document_writeback_confirmed` is emitted only for sinks implementing successful `confirm_writeback()`; currently ES bulk acknowledgement (not ES refresh/readback). Excel/CSV/SQl without this explicit handshake do not contribute a confirmed writeback count. Do not interpret missing confirmation events as failed documents or a batch-wide success percentage.
+
+### 2026-10-20 offline CLI quality report contract (separate PR)
+- `python -m czjLLM.cli_tools.processing_quality_report --audit-path <llm_call_audit_run.csv>` reads the matching JSONL, or `--audit-dir <directory> [--limit 1..100]` reads bounded sorted run history; optional `--output <report.json>` is atomic and refuses JSONL as a destination.
+- Report `report_version=1` contains observed `QualityAccumulator` aggregate metrics only, with `state`, `sample_advisories`, `incomplete_or_concurrent_append`; never exports raw event/document IDs or silently converts missing denominators to 0%. Recovered schema does not remain failed. No cross-run aggregate percentage, and explicit acknowledgment only (currently ES) does not imply ES readback.

@@ -97,3 +97,8 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 - [ ] Add full single-slice worker/API failure taxonomy (transport, timeout, JSON generation, stage orchestration), expose retry/token cost and distinct affected-doc counts, and enable error drill-down with filters.
 - [ ] Add rolling denominators, low-sample guardrails, optional anomaly thresholds, per-run export/history, retention/rotation with resumable aggregation, and Windows visual acceptance.
 - [ ] Perform 1–3 controlled real ES/Ollama tests (pending and confirmed writes) before any 37k-row production replay.
+
+### 2026-10-20 offline report PR follow-up (separate branch after merged #218)
+- [x] Implement independent read-only report CLI for one run or bounded (max 100) run history: existing quality JSONL only, no raw doc IDs, no cross-run statistical mixing, optional atomic JSON report.
+- [ ] Verify exact-head Hosted focused offline tests and formal Codex review on this PR, resolve findings; do not merge until explicit authorization and tomorrow's pinned #218 Windows acceptance remains unaffected.
+- [ ] Continue taxonomy, filtering/drill-down, retention/rotation, and full Windows UI validation as separate stages; no LLM-dependent acceptance claims.

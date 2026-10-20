@@ -109,3 +109,7 @@
 ### 2026-10-20 PR #218 confirmed-writeback attribution (Codex P2)
 - An unexceptional Excel/CSV `write_main()` return does not prove data reached durable storage: these sinks may skip PKs, swallow I/O errors or defer buffered flush. Quality `document_writeback_confirmed` is therefore emitted ONLY after an explicitly exposed sink `confirm_writeback()` succeeds (currently ES). Non-confirming sinks must remain unmeasured, not mislabeled as successful.
 - Historical document-level schema pending rate is a **coverage-limited observed-decision rate**, not an all-backend write success rate; it needs per-sink contracts to become cross-backend. Current full GUI/ES live acceptance still outstanding.
+
+### 2026-10-20 offline quality report caveats
+- No real model/Windows ES acceptance today: continue development in an unmerged PR, pin tomorrow's smoke test to merged #218 `bfe49413071a80a67d1a0d8208ef3706d5411b7f`.
+- The offline report is an observational read of a possibly active stream, not a transactionally consistent snapshot. Incomplete trailing JSONL records are excluded; corrupt complete lines are skipped by the existing reader. Read-only report is not proof of bulk durable ES search visibility. Windows self-hosted CI may remain queued.

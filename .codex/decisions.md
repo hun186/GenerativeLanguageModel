@@ -85,3 +85,6 @@
 - Keep slice validation and JSON repair attempt rates separate from distinct document writeback decisions to avoid treating recovered syntax errors as failed documents, or treating a released pending row as successful ES writeback.
 - Prefer structured events emitted at decision points over parsing console warnings; append minimal metadata to a separate per-run JSONL with a cross-process file lock; render a collapsed GUI section with a background reader independent of token/context distribution.
 - Do not automatically interrupt a large batch based on a raw event count; alerts require a denominator and minimum sample size.
+
+### 2026-10-20 offline continuation without LLM
+- Preserve tomorrow's real acceptance baseline on merged #218 main; new work belongs in separate unmerged branch. Implement offline quality history/export as a read-only projection of the single existing JSONL event authority rather than introducing another log writer or shadow counters. A denominator below 30 is advisory only; it does not gate acceptance, and unknown stays null.
