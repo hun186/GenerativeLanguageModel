@@ -91,7 +91,7 @@ def emit_quality_event(
         "scope": scope,
         "code": code,
         "outcome": str(outcome or "")[:32],
-        "document_id": str(document_id or "")[:160],
+        "document_id": str(document_id or ""),
         "slice_id": Path(str(slice_id)).name[:160] if slice_id else "",
     }
     # Long SQL/ES keys must retain distinct identities even with shared prefixes.
