@@ -570,7 +570,7 @@ def format_quality_summary(stats: dict) -> str:
         f"初次 JSON 不合法 {percent('slice_initial_invalid_pct', int(stats.get('slice_validation_attempts', 0)))}"
         f"  ｜  修復成功 {percent('repair_success_pct', int(stats.get('repair_attempts', 0)))}"
         f"  ｜  文件 Schema 待處理 {percent('document_schema_reject_pct', int(stats.get('documents_decided', 0)))}"
-        f"  ｜  寫回確認 {int(stats.get('documents_writeback_confirmed', 0)):,} 筆"
+        f"  ｜  確認式 Sink 寫回 {int(stats.get('documents_writeback_confirmed', 0)):,} 筆"
     )
 
 

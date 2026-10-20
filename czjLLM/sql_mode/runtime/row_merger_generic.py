@@ -977,21 +977,25 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     if callable(confirm_writeback):
                         confirm_writeback()
 
-                    # ES acknowledgement occurs before the success event. For
-                    # non-ES sinks the successful write_main is the contract.
-                    try:
-                        emit_quality_event(
-                            getattr(ctx, "llm_call_audit_path", ""),
-                            run_id=getattr(ctx, "llm_call_audit_run_id", ""),
-                            event="document_writeback_confirmed",
-                            code="WRITEBACK_CONFIRMED",
-                            scope="document", outcome="confirmed",
-                            document_id=str(pk),
-                        )
-                    except Exception as quality_error:
-                        tlog_warn(
-                            f"⚠️ processing_quality audit failed: {type(quality_error).__name__}"
-                        )
+                    # Emit a confirmed quality metric ONLY for sinks with
+                    # an explicit acknowledged-writeback contract (e.g. ES).
+                    # Excel/CSV may buffer data, skip missing PKs, or swallow
+                    # I/O failures while returning normally from write_main.
+                    # Their completion cannot be treated as durable success.
+                    if callable(confirm_writeback):
+                        try:
+                            emit_quality_event(
+                                getattr(ctx, "llm_call_audit_path", ""),
+                                run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+                                event="document_writeback_confirmed",
+                                code="WRITEBACK_CONFIRMED",
+                                scope="document", outcome="confirmed",
+                                document_id=str(pk),
+                            )
+                        except Exception as quality_error:
+                            tlog_warn(
+                                f"⚠️ processing_quality audit failed: {type(quality_error).__name__}"
+                            )
 
                     # 完成後收尾
                     try:

@@ -120,3 +120,19 @@ def test_long_document_keys_remain_distinct(tmp_path):
     reader = QualityTailReader(str(path))
     assert reader.poll()[1]["documents_schema_pending"] == 1
     assert reader.poll()[1]["documents_decided"] == 2
+
+
+
+def test_unacknowledged_sinks_do_not_report_durable_success():
+    from pathlib import Path
+    code = Path("czjLLM/sql_mode/runtime/row_merger_generic.py").read_text(
+        encoding="utf-8"
+    )
+    confirmation = code.index('if callable(confirm_writeback):')
+    event = code.index('event="document_writeback_confirmed"')
+    assert confirmation < event
+    # The event must sit under the conditional guard rather than an
+    # unconditional success path shared by Excel/CSV.
+    fragment = code[confirmation:event]
+    assert fragment.count("if callable(confirm_writeback):") == 2
+    assert 'if callable(confirm_writeback):\n                        try:' in fragment

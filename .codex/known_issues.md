@@ -105,3 +105,7 @@
 - Current quality panel covers JSON syntax/recovery and terminal Row Merger schema/confirmed writeback; it does NOT yet include all LLM transport failures, stage exceptions, worker crash classes or raw error timeline. Existing LLM call audit retains request-level failures. Do not present the first-stage view as whole-pipeline failure rate.
 - A writeback success event follows the Row Merger sink contract (ESSink bulk acknowledgment), not ES search refresh/readback. Actual Windows GUI visual validation and ES/Ollama production acceptance remain outstanding. Windows self-hosted CI may remain queued.
 - The JSONL append log is run-scoped and unbounded; incrementally processed by the GUI. Across-run comparison/export, retention, threshold alerting and integrated process error taxonomy remain backlog.
+
+### 2026-10-20 PR #218 confirmed-writeback attribution (Codex P2)
+- An unexceptional Excel/CSV `write_main()` return does not prove data reached durable storage: these sinks may skip PKs, swallow I/O errors or defer buffered flush. Quality `document_writeback_confirmed` is therefore emitted ONLY after an explicitly exposed sink `confirm_writeback()` succeeds (currently ES). Non-confirming sinks must remain unmeasured, not mislabeled as successful.
+- Historical document-level schema pending rate is a **coverage-limited observed-decision rate**, not an all-backend write success rate; it needs per-sink contracts to become cross-backend. Current full GUI/ES live acceptance still outstanding.

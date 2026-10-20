@@ -99,7 +99,9 @@ def test_runtime_ui_connects_current_run_audit_path_to_gui():
     from czjLLM.sql_mode.runtime import runtime_ui
 
     source = inspect.getsource(runtime_ui.prepare_ui)
-    assert 'gui.set_audit_path(getattr(ctx, "llm_call_audit_path", "") or "")' in source
+    assert 'audit_path = getattr(ctx, "llm_call_audit_path", "") or ""' in source
+    assert 'gui.set_audit_path(audit_path)' in source
+    assert 'gui.set_quality_event_path(str(quality_path) if quality_path else "")' in source
 
 
 
