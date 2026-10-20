@@ -98,3 +98,25 @@ def test_production_emitters_are_connected_without_console_regex():
     assert 'event="document_schema_rejected"' in row
     assert 'event="document_writeback_confirmed"' in row
     assert row.index('confirm_writeback()') < row.index('event="document_writeback_confirmed"')
+
+
+def test_long_document_keys_remain_distinct(tmp_path):
+    audit = str(tmp_path / "llm_call_audit_long.csv")
+    prefix = "D" * 200
+    first, second = prefix + "A", prefix + "B"
+    path = quality_event_path(audit)
+    for event, code, document_id in [
+        ("document_schema_rejected", "SCHEMA_MISSING_FIELD", first),
+        ("document_writeback_confirmed", "WRITEBACK_CONFIRMED", second),
+    ]:
+        emit_quality_event(
+            audit, run_id="same-run", event=event, code=code, scope="document",
+            outcome="pending" if event == "document_schema_rejected" else "confirmed",
+            document_id=document_id,
+        )
+    lines = [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines()]
+    assert all(row["document_id"].startswith("sha256:") for row in lines)
+    assert lines[0]["document_id"] != lines[1]["document_id"]
+    reader = QualityTailReader(str(path))
+    assert reader.poll()[1]["documents_schema_pending"] == 1
+    assert reader.poll()[1]["documents_decided"] == 2

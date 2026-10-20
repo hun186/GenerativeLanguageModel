@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections import Counter
 from datetime import datetime, timezone
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -93,6 +94,12 @@ def emit_quality_event(
         "document_id": str(document_id or "")[:160],
         "slice_id": Path(str(slice_id)).name[:160] if slice_id else "",
     }
+    # Long SQL/ES keys must retain distinct identities even with shared prefixes.
+    # Store a stable bounded fingerprint instead of silently merging documents.
+    if len(data["document_id"]) > 160:
+        data["document_id"] = "sha256:" + hashlib.sha256(
+            data["document_id"].encode("utf-8", errors="surrogatepass")
+        ).hexdigest()
     payload = (json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n").encode("utf-8")
     path.parent.mkdir(parents=True, exist_ok=True)
     lock_path = path.with_suffix(path.suffix + ".lock")
