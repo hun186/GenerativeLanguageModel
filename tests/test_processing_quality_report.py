@@ -231,3 +231,64 @@ def test_mismatched_codes_and_missing_document_ids_are_degraded(tmp_path):
     assert report["skipped_corrupt_complete_lines"] == len(records)
     assert report["metrics"]["events"] == 0
     assert report["metrics"]["documents_decided"] == 0
+
+
+def test_conflicting_event_id_replay_degrades_but_identical_replay_does_not(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261020-000010-1.csv"
+    _emit(audit, event="slice_json_validation", code="JSON_VALID",
+          scope="slice", outcome="valid")
+    path = quality_event_path(str(audit))
+    original = json.loads(path.read_text(encoding="utf-8"))
+    conflict = dict(original, code="JSON_SYNTAX_INVALID")
+    with path.open("ab") as fp:
+        # Dictionary order changes don't change the canonical record signature.
+        fp.write(json.dumps(dict(reversed(list(original.items())))).encode("utf-8") + b"\n")
+        fp.write(json.dumps(conflict).encode("utf-8") + b"\n")
+    report = report_for_audit(audit)["run"]
+    assert report["state"] == "degraded_corrupt_lines"
+    assert report["skipped_corrupt_complete_lines"] == 1
+    assert report["metrics"]["events"] == 1
+    assert report["metrics"]["slice_initial_invalid"] == 0
+
+
+def test_reader_reset_change_publishes_empty_or_corrupt_generation(tmp_path):
+    from czjLLM.utilities.processing_quality import QualityTailReader
+    path = tmp_path / "quality.jsonl"
+    first = {
+        "schema_version": 1, "event_id": "first",
+        "event": "slice_json_validation", "code": "JSON_VALID",
+    }
+    path.write_text(json.dumps(first) + "\n", encoding="utf-8")
+    reader = QualityTailReader(str(path))
+    assert reader.poll()[1]["events"] == 1
+    # The GUI should receive changed=True to clear its stale snapshot.
+    path.write_bytes(b"")
+    changed, snap = reader.poll()
+    assert changed is True and snap["events"] == 0
+    path.write_text("totally invalid record\n", encoding="utf-8")
+    changed, snap = reader.poll()
+    assert changed is False and snap["events"] == 0
+    assert reader.skipped_corrupt_lines == 1
+    # Restore valid then rotate atomically to corrupt, without a zero-size poll.
+    path.write_text(json.dumps(first) + "\n", encoding="utf-8")
+    assert reader.poll()[1]["events"] == 1
+    replacement = tmp_path / "replacement.jsonl"
+    replacement.write_text("wrong\n", encoding="utf-8")
+    replacement.replace(path)
+    changed, snap = reader.poll()
+    assert changed is True and snap["events"] == 0
+    assert reader.skipped_corrupt_lines == 1
+
+
+def test_non_string_event_fields_are_degraded_not_type_errors(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261020-000011-1.csv"
+    path = quality_event_path(str(audit))
+    broken = {
+        "schema_version": 1, "event_id": "bad", "event": [],
+        "code": {"oops": True},
+    }
+    path.write_text(json.dumps(broken) + "\n", encoding="utf-8")
+    report = report_for_audit(audit)["run"]
+    assert report["state"] == "degraded_corrupt_lines"
+    assert report["skipped_corrupt_complete_lines"] == 1
+    assert report["metrics"]["events"] == 0

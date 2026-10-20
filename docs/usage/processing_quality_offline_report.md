@@ -25,3 +25,5 @@ Confirmed writeback applies only to explicit Sink acknowledgement (currently ES 
 The user must still perform a small real Windows + LLM + ES acceptance run for merged PR #218. Keep this new report PR unmerged while using the pinned #218 merge commit for that acceptance.
 
 The quality tail reader also counts **schema-invalid but JSON-decodable complete lines** as degraded, while duplicate event IDs remain deduplicated without being labeled corrupt. For replaced files the reader resets when the inode changes, processed prefix/tail changes, or the file shrinks. This lightweight bounded fingerprint detects common truncate+rewrite patterns but is not a cryptographic guarantee against a same-size rewrite that leaves both sampled ends unchanged.
+
+A duplicate is harmless ONLY when the same `event_id` replays an identical canonical complete JSON event (independent of object key order). A conflicting record reusing the ID is degraded corruption. If the input file generation changes, `QualityTailReader.poll()` returns `changed=True` even when the replacement is empty or all-invalid so the GUI does not retain stale totals.

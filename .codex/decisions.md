@@ -94,3 +94,5 @@
 - Incremental quality reader retains O(1) bounded reread on each poll (first/last 512 committed bytes), detecting common in-place rewrites/rotation while preserving large log performance; avoids mislabeling valid repeated event IDs as malformed. If an adversarial rewrite changes only unmonitored interior bytes, offline reports cannot prove integrity and need a separate durable manifest/hash contract, not a made-up success signal.
 
 - A syntactically valid record must have a semantically matched event/code and (where present) scope; document events require a nonblank document_id. This prevents incomplete input from falsely raising `events` without affecting the relevant denominator. Deprecated test fixtures without explicit scope remain backward compatible.
+
+- The quality audit reader now keeps a compact per-event canonical hash as its duplicate identity instead of only a set of event IDs: exact replays remain idempotent, but conflicting content with reused ID is explicitly degraded. Generation reset is a published state change so a status UI cannot persist obsolete counts when zero replacement events exist.

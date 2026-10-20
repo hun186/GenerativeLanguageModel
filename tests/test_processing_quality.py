@@ -162,3 +162,15 @@ def test_quality_producer_rejects_event_code_scope_mismatch(tmp_path):
             scope="document", outcome="valid"
         )
     assert not quality_event_path(audit).exists()
+
+
+def test_reader_reset_alone_reports_changed_for_gui_consumer(tmp_path):
+    path = tmp_path / "quality.jsonl"
+    record = {"schema_version": 1, "event_id": "one",
+              "event": "slice_json_validation", "code": "JSON_VALID"}
+    path.write_text(json.dumps(record) + "\n", encoding="utf-8")
+    reader = QualityTailReader(str(path))
+    reader.poll()
+    path.write_bytes(b"")
+    changed, stats = reader.poll()
+    assert changed and stats["events"] == 0

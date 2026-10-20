@@ -124,7 +124,7 @@ def emit_quality_event(
 class QualityAccumulator:
     """Aggregate event attempts and distinct documents without mixing units."""
     def __init__(self):
-        self._event_ids = set()
+        self._event_signatures = {}
         self._codes = Counter()
         self._json_valid = 0
         self._json_invalid = 0
@@ -143,7 +143,9 @@ class QualityAccumulator:
         code = record.get("code")
         if not isinstance(event_id, str) or not event_id:
             return False
-        if event not in _EVENT_CODES or code not in _EVENT_CODES[event]:
+        if not isinstance(event, str) or event not in _EVENT_CODES:
+            return False
+        if not isinstance(code, str) or code not in _EVENT_CODES[event]:
             return False
         scope = record.get("scope")
         if scope is not None and scope != (
@@ -152,9 +154,17 @@ class QualityAccumulator:
         if event.startswith("document_") and not (
                 isinstance(record.get("document_id"), str) and record["document_id"]):
             return False
-        if event_id in self._event_ids:
+        if event_id in self._event_signatures:
             return False
-        self._event_ids.add(event_id)
+        try:
+            signature = hashlib.sha256(json.dumps(
+                record, sort_keys=True, ensure_ascii=False,
+                separators=(",", ":"),
+            ).encode("utf-8")).digest()
+        except (TypeError, ValueError, UnicodeError):
+            # An in-process non-JSON record is not an auditable event.
+            return False
+        self._event_signatures[event_id] = signature
         if event == "slice_json_validation":
             if code == "JSON_VALID":
                 self._json_valid += 1
@@ -178,9 +188,21 @@ class QualityAccumulator:
                 self._writeback_confirmed.add(doc)
         return True
 
-    def has_event_id(self, event_id: object) -> bool:
-        """True only for a previously accepted event; duplicates aren't corruption."""
-        return isinstance(event_id, str) and event_id in self._event_ids
+    def is_identical_accepted_event(self, record: object) -> bool:
+        """Only exact logical replays are duplicates; reused IDs with edits degrade."""
+        if not isinstance(record, dict):
+            return False
+        event_id = record.get("event_id")
+        if not isinstance(event_id, str) or event_id not in self._event_signatures:
+            return False
+        try:
+            signature = hashlib.sha256(json.dumps(
+                record, sort_keys=True, ensure_ascii=False,
+                separators=(",", ":"),
+            ).encode("utf-8")).digest()
+        except (TypeError, ValueError, UnicodeError):
+            return False
+        return signature == self._event_signatures[event_id]
 
     def snapshot(self) -> dict:
         validations = self._json_valid + self._json_invalid
@@ -189,7 +211,7 @@ class QualityAccumulator:
         failed_docs = self._schema_rejected - self._writeback_confirmed
         decided = failed_docs | self._writeback_confirmed
         return {
-            "events": len(self._event_ids),
+            "events": len(self._event_signatures),
             "slice_validation_attempts": validations,
             "slice_initial_invalid": self._json_invalid,
             "slice_initial_invalid_pct": round(100 * self._json_invalid / validations, 2) if validations else None,
@@ -249,6 +271,7 @@ class QualityTailReader:
                 stat = os.fstat(fp.fileno())
                 identity = (stat.st_dev, stat.st_ino)
                 size = stat.st_size
+                reset = False
                 if self._file_identity is not None:
                     if (identity != self._file_identity or size < self.offset
                             or self._fingerprints(fp, self.offset) != (
@@ -256,10 +279,11 @@ class QualityTailReader:
                         # Existing offset no longer points into the same input
                         # generation; a size-only check misses fast rewrites.
                         self._reset()
+                        reset = True
                 if size == self.offset:
                     self._file_identity = identity
-                    return False, self.accumulator.snapshot()
-                changed = False
+                    return reset, self.accumulator.snapshot()
+                changed = reset
                 fp.seek(self.offset)
                 while True:
                     line = fp.readline()
@@ -276,8 +300,7 @@ class QualityTailReader:
                         continue
                     if self.accumulator.add(parsed):
                         changed = True
-                    elif not self.accumulator.has_event_id(
-                            parsed.get("event_id") if isinstance(parsed, dict) else None):
+                    elif not self.accumulator.is_identical_accepted_event(parsed):
                         # Syntactically valid JSON can still be unsupported
                         # as a quality event (schema, missing ID, bad code).
                         self.skipped_corrupt_lines += 1
