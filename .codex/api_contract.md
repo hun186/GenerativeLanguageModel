@@ -120,3 +120,9 @@
 - `ESSink.write_main()` / `write_flatten()` can enqueue bulk updates without sending them immediately. In the Row Merger path, `ESSink.confirm_writeback()` explicitly drains that buffer and propagates bulk failures before source input, successful slices, or pending/completion bookkeeping can be finalized.
 - For an acknowledged ES bulk, search-based pending discovery may still require an index refresh; the confirmation contract does not force refresh or prove an entire batch is complete.
 - Other sink types retain their previous behavior; this change must be validated by exact-head CI and external ES readback before release.
+
+
+### 2026-10-20 run-scoped processing-quality JSONL v1 (PR #218)
+- Per-run sibling of `llm_call_audit_<run_id>.csv`: `processing_quality_events_<run_id>.jsonl`.
+- Every record: `schema_version=1`, UUID `event_id`, UTC `ts`, `run_id`, `event`, `scope`, `code`, `outcome`, `document_id`, `slice_id`. Event families: `slice_json_validation`, `slice_json_repair`, `document_schema_rejected`, `document_writeback_confirmed`. No raw prompts, outputs, secrets or exception bodies.
+- GUI percentages: first-pass invalid / completed JSON validation attempts; repair successful / completed repair attempts; final schema pending (distinct document IDs with rejection but without later confirmation) / distinct documents with writeback decision. Unknown denominator is not shown as 0%.

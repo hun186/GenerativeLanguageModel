@@ -99,3 +99,9 @@
 - Branch `fix/es-writeback-ack-before-row-cleanup-20261019` proposes an explicit `confirm_writeback()` handshake before final row cleanup with targeted regression and Hosted CI coverage. Risk is inferred from source code, not an observed production data-loss report.
 - Remaining limits: a bulk acknowledgement is not the same as search visibility (refresh), Windows/internal ES+Ollama tests are not yet performed, and transport errors can keep a row pending for rerun. Before 37,286-row restart, verify 1–3 real rows by independent ES readback and compare to tracking and artifact state.
 - **Status:** Fix proposed in new PR; production acceptance open. Earlier text saying PR #214/#215/#216 are pending is historic and superseded by the merged commits recorded in memory.md.
+
+
+### 2026-10-20 Processing Quality PR #218 remaining gaps
+- Current quality panel covers JSON syntax/recovery and terminal Row Merger schema/confirmed writeback; it does NOT yet include all LLM transport failures, stage exceptions, worker crash classes or raw error timeline. Existing LLM call audit retains request-level failures. Do not present the first-stage view as whole-pipeline failure rate.
+- A writeback success event follows the Row Merger sink contract (ESSink bulk acknowledgment), not ES search refresh/readback. Actual Windows GUI visual validation and ES/Ollama production acceptance remain outstanding. Windows self-hosted CI may remain queued.
+- The JSONL append log is run-scoped and unbounded; incrementally processed by the GUI. Across-run comparison/export, retention, threshold alerting and integrated process error taxonomy remain backlog.

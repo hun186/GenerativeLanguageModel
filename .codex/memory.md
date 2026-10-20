@@ -77,3 +77,10 @@
 ### PR #217 second Codex P1 (2026-10-19)
 - On exact head `58c69006855f811a27dbc4b335d1cd2ad55700d9`, Codex P1 #4313781359 found that `_process_flatten_target()` swallowed ESSink.write_flatten() threshold-triggered HTTP 400 failures. The bulk buffer could be cleared by the terminal failure while subsequent confirm_writeback() returned success, incorrectly finalizing the row.
 - Proposed corrective: for sinks offering the explicit ES `confirm_writeback` handshake, propagate flatten write exceptions into Row Merger's normal schema/transport error path before finalization; other sink types keep best-effort legacy flatten semantics. Regression checks both ES and non-ES behavior and context restoration. Fresh exact-head CI + Codex review required before resolve/merge.
+
+
+### 2026-10-20 Processing Quality monitor PR #218 (unmerged)
+- PR #217 was merged into main as `a7f441136c63caee15214610ee83abc7a5049e38`; exact-run Windows/real ES acceptance still open. Older "PR #217 pending" entries are historical.
+- New branch `feat/processing-quality-observability-p1-20261020` / PR #218 adds run-scoped `processing_quality_events_<run_id>.jsonl`, per-slice JSON validation/repair and distinct document schema/confirmed-writeback events; increments Tk GUI quality widgets in a separate collapsed panel.
+- Quality rates have independent denominators (slice JSON validation attempt, completed repair attempt, distinct document writeback decisions) and unknown values for zero samples. A repaired JSON is not a failed document. Raw prompts/outputs are excluded.
+- Linux offline-e2e (including tests/test_processing_quality.py), Codex exact-head review, Windows runner and real ES acceptance are validation gates; treat current implementation as unmerged and unaccepted until their actual evidence is recorded.
