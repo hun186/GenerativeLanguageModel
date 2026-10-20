@@ -35,6 +35,7 @@ def summarize_quality_stream(path: str | Path) -> dict[str, Any]:
     _, stats = reader.poll()
     # The writer may append while we read; a partial final line is never counted.
     incomplete = source.stat().st_size > reader.offset
+    corrupt_lines = reader.skipped_corrupt_lines
     sample_notes = {}
     for pct, denom in _METRIC_DENOMINATORS.items():
         n = int(stats[denom])
@@ -46,9 +47,10 @@ def summarize_quality_stream(path: str | Path) -> dict[str, Any]:
             )
     return {
         "log_file": source.name,
-        "state": "incomplete_tail" if incomplete else (
-            "no_valid_events" if not stats["events"] else "observed"
-        ),
+        "state": ("degraded_corrupt_lines" if corrupt_lines else
+                  "incomplete_tail" if incomplete else
+                  "no_valid_events" if not stats["events"] else "observed"),
+        "skipped_corrupt_complete_lines": corrupt_lines,
         "metrics": stats,
         "sample_advisories": sample_notes,
         "incomplete_or_concurrent_append": incomplete,

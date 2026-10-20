@@ -113,3 +113,5 @@
 ### 2026-10-20 offline quality report caveats
 - No real model/Windows ES acceptance today: continue development in an unmerged PR, pin tomorrow's smoke test to merged #218 `bfe49413071a80a67d1a0d8208ef3706d5411b7f`.
 - The offline report is an observational read of a possibly active stream, not a transactionally consistent snapshot. Incomplete trailing JSONL records are excluded; corrupt complete lines are skipped by the existing reader. Read-only report is not proof of bulk durable ES search visibility. Windows self-hosted CI may remain queued.
+
+- New offline quality report flags truncated/in-flight tail and complete corrupt JSONL lines separately. It does not reconstruct discarded payloads or validate syntactically correct unknown-schema events; audited denominators may be incomplete when the corruption flag is nonzero.

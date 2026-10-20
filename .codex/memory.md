@@ -88,3 +88,5 @@
 ### 2026-10-20 PR #218 merged + offline report follow-up (separate branch)
 - PR #218 merged at `bfe49413071a80a67d1a0d8208ef3706d5411b7f`. Code-reviewed exact head `b3d8a7...`, Linux offline-e2e success; real Windows/LLM/ES acceptance is **not** complete and intentionally deferred until model capacity is available.
 - Next development is isolated from pinned acceptance main: read-only per-run/history JSON report CLI built on QualityTailReader/QualityAccumulator and atomic_io, no new quality log, no LLM/network/DB. Includes explicit low-sample/unknown-denominator and concurrent-tail warnings. Unit/Hosted CI and Codex acceptance pending; do not merge automatically.
+
+- First PR #219 Codex exact-head review found P2: complete malformed JSONL rows were silently skipped, making offline report look complete. Fix now tracks `QualityTailReader.skipped_corrupt_lines` across polling/reset, surfaces degraded report status + count, with focused regression. Fresh Hosted CI/Codex review remain required.

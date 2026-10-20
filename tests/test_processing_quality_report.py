@@ -109,3 +109,31 @@ def test_history_empty_and_reject_log_as_report_destination(tmp_path):
     with pytest.raises(SystemExit) as exc:
         main(["--audit-path", str(audit), "--output", str(quality_event_path(str(audit)))])
     assert exc.value.code == 2
+
+
+def test_corrupt_complete_lines_are_visible_and_do_not_enter_denominator(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261020-222222-1.csv"
+    _emit(audit, event="slice_json_validation", code="JSON_VALID",
+          scope="slice", outcome="valid")
+    path = quality_event_path(str(audit))
+    with path.open("ab") as fp:
+        fp.write(b"not a JSON event\n")
+        fp.write(b"\xffinvalid utf8\n")
+    report = report_for_audit(audit)["run"]
+    assert report["state"] == "degraded_corrupt_lines"
+    assert report["skipped_corrupt_complete_lines"] == 2
+    assert report["metrics"]["events"] == 1
+    assert report["metrics"]["slice_validation_attempts"] == 1
+    assert report["incomplete_or_concurrent_append"] is False
+
+
+def test_reader_corruption_counter_resets_on_truncation(tmp_path):
+    from czjLLM.utilities.processing_quality import QualityTailReader
+    path = tmp_path / "quality.jsonl"
+    path.write_bytes(b"bad record\n")
+    reader = QualityTailReader(str(path))
+    reader.poll()
+    assert reader.skipped_corrupt_lines == 1
+    path.write_bytes(b"")
+    reader.poll()
+    assert reader.skipped_corrupt_lines == 0

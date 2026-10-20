@@ -193,6 +193,7 @@ class QualityTailReader:
         self.path = str(path or "")
         self.offset = 0
         self.accumulator = QualityAccumulator()
+        self.skipped_corrupt_lines = 0
 
     def poll(self) -> tuple[bool, dict]:
         if not self.path:
@@ -204,6 +205,7 @@ class QualityTailReader:
         if size < self.offset:
             self.offset = 0
             self.accumulator = QualityAccumulator()
+            self.skipped_corrupt_lines = 0
         if size == self.offset:
             return False, self.accumulator.snapshot()
         changed = False
@@ -221,6 +223,7 @@ class QualityTailReader:
                     try:
                         parsed = json.loads(line.decode("utf-8"))
                     except (UnicodeDecodeError, ValueError):
+                        self.skipped_corrupt_lines += 1
                         continue
                     changed = self.accumulator.add(parsed) or changed
         except OSError:
