@@ -18,6 +18,7 @@ from czjLLM.utilities.slice_merge import (
     MultidimEventSchemaError, should_merge_slices,
 )
 from czjLLM.prompt_pipeline.pending_central import mark_not_running, record_adjustment
+from czjLLM.utilities.processing_quality import classify_schema_error, emit_quality_event
 
 from .runtime_ui import prepare_ui, start_bar_refresher
 from ..metrics.metering import init_meter
@@ -285,6 +286,23 @@ def _release_terminal_fallback_merge_error(
         )
     except Exception as audit_error:
         tlog_warn(f"⚠️ fallback schema 稽核紀錄寫入異常（pk={pk}）：{audit_error}")
+
+    # The post-drain fallback is a second production owner of schema failure.
+    # Emit the same document decision as the regular Row Merger path, without
+    # changing the source/Success or pending release semantics.
+    try:
+        emit_quality_event(
+            getattr(ctx, "llm_call_audit_path", ""),
+            run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+            event="document_schema_rejected",
+            code=classify_schema_error(str(exc)),
+            scope="document", outcome="pending",
+            document_id=str(pk),
+        )
+    except Exception as quality_error:
+        tlog_warn(
+            f"⚠️ processing_quality audit failed: {type(quality_error).__name__}"
+        )
 
     # Never delete or rewrite the original input, cached Success slices, or
     # the ES document; only release this in-process scheduling reference.

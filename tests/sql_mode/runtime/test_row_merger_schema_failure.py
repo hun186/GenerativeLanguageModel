@@ -363,6 +363,11 @@ def test_postdrain_fallback_releases_bad_local_event_link_once(tmp_path: Path, m
         ),
     )
     monkeypatch.setattr(orchestrator, "tlog_warn", warnings.append)
+    quality = []
+    monkeypatch.setattr(
+        orchestrator, "emit_quality_event",
+        lambda _audit_path, **fields: quality.append(fields),
+    )
 
     done_q = queue.Queue()
     ctx = SimpleNamespace(
@@ -381,6 +386,10 @@ def test_postdrain_fallback_releases_bad_local_event_link_once(tmp_path: Path, m
         "writeback_failed_schema_release", "fallback-missing-E3",
     )
     assert audits[0][2]["combined_result_path"] == str(missing_combined)
+    assert len(quality) == 1
+    assert quality[0]["event"] == "document_schema_rejected"
+    assert quality[0]["document_id"] == "fallback-missing-E3"
+    assert quality[0]["code"] == "SCHEMA_EVENT_REFERENCE"
     assert done_q.get_nowait() == 1
     assert len(meter_events) == 2
     assert len(warnings) == 1 and "pending" in warnings[0]
@@ -394,7 +403,7 @@ def test_postdrain_fallback_releases_bad_local_event_link_once(tmp_path: Path, m
         ctx, registry, str(root), exc,
         meter_fn="meter.json", done_q=done_q,
     )
-    assert len(released) == len(audits) == 1
+    assert len(released) == len(audits) == len(quality) == 1
     assert done_q.empty()
 
 

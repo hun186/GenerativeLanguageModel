@@ -64,6 +64,7 @@ from czjLLM.prompt_pipeline.slice_identity import (
 )
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
+from czjLLM.utilities.processing_quality import emit_quality_event
 from czjLLM.utilities.env_overrides import env_bool, env_int, load_czjllm_env_files_once
 from czjLLM.tokenizer_utils import TokenizerWrapper
 #from czjLLM.utilities.logging_utils import log_error
@@ -3131,6 +3132,17 @@ class PromptAPIPipeline:
                 "error": ""                  # 失敗時放錯誤訊息
             }
 
+    def _emit_json_quality(self, event: str, code: str, outcome: str) -> None:
+        # A failed audit must not mutate outputs or requeue LLM work.
+        try:
+            emit_quality_event(
+                self.audit_path, run_id=self.audit_run_id,
+                event=event, code=code, scope="slice", outcome=outcome,
+                slice_id=self.promptFile,
+            )
+        except Exception as audit_error:
+            print(f"⚠️ processing_quality audit failed: {type(audit_error).__name__}")
+
     def handle_json_output(self, retMES):
         '''
         嘗試用json.loads驗證回傳訊息json正確性，
@@ -3141,8 +3153,10 @@ class PromptAPIPipeline:
             #print("raise Exception to debug json output")
             #raise Exception
             json.loads(retMES)
+            self._emit_json_quality("slice_json_validation", "JSON_VALID", "accepted")
             return [],retMES
         except json.JSONDecodeError:
+            self._emit_json_quality("slice_json_validation", "JSON_SYNTAX_INVALID", "rejected")
             #如果json格式驗證失敗，那麼切割後再產生新的Job重試。
             print("json format verification failed.")
             print("retMES:",retMES)
@@ -3163,10 +3177,12 @@ class PromptAPIPipeline:
                     #no_think = should_disable_think(self.model_spec["model_name"])
                     )
                 json.loads(retMES_rep)
+                self._emit_json_quality("slice_json_repair", "JSON_REPAIR_SUCCEEDED", "recovered")
                 print("Successfully repair with LLM.")
                 print("repaired retMES_rep",retMES_rep)
                 return [],retMES_rep
             except Exception as ex_json:
+                self._emit_json_quality("slice_json_repair", "JSON_REPAIR_FAILED", "not_recovered")
                 print("ex_json",ex_json)
                 print("Fail to repair with LLM.")
                 if retMES_rep is not None:

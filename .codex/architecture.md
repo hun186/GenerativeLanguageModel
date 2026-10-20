@@ -87,3 +87,8 @@
 
 - Hash-only raw source and dispatch provenance lives under `<item>/_extract_slice_identity/source/original.json`, not `_stage_outputs`, because `smart_reset` intentionally deletes all stage snapshots. Full raw-source fragments can be safely regenerated only after validating the source hash, ordered part hashes, and original filename mapping. These regenerated texts remain transient in `_stage_outputs/original`.
 - The existing success and split identity directories remain authoritative for completed/retried prompts. When partial source membership cannot be verified, reject writeback rather than silently omitting Success siblings.
+
+
+### 2026-10-20 Processing Quality observation boundary (PR #218)
+- `czjLLM/utilities/processing_quality.py` defines a quality event stream adjacent to the per-run LLM call-audit CSV. `handle_json_output` emits slice-first-pass JSON and JSON-repair decisions. Row Merger emits terminal document schema rejection and successful writeback decisions only after the configured sink's confirmation.
+- `QualityTailReader` incrementally reads complete JSONL lines off the Tk thread; `win_gui.py` displays an independent collapsed Processing Quality summary and type counts instead of mixing with the LLM Token/Context histogram. No source payload is stored.

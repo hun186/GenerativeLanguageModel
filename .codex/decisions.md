@@ -79,3 +79,9 @@
 - For cross-slice metadata, treat article_date_iso and article_date_precision as ONE atomic source-provenance pair; never compose a date from one slice with a precision from another. Preserve existing scalar conflict preference and conservative unknown/null instead of favoring a date merely because it exists in a later slice. Treaty/event signing dates are not document publication metadata without explicit source evidence.
 - ES strict multidim output contract may perform lossless shape normalization of the five explicitly documented importance score keys found at top-level, but never recompute a score, silently overwrite conflicting existing nested values or allow unknown keys. Generic JSON processing remains unchanged.
 - Retain strict fail-closed Event local links and schema errors, requiring bounded real ES acceptance after unit/CI and code review.
+
+
+### 2026-10-20 separate processing-quality observability (PR #218)
+- Keep slice validation and JSON repair attempt rates separate from distinct document writeback decisions to avoid treating recovered syntax errors as failed documents, or treating a released pending row as successful ES writeback.
+- Prefer structured events emitted at decision points over parsing console warnings; append minimal metadata to a separate per-run JSONL with a cross-process file lock; render a collapsed GUI section with a background reader independent of token/context distribution.
+- Do not automatically interrupt a large batch based on a raw event count; alerts require a denominator and minimum sample size.

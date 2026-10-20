@@ -90,3 +90,10 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 - [ ] Confirm locally deployed Windows executable commit includes merged #216 before touching real rows; stop/restart old process safely after in-flight work has drained.
 - [ ] Controlled 1–3 item ES/Ollama acceptance including known date/importance failures, Event ID uniqueness, linked IDs, stored ES readback, pending/completion state, and immutable raw Success artifacts on rejection.
 - [ ] Only after live acceptance, characterize bulk completion timing, pending failure counts and model token cost before resuming 37,286 candidate items. ES search refresh visibility and exact target index/key must be verified separately from bulk acknowledgement.
+
+
+### 2026-10-20 Processing Quality follow-up / PR #218 acceptance
+- [ ] Confirm exact-head offline-e2e and targeted quality tests, obtain fresh Codex review with no unresolved P1/P2, verify Windows self-hosted or disclose its queued state, and merge only on explicit user authorization.
+- [ ] Add full single-slice worker/API failure taxonomy (transport, timeout, JSON generation, stage orchestration), expose retry/token cost and distinct affected-doc counts, and enable error drill-down with filters.
+- [ ] Add rolling denominators, low-sample guardrails, optional anomaly thresholds, per-run export/history, retention/rotation with resumable aggregation, and Windows visual acceptance.
+- [ ] Perform 1–3 controlled real ES/Ollama tests (pending and confirmed writes) before any 37k-row production replay.

@@ -8,6 +8,7 @@ import multiprocessing as mp
 import queue as pyqueue
 import threading
 from dataclasses import dataclass
+from czjLLM.utilities.processing_quality import QualityAccumulator, QualityTailReader
 
 # 僅 Windows 啟用 GUI；其他平台回傳 None
 IS_WIN = (sys.platform == "win32")
@@ -22,6 +23,7 @@ class _GuiEvents:
     RECHECK:   str = "recheck"
     REDUCTION: str = "reduction"
     AUDIT_PATH: str = "audit_path"
+    QUALITY_PATH: str = "quality_path"
 
 
 
@@ -559,6 +561,49 @@ def _enable_windows_dpi_awareness():
     except Exception:
         pass
 
+def format_quality_summary(stats: dict) -> str:
+    """Keep incompatible slice/document denominators separate in the header."""
+    def percent(key, n):
+        value = stats.get(key)
+        return "— (樣本不足)" if value is None else f"{value:.1f}% (n={n:,})"
+    return (
+        f"初次 JSON 不合法 {percent('slice_initial_invalid_pct', int(stats.get('slice_validation_attempts', 0)))}"
+        f"  ｜  修復成功 {percent('repair_success_pct', int(stats.get('repair_attempts', 0)))}"
+        f"  ｜  文件 Schema 待處理 {percent('document_schema_reject_pct', int(stats.get('documents_decided', 0)))}"
+        f"  ｜  確認式 Sink 寫回 {int(stats.get('documents_writeback_confirmed', 0)):,} 筆"
+    )
+
+
+def _quality_reader_worker(path_queue, result_queue, stop_event, poll_interval: float = 1.0):
+    """Tail the run-scoped JSONL incrementally outside the Tk thread."""
+    reader = QualityTailReader()
+    while not stop_event.is_set():
+        reset = False
+        try:
+            while True:
+                path = str(path_queue.get_nowait() or "")
+                reader = QualityTailReader(path)
+                reset = True
+        except pyqueue.Empty:
+            pass
+        try:
+            changed, stats = reader.poll()
+            if changed or reset:
+                try:
+                    while True:
+                        result_queue.get_nowait()
+                except pyqueue.Empty:
+                    pass
+                try:
+                    result_queue.put_nowait(stats)
+                except pyqueue.Full:
+                    pass
+        except Exception:
+            # A corrupt log must not close the GUI or interrupt processing.
+            pass
+        stop_event.wait(max(0.05, float(poll_interval)))
+
+
 def _audit_reader_worker(path_queue, result_queue, stop_event, poll_interval: float = 1.0):
     """Parse growing audit CSVs off the Tk event-loop thread."""
     audit_path = ""
@@ -669,6 +714,17 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         daemon=True,
     )
     _audit_reader_thread.start()
+    _quality_stats = QualityAccumulator().snapshot()
+    _quality_path_queue = pyqueue.Queue(maxsize=2)
+    _quality_result_queue = pyqueue.Queue(maxsize=1)
+    _quality_reader_stop = threading.Event()
+    _quality_reader_thread = threading.Thread(
+        target=_quality_reader_worker,
+        args=(_quality_path_queue, _quality_result_queue, _quality_reader_stop),
+        name="quality-gui-reader", daemon=True,
+    )
+    _quality_reader_thread.start()
+    _quality_expanded = False
     _recheck_expanded = False
     _reduction_expanded = False
     _audit_expanded = False
@@ -794,6 +850,56 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         lbl_reduction.configure(wraplength=wrap)
 
     status_row.bind("<Configure>", _resize_status_detail_wrap)
+
+    # Run-scoped quality is separate from LLM performance distributions.
+    quality_section = ttk.Frame(frm)
+    quality_section.pack(fill="x", pady=(0, 4))
+    quality_toggle = ttk.Button(quality_section)
+    quality_toggle.pack(fill="x")
+    quality_summary = ttk.Label(
+        quality_section, text=format_quality_summary(_quality_stats),
+        anchor="w", justify="left", wraplength=720,
+    )
+    quality_summary.pack(fill="x", padx=8, pady=(2, 3))
+    quality_frame = ttk.Frame(quality_section, padding=(8, 5))
+    quality_metrics = {}
+    for key, title in (
+        ("slice_initial_invalid_pct", "初次 JSON 不合法 / 已驗證切片"),
+        ("repair_success_pct", "修復成功 / 已完成修復嘗試"),
+        ("document_schema_reject_pct", "Schema pending / 已判定文件"),
+    ):
+        ttk.Label(quality_frame, text=title).pack(anchor="w")
+        quality_metrics[key] = ttk.Progressbar(
+            quality_frame, maximum=100, value=0,
+        )
+        quality_metrics[key].pack(fill="x", pady=(0, 3))
+    quality_codes = ttk.Label(quality_frame, anchor="w", justify="left", wraplength=720)
+    quality_codes.pack(fill="x")
+
+    def _refresh_quality():
+        quality_toggle.configure(text=f"{'▼' if _quality_expanded else '▶'} Processing Quality / 異常監控")
+        quality_summary.configure(text=format_quality_summary(_quality_stats))
+        for key, widget in quality_metrics.items():
+            widget.configure(value=float(_quality_stats.get(key) or 0))
+        codes = _quality_stats.get("error_codes", {}) or {}
+        top = sorted(codes.items(), key=lambda pair: (-pair[1], pair[0]))[:5]
+        quality_codes.configure(
+            text="主要錯誤（事件次數）： " + (
+                "｜".join(f"{code}: {count:,}" for code, count in top) if top else "尚無錯誤事件"
+            )
+        )
+
+    def _toggle_quality():
+        nonlocal _quality_expanded
+        _quality_expanded = not _quality_expanded
+        if _quality_expanded:
+            quality_frame.pack(fill="x")
+        else:
+            quality_frame.pack_forget()
+        _refresh_quality()
+
+    quality_toggle.configure(command=_toggle_quality)
+    _refresh_quality()
 
     # LLM token/context distributions are collapsed by default. The GUI reads
     # the append-only audit CSV so worker execution does not need GUI coupling.
@@ -1109,6 +1215,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         _update_labels()
 
     def _shutdown():
+        _quality_reader_stop.set()
         _audit_reader_stop.set()
         try:
             root.quit()
@@ -1124,7 +1231,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     # 事件輪詢：全部在 Tk 主緒
     def poll():
         nonlocal _tot, _done_cnt, _sched_cnt, _recheck_stats, _recheck_error_visible, _reduction_stats
-        nonlocal _audit_stats, _audit_path
+        nonlocal _audit_stats, _audit_path, _quality_stats
         try:
             updated = False
             while True:
@@ -1167,6 +1274,16 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                     if _reduction_stats.get("run_status") == "cancelled":
                         cancel_status.configure(text="Cancelled / safely drained")
                         cancel_button.configure(state="disabled")
+                elif evt == _GuiEvents.QUALITY_PATH:
+                    try:
+                        while True:
+                            _quality_path_queue.get_nowait()
+                    except pyqueue.Empty:
+                        pass
+                    try:
+                        _quality_path_queue.put_nowait(str(payload or ""))
+                    except pyqueue.Full:
+                        pass
                 elif evt == _GuiEvents.AUDIT_PATH:
                     _audit_path = str(payload or "")
                     try:
@@ -1182,6 +1299,16 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                     _shutdown(); return
         except pyqueue.Empty:
             pass
+
+        quality_updated = False
+        try:
+            while True:
+                _quality_stats = _quality_result_queue.get_nowait()
+                quality_updated = True
+        except pyqueue.Empty:
+            pass
+        if quality_updated:
+            _refresh_quality()
 
         audit_updated = False
         try:
@@ -1224,6 +1351,8 @@ class _GUIClient:
         self._q.put((_GuiEvents.REDUCTION, dict(stats)))
     def set_audit_path(self, audit_path: str):
         self._q.put((_GuiEvents.AUDIT_PATH, str(audit_path or "")))
+    def set_quality_event_path(self, path: str):
+        self._q.put((_GuiEvents.QUALITY_PATH, str(path or "")))
     def cancellation_requested(self) -> bool:
         return bool(self._cancel_event is not None and self._cancel_event.is_set())
 
