@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Iterable, Tuple, Any, Optional, List, Dict
 
 from czjLLM.prompt_pipeline.pending_central import mark_not_running, record_adjustment
+from czjLLM.utilities.processing_quality import classify_schema_error, emit_quality_event
 from czjLLM.es_mode.output_profiles import OutputProfileValidationError
 from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from czjLLM.utilities.combine_utils import merge_dict_slices
@@ -598,6 +599,21 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             )
         except Exception as ex:
             tlog_warn(f"⚠️ schema 失敗稽核紀錄寫入異常（pk={pk}）：{ex}")
+        # A completed invalid document is a document-level decision, not a
+        # failed slice.  Do not let audit failures change pending semantics.
+        try:
+            emit_quality_event(
+                getattr(ctx, "llm_call_audit_path", ""),
+                run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+                event="document_schema_rejected",
+                code=classify_schema_error(msg),
+                scope="document", outcome="pending",
+                document_id=str(pk),
+            )
+        except Exception as quality_error:
+            tlog_warn(
+                f"⚠️ processing_quality audit failed: {type(quality_error).__name__}"
+            )
         log_hint = (
             f"；錯誤紀錄已保存於 {schema_log_path}"
             if schema_log_path is not None
@@ -960,6 +976,22 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     confirm_writeback = getattr(sink, "confirm_writeback", None)
                     if callable(confirm_writeback):
                         confirm_writeback()
+
+                    # ES acknowledgement occurs before the success event. For
+                    # non-ES sinks the successful write_main is the contract.
+                    try:
+                        emit_quality_event(
+                            getattr(ctx, "llm_call_audit_path", ""),
+                            run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+                            event="document_writeback_confirmed",
+                            code="WRITEBACK_CONFIRMED",
+                            scope="document", outcome="confirmed",
+                            document_id=str(pk),
+                        )
+                    except Exception as quality_error:
+                        tlog_warn(
+                            f"⚠️ processing_quality audit failed: {type(quality_error).__name__}"
+                        )
 
                     # 完成後收尾
                     try:

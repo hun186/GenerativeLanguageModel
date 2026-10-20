@@ -73,3 +73,28 @@ def test_known_schema_categories():
     assert classify_schema_error("precision='day' requires a date-only time_iso") == "SCHEMA_TIME_PRECISION"
     assert classify_schema_error("missing event_ids reference") == "SCHEMA_EVENT_REFERENCE"
     assert classify_schema_error("other bad payload") == "SCHEMA_OTHER"
+
+
+def test_quality_gui_wiring_and_percent_unit_labels():
+    from pathlib import Path
+    from czjLLM.job_manager.win_gui import format_quality_summary
+    stats = QualityAccumulator().snapshot()
+    text = format_quality_summary(stats)
+    assert "樣本不足" in text and "0 筆" in text
+    gui = Path("czjLLM/job_manager/win_gui.py").read_text(encoding="utf-8")
+    runtime = Path("czjLLM/sql_mode/runtime/runtime_ui.py").read_text(encoding="utf-8")
+    assert "_quality_reader_worker" in gui
+    assert "set_quality_event_path" in gui and "QUALITY_PATH" in gui
+    assert "quality_frame.pack_forget()" in gui
+    assert "quality_event_path(audit_path)" in runtime
+
+
+def test_production_emitters_are_connected_without_console_regex():
+    from pathlib import Path
+    pipeline = Path("czjLLM/prompt_pipeline/pipeline_controller.py").read_text(encoding="utf-8")
+    row = Path("czjLLM/sql_mode/runtime/row_merger_generic.py").read_text(encoding="utf-8")
+    assert '"slice_json_validation", "JSON_SYNTAX_INVALID"' in pipeline
+    assert '"slice_json_repair", "JSON_REPAIR_SUCCEEDED"' in pipeline
+    assert 'event="document_schema_rejected"' in row
+    assert 'event="document_writeback_confirmed"' in row
+    assert row.index('confirm_writeback()') < row.index('event="document_writeback_confirmed"')

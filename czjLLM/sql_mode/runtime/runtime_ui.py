@@ -1,5 +1,6 @@
 import threading, time
 from czjLLM.job_manager.win_gui import try_start_gui, make_gui_sink
+from czjLLM.utilities.processing_quality import quality_event_path
 from czjLLM.job_manager.console_ui import setup_console_ui, add_log_sink
 from ..utils.term_lock import TQDM_LOCK
 
@@ -13,7 +14,10 @@ def prepare_ui(ctx, total_rows: int):
         ctx.gui_handle = gui
         ctx.gui_sink = gui_sink
         try:
-            gui.set_audit_path(getattr(ctx, "llm_call_audit_path", "") or "")
+            audit_path = getattr(ctx, "llm_call_audit_path", "") or ""
+            gui.set_audit_path(audit_path)
+            quality_path = quality_event_path(audit_path)
+            gui.set_quality_event_path(str(quality_path) if quality_path else "")
         except Exception:
             pass
 
