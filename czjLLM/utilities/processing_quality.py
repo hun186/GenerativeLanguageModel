@@ -141,7 +141,7 @@ class QualityAccumulator:
         event_id = record.get("event_id")
         event = record.get("event")
         code = record.get("code")
-        if not isinstance(event_id, str) or not event_id:
+        if not isinstance(event_id, str) or not event_id.strip():
             return False
         if not isinstance(event, str) or event not in _EVENT_CODES:
             return False
@@ -152,14 +152,14 @@ class QualityAccumulator:
                 "document" if event.startswith("document_") else "slice"):
             return False
         if event.startswith("document_") and not (
-                isinstance(record.get("document_id"), str) and record["document_id"]):
+                isinstance(record.get("document_id"), str) and record["document_id"].strip()):
             return False
         if event_id in self._event_signatures:
             return False
         try:
             signature = hashlib.sha256(json.dumps(
                 record, sort_keys=True, ensure_ascii=False,
-                separators=(",", ":"),
+                separators=(",", ":"), allow_nan=False,
             ).encode("utf-8")).digest()
         except (TypeError, ValueError, UnicodeError):
             # An in-process non-JSON record is not an auditable event.
@@ -198,7 +198,7 @@ class QualityAccumulator:
         try:
             signature = hashlib.sha256(json.dumps(
                 record, sort_keys=True, ensure_ascii=False,
-                separators=(",", ":"),
+                separators=(",", ":"), allow_nan=False,
             ).encode("utf-8")).digest()
         except (TypeError, ValueError, UnicodeError):
             return False
@@ -224,6 +224,11 @@ class QualityAccumulator:
             "document_schema_reject_pct": round(100 * len(failed_docs) / len(decided), 2) if decided else None,
             "error_codes": dict(self._codes.most_common()),
         }
+
+
+def _reject_nonstandard_json_constant(value: str):
+    """Strict JSON excludes NaN, Infinity and -Infinity (Python accepts by default)."""
+    raise ValueError("non-standard JSON constant")
 
 
 class QualityTailReader:
@@ -294,7 +299,10 @@ class QualityTailReader:
                         break
                     self.offset = fp.tell()
                     try:
-                        parsed = json.loads(line.decode("utf-8"))
+                        parsed = json.loads(
+                            line.decode("utf-8"),
+                            parse_constant=_reject_nonstandard_json_constant,
+                        )
                     except (UnicodeDecodeError, ValueError):
                         self.skipped_corrupt_lines += 1
                         continue

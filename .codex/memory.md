@@ -96,3 +96,5 @@
 - Additional defensive hardening before latest re-review: validate quality event/code pairs and optional scope, and reject document events lacking document IDs; synthetic legacy fixtures without a scope stay accepted. Targeted tests added. No LLM or live sink functionality was changed; Hosted CI status remains a separate, runner-allocation issue until proven otherwise.
 
 - Latest PR #219 Codex also found conflicting duplicate event IDs and GUI reset-to-empty suppression. Accepted-event IDs now hold a compact canonical JSON SHA-256 signature and only identical replays bypass corrupt-line accounting; a file generation reset is `changed=True` so the Tk poller clears old stats. Tests added; exact-head Hosted CI and Codex re-review still outstanding.
+
+- New Codex P2 on 5abe4cd: NaN/Infinity parsed as JSON and blank event_id accepted. Added strict parse_constant decoder, nonblank IDs, canonical signature finite-float requirement and regression. Fresh Codex/CI exact-head evidence still required; Hosted Linux runners have repeatedly not been provisioned (runner_id=0, steps=[]); do not claim tests passed. PR remains unmerged.

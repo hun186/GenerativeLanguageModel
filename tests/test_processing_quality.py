@@ -174,3 +174,15 @@ def test_reader_reset_alone_reports_changed_for_gui_consumer(tmp_path):
     path.write_bytes(b"")
     changed, stats = reader.poll()
     assert changed and stats["events"] == 0
+
+
+def test_quality_accumulator_rejects_nonstandard_python_nan_and_blank_ids():
+    a = QualityAccumulator()
+    record = {"schema_version": 1, "event_id": "x",
+              "event": "slice_json_validation", "code": "JSON_VALID",
+              "extra": float("nan")}
+    assert a.add(record) is False
+    record.pop("extra")
+    record["event_id"] = " \t "
+    assert a.add(record) is False
+    assert a.snapshot()["events"] == 0

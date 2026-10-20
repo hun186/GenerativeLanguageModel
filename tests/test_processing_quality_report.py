@@ -292,3 +292,38 @@ def test_non_string_event_fields_are_degraded_not_type_errors(tmp_path):
     assert report["state"] == "degraded_corrupt_lines"
     assert report["skipped_corrupt_complete_lines"] == 1
     assert report["metrics"]["events"] == 0
+
+
+def test_nonstandard_json_constants_are_corrupt_complete_lines(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261021-000001-1.csv"
+    _emit(audit, event="slice_json_validation", code="JSON_VALID",
+          scope="slice", outcome="valid")
+    path = quality_event_path(str(audit))
+    valid = json.loads(path.read_text(encoding="utf-8"))
+    with path.open("ab") as fp:
+        for constant in ("NaN", "Infinity", "-Infinity"):
+            line = json.dumps(valid).rstrip("}") + ',"extra_measurement":' + constant + "}\n"
+            fp.write(line.encode("utf-8"))
+    out = report_for_audit(audit)["run"]
+    assert out["state"] == "degraded_corrupt_lines"
+    assert out["skipped_corrupt_complete_lines"] == 3
+    assert out["metrics"]["events"] == 1
+    assert out["metrics"]["slice_validation_attempts"] == 1
+
+
+def test_whitespace_only_event_id_and_document_id_are_not_accepted(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261021-000001-2.csv"
+    path = quality_event_path(str(audit))
+    lines = [
+        {"schema_version": 1, "event_id": " \t ", "event": "slice_json_validation",
+         "code": "JSON_VALID"},
+        {"schema_version": 1, "event_id": "valid", "event": "document_schema_rejected",
+         "code": "SCHEMA_OTHER", "document_id": "\t"},
+    ]
+    path.write_text("".join(json.dumps(x) + "\n" for x in lines), encoding="utf-8")
+    out = report_for_audit(audit)["run"]
+    assert out["state"] == "degraded_corrupt_lines"
+    assert out["skipped_corrupt_complete_lines"] == 2
+    assert out["metrics"]["events"] == 0
+    assert out["metrics"]["slice_validation_attempts"] == 0
+    assert out["metrics"]["documents_decided"] == 0
