@@ -92,3 +92,5 @@
 - Corrupt newline-complete JSONL lines are surfaced as a degraded completeness warning, not silently absorbed into a successful report or counted in quality denominators. This change is read-only, backward compatible for old reader clients, and explicitly observable in offline reports.
 
 - Incremental quality reader retains O(1) bounded reread on each poll (first/last 512 committed bytes), detecting common in-place rewrites/rotation while preserving large log performance; avoids mislabeling valid repeated event IDs as malformed. If an adversarial rewrite changes only unmonitored interior bytes, offline reports cannot prove integrity and need a separate durable manifest/hash contract, not a made-up success signal.
+
+- A syntactically valid record must have a semantically matched event/code and (where present) scope; document events require a nonblank document_id. This prevents incomplete input from falsely raising `events` without affecting the relevant denominator. Deprecated test fixtures without explicit scope remain backward compatible.

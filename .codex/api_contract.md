@@ -137,3 +137,5 @@
 - Report `skipped_corrupt_complete_lines` and `state=degraded_corrupt_lines` explicitly warn whenever newline-terminated UTF-8/JSON decoding fails; partial last lines remain excluded until complete. Counters do not count corrupt records as valid attempts.
 
 - Existing `QualityTailReader` now exposes `skipped_corrupt_lines` counting both undecodable complete JSONL and valid-JSON records rejected by the quality accumulator (except valid duplicate IDs). Incremental input generation detection uses inode plus bounded consumed head/tail consistency, not size alone. Existing GUI `poll() -> (changed, stats)` remains unchanged.
+
+- Quality event contracts are per-event code allowlists. JSON validation only accepts JSON_VALID / JSON_SYNTAX_INVALID; JSON repair only repair succeeded/failed; document schema rejection only SCHEMA_*; document writeback confirmation only WRITEBACK_CONFIRMED. Emitters reject mismatched scope/code; readers degrade on unsupported event/code combinations, wrong supplied scope, missing document identity, or non-integer schema_version. Missing scope in earlier synthetic fixtures remains accepted for compatibility.

@@ -92,3 +92,5 @@
 - First PR #219 Codex exact-head review found P2: complete malformed JSONL rows were silently skipped, making offline report look complete. Fix now tracks `QualityTailReader.skipped_corrupt_lines` across polling/reset, surfaces degraded report status + count, with focused regression. Fresh Hosted CI/Codex review remain required.
 
 - Latest PR #219 Codex found P2 for unsupported complete event records and same-file rewritten contents when current size >= prior read offset; corrected QualityTailReader to distinguish duplicates from invalid schema and to reset generation on inode or bounded committed head/tail change. Added offline tests for both. Hosted CI failed in prior heads with job-log API 404 BlobNotFound; cause not proven; must re-run/inspect exact head before marking accepted.
+
+- Additional defensive hardening before latest re-review: validate quality event/code pairs and optional scope, and reject document events lacking document IDs; synthetic legacy fixtures without a scope stay accepted. Targeted tests added. No LLM or live sink functionality was changed; Hosted CI status remains a separate, runner-allocation issue until proven otherwise.

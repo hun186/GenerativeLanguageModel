@@ -20,12 +20,16 @@ _KNOWN_EVENTS = {
     "slice_json_validation", "slice_json_repair",
     "document_schema_rejected", "document_writeback_confirmed",
 }
-_KNOWN_CODES = {
-    "JSON_VALID", "JSON_SYNTAX_INVALID", "JSON_REPAIR_SUCCEEDED",
-    "JSON_REPAIR_FAILED", "SCHEMA_MISSING_FIELD",
-    "SCHEMA_TIME_PRECISION", "SCHEMA_EVENT_REFERENCE",
-    "SCHEMA_OTHER", "WRITEBACK_CONFIRMED",
+_EVENT_CODES = {
+    "slice_json_validation": {"JSON_VALID", "JSON_SYNTAX_INVALID"},
+    "slice_json_repair": {"JSON_REPAIR_SUCCEEDED", "JSON_REPAIR_FAILED"},
+    "document_schema_rejected": {
+        "SCHEMA_MISSING_FIELD", "SCHEMA_TIME_PRECISION",
+        "SCHEMA_EVENT_REFERENCE", "SCHEMA_OTHER",
+    },
+    "document_writeback_confirmed": {"WRITEBACK_CONFIRMED"},
 }
+_KNOWN_CODES = set().union(*_EVENT_CODES.values())
 
 
 def quality_event_path(audit_path: str) -> Path | None:
@@ -78,10 +82,10 @@ def emit_quality_event(
     path = quality_event_path(audit_path)
     if path is None:
         return None
-    if event not in _KNOWN_EVENTS or code not in _KNOWN_CODES:
-        raise ValueError("unknown quality event/code")
-    if scope not in {"slice", "document"}:
-        raise ValueError("invalid quality scope")
+    if event not in _EVENT_CODES or code not in _EVENT_CODES[event]:
+        raise ValueError("unknown or mismatched quality event/code")
+    if scope != ("document" if event.startswith("document_") else "slice"):
+        raise ValueError("mismatched quality event scope")
     data = {
         "schema_version": 1,
         "event_id": uuid4().hex,
@@ -130,14 +134,23 @@ class QualityAccumulator:
         self._writeback_confirmed = set()
 
     def add(self, record: dict) -> bool:
-        if not isinstance(record, dict) or record.get("schema_version") != 1:
+        if not isinstance(record, dict) or type(record.get("schema_version")) is not int:
+            return False
+        if record["schema_version"] != 1:
             return False
         event_id = record.get("event_id")
         event = record.get("event")
         code = record.get("code")
-        if not isinstance(event_id, str) or not event_id or event in (None, ""):
+        if not isinstance(event_id, str) or not event_id:
             return False
-        if event not in _KNOWN_EVENTS or code not in _KNOWN_CODES:
+        if event not in _EVENT_CODES or code not in _EVENT_CODES[event]:
+            return False
+        scope = record.get("scope")
+        if scope is not None and scope != (
+                "document" if event.startswith("document_") else "slice"):
+            return False
+        if event.startswith("document_") and not (
+                isinstance(record.get("document_id"), str) and record["document_id"]):
             return False
         if event_id in self._event_ids:
             return False

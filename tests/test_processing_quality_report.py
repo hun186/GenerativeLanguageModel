@@ -214,3 +214,20 @@ def test_atomic_replacement_equal_or_larger_resets_reader(tmp_path):
     assert path.stat().st_size >= size
     assert reader.poll()[1]["slice_initial_invalid"] == 0
     assert reader.poll()[1]["slice_validation_attempts"] == 1
+
+
+def test_mismatched_codes_and_missing_document_ids_are_degraded(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261020-222222-4.csv"
+    path = quality_event_path(str(audit))
+    records = [
+        {"schema_version": True, "event_id": "bool", "event": "slice_json_validation", "code": "JSON_VALID"},
+        {"schema_version": 1, "event_id": "wrong-code", "event": "slice_json_validation", "code": "WRITEBACK_CONFIRMED"},
+        {"schema_version": 1, "event_id": "wrong-scope", "event": "slice_json_validation", "code": "JSON_VALID", "scope": "document"},
+        {"schema_version": 1, "event_id": "no-pk", "event": "document_schema_rejected", "code": "SCHEMA_OTHER"},
+    ]
+    path.write_text("".join(json.dumps(x) + "\n" for x in records), encoding="utf-8")
+    report = report_for_audit(audit)["run"]
+    assert report["state"] == "degraded_corrupt_lines"
+    assert report["skipped_corrupt_complete_lines"] == len(records)
+    assert report["metrics"]["events"] == 0
+    assert report["metrics"]["documents_decided"] == 0

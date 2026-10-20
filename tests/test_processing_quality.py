@@ -146,3 +146,19 @@ def test_quality_tail_reader_does_not_count_valid_duplicate_as_corruption(tmp_pa
     reader = QualityTailReader(str(path))
     assert reader.poll()[1]["events"] == 1
     assert reader.skipped_corrupt_lines == 0
+
+
+def test_quality_producer_rejects_event_code_scope_mismatch(tmp_path):
+    audit = str(tmp_path / "llm_call_audit_invalid.csv")
+    import pytest
+    with pytest.raises(ValueError, match="mismatched quality event/code"):
+        emit_quality_event(
+            audit, event="slice_json_validation", code="SCHEMA_OTHER",
+            scope="slice", outcome="invalid"
+        )
+    with pytest.raises(ValueError, match="mismatched quality event scope"):
+        emit_quality_event(
+            audit, event="slice_json_validation", code="JSON_VALID",
+            scope="document", outcome="valid"
+        )
+    assert not quality_event_path(audit).exists()
