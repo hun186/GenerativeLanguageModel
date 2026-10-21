@@ -123,3 +123,5 @@
 - 2026-10-21 latest Codex P2 follow-up: Python permissive JSON parser accepted NaN/Infinity/-Infinity as valid complete events; whitespace-only event_id entered denominators. Fixed with rejecting parse_constant, stripped ID validation, strict direct-mapping allow_nan=False and focused regressions. This does not certify upstream CSV/XLSX sink persistence or live LLM acceptance.
 
 - 2026-10-21 PR #219: explicitly null `scope` is not equivalent to absent (legacy) `scope`; repaired the distinction. Full Linux CI is still blocked by jobs failing before runner allocation; this does not establish a successful pytest execution.
+
+- 2026-10-21 PR #219: deeply nested JSONL input could raise RecursionError and abort offline report or strand Tk reader. This is now classified as a complete corrupt line with a regression demonstrating later good events still count. No evidence that upstream 37k-row run or Windows deployed GUI has been validated with a real LLM after this change.

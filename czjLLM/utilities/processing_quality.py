@@ -161,7 +161,7 @@ class QualityAccumulator:
                 record, sort_keys=True, ensure_ascii=False,
                 separators=(",", ":"), allow_nan=False,
             ).encode("utf-8")).digest()
-        except (TypeError, ValueError, UnicodeError):
+        except (TypeError, ValueError, UnicodeError, RecursionError):
             # An in-process non-JSON record is not an auditable event.
             return False
         self._event_signatures[event_id] = signature
@@ -200,7 +200,7 @@ class QualityAccumulator:
                 record, sort_keys=True, ensure_ascii=False,
                 separators=(",", ":"), allow_nan=False,
             ).encode("utf-8")).digest()
-        except (TypeError, ValueError, UnicodeError):
+        except (TypeError, ValueError, UnicodeError, RecursionError):
             return False
         return signature == self._event_signatures[event_id]
 
@@ -303,7 +303,9 @@ class QualityTailReader:
                             line.decode("utf-8"),
                             parse_constant=_reject_nonstandard_json_constant,
                         )
-                    except (UnicodeDecodeError, ValueError):
+                    except (UnicodeDecodeError, ValueError, RecursionError):
+                        # A deeply nested complete line is corrupt input, not
+                        # a reason to abort polling or lose all later events.
                         self.skipped_corrupt_lines += 1
                         continue
                     if self.accumulator.add(parsed):

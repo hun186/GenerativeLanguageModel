@@ -145,3 +145,5 @@
 - Quality JSONL reader rejects nonstandard NaN/±Infinity JSON tokens; accumulator requires non-whitespace event IDs and document IDs for document events. Canonical event signatures reject non-finite Python float extras by allow_nan=False. Malformed full lines increase skipped_corrupt_complete_lines and do not contribute to quality metrics.
 
 - The optional legacy `scope` field is compatible ONLY when genuinely omitted. If supplied, `scope` must be the exact `slice` or `document` value derived from the event. Explicit JSON null, blank string, or mismatched scope degrades the report and never enters its denominator.
+
+- A recursion-depth failure while decoding a complete JSONL line counts as a rejected corrupt complete line; the reader continues with subsequent lines instead of aborting a whole report or keeping a stale GUI snapshot. GUI document error label is now 'LLM 文件結構異常（待處理）', describing observed post-merge output validation failures, not Elasticsearch mapping errors.

@@ -352,3 +352,31 @@ def test_explicit_null_or_blank_scope_degrades_but_absent_scope_is_legacy_ok(tmp
     assert run["metrics"]["events"] == 2
     assert run["metrics"]["slice_validation_attempts"] == 2
     assert run["metrics"]["documents_decided"] == 0
+
+
+def test_deeply_nested_complete_json_is_counted_corrupt_and_reader_continues(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261021-110000-1.csv"
+    path = quality_event_path(str(audit))
+    # Well-balanced JSON text, but exceeds CPython JSON decoder's safe
+    # recursion depth and must not abort the entire report/GUI reader.
+    excessively_nested = "[" * 2000 + "0" + "]" * 2000 + "\n"
+    accepted = {
+        "schema_version": 1, "event_id": "after-deep-error",
+        "event": "slice_json_validation", "code": "JSON_VALID",
+        "scope": "slice",
+    }
+    path.write_bytes(excessively_nested.encode("utf-8") +
+                     (json.dumps(accepted) + "\n").encode("utf-8"))
+    report = report_for_audit(audit)["run"]
+    assert report["state"] == "degraded_corrupt_lines"
+    assert report["skipped_corrupt_complete_lines"] == 1
+    assert report["metrics"]["slice_validation_attempts"] == 1
+    assert report["metrics"]["events"] == 1
+    from czjLLM.utilities.processing_quality import QualityTailReader
+    reader = QualityTailReader(str(path))
+    changed, snapshot = reader.poll()
+    assert changed is True
+    assert snapshot["events"] == 1
+    assert reader.skipped_corrupt_lines == 1
+    assert reader.offset == path.stat().st_size
+    assert reader.poll()[0] is False

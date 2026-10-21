@@ -198,3 +198,13 @@ def test_explicit_null_scope_rejected_but_absent_legacy_scope_accepted():
     assert not a.add({**legacy, "event_id": "bad2", "scope": ""})
     assert a.add({**legacy, "event_id": "ok", "scope": "slice"})
     assert a.snapshot()["events"] == 2
+
+
+def test_gui_quality_schema_failure_labels_are_unambiguous():
+    from pathlib import Path
+    from czjLLM.job_manager.win_gui import format_quality_summary
+    stats = QualityAccumulator().snapshot()
+    summary = format_quality_summary(stats)
+    assert "LLM 文件結構異常（待處理）" in summary
+    ui = Path("czjLLM/job_manager/win_gui.py").read_text(encoding="utf-8")
+    assert "文件結構驗證未通過 / 已判定文件" in ui
