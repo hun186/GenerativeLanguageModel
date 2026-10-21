@@ -186,3 +186,15 @@ def test_quality_accumulator_rejects_nonstandard_python_nan_and_blank_ids():
     record["event_id"] = " \t "
     assert a.add(record) is False
     assert a.snapshot()["events"] == 0
+
+
+
+def test_explicit_null_scope_rejected_but_absent_legacy_scope_accepted():
+    a = QualityAccumulator()
+    legacy = {"schema_version": 1, "event_id": "old", "event": "slice_json_validation",
+              "code": "JSON_VALID"}
+    assert a.add(legacy)
+    assert not a.add({**legacy, "event_id": "bad", "scope": None})
+    assert not a.add({**legacy, "event_id": "bad2", "scope": ""})
+    assert a.add({**legacy, "event_id": "ok", "scope": "slice"})
+    assert a.snapshot()["events"] == 2

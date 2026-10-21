@@ -143,3 +143,5 @@
 - Duplicate `event_id` is accepted as a harmless idempotent replay only when the canonical JSON record is identical; conflicting reuse counts as a degraded complete line. Reader reset publishes `changed=True` even when the new file is empty/invalid, preserving GUI update contract. Nonstring event/code values are rejected rather than raising TypeError.
 
 - Quality JSONL reader rejects nonstandard NaN/±Infinity JSON tokens; accumulator requires non-whitespace event IDs and document IDs for document events. Canonical event signatures reject non-finite Python float extras by allow_nan=False. Malformed full lines increase skipped_corrupt_complete_lines and do not contribute to quality metrics.
+
+- The optional legacy `scope` field is compatible ONLY when genuinely omitted. If supplied, `scope` must be the exact `slice` or `document` value derived from the event. Explicit JSON null, blank string, or mismatched scope degrades the report and never enters its denominator.

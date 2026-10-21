@@ -147,8 +147,8 @@ class QualityAccumulator:
             return False
         if not isinstance(code, str) or code not in _EVENT_CODES[event]:
             return False
-        scope = record.get("scope")
-        if scope is not None and scope != (
+        # Old fixtures may omit scope entirely; explicit null is invalid.
+        if "scope" in record and record["scope"] != (
                 "document" if event.startswith("document_") else "slice"):
             return False
         if event.startswith("document_") and not (

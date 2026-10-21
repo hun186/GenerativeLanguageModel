@@ -121,3 +121,5 @@
 - Codex round on head `79a4af64...` found 3 P2: conflicting duplicate IDs, mismatched event/code combinations (already addressed on `0cdf...`), and GUI stats not clearing when replacement has no valid records. Current correction hashes canonical accepted event records for exact-replay verification and signals `changed=True` on reader generation resets. Memory usage increases to store one compact fingerprint per accepted event ID; no original prompt/output stored.
 
 - 2026-10-21 latest Codex P2 follow-up: Python permissive JSON parser accepted NaN/Infinity/-Infinity as valid complete events; whitespace-only event_id entered denominators. Fixed with rejecting parse_constant, stripped ID validation, strict direct-mapping allow_nan=False and focused regressions. This does not certify upstream CSV/XLSX sink persistence or live LLM acceptance.
+
+- 2026-10-21 PR #219: explicitly null `scope` is not equivalent to absent (legacy) `scope`; repaired the distinction. Full Linux CI is still blocked by jobs failing before runner allocation; this does not establish a successful pytest execution.

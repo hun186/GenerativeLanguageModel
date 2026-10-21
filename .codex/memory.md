@@ -98,3 +98,5 @@
 - Latest PR #219 Codex also found conflicting duplicate event IDs and GUI reset-to-empty suppression. Accepted-event IDs now hold a compact canonical JSON SHA-256 signature and only identical replays bypass corrupt-line accounting; a file generation reset is `changed=True` so the Tk poller clears old stats. Tests added; exact-head Hosted CI and Codex re-review still outstanding.
 
 - New Codex P2 on 5abe4cd: NaN/Infinity parsed as JSON and blank event_id accepted. Added strict parse_constant decoder, nonblank IDs, canonical signature finite-float requirement and regression. Fresh Codex/CI exact-head evidence still required; Hosted Linux runners have repeatedly not been provisioned (runner_id=0, steps=[]); do not claim tests passed. PR remains unmerged.
+
+- 2026-10-21 PR #219 Codex P2 on `e6dd2bd...`: an explicitly provided null scope was accepted like an absent legacy scope. Fix now validates scope on field *presence* (reject explicit null/blank/mismatch) while still accepting truly absent legacy fixtures. Added reader/report + accumulator regression; exact-head Hosted acceptance and Codex review pending, no merge.

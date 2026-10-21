@@ -327,3 +327,28 @@ def test_whitespace_only_event_id_and_document_id_are_not_accepted(tmp_path):
     assert out["metrics"]["events"] == 0
     assert out["metrics"]["slice_validation_attempts"] == 0
     assert out["metrics"]["documents_decided"] == 0
+
+
+
+def test_explicit_null_or_blank_scope_degrades_but_absent_scope_is_legacy_ok(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261021-101000-1.csv"
+    path = quality_event_path(str(audit))
+    rows = [
+        {"schema_version": 1, "event_id": "old", "event": "slice_json_validation",
+         "code": "JSON_VALID"},
+        {"schema_version": 1, "event_id": "null", "event": "slice_json_validation",
+         "code": "JSON_VALID", "scope": None},
+        {"schema_version": 1, "event_id": "empty", "event": "slice_json_validation",
+         "code": "JSON_VALID", "scope": ""},
+        {"schema_version": 1, "event_id": "other", "event": "document_schema_rejected",
+         "code": "SCHEMA_OTHER", "document_id": "doc", "scope": None},
+        {"schema_version": 1, "event_id": "new", "event": "slice_json_validation",
+         "code": "JSON_VALID", "scope": "slice"},
+    ]
+    path.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+    run = report_for_audit(audit)["run"]
+    assert run["state"] == "degraded_corrupt_lines"
+    assert run["skipped_corrupt_complete_lines"] == 3
+    assert run["metrics"]["events"] == 2
+    assert run["metrics"]["slice_validation_attempts"] == 2
+    assert run["metrics"]["documents_decided"] == 0
