@@ -162,6 +162,20 @@ def test_python_api_rejects_empty_roots(tmp_path: Path):
         inventory_legacy_reduction_artifacts(path for path in [])
 
 
+def test_item_root_and_dot_reduction_alias_share_one_scan_budget(tmp_path: Path):
+    item = tmp_path / "item"
+    checkpoint = _checkpoint(item, "a" * 64)
+    report = inventory_legacy_reduction_artifacts(
+        [item_retention_root(item), item_retention_root(item / ".reduction")],
+        max_scan_entries=1,
+    )
+    assert report.scanned_entries == 1
+    assert report.candidate_directories == 1
+    assert report.unmarked_checkpoint_manifest_present_unverified == 1
+    assert not report.scan_limit_reached
+    assert checkpoint.exists()
+
+
 def test_cli_json_is_bounded_and_truncation_has_nonzero_exit(tmp_path: Path, capsys):
     prompt = tmp_path / "Prompt"
     _checkpoint(prompt / "one", "a" * 64)

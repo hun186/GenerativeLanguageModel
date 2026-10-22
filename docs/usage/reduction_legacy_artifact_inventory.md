@@ -20,8 +20,9 @@ python -m czjLLM.cli_tools.reduction_legacy_audit --prompt-root /path/to/Prompt 
 ```
 
 Repeat `--item-root` / `--prompt-root` for additional existing roots.
-Overlapping item/Prompt scopes are normalized **before discovery** so repeated
-root paths do not inflate statistics or exhaust the scan budget. Missing roots fail instead of returning an
+Overlapping item/Prompt scopes, repeated paths, and item-root versus
+item/.reduction aliases are normalized **before discovery** so repeated
+roots do not inflate statistics or exhaust the scan budget. Missing roots fail instead of returning an
 apparently complete empty report. The default scan
 bound is 10,000 entries shared across all roots. The CLI exits with code 2
 when truncated, invalid, or unable to inspect an entry: do not treat the
