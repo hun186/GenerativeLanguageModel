@@ -82,10 +82,13 @@ def inventory_legacy_reduction_artifacts(
         if any(_is_reparse_path(part) for part in (absolute, *absolute.parents)):
             raise ValueError("symlink or junction inventory roots are not accepted")
         canonical = root.path.resolve(strict=True)
-        if (root.kind is RetentionRootKind.PROMPT_CONTAINER
-                and canonical.name == ".reduction"):
-            raise ValueError("prompt root cannot be a .reduction metadata directory")
-        if root.kind is RetentionRootKind.ITEM and canonical.name == ".reduction":
+        reserved_parts = [i for i, part in enumerate(canonical.parts)
+                          if part.casefold() == ".reduction"]
+        if root.kind is RetentionRootKind.PROMPT_CONTAINER and reserved_parts:
+            raise ValueError("prompt root cannot be within a .reduction metadata directory")
+        if root.kind is RetentionRootKind.ITEM and reserved_parts:
+            if reserved_parts != [len(canonical.parts) - 1]:
+                raise ValueError("item root cannot be nested within a .reduction metadata directory")
             # L3 _discover accepts either the workspace or its .reduction
             # directory; they must share one budget/identity in the inventory.
             canonical = canonical.parent

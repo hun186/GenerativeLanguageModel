@@ -212,6 +212,10 @@ def test_reduction_metadata_root_is_not_a_prompt_container(tmp_path: Path):
             prompt_container_retention_root(reduction_root),
             item_retention_root(item),
         ], max_scan_entries=1)
+    with pytest.raises(ValueError, match="item root cannot be nested"):
+        inventory_legacy_reduction_artifacts([
+            item_retention_root(item / ".reduction" / "checkpoints")
+        ])
     assert checkpoint.exists()
 
 

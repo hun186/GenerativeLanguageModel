@@ -372,7 +372,7 @@ def _discover(
     def scan_item(base: Path) -> bool:
         if _is_reparse_path(base) or not base.is_dir():
             return True
-        reductions = [base] if base.name == ".reduction" else [base / ".reduction"]
+        reductions = [base] if base.name.casefold() == ".reduction" else [base / ".reduction"]
         for reduction in reductions:
             if _is_reparse_path(reduction) or not reduction.is_dir():
                 continue
@@ -397,7 +397,7 @@ def _discover(
                 # .reduction is an item-internal metadata root, never a
                 # separate item in Prompt-container traversal. Exclude it
                 # before charging the shared scan budget.
-                if child.name == ".reduction":
+                if child.name.casefold() == ".reduction":
                     continue
                 if not consume():
                     return found, True, scanned
