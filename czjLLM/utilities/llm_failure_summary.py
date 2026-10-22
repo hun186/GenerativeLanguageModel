@@ -140,32 +140,32 @@ def _summarize_snapshot(path: Path, *, max_bytes: int) -> tuple[dict, int]:
             # A source is already capped at max_bytes. A producer-written
             # exception field can legally exceed Python's default 128 KiB.
             csv.field_size_limit(max(prior_field_limit, max_bytes))
-        reader = csv.reader(io.StringIO(text, newline=""), strict=True)
-        try:
-            headers = next(reader, [])
-            if (headers.count("ok") != 1 or headers.count("error") != 1
-                    or len(headers) != len(set(headers))):
-                raise ValueError("audit CSV has invalid or duplicate required headers")
-            ok_idx = headers.index("ok")
-            error_idx = headers.index("error")
-            successful = failed = invalid = 0
-            counts = Counter()
-            for row in reader:
-                # csv.DictReader silently drops [], whereas csv.reader preserves
-                # blank physical rows. A quoted multi-line error remains one row.
-                if len(row) != len(headers):
-                    invalid += 1
-                    continue
-                outcome = row[ok_idx]
-                if outcome == "YES":
-                    successful += 1
-                elif outcome == "NO":
-                    failed += 1
-                    counts[classify_failed_call(row[error_idx])] += 1
-                else:
-                    invalid += 1
-        except (csv.Error, UnicodeError) as exc:
-            raise ValueError("audit CSV has malformed rows") from exc
+            reader = csv.reader(io.StringIO(text, newline=""), strict=True)
+            try:
+                headers = next(reader, [])
+                if (headers.count("ok") != 1 or headers.count("error") != 1
+                        or len(headers) != len(set(headers))):
+                    raise ValueError("audit CSV has invalid or duplicate required headers")
+                ok_idx = headers.index("ok")
+                error_idx = headers.index("error")
+                successful = failed = invalid = 0
+                counts = Counter()
+                for row in reader:
+                    # csv.DictReader silently drops [], whereas csv.reader preserves
+                    # blank physical rows. A quoted multi-line error remains one row.
+                    if len(row) != len(headers):
+                        invalid += 1
+                        continue
+                    outcome = row[ok_idx]
+                    if outcome == "YES":
+                        successful += 1
+                    elif outcome == "NO":
+                        failed += 1
+                        counts[classify_failed_call(row[error_idx])] += 1
+                    else:
+                        invalid += 1
+            except (csv.Error, UnicodeError) as exc:
+                raise ValueError("audit CSV has malformed rows") from exc
         finally:
             csv.field_size_limit(prior_field_limit)
     observed = successful + failed
