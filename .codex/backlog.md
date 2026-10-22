@@ -102,3 +102,8 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 - [x] Implement independent read-only report CLI for one run or bounded (max 100) run history: existing quality JSONL only, no raw doc IDs, no cross-run statistical mixing, optional atomic JSON report.
 - [ ] Verify exact-head Hosted focused offline tests and formal Codex review on this PR, resolve findings; do not merge until explicit authorization and tomorrow's pinned #218 Windows acceptance remains unaffected.
 - [ ] Continue taxonomy, filtering/drill-down, retention/rotation, and full Windows UI validation as separate stages; no LLM-dependent acceptance claims.
+
+### 2026-10-22 Reduction v1.1 read-only legacy inventory (PR pending)
+- [ ] Review bounded, count-only inventory for unmarked checkpoint/runtime directories under approved L3 item/prompt scopes; no file reads, migration, ownership adoption, or deletion.
+- [ ] Verify Hosted exact-head Linux offline E2E plus focused new and L3 retention regressions, then obtain Codex review and address threads before requesting merge authorization.
+- [ ] A future migration/GC adoption needs an entirely separate safety contract; checkpoint coordination requires evidence. #203 Semantic Cache remains deferred.
