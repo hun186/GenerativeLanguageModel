@@ -85,3 +85,9 @@ fields: normal fields are source slices, while quoted fields write
 contiguous spans into a StringIO buffer. This keeps memory proportional
 to the bounded audit input instead of multiplying allocations for each
 character. A multi-megabyte quoted error regression tracks peak memory.
+
+Every CSV row is bounded by the already-validated header width before any
+extra field is buffered. Header discovery also has a 128-field hard cap,
+comfortably above the audit producer schema. Malformed comma-flood rows
+fail explicitly and cannot multiply memory usage through millions of
+empty per-field Python objects.

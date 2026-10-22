@@ -127,12 +127,14 @@ def _read_bounded_csv(path: Path, *, max_bytes: int) -> tuple[str, int]:
         raise ValueError("audit CSV has invalid UTF-8") from exc
 
 
-def _iter_audit_csv_rows(text: str):
+def _iter_audit_csv_rows(text: str, *, field_limit: list[int]):
     """Parse bounded producer CSV with O(input-size) memory, no global state.
 
     Unquoted fields use one source slice; quoted fields accumulate contiguous
     spans via StringIO instead of storing a Python list entry per character.
     Handles CSV writer escaping, embedded CR/LF, blank rows and strict quotes.
+    The caller narrows field_limit[0] to the validated header width before
+    reading any data rows. Excess columns fail before allocating fields.
     """
     i = 0
     length = len(text)
@@ -157,6 +159,8 @@ def _iter_audit_csv_rows(text: str):
             continue
         if ch == ',' or ch in '\r\n':
             if ch == ',' or row or field_start != i or after_quotes:
+                if len(row) >= field_limit[0]:
+                    raise ValueError("audit CSV has too many fields")
                 row.append(quoted.getvalue() if after_quotes else text[field_start:i])
             if ch == ',':
                 i += 1
@@ -180,6 +184,8 @@ def _iter_audit_csv_rows(text: str):
     if in_quotes:
         raise ValueError("audit CSV has malformed rows")
     if row or field_start != i or after_quotes:
+        if len(row) >= field_limit[0]:
+            raise ValueError("audit CSV has too many fields")
         row.append(quoted.getvalue() if after_quotes else text[field_start:i])
         yield row
 
@@ -187,11 +193,15 @@ def _iter_audit_csv_rows(text: str):
 def _summarize_snapshot(path: Path, *, max_bytes: int) -> tuple[dict, int]:
     """Read one snapshot and report the verified bytes for history budgeting."""
     text, actual_size = _read_bounded_csv(path, max_bytes=max_bytes)
-    reader = iter(_iter_audit_csv_rows(text))
+    # Cap even malformed header rows before their width is known. The audit
+    # producer emits far fewer than 128 columns; narrow after validation.
+    field_limit = [128]
+    reader = iter(_iter_audit_csv_rows(text, field_limit=field_limit))
     headers = next(reader, [])
     if (headers.count("ok") != 1 or headers.count("error") != 1
             or len(headers) != len(set(headers))):
         raise ValueError("audit CSV has invalid or duplicate required headers")
+    field_limit[0] = len(headers)
     ok_idx = headers.index("ok")
     error_idx = headers.index("error")
     successful = failed = invalid = 0

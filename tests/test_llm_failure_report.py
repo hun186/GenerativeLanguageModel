@@ -163,6 +163,34 @@ def test_long_csv_error_field_does_not_amplify_per_character_memory(tmp_path: Pa
     assert peak_bytes < size * 6
 
 
+def test_csv_excess_fields_fail_before_multi_megabyte_buffering(tmp_path: Path):
+    import tracemalloc
+    path = tmp_path / "llm_call_audit_20261022-comma-flood.csv"
+    # The approved header has two columns. A malformed row with millions of
+    # empty fields must be rejected immediately at the third column, without
+    # retaining the entire row as a Python object list.
+    path.write_bytes(b"ok,error\nNO," + b"," * (4 * 1024 * 1024) + b"\n")
+    original = path.read_bytes()
+    tracemalloc.start()
+    try:
+        with pytest.raises(ValueError, match="too many fields"):
+            summarize_llm_failure_audit(path)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert peak < len(original) * 5
+    assert path.read_bytes() == original
+
+
+def test_csv_header_field_bound_and_valid_width(tmp_path: Path):
+    path = tmp_path / "llm_call_audit_20261022-width.csv"
+    _audit(path, [("NO", 'ReadTimeout, "sample"'), ("YES", "")])
+    assert summarize_llm_failure_audit(path)["failed_call_attempts"] == 1
+    path.write_bytes(b"ok,error\nNO,timeout,unexpected\n")
+    with pytest.raises(ValueError, match="too many fields"):
+        summarize_llm_failure_audit(path)
+
+
 def test_empty_denominator_unknown_and_header_requirements(tmp_path: Path):
     path = tmp_path / "llm_call_audit_empty.csv"
     _audit(path, [])
