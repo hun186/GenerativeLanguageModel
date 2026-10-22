@@ -246,7 +246,9 @@ def test_history_rejects_simulated_windows_junction_scope(tmp_path: Path, monkey
                 metadata.st_dev == tmp_path.lstat().st_dev) or original(metadata)
 
     monkeypatch.setattr(mod, "_is_reparse_or_link", simulated)
-    with pytest.raises(ValueError, match="real directory"):
+    # The earlier no-follow ancestor snapshot rejects this junction before
+    # the later directory-type check; that early refusal is intentional.
+    with pytest.raises(ValueError, match="symlink or reparse audit path components"):
         llm_failure_history(tmp_path)
 
 
