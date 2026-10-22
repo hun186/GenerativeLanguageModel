@@ -198,6 +198,23 @@ def test_same_directory_as_item_and_prompt_root_is_not_double_scanned(tmp_path: 
     assert not prompt_only.scan_limit_reached
 
 
+def test_reduction_metadata_root_is_not_a_prompt_container(tmp_path: Path):
+    item = tmp_path / "item"
+    checkpoint = _checkpoint(item, "a" * 64)
+    reduction_root = item / ".reduction"
+    with pytest.raises(ValueError, match="prompt root cannot"):
+        inventory_legacy_reduction_artifacts([
+            item_retention_root(item),
+            prompt_container_retention_root(reduction_root),
+        ], max_scan_entries=1)
+    with pytest.raises(ValueError, match="prompt root cannot"):
+        inventory_legacy_reduction_artifacts([
+            prompt_container_retention_root(reduction_root),
+            item_retention_root(item),
+        ], max_scan_entries=1)
+    assert checkpoint.exists()
+
+
 def test_cli_json_is_bounded_and_truncation_has_nonzero_exit(tmp_path: Path, capsys):
     prompt = tmp_path / "Prompt"
     _checkpoint(prompt / "one", "a" * 64)

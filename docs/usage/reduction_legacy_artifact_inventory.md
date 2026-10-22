@@ -71,3 +71,7 @@ contract, and Reduction semantic fingerprints are unchanged.
 For a Prompt-container scan, the container's own `.reduction` directory
 is **never** an item and is skipped without consuming the entry budget;
 this remains true when one directory is supplied in both item and prompt scopes.
+
+A `.reduction` directory may be provided as an **item** scan alias, but is
+explicitly rejected as a **Prompt-container** root; the latter would otherwise
+misclassify internal checkpoint/runtime directories as child workspaces.
