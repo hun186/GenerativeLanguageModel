@@ -83,6 +83,8 @@ def inventory_legacy_reduction_artifacts(
             raise ValueError("symlink or junction inventory roots are not accepted")
         canonical = root.path.resolve(strict=True)
         unique_roots[(root.kind, canonical)] = RetentionRoot(canonical, root.kind)
+    if not unique_roots:
+        raise ValueError("at least one approved inventory root is required")
 
     prompt_roots = {path for kind, path in unique_roots if kind is RetentionRootKind.PROMPT_CONTAINER}
     approved = []

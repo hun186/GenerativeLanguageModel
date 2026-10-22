@@ -155,6 +155,13 @@ def test_missing_roots_fail_and_overlapping_scopes_do_not_double_count(tmp_path:
     assert report.scanned_entries == 2
 
 
+def test_python_api_rejects_empty_roots(tmp_path: Path):
+    with pytest.raises(ValueError, match="at least one approved"):
+        inventory_legacy_reduction_artifacts([])
+    with pytest.raises(ValueError, match="at least one approved"):
+        inventory_legacy_reduction_artifacts(path for path in [])
+
+
 def test_cli_json_is_bounded_and_truncation_has_nonzero_exit(tmp_path: Path, capsys):
     prompt = tmp_path / "Prompt"
     _checkpoint(prompt / "one", "a" * 64)
