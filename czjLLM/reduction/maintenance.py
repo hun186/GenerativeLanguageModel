@@ -20,6 +20,7 @@ from czjLLM.reduction.retention import (
     RetentionRootKind,
     _contained_child,
     _discover,
+    _is_reparse_path,
     item_retention_root,
 )
 
@@ -68,15 +69,31 @@ def inventory_legacy_reduction_artifacts(
     if type(max_scan_entries) is not int or max_scan_entries <= 0:
         raise ValueError("max_scan_entries must be a positive integer")
 
-    approved: list[RetentionRoot] = []
+    unique_roots: dict[tuple[RetentionRootKind, Path], RetentionRoot] = {}
     for supplied in roots:
         root = supplied if isinstance(supplied, RetentionRoot) else item_retention_root(supplied)
         if root.kind not in (RetentionRootKind.ITEM, RetentionRootKind.PROMPT_CONTAINER):
             raise ValueError("unsupported inventory root kind")
-        if root.path.is_symlink():
-            raise ValueError("symlink inventory roots are not accepted")
         if not root.path.is_dir():
             raise ValueError("inventory root must be an existing directory")
+        # Check every supplied path component BEFORE canonicalizing: Windows
+        # junctions and intermediate symlinks must never widen approval scope.
+        absolute = root.path.absolute()
+        if any(_is_reparse_path(part) for part in (absolute, *absolute.parents)):
+            raise ValueError("symlink or junction inventory roots are not accepted")
+        canonical = root.path.resolve(strict=True)
+        unique_roots[(root.kind, canonical)] = RetentionRoot(canonical, root.kind)
+
+    prompt_roots = {path for kind, path in unique_roots if kind is RetentionRootKind.PROMPT_CONTAINER}
+    approved = []
+    for (kind, path), root in unique_roots.items():
+        if kind is RetentionRootKind.ITEM and (
+            path.parent in prompt_roots or
+            (path.name == ".reduction" and path.parent.parent in prompt_roots)
+        ):
+            # Prompt traversal already covers this immediate item; do not
+            # exhaust the scan budget visiting the same child a second time.
+            continue
         approved.append(root)
 
     candidates, truncated, scanned = _discover(approved, max_scan_entries)

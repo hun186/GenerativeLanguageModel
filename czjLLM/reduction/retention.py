@@ -13,6 +13,7 @@ import os
 import re
 import secrets
 import shutil
+import stat
 from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 from enum import Enum
@@ -281,8 +282,19 @@ def _lease_is_active(path: Path, now: datetime) -> bool:
         return False
 
 
+def _is_reparse_path(path: Path) -> bool:
+    """Block symlinks and Windows junction/reparse points without following."""
+    try:
+        metadata = path.lstat()
+    except OSError:
+        return True
+    return (stat.S_ISLNK(metadata.st_mode) or
+            bool(getattr(metadata, "st_file_attributes", 0) &
+                 getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)))
+
+
 def _contained_child(path: Path, approved_parent: Path) -> bool:
-    if path.is_symlink() or approved_parent.is_symlink():
+    if _is_reparse_path(path) or _is_reparse_path(approved_parent):
         return False
     try:
         resolved = path.resolve(strict=True)
@@ -358,18 +370,20 @@ def _discover(
         return True
 
     def scan_item(base: Path) -> bool:
+        if _is_reparse_path(base) or not base.is_dir():
+            return True
         reductions = [base] if base.name == ".reduction" else [base / ".reduction"]
         for reduction in reductions:
-            if reduction.is_symlink() or not reduction.is_dir():
+            if _is_reparse_path(reduction) or not reduction.is_dir():
                 continue
             for parent, kind in ((reduction / "checkpoints", ReductionArtifactKind.CHECKPOINT_RUN),
                                  (reduction / "runtime", ReductionArtifactKind.RUNTIME_ROUND)):
-                if parent.is_symlink() or not parent.is_dir():
+                if _is_reparse_path(parent) or not parent.is_dir():
                     continue
                 for child in os.scandir(parent):
                     if not consume():
                         return False
-                    if child.is_dir(follow_symlinks=False):
+                    if child.is_dir(follow_symlinks=False) and not _is_reparse_path(Path(child.path)):
                         found.append((Path(child.path), parent, kind))
         return True
 
@@ -377,12 +391,14 @@ def _discover(
         root = supplied if isinstance(supplied, RetentionRoot) else item_retention_root(supplied)
         base = root.path
         if root.kind is RetentionRootKind.PROMPT_CONTAINER:
-            if base.is_symlink() or not base.is_dir():
+            if _is_reparse_path(base) or not base.is_dir():
                 continue
             for child in os.scandir(base):
                 if not consume():
                     return found, True, scanned
-                if child.is_dir(follow_symlinks=False) and not scan_item(Path(child.path)):
+                if (child.is_dir(follow_symlinks=False)
+                        and not _is_reparse_path(Path(child.path))
+                        and not scan_item(Path(child.path))):
                     return found, True, scanned
         elif not scan_item(base):
             return found, True, scanned

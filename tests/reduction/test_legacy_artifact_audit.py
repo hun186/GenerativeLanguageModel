@@ -103,10 +103,34 @@ def test_symlinks_never_classified_as_plain_legacy(tmp_path: Path):
     assert report.candidate_directories == 1
     assert report.unmarked_checkpoint_manifest_nonregular == 1
     (item.parent / "item-link").symlink_to(item, target_is_directory=True)
-    with pytest.raises(ValueError, match="symlink inventory roots"):
+    with pytest.raises(ValueError, match="symlink or junction inventory roots"):
         inventory_legacy_reduction_artifacts([item_retention_root(item.parent / "item-link")])
 
     assert outside.exists()
+
+
+def test_windows_reparse_junction_guard_in_prompt_and_explicit_root(tmp_path: Path, monkeypatch):
+    # Simulate Windows FILE_ATTRIBUTE_REPARSE_POINT to cover 3.10/3.11,
+    # even when the Linux test filesystem cannot create real junctions.
+    from czjLLM.reduction import maintenance, retention
+
+    prompt = tmp_path / "Prompt"
+    blocked_item = prompt / "junction-like"
+    run = _checkpoint(blocked_item, "a" * 64)
+    safe = _checkpoint(prompt / "safe", "b" * 64)
+    real = retention._is_reparse_path
+
+    def junction_like(path: Path) -> bool:
+        return Path(path) == blocked_item or real(path)
+
+    monkeypatch.setattr(retention, "_is_reparse_path", junction_like)
+    monkeypatch.setattr(maintenance, "_is_reparse_path", junction_like)
+    report = inventory_legacy_reduction_artifacts([prompt_container_retention_root(prompt)])
+    assert report.unmarked_checkpoint_manifest_present_unverified == 1
+    assert report.candidate_directories == 1
+    assert run.exists() and safe.exists()
+    with pytest.raises(ValueError, match="symlink or junction"):
+        inventory_legacy_reduction_artifacts([item_retention_root(blocked_item)])
 
 
 def test_missing_roots_fail_and_overlapping_scopes_do_not_double_count(tmp_path: Path):
@@ -117,13 +141,18 @@ def test_missing_roots_fail_and_overlapping_scopes_do_not_double_count(tmp_path:
         inventory_legacy_reduction_artifacts([tmp_path / "wrong"])
     with pytest.raises(ValueError, match="existing directory"):
         inventory_legacy_reduction_artifacts([tmp_path / "wrong" / "missing"])
+    not_a_directory = tmp_path / "plain-file"
+    not_a_directory.write_text("still here", encoding="utf-8")
+    with pytest.raises(ValueError, match="existing directory"):
+        inventory_legacy_reduction_artifacts([not_a_directory])
     report = inventory_legacy_reduction_artifacts([
         item_retention_root(item), prompt_container_retention_root(prompt),
         item_retention_root(item),
     ])
     assert report.candidate_directories == 1
     assert report.unmarked_checkpoint_manifest_present_unverified == 1
-    assert report.scanned_entries >= 3
+    # Prompt child + one checkpoint, not three overlapping walks.
+    assert report.scanned_entries == 2
 
 
 def test_cli_json_is_bounded_and_truncation_has_nonzero_exit(tmp_path: Path, capsys):

@@ -20,8 +20,8 @@ python -m czjLLM.cli_tools.reduction_legacy_audit --prompt-root /path/to/Prompt 
 ```
 
 Repeat `--item-root` / `--prompt-root` for additional existing roots.
-Overlapping scopes are deduplicated by artifact identity (the bounded scan still
-accounts for every visited entry). Missing roots fail instead of returning an
+Overlapping item/Prompt scopes are normalized **before discovery** so repeated
+root paths do not inflate statistics or exhaust the scan budget. Missing roots fail instead of returning an
 apparently complete empty report. The default scan
 bound is 10,000 entries shared across all roots. The CLI exits with code 2
 when truncated, invalid, or unable to inspect an entry: do not treat the
@@ -52,8 +52,9 @@ document IDs, checkpoint keys, prompts, outputs or credentials.
 
 The audit is strictly **read-only**: no ownership adoption, migration,
 marker creation, lease, checkpoint resume, deletion, tombstone, or GC mutation.
-It never parses run/round JSON or inspects source contents. Symlink roots
-are rejected, symlink candidate directories ignored, and symlink markers/
+It never parses run/round JSON or inspects source contents. Symlink and Windows Junction/reparse roots (including intermediate path
+components) are rejected; junction/symlink candidate directories are ignored,
+and symlink markers/
 manifests never opened. Approval scope follows the L3 direct-child
 traversal; nothing is recursively discovered under unrelated item folders.
 
