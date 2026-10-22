@@ -60,6 +60,27 @@ def _has_untrusted_path_component(path: Path) -> bool:
                for component in (absolute, *absolute.parents))
 
 
+def _snapshot_path_components(path: Path) -> tuple:
+    """Capture no-follow identities of every ancestor before opening the leaf."""
+    absolute = path.absolute()
+    snapshot = tuple((component, component.lstat())
+                     for component in (absolute, *absolute.parents))
+    if any(_is_reparse_or_link(info) for _, info in snapshot):
+        raise ValueError("symlink or reparse audit path components are not allowed")
+    return snapshot
+
+
+def _verify_path_snapshot(snapshot: tuple) -> None:
+    """Fail closed when a directory path was replaced during a snapshot read."""
+    for component, before in snapshot:
+        after = component.lstat()
+        if (_is_reparse_or_link(after) or
+                before.st_dev != after.st_dev or
+                before.st_ino != after.st_ino or
+                stat.S_IFMT(before.st_mode) != stat.S_IFMT(after.st_mode)):
+            raise ValueError("audit directory identity changed during reading")
+
+
 def _same_open_file(a, b) -> bool:
     """The path's pre/post lstat identity must match the opened descriptor."""
     return (stat.S_ISREG(a.st_mode) and stat.S_ISREG(b.st_mode)
@@ -69,9 +90,8 @@ def _same_open_file(a, b) -> bool:
 def _read_bounded_csv(path: Path, *, max_bytes: int) -> tuple[str, int]:
     if not _audit_file_name(path):
         raise ValueError("expected a canonical llm_call_audit_<run_id>.csv filename")
-    if _has_untrusted_path_component(path):
-        raise ValueError("symlink or reparse audit path components are not allowed")
-    original = path.lstat()
+    component_snapshot = _snapshot_path_components(path)
+    original = component_snapshot[0][1]
     if _is_reparse_or_link(original):
         raise ValueError("symlink or reparse audit streams are not allowed")
     if not stat.S_ISREG(original.st_mode):
@@ -84,6 +104,7 @@ def _read_bounded_csv(path: Path, *, max_bytes: int) -> tuple[str, int]:
         start = os.fstat(stream.fileno())
         if not _same_open_file(original, start):
             raise ValueError("audit path changed or was redirected during open")
+        _verify_path_snapshot(component_snapshot)
         if start.st_size > max_bytes:
             raise ValueError("audit stream exceeds bounded read budget")
         data = stream.read(start.st_size + 1)
@@ -95,6 +116,7 @@ def _read_bounded_csv(path: Path, *, max_bytes: int) -> tuple[str, int]:
                 end.st_size != start.st_size or
                 end.st_mtime_ns != start.st_mtime_ns):
             raise ValueError("audit stream changed during reading")
+        _verify_path_snapshot(component_snapshot)
     if not data.endswith(b"\n"):
         raise ValueError("audit CSV has an incomplete trailing record")
     try:
