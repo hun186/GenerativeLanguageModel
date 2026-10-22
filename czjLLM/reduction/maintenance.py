@@ -21,6 +21,7 @@ from czjLLM.reduction.retention import (
     _contained_child,
     _discover,
     _is_reparse_path,
+    _is_reduction_metadata_name,
     item_retention_root,
 )
 
@@ -83,7 +84,7 @@ def inventory_legacy_reduction_artifacts(
             raise ValueError("symlink or junction inventory roots are not accepted")
         canonical = root.path.resolve(strict=True)
         reserved_parts = [i for i, part in enumerate(canonical.parts)
-                          if part.casefold() == ".reduction"]
+                          if _is_reduction_metadata_name(part)]
         if root.kind is RetentionRootKind.PROMPT_CONTAINER and reserved_parts:
             raise ValueError("prompt root cannot be within a .reduction metadata directory")
         if root.kind is RetentionRootKind.ITEM and reserved_parts:
@@ -100,8 +101,7 @@ def inventory_legacy_reduction_artifacts(
     approved = []
     for (kind, path), root in unique_roots.items():
         if kind is RetentionRootKind.ITEM and (
-            path.parent in prompt_roots or
-            (path.name == ".reduction" and path.parent.parent in prompt_roots)
+            path.parent in prompt_roots
         ):
             # Prompt traversal already covers this immediate item; do not
             # exhaust the scan budget visiting the same child a second time.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -8,8 +9,11 @@ import pytest
 from czjLLM.cli_tools.reduction_legacy_audit import main
 from czjLLM.reduction.maintenance import inventory_legacy_reduction_artifacts
 from czjLLM.reduction.retention import (
+    ReductionRetentionPolicy,
+    _is_reduction_metadata_name,
     item_retention_root,
     prompt_container_retention_root,
+    run_reduction_retention,
 )
 
 
@@ -217,6 +221,47 @@ def test_reduction_metadata_root_is_not_a_prompt_container(tmp_path: Path):
             item_retention_root(item / ".reduction" / "checkpoints")
         ])
     assert checkpoint.exists()
+
+
+
+def test_reserved_reduction_name_respects_host_filesystem_case_rules():
+    assert _is_reduction_metadata_name(".reduction")
+    assert _is_reduction_metadata_name(".REDUCTION") is (os.name == "nt")
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Windows treats .REDUCTION as .reduction")
+def test_posix_uppercase_item_is_not_reserved_metadata(tmp_path: Path):
+    prompt = tmp_path / "Prompt"
+    upper_item = prompt / ".REDUCTION"
+    upper_run = _checkpoint(upper_item, "a" * 64)
+    # A separate, lower-case metadata dir belonging to Prompt must be ignored
+    # as a Prompt-container child, not counted as another logical item.
+    parent_metadata = _checkpoint(prompt, "b" * 64)
+
+    report = inventory_legacy_reduction_artifacts(
+        [prompt_container_retention_root(prompt)],
+        max_scan_entries=2,
+    )
+    assert report.scanned_entries == 2
+    assert report.candidate_directories == 1
+    assert report.unmarked_checkpoint_manifest_present_unverified == 1
+    assert not report.scan_limit_reached
+    assert upper_run.exists() and parent_metadata.exists()
+
+    item_report = inventory_legacy_reduction_artifacts(
+        [item_retention_root(upper_item)], max_scan_entries=1,
+    )
+    alias_report = inventory_legacy_reduction_artifacts(
+        [item_retention_root(upper_item / ".reduction")], max_scan_entries=1,
+    )
+    assert item_report.unmarked_checkpoint_manifest_present_unverified == 1
+    assert alias_report.unmarked_checkpoint_manifest_present_unverified == 1
+    l3 = run_reduction_retention(
+        [prompt_container_retention_root(prompt)],
+        ReductionRetentionPolicy(enabled=True, dry_run=True),
+    )
+    assert l3.skipped_unowned == 1
+    assert upper_run.exists() and parent_metadata.exists()
 
 
 def test_cli_json_is_bounded_and_truncation_has_nonzero_exit(tmp_path: Path, capsys):

@@ -356,6 +356,11 @@ def _checkpoint_terminal(path: Path) -> bool:
     return state is not None and state.terminal_stop_reason is not None
 
 
+def _is_reduction_metadata_name(name: str) -> bool:
+    """Use OS path-name casing: distinct on POSIX, folded on Windows."""
+    return os.path.normcase(name) == os.path.normcase(".reduction")
+
+
 def _discover(
     roots: Iterable[str | Path | RetentionRoot], limit: int,
 ) -> tuple[list[tuple[Path, Path, ReductionArtifactKind]], bool, int]:
@@ -372,7 +377,7 @@ def _discover(
     def scan_item(base: Path) -> bool:
         if _is_reparse_path(base) or not base.is_dir():
             return True
-        reductions = [base] if base.name.casefold() == ".reduction" else [base / ".reduction"]
+        reductions = [base] if _is_reduction_metadata_name(base.name) else [base / ".reduction"]
         for reduction in reductions:
             if _is_reparse_path(reduction) or not reduction.is_dir():
                 continue
@@ -397,7 +402,7 @@ def _discover(
                 # .reduction is an item-internal metadata root, never a
                 # separate item in Prompt-container traversal. Exclude it
                 # before charging the shared scan budget.
-                if child.name.casefold() == ".reduction":
+                if _is_reduction_metadata_name(child.name):
                     continue
                 if not consume():
                     return found, True, scanned
