@@ -64,7 +64,7 @@ def test_empty_denominator_unknown_and_header_requirements(tmp_path: Path):
     out = summarize_llm_failure_audit(path)
     assert out["failed_call_pct"] is None
     assert out["state"] == "no_observed_calls"
-    path.write_text("ok\\nNO\\n", encoding="utf-8")
+    path.write_text("ok\nNO\n", encoding="utf-8")
     with pytest.raises(ValueError, match="headers"):
         summarize_llm_failure_audit(path)
 

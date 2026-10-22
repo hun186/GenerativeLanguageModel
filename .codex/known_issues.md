@@ -125,3 +125,8 @@
 - 2026-10-21 PR #219: explicitly null `scope` is not equivalent to absent (legacy) `scope`; repaired the distinction. Full Linux CI is still blocked by jobs failing before runner allocation; this does not establish a successful pytest execution.
 
 - 2026-10-21 PR #219: deeply nested JSONL input could raise RecursionError and abort offline report or strand Tk reader. This is now classified as a complete corrupt line with a regression demonstrating later good events still count. No evidence that upstream 37k-row run or Windows deployed GUI has been validated with a real LLM after this change.
+
+### 2026-10-22 LLM call failure taxonomy observational limitations
+
+- Existing per-request CSV `llm_call_audit_*.csv` contains `ok` and an **unredacted** exception `error` field. New read-only report categorizes those error texts internally but never emits them; raw CSV itself must remain access-controlled. Classification is conservative heuristic, not a proof of provider root cause or worker/stage failure coverage. The statistics denominator covers valid `ok=YES/NO` call attempts only and must not be treated as document failure rate.
+- Old audit records have no stable request UUID. The report intentionally counts observed rows, not deduplicated logical retries. Concurrent append, malformed/truncated CSV and bounded file sizes can prevent a complete report; fail closed rather than invent counts.
