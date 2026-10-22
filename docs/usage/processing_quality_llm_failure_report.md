@@ -73,7 +73,9 @@ Legacy audit rows are unchanged and cannot be retroactively reclassified.
 On POSIX, O_NONBLOCK prevents a substituted FIFO from blocking the reader;
 the opened file must still be a verified regular file.
 
-The CSV parser temporarily raises its per-field limit to the bounded
-input budget so valid producer-written error fields over Python's default
-128 KiB limit can be categorized. The global parser limit is restored
-under a local serialization lock after processing each snapshot.
+The bounded report uses a self-contained CSV record parser supporting
+producer-written quoting, escaped double quotes, embedded newlines and large
+error fields. It does **not** access or modify Python's process-global
+csv.field_size_limit(), even when other threads parse CSV concurrently.
+Malformed quoted-field syntax fails closed; empty physical records are
+counted as invalid observations.

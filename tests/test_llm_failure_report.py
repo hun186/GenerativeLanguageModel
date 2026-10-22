@@ -110,6 +110,38 @@ def test_large_valid_csv_error_field_within_file_budget(tmp_path: Path):
     assert csv.field_size_limit() == original_limit
 
 
+def test_large_csv_does_not_mutate_process_wide_parser_setting(tmp_path: Path, monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor
+    from czjLLM.utilities import llm_failure_summary as mod
+
+    path = tmp_path / "llm_call_audit_20261022-concurrent.csv"
+    _audit(path, [("NO", "ReadTimeout " + "private!" * 21000)])
+    before = csv.field_size_limit()
+    # Even if another unrelated CSV reader is using the global default,
+    # our parser must not call the setter/getter at all.
+    def forbidden_global_change(*args, **kwargs):
+        raise AssertionError("csv.field_size_limit should never be used")
+
+    monkeypatch.setattr(csv, "field_size_limit", forbidden_global_change)
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        reports = list(pool.map(lambda _: mod.summarize_llm_failure_audit(path), range(8)))
+    assert all(r["failure_categories"]["timeout"] == 1 for r in reports)
+    monkeypatch.undo()
+    assert csv.field_size_limit() == before
+
+
+def test_csv_writer_escaping_multiline_and_bad_postquote(tmp_path: Path):
+    path = tmp_path / "llm_call_audit_20261022-quotes.csv"
+    _audit(path, [("NO", 'ReadTimeout: "header, quoted"\nsecond line'),
+                  ("YES", "")])
+    result = summarize_llm_failure_audit(path)
+    assert result["failed_call_attempts"] == 1
+    assert result["successful_call_attempts"] == 1
+    path.write_bytes(b'ok,error\nNO,"closed"unexpected\n')
+    with pytest.raises(ValueError, match="malformed"):
+        summarize_llm_failure_audit(path)
+
+
 def test_empty_denominator_unknown_and_header_requirements(tmp_path: Path):
     path = tmp_path / "llm_call_audit_empty.csv"
     _audit(path, [])

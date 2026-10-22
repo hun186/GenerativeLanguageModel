@@ -7,9 +7,6 @@ failure rate.  Raw exceptions, prompts, URLs and file paths never leave here.
 from __future__ import annotations
 
 from collections import Counter
-import csv
-import threading
-import io
 import os
 from pathlib import Path
 import re
@@ -19,8 +16,6 @@ MAX_AUDIT_FILE_BYTES = 16 * 1024 * 1024
 MAX_HISTORY_BYTES = 64 * 1024 * 1024
 MAX_HISTORY_ENTRIES = 10000
 LOW_SAMPLE_THRESHOLD = 30
-# csv.field_size_limit() is global; serialize our temporary override.
-_CSV_FIELD_LOCK = threading.Lock()
 _AUDIT_FILENAME = re.compile(r"llm_call_audit_[A-Za-z0-9][A-Za-z0-9_.-]{0,100}\.csv\Z")
 
 # Apply only to rows where ok=NO.  Patterns classify exceptions, never content.
@@ -131,43 +126,94 @@ def _read_bounded_csv(path: Path, *, max_bytes: int) -> tuple[str, int]:
         raise ValueError("audit CSV has invalid UTF-8") from exc
 
 
+def _iter_audit_csv_rows(text: str):
+    """Parse bounded producer-style CSV without changing global parser state.
+
+    Accept CSV writer quoting, doubled quotes, commas and embedded CR/LF;
+    preserve blank physical records as empty rows. Fail closed on malformed
+    post-quote material and unterminated quoted fields. Input is already
+    UTF-8 decoded and limited by the snapshot byte budget.
+    """
+    i = 0
+    length = len(text)
+    row = []
+    field = []
+    in_quotes = False
+    ended_quotes = False
+    at_field_start = True
+    while i < length:
+        ch = text[i]
+        if in_quotes:
+            if ch == '"':
+                if i + 1 < length and text[i + 1] == '"':
+                    field.append('"')
+                    i += 2
+                    continue
+                in_quotes = False
+                ended_quotes = True
+            else:
+                field.append(ch)
+            i += 1
+            continue
+        if ch == ',':
+            row.append(''.join(field))
+            field = []
+            at_field_start = True
+            ended_quotes = False
+            i += 1
+            continue
+        if ch in '\r\n':
+            if row or not at_field_start or ended_quotes:
+                row.append(''.join(field))
+            yield row
+            row = []
+            field = []
+            at_field_start = True
+            ended_quotes = False
+            i += 2 if ch == '\r' and i + 1 < length and text[i + 1] == '\n' else 1
+            continue
+        if ended_quotes:
+            raise ValueError("audit CSV has malformed rows")
+        if ch == '"' and at_field_start:
+            in_quotes = True
+            at_field_start = False
+        else:
+            field.append(ch)
+            at_field_start = False
+        i += 1
+    if in_quotes:
+        raise ValueError("audit CSV has malformed rows")
+    if row or not at_field_start or ended_quotes:
+        row.append(''.join(field))
+        yield row
+
+
 def _summarize_snapshot(path: Path, *, max_bytes: int) -> tuple[dict, int]:
     """Read one snapshot and report the verified bytes for history budgeting."""
     text, actual_size = _read_bounded_csv(path, max_bytes=max_bytes)
-    with _CSV_FIELD_LOCK:
-        prior_field_limit = csv.field_size_limit()
-        try:
-            # A source is already capped at max_bytes. A producer-written
-            # exception field can legally exceed Python's default 128 KiB.
-            csv.field_size_limit(max(prior_field_limit, max_bytes))
-            reader = csv.reader(io.StringIO(text, newline=""), strict=True)
-            try:
-                headers = next(reader, [])
-                if (headers.count("ok") != 1 or headers.count("error") != 1
-                        or len(headers) != len(set(headers))):
-                    raise ValueError("audit CSV has invalid or duplicate required headers")
-                ok_idx = headers.index("ok")
-                error_idx = headers.index("error")
-                successful = failed = invalid = 0
-                counts = Counter()
-                for row in reader:
-                    # csv.DictReader silently drops [], whereas csv.reader preserves
-                    # blank physical rows. A quoted multi-line error remains one row.
-                    if len(row) != len(headers):
-                        invalid += 1
-                        continue
-                    outcome = row[ok_idx]
-                    if outcome == "YES":
-                        successful += 1
-                    elif outcome == "NO":
-                        failed += 1
-                        counts[classify_failed_call(row[error_idx])] += 1
-                    else:
-                        invalid += 1
-            except (csv.Error, UnicodeError) as exc:
-                raise ValueError("audit CSV has malformed rows") from exc
-        finally:
-            csv.field_size_limit(prior_field_limit)
+    reader = iter(_iter_audit_csv_rows(text))
+    headers = next(reader, [])
+    if (headers.count("ok") != 1 or headers.count("error") != 1
+            or len(headers) != len(set(headers))):
+        raise ValueError("audit CSV has invalid or duplicate required headers")
+    ok_idx = headers.index("ok")
+    error_idx = headers.index("error")
+    successful = failed = invalid = 0
+    counts = Counter()
+    for row in reader:
+        # Blank physical CSV rows are malformed observations, not successes.
+        # Empty lines inside a quoted error string remain within that field.
+        if len(row) != len(headers):
+            invalid += 1
+            continue
+        outcome = row[ok_idx]
+        if outcome == "YES":
+            successful += 1
+        elif outcome == "NO":
+            failed += 1
+            counts[classify_failed_call(row[error_idx])] += 1
+        else:
+            invalid += 1
     observed = successful + failed
     # Raw basenames are deliberately omitted: legacy names may embed private
     # document IDs even if they start with the expected audit prefix.
