@@ -7,6 +7,7 @@ failure rate.  Raw exceptions, prompts, URLs and file paths never leave here.
 from __future__ import annotations
 
 from collections import Counter
+import io
 import os
 from pathlib import Path
 import re
@@ -127,64 +128,59 @@ def _read_bounded_csv(path: Path, *, max_bytes: int) -> tuple[str, int]:
 
 
 def _iter_audit_csv_rows(text: str):
-    """Parse bounded producer-style CSV without changing global parser state.
+    """Parse bounded producer CSV with O(input-size) memory, no global state.
 
-    Accept CSV writer quoting, doubled quotes, commas and embedded CR/LF;
-    preserve blank physical records as empty rows. Fail closed on malformed
-    post-quote material and unterminated quoted fields. Input is already
-    UTF-8 decoded and limited by the snapshot byte budget.
+    Unquoted fields use one source slice; quoted fields accumulate contiguous
+    spans via StringIO instead of storing a Python list entry per character.
+    Handles CSV writer escaping, embedded CR/LF, blank rows and strict quotes.
     """
     i = 0
     length = len(text)
     row = []
-    field = []
+    field_start = 0
     in_quotes = False
-    ended_quotes = False
-    at_field_start = True
+    after_quotes = False
+    quoted = None
     while i < length:
         ch = text[i]
         if in_quotes:
             if ch == '"':
+                quoted.write(text[field_start:i])
                 if i + 1 < length and text[i + 1] == '"':
-                    field.append('"')
+                    quoted.write('"')
                     i += 2
+                    field_start = i
                     continue
                 in_quotes = False
-                ended_quotes = True
+                after_quotes = True
+            i += 1
+            continue
+        if ch == ',' or ch in '\r\n':
+            if ch == ',' or row or field_start != i or after_quotes:
+                row.append(quoted.getvalue() if after_quotes else text[field_start:i])
+            if ch == ',':
+                i += 1
             else:
-                field.append(ch)
-            i += 1
+                yield row
+                row = []
+                i += 2 if ch == '\r' and i + 1 < length and text[i + 1] == '\n' else 1
+            field_start = i
+            quoted = None
+            after_quotes = False
             continue
-        if ch == ',':
-            row.append(''.join(field))
-            field = []
-            at_field_start = True
-            ended_quotes = False
-            i += 1
-            continue
-        if ch in '\r\n':
-            if row or not at_field_start or ended_quotes:
-                row.append(''.join(field))
-            yield row
-            row = []
-            field = []
-            at_field_start = True
-            ended_quotes = False
-            i += 2 if ch == '\r' and i + 1 < length and text[i + 1] == '\n' else 1
-            continue
-        if ended_quotes:
+        if after_quotes:
             raise ValueError("audit CSV has malformed rows")
-        if ch == '"' and at_field_start:
+        if ch == '"' and field_start == i:
             in_quotes = True
-            at_field_start = False
-        else:
-            field.append(ch)
-            at_field_start = False
+            quoted = io.StringIO()
+            i += 1
+            field_start = i
+            continue
         i += 1
     if in_quotes:
         raise ValueError("audit CSV has malformed rows")
-    if row or not at_field_start or ended_quotes:
-        row.append(''.join(field))
+    if row or field_start != i or after_quotes:
+        row.append(quoted.getvalue() if after_quotes else text[field_start:i])
         yield row
 
 

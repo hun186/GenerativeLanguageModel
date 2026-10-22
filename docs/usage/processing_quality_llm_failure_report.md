@@ -79,3 +79,9 @@ error fields. It does **not** access or modify Python's process-global
 csv.field_size_limit(), even when other threads parse CSV concurrently.
 Malformed quoted-field syntax fails closed; empty physical records are
 counted as invalid observations.
+
+The CSV parser avoids per-character list buffering for large producer
+fields: normal fields are source slices, while quoted fields write
+contiguous spans into a StringIO buffer. This keeps memory proportional
+to the bounded audit input instead of multiplying allocations for each
+character. A multi-megabyte quoted error regression tracks peak memory.

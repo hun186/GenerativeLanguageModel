@@ -142,6 +142,27 @@ def test_csv_writer_escaping_multiline_and_bad_postquote(tmp_path: Path):
         summarize_llm_failure_audit(path)
 
 
+def test_long_csv_error_field_does_not_amplify_per_character_memory(tmp_path: Path):
+    import tracemalloc
+    path = tmp_path / "llm_call_audit_20261022-near-limit.csv"
+    # Quoted commas and CR/LF exercise the optimized StringIO span writer,
+    # not merely the zero-copy unquoted branch.
+    large_error = 'ReadTimeout ' + ('private,data\n' * 250000)
+    _audit(path, [("NO", large_error)])
+    size = path.stat().st_size
+    assert 2 * 1024 * 1024 < size < 16 * 1024 * 1024
+    tracemalloc.start()
+    try:
+        report = summarize_llm_failure_audit(path)
+        _, peak_bytes = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert report["failure_categories"]["timeout"] == 1
+    # Old one-list-reference-per-character implementation can exceed 10x;
+    # allow generous headroom for CPython 3.10/3.11 differences.
+    assert peak_bytes < size * 6
+
+
 def test_empty_denominator_unknown_and_header_requirements(tmp_path: Path):
     path = tmp_path / "llm_call_audit_empty.csv"
     _audit(path, [])
