@@ -2775,6 +2775,8 @@ class PromptAPIPipeline:
         response = None
         llm_request_attempted = False
         DTBJobs_Retry = []
+        # Fixed payload-free audit code, reset for each invocation.
+        self._llm_json_failure_code = ""
     
         if self.promptFile == "":
             print(f"No promptFile is input, run for content: {self.content[:200]}...")
@@ -2885,7 +2887,8 @@ class PromptAPIPipeline:
     
             # 7) 成功旗標
             ok = bool(retMES)
-            err = ""
+            # Internally handled JSON repair failure needs an audit signal.
+            err = (self._llm_json_failure_code if not ok else "")
     
             # 你如果後面還會用 response 物件可留著；但回傳不要回傳它
             response.choices[0].message.content = retMES
@@ -3182,6 +3185,7 @@ class PromptAPIPipeline:
                 print("repaired retMES_rep",retMES_rep)
                 return [],retMES_rep
             except Exception as ex_json:
+                self._llm_json_failure_code = "JSON_POSTPROCESSING_FAILED"
                 self._emit_json_quality("slice_json_repair", "JSON_REPAIR_FAILED", "not_recovered")
                 print("ex_json",ex_json)
                 print("Fail to repair with LLM.")

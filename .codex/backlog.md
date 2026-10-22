@@ -107,3 +107,9 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 - [ ] Review bounded, count-only inventory for unmarked checkpoint/runtime directories under approved L3 item/prompt scopes; no file reads, migration, ownership adoption, or deletion.
 - [ ] Verify Hosted exact-head Linux offline E2E plus focused new and L3 retention regressions, then obtain Codex review and address threads before requesting merge authorization.
 - [ ] A future migration/GC adoption needs an entirely separate safety contract; checkpoint coordination requires evidence. #203 Semantic Cache remains deferred.
+
+### 2026-10-22 LLM-call failure taxonomy P2 (separate PR pending)
+
+- [ ] Add a strictly read-only per-run and bounded-history LLM **request** error breakdown from existing CSV, with conservative fixed codes (429/rate limit, timeout, transport, context budget, JSON post-processing, unknown), explicit denominator/low-n warning and **no exception text, URLs, tokens, prompts, document or path payloads exported**.
+- [ ] Validate malformed/unbounded/in-progress CSV fail closed, no audit changes, and exact-head Hosted Linux offline CI plus Codex review. Keep stage-orchestration failures and document-level success outside this request-level measurement; no live LLM/ES claims.
+- [ ] Subsequent phases, separately scoped: structured emission for non-LLM worker/stage failures, drill-down without sensitive data, JSONL lifecycle, real Windows visual acceptance.
