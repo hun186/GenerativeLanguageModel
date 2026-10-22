@@ -136,3 +136,75 @@ def test_unacknowledged_sinks_do_not_report_durable_success():
     fragment = code[confirmation:event]
     assert fragment.count("if callable(confirm_writeback):") == 2
     assert 'if callable(confirm_writeback):\n                        try:' in fragment
+
+
+def test_quality_tail_reader_does_not_count_valid_duplicate_as_corruption(tmp_path):
+    path = tmp_path / "quality.jsonl"
+    rec = {"schema_version": 1, "event_id": "same",
+           "event": "slice_json_validation", "code": "JSON_VALID"}
+    path.write_text(json.dumps(rec) + "\n" + json.dumps(rec) + "\n", encoding="utf-8")
+    reader = QualityTailReader(str(path))
+    assert reader.poll()[1]["events"] == 1
+    assert reader.skipped_corrupt_lines == 0
+
+
+def test_quality_producer_rejects_event_code_scope_mismatch(tmp_path):
+    audit = str(tmp_path / "llm_call_audit_invalid.csv")
+    import pytest
+    with pytest.raises(ValueError, match="mismatched quality event/code"):
+        emit_quality_event(
+            audit, event="slice_json_validation", code="SCHEMA_OTHER",
+            scope="slice", outcome="invalid"
+        )
+    with pytest.raises(ValueError, match="mismatched quality event scope"):
+        emit_quality_event(
+            audit, event="slice_json_validation", code="JSON_VALID",
+            scope="document", outcome="valid"
+        )
+    assert not quality_event_path(audit).exists()
+
+
+def test_reader_reset_alone_reports_changed_for_gui_consumer(tmp_path):
+    path = tmp_path / "quality.jsonl"
+    record = {"schema_version": 1, "event_id": "one",
+              "event": "slice_json_validation", "code": "JSON_VALID"}
+    path.write_text(json.dumps(record) + "\n", encoding="utf-8")
+    reader = QualityTailReader(str(path))
+    reader.poll()
+    path.write_bytes(b"")
+    changed, stats = reader.poll()
+    assert changed and stats["events"] == 0
+
+
+def test_quality_accumulator_rejects_nonstandard_python_nan_and_blank_ids():
+    a = QualityAccumulator()
+    record = {"schema_version": 1, "event_id": "x",
+              "event": "slice_json_validation", "code": "JSON_VALID",
+              "extra": float("nan")}
+    assert a.add(record) is False
+    record.pop("extra")
+    record["event_id"] = " \t "
+    assert a.add(record) is False
+    assert a.snapshot()["events"] == 0
+
+
+
+def test_explicit_null_scope_rejected_but_absent_legacy_scope_accepted():
+    a = QualityAccumulator()
+    legacy = {"schema_version": 1, "event_id": "old", "event": "slice_json_validation",
+              "code": "JSON_VALID"}
+    assert a.add(legacy)
+    assert not a.add({**legacy, "event_id": "bad", "scope": None})
+    assert not a.add({**legacy, "event_id": "bad2", "scope": ""})
+    assert a.add({**legacy, "event_id": "ok", "scope": "slice"})
+    assert a.snapshot()["events"] == 2
+
+
+def test_gui_quality_schema_failure_labels_are_unambiguous():
+    from pathlib import Path
+    from czjLLM.job_manager.win_gui import format_quality_summary
+    stats = QualityAccumulator().snapshot()
+    summary = format_quality_summary(stats)
+    assert "LLM 文件結構異常（待處理）" in summary
+    ui = Path("czjLLM/job_manager/win_gui.py").read_text(encoding="utf-8")
+    assert "文件結構驗證未通過 / 已判定文件" in ui

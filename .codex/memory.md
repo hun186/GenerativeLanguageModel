@@ -84,3 +84,21 @@
 - New branch `feat/processing-quality-observability-p1-20261020` / PR #218 adds run-scoped `processing_quality_events_<run_id>.jsonl`, per-slice JSON validation/repair and distinct document schema/confirmed-writeback events; increments Tk GUI quality widgets in a separate collapsed panel.
 - Quality rates have independent denominators (slice JSON validation attempt, completed repair attempt, distinct document writeback decisions) and unknown values for zero samples. A repaired JSON is not a failed document. Raw prompts/outputs are excluded.
 - Linux offline-e2e (including tests/test_processing_quality.py), Codex exact-head review, Windows runner and real ES acceptance are validation gates; treat current implementation as unmerged and unaccepted until their actual evidence is recorded.
+
+### 2026-10-20 PR #218 merged + offline report follow-up (separate branch)
+- PR #218 merged at `bfe49413071a80a67d1a0d8208ef3706d5411b7f`. Code-reviewed exact head `b3d8a7...`, Linux offline-e2e success; real Windows/LLM/ES acceptance is **not** complete and intentionally deferred until model capacity is available.
+- Next development is isolated from pinned acceptance main: read-only per-run/history JSON report CLI built on QualityTailReader/QualityAccumulator and atomic_io, no new quality log, no LLM/network/DB. Includes explicit low-sample/unknown-denominator and concurrent-tail warnings. Unit/Hosted CI and Codex acceptance pending; do not merge automatically.
+
+- First PR #219 Codex exact-head review found P2: complete malformed JSONL rows were silently skipped, making offline report look complete. Fix now tracks `QualityTailReader.skipped_corrupt_lines` across polling/reset, surfaces degraded report status + count, with focused regression. Fresh Hosted CI/Codex review remain required.
+
+- Latest PR #219 Codex found P2 for unsupported complete event records and same-file rewritten contents when current size >= prior read offset; corrected QualityTailReader to distinguish duplicates from invalid schema and to reset generation on inode or bounded committed head/tail change. Added offline tests for both. Hosted CI failed in prior heads with job-log API 404 BlobNotFound; cause not proven; must re-run/inspect exact head before marking accepted.
+
+- Additional defensive hardening before latest re-review: validate quality event/code pairs and optional scope, and reject document events lacking document IDs; synthetic legacy fixtures without a scope stay accepted. Targeted tests added. No LLM or live sink functionality was changed; Hosted CI status remains a separate, runner-allocation issue until proven otherwise.
+
+- Latest PR #219 Codex also found conflicting duplicate event IDs and GUI reset-to-empty suppression. Accepted-event IDs now hold a compact canonical JSON SHA-256 signature and only identical replays bypass corrupt-line accounting; a file generation reset is `changed=True` so the Tk poller clears old stats. Tests added; exact-head Hosted CI and Codex re-review still outstanding.
+
+- New Codex P2 on 5abe4cd: NaN/Infinity parsed as JSON and blank event_id accepted. Added strict parse_constant decoder, nonblank IDs, canonical signature finite-float requirement and regression. Fresh Codex/CI exact-head evidence still required; Hosted Linux runners have repeatedly not been provisioned (runner_id=0, steps=[]); do not claim tests passed. PR remains unmerged.
+
+- 2026-10-21 PR #219 Codex P2 on `e6dd2bd...`: an explicitly provided null scope was accepted like an absent legacy scope. Fix now validates scope on field *presence* (reject explicit null/blank/mismatch) while still accepting truly absent legacy fixtures. Added reader/report + accumulator regression; exact-head Hosted acceptance and Codex review pending, no merge.
+
+- 2026-10-21 PR #219 new Codex P2: excessively deep valid-looking JSONL line raised uncaught RecursionError and prevented later events from being reported. Reader now catches decoder RecursionError and categorizes complete line as degraded, and duplicate/signature serializer also handles recursion failures. Offline regression verifies deep invalid line followed by a good event continues safely. User-approved GUI terminology now says 'LLM 文件結構異常（待處理）' and chart caption '文件結構驗證未通過 / 已判定文件'. Fresh exact-head Hosted CI and Codex review requested; no merge.

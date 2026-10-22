@@ -109,3 +109,19 @@
 ### 2026-10-20 PR #218 confirmed-writeback attribution (Codex P2)
 - An unexceptional Excel/CSV `write_main()` return does not prove data reached durable storage: these sinks may skip PKs, swallow I/O errors or defer buffered flush. Quality `document_writeback_confirmed` is therefore emitted ONLY after an explicitly exposed sink `confirm_writeback()` succeeds (currently ES). Non-confirming sinks must remain unmeasured, not mislabeled as successful.
 - Historical document-level schema pending rate is a **coverage-limited observed-decision rate**, not an all-backend write success rate; it needs per-sink contracts to become cross-backend. Current full GUI/ES live acceptance still outstanding.
+
+### 2026-10-20 offline quality report caveats
+- No real model/Windows ES acceptance today: continue development in an unmerged PR, pin tomorrow's smoke test to merged #218 `bfe49413071a80a67d1a0d8208ef3706d5411b7f`.
+- The offline report is an observational read of a possibly active stream, not a transactionally consistent snapshot. Incomplete trailing JSONL records are excluded; corrupt complete lines are skipped by the existing reader. Read-only report is not proof of bulk durable ES search visibility. Windows self-hosted CI may remain queued.
+
+- New offline quality report flags truncated/in-flight tail and complete corrupt JSONL lines separately. It does not reconstruct discarded payloads or validate syntactically correct unknown-schema events; audited denominators may be incomplete when the corruption flag is nonzero.
+
+- Codex review after first corruption fix identified two P2 in PR #219: JSON-valid but event-schema-invalid rows remained silent; rapid truncate+rewrite could regrow beyond old offset and retain stale counters. This revision counts invalid-schema lines, keeps true duplicate-ID suppression, resets on inode or consumed-head/tail mismatches, with offline regression for both same-inode rewrite and atomic replacement. Bounded edge fingerprints are not tamper-proof against adversarial interior rewrites.
+
+- Codex round on head `79a4af64...` found 3 P2: conflicting duplicate IDs, mismatched event/code combinations (already addressed on `0cdf...`), and GUI stats not clearing when replacement has no valid records. Current correction hashes canonical accepted event records for exact-replay verification and signals `changed=True` on reader generation resets. Memory usage increases to store one compact fingerprint per accepted event ID; no original prompt/output stored.
+
+- 2026-10-21 latest Codex P2 follow-up: Python permissive JSON parser accepted NaN/Infinity/-Infinity as valid complete events; whitespace-only event_id entered denominators. Fixed with rejecting parse_constant, stripped ID validation, strict direct-mapping allow_nan=False and focused regressions. This does not certify upstream CSV/XLSX sink persistence or live LLM acceptance.
+
+- 2026-10-21 PR #219: explicitly null `scope` is not equivalent to absent (legacy) `scope`; repaired the distinction. Full Linux CI is still blocked by jobs failing before runner allocation; this does not establish a successful pytest execution.
+
+- 2026-10-21 PR #219: deeply nested JSONL input could raise RecursionError and abort offline report or strand Tk reader. This is now classified as a complete corrupt line with a regression demonstrating later good events still count. No evidence that upstream 37k-row run or Windows deployed GUI has been validated with a real LLM after this change.

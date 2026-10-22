@@ -569,7 +569,7 @@ def format_quality_summary(stats: dict) -> str:
     return (
         f"初次 JSON 不合法 {percent('slice_initial_invalid_pct', int(stats.get('slice_validation_attempts', 0)))}"
         f"  ｜  修復成功 {percent('repair_success_pct', int(stats.get('repair_attempts', 0)))}"
-        f"  ｜  文件 Schema 待處理 {percent('document_schema_reject_pct', int(stats.get('documents_decided', 0)))}"
+        f"  ｜  LLM 文件結構異常（待處理） {percent('document_schema_reject_pct', int(stats.get('documents_decided', 0)))}"
         f"  ｜  確認式 Sink 寫回 {int(stats.get('documents_writeback_confirmed', 0)):,} 筆"
     )
 
@@ -866,7 +866,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     for key, title in (
         ("slice_initial_invalid_pct", "初次 JSON 不合法 / 已驗證切片"),
         ("repair_success_pct", "修復成功 / 已完成修復嘗試"),
-        ("document_schema_reject_pct", "Schema pending / 已判定文件"),
+        ("document_schema_reject_pct", "文件結構驗證未通過 / 已判定文件"),
     ):
         ttk.Label(quality_frame, text=title).pack(anchor="w")
         quality_metrics[key] = ttk.Progressbar(

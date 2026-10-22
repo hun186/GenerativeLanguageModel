@@ -20,12 +20,16 @@ _KNOWN_EVENTS = {
     "slice_json_validation", "slice_json_repair",
     "document_schema_rejected", "document_writeback_confirmed",
 }
-_KNOWN_CODES = {
-    "JSON_VALID", "JSON_SYNTAX_INVALID", "JSON_REPAIR_SUCCEEDED",
-    "JSON_REPAIR_FAILED", "SCHEMA_MISSING_FIELD",
-    "SCHEMA_TIME_PRECISION", "SCHEMA_EVENT_REFERENCE",
-    "SCHEMA_OTHER", "WRITEBACK_CONFIRMED",
+_EVENT_CODES = {
+    "slice_json_validation": {"JSON_VALID", "JSON_SYNTAX_INVALID"},
+    "slice_json_repair": {"JSON_REPAIR_SUCCEEDED", "JSON_REPAIR_FAILED"},
+    "document_schema_rejected": {
+        "SCHEMA_MISSING_FIELD", "SCHEMA_TIME_PRECISION",
+        "SCHEMA_EVENT_REFERENCE", "SCHEMA_OTHER",
+    },
+    "document_writeback_confirmed": {"WRITEBACK_CONFIRMED"},
 }
+_KNOWN_CODES = set().union(*_EVENT_CODES.values())
 
 
 def quality_event_path(audit_path: str) -> Path | None:
@@ -78,10 +82,10 @@ def emit_quality_event(
     path = quality_event_path(audit_path)
     if path is None:
         return None
-    if event not in _KNOWN_EVENTS or code not in _KNOWN_CODES:
-        raise ValueError("unknown quality event/code")
-    if scope not in {"slice", "document"}:
-        raise ValueError("invalid quality scope")
+    if event not in _EVENT_CODES or code not in _EVENT_CODES[event]:
+        raise ValueError("unknown or mismatched quality event/code")
+    if scope != ("document" if event.startswith("document_") else "slice"):
+        raise ValueError("mismatched quality event scope")
     data = {
         "schema_version": 1,
         "event_id": uuid4().hex,
@@ -120,7 +124,7 @@ def emit_quality_event(
 class QualityAccumulator:
     """Aggregate event attempts and distinct documents without mixing units."""
     def __init__(self):
-        self._event_ids = set()
+        self._event_signatures = {}
         self._codes = Counter()
         self._json_valid = 0
         self._json_invalid = 0
@@ -130,18 +134,37 @@ class QualityAccumulator:
         self._writeback_confirmed = set()
 
     def add(self, record: dict) -> bool:
-        if not isinstance(record, dict) or record.get("schema_version") != 1:
+        if not isinstance(record, dict) or type(record.get("schema_version")) is not int:
+            return False
+        if record["schema_version"] != 1:
             return False
         event_id = record.get("event_id")
         event = record.get("event")
         code = record.get("code")
-        if not isinstance(event_id, str) or not event_id or event in (None, ""):
+        if not isinstance(event_id, str) or not event_id.strip():
             return False
-        if event not in _KNOWN_EVENTS or code not in _KNOWN_CODES:
+        if not isinstance(event, str) or event not in _EVENT_CODES:
             return False
-        if event_id in self._event_ids:
+        if not isinstance(code, str) or code not in _EVENT_CODES[event]:
             return False
-        self._event_ids.add(event_id)
+        # Old fixtures may omit scope entirely; explicit null is invalid.
+        if "scope" in record and record["scope"] != (
+                "document" if event.startswith("document_") else "slice"):
+            return False
+        if event.startswith("document_") and not (
+                isinstance(record.get("document_id"), str) and record["document_id"].strip()):
+            return False
+        if event_id in self._event_signatures:
+            return False
+        try:
+            signature = hashlib.sha256(json.dumps(
+                record, sort_keys=True, ensure_ascii=False,
+                separators=(",", ":"), allow_nan=False,
+            ).encode("utf-8")).digest()
+        except (TypeError, ValueError, UnicodeError, RecursionError):
+            # An in-process non-JSON record is not an auditable event.
+            return False
+        self._event_signatures[event_id] = signature
         if event == "slice_json_validation":
             if code == "JSON_VALID":
                 self._json_valid += 1
@@ -165,6 +188,22 @@ class QualityAccumulator:
                 self._writeback_confirmed.add(doc)
         return True
 
+    def is_identical_accepted_event(self, record: object) -> bool:
+        """Only exact logical replays are duplicates; reused IDs with edits degrade."""
+        if not isinstance(record, dict):
+            return False
+        event_id = record.get("event_id")
+        if not isinstance(event_id, str) or event_id not in self._event_signatures:
+            return False
+        try:
+            signature = hashlib.sha256(json.dumps(
+                record, sort_keys=True, ensure_ascii=False,
+                separators=(",", ":"), allow_nan=False,
+            ).encode("utf-8")).digest()
+        except (TypeError, ValueError, UnicodeError, RecursionError):
+            return False
+        return signature == self._event_signatures[event_id]
+
     def snapshot(self) -> dict:
         validations = self._json_valid + self._json_invalid
         repairs = self._repair_success + self._repair_failure
@@ -172,7 +211,7 @@ class QualityAccumulator:
         failed_docs = self._schema_rejected - self._writeback_confirmed
         decided = failed_docs | self._writeback_confirmed
         return {
-            "events": len(self._event_ids),
+            "events": len(self._event_signatures),
             "slice_validation_attempts": validations,
             "slice_initial_invalid": self._json_invalid,
             "slice_initial_invalid_pct": round(100 * self._json_invalid / validations, 2) if validations else None,
@@ -187,28 +226,69 @@ class QualityAccumulator:
         }
 
 
+def _reject_nonstandard_json_constant(value: str):
+    """Strict JSON excludes NaN, Infinity and -Infinity (Python accepts by default)."""
+    raise ValueError("non-standard JSON constant")
+
+
 class QualityTailReader:
-    """Incrementally parse complete JSONL lines; never block the Tk UI thread."""
+    """Incrementally parse complete JSONL lines; never block the Tk UI thread.
+
+    A same-path file may be rotated/replaced between polls. Besides its size and
+    inode, check bounded fingerprints of previously consumed head/tail bytes.
+    This detects in-place truncate+rewrite even after it regrows past offset,
+    without rereading a potentially large historical stream each GUI tick.
+    """
+    _FINGERPRINT_BYTES = 512
+
     def __init__(self, path: str = ""):
         self.path = str(path or "")
         self.offset = 0
         self.accumulator = QualityAccumulator()
+        self.skipped_corrupt_lines = 0
+        self._file_identity = None
+        self._committed_head = b""
+        self._committed_tail = b""
+
+    def _reset(self) -> None:
+        self.offset = 0
+        self.accumulator = QualityAccumulator()
+        self.skipped_corrupt_lines = 0
+        self._file_identity = None
+        self._committed_head = b""
+        self._committed_tail = b""
+
+    def _fingerprints(self, fp, offset: int) -> tuple[bytes, bytes]:
+        if offset <= 0:
+            return b"", b""
+        span = min(offset, self._FINGERPRINT_BYTES)
+        fp.seek(0)
+        head = fp.read(span)
+        fp.seek(offset - span)
+        tail = fp.read(span)
+        return head, tail
 
     def poll(self) -> tuple[bool, dict]:
         if not self.path:
             return False, self.accumulator.snapshot()
         try:
-            size = os.path.getsize(self.path)
-        except OSError:
-            return False, self.accumulator.snapshot()
-        if size < self.offset:
-            self.offset = 0
-            self.accumulator = QualityAccumulator()
-        if size == self.offset:
-            return False, self.accumulator.snapshot()
-        changed = False
-        try:
             with open(self.path, "rb") as fp:
+                stat = os.fstat(fp.fileno())
+                identity = (stat.st_dev, stat.st_ino)
+                size = stat.st_size
+                reset = False
+                if self._file_identity is not None:
+                    if (identity != self._file_identity or size < self.offset
+                            or self._fingerprints(fp, self.offset) != (
+                                self._committed_head, self._committed_tail)):
+                        # Existing offset no longer points into the same input
+                        # generation; a size-only check misses fast rewrites.
+                        self._reset()
+                        reset = True
+                if size == self.offset:
+                    self._file_identity = identity
+                    return reset, self.accumulator.snapshot()
+                changed = reset
                 fp.seek(self.offset)
                 while True:
                     line = fp.readline()
@@ -219,10 +299,24 @@ class QualityTailReader:
                         break
                     self.offset = fp.tell()
                     try:
-                        parsed = json.loads(line.decode("utf-8"))
-                    except (UnicodeDecodeError, ValueError):
+                        parsed = json.loads(
+                            line.decode("utf-8"),
+                            parse_constant=_reject_nonstandard_json_constant,
+                        )
+                    except (UnicodeDecodeError, ValueError, RecursionError):
+                        # A deeply nested complete line is corrupt input, not
+                        # a reason to abort polling or lose all later events.
+                        self.skipped_corrupt_lines += 1
                         continue
-                    changed = self.accumulator.add(parsed) or changed
+                    if self.accumulator.add(parsed):
+                        changed = True
+                    elif not self.accumulator.is_identical_accepted_event(parsed):
+                        # Syntactically valid JSON can still be unsupported
+                        # as a quality event (schema, missing ID, bad code).
+                        self.skipped_corrupt_lines += 1
+                self._file_identity = identity
+                self._committed_head, self._committed_tail = self._fingerprints(
+                    fp, self.offset)
+                return changed, self.accumulator.snapshot()
         except OSError:
             return False, self.accumulator.snapshot()
-        return changed, self.accumulator.snapshot()

@@ -85,3 +85,14 @@
 - Keep slice validation and JSON repair attempt rates separate from distinct document writeback decisions to avoid treating recovered syntax errors as failed documents, or treating a released pending row as successful ES writeback.
 - Prefer structured events emitted at decision points over parsing console warnings; append minimal metadata to a separate per-run JSONL with a cross-process file lock; render a collapsed GUI section with a background reader independent of token/context distribution.
 - Do not automatically interrupt a large batch based on a raw event count; alerts require a denominator and minimum sample size.
+
+### 2026-10-20 offline continuation without LLM
+- Preserve tomorrow's real acceptance baseline on merged #218 main; new work belongs in separate unmerged branch. Implement offline quality history/export as a read-only projection of the single existing JSONL event authority rather than introducing another log writer or shadow counters. A denominator below 30 is advisory only; it does not gate acceptance, and unknown stays null.
+
+- Corrupt newline-complete JSONL lines are surfaced as a degraded completeness warning, not silently absorbed into a successful report or counted in quality denominators. This change is read-only, backward compatible for old reader clients, and explicitly observable in offline reports.
+
+- Incremental quality reader retains O(1) bounded reread on each poll (first/last 512 committed bytes), detecting common in-place rewrites/rotation while preserving large log performance; avoids mislabeling valid repeated event IDs as malformed. If an adversarial rewrite changes only unmonitored interior bytes, offline reports cannot prove integrity and need a separate durable manifest/hash contract, not a made-up success signal.
+
+- A syntactically valid record must have a semantically matched event/code and (where present) scope; document events require a nonblank document_id. This prevents incomplete input from falsely raising `events` without affecting the relevant denominator. Deprecated test fixtures without explicit scope remain backward compatible.
+
+- The quality audit reader now keeps a compact per-event canonical hash as its duplicate identity instead of only a set of event IDs: exact replays remain idempotent, but conflicting content with reused ID is explicitly degraded. Generation reset is a published state change so a status UI cannot persist obsolete counts when zero replacement events exist.
