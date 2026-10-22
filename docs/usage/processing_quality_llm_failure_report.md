@@ -59,3 +59,9 @@ revalidates them immediately after opening and again after reading, so a
 parent switched to a new symlink/junction during the operation invalidates
 the snapshot. The report is observational, not a forensic integrity proof
 against an adversary able to perform undetectable rapid ABA replacements.
+
+The history-scoped inventory snapshots the originally approved directory
+identity and revalidates it after discovery, before and after each selected
+CSV read, and before publishing results. Replacing the root with a different
+*ordinary directory* is therefore also rejected instead of silently
+returning substituted audit data.

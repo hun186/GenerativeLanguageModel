@@ -188,8 +188,13 @@ def llm_failure_history(folder: str | Path, *, limit: int = 20) -> dict:
     if type(limit) is not int or not 1 <= limit <= 100:
         raise ValueError("limit must be 1..100")
     root = Path(folder)
-    if _has_untrusted_path_component(root) or not root.is_dir():
+    # Bind discovery and every subsequent read to one approved directory
+    # generation. A replacement with an ordinary directory (not a symlink)
+    # must not silently supply a different set of audit files.
+    root_snapshot = _snapshot_path_components(root)
+    if not stat.S_ISDIR(root_snapshot[0][1].st_mode):
         raise ValueError("audit directory must be a real directory")
+    _verify_path_snapshot(root_snapshot)
     found = []
     with os.scandir(root) as entries:
         for index, entry in enumerate(entries):
@@ -197,17 +202,22 @@ def llm_failure_history(folder: str | Path, *, limit: int = 20) -> dict:
                 raise ValueError("audit directory exceeds discovery limit")
             if _audit_file_name(Path(entry.name)) and entry.is_file(follow_symlinks=False):
                 found.append(root / entry.name)
+    _verify_path_snapshot(root_snapshot)
     selected = sorted(found, key=lambda p: p.name, reverse=True)[:limit]
     snapshots = []
     consumed = 0
     for path in selected:
+        _verify_path_snapshot(root_snapshot)
         remaining = MAX_HISTORY_BYTES - consumed
         if remaining <= 0:
             raise ValueError("selected audit history exceeds combined read budget")
         summary, size = _summarize_snapshot(
             path, max_bytes=min(MAX_AUDIT_FILE_BYTES, remaining))
+        _verify_path_snapshot(root_snapshot)
         consumed += size
         snapshots.append(summary)
+    # Also cover empty directories and swaps after the final selected read.
+    _verify_path_snapshot(root_snapshot)
     return {
         "report_version": 1,
         "mode": "run_history",

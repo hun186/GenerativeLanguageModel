@@ -183,6 +183,59 @@ def test_directory_swapped_to_same_file_via_symlink_is_detected(tmp_path: Path, 
     assert did_swap
 
 
+def test_history_rejects_plain_directory_swap_before_scandir(tmp_path: Path, monkeypatch):
+    import czjLLM.utilities.llm_failure_summary as mod
+    root = tmp_path / "audit"
+    replacement = tmp_path / "replacement"
+    root.mkdir()
+    replacement.mkdir()
+    _audit(root / "llm_call_audit_20261022-good.csv", [("YES", "")])
+    _audit(replacement / "llm_call_audit_20261022-other.csv",
+           [("NO", "ReadTimeout")])
+    moved = tmp_path / "original-moved"
+    real_scandir = mod.os.scandir
+    did_swap = False
+
+    def swap_scandir(path):
+        nonlocal did_swap
+        if Path(path) == root and not did_swap:
+            did_swap = True
+            root.rename(moved)
+            replacement.rename(root)
+        return real_scandir(path)
+
+    monkeypatch.setattr(mod.os, "scandir", swap_scandir)
+    with pytest.raises(ValueError, match="identity changed"):
+        llm_failure_history(root)
+    assert did_swap
+
+
+def test_history_revalidates_root_after_selected_snapshot(tmp_path: Path, monkeypatch):
+    import czjLLM.utilities.llm_failure_summary as mod
+    root = tmp_path / "audit"
+    replacement = tmp_path / "replacement"
+    root.mkdir()
+    replacement.mkdir()
+    _audit(root / "llm_call_audit_20261022-good.csv", [("YES", "")])
+    moved = tmp_path / "original-moved"
+    original = mod._summarize_snapshot
+    did_swap = False
+
+    def swap_after_summary(path, *, max_bytes):
+        nonlocal did_swap
+        report = original(path, max_bytes=max_bytes)
+        if not did_swap:
+            did_swap = True
+            root.rename(moved)
+            replacement.rename(root)
+        return report
+
+    monkeypatch.setattr(mod, "_summarize_snapshot", swap_after_summary)
+    with pytest.raises(ValueError, match="identity changed"):
+        llm_failure_history(root)
+    assert did_swap
+
+
 def test_history_rejects_simulated_windows_junction_scope(tmp_path: Path, monkeypatch):
     import czjLLM.utilities.llm_failure_summary as mod
     _audit(tmp_path / "llm_call_audit_20261022-1.csv", [("YES", "")])
