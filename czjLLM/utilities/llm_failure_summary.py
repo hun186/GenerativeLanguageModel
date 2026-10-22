@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections import Counter
 import csv
+import threading
 import io
 import os
 from pathlib import Path
@@ -18,6 +19,8 @@ MAX_AUDIT_FILE_BYTES = 16 * 1024 * 1024
 MAX_HISTORY_BYTES = 64 * 1024 * 1024
 MAX_HISTORY_ENTRIES = 10000
 LOW_SAMPLE_THRESHOLD = 30
+# csv.field_size_limit() is global; serialize our temporary override.
+_CSV_FIELD_LOCK = threading.Lock()
 _AUDIT_FILENAME = re.compile(r"llm_call_audit_[A-Za-z0-9][A-Za-z0-9_.-]{0,100}\.csv\Z")
 
 # Apply only to rows where ok=NO.  Patterns classify exceptions, never content.
@@ -131,32 +134,40 @@ def _read_bounded_csv(path: Path, *, max_bytes: int) -> tuple[str, int]:
 def _summarize_snapshot(path: Path, *, max_bytes: int) -> tuple[dict, int]:
     """Read one snapshot and report the verified bytes for history budgeting."""
     text, actual_size = _read_bounded_csv(path, max_bytes=max_bytes)
-    reader = csv.reader(io.StringIO(text, newline=""), strict=True)
-    try:
-        headers = next(reader, [])
-        if (headers.count("ok") != 1 or headers.count("error") != 1
-                or len(headers) != len(set(headers))):
-            raise ValueError("audit CSV has invalid or duplicate required headers")
-        ok_idx = headers.index("ok")
-        error_idx = headers.index("error")
-        successful = failed = invalid = 0
-        counts = Counter()
-        for row in reader:
-            # csv.DictReader silently drops [], whereas csv.reader preserves
-            # blank physical rows. A quoted multi-line error remains one row.
-            if len(row) != len(headers):
-                invalid += 1
-                continue
-            outcome = row[ok_idx]
-            if outcome == "YES":
-                successful += 1
-            elif outcome == "NO":
-                failed += 1
-                counts[classify_failed_call(row[error_idx])] += 1
-            else:
-                invalid += 1
-    except (csv.Error, UnicodeError) as exc:
-        raise ValueError("audit CSV has malformed rows") from exc
+    with _CSV_FIELD_LOCK:
+        prior_field_limit = csv.field_size_limit()
+        try:
+            # A source is already capped at max_bytes. A producer-written
+            # exception field can legally exceed Python's default 128 KiB.
+            csv.field_size_limit(max(prior_field_limit, max_bytes))
+        reader = csv.reader(io.StringIO(text, newline=""), strict=True)
+        try:
+            headers = next(reader, [])
+            if (headers.count("ok") != 1 or headers.count("error") != 1
+                    or len(headers) != len(set(headers))):
+                raise ValueError("audit CSV has invalid or duplicate required headers")
+            ok_idx = headers.index("ok")
+            error_idx = headers.index("error")
+            successful = failed = invalid = 0
+            counts = Counter()
+            for row in reader:
+                # csv.DictReader silently drops [], whereas csv.reader preserves
+                # blank physical rows. A quoted multi-line error remains one row.
+                if len(row) != len(headers):
+                    invalid += 1
+                    continue
+                outcome = row[ok_idx]
+                if outcome == "YES":
+                    successful += 1
+                elif outcome == "NO":
+                    failed += 1
+                    counts[classify_failed_call(row[error_idx])] += 1
+                else:
+                    invalid += 1
+        except (csv.Error, UnicodeError) as exc:
+            raise ValueError("audit CSV has malformed rows") from exc
+        finally:
+            csv.field_size_limit(prior_field_limit)
     observed = successful + failed
     # Raw basenames are deliberately omitted: legacy names may embed private
     # document IDs even if they start with the expected audit prefix.

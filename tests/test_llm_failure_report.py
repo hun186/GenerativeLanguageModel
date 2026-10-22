@@ -94,6 +94,22 @@ def test_replaced_audit_fifo_open_cannot_block(tmp_path: Path, monkeypatch):
     assert replaced
 
 
+def test_large_valid_csv_error_field_within_file_budget(tmp_path: Path):
+    path = tmp_path / "llm_call_audit_20261022-large.csv"
+    long_error = "ReadTimeout " + "confidential-data-" * 9000
+    _audit(path, [("NO", long_error), ("YES", "")])
+    original_limit = csv.field_size_limit()
+    original_bytes = path.read_bytes()
+    report = summarize_llm_failure_audit(path)
+    assert report["failed_call_attempts"] == 1
+    assert report["failure_categories"]["timeout"] == 1
+    assert report["successful_call_attempts"] == 1
+    assert report["state"] == "observed"
+    assert long_error[:100] not in json.dumps(report)
+    assert path.read_bytes() == original_bytes
+    assert csv.field_size_limit() == original_limit
+
+
 def test_empty_denominator_unknown_and_header_requirements(tmp_path: Path):
     path = tmp_path / "llm_call_audit_empty.csv"
     _audit(path, [])

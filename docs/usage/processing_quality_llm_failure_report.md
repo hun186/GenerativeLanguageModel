@@ -72,3 +72,8 @@ text, so they can be counted as json_postprocessing rather than unclassified.
 Legacy audit rows are unchanged and cannot be retroactively reclassified.
 On POSIX, O_NONBLOCK prevents a substituted FIFO from blocking the reader;
 the opened file must still be a verified regular file.
+
+The CSV parser temporarily raises its per-field limit to the bounded
+input budget so valid producer-written error fields over Python's default
+128 KiB limit can be categorized. The global parser limit is restored
+under a local serialization lock after processing each snapshot.
