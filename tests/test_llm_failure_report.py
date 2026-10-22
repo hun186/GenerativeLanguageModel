@@ -75,7 +75,7 @@ def test_truncation_utf8_and_bounded_input_refuse_incomplete_counts(tmp_path: Pa
     path.write_bytes(path.read_bytes()[:-1])
     with pytest.raises(ValueError, match="trailing"):
         summarize_llm_failure_audit(path)
-    path.write_bytes(b"ok,error\\nNO,\\xff\\n")
+    path.write_bytes(b"ok,error\nNO,\xff\n")
     with pytest.raises(ValueError, match="UTF-8"):
         summarize_llm_failure_audit(path)
     _audit(path, [("YES", "")])
@@ -92,7 +92,7 @@ def test_history_run_isolation_and_symlink_protection(tmp_path: Path):
     _audit(b, [("YES", "")])
     report = llm_failure_history(tmp_path, limit=2)
     assert report["available_run_files"] == 2
-    assert report["runs"][0]["log_file"] == b.name
+    assert "log_file" not in report["runs"][0]
     assert report["runs"][0]["failed_call_attempts"] == 0
     assert report["runs"][1]["failed_call_attempts"] == 1
     with pytest.raises(ValueError, match="limit"):
@@ -104,6 +104,73 @@ def test_history_run_isolation_and_symlink_protection(tmp_path: Path):
     assert llm_failure_history(tmp_path)["available_run_files"] == 2
     with pytest.raises(ValueError, match="symlink"):
         summarize_llm_failure_audit(link)
+
+
+
+def test_blank_record_degrades_without_reclassifying_quoted_newlines(tmp_path: Path):
+    path = tmp_path / "llm_call_audit_20261022-blank.csv"
+    _audit(path, [("YES", ""), ("NO", "timeout\n\nwithout separator")])
+    raw = path.read_text(encoding="utf-8")
+    # Place a genuinely blank physical CSV record between the two rows.
+    with path.open("w", encoding="utf-8", newline="") as fp:
+        fp.write(raw.replace("YES,", "YES,", 1))  # preserve valid quoted multiline
+        fp.write("\n")
+    report = summarize_llm_failure_audit(path)
+    assert report["failed_call_attempts"] == 1
+    assert report["successful_call_attempts"] == 1
+    assert report["unclassified_or_invalid_status_rows"] == 1
+    assert report["state"] == "degraded_invalid_rows"
+
+
+def test_untrusted_filename_is_not_released_in_report(tmp_path: Path, capsys):
+    source = tmp_path / "llm_call_audit_patient-123.csv"
+    _audit(source, [("NO", "timeout with private token")])
+    result = summarize_llm_failure_audit(source)
+    assert "patient-123" not in json.dumps(result)
+    assert "log_file" not in result
+    assert main(["--audit-path", str(source)]) == 0
+    assert "patient-123" not in capsys.readouterr().out
+
+
+def test_history_enforces_actual_snapshots_not_stale_preflight_sizes(tmp_path: Path, monkeypatch):
+    import czjLLM.utilities.llm_failure_summary as mod
+    files = [tmp_path / f"llm_call_audit_20261022-{i}.csv" for i in range(3)]
+    for item in files:
+        _audit(item, [("YES", "")])
+    real = mod._summarize_snapshot
+    calls = []
+
+    def forced(path, *, max_bytes):
+        calls.append(max_bytes)
+        summary, size = real(path, max_bytes=max_bytes)
+        return summary, 25
+
+    monkeypatch.setattr(mod, "_summarize_snapshot", forced)
+    monkeypatch.setattr(mod, "MAX_HISTORY_BYTES", 60)
+    with pytest.raises(ValueError, match="budget"):
+        llm_failure_history(tmp_path, limit=3)
+    assert len(calls) <= 3
+    assert calls[-1] < calls[0]
+
+
+def test_replacement_symlink_cannot_redirect_open(tmp_path: Path, monkeypatch):
+    import czjLLM.utilities.llm_failure_summary as mod
+    source = tmp_path / "llm_call_audit_20261022-safe.csv"
+    target = tmp_path / "llm_call_audit_20261022-secret.csv"
+    _audit(source, [("YES", "")])
+    _audit(target, [("NO", "timeout")])
+    original_open = mod.os.open
+
+    def replaced(path, flags, *args, **kwargs):
+        # Simulate local replacement after the initial lstat precheck.
+        if Path(path) == source:
+            source.unlink()
+            source.symlink_to(target)
+        return original_open(path, flags, *args, **kwargs)
+
+    monkeypatch.setattr(mod.os, "open", replaced)
+    with pytest.raises((ValueError, OSError)):
+        summarize_llm_failure_audit(source)
 
 
 def test_cli_atomic_output_preserves_raw_csv_and_refuses_audit_names(tmp_path: Path, capsys):

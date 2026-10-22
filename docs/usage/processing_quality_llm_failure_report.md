@@ -30,7 +30,7 @@ python -m czjLLM.cli_tools.llm_failure_report --audit-dir logs/llm_call_audit --
   The independent JSONL Processing Quality report covers slice JSON
   validation/repair and explicitly confirmed ES writeback decisions.
   Do not add the two reports' percentages or assume they share units.
-- The report has only fixed category counters and canonical log filenames:
+- The report contains only fixed category counters and *no source filenames*:
   it **never outputs raw errors, prompts, response text, task IDs,
   document IDs, URLs, or credentials**. It does not rewrite the CSV or XLSX.
 - CSV snapshots must be complete UTF-8 with a newline-terminated last
@@ -44,3 +44,8 @@ python -m czjLLM.cli_tools.llm_failure_report --audit-dir logs/llm_call_audit --
 
 This P2 stage intentionally does **not** add an exception body to the
 processing-quality JSONL and does not change runtime LLM/ES flow.
+
+The snapshot opener uses no-follow semantics where supported, plus opened-file
+identity checks. Blank CSV records are counted as degraded/invalid, not silently
+dropped. History size is verified against the combined budget after each
+opened snapshot; source filenames and free-form error strings are never emitted.

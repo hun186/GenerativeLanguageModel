@@ -46,60 +46,87 @@ def _audit_file_name(path: Path) -> bool:
     return bool(_AUDIT_FILENAME.fullmatch(path.name))
 
 
-def _read_bounded_csv(path: Path, *, max_bytes: int) -> str:
+def _is_reparse_or_link(metadata) -> bool:
+    """Reject symlinks and Windows reparse points without following them."""
+    return (stat.S_ISLNK(metadata.st_mode) or
+            bool(getattr(metadata, "st_file_attributes", 0) &
+                 getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)))
+
+
+def _same_open_file(a, b) -> bool:
+    """The path's pre/post lstat identity must match the opened descriptor."""
+    return (stat.S_ISREG(a.st_mode) and stat.S_ISREG(b.st_mode)
+            and a.st_dev == b.st_dev and a.st_ino == b.st_ino)
+
+
+def _read_bounded_csv(path: Path, *, max_bytes: int) -> tuple[str, int]:
     if not _audit_file_name(path):
         raise ValueError("expected a canonical llm_call_audit_<run_id>.csv filename")
-    if path.is_symlink():
-        raise ValueError("symlink audit streams are not allowed")
-    with path.open("rb") as stream:
+    original = path.lstat()
+    if _is_reparse_or_link(original):
+        raise ValueError("symlink or reparse audit streams are not allowed")
+    if not stat.S_ISREG(original.st_mode):
+        raise ValueError("audit stream must be a regular file")
+    # O_NOFOLLOW closes the path-check/open gap on POSIX. On Windows, where
+    # it is not portable, verify the descriptor against both lstat snapshots.
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    descriptor = os.open(path, flags)
+    with os.fdopen(descriptor, "rb") as stream:
         start = os.fstat(stream.fileno())
-        if not stat.S_ISREG(start.st_mode):
-            raise ValueError("audit stream must be a regular file")
+        if not _same_open_file(original, start):
+            raise ValueError("audit path changed or was redirected during open")
         if start.st_size > max_bytes:
             raise ValueError("audit stream exceeds bounded read budget")
         data = stream.read(start.st_size + 1)
         end = os.fstat(stream.fileno())
-        if len(data) != start.st_size or end.st_size != start.st_size:
+        current = path.lstat()
+        if (_is_reparse_or_link(current) or
+                not _same_open_file(current, start) or
+                len(data) != start.st_size or
+                end.st_size != start.st_size or
+                end.st_mtime_ns != start.st_mtime_ns):
             raise ValueError("audit stream changed during reading")
-    # A half-written trailing CSV record cannot be a verified completed call.
     if not data.endswith(b"\n"):
         raise ValueError("audit CSV has an incomplete trailing record")
     try:
-        return data.decode("utf-8-sig")
+        return data.decode("utf-8-sig"), len(data)
     except UnicodeDecodeError as exc:
         raise ValueError("audit CSV has invalid UTF-8") from exc
 
 
-def summarize_llm_failure_audit(path: str | Path, *, max_bytes: int = MAX_AUDIT_FILE_BYTES) -> dict:
-    """Summarize one immutable read snapshot; never emit raw errors or IDs."""
-    if type(max_bytes) is not int or max_bytes <= 0 or max_bytes > MAX_AUDIT_FILE_BYTES:
-        raise ValueError("invalid per-file read bound")
-    source = Path(path)
-    text = _read_bounded_csv(source, max_bytes=max_bytes)
-    reader = csv.DictReader(io.StringIO(text, newline=""), strict=True)
-    headers = reader.fieldnames or []
-    if headers.count("ok") != 1 or headers.count("error") != 1 or len(headers) != len(set(headers)):
-        raise ValueError("audit CSV has invalid or duplicate required headers")
-    counts = Counter()
-    successful = failed = invalid = 0
+def _summarize_snapshot(path: Path, *, max_bytes: int) -> tuple[dict, int]:
+    """Read one snapshot and report the verified bytes for history budgeting."""
+    text, actual_size = _read_bounded_csv(path, max_bytes=max_bytes)
+    reader = csv.reader(io.StringIO(text, newline=""), strict=True)
     try:
+        headers = next(reader, [])
+        if (headers.count("ok") != 1 or headers.count("error") != 1
+                or len(headers) != len(set(headers))):
+            raise ValueError("audit CSV has invalid or duplicate required headers")
+        ok_idx = headers.index("ok")
+        error_idx = headers.index("error")
+        successful = failed = invalid = 0
+        counts = Counter()
         for row in reader:
-            if None in row or any(value is None for value in row.values()):
+            # csv.DictReader silently drops [], whereas csv.reader preserves
+            # blank physical rows. A quoted multi-line error remains one row.
+            if len(row) != len(headers):
                 invalid += 1
                 continue
-            outcome = row["ok"]
+            outcome = row[ok_idx]
             if outcome == "YES":
                 successful += 1
             elif outcome == "NO":
                 failed += 1
-                counts[classify_failed_call(row["error"])] += 1
+                counts[classify_failed_call(row[error_idx])] += 1
             else:
                 invalid += 1
     except (csv.Error, UnicodeError) as exc:
         raise ValueError("audit CSV has malformed rows") from exc
     observed = successful + failed
-    return {
-        "log_file": source.name,
+    # Raw basenames are deliberately omitted: legacy names may embed private
+    # document IDs even if they start with the expected audit prefix.
+    result = {
         "state": "degraded_invalid_rows" if invalid else "observed" if observed else "no_observed_calls",
         "total_rows": observed + invalid,
         "observed_call_attempts": observed,
@@ -115,6 +142,14 @@ def summarize_llm_failure_audit(path: str | Path, *, max_bytes: int = MAX_AUDIT_
                             else f"small denominator (n={observed}); interpret cautiously"
                             if observed < LOW_SAMPLE_THRESHOLD else ""),
     }
+    return result, actual_size
+
+
+def summarize_llm_failure_audit(path: str | Path, *, max_bytes: int = MAX_AUDIT_FILE_BYTES) -> dict:
+    """Read a bounded, no-follow immutable snapshot; never export file names."""
+    if type(max_bytes) is not int or max_bytes <= 0 or max_bytes > MAX_AUDIT_FILE_BYTES:
+        raise ValueError("invalid per-file read bound")
+    return _summarize_snapshot(Path(path), max_bytes=max_bytes)[0]
 
 
 def llm_failure_history(folder: str | Path, *, limit: int = 20) -> dict:
@@ -132,13 +167,21 @@ def llm_failure_history(folder: str | Path, *, limit: int = 20) -> dict:
             if _audit_file_name(Path(entry.name)) and entry.is_file(follow_symlinks=False):
                 found.append(root / entry.name)
     selected = sorted(found, key=lambda p: p.name, reverse=True)[:limit]
-    if sum(path.stat().st_size for path in selected) > MAX_HISTORY_BYTES:
-        raise ValueError("selected audit history exceeds combined read budget")
+    snapshots = []
+    consumed = 0
+    for path in selected:
+        remaining = MAX_HISTORY_BYTES - consumed
+        if remaining <= 0:
+            raise ValueError("selected audit history exceeds combined read budget")
+        summary, size = _summarize_snapshot(
+            path, max_bytes=min(MAX_AUDIT_FILE_BYTES, remaining))
+        consumed += size
+        snapshots.append(summary)
     return {
         "report_version": 1,
         "mode": "run_history",
         "denominator_contract": "observed LLM call attempts only; separate per run",
         "available_run_files": len(found),
         "selected_run_files": len(selected),
-        "runs": [summarize_llm_failure_audit(path) for path in selected],
+        "runs": snapshots,
     }
