@@ -67,3 +67,7 @@ Any future **actual migration** needs a separate reviewed ownership and
 rollback contract, reliable checkpoint/round-chain validation, active lease
 coordination and operator opt-in. This inventory does not provide that
 contract, and Reduction semantic fingerprints are unchanged.
+
+For a Prompt-container scan, the container's own `.reduction` directory
+is **never** an item and is skipped without consuming the entry budget;
+this remains true when one directory is supplied in both item and prompt scopes.

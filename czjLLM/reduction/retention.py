@@ -394,6 +394,11 @@ def _discover(
             if _is_reparse_path(base) or not base.is_dir():
                 continue
             for child in os.scandir(base):
+                # .reduction is an item-internal metadata root, never a
+                # separate item in Prompt-container traversal. Exclude it
+                # before charging the shared scan budget.
+                if child.name == ".reduction":
+                    continue
                 if not consume():
                     return found, True, scanned
                 if (child.is_dir(follow_symlinks=False)

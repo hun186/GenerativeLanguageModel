@@ -176,6 +176,28 @@ def test_item_root_and_dot_reduction_alias_share_one_scan_budget(tmp_path: Path)
     assert checkpoint.exists()
 
 
+def test_same_directory_as_item_and_prompt_root_is_not_double_scanned(tmp_path: Path):
+    item = tmp_path / "both"
+    artifact = _checkpoint(item, "a" * 64)
+    report = inventory_legacy_reduction_artifacts(
+        [item_retention_root(item), prompt_container_retention_root(item)],
+        max_scan_entries=1,
+    )
+    assert report.scanned_entries == 1
+    assert report.candidate_directories == 1
+    assert report.unmarked_checkpoint_manifest_present_unverified == 1
+    assert not report.scan_limit_reached
+    assert artifact.exists()
+    # A prompt-only scan must not treat the container's .reduction as
+    # an item in its own right.
+    prompt_only = inventory_legacy_reduction_artifacts(
+        [prompt_container_retention_root(item)], max_scan_entries=1,
+    )
+    assert prompt_only.scanned_entries == 0
+    assert prompt_only.candidate_directories == 0
+    assert not prompt_only.scan_limit_reached
+
+
 def test_cli_json_is_bounded_and_truncation_has_nonzero_exit(tmp_path: Path, capsys):
     prompt = tmp_path / "Prompt"
     _checkpoint(prompt / "one", "a" * 64)
