@@ -19,7 +19,10 @@ Or an approved Prompt container (immediate child item directories only):
 python -m czjLLM.cli_tools.reduction_legacy_audit --prompt-root /path/to/Prompt --max-scan-entries 5000
 ```
 
-Repeat `--item-root` / `--prompt-root` for additional roots. The default scan
+Repeat `--item-root` / `--prompt-root` for additional existing roots.
+Overlapping scopes are deduplicated by artifact identity (the bounded scan still
+accounts for every visited entry). Missing roots fail instead of returning an
+apparently complete empty report. The default scan
 bound is 10,000 entries shared across all roots. The CLI exits with code 2
 when truncated, invalid, or unable to inspect an entry: do not treat the
 partial counts as a complete inventory.

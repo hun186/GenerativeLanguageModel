@@ -109,6 +109,23 @@ def test_symlinks_never_classified_as_plain_legacy(tmp_path: Path):
     assert outside.exists()
 
 
+def test_missing_roots_fail_and_overlapping_scopes_do_not_double_count(tmp_path: Path):
+    item = tmp_path / "Prompt" / "one"
+    _checkpoint(item, "a" * 64)
+    prompt = item.parent
+    with pytest.raises(ValueError, match="existing directory"):
+        inventory_legacy_reduction_artifacts([tmp_path / "wrong"])
+    with pytest.raises(ValueError, match="existing directory"):
+        inventory_legacy_reduction_artifacts([tmp_path / "wrong" / "missing"])
+    report = inventory_legacy_reduction_artifacts([
+        item_retention_root(item), prompt_container_retention_root(prompt),
+        item_retention_root(item),
+    ])
+    assert report.candidate_directories == 1
+    assert report.unmarked_checkpoint_manifest_present_unverified == 1
+    assert report.scanned_entries >= 3
+
+
 def test_cli_json_is_bounded_and_truncation_has_nonzero_exit(tmp_path: Path, capsys):
     prompt = tmp_path / "Prompt"
     _checkpoint(prompt / "one", "a" * 64)

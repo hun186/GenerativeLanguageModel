@@ -75,6 +75,8 @@ def inventory_legacy_reduction_artifacts(
             raise ValueError("unsupported inventory root kind")
         if root.path.is_symlink():
             raise ValueError("symlink inventory roots are not accepted")
+        if not root.path.is_dir():
+            raise ValueError("inventory root must be an existing directory")
         approved.append(root)
 
     candidates, truncated, scanned = _discover(approved, max_scan_entries)
@@ -88,10 +90,16 @@ def inventory_legacy_reduction_artifacts(
         "unrecognized_unmarked_directories": 0,
         "skipped_containment": 0,
     }
+    unique_paths: set[Path] = set()
     for path, parent, kind in candidates:
         if not _contained_child(path, parent):
             counts["skipped_containment"] += 1
             continue
+        # Overlapping item and Prompt scopes should not inflate audit counts.
+        resolved = path.resolve(strict=True)
+        if resolved in unique_paths:
+            continue
+        unique_paths.add(resolved)
         marker_mode = _file_type(path / MARKER_NAME)
         if marker_mode is not None:
             key = ("marker_files_present_unverified"
@@ -113,7 +121,7 @@ def inventory_legacy_reduction_artifacts(
 
     return LegacyArtifactInventory(
         scanned_entries=scanned,
-        candidate_directories=len(candidates),
+        candidate_directories=len(unique_paths) + counts["skipped_containment"],
         scan_limit_reached=truncated,
         **counts,
     )
