@@ -53,6 +53,13 @@ def _is_reparse_or_link(metadata) -> bool:
                  getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)))
 
 
+def _has_untrusted_path_component(path: Path) -> bool:
+    """Never accept a symlink or Windows junction in the entire supplied path."""
+    absolute = path.absolute()
+    return any(_is_reparse_or_link(component.lstat())
+               for component in (absolute, *absolute.parents))
+
+
 def _same_open_file(a, b) -> bool:
     """The path's pre/post lstat identity must match the opened descriptor."""
     return (stat.S_ISREG(a.st_mode) and stat.S_ISREG(b.st_mode)
@@ -62,6 +69,8 @@ def _same_open_file(a, b) -> bool:
 def _read_bounded_csv(path: Path, *, max_bytes: int) -> tuple[str, int]:
     if not _audit_file_name(path):
         raise ValueError("expected a canonical llm_call_audit_<run_id>.csv filename")
+    if _has_untrusted_path_component(path):
+        raise ValueError("symlink or reparse audit path components are not allowed")
     original = path.lstat()
     if _is_reparse_or_link(original):
         raise ValueError("symlink or reparse audit streams are not allowed")
@@ -157,7 +166,7 @@ def llm_failure_history(folder: str | Path, *, limit: int = 20) -> dict:
     if type(limit) is not int or not 1 <= limit <= 100:
         raise ValueError("limit must be 1..100")
     root = Path(folder)
-    if root.is_symlink() or not root.is_dir():
+    if _has_untrusted_path_component(root) or not root.is_dir():
         raise ValueError("audit directory must be a real directory")
     found = []
     with os.scandir(root) as entries:

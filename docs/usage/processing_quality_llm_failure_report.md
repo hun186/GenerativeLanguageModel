@@ -49,3 +49,7 @@ The snapshot opener uses no-follow semantics where supported, plus opened-file
 identity checks. Blank CSV records are counted as degraded/invalid, not silently
 dropped. History size is verified against the combined budget after each
 opened snapshot; source filenames and free-form error strings are never emitted.
+
+Directory scopes are validated with no-follow metadata for every path
+component, rejecting Windows junction/reparse roots and symlink aliases
+rather than trusting `is_symlink()` alone.

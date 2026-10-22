@@ -139,18 +139,36 @@ def test_history_enforces_actual_snapshots_not_stale_preflight_sizes(tmp_path: P
         _audit(item, [("YES", "")])
     real = mod._summarize_snapshot
     calls = []
+    fixture_size = max(path.stat().st_size for path in files)
+    # Each of the first two snapshots remains physically readable; only the
+    # accumulated verified-byte accounting exhausts the third snapshot.
+    budget = fixture_size * 2 + 5
 
     def forced(path, *, max_bytes):
         calls.append(max_bytes)
         summary, size = real(path, max_bytes=max_bytes)
-        return summary, 25
+        return summary, fixture_size + 3
 
     monkeypatch.setattr(mod, "_summarize_snapshot", forced)
-    monkeypatch.setattr(mod, "MAX_HISTORY_BYTES", 60)
+    monkeypatch.setattr(mod, "MAX_HISTORY_BYTES", budget)
     with pytest.raises(ValueError, match="budget"):
         llm_failure_history(tmp_path, limit=3)
-    assert len(calls) <= 3
-    assert calls[-1] < calls[0]
+    assert len(calls) == 2
+    assert calls[1] < calls[0]
+
+
+def test_history_rejects_simulated_windows_junction_scope(tmp_path: Path, monkeypatch):
+    import czjLLM.utilities.llm_failure_summary as mod
+    _audit(tmp_path / "llm_call_audit_20261022-1.csv", [("YES", "")])
+    original = mod._is_reparse_or_link
+
+    def simulated(metadata):
+        return (metadata.st_ino == tmp_path.lstat().st_ino and
+                metadata.st_dev == tmp_path.lstat().st_dev) or original(metadata)
+
+    monkeypatch.setattr(mod, "_is_reparse_or_link", simulated)
+    with pytest.raises(ValueError, match="real directory"):
+        llm_failure_history(tmp_path)
 
 
 def test_replacement_symlink_cannot_redirect_open(tmp_path: Path, monkeypatch):
