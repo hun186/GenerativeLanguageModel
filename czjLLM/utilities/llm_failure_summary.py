@@ -28,7 +28,8 @@ _PATTERNS = (
     ("transport", re.compile(r"connection (?:error|refused|reset|aborted|closed|failed)|"
                               r"connect(?:ion)?error|remoteprotocolerror|network (?:error|unreachable)|"
                               r"\b(?:502|503|504)\b", re.I)),
-    ("json_postprocessing", re.compile(r"jsondecodeerror|json (?:decode|parse|syntax) error", re.I)),
+    ("json_postprocessing", re.compile(
+        r"\bJSON_POSTPROCESSING_FAILED\b|jsondecodeerror|json (?:decode|parse|syntax) error", re.I)),
 )
 
 
@@ -98,7 +99,9 @@ def _read_bounded_csv(path: Path, *, max_bytes: int) -> tuple[str, int]:
         raise ValueError("audit stream must be a regular file")
     # O_NOFOLLOW closes the path-check/open gap on POSIX. On Windows, where
     # it is not portable, verify the descriptor against both lstat snapshots.
-    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    # O_NONBLOCK avoids indefinite hangs if a file is replaced by a FIFO.
+    flags = (os.O_RDONLY | getattr(os, "O_BINARY", 0)
+             | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0))
     descriptor = os.open(path, flags)
     with os.fdopen(descriptor, "rb") as stream:
         start = os.fstat(stream.fileno())

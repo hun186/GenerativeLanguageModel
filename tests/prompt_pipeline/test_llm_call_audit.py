@@ -54,6 +54,27 @@ def test_every_prompt_worker_factory_receives_run_audit_metadata():
     )
 
 
+def test_json_repair_failure_preserves_fixed_audit_marker_contract():
+    source_path = (
+        Path(__file__).parents[2] / "czjLLM" /
+        "prompt_pipeline" / "pipeline_controller.py"
+    )
+    text = source_path.read_text(encoding="utf-8")
+    tree = ast.parse(text)
+    controller = next(n for n in tree.body
+                      if isinstance(n, ast.ClassDef) and n.name == "PromptAPIPipeline")
+    proc = next(n for n in controller.body
+                if isinstance(n, ast.FunctionDef) and n.name == "proc")
+    handler = next(n for n in controller.body
+                   if isinstance(n, ast.FunctionDef) and n.name == "handle_json_output")
+    proc_text = ast.get_source_segment(text, proc)
+    handler_text = ast.get_source_segment(text, handler)
+    assert 'self._llm_json_failure_code = ""' in proc_text
+    assert 'self._llm_json_failure_code = "JSON_POSTPROCESSING_FAILED"' in handler_text
+    assert 'err = (self._llm_json_failure_code if not ok else "")' in proc_text
+    assert "error=err" in proc_text
+
+
 def test_audit_run_appends_a_call_row(tmp_path):
     metadata = create_llm_call_audit_run(str(tmp_path))
     response = SimpleNamespace(

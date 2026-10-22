@@ -65,3 +65,10 @@ identity and revalidates it after discovery, before and after each selected
 CSV read, and before publishing results. Replacing the root with a different
 *ordinary directory* is therefore also rejected instead of silently
 returning substituted audit data.
+
+Handled automatic JSON-repair failures after an LLM request now persist
+a fixed JSON_POSTPROCESSING_FAILED audit marker, without raw JSON or exception
+text, so they can be counted as json_postprocessing rather than unclassified.
+Legacy audit rows are unchanged and cannot be retroactively reclassified.
+On POSIX, O_NONBLOCK prevents a substituted FIFO from blocking the reader;
+the opened file must still be a verified regular file.

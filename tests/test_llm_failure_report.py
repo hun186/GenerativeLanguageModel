@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -56,6 +57,41 @@ def test_failure_categories_and_request_denominator_are_separate(tmp_path: Path)
     assert "prompt.txt" not in printed
     assert classify_failed_call("context length exceeded") == "context_budget"
     assert classify_failed_call("unrelated unknown") == "unclassified"
+
+
+def test_json_repair_failure_marker_is_counted_without_raw_payload(tmp_path: Path):
+    path = tmp_path / "llm_call_audit_20261022-repair.csv"
+    _audit(path, [("YES", ""), ("NO", "JSON_POSTPROCESSING_FAILED"),
+                  ("NO", "")])
+    report = summarize_llm_failure_audit(path)
+    assert report["failed_call_attempts"] == 2
+    assert report["failure_categories"]["json_postprocessing"] == 1
+    assert report["failure_categories"]["unclassified"] == 1
+    assert "JSON_POSTPROCESSING_FAILED" not in json.dumps(report)
+
+
+@pytest.mark.skipif(not hasattr(os, "mkfifo") or not hasattr(os, "O_NONBLOCK"),
+                    reason="requires POSIX nonblocking FIFO support")
+def test_replaced_audit_fifo_open_cannot_block(tmp_path: Path, monkeypatch):
+    import czjLLM.utilities.llm_failure_summary as mod
+    source = tmp_path / "llm_call_audit_20261022-fifo.csv"
+    _audit(source, [("YES", "")])
+    orig = mod.os.open
+    replaced = False
+
+    def swap_to_fifo(path, flags, *args, **kwargs):
+        nonlocal replaced
+        if not replaced and Path(path) == source:
+            replaced = True
+            source.unlink()
+            os.mkfifo(source)
+            assert flags & os.O_NONBLOCK
+        return orig(path, flags, *args, **kwargs)
+
+    monkeypatch.setattr(mod.os, "open", swap_to_fifo)
+    with pytest.raises(ValueError, match="changed or was redirected"):
+        summarize_llm_failure_audit(source)
+    assert replaced
 
 
 def test_empty_denominator_unknown_and_header_requirements(tmp_path: Path):
