@@ -29,3 +29,10 @@ The quality tail reader also counts **schema-invalid but JSON-decodable complete
 A duplicate is harmless ONLY when the same `event_id` replays an identical canonical complete JSON event (independent of object key order). A conflicting record reusing the ID is degraded corruption. If the input file generation changes, `QualityTailReader.poll()` returns `changed=True` even when the replacement is empty or all-invalid so the GUI does not retain stale totals.
 
 Strict JSON parsing now rejects non-RFC constants (NaN, Infinity, -Infinity) that Python accepts by default. Event IDs must contain non-whitespace characters; document IDs must likewise be nonblank. Even when called with in-memory mappings, the accumulator rejects non-finite extra numeric values instead of generating a misleading accepted event. Such records degrade the offline report and never enter its denominators.
+
+
+## Consumer 調度異常稽核（2026-10-23）
+
+舊版單階段 Consumer 批次超時、批次例外或未捕捉例外退出時，沿用既有 quality JSONL 寫入 `consumer_orchestration_failure`、`scope=run`，僅允許 `CONSUMER_ROUND_TIMEOUT`、`CONSUMER_ROUND_EXCEPTION`、`CONSUMER_TERMINATED`。新事件不包含原始例外訊息、文件 ID、Prompt 或路徑；稽核失敗不改變既有重派／中止流程。
+
+GUI 與離線報表 `consumer_orchestration_failure_events` 是**觀測到的調度事件次數**，重試可能多次計入；不是呼叫、切片、文件失敗數，也沒有百分比分母。原有百分比分母不變。本階段尚未涵蓋多階段 Stage Worker、Producer 或 Row Merger 一般例外，也不代表實際 Windows／LLM／ES 驗收通過。

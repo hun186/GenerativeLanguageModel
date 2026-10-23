@@ -208,3 +208,107 @@ def test_gui_quality_schema_failure_labels_are_unambiguous():
     assert "LLM 文件結構異常（待處理）" in summary
     ui = Path("czjLLM/job_manager/win_gui.py").read_text(encoding="utf-8")
     assert "文件結構驗證未通過 / 已判定文件" in ui
+
+
+def test_consumer_orchestration_incidents_are_not_document_or_slice_failures(tmp_path):
+    audit = str(tmp_path / "llm_call_audit_consumer.csv")
+    for code in ("CONSUMER_ROUND_TIMEOUT", "CONSUMER_ROUND_EXCEPTION",
+                 "CONSUMER_TERMINATED"):
+        emit_quality_event(
+            audit, run_id="r-consumer", event="consumer_orchestration_failure",
+            code=code, scope="run", outcome="observed",
+        )
+    path = quality_event_path(audit)
+    rows = [json.loads(row) for row in path.read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 3
+    assert all(row["scope"] == "run" and not row["document_id"]
+               and not row["slice_id"] for row in rows)
+    assert all("exception" not in row and "error" not in row and "prompt" not in row
+               for row in rows)
+    changed, stats = QualityTailReader(str(path)).poll()
+    assert changed and stats["consumer_orchestration_failure_events"] == 3
+    assert stats["events"] == 3
+    assert stats["slice_validation_attempts"] == stats["repair_attempts"] == 0
+    assert stats["documents_decided"] == 0
+    assert stats["slice_initial_invalid_pct"] is None
+    assert stats["document_schema_reject_pct"] is None
+    assert stats["error_codes"]["CONSUMER_ROUND_TIMEOUT"] == 1
+    assert stats["error_codes"]["CONSUMER_ROUND_EXCEPTION"] == 1
+    assert stats["error_codes"]["CONSUMER_TERMINATED"] == 1
+
+
+def test_consumer_incident_bad_scope_and_code_fail_closed(tmp_path):
+    import pytest
+    audit = str(tmp_path / "llm_call_audit_invalid.csv")
+    with pytest.raises(ValueError, match="mismatched quality event scope"):
+        emit_quality_event(audit, event="consumer_orchestration_failure",
+                           code="CONSUMER_ROUND_TIMEOUT", scope="slice",
+                           outcome="observed")
+    with pytest.raises(ValueError, match="unknown or mismatched quality event/code"):
+        emit_quality_event(audit, event="consumer_orchestration_failure",
+                           code="JSON_VALID", scope="run", outcome="observed")
+    assert not quality_event_path(audit).exists()
+    assert not QualityAccumulator().add({
+        "schema_version": 1, "event_id": "bad", "event": "consumer_orchestration_failure",
+        "code": "CONSUMER_ROUND_EXCEPTION", "scope": "document",
+    })
+
+
+def test_consumer_incident_production_wiring_and_gui_label():
+    from pathlib import Path
+    from czjLLM.job_manager.win_gui import format_quality_summary
+    code = Path("czjLLM/prompt_pipeline/pipeline_controller.py").read_text(encoding="utf-8")
+    for value in ("CONSUMER_ROUND_TIMEOUT", "CONSUMER_ROUND_EXCEPTION",
+                  "CONSUMER_TERMINATED"):
+        assert f'_audit_consumer_orchestration_failure(ctx, "{value}")' in code
+    assert "Consumer 調度異常 0 次（事件數）" in format_quality_summary(
+        QualityAccumulator().snapshot())
+
+
+def test_consumer_run_events_refuse_document_and_slice_id_at_write_boundary(tmp_path):
+    import pytest
+    audit = str(tmp_path / "llm_call_audit_no_identity.csv")
+    for identities in (
+        {"document_id": "sensitive-id"},
+        {"slice_id": "TODO/sensitive-slice.txt"},
+        {"document_id": " ", "slice_id": " "},
+        {"document_id": None},
+        {"slice_id": None},
+    ):
+        with pytest.raises(ValueError, match="cannot carry document or slice identities"):
+            emit_quality_event(
+                audit, event="consumer_orchestration_failure",
+                code="CONSUMER_ROUND_TIMEOUT", scope="run", outcome="observed",
+                **identities,
+            )
+    assert not quality_event_path(audit).exists()
+
+
+def test_consumer_run_reader_rejects_identity_bearing_complete_jsonl(tmp_path):
+    path = tmp_path / "processing_quality_events_bad-identities.jsonl"
+    base = {
+        "schema_version": 1,
+        "event": "consumer_orchestration_failure",
+        "code": "CONSUMER_ROUND_TIMEOUT",
+        "scope": "run",
+    }
+    bad = [
+        {**base, "event_id": "doc", "document_id": "sensitive-document"},
+        {**base, "event_id": "slice", "slice_id": "sensitive-slice"},
+        {**base, "event_id": "null", "document_id": None},
+    ]
+    good = {**base, "event_id": "valid", "document_id": "", "slice_id": ""}
+    path.write_text(
+        "".join(json.dumps(row) + "\n" for row in bad + [good]),
+        encoding="utf-8",
+    )
+    reader = QualityTailReader(str(path))
+    changed, stats = reader.poll()
+    assert changed
+    assert reader.skipped_corrupt_lines == len(bad)
+    assert stats["events"] == 1
+    assert stats["consumer_orchestration_failure_events"] == 1
+    assert stats["documents_decided"] == 0
+    assert stats["slice_validation_attempts"] == 0
+    assert not QualityAccumulator().add(bad[0])
+    assert not QualityAccumulator().add(bad[1])

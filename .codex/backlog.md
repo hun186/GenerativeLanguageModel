@@ -113,3 +113,12 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 - [ ] Add a strictly read-only per-run and bounded-history LLM **request** error breakdown from existing CSV, with conservative fixed codes (429/rate limit, timeout, transport, context budget, JSON post-processing, unknown), explicit denominator/low-n warning and **no exception text, URLs, tokens, prompts, document or path payloads exported**.
 - [ ] Validate malformed/unbounded/in-progress CSV fail closed, no audit changes, and exact-head Hosted Linux offline CI plus Codex review. Keep stage-orchestration failures and document-level success outside this request-level measurement; no live LLM/ES claims.
 - [ ] Subsequent phases, separately scoped: structured emission for non-LLM worker/stage failures, drill-down without sensitive data, JSONL lifecycle, real Windows visual acceptance.
+
+
+### 2026-10-23 reconciled main and next Consumer-quality PR
+
+- [x] Issue #211 fix #212 + SQLite/Excel offline E2E #213 merged and Hosted offline E2E verified; issue closed, real provider/Windows acceptance independent.
+- [x] #219/#220/#221 merged; older unchecked “pending” sections above are historical rather than current PR state.
+- [ ] Validate new Consumer orchestration event PR with exact-head Linux offline-e2e, focused `tests/test_processing_quality.py`, formal Codex P1/P2 review and zero unresolved threads; wait for user merge authorization.
+- [ ] Independently instrument Stage Worker/Producer/Row Merger non-schema failures at authoritative event boundaries. Consumer incidents cannot be interpreted as whole-pipeline or document failure rate.
+- [ ] Controlled 1–3 row Windows + Ollama + ES acceptance and independent ES readback before large batch replay. #203 transient semantic cache stays deferred.

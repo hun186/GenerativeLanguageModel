@@ -155,6 +155,28 @@ def pick_next_prompts(item_dirs, per_round_limit=128):
 '''
 
 
+def _audit_consumer_orchestration_failure(ctx, code: str) -> None:
+    """Count one run-scoped incident, never a slice/document or API failure.
+
+    Audit failures must not affect existing retry, cancellation or teardown.
+    """
+    try:
+        emit_quality_event(
+            getattr(ctx, "llm_call_audit_path", ""),
+            run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+            event="consumer_orchestration_failure", code=code,
+            scope="run", outcome="observed",
+        )
+    except Exception as audit_error:
+        try:
+            tlog_warn(
+                "⚠️ consumer quality audit failed: "
+                f"{type(audit_error).__name__}"
+            )
+        except Exception:
+            pass
+
+
 def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                         stop_event: threading.Event,
                         restart_event: threading.Event,   # ★ 新增
@@ -355,6 +377,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             except BatchRunTimeout as ex:
                 round_timed_out = True
                 MPresult = []
+                _audit_consumer_orchestration_failure(ctx, "CONSUMER_ROUND_TIMEOUT")
                 tlog_warn(
                     f"⏱️ LLM 批次超時：{ex}；將本輪仍在 RUNNING 的切片退回 TODO，避免派工永久卡住。"
                 )
@@ -362,6 +385,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                 # 不讓整輪報廢；把本輪仍在 RUNNING 的切片退回 TODO，下一輪再吃。
                 round_timed_out = True
                 MPresult = []
+                _audit_consumer_orchestration_failure(ctx, "CONSUMER_ROUND_EXCEPTION")
                 tlog_warn(f"❌ run_round 例外：{ex}；將本輪 RUNNING 切片退回 TODO 後重試")
                 #MPresult = []
                 
@@ -490,6 +514,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
 
     except Exception as ex:
         # **最外層保護**：任何沒抓到的例外都要吼一聲，並標記 consumer 死亡
+        _audit_consumer_orchestration_failure(ctx, "CONSUMER_TERMINATED")
         try:
             tlog_warn(f"❌ consumer 未捕捉例外：{ex}")
         except Exception:

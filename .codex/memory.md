@@ -113,3 +113,17 @@
 - PR #220 merged to main at `d42da809ced603544e95ff6fbccdc82cda47033a`. Exact PR head `ef244c3a...` passed Codex with zero findings/0 unresolved threads; Linux offline E2E and legacy inventory/L3 regressions succeeded. Main push run `39735525575` Linux offline-e2e also succeeded; Windows selfhosted jobs remain queued. Legacy tool is inventory only, no migration or GC ownership adoption.
 - New branch `feat/processing-quality-llm-failure-audit-p2-20261022` adds independent **read-only** LLM call-failure CSV summarization. Fixed-label allowlist taxonomy from existing `ok=NO` rows only; unknown and corrupt outcome observations remain explicitly unknown. Never exports raw exception/prompt/model URLs/file paths/doc IDs, never modifies historical CSV/XLSX. This is request-level audit coverage, not document, Worker/Stage, or ES durability. No live model, SQL/ES, or GUI changes.
 - Hosted exact-head offline focused tests and Codex Review required before merge; no automatic merge. Real Windows/LLM/ES acceptance remains deferred and must not be claimed.
+
+
+### 2026-10-23 Hosted handoff and Consumer-quality PR (pending)
+
+- Hosted main `85625666221655da507d3938251821e04b295495` contains merged #221. Main push run `39810479815` Linux offline-e2e succeeded (job `119935062535`), while Windows self-hosted 3.10/3.11 jobs remain queued: entire workflow has not concluded.
+- Issue #211 was closed after #212/#213 merged, #213 exact-head Linux offline-e2e job `116860266565` succeeded and all 28 review threads resolved. No Windows/provider/real SQL/ES persistence acceptance is claimed.
+- Consumer-quality branch adds run-scoped, payload-free incidents for legacy batch timeout, caught round exceptions and uncaught consumer termination; counts are events, not failed slices/documents. Stage-managed workers remain outside this scope. Focused tests added; exact-head CI and Codex review still needed, and no merge without user authorization.
+
+
+### 2026-10-23 PR #222 first formal Codex P2 corrective (new exact-head validation pending)
+
+- On original PR head `099d32ca6827f465a3cdce0bfee3e43473a3e719`, Codex formal review completed and found P2 #4357453454: public run-scoped quality event emitter allowed supplied `document_id` or `slice_id`, persisting those identifiers despite the payload-minimal contract. One unresolved review thread remained.
+- Corrective commits add explicit event-specific empty-identity validation at `emit_quality_event` **before writing any output**, and mirror the validation in `QualityAccumulator.add` so old/malformed JSONL lines degrade and do not enter any numerator/denominator. Targeted tests check rejected identity-bearing emit attempts and malformed complete-line reader behavior while preserving valid run-event counts.
+- Prior exact head `099d32c` Linux offline-e2e SUCCESS (run `39922388801`, job `120310471484`); its success does **not** validate these new corrections. Fresh exact-head Hosted CI + formal Codex re-review and resolution remain required; Windows self-hosted 3.10/3.11 queued, no live Ollama/ES acceptance.
