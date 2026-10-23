@@ -96,3 +96,8 @@
 - A syntactically valid record must have a semantically matched event/code and (where present) scope; document events require a nonblank document_id. This prevents incomplete input from falsely raising `events` without affecting the relevant denominator. Deprecated test fixtures without explicit scope remain backward compatible.
 
 - The quality audit reader now keeps a compact per-event canonical hash as its duplicate identity instead of only a set of event IDs: exact replays remain idempotent, but conflicting content with reused ID is explicitly degraded. Generation reset is a published state change so a status UI cannot persist obsolete counts when zero replacement events exist.
+
+### 2026-10-23 Producer operational observability boundary (P2 PR proposal)
+
+- Instrument catch-site exceptions rather than parse console messages or infer failure from a schedule returning zero. Mark operational events run-scoped with fixed enums, no row/stage identity or source content. Do not change cancellation, pending-row skip, ordinary schedule-noop semantics or multistage Future behavior.
+- Existing per-run JSONL writer and reader remain the only event authority; GUI is a projection. No new persistent store or request/document failure-rate denominator. Stage Worker and lifecycle/retention remain separate so this PR's scope stays reviewable.
