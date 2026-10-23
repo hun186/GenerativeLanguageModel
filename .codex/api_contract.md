@@ -153,3 +153,8 @@
 
 - Existing version 1 schema additionally accepts `event=consumer_orchestration_failure` with `scope=run` and allowlisted codes `CONSUMER_ROUND_TIMEOUT`, `CONSUMER_ROUND_EXCEPTION`, `CONSUMER_TERMINATED`. Invalid code/scope combinations fail closed; there is no source, prompt, document, or slice ID in this event.
 - `QualityAccumulator.snapshot()` adds integer `consumer_orchestration_failure_events`; no percentage or denominator is introduced. Existing JSON validation/repair and document decision rates are unchanged. Retries can produce multiple events.
+
+
+### 2026-10-23 PR #222 P2 run-event privacy correction (pending validation)
+
+- For `consumer_orchestration_failure`, `emit_quality_event()` explicitly rejects nonempty or non-string `document_id` and `slice_id` rather than relying on the one internal caller. The reader/accumulator also refuses any nonempty/non-string identity in version-1 run events, including previously emitted/tampered complete JSONL rows. Omitted fields and exact empty strings remain compatible. No other event type's identity contract changes.
