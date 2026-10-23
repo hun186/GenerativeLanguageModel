@@ -146,3 +146,13 @@
 - Old `7eabcb5` Head Codex P2: Row Merger combine-preparation exception caught/returned before outer retry handler, leaving `ROW_MERGER_PREPARE_RETRY` unreported. Fixed on PR branch with shared telemetry invoked from the earlier exception handler, still throttle/best-effort.
 - Old `7eabcb5` Head Linux CI `39954419192` failed one new regression: two valid quality JSONL events after a successful acknowledged retry versus test expectation of one; repaired test now distinguishes successful document confirmation from the run-scoped retry observation.
 - Fresh exact-head CI and formal review needed; do not call correction accepted until verified.
+
+### 2026-10-23 PR #224 first Codex P2 and revalidation
+
+- First review `d5e8dd3` identified that the Producer's broad `_schedule_row` handler misattributed pending-console/mark_running/no-op-release errors to `PRODUCER_SCHEDULE_EXCEPTION`. The event emission is now scoped to actual `schedule_one_row()` execution failure, and negative regression cases cover surrounding bookkeeping exceptions. Bookkeeping fault observability itself remains future separate work, rather than mislabeled success/failure counts.
+- Old Linux PR CI was cancelled when new commits arrived. Do not treat old results as accepted for this PR; require latest exact-head Hosted test and a new formal Codex review.
+
+### 2026-10-23 PR #224 second Codex P2 — cancellation cleanup failure overriding cancellation
+
+- Formal Codex identified a control-flow defect: a cleanup failure inside `except ExecutionCancelled: try: cleanup; finally: raise` can replace the cancellation before `Future.result()`, producing false future-error telemetry and `_producer_cancelled=False`. Corrective preserves the original cancellation while separately attempting each cleanup; regression covers both simultaneous and single cleanup failures in multistage parallel mode.
+- Await newest exact-head CI and Codex confirmation; do not claim acceptance from previous completed/cancelled CI runs. Windows self-hosted remains unconfigured and intentionally deferred.

@@ -48,3 +48,19 @@ Row Merger 在非 Schema 的可重試例外路徑，使用既有稽核 JSONL 新
 ### PR #223 初輪複審與驗測修正
 
 原本僅在寫回主體例外 handler 發送可重試事件，漏掉 `_resolve_combined_path` 將 `combine_api_finished_item()` 一般例外捕捉後返回的準備階段重試。現改為兩個路徑共用節流的 run-scoped emitter，不改變當次 retry、Success 保留或 cancellation 流程。另明確區分「失敗嘗試」和「之後成功且由 Sink 確認的文件寫回」：兩種事件可同時存在，不能將 quality JSONL 總事件數當成重試事件數。新修正仍須 exact-head Hosted Linux CI 與 Codex 複審通過。
+
+## Producer 操作異常稽核（2026-10-23，獨立待驗 PR）
+
+Producer 原有三種「已捕捉並可繼續處理」的非 Schema 操作例外，會寫入現有每輪 Processing Quality JSONL 中的 `producer_operational_failure` / `scope=run`：`PRODUCER_SCHEDULE_EXCEPTION`（`schedule_one_row()` 丟出非取消例外）、`PRODUCER_BACKPRESSURE_EXCEPTION`（backpressure 等待拋出非取消例外）、`PRODUCER_FUTURE_EXCEPTION`（多階段 row Future 的 `result()` 丟出非取消例外）。事件不含文件／切片識別、來源、例外文字、Prompt、URL 或路徑；記錄失敗不改變原本的排程、釋放及中止行為。
+
+GUI「Producer 執行異常」及離線報表 `producer_operational_failure_events` 是已捕捉例外**事件次數**，不是不同失敗文件數、API 呼叫失敗數或一輪排程的完整失敗率。單一 row 也可能發生多次操作異常；正常 pending 跳過、任務數為零、合作式取消不列入此事件。Stage Worker 內部一般錯誤並不等同 Producer 的三個邊界，將由獨立階段擴充。
+
+本次僅在 Hosted Linux 與離線回歸測試範圍內驗收；Windows self-hosted Runner 未架設，實際 Ollama／SQL／ES 寫回與 GUI 視覺驗收都仍須操作端安排。
+
+### PR #224 初輪複審分類修正
+
+`PRODUCER_SCHEDULE_EXCEPTION` 僅在 `schedule_one_row()` 本身丟出非取消例外時記錄。前後的 Pending Console `mark_running`、紀錄更新、schedule-noop 釋放錯誤並不是 scheduler 的錯誤，**不可以套用這個代碼**；其具體問題仍由原有的操作日誌與排程錯誤處理承擔，不是本階段 Producer 監控全面涵蓋的範圍。新增防止這三類誤判的回歸測試；本變更需對新 Head 重新跑 Hosted CI 與正式 Codex 複審。
+
+### PR #224 第二輪 P2：取消流程與品質計數
+
+多階段平行 Producer 的 `schedule_one_row()` 若觸發 `ExecutionCancelled`，清理 Pending Running 狀態與寫入取消異動紀錄都屬於「盡力而為」，即使這兩者失敗也**必須保留原始取消訊號**。原始取消仍由 Producer 記錄 `_producer_cancelled=True`，不得誤記為 `PRODUCER_FUTURE_EXCEPTION`。新回歸測試會確認單一或兩個清理操作同時失敗時仍有正確取消結果；Host Linux CI 和正式 Codex 複審以最新 PR Head 為準。

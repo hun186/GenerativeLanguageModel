@@ -573,6 +573,7 @@ def format_quality_summary(stats: dict) -> str:
         f"  ｜  確認式 Sink 寫回 {int(stats.get('documents_writeback_confirmed', 0)):,} 筆"
         f"  ｜  Consumer 調度異常 {int(stats.get('consumer_orchestration_failure_events', 0)):,} 次（事件數）"
         f"  ｜  Row Merger 暫時異常 {int(stats.get('row_merger_retryable_failure_events', 0)):,} 次（節流事件數）"
+        f"  ｜  Producer 執行異常 {int(stats.get('producer_operational_failure_events', 0)):,} 次（事件數）"
     )
 
 
