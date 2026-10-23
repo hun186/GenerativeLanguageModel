@@ -158,3 +158,9 @@
 ### 2026-10-23 PR #222 P2 run-event privacy correction (pending validation)
 
 - For `consumer_orchestration_failure`, `emit_quality_event()` explicitly rejects nonempty or non-string `document_id` and `slice_id` rather than relying on the one internal caller. The reader/accumulator also refuses any nonempty/non-string identity in version-1 run events, including previously emitted/tampered complete JSONL rows. Omitted fields and exact empty strings remain compatible. No other event type's identity contract changes.
+
+### 2026-10-23 Producer operational quality extension (P2 PR proposal)
+
+- Existing per-run `processing_quality_events_<run_id>.jsonl` schema v1 admits one new `event=producer_operational_failure`, `scope=run`, `outcome=observed` with fixed codes: `PRODUCER_SCHEDULE_EXCEPTION`, `PRODUCER_BACKPRESSURE_EXCEPTION`, `PRODUCER_FUTURE_EXCEPTION`. The write and read boundaries reject nonempty/null `document_id` or `slice_id`; events do not include exception text, input/prompt text, URLs, secrets, paths or PKs.
+- `QualityAccumulator.snapshot()` adds `producer_operational_failure_events` and per-code entries under existing `error_codes`. Numerators are observed caught exceptions only and are never folded into slice JSON attempts, repair attempts, documents decided/schema-pending, or LLM call failures. Existing schema_version and API signatures remain unchanged; missing count is handled as zero in GUI. Real worker/Stage failures and rate denominators remain outside the contract.
+- Added Producer production catch-site regression gate to Hosted Linux offline E2E; exact-head Codex and CI acceptance pending.
