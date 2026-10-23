@@ -156,3 +156,8 @@
 
 - Formal Codex identified a control-flow defect: a cleanup failure inside `except ExecutionCancelled: try: cleanup; finally: raise` can replace the cancellation before `Future.result()`, producing false future-error telemetry and `_producer_cancelled=False`. Corrective preserves the original cancellation while separately attempting each cleanup; regression covers both simultaneous and single cleanup failures in multistage parallel mode.
 - Await newest exact-head CI and Codex confirmation; do not claim acceptance from previous completed/cancelled CI runs. Windows self-hosted remains unconfigured and intentionally deferred.
+
+### 2026-10-23 Stage orchestration quality observation limitations
+
+- New Stage prepare / Runner exception counters are caught-or-escaped event observations only. Runner may do model calls, local data processing or persistence, and a generic escaped exception cannot be reliably classified as LLM versus non-LLM from this boundary. Do not describe the counts as complete non-LLM worker coverage, per-stage incident attribution, or distinct failed document count. Returned `ok:false` or ordinary route misses are outside the narrow exception counts.
+- No Windows self-hosted/real provider or Elasticsearch visual/writeback acceptance available. New PR exact-head Hosted Linux offline E2E and formal Codex Review must establish coverage; until then no finished/merged claim.
