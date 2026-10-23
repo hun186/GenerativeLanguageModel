@@ -1069,6 +1069,23 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     failure_key = (item_dir, str(e))
                     last_logged = failure_log_state.get(failure_key)
                     if last_logged is None or now - last_logged >= failure_log_interval:
+                        # Record only one bounded incident per existing log
+                        # throttle window. Hot-loop retries must not produce
+                        # unbounded quality JSONL or inflate document failures.
+                        try:
+                            emit_quality_event(
+                                getattr(ctx, "llm_call_audit_path", ""),
+                                run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+                                event="row_merger_retryable_failure",
+                                code=("ROW_MERGER_WRITEBACK_RETRY" if writeback_started
+                                      else "ROW_MERGER_PREPARE_RETRY"),
+                                scope="run", outcome="observed",
+                            )
+                        except Exception as audit_error:
+                            tlog_warn(
+                                "⚠️ Row Merger quality audit failed: "
+                                f"{type(audit_error).__name__}"
+                            )
                         tlog_warn(
                             f"Row Merger 寫回失敗 pk={pk}: {e} "
                             f"（相同錯誤最多每 {failure_log_interval:g} 秒提示一次）"
