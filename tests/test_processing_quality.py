@@ -263,3 +263,52 @@ def test_consumer_incident_production_wiring_and_gui_label():
         assert f'_audit_consumer_orchestration_failure(ctx, "{value}")' in code
     assert "Consumer 調度異常 0 次（事件數）" in format_quality_summary(
         QualityAccumulator().snapshot())
+
+
+def test_consumer_run_events_refuse_document_and_slice_id_at_write_boundary(tmp_path):
+    import pytest
+    audit = str(tmp_path / "llm_call_audit_no_identity.csv")
+    for identities in (
+        {"document_id": "sensitive-id"},
+        {"slice_id": "TODO/sensitive-slice.txt"},
+        {"document_id": " ", "slice_id": " "},
+        {"document_id": None},
+        {"slice_id": None},
+    ):
+        with pytest.raises(ValueError, match="cannot carry document or slice identities"):
+            emit_quality_event(
+                audit, event="consumer_orchestration_failure",
+                code="CONSUMER_ROUND_TIMEOUT", scope="run", outcome="observed",
+                **identities,
+            )
+    assert not quality_event_path(audit).exists()
+
+
+def test_consumer_run_reader_rejects_identity_bearing_complete_jsonl(tmp_path):
+    path = tmp_path / "processing_quality_events_bad-identities.jsonl"
+    base = {
+        "schema_version": 1,
+        "event": "consumer_orchestration_failure",
+        "code": "CONSUMER_ROUND_TIMEOUT",
+        "scope": "run",
+    }
+    bad = [
+        {**base, "event_id": "doc", "document_id": "sensitive-document"},
+        {**base, "event_id": "slice", "slice_id": "sensitive-slice"},
+        {**base, "event_id": "null", "document_id": None},
+    ]
+    good = {**base, "event_id": "valid", "document_id": "", "slice_id": ""}
+    path.write_text(
+        "".join(json.dumps(row) + "\n" for row in bad + [good]),
+        encoding="utf-8",
+    )
+    reader = QualityTailReader(str(path))
+    changed, stats = reader.poll()
+    assert changed
+    assert reader.skipped_corrupt_lines == len(bad)
+    assert stats["events"] == 1
+    assert stats["consumer_orchestration_failure_events"] == 1
+    assert stats["documents_decided"] == 0
+    assert stats["slice_validation_attempts"] == 0
+    assert not QualityAccumulator().add(bad[0])
+    assert not QualityAccumulator().add(bad[1])
