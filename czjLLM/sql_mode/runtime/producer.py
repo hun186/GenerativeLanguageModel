@@ -376,11 +376,25 @@ def produce_rows(
                 return pk, False
             return pk, True
         except ExecutionCancelled:
-            try:
-                mark_not_running(ctx, pk, state="cancelled")
-                record_adjustment(ctx, "cancelled_release", pk=pk)
-            finally:
-                raise
+            # Preserve the cooperative cancellation even if pending-console
+            # cleanup also fails. Otherwise a cleanup exception replaces
+            # ExecutionCancelled in fut.result(), and _drain_completed()
+            # falsely records a producer future failure instead of cancelling.
+            for cleanup in (
+                lambda: mark_not_running(ctx, pk, state="cancelled"),
+                lambda: record_adjustment(ctx, "cancelled_release", pk=pk),
+            ):
+                try:
+                    cleanup()
+                except Exception as cleanup_error:
+                    try:
+                        tlog_warn(
+                            "[producer] cancellation cleanup failed: "
+                            f"{type(cleanup_error).__name__}"
+                        )
+                    except Exception:
+                        pass
+            raise
         except Exception as e:
             try:
                 mark_not_running(ctx, pk, state="schedule_error")
