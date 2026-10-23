@@ -36,3 +36,11 @@ Strict JSON parsing now rejects non-RFC constants (NaN, Infinity, -Infinity) tha
 舊版單階段 Consumer 批次超時、批次例外或未捕捉例外退出時，沿用既有 quality JSONL 寫入 `consumer_orchestration_failure`、`scope=run`，僅允許 `CONSUMER_ROUND_TIMEOUT`、`CONSUMER_ROUND_EXCEPTION`、`CONSUMER_TERMINATED`。新事件不包含原始例外訊息、文件 ID、Prompt 或路徑；稽核失敗不改變既有重派／中止流程。
 
 GUI 與離線報表 `consumer_orchestration_failure_events` 是**觀測到的調度事件次數**，重試可能多次計入；不是呼叫、切片、文件失敗數，也沒有百分比分母。原有百分比分母不變。本階段尚未涵蓋多階段 Stage Worker、Producer 或 Row Merger 一般例外，也不代表實際 Windows／LLM／ES 驗收通過。
+
+## Row Merger 暫時寫回異常觀測（2026-10-23，後續獨立 PR）
+
+Row Merger 在非 Schema 的可重試例外路徑，使用既有稽核 JSONL 新增 `row_merger_retryable_failure`、`scope=run`，只接受 `ROW_MERGER_PREPARE_RETRY`（寫回準備階段）和 `ROW_MERGER_WRITEBACK_RETRY`（開始寫回後的 Sink／確認階段）。事件不含文件／切片 ID、原始例外訊息、URL、Prompt 或結果內容。寫入失敗為 best effort，不改變原有 pending、ES buffer discard 或重試行為；具體異常仍看原系統操作日誌。
+
+為避免每 0.5 秒 Watchdog 重試就寫入事件，**只在原有同筆錯誤的日誌節流窗口觸發時記錄**。因此 `row_merger_retryable_failure_events` 與 GUI「Row Merger 暫時異常」表示**節流後觀測事件數**，不是所有實際重試次數、失敗文件數、API 呼叫失敗數或永久寫回失敗率。相同筆數後續重試成功，不會抵銷已發生的運作異常事件。Stage 尚未準備好、文件 Schema 終止、合作式取消均不列入此類事件。
+
+同一品質 JSONL 中仍採不同分母：slice JSON 嘗試、repair 嘗試、已判定 document、run 調度事件。本次只補 Row Merger 的非 Schema 例外；Producer、Stage Worker 尚未納入。Windows self-hosted Runner 未部署，需保留實機驗收待辦，不得以 Linux 離線 PASS 推論 Windows／Ollama／ES 實際資料寫回驗收完成。
