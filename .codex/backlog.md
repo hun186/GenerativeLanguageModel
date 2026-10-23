@@ -129,3 +129,10 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 - [ ] New independent P2 PR: Row Merger **non-schema retry** incident telemetry at its actual retry handler, throttled by the existing log window. Two run-scoped codes (prepare/writeback), never raw IDs/messages; added to Processing Quality GUI and offline per-run snapshot. Does not redefine document success/failure or change retries.
 - [ ] Obtain latest exact-head Hosted Linux offline-e2e (including `tests/sql_mode/runtime/test_row_merger_schema_failure.py` and `tests/test_processing_quality.py`), formal Codex review with zero unresolved findings, then require explicit user merge authorization.
 - [ ] Subsequent separate scopes: Producer / Stage Worker durable operational exception taxonomy, bounded filter/drill-down and JSONL retention; no real Windows/ES/Ollama acceptance claim before operator can deploy and verify.
+
+### 2026-10-23 PR #223 closure and independent Producer quality follow-up
+
+- [x] PR #223 merged `a9240f826bfef9a999848017a254c69c5c05f748` after exact-head Linux offline E2E, formal Codex no-findings and all threads resolved; do not equate earlier unchecked PR #223 rows with current state.
+- [ ] New P2 Producer operational incident telemetry: non-Schema schedule/backpressure/future catch sites, no raw IDs or exception text; require exact-head Hosted Linux offline E2E including focused Producer tests, Codex clean review, and explicit merge authorization.
+- [ ] Stage Worker non-LLM exceptions and structured per-stage/worker taxonomy as a separate PR; require source-authoritative boundaries, cancellation exclusion and payload-free audit. Neither Producer nor Row Merger event counts are a document failure rate.
+- [ ] Retention/rotation with resumable aggregation, bounded drill-down/filters, and 1–3 real Windows/Ollama/Elasticsearch writeback/readback acceptance when operator environment is ready; Windows self-hosted runners deliberately deferred.
