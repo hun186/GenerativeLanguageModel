@@ -148,3 +148,155 @@ def test_cancelled_scheduler_releases_running_marker_without_teardown(monkeypatc
     assert states == ["cancelled"]
     assert ctx._producer_cancelled is True
     assert stop_event.is_set() is False
+
+
+def test_producer_schedule_exception_emits_run_incident_without_failing_batch(
+    tmp_path, monkeypatch,
+):
+    import json
+    from czjLLM.utilities.processing_quality import quality_event_path, QualityTailReader
+    released = []
+    monkeypatch.setattr(producer, "schedule_one_row",
+                        lambda *_a, **_kw: (_ for _ in ()).throw(
+                            RuntimeError("confidential schedule exception")
+                        ))
+    monkeypatch.setattr(producer, "mark_not_running",
+                        lambda _ctx, _pk, state: released.append(state))
+    ctx = SimpleNamespace(
+        mode="sql", n_process=1, stages=[{"name": "one"}],
+        sql_enable_multistage_stream=True,
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_producer.csv"),
+        llm_call_audit_run_id="producer-test",
+    )
+    progress = SimpleNamespace(update=lambda *_a: None)
+    assert producer.produce_rows(
+        ctx, [("private-document", "raw private text")],
+        object(), "meter", 0, threading.Event(), None, progress,
+    ) == 0
+    assert released == ["schedule_error"]
+    path = quality_event_path(ctx.llm_call_audit_path)
+    data = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+    assert len(data) == 1
+    assert data[0]["code"] == "PRODUCER_SCHEDULE_EXCEPTION"
+    assert data[0]["scope"] == "run" and data[0]["document_id"] == data[0]["slice_id"] == ""
+    assert "private-document" not in path.read_text(encoding="utf-8")
+    assert "confidential schedule exception" not in path.read_text(encoding="utf-8")
+    stats = QualityTailReader(str(path)).poll()[1]
+    assert stats["producer_operational_failure_events"] == 1
+    assert stats["documents_decided"] == 0
+
+
+def test_producer_backpressure_exception_emits_run_incident_without_dispatch(
+    tmp_path, monkeypatch,
+):
+    import json
+    from czjLLM.utilities.processing_quality import quality_event_path
+    monkeypatch.setattr(producer, "producer_backpressure_wait",
+                        lambda **_kw: (_ for _ in ()).throw(
+                            RuntimeError("private backpressure")
+                        ))
+    monkeypatch.setattr(producer, "schedule_one_row",
+                        lambda *_a, **_kw: (_ for _ in ()).throw(
+                            AssertionError("backpressure failure must skip this row")
+                        ))
+    ctx = SimpleNamespace(
+        mode="sql", n_process=1, stages=[{"name": "one"}],
+        sql_enable_multistage_stream=True,
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_backpressure.csv"),
+    )
+    progress = SimpleNamespace(update=lambda *_a: None)
+    assert producer.produce_rows(
+        ctx, [("secret-pk", "text")],
+        object(), "meter", 0, threading.Event(), None, progress,
+    ) == 0
+    path = quality_event_path(ctx.llm_call_audit_path)
+    data = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+    assert [r["code"] for r in data] == ["PRODUCER_BACKPRESSURE_EXCEPTION"]
+    assert "secret-pk" not in path.read_text(encoding="utf-8")
+    assert "private backpressure" not in path.read_text(encoding="utf-8")
+
+
+def test_producer_future_failure_is_observed_at_future_completion_boundary(
+    tmp_path, monkeypatch,
+):
+    import json
+    from concurrent.futures import Future
+    from czjLLM.utilities.processing_quality import quality_event_path
+
+    class FailedExecutor:
+        def __init__(self, max_workers, thread_name_prefix):
+            assert max_workers == 2 and thread_name_prefix == "multistage-row"
+
+        def submit(self, *_args, **_kwargs):
+            fut = Future()
+            fut.set_exception(RuntimeError("private worker exception"))
+            return fut
+
+        def shutdown(self, wait):
+            assert wait is True
+
+    monkeypatch.setattr(producer, "ThreadPoolExecutor", FailedExecutor)
+    ctx = SimpleNamespace(
+        mode="sql", n_process=2, stages=[{"name": "one"}],
+        sql_enable_multistage_stream=True, _execution_budget=ExecutionBudget(2),
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_future.csv"),
+    )
+    progress = SimpleNamespace(update=lambda *_a: None)
+    assert producer.produce_rows(
+        ctx, [("private-pk", "text")],
+        object(), "meter", 0, threading.Event(), None, progress,
+    ) == 0
+    path = quality_event_path(ctx.llm_call_audit_path)
+    rows = [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 1 and rows[0]["code"] == "PRODUCER_FUTURE_EXCEPTION"
+    assert rows[0]["document_id"] == rows[0]["slice_id"] == ""
+    assert "private worker exception" not in path.read_text(encoding="utf-8")
+
+
+def test_producer_quality_audit_failure_is_best_effort(tmp_path, monkeypatch):
+    released = []
+    warnings = []
+    monkeypatch.setattr(producer, "emit_quality_event",
+                        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+                            OSError("audit cannot write")
+                        ))
+    monkeypatch.setattr(producer, "tlog_warn", warnings.append)
+    monkeypatch.setattr(producer, "schedule_one_row",
+                        lambda *_a, **_kw: (_ for _ in ()).throw(
+                            RuntimeError("scheduler failed")
+                        ))
+    monkeypatch.setattr(producer, "mark_not_running",
+                        lambda _ctx, _pk, state: released.append(state))
+    ctx = SimpleNamespace(
+        mode="sql", n_process=1, stages=[{"name": "one"}],
+        sql_enable_multistage_stream=True,
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_unwritable.csv"),
+    )
+    progress = SimpleNamespace(update=lambda *_a: None)
+    assert producer.produce_rows(
+        ctx, [("pk", "text")], object(), "meter", 0,
+        threading.Event(), None, progress,
+    ) == 0
+    assert released == ["schedule_error"]
+    assert any("quality audit failed: OSError" in warning for warning in warnings)
+
+
+def test_producer_cancel_is_not_a_quality_failure(tmp_path, monkeypatch):
+    from czjLLM.reduction.execution import ExecutionCancelled
+    from czjLLM.utilities.processing_quality import quality_event_path
+    monkeypatch.setattr(producer, "schedule_one_row",
+                        lambda *_a, **_kw: (_ for _ in ()).throw(
+                            ExecutionCancelled("cancelled")
+                        ))
+    ctx = SimpleNamespace(
+        mode="sql", n_process=1, stages=[{"name": "one"}],
+        sql_enable_multistage_stream=True,
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_cancel.csv"),
+    )
+    progress = SimpleNamespace(update=lambda *_a: None)
+    assert producer.produce_rows(
+        ctx, [("pk", "text")], object(), "meter", 0,
+        threading.Event(), None, progress,
+    ) == 0
+    assert ctx._producer_cancelled
+    assert not quality_event_path(ctx.llm_call_audit_path).exists()
