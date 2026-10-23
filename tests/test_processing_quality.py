@@ -374,3 +374,76 @@ def test_row_merger_run_incident_rejects_raw_identity_or_mismatched_code(tmp_pat
     _, stats = reader.poll()
     assert reader.skipped_corrupt_lines == 1
     assert stats["row_merger_retryable_failure_events"] == 1
+
+
+def test_producer_operational_run_events_are_not_failed_documents(tmp_path):
+    audit = str(tmp_path / "llm_call_audit_producer.csv")
+    codes = (
+        "PRODUCER_SCHEDULE_EXCEPTION",
+        "PRODUCER_BACKPRESSURE_EXCEPTION",
+        "PRODUCER_FUTURE_EXCEPTION",
+    )
+    for code in codes:
+        emit_quality_event(
+            audit, run_id="r-producer", event="producer_operational_failure",
+            code=code, scope="run", outcome="observed",
+        )
+    path = quality_event_path(audit)
+    records = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+    assert len(records) == 3
+    assert all(row["scope"] == "run" and row["document_id"] == ""
+               and row["slice_id"] == "" for row in records)
+    assert all("error" not in row and "exception" not in row
+               and "prompt" not in row and "path" not in row for row in records)
+    changed, stats = QualityTailReader(str(path)).poll()
+    assert changed and stats["producer_operational_failure_events"] == 3
+    assert all(stats["error_codes"][code] == 1 for code in codes)
+    assert stats["documents_decided"] == stats["documents_schema_pending"] == 0
+    assert stats["slice_validation_attempts"] == stats["repair_attempts"] == 0
+    assert stats["document_schema_reject_pct"] is None
+    from czjLLM.job_manager.win_gui import format_quality_summary
+    assert "Producer 執行異常 3 次（事件數）" in format_quality_summary(stats)
+
+
+def test_producer_run_event_rejects_identity_and_bad_code(tmp_path):
+    import pytest
+    audit = str(tmp_path / "llm_call_audit_producer_invalid.csv")
+    for bad_ids in (
+        {"document_id": "private-identifier"},
+        {"slice_id": "private-file.txt"},
+        {"document_id": None},
+        {"slice_id": None},
+    ):
+        with pytest.raises(ValueError, match="cannot carry document or slice identities"):
+            emit_quality_event(
+                audit, event="producer_operational_failure",
+                code="PRODUCER_SCHEDULE_EXCEPTION", scope="run",
+                outcome="observed", **bad_ids,
+            )
+    with pytest.raises(ValueError, match="unknown or mismatched quality event/code"):
+        emit_quality_event(
+            audit, event="producer_operational_failure",
+            code="CONSUMER_TERMINATED", scope="run", outcome="observed",
+        )
+    with pytest.raises(ValueError, match="mismatched quality event scope"):
+        emit_quality_event(
+            audit, event="producer_operational_failure",
+            code="PRODUCER_SCHEDULE_EXCEPTION", scope="document",
+            outcome="observed",
+        )
+    assert not quality_event_path(audit).exists()
+    invalid = {
+        "schema_version": 1, "event_id": "bad-producer",
+        "event": "producer_operational_failure", "scope": "run",
+        "code": "PRODUCER_SCHEDULE_EXCEPTION",
+        "document_id": "private-identifier",
+    }
+    assert not QualityAccumulator().add(invalid)
+    good = {**invalid, "event_id": "good-producer", "document_id": "",
+            "slice_id": ""}
+    p = tmp_path / "producer-corrupt.jsonl"
+    p.write_text(json.dumps(invalid) + "\n" + json.dumps(good) + "\n", encoding="utf-8")
+    reader = QualityTailReader(str(p))
+    _, stats = reader.poll()
+    assert reader.skipped_corrupt_lines == 1
+    assert stats["producer_operational_failure_events"] == 1
