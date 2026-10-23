@@ -32,11 +32,16 @@ _EVENT_CODES = {
         "CONSUMER_ROUND_TIMEOUT", "CONSUMER_ROUND_EXCEPTION",
         "CONSUMER_TERMINATED",
     },
+    "row_merger_retryable_failure": {
+        "ROW_MERGER_PREPARE_RETRY", "ROW_MERGER_WRITEBACK_RETRY",
+    },
 }
 _KNOWN_CODES = set().union(*_EVENT_CODES.values())
 _EVENT_SCOPES = {
     event: ("document" if event.startswith("document_") else
-            "run" if event.startswith("consumer_") else "slice")
+            "run" if event in {
+                "consumer_orchestration_failure", "row_merger_retryable_failure",
+            } else "slice")
     for event in _EVENT_CODES
 }
 
@@ -95,7 +100,7 @@ def emit_quality_event(
         raise ValueError("unknown or mismatched quality event/code")
     if scope != _EVENT_SCOPES[event]:
         raise ValueError("mismatched quality event scope")
-    if event == "consumer_orchestration_failure" and (
+    if scope == "run" and (
             document_id != "" or slice_id != ""):
         raise ValueError("run-scoped quality events cannot carry document or slice identities")
     data = {
@@ -143,6 +148,7 @@ class QualityAccumulator:
         self._repair_success = 0
         self._repair_failure = 0
         self._consumer_failures = 0
+        self._row_merger_retryable_failures = 0
         self._schema_rejected = set()
         self._writeback_confirmed = set()
 
@@ -163,7 +169,7 @@ class QualityAccumulator:
         # Old fixtures may omit scope entirely; explicit null is invalid.
         if "scope" in record and record["scope"] != _EVENT_SCOPES[event]:
             return False
-        if event == "consumer_orchestration_failure" and (
+        if _EVENT_SCOPES[event] == "run" and (
                 record.get("document_id", "") != "" or
                 record.get("slice_id", "") != ""):
             # Defensive read boundary: reject preexisting/tampered JSONL identities.
@@ -207,6 +213,10 @@ class QualityAccumulator:
             # Retry observations are not failed calls, slices, or documents.
             self._consumer_failures += 1
             self._codes[code] += 1
+        elif event == "row_merger_retryable_failure":
+            # Throttled run-scoped retry observations, never document decisions.
+            self._row_merger_retryable_failures += 1
+            self._codes[code] += 1
         return True
 
     def is_identical_accepted_event(self, record: object) -> bool:
@@ -239,6 +249,7 @@ class QualityAccumulator:
             "repair_attempts": repairs,
             "repair_succeeded": self._repair_success,
             "consumer_orchestration_failure_events": self._consumer_failures,
+            "row_merger_retryable_failure_events": self._row_merger_retryable_failures,
             "repair_success_pct": round(100 * self._repair_success / repairs, 2) if repairs else None,
             "documents_decided": len(decided),
             "documents_schema_pending": len(failed_docs),
