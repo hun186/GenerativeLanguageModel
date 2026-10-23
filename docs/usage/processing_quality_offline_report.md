@@ -56,3 +56,7 @@ Producer 原有三種「已捕捉並可繼續處理」的非 Schema 操作例外
 GUI「Producer 執行異常」及離線報表 `producer_operational_failure_events` 是已捕捉例外**事件次數**，不是不同失敗文件數、API 呼叫失敗數或一輪排程的完整失敗率。單一 row 也可能發生多次操作異常；正常 pending 跳過、任務數為零、合作式取消不列入此事件。Stage Worker 內部一般錯誤並不等同 Producer 的三個邊界，將由獨立階段擴充。
 
 本次僅在 Hosted Linux 與離線回歸測試範圍內驗收；Windows self-hosted Runner 未架設，實際 Ollama／SQL／ES 寫回與 GUI 視覺驗收都仍須操作端安排。
+
+### PR #224 初輪複審分類修正
+
+`PRODUCER_SCHEDULE_EXCEPTION` 僅在 `schedule_one_row()` 本身丟出非取消例外時記錄。前後的 Pending Console `mark_running`、紀錄更新、schedule-noop 釋放錯誤並不是 scheduler 的錯誤，**不可以套用這個代碼**；其具體問題仍由原有的操作日誌與排程錯誤處理承擔，不是本階段 Producer 監控全面涵蓋的範圍。新增防止這三類誤判的回歸測試；本變更需對新 Head 重新跑 Hosted CI 與正式 Codex 複審。
