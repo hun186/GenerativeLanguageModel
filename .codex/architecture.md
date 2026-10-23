@@ -95,3 +95,8 @@
 
 ### 2026-10-20 offline read-only quality report (separate PR)
 - `cli_tools.processing_quality_report` reads only one existing run-scoped quality JSONL or enumerates a bounded history in its existing audit directory via `QualityTailReader` / `QualityAccumulator`. No new event producer/storage or runtime/GUI/prompt/sink mutation. Optional summary file uses `utilities.atomic_io.atomic_write_json`.
+
+
+### 2026-10-23 Consumer-quality telemetry (new PR, unmerged)
+
+- Legacy `llm_stream_consumer` sends observed scheduler/termination failures through the existing nonblocking quality JSONL writer; the same reader, GUI and offline CLI surface an independent event count. No new sink or per-document failure inference; stage-managed workers are not instrumented in this incremental scope.
