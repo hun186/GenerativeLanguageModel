@@ -44,3 +44,7 @@ Row Merger 在非 Schema 的可重試例外路徑，使用既有稽核 JSONL 新
 為避免每 0.5 秒 Watchdog 重試就寫入事件，**只在原有同筆錯誤的日誌節流窗口觸發時記錄**。因此 `row_merger_retryable_failure_events` 與 GUI「Row Merger 暫時異常」表示**節流後觀測事件數**，不是所有實際重試次數、失敗文件數、API 呼叫失敗數或永久寫回失敗率。相同筆數後續重試成功，不會抵銷已發生的運作異常事件。Stage 尚未準備好、文件 Schema 終止、合作式取消均不列入此類事件。
 
 同一品質 JSONL 中仍採不同分母：slice JSON 嘗試、repair 嘗試、已判定 document、run 調度事件。本次只補 Row Merger 的非 Schema 例外；Producer、Stage Worker 尚未納入。Windows self-hosted Runner 未部署，需保留實機驗收待辦，不得以 Linux 離線 PASS 推論 Windows／Ollama／ES 實際資料寫回驗收完成。
+
+### PR #223 初輪複審與驗測修正
+
+原本僅在寫回主體例外 handler 發送可重試事件，漏掉 `_resolve_combined_path` 將 `combine_api_finished_item()` 一般例外捕捉後返回的準備階段重試。現改為兩個路徑共用節流的 run-scoped emitter，不改變當次 retry、Success 保留或 cancellation 流程。另明確區分「失敗嘗試」和「之後成功且由 Sink 確認的文件寫回」：兩種事件可同時存在，不能將 quality JSONL 總事件數當成重試事件數。新修正仍須 exact-head Hosted Linux CI 與 Codex 複審通過。
