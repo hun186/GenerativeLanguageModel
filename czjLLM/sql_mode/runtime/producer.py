@@ -5,6 +5,7 @@ from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from typing import Iterable, Tuple, Any, Optional
 
 from czjLLM.job_manager.console_ui import tlog_warn,tlog
+from czjLLM.utilities.processing_quality import emit_quality_event
 from czjLLM.prompt_pipeline.pipeline_controller import producer_backpressure_wait
 from czjLLM.prompt_pipeline.pipeline_controller import meter_update
 from czjLLM.prompt_pipeline.runtime_support.stage_mode import explicit_stage_flow
@@ -28,6 +29,30 @@ from czjLLM.prompt_pipeline.pending_central import (
 )
 from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.reduction.production_control import execution_cancel_requested
+
+
+def _audit_producer_operational_failure(ctx, code: str) -> None:
+    """Observe a caught Producer failure without changing its control flow.
+
+    Only fixed run-scoped codes are allowed; do not pass PK, input text,
+    exception messages, configuration, file paths or stage payloads.
+    """
+    try:
+        emit_quality_event(
+            getattr(ctx, "llm_call_audit_path", ""),
+            run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+            event="producer_operational_failure", code=code,
+            scope="run", outcome="observed",
+        )
+    except Exception as audit_error:
+        # A broken quality log must never fail the Producer/retry process.
+        try:
+            tlog_warn(
+                "[producer] quality audit failed: "
+                f"{type(audit_error).__name__}"
+            )
+        except Exception:
+            pass
 
 
 def _get_positive_int(ctx, *names: str, default: int = 0) -> int:
@@ -262,6 +287,7 @@ def produce_rows(
         except ExecutionCancelled:
             raise
         except Exception as e:
+            _audit_producer_operational_failure(ctx, "PRODUCER_FUTURE_EXCEPTION")
             tlog_warn(f"[producer] multistage row future failed: {e!r}")
             return False, pk_done
 
@@ -344,6 +370,7 @@ def produce_rows(
             finally:
                 raise
         except Exception as e:
+            _audit_producer_operational_failure(ctx, "PRODUCER_SCHEDULE_EXCEPTION")
             try:
                 mark_not_running(ctx, pk, state="schedule_error")
                 record_adjustment(ctx, "schedule_error_release", pk=pk,
@@ -437,6 +464,10 @@ def produce_rows(
                     sleep_step=0.05,
                 )
             except Exception as e:
+                if not isinstance(e, ExecutionCancelled):
+                    _audit_producer_operational_failure(
+                        ctx, "PRODUCER_BACKPRESSURE_EXCEPTION"
+                    )
                 tlog_warn(f"[producer] backpressure wait 例外，略過此列 pk={pk}: {e!r}")
                 try:
                     meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
