@@ -4,6 +4,8 @@ from dataclasses import dataclass, replace
 from collections.abc import Mapping
 from typing import Callable
 
+from czjLLM.reduction.execution import ExecutionCancelled
+from czjLLM.utilities.processing_quality import emit_quality_event
 from czjLLM.prompt_pipeline.stage_runtime import (
     ChunkStageRuntime,
     StageDefinition,
@@ -16,6 +18,24 @@ from czjLLM.prompt_pipeline.stage_runtime import (
     should_persist_output,
     summarize_runtime,
 )
+
+def _observe_stage_orchestration_failure(ctx, code: str) -> None:
+    """Best-effort run-only observation at the actual stage failure boundary.
+
+    Do not persist a stage task, stage name, chunk ID, raw exception or path.
+    A stage exception is not proof of an LLM request or a failed document.
+    """
+    try:
+        emit_quality_event(
+            getattr(ctx, "llm_call_audit_path", ""),
+            run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+            event="stage_orchestration_failure",
+            code=code, scope="run", outcome="observed",
+        )
+    except Exception:
+        # Never replace the original failure/cancellation or alter retries.
+        pass
+
 
 def _stage_task_debug_preview(task: object, max_len: int = 300) -> str:
     if isinstance(task, Mapping):
@@ -129,7 +149,15 @@ def execute_stage_round(
         original_text = original_inputs.get(job.chunk_id, "")
         stage_def = stage_map[job.stage_name]
         chunk_runtime.mark_started(job.stage_name)
-        effective_task, route_err = resolve_stage_task(stage_def, chunk_stage_outputs, task_setting=task_setting)
+        try:
+            effective_task, route_err = resolve_stage_task(
+                stage_def, chunk_stage_outputs, task_setting=task_setting,
+            )
+        except ExecutionCancelled:
+            raise
+        except Exception:
+            _observe_stage_orchestration_failure(ctx, "STAGE_PREPARE_EXCEPTION")
+            raise
         if stage_def.debug_print_llm_io:
             print(
                 f"[stage:{job.stage_name}] 🔎 resolved task preview: "
@@ -169,16 +197,30 @@ def execute_stage_round(
             stage_task=effective_task,
             input_from=effective_input_from,
         )
-        input_text = resolve_stage_input(
-            stage=type(stage_def)(**{**stage_def.__dict__, "input_from": effective_input_from}),
-            stage_order=stage_order,
-            outputs_by_stage=chunk_stage_outputs,
-            original_text=original_text,
-        )
         try:
-            raw = runner(routed_job, ctx, input_text)
-        except TypeError:
-            raw = runner(routed_job, ctx)
+            input_text = resolve_stage_input(
+                stage=type(stage_def)(**{**stage_def.__dict__, "input_from": effective_input_from}),
+                stage_order=stage_order,
+                outputs_by_stage=chunk_stage_outputs,
+                original_text=original_text,
+            )
+        except ExecutionCancelled:
+            raise
+        except Exception:
+            _observe_stage_orchestration_failure(ctx, "STAGE_PREPARE_EXCEPTION")
+            raise
+        try:
+            try:
+                raw = runner(routed_job, ctx, input_text)
+            except TypeError:
+                # Preserve the historical two-argument compatibility path.
+                # The first TypeError alone is not a failed stage run.
+                raw = runner(routed_job, ctx)
+        except ExecutionCancelled:
+            raise
+        except Exception:
+            _observe_stage_orchestration_failure(ctx, "STAGE_RUNNER_EXCEPTION")
+            raise
         if isinstance(raw, dict):
             ok = bool(raw.get("ok"))
             error = str(raw.get("error", ""))
