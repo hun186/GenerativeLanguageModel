@@ -136,3 +136,9 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 - [ ] New P2 Producer operational incident telemetry: non-Schema schedule/backpressure/future catch sites, no raw IDs or exception text; require exact-head Hosted Linux offline E2E including focused Producer tests, Codex clean review, and explicit merge authorization.
 - [ ] Stage Worker non-LLM exceptions and structured per-stage/worker taxonomy as a separate PR; require source-authoritative boundaries, cancellation exclusion and payload-free audit. Neither Producer nor Row Merger event counts are a document failure rate.
 - [ ] Retention/rotation with resumable aggregation, bounded drill-down/filters, and 1–3 real Windows/Ollama/Elasticsearch writeback/readback acceptance when operator environment is ready; Windows self-hosted runners deliberately deferred.
+
+### 2026-10-23 #224 closure and Stage orchestration telemetry follow-up
+
+- [x] PR #224 user-authorized merged `06a17d48442cce645a8e429e4a6e083fc9679692`, exact-head Codex findings=0, Threads unresolved=0, PR-head Linux offline E2E PASS; post-merge main run #39980110881 Linux offline-e2e SUCCESS. Older pending #224 lines are historical.
+- [ ] Stage orchestration (not global worker crash) escaped exception observation at actual task/runner boundaries, with fixed run-only no-identity codes and no document failure-rate arithmetic. Exact-head Hosted offline Linux and formal Codex Review must pass before requesting explicit merge permission.
+- [ ] Follow-up: real non-LLM versus LLM execution root-cause attribution inside Worker/Stage; an escaped generic Runner exception does not by itself prove the source, so keep taxonomy and GUI terminology neutral. Also bounded drill-down, retention/rotation, 1–3 real ES/Ollama samples and Windows visual acceptance remain unverified.

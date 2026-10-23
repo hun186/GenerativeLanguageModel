@@ -168,3 +168,8 @@
 ### 2026-10-23 PR #224 Producer schedule event semantic clarification (pending review)
 
 - `PRODUCER_SCHEDULE_EXCEPTION` means **only** a non-cancellation exception raised directly by the `schedule_one_row()` call. It does **not** cover preceding `mark_running()`, `record_adjustment(mark_running_before_dispatch)`, or no-op `mark_not_running()/record_adjustment()` bookkeeping failures; those are separate operational failure sources and must not be silently conflated with the scheduler code. The outer existing catch/release behavior remains unchanged. No payload/PK/exception body is included in the emitted run event.
+
+### 2026-10-23 Stage orchestration quality events (P2 PR proposed; Hosted acceptance pending)
+
+- Extend Quality schema v1 with `event=stage_orchestration_failure`, `scope=run`, `outcome=observed`, fixed codes `STAGE_PREPARE_EXCEPTION` (Stage task resolution/input preparation exception) and `STAGE_RUNNER_EXCEPTION` (escaped exception from actual Stage Runner call, after legacy signature fallback where needed). The public writer and strict reader reject non-empty, null, or otherwise non-string document/slice IDs for run events; original exception, stage/chunk identity, model endpoint, prompt/output, file paths and secrets are not included in JSONL.
+- Add `stage_orchestration_failure_events` to `QualityAccumulator.snapshot`, with codes in existing `error_codes`. Not a distinct failed document count, provider request failure, full worker exception taxonomy or a rate denominator. An `ExecutionCancelled`, normal `{ok:false}` or successful 2-arg Runner fallback does not emit an incident. The original Runner/Stage exception remains authoritative and propagates.

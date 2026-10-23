@@ -39,13 +39,16 @@ _EVENT_CODES = {
         "PRODUCER_SCHEDULE_EXCEPTION", "PRODUCER_BACKPRESSURE_EXCEPTION",
         "PRODUCER_FUTURE_EXCEPTION",
     },
+    "stage_orchestration_failure": {
+        "STAGE_PREPARE_EXCEPTION", "STAGE_RUNNER_EXCEPTION",
+    },
 }
 _KNOWN_CODES = set().union(*_EVENT_CODES.values())
 _EVENT_SCOPES = {
     event: ("document" if event.startswith("document_") else
             "run" if event in {
                 "consumer_orchestration_failure", "row_merger_retryable_failure",
-                "producer_operational_failure",
+                "producer_operational_failure", "stage_orchestration_failure",
             } else "slice")
     for event in _EVENT_CODES
 }
@@ -155,6 +158,7 @@ class QualityAccumulator:
         self._consumer_failures = 0
         self._row_merger_retryable_failures = 0
         self._producer_operational_failures = 0
+        self._stage_orchestration_failures = 0
         self._schema_rejected = set()
         self._writeback_confirmed = set()
 
@@ -227,6 +231,10 @@ class QualityAccumulator:
             # Producer catch-site incidents, not failed slices or documents.
             self._producer_operational_failures += 1
             self._codes[code] += 1
+        elif event == "stage_orchestration_failure":
+            # Stage control-plane exceptions, not provider or document rates.
+            self._stage_orchestration_failures += 1
+            self._codes[code] += 1
         return True
 
     def is_identical_accepted_event(self, record: object) -> bool:
@@ -261,6 +269,7 @@ class QualityAccumulator:
             "consumer_orchestration_failure_events": self._consumer_failures,
             "row_merger_retryable_failure_events": self._row_merger_retryable_failures,
             "producer_operational_failure_events": self._producer_operational_failures,
+            "stage_orchestration_failure_events": self._stage_orchestration_failures,
             "repair_success_pct": round(100 * self._repair_success / repairs, 2) if repairs else None,
             "documents_decided": len(decided),
             "documents_schema_pending": len(failed_docs),

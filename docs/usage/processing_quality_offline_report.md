@@ -64,3 +64,9 @@ GUI「Producer 執行異常」及離線報表 `producer_operational_failure_even
 ### PR #224 第二輪 P2：取消流程與品質計數
 
 多階段平行 Producer 的 `schedule_one_row()` 若觸發 `ExecutionCancelled`，清理 Pending Running 狀態與寫入取消異動紀錄都屬於「盡力而為」，即使這兩者失敗也**必須保留原始取消訊號**。原始取消仍由 Producer 記錄 `_producer_cancelled=True`，不得誤記為 `PRODUCER_FUTURE_EXCEPTION`。新回歸測試會確認單一或兩個清理操作同時失敗時仍有正確取消結果；Host Linux CI 和正式 Codex 複審以最新 PR Head 為準。
+
+## Stage 調度例外監控（2026-10-23，獨立待驗 PR）
+
+Stage 管理的多階段流程在**真正的階段任務解析與輸入準備**拋出例外時，記錄 `STAGE_PREPARE_EXCEPTION`；在 Stage Runner 呼叫（含既有雙參數相容回退）最終拋出例外時記錄 `STAGE_RUNNER_EXCEPTION`。共用 Processing Quality run-scoped JSONL，只存固定代碼與最少的執行資訊，不存切片／文件識別、階段名稱、例外文字、Prompt、輸出、檔案路徑或模型端點。稽核寫入失敗不會替代原本的例外，`ExecutionCancelled` 不算失敗。
+
+GUI「Stage 調度例外」與離線 `stage_orchestration_failure_events` 表示例外**事件數**，不代表各文件失敗次數、某階段失敗率或實際 LLM API 失敗率。Runner 的內部可能是 LLM、檔案或其他操作，因此單憑此事件不能判定根本原因為「非 LLM」。Runner 正常回傳 `ok=false`、路由未命中、雙參數相容回退成功，均不列入這個例外觀測。Stage 結構外的獨立 Worker 與持久化的失敗分類仍須獨立處理；Windows／真實 ES／Ollama 驗收暫緩。

@@ -105,3 +105,8 @@
 ### 2026-10-23 Producer cooperative cancellation error priority (PR #224 P2 corrective)
 
 - Cooperative `ExecutionCancelled` is authoritative for Producer control flow. Best-effort Pending Console cancellation cleanup may log only exception type on failure, but must never convert cancellation to a generic `Future.result()` exception, emit `PRODUCER_FUTURE_EXCEPTION`, or mark the run as not cancelled. Attempt each cleanup step independently even if the other fails.
+
+### 2026-10-23 Stage instrumentation scope decision (P2 PR pending)
+
+- Instrument actual Stage orchestration task/input resolution and Runner invocation failure boundaries; do not parse console logs, infer any Stage error from failed model responses, or mislabel generic escaped Runner exceptions as specifically provider or non-provider failures. Preserve historical two-argument fallback and cancellation propagation; best-effort JSONL audit cannot replace the primary exception.
+- Keep observability run scoped and payload/identity free, using the existing quality reader, GUI and read-only offline reports. Worker root-cause detail, filters and event retention remain separate work.

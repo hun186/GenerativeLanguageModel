@@ -100,3 +100,7 @@
 ### 2026-10-23 Consumer-quality telemetry (new PR, unmerged)
 
 - Legacy `llm_stream_consumer` sends observed scheduler/termination failures through the existing nonblocking quality JSONL writer; the same reader, GUI and offline CLI surface an independent event count. No new sink or per-document failure inference; stage-managed workers are not instrumented in this incremental scope.
+
+### 2026-10-23 Stage orchestration observation boundary (new P2 PR, pending acceptance)
+
+- The active multi-stage pipeline in `pipeline_controller.py` calls `stage_orchestrator.run_stage_pipeline` / `execute_stage_round`. Stage task routing and input preparation, followed by a compatible 3-argument or 2-argument Runner invocation, are the new bounded observation sites. Their escaping non-cancellation exceptions use existing `processing_quality` per-run JSONL; no replay/exception policy, checkpoint ownership or result shape is changed. GUI, accumulator and offline reports project the same events and never count them as failed documents or LLM requests.
