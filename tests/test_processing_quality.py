@@ -447,3 +447,71 @@ def test_producer_run_event_rejects_identity_and_bad_code(tmp_path):
     _, stats = reader.poll()
     assert reader.skipped_corrupt_lines == 1
     assert stats["producer_operational_failure_events"] == 1
+
+
+def test_stage_orchestration_run_codes_keep_document_rates_untouched(tmp_path):
+    audit = str(tmp_path / "llm_call_audit_stage_quality.csv")
+    codes = ("STAGE_PREPARE_EXCEPTION", "STAGE_RUNNER_EXCEPTION")
+    for code in codes:
+        emit_quality_event(
+            audit, run_id="r-stage", event="stage_orchestration_failure",
+            code=code, scope="run", outcome="observed",
+        )
+    path = quality_event_path(audit)
+    lines = [json.loads(row) for row in path.read_text(encoding="utf-8").splitlines()]
+    assert len(lines) == 2
+    assert all(row["document_id"] == row["slice_id"] == "" for row in lines)
+    assert all(row["scope"] == "run" for row in lines)
+    stats = QualityTailReader(str(path)).poll()[1]
+    assert stats["stage_orchestration_failure_events"] == 2
+    assert stats["error_codes"] == {code: 1 for code in codes}
+    assert stats["documents_decided"] == stats["documents_schema_pending"] == 0
+    assert stats["slice_validation_attempts"] == stats["repair_attempts"] == 0
+    assert stats["document_schema_reject_pct"] is None
+    from czjLLM.job_manager.win_gui import format_quality_summary
+    assert "Stage 調度例外 2 次（事件數）" in format_quality_summary(stats)
+
+
+def test_stage_orchestration_refuses_identity_scope_or_other_event_code(tmp_path):
+    import pytest
+    audit = str(tmp_path / "llm_call_audit_stage_no_identity.csv")
+    for identity in (
+        {"document_id": "secret-pk"},
+        {"slice_id": "secret-prompt.txt"},
+        {"document_id": None},
+        {"slice_id": None},
+    ):
+        with pytest.raises(ValueError, match="cannot carry document or slice identities"):
+            emit_quality_event(
+                audit, event="stage_orchestration_failure",
+                code="STAGE_RUNNER_EXCEPTION", scope="run", outcome="observed",
+                **identity,
+            )
+    with pytest.raises(ValueError, match="unknown or mismatched quality event/code"):
+        emit_quality_event(
+            audit, event="stage_orchestration_failure",
+            code="PRODUCER_FUTURE_EXCEPTION", scope="run", outcome="observed",
+        )
+    with pytest.raises(ValueError, match="mismatched quality event scope"):
+        emit_quality_event(
+            audit, event="stage_orchestration_failure",
+            code="STAGE_PREPARE_EXCEPTION", scope="slice", outcome="observed",
+        )
+    assert not quality_event_path(audit).exists()
+
+    base = {"schema_version": 1, "event_id": "stage1",
+            "event": "stage_orchestration_failure",
+            "code": "STAGE_RUNNER_EXCEPTION", "scope": "run"}
+    bad = [
+        {**base, "document_id": "private-pk"},
+        {**base, "event_id": "stage2", "slice_id": "private-slice"},
+        {**base, "event_id": "stage3", "document_id": None},
+    ]
+    good = {**base, "event_id": "stage4", "document_id": "", "slice_id": ""}
+    assert all(not QualityAccumulator().add(x) for x in bad)
+    path = tmp_path / "stage-invalid-complete.jsonl"
+    path.write_text("".join(json.dumps(v) + "\n" for v in bad + [good]), encoding="utf-8")
+    reader = QualityTailReader(str(path))
+    _, stats = reader.poll()
+    assert reader.skipped_corrupt_lines == len(bad)
+    assert stats["stage_orchestration_failure_events"] == 1
