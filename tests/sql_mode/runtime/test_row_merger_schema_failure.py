@@ -921,6 +921,8 @@ def test_es_buffer_discarded_when_write_main_flush_itself_raises(
         llm_source_backup_dir=str(tmp_path / "backup"),
         cleanup_prompt_item_after_writeback=False,
         row_merger_failure_log_interval=60,
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_retry.csv"),
+        llm_call_audit_run_id="r-retry",
     )
     merger_module.row_merger_watchdog_generic(
         ctx, registry, lambda *_args: None,
@@ -929,6 +931,20 @@ def test_es_buffer_discarded_when_write_main_flush_itself_raises(
     )
     assert attempts == ["doc", "doc"] and discarded == ["doc"]
     assert releases == [("doc", "writeback_completed")]
+    # The first failed write_main produces one run-scoped incident, while
+    # the successful retry still releases the row as completed.
+    from czjLLM.utilities.processing_quality import quality_event_path, QualityTailReader
+    audit = quality_event_path(ctx.llm_call_audit_path)
+    observed = [json.loads(row) for row in audit.read_text(encoding="utf-8").splitlines()]
+    assert len(observed) == 1
+    assert observed[0]["code"] == "ROW_MERGER_WRITEBACK_RETRY"
+    assert observed[0]["scope"] == "run"
+    assert observed[0]["document_id"] == observed[0]["slice_id"] == ""
+    assert "size-triggered bulk transport failure" not in audit.read_text(encoding="utf-8")
+    stats = QualityTailReader(str(audit)).poll()[1]
+    assert stats["row_merger_retryable_failure_events"] == 1
+    assert stats["documents_schema_pending"] == 0
+    assert stats["documents_decided"] == 0
 
 @pytest.mark.parametrize("es_ack_required", [True, False])
 def test_flatten_write_failure_propagates_for_buffered_es_only(
