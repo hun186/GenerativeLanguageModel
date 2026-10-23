@@ -95,6 +95,9 @@ def emit_quality_event(
         raise ValueError("unknown or mismatched quality event/code")
     if scope != _EVENT_SCOPES[event]:
         raise ValueError("mismatched quality event scope")
+    if event == "consumer_orchestration_failure" and (
+            document_id != "" or slice_id != ""):
+        raise ValueError("run-scoped quality events cannot carry document or slice identities")
     data = {
         "schema_version": 1,
         "event_id": uuid4().hex,
@@ -159,6 +162,11 @@ class QualityAccumulator:
             return False
         # Old fixtures may omit scope entirely; explicit null is invalid.
         if "scope" in record and record["scope"] != _EVENT_SCOPES[event]:
+            return False
+        if event == "consumer_orchestration_failure" and (
+                record.get("document_id", "") != "" or
+                record.get("slice_id", "") != ""):
+            # Defensive read boundary: reject preexisting/tampered JSONL identities.
             return False
         if event.startswith("document_") and not (
                 isinstance(record.get("document_id"), str) and record["document_id"].strip()):
