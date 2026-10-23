@@ -571,6 +571,7 @@ def format_quality_summary(stats: dict) -> str:
         f"  ｜  修復成功 {percent('repair_success_pct', int(stats.get('repair_attempts', 0)))}"
         f"  ｜  LLM 文件結構異常（待處理） {percent('document_schema_reject_pct', int(stats.get('documents_decided', 0)))}"
         f"  ｜  確認式 Sink 寫回 {int(stats.get('documents_writeback_confirmed', 0)):,} 筆"
+        f"  ｜  Consumer 調度異常 {int(stats.get('consumer_orchestration_failure_events', 0)):,} 次（事件數）"
     )
 
 
