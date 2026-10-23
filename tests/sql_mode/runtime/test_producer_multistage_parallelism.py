@@ -386,3 +386,84 @@ def test_noop_release_bookkeeping_failure_is_not_scheduler_incident(
     ) == 0
     assert calls == ["scheduler"]
     assert not quality_event_path(ctx.llm_call_audit_path).exists()
+
+
+def test_parallel_cancellation_survives_pending_cleanup_errors(tmp_path, monkeypatch):
+    """Cleanup faults must not replace ExecutionCancelled in Future.result()."""
+    from czjLLM.reduction.execution import ExecutionCancelled
+    from czjLLM.utilities.processing_quality import quality_event_path
+
+    cleanup_steps = []
+    warnings = []
+    def cancel_row(*_args, **_kwargs):
+        raise ExecutionCancelled("cooperative stop")
+
+    def fail_release(_ctx, _pk, state):
+        cleanup_steps.append(("release", state))
+        raise OSError("private pending lock path")
+
+    def fail_adjustment(_ctx, event, **_kwargs):
+        cleanup_steps.append(("adjustment", event))
+        if event == "cancelled_release":
+            raise RuntimeError("private adjustment log")
+
+    monkeypatch.setattr(producer, "schedule_one_row", cancel_row)
+    monkeypatch.setattr(producer, "mark_not_running", fail_release)
+    monkeypatch.setattr(producer, "record_adjustment", fail_adjustment)
+    monkeypatch.setattr(producer, "tlog_warn", warnings.append)
+    ctx = SimpleNamespace(
+        mode="sql", n_process=2, stages=[{"name": "one"}],
+        sql_enable_multistage_stream=True,
+        _execution_budget=ExecutionBudget(2),
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_cancel_cleanup.csv"),
+    )
+    stop = threading.Event()
+    progress = SimpleNamespace(update=lambda *_args: None)
+    assert producer.produce_rows(
+        ctx, [("private-pk", "private prompt")],
+        object(), "meter", 0, stop, None, progress,
+    ) == 0
+    assert ctx._producer_cancelled is True
+    assert stop.is_set() is False
+    assert ("release", "cancelled") in cleanup_steps
+    assert ("adjustment", "cancelled_release") in cleanup_steps
+    assert any("cancellation cleanup failed: OSError" in w for w in warnings)
+    assert any("cancellation cleanup failed: RuntimeError" in w for w in warnings)
+    assert not any("multistage row future failed" in w for w in warnings)
+    assert not quality_event_path(ctx.llm_call_audit_path).exists()
+
+
+def test_parallel_cancel_only_adjustment_failure_is_still_cancelled(tmp_path, monkeypatch):
+    """A single cleanup failure must not convert cancellation to a future error."""
+    from czjLLM.reduction.execution import ExecutionCancelled
+    from czjLLM.utilities.processing_quality import quality_event_path
+
+    states = []
+    monkeypatch.setattr(
+        producer, "schedule_one_row",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(ExecutionCancelled("cancel")),
+    )
+    monkeypatch.setattr(
+        producer, "mark_not_running",
+        lambda _ctx, _pk, state: states.append(state),
+    )
+
+    def record(_ctx, event, **_kwargs):
+        if event == "cancelled_release":
+            raise OSError("private cancellation adjustment")
+
+    monkeypatch.setattr(producer, "record_adjustment", record)
+    ctx = SimpleNamespace(
+        mode="sql", n_process=2, stages=[{"name": "one"}],
+        sql_enable_multistage_stream=True,
+        _execution_budget=ExecutionBudget(2),
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_cancel_adjustment.csv"),
+    )
+    progress = SimpleNamespace(update=lambda *_args: None)
+    assert producer.produce_rows(
+        ctx, [("pk", "text")], object(), "meter", 0,
+        threading.Event(), None, progress,
+    ) == 0
+    assert states == ["cancelled"]
+    assert ctx._producer_cancelled is True
+    assert not quality_event_path(ctx.llm_call_audit_path).exists()
