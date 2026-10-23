@@ -140,3 +140,9 @@
 ### 2026-10-23 PR #222 first Codex P2 privacy issue (corrected on branch; unverified)
 
 - Codex #4357453454 identified a public event API validation gap: a run-scoped Consumer event with supplied document/slice IDs could persist those identifiers. Event-specific producer and accumulator guards and targeted regression were added, but latest PR-head Hosted CI and formal Codex re-review must confirm the fix before calling the issue resolved. Original-head CI success does not validate new commits.
+
+### 2026-10-23 PR #223 initial P2 and CI (corrections pending Hosted acceptance)
+
+- Old `7eabcb5` Head Codex P2: Row Merger combine-preparation exception caught/returned before outer retry handler, leaving `ROW_MERGER_PREPARE_RETRY` unreported. Fixed on PR branch with shared telemetry invoked from the earlier exception handler, still throttle/best-effort.
+- Old `7eabcb5` Head Linux CI `39954419192` failed one new regression: two valid quality JSONL events after a successful acknowledged retry versus test expectation of one; repaired test now distinguishes successful document confirmation from the run-scoped retry observation.
+- Fresh exact-head CI and formal review needed; do not call correction accepted until verified.

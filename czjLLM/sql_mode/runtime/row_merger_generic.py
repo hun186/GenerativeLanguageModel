@@ -578,6 +578,37 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
     failure_log_interval = max(
         1.0, float(getattr(ctx, "row_merger_failure_log_interval", 60.0) or 60.0)
     )
+    quality_incident_state = {}
+
+    def _record_retry_incident(item_dir, code, exc):
+        """Throttle run-scoped quality observations, independently of logging.
+
+        Some combination failures are caught by _resolve_combined_path()
+        before the outer writeback exception handler. Both paths must share
+        this best-effort, privacy-minimal emission boundary.
+        """
+        key = (item_dir, code, type(exc).__name__, str(exc))
+        now = time.monotonic()
+        last = quality_incident_state.get(key)
+        if last is not None and now - last < failure_log_interval:
+            return
+        quality_incident_state[key] = now
+        try:
+            emit_quality_event(
+                getattr(ctx, "llm_call_audit_path", ""),
+                run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+                event="row_merger_retryable_failure",
+                code=code, scope="run", outcome="observed",
+            )
+        except Exception as audit_error:
+            # Auditing is not allowed to change retry or cleanup semantics.
+            try:
+                tlog_warn(
+                    "⚠️ Row Merger quality audit failed: "
+                    f"{type(audit_error).__name__}"
+                )
+            except Exception:
+                pass
 
     def _release_terminal_schema_failure(item_dir, pk, exc, combined_path):
         """Fail completed invalid article once; preserve Success and ES pending."""
@@ -741,6 +772,11 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 _legacy_merge_finish(
                     item_dir, success=False, error_type=type(e).__name__
                 )
+                if not _is_terminal_schema_writeback_error(e):
+                    # Preparation retries never enter the writeback handler.
+                    _record_retry_incident(
+                        item_dir, "ROW_MERGER_PREPARE_RETRY", e
+                    )
                 tlog_warn(f"ℹ️ 合併提示（pk={meta.get('pk')}）：{e}")
     
         return None
@@ -1069,6 +1105,14 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     failure_key = (item_dir, str(e))
                     last_logged = failure_log_state.get(failure_key)
                     if last_logged is None or now - last_logged >= failure_log_interval:
+                        # Reuse the same telemetry boundary as combine
+                        # preparation retries, without logging payload/IDs.
+                        _record_retry_incident(
+                            item_dir,
+                            ("ROW_MERGER_WRITEBACK_RETRY" if writeback_started
+                             else "ROW_MERGER_PREPARE_RETRY"),
+                            e,
+                        )
                         tlog_warn(
                             f"Row Merger 寫回失敗 pk={pk}: {e} "
                             f"（相同錯誤最多每 {failure_log_interval:g} 秒提示一次）"

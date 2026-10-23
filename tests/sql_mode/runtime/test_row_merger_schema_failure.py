@@ -921,6 +921,8 @@ def test_es_buffer_discarded_when_write_main_flush_itself_raises(
         llm_source_backup_dir=str(tmp_path / "backup"),
         cleanup_prompt_item_after_writeback=False,
         row_merger_failure_log_interval=60,
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_retry.csv"),
+        llm_call_audit_run_id="r-retry",
     )
     merger_module.row_merger_watchdog_generic(
         ctx, registry, lambda *_args: None,
@@ -929,6 +931,99 @@ def test_es_buffer_discarded_when_write_main_flush_itself_raises(
     )
     assert attempts == ["doc", "doc"] and discarded == ["doc"]
     assert releases == [("doc", "writeback_completed")]
+    # The first failed write_main produces one run-scoped incident, while
+    # the successful retry still releases the row as completed.
+    from czjLLM.utilities.processing_quality import quality_event_path, QualityTailReader
+    audit = quality_event_path(ctx.llm_call_audit_path)
+    observed = [json.loads(row) for row in audit.read_text(encoding="utf-8").splitlines()]
+    # The acknowledged successful retry ALSO writes a document confirmation.
+    # It must not be mistaken for a duplicate retry incident.
+    incidents = [row for row in observed if row["event"] == "row_merger_retryable_failure"]
+    confirmations = [row for row in observed if row["event"] == "document_writeback_confirmed"]
+    assert len(observed) == 2 and len(incidents) == len(confirmations) == 1
+    assert incidents[0]["code"] == "ROW_MERGER_WRITEBACK_RETRY"
+    assert incidents[0]["scope"] == "run"
+    assert incidents[0]["document_id"] == incidents[0]["slice_id"] == ""
+    assert confirmations[0]["document_id"] == "doc"
+    assert "size-triggered bulk transport failure" not in audit.read_text(encoding="utf-8")
+    stats = QualityTailReader(str(audit)).poll()[1]
+    assert stats["row_merger_retryable_failure_events"] == 1
+    assert stats["documents_writeback_confirmed"] == stats["documents_decided"] == 1
+    assert stats["documents_schema_pending"] == 0
+
+
+def test_row_merger_combine_prepare_retry_is_audited_then_recovers(tmp_path, monkeypatch):
+    """A swallowed combine exception needs its own throttled retry incident."""
+    item = tmp_path / "item"
+    success = item / "Success"
+    success.mkdir(parents=True)
+    (success / "0.txt").write_text('{"ok": true}', encoding="utf-8")
+    source = tmp_path / "raw" / "doc.txt"
+    source.parent.mkdir()
+    source.write_text("original", encoding="utf-8")
+    combined = tmp_path / "finished" / "combined.json"
+    combined.parent.mkdir()
+    registry = _Registry(
+        str(item), {
+            "pk": "doc", "temp_txt": str(source),
+            "CombBackFN": str(combined), "chunks": 1,
+        },
+    )
+    attempts, writes = [], []
+
+    def combine_once_broken(_item, _ctx):
+        attempts.append(_item)
+        if len(attempts) == 1:
+            raise RuntimeError("combine failed: private-prompt-must-not-leak")
+        combined.write_text('{"ok": true}', encoding="utf-8")
+        return str(combined)
+
+    class Sink:
+        def open(self):
+            pass
+
+        def close(self):
+            pass
+
+        def write_main(self, pk, *_args, **_kwargs):
+            writes.append(pk)
+
+    monkeypatch.setattr(merger_module, "combine_api_finished_item", combine_once_broken)
+    monkeypatch.setattr(
+        merger_module, "get_combined_result_path",
+        lambda *_args, **_kwargs: str(combined),
+    )
+    ctx = SimpleNamespace(
+        output_col="result", merge_slices=False,
+        record_update_time=False, flatten_json_output=False,
+        llm_source_dir=str(source.parent),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        cleanup_prompt_item_after_writeback=False,
+        row_merger_failure_log_interval=60,
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_combine.csv"),
+        llm_call_audit_run_id="r-combine",
+    )
+    merger_module.row_merger_watchdog_generic(
+        ctx, registry, lambda *_args: None,
+        SimpleNamespace(is_set=lambda: True),
+        Sink(), scan_interval=0.001,
+    )
+    assert len(attempts) == 2
+    assert writes == ["doc"]
+    assert registry.removed
+    from czjLLM.utilities.processing_quality import quality_event_path, QualityTailReader
+    audit = quality_event_path(ctx.llm_call_audit_path)
+    events = [json.loads(line) for line in audit.read_text(encoding="utf-8").splitlines()]
+    assert len(events) == 1
+    assert events[0]["event"] == "row_merger_retryable_failure"
+    assert events[0]["code"] == "ROW_MERGER_PREPARE_RETRY"
+    assert events[0]["scope"] == "run"
+    assert events[0]["document_id"] == events[0]["slice_id"] == ""
+    assert "private-prompt-must-not-leak" not in audit.read_text(encoding="utf-8")
+    stats = QualityTailReader(str(audit)).poll()[1]
+    assert stats["row_merger_retryable_failure_events"] == 1
+    assert stats["documents_decided"] == 0  # Sink has no confirmation contract.
+
 
 @pytest.mark.parametrize("es_ack_required", [True, False])
 def test_flatten_write_failure_propagates_for_buffered_es_only(

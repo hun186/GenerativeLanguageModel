@@ -122,3 +122,10 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 - [ ] Validate new Consumer orchestration event PR with exact-head Linux offline-e2e, focused `tests/test_processing_quality.py`, formal Codex P1/P2 review and zero unresolved threads; wait for user merge authorization.
 - [ ] Independently instrument Stage Worker/Producer/Row Merger non-schema failures at authoritative event boundaries. Consumer incidents cannot be interpreted as whole-pipeline or document failure rate.
 - [ ] Controlled 1–3 row Windows + Ollama + ES acceptance and independent ES readback before large batch replay. #203 transient semantic cache stays deferred.
+
+### 2026-10-23 PR #222 accepted; next Row Merger retry incident PR
+
+- [x] Consumer run-scoped orchestration event PR #222 merged into `main` as `bd3fc22c647ef296c2210750a69c78c168c50904` after clean formal Codex exact-head re-review, zero unresolved threads, and Linux offline E2E. The post-merge Linux offline-e2e passed; Windows self-hosted queue explicitly skipped for now by operator request.
+- [ ] New independent P2 PR: Row Merger **non-schema retry** incident telemetry at its actual retry handler, throttled by the existing log window. Two run-scoped codes (prepare/writeback), never raw IDs/messages; added to Processing Quality GUI and offline per-run snapshot. Does not redefine document success/failure or change retries.
+- [ ] Obtain latest exact-head Hosted Linux offline-e2e (including `tests/sql_mode/runtime/test_row_merger_schema_failure.py` and `tests/test_processing_quality.py`), formal Codex review with zero unresolved findings, then require explicit user merge authorization.
+- [ ] Subsequent separate scopes: Producer / Stage Worker durable operational exception taxonomy, bounded filter/drill-down and JSONL retention; no real Windows/ES/Ollama acceptance claim before operator can deploy and verify.

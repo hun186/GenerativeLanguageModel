@@ -312,3 +312,65 @@ def test_consumer_run_reader_rejects_identity_bearing_complete_jsonl(tmp_path):
     assert stats["slice_validation_attempts"] == 0
     assert not QualityAccumulator().add(bad[0])
     assert not QualityAccumulator().add(bad[1])
+
+
+def test_row_merger_retryable_incidents_are_throttled_run_observations(tmp_path):
+    """Retryable sink/prepare anomalies never become document/schema failures."""
+    audit = str(tmp_path / "llm_call_audit_merger.csv")
+    for code in ("ROW_MERGER_PREPARE_RETRY", "ROW_MERGER_WRITEBACK_RETRY"):
+        emit_quality_event(
+            audit, run_id="r-row", event="row_merger_retryable_failure",
+            code=code, scope="run", outcome="observed",
+        )
+    path = quality_event_path(audit)
+    rows = [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 2
+    assert all(row["scope"] == "run" and row["document_id"] == ""
+               and row["slice_id"] == "" for row in rows)
+    assert all("exception" not in row and "error" not in row and
+               "prompt" not in row and "path" not in row for row in rows)
+    changed, stats = QualityTailReader(str(path)).poll()
+    assert changed and stats["row_merger_retryable_failure_events"] == 2
+    assert stats["error_codes"]["ROW_MERGER_PREPARE_RETRY"] == 1
+    assert stats["error_codes"]["ROW_MERGER_WRITEBACK_RETRY"] == 1
+    assert stats["slice_validation_attempts"] == stats["repair_attempts"] == 0
+    assert stats["documents_decided"] == stats["documents_schema_pending"] == 0
+    assert stats["document_schema_reject_pct"] is None
+    from czjLLM.job_manager.win_gui import format_quality_summary
+    assert "Row Merger 暫時異常 2 次（節流事件數）" in format_quality_summary(stats)
+
+
+def test_row_merger_run_incident_rejects_raw_identity_or_mismatched_code(tmp_path):
+    import pytest
+    audit = str(tmp_path / "llm_call_audit_row_invalid.csv")
+    for ids in ({"document_id": "secret"}, {"slice_id": "private.txt"},
+                {"document_id": None}, {"slice_id": None}):
+        with pytest.raises(ValueError, match="cannot carry document or slice identities"):
+            emit_quality_event(
+                audit, event="row_merger_retryable_failure",
+                code="ROW_MERGER_WRITEBACK_RETRY", scope="run",
+                outcome="observed", **ids,
+            )
+    with pytest.raises(ValueError, match="mismatched quality event scope"):
+        emit_quality_event(audit, event="row_merger_retryable_failure",
+                           code="ROW_MERGER_PREPARE_RETRY", scope="document",
+                           outcome="observed")
+    with pytest.raises(ValueError, match="unknown or mismatched quality event/code"):
+        emit_quality_event(audit, event="row_merger_retryable_failure",
+                           code="SCHEMA_OTHER", scope="run", outcome="observed")
+    assert not quality_event_path(audit).exists()
+    invalid = {
+        "schema_version": 1, "event_id": "bad-row",
+        "event": "row_merger_retryable_failure",
+        "scope": "run", "code": "ROW_MERGER_PREPARE_RETRY",
+        "document_id": "secret",
+    }
+    assert not QualityAccumulator().add(invalid)
+    good = {**invalid, "event_id": "good-row", "document_id": "", "slice_id": ""}
+    assert QualityAccumulator().add(good)
+    path = tmp_path / "old-bad-quality.jsonl"
+    path.write_text(json.dumps(invalid) + "\n" + json.dumps(good) + "\n", encoding="utf-8")
+    reader = QualityTailReader(str(path))
+    _, stats = reader.poll()
+    assert reader.skipped_corrupt_lines == 1
+    assert stats["row_merger_retryable_failure_events"] == 1
