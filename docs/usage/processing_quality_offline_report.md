@@ -60,3 +60,7 @@ GUI「Producer 執行異常」及離線報表 `producer_operational_failure_even
 ### PR #224 初輪複審分類修正
 
 `PRODUCER_SCHEDULE_EXCEPTION` 僅在 `schedule_one_row()` 本身丟出非取消例外時記錄。前後的 Pending Console `mark_running`、紀錄更新、schedule-noop 釋放錯誤並不是 scheduler 的錯誤，**不可以套用這個代碼**；其具體問題仍由原有的操作日誌與排程錯誤處理承擔，不是本階段 Producer 監控全面涵蓋的範圍。新增防止這三類誤判的回歸測試；本變更需對新 Head 重新跑 Hosted CI 與正式 Codex 複審。
+
+### PR #224 第二輪 P2：取消流程與品質計數
+
+多階段平行 Producer 的 `schedule_one_row()` 若觸發 `ExecutionCancelled`，清理 Pending Running 狀態與寫入取消異動紀錄都屬於「盡力而為」，即使這兩者失敗也**必須保留原始取消訊號**。原始取消仍由 Producer 記錄 `_producer_cancelled=True`，不得誤記為 `PRODUCER_FUTURE_EXCEPTION`。新回歸測試會確認單一或兩個清理操作同時失敗時仍有正確取消結果；Host Linux CI 和正式 Codex 複審以最新 PR Head 為準。
