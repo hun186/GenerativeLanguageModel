@@ -347,9 +347,21 @@ def produce_rows(
         try:
             mark_running(ctx, pk)
             record_adjustment(ctx, "mark_running_before_dispatch", pk=pk)
-            scheduled_chunks = schedule_one_row(
-                ctx, registry, meter_fn, row_idx_for_schedule, pk, text, source_inputs=source_inputs
-            )
+            try:
+                scheduled_chunks = schedule_one_row(
+                    ctx, registry, meter_fn, row_idx_for_schedule, pk, text,
+                    source_inputs=source_inputs,
+                )
+            except ExecutionCancelled:
+                raise
+            except Exception:
+                # Bookkeeping (mark_running/record_adjustment/no-op release)
+                # also lives in the enclosing try, but is not a scheduler
+                # execution failure. Emit only for schedule_one_row itself.
+                _audit_producer_operational_failure(
+                    ctx, "PRODUCER_SCHEDULE_EXCEPTION"
+                )
+                raise
             try:
                 scheduled_chunk_count = int(scheduled_chunks or 0)
             except (TypeError, ValueError):
@@ -370,7 +382,6 @@ def produce_rows(
             finally:
                 raise
         except Exception as e:
-            _audit_producer_operational_failure(ctx, "PRODUCER_SCHEDULE_EXCEPTION")
             try:
                 mark_not_running(ctx, pk, state="schedule_error")
                 record_adjustment(ctx, "schedule_error_release", pk=pk,
