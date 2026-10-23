@@ -101,3 +101,7 @@
 
 - Instrument catch-site exceptions rather than parse console messages or infer failure from a schedule returning zero. Mark operational events run-scoped with fixed enums, no row/stage identity or source content. Do not change cancellation, pending-row skip, ordinary schedule-noop semantics or multistage Future behavior.
 - Existing per-run JSONL writer and reader remain the only event authority; GUI is a projection. No new persistent store or request/document failure-rate denominator. Stage Worker and lifecycle/retention remain separate so this PR's scope stays reviewable.
+
+### 2026-10-23 Producer cooperative cancellation error priority (PR #224 P2 corrective)
+
+- Cooperative `ExecutionCancelled` is authoritative for Producer control flow. Best-effort Pending Console cancellation cleanup may log only exception type on failure, but must never convert cancellation to a generic `Future.result()` exception, emit `PRODUCER_FUTURE_EXCEPTION`, or mark the run as not cancelled. Attempt each cleanup step independently even if the other fails.
