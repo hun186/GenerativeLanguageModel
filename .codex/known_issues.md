@@ -130,3 +130,8 @@
 
 - Existing per-request CSV `llm_call_audit_*.csv` contains `ok` and an **unredacted** exception `error` field. New read-only report categorizes those error texts internally but never emits them; raw CSV itself must remain access-controlled. Classification is conservative heuristic, not a proof of provider root cause or worker/stage failure coverage. The statistics denominator covers valid `ok=YES/NO` call attempts only and must not be treated as document failure rate.
 - Old audit records have no stable request UUID. The report intentionally counts observed rows, not deduplicated logical retries. Concurrent append, malformed/truncated CSV and bounded file sizes can prevent a complete report; fail closed rather than invent counts.
+
+
+### 2026-10-23 Consumer-quality observation limitation
+
+- New run-scoped Consumer orchestration incident counts cannot identify failed documents or provider root causes; stage-managed workers and Producer/Row Merger general exceptions are outside this narrow instrumentation. Multiple retries may refer to the same unfinished batch. Linux main offline E2E success is not real Windows/LLM/ES acceptance. **Status:** partial observation; live acceptance open.
