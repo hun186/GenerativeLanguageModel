@@ -300,3 +300,89 @@ def test_producer_cancel_is_not_a_quality_failure(tmp_path, monkeypatch):
     ) == 0
     assert ctx._producer_cancelled
     assert not quality_event_path(ctx.llm_call_audit_path).exists()
+
+
+def test_pending_bookkeeping_exception_is_not_a_scheduler_incident(
+    tmp_path, monkeypatch,
+):
+    """Failures before schedule_one_row must not mislabel the scheduler."""
+    from czjLLM.utilities.processing_quality import quality_event_path
+
+    calls = []
+    releases = []
+
+    def refuse_running(_ctx, _pk):
+        raise OSError("private pending lock unavailable")
+
+    monkeypatch.setattr(producer, "mark_running", refuse_running)
+    monkeypatch.setattr(producer, "schedule_one_row",
+                        lambda *_args, **_kwargs: calls.append("scheduler") or 1)
+    monkeypatch.setattr(producer, "mark_not_running",
+                        lambda _ctx, _pk, state: releases.append(state))
+    ctx = SimpleNamespace(
+        mode="sql", stages=[{"name": "one"}], n_process=1,
+        sql_enable_multistage_stream=True,
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_bookkeeping.csv"),
+    )
+    progress = SimpleNamespace(update=lambda *_args: None)
+    assert producer.produce_rows(
+        ctx, [("private-pk", "private-content")], object(), "meter", 0,
+        threading.Event(), None, progress,
+    ) == 0
+    assert calls == []
+    assert releases == ["schedule_error"]
+    assert not quality_event_path(ctx.llm_call_audit_path).exists()
+
+
+def test_pre_dispatch_adjustment_error_is_not_scheduler_incident(
+    tmp_path, monkeypatch,
+):
+    from czjLLM.utilities.processing_quality import quality_event_path
+    schedule_calls = []
+
+    def fail_before_dispatch(_ctx, event, **_kwargs):
+        if event == "mark_running_before_dispatch":
+            raise OSError("private adjustment store unavailable")
+
+    monkeypatch.setattr(producer, "record_adjustment", fail_before_dispatch)
+    monkeypatch.setattr(producer, "schedule_one_row",
+                        lambda *_args, **_kwargs: schedule_calls.append(True) or 1)
+    ctx = SimpleNamespace(
+        mode="sql", stages=[{"name": "one"}], n_process=1,
+        sql_enable_multistage_stream=True,
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_before.csv"),
+    )
+    progress = SimpleNamespace(update=lambda *_args: None)
+    assert producer.produce_rows(
+        ctx, [("private-pk", "private-content")], object(), "meter", 0,
+        threading.Event(), None, progress,
+    ) == 0
+    assert schedule_calls == []
+    assert not quality_event_path(ctx.llm_call_audit_path).exists()
+
+
+def test_noop_release_bookkeeping_failure_is_not_scheduler_incident(
+    tmp_path, monkeypatch,
+):
+    from czjLLM.utilities.processing_quality import quality_event_path
+    calls = []
+
+    def fail_noop_release(_ctx, event, **_kwargs):
+        if event == "schedule_noop_release":
+            raise OSError("private adjustment store unavailable")
+
+    monkeypatch.setattr(producer, "record_adjustment", fail_noop_release)
+    monkeypatch.setattr(producer, "schedule_one_row",
+                        lambda *_args, **_kwargs: calls.append("scheduler") or 0)
+    ctx = SimpleNamespace(
+        mode="sql", stages=[{"name": "one"}], n_process=1,
+        sql_enable_multistage_stream=True,
+        llm_call_audit_path=str(tmp_path / "llm_call_audit_noop.csv"),
+    )
+    progress = SimpleNamespace(update=lambda *_args: None)
+    assert producer.produce_rows(
+        ctx, [("private-pk", "private-content")], object(), "meter", 0,
+        threading.Event(), None, progress,
+    ) == 0
+    assert calls == ["scheduler"]
+    assert not quality_event_path(ctx.llm_call_audit_path).exists()
