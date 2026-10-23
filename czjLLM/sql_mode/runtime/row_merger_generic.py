@@ -1082,10 +1082,14 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                                 scope="run", outcome="observed",
                             )
                         except Exception as audit_error:
-                            tlog_warn(
-                                "⚠️ Row Merger quality audit failed: "
-                                f"{type(audit_error).__name__}"
-                            )
+                            # Telemetry must never change the pending/retry path.
+                            try:
+                                tlog_warn(
+                                    "⚠️ Row Merger quality audit failed: "
+                                    f"{type(audit_error).__name__}"
+                                )
+                            except Exception:
+                                pass
                         tlog_warn(
                             f"Row Merger 寫回失敗 pk={pk}: {e} "
                             f"（相同錯誤最多每 {failure_log_interval:g} 秒提示一次）"
