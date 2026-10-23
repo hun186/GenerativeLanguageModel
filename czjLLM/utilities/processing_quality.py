@@ -28,8 +28,17 @@ _EVENT_CODES = {
         "SCHEMA_EVENT_REFERENCE", "SCHEMA_OTHER",
     },
     "document_writeback_confirmed": {"WRITEBACK_CONFIRMED"},
+    "consumer_orchestration_failure": {
+        "CONSUMER_ROUND_TIMEOUT", "CONSUMER_ROUND_EXCEPTION",
+        "CONSUMER_TERMINATED",
+    },
 }
 _KNOWN_CODES = set().union(*_EVENT_CODES.values())
+_EVENT_SCOPES = {
+    event: ("document" if event.startswith("document_") else
+            "run" if event.startswith("consumer_") else "slice")
+    for event in _EVENT_CODES
+}
 
 
 def quality_event_path(audit_path: str) -> Path | None:
@@ -84,7 +93,7 @@ def emit_quality_event(
         return None
     if event not in _EVENT_CODES or code not in _EVENT_CODES[event]:
         raise ValueError("unknown or mismatched quality event/code")
-    if scope != ("document" if event.startswith("document_") else "slice"):
+    if scope != _EVENT_SCOPES[event]:
         raise ValueError("mismatched quality event scope")
     data = {
         "schema_version": 1,
@@ -130,6 +139,7 @@ class QualityAccumulator:
         self._json_invalid = 0
         self._repair_success = 0
         self._repair_failure = 0
+        self._consumer_failures = 0
         self._schema_rejected = set()
         self._writeback_confirmed = set()
 
@@ -148,8 +158,7 @@ class QualityAccumulator:
         if not isinstance(code, str) or code not in _EVENT_CODES[event]:
             return False
         # Old fixtures may omit scope entirely; explicit null is invalid.
-        if "scope" in record and record["scope"] != (
-                "document" if event.startswith("document_") else "slice"):
+        if "scope" in record and record["scope"] != _EVENT_SCOPES[event]:
             return False
         if event.startswith("document_") and not (
                 isinstance(record.get("document_id"), str) and record["document_id"].strip()):
@@ -186,6 +195,10 @@ class QualityAccumulator:
             doc = record.get("document_id")
             if isinstance(doc, str) and doc:
                 self._writeback_confirmed.add(doc)
+        elif event == "consumer_orchestration_failure":
+            # Retry observations are not failed calls, slices, or documents.
+            self._consumer_failures += 1
+            self._codes[code] += 1
         return True
 
     def is_identical_accepted_event(self, record: object) -> bool:
@@ -217,6 +230,7 @@ class QualityAccumulator:
             "slice_initial_invalid_pct": round(100 * self._json_invalid / validations, 2) if validations else None,
             "repair_attempts": repairs,
             "repair_succeeded": self._repair_success,
+            "consumer_orchestration_failure_events": self._consumer_failures,
             "repair_success_pct": round(100 * self._repair_success / repairs, 2) if repairs else None,
             "documents_decided": len(decided),
             "documents_schema_pending": len(failed_docs),
