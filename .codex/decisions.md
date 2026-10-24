@@ -115,3 +115,8 @@
 
 - Use a fixed enum set by control flow before the external model call, while running the call, after its successful return, or while persisting Success/identity. Avoid user-provided exception messages, class-name guessing, model URLs or any stage/input/prompt ID as an event field. Do not label every call-site exception a provider failure.
 - A run-scoped leaf Worker phase event and a request CSV entry can both describe one failure; do not aggregate them into distinct failed documents. Keep the historical caught-error return, CSV row finalization, mock-only behavior and cancellation handling unchanged. Emitter failure is best effort and cannot replace original Worker results.
+
+### 2026-10-24 SDK failure subtype policy
+
+- Reuse one existing `worker_phase_failure` run-only event rather than issuing a second SDK event per caught exception. Only refine the previously established `WORKER_LLM_CALL_EXCEPTION` phase, using SDK exception classes and verified `APIStatusError.status_code`; do not infer from localized error text, URLs, regular expressions or arbitrary `RuntimeError`.
+- Distinguish 429 vs HTTP 5xx vs 4xx (with generic fallback); preserve original `CallLLMAPI` exception/return and legacy CSV. A classifier failure is best effort and must never mask the original Worker failure. Categorize mechanisms as evidence, not remote-model blame.

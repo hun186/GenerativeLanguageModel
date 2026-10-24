@@ -78,3 +78,9 @@ Leaf Worker `PromptAPIPipeline.proc()` 在已捕捉的非取消例外處，依**
 GUI「Worker 階段例外」與離線 `worker_phase_failure_events` 為事件數，**不表示失敗文件數、失敗 API 呼叫數或遠端服務故障次數**。`WORKER_LLM_CALL_EXCEPTION` 只證明例外發生在 `CallLLMAPI()` 呼叫點，不代表可以認定模型伺服器有錯。LLM 呼叫 CSV 的既有逐次紀錄與 Worker 事件可能對應相同失敗，禁止把兩者相加。這一輪不變更 Worker 的原有錯誤回傳、CSV 稽核、retry 或取消語意；稽核 JSONL 寫入失敗仍不影響既有回傳。
 
 這次範圍不涵蓋 Worker 進程突然中止、未拋例外的語意失敗、真實 Windows／Ollama／Elasticsearch 已驗收，亦不宣稱已建立完整的 Worker 根因分析。相關事項需獨立工項及實際執行證據。
+
+## OpenAI SDK 類型化呼叫失敗原因（2026-10-24，待驗獨立 PR）
+
+原 `worker_phase_failure` 的 `WORKER_LLM_CALL_EXCEPTION` 泛用分類，現在只在可由 SDK 型別或其既有保留的直屬例外原因證實時，細分為 `WORKER_LLM_TIMEOUT_EXCEPTION`（逾時）、`WORKER_LLM_CONNECTION_EXCEPTION`（連線）、`WORKER_LLM_RATE_LIMIT_EXCEPTION`（429）、`WORKER_LLM_HTTP_SERVER_EXCEPTION`（HTTP 5xx）、`WORKER_LLM_HTTP_CLIENT_EXCEPTION`（HTTP 4xx）以及 `WORKER_LLM_RESPONSE_VALIDATION_EXCEPTION`（SDK 回應驗證）。其餘維持泛用代碼，不從原始例外文字、端點或模型內容推論。逾時／連線可能是客戶端問題；收到 HTTP 5xx 並不等於證明模型推論故障。
+
+**仍然每個已捕捉 Worker 例外最多只寫入一筆既有 `scope=run` 事件**，不另外計一個 SDK 事件、不變更 CSV 稽核或 `worker_phase_failure_events` 分母，不存原始例外、Endpoint、Prompt、來源識別、機密或輸出。SDK 可能先重試數次網路請求才將例外交給 Worker，品質事件數不代表底層 HTTP 嘗試次數或失敗文件數。取消流程、Mock-only 及原先的 Stage／Producer／Row Merger 事件分類不受影響。Hosted Linux 模擬 HTTP 傳輸測試不能取代真實 Windows／Ollama／Elasticsearch 驗收。

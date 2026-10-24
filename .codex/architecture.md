@@ -109,3 +109,8 @@
 
 - The actual `PromptAPIPipeline.proc()` boundary (used in leaf jobs, including multiprocess execution) now records bounded `worker_phase_failure` observations in its established caught-exception path based solely on the current execution phase. Before-call endpoint selection, during `CallLLMAPI` invocation, after-return response/JSON handling and Success file/identity persistence are distinct sites; they are not provider root-cause classifications.
 - Existing Worker error dict, per-request CSV, per-slice repair auditing and Stage orchestrator exception auditing remain independent; overlapping incidents across layers may occur and do not represent unique failed documents. Shared Processing Quality reader, offline report and GUI project the one existing JSONL authority.
+
+### 2026-10-24 typed OpenAI SDK exception classification (proposed PR)
+
+- `CallLLMAPI` remains the source of actual SDK request execution and legacy timeout/connection `RuntimeError` wrapping. New pure `classify_llm_call_exception(error)` checks only the SDK exception's type, HTTP `status_code`, or the direct SDK cause of a legacy `RuntimeError`; no error-string interpretation or network inspection.
+- `PromptAPIPipeline.proc()` still owns its single caught-error Worker run event: for its existing `WORKER_LLM_CALL_EXCEPTION` execution phase only, call the classifier and emit exactly one more-specific `worker_phase_failure` code or the old generic code. Existing CSV and JSONL stream authorities, document denominators, GUI count, cancellation and persistence are unchanged.
