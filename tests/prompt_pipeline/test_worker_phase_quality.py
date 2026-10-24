@@ -193,3 +193,16 @@ def test_non_sdk_exception_message_never_guesses_provider_source(monkeypatch, tm
     assert worker.proc()["ok"] is False
     assert len(csv) == 1
     _assert_single_phase_event(worker, "WORKER_LLM_CALL_EXCEPTION")
+
+
+def test_classifier_exception_never_masks_worker_failure(monkeypatch, tmp_path):
+    worker, csv = _make_worker(monkeypatch, tmp_path)
+    monkeypatch.setattr(pc, "CallLLMAPI", lambda *_a, **_kw:
+                        (_ for _ in ()).throw(ValueError("authoritative-private-error")))
+    monkeypatch.setattr(pc, "classify_llm_call_exception", lambda _e:
+                        (_ for _ in ()).throw(RuntimeError("broken classifier")))
+    result = worker.proc()
+    assert result["ok"] is False
+    assert "authoritative-private-error" in result["error"]
+    assert len(csv) == 1 and csv[0]["ok"] is False
+    _assert_single_phase_event(worker, "WORKER_LLM_CALL_EXCEPTION")
