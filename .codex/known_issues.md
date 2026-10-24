@@ -30,3 +30,9 @@
 - `.codex/archive/known_issues.md-20261024-before-pr226-review.md` — complete pre-compaction known issues, prior PR #213–#225 findings and historical context.
 - `.codex/archive/memory.md-20261024-before-pr226-review.md` — full project history and earlier archive references.
 - Earlier archives remain under `.codex/archive/`; historical pending statuses are not current Hosted authoritative states.
+
+## 2026-10-24 typed SDK failure observability caveats (PR pending)
+
+- The OpenAI-compatible SDK can emit timeout/connection errors for *local* client/transport issues as well as inaccessible remote providers. HTTP 4xx/5xx proves only an HTTP status was returned, not whether the actual model runtime caused it. `APIResponseValidationError` indicates SDK response interpretation trouble but not necessarily malformed generated model text. This telemetry deliberately avoids causal claims.
+- The existing `CallLLMAPI` wraps typed timeout/connection SDK exceptions into `RuntimeError`; classifier is limited to typed direct causes, not error text. SDK retries may perform multiple HTTP calls before one Worker incident is written. Fatal crashes/process kills, non-exception `ok=false`, API request counts and on-disk persistence remain outside this work. The raw legacy request CSV may include exception text and remains access-controlled.
+- Offline/mock-transport and Hosted Linux CI are not proof of successful Ollama/Windows/ES integration. Those operator acceptance checks remain deferred.
