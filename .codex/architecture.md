@@ -114,3 +114,9 @@
 
 - `CallLLMAPI` remains the source of actual SDK request execution and legacy timeout/connection `RuntimeError` wrapping. New pure `classify_llm_call_exception(error)` checks only the SDK exception's type, HTTP `status_code`, or the direct SDK cause of a legacy `RuntimeError`; no error-string interpretation or network inspection.
 - `PromptAPIPipeline.proc()` still owns its single caught-error Worker run event: for its existing `WORKER_LLM_CALL_EXCEPTION` execution phase only, call the classifier and emit exactly one more-specific `worker_phase_failure` code or the old generic code. Existing CSV and JSONL stream authorities, document denominators, GUI count, cancellation and persistence are unchanged.
+
+
+### 2026-10-24 run-only incident drilldown projection (pending PR)
+
+- New `RUN_INCIDENT_CODES` is derived from existing `_EVENT_CODES` and `_EVENT_SCOPES`; report modules never invent an independent/possibly stale Worker SDK code list.
+- The existing `QualityTailReader` performs privacy/error-code validation, deduplication and corrupt-line observation. `run_incident_diagnostics(stats, family=...)` is a pure read-only projection of its accepted fixed-code counts, optionally narrowing only the displayed run-scoped family details. Per-run observed-incident denominator remains the whole run, with null share when zero. History never pools per-run denominators. No additional parser, log write, I/O authority or DB/model service.

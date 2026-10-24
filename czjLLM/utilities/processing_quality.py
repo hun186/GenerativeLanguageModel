@@ -61,6 +61,12 @@ _EVENT_SCOPES = {
             } else "slice")
     for event in _EVENT_CODES
 }
+# Single source of truth for run-only diagnostic allowlists. Never classify
+# slice/document codes as operational incidents in report drilldowns.
+RUN_INCIDENT_CODES = {
+    event: frozenset(_EVENT_CODES[event])
+    for event in _EVENT_CODES if _EVENT_SCOPES[event] == "run"
+}
 
 
 def quality_event_path(audit_path: str) -> Path | None:
