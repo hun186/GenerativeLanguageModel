@@ -1,5 +1,6 @@
 """Regression: quality counters must never confuse slice and document failure."""
 import json
+import pytest
 from czjLLM.utilities.processing_quality import (
     QualityAccumulator, QualityTailReader, classify_schema_error,
     emit_quality_event, quality_event_path,
