@@ -161,3 +161,8 @@
 
 - New Stage prepare / Runner exception counters are caught-or-escaped event observations only. Runner may do model calls, local data processing or persistence, and a generic escaped exception cannot be reliably classified as LLM versus non-LLM from this boundary. Do not describe the counts as complete non-LLM worker coverage, per-stage incident attribution, or distinct failed document count. Returned `ok:false` or ordinary route misses are outside the narrow exception counts.
 - No Windows self-hosted/real provider or Elasticsearch visual/writeback acceptance available. New PR exact-head Hosted Linux offline E2E and formal Codex Review must establish coverage; until then no finished/merged claim.
+
+### 2026-10-24 Worker exception phase scope and acceptance
+
+- `WORKER_LLM_CALL_EXCEPTION` means an exception raised by the `CallLLMAPI` invocation, which may be client preparation, transport, local processing or provider response: **not** confirmed remote provider outage. `WORKER_RESPONSE_EXCEPTION` and `WORKER_PERSIST_EXCEPTION` likewise reflect the point of failure but not forensic root cause. Existing request CSV may mark local post-call failures as `ok=NO`; independent Worker events help operators distinguish phases, not deduplicate logical failures.
+- Failures that do not raise (empty response, retry requested, JSON-invalid repaired), crashes before `proc()` or killing the process, and unhandled exceptions after its caught-error block are outside this event coverage. A synthetic/mock failure is not counted. Windows self-hosted, live model, SQL/ES durability, and GUI visual acceptance remain operator-deferred; no full pipeline reliability rate is proven.
