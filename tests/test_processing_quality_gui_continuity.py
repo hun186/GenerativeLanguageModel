@@ -147,9 +147,11 @@ def test_sealed_hash_change_or_missing_shard_fail_closed(tmp_path):
     shard.write_bytes(shard.read_bytes().replace(b"TIMEOUT", b"INVALID"))
     with pytest.raises(ValueError, match="integrity"):
         reader.poll()
-    # Erasure of the whole sealed shard also needs to fail, not silently zero.
+    # Erasure of a previously observed sealed shard must still fail closed.
+    # Both the session-shrink guard and sealed-ledger count verification are
+    # valid fail-closed layers; neither may silently return smaller counters.
     shard.unlink()
-    with pytest.raises(ValueError, match="count differs"):
+    with pytest.raises(ValueError, match="count differs|archive shard disappeared"):
         reader.poll()
 
 
