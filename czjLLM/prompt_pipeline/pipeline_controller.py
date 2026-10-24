@@ -65,6 +65,7 @@ from czjLLM.prompt_pipeline.slice_identity import (
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
 from czjLLM.utilities.processing_quality import emit_quality_event
+from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.utilities.env_overrides import env_bool, env_int, load_czjllm_env_files_once
 from czjLLM.tokenizer_utils import TokenizerWrapper
 #from czjLLM.utilities.logging_utils import log_error
@@ -175,6 +176,23 @@ def _audit_consumer_orchestration_failure(ctx, code: str) -> None:
             )
         except Exception:
             pass
+
+
+def _audit_leaf_worker_phase_failure(audit_path: str, run_id: str, code: str) -> None:
+    """Observe the actual leaf Worker boundary without payload or row identity.
+
+    This is a best-effort phase attribution, NOT proof of provider root cause.
+    The existing request CSV audit and error/return behavior stay unchanged.
+    """
+    try:
+        emit_quality_event(
+            audit_path, run_id=run_id,
+            event="worker_phase_failure", code=code,
+            scope="run", outcome="observed",
+        )
+    except Exception:
+        # Never make audit persistence a second Worker failure.
+        pass
 
 
 def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
@@ -2799,6 +2817,8 @@ class PromptAPIPipeline:
         base_url = None
         response = None
         llm_request_attempted = False
+        # Explicit execution site, never inferred from exception text.
+        worker_failure_code = "WORKER_PRECALL_EXCEPTION"
         DTBJobs_Retry = []
         # Fixed payload-free audit code, reset for each invocation.
         self._llm_json_failure_code = ""
@@ -2819,6 +2839,8 @@ class PromptAPIPipeline:
         try:
             # mock 模式：不進 LLM 呼叫，直接產生可驗證輸出
             if self._is_mock_mode():
+                # Synthetic/no-provider mode is not a production Worker incident.
+                worker_failure_code = ""
                 retMES = self._build_mock_output()
                 if self.OutputSaveFN != "":
                     MKDIR(os.path.dirname(self.OutputSaveFN))
@@ -2854,12 +2876,14 @@ class PromptAPIPipeline:
                 self.model_spec["api_key"] = "ThisIsFakeKey"
     
             # 2) 呼叫 LLM
+            worker_failure_code = "WORKER_LLM_CALL_EXCEPTION"
             llm_request_attempted = True
             response, cost = CallLLMAPI(
                 self.content,
                 max_tokens=self.max_tokens,
                 model_spec=self.model_spec
             )
+            worker_failure_code = "WORKER_RESPONSE_EXCEPTION"
             # 3) token 警告
             if response.usage.completion_tokens >= self.max_tokens:
                 log_dir = "logs"
@@ -2895,6 +2919,7 @@ class PromptAPIPipeline:
                 DTBJobs_Retry, retMES = self.handle_json_output(retMES)
     
             # 6) 落地 Success（只有沒有 retry 且有內容才寫）
+            worker_failure_code = "WORKER_PERSIST_EXCEPTION"
             if self.OutputSaveFN != "" and DTBJobs_Retry == [] and retMES != "":
                 MKDIR(os.path.dirname(self.OutputSaveFN))
                 tmp_fn = self.OutputSaveFN + ".tmp"
@@ -2911,6 +2936,7 @@ class PromptAPIPipeline:
                     safe_unlink(self.promptFile)
     
             # 7) 成功旗標
+            worker_failure_code = "WORKER_RESPONSE_EXCEPTION"
             ok = bool(retMES)
             # Internally handled JSON repair failure needs an audit signal.
             err = (self._llm_json_failure_code if not ok else "")
@@ -2919,7 +2945,12 @@ class PromptAPIPipeline:
             response.choices[0].message.content = retMES
     
         except Exception as ex:
-            # ====== 這裡就是你問的「例外時回」 ======
+            # Preserve legacy caught-error return and per-request CSV audit.
+            # Cooperative cancellation and synthetic mock faults are not incidents.
+            if worker_failure_code and not isinstance(ex, ExecutionCancelled):
+                _audit_leaf_worker_phase_failure(
+                    self.audit_path, self.audit_run_id, worker_failure_code,
+                )
             retMES = ""
             ok = False
             err = str(ex)

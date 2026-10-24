@@ -70,3 +70,11 @@ GUI「Producer 執行異常」及離線報表 `producer_operational_failure_even
 Stage 管理的多階段流程在**真正的階段任務解析與輸入準備**拋出例外時，記錄 `STAGE_PREPARE_EXCEPTION`；在 Stage Runner 呼叫（含既有雙參數相容回退）最終拋出例外時記錄 `STAGE_RUNNER_EXCEPTION`。共用 Processing Quality run-scoped JSONL，只存固定代碼與最少的執行資訊，不存切片／文件識別、階段名稱、例外文字、Prompt、輸出、檔案路徑或模型端點。稽核寫入失敗不會替代原本的例外，`ExecutionCancelled` 不算失敗。
 
 GUI「Stage 調度例外」與離線 `stage_orchestration_failure_events` 表示例外**事件數**，不代表各文件失敗次數、某階段失敗率或實際 LLM API 失敗率。Runner 的內部可能是 LLM、檔案或其他操作，因此單憑此事件不能判定根本原因為「非 LLM」。Runner 正常回傳 `ok=false`、路由未命中、雙參數相容回退成功，均不列入這個例外觀測。Stage 結構外的獨立 Worker 與持久化的失敗分類仍須獨立處理；Windows／真實 ES／Ollama 驗收暫緩。
+
+## Leaf Worker 執行階段例外分類（2026-10-24，獨立待驗 PR）
+
+Leaf Worker `PromptAPIPipeline.proc()` 在已捕捉的非取消例外處，依**實際執行位置**寫入現有每輪 Processing Quality JSONL：`WORKER_PRECALL_EXCEPTION`（挑選端點／呼叫前準備）、`WORKER_LLM_CALL_EXCEPTION`（執行 `CallLLMAPI()` 呼叫時）、`WORKER_RESPONSE_EXCEPTION`（取得呼叫結果後，回應解析、JSON 驗證與後處理）、`WORKER_PERSIST_EXCEPTION`（儲存 Success 或身分紀錄）。事件為 `worker_phase_failure` / `scope=run`，只帶固定類別，不包含文件／切片／階段身分、Prompt、回應、原始例外文字、儲存路徑或端點。取消、正常完成、未拋錯的 `ok=false` 結果、測試用 Mock 執行不會被算作新 Worker 例外。
+
+GUI「Worker 階段例外」與離線 `worker_phase_failure_events` 為事件數，**不表示失敗文件數、失敗 API 呼叫數或遠端服務故障次數**。`WORKER_LLM_CALL_EXCEPTION` 只證明例外發生在 `CallLLMAPI()` 呼叫點，不代表可以認定模型伺服器有錯。LLM 呼叫 CSV 的既有逐次紀錄與 Worker 事件可能對應相同失敗，禁止把兩者相加。這一輪不變更 Worker 的原有錯誤回傳、CSV 稽核、retry 或取消語意；稽核 JSONL 寫入失敗仍不影響既有回傳。
+
+這次範圍不涵蓋 Worker 進程突然中止、未拋例外的語意失敗、真實 Windows／Ollama／Elasticsearch 已驗收，亦不宣稱已建立完整的 Worker 根因分析。相關事項需獨立工項及實際執行證據。

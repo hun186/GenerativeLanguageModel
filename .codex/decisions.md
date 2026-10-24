@@ -110,3 +110,8 @@
 
 - Instrument actual Stage orchestration task/input resolution and Runner invocation failure boundaries; do not parse console logs, infer any Stage error from failed model responses, or mislabel generic escaped Runner exceptions as specifically provider or non-provider failures. Preserve historical two-argument fallback and cancellation propagation; best-effort JSONL audit cannot replace the primary exception.
 - Keep observability run scoped and payload/identity free, using the existing quality reader, GUI and read-only offline reports. Worker root-cause detail, filters and event retention remain separate work.
+
+### 2026-10-24 leaf Worker execution site classification decision
+
+- Use a fixed enum set by control flow before the external model call, while running the call, after its successful return, or while persisting Success/identity. Avoid user-provided exception messages, class-name guessing, model URLs or any stage/input/prompt ID as an event field. Do not label every call-site exception a provider failure.
+- A run-scoped leaf Worker phase event and a request CSV entry can both describe one failure; do not aggregate them into distinct failed documents. Keep the historical caught-error return, CSV row finalization, mock-only behavior and cancellation handling unchanged. Emitter failure is best effort and cannot replace original Worker results.
