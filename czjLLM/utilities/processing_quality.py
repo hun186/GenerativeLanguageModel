@@ -315,10 +315,12 @@ class QualityTailReader:
     """
     _FINGERPRINT_BYTES = 512
 
-    def __init__(self, path: str = ""):
+    def __init__(self, path: str = "", *, accumulator: QualityAccumulator | None = None):
         self.path = str(path or "")
         self.offset = 0
-        self.accumulator = QualityAccumulator()
+        # Offline multi-segment replay shares one accumulator so event IDs and
+        # distinct document decisions keep their original per-run semantics.
+        self.accumulator = accumulator if accumulator is not None else QualityAccumulator()
         self.skipped_corrupt_lines = 0
         self._file_identity = None
         self._committed_head = b""

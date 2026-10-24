@@ -13,8 +13,9 @@ from typing import Any
 
 from czjLLM.utilities.atomic_io import atomic_write_json
 from czjLLM.utilities.processing_quality import (
-    QualityTailReader, RUN_INCIDENT_CODES, quality_event_path,
+    QualityAccumulator, QualityTailReader, RUN_INCIDENT_CODES, quality_event_path,
 )
+from czjLLM.utilities.processing_quality_rotation import quality_stream_segments
 
 LOW_SAMPLE_ADVISORY_THRESHOLD = 30
 _METRIC_DENOMINATORS = {
@@ -85,15 +86,45 @@ def summarize_quality_stream(
     if incident_family is not None and incident_family not in RUN_INCIDENT_CODES:
         raise ValueError("unknown run-scoped incident family")
     source = Path(path)
+    archives = quality_stream_segments(source)
     if source.is_symlink():
         raise ValueError("refusing a symlink quality event stream")
-    if not source.is_file():
+    if source.exists() and not source.is_file():
+        raise ValueError("quality event stream must be a regular file")
+    if not source.is_file() and not archives:
         raise FileNotFoundError(f"quality event stream does not exist: {source.name}")
-    reader = QualityTailReader(str(source))
-    _, stats = reader.poll()
-    # The writer may append while we read; a partial final line is never counted.
-    incomplete = source.stat().st_size > reader.offset
-    corrupt_lines = reader.skipped_corrupt_lines
+
+    def identity(file):
+        if not file.exists():
+            return None
+        st = file.stat()
+        return st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns
+
+    before_active = identity(source)
+    before_archives = [identity(segment) for segment in archives]
+    accumulator = QualityAccumulator()
+    corrupt_lines = 0
+    incomplete = False
+    incomplete_archive = False
+    # The same validated accumulator preserves cross-shard event-id dedup and
+    # document writeback recovery semantics. Only this one run is aggregated.
+    for segment in archives + ([source] if source.is_file() else []):
+        reader = QualityTailReader(str(segment), accumulator=accumulator)
+        reader.poll()
+        corrupt_lines += reader.skipped_corrupt_lines
+        missing_tail = segment.stat().st_size > reader.offset
+        incomplete = incomplete or missing_tail
+        if segment != source and missing_tail:
+            incomplete_archive = True
+    # Fail closed on maintenance rotation while a report is being assembled.
+    # Concurrent ordinary appends retain their historical incomplete state.
+    if quality_stream_segments(source) != archives:
+        raise ValueError("quality segment generation changed during reporting")
+    if [identity(segment) for segment in archives] != before_archives:
+        raise ValueError("quality archived segment changed during reporting")
+    changed_during_read = identity(source) != before_active
+    incomplete = incomplete or changed_during_read
+    stats = accumulator.snapshot()
     sample_notes = {}
     for pct, denom in _METRIC_DENOMINATORS.items():
         n = int(stats[denom])
@@ -105,10 +136,12 @@ def summarize_quality_stream(
             )
     return {
         "log_file": source.name,
-        "state": ("degraded_corrupt_lines" if corrupt_lines else
+        "state": ("degraded_incomplete_archive" if incomplete_archive else
+                  "degraded_corrupt_lines" if corrupt_lines else
                   "incomplete_tail" if incomplete else
                   "no_valid_events" if not stats["events"] else "observed"),
         "skipped_corrupt_complete_lines": corrupt_lines,
+        "archived_segments": len(archives),
         "metrics": stats,
         "incident_diagnostics": run_incident_diagnostics(stats, family=incident_family),
         "sample_advisories": sample_notes,
@@ -149,11 +182,19 @@ def report_history(
         raise ValueError("limit must be an integer between 1 and 100")
     if incident_family is not None and incident_family not in RUN_INCIDENT_CODES:
         raise ValueError("unknown run-scoped incident family")
-    candidates = sorted(
-        (p for p in directory.glob(_FILE_PREFIX + "*" + _FILE_SUFFIX)
-         if p.is_file() and not p.is_symlink()),
-        key=lambda p: p.name, reverse=True,
-    )
+    # Include runs with only completed numbered archives after explicit
+    # maintenance rotation; the stable active basename may not yet exist.
+    discovered = set()
+    for item in directory.glob(_FILE_PREFIX + "*"):
+        if item.is_symlink() or not item.is_file():
+            continue
+        name = item.name
+        if name.endswith(_FILE_SUFFIX):
+            discovered.add(item)
+        elif _FILE_SUFFIX + ".seg-" in name:
+            stable, _suffix = name.split(_FILE_SUFFIX + ".seg-", 1)
+            discovered.add(directory / (stable + _FILE_SUFFIX))
+    candidates = sorted(discovered, key=lambda p: p.name, reverse=True)
     runs = [
         summarize_quality_stream(p, incident_family=incident_family)
         for p in candidates[:limit]
