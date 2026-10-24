@@ -132,3 +132,9 @@
 
 - Keep the original `processing_quality_events_<run>.jsonl` writer, lock and manual numbered shard scheme unchanged. A distinct `processing_quality_manifest` module hashes only sealed `.jsonl.seg-NNNNNNNN` archive bytes via bounded memory descriptor reads, recording sequence, byte size and digest; small schema-checked `.jsonl.manifest.json` is atomically published under the writer lock.
 - Manifest initialization against legacy archives is explicitly opt-in (stopped producer); no implicit baseline or archival deletion. Once sealed, manual rotation prechecks the existing manifest, renames its active file, publishes an updated ledger, and attempts rollback on publish failure. Offline report validates sealed bytes before and after existing shared-accumulator replay and discovers manifest-only missing-run records. Unsealed legacy history is reported as unsealed, not silently called verified.
+
+
+### 2026-10-24 GUI cross-archive quality reader (new independent PR)
+
+- `win_gui._quality_reader_worker` still handles all I/O and parsing outside Tk, but now delegates to `QualityRunTailReader` rather than a standalone active-only `QualityTailReader`. On initial load, archived numbered files and optional live active file share a single validated `QualityAccumulator`. On stable generations, only the active append tail is polled; archive and ledger identities are bounded metadata checks, not full SHA-256 on every 1s poll.
+- When archived shard metadata, ledger metadata, or active file generation changes, the wrapper replays verified archives and active through one new accumulator off-Tk. Tampered missing archives, partial archived shard and unsafe symlink fail closed. The GUI receives a fixed `quality_stream_status`, not any raw path/exception text. The existing manual rotation CLI remains stopped-producer-only; GUI cross-shard visibility is not approval for online rotation.
