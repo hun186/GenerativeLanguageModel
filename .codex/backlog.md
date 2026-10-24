@@ -165,6 +165,6 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 
 ### 2026-10-24 PR #228 merged; JSONL lifecycle safety staged
 
-- [x] PR #228 user-authorized merge `2fdae2bab465471ddb88cbf574c2d6a2b44a0f46` after exact-head Codex 0 findings/threads, Linux PR offline-e2e SUCCESS; post-merge main #40074000439 **still in progress at branch start**. Historical pending #228 entries above no longer authoritative.
+- [x] PR #228 user-authorized merge `2fdae2bab465471ddb88cbf574c2d6a2b44a0f46` after exact-head Codex 0 findings/threads, Linux PR offline-e2e SUCCESS; post-merge main Linux `offline-e2e` #40074000439 subsequently checked via Hosted GitHub and confirmed SUCCESS. Historical pending #228 entries above no longer authoritative.
 - [ ] New independent `feat/quality-jsonl-manual-rotation-20261024`: opt-in stopped-producer JSONL rotation via existing lock, strict sequential archives max 64, no automatic deletion, offline archive+active replay with shared accumulator, gap and corrupt detection. Verify Hosted Linux exact-head (including physical rotation tests), formal Codex review P1/P2 remediation, zero unresolved threads. **Do not merge without user authorization.**
 - [ ] Follow-up separately: online writer-safe auto-rotation and retention only with checkpoint/manifest guaranteeing accepted-event continuity, crash/restart tests, archive deletion protocol, live GUI cumulative replay and generation restart rules; run-ID file privacy hardening; bounded rolling windows. Live Windows/Ollama/ES writeback/readback remains operator dependent.
