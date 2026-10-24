@@ -58,12 +58,19 @@ def rotate_quality_event_stream(
     must stop producer/GUI processes for maintenance: cross-process locks
     serialize cooperating writers but not uncooperative external editors.
     """
-    source = quality_event_path(str(audit_path))
+    audit = Path(audit_path)
+    if (audit.suffix.lower() != ".csv"
+            or not audit.name.startswith("llm_call_audit_")):
+        raise ValueError("expected canonical llm_call_audit_<run_id>.csv filename")
+    source = quality_event_path(str(audit))
     if source is None:
         raise ValueError("missing quality audit path")
     if type(max_segments) is not int or not 1 <= max_segments <= MAX_QUALITY_SEGMENTS:
         raise ValueError("invalid quality segment bound")
     lock_path = source.with_suffix(source.suffix + ".lock")
+    for component in (source.parent, *source.parent.parents, lock_path):
+        if component.is_symlink():
+            raise ValueError("quality rotation refuses symlink path components")
     source.parent.mkdir(parents=True, exist_ok=True)
     with lock_path.open("a+b") as lock_fp:
         if lock_fp.seek(0, os.SEEK_END) == 0:
