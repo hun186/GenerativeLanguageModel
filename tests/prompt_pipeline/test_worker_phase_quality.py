@@ -156,3 +156,40 @@ def test_quality_write_failure_does_not_override_original_worker_failure(monkeyp
     assert "authoritative worker error" in outcome["error"]
     assert len(csv) == 1 and csv[0]["ok"] is False
     assert _events(worker) == []
+
+
+def test_typed_sdk_exceptions_are_a_single_worker_event_and_csv_row(monkeypatch, tmp_path):
+    import httpx
+    from openai import APITimeoutError, RateLimitError, APIStatusError
+    from czjLLM.prompt_pipeline import llm_caller
+
+    for label, error, expected in (
+        ("timeout", APITimeoutError(request=httpx.Request("POST", "https://private.invalid")),
+         "WORKER_LLM_TIMEOUT_EXCEPTION"),
+        ("rate", RateLimitError("private", response=httpx.Response(
+            429, request=httpx.Request("POST", "https://private.invalid")), body=None),
+         "WORKER_LLM_RATE_LIMIT_EXCEPTION"),
+        ("server", APIStatusError("private", response=httpx.Response(
+            503, request=httpx.Request("POST", "https://private.invalid")), body=None),
+         "WORKER_LLM_HTTP_SERVER_EXCEPTION"),
+    ):
+        case_dir = tmp_path / label
+        case_dir.mkdir()
+        worker, csv = _make_worker(monkeypatch, case_dir)
+        def throw(*_a, _error=error, **_kw):
+            raise _error
+        monkeypatch.setattr(pc, "CallLLMAPI", throw)
+        result = worker.proc()
+        assert result["ok"] is False
+        assert len(csv) == 1 and csv[0]["ok"] is False
+        _assert_single_phase_event(worker, expected)
+
+
+def test_non_sdk_exception_message_never_guesses_provider_source(monkeypatch, tmp_path):
+    worker, csv = _make_worker(monkeypatch, tmp_path)
+    monkeypatch.setattr(pc, "CallLLMAPI", lambda *_a, **_kw:
+                        (_ for _ in ()).throw(RuntimeError(
+                            "HTTP 503 rate limit ReadTimeout private password")))
+    assert worker.proc()["ok"] is False
+    assert len(csv) == 1
+    _assert_single_phase_event(worker, "WORKER_LLM_CALL_EXCEPTION")
