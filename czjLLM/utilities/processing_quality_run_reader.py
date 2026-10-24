@@ -56,6 +56,7 @@ class QualityRunTailReader:
         self._segments = 0
         self._archive_corrupt = 0
         self._seen_source = False
+        self._active_seen = False
         self._last_report = None
 
     def _status_snapshot(self, *, active_incomplete: bool = False) -> dict:
@@ -129,7 +130,8 @@ class QualityRunTailReader:
         self._segments = len(archives)
         self._archive_identity = archive_identity
         self._ledger_identity = ledger_identity
-        self._seen_source = bool(archives or _file_identity(active) is not None)
+        self._active_seen = _file_identity(active) is not None
+        self._seen_source = bool(archives or self._active_seen)
 
     def poll(self) -> tuple[bool, dict]:
         """Return (changed, snapshot) with separate accuracy/identity status.
@@ -144,13 +146,11 @@ class QualityRunTailReader:
             self._last_report = result
             return changed, result
         active = Path(self.path)
-        if _file_identity(active) is None and self._seen_source:
-            # If a rotation really happened its newly numbered shard changes
-            # the archive signature and rebuild handles that case below.
-            missing_known = True
-        else:
-            missing_known = False
         archives = quality_stream_segments(active)
+        # An archive-only run is a valid, stable state. Only a previously
+        # observed *active* generation disappearing is suspicious if no
+        # corresponding archive generation change explains the rename.
+        missing_known = _file_identity(active) is None and self._active_seen
         archive_identity = tuple((p.name, _file_identity(p)) for p in archives)
         ledger_identity = _file_identity(manifest_path(active))
         active_identity = _file_identity(active)
@@ -165,6 +165,8 @@ class QualityRunTailReader:
             self._rebuild(active, archives, archive_identity, ledger_identity)
         elif active_identity is not None:
             self._active_reader.poll()
+            self._active_seen = True
+            self._seen_source = True
             if self._active_reader.accumulator is not self._accumulator:
                 # An in-flight truncate/rewrite was detected by the underlying
                 # tail reader. Rebuild from archives and current active instead
