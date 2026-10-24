@@ -5,7 +5,7 @@
 - Real Windows/Ollama/Elasticsearch smoke is a separate operator acceptance dependency.
 
 ## Recent Outcomes
-- 2026-10-24 main baseline `2fdae2bab465471ddb88cbf574c2d6a2b44a0f46`; #219–#228 merged. PR #228 exact-head Linux `offline-e2e` and formal Codex completed with 0 Findings; post-merge main CI #40074000439 was in progress when the new branch began. Windows self-hosted remains operator-deferred.
+- 2026-10-24 main baseline `2fdae2bab465471ddb88cbf574c2d6a2b44a0f46`; #219–#228 merged. PR #228 exact-head Linux `offline-e2e` and formal Codex completed with 0 Findings; post-merge main Linux `offline-e2e` #40074000439 subsequently confirmed SUCCESS. Windows self-hosted remains operator-deferred.
 - Issue #211 fixed via merged #212/#213 and closed after successful SQLite/Excel offline E2E; live provider acceptance not claimed.
 - Reduction v1 release closure complete. Transient semantic cache #203 remains deferred.
 
