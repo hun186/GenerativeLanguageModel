@@ -190,12 +190,20 @@ def test_gui_background_worker_reports_validation_failure_instead_of_old_green(t
         assert observed["events"] == 1
         assert observed["quality_archive_integrity"] == "verified"
         shard = quality_stream_segments(active)[0]
-        shard.write_bytes(shard.read_bytes().replace(b"CONNECTION", b"BADBADBADB"))
+        original = shard.read_bytes()
+        shard.write_bytes(original.replace(b"CONNECTION", b"BADBADBADB"))
         invalid = outgoing.get(timeout=5)
         assert invalid["quality_stream_status"] == "unverified"
         assert invalid["events"] == 0
         assert "暫不可用" in format_quality_summary(invalid)
         assert str(tmp_path) not in json.dumps(invalid)
+        # Codex P2: restoring identical original bytes must publish a fresh
+        # valid snapshot even if the cumulative event counters did not change.
+        shard.write_bytes(original)
+        restored = outgoing.get(timeout=5)
+        assert restored["quality_stream_status"] == "observed"
+        assert restored["events"] == observed["events"] == 1
+        assert restored["quality_archive_integrity"] == "verified"
         assert outgoing.empty()
     finally:
         stop.set()
@@ -262,3 +270,32 @@ def test_sealed_archive_only_remains_verified_across_many_gui_polls(tmp_path):
         assert repeated["quality_stream_status"] == "observed"
         assert repeated["events"] == 1
         assert repeated["quality_archive_integrity"] == "verified"
+
+
+def test_unsealed_archive_shrink_never_silently_drops_prior_events(tmp_path):
+    """Codex P2: known last legacy shard removal is a fail-closed transition."""
+    archive_only = tmp_path / "llm_call_audit_20261024-shrinkarchive.csv"
+    active = quality_event_path(str(archive_only))
+    _emit(archive_only, "worker_phase_failure", "WORKER_LLM_TIMEOUT_EXCEPTION")
+    rotate_quality_event_stream(archive_only)
+    reader = QualityRunTailReader(str(active))
+    assert reader.poll()[1]["events"] == 1
+    assert reader.poll()[0] is False
+    quality_stream_segments(active)[0].unlink()
+    with pytest.raises(ValueError, match="archive shard disappeared"):
+        reader.poll()
+
+
+def test_unsealed_archive_shrink_with_active_file_preserves_no_false_success(tmp_path):
+    """Codex P2: partial remaining active counters must not replace full history."""
+    audit = tmp_path / "llm_call_audit_20261024-shrinklive.csv"
+    active = quality_event_path(str(audit))
+    _emit(audit, "worker_phase_failure", "WORKER_LLM_TIMEOUT_EXCEPTION")
+    rotate_quality_event_stream(audit)
+    _emit(audit, "stage_orchestration_failure", "STAGE_PREPARE_EXCEPTION")
+    reader = QualityRunTailReader(str(active))
+    assert reader.poll()[1]["events"] == 2
+    quality_stream_segments(active)[0].unlink()
+    with pytest.raises(ValueError, match="archive shard disappeared"):
+        reader.poll()
+    assert active.exists()  # No mutation or cleanup of the surviving stream.
