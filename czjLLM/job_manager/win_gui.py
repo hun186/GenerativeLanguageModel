@@ -575,6 +575,7 @@ def format_quality_summary(stats: dict) -> str:
         f"  ｜  Row Merger 暫時異常 {int(stats.get('row_merger_retryable_failure_events', 0)):,} 次（節流事件數）"
         f"  ｜  Producer 執行異常 {int(stats.get('producer_operational_failure_events', 0)):,} 次（事件數）"
         f"  ｜  Stage 調度例外 {int(stats.get('stage_orchestration_failure_events', 0)):,} 次（事件數）"
+        f"  ｜  Worker 階段例外 {int(stats.get('worker_phase_failure_events', 0)):,} 次（事件數）"
     )
 
 
