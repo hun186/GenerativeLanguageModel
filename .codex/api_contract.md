@@ -178,3 +178,8 @@
 
 - Quality JSONL schema_version=1 adds `event=worker_phase_failure`, `scope=run`, `outcome=observed` and allowlisted `code` values: `WORKER_PRECALL_EXCEPTION`, `WORKER_LLM_CALL_EXCEPTION`, `WORKER_RESPONSE_EXCEPTION`, `WORKER_PERSIST_EXCEPTION`. Both writer and reader reject non-empty/non-string document_id and slice_id in these run events. No request, slice, stage, document identity, raw exception, URL, prompt or model response fields are emitted.
 - `QualityAccumulator.snapshot()` adds `worker_phase_failure_events`; codes appear in existing `error_codes`. These are exception observations only (no denominator) and never imply a distinct failed LLM call/document or failure rate. The existing `PromptAPIPipeline.proc` return dict, CSV request audit, cancellation handling, and mock results are unchanged.
+
+### 2026-10-24 Worker SDK typed subtype extension (PR pending)
+
+- Existing `worker_phase_failure` `scope=run` allowlist gains `WORKER_LLM_TIMEOUT_EXCEPTION`, `WORKER_LLM_CONNECTION_EXCEPTION`, `WORKER_LLM_RATE_LIMIT_EXCEPTION`, `WORKER_LLM_HTTP_SERVER_EXCEPTION`, `WORKER_LLM_HTTP_CLIENT_EXCEPTION`, `WORKER_LLM_RESPONSE_VALIDATION_EXCEPTION`. Events still have no document/slice/stage IDs, prompt, endpoint, credentials, raw error or response; writer/reader reject misplaced identities and codes.
+- One caught leaf Worker error produces at most one `worker_phase_failure` quality record; its existing `worker_phase_failure_events` count and old request CSV format/exception return remain unchanged. Unknown SDK/local errors retain `WORKER_LLM_CALL_EXCEPTION`. Only typed SDK exceptions / status (4xx/5xx) and known wrapped direct causes qualify for refinement.
