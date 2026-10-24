@@ -21,7 +21,10 @@ import httpx
 import inspect
 
 from openai import OpenAI
-from openai import APIConnectionError, APITimeoutError, RateLimitError, APIError
+from openai import (
+    APIConnectionError, APITimeoutError, RateLimitError, APIError,
+    APIStatusError, APIResponseValidationError,
+)
 
 try:
     # 專案既有的輕量日誌工具
@@ -29,6 +32,35 @@ try:
 except Exception:
     def tlog(msg: str) -> None:  # 極簡 fallback
         print(msg)
+
+
+def classify_llm_call_exception(error: BaseException) -> str:
+    """Classify only typed SDK evidence, never error messages or endpoints.
+
+    The legacy CallLLMAPI timeout/connection wrappers retain the original
+    SDK exception in __cause__. An arbitrary RuntimeError or plain OSError
+    is intentionally unclassified, not labeled as remote provider failure.
+    """
+    source = error
+    if isinstance(error, RuntimeError) and isinstance(
+        error.__cause__, (APITimeoutError, APIConnectionError)
+    ):
+        source = error.__cause__
+    if isinstance(source, APITimeoutError):
+        return "WORKER_LLM_TIMEOUT_EXCEPTION"
+    if isinstance(source, APIConnectionError):
+        return "WORKER_LLM_CONNECTION_EXCEPTION"
+    if isinstance(source, RateLimitError):
+        return "WORKER_LLM_RATE_LIMIT_EXCEPTION"
+    if isinstance(source, APIResponseValidationError):
+        return "WORKER_LLM_RESPONSE_VALIDATION_EXCEPTION"
+    if isinstance(source, APIStatusError):
+        status = source.status_code
+        if isinstance(status, int) and 500 <= status <= 599:
+            return "WORKER_LLM_HTTP_SERVER_EXCEPTION"
+        if isinstance(status, int) and 400 <= status <= 499:
+            return "WORKER_LLM_HTTP_CLIENT_EXCEPTION"
+    return "WORKER_LLM_CALL_EXCEPTION"
 
 
 # ===== Qwen /no_think 能力整合 =====
