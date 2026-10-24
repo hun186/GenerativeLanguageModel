@@ -89,8 +89,7 @@ def test_hash_checks_detect_same_size_in_place_edit_and_fail_closed(tmp_path):
     archive = quality_stream_segments(active)[0]
     content = archive.read_bytes()
     assert b"WORKER_LLM_TIMEOUT_EXCEPTION" in content
-    archive.write_bytes(content.replace(b"WORKER_LLM_TIMEOUT_EXCEPTION",
-                                        b"WORKER_LLM_CONNECTION_EXCEPTIO"))  # changed size
+    archive.write_bytes(content.replace(b"TIMEOUT", b"INVALID"))  # same byte length
     with pytest.raises(ValueError, match="integrity checksum"):
         report_for_audit(audit)
     with pytest.raises(ValueError, match="integrity checksum"):
