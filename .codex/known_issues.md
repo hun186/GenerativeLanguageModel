@@ -43,3 +43,10 @@
 - Incident family composition is only the relative mix of *accepted run-scoped incident observations*, not a failure rate per LLM/HTTP attempt, slice, document or distinct cause; different catch sites can observe one logical error. Zero incident observations give unknown percentages, and n<30 remains advisory.
 - Complete malformed JSONL records are excluded with degraded completeness; incomplete writer tails are excluded and flagged. Existing `QualityTailReader` per-poll bounded file edge checks do not provide adversarial archival integrity. Historic reports still include the existing `log_file` basename; avoid embedding private identifiers into audit run IDs.
 - Windows self-hosted 3.10/3.11, real Ollama/ES writeback and independent ES readback remain unavailable in the agent Hosted CI; only Linux offline tests are claimed after their actual run completes.
+
+
+## 2026-10-24 manual JSONL rotation operational constraints (unmerged PR)
+
+- Rotation explicitly **requires all producers and GUI readers stopped by operator**. Lock serializes cooperating writer calls during rename but cannot stop external noncooperating editors. Live GUI `QualityTailReader` still sees only active file and its counters may reset after manual rotation; use offline report for full archive+active history until separately designed live cross-generation reader.
+- No durable manifest/sequence seal yet: gap detection catches removed intermediate indexes but cannot prove that a highest or all segments were deleted, nor authenticated integrity of historical bytes. Never silently garbage collect archives. A corrupt archived record causes degraded reporting; incomplete archived tail is explicitly degraded, not proof of intact history.
+- First-stage implementation is bounded to 64 numbered segments and manual no-deletion. Auto retention/pruning, crash-safe manifest, secure concurrent live rotation, Windows/junction tests, actual Ollama/ES round trips and in-place logfile archive replay under highly concurrent production writers remain unverified.
