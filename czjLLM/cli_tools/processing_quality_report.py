@@ -16,6 +16,7 @@ from czjLLM.utilities.processing_quality import (
     QualityAccumulator, QualityTailReader, RUN_INCIDENT_CODES, quality_event_path,
 )
 from czjLLM.utilities.processing_quality_rotation import quality_stream_segments
+from czjLLM.utilities.processing_quality_manifest import verify_quality_manifest
 
 LOW_SAMPLE_ADVISORY_THRESHOLD = 30
 _METRIC_DENOMINATORS = {
@@ -87,6 +88,7 @@ def summarize_quality_stream(
         raise ValueError("unknown run-scoped incident family")
     source = Path(path)
     archives = quality_stream_segments(source)
+    archive_integrity = verify_quality_manifest(source, archives)
     if source.is_symlink():
         raise ValueError("refusing a symlink quality event stream")
     if source.exists() and not source.is_file():
@@ -122,6 +124,10 @@ def summarize_quality_stream(
         raise ValueError("quality segment generation changed during reporting")
     if [identity(segment) for segment in archives] != before_archives:
         raise ValueError("quality archived segment changed during reporting")
+    # Check again to catch a changed ledger/archive while replaying. A
+    # mismatch is a hard error, never an apparently complete summary.
+    if verify_quality_manifest(source, archives) != archive_integrity:
+        raise ValueError("quality archive ledger changed during reporting")
     changed_during_read = identity(source) != before_active
     incomplete = incomplete or changed_during_read
     stats = accumulator.snapshot()
@@ -142,6 +148,7 @@ def summarize_quality_stream(
                   "no_valid_events" if not stats["events"] else "observed"),
         "skipped_corrupt_complete_lines": corrupt_lines,
         "archived_segments": len(archives),
+        "archive_integrity": archive_integrity,
         "metrics": stats,
         "incident_diagnostics": run_incident_diagnostics(stats, family=incident_family),
         "sample_advisories": sample_notes,
@@ -194,6 +201,10 @@ def report_history(
         elif _FILE_SUFFIX + ".seg-" in name:
             stable, _suffix = name.split(_FILE_SUFFIX + ".seg-", 1)
             discovered.add(directory / (stable + _FILE_SUFFIX))
+        elif name.endswith(_FILE_SUFFIX + ".manifest.json"):
+            # A ledger with all shards missing must still be discovered so
+            # verification fails closed instead of silently omitting the run.
+            discovered.add(directory / name[:-len(".manifest.json")])
     candidates = sorted(discovered, key=lambda p: p.name, reverse=True)
     runs = [
         summarize_quality_stream(p, incident_family=incident_family)

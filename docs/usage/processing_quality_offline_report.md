@@ -110,3 +110,26 @@ python -m czjLLM.cli_tools.processing_quality_rotate --audit-path logs/llm_call_
 既有 `processing_quality_report --audit-path ...` 與 `--audit-dir ...` 離線報告可依分段編號順序重新讀取整個單次執行的封存檔和活躍檔，使用**同一份**事件累計器進行跨段 `event_id` 去重、Schema 失敗與後續寫入成功之回復統計，保留原 `incident_diagnostics` 及分母語意。封存檔即使尚無新活躍檔，仍可被歷史報告發現。缺少中間編號、封存名稱異常、分段超限都會拒絕當成完整報告；封存檔末尾不完整會顯示 `degraded_incomplete_archive`，不會冒稱成功。原 `log_file` 欄位仍只提供穩定活躍檔 basename。
 
 **限制**：目前並未提供封存資料完整性 Manifest，無法證實最後一段或整批封存資料是否遭到人為全部移除。檔案仍可能受未遵守停機要求之外部寫入者干擾；停止所有 Worker/GUI 是操作條件。現行即時 GUI `QualityTailReader` 仍主要追蹤活躍單檔，輪替後的跨段完整計數請以離線報告為準。自動保留／空間預算清理、可證實不遺失事件的持續性續讀（含即時 GUI）、Manifest、跨日滾動窗口都尚未完成，需獨立設計並複審，不應自行刪除封存檔。
+
+
+## JSONL 封存完整性 Manifest（2026-10-24，獨立 PR 待驗）
+
+本功能不變更既有手動輪替指令的預設行為。**沒有 Manifest 的歷史封存仍可閱讀，但離線品質報告新增 `archive_integrity.status=unsealed_legacy`，明確表示未具備雜湊基準。** 沒有封存資料時為 `not_applicable`。即使離線報告顯示 `state=observed`，也不代表歷史封存已經驗證。
+
+首次封存後，先停止所有寫入者、Workers 與品質 GUI 讀取，再進行一次性基準建立（trust on first use）：
+
+```bash
+python -m czjLLM.cli_tools.processing_quality_manifest --audit-path logs/llm_call_audit_<run_id>.csv --initialize --confirm-stopped
+```
+
+此命令只對**當時已存在的編號封存分段**計算 SHA-256、檔案長度與序號，將無原始事件內容的 `.jsonl.manifest.json` 安全落地，已存在的基準不得默默重新建立或覆寫。後續停止 Workers 後執行既有 `processing_quality_rotate ... --confirm-stopped`，若已有 Manifest，會先核對所有舊封存，再於成功輪替時一併擴充 Manifest；Manifest 發布失敗時，在同一輪替鎖內嘗試恢復活躍檔名，**不自動丟棄原始資料**。
+
+唯讀驗證可隨時執行：
+
+```bash
+python -m czjLLM.cli_tools.processing_quality_manifest --audit-path logs/llm_call_audit_<run_id>.csv
+```
+
+既有 `processing_quality_report` 單次與歷史報告會於重建前後核對 Manifest。封存檔雜湊或份數不符、Manifest 格式毀損、缺少已封存的最高編號、封存內容在讀取期間變動時，直接拒絕提供看似完整的報告，不靜默重新歸零。Manifest 只記錄 `schema_version`、`segments[].{sequence,bytes,sha256}` 與 `ledger_sha256`，不含來源文件、Prompt、模型端點或原始錯誤內容。
+
+**安全邊界與保留限制：** SHA-256 側錄可檢出意外覆寫、損毀及建立基準之後的封存檔遺失，但不具備數位簽章／外部信任錨；有權修改所有檔案的人仍可重算 Manifest，若連 Manifest 也被移除就無法單憑本地目錄證明歷史曾存在。首次建立基準只能證實*當下*現存封存檔，不能追溯先前是否已有缺失。活躍 JSONL 不受封存 Manifest 保護，需先手動輪替才能封存驗證。停機確認是操作者責任，不能防止不遵守規則的外部修改。仍**沒有**自動清理、已驗證安全刪除、線上無停機輪替或跨段 GUI 即時續讀；這些須另外設計及審查。
