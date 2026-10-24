@@ -84,3 +84,14 @@ GUI「Worker 階段例外」與離線 `worker_phase_failure_events` 為事件數
 原 `worker_phase_failure` 的 `WORKER_LLM_CALL_EXCEPTION` 泛用分類，現在只在可由 SDK 型別或其既有保留的直屬例外原因證實時，細分為 `WORKER_LLM_TIMEOUT_EXCEPTION`（逾時）、`WORKER_LLM_CONNECTION_EXCEPTION`（連線）、`WORKER_LLM_RATE_LIMIT_EXCEPTION`（429）、`WORKER_LLM_HTTP_SERVER_EXCEPTION`（HTTP 5xx）、`WORKER_LLM_HTTP_CLIENT_EXCEPTION`（HTTP 4xx）以及 `WORKER_LLM_RESPONSE_VALIDATION_EXCEPTION`（SDK 回應驗證）。其餘維持泛用代碼，不從原始例外文字、端點或模型內容推論。逾時／連線可能是客戶端問題；收到 HTTP 5xx 並不等於證明模型推論故障。
 
 **仍然每個已捕捉 Worker 例外最多只寫入一筆既有 `scope=run` 事件**，不另外計一個 SDK 事件、不變更 CSV 稽核或 `worker_phase_failure_events` 分母，不存原始例外、Endpoint、Prompt、來源識別、機密或輸出。SDK 可能先重試數次網路請求才將例外交給 Worker，品質事件數不代表底層 HTTP 嘗試次數或失敗文件數。取消流程、Mock-only 及原先的 Stage／Producer／Row Merger 事件分類不受影響。Hosted Linux 模擬 HTTP 傳輸測試不能取代真實 Windows／Ollama／Elasticsearch 驗收。
+
+
+## 執行層級異常診斷與分類篩選（2026-10-24，獨立 PR 待驗）
+
+`python -m czjLLM.cli_tools.processing_quality_report --audit-dir logs --limit 20 --incident-family worker_phase_failure`
+
+或針對單次執行使用 `--audit-path logs/llm_call_audit_<run_id>.csv --incident-family stage_orchestration_failure`。`--incident-family` 僅允許本系統固定的 `scope=run` 異常類別：`consumer_orchestration_failure`、`row_merger_retryable_failure`、`producer_operational_failure`、`stage_orchestration_failure`、`worker_phase_failure`。未指定時顯示全部異常類別；指定時僅縮減 `incident_diagnostics.families` 顯示內容，**保留完整 `metrics` 與該次執行全部執行層級事件的分母**。未知、文件或切片類別不會被默默當成零事件。
+
+報告的 `incident_diagnostics.observed_run_incident_events` 是經既有 JSONL 驗證器接受、去重後的**執行層級事件數**；`share_of_observed_incidents_pct` 是各類事件在當次觀測的相對占比，**不是 LLM 呼叫失敗率、失敗文件率、獨立錯誤根因數或 ES 寫入失敗率**，同一實際故障可能先後在 Worker、Stage、Producer 被不同捕捉點觀察到。分母為零時百分比為 `null`（未知），樣本少於 30 時提示低樣本警語。歷史報告維持每次執行獨立統計，不合併分母；原始 JSONL、Prompt、來源身分、端點、密碼、錯誤訊息均不會出現在新的診斷欄位中。
+
+若既有 JSONL 含格式損毀完整行，或尾端只有部分寫入，維持現有 `degraded_corrupt_lines`／`incomplete_tail` 狀態，不能因顯示有分類而視為驗收成功；此功能無模型端點、資料庫或網路需求。既有報告 `log_file` 檔名欄位仍存在，執行 ID 不應含私人資訊。
