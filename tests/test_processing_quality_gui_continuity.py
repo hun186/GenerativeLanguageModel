@@ -46,6 +46,10 @@ def test_incremental_live_poll_and_two_rotations_keep_cumulative_events(tmp_path
     assert changed and archive_only["events"] == 1
     assert archive_only["quality_archived_segments"] == 1
     assert archive_only["quality_stream_status"] == "unsealed_legacy"
+    # Codex P2 regression: stable archive-only history must remain valid over
+    # repeated UI polling, not turn into an unavailable snapshot.
+    assert reader.poll()[0] is False
+    assert reader.poll()[1]["events"] == 1
     initialize_quality_manifest(audit)
     changed, sealed = reader.poll()
     assert changed and sealed["events"] == 1
@@ -221,3 +225,40 @@ def test_quality_gui_wires_generation_reader_and_safe_status_display():
     assert "品質事件封存或檔案驗證異常" in src
     assert "品質事件尚無可靠統計" in src
     assert "result_queue.put_nowait(stats)" in src
+
+
+def test_initially_absent_active_transition_to_observed_without_full_reload(tmp_path):
+    """Codex P2: a run whose GUI reader starts before first event."""
+    audit = tmp_path / "llm_call_audit_20261024-delayed.csv"
+    active = quality_event_path(str(audit))
+    reader = QualityRunTailReader(str(active))
+    assert reader.poll()[1]["quality_stream_status"] == "not_initialized"
+    assert reader.poll()[0] is False
+    _emit(audit, "worker_phase_failure", "WORKER_LLM_TIMEOUT_EXCEPTION")
+    changed, stats = reader.poll()
+    assert changed
+    assert stats["events"] == 1
+    assert stats["quality_stream_status"] == "observed"
+    assert "Worker 階段例外 1 次" in format_quality_summary(stats)
+    assert reader.poll()[0] is False
+
+
+def test_sealed_archive_only_remains_verified_across_many_gui_polls(tmp_path):
+    """Codex P2: no active stream is normal after a completed manual rotation."""
+    audit = tmp_path / "llm_call_audit_20261024-archiveonly.csv"
+    active = quality_event_path(str(audit))
+    _emit(audit, "worker_phase_failure", "WORKER_LLM_CONNECTION_EXCEPTION")
+    rotate_quality_event_stream(audit)
+    initialize_quality_manifest(audit)
+    reader = QualityRunTailReader(str(active))
+    changed, summary = reader.poll()
+    assert changed
+    assert summary["events"] == 1
+    assert summary["quality_archive_integrity"] == "verified"
+    assert not active.exists()
+    for _ in range(6):
+        changed, repeated = reader.poll()
+        assert not changed
+        assert repeated["quality_stream_status"] == "observed"
+        assert repeated["events"] == 1
+        assert repeated["quality_archive_integrity"] == "verified"
