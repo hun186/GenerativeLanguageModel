@@ -95,3 +95,18 @@ GUI「Worker 階段例外」與離線 `worker_phase_failure_events` 為事件數
 報告的 `incident_diagnostics.observed_run_incident_events` 是經既有 JSONL 驗證器接受、去重後的**執行層級事件數**；`share_of_observed_incidents_pct` 是各類事件在當次觀測的相對占比，**不是 LLM 呼叫失敗率、失敗文件率、獨立錯誤根因數或 ES 寫入失敗率**，同一實際故障可能先後在 Worker、Stage、Producer 被不同捕捉點觀察到。分母為零時百分比為 `null`（未知），樣本少於 30 時提示低樣本警語。歷史報告維持每次執行獨立統計，不合併分母；原始 JSONL、Prompt、來源身分、端點、密碼、錯誤訊息均不會出現在新的診斷欄位中。
 
 若既有 JSONL 含格式損毀完整行，或尾端只有部分寫入，維持現有 `degraded_corrupt_lines`／`incomplete_tail` 狀態，不能因顯示有分類而視為驗收成功；此功能無模型端點、資料庫或網路需求。既有報告 `log_file` 檔名欄位仍存在，執行 ID 不應含私人資訊。
+
+ 
+## 品質 JSONL 手動輪替與跨檔案報告重建（2026-10-24，獨立 PR 待驗）
+
+第一階段採**人工停機、非自動、零刪除**模式，確保事件完整性優先於節省空間。務必先停止目前的 LLM/排程 Workers、寫入者及正在讀取品質資訊的 GUI，再執行：
+
+```bash
+python -m czjLLM.cli_tools.processing_quality_rotate --audit-path logs/llm_call_audit_<run_id>.csv --confirm-stopped
+```
+
+維護指令取得既有 JSONL 跨程序鎖後，只會把完整且以換行結束的 `processing_quality_events_<run_id>.jsonl` 以同目錄原子改名為 `processing_quality_events_<run_id>.jsonl.seg-00000001`（後續編號遞增）；沒有完整末行時直接拒絕，不會嘗試修補或截斷。正在使用中的活躍檔名保留為穩定位置，**下一筆事件將重新建立原活躍檔**。最多支援 64 個輪替分段，滿額時拒絕而不刪舊檔；可使用 `--max-segments` 設定更保守的上限。預設**不排程、不自動輪替、不清理、不覆寫**。
+
+既有 `processing_quality_report --audit-path ...` 與 `--audit-dir ...` 離線報告可依分段編號順序重新讀取整個單次執行的封存檔和活躍檔，使用**同一份**事件累計器進行跨段 `event_id` 去重、Schema 失敗與後續寫入成功之回復統計，保留原 `incident_diagnostics` 及分母語意。封存檔即使尚無新活躍檔，仍可被歷史報告發現。缺少中間編號、封存名稱異常、分段超限都會拒絕當成完整報告；封存檔末尾不完整會顯示 `degraded_incomplete_archive`，不會冒稱成功。原 `log_file` 欄位仍只提供穩定活躍檔 basename。
+
+**限制**：目前並未提供封存資料完整性 Manifest，無法證實最後一段或整批封存資料是否遭到人為全部移除。檔案仍可能受未遵守停機要求之外部寫入者干擾；停止所有 Worker/GUI 是操作條件。現行即時 GUI `QualityTailReader` 仍主要追蹤活躍單檔，輪替後的跨段完整計數請以離線報告為準。自動保留／空間預算清理、可證實不遺失事件的持續性續讀（含即時 GUI）、Manifest、跨日滾動窗口都尚未完成，需獨立設計並複審，不應自行刪除封存檔。
