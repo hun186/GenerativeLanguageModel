@@ -132,3 +132,9 @@
 
 - Start with **opt-in manual rotation after operator stops writers/readers**, not online timer or automatic retention. Reuse the producer's cross-process append lock, same-directory atomic rename and consecutive numbered archives without rewriting or deleting any accepted event; reject partial last records, gaps and archive budget exhaustion.
 - Extend existing offline report with shared-accumulator replay instead of summing per-file aggregates (which would double-count event IDs and lose document reject→confirmed recovery). Keep GUI single-live-file view as a disclosed limitation. Only introduce destructive retention and real live readers with separate consistency/manifest protocol and independently tested rollback/partial-failure semantics.
+
+
+### 2026-10-24 archive integrity ledger trust boundary
+
+- Choose manual opt-in trust-on-first-use SHA-256 sidecar over automatic migration of legacy archives; avoid falsely asserting past integrity. Hash immutable numbered archives only, not concurrently growing active JSONL. Retain original append lock and no-delete rotation; write metadata via same-directory atomic replace with fsynced payload, roll back rename on publication errors where safe.
+- Verify sealed archive count and hashes both before and after offline multi-shard replay. A ledger mismatch fails closed rather than reset or inferred successful migration; retain existing strict event schema, duplicate ID and per-document recovery semantics. Explicitly distinguish self-consistency from authenticated evidence, defer signed manifests, crash recovery, automated retention and GUI continuity.
