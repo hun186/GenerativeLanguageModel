@@ -132,3 +132,9 @@
 
 - Keep the original `processing_quality_events_<run>.jsonl` writer, lock and manual numbered shard scheme unchanged. A distinct `processing_quality_manifest` module hashes only sealed `.jsonl.seg-NNNNNNNN` archive bytes via bounded memory descriptor reads, recording sequence, byte size and digest; small schema-checked `.jsonl.manifest.json` is atomically published under the writer lock.
 - Manifest initialization against legacy archives is explicitly opt-in (stopped producer); no implicit baseline or archival deletion. Once sealed, manual rotation prechecks the existing manifest, renames its active file, publishes an updated ledger, and attempts rollback on publish failure. Offline report validates sealed bytes before and after existing shared-accumulator replay and discovers manifest-only missing-run records. Unsealed legacy history is reported as unsealed, not silently called verified.
+
+
+### 2026-10-24 interrupted JSONL rotation recovery guard (new unmerged PR)
+
+- Existing writer, manual rotation, immutable sealed archive digest and manifest remain authoritative. Read-only recovery inspection compares sealed Manifest entries against matching existing archive hashes, then only permits a potential rollback when there is **exactly one sequential additional complete unsealed shard** and no active file. A collision, divergent old shard, unknown ledger or multiple extras cannot be auto-classified as safely recoverable.
+- With operator stop acknowledgement, a separate CLI uses the same writer lock to recheck and create the active name exclusively via hardlink (no clobber) to the extra shard; verifies bytes before unlinking the extra unsealed name. Interrupted hardlink/unlink leaves an explicit ambiguous dual-alias state, preserving bytes rather than rewriting the ledger. No automatic manifest adoption/rebaseline, archive deletion or live GUI replay.
