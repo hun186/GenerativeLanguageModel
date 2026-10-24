@@ -36,3 +36,10 @@
 - The OpenAI-compatible SDK can emit timeout/connection errors for *local* client/transport issues as well as inaccessible remote providers. HTTP 4xx/5xx proves only an HTTP status was returned, not whether the actual model runtime caused it. `APIResponseValidationError` indicates SDK response interpretation trouble but not necessarily malformed generated model text. This telemetry deliberately avoids causal claims.
 - The existing `CallLLMAPI` wraps typed timeout/connection SDK exceptions into `RuntimeError`; classifier is limited to typed direct causes, not error text. SDK retries may perform multiple HTTP calls before one Worker incident is written. Fatal crashes/process kills, non-exception `ok=false`, API request counts and on-disk persistence remain outside this work. The raw legacy request CSV may include exception text and remains access-controlled.
 - Offline/mock-transport and Hosted Linux CI are not proof of successful Ollama/Windows/ES integration. Those operator acceptance checks remain deferred.
+
+
+## 2026-10-24 run-scoped incident diagnostics caveats (new PR)
+
+- Incident family composition is only the relative mix of *accepted run-scoped incident observations*, not a failure rate per LLM/HTTP attempt, slice, document or distinct cause; different catch sites can observe one logical error. Zero incident observations give unknown percentages, and n<30 remains advisory.
+- Complete malformed JSONL records are excluded with degraded completeness; incomplete writer tails are excluded and flagged. Existing `QualityTailReader` per-poll bounded file edge checks do not provide adversarial archival integrity. Historic reports still include the existing `log_file` basename; avoid embedding private identifiers into audit run IDs.
+- Windows self-hosted 3.10/3.11, real Ollama/ES writeback and independent ES readback remain unavailable in the agent Hosted CI; only Linux offline tests are claimed after their actual run completes.
