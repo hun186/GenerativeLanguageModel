@@ -2948,11 +2948,13 @@ class PromptAPIPipeline:
             # Preserve legacy caught-error return and per-request CSV audit.
             # Cooperative cancellation and synthetic mock faults are not incidents.
             if worker_failure_code and not isinstance(ex, ExecutionCancelled):
-                quality_code = (
-                    classify_llm_call_exception(ex)
-                    if worker_failure_code == "WORKER_LLM_CALL_EXCEPTION"
-                    else worker_failure_code
-                )
+                quality_code = worker_failure_code
+                if worker_failure_code == "WORKER_LLM_CALL_EXCEPTION":
+                    try:
+                        quality_code = classify_llm_call_exception(ex)
+                    except Exception:
+                        # Telemetry may never replace the original caught error.
+                        quality_code = worker_failure_code
                 _audit_leaf_worker_phase_failure(
                     self.audit_path, self.audit_run_id, quality_code,
                 )
