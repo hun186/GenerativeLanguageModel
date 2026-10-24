@@ -101,6 +101,7 @@ def summarize_quality_stream(
         return st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns
 
     before_active = identity(source)
+    before_archives = [identity(segment) for segment in archives]
     accumulator = QualityAccumulator()
     corrupt_lines = 0
     incomplete = False
@@ -119,6 +120,8 @@ def summarize_quality_stream(
     # Concurrent ordinary appends retain their historical incomplete state.
     if quality_stream_segments(source) != archives:
         raise ValueError("quality segment generation changed during reporting")
+    if [identity(segment) for segment in archives] != before_archives:
+        raise ValueError("quality archived segment changed during reporting")
     changed_during_read = identity(source) != before_active
     incomplete = incomplete or changed_during_read
     stats = accumulator.snapshot()
