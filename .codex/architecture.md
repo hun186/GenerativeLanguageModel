@@ -126,3 +126,9 @@
 
 - Existing run quality JSONL active path and `.jsonl.lock` remain the only emit targets; an opt-in maintenance command reuses the same cross-process lock and atomically renames complete active files to numbered immutable `.jsonl.seg-NNNNNNNN` paths. Neither scheduled rotation nor automated retention/deletion exists.
 - A separate bounded (64) archive-discovery module enumerates strict consecutive numbered segments, refusing gap/malformed names and symlinks. Offline reports replay archive segments in sequence followed by the optional current active file; all `QualityTailReader` instances share one `QualityAccumulator` for cross-generation event ID dedup and document decision reconciliation. GUI continues using the unchanged single-active-file reader; no full live-resume claim.
+
+
+### 2026-10-24 opt-in sealed-archive SHA256 consistency ledger (unmerged PR)
+
+- Keep the original `processing_quality_events_<run>.jsonl` writer, lock and manual numbered shard scheme unchanged. A distinct `processing_quality_manifest` module hashes only sealed `.jsonl.seg-NNNNNNNN` archive bytes via bounded memory descriptor reads, recording sequence, byte size and digest; small schema-checked `.jsonl.manifest.json` is atomically published under the writer lock.
+- Manifest initialization against legacy archives is explicitly opt-in (stopped producer); no implicit baseline or archival deletion. Once sealed, manual rotation prechecks the existing manifest, renames its active file, publishes an updated ledger, and attempts rollback on publish failure. Offline report validates sealed bytes before and after existing shared-accumulator replay and discovers manifest-only missing-run records. Unsealed legacy history is reported as unsealed, not silently called verified.
