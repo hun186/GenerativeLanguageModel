@@ -189,3 +189,34 @@ def test_symlinks_and_invalid_audit_are_rejected(tmp_path):
     with pytest.raises(ValueError, match="symlink"):
         rollback_interrupted_rotation(audit)
     assert extra.exists() and target.read_bytes() == b"private\n"
+
+
+def test_interrupt_after_exclusive_link_retains_both_names_without_data_loss(tmp_path, monkeypatch):
+    """Second crash during repair must preserve bytes, not overwrite or delete."""
+    from pathlib import Path
+
+    audit = tmp_path / "llm_call_audit_20261024-interrupted-repair.csv"
+    active = _sealed_one(audit)
+    _emit(audit, event="stage_orchestration_failure", code="STAGE_PREPARE_EXCEPTION")
+    raw, candidate = _simulate_crash_after_rename(audit)
+    baseline = manifest_path(active).read_bytes()
+    actual_unlink = Path.unlink
+
+    def refuse_candidate_unlink(self, *args, **kwargs):
+        if self == candidate:
+            raise OSError("simulated second interruption")
+        return actual_unlink(self, *args, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(Path, "unlink", refuse_candidate_unlink)
+        with pytest.raises(OSError, match="second interruption"):
+            rollback_interrupted_rotation(audit)
+
+    assert active.read_bytes() == raw
+    assert candidate.read_bytes() == raw
+    assert manifest_path(active).read_bytes() == baseline
+    assert inspect_interrupted_rotation(audit)["status"] == "ambiguous_active_present"
+    with pytest.raises(ValueError, match="not unambiguously eligible"):
+        rollback_interrupted_rotation(audit)
+    # Neither name is silently removed in an ambiguous state.
+    assert active.exists() and candidate.exists()
