@@ -612,18 +612,19 @@ def _quality_reader_worker(path_queue, result_queue, stop_event, poll_interval: 
             pass
 
     while not stop_event.is_set():
-        reset = False
         try:
             while True:
                 path = str(path_queue.get_nowait() or "")
                 reader = QualityRunTailReader(path)
-                reset = True
         except pyqueue.Empty:
             pass
         try:
-            changed, stats = reader.poll()
-            if changed or reset:
-                publish(stats)
+            _, stats = reader.poll()
+            # Publish even when the reader's counters did not change: after a
+            # previous integrity failure the last GUI snapshot was marked
+            # unverified, and identical restored counters must become visible.
+            # publish() deduplicates unchanged successful snapshots.
+            publish(stats)
         except (OSError, ValueError):
             # A failed ledger, vanished known shard or unsafe link means the
             # whole snapshot is unknown. Never silently keep old green values.
