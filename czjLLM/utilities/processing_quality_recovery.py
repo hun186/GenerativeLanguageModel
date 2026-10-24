@@ -120,11 +120,17 @@ def rollback_interrupted_rotation(audit_path: str | Path) -> dict:
             # reader/writer online rename. Refuse any existing active file.
             if active.exists() or active.is_symlink():
                 raise ValueError("quality active path collision")
-            os.rename(candidate, active)
-            # In the stopped environment, make sure bytes survived the rename
-            # and the prior sealed archive set still agrees with its manifest.
+            # Create the active name without replacement: unlike os.rename
+            # on POSIX, hard-link creation fails when a noncooperating writer
+            # created an active file after our collision check. Both names
+            # address the *same bytes* until the extra unsealed link is
+            # removed. A crash between these steps leaves two links (an
+            # explicit ambiguous state), never lost original bytes.
+            os.link(candidate, active, follow_symlinks=False)
             if segment_fingerprint(active, len(archived)) != before:
                 raise ValueError("restored active quality bytes changed")
+            candidate.unlink()
+            # Prior sealed generations remain authoritative.
             verify_quality_manifest(active, archived[:-1])
             return {
                 "status": "rolled_back_to_active_unsealed",
