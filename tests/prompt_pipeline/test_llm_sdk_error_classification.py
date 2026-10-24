@@ -29,7 +29,7 @@ def test_sdk_error_types_have_fixed_privacy_safe_categories():
         (_http_error(503), "WORKER_LLM_HTTP_SERVER_EXCEPTION"),
         (_http_error(401), "WORKER_LLM_HTTP_CLIENT_EXCEPTION"),
         (_http_error(400), "WORKER_LLM_HTTP_CLIENT_EXCEPTION"),
-        (APIResponseValidationError("secret data", response=httpx.Response(200, request=request), body=None),
+        (APIResponseValidationError(response=httpx.Response(200, request=request), body=None, message="secret data"),
          "WORKER_LLM_RESPONSE_VALIDATION_EXCEPTION"),
     )
     for error, expected in samples:
