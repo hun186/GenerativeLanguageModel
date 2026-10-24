@@ -126,3 +126,9 @@
 
 - Deliver fixed-code, run-only **read-only reporting** first: the JSONL `QualityTailReader` remains sole authority for valid/duplicate events and corrupt line status. Filter accepted counts from the same mapping as the emitter/parser, never parse exception text, URLs or source IDs and never reread raw source to extract "examples".
 - CLI family focus is an allowlisted *presentation projection*; retain unfiltered metric counters and the denominator of all observed run-scoped incidents. Show unknown percent on zero denominator and low-sample advisory. No new persistent store, event schema or cross-run aggregation; lifecycle/rotation and operator-specific privacy/redaction improvements remain future work.
+
+
+### 2026-10-24 JSONL lifecycle phase 1 no-delete boundary
+
+- Start with **opt-in manual rotation after operator stops writers/readers**, not online timer or automatic retention. Reuse the producer's cross-process append lock, same-directory atomic rename and consecutive numbered archives without rewriting or deleting any accepted event; reject partial last records, gaps and archive budget exhaustion.
+- Extend existing offline report with shared-accumulator replay instead of summing per-file aggregates (which would double-count event IDs and lose document reject→confirmed recovery). Keep GUI single-live-file view as a disclosed limitation. Only introduce destructive retention and real live readers with separate consistency/manifest protocol and independently tested rollback/partial-failure semantics.
