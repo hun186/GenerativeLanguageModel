@@ -203,11 +203,8 @@ def advance_quality_manifest(active: Path, previous: list[Path], target: Path) -
     path = manifest_path(active)
     existing = _read_manifest(path)
     if existing is None:
-        if previous:
-            return  # Legacy rotation stays unsealed; never imply verification.
-        # First-ever rotation may establish a ledger without prior history.
-        entries = [segment_fingerprint(target, 1)]
-        _publish_manifest(path, entries, replace=False)
+        # Preserve backwards-compatible manual rotation. Initial sealing
+        # requires a separate explicit operator trust-on-first-use action.
         return
     verify_quality_manifest(active, previous)
     entries = existing["segments"] + [segment_fingerprint(target, len(previous) + 1)]
