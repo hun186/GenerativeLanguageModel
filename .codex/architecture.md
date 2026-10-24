@@ -120,3 +120,9 @@
 
 - New `RUN_INCIDENT_CODES` is derived from existing `_EVENT_CODES` and `_EVENT_SCOPES`; report modules never invent an independent/possibly stale Worker SDK code list.
 - The existing `QualityTailReader` performs privacy/error-code validation, deduplication and corrupt-line observation. `run_incident_diagnostics(stats, family=...)` is a pure read-only projection of its accepted fixed-code counts, optionally narrowing only the displayed run-scoped family details. Per-run observed-incident denominator remains the whole run, with null share when zero. History never pools per-run denominators. No additional parser, log write, I/O authority or DB/model service.
+
+
+### 2026-10-24 manual archive rotation and offline multi-file replay (unmerged PR)
+
+- Existing run quality JSONL active path and `.jsonl.lock` remain the only emit targets; an opt-in maintenance command reuses the same cross-process lock and atomically renames complete active files to numbered immutable `.jsonl.seg-NNNNNNNN` paths. Neither scheduled rotation nor automated retention/deletion exists.
+- A separate bounded (64) archive-discovery module enumerates strict consecutive numbered segments, refusing gap/malformed names and symlinks. Offline reports replay archive segments in sequence followed by the optional current active file; all `QualityTailReader` instances share one `QualityAccumulator` for cross-generation event ID dedup and document decision reconciliation. GUI continues using the unchanged single-active-file reader; no full live-resume claim.
