@@ -138,3 +138,9 @@
 
 - Choose manual opt-in trust-on-first-use SHA-256 sidecar over automatic migration of legacy archives; avoid falsely asserting past integrity. Hash immutable numbered archives only, not concurrently growing active JSONL. Retain original append lock and no-delete rotation; write metadata via same-directory atomic replace with fsynced payload, roll back rename on publication errors where safe.
 - Verify sealed archive count and hashes both before and after offline multi-shard replay. A ledger mismatch fails closed rather than reset or inferred successful migration; retain existing strict event schema, duplicate ID and per-document recovery semantics. Explicitly distinguish self-consistency from authenticated evidence, defer signed manifests, crash recovery, automated retention and GUI continuity.
+
+
+### 2026-10-24 conservative operator-approved interrupted archive recovery
+
+- Only handle the unambiguous **bounded shape** of interrupted stopped-producer manual rotation: sealed SHA256 prefix remains intact, exactly one next numbered complete but unsealed archive, no active name. Never automatically adopt an unsigned shard into the Manifest or infer remote causation; read-only inspection reveals only fixed states and counts.
+- Prefer exclusive non-clobber hardlink creation and unlink of the extra unsealed alias under the original per-run writer lock over POSIX `rename` (which might overwrite a newly created active file). If interrupted between operations, preserve both aliases and require manual intervention rather than deleting or overwriting anything. Operator stop remains a prerequisite; more general recovery, Windows validation and archival trust remain distinct tasks.
