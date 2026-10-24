@@ -515,3 +515,76 @@ def test_stage_orchestration_refuses_identity_scope_or_other_event_code(tmp_path
     _, stats = reader.poll()
     assert reader.skipped_corrupt_lines == len(bad)
     assert stats["stage_orchestration_failure_events"] == 1
+
+
+def test_worker_phase_events_are_run_only_and_not_document_failures(tmp_path):
+    audit = str(tmp_path / "llm_call_audit_worker_schema.csv")
+    codes = (
+        "WORKER_PRECALL_EXCEPTION", "WORKER_LLM_CALL_EXCEPTION",
+        "WORKER_RESPONSE_EXCEPTION", "WORKER_PERSIST_EXCEPTION",
+    )
+    for code in codes:
+        emit_quality_event(
+            audit, event="worker_phase_failure", code=code,
+            scope="run", outcome="observed",
+        )
+    path = quality_event_path(audit)
+    records = [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines()]
+    assert len(records) == 4
+    assert all(row["document_id"] == row["slice_id"] == ""
+               and row["scope"] == "run" for row in records)
+    stats = QualityTailReader(str(path)).poll()[1]
+    assert stats["worker_phase_failure_events"] == 4
+    assert all(stats["error_codes"][code] == 1 for code in codes)
+    assert stats["documents_decided"] == stats["documents_schema_pending"] == 0
+    assert stats["slice_validation_attempts"] == stats["repair_attempts"] == 0
+    assert stats["document_schema_reject_pct"] is None
+    from czjLLM.job_manager.win_gui import format_quality_summary
+    assert "Worker 階段例外 4 次（事件數）" in format_quality_summary(stats)
+
+
+def test_worker_phase_schema_rejects_identity_code_mismatch_and_bad_scope(tmp_path):
+    import pytest
+    audit = str(tmp_path / "llm_call_audit_worker_invalid.csv")
+    for ids in (
+        {"document_id": "private-pk"}, {"slice_id": "private-input.txt"},
+        {"document_id": None}, {"slice_id": None},
+    ):
+        with pytest.raises(ValueError, match="cannot carry document or slice identities"):
+            emit_quality_event(
+                audit, event="worker_phase_failure",
+                code="WORKER_PERSIST_EXCEPTION", scope="run",
+                outcome="observed", **ids,
+            )
+    with pytest.raises(ValueError, match="unknown or mismatched quality event/code"):
+        emit_quality_event(
+            audit, event="worker_phase_failure",
+            code="STAGE_RUNNER_EXCEPTION", scope="run", outcome="observed",
+        )
+    with pytest.raises(ValueError, match="mismatched quality event scope"):
+        emit_quality_event(
+            audit, event="worker_phase_failure",
+            code="WORKER_LLM_CALL_EXCEPTION", scope="slice", outcome="observed",
+        )
+    assert not quality_event_path(audit).exists()
+    base = {
+        "schema_version": 1, "event": "worker_phase_failure",
+        "code": "WORKER_PERSIST_EXCEPTION", "scope": "run",
+    }
+    invalid = [
+        {**base, "event_id": "bad1", "document_id": "private"},
+        {**base, "event_id": "bad2", "slice_id": "private"},
+        {**base, "event_id": "bad3", "document_id": None},
+        {**base, "event_id": "bad4", "scope": "document"},
+    ]
+    valid = {**base, "event_id": "good", "document_id": "", "slice_id": ""}
+    path = tmp_path / "bad-worker-quality.jsonl"
+    path.write_text(
+        "".join(json.dumps(row) + "\n" for row in invalid + [valid]),
+        encoding="utf-8",
+    )
+    reader = QualityTailReader(str(path))
+    _, stats = reader.poll()
+    assert reader.skipped_corrupt_lines == len(invalid)
+    assert stats["worker_phase_failure_events"] == 1
+    assert stats["documents_decided"] == 0
