@@ -588,3 +588,31 @@ def test_worker_phase_schema_rejects_identity_code_mismatch_and_bad_scope(tmp_pa
     assert reader.skipped_corrupt_lines == len(invalid)
     assert stats["worker_phase_failure_events"] == 1
     assert stats["documents_decided"] == 0
+
+
+def test_sdk_subcode_quality_schema_is_run_only_and_one_incident_per_event(tmp_path):
+    codes = (
+        "WORKER_LLM_TIMEOUT_EXCEPTION", "WORKER_LLM_CONNECTION_EXCEPTION",
+        "WORKER_LLM_RATE_LIMIT_EXCEPTION", "WORKER_LLM_HTTP_SERVER_EXCEPTION",
+        "WORKER_LLM_HTTP_CLIENT_EXCEPTION", "WORKER_LLM_RESPONSE_VALIDATION_EXCEPTION",
+    )
+    audit = str(tmp_path / "llm_call_audit_sdk_types.csv")
+    for code in codes:
+        emit_quality_event(audit, event="worker_phase_failure", code=code,
+                           scope="run", outcome="observed")
+    p = quality_event_path(audit)
+    recs = [json.loads(x) for x in p.read_text(encoding="utf-8").splitlines()]
+    assert len(recs) == len(codes)
+    assert all(r["document_id"] == r["slice_id"] == "" for r in recs)
+    stats = QualityTailReader(str(p)).poll()[1]
+    assert stats["worker_phase_failure_events"] == len(codes)
+    assert all(stats["error_codes"][x] == 1 for x in codes)
+    assert stats["documents_decided"] == stats["documents_schema_pending"] == 0
+    assert stats["slice_validation_attempts"] == stats["repair_attempts"] == 0
+    with pytest.raises(ValueError, match="cannot carry"):
+        emit_quality_event(audit, event="worker_phase_failure",
+                           code=codes[0], scope="run", outcome="observed",
+                           document_id="private")
+    with pytest.raises(ValueError, match="unknown or mismatched"):
+        emit_quality_event(audit, event="stage_orchestration_failure",
+                           code=codes[0], scope="run", outcome="observed")
