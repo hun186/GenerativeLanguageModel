@@ -143,7 +143,7 @@ def test_corrupt_or_replaced_ledger_rejected_not_rebaselined(tmp_path):
     initialize_quality_manifest(audit)
     path = manifest_path(active)
     raw = path.read_bytes()
-    path.write_bytes(raw.replace(b'"ledger_sha256": "', b'"ledger_sha256": "f', 1))
+    path.write_bytes(raw.replace(b'"ledger_sha256":"', b'"ledger_sha256":"f', 1))
     with pytest.raises(ValueError, match="checksum|schema"):
         verify_quality_manifest(active)
     with pytest.raises(ValueError):
