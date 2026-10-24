@@ -80,6 +80,12 @@ def rotate_quality_event_stream(
         _lock_stream(lock_fp)
         try:
             archives = quality_stream_segments(source, max_segments=max_segments)
+            # The integrity ledger is optional for historical unsealed runs,
+            # but once initialized a mismatch blocks additional rotation.
+            from czjLLM.utilities.processing_quality_manifest import (
+                advance_quality_manifest, verify_quality_manifest,
+            )
+            verify_quality_manifest(source, archives)
             if source.is_symlink():
                 raise ValueError("quality active stream must not be a symlink")
             if not source.exists():
@@ -98,8 +104,17 @@ def rotate_quality_event_stream(
             target = source.with_name(f"{source.name}.seg-{len(archives) + 1:08d}")
             if target.exists() or target.is_symlink():
                 raise FileExistsError("quality segment destination already exists")
-            # Atomic same-directory move. No destructive truncation/copy/rewrite.
+            # Atomic same-directory move. If ledger publication fails,
+            # restore the active name before releasing the writer lock.
             os.rename(source, target)
+            try:
+                advance_quality_manifest(source, archives, target)
+            except Exception:
+                if source.exists() or source.is_symlink():
+                    # Never overwrite newly written data during recovery.
+                    raise RuntimeError("rotation manifest failed; operator recovery required")
+                os.rename(target, source)
+                raise
             return {"rotated": True, "archived_segments": len(archives) + 1}
         finally:
             _unlock_stream(lock_fp)
