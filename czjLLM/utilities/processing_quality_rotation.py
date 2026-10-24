@@ -71,7 +71,8 @@ def rotate_quality_event_stream(
     for component in (source.parent, *source.parent.parents, lock_path):
         if component.is_symlink():
             raise ValueError("quality rotation refuses symlink path components")
-    source.parent.mkdir(parents=True, exist_ok=True)
+    if not source.parent.is_dir():
+        raise FileNotFoundError("quality stream directory not found")
     with lock_path.open("a+b") as lock_fp:
         if lock_fp.seek(0, os.SEEK_END) == 0:
             lock_fp.write(b"0")
