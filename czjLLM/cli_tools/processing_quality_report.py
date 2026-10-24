@@ -12,7 +12,9 @@ from pathlib import Path
 from typing import Any
 
 from czjLLM.utilities.atomic_io import atomic_write_json
-from czjLLM.utilities.processing_quality import QualityTailReader, quality_event_path
+from czjLLM.utilities.processing_quality import (
+    QualityTailReader, RUN_INCIDENT_CODES, quality_event_path,
+)
 
 LOW_SAMPLE_ADVISORY_THRESHOLD = 30
 _METRIC_DENOMINATORS = {
@@ -24,8 +26,64 @@ _FILE_PREFIX = "processing_quality_events_"
 _FILE_SUFFIX = ".jsonl"
 
 
-def summarize_quality_stream(path: str | Path) -> dict[str, Any]:
+def run_incident_diagnostics(
+    metrics: dict[str, Any], *, family: str | None = None,
+) -> dict[str, Any]:
+    """Project only the prevalidated run-scoped code counters, without raw IDs.
+
+    Share percentages refer to the *observed incident event* denominator only.
+    They are not request failure rates, failed-document rates or deduped causes.
+    """
+    if family is not None and family not in RUN_INCIDENT_CODES:
+        raise ValueError("unknown run-scoped incident family")
+    codes = metrics["error_codes"]
+    families = {}
+    for name, allowed in RUN_INCIDENT_CODES.items():
+        observed_codes = {
+            code: codes[code] for code in sorted(allowed) if codes.get(code, 0)
+        }
+        families[name] = {
+            "observed_events": sum(observed_codes.values()),
+            "codes": observed_codes,
+        }
+
+    observed_total = sum(item["observed_events"] for item in families.values())
+    names = [family] if family is not None else sorted(families)
+    selected = {}
+    for name in names:
+        count = families[name]["observed_events"]
+        selected[name] = {
+            **families[name],
+            "share_of_observed_incidents_pct": (
+                round(100 * count / observed_total, 2) if observed_total else None
+            ),
+        }
+    return {
+        "scope": "run",
+        "denominator_contract": (
+            "observed run-scoped incident events only; overlapping catch sites "
+            "may count the same logical failure; not HTTP attempts, requests "
+            "or distinct failed documents"
+        ),
+        "focus_family": family,
+        "observed_run_incident_events": observed_total,
+        "families": selected,
+        "sample_advisory": (
+            "no observed run-scoped incident events; share is unknown"
+            if not observed_total else
+            f"small observed incident denominator (n={observed_total}); "
+            "interpret shares cautiously"
+            if observed_total < LOW_SAMPLE_ADVISORY_THRESHOLD else ""
+        ),
+    }
+
+
+def summarize_quality_stream(
+    path: str | Path, *, incident_family: str | None = None,
+) -> dict[str, Any]:
     """Summarize one explicit log, without including document IDs or event payloads."""
+    if incident_family is not None and incident_family not in RUN_INCIDENT_CODES:
+        raise ValueError("unknown run-scoped incident family")
     source = Path(path)
     if source.is_symlink():
         raise ValueError("refusing a symlink quality event stream")
@@ -52,12 +110,15 @@ def summarize_quality_stream(path: str | Path) -> dict[str, Any]:
                   "no_valid_events" if not stats["events"] else "observed"),
         "skipped_corrupt_complete_lines": corrupt_lines,
         "metrics": stats,
+        "incident_diagnostics": run_incident_diagnostics(stats, family=incident_family),
         "sample_advisories": sample_notes,
         "incomplete_or_concurrent_append": incomplete,
     }
 
 
-def report_for_audit(audit_path: str | Path) -> dict[str, Any]:
+def report_for_audit(
+    audit_path: str | Path, *, incident_family: str | None = None,
+) -> dict[str, Any]:
     """Derive the companion JSONL from the canonical LLM audit CSV filename."""
     audit = Path(audit_path)
     if audit.suffix.lower() != ".csv" or not audit.name.startswith("llm_call_audit_"):
@@ -70,11 +131,14 @@ def report_for_audit(audit_path: str | Path) -> dict[str, Any]:
         "mode": "single_run",
         "denominator_contract": "observed events only; not all processed documents",
         "confirmed_writeback_contract": "explicit sink acknowledgement only (currently ES); not ES readback",
-        "run": summarize_quality_stream(companion),
+        "run": summarize_quality_stream(companion, incident_family=incident_family),
     }
 
 
-def report_history(audit_dir: str | Path, *, limit: int = 20) -> dict[str, Any]:
+def report_history(
+    audit_dir: str | Path, *, limit: int = 20,
+    incident_family: str | None = None,
+) -> dict[str, Any]:
     """Show the latest named run streams, ordered by sortable timestamped run ID."""
     directory = Path(audit_dir)
     if not directory.is_dir():
@@ -83,12 +147,17 @@ def report_history(audit_dir: str | Path, *, limit: int = 20) -> dict[str, Any]:
         raise ValueError("refusing a symlink audit directory")
     if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 100:
         raise ValueError("limit must be an integer between 1 and 100")
+    if incident_family is not None and incident_family not in RUN_INCIDENT_CODES:
+        raise ValueError("unknown run-scoped incident family")
     candidates = sorted(
         (p for p in directory.glob(_FILE_PREFIX + "*" + _FILE_SUFFIX)
          if p.is_file() and not p.is_symlink()),
         key=lambda p: p.name, reverse=True,
     )
-    runs = [summarize_quality_stream(p) for p in candidates[:limit]]
+    runs = [
+        summarize_quality_stream(p, incident_family=incident_family)
+        for p in candidates[:limit]
+    ]
     return {
         "report_version": 1,
         "mode": "run_history",
@@ -108,12 +177,18 @@ def main(argv: list[str] | None = None) -> int:
     source.add_argument("--audit-path", type=Path, help="llm_call_audit_<run_id>.csv")
     source.add_argument("--audit-dir", type=Path, help="directory of per-run JSONL logs")
     parser.add_argument("--limit", type=int, default=20, help="history rows (1..100)")
+    parser.add_argument(
+        "--incident-family", choices=sorted(RUN_INCIDENT_CODES), default=None,
+        help="focus the run-only incident breakdown without filtering raw metrics",
+    )
     parser.add_argument("--output", type=Path, help="optional atomic JSON report output")
     args = parser.parse_args(argv)
     try:
         result = (
-            report_for_audit(args.audit_path) if args.audit_path is not None
-            else report_history(args.audit_dir, limit=args.limit)
+            report_for_audit(args.audit_path, incident_family=args.incident_family)
+            if args.audit_path is not None else report_history(
+                args.audit_dir, limit=args.limit, incident_family=args.incident_family
+            )
         )
         if args.output is not None:
             if args.output.suffix.lower() != ".json":
