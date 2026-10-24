@@ -152,6 +152,13 @@ class QualityRunTailReader:
         # corresponding archive generation change explains the rename.
         missing_known = _file_identity(active) is None and self._active_seen
         archive_identity = tuple((p.name, _file_identity(p)) for p in archives)
+        if (self._archive_identity is not None and
+                len(archive_identity) < len(self._archive_identity)):
+            # Historical retention/deletion has no trusted retirement
+            # checkpoint. Even legacy archives lacking a manifest were seen
+            # earlier in *this session*: silently dropping the last shard
+            # would make the GUI show false lower counters.
+            raise ValueError("known quality archive shard disappeared")
         ledger_identity = _file_identity(manifest_path(active))
         active_identity = _file_identity(active)
         generation_changed = (
