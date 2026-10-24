@@ -8,7 +8,8 @@ import multiprocessing as mp
 import queue as pyqueue
 import threading
 from dataclasses import dataclass
-from czjLLM.utilities.processing_quality import QualityAccumulator, QualityTailReader
+from czjLLM.utilities.processing_quality import QualityAccumulator
+from czjLLM.utilities.processing_quality_run_reader import QualityRunTailReader
 
 # 僅 Windows 啟用 GUI；其他平台回傳 None
 IS_WIN = (sys.platform == "win32")
@@ -563,10 +564,21 @@ def _enable_windows_dpi_awareness():
 
 def format_quality_summary(stats: dict) -> str:
     """Keep incompatible slice/document denominators separate in the header."""
+    status = stats.get("quality_stream_status", "")
+    if status == "unverified":
+        return "⚠️ 品質事件封存或檔案驗證異常，統計暫不可用；請檢查離線報告"
+    if status == "not_initialized":
+        return "尚未取得此次執行的品質事件"
+    advisory = {
+        "unsealed_legacy": "⚠️ 歷史封存未建立完整性驗證基準｜",
+        "degraded_corrupt_lines": "⚠️ 品質事件含損毀紀錄，統計不完整｜",
+        "incomplete_tail": "品質事件末行寫入中（僅統計完整紀錄）｜",
+    }.get(status, "")
     def percent(key, n):
         value = stats.get(key)
         return "— (樣本不足)" if value is None else f"{value:.1f}% (n={n:,})"
     return (
+        advisory +
         f"初次 JSON 不合法 {percent('slice_initial_invalid_pct', int(stats.get('slice_validation_attempts', 0)))}"
         f"  ｜  修復成功 {percent('repair_success_pct', int(stats.get('repair_attempts', 0)))}"
         f"  ｜  LLM 文件結構異常（待處理） {percent('document_schema_reject_pct', int(stats.get('documents_decided', 0)))}"
@@ -580,32 +592,45 @@ def format_quality_summary(stats: dict) -> str:
 
 
 def _quality_reader_worker(path_queue, result_queue, stop_event, poll_interval: float = 1.0):
-    """Tail the run-scoped JSONL incrementally outside the Tk thread."""
-    reader = QualityTailReader()
-    while not stop_event.is_set():
-        reset = False
+    """Reconcile sealed archives + active JSONL off the Tk event loop."""
+    reader = QualityRunTailReader()
+    last_published = None
+
+    def publish(stats):
+        nonlocal last_published
+        if stats == last_published:
+            return
         try:
             while True:
-                path = str(path_queue.get_nowait() or "")
-                reader = QualityTailReader(path)
-                reset = True
+                result_queue.get_nowait()
         except pyqueue.Empty:
             pass
         try:
-            changed, stats = reader.poll()
-            if changed or reset:
-                try:
-                    while True:
-                        result_queue.get_nowait()
-                except pyqueue.Empty:
-                    pass
-                try:
-                    result_queue.put_nowait(stats)
-                except pyqueue.Full:
-                    pass
-        except Exception:
-            # A corrupt log must not close the GUI or interrupt processing.
+            result_queue.put_nowait(stats)
+            last_published = stats
+        except pyqueue.Full:
             pass
+
+    while not stop_event.is_set():
+        try:
+            while True:
+                path = str(path_queue.get_nowait() or "")
+                reader = QualityRunTailReader(path)
+        except pyqueue.Empty:
+            pass
+        try:
+            _, stats = reader.poll()
+            # Publish even when the reader's counters did not change: after a
+            # previous integrity failure the last GUI snapshot was marked
+            # unverified, and identical restored counters must become visible.
+            # publish() deduplicates unchanged successful snapshots.
+            publish(stats)
+        except (OSError, ValueError):
+            # A failed ledger, vanished known shard or unsafe link means the
+            # whole snapshot is unknown. Never silently keep old green values.
+            unavailable = QualityAccumulator().snapshot()
+            unavailable["quality_stream_status"] = "unverified"
+            publish(unavailable)
         stop_event.wait(max(0.05, float(poll_interval)))
 
 
@@ -888,10 +913,12 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
             widget.configure(value=float(_quality_stats.get(key) or 0))
         codes = _quality_stats.get("error_codes", {}) or {}
         top = sorted(codes.items(), key=lambda pair: (-pair[1], pair[0]))[:5]
+        unusable = _quality_stats.get("quality_stream_status") == "unverified"
         quality_codes.configure(
-            text="主要錯誤（事件次數）： " + (
-                "｜".join(f"{code}: {count:,}" for code, count in top) if top else "尚無錯誤事件"
-            )
+            text=("品質事件尚無可靠統計，請檢查 JSONL 封存與 Manifest" if unusable
+                  else "主要錯誤（事件次數）： " + (
+                      "｜".join(f"{code}: {count:,}" for code, count in top)
+                      if top else "尚無錯誤事件"))
         )
 
     def _toggle_quality():

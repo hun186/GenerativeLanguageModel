@@ -138,3 +138,9 @@
 
 - Choose manual opt-in trust-on-first-use SHA-256 sidecar over automatic migration of legacy archives; avoid falsely asserting past integrity. Hash immutable numbered archives only, not concurrently growing active JSONL. Retain original append lock and no-delete rotation; write metadata via same-directory atomic replace with fsynced payload, roll back rename on publication errors where safe.
 - Verify sealed archive count and hashes both before and after offline multi-shard replay. A ledger mismatch fails closed rather than reset or inferred successful migration; retain existing strict event schema, duplicate ID and per-document recovery semantics. Explicitly distinguish self-consistency from authenticated evidence, defer signed manifests, crash recovery, automated retention and GUI continuity.
+
+
+### 2026-10-24 incremental GUI multi-segment reader policy
+
+- Rebuild one validated cumulative quality accumulator on archive/manifest/active generation changes, but tail only complete active JSONL lines during stable generations to avoid rescanning potentially large archives each GUI poll. Keep privacy-minimal and scope-correct event-id de-dup/document recovery; avoid adding slice and document percentages together.
+- Treat invalid sealed history or missing known active without documented rotation as an unavailable snapshot, **not** the previous apparently valid numbers. Report unsealed/partial/corrupt completeness warnings separately and do not change the safety boundary of manual stopped-producer rotation. Run the reader outside Tk only; defer Windows visual E2E, cryptographically anchored integrity, automatic pruning and safe online rotation.
