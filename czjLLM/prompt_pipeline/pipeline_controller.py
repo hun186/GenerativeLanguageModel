@@ -26,7 +26,7 @@ import faulthandler
 #from czjLLM.prompt_pipeline.result_handler import PromptResultHandler
 from czjLLM.prompt_pipeline.prompt_generator import generate_prompt, _render_raw_task_prompt, write_prompt_component_metrics
 from czjLLM.taskConfig import taskSetting
-from czjLLM.prompt_pipeline.llm_caller import CallLLMAPI
+from czjLLM.prompt_pipeline.llm_caller import CallLLMAPI, classify_llm_call_exception
 from czjLLM.prompt_pipeline.debug_snapshot import build_debug_snapshot
 from czjLLM.prompt_pipeline.stage_runtime import (
     ChunkStageRuntime,
@@ -2948,8 +2948,13 @@ class PromptAPIPipeline:
             # Preserve legacy caught-error return and per-request CSV audit.
             # Cooperative cancellation and synthetic mock faults are not incidents.
             if worker_failure_code and not isinstance(ex, ExecutionCancelled):
+                quality_code = (
+                    classify_llm_call_exception(ex)
+                    if worker_failure_code == "WORKER_LLM_CALL_EXCEPTION"
+                    else worker_failure_code
+                )
                 _audit_leaf_worker_phase_failure(
-                    self.audit_path, self.audit_run_id, worker_failure_code,
+                    self.audit_path, self.audit_run_id, quality_code,
                 )
             retMES = ""
             ok = False
