@@ -207,3 +207,117 @@ def test_gui_status_label_and_cap_bounds_wired():
     assert '"capacity_exceeded"' in code
     assert QualityRunTailReader.DEFAULT_MAX_EVENTS == 50_000
     assert QualityRunTailReader.DEFAULT_MAX_LINE_BYTES == 64 * 1024
+
+
+def test_stable_overbudget_sealed_archive_does_not_replay_or_rehash(tmp_path, monkeypatch):
+    """Codex P2: stable oversized runs must stay unavailable at constant poll cost."""
+    import czjLLM.utilities.processing_quality_run_reader as reader_module
+    from czjLLM.utilities.processing_quality_manifest import initialize_quality_manifest
+
+    audit = tmp_path / "llm_call_audit_20261025-cache-sealed.csv"
+    active = quality_event_path(str(audit))
+    _emit(audit)
+    _emit(audit, code="WORKER_LLM_CONNECTION_EXCEPTION")
+    rotate_quality_event_stream(audit)
+    initialize_quality_manifest(audit)
+
+    calls = {"add": 0, "verify": 0}
+    real_add = QualityAccumulator.add
+    real_verify = reader_module.verify_quality_manifest
+
+    def count_add(acc, record):
+        calls["add"] += 1
+        return real_add(acc, record)
+
+    def count_verify(*args, **kwargs):
+        calls["verify"] += 1
+        return real_verify(*args, **kwargs)
+
+    monkeypatch.setattr(QualityAccumulator, "add", count_add)
+    monkeypatch.setattr(reader_module, "verify_quality_manifest", count_verify)
+    reader = QualityRunTailReader(
+        str(active), max_events=1, max_identity_chars=1000,
+        max_line_bytes=4096,
+    )
+    with pytest.raises(QualityCapacityExceeded):
+        reader.poll()
+    initial = dict(calls)
+    assert initial["add"] == 2 and initial["verify"] >= 1
+    for _ in range(4):
+        with pytest.raises(QualityCapacityExceeded, match="remains over budget"):
+            reader.poll()
+    assert calls == initial  # no repeated replay or SHA256 verification
+    assert reader._last_report is None
+    assert reader._accumulator.snapshot()["events"] == 0
+    # Changing active file generation forces exactly one new attempt, then
+    # its new generation also stays cached while source metadata is stable.
+    _emit(audit)
+    with pytest.raises(QualityCapacityExceeded):
+        reader.poll()
+    assert calls["add"] > initial["add"]
+    revised = dict(calls)
+    with pytest.raises(QualityCapacityExceeded, match="remains over budget"):
+        reader.poll()
+    assert calls == revised
+
+
+def test_cached_overbudget_active_file_can_recover_after_rewrite(tmp_path, monkeypatch):
+    audit = tmp_path / "llm_call_audit_20261025-cache-recover.csv"
+    active = quality_event_path(str(audit))
+    _emit(audit)
+    one_event = active.read_bytes()
+    _emit(audit, code="WORKER_LLM_CONNECTION_EXCEPTION")
+    calls = {"add": 0}
+    real_add = QualityAccumulator.add
+
+    def count_add(acc, record):
+        calls["add"] += 1
+        return real_add(acc, record)
+
+    monkeypatch.setattr(QualityAccumulator, "add", count_add)
+    reader = QualityRunTailReader(
+        str(active), max_events=1, max_identity_chars=1000,
+        max_line_bytes=4096,
+    )
+    with pytest.raises(QualityCapacityExceeded):
+        reader.poll()
+    n = calls["add"]
+    for _ in range(2):
+        with pytest.raises(QualityCapacityExceeded):
+            reader.poll()
+    assert calls["add"] == n
+    # Maintenance-only replacement of this unsealed fixture creates a new
+    # metadata generation; successful stats must then be re-published.
+    active.write_bytes(one_event)
+    changed, result = reader.poll()
+    assert changed and result["quality_stream_status"] == "observed"
+    assert result["events"] == 1
+    assert calls["add"] > n
+    assert reader.poll()[0] is False
+
+
+def test_cached_capacity_failure_cannot_hide_removed_legacy_archive(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261025-cache-loss.csv"
+    active = quality_event_path(str(audit))
+    _emit(audit)
+    rotate_quality_event_stream(audit)
+    _emit(audit, code="WORKER_LLM_CONNECTION_EXCEPTION")
+    rotate_quality_event_stream(audit)
+    reader = QualityRunTailReader(
+        str(active), max_events=1, max_identity_chars=1000,
+        max_line_bytes=4096,
+    )
+    with pytest.raises(QualityCapacityExceeded):
+        reader.poll()
+    segments = list(active.parent.glob(active.name + ".seg-*"))
+    assert len(segments) == 2
+    last_segment = max(segments)
+    backup = tmp_path / "separate-backup"
+    last_segment.rename(backup)
+    try:
+        with pytest.raises(ValueError, match="known quality archive shard disappeared"):
+            reader.poll()
+    finally:
+        backup.rename(last_segment)
+    with pytest.raises(QualityCapacityExceeded, match="remains over budget"):
+        reader.poll()
