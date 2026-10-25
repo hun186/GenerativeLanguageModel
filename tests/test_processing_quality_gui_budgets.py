@@ -400,3 +400,33 @@ def test_overbudget_archive_count_survives_capacity_metadata_race(tmp_path, monk
             reader.poll()
     finally:
         backup.rename(second)
+
+
+def test_invalid_extra_sealed_archive_can_be_restored_without_sticky_shrink(tmp_path):
+    """A rejected manifest generation must not poison observed history."""
+    from czjLLM.utilities.processing_quality_manifest import initialize_quality_manifest
+
+    audit = tmp_path / "llm_call_audit_20261025-restore-sealed.csv"
+    active = quality_event_path(str(audit))
+    _emit(audit)
+    rotate_quality_event_stream(audit)
+    initialize_quality_manifest(audit)
+    reader = QualityRunTailReader(
+        str(active), max_events=10, max_identity_chars=1000,
+        max_line_bytes=4096,
+    )
+    first = reader.poll()[1]
+    assert first["quality_archive_integrity"] == "verified"
+    assert reader._observed_archive_count == 1
+    fake_second = active.with_name(active.name + ".seg-00000002")
+    fake_second.write_bytes(b'{}\\n'.replace(b'\\n', b'\n'))
+    try:
+        with pytest.raises(ValueError):
+            reader.poll()  # Ledger remains sealed for only the first shard.
+        assert reader._observed_archive_count == 1
+    finally:
+        fake_second.unlink()
+    changed, restored = reader.poll()
+    assert restored["events"] == 1
+    assert restored["quality_archive_integrity"] == "verified"
+    assert restored["quality_stream_status"] == "observed"
