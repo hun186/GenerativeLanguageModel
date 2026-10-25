@@ -72,3 +72,6 @@
 
 
 - Codex P2 for PR #233 observed pathological replay/rehash of an unchanged over-cap archive on each GUI poll. The new attempt caches unchanged failure-generation metadata and reraises unavailable status cheaply; changed metadata rechecks, and raw source files remain untouched. This optimization relies on the same bounded file metadata identity used in routine GUI polling; attacker-induced same-stat content forgery may evade immediate refresh. A complete offline report remains authoritative for sealed-history verification. Fresh Hosted CI + Codex review must validate the follow-up change before claiming closure.
+
+
+- Post-Codex findings identified two additional fail-closed history corner cases at PR #233: first over-cap read losing active existence, and concurrent mutation invalidating capacity cache plus observed archive history. Proposed fix separates persistent observed archive/active state from the retry cache and verifies that disappearance of observed active has an inode-matching new shard. Avoid recording bogus archive high-water when integrity verification itself failed, to permit a known valid sealed ledger to be restored. New regressions exist; these are **not accepted or released** until latest Hosted CI and formal re-review pass.
