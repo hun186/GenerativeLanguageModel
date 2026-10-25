@@ -79,6 +79,11 @@ class QualityRunTailReader:
         # replayed on each background poll. Cache ONLY its observed metadata
         # generation and keep raising fail-closed until something changes.
         self._capacity_generation: tuple | None = None
+        # Observed filesystem history is NOT a part of the evictable capacity
+        # cache: a concurrent writer can invalidate that cache mid-replay.
+        # Still refuse silently shrinking known legacy archives / active file.
+        self._observed_archive_count = 0
+        self._observed_active_identity: tuple | None = None
         self._last_report = None
 
     def _new_accumulator(self) -> QualityAccumulator:
@@ -179,31 +184,36 @@ class QualityRunTailReader:
             return changed, result
         active = Path(self.path)
         archives = quality_stream_segments(active)
-        # An archive-only run is a valid, stable state. Only a previously
-        # observed *active* generation disappearing is suspicious if no
-        # corresponding archive generation change explains the rename.
-        missing_known = _file_identity(active) is None and self._active_seen
         archive_identity = tuple((p.name, _file_identity(p)) for p in archives)
-        # Even if a previous attempt exceeded the cap before it could commit
-        # an accumulator, the session has already seen these archives. Their
-        # unexplained deletion must never turn an unavailable run "healthy".
-        known_archive_count = max(
-            len(self._archive_identity or ()),
-            len(self._capacity_generation[0])
-            if self._capacity_generation is not None else 0,
-        )
-        if len(archive_identity) < known_archive_count:
+        # Retain the maximum known archive generation even if a capacity
+        # failure's cache is invalidated by a concurrent metadata change.
+        prior_archives = self._observed_archive_count
+        if len(archive_identity) < prior_archives:
             raise ValueError("known quality archive shard disappeared")
         ledger_identity = _file_identity(manifest_path(active))
         active_identity = _file_identity(active)
+        if self._observed_active_identity is not None and active_identity is None:
+            # A known active stream may disappear only when a newly numbered
+            # archive explains its rename. This matters before the *first*
+            # successful rebuild: _active_reader/_active_seen may be unset.
+            new_segments = archive_identity[prior_archives:]
+            if not any(
+                identity is not None
+                and identity[:2] == self._observed_active_identity[:2]
+                and identity[2] >= self._observed_active_identity[2]
+                for _, identity in new_segments
+            ):
+                raise ValueError("known quality active stream disappeared without rotation")
+            self._observed_active_identity = None
+        if active_identity is not None:
+            self._observed_active_identity = active_identity
+        self._observed_archive_count = len(archive_identity)
         generation = (archive_identity, ledger_identity, active_identity)
         generation_changed = (
             self._active_reader is None or
             self._archive_identity != archive_identity or
             self._ledger_identity != ledger_identity
         )
-        if missing_known and not generation_changed:
-            raise ValueError("known quality active stream disappeared without rotation")
         if generation == self._capacity_generation:
             # Preserve the worker's capacity_exceeded warning without another
             # O(number_of_events) replay or manifest hash on each GUI poll.
