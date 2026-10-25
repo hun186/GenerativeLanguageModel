@@ -46,18 +46,42 @@ class QualityRunTailReader:
     initial load or when archive or ledger metadata changes.
     """
 
-    def __init__(self, path: str = ""):
+    # Conservative per-run GUI thresholds. They bound retained cardinality
+    # and per-line decoding, NOT total Python RSS. Offline reporting remains
+    # uncapped and is the operator path for oversized runs.
+    DEFAULT_MAX_EVENTS = 50_000
+    DEFAULT_MAX_IDENTITY_CHARS = 4_000_000
+    DEFAULT_MAX_LINE_BYTES = 64 * 1024
+
+    def __init__(self, path: str = "", *,
+                 max_events: int = DEFAULT_MAX_EVENTS,
+                 max_identity_chars: int = DEFAULT_MAX_IDENTITY_CHARS,
+                 max_line_bytes: int = DEFAULT_MAX_LINE_BYTES):
+        for name, value in (("max_events", max_events),
+                            ("max_identity_chars", max_identity_chars),
+                            ("max_line_bytes", max_line_bytes)):
+            if type(value) is not int or value < 1:
+                raise ValueError("invalid GUI quality budget: " + name)
+        self._max_events = max_events
+        self._max_identity_chars = max_identity_chars
+        self._max_line_bytes = max_line_bytes
         self.path = str(path or "")
         self._archive_identity = None
         self._ledger_identity = None
         self._active_reader: QualityTailReader | None = None
-        self._accumulator = QualityAccumulator()
+        self._accumulator = self._new_accumulator()
         self._integrity = {"status": "not_applicable", "sealed_segments": 0}
         self._segments = 0
         self._archive_corrupt = 0
         self._seen_source = False
         self._active_seen = False
         self._last_report = None
+
+    def _new_accumulator(self) -> QualityAccumulator:
+        return QualityAccumulator(
+            max_events=self._max_events,
+            max_identity_chars=self._max_identity_chars,
+        )
 
     def _status_snapshot(self, *, active_incomplete: bool = False) -> dict:
         data = self._accumulator.snapshot()
@@ -106,15 +130,19 @@ class QualityRunTailReader:
         # Only replace previous metrics after *all* shard reads have succeeded;
         # an inconsistent sealed ledger must not be displayed as valid zeros.
         integrity = verify_quality_manifest(active, archives)
-        acc = QualityAccumulator()
+        acc = self._new_accumulator()
         corrupt = 0
         for shard in archives:
-            reader = QualityTailReader(str(shard), accumulator=acc)
+            reader = QualityTailReader(
+                str(shard), accumulator=acc, max_line_bytes=self._max_line_bytes,
+            )
             reader.poll()
             if reader.offset != shard.stat().st_size:
                 raise ValueError("incomplete archived quality shard")
             corrupt += reader.skipped_corrupt_lines
-        live = QualityTailReader(str(active), accumulator=acc)
+        live = QualityTailReader(
+            str(active), accumulator=acc, max_line_bytes=self._max_line_bytes,
+        )
         if _file_identity(active) is not None:
             live.poll()
         if (tuple((p.name, _file_identity(p)) for p in archives)
