@@ -144,3 +144,9 @@
 
 - Rebuild one validated cumulative quality accumulator on archive/manifest/active generation changes, but tail only complete active JSONL lines during stable generations to avoid rescanning potentially large archives each GUI poll. Keep privacy-minimal and scope-correct event-id de-dup/document recovery; avoid adding slice and document percentages together.
 - Treat invalid sealed history or missing known active without documented rotation as an unavailable snapshot, **not** the previous apparently valid numbers. Report unsealed/partial/corrupt completeness warnings separately and do not change the safety boundary of manual stopped-producer rotation. Run the reader outside Tk only; defer Windows visual E2E, cryptographically anchored integrity, automatic pruning and safe online rotation.
+
+
+### 2026-10-25 bounded GUI event retention fail-closed policy
+
+- Avoid silently approximating document schema rates or losing dedup consistency by pruning seen event IDs and document sets. Introduce explicit optional read-side budgets enforced **before** accepted-event state mutation and before advancing JSONL offsets. GUI alone uses finite threshold defaults, reports capacity-exceeded instead of partial numbers, and keeps archived JSONL and Manifest untouched. Offline report retains the original full audit contract.
+- Bound single JSONL record length before `json.loads` in GUI readers; do not reclassify an oversized unknown event as merely a harmless invalid record. This restricts decoder spikes but is not a byte-precise process memory cap. Crash-safe bounded-memory checkpoints and guaranteed retention retirement need separate protocol and tests.
