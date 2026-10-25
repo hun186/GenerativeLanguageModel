@@ -190,3 +190,9 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 - [ ] Independent new `feat/quality-gui-memory-budgets-20261025`: GUI-only limits for unique event IDs, approximate retained identity characters and JSONL single-line reads, explicit capacity-exceeded unavailable GUI status with no event truncation, correct offset retry and archive+live shared cap. Run newest-head Hosted Linux `offline-e2e` with `tests/test_processing_quality_gui_budgets.py`, formal Codex P1/P2 Review and resolve all findings/threads, await explicit user merge approval.
 - [ ] PR #231 interrupted rotation rollback still OPEN/not merged (original exact-head Codex/PR Linux successful). Only user may authorize merge; check mergeability and current main at that time.
 - [ ] Longer term: disk-backed exact run identity state/index, restartable checkpoint and explicit manifest retirement safe enough for automatic archive pruning; Windows memory/Tk visual profiling; online rotation protocol; external trust signatures; real Ollama/ES writeback/readback. No automatic deletion in this PR.
+
+
+### 2026-10-25 PR #233 formal Codex review (P2 remediation pending)
+
+- [x] Exact-head `974418d8ea02dcffae1a5d59991616cb7b1d2d6a` Codex review completed with **one P2**, unchanged over-limit run repeatedly doing O(N) replay/hash on every GUI poll. Historical state "Review running" superseded.
+- [ ] New PR #233 branch commits: memoize unchanged over-cap archive+ledger+active stat identities, immediate capacity failure without repeated costly archive replay; invalidate on physical generation change/path change. Added sealed-archive work-count, active metadata change/recovery, legacy archive removal test. Run Hosted Linux CI at latest HEAD, reply to P2 comment and resolve thread only after verified fix, request formal Codex re-review. Require explicit user merge authorization.
