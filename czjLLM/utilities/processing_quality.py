@@ -161,9 +161,25 @@ def emit_quality_event(
     return path
 
 
+class QualityCapacityExceeded(ValueError):
+    """Exact run metrics cannot be safely retained within the GUI read budget."""
+
+
 class QualityAccumulator:
-    """Aggregate event attempts and distinct documents without mixing units."""
-    def __init__(self):
+    """Aggregate event attempts and distinct documents without mixing units.
+
+    Optional GUI-only retention budgets fail closed; default unlimited mode
+    preserves the original offline reporting contract and event semantics.
+    """
+    def __init__(self, *, max_events: int | None = None,
+                 max_identity_chars: int | None = None):
+        for name, value in (("max_events", max_events),
+                            ("max_identity_chars", max_identity_chars)):
+            if value is not None and (type(value) is not int or value < 1):
+                raise ValueError("invalid quality retention budget: " + name)
+        self._max_events = max_events
+        self._max_identity_chars = max_identity_chars
+        self._retained_identity_chars = 0
         self._event_signatures = {}
         self._codes = Counter()
         self._json_valid = 0
@@ -177,6 +193,13 @@ class QualityAccumulator:
         self._worker_phase_failures = 0
         self._schema_rejected = set()
         self._writeback_confirmed = set()
+
+    def empty_copy(self) -> "QualityAccumulator":
+        """Keep GUI safety budgets through a detected active-file reset."""
+        return QualityAccumulator(
+            max_events=self._max_events,
+            max_identity_chars=self._max_identity_chars,
+        )
 
     def add(self, record: dict) -> bool:
         if not isinstance(record, dict) or type(record.get("schema_version")) is not int:
@@ -213,7 +236,24 @@ class QualityAccumulator:
         except (TypeError, ValueError, UnicodeError, RecursionError):
             # An in-process non-JSON record is not an auditable event.
             return False
+        # Reject BEFORE mutating counters, signatures or document state.
+        # Distinct event IDs and document identities are the two principal
+        # retained-cardinality dimensions. The count is an *approximation*
+        # of identity allocations, not a claim about exact Python RSS bytes.
+        doc_id = record.get("document_id") if event.startswith("document_") else None
+        new_doc = (
+            isinstance(doc_id, str) and doc_id not in self._schema_rejected
+            and doc_id not in self._writeback_confirmed
+        )
+        growth = len(event_id) + (len(doc_id) if new_doc else 0)
+        if (self._max_events is not None and
+                len(self._event_signatures) >= self._max_events):
+            raise QualityCapacityExceeded("quality unique event budget exceeded")
+        if (self._max_identity_chars is not None and
+                self._retained_identity_chars + growth > self._max_identity_chars):
+            raise QualityCapacityExceeded("quality identity budget exceeded")
         self._event_signatures[event_id] = signature
+        self._retained_identity_chars += growth
         if event == "slice_json_validation":
             if code == "JSON_VALID":
                 self._json_valid += 1
@@ -315,7 +355,12 @@ class QualityTailReader:
     """
     _FINGERPRINT_BYTES = 512
 
-    def __init__(self, path: str = "", *, accumulator: QualityAccumulator | None = None):
+    def __init__(self, path: str = "", *, accumulator: QualityAccumulator | None = None,
+                 max_line_bytes: int | None = None):
+        if max_line_bytes is not None and (
+                type(max_line_bytes) is not int or max_line_bytes < 1):
+            raise ValueError("invalid quality JSONL line budget")
+        self._max_line_bytes = max_line_bytes
         self.path = str(path or "")
         self.offset = 0
         # Offline multi-segment replay shares one accumulator so event IDs and
@@ -328,7 +373,7 @@ class QualityTailReader:
 
     def _reset(self) -> None:
         self.offset = 0
-        self.accumulator = QualityAccumulator()
+        self.accumulator = self.accumulator.empty_copy()
         self.skipped_corrupt_lines = 0
         self._file_identity = None
         self._committed_head = b""
@@ -367,9 +412,20 @@ class QualityTailReader:
                 changed = reset
                 fp.seek(self.offset)
                 while True:
-                    line = fp.readline()
+                    # Limit the bytes of a single attacker-controlled line
+                    # before decoding / allocating a huge JSON object. The
+                    # final newline counts against this bound. An oversized
+                    # line is NOT a corrupt event to skip: exact totals are
+                    # unavailable until a separate offline inspection.
+                    line = fp.readline(
+                        self._max_line_bytes + 1
+                        if self._max_line_bytes is not None else -1
+                    )
                     if not line:
                         break
+                    if (self._max_line_bytes is not None and
+                            len(line) > self._max_line_bytes):
+                        raise QualityCapacityExceeded("quality JSONL line budget exceeded")
                     if not line.endswith(b"\n"):
                         # In-progress writer; retry the entire line next poll.
                         break
