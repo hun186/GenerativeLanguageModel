@@ -204,10 +204,9 @@ class QualityRunTailReader:
                 for _, identity in new_segments
             ):
                 raise ValueError("known quality active stream disappeared without rotation")
-            self._observed_active_identity = None
-        if active_identity is not None:
-            self._observed_active_identity = active_identity
-        self._observed_archive_count = len(archive_identity)
+            # Do not commit the acknowledged rotation just yet: an invalid
+            # manifest must still be recoverable if the operator restores
+            # the last known good archive layout.
         generation = (archive_identity, ledger_identity, active_identity)
         generation_changed = (
             self._active_reader is None or
@@ -230,6 +229,11 @@ class QualityRunTailReader:
                     # instead of losing previously archived document decisions.
                     self._rebuild(active, archives, archive_identity, ledger_identity)
         except QualityCapacityExceeded:
+            # A capacity failure is itself evidence that these input paths
+            # were present at the beginning of the attempted replay, even if
+            # metadata changes later and prevents caching the retry shortcut.
+            self._observed_archive_count = len(archive_identity)
+            self._observed_active_identity = active_identity
             # Only memoize a FAILED attempt when archive, manifest AND active
             # metadata stayed unchanged for its duration. If a writer changed
             # them mid-replay, retry fresh rather than caching a stale failure.
@@ -254,6 +258,11 @@ class QualityRunTailReader:
                 raise ValueError("quality active generation changed during polling")
             incomplete = current[2] > self._active_reader.offset
         result = self._status_snapshot(active_incomplete=incomplete)
+        # Commit observed history only for a successful read or a definite
+        # capacity exceed, not for an invalid manifest/symlink. Otherwise a
+        # temporary corrupt extra shard would block restoration forever.
+        self._observed_archive_count = len(archive_identity)
+        self._observed_active_identity = active_identity
         changed = result != self._last_report
         self._last_report = result
         return changed, result
