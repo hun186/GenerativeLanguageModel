@@ -149,3 +149,8 @@
 ### 2026-10-25 unchanged over-budget GUI run polling
 
 - `QualityRunTailReader.poll()` keeps a small `_capacity_generation` (archive file stat identities, Manifest stat identity, active stat identity) when `QualityCapacityExceeded` occurs and the metadata remains unchanged across the failed read. Stable, failed generation yields immediate capacity error on subsequent polls; no archive hash or expensive event replay occurs. When metadata changes, reconstruction is retried, and successful stats clear the capacity marker. Once the reader observed archive count, subsequent unexplained historical shrink also fails closed, even if the initial rebuild did not finish. The worker still publishes an unavailable, privacy-minimal capacity warning.
+
+
+### 2026-10-25 capacity retry state vs established filesystem history
+
+- `_capacity_generation` is evictable metadata cache used solely to avoid expensive repeated failed replay. Separately, `_observed_archive_count` and `_observed_active_identity` retain evidence of previously seen historical files even if a metadata race invalidates the capacity shortcut. When a formerly present active disappears, a new canonical archive must preserve its device/inode identity with nondecreasing size to count as a safe rotation; otherwise status is unavailable. Commit these observed-history fields on successful read or definite over-budget failure, not on malformed/invalid archived or manifest generations, so repairing a temporary invalid extra shard remains possible.
