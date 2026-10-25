@@ -321,3 +321,82 @@ def test_cached_capacity_failure_cannot_hide_removed_legacy_archive(tmp_path):
         backup.rename(last_segment)
     with pytest.raises(QualityCapacityExceeded, match="remains over budget"):
         reader.poll()
+
+
+def test_initial_overbudget_observed_active_disappears_without_rotation(tmp_path):
+    """Codex P2: first failed rebuild still proves an active file existed."""
+    audit = tmp_path / "llm_call_audit_20261025-active-loss.csv"
+    active = quality_event_path(str(audit))
+    _emit(audit)
+    rotate_quality_event_stream(audit)
+    _emit(audit, code="WORKER_LLM_CONNECTION_EXCEPTION")
+    reader = QualityRunTailReader(
+        str(active), max_events=1, max_identity_chars=1000,
+        max_line_bytes=4096,
+    )
+    with pytest.raises(QualityCapacityExceeded):
+        reader.poll()
+    assert reader._observed_active_identity is not None
+    active.unlink()
+    with pytest.raises(ValueError, match="active stream disappeared"):
+        reader.poll()
+
+
+def test_overbudget_active_can_disappear_after_real_archive_rename(tmp_path):
+    """A legitimate rename must not be confused with data loss."""
+    audit = tmp_path / "llm_call_audit_20261025-active-rotate.csv"
+    active = quality_event_path(str(audit))
+    _emit(audit)
+    rotate_quality_event_stream(audit)
+    _emit(audit, code="WORKER_LLM_CONNECTION_EXCEPTION")
+    reader = QualityRunTailReader(
+        str(active), max_events=1, max_identity_chars=1000,
+        max_line_bytes=4096,
+    )
+    with pytest.raises(QualityCapacityExceeded):
+        reader.poll()
+    assert reader._observed_active_identity is not None
+    rotate_quality_event_stream(audit)
+    with pytest.raises(QualityCapacityExceeded):
+        reader.poll()  # Still oversized, but normal archival rename is valid.
+    assert reader._observed_active_identity is None
+    with pytest.raises(QualityCapacityExceeded, match="remains over budget"):
+        reader.poll()
+
+
+def test_overbudget_archive_count_survives_capacity_metadata_race(tmp_path, monkeypatch):
+    """Codex P2: invalidated retry cache must NOT forget seen archive count."""
+    audit = tmp_path / "llm_call_audit_20261025-raced-shards.csv"
+    active = quality_event_path(str(audit))
+    _emit(audit)
+    rotate_quality_event_stream(audit)
+    _emit(audit, code="WORKER_LLM_CONNECTION_EXCEPTION")
+    rotate_quality_event_stream(audit)
+    real_add = QualityAccumulator.add
+    calls = {"count": 0}
+
+    def race_on_second_add(acc, record):
+        calls["count"] += 1
+        if calls["count"] == 2:
+            # Mimics concurrent active creation while historic replay runs.
+            # The over-cap marker must be discarded, not the observed history.
+            active.write_bytes(b"")
+        return real_add(acc, record)
+
+    monkeypatch.setattr(QualityAccumulator, "add", race_on_second_add)
+    reader = QualityRunTailReader(
+        str(active), max_events=1, max_identity_chars=1000,
+        max_line_bytes=4096,
+    )
+    with pytest.raises(QualityCapacityExceeded):
+        reader.poll()
+    assert reader._capacity_generation is None
+    assert reader._observed_archive_count == 2
+    second = active.with_name(active.name + ".seg-00000002")
+    backup = tmp_path / "outside-archives"
+    second.rename(backup)
+    try:
+        with pytest.raises(ValueError, match="known quality archive shard disappeared"):
+            reader.poll()
+    finally:
+        backup.rename(second)
