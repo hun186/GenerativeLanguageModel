@@ -419,7 +419,7 @@ def test_invalid_extra_sealed_archive_can_be_restored_without_sticky_shrink(tmp_
     assert first["quality_archive_integrity"] == "verified"
     assert reader._observed_archive_count == 1
     fake_second = active.with_name(active.name + ".seg-00000002")
-    fake_second.write_bytes(b'{}\\n'.replace(b'\\n', b'\n'))
+    fake_second.write_bytes(b'{}\n')
     try:
         with pytest.raises(ValueError):
             reader.poll()  # Ledger remains sealed for only the first shard.
