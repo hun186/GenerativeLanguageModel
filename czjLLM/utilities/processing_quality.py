@@ -429,7 +429,11 @@ class QualityTailReader:
                     if not line.endswith(b"\n"):
                         # In-progress writer; retry the entire line next poll.
                         break
-                    self.offset = fp.tell()
+                    # Commit byte offsets only *after* the record has been
+                    # consumed. An over-budget event raises before mutating
+                    # metrics and must be retried/fail-closed on future polls,
+                    # never skipped as though it were accepted.
+                    next_offset = fp.tell()
                     try:
                         parsed = json.loads(
                             line.decode("utf-8"),
@@ -439,6 +443,7 @@ class QualityTailReader:
                         # A deeply nested complete line is corrupt input, not
                         # a reason to abort polling or lose all later events.
                         self.skipped_corrupt_lines += 1
+                        self.offset = next_offset
                         continue
                     if self.accumulator.add(parsed):
                         changed = True
@@ -446,6 +451,7 @@ class QualityTailReader:
                         # Syntactically valid JSON can still be unsupported
                         # as a quality event (schema, missing ID, bad code).
                         self.skipped_corrupt_lines += 1
+                    self.offset = next_offset
                 self._file_identity = identity
                 self._committed_head, self._committed_tail = self._fingerprints(
                     fp, self.offset)
