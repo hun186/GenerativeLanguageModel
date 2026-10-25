@@ -196,3 +196,9 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 
 - [x] Exact-head `974418d8ea02dcffae1a5d59991616cb7b1d2d6a` Codex review completed with **one P2**, unchanged over-limit run repeatedly doing O(N) replay/hash on every GUI poll. Historical state "Review running" superseded.
 - [ ] New PR #233 branch commits: memoize unchanged over-cap archive+ledger+active stat identities, immediate capacity failure without repeated costly archive replay; invalidate on physical generation change/path change. Added sealed-archive work-count, active metadata change/recovery, legacy archive removal test. Run Hosted Linux CI at latest HEAD, reply to P2 comment and resolve thread only after verified fix, request formal Codex re-review. Require explicit user merge authorization.
+
+
+### 2026-10-25 PR #233 further P2 findings
+
+- [x] Second formal Codex review of `82cc48f...` completed with **two new P2**: first-load active disappearance silently reducing legacy counters, and lost archive count when metadata raced an over-budget replay. New commits persist observed archive/active history independently of the capacity retry marker, only after successful or definitely over-budget read; active disappearance must be explained by matching new numbered shard. Added targeted actual-file tests, including manifest recovery from a temporary invalid extra shard.
+- [ ] Complete exact-head Hosted Linux offline-e2e and fresh formal Codex review, reply to and resolve all three review threads only after correction verified. PR #233 must remain OPEN until user explicitly approves merge.
