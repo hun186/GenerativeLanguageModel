@@ -16,7 +16,7 @@ from pathlib import Path
 import stat
 
 from czjLLM.utilities.processing_quality import (
-    QualityAccumulator, QualityTailReader,
+    QualityAccumulator, QualityCapacityExceeded, QualityTailReader,
 )
 from czjLLM.utilities.processing_quality_manifest import (
     manifest_path, verify_quality_manifest,
@@ -75,6 +75,10 @@ class QualityRunTailReader:
         self._archive_corrupt = 0
         self._seen_source = False
         self._active_seen = False
+        # A source that already exceeds the GUI budget must not be rehashed /
+        # replayed on each background poll. Cache ONLY its observed metadata
+        # generation and keep raising fail-closed until something changes.
+        self._capacity_generation: tuple | None = None
         self._last_report = None
 
     def _new_accumulator(self) -> QualityAccumulator:
@@ -180,15 +184,19 @@ class QualityRunTailReader:
         # corresponding archive generation change explains the rename.
         missing_known = _file_identity(active) is None and self._active_seen
         archive_identity = tuple((p.name, _file_identity(p)) for p in archives)
-        if (self._archive_identity is not None and
-                len(archive_identity) < len(self._archive_identity)):
-            # Historical retention/deletion has no trusted retirement
-            # checkpoint. Even legacy archives lacking a manifest were seen
-            # earlier in *this session*: silently dropping the last shard
-            # would make the GUI show false lower counters.
+        # Even if a previous attempt exceeded the cap before it could commit
+        # an accumulator, the session has already seen these archives. Their
+        # unexplained deletion must never turn an unavailable run "healthy".
+        known_archive_count = max(
+            len(self._archive_identity or ()),
+            len(self._capacity_generation[0])
+            if self._capacity_generation is not None else 0,
+        )
+        if len(archive_identity) < known_archive_count:
             raise ValueError("known quality archive shard disappeared")
         ledger_identity = _file_identity(manifest_path(active))
         active_identity = _file_identity(active)
+        generation = (archive_identity, ledger_identity, active_identity)
         generation_changed = (
             self._active_reader is None or
             self._archive_identity != archive_identity or
@@ -196,17 +204,39 @@ class QualityRunTailReader:
         )
         if missing_known and not generation_changed:
             raise ValueError("known quality active stream disappeared without rotation")
-        if generation_changed or self._active_replaced(active, active_identity):
-            self._rebuild(active, archives, archive_identity, ledger_identity)
-        elif active_identity is not None:
-            self._active_reader.poll()
-            self._active_seen = True
-            self._seen_source = True
-            if self._active_reader.accumulator is not self._accumulator:
-                # An in-flight truncate/rewrite was detected by the underlying
-                # tail reader. Rebuild from archives and current active instead
-                # of forgetting previously archived document decisions.
+        if generation == self._capacity_generation:
+            # Preserve the worker's capacity_exceeded warning without another
+            # O(number_of_events) replay or manifest hash on each GUI poll.
+            raise QualityCapacityExceeded("quality GUI source remains over budget")
+        try:
+            if generation_changed or self._active_replaced(active, active_identity):
                 self._rebuild(active, archives, archive_identity, ledger_identity)
+            elif active_identity is not None:
+                self._active_reader.poll()
+                self._active_seen = True
+                self._seen_source = True
+                if self._active_reader.accumulator is not self._accumulator:
+                    # In-flight truncate/rewrite: rebuild from all segments
+                    # instead of losing previously archived document decisions.
+                    self._rebuild(active, archives, archive_identity, ledger_identity)
+        except QualityCapacityExceeded:
+            # Only memoize a FAILED attempt when archive, manifest AND active
+            # metadata stayed unchanged for its duration. If a writer changed
+            # them mid-replay, retry fresh rather than caching a stale failure.
+            try:
+                after_archives = quality_stream_segments(active)
+                after_generation = (
+                    tuple((p.name, _file_identity(p)) for p in after_archives),
+                    _file_identity(manifest_path(active)),
+                    _file_identity(active),
+                )
+                self._capacity_generation = (
+                    generation if after_generation == generation else None
+                )
+            except (OSError, ValueError):
+                self._capacity_generation = None
+            raise
+        self._capacity_generation = None
         incomplete = False
         if active_identity is not None and self._active_reader is not None:
             current = _file_identity(active)
