@@ -80,3 +80,8 @@
 
 - Temporary SQLite stores *raw* event/document identity keys during one offline report. Restrict to trusted local OS account/disk and protect swap/backups; abnormal process kill or OS crash may leave residual bytes. Physical SQLite spill reduces Python identity-map growth but **is not** an absolute RSS bound; single-line JSON decoding, SQLite pager/cache and other processing still allocate memory.
 - Spilling identities may increase disk usage and processing latency on large reports. No persistent/restartable checkpoint, source manifest binding, safe shard retirement, online rotation or Windows performance testing. Hosted Linux CI and Codex acceptance still pending; do not claim released.
+
+### 2026-10-27 PR #234 first formal Codex P2 findings (remediation awaiting acceptance)
+
+- Initial temporary SQLite implementation could leak sensitive local temporary paths through `TemporaryDirectory()` creation outside the sanitizer or `cleanup()` throwing an OSError. Remediation translates both to constant path-free ValueError and keeps cleanup best-effort; forced termination still may leave index remnants.
+- JSON-escaped lone surrogate event/document IDs were originally accepted by `json.loads` but could fail on SQLite UTF-8 membership lookup before the old `json.dumps(... ensure_ascii=False).encode("utf-8")` rejection. Remediation returns membership false for unencodable event IDs, retaining old bad-line classification and continuation. **Exact-head Hosted regressions and formal Codex re-review are pending.**
