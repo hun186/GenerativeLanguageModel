@@ -132,3 +132,89 @@ def test_disk_backed_fail_closed_on_invalid_archive_and_no_sqlite_residue(tmp_pa
     with pytest.raises(ValueError):
         report_for_audit(audit, disk_backed=True)
     assert list(tmp_path.glob("czjllm-quality-*")) == []
+
+
+def test_unpaired_unicode_event_and_document_ids_match_default_reader(tmp_path):
+    """A JSON escaped surrogate parses but cannot become a UTF-8 signature."""
+    audit = tmp_path / "llm_call_audit_20261027-surrogate.csv"
+    active = quality_event_path(str(audit))
+    invalid_event = {
+        "schema_version": 1, "event_id": "\\ud800",
+        "event": "slice_json_validation", "code": "JSON_VALID",
+    }
+    invalid_document = {
+        "schema_version": 1, "event_id": "bad-document",
+        "event": "document_schema_rejected", "code": "SCHEMA_OTHER",
+        "document_id": "\\udfff",
+    }
+    valid = {
+        "schema_version": 1, "event_id": "accepted",
+        "event": "slice_json_validation", "code": "JSON_VALID",
+    }
+    active.write_text(
+        "".join(json.dumps(record, ensure_ascii=True) + "\\n"
+                for record in (invalid_event, invalid_document, valid)),
+        encoding="utf-8",
+    )
+    expected = summarize_quality_stream(active)
+    actual = summarize_quality_stream(active, disk_backed=True)
+    assert actual == expected
+    assert actual["metrics"]["events"] == 1
+    assert actual["skipped_corrupt_complete_lines"] == 2
+    assert actual["state"] == "degraded_corrupt_lines"
+    with DiskBackedQualityAccumulator() as accumulator:
+        # Neither add() nor duplicate membership may fail Unicode encoding.
+        assert not accumulator.add(invalid_event)
+        assert not accumulator.is_identical_accepted_event(invalid_event)
+        assert accumulator.add(valid)
+        assert not accumulator.is_identical_accepted_event(invalid_event)
+
+
+def test_private_temp_directory_create_failure_has_fixed_error(monkeypatch):
+    import czjLLM.utilities.processing_quality_disk_spill as spill
+
+    secret = "/restricted/private-user/session-cred/identity.sqlite3"
+
+    def deny_creation(*args, **kwargs):
+        raise PermissionError("private temp directory access denied: " + secret)
+
+    monkeypatch.setattr(spill.tempfile, "TemporaryDirectory", deny_creation)
+    with pytest.raises(ValueError, match="temporary quality identity index unavailable") as error:
+        spill.DiskBackedQualityAccumulator()
+    assert secret not in str(error.value)
+
+
+def test_private_temp_cleanup_failure_has_fixed_error_and_attempts_cleanup():
+    secret = "/restricted/private-user/session-cred/identity.sqlite3"
+    accumulator = DiskBackedQualityAccumulator()
+    directory = Path(accumulator._tmp.name)
+    real_cleanup = accumulator._tmp.cleanup
+    attempted = []
+
+    def failing_cleanup():
+        attempted.append(True)
+        real_cleanup()
+        raise PermissionError("private temporary directory cleanup failed: " + secret)
+
+    accumulator._tmp.cleanup = failing_cleanup
+    with pytest.raises(ValueError, match="temporary quality identity index unavailable") as error:
+        accumulator.close()
+    assert attempted == [True]
+    assert secret not in str(error.value)
+    assert not directory.exists()
+    accumulator.close()  # idempotent even after failed cleanup notification
+
+
+def test_cleanup_failure_does_not_mask_original_sanitized_sqlite_error():
+    secret = "/restricted/private-user/session-cred/identity.sqlite3"
+    with pytest.raises(ValueError, match="temporary quality identity index unavailable") as error:
+        with DiskBackedQualityAccumulator() as accumulator:
+            real_cleanup = accumulator._tmp.cleanup
+
+            def failing_cleanup():
+                real_cleanup()
+                raise OSError("private cleanup path: " + secret)
+
+            accumulator._tmp.cleanup = failing_cleanup
+            raise ValueError("temporary quality identity index unavailable")
+    assert secret not in str(error.value)
