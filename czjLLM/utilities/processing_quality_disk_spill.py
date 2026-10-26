@@ -19,7 +19,7 @@ def _execute(connection: sqlite3.Connection, query: str, parameters=()):
     """Prevent private temporary paths/identities leaking into CLI errors."""
     try:
         return connection.execute(query, parameters)
-    except sqlite3.Error:
+    except (sqlite3.Error, UnicodeError):
         raise ValueError("temporary quality identity index unavailable") from None
 
 
@@ -28,6 +28,14 @@ class _Signatures:
         self._db = connection
 
     def __contains__(self, event_id: str) -> bool:
+        # Python dict membership accepts unpaired surrogates; the original
+        # accumulator then rejects them when UTF-8 hashing the JSON payload.
+        # SQLite TEXT binding raises before that validation unless membership
+        # treats an unencodable ID as unseen (and lets hashing reject it).
+        try:
+            event_id.encode("utf-8")
+        except UnicodeEncodeError:
+            return False
         return _execute(
             self._db, "SELECT 1 FROM signatures WHERE id=?", (event_id,)
         ).fetchone() is not None
@@ -84,9 +92,12 @@ class DiskBackedQualityAccumulator(QualityAccumulator):
 
     def __init__(self):
         super().__init__()
-        self._tmp = tempfile.TemporaryDirectory(prefix="czjllm-quality-")
+        self._tmp = None
         self._db = None
         try:
+            # Construction and eventual cleanup can raise path-bearing OSError.
+            # They belong inside the same sanitized resource boundary.
+            self._tmp = tempfile.TemporaryDirectory(prefix="czjllm-quality-")
             db_path = Path(self._tmp.name) / "identities.sqlite3"
             fd = os.open(db_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             os.close(fd)
@@ -102,22 +113,43 @@ class DiskBackedQualityAccumulator(QualityAccumulator):
             self._schema_rejected = _Identities(self._db, "rejected")
             self._writeback_confirmed = _Identities(self._db, "confirmed")
         except (OSError, sqlite3.Error, ValueError):
-            self.close()
+            try:
+                self.close()
+            except ValueError:
+                # Cleanup failures must never override the sanitized
+                # initialization error, but all cleanup is still attempted.
+                pass
             raise ValueError("temporary quality identity index unavailable") from None
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.close()
+        try:
+            self.close()
+        except ValueError:
+            if exc_type is None:
+                raise
+            # Keep the primary exception (e.g. a previously sanitized
+            # database error) rather than replacing it with cleanup failure.
+        return False
 
     def close(self):
-        if self._db is not None:
-            self._db.close()
-            self._db = None
-        if self._tmp is not None:
-            self._tmp.cleanup()
-            self._tmp = None
+        db, self._db = self._db, None
+        tmp, self._tmp = self._tmp, None
+        failed = False
+        if db is not None:
+            try:
+                db.close()
+            except (sqlite3.Error, OSError):
+                failed = True
+        if tmp is not None:
+            try:
+                tmp.cleanup()
+            except OSError:
+                failed = True
+        if failed:
+            raise ValueError("temporary quality identity index unavailable") from None
 
     def empty_copy(self):
         # A source that changed beneath a one-shot offline report must never
