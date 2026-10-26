@@ -210,3 +210,14 @@
 
 - `QualityRunTailReader(path).poll() -> (changed:bool, stats:dict)` reuses all `QualityAccumulator.snapshot()` keys, plus `quality_stream_status` (observed/not_initialized/unsealed_legacy/incomplete_tail/degraded_corrupt_lines), `quality_archived_segments:int`, `quality_archive_integrity:string` (verified/unsealed_legacy/not_applicable), `quality_skipped_corrupt_lines:int`. The per-run reader maintains accumulated distinct document and event ID state across physical archive boundaries, and only replays full archives on actual generation changes. The meaning of fixed event percentages does not change.
 - GUI worker translates unsafe/invalid archive, active-file or manifest I/O states to aggregate-only `quality_stream_status=unverified` and an explicit unknown-statistics message; no stale prior green state, raw exception text, URLs, run IDs, source documents, payload or local paths. No change to JSONL writer event schema or `report_version=1`. No user control to trigger rotation from GUI.
+
+
+### 2026-10-25 GUI read-side safety-budget contract (new independent PR)
+
+- `QualityAccumulator(*, max_events: int|None=None, max_identity_chars: int|None=None)` and `QualityTailReader(path='', *, accumulator=None, max_line_bytes: int|None=None)` remain unlimited by default. Positive (non-bool) integer budgets may be supplied by read-side callers; crossing a budget raises `QualityCapacityExceeded(ValueError)`, without accepting the over-limit event or advancing the committed JSONL byte offset. `empty_copy()` preserves limits on an active generation reset.
+- `QualityRunTailReader(path='', *, max_events=50000, max_identity_chars=4000000, max_line_bytes=65536)` enforces the same finite budget across sealed and legacy archived segments plus active JSONL. GUI-only `quality_stream_status=capacity_exceeded` is distinct from `unverified`; GUI publishes no partial metrics on either status. No event schema, persisted file, manifest format, or offline `report_version=1` change; archived events remain losslessly available to the separate uncapped offline report.
+
+
+### 2026-10-25 unchanged GUI over-cap generation behavior
+
+- `QualityRunTailReader.poll()` may raise `QualityCapacityExceeded` immediately after metadata checks on subsequent polls of the same previously failed generation. This is intentional; its public contract continues to provide **no partial snapshot** while over-cap. Archive/Manifest/active identity changes invalidate this fast path, and switching to a new reader/path resets it. Original offline report and event output contracts unchanged.

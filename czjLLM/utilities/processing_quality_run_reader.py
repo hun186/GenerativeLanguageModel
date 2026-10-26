@@ -16,7 +16,7 @@ from pathlib import Path
 import stat
 
 from czjLLM.utilities.processing_quality import (
-    QualityAccumulator, QualityTailReader,
+    QualityAccumulator, QualityCapacityExceeded, QualityTailReader,
 )
 from czjLLM.utilities.processing_quality_manifest import (
     manifest_path, verify_quality_manifest,
@@ -46,18 +46,51 @@ class QualityRunTailReader:
     initial load or when archive or ledger metadata changes.
     """
 
-    def __init__(self, path: str = ""):
+    # Conservative per-run GUI thresholds. They bound retained cardinality
+    # and per-line decoding, NOT total Python RSS. Offline reporting remains
+    # uncapped and is the operator path for oversized runs.
+    DEFAULT_MAX_EVENTS = 50_000
+    DEFAULT_MAX_IDENTITY_CHARS = 4_000_000
+    DEFAULT_MAX_LINE_BYTES = 64 * 1024
+
+    def __init__(self, path: str = "", *,
+                 max_events: int = DEFAULT_MAX_EVENTS,
+                 max_identity_chars: int = DEFAULT_MAX_IDENTITY_CHARS,
+                 max_line_bytes: int = DEFAULT_MAX_LINE_BYTES):
+        for name, value in (("max_events", max_events),
+                            ("max_identity_chars", max_identity_chars),
+                            ("max_line_bytes", max_line_bytes)):
+            if type(value) is not int or value < 1:
+                raise ValueError("invalid GUI quality budget: " + name)
+        self._max_events = max_events
+        self._max_identity_chars = max_identity_chars
+        self._max_line_bytes = max_line_bytes
         self.path = str(path or "")
         self._archive_identity = None
         self._ledger_identity = None
         self._active_reader: QualityTailReader | None = None
-        self._accumulator = QualityAccumulator()
+        self._accumulator = self._new_accumulator()
         self._integrity = {"status": "not_applicable", "sealed_segments": 0}
         self._segments = 0
         self._archive_corrupt = 0
         self._seen_source = False
         self._active_seen = False
+        # A source that already exceeds the GUI budget must not be rehashed /
+        # replayed on each background poll. Cache ONLY its observed metadata
+        # generation and keep raising fail-closed until something changes.
+        self._capacity_generation: tuple | None = None
+        # Observed filesystem history is NOT a part of the evictable capacity
+        # cache: a concurrent writer can invalidate that cache mid-replay.
+        # Still refuse silently shrinking known legacy archives / active file.
+        self._observed_archive_count = 0
+        self._observed_active_identity: tuple | None = None
         self._last_report = None
+
+    def _new_accumulator(self) -> QualityAccumulator:
+        return QualityAccumulator(
+            max_events=self._max_events,
+            max_identity_chars=self._max_identity_chars,
+        )
 
     def _status_snapshot(self, *, active_incomplete: bool = False) -> dict:
         data = self._accumulator.snapshot()
@@ -106,15 +139,19 @@ class QualityRunTailReader:
         # Only replace previous metrics after *all* shard reads have succeeded;
         # an inconsistent sealed ledger must not be displayed as valid zeros.
         integrity = verify_quality_manifest(active, archives)
-        acc = QualityAccumulator()
+        acc = self._new_accumulator()
         corrupt = 0
         for shard in archives:
-            reader = QualityTailReader(str(shard), accumulator=acc)
+            reader = QualityTailReader(
+                str(shard), accumulator=acc, max_line_bytes=self._max_line_bytes,
+            )
             reader.poll()
             if reader.offset != shard.stat().st_size:
                 raise ValueError("incomplete archived quality shard")
             corrupt += reader.skipped_corrupt_lines
-        live = QualityTailReader(str(active), accumulator=acc)
+        live = QualityTailReader(
+            str(active), accumulator=acc, max_line_bytes=self._max_line_bytes,
+        )
         if _file_identity(active) is not None:
             live.poll()
         if (tuple((p.name, _file_identity(p)) for p in archives)
@@ -147,38 +184,73 @@ class QualityRunTailReader:
             return changed, result
         active = Path(self.path)
         archives = quality_stream_segments(active)
-        # An archive-only run is a valid, stable state. Only a previously
-        # observed *active* generation disappearing is suspicious if no
-        # corresponding archive generation change explains the rename.
-        missing_known = _file_identity(active) is None and self._active_seen
         archive_identity = tuple((p.name, _file_identity(p)) for p in archives)
-        if (self._archive_identity is not None and
-                len(archive_identity) < len(self._archive_identity)):
-            # Historical retention/deletion has no trusted retirement
-            # checkpoint. Even legacy archives lacking a manifest were seen
-            # earlier in *this session*: silently dropping the last shard
-            # would make the GUI show false lower counters.
+        # Retain the maximum known archive generation even if a capacity
+        # failure's cache is invalidated by a concurrent metadata change.
+        prior_archives = self._observed_archive_count
+        if len(archive_identity) < prior_archives:
             raise ValueError("known quality archive shard disappeared")
         ledger_identity = _file_identity(manifest_path(active))
         active_identity = _file_identity(active)
+        if self._observed_active_identity is not None and active_identity is None:
+            # A known active stream may disappear only when a newly numbered
+            # archive explains its rename. This matters before the *first*
+            # successful rebuild: _active_reader/_active_seen may be unset.
+            new_segments = archive_identity[prior_archives:]
+            if not any(
+                identity is not None
+                and identity[:2] == self._observed_active_identity[:2]
+                and identity[2] >= self._observed_active_identity[2]
+                for _, identity in new_segments
+            ):
+                raise ValueError("known quality active stream disappeared without rotation")
+            # Do not commit the acknowledged rotation just yet: an invalid
+            # manifest must still be recoverable if the operator restores
+            # the last known good archive layout.
+        generation = (archive_identity, ledger_identity, active_identity)
         generation_changed = (
             self._active_reader is None or
             self._archive_identity != archive_identity or
             self._ledger_identity != ledger_identity
         )
-        if missing_known and not generation_changed:
-            raise ValueError("known quality active stream disappeared without rotation")
-        if generation_changed or self._active_replaced(active, active_identity):
-            self._rebuild(active, archives, archive_identity, ledger_identity)
-        elif active_identity is not None:
-            self._active_reader.poll()
-            self._active_seen = True
-            self._seen_source = True
-            if self._active_reader.accumulator is not self._accumulator:
-                # An in-flight truncate/rewrite was detected by the underlying
-                # tail reader. Rebuild from archives and current active instead
-                # of forgetting previously archived document decisions.
+        if generation == self._capacity_generation:
+            # Preserve the worker's capacity_exceeded warning without another
+            # O(number_of_events) replay or manifest hash on each GUI poll.
+            raise QualityCapacityExceeded("quality GUI source remains over budget")
+        try:
+            if generation_changed or self._active_replaced(active, active_identity):
                 self._rebuild(active, archives, archive_identity, ledger_identity)
+            elif active_identity is not None:
+                self._active_reader.poll()
+                self._active_seen = True
+                self._seen_source = True
+                if self._active_reader.accumulator is not self._accumulator:
+                    # In-flight truncate/rewrite: rebuild from all segments
+                    # instead of losing previously archived document decisions.
+                    self._rebuild(active, archives, archive_identity, ledger_identity)
+        except QualityCapacityExceeded:
+            # A capacity failure is itself evidence that these input paths
+            # were present at the beginning of the attempted replay, even if
+            # metadata changes later and prevents caching the retry shortcut.
+            self._observed_archive_count = len(archive_identity)
+            self._observed_active_identity = active_identity
+            # Only memoize a FAILED attempt when archive, manifest AND active
+            # metadata stayed unchanged for its duration. If a writer changed
+            # them mid-replay, retry fresh rather than caching a stale failure.
+            try:
+                after_archives = quality_stream_segments(active)
+                after_generation = (
+                    tuple((p.name, _file_identity(p)) for p in after_archives),
+                    _file_identity(manifest_path(active)),
+                    _file_identity(active),
+                )
+                self._capacity_generation = (
+                    generation if after_generation == generation else None
+                )
+            except (OSError, ValueError):
+                self._capacity_generation = None
+            raise
+        self._capacity_generation = None
         incomplete = False
         if active_identity is not None and self._active_reader is not None:
             current = _file_identity(active)
@@ -186,6 +258,11 @@ class QualityRunTailReader:
                 raise ValueError("quality active generation changed during polling")
             incomplete = current[2] > self._active_reader.offset
         result = self._status_snapshot(active_incomplete=incomplete)
+        # Commit observed history only for a successful read or a definite
+        # capacity exceed, not for an invalid manifest/symlink. Otherwise a
+        # temporary corrupt extra shard would block restoration forever.
+        self._observed_archive_count = len(archive_identity)
+        self._observed_active_identity = active_identity
         changed = result != self._last_report
         self._last_report = result
         return changed, result

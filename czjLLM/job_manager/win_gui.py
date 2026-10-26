@@ -8,7 +8,9 @@ import multiprocessing as mp
 import queue as pyqueue
 import threading
 from dataclasses import dataclass
-from czjLLM.utilities.processing_quality import QualityAccumulator
+from czjLLM.utilities.processing_quality import (
+    QualityAccumulator, QualityCapacityExceeded,
+)
 from czjLLM.utilities.processing_quality_run_reader import QualityRunTailReader
 
 # 僅 Windows 啟用 GUI；其他平台回傳 None
@@ -567,6 +569,8 @@ def format_quality_summary(stats: dict) -> str:
     status = stats.get("quality_stream_status", "")
     if status == "unverified":
         return "⚠️ 品質事件封存或檔案驗證異常，統計暫不可用；請檢查離線報告"
+    if status == "capacity_exceeded":
+        return "⚠️ 品質事件超過 GUI 安全累計上限，統計暫不可用；請使用離線報告"
     if status == "not_initialized":
         return "尚未取得此次執行的品質事件"
     advisory = {
@@ -625,6 +629,12 @@ def _quality_reader_worker(path_queue, result_queue, stop_event, poll_interval: 
             # unverified, and identical restored counters must become visible.
             # publish() deduplicates unchanged successful snapshots.
             publish(stats)
+        except QualityCapacityExceeded:
+            # Exact counters cannot fit the GUI cardinality/line budgets.
+            # Preserve files and explicitly direct operators to offline report.
+            unavailable = QualityAccumulator().snapshot()
+            unavailable["quality_stream_status"] = "capacity_exceeded"
+            publish(unavailable)
         except (OSError, ValueError):
             # A failed ledger, vanished known shard or unsafe link means the
             # whole snapshot is unknown. Never silently keep old green values.
@@ -913,9 +923,11 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
             widget.configure(value=float(_quality_stats.get(key) or 0))
         codes = _quality_stats.get("error_codes", {}) or {}
         top = sorted(codes.items(), key=lambda pair: (-pair[1], pair[0]))[:5]
-        unusable = _quality_stats.get("quality_stream_status") == "unverified"
+        unusable = _quality_stats.get("quality_stream_status") in (
+            "unverified", "capacity_exceeded",
+        )
         quality_codes.configure(
-            text=("品質事件尚無可靠統計，請檢查 JSONL 封存與 Manifest" if unusable
+            text=("品質事件尚無可靠統計，請查閱離線報告並檢查封存狀態" if unusable
                   else "主要錯誤（事件次數）： " + (
                       "｜".join(f"{code}: {count:,}" for code, count in top)
                       if top else "尚無錯誤事件"))

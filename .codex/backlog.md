@@ -182,3 +182,23 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 - [x] PR #231 exact-head `a8711e9337b62e4b9c6ad62f37ba3e78ba4e8fea` Codex completed 0 Findings/threads; Hosted Linux `offline-e2e` #40086132477 SUCCESS. **PR remains OPEN until user explicitly approves merge**. Keep separate from GUI PR.
 - [ ] New independent `feat/quality-gui-cross-segment-continuity-20261024` from merged #230 main: GUI background reader verifies/replays archived shards, incrementally follows active tail, rebuilds on generation reset, does not double-count repeated event IDs or lose prior rejected→confirmed decisions; fails closed on invalid sealed archives with visible warning. Add `tests/test_processing_quality_gui_continuity.py` to Hosted Linux, formal exact-head Codex Review, address any P1/P2 and unresolved threads, then await explicit user merge authorization.
 - [ ] Later independent: bounded-memory checkpointing for very large run histories, true online writer-safe rotation / GUI concurrency, Windows visual smoke, safe archive retirement and retention checkpoints, recovery of dual-hardlink interruption states, signed/external manifests and real Ollama/ES readback acceptance. Do not activate archive auto-delete.
+
+
+### 2026-10-25 PR #232 merged; GUI run read safety thresholds
+
+- [x] PR #232 user-authorized merge `324148f7d747be8afbddb4c6a448d053b0255e2c`; latest-head Codex 0 Findings/threads, Linux PR offline-e2e #40092679536 SUCCESS, postmerge main Linux #40101418772 SUCCESS. All four previous P2 were fixed before merge. Old entries saying #232 pending are historical.
+- [ ] Independent new `feat/quality-gui-memory-budgets-20261025`: GUI-only limits for unique event IDs, approximate retained identity characters and JSONL single-line reads, explicit capacity-exceeded unavailable GUI status with no event truncation, correct offset retry and archive+live shared cap. Run newest-head Hosted Linux `offline-e2e` with `tests/test_processing_quality_gui_budgets.py`, formal Codex P1/P2 Review and resolve all findings/threads, await explicit user merge approval.
+- [ ] PR #231 interrupted rotation rollback still OPEN/not merged (original exact-head Codex/PR Linux successful). Only user may authorize merge; check mergeability and current main at that time.
+- [ ] Longer term: disk-backed exact run identity state/index, restartable checkpoint and explicit manifest retirement safe enough for automatic archive pruning; Windows memory/Tk visual profiling; online rotation protocol; external trust signatures; real Ollama/ES writeback/readback. No automatic deletion in this PR.
+
+
+### 2026-10-25 PR #233 formal Codex review (P2 remediation pending)
+
+- [x] Exact-head `974418d8ea02dcffae1a5d59991616cb7b1d2d6a` Codex review completed with **one P2**, unchanged over-limit run repeatedly doing O(N) replay/hash on every GUI poll. Historical state "Review running" superseded.
+- [ ] New PR #233 branch commits: memoize unchanged over-cap archive+ledger+active stat identities, immediate capacity failure without repeated costly archive replay; invalidate on physical generation change/path change. Added sealed-archive work-count, active metadata change/recovery, legacy archive removal test. Run Hosted Linux CI at latest HEAD, reply to P2 comment and resolve thread only after verified fix, request formal Codex re-review. Require explicit user merge authorization.
+
+
+### 2026-10-25 PR #233 further P2 findings
+
+- [x] Second formal Codex review of `82cc48f...` completed with **two new P2**: first-load active disappearance silently reducing legacy counters, and lost archive count when metadata raced an over-budget replay. New commits persist observed archive/active history independently of the capacity retry marker, only after successful or definitely over-budget read; active disappearance must be explained by matching new numbered shard. Added targeted actual-file tests, including manifest recovery from a temporary invalid extra shard.
+- [ ] Complete exact-head Hosted Linux offline-e2e and fresh formal Codex review, reply to and resolve all three review threads only after correction verified. PR #233 must remain OPEN until user explicitly approves merge.
