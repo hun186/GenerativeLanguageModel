@@ -139,20 +139,20 @@ def test_unpaired_unicode_event_and_document_ids_match_default_reader(tmp_path):
     audit = tmp_path / "llm_call_audit_20261027-surrogate.csv"
     active = quality_event_path(str(audit))
     invalid_event = {
-        "schema_version": 1, "event_id": "\\ud800",
+        "schema_version": 1, "event_id": "\ud800",
         "event": "slice_json_validation", "code": "JSON_VALID",
     }
     invalid_document = {
         "schema_version": 1, "event_id": "bad-document",
         "event": "document_schema_rejected", "code": "SCHEMA_OTHER",
-        "document_id": "\\udfff",
+        "document_id": "\udfff",
     }
     valid = {
         "schema_version": 1, "event_id": "accepted",
         "event": "slice_json_validation", "code": "JSON_VALID",
     }
     active.write_text(
-        "".join(json.dumps(record, ensure_ascii=True) + "\\n"
+        "".join(json.dumps(record, ensure_ascii=True) + "\n"
                 for record in (invalid_event, invalid_document, valid)),
         encoding="utf-8",
     )
