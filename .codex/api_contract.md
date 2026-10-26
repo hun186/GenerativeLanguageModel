@@ -221,3 +221,8 @@
 ### 2026-10-25 unchanged GUI over-cap generation behavior
 
 - `QualityRunTailReader.poll()` may raise `QualityCapacityExceeded` immediately after metadata checks on subsequent polls of the same previously failed generation. This is intentional; its public contract continues to provide **no partial snapshot** while over-cap. Archive/Manifest/active identity changes invalidate this fast path, and switching to a new reader/path resets it. Original offline report and event output contracts unchanged.
+
+### 2026-10-27 optional offline report SQLite identity spill (unmerged)
+
+- `summarize_quality_stream(path, *, incident_family=None, disk_backed=False)`, `report_for_audit(..., disk_backed=False)`, `report_history(..., disk_backed=False)`, and CLI `--disk-backed` enable ephemeral local SQLite exact event/document identity retention. Default False retains prior API behavior.
+- Results use the **same** `report_version=1` single/history payload, diagnostics, percentages, safety statuses and integrity validation; raw IDs and temporary DB paths must not enter the JSON report. OS-managed private temporary SQLite stores are destroyed in normal/error cleanup; no persistent data/index contract.

@@ -154,3 +154,8 @@
 ### 2026-10-25 capacity retry state vs established filesystem history
 
 - `_capacity_generation` is evictable metadata cache used solely to avoid expensive repeated failed replay. Separately, `_observed_archive_count` and `_observed_active_identity` retain evidence of previously seen historical files even if a metadata race invalidates the capacity shortcut. When a formerly present active disappears, a new canonical archive must preserve its device/inode identity with nondecreasing size to count as a safe rotation; otherwise status is unavailable. Commit these observed-history fields on successful read or definite over-budget failure, not on malformed/invalid archived or manifest generations, so repairing a temporary invalid extra shard remains possible.
+
+### 2026-10-27 optional offline SQLite temporary identity spill (unmerged)
+
+- `processing_quality_disk_spill.DiskBackedQualityAccumulator` reuses QualityAccumulator's event validation, code taxonomy and privacy-safe in-memory counters while substituting private ephemeral SQLite-backed exact event-ID/signature and rejected/confirmed document membership. Its aggregate snapshot queries pending/confirmed cardinality without materializing the full union/difference in Python RAM.
+- Only the offline report CLI opt-in `--disk-backed` constructs this backend; each single-run/history item gets a new scoped temporary index. It is closed and removed on success and exceptions, and refuses source resets rather than presenting partial history. GUI/Tk and producers keep the unchanged in-memory implementation; ledger integrity checks still surround replay. No archival mutation, retention or restart checkpoint.
