@@ -75,3 +75,8 @@
 
 
 - Post-Codex findings identified two additional fail-closed history corner cases at PR #233: first over-cap read losing active existence, and concurrent mutation invalidating capacity cache plus observed archive history. Proposed fix separates persistent observed archive/active state from the retry cache and verifies that disappearance of observed active has an inode-matching new shard. Avoid recording bogus archive high-water when integrity verification itself failed, to permit a known valid sealed ledger to be restored. New regressions exist; these are **not accepted or released** until latest Hosted CI and formal re-review pass.
+
+### 2026-10-27 offline SQLite disk-spill boundaries (unmerged)
+
+- Temporary SQLite stores *raw* event/document identity keys during one offline report. Restrict to trusted local OS account/disk and protect swap/backups; abnormal process kill or OS crash may leave residual bytes. Physical SQLite spill reduces Python identity-map growth but **is not** an absolute RSS bound; single-line JSON decoding, SQLite pager/cache and other processing still allocate memory.
+- Spilling identities may increase disk usage and processing latency on large reports. No persistent/restartable checkpoint, source manifest binding, safe shard retirement, online rotation or Windows performance testing. Hosted Linux CI and Codex acceptance still pending; do not claim released.
