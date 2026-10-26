@@ -155,3 +155,8 @@
 ### 2026-10-25 unchanged over-cap GUI poll cache
 
 - Do not repeat full JSONL/archive verification after a known `QualityCapacityExceeded` if all archived, manifest and active file-generation metadata were unchanged during the failed attempt. Memoize only the failure generation, not input content or a partial accumulator result. Continue raising a distinct unavailable capacity error; retry only when generation changes or a different run reader is created. Retain prior observed archive cardinality so unsealed shard disappearance after over-cap first load cannot be mistaken for a newly healthy smaller run. Bounded stat polling is not cryptographic authentication.
+
+### 2026-10-27 offline temporary SQLite identity spill (unmerged)
+
+- First relieve large offline report identity-map growth via an **explicit opt-in, temporary, exact SQLite** backend; do not silently change the uncapped original accumulator or the already budgeted GUI reader. Reuse existing event/code validation and aggregate counters; store exact identities rather than lossy hashes if claiming exact dedup. Keep run-history accumulators scoped to each run.
+- Prefer private short-lived OS temp files deleted in both normal and exception paths; disclose identifier-at-rest and crash-remnant risks. This is not authorization for automatic archival pruning, a durable checkpoint or an authenticated trust anchor. Those mechanisms require separate design and crash/restart tests.
