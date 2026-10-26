@@ -7,6 +7,7 @@ Results are observational, not an ES read-after-refresh or cross-sink success ga
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
 import json
 from pathlib import Path
 from typing import Any
@@ -16,6 +17,7 @@ from czjLLM.utilities.processing_quality import (
     QualityAccumulator, QualityTailReader, RUN_INCIDENT_CODES, quality_event_path,
 )
 from czjLLM.utilities.processing_quality_rotation import quality_stream_segments
+from czjLLM.utilities.processing_quality_disk_spill import DiskBackedQualityAccumulator
 from czjLLM.utilities.processing_quality_manifest import verify_quality_manifest
 
 LOW_SAMPLE_ADVISORY_THRESHOLD = 30
@@ -82,6 +84,7 @@ def run_incident_diagnostics(
 
 def summarize_quality_stream(
     path: str | Path, *, incident_family: str | None = None,
+    disk_backed: bool = False,
 ) -> dict[str, Any]:
     """Summarize one explicit log, without including document IDs or event payloads."""
     if incident_family is not None and incident_family not in RUN_INCIDENT_CODES:
@@ -104,60 +107,64 @@ def summarize_quality_stream(
 
     before_active = identity(source)
     before_archives = [identity(segment) for segment in archives]
-    accumulator = QualityAccumulator()
-    corrupt_lines = 0
-    incomplete = False
-    incomplete_archive = False
-    # The same validated accumulator preserves cross-shard event-id dedup and
-    # document writeback recovery semantics. Only this one run is aggregated.
-    for segment in archives + ([source] if source.is_file() else []):
-        reader = QualityTailReader(str(segment), accumulator=accumulator)
-        reader.poll()
-        corrupt_lines += reader.skipped_corrupt_lines
-        missing_tail = segment.stat().st_size > reader.offset
-        incomplete = incomplete or missing_tail
-        if segment != source and missing_tail:
-            incomplete_archive = True
-    # Fail closed on maintenance rotation while a report is being assembled.
-    # Concurrent ordinary appends retain their historical incomplete state.
-    if quality_stream_segments(source) != archives:
-        raise ValueError("quality segment generation changed during reporting")
-    if [identity(segment) for segment in archives] != before_archives:
-        raise ValueError("quality archived segment changed during reporting")
-    # Check again to catch a changed ledger/archive while replaying. A
-    # mismatch is a hard error, never an apparently complete summary.
-    if verify_quality_manifest(source, archives) != archive_integrity:
-        raise ValueError("quality archive ledger changed during reporting")
-    changed_during_read = identity(source) != before_active
-    incomplete = incomplete or changed_during_read
-    stats = accumulator.snapshot()
-    sample_notes = {}
-    for pct, denom in _METRIC_DENOMINATORS.items():
-        n = int(stats[denom])
-        if n == 0:
-            sample_notes[pct] = "no observed denominator; rate is unknown"
-        elif n < LOW_SAMPLE_ADVISORY_THRESHOLD:
-            sample_notes[pct] = (
-                f"small observed denominator (n={n}); interpret rate cautiously"
-            )
-    return {
-        "log_file": source.name,
-        "state": ("degraded_incomplete_archive" if incomplete_archive else
-                  "degraded_corrupt_lines" if corrupt_lines else
-                  "incomplete_tail" if incomplete else
-                  "no_valid_events" if not stats["events"] else "observed"),
-        "skipped_corrupt_complete_lines": corrupt_lines,
-        "archived_segments": len(archives),
-        "archive_integrity": archive_integrity,
-        "metrics": stats,
-        "incident_diagnostics": run_incident_diagnostics(stats, family=incident_family),
-        "sample_advisories": sample_notes,
-        "incomplete_or_concurrent_append": incomplete,
-    }
+    # Ephemeral SQLite is opt-in. The default remains entirely read-only and
+    # in-memory; the temporary index is removed even on validation failures.
+    with (DiskBackedQualityAccumulator() if disk_backed else
+          nullcontext(QualityAccumulator())) as accumulator:
+        corrupt_lines = 0
+        incomplete = False
+        incomplete_archive = False
+        # The same validated accumulator preserves cross-shard event-id dedup and
+        # document writeback recovery semantics. Only this one run is aggregated.
+        for segment in archives + ([source] if source.is_file() else []):
+            reader = QualityTailReader(str(segment), accumulator=accumulator)
+            reader.poll()
+            corrupt_lines += reader.skipped_corrupt_lines
+            missing_tail = segment.stat().st_size > reader.offset
+            incomplete = incomplete or missing_tail
+            if segment != source and missing_tail:
+                incomplete_archive = True
+        # Fail closed on maintenance rotation while a report is being assembled.
+        # Concurrent ordinary appends retain their historical incomplete state.
+        if quality_stream_segments(source) != archives:
+            raise ValueError("quality segment generation changed during reporting")
+        if [identity(segment) for segment in archives] != before_archives:
+            raise ValueError("quality archived segment changed during reporting")
+        # Check again to catch a changed ledger/archive while replaying. A
+        # mismatch is a hard error, never an apparently complete summary.
+        if verify_quality_manifest(source, archives) != archive_integrity:
+            raise ValueError("quality archive ledger changed during reporting")
+        changed_during_read = identity(source) != before_active
+        incomplete = incomplete or changed_during_read
+        stats = accumulator.snapshot()
+        sample_notes = {}
+        for pct, denom in _METRIC_DENOMINATORS.items():
+            n = int(stats[denom])
+            if n == 0:
+                sample_notes[pct] = "no observed denominator; rate is unknown"
+            elif n < LOW_SAMPLE_ADVISORY_THRESHOLD:
+                sample_notes[pct] = (
+                    f"small observed denominator (n={n}); interpret rate cautiously"
+                )
+        return {
+            "log_file": source.name,
+            "state": ("degraded_incomplete_archive" if incomplete_archive else
+                      "degraded_corrupt_lines" if corrupt_lines else
+                      "incomplete_tail" if incomplete else
+                      "no_valid_events" if not stats["events"] else "observed"),
+            "skipped_corrupt_complete_lines": corrupt_lines,
+            "archived_segments": len(archives),
+            "archive_integrity": archive_integrity,
+            "metrics": stats,
+            "incident_diagnostics": run_incident_diagnostics(stats, family=incident_family),
+            "sample_advisories": sample_notes,
+            "incomplete_or_concurrent_append": incomplete,
+        }
 
 
 def report_for_audit(
     audit_path: str | Path, *, incident_family: str | None = None,
+    disk_backed: bool = False,
 ) -> dict[str, Any]:
     """Derive the companion JSONL from the canonical LLM audit CSV filename."""
     audit = Path(audit_path)
@@ -171,13 +178,13 @@ def report_for_audit(
         "mode": "single_run",
         "denominator_contract": "observed events only; not all processed documents",
         "confirmed_writeback_contract": "explicit sink acknowledgement only (currently ES); not ES readback",
-        "run": summarize_quality_stream(companion, incident_family=incident_family),
+        "run": summarize_quality_stream(companion, incident_family=incident_family, disk_backed=disk_backed),
     }
 
 
 def report_history(
     audit_dir: str | Path, *, limit: int = 20,
-    incident_family: str | None = None,
+    incident_family: str | None = None, disk_backed: bool = False,
 ) -> dict[str, Any]:
     """Show the latest named run streams, ordered by sortable timestamped run ID."""
     directory = Path(audit_dir)
@@ -207,7 +214,7 @@ def report_history(
             discovered.add(directory / name[:-len(".manifest.json")])
     candidates = sorted(discovered, key=lambda p: p.name, reverse=True)
     runs = [
-        summarize_quality_stream(p, incident_family=incident_family)
+        summarize_quality_stream(p, incident_family=incident_family, disk_backed=disk_backed)
         for p in candidates[:limit]
     ]
     return {
@@ -233,13 +240,18 @@ def main(argv: list[str] | None = None) -> int:
         "--incident-family", choices=sorted(RUN_INCIDENT_CODES), default=None,
         help="focus the run-only incident breakdown without filtering raw metrics",
     )
+    parser.add_argument("--disk-backed", action="store_true",
+                        help="use an ephemeral local SQLite identity index to reduce retained RAM; "
+                             "requires private temporary disk space")
     parser.add_argument("--output", type=Path, help="optional atomic JSON report output")
     args = parser.parse_args(argv)
     try:
         result = (
-            report_for_audit(args.audit_path, incident_family=args.incident_family)
+            report_for_audit(args.audit_path, incident_family=args.incident_family,
+                             disk_backed=args.disk_backed)
             if args.audit_path is not None else report_history(
-                args.audit_dir, limit=args.limit, incident_family=args.incident_family
+                args.audit_dir, limit=args.limit, incident_family=args.incident_family,
+                disk_backed=args.disk_backed
             )
         )
         if args.output is not None:
