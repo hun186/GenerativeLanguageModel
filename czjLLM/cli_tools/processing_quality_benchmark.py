@@ -17,6 +17,13 @@ import time
 import tracemalloc
 from pathlib import Path
 
+from czjLLM.cli_tools import processing_quality_report as reports
+
+# resource is absent from Windows. Choose supported platforms BEFORE import,
+# instead of importing inside a try/except (AGENTS.md repository requirement).
+if sys.platform.startswith("linux") or sys.platform == "darwin":
+    import resource
+
 
 _MODES = ("memory", "sqlite")
 _MAX_REQUEST = 16 * 1024
@@ -37,7 +44,6 @@ def _worker() -> int:
         if mode not in _MODES:
             raise ValueError("invalid benchmark mode")
 
-        from czjLLM.cli_tools import processing_quality_report as reports
         temp_size = []
         if mode == "sqlite":
             # Private instrumentation in this *child process only*. Collect
@@ -70,15 +76,15 @@ def _worker() -> int:
         # On Linux ru_maxrss is KiB; on macOS it is bytes. Windows has no
         # resource.ru_maxrss, so remain explicit about unavailable RSS.
         rss = None
-        try:
-            import resource
-            units = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-            if sys.platform.startswith("linux"):
-                rss = int(units * 1024)
-            elif sys.platform == "darwin":
-                rss = int(units)
-        except (ImportError, OSError, ValueError):
-            pass
+        if sys.platform.startswith("linux") or sys.platform == "darwin":
+            try:
+                units = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+                if sys.platform.startswith("linux"):
+                    rss = int(units * 1024)
+                else:
+                    rss = int(units)
+            except (OSError, ValueError):
+                pass
 
         canonical = json.dumps(
             report, sort_keys=True, ensure_ascii=True,
@@ -210,8 +216,15 @@ def benchmark_quality_run(
     }
 
 
+class _PrivateArgumentParser(argparse.ArgumentParser):
+    """Do not reflect malformed path-valued CLI arguments to stderr."""
+
+    def error(self, _message: str) -> None:
+        self.exit(2, "quality benchmark: invalid arguments\n")
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
+    parser = _PrivateArgumentParser(
         description="Compare exact offline quality report cost without raw data output"
     )
     parser.add_argument("--audit-path", type=Path, required=True)
