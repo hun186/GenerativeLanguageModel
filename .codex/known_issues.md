@@ -37,3 +37,7 @@
 
 - Two active-contract regressions were caught despite correct full history archiving: the original single-extract source fingerprint/ordered slice/dispatch identity during partial `resume`/`smart_reset` had become archive-only, and ES strict top-level `importance` lossless five-score integer/null normalization was absent from active documents. Compact snapshots are not enough when active-only readers must maintain these correctness boundaries.
 - Both contracts and active-memory regression assertions were restored. Latest-head CI and formal Codex re-review are required before marking accepted; Windows physical smoke remains deferred.
+
+## 2026-10-27 PR #240 third Code Review P2
+
+- Original cache-aware per-request audit `cached_input_tokens`/source/stage and GUI `effective_tok_per_s_est` heuristic semantics were lost during active-memory compaction even though runtime continued to implement them. Missing provider cache metadata is unknown, not zero; same-stage stable template size is only a proxy, not proof of cache hit or isolated GPU throughput. Active contracts and regression checks restored. Latest-head CI/re-review still pending; no real Windows runner acceptance implied.
