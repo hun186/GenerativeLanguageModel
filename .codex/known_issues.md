@@ -95,3 +95,8 @@
 
 - P1 (repo rule): conditional Unix `resource` and report imports previously appeared inside try blocks. Now report import is at module level and `resource` imported only on supported Unix platforms outside try; only measurement errors are caught. Windows resource unavailability leaves RSS=null.
 - P2 (privacy): argparse's default failure text reflected accidentally supplied private paths/run names from `--repetitions` / `--timeout` / unknown positionals. New sanitized parser prints only fixed `quality benchmark: invalid arguments` and exit 2. Physical real-child tests added. Newest-head CI and Codex re-review still pending.
+
+### 2026-10-27 quality benchmark source mutation guard limitations (pending acceptance)
+
+- Prior benchmark failed closed only when the *report digest* differed, so appended malformed/corrupt input with unchanged aggregate could create misleading timing comparisons. The new guard uses metadata snapshots of active/sealed/manifest components before/after every child run; it catches ordinary writes, archive additions/removals and manifest rewrites even if the output digest is identical.
+- **Residual:** Metadata guard is not a lock, atomic snapshot, full-file content hash, or authenticated protection against hostile timestamp/inode spoofing. Producers and maintenance rotation MUST be stopped. Windows real-run behavior and GUI memory remain operator-only; Hosted Linux review/tests pending.
