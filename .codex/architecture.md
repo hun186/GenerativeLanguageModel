@@ -164,3 +164,8 @@
 
 - `czjLLM.cli_tools.processing_quality_benchmark` accepts one canonical audit CSV path and child-process repetitions. Each fresh `sys.executable -m ... --worker` subprocess reads the path and mode via bounded JSON stdin, executes existing `report_for_audit()`, hashes the *complete* canonical aggregate report, measures elapsed, tracemalloc peak and platform high-water RSS. It instruments the SQLite backend only in the private child to measure final temporary main database size immediately before cleanup.
 - Parent aggregates sample medians; a differing digest on any sample raises rather than claiming performance comparison. No raw document/event IDs, paths, payloads or temp identities leave the child; no new permanent DB or retained source. Source immutability is an operator precondition, not a cryptographic lock.
+
+### 2026-10-27 benchmark-only physical source generation guard (pending acceptance)
+
+- `processing_quality_benchmark._source_generation()` uses canonical `quality_event_path`, `quality_stream_segments` and `manifest_path` to collect bounded read-only identity/size/mtime/ctime metadata for each run component. Benchmark takes a baseline, checks before and after every isolated worker sample, and refuses to publish result when source files mutate independently of aggregate report SHA256. Internal path names never leave the benchmark summary; failures use a fixed sanitized error.
+- This metadata scan is O(number of archived shards) without reading active JSONL contents or modifying producers, persistent indexes, or archives. It is deliberately not an atomic snapshot, lock, or cryptographic authenticity proof; stopped-producer precondition remains.
