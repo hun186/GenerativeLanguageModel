@@ -1,5 +1,7 @@
 """Offline benchmark uses real quality JSONL, independent measurement children."""
 import ast
+import ctypes
+from types import SimpleNamespace
 import json
 from pathlib import Path
 import subprocess
@@ -8,6 +10,7 @@ import sys
 import pytest
 
 from czjLLM.cli_tools import processing_quality_benchmark as bench
+from czjLLM.cli_tools import processing_quality_process_memory as winmem
 from czjLLM.utilities.processing_quality import emit_quality_event, quality_event_path
 from czjLLM.utilities.processing_quality_manifest import initialize_quality_manifest
 from czjLLM.utilities.processing_quality_rotation import rotate_quality_event_stream
@@ -267,3 +270,78 @@ def test_source_generation_rejects_symlinked_active_and_manifest(tmp_path):
     ledger.symlink_to(original_ledger)
     with pytest.raises(ValueError, match="source snapshot unavailable"):
         bench.benchmark_quality_run(audit, repetitions=1)
+
+
+def test_windows_memory_probe_unavailable_outside_windows():
+    if sys.platform != "win32":
+        assert winmem.windows_peak_working_set_bytes() is None
+
+
+def test_windows_memory_probe_uses_correct_psapi_process_fields(monkeypatch):
+    """Linux CI simulates Windows API calling contract; no Windows claim."""
+    observed = []
+
+    def get_current_process():
+        return 12345
+
+    def get_memory_info(process, ptr, size):
+        assert process == 12345
+        assert size == ctypes.sizeof(winmem._ProcessMemoryCounters)
+        output = ctypes.cast(
+            ptr, ctypes.POINTER(winmem._ProcessMemoryCounters)
+        ).contents
+        assert output.cb == ctypes.sizeof(winmem._ProcessMemoryCounters)
+        output.PeakWorkingSetSize = 987654
+        observed.append("called")
+        return 1
+
+    def fake_dll(name, *, use_last_error=False):
+        assert use_last_error is True
+        if name == "kernel32":
+            return SimpleNamespace(GetCurrentProcess=get_current_process)
+        assert name == "psapi"
+        return SimpleNamespace(GetProcessMemoryInfo=get_memory_info)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(winmem.sys, "platform", "win32")
+        patch.setattr(winmem.ctypes, "WinDLL", fake_dll, raising=False)
+        assert winmem.windows_peak_working_set_bytes() == 987654
+    assert observed == ["called"]
+
+
+def test_windows_memory_probe_api_errors_are_null_and_path_free(monkeypatch):
+    secret = "/private/sensitive/quality-ids"
+
+    def broken_dll(*args, **kwargs):
+        raise OSError(secret)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(winmem.sys, "platform", "win32")
+        patch.setattr(winmem.ctypes, "WinDLL", broken_dll, raising=False)
+        assert winmem.windows_peak_working_set_bytes() is None
+
+
+def test_windows_memory_probe_failed_api_status_is_null(monkeypatch):
+    def handle():
+        return 42
+
+    def failed_info(_handle, _ptr, _size):
+        return 0
+
+    def fake_dll(name, *, use_last_error=False):
+        if name == "kernel32":
+            return SimpleNamespace(GetCurrentProcess=handle)
+        return SimpleNamespace(GetProcessMemoryInfo=failed_info)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(winmem.sys, "platform", "win32")
+        patch.setattr(winmem.ctypes, "WinDLL", fake_dll, raising=False)
+        assert winmem.windows_peak_working_set_bytes() is None
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="requires real Windows OS")
+def test_native_windows_memory_probe_real_current_process():
+    """Operator/self-hosted Windows gate: actual PSAPI current-process call."""
+    value = winmem.windows_peak_working_set_bytes()
+    assert type(value) is int
+    assert value > 0

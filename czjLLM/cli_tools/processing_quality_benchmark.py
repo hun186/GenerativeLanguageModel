@@ -19,6 +19,7 @@ import tracemalloc
 from pathlib import Path
 
 from czjLLM.cli_tools import processing_quality_report as reports
+from czjLLM.cli_tools.processing_quality_process_memory import windows_peak_working_set_bytes
 from czjLLM.utilities.processing_quality import quality_event_path
 from czjLLM.utilities.processing_quality_manifest import manifest_path
 from czjLLM.utilities.processing_quality_rotation import quality_stream_segments
@@ -77,8 +78,8 @@ def _worker() -> int:
         _current, traced_peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
 
-        # On Linux ru_maxrss is KiB; on macOS it is bytes. Windows has no
-        # resource.ru_maxrss, so remain explicit about unavailable RSS.
+        # Linux ru_maxrss is KiB, macOS is bytes; Windows PSAPI reports
+        # PeakWorkingSetSize (resident working-set high-water), not commit.
         rss = None
         if sys.platform.startswith("linux") or sys.platform == "darwin":
             try:
@@ -89,6 +90,8 @@ def _worker() -> int:
                     rss = int(units)
             except (OSError, ValueError):
                 pass
+        elif sys.platform == "win32":
+            rss = windows_peak_working_set_bytes()
 
         canonical = json.dumps(
             report, sort_keys=True, ensure_ascii=True,
@@ -263,8 +266,9 @@ def benchmark_quality_run(
         "measurements": summary,
         "measurement_notes": (
             "Fresh child process per sample; tracemalloc changes timing; "
-            "RSS is OS high-water including interpreter and libraries, "
-            "null on unsupported platforms; SQLite DB size excludes other "
+            "RSS is OS high-water including interpreter and libraries; "
+            "Windows is peak resident working set (not private commit), "
+            "null if unavailable; SQLite DB size excludes other "
             "temporary files and total bytes written; no guaranteed memory "
             "or latency savings and no live producer/ES acceptance."
         ),

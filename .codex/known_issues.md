@@ -100,3 +100,8 @@
 
 - Prior benchmark failed closed only when the *report digest* differed, so appended malformed/corrupt input with unchanged aggregate could create misleading timing comparisons. The new guard uses metadata snapshots of active/sealed/manifest components before/after every child run; it catches ordinary writes, archive additions/removals and manifest rewrites even if the output digest is identical.
 - **Residual:** Metadata guard is not a lock, atomic snapshot, full-file content hash, or authenticated protection against hostile timestamp/inode spoofing. Producers and maintenance rotation MUST be stopped. Windows real-run behavior and GUI memory remain operator-only; Hosted Linux review/tests pending.
+
+### 2026-10-27 Windows benchmark RSS support requires real operator validation
+
+- Previous benchmark returned null `peak_process_rss_bytes` on Windows; ctypes/Win32 PSAPI provider is now implemented on a new unmerged branch. Linux CI tests **simulate** Win32 API, including ABI field/pointer checks, failure and unavailable library conditions; they do not prove actual Windows DLL loading or working-set values.
+- PeakWorkingSetSize is an OS-managed high-water resident working-set counter, not private commit. It contains interpreter baseline and can be influenced by OS trimming; comparison against Unix ru_maxrss across platforms is not warranted. Windows self-hosted unavailable/queued; no native Windows physical acceptance claimed. Await latest-head Hosted Linux and formal Codex.

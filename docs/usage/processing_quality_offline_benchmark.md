@@ -30,9 +30,15 @@ stop producers and maintenance rotation before benchmarking.**
   it as unaided production throughput or a strict service SLA.
 - `median_peak_traced_python_bytes` is Python allocations traced since the
   start of the report, **not total RSS** or database pages. When supported,
-  `median_peak_process_rss_bytes` is OS high-water RSS (Linux/macOS);
-  it includes Python runtime/library baseline, so compare only on the same
-  host/build and matching workload. On unsupported systems it is `null`.
+  `median_peak_process_rss_bytes` uses OS high-water RSS on Linux/macOS;
+  on Windows it calls native PSAPI `GetProcessMemoryInfo` and reads
+  `PROCESS_MEMORY_COUNTERS.PeakWorkingSetSize` (historical peak resident
+  **working set**, not private committed memory or a hard RAM ceiling).
+  It includes interpreter/import baseline, so compare only modes on the same
+  host, Python build and workload; never compare peaks across platforms.
+  If the OS call fails, the field remains `null` rather than an inferred
+  zero. Simulated Windows API regressions run in Linux CI; real Windows
+  native/GUI physical acceptance still requires an operator run.
 - `median_sqlite_main_db_final_bytes` is the SQLite main temporary index
   size just before normal cleanup, **not cumulative bytes written, WAL,
   journal, swap, file-system cache, or total physical disk I/O**. It is `null`
@@ -67,7 +73,7 @@ producers and maintenance rotation during measurement. On change, the CLI
 fails with a generic, path-free error. It never outputs filenames, raw IDs or
 private paths.
 
-No live Ollama, Windows GUI visual/physical RSS acceptance, ES independent
-readback, automatic archived-file deletion or safe online rotation is implied
-by this probe. Merge only after latest-head Hosted Linux tests and formal Codex
+No live Ollama, Windows GUI visual acceptance, **real** Windows PSAPI
+execution acceptance, ES independent readback, automatic archived-file
+deletion or safe online rotation is implied by Linux CI on this probe. Merge only after latest-head Hosted Linux tests and formal Codex
 review, with explicit user authorization.

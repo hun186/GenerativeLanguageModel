@@ -170,3 +170,8 @@
 
 - Keep the previous full-report SHA256 parity gate and add cheap read-only bounded filesystem stat generations of exactly the quality components already used by the offline report (active, canonical shards, optional manifest). Check at baseline, before, and after every child process; reject any change without writing or printing input paths.
 - Prefer fail-closed measurement over presenting unverified speedups; still require stopped producers and honest metadata-only limitations rather than broadening to online locking, automatic retention, persistent checkpoint or user-content serialization.
+
+### 2026-10-27 benchmark native Windows memory metric without dependency (pending)
+
+- Prefer Windows `GetProcessMemoryInfo(PeakWorkingSetSize)` via stdlib ctypes/PSAPI to avoid adding psutil/native vendor dependency or copying sensitive process paths into diagnostics. Preserve existing nullable `peak_process_rss_bytes` and per-child isolation; API failure returns null, not zero or fabricated traced-RAM-equivalent value. Linux/macOS retain `resource.ru_maxrss`.
+- Label the resulting number precisely as historical Windows working-set peak, not private commit or memory boundedness proof. Simulated Linux CI cannot substitute actual Windows process acceptance. PR #231 and retention/rotation remain independent.
