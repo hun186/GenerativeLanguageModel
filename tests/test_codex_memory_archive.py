@@ -60,3 +60,41 @@ def test_active_router_reconciles_recent_accepted_main_and_open_pr():
     # No old “pending review” handoff should displace the new current focus.
     assert "Current Focus — PR #226" not in memory
     assert "Issue #211 multistage JSON writeback corrective" not in backlog
+
+
+def test_archive_checkout_uses_exact_bytes_even_with_windows_autocrlf():
+    attrs = (_ROOT / ".gitattributes").read_text(encoding="utf-8")
+    assert (
+        ".codex/archive/*.md-20261027-213700.md -text"
+        in attrs.splitlines()
+    )
+
+
+def test_current_es_multidim_and_writeback_contracts_remain_active():
+    """Compaction must not silently turn active ES safety rules into history."""
+    contract = (_ROOT / ".codex" / "api_contract.md").read_text(
+        encoding="utf-8"
+    )
+    decisions = (_ROOT / ".codex" / "decisions.md").read_text(
+        encoding="utf-8"
+    )
+    architecture = (_ROOT / ".codex" / "architecture.md").read_text(
+        encoding="utf-8"
+    )
+    for field in ("article_date_iso", "article_date_precision", "event_ids",
+                  "confirm_writeback()", "Success"):
+        assert field in contract
+    assert "source slice" in contract
+    assert "YYYY-01-01" in contract
+    assert "unknown" in contract
+    assert "acknowledgement" in decisions
+    assert "es_sink.py" in architecture
+
+
+def test_archive_integrity_is_in_active_hosted_linux_gate():
+    workflow = (
+        _ROOT / ".github" / "workflows" / "ci.yml"
+    ).read_text(encoding="utf-8")
+    start = workflow.index("  offline-e2e:")
+    end = workflow.index("  unit-linux:")
+    assert "tests/test_codex_memory_archive.py" in workflow[start:end]
