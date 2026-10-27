@@ -27,3 +27,8 @@
 ## Archived History
 
 - `.codex/archive/known_issues.md-20261027-213700.md` (exact original Git blob `f6ac56a63f63f84b74cb6b5048c88086b70b0e4b`) retains all pre-compaction historical issues, older findings, privacy/capacity caveats and previous archives. Review it only for traceability; old “PR pending” labels are not current status.
+
+## 2026-10-27 PR #240 archival compaction Review findings (remediation pending acceptance)
+
+- Initial clean Linux `offline-e2e` did **not** collect the new archive hash regression; this was flagged as P2. Also Windows Git `core.autocrlf=true` could rewrite .md archive checkout LF to CRLF, producing false blob-hash failures, and active ES bulk/date validation rules were lost (P1) even though archived. Remediation now places direct test in active Linux job, pins archive byte-preserving checkout via `-text`, restores ES date/precision pair and writeback acknowledgement semantics in active memory.
+- Windows self-hosted runners remain queued; no Windows checkout test was physically executed. Latest-head Hosted Linux CI and formal Codex re-review remain pending. Preserve original immutable archive bytes and do not claim review closed until verified.
