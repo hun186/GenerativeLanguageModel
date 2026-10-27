@@ -46,3 +46,9 @@
 - [x] First Codex exact-head `c614674644d35bcdc16ac47b685d2a00d145c0ff`: **1 P1 and 2 P2**. P1 ES publication date/precision, Event link and buffered writeback acknowledgement contracts were absent from current active memory. P2 Windows autocrlf changed archived Git blob checkout bytes; active Linux `offline-e2e` did not execute new archive tests.
 - [x] Restored concise ES contracts in `.codex/{api_contract,decisions,architecture}.md`, added `.gitattributes` `-text` for exactly the six immutable archives, included focused archive tests in Linux `offline-e2e`, expanded regression assertions.
 - [ ] Verify **remediated latest HEAD** Linux `offline-e2e`, request formal `@codex review` and confirm P1/P2 removal; reply to/resolve all three prior review threads only with corroborating CI and reviewer acceptance. Await explicit Merge instruction. PR #231 remains independent OPEN; Windows real runner acceptance remains operator-deferred.
+
+## PR #240 second formal Code Review follow-up
+
+- [x] Codex reviewed `8f780583ec5b97ee9924cdfea6edde7eb3539ce8` with **2 additional P1** (extract partial-resume original source provenance, strict ES importance score normalization). Linux `offline-e2e` #40521614397 SUCCESS and archive regression step SUCCESS; prior 3 findings not re-raised but threads still open.
+- [x] Reinstated both active contracts in `.codex/{architecture,decisions,api_contract}.md`, protected their presence by new targeted tests. All six original archive byte identities retained.
+- [ ] Verify remediated *new latest HEAD* Linux archive tests and complete Hosted Linux `offline-e2e`, request new exact-HEAD `@codex review`, address any further Findings, and resolve 5 historical Review Threads with evidence. PR #240 **must not merge without explicit user approval**; independent PR #231 remains OPEN.
