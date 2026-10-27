@@ -32,3 +32,10 @@
 - `.codex/archive/memory.md-20261027-213700.md` — identical full pre-compaction memory text, Git blob `72e0fe6912d3c19e46b2c11de4da532e24ed61fd`, including earlier archive references, PR commitments, reviews, CI evidence, P1/P2 findings/remediations and superseded handoffs.
 - The same timestamped verified-full-copy snapshot exists for `architecture.md`, `api_contract.md`, `decisions.md`, `backlog.md` and `known_issues.md`; previous archive files stay available.
 - 2026-10-27 compaction verification: direct connector created archives **before** updating active versions, then confirmed each archive Git blob SHA and exact text match its original. No original history was discarded; the later PR tests recheck immutable snapshot blob IDs and the current actionable status.
+
+## 2026-10-27 PR #240 first Codex Review P1/P2 remediation
+
+- Formal Codex review of initial PR #240 exact HEAD `c614674644d35bcdc16ac47b685d2a00d145c0ff` completed with **1 P1** (active ES multidim date/precision + ES bulk acknowledgement contract missing after compaction) and **2 P2** (Windows `core.autocrlf` corrupts checkout-byte SHA assertions; new archive test absent from active Linux `offline-e2e` job). Initial Linux offline-e2e #40517361432 SUCCESS does **not** prove the new archive test ran.
+- Remediation commits restore active ES date/precision atomic pair, Event[] referential integrity, and `confirm_writeback()` acknowledgement before Row Merger releases source/Success artifacts. Added targeted `.gitattributes` `-text` for the six immutable snapshot paths, enabled archive pytest in Linux `offline-e2e`, and added guard regressions for ES contract presence, cross-platform checkout byte stability, and CI invocation.
+- Original six archived snapshots and their Git blob hashes remain unchanged. No runtime ES code or PR #231 changed.
+- **Status:** remediation committed; verify new exact-head Linux CI, obtain *new* formal Codex Review and resolve three historical Review Threads after findings are confirmed addressed. Do not merge without explicit user approval.
