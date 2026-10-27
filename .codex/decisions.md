@@ -81,6 +81,12 @@ The following sections describe the accepted main implementation through PR #239
 ### fail closed on non-finite benchmark numbers
 - Python `json.loads` accepts NaN/Infinity extensions and can parse exponent overflow to non-finite floats despite expected JSON. Use strict `parse_constant` rejection plus `math.isfinite` on numeric worker duration; enforce native `tracemalloc` peak bytes as integral; reject a failed/non-finite parent monotonic sample. Do not publish statistics based on non-standard JSON numbers, convert missing values to zero or print child error payloads.
 - Preserve the opt-in summary schema and report-v1 behavior; serialize final output with `allow_nan=False` as defense in depth and give fixed path-free CLI errors. Source-generation and full report digest gates remain required.
+## Current ES data integrity and acknowledgement decisions
+
+- Keep `article_date_iso` and `article_date_precision` as a single consistent publication-date evidence pair from one source slice, validated strictly for null/unknown and day/month/year alignment. Never assemble a plausible-looking date/precision from separate malformed slices or infer the article date from `Event_Timeline`/`time_raw`. This protects indexing semantics from plausible but false publication dates.
+- Preserve Event[] `event_id` uniqueness and linked `event_ids` referential integrity at the strict output profile; no schema-invalid result should be promoted to ES writeback.
+- For buffered ES bulk writes, a successful queue/dispatch is not Row Merger success. Require sink `confirm_writeback()` acknowledgement before releasing source and Success artifacts; on error retain replay evidence and discard only unacknowledged queued actions. Do not confuse acknowledgement with search refresh/readback visibility. Operator must separately prove stored ES results before production bulk replay.
+
 ## Archived History
 
 - `.codex/archive/decisions.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `2fcdc099dfd3065af18402dfc8e7aed9618b9195`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
