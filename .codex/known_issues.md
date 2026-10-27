@@ -32,3 +32,8 @@
 
 - Initial clean Linux `offline-e2e` did **not** collect the new archive hash regression; this was flagged as P2. Also Windows Git `core.autocrlf=true` could rewrite .md archive checkout LF to CRLF, producing false blob-hash failures, and active ES bulk/date validation rules were lost (P1) even though archived. Remediation now places direct test in active Linux job, pins archive byte-preserving checkout via `-text`, restores ES date/precision pair and writeback acknowledgement semantics in active memory.
 - Windows self-hosted runners remain queued; no Windows checkout test was physically executed. Latest-head Hosted Linux CI and formal Codex re-review remain pending. Preserve original immutable archive bytes and do not claim review closed until verified.
+
+## 2026-10-27 PR #240 second Codex P1 safety-note (remediation pending verification)
+
+- Two active-contract regressions were caught despite correct full history archiving: the original single-extract source fingerprint/ordered slice/dispatch identity during partial `resume`/`smart_reset` had become archive-only, and ES strict top-level `importance` lossless five-score integer/null normalization was absent from active documents. Compact snapshots are not enough when active-only readers must maintain these correctness boundaries.
+- Both contracts and active-memory regression assertions were restored. Latest-head CI and formal Codex re-review are required before marking accepted; Windows physical smoke remains deferred.
