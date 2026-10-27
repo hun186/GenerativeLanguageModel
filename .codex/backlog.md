@@ -52,3 +52,9 @@
 - [x] Codex reviewed `8f780583ec5b97ee9924cdfea6edde7eb3539ce8` with **2 additional P1** (extract partial-resume original source provenance, strict ES importance score normalization). Linux `offline-e2e` #40521614397 SUCCESS and archive regression step SUCCESS; prior 3 findings not re-raised but threads still open.
 - [x] Reinstated both active contracts in `.codex/{architecture,decisions,api_contract}.md`, protected their presence by new targeted tests. All six original archive byte identities retained.
 - [ ] Verify remediated *new latest HEAD* Linux archive tests and complete Hosted Linux `offline-e2e`, request new exact-HEAD `@codex review`, address any further Findings, and resolve 5 historical Review Threads with evidence. PR #240 **must not merge without explicit user approval**; independent PR #231 remains OPEN.
+
+## PR #240 third formal review follow-up
+
+- [x] Third Codex review exact HEAD `7f53e8171034893554d1052b859f01c5e39a9dc1` returned **1 P2**: missing active provider cache-aware audit fields and distinct stage-isolated heuristic GUI throughput contract. Latest-head Linux offline-e2e #40525751547 SUCCESS including active archive-test step; historical six review threads remained unresolved.
+- [x] Restore `cached_input_tokens` nullable provider evidence (`provider_usage` including explicit zero), stage identity, `total_tok_per_s`, `effective_tok_per_s_est`, historical `processing_tps`, provider/heuristic distinct source and same-stage two-stable-sample capped proxy; add documentation guard regression.
+- [ ] Fourth exact-head Hosted Linux CI SUCCESS and formal Codex re-review; address any P1/P2 then evidence-backed resolve prior six threads before explicit user-approved merge. Windows operator run remains queued/deferred and PR #231 stays independent.
