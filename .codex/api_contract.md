@@ -241,3 +241,8 @@
 
 - Existing `benchmark_quality_run()` and CLI JSON contract remain unchanged. On Windows, `median_peak_process_rss_bytes` now intends to report native PSAPI `PROCESS_MEMORY_COUNTERS.PeakWorkingSetSize` in bytes. The field remains null when the API fails, rather than making up a metric or deriving it from `tracemalloc`. On Linux/macOS original `ru_maxrss` interpretation is unchanged.
 - This Windows statistic is a peak resident **working set**, not private committed/virtual bytes, a zero-cost in-report memory peak, or a hard RSS guarantee. Only intra-host comparisons on stable inputs are valid. Windows self-hosted tests not yet run.
+
+### 2026-10-27 optional benchmark subprocess wall-time metric (pending acceptance)
+
+- The opt-in `benchmark_quality_run()`/CLI still returns `benchmark_version=1` and the prior result keys; each `measurements.{memory,sqlite}` gains additive numeric `median_subprocess_wall_seconds` (`>=0`) derived **only** from parent monotonic-clock timing of the child `subprocess.run()`. Existing `median_seconds` remains inner report-call runtime and is unchanged. No report-v1 JSON, worker stdin protocol, source-files or archives contract changes.
+- This value includes process spawn/import, IPC and child exit but excludes parent metadata integrity guards and entire CLI time. It is not performance superiority, a worker-selected metric or a production SLA.
