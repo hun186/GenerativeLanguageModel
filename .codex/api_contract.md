@@ -236,3 +236,8 @@
 
 - Existing `benchmark_quality_run(...)` and CLI/JSON output shapes remain unchanged. Input now must contain a physical quality stream (active or valid numbered archive), not merely a CSV-shaped audit filename. Before/after every child sample, the benchmark validates unchanged canonical JSONL/shard/manifest path metadata; altered generations raise sanitized `ValueError` and CLI exits 2 without emitting performance JSON.
 - Inputs must be regular non-symlink files; no claim of synchronized/atomic content hashing. Existing `report_sha256` parity check remains independent and required.
+
+### 2026-10-27 Win32 native benchmark memory semantics (pending)
+
+- Existing `benchmark_quality_run()` and CLI JSON contract remain unchanged. On Windows, `median_peak_process_rss_bytes` now intends to report native PSAPI `PROCESS_MEMORY_COUNTERS.PeakWorkingSetSize` in bytes. The field remains null when the API fails, rather than making up a metric or deriving it from `tracemalloc`. On Linux/macOS original `ru_maxrss` interpretation is unchanged.
+- This Windows statistic is a peak resident **working set**, not private committed/virtual bytes, a zero-cost in-report memory peak, or a hard RSS guarantee. Only intra-host comparisons on stable inputs are valid. Windows self-hosted tests not yet run.
