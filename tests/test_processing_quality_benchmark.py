@@ -1,5 +1,7 @@
 """Offline benchmark uses real quality JSONL, independent measurement children."""
+import ast
 import json
+from pathlib import Path
 import subprocess
 import sys
 
@@ -133,3 +135,35 @@ def test_worker_rejects_malformed_request_without_echoing_raw_data(monkeypatch, 
     assert bench._worker() == 1
     read = capsys.readouterr()
     assert "/private/top-secret" not in read.out + read.err
+
+
+@pytest.mark.parametrize("args", [
+    ["--audit-path", "/private/secret_audit.csv",
+     "--repetitions", "/private/secret-repetitions.csv"],
+    ["--audit-path", "/private/secret_audit.csv",
+     "--timeout", "/private/secret-timeout.csv"],
+    ["--audit-path", "/private/secret_audit.csv", "/private/secret-extra.jsonl"],
+    ["--audit-path", "/private/secret_audit.csv", "--repetitions", "0"],
+    ["--repetitions", "2"],
+])
+def test_real_cli_parser_error_never_echoes_private_paths(args):
+    """Validate native argparse failures, not only worker errors."""
+    result = subprocess.run(
+        [sys.executable, "-m", "czjLLM.cli_tools.processing_quality_benchmark",
+         *args],
+        capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 2
+    assert result.stdout == ""
+    assert result.stderr == "quality benchmark: invalid arguments\n"
+    assert "/private/" not in result.stderr
+
+
+def test_benchmark_imports_are_not_inside_try_blocks():
+    """Enforce AGENTS.md: dependency imports must be outside try/except."""
+    path = Path(bench.__file__)
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    for block in ast.walk(tree):
+        if isinstance(block, ast.Try):
+            for statement in block.body:
+                assert not isinstance(statement, (ast.Import, ast.ImportFrom))
