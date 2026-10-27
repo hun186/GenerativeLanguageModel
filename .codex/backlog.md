@@ -40,3 +40,9 @@
 
 - `.codex/archive/backlog.md-20261027-213700.md` (exact old Git blob `0a40f0a9b26d7bebb7125a790995db6b84181a4f`) retains **all** previous checked/unchecked tasks, historical PR staging, CI run IDs, heads, reviews and prior archive links. Some old unchecked tasks refer to features since accepted; reconcile with current main before reviving work.
 - Earlier archives are unchanged and remain traceable.
+
+## PR #240 formal review remediation (2026-10-27)
+
+- [x] First Codex exact-head `c614674644d35bcdc16ac47b685d2a00d145c0ff`: **1 P1 and 2 P2**. P1 ES publication date/precision, Event link and buffered writeback acknowledgement contracts were absent from current active memory. P2 Windows autocrlf changed archived Git blob checkout bytes; active Linux `offline-e2e` did not execute new archive tests.
+- [x] Restored concise ES contracts in `.codex/{api_contract,decisions,architecture}.md`, added `.gitattributes` `-text` for exactly the six immutable archives, included focused archive tests in Linux `offline-e2e`, expanded regression assertions.
+- [ ] Verify **remediated latest HEAD** Linux `offline-e2e`, request formal `@codex review` and confirm P1/P2 removal; reply to/resolve all three prior review threads only with corroborating CI and reviewer acceptance. Await explicit Merge instruction. PR #231 remains independent OPEN; Windows real runner acceptance remains operator-deferred.
