@@ -87,6 +87,11 @@ The following sections describe the accepted main implementation through PR #239
 - Preserve Event[] `event_id` uniqueness and linked `event_ids` referential integrity at the strict output profile; no schema-invalid result should be promoted to ES writeback.
 - For buffered ES bulk writes, a successful queue/dispatch is not Row Merger success. Require sink `confirm_writeback()` acknowledgement before releasing source and Success artifacts; on error retain replay evidence and discard only unacknowledged queued actions. Do not confuse acknowledgement with search refresh/readback visibility. Operator must separately prove stored ES results before production bulk replay.
 
+## Current single-extract resume data-integrity decision
+
+- For one extract-stage `merge_slices: true` JSON stage writeback (Issue #211 / PR #213), **original complete raw source membership is the authority**, not the surviving TODO filenames after successes. Keep the hash-only manifest `_extract_slice_identity/source/original.json` independent of destructible stage snapshots; verify source SHA, ordered raw chunk hashes, saved filename map, effective stage-task hash and original dispatched prompt hashes across `resume` and `smart_reset`.
+- Accept reused Success and committed split child attempts only after verifying their original dispatch/child lineage; refuse incomplete/changed sources or stale stage tasks rather than silently dropping completed siblings or re-rendering a retry child as a new source. Regenerated source text in `_stage_outputs/original` is **transient**, never replacement authority.
+
 ## Archived History
 
 - `.codex/archive/decisions.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `2fcdc099dfd3065af18402dfc8e7aed9618b9195`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
