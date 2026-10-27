@@ -41,6 +41,10 @@
 - Verify original source hash, **ordered** raw slice hashes and original filename mapping, the effective extract stage-task identity, and the dispatched prompt hashes against the saved provenance before keeping existing Success or regenerating transient snapshots. Remaining TODO is never a substitute for the original complete source membership; it can omit previously completed siblings. Any missing, mismatched, stale or ambiguous proof fails closed instead of publishing partial/old combined output.
 - Split/retry child prompt files keep their verified parent/child dispatch lineage and must not be mistaken for independent new raw source chunks. Hash-only provenance records do not persist raw input text, prompts, credentials or output values. No extra cache or change to public Row Merger/output schema is introduced.
 
+## Current strict ES importance score normalization
+
+- The `multidim_event` ES output profile permits a **narrow lossless shape correction**: exactly `coverage`, `novelty`, `impact`, `credibility`, `importance_score` may move from article top level into nested `importance`, with `int` (not `bool`) or `null` values. Contradictory nested/top-level scores and unknown keys are rejected, never silently recomputed or overwritten. Generic JSON output processing is unchanged.
+
 ## Archived History
 
 - `.codex/archive/architecture.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `6b3671c46d80acabd692bf2a6f227792c1b06018`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
