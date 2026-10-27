@@ -159,3 +159,8 @@
 
 - `processing_quality_disk_spill.DiskBackedQualityAccumulator` reuses QualityAccumulator's event validation, code taxonomy and privacy-safe in-memory counters while substituting private ephemeral SQLite-backed exact event-ID/signature and rejected/confirmed document membership. Its aggregate snapshot queries pending/confirmed cardinality without materializing the full union/difference in Python RAM.
 - Only the offline report CLI opt-in `--disk-backed` constructs this backend; each single-run/history item gets a new scoped temporary index. It is closed and removed on success and exceptions, and refuses source resets rather than presenting partial history. GUI/Tk and producers keep the unchanged in-memory implementation; ledger integrity checks still surround replay. No archival mutation, retention or restart checkpoint.
+
+### 2026-10-27 isolated offline quality report benchmark (unmerged)
+
+- `czjLLM.cli_tools.processing_quality_benchmark` accepts one canonical audit CSV path and child-process repetitions. Each fresh `sys.executable -m ... --worker` subprocess reads the path and mode via bounded JSON stdin, executes existing `report_for_audit()`, hashes the *complete* canonical aggregate report, measures elapsed, tracemalloc peak and platform high-water RSS. It instruments the SQLite backend only in the private child to measure final temporary main database size immediately before cleanup.
+- Parent aggregates sample medians; a differing digest on any sample raises rather than claiming performance comparison. No raw document/event IDs, paths, payloads or temp identities leave the child; no new permanent DB or retained source. Source immutability is an operator precondition, not a cryptographic lock.
