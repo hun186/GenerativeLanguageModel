@@ -26,8 +26,18 @@ stop producers and maintenance rotation before benchmarking.**
   report. A digest mismatch across any sample aborts instead of returning
   potentially misleading comparisons.
 - `median_seconds` measures the actual report call, **excluding process
-  startup and imports** but including `tracemalloc` overhead. Do not interpret
-  it as unaided production throughput or a strict service SLA.
+  startup and imports** but including `tracemalloc` overhead.
+- `median_subprocess_wall_seconds` is timed by the **parent process** around
+  each fresh child's `subprocess.run()`: it includes spawning/interpreter
+  startup, imports, JSON/stdin/stdout IPC, report work and child exit. This is
+  a closer approximation of **one complete isolated child sample**, but it
+  **excludes** the parent's source-generation stat checks before/after every
+  sample, orchestration, final summary serialization and any operator setup.
+  It is not whole CLI execution duration or a production processing SLA.
+  The worker cannot supply/override this parent-owned measurement.
+- Both durations include measurement overhead (especially `tracemalloc`);
+  differences are not the cost of Python startup alone, and neither metric
+  guarantees speedups without representative *stopped* real input runs.
 - `median_peak_traced_python_bytes` is Python allocations traced since the
   start of the report, **not total RSS** or database pages. When supported,
   `median_peak_process_rss_bytes` uses OS high-water RSS on Linux/macOS;
