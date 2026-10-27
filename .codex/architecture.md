@@ -45,6 +45,11 @@
 
 - The `multidim_event` ES output profile permits a **narrow lossless shape correction**: exactly `coverage`, `novelty`, `impact`, `credibility`, `importance_score` may move from article top level into nested `importance`, with `int` (not `bool`) or `null` values. Contradictory nested/top-level scores and unknown keys are rejected, never silently recomputed or overwritten. Generic JSON output processing is unchanged.
 
+## Current cache-aware audit / GUI throughput boundaries
+
+- The append-only per-run LLM audit at `utilities/llm_call_audit.py` writes nullable `cached_input_tokens` and `cached_input_token_source=provider_usage` only for provider-backed cache evidence; missing provider metadata is unknown, not zero. A safe `stage_identity` and local prompt-component token source permit isolation without copying plaintext prompt/task payloads into sidecar handoffs.
+- The GUI `job_manager/win_gui.py` reads audit CSV outside the Tk hot path and shows `total_tok_per_s` and `effective_tok_per_s_est` separately from historical `processing_tps`. The first is API input+output divided by positive slice duration; the second subtracts **actual provider cached input** when known, otherwise may use a conservative **heuristic** only after at least two stable template samples within an identical (model, endpoint, task, YAML stage, token-source) group. Neither is pure GPU throughput; estimates never create or overwrite provider usage evidence.
+
 ## Archived History
 
 - `.codex/archive/architecture.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `6b3671c46d80acabd692bf2a6f227792c1b06018`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
