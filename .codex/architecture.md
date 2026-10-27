@@ -30,6 +30,11 @@
 - PR #231 (`a8711e9337b62e4b9c6ad62f37ba3e78ba4e8fea`) is still OPEN/non-mergeable at the compaction baseline; its interrupted-rotation rollback semantics must not be described as shipped.
 - Source generation checks are read-only metadata checks, not an atomic filesystem snapshot or a hostile tamper detector. No crash-safe checkpoint, safe online writer/GUI rotation, automated pruning/retirement, independent live ES/LLM acceptance, or full Windows GUI acceptance is established.
 
+## Current ES final-output and persistence integrity
+
+- Strict ES `multidim_event` validation remains at `es_mode/output_profiles/multidim_event.py`: publication `article_date_iso` and `article_date_precision` are validated together (null ↔ unknown, month/year normalization), and linked `event_ids` must refer to unique valid `Event[].event_id` values. `utilities/slice_merge.py` keeps each source date/precision pair atomic rather than recombining halves of different slices or inferring an event date.
+- `es_mode/runtime/sinks/es_sink.py` may buffer writes; Row Merger must call `confirm_writeback()` and receive ES bulk acknowledgement before releasing original Success/source artifacts. Failed/unconfirmed attempts preserve replay evidence; ES refresh/search visibility is independently verified, not presumed from enqueue. These are **current design boundaries**, not superseded archive-only records.
+
 ## Archived History
 
 - `.codex/archive/architecture.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `6b3671c46d80acabd692bf2a6f227792c1b06018`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
