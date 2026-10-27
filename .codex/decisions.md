@@ -160,3 +160,8 @@
 
 - First relieve large offline report identity-map growth via an **explicit opt-in, temporary, exact SQLite** backend; do not silently change the uncapped original accumulator or the already budgeted GUI reader. Reuse existing event/code validation and aggregate counters; store exact identities rather than lossy hashes if claiming exact dedup. Keep run-history accumulators scoped to each run.
 - Prefer private short-lived OS temp files deleted in both normal and exception paths; disclose identifier-at-rest and crash-remnant risks. This is not authorization for automatic archival pruning, a durable checkpoint or an authenticated trust anchor. Those mechanisms require separate design and crash/restart tests.
+
+### 2026-10-27 compare cost before designing durable checkpoint (unmerged)
+
+- Prefer a no-mutation, opt-in **real-run**, one-report measurement tool before changing production memory policies. Reuse accepted disk-backed and in-memory quality report implementations; isolate each in a fresh subprocess to reduce cross-mode heap contamination. Canonical SHA256 of the complete output is a hard correctness gate across all repetitions, not a proof of immutable log identity.
+- Report wall time, traced Python peak, nullable platform RSS and final SQLite main DB size with explicit measurement caveats. Never publish raw event/document identities or source/temp paths, and do not misrepresent traced allocation, SQLite file size or Linux CI as a Windows production memory/ES acceptance guarantee. Durable checkpoint/rotation/delete remain separate, explicitly authorized future work.

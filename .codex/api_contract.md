@@ -226,3 +226,8 @@
 
 - `summarize_quality_stream(path, *, incident_family=None, disk_backed=False)`, `report_for_audit(..., disk_backed=False)`, `report_history(..., disk_backed=False)`, and CLI `--disk-backed` enable ephemeral local SQLite exact event/document identity retention. Default False retains prior API behavior.
 - Results use the **same** `report_version=1` single/history payload, diagnostics, percentages, safety statuses and integrity validation; raw IDs and temporary DB paths must not enter the JSON report. OS-managed private temporary SQLite stores are destroyed in normal/error cleanup; no persistent data/index contract.
+
+### 2026-10-27 offline quality benchmark CLI (unmerged)
+
+- `python -m czjLLM.cli_tools.processing_quality_benchmark --audit-path <llm_call_audit_*.csv> [--repetitions 1..5] [--timeout 1..3600]` is an opt-in read-only CLI. JSON stdout contains `benchmark_version=1`, `mode=offline_quality_single_run`, `parity=matching_complete_report_sha256`, `report_sha256`, `repetitions`, `measurements.{memory,sqlite}` and `measurement_notes`; each measurement exposes sample count, median elapsed seconds, median traced Python peak bytes, nullable OS high-water RSS bytes and nullable SQLite main temp DB final bytes.
+- The tool does not change offline report v1 JSON/CLI output or JSONL lifecycle. Its private stdin-only worker protocol is **not** a stable public API. Source/payload/identity and private paths must not be printed or persisted.

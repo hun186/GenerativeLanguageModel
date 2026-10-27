@@ -85,3 +85,13 @@
 
 - Initial temporary SQLite implementation could leak sensitive local temporary paths through `TemporaryDirectory()` creation outside the sanitizer or `cleanup()` throwing an OSError. Remediation translates both to constant path-free ValueError and keeps cleanup best-effort; forced termination still may leave index remnants.
 - JSON-escaped lone surrogate event/document IDs were originally accepted by `json.loads` but could fail on SQLite UTF-8 membership lookup before the old `json.dumps(... ensure_ascii=False).encode("utf-8")` rejection. Remediation returns membership false for unencodable event IDs, retaining old bad-line classification and continuation. **Exact-head Hosted regressions and formal Codex re-review are pending.**
+
+### 2026-10-27 benchmark measurement limitations (unmerged)
+
+- `tracemalloc` instruments Python allocations and adds overhead; it excludes non-Python SQLite/OS caches. Platform high-water RSS includes interpreter baseline and is unavailable on Windows through Python `resource` (returned as null). SQLite final main DB bytes are **not** cumulative disk writes, transient journal, OS page cache, or a guarantee of zero remnants on forced termination.
+- Repeated real-file digest parity only detects source changes altering the output; stop producers and rotation before measurement. Timed region excludes subprocess startup/imports, and a few repeats cannot establish statistical performance superiority; representative stopped real runs and Windows/RSS tests are separate. Private temporary disk must be trusted. CI and Codex still pending.
+
+### 2026-10-27 PR #235 formal review findings (remediation awaiting Hosted re-review)
+
+- P1 (repo rule): conditional Unix `resource` and report imports previously appeared inside try blocks. Now report import is at module level and `resource` imported only on supported Unix platforms outside try; only measurement errors are caught. Windows resource unavailability leaves RSS=null.
+- P2 (privacy): argparse's default failure text reflected accidentally supplied private paths/run names from `--repetitions` / `--timeout` / unknown positionals. New sanitized parser prints only fixed `quality benchmark: invalid arguments` and exit 2. Physical real-child tests added. Newest-head CI and Codex re-review still pending.
