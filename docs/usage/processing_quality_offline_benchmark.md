@@ -59,6 +59,18 @@ stop producers and maintenance rotation before benchmarking.**
   before deciding whether the SQLite mode actually reduces pressure enough
   to justify its slower disk operations. No automatic mode selection is added.
 
+## Fail-closed numeric validation
+
+The benchmark worker's numeric measurements are treated as *untrusted*
+process-boundary input: JSON `NaN`, `Infinity`, `-Infinity` and exponent
+overflow (such as `1e9999`) are rejected rather than entering medians or
+producing non-standard JSON. The report's wall time must be finite and
+nonnegative; tracemalloc peak bytes must be a nonnegative integer.
+The parent-observed child-process wall clock must likewise be finite and
+nonnegative. If any value is invalid, the command emits no partial benchmark
+result and fails with a fixed path-free error; it does not substitute zeros
+or infer missing values. The public JSON report shape is unchanged.
+
 ## Safety and scope
 
 The benchmark never writes to existing audit CSV, JSONL, archive shards or

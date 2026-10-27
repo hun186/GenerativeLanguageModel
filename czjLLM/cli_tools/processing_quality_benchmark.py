@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import stat
 import statistics
 import subprocess
@@ -116,6 +117,20 @@ def _worker() -> int:
         return 1
 
 
+def _reject_nonstandard_json_number(_token: str) -> None:
+    """json.loads otherwise accepts NaN/Infinity outside strict JSON."""
+    raise ValueError("invalid quality benchmark worker number")
+
+
+def _is_finite_nonnegative_number(value: object) -> bool:
+    if type(value) not in (int, float) or value < 0:
+        return False
+    try:
+        return math.isfinite(value)
+    except (OverflowError, ValueError):
+        return False
+
+
 def _sample(audit_path: Path, mode: str, timeout: int) -> dict:
     request = json.dumps({"audit_path": str(audit_path), "mode": mode})
     # Parent clock captures interpreter startup, module imports, report, IPC,
@@ -130,22 +145,29 @@ def _sample(audit_path: Path, mode: str, timeout: int) -> dict:
         )
     except (OSError, subprocess.TimeoutExpired):
         raise ValueError("quality benchmark worker unavailable") from None
-    subprocess_wall_seconds = round(time.perf_counter() - started, 6)
+    elapsed_wall = time.perf_counter() - started
+    if not _is_finite_nonnegative_number(elapsed_wall):
+        raise ValueError("quality benchmark worker unavailable") from None
+    subprocess_wall_seconds = round(elapsed_wall, 6)
     if proc.returncode != 0:
         raise ValueError("quality benchmark worker failed") from None
     try:
-        result = json.loads(proc.stdout)
+        result = json.loads(
+            proc.stdout, parse_constant=_reject_nonstandard_json_number
+        )
         if not isinstance(result, dict) or result.get("mode") != mode:
             raise ValueError("invalid worker result")
         signature = result["report_sha256"]
         if not (isinstance(signature, str) and len(signature) == 64
                 and all(c in "0123456789abcdef" for c in signature)):
             raise ValueError("invalid worker digest")
-        for name in ("elapsed_seconds", "peak_traced_python_bytes"):
-            if (isinstance(result.get(name), bool)
-                    or not isinstance(result.get(name), (int, float))
-                    or result[name] < 0):
-                raise ValueError("invalid worker measurement")
+        if not _is_finite_nonnegative_number(result.get("elapsed_seconds")):
+            raise ValueError("invalid worker elapsed seconds")
+        # tracemalloc's peak byte count is an integer, never a floating point
+        # estimate, even when encoded by a malformed or compromised child.
+        traced = result.get("peak_traced_python_bytes")
+        if type(traced) is not int or traced < 0:
+            raise ValueError("invalid worker traced memory")
         for name in ("peak_process_rss_bytes", "sqlite_main_db_final_bytes"):
             value = result.get(name)
             if value is not None and (
@@ -308,7 +330,13 @@ def main(argv: list[str] | None = None) -> int:
         )
     except ValueError as error:
         parser.error(str(error))
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    try:
+        serialized = json.dumps(
+            result, ensure_ascii=False, indent=2, allow_nan=False
+        )
+    except (ValueError, OverflowError):
+        parser.error("invalid benchmark measurement")
+    print(serialized)
     return 0
 
 

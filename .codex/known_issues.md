@@ -110,3 +110,8 @@
 
 - Prior benchmark published only `median_seconds`, timing report function but excluding process startup/import/IPC, so a small job's isolated worker overhead could be understated. Proposed new `median_subprocess_wall_seconds` uses the trusted parent clock around `subprocess.run()`; its median is separate, not merely a sum of the worker's report timing plus fixed launch cost.
 - Parent wall-time still excludes source-generation stat checks, final summary, CLI import/startup and operator filesystem setup; `tracemalloc` changes the measured runtime. Representative stopped-run measurements are still required, Windows physical acceptance not implied by Hosted Linux. New branch not yet CI/review accepted.
+
+### 2026-10-27 private benchmark invalid numeric failure mode (fix pending review)
+
+- Previous `processing_quality_benchmark._sample()` allowed Python JSON extension tokens NaN/Infinity (including exponent overflow to infinity) for child `elapsed_seconds`: comparison `NaN < 0` is false, so malformed measurements could reach mode medians and produce nonstandard JSON. It also accepted floats for integer `peak_traced_python_bytes`. This branch rejects invalid data, clamps nothing, and ensures CLI emits only strict JSON or fixed path-free error.
+- Parent subprocess wall clock is checked for finite/nonnegative values before aggregation. This is boundary hardening, **not** a claim that malicious workers or producer mutations can be handled atomically or a Windows production smoke. Pending exact-head Hosted CI/Review.

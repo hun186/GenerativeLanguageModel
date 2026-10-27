@@ -180,3 +180,8 @@
 
 - Preserve prior `median_seconds` as exact child-measured report function runtime and add a distinct parent-observed `median_subprocess_wall_seconds` in the experimental opt-in benchmark summary. A parent monotonic timer around `subprocess.run()` is the simplest trustworthy measurement of child startup/import/IPC/termination cost; do not trust a worker-supplied wall-time field. Keep the old metric for compatibility and no child worker JSON shape change.
 - Clearly distinguish single-child wall duration from entire CLI orchestration and production throughput; do not claim genuine speedup without real stopped-run samples. Retain source integrity checks, privacy sanitization and SQLite cleanup.
+
+### 2026-10-27 fail closed on non-finite benchmark numbers (pending acceptance)
+
+- Python `json.loads` accepts NaN/Infinity extensions and can parse exponent overflow to non-finite floats despite expected JSON. Use strict `parse_constant` rejection plus `math.isfinite` on numeric worker duration; enforce native `tracemalloc` peak bytes as integral; reject a failed/non-finite parent monotonic sample. Do not publish statistics based on non-standard JSON numbers, convert missing values to zero or print child error payloads.
+- Preserve the opt-in summary schema and report-v1 behavior; serialize final output with `allow_nan=False` as defense in depth and give fixed path-free CLI errors. Source-generation and full report digest gates remain required.
