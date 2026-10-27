@@ -169,3 +169,8 @@
 
 - `processing_quality_benchmark._source_generation()` uses canonical `quality_event_path`, `quality_stream_segments` and `manifest_path` to collect bounded read-only identity/size/mtime/ctime metadata for each run component. Benchmark takes a baseline, checks before and after every isolated worker sample, and refuses to publish result when source files mutate independently of aggregate report SHA256. Internal path names never leave the benchmark summary; failures use a fixed sanitized error.
 - This metadata scan is O(number of archived shards) without reading active JSONL contents or modifying producers, persistent indexes, or archives. It is deliberately not an atomic snapshot, lock, or cryptographic authenticity proof; stopped-producer precondition remains.
+
+### 2026-10-27 optional Windows peak working-set probe in offline benchmark (pending)
+
+- `processing_quality_process_memory.windows_peak_working_set_bytes()` uses standard-library ctypes to request the process's native PSAPI `PROCESS_MEMORY_COUNTERS.PeakWorkingSetSize` on win32. It returns null if unsupported/failed and never exposes OS errors, source paths, process IDs or raw quality identities. The `processing_quality_benchmark` worker includes its value in the existing `peak_process_rss_bytes` result. Existing Linux/macOS `resource.ru_maxrss`, report semantics, isolated subprocess boundaries, source-generation guard and output shape remain unchanged.
+- Windows resident working-set peak is historical process high-water, including Python interpreter/imports; it is neither process private commit nor exclusive report-call allocation. Real Windows execution validation remains operator-deferred.
