@@ -135,3 +135,29 @@ def test_importance_score_shape_repair_stays_strict():
     assert "reject conflicting values" in contract
     assert "unknown fields" in contract.lower() or "Unknown fields" in contract
     assert "lossless shape" in architecture
+
+
+def test_cache_aware_provider_audit_and_stage_isolated_gui_are_active():
+    """Do not archive away still-effective cache/throughput semantics."""
+    contract = (_ROOT / ".codex" / "api_contract.md").read_text(
+        encoding="utf-8"
+    )
+    architecture = (_ROOT / ".codex" / "architecture.md").read_text(
+        encoding="utf-8"
+    )
+    decisions = (_ROOT / ".codex" / "decisions.md").read_text(
+        encoding="utf-8"
+    )
+    for field in (
+        "cached_input_tokens", "cached_input_token_source",
+        "stage_identity", "effective_tok_per_s_est",
+        "total_tok_per_s", "processing_tps", "provider_usage",
+    ):
+        assert field in contract
+    assert "missing data" in contract
+    assert "zero cached input" in contract
+    assert "two prior" in contract
+    assert "50%" in contract
+    assert "different stages must never" in contract
+    assert "heuristic" in decisions
+    assert "historical" in architecture
