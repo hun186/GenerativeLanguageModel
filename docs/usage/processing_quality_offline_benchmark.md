@@ -53,11 +53,19 @@ Use only a trusted local machine with sufficient private temporary storage:
 an OS crash or forced kill can leave remnants; swap/backups are outside the
 application's deletion guarantee.
 
-Source-file changes between samples are detected whenever they alter the
-canonical report digest. This is not a cryptographic source-generation lock:
-stop all producers to avoid a concurrent append/rotation or a same-digest
-rewrite. Benchmark failures emit generic sanitized messages; no source or
-path-bearing exception text is printed.
+The benchmark also captures a bounded **read-only metadata snapshot** of the
+canonical active JSONL, numbered archived shards, and optional manifest before
+and after every isolated sample. New/removed shards, changed file identity,
+size, modification or change times abort even when the complete report SHA-256
+happens to match (for example, appending an invalid complete JSONL line whose
+aggregate metrics do not change). A run with no quality stream does not
+produce fake performance measurements; symlinked input files are rejected.
+
+This **is not** an atomic file snapshot, an authenticated content hash, a lock,
+or a protection against malicious rewrites that restore file metadata. Stop all
+producers and maintenance rotation during measurement. On change, the CLI
+fails with a generic, path-free error. It never outputs filenames, raw IDs or
+private paths.
 
 No live Ollama, Windows GUI visual/physical RSS acceptance, ES independent
 readback, automatic archived-file deletion or safe online rotation is implied

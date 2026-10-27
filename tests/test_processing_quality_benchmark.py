@@ -65,7 +65,7 @@ def test_cli_single_repetition_json_output_and_privacy(tmp_path, capsys):
 
 
 def test_digest_mismatch_including_midrun_mutation_fails_closed(monkeypatch, tmp_path):
-    audit = tmp_path / "llm_call_audit_benchmark-case.csv"
+    audit = _audit_with_archives(tmp_path)
     counter = [0]
 
     def different_reports(_path, mode, _timeout):
@@ -86,7 +86,7 @@ def test_digest_mismatch_including_midrun_mutation_fails_closed(monkeypatch, tmp
 
 
 def test_subprocess_failure_masks_stderr_private_file_path(monkeypatch, tmp_path):
-    audit = tmp_path / "llm_call_audit_benchmark-case.csv"
+    audit = _audit_with_archives(tmp_path)
     secret = "/private/internal/run-id/credentials"
 
     def failed_process(*args, **kwargs):
@@ -102,7 +102,7 @@ def test_subprocess_failure_masks_stderr_private_file_path(monkeypatch, tmp_path
 
 
 def test_timeout_and_worker_response_fail_closed(monkeypatch, tmp_path):
-    audit = tmp_path / "llm_call_audit_benchmark-case.csv"
+    audit = _audit_with_archives(tmp_path)
 
     def timeout(*args, **kwargs):
         raise subprocess.TimeoutExpired(args[0], kwargs["timeout"])
@@ -167,3 +167,103 @@ def test_benchmark_imports_are_not_inside_try_blocks():
         if isinstance(block, ast.Try):
             for statement in block.body:
                 assert not isinstance(statement, (ast.Import, ast.ImportFrom))
+
+
+def _fixed_sample(_path, mode, _timeout):
+    """Only measurements are substituted; source inputs are real physical files."""
+    return {
+        "report_sha256": "a" * 64,
+        "mode": mode,
+        "elapsed_seconds": 1.0,
+        "peak_traced_python_bytes": 2000,
+        "peak_process_rss_bytes": None,
+        "sqlite_main_db_final_bytes": None,
+    }
+
+
+def test_source_generation_changes_on_append_even_if_report_digest_same(
+    monkeypatch, tmp_path
+):
+    audit = _audit_with_archives(tmp_path)
+    active = quality_event_path(str(audit))
+    called = []
+
+    def append_during_sample(path, mode, timeout):
+        called.append(mode)
+        with active.open("ab") as writer:
+            writer.write(b"not-a-quality-record\n")
+        return _fixed_sample(path, mode, timeout)
+
+    monkeypatch.setattr(bench, "_sample", append_during_sample)
+    with pytest.raises(ValueError, match="source changed during measurement") as error:
+        bench.benchmark_quality_run(audit, repetitions=1)
+    assert called == ["memory"]
+    assert str(tmp_path) not in str(error.value)
+
+
+def test_source_generation_changes_on_manifest_rewrite_without_metric_change(
+    monkeypatch, tmp_path
+):
+    from czjLLM.utilities.processing_quality_manifest import manifest_path
+
+    audit = _audit_with_archives(tmp_path)
+    ledger = manifest_path(quality_event_path(str(audit)))
+    called = []
+
+    def rewrite_manifest(path, mode, timeout):
+        called.append(mode)
+        with ledger.open("ab") as writer:
+            writer.write(b" ")
+        return _fixed_sample(path, mode, timeout)
+
+    monkeypatch.setattr(bench, "_sample", rewrite_manifest)
+    with pytest.raises(ValueError, match="source changed during measurement"):
+        bench.benchmark_quality_run(audit, repetitions=1)
+    assert called == ["memory"]
+
+
+def test_source_generation_changes_on_new_archived_shard(
+    monkeypatch, tmp_path
+):
+    audit = _audit_with_archives(tmp_path)
+    active = quality_event_path(str(audit))
+    shard = active.with_name(active.name + ".seg-00000002")
+    first = active.with_name(active.name + ".seg-00000001")
+
+    def add_shard(path, mode, timeout):
+        shard.write_bytes(first.read_bytes())
+        return _fixed_sample(path, mode, timeout)
+
+    monkeypatch.setattr(bench, "_sample", add_shard)
+    with pytest.raises(ValueError, match="source changed during measurement"):
+        bench.benchmark_quality_run(audit, repetitions=1)
+
+
+def test_missing_quality_stream_rejected_without_fake_performance(tmp_path):
+    audit = tmp_path / "llm_call_audit_no-events.csv"
+    with pytest.raises(ValueError, match="source snapshot unavailable"):
+        bench.benchmark_quality_run(audit, repetitions=1)
+
+
+def test_source_generation_rejects_symlinked_active_and_manifest(tmp_path):
+    from czjLLM.utilities.processing_quality_manifest import manifest_path
+
+    audit = _audit_with_archives(tmp_path)
+    active = quality_event_path(str(audit))
+    ledger = manifest_path(active)
+    original = active.with_name("fixture-original.jsonl")
+    active.rename(original)
+    try:
+        active.symlink_to(original)
+    except (NotImplementedError, OSError):
+        pytest.skip("symlink creation unavailable on this runner")
+    with pytest.raises(ValueError, match="source snapshot unavailable"):
+        bench.benchmark_quality_run(audit, repetitions=1)
+    active.unlink()
+    original.rename(active)
+
+    original_ledger = ledger.with_name("fixture-original-manifest.json")
+    ledger.rename(original_ledger)
+    ledger.symlink_to(original_ledger)
+    with pytest.raises(ValueError, match="source snapshot unavailable"):
+        bench.benchmark_quality_run(audit, repetitions=1)

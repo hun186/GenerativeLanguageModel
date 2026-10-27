@@ -219,3 +219,9 @@ PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079a
 
 - [x] Formal Codex review of initial `632037f892a87c091b1038c089be5d867393de54` returned 1 P1 (imports in try violate AGENTS.md) and 1 P2 (argparse errors disclose private invalid inputs). Initial HEAD Linux offline-e2e #40460505496 SUCCESS.
 - [ ] Fix commits `11bf560` and `278d55b` relocate imports, sanitize argparse and add real CLI process/static rule tests; verify final exact-HEAD Hosted Linux, request formal Codex re-review, respond and resolve both threads when accepted. Await explicit user Merge; PR #231 remains open, independent.
+
+### 2026-10-27 PR #235 accepted; benchmark source-generation integrity enhancement
+
+- [x] PR #235 final exact HEAD `9534a9497ba7becf4bafe5cc8fe861cfd33d8467`, formal Codex zero findings and 2 resolved threads, Hosted Linux PR offline-e2e #40462916581 SUCCESS, user-authorized merge `6cba3ef417047f07a2c3e8b46bd0ac36e7d2fd64`, postmerge Linux offline-e2e #40465197165 SUCCESS. Windows queued/operator-deferred, overall run not SUCCESS. Prior pending #235 entries are superseded.
+- [ ] New independent branch `fix/quality-benchmark-source-generation-20261027`: reject source generation changes during paired samples even when report digest remains identical, using bounded active/archive/manifest metadata checks; provide physical file mutation/symlink/empty-source regressions, verify latest-head Hosted Linux and formal Codex review, fix any findings/threads; **do not merge before explicit user authorization**.
+- [ ] Operator still must benchmark 2–3 repeats over several representative fully stopped real runs on target Windows hardware; implement no automatic pruning/rotation, durable checkpoint or ES live E2E acceptance here. #231 remains independent and unmerged.

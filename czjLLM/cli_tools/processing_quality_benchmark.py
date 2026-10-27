@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import stat
 import statistics
 import subprocess
 import sys
@@ -18,6 +19,9 @@ import tracemalloc
 from pathlib import Path
 
 from czjLLM.cli_tools import processing_quality_report as reports
+from czjLLM.utilities.processing_quality import quality_event_path
+from czjLLM.utilities.processing_quality_manifest import manifest_path
+from czjLLM.utilities.processing_quality_rotation import quality_stream_segments
 
 # resource is absent from Windows. Choose supported platforms BEFORE import,
 # instead of importing inside a try/except (AGENTS.md repository requirement).
@@ -145,6 +149,47 @@ def _sample(audit_path: Path, mode: str, timeout: int) -> dict:
         raise ValueError("invalid quality benchmark worker response") from None
 
 
+def _source_generation(audit_path: Path) -> tuple:
+    """Bounded path/metadata generation guard for a *stopped* quality run.
+
+    This is a cheap, read-only race detector, NOT an atomic snapshot, source
+    lock, hash of active bytes, or protection against hostile metadata replay.
+    Do not expose filenames/identities from the internal tuple in CLI output.
+    """
+    active = quality_event_path(str(audit_path))
+    if active is None:
+        raise ValueError("quality benchmark source snapshot unavailable")
+    try:
+        segments = quality_stream_segments(active)
+        ledger = manifest_path(active)
+        observed = []
+        present = False
+        for path in [*segments, active, ledger]:
+            try:
+                info = path.lstat()
+            except FileNotFoundError:
+                if path in segments:
+                    raise ValueError("quality benchmark source snapshot unavailable") from None
+                observed.append((path.name, None))
+                continue
+            if not stat.S_ISREG(info.st_mode) or (
+                getattr(info, "st_file_attributes", 0)
+                & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+            ):
+                raise ValueError("quality benchmark source snapshot unavailable")
+            if path == active or path in segments:
+                present = True
+            observed.append((
+                path.name, info.st_dev, info.st_ino, info.st_size,
+                info.st_mtime_ns, info.st_ctime_ns,
+            ))
+        if not present:
+            raise ValueError("quality benchmark requires an existing quality stream")
+        return tuple(observed)
+    except (OSError, ValueError):
+        raise ValueError("quality benchmark source snapshot unavailable") from None
+
+
 def benchmark_quality_run(
     audit_path: str | Path, *, repetitions: int = 2, timeout: int = 300,
 ) -> dict:
@@ -152,6 +197,9 @@ def benchmark_quality_run(
 
     Each sample is a fresh subprocess; timed region excludes imports and
     process startup. Input must be an existing stopped-producer quality run.
+    Lightweight before/after metadata checks catch many source-generation
+    races even if output metrics happen to match. They are not a lock or
+    authenticated hash of active content.
     This function and its outputs never modify JSONL, archive or manifest.
     """
     if type(repetitions) is not int or not 1 <= repetitions <= 5:
@@ -162,12 +210,19 @@ def benchmark_quality_run(
     if (source.suffix.lower() != ".csv"
             or not source.name.startswith("llm_call_audit_")):
         raise ValueError("expected canonical LLM audit CSV run name")
+    # A matching report digest is not enough: a run may be appended, replaced,
+    # or have its manifest updated without changing the aggregate metrics.
+    baseline = _source_generation(source)
     samples = {mode: [] for mode in _MODES}
     digests = set()
     for index in range(repetitions):
         # Alternate run order to reduce warmed filesystem cache bias.
         for mode in (_MODES if index % 2 == 0 else reversed(_MODES)):
+            if _source_generation(source) != baseline:
+                raise ValueError("quality benchmark source changed during measurement")
             measured = _sample(source, mode, timeout)
+            if _source_generation(source) != baseline:
+                raise ValueError("quality benchmark source changed during measurement")
             digests.add(measured["report_sha256"])
             if len(digests) != 1:
                 raise ValueError(
