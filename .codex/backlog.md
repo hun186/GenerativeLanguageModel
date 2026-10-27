@@ -1,245 +1,60 @@
-# 待辦事項（Backlog）
+# GenerativeLanguageModel — Active Backlog
 
 ## Current Summary
 
-**Reduction Engine v1 = COMPLETE / RELEASE-READY.** A–L is complete, the L3 release-audit reporting blocker was resolved by PR #201, and the documentation/release closure was merged by PR #200. Authoritative Reduction v1 closure baseline: verified merge `99d79676b16b7fed54f9cf6e701441db79846cea`; later Hosted `main` includes the accepted GUI observability/layout fixes through `4a2eb27942d1bfda3ae845e877f5bac7d5df811c`.
+- Reduction Engine v1 A–L is complete, including PR #200 documentation/release closure; #203 optional transient semantic cache remains intentionally **deferred** pending observed duplicate-call savings.
+- Issue #211 corrected via user-accepted #212/#213, which passed focused offline SQLite/Excel E2E. This is not independent live Ollama/ES readback.
+- Quality telemetry/GUI/JSONL/benchmark PRs #218–#230 and #232–#239 are accepted on main as of `46b7c7290417421a6dc09e114f82c1066ce0179d`; historical unchecked checklist entries for those already-merged PRs are superseded, **not reopened**.
+- PR **#231** remains OPEN, unmerged, mergeable=false (head `a8711e9337b62e4b9c6ad62f37ba3e78ba4e8fea`), independent from all new development. Do not auto-merge or rebase.
+- As of PR #239 postmerge Hosted CI #40513712390, Linux `offline-e2e` SUCCESS; Windows 3.10/3.11 queued/operator-deferred. Overall workflow is not marked green because those runners are missing.
 
-PR #200 is closed/merged. Its accepted exact head `36a40eb37827e33545865203b079aefaab1ba1f4` passed CI #467 / `37420475520`, offline job `112128483703`, collect 24 and full gate PASS / 100%, with zero unresolved review threads and a fresh Codex review reporting no major issues.
+## Active Work — In Progress (separate PR)
 
-### Reduction Engine v1 roadmap
+- [ ] `docs/codex-active-memory-compaction-20261027`: archive exact six pre-compaction `.codex/*.md` files, preserve blob hashes and past review/commit evidence; condense dated historical “pending” notes without changing effective program/API rules, safety or uncompleted backlog. Verify snapshots, CI and exact-head official Codex Review; **wait for explicit Merge authorization**.
 
-- [x] PR A — Characterization / Golden Tests
-- [x] PR B — Contracts, Reducer Registry, legacy adapters
-- [x] PR C — Strict config + opt-in single-pass routing
-- [x] PR D — Hierarchical reduction (D1/D2)
-- [x] PR E — Shared Execution Budget
-- [x] PR F — Logical Work Unit + immutable Collection Manifest
-- [x] PR G — SQL/ES Collection Adapters + idempotent aggregate upsert
-- [x] PR H — Deterministic composite reducers
-- [x] PR I — Semantic reducer
-- [x] PR J — Structured relational reducer
-- [x] PR K — ReductionStage + bounded PipelineRef nesting (K1/K2)
-- [x] PR L — Production hardening (L1/L2a/L2b/L3)
+## True Open Engineering Work (not silently completed)
 
-## Open Follow-ups
+- [ ] PR #231 interrupted sealed JSONL rotation no-clobber rollback: investigate mergeability/branch drift independently; only merge with explicit user approval and current-head test/review evidence.
+- [ ] Operator Windows real native PSAPI `PeakWorkingSetSize`, GUI visual, and several representative *stopped* full-run memory-vs-SQLite performance repetitions. Linux simulated Windows API tests do **not** complete this.
+- [ ] Operator-controlled 1–3 real Windows+Ollama+Elasticsearch rows, independent ES readback and state/lineage/structured Event ID/date validation before replaying any large production workload. Confirm deployed binary commit includes accepted writeback fixes. Only then characterize bulk pending/confirmed/latency/token cost.
+- [ ] Complete distinct LLM request error classification / effective retry and failure denominators (legacy request CSV lacks stable request UUID; catch-site JSONL cannot imply unique affected document). Add bounded privacy-safe drilldown/time windows only with source-authoritative identity/evidence.
+- [ ] Deepen actual Producer/Worker/Stage/Row Merger **non-schema** root-cause taxonomy and cancellation semantics where not yet attributable; existing Worker SDK subcodes provide *mechanism hints*, not provider fault guarantees.
+- [ ] Design crash-safe authenticated exact disk checkpoint and generation-bound replay/resume with stopped/online producer safety before any automatic shard retirement, pruning, or online rotation. Existing temp SQLite spill and self-consistency SHA256 manifest are **not** substitutes.
+- [ ] Engineer GUI restartable bounded checkpoints/disk-backed identity cache only after strong correctness and physical restart tests; capacity-exceeded must remain unavailable rather than dropped events/partial percentages.
+- [ ] Consider opt-in legacy unmarked runtime/checkpoint inventory/migration (GC must not silently adopt old files) and finer reduction checkpoint locks *if* measured evidence warrants them.
+- [ ] Evaluate whether `utils/utilities.py` is still an active dependency before gradually refactoring behind compatibility re-exports; avoid speculative rearchitecture.
+- [ ] Consider verified ES buffered bulk acknowledgements and sink writeback semantics without mistaking dispatch/refresh visibility for durable persisted confirmation.
+- [ ] Retain operator-deferred Windows self-hosted CI and a truthful separate Linux `offline-e2e` acceptance gate; never equate queued overall workflow to full acceptance.
 
-## Issue #211 multistage JSON writeback corrective (2026-10-12)
+## Accepted Recent History (supersedes past unchecked rows)
 
-- [ ] Review and land a narrowly scoped one-extract-stage `merge_slices: true` JSON stage writeback correction. Hosted main baseline is `c732991c8a1b612a0bcbd17c6c4db83e0a3bc0c8`; evidence: both Excel/SQLite example YAML configurations use `source: stage`, while the legacy stage artifact builder newline-joins individual JSON slices before Row Merger resolves them.
-- New branch `fix/issue-211-single-extract-slice-writeback` validates each stage JSON slice, uses existing audited dict merge semantics only for one `extract` stage with explicit writeback and slice merge, keeps one-slice envelopes, and refuses invalid/partial inputs; unrelated real multistage output behavior remains unchanged.
-- Focused tests cover both YAML configurations and actual stage-manifest to Row Merger resolution/flatten selection; Hosted `offline-e2e` must pass the new CI step and Codex must review exact head. No merge without explicit user authorization. Keep Issue #211 open until implementation is accepted.
-
-
-### Future v1.1 candidates — not v1 blockers
-
-- [x] Evaluate optional transient semantic/member caching only with a distinct authority/privacy contract; **decision: defer implementation until production evidence shows material duplicate member/semantic execution. No persistent second cache is allowed; SQL/ES persisted output and committed checkpoints retain their existing authority.**
-- [x] Add a narrow task-specific final-result quality/coverage hook without creating a generic evaluation platform. Python-only `QualityHook` / `QualityAssessment` attaches safe scalar metrics/warning codes, may reject a final result explicitly, and contributes semantic hook metadata to the execution fingerprint.
-- [x] Add narrow, read-only aggregate-lineage convenience APIs beyond the complete v1 `AggregateOutput` payload lineage contract (v1.1 PR pending Hosted exact-head CI and Codex review).
-- [ ] Consider explicit maintenance/migration tooling for legacy unmarked stage artifacts; v1 GC intentionally never adopts them.
-- [ ] Consider finer checkpoint coordination if production evidence justifies replacing conservative per-executable serialization.
-
-### Existing technical-debt follow-up
-
-- [ ] Evaluate whether `utils/utilities.py` remains an active dependency; if so, progressively move responsibilities into focused utility modules while retaining compatibility re-exports.
-
-## Recent Changes
-
-### 2026-10-06 v1.1 final quality/coverage hook
-
-- [x] Added one optional Python-only final-result `QualityHook` on `ReductionStage`; no scorer registry, YAML schema, UI, or persistence layer.
-- [x] Hook assessments expose only safe scalar metrics plus bounded warning codes; rejected results fail explicitly with `QualityCheckRejectedError`.
-- [x] Hook semantic metadata participates in execution fingerprints only when a hook is configured, preserving no-hook fingerprint compatibility.
-- [x] Extended the existing production ReductionStage E2E with real HTTP accepted/rejected quality-policy coverage; hosted acceptance is required before merge.
-
-### 2026-10-06 v1.1 transient-cache evaluation
-
-- [x] Evaluated a second transient semantic/member cache against the current execution, checkpoint, persisted-freshness, cancellation and privacy contracts.
-- [x] Deferred implementation: current source/tests do not establish a material duplicate-call workload that justifies new cache semantics.
-- [x] Any future reconsideration requires production duplication/cost evidence and a bounded run-scoped privacy contract; disk/global persistence must not become a second reuse authority.
-
-### 2026-10-06 Release-audit closure
-
-- [x] L3 truthful bounded-reporting blocker resolved by PR #201.
-- [x] Accepted PR #201 head `62deba6a35d5d5f1d5c82f586d65bc8827e212ef`; CI #459 / `37399753801`; offline job `112064086574`; collect 24; full gate PASS / 100%; merge `91e39503c8e84d17752f9d26a23ff6b34db75b9e`; signature verified / valid.
-- [x] PR #200 release-state declaration head `8d283b369da2989535c109fa4f046b2c7ba57f31` passed CI #463 / `37402351444`, offline job `112072129880`, collect 24 and full gate PASS / 100%.
-- [x] PR #200 accepted head `36a40eb37827e33545865203b079aefaab1ba1f4`; CI #467 / `37420475520`; offline job `112128483703`; collect 24; full gate PASS / 100%; zero unresolved review threads; fresh Codex review reported no major issues; merged as verified/valid `99d79676b16b7fed54f9cf6e701441db79846cea`.
+- #233 GUI over-cap stat-cache merged `8d4a967e29dbda8d845f30dde435e2883f9b9b3c`.
+- #234 opt-in offline SQLite identity spill merged `4d34ac790a4511963d1b191cd495f459f9bee341`.
+- #235 resource/performance benchmark merged `6cba3ef417047f07a2c3e8b46bd0ac36e7d2fd64`.
+- #236 benchmark physical source generation guard merged `6c5cda3b51fab14049edf540b65f30a59f2fb7ef`.
+- #237 Windows resident working-set reading merged `1757570e0c40d331d7a55ece386089309f13cd10`.
+- #238 parent-clock complete child wall-time merged `3cabaa4baa475d4d3566d552d6a5a53cae0fb1a8`.
+- #239 strict finite benchmark measurements merged `46b7c7290417421a6dc09e114f82c1066ce0179d`.
 
 ## Archived History
 
-- `.codex/archive/backlog.md-20261006-134200.md` — complete pre-compaction backlog/history through PR #200 head `39177737486a372f38e9b6d81563d6f14327459a`. Historical unchecked K/L entries in that archive are superseded by the completed roadmap above.
+- `.codex/archive/backlog.md-20261027-213700.md` (exact old Git blob `0a40f0a9b26d7bebb7125a790995db6b84181a4f`) retains **all** previous checked/unchecked tasks, historical PR staging, CI run IDs, heads, reviews and prior archive links. Some old unchecked tasks refer to features since accepted; reconcile with current main before reviving work.
+- Earlier archives are unchanged and remain traceable.
 
-### 2026-10-12 execution order / GUI follow-up
+## PR #240 formal review remediation (2026-10-27)
 
-- [x] GUI throughput/key-axis PR #209 merged to Hosted main as verified/valid `584a4345fe198544eb198eda9d99c2d948ee01d0` after exact-head `offline-e2e`, focused GUI regression and Codex clean review.
-- [ ] Review and land the narrow v1.1 aggregate-lineage convenience API PR from `feat/reduction-v1-1-aggregate-lineage-helpers`; exact-head Hosted `offline-e2e` with focused tests and Codex clean required, user merge authorization required.
-- Keep #203 transient semantic cache prototype **deferred** until production duplication/cost evidence or explicit user direction.
+- [x] First Codex exact-head `c614674644d35bcdc16ac47b685d2a00d145c0ff`: **1 P1 and 2 P2**. P1 ES publication date/precision, Event link and buffered writeback acknowledgement contracts were absent from current active memory. P2 Windows autocrlf changed archived Git blob checkout bytes; active Linux `offline-e2e` did not execute new archive tests.
+- [x] Restored concise ES contracts in `.codex/{api_contract,decisions,architecture}.md`, added `.gitattributes` `-text` for exactly the six immutable archives, included focused archive tests in Linux `offline-e2e`, expanded regression assertions.
+- [ ] Verify **remediated latest HEAD** Linux `offline-e2e`, request formal `@codex review` and confirm P1/P2 removal; reply to/resolve all three prior review threads only with corroborating CI and reviewer acceptance. Await explicit Merge instruction. PR #231 remains independent OPEN; Windows real runner acceptance remains operator-deferred.
 
-### 2026-10-13 Issue #211 physical E2E follow-up
+## PR #240 second formal Code Review follow-up
 
-- [ ] PR #213: accept exact-head Hosted offline E2E for SQLite+Excel two-slice JSON writeback and partial resume; complete Codex review and resolve all threads before requesting user merge authorization.
-- [ ] Separately smoke-test with real external LLM and existing Windows / database deployment when available; offline model stubs and deterministic cut boundaries are not a substitute for production validation.
+- [x] Codex reviewed `8f780583ec5b97ee9924cdfea6edde7eb3539ce8` with **2 additional P1** (extract partial-resume original source provenance, strict ES importance score normalization). Linux `offline-e2e` #40521614397 SUCCESS and archive regression step SUCCESS; prior 3 findings not re-raised but threads still open.
+- [x] Reinstated both active contracts in `.codex/{architecture,decisions,api_contract}.md`, protected their presence by new targeted tests. All six original archive byte identities retained.
+- [ ] Verify remediated *new latest HEAD* Linux archive tests and complete Hosted Linux `offline-e2e`, request new exact-HEAD `@codex review`, address any further Findings, and resolve 5 historical Review Threads with evidence. PR #240 **must not merge without explicit user approval**; independent PR #231 remains OPEN.
 
-### 2026-10-14 PR #213 acceptance gate
+## PR #240 third formal review follow-up
 
-- [ ] Confirm Hosted exact-head offline E2E and focused Issue #211 suite pass after durable A+B source/dispatch snapshot restoration, including SQLite/Excel task_key override, B-only resume, tampered-source refusal and verified nested retry descendants.
-- [ ] Request and complete fresh Codex exact-head review, resolve all findings; report Windows self-hosted queue honestly. Await explicit user `merge` authorization.
-
-
-### 2026-10-19 post-PR #216 ES production acceptance
-- [ ] Validate proposed ES buffered-write acknowledgement PR at its exact head with Hosted offline E2E and fresh Codex review; do not merge without user authorization.
-- [ ] Confirm locally deployed Windows executable commit includes merged #216 before touching real rows; stop/restart old process safely after in-flight work has drained.
-- [ ] Controlled 1–3 item ES/Ollama acceptance including known date/importance failures, Event ID uniqueness, linked IDs, stored ES readback, pending/completion state, and immutable raw Success artifacts on rejection.
-- [ ] Only after live acceptance, characterize bulk completion timing, pending failure counts and model token cost before resuming 37,286 candidate items. ES search refresh visibility and exact target index/key must be verified separately from bulk acknowledgement.
-
-
-### 2026-10-20 Processing Quality follow-up / PR #218 acceptance
-- [ ] Confirm exact-head offline-e2e and targeted quality tests, obtain fresh Codex review with no unresolved P1/P2, verify Windows self-hosted or disclose its queued state, and merge only on explicit user authorization.
-- [ ] Add full single-slice worker/API failure taxonomy (transport, timeout, JSON generation, stage orchestration), expose retry/token cost and distinct affected-doc counts, and enable error drill-down with filters.
-- [ ] Add rolling denominators, low-sample guardrails, optional anomaly thresholds, per-run export/history, retention/rotation with resumable aggregation, and Windows visual acceptance.
-- [ ] Perform 1–3 controlled real ES/Ollama tests (pending and confirmed writes) before any 37k-row production replay.
-
-### 2026-10-20 offline report PR follow-up (separate branch after merged #218)
-- [x] Implement independent read-only report CLI for one run or bounded (max 100) run history: existing quality JSONL only, no raw doc IDs, no cross-run statistical mixing, optional atomic JSON report.
-- [ ] Verify exact-head Hosted focused offline tests and formal Codex review on this PR, resolve findings; do not merge until explicit authorization and tomorrow's pinned #218 Windows acceptance remains unaffected.
-- [ ] Continue taxonomy, filtering/drill-down, retention/rotation, and full Windows UI validation as separate stages; no LLM-dependent acceptance claims.
-
-### 2026-10-22 Reduction v1.1 read-only legacy inventory (PR pending)
-- [ ] Review bounded, count-only inventory for unmarked checkpoint/runtime directories under approved L3 item/prompt scopes; no file reads, migration, ownership adoption, or deletion.
-- [ ] Verify Hosted exact-head Linux offline E2E plus focused new and L3 retention regressions, then obtain Codex review and address threads before requesting merge authorization.
-- [ ] A future migration/GC adoption needs an entirely separate safety contract; checkpoint coordination requires evidence. #203 Semantic Cache remains deferred.
-
-### 2026-10-22 LLM-call failure taxonomy P2 (separate PR pending)
-
-- [ ] Add a strictly read-only per-run and bounded-history LLM **request** error breakdown from existing CSV, with conservative fixed codes (429/rate limit, timeout, transport, context budget, JSON post-processing, unknown), explicit denominator/low-n warning and **no exception text, URLs, tokens, prompts, document or path payloads exported**.
-- [ ] Validate malformed/unbounded/in-progress CSV fail closed, no audit changes, and exact-head Hosted Linux offline CI plus Codex review. Keep stage-orchestration failures and document-level success outside this request-level measurement; no live LLM/ES claims.
-- [ ] Subsequent phases, separately scoped: structured emission for non-LLM worker/stage failures, drill-down without sensitive data, JSONL lifecycle, real Windows visual acceptance.
-
-
-### 2026-10-23 reconciled main and next Consumer-quality PR
-
-- [x] Issue #211 fix #212 + SQLite/Excel offline E2E #213 merged and Hosted offline E2E verified; issue closed, real provider/Windows acceptance independent.
-- [x] #219/#220/#221 merged; older unchecked “pending” sections above are historical rather than current PR state.
-- [ ] Validate new Consumer orchestration event PR with exact-head Linux offline-e2e, focused `tests/test_processing_quality.py`, formal Codex P1/P2 review and zero unresolved threads; wait for user merge authorization.
-- [ ] Independently instrument Stage Worker/Producer/Row Merger non-schema failures at authoritative event boundaries. Consumer incidents cannot be interpreted as whole-pipeline or document failure rate.
-- [ ] Controlled 1–3 row Windows + Ollama + ES acceptance and independent ES readback before large batch replay. #203 transient semantic cache stays deferred.
-
-### 2026-10-23 PR #222 accepted; next Row Merger retry incident PR
-
-- [x] Consumer run-scoped orchestration event PR #222 merged into `main` as `bd3fc22c647ef296c2210750a69c78c168c50904` after clean formal Codex exact-head re-review, zero unresolved threads, and Linux offline E2E. The post-merge Linux offline-e2e passed; Windows self-hosted queue explicitly skipped for now by operator request.
-- [ ] New independent P2 PR: Row Merger **non-schema retry** incident telemetry at its actual retry handler, throttled by the existing log window. Two run-scoped codes (prepare/writeback), never raw IDs/messages; added to Processing Quality GUI and offline per-run snapshot. Does not redefine document success/failure or change retries.
-- [ ] Obtain latest exact-head Hosted Linux offline-e2e (including `tests/sql_mode/runtime/test_row_merger_schema_failure.py` and `tests/test_processing_quality.py`), formal Codex review with zero unresolved findings, then require explicit user merge authorization.
-- [ ] Subsequent separate scopes: Producer / Stage Worker durable operational exception taxonomy, bounded filter/drill-down and JSONL retention; no real Windows/ES/Ollama acceptance claim before operator can deploy and verify.
-
-### 2026-10-23 PR #223 closure and independent Producer quality follow-up
-
-- [x] PR #223 merged `a9240f826bfef9a999848017a254c69c5c05f748` after exact-head Linux offline E2E, formal Codex no-findings and all threads resolved; do not equate earlier unchecked PR #223 rows with current state.
-- [ ] New P2 Producer operational incident telemetry: non-Schema schedule/backpressure/future catch sites, no raw IDs or exception text; require exact-head Hosted Linux offline E2E including focused Producer tests, Codex clean review, and explicit merge authorization.
-- [ ] Stage Worker non-LLM exceptions and structured per-stage/worker taxonomy as a separate PR; require source-authoritative boundaries, cancellation exclusion and payload-free audit. Neither Producer nor Row Merger event counts are a document failure rate.
-- [ ] Retention/rotation with resumable aggregation, bounded drill-down/filters, and 1–3 real Windows/Ollama/Elasticsearch writeback/readback acceptance when operator environment is ready; Windows self-hosted runners deliberately deferred.
-
-### 2026-10-23 #224 closure and Stage orchestration telemetry follow-up
-
-- [x] PR #224 user-authorized merged `06a17d48442cce645a8e429e4a6e083fc9679692`, exact-head Codex findings=0, Threads unresolved=0, PR-head Linux offline E2E PASS; post-merge main run #39980110881 Linux offline-e2e SUCCESS. Older pending #224 lines are historical.
-- [ ] Stage orchestration (not global worker crash) escaped exception observation at actual task/runner boundaries, with fixed run-only no-identity codes and no document failure-rate arithmetic. Exact-head Hosted offline Linux and formal Codex Review must pass before requesting explicit merge permission.
-- [ ] Follow-up: real non-LLM versus LLM execution root-cause attribution inside Worker/Stage; an escaped generic Runner exception does not by itself prove the source, so keep taxonomy and GUI terminology neutral. Also bounded drill-down, retention/rotation, 1–3 real ES/Ollama samples and Windows visual acceptance remain unverified.
-
-### 2026-10-24 Stage PR #225 accepted; next Worker phase quality P2
-
-- [x] User-approved PR #225 merged as `e9a7e549205323b310ba7063cde5e39b0f5e1e01` after exact-head Codex 0 Findings, Linux PR offline E2E SUCCESS, 0 unresolved threads. Post-merge `main` run #39984570836 Linux offline E2E SUCCESS. Earlier unchecked PR #225 entries are historical.
-- [ ] Exact-head Hosted Linux tests and formal Codex Review for `feat/quality-worker-execution-phases-20261024`, including actual leaf `PromptAPIPipeline.proc` exception phases, strict run JSONL privacy, mock and cancellation exclusions, successful two-layer audit continuation. Do not merge without user's explicit instruction.
-- [ ] Deeper `CallLLMAPI` transport / provider / response semantics need separate evidence; event phases must not be misrepresented as proven provider diagnoses. Investigate Worker fatal process crashes, bounded drill-down, JSONL rotation/resume and 1–3 real Windows/Ollama/ES writeback/readback acceptance separately. Windows self-hosted remains deferred.
-
-### 2026-10-24 #226 merged; next typed SDK call-site taxonomy PR
-
-- [x] PR #226 user-approved merge `a4eb5ec3fcb68eb07ae849f77294cc8b72a59b24` after exact-head clean Codex, 0 unresolved threads, PR Linux offline E2E SUCCESS. Post-merge main offline-e2e #40066964887 SUCCESS. Older #226 pending work is historical.
-- [ ] Separate `feat/quality-llm-sdk-error-codes-20261024`: validate SDK typed timeout, connection, 429, HTTP 5xx/4xx, SDK response validation as refinements of one Worker call-site event. Run latest-head Hosted Linux offline-e2e including SDK actual mocked transport and Worker privacy/CSV tests; complete formal Codex Review with no unresolved P1/P2; await explicit user merge permission.
-- [ ] Future: true backend/client setup/transport distinction needs carefully grounded instrumentation in `CallLLMAPI`; distinguish retry logical attempts from request rows only when stable IDs exist. Real Windows/Ollama/ES writeback/readback operator tests, JSONL lifecycle and bounded drilldown remain deferred.
-
-
-### 2026-10-24 #227 merged; independent run incident drilldown reporting
-
-- [x] PR #227 exact-head Linux offline-e2e #40069591703 SUCCESS, Codex clean (0 Findings/threads), explicit user-authorized merged `45a6b6e663f1bbe1ad30eccd403f593b0860de1c`. Post-merge main Linux offline-e2e CI run #40070824184 was subsequently verified SUCCESS. Earlier pending #227 notes are historical.
-- [ ] New branch `feat/quality-run-incident-drilldown-20261024`: read-only incident family/code counters and zero-denominator/low-n composition in existing single-run + history quality offline report; validate family allowlisting, full metrics retained despite filtering, corrupted/partial JSONL and schema privacy, per-run isolation. Exact-head Hosted Linux offline-e2e (including new focused tests), formal Codex Review + Findings corrections, 0 unresolved review threads, then wait for explicit merge authorization.
-- [ ] Later independent scope: bounded safe diagnostics by generation/time windows, lifecycle/rotation, source identity-safe report filenames, tighter model client setup vs transport attribution, retry attempt IDs, Windows visual inspection and 1–3 real Ollama/Elasticsearch persisted/readback samples. Do not turn incident composition into a failed document rate.
-
-
-### 2026-10-24 PR #228 merged; JSONL lifecycle safety staged
-
-- [x] PR #228 user-authorized merge `2fdae2bab465471ddb88cbf574c2d6a2b44a0f46` after exact-head Codex 0 findings/threads, Linux PR offline-e2e SUCCESS; post-merge main Linux `offline-e2e` #40074000439 subsequently checked via Hosted GitHub and confirmed SUCCESS. Historical pending #228 entries above no longer authoritative.
-- [ ] New independent `feat/quality-jsonl-manual-rotation-20261024`: opt-in stopped-producer JSONL rotation via existing lock, strict sequential archives max 64, no automatic deletion, offline archive+active replay with shared accumulator, gap and corrupt detection. Verify Hosted Linux exact-head (including physical rotation tests), formal Codex review P1/P2 remediation, zero unresolved threads. **Do not merge without user authorization.**
-- [ ] Follow-up separately: online writer-safe auto-rotation and retention only with checkpoint/manifest guaranteeing accepted-event continuity, crash/restart tests, archive deletion protocol, live GUI cumulative replay and generation restart rules; run-ID file privacy hardening; bounded rolling windows. Live Windows/Ollama/ES writeback/readback remains operator dependent.
-
-
-### 2026-10-24 #229 accepted; archival SHA256 integrity stage 2
-
-- [x] User-approved #229 merge `638c0ddaa030e6d85de8f93e12f2360baf295802`, exact-head Codex no Findings/threads, PR Linux offline-e2e SUCCESS #40075231351; postmerge main Linux offline-e2e #40078552431 SUCCESS. Old unchecked #229 items are historical.
-- [ ] New `feat/quality-jsonl-integrity-manifest-20261024`: explicit stopped-producer trust-on-first-use v1 sidecar seal, SHA256 file-level consistency and ordinal gaps, rollback-aware manifest extension on later rotation, validation before/after offline report, manifest-only history discovery; preserve unsealed legacy history with explicit status. Hosted exact-head Linux E2E including actual-file manifest regressions and formal Codex Review required, correct P1/P2 findings and resolve all threads, obtain user authorization before merge.
-- [ ] Independently design crash-recovery/repair protocol for interrupted rename + ledger publish, externally anchored/signable manifests, performance budgets, durable retirement/pruning checkpoints and safe rollback. GUI real-time cross-segment replay remains incomplete; Windows self-hosted and 1–3 actual Ollama/ES write/readback runs are operator-gated. No auto-delete in this PR.
-
-
-### 2026-10-24 PR #231 reviewed; GUI archived quality continuity
-
-- [x] PR #231 exact-head `a8711e9337b62e4b9c6ad62f37ba3e78ba4e8fea` Codex completed 0 Findings/threads; Hosted Linux `offline-e2e` #40086132477 SUCCESS. **PR remains OPEN until user explicitly approves merge**. Keep separate from GUI PR.
-- [ ] New independent `feat/quality-gui-cross-segment-continuity-20261024` from merged #230 main: GUI background reader verifies/replays archived shards, incrementally follows active tail, rebuilds on generation reset, does not double-count repeated event IDs or lose prior rejected→confirmed decisions; fails closed on invalid sealed archives with visible warning. Add `tests/test_processing_quality_gui_continuity.py` to Hosted Linux, formal exact-head Codex Review, address any P1/P2 and unresolved threads, then await explicit user merge authorization.
-- [ ] Later independent: bounded-memory checkpointing for very large run histories, true online writer-safe rotation / GUI concurrency, Windows visual smoke, safe archive retirement and retention checkpoints, recovery of dual-hardlink interruption states, signed/external manifests and real Ollama/ES readback acceptance. Do not activate archive auto-delete.
-
-
-### 2026-10-25 PR #232 merged; GUI run read safety thresholds
-
-- [x] PR #232 user-authorized merge `324148f7d747be8afbddb4c6a448d053b0255e2c`; latest-head Codex 0 Findings/threads, Linux PR offline-e2e #40092679536 SUCCESS, postmerge main Linux #40101418772 SUCCESS. All four previous P2 were fixed before merge. Old entries saying #232 pending are historical.
-- [ ] Independent new `feat/quality-gui-memory-budgets-20261025`: GUI-only limits for unique event IDs, approximate retained identity characters and JSONL single-line reads, explicit capacity-exceeded unavailable GUI status with no event truncation, correct offset retry and archive+live shared cap. Run newest-head Hosted Linux `offline-e2e` with `tests/test_processing_quality_gui_budgets.py`, formal Codex P1/P2 Review and resolve all findings/threads, await explicit user merge approval.
-- [ ] PR #231 interrupted rotation rollback still OPEN/not merged (original exact-head Codex/PR Linux successful). Only user may authorize merge; check mergeability and current main at that time.
-- [ ] Longer term: disk-backed exact run identity state/index, restartable checkpoint and explicit manifest retirement safe enough for automatic archive pruning; Windows memory/Tk visual profiling; online rotation protocol; external trust signatures; real Ollama/ES writeback/readback. No automatic deletion in this PR.
-
-
-### 2026-10-25 PR #233 formal Codex review (P2 remediation pending)
-
-- [x] Exact-head `974418d8ea02dcffae1a5d59991616cb7b1d2d6a` Codex review completed with **one P2**, unchanged over-limit run repeatedly doing O(N) replay/hash on every GUI poll. Historical state "Review running" superseded.
-- [ ] New PR #233 branch commits: memoize unchanged over-cap archive+ledger+active stat identities, immediate capacity failure without repeated costly archive replay; invalidate on physical generation change/path change. Added sealed-archive work-count, active metadata change/recovery, legacy archive removal test. Run Hosted Linux CI at latest HEAD, reply to P2 comment and resolve thread only after verified fix, request formal Codex re-review. Require explicit user merge authorization.
-
-
-### 2026-10-25 PR #233 further P2 findings
-
-- [x] Second formal Codex review of `82cc48f...` completed with **two new P2**: first-load active disappearance silently reducing legacy counters, and lost archive count when metadata raced an over-budget replay. New commits persist observed archive/active history independently of the capacity retry marker, only after successful or definitely over-budget read; active disappearance must be explained by matching new numbered shard. Added targeted actual-file tests, including manifest recovery from a temporary invalid extra shard.
-- [ ] Complete exact-head Hosted Linux offline-e2e and fresh formal Codex review, reply to and resolve all three review threads only after correction verified. PR #233 must remain OPEN until user explicitly approves merge.
-
-### 2026-10-27 #233 accepted; new offline SQLite spill P2
-
-- [x] PR #233 latest head `0072cda7acc306753339c38c1f2295bf93694e6b` formal Codex 0 Findings/threads, Linux PR offline-e2e #40191931965 SUCCESS; user-authorized merge `8d4a967e29dbda8d845f30dde435e2883f9b9b3c`, postmerge main Linux `offline-e2e` #40360012110 SUCCESS. Windows operator deferred; overall workflow not SUCCESS. Earlier pending items above are historical.
-- [ ] New branch `feat/quality-offline-sqlite-disk-spill-20261027`: implement opt-in private temporary SQLite identity sets to avoid keeping all unique event/document IDs in Python RAM for large offline single-run/history reports. Preserve exact dedup, metadata/manifest verification, report_version=1 and no source writes. Gate new physical regressions via Hosted Linux, request exact-HEAD formal Codex P1/P2 Review and remediate all findings/threads, then await explicit user Merge authorization.
-- [ ] Follow-on separately: benchmark end-to-end runtime/RSS and SQLite I/O on representative long runs; true resumable authenticated disk checkpoint with crash/replay/manifest binding; safe archive retirement protocol; GUI bounded checkpoints; Windows/LLM/ES smoke. Do not call the temporary SQLite spill a persistent checkpoint or make rotation/pruning automatic. PR #231 is independent, open and currently mergeable=false.
-
-### 2026-10-27 PR #234 merged; benchmark resource-cost truthfulness
-
-- [x] PR #234 accepted exact-head `63e59187f3fe89356ee222c48dcda41cac29040c`, formal Codex clean latest head and 2 resolved P2 threads, Linux PR offline-e2e #40374056931 SUCCESS, user-authorized merge `4d34ac790a4511963d1b191cd495f459f9bee341` and postmerge main Linux offline-e2e #40421390604 SUCCESS. Windows operator deferred. Historical #234 unmerged lines above superseded.
-- [ ] New independent `feat/quality-offline-benchmark-20261027`: real stopped-run comparative benchmark in child processes; verify **complete** report SHA256 equality, measured per-mode runtime, tracemalloc Python allocations, OS RSS where available, SQLite main file final bytes proxy (not I/O volume); privacy and safety regressions in Hosted Linux; exact-head formal Codex review, repair P1/P2 and threads; explicit user Merge authorization required.
-- [ ] Operator: run reproducible repetitions with several representative real-size stopped runs under the actual Windows environment to establish observed speed/RSS/disk tradeoffs. Need separate design and acceptance for persistent crash-safe exact checkpoint, auto pruning, online rotation, authenticated external integrity and independent Ollama/ES readback; none are implemented by benchmark. PR #231 stays independent/unmerged.
-
-### 2026-10-27 PR #235 Codex P1/P2 remediation handoff
-
-- [x] Formal Codex review of initial `632037f892a87c091b1038c089be5d867393de54` returned 1 P1 (imports in try violate AGENTS.md) and 1 P2 (argparse errors disclose private invalid inputs). Initial HEAD Linux offline-e2e #40460505496 SUCCESS.
-- [ ] Fix commits `11bf560` and `278d55b` relocate imports, sanitize argparse and add real CLI process/static rule tests; verify final exact-HEAD Hosted Linux, request formal Codex re-review, respond and resolve both threads when accepted. Await explicit user Merge; PR #231 remains open, independent.
-
-### 2026-10-27 PR #235 accepted; benchmark source-generation integrity enhancement
-
-- [x] PR #235 final exact HEAD `9534a9497ba7becf4bafe5cc8fe861cfd33d8467`, formal Codex zero findings and 2 resolved threads, Hosted Linux PR offline-e2e #40462916581 SUCCESS, user-authorized merge `6cba3ef417047f07a2c3e8b46bd0ac36e7d2fd64`, postmerge Linux offline-e2e #40465197165 SUCCESS. Windows queued/operator-deferred, overall run not SUCCESS. Prior pending #235 entries are superseded.
-- [ ] New independent branch `fix/quality-benchmark-source-generation-20261027`: reject source generation changes during paired samples even when report digest remains identical, using bounded active/archive/manifest metadata checks; provide physical file mutation/symlink/empty-source regressions, verify latest-head Hosted Linux and formal Codex review, fix any findings/threads; **do not merge before explicit user authorization**.
-- [ ] Operator still must benchmark 2–3 repeats over several representative fully stopped real runs on target Windows hardware; implement no automatic pruning/rotation, durable checkpoint or ES live E2E acceptance here. #231 remains independent and unmerged.
-
-### 2026-10-27 PR #236 merged; next Windows native benchmark measurement
-
-- [x] PR #236 accepted at exact HEAD `0f4012b16fe6c1ad2ce5840eacd1e2655f027920` with formal Codex 0 Findings/threads, Hosted Linux offline-e2e #40468583534 SUCCESS, user-authorized merge `6c5cda3b51fab14049edf540b65f30a59f2fb7ef`, postmerge main Linux offline-e2e #40470719085 SUCCESS. Overall workflow queued due to Windows self-hosted runners. Historical pending #236 entries above superseded.
-- [ ] `feat/quality-benchmark-windows-working-set-20261027`: implement nullable native Windows peak resident working-set metric with ctypes/PSAPI without new dependencies; exact-head Linux simulated Windows API regressions and formal Codex P1/P2 review, fix findings and threads. Real Windows physical native probe acceptance operator-deferred. **Explicit user merge approval required.**
-- [ ] Operator: run per-run benchmark against fully stopped real Windows/Ollama workloads; verify RSS and timing tradeoffs for representative size distribution before memory-mode policy changes. PR #231 independent/open; no automatic archive pruning, durable checkpoint or real ES readback in this phase.
-
-### 2026-10-27 PR #237 accepted; follow-on benchmark subprocess wall cost
-
-- [x] PR #237 accepted at exact HEAD `4bd0bfbf15f6a1d9285e2cc6064a61771e169779`, formal Codex zero Findings/threads, latest PR Linux offline-e2e #40483598995 SUCCESS, user-authorized main merge `1757570e0c40d331d7a55ece386089309f13cd10`, postmerge main Linux offline-e2e #40491920298 SUCCESS. Windows selfhosted remains queued/operator-deferred; prior open #237 entries above are superseded.
-- [ ] Branch `feat/quality-benchmark-child-process-wall-20261027`: preserve report-only `median_seconds` while adding parent-owned `median_subprocess_wall_seconds` per mode, proving it includes child launch/IPC/shutdown (not the total CLI). Focused unit + real subprocess tests, latest-head Linux CI, formal Codex P1/P2 Review and thread resolution. **No merge until user explicitly authorizes it.**
-- [ ] Windows operator: physically validate PSAPI and real representative, fully stopped audit runs before selecting default SQLite mode. No automatic rotation/pruning, durable checkpoint or live ES/Ollama acceptance implied; PR #231 independent OPEN.
-
-### 2026-10-27 PR #238 accepted; benchmark non-finite safety regression
-
-- [x] PR #238 merged after latest-head formal Codex zero Findings/Threads and Hosted Linux offline-e2e #40495454346 SUCCESS; user-approved main merge `3cabaa4baa475d4d3566d552d6a5a53cae0fb1a8`. Postmerge main Linux offline-e2e #40499018753 SUCCESS; Windows self-hosted queued, overall run not SUCCESS. Prior #238 pending entries superseded.
-- [ ] `fix/quality-benchmark-finite-measurements-20261027`: fail closed on worker NaN/Infinity, numerical overflow, incorrect traced byte type and invalid parent wall time; guard CLI from non-standard JSON and preserve sanitized private-path-safe errors. Verify actual offline quality report parity plus malformed-worker regression in latest-head Hosted Linux; request formal Codex review, fix P1/P2 and review threads before user-authorized Merge.
-- [ ] Operator Windows PSAPI physical smoke and representative stopped-run performance comparisons; follow-on separate memory system compaction per AGENTS.md (long dated architecture/API/decisions/backlog); no automatic archival pruning or durable checkpoint. PR #231 independent and OPEN.
+- [x] Third Codex review exact HEAD `7f53e8171034893554d1052b859f01c5e39a9dc1` returned **1 P2**: missing active provider cache-aware audit fields and distinct stage-isolated heuristic GUI throughput contract. Latest-head Linux offline-e2e #40525751547 SUCCESS including active archive-test step; historical six review threads remained unresolved.
+- [x] Restore `cached_input_tokens` nullable provider evidence (`provider_usage` including explicit zero), stage identity, `total_tok_per_s`, `effective_tok_per_s_est`, historical `processing_tps`, provider/heuristic distinct source and same-stage two-stable-sample capped proxy; add documentation guard regression.
+- [ ] Fourth exact-head Hosted Linux CI SUCCESS and formal Codex re-review; address any P1/P2 then evidence-backed resolve prior six threads before explicit user-approved merge. Windows operator run remains queued/deferred and PR #231 stays independent.

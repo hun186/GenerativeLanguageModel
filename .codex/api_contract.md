@@ -73,64 +73,16 @@
 
 - Persisted model metadata is allowlisted. Credential-like keys, actual endpoint URLs, API keys/tokens/passwords/private keys and raw model specs must not be written into ES metadata.
 
-## Recent Changes
+## Current Processing Quality contracts
 
-### 2026-10-08 LLM token/context GUI observability
+The following sections describe the accepted main implementation through PR #239. Historical review/merge placeholders were superseded; see exact archived snapshot for original chronology.
 
-- Extended the per-run audit contract with local prompt-component token estimates while preserving API usage as authoritative token/context usage.
-- Added a default-collapsed Windows GUI distribution surface driven from the append-only audit CSV, including per-slice LLM latency P50/P95/max.
-
-### 2026-10-06 v1.1 final quality/coverage hook
-
-- Added the narrow Python-only final-result quality policy contract described above; it is explicit, fingerprinted, payload-minimizing, and outside root YAML.
-
-### 2026-10-06 Closure documentation corrections
-
-- Clarified that persisted semantic processing identity is opt-in and that prompt semantics influence the hash without persisting plaintext prompts.
-- Clarified default immediate cleanup behavior for successful transient runtime artifacts.
-
-### 2026-10-06 L3 reporting corrective
-
-- PR #201 introduced the run-local deletion-budget latch and added regressions for later malformed tombstones and smaller artifacts encountered after byte-budget exhaustion.
-
-### 2026-10-04 L2/L3 contracts
-
-- Added explicit partial-success/cancellation taxonomy, production cancellation/observer contracts and safe retention/GC contracts.
-
-### 2026-10-02 to 2026-10-03 K2/L1 contracts
-
-- Added bounded nesting, prompt-aware input preparation, persisted processing identity and SQL/ES freshness/recheck contracts.
-
-## Archived History
-
-- `.codex/archive/api_contract.md-20261006-134200.md` — complete pre-compaction API/contract history through PR #200 head `39177737486a372f38e9b6d81563d6f14327459a`.
-
-### 2026-10-12 audit GUI throughput extension (pending review)
-
-- Optional per-call audit columns: `cached_input_tokens` (nullable), `cached_input_token_source` (either `provider_usage` or blank), and `stage_identity` (safe stage name or `single_stage`). No prompt/output payload is added to the audit handoff. Provider cache usage accepts an explicit zero but never infers a zero when metadata is absent.
-- Existing `processing_tps` remains API-total-based historical telemetry. GUI-only `total_tok_per_s` is derived from API input+output divided by strictly positive slice elapsed. GUI-only `effective_tok_per_s_est` uses provider-reported cached input when valid, otherwise a conservative, stage-isolated heuristic after repeated stable template-size evidence; estimate samples and provider samples are counted separately and absent evidence remains unknown.
-
-### 2026-10-19 ES multidim_event_json metadata normalization (PR #216 pending)
-- Strict ES multidim output_profile still requires exactly article_date_iso (date or null) and article_date_precision (day/month/year/unknown) as a coherent pair; null requires unknown and non-null cannot have unknown. For multidim sliced merge only, source-consistent pairs are selected atomically under existing left/right policy. No inference of publication date from Event_Timeline or signature/event dates.
-- On strict profile normalization only, exact top-level keys coverage/novelty/impact/credibility/importance_score may be moved losslessly into importance; a conflicting nested duplicate is an error, and allowed value type is integer or null, not bool/float/string. Unexpected other fields still fail closed. Generic JSON / alternate output profiles are unchanged.
-- Existing audit and writeback metadata behavior, Event/event_ids referential integrity, pending status and original Success retention are unchanged.
-
-
-### 2026-10-19 ES per-row bulk acknowledgement (proposed new PR)
-- `ESSink.write_main()` / `write_flatten()` can enqueue bulk updates without sending them immediately. In the Row Merger path, `ESSink.confirm_writeback()` explicitly drains that buffer and propagates bulk failures before source input, successful slices, or pending/completion bookkeeping can be finalized.
-- For an acknowledged ES bulk, search-based pending discovery may still require an index refresh; the confirmation contract does not force refresh or prove an entire batch is complete.
-- Other sink types retain their previous behavior; this change must be validated by exact-head CI and external ES readback before release.
-
-
-### 2026-10-20 run-scoped processing-quality JSONL v1 (PR #218)
+### run-scoped processing-quality JSONL v1 (PR #218)
 - Per-run sibling of `llm_call_audit_<run_id>.csv`: `processing_quality_events_<run_id>.jsonl`.
 - Every record: `schema_version=1`, UUID `event_id`, UTC `ts`, `run_id`, `event`, `scope`, `code`, `outcome`, `document_id`, `slice_id`. Event families: `slice_json_validation`, `slice_json_repair`, `document_schema_rejected`, `document_writeback_confirmed`. No raw prompts, outputs, secrets or exception bodies.
 - GUI percentages: first-pass invalid / completed JSON validation attempts; repair successful / completed repair attempts; final schema pending (distinct document IDs with rejection but without later confirmation) / distinct documents with writeback decision. Unknown denominator is not shown as 0%.
 
-### 2026-10-20 PR #218 acknowledgment caveat
-- `document_writeback_confirmed` is emitted only for sinks implementing successful `confirm_writeback()`; currently ES bulk acknowledgement (not ES refresh/readback). Excel/CSV/SQl without this explicit handshake do not contribute a confirmed writeback count. Do not interpret missing confirmation events as failed documents or a batch-wide success percentage.
-
-### 2026-10-20 offline CLI quality report contract (separate PR)
+### offline CLI quality report contract (separate PR)
 - `python -m czjLLM.cli_tools.processing_quality_report --audit-path <llm_call_audit_run.csv>` reads the matching JSONL, or `--audit-dir <directory> [--limit 1..100]` reads bounded sorted run history; optional `--output <report.json>` is atomic and refuses JSONL as a destination.
 - Report `report_version=1` contains observed `QualityAccumulator` aggregate metrics only, with `state`, `sample_advisories`, `incomplete_or_concurrent_append`; never exports raw event/document IDs or silently converts missing denominators to 0%. Recovered schema does not remain failed. No cross-run aggregate percentage, and explicit acknowledgment only (currently ES) does not imply ES readback.
 
@@ -148,106 +100,100 @@
 
 - A recursion-depth failure while decoding a complete JSONL line counts as a rejected corrupt complete line; the reader continues with subsequent lines instead of aborting a whole report or keeping a stale GUI snapshot. GUI document error label is now 'LLM 文件結構異常（待處理）', describing observed post-merge output validation failures, not Elasticsearch mapping errors.
 
-
-### 2026-10-23 quality JSONL Consumer incident schema (new PR, unmerged)
-
+### quality JSONL Consumer incident schema
 - Existing version 1 schema additionally accepts `event=consumer_orchestration_failure` with `scope=run` and allowlisted codes `CONSUMER_ROUND_TIMEOUT`, `CONSUMER_ROUND_EXCEPTION`, `CONSUMER_TERMINATED`. Invalid code/scope combinations fail closed; there is no source, prompt, document, or slice ID in this event.
 - `QualityAccumulator.snapshot()` adds integer `consumer_orchestration_failure_events`; no percentage or denominator is introduced. Existing JSON validation/repair and document decision rates are unchanged. Retries can produce multiple events.
 
-
-### 2026-10-23 PR #222 P2 run-event privacy correction (pending validation)
-
-- For `consumer_orchestration_failure`, `emit_quality_event()` explicitly rejects nonempty or non-string `document_id` and `slice_id` rather than relying on the one internal caller. The reader/accumulator also refuses any nonempty/non-string identity in version-1 run events, including previously emitted/tampered complete JSONL rows. Omitted fields and exact empty strings remain compatible. No other event type's identity contract changes.
-
-### 2026-10-23 Producer operational quality extension (P2 PR proposal)
-
+### Producer operational quality extension (P2 PR proposal)
 - Existing per-run `processing_quality_events_<run_id>.jsonl` schema v1 admits one new `event=producer_operational_failure`, `scope=run`, `outcome=observed` with fixed codes: `PRODUCER_SCHEDULE_EXCEPTION`, `PRODUCER_BACKPRESSURE_EXCEPTION`, `PRODUCER_FUTURE_EXCEPTION`. The write and read boundaries reject nonempty/null `document_id` or `slice_id`; events do not include exception text, input/prompt text, URLs, secrets, paths or PKs.
 - `QualityAccumulator.snapshot()` adds `producer_operational_failure_events` and per-code entries under existing `error_codes`. Numerators are observed caught exceptions only and are never folded into slice JSON attempts, repair attempts, documents decided/schema-pending, or LLM call failures. Existing schema_version and API signatures remain unchanged; missing count is handled as zero in GUI. Real worker/Stage failures and rate denominators remain outside the contract.
 - Added Producer production catch-site regression gate to Hosted Linux offline E2E; exact-head Codex and CI acceptance pending.
 
-### 2026-10-23 PR #224 Producer schedule event semantic clarification (pending review)
-
-- `PRODUCER_SCHEDULE_EXCEPTION` means **only** a non-cancellation exception raised directly by the `schedule_one_row()` call. It does **not** cover preceding `mark_running()`, `record_adjustment(mark_running_before_dispatch)`, or no-op `mark_not_running()/record_adjustment()` bookkeeping failures; those are separate operational failure sources and must not be silently conflated with the scheduler code. The outer existing catch/release behavior remains unchanged. No payload/PK/exception body is included in the emitted run event.
-
-### 2026-10-23 Stage orchestration quality events (P2 PR proposed; Hosted acceptance pending)
-
+### Stage orchestration quality events
 - Extend Quality schema v1 with `event=stage_orchestration_failure`, `scope=run`, `outcome=observed`, fixed codes `STAGE_PREPARE_EXCEPTION` (Stage task resolution/input preparation exception) and `STAGE_RUNNER_EXCEPTION` (escaped exception from actual Stage Runner call, after legacy signature fallback where needed). The public writer and strict reader reject non-empty, null, or otherwise non-string document/slice IDs for run events; original exception, stage/chunk identity, model endpoint, prompt/output, file paths and secrets are not included in JSONL.
 - Add `stage_orchestration_failure_events` to `QualityAccumulator.snapshot`, with codes in existing `error_codes`. Not a distinct failed document count, provider request failure, full worker exception taxonomy or a rate denominator. An `ExecutionCancelled`, normal `{ok:false}` or successful 2-arg Runner fallback does not emit an incident. The original Runner/Stage exception remains authoritative and propagates.
 
-### 2026-10-24 leaf Worker quality phase event extension (P2 PR pending)
-
+### leaf Worker quality phase event extension
 - Quality JSONL schema_version=1 adds `event=worker_phase_failure`, `scope=run`, `outcome=observed` and allowlisted `code` values: `WORKER_PRECALL_EXCEPTION`, `WORKER_LLM_CALL_EXCEPTION`, `WORKER_RESPONSE_EXCEPTION`, `WORKER_PERSIST_EXCEPTION`. Both writer and reader reject non-empty/non-string document_id and slice_id in these run events. No request, slice, stage, document identity, raw exception, URL, prompt or model response fields are emitted.
 - `QualityAccumulator.snapshot()` adds `worker_phase_failure_events`; codes appear in existing `error_codes`. These are exception observations only (no denominator) and never imply a distinct failed LLM call/document or failure rate. The existing `PromptAPIPipeline.proc` return dict, CSV request audit, cancellation handling, and mock results are unchanged.
 
-### 2026-10-24 Worker SDK typed subtype extension (PR pending)
-
+### Worker SDK typed subtype extension
 - Existing `worker_phase_failure` `scope=run` allowlist gains `WORKER_LLM_TIMEOUT_EXCEPTION`, `WORKER_LLM_CONNECTION_EXCEPTION`, `WORKER_LLM_RATE_LIMIT_EXCEPTION`, `WORKER_LLM_HTTP_SERVER_EXCEPTION`, `WORKER_LLM_HTTP_CLIENT_EXCEPTION`, `WORKER_LLM_RESPONSE_VALIDATION_EXCEPTION`. Events still have no document/slice/stage IDs, prompt, endpoint, credentials, raw error or response; writer/reader reject misplaced identities and codes.
 - One caught leaf Worker error produces at most one `worker_phase_failure` quality record; its existing `worker_phase_failure_events` count and old request CSV format/exception return remain unchanged. Unknown SDK/local errors retain `WORKER_LLM_CALL_EXCEPTION`. Only typed SDK exceptions / status (4xx/5xx) and known wrapped direct causes qualify for refinement.
 
-
-### 2026-10-24 read-only incident family diagnostics report (PR pending)
-
+### read-only incident family diagnostics report
 - Existing `processing_quality_report.py` `report_for_audit(audit_path, *, incident_family=None)`, `report_history(audit_dir, *, limit=20, incident_family=None)`, and `summarize_quality_stream(path, *, incident_family=None)` gain an optional fixed allowlist run-only event-family focus. CLI adds `--incident-family {consumer_orchestration_failure,row_merger_retryable_failure,producer_operational_failure,stage_orchestration_failure,worker_phase_failure}` for `--audit-path` or `--audit-dir`. Unknown or document/slice family is an error, never a silent zero.
 - Each existing `run` report gains additive `incident_diagnostics`: `scope=run`, denominator explanation, `focus_family`, `observed_run_incident_events`, and `families[event]={observed_events,codes,share_of_observed_incidents_pct}` plus low-sample advisory. Code keys are accepted fixed JSONL error enums with count > 0 only; family groups come from the same source-of-truth event/scope mapping as strict JSONL parser. A focused report still includes full unfiltered `metrics` and a denominator from **all** run-only incidents, so filtered counts do not imply a rate of failed documents.
 - Empty observed incident denominator produces `share_of_observed_incidents_pct=null`, not 0%; counts can be zero. Repeated catch sites may describe one logical failure. Corrupt complete lines and incomplete tail retain existing degraded/incomplete status; no raw JSONL, event IDs, document/slice IDs, URLs, prompts or exception text in new diagnostics. No change to `report_version=1`, legacy result fields, producer CSV or JSONL schema.
 
-
-### 2026-10-24 manual JSONL segment rotation stage 1 (unmerged PR)
-
+### manual JSONL segment rotation stage 1
 - `czjLLM.cli_tools.processing_quality_rotate --audit-path llm_call_audit_<run>.csv --confirm-stopped [--max-segments N]`: explicit maintenance command returning only `mode=manual_quality_rotation`, `rotated: bool` and `archived_segments: int`. Refuses missing acknowledgment, malformed audit filename, incomplete active final record, symlink, gap, collision or exhausted bounded archives. No auto timer or deletion.
 - `rotate_quality_event_stream(audit_path, *, max_segments=64)` produces `processing_quality_events_<run>.jsonl.seg-00000001` etc using the existing writer lock. New emits still append to `processing_quality_events_<run>.jsonl`.
 - Existing `summarize_quality_stream`, `report_for_audit`, `report_history` replay archived segments plus optional active using one accumulator; allow archive-only runs; reject discontinuous archive indexes and distinguish `degraded_incomplete_archive`. Existing `run.metrics` and `incident_diagnostics` remain consistent with one logical run. Additive `archived_segments` integer field; no alteration to JSONL event version, `report_version=1`, request CSV or GUI controls.
 
-
-### 2026-10-24 quality archive consistency manifest v1 (unmerged PR)
-
+### quality archive consistency manifest v1
 - Sidecar derived from active path: `processing_quality_events_<run>.jsonl.manifest.json`; JSON v1 contains exactly `schema_version:1`, `segments: [{sequence:1..N, bytes:int, sha256:64-lowercase-hex}, ...]`, `ledger_sha256` (canonical segments JSON hash). Maximum 64 shards and 24 KiB metadata; no raw event identifiers, documents, model addresses or secrets. This is self-consistency, NOT an authenticated chain/signature.
 - New CLI `python -m czjLLM.cli_tools.processing_quality_manifest --audit-path ...` reports only `mode=quality_archive_manifest`, `status` and `sealed_segments`. One-time opt-in legacy baseline uses `--initialize --confirm-stopped`, cannot overwrite an existing baseline; no in-place archive modifications. The existing manual rotate CLI remains unchanged; after initial sealing it validates and extends the manifest atomically under the same writer lock.
 - Offline single-run/history report `run.archive_integrity={status:verified|unsealed_legacy|not_applicable,sealed_segments:int}` is additive, `report_version=1` unchanged. Verified mismatch, missing archive, invalid sidecar, symlink or concurrent metadata mutation raises `ValueError` (fail closed); archive-only history with missing sealed shards must still surface error. `state=observed` alone does not prove sealed consistency; `unsealed_legacy` warns on unprotected history. No legacy CSV, quality event JSONL schema, GUI or provider contract modifications.
 
-
-### 2026-10-24 GUI quality cumulative stream snapshot (independent unmerged PR)
-
+### GUI quality cumulative stream snapshot
 - `QualityRunTailReader(path).poll() -> (changed:bool, stats:dict)` reuses all `QualityAccumulator.snapshot()` keys, plus `quality_stream_status` (observed/not_initialized/unsealed_legacy/incomplete_tail/degraded_corrupt_lines), `quality_archived_segments:int`, `quality_archive_integrity:string` (verified/unsealed_legacy/not_applicable), `quality_skipped_corrupt_lines:int`. The per-run reader maintains accumulated distinct document and event ID state across physical archive boundaries, and only replays full archives on actual generation changes. The meaning of fixed event percentages does not change.
 - GUI worker translates unsafe/invalid archive, active-file or manifest I/O states to aggregate-only `quality_stream_status=unverified` and an explicit unknown-statistics message; no stale prior green state, raw exception text, URLs, run IDs, source documents, payload or local paths. No change to JSONL writer event schema or `report_version=1`. No user control to trigger rotation from GUI.
 
-
-### 2026-10-25 GUI read-side safety-budget contract (new independent PR)
-
+### GUI read-side safety-budget contract
 - `QualityAccumulator(*, max_events: int|None=None, max_identity_chars: int|None=None)` and `QualityTailReader(path='', *, accumulator=None, max_line_bytes: int|None=None)` remain unlimited by default. Positive (non-bool) integer budgets may be supplied by read-side callers; crossing a budget raises `QualityCapacityExceeded(ValueError)`, without accepting the over-limit event or advancing the committed JSONL byte offset. `empty_copy()` preserves limits on an active generation reset.
 - `QualityRunTailReader(path='', *, max_events=50000, max_identity_chars=4000000, max_line_bytes=65536)` enforces the same finite budget across sealed and legacy archived segments plus active JSONL. GUI-only `quality_stream_status=capacity_exceeded` is distinct from `unverified`; GUI publishes no partial metrics on either status. No event schema, persisted file, manifest format, or offline `report_version=1` change; archived events remain losslessly available to the separate uncapped offline report.
 
-
-### 2026-10-25 unchanged GUI over-cap generation behavior
-
+### unchanged GUI over-cap generation behavior
 - `QualityRunTailReader.poll()` may raise `QualityCapacityExceeded` immediately after metadata checks on subsequent polls of the same previously failed generation. This is intentional; its public contract continues to provide **no partial snapshot** while over-cap. Archive/Manifest/active identity changes invalidate this fast path, and switching to a new reader/path resets it. Original offline report and event output contracts unchanged.
 
-### 2026-10-27 optional offline report SQLite identity spill (unmerged)
-
+### optional offline report SQLite identity spill
 - `summarize_quality_stream(path, *, incident_family=None, disk_backed=False)`, `report_for_audit(..., disk_backed=False)`, `report_history(..., disk_backed=False)`, and CLI `--disk-backed` enable ephemeral local SQLite exact event/document identity retention. Default False retains prior API behavior.
 - Results use the **same** `report_version=1` single/history payload, diagnostics, percentages, safety statuses and integrity validation; raw IDs and temporary DB paths must not enter the JSON report. OS-managed private temporary SQLite stores are destroyed in normal/error cleanup; no persistent data/index contract.
 
-### 2026-10-27 offline quality benchmark CLI (unmerged)
-
+### offline quality benchmark CLI
 - `python -m czjLLM.cli_tools.processing_quality_benchmark --audit-path <llm_call_audit_*.csv> [--repetitions 1..5] [--timeout 1..3600]` is an opt-in read-only CLI. JSON stdout contains `benchmark_version=1`, `mode=offline_quality_single_run`, `parity=matching_complete_report_sha256`, `report_sha256`, `repetitions`, `measurements.{memory,sqlite}` and `measurement_notes`; each measurement exposes sample count, median elapsed seconds, median traced Python peak bytes, nullable OS high-water RSS bytes and nullable SQLite main temp DB final bytes.
 - The tool does not change offline report v1 JSON/CLI output or JSONL lifecycle. Its private stdin-only worker protocol is **not** a stable public API. Source/payload/identity and private paths must not be printed or persisted.
 
-### 2026-10-27 benchmark source-generation fail-closed extension (pending acceptance)
-
+### benchmark source-generation fail-closed extension
 - Existing `benchmark_quality_run(...)` and CLI/JSON output shapes remain unchanged. Input now must contain a physical quality stream (active or valid numbered archive), not merely a CSV-shaped audit filename. Before/after every child sample, the benchmark validates unchanged canonical JSONL/shard/manifest path metadata; altered generations raise sanitized `ValueError` and CLI exits 2 without emitting performance JSON.
 - Inputs must be regular non-symlink files; no claim of synchronized/atomic content hashing. Existing `report_sha256` parity check remains independent and required.
 
-### 2026-10-27 Win32 native benchmark memory semantics (pending)
-
+### Win32 native benchmark memory semantics
 - Existing `benchmark_quality_run()` and CLI JSON contract remain unchanged. On Windows, `median_peak_process_rss_bytes` now intends to report native PSAPI `PROCESS_MEMORY_COUNTERS.PeakWorkingSetSize` in bytes. The field remains null when the API fails, rather than making up a metric or deriving it from `tracemalloc`. On Linux/macOS original `ru_maxrss` interpretation is unchanged.
 - This Windows statistic is a peak resident **working set**, not private committed/virtual bytes, a zero-cost in-report memory peak, or a hard RSS guarantee. Only intra-host comparisons on stable inputs are valid. Windows self-hosted tests not yet run.
 
-### 2026-10-27 optional benchmark subprocess wall-time metric (pending acceptance)
-
+### optional benchmark subprocess wall-time metric
 - The opt-in `benchmark_quality_run()`/CLI still returns `benchmark_version=1` and the prior result keys; each `measurements.{memory,sqlite}` gains additive numeric `median_subprocess_wall_seconds` (`>=0`) derived **only** from parent monotonic-clock timing of the child `subprocess.run()`. Existing `median_seconds` remains inner report-call runtime and is unchanged. No report-v1 JSON, worker stdin protocol, source-files or archives contract changes.
 - This value includes process spawn/import, IPC and child exit but excludes parent metadata integrity guards and entire CLI time. It is not performance superiority, a worker-selected metric or a production SLA.
 
-### 2026-10-27 benchmark numeric validity at private worker boundary (pending acceptance)
-
+### benchmark numeric validity at private worker boundary
 - Opt-in benchmark CLI/JSON public shape stays `benchmark_version=1`; every numeric summary metric must serialize as finite, standard JSON (never NaN/Infinity). Parent rejects nonstandard worker tokens `NaN`/`Infinity`/`-Infinity`, float exponent overflow, non-finite/negative worker report wall time, non-integer/negative traced bytes, and invalid parent-observed subprocess wall time. On failure, no partial benchmark result is emitted; CLI exits 2 with fixed sanitized argparse error and no raw identities, private paths, stdout or child exception details.
 - Private worker protocol remains internal; invalid data fails closed rather than substituted with zero or inferred values. Existing report-version 1 and SHA256/source-generation parity contracts unchanged.
+## Current Elasticsearch multidimensional Event / writeback contracts (accepted)
+
+- The strict ES `multidim_event` output profile at `czjLLM/es_mode/output_profiles/multidim_event.py` requires the **paired** top-level `article_date_iso` and `article_date_precision` fields. `article_date_iso` is a valid calendar `YYYY-MM-DD` or null; precision is exactly `day`, `month`, `year` or `unknown`. Null requires `unknown`, a non-null date forbids `unknown`, month precision requires day `01`, and year precision requires `YYYY-01-01`. Missing/mismatched pair fails strict validation; no date may be inferred from event `time_raw`. Keep source article publication date distinct from timeline/event dates.
+- `czjLLM/utilities/slice_merge.py` selects the article date **as an atomic (date, precision) pair from one slice**, using the configured conflict policy; never combine date from one slice with precision from another, substitute an event date, or silently invent validity when all complete pairs are invalid. The strict output profile must still reject an invalid preserved pair.
+- The current Event model uses `Event: list[object]` with unique nonblank `event_id`; linked `Person`, `Involved_Parties`, `Impact`, `Event_Timeline`, and evidence records use `event_ids` that must refer to existing Event IDs. Legacy single-object Event and old timeline date shapes are not supported. Preserve original raw source/Success artifacts when strict schema or references fail rather than silently acknowledging writeback.
+- `czjLLM/es_mode/runtime/sinks/es_sink.py` `write_main()`/`write_flatten()` can **enqueue** buffered ES bulk actions: enqueue/dispatch alone does not mean an acknowledged durable write. `confirm_writeback()` flushes pending bulk operations before Row Merger marks a row complete or deletes its original Success/source artifacts. On an exception, `discard_unacknowledged_writeback()` clears queued unacknowledged actions and preserved source/result artifacts remain replay authority; some idempotent writes may already have applied. Search visibility/refresh is separate from acknowledgement and needs independent readback in operator E2E.
+- These constraints are active even though older review chronology lives in the exact archived `.codex/api_contract.md` snapshot. Do not weaken validation, fill unknown values by guesswork, or declare ES writeback confirmed without actual acknowledgement.
+
+## Current strict ES importance normalization contract (accepted)
+
+- In `czjLLM/es_mode/output_profiles/multidim_event.py::_normalize_flat_importance_fields()`, **only** the five exact documented top-level metric keys `coverage`, `novelty`, `impact`, `credibility`, `importance_score` can be **losslessly moved** into the nested `importance` object. Values must be an `integer` (excluding booleans) or `null`; floating, string and boolean scores fail strict type checks.
+- If the same score exists nested and top-level, validate **both** representations and reject conflicting values, including malformed nested values that compare equal in Python (e.g. `True == 1`). Never silently overwrite, recompute a score or accept unrelated top-level fields. Unknown fields still fail the strict output profile; this narrow repair does **not** change generic JSON handling or other profiles.
+- The move is a shape normalization only, not a license to infer article publication metadata, source provenance or ES bulk acknowledgement.
+
+## Current cache-aware audit and GUI throughput contract
+
+- `czjLLM/utilities/llm_call_audit.py::append_llm_call_audit()` keeps API-provided `input_tokens`, `output_tokens`, `total_tokens` and original `processing_tps` fields. Optional `cached_input_tokens` is **nullable** (an absent provider signal stays blank/unknown, never a synthetic zero); `cached_input_token_source` equals `provider_usage` only for supported actual provider usage. A provider-reported **zero cached input** is valid and distinct from missing data. No estimated cache hit is written back to the authoritative provider audit.
+- Prompt-component audit may carry a safe `stage_identity` (or a separately recognized `single_stage` where appropriate) and local `prompt_component_token_source`, not raw prompts, output payloads or sensitive task metadata. The GUI groups heuristic template-history comparisons by **model, endpoint, task, YAML stage identity and tokenizer/source**; different stages must never share a cacheable-template estimate.
+- `czjLLM/job_manager/win_gui.py` derives GUI-only `total_tok_per_s = (API input_tokens + output_tokens) / elapsed_seconds` for real prompt-file slice requests with authoritative `token_usage_source=llm_api_usage`, finite nonnegative counts and strictly positive elapsed. Existing `processing_tps` is historical API-total telemetry with different fallback/collection semantics and is **not** silently redefined by either GUI distribution.
+- GUI `effective_tok_per_s_est` uses `(input_tokens - cached_input_tokens + output_tokens) / elapsed_seconds` **only** for valid `provider_usage` cache values (including explicit 0). Otherwise, an explicitly labeled `heuristic` estimate is permitted only after **at least two prior near-stable template-size samples from the same model/endpoint/task/stage/source**, with a conservative maximum 50% discount of that stable template floor. Missing stage identity, component source, token counts or stable history means *no effective-throughput sample*, not zero cache reuse or an inferred provider hit. Provider and heuristic sample counts are kept separate.
+- `total_tok_per_s` and `effective_tok_per_s_est` are **request-level observed elapsed-throughput proxies** including network/queue/time-to-first-token overhead, not pure GPU/kernel generation rates or a true billed-token cache saving guarantee. A heuristic remains an estimate even when plotted in the same default-collapsed GUI distribution.
+
+## Archived History
+
+- `.codex/archive/api_contract.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `b1ef36b488496a83059bf82123c391b719cd3aab`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
+- Earlier archives referenced inside this snapshot remain unchanged; no history was deleted.
+- Active summary reconciled with GitHub `main` `46b7c7290417421a6dc09e114f82c1066ce0179d` after user-authorized PR #239 merge and Linux postmerge `offline-e2e` success; Windows runner jobs remain queued/operator-deferred.
