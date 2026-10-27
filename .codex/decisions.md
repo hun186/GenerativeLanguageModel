@@ -165,3 +165,8 @@
 
 - Prefer a no-mutation, opt-in **real-run**, one-report measurement tool before changing production memory policies. Reuse accepted disk-backed and in-memory quality report implementations; isolate each in a fresh subprocess to reduce cross-mode heap contamination. Canonical SHA256 of the complete output is a hard correctness gate across all repetitions, not a proof of immutable log identity.
 - Report wall time, traced Python peak, nullable platform RSS and final SQLite main DB size with explicit measurement caveats. Never publish raw event/document identities or source/temp paths, and do not misrepresent traced allocation, SQLite file size or Linux CI as a Windows production memory/ES acceptance guarantee. Durable checkpoint/rotation/delete remain separate, explicitly authorized future work.
+
+### 2026-10-27 benchmark physical-input stability before output (pending acceptance)
+
+- Keep the previous full-report SHA256 parity gate and add cheap read-only bounded filesystem stat generations of exactly the quality components already used by the offline report (active, canonical shards, optional manifest). Check at baseline, before, and after every child process; reject any change without writing or printing input paths.
+- Prefer fail-closed measurement over presenting unverified speedups; still require stopped producers and honest metadata-only limitations rather than broadening to online locking, automatic retention, persistent checkpoint or user-content serialization.
