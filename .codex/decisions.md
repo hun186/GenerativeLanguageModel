@@ -175,3 +175,8 @@
 
 - Prefer Windows `GetProcessMemoryInfo(PeakWorkingSetSize)` via stdlib ctypes/PSAPI to avoid adding psutil/native vendor dependency or copying sensitive process paths into diagnostics. Preserve existing nullable `peak_process_rss_bytes` and per-child isolation; API failure returns null, not zero or fabricated traced-RAM-equivalent value. Linux/macOS retain `resource.ru_maxrss`.
 - Label the resulting number precisely as historical Windows working-set peak, not private commit or memory boundedness proof. Simulated Linux CI cannot substitute actual Windows process acceptance. PR #231 and retention/rotation remain independent.
+
+### 2026-10-27 separate report compute and isolated child-process timing (pending acceptance)
+
+- Preserve prior `median_seconds` as exact child-measured report function runtime and add a distinct parent-observed `median_subprocess_wall_seconds` in the experimental opt-in benchmark summary. A parent monotonic timer around `subprocess.run()` is the simplest trustworthy measurement of child startup/import/IPC/termination cost; do not trust a worker-supplied wall-time field. Keep the old metric for compatibility and no child worker JSON shape change.
+- Clearly distinguish single-child wall duration from entire CLI orchestration and production throughput; do not claim genuine speedup without real stopped-run samples. Retain source integrity checks, privacy sanitization and SQLite cleanup.

@@ -118,6 +118,9 @@ def _worker() -> int:
 
 def _sample(audit_path: Path, mode: str, timeout: int) -> dict:
     request = json.dumps({"audit_path": str(audit_path), "mode": mode})
+    # Parent clock captures interpreter startup, module imports, report, IPC,
+    # and orderly child exit; the child-reported elapsed_seconds does not.
+    started = time.perf_counter()
     try:
         proc = subprocess.run(
             [sys.executable, "-m", "czjLLM.cli_tools.processing_quality_benchmark",
@@ -127,6 +130,7 @@ def _sample(audit_path: Path, mode: str, timeout: int) -> dict:
         )
     except (OSError, subprocess.TimeoutExpired):
         raise ValueError("quality benchmark worker unavailable") from None
+    subprocess_wall_seconds = round(time.perf_counter() - started, 6)
     if proc.returncode != 0:
         raise ValueError("quality benchmark worker failed") from None
     try:
@@ -147,6 +151,8 @@ def _sample(audit_path: Path, mode: str, timeout: int) -> dict:
             if value is not None and (
                     type(value) is not int or value < 0):
                 raise ValueError("invalid optional measurement")
+        # Trusted parent measurement; do not accept this value from worker JSON.
+        result["subprocess_wall_seconds"] = subprocess_wall_seconds
         return result
     except (KeyError, TypeError, ValueError, json.JSONDecodeError):
         raise ValueError("invalid quality benchmark worker response") from None
@@ -240,6 +246,9 @@ def benchmark_quality_run(
             "median_seconds": statistics.median(
                 e["elapsed_seconds"] for e in entries
             ),
+            "median_subprocess_wall_seconds": statistics.median(
+                e["subprocess_wall_seconds"] for e in entries
+            ),
             "median_peak_traced_python_bytes": statistics.median(
                 e["peak_traced_python_bytes"] for e in entries
             ),
@@ -265,7 +274,10 @@ def benchmark_quality_run(
         "repetitions": repetitions,
         "measurements": summary,
         "measurement_notes": (
-            "Fresh child process per sample; tracemalloc changes timing; "
+            "Fresh child process per sample; median_seconds excludes "
+            "startup/imports while median_subprocess_wall_seconds includes "
+            "spawn/IPC/child exit but excludes parent source guards; "
+            "tracemalloc changes timing; "
             "RSS is OS high-water including interpreter and libraries; "
             "Windows is peak resident working set (not private commit), "
             "null if unavailable; SQLite DB size excludes other "

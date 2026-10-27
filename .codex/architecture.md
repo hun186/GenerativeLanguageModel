@@ -174,3 +174,8 @@
 
 - `processing_quality_process_memory.windows_peak_working_set_bytes()` uses standard-library ctypes to request the process's native PSAPI `PROCESS_MEMORY_COUNTERS.PeakWorkingSetSize` on win32. It returns null if unsupported/failed and never exposes OS errors, source paths, process IDs or raw quality identities. The `processing_quality_benchmark` worker includes its value in the existing `peak_process_rss_bytes` result. Existing Linux/macOS `resource.ru_maxrss`, report semantics, isolated subprocess boundaries, source-generation guard and output shape remain unchanged.
 - Windows resident working-set peak is historical process high-water, including Python interpreter/imports; it is neither process private commit nor exclusive report-call allocation. Real Windows execution validation remains operator-deferred.
+
+### 2026-10-27 parent-observed child-process wall timing (pending acceptance)
+
+- `processing_quality_benchmark._sample()` now uses parent `time.perf_counter()` around `subprocess.run()` to measure each fresh child's lifecycle, including startup/import, standard-stream IPC, worker report calculation and exit. A private `subprocess_wall_seconds` measurement is attached to the validated worker result by the parent only; the aggregate mode summary adds `median_subprocess_wall_seconds` without altering existing child-measured `median_seconds` or the report-v1 payload.
+- This does not include parent source-generation stat checks, orchestration or operator setup; it also contains tracemalloc measurement overhead. Error sanitization, child stdin-only request and sensitive-path isolation remain unchanged.

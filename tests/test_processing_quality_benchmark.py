@@ -46,6 +46,7 @@ def test_actual_isolated_process_report_parity_and_sanitized_output(tmp_path):
         entry = output["measurements"][mode]
         assert entry["samples"] == 2
         assert entry["median_seconds"] >= 0
+        assert entry["median_subprocess_wall_seconds"] >= entry["median_seconds"]
         assert entry["median_peak_traced_python_bytes"] > 0
     assert output["measurements"]["sqlite"]["median_sqlite_main_db_final_bytes"] > 0
     assert output["measurements"]["memory"]["median_sqlite_main_db_final_bytes"] is None
@@ -64,6 +65,7 @@ def test_cli_single_repetition_json_output_and_privacy(tmp_path, capsys):
     output = json.loads(capsys.readouterr().out)
     assert output["repetitions"] == 1
     assert output["measurements"]["sqlite"]["samples"] == 1
+    assert output["measurements"]["sqlite"]["median_subprocess_wall_seconds"] > 0
     assert str(tmp_path) not in json.dumps(output)
 
 
@@ -345,3 +347,63 @@ def test_native_windows_memory_probe_real_current_process():
     value = winmem.windows_peak_working_set_bytes()
     assert type(value) is int
     assert value > 0
+
+
+def test_parent_measures_subprocess_wall_without_trusting_worker_value(
+    monkeypatch, tmp_path
+):
+    """Wall clock belongs to parent; worker cannot forge it through stdout."""
+    audit = tmp_path / "llm_call_audit_private.csv"
+    result = {
+        "mode": "memory",
+        "report_sha256": "a" * 64,
+        "elapsed_seconds": 0.25,
+        "peak_traced_python_bytes": 1024,
+        "peak_process_rss_bytes": None,
+        "sqlite_main_db_final_bytes": None,
+        "subprocess_wall_seconds": 9999,
+    }
+    calls = []
+
+    def completed_process(command, **kwargs):
+        calls.append(command)
+        assert kwargs["timeout"] == 42
+        assert kwargs["input"] == json.dumps({
+            "audit_path": str(audit), "mode": "memory",
+        })
+        assert str(audit) not in " ".join(command)
+        return subprocess.CompletedProcess(command, 0, json.dumps(result), "")
+
+    clocks = iter([10.0, 10.875001])
+    with monkeypatch.context() as patch:
+        patch.setattr(bench.subprocess, "run", completed_process)
+        patch.setattr(bench.time, "perf_counter", lambda: next(clocks))
+        measured = bench._sample(audit, "memory", 42)
+
+    assert len(calls) == 1
+    assert measured["elapsed_seconds"] == 0.25
+    assert measured["subprocess_wall_seconds"] == pytest.approx(0.875001)
+    assert str(audit) not in json.dumps(measured)
+
+
+def test_benchmark_preserves_report_median_and_adds_subprocess_median(
+    monkeypatch, tmp_path
+):
+    audit = _audit_with_archives(tmp_path)
+    calls = []
+
+    def measured_sample(_path, mode, _timeout):
+        calls.append(mode)
+        result = _fixed_sample(_path, mode, _timeout)
+        result["elapsed_seconds"] = 0.4 if mode == "memory" else 0.8
+        result["subprocess_wall_seconds"] = 2.2 if mode == "memory" else 3.2
+        return result
+
+    monkeypatch.setattr(bench, "_sample", measured_sample)
+    result = bench.benchmark_quality_run(audit, repetitions=2)
+    assert calls == ["memory", "sqlite", "sqlite", "memory"]
+    assert result["measurements"]["memory"]["median_seconds"] == 0.4
+    assert result["measurements"]["sqlite"]["median_seconds"] == 0.8
+    assert result["measurements"]["memory"]["median_subprocess_wall_seconds"] == 2.2
+    assert result["measurements"]["sqlite"]["median_subprocess_wall_seconds"] == 3.2
+    assert str(tmp_path) not in json.dumps(result)

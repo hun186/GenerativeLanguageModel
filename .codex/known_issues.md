@@ -105,3 +105,8 @@
 
 - Previous benchmark returned null `peak_process_rss_bytes` on Windows; ctypes/Win32 PSAPI provider is now implemented on a new unmerged branch. Linux CI tests **simulate** Win32 API, including ABI field/pointer checks, failure and unavailable library conditions; they do not prove actual Windows DLL loading or working-set values.
 - PeakWorkingSetSize is an OS-managed high-water resident working-set counter, not private commit. It contains interpreter baseline and can be influenced by OS trimming; comparison against Unix ru_maxrss across platforms is not warranted. Windows self-hosted unavailable/queued; no native Windows physical acceptance claimed. Await latest-head Hosted Linux and formal Codex.
+
+### 2026-10-27 benchmark report-only versus subprocess wall-time caveat (pending acceptance)
+
+- Prior benchmark published only `median_seconds`, timing report function but excluding process startup/import/IPC, so a small job's isolated worker overhead could be understated. Proposed new `median_subprocess_wall_seconds` uses the trusted parent clock around `subprocess.run()`; its median is separate, not merely a sum of the worker's report timing plus fixed launch cost.
+- Parent wall-time still excludes source-generation stat checks, final summary, CLI import/startup and operator filesystem setup; `tracemalloc` changes the measured runtime. Representative stopped-run measurements are still required, Windows physical acceptance not implied by Hosted Linux. New branch not yet CI/review accepted.
