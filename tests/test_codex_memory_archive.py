@@ -98,3 +98,40 @@ def test_archive_integrity_is_in_active_hosted_linux_gate():
     start = workflow.index("  offline-e2e:")
     end = workflow.index("  unit-linux:")
     assert "tests/test_codex_memory_archive.py" in workflow[start:end]
+
+
+def test_single_extract_resume_source_identity_is_still_active():
+    architecture = (_ROOT / ".codex" / "architecture.md").read_text(
+        encoding="utf-8"
+    )
+    decisions = (_ROOT / ".codex" / "decisions.md").read_text(
+        encoding="utf-8"
+    )
+    for value in (
+        "_extract_slice_identity/source/original.json",
+        "smart_reset", "ordered", "stage-task", "Success",
+    ):
+        assert value in architecture
+    assert "Remaining TODO" in architecture
+    assert "split" in decisions
+    assert "raw chunk hashes" in decisions
+    assert "fails closed" in architecture
+
+
+def test_importance_score_shape_repair_stays_strict():
+    contract = (_ROOT / ".codex" / "api_contract.md").read_text(
+        encoding="utf-8"
+    )
+    architecture = (_ROOT / ".codex" / "architecture.md").read_text(
+        encoding="utf-8"
+    )
+    for field in (
+        "_normalize_flat_importance_fields()",
+        "coverage", "novelty", "impact", "credibility",
+        "importance_score", "integer", "null",
+    ):
+        assert field in contract
+    assert "excluding booleans" in contract
+    assert "reject conflicting values" in contract
+    assert "unknown fields" in contract.lower() or "Unknown fields" in contract
+    assert "lossless shape" in architecture
