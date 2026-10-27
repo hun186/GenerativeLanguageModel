@@ -178,6 +178,12 @@ The following sections describe the accepted main implementation through PR #239
 - `czjLLM/es_mode/runtime/sinks/es_sink.py` `write_main()`/`write_flatten()` can **enqueue** buffered ES bulk actions: enqueue/dispatch alone does not mean an acknowledged durable write. `confirm_writeback()` flushes pending bulk operations before Row Merger marks a row complete or deletes its original Success/source artifacts. On an exception, `discard_unacknowledged_writeback()` clears queued unacknowledged actions and preserved source/result artifacts remain replay authority; some idempotent writes may already have applied. Search visibility/refresh is separate from acknowledgement and needs independent readback in operator E2E.
 - These constraints are active even though older review chronology lives in the exact archived `.codex/api_contract.md` snapshot. Do not weaken validation, fill unknown values by guesswork, or declare ES writeback confirmed without actual acknowledgement.
 
+## Current strict ES importance normalization contract (accepted)
+
+- In `czjLLM/es_mode/output_profiles/multidim_event.py::_normalize_flat_importance_fields()`, **only** the five exact documented top-level metric keys `coverage`, `novelty`, `impact`, `credibility`, `importance_score` can be **losslessly moved** into the nested `importance` object. Values must be an `integer` (excluding booleans) or `null`; floating, string and boolean scores fail strict type checks.
+- If the same score exists nested and top-level, validate **both** representations and reject conflicting values, including malformed nested values that compare equal in Python (e.g. `True == 1`). Never silently overwrite, recompute a score or accept unrelated top-level fields. Unknown fields still fail the strict output profile; this narrow repair does **not** change generic JSON handling or other profiles.
+- The move is a shape normalization only, not a license to infer article publication metadata, source provenance or ES bulk acknowledgement.
+
 ## Archived History
 
 - `.codex/archive/api_contract.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `b1ef36b488496a83059bf82123c391b719cd3aab`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
