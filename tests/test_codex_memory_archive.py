@@ -84,7 +84,7 @@ def test_current_es_multidim_and_writeback_contracts_remain_active():
     for field in ("article_date_iso", "article_date_precision", "event_ids",
                   "confirm_writeback()", "Success"):
         assert field in contract
-    assert "source slice" in contract
+    assert "from one slice" in contract
     assert "YYYY-01-01" in contract
     assert "unknown" in contract
     assert "acknowledgement" in decisions
