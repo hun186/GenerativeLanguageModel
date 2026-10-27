@@ -6,6 +6,8 @@
 - **This independent PR:** `docs/codex-active-memory-compaction-20261027` performs the `AGENTS.md`-mandated six-file archive-first memory compaction. The old full original `.codex/*.md` versions are saved byte-for-byte under `.codex/archive/*-20261027-213700.md` with matching Git Blob SHA before replacement. Active files now contain current contracts and open constraints. Initial review found 1 P1 + 2 P2 (restored ES date/bulk contracts, immutable archive LF/CRLF, active Linux archive CI gate). Second exact-head review `8f780583ec5b97ee9924cdfea6edde7eb3539ce8` found 2 new P1 (original single-extract resume source identity, strict ES importance-score normalization); now fixed with active contracts and guard tests. Latest-head Linux CI and fresh Codex review remain required; 5 historical review threads need evidence-backed resolution. **No merge until the user explicitly authorizes it**.
 - **Independent PR #231:** OPEN, head `a8711e9337b62e4b9c6ad62f37ba3e78ba4e8fea`, previously `mergeable=false`. Do not edit, close, rebase or merge it in this work.
 
+- Third exact-head Codex Review `7f53e8171034893554d1052b859f01c5e39a9dc1` found 1 P2: active cache-aware audit/GUI throughput semantics had been accidentally archived. Restored `cached_input_tokens`, `cached_input_token_source`, `stage_identity`, provider/heuristic distinctions, `total_tok_per_s`/`effective_tok_per_s_est`, unchanged `processing_tps`, stage-specific history and positive-duration boundaries; added regression. Latest-head Linux CI + fourth formal Codex re-review and evidence-backed closure of prior review threads needed before merge.
+
 ## Recent Accepted Outcomes
 
 - #233 GUI over-cap replay generation guard merged `8d4a967e29dbda8d845f30dde435e2883f9b9b3c`.
