@@ -35,6 +35,12 @@
 - Strict ES `multidim_event` validation remains at `es_mode/output_profiles/multidim_event.py`: publication `article_date_iso` and `article_date_precision` are validated together (null ↔ unknown, month/year normalization), and linked `event_ids` must refer to unique valid `Event[].event_id` values. `utilities/slice_merge.py` keeps each source date/precision pair atomic rather than recombining halves of different slices or inferring an event date.
 - `es_mode/runtime/sinks/es_sink.py` may buffer writes; Row Merger must call `confirm_writeback()` and receive ES bulk acknowledgement before releasing original Success/source artifacts. Failed/unconfirmed attempts preserve replay evidence; ES refresh/search visibility is independently verified, not presumed from enqueue. These are **current design boundaries**, not superseded archive-only records.
 
+## Current single-extract partial resume / smart_reset source identity
+
+- For the **single extract-stage JSON slice merge/writeback** path in `czjLLM/prompt_pipeline/pipeline_controller.py`, `resume` / `smart_reset` must validate the **complete original source** even after some slices have been removed from TODO because Success files exist. The original hash-only manifest at `<item>/_extract_slice_identity/source/original.json` intentionally lives **outside** the resettable `_stage_outputs` directory so smart_reset cannot erase its authoritative source membership evidence.
+- Verify original source hash, **ordered** raw slice hashes and original filename mapping, the effective extract stage-task identity, and the dispatched prompt hashes against the saved provenance before keeping existing Success or regenerating transient snapshots. Remaining TODO is never a substitute for the original complete source membership; it can omit previously completed siblings. Any missing, mismatched, stale or ambiguous proof fails closed instead of publishing partial/old combined output.
+- Split/retry child prompt files keep their verified parent/child dispatch lineage and must not be mistaken for independent new raw source chunks. Hash-only provenance records do not persist raw input text, prompts, credentials or output values. No extra cache or change to public Row Merger/output schema is introduced.
+
 ## Archived History
 
 - `.codex/archive/architecture.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `6b3671c46d80acabd692bf2a6f227792c1b06018`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
