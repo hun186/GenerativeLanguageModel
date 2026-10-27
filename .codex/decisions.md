@@ -92,6 +92,11 @@ The following sections describe the accepted main implementation through PR #239
 - For one extract-stage `merge_slices: true` JSON stage writeback (Issue #211 / PR #213), **original complete raw source membership is the authority**, not the surviving TODO filenames after successes. Keep the hash-only manifest `_extract_slice_identity/source/original.json` independent of destructible stage snapshots; verify source SHA, ordered raw chunk hashes, saved filename map, effective stage-task hash and original dispatched prompt hashes across `resume` and `smart_reset`.
 - Accept reused Success and committed split child attempts only after verifying their original dispatch/child lineage; refuse incomplete/changed sources or stale stage tasks rather than silently dropping completed siblings or re-rendering a retry child as a new source. Regenerated source text in `_stage_outputs/original` is **transient**, never replacement authority.
 
+## Current cache-aware throughput attribution decisions
+
+- Preserve `processing_tps` as historical source metadata; compute the GUI-only `total_tok_per_s` and `effective_tok_per_s_est` distributions only for authoritative API-usage slice calls with nonzero elapsed. Do not reinterpret a failed/missing measurement as a zero token count or cache hit.
+- Provider `cached_input_tokens` and `cached_input_token_source=provider_usage` are authoritative only when explicitly available (valid zero is distinguishable from absent). A possible cache reuse **heuristic** must be labeled and separately counted, derived from **two or more previous stable template sizes** within the **same model/endpoint/task/stage/source**, bounded to a 50% template discount; never compare across stages, write estimates into audit provider cache columns, or describe heuristic throughput as hardware-only generation speed.
+
 ## Archived History
 
 - `.codex/archive/decisions.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `2fcdc099dfd3065af18402dfc8e7aed9618b9195`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
