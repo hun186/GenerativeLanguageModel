@@ -51,7 +51,7 @@ def test_actual_isolated_process_report_parity_and_sanitized_output(tmp_path):
     assert output["measurements"]["sqlite"]["median_sqlite_main_db_final_bytes"] > 0
     assert output["measurements"]["memory"]["median_sqlite_main_db_final_bytes"] is None
     assert active.read_bytes() == before
-    public = json.dumps(output)
+    public = json.dumps(output, allow_nan=False)
     assert str(tmp_path) not in public
     assert "sensitive-private-key" not in public
     assert "processing_quality_events_" not in public
@@ -407,3 +407,95 @@ def test_benchmark_preserves_report_median_and_adds_subprocess_median(
     assert result["measurements"]["memory"]["median_subprocess_wall_seconds"] == 2.2
     assert result["measurements"]["sqlite"]["median_subprocess_wall_seconds"] == 3.2
     assert str(tmp_path) not in json.dumps(result)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("elapsed_seconds", float("nan")),
+    ("elapsed_seconds", float("inf")),
+    ("elapsed_seconds", float("-inf")),
+    ("elapsed_seconds", -0.1),
+    ("elapsed_seconds", True),
+    ("elapsed_seconds", 10 ** 400),
+    ("peak_traced_python_bytes", float("nan")),
+    ("peak_traced_python_bytes", float("inf")),
+    ("peak_traced_python_bytes", 3.5),
+    ("peak_traced_python_bytes", True),
+])
+def test_worker_nonfinite_or_noninteger_measurements_fail_closed(
+    monkeypatch, tmp_path, field, value
+):
+    """Do not let non-JSON or bogus physical metrics reach published medians."""
+    audit = tmp_path / "llm_call_audit_sensitive.csv"
+    reply = {
+        "mode": "memory",
+        "report_sha256": "a" * 64,
+        "elapsed_seconds": 0.25,
+        "peak_traced_python_bytes": 1000,
+        "peak_process_rss_bytes": None,
+        "sqlite_main_db_final_bytes": None,
+    }
+    reply[field] = value
+    secret = "/secret/private/audit-path"
+
+    def worker(command, **kwargs):
+        assert secret not in " ".join(command)
+        return subprocess.CompletedProcess(
+            command, 0, json.dumps(reply), secret
+        )
+
+    monkeypatch.setattr(bench.subprocess, "run", worker)
+    with pytest.raises(
+        ValueError, match="invalid quality benchmark worker response"
+    ) as failure:
+        bench._sample(audit, "memory", 10)
+    assert str(audit) not in str(failure.value)
+    assert secret not in str(failure.value)
+
+
+def test_nonstandard_json_number_in_unused_worker_field_is_rejected(
+    monkeypatch, tmp_path
+):
+    audit = tmp_path / "llm_call_audit_private.csv"
+    reply = (
+        '{"mode":"memory","report_sha256":"' + "a" * 64
+        + '","elapsed_seconds":0.5,"peak_traced_python_bytes":100,'
+        + '"peak_process_rss_bytes":null,"sqlite_main_db_final_bytes":null,'
+        + '"ignored":NaN}'
+    )
+    monkeypatch.setattr(
+        bench.subprocess, "run",
+        lambda args, **kw: subprocess.CompletedProcess(args, 0, reply, ""),
+    )
+    with pytest.raises(ValueError, match="invalid quality benchmark worker response"):
+        bench._sample(audit, "memory", 10)
+
+
+@pytest.mark.parametrize("end_time", [float("nan"), float("inf"), -5.0])
+def test_invalid_parent_subprocess_wall_clock_is_unavailable(
+    monkeypatch, tmp_path, end_time
+):
+    audit = tmp_path / "llm_call_audit_hidden.csv"
+    seen = iter((4.0, end_time))
+    monkeypatch.setattr(bench.time, "perf_counter", lambda: next(seen))
+    monkeypatch.setattr(
+        bench.subprocess, "run",
+        lambda args, **kw: subprocess.CompletedProcess(args, 0, "{}", ""),
+    )
+    with pytest.raises(ValueError, match="quality benchmark worker unavailable") as failure:
+        bench._sample(audit, "memory", 10)
+    assert str(audit) not in str(failure.value)
+
+
+def test_cli_rejects_invalid_summary_json_without_partial_output(
+    monkeypatch, tmp_path, capsys
+):
+    """Defense in depth if an upstream contract regresses after validation."""
+    fake = {"measurements": {"memory": {"median_seconds": float("nan")}}}
+    monkeypatch.setattr(bench, "benchmark_quality_run", lambda *a, **kw: fake)
+    with pytest.raises(SystemExit) as result:
+        bench.main(["--audit-path", str(tmp_path / "llm_call_audit_private.csv")])
+    captured = capsys.readouterr()
+    assert result.value.code == 2
+    assert captured.out == ""
+    assert captured.err == "quality benchmark: invalid arguments\n"
+    assert str(tmp_path) not in captured.err
