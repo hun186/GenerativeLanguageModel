@@ -12,7 +12,7 @@ import sys
 
 
 class _ProcessMemoryCounters(ctypes.Structure):
-    """Windows PROCESS_MEMORY_COUNTERS (the common 9-field prefix)."""
+    """Windows PROCESS_MEMORY_COUNTERS (native 10-field layout)."""
 
     _fields_ = [
         ("cb", wintypes.DWORD),
