@@ -57,3 +57,9 @@
 ## 2026-10-28 LLM failure report other-directory ledger overwrite gap (pending review)
 
 - `llm_failure_report` previously reserved audit-like `--output` names **only** when destination parent matched the input audit directory. A user could choose another directory's sealed `processing_quality_events_*.jsonl.manifest.json` and accidentally overwrite its SHA256 ledger via shared atomic writer. No actual user data loss is asserted. The new branch rejects the canonical manifest name globally before audit CSV replay and adds physical negative tests. This is not a cross-process race-proof path sandbox. Hosted CI / Codex Review pending.
+
+## 2026-10-28 observed local-time audit filters (review pending)
+
+- `llm_call_audit` producer timestamps are naive `datetime.now().isoformat(timespec="seconds")` local wall clock, **not UTC**. The new opt-in `llm_failure_report --since/--before` scope preserves these literal producer-local seconds without cross-host or DST normalization. Comparing separate hosts' naive timestamps is not absolute chronology.
+- Legacy CSV can have blank/missing timestamps. When filtering, a row that cannot be unambiguously placed in the chosen interval makes the entire scoped report unavailable rather than silently decreasing the denominator. Unfiltered historic reports retain existing invalid-row degraded diagnostics. Filtered call-attempt counts do not prove unique request attempts, provider faults, retries or document failures; remain operator-observational only.
+- New branch's exact-head Hosted CI and formal Codex review remain pending. Windows self-hosted/real ES/Ollama readback still operator-deferred.
