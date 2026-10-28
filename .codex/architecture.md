@@ -55,3 +55,7 @@
 - `.codex/archive/architecture.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `6b3671c46d80acabd692bf2a6f227792c1b06018`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
 - Earlier archives referenced inside this snapshot remain unchanged; no history was deleted.
 - Active summary reconciled with GitHub `main` `46b7c7290417421a6dc09e114f82c1066ce0179d` after user-authorized PR #239 merge and Linux postmerge `offline-e2e` success; Windows runner jobs remain queued/operator-deferred.
+
+## 2026-10-28 append-only audit row UUID (pending acceptance)
+
+- The per-run `utilities/llm_call_audit.py` producer appends a new trailing opaque `audit_record_id` UUID4 column for **newly created** CSV runs and its actual XLSX export. A pre-upgrade CSV with exactly the previous schema retains its original columns (no retroactive upgrades) and unknown headers fail closed without misaligned writes. These IDs identify *logged rows*, not provider requests, retry groups, source slices, documents or ES acknowledgement; no reader denominator/schema change is implied. Source-authoritative retry identity is a distinct future task.

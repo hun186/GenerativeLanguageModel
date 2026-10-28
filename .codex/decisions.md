@@ -116,3 +116,7 @@ The following sections describe the accepted main implementation through PR #239
 
 - Use producer-emitted local-second `timestamp` only for optional `llm_failure_report --since` (inclusive) and `--before` (exclusive), validating strict canonical `YYYY-MM-DDTHH:MM:SS` and `since < before` if both are supplied. Reject offset/Z/ambiguous timestamps; do **not** fabricate UTC, retry UUID or document identities. All records in a filtered snapshot must have valid timestamps, including out-of-window rows; otherwise fail closed rather than misrepresent denominators.
 - Preserve unfiltered report v1 and legacy parser/snapshot budgets. Filtered v1 adds fixed `time_window` with producer-local clock labeling, and per-run excluded count. History keeps independent run snapshots; no cross-run denominator pooling or online mutable-writer guarantee. No runtime CSV producer or LLM path changed.
+
+## 2026-10-28 audit identity boundary (pending review)
+
+- Mint a private-data-independent UUID4 per recorded `log_llm_call` entry and append it to **new** CSV/XLSX audit exports as `audit_record_id`; no hash of prompt, document, endpoint, error or raw provider payload. Do not reuse an audit-row UUID as a provider request ID or retry-family identity; a crashed/unlogged request has no row. For a running legacy CSV with precisely the former header, emit the former column width. Reject other existing headers instead of silently misaligning output. Preserve unfiltered/filtered `llm_failure_report` v1 denominators and privacy; do not infer retry rates from UUID counts.

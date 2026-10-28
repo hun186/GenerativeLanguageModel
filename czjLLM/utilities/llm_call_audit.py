@@ -11,6 +11,7 @@ import zipfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
+from uuid import uuid4
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse, urlunparse
 from urllib.request import Request, urlopen
@@ -49,6 +50,7 @@ _FIELDS = [
     "cost_twd",
     "ok",
     "error",
+    "audit_record_id",
 ]
 
 
@@ -294,13 +296,27 @@ def log_llm_call(
         "cost_twd": f"{float(cost_twd or 0):.6f}",
         "ok": "YES" if ok else "NO",
         "error": str(error or ""),
+        # Identifies this emitted audit record, not a provider request, retry
+        # family, source document, or persisted sink acknowledgement.
+        "audit_record_id": uuid4().hex,
     }
     path = Path(audit_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with _LOCK:
         _ensure_header(path)
+        # A running installation may still append to a pre-upgrade audit CSV.
+        # Preserve its exact header/width; silently adding a new column would
+        # misalign old records and poison downstream reports/Excel exports.
+        # Existing noncanonical headers fail closed instead of being rewritten.
+        with path.open("r", newline="", encoding="utf-8") as fp:
+            header_line = fp.readline(8192)
+        if not header_line.endswith("\n"):
+            raise ValueError("invalid existing LLM audit CSV header")
+        header = next(csv.reader([header_line]), [])
+        if header != _FIELDS and header != _FIELDS[:-1]:
+            raise ValueError("incompatible existing LLM audit CSV header")
         with path.open("a", newline="", encoding="utf-8") as fp:
-            writer = csv.DictWriter(fp, fieldnames=_FIELDS)
+            writer = csv.DictWriter(fp, fieldnames=header, extrasaction="ignore")
             writer.writerow(row)
         _write_xlsx_from_csv(path, path.with_suffix(".xlsx"))
 
