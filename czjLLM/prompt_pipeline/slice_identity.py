@@ -102,7 +102,7 @@ def _verified_split_record(item: Path, parent_name: str) -> dict:
         if not isinstance(child, dict):
             return {}
         name, digest = child.get("name"), child.get("prompt_sha256")
-        if (name not in expected or name in found
+        if (not isinstance(name, str) or name not in expected or name in found
                 or not isinstance(digest, str) or len(digest) != 64):
             return {}
         found[name] = digest
