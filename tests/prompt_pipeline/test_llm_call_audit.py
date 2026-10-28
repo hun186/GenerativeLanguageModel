@@ -177,6 +177,13 @@ def test_prompt_api_pipeline_emits_one_audit_row_per_request():
     assert "ok=ok" in source
     assert "error=err" in source
     assert "worker_call_id=worker_call_id" in source
+    assert "call_llm_api_returned=call_llm_api_returned" in source
+    assert "call_llm_api_returned = False" in source
+    assert "call_llm_api_returned = True" in source
+    # Explicitly observed only after the call expression returns, before
+    # response parsing/JSON repair/output persistence starts.
+    assert source.index("response, cost = CallLLMAPI(") < source.index("call_llm_api_returned = True")
+    assert source.index("call_llm_api_returned = True") < source.index("worker_failure_code = \"WORKER_RESPONSE_EXCEPTION\"")
     assert "worker_call_id = uuid.uuid4().hex" in source
     # The source boundary must set the identifier before actual CallLLMAPI
     # dispatch, not derive it from any prompt/response/error text.
@@ -327,7 +334,8 @@ def test_new_audit_records_have_distinct_opaque_row_ids_and_xlsx_column(tmp_path
     with path.open(encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
         rows = list(reader)
-        assert reader.fieldnames[-2:] == ["audit_record_id", "worker_call_id"]
+        assert reader.fieldnames[-3:] == [
+            "audit_record_id", "worker_call_id", "call_llm_api_returned"]
     assert len(rows) == 2
     identifiers = [row["audit_record_id"] for row in rows]
     assert len(set(identifiers)) == 2
@@ -422,9 +430,9 @@ def test_worker_call_id_rejects_untrusted_values_without_csv_side_effect(tmp_pat
 
 
 def test_two_supported_legacy_audit_headers_keep_exact_width(tmp_path):
-    """Pre-#245 and #245 audit generations cannot be silently upgraded."""
+    """Pre-#245, #245 and #246 headers cannot be silently upgraded."""
     from czjLLM.utilities.llm_failure_summary import summarize_llm_failure_audit
-    for past_fields in (_AUDIT._FIELDS[:-2], _AUDIT._FIELDS[:-1]):
+    for past_fields in (_AUDIT._FIELDS[:-3], _AUDIT._FIELDS[:-2], _AUDIT._FIELDS[:-1]):
         path = tmp_path / f"llm_call_audit_{len(past_fields)}-old.csv"
         with path.open("w", newline="", encoding="utf-8") as stream:
             writer = csv.DictWriter(stream, fieldnames=past_fields)
@@ -441,3 +449,79 @@ def test_two_supported_legacy_audit_headers_keep_exact_width(tmp_path):
         assert len(rows) == 1 and rows[0]["ok"] == "YES"
         assert None not in rows[0]
         assert summarize_llm_failure_audit(path)["successful_call_attempts"] == 1
+
+
+def test_explicit_wrapper_return_and_local_failure_are_separate(tmp_path):
+    """Caller source decides return; ok=NO may mean a LOCAL failure."""
+    import zipfile
+    from czjLLM.utilities.llm_failure_summary import summarize_llm_failure_audit
+
+    path = tmp_path / "llm_call_audit_20261028-outcome.csv"
+    scenarios = (
+        ("a" * 32, True, False, "JSON_POSTPROCESSING_FAILED"),
+        ("b" * 32, False, False, "Timeout while invoking CallLLMAPI"),
+        ("c" * 32, True, True, ""),
+        ("", None, False, "ReadTimeout unknown source"),
+    )
+    for worker_id, returned, ok, error in scenarios:
+        log_llm_call(audit_path=str(path), run_id="run",
+                     worker_call_id=worker_id, call_llm_api_returned=returned,
+                     model_spec={"num_ctx": 1024}, ok=ok, error=error)
+
+    with path.open(encoding="utf-8", newline="") as stream:
+        reader = csv.DictReader(stream)
+        rows = list(reader)
+        assert reader.fieldnames[-3:] == [
+            "audit_record_id", "worker_call_id", "call_llm_api_returned"]
+    assert [row["call_llm_api_returned"] for row in rows] == ["YES", "NO", "YES", ""]
+    assert [row["ok"] for row in rows] == ["NO", "NO", "YES", "NO"]
+    assert rows[0]["worker_call_id"] == "a" * 32
+    assert rows[3]["worker_call_id"] == ""
+    assert all(row["audit_record_id"] for row in rows)
+    with zipfile.ZipFile(path.with_suffix(".xlsx")) as archive:
+        xml = archive.read("xl/worksheets/sheet1.xml").decode("utf-8")
+    assert "call_llm_api_returned" in xml
+    assert "a" * 32 in xml
+    report = summarize_llm_failure_audit(path)
+    assert report["observed_call_attempts"] == 4
+    assert report["failed_call_attempts"] == 3
+    assert "call_llm_api_returned" not in report
+    assert "worker_call_id" not in report
+
+
+def test_return_outcome_requires_source_worker_id_and_bool_without_file_write(tmp_path):
+    import pytest
+    path = tmp_path / "llm_call_audit_20261028-invalid-outcome.csv"
+    cases = (
+        ("", True), ("", False),
+        ("a" * 32, 0), ("a" * 32, 1), ("a" * 32, "YES"),
+        ("a" * 32, []), ("a" * 32, "NO"),
+    )
+    for worker_call_id, returned in cases:
+        with pytest.raises(ValueError, match="CallLLMAPI return"):
+            log_llm_call(audit_path=str(path), run_id="run",
+                         worker_call_id=worker_call_id,
+                         call_llm_api_returned=returned,
+                         model_spec={"num_ctx": 1024})
+        assert not path.exists()
+        assert not path.with_suffix(".xlsx").exists()
+
+
+def test_legacy_worker_id_header_does_not_gain_return_field(tmp_path):
+    """Existing #246 files remain byte-width compatible on append."""
+    path = tmp_path / "llm_call_audit_20261028-previous.csv"
+    fields = _AUDIT._FIELDS[:-1]
+    with path.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+    original_header = path.read_bytes().splitlines()[0]
+    log_llm_call(audit_path=str(path), run_id="run", worker_call_id="a" * 32,
+                 call_llm_api_returned=False, model_spec={"num_ctx": 1024},
+                 ok=False, error="ReadTimeout")
+    assert path.read_bytes().splitlines()[0] == original_header
+    with path.open(encoding="utf-8", newline="") as stream:
+        reader = csv.DictReader(stream)
+        rows = list(reader)
+    assert reader.fieldnames == fields
+    assert len(rows) == 1 and rows[0]["worker_call_id"] == "a" * 32
+    assert None not in rows[0]
