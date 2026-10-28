@@ -420,3 +420,111 @@ def test_cli_atomic_output_preserves_raw_csv_and_refuses_audit_names(tmp_path: P
               "--output", str(tmp_path / "llm_call_audit_evil.json")])
     assert exc.value.code == 2
     assert path.read_bytes() == raw
+
+
+@pytest.mark.parametrize("history_mode", [False, True])
+@pytest.mark.parametrize("ledger_exists", [False, True])
+def test_failure_report_cross_directory_cannot_replace_quality_manifest(
+    tmp_path: Path, capsys, history_mode: bool, ledger_exists: bool
+):
+    """Protect the other run's real sealed ledger regardless of source folder."""
+    from czjLLM.utilities.processing_quality import (
+        emit_quality_event, quality_event_path,
+    )
+    from czjLLM.utilities.processing_quality_manifest import (
+        initialize_quality_manifest, manifest_path, verify_quality_manifest,
+    )
+    from czjLLM.utilities.processing_quality_rotation import rotate_quality_event_stream
+
+    source_dir = tmp_path / "failure-audits"
+    manifest_dir = tmp_path / "other-quality-run"
+    source_dir.mkdir()
+    manifest_dir.mkdir()
+    input_audit = source_dir / "llm_call_audit_20261028-123456-1.csv"
+    _audit(input_audit, [("NO", "ReadTimeout private-error")])
+
+    other_audit = manifest_dir / "llm_call_audit_20261028-654321-2.csv"
+    ledger = manifest_path(quality_event_path(str(other_audit)))
+    if ledger_exists:
+        emit_quality_event(
+            str(other_audit), run_id="other", event="slice_json_validation",
+            code="JSON_VALID", scope="slice", outcome="valid",
+        )
+        rotate_quality_event_stream(other_audit)
+        initialize_quality_manifest(other_audit)
+        assert verify_quality_manifest(
+            quality_event_path(str(other_audit))
+        )["status"] == "verified"
+
+    original = ledger.read_bytes() if ledger_exists else None
+    source = (
+        ["--audit-dir", str(source_dir)] if history_mode else
+        ["--audit-path", str(input_audit)]
+    )
+    with pytest.raises(SystemExit) as failure:
+        main(source + ["--output", str(ledger)])
+    captured = capsys.readouterr()
+    assert failure.value.code == 2
+    assert captured.out == ""
+    assert str(tmp_path) not in captured.err
+    assert ledger.read_bytes() == original if ledger_exists else not ledger.exists()
+    assert summarize_llm_failure_audit(input_audit)["failed_call_attempts"] == 1
+    if ledger_exists:
+        assert verify_quality_manifest(
+            quality_event_path(str(other_audit))
+        )["status"] == "verified"
+
+
+def test_failure_report_rejects_casefolded_ledger_outside_source_dir(
+    tmp_path: Path, capsys
+):
+    audits = tmp_path / "audits"
+    outputs = tmp_path / "unrelated"
+    audits.mkdir()
+    outputs.mkdir()
+    source = audits / "llm_call_audit_20261028-case.csv"
+    _audit(source, [("YES", "")])
+    destination = outputs / "PROCESSING_QUALITY_EVENTS_20261028.JSONL.MANIFEST.JSON"
+    with pytest.raises(SystemExit) as failure:
+        main(["--audit-path", str(source), "--output", str(destination)])
+    assert failure.value.code == 2
+    assert not destination.exists()
+    assert "audit failed" in capsys.readouterr().err
+
+
+def test_failure_report_protected_output_rejected_before_csv_replay(
+    tmp_path: Path, capsys, monkeypatch
+):
+    import czjLLM.cli_tools.llm_failure_report as mod
+    source = tmp_path / "llm_call_audit_20261028-unreadable.csv"
+    destination = tmp_path / "separate" / "processing_quality_events_x.jsonl.manifest.json"
+
+    def must_not_read(_path):
+        raise AssertionError("blocked output must be rejected before audit replay")
+
+    monkeypatch.setattr(mod, "summarize_llm_failure_audit", must_not_read)
+    with pytest.raises(SystemExit) as failure:
+        main(["--audit-path", str(source), "--output", str(destination)])
+    assert failure.value.code == 2
+    assert not destination.exists()
+    assert "audit failed" in capsys.readouterr().err
+
+
+def test_failure_report_allows_standalone_json_in_other_folder(
+    tmp_path: Path, capsys
+):
+    source_dir = tmp_path / "source"
+    output_dir = tmp_path / "reports"
+    source_dir.mkdir()
+    output_dir.mkdir()
+    audit = source_dir / "llm_call_audit_20261028-good.csv"
+    _audit(audit, [("NO", "ReadTimeout private-info"), ("YES", "")])
+    raw = audit.read_bytes()
+    destination = output_dir / "llm_failures.json"
+    assert main(["--audit-path", str(audit), "--output", str(destination)]) == 0
+    report = json.loads(destination.read_text(encoding="utf-8"))
+    assert report["report_version"] == 1
+    assert report["run"]["failed_call_attempts"] == 1
+    assert audit.read_bytes() == raw
+    assert "private-info" not in destination.read_text(encoding="utf-8")
+    assert json.loads(capsys.readouterr().out)["mode"] == "single_run"
