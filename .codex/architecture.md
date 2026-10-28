@@ -63,3 +63,7 @@
 ## 2026-10-28 Worker call boundary metadata (pending acceptance)
 
 - `PromptAPIPipeline.proc()` mints opaque UUID4 `worker_call_id` at the real `CallLLMAPI` invocation boundary, before calling it, and forwards it to the existing post-settlement `log_llm_call`. The separate per-record `audit_record_id` is still minted on row creation. A new CSV has the extra final `worker_call_id` column in CSV/XLSX; two preceding full headers remain supported without rewriting old audit rows. Lower-level SDK HTTP retries and source logical retry families are not observed or identified here; exception/precall/crash gaps remain, and report-v1 denominators stay observed rows.
+
+## 2026-10-28 explicit wrapper-return observation (pending acceptance)
+
+- The real Worker `PromptAPIPipeline.proc()` begins with `call_llm_api_returned=False`, flips to True **only after** the `CallLLMAPI` wrapper normally returns, and records it alongside the already unique `worker_call_id` and `audit_record_id` after postprocessing. New CSV/XLSX field `call_llm_api_returned` is YES/NO/unknown blank, independent of final local `ok`. A returned wrapper is not provider HTTP proof, and `NO` is not proof the provider did not process a timed-out request. Current and exactly three prior CSV headers remain append-compatible with no auto-migration. Read-only v1 reporting unchanged.
