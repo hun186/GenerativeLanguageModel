@@ -10,7 +10,7 @@ import sys
 
 from czjLLM.utilities.atomic_io import atomic_write_json
 from czjLLM.utilities.llm_failure_summary import (
-    llm_failure_history, summarize_llm_failure_audit,
+    llm_failure_history, parse_local_time_window, summarize_llm_failure_audit,
 )
 
 
@@ -40,9 +40,12 @@ def main(argv: list[str] | None = None) -> int:
     inputs.add_argument("--audit-path", type=Path, help="one llm_call_audit_<run_id>.csv")
     inputs.add_argument("--audit-dir", type=Path, help="per-run audit CSV directory")
     parser.add_argument("--limit", type=int, default=20, help="maximum history runs (1..100)")
+    parser.add_argument("--since", help="inclusive producer-local YYYY-MM-DDTHH:MM:SS")
+    parser.add_argument("--before", help="exclusive producer-local YYYY-MM-DDTHH:MM:SS")
     parser.add_argument("--output", type=Path, help="optional separate atomic JSON report")
     args = parser.parse_args(argv)
     try:
+        window = parse_local_time_window(args.since, args.before)
         if args.output is not None:
             # Validate the output namespace before replaying any private CSV.
             _validate_failure_report_output(
@@ -54,10 +57,17 @@ def main(argv: list[str] | None = None) -> int:
                 "report_version": 1,
                 "mode": "single_run",
                 "denominator_contract": "observed LLM call attempts; not whole-pipeline or document rate",
-                "run": summarize_llm_failure_audit(args.audit_path),
+                "run": summarize_llm_failure_audit(
+                    args.audit_path, **({"time_window": window} if window is not None else {})
+                ),
             }
+            if window is not None:
+                result["time_window"] = result["run"]["time_window"]
         else:
-            result = llm_failure_history(args.audit_dir, limit=args.limit)
+            result = llm_failure_history(
+                args.audit_dir, limit=args.limit,
+                **({"time_window": window} if window is not None else {}),
+            )
         if args.output is not None:
             atomic_write_json(str(args.output), result)
     except (OSError, ValueError, csv.Error) as exc:
