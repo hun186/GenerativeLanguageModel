@@ -46,3 +46,7 @@
 
 - The report CLI previously checked only `.json` suffix for `--output` and then used `atomic_write_json` with `os.replace`. A path named `processing_quality_events_*.jsonl.manifest.json` also passed, so exporting a summary could clobber another run's archive SHA256 consistency ledger and invalidate future verified replay. This was discovered by source inspection; no production data loss is claimed.
 - Branch protection rejects reserved ledger destinations, including nonexistent ones, and symlink aliases before stream replay; real-file regression tests should verify ledger bytes and valid replay stay unchanged. Latest-head Hosted CI, formal review, and Windows actual acceptance have not yet completed. Avoid describing the SHA256 ledger as independently authenticated or the CLI guard as race-free.
+
+## 2026-10-28 LLM failure report other-directory ledger overwrite gap (pending review)
+
+- `llm_failure_report` previously reserved audit-like `--output` names **only** when destination parent matched the input audit directory. A user could choose another directory's sealed `processing_quality_events_*.jsonl.manifest.json` and accidentally overwrite its SHA256 ledger via shared atomic writer. No actual user data loss is asserted. The new branch rejects the canonical manifest name globally before audit CSV replay and adds physical negative tests. This is not a cross-process race-proof path sandbox. Hosted CI / Codex Review pending.

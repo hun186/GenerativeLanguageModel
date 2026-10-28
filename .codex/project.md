@@ -2,6 +2,10 @@
 
 ## Current Focus
 
+- **Current accepted main:** User-approved PR #241 merged as `fb713365b173378ba8ca82e0557e4fdd5a415650`; main Hosted Linux `offline-e2e` #40616682036 SUCCESS. Formal Codex exact-head #241 completed zero Findings, one historical P2 thread resolved; Windows 3.10/3.11 operator-deferred. Older #240/#241 "pending review/merge" labels below are historical, not current.
+- **Independent next branch:** `fix/llm-failure-report-cross-dir-ledger-output-20261028` plugs a matching read-only `llm_failure_report --output` integrity risk: destination reserved `processing_quality_events_*.jsonl.manifest.json` in **another directory** bypassed previous same-source-dir guard. Now refuses the reserved pattern globally and checks output before private CSV replay; normal report-v1 JSON and existing safe in-folder artifact restrictions remain. Actual-file tests, docs, CI and formal Codex Review required; **do not merge without explicit approval**. PR #231 OPEN/untouched.
+
+
 - **2026-10-28 authoritative GitHub reconciliation:** User-approved PR #240 has **merged**, main merge SHA `21ae2cb690031c6409fd05f5cf6e4109a21548e1`; formal Codex fourth exact-head review completed with zero Findings, 6/6 review threads resolved, postmerge Hosted Linux `offline-e2e` #40604470304 SUCCESS. All older statements below about PR #240 being unmerged or pending review are historical/superseded. Windows 3.10/3.11 self-hosted remain queued/operator-deferred.
 - **New independent focus (no merge authorization):** `fix/quality-report-protect-manifest-output-20261028` prevents the read-only offline Quality Report CLI `--output` from atomically replacing any `processing_quality_events_*.jsonl.manifest.json` integrity ledger, or a symlink output alias; reject before source replay, preserve strict sealed-archive SHA256 and report_version=1. Add real-file and negative-path tests; require new exact-head Hosted Linux CI and formal Codex Review before asking the user to merge. Existing PR #231 independent OPEN/unchanged.
 
