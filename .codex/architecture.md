@@ -67,3 +67,7 @@
 ## 2026-10-28 explicit wrapper-return observation (pending acceptance)
 
 - The real Worker `PromptAPIPipeline.proc()` begins with `call_llm_api_returned=False`, flips to True **only after** the `CallLLMAPI` wrapper normally returns, and records it alongside the already unique `worker_call_id` and `audit_record_id` after postprocessing. New CSV/XLSX field `call_llm_api_returned` is YES/NO/unknown blank, independent of final local `ok`. A returned wrapper is not provider HTTP proof, and `NO` is not proof the provider did not process a timed-out request. Current and exactly three prior CSV headers remain append-compatible with no auto-migration. Read-only v1 reporting unchanged.
+
+## 2026-10-29 persisted explicit split-intent family identity (pending acceptance)
+
+- Existing single-extract `slice_identity.record_split_identity` writes a version-1 SHA256-only split-intent journal before two child files. The independent `feat/verified-split-retry-lineage-20261029` adds optional random `split_family_id` to new journals without replacing version/parent/child digests. A bounded `verified_split_family_id` verifies the exact queued parent or direct `-0`/`-1` child prompt against the persisted two-child journal; nested split inherits its verified parent group. Old journals without ID yield unknown; filename-only matches, symlink/oversize/corrupt journals yield none. This remains local, unauthenticated **intent** evidence, not proof the split committed, a provider HTTP retry, original document or safe writeback; Worker/CSV/report unchanged.

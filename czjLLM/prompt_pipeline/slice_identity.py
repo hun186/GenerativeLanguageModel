@@ -79,24 +79,155 @@ def valid_success(item: str, filename: str, prompt_hash: str) -> bool:
     return record.get("output_sha256") == output_hash
 
 
+def _split_journal_namespace_safe(item: Path) -> bool:
+    """Refuse explicit directory aliases into another item's split journal."""
+    return not any(path.is_symlink() for path in (
+        item, item / "_extract_slice_identity",
+        _identity_dir(item, "splits"),
+    ))
+
+
+def _valid_split_family_id(value: object) -> str:
+    """Accept a canonical RFC variant UUIDv4, not just arbitrary hex."""
+    if not isinstance(value, str) or len(value) != 32:
+        return ""
+    try:
+        parsed = uuid.UUID(hex=value)
+    except (ValueError, AttributeError):
+        return ""
+    if (parsed.hex != value or parsed.version != 4
+            or parsed.variant != uuid.RFC_4122):
+        return ""
+    return value
+
+
+def _valid_split_sha256(value: object) -> bool:
+    """Require SHA256 hexadecimal in the canonical persisted representation."""
+    return (isinstance(value, str) and len(value) == 64
+            and all(char in "0123456789abcdef" for char in value))
+
+
+def _verified_split_record(item: Path, parent_name: str) -> dict:
+    """Bounded, non-alias read of one *unauthenticated* split intent."""
+    if not _split_journal_namespace_safe(item):
+        return {}
+    path = _record_path(item, "splits", parent_name)
+    try:
+        if path.is_symlink() or not path.is_file():
+            return {}
+        # Bound the actual read as well as rejecting oversized files. Avoid
+        # trusting a separate stat size if the journal changes after stat.
+        with path.open("rb") as handle:
+            raw = handle.read(16385)
+        if len(raw) > 16384:
+            return {}
+        record = json.loads(raw.decode("utf-8"))
+    except (OSError, ValueError, UnicodeError, RecursionError):
+        return {}
+    if not isinstance(record, dict) or record.get("version") != 1:
+        return {}
+    parent_hash = record.get("parent_prompt_sha256")
+    children = record.get("children")
+    if (not _valid_split_sha256(parent_hash)
+            or not isinstance(children, list) or len(children) != 2):
+        return {}
+    expected = {parent_name[:-4] + "-0.txt", parent_name[:-4] + "-1.txt"}
+    found = {}
+    for child in children:
+        if not isinstance(child, dict):
+            return {}
+        name, digest = child.get("name"), child.get("prompt_sha256")
+        if (not isinstance(name, str) or name not in expected or name in found
+                or not _valid_split_sha256(digest)):
+            return {}
+        found[name] = digest
+    if set(found) != expected:
+        return {}
+    return record
+
+
+def _direct_parent_family(
+    item: Path, file: Path, prompt_digest: str,
+) -> tuple[bool, str]:
+    """Report direct-parent evidence presence and its *valid* family.
+
+    A matching child name with wrong digest, a legacy missing family, or a
+    damaged family ID is evidence of uncertainty; it must not be overridden
+    by an older nested journal belonging to the same basename.
+    """
+    stem, sep, suffix = file.stem.rpartition("-")
+    if not sep or suffix not in {"0", "1"} or not stem:
+        return False, ""
+    parent = _verified_split_record(item, stem + ".txt")
+    if not parent:
+        return False, ""
+    for child in parent["children"]:
+        if child["name"] == file.name:
+            if child["prompt_sha256"] != prompt_digest:
+                return True, ""
+            return True, _valid_split_family_id(parent.get("split_family_id"))
+    return False, ""
+
+
+def verified_split_family_id(prompt_file: str, prompt: str) -> str:
+    """Match current source to a persisted explicit split-intent UUID.
+
+    A child whose direct parent journal contradicts its older nested journal
+    returns unknown rather than silently adopting a stale family. This is
+    not authenticated lineage, proof of committed children or SDK retries.
+    """
+    file = Path(prompt_file)
+    if file.parent.name not in {"TODO", "RUNNING"} or file.suffix != ".txt":
+        return ""
+    root = file.parent.parent
+    prompt_digest = digest_text(prompt)
+    own = _verified_split_record(root, file.name)
+    own_family = (
+        _valid_split_family_id(own.get("split_family_id"))
+        if own and own["parent_prompt_sha256"] == prompt_digest else ""
+    )
+    parent_seen, direct_family = _direct_parent_family(root, file, prompt_digest)
+    if parent_seen:
+        if not direct_family or (own_family and own_family != direct_family):
+            return ""
+        return direct_family
+    return own_family
+
+
 def record_split_identity(
     prompt_file: str, prompt: str, children: list[tuple[str, str]],
-) -> None:
-    """Remember a failed parent's exact two replacement prompts."""
+) -> str:
+    """Persist a split intent with a UUID anchored to *current* parent evidence."""
     file = Path(prompt_file)
     if file.parent.name not in {"RUNNING", "TODO"}:
-        return
+        return ""
     if len(children) != 2:
         raise ValueError("split must have exactly two children")
-    stem = file.stem + "-"
-    if any(not name.startswith(stem) or not name.endswith(".txt") for name, _ in children):
-        raise ValueError("split children do not belong to parent")
+    expected_names = {file.stem + "-0.txt", file.stem + "-1.txt"}
+    if {name for name, _ in children} != expected_names:
+        raise ValueError("split requires canonical, distinct -0/-1 children")
+    root = file.parent.parent
+    if not _split_journal_namespace_safe(root):
+        raise ValueError("split journal namespace is a symlink")
+    # For a nested re-split, the *direct* parent has priority over an older
+    # matching child journal. On conflict the read-only query returns unknown,
+    # but a new explicit split writes a new journal with the current parent's
+    # source-verified family (not the stale child's old family).
+    parent_seen, direct_family = _direct_parent_family(
+        root, file, digest_text(prompt),
+    )
+    if parent_seen:
+        family_id = direct_family or uuid.uuid4().hex
+    else:
+        family_id = verified_split_family_id(prompt_file, prompt) or uuid.uuid4().hex
     _atomic_record(
-        _record_path(file.parent.parent, "splits", file.name),
+        _record_path(root, "splits", file.name),
         {"version": 1, "parent_prompt_sha256": digest_text(prompt),
+         "split_family_id": family_id,
          "children": [{"name": name, "prompt_sha256": digest_text(value)}
                       for name, value in children]},
     )
+    return family_id
 
 
 def _write_child_prompt(path: Path, text: str) -> None:
