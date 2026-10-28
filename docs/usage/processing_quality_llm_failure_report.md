@@ -10,6 +10,17 @@ python -m czjLLM.cli_tools.llm_failure_report --audit-dir logs/llm_call_audit --
 python -m czjLLM.cli_tools.llm_failure_report --audit-dir logs/llm_call_audit --output failure_summary.json
 ```
 
+The optional `--output` JSON is a **separate** aggregate report, never an
+audit file or sealed quality archive ledger. Regardless of the source audit
+directory, the CLI rejects `processing_quality_events_*.jsonl.manifest.json`
+destination names (including nonexistent reservations and case variants on
+Windows) before parsing source CSV. Within the source audit directory, it also
+reserves `llm_call_audit_*` and `processing_quality_events_*` filenames.
+A regular `failure_summary.json` elsewhere remains supported and atomically
+replaceable. Output symlink aliases are refused. These guards prevent ordinary
+CLI mistakes but are not an authenticated archive or a race-free guarantee
+against malicious directory replacement.
+
 ## Meaning and coverage limits
 
 - **Denominator:** individual logged LLM call attempts with an explicit
