@@ -366,7 +366,7 @@ def test_append_to_preupgrade_audit_preserves_legacy_csv_width(tmp_path):
 
 def test_append_rejects_incompatible_existing_audit_header_without_misalignment(tmp_path):
     path = tmp_path / "llm_call_audit_20261028-wrong.csv"
-    path.write_bytes(b"timestamp,ok,error\\n".replace(b"\\n", b"\n"))
+    path.write_bytes(b"timestamp,ok,error\n")
     unchanged = path.read_bytes()
     import pytest
     with pytest.raises(ValueError, match="incompatible existing LLM audit CSV header"):
