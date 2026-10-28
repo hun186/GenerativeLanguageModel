@@ -268,6 +268,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, help="optional atomic JSON report output")
     args = parser.parse_args(argv)
     try:
+        # Fail fast before scanning/replaying archives or creating a temporary
+        # SQLite index if the requested output is a protected metadata path.
+        if args.output is not None:
+            _validate_report_output_path(args.output)
         result = (
             report_for_audit(args.audit_path, incident_family=args.incident_family,
                              disk_backed=args.disk_backed)
@@ -277,7 +281,6 @@ def main(argv: list[str] | None = None) -> int:
             )
         )
         if args.output is not None:
-            _validate_report_output_path(args.output)
             # Never overwrite an input CSV/JSONL or archive integrity ledger.
             atomic_write_json(str(args.output), result, ensure_ascii=False)
     except (OSError, ValueError) as exc:
