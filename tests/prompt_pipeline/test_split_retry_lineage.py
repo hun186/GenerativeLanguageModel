@@ -137,3 +137,103 @@ def test_unrelated_requeues_or_filename_prefixes_are_not_split_families(tmp_path
     assert verified_split_family_id(str(unrelated), "left") == ""
     assert verified_split_family_id(str(root / "Success" / "root-0.txt"), "left") == ""
     assert verified_split_family_id(str(root / "TODO" / "root-0.txt"), "right") == ""
+
+
+def test_recreated_root_with_same_child_does_not_reuse_stale_nested_family(tmp_path):
+    """A stale child's own journal may not override a fresh direct parent."""
+    root, original = _running_parent(tmp_path, text="root version A")
+    child_text = "the same child prompt"
+    install_split_prompts(str(root), original,
+                          [("root-0.txt", child_text), ("root-1.txt", "sibling A")])
+    family_a = verified_split_family_id(str(root), original)
+    child = root.parent.parent / "TODO" / "root-0.txt"
+    nested = [("root-0-0.txt", "left"), ("root-0-1.txt", "right")]
+    install_split_prompts(str(child), child_text, nested)
+    assert verified_split_family_id(str(child), child_text) == family_a
+
+    # An independent new source run reuses the child prompt text and
+    # filename, but has a different parent intent and hence a new family.
+    root.write_text("root version B", encoding="utf-8")
+    family_b = record_split_identity(
+        str(root), "root version B",
+        [("root-0.txt", child_text), ("root-1.txt", "sibling B")],
+    )
+    assert family_b != family_a
+    assert verified_split_family_id(str(root), "root version B") == family_b
+    assert verified_split_family_id(str(child), child_text) == ""  # conflict
+    # Explicitly committing a new nested intent may adopt only family B,
+    # never the stale family's persisted UUID.
+    assert record_split_identity(str(child), child_text, nested) == family_b
+    assert verified_split_family_id(str(child), child_text) == family_b
+    descendant = root.parent.parent / "TODO" / nested[0][0]
+    assert verified_split_family_id(str(descendant), nested[0][1]) == family_b
+
+
+def test_symlinked_identity_directories_cannot_read_or_redirect_other_item(tmp_path):
+    source, text = _running_parent(tmp_path / "source")
+    install_split_prompts(str(source), text,
+                          [("root-0.txt", "left"), ("root-1.txt", "right")])
+    family = verified_split_family_id(str(source), text)
+    assert family
+
+    for alias_level in ("identity", "splits"):
+        victim, victim_text = _running_parent(tmp_path / alias_level)
+        victim_root = victim.parent.parent
+        real_root = source.parent.parent
+        identity = victim_root / "_extract_slice_identity"
+        try:
+            if alias_level == "identity":
+                identity.symlink_to(real_root / "_extract_slice_identity",
+                                    target_is_directory=True)
+            else:
+                identity.mkdir()
+                (identity / "splits").symlink_to(
+                    real_root / "_extract_slice_identity" / "splits",
+                    target_is_directory=True,
+                )
+        except (OSError, NotImplementedError):
+            pytest.skip("directory symlinks unavailable")
+        assert verified_split_family_id(str(victim), text) == ""
+        with pytest.raises(ValueError, match="split journal namespace is a symlink"):
+            record_split_identity(
+                str(victim), victim_text,
+                [("root-0.txt", "victim left"), ("root-1.txt", "victim right")],
+            )
+        assert verified_split_family_id(str(source), text) == family
+
+
+def test_shallow_file_size_with_excessive_json_nesting_is_unknown(tmp_path):
+    parent, original = _running_parent(tmp_path)
+    journal = _intent_path(parent)
+    journal.parent.mkdir(parents=True, exist_ok=True)
+    journal.write_text("[" * 1100 + "0" + "]" * 1100, encoding="utf-8")
+    assert journal.stat().st_size < 16384
+    assert verified_split_family_id(str(parent), original) == ""
+    # Malformed old evidence does not crash or prevent explicit new intent.
+    family = record_split_identity(
+        str(parent), original,
+        [("root-0.txt", "left"), ("root-1.txt", "right")],
+    )
+    assert re.fullmatch(r"[0-9a-f]{32}", family)
+    assert verified_split_family_id(str(parent), original) == family
+
+
+def test_split_family_rejects_nil_non_version4_and_wrong_variant(tmp_path):
+    parent, original = _running_parent(tmp_path)
+    record_split_identity(str(parent), original,
+                          [("root-0.txt", "left"), ("root-1.txt", "right")])
+    journal = _intent_path(parent)
+    original_data = json.loads(journal.read_text(encoding="utf-8"))
+    child = parent.parent.parent / "TODO" / "root-0.txt"
+    for invalid in (
+        "0" * 32,                    # NIL
+        "1" * 32,                    # Wrong UUID version
+        "123456781234412341234567890abcde",  # v4 nibble, wrong variant
+        "A" * 32,                    # Noncanonical uppercase
+    ):
+        modified = dict(original_data, split_family_id=invalid)
+        journal.write_text(json.dumps(modified), encoding="utf-8")
+        assert verified_split_family_id(str(parent), original) == ""
+        assert verified_split_family_id(str(child), "left") == ""
+    journal.write_text(json.dumps(original_data), encoding="utf-8")
+    assert verified_split_family_id(str(parent), original) == original_data["split_family_id"]
