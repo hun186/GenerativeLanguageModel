@@ -176,6 +176,12 @@ def test_prompt_api_pipeline_emits_one_audit_row_per_request():
     assert "response=response" in source
     assert "ok=ok" in source
     assert "error=err" in source
+    assert "worker_call_id=worker_call_id" in source
+    assert "worker_call_id = uuid.uuid4().hex" in source
+    # The source boundary must set the identifier before actual CallLLMAPI
+    # dispatch, not derive it from any prompt/response/error text.
+    assert source.index("worker_call_id = uuid.uuid4().hex") < source.index("response, cost = CallLLMAPI(")
+    assert source.index("response, cost = CallLLMAPI(") < source.index("worker_call_id=worker_call_id")
 
 
 def test_provider_cached_usage_is_explicit_and_not_inferred(tmp_path):
@@ -321,7 +327,7 @@ def test_new_audit_records_have_distinct_opaque_row_ids_and_xlsx_column(tmp_path
     with path.open(encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
         rows = list(reader)
-        assert reader.fieldnames[-1] == "audit_record_id"
+        assert reader.fieldnames[-2:] == ["audit_record_id", "worker_call_id"]
     assert len(rows) == 2
     identifiers = [row["audit_record_id"] for row in rows]
     assert len(set(identifiers)) == 2
@@ -373,3 +379,65 @@ def test_append_rejects_incompatible_existing_audit_header_without_misalignment(
         log_llm_call(audit_path=str(path), run_id="old", model_spec={"num_ctx": 1024})
     assert path.read_bytes() == unchanged
     assert not path.with_suffix(".xlsx").exists()
+
+
+def test_worker_call_id_is_explicit_and_distinct_from_audit_record_identity(tmp_path):
+    """Only a Worker with a true dispatch identifier can supply provenance."""
+    import re
+    import zipfile
+    path = tmp_path / "llm_call_audit_20261028-worker.csv"
+    source_call = "0123456789abcdef0123456789abcdef"
+    log_llm_call(audit_path=str(path), run_id="run-a", worker_call_id=source_call,
+                 model_spec={"num_ctx": 1024}, ok=False, error="ReadTimeout SECRET")
+    log_llm_call(audit_path=str(path), run_id="run-a",
+                 model_spec={"num_ctx": 1024}, ok=False, error="ReadTimeout SECRET")
+    with path.open(newline="", encoding="utf-8") as stream:
+        rows = list(csv.DictReader(stream))
+    assert len(rows) == 2
+    assert rows[0]["worker_call_id"] == source_call
+    assert rows[1]["worker_call_id"] == ""  # No dispatch evidence: don't invent it.
+    assert all(re.fullmatch(r"[0-9a-f]{32}", row["audit_record_id"]) for row in rows)
+    assert rows[0]["audit_record_id"] != source_call
+    assert rows[0]["audit_record_id"] != rows[1]["audit_record_id"]
+    with zipfile.ZipFile(path.with_suffix(".xlsx")) as archive:
+        sheet = archive.read("xl/worksheets/sheet1.xml").decode("utf-8")
+    assert "worker_call_id" in sheet and source_call in sheet
+    from czjLLM.utilities.llm_failure_summary import summarize_llm_failure_audit
+    report = summarize_llm_failure_audit(path)
+    assert report["observed_call_attempts"] == 2
+    assert report["failed_call_attempts"] == 2
+    assert "worker_call_id" not in report and "audit_record_id" not in report
+
+
+def test_worker_call_id_rejects_untrusted_values_without_csv_side_effect(tmp_path):
+    import pytest
+    path = tmp_path / "llm_call_audit_20261028-invalid-worker.csv"
+    for invalid in ("secret/api_key", "f" * 31, "G" * 32,
+                    "f" * 33, "f" * 32 + "\\nsecret", None, 123):
+        with pytest.raises(ValueError, match="invalid worker call identifier"):
+            log_llm_call(audit_path=str(path), run_id="run",
+                         worker_call_id=invalid, model_spec={"num_ctx": 1024})
+        assert not path.exists()
+        assert not path.with_suffix(".xlsx").exists()
+
+
+def test_two_supported_legacy_audit_headers_keep_exact_width(tmp_path):
+    """Pre-#245 and #245 audit generations cannot be silently upgraded."""
+    from czjLLM.utilities.llm_failure_summary import summarize_llm_failure_audit
+    for past_fields in (_AUDIT._FIELDS[:-2], _AUDIT._FIELDS[:-1]):
+        path = tmp_path / f"llm_call_audit_{len(past_fields)}-old.csv"
+        with path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=past_fields)
+            writer.writeheader()
+        original_header = path.read_bytes().splitlines()[0]
+        log_llm_call(audit_path=str(path), run_id="run",
+                     worker_call_id="a" * 32,
+                     model_spec={"num_ctx": 1024}, ok=True)
+        assert path.read_bytes().splitlines()[0] == original_header
+        with path.open(newline="", encoding="utf-8") as stream:
+            reader = csv.DictReader(stream)
+            rows = list(reader)
+        assert reader.fieldnames == past_fields
+        assert len(rows) == 1 and rows[0]["ok"] == "YES"
+        assert None not in rows[0]
+        assert summarize_llm_failure_audit(path)["successful_call_attempts"] == 1
