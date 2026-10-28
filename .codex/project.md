@@ -2,6 +2,9 @@
 
 ## Current Focus
 
+- **Authoritative 2026-10-28 accepted main:** user-approved #245 squash-merged as `bc0a46ababa40f67004659a0b15dd0b29cd31303`; formal exact-head review 0 Findings/Threads; PR Linux `offline-e2e` #40661652119 SUCCESS (immutable archives included). New main postmerge #40663629016 Linux initially running; Windows self-hosted queued/operator-deferred. Older #245-in-progress entries below are historical/superseded.
+- **Independent current engineering branch:** `feat/llm-worker-call-id-20261028` adds Worker invocation-bound UUID4 `worker_call_id` minted only immediately before real `CallLLMAPI`, separate from the persisted audit row UUID; CSV/XLSX newest header carries it, old two generations stay width-compatible. **Not** HTTP/provider request UUID or logical retry-family lineage. Requires Hosted Linux CI, exact-head Codex Review and explicit user Merge. Independent PR #231 remains OPEN untouched.
+
 - **2026-10-28 newest main:** user-approved PR #244 merged with squash SHA `9e743267676af6fc956eca3917253527797785ec`; exact-head Codex 0 Findings/Threads, PR Linux `offline-e2e` #40632361447 SUCCESS. Main postmerge #40660431903 Linux still in progress at initial check; Windows 3.10/3.11 queued/operator-deferred. The previous #244-in-progress focus below is historical and superseded.
 - **Current independent work:** `feat/llm-audit-record-uuid-20261028` adds opaque `audit_record_id` UUID4 to *new* per-run LLM CSV/XLSX audit rows; exact legacy immediately prior header continues without new column, unfamiliar existing header fails closed. This is persisted audit-row identity, **not** a provider request UUID, logical retry identifier or document-failure denominator. Requires exact-head Hosted Linux CI, formal Codex Review, explicit Merge authorization. PR #231 stays OPEN/untouched.
 

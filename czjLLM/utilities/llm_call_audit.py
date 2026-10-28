@@ -6,6 +6,7 @@ from __future__ import annotations
 import csv
 import json
 import os
+import re
 import threading
 import zipfile
 from datetime import datetime
@@ -51,6 +52,7 @@ _FIELDS = [
     "ok",
     "error",
     "audit_record_id",
+    "worker_call_id",
 ]
 
 
@@ -241,10 +243,15 @@ def log_llm_call(
     rendered_prompt_tokens: int | None = None,
     prompt_component_token_source: str = "",
     stage_identity: str = "",
+    worker_call_id: str = "",
 ) -> None:
     """Append one LLM call row. Missing usage/context fields are recorded as 0/blank."""
     if not audit_path:
         return
+    # Only the Worker invocation boundary may supply this value. Never infer
+    # it from a prompt name, a response, a timestamp or an exception message.
+    if not isinstance(worker_call_id, str) or (worker_call_id and not re.fullmatch(r"[0-9a-f]{32}", worker_call_id)):
+        raise ValueError("invalid worker call identifier")
     spec = dict(model_spec or {})
     model = str(spec.get("model_name") or spec.get("model") or "")
     usage = getattr(response, "usage", None)
@@ -299,6 +306,7 @@ def log_llm_call(
         # Identifies this emitted audit record, not a provider request, retry
         # family, source document, or persisted sink acknowledgement.
         "audit_record_id": uuid4().hex,
+        "worker_call_id": worker_call_id,
     }
     path = Path(audit_path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -313,7 +321,8 @@ def log_llm_call(
         if not header_line.endswith("\n"):
             raise ValueError("invalid existing LLM audit CSV header")
         header = next(csv.reader([header_line]), [])
-        if header != _FIELDS and header != _FIELDS[:-1]:
+        # New schema, previous row-UUID schema, or pre-row-UUID schema.
+        if header != _FIELDS and header != _FIELDS[:-1] and header != _FIELDS[:-2]:
             raise ValueError("incompatible existing LLM audit CSV header")
         with path.open("a", newline="", encoding="utf-8") as fp:
             writer = csv.DictWriter(fp, fieldnames=header, extrasaction="ignore")

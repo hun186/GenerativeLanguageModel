@@ -2817,6 +2817,7 @@ class PromptAPIPipeline:
         base_url = None
         response = None
         llm_request_attempted = False
+        worker_call_id = ""  # Filled only at the real CallLLMAPI boundary.
         # Explicit execution site, never inferred from exception text.
         worker_failure_code = "WORKER_PRECALL_EXCEPTION"
         DTBJobs_Retry = []
@@ -2877,6 +2878,7 @@ class PromptAPIPipeline:
     
             # 2) 呼叫 LLM
             worker_failure_code = "WORKER_LLM_CALL_EXCEPTION"
+            worker_call_id = uuid.uuid4().hex
             llm_request_attempted = True
             response, cost = CallLLMAPI(
                 self.content,
@@ -2996,6 +2998,7 @@ class PromptAPIPipeline:
                         "prompt_component_token_source", ""
                     ),
                     stage_identity=self.audit_prompt_tokens.get("stage_identity", ""),
+                    worker_call_id=worker_call_id,
                 )
             except Exception as audit_ex:
                 print(
