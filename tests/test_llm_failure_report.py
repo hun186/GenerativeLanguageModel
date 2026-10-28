@@ -467,7 +467,10 @@ def test_failure_report_cross_directory_cannot_replace_quality_manifest(
     assert failure.value.code == 2
     assert captured.out == ""
     assert str(tmp_path) not in captured.err
-    assert ledger.read_bytes() == original if ledger_exists else not ledger.exists()
+    if ledger_exists:
+        assert ledger.read_bytes() == original
+    else:
+        assert not ledger.exists()
     assert summarize_llm_failure_audit(input_audit)["failed_call_attempts"] == 1
     if ledger_exists:
         assert verify_quality_manifest(
