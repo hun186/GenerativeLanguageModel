@@ -303,3 +303,73 @@ def test_multistage_original_prompt_retags_before_early_return():
     assert "shutil.copy2" in section
     assert "relabel_prompt_token_stage(str(fp), stage_name)" in section
     assert section.index("shutil.copy2") < section.index("relabel_prompt_token_stage")
+
+
+def test_new_audit_records_have_distinct_opaque_row_ids_and_xlsx_column(tmp_path):
+    """Same-second identical calls are separate records, not inferred retries."""
+    import re
+    import zipfile
+
+    metadata = create_llm_call_audit_run(str(tmp_path))
+    path = Path(metadata["llm_call_audit_path"])
+    for _ in range(2):
+        log_llm_call(
+            audit_path=str(path), run_id=metadata["llm_call_audit_run_id"],
+            task="same-task", model_spec={"model_name": "test", "num_ctx": 1024},
+            ok=False, error="ReadTimeout: confidential input",
+        )
+    with path.open(encoding="utf-8", newline="") as stream:
+        reader = csv.DictReader(stream)
+        rows = list(reader)
+        assert reader.fieldnames[-1] == "audit_record_id"
+    assert len(rows) == 2
+    identifiers = [row["audit_record_id"] for row in rows]
+    assert len(set(identifiers)) == 2
+    assert all(re.fullmatch(r"[0-9a-f]{32}", value) for value in identifiers)
+    assert all(row["ok"] == "NO" for row in rows)
+    # XLSX is the real producer export, not a mocked summary.
+    with zipfile.ZipFile(path.with_suffix(".xlsx")) as archive:
+        sheet = archive.read("xl/worksheets/sheet1.xml").decode("utf-8")
+    assert "audit_record_id" in sheet
+    assert all(value in sheet for value in identifiers)
+    # The read-only failure report still measures observed call rows, not IDs.
+    from czjLLM.utilities.llm_failure_summary import summarize_llm_failure_audit
+    result = summarize_llm_failure_audit(path)
+    assert result["observed_call_attempts"] == 2
+    assert result["failed_call_attempts"] == 2
+    assert "audit_record_id" not in result
+
+
+def test_append_to_preupgrade_audit_preserves_legacy_csv_width(tmp_path):
+    """An in-flight old run is not silently upgraded mid-file."""
+    legacy = tmp_path / "llm_call_audit_20261028-legacy.csv"
+    with legacy.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=_AUDIT._FIELDS[:-1])
+        writer.writeheader()
+    original_header = legacy.read_bytes().splitlines()[0]
+    log_llm_call(
+        audit_path=str(legacy), run_id="old-run",
+        model_spec={"model_name": "test", "num_ctx": 1024},
+        ok=True,
+    )
+    assert legacy.read_bytes().splitlines()[0] == original_header
+    with legacy.open(encoding="utf-8", newline="") as stream:
+        reader = csv.DictReader(stream)
+        records = list(reader)
+        assert reader.fieldnames == _AUDIT._FIELDS[:-1]
+    assert len(records) == 1
+    assert records[0]["ok"] == "YES"
+    assert None not in records[0]
+    from czjLLM.utilities.llm_failure_summary import summarize_llm_failure_audit
+    assert summarize_llm_failure_audit(legacy)["successful_call_attempts"] == 1
+
+
+def test_append_rejects_incompatible_existing_audit_header_without_misalignment(tmp_path):
+    path = tmp_path / "llm_call_audit_20261028-wrong.csv"
+    path.write_bytes(b"timestamp,ok,error\\n".replace(b"\\n", b"\n"))
+    unchanged = path.read_bytes()
+    import pytest
+    with pytest.raises(ValueError, match="incompatible existing LLM audit CSV header"):
+        log_llm_call(audit_path=str(path), run_id="old", model_spec={"num_ctx": 1024})
+    assert path.read_bytes() == unchanged
+    assert not path.with_suffix(".xlsx").exists()
