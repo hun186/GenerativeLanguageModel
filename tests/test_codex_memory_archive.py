@@ -225,3 +225,21 @@ def test_current_handoffs_do_not_reopen_merged_240_241_242():
     ):
         assert old_branch not in focus
         assert old_branch not in current
+
+
+def test_active_accepted_protection_issues_do_not_require_rediscovery():
+    """Historical review-stage risk notes must not masquerade as open PR work."""
+    known = (_ROOT / ".codex" / "known_issues.md").read_text(
+        encoding="utf-8"
+    )
+    contract = (_ROOT / ".codex" / "api_contract.md").read_text(
+        encoding="utf-8"
+    )
+    current = known.split("## Current Acceptance Reconciliation", 1)[1].split(
+        "## Environment and External Dependencies", 1
+    )[0]
+    for value in ("#240", "#241", "#242", "40623677955", "SUCCESS", "#231"):
+        assert value in current
+    assert "operator-deferred" in current
+    assert "accepted PR #241" in contract
+    assert "pending PR acceptance" not in contract
