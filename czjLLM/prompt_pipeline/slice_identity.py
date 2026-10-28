@@ -101,6 +101,12 @@ def _valid_split_family_id(value: object) -> str:
     return value
 
 
+def _valid_split_sha256(value: object) -> bool:
+    """Require SHA256 hexadecimal in the canonical persisted representation."""
+    return (isinstance(value, str) and len(value) == 64
+            and all(char in "0123456789abcdef" for char in value))
+
+
 def _verified_split_record(item: Path, parent_name: str) -> dict:
     """Bounded, non-alias read of one *unauthenticated* split intent."""
     if not _split_journal_namespace_safe(item):
@@ -122,7 +128,7 @@ def _verified_split_record(item: Path, parent_name: str) -> dict:
         return {}
     parent_hash = record.get("parent_prompt_sha256")
     children = record.get("children")
-    if (not isinstance(parent_hash, str) or len(parent_hash) != 64
+    if (not _valid_split_sha256(parent_hash)
             or not isinstance(children, list) or len(children) != 2):
         return {}
     expected = {parent_name[:-4] + "-0.txt", parent_name[:-4] + "-1.txt"}
@@ -132,7 +138,7 @@ def _verified_split_record(item: Path, parent_name: str) -> dict:
             return {}
         name, digest = child.get("name"), child.get("prompt_sha256")
         if (not isinstance(name, str) or name not in expected or name in found
-                or not isinstance(digest, str) or len(digest) != 64):
+                or not _valid_split_sha256(digest)):
             return {}
         found[name] = digest
     if set(found) != expected:
@@ -197,9 +203,9 @@ def record_split_identity(
         return ""
     if len(children) != 2:
         raise ValueError("split must have exactly two children")
-    stem = file.stem + "-"
-    if any(not name.startswith(stem) or not name.endswith(".txt") for name, _ in children):
-        raise ValueError("split children do not belong to parent")
+    expected_names = {file.stem + "-0.txt", file.stem + "-1.txt"}
+    if {name for name, _ in children} != expected_names:
+        raise ValueError("split requires canonical, distinct -0/-1 children")
     root = file.parent.parent
     if not _split_journal_namespace_safe(root):
         raise ValueError("split journal namespace is a symlink")

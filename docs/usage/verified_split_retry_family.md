@@ -58,3 +58,8 @@ symlink refusal, and unrelated requeues. Hosted Linux CI explicitly runs
 the new suite, alongside its unchanged offline E2E and immutable archive gate.
 Physical Windows/Ollama/ES acceptance remains operator-gated. Independent
 PR #231 is neither modified nor merged.
+
+
+## Additional format consistency guard (2026-10-29)
+
+Newly written split journals accept **only** the two distinct canonical child basenames `<parent>-0.txt` and `<parent>-1.txt`; invalid pairs are rejected before any intent or child is written. Family verification also requires canonical lowercase 64-digit hexadecimal SHA256 for the parent **and both children**, not merely 64 characters. This tightens family *attribution* only: it does not rewrite historical journals or change existing resume/rollback semantics, and remains unauthenticated local intent evidence.

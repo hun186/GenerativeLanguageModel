@@ -237,3 +237,39 @@ def test_split_family_rejects_nil_non_version4_and_wrong_variant(tmp_path):
         assert verified_split_family_id(str(child), "left") == ""
     journal.write_text(json.dumps(original_data), encoding="utf-8")
     assert verified_split_family_id(str(parent), original) == original_data["split_family_id"]
+
+
+@pytest.mark.parametrize("names", [
+    ("root-0.txt", "root-0.txt"),
+    ("root-0.txt", "root-2.txt"),
+    ("root-1.txt", "root-other.txt"),
+])
+def test_split_writer_rejects_noncanonical_or_duplicate_children_without_writes(tmp_path, names):
+    parent, original = _running_parent(tmp_path)
+    journal = _intent_path(parent)
+    with pytest.raises(ValueError, match="canonical, distinct"):
+        install_split_prompts(str(parent), original, [(name, "child") for name in names])
+    assert parent.read_text(encoding="utf-8") == original
+    assert not journal.exists()
+    assert not (parent.parent.parent / "TODO").exists()
+
+
+def test_split_family_rejects_malformed_parent_or_sibling_hash_even_if_length_64(tmp_path):
+    parent, original = _running_parent(tmp_path)
+    install_split_prompts(str(parent), original,
+                          [("root-0.txt", "left"), ("root-1.txt", "right")])
+    journal = _intent_path(parent)
+    valid = json.loads(journal.read_text(encoding="utf-8"))
+    child = parent.parent.parent / "TODO" / "root-0.txt"
+    assert verified_split_family_id(str(parent), original)
+    for location in ("parent_prompt_sha256", "sibling"):
+        altered = json.loads(json.dumps(valid))
+        if location == "parent_prompt_sha256":
+            altered[location] = "g" * 64
+        else:
+            altered["children"][1]["prompt_sha256"] = "G" * 64
+        journal.write_text(json.dumps(altered), encoding="utf-8")
+        assert verified_split_family_id(str(parent), original) == ""
+        assert verified_split_family_id(str(child), "left") == ""
+    journal.write_text(json.dumps(valid), encoding="utf-8")
+    assert verified_split_family_id(str(child), "left") == valid["split_family_id"]
