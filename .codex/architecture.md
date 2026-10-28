@@ -59,3 +59,7 @@
 ## 2026-10-28 append-only audit row UUID (pending acceptance)
 
 - The per-run `utilities/llm_call_audit.py` producer appends a new trailing opaque `audit_record_id` UUID4 column for **newly created** CSV runs and its actual XLSX export. A pre-upgrade CSV with exactly the previous schema retains its original columns (no retroactive upgrades) and unknown headers fail closed without misaligned writes. These IDs identify *logged rows*, not provider requests, retry groups, source slices, documents or ES acknowledgement; no reader denominator/schema change is implied. Source-authoritative retry identity is a distinct future task.
+
+## 2026-10-28 Worker call boundary metadata (pending acceptance)
+
+- `PromptAPIPipeline.proc()` mints opaque UUID4 `worker_call_id` at the real `CallLLMAPI` invocation boundary, before calling it, and forwards it to the existing post-settlement `log_llm_call`. The separate per-record `audit_record_id` is still minted on row creation. A new CSV has the extra final `worker_call_id` column in CSV/XLSX; two preceding full headers remain supported without rewriting old audit rows. Lower-level SDK HTTP retries and source logical retry families are not observed or identified here; exception/precall/crash gaps remain, and report-v1 denominators stay observed rows.
