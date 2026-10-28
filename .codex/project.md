@@ -2,7 +2,7 @@
 
 ## Current Focus
 
-- **Authoritative accepted main (2026-10-28):** user-approved PR #242 merged as `e010a5e07c45016f8f0ab4094c30bcd33825d3b5` after formal exact-head Codex Review (0 Findings, 0 unresolved Threads) and PR Linux `offline-e2e` #40622149444 SUCCESS. Main postmerge Linux #40623677955 **pending verification**; no claim of postmerge PASS until its exact result is checked. Windows self-hosted 3.10/3.11 remain queued and **operator-deferred**.
+- **Authoritative accepted main (2026-10-28):** user-approved PR #242 merged as `e010a5e07c45016f8f0ab4094c30bcd33825d3b5` after formal exact-head Codex Review (0 Findings, 0 unresolved Threads) and PR Linux `offline-e2e` #40622149444 SUCCESS. Main postmerge Linux `offline-e2e` #40623677955 **SUCCESS** including immutable archive test, as checked on Hosted GitHub. This is Linux-only evidence, not full Windows or ES/Ollama acceptance. Windows self-hosted 3.10/3.11 remain queued and **operator-deferred**.
 - **Current independent memory-reconciliation branch:** `docs/codex-current-handoff-reconciliation-20261028` archives full prior active `project.md`, `memory.md` and `backlog.md` byte-for-byte **before** replacing obsolete current-focus claims; verifies archive Git blob SHA in Hosted Linux and preserves all original six 2026-10-27 immutable archives. No runtime code changes, formal latest-head CI/Codex review and explicit user Merge authorization still required.
 - **Only independent outstanding PR at this baseline:** #231, OPEN/unmerged, head `a8711e9337b62e4b9c6ad62f37ba3e78ba4e8fea`. Its interrupted sealed-JSONL rotation rollback remains separate: do not edit, close, rebase or merge it without a separately authorized workflow. Mergeability must be rechecked rather than trusted from old snapshots.
 
