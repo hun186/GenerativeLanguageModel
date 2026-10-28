@@ -2,6 +2,9 @@
 
 ## Current Focus
 
+- **Latest accepted Hosted main (2026-10-28):** user-approved #246 squash merged as `0b380ae65d9bc0b388b66bfa8a6c216ca8e0782d`; formal exact-head Codex 0 Findings/Threads and PR Linux `offline-e2e` #40665096448 SUCCESS incl. archive test. New main postmerge #40671779239 initially running; Windows 3.10/3.11 operator-deferred. Older #246 pending labels below are historical/superseded; independent PR #231 stays OPEN untouched.
+- **Next independent engineering branch:** `feat/llm-worker-call-return-outcome-20261028` records explicit `CallLLMAPI` wrapper normal return as `call_llm_api_returned` YES/NO (unknown blank outside observed Worker boundary), separate from the final local `ok` result. It preserves three historical CSV header generations, report-v1 semantics and privacy. This is **not** a provider HTTP acknowledgement or retry lineage. Require exact-head Hosted Linux CI, formal Codex Review and explicit Merge approval.
+
 - **Authoritative 2026-10-28 accepted main:** user-approved #245 squash-merged as `bc0a46ababa40f67004659a0b15dd0b29cd31303`; formal exact-head review 0 Findings/Threads; PR Linux `offline-e2e` #40661652119 SUCCESS (immutable archives included). New main postmerge #40663629016 Linux initially running; Windows self-hosted queued/operator-deferred. Older #245-in-progress entries below are historical/superseded.
 - **Independent current engineering branch:** `feat/llm-worker-call-id-20261028` adds Worker invocation-bound UUID4 `worker_call_id` minted only immediately before real `CallLLMAPI`, separate from the persisted audit row UUID; CSV/XLSX newest header carries it, old two generations stay width-compatible. **Not** HTTP/provider request UUID or logical retry-family lineage. Requires Hosted Linux CI, exact-head Codex Review and explicit user Merge. Independent PR #231 remains OPEN untouched.
 
