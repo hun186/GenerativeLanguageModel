@@ -102,6 +102,9 @@ def test_journal_malformed_unknown_and_symlink_are_not_family_evidence(tmp_path)
                           [("root-0.txt", "left"), ("root-1.txt", "right")])
     content = json.loads(journal.read_text())
     assert verified_split_family_id(str(parent), original) == content["split_family_id"]
+    journal.write_text("x" * 16385, encoding="utf-8")
+    assert verified_split_family_id(str(parent), original) == ""
+    journal.write_text(json.dumps(content), encoding="utf-8")
     content["children"][0]["name"] = []
     journal.write_text(json.dumps(content))
     assert verified_split_family_id(str(parent), original) == ""
