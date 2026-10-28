@@ -2818,6 +2818,7 @@ class PromptAPIPipeline:
         response = None
         llm_request_attempted = False
         worker_call_id = ""  # Filled only at the real CallLLMAPI boundary.
+        call_llm_api_returned = False  # Actual wrapper return, not provider HTTP proof.
         # Explicit execution site, never inferred from exception text.
         worker_failure_code = "WORKER_PRECALL_EXCEPTION"
         DTBJobs_Retry = []
@@ -2885,6 +2886,7 @@ class PromptAPIPipeline:
                 max_tokens=self.max_tokens,
                 model_spec=self.model_spec
             )
+            call_llm_api_returned = True
             worker_failure_code = "WORKER_RESPONSE_EXCEPTION"
             # 3) token 警告
             if response.usage.completion_tokens >= self.max_tokens:
@@ -2999,6 +3001,7 @@ class PromptAPIPipeline:
                     ),
                     stage_identity=self.audit_prompt_tokens.get("stage_identity", ""),
                     worker_call_id=worker_call_id,
+                    call_llm_api_returned=call_llm_api_returned,
                 )
             except Exception as audit_ex:
                 print(
