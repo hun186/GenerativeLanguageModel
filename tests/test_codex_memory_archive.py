@@ -161,3 +161,85 @@ def test_cache_aware_provider_audit_and_stage_isolated_gui_are_active():
     assert "different stages must never" in contract
     assert "heuristic" in decisions
     assert "historical" in architecture
+
+
+# The 2026-10-28 acceptance reconciliation is a second, distinct
+# archive-first compaction. The original 2026-10-27 six-file snapshots remain
+# independently checked by test_exact_original_archives_remain_recoverable.
+_RECONCILIATION_GIT_BLOBS = {
+    "project": "a4eeb14fe91dadbb3583087a1517f1f290f2834c",
+    "memory": "309b57f00fc85f0d03fd12fdb3b7bdfdaa4708d8",
+    "backlog": "67b64c801806d585e246d9f0091efe4cb69d37ef",
+}
+
+
+@pytest.mark.parametrize("name,expected", sorted(_RECONCILIATION_GIT_BLOBS.items()))
+def test_reconciliation_archive_is_exact_and_active_linked(name, expected):
+    """Do not lose the pre-reconciliation review/merge handoffs."""
+    stem = f"{name}.md-20261028-104900.md"
+    archived = _ROOT / ".codex" / "archive" / stem
+    active = _ROOT / ".codex" / f"{name}.md"
+    assert archived.is_file() and active.is_file()
+    assert _git_blob_sha(archived.read_bytes()) == expected
+    body = active.read_text(encoding="utf-8")
+    assert stem in body and expected in body
+    assert len(body.splitlines()) <= 200
+    assert len(body.encode("utf-8")) < 40_000
+    attrs = (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
+    assert ".codex/archive/*-20261028-104900.md -text" in attrs
+
+
+def test_current_handoffs_do_not_reopen_merged_240_241_242():
+    """The active work queue follows accepted Hosted main, not old PR text."""
+    router = (_ROOT / ".codex" / "project.md").read_text(encoding="utf-8")
+    memory = (_ROOT / ".codex" / "memory.md").read_text(encoding="utf-8")
+    backlog = (_ROOT / ".codex" / "backlog.md").read_text(encoding="utf-8")
+    focus = router.split("## Current Focus", 1)[1].split(
+        "## Recent Accepted Outcomes", 1
+    )[0]
+    current = backlog.split("## Current Summary", 1)[1].split(
+        "## True Open Engineering Work", 1
+    )[0]
+    for content in (focus, current, memory.split("## Current Summary", 1)[1].split(
+            "## Accepted Recent Outcomes", 1)[0]):
+        assert "e010a5e07c45016f8f0ab4094c30bcd33825d3b5" in content
+        assert "40623677955" in content and "SUCCESS" in content
+        assert "#231" in content
+    for number in ("#240", "#241", "#242"):
+        assert number in router and number in memory and number in backlog
+    assert "operator-deferred" in focus
+    # Escaped text '\\n-' must never splice two independent active bullets.
+    assert r"\n- " not in current
+    open_items = [
+        line for line in backlog.splitlines() if line.startswith("- [ ]")
+    ]
+    assert open_items
+    assert all(
+        not any(number in line for number in ("#240", "#241", "#242"))
+        for line in open_items
+    )
+    for old_branch in (
+        "docs/codex-active-memory-compaction-20261027",
+        "fix/quality-report-protect-manifest-output-20261028",
+        "fix/llm-failure-report-cross-dir-ledger-output-20261028",
+    ):
+        assert old_branch not in focus
+        assert old_branch not in current
+
+
+def test_active_accepted_protection_issues_do_not_require_rediscovery():
+    """Historical review-stage risk notes must not masquerade as open PR work."""
+    known = (_ROOT / ".codex" / "known_issues.md").read_text(
+        encoding="utf-8"
+    )
+    contract = (_ROOT / ".codex" / "api_contract.md").read_text(
+        encoding="utf-8"
+    )
+    current = known.split("## Current Acceptance Reconciliation", 1)[1].split(
+        "## Environment and External Dependencies", 1
+    )[0]
+    for value in ("#240", "#241", "#242", "40623677955", "SUCCESS", "#231"):
+        assert value in current
+    assert "operator-deferred" in current
+    assert "accepted PR #241" in contract
+    assert "pending PR acceptance" not in contract

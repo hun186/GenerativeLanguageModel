@@ -1,5 +1,12 @@
 # Known Issues — Current / Operator-Gated
 
+## Current Acceptance Reconciliation — 2026-10-28
+
+- PR **#240** (six-file archive compaction) was user-approved and merged `21ae2cb690031c6409fd05f5cf6e4109a21548e1`; formal Codex 0 Findings, 6/6 Threads resolved, PR/main Linux E2E passed.
+- PR **#241** (quality summary manifest export guard) was user-approved and merged `fb713365b173378ba8ca82e0557e4fdd5a415650`; Codex 0 Findings, 1/1 Thread resolved, PR/main Linux E2E passed.
+- PR **#242** (failure report cross-folder ledger guard) was user-approved and merged `e010a5e07c45016f8f0ab4094c30bcd33825d3b5`; Codex 0 Findings/Threads, PR Linux #40622149444 and main Linux `offline-e2e` #40623677955 SUCCESS. All old `pending` labels in dated findings below are historical *at the time of review*, not current outstanding engineering tasks.
+- Remaining issues: Windows self-hosted 3.10/3.11 still queued/operator-deferred, independent OPEN PR #231, no real Windows/Ollama/ES readback, no crash-safe authenticated checkpoint/online shard retirement. These accepted PRs do not prove absence of filesystem races or malicious-tamper resilience.
+
 ## Environment and External Dependencies
 
 - Windows 3.10 and 3.11 self-hosted runners remain **queued**; Linux Hosted `offline-e2e` is the operative independently reported test. Physical Windows PSAPI/GUI/LLM/SQL Server/ES operation remains operator-deferred. Do not label full workflow green.
