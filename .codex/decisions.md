@@ -107,3 +107,7 @@ The following sections describe the accepted main implementation through PR #239
 
 - A read-only summary should never share its destination namespace with a quality archive consistency manifest, even though both filenames end in `.json`. Reject the canonical ledger filename pattern unconditionally (including uncreated/other-run manifest targets) before scanning sources or creating temporary SQLite; also reject symlink report output aliases. Keep the original generic atomic JSON writer unchanged to avoid affecting unrelated sinks.
 - This rule prevents inadvertent overwrite by CLI users; it is not an online-writer lock, an authenticated manifest trust root or a durable checkpoint. Preserve normal `--output quality_summary.json` behavior and all report-v1 metrics.
+
+## 2026-10-28 LLM-call failure report output namespace decision
+
+- Keep the existing `llm_failure_report` report-v1 shape and strict CSV audit reader. Reserve the `processing_quality_events_*.jsonl.manifest.json` SHA256 ledger filename **regardless of destination directory**, before CSV replay. Retain separate within-source-directory `llm_call_audit_*`/quality artifact prefix rules, casefold for Windows and reject symlink output aliases. Do not broaden generic `atomic_write_json` behavior or interpret this as a race-free file sandbox.
