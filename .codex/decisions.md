@@ -111,3 +111,8 @@ The following sections describe the accepted main implementation through PR #239
 ## 2026-10-28 LLM-call failure report output namespace decision
 
 - Keep the existing `llm_failure_report` report-v1 shape and strict CSV audit reader. Reserve the `processing_quality_events_*.jsonl.manifest.json` SHA256 ledger filename **regardless of destination directory**, before CSV replay. Retain separate within-source-directory `llm_call_audit_*`/quality artifact prefix rules, casefold for Windows and reject symlink output aliases. Do not broaden generic `atomic_write_json` behavior or interpret this as a race-free file sandbox.
+
+## 2026-10-28 LLM call failure time interval decisions (pending PR acceptance)
+
+- Use producer-emitted local-second `timestamp` only for optional `llm_failure_report --since` (inclusive) and `--before` (exclusive), validating strict canonical `YYYY-MM-DDTHH:MM:SS` and `since < before` if both are supplied. Reject offset/Z/ambiguous timestamps; do **not** fabricate UTC, retry UUID or document identities. All records in a filtered snapshot must have valid timestamps, including out-of-window rows; otherwise fail closed rather than misrepresent denominators.
+- Preserve unfiltered report v1 and legacy parser/snapshot budgets. Filtered v1 adds fixed `time_window` with producer-local clock labeling, and per-run excluded count. History keeps independent run snapshots; no cross-run denominator pooling or online mutable-writer guarantee. No runtime CSV producer or LLM path changed.

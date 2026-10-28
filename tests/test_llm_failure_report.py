@@ -11,7 +11,8 @@ import pytest
 
 from czjLLM.cli_tools.llm_failure_report import main
 from czjLLM.utilities.llm_failure_summary import (
-    classify_failed_call, llm_failure_history, summarize_llm_failure_audit,
+    classify_failed_call, llm_failure_history, parse_local_time_window,
+    summarize_llm_failure_audit,
 )
 
 
@@ -531,3 +532,179 @@ def test_failure_report_allows_standalone_json_in_other_folder(
     assert audit.read_bytes() == raw
     assert "private-info" not in destination.read_text(encoding="utf-8")
     assert json.loads(capsys.readouterr().out)["mode"] == "single_run"
+
+
+
+def _timed_audit(path: Path, entries: list[tuple[str, str, str]]) -> None:
+    """Use producer-compatible CSV output, with private error/URL fields."""
+    with path.open("w", encoding="utf-8", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=HEADERS)
+        writer.writeheader()
+        for timestamp, state, error in entries:
+            writer.writerow({
+                "timestamp": timestamp, "run_id": "private-run",
+                "ok": state, "error": error, "prompt_file": "/secret/input.txt",
+                "base_url": "http://user:password@private.invalid",
+            })
+
+
+def test_observed_time_window_boundaries_and_default_behavior(tmp_path: Path):
+    source = tmp_path / "llm_call_audit_20261028-window.csv"
+    _timed_audit(source, [
+        ("2026-10-28T09:59:59", "???", "private-before"),
+        ("2026-10-28T10:00:00", "NO", "ReadTimeout private-in-window"),
+        ("2026-10-28T10:05:00", "NO", "HTTPError 429 private-in-window"),
+        ("2026-10-28T10:09:59", "YES", ""),
+        ("2026-10-28T10:10:00", "NO", "connection refused private-after"),
+    ])
+    original = source.read_bytes()
+    default = summarize_llm_failure_audit(source)
+    window = parse_local_time_window(
+        "2026-10-28T10:00:00", "2026-10-28T10:10:00")
+    assert window is not None
+    report = summarize_llm_failure_audit(source, time_window=window)
+    assert source.read_bytes() == original
+    assert default["total_rows"] == 5
+    assert default["unclassified_or_invalid_status_rows"] == 1
+    assert "time_window" not in default and "excluded_by_time_window" not in default
+    assert report["total_rows"] == 3
+    assert report["observed_call_attempts"] == 3
+    assert report["failed_call_attempts"] == 2
+    assert report["successful_call_attempts"] == 1
+    assert report["failed_call_pct"] == 66.67
+    assert report["unclassified_or_invalid_status_rows"] == 0
+    assert report["excluded_by_time_window"] == 2
+    assert report["failure_categories"]["rate_limit"] == 1
+    assert report["failure_categories"]["timeout"] == 1
+    assert report["time_window"] == {
+        "since": "2026-10-28T10:00:00",
+        "before": "2026-10-28T10:10:00",
+        "bounds": "[since,before)",
+        "clock": "producer_local_naive",
+    }
+    exported = json.dumps(report)
+    for secret in ("private-", "password", "input.txt", "private-run"):
+        assert secret not in exported
+
+
+@pytest.mark.parametrize("since,before", [
+    ("2026-10-28", None),
+    ("2026-10-28T10:00", None),
+    ("2026-10-28T10:00:00Z", None),
+    ("2026-10-28T10:00:00+08:00", None),
+    ("2026-10-28 10:00:00", None),
+    ("2026-02-29T10:00:00", None),
+    ("2026-10-28T25:00:00", None),
+    (None, "2026-10-28T10:00:00.0"),
+    ("2026-10-28T10:00:00", "2026-10-28T10:00:00"),
+    ("2026-10-28T11:00:00", "2026-10-28T10:00:00"),
+])
+def test_time_window_refuses_imprecise_utc_and_reversed_clock_values(since, before):
+    with pytest.raises(ValueError):
+        parse_local_time_window(since, before)
+    assert parse_local_time_window(None, None) is None
+
+
+def test_time_window_history_isolated_and_filename_selection_unchanged(
+    tmp_path: Path, capsys
+):
+    a = tmp_path / "llm_call_audit_20261028-1.csv"
+    b = tmp_path / "llm_call_audit_20261028-2.csv"
+    _timed_audit(a, [
+        ("2026-10-28T09:00:00", "NO", "connection refused"),
+        ("2026-10-28T10:30:00", "NO", "ReadTimeout"),
+    ])
+    _timed_audit(b, [
+        ("2026-10-28T11:59:59", "YES", ""),
+        ("2026-10-28T12:00:00", "NO", "HTTPError 429"),
+    ])
+    window = parse_local_time_window(
+        "2026-10-28T10:00:00", "2026-10-28T12:00:00")
+    out = llm_failure_history(tmp_path, time_window=window)
+    assert out["available_run_files"] == 2
+    assert out["selected_run_files"] == 2
+    assert out["runs"][0]["observed_call_attempts"] == 1
+    assert out["runs"][0]["successful_call_attempts"] == 1
+    assert out["runs"][1]["failed_call_attempts"] == 1
+    assert [r["excluded_by_time_window"] for r in out["runs"]] == [1, 1]
+    assert out["time_window"]["clock"] == "producer_local_naive"
+    assert "run_id" not in json.dumps(out)
+    assert main([
+        "--audit-dir", str(tmp_path),
+        "--since", "2026-10-28T10:00:00",
+        "--before", "2026-10-28T12:00:00",
+    ]) == 0
+    assert json.loads(capsys.readouterr().out) == out
+
+
+@pytest.mark.parametrize("timestamp", [
+    "", "2026-02-29T09:00:00", "2026-10-28T09:00:00+08:00",
+    "2026-10-28T09:00", "sensitive/illegal/timestamp",
+])
+def test_time_filter_rejects_untrusted_source_timestamps_without_partial_output(
+    tmp_path: Path, capsys, timestamp
+):
+    source = tmp_path / "llm_call_audit_20261028-bad-clock.csv"
+    _timed_audit(source, [
+        (timestamp, "NO", "ReadTimeout private"),
+    ])
+    output = tmp_path / "summary.json"
+    raw = source.read_bytes()
+    with pytest.raises(ValueError, match="timestamp"):
+        summarize_llm_failure_audit(
+            source, time_window=parse_local_time_window(
+                "2026-10-28T10:00:00", "2026-10-28T11:00:00",
+            ),
+        )
+    with pytest.raises(SystemExit) as stopped:
+        main(["--audit-path", str(source), "--output", str(output),
+              "--since", "2026-10-28T10:00:00"])
+    assert stopped.value.code == 2
+    capture = capsys.readouterr()
+    assert capture.out == ""
+    assert "private" not in capture.err and str(tmp_path) not in capture.err
+    assert not output.exists()
+    assert source.read_bytes() == raw
+
+
+@pytest.mark.parametrize("mode", ["missing_header", "short_row", "blank_row"])
+def test_time_filter_fails_closed_when_row_cannot_be_located(tmp_path: Path, mode):
+    source = tmp_path / "llm_call_audit_20261028-legacy.csv"
+    if mode == "missing_header":
+        source.write_bytes(b"ok,error\nNO,ReadTimeout\n")
+    elif mode == "short_row":
+        source.write_bytes(b"timestamp,ok,error\n2026-10-28T10:00:00,NO\n")
+    else:
+        source.write_bytes(b"timestamp,ok,error\n\n2026-10-28T10:00:00,NO,ReadTimeout\n")
+    original = source.read_bytes()
+    with pytest.raises(ValueError, match="timestamp|malformed audit row"):
+        summarize_llm_failure_audit(
+            source, time_window=parse_local_time_window(
+                "2026-10-28T10:00:00", None,
+            ),
+        )
+    assert source.read_bytes() == original
+    # The no-filter legacy contract must remain unchanged.
+    plain = summarize_llm_failure_audit(source)
+    assert "time_window" not in plain
+
+
+def test_cli_time_window_allows_one_sided_bounds_and_empty_sample(
+    tmp_path: Path, capsys
+):
+    source = tmp_path / "llm_call_audit_20261028-single.csv"
+    _timed_audit(source, [
+        ("2026-10-28T09:00:00", "NO", "ReadTimeout"),
+        ("2026-10-28T10:00:00", "YES", ""),
+    ])
+    assert main(["--audit-path", str(source),
+                 "--since", "2026-10-28T11:00:00"]) == 0
+    output = json.loads(capsys.readouterr().out)
+    assert output["run"]["observed_call_attempts"] == 0
+    assert output["run"]["failed_call_pct"] is None
+    assert output["run"]["state"] == "no_observed_calls"
+    assert output["run"]["excluded_by_time_window"] == 2
+    assert output["time_window"]["before"] is None
+    assert main(["--audit-path", str(source),
+                 "--before", "2026-10-28T10:00:00"]) == 0
+    assert json.loads(capsys.readouterr().out)["run"]["failed_call_attempts"] == 1

@@ -25,3 +25,9 @@
 - `.codex/archive/backlog.md-20261027-213700.md` — exact pre-#240 original Git blob `0a40f0a9b26d7bebb7125a790995db6b84181a4f`; preserves older quality/memory backlog, decisions and historical PR status.
 - `.codex/archive/backlog.md-20261028-104900.md` — exact pre-reconciliation active backlog Git blob `67b64c801806d585e246d9f0091efe4cb69d37ef`; preserves the original historical #240–#242 review/CI entries now confirmed closed.
 - These archives are for historical traceability, not a current todo list. Reconcile new work against Hosted main, branch HEAD, CI and formal Reviews before marking a task completed.
+
+## 2026-10-28 #243 closure and time-bounded observational LLM call failure counts
+
+- [x] PR #243 user-authorized merge `5c307705884903abca882f3283ec8968b302a2d4`; formal Codex 0 Findings/Threads; main Linux `offline-e2e` #40628120579 SUCCESS including archive test. Earlier #243 in-progress notes are superseded; Windows 3.10/3.11 remains queued/operator-deferred.
+- [ ] New independent `feat/llm-failure-observed-time-window-20261028`: strict opt-in local-second `--since`/`--before` filtering over existing CSV only, fail closed for unknown/malformed timestamps and rows, keep legacy v1 JSON unfiltered path unchanged; add interval/exclusion metadata only with filter; preserve bounded reader, per-run denominators, privacy. Obtain exact-head Hosted Linux E2E, Codex P1/P2 review; require explicit Merge authorization.
+- [ ] Remaining independent followups: source-authoritative request UUID/retry lineage, cross-clock normalization only with explicit timezone evidence, actual logical failure denominators, real Windows/LLM/ES acceptance. PR #231 OPEN and out of scope.
