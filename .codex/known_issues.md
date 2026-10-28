@@ -41,3 +41,8 @@
 ## 2026-10-27 PR #240 third Code Review P2
 
 - Original cache-aware per-request audit `cached_input_tokens`/source/stage and GUI `effective_tok_per_s_est` heuristic semantics were lost during active-memory compaction even though runtime continued to implement them. Missing provider cache metadata is unknown, not zero; same-stage stable template size is only a proxy, not proof of cache hit or isolated GPU throughput. Active contracts and regression checks restored. Latest-head CI/re-review still pending; no real Windows runner acceptance implied.
+
+## 2026-10-28 read-only quality report export could overwrite sealed ledger (fix pending acceptance)
+
+- The report CLI previously checked only `.json` suffix for `--output` and then used `atomic_write_json` with `os.replace`. A path named `processing_quality_events_*.jsonl.manifest.json` also passed, so exporting a summary could clobber another run's archive SHA256 consistency ledger and invalidate future verified replay. This was discovered by source inspection; no production data loss is claimed.
+- Branch protection rejects reserved ledger destinations, including nonexistent ones, and symlink aliases before stream replay; real-file regression tests should verify ledger bytes and valid replay stay unchanged. Latest-head Hosted CI, formal review, and Windows actual acceptance have not yet completed. Avoid describing the SHA256 ledger as independently authenticated or the CLI guard as race-free.
