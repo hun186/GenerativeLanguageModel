@@ -197,3 +197,9 @@ The following sections describe the accepted main implementation through PR #239
 - `.codex/archive/api_contract.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `b1ef36b488496a83059bf82123c391b719cd3aab`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
 - Earlier archives referenced inside this snapshot remain unchanged; no history was deleted.
 - Active summary reconciled with GitHub `main` `46b7c7290417421a6dc09e114f82c1066ce0179d` after user-authorized PR #239 merge and Linux postmerge `offline-e2e` success; Windows runner jobs remain queued/operator-deferred.
+
+## 2026-10-28 offline quality report protected export destination (pending PR acceptance)
+
+- The existing `python -m czjLLM.cli_tools.processing_quality_report` `--audit-path`/`--audit-dir` modes, `report_version=1` JSON schema, optional `--disk-backed` ephemeral backend and legitimate `--output quality_summary.json` remain unchanged.
+- Before source replay/temporary SQLite creation, a requested `--output` must have a `.json` suffix, must not be a symlink, and must **never** occupy the reserved `processing_quality_events_*.jsonl.manifest.json` integrity ledger namespace (case-insensitive for Windows), whether ledger exists or not and regardless of which run was requested. Fail as a fixed path-free argparse error with no partial JSON output and no report/ledger writes. Normal standalone JSON output remains atomically replaceable.
+- This is narrowly scoped report CLI output protection, not a filesystem race-free authentication claim, a change to the separate manifest CLI, or permission for online rotation/automatic pruning.
