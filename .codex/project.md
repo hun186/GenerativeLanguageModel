@@ -2,6 +2,9 @@
 
 ## Current Focus
 
+- **2026-10-28 newest main:** user-approved PR #244 merged with squash SHA `9e743267676af6fc956eca3917253527797785ec`; exact-head Codex 0 Findings/Threads, PR Linux `offline-e2e` #40632361447 SUCCESS. Main postmerge #40660431903 Linux still in progress at initial check; Windows 3.10/3.11 queued/operator-deferred. The previous #244-in-progress focus below is historical and superseded.
+- **Current independent work:** `feat/llm-audit-record-uuid-20261028` adds opaque `audit_record_id` UUID4 to *new* per-run LLM CSV/XLSX audit rows; exact legacy immediately prior header continues without new column, unfamiliar existing header fails closed. This is persisted audit-row identity, **not** a provider request UUID, logical retry identifier or document-failure denominator. Requires exact-head Hosted Linux CI, formal Codex Review, explicit Merge authorization. PR #231 stays OPEN/untouched.
+
 - **Verified GitHub 2026-10-28:** PR #243 user-authorized merged to `main` SHA `5c307705884903abca882f3283ec8968b302a2d4`; formal exact-head Codex 0 Findings, 0 unresolved Threads; postmerge Hosted Linux `offline-e2e` #40628120579 SUCCESS including immutable archive regression. Earlier #243 branch-as-current and "review pending" entries below are historical/superseded. Windows self-hosted 3.10/3.11 queued/operator-deferred; independent PR #231 OPEN, untouched.
 - **Current independent engineering focus:** `feat/llm-failure-observed-time-window-20261028` adds opt-in strict `--since` inclusive / `--before` exclusive producer-local naive timestamp filtering to read-only `llm_failure_report`, retaining legacy unfiltered report-v1 shape and source snapshot bounds. Missing/malformed timestamps fail closed; no retry UUID inference, no unique-document denominator. Require new exact-head Linux CI and formal Codex Review. **No merge without explicit user instruction.**
 
