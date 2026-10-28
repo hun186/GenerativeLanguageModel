@@ -208,6 +208,8 @@ def test_current_handoffs_do_not_reopen_merged_240_241_242():
     for number in ("#240", "#241", "#242"):
         assert number in router and number in memory and number in backlog
     assert "operator-deferred" in focus
+    # Escaped text '\\n-' must never splice two independent active bullets.
+    assert r"\n- " not in current
     open_items = [
         line for line in backlog.splitlines() if line.startswith("- [ ]")
     ]
