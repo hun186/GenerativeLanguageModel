@@ -102,3 +102,8 @@ The following sections describe the accepted main implementation through PR #239
 - `.codex/archive/decisions.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `2fcdc099dfd3065af18402dfc8e7aed9618b9195`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
 - Earlier archives referenced inside this snapshot remain unchanged; no history was deleted.
 - Active summary reconciled with GitHub `main` `46b7c7290417421a6dc09e114f82c1066ce0179d` after user-authorized PR #239 merge and Linux postmerge `offline-e2e` success; Windows runner jobs remain queued/operator-deferred.
+
+## 2026-10-28 offline quality output/control-plane separation
+
+- A read-only summary should never share its destination namespace with a quality archive consistency manifest, even though both filenames end in `.json`. Reject the canonical ledger filename pattern unconditionally (including uncreated/other-run manifest targets) before scanning sources or creating temporary SQLite; also reject symlink report output aliases. Keep the original generic atomic JSON writer unchanged to avoid affecting unrelated sinks.
+- This rule prevents inadvertent overwrite by CLI users; it is not an online-writer lock, an authenticated manifest trust root or a durable checkpoint. Preserve normal `--output quality_summary.json` behavior and all report-v1 metrics.

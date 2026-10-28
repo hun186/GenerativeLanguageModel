@@ -228,6 +228,28 @@ def report_history(
     }
 
 
+
+def _validate_report_output_path(path: Path) -> None:
+    """Never replace an archive integrity ledger with a read-only report.
+
+    The generic atomic JSON writer intentionally supports replacing JSON
+    destinations. A quality *.jsonl.manifest.json is not a report destination:
+    it is the sealed shard consistency ledger for any run in this directory,
+    including runs unrelated to the requested --audit-path/--audit-dir.
+    """
+    name = path.name.casefold()
+    if path.suffix.lower() != ".json":
+        raise ValueError("report output must end in .json")
+    if (name.startswith(_FILE_PREFIX)
+            and name.endswith(_FILE_SUFFIX + ".manifest.json")):
+        raise ValueError("quality archive manifest is not a report destination")
+    # Atomic replacement otherwise silently replaces the link itself. Never
+    # mutate a user-provided path alias when a regular output was intended.
+    if path.is_symlink():
+        raise ValueError("report output must not be a symlink")
+
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Offline read-only quality summary from logs/llm_call_audit"
@@ -246,6 +268,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, help="optional atomic JSON report output")
     args = parser.parse_args(argv)
     try:
+        # Fail fast before scanning/replaying archives or creating a temporary
+        # SQLite index if the requested output is a protected metadata path.
+        if args.output is not None:
+            _validate_report_output_path(args.output)
         result = (
             report_for_audit(args.audit_path, incident_family=args.incident_family,
                              disk_backed=args.disk_backed)
@@ -255,9 +281,7 @@ def main(argv: list[str] | None = None) -> int:
             )
         )
         if args.output is not None:
-            if args.output.suffix.lower() != ".json":
-                raise ValueError("output path must end in .json, not a source log")
-            # Never overwrite an input CSV/JSONL. This is a report-only writer.
+            # Never overwrite an input CSV/JSONL or archive integrity ledger.
             atomic_write_json(str(args.output), result, ensure_ascii=False)
     except (OSError, ValueError) as exc:
         parser.error(str(exc))

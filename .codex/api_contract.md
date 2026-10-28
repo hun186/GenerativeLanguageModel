@@ -61,7 +61,6 @@
 - Canonical production Reduction events/counters are payload-free. Observer, tags and cancellation state are operational and excluded from semantic fingerprints.
 
 ### Retention
-
 - Root `reduction_retention` is a separate frozen operational policy and defaults to disabled.
 - Defaults: terminal checkpoint 14 days, incomplete checkpoint 30 days, transient runtime 24 hours, `cleanup_transient_on_success=true`, 100 delete entries, 1 GiB delete bytes and 10,000 scanned entries per sweep.
 - Unknown keys/types and invalid TTL/bounds fail strictly. Incomplete TTL cannot be shorter than terminal TTL. `dry_run=true` performs bounded discovery/validation/classification/planning without mutation.
@@ -70,7 +69,6 @@
 - Successful hierarchical final write with `cleanup_transient_on_success=true` invokes immediate eligible transient cleanup using effective transient TTL zero; set it false to retain successful runtime workspaces for the configured transient TTL.
 
 ### ES metadata safety
-
 - Persisted model metadata is allowlisted. Credential-like keys, actual endpoint URLs, API keys/tokens/passwords/private keys and raw model specs must not be written into ES metadata.
 
 ## Current Processing Quality contracts
@@ -171,7 +169,6 @@ The following sections describe the accepted main implementation through PR #239
 - Opt-in benchmark CLI/JSON public shape stays `benchmark_version=1`; every numeric summary metric must serialize as finite, standard JSON (never NaN/Infinity). Parent rejects nonstandard worker tokens `NaN`/`Infinity`/`-Infinity`, float exponent overflow, non-finite/negative worker report wall time, non-integer/negative traced bytes, and invalid parent-observed subprocess wall time. On failure, no partial benchmark result is emitted; CLI exits 2 with fixed sanitized argparse error and no raw identities, private paths, stdout or child exception details.
 - Private worker protocol remains internal; invalid data fails closed rather than substituted with zero or inferred values. Existing report-version 1 and SHA256/source-generation parity contracts unchanged.
 ## Current Elasticsearch multidimensional Event / writeback contracts (accepted)
-
 - The strict ES `multidim_event` output profile at `czjLLM/es_mode/output_profiles/multidim_event.py` requires the **paired** top-level `article_date_iso` and `article_date_precision` fields. `article_date_iso` is a valid calendar `YYYY-MM-DD` or null; precision is exactly `day`, `month`, `year` or `unknown`. Null requires `unknown`, a non-null date forbids `unknown`, month precision requires day `01`, and year precision requires `YYYY-01-01`. Missing/mismatched pair fails strict validation; no date may be inferred from event `time_raw`. Keep source article publication date distinct from timeline/event dates.
 - `czjLLM/utilities/slice_merge.py` selects the article date **as an atomic (date, precision) pair from one slice**, using the configured conflict policy; never combine date from one slice with precision from another, substitute an event date, or silently invent validity when all complete pairs are invalid. The strict output profile must still reject an invalid preserved pair.
 - The current Event model uses `Event: list[object]` with unique nonblank `event_id`; linked `Person`, `Involved_Parties`, `Impact`, `Event_Timeline`, and evidence records use `event_ids` that must refer to existing Event IDs. Legacy single-object Event and old timeline date shapes are not supported. Preserve original raw source/Success artifacts when strict schema or references fail rather than silently acknowledging writeback.
@@ -179,13 +176,11 @@ The following sections describe the accepted main implementation through PR #239
 - These constraints are active even though older review chronology lives in the exact archived `.codex/api_contract.md` snapshot. Do not weaken validation, fill unknown values by guesswork, or declare ES writeback confirmed without actual acknowledgement.
 
 ## Current strict ES importance normalization contract (accepted)
-
 - In `czjLLM/es_mode/output_profiles/multidim_event.py::_normalize_flat_importance_fields()`, **only** the five exact documented top-level metric keys `coverage`, `novelty`, `impact`, `credibility`, `importance_score` can be **losslessly moved** into the nested `importance` object. Values must be an `integer` (excluding booleans) or `null`; floating, string and boolean scores fail strict type checks.
 - If the same score exists nested and top-level, validate **both** representations and reject conflicting values, including malformed nested values that compare equal in Python (e.g. `True == 1`). Never silently overwrite, recompute a score or accept unrelated top-level fields. Unknown fields still fail the strict output profile; this narrow repair does **not** change generic JSON handling or other profiles.
 - The move is a shape normalization only, not a license to infer article publication metadata, source provenance or ES bulk acknowledgement.
 
 ## Current cache-aware audit and GUI throughput contract
-
 - `czjLLM/utilities/llm_call_audit.py::append_llm_call_audit()` keeps API-provided `input_tokens`, `output_tokens`, `total_tokens` and original `processing_tps` fields. Optional `cached_input_tokens` is **nullable** (an absent provider signal stays blank/unknown, never a synthetic zero); `cached_input_token_source` equals `provider_usage` only for supported actual provider usage. A provider-reported **zero cached input** is valid and distinct from missing data. No estimated cache hit is written back to the authoritative provider audit.
 - Prompt-component audit may carry a safe `stage_identity` (or a separately recognized `single_stage` where appropriate) and local `prompt_component_token_source`, not raw prompts, output payloads or sensitive task metadata. The GUI groups heuristic template-history comparisons by **model, endpoint, task, YAML stage identity and tokenizer/source**; different stages must never share a cacheable-template estimate.
 - `czjLLM/job_manager/win_gui.py` derives GUI-only `total_tok_per_s = (API input_tokens + output_tokens) / elapsed_seconds` for real prompt-file slice requests with authoritative `token_usage_source=llm_api_usage`, finite nonnegative counts and strictly positive elapsed. Existing `processing_tps` is historical API-total telemetry with different fallback/collection semantics and is **not** silently redefined by either GUI distribution.
@@ -193,7 +188,11 @@ The following sections describe the accepted main implementation through PR #239
 - `total_tok_per_s` and `effective_tok_per_s_est` are **request-level observed elapsed-throughput proxies** including network/queue/time-to-first-token overhead, not pure GPU/kernel generation rates or a true billed-token cache saving guarantee. A heuristic remains an estimate even when plotted in the same default-collapsed GUI distribution.
 
 ## Archived History
-
 - `.codex/archive/api_contract.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `b1ef36b488496a83059bf82123c391b719cd3aab`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
 - Earlier archives referenced inside this snapshot remain unchanged; no history was deleted.
 - Active summary reconciled with GitHub `main` `46b7c7290417421a6dc09e114f82c1066ce0179d` after user-authorized PR #239 merge and Linux postmerge `offline-e2e` success; Windows runner jobs remain queued/operator-deferred.
+
+## 2026-10-28 offline quality report protected export destination (pending PR acceptance)
+- The existing `python -m czjLLM.cli_tools.processing_quality_report` `--audit-path`/`--audit-dir` modes, `report_version=1` JSON schema, optional `--disk-backed` ephemeral backend and legitimate `--output quality_summary.json` remain unchanged.
+- Before source replay/temporary SQLite creation, a requested `--output` must have a `.json` suffix, must not be a symlink, and must **never** occupy the reserved `processing_quality_events_*.jsonl.manifest.json` integrity ledger namespace (case-insensitive for Windows), whether ledger exists or not and regardless of which run was requested. Fail as a fixed path-free argparse error with no partial JSON output and no report/ledger writes. Normal standalone JSON output remains atomically replaceable.
+- This is narrowly scoped report CLI output protection, not a filesystem race-free authentication claim, a change to the separate manifest CLI, or permission for online rotation/automatic pruning.

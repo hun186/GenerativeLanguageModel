@@ -16,6 +16,18 @@ Write a separate **summary JSON**, atomically:
 
     python -m czjLLM.cli_tools.processing_quality_report --audit-dir logs/llm_call_audit --output quality_summary.json
 
+The `--output` destination must be a separate normal `.json` report.
+It **refuses** any filename in the reserved
+`processing_quality_events_*.jsonl.manifest.json` namespace (including an
+uncreated ledger or a ledger for another run), and it refuses symlink output
+aliases. This prevents the generic atomic JSON writer from replacing a sealed
+quality archive's SHA256 consistency ledger, which would otherwise invalidate
+archived-run verification. A protected destination fails with a fixed error
+**before** source replay or temporary SQLite indexing, without writing a
+partial report. Ordinary reports such as `quality_summary.json` remain
+supported and can be atomically regenerated. This guard does not make
+concurrent writers safe or authenticate a ledger against malicious changes.
+
 The percentages and counters reuse QualityAccumulator, including de-duplication and recovered-schema semantics; source event records/document IDs are not exported. Unknown denominators show null, not 0%. Each denominator under 30 adds an **advisory only** (not a statistical pass/fail gate). The reports never combine numerators/denominators across runs.
 
 A partial trailing JSONL record is ignored until complete, and reported as incomplete_or_concurrent_append; the file may be actively appended during inspection. Malformed complete UTF-8/JSON lines are excluded from denominators but counted in `skipped_corrupt_complete_lines`; the state becomes `degraded_corrupt_lines` even when other valid events exist. This is a completeness warning, not a forensic reconstruction of damaged content. Invalid-schema JSON records and duplicate event IDs continue to use the existing reader policy.
