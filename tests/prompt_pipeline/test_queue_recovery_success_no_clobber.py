@@ -258,9 +258,21 @@ def test_cleanup_failure_after_committed_success_is_not_worker_failure(
     assert result["ok"] is True
     assert (item / "Success" / "root.txt").read_text() == "actual completed result"
     assert not running.exists(), "RUNNING may be removed only after Success committed"
-    # The temp hardlink can remain on a denied cleanup. Do not claim it
-    # was cleaned, and never let it replace published output.
-    assert len(list((item / "Success").glob(".success-*.tmp"))) == 1
+    # A denied disposable cleanup leaves an orphan OUTSIDE Success, never
+    # another input slice for the real item merger.
+    staging = item / ".success-publish-staging"
+    assert len(list(staging.glob(".success-*.tmp"))) == 1
+    assert sorted((item / "Success").rglob("*")) == [item / "Success" / "root.txt"]
+    from czjLLM.utilities.combine_utils import combine_api_finished_item
+    combined_path = combine_api_finished_item(str(item), SimpleNamespace(
+        task="plain response",
+        mode="table",
+        prompt_dir=str(tmp_path),
+        temp_txt_finished_dir=str(tmp_path / "combined"),
+        debug=True,
+    ))
+    assert Path(combined_path).read_text(encoding="utf-8") == "actual completed result"
+    assert len(list(staging.glob(".success-*.tmp"))) == 1
 
 
 def test_failed_publication_keeps_original_error_when_cleanup_fails(
@@ -448,3 +460,107 @@ def test_backpressure_wait_exits_on_terminal_rollback_without_cancel(
     assert not thread.is_alive()
     assert result == [None]
     assert blocked.is_set() and not stop.is_set()
+
+
+def _blocked_success_consumer_fixture(monkeypatch, tmp_path, item):
+    """Real consumer with unfinished producer and outstanding work remaining."""
+    import threading
+    from czjLLM.prompt_pipeline import pipeline_controller as pc
+
+    producer_done, blocked, stop = (threading.Event() for _ in range(3))
+    ctx = SimpleNamespace(
+        _producer_done_flag=producer_done,  # intentionally NOT set
+        _queue_claim_blocked_event=blocked,
+        stage_cfg=None, es_writeback_rules=[], sql_writeback_rules=[],
+    )
+    registry = SimpleNamespace(list_items=lambda: {str(item): {"pk": "one"}})
+    failures = []
+    monkeypatch.setattr(pc, "resolve_pipeline_stages", lambda *_a, **_k: [])
+    monkeypatch.setattr(pc, "_stage_cfg_declares_flow", lambda *_a, **_k: False)
+    monkeypatch.setattr(pc, "meter_update", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "meter_read", lambda *_a, **_k: {
+        "queue": {"pending": 20, "running": 3},
+    })
+    monkeypatch.setattr(pc, "_audit_consumer_orchestration_failure",
+                        lambda _ctx, code: failures.append(code))
+    monkeypatch.setattr(pc, "tlog", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a, **_k: None)
+    return ctx, registry, stop, failures
+
+
+def test_preexisting_success_blocks_consumer_before_producer_done(
+    monkeypatch, tmp_path
+):
+    item = tmp_path / "item"
+    source = item / "TODO" / "root.txt"
+    source.parent.mkdir(parents=True)
+    source.write_bytes(b"fresh source never consumed")
+    target = item / "Success" / "root.txt"
+    target.parent.mkdir()
+    target.write_bytes(b"existing old output")
+    ctx, registry, stop, failures = _blocked_success_consumer_fixture(
+        monkeypatch, tmp_path, item,
+    )
+    pc.llm_stream_consumer(ctx, registry, str(tmp_path / "meter"), stop,
+                           restart_event=None)
+    assert ctx._queue_claim_blocked_event.is_set()
+    assert not ctx._producer_done_flag.is_set() and not stop.is_set()
+    assert failures == ["CONSUMER_TERMINATED"]
+    assert source.read_bytes() == b"fresh source never consumed"
+    assert target.read_bytes() == b"existing old output"
+
+
+def test_successful_rollback_signals_before_producer_completion(
+    monkeypatch, tmp_path
+):
+    """Old Worker publishes in claim gap; fresh source rolls back cleanly.
+
+    Unlike failed-rollback handling, this must also signal the coordinator
+    while the real Producer has outstanding work and has NOT yet finished.
+    """
+    item, old_running = _setup_running(tmp_path, b"prior worker source")
+    source = item / "TODO" / "root.txt"
+    source.parent.mkdir(parents=True)
+    source.write_bytes(b"new source to preserve")
+    prior_output = item / "Success" / "root.txt"
+    real_move = queue._claim_regular_source_no_clobber
+    interleaving = []
+    def concurrent_old_worker(source_path, target_path):
+        if source_path == source and target_path == old_running:
+            queue.publish_success_text_no_clobber(str(prior_output), "older output")
+            old_running.unlink()
+            interleaving.append("older_worker_published")
+        if source_path == old_running and target_path == source:
+            interleaving.append("fresh_rollback")
+        return real_move(source_path, target_path)
+    monkeypatch.setattr(queue, "_claim_regular_source_no_clobber",
+                        concurrent_old_worker)
+    ctx, registry, stop, failures = _blocked_success_consumer_fixture(
+        monkeypatch, tmp_path, item,
+    )
+    pc.llm_stream_consumer(ctx, registry, str(tmp_path / "meter"), stop,
+                           restart_event=None)
+    assert interleaving == ["older_worker_published", "fresh_rollback"]
+    assert ctx._queue_claim_blocked_event.is_set()
+    assert not ctx._producer_done_flag.is_set() and not stop.is_set()
+    assert failures == ["CONSUMER_TERMINATED"]
+    assert source.read_bytes() == b"new source to preserve"
+    assert prior_output.read_text() == "older output"
+    assert not old_running.exists()
+    assert summarize_queue_observations(item)["observed_claims"] == 0
+
+
+def test_omitted_orphan_cleanup_never_enters_nested_success_tree(
+    monkeypatch, tmp_path
+):
+    nested_output = tmp_path / "item" / "Success" / "stage" / "root.txt"
+    original_unlink = Path.unlink
+    def deny_cleanup(path, *args, **kwargs):
+        if path.name.startswith(".success-") and path.suffix == ".tmp":
+            raise PermissionError("staged artifact still open")
+        return original_unlink(path, *args, **kwargs)
+    monkeypatch.setattr(Path, "unlink", deny_cleanup)
+    queue.publish_success_text_no_clobber(str(nested_output), "committed")
+    assert nested_output.read_text() == "committed"
+    assert len(list((tmp_path / "item" / ".success-publish-staging").glob(".success-*.tmp"))) == 1
+    assert list((tmp_path / "item" / "Success").rglob("*.tmp")) == []

@@ -116,6 +116,8 @@ from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     require_no_pending_todo_sources,
     publish_success_text_no_clobber,
     QueueClaimRollbackError,
+    QueueClaimSuccessConflictError,
+    require_no_pending_success_conflicts,
 )
 from czjLLM.prompt_pipeline.runtime_support.stage_mode import (
     explicit_stage_flow as _explicit_stage_flow,
@@ -348,6 +350,20 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                 raise
 
             if not batch:
+                # A TODO with an older Success is permanently unclaimable.
+                # The older Worker may have published between our initial
+                # check and a fresh claim, which was safely restored. Unlike
+                # generic contention, we know this cannot drain even if the
+                # Producer is still blocked under backpressure. Signal now,
+                # independently of producer_done, so Producer and coordinator
+                # both terminate the run as failed without fabricating work.
+                try:
+                    require_no_pending_success_conflicts(item_dirs)
+                except QueueClaimSuccessConflictError:
+                    blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+                    if blocked is not None:
+                        blocked.set()
+                    raise
                 # Producer completion is NOT stop_event: in SQL/Table/ES,
                 # teardown sets stop_event only after the coordinator finishes.
                 # If the producer is done and there are no in-flight sources,

@@ -17,6 +17,10 @@ class QueueClaimRollbackError(RuntimeError):
     """
 
 
+class QueueClaimSuccessConflictError(RuntimeError):
+    """A pending source conflicts with an older, already published Success."""
+
+
 def _claim_regular_source_no_clobber(source: Path, target: Path) -> bool:
     """Safely *avoid overwriting* an existing RUNNING destination.
 
@@ -53,16 +57,27 @@ def _claim_regular_source_no_clobber(source: Path, target: Path) -> bool:
 def publish_success_text_no_clobber(destination: str, text: str) -> None:
     """Publish an exclusively-created Success result, never replace a prior result.
 
-    Write a unique fsynced same-directory staging file, then use an atomic
-    hardlink create-if-absent. A competing writer or existing Success file
-    raises FileExistsError while leaving that previous result unchanged.
+    Write a unique fsynced staging file on the same volume *outside the
+    Success tree*, then use an atomic hardlink create-if-absent. Orphan
+    staging files can never appear as additional Success merger input.
     """
     target = Path(destination)
     if any(p.is_symlink() for p in (target.parent, *target.parent.parents)):
         raise OSError("unsafe success output directory")
     target.parent.mkdir(parents=True, exist_ok=True)
+    # Success can contain nested stage paths. Locate its outer Success
+    # ancestor, then keep all disposable temporary hardlinks in a sibling
+    # directory that cannot be enumerated by any Success-only merge reader.
+    success_root = next(
+        (parent for parent in target.parents if parent.name == "Success"),
+        target.parent,
+    )
+    stage_dir = success_root.parent / ".success-publish-staging"
+    if stage_dir.is_symlink():
+        raise OSError("unsafe success staging directory")
+    stage_dir.mkdir(parents=True, exist_ok=True)
     fd, staged_name = tempfile.mkstemp(
-        dir=str(target.parent), prefix=".success-", suffix=".tmp",
+        dir=str(stage_dir), prefix=".success-", suffix=".tmp",
     )
     staged = Path(staged_name)
     try:
@@ -83,6 +98,28 @@ def publish_success_text_no_clobber(destination: str, text: str) -> None:
             staged.unlink()
         except OSError:
             pass
+
+
+def require_no_pending_success_conflicts(item_dirs) -> None:
+    """Detect permanently unclaimable TODO/Success pairs before producer ends.
+
+    A successful rollback of a racing claim restores TODO but does not make
+    the source claimable: the older Success remains and blocks all further
+    claims. Signal a terminal condition without waiting for producer_done.
+    """
+    for item_dir in item_dirs:
+        root = Path(item_dir)
+        todo = root / "TODO"
+        if not todo.is_dir():
+            continue
+        for source in todo.rglob("*"):
+            if not (source.is_file() or source.is_symlink()):
+                continue
+            success = root / "Success" / source.name
+            if success.exists() or success.is_symlink():
+                raise QueueClaimSuccessConflictError(
+                    "undispatched TODO conflicts with prior Success"
+                )
 
 
 def require_no_pending_todo_sources(item_dirs) -> None:
