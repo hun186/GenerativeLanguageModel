@@ -220,3 +220,48 @@ def test_interrupt_after_exclusive_link_retains_both_names_without_data_loss(tmp
         rollback_interrupted_rotation(audit)
     # Neither name is silently removed in an ambiguous state.
     assert active.exists() and candidate.exists()
+
+
+def test_sealed_archive_hardlink_candidate_fails_closed(tmp_path):
+    """An extra link to a sealed inode must never become writable active JSONL."""
+    audit = tmp_path / "llm_call_audit_20261029-linked-sealed.csv"
+    active = _sealed_one(audit)
+    first = quality_stream_segments(active)[0]
+    sealed_bytes = first.read_bytes()
+    ledger_bytes = manifest_path(active).read_bytes()
+    extra = active.with_name(active.name + ".seg-00000002")
+    try:
+        os.link(first, extra)
+    except (OSError, NotImplementedError):
+        pytest.skip("filesystem does not support hardlinks")
+    assert not active.exists() and first.stat().st_nlink >= 2
+    with pytest.raises(ValueError, match="unsafe hardlink"):
+        inspect_interrupted_rotation(audit)
+    with pytest.raises(ValueError, match="unsafe hardlink"):
+        rollback_interrupted_rotation(audit)
+    assert not active.exists()
+    assert first.read_bytes() == sealed_bytes
+    assert extra.read_bytes() == sealed_bytes
+    assert manifest_path(active).read_bytes() == ledger_bytes
+    extra.unlink()
+    assert verify_quality_manifest(active)["sealed_segments"] == 1
+
+
+def test_external_hardlink_candidate_is_not_recovered(tmp_path):
+    """Even a hardlink outside the shard namespace is an unsafe candidate."""
+    audit = tmp_path / "llm_call_audit_20261029-linked-other.csv"
+    active = _sealed_one(audit)
+    _emit(audit)
+    original, candidate = _simulate_crash_after_rename(audit)
+    external_alias = tmp_path / "another-quality-name"
+    try:
+        os.link(candidate, external_alias)
+    except (OSError, NotImplementedError):
+        pytest.skip("filesystem does not support hardlinks")
+    with pytest.raises(ValueError, match="unsafe hardlink"):
+        inspect_interrupted_rotation(audit)
+    with pytest.raises(ValueError, match="unsafe hardlink"):
+        rollback_interrupted_rotation(audit)
+    assert not active.exists()
+    assert candidate.read_bytes() == original
+    assert external_alias.read_bytes() == original

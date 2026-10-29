@@ -55,6 +55,20 @@ def _active_present(active: Path) -> bool:
     return True
 
 
+def _require_single_link_candidate(candidate: Path) -> None:
+    """Fail closed if an unsealed candidate aliases any other writable inode.
+
+    In particular, it must not hardlink a sealed archive: appending to the
+    restored active file would then silently mutate that sealed generation.
+    This is an operator-stopped precondition, not protection from hostile races.
+    """
+    info = candidate.lstat()
+    if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1
+            or (getattr(info, "st_file_attributes", 0)
+                & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0))):
+        raise ValueError("unsealed quality candidate has unsafe hardlink or file type")
+
+
 def inspect_interrupted_rotation(audit_path: str | Path) -> dict:
     """Read-only state assessment; unverified states never return 'ready'."""
     active, _ = _paths(audit_path)
@@ -82,6 +96,11 @@ def inspect_interrupted_rotation(audit_path: str | Path) -> dict:
             if segment_fingerprint(segment, index) != sealed[index - 1]:
                 raise ValueError("sealed quality archive mismatch")
         segment_fingerprint(archived[-1], len(archived))
+        # An extra shard linked to a sealed archive is not an independent
+        # rollback candidate. Keep active-present (interrupted link/unlink)
+        # classified as ambiguous, without touching either existing name.
+        if not active_present:
+            _require_single_link_candidate(archived[-1])
         if _read_manifest(manifest_path(active)) != ledger:
             raise ValueError("quality manifest changed during recovery inspection")
         status = "ambiguous_active_present" if active_present else "rollback_candidate"
@@ -116,6 +135,9 @@ def rollback_interrupted_rotation(audit_path: str | Path) -> dict:
             archived = quality_stream_segments(active)
             candidate = archived[-1]
             before = segment_fingerprint(candidate, len(archived))
+            # Recheck the actual extra shard under the writer lock immediately
+            # before linking; inspection alone is not a write authorization.
+            _require_single_link_candidate(candidate)
             # This is a stopped-producer maintenance operation, not a live
             # reader/writer online rename. Refuse any existing active file.
             if active.exists() or active.is_symlink():
@@ -127,6 +149,15 @@ def rollback_interrupted_rotation(audit_path: str | Path) -> dict:
             # removed. A crash between these steps leaves two links (an
             # explicit ambiguous state), never lost original bytes.
             os.link(candidate, active, follow_symlinks=False)
+            # A normal exclusive link yields exactly two names for one inode.
+            # On unexpected aliasing, leave both names for manual inspection;
+            # never make sealed bytes writable via an active-file name.
+            original = candidate.lstat()
+            restored = active.lstat()
+            if (original.st_nlink != 2 or restored.st_nlink != 2
+                    or (original.st_dev, original.st_ino)
+                    != (restored.st_dev, restored.st_ino)):
+                raise ValueError("restored quality candidate has unsafe hardlink count")
             if segment_fingerprint(active, len(archived)) != before:
                 raise ValueError("restored active quality bytes changed")
             candidate.unlink()
