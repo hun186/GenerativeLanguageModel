@@ -19,6 +19,7 @@ _ROOT = "_extract_slice_identity"
 _KIND = "queue_events"
 _EVENTS = {"claimed": "RUNNING", "requeued": "TODO"}
 _UUID = re.compile(r"[0-9a-f]{32}\Z")
+_STAGING = re.compile(r"([0-9a-f]{32})\.([0-9a-f]{32})\.tmp\Z")
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
 _MAX_EVENT_BYTES = 1024
 _MAX_EVENTS = 50000
@@ -182,8 +183,22 @@ def summarize_queue_observations(item_dir: str | Path) -> dict[str, int]:
     if not namespace.is_dir():
         raise ValueError("invalid queue observation namespace")
     counts = {"claimed": 0, "requeued": 0}
-    for index, path in enumerate(namespace.iterdir()):
-        if index >= _MAX_EVENTS:
+    published_count = 0
+    for seen, path in enumerate(namespace.iterdir(), start=1):
+        # A killed writer can leave its unpublished temporary source.
+        # A strict name match is the only ignorable form; never interpret
+        # its partial JSON or hide arbitrary/aliased files as staging.
+        staging = _STAGING.fullmatch(path.name)
+        if (staging is not None
+                and _is_canonical_uuid4(staging.group(1))
+                and _is_canonical_uuid4(staging.group(2))):
+            if path.is_symlink() or not path.is_file():
+                raise ValueError("invalid queue observation staging file")
+            if seen > _MAX_EVENTS * 2:
+                raise ValueError("queue observation directory limit exceeded")
+            continue
+        published_count += 1
+        if published_count > _MAX_EVENTS or seen > _MAX_EVENTS * 2:
             raise ValueError("queue observation limit exceeded")
         if path.suffix != ".json" or not _is_canonical_uuid4(path.stem) or not _safe_path(path):
             raise ValueError("invalid queue observation entry")

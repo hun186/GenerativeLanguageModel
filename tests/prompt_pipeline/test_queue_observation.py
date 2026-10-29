@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 import pytest
+from uuid import uuid4
 
 from czjLLM.prompt_pipeline.runtime_support import prompt_queue as queue
 from czjLLM.prompt_pipeline.runtime_support.queue_observation import (
@@ -240,3 +241,35 @@ def test_non_uuid4_event_record_and_filename_are_rejected(tmp_path):
     bogus.write_text(json.dumps(record), encoding="utf-8")
     with pytest.raises(ValueError, match="invalid queue observation"):
         summarize_queue_observations(item)
+
+
+def test_interrupted_writer_staging_is_not_a_published_observation(tmp_path):
+    item, _ = _todo(tmp_path)
+    queue.pick_and_claim_next_prompts([str(item)])
+    directory = item / "_extract_slice_identity" / "queue_events"
+    temporary = directory / (uuid4().hex + "." + uuid4().hex + ".tmp")
+    temporary.write_bytes(b'{"event":"claimed",')  # Interrupted pre-fsync write.
+    assert summarize_queue_observations(item) == {
+        "observed_claims": 1, "observed_requeues": 0,
+    }
+    # Only narrowly named staging is excluded; other partial files fail closed.
+    bad = directory / "unpublished.tmp"
+    bad.write_bytes(b"{")
+    with pytest.raises(ValueError, match="invalid queue observation"):
+        summarize_queue_observations(item)
+
+
+def test_symlinked_staging_file_is_not_ignored(tmp_path):
+    item, _ = _todo(tmp_path)
+    queue.pick_and_claim_next_prompts([str(item)])
+    directory = item / "_extract_slice_identity" / "queue_events"
+    target = tmp_path / "outside"
+    target.write_bytes(b"private")
+    staged_link = directory / (uuid4().hex + "." + uuid4().hex + ".tmp")
+    try:
+        staged_link.symlink_to(target)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlinks unsupported")
+    with pytest.raises(ValueError, match="staging"):
+        summarize_queue_observations(item)
+    assert target.read_bytes() == b"private"

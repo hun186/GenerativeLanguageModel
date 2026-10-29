@@ -15,3 +15,5 @@ An event UUID identifies only one observed rename. It is not a worker_call_id, a
 Hosted Linux CI runs actual file move and append/read regressions. This does not establish Windows hardlink availability or real Ollama/ES/SQL integration.
 
 Nested RUNNING/stage-a/file.txt to TODO/stage-a/file.txt recovery must be observed in the item-level event namespace. The strict reader rejects duplicate JSON object keys, non-v4 UUID placeholders, invalid timestamps and all malformed metadata. These additional checks do not turn events into authoritative retry lineage.
+
+A killed process may leave an unpublished UUID4.UUID4.tmp staging artifact. The bounded reader excludes only this canonical staging form, rejects symlinked staging and unknown names, and never counts unpublished fragments. It does not delete those artifacts; filesystem maintenance is a separate operator-controlled task.
