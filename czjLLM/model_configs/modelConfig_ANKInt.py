@@ -26,6 +26,10 @@ models = [
         16: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
         32: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
     }),
+    ("muse-glimmer:latest", [16, 32, 64, 128], {
+        16: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
+        32: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
+    }),
     ("gpt-oss:latest", [4, 8, 16, 32, 64, 128], {
         32: {"nProcess": 4},
     }),

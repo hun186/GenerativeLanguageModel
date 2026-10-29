@@ -10,6 +10,52 @@ python -m czjLLM.cli_tools.llm_failure_report --audit-dir logs/llm_call_audit --
 python -m czjLLM.cli_tools.llm_failure_report --audit-dir logs/llm_call_audit --output failure_summary.json
 ```
 
+The optional `--output` JSON is a **separate** aggregate report, never an
+audit file or sealed quality archive ledger. Regardless of the source audit
+directory, the CLI rejects `processing_quality_events_*.jsonl.manifest.json`
+destination names (including nonexistent reservations and case variants on
+Windows) before parsing source CSV. Within the source audit directory, it also
+reserves `llm_call_audit_*` and `processing_quality_events_*` filenames.
+A regular `failure_summary.json` elsewhere remains supported and atomically
+replaceable. Output symlink aliases are refused. These guards prevent ordinary
+CLI mistakes but are not an authenticated archive or a race-free guarantee
+against malicious directory replacement.
+
+## Optional observed local-time window
+
+The producer currently writes its CSV `timestamp` as **local, timezone-naive**
+`YYYY-MM-DDTHH:MM:SS` (`datetime.now().isoformat(timespec="seconds")`).
+Use `--since` (inclusive) and/or `--before` (exclusive) when the producing
+host's local clock is known, for example:
+
+```bash
+python -m czjLLM.cli_tools.llm_failure_report --audit-path logs/llm_call_audit/llm_call_audit_20261022-123456-1.csv --since 2026-10-28T10:00:00 --before 2026-10-28T12:00:00
+python -m czjLLM.cli_tools.llm_failure_report --audit-dir logs/llm_call_audit --since 2026-10-28T10:00:00 --before 2026-10-28T12:00:00
+```
+
+Only events in `[since, before)` contribute to **that run's** existing
+`observed_call_attempts`, `failed_call_pct` and category counts. With a
+filter, the existing `report_version=1` JSON adds a fixed `time_window`
+object (`since`, `before`, `bounds`, `clock`) and each run adds
+`excluded_by_time_window`; without either flag, the JSON shape and legacy
+behavior remain unchanged. Empty selected windows show null failure
+percentage, not 0%. History still counts and lists the same bounded audit
+files as before, without pooling counters from unrelated runs.
+
+**Completeness rule:** a filtered report requires one `timestamp` column
+and valid local-second timestamps for **every** CSV row, even rows outside the
+requested window. Undated/malformed-width rows fail closed rather than being
+guessed into or silently excluded from the denominator. The existing 16 MiB
+per-file, 64 MiB history, file-generation and no-follow guards still apply.
+Input files are read-only; errors remain generic and omit paths/secrets.
+
+UTC offsets, `Z`, fractional seconds, date-only values and reversed/empty
+intervals are rejected. **Do not compare timestamps produced on different
+hosts/time zones as one absolute chronology.** The report does not perform a
+timezone conversion, infer retry identities, or assert unique document
+failures. Physical Windows/Ollama/ES acceptance still requires separate
+operator verification.
+
 ## Meaning and coverage limits
 
 - **Denominator:** individual logged LLM call attempts with an explicit

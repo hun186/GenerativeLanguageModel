@@ -380,3 +380,99 @@ def test_deeply_nested_complete_json_is_counted_corrupt_and_reader_continues(tmp
     assert reader.skipped_corrupt_lines == 1
     assert reader.offset == path.stat().st_size
     assert reader.poll()[0] is False
+
+
+@pytest.mark.parametrize("other_run", [False, True])
+@pytest.mark.parametrize("history_mode", [False, True])
+def test_report_cli_refuses_to_replace_any_quality_archive_manifest(
+    tmp_path, capsys, other_run, history_mode
+):
+    """Export must never clobber this or another run's seal/consistency ledger."""
+    from czjLLM.utilities.processing_quality_manifest import (
+        initialize_quality_manifest, manifest_path, verify_quality_manifest,
+    )
+    from czjLLM.utilities.processing_quality_rotation import rotate_quality_event_stream
+
+    source = tmp_path / "llm_call_audit_20261028-000001-1.csv"
+    other = tmp_path / "llm_call_audit_20261028-000002-2.csv"
+    for audit in (source, other):
+        _emit(audit, event="slice_json_validation", code="JSON_VALID",
+              scope="slice", outcome="valid")
+        rotate_quality_event_stream(audit)
+        initialize_quality_manifest(audit)
+
+    target_audit = other if other_run else source
+    ledger = manifest_path(quality_event_path(str(target_audit)))
+    untouched = {p: p.read_bytes() for p in (
+        manifest_path(quality_event_path(str(source))),
+        manifest_path(quality_event_path(str(other))),
+    )}
+    argv = (
+        ["--audit-dir", str(tmp_path)] if history_mode else
+        ["--audit-path", str(source)]
+    )
+    with pytest.raises(SystemExit) as failure:
+        main(argv + ["--output", str(ledger)])
+    captured = capsys.readouterr()
+    assert failure.value.code == 2
+    assert captured.out == ""
+    assert "quality archive manifest is not a report destination" in captured.err
+    assert str(tmp_path) not in captured.err
+    assert {p: p.read_bytes() for p in untouched} == untouched
+    assert report_for_audit(source)["run"]["archive_integrity"]["status"] == "verified"
+    assert report_history(tmp_path)["selected_run_files"] == 2
+
+
+def test_report_cli_rejects_nonexistent_reserved_manifest_before_creation(
+    tmp_path, capsys
+):
+    """A report may not claim an unsealed run's future ledger namespace."""
+    audit = tmp_path / "llm_call_audit_20261028-000003-3.csv"
+    _emit(audit, event="slice_json_validation", code="JSON_VALID",
+          scope="slice", outcome="valid")
+    reserved = quality_event_path(str(audit)).with_name(
+        quality_event_path(str(audit)).name + ".manifest.json"
+    )
+    with pytest.raises(SystemExit) as failure:
+        main(["--audit-path", str(audit), "--output", str(reserved)])
+    assert failure.value.code == 2
+    assert not reserved.exists()
+    assert "manifest" in capsys.readouterr().err
+    assert report_for_audit(audit)["run"]["metrics"]["events"] == 1
+
+
+def test_report_cli_rejects_case_insensitive_manifest_namespace(
+    tmp_path, capsys
+):
+    audit = tmp_path / "llm_call_audit_20261028-000004-4.csv"
+    _emit(audit, event="slice_json_validation", code="JSON_VALID",
+          scope="slice", outcome="valid")
+    reserved = tmp_path / "PROCESSING_QUALITY_EVENTS_other.JSONL.MANIFEST.JSON"
+    with pytest.raises(SystemExit) as failure:
+        main(["--audit-path", str(audit), "--output", str(reserved)])
+    assert failure.value.code == 2
+    assert not reserved.exists()
+    assert "manifest" in capsys.readouterr().err
+
+
+def test_report_cli_rejects_report_json_symlink_without_replacing_link(
+    tmp_path, capsys
+):
+    """Do not let os.replace silently destroy a caller's symlink alias."""
+    audit = tmp_path / "llm_call_audit_20261028-000005-5.csv"
+    _emit(audit, event="slice_json_validation", code="JSON_VALID",
+          scope="slice", outcome="valid")
+    target = tmp_path / "saved.json"
+    target.write_bytes(b'{"existing":true}')
+    alias = tmp_path / "report.json"
+    try:
+        alias.symlink_to(target)
+    except (OSError, NotImplementedError):
+        pytest.skip("local symlink creation unavailable")
+    before = target.read_bytes()
+    with pytest.raises(SystemExit) as failure:
+        main(["--audit-path", str(audit), "--output", str(alias)])
+    assert failure.value.code == 2
+    assert alias.is_symlink()
+    assert target.read_bytes() == before
+    assert "symlink" in capsys.readouterr().err

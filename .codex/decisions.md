@@ -19,128 +19,124 @@
 - `cleanup_transient_on_success=true` is the default post-success fast path; retaining successful runtime workspaces for the transient TTL requires disabling that option.
 - Reduction Engine v1 A–L is complete. The L3 audit corrective merged at `91e39503c8e84d17752f9d26a23ff6b34db75b9e`, and PR #200 documentation/release closure merged at verified `main` `99d79676b16b7fed54f9cf6e701441db79846cea`.
 
-## Recent Changes
+## Current Processing Quality design decisions
 
-### 2026-10-08 LLM audit GUI decision
+The following sections describe the accepted main implementation through PR #239. Historical review/merge placeholders were superseded; see exact archived snapshot for original chronology.
 
-- Keep API-reported input/output usage authoritative; local tokenizer counts for task text/template overhead are observability estimates only.
-- Drive GUI distributions from the append-only audit CSV instead of sending per-call token/latency payloads over GUI IPC.
-- Keep prompt-component handoff numeric-only and outside TODO/RUNNING; every rendered multi-stage prompt refreshes its basename metadata, and refresh failure clears stale values rather than reusing them. Unavailable component metrics remain unknown rather than inferred from API totals.
-- Treat `elapsed_seconds` as per-slice LLM latency only when the audit row has a nonblank `prompt_file`; direct JSON repair calls remain valid audit rows but are not slice-latency samples.
-
-### 2026-10-06 v1.1 quality-hook decision
-
-- Use one optional Python-only final-result hook on `ReductionStage`; do not add a universal quality scorer, registry, YAML schema, model judge, or UI.
-- Restrict returned assessment metadata to safe scalar metrics and warning codes. Payload inspection is transient inside caller hook code and is not copied into audit/metrics.
-- Rejection is explicit and fail-closed; hook metadata is semantic/fingerprinted because it can change acceptance.
-
-### 2026-10-06 v1.1 transient-cache decision
-
-- Do not add a disk/global semantic or member-result cache: that would duplicate persisted reuse authority and enlarge source-derived data retention/privacy scope.
-- Do not add a run-memory cache merely because it is technically possible. Reopen only when production telemetry or reproducible workloads show material duplicate same-semantics execution/cost.
-- If reopened, the acceptable starting shape is opt-in + bounded + run-scoped + non-persistent by default; cache only successful immutable execution results; keep cache policy/state outside semantic fingerprints; preserve cancellation, partial-failure, observer and accounting semantics.
-
-### 2026-10-06 Closure decision
-
-- PR #201 resolved truthful bounded-retention reporting and passed fresh 24/24 hosted acceptance before merge.
-- PR #200 release-state declaration head `8d283b369da2989535c109fa4f046b2c7ba57f31` passed CI #463 / `37402351444`, offline job `112072129880`, collect 24 and full gate PASS / 100%.
-- Subsequent review/documentation corrections received their own fresh exact-head gate on `36a40eb37827e33545865203b079aefaab1ba1f4`, then PR #200 merged as verified/valid `99d79676b16b7fed54f9cf6e701441db79846cea`.
-
-### 2026-10-04 L2/L3 decisions
-
-- Keep partial success explicit, preserve exception taxonomy, use cooperative cancellation, and keep observability payload-free.
-- Keep GC operational, disabled by default, claim-before-delete and outside authoritative persisted result/manifest/final-output ownership.
-
-### 2026-10-02 to 2026-10-03 K2/L1 decisions
-
-- Prompt-aware preparation must use the authoritative production rendering/tokenization boundary; checkpointed nested execution is conservatively serialized.
-- Persisted freshness derives from existing Executable metadata and binds once before discovery; SQL identity-column collisions fail configuration and ES required-output correctness may override query optimization.
-
-### 2026-09-19 to 2026-10-01 foundation decisions
-
-- Reduction was delivered incrementally: strict opt-in routing → hierarchical checkpoints → shared execution budget → immutable collection identity/adapters → deterministic/semantic/relational reducers → executable stages and bounded nesting.
-
-## Archived History
-
-- `.codex/archive/decisions.md-20261006-134200.md` — complete pre-compaction decision history through PR #200 head `39177737486a372f38e9b6d81563d6f14327459a`.
-- Earlier archive references remain preserved inside that snapshot.
-
-### 2026-10-13 Issue #211 SQL/Excel E2E test decision (PR #213, pending)
-
-- Mock only the external model HTTP response and initial tokenization cut boundaries; assert production scheduling, stage validation, merged stage writeback and physical SQLite/XLSX readback. Add explicit partial-resume case using persisted Success provenance and real remaining-leaf provider dispatch.
-- Preserve existing per-slice primary-input prompts during scoped single-extract stage preparation instead of rendering one full SQL/Excel row prompt for each slice. No change to alternate source-column routing.
-
-### 2026-10-14 extract partial-resume provenance (PR #213 pending)
-
-- Prefer one persisted, source-bound original input-slice identity over reassigning raw chunks to whatever TODO files happen to remain after interrupted processing. Treat source SHA, ordered chunk fingerprints, saved filenames and dispatched prompt/stage identity together as the reuse contract; stale or ambiguous evidence must reject writeback.
-- Preserve committed retry child prompts by verifying split lineage; do not rerender the parent source as a child's independent prompt.
-
-### 2026-10-19 multidim Event output schema correction policy (PR #216)
-- For cross-slice metadata, treat article_date_iso and article_date_precision as ONE atomic source-provenance pair; never compose a date from one slice with a precision from another. Preserve existing scalar conflict preference and conservative unknown/null instead of favoring a date merely because it exists in a later slice. Treaty/event signing dates are not document publication metadata without explicit source evidence.
-- ES strict multidim output contract may perform lossless shape normalization of the five explicitly documented importance score keys found at top-level, but never recompute a score, silently overwrite conflicting existing nested values or allow unknown keys. Generic JSON processing remains unchanged.
-- Retain strict fail-closed Event local links and schema errors, requiring bounded real ES acceptance after unit/CI and code review.
-
-
-### 2026-10-20 separate processing-quality observability (PR #218)
-- Keep slice validation and JSON repair attempt rates separate from distinct document writeback decisions to avoid treating recovered syntax errors as failed documents, or treating a released pending row as successful ES writeback.
-- Prefer structured events emitted at decision points over parsing console warnings; append minimal metadata to a separate per-run JSONL with a cross-process file lock; render a collapsed GUI section with a background reader independent of token/context distribution.
-- Do not automatically interrupt a large batch based on a raw event count; alerts require a denominator and minimum sample size.
-
-### 2026-10-20 offline continuation without LLM
-- Preserve tomorrow's real acceptance baseline on merged #218 main; new work belongs in separate unmerged branch. Implement offline quality history/export as a read-only projection of the single existing JSONL event authority rather than introducing another log writer or shadow counters. A denominator below 30 is advisory only; it does not gate acceptance, and unknown stays null.
-
-- Corrupt newline-complete JSONL lines are surfaced as a degraded completeness warning, not silently absorbed into a successful report or counted in quality denominators. This change is read-only, backward compatible for old reader clients, and explicitly observable in offline reports.
-
-- Incremental quality reader retains O(1) bounded reread on each poll (first/last 512 committed bytes), detecting common in-place rewrites/rotation while preserving large log performance; avoids mislabeling valid repeated event IDs as malformed. If an adversarial rewrite changes only unmonitored interior bytes, offline reports cannot prove integrity and need a separate durable manifest/hash contract, not a made-up success signal.
-
-- A syntactically valid record must have a semantically matched event/code and (where present) scope; document events require a nonblank document_id. This prevents incomplete input from falsely raising `events` without affecting the relevant denominator. Deprecated test fixtures without explicit scope remain backward compatible.
-
-- The quality audit reader now keeps a compact per-event canonical hash as its duplicate identity instead of only a set of event IDs: exact replays remain idempotent, but conflicting content with reused ID is explicitly degraded. Generation reset is a published state change so a status UI cannot persist obsolete counts when zero replacement events exist.
-
-### 2026-10-23 Producer operational observability boundary (P2 PR proposal)
-
+### Producer operational observability boundary (P2 PR proposal)
 - Instrument catch-site exceptions rather than parse console messages or infer failure from a schedule returning zero. Mark operational events run-scoped with fixed enums, no row/stage identity or source content. Do not change cancellation, pending-row skip, ordinary schedule-noop semantics or multistage Future behavior.
 - Existing per-run JSONL writer and reader remain the only event authority; GUI is a projection. No new persistent store or request/document failure-rate denominator. Stage Worker and lifecycle/retention remain separate so this PR's scope stays reviewable.
 
-### 2026-10-23 Producer cooperative cancellation error priority (PR #224 P2 corrective)
-
-- Cooperative `ExecutionCancelled` is authoritative for Producer control flow. Best-effort Pending Console cancellation cleanup may log only exception type on failure, but must never convert cancellation to a generic `Future.result()` exception, emit `PRODUCER_FUTURE_EXCEPTION`, or mark the run as not cancelled. Attempt each cleanup step independently even if the other fails.
-
-### 2026-10-23 Stage instrumentation scope decision (P2 PR pending)
-
-- Instrument actual Stage orchestration task/input resolution and Runner invocation failure boundaries; do not parse console logs, infer any Stage error from failed model responses, or mislabel generic escaped Runner exceptions as specifically provider or non-provider failures. Preserve historical two-argument fallback and cancellation propagation; best-effort JSONL audit cannot replace the primary exception.
-- Keep observability run scoped and payload/identity free, using the existing quality reader, GUI and read-only offline reports. Worker root-cause detail, filters and event retention remain separate work.
-
-### 2026-10-24 leaf Worker execution site classification decision
-
+### leaf Worker execution site classification decision
 - Use a fixed enum set by control flow before the external model call, while running the call, after its successful return, or while persisting Success/identity. Avoid user-provided exception messages, class-name guessing, model URLs or any stage/input/prompt ID as an event field. Do not label every call-site exception a provider failure.
 - A run-scoped leaf Worker phase event and a request CSV entry can both describe one failure; do not aggregate them into distinct failed documents. Keep the historical caught-error return, CSV row finalization, mock-only behavior and cancellation handling unchanged. Emitter failure is best effort and cannot replace original Worker results.
 
-### 2026-10-24 SDK failure subtype policy
-
+### SDK failure subtype policy
 - Reuse one existing `worker_phase_failure` run-only event rather than issuing a second SDK event per caught exception. Only refine the previously established `WORKER_LLM_CALL_EXCEPTION` phase, using SDK exception classes and verified `APIStatusError.status_code`; do not infer from localized error text, URLs, regular expressions or arbitrary `RuntimeError`.
 - Distinguish 429 vs HTTP 5xx vs 4xx (with generic fallback); preserve original `CallLLMAPI` exception/return and legacy CSV. A classifier failure is best effort and must never mask the original Worker failure. Categorize mechanisms as evidence, not remote-model blame.
 
-
-### 2026-10-24 incident drilldown scope policy
-
+### incident drilldown scope policy
 - Deliver fixed-code, run-only **read-only reporting** first: the JSONL `QualityTailReader` remains sole authority for valid/duplicate events and corrupt line status. Filter accepted counts from the same mapping as the emitter/parser, never parse exception text, URLs or source IDs and never reread raw source to extract "examples".
 - CLI family focus is an allowlisted *presentation projection*; retain unfiltered metric counters and the denominator of all observed run-scoped incidents. Show unknown percent on zero denominator and low-sample advisory. No new persistent store, event schema or cross-run aggregation; lifecycle/rotation and operator-specific privacy/redaction improvements remain future work.
 
-
-### 2026-10-24 JSONL lifecycle phase 1 no-delete boundary
-
+### JSONL lifecycle phase 1 no-delete boundary
 - Start with **opt-in manual rotation after operator stops writers/readers**, not online timer or automatic retention. Reuse the producer's cross-process append lock, same-directory atomic rename and consecutive numbered archives without rewriting or deleting any accepted event; reject partial last records, gaps and archive budget exhaustion.
 - Extend existing offline report with shared-accumulator replay instead of summing per-file aggregates (which would double-count event IDs and lose document reject→confirmed recovery). Keep GUI single-live-file view as a disclosed limitation. Only introduce destructive retention and real live readers with separate consistency/manifest protocol and independently tested rollback/partial-failure semantics.
 
-
-### 2026-10-24 archive integrity ledger trust boundary
-
+### archive integrity ledger trust boundary
 - Choose manual opt-in trust-on-first-use SHA-256 sidecar over automatic migration of legacy archives; avoid falsely asserting past integrity. Hash immutable numbered archives only, not concurrently growing active JSONL. Retain original append lock and no-delete rotation; write metadata via same-directory atomic replace with fsynced payload, roll back rename on publication errors where safe.
 - Verify sealed archive count and hashes both before and after offline multi-shard replay. A ledger mismatch fails closed rather than reset or inferred successful migration; retain existing strict event schema, duplicate ID and per-document recovery semantics. Explicitly distinguish self-consistency from authenticated evidence, defer signed manifests, crash recovery, automated retention and GUI continuity.
 
+### incremental GUI multi-segment reader policy
+- Rebuild one validated cumulative quality accumulator on archive/manifest/active generation changes, but tail only complete active JSONL lines during stable generations to avoid rescanning potentially large archives each GUI poll. Keep privacy-minimal and scope-correct event-id de-dup/document recovery; avoid adding slice and document percentages together.
+- Treat invalid sealed history or missing known active without documented rotation as an unavailable snapshot, **not** the previous apparently valid numbers. Report unsealed/partial/corrupt completeness warnings separately and do not change the safety boundary of manual stopped-producer rotation. Run the reader outside Tk only; defer Windows visual E2E, cryptographically anchored integrity, automatic pruning and safe online rotation.
 
-### 2026-10-24 conservative operator-approved interrupted archive recovery
+### bounded GUI event retention fail-closed policy
+- Avoid silently approximating document schema rates or losing dedup consistency by pruning seen event IDs and document sets. Introduce explicit optional read-side budgets enforced **before** accepted-event state mutation and before advancing JSONL offsets. GUI alone uses finite threshold defaults, reports capacity-exceeded instead of partial numbers, and keeps archived JSONL and Manifest untouched. Offline report retains the original full audit contract.
+- Bound single JSONL record length before `json.loads` in GUI readers; do not reclassify an oversized unknown event as merely a harmless invalid record. This restricts decoder spikes but is not a byte-precise process memory cap. Crash-safe bounded-memory checkpoints and guaranteed retention retirement need separate protocol and tests.
 
-- Only handle the unambiguous **bounded shape** of interrupted stopped-producer manual rotation: sealed SHA256 prefix remains intact, exactly one next numbered complete but unsealed archive, no active name. Never automatically adopt an unsigned shard into the Manifest or infer remote causation; read-only inspection reveals only fixed states and counts.
-- Prefer exclusive non-clobber hardlink creation and unlink of the extra unsealed alias under the original per-run writer lock over POSIX `rename` (which might overwrite a newly created active file). If interrupted between operations, preserve both aliases and require manual intervention rather than deleting or overwriting anything. Operator stop remains a prerequisite; more general recovery, Windows validation and archival trust remain distinct tasks.
+### unchanged over-cap GUI poll cache
+- Do not repeat full JSONL/archive verification after a known `QualityCapacityExceeded` if all archived, manifest and active file-generation metadata were unchanged during the failed attempt. Memoize only the failure generation, not input content or a partial accumulator result. Continue raising a distinct unavailable capacity error; retry only when generation changes or a different run reader is created. Retain prior observed archive cardinality so unsealed shard disappearance after over-cap first load cannot be mistaken for a newly healthy smaller run. Bounded stat polling is not cryptographic authentication.
+
+### offline temporary SQLite identity spill
+- First relieve large offline report identity-map growth via an **explicit opt-in, temporary, exact SQLite** backend; do not silently change the uncapped original accumulator or the already budgeted GUI reader. Reuse existing event/code validation and aggregate counters; store exact identities rather than lossy hashes if claiming exact dedup. Keep run-history accumulators scoped to each run.
+- Prefer private short-lived OS temp files deleted in both normal and exception paths; disclose identifier-at-rest and crash-remnant risks. This is not authorization for automatic archival pruning, a durable checkpoint or an authenticated trust anchor. Those mechanisms require separate design and crash/restart tests.
+
+### compare cost before designing durable checkpoint
+- Prefer a no-mutation, opt-in **real-run**, one-report measurement tool before changing production memory policies. Reuse accepted disk-backed and in-memory quality report implementations; isolate each in a fresh subprocess to reduce cross-mode heap contamination. Canonical SHA256 of the complete output is a hard correctness gate across all repetitions, not a proof of immutable log identity.
+- Report wall time, traced Python peak, nullable platform RSS and final SQLite main DB size with explicit measurement caveats. Never publish raw event/document identities or source/temp paths, and do not misrepresent traced allocation, SQLite file size or Linux CI as a Windows production memory/ES acceptance guarantee. Durable checkpoint/rotation/delete remain separate, explicitly authorized future work.
+
+### benchmark physical-input stability before output
+- Keep the previous full-report SHA256 parity gate and add cheap read-only bounded filesystem stat generations of exactly the quality components already used by the offline report (active, canonical shards, optional manifest). Check at baseline, before, and after every child process; reject any change without writing or printing input paths.
+- Prefer fail-closed measurement over presenting unverified speedups; still require stopped producers and honest metadata-only limitations rather than broadening to online locking, automatic retention, persistent checkpoint or user-content serialization.
+
+### benchmark native Windows memory metric without dependency
+- Prefer Windows `GetProcessMemoryInfo(PeakWorkingSetSize)` via stdlib ctypes/PSAPI to avoid adding psutil/native vendor dependency or copying sensitive process paths into diagnostics. Preserve existing nullable `peak_process_rss_bytes` and per-child isolation; API failure returns null, not zero or fabricated traced-RAM-equivalent value. Linux/macOS retain `resource.ru_maxrss`.
+- Label the resulting number precisely as historical Windows working-set peak, not private commit or memory boundedness proof. Simulated Linux CI cannot substitute actual Windows process acceptance. PR #231 and retention/rotation remain independent.
+
+### separate report compute and isolated child-process timing
+- Preserve prior `median_seconds` as exact child-measured report function runtime and add a distinct parent-observed `median_subprocess_wall_seconds` in the experimental opt-in benchmark summary. A parent monotonic timer around `subprocess.run()` is the simplest trustworthy measurement of child startup/import/IPC/termination cost; do not trust a worker-supplied wall-time field. Keep the old metric for compatibility and no child worker JSON shape change.
+- Clearly distinguish single-child wall duration from entire CLI orchestration and production throughput; do not claim genuine speedup without real stopped-run samples. Retain source integrity checks, privacy sanitization and SQLite cleanup.
+
+### fail closed on non-finite benchmark numbers
+- Python `json.loads` accepts NaN/Infinity extensions and can parse exponent overflow to non-finite floats despite expected JSON. Use strict `parse_constant` rejection plus `math.isfinite` on numeric worker duration; enforce native `tracemalloc` peak bytes as integral; reject a failed/non-finite parent monotonic sample. Do not publish statistics based on non-standard JSON numbers, convert missing values to zero or print child error payloads.
+- Preserve the opt-in summary schema and report-v1 behavior; serialize final output with `allow_nan=False` as defense in depth and give fixed path-free CLI errors. Source-generation and full report digest gates remain required.
+## Current ES data integrity and acknowledgement decisions
+
+- Keep `article_date_iso` and `article_date_precision` as a single consistent publication-date evidence pair from one source slice, validated strictly for null/unknown and day/month/year alignment. Never assemble a plausible-looking date/precision from separate malformed slices or infer the article date from `Event_Timeline`/`time_raw`. This protects indexing semantics from plausible but false publication dates.
+- Preserve Event[] `event_id` uniqueness and linked `event_ids` referential integrity at the strict output profile; no schema-invalid result should be promoted to ES writeback.
+- For buffered ES bulk writes, a successful queue/dispatch is not Row Merger success. Require sink `confirm_writeback()` acknowledgement before releasing source and Success artifacts; on error retain replay evidence and discard only unacknowledged queued actions. Do not confuse acknowledgement with search refresh/readback visibility. Operator must separately prove stored ES results before production bulk replay.
+
+## Current single-extract resume data-integrity decision
+
+- For one extract-stage `merge_slices: true` JSON stage writeback (Issue #211 / PR #213), **original complete raw source membership is the authority**, not the surviving TODO filenames after successes. Keep the hash-only manifest `_extract_slice_identity/source/original.json` independent of destructible stage snapshots; verify source SHA, ordered raw chunk hashes, saved filename map, effective stage-task hash and original dispatched prompt hashes across `resume` and `smart_reset`.
+- Accept reused Success and committed split child attempts only after verifying their original dispatch/child lineage; refuse incomplete/changed sources or stale stage tasks rather than silently dropping completed siblings or re-rendering a retry child as a new source. Regenerated source text in `_stage_outputs/original` is **transient**, never replacement authority.
+
+## Current cache-aware throughput attribution decisions
+
+- Preserve `processing_tps` as historical source metadata; compute the GUI-only `total_tok_per_s` and `effective_tok_per_s_est` distributions only for authoritative API-usage slice calls with nonzero elapsed. Do not reinterpret a failed/missing measurement as a zero token count or cache hit.
+- Provider `cached_input_tokens` and `cached_input_token_source=provider_usage` are authoritative only when explicitly available (valid zero is distinguishable from absent). A possible cache reuse **heuristic** must be labeled and separately counted, derived from **two or more previous stable template sizes** within the **same model/endpoint/task/stage/source**, bounded to a 50% template discount; never compare across stages, write estimates into audit provider cache columns, or describe heuristic throughput as hardware-only generation speed.
+
+## Archived History
+
+- `.codex/archive/decisions.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `2fcdc099dfd3065af18402dfc8e7aed9618b9195`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
+- Earlier archives referenced inside this snapshot remain unchanged; no history was deleted.
+- Active summary reconciled with GitHub `main` `46b7c7290417421a6dc09e114f82c1066ce0179d` after user-authorized PR #239 merge and Linux postmerge `offline-e2e` success; Windows runner jobs remain queued/operator-deferred.
+
+## 2026-10-28 offline quality output/control-plane separation
+
+- A read-only summary should never share its destination namespace with a quality archive consistency manifest, even though both filenames end in `.json`. Reject the canonical ledger filename pattern unconditionally (including uncreated/other-run manifest targets) before scanning sources or creating temporary SQLite; also reject symlink report output aliases. Keep the original generic atomic JSON writer unchanged to avoid affecting unrelated sinks.
+- This rule prevents inadvertent overwrite by CLI users; it is not an online-writer lock, an authenticated manifest trust root or a durable checkpoint. Preserve normal `--output quality_summary.json` behavior and all report-v1 metrics.
+
+## 2026-10-28 LLM-call failure report output namespace decision
+
+- Keep the existing `llm_failure_report` report-v1 shape and strict CSV audit reader. Reserve the `processing_quality_events_*.jsonl.manifest.json` SHA256 ledger filename **regardless of destination directory**, before CSV replay. Retain separate within-source-directory `llm_call_audit_*`/quality artifact prefix rules, casefold for Windows and reject symlink output aliases. Do not broaden generic `atomic_write_json` behavior or interpret this as a race-free file sandbox.
+
+## 2026-10-28 LLM call failure time interval decisions (pending PR acceptance)
+
+- Use producer-emitted local-second `timestamp` only for optional `llm_failure_report --since` (inclusive) and `--before` (exclusive), validating strict canonical `YYYY-MM-DDTHH:MM:SS` and `since < before` if both are supplied. Reject offset/Z/ambiguous timestamps; do **not** fabricate UTC, retry UUID or document identities. All records in a filtered snapshot must have valid timestamps, including out-of-window rows; otherwise fail closed rather than misrepresent denominators.
+- Preserve unfiltered report v1 and legacy parser/snapshot budgets. Filtered v1 adds fixed `time_window` with producer-local clock labeling, and per-run excluded count. History keeps independent run snapshots; no cross-run denominator pooling or online mutable-writer guarantee. No runtime CSV producer or LLM path changed.
+
+## 2026-10-28 audit identity boundary (pending review)
+
+- Mint a private-data-independent UUID4 per recorded `log_llm_call` entry and append it to **new** CSV/XLSX audit exports as `audit_record_id`; no hash of prompt, document, endpoint, error or raw provider payload. Do not reuse an audit-row UUID as a provider request ID or retry-family identity; a crashed/unlogged request has no row. For a running legacy CSV with precisely the former header, emit the former column width. Reject other existing headers instead of silently misaligning output. Preserve unfiltered/filtered `llm_failure_report` v1 denominators and privacy; do not infer retry rates from UUID counts.
+
+## 2026-10-28 explicit Worker invocation ID decision (pending review)
+
+- Use `uuid.uuid4().hex` generated by `PromptAPIPipeline.proc` immediately before the real `CallLLMAPI` invocation, forward it to optional validated `log_llm_call(worker_call_id=...)` and store as a trailing CSV/XLSX column. Direct audit invocations without that boundary leave it empty (no guessing from prompts, URLs, timestamps or error text). Preserve both #245 and pre-#245 headers by exact width on append; incompatible headers fail closed. Never interpret this as SDK HTTP attempt identity, retry group, unique document identity, successful provider processing, sink acknowledgment or a new failure-rate denominator. Keep v1 failure summary unchanged.
+
+## 2026-10-28 Worker wrapper-return attribution decision (pending review)
+
+- Separate explicit `CallLLMAPI` normal-return evidence (YES/NO/unknown) from local postprocessed `ok`; capture the observation at the actual Worker call site, never infer from a nonnull `response` or exception/error text and never label it provider HTTP acknowledgement. A non-null flag requires a valid Worker-call UUID; otherwise direct audit callers emit an empty/unknown field. New CSV/XLSX final field preserves current and three earlier exact headers without modifying source bytes/widths. Do not extend report-v1 denominators or count logical retry families from the return flag; source-authoritative retry dispatch remains separate.
+
+## 2026-10-29 explicit persisted split lineage ID (pending review)
+
+- Extend the already-durable v1 SHA256 parent+two-child JSON repair *intent* journal with an independently random UUID4 `split_family_id`; don't hash user input to create group identity or infer from filenames alone. Require direct parent journal with matched child SHA256 and canonical two-child name pair before inheriting ID for child or nested split. Preserve original hashes, file format version, resume/rollback code and old journals (unknown ID), and never claim journal identity means actual committed children or LLM calls. Keep Worker audit CSV/XLSX/report v1 untouched; separate actual Worker-to-family correlation and cross-run/request retry grouping later after source-level proofs. No Merge without explicit user authorization.
+
+## 2026-10-29 source-verified Worker/split correlation
+
+- The first parent split journal is written after its LLM response is repaired; hence look up lineage **after** postprocessing while preserving a bounded-memory verified actual queued-source observation from **before** `CallLLMAPI`. No reliance on filename/time/error strings, no prompt payload in the new UUID field, no changes to failure-report v1 or queue/SDK retry strategy. Attach only with Worker call ID and wrapper-return observation; four preceding audit headers remain byte-width compatible. No claim of authenticated source generation or HTTP retries; #231 is independent.
+
+## 2026-10-29 #231 main-first safety reconciliation (pending acceptance)
+
+- Avoid a blind merge of the 224-behind branch: preserve `main`'s stronger #249 source verification, GUI budget guards and immutable Codex archives. Make #231's recovery functionality a two-parent integration commit (old #231 head + accepted current main as parents) with a tree built from current main plus only its new recovery module/CLI/tests and bounded docs. Explicit stopped-producer rollback uses exclusive hardlink, never unlink sealed shards, never rebaseline SHA256 ledger; run latest-head full Linux E2E/archive regression and formal Codex review. Never merge without explicit user approval.

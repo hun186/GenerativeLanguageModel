@@ -20,121 +20,62 @@
 - Retention is disabled by default, ownership/lease/claim based, bounded, symlink/containment guarded, and never adopts legacy unmarked artifacts. After deletion-budget exhaustion, later candidates still undergo validation/classification/counters but no further deletion is attempted.
 - Successful hierarchical final writes use `cleanup_transient_on_success: true` by default, which performs the post-success transient cleanup path with effective transient TTL zero. Set it false to retain successful runtime workspaces for `transient_runtime_ttl_hours`.
 
-## Recent Changes
+## Current Processing Quality architecture (accepted through PR #239)
 
-### 2026-10-08 LLM token/context distribution observability
+- `czjLLM/utilities/processing_quality.py` emits bounded, run-scoped `processing_quality_events_<run>.jsonl` records adjacent to the existing per-run request CSV. Fixed site/code taxonomy covers Consumer, Row Merger retry, Producer, Stage Runner and leaf Worker; typed SDK subcodes further refine eligible call-site exceptions. These are **catch-site observations**, not unique failed documents, provider-outage proof or an API failure-rate denominator; no document IDs, slice IDs, prompts, raw exceptions or secret endpoints may appear in run-only events.
+- `processing_quality_report` uses the existing strict writer/reader/accumulator and supports one stopped run or bounded history, an allowlisted run-incident family projection and read-only archived segment replay. A manual stopped-producer rotation command creates consecutive numbered segments; an opt-in v1 SHA256 manifest detects accidental sealed-archive inconsistencies. This is self-consistency, **not** a signed trust anchor, online rotation or permission to auto-delete.
+- The Windows GUI reader replays archived plus active quality JSONL in a background worker, deduplicates accepted event IDs/doc state, uses generation-change invalidation, and fails closed with explicit `capacity_exceeded`/unverified status rather than partial or stale success. Read-side GUI defaults cap event cardinality (50k), retained identity characters (~4m) and single line size (64 KiB). Offline reports retain separate full replay support.
+- `processing_quality_disk_spill.DiskBackedQualityAccumulator` is opt-in and uses private temporary SQLite for **exact** event/document identity sets. It preserves `report_version=1`, deletes temporary state on ordinary/error paths, and is **not** a persisted checkpoint or authorization for disk retention/pruning.
+- `czjLLM.cli_tools.processing_quality_benchmark` is an opt-in stopped-run comparative child-process benchmark. Per-mode report-only `median_seconds` and parent-clock `median_subprocess_wall_seconds` are distinct; child output is strictly checked for finite numeric data, all sample reports must match full canonical SHA256, and stat-generations of active/archive/manifest must remain unchanged before/after every sample. Linux/macOS OS peak memory uses `ru_maxrss`, Windows uses PSAPI historical `PeakWorkingSetSize`, nullable if unavailable. Windows native measurements and representative workload performance need **operator** verification.
+- PR #231 (`a8711e9337b62e4b9c6ad62f37ba3e78ba4e8fea`) is still OPEN/non-mergeable at the compaction baseline; its interrupted-rotation rollback semantics must not be described as shipped.
+- Source generation checks are read-only metadata checks, not an atomic filesystem snapshot or a hostile tamper detector. No crash-safe checkpoint, safe online writer/GUI rotation, automated pruning/retirement, independent live ES/LLM acceptance, or full Windows GUI acceptance is established.
 
-- Added local task-text/template/rendered-prompt token estimates at prompt-generation time and keeps API usage authoritative for input/output/context occupancy. Multi-stage prompt replacement refreshes the numeric metadata for the actual dispatched prompt and clears stale metadata on count failure.
-- A daemon audit-reader thread inside the Windows GUI process checks the append-only per-run audit CSV at a throttled cadence and performs CSV parsing plus distribution calculation off the Tk event loop. Tk only consumes completed snapshots, preserving progress/log/Cancel responsiveness while rendering default-collapsed token/context plus prompt-backed Slice latency distributions.
+## Current ES final-output and persistence integrity
 
-### 2026-10-06 v1.1 final quality/coverage hook
+- Strict ES `multidim_event` validation remains at `es_mode/output_profiles/multidim_event.py`: publication `article_date_iso` and `article_date_precision` are validated together (null ↔ unknown, month/year normalization), and linked `event_ids` must refer to unique valid `Event[].event_id` values. `utilities/slice_merge.py` keeps each source date/precision pair atomic rather than recombining halves of different slices or inferring an event date.
+- `es_mode/runtime/sinks/es_sink.py` may buffer writes; Row Merger must call `confirm_writeback()` and receive ES bulk acknowledgement before releasing original Success/source artifacts. Failed/unconfirmed attempts preserve replay evidence; ES refresh/search visibility is independently verified, not presumed from enqueue. These are **current design boundaries**, not superseded archive-only records.
 
-- Added a single final-stage task-specific quality policy extension point rather than a generic evaluator framework.
-- No-hook behavior/fingerprint remains compatible; configured hook semantics are fingerprinted, accepted metrics are nested under result metrics/audit, and rejection is explicit.
+## Current single-extract partial resume / smart_reset source identity
 
-### 2026-10-06 v1.1 cache-boundary evaluation
+- For the **single extract-stage JSON slice merge/writeback** path in `czjLLM/prompt_pipeline/pipeline_controller.py`, `resume` / `smart_reset` must validate the **complete original source** even after some slices have been removed from TODO because Success files exist. The original hash-only manifest at `<item>/_extract_slice_identity/source/original.json` intentionally lives **outside** the resettable `_stage_outputs` directory so smart_reset cannot erase its authoritative source membership evidence.
+- Verify original source hash, **ordered** raw slice hashes and original filename mapping, the effective extract stage-task identity, and the dispatched prompt hashes against the saved provenance before keeping existing Success or regenerating transient snapshots. Remaining TODO is never a substitute for the original complete source membership; it can omit previously completed siblings. Any missing, mismatched, stale or ambiguous proof fails closed instead of publishing partial/old combined output.
+- Split/retry child prompt files keep their verified parent/child dispatch lineage and must not be mistaken for independent new raw source chunks. Hash-only provenance records do not persist raw input text, prompts, credentials or output values. No extra cache or change to public Row Merger/output schema is introduced.
 
-- Reaffirmed a single authority per retry scope: persisted SQL/ES results for cross-run reuse and committed checkpoints for hierarchical resume.
-- Deferred transient semantic/member caching because current code/tests do not demonstrate a material duplicate-call workload. Any future cache must be opt-in, bounded, run-scoped, non-persistent by default, and operational rather than semantic authority.
+## Current strict ES importance score normalization
 
-### 2026-10-06 Reduction Engine v1 closure
+- The `multidim_event` ES output profile permits a **narrow lossless shape correction**: exactly `coverage`, `novelty`, `impact`, `credibility`, `importance_score` may move from article top level into nested `importance`, with `int` (not `bool`) or `null` values. Contradictory nested/top-level scores and unknown keys are rejected, never silently recomputed or overwritten. Generic JSON output processing is unchanged.
 
-- PR #201 corrected truthful bounded-retention reporting and merged as verified/valid `91e39503c8e84d17752f9d26a23ff6b34db75b9e`.
-- PR #200 reconciled the operator/developer documentation and merged as verified/valid `99d79676b16b7fed54f9cf6e701441db79846cea`.
+## Current cache-aware audit / GUI throughput boundaries
 
-### 2026-10-04 Production hardening
-
-- L2a established explicit partial-success policy and cooperative cancellation; only `ExecutionError` is recoverable member failure, while cancellation and programmer/system faults propagate.
-- L2b bridged cancellation and production observability through SQL/Table/ES scheduling, prompt execution, reduction, writeback and GUI status.
-- L3 added disabled-by-default safe retention with ownership markers, leases, claim/tombstone deletion, TTLs, scan/delete budgets and post-success transient cleanup.
-
-### 2026-10-02 to 2026-10-03 Persisted freshness and bounded nesting
-
-- K2 established one nested ReductionStage level, four active PipelineRef names, immutable depth/cycle guards and prompt-aware preparers.
-- L1 kept SQL/ES persisted output as reuse authority and added opt-in semantic processing identity plus recheck observability.
-
-### 2026-09-24 to 2026-10-01 Collection and reducer expansion
-
-- Immutable collection identity, SQL/ES collection adapters, idempotent aggregate upsert, deterministic composite reducers, semantic reduction, structured-relational reduction and executable-stage composition were added without moving writeback ownership into Reduction Core.
-
-### 2026-09-19 to 2026-09-20 Reduction foundation
-
-- Reduction began as strict opt-in routing with source-agnostic reducer/controller/checkpoint contracts, then added fixed/adaptive hierarchical text reduction and the shared process-local execution budget.
+- The append-only per-run LLM audit at `utilities/llm_call_audit.py` writes nullable `cached_input_tokens` and `cached_input_token_source=provider_usage` only for provider-backed cache evidence; missing provider metadata is unknown, not zero. A safe `stage_identity` and local prompt-component token source permit isolation without copying plaintext prompt/task payloads into sidecar handoffs.
+- The GUI `job_manager/win_gui.py` reads audit CSV outside the Tk hot path and shows `total_tok_per_s` and `effective_tok_per_s_est` separately from historical `processing_tps`. The first is API input+output divided by positive slice duration; the second subtracts **actual provider cached input** when known, otherwise may use a conservative **heuristic** only after at least two stable template samples within an identical (model, endpoint, task, YAML stage, token-source) group. Neither is pure GPU throughput; estimates never create or overwrite provider usage evidence.
 
 ## Archived History
 
-- `.codex/archive/architecture.md-20261006-134200.md` — complete pre-compaction architecture history through PR #200 head `39177737486a372f38e9b6d81563d6f14327459a`.
-- Historical point-in-time implementation notes that are superseded by the Current Summary remain traceable in that archive.
+- `.codex/archive/architecture.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `6b3671c46d80acabd692bf2a6f227792c1b06018`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
+- Earlier archives referenced inside this snapshot remain unchanged; no history was deleted.
+- Active summary reconciled with GitHub `main` `46b7c7290417421a6dc09e114f82c1066ce0179d` after user-authorized PR #239 merge and Linux postmerge `offline-e2e` success; Windows runner jobs remain queued/operator-deferred.
 
-### 2026-10-12 GUI request throughput observability (proposed)
+## 2026-10-28 append-only audit row UUID (pending acceptance)
 
-- The append-only audit schema can capture provider-reported cached input token counts, with a distinct source marker; missing provider cache metadata is unknown, not zero. Current `processing_tps` remains backward compatible; GUI derives `(input_tokens + output_tokens) / elapsed_seconds` for actual slice requests with positive elapsed.
-- Local token sidecars add only an allowlisted stage identity (never task/prompt payload). The GUI off-thread CSV reader computes cache-adjusted throughput from provider truth where present and an explicitly discounted stable-template-size proxy only after same-stage history exists; no new persistence, service, prompt transfer, or cache-hit truth source is created.
-- Histograms include collision-pruned min/P50/P95/max ticks and a 3+4 chart layout. Tk redraw and hover both use shared width/height bounds.
+- The per-run `utilities/llm_call_audit.py` producer appends a new trailing opaque `audit_record_id` UUID4 column for **newly created** CSV runs and its actual XLSX export. A pre-upgrade CSV with exactly the previous schema retains its original columns (no retroactive upgrades) and unknown headers fail closed without misaligned writes. These IDs identify *logged rows*, not provider requests, retry groups, source slices, documents or ES acknowledgement; no reader denominator/schema change is implied. Source-authoritative retry identity is a distinct future task.
 
-### 2026-10-13 Issue #211 E2E verification boundary (PR #213, pending)
+## 2026-10-28 Worker call boundary metadata (pending acceptance)
 
-- SQL and Table input modes share the production scheduler, direct multistage extract processing, stage manifest, row merger and physical sink. A first extract stage using the same input column as the primary row can safely reuse already-rendered per-slice prompts rather than rerender the entire source once per slice. This preservation is scoped to single-extract JSON stage writeback; alternate input-column routing and genuine multistage behavior stay untouched.
-- New offline end-to-end tests use localhost fake OpenAI responses and deterministic cut positions, but real SQLite files, XLSX files, prompt queue and production writeback to verify output readback. No live provider/SQL Server is involved.
+- `PromptAPIPipeline.proc()` mints opaque UUID4 `worker_call_id` at the real `CallLLMAPI` invocation boundary, before calling it, and forwards it to the existing post-settlement `log_llm_call`. The separate per-record `audit_record_id` is still minted on row creation. A new CSV has the extra final `worker_call_id` column in CSV/XLSX; two preceding full headers remain supported without rewriting old audit rows. Lower-level SDK HTTP retries and source logical retry families are not observed or identified here; exception/precall/crash gaps remain, and report-v1 denominators stay observed rows.
 
-### 2026-10-14 partial extract resume authoritative source snapshots (PR #213 pending)
+## 2026-10-28 explicit wrapper-return observation (pending acceptance)
 
-- For the single-extract JSON stage writeback path, the first unpruned input queue establishes the ordered raw-source-slice-to-filename mapping. A durable SHA-256-only provenance manifest in the original snapshot folder records both source/slice identities and actual dispatched prompt hashes with an effective stage-task digest.
-- Later partial resumes reconstruct source slices and verify the existing complete snapshot, even after Success removes A from TODO. Completed members' recorded dispatch hashes reenter the final mandatory Success validation; partial or stale source and stage-task changes fail closed. Verified split child TODO prompts can survive original snapshot validation without being falsely treated as new raw slices.
-- No second cache, alternative source of model results or changed public output schema was introduced. Scope remains strictly the original single extract / SQLite-Excel writeback flow.
+- The real Worker `PromptAPIPipeline.proc()` begins with `call_llm_api_returned=False`, flips to True **only after** the `CallLLMAPI` wrapper normally returns, and records it alongside the already unique `worker_call_id` and `audit_record_id` after postprocessing. New CSV/XLSX field `call_llm_api_returned` is YES/NO/unknown blank, independent of final local `ok`. A returned wrapper is not provider HTTP proof, and `NO` is not proof the provider did not process a timed-out request. Current and exactly three prior CSV headers remain append-compatible with no auto-migration. Read-only v1 reporting unchanged.
 
-### 2026-10-14 resilient single-extract source identity for smart_reset (PR #213)
+## 2026-10-29 persisted explicit split-intent family identity (pending acceptance)
 
-- Hash-only raw source and dispatch provenance lives under `<item>/_extract_slice_identity/source/original.json`, not `_stage_outputs`, because `smart_reset` intentionally deletes all stage snapshots. Full raw-source fragments can be safely regenerated only after validating the source hash, ordered part hashes, and original filename mapping. These regenerated texts remain transient in `_stage_outputs/original`.
-- The existing success and split identity directories remain authoritative for completed/retried prompts. When partial source membership cannot be verified, reject writeback rather than silently omitting Success siblings.
+- Existing single-extract `slice_identity.record_split_identity` writes a version-1 SHA256-only split-intent journal before two child files. The independent `feat/verified-split-retry-lineage-20261029` adds optional random `split_family_id` to new journals without replacing version/parent/child digests. A bounded `verified_split_family_id` verifies the exact queued parent or direct `-0`/`-1` child prompt against the persisted two-child journal; nested split inherits its verified parent group. Old journals without ID yield unknown; filename-only matches, symlink/oversize/corrupt journals yield none. This remains local, unauthenticated **intent** evidence, not proof the split committed, a provider HTTP retry, original document or safe writeback; Worker/CSV/report unchanged.
 
+## 2026-10-29 Worker ↔ split-intent evidence boundary
 
-### 2026-10-20 Processing Quality observation boundary (PR #218)
-- `czjLLM/utilities/processing_quality.py` defines a quality event stream adjacent to the per-run LLM call-audit CSV. `handle_json_output` emits slice-first-pass JSON and JSON-repair decisions. Row Merger emits terminal document schema rejection and successful writeback decisions only after the configured sink's confirmation.
-- `QualityTailReader` incrementally reads complete JSONL lines off the Tk thread; `win_gui.py` displays an independent collapsed Processing Quality summary and type counts instead of mixing with the LLM Token/Context histogram. No source payload is stored.
+- Before actual `CallLLMAPI`, `PromptAPIPipeline.proc` streaming-hashes the real queued file against its sent content without retaining another full prompt. After repair (which may first create the parent's journal), strict `verified_split_family_id` supplies an optional lineage UUIDv4 to the same Worker audit row. New trailing CSV/XLSX field keeps four prior headers compatible. This is an unauthenticated local source/intention correlation, not a lock, complete retry census, HTTP-level identity or sink readback.
 
-### 2026-10-20 offline read-only quality report (separate PR)
-- `cli_tools.processing_quality_report` reads only one existing run-scoped quality JSONL or enumerates a bounded history in its existing audit directory via `QualityTailReader` / `QualityAccumulator`. No new event producer/storage or runtime/GUI/prompt/sink mutation. Optional summary file uses `utilities.atomic_io.atomic_write_json`.
+## 2026-10-29 stopped-producer quality JSONL recovery (PR #231 integration)
 
-
-### 2026-10-23 Consumer-quality telemetry (new PR, unmerged)
-
-- Legacy `llm_stream_consumer` sends observed scheduler/termination failures through the existing nonblocking quality JSONL writer; the same reader, GUI and offline CLI surface an independent event count. No new sink or per-document failure inference; stage-managed workers are not instrumented in this incremental scope.
-
-### 2026-10-23 Stage orchestration observation boundary (new P2 PR, pending acceptance)
-
-- The active multi-stage pipeline in `pipeline_controller.py` calls `stage_orchestrator.run_stage_pipeline` / `execute_stage_round`. Stage task routing and input preparation, followed by a compatible 3-argument or 2-argument Runner invocation, are the new bounded observation sites. Their escaping non-cancellation exceptions use existing `processing_quality` per-run JSONL; no replay/exception policy, checkpoint ownership or result shape is changed. GUI, accumulator and offline reports project the same events and never count them as failed documents or LLM requests.
-
-### 2026-10-24 leaf Worker phase observations (P2 PR pending)
-
-- The actual `PromptAPIPipeline.proc()` boundary (used in leaf jobs, including multiprocess execution) now records bounded `worker_phase_failure` observations in its established caught-exception path based solely on the current execution phase. Before-call endpoint selection, during `CallLLMAPI` invocation, after-return response/JSON handling and Success file/identity persistence are distinct sites; they are not provider root-cause classifications.
-- Existing Worker error dict, per-request CSV, per-slice repair auditing and Stage orchestrator exception auditing remain independent; overlapping incidents across layers may occur and do not represent unique failed documents. Shared Processing Quality reader, offline report and GUI project the one existing JSONL authority.
-
-### 2026-10-24 typed OpenAI SDK exception classification (proposed PR)
-
-- `CallLLMAPI` remains the source of actual SDK request execution and legacy timeout/connection `RuntimeError` wrapping. New pure `classify_llm_call_exception(error)` checks only the SDK exception's type, HTTP `status_code`, or the direct SDK cause of a legacy `RuntimeError`; no error-string interpretation or network inspection.
-- `PromptAPIPipeline.proc()` still owns its single caught-error Worker run event: for its existing `WORKER_LLM_CALL_EXCEPTION` execution phase only, call the classifier and emit exactly one more-specific `worker_phase_failure` code or the old generic code. Existing CSV and JSONL stream authorities, document denominators, GUI count, cancellation and persistence are unchanged.
-
-
-### 2026-10-24 run-only incident drilldown projection (pending PR)
-
-- New `RUN_INCIDENT_CODES` is derived from existing `_EVENT_CODES` and `_EVENT_SCOPES`; report modules never invent an independent/possibly stale Worker SDK code list.
-- The existing `QualityTailReader` performs privacy/error-code validation, deduplication and corrupt-line observation. `run_incident_diagnostics(stats, family=...)` is a pure read-only projection of its accepted fixed-code counts, optionally narrowing only the displayed run-scoped family details. Per-run observed-incident denominator remains the whole run, with null share when zero. History never pools per-run denominators. No additional parser, log write, I/O authority or DB/model service.
-
-
-### 2026-10-24 manual archive rotation and offline multi-file replay (unmerged PR)
-
-- Existing run quality JSONL active path and `.jsonl.lock` remain the only emit targets; an opt-in maintenance command reuses the same cross-process lock and atomically renames complete active files to numbered immutable `.jsonl.seg-NNNNNNNN` paths. Neither scheduled rotation nor automated retention/deletion exists.
-- A separate bounded (64) archive-discovery module enumerates strict consecutive numbered segments, refusing gap/malformed names and symlinks. Offline reports replay archive segments in sequence followed by the optional current active file; all `QualityTailReader` instances share one `QualityAccumulator` for cross-generation event ID dedup and document decision reconciliation. GUI continues using the unchanged single-active-file reader; no full live-resume claim.
-
-
-### 2026-10-24 opt-in sealed-archive SHA256 consistency ledger (unmerged PR)
-
-- Keep the original `processing_quality_events_<run>.jsonl` writer, lock and manual numbered shard scheme unchanged. A distinct `processing_quality_manifest` module hashes only sealed `.jsonl.seg-NNNNNNNN` archive bytes via bounded memory descriptor reads, recording sequence, byte size and digest; small schema-checked `.jsonl.manifest.json` is atomically published under the writer lock.
-- Manifest initialization against legacy archives is explicitly opt-in (stopped producer); no implicit baseline or archival deletion. Once sealed, manual rotation prechecks the existing manifest, renames its active file, publishes an updated ledger, and attempts rollback on publish failure. Offline report validates sealed bytes before and after existing shared-accumulator replay and discovers manifest-only missing-run records. Unsealed legacy history is reported as unsealed, not silently called verified.
-
-
-### 2026-10-24 interrupted JSONL rotation recovery guard (new unmerged PR)
-
-- Existing writer, manual rotation, immutable sealed archive digest and manifest remain authoritative. Read-only recovery inspection compares sealed Manifest entries against matching existing archive hashes, then only permits a potential rollback when there is **exactly one sequential additional complete unsealed shard** and no active file. A collision, divergent old shard, unknown ledger or multiple extras cannot be auto-classified as safely recoverable.
-- With operator stop acknowledgement, a separate CLI uses the same writer lock to recheck and create the active name exclusively via hardlink (no clobber) to the extra shard; verifies bytes before unlinking the extra unsealed name. Interrupted hardlink/unlink leaves an explicit ambiguous dual-alias state, preserving bytes rather than rewriting the ledger. No automatic manifest adoption/rebaseline, archive deletion or live GUI replay.
+- Separate `utilities.processing_quality_recovery` and `cli_tools.processing_quality_recover` inspect SHA256 sealed manifests, detect one extra consecutive unsealed shard without active path, and under existing quality writer lock restore it via exclusive hardlink then remove the extra name only after byte verification. Sealed manifest, accepted shards, offline quality-report semantics, GUI readers and audit CSV stay unchanged. A second interruption leaves an explicit ambiguous two-name state; unrelated writers are beyond the operator stop barrier. This feature is awaiting fresh exact-head CI/Codex after main reconciliation.

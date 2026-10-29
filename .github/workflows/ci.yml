@@ -31,8 +31,12 @@ jobs:
         run: python -m pytest --collect-only -q tests/e2e -m e2e
       - name: Run offline production E2E gate
         run: python -m pytest -q tests/e2e -m e2e --maxfail=1 --disable-warnings
-      - name: Run focused quality GUI, rotation, integrity manifest and stopped-producer recovery regressions
-        run: python -m pytest -q tests/job_manager/test_win_gui_llm_audit.py tests/prompt_pipeline/test_llm_call_audit.py tests/test_processing_quality.py tests/test_processing_quality_report.py tests/test_processing_quality_incident_drilldown.py tests/test_processing_quality_rotation.py tests/test_processing_quality_manifest.py tests/test_processing_quality_recovery.py --maxfail=1 --disable-warnings
+      - name: Run focused quality GUI, bounded memory, archival continuity and SHA256 manifest regressions
+        run: python -m pytest -q tests/job_manager/test_win_gui_llm_audit.py tests/prompt_pipeline/test_llm_call_audit.py tests/prompt_pipeline/test_split_retry_lineage.py tests/prompt_pipeline/test_worker_split_family_audit.py tests/test_processing_quality.py tests/test_processing_quality_report.py tests/test_processing_quality_incident_drilldown.py tests/test_processing_quality_rotation.py tests/test_processing_quality_manifest.py tests/test_processing_quality_gui_continuity.py tests/test_processing_quality_gui_budgets.py tests/test_processing_quality_disk_spill.py tests/test_processing_quality_benchmark.py --maxfail=1 --disable-warnings
+      - name: Verify stopped-producer interrupted JSONL rotation recovery
+        run: python -m pytest -q tests/test_processing_quality_recovery.py --maxfail=1 --disable-warnings
+      - name: Verify immutable Codex archives and current active memory
+        run: python -m pytest -q tests/test_codex_memory_archive.py --maxfail=1 --disable-warnings
       - name: Run Producer operational incident regressions
         run: python -m pytest -q tests/sql_mode/runtime/test_producer_multistage_parallelism.py --maxfail=1 --disable-warnings
       - name: Run Stage orchestration incident regressions

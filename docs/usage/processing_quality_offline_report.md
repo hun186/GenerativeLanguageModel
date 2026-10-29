@@ -16,6 +16,18 @@ Write a separate **summary JSON**, atomically:
 
     python -m czjLLM.cli_tools.processing_quality_report --audit-dir logs/llm_call_audit --output quality_summary.json
 
+The `--output` destination must be a separate normal `.json` report.
+It **refuses** any filename in the reserved
+`processing_quality_events_*.jsonl.manifest.json` namespace (including an
+uncreated ledger or a ledger for another run), and it refuses symlink output
+aliases. This prevents the generic atomic JSON writer from replacing a sealed
+quality archive's SHA256 consistency ledger, which would otherwise invalidate
+archived-run verification. A protected destination fails with a fixed error
+**before** source replay or temporary SQLite indexing, without writing a
+partial report. Ordinary reports such as `quality_summary.json` remain
+supported and can be atomically regenerated. This guard does not make
+concurrent writers safe or authenticate a ledger against malicious changes.
+
 The percentages and counters reuse QualityAccumulator, including de-duplication and recovered-schema semantics; source event records/document IDs are not exported. Unknown denominators show null, not 0%. Each denominator under 30 adds an **advisory only** (not a statistical pass/fail gate). The reports never combine numerators/denominators across runs.
 
 A partial trailing JSONL record is ignored until complete, and reported as incomplete_or_concurrent_append; the file may be actively appended during inspection. Malformed complete UTF-8/JSON lines are excluded from denominators but counted in `skipped_corrupt_complete_lines`; the state becomes `degraded_corrupt_lines` even when other valid events exist. This is a completeness warning, not a forensic reconstruction of damaged content. Invalid-schema JSON records and duplicate event IDs continue to use the existing reader policy.
@@ -135,6 +147,34 @@ python -m czjLLM.cli_tools.processing_quality_manifest --audit-path logs/llm_cal
 **安全邊界與保留限制：** SHA-256 側錄可檢出意外覆寫、損毀及建立基準之後的封存檔遺失，但不具備數位簽章／外部信任錨；有權修改所有檔案的人仍可重算 Manifest，若連 Manifest 也被移除就無法單憑本地目錄證明歷史曾存在。首次建立基準只能證實*當下*現存封存檔，不能追溯先前是否已有缺失。活躍 JSONL 不受封存 Manifest 保護，需先手動輪替才能封存驗證。停機確認是操作者責任，不能防止不遵守規則的外部修改。仍**沒有**自動清理、已驗證安全刪除、線上無停機輪替或跨段 GUI 即時續讀；這些須另外設計及審查。
 
 
+## GUI 跨輪替 JSONL 累計續讀（2026-10-24，獨立 PR 待驗）
+
+Processing Quality GUI 背景品質讀取器改用 `QualityRunTailReader`。對單一 run 的品質事件，先核對已封存的所有連續編號分段與 Manifest（若已封存），以**同一份累計器**跨封存檔和活躍檔重建事件、文件 Schema 待處理與後續寫入成功數；當分段與基準不變時，僅增量處理活躍檔**新增的完整 JSONL 行**，不會每秒重新雜湊或讀取全部歷史分段。若檔案被手動輪替、活躍檔重建／截斷，會重新建立同一執行的歷史統計，而不是僅顯示新活躍檔的事件數，也不會直接把不同檔案的統計相加造成重複計算。
+
+GUI 主執行緒只接收背景執行緒回傳的彙總資訊，不在 Tk 執行緒讀取大型 JSONL，也不回傳 document ID、Prompt、模型回應、端點或原始事件。面板在歷史封存尚未建立 SHA-256 Manifest 時標示「歷史封存未建立完整性驗證基準」，遇到損毀完整紀錄、末行只寫了一半時也有不同警語。若發現已驗證封存缺失、雜湊改變、未知替換或不安全路徑，**顯示「品質事件封存或檔案驗證異常，統計暫不可用」**，不再展示上一次可能過時的正常事件百分比。
+
+此處的「續讀」是**在同一 GUI 執行期間**基於輪替代數和完整事件的恢復；單次啟動時必須載入當前 run 的既有封存，且初次載入成本與檔案總量成正比。封存的 inode／長度／mtime 或 Manifest 的 Metadata 改變才會重算 SHA-256；穩定期間採 metadata 檢查與活躍檔 tail，不提供惡意對手同時竄改檔案及偽造 timestamp 的即時防竄改保證。完整檔案驗證的正式來源仍是離線報告。
+
+**重要：現行手動輪替仍要求先停止所有 Worker 與 GUI。** 測試是在兩次讀取之間模擬輪替與 GUI 再啟動／恢復讀取，不代表已支援無停機線上輪替。Windows Tk 視覺呈現、自動清理、安全跨進程協作以及惡意改寫偵測需獨立驗收；Linux Hosted pytest 不代表 Windows 真機完成驗收。
+
+
+## GUI 大型品質紀錄安全預算（2026-10-25，新獨立 PR 待驗）
+
+為防止單一極大型 run 讓 Tk GUI 背景讀取器無限制保留唯一事件 ID、文件決策身分與超長 JSONL 單行，新增僅套用於 GUI 跨分段讀取器的**非破壞性安全預算**：每 run 最多接受 `50,000` 筆唯一事件、累計至多 `4,000,000` 個被保留身分字元（事件 ID 及首次遇到的文件 ID），單筆原始 JSONL 完整行不得超過 `65,536` bytes。這些是保守的基數／資料讀取安全門檻，**不等於精確 RSS RAM 上限**；如遇特殊字元、Python 物件額外配置、GUI 首次歷史重建、其他應用負荷，實際總記憶體使用仍不同。
+
+任何安全預算超限時，**不得**將後續事件直接略過、裁切事件 ID、簡化文件集合，或繼續以局部統計宣稱完整；GUI 改為顯示「⚠️ 品質事件超過 GUI 安全累計上限，統計暫不可用；請使用離線報告」，事件數值清為不可用狀態。不修改 JSONL 事件流、封存、Manifest、寫入者或既有離線 CLI。安全界線是讀取端的明確 fail-closed，不是自動分段、資料保留、刪除、重新建立基準或降級精確度。
+
+`QualityAccumulator` 可選用 `max_events` / `max_identity_chars`，而 `QualityTailReader` 可選用 `max_line_bytes`；缺省值仍維持既有不設上限的完整離線報告與回歸測試契約。`QualityRunTailReader` 建立 GUI 專用讀取器時套用三個門檻，跨所有封存與活躍檔使用同一份預算。任何超限在變更事件計數器**之前**拒絕，並保留被拒絕那一筆事件的讀取起點，避免隔次輪詢錯誤跳過。安全預算對 GUI 連續讀取生效；仍需對超大型離線報告個別評估效能與可用 RAM。將來如需處理超過 GUI 限制的所有事件，須另外設計可驗證、具明確成本與復原機制的精確磁碟檢索／checkpoint，不能在本功能內偷偷丟棄唯一 ID 或已觀察到的文件狀態。
+
+**驗證限制：** 自動化回歸覆蓋真實 JSONL 追加、跨封存基數、單行過大、身份預算、背景 GUI thread 告警與切換 run 後恢復，Linux Hosted CI 不能代表 Windows Tk 視覺驗收。手動輪替仍需先停 Workers／GUI，自動保留與刪除仍未開啟。
+
+
+超限來源如果在 GUI 輪詢期間持續未改變，讀取器會快取**失敗檔案世代的檔名與有限 stat 身分資料（封存、Manifest、活躍檔）**，維持 `capacity_exceeded` 狀態，不再於每次輪詢重播整段 JSONL 或重算封存 SHA-256。只有檔案世代的身分資訊發生變更，才重新嘗試；切換 run 會建立新讀取器。快取不儲存敏感事件內容或成功統計，也不能把容量超限錯誤降級為正常統計。若歷史封存檔在這次工作階段曾被觀察到，即使是在首次超限的讀取過程中，之後突然減少也必須回報完整性異常，避免顯示誤導性的較小累計值。這是有限 metadata 偵測的效能設計，不提供惡意偽造 mtime/大小時的即時完整性保證。
+
+
+注意：超限世代的「避免重掃描快取」與「本工作階段已觀察到的檔案存在紀錄」分開管理。即使因為同時讀寫、metadata 競態而取消超限快取，已經看過的歷史封存數量與活躍檔仍不能悄悄消失。活躍檔被移走，必須能由新增且同一檔案身分的封存分段解釋。反之，驗證失敗的陌生封存／Manifest 不會自動變成已接受的歷史基準，以避免修復臨時錯誤後仍無法恢復正常統計。此功能仍不授權線上輪替。
+
+
 ## 手動輪替中斷後的保守復原（2026-10-24，獨立 PR 待驗）
 
 當已建立完整性 Manifest 的單次執行，在 JSONL 封存名稱轉移完成、Manifest 尚未完成發布的狹窄中斷窗口內停止，目錄可能存在比 Manifest **恰好多一份**連續編號封存、原活躍檔案消失的狀態。此時原有報告依規定拒絕宣稱封存已驗證；不可直接重新 `--initialize` 覆蓋基準。
@@ -155,4 +195,4 @@ python -m czjLLM.cli_tools.processing_quality_recover --audit-path logs/llm_call
 
 使用相同寫入鎖，僅在 `rollback_candidate` 可復核成立時，把那份**尚未納入 Manifest**的分段內容恢復成活躍 JSONL；不修改已有 SHA-256 Manifest、任何先前封存，也不覆寫已存在的活躍檔。為避免競爭覆寫，復原時使用排他硬連結建立活躍名稱，檢核相同 bytes 後，才移除原先**未封存完成**的額外名稱。若檔案系統不支援硬連結便拒絕作業；若兩步驟間再度中斷，可能留下兩個指向相同資料的名稱，系統會回報 `ambiguous_active_present`，要求人工判斷而不清除任一檔案。成功回報 `rolled_back_to_active_unsealed`，代表新增檔案回到**未封存活躍狀態**，後續再由原本的手動輪替流程封存並將摘要加入 Manifest。
 
-**拒絕自動復原**：Manifest 遺失或損壞、已封存的任一檔案雜湊不符、缺少既有封存、多於一份額外封存、活躍檔同時存在、符號連結、未確實停止讀寫程序等。工具不會由未驗證額外封存重算或直接延伸 Manifest，也不會自動刪除已封存資料。這是經人工作業隔離下有限且保守的復原流程，**不是**自動當機修復、全面斷電一致性保證，也不能取代備份／外部可信驗證。GUI 跨段即時續讀與自動清理尚未實作。
+**拒絕自動復原**：Manifest 遺失或損壞、已封存的任一檔案雜湊不符、缺少既有封存、多於一份額外封存、活躍檔同時存在、符號連結、未確實停止讀寫程序等。工具不會由未驗證額外封存重算或直接延伸 Manifest，也不會自動刪除已封存資料。這是經人工作業隔離下有限且保守的復原流程，**不是**自動當機修復、全面斷電一致性保證，也不能取代備份／外部可信驗證。GUI 跨段讀取已另行實作，但仍要求停止相關 Workers／GUI 進行手動輪替；自動刪除與清理仍未開啟。

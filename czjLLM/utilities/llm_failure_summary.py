@@ -7,6 +7,7 @@ failure rate.  Raw exceptions, prompts, URLs and file paths never leave here.
 from __future__ import annotations
 
 from collections import Counter
+from datetime import datetime
 import io
 import os
 from pathlib import Path
@@ -18,6 +19,44 @@ MAX_HISTORY_BYTES = 64 * 1024 * 1024
 MAX_HISTORY_ENTRIES = 10000
 LOW_SAMPLE_THRESHOLD = 30
 _AUDIT_FILENAME = re.compile(r"llm_call_audit_[A-Za-z0-9][A-Za-z0-9_.-]{0,100}\.csv\Z")
+_LOCAL_TIMESTAMP = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\Z")
+
+
+def _parse_local_timestamp(value: str) -> datetime:
+    """Strict producer-local, timezone-naive ISO seconds. No guessing UTC."""
+    if not _LOCAL_TIMESTAMP.fullmatch(value):
+        raise ValueError("audit timestamp must use local YYYY-MM-DDTHH:MM:SS")
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError as exc:
+        raise ValueError("invalid local audit timestamp") from exc
+    if parsed.isoformat(timespec="seconds") != value:
+        raise ValueError("invalid local audit timestamp")
+    return parsed
+
+
+def parse_local_time_window(
+    since: str | None, before: str | None,
+) -> tuple[datetime | None, datetime | None] | None:
+    """Optional [since, before); both use the producer's local clock."""
+    if since is None and before is None:
+        return None
+    start = _parse_local_timestamp(since) if since is not None else None
+    end = _parse_local_timestamp(before) if before is not None else None
+    if start is not None and end is not None and start >= end:
+        raise ValueError("since must precede before")
+    return (start, end)
+
+
+def _time_window_metadata(
+    window: tuple[datetime | None, datetime | None],
+) -> dict:
+    return {
+        "since": window[0].isoformat(timespec="seconds") if window[0] else None,
+        "before": window[1].isoformat(timespec="seconds") if window[1] else None,
+        "bounds": "[since,before)",
+        "clock": "producer_local_naive",
+    }
 
 # Apply only to rows where ok=NO.  Patterns classify exceptions, never content.
 _PATTERNS = (
@@ -190,7 +229,10 @@ def _iter_audit_csv_rows(text: str, *, field_limit: list[int]):
         yield row
 
 
-def _summarize_snapshot(path: Path, *, max_bytes: int) -> tuple[dict, int]:
+def _summarize_snapshot(
+    path: Path, *, max_bytes: int,
+    time_window: tuple[datetime | None, datetime | None] | None = None,
+) -> tuple[dict, int]:
     """Read one snapshot and report the verified bytes for history budgeting."""
     text, actual_size = _read_bounded_csv(path, max_bytes=max_bytes)
     # Cap even malformed header rows before their width is known. The audit
@@ -202,16 +244,28 @@ def _summarize_snapshot(path: Path, *, max_bytes: int) -> tuple[dict, int]:
             or len(headers) != len(set(headers))):
         raise ValueError("audit CSV has invalid or duplicate required headers")
     field_limit[0] = len(headers)
+    if time_window is not None and headers.count("timestamp") != 1:
+        raise ValueError("time filtering requires a unique timestamp header")
+    timestamp_idx = headers.index("timestamp") if time_window is not None else None
     ok_idx = headers.index("ok")
     error_idx = headers.index("error")
-    successful = failed = invalid = 0
+    successful = failed = invalid = excluded = 0
     counts = Counter()
     for row in reader:
-        # Blank physical CSV rows are malformed observations, not successes.
-        # Empty lines inside a quoted error string remain within that field.
+        # A row with no trustworthy timestamp cannot be placed in a window.
+        # Fail rather than quietly undercounting or treating it as out-of-range.
         if len(row) != len(headers):
+            if time_window is not None:
+                raise ValueError("malformed audit row cannot be time-filtered")
             invalid += 1
             continue
+        if time_window is not None:
+            recorded = _parse_local_timestamp(row[timestamp_idx])
+            start, end = time_window
+            if (start is not None and recorded < start or
+                    end is not None and recorded >= end):
+                excluded += 1
+                continue
         outcome = row[ok_idx]
         if outcome == "YES":
             successful += 1
@@ -239,17 +293,27 @@ def _summarize_snapshot(path: Path, *, max_bytes: int) -> tuple[dict, int]:
                             else f"small denominator (n={observed}); interpret cautiously"
                             if observed < LOW_SAMPLE_THRESHOLD else ""),
     }
+    if time_window is not None:
+        result["time_window"] = _time_window_metadata(time_window)
+        result["excluded_by_time_window"] = excluded
     return result, actual_size
 
 
-def summarize_llm_failure_audit(path: str | Path, *, max_bytes: int = MAX_AUDIT_FILE_BYTES) -> dict:
+def summarize_llm_failure_audit(
+    path: str | Path, *, max_bytes: int = MAX_AUDIT_FILE_BYTES,
+    time_window: tuple[datetime | None, datetime | None] | None = None,
+) -> dict:
     """Read a bounded, no-follow immutable snapshot; never export file names."""
     if type(max_bytes) is not int or max_bytes <= 0 or max_bytes > MAX_AUDIT_FILE_BYTES:
         raise ValueError("invalid per-file read bound")
-    return _summarize_snapshot(Path(path), max_bytes=max_bytes)[0]
+    opts = {"time_window": time_window} if time_window is not None else {}
+    return _summarize_snapshot(Path(path), max_bytes=max_bytes, **opts)[0]
 
 
-def llm_failure_history(folder: str | Path, *, limit: int = 20) -> dict:
+def llm_failure_history(
+    folder: str | Path, *, limit: int = 20,
+    time_window: tuple[datetime | None, datetime | None] | None = None,
+) -> dict:
     """Latest bounded independent CSV snapshots; never pool run denominators."""
     if type(limit) is not int or not 1 <= limit <= 100:
         raise ValueError("limit must be 1..100")
@@ -277,14 +341,15 @@ def llm_failure_history(folder: str | Path, *, limit: int = 20) -> dict:
         remaining = MAX_HISTORY_BYTES - consumed
         if remaining <= 0:
             raise ValueError("selected audit history exceeds combined read budget")
+        opts = {"time_window": time_window} if time_window is not None else {}
         summary, size = _summarize_snapshot(
-            path, max_bytes=min(MAX_AUDIT_FILE_BYTES, remaining))
+            path, max_bytes=min(MAX_AUDIT_FILE_BYTES, remaining), **opts)
         _verify_path_snapshot(root_snapshot)
         consumed += size
         snapshots.append(summary)
     # Also cover empty directories and swaps after the final selected read.
     _verify_path_snapshot(root_snapshot)
-    return {
+    report = {
         "report_version": 1,
         "mode": "run_history",
         "denominator_contract": "observed LLM call attempts only; separate per run",
@@ -292,3 +357,6 @@ def llm_failure_history(folder: str | Path, *, limit: int = 20) -> dict:
         "selected_run_files": len(selected),
         "runs": snapshots,
     }
+    if time_window is not None:
+        report["time_window"] = _time_window_metadata(time_window)
+    return report

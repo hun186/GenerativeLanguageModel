@@ -1,65 +1,91 @@
-# 已知問題（Known Issues）
+# Known Issues — Current / Operator-Gated
 
-## Current Summary — Open / Operator Required
+## Current Acceptance Reconciliation — 2026-10-28
 
-- **Requirements install proxy limitation:** `python -m pip install -r requirements.txt` may fail cloning pinned `peft` via proxy HTTP 403. Targeted Hosted `requirements-e2e.txt` Python 3.11 offline-e2e is the operative CI gate; incomplete local environments can be missing YAML/OpenCC/tqdm.
-- **Historical ES secrets:** older ES documents/snapshots may contain stringified model specs and API keys. Runtime redaction does not clean existing data; rotation and controlled reindex remain operator actions.
-- **Windows legacy multiprocessing overlap:** `EOFError` / `WinError 5 DuplicateHandle` mitigated by short reap and thread fallback, but `test_windows_spawn_overlap_join_clear_allows_pool` expectation mismatch and actual Windows smoke remain open.
-- **Windows self-hosted unavailable:** 3.10/3.11 CI jobs remain queued; user explicitly defers them. Never imply real Ollama/SQL Server/ES persistence or GUI visual verification from Linux offline CI.
-- **datetime.utcnow** deprecation warnings remain a nonfunctional follow-up.
-- **ES real sink coverage:** only explicitly acknowledged writeback can increment confirmed sink counters (currently selected ES paths); Excel/CSV no durable acknowledgement means unknown, not failed or confirmed. Strict multidimensional Event local references, article-date provenance and malformed source preservation must continue to fail closed.
+- PR **#240** (six-file archive compaction) was user-approved and merged `21ae2cb690031c6409fd05f5cf6e4109a21548e1`; formal Codex 0 Findings, 6/6 Threads resolved, PR/main Linux E2E passed.
+- PR **#241** (quality summary manifest export guard) was user-approved and merged `fb713365b173378ba8ca82e0557e4fdd5a415650`; Codex 0 Findings, 1/1 Thread resolved, PR/main Linux E2E passed.
+- PR **#242** (failure report cross-folder ledger guard) was user-approved and merged `e010a5e07c45016f8f0ab4094c30bcd33825d3b5`; Codex 0 Findings/Threads, PR Linux #40622149444 and main Linux `offline-e2e` #40623677955 SUCCESS. All old `pending` labels in dated findings below are historical *at the time of review*, not current outstanding engineering tasks.
+- Remaining issues: Windows self-hosted 3.10/3.11 still queued/operator-deferred, independent OPEN PR #231, no real Windows/Ollama/ES readback, no crash-safe authenticated checkpoint/online shard retirement. These accepted PRs do not prove absence of filesystem races or malicious-tamper resilience.
 
-## Current Quality Observability Limitations
+## Environment and External Dependencies
 
-- The per-run Processing Quality JSONL, strict writer/reader/GUI/offline report are observational, not transactionally consistent archival proof. Corrupt complete JSONL lines degrade the report; incomplete tails are excluded. Bounded file-edge fingerprints cannot detect all adversarial in-place interior edits.
-- Per-request `llm_call_audit_*.csv` may retain raw `error` text: restrict access. The legacy CSV has no request UUID; historical deduplicated request counts cannot be claimed. Request rows with `ok=NO` can reflect local post-call processing/persistence failures, not necessarily provider failure.
-- `consumer_orchestration_failure`, `row_merger_retryable_failure`, `producer_operational_failure`, `stage_orchestration_failure` count catch/retry-site observations, not distinct failed documents. Stage Runner may perform model calls or local work; generic Runner exceptions are not automatically non-LLM.
-- **PR #226 pending acceptance:** `worker_phase_failure` records fixed leaf execution-site codes only. `WORKER_LLM_CALL_EXCEPTION` means exception arose inside the `CallLLMAPI()` invocation, NOT proven provider outage. Failures that return `ok=false` without exceptions, mock-only faults, unexpected process kills, and exceptions outside caught `proc()` are not comprehensively covered; mock/cancellation are excluded from this event taxonomy.
-- One failure may produce CSV/Worker/Stage/Producer events at different catch sites. Do not add counters to infer logical failed document count, API-call failure rate or unique incidents.
-- Need 1–3 controlled real Windows + Ollama + ES rows with independent readback before replaying bulk workload; complete Worker root-cause drilldown and rotation/resume remain future work.
+- Windows 3.10 and 3.11 self-hosted runners remain **queued**; Linux Hosted `offline-e2e` is the operative independently reported test. Physical Windows PSAPI/GUI/LLM/SQL Server/ES operation remains operator-deferred. Do not label full workflow green.
+- Pinned `peft` dependencies may be blocked by proxy HTTP 403; clean offline Linux E2E uses `requirements-e2e.txt`. Local environments may lack YAML/OpenCC/tqdm. Do not treat such install limitations as working integration proof.
+- Historical ES persisted metadata might contain sensitive model specs or old API credentials. New allowlisting cannot retroactively redact history; operators must rotate and reindex in controlled deployment.
+- Windows legacy multiprocessing occasionally triggers `EOFError` or `WinError 5 DuplicateHandle`; thread fallback/reap mitigate but physical Windows tests remain unaccepted. `datetime.utcnow` warnings are nonfunctional technical debt.
 
-## Recent Changes
+## Semantics and User-visible Quality Boundaries
 
-- 2026-10-23 #224 corrected misclassified schedule bookkeeping exceptions and re-propagated cooperative cancellation when cleanup fails. Hosted Codex and Linux CI later passed; user-approved merge.
-- 2026-10-23 #225 Stage preparation and escaped Runner exception telemetry, exact-head Codex 0 Findings and Linux E2E success, merged into `e9a7e549205323b310ba7063cde5e39b0f5e1e01`. Main Linux E2E after merge passed.
-- 2026-10-24 #226 leaf Worker phase telemetry/tests prepared for independent Hosted acceptance. Scope is observability only, not live provider diagnostics.
-- 2026-10-24 compaction: prior full issue file was archived before active rewrite; all historical issues, PR findings, and previous issue-status snapshots preserved unchanged.
+- Per-run `processing_quality_events_*.jsonl` is an observational log, not a transactionally authoritative audited writeback record. Partial tails, corrupt complete lines, duplicate IDs, retention/cardinality overflow and generation changes have distinct fail-closed statuses. Manifest SHA256 ensures self-consistency *after sealing* only, not signature or retroactive trust.
+- Manual numbered shard rotation requires the operator to stop all writers/readers; there is no safe automatic online writer+GUI rotation, no automatic shard deletion, no authenticated checkpoint, and no crash-safe resume guarantee.
+- GUI reader budgets (50k events/4m retained identity characters/65536 bytes per line) are **capacity guardrails**, not a byte-precise memory ceiling. A failed generation may be cached for efficient repeat rejection, but no partial stale counts may be displayed as valid.
+- `consumer_orchestration_failure`, `row_merger_retryable_failure`, `producer_operational_failure`, `stage_orchestration_failure` and `worker_phase_failure` are fixed run-scoped catch-site observations; multiple may cover one incident. Do not sum them as distinct document failures. Typed SDK transport/timeouts are mechanistic classification only; `WORKER_LLM_CALL_EXCEPTION` does not establish provider fault. A worker may fail outside caught paths or without an exception.
+- Existing `llm_call_audit_*.csv` may retain raw `error` text; restrict filesystem access. No stable historical per-request UUID, so count of request rows is not a proven logical unique-attempt denominator. A post-call local failure can yield `ok=NO` even after successful provider response.
+- Explicit ES sink acknowledgement is required to claim confirmed durability. Only selected paths support it; non-acknowledging Excel/CSV or pending ES queue dispatch remain unknown, not failures/successes. Validate real stored ES writeback and reference IDs before bulk replay.
+
+## Offline Quality Benchmark Limitations
+
+- Temporary SQLite exact identity keys persist briefly on a local private temp file; delete on normal/error cleanup, but abnormal crash remnants and storage privacy need operator care. It is not a persistent checkpoint or retention mechanism.
+- Full canonical report SHA256 parity and active/archive/manifest file stat-generation checks are required before a benchmark result; stat metadata is **not** an atomic content snapshot, lock or robust malicious timestamp/inode tamper detector. Stop writers and rotation before benchmarking.
+- `median_seconds` times worker report only, `median_subprocess_wall_seconds` times parent-observed one child lifecycle but excludes parent's guard/orchestration; `tracemalloc` alters both. OS high-water RSS includes interpreter/imports, Windows `PeakWorkingSetSize` is resident working set, **not** private committed RAM, and final SQLite main DB bytes are **not** total bytes written.
+- Worker/parent numeric data now fails closed on NaN/Infinity, malformed byte counts and invalid wall clocks in accepted PR #239. This does not prove real Windows DLL success, benchmark speedup, or available disk capacity.
+- 1–3 controlled real Windows/Ollama/ES samples with **independent stored readback** and representative Windows stopped-run benchmarking remain pending.
 
 ## Archived History
 
-- `.codex/archive/known_issues.md-20261024-before-pr226-review.md` — complete pre-compaction known issues, prior PR #213–#225 findings and historical context.
-- `.codex/archive/memory.md-20261024-before-pr226-review.md` — full project history and earlier archive references.
-- Earlier archives remain under `.codex/archive/`; historical pending statuses are not current Hosted authoritative states.
+- `.codex/archive/known_issues.md-20261027-213700.md` (exact original Git blob `f6ac56a63f63f84b74cb6b5048c88086b70b0e4b`) retains all pre-compaction historical issues, older findings, privacy/capacity caveats and previous archives. Review it only for traceability; old “PR pending” labels are not current status.
 
-## 2026-10-24 typed SDK failure observability caveats (PR pending)
+## 2026-10-27 PR #240 archival compaction Review findings (remediation pending acceptance)
 
-- The OpenAI-compatible SDK can emit timeout/connection errors for *local* client/transport issues as well as inaccessible remote providers. HTTP 4xx/5xx proves only an HTTP status was returned, not whether the actual model runtime caused it. `APIResponseValidationError` indicates SDK response interpretation trouble but not necessarily malformed generated model text. This telemetry deliberately avoids causal claims.
-- The existing `CallLLMAPI` wraps typed timeout/connection SDK exceptions into `RuntimeError`; classifier is limited to typed direct causes, not error text. SDK retries may perform multiple HTTP calls before one Worker incident is written. Fatal crashes/process kills, non-exception `ok=false`, API request counts and on-disk persistence remain outside this work. The raw legacy request CSV may include exception text and remains access-controlled.
-- Offline/mock-transport and Hosted Linux CI are not proof of successful Ollama/Windows/ES integration. Those operator acceptance checks remain deferred.
+- Initial clean Linux `offline-e2e` did **not** collect the new archive hash regression; this was flagged as P2. Also Windows Git `core.autocrlf=true` could rewrite .md archive checkout LF to CRLF, producing false blob-hash failures, and active ES bulk/date validation rules were lost (P1) even though archived. Remediation now places direct test in active Linux job, pins archive byte-preserving checkout via `-text`, restores ES date/precision pair and writeback acknowledgement semantics in active memory.
+- Windows self-hosted runners remain queued; no Windows checkout test was physically executed. Latest-head Hosted Linux CI and formal Codex re-review remain pending. Preserve original immutable archive bytes and do not claim review closed until verified.
 
+## 2026-10-27 PR #240 second Codex P1 safety-note (remediation pending verification)
 
-## 2026-10-24 run-scoped incident diagnostics caveats (new PR)
+- Two active-contract regressions were caught despite correct full history archiving: the original single-extract source fingerprint/ordered slice/dispatch identity during partial `resume`/`smart_reset` had become archive-only, and ES strict top-level `importance` lossless five-score integer/null normalization was absent from active documents. Compact snapshots are not enough when active-only readers must maintain these correctness boundaries.
+- Both contracts and active-memory regression assertions were restored. Latest-head CI and formal Codex re-review are required before marking accepted; Windows physical smoke remains deferred.
 
-- Incident family composition is only the relative mix of *accepted run-scoped incident observations*, not a failure rate per LLM/HTTP attempt, slice, document or distinct cause; different catch sites can observe one logical error. Zero incident observations give unknown percentages, and n<30 remains advisory.
-- Complete malformed JSONL records are excluded with degraded completeness; incomplete writer tails are excluded and flagged. Existing `QualityTailReader` per-poll bounded file edge checks do not provide adversarial archival integrity. Historic reports still include the existing `log_file` basename; avoid embedding private identifiers into audit run IDs.
-- Windows self-hosted 3.10/3.11, real Ollama/ES writeback and independent ES readback remain unavailable in the agent Hosted CI; only Linux offline tests are claimed after their actual run completes.
+## 2026-10-27 PR #240 third Code Review P2
 
+- Original cache-aware per-request audit `cached_input_tokens`/source/stage and GUI `effective_tok_per_s_est` heuristic semantics were lost during active-memory compaction even though runtime continued to implement them. Missing provider cache metadata is unknown, not zero; same-stage stable template size is only a proxy, not proof of cache hit or isolated GPU throughput. Active contracts and regression checks restored. Latest-head CI/re-review still pending; no real Windows runner acceptance implied.
 
-## 2026-10-24 manual JSONL rotation operational constraints (unmerged PR)
+## 2026-10-28 read-only quality report export could overwrite sealed ledger (fix pending acceptance)
 
-- Rotation explicitly **requires all producers and GUI readers stopped by operator**. Lock serializes cooperating writer calls during rename but cannot stop external noncooperating editors. Live GUI `QualityTailReader` still sees only active file and its counters may reset after manual rotation; use offline report for full archive+active history until separately designed live cross-generation reader.
-- No durable manifest/sequence seal yet: gap detection catches removed intermediate indexes but cannot prove that a highest or all segments were deleted, nor authenticated integrity of historical bytes. Never silently garbage collect archives. A corrupt archived record causes degraded reporting; incomplete archived tail is explicitly degraded, not proof of intact history.
-- First-stage implementation is bounded to 64 numbered segments and manual no-deletion. Auto retention/pruning, crash-safe manifest, secure concurrent live rotation, Windows/junction tests, actual Ollama/ES round trips and in-place logfile archive replay under highly concurrent production writers remain unverified.
+- The report CLI previously checked only `.json` suffix for `--output` and then used `atomic_write_json` with `os.replace`. A path named `processing_quality_events_*.jsonl.manifest.json` also passed, so exporting a summary could clobber another run's archive SHA256 consistency ledger and invalidate future verified replay. This was discovered by source inspection; no production data loss is claimed.
+- Branch protection rejects reserved ledger destinations, including nonexistent ones, and symlink aliases before stream replay; real-file regression tests should verify ledger bytes and valid replay stay unchanged. Latest-head Hosted CI, formal review, and Windows actual acceptance have not yet completed. Avoid describing the SHA256 ledger as independently authenticated or the CLI guard as race-free.
 
+## 2026-10-28 LLM failure report other-directory ledger overwrite gap (pending review)
 
-## 2026-10-24 archive manifest stage 2 limitations (unmerged PR)
+- `llm_failure_report` previously reserved audit-like `--output` names **only** when destination parent matched the input audit directory. A user could choose another directory's sealed `processing_quality_events_*.jsonl.manifest.json` and accidentally overwrite its SHA256 ledger via shared atomic writer. No actual user data loss is asserted. The new branch rejects the canonical manifest name globally before audit CSV replay and adds physical negative tests. This is not a cross-process race-proof path sandbox. Hosted CI / Codex Review pending.
 
-- SHA-256 manifest detects accidental archive corruption/loss **only from first sealing onward**. It is unsigned and locally co-located, not an audit-grade trust anchor: an attacker with access to archives and ledger can recompute hashes; deleting both prevents detection without external reference. Initial trust-on-first-use cannot attest to historical deletions. Active stream changes remain outside the sealed-shard digest until manually rotated.
-- Crashes after archive rename but before ledger publication leave a mismatching manifest that prevents false-success reporting; operator repair/reconciliation is a separate future task. Runtime exceptions before ledger publish attempt to roll back rename while holding writer lock; uncooperative writers and platform crash durability are not proved. No automatic deletion/retention, no on-the-fly GUI replay, no Windows junction acceptance, no live Ollama/ES readback.
-- Offline reports require hashing sealed archives (twice for mutation detection), increasing I/O proportional to archive size; max 64 shards and 24 KiB ledger enforced. Legacy shards remain explicitly `unsealed_legacy`, not verified.
+## 2026-10-28 observed local-time audit filters (review pending)
 
+- `llm_call_audit` producer timestamps are naive `datetime.now().isoformat(timespec="seconds")` local wall clock, **not UTC**. The new opt-in `llm_failure_report --since/--before` scope preserves these literal producer-local seconds without cross-host or DST normalization. Comparing separate hosts' naive timestamps is not absolute chronology.
+- Legacy CSV can have blank/missing timestamps. When filtering, a row that cannot be unambiguously placed in the chosen interval makes the entire scoped report unavailable rather than silently decreasing the denominator. Unfiltered historic reports retain existing invalid-row degraded diagnostics. Filtered call-attempt counts do not prove unique request attempts, provider faults, retries or document failures; remain operator-observational only.
+- New branch's exact-head Hosted CI and formal Codex review remain pending. Windows self-hosted/real ES/Ollama readback still operator-deferred.
 
-## 2026-10-24 interrupted rotation recovery caveats (new PR)
+## 2026-10-28 audit-row UUID migration limitations (new branch pending)
 
-- An unsealed extra `.seg-N` matching the narrow crash window cannot prove that it is the genuine most recent active stream or that its JSONL events are valid. Inspector merely verifies existing previously sealed shards, sequential completeness and the extra file's well-formed ending. Manual rollback always restores this untrusted candidate as **unsealed active** without extending the ledger. Full external authenticity requires independent backups/trust anchor.
-- Operators MUST stop GUI and all writers. Cross-process lock excludes only cooperating writers. `os.link` no-clobber operation may fail on filesystems that do not support hardlinks; fail closed, no fallback to potentially clobbering rename. Crash between link and unlink leaves dual aliases and is intentionally blocked from automatic second recovery. Unknown/multiple extras, missing/corrupted sealed files or ledger and active-file collisions are rejected. No fully automated crash recovery, GUI archived replay, destructive retention, Windows junction or live ES/Ollama acceptance.
+- `audit_record_id` only identifies a successfully emitted audit CSV record. It cannot detect calls that failed before logging or identify two rows as the same provider retry/dispatch; legacy files may not have the field at all. A running prior-version file whose header matches the immediately preceding schema is appended in its old format; unknown older headers require explicit offline migration or a new run rather than silent corruption. Do not treat this feature as durable retry checkpoint, authenticated identity, unique request denominator or live Windows acceptance. Latest-head Hosted Linux and Codex Review pending. Historical "#244 pending" entries above are superseded by accepted merge `9e743267676af6fc956eca3917253527797785ec`.
+
+## 2026-10-28 Worker-side call-ID scope (pending review)
+
+- `worker_call_id` identifies one explicit application Worker `CallLLMAPI` invocation only, not an HTTP-level provider request: an SDK may retry internally, and failed pre-call selection/mock/cancelled jobs have no such ID. A crash or an audit append failure may omit the record. This metadata does not create a retry-family ID or unique document failure denominator, nor prove successful ES/SQL persistence. The append writer accepts exact newest plus two prior CSV headers, but no automatic legacy schema migration or external cross-process lock is introduced. Latest-head Hosted Linux and Codex Review pending; Windows/Ollama/ES operator-gated. Previous #245 pending issue is superseded by accepted merge `bc0a46ababa40f67004659a0b15dd0b29cd31303`.
+
+## 2026-10-28 wrapper-return audit evidence limits (pending review)
+
+- `call_llm_api_returned` reports a Python `CallLLMAPI` function return, not remote provider HTTP success; SDK internal retries and remote processing before a timeout remain unobserved. The flag is unknown/blank for non-Worker logging; post-call JSON repair/persistence can cause `ok=NO` even when the function returned. Worker exceptions before dispatch, forced termination, failed audit writes or out-of-process processes can leave missing evidence. Schema compatibility accepts only complete exact prior three headers and retains old widths. Do not use this signal as a unique retry or affected-document denominator, authenticated checkpoint, full Windows acceptance or ES/SQL readback. Latest-head CI and formal Codex Review pending; older #246 in-progress labels superseded by merged main `0b380ae65d9bc0b388b66bfa8a6c216ca8e0782d`.
+
+## 2026-10-29 limitations of source-verified split family IDs (pending review)
+
+- A `split_family_id` is created only for explicit persisted split-intent of invalid JSON, not general Worker requeues, same-prompt redispatch, SDK HTTP retries or logical document success. Journal SHA256 and random UUID offer local consistency, **not authentication**, and evidence may be interrupted between intent write and two child file installs. Legacy v1 journals lack IDs and return unknown until a later explicit write, without claiming historical attribution. Reader validates direct parent/child and bounded non-symlink journal but is not an adversarial, race-free filesystem sandbox. No remote Ollama/ES/Windows/Tk acceptance, and no affected-document denominator or provider/sink confirmation. Hosted CI and formal exact-head Codex Review pending at implementation; #231 untouched.
+
+- Initial PR #248 exact-head Codex review exposed four important P2 lineage risks: old nested UUID after replaced parent source; symlink alias in identity/splits directory; oversized nesting within size budget; and non-v4 placeholder IDs. Fixes and new tests were committed on the PR branch, but do not claim closure until fresh exact-head Codex review and Hosted Linux tests. Metadata is still unauthenticated and directory checks are not race-free against an active malicious local operator; no automatic production retry accounting.
+
+## 2026-10-29 Worker family correlation limitations
+
+- Streaming source check and journal hashes are not authenticated or race-free across a concurrent source-file replacement; no generation-locked transaction, no crash-proof audit writer. Call failures before CSV append may be omitted. Same-content generations and generic requeues, SDK internal HTTP retries, historical v1 journals without family IDs, sink readback and true unique-document failure denominators remain unproven. Invalid/absent/symlink sources and corrupt lineage produce unknown. Windows/Ollama/ES operator validation still deferred; new PR Hosted Linux and formal Codex pending.
+
+## 2026-10-29 #231 reconcile: stopped-producer JSONL recovery limitations
+
+- Manual recovery is only for one extra consecutive newline-complete, unsealed JSONL shard outside an otherwise verified SHA256 manifest and with no active file. It requires stopping all writers/GUI, explicit CLI confirmation, exclusive hardlink naming and post-link SHA256 check. Unsigned ledger or extra shard cannot authenticate event provenance; symlink/active collision, missing/corrupt manifest and multiple extras fail closed. It cannot prevent races with noncooperating external writers or guarantee Windows hardlink support. An interrupted link/unlink leaves an ambiguous state for human inspection; no automatic cleanup. Old #231 Linux/Codex evidence predates latest `main`, so exact-head re-review and Linux CI are pending, Windows operator-gated.

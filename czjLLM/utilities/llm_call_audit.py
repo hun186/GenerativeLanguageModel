@@ -6,11 +6,13 @@ from __future__ import annotations
 import csv
 import json
 import os
+import re
 import threading
 import zipfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
+from uuid import RFC_4122, UUID, uuid4
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse, urlunparse
 from urllib.request import Request, urlopen
@@ -49,6 +51,10 @@ _FIELDS = [
     "cost_twd",
     "ok",
     "error",
+    "audit_record_id",
+    "worker_call_id",
+    "call_llm_api_returned",
+    "split_family_id",
 ]
 
 
@@ -239,10 +245,37 @@ def log_llm_call(
     rendered_prompt_tokens: int | None = None,
     prompt_component_token_source: str = "",
     stage_identity: str = "",
+    worker_call_id: str = "",
+    call_llm_api_returned: bool | None = None,
+    split_family_id: str = "",
 ) -> None:
     """Append one LLM call row. Missing usage/context fields are recorded as 0/blank."""
     if not audit_path:
         return
+    # Only the Worker invocation boundary may supply this value. Never infer
+    # it from a prompt name, a response, a timestamp or an exception message.
+    if not isinstance(worker_call_id, str) or (worker_call_id and not re.fullmatch(r"[0-9a-f]{32}", worker_call_id)):
+        raise ValueError("invalid worker call identifier")
+    # Explicit observation only: never infer success from response objects or
+    # final CSV ok, which also includes local postprocessing/persistence.
+    if call_llm_api_returned is not None and type(call_llm_api_returned) is not bool:
+        raise ValueError("invalid CallLLMAPI return observation")
+    if call_llm_api_returned is not None and not worker_call_id:
+        raise ValueError("CallLLMAPI return observation requires worker call ID")
+    # Only the Worker is authorized to supply a journal-verified source ID;
+    # validate UUID4 shape and observed call boundary before writing artifacts.
+    if not isinstance(split_family_id, str):
+        raise ValueError("invalid split family identifier")
+    if split_family_id:
+        try:
+            family = UUID(hex=split_family_id)
+        except (ValueError, AttributeError) as exc:
+            raise ValueError("invalid split family identifier") from exc
+        if (len(split_family_id) != 32 or family.hex != split_family_id
+                or family.version != 4 or family.variant != RFC_4122):
+            raise ValueError("invalid split family identifier")
+        if not worker_call_id or call_llm_api_returned is None:
+            raise ValueError("split family requires observed Worker invocation")
     spec = dict(model_spec or {})
     model = str(spec.get("model_name") or spec.get("model") or "")
     usage = getattr(response, "usage", None)
@@ -294,13 +327,36 @@ def log_llm_call(
         "cost_twd": f"{float(cost_twd or 0):.6f}",
         "ok": "YES" if ok else "NO",
         "error": str(error or ""),
+        # Identifies this emitted audit record, not a provider request, retry
+        # family, source document, or persisted sink acknowledgement.
+        "audit_record_id": uuid4().hex,
+        "worker_call_id": worker_call_id,
+        "call_llm_api_returned": (
+            "" if call_llm_api_returned is None else
+            "YES" if call_llm_api_returned else "NO"
+        ),
+        "split_family_id": split_family_id,
     }
     path = Path(audit_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with _LOCK:
         _ensure_header(path)
+        # A running installation may still append to a pre-upgrade audit CSV.
+        # Preserve its exact header/width; silently adding a new column would
+        # misalign old records and poison downstream reports/Excel exports.
+        # Existing noncanonical headers fail closed instead of being rewritten.
+        with path.open("r", newline="", encoding="utf-8") as fp:
+            header_line = fp.readline(8192)
+        if not header_line.endswith("\n"):
+            raise ValueError("invalid existing LLM audit CSV header")
+        header = next(csv.reader([header_line]), [])
+        # Current schema and four previous complete header generations.
+        if not any(header == _FIELDS[:count] for count in (
+                len(_FIELDS), len(_FIELDS) - 1, len(_FIELDS) - 2,
+                len(_FIELDS) - 3, len(_FIELDS) - 4)):
+            raise ValueError("incompatible existing LLM audit CSV header")
         with path.open("a", newline="", encoding="utf-8") as fp:
-            writer = csv.DictWriter(fp, fieldnames=_FIELDS)
+            writer = csv.DictWriter(fp, fieldnames=header, extrasaction="ignore")
             writer.writerow(row)
         _write_xlsx_from_csv(path, path.with_suffix(".xlsx"))
 
