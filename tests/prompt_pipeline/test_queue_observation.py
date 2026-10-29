@@ -171,3 +171,29 @@ def test_corrupt_observation_rejected_without_guessing_counts(tmp_path):
     entry.write_text(json.dumps(obj), encoding="utf-8")
     with pytest.raises(ValueError, match="schema"):
         summarize_queue_observations(item)
+
+
+@pytest.mark.parametrize("bad_timestamp", [
+    "", "not-a-date", "2026-10-29T07:30:00",
+    "2026-10-29T07:30:00+08:00", "2026-13-29T07:30:00+00:00",
+    42, None,
+])
+def test_invalid_or_non_utc_observation_timestamp_fails_closed(tmp_path, bad_timestamp):
+    item, _ = _todo(tmp_path)
+    queue.pick_and_claim_next_prompts([str(item)])
+    entry = _events(item)[0]
+    record = json.loads(entry.read_text(encoding="utf-8"))
+    record["observed_at_utc"] = bad_timestamp
+    entry.write_text(json.dumps(record), encoding="utf-8")
+    with pytest.raises(ValueError, match="schema"):
+        summarize_queue_observations(item)
+
+
+def test_aware_zero_offset_observation_timestamp_remains_valid(tmp_path):
+    item, _ = _todo(tmp_path)
+    queue.pick_and_claim_next_prompts([str(item)])
+    entry = _events(item)[0]
+    record = json.loads(entry.read_text(encoding="utf-8"))
+    record["observed_at_utc"] = "2026-10-29T07:30:00+00:00"
+    entry.write_text(json.dumps(record), encoding="utf-8")
+    assert summarize_queue_observations(item)["observed_claims"] == 1

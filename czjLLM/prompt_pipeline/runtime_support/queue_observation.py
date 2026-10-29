@@ -6,7 +6,7 @@ between os.replace and recording can leave a real move with no observation.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 import os
@@ -122,6 +122,16 @@ def record_queue_transition(path: str | Path, event: str, *, previous_path: str 
         return False
 
 
+def _is_explicit_utc_timestamp(value: object) -> bool:
+    if not isinstance(value, str):
+        return False
+    try:
+        parsed = datetime.fromisoformat(value)
+    except (TypeError, ValueError):
+        return False
+    return parsed.tzinfo is not None and parsed.utcoffset() == timedelta(0)
+
+
 def summarize_queue_observations(item_dir: str | Path) -> dict[str, int]:
     """Bounded read-only observed counts, deliberately NOT retry statistics."""
     item = Path(item_dir)
@@ -165,7 +175,7 @@ def summarize_queue_observations(item_dir: str | Path) -> dict[str, int]:
                 not isinstance(record["source_sha256"], str) or not _SHA.fullmatch(record["source_sha256"]) or
                 not isinstance(record["queue_name_sha256"], str) or not _SHA.fullmatch(record["queue_name_sha256"]) or
                 type(record["source_bytes"]) is not int or record["source_bytes"] < 0 or
-                not isinstance(record["observed_at_utc"], str)):
+                not _is_explicit_utc_timestamp(record["observed_at_utc"])):
             raise ValueError("invalid queue observation schema")
         counts[record["event"]] += 1
     return {"observed_claims": counts["claimed"], "observed_requeues": counts["requeued"]}

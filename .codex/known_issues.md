@@ -95,3 +95,5 @@
 ## 2026-10-29 observed queue events (pending review)
 
 - Queue observations can be absent after a crash between atomic rename and event write, or on unsupported hardlinks, permission faults or competing filesystem editors. Only explicitly instrumented queue transitions are represented; worker-stage direct moves, SDK HTTP retries and sink operations are not counted. SHA256 source/name digests are not a privacy anonymity guarantee for guessable input. Event data has no authentication or cross-process lease; same filename/text does not prove a common retry generation. Do not compute retry rates, source-doc success rates or provider attempts from these counts. Windows real integration and Linux exact-head CI/review pending.
+
+- **#251 first exact-head P2:** Queue event read-only validator initially accepted arbitrary text as `observed_at_utc`; such a corrupted record would incorrectly count as a valid observation. Require a parseable timezone-aware UTC offset zero, reject malformed/naive/non-UTC values, retain observed-count fail-closed contract; add real-file negative tests. New SHA needs fresh Hosted CI and official review, not inferred from predecessor.
