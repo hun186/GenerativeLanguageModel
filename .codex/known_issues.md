@@ -129,3 +129,9 @@
 - Github can verify tracked source state but not whether provider API keys or SQL passwords remain valid, whether credentials were used without authorization, nor full request source IP. Owner must revoke/rotate and request provider usage evidence.
 - Old Git objects, branches, CI logs, forks and clones may retain values even after file deletion. Historical full scan and disruption-reviewed rewrite are deferred; do not assume they were addressed by this PR.
 - New changed-line scanner is preventive only, not a complete all-refs historical audit. Actual credential-backed runtime tests and Windows SQL environments are operator-deferred.
+
+
+## 2026-10-30 — ongoing public historical/branch credential exposure
+
+- PR #255 main-tree cleanup does not remove old source from 171 of 175 fetched remote branch heads, or from reachable Git history. Earlier root commit also contains compiled Python key-related bytecode. Read-only PR #256 scanner finds pattern hits but is incomplete for unscanned >2 MB blobs, other repos' complete histories, CI logs/artifacts, forks and unreachable objects. Provider-side validity and key revocation are still not confirmed.
+- Do not rewrite history, force push/delete branches or claim incident resolved without explicit owner approval and a reviewed migration plan. The cross-repository `menu-planner/.env` setting needs a separate validity/rotation review.
