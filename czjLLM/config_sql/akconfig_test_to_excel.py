@@ -1,10 +1,11 @@
+import os
+
 # akconfig.py
 
 # 服务器信息
 server = '192.168.0.135'
 username = 'UserApp'
-password = '1qaz@WSX'
-
+password = os.environ.get("CZJLLM_SQL_ORION_PASSWORD")
 # 数据库和表信息
 database_name = 'Orion'
 table_name = 'UserAcc'

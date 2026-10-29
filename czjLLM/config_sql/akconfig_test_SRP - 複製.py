@@ -1,10 +1,11 @@
+import os
+
 # czjLLM/config_sql/akconfig_test_SRP.py
 
 # 服务器信息
 server = '192.168.0.136'
 username = 'sa'
-password = '@k05sys g3'
-
+password = os.environ.get("CZJLLM_SQL_SRP_ADMIN_PASSWORD")
 # 数据库和表信息
 database_name = 'Test_SRP'
 table_name = 'Table_SRP'

@@ -17,3 +17,11 @@ repos:
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.4.0
     hooks: [{id: detect-secrets}]
+  - repo: local
+    hooks:
+      - id: changed-line-secrets
+        name: Scan staged additions for plaintext credentials
+        entry: python scripts/check_no_secrets.py --staged
+        language: system
+        pass_filenames: false
+        always_run: true

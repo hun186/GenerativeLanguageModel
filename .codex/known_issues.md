@@ -121,3 +121,11 @@
 - **#253 blocked terminal Row Merger:** registry cannot empty while conflicting TODO remains; ordinary merger loop previously requires registry empty + stop_event, and teardown joins it without timeout. Dedicated blocked-terminal exit allows one last already-ready scan then closes sink and exits, retaining incomplete registry and filesystem data. This exit applies ONLY when both stop_event and explicit blocked queue event are set; normal merge scheduling still waits for full completion. Isolated real merger/shutdown test added. Cross-platform and real ES/SQL sink shutdown remain operator-deferred.
 
 - **#253 newest Hosted Linux CI #40854121454:** focused queue test erroneously asserted a consumer `break` within 180 source characters of a pending guard; added event-signalling lines made this formatting-dependent check fail although runtime path has separate real consumer tests. Update static assertion to check required signal wiring, keep real execution regressions, rerun exact-head CI. Do not count earlier FAIL as acceptance.
+
+
+## 2026-10-29 public credential exposure — requires owner action
+
+- Public `czjLLM/czjLLM_utils_key.py` previously contained two full key-format values; four `config_sql/akconfig_test*` scripts used literal password values. Current-source remediation is being reviewed separately in security PR #255, not merged.
+- Github can verify tracked source state but not whether provider API keys or SQL passwords remain valid, whether credentials were used without authorization, nor full request source IP. Owner must revoke/rotate and request provider usage evidence.
+- Old Git objects, branches, CI logs, forks and clones may retain values even after file deletion. Historical full scan and disruption-reviewed rewrite are deferred; do not assume they were addressed by this PR.
+- New changed-line scanner is preventive only, not a complete all-refs historical audit. Actual credential-backed runtime tests and Windows SQL environments are operator-deferred.
