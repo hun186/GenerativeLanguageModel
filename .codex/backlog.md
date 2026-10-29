@@ -57,3 +57,9 @@
 - [ ] Separate future branch: correlate actual Worker calls with verified split-intent families without trusting prompt paths or assuming provider HTTP retries; specify source snapshot and crash/restart constraints first. Genuine repeated identical Worker's RUNNING→TODO attempts, SDK internal retries and unique-document denominators still have no authoritative lineage. Do not auto-compute retry success rates from split IDs.
 
 - [ ] PR #248 four P2 first-review findings: nested A→B lineage conflict, identity-directory symlink aliasing, deep-nested JSON RecursionError, and noncanonical/non-v4 UUID placeholders. New candidate fixes plus regression tests committed; require *new exact HEAD* Hosted Linux and official review, close/resolve only after independent verification. Keep #231 untouched and do not Merge without permission.
+
+## 2026-10-29 verified split-family audit wiring
+
+- [x] PR #248 user-approved squash merged to main `8468ed5bc8382c62d6f7278be60264f84e57db7f`, formal exact-head Codex 0 Findings/Threads. Earlier #248 pending entries in Current Focus are superseded. Main postmerge Linux #40790298292 initially queued; Windows operator-deferred.
+- [ ] Independent `feat/audit-verified-split-family-20261029`: safely surface #248 journal's verified UUID4 to Worker CSV/XLSX only after postprocessing; empty for no evidence, altered prompts or old split journal. Strict validation, four known header widths, real Worker-to-audit tests, immutable Codex memory gate, exact-head Hosted Linux and formal review. Do not Merge without user permission; #231 remains untouched.
+- [ ] Future source-authoritative general RUNNING→TODO requeue / retry-group and document denominator: requires durable dispatch-side identity separate from split-family and SDK hidden retries. No estimates based solely on UUID, basenames or legacy CSV `ok`. Windows/Ollama/ES physical readback operator-gated.
