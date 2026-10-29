@@ -57,6 +57,15 @@ def read_object(stream, size, retain):
 def audit():
     objects = git("rev-list", "--objects", "--all").splitlines()
     refs = git("for-each-ref", "--format=%(refname)").splitlines()
+    remote_heads = git(
+        "for-each-ref", "--format=%(refname)", "refs/remotes/origin"
+    ).splitlines()
+    key_path = "czjLLM/czjLLM_utils_key.py"
+    exposed_branch_heads = 0
+    for remote_ref in remote_heads:
+        # Check the published HEAD of each branch without reading its content.
+        if git("ls-tree", "-r", "--name-only", remote_ref.decode("ascii"), "--", key_path).strip():
+            exposed_branch_heads += 1
     proc = subprocess.Popen(
         ["git", "cat-file", "--batch"],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
@@ -101,6 +110,8 @@ def audit():
         "audit_version": 1,
         "scope": "reachable Git objects from fetched local and remote refs",
         "ref_count": len(refs),
+        "fetched_remote_branch_heads": len(remote_heads),
+        "branch_heads_still_containing_legacy_key_file": exposed_branch_heads,
         "counts": dict(counts),
         "credential_pattern_blob_counts": dict(patterns),
         "compiled_python_pattern_blob_counts": dict(pyc_patterns),
