@@ -16,3 +16,5 @@ An observed nonempty `queue_claim_event_id` supports one **trusted local dispatc
 ## Verification
 
 Hosted Linux `offline-e2e` includes tests/prompt_pipeline/test_worker_queue_claim_audit.py and test_worker_split_family_audit.py, covering actual file rename → queue receipt → isolated real Worker invocation → persisted CSV, subsequent requeue and new claim, stale/mismatched prompt, malformed receipt, and legacy header compatibility. Physical Windows/Ollama/ES/SQL acceptance is operator deferred.
+
+**Ambiguous legacy queue collision:** the existing dispatcher flattens nested TODO paths into a single RUNNING basename. If two successful claims in the same batch share that destination, the optional handoff deletes/suppresses all candidate IDs for that path (including when the first event publication failed). It must never attribute the second event to both jobs. This is only an attribution guard and does not fix the older scheduler destination-overwrite problem, which requires a separately reviewed queue-behavior change.

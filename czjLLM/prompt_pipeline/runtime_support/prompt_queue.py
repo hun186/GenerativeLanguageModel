@@ -12,6 +12,11 @@ def pick_and_claim_next_prompts(item_dirs, per_round_limit=128, *, claim_ids_out
     回傳 [(pf_running, item_dir), ...]，其中 pf_running 位於 RUNNING 目錄。
     """
     claimed = []
+    # The legacy queue flattens nested TODO names into RUNNING/<basename>.
+    # More than one real successful claim can therefore share a destination.
+    # A path-keyed receipt must never be attributed to both scheduled jobs.
+    seen_destinations = set()
+    ambiguous_destinations = set()
     for item_dir in item_dirs:
         todo = Path(item_dir) / "TODO"
         run = Path(item_dir) / "RUNNING"
@@ -32,15 +37,24 @@ def pick_and_claim_next_prompts(item_dirs, per_round_limit=128, *, claim_ids_out
             except OSError:
                 continue
 
-            # Witness only a completed atomic claim; telemetry is never a
-            # prerequisite for running the work.
+            # Observe the real completed rename without changing the legacy
+            # scheduling behavior. A duplicate destination (even when its
+            # earlier observation write failed) is never safe to attribute.
+            dst_key = str(dst_p)
+            if claim_ids_out is not None:
+                if dst_key in seen_destinations or dst_key in claim_ids_out:
+                    ambiguous_destinations.add(dst_key)
+                    claim_ids_out.pop(dst_key, None)
+                seen_destinations.add(dst_key)
             try:
                 claim_id = record_queue_transition(
                     dst_p, "claimed", previous_path=src_p,
                     return_event_id=claim_ids_out is not None,
                 )
-                if claim_ids_out is not None and isinstance(claim_id, str):
-                    claim_ids_out[str(dst_p)] = claim_id
+                if (claim_ids_out is not None and
+                        dst_key not in ambiguous_destinations and
+                        isinstance(claim_id, str)):
+                    claim_ids_out[dst_key] = claim_id
             except Exception:
                 pass
             claimed.append((str(dst_p), str(item_dir)))
