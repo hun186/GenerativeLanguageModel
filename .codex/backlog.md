@@ -57,3 +57,9 @@
 - [ ] Separate future branch: correlate actual Worker calls with verified split-intent families without trusting prompt paths or assuming provider HTTP retries; specify source snapshot and crash/restart constraints first. Genuine repeated identical Worker's RUNNING→TODO attempts, SDK internal retries and unique-document denominators still have no authoritative lineage. Do not auto-compute retry success rates from split IDs.
 
 - [ ] PR #248 four P2 first-review findings: nested A→B lineage conflict, identity-directory symlink aliasing, deep-nested JSON RecursionError, and noncanonical/non-v4 UUID placeholders. New candidate fixes plus regression tests committed; require *new exact HEAD* Hosted Linux and official review, close/resolve only after independent verification. Keep #231 untouched and do not Merge without permission.
+
+## 2026-10-29 next Worker-to-split-family evidence
+
+- [x] #248 accepted squash merge `8468ed5bc8382c62d6f7278be60264f84e57db7f`, prior Linux #40738436235 SUCCESS and Codex 0 Findings/Threads. Historical #248 pending entries superseded.
+- [ ] Independent `feat/worker-split-family-audit-20261029`: source-verified Worker call correlated to existing persisted explicit split intent via new trailing CSV/XLSX `split_family_id`; tests on real queued/journal files, actual Worker proc with isolated model, failure-report-v1 and legacy-width regressions. Await exact-head Hosted Linux, immutable archive and formal Codex Review. Do not Merge without user authorization; PR #231 unchanged.
+- [ ] Later: generation-locked authenticated crash/replay, generic resubmission and SDK HTTP attribution, unique-document denominators and controlled Windows/Ollama/ES persisted readback.

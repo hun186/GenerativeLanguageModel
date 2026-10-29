@@ -132,3 +132,7 @@ The following sections describe the accepted main implementation through PR #239
 ## 2026-10-29 explicit persisted split lineage ID (pending review)
 
 - Extend the already-durable v1 SHA256 parent+two-child JSON repair *intent* journal with an independently random UUID4 `split_family_id`; don't hash user input to create group identity or infer from filenames alone. Require direct parent journal with matched child SHA256 and canonical two-child name pair before inheriting ID for child or nested split. Preserve original hashes, file format version, resume/rollback code and old journals (unknown ID), and never claim journal identity means actual committed children or LLM calls. Keep Worker audit CSV/XLSX/report v1 untouched; separate actual Worker-to-family correlation and cross-run/request retry grouping later after source-level proofs. No Merge without explicit user authorization.
+
+## 2026-10-29 source-verified Worker/split correlation
+
+- The first parent split journal is written after its LLM response is repaired; hence look up lineage **after** postprocessing while preserving a bounded-memory verified actual queued-source observation from **before** `CallLLMAPI`. No reliance on filename/time/error strings, no prompt payload in the new UUID field, no changes to failure-report v1 or queue/SDK retry strategy. Attach only with Worker call ID and wrapper-return observation; four preceding audit headers remain byte-width compatible. No claim of authenticated source generation or HTTP retries; #231 is independent.
