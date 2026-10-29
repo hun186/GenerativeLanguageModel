@@ -182,50 +182,33 @@ def test_previous_exact_audit_header_is_append_compatible(tmp_path):
     assert len(rows) == 1 and "queue_claim_event_id" not in rows[0]
 
 
-def test_duplicate_nested_todo_names_have_no_ambiguous_claim_handoff(tmp_path):
-    """Existing queue flattens two nested names into one RUNNING basename.
-
-    Do not attach either separately emitted event to either scheduled job.
-    The collision is an existing queue behavior; attribution must be unknown.
-    """
+def test_duplicate_nested_todo_names_are_deferred_without_clobber(tmp_path):
+    """Two same-basename TODO files must remain intact until disambiguated."""
     item = tmp_path / "item"
-    left = item / "TODO" / "a"
-    right = item / "TODO" / "b"
-    left.mkdir(parents=True)
-    right.mkdir(parents=True)
-    (left / "root.txt").write_text("same source text", encoding="utf-8")
-    (right / "root.txt").write_text("same source text", encoding="utf-8")
+    for part in ("a", "b"):
+        directory = item / "TODO" / part
+        directory.mkdir(parents=True)
+        (directory / "root.txt").write_text("original " + part, encoding="utf-8")
     received = {}
     batch = pick_and_claim_next_prompts([str(item)], claim_ids_out=received)
-    assert len(batch) == 2
-    assert batch[0][0] == batch[1][0] == str(item / "RUNNING" / "root.txt")
-    assert received == {}
-    observed = list((item / "_extract_slice_identity" / "queue_events").glob("*.json"))
-    assert len(observed) == 2
-    ids = {json.loads(path.read_text(encoding="utf-8"))["event_id"] for path in observed}
-    assert len(ids) == 2
+    assert batch == [] and received == {}
+    assert not (item / "RUNNING" / "root.txt").exists()
+    assert (item / "TODO" / "a" / "root.txt").read_text() == "original a"
+    assert (item / "TODO" / "b" / "root.txt").read_text() == "original b"
+    assert not (item / "_extract_slice_identity" / "queue_events").exists()
 
 
-def test_duplicate_destination_does_not_recover_last_receipt_after_first_write_failed(
-    tmp_path, monkeypatch
-):
-    """A missing first event must not let the second event look unambiguous."""
+def test_duplicate_names_remain_intact_even_if_observer_is_broken(tmp_path, monkeypatch):
     from czjLLM.prompt_pipeline.runtime_support import prompt_queue as queue
-    original = queue.record_queue_transition
-    calls = {"n": 0}
-
-    def fail_first(*args, **kwargs):
-        calls["n"] += 1
-        if calls["n"] == 1:
-            return False
-        return original(*args, **kwargs)
-
     item = tmp_path / "item"
     for section in ("a", "b"):
-        folder = item / "TODO" / section
-        folder.mkdir(parents=True)
-        (folder / "root.txt").write_text("reused content", encoding="utf-8")
-    monkeypatch.setattr(queue, "record_queue_transition", fail_first)
+        directory = item / "TODO" / section
+        directory.mkdir(parents=True)
+        (directory / "root.txt").write_text(section, encoding="utf-8")
+    monkeypatch.setattr(queue, "record_queue_transition",
+                        lambda *_a, **_k: (_ for _ in ()).throw(OSError("telemetry broken")))
     received = {}
-    assert len(pick_and_claim_next_prompts([str(item)], claim_ids_out=received)) == 2
+    assert pick_and_claim_next_prompts([str(item)], claim_ids_out=received) == []
     assert received == {}
+    assert (item / "TODO" / "a" / "root.txt").read_text() == "a"
+    assert (item / "TODO" / "b" / "root.txt").read_text() == "b"

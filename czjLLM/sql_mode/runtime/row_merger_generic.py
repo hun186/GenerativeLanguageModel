@@ -782,11 +782,26 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
         return None
 
     sink.open()
+    blocked_shutdown_scan_done = False
     try:
         while True:
             items_map = registry.list_items()
             if not items_map and stop_event.is_set():
                 break
+            # An unrecoverably blocked queue deliberately keeps TODO and
+            # registry evidence. Teardown must not join forever waiting for
+            # _all_slices_done() to become true. Permit one final normal scan
+            # for rows already ready to write back, then exit preserving
+            # any blocked/unacknowledged sources for operator recovery.
+            blocked_event = getattr(ctx, "_queue_claim_blocked_event", None)
+            blocked_terminal = (
+                stop_event.is_set() and blocked_event is not None
+                and blocked_event.is_set()
+            )
+            if blocked_terminal:
+                if blocked_shutdown_scan_done:
+                    break
+                blocked_shutdown_scan_done = True
 
             progressed = False
             for item_dir, meta in list(items_map.items()):

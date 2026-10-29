@@ -101,15 +101,14 @@ def test_unmoved_source_or_invalid_queue_position_is_not_evidence(tmp_path):
         record_queue_transition(source, "unknown")
 
 
-def test_rename_failure_has_no_event(tmp_path, monkeypatch):
+def test_no_clobber_link_failure_has_no_event(tmp_path, monkeypatch):
     item, source = _todo(tmp_path)
-    real_replace = queue.os.replace
-    def no_rename(*_a, **_k):
-        raise PermissionError("no queue rename")
-    monkeypatch.setattr(queue.os, "replace", no_rename)
+    def no_link(*_a, **_k):
+        raise PermissionError("hardlink unavailable")
+    monkeypatch.setattr(queue.os, "link", no_link)
     assert queue.pick_and_claim_next_prompts([str(item)]) == []
     assert source.exists() and not _events(item)
-    monkeypatch.setattr(queue.os, "replace", real_replace)
+    assert not (item / "RUNNING" / source.name).exists()
 
 
 def test_observations_do_not_infer_family_for_regenerated_source(tmp_path):
