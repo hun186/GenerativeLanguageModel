@@ -227,7 +227,8 @@ def verified_split_family_id(prompt_file: str, prompt: str) -> str:
     if file.parent.name not in {"TODO", "RUNNING"} or file.suffix != ".txt":
         return ""
     root = file.parent.parent
-    prompt_digest = digest_text(prompt)
+    # Keep the post-call Worker lookup within a bounded auxiliary memory budget.
+    prompt_digest = _bounded_prompt_digest(prompt)
     own = _verified_split_record(root, file.name)
     own_family = (
         _valid_split_family_id(own.get("split_family_id"))

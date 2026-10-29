@@ -177,3 +177,33 @@ def test_ancestor_directory_symlink_is_unknown_for_both_source_and_journal(tmp_p
     aliased_parent = alias / "item" / "RUNNING" / "root.txt"
     assert not verified_queued_prompt_source(str(aliased_parent), "root source")
     assert verified_split_family_id(str(aliased_parent), "root source") == ""
+
+
+def test_postsettlement_family_lookup_avoids_whole_prompt_copies(tmp_path):
+    """Large queued prompts stay memory-bounded even when journals exist."""
+    import tracemalloc
+    from czjLLM.prompt_pipeline.slice_identity import (
+        digest_text, record_split_identity, verified_split_family_id,
+    )
+    prompt = ("x" * 65535 + "\r\n" + "中文" + "\r") * 32
+    path = queued(tmp_path, prompt)
+    assert digest_text(prompt) == digest_text(prompt.replace("\r\n", "\n").replace("\r", "\n"))
+    family = record_split_identity(
+        str(path), prompt, [("root-0.txt", "left"), ("root-1.txt", "right")],
+    )
+    tracemalloc.start()
+    try:
+        assert verified_split_family_id(str(path), prompt) == family
+        peak_existing = tracemalloc.get_traced_memory()[1]
+    finally:
+        tracemalloc.stop()
+    assert peak_existing < 1_000_000
+    journal = path.parent.parent / "_extract_slice_identity" / "splits" / "root.txt.json"
+    journal.unlink()
+    tracemalloc.start()
+    try:
+        assert verified_split_family_id(str(path), prompt) == ""
+        peak_missing = tracemalloc.get_traced_memory()[1]
+    finally:
+        tracemalloc.stop()
+    assert peak_missing < 1_000_000
