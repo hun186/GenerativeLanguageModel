@@ -334,8 +334,9 @@ def test_new_audit_records_have_distinct_opaque_row_ids_and_xlsx_column(tmp_path
     with path.open(encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
         rows = list(reader)
-        assert reader.fieldnames[-4:] == [
-            "audit_record_id", "worker_call_id", "call_llm_api_returned", "split_family_id"]
+        assert reader.fieldnames[-5:] == [
+            "audit_record_id", "worker_call_id", "call_llm_api_returned",
+            "split_family_id", "queue_claim_event_id"]
     assert len(rows) == 2
     identifiers = [row["audit_record_id"] for row in rows]
     assert len(set(identifiers)) == 2
@@ -432,8 +433,9 @@ def test_worker_call_id_rejects_untrusted_values_without_csv_side_effect(tmp_pat
 def test_two_supported_legacy_audit_headers_keep_exact_width(tmp_path):
     """Pre-#245, #245 and #246 headers cannot be silently upgraded."""
     from czjLLM.utilities.llm_failure_summary import summarize_llm_failure_audit
-    for past_fields in (_AUDIT._FIELDS[:-4], _AUDIT._FIELDS[:-3],
-                        _AUDIT._FIELDS[:-2], _AUDIT._FIELDS[:-1]):
+    for past_fields in (_AUDIT._FIELDS[:-5], _AUDIT._FIELDS[:-4],
+                        _AUDIT._FIELDS[:-3], _AUDIT._FIELDS[:-2],
+                        _AUDIT._FIELDS[:-1]):
         path = tmp_path / f"llm_call_audit_{len(past_fields)}-old.csv"
         with path.open("w", newline="", encoding="utf-8") as stream:
             writer = csv.DictWriter(stream, fieldnames=past_fields)
@@ -472,8 +474,9 @@ def test_explicit_wrapper_return_and_local_failure_are_separate(tmp_path):
     with path.open(encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
         rows = list(reader)
-        assert reader.fieldnames[-4:] == [
-            "audit_record_id", "worker_call_id", "call_llm_api_returned", "split_family_id"]
+        assert reader.fieldnames[-5:] == [
+            "audit_record_id", "worker_call_id", "call_llm_api_returned",
+            "split_family_id", "queue_claim_event_id"]
     assert [row["call_llm_api_returned"] for row in rows] == ["YES", "NO", "YES", ""]
     assert [row["ok"] for row in rows] == ["NO", "NO", "YES", "NO"]
     assert rows[0]["worker_call_id"] == "a" * 32
