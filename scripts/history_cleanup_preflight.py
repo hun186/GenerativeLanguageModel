@@ -54,9 +54,24 @@ def preflight(expected_main: str, cwd=None) -> dict:
         branches.append((ref, oid))
     if not branches or "refs/remotes/origin/main" not in [x[0] for x in branches]:
         raise ValueError("no authoritative remote main branch found")
-    branches.sort()
+    # Snapshot ALL fetched tags too, retaining the tag object's own SHA.
+    # Never dereference annotated tags: that would miss a tag-object replacement
+    # if the peeled target happened to remain unchanged.
+    tag_output = git(
+        "for-each-ref", "--format=%(refname)%00%(objectname)",
+        "refs/tags/", cwd=cwd,
+    ).splitlines()
+    tags: list[tuple[str, str]] = []
+    for item in tag_output:
+        ref, oid = item.decode("utf-8").split("\0", 1)
+        if not ref.startswith("refs/tags/") or not SHA.fullmatch(oid):
+            raise ValueError("invalid tag ref or object id")
+        tags.append((ref, oid))
+    # Fully qualified ref names avoid branch/tag namespace ambiguity.
+    # Commit/tag object identifiers are public Git metadata, not credentials.
+    all_refs = sorted(branches + tags)
     refs_sha = hashlib.sha256(
-        "".join(ref + "\0" + oid + "\n" for ref, oid in branches).encode()
+        "".join(ref + "\0" + oid + "\n" for ref, oid in all_refs).encode()
     ).hexdigest()
     tracked_path_counts: dict[str, int] = {}
     for path in LEGACY_PATHS + SQL_CONFIG_PATHS:
@@ -66,13 +81,12 @@ def preflight(expected_main: str, cwd=None) -> dict:
             if git("ls-tree", "--name-only", ref, "--", path, cwd=cwd).strip():
                 count += 1
         tracked_path_counts[path] = count
-    tag_lines = git("for-each-ref", "--format=%(refname)", "refs/tags/", cwd=cwd)
     return {
-        "schema": "history-cleanup-preflight-v1",
+        "schema": "history-cleanup-preflight-v2",
         "mode": "READ_ONLY",
         "expected_main": expected_main,
         "remote_branch_count": len(branches),
-        "tag_count": len(tag_lines.splitlines()),
+        "tag_count": len(tags),
         "remote_ref_snapshot_sha256": refs_sha,
         "known_paths_in_branch_heads": tracked_path_counts,
         "candidate_legacy_path_count": len(LEGACY_PATHS),
