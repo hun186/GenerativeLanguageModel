@@ -238,3 +238,78 @@ def test_orchestrator_links_producer_done_and_blocked_failure_before_teardown():
     assert "if A and queue_claim_blocked_event.is_set():" in source
     assert "terminal_queue_claim_blocked = True" in source
     assert 'observer.emit("run_failed", {"reason": "unclaimable_queue_sources"})' in source
+
+
+def test_real_row_merger_shutdown_releases_blocked_registry_without_losing_sources(
+    monkeypatch, tmp_path
+):
+    """Run actual merger thread and teardown; pending registry stays recoverable."""
+    import threading
+    from types import SimpleNamespace
+    from czjLLM.sql_mode.runtime import row_merger_generic as row_mod
+    from czjLLM.sql_mode.runtime.teardown import shutdown
+
+    item = tmp_path / "item"
+    first = item / "TODO" / "a"
+    second = item / "TODO" / "b"
+    first.mkdir(parents=True)
+    second.mkdir(parents=True)
+    (first / "same.txt").write_bytes(b"important original A")
+    (second / "same.txt").write_bytes(b"important original B")
+
+    class Registry:
+        def __init__(self):
+            self.items = {str(item): {"pk": "row-1", "temp_txt": str(tmp_path / "original.txt")}}
+            self.removed = []
+        def list_items(self):
+            return dict(self.items)
+        def remove(self, key):
+            self.removed.append(key)
+            self.items.pop(key, None)
+
+    class Sink:
+        opened = False
+        closed = False
+        def open(self):
+            self.opened = True
+        def close(self):
+            self.closed = True
+
+    blocked = threading.Event()
+    blocked.set()
+    ctx = SimpleNamespace(_queue_claim_blocked_event=blocked)
+    registry = Registry()
+    sink = Sink()
+    stop = threading.Event()
+    merger_done = threading.Event()
+    monkeypatch.setattr(row_mod, "ensure_production_observer",
+                        lambda _ctx: SimpleNamespace(emit=lambda *_a, **_k: None))
+    monkeypatch.setattr(row_mod, "tlog", lambda *_a, **_k: None)
+
+    merger = threading.Thread(
+        target=row_mod.row_merger_watchdog_generic,
+        args=(ctx, registry, str(tmp_path / "meter"), stop, sink),
+        kwargs={"scan_interval": 0.001, "done_q": None},
+        daemon=True,
+    )
+    merger.start()
+    # Teardown sets stop_event and joins the *actual* row merger.
+    # If regression blocks forever, do not hang pytest on its own join:
+    # run the real teardown in a daemon test thread and assert bounded exit.
+    teardown = threading.Thread(
+        target=shutdown,
+        kwargs=dict(ctx=ctx, gui=None, gui_sink=None, restore_console=None,
+                    stop_event=stop, consumer=None, merger=merger, drain=None,
+                    merger_done=merger_done, refresher=None,
+                    bar_refresh_stop=threading.Event(), close_gui=False),
+        daemon=True,
+    )
+    teardown.start()
+    teardown.join(timeout=3)
+    assert not teardown.is_alive(), "terminal-failure merger join hung on retained TODO"
+    assert not merger.is_alive()
+    assert sink.opened and sink.closed
+    assert registry.removed == []
+    assert str(item) in registry.items
+    assert (first / "same.txt").read_bytes() == b"important original A"
+    assert (second / "same.txt").read_bytes() == b"important original B"
