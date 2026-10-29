@@ -2,6 +2,7 @@
 
 import os
 import stat
+import tempfile
 from collections import Counter
 from pathlib import Path
 
@@ -39,6 +40,36 @@ def _claim_regular_source_no_clobber(source: Path, target: Path) -> bool:
         return True
     except (OSError, ValueError):
         return False
+
+
+def publish_success_text_no_clobber(destination: str, text: str) -> None:
+    """Publish an exclusively-created Success result, never replace a prior result.
+
+    Write a unique fsynced same-directory staging file, then use an atomic
+    hardlink create-if-absent. A competing writer or existing Success file
+    raises FileExistsError while leaving that previous result unchanged.
+    """
+    target = Path(destination)
+    if any(p.is_symlink() for p in (target.parent, *target.parent.parents)):
+        raise OSError("unsafe success output directory")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    fd, staged_name = tempfile.mkstemp(
+        dir=str(target.parent), prefix=".success-", suffix=".tmp",
+    )
+    staged = Path(staged_name)
+    try:
+        with os.fdopen(fd, mode="w", encoding="utf-8", newline="") as stream:
+            stream.write(text)
+            stream.flush()
+            os.fsync(stream.fileno())
+        # Atomic no-clobber publication, not os.replace. If a success was
+        # already published, preserve it and leave RUNNING for inspection.
+        os.link(staged, target, follow_symlinks=False)
+    finally:
+        try:
+            staged.unlink()
+        except FileNotFoundError:
+            pass
 
 
 def require_no_pending_todo_sources(item_dirs) -> None:
@@ -82,6 +113,12 @@ def pick_and_claim_next_prompts(item_dirs, per_round_limit=128, *, claim_ids_out
             if basename_counts[src_p.name] != 1:
                 continue
             dst_p = run / src_p.name
+            prior_success = Path(item_dir) / "Success" / src_p.name
+            # A prior completed result is not evidence that this generation
+            # succeeded. Refuse dispatch instead of allowing a stale Success
+            # file to be mistaken for this new Worker's output.
+            if prior_success.exists() or prior_success.is_symlink():
+                continue
             if not _claim_regular_source_no_clobber(src_p, dst_p):
                 continue
 
@@ -170,17 +207,16 @@ def recover_running_to_todo(item_dirs):
             rel = p.relative_to(run)
             dst = todo / rel
             dst.parent.mkdir(parents=True, exist_ok=True)
+            # Reuse the exclusive same-filesystem move used by claiming.
+            # This preserves an existing TODO (including symlinks) and leaves
+            # RUNNING untouched when the move cannot be performed safely.
+            if not _claim_regular_source_no_clobber(p, dst):
+                continue
+            # A successful requeue move is an observed queue transition,
+            # not evidence of a second provider invocation or retry family.
             try:
-                os.replace(str(p), str(dst))
-                # A successful requeue move is evidence of a queue transition,
-                # not proof of a second LLM/provider invocation.
-                try:
-                    record_queue_transition(dst, "requeued", previous_path=p)
-                except Exception:
-                    pass
-                moved += 1
-            except FileNotFoundError:
+                record_queue_transition(dst, "requeued", previous_path=p)
+            except Exception:
                 pass
-            except PermissionError:
-                pass
+            moved += 1
     return moved

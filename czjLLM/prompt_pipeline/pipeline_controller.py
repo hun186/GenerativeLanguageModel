@@ -114,6 +114,7 @@ from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     pick_and_claim_next_prompts,
     recover_running_to_todo,
     require_no_pending_todo_sources,
+    publish_success_text_no_clobber,
 )
 from czjLLM.prompt_pipeline.runtime_support.stage_mode import (
     explicit_stage_flow as _explicit_stage_flow,
@@ -2891,12 +2892,7 @@ class PromptAPIPipeline:
                 retMES = self._build_mock_output()
                 if self.OutputSaveFN != "":
                     MKDIR(os.path.dirname(self.OutputSaveFN))
-                    tmp_fn = self.OutputSaveFN + ".tmp"
-                    with open(tmp_fn, mode='wt', encoding='utf-8', newline='') as fp:
-                        fp.write(retMES)
-                        fp.flush()
-                        os.fsync(fp.fileno())
-                    os.replace(tmp_fn, self.OutputSaveFN)
+                    publish_success_text_no_clobber(self.OutputSaveFN, retMES)
                     record_success_identity(
                         self.promptFile, self.OutputSaveFN, self.content, retMES,
                     )
@@ -2984,12 +2980,7 @@ class PromptAPIPipeline:
             worker_failure_code = "WORKER_PERSIST_EXCEPTION"
             if self.OutputSaveFN != "" and DTBJobs_Retry == [] and retMES != "":
                 MKDIR(os.path.dirname(self.OutputSaveFN))
-                tmp_fn = self.OutputSaveFN + ".tmp"
-                with open(tmp_fn, mode='wt', encoding='utf-8', newline='') as fp:
-                    fp.write(retMES)
-                    fp.flush()
-                    os.fsync(fp.fileno())
-                os.replace(tmp_fn, self.OutputSaveFN)
+                publish_success_text_no_clobber(self.OutputSaveFN, retMES)
                 record_success_identity(
                     self.promptFile, self.OutputSaveFN, self.content, retMES,
                 )
@@ -3183,16 +3174,7 @@ class PromptAPIPipeline:
             #if self.OutputSaveFN != "" and DTBJobs_Retry == []:
             if self.OutputSaveFN != "" and DTBJobs_Retry == [] and retMES != "":
                 MKDIR(os.path.dirname(self.OutputSaveFN))
-                tmp_fn = self.OutputSaveFN + ".tmp"
-                #print(f"Start to run os.sync for tmp_fn {tmp_fn}")
-                with open(tmp_fn, mode='wt', encoding='utf-8', newline='') as fp:
-                    fp.write(retMES)
-                    fp.flush()
-                    os.fsync(fp.fileno())  # 確保落地
-                #print(f"Finished running os.sync for tmp_fn {tmp_fn}")
-                #print(f"Start to run os.replace for tmp_fn {tmp_fn}")
-                os.replace(tmp_fn, self.OutputSaveFN)  # ✅ 原子替換
-                #print(f"Finished running os.replace for tmp_fn {tmp_fn}")
+                publish_success_text_no_clobber(self.OutputSaveFN, retMES)
                 if self.removeFinPromptFile and self.promptFile:
                     #print(f"Start to run os.remove for self.promptFile {self.promptFile}")
                     #os.remove(self.promptFile)         # ✅ 再刪 TODO

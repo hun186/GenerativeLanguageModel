@@ -86,3 +86,9 @@
 - [ ] New PR: make TODO→RUNNING fail closed for duplicate nested basenames, existing RUNNING target, symlink/hardlink/unsupported FS; exclusive hardlink no-overwrite + source unlink, preserving tuple and evidence semantics; real-file concurrent/collision/interruption tests, exact latest Hosted Linux E2E/archive and formal Codex Review; user authorization required before Merge.
 - [ ] Separate no-clobber review of RUNNING→TODO recovery/timeout and RUNNING→Success destinations (potential overwrite or stale source). Define operator recovery workflow for interrupted hardlink+unlink window, pending duplicate names, unsupported filesystem; evaluate queue liveness and diagnostics.
 - [ ] Later: durable source-generation/lease based logical Retry Family across retries; Worker UUID/Claim UUID are per-attempt and split family remains JSON-only, never derive denominator from repeated basename/hash.
+
+## 2026-10-29 phase 2c recovery and Worker Success protection
+
+- [ ] New PR: no-clobber RUNNING→TODO recovery/timeout and direct Worker Success publication with conflict preservation, source/receipt semantics and actual-file concurrency tests, exact-HEAD Hosted Linux CI and formal Codex Review. User Merge permission required.
+- [ ] Audit stage-managed and alternate Success writers, explicit full-restart policies, collision recovery tooling and prior Success provenance; no automatic manual artifact deletion or reinterpretation of stale results. Require Windows filesystem and actual LLM/ES/SQL operator E2E before claims of deployment readiness.
+- [ ] Durable source generations and trusted cross-claim logical Retry Family remain deferred; distinct from one claim UUID, Worker invocation UUID, split-intent UUID and SDK internal HTTP requests.
