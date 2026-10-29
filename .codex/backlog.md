@@ -80,3 +80,9 @@
 - [ ] Future: link real requeue and subsequent claim to source generations through authoritative persisted state, including stage-managed paths, missing events/crashes, immutable generations and concurrency; distinguish claim attempts, Worker invocations, SDK HTTP retries, JSON split families and acknowledged downstream sinks. Never infer from filename/SHA256 matches or report as unique logical retry success rates.
 
 - [ ] **Separate queue scheduling correctness issue:** legacy recursive TODO collection flattens nested names into RUNNING basename, and os.replace may overwrite an earlier claimed file with a duplicate basename. Provide collision-safe queue claim behavior, preserved stage paths or explicit no-overwrite and migration/recovery tests; do not silently alter it inside #252 audit attribution. This phase suppresses ambiguous claim IDs only.
+
+## 2026-10-29 claim collision prevention phase 2b
+
+- [ ] New PR: make TODO→RUNNING fail closed for duplicate nested basenames, existing RUNNING target, symlink/hardlink/unsupported FS; exclusive hardlink no-overwrite + source unlink, preserving tuple and evidence semantics; real-file concurrent/collision/interruption tests, exact latest Hosted Linux E2E/archive and formal Codex Review; user authorization required before Merge.
+- [ ] Separate no-clobber review of RUNNING→TODO recovery/timeout and RUNNING→Success destinations (potential overwrite or stale source). Define operator recovery workflow for interrupted hardlink+unlink window, pending duplicate names, unsupported filesystem; evaluate queue liveness and diagnostics.
+- [ ] Later: durable source-generation/lease based logical Retry Family across retries; Worker UUID/Claim UUID are per-attempt and split family remains JSON-only, never derive denominator from repeated basename/hash.

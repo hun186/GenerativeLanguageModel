@@ -1,14 +1,50 @@
 """Filesystem-backed prompt queue helpers for TODO/RUNNING/Success folders."""
 
 import os
+import stat
+from collections import Counter
 from pathlib import Path
 
 from czjLLM.prompt_pipeline.runtime_support.queue_observation import record_queue_transition
 
 
+def _claim_regular_source_no_clobber(source: Path, target: Path) -> bool:
+    """Safely *avoid overwriting* an existing RUNNING destination.
+
+    An exclusive same-filesystem hardlink is the publication point. Remove
+    TODO only after verifying the linked inode. If the filesystem cannot
+    hardlink, leave TODO untouched rather than falling back to os.replace.
+    A crash between link and unlink leaves two paths; never dispatch in that
+    state without a successful source unlink.
+    """
+    try:
+        if any(p.is_symlink() for p in (source, *source.parents, target.parent, *target.parent.parents)):
+            return False
+        original = source.lstat()
+        if not stat.S_ISREG(original.st_mode) or original.st_nlink != 1:
+            return False
+        # os.link atomically refuses to overwrite an existing target, even
+        # when another scheduler creates it between checks.
+        os.link(source, target, follow_symlinks=False)
+        source_now = source.lstat()
+        target_now = target.lstat()
+        identity = lambda x: (x.st_dev, x.st_ino, x.st_size, x.st_mtime_ns)
+        if (not stat.S_ISREG(target_now.st_mode)
+                or identity(original) != identity(source_now)
+                or identity(source_now) != identity(target_now)
+                or source_now.st_nlink != 2 or target_now.st_nlink != 2):
+            # Refuse dispatch and leave both copies for explicit recovery.
+            return False
+        source.unlink()
+        return True
+    except (OSError, ValueError):
+        return False
+
+
 def pick_and_claim_next_prompts(item_dirs, per_round_limit=128, *, claim_ids_out=None):
     """
-    從各 item_dir 的 TODO 中挑選檔案，並立即以 os.replace() 更名為 RUNNING/xxx.txt。
+    從各 item_dir 的 TODO 中挑選檔案，只領取不會覆寫 RUNNING 的檔案。
+    同一 item 下名稱相同的巢狀 TODO 保留原狀，須先排除歧義。
     回傳 [(pf_running, item_dir), ...]，其中 pf_running 位於 RUNNING 目錄。
     """
     claimed = []
@@ -24,17 +60,17 @@ def pick_and_claim_next_prompts(item_dirs, per_round_limit=128, *, claim_ids_out
             continue
         run.mkdir(parents=True, exist_ok=True)
 
-        # 排序讓行為穩定
-        for src in sorted(str(path) for path in todo.rglob("*") if path.is_file()):
-            src_p = Path(src)
+        # Snapshot candidate names before any mutation. The existing queue
+        # flattens TODO subdirectories into RUNNING/<basename>; refuse *all*
+        # collisions, not just the second file, so neither source can be lost.
+        sources = sorted((path for path in todo.rglob("*") if path.is_file()),
+                         key=lambda p: str(p))
+        basename_counts = Counter(p.name for p in sources)
+        for src_p in sources:
+            if basename_counts[src_p.name] != 1:
+                continue
             dst_p = run / src_p.name
-            try:
-                os.replace(str(src_p), str(dst_p))
-            except FileNotFoundError:
-                continue
-            except PermissionError:
-                continue
-            except OSError:
+            if not _claim_regular_source_no_clobber(src_p, dst_p):
                 continue
 
             # Observe the real completed rename without changing the legacy
