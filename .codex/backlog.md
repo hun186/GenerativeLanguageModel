@@ -86,3 +86,9 @@
 - [ ] New PR: make TODO→RUNNING fail closed for duplicate nested basenames, existing RUNNING target, symlink/hardlink/unsupported FS; exclusive hardlink no-overwrite + source unlink, preserving tuple and evidence semantics; real-file concurrent/collision/interruption tests, exact latest Hosted Linux E2E/archive and formal Codex Review; user authorization required before Merge.
 - [ ] Separate no-clobber review of RUNNING→TODO recovery/timeout and RUNNING→Success destinations (potential overwrite or stale source). Define operator recovery workflow for interrupted hardlink+unlink window, pending duplicate names, unsupported filesystem; evaluate queue liveness and diagnostics.
 - [ ] Later: durable source-generation/lease based logical Retry Family across retries; Worker UUID/Claim UUID are per-attempt and split family remains JSON-only, never derive denominator from repeated basename/hash.
+
+## 2026-10-30 — operator-gated credential-history cleanup
+- [ ] Have operator revoke potentially exposed provider keys/active SQL logins and preserve source-IP/account audit evidence securely.
+- [ ] Run exact-head Hosted read-only preflight and formal Codex review; record branch/ref SHA snapshot and check delta against #256 evidence.
+- [ ] Independently inspect >2MB blobs, forks, PR refs, GitHub Actions logs/assets, other public repo histories, compiled Python and false positives without public secret values.
+- [ ] With separate approval, perform private mirror backup and restore, isolated git-filter-repo rehearsal, confidential SQL literal replacement, full-ref scan and #254 migration validation. Never rewrite public Git or force push without a new explicitly approved execution packet.
