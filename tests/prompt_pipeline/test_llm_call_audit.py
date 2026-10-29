@@ -178,6 +178,8 @@ def test_prompt_api_pipeline_emits_one_audit_row_per_request():
     assert "error=err" in source
     assert "worker_call_id=worker_call_id" in source
     assert "call_llm_api_returned=call_llm_api_returned" in source
+    assert "split_family_id=verified_split_family_id(" in source
+    assert "self.promptFile, self.content," in source
     assert "call_llm_api_returned = False" in source
     assert "call_llm_api_returned = True" in source
     # Explicitly observed only after the call expression returns, before
@@ -334,8 +336,9 @@ def test_new_audit_records_have_distinct_opaque_row_ids_and_xlsx_column(tmp_path
     with path.open(encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
         rows = list(reader)
-        assert reader.fieldnames[-3:] == [
-            "audit_record_id", "worker_call_id", "call_llm_api_returned"]
+        assert reader.fieldnames[-4:] == [
+            "audit_record_id", "worker_call_id", "call_llm_api_returned",
+            "split_family_id"]
     assert len(rows) == 2
     identifiers = [row["audit_record_id"] for row in rows]
     assert len(set(identifiers)) == 2
@@ -430,9 +433,10 @@ def test_worker_call_id_rejects_untrusted_values_without_csv_side_effect(tmp_pat
 
 
 def test_two_supported_legacy_audit_headers_keep_exact_width(tmp_path):
-    """Pre-#245, #245 and #246 headers cannot be silently upgraded."""
+    """Pre-#245, #245, #246, #247 headers cannot be silently upgraded."""
     from czjLLM.utilities.llm_failure_summary import summarize_llm_failure_audit
-    for past_fields in (_AUDIT._FIELDS[:-3], _AUDIT._FIELDS[:-2], _AUDIT._FIELDS[:-1]):
+    for past_fields in (_AUDIT._FIELDS[:-4], _AUDIT._FIELDS[:-3],
+                        _AUDIT._FIELDS[:-2], _AUDIT._FIELDS[:-1]):
         path = tmp_path / f"llm_call_audit_{len(past_fields)}-old.csv"
         with path.open("w", newline="", encoding="utf-8") as stream:
             writer = csv.DictWriter(stream, fieldnames=past_fields)
@@ -525,3 +529,150 @@ def test_legacy_worker_id_header_does_not_gain_return_field(tmp_path):
     assert reader.fieldnames == fields
     assert len(rows) == 1 and rows[0]["worker_call_id"] == "a" * 32
     assert None not in rows[0]
+
+
+def test_split_family_id_requires_valid_v4_and_worker_evidence(tmp_path):
+    """Do not silently write fake ancestry or leak raw metadata."""
+    import uuid
+    import pytest
+
+    path = tmp_path / "llm_call_audit_bad_split.csv"
+    valid = uuid.uuid4().hex
+    invalid = (
+        (valid, ""), (None, "a" * 32), (123, "a" * 32),
+        ("secret prompt text", "a" * 32),
+        ("a" * 32, "a" * 32),  # structurally hex, not a UUID4
+        (valid.upper(), "a" * 32),
+        (str(uuid.UUID(hex=valid)), "a" * 32),
+        ("f" * 31, "a" * 32),
+    )
+    for split_id, worker in invalid:
+        with pytest.raises(ValueError, match="invalid split family identifier"):
+            log_llm_call(audit_path=str(path), run_id="run",
+                         worker_call_id=worker,
+                         split_family_id=split_id,
+                         model_spec={"num_ctx": 1024})
+        assert not path.exists()
+        assert not path.with_suffix(".xlsx").exists()
+
+
+def test_split_lineage_audit_connects_parent_children_and_excludes_unknown(
+    tmp_path, monkeypatch,
+):
+    """Actual Worker.proc -> verified split journal -> CSV/XLSX; no provider."""
+    import uuid
+    import zipfile
+    from czjLLM.prompt_pipeline import pipeline_controller as ctl
+    from czjLLM.prompt_pipeline.slice_identity import install_split_prompts
+
+    root = tmp_path / "item"
+    running = root / "RUNNING"
+    todo = root / "TODO"
+    running.mkdir(parents=True)
+    todo.mkdir()
+    parent = running / "0.txt"
+    parent.write_text("root sensitive prompt", encoding="utf-8")
+    audit = tmp_path / "llm_call_audit_20261029-family.csv"
+
+    monkeypatch.setattr(
+        ctl, "select_idle_ollama_url", lambda *args, **kwargs: "http://localhost:11434",
+    )
+    monkeypatch.setattr(ctl, "release_url_load", lambda *args, **kwargs: None)
+
+    def raised_wrapper(*args, **kwargs):
+        raise RuntimeError("simulated wrapper interruption")
+
+    monkeypatch.setattr(ctl, "CallLLMAPI", raised_wrapper)
+
+    def worker(prompt_path, prompt_text):
+        pipeline = ctl.PromptAPIPipeline(
+            task="test extraction", content=prompt_text,
+            promptFile=str(prompt_path), OutputSaveFN="",
+            audit_path=str(audit), audit_run_id="source-run",
+            model_spec={"base_url": ["http://localhost:11434"],
+                        "model_name": "test-model", "num_ctx": 1024},
+            allow_to_retry=False,
+        )
+        result = pipeline.proc()
+        assert result["ok"] is False
+
+    # Construct actual parent Worker *before* split and source unlink, as
+    # production does during failed JSON repair. The post-call audit finds
+    # the newly committed source journal even when the parent is gone.
+    parent_worker = ctl.PromptAPIPipeline(
+        task="test extraction", content="root sensitive prompt",
+        promptFile=str(parent), OutputSaveFN="",
+        audit_path=str(audit), audit_run_id="source-run",
+        model_spec={"base_url": ["http://localhost:11434"],
+                    "model_name": "test-model", "num_ctx": 1024},
+        allow_to_retry=False,
+    )
+    children = [("0-0.txt", "left sensitive prompt"),
+                ("0-1.txt", "right sensitive prompt")]
+    install_split_prompts(str(parent), "root sensitive prompt", children)
+    record = (root / "_extract_slice_identity" / "splits" / "0.txt.json")
+    source_family = __import__("json").loads(record.read_text())["split_family_id"]
+    assert uuid.UUID(hex=source_family).version == 4
+    parent.unlink()
+    assert parent_worker.proc()["ok"] is False
+
+    child = todo / children[0][0]
+    child_in_running = running / child.name
+    child.rename(child_in_running)
+    worker(child_in_running, children[0][1])
+
+    unknown = running / "1.txt"
+    unknown.write_text("other sensitive source", encoding="utf-8")
+    worker(unknown, "other sensitive source")
+    # Matching basename with stale/changed prompt must NOT inherit family.
+    worker(child_in_running, "changed child source that is not verified")
+
+    with audit.open(encoding="utf-8", newline="") as stream:
+        reader = csv.DictReader(stream)
+        rows = list(reader)
+        assert reader.fieldnames[-1] == "split_family_id"
+    assert len(rows) == 4
+    assert [row["split_family_id"] for row in rows] == [
+        source_family, source_family, "", ""]
+    assert len({row["worker_call_id"] for row in rows}) == 4
+    assert len({row["audit_record_id"] for row in rows}) == 4
+    assert all(row["call_llm_api_returned"] == "NO" for row in rows)
+    with zipfile.ZipFile(audit.with_suffix(".xlsx")) as archive:
+        sheet = archive.read("xl/worksheets/sheet1.xml").decode("utf-8")
+    assert "split_family_id" in sheet and source_family in sheet
+    assert "root sensitive prompt" not in sheet
+    from czjLLM.utilities.llm_failure_summary import summarize_llm_failure_audit
+    report = summarize_llm_failure_audit(audit)
+    assert report["observed_call_attempts"] == 4
+    assert report["failed_call_attempts"] == 4
+    assert "split_family_id" not in report
+
+
+def test_known_legacy_csv_retains_old_width_with_explicit_split_family(tmp_path):
+    import uuid
+    import zipfile
+    from czjLLM.utilities.llm_failure_summary import summarize_llm_failure_audit
+
+    family = uuid.uuid4().hex
+    for offset in range(1, 5):
+        fields = _AUDIT._FIELDS[:-offset]
+        path = tmp_path / f"llm_call_audit_20261029-legacy-{offset}.csv"
+        with path.open("w", encoding="utf-8", newline="") as stream:
+            writer = csv.DictWriter(stream, fieldnames=fields)
+            writer.writeheader()
+        original = path.read_bytes().splitlines()[0]
+        log_llm_call(audit_path=str(path), run_id="run",
+                     worker_call_id="a" * 32, split_family_id=family,
+                     call_llm_api_returned=False,
+                     model_spec={"num_ctx": 1024}, ok=False)
+        assert path.read_bytes().splitlines()[0] == original
+        with path.open(encoding="utf-8", newline="") as stream:
+            reader = csv.DictReader(stream)
+            rows = list(reader)
+        assert reader.fieldnames == fields
+        assert len(rows) == 1 and None not in rows[0]
+        assert "split_family_id" not in rows[0]
+        assert summarize_llm_failure_audit(path)["observed_call_attempts"] == 1
+        with zipfile.ZipFile(path.with_suffix(".xlsx")) as archive:
+            sheet = archive.read("xl/worksheets/sheet1.xml").decode("utf-8")
+        assert "split_family_id" not in sheet
