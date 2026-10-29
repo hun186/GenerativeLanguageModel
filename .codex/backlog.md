@@ -63,3 +63,8 @@
 - [x] #248 accepted squash merge `8468ed5bc8382c62d6f7278be60264f84e57db7f`, prior Linux #40738436235 SUCCESS and Codex 0 Findings/Threads. Historical #248 pending entries superseded.
 - [ ] Independent `feat/worker-split-family-audit-20261029`: source-verified Worker call correlated to existing persisted explicit split intent via new trailing CSV/XLSX `split_family_id`; tests on real queued/journal files, actual Worker proc with isolated model, failure-report-v1 and legacy-width regressions. Await exact-head Hosted Linux, immutable archive and formal Codex Review. Do not Merge without user authorization; PR #231 unchanged.
 - [ ] Later: generation-locked authenticated crash/replay, generic resubmission and SDK HTTP attribution, unique-document denominators and controlled Windows/Ollama/ES persisted readback.
+
+## 2026-10-29 #231 reconciliation work
+
+- [ ] #231 old head `a8711e9` was safe only on obsolete base; reconcile onto current `main` `d7d385a` without losing accepted #249/GUI/archive changes. New dedicated recovery regression in hosted Linux `offline-e2e`; validate actual successful exact-head CI and fresh formal Codex review. User Merge approval required.
+- [ ] Stop producers/GUI before any real restoration; actual Windows hardlink/locking behavior, malicious filesystem interference and physical service acceptance remain operator-deferred. Never claim automated crash recovery or authenticated history.

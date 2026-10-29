@@ -2,6 +2,8 @@
 
 ## Current Focus
 
+- **2026-10-29 PR #231 reconciliation (pending):** Hosted main `d7d385aff51bf080fbe0314f92dad8c6c07d6b0a` includes user-approved merged #249, source-verification hardening, and a separate `muse-glimmer` config change. Existing #231 first-pass Linux CI and Codex clean apply only to `a8711e9` from old #230 base; old branch is 224 commits behind main and mergeable=false. New two-parent reconciliation preserves accepted main, introduces only bounded stopped-producer JSONL interrupted-rotation CLI + tests and docs, and MUST pass new exact-head Linux CI and formal Codex review before any merge approval. #250 obsolete/closed without merge. Windows physical readback deferred.
+
 - **Current 2026-10-29:** #248 user-approved merged to main `8468ed5bc8382c62d6f7278be60264f84e57db7f` (prior exact-head Codex zero Findings/Threads and Linux #40738436235 SUCCESS). New `feat/worker-split-family-audit-20261029` links source-matched real Worker calls to verified persisted split-intent family UUIDs. It captures parents after the repair journal is written, descendants via direct/nested evidence, and emits an optional trailing CSV/XLSX field while preserving four prior headers and unchanged failure report-v1. Main postmerge #40790298292 initially queued; real Windows/Ollama/ES deferred. PR #231 OPEN/untouched; new branch Linux and Codex review still pending, NO Merge authorized.
 
 

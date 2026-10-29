@@ -173,3 +173,26 @@ GUI 主執行緒只接收背景執行緒回傳的彙總資訊，不在 Tk 執行
 
 
 注意：超限世代的「避免重掃描快取」與「本工作階段已觀察到的檔案存在紀錄」分開管理。即使因為同時讀寫、metadata 競態而取消超限快取，已經看過的歷史封存數量與活躍檔仍不能悄悄消失。活躍檔被移走，必須能由新增且同一檔案身分的封存分段解釋。反之，驗證失敗的陌生封存／Manifest 不會自動變成已接受的歷史基準，以避免修復臨時錯誤後仍無法恢復正常統計。此功能仍不授權線上輪替。
+
+
+## 手動輪替中斷後的保守復原（2026-10-24，獨立 PR 待驗）
+
+當已建立完整性 Manifest 的單次執行，在 JSONL 封存名稱轉移完成、Manifest 尚未完成發布的狹窄中斷窗口內停止，目錄可能存在比 Manifest **恰好多一份**連續編號封存、原活躍檔案消失的狀態。此時原有報告依規定拒絕宣稱封存已驗證；不可直接重新 `--initialize` 覆蓋基準。
+
+先執行完全唯讀檢查：
+
+```bash
+python -m czjLLM.cli_tools.processing_quality_recover --audit-path logs/llm_call_audit_<run_id>.csv
+```
+
+回報 `verified`、`rollback_candidate`、`ambiguous_active_present`、`unsealed_legacy` 或 `not_applicable`，並只提供已封存、現存封存份數與活躍檔是否存在，不顯示任何原始日誌、文件 ID、Prompt、錯誤文字或絕對路徑。`rollback_candidate` 只表示**已驗證 Manifest 原有封存全部完整，另外恰有一份內容完整、末行換行的未受保護封存，且活躍檔不存在**；它不證實最後一份資料必然由中斷輪替產生，亦不證實其中每個事件都有效。
+
+經操作者另行確認所有 Workers、排程及 GUI 已停止、檢查現場與備份後，才可明確執行：
+
+```bash
+python -m czjLLM.cli_tools.processing_quality_recover --audit-path logs/llm_call_audit_<run_id>.csv --rollback --confirm-stopped
+```
+
+使用相同寫入鎖，僅在 `rollback_candidate` 可復核成立時，把那份**尚未納入 Manifest**的分段內容恢復成活躍 JSONL；不修改已有 SHA-256 Manifest、任何先前封存，也不覆寫已存在的活躍檔。為避免競爭覆寫，復原時使用排他硬連結建立活躍名稱，檢核相同 bytes 後，才移除原先**未封存完成**的額外名稱。復原前（唯讀檢查及持鎖復核）會拒絕已存在其他 Hardlink 的額外候選檔（`st_nlink` 必須恰為 1），避免原封存或其他檔案的 inode 被恢復為可寫 active；新建立的 active 與候選檔必須恰好形成同一 inode 的兩個連結，否則保留兩者供人工處理。若檔案系統不支援硬連結便拒絕作業；若兩步驟間再度中斷，可能留下兩個指向相同資料的名稱，系統會回報 `ambiguous_active_present`，要求人工判斷而不清除任一檔案。成功回報 `rolled_back_to_active_unsealed`，代表新增檔案回到**未封存活躍狀態**，後續再由原本的手動輪替流程封存並將摘要加入 Manifest。
+
+**拒絕自動復原**：Manifest 遺失或損壞、已封存的任一檔案雜湊不符、缺少既有封存、多於一份額外封存、活躍檔同時存在、符號連結、未確實停止讀寫程序等。工具不會由未驗證額外封存重算或直接延伸 Manifest，也不會自動刪除已封存資料。這是經人工作業隔離下有限且保守的復原流程，**不是**自動當機修復、全面斷電一致性保證，也不能取代備份／外部可信驗證。GUI 跨段讀取已另行實作，但仍要求停止相關 Workers／GUI 進行手動輪替；自動刪除與清理仍未開啟。

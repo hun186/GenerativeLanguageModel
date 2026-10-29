@@ -136,3 +136,7 @@ The following sections describe the accepted main implementation through PR #239
 ## 2026-10-29 source-verified Worker/split correlation
 
 - The first parent split journal is written after its LLM response is repaired; hence look up lineage **after** postprocessing while preserving a bounded-memory verified actual queued-source observation from **before** `CallLLMAPI`. No reliance on filename/time/error strings, no prompt payload in the new UUID field, no changes to failure-report v1 or queue/SDK retry strategy. Attach only with Worker call ID and wrapper-return observation; four preceding audit headers remain byte-width compatible. No claim of authenticated source generation or HTTP retries; #231 is independent.
+
+## 2026-10-29 #231 main-first safety reconciliation (pending acceptance)
+
+- Avoid a blind merge of the 224-behind branch: preserve `main`'s stronger #249 source verification, GUI budget guards and immutable Codex archives. Make #231's recovery functionality a two-parent integration commit (old #231 head + accepted current main as parents) with a tree built from current main plus only its new recovery module/CLI/tests and bounded docs. Explicit stopped-producer rollback uses exclusive hardlink, never unlink sealed shards, never rebaseline SHA256 ledger; run latest-head full Linux E2E/archive regression and formal Codex review. Never merge without explicit user approval.
