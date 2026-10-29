@@ -59,6 +59,7 @@ from czjLLM.prompt_pipeline.slice_identity import (
     committed_split_parent_identities, digest_text,
     include_committed_split_roots, install_split_prompts,
     is_verified_queued_split_child, reconcile_split_transitions,
+    verified_queued_prompt_source, verified_split_family_id,
     record_success_identity, resolve_success_leaves,
     restore_full_restart_parent, valid_success,
 )
@@ -2818,6 +2819,7 @@ class PromptAPIPipeline:
         response = None
         llm_request_attempted = False
         worker_call_id = ""  # Filled only at the real CallLLMAPI boundary.
+        split_source_verified = False
         call_llm_api_returned = False  # Actual wrapper return, not provider HTTP proof.
         # Explicit execution site, never inferred from exception text.
         worker_failure_code = "WORKER_PRECALL_EXCEPTION"
@@ -2880,6 +2882,12 @@ class PromptAPIPipeline:
             # 2) 呼叫 LLM
             worker_failure_code = "WORKER_LLM_CALL_EXCEPTION"
             worker_call_id = uuid.uuid4().hex
+            try:
+                split_source_verified = verified_queued_prompt_source(
+                    self.promptFile, self.content,
+                )
+            except Exception:
+                split_source_verified = False
             llm_request_attempted = True
             response, cost = CallLLMAPI(
                 self.content,
@@ -2982,6 +2990,16 @@ class PromptAPIPipeline:
         # failure cannot create both success and failure rows.
         if llm_request_attempted:
             try:
+                # Initial failed parent journal may be written DURING repair.
+                # Require a pre-call disk snapshot, then verify intent after.
+                split_family_id = ""
+                if split_source_verified:
+                    try:
+                        split_family_id = verified_split_family_id(
+                            self.promptFile, self.content,
+                        )
+                    except Exception:
+                        pass
                 log_llm_call(
                     audit_path=self.audit_path,
                     run_id=self.audit_run_id,
@@ -3002,6 +3020,7 @@ class PromptAPIPipeline:
                     stage_identity=self.audit_prompt_tokens.get("stage_identity", ""),
                     worker_call_id=worker_call_id,
                     call_llm_api_returned=call_llm_api_returned,
+                    split_family_id=split_family_id,
                 )
             except Exception as audit_ex:
                 print(

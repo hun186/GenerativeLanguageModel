@@ -71,3 +71,7 @@
 ## 2026-10-29 persisted explicit split-intent family identity (pending acceptance)
 
 - Existing single-extract `slice_identity.record_split_identity` writes a version-1 SHA256-only split-intent journal before two child files. The independent `feat/verified-split-retry-lineage-20261029` adds optional random `split_family_id` to new journals without replacing version/parent/child digests. A bounded `verified_split_family_id` verifies the exact queued parent or direct `-0`/`-1` child prompt against the persisted two-child journal; nested split inherits its verified parent group. Old journals without ID yield unknown; filename-only matches, symlink/oversize/corrupt journals yield none. This remains local, unauthenticated **intent** evidence, not proof the split committed, a provider HTTP retry, original document or safe writeback; Worker/CSV/report unchanged.
+
+## 2026-10-29 Worker ↔ split-intent evidence boundary
+
+- Before actual `CallLLMAPI`, `PromptAPIPipeline.proc` streaming-hashes the real queued file against its sent content without retaining another full prompt. After repair (which may first create the parent's journal), strict `verified_split_family_id` supplies an optional lineage UUIDv4 to the same Worker audit row. New trailing CSV/XLSX field keeps four prior headers compatible. This is an unauthenticated local source/intention correlation, not a lock, complete retry census, HTTP-level identity or sink readback.

@@ -2,6 +2,9 @@
 
 ## Current Focus
 
+- **Current 2026-10-29:** #248 user-approved merged to main `8468ed5bc8382c62d6f7278be60264f84e57db7f` (prior exact-head Codex zero Findings/Threads and Linux #40738436235 SUCCESS). New `feat/worker-split-family-audit-20261029` links source-matched real Worker calls to verified persisted split-intent family UUIDs. It captures parents after the repair journal is written, descendants via direct/nested evidence, and emits an optional trailing CSV/XLSX field while preserving four prior headers and unchanged failure report-v1. Main postmerge #40790298292 initially queued; real Windows/Ollama/ES deferred. PR #231 OPEN/untouched; new branch Linux and Codex review still pending, NO Merge authorized.
+
+
 - **Authoritative main 2026-10-28:** user-approved #247 squash-merged at `d61d223f80ff7f12c9a04ba8f002e8be26d71a5c`; exact-head formal Codex Review 0 Findings/Threads and PR Linux `offline-e2e` #40673229040 SUCCESS incl. immutable archives. Main postmerge #40715931308 needs explicit completion check; Windows 3.10/3.11 operator-deferred. Older #247 pending/current-focus entries below are superseded. Independent PR #231 OPEN/untouched.
 - **Current bounded engineering branch:** `feat/verified-split-retry-lineage-20261029` enriches existing v1 persisted single-extract JSON split-intent journal with random `split_family_id` UUID4 and adds a digest-verified direct parent/child/nested lineage lookup. Old journals remain readable as **unknown**, not retroactively attributed. This is only explicit split-intent ancestry, not general RUNNING→TODO, provider/SDK retries, document/HTTP identity, completed split or authoritative failure denominator. No LLM, ES/SQL, CSV/XLSX or report schema changes. Require latest-head Hosted Linux CI and formal Codex review; do not Merge without user permission.
 
