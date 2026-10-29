@@ -44,6 +44,29 @@ class PreflightTests(unittest.TestCase):
                 preflight("0" * 40, cwd=work)
             self.assertEqual(refs_before, git(work, "show-ref"))
 
+    def test_synthetic_private_backup_restore_ref_shas(self):
+        # Proves bundle/restore mechanics only on fake data; never bundle live CI repo.
+        with tempfile.TemporaryDirectory() as root:
+            root = Path(root)
+            work = root / "src"
+            work.mkdir()
+            git(work, "init", "-b", "main")
+            git(work, "config", "user.email", "fixture@example.invalid")
+            git(work, "config", "user.name", "Fixture")
+            (work / "README.md").write_text("synthetic and safe\n", encoding="utf-8")
+            git(work, "add", ".")
+            git(work, "commit", "-m", "synthetic root")
+            git(work, "branch", "legacy")
+            bundle = root / "private-example.bundle"
+            git(work, "bundle", "create", str(bundle), "--all")
+            git(work, "bundle", "verify", str(bundle))
+            restored = root / "restored.git"
+            git(root, "clone", "--mirror", str(bundle), str(restored))
+            self.assertEqual(
+                git(work, "for-each-ref", "--format=%(refname) %(objectname)", "refs/heads"),
+                git(restored, "for-each-ref", "--format=%(refname) %(objectname)", "refs/heads"),
+            )
+
     def test_malformed_expected_sha_refused(self):
         for candidate in ("HEAD", "", "123", "a" * 41, "Z" * 40):
             with self.assertRaises(ValueError):
