@@ -132,3 +132,7 @@ The following sections describe the accepted main implementation through PR #239
 ## 2026-10-29 explicit persisted split lineage ID (pending review)
 
 - Extend the already-durable v1 SHA256 parent+two-child JSON repair *intent* journal with an independently random UUID4 `split_family_id`; don't hash user input to create group identity or infer from filenames alone. Require direct parent journal with matched child SHA256 and canonical two-child name pair before inheriting ID for child or nested split. Preserve original hashes, file format version, resume/rollback code and old journals (unknown ID), and never claim journal identity means actual committed children or LLM calls. Keep Worker audit CSV/XLSX/report v1 untouched; separate actual Worker-to-family correlation and cross-run/request retry grouping later after source-level proofs. No Merge without explicit user authorization.
+
+## 2026-10-29 split-family propagation contract (pending formal review)
+
+- Expose only source-verified `verified_split_family_id` from #248 explicit hash-bound JSON split journal to the Worker append-only audit boundary, never construct group identity from filename, timestamp, error, prompt plaintext or neighboring CSV rows. Require canonical random UUID4 and a real `worker_call_id` for nonempty `split_family_id`. New CSV/XLSX schema appends a trailing field; exactly four previous full headers stay unchanged on append and unrelated rows remain empty. Do not modify old journals, source work, provider policies, report-v1 observed-denominator semantics, or ES/SQL sink state.
