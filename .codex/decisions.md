@@ -140,3 +140,7 @@ The following sections describe the accepted main implementation through PR #239
 ## 2026-10-29 #231 main-first safety reconciliation (pending acceptance)
 
 - Avoid a blind merge of the 224-behind branch: preserve `main`'s stronger #249 source verification, GUI budget guards and immutable Codex archives. Make #231's recovery functionality a two-parent integration commit (old #231 head + accepted current main as parents) with a tree built from current main plus only its new recovery module/CLI/tests and bounded docs. Explicit stopped-producer rollback uses exclusive hardlink, never unlink sealed shards, never rebaseline SHA256 ledger; run latest-head full Linux E2E/archive regression and formal Codex review. Never merge without explicit user approval.
+
+## 2026-10-29 first queue evidence phase (pending review)
+
+- Record only actual completed TODO/RUNNING rename observations, not guessed retry ancestry from matching filenames, hashes, exception text or existing Worker IDs. Store event UUID4 and bounded source bytes digest in item-local append-only JSON; never log raw prompt, basename, path or response. Observation failures must never abort or requeue an already claimed task. A later phase will require a durable verified source generation/lease to correlate retry attempts and Worker calls. No changes to report-v1 denominators.

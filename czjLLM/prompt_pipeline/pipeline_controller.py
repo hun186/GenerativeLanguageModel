@@ -105,6 +105,7 @@ from czjLLM.prompt_pipeline.runtime_support.load_meter import (
     meter_update,
     safe_unlink,
 )
+from czjLLM.prompt_pipeline.runtime_support.queue_observation import record_queue_transition
 from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     _ensure_in_todo,
     _running_to_todo,
@@ -454,6 +455,12 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                         try:
                             todo_dst = _to_todo(pf)
                             os.replace(pf, todo_dst)
+                            # Only after the explicit timeout/restart requeue;
+                            # never infer retries from error text or basenames.
+                            try:
+                                record_queue_transition(todo_dst, "requeued", previous_path=pf)
+                            except Exception:
+                                pass
                         except FileNotFoundError:
                             pass
                         except Exception as ex:

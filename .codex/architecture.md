@@ -79,3 +79,7 @@
 ## 2026-10-29 stopped-producer quality JSONL recovery (PR #231 integration)
 
 - Separate `utilities.processing_quality_recovery` and `cli_tools.processing_quality_recover` inspect SHA256 sealed manifests, detect one extra consecutive unsealed shard without active path, and under existing quality writer lock restore it via exclusive hardlink then remove the extra name only after byte verification. Sealed manifest, accepted shards, offline quality-report semantics, GUI readers and audit CSV stay unchanged. A second interruption leaves an explicit ambiguous two-name state; unrelated writers are beyond the operator stop barrier. This feature is awaiting fresh exact-head CI/Codex after main reconciliation.
+
+## 2026-10-29 queue transition observation boundary (pending)
+
+- Runtime queue observer at `runtime_support/queue_observation.py` records an independent append-only UUID4 event after successful TODO/RUNNING `os.replace` in `prompt_queue` and the consumer timeout rollback. It streams real moved-file bytes, stores SHA256/size/opaque queue-name hash/time only, rejects symlinked or changing sources and reads bounded records fail-closed. Writes are best-effort; queue mechanics, Worker CallLLMAPI, split journal, CSV/XLSX, ES/SQL and quality reports are unchanged. Observed move counts are not retry identities.

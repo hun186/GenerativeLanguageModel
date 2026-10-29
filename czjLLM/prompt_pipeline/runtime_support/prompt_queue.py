@@ -3,6 +3,8 @@
 import os
 from pathlib import Path
 
+from czjLLM.prompt_pipeline.runtime_support.queue_observation import record_queue_transition
+
 
 def pick_and_claim_next_prompts(item_dirs, per_round_limit=128):
     """
@@ -30,6 +32,12 @@ def pick_and_claim_next_prompts(item_dirs, per_round_limit=128):
             except OSError:
                 continue
 
+            # Witness only a completed atomic claim; telemetry is never a
+            # prerequisite for running the work.
+            try:
+                record_queue_transition(dst_p, "claimed", previous_path=src_p)
+            except Exception:
+                pass
             claimed.append((str(dst_p), str(item_dir)))
             if len(claimed) >= per_round_limit:
                 return claimed
@@ -97,6 +105,12 @@ def recover_running_to_todo(item_dirs):
             dst.parent.mkdir(parents=True, exist_ok=True)
             try:
                 os.replace(str(p), str(dst))
+                # A successful requeue move is evidence of a queue transition,
+                # not proof of a second LLM/provider invocation.
+                try:
+                    record_queue_transition(dst, "requeued", previous_path=p)
+                except Exception:
+                    pass
                 moved += 1
             except FileNotFoundError:
                 pass
