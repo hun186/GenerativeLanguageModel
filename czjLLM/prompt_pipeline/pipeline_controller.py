@@ -113,6 +113,7 @@ from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     _to_todo,
     pick_and_claim_next_prompts,
     recover_running_to_todo,
+    require_no_pending_todo_sources,
 )
 from czjLLM.prompt_pipeline.runtime_support.stage_mode import (
     explicit_stage_flow as _explicit_stage_flow,
@@ -336,6 +337,11 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                 if stop_event.is_set():
                     #if not pick_next_prompts(item_dirs, per_round_limit=1):
                     if not pick_and_claim_next_prompts(item_dirs, per_round_limit=1):
+                        # A safe claim can be blocked by a basename collision,
+                        # an in-flight RUNNING target, filesystem restrictions,
+                        # or an interrupted prior operation. Never report the
+                        # consumer as drained while actual TODO sources remain.
+                        require_no_pending_todo_sources(item_dirs)
                         break
                 time.sleep(0.1)
                 continue

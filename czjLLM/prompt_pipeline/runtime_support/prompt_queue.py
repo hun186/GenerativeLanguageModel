@@ -41,6 +41,18 @@ def _claim_regular_source_no_clobber(source: Path, target: Path) -> bool:
         return False
 
 
+def require_no_pending_todo_sources(item_dirs) -> None:
+    """Fail instead of finalizing a consumer while unclaimable TODO files remain.
+
+    Called only when the producer stopped and both regular claim sweeps found
+    no claimable work. Never delete or implicitly rename private sources.
+    """
+    for item_dir in item_dirs:
+        todo = Path(item_dir) / "TODO"
+        if todo.is_dir() and any(p.is_file() or p.is_symlink() for p in todo.rglob("*")):
+            raise RuntimeError("undispatched TODO sources remain after producer stopped")
+
+
 def pick_and_claim_next_prompts(item_dirs, per_round_limit=128, *, claim_ids_out=None):
     """
     從各 item_dir 的 TODO 中挑選檔案，只領取不會覆寫 RUNNING 的檔案。

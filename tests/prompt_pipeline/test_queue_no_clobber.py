@@ -152,3 +152,25 @@ def test_preexisting_running_symlink_not_followed_or_overwritten(tmp_path):
     assert source.read_bytes() == b"good queued text"
     assert outside.read_bytes() == b"protected"
     assert target.is_symlink()
+
+
+def test_stopped_producer_cannot_finalize_with_unclaimable_todo(tmp_path):
+    item = tmp_path / "item"
+    source = _todo(item, "root.txt", b"not dispatched")
+    from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
+        require_no_pending_todo_sources,
+    )
+    with pytest.raises(RuntimeError, match="undispatched TODO"):
+        require_no_pending_todo_sources([str(item)])
+    assert source.read_bytes() == b"not dispatched"
+    source.unlink()
+    require_no_pending_todo_sources([str(item)])
+
+
+def test_consumer_uses_fail_closed_pending_guard_at_shutdown():
+    import inspect
+    from czjLLM.prompt_pipeline import pipeline_controller
+    source = inspect.getsource(pipeline_controller.llm_stream_consumer)
+    assert "require_no_pending_todo_sources(item_dirs)" in source
+    guard = source.index("require_no_pending_todo_sources(item_dirs)")
+    assert "break" in source[guard:guard + 180]

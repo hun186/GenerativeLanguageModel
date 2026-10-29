@@ -20,3 +20,5 @@ Previously, the streaming queue flattened two nested sources such as `TODO/a/roo
 ## Verification
 
 Hosted Linux CI runs actual filesystem tests of preexisting RUNNING collision, nested duplicate name preservation, ordinary exclusive claim/receipt, unsupported hardlink, interrupted source unlink, two-thread competition, and symlink handling; previously accepted queue/Worker provenance tests are rerun. The project still requires formal Codex Review and latest exact-head Hosted CI prior to merge; Windows real-hardware behavior and Ollama/ES/SQL remain operator-deferred.
+
+**Consumer shutdown:** if the producer has stopped and two consecutive claim attempts find no claimable sources, the streaming consumer checks all item TODO directories. Any remaining file (including a deferred same-basename conflict or unsupported hardlink source) raises a payload-free orchestration failure and keeps the files pending, rather than silently declaring the queue drained. It does not automatically rename/de-duplicate those files.
