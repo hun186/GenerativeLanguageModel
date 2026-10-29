@@ -3578,6 +3578,12 @@ def producer_backpressure_wait(ctx: LLMJobConfig,
     last_change_ts = start
 
     while True:
+        # A terminal claim rollback cannot be drained by the stopped consumer.
+        # The producer must unwind immediately (no more dispatch), even when
+        # ordinary stop_event is not yet set by the coordinator teardown.
+        blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+        if blocked is not None and blocked.is_set():
+            return
         # 停止訊號 → 直接返回
         if stop_event.is_set():
             return

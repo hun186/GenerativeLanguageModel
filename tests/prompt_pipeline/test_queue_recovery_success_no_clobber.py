@@ -349,3 +349,102 @@ def test_failed_claim_rollback_signals_coordinator_and_preserves_files(
     assert old_running.read_bytes() == b"fresh source must be retained"
     assert not pending.exists()
     assert summarize_queue_observations(item)["observed_claims"] == 0
+
+
+def test_real_producer_exits_unfinished_drain_on_terminal_claim_failure(
+    monkeypatch, tmp_path
+):
+    """Codex P2: producer pending/outstanding must not wait for hard timeout.
+
+    This exercises the actual SQL/Table/ES produce_rows entry, rather than
+    pre-setting the producer-done flag and skipping its drain loop.
+    """
+    import threading
+    from czjLLM.sql_mode.runtime import producer as prod
+    from czjLLM.prompt_pipeline import pipeline_controller as pc
+
+    blocked = threading.Event()
+    stop = threading.Event()
+    ctx = SimpleNamespace(
+        _queue_claim_blocked_event=blocked,
+        producer_drain_soft=300.0,
+        producer_drain_hard=600.0,
+        mode="sql",
+        on_premises=True,
+    )
+    progress = {}
+    produced = []
+
+    monkeypatch.setattr(prod, "order_rows_avoiding_running", lambda _ctx, rows: rows)
+    monkeypatch.setattr(prod, "announce_pending_recheck_if_enabled", lambda _ctx: False)
+    monkeypatch.setattr(prod, "finalize_scheduled", lambda *_a, **_k: None)
+    monkeypatch.setattr(prod, "cap_orchestration_workers", lambda *_a, **_k: 1)
+    monkeypatch.setattr(prod, "_stream_multistage_enabled", lambda _ctx: False)
+    monkeypatch.setattr(prod, "still_pending_before_dispatch", lambda *_a, **_k: True)
+    monkeypatch.setattr(prod, "mark_running", lambda *_a, **_k: None)
+    monkeypatch.setattr(prod, "record_adjustment", lambda *_a, **_k: None)
+    monkeypatch.setattr(prod, "tlog", lambda *_a, **_k: None)
+    monkeypatch.setattr(prod, "tlog_warn", lambda *_a, **_k: None)
+    monkeypatch.setattr(prod, "schedule_one_row",
+                        lambda *_a, **_k: produced.append("sent") or 1)
+    monkeypatch.setattr(prod, "producer_backpressure_wait", lambda **_k: None)
+
+    def read_outstanding(_meter):
+        # The actual Consumer would have raised QueueClaimRollbackError and
+        # signaled the event while outstanding remains nonzero.
+        blocked.set()
+        return 5
+
+    monkeypatch.setattr(prod, "outstanding_now", read_outstanding)
+    def save_meter(_fn, change):
+        d = {"progress": dict(progress)}
+        change(d)
+        progress.update(d.get("progress", {}))
+        return d
+    monkeypatch.setattr(prod, "meter_update", save_meter)
+
+    results = []
+    worker = threading.Thread(
+        target=lambda: results.append(prod.produce_rows(
+            ctx, [("row-1", "private input")],
+            registry=SimpleNamespace(), meter_fn=str(tmp_path / "meter"),
+            low=0, stop_event=stop, consumer=threading.current_thread(),
+            p_sched=SimpleNamespace(update=lambda _n: None),
+        )),
+        daemon=True,
+    )
+    worker.start()
+    worker.join(timeout=3)
+    assert not worker.is_alive(), "producer deadlocked in outstanding drain"
+    assert produced == ["sent"]
+    assert results == [1]
+    assert blocked.is_set() and not stop.is_set()
+    assert progress["prod_done"] is False, "terminal failure is not normal drain"
+
+
+def test_backpressure_wait_exits_on_terminal_rollback_without_cancel(
+    monkeypatch, tmp_path
+):
+    """Keep producer stop/cancellation distinct from terminal queue failure."""
+    import threading
+    from czjLLM.prompt_pipeline import pipeline_controller as pc
+
+    blocked, stop = threading.Event(), threading.Event()
+    blocked.set()
+    ctx = SimpleNamespace(_queue_claim_blocked_event=blocked)
+    # A live thread would otherwise keep waiting for outstanding==low.
+    monkeypatch.setattr(pc, "meter_read",
+                        lambda *_a, **_k: {"queue": {"pending": 99, "running": 1}})
+    result = []
+    thread = threading.Thread(
+        target=lambda: result.append(pc.producer_backpressure_wait(
+            ctx, low=0, meter_fn=str(tmp_path / "meter"), stop_event=stop,
+            consumer_thread=None, hard_timeout=600,
+        )),
+        daemon=True,
+    )
+    thread.start()
+    thread.join(timeout=3)
+    assert not thread.is_alive()
+    assert result == [None]
+    assert blocked.is_set() and not stop.is_set()
