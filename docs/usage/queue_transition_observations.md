@@ -13,3 +13,5 @@ The read-only function summarize_queue_observations(item_dir) in czjLLM.prompt_p
 An event UUID identifies only one observed rename. It is not a worker_call_id, audit_record_id, split_family_id, source-document identity, provider/SDK HTTP request, successful ES/SQL writeback, or durable exactly-once dispatch checkpoint. Same pathname or source hash does not prove two attempts belong to the same logical retry family. Verified source generation/lease, checkpointing and Worker attribution are separate future tasks.
 
 Hosted Linux CI runs actual file move and append/read regressions. This does not establish Windows hardlink availability or real Ollama/ES/SQL integration.
+
+Nested RUNNING/stage-a/file.txt to TODO/stage-a/file.txt recovery must be observed in the item-level event namespace. The strict reader rejects duplicate JSON object keys, non-v4 UUID placeholders, invalid timestamps and all malformed metadata. These additional checks do not turn events into authoritative retry lineage.

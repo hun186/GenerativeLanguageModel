@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 import re
 import stat
-from uuid import uuid4
+from uuid import RFC_4122, UUID, uuid4
 
 _ROOT = "_extract_slice_identity"
 _KIND = "queue_events"
@@ -68,24 +68,43 @@ def record_queue_transition(path: str | Path, event: str, *, previous_path: str 
     if event not in _EVENTS:
         raise ValueError("invalid queue transition")
     p = Path(path)
-    if p.parent.name != _EVENTS[event] or p.suffix != ".txt":
+    if p.suffix != ".txt":
         return False
     previous = Path(previous_path) if previous_path is not None else None
     if previous is None or previous.name != p.name:
         return False
     if not _safe_path(p) or not _safe_path(previous):
         return False
-    root = p.parent.parent
-    old_queue = "TODO" if event == "claimed" else "RUNNING"
-    try:
-        previous.relative_to(root / old_queue)
-    except ValueError:
-        return False
+    # Queue roots are item-level directories. A recovered RUNNING/stage/file
+    # goes to TODO/stage/file; do not mistake the nested stage for item root.
+    if event == "claimed":
+        if p.parent.name != "RUNNING":
+            return False
+        root = p.parent.parent
+        try:
+            previous.relative_to(root / "TODO")
+        except ValueError:
+            return False
+    else:
+        root = None
+        for ancestor in previous.parents:
+            if ancestor.name != "RUNNING":
+                continue
+            candidate = ancestor.parent
+            try:
+                relative = previous.relative_to(ancestor)
+            except ValueError:
+                continue
+            if p == candidate / "TODO" / relative:
+                root = candidate
+                break
+        if root is None:
+            return False
     if previous.exists() or previous.is_symlink():
         return False
     try:
         digest, size = _source_snapshot(p)
-        namespace = p.parent.parent / _ROOT / _KIND
+        namespace = root / _ROOT / _KIND
         if not _safe_path(namespace):
             return False
         namespace.mkdir(parents=True, exist_ok=True)
@@ -122,6 +141,26 @@ def record_queue_transition(path: str | Path, event: str, *, previous_path: str 
         return False
 
 
+def _is_canonical_uuid4(value: object) -> bool:
+    if not isinstance(value, str) or not _UUID.fullmatch(value):
+        return False
+    try:
+        parsed = UUID(hex=value)
+    except (TypeError, ValueError, AttributeError):
+        return False
+    return (parsed.hex == value and parsed.version == 4
+            and parsed.variant == RFC_4122)
+
+
+def _no_duplicate_json_fields(pairs: list[tuple[str, object]]) -> dict:
+    result = {}
+    for name, value in pairs:
+        if name in result:
+            raise ValueError("duplicate queue observation JSON field")
+        result[name] = value
+    return result
+
+
 def _is_explicit_utc_timestamp(value: object) -> bool:
     if not isinstance(value, str):
         return False
@@ -146,7 +185,7 @@ def summarize_queue_observations(item_dir: str | Path) -> dict[str, int]:
     for index, path in enumerate(namespace.iterdir()):
         if index >= _MAX_EVENTS:
             raise ValueError("queue observation limit exceeded")
-        if path.suffix != ".json" or not _UUID.fullmatch(path.stem) or not _safe_path(path):
+        if path.suffix != ".json" or not _is_canonical_uuid4(path.stem) or not _safe_path(path):
             raise ValueError("invalid queue observation entry")
         info = path.lstat()
         if not stat.S_ISREG(info.st_mode) or info.st_size > _MAX_EVENT_BYTES:
@@ -163,7 +202,7 @@ def summarize_queue_observations(item_dir: str | Path) -> dict[str, int]:
                 or ident(closed) != ident(after) or len(data) > _MAX_EVENT_BYTES):
             raise ValueError("queue observation changed during reading")
         try:
-            record = json.loads(data)
+            record = json.loads(data, object_pairs_hook=_no_duplicate_json_fields)
         except (UnicodeError, ValueError, RecursionError) as exc:
             raise ValueError("invalid queue observation JSON") from exc
         if (not isinstance(record, dict) or
@@ -171,7 +210,7 @@ def summarize_queue_observations(item_dir: str | Path) -> dict[str, int]:
                                 "source_bytes", "queue_name_sha256", "observed_at_utc"} or
                 type(record["version"]) is not int or record["version"] != 1 or
                 not isinstance(record["event"], str) or record["event"] not in counts or
-                record["event_id"] != path.stem or
+                not _is_canonical_uuid4(record["event_id"]) or record["event_id"] != path.stem or
                 not isinstance(record["source_sha256"], str) or not _SHA.fullmatch(record["source_sha256"]) or
                 not isinstance(record["queue_name_sha256"], str) or not _SHA.fullmatch(record["queue_name_sha256"]) or
                 type(record["source_bytes"]) is not int or record["source_bytes"] < 0 or

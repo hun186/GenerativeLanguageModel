@@ -197,3 +197,46 @@ def test_aware_zero_offset_observation_timestamp_remains_valid(tmp_path):
     record["observed_at_utc"] = "2026-10-29T07:30:00+00:00"
     entry.write_text(json.dumps(record), encoding="utf-8")
     assert summarize_queue_observations(item)["observed_claims"] == 1
+
+
+def test_nested_running_requeue_preserves_item_level_event_namespace(tmp_path):
+    item, _ = _todo(tmp_path)
+    nested = item / "RUNNING" / "stage-a"
+    nested.mkdir(parents=True)
+    current = nested / "nested.txt"
+    current.write_text("nested private prompt", encoding="utf-8")
+    assert queue.recover_running_to_todo([str(item)]) == 1
+    relocated = item / "TODO" / "stage-a" / "nested.txt"
+    assert relocated.exists() and not current.exists()
+    assert summarize_queue_observations(item) == {
+        "observed_claims": 0, "observed_requeues": 1,
+    }
+    assert len(_events(item)) == 1
+    assert not (item / "TODO" / "stage-a" / "_extract_slice_identity").exists()
+
+
+def test_duplicate_json_fields_refused_instead_of_biasing_counts(tmp_path):
+    item, _ = _todo(tmp_path)
+    queue.pick_and_claim_next_prompts([str(item)])
+    event_file = _events(item)[0]
+    raw = event_file.read_text(encoding="utf-8")
+    assert '"event":"claimed"' in raw
+    event_file.write_text(
+        raw.replace('"event":"claimed"', '"event":"claimed","event":"requeued"'),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="JSON"):
+        summarize_queue_observations(item)
+
+
+def test_non_uuid4_event_record_and_filename_are_rejected(tmp_path):
+    item, _ = _todo(tmp_path)
+    queue.pick_and_claim_next_prompts([str(item)])
+    event_file = _events(item)[0]
+    record = json.loads(event_file.read_text(encoding="utf-8"))
+    record["event_id"] = "0" * 32
+    bogus = event_file.with_name(("0" * 32) + ".json")
+    event_file.rename(bogus)
+    bogus.write_text(json.dumps(record), encoding="utf-8")
+    with pytest.raises(ValueError, match="invalid queue observation"):
+        summarize_queue_observations(item)
