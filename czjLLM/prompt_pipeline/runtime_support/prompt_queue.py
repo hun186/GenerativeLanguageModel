@@ -6,7 +6,7 @@ from pathlib import Path
 from czjLLM.prompt_pipeline.runtime_support.queue_observation import record_queue_transition
 
 
-def pick_and_claim_next_prompts(item_dirs, per_round_limit=128):
+def pick_and_claim_next_prompts(item_dirs, per_round_limit=128, *, claim_ids_out=None):
     """
     從各 item_dir 的 TODO 中挑選檔案，並立即以 os.replace() 更名為 RUNNING/xxx.txt。
     回傳 [(pf_running, item_dir), ...]，其中 pf_running 位於 RUNNING 目錄。
@@ -35,7 +35,12 @@ def pick_and_claim_next_prompts(item_dirs, per_round_limit=128):
             # Witness only a completed atomic claim; telemetry is never a
             # prerequisite for running the work.
             try:
-                record_queue_transition(dst_p, "claimed", previous_path=src_p)
+                claim_id = record_queue_transition(
+                    dst_p, "claimed", previous_path=src_p,
+                    return_event_id=claim_ids_out is not None,
+                )
+                if claim_ids_out is not None and isinstance(claim_id, str):
+                    claim_ids_out[str(dst_p)] = claim_id
             except Exception:
                 pass
             claimed.append((str(dst_p), str(item_dir)))

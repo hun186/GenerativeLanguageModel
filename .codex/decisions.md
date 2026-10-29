@@ -144,3 +144,7 @@ The following sections describe the accepted main implementation through PR #239
 ## 2026-10-29 first queue evidence phase (pending review)
 
 - Record only actual completed TODO/RUNNING rename observations, not guessed retry ancestry from matching filenames, hashes, exception text or existing Worker IDs. Store event UUID4 and bounded source bytes digest in item-local append-only JSON; never log raw prompt, basename, path or response. Observation failures must never abort or requeue an already claimed task. A later phase will require a durable verified source generation/lease to correlate retry attempts and Worker calls. No changes to report-v1 denominators.
+
+## 2026-10-29 phase 2a: trusted queue claim → Worker evidence only
+
+- Pass the **exact random UUIDv4** emitted on the real successful queue claim directly from dispatcher to its Worker instance; never retrieve possible receipts by path/hash/time searches. Preserve the historic two-tuple queue API via a write-only optional `claim_ids_out` map and keep queue progress independent of telemetry publication. Before real `CallLLMAPI`, require the existing actual source/prompt check plus a bounded exact receipt re-read with file SHA256 and strict schema. Record an optional final `queue_claim_event_id` alongside `worker_call_id` in new CSV/XLSX, preserving five prior widths; existing report-v1 denominators unchanged. General Retry Family inference is explicitly deferred until authoritative generation-linked requeue and dispatch evidence exists, and never collapsed with the JSON `split_family_id`.

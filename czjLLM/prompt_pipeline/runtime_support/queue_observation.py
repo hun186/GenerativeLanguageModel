@@ -58,7 +58,10 @@ def _source_snapshot(path: Path) -> tuple[str, int]:
     return digest.hexdigest(), total
 
 
-def record_queue_transition(path: str | Path, event: str, *, previous_path: str | Path | None = None) -> bool:
+def record_queue_transition(
+    path: str | Path, event: str, *, previous_path: str | Path | None = None,
+    return_event_id: bool = False,
+) -> bool | str:
     """Observe a completed TODO/RUNNING move; never influence scheduler behavior.
 
     The old filename must be absent and new file must have the expected queue
@@ -137,9 +140,59 @@ def record_queue_transition(path: str | Path, event: str, *, previous_path: str 
             os.link(temporary, target, follow_symlinks=False)
         finally:
             temporary.unlink(missing_ok=True)
-        return True
+        return event_id if return_event_id else True
     except (OSError, ValueError, UnicodeError):
         return False
+
+
+def verified_claim_observation(prompt_file: str | Path, event_id: str) -> str:
+    """Check one explicitly handed-off dispatch receipt against real RUNNING bytes.
+
+    The trusted dispatcher supplies this id directly. Never search events
+    for a matching filename or hash to invent a retry/dispatch identity.
+    """
+    if not _is_canonical_uuid4(event_id):
+        return ""
+    p = Path(prompt_file)
+    if p.parent.name != "RUNNING" or p.suffix != ".txt" or not _safe_path(p):
+        return ""
+    record_path = p.parent.parent / _ROOT / _KIND / (event_id + ".json")
+    if not _safe_path(record_path):
+        return ""
+    try:
+        info = record_path.lstat()
+        if not stat.S_ISREG(info.st_mode) or info.st_size > _MAX_EVENT_BYTES:
+            return ""
+        flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0)
+        with os.fdopen(os.open(record_path, flags), "rb") as stream:
+            opened = os.fstat(stream.fileno())
+            data = stream.read(_MAX_EVENT_BYTES + 1)
+            closed = os.fstat(stream.fileno())
+        after = record_path.lstat()
+        identity = lambda x: (x.st_dev, x.st_ino, x.st_size, x.st_mtime_ns)
+        if (identity(info) != identity(opened) or identity(opened) != identity(closed)
+                or identity(closed) != identity(after) or len(data) > _MAX_EVENT_BYTES):
+            return ""
+        record = json.loads(data, object_pairs_hook=_no_duplicate_json_fields)
+        if (not isinstance(record, dict) or
+                set(record) != {"version", "event", "event_id", "source_sha256",
+                                "source_bytes", "queue_name_sha256", "observed_at_utc"} or
+                type(record["version"]) is not int or record["version"] != 1 or
+                record["event"] != "claimed" or record["event_id"] != event_id or
+                not isinstance(record["source_sha256"], str) or
+                not _SHA.fullmatch(record["source_sha256"]) or
+                type(record["source_bytes"]) is not int or record["source_bytes"] < 0 or
+                not isinstance(record["queue_name_sha256"], str) or
+                not _SHA.fullmatch(record["queue_name_sha256"]) or
+                not _is_explicit_utc_timestamp(record["observed_at_utc"])):
+            return ""
+        expected_name = hashlib.sha256(p.name.encode("utf-8")).hexdigest()
+        if record["queue_name_sha256"] != expected_name:
+            return ""
+        digest, size = _source_snapshot(p)
+        return event_id if (digest, size) == (record["source_sha256"], record["source_bytes"]) else ""
+    except (OSError, ValueError, UnicodeError, RecursionError, TypeError):
+        return ""
 
 
 def _is_canonical_uuid4(value: object) -> bool:

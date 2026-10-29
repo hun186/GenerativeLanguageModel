@@ -105,7 +105,7 @@ from czjLLM.prompt_pipeline.runtime_support.load_meter import (
     meter_update,
     safe_unlink,
 )
-from czjLLM.prompt_pipeline.runtime_support.queue_observation import record_queue_transition
+from czjLLM.prompt_pipeline.runtime_support.queue_observation import record_queue_transition, verified_claim_observation
 from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     _ensure_in_todo,
     _running_to_todo,
@@ -328,7 +328,8 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             #    did_recover = True
             # 🔸 B. 這裡用「可鎖定切片」的 pick（你已經在用）
             #batch = pick_next_prompts(item_dirs, per_round_limit=per_round_limit)
-            batch = pick_and_claim_next_prompts(item_dirs, per_round_limit=per_round_limit)
+            claimed_evidence = {}
+            batch = pick_and_claim_next_prompts(item_dirs, per_round_limit=per_round_limit, claim_ids_out=claimed_evidence)
 
             if not batch:
                 # 若無可派發任務：producer 已宣告結束且再檢一次仍空 → 收尾
@@ -376,6 +377,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     #model_spec=ctx.model_spec,
                     model_spec=job_spec,           # ★ 用副本，不要用 ctx.model_spec 本體
                     PGMSubDir=ctx.PGMSubDir,
+                    queue_claim_event_id=claimed_evidence.get(pf, ""),
                     **_llm_call_audit_kwargs(ctx),
                 ))
 
@@ -2742,6 +2744,7 @@ class PromptAPIPipeline:
                  debug_print_max_chars: int = 2000,
                  audit_run_id: str = "",
                  audit_path: str = "",
+                 queue_claim_event_id: str = "",
                  
                  ):
         self.task = task
@@ -2761,6 +2764,7 @@ class PromptAPIPipeline:
         self.debug_print_max_chars = int(debug_print_max_chars)
         self.audit_run_id = audit_run_id
         self.audit_path = audit_path
+        self.queue_claim_event_id = queue_claim_event_id
         self.audit_prompt_tokens = read_prompt_token_metadata(self.promptFile)
         
         # 1) 拿到規格的「私有」副本
@@ -2827,6 +2831,7 @@ class PromptAPIPipeline:
         llm_request_attempted = False
         worker_call_id = ""  # Filled only at the real CallLLMAPI boundary.
         split_source_verified = False
+        verified_queue_claim_id = ""
         call_llm_api_returned = False  # Actual wrapper return, not provider HTTP proof.
         # Explicit execution site, never inferred from exception text.
         worker_failure_code = "WORKER_PRECALL_EXCEPTION"
@@ -2895,6 +2900,13 @@ class PromptAPIPipeline:
                 )
             except Exception:
                 split_source_verified = False
+            if split_source_verified:
+                try:
+                    verified_queue_claim_id = verified_claim_observation(
+                        self.promptFile, getattr(self, "queue_claim_event_id", ""),
+                    )
+                except Exception:
+                    verified_queue_claim_id = ""
             llm_request_attempted = True
             response, cost = CallLLMAPI(
                 self.content,
@@ -3028,6 +3040,7 @@ class PromptAPIPipeline:
                     worker_call_id=worker_call_id,
                     call_llm_api_returned=call_llm_api_returned,
                     split_family_id=split_family_id,
+                    queue_claim_event_id=verified_queue_claim_id,
                 )
             except Exception as audit_ex:
                 print(

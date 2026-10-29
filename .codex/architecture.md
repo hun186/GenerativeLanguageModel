@@ -83,3 +83,7 @@
 ## 2026-10-29 queue transition observation boundary (pending)
 
 - Runtime queue observer at `runtime_support/queue_observation.py` records an independent append-only UUID4 event after successful TODO/RUNNING `os.replace` in `prompt_queue` and the consumer timeout rollback. It streams real moved-file bytes, stores SHA256/size/opaque queue-name hash/time only, rejects symlinked or changing sources and reads bounded records fail-closed. Writes are best-effort; queue mechanics, Worker CallLLMAPI, split journal, CSV/XLSX, ES/SQL and quality reports are unchanged. Observed move counts are not retry identities.
+
+## 2026-10-29 direct claim receipt → Worker boundary (new PR)
+
+- Existing `queue_observation.record_queue_transition(return_event_id=True)` optionally exposes the **id of the just-published record**; original bool return remains default. `pick_and_claim_next_prompts(claim_ids_out=...)` retains `[(running_path,item_dir)]` and receives only valid event IDs; `llm_stream_consumer` directly attaches an id to the appropriate `PromptAPIPipeline`. A bounded `verified_claim_observation(running_path,id)` reopens only that exact stored UUIDv4 claim event with symlink, duplicate JSON, UTC, size, raw file SHA256 and basename hash checks at the Worker call boundary. Opt-in CSV/XLSX trailing id stores the observed per-claim correlation only. Legacy paths with no exact dispatch proof remain blank. Source JSON is not copied into audit or a new cache. No retry group across separate claims or HTTP/ES/SQL evidence.
