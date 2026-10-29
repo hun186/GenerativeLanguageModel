@@ -9,6 +9,14 @@ from pathlib import Path
 from czjLLM.prompt_pipeline.runtime_support.queue_observation import record_queue_transition
 
 
+class QueueClaimRollbackError(RuntimeError):
+    """An already-claimed source could not safely return to its original TODO.
+
+    This terminal condition must reach the SQL/Table/ES coordinator; it is not
+    an ordinary missing/blocked candidate and cannot be retried blindly.
+    """
+
+
 def _claim_regular_source_no_clobber(source: Path, target: Path) -> bool:
     """Safely *avoid overwriting* an existing RUNNING destination.
 
@@ -136,7 +144,7 @@ def pick_and_claim_next_prompts(item_dirs, per_round_limit=128, *, claim_ids_out
                 if not _claim_regular_source_no_clobber(dst_p, src_p):
                     # Preserve all evidence; never schedule an ambiguous
                     # RUNNING/Success pair or silently report it as claimed.
-                    raise RuntimeError("queue claim collision recovery incomplete")
+                    raise QueueClaimRollbackError("queue claim collision recovery incomplete")
                 continue
 
             # Observe the real completed rename without changing the legacy

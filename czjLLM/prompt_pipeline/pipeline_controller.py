@@ -115,6 +115,7 @@ from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     recover_running_to_todo,
     require_no_pending_todo_sources,
     publish_success_text_no_clobber,
+    QueueClaimRollbackError,
 )
 from czjLLM.prompt_pipeline.runtime_support.stage_mode import (
     explicit_stage_flow as _explicit_stage_flow,
@@ -331,7 +332,20 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             # 🔸 B. 這裡用「可鎖定切片」的 pick（你已經在用）
             #batch = pick_next_prompts(item_dirs, per_round_limit=per_round_limit)
             claimed_evidence = {}
-            batch = pick_and_claim_next_prompts(item_dirs, per_round_limit=per_round_limit, claim_ids_out=claimed_evidence)
+            try:
+                batch = pick_and_claim_next_prompts(
+                    item_dirs, per_round_limit=per_round_limit,
+                    claim_ids_out=claimed_evidence,
+                )
+            except QueueClaimRollbackError:
+                # Rollback itself failed after a real claim; preserve all
+                # filesystem evidence, but tell the coordinator that pending
+                # work cannot be completed by this now-terminating consumer.
+                # Producer done is independent from the teardown stop event.
+                blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+                if blocked is not None:
+                    blocked.set()
+                raise
 
             if not batch:
                 # Producer completion is NOT stop_event: in SQL/Table/ES,

@@ -278,3 +278,74 @@ def test_failed_publication_keeps_original_error_when_cleanup_fails(
     with pytest.raises(FileExistsError):
         queue.publish_success_text_no_clobber(str(destination), "new output")
     assert destination.read_text(encoding="utf-8") == "original output"
+
+
+def test_failed_claim_rollback_signals_coordinator_and_preserves_files(
+    monkeypatch, tmp_path
+):
+    """Reproduce review P2 through the REAL consumer and file-based picker.
+
+    An old Success arrives in the claim gap, while rolling fresh RUNNING
+    back to TODO fails. The consumer must flag terminal queue failure for
+    coordinator shutdown instead of disappearing while pending stays >0.
+    """
+    import threading
+    from czjLLM.prompt_pipeline import pipeline_controller as pc
+    from czjLLM.prompt_pipeline.runtime_support import prompt_queue as queue
+
+    item, old_running = _setup_running(tmp_path, b"prior Worker source")
+    pending = item / "TODO" / "root.txt"
+    pending.parent.mkdir(parents=True)
+    pending.write_bytes(b"fresh source must be retained")
+    success = item / "Success" / "root.txt"
+
+    actual_move = queue._claim_regular_source_no_clobber
+    interleaving = []
+    def move_with_failed_rollback(source, target):
+        if source == pending and target == old_running:
+            assert old_running.read_bytes() == b"prior Worker source"
+            queue.publish_success_text_no_clobber(str(success), "old result")
+            old_running.unlink()  # prior Worker finished while new claim waited
+            interleaving.append("published_old_success")
+            return actual_move(source, target)
+        if source == old_running and target == pending:
+            interleaving.append("rollback_denied")
+            return False  # model permission error returning to original TODO
+        return actual_move(source, target)
+
+    monkeypatch.setattr(queue, "_claim_regular_source_no_clobber",
+                        move_with_failed_rollback)
+
+    producer_done, blocked, stopped = (threading.Event() for _ in range(3))
+    producer_done.set()
+    ctx = SimpleNamespace(
+        _producer_done_flag=producer_done,
+        _queue_claim_blocked_event=blocked,
+        stage_cfg=None,
+        es_writeback_rules=[],
+        sql_writeback_rules=[],
+    )
+    registry = SimpleNamespace(
+        list_items=lambda: {str(item): {"pk": "item"}},
+    )
+    failures = []
+    monkeypatch.setattr(pc, "resolve_pipeline_stages", lambda *_a, **_k: [])
+    monkeypatch.setattr(pc, "_stage_cfg_declares_flow", lambda *_a, **_k: False)
+    monkeypatch.setattr(pc, "meter_update", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "_audit_consumer_orchestration_failure",
+                        lambda _ctx, code: failures.append(code))
+    monkeypatch.setattr(pc, "tlog", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a, **_k: None)
+
+    pc.llm_stream_consumer(
+        ctx, registry, str(tmp_path / "meter"), stopped,
+        restart_event=threading.Event(), per_round_limit=4,
+    )
+    assert interleaving == ["published_old_success", "rollback_denied"]
+    assert blocked.is_set(), "coordinator must observe unrecoverable queue error"
+    assert producer_done.is_set() and not stopped.is_set()
+    assert failures == ["CONSUMER_TERMINATED"]
+    assert success.read_text(encoding="utf-8") == "old result"
+    assert old_running.read_bytes() == b"fresh source must be retained"
+    assert not pending.exists()
+    assert summarize_queue_observations(item)["observed_claims"] == 0
