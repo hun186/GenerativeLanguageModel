@@ -67,6 +67,34 @@ class PreflightTests(unittest.TestCase):
                 git(restored, "for-each-ref", "--format=%(refname) %(objectname)", "refs/heads"),
             )
 
+    def test_tag_change_invalidates_snapshot(self):
+        with tempfile.TemporaryDirectory() as root:
+            work = Path(root)
+            git(work, "init", "-b", "main")
+            git(work, "config", "user.email", "fixture@example.invalid")
+            git(work, "config", "user.name", "Fixture")
+            (work / "README.md").write_text("first", encoding="utf-8")
+            git(work, "add", ".")
+            git(work, "commit", "-m", "first")
+            old = git(work, "rev-parse", "HEAD")
+            (work / "README.md").write_text("second", encoding="utf-8")
+            git(work, "add", ".")
+            git(work, "commit", "-m", "second")
+            main = git(work, "rev-parse", "HEAD")
+            git(work, "remote", "add", "origin", ".")
+            git(work, "fetch", "origin", "+refs/heads/*:refs/remotes/origin/*")
+            git(work, "tag", "-a", "release", old, "-m", "one")
+            first = preflight(main, cwd=work)
+            git(work, "tag", "-d", "release")
+            git(work, "tag", "-a", "release", main, "-m", "two")
+            second = preflight(main, cwd=work)
+            self.assertEqual(first["tag_count"], second["tag_count"])
+            self.assertNotEqual(first["remote_ref_snapshot_sha256"], second["remote_ref_snapshot_sha256"])
+            git(work, "tag", "-d", "release")
+            git(work, "tag", "-a", "release", main, "-m", "three")
+            third = preflight(main, cwd=work)
+            self.assertNotEqual(second["remote_ref_snapshot_sha256"], third["remote_ref_snapshot_sha256"])
+
     def test_malformed_expected_sha_refused(self):
         for candidate in ("HEAD", "", "123", "a" * 41, "Z" * 40):
             with self.assertRaises(ValueError):
