@@ -333,7 +333,32 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             batch = pick_and_claim_next_prompts(item_dirs, per_round_limit=per_round_limit, claim_ids_out=claimed_evidence)
 
             if not batch:
-                # 若無可派發任務：producer 已宣告結束且再檢一次仍空 → 收尾
+                # Producer completion is NOT stop_event: in SQL/Table/ES,
+                # teardown sets stop_event only after the coordinator finishes.
+                # If the producer is done and there are no in-flight sources,
+                # an unclaimable TODO cannot drain itself. Signal the shared
+                # coordinator before it waits forever for pending==0.
+                producer_done = getattr(ctx, "_producer_done_flag", None)
+                if (producer_done is not None and producer_done.is_set()
+                        and not stop_event.is_set()):
+                    meter = meter_read(meter_fn)
+                    queue_state = meter.get("queue", {})
+                    running = int(queue_state.get("running", 0) or 0)
+                    running_files = any(
+                        (Path(d) / "RUNNING").is_dir() and
+                        any(p.is_file() or p.is_symlink()
+                            for p in (Path(d) / "RUNNING").rglob("*"))
+                        for d in item_dirs
+                    )
+                    if running == 0 and not running_files:
+                        try:
+                            require_no_pending_todo_sources(item_dirs)
+                        except RuntimeError:
+                            blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+                            if blocked is not None:
+                                blocked.set()
+                            raise
+                # 若無可派發任務：teardown 已設定 stop_event 時才收尾
                 if stop_event.is_set():
                     #if not pick_next_prompts(item_dirs, per_round_limit=1):
                     if not pick_and_claim_next_prompts(item_dirs, per_round_limit=1):

@@ -464,6 +464,13 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                 pass
             time.sleep(interval)
     '''
+    # Producer completion and blocked-queue failure must be observable by
+    # the consumer and coordinator BEFORE the worker thread starts.  Worker
+    # stop_event is still teardown-only; do not overload cancellation.
+    producer_done_flag = threading.Event()
+    queue_claim_blocked_event = threading.Event()
+    ctx._producer_done_flag = producer_done_flag
+    ctx._queue_claim_blocked_event = queue_claim_blocked_event
     # 於 worker 啟動後建立 watchdog
     stop_event, consumer, merger = start_workers(ctx, registry, meter_fn, is_sqlite, done_q, sink=sink)
     # Operator cancellation stops only producer scheduling.  Worker stop_event
@@ -496,7 +503,6 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     refresher, bar_refresh_stop = start_bar_refresher(p_sched, p_done, interval=0.15)
 
     # 8) 主回圈：排程所有列（改成執行緒，主線程負責收尾條件）
-    producer_done_flag = threading.Event()
     producer_result = {"scheduled": 0}
 
     def _producer_main():
@@ -525,6 +531,7 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     # 8.5) 完成條件守門：A+B+C+D 皆為 True 才能進入收尾
     total_rows = len(rows_for_count)
     last_report = 0.0
+    terminal_queue_claim_blocked = False
 
     def _registry_empty() -> bool:
         try:
@@ -538,6 +545,11 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                 request_execution_cancel(ctx, source="gui")
         out_now = _get_outstanding(meter_fn)
         A = producer_done_flag.is_set()          # 產生端已跑完
+        # Fail visibly rather than waiting forever for pending==0 after all
+        # remaining sources were safely refused by the no-clobber consumer.
+        if A and queue_claim_blocked_event.is_set():
+            terminal_queue_claim_blocked = True
+            break
         B = (out_now <= 0)                      # 無未完成（pending+running）
         C = False                               # 先別急著用舊的 registry 清空判斷，下面會放寬
         D = (getattr(p_done, "n", 0) >= int(total_rows or 0))  # 完成條達到總列數（含空字串補點）
@@ -750,6 +762,10 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                       "succeeded": producer_result["scheduled"],
                       "failed": max(0, processable - producer_result["scheduled"]),
                       "stop_reason": "cancelled"})
+    elif terminal_queue_claim_blocked:
+        ctx.run_status = "failed"
+        observer.emit("run_failed", {"reason": "unclaimable_queue_sources"})
+        tlog_warn("Queue blocked: unclaimable TODO sources retained; inspect pending files.")
     elif completion["pending"] or completion["errors"]:
         ctx.run_status = "failed"
         observer.emit("run_failed", {"reason": "incomplete_writeback"})

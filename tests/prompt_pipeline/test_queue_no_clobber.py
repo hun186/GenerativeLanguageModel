@@ -174,3 +174,67 @@ def test_consumer_uses_fail_closed_pending_guard_at_shutdown():
     assert "require_no_pending_todo_sources(item_dirs)" in source
     guard = source.index("require_no_pending_todo_sources(item_dirs)")
     assert "break" in source[guard:guard + 180]
+
+
+def test_real_stream_consumer_reports_blocked_queue_after_producer_done(
+    monkeypatch, tmp_path
+):
+    """No SQL/ES server: exercise the real no-work consumer path."""
+    import threading
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline import pipeline_controller as pc
+
+    item = tmp_path / "item"
+    for section in ("a", "b"):
+        sub = item / "TODO" / section
+        sub.mkdir(parents=True)
+        (sub / "same.txt").write_text(section, encoding="utf-8")
+
+    producer_done = threading.Event()
+    producer_done.set()
+    blocked = threading.Event()
+    ctx = SimpleNamespace(
+        _producer_done_flag=producer_done,
+        _queue_claim_blocked_event=blocked,
+        stage_cfg=None,
+        es_writeback_rules=[],
+        sql_writeback_rules=[],
+    )
+    registry = SimpleNamespace(
+        list_items=lambda: {str(item): {"pk": "item"}},
+    )
+    failures = []
+    monkeypatch.setattr(pc, "resolve_pipeline_stages", lambda *_a, **_k: [])
+    monkeypatch.setattr(pc, "_stage_cfg_declares_flow", lambda *_a, **_k: False)
+    monkeypatch.setattr(pc, "meter_read", lambda *_a, **_k: {
+        "queue": {"pending": 2, "running": 0},
+    })
+    monkeypatch.setattr(pc, "meter_update", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "_audit_consumer_orchestration_failure",
+                        lambda _ctx, code: failures.append(code))
+    monkeypatch.setattr(pc, "tlog", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a, **_k: None)
+
+    stop_event = threading.Event()  # teardown has NOT happened yet
+    pc.llm_stream_consumer(
+        ctx, registry, str(tmp_path / "meter"), stop_event,
+        restart_event=threading.Event(), per_round_limit=5,
+    )
+    assert not stop_event.is_set()
+    assert blocked.is_set()
+    assert failures == ["CONSUMER_TERMINATED"]
+    assert (item / "TODO" / "a" / "same.txt").read_text() == "a"
+    assert (item / "TODO" / "b" / "same.txt").read_text() == "b"
+
+
+def test_orchestrator_links_producer_done_and_blocked_failure_before_teardown():
+    import inspect
+    from czjLLM.sql_mode.runtime import orchestrator
+    source = inspect.getsource(orchestrator.run_pipeline)
+    assert source.index("ctx._producer_done_flag = producer_done_flag") < source.index(
+        "start_workers(ctx"
+    )
+    assert "ctx._queue_claim_blocked_event = queue_claim_blocked_event" in source
+    assert "if A and queue_claim_blocked_event.is_set():" in source
+    assert "terminal_queue_claim_blocked = True" in source
+    assert 'observer.emit("run_failed", {"reason": "unclaimable_queue_sources"})' in source
