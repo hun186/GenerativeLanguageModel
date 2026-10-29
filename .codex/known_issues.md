@@ -135,3 +135,7 @@
 
 - PR #255 main-tree cleanup does not remove old source from 171 of 175 fetched remote branch heads, or from reachable Git history. Earlier root commit also contains compiled Python key-related bytecode. Read-only PR #256 scanner finds pattern hits but is incomplete for unscanned >2 MB blobs, other repos' complete histories, CI logs/artifacts, forks and unreachable objects. Provider-side validity and key revocation are still not confirmed.
 - Do not rewrite history, force push/delete branches or claim incident resolved without explicit owner approval and a reviewed migration plan. The cross-repository `menu-planner/.env` setting needs a separate validity/rotation review.
+
+## 2026-10-30 — historical cleanup readiness blockers
+- As of #256, ~171/175 remote branch heads retained the legacy key path; pattern matches may include duplicate objects/false positives. Twelve oversized blobs and CI logs/forks remained outside the limited historical scanner. Provider-side key revocation and SQL-account rotation still lack authoritative provider/operator confirmation.
+- Prior SHA-based review/CI cannot be reused if Git history is rewritten, notably for OPEN #254. A private full-ref backup, independent restore verification, exact ref freeze, all-history secret scan (including binaries), PR migration and explicit destructive-action authorization are mandatory. This PR adds only redacted read-only tooling; never claim history is clean or rewrites complete.
