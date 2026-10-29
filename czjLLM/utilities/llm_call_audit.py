@@ -12,7 +12,7 @@ import zipfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
-from uuid import uuid4
+from uuid import RFC_4122, UUID, uuid4
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse, urlunparse
 from urllib.request import Request, urlopen
@@ -54,6 +54,7 @@ _FIELDS = [
     "audit_record_id",
     "worker_call_id",
     "call_llm_api_returned",
+    "split_family_id",
 ]
 
 
@@ -246,6 +247,7 @@ def log_llm_call(
     stage_identity: str = "",
     worker_call_id: str = "",
     call_llm_api_returned: bool | None = None,
+    split_family_id: str = "",
 ) -> None:
     """Append one LLM call row. Missing usage/context fields are recorded as 0/blank."""
     if not audit_path:
@@ -260,6 +262,19 @@ def log_llm_call(
         raise ValueError("invalid CallLLMAPI return observation")
     if call_llm_api_returned is not None and not worker_call_id:
         raise ValueError("CallLLMAPI return observation requires worker call ID")
+    # A split family must be explicitly supported by the verified, hash-bound
+    # source journal. It is not inferred from basename or prior CSV rows.
+    if not isinstance(split_family_id, str):
+        raise ValueError("invalid split family identifier")
+    if split_family_id:
+        try:
+            family = UUID(hex=split_family_id)
+        except (ValueError, AttributeError):
+            raise ValueError("invalid split family identifier") from None
+        if (len(split_family_id) != 32 or family.hex != split_family_id
+                or family.version != 4 or family.variant != RFC_4122
+                or not worker_call_id):
+            raise ValueError("invalid split family identifier")
     spec = dict(model_spec or {})
     model = str(spec.get("model_name") or spec.get("model") or "")
     usage = getattr(response, "usage", None)
@@ -319,6 +334,7 @@ def log_llm_call(
             "" if call_llm_api_returned is None else
             "YES" if call_llm_api_returned else "NO"
         ),
+        "split_family_id": split_family_id,
     }
     path = Path(audit_path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -333,11 +349,10 @@ def log_llm_call(
         if not header_line.endswith("\n"):
             raise ValueError("invalid existing LLM audit CSV header")
         header = next(csv.reader([header_line]), [])
-        # Current schema and three previous full header generations:
-        # worker-ID, row-UUID, and pre-UUID audit streams.
-        if not any(header == _FIELDS[:count] for count in (
-                len(_FIELDS), len(_FIELDS) - 1, len(_FIELDS) - 2,
-                len(_FIELDS) - 3)):
+        # Current schema and four complete preceding generations: wrapper
+        # outcome, Worker ID, row UUID, and pre-UUID audit streams.
+        if not any(header == _FIELDS[:len(_FIELDS) - offset]
+                   for offset in range(5)):
             raise ValueError("incompatible existing LLM audit CSV header")
         with path.open("a", newline="", encoding="utf-8") as fp:
             writer = csv.DictWriter(fp, fieldnames=header, extrasaction="ignore")
