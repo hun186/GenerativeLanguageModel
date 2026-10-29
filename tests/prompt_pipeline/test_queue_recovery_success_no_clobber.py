@@ -271,7 +271,9 @@ def test_cleanup_failure_after_committed_success_is_not_worker_failure(
         temp_txt_finished_dir=str(tmp_path / "combined"),
         debug=True,
     ))
-    assert Path(combined_path).read_text(encoding="utf-8") == "actual completed result"
+    # The actual merger adds one newline per slice. Assert there is only
+    # one merged slice, not two duplicated payloads.
+    assert Path(combined_path).read_text(encoding="utf-8") == "actual completed result\n"
     assert len(list(staging.glob(".success-*.tmp"))) == 1
 
 
@@ -564,3 +566,40 @@ def test_omitted_orphan_cleanup_never_enters_nested_success_tree(
     assert nested_output.read_text() == "committed"
     assert len(list((tmp_path / "item" / ".success-publish-staging").glob(".success-*.tmp"))) == 1
     assert list((tmp_path / "item" / "Success").rglob("*.tmp")) == []
+
+
+def test_repeated_success_ancestors_never_put_stage_inside_outer_success(
+    tmp_path, monkeypatch
+):
+    """Codex P2: item/Success/Success/root.txt is one logical merge slice.
+
+    Failure to delete a published staging hardlink must never leave another
+    readable input anywhere under the OUTERMOST Success ancestor.
+    """
+    item = tmp_path / "item"
+    output = item / "Success" / "Success" / "root.txt"
+    original_unlink = Path.unlink
+    def fail_stage_cleanup(path, *args, **kwargs):
+        if path.name.startswith(".success-") and path.suffix == ".tmp":
+            raise PermissionError("simulated orphan after committed publication")
+        return original_unlink(path, *args, **kwargs)
+    monkeypatch.setattr(Path, "unlink", fail_stage_cleanup)
+
+    queue.publish_success_text_no_clobber(str(output), "one logical slice")
+    outer = item / "Success"
+    assert output.read_text(encoding="utf-8") == "one logical slice"
+    assert len([p for p in outer.rglob("*") if p.is_file()]) == 1
+    orphan_dir = item / ".success-publish-staging"
+    assert len(list(orphan_dir.glob(".success-*.tmp"))) == 1
+    assert not (outer / ".success-publish-staging").exists()
+
+    from czjLLM.utilities.combine_utils import combine_api_finished_item
+    result = combine_api_finished_item(str(item), SimpleNamespace(
+        task="plain response",
+        mode="table",
+        prompt_dir=str(tmp_path),
+        temp_txt_finished_dir=str(tmp_path / "combined"),
+        debug=True,
+    ))
+    assert Path(result).read_text(encoding="utf-8") == "one logical slice\n"
+    assert len(list(orphan_dir.glob(".success-*.tmp"))) == 1

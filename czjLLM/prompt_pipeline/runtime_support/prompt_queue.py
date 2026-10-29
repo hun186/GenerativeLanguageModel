@@ -68,10 +68,11 @@ def publish_success_text_no_clobber(destination: str, text: str) -> None:
     # Success can contain nested stage paths. Locate its outer Success
     # ancestor, then keep all disposable temporary hardlinks in a sibling
     # directory that cannot be enumerated by any Success-only merge reader.
-    success_root = next(
-        (parent for parent in target.parents if parent.name == "Success"),
-        target.parent,
-    )
+    # Path.parents runs from nearest to farthest. Use the OUTERMOST
+    # Success ancestor, otherwise Success/Success/... leaves stage files
+    # inside the outer result namespace and the merger reads them twice.
+    success_roots = [p for p in target.parents if p.name == "Success"]
+    success_root = success_roots[-1] if success_roots else target.parent
     stage_dir = success_root.parent / ".success-publish-staging"
     if stage_dir.is_symlink():
         raise OSError("unsafe success staging directory")
