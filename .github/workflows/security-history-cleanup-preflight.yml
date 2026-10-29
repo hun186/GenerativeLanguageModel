@@ -1,0 +1,43 @@
+name: Read-only history cleanup preflight
+
+on:
+  pull_request:
+    paths:
+      - scripts/history_cleanup_preflight.py
+      - tests/security/test_history_cleanup_preflight.py
+      - .github/workflows/security-history-cleanup-preflight.yml
+      - docs/security/history_cleanup_plan_20261030.md
+  workflow_dispatch:
+    inputs:
+      expected_main_sha:
+        description: "Exact 40-character main SHA to lock branch snapshot; no remote writes"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fetch branches and tags for read-only exact-ref comparison
+        run: |
+          git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+          git fetch --tags origin
+      - name: Synthetic Git regression without real credential fixtures
+        run: python -m unittest discover -s tests/security -p 'test_history_cleanup_preflight.py' -v
+      - name: Verify ref snapshot and report only aggregate path-presence counts
+        env:
+          EXPECTED_MAIN: ${{ github.event.pull_request.base.sha || inputs.expected_main_sha }}
+        run: |
+          python scripts/history_cleanup_preflight.py --expected-main "$EXPECTED_MAIN"
