@@ -83,4 +83,8 @@ vicuna_test.py
 使用 PEFT 的 LoRA（Windows10（不使用 WSL2），使用 bitsandbytes==0.37.0） - Qiita.pdf
 摘要標註整合PBI*.pbix
 
-
+# Credential sources and local secret overrides
+czjLLM/czjLLM_utils_key.py
+czjLLM/config_sql/*_local.py
+*.secrets
+*.secrets.*
