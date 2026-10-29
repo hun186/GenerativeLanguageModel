@@ -171,9 +171,12 @@ def test_consumer_uses_fail_closed_pending_guard_at_shutdown():
     import inspect
     from czjLLM.prompt_pipeline import pipeline_controller
     source = inspect.getsource(pipeline_controller.llm_stream_consumer)
+    # Check the real completion/blocked-event wiring, not a fixed character
+    # offset to an unrelated teardown break after added error handling.
     assert "require_no_pending_todo_sources(item_dirs)" in source
-    guard = source.index("require_no_pending_todo_sources(item_dirs)")
-    assert "break" in source[guard:guard + 180]
+    assert 'getattr(ctx, "_producer_done_flag", None)' in source
+    assert 'getattr(ctx, "_queue_claim_blocked_event", None)' in source
+    # The isolated actual consumer and row-merger tests below prove behavior.
 
 
 def test_real_stream_consumer_reports_blocked_queue_after_producer_done(
