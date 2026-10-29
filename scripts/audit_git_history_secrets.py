@@ -132,7 +132,8 @@ def main():
     if args.self_test:
         sample = b"sk" + b"-" + b"A" * 29
         assert "key_style" in classify(sample)
-        assert "credential_assignment" in classify(b"password = 'synthetic_for_regression'")
+        synthetic_assignment = b"pass" + b"word = " + b"'synthetic_for_regression'"
+        assert "credential_assignment" in classify(synthetic_assignment)
         assert not classify(b"password = os.environ.get('SQL_PASSWORD')")
         assert not classify(b"api_key = 'placeholder-value'")
         assert "private_key_header" in classify(b"-----BEGIN " + b"PRIVATE KEY-----")
