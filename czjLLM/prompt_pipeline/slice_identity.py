@@ -23,6 +23,34 @@ def digest_text(text: str) -> str:
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
+def verified_queued_prompt_source(prompt_file: str, prompt: str) -> bool:
+    """Bounded-memory actual queued-file digest at the Worker call boundary.
+
+    Not authenticated or an atomic snapshot; never retain or log prompt text.
+    """
+    if not isinstance(prompt, str):
+        return False
+    path = Path(prompt_file)
+    if path.parent.name not in {"TODO", "RUNNING"} or path.suffix != ".txt":
+        return False
+    if any(p.is_symlink() for p in (path.parent.parent, path.parent, path)):
+        return False
+    try:
+        if not path.is_file():
+            return False
+        digest = hashlib.sha256()
+        count = 0
+        with path.open("r", encoding="utf-8", newline=None) as handle:
+            while chunk := handle.read(65536):
+                count += len(chunk)
+                if count > len(prompt):
+                    return False
+                digest.update(chunk.encode("utf-8"))
+        return digest.hexdigest() == digest_text(prompt)
+    except (OSError, UnicodeError, ValueError):
+        return False
+
+
 def _identity_dir(item: Path, kind: str) -> Path:
     return item / "_extract_slice_identity" / kind
 
