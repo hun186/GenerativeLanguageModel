@@ -126,7 +126,7 @@ def test_strict_uuid_and_worker_proof_before_writing_csv(tmp_path):
 
 def test_four_legacy_header_widths_and_report_denominator_unchanged(tmp_path):
     from czjLLM.utilities import llm_call_audit as mod
-    for n in range(1,5):
+    for n in range(2,6):
         fields=mod._FIELDS[:-n]
         path=tmp_path / f"llm_call_audit_old_{n}.csv"
         with path.open("w",newline="",encoding="utf-8") as h:

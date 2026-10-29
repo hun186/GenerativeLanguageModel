@@ -55,6 +55,7 @@ _FIELDS = [
     "worker_call_id",
     "call_llm_api_returned",
     "split_family_id",
+    "queue_claim_event_id",
 ]
 
 
@@ -248,6 +249,7 @@ def log_llm_call(
     worker_call_id: str = "",
     call_llm_api_returned: bool | None = None,
     split_family_id: str = "",
+    queue_claim_event_id: str = "",
 ) -> None:
     """Append one LLM call row. Missing usage/context fields are recorded as 0/blank."""
     if not audit_path:
@@ -276,6 +278,18 @@ def log_llm_call(
             raise ValueError("invalid split family identifier")
         if not worker_call_id or call_llm_api_returned is None:
             raise ValueError("split family requires observed Worker invocation")
+    if not isinstance(queue_claim_event_id, str):
+        raise ValueError("invalid queue claim identifier")
+    if queue_claim_event_id:
+        try:
+            claim = UUID(hex=queue_claim_event_id)
+        except (ValueError, AttributeError) as exc:
+            raise ValueError("invalid queue claim identifier") from exc
+        if (len(queue_claim_event_id) != 32 or claim.hex != queue_claim_event_id
+                or claim.version != 4 or claim.variant != RFC_4122):
+            raise ValueError("invalid queue claim identifier")
+        if not worker_call_id or call_llm_api_returned is None:
+            raise ValueError("queue claim requires observed Worker invocation")
     spec = dict(model_spec or {})
     model = str(spec.get("model_name") or spec.get("model") or "")
     usage = getattr(response, "usage", None)
@@ -336,6 +350,7 @@ def log_llm_call(
             "YES" if call_llm_api_returned else "NO"
         ),
         "split_family_id": split_family_id,
+        "queue_claim_event_id": queue_claim_event_id,
     }
     path = Path(audit_path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -350,10 +365,9 @@ def log_llm_call(
         if not header_line.endswith("\n"):
             raise ValueError("invalid existing LLM audit CSV header")
         header = next(csv.reader([header_line]), [])
-        # Current schema and four previous complete header generations.
-        if not any(header == _FIELDS[:count] for count in (
-                len(_FIELDS), len(_FIELDS) - 1, len(_FIELDS) - 2,
-                len(_FIELDS) - 3, len(_FIELDS) - 4)):
+        # Current schema plus five complete predecessor header generations.
+        if not any(header == _FIELDS[:len(_FIELDS) - delta]
+                   for delta in range(6)):
             raise ValueError("incompatible existing LLM audit CSV header")
         with path.open("a", newline="", encoding="utf-8") as fp:
             writer = csv.DictWriter(fp, fieldnames=header, extrasaction="ignore")
