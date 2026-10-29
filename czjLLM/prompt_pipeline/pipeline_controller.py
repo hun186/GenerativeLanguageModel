@@ -61,6 +61,7 @@ from czjLLM.prompt_pipeline.slice_identity import (
     is_verified_queued_split_child, reconcile_split_transitions,
     record_success_identity, resolve_success_leaves,
     restore_full_restart_parent, valid_success,
+    verified_split_family_id,
 )
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
@@ -3002,6 +3003,12 @@ class PromptAPIPipeline:
                     stage_identity=self.audit_prompt_tokens.get("stage_identity", ""),
                     worker_call_id=worker_call_id,
                     call_llm_api_returned=call_llm_api_returned,
+                    # Read source-verified split ancestry only after JSON
+                    # processing: the failed parent may have just recorded
+                    # an explicit two-child split. Unknown/legacy stays blank.
+                    split_family_id=verified_split_family_id(
+                        self.promptFile, self.content,
+                    ),
                 )
             except Exception as audit_ex:
                 print(
