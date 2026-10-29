@@ -1,0 +1,34 @@
+name: Read-only historical credential inventory
+
+on:
+  pull_request:
+    paths:
+      - "scripts/audit_git_history_secrets.py"
+      - ".github/workflows/read-only-history-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  historical-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fetch every remote branch and tag without rewriting refs
+        run: |
+          git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+          git fetch --tags origin
+          echo "Fetched branch references for read-only inspection"
+      - name: Confirm scanner behavior with synthetic data
+        run: python scripts/audit_git_history_secrets.py --self-test
+      - name: Inventory reachable Git blobs without logging credential values
+        run: python scripts/audit_git_history_secrets.py
