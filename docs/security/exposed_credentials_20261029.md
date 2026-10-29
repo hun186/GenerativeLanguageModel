@@ -35,3 +35,7 @@ Run: python scripts/check_no_secrets.py --staged
 Install local hooks with pre-commit install (requires pre-commit installed).
 
 The scanner detects newly added high-risk literal key patterns, common credential assignments and private key headers. It is a guardrail, not proof that all secrets have been found.
+
+### Manual GitHub Actions scan range
+
+A `workflow_dispatch` run cannot infer a PR base SHA or `push.before`. The workflow now explicitly compares the selected HEAD against `HEAD^` when no `base_sha` input is supplied, i.e. **only the latest commit**, and validates both Git revisions before proceeding. To scan a wider, known interval, provide the desired available `base_sha` commit when manually dispatching. The workflow is incremental; none of these choices performs an all-history secret audit.
