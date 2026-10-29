@@ -16,7 +16,7 @@ import sys
 MAX_BYTES = 2_000_000
 KEY = re.compile(rb"(?<![A-Za-z0-9])" + b"sk" + rb"-[A-Za-z0-9_-]{20,}")
 ASSIGN = re.compile(
-    rb"\b(?:password|passwd|api[_-]?key|access[_-]?token|auth[_-]?token|secret)\s*[:=]\s*['\"]([^'\"\r\n]{6,})['\"]", re.I
+    rb"(?<![A-Za-z0-9_])['\"]?(?:password|passwd|api[_-]?key|access[_-]?token|auth[_-]?token|secret)['\"]?\s*[:=]\s*['\"]([^'\"\r\n]{6,})['\"]", re.I
 )
 PRIVATE = re.compile(rb"-----BEGIN (?:RSA |DSA |EC |OPENSSH )?PRIVATE KEY-----")
 PLACEHOLDER = re.compile(rb"^(?:example|sample|placeholder|redacted|dummy|changeme|your[_-]|test[_-])", re.I)
@@ -134,6 +134,11 @@ def main():
         assert "key_style" in classify(sample)
         synthetic_assignment = b"pass" + b"word = " + b"'synthetic_for_regression'"
         assert "credential_assignment" in classify(synthetic_assignment)
+        json_mapping = b'{"pass' + b'word": "synthetic_for_regression"}'
+        python_mapping = b"{'api_" + b"key': 'synthetic_for_regression'}"
+        yaml_mapping = b"'pass" + b"word': 'synthetic_for_regression'"
+        for sample in (json_mapping, python_mapping, yaml_mapping):
+            assert "credential_assignment" in classify(sample)
         assert not classify(b"password = os.environ.get('SQL_PASSWORD')")
         assert not classify(b"api_key = 'placeholder-value'")
         assert "private_key_header" in classify(b"-----BEGIN " + b"PRIVATE KEY-----")
