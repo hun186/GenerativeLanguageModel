@@ -66,9 +66,14 @@ def publish_success_text_no_clobber(destination: str, text: str) -> None:
         # already published, preserve it and leave RUNNING for inspection.
         os.link(staged, target, follow_symlinks=False)
     finally:
+        # Cleanup is best effort, *not* part of the publication outcome.
+        # Once os.link succeeds the complete Success exists; a permission
+        # error removing this disposable staging link must never turn that
+        # committed output into a failed Worker or skip its identity journal.
+        # On an earlier publish failure, also preserve the original error.
         try:
             staged.unlink()
-        except FileNotFoundError:
+        except OSError:
             pass
 
 
@@ -120,6 +125,18 @@ def pick_and_claim_next_prompts(item_dirs, per_round_limit=128, *, claim_ids_out
             if prior_success.exists() or prior_success.is_symlink():
                 continue
             if not _claim_regular_source_no_clobber(src_p, dst_p):
+                continue
+            # Another Worker may publish Success and release its former
+            # RUNNING file between the above existence check and our exclusive
+            # claim. Claiming is then possible only AFTER that old output is
+            # already present. Recheck *after* the successful claim and restore
+            # our source to its exact original TODO path before dispatching.
+            # Do not create a claim event, Worker call or false completion.
+            if prior_success.exists() or prior_success.is_symlink():
+                if not _claim_regular_source_no_clobber(dst_p, src_p):
+                    # Preserve all evidence; never schedule an ambiguous
+                    # RUNNING/Success pair or silently report it as claimed.
+                    raise RuntimeError("queue claim collision recovery incomplete")
                 continue
 
             # Observe the real completed rename without changing the legacy

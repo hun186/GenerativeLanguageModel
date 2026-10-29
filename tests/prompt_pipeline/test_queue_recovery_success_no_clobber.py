@@ -185,3 +185,96 @@ def test_real_worker_conflicting_success_preserves_running_and_prior_output(monk
     assert success.read_bytes() == b"old verified output"
     assert running.read_bytes() == b"real private prompt"
     assert list(success.parent.glob(".success-*.tmp")) == []
+
+
+def test_real_old_worker_completion_cannot_be_adopted_by_later_claim(
+    tmp_path, monkeypatch
+):
+    """Reproduce Codex P1: old Worker publishes after first Success check.
+
+    New claimant is paused immediately before the exclusive RUNNING move.
+    Older Worker publishes its own Success and releases RUNNING. The claimant
+    must then restore its TODO source and return NO new job or claim event.
+    """
+    import threading
+
+    item, old_running = _setup_running(tmp_path, b"old source")
+    todo = item / "TODO"
+    todo.mkdir()
+    fresh = todo / "root.txt"
+    fresh.write_bytes(b"new generation never processed")
+    started = threading.Event()
+    resume = threading.Event()
+    original_move = queue._claim_regular_source_no_clobber
+
+    def pause_new_claim(source, target):
+        if source == fresh and target == old_running:
+            started.set()
+            assert resume.wait(timeout=8), "claim test synchronization timed out"
+        return original_move(source, target)
+
+    monkeypatch.setattr(queue, "_claim_regular_source_no_clobber", pause_new_claim)
+    monkeypatch.setattr(pc, "CallLLMAPI", lambda *_a, **_k: (_response("old result"), 0))
+    original_worker = _worker(monkeypatch, tmp_path, old_running, "old source")
+    receipts = {}
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        claimed = executor.submit(
+            queue.pick_and_claim_next_prompts, [str(item)],
+            claim_ids_out=receipts,
+        )
+        try:
+            assert started.wait(timeout=8)
+            result = original_worker.proc()
+            assert result["ok"] and not old_running.exists()
+            assert (item / "Success" / "root.txt").read_text() == "old result"
+        finally:
+            resume.set()
+        assert claimed.result(timeout=8) == []
+    assert receipts == {}
+    assert fresh.read_bytes() == b"new generation never processed"
+    assert not old_running.exists()
+    assert summarize_queue_observations(item)["observed_claims"] == 0
+
+
+def test_cleanup_failure_after_committed_success_is_not_worker_failure(
+    monkeypatch, tmp_path
+):
+    item, running = _setup_running(tmp_path, b"real prompt content")
+    worker = _worker(monkeypatch, tmp_path, running, "real prompt content")
+    monkeypatch.setattr(pc, "CallLLMAPI",
+                        lambda *_a, **_k: (_response("actual completed result"), 0))
+    original_unlink = Path.unlink
+    seen = []
+
+    def refuse_temporary_unlink(path, *args, **kwargs):
+        if path.name.startswith(".success-") and path.suffix == ".tmp":
+            seen.append(path.name)
+            raise PermissionError("simulated staging cleanup failure")
+        return original_unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", refuse_temporary_unlink)
+    result = worker.proc()
+    assert seen, "must simulate failure after actual Success publication"
+    assert result["ok"] is True
+    assert (item / "Success" / "root.txt").read_text() == "actual completed result"
+    assert not running.exists(), "RUNNING may be removed only after Success committed"
+    # The temp hardlink can remain on a denied cleanup. Do not claim it
+    # was cleaned, and never let it replace published output.
+    assert len(list((item / "Success").glob(".success-*.tmp"))) == 1
+
+
+def test_failed_publication_keeps_original_error_when_cleanup_fails(
+    monkeypatch, tmp_path
+):
+    destination = tmp_path / "Success" / "root.txt"
+    destination.parent.mkdir(parents=True)
+    destination.write_text("original output", encoding="utf-8")
+    original_unlink = Path.unlink
+    def failed_cleanup(path, *args, **kwargs):
+        if path.name.startswith(".success-") and path.suffix == ".tmp":
+            raise PermissionError("cannot clean staged file")
+        return original_unlink(path, *args, **kwargs)
+    monkeypatch.setattr(Path, "unlink", failed_cleanup)
+    with pytest.raises(FileExistsError):
+        queue.publish_success_text_no_clobber(str(destination), "new output")
+    assert destination.read_text(encoding="utf-8") == "original output"
