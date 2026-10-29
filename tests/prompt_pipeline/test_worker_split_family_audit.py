@@ -7,7 +7,9 @@ from types import SimpleNamespace
 from uuid import uuid4
 import pytest
 from czjLLM.prompt_pipeline import pipeline_controller as pc
-from czjLLM.prompt_pipeline.slice_identity import install_split_prompts, verified_queued_prompt_source
+from czjLLM.prompt_pipeline.slice_identity import (
+    install_split_prompts, verified_queued_prompt_source, verified_split_family_id,
+)
 from czjLLM.utilities.llm_call_audit import log_llm_call
 from czjLLM.utilities.llm_failure_summary import summarize_llm_failure_audit
 
@@ -140,3 +142,39 @@ def test_four_legacy_header_widths_and_report_denominator_unchanged(tmp_path):
         assert reader.fieldnames==fields and len(values)==1
         assert None not in values[0] and "split_family_id" not in fields
         assert summarize_llm_failure_audit(path)["observed_call_attempts"]==1
+
+
+
+def test_large_prompt_hash_is_bounded_and_crlf_split_across_chunks(tmp_path):
+    import tracemalloc
+    prompt = ("x" * 65535 + "\r\n" + "中文" + "\r" + "z") * 32
+    path = queued(tmp_path, prompt)
+    tracemalloc.start()
+    try:
+        assert verified_queued_prompt_source(str(path), prompt)
+        assert verified_queued_prompt_source(
+            str(path), prompt.replace("\r\n", "\n").replace("\r", "\n"),
+        )
+        peak = tracemalloc.get_traced_memory()[1]
+    finally:
+        tracemalloc.stop()
+    # Payload is >2 MiB; neither side of source proof may make full copies.
+    assert peak < 1_000_000
+
+
+def test_ancestor_directory_symlink_is_unknown_for_both_source_and_journal(tmp_path):
+    real = tmp_path / "real"
+    parent = queued(real, "root source")
+    install_split_prompts(
+        str(parent), "root source",
+        [("root-0.txt", "left"), ("root-1.txt", "right")],
+    )
+    assert verified_split_family_id(str(parent), "root source")
+    alias = tmp_path / "alias"
+    try:
+        alias.symlink_to(real, target_is_directory=True)
+    except (OSError, NotImplementedError):
+        pytest.skip("directory symlinks unavailable")
+    aliased_parent = alias / "item" / "RUNNING" / "root.txt"
+    assert not verified_queued_prompt_source(str(aliased_parent), "root source")
+    assert verified_split_family_id(str(aliased_parent), "root source") == ""

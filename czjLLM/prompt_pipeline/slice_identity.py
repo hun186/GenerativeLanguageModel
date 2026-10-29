@@ -23,6 +23,28 @@ def digest_text(text: str) -> str:
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
+def _path_has_no_symlink_components(path: Path) -> bool:
+    """Reject symlinks anywhere from the file/namespace through filesystem root."""
+    return not any(component.is_symlink() for component in (path, *path.parents))
+
+
+def _bounded_prompt_digest(text: str) -> str:
+    """Hash normalized text in bounded chunks, including CRLF at chunk edges."""
+    digest = hashlib.sha256()
+    trailing_cr = False
+    for offset in range(0, len(text), 65536):
+        chunk = text[offset:offset + 65536]
+        if trailing_cr:
+            chunk = "\r" + chunk
+        trailing_cr = chunk.endswith("\r")
+        if trailing_cr:
+            chunk = chunk[:-1]
+        digest.update(chunk.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8"))
+    if trailing_cr:
+        digest.update(b"\n")
+    return digest.hexdigest()
+
+
 def verified_queued_prompt_source(prompt_file: str, prompt: str) -> bool:
     """Bounded-memory actual queued-file digest at the Worker call boundary.
 
@@ -33,7 +55,7 @@ def verified_queued_prompt_source(prompt_file: str, prompt: str) -> bool:
     path = Path(prompt_file)
     if path.parent.name not in {"TODO", "RUNNING"} or path.suffix != ".txt":
         return False
-    if any(p.is_symlink() for p in (path.parent.parent, path.parent, path)):
+    if not _path_has_no_symlink_components(path):
         return False
     try:
         if not path.is_file():
@@ -46,7 +68,7 @@ def verified_queued_prompt_source(prompt_file: str, prompt: str) -> bool:
                 if count > len(prompt):
                     return False
                 digest.update(chunk.encode("utf-8"))
-        return digest.hexdigest() == digest_text(prompt)
+        return digest.hexdigest() == _bounded_prompt_digest(prompt)
     except (OSError, UnicodeError, ValueError):
         return False
 
@@ -109,10 +131,7 @@ def valid_success(item: str, filename: str, prompt_hash: str) -> bool:
 
 def _split_journal_namespace_safe(item: Path) -> bool:
     """Refuse explicit directory aliases into another item's split journal."""
-    return not any(path.is_symlink() for path in (
-        item, item / "_extract_slice_identity",
-        _identity_dir(item, "splits"),
-    ))
+    return _path_has_no_symlink_components(_identity_dir(item, "splits"))
 
 
 def _valid_split_family_id(value: object) -> str:
