@@ -68,3 +68,8 @@
 
 - [ ] #231 old head `a8711e9` was safe only on obsolete base; reconcile onto current `main` `d7d385a` without losing accepted #249/GUI/archive changes. New dedicated recovery regression in hosted Linux `offline-e2e`; validate actual successful exact-head CI and fresh formal Codex review. User Merge approval required.
 - [ ] Stop producers/GUI before any real restoration; actual Windows hardlink/locking behavior, malicious filesystem interference and physical service acceptance remain operator-deferred. Never claim automated crash recovery or authenticated history.
+
+## 2026-10-29 queue observation work
+
+- [ ] Queue event phase 1: real claimed/requeued rename observations and strict privacy-minimal read-only counts, actual filesystem tests, Hosted Linux E2E/immutable archives and formal exact-head Codex Review; do not merge without user instruction.
+- [ ] Phase 2: source-generation-verified requeue-to-next-claim linkage plus observed Worker call binding. Cover stage-managed and direct split paths, crashes, inode reuse/unchanged bytes, cross-process writer locks; do not infer a retry family from file path, prompt hash, event timestamp or `worker_call_id` alone. Real SDK HTTP retries and ES/SQL writeback denominators remain separate.
