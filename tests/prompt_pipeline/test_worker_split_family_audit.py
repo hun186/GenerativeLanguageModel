@@ -149,12 +149,11 @@ def test_large_prompt_hash_is_bounded_and_crlf_split_across_chunks(tmp_path):
     import tracemalloc
     prompt = ("x" * 65535 + "\r\n" + "中文" + "\r" + "z") * 32
     path = queued(tmp_path, prompt)
+    normalized = prompt.replace("\r\n", "\n").replace("\r", "\n")
     tracemalloc.start()
     try:
         assert verified_queued_prompt_source(str(path), prompt)
-        assert verified_queued_prompt_source(
-            str(path), prompt.replace("\r\n", "\n").replace("\r", "\n"),
-        )
+        assert verified_queued_prompt_source(str(path), normalized)
         peak = tracemalloc.get_traced_memory()[1]
     finally:
         tracemalloc.stop()
