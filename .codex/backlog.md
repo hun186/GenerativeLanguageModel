@@ -103,3 +103,7 @@
 - [ ] Exact-head GitHub CI, private-profile regressions, secret scan, Linux E2E, formal Codex re-review and resolution of new findings required for PR #258; user approval needed for Merge.
 - [ ] Operator must create or migrate real SQL/ES full connection files to ignored `config_sql/private/` and `config_es/private/` before deployment; verify path selection and live connectivity without exposing values. Back up these private folders securely and exclude from deployments/releases shared with others.
 - [ ] Rotate any still-live SQL/ES credentials that had previously appeared publicly. DeepSeek key revocation alone does not imply rotation of database credentials; full Git-history rewrite remains separately deferred.
+
+## 2026-10-30 — connection profile untracking deployment gate
+- [ ] Run exact-head Hosted security regression (including 11 root file absence/11 public template assertions), changed-lines secret scan, Linux E2E and formal Codex Review on PR #258; 0 outstanding P1/P2 before requesting Merge.
+- [ ] Before deployment, operator locally copies complete SQL/ES root profiles to the ignored `private/` directories (optionally with `scripts/migrate_connection_profiles_to_private.py --apply` on a checkout where originals still exist), confirms SHA/contents privately, then validates old YAML path resolution and actual connection. Never assume GitHub could migrate local secrets.
