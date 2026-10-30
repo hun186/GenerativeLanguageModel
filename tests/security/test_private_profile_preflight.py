@@ -227,10 +227,10 @@ es_index = "synthetic_index"
                 ):
                     with self.subTest(missing=missing):
                         p.write_text(
-                            "es_host='http://localhost:9200'\\n"
-                            "es_user=" + repr(user) + "\\n"
-                            "es_pass=" + repr(password) + "\\n"
-                            "es_index='synthetic'\\n", encoding="utf-8"
+                            "es_host='http://localhost:9200'\n"
+                            "es_user=" + repr(user) + "\n"
+                            "es_pass=" + repr(password) + "\n"
+                            "es_index='synthetic'\n", encoding="utf-8"
                         )
                         _, issues = inspect(
                             root, kind="es", profile="anon.py",
