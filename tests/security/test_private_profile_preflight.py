@@ -83,15 +83,15 @@ class PrivateDeploymentPreflightTests(unittest.TestCase):
             root = synthetic_root(tmp)
             p = root / "czjLLM/config_es/private/example.py"
             p.write_text(
-                "es_host = ''\\nhosts = ['https://example.invalid:9200']\\n"
-                "es_user = 'operator'\\nes_pass = 'dummy'\\n"
-                "es_index = 'synthetic'\\n", encoding="utf-8",
+                "es_host = ''\nhosts = ['https://example.invalid:9200']\n"
+                "es_user = 'operator'\nes_pass = 'dummy'\n"
+                "es_index = 'synthetic'\n", encoding="utf-8",
             )
             self.assertEqual(check_one(root, p, "es"), [])
             p.write_text(
-                "es_host = ''\\nhosts = []\\n"
-                "es_user = 'operator'\\nes_pass = 'dummy'\\n"
-                "es_index: str\\n", encoding="utf-8",
+                "es_host = ''\nhosts = []\n"
+                "es_user = 'operator'\nes_pass = 'dummy'\n"
+                "es_index: str\n", encoding="utf-8",
             )
             issues = check_one(root, p, "es")
             self.assertIn("EMPTY_FIELD:es_host", issues)
