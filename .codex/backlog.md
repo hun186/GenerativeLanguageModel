@@ -128,3 +128,14 @@
 - [ ] Durable source generations and trusted cross-claim logical Retry Family remain deferred; distinct from one claim UUID, Worker invocation UUID, split-intent UUID and SDK internal HTTP requests.
 
 - [ ] **2026-10-30 current PR #254 integration:** original phase 2c review was clean on its prior HEAD but branch was unmergeable after later security merges. Main-first two-parent integration on latest main preserves security patches and original queue fixes; fresh exact-head Linux E2E/Codex Review required, then explicit owner Merge approval.
+
+## 2026-10-30 — after accepted #254, phase 2d queue recovery inventory
+
+- [x] PR #254 user-approved Squash Merge `9af997458bb8267735a4cd1fe793263eb0a8d2b0`: no-clobber RUNNING→TODO and Worker Success publication; prior historical #254 [ ] pending review rows superseded. Linux E2E + exact-head Codex review pass; Windows/SMB and live services not verified.
+- [ ] New PR phase 2d: ship read-only, secret-free and non-atomic operator inventory of orphan Success staging, interrupted hardlink move candidates, duplicate TODO names and collisions. Run exact-head Hosted synthetic tests, Linux E2E, formal Codex Review, resolve Findings; Merge only after explicit authorization.
+- [ ] Future separate scope: operator-approved, generation-verified recovery workflow (no automatic unlink), cross-process crash/restart/SMB behavior, all alternate Success writers; no trusted general Retry Family or committed ES/SQL sink truth yet.
+
+- [ ] **Phase 2d formal Codex P2 remediation on PR #261:** run new exact-head Hosted Linux E2E & second formal Codex Review after four initial P2s (Windows zero identities, path scandir redirect race, unbounded sorting, junctions). New code uses anchored POSIX handles, streaming entry budget, unknown ID fail-closed, Windows unsupported gate; 20 synthetic tests. Do not Merge without owner approval.
+- [ ] **Separate Windows-native secure recovery diagnostics:** implement Windows handle-based no-reparse directory traversal and reliable FILE_ID_INFO/link counts with genuine Windows self-hosted filesystem tests; current phase 2d intentionally refuses Windows rather than risk silent external/junction traversal. Real SMB and service recovery remain operator-deferred.
+
+- [ ] **PR #261 second-round Codex P2s:** reject unchecked `..` before normalizing item paths, correct three mock tests' capability gate and Windows unsupported-platform skips; add symlink/nonexistent/relative parent traversal regressions. Re-run exact-HEAD Hosted Linux E2E plus secret scan and third formal Codex Review, resolve findings, request explicit owner Merge approval. Prior head `925b5ec32f` had 3 new P2 and FAILED Linux E2E; never count as acceptance.
