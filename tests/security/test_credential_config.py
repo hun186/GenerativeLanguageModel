@@ -60,7 +60,8 @@ class CredentialConfigTests(unittest.TestCase):
             with self.assertRaises(ValueError) as caught:
                 validate_es_config(bad)
             self.assertNotIn("synthetic_for_test", str(caught.exception))
-        self.assertIs(validate_es_config({"es_user": "", "es_pass": None}), validate_es_config({"es_user": "", "es_pass": None}))
+        anonymous = {"es_user": "", "es_pass": None}
+        self.assertIs(validate_es_config(anonymous), anonymous)
 
     def test_sql_production_is_fail_closed(self):
         with patch.dict(os.environ, {"CZJLLM_ENV": "production"}):
