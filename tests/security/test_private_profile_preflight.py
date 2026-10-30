@@ -4,6 +4,8 @@ import contextlib
 import io
 import os
 import subprocess
+import sys
+from unittest.mock import patch
 import tempfile
 import unittest
 
@@ -115,6 +117,41 @@ class PrivateDeploymentPreflightTests(unittest.TestCase):
                 self.skipTest("Symlinks unavailable on this machine")
             self.assertEqual(check_one(root, p, "sql"),
                              ["SYMLINK_NOT_ALLOWED"])
+
+    def test_symlinked_connection_directory_is_rejected(self):
+        if not hasattr(os, "symlink"):
+            self.skipTest("No symlink support")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = synthetic_root(tmp)
+            src = root / "czjLLM" / "config_sql"
+            outside = root / "moved-sql"
+            src.rename(outside)
+            try:
+                src.symlink_to(outside, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("Directory symlinks unavailable")
+            _, issues = inspect(root, kind="sql")
+            self.assertIn("sql:PRIVATE_DIRECTORY_SYMLINK", issues)
+
+    def test_cli_returns_failure_without_leaking_values(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = synthetic_root(tmp)
+            path = root / "czjLLM/config_sql/private/example.py"
+            marker = "".join(("no", "-", "credential", "-", "output"))
+            path.write_text(
+                "server='example.invalid'\\nusername='u'\\npassword="
+                + repr(marker) + "\\ndatabase_name='demo'\\ntable_name='demo'\\n",
+                encoding="utf-8",
+            )
+            out = io.StringIO()
+            with patch.object(sys, "argv", ["preflight", "--root", str(root),
+                                           "--kind", "sql"]):
+                with contextlib.redirect_stdout(out):
+                    result = main()
+            self.assertEqual(result, 0)
+            self.assertIn("No connection made", out.getvalue())
+            self.assertNotIn(marker, out.getvalue())
+            self.assertNotIn(str(root), out.getvalue())
 
     def test_yaml_is_not_executed_or_claimed_semantically_verified(self):
         with tempfile.TemporaryDirectory() as tmp:
