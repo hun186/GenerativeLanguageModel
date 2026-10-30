@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import struct
+import subprocess
 import sys
 
 import pytest
@@ -274,3 +275,40 @@ def test_ntfs_native_reparse_child_not_traversed(tmp_path):
     assert result["counts"]["unsafe_entries"] == 1
     assert result["counts"]["todo_files"] == 0
     assert result["status"] == "review_required"
+
+
+def test_direct_cli_entrypoint_without_pythonpath_can_run_outside_repo(tmp_path):
+    """AGENTS.md: import path compatibility is centralized in CLI startup."""
+    env = os.environ.copy()
+    env.pop("PYTHONPATH", None)
+    entrypoint = Path(inspect.__file__).resolve()
+    command = [sys.executable, str(entrypoint),
+               "--item-dir", str(tmp_path / "missing")]
+    result = subprocess.run(
+        command, cwd=tmp_path, env=env, capture_output=True, text=True,
+        timeout=15,
+    )
+    assert result.returncode == 2
+    payload = json.loads(result.stdout)
+    assert payload["items"][0]["codes"] == ["INCOMPLETE_OR_UNSAFE_SCAN"]
+    assert "Traceback" not in result.stderr
+
+
+@pytest.mark.skipif(os.name != "nt", reason="requires real Windows native import")
+def test_windows_direct_script_experimental_import_from_foreign_cwd(tmp_path):
+    """Exercise ordinary 'from scripts...' imports after entrypoint path setup."""
+    item = tmp_path / "item"
+    (item / "TODO").mkdir(parents=True)
+    env = os.environ.copy()
+    env.pop("PYTHONPATH", None)
+    entrypoint = Path(inspect.__file__).resolve()
+    result = subprocess.run(
+        [sys.executable, str(entrypoint),
+         "--item-dir", str(item), "--experimental-windows"],
+        cwd=tmp_path, env=env, capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 2
+    assert "Traceback" not in result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["items"][0]["scan_complete"]
+    assert "WINDOWS_EXPERIMENTAL_UNVERIFIED" in payload["items"][0]["codes"]
