@@ -72,6 +72,22 @@ class CredentialConfigTests(unittest.TestCase):
                        "es_user": "service-user", "es_pass": "synthetic"+"_for_test"}
             self.assertIs(validate_es_config(private), private)
 
+    def test_supported_es_hosts_list_is_accepted_in_production(self):
+        fake_auth = "".join(["synthetic", "_for_test"])
+        with patch.dict(os.environ, {"CZJLLM_ENV": "production"}):
+            for hosts in (["https://node-a.example.invalid:9200"],
+                          ["https://node-a.example.invalid:9200",
+                           "https://node-b.example.invalid:9200"],
+                          [{"host": "node-a.example.invalid", "port": 9200}]):
+                with self.subTest(hosts_type=type(hosts[0]).__name__):
+                    cfg = {"hosts": hosts, "es_user": "service-user",
+                           "es_pass": fake_auth, "es_host": ""}
+                    self.assertIs(validate_es_config(cfg), cfg)
+            bad = {"hosts": [" "], "es_user": "service-user",
+                   "es_pass": fake_auth, "es_host": ""}
+            with self.assertRaisesRegex(ValueError, "ES production connection requires"):
+                validate_es_config(bad)
+
     def test_real_es_profiles_refuse_missing_host_in_production(self):
         # This test imports real tracked profiles but never opens a connection.
         fake = {"CZJLLM_ENV": "production",
