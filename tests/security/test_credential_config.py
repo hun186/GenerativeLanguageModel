@@ -176,6 +176,16 @@ class CredentialConfigTests(unittest.TestCase):
         self.assertEqual(output["nested"][0]["api_key"], REDACTED)
         self.assertEqual(output["server"], config["server"])
 
+    def test_sql_and_es_config_preview_never_logs_raw_credentials(self):
+        ui = (ROOT / "czjLLM/config_ui/interactive_config_loader.py").read_text(encoding="utf-8")
+        self.assertIn("pprint.pprint(redact_config(sql_cfg)", ui)
+        self.assertIn("pprint.pprint(redact_config(es_cfg)", ui)
+        for relative in ("czjLLM/es_mode/entry/steps_es.py",
+                         "czjLLM/es_mode/entry/steps_es_noeventids.py"):
+            source = (ROOT / relative).read_text(encoding="utf-8")
+            self.assertIn("redact_config(es_cfg)", source)
+            self.assertNotIn('print("es_cfg in resolve_es_connection", es_cfg)', source)
+
     def test_public_env_example_is_blank_for_credentials(self):
         path = ROOT / "czjLLM" / "env_examples" / "czjllm.env.example"
         entries = dict(line.split("=", 1) for line in path.read_text(encoding="utf-8").splitlines()
