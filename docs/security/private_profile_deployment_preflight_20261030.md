@@ -52,6 +52,44 @@ The checker **does not**:
 - prove TLS hostname verification, certificate SANs, account permissions,
   existence of database/tables/indices, or live credentials.
 
+## Optional development-only anonymous Elasticsearch profile
+
+The default preflight remains **strict**: both `es_user` and `es_pass`
+must be populated when checking all ES profiles, so the original
+`EMPTY_FIELD:es_user` / `EMPTY_FIELD:es_pass` report is not silently hidden.
+
+If a **specific Python ES profile is intentionally anonymous** (both
+`es_user` and `es_pass` explicitly blank), use the following opt-in
+only after confirming that the target ES server is an authorized
+development/test endpoint:
+
+```bat
+python scripts/verify_private_connection_profiles.py --kind es --profile YOUR_PROFILE.py --allow-anonymous-es
+```
+
+This opt-in must name **one** ES `.py` profile. It cannot be used for SQL,
+all-profile checks, or YAML. `CZJLLM_ENV=production` / `prod` and
+unrecognized environment names block it; production continues to require
+both credentials. Partial ES authentication (only username or only password)
+still fails. The ES host/hosts, index, syntax, Git-ignore and symlink
+checks remain active. If the environment variable is unset, the flag is
+still an explicit operator declaration of non-production intent; it does
+**not** prove the server is actually isolated or anonymous access is safe.
+
+To map an ordinal such as `PROFILE_4` to the local filename without
+displaying file contents or credentials, run this in the repository root:
+
+```bat
+python -c "from pathlib import Path; p=Path('czjLLM/config_es/private'); f=sorted(x for x in p.iterdir() if x.suffix.lower() in ('.py','.yaml','.yml')); print(f[3].name)"
+```
+
+Keep anonymous access disabled on production and externally reachable ES,
+and never set fake credentials to make the static check pass. A successful
+opt-in result indicates only that the selected file's static checks passed,
+**not** that the ES service permits or should permit anonymous login.
+The usual unrestricted directory-wide preflight will still flag the
+anonymous profile until its authentication policy is intentionally handled.
+
 ## Rollout
 
 1. Confirm the backup exists outside the Git worktree; do not include it in
