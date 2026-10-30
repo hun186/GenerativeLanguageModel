@@ -124,6 +124,28 @@ class CredentialConfigTests(unittest.TestCase):
                     password_identity = identity if identity.endswith("ADMIN") else service
                     self.assertEqual(cfg["password"], fake[f"CZJLLM_SQL_{password_identity}_PASSWORD"])
 
+    def test_real_sql_profiles_refuse_missing_host_in_production(self):
+        fake = {
+            "CZJLLM_ENV": "production",
+            "CZJLLM_SQL_ORION_USERNAME": "orion-user",
+            "CZJLLM_SQL_ORION_PASSWORD": "".join(["synthetic", "_orion"]),
+            "CZJLLM_SQL_SRP_USERNAME": "srp-user",
+            "CZJLLM_SQL_SRP_PASSWORD": "".join(["synthetic", "_srp"]),
+            "CZJLLM_SQL_SRP_ADMIN_USERNAME": "admin-user",
+            "CZJLLM_SQL_SRP_ADMIN_PASSWORD": "".join(["synthetic", "_admin"]),
+        }
+        profiles = ("akconfig_test.py", "akconfig_test_to_excel.py",
+                    "akconfig_test_SRP.py", "akconfig_test_SRP - 複製.py")
+        with patch.dict(os.environ, fake):
+            os.environ.pop("CZJLLM_SQL_ORION_SERVER", None)
+            os.environ.pop("CZJLLM_SQL_SRP_SERVER", None)
+            for filename in profiles:
+                with self.subTest(filename=filename):
+                    cfg = runpy.run_path(str(ROOT / "czjLLM" / "config_sql" / filename))
+                    self.assertEqual(cfg["server"], "")
+                    with self.assertRaisesRegex(ValueError, "SQL production connection requires"):
+                        validate_sql_config(cfg)
+
     def test_recursive_log_redaction(self):
         secret = "".join(["synthetic", "_for_test"])
         config = {"password": secret, "es_pass": secret,
