@@ -63,6 +63,15 @@ class CredentialConfigTests(unittest.TestCase):
         anonymous = {"es_user": "", "es_pass": None}
         self.assertIs(validate_es_config(anonymous), anonymous)
 
+    def test_es_production_missing_credentials_is_fail_closed(self):
+        with patch.dict(os.environ, {"CZJLLM_ENV": "production"}):
+            with self.assertRaisesRegex(ValueError, "ES production connection requires"):
+                validate_es_config({"es_host": "https://example.invalid:9200",
+                                    "es_user": "", "es_pass": None})
+            private = {"es_host": "https://example.invalid:9200",
+                       "es_user": "service-user", "es_pass": "synthetic"+"_for_test"}
+            self.assertIs(validate_es_config(private), private)
+
     def test_sql_production_is_fail_closed(self):
         with patch.dict(os.environ, {"CZJLLM_ENV": "production"}):
             with self.assertRaisesRegex(ValueError, "SQL password missing"):
