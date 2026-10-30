@@ -29,3 +29,5 @@ Never publish populated `.env` files, example credentials, decoded tokens, SQL c
 - First verify static source/test gates and exact PR HEAD on Hosted GitHub (secret scan, synthetic credential/unit tests, Linux E2E, formal Codex review). Production SQL and ES tests are **operator-deferred**, not simulated as successful.
 - Before deploying this PR, take an inventory of the actual ES hostname and account, validate that private runtime values are available to the process, verify login and TLS on staging, then restart the relevant job or service. Avoid inserting credentials in console output.
 - If operator staging fails, restore the previous **runtime configuration**, not the historically exposed plaintext password. Do not commit or redistribute old values for rollback.
+
+**Fail-closed production host rule:** the development-only `localhost` fallback applies only when `CZJLLM_ENV` is not `production` or `prod`. With production selected, an unset ES/SQL host is considered missing rather than silently connecting to localhost. No credential value or actual production connection is tested in hosted CI.
