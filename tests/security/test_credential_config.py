@@ -90,7 +90,8 @@ class CredentialConfigTests(unittest.TestCase):
         with patch.dict(os.environ, {"CZJLLM_ENV": "production"}):
             with self.assertRaisesRegex(ValueError, "SQL production connection requires"):
                 validate_sql_config({"username": "service-user", "password": None})
-            good = {"username": "service-user", "password": "synthetic"+"_for_test"}
+            good = {"server": "example.invalid", "username": "service-user",
+                    "password": "synthetic"+"_for_test"}
             self.assertIs(validate_sql_config(good), good)
 
     def test_sql_profiles_read_per_service_connection_fields(self):
