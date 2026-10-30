@@ -5,6 +5,7 @@ They use no application credentials, production inputs, LLM, SQL or ES.
 """
 from __future__ import annotations
 
+import base64
 import ctypes
 from ctypes import wintypes
 import json
@@ -33,13 +34,29 @@ def _item(tmp_path):
 
 
 def _junction(link: Path, target: Path):
-    """Create a temporary directory junction without requiring symlink privilege."""
+    """Create test-only junction with encoded data, never cmd.exe shell text."""
     assert not link.exists() and target.is_dir()
-    result = subprocess.run(
-        ["cmd.exe", "/d", "/c", "mklink", "/J", str(link), str(target)],
-        capture_output=True, text=True, timeout=15,
+    # cmd.exe parses '&', '^', '%NAME%' even when Python is given a list.
+    # Transport the paths only as JSON encoded to Base64, inside an encoded
+    # PowerShell script. The script contains NO user-controlled path strings.
+    data = base64.b64encode(json.dumps({
+        "link": str(link), "target": str(target),
+    }).encode("utf-8")).decode("ascii")
+    script = (
+        "$ErrorActionPreference='Stop';"
+        "$payload=[Text.Encoding]::UTF8.GetString("
+        f"[Convert]::FromBase64String('{data}'));"
+        "$paths=ConvertFrom-Json -InputObject $payload;"
+        "New-Item -ItemType Junction -Path $paths.link "
+        "-Target $paths.target -ErrorAction Stop | Out-Null"
     )
-    # Failure here is a failed acceptance prerequisite, not an accepted skip.
+    command = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+    result = subprocess.run(
+        ["powershell.exe", "-NoProfile", "-NonInteractive",
+         "-EncodedCommand", command],
+        capture_output=True, text=True, timeout=25,
+    )
+    # Missing junction privileges/API must FAIL acceptance, never be skipped.
     assert result.returncode == 0, "WINDOWS_JUNCTION_SETUP_FAILED"
     assert link.is_dir()
 
@@ -153,6 +170,28 @@ def test_real_ntfs_child_junction_is_counted_but_never_traversed(tmp_path):
         assert "UNSAFE_ENTRY_PRESENT" in result["codes"]
         assert "PRIVATE_OUTSIDE" not in json.dumps(result)
         assert secret.read_bytes() == b"PRIVATE_OUTSIDE_DATA"
+    finally:
+        os.rmdir(junction)
+
+
+def test_junction_setup_handles_shell_metacharacters_without_expansion(tmp_path):
+    special = tmp_path / "A&B_%TEMP%_^_!_$"
+    special.mkdir()
+    external = special / "target&outside"
+    external.mkdir()
+    marker = external / "do_not_traverse.txt"
+    marker.write_bytes(b"NO_CMD_EXPANSION_OR_TRAVERSAL")
+    item = _item(special)
+    junction = item / "TODO" / "literal&%TEMP%^!"
+    _junction(junction, external)
+    try:
+        result = _inspect(item)
+        assert result["scan_complete"]
+        assert result["counts"]["unsafe_entries"] == 1
+        assert result["counts"]["todo_files"] == 0
+        assert result["status"] == "review_required"
+        assert "A&B" not in json.dumps(result)
+        assert marker.read_bytes() == b"NO_CMD_EXPANSION_OR_TRAVERSAL"
     finally:
         os.rmdir(junction)
 
