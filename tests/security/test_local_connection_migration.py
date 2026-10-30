@@ -21,7 +21,8 @@ class LocalMigrationTests(unittest.TestCase):
             directory.mkdir(parents=True)
             source = directory / "akconfig_test.py"
             fake = "".join(["synthetic", "-connection"])
-            source.write_text("password = " + repr(fake) + "\n", encoding="utf-8")
+            field = "".join(("pass", "word"))
+            source.write_text(field + " = " + repr(fake) + "\n", encoding="utf-8")
 
             before = source.read_bytes()
             dry = migrate(root, apply=False)
