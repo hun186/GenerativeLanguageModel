@@ -1,0 +1,22 @@
+# Shareable connection profile template. Copy to private/akconfig_test_SRP.py and add your complete connection values there.
+# Public version contains no live credentials; private/ is excluded by Git.
+import os
+
+# czjLLM/config_sql/akconfig_test_SRP.py
+
+# 服务器信息
+server = os.environ.get("CZJLLM_SQL_SRP_SERVER") or (
+    "" if os.environ.get("CZJLLM_ENV", "").strip().lower() in {"production", "prod"}
+    else "localhost"
+)
+username = os.environ.get("CZJLLM_SQL_SRP_USERNAME", "")
+password = os.environ.get("CZJLLM_SQL_SRP_PASSWORD")
+# 数据库和表信息
+database_name = 'AIDB'
+table_name = 'vessel_activities'
+primary_key = 'hash_value'
+
+target_table = 'vessel_activities_LLM_result'
+
+reset_output = False          # True 或 False，控制是否重設欄位，如果無此項設定，會進行互動詢問。
+# reset_confirm_code intentionally omitted from public example

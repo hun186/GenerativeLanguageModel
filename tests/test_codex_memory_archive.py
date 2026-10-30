@@ -243,3 +243,19 @@ def test_active_accepted_protection_issues_do_not_require_rediscovery():
     assert "operator-deferred" in current
     assert "accepted PR #241" in contract
     assert "pending PR acceptance" not in contract
+
+
+def test_20261030_precompaction_memory_is_exact_and_active_is_bounded():
+    """Archive full pre-untracking handoff before compacting current memory."""
+    archived = _ROOT / ".codex" / "archive" / "memory.md-20261030-103500.md"
+    active = _ROOT / ".codex" / "memory.md"
+    expected_blob = "8af2694365bd5202a1533a36c8b7cd4c82f22408"
+    assert archived.is_file()
+    assert _git_blob_sha(archived.read_bytes()) == expected_blob
+    content = active.read_text(encoding="utf-8")
+    assert "memory.md-20261030-103500.md" in content
+    assert expected_blob in content
+    assert len(content.encode("utf-8")) < 40_000
+    assert len(content.splitlines()) <= 200
+    attrs = (_ROOT / ".gitattributes").read_text(encoding="utf-8")
+    assert ".codex/archive/memory.md-20261030-103500.md -text" in attrs.splitlines()

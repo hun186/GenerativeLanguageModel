@@ -3,3 +3,4 @@
 # tests/test_codex_memory_archive.py can verify the original Git blob hashes.
 .codex/archive/*.md-20261027-213700.md -text
 .codex/archive/*-20261028-104900.md -text
+.codex/archive/memory.md-20261030-103500.md -text

@@ -1,10 +1,19 @@
+# Shareable connection profile template. Copy to private/akconfig_es_test.py and add your complete connection values there.
+# Public version contains no live credentials; private/ is excluded by Git.
+import os
+
+# Shareable profile only: set real ES host/user/password via private runtime environment.
+# Never commit credentials to this file or fall back to a stored historical secret.
 #akconfig_es_test.py
 # Elasticsearch 設定
-#es_host = 'http://localhost:9200'
-es_host = 'https://192.168.0.134:9001'
-es_index = 'fishing_test'
-es_user = 'SRA'
-es_pass = 'AAEAAWVsYXN0aWMv'
+#es_index = 'news_test'
+es_host = os.environ.get("CZJLLM_ES_HOST") or (
+    "" if os.environ.get("CZJLLM_ENV", "").strip().lower() in {"production", "prod"}
+    else "http://localhost:9200"
+)
+es_index = 'news_test'
+es_user = os.environ.get("CZJLLM_ES_USERNAME", "")
+es_pass = os.environ.get("CZJLLM_ES_PASSWORD")
 
 # ✅ 推薦：CA 憑證（ES 8/9 預設的 http_ca.crt）
 es_ca_certs = 'czjLLM/es_mode/certs/http_ca.crt'
@@ -21,7 +30,7 @@ input_col = 'rawInfo.content'
 output_col = 'multidim_event_json'
 
 reset_output = False          # True 或 False，控制是否重設欄位，如果無此項設定，會進行互動詢問。
-reset_confirm_code = "12345"  # 自動跳過驗證碼用，建議搭配 reset_output= True 一起使用
+# reset_confirm_code intentionally omitted from public example
 es_apply_mapping = True
 mapping_file = "czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml"
 
@@ -57,6 +66,7 @@ pending_filters = [
 
 es_prefetch_buffer = 0              # 預設關閉；LLM-heavy/多程序協作較穩定，必要時可設 5~50 試用
 es_prefetch_first_timeout = 8      # 首批最大等待秒數
+
 
 rerun = {
     "enable": True,

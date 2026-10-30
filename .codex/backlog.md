@@ -92,3 +92,18 @@
 - [ ] Run exact-head Hosted read-only preflight and formal Codex review; record branch/ref SHA snapshot and check delta against #256 evidence.
 - [ ] Independently inspect >2MB blobs, forks, PR refs, GitHub Actions logs/assets, other public repo histories, compiled Python and false positives without public secret values.
 - [ ] With separate approval, perform private mirror backup and restore, isolated git-filter-repo rehearsal, confidential SQL literal replacement, full-ref scan and #254 migration validation. Never rewrite public Git or force push without a new explicitly approved execution packet.
+
+## 2026-10-30 — production credential security follow-up
+- [ ] Verify exact-head Hosted credential synthetic tests, changed-line scanner, offline Linux E2E, formal Codex review and review-thread resolution for the new PR; merge only on user approval.
+- [ ] Operator deploy: inject `CZJLLM_ES_HOST`/`CZJLLM_ES_USERNAME`/`CZJLLM_ES_PASSWORD` and SQL variables via OS secret manager or private `.env.production`, check staging login and TLS hostname/SAN, then confirm production behavior without displaying secret values.
+- [ ] Revoke/rotate any **still-valid** Elasticsearch credentials previously committed and independently verify old SQL logins; do not confuse DeepSeek revocation with other service credentials.
+- [ ] Long term: consider separate ES profiles for independent clusters and remove hostname-verification bypass where correct certificates are available; maintain no plaintext runtime secrets in tracked examples. Historical ref cleanup remains deferred and explicitly approval-gated.
+
+## 2026-10-30 — preferred private connection-profile deployment
+- [ ] Exact-head GitHub CI, private-profile regressions, secret scan, Linux E2E, formal Codex re-review and resolution of new findings required for PR #258; user approval needed for Merge.
+- [ ] Operator must create or migrate real SQL/ES full connection files to ignored `config_sql/private/` and `config_es/private/` before deployment; verify path selection and live connectivity without exposing values. Back up these private folders securely and exclude from deployments/releases shared with others.
+- [ ] Rotate any still-live SQL/ES credentials that had previously appeared publicly. DeepSeek key revocation alone does not imply rotation of database credentials; full Git-history rewrite remains separately deferred.
+
+## 2026-10-30 — connection profile untracking deployment gate
+- [ ] Run exact-head Hosted security regression (including 11 root file absence/11 public template assertions), changed-lines secret scan, Linux E2E and formal Codex Review on PR #258; 0 outstanding P1/P2 before requesting Merge.
+- [ ] Before deployment, operator locally copies complete SQL/ES root profiles to the ignored `private/` directories (optionally with `scripts/migrate_connection_profiles_to_private.py --apply` on a checkout where originals still exist), confirms SHA/contents privately, then validates old YAML path resolution and actual connection. Never assume GitHub could migrate local secrets.
