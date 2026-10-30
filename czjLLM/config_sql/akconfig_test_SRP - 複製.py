@@ -3,7 +3,10 @@ import os
 # czjLLM/config_sql/akconfig_test_SRP.py
 
 # 服务器信息
-server = os.environ.get("CZJLLM_SQL_SRP_SERVER", "localhost")
+server = os.environ.get("CZJLLM_SQL_SRP_SERVER") or (
+    "" if os.environ.get("CZJLLM_ENV", "").strip().lower() in {"production", "prod"}
+    else "localhost"
+)
 username = os.environ.get("CZJLLM_SQL_SRP_ADMIN_USERNAME", "")
 password = os.environ.get("CZJLLM_SQL_SRP_ADMIN_PASSWORD")
 # 数据库和表信息
