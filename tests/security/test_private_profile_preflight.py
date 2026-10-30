@@ -10,6 +10,7 @@ import tempfile
 import unittest
 
 from scripts.verify_private_connection_profiles import check_one, inspect, main
+from czjLLM.utilities.credential_config import validate_es_config
 
 
 def synthetic_root(tmp: str) -> Path:
@@ -290,6 +291,16 @@ es_index = ""
                         )
                         self.assertEqual(report, {})
                         self.assertEqual(issues, ["INVALID_ANONYMOUS_SELECTION"])
+
+    def test_anonymous_es_runtime_contract_is_dev_only(self):
+        # Direct helper validation, no DB/ES connection or configuration execution.
+        config = {"es_host": "http://localhost:9200", "es_user": "",
+                  "es_pass": "", "es_index": "synthetic"}
+        with patch.dict(os.environ, {"CZJLLM_ENV": "development"}):
+            self.assertIs(validate_es_config(config), config)
+        with patch.dict(os.environ, {"CZJLLM_ENV": "production"}):
+            with self.assertRaisesRegex(ValueError, "ES production connection"):
+                validate_es_config(config)
 
     def test_anonymous_cli_explicit_notice_and_no_secret_output(self):
         with tempfile.TemporaryDirectory() as tmp:
