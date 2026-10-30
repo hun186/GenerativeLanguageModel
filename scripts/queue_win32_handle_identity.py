@@ -94,13 +94,21 @@ class _IoStatusBlock(ctypes.Structure):
 
 
 def _require_component(component: str) -> str:
-    """Allow only one literal name, never an ADS or relative traversal."""
+    """Allow only one literal name; reject unpaired UTF-16 surrogates safely."""
     if (
         not component or component in (".", "..")
         or component.endswith((" ", "."))
         or any(char in component for char in ("/", "\\", ":", "\x00"))
-        or len(component.encode("utf-16-le")) > 510
     ):
+        raise UnsafeWindowsIdentity("UNSAFE_WINDOWS_COMPONENT")
+    # Windows can expose unpaired UTF-16 surrogate code units. This primitive
+    # intentionally refuses them rather than leaking an encoding exception,
+    # or silently normalizing a path that may resolve to a different file.
+    try:
+        encoded_length = len(component.encode("utf-16-le"))
+    except UnicodeEncodeError:
+        raise UnsafeWindowsIdentity("UNSAFE_WINDOWS_COMPONENT") from None
+    if encoded_length > 510:
         raise UnsafeWindowsIdentity("UNSAFE_WINDOWS_COMPONENT")
     return component
 
