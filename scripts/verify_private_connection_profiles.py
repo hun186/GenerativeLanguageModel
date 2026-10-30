@@ -44,18 +44,30 @@ def _check_python(path: Path, kind: str) -> list[str]:
         elif isinstance(stmt, ast.AnnAssign) and isinstance(stmt.target, ast.Name):
             fields[stmt.target.id] = stmt.value
     missing = [field for field in REQUIRED[kind] if field not in fields]
-    if kind == "es" and not any(field in fields for field in HOST_FIELDS):
-        missing.append("es_host_or_hosts")
     issues = ["MISSING_FIELD:" + field for field in missing]
-    for name in REQUIRED[kind] + (HOST_FIELDS if kind == "es" else ()):
-        if name not in fields:
-            continue
-        expr = fields[name]
-        if isinstance(expr, ast.Constant) and (
-            expr.value is None or isinstance(expr.value, str) and not expr.value.strip()
-        ):
-            issues.append("EMPTY_FIELD:" + name)
-        elif isinstance(expr, (ast.List, ast.Tuple)) and not expr.elts:
+
+    def blank(expr) -> bool:
+        return (
+            expr is None
+            or isinstance(expr, ast.Constant)
+            and (expr.value is None
+                 or isinstance(expr.value, str) and not expr.value.strip())
+            or isinstance(expr, (ast.List, ast.Tuple, ast.Dict))
+            and not (expr.elts if not isinstance(expr, ast.Dict) else expr.keys)
+        )
+
+    # The active ES resolver gives a nonempty 'hosts' value precedence over
+    # es_host; a deliberately blank es_host with valid hosts is not an error.
+    fields_to_check = list(REQUIRED[kind])
+    if kind == "es":
+        if not any(field in fields for field in HOST_FIELDS):
+            issues.append("MISSING_FIELD:es_host_or_hosts")
+        else:
+            selected = ("hosts" if "hosts" in fields and not blank(fields["hosts"])
+                        else "es_host" if "es_host" in fields else "hosts")
+            fields_to_check.append(selected)
+    for name in fields_to_check:
+        if name in fields and blank(fields[name]):
             issues.append("EMPTY_FIELD:" + name)
     return issues
 
