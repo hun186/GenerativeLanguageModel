@@ -259,3 +259,24 @@ def test_20261030_precompaction_memory_is_exact_and_active_is_bounded():
     assert len(content.splitlines()) <= 200
     attrs = (_ROOT / ".gitattributes").read_text(encoding="utf-8")
     assert ".codex/archive/memory.md-20261030-103500.md -text" in attrs.splitlines()
+
+
+def test_20261030_phase2f_known_issues_archive_is_exact_and_active_bounded():
+    """Keep exact historical known issues before compacting the active file."""
+    stem = "known_issues.md-20261030-191600.md"
+    expected = "e293b2406ffcbf1f48b119f566b52ebbe86854af"
+    archive = _ROOT / ".codex" / "archive" / stem
+    active = _ROOT / ".codex" / "known_issues.md"
+    assert archive.is_file()
+    assert _git_blob_sha(archive.read_bytes()) == expected
+    body = active.read_text(encoding="utf-8")
+    assert stem in body and expected in body
+    assert len(body.splitlines()) <= 200
+    assert len(body.encode("utf-8")) < 40_000
+    assert "## Current Acceptance Reconciliation" in body
+    assert "## Environment and External Dependencies" in body
+    assert "Windows" in body and "operator-deferred" in body
+    assert "WINDOWS_EXPERIMENTAL_UNVERIFIED" in body
+    assert "ES" in body and "SQL" in body
+    attrs = (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
+    assert f".codex/archive/{stem} -text" in attrs
