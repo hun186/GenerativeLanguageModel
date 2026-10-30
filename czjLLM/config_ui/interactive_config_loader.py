@@ -5,6 +5,7 @@ import pprint
 from pathlib import Path
 
 from czjLLM.job_manager.job_config import load_sql_config_from_file
+from czjLLM.utilities.credential_config import redact_config
 from czjLLM.job_manager.job_config import load_es_config_from_file  # 類似 SQL 的 load_sql_config_from_file
 
 from utils.selector import OptionSelector
@@ -35,7 +36,7 @@ def load_sql_config_interactively(PGMSubDir, get_param, ctx):
             ctx.sql_config_file = config_options[selected]
 
     print("✔ 載入設定內容如下：")
-    pprint.pprint(sql_cfg, indent=4, width=100)
+    pprint.pprint(redact_config(sql_cfg), indent=4, width=100)
     return sql_cfg
 
 def load_es_config_interactively(PGMSubDir, get_param, ctx):
@@ -63,5 +64,5 @@ def load_es_config_interactively(PGMSubDir, get_param, ctx):
             ctx.es_config_file = config_options[selected]
 
     print("✔ 載入設定內容如下：")
-    pprint.pprint(es_cfg, indent=4, width=100)
+    pprint.pprint(redact_config(es_cfg), indent=4, width=100)
     return es_cfg
