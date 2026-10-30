@@ -1,0 +1,23 @@
+# Shareable connection profile template. Copy to private/akconfig_test.py and add your complete connection values there.
+# Public version contains no live credentials; private/ is excluded by Git.
+import os
+
+# czjLLM/config_sql/akconfig.py
+
+# 服务器信息
+server = os.environ.get("CZJLLM_SQL_ORION_SERVER") or (
+    "" if os.environ.get("CZJLLM_ENV", "").strip().lower() in {"production", "prod"}
+    else "localhost"
+)
+username = os.environ.get("CZJLLM_SQL_ORION_USERNAME", "")
+password = os.environ.get("CZJLLM_SQL_ORION_PASSWORD")
+# 数据库和表信息
+database_name = 'Orion'
+table_name = 'UserAcc'
+primary_key = 'Auto'
+
+target_table = 'UserAcc_LLM_result'    # 
+#target_table = 'UserAcc'    # 
+
+reset_output = False          # True 或 False，控制是否重設欄位，如果無此項設定，會進行互動詢問。
+# reset_confirm_code intentionally omitted from public example
