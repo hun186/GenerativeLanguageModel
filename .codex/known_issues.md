@@ -147,3 +147,8 @@
 ## 2026-10-30 — operator migration required before PR #258 deployment
 - Removed 11 root SQL/ES `.py` connection files from PR branch Git tracking; old YAML paths require matching local `private/` files before running jobs. GitHub cannot move local operator credentials. On existing checkouts copy original complete profiles into ignored `private/` **before** pulling a version that removes root files; then validate runtime load and database/ES login. If an old root file was sanitized earlier, copying it does not recover an absent password.
 - Public Git history still retains prior credentials; Git untracking affects only the prospective latest tree. Real SQL/ES credential validity/rotation and private-file presence on Windows/Linux remain unverified. Local archives, Docker builds, shared release bundles must exclude private folders.
+
+## 2026-10-30 — private-profile deployment verification boundary
+
+- Merged PR #258 removes eleven tracked root connection profiles; no restored private production connection files exist in GitHub by design. The user's backed-up SQL/ES private files must be restored and validated on their own machine. Hosted tests are synthetic and cannot prove actual SQL/ES login, database/table/index existence, certificate SAN verification or rotations.
+- Follow-up read-only preflight never executes local .py files or prints secret values; it does **not** cryptographically prove that a nonblank string is a working credential. YAML profiles require manual content/schema inspection. A local source profile containing dynamic expressions requires operator confirmation in the actual runtime, not a CI assertion.
