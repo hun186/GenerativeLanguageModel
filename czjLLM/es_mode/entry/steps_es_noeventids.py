@@ -1,3 +1,4 @@
+from czjLLM.utilities.credential_config import redact_config
 # czjLLM/es_mode/entry/steps_es.py
 from typing import Any, Dict, List, Tuple
 from pathlib import Path
@@ -27,7 +28,7 @@ def resolve_es_connection_old(ctx, get_param, args):
     # ---------------- 1. 選擇互動策略 ----------------
     policy = NonInteractivePolicy(args) if args.config else InteractivePolicy()
     es_cfg = load_es_cfg(ctx, get_param, args, policy)
-    print("es_cfg in resolve_es_connection", es_cfg)
+    print("es_cfg in resolve_es_connection", redact_config(es_cfg))
     # ---------------- 2. 取得連線參數 ----------------
     es_host = (es_cfg.get("es_host") or
                input("🔹 請輸入 ES host（預設 http://localhost:9200）：").strip() or
