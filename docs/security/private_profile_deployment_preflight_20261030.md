@@ -68,7 +68,12 @@ python scripts/verify_private_connection_profiles.py --kind es --profile YOUR_PR
 ```
 
 This opt-in must name **one** ES `.py` profile. It cannot be used for SQL,
-all-profile checks, or YAML. `CZJLLM_ENV=production` / `prod` and
+all-profile checks, or YAML. To match the actual ES runtime validator, the
+username may be a literal blank/whitespace-only string, but the password
+must be a literal **empty string** or `None` (not spaces or tabs). A
+whitespace-only password is treated as present by the runtime, so preflight
+rejects that apparent anonymous pair. Dynamic expressions do not qualify for
+the anonymous exception. `CZJLLM_ENV=production` / `prod` and
 unrecognized environment names block it; production continues to require
 both credentials. Partial ES authentication (only username or only password)
 still fails. The ES host/hosts, index, syntax, Git-ignore and symlink
