@@ -88,3 +88,22 @@ czjLLM/czjLLM_utils_key.py
 czjLLM/config_sql/*_local.py
 *.secrets
 *.secrets.*
+
+# Private production/local credential material (never commit populated versions)
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+!**/*.env.example
+**/config_es/*_local.py
+**/config_es/*_private.py
+**/config_sql/*_private.py
+**/config_es/private/
+**/config_sql/private/
+**/secrets/
+*.key
+*.p12
+*.pfx
+*.jks
