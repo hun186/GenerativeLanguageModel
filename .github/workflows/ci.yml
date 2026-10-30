@@ -41,6 +41,8 @@ jobs:
         run: python -m pytest -q tests/prompt_pipeline/test_queue_recovery_readonly_diagnostics.py --maxfail=1 --disable-warnings
       - name: Verify Windows native handle/128-bit file-ID groundwork (portable synthetic)
         run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py --maxfail=1 --disable-warnings
+      - name: Verify Windows handle-relative enumeration and guarded CLI (portable synthetic)
+        run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_native_enumeration.py --maxfail=1 --disable-warnings
       - name: Verify no-clobber TODO to RUNNING dispatch and collision fail-closed
         run: python -m pytest -q tests/prompt_pipeline/test_queue_no_clobber.py --maxfail=1 --disable-warnings
       - name: Verify observed queue claim and requeue events
@@ -178,6 +180,11 @@ jobs:
         env:
           PYTHONNOUSERSITE: 1
         run: pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py --maxfail=1 --disable-warnings
+      - name: Verify Windows native directory inventory on real NTFS (operator-gated self-hosted)
+        shell: powershell
+        env:
+          PYTHONNOUSERSITE: 1
+        run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_native_enumeration.py --maxfail=1 --disable-warnings
 
       - name: Run integration tests (self-hosted only)
         # 這裡改成用 env.* 判斷（且避免在 pull_request 事件跑）
