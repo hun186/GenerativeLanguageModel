@@ -66,11 +66,32 @@ def _check_python(path: Path, kind: str, *, allow_anonymous_es: bool = False) ->
             selected = ("hosts" if "hosts" in fields and not blank(fields["hosts"])
                         else "es_host" if "es_host" in fields else "hosts")
             fields_to_check.append(selected)
-    # Only an explicitly selected development ES profile may omit *both* auth
-    # fields; partial auth must still fail, and index/host checks stay strict.
-    anonymous_pair = (kind == "es" and allow_anonymous_es
-                      and all(name in fields and blank(fields[name])
-                              for name in ("es_user", "es_pass")))
+    # Mirror validate_es_config's asymmetric auth semantics when allowing
+    # an anonymous development profile: username is stripped but password
+    # truthiness is checked *without* stripping. A whitespace-only password
+    # is therefore NOT an absent password, and would fail runtime validation.
+    # Accept only literal None/strings here, never evaluated expressions.
+    def anonymous_username(expr) -> bool:
+        return (
+            isinstance(expr, ast.Constant)
+            and (expr.value is None
+                 or isinstance(expr.value, str) and not expr.value.strip())
+        )
+
+    def anonymous_password(expr) -> bool:
+        return (
+            isinstance(expr, ast.Constant)
+            and (expr.value is None or type(expr.value) is str and expr.value == "")
+        )
+
+    # One explicitly selected dev ES profile may omit *both* auth fields;
+    # neither a whitespace-only password nor partial auth receives a waiver.
+    anonymous_pair = (
+        kind == "es" and allow_anonymous_es
+        and "es_user" in fields and "es_pass" in fields
+        and anonymous_username(fields["es_user"])
+        and anonymous_password(fields["es_pass"])
+    )
     for name in fields_to_check:
         if name in fields and blank(fields[name]):
             if anonymous_pair and name in {"es_user", "es_pass"}:
