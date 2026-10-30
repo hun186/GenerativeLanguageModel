@@ -14,7 +14,13 @@ are sufficient evidence to automatically remove files or dispatch a retry.
 
 Stop every producer, Worker, consumer and stage merger writing to the relevant
 item first. From the repository root, pass the **item directory itself**, not
-a TODO subdirectory. Windows paths may be quoted:
+a TODO subdirectory. **Current safe enumeration is POSIX/Linux only.**
+On Windows Python 3.10/3.11, the standard-library directory enumeration APIs
+do not provide the required handle-relative, no-follow traversal used by
+this tool. Windows execution therefore returns
+`UNSUPPORTED_SAFE_SCAN_PLATFORM` and exit 2 without inspecting files;
+it must **never** produce a falsely clean Windows snapshot. The path examples
+below illustrate the item-root arguments but are not Windows acceptance:
 
 ```bat
 python scripts/inspect_queue_recovery_state.py --item-dir "D:\\private-workspace\\item"
@@ -48,11 +54,22 @@ assume one of the two copies is disposable merely because they share an inode.
 
 ## Safety and limits
 
-The scan uses filesystem metadata (including `lstat` and link counts)
-without opening file contents. It ignores directory and file symlinks rather
-than following them. Unknown file types and absent/unsafe item roots produce
-fixed warnings without leaking paths. It has a default cap of 10,000 directory
-entries per item; exceeding this limit fails closed as `INCOMPLETE_OR_UNSAFE_SCAN`.
+On supported POSIX environments the scan uses pinned directory file
+descriptors opened with `O_DIRECTORY | O_NOFOLLOW` from the filesystem root,
+opens child directories relative to verified parent descriptors, and enumerates
+using `os.scandir(fd)`. It never opens file contents or follows symlinks.
+The shared budget is enforced during enumeration, **before** buffering or
+sorting children. It gets file identity through handle-relative
+`os.stat(name, dir_fd=fd, follow_symlinks=False)`, not
+`DirEntry.stat()` (which can return placeholder zero identities on Windows).
+Unknown dev/inode/link-count fields are reported as `UNKNOWN_FILE_IDENTITY`
+and never compared as real shared inodes. Windows junction/reparse entries
+are unsafe; because safe descriptor-relative Windows traversal is not
+provided, the whole inspection refuses Windows rather than opening them.
+
+Unknown file types and absent/unsafe item roots produce fixed warnings without
+leaking paths. It has a default cap of 10,000 directory entries per item;
+exceeding this limit fails closed as `INCOMPLETE_OR_UNSAFE_SCAN`.
 Use `--max-entries` to select a different cap up to 100,000 if required.
 At most 100 item roots may be passed in one invocation.
 
@@ -67,3 +84,7 @@ Hosted Linux regression tests use only synthetic temporary files and verify
 real hardlinks, inode pairs, nested TODO names, completed-output conflicts,
 staging leftovers, symlink refusal, bounded scans and output redaction.
 Windows/SMB and actual Ollama/SQL/ES remain operator-deferred.
+A future **separate** Windows implementation must use native no-follow
+directory handles and reliable file IDs, with race and junction tests.
+Neither this Linux acceptance gate nor a simulated Windows metadata test
+claims a working Windows inspector.
