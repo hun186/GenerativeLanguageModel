@@ -40,3 +40,9 @@
 ## New archive
 - The complete prior active memory was saved verbatim at .codex/archive/memory.md-20261030-103500.md, original Git blob 8af2694365bd5202a1533a36c8b7cd4c82f22408.
 - Earlier immutable archives and references above remain unchanged. The previous Linux E2E failed because active memory exceeded 40 KB. Latest PR CI and formal review require new validation before merge.
+
+## 2026-10-30 — Postmerge #258 and new private-profile deployment preflight
+
+- **Verified Hosted merge:** user-approved PR #258 Squash merged into main SHA `a2815b369e80108fbc893d3d8b97e4f29f20e878`. Postmerge main Linux offline-e2e #40995630404 SUCCESS; changed-line secret scan #40995630406 SUCCESS. Windows self-hosted remains queued/deferred. Four SQL/seven ES tracked root profiles removed; 11 sanitized public `*.py.example` retained. The user backed up real SQL/ES private folders for later local restoration. This evidence supersedes the older OPEN #258 handoff above.
+- **New independent branch:** `security/private-profile-deploy-preflight-20261030` adds `scripts/verify_private_connection_profiles.py`, a no-network/no-mutation static private-file checker: Git ignored/untracked, non-symlink, supported size/type, Python AST syntax and required field presence/blank literals; YAML path/ignore only, flagged for manual field inspection. No Python profile is executed, credentials printed, or live SQL/ES login claimed. Repair `.github/workflows/security-credential-config.yml` malformed combined path trigger and add synthetic dedicated regression, public operator doc.
+- Actual secrets and private files have not been accessed by GitHub. Require exact-head Hosted credential regression, scanner, Linux offline-e2e and formal Codex Review, then user approval before merge; real SQL/ES connectivity and TLS tests remain operator-deferred.

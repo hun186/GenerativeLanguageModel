@@ -74,6 +74,21 @@ LLM/provider API keys (`CZJLLM_UTILS_API_KEY`, `CZJLLM_ANKINT_API_KEY`) continue
 - Interactive SQL/ES configuration previews and the legacy ES resolver print sites now display recursively redacted maps instead of raw account passwords, HTTP auth, API keys, tokens or reset confirmation codes. These protections do not cover every external library's logs.
 - `http_ca.crt` is a public CA trust certificate, not a private key. Never commit private-key files, .p12/.pfx bundles or populated env files.
 
+
+## Read-only post-update deployment preflight (next phase)
+
+After restoring your own SQL/ES `private/` folders into the updated local
+checkout, run `python scripts/verify_private_connection_profiles.py` from
+the repository root. This reports anonymous file counts and checks each
+selected local profile's Git-ignore/tracked state, symlinks, file size, Python
+syntax and required fields without executing Python or contacting SQL/ES.
+For targeted inspection use `--kind sql --profile <basename>.py` (or ES).
+Detailed command, exit codes and limits:
+`docs/security/private_profile_deployment_preflight_20261030.md`.
+
+**This is not a real connection test.** Operator-side SQL/ES authentication,
+database/table existence and ES CA/TLS SAN verification remain required.
+
 ## Test and release gates
 
 The dedicated hosted credential workflow runs synthetic config tests (both old env-based profiles and new private complete-file scenarios), checks Git ignore behavior and syntax, followed by the changed-line secret scanner, standard Linux E2E and formal latest-HEAD Codex Review. No real provider, SQL/ES login, private files, private historical rewrite or destructive Git operation occurs in this PR. Merge and deployment are separately approval-gated.
