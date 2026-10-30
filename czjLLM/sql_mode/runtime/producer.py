@@ -31,6 +31,16 @@ from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.reduction.production_control import execution_cancel_requested
 
 
+def _terminal_queue_claim_blocked(ctx) -> bool:
+    """Producer stop only for the existing fail-closed queue terminal event.
+
+    This is distinct from user cancellation and ordinary producer completion.
+    Do not wait for outstanding to drain: no consumer can process those items.
+    """
+    blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+    return blocked is not None and blocked.is_set()
+
+
 def _audit_producer_operational_failure(ctx, code: str) -> None:
     """Observe a caught Producer failure without changing its control flow.
 
@@ -154,7 +164,8 @@ def _wait_before_revisiting_all_running_rows(ctx, rows, stop_event) -> None:
         f"wait up to {wait_seconds:.1f}s before fallback revisit. rows={row_count}"
     )
 
-    while not stop_event.is_set() and time.time() < deadline:
+    while (not stop_event.is_set() and not _terminal_queue_claim_blocked(ctx)
+           and time.time() < deadline):
         running_count = sum(1 for row in rows if is_running(ctx, row[0]))
         if running_count <= 0:
             if clear_grace_seconds > 0:
@@ -163,14 +174,15 @@ def _wait_before_revisiting_all_running_rows(ctx, rows, stop_event) -> None:
                     f"wait {clear_grace_seconds:.1f}s for DB writeback visibility before recheck."
                 )
                 end_grace = time.time() + clear_grace_seconds
-                while not stop_event.is_set() and time.time() < end_grace:
+                while (not stop_event.is_set() and not _terminal_queue_claim_blocked(ctx)
+                       and time.time() < end_grace):
                     time.sleep(min(0.2, max(end_grace - time.time(), 0)))
             return
         sleep_for = min(poll_seconds, max(deadline - time.time(), 0))
         if sleep_for > 0:
             time.sleep(sleep_for)
 
-    if not stop_event.is_set():
+    if not stop_event.is_set() and not _terminal_queue_claim_blocked(ctx):
         tlog_warn(
             "[producer] pending running console: all-running wait timed out; "
             "fallback revisit will rely on dispatch pending recheck and may duplicate work if peer is still running."
@@ -415,8 +427,11 @@ def produce_rows(
                 executor is not None
                 and len(in_flight) >= effective_row_parallelism
                 and not stop_event.is_set() and not execution_cancel_requested(ctx)
+                and not _terminal_queue_claim_blocked(ctx)
             ):
                 _drain_completed(block=True)
+            if _terminal_queue_claim_blocked(ctx):
+                break
             if execution_cancel_requested(ctx) or cancelled:
                 cancelled = True
                 break
@@ -445,7 +460,7 @@ def produce_rows(
                     )
                 continue
 
-            if stop_event.is_set() or execution_cancel_requested(ctx):
+            if stop_event.is_set() or execution_cancel_requested(ctx) or _terminal_queue_claim_blocked(ctx):
                 cancelled = cancelled or execution_cancel_requested(ctx)
                 tlog_warn("produce_rows: stop_event set，提前結束排程。")
                 # ★新增：提前結束也要回報目前游標；不要把 prod_done 設 True
@@ -504,6 +519,8 @@ def produce_rows(
                     pass
                 continue
 
+            if _terminal_queue_claim_blocked(ctx):
+                break
             if execution_cancel_requested(ctx):
                 cancelled = True
                 break
@@ -530,6 +547,7 @@ def produce_rows(
                 pass
 
             while (not stop_event.is_set() and not execution_cancel_requested(ctx)
+                   and not _terminal_queue_claim_blocked(ctx)
                    and outstanding_now(meter_fn) > low):
                 _drain_completed(block=False)
                 time.sleep(0.05)
@@ -548,6 +566,10 @@ def produce_rows(
     last_out = None
 
     while True:
+        # A dead consumer cannot drain pending sources. Avoid waiting for
+        # the ordinary producer hard_timeout after a terminal rollback.
+        if _terminal_queue_claim_blocked(ctx):
+            break
         out = outstanding_now(meter_fn)
         if out <= 0:
             break
@@ -602,7 +624,8 @@ def produce_rows(
     #    tlog_warn(f"⚠️ producer 迴圈提前結束：僅處理 {seen}/{total_rows} 列；已成功排程 {scheduled} 列。"
     #              " 請檢查是否有早退條件（return/break/row_limit/backpressure）、或外部執行緒誤設 stop_event。")
     # ★新增：只有「真的跑完整個 rows_for_count」且未被 stop_event 打斷才標 prod_done=True
-    if not cancelled and ((total_rows is None) or (seen >= total_rows and not stop_event.is_set())):
+    if (not cancelled and not _terminal_queue_claim_blocked(ctx)
+            and ((total_rows is None) or (seen >= total_rows and not stop_event.is_set()))):
         try:
             meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({
                 "cursor": seen, "enq": scheduled, "producer_alive": False,

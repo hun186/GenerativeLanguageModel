@@ -120,3 +120,11 @@
 - [x] PR #259 previously user-approved Squash Merge to main SHA `8fca421c772430493bf5e49f3cd8cf946973f218`; read-only SQL/ES static preflight landed with Hosted synthetic unit/secret scanner and Linux E2E PASS. Windows live private profile check and actual SQL/ES authentication remain operator-only.
 - [ ] New independent security PR: allow explicit nonproduction single-file anonymous Elasticsearch static inspection without weakening default auth requirements, production checks or field/path/Git hygiene. Require latest-head Hosted synthetic tests, changed-line scan, Linux E2E, formal Codex review and explicit owner merge authorization.
 - [ ] Operator confirm ES PROFILE_4 corresponds to an intentionally anonymous development endpoint. If credentials are actually required, repair private file locally instead; never commit real secrets. Runtime ES/TLS authentication and SQL still require operator validation.
+
+## 2026-10-29 phase 2c recovery and Worker Success protection
+
+- [ ] New PR: no-clobber RUNNING→TODO recovery/timeout and direct Worker Success publication with conflict preservation, source/receipt semantics and actual-file concurrency tests, exact-HEAD Hosted Linux CI and formal Codex Review. User Merge permission required.
+- [ ] Audit stage-managed and alternate Success writers, explicit full-restart policies, collision recovery tooling and prior Success provenance; no automatic manual artifact deletion or reinterpretation of stale results. Require Windows filesystem and actual LLM/ES/SQL operator E2E before claims of deployment readiness.
+- [ ] Durable source generations and trusted cross-claim logical Retry Family remain deferred; distinct from one claim UUID, Worker invocation UUID, split-intent UUID and SDK internal HTTP requests.
+
+- [ ] **2026-10-30 current PR #254 integration:** original phase 2c review was clean on its prior HEAD but branch was unmergeable after later security merges. Main-first two-parent integration on latest main preserves security patches and original queue fixes; fresh exact-head Linux E2E/Codex Review required, then explicit owner Merge approval.

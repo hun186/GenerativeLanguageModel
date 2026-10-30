@@ -114,6 +114,10 @@ from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     pick_and_claim_next_prompts,
     recover_running_to_todo,
     require_no_pending_todo_sources,
+    publish_success_text_no_clobber,
+    QueueClaimRollbackError,
+    QueueClaimSuccessConflictError,
+    require_no_pending_success_conflicts,
 )
 from czjLLM.prompt_pipeline.runtime_support.stage_mode import (
     explicit_stage_flow as _explicit_stage_flow,
@@ -330,9 +334,36 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             # 🔸 B. 這裡用「可鎖定切片」的 pick（你已經在用）
             #batch = pick_next_prompts(item_dirs, per_round_limit=per_round_limit)
             claimed_evidence = {}
-            batch = pick_and_claim_next_prompts(item_dirs, per_round_limit=per_round_limit, claim_ids_out=claimed_evidence)
+            try:
+                batch = pick_and_claim_next_prompts(
+                    item_dirs, per_round_limit=per_round_limit,
+                    claim_ids_out=claimed_evidence,
+                )
+            except QueueClaimRollbackError:
+                # Rollback itself failed after a real claim; preserve all
+                # filesystem evidence, but tell the coordinator that pending
+                # work cannot be completed by this now-terminating consumer.
+                # Producer done is independent from the teardown stop event.
+                blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+                if blocked is not None:
+                    blocked.set()
+                raise
 
             if not batch:
+                # A TODO with an older Success is permanently unclaimable.
+                # The older Worker may have published between our initial
+                # check and a fresh claim, which was safely restored. Unlike
+                # generic contention, we know this cannot drain even if the
+                # Producer is still blocked under backpressure. Signal now,
+                # independently of producer_done, so Producer and coordinator
+                # both terminate the run as failed without fabricating work.
+                try:
+                    require_no_pending_success_conflicts(item_dirs)
+                except QueueClaimSuccessConflictError:
+                    blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+                    if blocked is not None:
+                        blocked.set()
+                    raise
                 # Producer completion is NOT stop_event: in SQL/Table/ES,
                 # teardown sets stop_event only after the coordinator finishes.
                 # If the producer is done and there are no in-flight sources,
@@ -2891,12 +2922,7 @@ class PromptAPIPipeline:
                 retMES = self._build_mock_output()
                 if self.OutputSaveFN != "":
                     MKDIR(os.path.dirname(self.OutputSaveFN))
-                    tmp_fn = self.OutputSaveFN + ".tmp"
-                    with open(tmp_fn, mode='wt', encoding='utf-8', newline='') as fp:
-                        fp.write(retMES)
-                        fp.flush()
-                        os.fsync(fp.fileno())
-                    os.replace(tmp_fn, self.OutputSaveFN)
+                    publish_success_text_no_clobber(self.OutputSaveFN, retMES)
                     record_success_identity(
                         self.promptFile, self.OutputSaveFN, self.content, retMES,
                     )
@@ -2984,12 +3010,7 @@ class PromptAPIPipeline:
             worker_failure_code = "WORKER_PERSIST_EXCEPTION"
             if self.OutputSaveFN != "" and DTBJobs_Retry == [] and retMES != "":
                 MKDIR(os.path.dirname(self.OutputSaveFN))
-                tmp_fn = self.OutputSaveFN + ".tmp"
-                with open(tmp_fn, mode='wt', encoding='utf-8', newline='') as fp:
-                    fp.write(retMES)
-                    fp.flush()
-                    os.fsync(fp.fileno())
-                os.replace(tmp_fn, self.OutputSaveFN)
+                publish_success_text_no_clobber(self.OutputSaveFN, retMES)
                 record_success_identity(
                     self.promptFile, self.OutputSaveFN, self.content, retMES,
                 )
@@ -3183,16 +3204,7 @@ class PromptAPIPipeline:
             #if self.OutputSaveFN != "" and DTBJobs_Retry == []:
             if self.OutputSaveFN != "" and DTBJobs_Retry == [] and retMES != "":
                 MKDIR(os.path.dirname(self.OutputSaveFN))
-                tmp_fn = self.OutputSaveFN + ".tmp"
-                #print(f"Start to run os.sync for tmp_fn {tmp_fn}")
-                with open(tmp_fn, mode='wt', encoding='utf-8', newline='') as fp:
-                    fp.write(retMES)
-                    fp.flush()
-                    os.fsync(fp.fileno())  # 確保落地
-                #print(f"Finished running os.sync for tmp_fn {tmp_fn}")
-                #print(f"Start to run os.replace for tmp_fn {tmp_fn}")
-                os.replace(tmp_fn, self.OutputSaveFN)  # ✅ 原子替換
-                #print(f"Finished running os.replace for tmp_fn {tmp_fn}")
+                publish_success_text_no_clobber(self.OutputSaveFN, retMES)
                 if self.removeFinPromptFile and self.promptFile:
                     #print(f"Start to run os.remove for self.promptFile {self.promptFile}")
                     #os.remove(self.promptFile)         # ✅ 再刪 TODO
@@ -3582,6 +3594,12 @@ def producer_backpressure_wait(ctx: LLMJobConfig,
     last_change_ts = start
 
     while True:
+        # A terminal claim rollback cannot be drained by the stopped consumer.
+        # The producer must unwind immediately (no more dispatch), even when
+        # ordinary stop_event is not yet set by the coordinator teardown.
+        blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+        if blocked is not None and blocked.is_set():
+            return
         # 停止訊號 → 直接返回
         if stop_event.is_set():
             return

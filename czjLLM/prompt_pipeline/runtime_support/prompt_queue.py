@@ -2,10 +2,23 @@
 
 import os
 import stat
+import tempfile
 from collections import Counter
 from pathlib import Path
 
 from czjLLM.prompt_pipeline.runtime_support.queue_observation import record_queue_transition
+
+
+class QueueClaimRollbackError(RuntimeError):
+    """An already-claimed source could not safely return to its original TODO.
+
+    This terminal condition must reach the SQL/Table/ES coordinator; it is not
+    an ordinary missing/blocked candidate and cannot be retried blindly.
+    """
+
+
+class QueueClaimSuccessConflictError(RuntimeError):
+    """A pending source conflicts with an older, already published Success."""
 
 
 def _claim_regular_source_no_clobber(source: Path, target: Path) -> bool:
@@ -39,6 +52,75 @@ def _claim_regular_source_no_clobber(source: Path, target: Path) -> bool:
         return True
     except (OSError, ValueError):
         return False
+
+
+def publish_success_text_no_clobber(destination: str, text: str) -> None:
+    """Publish an exclusively-created Success result, never replace a prior result.
+
+    Write a unique fsynced staging file on the same volume *outside the
+    Success tree*, then use an atomic hardlink create-if-absent. Orphan
+    staging files can never appear as additional Success merger input.
+    """
+    target = Path(destination)
+    if any(p.is_symlink() for p in (target.parent, *target.parent.parents)):
+        raise OSError("unsafe success output directory")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    # Success can contain nested stage paths. Locate its outer Success
+    # ancestor, then keep all disposable temporary hardlinks in a sibling
+    # directory that cannot be enumerated by any Success-only merge reader.
+    # Path.parents runs from nearest to farthest. Use the OUTERMOST
+    # Success ancestor, otherwise Success/Success/... leaves stage files
+    # inside the outer result namespace and the merger reads them twice.
+    success_roots = [p for p in target.parents if p.name == "Success"]
+    success_root = success_roots[-1] if success_roots else target.parent
+    stage_dir = success_root.parent / ".success-publish-staging"
+    if stage_dir.is_symlink():
+        raise OSError("unsafe success staging directory")
+    stage_dir.mkdir(parents=True, exist_ok=True)
+    fd, staged_name = tempfile.mkstemp(
+        dir=str(stage_dir), prefix=".success-", suffix=".tmp",
+    )
+    staged = Path(staged_name)
+    try:
+        with os.fdopen(fd, mode="w", encoding="utf-8", newline="") as stream:
+            stream.write(text)
+            stream.flush()
+            os.fsync(stream.fileno())
+        # Atomic no-clobber publication, not os.replace. If a success was
+        # already published, preserve it and leave RUNNING for inspection.
+        os.link(staged, target, follow_symlinks=False)
+    finally:
+        # Cleanup is best effort, *not* part of the publication outcome.
+        # Once os.link succeeds the complete Success exists; a permission
+        # error removing this disposable staging link must never turn that
+        # committed output into a failed Worker or skip its identity journal.
+        # On an earlier publish failure, also preserve the original error.
+        try:
+            staged.unlink()
+        except OSError:
+            pass
+
+
+def require_no_pending_success_conflicts(item_dirs) -> None:
+    """Detect permanently unclaimable TODO/Success pairs before producer ends.
+
+    A successful rollback of a racing claim restores TODO but does not make
+    the source claimable: the older Success remains and blocks all further
+    claims. Signal a terminal condition without waiting for producer_done.
+    """
+    for item_dir in item_dirs:
+        root = Path(item_dir)
+        todo = root / "TODO"
+        if not todo.is_dir():
+            continue
+        for source in todo.rglob("*"):
+            if not (source.is_file() or source.is_symlink()):
+                continue
+            success = root / "Success" / source.name
+            if success.exists() or success.is_symlink():
+                raise QueueClaimSuccessConflictError(
+                    "undispatched TODO conflicts with prior Success"
+                )
 
 
 def require_no_pending_todo_sources(item_dirs) -> None:
@@ -82,7 +164,25 @@ def pick_and_claim_next_prompts(item_dirs, per_round_limit=128, *, claim_ids_out
             if basename_counts[src_p.name] != 1:
                 continue
             dst_p = run / src_p.name
+            prior_success = Path(item_dir) / "Success" / src_p.name
+            # A prior completed result is not evidence that this generation
+            # succeeded. Refuse dispatch instead of allowing a stale Success
+            # file to be mistaken for this new Worker's output.
+            if prior_success.exists() or prior_success.is_symlink():
+                continue
             if not _claim_regular_source_no_clobber(src_p, dst_p):
+                continue
+            # Another Worker may publish Success and release its former
+            # RUNNING file between the above existence check and our exclusive
+            # claim. Claiming is then possible only AFTER that old output is
+            # already present. Recheck *after* the successful claim and restore
+            # our source to its exact original TODO path before dispatching.
+            # Do not create a claim event, Worker call or false completion.
+            if prior_success.exists() or prior_success.is_symlink():
+                if not _claim_regular_source_no_clobber(dst_p, src_p):
+                    # Preserve all evidence; never schedule an ambiguous
+                    # RUNNING/Success pair or silently report it as claimed.
+                    raise QueueClaimRollbackError("queue claim collision recovery incomplete")
                 continue
 
             # Observe the real completed rename without changing the legacy
@@ -170,17 +270,16 @@ def recover_running_to_todo(item_dirs):
             rel = p.relative_to(run)
             dst = todo / rel
             dst.parent.mkdir(parents=True, exist_ok=True)
+            # Reuse the exclusive same-filesystem move used by claiming.
+            # This preserves an existing TODO (including symlinks) and leaves
+            # RUNNING untouched when the move cannot be performed safely.
+            if not _claim_regular_source_no_clobber(p, dst):
+                continue
+            # A successful requeue move is an observed queue transition,
+            # not evidence of a second provider invocation or retry family.
             try:
-                os.replace(str(p), str(dst))
-                # A successful requeue move is evidence of a queue transition,
-                # not proof of a second LLM/provider invocation.
-                try:
-                    record_queue_transition(dst, "requeued", previous_path=p)
-                except Exception:
-                    pass
-                moved += 1
-            except FileNotFoundError:
+                record_queue_transition(dst, "requeued", previous_path=p)
+            except Exception:
                 pass
-            except PermissionError:
-                pass
+            moved += 1
     return moved
