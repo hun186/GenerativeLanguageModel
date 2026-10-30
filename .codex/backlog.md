@@ -98,3 +98,8 @@
 - [ ] Operator deploy: inject `CZJLLM_ES_HOST`/`CZJLLM_ES_USERNAME`/`CZJLLM_ES_PASSWORD` and SQL variables via OS secret manager or private `.env.production`, check staging login and TLS hostname/SAN, then confirm production behavior without displaying secret values.
 - [ ] Revoke/rotate any **still-valid** Elasticsearch credentials previously committed and independently verify old SQL logins; do not confuse DeepSeek revocation with other service credentials.
 - [ ] Long term: consider separate ES profiles for independent clusters and remove hostname-verification bypass where correct certificates are available; maintain no plaintext runtime secrets in tracked examples. Historical ref cleanup remains deferred and explicitly approval-gated.
+
+## 2026-10-30 — preferred private connection-profile deployment
+- [ ] Exact-head GitHub CI, private-profile regressions, secret scan, Linux E2E, formal Codex re-review and resolution of new findings required for PR #258; user approval needed for Merge.
+- [ ] Operator must create or migrate real SQL/ES full connection files to ignored `config_sql/private/` and `config_es/private/` before deployment; verify path selection and live connectivity without exposing values. Back up these private folders securely and exclude from deployments/releases shared with others.
+- [ ] Rotate any still-live SQL/ES credentials that had previously appeared publicly. DeepSeek key revocation alone does not imply rotation of database credentials; full Git-history rewrite remains separately deferred.
