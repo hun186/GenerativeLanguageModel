@@ -147,3 +147,9 @@
 - [ ] Independent phase 2f: complete bounded NtQueryDirectoryFile handle-relative enumeration and integrate output with existing CLI, *only after* real Windows 3.10/3.11, NTFS and reparse/race validation. UNC/SMB remains separately gated; no unsafe path-based fallback, auto cleanup or trusted retry family.
 
 - [ ] **PR #262 first formal review P2:** Windows lone UTF-16 surrogate path components must produce controlled `UnsafeWindowsIdentity` instead of unhandled encoding errors. Code and actual surrogate/non-BMP regressions committed. Require exact new-HEAD Linux E2E, changed-lines scan and formal Codex re-review, zero unresolved threads; owner must approve Merge. Native Windows self-hosted still queued.
+
+## 2026-10-30 — after accepted #262, phase 2f Windows native enumeration
+
+- [x] PR #262 user-approved Squash Merge `2025744d6b5bced35f377a1c083821123a7f0e1e`, native no-reparse Windows ancestor/leaf Handle and 128-bit File ID groundwork. Exact-head Linux offline-e2e, secret scan, formal Codex Review pass; Windows 3.10/3.11 still queued. Older historical #262 pending review P2 is superseded.
+- [ ] Phase 2f independent PR: stream bounded FILE_DIRECTORY_INFORMATION from NtQueryDirectoryFile, reject reparse and stale/unsafe child opens, count-only/secret-free experimental Windows CLI integration; always manual-review/exit 2 until actual Windows NTFS acceptance. Run new exact-head Hosted Linux synthetic tests, secret scan and formal Codex Review, resolve P1/P2, obtain explicit owner Merge authorization.
+- [ ] Native Windows operator acceptance: self-hosted Python 3.10/3.11, real NTFS direct CLI and temp-file hardlink/Junction/race tests; evaluate SDK/ABI errors, no-follow behavior, handle leaks, filesystem filter differences. UNC/SMB separately deferred, and do NOT remove `WINDOWS_EXPERIMENTAL_UNVERIFIED` without verified acceptance and separate approval.
