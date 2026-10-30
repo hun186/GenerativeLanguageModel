@@ -12,6 +12,8 @@ import subprocess
 from collections.abc import Mapping
 
 from czjLLM.utilities.path_utils import llm_channel_dir
+from czjLLM.utilities.credential_config import validate_es_config, validate_sql_config
+from czjLLM.utilities.env_overrides import load_czjllm_env_files_once
 
 
 from utils.selector import OptionSelector
@@ -44,36 +46,37 @@ def load_config_from_file(PGMSubDir="", config_path=""):
     raise FileNotFoundError("設定檔不存在")
 
 def load_sql_config_from_file(config_path: str) -> dict:
+    # Explicit OS variables outrank private .env files. No tracked secrets are loaded.
+    load_czjllm_env_files_once(base_dir=str(Path(__file__).resolve().parents[2]))
     ext = os.path.splitext(config_path)[1].lower()
     #print("config_path",config_path)
     if ext == ".py":
         spec = importlib.util.spec_from_file_location("sql_config", config_path)
         config_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(config_module)
-        return {k: getattr(config_module, k) for k in dir(config_module) if not k.startswith("__")}
+        return validate_sql_config({k: getattr(config_module, k) for k in dir(config_module) if not k.startswith("__")})
 
     elif ext in [".yaml", ".yml"]:
         with open(config_path, "r", encoding="utf-8") as f:
-            return yaml.safe_load(f)
+            return validate_sql_config(yaml.safe_load(f))
 
     else:
         raise ValueError(f"❌ 不支援的設定檔副檔名：{ext}")
 
 def load_es_config_from_file(config_path: str) -> dict:
-    """
-    與 load_sql_config_from_file 相同，只是命名區分 ES
-    """
+    """Load ES profile after private env files; reject partial auth pairs."""
+    load_czjllm_env_files_once(base_dir=str(Path(__file__).resolve().parents[2]))
     ext = os.path.splitext(config_path)[1].lower()
     if ext == ".py":
         spec = importlib.util.spec_from_file_location("es_config", config_path)
         config_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(config_module)
-        return {k: getattr(config_module, k) for k in dir(config_module) if not k.startswith("__")}
+        return validate_es_config({k: getattr(config_module, k) for k in dir(config_module) if not k.startswith("__")})
 
     elif ext in [".yaml", ".yml"]:
         with open(config_path, "r", encoding="utf-8") as f:
             #print("load es config res",yaml.safe_load(f))
-            return yaml.safe_load(f)
+            return validate_es_config(yaml.safe_load(f))
 
     else:
         raise ValueError(f"❌ 不支援的設定檔副檔名：{ext}")
