@@ -14,6 +14,7 @@ import json
 import os
 from pathlib import Path
 import stat
+import sys
 
 
 ROLES = ("TODO", "RUNNING", "Success", ".success-publish-staging")
@@ -162,15 +163,8 @@ def _is_windows() -> bool:
 
 
 def _native_windows_snapshot(item_dir, max_entries):
-    # Lazy import: POSIX production remains entirely independent of Win32.
-    # Support both 'python -m scripts.inspect_queue_recovery_state' and the
-    # documented direct 'python scripts/inspect_queue_recovery_state.py'.
-    try:
-        from scripts.queue_win32_native_enumeration import scan_windows_roles
-    except ModuleNotFoundError as exc:
-        if exc.name != "scripts":
-            raise
-        from queue_win32_native_enumeration import scan_windows_roles
+    # Lazy ordinary import; CLI entrypoint establishes the repo module root.
+    from scripts.queue_win32_native_enumeration import scan_windows_roles
     return scan_windows_roles(item_dir, max_entries)
 
 
@@ -331,4 +325,11 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # Centralize direct-script import compatibility at the CLI entrypoint.
+    # 'python -m scripts.inspect_queue_recovery_state' already has the root
+    # on sys.path; 'python scripts/inspect_queue_recovery_state.py' may not.
+    if not __package__:
+        module_root = str(Path(__file__).resolve().parent.parent)
+        if module_root not in sys.path:
+            sys.path.insert(0, module_root)
     raise SystemExit(main())
