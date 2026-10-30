@@ -45,7 +45,19 @@ def validate_es_config(config):
             "and CZJLLM_ES_PASSWORD in a private runtime environment"
         )
     if os.getenv("CZJLLM_ENV", "").strip().lower() in {"production", "prod"}:
-        if not user or not password or not str(config.get("es_host") or "").strip():
+        hosts = config.get("hosts")
+        if hosts:
+            # resolve_es_connection uses hosts ahead of es_host.
+            entries = hosts if isinstance(hosts, (list, tuple)) else [hosts]
+            valid_destination = bool(entries) and all(
+                bool(entry.strip()) if isinstance(entry, str)
+                else bool(str(entry.get("host") or "").strip())
+                if isinstance(entry, Mapping) else False
+                for entry in entries
+            )
+        else:
+            valid_destination = bool(str(config.get("es_host") or "").strip())
+        if not user or not password or not valid_destination:
             raise ValueError(
                 "ES production connection requires private host, username and password"
             )
