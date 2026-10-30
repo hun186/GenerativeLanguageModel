@@ -122,6 +122,44 @@
 
 - **#253 newest Hosted Linux CI #40854121454:** focused queue test erroneously asserted a consumer `break` within 180 source characters of a pending guard; added event-signalling lines made this formatting-dependent check fail although runtime path has separate real consumer tests. Update static assertion to check required signal wiring, keep real execution regressions, rerun exact-head CI. Do not count earlier FAIL as acceptance.
 
+
+## 2026-10-29 public credential exposure — requires owner action
+
+- Public `czjLLM/czjLLM_utils_key.py` previously contained two full key-format values; four `config_sql/akconfig_test*` scripts used literal password values. Current-source remediation is being reviewed separately in security PR #255, not merged.
+- Github can verify tracked source state but not whether provider API keys or SQL passwords remain valid, whether credentials were used without authorization, nor full request source IP. Owner must revoke/rotate and request provider usage evidence.
+- Old Git objects, branches, CI logs, forks and clones may retain values even after file deletion. Historical full scan and disruption-reviewed rewrite are deferred; do not assume they were addressed by this PR.
+- New changed-line scanner is preventive only, not a complete all-refs historical audit. Actual credential-backed runtime tests and Windows SQL environments are operator-deferred.
+
+
+## 2026-10-30 — ongoing public historical/branch credential exposure
+
+- PR #255 main-tree cleanup does not remove old source from 171 of 175 fetched remote branch heads, or from reachable Git history. Earlier root commit also contains compiled Python key-related bytecode. Read-only PR #256 scanner finds pattern hits but is incomplete for unscanned >2 MB blobs, other repos' complete histories, CI logs/artifacts, forks and unreachable objects. Provider-side validity and key revocation are still not confirmed.
+- Do not rewrite history, force push/delete branches or claim incident resolved without explicit owner approval and a reviewed migration plan. The cross-repository `menu-planner/.env` setting needs a separate validity/rotation review.
+
+## 2026-10-30 — historical cleanup readiness blockers
+- As of #256, ~171/175 remote branch heads retained the legacy key path; pattern matches may include duplicate objects/false positives. Twelve oversized blobs and CI logs/forks remained outside the limited historical scanner. Provider-side key revocation and SQL-account rotation still lack authoritative provider/operator confirmation.
+- Prior SHA-based review/CI cannot be reused if Git history is rewritten, notably for OPEN #254. A private full-ref backup, independent restore verification, exact ref freeze, all-history secret scan (including binaries), PR migration and explicit destructive-action authorization are mandatory. This PR adds only redacted read-only tooling; never claim history is clean or rewrites complete.
+
+## 2026-10-30 — production ES and SQL secret separation risks
+- Current public main previously included six nonempty `es_pass` assignments in seven ES Python profiles. Proposed update removes current literals but not old Git objects/branches; rotate any live ES account/password independently. Operators must supply ES host/username/password via private environment and validate staged connectivity before deployment.
+- Existing ES configs have `es_ssl_assert_hostname=False` for historical IP endpoint compatibility; TLS hostname verification remains an operator security concern, not declared resolved. Current work does not inspect all external clones/forks nor guarantee removal of historical credentials. SQL password validity and actual SQL/ES production tests are operator-deferred.
+
+## 2026-10-30 — operator migration required before PR #258 deployment
+- Removed 11 root SQL/ES `.py` connection files from PR branch Git tracking; old YAML paths require matching local `private/` files before running jobs. GitHub cannot move local operator credentials. On existing checkouts copy original complete profiles into ignored `private/` **before** pulling a version that removes root files; then validate runtime load and database/ES login. If an old root file was sanitized earlier, copying it does not recover an absent password.
+- Public Git history still retains prior credentials; Git untracking affects only the prospective latest tree. Real SQL/ES credential validity/rotation and private-file presence on Windows/Linux remain unverified. Local archives, Docker builds, shared release bundles must exclude private folders.
+
+## 2026-10-30 — private-profile deployment verification boundary
+
+- Merged PR #258 removes eleven tracked root connection profiles; no restored private production connection files exist in GitHub by design. The user's backed-up SQL/ES private files must be restored and validated on their own machine. Hosted tests are synthetic and cannot prove actual SQL/ES login, database/table/index existence, certificate SAN verification or rotations.
+- Follow-up read-only preflight never executes local .py files or prints secret values; it does **not** cryptographically prove that a nonblank string is a working credential. YAML profiles require manual content/schema inspection. A local source profile containing dynamic expressions requires operator confirmation in the actual runtime, not a CI assertion.
+
+## 2026-10-30 — ES private static preflight dev anonymous detection
+
+- Operator's Windows report after #259: four of four SQL private profiles pass; six of seven ES profiles pass static inspection. Fourth sorted ES file has empty `es_user` and `es_pass`, **not yet confirmed as intentionally anonymous**. The strict default is correct for production but may flag legitimate development-only anonymous ES.
+- New branch offers explicit opt-in for one ES Python file in a nonproduction environment and never changes actual ES authentication or secret storage. It is not an automatic exception, never applies to SQL/bulk/YAML, rejects partial auth/production, and never proves the ES endpoint is safe or reachable. Operator must inspect the specific local profile and validate actual TLS/login separately.
+
+- **PR #260 initial Codex P2 (pending exact-head re-review):** whitespace-only ES password was misclassified as anonymous by preflight, despite active runtime validator rejecting it as incomplete auth. New static exception now matches runtime (anonymous username may strip whitespace; password must literally be empty or None) and synthetic tests cover both; the actual operator ES PROFILE_4 login policy remains unverified.
+
 ## 2026-10-29 phase 2c recovery/Success preservation boundaries
 
 - Old `recover_running_to_todo` used `os.replace` into possibly existing TODO; old leaf Worker Success writes likewise replaced prior outputs via `.tmp` + `os.replace`, potentially masking an older completed result. New paths fail closed with exclusive same-volume hardlink creation; target conflicts and unsupported file systems keep pending/running sources where possible. Interrupted hardlink+unlink can leave both paths and never counts as complete recovery. New pre-claim Success collision guard may block intentionally re-run work until operator clears/archives validated previous output; do not auto-delete either side. Direct leaf `PromptAPIPipeline.proc` output is protected, not all stage/merge/retention writers; real Windows/SMB and integrated SQL/ES/LLM provider semantics are unverified. No cross-dispatch Retry Family or exactly-once guarantee; new Hosted Linux E2E and formal Codex Review pending.
@@ -135,3 +173,5 @@
 - **#254 fourth Review P2s:** Treat a preexisting Success and a successfully rolled-back old Success race as terminally unclaimable TODO independently of Producer completion; after a no-batch Consumer sweep, read-only TODO/Success basename scan signals existing blocked event and fails with payload-free error, allowing Producer backpressure exit and coordinator failed teardown instead of cycle. A separate P2 found disposable `.success-*.tmp` inside Success gets double-counted by real combine_api_finished_item merger on cleanup-denied publication. New staging outside Success tree in sibling `.success-publish-staging`; orphan file remains visible but cannot be a Success result. Real merger regression covers duplicate prevention; nesting and supported-volume constraints remain. Keep existing #254 older review findings until exact-head re-review and explicit thread resolution.
 
 - **#254 latest repeat-Success-stage and test expectation:** For repeated Success ancestors, first/nearest match can leave orphan stage inside outer Success; fix outermost selection and verify real merger reads exactly one slice after failed unlink. Actual combine output appends one terminal newline to each merged slice; the previous new test expected no newline and caused Hosted Linux #40873345948 failure. Assert exact single-slice content with its expected trailing newline; do not weaken to substring checks or count it as completed CI. Require new exact HEAD Hosted CI + review, then resolve historical 7 threads.
+
+- **2026-10-30 #254 integration:** Main-first tree retains current security code while importing reviewed #254 no-clobber queue module/controller/producer/tests. GitHub CI+Codex must be re-run on final integration HEAD; old #254 review is historical only. Existing Success/partial retry files may coexist after hardlink+unlink interruption, and cannot be automatically removed. Windows/SMB+LLM/SQL/ES live results remain untested.

@@ -25,15 +25,16 @@ import argparse
 
 
 try:
-    from czjLLM_utils_key import api_key
     import czjLLM.taskConfig
     from czjLLM.taskConfig import taskSetting
     from czjLLM.taskConfig import *
 except:
-    from GenerativeLanguageModel.czjLLM.czjLLM_utils_key import api_key
     from GenerativeLanguageModel.czjLLM import taskConfig
     from GenerativeLanguageModel.czjLLM.taskConfig import taskSetting
     from GenerativeLanguageModel.czjLLM.taskConfig import *
+# Runtime-only credential: no fallback to committed API keys.
+api_key = os.environ.get("CZJLLM_UTILS_API_KEY")
+
 #print("taskConfig in L32",taskSetting)
 #from utils.utilities import MKDIR
 

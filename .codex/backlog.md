@@ -87,8 +87,44 @@
 - [ ] Separate no-clobber review of RUNNING→TODO recovery/timeout and RUNNING→Success destinations (potential overwrite or stale source). Define operator recovery workflow for interrupted hardlink+unlink window, pending duplicate names, unsupported filesystem; evaluate queue liveness and diagnostics.
 - [ ] Later: durable source-generation/lease based logical Retry Family across retries; Worker UUID/Claim UUID are per-attempt and split family remains JSON-only, never derive denominator from repeated basename/hash.
 
+## 2026-10-30 — operator-gated credential-history cleanup
+- [ ] Have operator revoke potentially exposed provider keys/active SQL logins and preserve source-IP/account audit evidence securely.
+- [ ] Run exact-head Hosted read-only preflight and formal Codex review; record branch/ref SHA snapshot and check delta against #256 evidence.
+- [ ] Independently inspect >2MB blobs, forks, PR refs, GitHub Actions logs/assets, other public repo histories, compiled Python and false positives without public secret values.
+- [ ] With separate approval, perform private mirror backup and restore, isolated git-filter-repo rehearsal, confidential SQL literal replacement, full-ref scan and #254 migration validation. Never rewrite public Git or force push without a new explicitly approved execution packet.
+
+## 2026-10-30 — production credential security follow-up
+- [ ] Verify exact-head Hosted credential synthetic tests, changed-line scanner, offline Linux E2E, formal Codex review and review-thread resolution for the new PR; merge only on user approval.
+- [ ] Operator deploy: inject `CZJLLM_ES_HOST`/`CZJLLM_ES_USERNAME`/`CZJLLM_ES_PASSWORD` and SQL variables via OS secret manager or private `.env.production`, check staging login and TLS hostname/SAN, then confirm production behavior without displaying secret values.
+- [ ] Revoke/rotate any **still-valid** Elasticsearch credentials previously committed and independently verify old SQL logins; do not confuse DeepSeek revocation with other service credentials.
+- [ ] Long term: consider separate ES profiles for independent clusters and remove hostname-verification bypass where correct certificates are available; maintain no plaintext runtime secrets in tracked examples. Historical ref cleanup remains deferred and explicitly approval-gated.
+
+## 2026-10-30 — preferred private connection-profile deployment
+- [ ] Exact-head GitHub CI, private-profile regressions, secret scan, Linux E2E, formal Codex re-review and resolution of new findings required for PR #258; user approval needed for Merge.
+- [ ] Operator must create or migrate real SQL/ES full connection files to ignored `config_sql/private/` and `config_es/private/` before deployment; verify path selection and live connectivity without exposing values. Back up these private folders securely and exclude from deployments/releases shared with others.
+- [ ] Rotate any still-live SQL/ES credentials that had previously appeared publicly. DeepSeek key revocation alone does not imply rotation of database credentials; full Git-history rewrite remains separately deferred.
+
+## 2026-10-30 — connection profile untracking deployment gate
+- [ ] Run exact-head Hosted security regression (including 11 root file absence/11 public template assertions), changed-lines secret scan, Linux E2E and formal Codex Review on PR #258; 0 outstanding P1/P2 before requesting Merge.
+- [ ] Before deployment, operator locally copies complete SQL/ES root profiles to the ignored `private/` directories (optionally with `scripts/migrate_connection_profiles_to_private.py --apply` on a checkout where originals still exist), confirms SHA/contents privately, then validates old YAML path resolution and actual connection. Never assume GitHub could migrate local secrets.
+
+## 2026-10-30 — after accepted PR #258
+
+- [x] PR #258 user-approved Squash Merge `a2815b369e80108fbc893d3d8b97e4f29f20e878`: remove 11 tracked SQL/ES root connection files, retain 11 sanitized templates and private path compatibility; exact-head formal review clean, Linux offline-e2e and secret scan passed. Historical earlier [ ] items for #258 in this document are superseded.
+- [ ] Current new branch `security/private-profile-deploy-preflight-20261030`: run exact-head Hosted no-network private-profile safety tests, secret scan, Linux offline E2E and formal Codex Review; resolve all findings, then request user authorization before merging.
+- [ ] Operator only: after updating local checkout, restore backed-up complete `config_sql/private/` and `config_es/private/` files, run read-only preflight, validate real SQL/ES logins and ES TLS certificates. Never print or upload credentials; no GitHub action can validate local private files.
+- [ ] Independently determine whether previously public SQL/ES credentials remain valid and rotate if needed. Do not do public Git history rewrite, branch deletion, force push, or #254 edits without separate authorization.
+
+## 2026-10-30 — ES anonymous development preflight follow-up
+
+- [x] PR #259 previously user-approved Squash Merge to main SHA `8fca421c772430493bf5e49f3cd8cf946973f218`; read-only SQL/ES static preflight landed with Hosted synthetic unit/secret scanner and Linux E2E PASS. Windows live private profile check and actual SQL/ES authentication remain operator-only.
+- [ ] New independent security PR: allow explicit nonproduction single-file anonymous Elasticsearch static inspection without weakening default auth requirements, production checks or field/path/Git hygiene. Require latest-head Hosted synthetic tests, changed-line scan, Linux E2E, formal Codex review and explicit owner merge authorization.
+- [ ] Operator confirm ES PROFILE_4 corresponds to an intentionally anonymous development endpoint. If credentials are actually required, repair private file locally instead; never commit real secrets. Runtime ES/TLS authentication and SQL still require operator validation.
+
 ## 2026-10-29 phase 2c recovery and Worker Success protection
 
 - [ ] New PR: no-clobber RUNNING→TODO recovery/timeout and direct Worker Success publication with conflict preservation, source/receipt semantics and actual-file concurrency tests, exact-HEAD Hosted Linux CI and formal Codex Review. User Merge permission required.
 - [ ] Audit stage-managed and alternate Success writers, explicit full-restart policies, collision recovery tooling and prior Success provenance; no automatic manual artifact deletion or reinterpretation of stale results. Require Windows filesystem and actual LLM/ES/SQL operator E2E before claims of deployment readiness.
 - [ ] Durable source generations and trusted cross-claim logical Retry Family remain deferred; distinct from one claim UUID, Worker invocation UUID, split-intent UUID and SDK internal HTTP requests.
+
+- [ ] **2026-10-30 current PR #254 integration:** original phase 2c review was clean on its prior HEAD but branch was unmergeable after later security merges. Main-first two-parent integration on latest main preserves security patches and original queue fixes; fresh exact-head Linux E2E/Codex Review required, then explicit owner Merge approval.

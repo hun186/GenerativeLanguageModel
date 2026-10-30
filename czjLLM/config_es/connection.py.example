@@ -1,0 +1,17 @@
+# Copy this entire file to config_es/private/<connection_name>.py .
+# Keep the host, login, index, mapping and other connection choices together.
+# Do not commit a populated copy; this file contains no real secrets.
+es_host = ""
+es_user = ""
+es_pass = ""
+es_index = ""
+id_col = "_id"
+input_col = "rawInfo.content"
+output_col = "multidim_event_json"
+es_verify_certs = True
+es_ssl_assert_hostname = True
+# For trusted private/internal HTTPS roots, adjust this path as needed.
+# es_ca_certs = "path/to/trusted/http_ca.crt"
+reset_output = False
+es_apply_mapping = False
+# mapping_file = "czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml"

@@ -157,6 +157,14 @@ The following sections describe the accepted main implementation through PR #239
 
 - On terminal blocked queue, do not remove registry entries just to satisfy merge exit and do not wait indefinitely for impossible `_all_slices_done`; bound Row Merger to one final normal scan after explicit blocked event and teardown stop_event, then close sink and preserve remaining artifacts. Coordinator owns authoritative terminal failed status. Normal job shutdown remains unchanged.
 
+## 2026-10-30 — preflight anonymous Elasticsearch design decision
+
+- Keep `verify_private_connection_profiles.py` strict by default; a single empty `es_user` or `es_pass` remains an error, and full-directory checks cannot silently accept anonymous endpoints.
+- Permit **only explicit one-file `.py` ES development/test** override `--kind es --profile FILENAME.py --allow-anonymous-es` when both fields are literal blanks and `CZJLLM_ENV` is unset/known nonproduction; production, staging and unknown environment names refuse the override. SQL and YAML never receive it. Other security and connection-shape checks are unchanged.
+- This is static validation policy, not a change to actual ES runtime authentication, a production credential bypass, or a claim of real endpoint login. Operator must verify that ES PROFILE_4 intentionally supports anonymous access, otherwise configure private credentials.
+
+- **Anonymous preflight parity refinement (Codex P2):** ES `validate_es_config` normalizes username via `.strip()` but checks password raw truthiness. Static anonymous exception must follow that asymmetry rather than treating whitespace-only passwords as empty; do not alter runtime authentication semantics for a preflight-only fix. Require literal empty/None password and reject dynamic expressions to avoid claiming unverifiable anonymous behavior.
+
 ## 2026-10-29 phase 2c: preserve prior TODO and Success generations
 
 - Extend the #253 exclusive hardlink policy to RUNNING→TODO recovery (nested paths and original integer moved count), and to direct Worker Success publication using a unique fsynced temp in its destination directory. Existing output means unknown/conflict, not proof of a fresh Worker success; never fallback to destructive `os.replace` for unsupported filesystems or use matching basename/hash as retry identity. A TODO claim refuses prior Success of the same basename. Failure preserves the source and lets normal orchestration observe incomplete work; requeue observation only after successful unlink. Keep Worker call auditing, SQL/ES acknowledgement and report-v1 denominators unchanged. True crash-atomic generations, stage/non-Worker Success output and logical Retry Family need separate work.

@@ -1,0 +1,13 @@
+# Copy this entire file to config_sql/private/<connection_name>.py .
+# The private directory is ignored by Git. Edit everything here in one place.
+# Never put populated credentials in a tracked public file.
+server = ""
+username = ""
+password = ""
+database_name = ""
+table_name = ""
+primary_key = "Auto"
+target_table = ""
+reset_output = False
+# Leave absent unless explicitly needed by your workflow:
+# reset_confirm_code = ""

@@ -96,6 +96,11 @@
 
 - **Blocked queue teardown:** SQL/Table/ES coordinator sets teardown stop_event after observing producer-complete/blocked signal. Row Merger recognizes ctx._queue_claim_blocked_event jointly with stop_event and performs at most one last merge pass, then exits without requiring registry empty; blocked TODO/Success sources remain untouched for replay. This prevents shutdown() indefinite merger.join(), while coordinator emits terminal run_failed rather than forged completion. Other cancellation/normal-drain modes retain their original registry-empty behavior.
 
+## 2026-10-30 — SQL/ES private connection profile source boundary (PR #258)
+- Runtime authoritative SQL/ES connection files live locally under Git-ignored `czjLLM/config_sql/private/` and `czjLLM/config_es/private/` (complete host/user/password/db/table/index per file). Git contains only sanitized `*.py.example` copy templates, not the former eleven active root `akconfig_*.py` profiles.
+- Existing YAML refs to removed root `.py` profiles are resolved by the shared `private_connection_profiles.resolve_profile_path` to matching local private files; selectors enumerate private files and create the directories on demand. Missing private files fail visibly. `job_config.py` performs the resolution for both SQL and ES; existing env-variable-based templates can be copied to private unchanged if desired.
+- A local opt-in pre-update migration script performs ignore-checked, verified byte-copy of pre-existing operator files to private without deleting source. Local secrets never transit GitHub/CI. Only Git remote index removal was done; published history is not rewritten.
+
 ## 2026-10-29 phase 2c — no-clobber queue recovery and Worker Success publication
 
 - Existing `runtime_support.prompt_queue._claim_regular_source_no_clobber` is reused for nested RUNNING→TODO recovery (exclusive hardlink + verified unlink). A recover count and requeue observation exist only after completed move; prior TODO or uncertain aliases leave RUNNING. The TODO→RUNNING picker also refuses existing Success basename, never claiming a new source as an already completed older result.
