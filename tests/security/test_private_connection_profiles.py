@@ -113,6 +113,32 @@ class PrivateConnectionProfilesTests(unittest.TestCase):
                 )
                 self.assertNotEqual(tracked_test.returncode, 0)
 
+    def test_legacy_yaml_filename_resolves_missing_root_profile(self):
+        # The tracked root .py was untracked, but operator's ignored twin remains.
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder) / "czjLLM" / "config_sql"
+            private = root / "private"
+            private.mkdir(parents=True)
+            hidden = private / "akconfig_test.py"
+            hidden.write_text("database_name = 'synthetic'\n", encoding="utf-8")
+            self.assertFalse((root / "akconfig_test.py").exists())
+            with patch(
+                "czjLLM.utilities.private_connection_profiles.profile_directory",
+                return_value=root,
+            ):
+                for old_path in (
+                    "akconfig_test.py",
+                    "config_sql/akconfig_test.py",
+                    "czjLLM/config_sql/akconfig_test.py",
+                    str(root / "akconfig_test.py"),
+                ):
+                    with self.subTest(old_path=old_path):
+                        self.assertEqual(
+                            resolve_profile_path(old_path, "config_sql"), hidden
+                        )
+                with self.assertRaises(FileNotFoundError):
+                    resolve_profile_path("czjLLM/config_sql/no-private.py", "config_sql")
+
     def test_live_loader_paths_use_resolver(self):
         root = Path(__file__).resolve().parents[2]
         loader = (root / "czjLLM/job_manager/job_config.py").read_text(encoding="utf-8")
