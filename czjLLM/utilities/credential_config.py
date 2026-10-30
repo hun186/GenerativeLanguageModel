@@ -44,6 +44,11 @@ def validate_es_config(config):
             "ES authentication incomplete: supply both CZJLLM_ES_USERNAME "
             "and CZJLLM_ES_PASSWORD in a private runtime environment"
         )
+    if os.getenv("CZJLLM_ENV", "").strip().lower() in {"production", "prod"}:
+        if not user or not password or not str(config.get("es_host") or "").strip():
+            raise ValueError(
+                "ES production connection requires private host, username and password"
+            )
     return config
 
 
