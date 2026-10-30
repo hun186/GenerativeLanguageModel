@@ -90,6 +90,10 @@ czjLLM/config_sql/*_local.py
 *.secrets.*
 
 # Private production/local credential material (never commit populated versions)
+# Full SQL/ES connection files: keep host, username, password and table in one
+# ignored directory; safe public *.py.example files remain version-controlled.
+czjLLM/config_sql/private/
+czjLLM/config_es/private/
 .env
 .env.*
 **/.env
