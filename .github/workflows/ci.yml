@@ -106,6 +106,38 @@ jobs:
       - name: Run unit tests (exclude integration)
         run: pytest -q -m "not integration and not e2e and not live_llm and not live_sql and not live_es and not live_e2e" --maxfail=1 --disable-warnings
 
+  windows-native-ntfs-hosted:
+    # Independent, ephemeral REAL Windows host. No service tokens or private
+    # mounts: the tests create fixtures exclusively under pytest tmp_path.
+    # This gate is distinct from the operator's queued self-hosted runners.
+    runs-on: windows-2022
+    permissions:
+      contents: read
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install isolated native test requirements
+        shell: pwsh
+        run: python -m pip install --upgrade pip pytest
+      - name: Require actual NTFS filesystem on test drive
+        shell: pwsh
+        run: |
+          & fsutil.exe fsinfo ntfsinfo $env:SystemDrive | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw "WINDOWS_NTFS_VOLUME_REQUIRED" }
+      - name: Verify native Win32 handles, bounded enumeration and NTFS safety
+        shell: pwsh
+        env:
+          PYTHONNOUSERSITE: "1"
+        run: |
+          python -m pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py tests/prompt_pipeline/test_queue_win32_native_enumeration.py tests/prompt_pipeline/test_queue_win32_ntfs_acceptance.py --maxfail=1 --disable-warnings
+
   windows-selfhosted:
     runs-on: [self-hosted, Windows, X64]
     strategy:

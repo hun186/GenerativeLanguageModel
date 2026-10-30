@@ -156,3 +156,7 @@
 ## 2026-10-30 — PR #263 second Code Review acceptance limits
 
 - Second formal Codex review on older head `a608f199440e` found active-memory overflow and a Windows default-refusal test mismatch. Exact pre-compaction contents preserved as `.codex/archive/known_issues.md-20261030-191600.md` with blob `e293b2406ffcbf1f48b119f566b52ebbe86854af`; current safety issues remain in active summary. Direct-script test now expects `UNSUPPORTED_SAFE_SCAN_PLATFORM` on Windows, `INCOMPLETE_OR_UNSAFE_SCAN` on POSIX; native Windows experimental scan is still not host-accepted. New Hosted Linux/secret CI, archive test, formal Codex re-review pending.
+
+## 2026-10-30 — native Windows NTFS acceptance not yet proven (phase 2g)
+
+- Existing Windows self-hosted Python 3.10/3.11 CI jobs were still queued after #263 merge. Added a separate GitHub-hosted Windows 2022 NTFS/3.10+3.11 matrix with deterministic temp filesystem security cases; **passing Linux synthetic tests cannot substitute for actual matrix SUCCESS**. If the hosted Windows runner or junction setup fails, report that blocker and leave the default Windows unsupported and opt-in experimental review-only/exit 2 unchanged. Even passing hosted NTFS does not prove this operator's filesystem, Windows SMB, live Worker writes, third-party racing writers or durable SQL/ES sink truth.
