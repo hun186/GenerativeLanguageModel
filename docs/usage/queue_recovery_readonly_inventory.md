@@ -58,6 +58,9 @@ On supported POSIX environments the scan uses pinned directory file
 descriptors opened with `O_DIRECTORY | O_NOFOLLOW` from the filesystem root,
 opens child directories relative to verified parent descriptors, and enumerates
 using `os.scandir(fd)`. It never opens file contents or follows symlinks.
+**Any explicit `..` path segment is rejected before `abspath()`**,
+preventing parent traversal from collapsing an unchecked symlink,
+nonexistent ancestor or substituted path into an apparently clean scan.
 The shared budget is enforced during enumeration, **before** buffering or
 sorting children. It gets file identity through handle-relative
 `os.stat(name, dir_fd=fd, follow_symlinks=False)`, not
