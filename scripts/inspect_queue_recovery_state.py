@@ -163,7 +163,14 @@ def _is_windows() -> bool:
 
 def _native_windows_snapshot(item_dir, max_entries):
     # Lazy import: POSIX production remains entirely independent of Win32.
-    from scripts.queue_win32_native_enumeration import scan_windows_roles
+    # Support both 'python -m scripts.inspect_queue_recovery_state' and the
+    # documented direct 'python scripts/inspect_queue_recovery_state.py'.
+    try:
+        from scripts.queue_win32_native_enumeration import scan_windows_roles
+    except ModuleNotFoundError as exc:
+        if exc.name != "scripts":
+            raise
+        from queue_win32_native_enumeration import scan_windows_roles
     return scan_windows_roles(item_dir, max_entries)
 
 
