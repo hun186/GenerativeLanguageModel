@@ -9,6 +9,20 @@ import pytest
 from scripts import inspect_queue_recovery_state as diagnostic
 
 
+@pytest.fixture(autouse=True)
+def _skip_unsupported_platform_except_fail_closed_tests(request):
+    # Windows 3.10/3.11 must REJECT traversal; only the explicit unsupported
+    # platform and static reparse-metadata tests run there. Do not weaken the
+    # scanner to make filesystem-success tests pass on Windows.
+    unsupported_cases = {
+        "test_unsupported_windows_safe_fd_scan_fails_closed",
+        "test_windows_junction_reparse_metadata_is_considered_unsafe",
+    }
+    if (request.node.name not in unsupported_cases
+            and not diagnostic._supports_safe_scan()):
+        pytest.skip("safe descriptor-relative nofollow traversal unavailable")
+
+
 def _item(tmp_path):
     item = tmp_path / "item"
     for role in ("TODO", "RUNNING", "Success"):
@@ -242,7 +256,12 @@ def test_zero_windows_inode_placeholders_are_never_equated(tmp_path, monkeypatch
                 st_mode=info.st_mode, st_dev=0, st_ino=0, st_nlink=0,
             )
         return info
+    # os.supports_dir_fd and supports_follow_symlinks contain the original
+    # built-in, so monkeypatching os.stat otherwise disables the capability
+    # gate and misses the regression entirely.
+    supported = diagnostic._supports_safe_scan()
     monkeypatch.setattr(diagnostic.os, "stat", placeholder_stat)
+    monkeypatch.setattr(diagnostic, "_supports_safe_scan", lambda: supported)
     result = diagnostic.inspect_item(item)
     assert result["scan_complete"]
     assert result["counts"]["unknown_identity_entries"] == 2
@@ -307,7 +326,9 @@ def test_budget_applied_during_scandir_iteration_not_after_materializing(
             return OverwideIterator()
         return real_scandir(fd)
 
+    supported = diagnostic._supports_safe_scan()
     monkeypatch.setattr(diagnostic.os, "scandir", guarded_scandir)
+    monkeypatch.setattr(diagnostic, "_supports_safe_scan", lambda: supported)
     result = diagnostic.inspect_item(item, max_entries=2)
     assert result["status"] == "review_required"
     assert result["codes"] == ["INCOMPLETE_OR_UNSAFE_SCAN"]
@@ -354,8 +375,52 @@ def test_directory_enumeration_uses_fd_and_not_direntry_stat(
             nofollow_stats[0] += 1
         return real_stat(path, *args, **kwargs)
 
+    supported = diagnostic._supports_safe_scan()
     monkeypatch.setattr(diagnostic.os, "scandir", wrapped_scandir)
     monkeypatch.setattr(diagnostic.os, "stat", tracked_stat)
+    monkeypatch.setattr(diagnostic, "_supports_safe_scan", lambda: supported)
     result = diagnostic.inspect_item(item)
     assert result["status"] == "no_observed_conflicts"
     assert nofollow_stats[0] > 0
+
+
+def test_dotdot_path_fails_closed_before_symlink_ancestor_normalization(tmp_path):
+    item = _item(tmp_path)
+    external = tmp_path / "outside"
+    external.mkdir()
+    (external / "private.txt").write_text("secret")
+    alias = tmp_path / "alias"
+    try:
+        alias.symlink_to(external, target_is_directory=True)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlinks unavailable")
+    # abspath() would silently rewrite alias/../item as item before verifying
+    # that alias is a symlink or that it would resolve outside our directory.
+    disguised_item = tmp_path / "alias" / ".." / item.name
+    assert ".." in disguised_item.parts
+    result = diagnostic.inspect_item(disguised_item)
+    assert result["scan_complete"] is False
+    assert result["codes"] == ["INCOMPLETE_OR_UNSAFE_SCAN"]
+    assert result["status"] == "review_required"
+
+
+def test_dotdot_path_fails_closed_even_if_parent_component_missing(tmp_path):
+    item = _item(tmp_path)
+    disguised_item = tmp_path / "nonexistent" / ".." / item.name
+    assert ".." in disguised_item.parts
+    result = diagnostic.inspect_item(disguised_item)
+    assert result["scan_complete"] is False
+    assert result["codes"] == ["INCOMPLETE_OR_UNSAFE_SCAN"]
+    assert item.is_dir()
+
+
+def test_relative_dotdot_rejected_and_normal_relative_path_supported(
+    tmp_path, monkeypatch,
+):
+    item = _item(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    result = diagnostic.inspect_item(Path("other") / ".." / "item")
+    assert result["codes"] == ["INCOMPLETE_OR_UNSAFE_SCAN"]
+    safe = diagnostic.inspect_item(Path("item"))
+    assert safe["scan_complete"] is True
+    assert safe["status"] == "no_observed_conflicts"
