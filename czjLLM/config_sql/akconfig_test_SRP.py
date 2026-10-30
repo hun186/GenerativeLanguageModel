@@ -3,8 +3,8 @@ import os
 # czjLLM/config_sql/akconfig_test_SRP.py
 
 # 服务器信息
-server = '192.168.0.136'
-username = 'aiapp'
+server = os.environ.get("CZJLLM_SQL_SRP_SERVER", "localhost")
+username = os.environ.get("CZJLLM_SQL_SRP_USERNAME", "")
 password = os.environ.get("CZJLLM_SQL_SRP_PASSWORD")
 # 数据库和表信息
 database_name = 'AIDB'
