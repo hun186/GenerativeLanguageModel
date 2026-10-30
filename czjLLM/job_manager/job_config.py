@@ -14,6 +14,7 @@ from collections.abc import Mapping
 from czjLLM.utilities.path_utils import llm_channel_dir
 from czjLLM.utilities.credential_config import validate_es_config, validate_sql_config
 from czjLLM.utilities.env_overrides import load_czjllm_env_files_once
+from czjLLM.utilities.private_connection_profiles import resolve_profile_path
 
 
 from utils.selector import OptionSelector
@@ -48,6 +49,7 @@ def load_config_from_file(PGMSubDir="", config_path=""):
 def load_sql_config_from_file(config_path: str) -> dict:
     # Explicit OS variables outrank private .env files. No tracked secrets are loaded.
     load_czjllm_env_files_once(base_dir=str(Path(__file__).resolve().parents[2]))
+    config_path = str(resolve_profile_path(config_path, "config_sql"))
     ext = os.path.splitext(config_path)[1].lower()
     #print("config_path",config_path)
     if ext == ".py":
@@ -66,6 +68,7 @@ def load_sql_config_from_file(config_path: str) -> dict:
 def load_es_config_from_file(config_path: str) -> dict:
     """Load ES profile after private env files; reject partial auth pairs."""
     load_czjllm_env_files_once(base_dir=str(Path(__file__).resolve().parents[2]))
+    config_path = str(resolve_profile_path(config_path, "config_es"))
     ext = os.path.splitext(config_path)[1].lower()
     if ext == ".py":
         spec = importlib.util.spec_from_file_location("es_config", config_path)
