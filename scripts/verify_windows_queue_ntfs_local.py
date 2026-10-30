@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import ntpath
 import os
 from pathlib import Path
 import subprocess
@@ -22,6 +23,7 @@ SUITES = (
 ALLOWED_ENV = {
     "PATH", "PATHEXT", "SYSTEMROOT", "WINDIR", "SYSTEMDRIVE",
     "TEMP", "TMP", "USERPROFILE", "LOCALAPPDATA", "APPDATA",
+    "PYTHONUSERBASE",
 }
 LIMITATIONS = [
     "DISPOSABLE_FIXTURES_ONLY",
@@ -73,12 +75,22 @@ def _run_suite(relative_path: str) -> tuple[bool, dict]:
     """
     env = {key: val for key, val in os.environ.items()
            if key.upper() in ALLOWED_ENV}
+    # A site-installed pytest may live in the operator's user site.
+    # Disable third-party pytest plugin autoload, not the user site itself.
     env.update({
-        "PYTHONNOUSERSITE": "1",
         "PYTHONDONTWRITEBYTECODE": "1",
         "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
         "PYTHONPATH": str(REPO_ROOT),
     })
+    # The Junction regression invokes Windows PowerShell 5.1 New-Item.
+    # A stripped PSModulePath makes its built-in Management cmdlets fail.
+    # Pin to system-owned module directory instead of inheriting user modules.
+    systemroot = next((v for k, v in env.items()
+                       if k.upper() == "SYSTEMROOT"), None)
+    if systemroot:
+        env["PSModulePath"] = ntpath.join(
+            systemroot, "System32", "WindowsPowerShell", "v1.0", "Modules"
+        )
     try:
         with tempfile.TemporaryDirectory(prefix="queue-ntfs-fixture-") as base:
             junit = Path(base) / "junit.xml"

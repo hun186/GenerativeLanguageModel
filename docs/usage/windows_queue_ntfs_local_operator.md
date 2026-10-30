@@ -51,3 +51,11 @@ Each module records only the numeric total/skipped testcase count and
 no case names, exception text, paths or test stdout/stderr enter the
 report. `JUNIT_MISSING`, `JUNIT_INVALID` and `RUNNER_UNAVAILABLE_OR_TIMEOUT`
 are fixed codes. The JUnit file stays in disposable temporary storage.
+
+### User Python site and junction setup
+
+Pytest may be installed through `pip install --user` and remains available
+to the child interpreter. Unrelated pytest plugins are disabled, not the
+user site itself. To support the native Junction fixture, the test process
+reconstructs PowerShell 5.1's system-owned `PSModulePath` from `SystemRoot`
+instead of inheriting user-provided PowerShell module search paths.

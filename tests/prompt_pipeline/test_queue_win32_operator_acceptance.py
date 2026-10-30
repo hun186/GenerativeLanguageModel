@@ -45,6 +45,8 @@ def test_runner_uses_disposable_tmp_and_sanitized_environment(monkeypatch):
     monkeypatch.setenv("API_SECRET_NEVER_EXPORT", "SENSITIVE_DO_NOT_PRINT")
     monkeypatch.setenv("PYTEST_ADDOPTS", "--bad-option")
     monkeypatch.setenv("PYTEST_PLUGINS", "private.plugin")
+    monkeypatch.setenv("SYSTEMROOT", r"C:\Windows")
+    monkeypatch.setenv("PYTHONUSERBASE", r"C:\fake-user-python-site")
     seen = []
 
     def fake_run(args, **kwargs):
@@ -66,6 +68,11 @@ def test_runner_uses_disposable_tmp_and_sanitized_environment(monkeypatch):
     assert "PYTEST_ADDOPTS" not in kwargs["env"]
     assert "PYTEST_PLUGINS" not in kwargs["env"]
     assert kwargs["env"]["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] == "1"
+    assert "PYTHONNOUSERSITE" not in kwargs["env"]
+    assert kwargs["env"]["PYTHONUSERBASE"] == r"C:\fake-user-python-site"
+    assert kwargs["env"]["PSModulePath"] == (
+        r"C:\Windows\System32\WindowsPowerShell\v1.0\Modules"
+    )
 
 
 def test_runner_timeout_fails_closed(monkeypatch):
