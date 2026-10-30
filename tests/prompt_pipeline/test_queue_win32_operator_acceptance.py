@@ -49,10 +49,13 @@ def test_runner_uses_disposable_tmp_and_sanitized_environment(monkeypatch):
 
     def fake_run(args, **kwargs):
         seen.append((args, kwargs))
+        junit = Path(args[args.index("--junitxml") + 1])
+        junit.write_text('<testsuite><testcase name="test_ok"/></testsuite>',
+                         encoding="utf-8")
         return subprocess.CompletedProcess(args, 0)
 
     monkeypatch.setattr(probe.subprocess, "run", fake_run)
-    assert probe._run_suite(probe.SUITES[0][1])
+    assert probe._run_suite(probe.SUITES[0][1])[0]
     args, kwargs = seen[0]
     assert args[:3] == [sys.executable, "-m", "pytest"]
     assert args[4] == probe.SUITES[0][1]
@@ -69,7 +72,7 @@ def test_runner_timeout_fails_closed(monkeypatch):
     def timeout(args, **kwargs):
         raise subprocess.TimeoutExpired(args, 180)
     monkeypatch.setattr(probe.subprocess, "run", timeout)
-    assert probe._run_suite(probe.SUITES[0][1]) is False
+    assert probe._run_suite(probe.SUITES[0][1])[0] is False
 
 
 def test_unique_reports_are_path_free_and_no_overwrite(tmp_path):
@@ -115,3 +118,25 @@ def test_real_cli_non_windows_has_fixed_codes_and_no_source_path(tmp_path):
     assert data["checks"]["windows_host"] == "BLOCKED"
     assert data["deployment_status"] == "NOT_VERIFIED"
     assert (tmp_path / "reports" / data["report_file"]).is_file()
+
+
+def test_junit_failure_is_only_numeric_ordinals(monkeypatch):
+    def fake_run(args, **kwargs):
+        junit = Path(args[args.index("--junitxml") + 1])
+        junit.write_text(
+            '<testsuite><testcase name="test_ok"/>'
+            '<testcase name="SENSITIVE_FILENAME"><failure>SECRET</failure></testcase>'
+            '<testcase name="test_skip"><skipped/></testcase></testsuite>',
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(args, 1)
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_run)
+    passed, detail = probe._run_suite(probe.SUITES[2][1])
+    assert not passed
+    assert detail == {
+        "total_cases": 3, "skipped_cases": 1,
+        "failure_ordinals": [2], "runner_code": "PYTEST_NONZERO",
+    }
+    assert "SENSITIVE" not in json.dumps(detail)
+    assert "SECRET" not in json.dumps(detail)

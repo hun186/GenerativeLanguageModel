@@ -43,3 +43,11 @@ this report. Real production validation requires separate approval.
 
 The GitHub-hosted Windows NTFS CI also executes the launcher. Linux
 CI checks path-free, no-overwrite and fail-closed behavior only.
+
+### Privacy-safe diagnostics
+
+Each module records only the numeric total/skipped testcase count and
+1-based failed testcase ordinal from a transient pytest JUnit file;
+no case names, exception text, paths or test stdout/stderr enter the
+report. `JUNIT_MISSING`, `JUNIT_INVALID` and `RUNNER_UNAVAILABLE_OR_TIMEOUT`
+are fixed codes. The JUnit file stays in disposable temporary storage.

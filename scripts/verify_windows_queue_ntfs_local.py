@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import uuid
+import xml.etree.ElementTree as ET
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SUITES = (
@@ -40,11 +41,18 @@ def evaluate(platform: str, version: tuple[int, int], pytest_available: bool,
         "pytest_installed": "PASS" if pytest_available else "BLOCKED",
     }
     checks.update({name: "NOT_RUN" for name, _path in SUITES})
+    diagnostics = {}
     if all(checks[k] == "PASS" for k in (
         "windows_host", "supported_python", "pytest_installed"
     )):
         for name, relative_path in SUITES:
-            checks[name] = "PASS" if run_suite(relative_path) else "FAIL"
+            outcome = run_suite(relative_path)
+            if isinstance(outcome, tuple):
+                passed, detail = outcome
+                diagnostics[name] = detail
+            else:
+                passed = outcome
+            checks[name] = "PASS" if passed else "FAIL"
     fixture_pass = all(value == "PASS" for value in checks.values())
     return {
         "report_version": 1,
@@ -52,12 +60,17 @@ def evaluate(platform: str, version: tuple[int, int], pytest_available: bool,
         "fixture_status": "PASS" if fixture_pass else "REVIEW_REQUIRED",
         "deployment_status": "NOT_VERIFIED",
         "checks": checks,
+        "suite_diagnostics": diagnostics,
         "limitations": LIMITATIONS.copy(),
     }
 
 
-def _run_suite(relative_path: str) -> bool:
-    """Run one checked-in test module in a disposable work dir, no test logs."""
+def _run_suite(relative_path: str) -> tuple[bool, dict]:
+    """Run a checked-in suite and parse only numeric JUnit totals/ordinals.
+
+    Never record raw pytest stdout, stderr, tracebacks, filenames or test names.
+    Failure ordinals are 1-based positions within the JUnit testcases.
+    """
     env = {key: val for key, val in os.environ.items()
            if key.upper() in ALLOWED_ENV}
     env.update({
@@ -66,21 +79,43 @@ def _run_suite(relative_path: str) -> bool:
         "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
         "PYTHONPATH": str(REPO_ROOT),
     })
-    with tempfile.TemporaryDirectory(prefix="queue-ntfs-fixture-") as base:
-        argv = [
-            sys.executable, "-m", "pytest", "-q", relative_path,
-            "--maxfail=1", "--disable-warnings", "-p", "no:cacheprovider",
-            "--basetemp", str(Path(base) / "pytest"),
-        ]
-        try:
+    try:
+        with tempfile.TemporaryDirectory(prefix="queue-ntfs-fixture-") as base:
+            junit = Path(base) / "junit.xml"
+            argv = [
+                sys.executable, "-m", "pytest", "-q", relative_path,
+                "--maxfail=1", "--disable-warnings", "-p", "no:cacheprovider",
+                "--basetemp", str(Path(base) / "pytest"),
+                "--junitxml", str(junit),
+            ]
             proc = subprocess.run(
                 argv, cwd=REPO_ROOT, env=env, shell=False,
                 stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL, timeout=180, check=False,
             )
-        except (OSError, subprocess.TimeoutExpired):
-            return False
-        return proc.returncode == 0
+            if not junit.is_file():
+                return False, {"code": "JUNIT_MISSING"}
+            try:
+                root = ET.parse(junit).getroot()
+                cases = list(root.iter("testcase"))
+                failures = [
+                    i + 1 for i, case in enumerate(cases)
+                    if case.find("failure") is not None
+                    or case.find("error") is not None
+                ]
+                skipped = sum(case.find("skipped") is not None for case in cases)
+            except (ET.ParseError, OSError):
+                return False, {"code": "JUNIT_INVALID"}
+            detail = {
+                "total_cases": len(cases),
+                "skipped_cases": skipped,
+                "failure_ordinals": failures[:20],
+                "runner_code": "OK" if proc.returncode == 0
+                else "PYTEST_NONZERO",
+            }
+            return proc.returncode == 0 and len(cases) > 0 and not failures, detail
+    except (OSError, subprocess.TimeoutExpired):
+        return False, {"code": "RUNNER_UNAVAILABLE_OR_TIMEOUT"}
 
 
 def _write_report(output_dir: Path, report: dict) -> str:
@@ -124,6 +159,7 @@ def main(argv: list[str] | None = None) -> int:
         "fixture_status": report["fixture_status"],
         "deployment_status": report["deployment_status"],
         "checks": report["checks"],
+        "suite_diagnostics": report["suite_diagnostics"],
         "report_file": filename,
     }, sort_keys=True))
     return 0 if report["fixture_status"] == "PASS" else 2

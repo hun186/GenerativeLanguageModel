@@ -163,3 +163,5 @@
 
 ## 2026-10-31 — phase 2h local NTFS fixture tool boundary
 - Hosted Windows NTFS success from #264 does not attest an operator PC, SMB, concurrent writers or durable SQL/ES sink. The phase 2h offline launcher requires installed Windows Python 3.10/3.11+pytest, runs only disposable fixtures, and emits fixed codes with no raw paths, prompts, secrets or stdout/stderr. A failed test identifies the suite but intentionally hides raw traceback. A local PASS is not safe-replay permission and cannot authorize enabling the default Windows scanner; full operator deployment and live network filesystem evidence remain separate gates.
+
+- **#265 hosted real Windows launcher failure:** original standalone fixture suite unexpectedly returned FAIL despite preceding combined native pytest success. The exact cause was not observable because the launcher discarded test output. New transient JUnit-only numeric test ordinal diagnostics preserve privacy; operator still must investigate any failing fixture and cannot claim validated deployment until actual Windows-hosted launcher PASS. No raw exception messages are persisted.
