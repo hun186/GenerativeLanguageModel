@@ -219,7 +219,9 @@ def test_native_directory_entry_swap_to_junction_is_fail_closed(
         assert result["codes"] == ["INCOMPLETE_OR_UNSAFE_SCAN"]
         assert marker.read_bytes() == b"NEVER_OPEN_EXTERNAL"
     finally:
-        if victim.is_junction():
+        # Path.is_junction() only exists in Python 3.12+. rmdir() removes
+        # a temporary junction or empty directory without following it.
+        if victim.exists():
             os.rmdir(victim)
 
 
