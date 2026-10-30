@@ -206,3 +206,156 @@ def test_no_regular_source_contents_are_read(tmp_path, monkeypatch):
     monkeypatch.setattr(Path, "read_text", never_read)
     assert diagnostic.inspect_item(item)["counts"]["running_files"] == 1
 
+def test_unsupported_windows_safe_fd_scan_fails_closed(tmp_path, monkeypatch):
+    item = _item(tmp_path)
+    (item / "TODO" / "sample.txt").write_text("not examined")
+    monkeypatch.setattr(diagnostic, "_supports_safe_scan", lambda: False)
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("unsafe Windows path traversal attempted")
+    monkeypatch.setattr(diagnostic.os, "scandir", forbidden)
+    result = diagnostic.inspect_item(item)
+    assert result["status"] == "review_required"
+    assert not result["scan_complete"]
+    assert result["codes"] == ["UNSUPPORTED_SAFE_SCAN_PLATFORM"]
+
+
+def test_windows_junction_reparse_metadata_is_considered_unsafe():
+    from types import SimpleNamespace
+    assert diagnostic._is_reparse_point(
+        SimpleNamespace(st_file_attributes=0x400)
+    )
+    assert not diagnostic._is_reparse_point(
+        SimpleNamespace(st_file_attributes=0)
+    )
+
+
+def test_zero_windows_inode_placeholders_are_never_equated(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    item = _item(tmp_path)
+    for role in ("TODO", "RUNNING"):
+        (item / role / "root.txt").write_text(role)
+    real_stat = os.stat
+    def placeholder_stat(path, *args, **kwargs):
+        info = real_stat(path, *args, **kwargs)
+        if path == "root.txt" and kwargs.get("dir_fd") is not None:
+            return SimpleNamespace(
+                st_mode=info.st_mode, st_dev=0, st_ino=0, st_nlink=0,
+            )
+        return info
+    monkeypatch.setattr(diagnostic.os, "stat", placeholder_stat)
+    result = diagnostic.inspect_item(item)
+    assert result["scan_complete"]
+    assert result["counts"]["unknown_identity_entries"] == 2
+    assert result["counts"]["todo_running_shared_inode_groups"] == 0
+    assert result["counts"]["multiply_linked_queue_entries"] == 0
+    assert "UNKNOWN_FILE_IDENTITY" in result["codes"]
+    assert "POSSIBLE_INTERRUPTED_LINK_MOVE" not in result["codes"]
+
+
+def test_replacement_with_symlink_cannot_redirect_directory_scan(tmp_path, monkeypatch):
+    if not diagnostic._supports_safe_scan():
+        pytest.skip("handle relative nofollow not supported")
+    item = _item(tmp_path)
+    outside = tmp_path / "external-private"
+    outside.mkdir()
+    (outside / "secret.txt").write_text("TOP_SECRET")
+    real_open = diagnostic._open_directory
+    triggered = [False]
+
+    def swap_directory(parent_fd, name):
+        if name == "TODO" and not triggered[0]:
+            triggered[0] = True
+            (item / "TODO").rename(item / "TODO-original")
+            (item / "TODO").symlink_to(outside, target_is_directory=True)
+        return real_open(parent_fd, name)
+
+    monkeypatch.setattr(diagnostic, "_open_directory", swap_directory)
+    result = diagnostic.inspect_item(item)
+    assert triggered[0]
+    assert result["status"] == "review_required"
+    assert result["codes"] == ["INCOMPLETE_OR_UNSAFE_SCAN"]
+    assert "TOP_SECRET" not in json.dumps(result)
+
+
+def test_budget_applied_during_scandir_iteration_not_after_materializing(
+    tmp_path, monkeypatch,
+):
+    if not diagnostic._supports_safe_scan():
+        pytest.skip("handle relative nofollow not supported")
+    from types import SimpleNamespace
+    item = _item(tmp_path)
+    (item / "TODO" / "sample.txt").write_text("unread private")
+    real_scandir = os.scandir
+    observations = [0]
+
+    class OverwideIterator:
+        def __enter__(self):
+            return self
+        def __exit__(self, *_):
+            return False
+        def __iter__(self):
+            return self
+        def __next__(self):
+            if observations[0] == 1000:
+                raise StopIteration
+            observations[0] += 1
+            return SimpleNamespace(name="sample.txt")
+
+    def guarded_scandir(fd):
+        if (isinstance(fd, int)
+                and os.readlink("/proc/self/fd/" + str(fd)).endswith("/TODO")):
+            return OverwideIterator()
+        return real_scandir(fd)
+
+    monkeypatch.setattr(diagnostic.os, "scandir", guarded_scandir)
+    result = diagnostic.inspect_item(item, max_entries=2)
+    assert result["status"] == "review_required"
+    assert result["codes"] == ["INCOMPLETE_OR_UNSAFE_SCAN"]
+    assert observations[0] == 3  # cap + first overflow, never all 1000
+
+
+def test_directory_enumeration_uses_fd_and_not_direntry_stat(
+    tmp_path, monkeypatch,
+):
+    if not diagnostic._supports_safe_scan():
+        pytest.skip("handle relative nofollow not supported")
+    from types import SimpleNamespace
+    item = _item(tmp_path)
+    (item / "TODO" / "source.txt").write_text("private")
+    real_scandir = os.scandir
+    real_stat = os.stat
+    nofollow_stats = [0]
+
+    class Entry:
+        def __init__(self, name):
+            self.name = name
+        def stat(self, **_kwargs):
+            raise AssertionError("unreliable DirEntry.stat used")
+
+    class Wrapped:
+        def __init__(self, original):
+            self.original = original
+        def __enter__(self):
+            self.original.__enter__()
+            return self
+        def __exit__(self, *args):
+            return self.original.__exit__(*args)
+        def __iter__(self):
+            return (Entry(x.name) for x in self.original)
+
+    def wrapped_scandir(fd):
+        if isinstance(fd, int):
+            return Wrapped(real_scandir(fd))
+        raise AssertionError("path-based scan not allowed")
+
+    def tracked_stat(path, *args, **kwargs):
+        if kwargs.get("dir_fd") is not None:
+            assert kwargs.get("follow_symlinks") is False
+            nofollow_stats[0] += 1
+        return real_stat(path, *args, **kwargs)
+
+    monkeypatch.setattr(diagnostic.os, "scandir", wrapped_scandir)
+    monkeypatch.setattr(diagnostic.os, "stat", tracked_stat)
+    result = diagnostic.inspect_item(item)
+    assert result["status"] == "no_observed_conflicts"
+    assert nofollow_stats[0] > 0
