@@ -64,8 +64,13 @@ def check_one(root: Path, path: Path, kind: str) -> list[str]:
     """Return only safe finding codes, never values, paths or secrets."""
     issues = []
     private = root / "czjLLM" / KINDS[kind] / "private"
-    if private.is_symlink() or path.is_symlink():
+    if (root.joinpath("czjLLM").is_symlink()
+            or private.parent.is_symlink()
+            or private.is_symlink()
+            or path.is_symlink()):
         return ["SYMLINK_NOT_ALLOWED"]
+    if not path.resolve().is_relative_to(root.resolve()):
+        return ["UNSAFE_PATH"]
     if not path.is_file():
         return ["FILE_MISSING"]
     if path.suffix.lower() not in EXTENSIONS:
@@ -104,7 +109,9 @@ def inspect(root: Path, *, kind: str = "both", profile: str | None = None):
     kinds = ("sql", "es") if kind == "both" else (kind,)
     for one_kind in kinds:
         directory = root / "czjLLM" / KINDS[one_kind] / "private"
-        if directory.is_symlink():
+        if (root.joinpath("czjLLM").is_symlink()
+                or directory.parent.is_symlink() or directory.is_symlink()
+                or not directory.resolve().is_relative_to(root)):
             failures.append(one_kind + ":PRIVATE_DIRECTORY_SYMLINK")
             summaries[one_kind] = {"profiles": 0, "checked": 0, "yaml_manual": 0}
             continue
