@@ -143,7 +143,27 @@ def test_junit_failure_is_only_numeric_ordinals(monkeypatch):
     assert not passed
     assert detail == {
         "total_cases": 3, "skipped_cases": 1,
-        "failure_ordinals": [2], "runner_code": "PYTEST_NONZERO",
+        "failure_ordinals": [2], "failure_codes": ["TEST_CASE_FAILED"],
+        "runner_code": "PYTEST_NONZERO",
     }
     assert "SENSITIVE" not in json.dumps(detail)
     assert "SECRET" not in json.dumps(detail)
+
+
+def test_explicit_junction_failure_marker_is_categorized_without_raw_text(monkeypatch):
+    def fake_run(args, **kwargs):
+        path = Path(args[args.index("--junitxml") + 1])
+        path.write_text(
+            '<testsuite><testcase name="private">'
+            '<failure message="WINDOWS_JUNCTION_SETUP_FAILED">'
+            'C:/private/secret</failure></testcase></testsuite>',
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(args, 1)
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_run)
+    ok, detail = probe._run_suite(probe.SUITES[2][1])
+    assert not ok
+    assert detail["failure_codes"] == ["JUNCTION_SETUP_FAILED"]
+    assert "private" not in json.dumps(detail)
+    assert "secret" not in json.dumps(detail)

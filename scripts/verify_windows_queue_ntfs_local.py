@@ -116,12 +116,28 @@ def _run_suite(relative_path: str) -> tuple[bool, dict]:
                     or case.find("error") is not None
                 ]
                 skipped = sum(case.find("skipped") is not None for case in cases)
+                # Classify only explicitly known marker strings from test code;
+                # never copy arbitrary pytest/JUnit messages to report fields.
+                failure_codes = []
+                for case in cases:
+                    for tag in ("failure", "error"):
+                        for node in case.findall(tag):
+                            raw = (node.get("message") or "") + (node.text or "")
+                            if "WINDOWS_JUNCTION_SETUP_FAILED" in raw:
+                                failure_codes.append("JUNCTION_SETUP_FAILED")
+                            elif "WINDOWS_NTFS_VOLUME_REQUIRED" in raw:
+                                failure_codes.append("NTFS_VOLUME_REQUIRED")
+                            elif "WINDOWS_NATIVE_RACE_TEST_NOT_EXERCISED" in raw:
+                                failure_codes.append("RACE_NOT_EXERCISED")
+                            else:
+                                failure_codes.append("TEST_CASE_FAILED")
             except (ET.ParseError, OSError):
                 return False, {"code": "JUNIT_INVALID"}
             detail = {
                 "total_cases": len(cases),
                 "skipped_cases": skipped,
                 "failure_ordinals": failures[:20],
+                "failure_codes": failure_codes[:20],
                 "runner_code": "OK" if proc.returncode == 0
                 else "PYTEST_NONZERO",
             }
