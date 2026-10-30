@@ -139,8 +139,8 @@ class PrivateDeploymentPreflightTests(unittest.TestCase):
             path = root / "czjLLM/config_sql/private/example.py"
             marker = "".join(("no", "-", "credential", "-", "output"))
             path.write_text(
-                "server='example.invalid'\\nusername='u'\\npassword="
-                + repr(marker) + "\\ndatabase_name='demo'\\ntable_name='demo'\\n",
+                "server='example.invalid'\nusername='u'\npassword="
+                + repr(marker) + "\ndatabase_name='demo'\ntable_name='demo'\n",
                 encoding="utf-8",
             )
             out = io.StringIO()
