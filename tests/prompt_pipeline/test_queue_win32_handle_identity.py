@@ -35,8 +35,26 @@ def test_child_native_name_must_be_exact_single_component(component):
 
 
 def test_relative_native_names_preserve_accepted_unicode():
-    for name in ("繁體中文.txt", "Stage_1.txt", ".success-publish-staging"):
+    for name in ("繁體中文.txt", "Stage_1.txt", ".success-publish-staging", "🚀.txt"):
         assert win._require_component(name) == name
+
+
+@pytest.mark.parametrize("component", ["\\ud800", "partial\\udfff", "\\ud800.txt"])
+def test_unpaired_utf16_surrogate_components_get_fixed_code_refusal(component):
+    with pytest.raises(win.UnsafeWindowsIdentity, match="^UNSAFE_WINDOWS_COMPONENT$"):
+        win._require_component(component)
+
+
+@pytest.mark.parametrize("component", ["\\ud800", "partial\\udfff", "\\ud800.txt"])
+def test_surrogate_filename_rejected_by_drive_parser_without_encoding_leak(component):
+    with pytest.raises(win.UnsafeWindowsIdentity, match="^UNSAFE_WINDOWS_COMPONENT$"):
+        win._drive_parts("C:\\\\queue\\\\" + component)
+
+
+def test_overlong_non_bmp_utf16_component_is_rejected():
+    # Python codepoints and Windows UTF-16 code units differ for non-BMP names.
+    with pytest.raises(win.UnsafeWindowsIdentity, match="^UNSAFE_WINDOWS_COMPONENT$"):
+        win._require_component("🚀" * 128)
 
 
 def test_win_file_id_is_128_bits_not_old_64_bit_indices():
