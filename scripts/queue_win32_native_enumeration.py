@@ -124,14 +124,18 @@ def _scan_roles_with_api(api, item_dir, limit: int):
         # pathname to test whether a role exists.
         discovered = {}
         seen = [0]
+        role_names = {name.casefold(): name for name in ROLES}
         for item in api.entries(item_handle):
             seen[0] += 1
             if seen[0] > limit:
                 raise UnsafeWindowsIdentity("WINDOWS_SCAN_LIMIT")
-            if item.name in ROLES:
-                if item.name in discovered:
+            role = role_names.get(item.name.casefold())
+            if role is not None:
+                # Two role names differing only by casing must never be
+                # quietly treated as separate queues on case-sensitive NTFS.
+                if role in discovered:
                     raise UnsafeWindowsIdentity("WINDOWS_DUPLICATE_ROLE")
-                discovered[item.name] = item
+                discovered[role] = item
 
         out = {role: [] for role in ROLES}
         unsafe_count = 0
@@ -172,7 +176,11 @@ def _scan_roles_with_api(api, item_dir, limit: int):
             if (entry.attributes & FILE_ATTRIBUTE_REPARSE_POINT
                     or not entry.attributes & FILE_ATTRIBUTE_DIRECTORY):
                 raise UnsafeWindowsIdentity("WINDOWS_ROLE_UNSAFE")
-            role_handle = api.open_child(item_handle, role, directory=True)
+            # Open the *listed* name through the pinned parent, not a
+            # guessed canonical path that could address a different entry.
+            role_handle = api.open_child(
+                item_handle, entry.name, directory=True
+            )
             try:
                 walk(role_handle, (), role, 0)
             finally:
