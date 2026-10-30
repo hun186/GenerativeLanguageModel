@@ -14,6 +14,7 @@ import json
 import os
 from pathlib import Path
 import stat
+import sys
 
 
 ROLES = ("TODO", "RUNNING", "Success", ".success-publish-staging")
@@ -157,8 +158,24 @@ def _scan_tree(root_fd: int, role: str, seen: list[int], limit: int):
             os.close(fd)
 
 
-def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES) -> dict:
-    """Non-atomic count-only snapshot; no source bytes or names in output."""
+def _is_windows() -> bool:
+    return os.name == "nt"
+
+
+def _native_windows_snapshot(item_dir, max_entries):
+    # Lazy ordinary import; CLI entrypoint establishes the repo module root.
+    from scripts.queue_win32_native_enumeration import scan_windows_roles
+    return scan_windows_roles(item_dir, max_entries)
+
+
+def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES,
+                 experimental_windows: bool = False) -> dict:
+    """Non-atomic count-only snapshot; no source bytes or names in output.
+
+    Windows scan requires explicit opt-in and ALWAYS returns review_required
+    until genuine native Windows acceptance is established. No safe-replay
+    implication is permitted, even when no conflicts are observed.
+    """
     counts = {key: 0 for key in (
         "todo_files", "running_files", "success_files", "staging_files",
         "duplicate_todo_basename_groups", "todo_running_basename_overlaps",
@@ -172,31 +189,49 @@ def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES) -> d
     if not 1 <= max_entries <= 100000:
         result["codes"].append("INVALID_ENTRY_LIMIT")
         return result
-    if not _supports_safe_scan():
-        result["codes"].append("UNSUPPORTED_SAFE_SCAN_PLATFORM")
-        return result
-    try:
-        seen = [0]
-        with _open_item_root(Path(item_dir)) as root_fd:
-            role_files = {}
-            unsafe = unknown_identity = 0
-            for role in ROLES:
-                files, unsafes, unknowns = _scan_tree(
-                    root_fd, role, seen, max_entries
-                )
-                role_files[role] = files
-                unsafe += unsafes
-                unknown_identity += unknowns
-    except (OSError, ValueError, _UnsafeScan, RecursionError):
-        result["codes"].append("INCOMPLETE_OR_UNSAFE_SCAN")
-        return result
+    native_windows = _is_windows()
+    if native_windows:
+        if not experimental_windows:
+            result["codes"].append("UNSUPPORTED_SAFE_SCAN_PLATFORM")
+            return result
+        try:
+            role_files, unsafe, unknown_identity = _native_windows_snapshot(
+                item_dir, max_entries
+            )
+        except (OSError, ValueError, RuntimeError, RecursionError):
+            # A controlled exception may contain private path details from
+            # the kernel. Never copy its message into the operator report.
+            result["codes"].append("INCOMPLETE_OR_UNSAFE_SCAN")
+            return result
+    else:
+        if not _supports_safe_scan():
+            result["codes"].append("UNSUPPORTED_SAFE_SCAN_PLATFORM")
+            return result
+        try:
+            seen = [0]
+            with _open_item_root(Path(item_dir)) as root_fd:
+                role_files = {}
+                unsafe = unknown_identity = 0
+                for role in ROLES:
+                    files, unsafes, unknowns = _scan_tree(
+                        root_fd, role, seen, max_entries
+                    )
+                    role_files[role] = files
+                    unsafe += unsafes
+                    unknown_identity += unknowns
+        except (OSError, ValueError, _UnsafeScan, RecursionError):
+            result["codes"].append("INCOMPLETE_OR_UNSAFE_SCAN")
+            return result
 
     todo, running, success, staging = (role_files[r] for r in ROLES)
     counts["todo_files"] = len(todo)
     counts["running_files"] = len(running)
     counts["success_files"] = len(success)
     counts["staging_files"] = len(staging)
-    names = [Counter(parts[-1] for parts, _, _ in entries)
+    # Windows queue basenames can compare case-insensitively. Do not miss
+    # conflicts such as TODO/Root.txt versus Success/root.txt.
+    normalize = str.casefold if native_windows else str
+    names = [Counter(normalize(parts[-1]) for parts, _, _ in entries)
              for entries in (todo, running, success)]
     counts["duplicate_todo_basename_groups"] = sum(
         frequency > 1 for frequency in names[0].values()
@@ -231,16 +266,22 @@ def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES) -> d
         ("unsafe_entries", "UNSAFE_ENTRY_PRESENT"),
     )
     result["codes"] = [code for name, code in code_by_count if counts[name]]
+    if native_windows:
+        # Deliberately prevent an unverified Windows run from claiming clean
+        # status or allowing exit 0 before self-hosted real filesystem proof.
+        result["codes"].append("WINDOWS_EXPERIMENTAL_UNVERIFIED")
     result["scan_complete"] = True
     result["status"] = "review_required" if result["codes"] else "no_observed_conflicts"
     return result
 
 
-def inspect_items(item_dirs, *, max_entries: int = DEFAULT_MAX_ENTRIES) -> dict:
+def inspect_items(item_dirs, *, max_entries: int = DEFAULT_MAX_ENTRIES,
+                  experimental_windows: bool = False) -> dict:
     """Ordinal-only summaries. Scan does not acquire a cross-process lock."""
     results = []
     for idx, directory in enumerate(item_dirs, 1):
-        row = inspect_item(Path(directory), max_entries=max_entries)
+        row = inspect_item(Path(directory), max_entries=max_entries,
+                           experimental_windows=experimental_windows)
         row["item"] = idx
         results.append(row)
     return {
@@ -263,12 +304,19 @@ def main() -> int:
                         help="Item root containing TODO/RUNNING/Success; repeatable")
     parser.add_argument("--max-entries", type=int, default=DEFAULT_MAX_ENTRIES,
                         help="Fail closed if one item contains more entries (default: 10000)")
+    parser.add_argument(
+        "--experimental-windows", action="store_true",
+        help="Native Windows metadata-only probe; always review-required/exit 2",
+    )
     args = parser.parse_args()
     if len(args.item_dir) > MAX_ITEMS:
         print(json.dumps({"version": 1, "error": "TOO_MANY_ITEMS"}))
         return 2
     try:
-        report = inspect_items(args.item_dir, max_entries=args.max_entries)
+        report = inspect_items(
+            args.item_dir, max_entries=args.max_entries,
+            experimental_windows=args.experimental_windows,
+        )
     except (OSError, ValueError):
         print(json.dumps({"version": 1, "error": "INSPECTION_FAILED"}))
         return 2
@@ -277,4 +325,11 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # Centralize direct-script import compatibility at the CLI entrypoint.
+    # 'python -m scripts.inspect_queue_recovery_state' already has the root
+    # on sys.path; 'python scripts/inspect_queue_recovery_state.py' may not.
+    if not __package__:
+        module_root = str(Path(__file__).resolve().parent.parent)
+        if module_root not in sys.path:
+            sys.path.insert(0, module_root)
     raise SystemExit(main())

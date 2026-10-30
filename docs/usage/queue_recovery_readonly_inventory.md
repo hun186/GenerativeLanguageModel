@@ -14,25 +14,32 @@ are sufficient evidence to automatically remove files or dispatch a retry.
 
 Stop every producer, Worker, consumer and stage merger writing to the relevant
 item first. From the repository root, pass the **item directory itself**, not
-a TODO subdirectory. **Current safe enumeration is POSIX/Linux only.**
-On Windows Python 3.10/3.11, the standard-library directory enumeration APIs
-do not provide the required handle-relative, no-follow traversal used by
-this tool. Windows execution therefore returns
-`UNSUPPORTED_SAFE_SCAN_PLATFORM` and exit 2 without inspecting files;
-it must **never** produce a falsely clean Windows snapshot. The path examples
-below illustrate the item-root arguments but are not Windows acceptance:
+a TODO subdirectory. **The accepted scanner remains POSIX/Linux only.**
+Windows Python 3.10/3.11 standard-library directory traversal cannot guarantee
+handle-relative no-follow behavior. The **default Windows CLI** therefore
+continues to return `UNSUPPORTED_SAFE_SCAN_PLATFORM` and exit 2.
+
+Phase 2f introduces separately gated `--experimental-windows`. This invokes
+bounded native `NtQueryDirectoryFile` with per-entry handle-relative no-reparse
+opens and real File IDs. **Even a completed, apparently conflict-free Windows
+scan returns `WINDOWS_EXPERIMENTAL_UNVERIFIED` and exit 2.** Real Windows
+NTFS/Junction/race acceptance remains operator-deferred; the examples below
+are not evidence of that acceptance:
 
 ```bat
 python scripts/inspect_queue_recovery_state.py --item-dir "D:\\private-workspace\\item"
 python scripts/inspect_queue_recovery_state.py --item-dir "D:\\private-workspace\\itemA" --item-dir "D:\\private-workspace\\itemB"
+python scripts/inspect_queue_recovery_state.py --item-dir "D:\\private-workspace\\item" --experimental-windows
 ```
 
 Output is one JSON object, with only item ordinal numbers, fixed finding codes
 and numeric counts. There are no filenames, directory paths, prompts,
 responses, timestamps, file sizes, hostnames or credentials in the output.
 A zero exit status indicates **no observed conflict in a completed, non-atomic
-snapshot only**. Exit 2 means a conflict, unsafe entry, incomplete scan or
-invalid CLI selection. Neither status proves that a run completed successfully.
+POSIX snapshot only**. Native Windows experimental scans **always exit 2**,
+even when no conflicts were observed. Exit 2 indicates review required,
+unverified native scan, unsafe entry, incomplete scan or invalid selection.
+Neither exit code proves the work completed successfully.
 
 The tool checks:
 - duplicate TODO basenames across nested subdirectories (current dispatch
@@ -91,3 +98,18 @@ A future **separate** Windows implementation must use native no-follow
 directory handles and reliable file IDs, with race and junction tests.
 Neither this Linux acceptance gate nor a simulated Windows metadata test
 claims a working Windows inspector.
+
+## Phase 2f Windows native directory enumeration (not yet host accepted)
+
+The opt-in Windows engine streams one `FILE_DIRECTORY_INFORMATION` record at a
+time using `NtQueryDirectoryFile(ReturnSingleEntry=TRUE)` on pinned directory
+handles. It validates fixed offsets, UTF-16 lengths and entry types, limits
+the total entry count and depth, never follows reparse points, and opens each
+child only via `NtCreateFile(RootDirectory=parent)` to query its full 128-bit
+File ID and link count. Existing count-only JSON is reused; Windows basename
+conflicts are compared case-insensitively. No filenames, raw errors, contents,
+timestamps, paths or identities are printed. No file mutation is performed.
+
+The native API behavior and NTFS races still require real Windows self-hosted
+validation. No UNC/SMB support or path-based enumeration fallback exists;
+a completed experimental scan is NOT a safe-replay or committed-writeback proof.
