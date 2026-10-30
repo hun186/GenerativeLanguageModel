@@ -139,3 +139,11 @@
 - [ ] **Separate Windows-native secure recovery diagnostics:** implement Windows handle-based no-reparse directory traversal and reliable FILE_ID_INFO/link counts with genuine Windows self-hosted filesystem tests; current phase 2d intentionally refuses Windows rather than risk silent external/junction traversal. Real SMB and service recovery remain operator-deferred.
 
 - [ ] **PR #261 second-round Codex P2s:** reject unchecked `..` before normalizing item paths, correct three mock tests' capability gate and Windows unsupported-platform skips; add symlink/nonexistent/relative parent traversal regressions. Re-run exact-HEAD Hosted Linux E2E plus secret scan and third formal Codex Review, resolve findings, request explicit owner Merge approval. Prior head `925b5ec32f` had 3 new P2 and FAILED Linux E2E; never count as acceptance.
+
+## 2026-10-30 — after accepted #261, Windows native queue handle phase 2e
+
+- [x] PR #261 user-approved Squash Merge `1182812b1d74d641a90aa6b96461108b3d863462`: bounded read-only queue inspector and POSIX no-follow traversal. Exact HEAD formal Codex Review clean; Linux offline-e2e and secret scan SUCCESS. Older historical #261 TODO/FAIL Review notes superseded.
+- [ ] New phase 2e PR: native Win32/NtCreateFile single-component no-reparse handles and 128-bit File IDs/link counts, real temporary-file hardlink/junction safety tests. Require exact-HEAD Linux synthetic tests, GitHub secret scan and formal Codex review, explicit user Merge authorization. Windows runners queued/unknown; no production Windows scanner enabled.
+- [ ] Independent phase 2f: complete bounded NtQueryDirectoryFile handle-relative enumeration and integrate output with existing CLI, *only after* real Windows 3.10/3.11, NTFS and reparse/race validation. UNC/SMB remains separately gated; no unsafe path-based fallback, auto cleanup or trusted retry family.
+
+- [ ] **PR #262 first formal review P2:** Windows lone UTF-16 surrogate path components must produce controlled `UnsafeWindowsIdentity` instead of unhandled encoding errors. Code and actual surrogate/non-BMP regressions committed. Require exact new-HEAD Linux E2E, changed-lines scan and formal Codex re-review, zero unresolved threads; owner must approve Merge. Native Windows self-hosted still queued.
