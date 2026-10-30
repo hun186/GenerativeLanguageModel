@@ -57,9 +57,11 @@ def validate_sql_config(config):
     if not isinstance(config, Mapping):
         raise ValueError("SQL configuration must be a mapping")
     if os.getenv("CZJLLM_ENV", "").strip().lower() in {"production", "prod"}:
-        if config.get("username") and not config.get("password"):
+        if "username" in config and not all(
+            (config.get("server"), config.get("username"), config.get("password"))
+        ):
             raise ValueError(
-                "SQL password missing for production profile; configure the "
-                "corresponding CZJLLM_SQL_*_PASSWORD environment variable"
+                "SQL production connection requires a private server, username "
+                "and the corresponding CZJLLM_SQL_*_PASSWORD"
             )
     return config
