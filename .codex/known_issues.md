@@ -160,3 +160,6 @@
 ## 2026-10-30 — native Windows NTFS acceptance not yet proven (phase 2g)
 
 - Existing Windows self-hosted Python 3.10/3.11 CI jobs were still queued after #263 merge. Added a separate GitHub-hosted Windows 2022 NTFS/3.10+3.11 matrix with deterministic temp filesystem security cases; **passing Linux synthetic tests cannot substitute for actual matrix SUCCESS**. If the hosted Windows runner or junction setup fails, report that blocker and leave the default Windows unsupported and opt-in experimental review-only/exit 2 unchanged. Even passing hosted NTFS does not prove this operator's filesystem, Windows SMB, live Worker writes, third-party racing writers or durable SQL/ES sink truth.
+
+## 2026-10-31 — phase 2h local NTFS fixture tool boundary
+- Hosted Windows NTFS success from #264 does not attest an operator PC, SMB, concurrent writers or durable SQL/ES sink. The phase 2h offline launcher requires installed Windows Python 3.10/3.11+pytest, runs only disposable fixtures, and emits fixed codes with no raw paths, prompts, secrets or stdout/stderr. A failed test identifies the suite but intentionally hides raw traceback. A local PASS is not safe-replay permission and cannot authorize enabling the default Windows scanner; full operator deployment and live network filesystem evidence remain separate gates.
