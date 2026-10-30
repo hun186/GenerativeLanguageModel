@@ -290,7 +290,11 @@ def test_direct_cli_entrypoint_without_pythonpath_can_run_outside_repo(tmp_path)
     )
     assert result.returncode == 2
     payload = json.loads(result.stdout)
-    assert payload["items"][0]["codes"] == ["INCOMPLETE_OR_UNSAFE_SCAN"]
+    expected = (
+        "UNSUPPORTED_SAFE_SCAN_PLATFORM" if os.name == "nt"
+        else "INCOMPLETE_OR_UNSAFE_SCAN"
+    )
+    assert payload["items"][0]["codes"] == [expected]
     assert "Traceback" not in result.stderr
 
 
