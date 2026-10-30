@@ -78,6 +78,25 @@ class PrivateDeploymentPreflightTests(unittest.TestCase):
             self.assertIn("EMPTY_FIELD:password", issues)
             self.assertNotIn("person", str(issues))
 
+    def test_es_hosts_precedence_and_missing_annassign(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = synthetic_root(tmp)
+            p = root / "czjLLM/config_es/private/example.py"
+            p.write_text(
+                "es_host = ''\\nhosts = ['https://example.invalid:9200']\\n"
+                "es_user = 'operator'\\nes_pass = 'dummy'\\n"
+                "es_index = 'synthetic'\\n", encoding="utf-8",
+            )
+            self.assertEqual(check_one(root, p, "es"), [])
+            p.write_text(
+                "es_host = ''\\nhosts = []\\n"
+                "es_user = 'operator'\\nes_pass = 'dummy'\\n"
+                "es_index: str\\n", encoding="utf-8",
+            )
+            issues = check_one(root, p, "es")
+            self.assertIn("EMPTY_FIELD:es_host", issues)
+            self.assertIn("EMPTY_FIELD:es_index", issues)
+
     def test_syntax_failure_does_not_echo_source(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = synthetic_root(tmp)
