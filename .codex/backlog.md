@@ -107,3 +107,10 @@
 ## 2026-10-30 — connection profile untracking deployment gate
 - [ ] Run exact-head Hosted security regression (including 11 root file absence/11 public template assertions), changed-lines secret scan, Linux E2E and formal Codex Review on PR #258; 0 outstanding P1/P2 before requesting Merge.
 - [ ] Before deployment, operator locally copies complete SQL/ES root profiles to the ignored `private/` directories (optionally with `scripts/migrate_connection_profiles_to_private.py --apply` on a checkout where originals still exist), confirms SHA/contents privately, then validates old YAML path resolution and actual connection. Never assume GitHub could migrate local secrets.
+
+## 2026-10-30 — after accepted PR #258
+
+- [x] PR #258 user-approved Squash Merge `a2815b369e80108fbc893d3d8b97e4f29f20e878`: remove 11 tracked SQL/ES root connection files, retain 11 sanitized templates and private path compatibility; exact-head formal review clean, Linux offline-e2e and secret scan passed. Historical earlier [ ] items for #258 in this document are superseded.
+- [ ] Current new branch `security/private-profile-deploy-preflight-20261030`: run exact-head Hosted no-network private-profile safety tests, secret scan, Linux offline E2E and formal Codex Review; resolve all findings, then request user authorization before merging.
+- [ ] Operator only: after updating local checkout, restore backed-up complete `config_sql/private/` and `config_es/private/` files, run read-only preflight, validate real SQL/ES logins and ES TLS certificates. Never print or upload credentials; no GitHub action can validate local private files.
+- [ ] Independently determine whether previously public SQL/ES credentials remain valid and rotate if needed. Do not do public Git history rewrite, branch deletion, force push, or #254 edits without separate authorization.
