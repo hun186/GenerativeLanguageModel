@@ -46,15 +46,15 @@ class LocalMigrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             (root / ".gitignore").write_text(
-                "czjLLM/config_sql/private/\\n"
-                "czjLLM/config_es/private/\\n", encoding="utf-8"
+                "czjLLM/config_sql/private/\n"
+                "czjLLM/config_es/private/\n", encoding="utf-8"
             )
             subprocess.run(["git", "init", "-q"], cwd=root,
                            check=True, capture_output=True)
             directory = root / "czjLLM" / "config_sql"
             directory.mkdir(parents=True)
             src = directory / "akconfig_test.py"
-            src.write_text("server = 'synthetic'\\n", encoding="utf-8")
+            src.write_text("server = 'synthetic'\n", encoding="utf-8")
             destination = directory / "private" / src.name
             real_link = os.link
 
@@ -72,7 +72,7 @@ class LocalMigrationTests(unittest.TestCase):
             self.assertEqual(destination.read_text(encoding="utf-8"),
                              "new operator config")
             self.assertEqual(src.read_text(encoding="utf-8"),
-                             "server = 'synthetic'\\n")
+                             "server = 'synthetic'\n")
             self.assertEqual(list(destination.parent.glob(".migrate-*")), [])
 
     def test_never_copy_without_ignore_rule(self):
