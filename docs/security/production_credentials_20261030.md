@@ -33,3 +33,5 @@ Never publish populated `.env` files, example credentials, decoded tokens, SQL c
 **Fail-closed production host rule:** the development-only `localhost` fallback applies only when `CZJLLM_ENV` is not `production` or `prod`. With production selected, an unset ES/SQL host is considered missing rather than silently connecting to localhost. No credential value or actual production connection is tested in hosted CI.
 
 **Existing ES multi-host contract:** private ES configurations may supply a nonempty `hosts` list instead of `es_host`; production validation follows the active resolver's `hosts`-first precedence. A nonempty list of usable hosts is accepted with complete credentials; missing/blank destinations are rejected. No DNS lookup or live ES authentication is performed by the synthetic tests.
+
+**Log hygiene:** interactive SQL/ES config previews and both legacy ES resolver debug print sites now display redacted copies of auth-bearing configuration dictionaries. This does not guarantee every third-party library or external service log is sanitized; keep production logging and access policies restricted.
