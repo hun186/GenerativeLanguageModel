@@ -29,7 +29,7 @@ class CredentialConfigTests(unittest.TestCase):
         with patch.dict(os.environ, clear):
             for filename in ES_PROFILES:
                 with self.subTest(filename=filename):
-                    path = ROOT / "czjLLM" / "config_es" / filename
+                    path = ROOT / "czjLLM" / "config_es" / (filename + ".example")
                     source = path.read_text(encoding="utf-8")
                     self.assertNotRegex(source, r"(?m)^es_pass\s*=\s*['\"]")
                     self.assertIn("CZJLLM_ES_PASSWORD", source)
@@ -48,7 +48,7 @@ class CredentialConfigTests(unittest.TestCase):
                 "CZJLLM_ES_PASSWORD": "synthetic"+"_for_test"}
         with patch.dict(os.environ, fake):
             for name in ES_PROFILES:
-                cfg = runpy.run_path(str(ROOT / "czjLLM" / "config_es" / name))
+                cfg = runpy.run_path(str(ROOT / "czjLLM" / "config_es" / (name + ".example")))
                 self.assertEqual(cfg["es_host"], fake["CZJLLM_ES_HOST"])
                 self.assertEqual(cfg["es_user"], fake["CZJLLM_ES_USERNAME"])
                 self.assertEqual(cfg["es_pass"], fake["CZJLLM_ES_PASSWORD"])
@@ -89,7 +89,7 @@ class CredentialConfigTests(unittest.TestCase):
                 validate_es_config(bad)
 
     def test_real_es_profiles_refuse_missing_host_in_production(self):
-        # This test imports real tracked profiles but never opens a connection.
+        # This test executes safe public example bodies; no connection is opened.
         fake = {"CZJLLM_ENV": "production",
                 "CZJLLM_ES_USERNAME": "service-user",
                 "CZJLLM_ES_PASSWORD": "".join(["synthetic", "_for_test"])}
@@ -97,7 +97,7 @@ class CredentialConfigTests(unittest.TestCase):
             os.environ.pop("CZJLLM_ES_HOST", None)
             for filename in ES_PROFILES:
                 with self.subTest(filename=filename):
-                    cfg = runpy.run_path(str(ROOT / "czjLLM" / "config_es" / filename))
+                    cfg = runpy.run_path(str(ROOT / "czjLLM" / "config_es" / (filename + ".example")))
                     self.assertEqual(cfg["es_host"], "")
                     with self.assertRaisesRegex(ValueError, "ES production connection requires"):
                         validate_es_config(cfg)
@@ -130,7 +130,7 @@ class CredentialConfigTests(unittest.TestCase):
         with patch.dict(os.environ, fake):
             for filename, service, identity in profiles:
                 with self.subTest(filename=filename):
-                    path = ROOT / "czjLLM" / "config_sql" / filename
+                    path = ROOT / "czjLLM" / "config_sql" / (filename + ".example")
                     source = path.read_text(encoding="utf-8")
                     self.assertIn("CZJLLM_SQL_", source)
                     self.assertNotRegex(source, r"(?m)^password\s*=\s*['\"]")
@@ -157,7 +157,7 @@ class CredentialConfigTests(unittest.TestCase):
             os.environ.pop("CZJLLM_SQL_SRP_SERVER", None)
             for filename in profiles:
                 with self.subTest(filename=filename):
-                    cfg = runpy.run_path(str(ROOT / "czjLLM" / "config_sql" / filename))
+                    cfg = runpy.run_path(str(ROOT / "czjLLM" / "config_sql" / (filename + ".example")))
                     self.assertEqual(cfg["server"], "")
                     with self.assertRaisesRegex(ValueError, "SQL production connection requires"):
                         validate_sql_config(cfg)
@@ -185,6 +185,24 @@ class CredentialConfigTests(unittest.TestCase):
             source = (ROOT / relative).read_text(encoding="utf-8")
             self.assertIn("redact_config(es_cfg)", source)
             self.assertNotIn('print("es_cfg in resolve_es_connection", es_cfg)', source)
+
+    def test_live_sql_es_profiles_are_not_tracked_at_root(self):
+        import subprocess
+        root = ROOT
+        sql = ("akconfig_test.py", "akconfig_test_to_excel.py",
+               "akconfig_test_SRP.py", "akconfig_test_SRP - 複製.py")
+        for kind, names in (("config_sql", sql), ("config_es", tuple(ES_PROFILES))):
+            for name in names:
+                with self.subTest(kind=kind, profile=name):
+                    original = root / "czjLLM" / kind / name
+                    example = original.with_name(name + ".example")
+                    self.assertTrue(example.is_file())
+                    self.assertFalse(original.exists())
+                    tracked = subprocess.run(
+                        ["git", "ls-files", "--error-unmatch", "--", str(original.relative_to(root))],
+                        cwd=root, capture_output=True, check=False,
+                    )
+                    self.assertNotEqual(tracked.returncode, 0)
 
     def test_public_env_example_is_blank_for_credentials(self):
         path = ROOT / "czjLLM" / "env_examples" / "czjllm.env.example"
