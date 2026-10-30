@@ -23,6 +23,8 @@ def load_sql_config_interactively(PGMSubDir, get_param, ctx):
     else:
         config_dir = os.path.join(PGMSubDir, "config_sql")
         os.makedirs(config_dir, exist_ok=True)
+        # Git does not store empty ignored directories. Create one on demand.
+        os.makedirs(os.path.join(config_dir, "private"), exist_ok=True)
         config_options = profile_options(config_dir)
         if not config_options:
             print("⚠️ 未找到任何 SQL 設定檔，將進入手動輸入模式。")
@@ -50,6 +52,8 @@ def load_es_config_interactively(PGMSubDir, get_param, ctx):
     else:
         config_dir = os.path.join(PGMSubDir, "config_es")
         os.makedirs(config_dir, exist_ok=True)
+        # Git does not store empty ignored directories. Create one on demand.
+        os.makedirs(os.path.join(config_dir, "private"), exist_ok=True)
         config_options = profile_options(config_dir)
         if not config_options:
             print("⚠️ 未找到任何 ES 設定檔，將進入手動輸入模式。")
