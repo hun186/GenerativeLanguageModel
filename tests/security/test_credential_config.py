@@ -74,10 +74,40 @@ class CredentialConfigTests(unittest.TestCase):
 
     def test_sql_production_is_fail_closed(self):
         with patch.dict(os.environ, {"CZJLLM_ENV": "production"}):
-            with self.assertRaisesRegex(ValueError, "SQL password missing"):
+            with self.assertRaisesRegex(ValueError, "SQL production connection requires"):
                 validate_sql_config({"username": "service-user", "password": None})
             good = {"username": "service-user", "password": "synthetic"+"_for_test"}
             self.assertIs(validate_sql_config(good), good)
+
+    def test_sql_profiles_read_per_service_connection_fields(self):
+        fake = {
+            "CZJLLM_SQL_ORION_SERVER": "orion.example.invalid",
+            "CZJLLM_SQL_ORION_USERNAME": "user-orion",
+            "CZJLLM_SQL_ORION_PASSWORD": "synthetic"+"_orion",
+            "CZJLLM_SQL_SRP_SERVER": "srp.example.invalid",
+            "CZJLLM_SQL_SRP_USERNAME": "user-srp",
+            "CZJLLM_SQL_SRP_PASSWORD": "synthetic"+"_srp",
+            "CZJLLM_SQL_SRP_ADMIN_USERNAME": "user-srp-admin",
+            "CZJLLM_SQL_SRP_ADMIN_PASSWORD": "synthetic"+"_admin",
+        }
+        profiles = (
+            ("akconfig_test.py", "ORION", "ORION"),
+            ("akconfig_test_to_excel.py", "ORION", "ORION"),
+            ("akconfig_test_SRP.py", "SRP", "SRP"),
+            ("akconfig_test_SRP - 複製.py", "SRP", "SRP_ADMIN"),
+        )
+        with patch.dict(os.environ, fake):
+            for filename, service, identity in profiles:
+                with self.subTest(filename=filename):
+                    path = ROOT / "czjLLM" / "config_sql" / filename
+                    source = path.read_text(encoding="utf-8")
+                    self.assertIn("CZJLLM_SQL_", source)
+                    self.assertNotRegex(source, r"(?m)^password\s*=\s*['\"]")
+                    cfg = runpy.run_path(str(path))
+                    self.assertEqual(cfg["server"], fake[f"CZJLLM_SQL_{service}_SERVER"])
+                    self.assertEqual(cfg["username"], fake[f"CZJLLM_SQL_{identity}_USERNAME"])
+                    password_identity = identity if identity.endswith("ADMIN") else service
+                    self.assertEqual(cfg["password"], fake[f"CZJLLM_SQL_{password_identity}_PASSWORD"])
 
     def test_recursive_log_redaction(self):
         secret = "synthetic"+"_for_test"
@@ -100,7 +130,9 @@ class CredentialConfigTests(unittest.TestCase):
         for key in ("CZJLLM_ES_HOST", "CZJLLM_ES_USERNAME", "CZJLLM_ES_PASSWORD",
                     "CZJLLM_UTILS_API_KEY", "CZJLLM_ANKINT_API_KEY",
                     "CZJLLM_SQL_ORION_PASSWORD", "CZJLLM_SQL_SRP_PASSWORD",
-                    "CZJLLM_SQL_SRP_ADMIN_PASSWORD"):
+                    "CZJLLM_SQL_SRP_ADMIN_PASSWORD", "CZJLLM_SQL_ORION_SERVER",
+                    "CZJLLM_SQL_ORION_USERNAME", "CZJLLM_SQL_SRP_SERVER",
+                    "CZJLLM_SQL_SRP_USERNAME", "CZJLLM_SQL_SRP_ADMIN_USERNAME"):
             self.assertIn(key, entries)
             self.assertEqual(entries[key], "")
 
