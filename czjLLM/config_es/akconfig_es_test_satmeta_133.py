@@ -4,7 +4,10 @@ import os
 # Never commit credentials to this file or fall back to a stored historical secret.
 #akconfig_es_test.py
 # Elasticsearch 設定
-es_host = os.environ.get("CZJLLM_ES_HOST", "http://localhost:9200")
+es_host = os.environ.get("CZJLLM_ES_HOST") or (
+    "" if os.environ.get("CZJLLM_ENV", "").strip().lower() in {"production", "prod"}
+    else "http://localhost:9200"
+)
 es_index = 'satmeta'
 es_user = os.environ.get("CZJLLM_ES_USERNAME", "")
 es_pass = os.environ.get("CZJLLM_ES_PASSWORD")
