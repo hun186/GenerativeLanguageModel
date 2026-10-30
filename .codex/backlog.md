@@ -114,3 +114,9 @@
 - [ ] Current new branch `security/private-profile-deploy-preflight-20261030`: run exact-head Hosted no-network private-profile safety tests, secret scan, Linux offline E2E and formal Codex Review; resolve all findings, then request user authorization before merging.
 - [ ] Operator only: after updating local checkout, restore backed-up complete `config_sql/private/` and `config_es/private/` files, run read-only preflight, validate real SQL/ES logins and ES TLS certificates. Never print or upload credentials; no GitHub action can validate local private files.
 - [ ] Independently determine whether previously public SQL/ES credentials remain valid and rotate if needed. Do not do public Git history rewrite, branch deletion, force push, or #254 edits without separate authorization.
+
+## 2026-10-30 — ES anonymous development preflight follow-up
+
+- [x] PR #259 previously user-approved Squash Merge to main SHA `8fca421c772430493bf5e49f3cd8cf946973f218`; read-only SQL/ES static preflight landed with Hosted synthetic unit/secret scanner and Linux E2E PASS. Windows live private profile check and actual SQL/ES authentication remain operator-only.
+- [ ] New independent security PR: allow explicit nonproduction single-file anonymous Elasticsearch static inspection without weakening default auth requirements, production checks or field/path/Git hygiene. Require latest-head Hosted synthetic tests, changed-line scan, Linux E2E, formal Codex review and explicit owner merge authorization.
+- [ ] Operator confirm ES PROFILE_4 corresponds to an intentionally anonymous development endpoint. If credentials are actually required, repair private file locally instead; never commit real secrets. Runtime ES/TLS authentication and SQL still require operator validation.
