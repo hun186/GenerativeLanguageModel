@@ -1,8 +1,10 @@
 """Synthetic, no-network local migration tests."""
+import os
 from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from scripts.migrate_connection_profiles_to_private import migrate
 
@@ -39,6 +41,39 @@ class LocalMigrationTests(unittest.TestCase):
             self.assertEqual(again["already_exists"], 1)
             self.assertEqual(dest.read_text(encoding="utf-8"),
                              "new private version")
+
+    def test_concurrent_new_private_file_is_never_overwritten(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / ".gitignore").write_text(
+                "czjLLM/config_sql/private/\\n"
+                "czjLLM/config_es/private/\\n", encoding="utf-8"
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root,
+                           check=True, capture_output=True)
+            directory = root / "czjLLM" / "config_sql"
+            directory.mkdir(parents=True)
+            src = directory / "akconfig_test.py"
+            src.write_text("server = 'synthetic'\\n", encoding="utf-8")
+            destination = directory / "private" / src.name
+            real_link = os.link
+
+            def publish_after_operator_intervenes(tmp, dst):
+                # Simulate concurrent operator saving a newer connection file.
+                Path(dst).write_text("new operator config", encoding="utf-8")
+                return real_link(tmp, dst)
+
+            with patch(
+                "scripts.migrate_connection_profiles_to_private.os.link",
+                side_effect=publish_after_operator_intervenes,
+            ):
+                with self.assertRaisesRegex(RuntimeError, "no overwrite"):
+                    migrate(root, apply=True)
+            self.assertEqual(destination.read_text(encoding="utf-8"),
+                             "new operator config")
+            self.assertEqual(src.read_text(encoding="utf-8"),
+                             "server = 'synthetic'\\n")
+            self.assertEqual(list(destination.parent.glob(".migrate-*")), [])
 
     def test_never_copy_without_ignore_rule(self):
         with tempfile.TemporaryDirectory() as folder:
