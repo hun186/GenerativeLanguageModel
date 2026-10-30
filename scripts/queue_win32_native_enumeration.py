@@ -12,11 +12,20 @@ from dataclasses import dataclass
 import os
 import struct
 
-from scripts.queue_win32_handle_identity import (
-    _IoStatusBlock, _WinApi, _drive_parts, _require_component,
-    FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_REPARSE_POINT,
-    UnsafeWindowsIdentity,
-)
+try:
+    from scripts.queue_win32_handle_identity import (
+        _IoStatusBlock, _WinApi, _drive_parts, _require_component,
+        FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_REPARSE_POINT,
+        UnsafeWindowsIdentity,
+    )
+except ModuleNotFoundError as exc:
+    if exc.name != "scripts":
+        raise
+    from queue_win32_handle_identity import (
+        _IoStatusBlock, _WinApi, _drive_parts, _require_component,
+        FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_REPARSE_POINT,
+        UnsafeWindowsIdentity,
+    )
 
 # From FILE_DIRECTORY_INFORMATION, documented structure offset 56/60/64.
 FILE_DIRECTORY_INFORMATION_CLASS = 1
