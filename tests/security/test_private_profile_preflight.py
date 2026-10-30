@@ -10,6 +10,7 @@ import tempfile
 import unittest
 
 from scripts.verify_private_connection_profiles import check_one, inspect, main
+from czjLLM.utilities.credential_config import validate_es_config
 
 
 def synthetic_root(tmp: str) -> Path:
@@ -192,6 +193,194 @@ class PrivateDeploymentPreflightTests(unittest.TestCase):
             result, issues = inspect(root, kind="both", profile="example.py")
             self.assertEqual(result, {})
             self.assertEqual(issues, ["INVALID_PROFILE_SELECTION"])
+
+    def test_anonymous_es_is_strict_by_default_and_explicit_in_development(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = synthetic_root(tmp)
+            p = root / "czjLLM/config_es/private/anon.py"
+            p.write_text('''es_host = "http://localhost:9200"
+es_user = ""
+es_pass = ""
+es_index = "synthetic_index"
+''', encoding="utf-8")
+            with patch.dict(os.environ, {"CZJLLM_ENV": "development"}):
+                strict, strict_issues = inspect(root, kind="es", profile="anon.py")
+                self.assertEqual(strict["es"]["checked"], 0)
+                self.assertIn("es:PROFILE_1:EMPTY_FIELD:es_user", strict_issues)
+                self.assertIn("es:PROFILE_1:EMPTY_FIELD:es_pass", strict_issues)
+                allowed, issues = inspect(
+                    root, kind="es", profile="anon.py", allow_anonymous_es=True
+                )
+                self.assertEqual(issues, [])
+                self.assertEqual(allowed["es"]["checked"], 1)
+                # Broad scan remains strict even when one profile is anonymous.
+                _, broad = inspect(root, kind="es")
+                self.assertIn("es:PROFILE_1:EMPTY_FIELD:es_user", broad)
+
+    def test_partial_es_auth_never_bypasses_even_with_opt_in(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = synthetic_root(tmp)
+            p = root / "czjLLM/config_es/private/anon.py"
+            with patch.dict(os.environ, {"CZJLLM_ENV": "dev"}):
+                for user, password, missing in (
+                    ("", "synthetic", "es_user"),
+                    ("synthetic", "", "es_pass"),
+                ):
+                    with self.subTest(missing=missing):
+                        p.write_text(
+                            "es_host='http://localhost:9200'\n"
+                            "es_user=" + repr(user) + "\n"
+                            "es_pass=" + repr(password) + "\n"
+                            "es_index='synthetic'\n", encoding="utf-8"
+                        )
+                        _, issues = inspect(
+                            root, kind="es", profile="anon.py",
+                            allow_anonymous_es=True,
+                        )
+                        self.assertIn("es:PROFILE_1:EMPTY_FIELD:" + missing, issues)
+
+    def test_anonymous_es_literal_whitespace_password_matches_runtime(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = synthetic_root(tmp)
+            p = root / "czjLLM/config_es/private/anon.py"
+            with patch.dict(os.environ, {"CZJLLM_ENV": "development"}):
+                for user, password, expect_allowed in (
+                    ("", " ", False),
+                    ("", "\t", False),
+                    (" ", "", True),
+                    (None, None, True),
+                    ("", None, True),
+                    ("", "", True),
+                ):
+                    with self.subTest(user=repr(user), expected=expect_allowed):
+                        # Synthetic values stay in a temporary ignored profile.
+                        p.write_text(
+                            "es_host='http://localhost:9200'\n"
+                            "es_index='synthetic'\n"
+                            "es_user=" + repr(user) + "\n"
+                            "es_pass=" + repr(password) + "\n",
+                            encoding="utf-8",
+                        )
+                        summary, errors = inspect(
+                            root, kind="es", profile="anon.py",
+                            allow_anonymous_es=True,
+                        )
+                        config = {
+                            "es_host": "http://localhost:9200",
+                            "es_index": "synthetic", "es_user": user,
+                            "es_pass": password,
+                        }
+                        if expect_allowed:
+                            self.assertEqual(errors, [])
+                            self.assertEqual(summary["es"]["checked"], 1)
+                            self.assertIs(validate_es_config(config), config)
+                        else:
+                            self.assertIn("es:PROFILE_1:EMPTY_FIELD:es_pass", errors)
+                            with self.assertRaisesRegex(ValueError, "incomplete"):
+                                validate_es_config(config)
+
+    def test_dynamic_empty_password_is_not_claimed_anonymous(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = synthetic_root(tmp)
+            p = root / "czjLLM/config_es/private/dynamic.py"
+            p.write_text(
+                "es_host='http://localhost:9200'\n"
+                "es_index='synthetic'\n"
+                "es_user=''\n"
+                "es_pass=''.join(())\n", encoding="utf-8",
+            )
+            with patch.dict(os.environ, {"CZJLLM_ENV": "dev"}):
+                summary, issues = inspect(
+                    root, kind="es", profile="dynamic.py",
+                    allow_anonymous_es=True,
+                )
+            self.assertEqual(summary["es"]["checked"], 0)
+            self.assertIn("es:PROFILE_1:EMPTY_FIELD:es_user", issues)
+
+    def test_explicit_anonymous_es_rejected_in_production_and_staging(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = synthetic_root(tmp)
+            p = root / "czjLLM/config_es/private/anon.py"
+            p.write_text('''es_host = "http://localhost:9200"
+es_user = ""
+es_pass = ""
+es_index = "synthetic"
+''', encoding="utf-8")
+            for environment in ("production", "prod", "staging", "unknown"):
+                with self.subTest(environment=environment):
+                    with patch.dict(os.environ, {"CZJLLM_ENV": environment}):
+                        report, issues = inspect(
+                            root, kind="es", profile="anon.py",
+                            allow_anonymous_es=True,
+                        )
+                        self.assertEqual(report, {})
+                        self.assertEqual(
+                            issues, ["ANONYMOUS_NOT_ALLOWED_IN_ENVIRONMENT"]
+                        )
+
+    def test_anonymous_exception_never_waives_es_host_or_index(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = synthetic_root(tmp)
+            p = root / "czjLLM/config_es/private/anon.py"
+            with patch.dict(os.environ, {"CZJLLM_ENV": "local"}):
+                p.write_text('''es_host = ""
+es_user = ""
+es_pass = ""
+es_index = ""
+''', encoding="utf-8")
+                _, issues = inspect(
+                    root, kind="es", profile="anon.py", allow_anonymous_es=True
+                )
+                self.assertIn("es:PROFILE_1:EMPTY_FIELD:es_host", issues)
+                self.assertIn("es:PROFILE_1:EMPTY_FIELD:es_index", issues)
+
+    def test_anonymous_exception_requires_single_es_python_profile(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = synthetic_root(tmp)
+            with patch.dict(os.environ, {"CZJLLM_ENV": "dev"}):
+                for kind, profile in (
+                    ("both", None), ("es", None),
+                    ("sql", "example.py"), ("es", "example.yaml"),
+                ):
+                    with self.subTest(kind=kind, profile=profile):
+                        report, issues = inspect(
+                            root, kind=kind, profile=profile,
+                            allow_anonymous_es=True,
+                        )
+                        self.assertEqual(report, {})
+                        self.assertEqual(issues, ["INVALID_ANONYMOUS_SELECTION"])
+
+    def test_anonymous_es_runtime_contract_is_dev_only(self):
+        # Direct helper validation, no DB/ES connection or configuration execution.
+        config = {"es_host": "http://localhost:9200", "es_user": "",
+                  "es_pass": "", "es_index": "synthetic"}
+        with patch.dict(os.environ, {"CZJLLM_ENV": "development"}):
+            self.assertIs(validate_es_config(config), config)
+        with patch.dict(os.environ, {"CZJLLM_ENV": "production"}):
+            with self.assertRaisesRegex(ValueError, "ES production connection"):
+                validate_es_config(config)
+
+    def test_anonymous_cli_explicit_notice_and_no_secret_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = synthetic_root(tmp)
+            p = root / "czjLLM/config_es/private/anon.py"
+            p.write_text('''es_host = "http://localhost:9200"
+es_user = ""
+es_pass = ""
+es_index = "synthetic"
+''', encoding="utf-8")
+            stdout = io.StringIO()
+            with patch.dict(os.environ, {"CZJLLM_ENV": "development"}):
+                with patch.object(sys, "argv", [
+                    "preflight", "--root", str(root), "--kind", "es",
+                    "--profile", "anon.py", "--allow-anonymous-es",
+                ]):
+                    with contextlib.redirect_stdout(stdout):
+                        result = main()
+            self.assertEqual(result, 0)
+            self.assertIn("Development-only anonymous ES opt-in", stdout.getvalue())
+            self.assertIn("No connection made", stdout.getvalue())
+            self.assertNotIn(str(root), stdout.getvalue())
 
     def test_no_private_credentials_in_log_output(self):
         with tempfile.TemporaryDirectory() as tmp:

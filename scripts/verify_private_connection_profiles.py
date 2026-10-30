@@ -28,7 +28,7 @@ def _git_ok(root: Path, args: list[str]) -> bool:
     return result.returncode == 0
 
 
-def _check_python(path: Path, kind: str) -> list[str]:
+def _check_python(path: Path, kind: str, *, allow_anonymous_es: bool = False) -> list[str]:
     """Parse syntax and field presence only; do not evaluate or print values."""
     try:
         source = path.read_text(encoding="utf-8")
@@ -66,13 +66,41 @@ def _check_python(path: Path, kind: str) -> list[str]:
             selected = ("hosts" if "hosts" in fields and not blank(fields["hosts"])
                         else "es_host" if "es_host" in fields else "hosts")
             fields_to_check.append(selected)
+    # Mirror validate_es_config's asymmetric auth semantics when allowing
+    # an anonymous development profile: username is stripped but password
+    # truthiness is checked *without* stripping. A whitespace-only password
+    # is therefore NOT an absent password, and would fail runtime validation.
+    # Accept only literal None/strings here, never evaluated expressions.
+    def anonymous_username(expr) -> bool:
+        return (
+            isinstance(expr, ast.Constant)
+            and (expr.value is None
+                 or isinstance(expr.value, str) and not expr.value.strip())
+        )
+
+    def anonymous_password(expr) -> bool:
+        return (
+            isinstance(expr, ast.Constant)
+            and (expr.value is None or type(expr.value) is str and expr.value == "")
+        )
+
+    # One explicitly selected dev ES profile may omit *both* auth fields;
+    # neither a whitespace-only password nor partial auth receives a waiver.
+    anonymous_pair = (
+        kind == "es" and allow_anonymous_es
+        and "es_user" in fields and "es_pass" in fields
+        and anonymous_username(fields["es_user"])
+        and anonymous_password(fields["es_pass"])
+    )
     for name in fields_to_check:
         if name in fields and blank(fields[name]):
+            if anonymous_pair and name in {"es_user", "es_pass"}:
+                continue
             issues.append("EMPTY_FIELD:" + name)
     return issues
 
 
-def check_one(root: Path, path: Path, kind: str) -> list[str]:
+def check_one(root: Path, path: Path, kind: str, *, allow_anonymous_es: bool = False) -> list[str]:
     """Return only safe finding codes, never values, paths or secrets."""
     issues = []
     private = root / "czjLLM" / KINDS[kind] / "private"
@@ -102,12 +130,13 @@ def check_one(root: Path, path: Path, kind: str) -> list[str]:
     if _git_ok(root, ["ls-files", "--error-unmatch", "--", str(relative)]):
         issues.append("STILL_TRACKED")
     if path.suffix.lower() == ".py":
-        issues += _check_python(path, kind)
+        issues += _check_python(path, kind, allow_anonymous_es=allow_anonymous_es)
     # YAML is checked only for location and Git hygiene; not parsed or executed.
     return issues
 
 
-def inspect(root: Path, *, kind: str = "both", profile: str | None = None):
+def inspect(root: Path, *, kind: str = "both", profile: str | None = None,
+            allow_anonymous_es: bool = False):
     """Return non-sensitive summary and errors; no mutation or network access."""
     root = root.resolve()
     if not _git_ok(root, ["rev-parse", "--is-inside-work-tree"]):
@@ -116,6 +145,14 @@ def inspect(root: Path, *, kind: str = "both", profile: str | None = None):
         kind == "both" or Path(profile).name != profile or profile in {"", ".", ".."}
     ):
         return {}, ["INVALID_PROFILE_SELECTION"]
+    if allow_anonymous_es:
+        if kind != "es" or profile is None or not profile.lower().endswith(".py"):
+            return {}, ["INVALID_ANONYMOUS_SELECTION"]
+        # The production config validator requires ES authentication; preflight
+        # must not imply an anonymous profile is production-ready.
+        environment = os.environ.get("CZJLLM_ENV", "").strip().lower()
+        if environment not in {"", "dev", "development", "local", "test", "testing"}:
+            return {}, ["ANONYMOUS_NOT_ALLOWED_IN_ENVIRONMENT"]
     summaries = {}
     failures = []
     kinds = ("sql", "es") if kind == "both" else (kind,)
@@ -138,7 +175,8 @@ def inspect(root: Path, *, kind: str = "both", profile: str | None = None):
             failures.append(one_kind + ":NO_PRIVATE_PROFILE")
         for idx, path in enumerate(paths, 1):
             # Index is ordinal; avoid exposing host, account or sensitive path.
-            errors = check_one(root, path, one_kind)
+            errors = check_one(root, path, one_kind,
+                               allow_anonymous_es=allow_anonymous_es and one_kind == "es")
             if errors:
                 failures.extend(one_kind + ":PROFILE_" + str(idx) + ":" + e for e in errors)
             else:
@@ -155,9 +193,12 @@ def main() -> int:
                         help="Local checkout root (not a URL)")
     parser.add_argument("--kind", choices=("both", "sql", "es"), default="both")
     parser.add_argument("--profile", help="One .py/.yaml/.yml basename; requires --kind")
+    parser.add_argument("--allow-anonymous-es", action="store_true",
+                        help="Development only: allow both blank ES auth fields in one --kind es --profile NAME.py")
     args = parser.parse_args()
     try:
-        report, errors = inspect(Path(args.root), kind=args.kind, profile=args.profile)
+        report, errors = inspect(Path(args.root), kind=args.kind, profile=args.profile,
+                                 allow_anonymous_es=args.allow_anonymous_es)
     except (OSError, ValueError):
         report, errors = {}, ["LOCAL_INSPECTION_ERROR"]
     for kind, summary in report.items():
@@ -166,6 +207,9 @@ def main() -> int:
               str(summary["yaml_manual"]) + " YAML profiles need manual field inspection")
     for code in errors:
         print("BLOCKED:", code)
+    if args.allow_anonymous_es:
+        print("Development-only anonymous ES opt-in requested for one Python profile; "
+              "production authentication was NOT validated.")
     print("No connection made. No credential values read into logs or executed.")
     print("Successful checks do NOT verify account validity, TLS, or actual SQL/ES login.")
     return 2 if errors else 0

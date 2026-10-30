@@ -152,3 +152,10 @@
 
 - Merged PR #258 removes eleven tracked root connection profiles; no restored private production connection files exist in GitHub by design. The user's backed-up SQL/ES private files must be restored and validated on their own machine. Hosted tests are synthetic and cannot prove actual SQL/ES login, database/table/index existence, certificate SAN verification or rotations.
 - Follow-up read-only preflight never executes local .py files or prints secret values; it does **not** cryptographically prove that a nonblank string is a working credential. YAML profiles require manual content/schema inspection. A local source profile containing dynamic expressions requires operator confirmation in the actual runtime, not a CI assertion.
+
+## 2026-10-30 — ES private static preflight dev anonymous detection
+
+- Operator's Windows report after #259: four of four SQL private profiles pass; six of seven ES profiles pass static inspection. Fourth sorted ES file has empty `es_user` and `es_pass`, **not yet confirmed as intentionally anonymous**. The strict default is correct for production but may flag legitimate development-only anonymous ES.
+- New branch offers explicit opt-in for one ES Python file in a nonproduction environment and never changes actual ES authentication or secret storage. It is not an automatic exception, never applies to SQL/bulk/YAML, rejects partial auth/production, and never proves the ES endpoint is safe or reachable. Operator must inspect the specific local profile and validate actual TLS/login separately.
+
+- **PR #260 initial Codex P2 (pending exact-head re-review):** whitespace-only ES password was misclassified as anonymous by preflight, despite active runtime validator rejecting it as incomplete auth. New static exception now matches runtime (anonymous username may strip whitespace; password must literally be empty or None) and synthetic tests cover both; the actual operator ES PROFILE_4 login policy remains unverified.
