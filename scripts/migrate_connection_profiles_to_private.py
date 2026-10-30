@@ -91,10 +91,18 @@ def migrate(repo_root: Path, *, apply: bool) -> dict[str, int]:
                     os.fsync(out.fileno())
                 if file_digest(src) != file_digest(temp):
                     raise RuntimeError("Private profile copy verification failed")
-                # Existing destinations are never replaced, including on reruns.
-                if dst.exists():
-                    raise RuntimeError("Private destination appeared during copy")
-                os.replace(temp, dst)
+                # Same-filesystem hardlink publication is atomic CREATE-IF-ABSENT:
+                # unlike os.replace(), a concurrently created destination cannot
+                # be clobbered. Unsupported filesystems must fail closed.
+                try:
+                    os.link(temp, dst)
+                except FileExistsError as exc:
+                    raise RuntimeError(
+                        "Private destination appeared during copy; no overwrite"
+                    ) from exc
+                if file_digest(dst) != file_digest(temp):
+                    raise RuntimeError("Published private copy verification failed")
+                temp.unlink()
                 temp = None
                 summary["copied"] += 1
             finally:
