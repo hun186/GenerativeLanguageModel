@@ -76,8 +76,15 @@ def _open_directory(parent_fd: int, name: str) -> int:
 @contextmanager
 def _open_item_root(directory: Path):
     """Pin each ancestor one by one, never open a full replaceable path."""
-    # Normalize lexical dot-segments, but do not resolve() a symlink.
-    root = Path(os.path.abspath(os.fspath(directory)))
+    # Reject parent traversal BEFORE abspath() can collapse unvalidated
+    # ancestors. For example, alias/../item must never silently become item
+    # when alias is a symlink, dangling directory or replaced junction.
+    raw = Path(directory)
+    if ".." in raw.parts:
+        raise _UnsafeScan
+    # From here, an absolute lexical path contains no parent traversal.
+    # Pin every remaining component with a handle-relative O_NOFOLLOW open.
+    root = Path(os.path.abspath(os.fspath(raw)))
     if root.anchor != os.sep:
         raise _UnsafeScan
     flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
