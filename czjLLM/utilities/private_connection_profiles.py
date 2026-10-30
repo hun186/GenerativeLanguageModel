@@ -45,10 +45,10 @@ def profile_options(directory: str | Path) -> dict[str, str]:
 
 
 def resolve_profile_path(config_path: str | Path, kind: str) -> Path:
-    """Honor explicit private paths; prefer private sibling for public paths.
+    """Resolve public or private paths, even when the public file was untracked.
 
-    A bare filename can be supplied instead of the full config_sql/config_es path.
-    No remote fetching, file mutation, or secret inspection is performed.
+    Recognizes legacy root paths in existing job YAML and a bare filename.
+    Explicit private paths must exist; they never fall back to another file.
     """
     root = profile_directory(kind)
     requested = Path(config_path)
@@ -56,17 +56,28 @@ def resolve_profile_path(config_path: str | Path, kind: str) -> Path:
     if not requested.is_absolute():
         candidates.append(root / requested)
 
+    # An existing public profile may be shadowed by its ignored private twin.
     for candidate in candidates:
         if candidate.is_file():
-            # Do not redirect an explicitly specified /private/ file.
+            if candidate.is_symlink():
+                raise ValueError("Connection profile symlinks are not supported")
             if candidate.parent.name == kind:
                 override = candidate.parent / "private" / candidate.name
                 if override.is_file() and not override.is_symlink():
                     return override
             return candidate
-    # Allow a YAML to name only a filename that exists in private/.
-    if len(requested.parts) == 1:
-        private = root / "private" / requested.name
+
+    # Historical YAML may name config_sql/<file>.py or
+    # czjLLM/config_es/<file>.py; that root file might now be untracked.
+    # Require the immediate parent of the missing file to match its kind.
+    if len(requested.parts) == 1 or requested.parent.name == kind:
+        if requested.parent.name == kind and requested.is_absolute():
+            private = requested.parent / "private" / requested.name
+        else:
+            private = root / "private" / requested.name
         if private.is_file() and not private.is_symlink():
             return private
-    raise FileNotFoundError("SQL/ES connection profile does not exist")
+    raise FileNotFoundError(
+        "SQL/ES connection profile not found. Copy the complete configuration "
+        "into config_sql/private/ or config_es/private/ before starting this job."
+    )
