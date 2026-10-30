@@ -70,3 +70,17 @@ sink acknowledgement and authorization to recover/retry remain unverified.
 Actual Windows runner failure must be investigated rather than treated as a
 Linux-synthetic equivalent. Formal exact-head Codex Review, CI, and explicit
 user authorization are required before Merge.
+
+## First hosted Windows results and Codex P2 hardening
+
+The first CI on initial PR #264 HEAD `d4f8da6b752b6a0eab5e69a7a4cc20fdaade5892`
+reported **SUCCESS** for both hosted Windows 2022 Python 3.10 and 3.11 jobs
+in run `41052426467`. It also passed the NTFS prerequisite. This is real
+native Windows evidence, but **not final acceptance of the subsequent
+changes**. Formal Codex Review identified one P2: `cmd.exe /c mklink /J`
+interpreted metacharacters in temporary directory names. The new test helper
+transfers path strings only via UTF-8 JSON encoded as Base64 inside
+PowerShell's `-EncodedCommand` (UTF-16LE), with no user-controlled raw shell
+text; an additional real NTFS test uses `&`, `%`, `^`, `!` and `$` in
+temporary path components. New exact-head hosted Windows jobs and Codex
+re-review must pass before claiming this hardening accepted.
