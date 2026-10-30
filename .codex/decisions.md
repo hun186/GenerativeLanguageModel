@@ -156,3 +156,9 @@ The following sections describe the accepted main implementation through PR #239
 - **Producer done ≠ teardown:** when no-clobber TODO claim is permanently blocked, avoid circular wait for `pending==0` by separate ctx-shared producer-complete and blocked-queue events. The real consumer owns blocked detection only once no running jobs remain, and the orchestrator owns final terminal failure and teardown. Preserve sources and truthful failed status; never reinterpret an empty dispatch batch as a successful drained queue.
 
 - On terminal blocked queue, do not remove registry entries just to satisfy merge exit and do not wait indefinitely for impossible `_all_slices_done`; bound Row Merger to one final normal scan after explicit blocked event and teardown stop_event, then close sink and preserve remaining artifacts. Coordinator owns authoritative terminal failed status. Normal job shutdown remains unchanged.
+
+## 2026-10-30 — preflight anonymous Elasticsearch design decision
+
+- Keep `verify_private_connection_profiles.py` strict by default; a single empty `es_user` or `es_pass` remains an error, and full-directory checks cannot silently accept anonymous endpoints.
+- Permit **only explicit one-file `.py` ES development/test** override `--kind es --profile FILENAME.py --allow-anonymous-es` when both fields are literal blanks and `CZJLLM_ENV` is unset/known nonproduction; production, staging and unknown environment names refuse the override. SQL and YAML never receive it. Other security and connection-shape checks are unchanged.
+- This is static validation policy, not a change to actual ES runtime authentication, a production credential bypass, or a claim of real endpoint login. Operator must verify that ES PROFILE_4 intentionally supports anonymous access, otherwise configure private credentials.
