@@ -320,10 +320,16 @@ def test_budget_applied_during_scandir_iteration_not_after_materializing(
             observations[0] += 1
             return SimpleNamespace(name="sample.txt")
 
+    todo_stat = (item / "TODO").stat()
+
     def guarded_scandir(fd):
-        if (isinstance(fd, int)
-                and os.readlink("/proc/self/fd/" + str(fd)).endswith("/TODO")):
-            return OverwideIterator()
+        # Compare directory handles instead of relying on Linux-only /proc.
+        # macOS and other supported POSIX systems can exercise this test.
+        if isinstance(fd, int):
+            opened = os.fstat(fd)
+            if ((opened.st_dev, opened.st_ino)
+                    == (todo_stat.st_dev, todo_stat.st_ino)):
+                return OverwideIterator()
         return real_scandir(fd)
 
     supported = diagnostic._supports_safe_scan()
