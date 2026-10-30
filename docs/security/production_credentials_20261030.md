@@ -31,3 +31,5 @@ Never publish populated `.env` files, example credentials, decoded tokens, SQL c
 - If operator staging fails, restore the previous **runtime configuration**, not the historically exposed plaintext password. Do not commit or redistribute old values for rollback.
 
 **Fail-closed production host rule:** the development-only `localhost` fallback applies only when `CZJLLM_ENV` is not `production` or `prod`. With production selected, an unset ES/SQL host is considered missing rather than silently connecting to localhost. No credential value or actual production connection is tested in hosted CI.
+
+**Existing ES multi-host contract:** private ES configurations may supply a nonempty `hosts` list instead of `es_host`; production validation follows the active resolver's `hosts`-first precedence. A nonempty list of usable hosts is accepted with complete credentials; missing/blank destinations are rejected. No DNS lookup or live ES authentication is performed by the synthetic tests.
