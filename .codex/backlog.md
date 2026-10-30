@@ -92,3 +92,9 @@
 - [ ] Run exact-head Hosted read-only preflight and formal Codex review; record branch/ref SHA snapshot and check delta against #256 evidence.
 - [ ] Independently inspect >2MB blobs, forks, PR refs, GitHub Actions logs/assets, other public repo histories, compiled Python and false positives without public secret values.
 - [ ] With separate approval, perform private mirror backup and restore, isolated git-filter-repo rehearsal, confidential SQL literal replacement, full-ref scan and #254 migration validation. Never rewrite public Git or force push without a new explicitly approved execution packet.
+
+## 2026-10-30 — production credential security follow-up
+- [ ] Verify exact-head Hosted credential synthetic tests, changed-line scanner, offline Linux E2E, formal Codex review and review-thread resolution for the new PR; merge only on user approval.
+- [ ] Operator deploy: inject `CZJLLM_ES_HOST`/`CZJLLM_ES_USERNAME`/`CZJLLM_ES_PASSWORD` and SQL variables via OS secret manager or private `.env.production`, check staging login and TLS hostname/SAN, then confirm production behavior without displaying secret values.
+- [ ] Revoke/rotate any **still-valid** Elasticsearch credentials previously committed and independently verify old SQL logins; do not confuse DeepSeek revocation with other service credentials.
+- [ ] Long term: consider separate ES profiles for independent clusters and remove hostname-verification bypass where correct certificates are available; maintain no plaintext runtime secrets in tracked examples. Historical ref cleanup remains deferred and explicitly approval-gated.
