@@ -1,37 +1,60 @@
-# Production credentials and shareable examples (2026-10-30)
+# Production credentials: complete private SQL/ES profiles (2026-10-30)
 
-## Inventory / scope
+## Recommended arrangement
 
-- **SQL Server:** Four tracked `czjLLM/config_sql/akconfig_test*.py` profiles previously contained quoted passwords. PR #255 moved their passwords to `CZJLLM_SQL_ORION_PASSWORD`, `CZJLLM_SQL_SRP_PASSWORD` and `CZJLLM_SQL_SRP_ADMIN_PASSWORD`. All four now also read service-specific `CZJLLM_SQL_ORION_SERVER`, `CZJLLM_SQL_ORION_USERNAME`, `CZJLLM_SQL_SRP_SERVER`, `CZJLLM_SQL_SRP_USERNAME` and `CZJLLM_SQL_SRP_ADMIN_USERNAME` instead of public production hosts or identities. Table/database names remain shareable metadata. Independently confirm whether old SQL credentials are still valid.
-- **Elasticsearch:** Six tracked `czjLLM/config_es/akconfig_es_*.py` profiles had a nonempty `es_pass` literal; a seventh profile had an empty string. **All seven** now read `CZJLLM_ES_HOST`, `CZJLLM_ES_USERNAME` and `CZJLLM_ES_PASSWORD` from the operator's private runtime environment. Default host is local-only `http://localhost:9200`; no stored password or production URL remains in these profile assignments. These changes can affect existing operator deployments; configure ES before updating.
-- **LLM providers:** Previous legacy `czjLLM_utils_key.py` was removed on current `main` by PR #255. `CZJLLM_UTILS_API_KEY` is its runtime replacement. The model pool already supports `CZJLLM_ANKINT_API_KEY`; do not commit populated examples. Provider ownership, active validity and revocation require independent verification.
-- **CA certificate:** Tracked `http_ca.crt` is a public trust certificate, not itself an API password/private signing key; do not place private keys or client identity bundles in Git.
-- **Other findings:** Prior history audit counted matching *Git blob objects*, not unique verified live credentials; it is not an exhaustive inventory of current or historical secrets. This PR does **not** rewrite old Git objects or invalidate exposed credentials.
+For SQL Server and Elasticsearch, **keep a connection's host, username, password, database/index, table and other settings in one file**, as before. The difference is *where* the populated file lives: under a Git-ignored `private/` subdirectory.
 
-## Operator setup
+```text
+czjLLM/
+  config_sql/
+    connection.py.example          # public blank copy-and-edit template
+    akconfig_test.py               # existing public example / optional env-based profile
+    private/                       # ignored: created on demand by SQL selector
+      orion.py                     # local only: complete connection config
+      akconfig_test.py             # local only: overrides same-name public example
+  config_es/
+    connection.py.example          # public blank copy-and-edit template
+    akconfig_es_test.py            # existing public example / optional env-based profile
+    private/                       # ignored: created on demand by ES selector
+      news.py                      # local only: complete ES connection config
+      akconfig_es_test.py          # local only: overrides same-name public example
+```
 
-1. Set and verify `CZJLLM_ENV=production` in the actual service environment **before** startup. Use a service/OS secret manager where possible. For local debugging only, copy the blank `czjLLM/env_examples/czjllm.env.example` to an ignored `.env.production` at the repository root. Never commit the populated file.
-2. Set `CZJLLM_ES_HOST` (HTTPS URL and certificate matching the hostname for production), `CZJLLM_ES_USERNAME` and `CZJLLM_ES_PASSWORD`. The same ES credentials are used by these seven shareable source profiles. If differing ES clusters/accounts are required, run each job with a separate private environment or use a private ignored `*_local.py` profile rather than hard-coding new credentials.
-3. Set the appropriate SQL server, username and password variables for each service profile. ORION uses the `CZJLLM_SQL_ORION_*` variables, SRP uses `CZJLLM_SQL_SRP_*`, and the legacy SRP admin profile uses `CZJLLM_SQL_SRP_ADMIN_USERNAME` and `CZJLLM_SQL_SRP_ADMIN_PASSWORD`. A production profile with missing SQL authentication fields fails closed. The operator must configure runtime values; plaintext credentials are not included here.
-4. Set `CZJLLM_UTILS_API_KEY` and `CZJLLM_ANKINT_API_KEY` only if those providers/features are used. Ensure revoked old keys are not copied into private runtime files.
-5. The central SQL/ES config-file loaders call the existing `load_czjllm_env_files_once` helper before importing profiles. Values in the actual OS process environment take precedence over private files: `.env` then `.env.<CZJLLM_ENV>` then `.env.local`. Directly importing a profile bypasses this loader: then set OS environment variables explicitly. The helper loads only once per process.
-6. Credential fields are masked during interactive configuration previews, and incomplete ES username/password pairs now raise an error. SQL source profiles require a complete server/username/password set in production rather than attempting interactive prompts. These checks are **not** proof of real database connectivity.
-7. For production TLS, retain certificate verification and use an ES certificate with a matching DNS/IP Subject Alternative Name. Some existing source profiles still set `es_ssl_assert_hostname=False` for historical compatibility; **do not assume this provides hostname verification**. Review TLS policy separately before relying on Internet-exposed ES endpoints.
+**All paths inside `private/` are ignored by `.gitignore`, not just password files.** Git does not store empty directories; if you are not using the interactive config selector, create `private/` yourself. The interactive SQL/ES selectors create them if absent. Keep a separate private encrypted backup of these files and limit OS read permissions to the service/operator account.
 
-## Local/private settings excluded by Git
+## Add a new connection (preferred)
 
-`.env`, `.env.*`, any `*_local.py` or `*_private.py` connection override inside `config_es/` or `config_sql/`, directories named `secrets/`, and private-key containers are ignored. Public blank `.env.example` files remain committable. **Ignore rules do not untrack existing Git files or remove historical versions.**
+1. Choose an existing matching `config_sql/*.py` or `config_es/*.py` profile, or use the new public blank `connection.py.example` template.
+2. Make a copy under the matching `private/` directory with the `.py` extension, e.g. `config_sql/private/orion.py` or `config_es/private/news.py`. A copied public example may use `os.environ.get(...)` instead of direct values: if you want all connection data together, replace only the *connection field expressions* with values inside the **ignored private copy**, leaving query/table/mapping settings untouched.
+3. Inside that **private** file, set server/host, username, password, database/index, table, connection options and other job-specific fields together, matching the existing Python configuration variable names. Do **not** write populated values back to a Git-tracked root profile.
+4. Pick the `private/<filename>.py` entry from the interactive SQL/ES file selector, or specify `sql_config_file: czjLLM/config_sql/private/orion.py` / `es_config_file: czjLLM/config_es/private/news.py` in a YAML job configuration.
+5. For maximum backward compatibility, if a private profile and a public example share the same filename, the **private file takes precedence** even when the existing job YAML points at `czjLLM/config_sql/akconfig_test.py` or `czjLLM/config_es/akconfig_es_test.py`. This prevents updating each old YAML reference individually. The file selector lists the private entry instead of a duplicate root entry. Check the selected profile on first run and do not accidentally copy the same name for an unrelated connection.
+6. Check `git check-ignore -v czjLLM/config_sql/private/orion.py` and `git check-ignore -v czjLLM/config_es/private/news.py`; verify your private paths are **not** shown by `git ls-files` or `git status --untracked-files=all`. An ignore rule cannot untrack a file that was already committed in the root directory.
+7. On the operator machine, validate both real SQL/ES login and ES TLS hostname verification, then deploy. CI uses only synthetic fixtures and cannot prove connectivity.
 
-Never publish populated `.env` files, example credentials, decoded tokens, SQL connection strings, secret fingerprints, certificates containing private keys or incident screenshots. The production operator must rotate any *other* still-valid SQL/ES credentials exposed in historical source independently.
+This mechanism supports `.py`, `.yaml` and `.yml` files. The copy-and-edit templates use the `.py.example` suffix intentionally: rename the copied file to `.py` in `private/` to make it selectable. An explicit private path is used as-is; it is never silently redirected to a public file when missing.
 
-## Verification and roll-out
+## Existing environment-variable profiles remain compatible
 
-- First verify static source/test gates and exact PR HEAD on Hosted GitHub (secret scan, synthetic credential/unit tests, Linux E2E, formal Codex review). Production SQL and ES tests are **operator-deferred**, not simulated as successful.
-- Before deploying this PR, take an inventory of the actual ES hostname and account, validate that private runtime values are available to the process, verify login and TLS on staging, then restart the relevant job or service. Avoid inserting credentials in console output.
-- If operator staging fails, restore the previous **runtime configuration**, not the historically exposed plaintext password. Do not commit or redistribute old values for rollback.
+PR #255 already removed hardcoded SQL passwords from four tracked samples. The earlier PR #258 code also removed six nonempty ES password literals from seven tracked profiles. Public root profiles remain safe-to-share environment-based examples; these paths are **not** moved or deleted by GitHub. They can continue to read:
 
-**Fail-closed production host rule:** the development-only `localhost` fallback applies only when `CZJLLM_ENV` is not `production` or `prod`. With production selected, an unset ES/SQL host is considered missing rather than silently connecting to localhost. No credential value or actual production connection is tested in hosted CI.
+- SQL: `CZJLLM_SQL_ORION_SERVER`, `CZJLLM_SQL_ORION_USERNAME`, `CZJLLM_SQL_ORION_PASSWORD`, `CZJLLM_SQL_SRP_SERVER`, `CZJLLM_SQL_SRP_USERNAME`, `CZJLLM_SQL_SRP_PASSWORD`, `CZJLLM_SQL_SRP_ADMIN_USERNAME`, `CZJLLM_SQL_SRP_ADMIN_PASSWORD`.
+- ES: `CZJLLM_ES_HOST`, `CZJLLM_ES_USERNAME`, `CZJLLM_ES_PASSWORD`.
 
-**Existing ES multi-host contract:** private ES configurations may supply a nonempty `hosts` list instead of `es_host`; production validation follows the active resolver's `hosts`-first precedence. A nonempty list of usable hosts is accepted with complete credentials; missing/blank destinations are rejected. No DNS lookup or live ES authentication is performed by the synthetic tests.
+**Using these variables is optional if the chosen private profile supplies full credentials.** The central config loaders still load existing private env-file precedence for older deployments (`.env`, `.env.<CZJLLM_ENV>`, `.env.local`, then existing OS variables have highest priority). A private connection file can contain full values and does not need an additional password file. If you copied an env-based root example without editing its `os.environ` lookups, it will still require those OS/env values.
 
-**Log hygiene:** interactive SQL/ES config previews and both legacy ES resolver debug print sites now display redacted copies of auth-bearing configuration dictionaries. This does not guarantee every third-party library or external service log is sanitized; keep production logging and access policies restricted.
+`CZJLLM_ENV=production` makes included SQL/ES production example profiles refuse incomplete connection credentials or missing destinations instead of using a localhost fallback. Independent private configurations with a supported ES `hosts` list are accepted with full authentication. The existing ES SSL hostname assertion may be disabled in old public profiles; restore verified TLS and correct certificate SANs before production use.
+
+LLM/provider API keys (`CZJLLM_UTILS_API_KEY`, `CZJLLM_ANKINT_API_KEY`) continue using private OS/environment settings. **This change is about SQL/ES full connection profiles**, not putting all unrelated provider keys into database config files.
+
+## Deployment and backup precautions
+
+- **Before copying an update over the old deployment**, copy your current, operator-owned SQL/ES connection configuration into the ignored matching `private/` directory and verify the correct file loads. Do not rely on secrets previously committed in public root config files or use revoked API keys. A source update may replace the public root files; preserve `private/` separately.
+- Do not put the `private/` directory into a public release archive, Docker build context, CI artifact, bug report or shared screenshot. Use service-specific read permissions and an encrypted private backup; restore only on an authorized machine.
+- Any still-active SQL or Elasticsearch password that previously appeared in public Git history should be rotated by the operator. Removing it from current `main` does **not** scrub existing commits, other branches, clones or forks.
+- Interactive SQL/ES configuration previews and the legacy ES resolver print sites now display recursively redacted maps instead of raw account passwords, HTTP auth, API keys, tokens or reset confirmation codes. These protections do not cover every external library's logs.
+- `http_ca.crt` is a public CA trust certificate, not a private key. Never commit private-key files, .p12/.pfx bundles or populated env files.
+
+## Test and release gates
+
+The dedicated hosted credential workflow runs synthetic config tests (both old env-based profiles and new private complete-file scenarios), checks Git ignore behavior and syntax, followed by the changed-line secret scanner, standard Linux E2E and formal latest-HEAD Codex Review. No real provider, SQL/ES login, private files, private historical rewrite or destructive Git operation occurs in this PR. Merge and deployment are separately approval-gated.
