@@ -25,7 +25,7 @@ ES_PROFILES = [
 
 class CredentialConfigTests(unittest.TestCase):
     def test_es_profiles_never_embed_auth_or_production_endpoints(self):
-        clear = {"CZJLLM_ES_HOST": "", "CZJLLM_ES_USERNAME": "", "CZJLLM_ES_PASSWORD": ""}
+        clear = {"CZJLLM_ENV": "dev", "CZJLLM_ES_HOST": "", "CZJLLM_ES_USERNAME": "", "CZJLLM_ES_PASSWORD": ""}
         with patch.dict(os.environ, clear):
             for filename in ES_PROFILES:
                 with self.subTest(filename=filename):
@@ -36,7 +36,7 @@ class CredentialConfigTests(unittest.TestCase):
                     cfg = runpy.run_path(str(path))
                     self.assertEqual(cfg["es_pass"], "")
                     self.assertEqual(cfg["es_user"], "")
-                    self.assertEqual(cfg["es_host"], "")
+                    self.assertEqual(cfg["es_host"], "http://localhost:9200")
         # A set of missing variables must not reuse old hardcoded connection values.
         for variable in clear:
             with patch.dict(os.environ, {variable: ""}, clear=False):
@@ -71,6 +71,20 @@ class CredentialConfigTests(unittest.TestCase):
             private = {"es_host": "https://example.invalid:9200",
                        "es_user": "service-user", "es_pass": "synthetic"+"_for_test"}
             self.assertIs(validate_es_config(private), private)
+
+    def test_real_es_profiles_refuse_missing_host_in_production(self):
+        # This test imports real tracked profiles but never opens a connection.
+        fake = {"CZJLLM_ENV": "production",
+                "CZJLLM_ES_USERNAME": "service-user",
+                "CZJLLM_ES_PASSWORD": "".join(["synthetic", "_for_test"])}
+        with patch.dict(os.environ, fake):
+            os.environ.pop("CZJLLM_ES_HOST", None)
+            for filename in ES_PROFILES:
+                with self.subTest(filename=filename):
+                    cfg = runpy.run_path(str(ROOT / "czjLLM" / "config_es" / filename))
+                    self.assertEqual(cfg["es_host"], "")
+                    with self.assertRaisesRegex(ValueError, "ES production connection requires"):
+                        validate_es_config(cfg)
 
     def test_sql_production_is_fail_closed(self):
         with patch.dict(os.environ, {"CZJLLM_ENV": "production"}):
@@ -110,7 +124,7 @@ class CredentialConfigTests(unittest.TestCase):
                     self.assertEqual(cfg["password"], fake[f"CZJLLM_SQL_{password_identity}_PASSWORD"])
 
     def test_recursive_log_redaction(self):
-        secret = "synthetic"+"_for_test"
+        secret = "".join(["synthetic", "_for_test"])
         config = {"password": secret, "es_pass": secret,
                   "http_auth": ("service-user", secret),
                   "nested": [{"api_key": secret, "access_token": secret}],
