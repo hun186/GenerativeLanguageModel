@@ -1,10 +1,13 @@
+import os
+
+# Shareable profile only: set real ES host/user/password via private runtime environment.
+# Never commit credentials to this file or fall back to a stored historical secret.
 #akconfig_es_test.py
 # Elasticsearch 設定
-#es_host = 'http://localhost:9200'
-es_host = 'http://192.168.0.228:9200'
+es_host = os.environ.get("CZJLLM_ES_HOST", "http://localhost:9200")
 es_index = 'mil_reports-01'
-es_user = ''
-es_pass = ''
+es_user = os.environ.get("CZJLLM_ES_USERNAME", "")
+es_pass = os.environ.get("CZJLLM_ES_PASSWORD")
 
 # 可選欄位
 #id_col = '_source.uuid'
