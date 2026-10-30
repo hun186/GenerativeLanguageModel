@@ -3,7 +3,10 @@ import os
 # czjLLM/config_sql/akconfig.py
 
 # 服务器信息
-server = os.environ.get("CZJLLM_SQL_ORION_SERVER", "localhost")
+server = os.environ.get("CZJLLM_SQL_ORION_SERVER") or (
+    "" if os.environ.get("CZJLLM_ENV", "").strip().lower() in {"production", "prod"}
+    else "localhost"
+)
 username = os.environ.get("CZJLLM_SQL_ORION_USERNAME", "")
 password = os.environ.get("CZJLLM_SQL_ORION_PASSWORD")
 # 数据库和表信息
