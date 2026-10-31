@@ -23,6 +23,94 @@ def _setup_running(tmp_path, data=b"running private input", *, nested=""):
     return item, src
 
 
+def test_interrupted_round_requeue_preserves_existing_todo(tmp_path):
+    item, running = _setup_running(tmp_path, b"original running generation")
+    existing = item / "TODO" / "root.txt"
+    existing.parent.mkdir()
+    existing.write_bytes(b"independent pending generation")
+    assert queue.requeue_running_no_clobber(str(running)) is False
+    assert running.read_bytes() == b"original running generation"
+    assert existing.read_bytes() == b"independent pending generation"
+    assert summarize_queue_observations(item)["observed_requeues"] == 0
+
+
+def test_interrupted_round_requeue_records_only_completed_move(tmp_path):
+    item, running = _setup_running(tmp_path, b"one interrupted batch")
+    todo = item / "TODO" / "root.txt"
+    assert queue.requeue_running_no_clobber(str(running)) is True
+    assert todo.read_bytes() == b"one interrupted batch"
+    assert not running.exists()
+    assert summarize_queue_observations(item) == {
+        "observed_claims": 0, "observed_requeues": 1,
+    }
+
+
+def test_interrupted_round_requeue_refuses_unsupported_link(tmp_path, monkeypatch):
+    item, running = _setup_running(tmp_path, b"preserve original")
+    monkeypatch.setattr(queue.os, "link",
+                        lambda *_a, **_k: (_ for _ in ()).throw(
+                            PermissionError("simulated unsupported hardlink")))
+    assert queue.requeue_running_no_clobber(str(running)) is False
+    assert running.read_bytes() == b"preserve original"
+    assert not (item / "TODO" / "root.txt").exists()
+    assert summarize_queue_observations(item)["observed_requeues"] == 0
+
+
+def test_real_consumer_timeout_collision_is_terminal_without_overwrite(
+    monkeypatch, tmp_path
+):
+    """Exercise actual picker, timeout handling, coordinator signal and files."""
+    import threading
+
+    item = tmp_path / "item"
+    todo = item / "TODO" / "root.txt"
+    todo.parent.mkdir(parents=True)
+    todo.write_bytes(b"old dispatched generation")
+
+    blocked, stopped = threading.Event(), threading.Event()
+    ctx = SimpleNamespace(
+        task=None, model_spec={}, PGMSubDir="", max_tokens=32,
+        stage_cfg=None, es_writeback_rules=[], sql_writeback_rules=[],
+        _queue_claim_blocked_event=blocked,
+        mock_llm_mode=True,
+    )
+    registry = SimpleNamespace(list_items=lambda: {str(item): {"pk": "one"}})
+    failures = []
+    invoked = []
+
+    monkeypatch.setattr(pc, "resolve_pipeline_stages", lambda *_a, **_k: [])
+    monkeypatch.setattr(pc, "_stage_cfg_declares_flow", lambda *_a, **_k: False)
+    monkeypatch.setattr(pc, "meter_update", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "_llm_call_audit_kwargs", lambda *_a, **_k: {})
+    monkeypatch.setattr(pc, "PromptAPIPipeline", lambda **kw: SimpleNamespace(**kw))
+    monkeypatch.setattr(pc, "_audit_consumer_orchestration_failure",
+                        lambda _ctx, code: failures.append(code))
+    monkeypatch.setattr(pc, "tlog", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a, **_k: None)
+
+    def timed_out_round(_ctx, jobs):
+        assert len(jobs) == 1
+        invoked.append("timed_out")
+        # The independent new TODO arrives after the RUNNING claim,
+        # while the original worker batch is still waiting for its timeout.
+        todo.write_bytes(b"new pending generation")
+        raise pc.BatchRunTimeout(1, 0, 1)
+
+    monkeypatch.setattr(pc, "_run_legacy_leaf_round", timed_out_round)
+    pc.llm_stream_consumer(ctx, registry, str(tmp_path / "meter"), stopped,
+                           restart_event=threading.Event(), per_round_limit=1)
+
+    running = item / "RUNNING" / "root.txt"
+    assert invoked == ["timed_out"]
+    assert blocked.is_set() and not stopped.is_set()
+    assert running.read_bytes() == b"old dispatched generation"
+    assert todo.read_bytes() == b"new pending generation"
+    assert failures == ["CONSUMER_ROUND_TIMEOUT", "CONSUMER_TERMINATED"]
+    assert summarize_queue_observations(item) == {
+        "observed_claims": 1, "observed_requeues": 0,
+    }
+
+
 def test_existing_todo_is_never_replaced_by_recovery(tmp_path):
     item, running = _setup_running(tmp_path, b"running generation")
     todo = item / "TODO"
