@@ -198,9 +198,23 @@ def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES,
         return result
     try:
         if status_file.exists():
-            if status_file.stat().st_size > 4096:
+            info = status_file.lstat()
+            if not stat.S_ISREG(info.st_mode) or info.st_size > 4096:
+                raise ValueError("nonregular or oversize recovery marker")
+            # Nonblocking plus fstat prevents FIFO/device hangs. O_NOFOLLOW
+            # rejects final-symlink swaps on supported POSIX hosts; Windows
+            # inspection stays review-required, not safe-replay approved.
+            flags = (os.O_RDONLY | getattr(os, "O_BINARY", 0)
+                     | getattr(os, "O_NONBLOCK", 0)
+                     | getattr(os, "O_NOFOLLOW", 0))
+            fd = os.open(status_file, flags)
+            with os.fdopen(fd, "rb") as stream:
+                if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+                    raise ValueError("unsafe opened recovery marker")
+                raw = stream.read(4097)
+            if len(raw) > 4096:
                 raise ValueError("oversize recovery marker")
-            record = json.loads(status_file.read_text(encoding="utf-8"))
+            record = json.loads(raw.decode("utf-8"))
             if (not isinstance(record, dict) or record.get("version") != 1
                     or record.get("state") != "blocked"
                     or record.get("integrity") != "incomplete"):
