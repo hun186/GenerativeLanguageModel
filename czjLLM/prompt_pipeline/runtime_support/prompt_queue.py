@@ -396,18 +396,25 @@ def recover_running_to_todo(item_dirs, *, require_complete=False,
             raise QueueClaimRollbackError("operator review required for blocked item")
         run = Path(item_dir) / "RUNNING"
         todo = Path(item_dir) / "TODO"
-        if require_complete and (
-            run.is_symlink() or todo.is_symlink()
-            or any(parent.is_symlink() for parent in run.parents)
-        ):
-            raise QueueClaimRollbackError("unsafe restart queue directory")
-        if not run.is_dir():
-            continue
         if require_complete:
+            try:
+                # pathlib.is_dir() can hide some OS errors on supported Python
+                # versions; absence is the ONLY benign non-directory result.
+                run_info = run.lstat()
+            except FileNotFoundError:
+                continue
+            except OSError as exc:
+                raise QueueClaimRollbackError("restart directory metadata unavailable") from exc
+            if (not stat.S_ISDIR(run_info.st_mode)
+                    or any(parent.is_symlink() for parent in run.parents)
+                    or todo.is_symlink()):
+                raise QueueClaimRollbackError("unsafe restart queue directory")
             try:
                 sources = _strict_running_files(run)
             except (OSError, ValueError) as exc:
                 raise QueueClaimRollbackError("restart enumeration incomplete") from exc
+        elif not run.is_dir():
+            continue
         else:
             sources = [p for p in run.rglob("*") if p.is_file()]
         todo.mkdir(parents=True, exist_ok=True)
