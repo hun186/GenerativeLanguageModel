@@ -196,10 +196,15 @@ def _read_recovery_marker_fd(root_fd: int):
         if len(raw) > 4096:
             raise _UnsafeScan("oversize recovery marker")
         record = json.loads(raw.decode("utf-8"))
-        if (not isinstance(record, dict) or record.get("version") != 1
-                or record.get("state") != "blocked"
-                or record.get("integrity") != "incomplete"):
+        if not isinstance(record, dict) or record.get("version") != 1:
             raise _UnsafeScan("invalid recovery marker")
+        if (record.get("state"), record.get("integrity")) not in {
+            ("blocked", "incomplete"), ("recovered", "pending"),
+        }:
+            raise _UnsafeScan("invalid recovery marker")
+        if (record.get("state") == "recovered"
+                and record.get("resolution") != "VERIFIED_EXISTING_TODO"):
+            raise _UnsafeScan("invalid recovery resolution")
         return record
     finally:
         os.close(identity_fd)
@@ -269,8 +274,12 @@ def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES,
                     result["recovery_manual_review_required"] = True
                     return result
                 if recovery_record is not None:
-                    result["recovery_integrity"] = "incomplete"
-                    result["recovery_manual_review_required"] = True
+                    result["recovery_integrity"] = recovery_record["integrity"]
+                    result["recovery_manual_review_required"] = (
+                        recovery_record["state"] == "blocked"
+                    )
+                    result["recheck_count"] = int(
+                        recovery_record.get("recheck_count", 0))
                     code = recovery_record.get("code")
                     result["recovery_code"] = (
                         code if code in {
@@ -279,7 +288,13 @@ def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES,
                             "RECOVERY_SCAN_INCOMPLETE",
                         } else "UNKNOWN_RECOVERY_CODE"
                     )
-                    result["codes"].append("RECOVERY_ITEM_BLOCKED")
+                    if recovery_record["state"] == "blocked":
+                        result["codes"].append("RECOVERY_ITEM_BLOCKED")
+                        if recovery_record.get("alert_state") == "operator_required":
+                            result["codes"].append("RECOVERY_OPERATOR_ACTION_REQUIRED")
+                    else:
+                        # Recovered means returned to TODO, not completed LLM.
+                        result["codes"].append("RECOVERY_PENDING")
         except (OSError, ValueError, _UnsafeScan, RecursionError):
             result["codes"].append("INCOMPLETE_OR_UNSAFE_SCAN")
             return result
