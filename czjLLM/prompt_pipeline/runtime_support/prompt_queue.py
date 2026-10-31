@@ -431,13 +431,23 @@ def recover_running_to_todo(item_dirs, *, require_complete=False,
             continue
         else:
             sources = [p for p in run.rglob("*") if p.is_file()]
-        todo.mkdir(parents=True, exist_ok=True)
+        try:
+            todo.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            if require_complete:
+                raise QueueClaimRollbackError("restart destination setup failed") from exc
+            raise
         for p in sources:
             rel = p.relative_to(run)
             dst = todo / rel
             if require_complete and (dst.exists() or dst.is_symlink()):
                 raise QueueClaimRollbackError("restart TODO basename collision")
-            dst.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                dst.parent.mkdir(parents=True, exist_ok=True)
+            except OSError as exc:
+                if require_complete:
+                    raise QueueClaimRollbackError("restart destination setup failed") from exc
+                raise
             attempts = max_attempts if require_complete else 1
             success = False
             for attempt in range(attempts):
