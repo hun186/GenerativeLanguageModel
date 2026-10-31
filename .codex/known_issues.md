@@ -179,3 +179,7 @@
 ## 2026-10-31 — PR #269 state: logical isolation, operator unblocking pending
 
 - Logical quarantine marker persists `blocked/incomplete` with fixed reason and attempts; normal restarts will NOT auto-release or repair deterministically conflicting generations. A blocked item remains incomplete; healthy units may finish but aggregate returns error. Operators require an explicit verified file-identity remediation before clearing marker (not automated by this PR). Path-based strict recovery uses explicit scandir error propagation and no-clobber hardlinks but is not a substitute for genuine concurrent-writer / handle-relative Windows/SMB acceptance. Input-unit partial work before terminal aggregated incomplete needs operator review. Full exact-head CI, Codex Review and manual high-risk Merge approval outstanding.
+
+### 2026-10-31 — malformed recovery marker / FIFO review follow-up
+
+- Former pending P2: malformed or unreadable marker during Consumer restart could exit before setting the coordinator's terminal block flag; special-file FIFO marker could hang diagnostic on blocking text read. Branch implementation now sets terminal event on unexpected consumer termination and uses no-follow/nonblocking regular-only bounded reads for both marker loading and read-only diagnostics. Exact-head Hosted regression evidence and formal Codex re-review remain required. Platform-specific nofollow semantics are not proof of production Windows/SMB acceptance.
