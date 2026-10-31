@@ -268,7 +268,18 @@ def requeue_running_no_clobber(pf_running: str) -> bool:
         target = Path(_to_todo(pf_running))
     except (OSError, ValueError):
         return False
-    if not _claim_regular_source_no_clobber(source, target):
+    # An existing TODO is a deterministic generation conflict, not a
+    # transient filesystem failure. Never retry and never overwrite it.
+    if target.exists() or target.is_symlink():
+        return False
+    for attempt in range(RECOVERY_MAX_ATTEMPTS):
+        if _claim_regular_source_no_clobber(source, target):
+            break
+        if target.exists() or target.is_symlink():
+            return False
+        if attempt + 1 < RECOVERY_MAX_ATTEMPTS:
+            time.sleep(RECOVERY_RETRY_DELAY_SEC)
+    else:
         return False
     # Transition evidence only after the actual no-clobber move completes.
     try:
