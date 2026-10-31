@@ -1024,3 +1024,39 @@ def test_partial_full_restart_only_cleans_healthy_items_then_reports_incomplete(
     assert not good_success.exists()
     with pytest.raises(queue.QueueClaimRollbackError, match="incomplete"):
         pc._require_recovery_integrity(ctx)
+
+
+def test_strict_restart_does_not_mistake_unreadable_root_as_empty(
+    tmp_path, monkeypatch
+):
+    item, running = _setup_running(tmp_path, b"private job")
+    original_lstat = Path.lstat
+
+    def unavailable_metadata(self, *args, **kwargs):
+        if self == running.parent:
+            raise PermissionError("simulated metadata failure")
+        return original_lstat(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "lstat", unavailable_metadata)
+    with pytest.raises(queue.QueueClaimRollbackError, match="metadata unavailable"):
+        queue.recover_running_to_todo([str(item)], require_complete=True)
+    assert running.read_bytes() == b"private job"
+
+
+def test_timeout_requeue_has_finite_transient_attempts(tmp_path, monkeypatch):
+    item, running = _setup_running(tmp_path, b"running")
+    actual = queue._claim_regular_source_no_clobber
+    attempts = []
+
+    def flaky(source, dest):
+        attempts.append(1)
+        if len(attempts) < queue.RECOVERY_MAX_ATTEMPTS:
+            return False
+        return actual(source, dest)
+
+    monkeypatch.setattr(queue, "_claim_regular_source_no_clobber", flaky)
+    monkeypatch.setattr(queue.time, "sleep", lambda *_a: None)
+    assert queue.requeue_running_no_clobber(str(running)) is True
+    assert len(attempts) == queue.RECOVERY_MAX_ATTEMPTS
+    assert not running.exists()
+    assert (item / "TODO" / "root.txt").read_bytes() == b"running"
