@@ -171,9 +171,11 @@ def test_consumer_restart_conflict_marks_terminal_block(tmp_path, monkeypatch):
     todo.write_bytes(b"new pending")
     blocked, stop, restart = (threading.Event() for _ in range(3))
     restart.set()
+    producer_done = threading.Event()
+    producer_done.set()
     ctx = SimpleNamespace(
         stage_cfg=None, es_writeback_rules=[], sql_writeback_rules=[],
-        _queue_claim_blocked_event=blocked,
+        _queue_claim_blocked_event=blocked, _producer_done_flag=producer_done,
     )
     registry = SimpleNamespace(list_items=lambda: {str(item): {"pk": "one"}})
     failures = []
@@ -915,6 +917,8 @@ def test_consumer_restart_isolates_bad_row_and_completes_healthy_row(
     )
     blocked_event, stop, restart = (threading.Event() for _ in range(3))
     restart.set()
+    producer_done = threading.Event()
+    producer_done.set()
     meter = {
         "rows": {},
         "queue": {"pending": 0, "running": 2, "completed": 0},
@@ -923,6 +927,7 @@ def test_consumer_restart_isolates_bad_row_and_completes_healthy_row(
         task=None, model_spec={}, PGMSubDir="", max_tokens=32,
         stage_cfg=None, es_writeback_rules=[], sql_writeback_rules=[],
         _queue_claim_blocked_event=blocked_event, mock_llm_mode=True,
+        _producer_done_flag=producer_done,
     )
     registry = SimpleNamespace(list_items=lambda: {
         str(bad): {"pk": "bad"}, str(good): {"pk": "good"},
