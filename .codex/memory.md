@@ -158,3 +158,5 @@
 ### 2026-10-31 — PR #269 auto-recheck (not merged)
 
 - Owner requested no abandoned Blocked jobs. Branch adds finite 30s/5-cycle metadata-only supervisor (in Consumer and opt-in CLI), exact single-inode RUNNING→TODO two-observation safe auto-clear (POSIX only), permanent operator escalation, redacted meter/audit/CLI; no LLM replay, Success deletion or SQL/ES writeback. Fixes Codex P2 that all-blocked registry must not terminate before Producer done; actionable backpressure excludes held slices and is time-bounded. Tests and docs added. Exact-head CI/Codex Review/owner Merge approval **pending**; Windows/SMB/live acceptance #266 remains open.
+
+- Follow-up: producer per-row queue_pending/queue_running receipts now prove which held slices may be excluded from backpressure (never infer from TODO basename counts); snapshot tests added. Latest exact-head CI and Codex review still pending.
