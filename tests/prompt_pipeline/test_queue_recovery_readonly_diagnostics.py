@@ -430,3 +430,37 @@ def test_relative_dotdot_rejected_and_normal_relative_path_supported(
     safe = diagnostic.inspect_item(Path("item"))
     assert safe["scan_complete"] is True
     assert safe["status"] == "no_observed_conflicts"
+
+
+def test_blocked_recovery_status_visible_without_sensitive_paths(tmp_path):
+    from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
+        mark_recovery_blocked,
+    )
+    item = _item(tmp_path)
+    (item / "RUNNING" / "secret.txt").write_text(
+        "PRIVATE_NEVER_REPORT", encoding="utf-8",
+    )
+    mark_recovery_blocked(item, "TODO_CONFLICT", 1)
+    result = diagnostic.inspect_item(item)
+    assert result["scan_complete"]
+    assert result["status"] == "review_required"
+    assert result["recovery_integrity"] == "incomplete"
+    assert result["recovery_manual_review_required"] is True
+    assert result["recovery_code"] == "TODO_CONFLICT"
+    assert "RECOVERY_ITEM_BLOCKED" in result["codes"]
+    raw = json.dumps(result)
+    assert "PRIVATE_NEVER_REPORT" not in raw
+    assert "secret.txt" not in raw
+    assert str(tmp_path) not in raw
+
+
+def test_corrupt_recovery_marker_cannot_look_clean(tmp_path):
+    item = _item(tmp_path)
+    status = item / "_extract_slice_identity" / "queue_recovery_status.json"
+    status.parent.mkdir()
+    status.write_text('{"version":1,"state":"healthy"}', encoding="utf-8")
+    result = diagnostic.inspect_item(item)
+    assert not result["scan_complete"]
+    assert result["recovery_integrity"] == "unknown"
+    assert result["recovery_manual_review_required"] is True
+    assert "UNREADABLE_RECOVERY_MARKER" in result["codes"]
