@@ -430,3 +430,90 @@ def test_relative_dotdot_rejected_and_normal_relative_path_supported(
     safe = diagnostic.inspect_item(Path("item"))
     assert safe["scan_complete"] is True
     assert safe["status"] == "no_observed_conflicts"
+
+
+def test_blocked_recovery_status_visible_without_sensitive_paths(tmp_path):
+    from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
+        mark_recovery_blocked,
+    )
+    item = _item(tmp_path)
+    (item / "RUNNING" / "secret.txt").write_text(
+        "PRIVATE_NEVER_REPORT", encoding="utf-8",
+    )
+    mark_recovery_blocked(item, "TODO_CONFLICT", 1)
+    result = diagnostic.inspect_item(item)
+    assert result["scan_complete"]
+    assert result["status"] == "review_required"
+    assert result["recovery_integrity"] == "incomplete"
+    assert result["recovery_manual_review_required"] is True
+    assert result["recovery_code"] == "TODO_CONFLICT"
+    assert "RECOVERY_ITEM_BLOCKED" in result["codes"]
+    raw = json.dumps(result)
+    assert "PRIVATE_NEVER_REPORT" not in raw
+    assert "secret.txt" not in raw
+    assert str(tmp_path) not in raw
+
+
+def test_corrupt_recovery_marker_cannot_look_clean(tmp_path):
+    item = _item(tmp_path)
+    status = item / "_extract_slice_identity" / "queue_recovery_status.json"
+    status.parent.mkdir()
+    status.write_text('{"version":1,"state":"healthy"}', encoding="utf-8")
+    result = diagnostic.inspect_item(item)
+    assert not result["scan_complete"]
+    assert result["recovery_integrity"] == "unknown"
+    assert result["recovery_manual_review_required"] is True
+    assert "UNREADABLE_RECOVERY_MARKER" in result["codes"]
+
+
+def test_fifo_recovery_status_diagnostic_fails_closed_without_hang(tmp_path):
+    """Codex P2: read-only status must never wait for a FIFO writer."""
+    if not hasattr(os, "mkfifo"):
+        pytest.skip("FIFO unavailable")
+    item = _item(tmp_path)
+    marker = item / "_extract_slice_identity" / "queue_recovery_status.json"
+    marker.parent.mkdir()
+    os.mkfifo(marker)
+    result = diagnostic.inspect_item(item)
+    assert result["scan_complete"] is False
+    assert result["recovery_integrity"] == "unknown"
+    assert result["recovery_manual_review_required"] is True
+    assert "UNREADABLE_RECOVERY_MARKER" in result["codes"]
+
+
+def test_symlinked_ancestor_never_opens_external_recovery_marker(
+    tmp_path, monkeypatch
+):
+    """Codex P2: marker reads must follow pinned nofollow item handles only."""
+    outside = tmp_path / "outside"
+    item = outside / "item"
+    for role in ("TODO", "RUNNING", "Success"):
+        (item / role).mkdir(parents=True, exist_ok=True)
+    marker = item / "_extract_slice_identity" / "queue_recovery_status.json"
+    marker.parent.mkdir(parents=True)
+    marker.write_text('{"private":"EXTERNAL_PRIVATE_BYTES"}', encoding="utf-8")
+    alias = tmp_path / "alias"
+    try:
+        alias.symlink_to(outside, target_is_directory=True)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlinks unavailable")
+    actual_open = diagnostic.os.open
+    opened_markers = []
+
+    def record_open(path, flags, *args, **kwargs):
+        if "queue_recovery_status.json" in str(path):
+            opened_markers.append(str(path))
+        return actual_open(path, flags, *args, **kwargs)
+
+    # Patching os.open also replaces the function identity inspected by
+    # os.supports_dir_fd; keep the already verified platform capability while
+    # recording calls, or this test never exercises the pinned-root scanner.
+    supported = diagnostic._supports_safe_scan()
+    monkeypatch.setattr(diagnostic.os, "open", record_open)
+    monkeypatch.setattr(diagnostic, "_supports_safe_scan", lambda: supported)
+    result = diagnostic.inspect_item(alias / "item")
+    assert not result["scan_complete"]
+    assert result["status"] == "review_required"
+    assert "INCOMPLETE_OR_UNSAFE_SCAN" in result["codes"]
+    assert opened_markers == []
+    assert "EXTERNAL_PRIVATE_BYTES" not in json.dumps(result)

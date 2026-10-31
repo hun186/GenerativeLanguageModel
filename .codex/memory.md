@@ -133,3 +133,30 @@
 
 - PR #267 Squash Merge confirmed on Hosted main `923d7b8d810aa243f4238c9efb3a9748a5e4579a`; prior PR HEAD `cbd8df6aeceebb32892ad0a1a876ddfd49b003d2` formal Codex Review completed zero findings/threads, Linux offline-e2e run #41163507810 SUCCESS, genuine Hosted Windows 2022 NTFS Python 3.10/3.11 SUCCESS, changed-line secrets run #41163507783 SUCCESS. Self-hosted Windows jobs queued. Operator acceptance remains in Issue #266.
 - Found a distinct legacy `llm_stream_consumer` batch timeout/restart fallback still using `os.replace(RUNNING, TODO)`, bypassing approved `_claim_regular_source_no_clobber`. A producer can create a fresh TODO between claim and timeout, which could be overwritten. An independent branch now reuses exclusive hardlink+unlink for exactly one interrupted RUNNING; success records an observed requeue, failure keeps evidence and marks coordinator blocked instead of claiming successful requeue. Added native real-file source/collision/unsupported-hardlink cases and actual consumer timeout interleaving regression. **New code is not yet CI or review accepted**; no real Windows or live queue acceptance claimed, and no automatic replay or cleanup authorized.
+
+## 2026-10-31 — #268 accepted; strict restart recovery pending
+
+- PR #268 Squash Merge verified main `ed131529e8c012cd7779d336832efda941b2f001`: latest PR HEAD `a86b2e14919e66afce578bc2d37f45138058c131`, Codex zero Findings/Threads, Hosted Linux offline-e2e #41164513535 SUCCESS, hosted Windows NTFS 3.10+3.11 SUCCESS, secret scan #41164513511 SUCCESS. Windows operator acceptance remains Issue #266.
+- New independent branch gates full restart/Resume and hot-restart Consumer on complete no-clobber RUNNING recovery. Legacy helper had deliberately returned only completed count, skipping conflicts; higher-level callers could continue with incomplete recovery and some full_restart paths then removed prior Success. Opt-in strict mode raises a fixed payload-free failure, prevents subsequent cleanup, and signals terminal coordinator blocked. Real-file and actual Consumer tests committed but **not yet Hosted CI or formal Review accepted**. This changes the behavior of full_restart and must not be merged without specific owner approval, even if general development PR Auto-Merge is enabled.
+
+## 2026-10-31 — PR #269 owner-requested isolation, bounded retry and integrity reporting
+
+- User clarified that a single bad RUNNING file must not permanently stall healthy work. On PR #269 branch, implemented fail-closed per-item recovery with at most three attempts for transient failures and no retry on existing TODO conflicts. A failure persists an opaque, payload-free `blocked/incomplete` marker, excludes only affected item from dispatch; healthy units can recover/process, but aggregate result raises `QueueClaimRollbackError` rather than claiming completion. Full_restart retains blocked item's old Success; SQL/ES/CSV row-merger now rejects quarantined rows even when an older combined artifact exists. UI data is available via meter row and queue_integrity, with CLI diagnostic read-only reporting. Formal Codex P2 on silent Path.rglob scan errors addressed using scandir failure propagation and new regression tests. **All changes remain on unmerged PR #269; no current exact-head CI/Review PASS claimed.** Operator Windows/SMB/live services unverified; merged main still PR #268 `ed131529e8c012cd7779d336832efda941b2f001`.
+
+### 2026-10-31 — PR #269 second Codex pass corrective fixes (pending CI/re-review)
+
+- Codex latest-head review on `488f1d1` found two P2: corrupt recovery status could terminate Consumer without coordinator signal, and a FIFO marker could block read-only inspection. Patched Consumer outer terminal exception to set `_queue_claim_blocked_event`; bounded 4096-byte metadata reads now validate regular-file lstat/fstat and use nonblocking no-follow opens (where supported). Added corrupted-marker coordinator and FIFO regression tests for both runtime and CLI. These commits are NOT yet exact-head CI/Review-accepted or merged; Issue #266 operator Windows/SMB/live acceptance stays outstanding.
+
+### 2026-10-31 — Third Codex P2 on safe diagnostic marker
+
+- A full-path recovery marker read could follow symlinked item ancestors ahead of descriptor-anchored inspection. Revised read-only inspector uses the already pinned item fd and nofollow relative opens; unsupported Windows remains unverified. Runtime marker read/write also rejects aliased ancestors. Added external symlink-ancestor tests. Pending exact-head CI and formal re-review, no operator approval to merge.
+
+### 2026-10-31 — Fourth Codex P2 fixes still pending CI
+
+- Typed `QueueClaimRollbackError` now covers strict destination mkdir failures so an invalid TODO directory only quarantines that item and healthy items continue. Fixed symlink-ancestor diagnostic regression to preserve the already verified `os.supports_dir_fd` result while instrumenting `os.open`. Added real-file bad-TODO/healthy-item regression. Not yet exact-head CI or review accepted; do not merge.
+
+### 2026-10-31 — PR #269 auto-recheck (not merged)
+
+- Owner requested no abandoned Blocked jobs. Branch adds finite 30s/5-cycle metadata-only supervisor (in Consumer and opt-in CLI), exact single-inode RUNNING→TODO two-observation safe auto-clear (POSIX only), permanent operator escalation, redacted meter/audit/CLI; no LLM replay, Success deletion or SQL/ES writeback. Fixes Codex P2 that all-blocked registry must not terminate before Producer done; actionable backpressure excludes held slices and is time-bounded. Tests and docs added. Exact-head CI/Codex Review/owner Merge approval **pending**; Windows/SMB/live acceptance #266 remains open.
+
+- Follow-up: producer per-row queue_pending/queue_running receipts now prove which held slices may be excluded from backpressure (never infer from TODO basename counts); snapshot tests added. Latest exact-head CI and Codex review still pending.

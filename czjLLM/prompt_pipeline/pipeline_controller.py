@@ -113,6 +113,9 @@ from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     _to_todo,
     pick_and_claim_next_prompts,
     recover_running_to_todo,
+    read_recovery_status,
+    mark_recovery_blocked,
+    recheck_blocked_recovery,
     requeue_running_no_clobber,
     require_no_pending_todo_sources,
     publish_success_text_no_clobber,
@@ -203,6 +206,214 @@ def _audit_leaf_worker_phase_failure(audit_path: str, run_id: str, code: str) ->
         pass
 
 
+def _queue_recovery_blocked(ctx):
+    return getattr(ctx, "_queue_recovery_blocked_items", set())
+
+
+def _update_recovery_integrity_meter(ctx, meter_fn, items_map):
+    if not meter_fn:
+        return
+    blocked = _queue_recovery_blocked(ctx)
+    def update(d):
+        q = d.get("queue", {})
+        rows = d.get("rows", {})
+        pending = running = 0
+        seen = set()
+        for item in blocked:
+            pk = items_map.get(item, {}).get("pk", item)
+            if pk in seen:
+                continue
+            seen.add(pk)
+            row = rows.get(pk, {})
+            # A physical TODO collision may be a NEW generation unrelated to
+            # this meter. Only subtract explicit per-row queue receipts,
+            # never a filename count or an unverified item total.
+            pending += max(0, int(row.get("queue_pending", 0) or 0))
+            running += max(0, int(row.get("queue_running", 0) or 0))
+        held_pending = min(pending, max(0, int(q.get("pending", 0) or 0)))
+        held_running = min(running, max(0, int(q.get("running", 0) or 0)))
+        d["queue_integrity"] = {
+            "status": "incomplete" if blocked else "pending",
+            "blocked_items": len(blocked),
+            "held_pending": held_pending,
+            "held_running": held_running,
+            "held_outstanding": held_pending + held_running,
+            "manual_review_required": bool(blocked),
+            "operator_action_required": bool(
+                blocked & getattr(ctx, "_queue_recovery_alerted_items", set())
+            ),
+            "healthy_items_may_continue": True,
+        }
+    meter_update(meter_fn, update)
+
+
+def _recheck_blocked_items(ctx, items_map, meter_fn):
+    """Poll with a finite budget without blocking unrelated dispatch."""
+    blocked = _queue_recovery_blocked(ctx)
+    if not blocked:
+        return
+    now = time.monotonic()
+    if now - getattr(ctx, "_queue_recovery_last_scan", -1e12) < 1:
+        return
+    ctx._queue_recovery_last_scan = now
+    alerted = getattr(ctx, "_queue_recovery_alerted_items", set())
+    for item in tuple(blocked):
+        if item not in items_map:
+            continue
+        result = recheck_blocked_recovery(item)
+        outcome = result["outcome"]
+        # A missing marker is NOT recovery evidence for a previously
+        # blocked in-memory row. Only the verified persisted transition from
+        # blocked -> recovered/pending may release its quarantine.
+        if outcome == "clear":
+            # Missing state was never proof of safety. Persist an opaque hold
+            # again so the next process cannot silently forget it either.
+            mark_recovery_blocked(item, "UNSAFE_QUEUE_ENTRY", 1)
+            outcome = "operator_required"
+        if outcome == "recovered":
+            blocked.discard(item)
+            pk = items_map[item].get("pk", item)
+            if meter_fn:
+                meter_update(meter_fn, lambda d, _pk=pk: d.setdefault(
+                    "rows", {}).setdefault(_pk, {}).update({
+                        "status": "pending", "integrity": "pending",
+                        "recovery_state": "auto_recovered_to_todo",
+                    }))
+            try:
+                emit_quality_event(
+                    getattr(ctx, "llm_call_audit_path", ""),
+                    run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+                    event="queue_recovery", code="VERIFIED_EXISTING_TODO",
+                    scope="run", outcome="recovered",
+                )
+                tlog_warn("[queue-recovery] VERIFIED TODO / auto-recovered; "
+                          "pending work may resume")
+            except Exception:
+                pass
+        elif outcome == "operator_required" and item not in alerted:
+            alerted.add(item)
+            try:
+                tlog_warn("[queue-recovery] OPERATOR ACTION REQUIRED; "
+                          "source retained, no forced replay")
+            except Exception:
+                pass
+            try:
+                emit_quality_event(
+                    getattr(ctx, "llm_call_audit_path", ""),
+                    run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+                    event="queue_recovery", code="OPERATOR_ACTION_REQUIRED",
+                    scope="run", outcome="incomplete",
+                )
+            except Exception:
+                pass
+        if meter_fn:
+            pk = items_map[item].get("pk", item)
+            meter_update(meter_fn, lambda d, _pk=pk, _out=outcome, _n=result["checks"]:
+                         d.setdefault("rows", {}).setdefault(_pk, {}).update({
+                             "recovery_state": _out, "recheck_count": _n,
+                             "integrity": "incomplete" if _out != "recovered" else "pending",
+                         }))
+    ctx._queue_recovery_alerted_items = alerted
+    _update_recovery_integrity_meter(ctx, meter_fn, items_map)
+
+
+def _mark_item_recovery_blocked(ctx, item, items_map, meter_fn, error):
+    """Logical quarantine: preserve all queue files; no silent clearance."""
+    message = str(error)
+    if "collision" in message:
+        code = "TODO_CONFLICT"
+        attempts = 1
+    elif "enumeration" in message:
+        code = "RECOVERY_SCAN_INCOMPLETE"
+        attempts = 1
+    elif "unsafe" in message or "entry limit" in message:
+        code = "UNSAFE_QUEUE_ENTRY"
+        attempts = 1
+    else:
+        code = "RECOVERY_RETRIES_EXHAUSTED"
+        attempts = 3
+    # A failed durable status write is terminal, never degrade to an
+    # unpersisted exclusion that will be forgotten on process restart.
+    marker = mark_recovery_blocked(item, code, attempts)
+    blocked = _queue_recovery_blocked(ctx)
+    blocked.add(item)
+    if ctx is not None:
+        ctx._queue_recovery_blocked_items = blocked
+    pk = items_map.get(item, {}).get("pk", item)
+    if meter_fn:
+        def update(d):
+            d.setdefault("rows", {}).setdefault(pk, {}).update({
+                "status": "blocked_recovery", "integrity": "incomplete",
+                "recovery_code": marker["code"],
+            })
+            d["queue_integrity"] = {
+                "status": "incomplete", "blocked_items": len(blocked),
+                "manual_review_required": True,
+                "healthy_items_may_continue": True,
+            }
+        meter_update(meter_fn, update)
+    _update_recovery_integrity_meter(ctx, meter_fn, items_map)
+    # Console/GUI logs contain only a fixed status code and counts, never
+    # private prompt bytes, filenames, source paths or row identifiers.
+    try:
+        tlog_warn(
+            "[queue-recovery] BLOCKED / INCOMPLETE "
+            f"code={marker['code']} affected_items={len(blocked)}; "
+            "other healthy items may continue; no automatic replay"
+        )
+    except Exception:
+        pass
+    return marker
+
+
+def _recover_items_isolated(ctx, items_map, *, meter_fn=None,
+                            moved_by_item_out=None):
+    """Attempt per-item bounded recovery; skip blocked items, not all work.
+
+    No success is inferred for blocked items, and the final aggregate remains
+    incomplete. Existing durable blocked markers are authoritative until
+    explicit operator intervention (not silently cleared by a new run).
+    """
+    healthy = []
+    requeued = 0
+    local_blocked = 0
+    for item in items_map:
+        try:
+            marker = read_recovery_status(item)
+            if marker is not None:
+                _mark_item_recovery_blocked(
+                    ctx, item, items_map, meter_fn,
+                    QueueClaimRollbackError("operator review required"),
+                )
+                local_blocked += 1
+                continue
+            moved = recover_running_to_todo([item], require_complete=True)
+        except QueueClaimRollbackError as exc:
+            _mark_item_recovery_blocked(ctx, item, items_map, meter_fn, exc)
+            local_blocked += 1
+            continue
+        healthy.append(item)
+        requeued += moved
+        if moved_by_item_out is not None and moved:
+            moved_by_item_out[item] = moved
+    if ctx is None and local_blocked:
+        # Standalone policy calls have no coordinator to carry the partial
+        # state: surface a failure instead of reporting an incomplete success.
+        raise QueueClaimRollbackError("recovery incomplete: operator review required")
+    return healthy, requeued
+
+
+def _require_recovery_integrity(ctx):
+    blocked = _queue_recovery_blocked(ctx)
+    if blocked:
+        event = getattr(ctx, "_queue_claim_blocked_event", None)
+        if event is not None:
+            event.set()
+        raise QueueClaimRollbackError(
+            "queue recovery incomplete: blocked input units require operator review"
+        )
+
+
 def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                         stop_event: threading.Event,
                         restart_event: threading.Event,   # ★ 新增
@@ -281,13 +492,25 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             if restart_event is not None and restart_event.is_set():
                 try:
                     items_map = registry.list_items()
-                    item_dirs = list(items_map.keys())
-                    n_requeued = recover_running_to_todo(item_dirs)
+                    moved_by_item = {}
+                    item_dirs, n_requeued = _recover_items_isolated(
+                        ctx, items_map, meter_fn=meter_fn,
+                        moved_by_item_out=moved_by_item,
+                    )
                     def _mark_restart_requeue(d, _n=n_requeued):
                         q = d.setdefault("queue", {})
                         if _n:
                             q["running"] = max(0, int(q.get("running", 0) or 0) - int(_n))
                             q["pending"] = int(q.get("pending", 0) or 0) + int(_n)
+                        for item, n_moved in moved_by_item.items():
+                            pk = items_map.get(item, {}).get("pk", item)
+                            row = d.setdefault("rows", {}).setdefault(pk, {})
+                            if "queue_running" in row and "queue_pending" in row:
+                                row["queue_running"] = max(
+                                    0, int(row["queue_running"]) - n_moved
+                                )
+                                row["queue_pending"] = int(
+                                    row["queue_pending"]) + n_moved
                         cons = d.setdefault("consumer", {})
                         cons.update({
                             "last_dispatch_ts": time.time(),
@@ -297,7 +520,15 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     meter_update(meter_fn, _mark_restart_requeue)
                     tlog_warn(f"[consumer] restart_event 收到 → 已復原 RUNNING→TODO {n_requeued} 個切片，繼續派工")
                 except Exception as ex:
-                    tlog_warn(f"[consumer] restart 恢復失敗：{ex}")
+                    # A partial filesystem recovery (or inability to account
+                    # for it) is terminal. Do not silently clear the event and
+                    # resume dispatch with a stale running/pending meter.
+                    blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+                    if blocked is not None:
+                        blocked.set()
+                    raise QueueClaimRollbackError(
+                        "restart recovery incomplete; operator review required"
+                    ) from ex
                 finally:
                     restart_event.clear()
                     
@@ -326,7 +557,29 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             '''
 
             items_map = registry.list_items()
-            item_dirs = list(items_map.keys())
+            # Persisted logical quarantine survives consumer restarts.
+            # Never silently dispatch an item held for operator review.
+            for item in items_map:
+                marker = read_recovery_status(item)
+                if marker and item not in _queue_recovery_blocked(ctx):
+                    _mark_item_recovery_blocked(
+                        ctx, item, items_map, meter_fn,
+                        QueueClaimRollbackError("operator review required"),
+                    )
+            _recheck_blocked_items(ctx, items_map, meter_fn)
+            item_dirs = [
+                item for item in items_map if item not in _queue_recovery_blocked(ctx)
+            ]
+            if not item_dirs and _queue_recovery_blocked(ctx):
+                # New healthy rows can still arrive from Producer. A fully
+                # quarantined CURRENT registry is not producer completion.
+                producer_done = getattr(ctx, "_producer_done_flag", None)
+                if stop_event.is_set() or (
+                    producer_done is not None and producer_done.is_set()
+                ):
+                    _require_recovery_integrity(ctx)
+                time.sleep(0.1)
+                continue
 
             # ★ 啟動後第一次迴圈：復原 RUNNING → TODO
             #if not did_recover:
@@ -351,6 +604,14 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                 raise
 
             if not batch:
+                # If the producer is done and healthy items have drained,
+                # terminate with INCOMPLETE rather than looping on held items.
+                producer_done = getattr(ctx, "_producer_done_flag", None)
+                if _queue_recovery_blocked(ctx) and (
+                    stop_event.is_set()
+                    or (producer_done is not None and producer_done.is_set())
+                ):
+                    _require_recovery_integrity(ctx)
                 # A TODO with an older Success is permanently unclaimable.
                 # The older Worker may have published between our initial
                 # check and a fresh claim, which was safely restored. Unlike
@@ -524,12 +785,14 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                         # ordinary RUNNING recovery; do not report requeue on
                         # failed or incomplete filesystem transitions.
                         if not requeue_running_no_clobber(pf):
-                            blocked = getattr(ctx, "_queue_claim_blocked_event", None)
-                            if blocked is not None:
-                                blocked.set()
-                            raise QueueClaimRollbackError(
-                                "interrupted batch RUNNING requeue needs operator review"
+                            _mark_item_recovery_blocked(
+                                ctx, item, items_map, meter_fn,
+                                QueueClaimRollbackError(
+                                    "interrupted batch RUNNING requeue incomplete"
+                                ),
                             )
+                            still_running.append((pf, item))
+                            continue
                         requeued.append((pf, item))
                     else:
                         # ✅ 仍在 RUNNING：表示這輪可能還沒寫完/或 job 卡住
@@ -602,7 +865,13 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             time.sleep(0.01)
 
     except Exception as ex:
-        # **最外層保護**：任何沒抓到的例外都要吼一聲，並標記 consumer 死亡
+        # If a marker is corrupt/unreadable, even the quarantine state cannot
+        # be persisted. Always signal coordinator terminal incompleteness,
+        # otherwise producer/backpressure can wait on an orphaned consumer.
+        # The same guard protects other unexpected consumer termination.
+        blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+        if blocked is not None:
+            blocked.set()
         _audit_consumer_orchestration_failure(ctx, "CONSUMER_TERMINATED")
         try:
             tlog_warn(f"❌ consumer 未捕捉例外：{ex}")
@@ -622,7 +891,10 @@ def _meter_on_dispatch(d, items_map, count_by_item, total_n):
     # 確保 rows entry 存在
     for item_dir, cnt in count_by_item.items():
         pk = items_map[item_dir]["pk"]
-        d["rows"].setdefault(pk, {})
+        row = d["rows"].setdefault(pk, {})
+        if "queue_pending" in row and "queue_running" in row:
+            row["queue_pending"] = max(0, int(row["queue_pending"]) - cnt)
+            row["queue_running"] = int(row["queue_running"]) + cnt
 
 
 def _meter_on_finish_batch(d, items_map, count_by_item, total_n):
@@ -653,6 +925,15 @@ def _meter_on_finish_batch_v2(d, items_map,
         pk = items_map.get(item_dir, {}).get("pk", item_dir)  # 保底
         row = rows.setdefault(pk, {})
         row["done"] = int(row.get("done", 0)) + int(cnt)
+        if "queue_running" in row:
+            row["queue_running"] = max(0, int(row["queue_running"]) - int(cnt))
+
+    for item_dir, cnt in count_by_item_requeued.items():
+        pk = items_map.get(item_dir, {}).get("pk", item_dir)
+        row = rows.setdefault(pk, {})
+        if "queue_running" in row and "queue_pending" in row:
+            row["queue_running"] = max(0, int(row["queue_running"]) - int(cnt))
+            row["queue_pending"] = int(row["queue_pending"]) + int(cnt)
 
     # ✅ requeued per item（可選：記錄一下）
     if n_requeued:
@@ -1349,7 +1630,12 @@ def _apply_resume_policy_multistage(
     full_restart:
       - smart_reset 行為 + 清除 Success（強制所有切片重跑）
     """
-    recover_running_to_todo(prompt_items)
+    healthy, _count = _recover_items_isolated(
+        ctx, {item: {"pk": item} for item in prompt_items},
+    )
+    prompt_items[:] = healthy
+    if not healthy:
+        _require_recovery_integrity(ctx)
     _append_resume_log(ctx, "action=recover_running_to_todo(multistage)")
     for item in prompt_items:
         before_counts = _root_resume_counts(item)
@@ -1375,7 +1661,12 @@ def _apply_resume_policy_multistage(
 
 
 def _apply_resume_policy_single_stage(policy: str, prompt_items: list[str], ops: MergeOps, ctx=None):
-    recover_running_to_todo(prompt_items)
+    healthy, _count = _recover_items_isolated(
+        ctx, {item: {"pk": item} for item in prompt_items},
+    )
+    prompt_items[:] = healthy
+    if not healthy:
+        _require_recovery_integrity(ctx)
     _append_resume_log(ctx, "action=recover_running_to_todo(single)")
     for item in prompt_items:
         before_counts = _root_resume_counts(item)
@@ -1690,13 +1981,18 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         # untracked globals before the later first-dispatch provenance write.
         # This is a read-only preflight for resume, smart_reset, full_restart.
         _extract_stage_provenance_fingerprint(stage_defs[0].task, ctx)
+        # Quarantine before split reconciliation, snapshot and any source
+        # generation work, not just full_restart cleanup. An incomplete item
+        # must not be modified by early stage preflight operations.
+        healthy, _count = _recover_items_isolated(
+            ctx, {item: {"pk": item} for item in prompt_items},
+        )
+        prompt_items[:] = healthy
+        if not healthy:
+            _require_recovery_integrity(ctx)
         # Full restart must first regenerate completed split branches from
         # the current source. Otherwise clearing Success loses their prompts.
         if resume_policy == "full_restart":
-            # The later resume-policy step would otherwise move stale RUNNING
-            # prompts into TODO *after* the fresh source prompts were staged,
-            # overwriting them via os.replace(). Recover the queue first.
-            recover_running_to_todo(prompt_items)
             restored = _rebuild_full_restart_from_verified_source(
                 prompt_items, ctx, file_path, stage_defs[0],
             )
@@ -2472,6 +2768,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             "[multistage] ↪ 偵測到 stage SQL writeback rules，"
             f"跳過最終 prompt combine，使用 stage manifest marker：{final_marker_fn}"
         )
+        _require_recovery_integrity(ctx)
         return final_marker_fn
 
     def _infer_combine_task_name(stage_obj, stage_task):
@@ -2533,6 +2830,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
                 print(f"{item} 尚有 {len(todo_files)} 個段落未處理")
     finally:
         ctx.task = old_task
+    _require_recovery_integrity(ctx)
     return comb_back_fn
 
 
@@ -2612,6 +2910,7 @@ def process_prompt_and_merge(ctx, file_path: str, ops: MergeOps | None = None) -
         else:
             print(f"{item} 尚有 {len(todo_files)} 個段落未處理")
 
+    _require_recovery_integrity(ctx)
     return comb_back_fn
 
 
@@ -3628,8 +3927,9 @@ def producer_backpressure_wait(ctx: LLMJobConfig,
             m = meter_read(meter_fn)
             q = m.get("queue", {})
             outstanding = int(q.get("pending", 0)) + int(q.get("running", 0))
-            if outstanding < 0:
-                outstanding = 0
+            held = max(0, int(m.get("queue_integrity", {}).get(
+                "held_outstanding", 0) or 0))
+            outstanding = max(0, outstanding - min(max(0, outstanding), held))
         except Exception:
             # 讀取計量檔失敗 → 短暫等待再試；不要卡死
             time.sleep(min(0.2, sleep_step * 4))

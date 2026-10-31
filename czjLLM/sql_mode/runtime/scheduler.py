@@ -123,6 +123,10 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
                 "total": 0, "done": 0, "status": "in_progress"
             })
             d["rows"][pk]["total"] = total_chunks
+            d["rows"][pk]["queue_pending"] = (
+                int(d["rows"][pk].get("queue_pending", 0) or 0) + total_chunks
+            )
+            d["rows"][pk].setdefault("queue_running", 0)
             d["queue"]["pending"] += total_chunks
 
         meter_update(meter_fn, _on_add_row)
@@ -214,8 +218,15 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
             "total": 0, "done": 0, "status": "in_progress"
         })
         d["rows"][pk]["total"] = total_chunks
+        # Per-row queue receipts avoid guessing held work from unrelated
+        # physical TODO files when subtracting producer backpressure.
+        queued_chunks = 0 if run_stream_multistage else total_chunks
+        d["rows"][pk]["queue_pending"] = (
+            int(d["rows"][pk].get("queue_pending", 0) or 0) + queued_chunks
+        )
+        d["rows"][pk].setdefault("queue_running", 0)
         # SQL/Table/ES 多階段已在 schedule 階段完成 LLM，不放入 consumer pending queue。
-        d["queue"]["pending"] += (0 if run_stream_multistage else total_chunks)
+        d["queue"]["pending"] += queued_chunks
 
     # 註冊給 row_merger（合併檔路徑用 row_ctx 算，不會串線）。
     # 多階段同步執行 LLM 時必須先註冊，否則 producer 正在跑 LLM 的期間
