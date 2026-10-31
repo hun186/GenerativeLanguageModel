@@ -275,21 +275,33 @@ def requeue_running_no_clobber(pf_running: str) -> bool:
     return True
 
 
-def recover_running_to_todo(item_dirs):
+def recover_running_to_todo(item_dirs, *, require_complete=False):
     """
     將 RUNNING/* 移回 TODO/*，讓它們能被重新排程。
 
     回傳實際退回的切片數；舊呼叫端可忽略回傳值。
+
+    require_complete is an opt-in fail-closed gate for resume/restart call
+    sites. A refused move is not a completed recovery, and must prevent any
+    later full-restart cleanup or optimistic coordinator drain.
     """
     moved = 0
     for item_dir in item_dirs:
         run = Path(item_dir) / "RUNNING"
         todo = Path(item_dir) / "TODO"
+        if require_complete and (run.is_symlink() or todo.is_symlink()):
+            raise QueueClaimRollbackError("unsafe restart queue directory")
         if not run.is_dir():
             continue
         todo.mkdir(parents=True, exist_ok=True)
         for p in run.rglob("*"):
+            if require_complete and p.is_symlink():
+                raise QueueClaimRollbackError("unsafe restart queue entry")
+            if p.is_dir():
+                continue
             if not p.is_file():
+                if require_complete:
+                    raise QueueClaimRollbackError("unsupported restart queue entry")
                 continue
             rel = p.relative_to(run)
             dst = todo / rel
@@ -298,6 +310,10 @@ def recover_running_to_todo(item_dirs):
             # This preserves an existing TODO (including symlinks) and leaves
             # RUNNING untouched when the move cannot be performed safely.
             if not _claim_regular_source_no_clobber(p, dst):
+                if require_complete:
+                    raise QueueClaimRollbackError(
+                        "restart RUNNING recovery incomplete; manual inspection required"
+                    )
                 continue
             # A successful requeue move is an observed queue transition,
             # not evidence of a second provider invocation or retry family.
