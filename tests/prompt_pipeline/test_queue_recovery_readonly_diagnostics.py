@@ -505,7 +505,12 @@ def test_symlinked_ancestor_never_opens_external_recovery_marker(
             opened_markers.append(str(path))
         return actual_open(path, flags, *args, **kwargs)
 
+    # Patching os.open also replaces the function identity inspected by
+    # os.supports_dir_fd; keep the already verified platform capability while
+    # recording calls, or this test never exercises the pinned-root scanner.
+    supported = diagnostic._supports_safe_scan()
     monkeypatch.setattr(diagnostic.os, "open", record_open)
+    monkeypatch.setattr(diagnostic, "_supports_safe_scan", lambda: supported)
     result = diagnostic.inspect_item(alias / "item")
     assert not result["scan_complete"]
     assert result["status"] == "review_required"
