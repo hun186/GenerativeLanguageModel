@@ -154,3 +154,7 @@
 ### 2026-10-31 — Fourth Codex P2 fixes still pending CI
 
 - Typed `QueueClaimRollbackError` now covers strict destination mkdir failures so an invalid TODO directory only quarantines that item and healthy items continue. Fixed symlink-ancestor diagnostic regression to preserve the already verified `os.supports_dir_fd` result while instrumenting `os.open`. Added real-file bad-TODO/healthy-item regression. Not yet exact-head CI or review accepted; do not merge.
+
+### 2026-10-31 — PR #269 auto-recheck (not merged)
+
+- Owner requested no abandoned Blocked jobs. Branch adds finite 30s/5-cycle metadata-only supervisor (in Consumer and opt-in CLI), exact single-inode RUNNING→TODO two-observation safe auto-clear (POSIX only), permanent operator escalation, redacted meter/audit/CLI; no LLM replay, Success deletion or SQL/ES writeback. Fixes Codex P2 that all-blocked registry must not terminate before Producer done; actionable backpressure excludes held slices and is time-bounded. Tests and docs added. Exact-head CI/Codex Review/owner Merge approval **pending**; Windows/SMB/live acceptance #266 remains open.
