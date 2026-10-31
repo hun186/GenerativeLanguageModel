@@ -1153,6 +1153,8 @@ def test_invalid_todo_directory_quarantines_only_one_item(tmp_path):
 def test_supervisor_verified_external_move_auto_recovers_without_replay(tmp_path):
     import json
     import os
+    if os.name != "posix" or not hasattr(os, "O_NOFOLLOW"):
+        pytest.skip("verified auto-resolve restricted to POSIX")
 
     item, running = _setup_running(tmp_path, b"never replay this LLM payload")
     record = queue.mark_recovery_blocked(
@@ -1262,3 +1264,77 @@ def test_actionable_queue_excludes_held_outstanding_not_raw_integrity(monkeypatc
     assert snapshot["queue"]["pending"] == 10
     snapshot["queue_integrity"]["held_outstanding"] = 10000
     assert workers.actionable_outstanding_now("meter") == 0
+
+
+def test_late_healthy_producer_row_is_not_lost_after_initial_all_blocked(
+    tmp_path, monkeypatch
+):
+    """Codex P2: producer not done means keep Consumer alive for new rows."""
+    import threading
+
+    bad, bad_running = _setup_running(tmp_path / "bad", b"conflicting old")
+    bad_todo = bad / "TODO" / "root.txt"
+    bad_todo.parent.mkdir()
+    bad_todo.write_bytes(b"different new generation")
+    good = tmp_path / "good" / "item"
+    good_todo = good / "TODO" / "root.txt"
+    good_todo.parent.mkdir(parents=True)
+    good_todo.write_bytes(b"later healthy job")
+    good_running = good / "RUNNING" / "root.txt"
+    done = threading.Event()
+    blocked = threading.Event()
+    restart = threading.Event()
+    restart.set()
+    stop = threading.Event()
+    ctx = SimpleNamespace(
+        task=None, model_spec={}, PGMSubDir="", max_tokens=32,
+        stage_cfg=None, es_writeback_rules=[], sql_writeback_rules=[],
+        mock_llm_mode=True, _queue_claim_blocked_event=blocked,
+        _producer_done_flag=done,
+    )
+    calls = []
+    def list_items():
+        calls.append(1)
+        if len(calls) <= 2:
+            return {str(bad): {"pk": "bad"}}
+        return {str(bad): {"pk": "bad"}, str(good): {"pk": "good"}}
+
+    registry = SimpleNamespace(list_items=list_items)
+    meter = {"rows": {}, "queue": {
+        "pending": 1, "running": 1, "completed": 0,
+    }}
+    failures = []
+    monkeypatch.setattr(pc, "resolve_pipeline_stages", lambda *_a: [])
+    monkeypatch.setattr(pc, "_stage_cfg_declares_flow", lambda *_a: False)
+    monkeypatch.setattr(pc, "PromptAPIPipeline",
+                        lambda **kw: SimpleNamespace(**kw))
+    monkeypatch.setattr(pc, "_llm_call_audit_kwargs", lambda *_a: {})
+    monkeypatch.setattr(pc, "tlog", lambda *_a: None)
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a: None)
+    monkeypatch.setattr(pc, "meter_read", lambda *_a: meter)
+    monkeypatch.setattr(pc, "meter_update",
+                        lambda _p, fn: (fn(meter), meter)[1])
+    monkeypatch.setattr(pc, "_audit_consumer_orchestration_failure",
+                        lambda _ctx, code: failures.append(code))
+
+    def complete_late(_ctx, jobs):
+        assert len(jobs) == 1
+        assert jobs[0].promptFile == str(good_running)
+        queue.publish_success_text_no_clobber(
+            str(good / "Success" / "root.txt"), "finished",
+        )
+        good_running.unlink()
+        done.set()
+        return [{"ok": True, "prompt_file": str(good_running)}]
+
+    monkeypatch.setattr(pc, "_run_legacy_leaf_round", complete_late)
+    pc.llm_stream_consumer(
+        ctx, registry, str(tmp_path / "meter"), stop, restart,
+        per_round_limit=10,
+    )
+    assert len(calls) >= 3
+    assert (good / "Success" / "root.txt").read_text() == "finished"
+    assert bad_running.read_bytes() == b"conflicting old"
+    assert bad_todo.read_bytes() == b"different new generation"
+    assert blocked.is_set()
+    assert failures == ["CONSUMER_TERMINATED"]
