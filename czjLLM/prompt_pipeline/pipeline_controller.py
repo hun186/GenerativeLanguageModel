@@ -262,7 +262,12 @@ def _recheck_blocked_items(ctx, items_map, meter_fn):
             continue
         result = recheck_blocked_recovery(item)
         outcome = result["outcome"]
-        if outcome == "recovered" or outcome == "clear":
+        # A missing marker is NOT recovery evidence for a previously
+        # blocked in-memory row. Only the verified persisted transition from
+        # blocked -> recovered/pending may release its quarantine.
+        if outcome == "clear":
+            outcome = "operator_required"
+        if outcome == "recovered":
             blocked.discard(item)
             pk = items_map[item].get("pk", item)
             if meter_fn:
