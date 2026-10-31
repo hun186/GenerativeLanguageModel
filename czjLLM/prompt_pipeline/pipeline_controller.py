@@ -210,48 +210,34 @@ def _queue_recovery_blocked(ctx):
     return getattr(ctx, "_queue_recovery_blocked_items", set())
 
 
-def _blocked_queue_file_counts(item):
-    """Observational per-role counts; no inference of completed work."""
-    counts = {"pending": 0, "running": 0}
-    for role, field in (("TODO", "pending"), ("RUNNING", "running")):
-        directory = Path(item) / role
-        try:
-            if directory.is_file():
-                counts[field] += 1
-            elif directory.is_dir():
-                counts[field] += sum(
-                    path.is_file() or path.is_symlink()
-                    for path in directory.rglob("*")
-                )
-        except OSError:
-            pass
-    return counts
-
-
 def _update_recovery_integrity_meter(ctx, meter_fn, items_map):
     if not meter_fn:
         return
     blocked = _queue_recovery_blocked(ctx)
-    held_pending = held_running = 0
-    for item in blocked:
-        counts = _blocked_queue_file_counts(item)
-        held_pending += counts["pending"]
-        held_running += counts["running"]
     def update(d):
         q = d.get("queue", {})
-        # Never count unmetered collision copies as a second held job.
-        accounted_pending = min(
-            held_pending, max(0, int(q.get("pending", 0) or 0))
-        )
-        accounted_running = min(
-            held_running, max(0, int(q.get("running", 0) or 0))
-        )
+        rows = d.get("rows", {})
+        pending = running = 0
+        seen = set()
+        for item in blocked:
+            pk = items_map.get(item, {}).get("pk", item)
+            if pk in seen:
+                continue
+            seen.add(pk)
+            row = rows.get(pk, {})
+            # A physical TODO collision may be a NEW generation unrelated to
+            # this meter. Only subtract explicit per-row queue receipts,
+            # never a filename count or an unverified item total.
+            pending += max(0, int(row.get("queue_pending", 0) or 0))
+            running += max(0, int(row.get("queue_running", 0) or 0))
+        held_pending = min(pending, max(0, int(q.get("pending", 0) or 0)))
+        held_running = min(running, max(0, int(q.get("running", 0) or 0)))
         d["queue_integrity"] = {
             "status": "incomplete" if blocked else "pending",
             "blocked_items": len(blocked),
-            "held_pending": accounted_pending,
-            "held_running": accounted_running,
-            "held_outstanding": accounted_pending + accounted_running,
+            "held_pending": held_pending,
+            "held_running": held_running,
+            "held_outstanding": held_pending + held_running,
             "manual_review_required": bool(blocked),
             "operator_action_required": bool(
                 blocked & getattr(ctx, "_queue_recovery_alerted_items", set())
@@ -883,7 +869,10 @@ def _meter_on_dispatch(d, items_map, count_by_item, total_n):
     # 確保 rows entry 存在
     for item_dir, cnt in count_by_item.items():
         pk = items_map[item_dir]["pk"]
-        d["rows"].setdefault(pk, {})
+        row = d["rows"].setdefault(pk, {})
+        if "queue_pending" in row and "queue_running" in row:
+            row["queue_pending"] = max(0, int(row["queue_pending"]) - cnt)
+            row["queue_running"] = int(row["queue_running"]) + cnt
 
 
 def _meter_on_finish_batch(d, items_map, count_by_item, total_n):
@@ -914,6 +903,15 @@ def _meter_on_finish_batch_v2(d, items_map,
         pk = items_map.get(item_dir, {}).get("pk", item_dir)  # 保底
         row = rows.setdefault(pk, {})
         row["done"] = int(row.get("done", 0)) + int(cnt)
+        if "queue_running" in row:
+            row["queue_running"] = max(0, int(row["queue_running"]) - int(cnt))
+
+    for item_dir, cnt in count_by_item_requeued.items():
+        pk = items_map.get(item_dir, {}).get("pk", item_dir)
+        row = rows.setdefault(pk, {})
+        if "queue_running" in row and "queue_pending" in row:
+            row["queue_running"] = max(0, int(row["queue_running"]) - int(cnt))
+            row["queue_pending"] = int(row["queue_pending"]) + int(cnt)
 
     # ✅ requeued per item（可選：記錄一下）
     if n_requeued:
