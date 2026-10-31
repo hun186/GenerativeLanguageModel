@@ -229,7 +229,8 @@ def _mark_item_recovery_blocked(ctx, item, items_map, meter_fn, error):
     marker = mark_recovery_blocked(item, code, attempts)
     blocked = _queue_recovery_blocked(ctx)
     blocked.add(item)
-    ctx._queue_recovery_blocked_items = blocked
+    if ctx is not None:
+        ctx._queue_recovery_blocked_items = blocked
     pk = items_map.get(item, {}).get("pk", item)
     if meter_fn:
         def update(d):
@@ -255,6 +256,7 @@ def _recover_items_isolated(ctx, items_map, *, meter_fn=None):
     """
     healthy = []
     requeued = 0
+    local_blocked = 0
     for item in items_map:
         try:
             marker = read_recovery_status(item)
@@ -263,13 +265,19 @@ def _recover_items_isolated(ctx, items_map, *, meter_fn=None):
                     ctx, item, items_map, meter_fn,
                     QueueClaimRollbackError("operator review required"),
                 )
+                local_blocked += 1
                 continue
             moved = recover_running_to_todo([item], require_complete=True)
         except QueueClaimRollbackError as exc:
             _mark_item_recovery_blocked(ctx, item, items_map, meter_fn, exc)
+            local_blocked += 1
             continue
         healthy.append(item)
         requeued += moved
+    if ctx is None and local_blocked:
+        # Standalone policy calls have no coordinator to carry the partial
+        # state: surface a failure instead of reporting an incomplete success.
+        raise QueueClaimRollbackError("recovery incomplete: operator review required")
     return healthy, requeued
 
 
