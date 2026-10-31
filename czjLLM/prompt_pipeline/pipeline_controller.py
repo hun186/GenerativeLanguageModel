@@ -358,7 +358,8 @@ def _mark_item_recovery_blocked(ctx, item, items_map, meter_fn, error):
     return marker
 
 
-def _recover_items_isolated(ctx, items_map, *, meter_fn=None):
+def _recover_items_isolated(ctx, items_map, *, meter_fn=None,
+                            moved_by_item_out=None):
     """Attempt per-item bounded recovery; skip blocked items, not all work.
 
     No success is inferred for blocked items, and the final aggregate remains
@@ -385,6 +386,8 @@ def _recover_items_isolated(ctx, items_map, *, meter_fn=None):
             continue
         healthy.append(item)
         requeued += moved
+        if moved_by_item_out is not None and moved:
+            moved_by_item_out[item] = moved
     if ctx is None and local_blocked:
         # Standalone policy calls have no coordinator to carry the partial
         # state: surface a failure instead of reporting an incomplete success.
@@ -481,14 +484,25 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             if restart_event is not None and restart_event.is_set():
                 try:
                     items_map = registry.list_items()
+                    moved_by_item = {}
                     item_dirs, n_requeued = _recover_items_isolated(
                         ctx, items_map, meter_fn=meter_fn,
+                        moved_by_item_out=moved_by_item,
                     )
                     def _mark_restart_requeue(d, _n=n_requeued):
                         q = d.setdefault("queue", {})
                         if _n:
                             q["running"] = max(0, int(q.get("running", 0) or 0) - int(_n))
                             q["pending"] = int(q.get("pending", 0) or 0) + int(_n)
+                        for item, n_moved in moved_by_item.items():
+                            pk = items_map.get(item, {}).get("pk", item)
+                            row = d.setdefault("rows", {}).setdefault(pk, {})
+                            if "queue_running" in row and "queue_pending" in row:
+                                row["queue_running"] = max(
+                                    0, int(row["queue_running"]) - n_moved
+                                )
+                                row["queue_pending"] = int(
+                                    row["queue_pending"]) + n_moved
                         cons = d.setdefault("consumer", {})
                         cons.update({
                             "last_dispatch_ts": time.time(),
