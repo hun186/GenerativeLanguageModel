@@ -68,10 +68,13 @@ def test_real_consumer_timeout_collision_is_terminal_without_overwrite(
     todo.write_bytes(b"old dispatched generation")
 
     blocked, stopped = threading.Event(), threading.Event()
+    producer_done = threading.Event()
+    producer_done.set()
     ctx = SimpleNamespace(
         task=None, model_spec={}, PGMSubDir="", max_tokens=32,
         stage_cfg=None, es_writeback_rules=[], sql_writeback_rules=[],
         _queue_claim_blocked_event=blocked,
+        _producer_done_flag=producer_done,
         mock_llm_mode=True,
     )
     registry = SimpleNamespace(list_items=lambda: {str(item): {"pk": "one"}})
@@ -116,7 +119,7 @@ def test_strict_restart_recovery_blocks_collision_without_overwrite(tmp_path):
     target = item / "TODO" / "root.txt"
     target.parent.mkdir()
     target.write_bytes(b"fresh TODO from another producer")
-    with pytest.raises(queue.QueueClaimRollbackError, match="recovery incomplete"):
+    with pytest.raises(queue.QueueClaimRollbackError, match="collision"):
         queue.recover_running_to_todo([str(item)], require_complete=True)
     assert target.read_bytes() == b"fresh TODO from another producer"
     assert running.read_bytes() == b"older running source"
