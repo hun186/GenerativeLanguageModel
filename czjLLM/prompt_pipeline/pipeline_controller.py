@@ -115,6 +115,7 @@ from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     recover_running_to_todo,
     read_recovery_status,
     mark_recovery_blocked,
+    recheck_blocked_recovery,
     requeue_running_no_clobber,
     require_no_pending_todo_sources,
     publish_success_text_no_clobber,
@@ -209,6 +210,100 @@ def _queue_recovery_blocked(ctx):
     return getattr(ctx, "_queue_recovery_blocked_items", set())
 
 
+def _blocked_outstanding_file_count(item):
+    """Best-effort accounting ONLY for backpressure, never proof of success."""
+    count = 0
+    for role in ("TODO", "RUNNING"):
+        directory = Path(item) / role
+        try:
+            if directory.is_file():
+                count += 1
+            elif directory.is_dir():
+                count += sum(
+                    path.is_file() or path.is_symlink()
+                    for path in directory.rglob("*")
+                )
+        except OSError:
+            # Unknown count is never used as recovery-completion evidence.
+            pass
+    return count
+
+
+def _update_recovery_integrity_meter(ctx, meter_fn, items_map):
+    if not meter_fn:
+        return
+    blocked = _queue_recovery_blocked(ctx)
+    held = sum(_blocked_outstanding_file_count(item) for item in blocked)
+    def update(d):
+        d["queue_integrity"] = {
+            "status": "incomplete" if blocked else "pending",
+            "blocked_items": len(blocked),
+            "held_outstanding": held,
+            "manual_review_required": bool(blocked),
+            "healthy_items_may_continue": True,
+        }
+    meter_update(meter_fn, update)
+
+
+def _recheck_blocked_items(ctx, items_map, meter_fn):
+    """Poll with a finite budget without blocking unrelated dispatch."""
+    blocked = _queue_recovery_blocked(ctx)
+    if not blocked:
+        return
+    now = time.monotonic()
+    if now - getattr(ctx, "_queue_recovery_last_scan", -1e12) < 1:
+        return
+    ctx._queue_recovery_last_scan = now
+    alerted = getattr(ctx, "_queue_recovery_alerted_items", set())
+    for item in tuple(blocked):
+        if item not in items_map:
+            continue
+        result = recheck_blocked_recovery(item)
+        outcome = result["outcome"]
+        if outcome == "recovered" or outcome == "clear":
+            blocked.discard(item)
+            pk = items_map[item].get("pk", item)
+            if meter_fn:
+                meter_update(meter_fn, lambda d, _pk=pk: d.setdefault(
+                    "rows", {}).setdefault(_pk, {}).update({
+                        "status": "pending", "integrity": "pending",
+                        "recovery_state": "auto_recovered_to_todo",
+                    }))
+            try:
+                emit_quality_event(
+                    getattr(ctx, "llm_call_audit_path", ""),
+                    run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+                    event="queue_recovery", code="VERIFIED_EXISTING_TODO",
+                    scope="run", outcome="recovered",
+                )
+                tlog_warn("[queue-recovery] VERIFIED TODO / auto-recovered; "
+                          "pending work may resume")
+            except Exception:
+                pass
+        elif outcome == "operator_required" and item not in alerted:
+            alerted.add(item)
+            try:
+                emit_quality_event(
+                    getattr(ctx, "llm_call_audit_path", ""),
+                    run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+                    event="queue_recovery", code="OPERATOR_ACTION_REQUIRED",
+                    scope="run", outcome="incomplete",
+                )
+                tlog_warn("[queue-recovery] OPERATOR ACTION REQUIRED; "
+                          "source retained, no forced replay")
+            except Exception:
+                pass
+        if meter_fn:
+            pk = items_map[item].get("pk", item)
+            meter_update(meter_fn, lambda d, _pk=pk, _out=outcome, _n=result["checks"]:
+                         d.setdefault("rows", {}).setdefault(_pk, {}).update({
+                             "recovery_state": _out, "recheck_count": _n,
+                             "integrity": "incomplete" if _out != "recovered" else "pending",
+                         }))
+    ctx._queue_recovery_alerted_items = alerted
+    _update_recovery_integrity_meter(ctx, meter_fn, items_map)
+
+
 def _mark_item_recovery_blocked(ctx, item, items_map, meter_fn, error):
     """Logical quarantine: preserve all queue files; no silent clearance."""
     message = str(error)
@@ -244,6 +339,7 @@ def _mark_item_recovery_blocked(ctx, item, items_map, meter_fn, error):
                 "healthy_items_may_continue": True,
             }
         meter_update(meter_fn, update)
+    _update_recovery_integrity_meter(ctx, meter_fn, items_map)
     # Console/GUI logs contain only a fixed status code and counts, never
     # private prompt bytes, filenames, source paths or row identifiers.
     try:
@@ -443,11 +539,20 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                         ctx, item, items_map, meter_fn,
                         QueueClaimRollbackError("operator review required"),
                     )
+            _recheck_blocked_items(ctx, items_map, meter_fn)
             item_dirs = [
                 item for item in items_map if item not in _queue_recovery_blocked(ctx)
             ]
             if not item_dirs and _queue_recovery_blocked(ctx):
-                _require_recovery_integrity(ctx)
+                # New healthy rows can still arrive from Producer. A fully
+                # quarantined CURRENT registry is not producer completion.
+                producer_done = getattr(ctx, "_producer_done_flag", None)
+                if stop_event.is_set() or (
+                    producer_done is not None and producer_done.is_set()
+                ):
+                    _require_recovery_integrity(ctx)
+                time.sleep(0.1)
+                continue
 
             # ★ 啟動後第一次迴圈：復原 RUNNING → TODO
             #if not did_recover:
@@ -477,8 +582,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                 producer_done = getattr(ctx, "_producer_done_flag", None)
                 if _queue_recovery_blocked(ctx) and (
                     stop_event.is_set()
-                    or producer_done is None
-                    or producer_done.is_set()
+                    or (producer_done is not None and producer_done.is_set())
                 ):
                     _require_recovery_integrity(ctx)
                 # A TODO with an older Success is permanently unclaimable.
