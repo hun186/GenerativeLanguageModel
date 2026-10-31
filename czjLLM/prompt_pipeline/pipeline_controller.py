@@ -244,6 +244,16 @@ def _mark_item_recovery_blocked(ctx, item, items_map, meter_fn, error):
                 "healthy_items_may_continue": True,
             }
         meter_update(meter_fn, update)
+    # Console/GUI logs contain only a fixed status code and counts, never
+    # private prompt bytes, filenames, source paths or row identifiers.
+    try:
+        tlog_warn(
+            "[queue-recovery] BLOCKED / INCOMPLETE "
+            f"code={marker['code']} affected_items={len(blocked)}; "
+            "other healthy items may continue; no automatic replay"
+        )
+    except Exception:
+        pass
     return marker
 
 
