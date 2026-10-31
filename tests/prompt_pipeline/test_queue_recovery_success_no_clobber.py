@@ -1148,3 +1148,117 @@ def test_invalid_todo_directory_quarantines_only_one_item(tmp_path):
     assert (good / "TODO" / "root.txt").read_bytes() == b"healthy running"
     assert queue.read_recovery_status(bad)["integrity"] == "incomplete"
     assert str(bad) in ctx._queue_recovery_blocked_items
+
+
+def test_supervisor_verified_external_move_auto_recovers_without_replay(tmp_path):
+    import json
+    import os
+
+    item, running = _setup_running(tmp_path, b"never replay this LLM payload")
+    record = queue.mark_recovery_blocked(
+        item, "RECOVERY_RETRIES_EXHAUSTED", 3,
+    )
+    assert record["source_fingerprint"] and len(record["source_fingerprint"]) == 64
+    todo = item / "TODO" / "root.txt"
+    todo.parent.mkdir()
+    # Another safe owner has ALREADY completed no-clobber RUNNING-to-TODO;
+    # supervisor does not perform this mutation itself.
+    os.link(running, todo)
+    running.unlink()
+    before = todo.stat()
+    start = record["next_check_ts"]
+    first = queue.recheck_blocked_recovery(item, now=start)
+    assert first == {"outcome": "candidate", "checks": 1}
+    assert queue.read_recovery_status(item)["integrity"] == "incomplete"
+    assert queue.recheck_blocked_recovery(item, now=start + 1)["outcome"] == "cooldown"
+    assert queue.recheck_blocked_recovery(
+        item, now=start + queue.RECOVERY_RECHECK_INTERVAL_SEC
+    ) == {"outcome": "recovered", "checks": 2}
+    assert queue.read_recovery_status(item) is None
+    assert todo.read_bytes() == b"never replay this LLM payload"
+    assert todo.stat().st_ino == before.st_ino
+    assert not running.exists()
+    # The durable record says pending, NEVER successfully processed by LLM.
+    saved = json.loads(queue.recovery_status_path(item).read_text("utf-8"))
+    assert (saved["state"], saved["integrity"]) == ("recovered", "pending")
+    assert saved["resolution"] == "VERIFIED_EXISTING_TODO"
+    assert "root.txt" not in json.dumps(saved)
+    assert "never replay" not in json.dumps(saved)
+
+
+def test_supervisor_cannot_repair_conflicting_generation_or_forge_success(tmp_path):
+    item, running = _setup_running(tmp_path, b"original generation")
+    todo = item / "TODO" / "root.txt"
+    todo.parent.mkdir()
+    todo.write_bytes(b"independent new generation")
+    record = queue.mark_recovery_blocked(item, "TODO_CONFLICT", 1)
+    for cycle in range(queue.RECOVERY_RECHECK_MAX_CHECKS):
+        out = queue.recheck_blocked_recovery(
+            item, now=record["next_check_ts"] +
+            cycle * queue.RECOVERY_RECHECK_INTERVAL_SEC,
+        )
+    assert out == {"outcome": "operator_required",
+                   "checks": queue.RECOVERY_RECHECK_MAX_CHECKS}
+    marker = queue.read_recovery_status(item)
+    assert marker["alert_state"] == "operator_required"
+    assert marker["recheck_state"] == "operator_required"
+    assert queue.recheck_blocked_recovery(
+        item, now=record["next_check_ts"] + 999999,
+    ) == out
+    assert todo.read_bytes() == b"independent new generation"
+    assert running.read_bytes() == b"original generation"
+    assert not (item / "Success").exists()
+
+
+def test_supervisor_absent_or_invalid_evidence_never_automatically_clears(tmp_path):
+    item, running = _setup_running(tmp_path, b"work must remain blocked")
+    record = queue.mark_recovery_blocked(item, "RECOVERY_SCAN_INCOMPLETE", 1)
+    original = queue.recovery_status_path(item).read_bytes()
+    assert record["source_fingerprint"] is None
+    for i in range(queue.RECOVERY_RECHECK_MAX_CHECKS):
+        outcome = queue.recheck_blocked_recovery(
+            item, now=record["next_check_ts"] +
+            i * queue.RECOVERY_RECHECK_INTERVAL_SEC,
+        )
+    assert outcome["outcome"] == "operator_required"
+    assert queue.read_recovery_status(item)["state"] == "blocked"
+    assert running.read_bytes() == b"work must remain blocked"
+    assert original != queue.recovery_status_path(item).read_bytes()
+
+
+def test_recovery_supervisor_cannot_repeat_retries_indefinitely(tmp_path):
+    item, running = _setup_running(tmp_path)
+    marker = queue.mark_recovery_blocked(
+        item, "RECOVERY_RETRIES_EXHAUSTED", 3,
+    )
+    for i in range(queue.RECOVERY_RECHECK_MAX_CHECKS):
+        outcome = queue.recheck_blocked_recovery(
+            item, now=marker["next_check_ts"] +
+            i * queue.RECOVERY_RECHECK_INTERVAL_SEC,
+        )
+    assert outcome["outcome"] == "operator_required"
+    assert outcome["checks"] == queue.RECOVERY_RECHECK_MAX_CHECKS
+    frozen = queue.recovery_status_path(item).read_bytes()
+    for _ in range(10):
+        assert queue.recheck_blocked_recovery(
+            item, now=1e12,
+        ) == outcome
+    assert queue.recovery_status_path(item).read_bytes() == frozen
+    assert running.read_bytes() == b"running private input"
+
+
+def test_actionable_queue_excludes_held_outstanding_not_raw_integrity(monkeypatch):
+    from czjLLM.sql_mode.runtime import workers
+    snapshot = {
+        "queue": {"pending": 10, "running": 4},
+        "queue_integrity": {
+            "blocked_items": 1, "held_outstanding": 9,
+            "status": "incomplete",
+        },
+    }
+    monkeypatch.setattr(workers, "meter_read", lambda *_a: snapshot)
+    assert workers.outstanding_now("meter") == 14
+    assert workers.actionable_outstanding_now("meter") == 5
+    assert snapshot["queue"]["pending"] == 10
+    snapshot["queue_integrity"]["held_outstanding"] = 10000
+    assert workers.actionable_outstanding_now("meter") == 0
