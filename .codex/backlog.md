@@ -167,3 +167,9 @@
 - [x] PR #264 Squash Merge `d2b16f19a9703fc288850bb7855a3be331913704`; exact-head Codex Review zero Findings, real Hosted Windows NTFS 3.10/3.11, Linux E2E and secret scan PASS. Older phase 2g pending line superseded; self-hosted runner remains queued.
 - [ ] Phase 2h one-click local native NTFS **fixture-only** acceptance: latest-head Linux/Windows Hosted CI, secret scan, formal Codex Review with no unresolved P1/P2; explicit owner Merge authorization required.
 - [ ] Physical Windows operator NTFS and separately supervised SMB/live queue/SQL/ES sink acceptance remain unverified even if this launcher passes. Do not auto clean, retry or remove default Windows refusal/experimental review gate.
+
+## 2026-10-31 — accepted phase 2h and external phase 2i handoff
+
+- [x] PR #265 Squash Merged `1ecf13b235d47bd47868b49f3e431a6a9ab408db`: real Hosted Windows 2022 NTFS Python 3.10/3.11, exact-head Linux offline E2E and changed-line secret scan SUCCESS; formal Codex review latest HEAD `f49b968` zero findings/unresolved threads. Earlier phase 2h pending entries above are historical and superseded; do not reopen them.
+- [ ] **Issue #266 BLOCKED on operator machine:** run the merged offline one-click local Windows fixture acceptance and preserve only fixed-code, redacted evidence; local fixture status is NOT_VERIFIED until operator runs it. Hosted success is not operator NTFS/SMB acceptance.
+- [ ] Plan separately authorized, stopped-writer real Queue/NTFS and SMB/concurrent-writer experiments and credential-safe LLM/SQL/ES sink readback only after operator evidence. Never auto delete/replay, enable Windows default scanner or treat experimental exit 2 as production approval.
