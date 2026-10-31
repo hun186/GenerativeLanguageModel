@@ -1822,18 +1822,18 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
         # untracked globals before the later first-dispatch provenance write.
         # This is a read-only preflight for resume, smart_reset, full_restart.
         _extract_stage_provenance_fingerprint(stage_defs[0].task, ctx)
+        # Quarantine before split reconciliation, snapshot and any source
+        # generation work, not just full_restart cleanup. An incomplete item
+        # must not be modified by early stage preflight operations.
+        healthy, _count = _recover_items_isolated(
+            ctx, {item: {"pk": item} for item in prompt_items},
+        )
+        prompt_items[:] = healthy
+        if not healthy:
+            _require_recovery_integrity(ctx)
         # Full restart must first regenerate completed split branches from
         # the current source. Otherwise clearing Success loses their prompts.
         if resume_policy == "full_restart":
-            # The later resume-policy step would otherwise move stale RUNNING
-            # prompts into TODO *after* the fresh source prompts were staged,
-            # overwriting them via os.replace(). Recover the queue first.
-            healthy, _count = _recover_items_isolated(
-                ctx, {item: {"pk": item} for item in prompt_items},
-            )
-            prompt_items[:] = healthy
-            if not healthy:
-                _require_recovery_integrity(ctx)
             restored = _rebuild_full_restart_from_verified_source(
                 prompt_items, ctx, file_path, stage_defs[0],
             )
