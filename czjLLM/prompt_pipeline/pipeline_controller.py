@@ -113,6 +113,7 @@ from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     _to_todo,
     pick_and_claim_next_prompts,
     recover_running_to_todo,
+    requeue_running_no_clobber,
     require_no_pending_todo_sources,
     publish_success_text_no_clobber,
     QueueClaimRollbackError,
@@ -516,21 +517,19 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                         # 批次已被硬超時中止（或 watchdog 要求熱重啟）：
                         # 把仍卡在 RUNNING 的切片原子移回 TODO，並回補 meter，
                         # 下一輪可重新派工，不會永遠顯示 queue.running > 0。
-                        try:
-                            todo_dst = _to_todo(pf)
-                            os.replace(pf, todo_dst)
-                            # Only after the explicit timeout/restart requeue;
-                            # never infer retries from error text or basenames.
-                            try:
-                                record_queue_transition(todo_dst, "requeued", previous_path=pf)
-                            except Exception:
-                                pass
-                        except FileNotFoundError:
-                            pass
-                        except Exception as ex:
-                            tlog_warn(f"⚠️ RUNNING→TODO 退回失敗：{pf}: {ex}")
-                            still_running.append((pf, item))
-                            continue
+                        # A previous or concurrent producer may already have
+                        # created a *new* TODO with this basename. The legacy
+                        # os.replace silently destroyed that generation.
+                        # Reuse the same exclusive hardlink+unlink primitive as
+                        # ordinary RUNNING recovery; do not report requeue on
+                        # failed or incomplete filesystem transitions.
+                        if not requeue_running_no_clobber(pf):
+                            blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+                            if blocked is not None:
+                                blocked.set()
+                            raise QueueClaimRollbackError(
+                                "interrupted batch RUNNING requeue needs operator review"
+                            )
                         requeued.append((pf, item))
                     else:
                         # ✅ 仍在 RUNNING：表示這輪可能還沒寫完/或 job 卡住

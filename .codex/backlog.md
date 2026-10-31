@@ -173,3 +173,9 @@
 - [x] PR #265 Squash Merged `1ecf13b235d47bd47868b49f3e431a6a9ab408db`: real Hosted Windows 2022 NTFS Python 3.10/3.11, exact-head Linux offline E2E and changed-line secret scan SUCCESS; formal Codex review latest HEAD `f49b968` zero findings/unresolved threads. Earlier phase 2h pending entries above are historical and superseded; do not reopen them.
 - [ ] **Issue #266 BLOCKED on operator machine:** run the merged offline one-click local Windows fixture acceptance and preserve only fixed-code, redacted evidence; local fixture status is NOT_VERIFIED until operator runs it. Hosted success is not operator NTFS/SMB acceptance.
 - [ ] Plan separately authorized, stopped-writer real Queue/NTFS and SMB/concurrent-writer experiments and credential-safe LLM/SQL/ES sink readback only after operator evidence. Never auto delete/replay, enable Windows default scanner or treat experimental exit 2 as production approval.
+
+## 2026-10-31 — separate timeout/restart requeue integrity branch
+
+- [x] PR #267 doc-only project memory reconciliation Squash Merged on Hosted main `923d7b8d810aa243f4238c9efb3a9748a5e4579a`, latest head `cbd8df6` formal Codex zero Findings/Threads, Linux offline E2E, Windows Hosted NTFS 3.10/3.11, changed-line secret scan SUCCESS. Issue #266 operator acceptance stays pending.
+- [ ] **Independent development, not yet verified:** fix `llm_stream_consumer` timeout/restart batch return path using `os.replace(RUNNING, TODO)` despite existing no-clobber recovery contract. Protect new TODO generations, return a true requeue count/observation only after exclusive move, and terminally signal queue block on conflict; add actual consumer timeout and real-file tests. Exact-head Hosted CI, formal Codex Review, no unresolved Findings and owner risk evaluation before merge.
+- [ ] Operator Windows/SMB live and actual SQL/ES sink acknowledgement remain separately gated; no automatic queue deletion/replay or implicit safe-recovery claim.

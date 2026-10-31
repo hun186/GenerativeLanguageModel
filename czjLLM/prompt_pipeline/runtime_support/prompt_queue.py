@@ -251,6 +251,30 @@ def _ensure_in_todo(pf_any: str) -> str:
     return pf_any
 
 
+def requeue_running_no_clobber(pf_running: str) -> bool:
+    """Fail closed when restoring exactly one interrupted RUNNING source.
+
+    A timeout/restart is not permission to replace a new TODO generation.
+    A false result leaves RUNNING untouched (or retains hardlink evidence
+    after interrupted unlink), and the consumer must signal terminal block.
+    """
+    source = Path(pf_running)
+    if source.parent.name != "RUNNING":
+        return False
+    try:
+        target = Path(_to_todo(pf_running))
+    except (OSError, ValueError):
+        return False
+    if not _claim_regular_source_no_clobber(source, target):
+        return False
+    # Transition evidence only after the actual no-clobber move completes.
+    try:
+        record_queue_transition(target, "requeued", previous_path=source)
+    except Exception:
+        pass
+    return True
+
+
 def recover_running_to_todo(item_dirs):
     """
     將 RUNNING/* 移回 TODO/*，讓它們能被重新排程。
