@@ -210,35 +210,48 @@ def _queue_recovery_blocked(ctx):
     return getattr(ctx, "_queue_recovery_blocked_items", set())
 
 
-def _blocked_outstanding_file_count(item):
-    """Best-effort accounting ONLY for backpressure, never proof of success."""
-    count = 0
-    for role in ("TODO", "RUNNING"):
+def _blocked_queue_file_counts(item):
+    """Observational per-role counts; no inference of completed work."""
+    counts = {"pending": 0, "running": 0}
+    for role, field in (("TODO", "pending"), ("RUNNING", "running")):
         directory = Path(item) / role
         try:
             if directory.is_file():
-                count += 1
+                counts[field] += 1
             elif directory.is_dir():
-                count += sum(
+                counts[field] += sum(
                     path.is_file() or path.is_symlink()
                     for path in directory.rglob("*")
                 )
         except OSError:
-            # Unknown count is never used as recovery-completion evidence.
             pass
-    return count
+    return counts
 
 
 def _update_recovery_integrity_meter(ctx, meter_fn, items_map):
     if not meter_fn:
         return
     blocked = _queue_recovery_blocked(ctx)
-    held = sum(_blocked_outstanding_file_count(item) for item in blocked)
+    held_pending = held_running = 0
+    for item in blocked:
+        counts = _blocked_queue_file_counts(item)
+        held_pending += counts["pending"]
+        held_running += counts["running"]
     def update(d):
+        q = d.get("queue", {})
+        # Never count unmetered collision copies as a second held job.
+        accounted_pending = min(
+            held_pending, max(0, int(q.get("pending", 0) or 0))
+        )
+        accounted_running = min(
+            held_running, max(0, int(q.get("running", 0) or 0))
+        )
         d["queue_integrity"] = {
             "status": "incomplete" if blocked else "pending",
             "blocked_items": len(blocked),
-            "held_outstanding": held,
+            "held_pending": accounted_pending,
+            "held_running": accounted_running,
+            "held_outstanding": accounted_pending + accounted_running,
             "manual_review_required": bool(blocked),
             "operator_action_required": bool(
                 blocked & getattr(ctx, "_queue_recovery_alerted_items", set())
