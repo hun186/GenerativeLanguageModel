@@ -1341,3 +1341,37 @@ def test_late_healthy_producer_row_is_not_lost_after_initial_all_blocked(
     assert bad_todo.read_bytes() == b"different new generation"
     assert blocked.is_set()
     assert failures == ["CONSUMER_TERMINATED"]
+
+
+def test_recovery_supervisor_cli_rechecks_finitely_and_redacts_paths(
+    tmp_path, capsys
+):
+    from scripts.recheck_queue_recovery import main
+    item, running = _setup_running(tmp_path, b"PRIVATE_PAYLOAD")
+    marker = queue.mark_recovery_blocked(item, "TODO_CONFLICT", 1)
+    # Single-shot returns pending; a future-safe scheduler may invoke again.
+    code = main(["--item-dir", str(item)])
+    assert code == 1
+    out = capsys.readouterr().out
+    assert '"outcome": "cooldown"' in out
+    assert str(tmp_path) not in out
+    assert "PRIVATE_PAYLOAD" not in out
+    assert running.read_bytes() == b"PRIVATE_PAYLOAD"
+
+
+def test_recovery_supervisor_cli_operator_escalation_exit_code(tmp_path, capsys):
+    from scripts.recheck_queue_recovery import main
+    item, running = _setup_running(tmp_path)
+    marker = queue.mark_recovery_blocked(item, "TODO_CONFLICT", 1)
+    for n in range(queue.RECOVERY_RECHECK_MAX_CHECKS):
+        queue.recheck_blocked_recovery(
+            item,
+            now=marker["next_check_ts"] +
+            n * queue.RECOVERY_RECHECK_INTERVAL_SEC,
+        )
+    assert main(["--item-dir", str(item)]) == 2
+    output = capsys.readouterr().out
+    assert '"manual_review_required": true' in output
+    assert '"outcome": "operator_required"' in output
+    assert str(tmp_path) not in output
+    assert running.exists()
