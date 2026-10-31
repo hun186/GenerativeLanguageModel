@@ -1422,3 +1422,25 @@ def test_per_row_queue_receipts_follow_dispatch_and_completed_requeue():
     assert meter["rows"]["row"]["queue_running"] == 0
     assert meter["rows"]["row"]["done"] == 1
     assert meter["queue"] == {"pending": 1, "running": 0, "completed": 1}
+
+
+def test_missing_marker_does_not_silently_unblock_previous_failure(
+    tmp_path, monkeypatch
+):
+    item = tmp_path / "item"
+    item.mkdir()
+    ctx = SimpleNamespace(
+        _queue_recovery_blocked_items={str(item)},
+    )
+    meter = {"queue": {"pending": 0, "running": 0}, "rows": {}}
+    monkeypatch.setattr(
+        pc, "meter_update", lambda _p, fn: (fn(meter), meter)[1],
+    )
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a: None)
+    pc._recheck_blocked_items(
+        ctx, {str(item): {"pk": "item"}}, str(tmp_path / "meter"),
+    )
+    assert str(item) in ctx._queue_recovery_blocked_items
+    assert meter["queue_integrity"]["status"] == "incomplete"
+    assert meter["queue_integrity"]["operator_action_required"] is True
+    assert meter["rows"]["item"]["recovery_state"] == "operator_required"
