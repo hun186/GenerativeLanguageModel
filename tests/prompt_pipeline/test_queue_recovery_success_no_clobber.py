@@ -774,3 +774,253 @@ def test_repeated_success_ancestors_never_put_stage_inside_outer_success(
     ))
     assert Path(result).read_text(encoding="utf-8") == "one logical slice\n"
     assert len(list(orphan_dir.glob(".success-*.tmp"))) == 1
+
+
+def test_strict_enumeration_failure_cannot_pass_full_restart(tmp_path, monkeypatch):
+    """Codex P2: scandir errors must fail before Success is removed."""
+    item, running = _setup_running(tmp_path, b"protected interrupted source")
+    success = item / "Success" / "root.txt"
+    success.parent.mkdir()
+    success.write_bytes(b"old confirmed success")
+    real_scandir = queue.os.scandir
+
+    def deny_running(path):
+        if str(path) == str(running.parent):
+            raise PermissionError("simulated unreadable RUNNING")
+        return real_scandir(path)
+
+    monkeypatch.setattr(queue.os, "scandir", deny_running)
+    with pytest.raises(queue.QueueClaimRollbackError, match="enumeration incomplete"):
+        queue.recover_running_to_todo([str(item)], require_complete=True)
+    with pytest.raises(queue.QueueClaimRollbackError):
+        pc._apply_resume_policy_single_stage(
+            "full_restart", [str(item)], ops=None, ctx=None,
+        )
+    assert running.read_bytes() == b"protected interrupted source"
+    assert success.read_bytes() == b"old confirmed success"
+
+
+def test_strict_recovery_retries_temporary_error_then_succeeds(
+    tmp_path, monkeypatch
+):
+    item, running = _setup_running(tmp_path, b"actual source")
+    real_move = queue._claim_regular_source_no_clobber
+    called = []
+
+    def intermittent_move(src, dest):
+        called.append(1)
+        if len(called) < 3:
+            return False
+        return real_move(src, dest)
+
+    monkeypatch.setattr(queue, "_claim_regular_source_no_clobber",
+                        intermittent_move)
+    assert queue.recover_running_to_todo(
+        [str(item)], require_complete=True, retry_delay=0,
+    ) == 1
+    assert len(called) == 3
+    assert not running.exists()
+    assert (item / "TODO" / "root.txt").read_bytes() == b"actual source"
+
+
+def test_strict_recovery_retry_cap_preserves_source(tmp_path, monkeypatch):
+    item, running = _setup_running(tmp_path, b"untouched source")
+    attempts = []
+    monkeypatch.setattr(
+        queue, "_claim_regular_source_no_clobber",
+        lambda *_a: attempts.append(1) and False,
+    )
+    with pytest.raises(queue.QueueClaimRollbackError, match="incomplete"):
+        queue.recover_running_to_todo(
+            [str(item)], require_complete=True, retry_delay=0,
+        )
+    assert len(attempts) == queue.RECOVERY_MAX_ATTEMPTS == 3
+    assert running.read_bytes() == b"untouched source"
+    assert not (item / "TODO" / "root.txt").exists()
+
+
+def test_strict_recovery_conflict_does_not_waste_retries(tmp_path, monkeypatch):
+    item, running = _setup_running(tmp_path, b"first source")
+    todo = item / "TODO" / "root.txt"
+    todo.parent.mkdir()
+    todo.write_bytes(b"independent new source")
+    attempts = []
+    monkeypatch.setattr(
+        queue, "_claim_regular_source_no_clobber",
+        lambda *_a: attempts.append(1) and False,
+    )
+    with pytest.raises(queue.QueueClaimRollbackError, match="collision"):
+        queue.recover_running_to_todo([str(item)], require_complete=True,
+                                      retry_delay=0)
+    assert attempts == []
+    assert todo.read_bytes() == b"independent new source"
+    assert running.read_bytes() == b"first source"
+
+
+def test_isolation_persists_metadata_only_and_other_item_recovers(tmp_path):
+    item_bad, running_bad = _setup_running(
+        tmp_path / "bad", b"original conflicting source",
+    )
+    todo_bad = item_bad / "TODO" / "root.txt"
+    todo_bad.parent.mkdir()
+    todo_bad.write_bytes(b"new competing source")
+    item_good, running_good = _setup_running(
+        tmp_path / "good", b"healthy interruption",
+    )
+    ctx = SimpleNamespace()
+    mapping = {
+        str(item_bad): {"pk": "bad"}, str(item_good): {"pk": "good"},
+    }
+    healthy, requeued = pc._recover_items_isolated(ctx, mapping)
+    assert healthy == [str(item_good)]
+    assert requeued == 1
+    assert todo_bad.read_bytes() == b"new competing source"
+    assert running_bad.read_bytes() == b"original conflicting source"
+    assert not running_good.exists()
+    assert (item_good / "TODO" / "root.txt").read_bytes() == b"healthy interruption"
+    assert str(item_bad) in ctx._queue_recovery_blocked_items
+
+    marker = queue.read_recovery_status(str(item_bad))
+    assert marker["integrity"] == "incomplete"
+    assert marker["state"] == "blocked"
+    assert marker["code"] == "TODO_CONFLICT"
+    assert marker["manual_review_required"] is True
+    raw = queue.recovery_status_path(str(item_bad)).read_text(encoding="utf-8")
+    assert "original conflicting source" not in raw
+    assert "new competing source" not in raw
+    assert "root.txt" not in raw
+    assert str(tmp_path) not in raw
+    # A fresh process does not silently remove quarantine or retry the bad
+    # source, even though the healthy work in the same batch can continue.
+    new_ctx = SimpleNamespace()
+    healthy2, n2 = pc._recover_items_isolated(new_ctx, mapping)
+    assert healthy2 == [str(item_good)]
+    assert n2 == 0
+    assert str(item_bad) in new_ctx._queue_recovery_blocked_items
+
+
+def test_consumer_restart_isolates_bad_row_and_completes_healthy_row(
+    tmp_path, monkeypatch
+):
+    import threading
+
+    bad, bad_running = _setup_running(
+        tmp_path / "bad", b"old interrupted worker",
+    )
+    bad_todo = bad / "TODO" / "root.txt"
+    bad_todo.parent.mkdir()
+    bad_todo.write_bytes(b"new competing source")
+    good, good_running = _setup_running(
+        tmp_path / "good", b"good recoverable worker",
+    )
+    blocked_event, stop, restart = (threading.Event() for _ in range(3))
+    restart.set()
+    meter = {
+        "rows": {},
+        "queue": {"pending": 0, "running": 2, "completed": 0},
+    }
+    ctx = SimpleNamespace(
+        task=None, model_spec={}, PGMSubDir="", max_tokens=32,
+        stage_cfg=None, es_writeback_rules=[], sql_writeback_rules=[],
+        _queue_claim_blocked_event=blocked_event, mock_llm_mode=True,
+    )
+    registry = SimpleNamespace(list_items=lambda: {
+        str(bad): {"pk": "bad"}, str(good): {"pk": "good"},
+    })
+    failures = []
+    rounds = []
+
+    monkeypatch.setattr(pc, "resolve_pipeline_stages", lambda *_a, **_k: [])
+    monkeypatch.setattr(pc, "_stage_cfg_declares_flow", lambda *_a, **_k: False)
+    monkeypatch.setattr(pc, "PromptAPIPipeline", lambda **kw: SimpleNamespace(**kw))
+    monkeypatch.setattr(pc, "_llm_call_audit_kwargs", lambda *_a, **_k: {})
+    monkeypatch.setattr(pc, "tlog", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "_audit_consumer_orchestration_failure",
+                        lambda _ctx, code: failures.append(code))
+    monkeypatch.setattr(pc, "meter_read", lambda *_a, **_k: meter)
+
+    def update(_path, mutator):
+        mutator(meter)
+        return meter
+
+    monkeypatch.setattr(pc, "meter_update", update)
+
+    def real_offline_round(_ctx, jobs):
+        assert len(jobs) == 1
+        current = jobs[0].promptFile
+        rounds.append(current)
+        assert current == str(good_running)
+        queue.publish_success_text_no_clobber(
+            str(good / "Success" / "root.txt"), "good completed output",
+        )
+        good_running.unlink()
+        return [{"ok": True, "prompt_file": current}]
+
+    monkeypatch.setattr(pc, "_run_legacy_leaf_round", real_offline_round)
+
+    pc.llm_stream_consumer(
+        ctx, registry, str(tmp_path / "loadmeter.json"),
+        stop, restart, per_round_limit=10,
+    )
+    assert len(rounds) == 1
+    assert (good / "Success" / "root.txt").read_text() == "good completed output"
+    assert not good_running.exists()
+    assert bad_running.read_bytes() == b"old interrupted worker"
+    assert bad_todo.read_bytes() == b"new competing source"
+    assert meter["rows"]["bad"]["status"] == "blocked_recovery"
+    assert meter["rows"]["bad"]["integrity"] == "incomplete"
+    assert meter["queue_integrity"]["status"] == "incomplete"
+    assert meter["queue_integrity"]["blocked_items"] == 1
+    assert meter["queue"]["completed"] == 1
+    assert blocked_event.is_set() and not stop.is_set()
+    assert failures == ["CONSUMER_TERMINATED"]
+
+
+def test_blocked_item_cannot_write_back_even_with_cached_combined_output(
+    tmp_path
+):
+    from czjLLM.sql_mode.runtime.row_merger_generic import (
+        _all_slices_done, _recovery_item_blocked,
+    )
+    item = tmp_path / "item"
+    (item / "TODO").mkdir(parents=True)
+    success = item / "Success" / "root.txt"
+    success.parent.mkdir()
+    success.write_text("already merged output", encoding="utf-8")
+    assert _all_slices_done(str(item)) is True
+    queue.mark_recovery_blocked(str(item), "TODO_CONFLICT", 1)
+    assert _recovery_item_blocked(str(item)) is True
+    assert _all_slices_done(str(item)) is False
+
+
+def test_partial_full_restart_only_cleans_healthy_items_then_reports_incomplete(
+    tmp_path
+):
+    bad, bad_running = _setup_running(
+        tmp_path / "bad", b"unrecoverable worker",
+    )
+    bad_todo = bad / "TODO" / "root.txt"
+    bad_todo.parent.mkdir()
+    bad_todo.write_bytes(b"competing pending")
+    bad_success = bad / "Success" / "root.txt"
+    bad_success.parent.mkdir()
+    bad_success.write_bytes(b"protected successful output")
+    good = tmp_path / "good" / "item"
+    (good / "TODO").mkdir(parents=True)
+    good_success = good / "Success" / "root.txt"
+    good_success.parent.mkdir()
+    good_success.write_bytes(b"old success to reset")
+    ctx = SimpleNamespace()
+    paths = [str(bad), str(good)]
+    from czjLLM.prompt_pipeline.pipeline_controller import MergeOps
+    pc._apply_resume_policy_single_stage(
+        "full_restart", paths, MergeOps(), ctx=ctx,
+    )
+    assert paths == [str(good)]
+    assert bad_running.read_bytes() == b"unrecoverable worker"
+    assert bad_todo.read_bytes() == b"competing pending"
+    assert bad_success.read_bytes() == b"protected successful output"
+    assert not good_success.exists()
+    with pytest.raises(queue.QueueClaimRollbackError, match="incomplete"):
+        pc._require_recovery_integrity(ctx)
