@@ -240,6 +240,9 @@ def _update_recovery_integrity_meter(ctx, meter_fn, items_map):
             "blocked_items": len(blocked),
             "held_outstanding": held,
             "manual_review_required": bool(blocked),
+            "operator_action_required": bool(
+                blocked & getattr(ctx, "_queue_recovery_alerted_items", set())
+            ),
             "healthy_items_may_continue": True,
         }
     meter_update(meter_fn, update)
@@ -283,14 +286,17 @@ def _recheck_blocked_items(ctx, items_map, meter_fn):
         elif outcome == "operator_required" and item not in alerted:
             alerted.add(item)
             try:
+                tlog_warn("[queue-recovery] OPERATOR ACTION REQUIRED; "
+                          "source retained, no forced replay")
+            except Exception:
+                pass
+            try:
                 emit_quality_event(
                     getattr(ctx, "llm_call_audit_path", ""),
                     run_id=getattr(ctx, "llm_call_audit_run_id", ""),
                     event="queue_recovery", code="OPERATOR_ACTION_REQUIRED",
                     scope="run", outcome="incomplete",
                 )
-                tlog_warn("[queue-recovery] OPERATOR ACTION REQUIRED; "
-                          "source retained, no forced replay")
             except Exception:
                 pass
         if meter_fn:
