@@ -334,7 +334,7 @@ def recovery_status_path(item_dir):
 def read_recovery_status(item_dir):
     """Read opaque recovery state; corrupt/aliased records fail closed."""
     path = recovery_status_path(item_dir)
-    if path.is_symlink() or path.parent.is_symlink():
+    if any(part.is_symlink() for part in (path, *path.parents)):
         raise QueueClaimRollbackError("unsafe recovery status marker")
     try:
         # FIFO/device entries can block forever on ordinary path.open().
@@ -376,7 +376,7 @@ def mark_recovery_blocked(item_dir, code, attempts):
     }:
         raise ValueError("invalid recovery status code")
     path = recovery_status_path(item_dir)
-    if path.is_symlink() or path.parent.is_symlink():
+    if any(part.is_symlink() for part in (path, *path.parents)):
         raise QueueClaimRollbackError("unsafe recovery status directory")
     if path.exists():
         # Existing operator hold must not be silently overwritten/released.
