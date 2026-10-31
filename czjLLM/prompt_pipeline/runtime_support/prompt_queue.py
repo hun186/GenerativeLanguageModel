@@ -463,7 +463,8 @@ def recheck_blocked_recovery(item_dir, *, now=None, interval=RECOVERY_RECHECK_IN
         return {"outcome": "cooldown", "checks": count}
     proof = record.get("source_fingerprint")
     matched = False
-    if (record["code"] == "RECOVERY_RETRIES_EXHAUSTED"
+    if (os.name == "posix" and hasattr(os, "O_NOFOLLOW")
+            and record["code"] == "RECOVERY_RETRIES_EXHAUSTED"
             and isinstance(proof, str) and len(proof) == 64):
         run = Path(item_dir) / "RUNNING"
         try:
