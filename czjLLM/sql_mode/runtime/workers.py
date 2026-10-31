@@ -140,6 +140,18 @@ def progress_drain(stop_event, done_q, p_done, gui=None, close_event=None):
         try: tlog("[drain] loop exited")
         except Exception: pass
 
+def actionable_outstanding_now(meter_fn: str) -> int:
+    """Backpressure excludes held sources; raw queue meters remain unchanged.
+
+    Held counts are observational only and NEVER proof of completion.
+    """
+    m = meter_read(meter_fn)
+    q = m.get("queue", {})
+    raw = max(0, int(q.get("pending", 0) or 0) + int(q.get("running", 0) or 0))
+    held = max(0, int(m.get("queue_integrity", {}).get("held_outstanding", 0) or 0))
+    return max(0, raw - min(raw, held))
+
+
 def outstanding_now(meter_fn: str) -> int:
     m = meter_read(meter_fn)
     return m["queue"]["pending"] + m["queue"]["running"]
