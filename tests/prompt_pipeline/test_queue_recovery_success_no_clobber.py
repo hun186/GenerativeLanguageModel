@@ -111,6 +111,89 @@ def test_real_consumer_timeout_collision_is_terminal_without_overwrite(
     }
 
 
+def test_strict_restart_recovery_blocks_collision_without_overwrite(tmp_path):
+    item, running = _setup_running(tmp_path, b"older running source")
+    target = item / "TODO" / "root.txt"
+    target.parent.mkdir()
+    target.write_bytes(b"fresh TODO from another producer")
+    with pytest.raises(queue.QueueClaimRollbackError, match="recovery incomplete"):
+        queue.recover_running_to_todo([str(item)], require_complete=True)
+    assert target.read_bytes() == b"fresh TODO from another producer"
+    assert running.read_bytes() == b"older running source"
+    assert summarize_queue_observations(item)["observed_requeues"] == 0
+
+
+def test_strict_restart_recovery_reports_partial_moves_and_blocks(tmp_path):
+    item, _ = _setup_running(tmp_path, b"first source")
+    running_dir = item / "RUNNING"
+    second = running_dir / "second.txt"
+    second.write_bytes(b"second source")
+    existing = item / "TODO" / "second.txt"
+    existing.parent.mkdir()
+    existing.write_bytes(b"newer second source")
+    with pytest.raises(queue.QueueClaimRollbackError):
+        queue.recover_running_to_todo([str(item)], require_complete=True)
+    # The first source may be moved before detecting the second collision;
+    # no existing TODO may be overwritten and the caller must stop.
+    assert existing.read_bytes() == b"newer second source"
+    assert second.read_bytes() == b"second source"
+
+
+@pytest.mark.parametrize("policy_call", [
+    "_apply_resume_policy_multistage",
+    "_apply_resume_policy_single_stage",
+])
+def test_full_restart_aborts_before_success_deletion_on_recovery_conflict(
+    tmp_path, policy_call
+):
+    item, running = _setup_running(tmp_path, b"unrecovered source")
+    todo = item / "TODO" / "root.txt"
+    todo.parent.mkdir()
+    todo.write_bytes(b"new TODO")
+    success = item / "Success" / "root.txt"
+    success.parent.mkdir()
+    success.write_bytes(b"old successful output")
+    fn = getattr(pc, policy_call)
+    # The strict recovery guard must run before policy-specific cleanup.
+    with pytest.raises(queue.QueueClaimRollbackError):
+        fn("full_restart", [str(item)], ops=None)
+    assert running.read_bytes() == b"unrecovered source"
+    assert todo.read_bytes() == b"new TODO"
+    assert success.read_bytes() == b"old successful output"
+
+
+def test_consumer_restart_conflict_marks_terminal_block(tmp_path, monkeypatch):
+    import threading
+
+    item, running = _setup_running(tmp_path, b"running existing")
+    todo = item / "TODO" / "root.txt"
+    todo.parent.mkdir()
+    todo.write_bytes(b"new pending")
+    blocked, stop, restart = (threading.Event() for _ in range(3))
+    restart.set()
+    ctx = SimpleNamespace(
+        stage_cfg=None, es_writeback_rules=[], sql_writeback_rules=[],
+        _queue_claim_blocked_event=blocked,
+    )
+    registry = SimpleNamespace(list_items=lambda: {str(item): {"pk": "one"}})
+    failures = []
+    monkeypatch.setattr(pc, "resolve_pipeline_stages", lambda *_a, **_k: [])
+    monkeypatch.setattr(pc, "_stage_cfg_declares_flow", lambda *_a, **_k: False)
+    monkeypatch.setattr(pc, "meter_update", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "tlog", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "_audit_consumer_orchestration_failure",
+                        lambda _ctx, code: failures.append(code))
+
+    pc.llm_stream_consumer(ctx, registry, str(tmp_path / "meter"), stop, restart)
+    assert blocked.is_set()
+    assert not stop.is_set() and not restart.is_set()
+    assert failures == ["CONSUMER_TERMINATED"]
+    assert todo.read_bytes() == b"new pending"
+    assert running.read_bytes() == b"running existing"
+    assert summarize_queue_observations(item)["observed_requeues"] == 0
+
+
 def test_existing_todo_is_never_replaced_by_recovery(tmp_path):
     item, running = _setup_running(tmp_path, b"running generation")
     todo = item / "TODO"
