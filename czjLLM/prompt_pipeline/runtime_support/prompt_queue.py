@@ -5,6 +5,7 @@ import stat
 import tempfile
 import time
 import json
+import hashlib
 from collections import Counter
 from pathlib import Path
 
@@ -292,6 +293,8 @@ def requeue_running_no_clobber(pf_running: str) -> bool:
 RECOVERY_MAX_ATTEMPTS = 3
 RECOVERY_RETRY_DELAY_SEC = 0.05
 RECOVERY_MARKER_NAME = "queue_recovery_status.json"
+RECOVERY_RECHECK_INTERVAL_SEC = 30
+RECOVERY_RECHECK_MAX_CHECKS = 5
 
 
 def _strict_running_files(run: Path):
@@ -327,6 +330,42 @@ def _strict_running_files(run: Path):
     return sorted(files, key=str)
 
 
+
+def _recovery_fingerprint(root, role):
+    """One regular source only; no source bytes/names persisted.
+
+    This is identity evidence, NOT proof an old worker exited. It may
+    validate an ALREADY completed external RUNNING-to-TODO move; it never
+    authorizes moving or replaying RUNNING automatically.
+    """
+    base = Path(root) / role
+    if any(p.is_symlink() for p in (base, *base.parents)):
+        return None
+    try:
+        info = base.lstat()
+    except FileNotFoundError:
+        return None
+    if not stat.S_ISDIR(info.st_mode):
+        return None
+    try:
+        files = _strict_running_files(base)
+        if len(files) != 1:
+            return None
+        file = files[0]
+        st = file.lstat()
+        if not stat.S_ISREG(st.st_mode) or st.st_nlink != 1:
+            return None
+        rel = file.relative_to(base)
+        if (Path(root) / "Success" / file.name).exists():
+            return None
+        parts = (str(rel), st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns)
+        return hashlib.sha256(
+            json.dumps(parts, ensure_ascii=True).encode("utf-8")
+        ).hexdigest()
+    except (OSError, ValueError, QueueClaimRollbackError):
+        return None
+
+
 def recovery_status_path(item_dir):
     return Path(item_dir) / "_extract_slice_identity" / RECOVERY_MARKER_NAME
 
@@ -358,12 +397,16 @@ def read_recovery_status(item_dir):
     except (OSError, ValueError, TypeError) as exc:
         raise QueueClaimRollbackError("unreadable recovery status marker") from exc
     if (not isinstance(record, dict) or record.get("version") != 1
-            or record.get("integrity") != "incomplete"
-            or record.get("state") != "blocked"
             or record.get("code") not in {
                 "TODO_CONFLICT", "UNSAFE_QUEUE_ENTRY", "RECOVERY_RETRIES_EXHAUSTED",
                 "RECOVERY_SCAN_INCOMPLETE",
             }):
+        raise QueueClaimRollbackError("invalid recovery status marker")
+    if (record.get("state"), record.get("integrity")) == ("recovered", "pending"):
+        if record.get("resolution") != "VERIFIED_EXISTING_TODO":
+            raise QueueClaimRollbackError("invalid auto-recovery evidence")
+        return None
+    if (record.get("state"), record.get("integrity")) != ("blocked", "incomplete"):
         raise QueueClaimRollbackError("invalid recovery status marker")
     return record
 
@@ -387,9 +430,75 @@ def mark_recovery_blocked(item_dir, code, attempts):
         "code": code, "attempts": int(attempts),
         "manual_review_required": True,
         "source_files_modified_by_quarantine": False,
+        "first_seen_ts": time.time(),
+        "next_check_ts": time.time() + RECOVERY_RECHECK_INTERVAL_SEC,
+        "recheck_count": 0,
+        "recheck_state": "scheduled",
+        "source_fingerprint": (
+            _recovery_fingerprint(item_dir, "RUNNING")
+            if code == "RECOVERY_RETRIES_EXHAUSTED" else None
+        ),
     }
     atomic_write_json(str(path), record)
     return record
+
+
+def recheck_blocked_recovery(item_dir, *, now=None, interval=RECOVERY_RECHECK_INTERVAL_SEC,
+                             max_checks=RECOVERY_RECHECK_MAX_CHECKS):
+    """Finite passive checks; auto-clear only for identical existing TODO inode.
+
+    Never invokes LLM, deletes Success or replays RUNNING. After the finite
+    budget, a durable operator alert remains. No prompt payload persisted.
+    """
+    if max_checks < 1 or max_checks > RECOVERY_RECHECK_MAX_CHECKS or interval < 1:
+        raise ValueError("invalid recheck budget")
+    record = read_recovery_status(item_dir)
+    if record is None:
+        return {"outcome": "clear", "checks": 0}
+    now = time.time() if now is None else float(now)
+    count = int(record.get("recheck_count", 0))
+    if count >= max_checks or record.get("recheck_state") == "operator_required":
+        return {"outcome": "operator_required", "checks": count}
+    if now < float(record.get("next_check_ts", 0)):
+        return {"outcome": "cooldown", "checks": count}
+    proof = record.get("source_fingerprint")
+    matched = False
+    if (record["code"] == "RECOVERY_RETRIES_EXHAUSTED"
+            and isinstance(proof, str) and len(proof) == 64):
+        run = Path(item_dir) / "RUNNING"
+        try:
+            run_empty = run.is_dir() and not _strict_running_files(run)
+        except (OSError, ValueError, QueueClaimRollbackError):
+            run_empty = False
+        matched = run_empty and _recovery_fingerprint(item_dir, "TODO") == proof
+    count += 1
+    record["recheck_count"] = count
+    if matched:
+        # Two cooldown-spaced observations prevent a one-scan false clear.
+        if record.get("recheck_state") == "candidate":
+            record.update({
+                "state": "recovered", "integrity": "pending",
+                "resolution": "VERIFIED_EXISTING_TODO",
+                "manual_review_required": False, "recheck_state": "resolved",
+                "last_check_ts": now, "next_check_ts": 0,
+            })
+            outcome = "recovered"
+        else:
+            record["recheck_state"] = "candidate"
+            outcome = "candidate"
+    else:
+        record["recheck_state"] = "scheduled"
+        outcome = "waiting"
+    if outcome != "recovered" and count >= max_checks:
+        record["recheck_state"] = "operator_required"
+        record["manual_review_required"] = True
+        record["alert_state"] = "operator_required"
+        outcome = "operator_required"
+    record["last_check_ts"] = now
+    if outcome != "recovered":
+        record["next_check_ts"] = now + interval
+    atomic_write_json(str(recovery_status_path(item_dir)), record)
+    return {"outcome": outcome, "checks": count}
 
 
 def recover_running_to_todo(item_dirs, *, require_complete=False,
