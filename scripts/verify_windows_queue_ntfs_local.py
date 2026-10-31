@@ -130,7 +130,18 @@ def _run_suite(relative_path: str) -> tuple[bool, dict]:
                             elif "WINDOWS_NATIVE_RACE_TEST_NOT_EXERCISED" in raw:
                                 failure_codes.append("RACE_NOT_EXERCISED")
                             else:
-                                failure_codes.append("TEST_CASE_FAILED")
+                                marker_codes = (
+                                    ("WINDOWS_JUNCTION_SCAN_INCOMPLETE", "JUNCTION_SCAN_INCOMPLETE"),
+                                    ("WINDOWS_JUNCTION_UNSAFE_COUNT", "JUNCTION_UNSAFE_COUNT"),
+                                    ("WINDOWS_JUNCTION_TODO_COUNT", "JUNCTION_TODO_COUNT"),
+                                    ("WINDOWS_JUNCTION_CODE_MISSING", "JUNCTION_CODE_MISSING"),
+                                    ("WINDOWS_JUNCTION_REPORT_LEAK", "JUNCTION_REPORT_LEAK"),
+                                    ("WINDOWS_JUNCTION_TARGET_CHANGED", "JUNCTION_TARGET_CHANGED"),
+                                    ("WINDOWS_JUNCTION_CLEANUP_FAILED", "JUNCTION_CLEANUP_FAILED"),
+                                )
+                                failure_codes.append(next((
+                                    code for needle, code in marker_codes if needle in raw
+                                ), "TEST_CASE_FAILED"))
             except (ET.ParseError, OSError):
                 return False, {"code": "JUNIT_INVALID"}
             detail = {

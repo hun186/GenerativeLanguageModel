@@ -164,15 +164,17 @@ def test_real_ntfs_child_junction_is_counted_but_never_traversed(tmp_path):
     _junction(junction, external)
     try:
         result = _inspect(item)
-        assert result["scan_complete"]
-        assert result["counts"]["unsafe_entries"] == 1
-        assert result["counts"]["todo_files"] == 0
-        assert "UNSAFE_ENTRY_PRESENT" in result["codes"]
-        assert "PRIVATE_OUTSIDE" not in json.dumps(result)
-        assert secret.read_bytes() == b"PRIVATE_OUTSIDE_DATA"
+        assert result["scan_complete"], "WINDOWS_JUNCTION_SCAN_INCOMPLETE"
+        assert result["counts"]["unsafe_entries"] == 1, "WINDOWS_JUNCTION_UNSAFE_COUNT"
+        assert result["counts"]["todo_files"] == 0, "WINDOWS_JUNCTION_TODO_COUNT"
+        assert "UNSAFE_ENTRY_PRESENT" in result["codes"], "WINDOWS_JUNCTION_CODE_MISSING"
+        assert "PRIVATE_OUTSIDE" not in json.dumps(result), "WINDOWS_JUNCTION_REPORT_LEAK"
+        assert secret.read_bytes() == b"PRIVATE_OUTSIDE_DATA", "WINDOWS_JUNCTION_TARGET_CHANGED"
     finally:
-        os.rmdir(junction)
-
+        try:
+            os.rmdir(junction)
+        except OSError:
+            pytest.fail("WINDOWS_JUNCTION_CLEANUP_FAILED", pytrace=False)
 
 def test_junction_setup_handles_shell_metacharacters_without_expansion(tmp_path):
     special = tmp_path / "A&B_%TEMP%_^_!_$"

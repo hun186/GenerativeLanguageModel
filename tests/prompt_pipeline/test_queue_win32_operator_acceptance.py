@@ -167,3 +167,21 @@ def test_explicit_junction_failure_marker_is_categorized_without_raw_text(monkey
     assert detail["failure_codes"] == ["JUNCTION_SETUP_FAILED"]
     assert "private" not in json.dumps(detail)
     assert "secret" not in json.dumps(detail)
+
+def test_known_junction_scan_marker_redacted(monkeypatch):
+    def fake_run(args, **kwargs):
+        xml = Path(args[args.index("--junitxml") + 1])
+        xml.write_text(
+            '<testsuite><testcase name="secret-path">'
+            '<failure message="AssertionError: WINDOWS_JUNCTION_SCAN_INCOMPLETE">'
+            'D:/private/secret</failure></testcase></testsuite>',
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(args, 1)
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_run)
+    passed, detail = probe._run_suite(probe.SUITES[2][1])
+    assert not passed
+    assert detail["failure_codes"] == ["JUNCTION_SCAN_INCOMPLETE"]
+    assert "private" not in json.dumps(detail)
+    assert "secret-path" not in json.dumps(detail)
