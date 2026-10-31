@@ -266,6 +266,9 @@ def _recheck_blocked_items(ctx, items_map, meter_fn):
         # blocked in-memory row. Only the verified persisted transition from
         # blocked -> recovered/pending may release its quarantine.
         if outcome == "clear":
+            # Missing state was never proof of safety. Persist an opaque hold
+            # again so the next process cannot silently forget it either.
+            mark_recovery_blocked(item, "UNSAFE_QUEUE_ENTRY", 1)
             outcome = "operator_required"
         if outcome == "recovered":
             blocked.discard(item)
