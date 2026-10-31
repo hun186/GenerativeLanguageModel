@@ -185,3 +185,21 @@ def test_known_junction_scan_marker_redacted(monkeypatch):
     assert detail["failure_codes"] == ["JUNCTION_SCAN_INCOMPLETE"]
     assert "private" not in json.dumps(detail)
     assert "secret-path" not in json.dumps(detail)
+
+def test_unknown_junit_failure_type_is_not_exposed(monkeypatch):
+    def fake_run(args, **kwargs):
+        xml = Path(args[args.index("--junitxml") + 1])
+        xml.write_text(
+            '<testsuite><testcase name="secret">'
+            '<failure type="FileNotFoundError" message="PRIVATE_PATH">'
+            'C:/sensitive/filename</failure></testcase></testsuite>',
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(args, 1)
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_run)
+    passed, detail = probe._run_suite(probe.SUITES[2][1])
+    assert not passed
+    assert detail["failure_codes"] == ["FILE_NOT_FOUND_EXCEPTION"]
+    assert "PRIVATE_PATH" not in json.dumps(detail)
+    assert "filename" not in json.dumps(detail)

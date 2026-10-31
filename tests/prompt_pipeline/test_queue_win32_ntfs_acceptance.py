@@ -35,7 +35,8 @@ def _item(tmp_path):
 
 def _junction(link: Path, target: Path):
     """Create test-only junction with encoded data, never cmd.exe shell text."""
-    assert not link.exists() and target.is_dir()
+    assert not link.exists(), "WINDOWS_JUNCTION_PREEXISTING"
+    assert target.is_dir(), "WINDOWS_JUNCTION_TARGET_MISSING"
     # cmd.exe parses '&', '^', '%NAME%' even when Python is given a list.
     # Transport the paths only as JSON encoded to Base64, inside an encoded
     # PowerShell script. The script contains NO user-controlled path strings.
@@ -51,14 +52,25 @@ def _junction(link: Path, target: Path):
         "-Target $paths.target -ErrorAction Stop | Out-Null"
     )
     command = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
-    result = subprocess.run(
-        ["powershell.exe", "-NoProfile", "-NonInteractive",
-         "-EncodedCommand", command],
-        capture_output=True, text=True, timeout=25,
-    )
+    # Resolve system-owned PowerShell without dependence on a user-controlled
+    # or heavily sanitized PATH in operator fixture subprocesses.
+    system_root = os.environ.get("SystemRoot")
+    if not system_root:
+        pytest.fail("WINDOWS_JUNCTION_SYSTEM_ROOT_MISSING", pytrace=False)
+    pwsh = Path(system_root) / "System32" / "WindowsPowerShell" / "v1.0" / "powershell.exe"
+    if not pwsh.is_file():
+        pytest.fail("WINDOWS_JUNCTION_SHELL_MISSING", pytrace=False)
+    try:
+        result = subprocess.run(
+            [str(pwsh), "-NoProfile", "-NonInteractive",
+             "-EncodedCommand", command],
+            capture_output=True, text=True, timeout=25,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        pytest.fail("WINDOWS_JUNCTION_SHELL_LAUNCH_FAILED", pytrace=False)
     # Missing junction privileges/API must FAIL acceptance, never be skipped.
     assert result.returncode == 0, "WINDOWS_JUNCTION_SETUP_FAILED"
-    assert link.is_dir()
+    assert link.is_dir(), "WINDOWS_JUNCTION_LINK_NOT_DIRECTORY"
 
 
 def _handle_count():

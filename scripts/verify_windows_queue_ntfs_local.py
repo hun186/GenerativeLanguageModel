@@ -138,10 +138,26 @@ def _run_suite(relative_path: str) -> tuple[bool, dict]:
                                     ("WINDOWS_JUNCTION_REPORT_LEAK", "JUNCTION_REPORT_LEAK"),
                                     ("WINDOWS_JUNCTION_TARGET_CHANGED", "JUNCTION_TARGET_CHANGED"),
                                     ("WINDOWS_JUNCTION_CLEANUP_FAILED", "JUNCTION_CLEANUP_FAILED"),
+                                    ("WINDOWS_JUNCTION_PREEXISTING", "JUNCTION_PREEXISTING"),
+                                    ("WINDOWS_JUNCTION_TARGET_MISSING", "JUNCTION_TARGET_MISSING"),
+                                    ("WINDOWS_JUNCTION_SYSTEM_ROOT_MISSING", "JUNCTION_SYSTEM_ROOT_MISSING"),
+                                    ("WINDOWS_JUNCTION_SHELL_MISSING", "JUNCTION_SHELL_MISSING"),
+                                    ("WINDOWS_JUNCTION_SHELL_LAUNCH_FAILED", "JUNCTION_SHELL_LAUNCH_FAILED"),
+                                    ("WINDOWS_JUNCTION_LINK_NOT_DIRECTORY", "JUNCTION_LINK_NOT_DIRECTORY"),
                                 )
-                                failure_codes.append(next((
+                                diagnostic = next((
                                     code for needle, code in marker_codes if needle in raw
-                                ), "TEST_CASE_FAILED"))
+                                ), None)
+                                if diagnostic is None:
+                                    kind = (node.get("type") or "").split(".")[-1]
+                                    diagnostic = {
+                                        "FileNotFoundError": "FILE_NOT_FOUND_EXCEPTION",
+                                        "PermissionError": "PERMISSION_EXCEPTION",
+                                        "OSError": "OS_ERROR_EXCEPTION",
+                                        "TimeoutExpired": "TIMEOUT_EXCEPTION",
+                                        "AssertionError": "UNMARKED_ASSERTION",
+                                    }.get(kind, "TEST_CASE_FAILED")
+                                failure_codes.append(diagnostic)
             except (ET.ParseError, OSError):
                 return False, {"code": "JUNIT_INVALID"}
             detail = {
