@@ -150,3 +150,7 @@
 ### 2026-10-31 — Third Codex P2 on safe diagnostic marker
 
 - A full-path recovery marker read could follow symlinked item ancestors ahead of descriptor-anchored inspection. Revised read-only inspector uses the already pinned item fd and nofollow relative opens; unsupported Windows remains unverified. Runtime marker read/write also rejects aliased ancestors. Added external symlink-ancestor tests. Pending exact-head CI and formal re-review, no operator approval to merge.
+
+### 2026-10-31 — Fourth Codex P2 fixes still pending CI
+
+- Typed `QueueClaimRollbackError` now covers strict destination mkdir failures so an invalid TODO directory only quarantines that item and healthy items continue. Fixed symlink-ancestor diagnostic regression to preserve the already verified `os.supports_dir_fd` result while instrumenting `os.open`. Added real-file bad-TODO/healthy-item regression. Not yet exact-head CI or review accepted; do not merge.
