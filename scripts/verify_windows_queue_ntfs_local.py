@@ -144,6 +144,9 @@ def _run_suite(relative_path: str) -> tuple[bool, dict]:
                                     ("WINDOWS_JUNCTION_SHELL_MISSING", "JUNCTION_SHELL_MISSING"),
                                     ("WINDOWS_JUNCTION_SHELL_LAUNCH_FAILED", "JUNCTION_SHELL_LAUNCH_FAILED"),
                                     ("WINDOWS_JUNCTION_LINK_NOT_DIRECTORY", "JUNCTION_LINK_NOT_DIRECTORY"),
+                                    ("WINDOWS_JUNCTION_NATIVE_PATH_TOO_LONG", "JUNCTION_NATIVE_PATH_TOO_LONG"),
+                                    ("WINDOWS_JUNCTION_NATIVE_OPEN_FAILED", "JUNCTION_NATIVE_OPEN_FAILED"),
+                                    ("WINDOWS_JUNCTION_NATIVE_SET_FAILED", "JUNCTION_NATIVE_SET_FAILED"),
                                 )
                                 diagnostic = next((
                                     code for needle, code in marker_codes if needle in raw

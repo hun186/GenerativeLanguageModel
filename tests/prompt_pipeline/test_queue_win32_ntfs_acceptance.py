@@ -5,7 +5,7 @@ They use no application credentials, production inputs, LLM, SQL or ES.
 """
 from __future__ import annotations
 
-import base64
+import struct
 import ctypes
 from ctypes import wintypes
 import json
@@ -33,45 +33,78 @@ def _item(tmp_path):
     return item
 
 
+def _junction_buffer(target_path: str) -> bytes:
+    """Microsoft mount-point reparse buffer, no command shell or expansion.
+
+    Only called with a disposable test target. The actual path never enters
+    a report, log, assertion message or the operator output.
+    """
+    # SubstituteName is an NT absolute path; both lengths exclude NUL.
+    substitute = ("\\??\\" + target_path).encode("utf-16-le")
+    printed = target_path.encode("utf-16-le")
+    path_buffer = substitute + b"\x00\x00" + printed + b"\x00\x00"
+    # REPARSE_DATA_BUFFER: common 8-byte header, 8-byte mount-point fields.
+    data_length = 8 + len(path_buffer)
+    if data_length > 16_000:
+        pytest.fail("WINDOWS_JUNCTION_NATIVE_PATH_TOO_LONG", pytrace=False)
+    return struct.pack(
+        "<IHHHHHH", 0xA0000003, data_length, 0,
+        0, len(substitute), len(substitute) + 2, len(printed),
+    ) + path_buffer
+
+
 def _junction(link: Path, target: Path):
-    """Create test-only junction with encoded data, never cmd.exe shell text."""
+    """Create a disposable NTFS Junction using Win32, never a subprocess.
+
+    No PowerShell, cmd.exe, PATH search or inherited environment is needed.
+    Failure is an acceptance failure with a fixed code; never skip silently.
+    """
     assert not link.exists(), "WINDOWS_JUNCTION_PREEXISTING"
     assert target.is_dir(), "WINDOWS_JUNCTION_TARGET_MISSING"
-    # cmd.exe parses '&', '^', '%NAME%' even when Python is given a list.
-    # Transport the paths only as JSON encoded to Base64, inside an encoded
-    # PowerShell script. The script contains NO user-controlled path strings.
-    data = base64.b64encode(json.dumps({
-        "link": str(link), "target": str(target),
-    }).encode("utf-8")).decode("ascii")
-    script = (
-        "$ErrorActionPreference='Stop';"
-        "$payload=[Text.Encoding]::UTF8.GetString("
-        f"[Convert]::FromBase64String('{data}'));"
-        "$paths=ConvertFrom-Json -InputObject $payload;"
-        "New-Item -ItemType Junction -Path $paths.link "
-        "-Target $paths.target -ErrorAction Stop | Out-Null"
+    target_absolute = str(target.resolve(strict=True))
+    link.mkdir()
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    open_handle = kernel32.CreateFileW
+    open_handle.argtypes = (
+        wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD,
+        ctypes.c_void_p, wintypes.DWORD, wintypes.DWORD, wintypes.HANDLE,
     )
-    command = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
-    # Resolve system-owned PowerShell without dependence on a user-controlled
-    # or heavily sanitized PATH in operator fixture subprocesses.
-    system_root = os.environ.get("SystemRoot")
-    if not system_root:
-        pytest.fail("WINDOWS_JUNCTION_SYSTEM_ROOT_MISSING", pytrace=False)
-    pwsh = Path(system_root) / "System32" / "WindowsPowerShell" / "v1.0" / "powershell.exe"
-    if not pwsh.is_file():
-        pytest.fail("WINDOWS_JUNCTION_SHELL_MISSING", pytrace=False)
-    try:
-        result = subprocess.run(
-            [str(pwsh), "-NoProfile", "-NonInteractive",
-             "-EncodedCommand", command],
-            capture_output=True, text=True, timeout=25,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        pytest.fail("WINDOWS_JUNCTION_SHELL_LAUNCH_FAILED", pytrace=False)
-    # Missing junction privileges/API must FAIL acceptance, never be skipped.
-    assert result.returncode == 0, "WINDOWS_JUNCTION_SETUP_FAILED"
-    assert link.is_dir(), "WINDOWS_JUNCTION_LINK_NOT_DIRECTORY"
+    open_handle.restype = wintypes.HANDLE
+    device_io = kernel32.DeviceIoControl
+    device_io.argtypes = (
+        wintypes.HANDLE, wintypes.DWORD, ctypes.c_void_p, wintypes.DWORD,
+        ctypes.c_void_p, wintypes.DWORD, ctypes.POINTER(wintypes.DWORD),
+        ctypes.c_void_p,
+    )
+    device_io.restype = wintypes.BOOL
+    close_handle = kernel32.CloseHandle
+    close_handle.argtypes = (wintypes.HANDLE,)
+    close_handle.restype = wintypes.BOOL
 
+    # Always open the link directory itself, not the target. This is a new
+    # empty directory, so it cannot initially contain a reparse point.
+    handle = open_handle(
+        str(link), 0x40000000, 0x00000007, None, 3,
+        0x02000000 | 0x00200000, None,
+    )
+    if handle in (None, ctypes.c_void_p(-1).value):
+        link.rmdir()
+        pytest.fail("WINDOWS_JUNCTION_NATIVE_OPEN_FAILED", pytrace=False)
+    try:
+        raw = _junction_buffer(target_absolute)
+        buffer = ctypes.create_string_buffer(raw)
+        returned = wintypes.DWORD()
+        # FSCTL_SET_REPARSE_POINT, synchronous call.
+        ok = device_io(
+            handle, 0x000900A4, ctypes.byref(buffer), len(raw),
+            None, 0, ctypes.byref(returned), None,
+        )
+    finally:
+        close_handle(handle)
+    if not ok:
+        link.rmdir()
+        pytest.fail("WINDOWS_JUNCTION_NATIVE_SET_FAILED", pytrace=False)
+    assert link.is_dir(), "WINDOWS_JUNCTION_LINK_NOT_DIRECTORY"
 
 def _handle_count():
     k = ctypes.WinDLL("kernel32", use_last_error=True)

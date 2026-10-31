@@ -59,3 +59,15 @@ to the child interpreter. Unrelated pytest plugins are disabled, not the
 user site itself. To support the native Junction fixture, the test process
 reconstructs PowerShell 5.1's system-owned `PSModulePath` from `SystemRoot`
 instead of inheriting user-provided PowerShell module search paths.
+
+### 2026-10-31 native Junction test fixture update
+
+The synthetic Junction fixture previously spawned Windows PowerShell from
+its isolated pytest process, which could time out after 25 seconds when
+system environment variables were intentionally filtered. Test-only Junction
+creation now calls documented Win32 `CreateFileW` and
+`DeviceIoControl(FSCTL_SET_REPARSE_POINT)` with the Microsoft mount-point
+reparse buffer directly. No shell, path expansion, PowerShell modules,
+network connection or user-managed installed binary is required. Windows
+still must genuinely support Junction creation; an error is a FAIL,
+not a skipped acceptance. The production scanner is unchanged.

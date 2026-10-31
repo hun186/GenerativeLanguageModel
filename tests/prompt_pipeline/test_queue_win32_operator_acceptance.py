@@ -203,3 +203,21 @@ def test_unknown_junit_failure_type_is_not_exposed(monkeypatch):
     assert detail["failure_codes"] == ["FILE_NOT_FOUND_EXCEPTION"]
     assert "PRIVATE_PATH" not in json.dumps(detail)
     assert "filename" not in json.dumps(detail)
+
+def test_native_junction_fixed_error_marker_is_redacted(monkeypatch):
+    def fake_run(args, **kwargs):
+        path = Path(args[args.index("--junitxml") + 1])
+        path.write_text(
+            '<testsuite><testcase name="C:/private">'
+            '<failure message="WINDOWS_JUNCTION_NATIVE_SET_FAILED">'
+            'secret runtime path</failure></testcase></testsuite>',
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(args, 1)
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_run)
+    passed, detail = probe._run_suite(probe.SUITES[2][1])
+    assert not passed
+    assert detail["failure_codes"] == ["JUNCTION_NATIVE_SET_FAILED"]
+    assert "private" not in json.dumps(detail)
+    assert "secret" not in json.dumps(detail)
