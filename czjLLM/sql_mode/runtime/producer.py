@@ -10,7 +10,7 @@ from czjLLM.prompt_pipeline.pipeline_controller import producer_backpressure_wai
 from czjLLM.prompt_pipeline.pipeline_controller import meter_update
 from czjLLM.prompt_pipeline.runtime_support.stage_mode import explicit_stage_flow
 from czjLLM.prompt_pipeline.dispatch_parallelism import cap_orchestration_workers
-from .workers import outstanding_now
+from .workers import outstanding_now, actionable_outstanding_now
 from .scheduler import schedule_one_row
 from .pending_recheck import (
     announce_pending_recheck_if_enabled,
@@ -546,10 +546,20 @@ def produce_rows(
             except Exception:
                 pass
 
+            # This loop was previously UNBOUNDED. Held quarantined slices
+            # can never drain; use actionable counts and a finite wait.
+            queue_wait_started = time.monotonic()
+            queue_wait_cap = _get_positive_float(
+                ctx, "bp_hard_timeout", default=120.0,
+            )
             while (not stop_event.is_set() and not execution_cancel_requested(ctx)
                    and not _terminal_queue_claim_blocked(ctx)
-                   and outstanding_now(meter_fn) > low):
+                   and actionable_outstanding_now(meter_fn) > low):
                 _drain_completed(block=False)
+                if time.monotonic() - queue_wait_started >= queue_wait_cap:
+                    tlog_warn("[producer] actionable backpressure wait cap hit; "
+                              "later rows remain schedulable")
+                    break
                 time.sleep(0.05)
     except ExecutionCancelled:
         cancelled = True
@@ -570,7 +580,9 @@ def produce_rows(
         # the ordinary producer hard_timeout after a terminal rollback.
         if _terminal_queue_claim_blocked(ctx):
             break
-        out = outstanding_now(meter_fn)
+        # Do not wait for held blocked sources to drain; their aggregate
+        # status remains incomplete and is handled by coordinator later.
+        out = actionable_outstanding_now(meter_fn)
         if out <= 0:
             break
         now = time.time()
