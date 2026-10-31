@@ -43,6 +43,8 @@ jobs:
         run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py --maxfail=1 --disable-warnings
       - name: Verify Windows handle-relative enumeration and guarded CLI (portable synthetic)
         run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_native_enumeration.py --maxfail=1 --disable-warnings
+      - name: Verify Windows operator fixture launcher fail-closed and privacy
+        run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_operator_acceptance.py --maxfail=1 --disable-warnings
       - name: Verify no-clobber TODO to RUNNING dispatch and collision fail-closed
         run: python -m pytest -q tests/prompt_pipeline/test_queue_no_clobber.py --maxfail=1 --disable-warnings
       - name: Verify observed queue claim and requeue events
@@ -137,6 +139,11 @@ jobs:
           PYTHONNOUSERSITE: "1"
         run: |
           python -m pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py tests/prompt_pipeline/test_queue_win32_native_enumeration.py tests/prompt_pipeline/test_queue_win32_ntfs_acceptance.py --maxfail=1 --disable-warnings
+
+      - name: Exercise one-click operator fixture probe on real NTFS
+        shell: pwsh
+        run: |
+          python scripts/verify_windows_queue_ntfs_local.py --output-dir "$env:RUNNER_TEMP\queue-ntfs-acceptance-results"
 
   windows-selfhosted:
     runs-on: [self-hosted, Windows, X64]
