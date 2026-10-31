@@ -422,8 +422,12 @@ def mark_recovery_blocked(item_dir, code, attempts):
     if any(part.is_symlink() for part in (path, *path.parents)):
         raise QueueClaimRollbackError("unsafe recovery status directory")
     if path.exists():
-        # Existing operator hold must not be silently overwritten/released.
-        return read_recovery_status(item_dir)
+        # A previously AUTO-RECOVERED marker is not permission to silently
+        # ignore a NEW failure. Fail closed rather than pretending it is held.
+        old = read_recovery_status(item_dir)
+        if old is None:
+            raise QueueClaimRollbackError("new failure after resolved recovery requires review")
+        return old
     path.parent.mkdir(parents=True, exist_ok=True)
     record = {
         "version": 1, "state": "blocked", "integrity": "incomplete",
