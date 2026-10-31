@@ -337,8 +337,22 @@ def read_recovery_status(item_dir):
     if path.is_symlink() or path.parent.is_symlink():
         raise QueueClaimRollbackError("unsafe recovery status marker")
     try:
-        with path.open("r", encoding="utf-8") as handle:
-            record = json.load(handle)
+        # FIFO/device entries can block forever on ordinary path.open().
+        # Precheck and then verify the opened descriptor again; on POSIX,
+        # O_NOFOLLOW closes the final symlink-swap race.
+        if not stat.S_ISREG(path.lstat().st_mode):
+            raise ValueError("nonregular recovery marker")
+        flags = (os.O_RDONLY | getattr(os, "O_BINARY", 0)
+                 | getattr(os, "O_NONBLOCK", 0)
+                 | getattr(os, "O_NOFOLLOW", 0))
+        fd = os.open(path, flags)
+        with os.fdopen(fd, "rb") as stream:
+            if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+                raise ValueError("nonregular opened recovery marker")
+            raw = stream.read(4097)
+        if len(raw) > 4096:
+            raise ValueError("oversize recovery marker")
+        record = json.loads(raw.decode("utf-8"))
     except FileNotFoundError:
         return None
     except (OSError, ValueError, TypeError) as exc:
