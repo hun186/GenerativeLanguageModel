@@ -1444,3 +1444,4 @@ def test_missing_marker_does_not_silently_unblock_previous_failure(
     assert meter["queue_integrity"]["status"] == "incomplete"
     assert meter["queue_integrity"]["operator_action_required"] is True
     assert meter["rows"]["item"]["recovery_state"] == "operator_required"
+    assert queue.read_recovery_status(item)["code"] == "UNSAFE_QUEUE_ENTRY"
