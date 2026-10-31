@@ -734,7 +734,13 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             time.sleep(0.01)
 
     except Exception as ex:
-        # **最外層保護**：任何沒抓到的例外都要吼一聲，並標記 consumer 死亡
+        # If a marker is corrupt/unreadable, even the quarantine state cannot
+        # be persisted. Always signal coordinator terminal incompleteness,
+        # otherwise producer/backpressure can wait on an orphaned consumer.
+        # The same guard protects other unexpected consumer termination.
+        blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+        if blocked is not None:
+            blocked.set()
         _audit_consumer_orchestration_failure(ctx, "CONSUMER_TERMINATED")
         try:
             tlog_warn(f"❌ consumer 未捕捉例外：{ex}")
