@@ -282,7 +282,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                 try:
                     items_map = registry.list_items()
                     item_dirs = list(items_map.keys())
-                    n_requeued = recover_running_to_todo(item_dirs)
+                    n_requeued = recover_running_to_todo(item_dirs, require_complete=True)
                     def _mark_restart_requeue(d, _n=n_requeued):
                         q = d.setdefault("queue", {})
                         if _n:
@@ -297,7 +297,15 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     meter_update(meter_fn, _mark_restart_requeue)
                     tlog_warn(f"[consumer] restart_event 收到 → 已復原 RUNNING→TODO {n_requeued} 個切片，繼續派工")
                 except Exception as ex:
-                    tlog_warn(f"[consumer] restart 恢復失敗：{ex}")
+                    # A partial filesystem recovery (or inability to account
+                    # for it) is terminal. Do not silently clear the event and
+                    # resume dispatch with a stale running/pending meter.
+                    blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+                    if blocked is not None:
+                        blocked.set()
+                    raise QueueClaimRollbackError(
+                        "restart recovery incomplete; operator review required"
+                    ) from ex
                 finally:
                     restart_event.clear()
                     
@@ -1349,7 +1357,7 @@ def _apply_resume_policy_multistage(
     full_restart:
       - smart_reset 行為 + 清除 Success（強制所有切片重跑）
     """
-    recover_running_to_todo(prompt_items)
+    recover_running_to_todo(prompt_items, require_complete=True)
     _append_resume_log(ctx, "action=recover_running_to_todo(multistage)")
     for item in prompt_items:
         before_counts = _root_resume_counts(item)
@@ -1375,7 +1383,7 @@ def _apply_resume_policy_multistage(
 
 
 def _apply_resume_policy_single_stage(policy: str, prompt_items: list[str], ops: MergeOps, ctx=None):
-    recover_running_to_todo(prompt_items)
+    recover_running_to_todo(prompt_items, require_complete=True)
     _append_resume_log(ctx, "action=recover_running_to_todo(single)")
     for item in prompt_items:
         before_counts = _root_resume_counts(item)
@@ -1696,7 +1704,7 @@ def process_prompt_and_merge_multistage(ctx, file_path: str, ops: MergeOps | Non
             # The later resume-policy step would otherwise move stale RUNNING
             # prompts into TODO *after* the fresh source prompts were staged,
             # overwriting them via os.replace(). Recover the queue first.
-            recover_running_to_todo(prompt_items)
+            recover_running_to_todo(prompt_items, require_complete=True)
             restored = _rebuild_full_restart_from_verified_source(
                 prompt_items, ctx, file_path, stage_defs[0],
             )
