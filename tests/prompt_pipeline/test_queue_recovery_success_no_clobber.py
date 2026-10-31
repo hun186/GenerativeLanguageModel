@@ -1106,3 +1106,19 @@ def test_fifo_recovery_marker_rejected_without_blocking(tmp_path):
     with pytest.raises(queue.QueueClaimRollbackError, match="unreadable"):
         queue.read_recovery_status(item)
     assert running.read_bytes() == b"running private input"
+
+
+def test_runtime_recovery_marker_rejects_aliased_item_ancestor(tmp_path):
+    item, _ = _setup_running(tmp_path / "outside")
+    queue.mark_recovery_blocked(item, "TODO_CONFLICT", 1)
+    alias = tmp_path / "alias"
+    try:
+        alias.symlink_to(tmp_path / "outside", target_is_directory=True)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlinks unavailable")
+    aliased_item = alias / "item"
+    with pytest.raises(queue.QueueClaimRollbackError, match="unsafe"):
+        queue.read_recovery_status(aliased_item)
+    with pytest.raises(queue.QueueClaimRollbackError, match="unsafe"):
+        queue.mark_recovery_blocked(aliased_item, "TODO_CONFLICT", 1)
+    assert queue.read_recovery_status(item)["integrity"] == "incomplete"
