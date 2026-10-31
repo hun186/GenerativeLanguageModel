@@ -3,10 +3,13 @@
 import os
 import stat
 import tempfile
+import time
+import json
 from collections import Counter
 from pathlib import Path
 
 from czjLLM.prompt_pipeline.runtime_support.queue_observation import record_queue_transition
+from czjLLM.utilities.atomic_io import atomic_write_json
 
 
 class QueueClaimRollbackError(RuntimeError):
@@ -275,48 +278,153 @@ def requeue_running_no_clobber(pf_running: str) -> bool:
     return True
 
 
-def recover_running_to_todo(item_dirs, *, require_complete=False):
-    """
-    將 RUNNING/* 移回 TODO/*，讓它們能被重新排程。
+RECOVERY_MAX_ATTEMPTS = 3
+RECOVERY_RETRY_DELAY_SEC = 0.05
+RECOVERY_MARKER_NAME = "queue_recovery_status.json"
 
-    回傳實際退回的切片數；舊呼叫端可忽略回傳值。
 
-    require_complete is an opt-in fail-closed gate for resume/restart call
-    sites. A refused move is not a completed recovery, and must prevent any
-    later full-restart cleanup or optimistic coordinator drain.
+def _strict_running_files(run: Path):
+    """Fully enumerate before any moves. Unlike pathlib.rglob, propagate errors.
+
+    No symlinks/reparse points, special files or unexpectedly large trees.
+    Path-based scanning is NOT a concurrent-writer-safe or no-follow proof:
+    real operator acceptance remains separately gated.
     """
+    files = []
+    stack = [run]
+    total = 0
+    while stack:
+        directory = stack.pop()
+        if directory.is_symlink():
+            raise QueueClaimRollbackError("unsafe restart directory")
+        # scandir, including iterator advancement, propagates EACCES/EIO.
+        with os.scandir(directory) as entries:
+            for entry in entries:
+                total += 1
+                if total > 10000:
+                    raise QueueClaimRollbackError("restart entry limit exceeded")
+                info = entry.stat(follow_symlinks=False)
+                if getattr(info, "st_file_attributes", 0) & 0x400:
+                    raise QueueClaimRollbackError("unsafe reparse entry")
+                path = Path(entry.path)
+                if stat.S_ISDIR(info.st_mode):
+                    stack.append(path)
+                elif stat.S_ISREG(info.st_mode):
+                    files.append(path)
+                else:
+                    raise QueueClaimRollbackError("unsafe restart queue entry")
+    return sorted(files, key=str)
+
+
+def recovery_status_path(item_dir):
+    return Path(item_dir) / "_extract_slice_identity" / RECOVERY_MARKER_NAME
+
+
+def read_recovery_status(item_dir):
+    """Read opaque recovery state; corrupt/aliased records fail closed."""
+    path = recovery_status_path(item_dir)
+    if path.is_symlink() or path.parent.is_symlink():
+        raise QueueClaimRollbackError("unsafe recovery status marker")
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            record = json.load(handle)
+    except FileNotFoundError:
+        return None
+    except (OSError, ValueError, TypeError) as exc:
+        raise QueueClaimRollbackError("unreadable recovery status marker") from exc
+    if (not isinstance(record, dict) or record.get("version") != 1
+            or record.get("integrity") != "incomplete"
+            or record.get("state") != "blocked"
+            or record.get("code") not in {
+                "TODO_CONFLICT", "UNSAFE_QUEUE_ENTRY", "RECOVERY_RETRIES_EXHAUSTED",
+                "RECOVERY_SCAN_INCOMPLETE",
+            }):
+        raise QueueClaimRollbackError("invalid recovery status marker")
+    return record
+
+
+def mark_recovery_blocked(item_dir, code, attempts):
+    """Persist non-sensitive, item-scoped logical quarantine, not a file move."""
+    if code not in {
+        "TODO_CONFLICT", "UNSAFE_QUEUE_ENTRY", "RECOVERY_RETRIES_EXHAUSTED",
+        "RECOVERY_SCAN_INCOMPLETE",
+    }:
+        raise ValueError("invalid recovery status code")
+    path = recovery_status_path(item_dir)
+    if path.is_symlink() or path.parent.is_symlink():
+        raise QueueClaimRollbackError("unsafe recovery status directory")
+    if path.exists():
+        # Existing operator hold must not be silently overwritten/released.
+        return read_recovery_status(item_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    record = {
+        "version": 1, "state": "blocked", "integrity": "incomplete",
+        "code": code, "attempts": int(attempts),
+        "manual_review_required": True,
+        "source_files_modified_by_quarantine": False,
+    }
+    atomic_write_json(str(path), record)
+    return record
+
+
+def recover_running_to_todo(item_dirs, *, require_complete=False,
+                            max_attempts=RECOVERY_MAX_ATTEMPTS,
+                            retry_delay=RECOVERY_RETRY_DELAY_SEC):
+    """Requeue crashed RUNNING files without clobbering.
+
+    Default remains legacy count-only. Strict mode scans every file before
+    mutation, refuses errors and retries transient no-clobber failures at
+    most max_attempts. Deterministic conflicts are not retried; never
+    auto-overwrite, auto-delete or silently recover a quarantined item.
+    """
+    if not 1 <= max_attempts <= RECOVERY_MAX_ATTEMPTS:
+        raise ValueError("invalid recovery retry limit")
     moved = 0
     for item_dir in item_dirs:
+        if require_complete and read_recovery_status(item_dir) is not None:
+            raise QueueClaimRollbackError("operator review required for blocked item")
         run = Path(item_dir) / "RUNNING"
         todo = Path(item_dir) / "TODO"
-        if require_complete and (run.is_symlink() or todo.is_symlink()):
+        if require_complete and (
+            run.is_symlink() or todo.is_symlink()
+            or any(parent.is_symlink() for parent in run.parents)
+        ):
             raise QueueClaimRollbackError("unsafe restart queue directory")
         if not run.is_dir():
             continue
+        if require_complete:
+            try:
+                sources = _strict_running_files(run)
+            except (OSError, ValueError) as exc:
+                raise QueueClaimRollbackError("restart enumeration incomplete") from exc
+        else:
+            sources = [p for p in run.rglob("*") if p.is_file()]
         todo.mkdir(parents=True, exist_ok=True)
-        for p in run.rglob("*"):
-            if require_complete and p.is_symlink():
-                raise QueueClaimRollbackError("unsafe restart queue entry")
-            if p.is_dir():
-                continue
-            if not p.is_file():
-                if require_complete:
-                    raise QueueClaimRollbackError("unsupported restart queue entry")
-                continue
+        for p in sources:
             rel = p.relative_to(run)
             dst = todo / rel
+            if require_complete and (dst.exists() or dst.is_symlink()):
+                raise QueueClaimRollbackError("restart TODO basename collision")
             dst.parent.mkdir(parents=True, exist_ok=True)
-            # Reuse the exclusive same-filesystem move used by claiming.
-            # This preserves an existing TODO (including symlinks) and leaves
-            # RUNNING untouched when the move cannot be performed safely.
-            if not _claim_regular_source_no_clobber(p, dst):
+            attempts = max_attempts if require_complete else 1
+            success = False
+            for attempt in range(attempts):
+                if _claim_regular_source_no_clobber(p, dst):
+                    success = True
+                    break
+                if not require_complete:
+                    break
+                # A competing producer may have published a new generation.
+                # Never retry a deterministic name collision or interrupted
+                # link+unlink with two paths pointing to one inode.
+                if dst.exists() or dst.is_symlink():
+                    break
+                if attempt + 1 < attempts:
+                    time.sleep(retry_delay)
+            if not success:
                 if require_complete:
-                    raise QueueClaimRollbackError(
-                        "restart RUNNING recovery incomplete; manual inspection required"
-                    )
+                    raise QueueClaimRollbackError("restart RUNNING recovery incomplete")
                 continue
-            # A successful requeue move is an observed queue transition,
-            # not evidence of a second provider invocation or retry family.
             try:
                 record_queue_transition(dst, "requeued", previous_path=p)
             except Exception:
