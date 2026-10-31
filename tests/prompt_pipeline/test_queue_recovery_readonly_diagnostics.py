@@ -464,3 +464,18 @@ def test_corrupt_recovery_marker_cannot_look_clean(tmp_path):
     assert result["recovery_integrity"] == "unknown"
     assert result["recovery_manual_review_required"] is True
     assert "UNREADABLE_RECOVERY_MARKER" in result["codes"]
+
+
+def test_fifo_recovery_status_diagnostic_fails_closed_without_hang(tmp_path):
+    """Codex P2: read-only status must never wait for a FIFO writer."""
+    if not hasattr(os, "mkfifo"):
+        pytest.skip("FIFO unavailable")
+    item = _item(tmp_path)
+    marker = item / "_extract_slice_identity" / "queue_recovery_status.json"
+    marker.parent.mkdir()
+    os.mkfifo(marker)
+    result = diagnostic.inspect_item(item)
+    assert result["scan_complete"] is False
+    assert result["recovery_integrity"] == "unknown"
+    assert result["recovery_manual_review_required"] is True
+    assert "UNREADABLE_RECOVERY_MARKER" in result["codes"]
