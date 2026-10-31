@@ -185,7 +185,40 @@ def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES,
         "staging_other_files", "unsafe_entries",
     )}
     result = {"scan_complete": False, "status": "review_required",
-              "counts": counts, "codes": []}
+              "counts": counts, "codes": [],
+              "recovery_integrity": "unverified",
+              "recovery_manual_review_required": False}
+    # The durable logical-quarantine marker is separate from the physical
+    # scan. Absence of the marker NEVER proves all work completed.
+    status_file = item_dir / "_extract_slice_identity" / "queue_recovery_status.json"
+    if status_file.is_symlink() or status_file.parent.is_symlink():
+        result["codes"].append("UNSAFE_RECOVERY_MARKER")
+        result["recovery_integrity"] = "unknown"
+        result["recovery_manual_review_required"] = True
+        return result
+    try:
+        if status_file.exists():
+            if status_file.stat().st_size > 4096:
+                raise ValueError("oversize recovery marker")
+            record = json.loads(status_file.read_text(encoding="utf-8"))
+            if (not isinstance(record, dict) or record.get("version") != 1
+                    or record.get("state") != "blocked"
+                    or record.get("integrity") != "incomplete"):
+                raise ValueError("invalid recovery marker")
+            result["recovery_integrity"] = "incomplete"
+            result["recovery_manual_review_required"] = True
+            result["recovery_code"] = (
+                record["code"] if record.get("code") in {
+                    "TODO_CONFLICT", "UNSAFE_QUEUE_ENTRY",
+                    "RECOVERY_RETRIES_EXHAUSTED", "RECOVERY_SCAN_INCOMPLETE",
+                } else "UNKNOWN_RECOVERY_CODE"
+            )
+            result["codes"].append("RECOVERY_ITEM_BLOCKED")
+    except (OSError, ValueError, TypeError):
+        result["codes"].append("UNREADABLE_RECOVERY_MARKER")
+        result["recovery_integrity"] = "unknown"
+        result["recovery_manual_review_required"] = True
+        return result
     if not 1 <= max_entries <= 100000:
         result["codes"].append("INVALID_ENTRY_LIMIT")
         return result
@@ -265,7 +298,9 @@ def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES,
         ("staging_other_files", "UNEXPECTED_STAGING_FILE"),
         ("unsafe_entries", "UNSAFE_ENTRY_PRESENT"),
     )
-    result["codes"] = [code for name, code in code_by_count if counts[name]]
+    result["codes"].extend(
+        code for name, code in code_by_count if counts[name]
+    )
     if native_windows:
         # Deliberately prevent an unverified Windows run from claiming clean
         # status or allowing exit 0 before self-hosted real filesystem proof.
