@@ -185,3 +185,5 @@
 - Former pending P2: malformed or unreadable marker during Consumer restart could exit before setting the coordinator's terminal block flag; special-file FIFO marker could hang diagnostic on blocking text read. Branch implementation now sets terminal event on unexpected consumer termination and uses no-follow/nonblocking regular-only bounded reads for both marker loading and read-only diagnostics. Exact-head Hosted regression evidence and formal Codex re-review remain required. Platform-specific nofollow semantics are not proof of production Windows/SMB acceptance.
 
 - Follow-up Codex P2: never read a recovery marker using an unverified full path ahead of the nofollow queue scanner; diagnostic marker status now uses pinned fd-relative access. Runtime marker rejects aliased ancestors; Windows/SMB live acceptance remains unverified.
+
+- Fourth Codex P2: failed strict destination mkdir must be converted to per-item recovery error, not abort all items. Regression scanner instrumentation must preserve verified fd capability. Fixes committed, hosted acceptance outstanding.
