@@ -1122,3 +1122,24 @@ def test_runtime_recovery_marker_rejects_aliased_item_ancestor(tmp_path):
     with pytest.raises(queue.QueueClaimRollbackError, match="unsafe"):
         queue.mark_recovery_blocked(aliased_item, "TODO_CONFLICT", 1)
     assert queue.read_recovery_status(item)["integrity"] == "incomplete"
+
+
+def test_invalid_todo_directory_quarantines_only_one_item(tmp_path):
+    """Codex P2: destination mkdir failure must not abort later healthy item."""
+    bad, bad_running = _setup_running(tmp_path / "bad", b"bad running")
+    invalid_todo = bad / "TODO"
+    invalid_todo.write_bytes(b"not a directory")
+    good, good_running = _setup_running(tmp_path / "good", b"healthy running")
+    ctx = SimpleNamespace()
+    mapping = {
+        str(bad): {"pk": "blocked"}, str(good): {"pk": "healthy"},
+    }
+    healthy, n = pc._recover_items_isolated(ctx, mapping)
+    assert healthy == [str(good)]
+    assert n == 1
+    assert invalid_todo.read_bytes() == b"not a directory"
+    assert bad_running.read_bytes() == b"bad running"
+    assert not good_running.exists()
+    assert (good / "TODO" / "root.txt").read_bytes() == b"healthy running"
+    assert queue.read_recovery_status(bad)["integrity"] == "incomplete"
+    assert str(bad) in ctx._queue_recovery_blocked_items
