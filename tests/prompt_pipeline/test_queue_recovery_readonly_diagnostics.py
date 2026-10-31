@@ -479,3 +479,36 @@ def test_fifo_recovery_status_diagnostic_fails_closed_without_hang(tmp_path):
     assert result["recovery_integrity"] == "unknown"
     assert result["recovery_manual_review_required"] is True
     assert "UNREADABLE_RECOVERY_MARKER" in result["codes"]
+
+
+def test_symlinked_ancestor_never_opens_external_recovery_marker(
+    tmp_path, monkeypatch
+):
+    """Codex P2: marker reads must follow pinned nofollow item handles only."""
+    outside = tmp_path / "outside"
+    item = outside / "item"
+    for role in ("TODO", "RUNNING", "Success"):
+        (item / role).mkdir(parents=True, exist_ok=True)
+    marker = item / "_extract_slice_identity" / "queue_recovery_status.json"
+    marker.parent.mkdir(parents=True)
+    marker.write_text('{"private":"EXTERNAL_PRIVATE_BYTES"}', encoding="utf-8")
+    alias = tmp_path / "alias"
+    try:
+        alias.symlink_to(outside, target_is_directory=True)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlinks unavailable")
+    actual_open = diagnostic.os.open
+    opened_markers = []
+
+    def record_open(path, flags, *args, **kwargs):
+        if "queue_recovery_status.json" in str(path):
+            opened_markers.append(str(path))
+        return actual_open(path, flags, *args, **kwargs)
+
+    monkeypatch.setattr(diagnostic.os, "open", record_open)
+    result = diagnostic.inspect_item(alias / "item")
+    assert not result["scan_complete"]
+    assert result["status"] == "review_required"
+    assert "INCOMPLETE_OR_UNSAFE_SCAN" in result["codes"]
+    assert opened_markers == []
+    assert "EXTERNAL_PRIVATE_BYTES" not in json.dumps(result)
