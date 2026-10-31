@@ -146,3 +146,7 @@
 ### 2026-10-31 — PR #269 second Codex pass corrective fixes (pending CI/re-review)
 
 - Codex latest-head review on `488f1d1` found two P2: corrupt recovery status could terminate Consumer without coordinator signal, and a FIFO marker could block read-only inspection. Patched Consumer outer terminal exception to set `_queue_claim_blocked_event`; bounded 4096-byte metadata reads now validate regular-file lstat/fstat and use nonblocking no-follow opens (where supported). Added corrupted-marker coordinator and FIFO regression tests for both runtime and CLI. These commits are NOT yet exact-head CI/Review-accepted or merged; Issue #266 operator Windows/SMB/live acceptance stays outstanding.
+
+### 2026-10-31 — Third Codex P2 on safe diagnostic marker
+
+- A full-path recovery marker read could follow symlinked item ancestors ahead of descriptor-anchored inspection. Revised read-only inspector uses the already pinned item fd and nofollow relative opens; unsupported Windows remains unverified. Runtime marker read/write also rejects aliased ancestors. Added external symlink-ancestor tests. Pending exact-head CI and formal re-review, no operator approval to merge.
