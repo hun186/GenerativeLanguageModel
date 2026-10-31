@@ -3888,8 +3888,9 @@ def producer_backpressure_wait(ctx: LLMJobConfig,
             m = meter_read(meter_fn)
             q = m.get("queue", {})
             outstanding = int(q.get("pending", 0)) + int(q.get("running", 0))
-            if outstanding < 0:
-                outstanding = 0
+            held = max(0, int(m.get("queue_integrity", {}).get(
+                "held_outstanding", 0) or 0))
+            outstanding = max(0, outstanding - min(max(0, outstanding), held))
         except Exception:
             # 讀取計量檔失敗 → 短暫等待再試；不要卡死
             time.sleep(min(0.2, sleep_step * 4))
