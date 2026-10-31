@@ -1375,3 +1375,50 @@ def test_recovery_supervisor_cli_operator_escalation_exit_code(tmp_path, capsys)
     assert '"outcome": "operator_required"' in output
     assert str(tmp_path) not in output
     assert running.exists()
+
+
+def test_held_backpressure_never_counts_unmetered_collision_copy(monkeypatch):
+    """An unrelated TODO generation must not reduce healthy queue pressure."""
+    bad, good = "/tmp/bad-item", "/tmp/good-item"
+    meter = {
+        "queue": {"pending": 1, "running": 2, "completed": 0},
+        "rows": {
+            "bad": {"queue_pending": 0, "queue_running": 1},
+            "good": {"queue_pending": 1, "queue_running": 1},
+        },
+    }
+    ctx = SimpleNamespace(_queue_recovery_blocked_items={bad})
+    monkeypatch.setattr(pc, "meter_update",
+                        lambda _p, fn: (fn(meter), meter)[1])
+    pc._update_recovery_integrity_meter(
+        ctx, "meter", {bad: {"pk": "bad"}, good: {"pk": "good"}},
+    )
+    status = meter["queue_integrity"]
+    assert status["held_pending"] == 0
+    assert status["held_running"] == 1
+    assert status["held_outstanding"] == 1
+    assert (meter["queue"]["pending"], meter["queue"]["running"]) == (1, 2)
+
+
+def test_per_row_queue_receipts_follow_dispatch_and_completed_requeue():
+    from collections import Counter
+    item = "/tmp/item"
+    mapping = {item: {"pk": "row"}}
+    meter = {
+        "queue": {"pending": 2, "running": 0, "completed": 0},
+        "rows": {"row": {
+            "queue_pending": 2, "queue_running": 0, "done": 0,
+        }},
+    }
+    pc._meter_on_dispatch(meter, mapping, Counter({item: 2}), 2)
+    assert meter["rows"]["row"]["queue_pending"] == 0
+    assert meter["rows"]["row"]["queue_running"] == 2
+    pc._meter_on_finish_batch_v2(
+        meter, mapping, count_by_item_done=Counter({item: 1}),
+        n_done=1, count_by_item_requeued=Counter({item: 1}),
+        n_requeued=1,
+    )
+    assert meter["rows"]["row"]["queue_pending"] == 1
+    assert meter["rows"]["row"]["queue_running"] == 0
+    assert meter["rows"]["row"]["done"] == 1
+    assert meter["queue"] == {"pending": 1, "running": 0, "completed": 1}
