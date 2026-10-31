@@ -1060,3 +1060,49 @@ def test_timeout_requeue_has_finite_transient_attempts(tmp_path, monkeypatch):
     assert len(attempts) == queue.RECOVERY_MAX_ATTEMPTS
     assert not running.exists()
     assert (item / "TODO" / "root.txt").read_bytes() == b"running"
+
+
+def test_corrupt_marker_sets_consumer_terminal_signal(tmp_path, monkeypatch):
+    """Codex P2: malformed durable state cannot strand producer backpressure."""
+    import threading
+
+    item, running = _setup_running(tmp_path, b"private unfinished")
+    marker = queue.recovery_status_path(item)
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    marker.write_text("{broken JSON", encoding="utf-8")
+    blocked, stop = threading.Event(), threading.Event()
+    ctx = SimpleNamespace(
+        stage_cfg=None, es_writeback_rules=[], sql_writeback_rules=[],
+        _queue_claim_blocked_event=blocked,
+    )
+    registry = SimpleNamespace(
+        list_items=lambda: {str(item): {"pk": "one"}},
+    )
+    failures = []
+    monkeypatch.setattr(pc, "resolve_pipeline_stages", lambda *_a, **_k: [])
+    monkeypatch.setattr(pc, "_stage_cfg_declares_flow", lambda *_a, **_k: False)
+    monkeypatch.setattr(pc, "meter_update", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "tlog", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "_audit_consumer_orchestration_failure",
+                        lambda _ctx, code: failures.append(code))
+
+    pc.llm_stream_consumer(ctx, registry, str(tmp_path / "meter"), stop, None)
+    assert blocked.is_set() and not stop.is_set()
+    assert failures == ["CONSUMER_TERMINATED"]
+    assert running.read_bytes() == b"private unfinished"
+    assert marker.read_text(encoding="utf-8") == "{broken JSON"
+
+
+def test_fifo_recovery_marker_rejected_without_blocking(tmp_path):
+    if not hasattr(__import__("os"), "mkfifo"):
+        pytest.skip("FIFO unsupported on this platform")
+    import os
+
+    item, running = _setup_running(tmp_path)
+    marker = queue.recovery_status_path(item)
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    os.mkfifo(marker)
+    with pytest.raises(queue.QueueClaimRollbackError, match="unreadable"):
+        queue.read_recovery_status(item)
+    assert running.read_bytes() == b"running private input"
