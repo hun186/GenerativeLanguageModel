@@ -271,26 +271,52 @@ def _recheck_blocked_items(ctx, items_map, meter_fn):
             mark_recovery_blocked(item, "UNSAFE_QUEUE_ENTRY", 1)
             outcome = "operator_required"
         if outcome == "recovered":
-            blocked.discard(item)
             pk = items_map[item].get("pk", item)
+            # The original RUNNING receipt is still accounted for in the
+            # coordinator. Transfer it to pending BEFORE making TODO
+            # dispatchable. This step is once per in-memory blocked item.
+            accounted = [not bool(meter_fn)]
             if meter_fn:
-                meter_update(meter_fn, lambda d, _pk=pk: d.setdefault(
-                    "rows", {}).setdefault(_pk, {}).update({
+                def _restore_verified_receipt(d):
+                    row = d.setdefault("rows", {}).setdefault(pk, {})
+                    q = d.setdefault("queue", {})
+                    pending = int(row.get("queue_pending", 0) or 0)
+                    running = int(row.get("queue_running", 0) or 0)
+                    global_running = int(q.get("running", 0) or 0)
+                    if running > 0 and global_running > 0:
+                        row["queue_running"] = running - 1
+                        row["queue_pending"] = pending + 1
+                        q["running"] = global_running - 1
+                        q["pending"] = int(q.get("pending", 0) or 0) + 1
+                    elif pending < 1:
+                        # Unknown legacy accounting cannot safely be
+                        # repaired by stealing an unrelated running count.
+                        return
+                    row.update({
                         "status": "pending", "integrity": "pending",
                         "recovery_state": "auto_recovered_to_todo",
-                    }))
-            try:
+                    })
+                    accounted[0] = True
+                meter_update(meter_fn, _restore_verified_receipt)
+            if not accounted[0]:
+                # Do not drop the in-memory hold when the correct pending/
+                # running receipt ownership cannot be proved.
+                outcome = "operator_required"
+            else:
+                blocked.discard(item)
+            if outcome == "recovered":
+                try:
                 emit_quality_event(
                     getattr(ctx, "llm_call_audit_path", ""),
                     run_id=getattr(ctx, "llm_call_audit_run_id", ""),
                     event="queue_recovery", code="VERIFIED_EXISTING_TODO",
                     scope="run", outcome="recovered",
                 )
-                tlog_warn("[queue-recovery] VERIFIED TODO / auto-recovered; "
-                          "pending work may resume")
-            except Exception:
-                pass
-        elif outcome == "operator_required" and item not in alerted:
+                    tlog_warn("[queue-recovery] VERIFIED TODO / auto-recovered; "
+                              "pending work may resume")
+                except Exception:
+                    pass
+        if outcome == "operator_required" and item not in alerted:
             alerted.add(item)
             try:
                 tlog_warn("[queue-recovery] OPERATOR ACTION REQUIRED; "
