@@ -277,3 +277,122 @@ def test_new_failure_reopens_formerly_resolved_review_and_stays_visible(tmp_path
     assert now_incomplete["code"] == "recovery_incomplete"
     assert now_incomplete["operational"] == "unknown"
     assert now_incomplete["review_state"] == "open"
+
+
+def test_detailed_packet_has_timestamps_queue_roles_and_safe_correlated_calls(tmp_path):
+    from czjLLM.job_manager.incident_diagnostics import build_detailed_debug_report
+    from czjLLM.utilities.processing_quality import quality_event_path
+    item, running, marker = _blocked(tmp_path)
+    (item / "TODO").mkdir()
+    (item / "Success").mkdir()
+    meter = tmp_path / "meter.json"
+    meter.write_text(json.dumps({
+        "session_run_id": "run_123",
+        "queue": {"pending": 2, "running": 1, "completed": 0},
+        "progress": {"last_progress_ts": marker["first_seen_ts"]},
+        "rows": {"42": {
+            "item_dir": str(item), "status": "blocked_recovery",
+            "queue_pending": 2, "queue_running": 1, "done": 0, "total": 3,
+            "private_field": "TOP_SECRET",
+        }}
+    }), encoding="utf-8")
+    audit = tmp_path / "llm_call_audit_debug.csv"
+    audit.write_text(
+        "prompt_file,model,ok,elapsed_seconds,input_tokens,output_tokens,timestamp,base_url\n"
+        + f"{running},qwen3.6,NO,42.5,123,45,2026-11-01T08:00:00Z,"
+          "https://user:SECRET_PASSWORD@example.com/api\n",
+        encoding="utf-8",
+    )
+    quality = quality_event_path(str(audit))
+    quality.write_text(json.dumps({
+        "schema_version": 1, "scope": "run",
+        "event": "worker_phase_failure",
+        "code": "WORKER_LLM_TIMEOUT_EXCEPTION",
+        "ts": "2026-11-01T08:01:00Z",
+        "private_message": "TOP_SECRET",
+    }) + "\n", encoding="utf-8")
+    item_record = review.review_snapshot(item, row_status="blocked_recovery")
+    record = {"item_dir": str(item), "source_row_status": "blocked_recovery",
+              **item_record}
+    report = build_detailed_debug_report(
+        [record], meter_path=meter, audit_path=audit,
+    )
+    for expected in (
+        "首次異常（UTC）", "TODO：存在", "RUNNING：存在", "Success：存在",
+        "Queue 待處理計數：2", "工作切片總數：3",
+        "qwen3.6", "elapsed_s=42.5", "in=123", "out=45",
+        "WORKER_LLM_TIMEOUT_EXCEPTION", "Run 範圍", "2026-11-01T08:00:00Z",
+    ):
+        assert expected in report
+    for secret in ("TOP_SECRET", "SECRET_PASSWORD", str(tmp_path),
+                   "run_123", "private.txt", "42\n"):
+        assert secret not in report
+    assert "SQL／ES 寫回回執：未直接取得" in report
+    with_path = build_detailed_debug_report(
+        [record], meter_path=meter, audit_path=audit, include_paths=True,
+    )
+    assert str(item) in with_path
+    assert "TOP_SECRET" not in with_path
+
+
+def test_detailed_packet_cannot_attribute_other_item_llm_calls(tmp_path):
+    from czjLLM.job_manager.incident_diagnostics import build_detailed_debug_report
+    one, _, _ = _blocked(tmp_path / "one")
+    other_dir = tmp_path / "other" / "item"
+    other_dir.mkdir(parents=True)
+    audit = tmp_path / "llm_call_audit_scope.csv"
+    audit.write_text(
+        "prompt_file,model,ok,elapsed_seconds,input_tokens,output_tokens\n"
+        + f"{other_dir / 'TODO' / 'prompt.txt'},other-model,YES,2.0,5,6\n",
+        encoding="utf-8",
+    )
+    snapshot = {"item_dir": str(one), "code": "TODO_CONFLICT",
+                "operational": "blocked", "review_state": "open"}
+    result = build_detailed_debug_report([snapshot], audit_path=audit)
+    assert "未找到具工作目錄關聯的 Audit 列" in result
+    assert "模型呼叫對應單一 item：未證明" in result
+    assert "other-model" in result  # only in run-wide aggregate, not per-item
+
+
+def test_detailed_diagnostic_does_not_read_oversized_or_symlinked_audit(tmp_path):
+    from czjLLM.job_manager.incident_diagnostics import build_detailed_debug_report
+    item, running, _ = _blocked(tmp_path / "one")
+    audit = tmp_path / "audit.csv"
+    audit.write_bytes(b"X" * (2_000_001))
+    snapshot = {"item_dir": str(item), "code": "TODO_CONFLICT",
+                "operational": "blocked", "review_state": "open"}
+    report = build_detailed_debug_report([snapshot], audit_path=audit)
+    assert "超過 2MB" in report
+    assert "X" * 500 not in report
+    alias = tmp_path / "alias.csv"
+    try:
+        alias.symlink_to(audit)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlink unsupported")
+    report = build_detailed_debug_report([snapshot], audit_path=alias)
+    assert "路徑不安全" in report
+
+
+def test_detailed_clipboard_button_is_optin_and_not_on_tk_io_thread():
+    import inspect
+    from czjLLM.job_manager import recovery_review_gui, win_gui
+    src = inspect.getsource(recovery_review_gui.show_recovery_review)
+    assert "複製選取條目的完整除錯包" in src
+    assert "含完整本機工作路徑（敏感；預設關閉）" in src
+    assert "include_local_paths = tk.BooleanVar(value=False)" in src
+    assert "build_detailed_debug_report(" in src
+    assert 'name="incident-diagnostic-reader", daemon=True' in src
+    assert "win.clipboard_append(result)" in src
+    assert "include_paths and not messagebox.askyesno(" in src
+    main = inspect.getsource(win_gui._gui_proc_main)
+    assert "audit_path_provider=lambda: _audit_path" in main
+
+
+def test_debug_quality_event_registered_as_run_only():
+    from czjLLM.utilities.processing_quality import (
+        _EVENT_CODES, _EVENT_SCOPES,
+    )
+    assert _EVENT_SCOPES["queue_recovery"] == "run"
+    assert _EVENT_CODES["queue_recovery"] == {
+        "VERIFIED_EXISTING_TODO", "OPERATOR_ACTION_REQUIRED",
+    }
