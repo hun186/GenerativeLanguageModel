@@ -316,8 +316,8 @@ def _release_terminal_fallback_merge_error(
         try:
             meter_update(
                 meter_fn,
-                lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update(
-                    {"status": "writeback_failed_schema"}
+                lambda d, _pk=pk: d["rows"].setdefault(str(_pk), {}).update(
+                    {"status": "writeback_failed_schema", "last_state_at": time.time()}
                 ),
             )
             meter_update(
@@ -354,6 +354,15 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     
     # 3) 計量器就緒
     registry, meter_fn, low, high = init_meter(ctx)
+    # The GUI runs in a separate process: publish the exact job-local meter
+    # path once it exists. Do not scan unrelated projects or entire drives.
+    if gui is not None and callable(
+        getattr(gui, "set_recovery_meter_path", None)
+    ):
+        try:
+            gui.set_recovery_meter_path(meter_fn)
+        except Exception:
+            pass
     '''
     mp_log_q = mp_listener_stop = mp_listener = None
     if not DETAIL_CONSUMER_INFO:

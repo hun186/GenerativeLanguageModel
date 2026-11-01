@@ -489,7 +489,23 @@ def _process_flatten_target(ctx, sink, pk, ft: dict) -> bool:
     finally:
         sink.ctx = old_ctx
 
+def _recovery_item_blocked(item_dir, ctx=None):
+    """Never let a logical quarantine complete SQL/ES/CSV writeback."""
+    from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
+        QueueClaimRollbackError, read_recovery_status,
+    )
+    if item_dir in getattr(ctx, "_queue_recovery_blocked_items", set()):
+        return True
+    try:
+        return read_recovery_status(item_dir) is not None
+    except QueueClaimRollbackError:
+        # Corrupt/unreadable marker is not proof of a clean queue.
+        return True
+
+
 def _all_slices_done(item_dir, meta=None):
+    if _recovery_item_blocked(item_dir):
+        return False
     t, r, s = _counts(item_dir)
     # 若能從 meta 帶入期望切片數（例如 produce_rows 時存的 chunks），再加一道保險
     expected = None
@@ -665,8 +681,8 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
         try:
             meter_update(
                 meter_fn,
-                lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update(
-                    {"status": "writeback_failed_schema"}
+                lambda d, _pk=pk: d["rows"].setdefault(str(_pk), {}).update(
+                    {"status": "writeback_failed_schema", "last_state_at": time.time()}
                 ),
             )
             meter_update(
@@ -808,6 +824,11 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 pk = meta["pk"]; temp_txt = meta["temp_txt"]
                 writeback_started = False
 
+                # A stale preexisting combined file MUST NOT bypass blocked
+                # recovery and be written back as if the row were complete.
+                if _recovery_item_blocked(item_dir, ctx):
+                    continue
+
                 if isinstance(meta, dict) and meta.get("status") == "scheduling_multistage":
                     continue
 
@@ -844,8 +865,8 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                         try:
                             meter_update(
                                 meter_fn,
-                                lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update(
-                                    {"status": "cancelled"}
+                                lambda d, _pk=pk: d["rows"].setdefault(str(_pk), {}).update(
+                                    {"status": "cancelled", "last_state_at": time.time()}
                                 ),
                             )
                         except Exception:
@@ -1060,7 +1081,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                         try: done_q.put_nowait(1)
                         except Exception: pass
                     try:
-                        meter_update(meter_fn, lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update({"status":"merged"}))
+                        meter_update(meter_fn, lambda d, _pk=pk: d["rows"].setdefault(str(_pk), {}).update({"status":"merged", "last_state_at": time.time()}))
                         meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({"last_progress_ts": time.time()}))
                     except Exception:
                         pass

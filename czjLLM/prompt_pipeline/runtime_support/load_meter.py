@@ -83,6 +83,12 @@ def meter_init(meter_fn, ctx, low=None, high=None):
     data = {
         "session_id": getattr(ctx, "session_start_ts", ""),
         "session_run_id": getattr(ctx, "session_run_id", ""),
+        # The run mode is a fixed non-payload enum for incident diagnostics.
+        "run_mode": (str(getattr(ctx, "mode", "")).lower()
+                     if str(getattr(ctx, "mode", "")).lower() in {
+                         "sql", "table", "es", "csv", "excel", "txt", "text",
+                         "sqlite", "file",
+                     } else "unknown"),
         "pid": os.getpid(),
         "created_at": datetime.now().isoformat(timespec="seconds"),
         "thresholds": {"low": low, "high": high},

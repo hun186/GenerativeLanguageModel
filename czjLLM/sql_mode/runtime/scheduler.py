@@ -117,12 +117,17 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
         registry.add(item_dir, pk, temp_txt_path, comb_back_fn)
 
         def _on_add_row(d):
-            d["rows"].setdefault(pk, {
+            d["rows"].setdefault(str(pk), {
                 "item_dir": item_dir,
                 "temp_txt": temp_txt_path,
                 "total": 0, "done": 0, "status": "in_progress"
             })
-            d["rows"][pk]["total"] = total_chunks
+            d["rows"][str(pk)]["total"] = total_chunks
+            d["rows"][str(pk)]["last_state_at"] = time.time()
+            d["rows"][str(pk)]["queue_pending"] = (
+                int(d["rows"][str(pk)].get("queue_pending", 0) or 0) + total_chunks
+            )
+            d["rows"][str(pk)].setdefault("queue_running", 0)
             d["queue"]["pending"] += total_chunks
 
         meter_update(meter_fn, _on_add_row)
@@ -208,14 +213,24 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
     comb_back_fn = get_combined_result_path(temp_txt_path, row_ctx)
 
     def _on_add_row(d):
-        d["rows"].setdefault(pk, {
+        d["rows"].setdefault(str(pk), {
             "item_dir": item_dir,
             "temp_txt": temp_txt_path,
             "total": 0, "done": 0, "status": "in_progress"
         })
-        d["rows"][pk]["total"] = total_chunks
+        d["rows"][str(pk)]["total"] = total_chunks
+        d["rows"][str(pk)]["last_state_at"] = time.time()
+        if run_stream_multistage:
+            d["rows"][str(pk)]["status"] = "scheduling_multistage"
+        # Per-row queue receipts avoid guessing held work from unrelated
+        # physical TODO files when subtracting producer backpressure.
+        queued_chunks = 0 if run_stream_multistage else total_chunks
+        d["rows"][str(pk)]["queue_pending"] = (
+            int(d["rows"][str(pk)].get("queue_pending", 0) or 0) + queued_chunks
+        )
+        d["rows"][str(pk)].setdefault("queue_running", 0)
         # SQL/Table/ES 多階段已在 schedule 階段完成 LLM，不放入 consumer pending queue。
-        d["queue"]["pending"] += (0 if run_stream_multistage else total_chunks)
+        d["queue"]["pending"] += queued_chunks
 
     # 註冊給 row_merger（合併檔路徑用 row_ctx 算，不會串線）。
     # 多階段同步執行 LLM 時必須先註冊，否則 producer 正在跑 LLM 的期間
@@ -242,6 +257,12 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
                     registry.update(item_dir, CombBackFN=comb_back_fn)
             if hasattr(registry, "update"):
                 registry.update(item_dir, status="ready_for_writeback")
+            meter_update(
+                meter_fn,
+                lambda d, _pk=str(pk): d["rows"].setdefault(_pk, {}).update({
+                    "status": "ready_for_writeback", "last_state_at": time.time(),
+                }),
+            )
             tlog(f"[sched] pk={pk} multistage completed, chunks={total_chunks}, dir={os.path.basename(item_dir)}")
         except ExecutionCancelled:
             # Release current-run coordination only.  TODO, Success and
@@ -253,8 +274,9 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
             try:
                 meter_update(
                     meter_fn,
-                    lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update(
-                        {"status": "cancelled", "done": 0}
+                    lambda d, _pk=str(pk): d["rows"].setdefault(_pk, {}).update(
+                        {"status": "cancelled", "done": 0,
+                         "last_state_at": time.time()}
                     ),
                 )
                 meter_update(
@@ -269,6 +291,15 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
         except Exception as ex:
             try:
                 registry.remove(item_dir)
+            except Exception:
+                pass
+            try:
+                meter_update(
+                    meter_fn,
+                    lambda d, _pk=str(pk): d["rows"].setdefault(_pk, {}).update({
+                        "status": "failed", "last_state_at": time.time(),
+                    }),
+                )
             except Exception:
                 pass
             tlog_warn(f"❌ 多階段執行失敗（pk={pk}, mode={mode})：{ex}")
@@ -321,12 +352,13 @@ def schedule_one_row_OLD_1027(ctx, registry, meter_fn, idx: int, pk: Any, text: 
 
     # 6) 更新負載計量檔
     def _on_add_row(d):
-        d["rows"].setdefault(pk, {
+        d["rows"].setdefault(str(pk), {
             "item_dir": item_dir,
             "temp_txt": temp_txt_path,
             "total": 0, "done": 0, "status": "in_progress"
         })
-        d["rows"][pk]["total"] = total_chunks
+        d["rows"][str(pk)]["total"] = total_chunks
+        d["rows"][str(pk)]["last_state_at"] = time.time()
         d["queue"]["pending"] += total_chunks
 
     meter_update(meter_fn, _on_add_row)
@@ -357,12 +389,13 @@ def schedule_one_row_OLD(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
     registry.add(item_dir, pk, temp_txt_path, comb_back_fn)
     print("comb_back_fn in schedule_one_row for ",pk, comb_back_fn)
     def _on_add_row(d):
-        d["rows"].setdefault(pk, {
+        d["rows"].setdefault(str(pk), {
             "item_dir": item_dir,
             "temp_txt": temp_txt_path,
             "total": 0, "done": 0, "status": "in_progress"
         })
-        d["rows"][pk]["total"] = total_chunks
+        d["rows"][str(pk)]["total"] = total_chunks
+        d["rows"][str(pk)]["last_state_at"] = time.time()
         d["queue"]["pending"] += total_chunks
 
     meter_update(meter_fn, _on_add_row)

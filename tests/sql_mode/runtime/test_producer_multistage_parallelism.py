@@ -34,7 +34,11 @@ def _load_producer_module():
         meter_update=lambda *_args, **_kwargs: None,
     )
     _stub_module("czjLLM.prompt_pipeline.runtime_support.stage_mode", explicit_stage_flow=lambda ctx: getattr(ctx, "stages", []))
-    _stub_module("czjLLM.sql_mode.runtime.workers", outstanding_now=lambda _meter_fn: 0)
+    _stub_module(
+        "czjLLM.sql_mode.runtime.workers",
+        outstanding_now=lambda _meter_fn: 0,
+        actionable_outstanding_now=lambda _meter_fn: 0,
+    )
     _stub_module("czjLLM.sql_mode.runtime.scheduler", schedule_one_row=lambda *_args, **_kwargs: 1)
     _stub_module(
         "czjLLM.sql_mode.runtime.pending_recheck",

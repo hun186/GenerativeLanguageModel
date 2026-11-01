@@ -168,6 +168,48 @@ def _native_windows_snapshot(item_dir, max_entries):
     return scan_windows_roles(item_dir, max_entries)
 
 
+def _read_recovery_marker_fd(root_fd: int):
+    """Read only beneath an already nofollow-pinned item root.
+
+    On platforms without fd-relative nofollow guarantees this helper is NOT
+    invoked. A path-based pre-scan read would bypass the safe scanner and can
+    read outside the item through symlinked ancestors.
+    """
+    try:
+        identity_fd = _open_directory(root_fd, "_extract_slice_identity")
+    except FileNotFoundError:
+        return None
+    try:
+        flags = (os.O_RDONLY | getattr(os, "O_NONBLOCK", 0)
+                 | getattr(os, "O_NOFOLLOW", 0))
+        try:
+            marker_fd = os.open(
+                "queue_recovery_status.json", flags, dir_fd=identity_fd,
+            )
+        except FileNotFoundError:
+            return None
+        with os.fdopen(marker_fd, "rb") as stream:
+            info = os.fstat(stream.fileno())
+            if not stat.S_ISREG(info.st_mode):
+                raise _UnsafeScan("nonregular recovery marker")
+            raw = stream.read(4097)
+        if len(raw) > 4096:
+            raise _UnsafeScan("oversize recovery marker")
+        record = json.loads(raw.decode("utf-8"))
+        if not isinstance(record, dict) or record.get("version") != 1:
+            raise _UnsafeScan("invalid recovery marker")
+        if (record.get("state"), record.get("integrity")) not in {
+            ("blocked", "incomplete"), ("recovered", "pending"),
+        }:
+            raise _UnsafeScan("invalid recovery marker")
+        if (record.get("state") == "recovered"
+                and record.get("resolution") != "VERIFIED_EXISTING_TODO"):
+            raise _UnsafeScan("invalid recovery resolution")
+        return record
+    finally:
+        os.close(identity_fd)
+
+
 def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES,
                  experimental_windows: bool = False) -> dict:
     """Non-atomic count-only snapshot; no source bytes or names in output.
@@ -185,7 +227,9 @@ def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES,
         "staging_other_files", "unsafe_entries",
     )}
     result = {"scan_complete": False, "status": "review_required",
-              "counts": counts, "codes": []}
+              "counts": counts, "codes": [],
+              "recovery_integrity": "unverified",
+              "recovery_manual_review_required": False}
     if not 1 <= max_entries <= 100000:
         result["codes"].append("INVALID_ENTRY_LIMIT")
         return result
@@ -219,6 +263,38 @@ def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES,
                     role_files[role] = files
                     unsafe += unsafes
                     unknown_identity += unknowns
+                # Read quarantine ONLY after the root is pinned and roles
+                # were scanned with no-follow dirfds. Handle/symlink errors
+                # remain incompleteness, never status success.
+                try:
+                    recovery_record = _read_recovery_marker_fd(root_fd)
+                except (OSError, ValueError, _UnsafeScan, TypeError):
+                    result["codes"].append("UNREADABLE_RECOVERY_MARKER")
+                    result["recovery_integrity"] = "unknown"
+                    result["recovery_manual_review_required"] = True
+                    return result
+                if recovery_record is not None:
+                    result["recovery_integrity"] = recovery_record["integrity"]
+                    result["recovery_manual_review_required"] = (
+                        recovery_record["state"] == "blocked"
+                    )
+                    result["recheck_count"] = int(
+                        recovery_record.get("recheck_count", 0))
+                    code = recovery_record.get("code")
+                    result["recovery_code"] = (
+                        code if code in {
+                            "TODO_CONFLICT", "UNSAFE_QUEUE_ENTRY",
+                            "RECOVERY_RETRIES_EXHAUSTED",
+                            "RECOVERY_SCAN_INCOMPLETE",
+                        } else "UNKNOWN_RECOVERY_CODE"
+                    )
+                    if recovery_record["state"] == "blocked":
+                        result["codes"].append("RECOVERY_ITEM_BLOCKED")
+                        if recovery_record.get("alert_state") == "operator_required":
+                            result["codes"].append("RECOVERY_OPERATOR_ACTION_REQUIRED")
+                    else:
+                        # Recovered means returned to TODO, not completed LLM.
+                        result["codes"].append("RECOVERY_PENDING")
         except (OSError, ValueError, _UnsafeScan, RecursionError):
             result["codes"].append("INCOMPLETE_OR_UNSAFE_SCAN")
             return result
@@ -265,7 +341,9 @@ def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES,
         ("staging_other_files", "UNEXPECTED_STAGING_FILE"),
         ("unsafe_entries", "UNSAFE_ENTRY_PRESENT"),
     )
-    result["codes"] = [code for name, code in code_by_count if counts[name]]
+    result["codes"].extend(
+        code for name, code in code_by_count if counts[name]
+    )
     if native_windows:
         # Deliberately prevent an unverified Windows run from claiming clean
         # status or allowing exit 0 before self-hosted real filesystem proof.
