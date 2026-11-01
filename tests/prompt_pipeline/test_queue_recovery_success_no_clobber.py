@@ -1569,3 +1569,82 @@ def test_verified_recovered_generation_is_adopted_only_once_per_consumer(
         ctx, str(item), queue.read_recovery_record(item)
     )
     assert str(item) not in pc._queue_recovery_blocked(ctx)
+
+
+def test_integer_pk_recovery_receipts_remain_single_json_meter_row(
+    tmp_path, monkeypatch,
+):
+    """Exact Codex P2: registry int 42, JSON meter key "42" after read."""
+    import json
+    from collections import Counter
+    from czjLLM.prompt_pipeline.runtime_support import load_meter
+
+    item, running = _setup_running(tmp_path)
+    queue.mark_recovery_blocked(item, "RECOVERY_RETRIES_EXHAUSTED", 3)
+    marker = queue.recovery_status_path(item)
+    data = json.loads(marker.read_text("utf-8"))
+    data.update({
+        "state": "recovered", "integrity": "pending",
+        "resolution": "VERIFIED_EXISTING_TODO",
+    })
+    marker.write_text(json.dumps(data), encoding="utf-8")
+    meter_path = str(tmp_path / "loadmeter.json")
+    with open(meter_path, "w", encoding="utf-8") as stream:
+        json.dump({
+            "queue": {"pending": 0, "running": 1, "completed": 0},
+            "rows": {"42": {
+                "item_dir": str(item),
+                "queue_pending": 0, "queue_running": 1,
+                "status": "blocked_recovery",
+            }},
+        }, stream)
+    ctx = SimpleNamespace(_queue_recovery_blocked_items={str(item)})
+    mapping = {str(item): {"pk": 42}}
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a: None)
+    monkeypatch.setattr(pc, "emit_quality_event", lambda *_a, **_kw: None)
+    # Actual file-locking meter reader/writer; no fake dict.
+    pc._recheck_blocked_items(ctx, mapping, meter_path)
+    after = load_meter.meter_read(meter_path)
+    assert set(after["rows"]) == {"42"}
+    assert after["rows"]["42"]["queue_pending"] == 1
+    assert after["rows"]["42"]["queue_running"] == 0
+    assert after["queue"]["pending"] == 1
+    assert after["queue"]["running"] == 0
+    assert not pc._queue_recovery_blocked(ctx)
+    load_meter.meter_update(
+        meter_path,
+        lambda d: pc._meter_on_dispatch(
+            d, mapping, Counter({str(item): 1}), 1,
+        ),
+    )
+    load_meter.meter_update(
+        meter_path,
+        lambda d: pc._meter_on_finish_batch_v2(
+            d, mapping, Counter({str(item): 1}), 1, Counter(), 0,
+        ),
+    )
+    final = load_meter.meter_read(meter_path)
+    assert set(final["rows"]) == {"42"}
+    assert final["queue"] == {"pending": 0, "running": 0, "completed": 1}
+    assert final["rows"]["42"]["done"] == 1
+
+
+def test_integer_pk_is_used_for_held_accounting_and_no_unrelated_row_deduction(
+    monkeypatch,
+):
+    meter = {
+        "queue": {"pending": 2, "running": 2},
+        "rows": {
+            "42": {"queue_pending": 1, "queue_running": 1},
+            "43": {"queue_pending": 1, "queue_running": 1},
+        },
+    }
+    ctx = SimpleNamespace(_queue_recovery_blocked_items={"/item/42"})
+    monkeypatch.setattr(pc, "meter_update", lambda _path, fn: fn(meter))
+    pc._update_recovery_integrity_meter(
+        ctx, "meter", {"/item/42": {"pk": 42}, "/item/43": {"pk": 43}},
+    )
+    assert meter["queue_integrity"]["held_outstanding"] == 2
+    assert meter["queue_integrity"]["held_pending"] == 1
+    assert meter["queue_integrity"]["held_running"] == 1
+    assert set(meter["rows"]) == {"42", "43"}
