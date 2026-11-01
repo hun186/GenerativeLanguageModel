@@ -138,13 +138,17 @@ def _role_state(item_dir, role):
         return "讀取失敗"
 
 
-def _audit_context(audit_path):
+def _audit_context(audit_path, selected_items=()):
     """Run-wide aggregate ONLY, not item-specific evidence."""
     if not audit_path:
         return {"status": "未提供"}
     if not _regular_file(audit_path, MAX_AUDIT_BYTES):
         return {"status": "不存在／超過 2MB／路徑不安全"}
     try:
+        selected = {
+            str(path): [] for path in selected_items
+            if isinstance(path, str) and path
+        }
         with open(audit_path, "r", encoding="utf-8", newline="") as fp:
             reader = csv.DictReader(fp)
             calls = errors = 0
@@ -159,9 +163,42 @@ def _audit_context(audit_path):
                 if calls > 10000:
                     return {"status": "超過 10000 筆安全上限"}
                 model = _safe_model(row.get("model"))
+                # Match path containment by directory boundary rather than
+                # naive prefix (job/1 must never match job/10).
+                prompt_file = row.get("prompt_file")
+                matched = []
+                if isinstance(prompt_file, str) and prompt_file:
+                    try:
+                        full_prompt = os.path.normcase(os.path.abspath(prompt_file))
+                        for item_path in selected:
+                            root = os.path.normcase(os.path.abspath(item_path))
+                            if os.path.commonpath((root, full_prompt)) == root:
+                                matched.append(item_path)
+                    except (ValueError, OSError):
+                        matched = []
+                if len(matched) == 1:
+                    target = selected[matched[0]]
+                    attempt_time = next((
+                        value for value in (
+                            row.get("timestamp"), row.get("start_time"),
+                            row.get("time_iso"),
+                        ) if isinstance(value, str) and
+                        _SAFE_ISO.fullmatch(value)
+                    ), "未記錄")
+                    item_attempt = {
+                        "time_utc": attempt_time,
+                        "model": model or "未記錄",
+                        "ok": row.get("ok") if row.get("ok") in {"YES", "NO"} else "未記錄",
+                        "elapsed_s": _number(row.get("elapsed_seconds")),
+                        "input_tokens": _number(row.get("input_tokens")),
+                        "output_tokens": _number(row.get("output_tokens")),
+                    }
+                    target.append(item_attempt)
+                    if len(target) > 10:
+                        target.pop(0)
                 if model and len(models) < 5:
                     models.add(model)
-                if row.get("ok", "").strip().upper() == "NO":
+                if str(row.get("ok") or "").strip().upper() == "NO":
                     errors += 1
                 i = _number(row.get("input_tokens"))
                 o = _number(row.get("output_tokens"))
@@ -178,7 +215,8 @@ def _audit_context(audit_path):
                     "models": sorted(models), "in_tokens": int(in_tokens),
                     "out_tokens": int(out_tokens),
                     "elapsed_sum_s": round(elapsed, 2),
-                    "elapsed_sample_count": measured}
+                    "elapsed_sample_count": measured,
+                    "item_attempts": selected}
     except (OSError, ValueError, UnicodeError, csv.Error, TypeError):
         return {"status": "讀取失敗"}
 
@@ -246,7 +284,9 @@ def build_detailed_debug_report(incidents, *, meter_path=None,
     if not 1 <= len(incidents) <= MAX_DEBUG_ITEMS:
         raise ValueError("debug report requires 1..100 incidents")
     meter, meter_status = _read_meter(meter_path)
-    audit = _audit_context(audit_path)
+    audit = _audit_context(audit_path, [
+        item.get("item_dir") for item in incidents if isinstance(item, dict)
+    ])
     quality = _quality_context(audit_path)
     q = meter.get("queue", {}) if isinstance(meter.get("queue"), dict) else {}
     timing = meter.get("progress", {}) if isinstance(meter.get("progress"), dict) else {}
@@ -330,6 +370,20 @@ def build_detailed_debug_report(incidents, *, meter_path=None,
             "SQL／ES 寫回回執：未直接取得；不得將 Success 當成確認寫回",
         ])
         history, history_status = _action_timeline(path)
+        attempts = audit.get("item_attempts", {}).get(path, [])
+        lines.append("LLM 呼叫（僅以 Audit prompt_file 在此工作目錄下關聯）：")
+        if attempts:
+            for call in attempts:
+                lines.append(
+                    "- " + call["time_utc"] + " | model=" + call["model"]
+                    + " | ok=" + call["ok"]
+                    + " | elapsed_s=" + call["elapsed_s"]
+                    + " | in=" + call["input_tokens"]
+                    + " | out=" + call["output_tokens"]
+                    + "；尚未確認 provider 單次請求／重試身分"
+                )
+        else:
+            lines.append("- 未找到具工作目錄關聯的 Audit 列（不代表沒有呼叫）")
         lines.append("檢閱處置歷史：" + history_status)
         for ev in history:
             lines.append(f"- {ev['time_utc']} | {ev['action']}")
