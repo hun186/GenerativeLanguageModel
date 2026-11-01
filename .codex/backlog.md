@@ -33,3 +33,8 @@
 - [x] PR #269 GUI UX: selected/visible clipboard copy for ChatGPT debugging, sanitized fixed-code/counts, unknown values redacted, <=100 item cap; tests and usage docs updated.
 - [x] P2 remediation: normalize integer PK to JSON meter string row keys (including scheduler), test actual meter-file locking; active writeback errors override recovered marker and re-open old resolved review.
 - [ ] Final exact-HEAD Hosted Linux/Windows, secret scan, formal Codex Review; operator Windows acceptance and explicit high-risk owner merge authorization required.
+
+
+- [x] PR #269 detailed debugging export: opt-in full diagnostic packet with sourced UTC event chronology, mode/run identity, queue/role receipts, per-item correlated LLM timings/tokens + separate run-only events, optional identifying paths/Run ID/row ID, bounded readonly readers and sensitive-data exclusion; headless tests/docs.
+- [x] Correct Row Merger and orchestrator integer-PK writeback-failure meter mutation to str(_pk), preserving item_dir for GUI inventory; register queue-recovery quality events.
+- [ ] Exact HEAD Hosted E2E/Windows tests, changed-line secret scan, formal Codex review CLEAN; physical GUI acceptance #266 and explicit high-risk owner merge authorization. No automatic merge.
