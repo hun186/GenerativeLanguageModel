@@ -94,9 +94,17 @@ def classify_row(key, row):
             updated_text = time.strftime("%H:%M:%S", time.localtime(updated))
         except (ValueError, OverflowError, OSError):
             updated_text = "—"
+    document_name = row.get("temp_txt")
+    if isinstance(document_name, str) and document_name:
+        # Only a local GUI basename, never the full source path or payload.
+        name = document_name.replace("\\", "/").rsplit("/", 1)[-1]
+        name = _safe_label(name)
+        label = _safe_label(str(key) + " · " + name) if name else _safe_label(key)
+    else:
+        label = _safe_label(key)
     return {
         "key": str(key),
-        "label": _safe_label(key),
+        "label": label,
         "state": state, "stage": status_text,
         "progress": progress,
         "done": done, "total": total,
