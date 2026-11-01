@@ -154,3 +154,17 @@ def test_listing_has_explicit_scope_and_item_limit(tmp_path):
         review.list_review_items(extra_item_dirs=[
             str(tmp_path / str(i)) for i in range(review.MAX_ITEMS + 1)
         ])
+
+
+def test_review_popup_keeps_polling_after_result_delivery():
+    """A refresh must not leave the review window permanently busy."""
+    import inspect
+    from czjLLM.job_manager import recovery_review_gui
+    source = inspect.getsource(recovery_review_gui.show_recovery_review)
+    poll_body = source.split("    def poll():", 1)[1].split(
+        "    def do_action(action):", 1
+    )[0]
+    assert poll_body.count("win.after(100, poll)") == 2
+    assert 'status.set(f"檢閱讀取失敗' in poll_body
+    assert "rows[:] = result" in poll_body
+
