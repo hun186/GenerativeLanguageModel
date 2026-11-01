@@ -354,6 +354,15 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     
     # 3) 計量器就緒
     registry, meter_fn, low, high = init_meter(ctx)
+    # The GUI runs in a separate process: publish the exact job-local meter
+    # path once it exists. Do not scan unrelated projects or entire drives.
+    if gui is not None and callable(
+        getattr(gui, "set_recovery_meter_path", None)
+    ):
+        try:
+            gui.set_recovery_meter_path(meter_fn)
+        except Exception:
+            pass
     '''
     mp_log_q = mp_listener_stop = mp_listener = None
     if not DETAIL_CONSUMER_INFO:
