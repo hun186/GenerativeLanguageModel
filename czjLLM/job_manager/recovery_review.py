@@ -131,7 +131,14 @@ def list_review_items(meter_path=None, extra_item_dirs=()):
     item_map = {}
     if meter_path:
         from czjLLM.prompt_pipeline.runtime_support.load_meter import meter_read
-        meter = meter_read(str(meter_path))
+        try:
+            meter = meter_read(str(meter_path))
+        except (OSError, ValueError, TypeError, KeyError):
+            # The run meter may be rotated/removed after shutdown. An
+            # explicitly chosen historic item directory must remain reviewable.
+            if not extra_item_dirs:
+                raise
+            meter = {}
         rows = meter.get("rows", {})
         if isinstance(rows, dict):
             for row in rows.values():
