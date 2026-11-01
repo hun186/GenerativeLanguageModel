@@ -14,7 +14,8 @@ _LABELS = {
 }
 
 
-def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda: ()):
+def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda: (),
+                         audit_path_provider=lambda: ""):
     """Open independently per Windows GUI instance; never mutate queue state."""
     import tkinter as tk
     from tkinter import ttk, messagebox, filedialog
@@ -40,11 +41,14 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
     controls.pack(fill="x", pady=(0, 6))
     status = tk.StringVar(value="讀取中…")
     show_hidden = tk.BooleanVar(value=False)
+    include_local_paths = tk.BooleanVar(value=False)
     rows = []
     by_id = {}
     manual_dirs = set()
     pending = queue.Queue(maxsize=1)
     busy = [False]
+    diagnostic_busy = [False]
+    diagnostic_result = queue.Queue(maxsize=1)
 
     grid = ttk.Treeview(
         frame,
@@ -177,6 +181,70 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
                 "複製診斷資訊失敗", type(exc).__name__, parent=win,
             )
 
+    def _copy_detailed_debug(items):
+        if diagnostic_busy[0]:
+            status.set("詳細診斷仍在採集，請先完成目前這次複製。")
+            return
+        if not items:
+            messagebox.showinfo("請選取條目", "請先選擇異常條目。", parent=win)
+            return
+        include_paths = include_local_paths.get()
+        if include_paths and not messagebox.askyesno(
+            "包含本機路徑？",
+            "完整路徑可能包含使用者名稱、資料夾名稱或其他敏感資訊。"
+            "確定要將路徑加入剪貼簿嗎？貼到 ChatGPT 前請再檢查。",
+            parent=win,
+        ):
+            return
+        diagnostic_busy[0] = True
+        status.set("正在背景採集詳細診斷證據（不會讀取 Prompt 或 SQL/ES 資料）…")
+        meter = meter_path_provider()
+        audit = audit_path_provider()
+        snapshot = tuple(dict(item) for item in items)
+        def work():
+            try:
+                from czjLLM.job_manager.incident_diagnostics import (
+                    build_detailed_debug_report,
+                )
+                report = build_detailed_debug_report(
+                    snapshot, meter_path=meter, audit_path=audit,
+                    include_paths=include_paths,
+                )
+                diagnostic_result.put((True, report))
+            except Exception as exc:
+                diagnostic_result.put((False, type(exc).__name__))
+        threading.Thread(
+            target=work, name="incident-diagnostic-reader", daemon=True,
+        ).start()
+        win.after(100, _poll_diagnostic)
+
+    def _poll_diagnostic():
+        if not win.winfo_exists():
+            return
+        try:
+            ok, result = diagnostic_result.get_nowait()
+        except queue.Empty:
+            win.after(100, _poll_diagnostic)
+            return
+        diagnostic_busy[0] = False
+        if not ok:
+            messagebox.showerror("詳細診斷失敗", result, parent=win)
+            return
+        try:
+            win.clipboard_clear()
+            win.clipboard_append(result)
+            win.update_idletasks()
+            status.set("已複製完整診斷包；請貼到 ChatGPT，必要時先檢查本機路徑。")
+        except Exception as exc:
+            messagebox.showerror(
+                "剪貼簿失敗", type(exc).__name__, parent=win,
+            )
+
+    def _copy_selected_detailed():
+        item = selected()
+        if item is not None:
+            _copy_detailed_debug([item])
+
     def _copy_selected_debug():
         item = selected()
         if item is not None:
@@ -200,6 +268,16 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
     ttk.Button(
         copy_controls, text="📋 複製目前顯示的異常摘要",
         command=_copy_visible_debug,
+    ).pack(side="left")
+    detail_controls = ttk.Frame(frame)
+    detail_controls.pack(fill="x", pady=(0, 6))
+    ttk.Button(
+        detail_controls, text="📋 複製選取條目的完整除錯包",
+        command=_copy_selected_detailed,
+    ).pack(side="left", padx=(0, 8))
+    ttk.Checkbutton(
+        detail_controls, text="含完整本機工作路徑（敏感；預設關閉）",
+        variable=include_local_paths,
     ).pack(side="left")
 
     ttk.Button(controls, text="重新整理", command=refresh).pack(
