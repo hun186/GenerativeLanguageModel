@@ -10,6 +10,7 @@ _LABELS = {
     "deleted": "已從檢閱清單隱藏", "resolved": "檢閱已結案",
     "blocked": "仍隔離", "pending": "回到 TODO（尚未完成）",
     "absent": "無復原檔", "unknown": "證據不可讀",
+    "writeback_failure": "寫回失敗／待處理",
 }
 
 
@@ -125,7 +126,9 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
         item = selected()
         if item is None:
             return
-        if action == "resolved" and item["operational"] in {"blocked", "unknown"}:
+        if action == "resolved" and item["operational"] in {
+            "blocked", "unknown", "writeback_failure",
+        }:
             messagebox.showwarning(
                 "仍有未解除的安全問題",
                 "該項目仍處於隔離或證據不可讀，不能標記為已解決。"
@@ -141,7 +144,10 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
         ):
             return
         try:
-            set_review_action(item["item_dir"], action)
+            set_review_action(
+                item["item_dir"], action,
+                row_status=item.get("source_row_status"),
+            )
         except Exception as exc:
             messagebox.showerror(
                 "儲存失敗", f"未變更原始工作：{type(exc).__name__}",
