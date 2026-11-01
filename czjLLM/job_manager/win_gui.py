@@ -862,6 +862,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
             from czjLLM.job_manager.recovery_review_gui import show_recovery_review
             _recovery_review_window = show_recovery_review(
                 root, lambda: _recovery_meter_path,
+                audit_path_provider=lambda: _audit_path,
             )
         except Exception as exc:
             from tkinter import messagebox
