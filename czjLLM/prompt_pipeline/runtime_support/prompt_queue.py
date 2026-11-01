@@ -370,8 +370,8 @@ def recovery_status_path(item_dir):
     return Path(item_dir) / "_extract_slice_identity" / RECOVERY_MARKER_NAME
 
 
-def read_recovery_status(item_dir):
-    """Read opaque recovery state; corrupt/aliased records fail closed."""
+def read_recovery_record(item_dir):
+    """Read verified blocked OR recovered record, preserving transition evidence."""
     path = recovery_status_path(item_dir)
     if any(part.is_symlink() for part in (path, *path.parents)):
         raise QueueClaimRollbackError("unsafe recovery status marker")
@@ -405,10 +405,16 @@ def read_recovery_status(item_dir):
     if (record.get("state"), record.get("integrity")) == ("recovered", "pending"):
         if record.get("resolution") != "VERIFIED_EXISTING_TODO":
             raise QueueClaimRollbackError("invalid auto-recovery evidence")
-        return None
+        return record
     if (record.get("state"), record.get("integrity")) != ("blocked", "incomplete"):
         raise QueueClaimRollbackError("invalid recovery status marker")
     return record
+
+
+def read_recovery_status(item_dir):
+    """Legacy-safe public predicate: recovered means not actively blocked."""
+    record = read_recovery_record(item_dir)
+    return record if record and record["state"] == "blocked" else None
 
 
 def mark_recovery_blocked(item_dir, code, attempts):
@@ -456,9 +462,15 @@ def recheck_blocked_recovery(item_dir, *, now=None, interval=RECOVERY_RECHECK_IN
     """
     if max_checks < 1 or max_checks > RECOVERY_RECHECK_MAX_CHECKS or interval < 1:
         raise ValueError("invalid recheck budget")
-    record = read_recovery_status(item_dir)
+    record = read_recovery_record(item_dir)
     if record is None:
         return {"outcome": "clear", "checks": 0}
+    if record["state"] == "recovered":
+        # External CLI may have verified the transition while a live
+        # consumer still holds this item. Never confuse it with a missing
+        # marker and try to overwrite an already resolved record.
+        return {"outcome": "recovered",
+                "checks": int(record.get("recheck_count", 0))}
     now = time.time() if now is None else float(now)
     count = int(record.get("recheck_count", 0))
     if count >= max_checks or record.get("recheck_state") == "operator_required":
