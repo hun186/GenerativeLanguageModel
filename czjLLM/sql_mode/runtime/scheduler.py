@@ -220,6 +220,8 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
         })
         d["rows"][str(pk)]["total"] = total_chunks
         d["rows"][str(pk)]["last_state_at"] = time.time()
+        if run_stream_multistage:
+            d["rows"][str(pk)]["status"] = "scheduling_multistage"
         # Per-row queue receipts avoid guessing held work from unrelated
         # physical TODO files when subtracting producer backpressure.
         queued_chunks = 0 if run_stream_multistage else total_chunks
@@ -255,6 +257,12 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
                     registry.update(item_dir, CombBackFN=comb_back_fn)
             if hasattr(registry, "update"):
                 registry.update(item_dir, status="ready_for_writeback")
+            meter_update(
+                meter_fn,
+                lambda d, _pk=str(pk): d["rows"].setdefault(_pk, {}).update({
+                    "status": "ready_for_writeback", "last_state_at": time.time(),
+                }),
+            )
             tlog(f"[sched] pk={pk} multistage completed, chunks={total_chunks}, dir={os.path.basename(item_dir)}")
         except ExecutionCancelled:
             # Release current-run coordination only.  TODO, Success and
@@ -267,7 +275,8 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
                 meter_update(
                     meter_fn,
                     lambda d, _pk=str(pk): d["rows"].setdefault(_pk, {}).update(
-                        {"status": "cancelled", "done": 0}
+                        {"status": "cancelled", "done": 0,
+                         "last_state_at": time.time()}
                     ),
                 )
                 meter_update(
@@ -282,6 +291,15 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
         except Exception as ex:
             try:
                 registry.remove(item_dir)
+            except Exception:
+                pass
+            try:
+                meter_update(
+                    meter_fn,
+                    lambda d, _pk=str(pk): d["rows"].setdefault(_pk, {}).update({
+                        "status": "failed", "last_state_at": time.time(),
+                    }),
+                )
             except Exception:
                 pass
             tlog_warn(f"❌ 多階段執行失敗（pk={pk}, mode={mode})：{ex}")
