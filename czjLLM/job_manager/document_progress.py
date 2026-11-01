@@ -5,7 +5,7 @@ The GUI receives this snapshot via a background thread only when expanded.
 """
 from __future__ import annotations
 
-import math
+import time
 import os
 from pathlib import Path
 import stat
@@ -14,7 +14,7 @@ MAX_METER_BYTES = 12 * 1024 * 1024
 PAGE_SIZE = 12
 MAX_ID_LENGTH = 85
 _VISIBLE_STATES = {
-    "merged": "已合併／寫回", "writeback_failed_schema": "寫回結構異常",
+    "merged": "Row Merger 已標 merged", "writeback_failed_schema": "寫回結構異常",
     "writeback_failed": "寫回失敗", "blocked_recovery": "復原隔離",
     "recovery_incomplete": "復原不完整", "cancelled": "已取消",
     "ready_to_merge": "待合併／寫回", "ready_for_writeback": "待寫回",
@@ -61,7 +61,8 @@ def classify_row(key, row):
     error = state in _ERROR_STATES
     finalized = state in _FINISHED_STATES
     active = (not finalized and (
-        state in {"scheduling_multistage", "ready_for_writeback", "ready_to_merge"}
+        state in {"in_progress", "scheduling_multistage",
+                  "ready_for_writeback", "ready_to_merge"}
         or (running is not None and running > 0)
         or (pending is not None and pending > 0)
         or (done is not None and done > 0 and (total is None or done < total))
@@ -85,6 +86,14 @@ def classify_row(key, row):
             status_text = "處理中／狀態未細分"
     else:
         status_text = _VISIBLE_STATES.get(state, "未記錄／未知狀態")
+    updated = _nonnegative(row.get("last_state_at"))
+    if updated is None:
+        updated_text = "—"
+    else:
+        try:
+            updated_text = time.strftime("%H:%M:%S", time.localtime(updated))
+        except (ValueError, OverflowError, OSError):
+            updated_text = "—"
     return {
         "key": str(key),
         "label": _safe_label(key),
@@ -95,7 +104,8 @@ def classify_row(key, row):
         "pending_text": "—" if pending is None else str(pending),
         "running_text": "—" if running is None else str(running),
         "error": error, "active": active,
-        "updated_at": _nonnegative(row.get("last_state_at")),
+        "updated_at": updated,
+        "updated_text": updated_text,
     }
 
 
