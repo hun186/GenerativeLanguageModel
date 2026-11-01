@@ -518,6 +518,27 @@ def recheck_blocked_recovery(item_dir, *, now=None, interval=RECOVERY_RECHECK_IN
     return {"outcome": outcome, "checks": count}
 
 
+def require_manual_recovery_reconciliation(item_dir):
+    """Restore a persistent safety hold if a verified TODO cannot be accounted.
+
+    The physical TODO, RUNNING and Success paths are not modified. This
+    prevents a fresh consumer from dispatching a resolved marker whose
+    live queue meter still contains stale RUNNING receipts.
+    """
+    record = read_recovery_record(item_dir)
+    if record is None:
+        raise QueueClaimRollbackError("missing recovery record")
+    record.update({
+        "state": "blocked", "integrity": "incomplete",
+        "code": "UNSAFE_QUEUE_ENTRY",
+        "manual_review_required": True,
+        "recheck_state": "operator_required",
+        "alert_state": "operator_required",
+    })
+    atomic_write_json(str(recovery_status_path(item_dir)), record)
+    return record
+
+
 def recover_running_to_todo(item_dirs, *, require_complete=False,
                             max_attempts=RECOVERY_MAX_ATTEMPTS,
                             retry_delay=RECOVERY_RETRY_DELAY_SEC):
