@@ -26,3 +26,6 @@
 - `.codex/archive/memory.md-20261027-213700.md` — immutable original Git blob `72e0fe6912d3c19e46b2c11de4da532e24ed61fd`.
 
 - 2026-11-01 GUI implementation: all single-run Windows GUIs using the shared `try_start_gui` have an incident review button; SQL/Table/ES send current `meter_fn`. `recovery_review.py` persists append-only operator decisions (`resolved/ignored/deleted/open`) separate from `queue_recovery_status.json`; `deleted` is a tombstone, active holds remain visible. Review of active blocked/writeback failures cannot be marked resolved; no source or sink deletion. New `tests/job_manager/test_recovery_review.py` is included in Linux E2E gate. Archive-first compaction handled old P1. The corrected supervisor preserves externally resolved marker identity and reconciles per-row/global queue receipts; CI and exact-head Codex Review still pending.
+
+
+- 2026-11-01: Owner-requested ChatGPT debug copy in shared Windows incident review GUI, selected item/all visible. Whitelist-only `format_incident_debug_report` includes fixed codes/status/counts, never paths/PK/prompt/keys/logs, clipboard-only. Codex P2 fixes: JSON-stable str(pk) row receipts; active writeback error precedes stale recovered marker, reopening old resolved review. New tests and usage docs added. Exact-head CI/re-review pending; high-risk PR #269 OPEN without merge authorization.
