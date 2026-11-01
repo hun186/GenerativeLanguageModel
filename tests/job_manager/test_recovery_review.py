@@ -527,3 +527,60 @@ def test_review_gui_exposes_page_navigation_and_filters_failed_rows_first():
     assert "上一頁" in src
     assert "下一頁" in src
     assert "review_page[0]" in src
+
+
+def test_incident_inventory_real_meter_corruption_never_becomes_zero_items(tmp_path):
+    """Codex P2 regression: preserve last known incident inventory on bad JSON."""
+    meter = tmp_path / "meter.json"
+    item = tmp_path / "row"
+    item.mkdir()
+    actual = {
+        "rows": {"99": {
+            "item_dir": str(item), "status": "writeback_failed_schema",
+        }},
+        "queue": {"pending": 0, "running": 0},
+    }
+    meter.write_text(json.dumps(actual), encoding="utf-8")
+    last_good = review.list_review_items(meter, page_size=100, with_paging=True)
+    assert last_good["total_candidates"] == 1
+    assert last_good["items"][0]["code"] == "writeback_failed_schema"
+
+    meter.write_text('{"rows":', encoding="utf-8")
+    with pytest.raises(ValueError, match="meter unavailable"):
+        review.list_review_items(meter, page_size=100, with_paging=True)
+    # Supplying old item paths must not swallow an EXISTING corrupt run meter.
+    with pytest.raises(ValueError, match="meter unavailable"):
+        review.list_review_items(meter, extra_item_dirs=[item], with_paging=True)
+    assert last_good["items"][0]["code"] == "writeback_failed_schema"
+
+    meter.write_text(json.dumps(actual), encoding="utf-8")
+    recovered = review.list_review_items(meter, page_size=100, with_paging=True)
+    assert recovered["items"] == last_good["items"]
+    assert recovered["total_candidates"] == 1
+
+
+def test_review_missing_old_run_meter_allows_explicit_item_dir(tmp_path):
+    item, _, _ = _blocked(tmp_path)
+    missing_meter = tmp_path / "removed_after_shutdown.json"
+    with pytest.raises(FileNotFoundError):
+        review.list_review_items(missing_meter, with_paging=True)
+    result = review.list_review_items(
+        missing_meter, extra_item_dirs=[item], with_paging=True,
+    )
+    assert result["total_candidates"] == 1
+    assert result["items"][0]["operational"] == "blocked"
+    assert result["items"][0]["code"] == "TODO_CONFLICT"
+
+
+def test_incident_review_gui_keeps_prior_rows_on_meter_read_error():
+    import inspect
+    from czjLLM.job_manager import recovery_review_gui
+    source = inspect.getsource(recovery_review_gui.show_recovery_review)
+    poll_body = source.split("    def poll():", 1)[1].split(
+        "    def turn_review_page(delta):", 1
+    )[0]
+    assert "if ok:" in poll_body
+    assert 'rows[:] = result["items"]' in poll_body
+    error_body = poll_body.split("        else:", 1)[1]
+    assert 'status.set(f"檢閱讀取失敗' in error_body
+    assert 'rows[:] = ' not in error_body
