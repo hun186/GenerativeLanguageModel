@@ -44,7 +44,12 @@ def _safe_log_parent(item_dir):
     if any(p.is_symlink() for p in (path, *path.parents)):
         raise QueueClaimRollbackError("unsafe review ledger path")
     if not path.parent.is_dir():
-        raise QueueClaimRollbackError("missing review metadata directory")
+        if not Path(item_dir).is_dir():
+            raise QueueClaimRollbackError("missing review item directory")
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            raise QueueClaimRollbackError("unable to create review metadata directory") from exc
     if path.exists() and not stat.S_ISREG(path.lstat().st_mode):
         raise QueueClaimRollbackError("nonregular review ledger")
     return path
@@ -99,11 +104,13 @@ def _marker_summary(item_dir):
 def review_snapshot(item_dir, *, row_status=None):
     """Return privacy-minimal issue summary, or None for no issue."""
     code, operational, count = _marker_summary(item_dir)
-    if code is None and row_status not in ISSUE_STATUSES:
-        return None
     history = _read_action_history(item_dir)
+    if code is None and row_status not in ISSUE_STATUSES and not history:
+        return None
+    if code is None and history:
+        code = history[-1]["code"]
     action = history[-1]["action"] if history else "open"
-    if operational == "blocked" and action == "resolved":
+    if operational in ("blocked", "unknown") and action == "resolved":
         # Operator review is NOT authorization to clear a safety hold.
         action = "open"
     return {
@@ -149,17 +156,28 @@ def list_review_items(meter_path=None, extra_item_dirs=()):
                 "needs_attention": True,
             }
         if summary is not None:
-            results.append({"item_dir": str(path), **summary})
+            results.append({
+                "item_dir": str(path), "source_row_status": status,
+                **summary,
+            })
     return results
 
 
-def set_review_action(item_dir, action):
+def set_review_action(item_dir, action, *, row_status=None):
     """Append operator decision to audit; NEVER mutate recovery marker."""
     if action not in ACTIONS:
         raise ValueError("unsupported review action")
     code, operational, _ = _marker_summary(item_dir)
     if code is None:
+        previous = _read_action_history(item_dir)
+        code = (str(row_status) if row_status in ISSUE_STATUSES
+                else previous[-1]["code"] if previous else None)
+    if code is None:
         raise QueueClaimRollbackError("review source must exist")
+    # A currently failing writeback row is not resolved merely because it
+    # lacks a queue-recovery marker.
+    if action == "resolved" and row_status in ISSUE_STATUSES:
+        raise QueueClaimRollbackError("cannot resolve active writeback failure")
     if action == "resolved" and operational == "blocked":
         raise QueueClaimRollbackError(
             "cannot mark unresolved blocked queue as resolved"
