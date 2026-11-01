@@ -148,12 +148,39 @@ def test_review_rejects_symlinked_item_ancestor(tmp_path):
     assert run.read_bytes() == b"PRIVATE_PROMPT"
 
 
-def test_listing_has_explicit_scope_and_item_limit(tmp_path):
+def test_listing_paginates_beyond_500_and_prioritizes_last_failure(tmp_path):
     assert review.list_review_items() == []
-    with pytest.raises(ValueError, match="limit"):
-        review.list_review_items(extra_item_dirs=[
-            str(tmp_path / str(i)) for i in range(review.MAX_ITEMS + 1)
-        ])
+    paths = [str(tmp_path / f"item_{i:04d}") for i in range(review.MAX_ITEMS)]
+    problem = tmp_path / "item_9999"
+    problem.mkdir()
+    from czjLLM.prompt_pipeline.runtime_support.load_meter import meter_read
+    from czjLLM.prompt_pipeline.runtime_support import load_meter
+    saved = load_meter.meter_read
+    meter = {"rows": {
+        str(i): {
+            "item_dir": path, "status": "merged",
+        } for i, path in enumerate(paths)
+    }}
+    meter["rows"]["9999"] = {
+        "item_dir": str(problem), "status": "writeback_failed_schema",
+    }
+    try:
+        load_meter.meter_read = lambda *_a: meter
+        first = review.list_review_items("meter", with_paging=True)
+        second = review.list_review_items("meter", page=1, with_paging=True)
+    finally:
+        load_meter.meter_read = saved
+    assert first["pages"] == 2
+    assert first["total_candidates"] == 501
+    assert first["scanned"] == review.MAX_ITEMS
+    assert any(
+        record["item_dir"] == str(problem)
+        and record["code"] == "writeback_failed_schema"
+        for record in first["items"]
+    )
+    assert second["scanned"] == 1
+    with pytest.raises(ValueError, match="invalid review page"):
+        review.list_review_items(page_size=review.MAX_ITEMS + 1)
 
 
 def test_review_popup_keeps_polling_after_result_delivery():
