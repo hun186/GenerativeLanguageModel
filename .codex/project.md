@@ -80,5 +80,6 @@ The following older in-progress/PENDING notes preserve history only and are **no
 
 ## Archived History
 
+- `.codex/archive/project.md-20261101-234800.md` — exact pre-PR #270 active project Git blob `1c5a01d44264de3ff5baed5fade965c0e6dd1aa5`, preserved without changes; #269 merge reconciliation replaces dated Current Focus/Handoff text only.
 - `.codex/archive/project.md-20261028-104900.md` — exact pre-reconciliation active router Git blob `a4eeb14fe91dadbb3583087a1517f1f290f2834c`; retains prior HEADs, completed review chronology and superseded `pending` labels. This archive is historical, not a current work queue.
 - Original six `.codex/archive/*.md-20261027-213700.md` snapshots remain untouched.
