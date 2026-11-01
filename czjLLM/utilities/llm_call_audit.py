@@ -311,7 +311,9 @@ def log_llm_call(
     elapsed_value = _float_or_attr(response, "_czjllm_elapsed_seconds", elapsed_seconds)
     tps_value = _float_or_attr(response, "_czjllm_processing_tps", processing_tps)
     row = {
-        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        # Include local UTC offset for new records; legacy naive timestamps
+        # remain explicitly tagged as local/unknown-zone by diagnostics.
+        "timestamp": datetime.now().astimezone().isoformat(timespec="seconds"),
         "run_id": run_id or "",
         "task": str(task or ""),
         "prompt_file": str(prompt_file or ""),
