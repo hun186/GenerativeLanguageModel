@@ -306,12 +306,12 @@ def _recheck_blocked_items(ctx, items_map, meter_fn):
                 blocked.discard(item)
             if outcome == "recovered":
                 try:
-                emit_quality_event(
-                    getattr(ctx, "llm_call_audit_path", ""),
-                    run_id=getattr(ctx, "llm_call_audit_run_id", ""),
-                    event="queue_recovery", code="VERIFIED_EXISTING_TODO",
-                    scope="run", outcome="recovered",
-                )
+                    emit_quality_event(
+                        getattr(ctx, "llm_call_audit_path", ""),
+                        run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+                        event="queue_recovery", code="VERIFIED_EXISTING_TODO",
+                        scope="run", outcome="recovered",
+                    )
                     tlog_warn("[queue-recovery] VERIFIED TODO / auto-recovered; "
                               "pending work may resume")
                 except Exception:
