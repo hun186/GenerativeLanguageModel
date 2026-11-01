@@ -255,3 +255,25 @@ def test_current_writeback_failure_overrides_recovered_marker_even_if_deleted(
     assert "writeback_failed_schema" in report
     assert "writeback_failure" in report
     assert str(tmp_path) not in report
+
+
+def test_new_failure_reopens_formerly_resolved_review_and_stays_visible(tmp_path):
+    item, _, _ = _blocked(tmp_path)
+    marker = queue.recovery_status_path(item)
+    data = json.loads(marker.read_text("utf-8"))
+    data.update({
+        "state": "recovered", "integrity": "pending",
+        "resolution": "VERIFIED_EXISTING_TODO",
+    })
+    marker.write_text(json.dumps(data), encoding="utf-8")
+    review.set_review_action(item, "resolved")
+    assert review.review_snapshot(item)["review_state"] == "resolved"
+    now_failed = review.review_snapshot(item, row_status="writeback_failed")
+    assert now_failed["code"] == "writeback_failed"
+    assert now_failed["operational"] == "writeback_failure"
+    assert now_failed["review_state"] == "open"
+    assert now_failed["needs_attention"] is True
+    now_incomplete = review.review_snapshot(item, row_status="recovery_incomplete")
+    assert now_incomplete["code"] == "recovery_incomplete"
+    assert now_incomplete["operational"] == "unknown"
+    assert now_incomplete["review_state"] == "open"
