@@ -317,7 +317,7 @@ def _release_terminal_fallback_merge_error(
             meter_update(
                 meter_fn,
                 lambda d, _pk=pk: d["rows"].setdefault(str(_pk), {}).update(
-                    {"status": "writeback_failed_schema"}
+                    {"status": "writeback_failed_schema", "last_state_at": time.time()}
                 ),
             )
             meter_update(
