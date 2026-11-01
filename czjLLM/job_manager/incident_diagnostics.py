@@ -410,6 +410,37 @@ def build_detailed_debug_report(incidents, *, meter_path=None,
             lines.append(f"- {ev['time_utc']} | {ev['action']}")
         if not history:
             lines.append("- 未記錄")
+        # Order only directly observed item-scoped facts. Run-wide quality
+        # events are shown elsewhere, never inserted as item causality.
+        timeline = []
+        for clock_value, label in (
+            (_clock(record.get("first_seen_ts")), "寫入復原異常標記"),
+            (_clock(record.get("last_check_ts")), "最後安全復查"),
+        ):
+            if clock_value != "未記錄":
+                timeline.append((clock_value, label))
+        for call in attempts:
+            if call["time_utc"] != "未記錄":
+                timeline.append((call["time_utc"], "Audit 記錄 LLM 呼叫；"
+                                 "以工作目錄關聯，未確認 provider attempt"))
+        for event in history:
+            if event["time_utc"] != "未記錄":
+                timeline.append((event["time_utc"], "人工檢閱操作 " + event["action"]))
+        order = []
+        for stamp, label in timeline:
+            try:
+                normalized = datetime.fromisoformat(
+                    stamp.replace("Z", "+00:00")
+                ).astimezone(timezone.utc)
+                order.append((normalized, label))
+            except ValueError:
+                continue
+        lines.append("該工作可證實的部分事件順序（UTC）：")
+        for timestamp, label in sorted(order)[:30]:
+            lines.append("- " + timestamp.isoformat().replace("+00:00", "Z")
+                         + " | " + label)
+        if not order:
+            lines.append("- 無足夠時間證據可排序")
         lines.append(
             "處理過程完整度：以上僅為現存標記、Meter、操作紀錄與檔案"
             "頂層狀態；未保存的逐步動作、個別 LLM 呼叫時間/錯誤不可推論。"
