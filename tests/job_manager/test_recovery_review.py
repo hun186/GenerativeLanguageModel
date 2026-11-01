@@ -77,13 +77,12 @@ def test_malformed_marker_is_not_silently_resolved(tmp_path):
     with pytest.raises(queue.QueueClaimRollbackError):
         review.set_review_action(item, "resolved")
     meter = {"rows": {"x": {"item_dir": str(item), "status": "blocked_recovery"}}}
-    from czjLLM.prompt_pipeline.runtime_support import load_meter
-    original = load_meter.meter_read
+    original = review.read_meter_strict
     try:
-        load_meter.meter_read = lambda *_a: meter
+        review.read_meter_strict = lambda *_a: meter
         found = review.list_review_items("job-meter.json")
     finally:
-        load_meter.meter_read = original
+        review.read_meter_strict = original
     assert len(found) == 1
     assert found[0]["code"] == "REVIEW_EVIDENCE_UNREADABLE"
     assert found[0]["operational"] == "unknown"
@@ -95,10 +94,9 @@ def test_writeback_failed_row_can_be_acknowledged_but_not_marked_resolved(
 ):
     item = tmp_path / "row"
     item.mkdir()
-    from czjLLM.prompt_pipeline.runtime_support import load_meter
     meter = {"rows": {"r": {"item_dir": str(item),
                            "status": "writeback_failed_schema"}}}
-    monkeypatch.setattr(load_meter, "meter_read", lambda *_a: meter)
+    monkeypatch.setattr(review, "read_meter_strict", lambda *_a: meter)
     found = review.list_review_items("current-run-meter")
     assert len(found) == 1
     assert found[0]["operational"] == "writeback_failure"
@@ -153,9 +151,7 @@ def test_listing_paginates_beyond_500_and_prioritizes_last_failure(tmp_path):
     paths = [str(tmp_path / f"item_{i:04d}") for i in range(review.MAX_ITEMS)]
     problem = tmp_path / "item_9999"
     problem.mkdir()
-    from czjLLM.prompt_pipeline.runtime_support.load_meter import meter_read
-    from czjLLM.prompt_pipeline.runtime_support import load_meter
-    saved = load_meter.meter_read
+    saved = review.read_meter_strict
     meter = {"rows": {
         str(i): {
             "item_dir": path, "status": "merged",
@@ -165,11 +161,11 @@ def test_listing_paginates_beyond_500_and_prioritizes_last_failure(tmp_path):
         "item_dir": str(problem), "status": "writeback_failed_schema",
     }
     try:
-        load_meter.meter_read = lambda *_a: meter
+        review.read_meter_strict = lambda *_a: meter
         first = review.list_review_items("meter", with_paging=True)
         second = review.list_review_items("meter", page=1, with_paging=True)
     finally:
-        load_meter.meter_read = saved
+        review.read_meter_strict = saved
     assert first["pages"] == 2
     assert first["total_candidates"] == 501
     assert first["scanned"] == review.MAX_ITEMS
