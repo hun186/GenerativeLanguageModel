@@ -109,9 +109,15 @@ def review_snapshot(item_dir, *, row_status=None):
         return None
     if code is None and history:
         code = history[-1]["code"]
-    if operational == "absent" and row_status in ISSUE_STATUSES:
-        operational = ("writeback_failure" if row_status.startswith("writeback")
-                       else "unknown")
+    # Active Queue blocks outrank inactive markers. A current writeback
+    # failure outranks a recovered/pending marker and stays visible.
+    if operational != "blocked" and row_status in {
+        "writeback_failed_schema", "writeback_failed",
+    }:
+        code = row_status
+        operational = "writeback_failure"
+    elif operational == "absent" and row_status in ISSUE_STATUSES:
+        operational = "unknown"
     action = history[-1]["action"] if history else "open"
     if operational in ("blocked", "unknown") and action == "resolved":
         # Operator review is NOT authorization to clear a safety hold.
@@ -122,7 +128,9 @@ def review_snapshot(item_dir, *, row_status=None):
         "review_state": action,
         "recheck_count": count,
         "actions_count": len(history),
-        "needs_attention": operational == "blocked" or action == "open",
+        "needs_attention": operational in {
+            "blocked", "unknown", "writeback_failure",
+        } or action == "open",
     }
 
 
