@@ -46,3 +46,7 @@
 
 - [x] Formal Codex P2 remedies: per-row Unix epoch validator independent of slice counters; strict bounded 5-attempt run-meter read that raises on corrupt/permission failures and preserves previous GUI data, never falsely showing zero work. Added regression cases for 2026 epoch, invalid JSON, transient recovery, last-good display.
 - [ ] Latest-head Hosted CI and exact-head Codex Review must PASS/CLEAN; Issue #266 Windows live GUI acceptance; require explicit high-risk owner Merge authorization.
+
+
+- [x] Codex P2 on incident review: use shared strict Meter reader rather than default-empty meter_read; invalid existing JSON propagates, UI retains last valid incident list, explicit old item directory works only for missing meter. Real-file corruption/recovery and UI regression tests added.
+- [ ] Exact-head Hosted CI, no P1/P2 formal Codex findings and owner-approved high-risk Merge remain required.
