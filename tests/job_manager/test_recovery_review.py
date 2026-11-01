@@ -378,7 +378,7 @@ def test_detailed_clipboard_button_is_optin_and_not_on_tk_io_thread():
     from czjLLM.job_manager import recovery_review_gui, win_gui
     src = inspect.getsource(recovery_review_gui.show_recovery_review)
     assert "複製選取條目的完整除錯包" in src
-    assert "含完整本機工作路徑（敏感；預設關閉）" in src
+    assert "含路徑、Run ID、任務 ID（敏感；預設關閉）" in src
     assert "include_local_paths = tk.BooleanVar(value=False)" in src
     assert "build_detailed_debug_report(" in src
     assert 'name="incident-diagnostic-reader", daemon=True' in src
@@ -396,3 +396,62 @@ def test_debug_quality_event_registered_as_run_only():
     assert _EVENT_CODES["queue_recovery"] == {
         "VERIFIED_EXISTING_TODO", "OPERATOR_ACTION_REQUIRED",
     }
+
+
+def test_schema_failure_integer_pk_visible_after_real_meter_roundtrip(
+    tmp_path, monkeypatch,
+):
+    """The production Row Merger must retain item_dir for integer PK=42."""
+    import inspect
+    from czjLLM.sql_mode.runtime import row_merger_generic, orchestrator
+    from czjLLM.prompt_pipeline.runtime_support.load_meter import (
+        meter_update, meter_read,
+    )
+    import czjLLM.sql_mode.runtime.scheduler as scheduler
+
+    # These are the production mutators that used to mix int and str keys.
+    src = inspect.getsource(row_merger_generic.row_merger_watchdog_generic)
+    assert 'd["rows"].setdefault(str(_pk), {})' in src
+    assert 'd["rows"].setdefault(_pk, {})' not in src
+    init = inspect.getsource(orchestrator._release_terminal_fallback_merge_error)
+    assert 'd["rows"].setdefault(str(_pk), {})' in init
+    meter = tmp_path / "meter.json"
+    item = tmp_path / "task"
+    item.mkdir()
+    meter.write_text(json.dumps({
+        "queue": {"pending": 0, "running": 0},
+        "rows": {"42": {
+            "item_dir": str(item), "status": "in_progress",
+            "total": 3, "done": 3,
+        }}
+    }), encoding="utf-8")
+    meter_update(str(meter), lambda d: d["rows"].setdefault(
+        str(42), {}).update({"status": "writeback_failed_schema"}))
+    records = review.list_review_items(str(meter))
+    assert len(records) == 1
+    assert records[0]["code"] == "writeback_failed_schema"
+    assert records[0]["item_dir"] == str(item)
+    assert set(meter_read(str(meter))["rows"]) == {"42"}
+
+
+def test_opted_in_diagnostic_includes_run_and_row_identifiers(tmp_path):
+    from czjLLM.job_manager.incident_diagnostics import build_detailed_debug_report
+    item, _, _ = _blocked(tmp_path)
+    meter = tmp_path / "meter.json"
+    meter.write_text(json.dumps({
+        "session_run_id": "test-run-567",
+        "run_mode": "es",
+        "queue": {"pending": 1, "running": 0},
+        "rows": {"42": {"item_dir": str(item), "status": "blocked_recovery"}}
+    }), encoding="utf-8")
+    source = {"item_dir": str(item), "code": "TODO_CONFLICT",
+              "operational": "blocked", "review_state": "open"}
+    safe = build_detailed_debug_report([source], meter_path=meter)
+    assert "test-run-567" not in safe
+    assert "任務列 ID：已隱藏／未記錄" in safe
+    assert "執行模式：es" in safe
+    explicit = build_detailed_debug_report([source], meter_path=meter,
+                                           include_paths=True)
+    assert "Run ID：test-run-567" in explicit
+    assert "任務列 ID：42" in explicit
+    assert str(item) in explicit
