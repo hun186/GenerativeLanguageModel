@@ -50,3 +50,7 @@
 
 - [x] Codex P2 on incident review: use shared strict Meter reader rather than default-empty meter_read; invalid existing JSON propagates, UI retains last valid incident list, explicit old item directory works only for missing meter. Real-file corruption/recovery and UI regression tests added.
 - [ ] Exact-head Hosted CI, no P1/P2 formal Codex findings and owner-approved high-risk Merge remain required.
+
+
+- [x] Formal Codex P2 (dd757864): detailed ChatGPT diagnostic clipboard must not use default-empty load_meter.meter_read. Now shares strict bounded reader, marks unavailable input and unknown counts explicitly, with actual-file corruption/restoration/missing/unsafe tests.
+- [ ] Exact-head full Hosted CI + clean formal Codex Review and explicit owner authorization before merge of high-risk #269.
