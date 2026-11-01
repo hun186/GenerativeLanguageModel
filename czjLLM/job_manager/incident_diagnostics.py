@@ -103,16 +103,21 @@ def _regular_file(path, max_bytes):
 
 
 def _read_meter(meter_path):
+    """Never substitute the coordinator's default-empty meter for evidence.
+
+    Both operator GUIs and copied diagnostics must agree on the same strict
+    bounded reader. Missing/corrupt/unsafe meter data is explicitly UNKNOWN,
+    never a successful zero-activity or zero-error measurement.
+    """
     if not meter_path:
-        return {}, "未提供"
-    if not _regular_file(meter_path, 2_000_000):
-        return {}, "不存在／超過 2MB／路徑不安全"
+        return {}, "未提供（無法判定工作數及 Queue 計數）"
+    from czjLLM.job_manager.document_progress import read_meter_strict
     try:
-        from czjLLM.prompt_pipeline.runtime_support.load_meter import meter_read
-        m = meter_read(str(meter_path))
-        return (m, "已讀取") if isinstance(m, dict) else ({}, "內容不正確")
-    except (OSError, ValueError, TypeError, KeyError):
-        return {}, "讀取失敗"
+        return read_meter_strict(meter_path), "已讀取（嚴格驗證）"
+    except FileNotFoundError:
+        return {}, "不存在／已移除（證據不可用；不可視為 0）"
+    except (OSError, ValueError, TypeError, KeyError, UnicodeError):
+        return {}, "損壞／不可讀／路徑不安全（證據不可用；不可視為 0）"
 
 
 def _item_meter_row(meter, item_dir):
