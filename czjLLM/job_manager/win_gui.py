@@ -1486,6 +1486,9 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         _document_expanded = not _document_expanded
         if _document_expanded:
             document_frame.pack(fill="x")
+            # Reclaim log request-height rather than creating two overflowing
+            # scroll regions at 125%/150% Windows DPI; log remains available.
+            txt.configure(height=6)
             width = max(760, root.winfo_width())
             height = min(max(690, root.winfo_height()),
                          max(500, root.winfo_screenheight() - 75))
@@ -1494,6 +1497,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
             _request_document_snapshot(force=True)
         else:
             document_frame.pack_forget()
+            txt.configure(height=15)
         _document_header()
 
     def _document_page_delta(delta):
