@@ -191,7 +191,7 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
         include_paths = include_local_paths.get()
         if include_paths and not messagebox.askyesno(
             "包含本機路徑？",
-            "完整路徑可能包含使用者名稱、資料夾名稱或其他敏感資訊。"
+            "完整路徑與 Run／任務 ID 可能包含使用者名稱或其他敏感資訊。"
             "確定要將路徑加入剪貼簿嗎？貼到 ChatGPT 前請再檢查。",
             parent=win,
         ):
@@ -276,7 +276,7 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
         command=_copy_selected_detailed,
     ).pack(side="left", padx=(0, 8))
     ttk.Checkbutton(
-        detail_controls, text="含完整本機工作路徑（敏感；預設關閉）",
+        detail_controls, text="含路徑、Run ID、任務 ID（敏感；預設關閉）",
         variable=include_local_paths,
     ).pack(side="left")
 
