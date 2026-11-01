@@ -227,3 +227,59 @@ def set_review_action(item_dir, action, *, row_status=None):
         stream.flush()
         os.fsync(stream.fileno())
     return event
+
+
+# Clipboard exports use finite, explicitly whitelisted metadata only.
+# Never copy full meter rows, filesystem paths, tracebacks or prompt data.
+_DEBUG_CODES = frozenset((
+    "TODO_CONFLICT", "UNSAFE_QUEUE_ENTRY", "RECOVERY_RETRIES_EXHAUSTED",
+    "RECOVERY_SCAN_INCOMPLETE", "VERIFIED_EXISTING_TODO",
+    "REVIEW_EVIDENCE_UNREADABLE", "blocked_recovery",
+    "writeback_failed_schema", "writeback_failed", "recovery_incomplete",
+))
+_DEBUG_RUNTIME_STATES = frozenset((
+    "blocked", "pending", "absent", "unknown", "writeback_failure",
+))
+MAX_DEBUG_ITEMS = 100
+
+
+def format_incident_debug_report(incidents):
+    """Pure safe copy/paste report; not a queue mutation or network upload."""
+    incidents = list(incidents)
+    if not 1 <= len(incidents) <= MAX_DEBUG_ITEMS:
+        raise ValueError("debug report requires 1..100 incidents")
+
+    def safe_enum(value, known):
+        return value if isinstance(value, str) and value in known else "UNKNOWN"
+
+    def safe_count(value):
+        return value if type(value) is int and 0 <= value <= 100000 else "unknown"
+
+    lines = [
+        "# GenerativeLanguageModel 重大事件診斷摘要",
+        "內容範圍：檢閱視窗選取的結構化異常（不是完整執行日誌）",
+        "用途：協助 ChatGPT 分析可能原因與安全排查；不代表已確定根因。",
+        "資料保護：不包含路徑、檔名、列 ID、Prompt、LLM 回應、金鑰或連線資訊。",
+        "安全提醒：檢閱「已解決」不是 LLM/SQL/ES 寫回完成；"
+        "「忽略／刪除檢閱紀錄」不會解除隔離。",
+        f"條目數：{len(incidents)}", "",
+    ]
+    for idx, entry in enumerate(incidents, 1):
+        if not isinstance(entry, dict):
+            entry = {}
+        lines.extend([
+            f"## 異常 #{idx}",
+            f"錯誤代碼：{safe_enum(entry.get('code'), _DEBUG_CODES)}",
+            f"執行狀態：{safe_enum(entry.get('operational'), _DEBUG_RUNTIME_STATES)}",
+            f"檢閱狀態：{safe_enum(entry.get('review_state'), ACTIONS)}",
+            f"來源列狀態：{safe_enum(entry.get('source_row_status'), ISSUE_STATUSES)}",
+            f"安全復查次數：{safe_count(entry.get('recheck_count'))}",
+            f"檢閱操作次數：{safe_count(entry.get('actions_count'))}",
+            "需注意：是" if entry.get("needs_attention") is True else "需注意：否/未知",
+            "",
+        ])
+    lines.append(
+        "請分析可能原因、哪些額外去識別化證據有助定位，以及不刪除 Success、"
+        "不覆寫 TODO/RUNNING、不重複 SQL/ES 寫回的安全修復方法。"
+    )
+    return "\n".join(lines) + "\n"
