@@ -47,6 +47,9 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
     manual_dirs = set()
     pending = queue.Queue(maxsize=1)
     busy = [False]
+    review_page = [0]
+    review_pages = [1]
+    review_candidates = [0]
     diagnostic_busy = [False]
     diagnostic_result = queue.Queue(maxsize=1)
 
@@ -65,6 +68,14 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
         grid.heading(col, text=text)
         grid.column(col, width=size, anchor="w", stretch=col != "number")
     grid.pack(fill="both", expand=True)
+    paging = ttk.Frame(frame)
+    paging.pack(fill="x", pady=(4, 0))
+    page_prev = ttk.Button(paging, text="上一頁")
+    page_prev.pack(side="left", padx=(0, 5))
+    page_next = ttk.Button(paging, text="下一頁")
+    page_next.pack(side="left")
+    page_label = ttk.Label(paging, text="第 1/1 頁")
+    page_label.pack(side="left", padx=(12, 0))
 
     def render():
         children = grid.get_children()
@@ -88,9 +99,20 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
                 _LABELS.get(item["review_state"], item["review_state"]),
                 item["recheck_count"],
             ))
+        page_label.configure(
+            text=f"第 {review_page[0] + 1}/{review_pages[0]} 頁"
+        )
+        page_prev.configure(
+            state="normal" if review_page[0] > 0 else "disabled"
+        )
+        page_next.configure(
+            state="normal" if review_page[0] + 1 < review_pages[0]
+            else "disabled"
+        )
         status.set(
-            f"共 {len(rows)} 筆；顯示 {len(by_id)} 筆。"
-            "隔離中的條目即使刪除檢閱紀錄也不會隱藏。"
+            f"目前頁 {len(rows)} 筆候選，實際顯示 {len(by_id)} 筆；"
+            f"全部工作候選 {review_candidates[0]} 筆。"
+            "只掃描目前頁，已知寫回／隔離異常優先。"
         )
 
     def selected():
@@ -109,7 +131,9 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
         extras = tuple(manual_dirs) + tuple(extra_dirs_provider())
         def work():
             try:
-                result = (True, list_review_items(meter, extras))
+                result = (True, list_review_items(
+                    meter, extras, page=review_page[0], with_paging=True,
+                ))
             except Exception as exc:
                 result = (False, type(exc).__name__)
             pending.put(result)
@@ -125,13 +149,25 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
             return
         busy[0] = False
         if ok:
-            rows[:] = result
+            rows[:] = result["items"]
+            review_page[0] = result["page"]
+            review_pages[0] = result["pages"]
+            review_candidates[0] = result["total_candidates"]
             render()
         else:
             status.set(f"檢閱讀取失敗（{result}）；請檢查資料與權限。")
         # Keep polling for every subsequent Refresh, manual directory add
         # and operator action, not only while the first read is pending.
         win.after(100, poll)
+
+    def turn_review_page(delta):
+        review_page[0] = max(0, min(
+            review_pages[0] - 1, review_page[0] + delta,
+        ))
+        refresh()
+
+    page_prev.configure(command=lambda: turn_review_page(-1))
+    page_next.configure(command=lambda: turn_review_page(1))
 
     def do_action(action):
         item = selected()
