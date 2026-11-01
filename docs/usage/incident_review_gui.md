@@ -60,3 +60,7 @@ Windows 的共用 `czjLLM/job_manager/win_gui.py` 進度 GUI 提供 **「⚠ 重
 
 ## 驗證及部署限制
 PR #269 改變完整復原與 `full_restart` 安全條件；須在最新 HEAD 跑完 GitHub-hosted CI、正式 Codex Review，並經專案負責人明確批准 Merge。Hosted Tk 靜態/無螢幕測試不代表 Windows 真實 GUI 點擊、NTFS/SMB 競態、SQL/ES 寫回已通過；實機驗收依 Issue #266 執行。
+
+
+## 2026-11-01：Meter 損壞時保留異常清單（正式 Codex P2）
+重大事件檢閱與各列／文件進度現在**共用同一套唯讀嚴格 Meter 讀取**：保留最多 12 MiB、一般檔案、5 次短暫重試的防護。正常 JSON 可列出事件；若現有 Meter JSON 損壞、不可讀或結構錯誤，檢閱 GUI 顯示讀取失敗並保留前一次成功檢閱的項目，**絕不將未解決事件變成 0 筆**。若舊工作 Meter 已經不存在，使用者仍可手動加入單筆舊工作目錄檢閱，但不能以手動目錄掩蓋仍存在的壞 Meter。這不會改動 Queue／Success、寫回資料或任何安全狀態。
