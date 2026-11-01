@@ -322,6 +322,7 @@ def test_detailed_packet_has_timestamps_queue_roles_and_safe_correlated_calls(tm
         "Queue 待處理計數：2", "工作切片總數：3",
         "qwen3.6", "elapsed_s=42.5", "in=123", "out=45",
         "WORKER_LLM_TIMEOUT_EXCEPTION", "Run 範圍", "2026-11-01T08:00:00Z",
+        "該工作可證實的部分事件順序（UTC）", "寫入復原異常標記",
     ):
         assert expected in report
     for secret in ("TOP_SECRET", "SECRET_PASSWORD", str(tmp_path),
