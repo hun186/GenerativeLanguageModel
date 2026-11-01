@@ -63,7 +63,9 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
     grid.pack(fill="both", expand=True)
 
     def render():
-        grid.delete(*grid.get_children())
+        children = grid.get_children()
+        if children:
+            grid.delete(*children)
         by_id.clear()
         for index, item in enumerate(rows, 1):
             # Active blocked or unreadable evidence can NEVER disappear from
