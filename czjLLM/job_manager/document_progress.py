@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import time
 import os
+import json
 from pathlib import Path
 import stat
 
@@ -39,6 +40,23 @@ def _nonnegative(value):
     if number < 0 or number > 10**9:
         return None
     return number
+
+
+def _timestamp(value):
+    """Validate Unix epoch seconds independently from slice-count limits.
+
+    Real last_state_at is time.time() (~1.8 billion in 2026), so reusing
+    _nonnegative() (max 1e9) silently discards all valid timestamps.
+    """
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    try:
+        timestamp = float(value)
+    except (ValueError, TypeError, OverflowError):
+        return None
+    if not 946684800 <= timestamp <= 4102444800:
+        return None
+    return timestamp
 
 
 def _safe_label(value):
@@ -86,7 +104,7 @@ def classify_row(key, row):
             status_text = "處理中／狀態未細分"
     else:
         status_text = _VISIBLE_STATES.get(state, "未記錄／未知狀態")
-    updated = _nonnegative(row.get("last_state_at"))
+    updated = _timestamp(row.get("last_state_at"))
     if updated is None:
         updated_text = "—"
     else:
@@ -189,8 +207,38 @@ def read_document_progress(meter_path, *, mode="目前處理", search="",
                                 page_size=page_size), "notice": "Meter 尚未建立"}
     if not stat.S_ISREG(info.st_mode) or info.st_size > MAX_METER_BYTES:
         raise ValueError("meter file unsafe or exceeds read budget")
-    from czjLLM.prompt_pipeline.runtime_support.load_meter import meter_read
-    data = meter_read(str(path))
+    # meter_read() falls back to an EMPTY DEFAULT after exhausted JSON
+    # retries. That is appropriate for some coordinator paths but unsafe for
+    # monitoring: a corrupt/unreadable live meter must never look like 0 jobs.
+    # This reader retries a bounded number of times and raises on failure,
+    # allowing the GUI to retain the last valid snapshot with an error notice.
+    data = None
+    last_error = None
+    for attempt in range(5):
+        try:
+            if any(node.is_symlink() for node in (path, *path.parents)):
+                raise ValueError("unsafe meter path")
+            fd = os.open(
+                path, os.O_RDONLY | getattr(os, "O_BINARY", 0)
+                | getattr(os, "O_NOFOLLOW", 0),
+            )
+            with os.fdopen(fd, "rb") as fp:
+                info = os.fstat(fp.fileno())
+                if not stat.S_ISREG(info.st_mode) or info.st_size > MAX_METER_BYTES:
+                    raise ValueError("meter file unsafe or exceeds read budget")
+                payload = fp.read(MAX_METER_BYTES + 1)
+            if len(payload) > MAX_METER_BYTES:
+                raise ValueError("meter file unsafe or exceeds read budget")
+            data = json.loads(payload)
+            if not isinstance(data, dict) or not isinstance(data.get("rows"), dict):
+                raise ValueError("invalid meter structure")
+            break
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            last_error = exc
+            if attempt != 4:
+                time.sleep(0.05)
+    if data is None:
+        raise ValueError("meter unavailable after bounded retries") from last_error
     result = project_meter(data, mode=mode, search=search, page=page,
                            page_size=page_size)
     result["notice"] = "本次 Run；切片100%≠確認寫回"
