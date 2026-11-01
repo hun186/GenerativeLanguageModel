@@ -212,6 +212,19 @@ def _queue_recovery_blocked(ctx):
     return getattr(ctx, "_queue_recovery_blocked_items", set())
 
 
+def _queue_recovery_reconciled(ctx):
+    # Records whose recovered/pending generation has ALREADY had its
+    # running-to-pending receipt reconciled by this consumer.
+    return getattr(ctx, "_queue_recovery_reconciled_items", set())
+
+
+def _should_adopt_recovery_record(ctx, item, record):
+    if not record or item in _queue_recovery_blocked(ctx):
+        return False
+    return (record["state"] == "blocked"
+            or item not in _queue_recovery_reconciled(ctx))
+
+
 def _update_recovery_integrity_meter(ctx, meter_fn, items_map):
     if not meter_fn:
         return
@@ -307,6 +320,9 @@ def _recheck_blocked_items(ctx, items_map, meter_fn):
                 require_manual_recovery_reconciliation(item)
                 outcome = "operator_required"
             else:
+                reconciled = _queue_recovery_reconciled(ctx)
+                reconciled.add(item)
+                ctx._queue_recovery_reconciled_items = reconciled
                 blocked.discard(item)
             if outcome == "recovered":
                 try:
@@ -365,6 +381,10 @@ def _mark_item_recovery_blocked(ctx, item, items_map, meter_fn, error):
     # A failed durable status write is terminal, never degrade to an
     # unpersisted exclusion that will be forgotten on process restart.
     marker = mark_recovery_blocked(item, code, attempts)
+    # The same item might encounter a NEW failure after prior recovery.
+    # Do not let a previous reconciliation bypass a new durable hold.
+    if ctx is not None:
+        _queue_recovery_reconciled(ctx).discard(item)
     blocked = _queue_recovery_blocked(ctx)
     blocked.add(item)
     if ctx is not None:
@@ -591,7 +611,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             # Never silently dispatch an item held for operator review.
             for item in items_map:
                 record = read_recovery_record(item)
-                if record and item not in _queue_recovery_blocked(ctx):
+                if _should_adopt_recovery_record(ctx, item, record):
                     if record["state"] == "blocked":
                         _mark_item_recovery_blocked(
                             ctx, item, items_map, meter_fn,
