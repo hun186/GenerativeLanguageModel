@@ -116,10 +116,13 @@ def review_snapshot(item_dir, *, row_status=None):
     }:
         code = row_status
         operational = "writeback_failure"
-    elif operational == "absent" and row_status in ISSUE_STATUSES:
+    elif operational != "blocked" and row_status in {
+        "blocked_recovery", "recovery_incomplete",
+    }:
+        code = row_status
         operational = "unknown"
     action = history[-1]["action"] if history else "open"
-    if operational in ("blocked", "unknown") and action == "resolved":
+    if operational in ("blocked", "unknown", "writeback_failure") and action == "resolved":
         # Operator review is NOT authorization to clear a safety hold.
         action = "open"
     return {
