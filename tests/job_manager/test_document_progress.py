@@ -120,7 +120,35 @@ def test_collapsible_gui_reads_off_tk_thread_only_while_expanded():
     assert 'page_size=page_size' not in source  # library default 12 rows
     assert 'item["updated_text"]' in source
     assert "切片100%≠寫回完成" in source
+    assert "document_selected_bar = ttk.Progressbar(" in source
+    assert 'document_grid.bind("<<TreeviewSelect>>", _document_selected)' in source
+    assert "document_selected_bar.configure(value=pct)" in source
     assert 'document_previous.configure(' in source
     assert 'document_next.configure(' in source
     assert "def _document_page_delta(delta)" in source
     assert "_recovery_meter_path" in source
+
+
+def test_document_name_and_row_identity_are_local_basename_only():
+    row = dp.classify_row(42, {
+        "temp_txt": r"C:\\sensitive\\source\\article_2026_11.txt",
+        "status": "in_progress",
+    })
+    assert row["key"] == "42"
+    assert "article_2026_11.txt" in row["label"]
+    assert "C:" not in row["label"]
+    assert "sensitive" not in row["label"]
+
+
+def test_last_state_at_time_is_derived_from_real_meter_changes():
+    import inspect
+    from czjLLM.prompt_pipeline import pipeline_controller
+    from czjLLM.sql_mode.runtime import scheduler
+    schedule_source = inspect.getsource(scheduler.schedule_one_row)
+    dispatch = inspect.getsource(pipeline_controller._meter_on_dispatch)
+    finish = inspect.getsource(pipeline_controller._meter_on_finish_batch_v2)
+    assert '"last_state_at"' in schedule_source
+    assert '"last_state_at"' in dispatch
+    assert '"last_state_at"' in finish
+    assert '"scheduling_multistage"' in schedule_source
+    assert '"ready_for_writeback"' in schedule_source
