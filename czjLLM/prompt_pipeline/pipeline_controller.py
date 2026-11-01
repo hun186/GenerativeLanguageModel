@@ -235,7 +235,7 @@ def _update_recovery_integrity_meter(ctx, meter_fn, items_map):
         pending = running = 0
         seen = set()
         for item in blocked:
-            pk = items_map.get(item, {}).get("pk", item)
+            pk = str(items_map.get(item, {}).get("pk", item))
             if pk in seen:
                 continue
             seen.add(pk)
@@ -286,7 +286,7 @@ def _recheck_blocked_items(ctx, items_map, meter_fn):
             mark_recovery_blocked(item, "UNSAFE_QUEUE_ENTRY", 1)
             outcome = "operator_required"
         if outcome == "recovered":
-            pk = items_map[item].get("pk", item)
+            pk = str(items_map[item].get("pk", item))
             # The original RUNNING receipt is still accounted for in the
             # coordinator. Transfer it to pending BEFORE making TODO
             # dispatchable. This step is once per in-memory blocked item.
@@ -353,7 +353,7 @@ def _recheck_blocked_items(ctx, items_map, meter_fn):
             except Exception:
                 pass
         if meter_fn:
-            pk = items_map[item].get("pk", item)
+            pk = str(items_map[item].get("pk", item))
             meter_update(meter_fn, lambda d, _pk=pk, _out=outcome, _n=result["checks"]:
                          d.setdefault("rows", {}).setdefault(_pk, {}).update({
                              "recovery_state": _out, "recheck_count": _n,
@@ -389,7 +389,7 @@ def _mark_item_recovery_blocked(ctx, item, items_map, meter_fn, error):
     blocked.add(item)
     if ctx is not None:
         ctx._queue_recovery_blocked_items = blocked
-    pk = items_map.get(item, {}).get("pk", item)
+    pk = str(items_map.get(item, {}).get("pk", item))
     if meter_fn:
         def update(d):
             d.setdefault("rows", {}).setdefault(pk, {}).update({
@@ -553,7 +553,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                             q["running"] = max(0, int(q.get("running", 0) or 0) - int(_n))
                             q["pending"] = int(q.get("pending", 0) or 0) + int(_n)
                         for item, n_moved in moved_by_item.items():
-                            pk = items_map.get(item, {}).get("pk", item)
+                            pk = str(items_map.get(item, {}).get("pk", item))
                             row = d.setdefault("rows", {}).setdefault(pk, {})
                             if "queue_running" in row and "queue_pending" in row:
                                 row["queue_running"] = max(
@@ -949,7 +949,7 @@ def _meter_on_dispatch(d, items_map, count_by_item, total_n):
     # 每列暫時不動 done/total；dispatch 僅改 queue 層級
     # 確保 rows entry 存在
     for item_dir, cnt in count_by_item.items():
-        pk = items_map[item_dir]["pk"]
+        pk = str(items_map[item_dir]["pk"])
         row = d["rows"].setdefault(pk, {})
         if "queue_pending" in row and "queue_running" in row:
             row["queue_pending"] = max(0, int(row["queue_pending"]) - cnt)
@@ -960,7 +960,7 @@ def _meter_on_finish_batch(d, items_map, count_by_item, total_n):
     d["queue"]["running"]   = max(0, d["queue"]["running"] - total_n)
     d["queue"]["completed"] += total_n
     for item_dir, cnt in count_by_item.items():
-        pk = items_map[item_dir]["pk"]
+        pk = str(items_map[item_dir]["pk"])
         row = d["rows"].setdefault(pk, {})
         row["done"] = row.get("done", 0) + cnt
         total = row.get("total", 0)
@@ -981,14 +981,14 @@ def _meter_on_finish_batch_v2(d, items_map,
     # ✅ completed per item（只算 done）
     for item_dir, cnt in count_by_item_done.items():
         #row = rows.setdefault(item_dir, {})
-        pk = items_map.get(item_dir, {}).get("pk", item_dir)  # 保底
+        pk = str(items_map.get(item_dir, {}).get("pk", item_dir))  # 保底
         row = rows.setdefault(pk, {})
         row["done"] = int(row.get("done", 0)) + int(cnt)
         if "queue_running" in row:
             row["queue_running"] = max(0, int(row["queue_running"]) - int(cnt))
 
     for item_dir, cnt in count_by_item_requeued.items():
-        pk = items_map.get(item_dir, {}).get("pk", item_dir)
+        pk = str(items_map.get(item_dir, {}).get("pk", item_dir))
         row = rows.setdefault(pk, {})
         if "queue_running" in row and "queue_pending" in row:
             row["queue_running"] = max(0, int(row["queue_running"]) - int(cnt))
