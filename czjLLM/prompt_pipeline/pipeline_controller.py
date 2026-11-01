@@ -954,6 +954,7 @@ def _meter_on_dispatch(d, items_map, count_by_item, total_n):
         if "queue_pending" in row and "queue_running" in row:
             row["queue_pending"] = max(0, int(row["queue_pending"]) - cnt)
             row["queue_running"] = int(row["queue_running"]) + cnt
+            row["last_state_at"] = time.time()
 
 
 def _meter_on_finish_batch(d, items_map, count_by_item, total_n):
@@ -963,6 +964,7 @@ def _meter_on_finish_batch(d, items_map, count_by_item, total_n):
         pk = str(items_map[item_dir]["pk"])
         row = d["rows"].setdefault(pk, {})
         row["done"] = row.get("done", 0) + cnt
+        row["last_state_at"] = time.time()
         total = row.get("total", 0)
         if total > 0 and row["done"] >= total and row.get("status") not in ("ready_to_merge", "merged"):
             row["status"] = "ready_to_merge"
@@ -984,6 +986,7 @@ def _meter_on_finish_batch_v2(d, items_map,
         pk = str(items_map.get(item_dir, {}).get("pk", item_dir))  # 保底
         row = rows.setdefault(pk, {})
         row["done"] = int(row.get("done", 0)) + int(cnt)
+        row["last_state_at"] = time.time()
         if "queue_running" in row:
             row["queue_running"] = max(0, int(row["queue_running"]) - int(cnt))
 
@@ -993,6 +996,7 @@ def _meter_on_finish_batch_v2(d, items_map,
         if "queue_running" in row and "queue_pending" in row:
             row["queue_running"] = max(0, int(row["queue_running"]) - int(cnt))
             row["queue_pending"] = int(row["queue_pending"]) + int(cnt)
+            row["last_state_at"] = time.time()
 
     # ✅ requeued per item（可選：記錄一下）
     if n_requeued:
