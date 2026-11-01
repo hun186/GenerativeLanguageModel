@@ -1266,6 +1266,208 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
 
     _update_labels()
 
+    # Per-document progress is collapsed by default. The child GUI process
+    # reads its own run-scoped Meter off the Tk thread, only when expanded.
+    # One worker at a time and one page of rows keep large SQL/ES runs usable.
+    document_section = ttk.Frame(frm)
+    document_section.pack(fill="x", pady=(0, 5))
+    document_toggle = ttk.Button(document_section)
+    document_toggle.pack(fill="x")
+    _document_expanded = False
+    _document_busy = False
+    _document_last_refresh = 0.0
+    _document_snapshot = {}
+    _document_page = 0
+    _document_snapshot_args = None
+    _document_results = pyqueue.Queue(maxsize=1)
+    _document_filter = tk.StringVar(value="目前處理")
+    _document_query = tk.StringVar(value="")
+
+    document_frame = ttk.Frame(document_section, padding=(5, 4))
+    document_controls = ttk.Frame(document_frame)
+    document_controls.pack(fill="x", pady=(0, 3))
+    ttk.Label(document_controls, text="顯示：").pack(side="left")
+    document_filter = ttk.Combobox(
+        document_controls, state="readonly", width=11,
+        textvariable=_document_filter, values=("目前處理", "異常", "全部"),
+    )
+    document_filter.pack(side="left", padx=(0, 7))
+    ttk.Label(document_controls, text="查找列 ID：").pack(side="left")
+    document_search = ttk.Entry(
+        document_controls, width=15, textvariable=_document_query,
+    )
+    document_search.pack(side="left", padx=(0, 7))
+    document_refresh = ttk.Button(document_controls, text="更新")
+    document_refresh.pack(side="left")
+    document_previous = ttk.Button(document_controls, text="上一頁")
+    document_next = ttk.Button(document_controls, text="下一頁")
+    document_next.pack(side="right")
+    document_previous.pack(side="right", padx=(0, 5))
+    document_page_label = ttk.Label(document_controls, text="第 1/1 頁")
+    document_page_label.pack(side="right", padx=(0, 10))
+    document_columns = (
+        ("document", "列／文件 ID", 125),
+        ("stage", "目前階段", 185),
+        ("progress", "切片進度（非寫回進度）", 235),
+        ("pending", "等待", 60),
+        ("running", "執行", 60),
+    )
+    document_grid = ttk.Treeview(
+        document_frame,
+        columns=tuple(c[0] for c in document_columns),
+        show="headings", height=9, selectmode="browse",
+    )
+    for col, title_text, width in document_columns:
+        document_grid.heading(col, text=title_text)
+        document_grid.column(
+            col, width=width, anchor="w" if col in
+            {"document", "stage", "progress"} else "center",
+            stretch=col in {"document", "stage", "progress"},
+        )
+    document_grid.tag_configure("error", foreground="#b00020")
+    document_grid.tag_configure("running", foreground="#175b99")
+    document_grid.pack(fill="x")
+    document_detail = ttk.Label(
+        document_frame, foreground="#555",
+        text="切片完成不等於已合併或 SQL/ES 寫回成功。每次只顯示目前頁。",
+        wraplength=720,
+    )
+    document_detail.pack(anchor="w", pady=(4, 0))
+
+    def _document_header():
+        arrow = "▼" if _document_expanded else "▶"
+        if _document_snapshot:
+            summary = (
+                f"{_document_snapshot.get('all', 0)} 列｜"
+                f"進行中 {_document_snapshot.get('active', 0)}｜"
+                f"異常 {_document_snapshot.get('errors', 0)}"
+            )
+        else:
+            summary = "展開查看每列的切片、合併與寫回狀態"
+        document_toggle.configure(
+            text=f"{arrow} 各列／文件進度 — {summary}",
+        )
+
+    def _request_document_snapshot(force=False):
+        nonlocal _document_busy, _document_last_refresh, _document_snapshot_args
+        if not _document_expanded or _document_busy:
+            return
+        now = time.monotonic()
+        if not force and now - _document_last_refresh < 1.5:
+            return
+        args = (
+            _recovery_meter_path, _document_filter.get(),
+            _document_query.get().strip()[:100], _document_page,
+        )
+        _document_busy = True
+        _document_last_refresh = now
+        _document_snapshot_args = args
+        def worker():
+            from czjLLM.job_manager.document_progress import read_document_progress
+            try:
+                result = (True, read_document_progress(
+                    args[0], mode=args[1], search=args[2],
+                    page=args[3],
+                ))
+            except Exception as exc:
+                result = (False, type(exc).__name__)
+            _document_results.put(result)
+        threading.Thread(
+            target=worker, daemon=True, name="row-progress-meter-reader",
+        ).start()
+
+    def _document_results_poll():
+        nonlocal _document_busy, _document_snapshot, _document_page
+        if not root.winfo_exists():
+            return
+        try:
+            ok, result = _document_results.get_nowait()
+        except pyqueue.Empty:
+            pass
+        else:
+            _document_busy = False
+            if ok:
+                _document_snapshot = result
+                _document_page = result["page"]
+                if _document_expanded:
+                    previous_selection = document_grid.selection()
+                    old_key = ""
+                    if previous_selection:
+                        vals = document_grid.item(previous_selection[0], "values")
+                        if vals:
+                            old_key = str(vals[0])
+                    children = document_grid.get_children()
+                    if children:
+                        document_grid.delete(*children)
+                    for idx, item in enumerate(result["shown"]):
+                        tag = ("error",) if item["error"] else (
+                            ("running",) if (item["running"] or 0) else ()
+                        )
+                        document_grid.insert(
+                            "", "end", iid=str(idx), tags=tag,
+                            values=(
+                                item["label"], item["stage"], item["progress"],
+                                item["pending_text"], item["running_text"],
+                            ),
+                        )
+                    document_page_label.configure(
+                        text=f"第 {result['page'] + 1}/{result['pages']} 頁"
+                    )
+                    document_previous.configure(
+                        state="normal" if result["page"] > 0 else "disabled"
+                    )
+                    document_next.configure(
+                        state="normal" if result["page"] + 1 < result["pages"]
+                        else "disabled"
+                    )
+                    document_detail.configure(
+                        text=(result.get("notice") or "")
+                        + f"；顯示 {len(result['shown'])}/{result['matching']} 筆。"
+                        + "切片100%≠寫回完成，僅 merged 標記為已合併／寫回。"
+                    )
+                _document_header()
+            else:
+                document_detail.configure(
+                    text=f"列進度暫無法讀取（{result}）。原始任務不受影響。"
+                )
+        if _document_expanded:
+            _request_document_snapshot()
+        root.after(250, _document_results_poll)
+
+    def _toggle_document():
+        nonlocal _document_expanded, _document_last_refresh
+        _document_expanded = not _document_expanded
+        if _document_expanded:
+            document_frame.pack(fill="x")
+            width = max(760, root.winfo_width())
+            height = min(max(690, root.winfo_height()),
+                         max(500, root.winfo_screenheight() - 75))
+            root.geometry(f"{width}x{height}")
+            _document_last_refresh = 0
+            _request_document_snapshot(force=True)
+        else:
+            document_frame.pack_forget()
+        _document_header()
+
+    def _document_page_delta(delta):
+        nonlocal _document_page
+        _document_page = max(0, _document_page + delta)
+        _request_document_snapshot(force=True)
+
+    def _document_change(_event=None):
+        nonlocal _document_page
+        _document_page = 0
+        _request_document_snapshot(force=True)
+
+    document_toggle.configure(command=_toggle_document)
+    document_previous.configure(command=lambda: _document_page_delta(-1))
+    document_next.configure(command=lambda: _document_page_delta(1))
+    document_refresh.configure(command=lambda: _request_document_snapshot(force=True))
+    document_filter.bind("<<ComboboxSelected>>", _document_change)
+    document_search.bind("<Return>", _document_change)
+    _document_header()
+    root.after(250, _document_results_poll)
+
     txt = tk.Text(frm, height=15, wrap="word")
     scr = ttk.Scrollbar(frm, command=txt.yview)
     txt.configure(yscrollcommand=scr.set, font=("Consolas", 10), bg="white", fg="black",
