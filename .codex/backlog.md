@@ -1,16 +1,16 @@
 # GenerativeLanguageModel — Active Backlog
 
 ## Current Summary
-- **Accepted baseline:** main `e010a5e07c45016f8f0ab4094c30bcd33825d3b5`, Linux offline-e2e #40623677955 **SUCCESS**; PR #239 commit `46b7c7290417421a6dc09e114f82c1066ce0179d`, #40513712390 **SUCCESS**; #231 remains independent OPEN. PR #240, #241, #242 already accepted/merged, never reopen. Windows selfhosted / operator real NTFS/SMB remains **operator-deferred**.
-- **Latest accepted queue main:** #267 handoff `923d7b8d810aa243f4238c9efb3a9748a5e4579a`; #268 exclusive RUNNING no-clobber `ed131529e8c012cd7779d336832efda941b2f001` merged. Other historical #243–#265 outcomes and earlier findings archived verbatim; consult archives only when needed.
-- **Current active high-risk PR #269:** `fix/strict-restart-recovery-20261031` OPEN. Safe strict enumeration, bounded retry, per-item quarantine, finite deferred recheck, healthy-row continuation and queue-integrity meter; external verified pending marker MUST reconcile RUNNING→TODO receipts once per consumer and never be mistaken for job Success. Production Windows/SMB approval not established.
-- **Current GUI work in #269:** shared Windows `win_gui.py` button `重大異常檢閱／管理`; per-run meter and optional explicit old item path; operator actions `resolved/ignored/deleted(open-hidden tombstone)/open` recorded in `queue_review_actions.jsonl`. This never deletes queue sources, authoritative recovery marker, or SQL/ES. Headless GUI/API tests are CI-gated. Polling must continue after every successful/failed refresh.
-- **Owner merge gate:** full_restart / sink integrity is high risk; require latest exact HEAD Linux E2E, Windows Hosted 3.10 and 3.11, changed-line secret scan, formal Codex Review CLEAN with zero unresolved P1/P2 Threads, branch rules and **explicit owner Merge permission**; never automatically merge.
+- **Accepted baseline:** main `e010a5e07c45016f8f0ab4094c30bcd33825d3b5`, Linux offline-e2e #40623677955 **SUCCESS**; PR #239 commit `46b7c7290417421a6dc09e114f82c1066ce0179d`, #40513712390 **SUCCESS**; #231 is closed/merged (confirmed merge `21f8ea5fc985171d5ae2287416f0ff5a8b012d63`). PR #240, #241, #242 already accepted/merged, never reopen. Windows selfhosted / operator real NTFS/SMB remains **operator-deferred**.
+- **Latest accepted queue main:** #269 owner-authorized Squash Merge `d22585b92be9b61d437cfba209902dade91c20d7` on 2026-11-01, exact reviewed HEAD `c5668c123e76ab5b85bd6506a3a505663cbbf641`; #267/#268 accepted earlier. Older dates and historical findings remain in archives.
+- **#269 merged, operational acceptance pending:** Safe strict enumeration, bounded retry, quarantine, finite recheck, healthy-row continuation and queue-integrity meter are in merged code. Verified pending markers must not be treated as sink Success. Operator Windows/SMB/live production acceptance is NOT VERIFIED (#266).
+- **#269 merged GUI feature:** shared Windows `win_gui.py` incident review and collapsible per-document progress, with bounded strict Meter readers, detailed clipboard diagnostics, and review-only append ledger. Headless GUI/API tests passed Hosted CI; physical interactive Tk acceptance remains Issue #266. Actions never delete source, authoritative hold evidence or SQL/ES sinks.
+- **#269 completed owner merge gate:** latest-head Linux E2E, Windows Hosted 3.10/3.11, changed-line scan SUCCESS, formal Codex receipt no major issues, 22/22 threads resolved, explicit 2026-11-01 owner instruction to merge, GitHub confirmed Squash Merge. Two self-hosted jobs were queued and not treated as verified; physical operator tests remain separate.
 
 ## True Open Engineering Work
-- [ ] Complete PR #269 newest-head Hosted Linux offline E2E, Windows 3.10/3.11 NTFS, secret scan, formal Codex re-review and remediate findings. No Merge pending explicit owner approval.
+- [x] PR #269 exact-head Hosted Linux E2E, Windows 3.10/3.11, secret scan, formal Codex Review, owner approval and Squash Merge accepted; physical operator acceptance is separate #266.
 - [ ] **Issue #266:** real operator Windows/SMB/NTFS, live Ollama, SQL/ES sink-ack/readback and Tk GUI interaction acceptance. Hosted CI is not physical operator acceptance; no unverified Windows auto-replay.
-- [ ] **Separate PR #231** sealed JSONL rotation no-clobber rollback remains OPEN; do not modify, close, merge or rebase without separate authorization.
+- [x] **Historical PR #231** is closed/merged (`21f8ea5fc985171d5ae2287416f0ff5a8b012d63`), independently verified from GitHub. Do not reopen stale historical work.
 - [ ] Native production writer-quiescence/stop evidence, authenticated replay identity and generation-bound checkpoint before any auto source rebuild or queue cleanup; never assume a stale RUNNING worker is safe to replay.
 - [ ] Add central all-project incident inventory only if user requests beyond current-run structured queue recovery/writeback codes; preserve privacy and per-run scopes. Optional owner-directed notification, not a silently installed service.
 - [ ] Durable error stream for non-schema Producer/Worker/Stage/Row-Merger failures, authoritative request/retry lineage and correct denominator; do not infer document failure from audit rows or cached tokens.
@@ -18,13 +18,16 @@
 - [ ] Audit ES event_ids/date-precision/stage lineage with independently confirmed sink readback; preserve source, repaired and acknowledged distinction.
 - [ ] Evaluate crash-safe checkpoint/identity, bounded reduction disk state, GUI observability and cache only after demonstrated need. Never change sensitive config or unsafe API keys.
 
-## Recent Changes
+## Recent Changes (historical progress notes; older Pending labels are superseded)
+- 2026-11-01: PR #270 Codex P1 remediation preserved exact original project, memory, and backlog snapshots; this PR's Hosted CI/Review remain independent pending gates.
+- 2026-11-01: Reconciled exact #269 Squash Merge with Hosted GitHub. Remaining next focus: Issue #266 operator-owned offline NTFS fixtures, then separately gated physical GUI/SMB/live sink evidence. No automatic production queue or data writes.
 - 2026-10-28 to 2026-10-31: #243–#265 concluded in historical archived handoffs; staged Windows native safe-handle probes, queue no-clobber, identity and queue-inspector work. Operator Windows acceptance #266 still pending.
 - 2026-10-31: #268 merged. #269 staged strict restart, three-attempt retry, per-item blocked/incomplete, five 30s cooldown rechecks, persisted operator escalation and metadata-only supervisor CLI.
 - 2026-11-01: #269 GUI management and review-only audit ledger; hard safety veto on marking active blocked/writeback failures as resolved; fixed missing GUI polling callback and duplicate recovered-item adoption. **All still pending final acceptance.**
 - 2026-11-01: **Archive-first compaction**: preserved the complete 205-line prior active backlog verbatim in `.codex/archive/backlog.md-20261101-124200.md` before reducing this active summary to within 200 lines / 40 KB. Retain all old open handoffs and review traces in immutable archive.
 
 ## Archived History
+- `.codex/archive/backlog.md-20261101-234800.md` — exact pre-PR #270 active backlog Git blob `869d39e0b2ba37a1e2691c5a3a1cc051be41e6bf`, preserved without changes; #269 merge reconciliation replaces dated Current Focus/Handoff text only.
 - `.codex/archive/backlog.md-20261101-124200.md` — full original #269 development chronology, old active backlog immediately before latest compaction.
 - `.codex/archive/backlog.md-20261028-104900.md` — original Git blob `67b64c801806d585e246d9f0091efe4cb69d37ef`; pre-reconciliation work preserved byte-for-byte.
 - `.codex/archive/backlog.md-20261027-213700.md` — original Git blob `0a40f0a9b26d7bebb7125a790995db6b84181a4f`; earliest handoffs preserved.

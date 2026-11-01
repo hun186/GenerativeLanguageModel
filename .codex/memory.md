@@ -2,12 +2,14 @@
 
 ## Current Summary
 - Accepted #242 main commit `e010a5e07c45016f8f0ab4094c30bcd33825d3b5`; Hosted postmerge Linux offline E2E `40623677955` **SUCCESS**; #231 merged. #239 `46b7c7290417421a6dc09e114f82c1066ce0179d`, Hosted `40513712390` SUCCESS. Accepted #240, #241 and #242 remain closed and must not be re-opened. Windows operator acceptance remains **operator-deferred**.
-- Accepted #268 main `ed131529e8c012cd7779d336832efda941b2f001`. Current high-risk PR #269 (branch `fix/strict-restart-recovery-20261031`) remains OPEN: owner requested finite recovery, per-item isolation, healthy continuation, bounded follow-up and an operator issue-review GUI. **No merge without latest-head Hosted CI, exact-head Codex Review zero Findings/Threads, all protections, and owner-specific authorization.**
+- **Latest accepted main #269:** PR #269 was owner-authorized and Squash Merged on 2026-11-01 into main as `d22585b92be9b61d437cfba209902dade91c20d7` from exact HEAD `c5668c123e76ab5b85bd6506a3a505663cbbf641`. Formal Codex exact-HEAD receipt said no major issues; all 22 review threads resolved. Latest-HEAD hosted Linux offline-e2e, hosted Windows NTFS Python 3.10/3.11 and changed-line secrets were SUCCESS. The two self-hosted Windows jobs stayed QUEUED, and operator PC, physical Tk GUI, SMB, live LLM, SQL/ES sink readback were NOT VERIFIED; see Issue #266. No production repair/deletion or replay authorized.
 - #269 safety: do NOT overwrite an unrelated TODO generation, blindly delete prior Success, misreport SQL/ES writeback as completed, or interpret partial recovery as success. File metadata `_extract_slice_identity/queue_recovery_status.json` is authoritative hold evidence; `queue_review_actions.jsonl` stores ONLY operator review decisions, never queue/sink actions. Ignore/delete are *review-only*, not execution or data deletion. Resolved cannot bypass blocked/unknown recovery state.
 - #269 follow-up: at most three transient move retries, finite 30-second/5-cycle follow-up, narrow POSIX-only two-observation identity-verified external RUNNING→TODO pending recovery; ambiguous conflicts are operator_required. Pending means not yet LLM/sink success. Run-scoped GUI uses shared `czjLLM/job_manager/win_gui.py`, with issue-review button and per-run meter supplied by SQL/Table/ES orchestrator; legacy items can be added manually. No entire-disk discovery or external notification.
 - Active quality contracts: ES `article_date_iso`/precision and `event_ids` shape, sink `confirm_writeback()` acknowledgments, original ordered slice identity for single-extract resume, stage-isolated audit `effective_tok_per_s_est` vs `total_tok_per_s`, provider cache source. Held queue accounting uses row pending/running receipts, not physical duplicate name counts.
 
 ## Recent Changes
+- 2026-11-01: Codex P1 fix for PR #270: restored archive-first traceability of exact pre-reconciliation project/memory/backlog blobs; new archive links and immutable Windows newline policy are included in the same PR. This is not evidence of current-head CI or review completion.
+- 2026-11-01: Reconciled PR #269 against actual merged GitHub PR and main SHA. This documentation-only follow-up contains no production queue, data, permission, or configuration changes; mark next PR CI/review separately, not as prior #269 acceptance.
 - 2026-10-30: #258 private profile untracking and per-environment deployment preflight; exact merged/current history preserved in archives. Private configs and credentials must stay untracked.
 - 2026-10-30 to 10-31: #261–#265 safety-focused queue scanner/NTFS tests and operator-only acceptance #266. Native Windows/SMB live worker quiescence, real LLM calls and SQL/ES readback **NOT accepted**.
 - 2026-10-31: #267 handoff and #268 queue no-clobber merged; #269 strict recovery, typed per-item exceptions, protected full_restart, persistent Blocked, producer backpressure fixes, safe finite rechecks, read-only diagnostic.
@@ -15,11 +17,12 @@
 - 2026-11-01: **Archive-first memory compaction**: copied the full immediately preceding active `.codex/memory.md` verbatim to `.codex/archive/memory.md-20261101-103200.md`, then replaced this active document with actionable concise handoff. GitHub historical source can be compared with archive blob. No old source content discarded.
 
 ## Open Handoffs
-- Complete exact-head Hosted Linux E2E, Windows Hosted Python 3.10/3.11, changed-line secrets and formal Codex Review for #269; repair all P1/P2 findings and tests before seeking specific high-risk merge approval.
+- [x] #269 exact-head hosted Linux/Windows/secret scan, formal Codex review, owner approval and Squash Merge completed; retain independent operator acceptance requirements in Issue #266.
 - Operator GUI must never delete source files or clear a Blocked marker; allow review-only soft removal, keep active incidents visible. Be careful about corrupt ledgers, symlink/unsafe paths and concurrent edits.
 - Issue #266 still requires real offline Windows NTFS/SMB and live LLM/SQL/ES acceptance. Production deployment/manual operator scheduling is distinct from GitHub Hosted test success.
 
 ## Archived History
+- `.codex/archive/memory.md-20261101-234800.md` — exact pre-PR #270 active memory Git blob `53ef85bf9d6a616177e84b9f594b8ae28a1defea`, preserved without changes; #269 merge reconciliation replaces dated Current Focus/Handoff text only.
 - `.codex/archive/memory.md-20261101-103200.md` — exact pre-2026-11-01 compaction active memory, including all earlier #269 reviews.
 - `.codex/archive/memory.md-20261030-103500.md` — immutable original Git blob `8af2694365bd5202a1533a36c8b7cd4c82f22408`.
 - `.codex/archive/memory.md-20261028-104900.md` — immutable original Git blob `309b57f00fc85f0d03fd12fdb3b7bdfdaa4708d8`.

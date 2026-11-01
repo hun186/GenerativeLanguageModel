@@ -280,3 +280,28 @@ def test_20261030_phase2f_known_issues_archive_is_exact_and_active_bounded():
     assert "ES" in body and "SQL" in body
     attrs = (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
     assert f".codex/archive/{stem} -text" in attrs
+
+
+# PR #270: never replace current focus, memory handoffs, or backlog status
+# without preserving the exact immediately preceding Git blob. This is
+# independent of earlier archive-first compactions and older test fixtures.
+_PR270_PRE_RECONCILIATION_BLOBS = {
+    "project": "1c5a01d44264de3ff5baed5fade965c0e6dd1aa5",
+    "memory": "53ef85bf9d6a616177e84b9f594b8ae28a1defea",
+    "backlog": "869d39e0b2ba37a1e2691c5a3a1cc051be41e6bf",
+}
+
+
+@pytest.mark.parametrize("name,expected", sorted(_PR270_PRE_RECONCILIATION_BLOBS.items()))
+def test_pr270_reconciliation_keeps_exact_pre_edit_handoff_archive(name, expected):
+    stem = f"{name}.md-20261101-234800.md"
+    archive = _ROOT / ".codex" / "archive" / stem
+    active = _ROOT / ".codex" / f"{name}.md"
+    assert archive.is_file()
+    assert _git_blob_sha(archive.read_bytes()) == expected
+    body = active.read_text(encoding="utf-8")
+    assert stem in body and expected in body
+    assert len(body.splitlines()) <= 200
+    assert len(body.encode("utf-8")) < 40_000
+    attrs = (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
+    assert ".codex/archive/*-20261101-234800.md -text" in attrs
