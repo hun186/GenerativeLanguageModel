@@ -69,7 +69,9 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
             # Active blocked or unreadable evidence can NEVER disappear from
             # the interface even after the operator presses Ignore/Delete.
             if (item["review_state"] == "deleted"
-                    and item["operational"] not in {"blocked", "unknown"}
+                    and item["operational"] not in {
+                        "blocked", "unknown", "writeback_failure",
+                    }
                     and not show_hidden.get()):
                 continue
             iid = str(index)
