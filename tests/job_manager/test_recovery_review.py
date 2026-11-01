@@ -168,3 +168,90 @@ def test_review_popup_keeps_polling_after_result_delivery():
     assert 'status.set(f"檢閱讀取失敗' in poll_body
     assert "rows[:] = result" in poll_body
 
+
+
+def test_chatgpt_copy_report_contains_safe_status_but_never_private_fields():
+    event = {
+        "item_dir": "C:/private/queue/prompt SECRET_SOURCE",
+        "code": "TODO_CONFLICT",
+        "operational": "blocked",
+        "review_state": "ignored",
+        "source_row_status": "blocked_recovery",
+        "recheck_count": 3,
+        "actions_count": 2,
+        "needs_attention": True,
+        "prompt_text": "SECRET_PROMPT",
+        "api_key": "SECRET_API_KEY",
+        "traceback": "SECRET_TRACE",
+        "pk": "SECRET_ROW_ID",
+        "password": "SECRET_PASSWORD",
+    }
+    result = review.format_incident_debug_report([event])
+    for expected in ("TODO_CONFLICT", "blocked", "ignored",
+                     "blocked_recovery", "安全復查次數：3", "條目數：1"):
+        assert expected in result
+    for private in ("C:/private", "SECRET_SOURCE", "SECRET_PROMPT",
+                    "SECRET_API_KEY", "SECRET_TRACE", "SECRET_ROW_ID",
+                    "SECRET_PASSWORD"):
+        assert private not in result
+    assert "不重複 SQL/ES 寫回" in result
+
+
+def test_chatgpt_copy_report_unknown_values_fail_closed_and_is_bounded():
+    injection = "C:/private/api-token=DO_NOT_LEAK"
+    item = {
+        "code": injection, "operational": injection,
+        "review_state": injection, "source_row_status": injection,
+        "recheck_count": injection, "actions_count": -99,
+        "needs_attention": injection,
+    }
+    report = review.format_incident_debug_report([item])
+    assert injection not in report
+    assert report.count("UNKNOWN") >= 4
+    assert "安全復查次數：unknown" in report
+    assert "需注意：否/未知" in report
+    with pytest.raises(ValueError, match="1..100"):
+        review.format_incident_debug_report([])
+    with pytest.raises(ValueError, match="1..100"):
+        review.format_incident_debug_report([item] * 101)
+
+
+def test_copy_buttons_are_bound_to_whitelisted_formatter_in_same_tk_window():
+    import inspect
+    from czjLLM.job_manager import recovery_review_gui
+    source = inspect.getsource(recovery_review_gui.show_recovery_review)
+    assert "複製選取條目（ChatGPT 除錯）" in source
+    assert "複製目前顯示的異常摘要" in source
+    assert "format_incident_debug_report(items)" in source
+    assert "win.clipboard_clear()" in source
+    assert "win.clipboard_append(report)" in source
+    assert "win.update_idletasks()" in source
+    assert "_copy_debug_report(visible)" in source
+    assert "_copy_debug_report([item])" in source
+
+
+def test_current_writeback_failure_overrides_recovered_marker_even_if_deleted(
+    tmp_path,
+):
+    item, run, _ = _blocked(tmp_path)
+    status_path = queue.recovery_status_path(item)
+    record = json.loads(status_path.read_text("utf-8"))
+    record.update({
+        "state": "recovered", "integrity": "pending",
+        "resolution": "VERIFIED_EXISTING_TODO",
+    })
+    status_path.write_text(json.dumps(record), encoding="utf-8")
+    review.set_review_action(item, "deleted")
+    row = review.review_snapshot(item, row_status="writeback_failed_schema")
+    assert row["code"] == "writeback_failed_schema"
+    assert row["operational"] == "writeback_failure"
+    assert row["review_state"] == "deleted"
+    assert row["needs_attention"] is True
+    with pytest.raises(queue.QueueClaimRollbackError):
+        review.set_review_action(
+            item, "resolved", row_status="writeback_failed_schema",
+        )
+    report = review.format_incident_debug_report([row])
+    assert "writeback_failed_schema" in report
+    assert "writeback_failure" in report
+    assert str(tmp_path) not in report
