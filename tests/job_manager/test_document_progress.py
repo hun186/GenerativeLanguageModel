@@ -154,3 +154,69 @@ def test_last_state_at_time_is_derived_from_real_meter_changes():
     assert '"last_state_at"' in finish
     assert '"scheduling_multistage"' in schedule_source
     assert '"ready_for_writeback"' in schedule_source
+
+
+def test_normal_epoch_is_not_confused_with_slice_count_budget():
+    epoch = 1793500000.125  # The previous 1e9 slice cap rejected this.
+    displayed = dp.classify_row(
+        "42", {"last_state_at": epoch, "total": 4, "done": 2},
+    )
+    assert displayed["updated_at"] == epoch
+    assert displayed["updated_text"] != "—"
+    for invalid in (None, False, "1793500000", -1, 0, float("nan"),
+                    float("inf"), 99999999999999):
+        assert dp.classify_row("42", {"last_state_at": invalid})[
+            "updated_text"
+        ] == "—"
+
+
+def test_corrupted_existing_meter_never_looks_like_an_empty_successful_run(tmp_path):
+    meter = tmp_path / "loadmeter.json"
+    meter.write_text('{"rows":', encoding="utf-8")
+    with pytest.raises(ValueError, match="unavailable after bounded retries"):
+        dp.read_document_progress(meter)
+    meter.write_text('{"queue": {"running": 4}, "rows": "bad"}',
+                     encoding="utf-8")
+    with pytest.raises(ValueError, match="invalid meter structure"):
+        dp.read_document_progress(meter)
+    # A legitimately not-yet-created meter may be reported as unavailable,
+    # but never as a confirmed empty/complete batch.
+    absent = dp.read_document_progress(tmp_path / "future.json")
+    assert absent["all"] == 0
+    assert "尚未建立" in absent["notice"]
+
+
+def test_transient_meter_json_failure_recovers_without_default_empty_fallback(
+    tmp_path, monkeypatch,
+):
+    meter = tmp_path / "loadmeter.json"
+    meter.write_text("not-json", encoding="utf-8")
+    calls = []
+    def repair_after_retry(_delay):
+        calls.append("retry")
+        meter.write_text(json.dumps({
+            "rows": {"row-A": {
+                "status": "in_progress", "total": 3, "done": 1,
+                "last_state_at": 1793500000,
+            }},
+        }), encoding="utf-8")
+    monkeypatch.setattr(dp.time, "sleep", repair_after_retry)
+    snap = dp.read_document_progress(meter)
+    assert calls == ["retry"]
+    assert snap["all"] == 1
+    assert snap["shown"][0]["key"] == "row-A"
+    assert snap["shown"][0]["updated_text"] != "—"
+
+
+def test_gui_does_not_wipe_previous_valid_rows_on_read_error():
+    source = inspect.getsource(win_gui._gui_proc_main)
+    fn = source.split("    def _document_results_poll():", 1)[1].split(
+        "    def _toggle_document():", 1,
+    )[0]
+    assert "if ok:" in fn
+    # The cached successful snapshot and table are only overwritten on
+    # successful read; on error the detail label shows evidence unavailable.
+    assert fn.index("if ok:") < fn.index("_document_snapshot = result")
+    error_branch = fn.split("            else:", 1)[-1]
+    assert "列進度暫無法讀取" in fn
+    assert "document_grid.delete(*children)" in fn
