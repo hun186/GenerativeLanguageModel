@@ -19,6 +19,7 @@
 - [ ] Evaluate crash-safe checkpoint/identity, bounded reduction disk state, GUI observability and cache only after demonstrated need. Never change sensitive config or unsafe API keys.
 
 ## Recent Changes (historical progress notes; older Pending labels are superseded)
+- 2026-11-01: PR #270 Codex P1 remediation preserved exact original project, memory, and backlog snapshots; this PR's Hosted CI/Review remain independent pending gates.
 - 2026-11-01: Reconciled exact #269 Squash Merge with Hosted GitHub. Remaining next focus: Issue #266 operator-owned offline NTFS fixtures, then separately gated physical GUI/SMB/live sink evidence. No automatic production queue or data writes.
 - 2026-10-28 to 2026-10-31: #243–#265 concluded in historical archived handoffs; staged Windows native safe-handle probes, queue no-clobber, identity and queue-inspector work. Operator Windows acceptance #266 still pending.
 - 2026-10-31: #268 merged. #269 staged strict restart, three-attempt retry, per-item blocked/incomplete, five 30s cooldown rechecks, persisted operator escalation and metadata-only supervisor CLI.
@@ -26,6 +27,7 @@
 - 2026-11-01: **Archive-first compaction**: preserved the complete 205-line prior active backlog verbatim in `.codex/archive/backlog.md-20261101-124200.md` before reducing this active summary to within 200 lines / 40 KB. Retain all old open handoffs and review traces in immutable archive.
 
 ## Archived History
+- `.codex/archive/backlog.md-20261101-234800.md` — exact pre-PR #270 active backlog Git blob `869d39e0b2ba37a1e2691c5a3a1cc051be41e6bf`, preserved without changes; #269 merge reconciliation replaces dated Current Focus/Handoff text only.
 - `.codex/archive/backlog.md-20261101-124200.md` — full original #269 development chronology, old active backlog immediately before latest compaction.
 - `.codex/archive/backlog.md-20261028-104900.md` — original Git blob `67b64c801806d585e246d9f0091efe4cb69d37ef`; pre-reconciliation work preserved byte-for-byte.
 - `.codex/archive/backlog.md-20261027-213700.md` — original Git blob `0a40f0a9b26d7bebb7125a790995db6b84181a4f`; earliest handoffs preserved.
