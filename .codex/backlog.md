@@ -38,3 +38,8 @@
 - [x] PR #269 detailed debugging export: opt-in full diagnostic packet with sourced UTC event chronology, mode/run identity, queue/role receipts, per-item correlated LLM timings/tokens + separate run-only events, optional identifying paths/Run ID/row ID, bounded readonly readers and sensitive-data exclusion; headless tests/docs.
 - [x] Correct Row Merger and orchestrator integer-PK writeback-failure meter mutation to str(_pk), preserving item_dir for GUI inventory; register queue-recovery quality events.
 - [ ] Exact HEAD Hosted E2E/Windows tests, changed-line secret scan, formal Codex review CLEAN; physical GUI acceptance #266 and explicit high-risk owner merge authorization. No automatic merge.
+
+
+- [x] PR #269 Windows shared GUI: paged collapsible per-row/document progress, 10-unit visual bars, selected native progress bar, priority statuses/filters/search, low-duty expanded-only background meter worker, no false writeback success. Scheduler/Consumer/Row Merger status+timestamp evidence and headless tests/docs included.
+- [x] Prior P2s: >500 review rows now paginated with known failures prioritized; old timezone-naive LLM audit lines explicitly marked unknown local timezone and not sorted into UTC chronology, future writer offset-aware. Regression tests included.
+- [ ] Latest-head CI and formal Codex review; Windows DPI and live LLM/SQL/ES/NTFS operator acceptance Issue #266. High-risk PR #269 must remain unmerged without owner permission.
