@@ -28,3 +28,8 @@
 - `.codex/archive/backlog.md-20261101-124200.md` — full original #269 development chronology, old active backlog immediately before latest compaction.
 - `.codex/archive/backlog.md-20261028-104900.md` — original Git blob `67b64c801806d585e246d9f0091efe4cb69d37ef`; pre-reconciliation work preserved byte-for-byte.
 - `.codex/archive/backlog.md-20261027-213700.md` — original Git blob `0a40f0a9b26d7bebb7125a790995db6b84181a4f`; earliest handoffs preserved.
+
+
+- [x] PR #269 GUI UX: selected/visible clipboard copy for ChatGPT debugging, sanitized fixed-code/counts, unknown values redacted, <=100 item cap; tests and usage docs updated.
+- [x] P2 remediation: normalize integer PK to JSON meter string row keys (including scheduler), test actual meter-file locking; active writeback errors override recovered marker and re-open old resolved review.
+- [ ] Final exact-HEAD Hosted Linux/Windows, secret scan, formal Codex Review; operator Windows acceptance and explicit high-risk owner merge authorization required.
