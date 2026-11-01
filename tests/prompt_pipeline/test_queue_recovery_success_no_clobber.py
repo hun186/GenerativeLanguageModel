@@ -1515,3 +1515,57 @@ def test_verified_recovery_without_receipts_reblocks_durably(tmp_path, monkeypat
     assert meter["queue"]["running"] == 1
     assert queue.read_recovery_status(item)["alert_state"] == "operator_required"
     assert running.exists()
+
+
+def test_verified_recovered_generation_is_adopted_only_once_per_consumer(
+    tmp_path, monkeypatch
+):
+    """Codex P2: a completed recovered row cannot be re-quarantined."""
+    import json
+    from collections import Counter
+
+    item, running = _setup_running(tmp_path)
+    queue.mark_recovery_blocked(item, "RECOVERY_RETRIES_EXHAUSTED", 3)
+    status = queue.recovery_status_path(item)
+    record = json.loads(status.read_text("utf-8"))
+    record.update({
+        "state": "recovered", "integrity": "pending",
+        "resolution": "VERIFIED_EXISTING_TODO",
+    })
+    status.write_text(json.dumps(record), encoding="utf-8")
+    meter = {
+        "queue": {"pending": 0, "running": 1, "completed": 0},
+        "rows": {"row": {
+            "queue_pending": 0, "queue_running": 1,
+            "status": "blocked_recovery",
+        }},
+    }
+    ctx = SimpleNamespace(_queue_recovery_blocked_items={str(item)})
+    monkeypatch.setattr(pc, "meter_update",
+                        lambda _p, update: (update(meter), meter)[1])
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a: None)
+    monkeypatch.setattr(pc, "emit_quality_event", lambda *_a, **_k: None)
+    items = {str(item): {"pk": "row"}}
+
+    assert pc._should_adopt_recovery_record(
+        ctx, str(item), queue.read_recovery_record(item)
+    ) is False  # Already held.
+    pc._recheck_blocked_items(ctx, items, "meter")
+    assert str(item) in pc._queue_recovery_reconciled(ctx)
+    assert not pc._should_adopt_recovery_record(
+        ctx, str(item), queue.read_recovery_record(item)
+    )
+    pc._meter_on_dispatch(meter, items, Counter({str(item): 1}), 1)
+    pc._meter_on_finish_batch_v2(
+        meter, items, Counter({str(item): 1}), 1, Counter(), 0,
+    )
+    assert meter["queue"] == {
+        "pending": 0, "running": 0, "completed": 1,
+    }
+    # Registered while waiting for the row-merger, but recovered marker is
+    # still present: a second loop MUST NOT re-add a durable Blocked.
+    assert queue.read_recovery_status(item) is None
+    assert not pc._should_adopt_recovery_record(
+        ctx, str(item), queue.read_recovery_record(item)
+    )
+    assert str(item) not in pc._queue_recovery_blocked(ctx)
