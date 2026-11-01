@@ -483,3 +483,51 @@ def test_opted_in_diagnostic_includes_run_and_row_identifiers(tmp_path):
     assert "Run ID：test-run-567" in explicit
     assert "任務列 ID：42" in explicit
     assert str(item) in explicit
+
+
+def test_legacy_audit_naive_timestamp_kept_as_local_unknown_zone(tmp_path):
+    """Previous writer emitted datetime.now().isoformat() WITHOUT offset."""
+    from czjLLM.job_manager.incident_diagnostics import (
+        _audit_timestamp, build_detailed_debug_report,
+    )
+    assert _audit_timestamp("2026-11-01T16:31:42") == (
+        "2026-11-01T16:31:42（本機時間，歷史紀錄未含時區）",
+        "legacy_local",
+    )
+    assert _audit_timestamp("2026-11-01T16:31:42+08:00") == (
+        "2026-11-01T16:31:42+08:00", "offset_explicit",
+    )
+    item, run, _ = _blocked(tmp_path)
+    audit = tmp_path / "llm_call_audit_legacy.csv"
+    audit.write_text(
+        "prompt_file,model,ok,elapsed_seconds,input_tokens,output_tokens,timestamp\n"
+        f"{run},qwen3.6,YES,19.4,100,30,2026-11-01T16:31:42\n",
+        encoding="utf-8",
+    )
+    source = {"item_dir": str(item), "code": "TODO_CONFLICT",
+              "operational": "blocked", "review_state": "open"}
+    result = build_detailed_debug_report([source], audit_path=audit)
+    assert "2026-11-01T16:31:42（本機時間，歷史紀錄未含時區）" in result
+    assert "elapsed_s=19.4" in result
+    # A legacy time with unknown timezone must NOT be placed in UTC chronology.
+    chronology = result.split("該工作可證實的部分事件順序（UTC）：", 1)[-1]
+    chronology = chronology.split("處理過程完整度：", 1)[0]
+    assert "2026-11-01T16:31:42" not in chronology
+
+
+def test_new_audit_writer_uses_explicit_timezone_offset():
+    import inspect
+    from czjLLM.utilities import llm_call_audit
+    source = inspect.getsource(llm_call_audit.log_llm_call)
+    assert 'datetime.now().astimezone().isoformat(timespec="seconds")' in source
+
+
+def test_review_gui_exposes_page_navigation_and_filters_failed_rows_first():
+    import inspect
+    from czjLLM.job_manager import recovery_review_gui
+    src = inspect.getsource(recovery_review_gui.show_recovery_review)
+    assert "with_paging=True" in src
+    assert "page_size=100" in src
+    assert "上一頁" in src
+    assert "下一頁" in src
+    assert "review_page[0]" in src
