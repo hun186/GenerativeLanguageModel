@@ -137,8 +137,15 @@ def review_snapshot(item_dir, *, row_status=None):
     }
 
 
-def list_review_items(meter_path=None, extra_item_dirs=()):
-    """Current-run only; do not walk the entire disk looking for incidents."""
+def list_review_items(meter_path=None, extra_item_dirs=(), *, page=0,
+                      page_size=MAX_ITEMS, with_paging=False):
+    """Review bounded pages across all rows, known failures first.
+
+    Never reject the entire inventory merely because a successful run has
+    >500 rows. Read at most page_size incident markers per refresh.
+    """
+    if type(page) is not int or page < 0 or type(page_size) is not int or not 1 <= page_size <= MAX_ITEMS:
+        raise ValueError("invalid review page")
     item_map = {}
     if meter_path:
         from czjLLM.prompt_pipeline.runtime_support.load_meter import meter_read
@@ -161,10 +168,21 @@ def list_review_items(meter_path=None, extra_item_dirs=()):
     for path in extra_item_dirs:
         if isinstance(path, (str, Path)) and str(path):
             item_map.setdefault(str(path), None)
-    if len(item_map) > MAX_ITEMS:
-        raise ValueError("review item limit exceeded")
+    # Known active failures first, so even a failure after thousands of
+    # successful rows appears on the initial page. Remaining history can be
+    # inspected with explicit pagination instead of a destructive full scan.
+    ordered = sorted(
+        item_map.items(),
+        key=lambda entry: (
+            0 if entry[1] in ISSUE_STATUSES else 1,
+            entry[0],
+        ),
+    )
+    pages = max(1, (len(ordered) + page_size - 1) // page_size)
+    page = min(page, pages - 1)
+    selected = ordered[page * page_size:(page + 1) * page_size]
     results = []
-    for path, status in item_map.items():
+    for path, status in selected:
         try:
             summary = review_snapshot(path, row_status=status)
         except (QueueClaimRollbackError, OSError, ValueError):
@@ -181,6 +199,12 @@ def list_review_items(meter_path=None, extra_item_dirs=()):
                 "item_dir": str(path), "source_row_status": status,
                 **summary,
             })
+    if with_paging:
+        return {
+            "items": results, "page": page, "pages": pages,
+            "total_candidates": len(ordered), "scanned": len(selected),
+            "scan_scope": "page_only",
+        }
     return results
 
 
