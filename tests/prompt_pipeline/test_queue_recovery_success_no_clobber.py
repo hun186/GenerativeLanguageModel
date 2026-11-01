@@ -1445,3 +1445,73 @@ def test_missing_marker_does_not_silently_unblock_previous_failure(
     assert meter["queue_integrity"]["operator_action_required"] is True
     assert meter["rows"]["item"]["recovery_state"] == "operator_required"
     assert queue.read_recovery_status(item)["code"] == "UNSAFE_QUEUE_ENTRY"
+
+
+def test_external_recovery_marker_reconciles_global_and_row_receipts(
+    tmp_path, monkeypatch
+):
+    item, running = _setup_running(tmp_path)
+    record = queue.mark_recovery_blocked(
+        item, "RECOVERY_RETRIES_EXHAUSTED", 3
+    )
+    marker = queue.recovery_status_path(item)
+    import json
+    payload = json.loads(marker.read_text("utf-8"))
+    payload.update({
+        "state": "recovered", "integrity": "pending",
+        "resolution": "VERIFIED_EXISTING_TODO",
+        "recheck_count": 2,
+    })
+    marker.write_text(json.dumps(payload), encoding="utf-8")
+    meter = {
+        "queue": {"pending": 0, "running": 1, "completed": 0},
+        "rows": {"one": {
+            "queue_pending": 0, "queue_running": 1, "status": "blocked_recovery",
+        }},
+    }
+    ctx = SimpleNamespace(_queue_recovery_blocked_items={str(item)})
+    monkeypatch.setattr(pc, "meter_update",
+                        lambda _fn, mutator: (mutator(meter), meter)[1])
+    monkeypatch.setattr(pc, "emit_quality_event", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a: None)
+    pc._recheck_blocked_items(
+        ctx, {str(item): {"pk": "one"}}, "meter_path",
+    )
+    assert str(item) not in ctx._queue_recovery_blocked_items
+    assert meter["queue"] == {
+        "pending": 1, "running": 0, "completed": 0,
+    }
+    assert meter["rows"]["one"]["queue_pending"] == 1
+    assert meter["rows"]["one"]["queue_running"] == 0
+    assert meter["rows"]["one"]["status"] == "pending"
+    assert queue.read_recovery_status(item) is None
+
+
+def test_verified_recovery_without_receipts_reblocks_durably(tmp_path, monkeypatch):
+    import json
+    item, running = _setup_running(tmp_path)
+    queue.mark_recovery_blocked(item, "RECOVERY_RETRIES_EXHAUSTED", 3)
+    marker = queue.recovery_status_path(item)
+    data = json.loads(marker.read_text("utf-8"))
+    data.update({
+        "state": "recovered", "integrity": "pending",
+        "resolution": "VERIFIED_EXISTING_TODO",
+    })
+    marker.write_text(json.dumps(data), encoding="utf-8")
+    meter = {
+        "queue": {"pending": 0, "running": 1, "completed": 0},
+        "rows": {"one": {
+            "queue_pending": 0, "queue_running": 0,
+            "status": "blocked_recovery",
+        }},
+    }
+    ctx = SimpleNamespace(_queue_recovery_blocked_items={str(item)})
+    monkeypatch.setattr(pc, "meter_update",
+                        lambda _fn, mutator: (mutator(meter), meter)[1])
+    monkeypatch.setattr(pc, "emit_quality_event", lambda *_a, **_k: None)
+    monkeypatch.setattr(pc, "tlog_warn", lambda *_a: None)
+    pc._recheck_blocked_items(ctx, {str(item): {"pk": "one"}}, "meter")
+    assert str(item) in ctx._queue_recovery_blocked_items
+    assert meter["queue"]["running"] == 1
+    assert queue.read_recovery_status(item)["alert_state"] == "operator_required"
+    assert running.exists()
