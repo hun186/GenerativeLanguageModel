@@ -42,6 +42,7 @@ _EVENT_CODES = {
     "stage_orchestration_failure": {
         "STAGE_PREPARE_EXCEPTION", "STAGE_RUNNER_EXCEPTION",
     },
+    "queue_recovery": {"VERIFIED_EXISTING_TODO", "OPERATOR_ACTION_REQUIRED"},
     "worker_phase_failure": {
         "WORKER_PRECALL_EXCEPTION", "WORKER_LLM_CALL_EXCEPTION",
         "WORKER_RESPONSE_EXCEPTION", "WORKER_PERSIST_EXCEPTION",
@@ -57,7 +58,7 @@ _EVENT_SCOPES = {
             "run" if event in {
                 "consumer_orchestration_failure", "row_merger_retryable_failure",
                 "producer_operational_failure", "stage_orchestration_failure",
-                "worker_phase_failure",
+                "worker_phase_failure", "queue_recovery",
             } else "slice")
     for event in _EVENT_CODES
 }
