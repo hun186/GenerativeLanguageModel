@@ -30,6 +30,17 @@ MAX_ACTIONS = 12
 MAX_ROLE_ENTRIES = 1000
 _SAFE_MODEL = re.compile(r"^[A-Za-z0-9_.:/+-]{1,100}$")
 _SAFE_ISO = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d\d:\d\d)$")
+_LEGACY_LOCAL_ISO = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?$")
+
+
+def _audit_timestamp(value):
+    """Never invent UTC for old offsetless local-time audit timestamps."""
+    if isinstance(value, str):
+        if _SAFE_ISO.fullmatch(value):
+            return value, "offset_explicit"
+        if _LEGACY_LOCAL_ISO.fullmatch(value):
+            return value + "（本機時間，歷史紀錄未含時區）", "legacy_local"
+    return "未記錄", "unknown"
 _EVENT_CODES = {
     "consumer_orchestration_failure": {
         "CONSUMER_ROUND_TIMEOUT", "CONSUMER_ROUND_EXCEPTION", "CONSUMER_TERMINATED"},
@@ -178,15 +189,18 @@ def _audit_context(audit_path, selected_items=()):
                         matched = []
                 if len(matched) == 1:
                     target = selected[matched[0]]
-                    attempt_time = next((
+                    original_time = next((
                         value for value in (
                             row.get("timestamp"), row.get("start_time"),
                             row.get("time_iso"),
-                        ) if isinstance(value, str) and
-                        _SAFE_ISO.fullmatch(value)
-                    ), "未記錄")
+                        ) if isinstance(value, str) and (
+                            _SAFE_ISO.fullmatch(value)
+                            or _LEGACY_LOCAL_ISO.fullmatch(value))
+                    ), None)
+                    attempt_time, time_kind = _audit_timestamp(original_time)
                     item_attempt = {
                         "time_utc": attempt_time,
+                        "time_kind": time_kind,
                         "model": model or "未記錄",
                         "stage": _safe_model(row.get("stage_identity")) or "未記錄",
                         "error_type": _safe_model(row.get("error_type")) or "未記錄",
@@ -430,7 +444,7 @@ def build_detailed_debug_report(incidents, *, meter_path=None,
             if clock_value != "未記錄":
                 timeline.append((clock_value, label))
         for call in attempts:
-            if call["time_utc"] != "未記錄":
+            if call.get("time_kind") == "offset_explicit":
                 timeline.append((call["time_utc"], "Audit 記錄 LLM 呼叫；"
                                  "以工作目錄關聯，未確認 provider attempt"))
         for event in history:
