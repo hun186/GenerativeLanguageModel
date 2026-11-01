@@ -112,6 +112,8 @@ def test_collapsible_gui_reads_off_tk_thread_only_while_expanded():
     assert '▶' in source and "▼" in source
     assert "各列／文件進度" in source
     assert "document_frame.pack_forget()" in source
+    assert "txt.configure(height=6)" in source
+    assert "txt.configure(height=15)" in source
     assert "document_frame.pack(fill=\"x\")" in source
     assert 'name="row-progress-meter-reader"' in source
     assert "if not _document_expanded or _document_busy:" in source
