@@ -109,6 +109,9 @@ def review_snapshot(item_dir, *, row_status=None):
         return None
     if code is None and history:
         code = history[-1]["code"]
+    if operational == "absent" and row_status in ISSUE_STATUSES:
+        operational = ("writeback_failure" if row_status.startswith("writeback")
+                       else "unknown")
     action = history[-1]["action"] if history else "open"
     if operational in ("blocked", "unknown") and action == "resolved":
         # Operator review is NOT authorization to clear a safety hold.
