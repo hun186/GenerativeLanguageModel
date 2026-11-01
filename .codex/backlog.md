@@ -43,3 +43,6 @@
 - [x] PR #269 Windows shared GUI: paged collapsible per-row/document progress, 10-unit visual bars, selected native progress bar, priority statuses/filters/search, low-duty expanded-only background meter worker, no false writeback success. Scheduler/Consumer/Row Merger status+timestamp evidence and headless tests/docs included.
 - [x] Prior P2s: >500 review rows now paginated with known failures prioritized; old timezone-naive LLM audit lines explicitly marked unknown local timezone and not sorted into UTC chronology, future writer offset-aware. Regression tests included.
 - [ ] Latest-head CI and formal Codex review; Windows DPI and live LLM/SQL/ES/NTFS operator acceptance Issue #266. High-risk PR #269 must remain unmerged without owner permission.
+
+- [x] Formal Codex P2 remedies: per-row Unix epoch validator independent of slice counters; strict bounded 5-attempt run-meter read that raises on corrupt/permission failures and preserves previous GUI data, never falsely showing zero work. Added regression cases for 2026 epoch, invalid JSON, transient recovery, last-good display.
+- [ ] Latest-head Hosted CI and exact-head Codex Review must PASS/CLEAN; Issue #266 Windows live GUI acceptance; require explicit high-risk owner Merge authorization.
