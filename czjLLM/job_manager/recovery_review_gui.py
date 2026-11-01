@@ -19,7 +19,7 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
     import tkinter as tk
     from tkinter import ttk, messagebox, filedialog
     from czjLLM.job_manager.recovery_review import (
-        list_review_items, set_review_action,
+        list_review_items, set_review_action, format_incident_debug_report,
     )
 
     win = tk.Toplevel(parent)
@@ -162,6 +162,45 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
             )
             return
         refresh()
+
+    def _copy_debug_report(items):
+        # The formatter accepts whitelisted metadata ONLY. Never pass paths
+        # or raw meter JSON to Tk clipboard; no network calls or file writes.
+        try:
+            report = format_incident_debug_report(items)
+            win.clipboard_clear()
+            win.clipboard_append(report)
+            win.update_idletasks()  # Keep clipboard available after closing.
+            status.set(f"已複製 {len(items)} 筆去識別化診斷資訊，可貼到 ChatGPT。")
+        except Exception as exc:
+            messagebox.showerror(
+                "複製診斷資訊失敗", type(exc).__name__, parent=win,
+            )
+
+    def _copy_selected_debug():
+        item = selected()
+        if item is not None:
+            _copy_debug_report([item])
+
+    def _copy_visible_debug():
+        visible = list(by_id.values())
+        if not visible:
+            messagebox.showinfo("沒有可複製資料", "目前沒有顯示中的異常條目。", parent=win)
+            return
+        _copy_debug_report(visible)
+
+    # Separate copy row avoids squeezing the existing review actions on a
+    # narrow/DPI-scaled Windows window.
+    copy_controls = ttk.Frame(frame)
+    copy_controls.pack(fill="x", pady=(0, 6))
+    ttk.Button(
+        copy_controls, text="📋 複製選取條目（ChatGPT 除錯）",
+        command=_copy_selected_debug,
+    ).pack(side="left", padx=(0, 8))
+    ttk.Button(
+        copy_controls, text="📋 複製目前顯示的異常摘要",
+        command=_copy_visible_debug,
+    ).pack(side="left")
 
     ttk.Button(controls, text="重新整理", command=refresh).pack(
         side="left", padx=(0, 6))
