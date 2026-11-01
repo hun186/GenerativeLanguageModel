@@ -584,3 +584,69 @@ def test_incident_review_gui_keeps_prior_rows_on_meter_read_error():
     error_body = poll_body.split("        else:", 1)[1]
     assert 'status.set(f"檢閱讀取失敗' in error_body
     assert 'rows[:] = ' not in error_body
+
+
+def test_detailed_debug_corrupt_meter_is_explicitly_unavailable_not_zero(tmp_path):
+    """Codex P2: never copy fabricated pending=0/running=0 to ChatGPT."""
+    from czjLLM.job_manager.incident_diagnostics import build_detailed_debug_report
+    item, _, _ = _blocked(tmp_path)
+    meter = tmp_path / "loadmeter.json"
+    incident = {
+        "item_dir": str(item), "code": "TODO_CONFLICT",
+        "operational": "blocked", "review_state": "open",
+    }
+    meter.write_text(json.dumps({
+        "rows": {"42": {
+            "item_dir": str(item), "status": "blocked_recovery",
+            "queue_pending": 2, "queue_running": 1,
+        }},
+        "queue": {"pending": 2, "running": 1, "completed": 0},
+    }), encoding="utf-8")
+    valid = build_detailed_debug_report([incident], meter_path=meter)
+    assert "Meter：已讀取（嚴格驗證）" in valid
+    assert "整次 Run Queue：pending=2 running=1 completed=0" in valid
+    assert "Queue 待處理計數：2" in valid
+
+    meter.write_text('{"rows":', encoding="utf-8")
+    corrupt = build_detailed_debug_report([incident], meter_path=meter)
+    assert "證據不可用；不可視為 0" in corrupt
+    assert "Meter：已讀取" not in corrupt
+    assert "整次 Run Queue：pending=未記錄 running=未記錄 completed=未記錄" in corrupt
+    assert "Queue 待處理計數：未記錄" in corrupt
+    assert "Queue 執行中計數：未記錄" in corrupt
+    assert "pending=0 running=0" not in corrupt
+    assert "TODO_CONFLICT" in corrupt  # Direct evidence survives meter corruption.
+
+    meter.write_text(json.dumps({
+        "rows": {"42": {
+            "item_dir": str(item), "status": "blocked_recovery",
+            "queue_pending": 2, "queue_running": 1,
+        }},
+        "queue": {"pending": 2, "running": 1, "completed": 0},
+    }), encoding="utf-8")
+    restored = build_detailed_debug_report([incident], meter_path=meter)
+    assert "Meter：已讀取（嚴格驗證）" in restored
+    assert "整次 Run Queue：pending=2 running=1 completed=0" in restored
+
+
+def test_detailed_debug_missing_and_unsafe_meter_are_not_zero_evidence(tmp_path):
+    from czjLLM.job_manager.incident_diagnostics import build_detailed_debug_report
+    item, _, _ = _blocked(tmp_path)
+    incident = {
+        "item_dir": str(item), "code": "TODO_CONFLICT",
+        "operational": "blocked", "review_state": "open",
+    }
+    for supplied in (None, tmp_path / "not-yet-created.json"):
+        report = build_detailed_debug_report([incident], meter_path=supplied)
+        assert "整次 Run Queue：pending=未記錄 running=未記錄" in report
+        assert "Meter：已讀取" not in report
+    corrupt = tmp_path / "bad-meter.json"
+    corrupt.write_text('{"rows":', encoding="utf-8")
+    link = tmp_path / "alias.json"
+    try:
+        link.symlink_to(corrupt)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlink unsupported")
+    report = build_detailed_debug_report([incident], meter_path=link)
+    assert "證據不可用；不可視為 0" in report
+    assert "Meter：已讀取" not in report
