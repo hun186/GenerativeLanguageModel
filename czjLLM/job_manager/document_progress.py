@@ -191,20 +191,17 @@ def project_meter(meter, *, mode="目前處理", search="", page=0,
     }
 
 
-def read_document_progress(meter_path, *, mode="目前處理", search="",
-                           page=0, page_size=PAGE_SIZE):
-    """Bounded read: no queue directory scan, no prompt content inspection."""
-    if not meter_path:
-        return {**project_meter({}, mode=mode, search=search, page=page,
-                                page_size=page_size), "notice": "尚未收到本次 Run Meter"}
+def read_meter_strict(meter_path):
+    """Read real run-meter evidence or raise. Never synthesize an empty run.
+
+    Both the per-document panel and incident review must share this fail-
+    closed reader. File-not-found may be handled explicitly by callers,
+    while corruption, truncation and read errors must propagate.
+    """
     path = Path(meter_path)
     if any(node.is_symlink() for node in (path, *path.parents)):
         raise ValueError("unsafe meter path")
-    try:
-        info = path.lstat()
-    except FileNotFoundError:
-        return {**project_meter({}, mode=mode, search=search, page=page,
-                                page_size=page_size), "notice": "Meter 尚未建立"}
+    info = path.lstat()
     if not stat.S_ISREG(info.st_mode) or info.st_size > MAX_METER_BYTES:
         raise ValueError("meter file unsafe or exceeds read budget")
     # meter_read() falls back to an EMPTY DEFAULT after exhausted JSON
@@ -239,6 +236,26 @@ def read_document_progress(meter_path, *, mode="目前處理", search="",
                 time.sleep(0.05)
     if data is None:
         raise ValueError("meter unavailable after bounded retries") from last_error
+    return data
+
+
+def read_document_progress(meter_path, *, mode="目前處理", search="",
+                           page=0, page_size=PAGE_SIZE):
+    """Bounded read: no queue directory scan, no prompt content inspection."""
+    if not meter_path:
+        return {**project_meter({}, mode=mode, search=search, page=page,
+                                page_size=page_size), "notice": "尚未收到本次 Run Meter"}
+    path = Path(meter_path)
+    if any(node.is_symlink() for node in (path, *path.parents)):
+        raise ValueError("unsafe meter path")
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return {**project_meter({}, mode=mode, search=search, page=page,
+                                page_size=page_size), "notice": "Meter 尚未建立"}
+    if not stat.S_ISREG(info.st_mode) or info.st_size > MAX_METER_BYTES:
+        raise ValueError("meter file unsafe or exceeds read budget")
+    data = read_meter_strict(path)
     result = project_meter(data, mode=mode, search=search, page=page,
                            page_size=page_size)
     result["notice"] = "本次 Run；切片100%≠確認寫回"
