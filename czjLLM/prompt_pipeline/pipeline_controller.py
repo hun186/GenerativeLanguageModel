@@ -116,6 +116,7 @@ from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     read_recovery_status,
     mark_recovery_blocked,
     recheck_blocked_recovery,
+    require_manual_recovery_reconciliation,
     requeue_running_no_clobber,
     require_no_pending_todo_sources,
     publish_success_text_no_clobber,
@@ -299,8 +300,10 @@ def _recheck_blocked_items(ctx, items_map, meter_fn):
                     accounted[0] = True
                 meter_update(meter_fn, _restore_verified_receipt)
             if not accounted[0]:
-                # Do not drop the in-memory hold when the correct pending/
-                # running receipt ownership cannot be proved.
+                # Also re-establish the DURABLE hold. Otherwise a restarted
+                # consumer could see "recovered/pending" and dispatch with a
+                # stale RUNNING count that cannot drain.
+                require_manual_recovery_reconciliation(item)
                 outcome = "operator_required"
             else:
                 blocked.discard(item)
