@@ -219,7 +219,7 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
             "total": 0, "done": 0, "status": "in_progress"
         })
         d["rows"][str(pk)]["total"] = total_chunks
-            d["rows"][str(pk)]["last_state_at"] = time.time()
+        d["rows"][str(pk)]["last_state_at"] = time.time()
         # Per-row queue receipts avoid guessing held work from unrelated
         # physical TODO files when subtracting producer backpressure.
         queued_chunks = 0 if run_stream_multistage else total_chunks
@@ -340,7 +340,7 @@ def schedule_one_row_OLD_1027(ctx, registry, meter_fn, idx: int, pk: Any, text: 
             "total": 0, "done": 0, "status": "in_progress"
         })
         d["rows"][str(pk)]["total"] = total_chunks
-            d["rows"][str(pk)]["last_state_at"] = time.time()
+        d["rows"][str(pk)]["last_state_at"] = time.time()
         d["queue"]["pending"] += total_chunks
 
     meter_update(meter_fn, _on_add_row)
@@ -377,7 +377,7 @@ def schedule_one_row_OLD(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
             "total": 0, "done": 0, "status": "in_progress"
         })
         d["rows"][str(pk)]["total"] = total_chunks
-            d["rows"][str(pk)]["last_state_at"] = time.time()
+        d["rows"][str(pk)]["last_state_at"] = time.time()
         d["queue"]["pending"] += total_chunks
 
     meter_update(meter_fn, _on_add_row)
