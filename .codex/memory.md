@@ -24,3 +24,5 @@
 - `.codex/archive/memory.md-20261030-103500.md` — immutable original Git blob `8af2694365bd5202a1533a36c8b7cd4c82f22408`.
 - `.codex/archive/memory.md-20261028-104900.md` — immutable original Git blob `309b57f00fc85f0d03fd12fdb3b7bdfdaa4708d8`.
 - `.codex/archive/memory.md-20261027-213700.md` — immutable original Git blob `72e0fe6912d3c19e46b2c11de4da532e24ed61fd`.
+
+- 2026-11-01 GUI implementation: all single-run Windows GUIs using the shared `try_start_gui` have an incident review button; SQL/Table/ES send current `meter_fn`. `recovery_review.py` persists append-only operator decisions (`resolved/ignored/deleted/open`) separate from `queue_recovery_status.json`; `deleted` is a tombstone, active holds remain visible. Review of active blocked/writeback failures cannot be marked resolved; no source or sink deletion. New `tests/job_manager/test_recovery_review.py` is included in Linux E2E gate. Archive-first compaction handled old P1. The corrected supervisor preserves externally resolved marker identity and reconciles per-row/global queue receipts; CI and exact-head Codex Review still pending.
