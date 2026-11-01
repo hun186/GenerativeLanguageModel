@@ -114,6 +114,7 @@ from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     pick_and_claim_next_prompts,
     recover_running_to_todo,
     read_recovery_status,
+    read_recovery_record,
     mark_recovery_blocked,
     recheck_blocked_recovery,
     require_manual_recovery_reconciliation,
@@ -589,12 +590,21 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             # Persisted logical quarantine survives consumer restarts.
             # Never silently dispatch an item held for operator review.
             for item in items_map:
-                marker = read_recovery_status(item)
-                if marker and item not in _queue_recovery_blocked(ctx):
-                    _mark_item_recovery_blocked(
-                        ctx, item, items_map, meter_fn,
-                        QueueClaimRollbackError("operator review required"),
-                    )
+                record = read_recovery_record(item)
+                if record and item not in _queue_recovery_blocked(ctx):
+                    if record["state"] == "blocked":
+                        _mark_item_recovery_blocked(
+                            ctx, item, items_map, meter_fn,
+                            QueueClaimRollbackError("operator review required"),
+                        )
+                    else:
+                        # External supervisor may have recorded verified TODO
+                        # before this Consumer started. Keep item excluded
+                        # until its original RUNNING receipt is reconciled;
+                        # otherwise a restarted process can double-count work.
+                        holds = _queue_recovery_blocked(ctx)
+                        holds.add(item)
+                        ctx._queue_recovery_blocked_items = holds
             _recheck_blocked_items(ctx, items_map, meter_fn)
             item_dirs = [
                 item for item in items_map if item not in _queue_recovery_blocked(ctx)
