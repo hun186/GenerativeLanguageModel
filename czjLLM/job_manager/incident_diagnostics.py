@@ -188,6 +188,8 @@ def _audit_context(audit_path, selected_items=()):
                     item_attempt = {
                         "time_utc": attempt_time,
                         "model": model or "未記錄",
+                        "stage": _safe_model(row.get("stage_identity")) or "未記錄",
+                        "error_type": _safe_model(row.get("error_type")) or "未記錄",
                         "ok": row.get("ok") if row.get("ok") in {"YES", "NO"} else "未記錄",
                         "elapsed_s": _number(row.get("elapsed_seconds")),
                         "input_tokens": _number(row.get("input_tokens")),
@@ -295,6 +297,10 @@ def build_detailed_debug_report(incidents, *, meter_path=None,
     # raw IDs (and never print PK, user filename or session paths).
     import hashlib
     run_ref = "sha256:" + hashlib.sha256(run_id.encode("utf-8")).hexdigest()[:16] if run_id else "未記錄"
+    run_mode = meter.get("run_mode", "unknown")
+    if run_mode not in {"sql", "table", "es", "csv", "excel", "txt", "text",
+                        "sqlite", "file"}:
+        run_mode = "未記錄"
     lines = [
         format_incident_debug_report(incidents).rstrip(),
         "",
@@ -305,7 +311,10 @@ def build_detailed_debug_report(incidents, *, meter_path=None,
         "Commit SHA：未由此介面驗證（請另附當前 Git commit）",
         f"Meter：{meter_status}",
         f"Run 識別摘要：{run_ref}",
-        "執行模式／任務名稱：未記錄或不在安全診斷欄位",
+        "Run ID：" + (run_id[:128].replace("\n", "[NL]").replace("\r", "[CR]")
+                         if include_paths and run_id else "已隱藏／未記錄"),
+        f"執行模式：{run_mode}",
+        "任務名稱：未記錄（不會猜測任務或 Prompt 名稱）",
         "模型呼叫對應單一 item：未證明（下列為整個 Run 的聚合資訊）",
         "來源時間欄位：UTC；需轉換本地時間請依時間戳處理",
         "整次 Run Queue：pending=" + _number(q.get("pending"))
@@ -344,7 +353,17 @@ def build_detailed_debug_report(incidents, *, meter_path=None,
             continue
         lines.append("工作目錄：" + (
             path.replace("\n", "[NL]").replace("\r", "[CR]")[:512]
-            if include_paths else "已隱藏（可手動勾選包含本機路徑）"))
+            if include_paths else "已隱藏（可勾選包含本機路徑與識別碼）"))
+        # Only the unambiguous unique meter row ID is useful for a
+        # targeted operator search, and is opt-in just like a full path.
+        matches = [
+            key for key, val in (meter.get("rows", {}) or {}).items()
+            if isinstance(val, dict) and val.get("item_dir") == path
+        ] if isinstance(meter.get("rows"), dict) else []
+        row_ref = str(matches[0]) if len(matches) == 1 else ""
+        lines.append("任務列 ID：" + (
+            row_ref[:100].replace("\n", "[NL]").replace("\r", "[CR]")
+            if include_paths and row_ref else "已隱藏／未記錄"))
         record, marker_status = _marker_context(path)
         row = _item_meter_row(meter, path)
         lines.extend([
@@ -376,6 +395,8 @@ def build_detailed_debug_report(incidents, *, meter_path=None,
             for call in attempts:
                 lines.append(
                     "- " + call["time_utc"] + " | model=" + call["model"]
+                    + " | stage=" + call["stage"]
+                    + " | error_type=" + call["error_type"]
                     + " | ok=" + call["ok"]
                     + " | elapsed_s=" + call["elapsed_s"]
                     + " | in=" + call["input_tokens"]
