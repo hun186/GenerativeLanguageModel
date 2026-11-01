@@ -24,3 +24,7 @@
 
 ## 驗證
 本 PR 需要 exact-head Hosted Linux / Windows CI、正式 Codex Review、安全掃描與 owner 明確 Merge 授權。Headless 單元測試不等於 Windows GUI 125%／150% DPI、NTFS/SMB 或真實 LLM/SQL/ES 寫回驗收；相關 Issue #266 仍需 operator 實機驗收。
+
+## 2026-11-01 正式 Review 的 P2 修正
+- 每列 last_state_at 是 Unix epoch seconds（例如 1793500000），**不能**套用只適用於切片數的 10^9 上限；已新增時間專用驗證與單元測試，合法時間正常顯示本機 HH:mm:ss。
+- 執行中的 JSON Meter 若因資料破損或權限問題重試仍失敗，**絕不**降級成「0 列／0 異常」的正常快照。GUI 保留最後一次成功渲染的進度，並明示本次讀取失敗；讀取至多重試 5 次，防止持續卡住或誤導使用者。只對真正尚未建立的 Meter 顯示「尚未建立」。
