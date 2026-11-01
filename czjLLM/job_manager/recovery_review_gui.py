@@ -125,6 +125,9 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
             render()
         else:
             status.set(f"檢閱讀取失敗（{result}）；請檢查資料與權限。")
+        # Keep polling for every subsequent Refresh, manual directory add
+        # and operator action, not only while the first read is pending.
+        win.after(100, poll)
 
     def do_action(action):
         item = selected()
