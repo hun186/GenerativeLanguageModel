@@ -8,6 +8,7 @@
 - Active quality contracts: ES `article_date_iso`/precision and `event_ids` shape, sink `confirm_writeback()` acknowledgments, original ordered slice identity for single-extract resume, stage-isolated audit `effective_tok_per_s_est` vs `total_tok_per_s`, provider cache source. Held queue accounting uses row pending/running receipts, not physical duplicate name counts.
 
 ## Recent Changes
+- 2026-11-01: Codex P1 fix for PR #270: restored archive-first traceability of exact pre-reconciliation project/memory/backlog blobs; new archive links and immutable Windows newline policy are included in the same PR. This is not evidence of current-head CI or review completion.
 - 2026-11-01: Reconciled PR #269 against actual merged GitHub PR and main SHA. This documentation-only follow-up contains no production queue, data, permission, or configuration changes; mark next PR CI/review separately, not as prior #269 acceptance.
 - 2026-10-30: #258 private profile untracking and per-environment deployment preflight; exact merged/current history preserved in archives. Private configs and credentials must stay untracked.
 - 2026-10-30 to 10-31: #261–#265 safety-focused queue scanner/NTFS tests and operator-only acceptance #266. Native Windows/SMB live worker quiescence, real LLM calls and SQL/ES readback **NOT accepted**.
@@ -21,6 +22,7 @@
 - Issue #266 still requires real offline Windows NTFS/SMB and live LLM/SQL/ES acceptance. Production deployment/manual operator scheduling is distinct from GitHub Hosted test success.
 
 ## Archived History
+- `.codex/archive/memory.md-20261101-234800.md` — exact pre-PR #270 active memory Git blob `53ef85bf9d6a616177e84b9f594b8ae28a1defea`, preserved without changes; #269 merge reconciliation replaces dated Current Focus/Handoff text only.
 - `.codex/archive/memory.md-20261101-103200.md` — exact pre-2026-11-01 compaction active memory, including all earlier #269 reviews.
 - `.codex/archive/memory.md-20261030-103500.md` — immutable original Git blob `8af2694365bd5202a1533a36c8b7cd4c82f22408`.
 - `.codex/archive/memory.md-20261028-104900.md` — immutable original Git blob `309b57f00fc85f0d03fd12fdb3b7bdfdaa4708d8`.
