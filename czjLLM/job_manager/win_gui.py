@@ -27,6 +27,7 @@ class _GuiEvents:
     REDUCTION: str = "reduction"
     AUDIT_PATH: str = "audit_path"
     QUALITY_PATH: str = "quality_path"
+    RECOVERY_METER: str = "recovery_meter"
 
 
 
@@ -744,6 +745,8 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     _reduction_stats = {}
     _audit_stats = load_llm_audit_distribution("")
     _audit_path = ""
+    _recovery_meter_path = ""
+    _recovery_review_window = None
     _audit_path_queue = pyqueue.Queue(maxsize=2)
     _audit_result_queue = pyqueue.Queue(maxsize=1)
     _audit_reader_stop = threading.Event()
@@ -844,6 +847,32 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     # ---- ETA 顯示（新增）----
     lbl_eta = ttk.Label(frm, foreground="#555")
     lbl_eta.pack(anchor="w", pady=(0, 8))
+
+    # Every single-run Windows GUI (SQL/Table/ES/CSV/etc.) shares this
+    # button. Review actions affect only operator annotation records;
+    # they never clear queue holds or delete Success.
+    def _open_recovery_review():
+        nonlocal _recovery_review_window
+        try:
+            if (_recovery_review_window is not None
+                    and _recovery_review_window.winfo_exists()):
+                _recovery_review_window.lift()
+                _recovery_review_window.focus_set()
+                return
+            from czjLLM.job_manager.recovery_review_gui import show_recovery_review
+            _recovery_review_window = show_recovery_review(
+                root, lambda: _recovery_meter_path,
+            )
+        except Exception as exc:
+            from tkinter import messagebox
+            messagebox.showerror(
+                "檢閱介面無法開啟", type(exc).__name__, parent=root,
+            )
+
+    recovery_button = ttk.Button(
+        frm, text="⚠ 重大異常檢閱／管理", command=_open_recovery_review,
+    )
+    recovery_button.pack(anchor="e", pady=(0, 6))
 
     # Recheck / Reduction 都是短摘要＋可展開細節；並排可把垂直空間
     # 留給主要執行日誌。兩欄等寬，展開狀態仍各自獨立。
@@ -1275,7 +1304,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     # 事件輪詢：全部在 Tk 主緒
     def poll():
         nonlocal _tot, _done_cnt, _sched_cnt, _recheck_stats, _recheck_error_visible, _reduction_stats
-        nonlocal _audit_stats, _audit_path, _quality_stats
+        nonlocal _audit_stats, _audit_path, _quality_stats, _recovery_meter_path
         try:
             updated = False
             while True:
@@ -1328,6 +1357,8 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                         _quality_path_queue.put_nowait(str(payload or ""))
                     except pyqueue.Full:
                         pass
+                elif evt == _GuiEvents.RECOVERY_METER:
+                    _recovery_meter_path = str(payload or "")
                 elif evt == _GuiEvents.AUDIT_PATH:
                     _audit_path = str(payload or "")
                     try:
@@ -1397,6 +1428,8 @@ class _GUIClient:
         self._q.put((_GuiEvents.AUDIT_PATH, str(audit_path or "")))
     def set_quality_event_path(self, path: str):
         self._q.put((_GuiEvents.QUALITY_PATH, str(path or "")))
+    def set_recovery_meter_path(self, path: str):
+        self._q.put((_GuiEvents.RECOVERY_METER, str(path or "")))
     def cancellation_requested(self) -> bool:
         return bool(self._cancel_event is not None and self._cancel_event.is_set())
 
