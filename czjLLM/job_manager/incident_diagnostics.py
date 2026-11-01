@@ -301,8 +301,18 @@ def build_detailed_debug_report(incidents, *, meter_path=None,
     if run_mode not in {"sql", "table", "es", "csv", "excel", "txt", "text",
                         "sqlite", "file"}:
         run_mode = "未記錄"
+    summary = format_incident_debug_report(incidents).rstrip()
+    if include_paths:
+        # The standard short summary says it contains no paths. Make that
+        # statement precise when the operator explicitly opted in to
+        # identifying path and run/row fields in the detailed supplement.
+        summary = summary.replace(
+            "資料保護：不包含路徑、檔名、列 ID、Prompt、LLM 回應、金鑰或連線資訊。",
+            "資料保護：已明確勾選包含本機工作路徑、Run ID 和列 ID；"
+            "仍不包含 Prompt、LLM 回應、金鑰或連線資訊。",
+        )
     lines = [
-        format_incident_debug_report(incidents).rstrip(),
+        summary,
         "",
         "# 詳細補充證據（唯讀快照）",
         f"採集時間（UTC）：{datetime.now(timezone.utc).isoformat()}",
