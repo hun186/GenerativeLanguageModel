@@ -1334,6 +1334,45 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         wraplength=720,
     )
     document_detail.pack(anchor="w", pady=(4, 0))
+    # One native ttk progress bar for whichever row the user selects;
+    # all other rows remain lightweight progress glyphs inside Treeview.
+    document_selected_label = ttk.Label(
+        document_frame, text="點選一列可查看該工作切片進度", foreground="#444",
+    )
+    document_selected_label.pack(fill="x", pady=(5, 1))
+    document_selected_bar = ttk.Progressbar(
+        document_frame, maximum=100, value=0,
+    )
+    document_selected_bar.pack(fill="x", pady=(0, 3))
+
+    def _document_selected(_event=None):
+        sel = document_grid.selection()
+        rows_now = _document_snapshot.get("shown", [])
+        if not sel:
+            document_selected_label.configure(
+                text="點選一列可查看該工作切片進度"
+            )
+            document_selected_bar.configure(value=0)
+            return
+        try:
+            idx = int(sel[0])
+            row = rows_now[idx]
+        except (ValueError, TypeError, IndexError, KeyError):
+            document_selected_bar.configure(value=0)
+            return
+        count = row["done"]
+        total = row["total"]
+        if count is not None and total is not None and total > 0:
+            pct = min(100, max(0, round(100 * count / total)))
+        else:
+            pct = 0
+        document_selected_bar.configure(value=pct)
+        document_selected_label.configure(
+            text=f"列 {row['label']}｜{row['stage']}｜"
+                 f"{row['progress']}｜最後更新 {row['updated_text']}"
+        )
+
+    document_grid.bind("<<TreeviewSelect>>", _document_selected)
 
     def _document_header():
         arrow = "▼" if _document_expanded else "▶"
@@ -1400,7 +1439,10 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                     children = document_grid.get_children()
                     if children:
                         document_grid.delete(*children)
+                    restored_iid = None
                     for idx, item in enumerate(result["shown"]):
+                        if item["label"] == old_key:
+                            restored_iid = str(idx)
                         tag = ("error",) if item["error"] else (
                             ("running",) if (item["running"] or 0) else ()
                         )
@@ -1412,6 +1454,9 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                                 item["updated_text"],
                             ),
                         )
+                    if restored_iid is not None:
+                        document_grid.selection_set(restored_iid)
+                    _document_selected()
                     document_page_label.configure(
                         text=f"第 {result['page'] + 1}/{result['pages']} 頁"
                     )
