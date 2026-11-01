@@ -1311,6 +1311,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         ("progress", "切片進度（非寫回進度）", 235),
         ("pending", "等待", 60),
         ("running", "執行", 60),
+        ("updated", "最後更新", 78),
     )
     document_grid = ttk.Treeview(
         document_frame,
@@ -1408,6 +1409,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                             values=(
                                 item["label"], item["stage"], item["progress"],
                                 item["pending_text"], item["running_text"],
+                                item["updated_text"],
                             ),
                         )
                     document_page_label.configure(
@@ -1423,7 +1425,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                     document_detail.configure(
                         text=(result.get("notice") or "")
                         + f"；顯示 {len(result['shown'])}/{result['matching']} 筆。"
-                        + "切片100%≠寫回完成，僅 merged 標記為已合併／寫回。"
+                        + "切片100%≠寫回完成；merged 為 Row Merger 標記，非獨立 sink readback。"
                     )
                 _document_header()
             else:
