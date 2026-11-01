@@ -20,6 +20,7 @@ from pathlib import Path
 from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     QueueClaimRollbackError, read_recovery_status, recovery_status_path,
 )
+from czjLLM.job_manager.document_progress import read_meter_strict
 
 ACTIONS = frozenset(("resolved", "ignored", "deleted", "open"))
 LOG_NAME = "queue_review_actions.jsonl"
@@ -148,15 +149,16 @@ def list_review_items(meter_path=None, extra_item_dirs=(), *, page=0,
         raise ValueError("invalid review page")
     item_map = {}
     if meter_path:
-        from czjLLM.prompt_pipeline.runtime_support.load_meter import meter_read
         try:
-            meter = meter_read(str(meter_path))
-        except (OSError, ValueError, TypeError, KeyError):
-            # The run meter may be rotated/removed after shutdown. An
-            # explicitly chosen historic item directory must remain reviewable.
+            meter = read_meter_strict(str(meter_path))
+        except FileNotFoundError:
+            # An old, explicit item directory remains inspectable if the
+            # original run meter was removed after a previous run. Corrupt,
+            # unreadable or unsafe EXISTING meters must never be swallowed:
+            # the GUI must preserve its last known incident inventory.
             if not extra_item_dirs:
                 raise
-            meter = {}
+            meter = {"rows": {}}
         rows = meter.get("rows", {})
         if isinstance(rows, dict):
             for row in rows.values():
