@@ -40,3 +40,6 @@
 
 
 - 2026-11-01 HEAD 402c190... formal Codex review completed with P2: incident review still used swallowed-failure load_meter.meter_read and cleared prior failures on corrupt JSON. Fixed by sharing document_progress.read_meter_strict (bounded real-file JSON and 12MiB guard), using it in recovery_review.list_review_items; corruption raises so Tk poll preserves last valid rows, only genuinely missing historical meter permits explicit manually selected item dirs. Added normal→corrupt→repaired actual meter, bad meter with manual dirs, historical missing-meter and Tk fail-closed regressions. Latest HEAD CI and re-review pending; high-risk #269 OPEN, no merge authorization.
+
+
+- 2026-11-01 Review on HEAD dd757864... completed with new P2: copied detailed diagnostic still used default-empty `meter_read`, falsely claiming pending=0/running=0 on corrupt JSON. Updated `incident_diagnostics._read_meter` to reuse strict `document_progress.read_meter_strict` and explicitly mark missing/corrupt/unsafe unavailable, never 0; keep independent queue recovery evidence. Added real-file valid→corrupt→restored and missing/symlink regressions. Await new exact-head Hosted CI and Codex CLEAN, #269 still high-risk OPEN without merge approval.
