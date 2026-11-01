@@ -117,16 +117,16 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
         registry.add(item_dir, pk, temp_txt_path, comb_back_fn)
 
         def _on_add_row(d):
-            d["rows"].setdefault(pk, {
+            d["rows"].setdefault(str(pk), {
                 "item_dir": item_dir,
                 "temp_txt": temp_txt_path,
                 "total": 0, "done": 0, "status": "in_progress"
             })
-            d["rows"][pk]["total"] = total_chunks
-            d["rows"][pk]["queue_pending"] = (
-                int(d["rows"][pk].get("queue_pending", 0) or 0) + total_chunks
+            d["rows"][str(pk)]["total"] = total_chunks
+            d["rows"][str(pk)]["queue_pending"] = (
+                int(d["rows"][str(pk)].get("queue_pending", 0) or 0) + total_chunks
             )
-            d["rows"][pk].setdefault("queue_running", 0)
+            d["rows"][str(pk)].setdefault("queue_running", 0)
             d["queue"]["pending"] += total_chunks
 
         meter_update(meter_fn, _on_add_row)
@@ -212,19 +212,19 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
     comb_back_fn = get_combined_result_path(temp_txt_path, row_ctx)
 
     def _on_add_row(d):
-        d["rows"].setdefault(pk, {
+        d["rows"].setdefault(str(pk), {
             "item_dir": item_dir,
             "temp_txt": temp_txt_path,
             "total": 0, "done": 0, "status": "in_progress"
         })
-        d["rows"][pk]["total"] = total_chunks
+        d["rows"][str(pk)]["total"] = total_chunks
         # Per-row queue receipts avoid guessing held work from unrelated
         # physical TODO files when subtracting producer backpressure.
         queued_chunks = 0 if run_stream_multistage else total_chunks
-        d["rows"][pk]["queue_pending"] = (
-            int(d["rows"][pk].get("queue_pending", 0) or 0) + queued_chunks
+        d["rows"][str(pk)]["queue_pending"] = (
+            int(d["rows"][str(pk)].get("queue_pending", 0) or 0) + queued_chunks
         )
-        d["rows"][pk].setdefault("queue_running", 0)
+        d["rows"][str(pk)].setdefault("queue_running", 0)
         # SQL/Table/ES 多階段已在 schedule 階段完成 LLM，不放入 consumer pending queue。
         d["queue"]["pending"] += queued_chunks
 
@@ -264,7 +264,7 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
             try:
                 meter_update(
                     meter_fn,
-                    lambda d, _pk=pk: d["rows"].setdefault(_pk, {}).update(
+                    lambda d, _pk=str(pk): d["rows"].setdefault(_pk, {}).update(
                         {"status": "cancelled", "done": 0}
                     ),
                 )
@@ -332,12 +332,12 @@ def schedule_one_row_OLD_1027(ctx, registry, meter_fn, idx: int, pk: Any, text: 
 
     # 6) 更新負載計量檔
     def _on_add_row(d):
-        d["rows"].setdefault(pk, {
+        d["rows"].setdefault(str(pk), {
             "item_dir": item_dir,
             "temp_txt": temp_txt_path,
             "total": 0, "done": 0, "status": "in_progress"
         })
-        d["rows"][pk]["total"] = total_chunks
+        d["rows"][str(pk)]["total"] = total_chunks
         d["queue"]["pending"] += total_chunks
 
     meter_update(meter_fn, _on_add_row)
@@ -368,12 +368,12 @@ def schedule_one_row_OLD(ctx, registry, meter_fn, idx: int, pk: Any, text: str):
     registry.add(item_dir, pk, temp_txt_path, comb_back_fn)
     print("comb_back_fn in schedule_one_row for ",pk, comb_back_fn)
     def _on_add_row(d):
-        d["rows"].setdefault(pk, {
+        d["rows"].setdefault(str(pk), {
             "item_dir": item_dir,
             "temp_txt": temp_txt_path,
             "total": 0, "done": 0, "status": "in_progress"
         })
-        d["rows"][pk]["total"] = total_chunks
+        d["rows"][str(pk)]["total"] = total_chunks
         d["queue"]["pending"] += total_chunks
 
     meter_update(meter_fn, _on_add_row)
