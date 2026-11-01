@@ -132,7 +132,8 @@ def show_recovery_review(parent, meter_path_provider, extra_dirs_provider=lambda
         def work():
             try:
                 result = (True, list_review_items(
-                    meter, extras, page=review_page[0], with_paging=True,
+                    meter, extras, page=review_page[0], page_size=100,
+                    with_paging=True,
                 ))
             except Exception as exc:
                 result = (False, type(exc).__name__)
