@@ -682,7 +682,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             meter_update(
                 meter_fn,
                 lambda d, _pk=pk: d["rows"].setdefault(str(_pk), {}).update(
-                    {"status": "writeback_failed_schema"}
+                    {"status": "writeback_failed_schema", "last_state_at": time.time()}
                 ),
             )
             meter_update(
@@ -866,7 +866,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                             meter_update(
                                 meter_fn,
                                 lambda d, _pk=pk: d["rows"].setdefault(str(_pk), {}).update(
-                                    {"status": "cancelled"}
+                                    {"status": "cancelled", "last_state_at": time.time()}
                                 ),
                             )
                         except Exception:
@@ -1081,7 +1081,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                         try: done_q.put_nowait(1)
                         except Exception: pass
                     try:
-                        meter_update(meter_fn, lambda d, _pk=pk: d["rows"].setdefault(str(_pk), {}).update({"status":"merged"}))
+                        meter_update(meter_fn, lambda d, _pk=pk: d["rows"].setdefault(str(_pk), {}).update({"status":"merged", "last_state_at": time.time()}))
                         meter_update(meter_fn, lambda d: d.setdefault("progress", {}).update({"last_progress_ts": time.time()}))
                     except Exception:
                         pass
