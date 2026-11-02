@@ -102,7 +102,9 @@ def test_strict_audit_failure_preserves_meter_rows_and_unknown_marker(tmp_path, 
     bad = document_progress.read_document_progress(meter, audit_path=str(audit))
     assert bad["shown"][0]["model_endpoint"] == "—"
     assert bad["shown"][0]["stage"] == view["shown"][0]["stage"]
-    assert "Audit 暫無法核對" in bad["notice"]
+    # A trailing incomplete Audit record is recoverable by a later append;
+    # the incremental reader must show pending, not stale model/IP or sink ACK.
+    assert "Audit 增量讀取中" in bad["notice"]
 
 
 def test_guarantees_no_model_from_unobserved_config_or_unrelated_item(tmp_path):
