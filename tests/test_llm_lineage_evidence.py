@@ -99,7 +99,7 @@ def test_malformed_width_and_invalid_outcome_do_not_inflate_verified_counts(tmp_
         dict(ok="MAYBE", error="private-error", audit_record_id=""),
     ])
     with path.open("a", encoding="utf-8", newline="") as fp:
-        fp.write("NO,secret,extra,cell\r\n")
+        fp.write("NO,secret\r\n")
     result = summarize_llm_lineage_evidence(path)
     assert result["state"] == "degraded"
     assert result["malformed_width_rows"] == 1
@@ -107,6 +107,17 @@ def test_malformed_width_and_invalid_outcome_do_not_inflate_verified_counts(tmp_
     assert result["observed_yes_rows"] == 1
     assert result["observed_no_rows"] == 0
     assert result["observed_csv_rows"] == 3
+
+
+def test_overwide_csv_row_is_rejected_by_bounded_parser(tmp_path):
+    path = _audit(tmp_path, ("ok", "error", "audit_record_id"), [
+        dict(ok="YES", error="", audit_record_id=uuid4().hex),
+    ])
+    with path.open("a", encoding="utf-8", newline="") as fp:
+        fp.write("NO,secret,extra,cell\\r\\n")
+    # The strict parser never exposes a partial summary for extra fields.
+    with pytest.raises(ValueError, match="too many fields"):
+        summarize_llm_lineage_evidence(path)
 
 
 def test_bad_header_reparse_and_incomplete_snapshot_fail_closed(tmp_path, capsys):
