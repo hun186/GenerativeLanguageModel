@@ -167,3 +167,21 @@ def test_more_than_six_distinct_endpoints_still_displays_last_actual_observation
     assert text.startswith("qwen3.6 · 192.168.30.8:11434")
     assert "(+6+ 組)" in text
     assert "192.168.30.6" not in text
+
+
+def test_legacy_non_dict_meter_row_does_not_break_model_projection(tmp_path):
+    meter = tmp_path / "loadmeter_legacy.json"
+    item = tmp_path / "item"
+    meter.write_text(__import__("json").dumps({
+        "rows": {"broken": None, "wellformed": {"item_dir": str(item), "total": 1}},
+    }), encoding="utf-8")
+    audit = tmp_path / "llm_call_audit_legacy.csv"
+    _audit(audit, [dict(prompt_file=str(item / "RUNNING" / "a.txt"),
+                        model="qwen3.6", base_url="http://10.0.0.8:11434",
+                        ok="YES", error="")])
+    result = document_progress.read_document_progress(
+        meter, mode="全部", audit_path=str(audit),
+    )
+    by_key = {row["key"]: row["model_endpoint"] for row in result["shown"]}
+    assert by_key["broken"] == "—"
+    assert by_key["wellformed"] == "qwen3.6 · 10.0.0.8:11434"
