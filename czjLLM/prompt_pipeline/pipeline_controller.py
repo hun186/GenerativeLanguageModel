@@ -3870,7 +3870,7 @@ class PromptAPIPipeline:
                     model_spec=self.model_spec,
                     audit_run_id=self.audit_run_id,
                     audit_path=self.audit_path,
-                    dispatch_item_dir=self.dispatch_item_dir,
+                    dispatch_item_dir=getattr(self, "dispatch_item_dir", ""),
                     )
                 )
 
