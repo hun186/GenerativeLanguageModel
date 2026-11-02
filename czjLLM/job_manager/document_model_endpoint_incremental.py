@@ -7,12 +7,12 @@ scanner has caught up with its *verified* observed file length.
 from __future__ import annotations
 
 from collections import OrderedDict
-import csv
-import io
 import os
 from pathlib import Path
 import stat
 import threading
+
+from czjLLM.utilities.llm_failure_summary import _iter_audit_csv_rows
 
 from czjLLM.job_manager.document_model_endpoint import (
     _MODEL_NAME, _audit_path_key, _endpoint_ip,
@@ -86,32 +86,60 @@ def _checkpoint(fd, offset):
     return _read_at(fd, start, offset - start)
 
 
+
+def _complete_csv_records(text):
+    """Yield newline-terminated logical CSV records, honoring quoted newlines.
+
+    This lightweight quote tracker finds record boundaries only; actual CSV
+    field validation uses the project's existing bounded custom parser.
+    It does not modify Python's process-global csv.field_size_limit().
+    """
+    start = 0
+    i = 0
+    inside_quote = False
+    field_start = True
+    while i < len(text):
+        c = text[i]
+        if inside_quote:
+            if c == '"':
+                if i + 1 < len(text) and text[i + 1] == '"':
+                    i += 2
+                    continue
+                inside_quote = False
+            i += 1
+            continue
+        if c == '"' and field_start:
+            inside_quote = True
+            field_start = False
+        elif c == ',':
+            field_start = True
+        elif c in "\\r\\n":
+            if c == "\\r" and i + 1 < len(text) and text[i + 1] == "\\n":
+                i += 1
+            yield text[start:i + 1]
+            start = i + 1
+            field_start = True
+        else:
+            field_start = False
+        i += 1
+
+
 def _consume_csv(state, chunk, requested):
-    """Only commit parser-complete rows. UTF-8/CSV exceptions fail closed."""
-    end = chunk.rfind(b"\n")
+    """Commit only complete logical records; keep large fields privately."""
+    end = chunk.rfind(b"\\n")
     if end < 0:
         if len(chunk) >= MAX_SCAN_BYTES:
             raise ValueError("audit contains an oversized or incomplete CSV record")
         return 0
     text = chunk[:end + 1].decode("utf-8", errors="strict")
-    stream = io.StringIO(text, newline="")
-    rows = csv.reader(stream, strict=True)
     consumed = 0
-    previous_char = 0
-    while True:
-        try:
-            row = next(rows)
-        except StopIteration:
-            break
-        except csv.Error as exc:
-            # A chunk can end in a quoted multiline CSV record; retry the
-            # uncommitted suffix next refresh. Other parser errors fail closed.
-            if str(exc) == "unexpected end of data":
-                break
-            raise ValueError("invalid audit CSV record") from exc
-        current_char = stream.tell()
-        consumed += len(text[previous_char:current_char].encode("utf-8"))
-        previous_char = current_char
+    for raw_record in _complete_csv_records(text):
+        limit = [state.get("width", MAX_HEADER_FIELDS)]
+        rows = list(_iter_audit_csv_rows(raw_record, field_limit=limit))
+        if len(rows) != 1:
+            raise ValueError("invalid audit CSV record")
+        row = rows[0]
+        consumed += len(raw_record.encode("utf-8"))
         if state["headers"] is None:
             if (not row or len(row) > MAX_HEADER_FIELDS
                     or len(row) != len(set(row))
@@ -142,7 +170,6 @@ def _consume_csv(state, chunk, requested):
     if consumed == 0 and len(chunk) >= MAX_SCAN_BYTES:
         raise ValueError("audit contains a CSV record beyond bounded chunk")
     return consumed
-
 
 def read_incremental_model_endpoints(path: str | Path,
                                      item_dirs: dict[str, object]) -> dict:
@@ -188,6 +215,11 @@ def read_incremental_model_endpoints(path: str | Path,
             check_path = Path(path).lstat()
             if ((after.st_dev, after.st_ino) != identity
                     or (check_path.st_dev, check_path.st_ino) != identity
+                    # An in-place rewrite or append while scanning can make
+                    # aggregates refer to different bytes than the checkpoint.
+                    # Invalidate, never certify such a mixed generation.
+                    or after.st_size != before.st_size
+                    or after.st_mtime_ns != before.st_mtime_ns
                     or after.st_size < state["offset"]
                     or any(p.is_symlink() for p in (Path(path), *Path(path).parents))):
                 raise ValueError("audit changed generation during incremental read")
@@ -209,7 +241,7 @@ def read_incremental_model_endpoints(path: str | Path,
                 "complete": complete, "scanned_bytes": state["offset"],
                 "total_bytes": after.st_size, "models": values,
             }
-        except (OSError, ValueError, UnicodeError, csv.Error):
+        except (OSError, ValueError, UnicodeError):
             _CACHE.pop(key, None)
             raise
         finally:
