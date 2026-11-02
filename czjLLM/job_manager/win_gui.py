@@ -957,6 +957,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     # Run-scoped quality is separate from LLM performance distributions.
     quality_section = ttk.Frame(frm)
     quality_section.pack(fill="x", pady=(0, 4))
+    # 重大異常檢閱／管理：right-hand icon, not a dedicated row.
     quality_header = ttk.Frame(quality_section)
     quality_header.pack(fill="x")
     recovery_button = tk.Button(
