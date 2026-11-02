@@ -189,3 +189,13 @@ def test_no_job_item_dir_means_no_guessed_row_event(tmp_path):
             status="calling",
         )
     assert not audit.with_suffix(".dispatch").exists()
+
+
+def test_dispatch_import_is_module_scoped_not_suppressed_by_observer_try():
+    import inspect
+    source = inspect.getsource(pc)
+    assert ("from czjLLM.job_manager.worker_dispatch_observation import "
+            "write_worker_dispatch_observation") in source
+    method = inspect.getsource(pc.PromptAPIPipeline._record_dispatch_observation)
+    assert "import write_worker_dispatch_observation" not in method
+    assert "write_worker_dispatch_observation(" in method
