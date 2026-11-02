@@ -114,7 +114,7 @@ def test_overwide_csv_row_is_rejected_by_bounded_parser(tmp_path):
         dict(ok="YES", error="", audit_record_id=uuid4().hex),
     ])
     with path.open("a", encoding="utf-8", newline="") as fp:
-        fp.write("NO,secret,extra,cell\\r\\n")
+        fp.write("NO,secret,extra,cell\r\n")
     # The strict parser never exposes a partial summary for extra fields.
     with pytest.raises(ValueError, match="too many fields"):
         summarize_llm_lineage_evidence(path)
