@@ -3250,12 +3250,16 @@ class PromptAPIPipeline:
         # The Worker already selected its real model/endpoint. This metadata
         # is best-effort observability only: never change the LLM, Queue, or
         # sink execution result because a GUI sidecar cannot be written.
-        if not (self.audit_path and self.dispatch_item_dir and self.promptFile):
+        # Legacy and isolated Worker fixtures may construct objects without
+        # the new optional row association. This must remain a no-op, not an
+        # AttributeError that interrupts the original LLM/repair behavior.
+        item_dir = getattr(self, "dispatch_item_dir", "")
+        if not (self.audit_path and item_dir and self.promptFile):
             return
         try:
             write_worker_dispatch_observation(
                 audit_path=self.audit_path,
-                item_dir=self.dispatch_item_dir,
+                item_dir=item_dir,
                 prompt_file=self.promptFile,
                 worker_call_id=worker_call_id,
                 model_spec=self.model_spec,
