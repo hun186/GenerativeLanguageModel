@@ -125,3 +125,56 @@ def test_bad_header_reparse_and_incomplete_snapshot_fail_closed(tmp_path, capsys
     printed = capsys.readouterr().err
     assert "invalid, unstable or oversized" in printed
     assert "partial" not in printed
+
+
+def test_reused_claim_is_shared_reference_not_duplicate_provider_request(tmp_path):
+    claim = uuid4().hex
+    path = _audit(tmp_path, (
+        "ok", "error", "audit_record_id", "worker_call_id",
+        "queue_claim_event_id", "call_llm_api_returned",
+    ), [
+        {"ok": "YES", "error": "", "audit_record_id": uuid4().hex,
+         "worker_call_id": uuid4().hex, "queue_claim_event_id": claim,
+         "call_llm_api_returned": "YES"},
+        {"ok": "NO", "error": "hidden", "audit_record_id": uuid4().hex,
+         "worker_call_id": uuid4().hex, "queue_claim_event_id": claim,
+         "call_llm_api_returned": "NO"},
+    ])
+    report = summarize_llm_lineage_evidence(path)
+    assert report["state"] == "observed"
+    assert report["audit_id_columns"]["queue_claim_event_id"]["duplicate_rows"] == 1
+    assert report["audit_id_columns"]["audit_record_id"]["duplicate_rows"] == 0
+    assert "shared references" in report["duplicate_id_semantics"]
+    assert claim not in json.dumps(report)
+
+
+def test_blank_worker_return_is_unknown_not_failure_or_provider_error(tmp_path):
+    path = _audit(tmp_path, (
+        "ok", "error", "audit_record_id", "worker_call_id",
+        "queue_claim_event_id", "call_llm_api_returned",
+    ), [
+        {"ok": "YES", "error": "", "audit_record_id": uuid4().hex,
+         "worker_call_id": uuid4().hex, "queue_claim_event_id": "",
+         "call_llm_api_returned": ""},
+    ])
+    report = summarize_llm_lineage_evidence(path)
+    assert report["state"] == "partial_evidence"
+    assert report["call_llm_api_returned"]["unknown_rows"] == 1
+    assert report["call_llm_api_returned"]["invalid_rows"] == 0
+    assert report["observed_no_rows"] == 0
+
+
+def test_noncanonical_uuid4_and_invalid_return_marker_fail_degraded(tmp_path):
+    path = _audit(tmp_path, (
+        "ok", "error", "audit_record_id", "worker_call_id",
+        "queue_claim_event_id", "call_llm_api_returned",
+    ), [
+        {"ok": "YES", "error": "", "audit_record_id": str(uuid4()),
+         "worker_call_id": uuid4().hex.upper(),
+         "queue_claim_event_id": "", "call_llm_api_returned": "MAYBE"},
+    ])
+    report = summarize_llm_lineage_evidence(path)
+    assert report["state"] == "degraded"
+    assert report["audit_id_columns"]["audit_record_id"]["invalid_rows"] == 1
+    assert report["audit_id_columns"]["worker_call_id"]["invalid_rows"] == 1
+    assert report["call_llm_api_returned"]["invalid_rows"] == 1
