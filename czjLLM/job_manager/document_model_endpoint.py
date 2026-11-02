@@ -52,7 +52,7 @@ def _endpoint_ip(value: object) -> str:
 
 
 def observed_model_endpoint_pairs(audit_path: str | Path,
-                                  item_dirs: dict[str, object]) -> dict[str, list[str]]:
+                                  item_dirs: dict[str, object]) -> dict[str, dict]:
     """For the *selected page only*, join exact item descendants to audit rows.
 
     The snapshot is bounded to the existing 16 MiB strict audit reader; if a
@@ -62,7 +62,10 @@ def observed_model_endpoint_pairs(audit_path: str | Path,
     """
     requested = {key: _audit_path_key(path) for key, path in item_dirs.items()}
     requested = {key: path for key, path in requested.items() if path}
-    result: dict[str, list[str]] = {key: [] for key in item_dirs}
+    result = {
+        key: {"latest": "", "pairs": [], "more_pairs": False}
+        for key in item_dirs
+    }
     if not requested:
         return result
     contents, _size = _read_bounded_csv(Path(audit_path), max_bytes=MAX_AUDIT_FILE_BYTES)
@@ -88,20 +91,28 @@ def observed_model_endpoint_pairs(audit_path: str | Path,
         display = f"{model} · {endpoint or 'IP 未記錄'}"
         for key, path in requested.items():
             if filename.startswith(path + "/"):
-                entries = result[key]
-                if display not in entries:
-                    # Bounded distinct display pairs. Never retain unlimited
-                    # values from a large run or untrusted CSV.
-                    if len(entries) < 6:
-                        entries.append(display)
+                evidence = result[key]
+                # Update on *every* observation. A -> B -> A must show A,
+                # including when A was already in the bounded distinct set.
+                evidence["latest"] = display
+                distinct = evidence["pairs"]
+                if display not in distinct:
+                    if len(distinct) < 6:
+                        distinct.append(display)
+                    else:
+                        # Do not claim an exact distinct count after the cap.
+                        # We still preserve the actual latest observation.
+                        evidence["more_pairs"] = True
     return result
 
 
-def summarize_model_endpoint_pairs(pairs: list[str]) -> str:
+def summarize_model_endpoint_pairs(evidence: dict) -> str:
     """A single narrow Treeview column, latest observed pair and diversity."""
-    if not pairs:
+    latest = evidence.get("latest", "")
+    if not latest:
         return "—"
-    latest = pairs[-1]
-    return latest[:94] + ("…" if len(latest) > 94 else "") + (
-        f" (+{len(pairs) - 1} 組)" if len(pairs) > 1 else ""
-    )
+    pairs = evidence.get("pairs") or []
+    extra = (len(pairs) if evidence.get("more_pairs") else len(pairs) - 1)
+    suffix = (f" (+{extra}+ 組)" if evidence.get("more_pairs")
+              else f" (+{extra} 組)" if extra > 0 else "")
+    return latest[:94] + ("…" if len(latest) > 94 else "") + suffix
