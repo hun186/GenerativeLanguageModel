@@ -108,6 +108,8 @@ def observed_model_endpoint_pairs(audit_path: str | Path,
 
 def summarize_model_endpoint_pairs(evidence: dict) -> str:
     """A single narrow Treeview column, latest observed pair and diversity."""
+    if not isinstance(evidence, dict):
+        return "—"
     latest = evidence.get("latest", "")
     if not latest:
         return "—"
