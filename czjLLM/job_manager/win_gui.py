@@ -565,6 +565,45 @@ def _enable_windows_dpi_awareness():
     except Exception:
         pass
 
+
+def incident_button_state(quality: dict, recheck: dict, reduction: dict):
+    """Per-run indicator; never misrepresent event counts as incident rows.
+
+    Numeric badges count only operational failure *events*. Recheck/Reduction
+    errors and unresolved document decisions have distinct denominators.
+    """
+    stream = str(quality.get("quality_stream_status") or "")
+    unavailable = stream in {"unverified", "capacity_exceeded"}
+    incomplete = stream in {"unsealed_legacy", "degraded_corrupt_lines", "incomplete_tail"}
+    events = sum(max(0, int(quality.get(key, 0) or 0)) for key in (
+        "consumer_orchestration_failure_events", "row_merger_retryable_failure_events",
+        "producer_operational_failure_events", "stage_orchestration_failure_events",
+        "worker_phase_failure_events",
+    ))
+    documents = max(0, int(quality.get("documents_schema_pending", 0) or 0))
+    recheck_errors = max(0, int(recheck.get("errors", 0) or 0))
+    reduction_errors = (
+        max(0, int(reduction.get("stages_failed", 0) or 0))
+        + max(0, int(reduction.get("legacy_merges_failed", 0) or 0))
+    )
+    detail = (
+        "重大異常檢閱／管理（點擊開啟浮動視窗）\n"
+        "僅顯示本次已觀察到的狀態；不是全部檢閱條目數。\n"
+        f"Producer／Stage／Worker／Consumer／Row Merger 事件：{events:,} 次（非文件數）\n"
+        f"待處理文件結構異常：{documents:,} 筆\n"
+        f"Recheck 錯誤：{recheck_errors:,} 次；Reduction 錯誤：{reduction_errors:,} 次"
+    )
+    if unavailable:
+        return "⚠ ?", "#b00020", detail + "\n品質事件資料不可用，不能視為零異常。"
+    if events or documents or recheck_errors or reduction_errors:
+        badge = (f"{min(events, 99)}{'+' if events > 99 else ''}"
+                 if events else "•")
+        return f"⚠ {badge}", "#b00020", detail
+    if incomplete:
+        return "⚠ ?", "#b45309", detail + "\n品質紀錄不完整，不能視為零異常。"
+    return "⚠", "#666666", detail + "\n未觀察到上述異常；不代表其他來源已驗證。"
+
+
 def format_quality_summary(stats: dict) -> str:
     """Keep incompatible slice/document denominators separate in the header."""
     status = stats.get("quality_stream_status", "")
@@ -848,9 +887,8 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     lbl_eta = ttk.Label(frm, foreground="#555")
     lbl_eta.pack(anchor="w", pady=(0, 8))
 
-    # Every single-run Windows GUI (SQL/Table/ES/CSV/etc.) shares this
-    # button. Review actions affect only operator annotation records;
-    # they never clear queue holds or delete Success.
+    # Shared review popup; the launch icon lives in the Processing Quality
+    # header. Review actions never clear queue holds or delete Success.
     def _open_recovery_review():
         nonlocal _recovery_review_window
         try:
@@ -869,11 +907,6 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
             messagebox.showerror(
                 "檢閱介面無法開啟", type(exc).__name__, parent=root,
             )
-
-    recovery_button = ttk.Button(
-        frm, text="⚠ 重大異常檢閱／管理", command=_open_recovery_review,
-    )
-    recovery_button.pack(anchor="e", pady=(0, 6))
 
     # Recheck / Reduction 都是短摘要＋可展開細節；並排可把垂直空間
     # 留給主要執行日誌。兩欄等寬，展開狀態仍各自獨立。
@@ -924,8 +957,18 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     # Run-scoped quality is separate from LLM performance distributions.
     quality_section = ttk.Frame(frm)
     quality_section.pack(fill="x", pady=(0, 4))
-    quality_toggle = ttk.Button(quality_section)
-    quality_toggle.pack(fill="x")
+    # 重大異常檢閱／管理：right-hand icon, not a dedicated row.
+    quality_header = ttk.Frame(quality_section)
+    quality_header.pack(fill="x")
+    recovery_button = tk.Button(
+        quality_header, text="⚠", command=_open_recovery_review,
+        font=("Segoe UI", 11), relief="flat", borderwidth=0,
+        padx=8, pady=0, highlightthickness=1, takefocus=True,
+        cursor="hand2", background=root.cget("bg"),
+    )
+    recovery_button.pack(side="right", padx=(4, 0))
+    quality_toggle = ttk.Button(quality_header)
+    quality_toggle.pack(side="left", fill="x", expand=True)
     quality_summary = ttk.Label(
         quality_section, text=format_quality_summary(_quality_stats),
         anchor="w", justify="left", wraplength=720,
@@ -946,6 +989,25 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     quality_codes = ttk.Label(quality_frame, anchor="w", justify="left", wraplength=720)
     quality_codes.pack(fill="x")
 
+    # Use the full window width rather than a hard-coded 720px text column.
+    def _resize_quality_wrap(event):
+        width = max(280, int(event.width) - 16)
+        quality_summary.configure(wraplength=width)
+        quality_codes.configure(wraplength=width)
+
+    quality_section.bind("<Configure>", _resize_quality_wrap)
+
+    _incident_tooltip_text = ""
+    def _refresh_incident_button():
+        nonlocal _incident_tooltip_text
+        text, color, detail = incident_button_state(
+            _quality_stats, _recheck_stats, _reduction_stats,
+        )
+        _incident_tooltip_text = detail
+        recovery_button.configure(
+            text=text, foreground=color, activeforeground=color,
+        )
+
     def _refresh_quality():
         quality_toggle.configure(text=f"{'▼' if _quality_expanded else '▶'} Processing Quality / 異常監控")
         quality_summary.configure(text=format_quality_summary(_quality_stats))
@@ -962,6 +1024,8 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                       "｜".join(f"{code}: {count:,}" for code, count in top)
                       if top else "尚無錯誤事件"))
         )
+
+        _refresh_incident_button()
 
     def _toggle_quality():
         nonlocal _quality_expanded
@@ -1112,6 +1176,18 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     audit_toggle.bind("<Leave>", _hide_audit_tooltip)
     audit_summary.bind("<Enter>", _audit_header_help)
     audit_summary.bind("<Leave>", _hide_audit_tooltip)
+
+    # Reuse the monitor-bounded Toplevel tooltip. The click still opens the
+    # existing review window and never manipulates queue/source/sink state.
+    recovery_button.bind(
+        "<Enter>", lambda event: _show_audit_tooltip(
+            _incident_tooltip_text, event.x_root, event.y_root,
+            "__incident__:" + _incident_tooltip_text,
+        ),
+    )
+    recovery_button.bind("<Leave>", _hide_audit_tooltip)
+    recovery_button.bind("<FocusOut>", _hide_audit_tooltip)
+    recovery_button.bind("<Button-1>", _hide_audit_tooltip)
 
     def _draw_audit_distribution():
         audit_canvas.delete("all")
@@ -1313,10 +1389,26 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         ("running", "執行", 60),
         ("updated", "最後更新", 78),
     )
+    # ttk.Treeview default row height need not follow scaled Segoe UI font.
+    # Font line metrics (after Tk DPI setup) preserve full glyph descent.
+    document_style = ttk.Style()
+    try:
+        document_line_height = int(tkfont.nametofont("TkDefaultFont").metrics("linespace"))
+    except (tk.TclError, ValueError, TypeError):
+        document_line_height = 20
+    document_style.configure(
+        "DocumentProgress.Treeview", font="TkDefaultFont",
+        rowheight=max(28, document_line_height + 10),
+    )
+    document_style.configure(
+        "DocumentProgress.Treeview.Heading", font="TkHeadingFont",
+        padding=(4, 5),
+    )
     document_grid = ttk.Treeview(
         document_frame,
         columns=tuple(c[0] for c in document_columns),
         show="headings", height=9, selectmode="browse",
+        style="DocumentProgress.Treeview",
     )
     for col, title_text, width in document_columns:
         document_grid.heading(col, text=title_text)
@@ -1588,6 +1680,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                         foreground="#b00020" if has_error else "#333333",
                     )
                     _refresh_recheck_header()
+                    _refresh_incident_button()
                     if has_error and not _recheck_error_visible:
                         append(f"⚠️ Pending recheck errors: {_recheck_stats.get('errors', 0)}")
                     _recheck_error_visible = has_error
@@ -1598,6 +1691,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                         foreground="#b00020" if reduction_status_is_error(_reduction_stats) else "#333333",
                     )
                     _refresh_reduction_header()
+                    _refresh_incident_button()
                     if _reduction_stats.get("run_status") == "cancelled":
                         cancel_status.configure(text="Cancelled / safely drained")
                         cancel_button.configure(state="disabled")

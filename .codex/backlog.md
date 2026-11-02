@@ -8,6 +8,7 @@
 - **#269 completed owner merge gate:** latest-head Linux E2E, Windows Hosted 3.10/3.11, changed-line scan SUCCESS, formal Codex receipt no major issues, 22/22 threads resolved, explicit 2026-11-01 owner instruction to merge, GitHub confirmed Squash Merge. Two self-hosted jobs were queued and not treated as verified; physical operator tests remain separate.
 
 ## True Open Engineering Work
+- [ ] **2026-11-02 GUI compact layout PR:** obtain exact-head Hosted CI, formal Codex review and zero unresolved findings before Merge. Verify on real Windows at 100%/125%/150% DPI: no Treeview text clipping, icon/tooltip placement and popup interaction, responsive quality-summary width, and unchanged cooperative Cancel. Operator verification is tracked in Issue #266; headless CI is not physical GUI acceptance.
 - [x] PR #269 exact-head Hosted Linux E2E, Windows 3.10/3.11, secret scan, formal Codex Review, owner approval and Squash Merge accepted; physical operator acceptance is separate #266.
 - [ ] **Issue #266:** real operator Windows/SMB/NTFS, live Ollama, SQL/ES sink-ack/readback and Tk GUI interaction acceptance. Hosted CI is not physical operator acceptance; no unverified Windows auto-replay.
 - [x] **Historical PR #231** is closed/merged (`21f8ea5fc985171d5ae2287416f0ff5a8b012d63`), independently verified from GitHub. Do not reopen stale historical work.
