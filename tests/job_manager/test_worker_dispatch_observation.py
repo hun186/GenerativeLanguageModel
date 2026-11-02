@@ -199,3 +199,13 @@ def test_dispatch_import_is_module_scoped_not_suppressed_by_observer_try():
     method = inspect.getsource(pc.PromptAPIPipeline._record_dispatch_observation)
     assert "import write_worker_dispatch_observation" not in method
     assert "write_worker_dispatch_observation(" in method
+
+
+def test_legacy_worker_without_optional_dispatch_item_dir_is_noop(tmp_path):
+    # Existing isolated Worker/repair tests use __new__ without running the
+    # constructor. Observability must never interrupt those production paths.
+    worker = pc.PromptAPIPipeline.__new__(pc.PromptAPIPipeline)
+    worker.audit_path = str(tmp_path / "llm_call_audit_legacy.csv")
+    worker.promptFile = str(tmp_path / "input.txt")
+    worker._record_dispatch_observation(uuid4().hex, "assigned")
+    assert not (tmp_path / "llm_call_audit_legacy.dispatch").exists()
