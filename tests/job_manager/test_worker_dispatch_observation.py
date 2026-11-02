@@ -209,3 +209,9 @@ def test_legacy_worker_without_optional_dispatch_item_dir_is_noop(tmp_path):
     worker.promptFile = str(tmp_path / "input.txt")
     worker._record_dispatch_observation(uuid4().hex, "assigned")
     assert not (tmp_path / "llm_call_audit_legacy.dispatch").exists()
+
+
+def test_legacy_retry_child_constructor_has_safe_optional_row_fallback():
+    import inspect
+    source = inspect.getsource(pc.PromptAPIPipeline.handle_json_output)
+    assert 'dispatch_item_dir=getattr(self, "dispatch_item_dir", "")' in source
