@@ -42,6 +42,7 @@ from czjLLM.prompt_pipeline.stage_orchestrator import (
 )
 from czjLLM.utilities.atomic_io import atomic_write_json, robust_json_read
 from czjLLM.job_manager import job_config as _job_config
+from czjLLM.job_manager.worker_dispatch_observation import write_worker_dispatch_observation
 from czjLLM.job_manager.job_config import LLMJobConfig, task_template_preview
 #from czjLLM.job_manager.end_point_manager import get_available_end_points
 from czjLLM.job_manager.end_point_manager import select_model
@@ -3252,9 +3253,6 @@ class PromptAPIPipeline:
         if not (self.audit_path and self.dispatch_item_dir and self.promptFile):
             return
         try:
-            from czjLLM.job_manager.worker_dispatch_observation import (
-                write_worker_dispatch_observation,
-            )
             write_worker_dispatch_observation(
                 audit_path=self.audit_path,
                 item_dir=self.dispatch_item_dir,
