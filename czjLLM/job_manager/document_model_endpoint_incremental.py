@@ -139,6 +139,8 @@ def _consume_csv(state, chunk, requested):
                         pairs.append(display)
                     else:
                         entry["more_pairs"] = True
+    if consumed == 0 and len(chunk) >= MAX_SCAN_BYTES:
+        raise ValueError("audit contains a CSV record beyond bounded chunk")
     return consumed
 
 
