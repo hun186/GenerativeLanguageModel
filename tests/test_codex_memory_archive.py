@@ -305,3 +305,57 @@ def test_pr270_reconciliation_keeps_exact_pre_edit_handoff_archive(name, expecte
     assert len(body.encode("utf-8")) < 40_000
     attrs = (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
     assert ".codex/archive/*-20261101-234800.md -text" in attrs
+
+
+# 2026-11-02 owner-authorized #271-#274 reconciliation. These original
+# handoffs are independently preserved before the active files are edited.
+_POST_GUI_AUDIT_BLOBS = {
+    "project": "c9363be1ce0c02157dbbd860b60708071d6899a3",
+    "memory": "5725c26247056df7baf8f8814d2998865461f259",
+    "backlog": "0c6122251db1110a205f38618d5809b14441fe95",
+}
+
+
+@pytest.mark.parametrize("name,expected", sorted(_POST_GUI_AUDIT_BLOBS.items()))
+def test_20261102_gui_audit_reconciliation_archives_exact_git_blobs(name, expected):
+    stem = f"{name}.md-20261102-152500.md"
+    archive = _ROOT / ".codex" / "archive" / stem
+    active = _ROOT / ".codex" / f"{name}.md"
+    assert archive.is_file() and active.is_file()
+    assert _git_blob_sha(archive.read_bytes()) == expected
+    body = active.read_text(encoding="utf-8")
+    assert stem in body and expected in body
+    assert len(body.splitlines()) <= 200
+    assert len(body.encode("utf-8")) < 40_000
+    attrs = (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
+    assert ".codex/archive/*-20261102-152500.md -text" in attrs
+
+
+def test_gui_audit_work_done_is_not_reopened_in_current_handoff():
+    files = {
+        name: (_ROOT / ".codex" / f"{name}.md").read_text(encoding="utf-8")
+        for name in ("project", "memory", "backlog")
+    }
+    merged = {
+        "#271": "e303a203657933847be4576b97fb9253fb990d7a",
+        "#272": "4befa0e1c29e46f614adeec8d3444df67ea4b7d1",
+        "#273": "a6720a7e636e40d1c814bdf52fc529217c829de2",
+        "#274": "7a7a9ba259e77b90f51737771bcc30058f231eae",
+    }
+    for name, text in files.items():
+        current = text.split(
+            "## Current Focus" if name == "project" else "## Current Summary",
+            1,
+        )[1].split("## ", 1)[0]
+        assert all(number in current and sha in current
+                   for number, sha in merged.items())
+        assert "#266" in current and "operator-deferred" in current
+        assert "Windows" in current and "SQL/ES" in current
+
+    active = files["backlog"].split("## True Open Engineering Work", 1)[1]
+    current_items = active.split("## Recent Changes", 1)[0].splitlines()
+    assert any("- [x]" in line and "#273" in line for line in current_items)
+    assert any("- [x]" in line and "#274" in line for line in current_items)
+    assert any("- [ ]" in line and "#266" in line for line in current_items)
+    assert not any("- [ ]" in line and any(n in line for n in merged)
+                   for line in current_items)
