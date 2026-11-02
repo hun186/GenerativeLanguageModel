@@ -39,12 +39,13 @@ def test_multiple_rows_only_join_real_descendant_prompt_paths(tmp_path):
     seen = observed_model_endpoint_pairs(audit, {
         "one": str(root), "other": str(sibling), "missing": str(tmp_path / "missing"),
     })
-    assert seen["one"] == [
+    assert seen["one"]["pairs"] == [
         "qwen3.6:128k · 192.168.1.20:11434",
         "qwen3.6:128k · 192.168.1.21:11434",
     ]
-    assert seen["other"] == ["other-model · 10.0.0.3:5000"]
-    assert seen["missing"] == []
+    assert seen["one"]["latest"] == "qwen3.6:128k · 192.168.1.21:11434"
+    assert seen["other"]["latest"] == "other-model · 10.0.0.3:5000"
+    assert seen["missing"]["latest"] == ""
     assert "2 組" not in summarize_model_endpoint_pairs(seen["one"])
     assert "(+1 組)" in summarize_model_endpoint_pairs(seen["one"])
 
@@ -66,7 +67,7 @@ def test_only_literal_ip_is_displayed_never_full_url_or_secrets(tmp_path):
              ok="NO", error="PRIVATE_ERR"),
     ])
     projected = observed_model_endpoint_pairs(audit, {"one": str(item)})
-    assert projected["one"] == ["qwen3.6:latest-128k · IP 未記錄"]
+    assert projected["one"]["latest"] == "qwen3.6:latest-128k · IP 未記錄"
     assert "password" not in str(projected)
     assert "SECRET" not in str(projected)
     assert "input.txt" not in str(projected)
@@ -115,7 +116,7 @@ def test_guarantees_no_model_from_unobserved_config_or_unrelated_item(tmp_path):
                         model="qwen3.6", base_url="http://192.168.1.8",
                         ok="YES", error="")])
     found = observed_model_endpoint_pairs(audit, {"x": str(tmp_path / "row")})
-    assert found["x"] == []
+    assert found["x"]["latest"] == ""
 
 
 def test_gui_inserts_one_actual_observed_model_ip_column_without_changing_cancel():
@@ -126,3 +127,43 @@ def test_gui_inserts_one_actual_observed_model_ip_column_without_changing_cancel
     assert 'orient="horizontal", command=document_grid.xview' in src
     assert "cancel_event.set()" in src
     assert "Cancelled / safely drained" in src
+
+
+def test_switch_back_to_prior_endpoint_is_still_the_actual_latest(tmp_path):
+    root = tmp_path / "item"
+    audit = tmp_path / "llm_call_audit_switch.csv"
+    _audit(audit, [
+        dict(prompt_file=str(root / "RUNNING" / f"{i}.txt"),
+             model="qwen3.6",
+             base_url=f"http://192.168.20.{host}:11434",
+             ok="YES", error="")
+        for i, host in enumerate((11, 22, 11))
+    ])
+    evidence = observed_model_endpoint_pairs(audit, {"row": str(root)})["row"]
+    assert evidence["pairs"] == [
+        "qwen3.6 · 192.168.20.11:11434",
+        "qwen3.6 · 192.168.20.22:11434",
+    ]
+    assert evidence["latest"] == "qwen3.6 · 192.168.20.11:11434"
+    assert summarize_model_endpoint_pairs(evidence).startswith(
+        "qwen3.6 · 192.168.20.11:11434"
+    )
+
+
+def test_more_than_six_distinct_endpoints_still_displays_last_actual_observation(tmp_path):
+    root = tmp_path / "item"
+    audit = tmp_path / "llm_call_audit_seven.csv"
+    _audit(audit, [
+        dict(prompt_file=str(root / "RUNNING" / f"{i}.txt"),
+             model="qwen3.6", base_url=f"http://192.168.30.{i}:11434",
+             ok="YES", error="")
+        for i in range(1, 9)
+    ])
+    evidence = observed_model_endpoint_pairs(audit, {"row": str(root)})["row"]
+    assert len(evidence["pairs"]) == 6
+    assert evidence["more_pairs"] is True
+    assert evidence["latest"] == "qwen3.6 · 192.168.30.8:11434"
+    text = summarize_model_endpoint_pairs(evidence)
+    assert text.startswith("qwen3.6 · 192.168.30.8:11434")
+    assert "(+6+ 組)" in text
+    assert "192.168.30.6" not in text
