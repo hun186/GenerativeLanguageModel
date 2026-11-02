@@ -113,8 +113,8 @@ def _complete_csv_records(text):
             field_start = False
         elif c == ',':
             field_start = True
-        elif c in "\\r\\n":
-            if c == "\\r" and i + 1 < len(text) and text[i + 1] == "\\n":
+        elif c in "\r\n":
+            if c == "\r" and i + 1 < len(text) and text[i + 1] == "\n":
                 i += 1
             yield text[start:i + 1]
             start = i + 1
@@ -126,7 +126,7 @@ def _complete_csv_records(text):
 
 def _consume_csv(state, chunk, requested):
     """Commit only complete logical records; keep large fields privately."""
-    end = chunk.rfind(b"\\n")
+    end = chunk.rfind(b"\n")
     if end < 0:
         if len(chunk) >= MAX_SCAN_BYTES:
             raise ValueError("audit contains an oversized or incomplete CSV record")
