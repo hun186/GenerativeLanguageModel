@@ -1,7 +1,8 @@
 # GenerativeLanguageModel — Active Project Router
 
 ## Current Focus
-- **2026-11-01 current accepted main:** PR #269 was owner-authorized and Squash Merged on 2026-11-01 into main as `d22585b92be9b61d437cfba209902dade91c20d7` from exact HEAD `c5668c123e76ab5b85bd6506a3a505663cbbf641`. Formal Codex exact-HEAD receipt said no major issues; all 22 review threads resolved. Latest-HEAD hosted Linux offline-e2e, hosted Windows NTFS Python 3.10/3.11 and changed-line secrets were SUCCESS. The two self-hosted Windows jobs stayed QUEUED, and operator PC, physical Tk GUI, SMB, live LLM, SQL/ES sink readback were NOT VERIFIED; see Issue #266. No production repair/deletion or replay authorized.
+- **2026-11-02 verified latest main:** #271 GUI compact incident icon / DPI row height Squash Merged `e303a203657933847be4576b97fb9253fb990d7a`; #272 offline read-only audit lineage Squash Merged `4befa0e1c29e46f614adeec8d3444df67ea4b7d1`; #273 audit-observed per-document model/IP Squash Merged `a6720a7e636e40d1c814bdf52fc529217c829de2`; #274 incremental bounded large-Audit reader Squash Merged `7a7a9ba259e77b90f51737771bcc30058f231eae`. For each, latest-head Hosted Linux offline-E2E, Hosted Windows NTFS Python 3.10/3.11, changed-line secrets and Codex Review were PASS, no unresolved threads. Self-hosted Windows remained QUEUED; physical Windows/Tk/SMB/live LLM and SQL/ES sink readback remain **operator-deferred** (#266). No reopened GUI PR and no implied sink ACK.
+- **Historical baseline #269 (2026-11-01):** PR #269 was owner-authorized and Squash Merged on 2026-11-01 into main as `d22585b92be9b61d437cfba209902dade91c20d7` from exact HEAD `c5668c123e76ab5b85bd6506a3a505663cbbf641`. Formal Codex exact-HEAD receipt said no major issues; all 22 review threads resolved. Latest-HEAD hosted Linux offline-e2e, hosted Windows NTFS Python 3.10/3.11 and changed-line secrets were SUCCESS. The two self-hosted Windows jobs stayed QUEUED, and operator PC, physical Tk GUI, SMB, live LLM, SQL/ES sink readback were NOT VERIFIED; see Issue #266. No production repair/deletion or replay authorized.
 - **Next authorized work:** Finish the operator-owned *offline disposable NTFS fixture* acceptance handoff under Issue #266. Real Windows/SMB queue, interactive GUI, and live model or sink tests require separate operator-controlled evidence. No automatic destructive recovery or claim of sink ACK from GUI 100% slices.
 
 ## Historical Focus Snapshots — superseded dated states
@@ -79,6 +80,7 @@ The following older in-progress/PENDING notes preserve history only and are **no
 - Hosted HEAD/CI, production code and official Codex Reviews override historical `pending` notes. When a PR merges, reconcile **Current Focus** before the next independent task.
 
 ## Archived History
+- `.codex/archive/project.md-20261102-152500.md` — exact pre-reconciliation `project.md` Git blob `c9363be1ce0c02157dbbd860b60708071d6899a3`, preserved before marking #271–#274 merged; older dated Pending handoffs remain recoverable.
 
 - `.codex/archive/project.md-20261101-234800.md` — exact pre-PR #270 active project Git blob `1c5a01d44264de3ff5baed5fade965c0e6dd1aa5`, preserved without changes; #269 merge reconciliation replaces dated Current Focus/Handoff text only.
 - `.codex/archive/project.md-20261028-104900.md` — exact pre-reconciliation active router Git blob `a4eeb14fe91dadbb3583087a1517f1f290f2834c`; retains prior HEADs, completed review chronology and superseded `pending` labels. This archive is historical, not a current work queue.
