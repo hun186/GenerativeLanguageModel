@@ -8,6 +8,7 @@
 - Remaining issues: Windows self-hosted 3.10/3.11 still queued/operator-deferred, independent OPEN PR #231, no real Windows/Ollama/ES readback, no crash-safe authenticated checkpoint/online shard retirement. These accepted PRs do not prove absence of filesystem races or malicious-tamper resilience.
 
 ## Environment and External Dependencies
+- **2026-11-02 pending Worker dispatch UI acceptance:** headless Linux tests cover the local pre-call event and row join, but cannot establish real Windows DPI/NTFS/Junction, live Ollama/provider request reception, cancellation/crash liveness, HTTP retry count or SQL/ES readback. A crashed process may leave its last `calling` observation; GUI must say `最後觀測` rather than `currently confirmed running`. Max 256 call files/visible row is a fail-closed UI budget; older workloads with no explicit item_dir or no audit path remain unknown. Physical acceptance still Issue #266.
 
 - Windows 3.10 and 3.11 self-hosted runners remain **queued**; Linux Hosted `offline-e2e` is the operative independently reported test. Physical Windows PSAPI/GUI/LLM/SQL Server/ES operation remains operator-deferred. Do not label full workflow green.
 - Pinned `peft` dependencies may be blocked by proxy HTTP 403; clean offline Linux E2E uses `requirements-e2e.txt`. Local environments may lack YAML/OpenCC/tqdm. Do not treat such install limitations as working integration proof.
