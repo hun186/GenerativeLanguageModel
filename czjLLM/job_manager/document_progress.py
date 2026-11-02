@@ -132,6 +132,7 @@ def classify_row(key, row):
         "error": error, "active": active,
         "updated_at": updated,
         "updated_text": updated_text,
+        "model_endpoint": "—",
     }
 
 
@@ -240,7 +241,7 @@ def read_meter_strict(meter_path):
 
 
 def read_document_progress(meter_path, *, mode="目前處理", search="",
-                           page=0, page_size=PAGE_SIZE):
+                           page=0, page_size=PAGE_SIZE, audit_path=""):
     """Bounded read: no queue directory scan, no prompt content inspection."""
     if not meter_path:
         return {**project_meter({}, mode=mode, search=search, page=page,
@@ -259,4 +260,27 @@ def read_document_progress(meter_path, *, mode="目前處理", search="",
     result = project_meter(data, mode=mode, search=search, page=page,
                            page_size=page_size)
     result["notice"] = "本次 Run；切片100%≠確認寫回"
+    if audit_path and result["shown"]:
+        # Only the visible page is joined; no source directories, LLM work,
+        # configuration fallbacks or raw audit fields go into the GUI table.
+        from czjLLM.job_manager.document_model_endpoint import (
+            observed_model_endpoint_pairs, summarize_model_endpoint_pairs,
+        )
+        row_map = data["rows"]
+        item_dirs = {
+            item["key"]: row_map[item["key"]].get("item_dir")
+            for item in result["shown"]
+            if isinstance(row_map.get(item["key"]), dict)
+        }
+        try:
+            observed = observed_model_endpoint_pairs(audit_path, item_dirs)
+        except (ValueError, OSError, UnicodeError):
+            # Meter is still usable even while CSV is missing, oversized,
+            # truncated or being appended. Never leak raw errors/paths.
+            result["notice"] += "；模型／端點 IP 的 Audit 暫無法核對"
+        else:
+            for item in result["shown"]:
+                item["model_endpoint"] = summarize_model_endpoint_pairs(
+                    observed.get(item["key"], [])
+                )
     return result

@@ -1385,6 +1385,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         ("document", "列／文件 ID", 125),
         ("stage", "目前階段", 185),
         ("progress", "切片進度（非寫回進度）", 235),
+        ("model_endpoint", "模型／端點 IP（已記錄）", 250),
         ("pending", "等待", 60),
         ("running", "執行", 60),
         ("updated", "最後更新", 78),
@@ -1414,12 +1415,18 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         document_grid.heading(col, text=title_text)
         document_grid.column(
             col, width=width, anchor="w" if col in
-            {"document", "stage", "progress"} else "center",
-            stretch=col in {"document", "stage", "progress"},
+            {"document", "stage", "progress", "model_endpoint"} else "center",
+            stretch=col in {"document", "stage", "progress", "model_endpoint"},
         )
     document_grid.tag_configure("error", foreground="#b00020")
     document_grid.tag_configure("running", foreground="#175b99")
     document_grid.pack(fill="x")
+    # Keep the new evidence column accessible at narrower Windows DPI.
+    document_xscroll = ttk.Scrollbar(
+        document_frame, orient="horizontal", command=document_grid.xview,
+    )
+    document_grid.configure(xscrollcommand=document_xscroll.set)
+    document_xscroll.pack(fill="x")
     document_detail = ttk.Label(
         document_frame, foreground="#555",
         text="切片完成不等於已合併或 SQL/ES 寫回成功。每次只顯示目前頁。",
@@ -1461,7 +1468,8 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         document_selected_bar.configure(value=pct)
         document_selected_label.configure(
             text=f"列 {row['label']}｜{row['stage']}｜"
-                 f"{row['progress']}｜最後更新 {row['updated_text']}"
+                 f"{row['progress']}｜模型／端點 {row['model_endpoint']}｜"
+                 f"最後更新 {row['updated_text']}"
         )
 
     document_grid.bind("<<TreeviewSelect>>", _document_selected)
@@ -1490,6 +1498,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         args = (
             _recovery_meter_path, _document_filter.get(),
             _document_query.get().strip()[:100], _document_page,
+            _audit_path,
         )
         _document_busy = True
         _document_last_refresh = now
@@ -1499,7 +1508,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
             try:
                 result = (True, read_document_progress(
                     args[0], mode=args[1], search=args[2],
-                    page=args[3],
+                    page=args[3], audit_path=args[4],
                 ))
             except Exception as exc:
                 result = (False, type(exc).__name__)
@@ -1542,7 +1551,8 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                             "", "end", iid=str(idx), tags=tag,
                             values=(
                                 item["label"], item["stage"], item["progress"],
-                                item["pending_text"], item["running_text"],
+                                item["model_endpoint"], item["pending_text"],
+                                item["running_text"],
                                 item["updated_text"],
                             ),
                         )
@@ -1562,7 +1572,8 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                     document_detail.configure(
                         text=(result.get("notice") or "")
                         + f"；顯示 {len(result['shown'])}/{result['matching']} 筆。"
-                        + "切片100%≠寫回完成；merged 為 Row Merger 標記，非獨立 sink readback。"
+                        + "切片100%≠寫回完成；模型／IP 僅顯示已記錄的 LLM Audit，"
+                        + "並非未完成呼叫的即時端點；merged 非獨立 sink readback。"
                     )
                 _document_header()
             else:
