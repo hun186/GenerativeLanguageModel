@@ -264,7 +264,10 @@ def read_document_progress(meter_path, *, mode="目前處理", search="",
         # Only the visible page is joined; no source directories, LLM work,
         # configuration fallbacks or raw audit fields go into the GUI table.
         from czjLLM.job_manager.document_model_endpoint import (
-            observed_model_endpoint_pairs, summarize_model_endpoint_pairs,
+            summarize_model_endpoint_pairs,
+        )
+        from czjLLM.job_manager.document_model_endpoint_incremental import (
+            read_incremental_model_endpoints,
         )
         row_map = data["rows"]
         item_dirs = {
@@ -273,14 +276,23 @@ def read_document_progress(meter_path, *, mode="目前處理", search="",
             if isinstance(row_map.get(item["key"]), dict)
         }
         try:
-            observed = observed_model_endpoint_pairs(audit_path, item_dirs)
+            observation = read_incremental_model_endpoints(audit_path, item_dirs)
         except (ValueError, OSError, UnicodeError):
-            # Meter is still usable even while CSV is missing, oversized,
-            # truncated or being appended. Never leak raw errors/paths.
+            # Meter stays usable if CSV changed generation or has malformed
+            # records. Do not display stale endpoints from earlier scans.
             result["notice"] += "；模型／端點 IP 的 Audit 暫無法核對"
         else:
-            for item in result["shown"]:
-                item["model_endpoint"] = summarize_model_endpoint_pairs(
-                    observed.get(item["key"], [])
+            if observation["complete"]:
+                for item in result["shown"]:
+                    item["model_endpoint"] = summarize_model_endpoint_pairs(
+                        observation["models"].get(item["key"], {})
+                    )
+            else:
+                # A partial catch-up is NOT the latest endpoint. The next
+                # scheduled UI refresh resumes from the verified byte cursor.
+                result["notice"] += (
+                    "；模型／端點 IP 的 Audit 增量讀取中"
+                    f"（{observation['scanned_bytes']:,}/"
+                    f"{observation['total_bytes']:,} bytes）"
                 )
     return result
