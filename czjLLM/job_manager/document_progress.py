@@ -295,4 +295,19 @@ def read_document_progress(meter_path, *, mode="目前處理", search="",
                     f"（{observation['scanned_bytes']:,}/"
                     f"{observation['total_bytes']:,} bytes）"
                 )
+        # The selected Worker records the chosen model/IP *before* entering
+        # CallLLMAPI, unlike the post-call audit. Its lifecycle evidence is a
+        # separate, non-authoritative projection (not a provider HTTP receipt).
+        from czjLLM.job_manager.worker_dispatch_observation import (
+            read_visible_dispatch_observations,
+        )
+        try:
+            dispatched = read_visible_dispatch_observations(audit_path, item_dirs)
+        except (OSError, ValueError, UnicodeError):
+            result["notice"] += "；Worker 分派狀態暫無法核對"
+        else:
+            for item in result["shown"]:
+                latest = dispatched.get(item["key"], {})
+                if latest.get("text"):
+                    item["model_endpoint"] = latest["text"]
     return result
