@@ -63,7 +63,7 @@ def test_real_audit_above_original_16_mib_is_incrementally_indexed(tmp_path):
 
 
 def test_incremental_append_tracks_actual_latest_across_revisit(tmp_path, monkeypatch):
-    monkeypatch.setattr(inc, "MAX_SCAN_BYTES", 220)
+    monkeypatch.setattr(inc, "MAX_SCAN_BYTES", 512)
     item = tmp_path / "row"
     audit = tmp_path / "llm_call_audit_append.csv"
     _csv(audit, [_record(item, 1, "10.1.1.1"),
@@ -77,7 +77,7 @@ def test_incremental_append_tracks_actual_latest_across_revisit(tmp_path, monkey
 
 
 def test_quoted_multiline_csv_row_is_not_misparsed_or_committed_early(tmp_path, monkeypatch):
-    monkeypatch.setattr(inc, "MAX_SCAN_BYTES", 230)
+    monkeypatch.setattr(inc, "MAX_SCAN_BYTES", 512)
     item = tmp_path / "row"
     audit = tmp_path / "llm_call_audit_multiline.csv"
     _csv(audit, [_record(item, 1, "10.2.0.1", error="quoted\nmultiline\nprivate"),
@@ -124,7 +124,7 @@ def test_discard_broken_header_oversize_and_symlink_evidence(tmp_path):
 
 
 def test_partial_scan_never_reports_stale_model_in_gui(tmp_path, monkeypatch):
-    monkeypatch.setattr(inc, "MAX_SCAN_BYTES", 200)
+    monkeypatch.setattr(inc, "MAX_SCAN_BYTES", 512)
     item = tmp_path / "row"
     meter = tmp_path / "loadmeter.json"
     meter.write_text(json.dumps({"rows": {"row": {
@@ -160,3 +160,47 @@ def test_unchanged_file_refresh_does_not_rescan_from_start(tmp_path, monkeypatch
     assert a["models"] == b["models"]
     assert calls[-1] == 0
     assert b["complete"]
+
+
+def test_same_size_in_place_rewrite_during_scan_invalidates_all_aggregates(
+        tmp_path, monkeypatch):
+    item = tmp_path / "row"
+    audit = tmp_path / "llm_call_audit_rewrite.csv"
+    _csv(audit, [_record(item, 1, "10.6.0.1")])
+    before = audit.stat()
+    original = inc._consume_csv
+    changed = [False]
+
+    def mutate_mid_scan(state, chunk, requested):
+        n = original(state, chunk, requested)
+        if not changed[0]:
+            changed[0] = True
+            payload = audit.read_bytes()
+            replaced = payload.replace(b"10.6.0.1", b"10.6.0.2")
+            assert len(replaced) == len(payload)
+            audit.write_bytes(replaced)
+            # Explicit distinct nanosecond mtime regardless filesystem clock.
+            os.utime(audit, ns=(before.st_atime_ns, before.st_mtime_ns + 2_000_000_000))
+        return n
+
+    monkeypatch.setattr(inc, "_consume_csv", mutate_mid_scan)
+    with pytest.raises(ValueError, match="changed generation"):
+        inc.read_incremental_model_endpoints(audit, {"doc": str(item)})
+    assert changed[0]
+    stable = _until_caught_up(audit, {"doc": str(item)})[-1]
+    assert stable["models"]["doc"]["latest"].endswith("10.6.0.2:11434")
+    assert not any("10.6.0.1" in str(d) for d in stable["models"].values())
+
+
+def test_valid_140k_csv_error_field_without_global_parser_limit_mutation(tmp_path):
+    import csv
+    item = tmp_path / "row"
+    audit = tmp_path / "llm_call_audit_wide_field.csv"
+    error = "private-failure-" + "Z" * 140_000
+    _csv(audit, [_record(item, 1, "10.7.0.7", error=error)])
+    limit_before = csv.field_size_limit()
+    data = _until_caught_up(audit, {"doc": str(item)})[-1]
+    assert data["complete"]
+    assert data["models"]["doc"]["latest"].endswith("10.7.0.7:11434")
+    assert "private-failure" not in json.dumps(data)
+    assert csv.field_size_limit() == limit_before
