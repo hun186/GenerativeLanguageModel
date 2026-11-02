@@ -108,7 +108,7 @@ def test_discard_broken_header_oversize_and_symlink_evidence(tmp_path):
         inc.read_incremental_model_endpoints(audit, {"doc": str(item)})
     _csv(audit, [_record(item, 1, "10.3.0.4")])
     assert _until_caught_up(audit, {"doc": str(item)})[-1]["complete"]
-    link = tmp_path / "linked.csv"
+    link = tmp_path / "llm_call_audit_linked.csv"
     try:
         link.symlink_to(audit)
     except (OSError, NotImplementedError):
@@ -204,3 +204,23 @@ def test_valid_140k_csv_error_field_without_global_parser_limit_mutation(tmp_pat
     assert data["models"]["doc"]["latest"].endswith("10.7.0.7:11434")
     assert "private-failure" not in json.dumps(data)
     assert csv.field_size_limit() == limit_before
+
+
+def test_windows_style_reparse_ancestor_is_rejected_with_existing_guard(
+        tmp_path, monkeypatch):
+    from czjLLM.utilities import llm_failure_summary as safe
+    item = tmp_path / "row"
+    audit = tmp_path / "llm_call_audit_ancestor.csv"
+    _csv(audit, [_record(item, 1, "10.8.0.8")])
+    watched = audit.parent.lstat()
+    original = safe._is_reparse_or_link
+
+    def simulated_windows_junction(metadata):
+        return original(metadata) or (
+            metadata.st_dev == watched.st_dev
+            and metadata.st_ino == watched.st_ino
+        )
+
+    monkeypatch.setattr(safe, "_is_reparse_or_link", simulated_windows_junction)
+    with pytest.raises(ValueError, match="reparse"):
+        inc.read_incremental_model_endpoints(audit, {"doc": str(item)})
