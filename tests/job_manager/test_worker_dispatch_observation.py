@@ -213,5 +213,5 @@ def test_legacy_worker_without_optional_dispatch_item_dir_is_noop(tmp_path):
 
 def test_legacy_retry_child_constructor_has_safe_optional_row_fallback():
     import inspect
-    source = inspect.getsource(pc.PromptAPIPipeline.handle_json_output)
+    source = inspect.getsource(pc.PromptAPIPipeline.split_and_generate_new_prompts_0112)
     assert 'dispatch_item_dir=getattr(self, "dispatch_item_dir", "")' in source
