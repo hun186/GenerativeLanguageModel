@@ -35,3 +35,12 @@
 - `各列／文件進度` 使用獨立的 `DocumentProgress.Treeview` ttk style；從 Windows TkDefaultFont 的實際 `linespace` 計算列高（最少 28px，額外預留 10px），並為標題列增加 padding，避免 DPI 放大時文字頂端／底端被截斷。只調整展示；總列數、分頁、排序及 Meter 內容不變。
 - `Cancel` 只發出取消事件並停用按鈕；工作流程仍採**合作式取消、安全收尾**，不強制 kill 正在處理的 LLM，也不能把取消請求視為 sink 成功。原取消事件與執行端行為均未修改。
 - Headless 測試涵蓋 UI 建構結構與狀態分類；本機 Windows DPI 100%／125%／150% 仍需實際人工檢查（Issue #266）。
+
+## 2026-11-02 每列新增模型／端點 IP 欄（待本 PR 驗證）
+
+- 在「各列／文件進度」增加唯一一欄 **模型／端點 IP（已記錄）**，顯示例如 `qwen3.6:128k · 192.168.1.20:11434`，並加水平捲動讓縮小視窗／Windows DPI 放大時仍能查看。多組模型／端點時標示 `(+N 組)`；選取文件後，下方顯示最近有記錄的一組。與 `Running`、`Cancel`、Queue 及原先切片進度計算無關。
+- **來源不是全域模型設定**。GUI 只在展開時，背景執行緒讀取「本次 Run」現有 `llm_call_audit_<run_id>.csv`，以 Audit 的 `prompt_file` 真正位於該 Meter row `item_dir` **目錄內**為依據，關聯 `model` 和 `base_url` 中的 IP literal。不同 item_dir 即使檔名相同也不混用。驗證須匹配完整路徑的目錄邊界，不猜 basename、文件數／切片數或 Worker 的全域模型。
+- 顯示端點為 URL 中的**字面 IP 與可選 port**，絕不顯示 API key、URL userinfo、path、query、DNS hostname 或原始錯誤訊息。無法由 URL 直接辨識 IP、未完成 LLM 呼叫、歷史 Audit 沒資料或多階段無法匹配時，顯示 `—`／`IP 未記錄`，不進行 DNS 解析或額外模型呼叫。
+- **重要時間語意：現有 LLM Audit 在實際呼叫結束後才寫入**。因此這是「最近**已記錄的**模型／端點」，**不是**當下正在飛行中的 Worker 即時 IP；若同一列在執行期間切換端點，可能顯示多組。呼叫失敗仍可能有已記錄的模型／IP，顯示它不表示呼叫成功或 SQL／ES 寫回確認。
+- 唯讀解析沿用既有嚴格 Audit CSV 讀取器：單檔 16 MiB 上限、CSV 欄位完整性、檔案身分／非連結檢查。Run 太大、Audit 正在寫入而不完整、沒有 Audit 或格式不可信時，進度表與 Meter 仍可使用，模型欄顯示 `—` 並註明 Audit 暫無法核對，不以錯誤推測模型。針對超長 Run 的增量式證據索引應另行評估，不能無界讀取每筆日誌。
+- 已新增實際 CSV／Meter 回歸測試，包含不同 Item 路徑、相似前綴、選擇多端點、URL 資訊遮蔽、遺失／截斷 Audit 與取消語意不變。Hosted CI 成功只能證明 headless 行為；Windows 100%／125%／150% DPI 實機互動及真實 Ollama／SQL／ES 還是 Issue #266 的獨立驗收。
