@@ -12,7 +12,10 @@ from pathlib import Path
 import stat
 import threading
 
-from czjLLM.utilities.llm_failure_summary import _iter_audit_csv_rows
+from czjLLM.utilities.llm_failure_summary import (
+    _audit_file_name, _iter_audit_csv_rows, _same_open_file,
+    _snapshot_path_components, _verify_path_snapshot,
+)
 
 from czjLLM.job_manager.document_model_endpoint import (
     _MODEL_NAME, _audit_path_key, _endpoint_ip,
@@ -50,9 +53,12 @@ def _fresh_state(item_dirs):
 
 def _open_checked(path):
     path = Path(path)
-    if any(part.is_symlink() for part in (path, *path.parents)):
-        raise ValueError("untrusted audit path")
-    before = path.lstat()
+    # The previous bounded reader rejects *all* Windows junction/reparse
+    # components, not just POSIX symlinks. Reuse that exact contract.
+    if not _audit_file_name(path):
+        raise ValueError("expected canonical llm_call_audit run filename")
+    components = _snapshot_path_components(path)
+    before = components[0][1]
     if not stat.S_ISREG(before.st_mode):
         raise ValueError("audit must be a regular file")
     if before.st_size > MAX_FILE_BYTES:
@@ -64,17 +70,13 @@ def _open_checked(path):
     )
     try:
         opened = os.fstat(fd)
-        if not stat.S_ISREG(opened.st_mode):
-            raise ValueError("audit changed file type")
-        if (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino):
+        if not _same_open_file(before, opened):
             raise ValueError("audit generation changed during open")
-        if any(part.is_symlink() for part in (path, *path.parents)):
-            raise ValueError("audit path redirected")
-        return fd
+        _verify_path_snapshot(components)
+        return fd, components
     except BaseException:
         os.close(fd)
         raise
-
 
 def _read_at(fd, offset, size):
     os.lseek(fd, offset, os.SEEK_SET)
@@ -192,7 +194,7 @@ def read_incremental_model_endpoints(path: str | Path,
         _CACHE.move_to_end(key)
         fd = None
         try:
-            fd = _open_checked(path)
+            fd, components = _open_checked(path)
             before = os.fstat(fd)
             identity = (before.st_dev, before.st_ino)
             if (state["identity"] is not None and (
@@ -212,16 +214,16 @@ def read_incremental_model_endpoints(path: str | Path,
             state["offset"] += advanced
             state["checkpoint"] = _checkpoint(fd, state["offset"])
             after = os.fstat(fd)
-            check_path = Path(path).lstat()
+            _verify_path_snapshot(components)
+            check_path = components[0][0].lstat()
             if ((after.st_dev, after.st_ino) != identity
-                    or (check_path.st_dev, check_path.st_ino) != identity
+                    or not _same_open_file(check_path, before)
                     # An in-place rewrite or append while scanning can make
                     # aggregates refer to different bytes than the checkpoint.
                     # Invalidate, never certify such a mixed generation.
                     or after.st_size != before.st_size
                     or after.st_mtime_ns != before.st_mtime_ns
-                    or after.st_size < state["offset"]
-                    or any(p.is_symlink() for p in (Path(path), *Path(path).parents))):
+                    or after.st_size < state["offset"]):
                 raise ValueError("audit changed generation during incremental read")
             state["previous_size"] = after.st_size
             state["previous_mtime"] = after.st_mtime_ns
