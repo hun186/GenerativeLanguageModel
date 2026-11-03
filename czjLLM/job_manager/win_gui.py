@@ -604,6 +604,16 @@ def incident_button_state(quality: dict, recheck: dict, reduction: dict):
     return "⚠", "#666666", detail + "\n未觀察到上述異常；不代表其他來源已驗證。"
 
 
+def format_json_repair_metric_help() -> str:
+    """Explain the two different event denominators, without implying lineage."""
+    return (
+        "初次 JSON 不合法：不合法驗證事件數／所有已記錄的切片 JSON 驗證事件數。\n"
+        "JSON 修復成功：成功修復事件數／所有已記錄的修復嘗試事件數。\n"
+        "兩者的分母不同；修復成功率 100% 不代表所有不合法 JSON 都已修復。\n"
+        "這裡統計的是事件／嘗試，不是不同文件數，也不能直接推算尚待修復筆數。"
+    )
+
+
 def format_quality_summary(stats: dict) -> str:
     """Keep incompatible slice/document denominators separate in the header."""
     status = stats.get("quality_stream_status", "")
@@ -621,10 +631,33 @@ def format_quality_summary(stats: dict) -> str:
     def percent(key, n):
         value = stats.get(key)
         return "— (樣本不足)" if value is None else f"{value:.1f}% (n={n:,})"
+
+    def observed_ratio(numerator_key, denominator_key, percent_key, unit):
+        numerator = stats.get(numerator_key)
+        denominator = stats.get(denominator_key)
+        percentage = stats.get(percent_key)
+        # Never invent a numerator for older/missing quality snapshots and
+        # never present a nonexistent 0/0 sample as 0% or full recovery.
+        if numerator is None or denominator is None or percentage is None:
+            return "—（樣本不足）"
+        numerator = int(numerator)
+        denominator = int(denominator)
+        if denominator <= 0 or numerator < 0 or numerator > denominator:
+            return "—（樣本不足）"
+        return f"{numerator:,}/{denominator:,} {unit}（{percentage:.1f}%）"
+
     return (
         advisory +
-        f"初次 JSON 不合法 {percent('slice_initial_invalid_pct', int(stats.get('slice_validation_attempts', 0)))}"
-        f"  ｜  修復成功 {percent('repair_success_pct', int(stats.get('repair_attempts', 0)))}"
+        "初次 JSON 不合法 "
+        + observed_ratio(
+            "slice_initial_invalid", "slice_validation_attempts",
+            "slice_initial_invalid_pct", "次驗證",
+        )
+        + "  ｜  JSON 修復成功 "
+        + observed_ratio(
+            "repair_succeeded", "repair_attempts",
+            "repair_success_pct", "次修復嘗試",
+        )
         f"  ｜  LLM 文件結構異常（待處理） {percent('document_schema_reject_pct', int(stats.get('documents_decided', 0)))}"
         f"  ｜  確認式 Sink 寫回 {int(stats.get('documents_writeback_confirmed', 0)):,} 筆"
         f"  ｜  Consumer 調度異常 {int(stats.get('consumer_orchestration_failure_events', 0)):,} 次（事件數）"
@@ -1021,12 +1054,16 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     quality_summary.pack(fill="x", padx=8, pady=(2, 3))
     quality_frame = ttk.Frame(quality_section, padding=(8, 5))
     quality_metrics = {}
+    _quality_help_labels = []
     for key, title in (
         ("slice_initial_invalid_pct", "初次 JSON 不合法 / 已驗證切片"),
         ("repair_success_pct", "修復成功 / 已完成修復嘗試"),
         ("document_schema_reject_pct", "文件結構驗證未通過 / 已判定文件"),
     ):
-        ttk.Label(quality_frame, text=title).pack(anchor="w")
+        label = ttk.Label(quality_frame, text=title)
+        label.pack(anchor="w")
+        if key in {"slice_initial_invalid_pct", "repair_success_pct"}:
+            _quality_help_labels.append(label)
         quality_metrics[key] = ttk.Progressbar(
             quality_frame, maximum=100, value=0,
         )
@@ -1221,6 +1258,17 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     audit_toggle.bind("<Leave>", _hide_audit_tooltip)
     audit_summary.bind("<Enter>", _audit_header_help)
     audit_summary.bind("<Leave>", _hide_audit_tooltip)
+    # Explain the event and repair-attempt denominators at the values
+    # themselves, without adding a separate toolbar row.
+    def _quality_ratio_help(event):
+        _show_audit_tooltip(
+            format_json_repair_metric_help(), event.x_root, event.y_root,
+            "__quality_ratio__",
+        )
+
+    for label in (quality_summary, *_quality_help_labels):
+        label.bind("<Enter>", _quality_ratio_help)
+        label.bind("<Leave>", _hide_audit_tooltip)
 
     # Reuse the monitor-bounded Toplevel tooltip. The click still opens the
     # existing review window and never manipulates queue/source/sink state.
