@@ -1,6 +1,7 @@
 # architecture
 
 ## Current Summary
+- **2026-11-03 pending Windows GUI page overflow fix:** `job_manager/win_gui._gui_proc_main` wraps the existing main `ttk.Frame` in its own `tk.Canvas` window. The page scrollbar is shown only when DPI/geometry-measured natural content height exceeds the viewport. `Canvas/Frame <Configure>` coalesces idle recalculation, with page wheel events routed via the root bindtag while native Text/Treeview/Combobox scrolling remains separate. Audit distribution retains its own drawing Canvas, and document grid retains only its horizontal bar. View-only; no changes to Queue, LLM, meter or sink contracts.
 - **2026-11-02 pending GUI Worker dispatch observation:** `prompt_pipeline/pipeline_controller.PromptAPIPipeline.proc` records best-effort metadata-only selected model/literal endpoint IP for explicitly mapped consumer row and prompt slice at `assigned`, `calling`, `returned`, `failed` phases. `job_manager/worker_dispatch_observation.py` holds atomic per-call JSON snapshots under audit-adjacent `.dispatch` (hashed row/slice and UUID4, no raw payload/URL/credentials); `document_progress.read_document_progress` projects only visible rows with post-call Audit fallback. Operational observer only, not authoritative HTTP attempt, Queue claim or SQL/ES ACK.
 
 - `czjLLM/prompt_pipeline/pipeline_controller.py` remains the compatibility/orchestration facade; focused runtime helpers live under `prompt_pipeline/runtime_support/`, while existing imports are preserved through re-exports.
