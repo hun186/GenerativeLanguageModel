@@ -798,6 +798,26 @@ def fit_document_column_widths(
     return tuple(v + inc for v, inc in zip(minimums, increments)), False
 
 
+def main_page_needs_vertical_scroll(content_height: int, viewport_height: int) -> bool:
+    """Show a vertical bar only when the complete GUI page exceeds its viewport.
+
+    Heights are actual Tk pixel measurements after layout/DPI scaling,
+    not assumptions about expanded sections or screen resolution.
+    """
+    if (not isinstance(content_height, int)
+            or not isinstance(viewport_height, int)):
+        raise ValueError("GUI layout heights must be integer pixels")
+    return content_height > max(0, viewport_height)
+
+
+def main_page_mouse_wheel_units(delta: int) -> int:
+    """Windows wheel delta to canvas scroll units; support touchpad deltas."""
+    if not isinstance(delta, int) or delta == 0:
+        return 0
+    magnitude = min(8, max(1, (abs(delta) + 119) // 120))
+    return -magnitude if delta > 0 else magnitude
+
+
 def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     """子行程內執行：所有 Tk 操作都在這裡，避免跨緒/跨行程錯誤。"""
     _enable_windows_dpi_awareness()
@@ -850,8 +870,87 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     except Exception:
         pass
 
-    frm = ttk.Frame(root, padding=10)
-    frm.pack(fill="both", expand=True)
+    # The whole page must be scrollable, not just the bottom console.
+    # A separate Canvas is already used by the audit chart and keeps its
+    # own rendering; this *outer* canvas only moves the Tk page window.
+    page_shell = ttk.Frame(root)
+    page_shell.pack(fill="both", expand=True)
+    page_canvas = tk.Canvas(
+        page_shell, width=1, height=1, borderwidth=0,
+        highlightthickness=0, background=root.cget("bg"),
+    )
+    page_scrollbar = ttk.Scrollbar(
+        page_shell, orient="vertical", command=page_canvas.yview,
+    )
+    page_canvas.configure(yscrollcommand=page_scrollbar.set)
+    page_canvas.pack(side="left", fill="both", expand=True)
+    frm = ttk.Frame(page_canvas, padding=10)
+    page_window = page_canvas.create_window((0, 0), window=frm, anchor="nw")
+    _page_scroll_refresh_pending = False
+
+    def _refresh_page_scroll():
+        nonlocal _page_scroll_refresh_pending
+        _page_scroll_refresh_pending = False
+        try:
+            width = int(page_canvas.winfo_width())
+            viewport = int(page_canvas.winfo_height())
+            if width <= 1 or viewport <= 1:
+                return
+            page_canvas.itemconfigure(page_window, width=width)
+            # reqheight reflects collapsed/expanded panel heights and live
+            # text wrapping. Do not use the screen's unscaled geometry.
+            content_height = max(1, int(frm.winfo_reqheight()))
+            page_canvas.configure(
+                scrollregion=(0, 0, width, content_height),
+            )
+            overflowing = main_page_needs_vertical_scroll(
+                content_height, viewport,
+            )
+            if overflowing and not page_scrollbar.winfo_manager():
+                page_scrollbar.pack(side="right", fill="y", before=page_canvas)
+            elif not overflowing and page_scrollbar.winfo_manager():
+                page_scrollbar.pack_forget()
+                page_canvas.yview_moveto(0)
+        except tk.TclError:
+            # The GUI may close during a queued idle layout callback.
+            pass
+
+    def _schedule_page_scroll_refresh(_event=None):
+        nonlocal _page_scroll_refresh_pending
+        if not _page_scroll_refresh_pending:
+            _page_scroll_refresh_pending = True
+            root.after_idle(_refresh_page_scroll)
+
+    def _page_viewport_resized(event):
+        try:
+            page_canvas.itemconfigure(page_window, width=max(1, int(event.width)))
+        except tk.TclError:
+            return
+        _schedule_page_scroll_refresh()
+
+    page_canvas.bind("<Configure>", _page_viewport_resized)
+    frm.bind("<Configure>", _schedule_page_scroll_refresh)
+
+    def _on_page_mousewheel(event):
+        # Tk routes child-widget wheel events through the root toplevel
+        # bindtag. Respect Text, Treeview and combobox's own scrollbars.
+        try:
+            widget = event.widget
+            if (widget.winfo_toplevel() is not root
+                    or isinstance(widget, (tk.Text, ttk.Treeview, ttk.Combobox))
+                    or not page_scrollbar.winfo_manager()
+                    or (int(getattr(event, "state", 0)) & 0x0004)):
+                return None
+            units = main_page_mouse_wheel_units(int(getattr(event, "delta", 0)))
+            if units:
+                page_canvas.yview_scroll(units, "units")
+                return "break"
+        except (tk.TclError, ValueError, TypeError):
+            pass
+        return None
+
+    root.bind("<MouseWheel>", _on_page_mousewheel)
+    _schedule_page_scroll_refresh()
 
     # 內部狀態
     _tot = max(1, int(total))

@@ -71,3 +71,10 @@
 - 「Processing Quality／異常監控」的 **初次 JSON 不合法** 顯示為 `不合法驗證次數 / 已記錄驗證次數（百分比）`，例如 `3/9 次驗證（33.3%）`；**JSON 修復成功** 顯示 `成功修復次數 / 修復嘗試次數（百分比）`，例如 `1/1 次修復嘗試（100.0%）`。分母為零或缺少可靠計數時仍顯示「樣本不足」，不製造 0% 或 100%。
 - 滑鼠移至品質摘要或兩個指標標題，可顯示現有浮動說明：**兩個分母不同，100% 的修復嘗試成功率不代表所有不合法 JSON 都已修復**；事件次數並非不同文件數，亦不能直接推算尚待修復筆數。
 - 這只是 GUI 排版與統計展示修正，原始 JSON 事件、品質累計器、LLM 呼叫、Queue、Cancel、SQL／ES 寫回機制都不變。數值測試與 Tk 版面結構測試在 Hosted CI 執行；Windows 實機 DPI 100%／125%／150% 仍須 Issue #266 驗收。
+
+## 2026-11-03 主視窗垂直捲動（此 PR 待驗證）
+
+- 使用者實際 Windows GUI 將 `Processing Quality` 與 `LLM Token / Context Distribution` 全部展開後，底部的文件進度和 Log 窗格會超出實際螢幕高度；原先只有 **Log Text** 有自己的捲軸，整個主 GUI 沒有捲動。
+- 主頁現在使用最外層獨立的 `tk.Canvas`，以內嵌 `ttk.Frame` 承載既有所有區塊，並將其寬度同步到 Canvas 的實際 viewport 寬度。當量測後的內容 `winfo_reqheight()` 大於 viewport `winfo_height()` 時才顯示右側**主頁專用**垂直捲軸。內容收合、視窗放大或不同 Windows DPI 造成重新排版時，`<Configure>` 事件會合併至 idle 一次更新；不會一直顯示無用 scrollbar。
+- 透過主視窗的滑鼠滾輪可以捲動整頁；只攔截目前主頁非 `Text`、非 `Treeview`、非 `Combobox` 的一般 Widget 事件，讓 Log、文件表格及下拉選單原有操作繼續有效。圖表原來的 Canvas 僅負責畫曲線，**不是**整頁捲動容器。
+- 這是 Tk 展示層修正，不碰進度分母、品質事件、LLM/Worker、Queue、Cancel、Reduction 或 SQL/ES。Hosted 測試驗證越界判斷、滑輪方向/上限、布局/事件 wiring，以及原按鈕與各子窗格語意；Windows 實機 DPI 100%／125%／150% 與多螢幕視覺結果仍需 Issue #266 人工驗收。
