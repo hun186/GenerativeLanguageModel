@@ -123,7 +123,7 @@ def test_guarantees_no_model_from_unobserved_config_or_unrelated_item(tmp_path):
 
 def test_gui_inserts_one_actual_observed_model_ip_column_without_changing_cancel():
     src = inspect.getsource(win_gui._gui_proc_main)
-    assert '("model_endpoint", "模型／端點 IP（已記錄）", 250)' in src
+    assert '("model_endpoint", "模型／端點 IP（已記錄）", 270)' in src
     assert 'item["model_endpoint"], item["pending_text"]' in src
     assert "page=args[3], audit_path=args[4]" in src
     assert 'orient="horizontal", command=document_grid.xview' in src
