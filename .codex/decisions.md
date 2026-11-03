@@ -1,6 +1,7 @@
 # Architecture Decisions
 
 ## Current Summary
+- **2026-11-03 GUI overflow scrolling decision (pending):** Preserve all chart/detail content and current text sizes. Wrap the complete Tk page in a bounded, independently scrollable Canvas, size its child to the measured viewport, and show its vertical Scrollbar only when natural content height exceeds the viewport. Let Tk `<Configure>` and `after_idle` perform DPI/resizing/expand recalculation, avoid global wheel interception so Log Text/Treeview/Combobox keep native wheel handling; treat root-wheel handling as a UI-only event. No auto-resize to full desktop or truncation of diagnostics.
 - **2026-11-02 Worker model/IP UX decision (pending):** do not infer an in-flight per-document endpoint from global model_spec or post-call Audit. At the actual selected Worker call boundary, write a separate best-effort atomically replaced, per-call local observation; keep separate from CSV and meter execution authority to avoid hot-path Queue/Success semantic changes. Store only model allowlist, literal IP, hashed item/slice and UUID4. No guessed join when item_dir absent; status is last observation, not authenticated provider receipt. GUI may show active last-observed snapshots and completed CSV evidence independently.
 
 - `combine_utils.py` remains the compatibility facade for Success discovery/output placement/final writes; Row Merger remains writeback coordination and Output Profile remains final strict schema validation.
