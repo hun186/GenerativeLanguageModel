@@ -11,6 +11,7 @@ except Exception:  # pragma: no cover
     helpers = None  # type: ignore
 
 from .pending_policy import ElasticsearchPendingPolicyMixin
+from .required_output_debug import flush_required_output_failures
 from .value_helpers import (
     extract_by_path as _extract_by_path,
     normalize_scalar as _norm_scalar,
@@ -373,14 +374,23 @@ class ElasticsearchAdapter(ElasticsearchPendingPolicyMixin):
         stage_source_input_cols = self.cfg.get("stage_source_input_cols", []) or []
         assert self.es is not None
     
-        if src_table == tgt_table:
-            # 單一 index：同文件包含 input/output
-            for item in self._scan_single_index_pending(src_table, pk, input_col, output_cols_resolved, fetch_size, stage_input_cols=stage_source_input_cols):
-                yield item
-        else:
-            # 來源/結果分離：src 提 id + input，tgt 用 mget 檢是否已有 output
-            for item in self._scan_dual_index_pending(src_table, tgt_table, pk, input_col, output_cols_resolved, fetch_size, stage_input_cols=stage_source_input_cols):
-                yield item
+        try:
+            if src_table == tgt_table:
+                # 單一 index：同文件包含 input/output
+                yield from self._scan_single_index_pending(
+                    src_table, pk, input_col, output_cols_resolved,
+                    fetch_size, stage_input_cols=stage_source_input_cols,
+                )
+            else:
+                # 來源/結果分離：src 提 id + input，tgt 用 mget 檢是否已有 output
+                yield from self._scan_dual_index_pending(
+                    src_table, tgt_table, pk, input_col, output_cols_resolved,
+                    fetch_size, stage_input_cols=stage_source_input_cols,
+                )
+        finally:
+            # A completed, abandoned or interrupted discovery scan should
+            # emit exact observed counts without changing any pending choice.
+            flush_required_output_failures(self)
     def _yield_pending_from_batch(
         self,
         *,
