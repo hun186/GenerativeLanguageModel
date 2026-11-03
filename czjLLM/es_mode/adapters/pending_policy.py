@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 from czjLLM.common.pending_conditions import clean_output_cols
 from czjLLM.common.pending_decision import PendingDecision
 from czjLLM.es_mode.model_metadata import safe_model_tag
+from .required_output_debug import record_required_output_failure
 from .value_helpers import (
     deep_collect_by_path as _deep_collect_by_path,
     extract_by_path as _extract_by_path,
@@ -397,10 +398,12 @@ class ElasticsearchPendingPolicyMixin:
                     break
 
             if valid_count < min_valid_count:
-                # debug 可選
-                print(f"[DEBUG] required_output_check failed: path={full_path}, "
-                      f"validator={validator}, format={fmt}, found_valid={valid_count}, "
-                      f"min_valid_count={min_valid_count}")
+                # Keep the authoritative pending decision unchanged. Only
+                # reduce duplicate console output for the same rule/threshold.
+                record_required_output_failure(
+                    self, path=full_path, validator=validator, fmt=fmt,
+                    found_valid=valid_count, min_valid_count=min_valid_count,
+                )
                 return False
 
         return True
