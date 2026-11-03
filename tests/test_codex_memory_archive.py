@@ -382,3 +382,42 @@ def test_20261103_known_issues_archive_keeps_exact_precompaction_evidence():
     assert ".codex/archive/known_issues.md-20261103-113300.md -text" in (
         (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
     )
+
+
+def test_20261103_pr276_acceptance_handoff_archives_are_exact_and_current():
+    pre_edit = {
+        "memory": "1676ac16c18ad268d68582b10b2ab2e20f6718e7",
+        "backlog": "2fd9b9e92b384ed73faf3503f1babec6f266c454",
+    }
+    merge_sha = "0e4d719577060414f2a938c12aa19dfe6d777dc8"
+    for name, expected in pre_edit.items():
+        archived_name = f"{name}.md-20261103-134000.md"
+        history = _ROOT / ".codex" / "archive" / archived_name
+        active = (_ROOT / ".codex" / f"{name}.md").read_text(
+            encoding="utf-8",
+        )
+        assert history.is_file()
+        assert _git_blob_sha(history.read_bytes()) == expected
+        assert archived_name in active and expected in active
+        assert merge_sha in active and "#276" in active
+        assert "operator-deferred" in active and "#266" in active
+        assert len(active.encode("utf-8")) < 40_000
+        assert len(active.splitlines()) <= 200
+
+    backlog = (_ROOT / ".codex" / "backlog.md").read_text(encoding="utf-8")
+    active_work = backlog.split("## True Open Engineering Work", 1)[1]
+    active_work = active_work.split("## Recent Changes", 1)[0]
+    assert any(
+        line.startswith("- [x]") and "#276" in line
+        for line in active_work.splitlines()
+    )
+    assert not any(
+        line.startswith("- [ ]") and "Worker pre-call model/IP telemetry PR" in line
+        for line in active_work.splitlines()
+    )
+    assert any(
+        line.startswith("- [ ]") and "#266" in line
+        for line in active_work.splitlines()
+    )
+    attributes = (_ROOT / ".gitattributes").read_text(encoding="utf-8")
+    assert ".codex/archive/*-20261103-134000.md -text" in attributes.splitlines()
