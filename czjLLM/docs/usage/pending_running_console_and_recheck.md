@@ -172,3 +172,13 @@ Discovery invariant 是：Python freshness 判為 pending 的 unchanged document
 Canonical event 與 legacy skip log 的 `task_json` 現在只取明確 config/job path identifier 的 basename，或 bounded simple `pipeline_name`；structured/list/object values、control characters 與完整 directory path 不會輸出。它不再 fallback 到 `ctx.task` 或 prompt content；找不到安全 identifier 時使用 `unknown`。Decision diagnostic allowlist 未擴大。
 
 PR #193 pre-final-corrective head `874dbc865c46a02b5ba76caebbac05b213f94c70`, CI #442 / `37080278738`, offline job `111079056066` collected 21 and passed 21/21. This remains pre-final-corrective green evidence: review found single-index required-output false negatives and raw `ctx.task` diagnostic leakage risk. PR L1 and PR L remain pending a fresh final-corrective hosted gate.
+
+## 2026-11-03 大型 ES 初始掃描 DEBUG 去重摘要
+
+啟用 `rerun.required_output_checks`（例如 `multidim_event_json.Event_Timeline.time_iso` 日期需有效）時，ES 的 Python authoritative postfilter 會逐筆驗證。為避免幾萬份既有輸出都觸發相同 `required_output_check failed` 而洗滿 Windows 終端機，**現在僅調整 DEBUG 輸出，不改 ES Pending／Fresh、重算、寫回、驗證規則與查詢結果**。
+
+- 同一個 Adapter、同一種驗證失敗簽章（欄位路徑、validator、format、`found_valid`、`min_valid_count`）的**第一筆**仍顯示原來的 `required_output_check failed`，並註明後續重複會彙總。
+- 後續只在累計 **10、100、1,000、10,000、20,000…** 筆事件輸出短訊；當 `select_pending_rows` 掃描耗盡或 generator 由呼叫端關閉時，`finally` 會顯示每種簽章實際觀測的 `summary: occurrences=N`，再重置統計。掃描尚在進行時不宣稱最終總數。
+- 最多保留 32 種不同簽章，超過即彙總為 `additional_signatures_occurrences` 並警告一次；不儲存 ES 文件 ID、原文、實際欄位值、憑證或路徑來源。長／換行設定文字進行 bounded display 處理。
+- **occurrences 是規則檢查失敗事件數，不一定是不同文件數**：同一文件可能在初始掃描、dispatch recheck、finalize recheck 反覆被檢查。直接的單筆重查不一定有 scan-end summary，但仍適用限量輸出。請勿以 DEBUG 摘要代替持久化 recheck reason codes 或 SQL／ES 完成確認。
+- 35,000 筆同樣失敗會縮成少量首筆／里程碑／總結訊息；測試涵蓋實際單 index 串流、提前關閉 generator、多種條件、thread-safety 與 ES pending 語意不變。Windows 實機持續執行的舊程序須於批次安全結束並更新版號後重啟，才能使用新版訊息。
