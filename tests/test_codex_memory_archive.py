@@ -359,3 +359,26 @@ def test_gui_audit_work_done_is_not_reopened_in_current_handoff():
     assert any("- [ ]" in line and "#266" in line for line in current_items)
     assert not any("- [ ]" in line and any(n in line for n in merged)
                    for line in current_items)
+
+
+def test_20261103_known_issues_archive_keeps_exact_precompaction_evidence():
+    original = (
+        _ROOT / ".codex" / "archive"
+        / "known_issues.md-20261103-113300.md"
+    )
+    body = (_ROOT / ".codex" / "known_issues.md").read_text(
+        encoding="utf-8",
+    )
+    assert original.is_file()
+    assert _git_blob_sha(original.read_bytes()) == (
+        "75331f0cee171fa8bb31d0ea9745b81f3079f189"
+    )
+    assert "known_issues.md-20261103-113300.md" in body
+    assert "75331f0cee171fa8bb31d0ea9745b81f3079f189" in body
+    assert len(body.encode("utf-8")) < 40_000
+    assert len(body.splitlines()) <= 200
+    assert "WINDOWS_EXPERIMENTAL_UNVERIFIED" in body
+    assert "operator-deferred" in body and "SQL/ES" in body
+    assert ".codex/archive/known_issues.md-20261103-113300.md -text" in (
+        (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
+    )

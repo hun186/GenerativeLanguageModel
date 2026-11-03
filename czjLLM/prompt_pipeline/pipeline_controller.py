@@ -42,6 +42,7 @@ from czjLLM.prompt_pipeline.stage_orchestrator import (
 )
 from czjLLM.utilities.atomic_io import atomic_write_json, robust_json_read
 from czjLLM.job_manager import job_config as _job_config
+from czjLLM.job_manager.worker_dispatch_observation import write_worker_dispatch_observation
 from czjLLM.job_manager.job_config import LLMJobConfig, task_template_preview
 #from czjLLM.job_manager.end_point_manager import get_available_end_points
 from czjLLM.job_manager.end_point_manager import select_model
@@ -761,6 +762,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     model_spec=job_spec,           # ★ 用副本，不要用 ctx.model_spec 本體
                     PGMSubDir=ctx.PGMSubDir,
                     queue_claim_event_id=claimed_evidence.get(pf, ""),
+                    dispatch_item_dir=item_dir,
                     **_llm_call_audit_kwargs(ctx),
                 ))
 
@@ -3109,6 +3111,7 @@ def call_llm_api(
             PGMSubDir=ctx.PGMSubDir,
             debug_print_llm_io=debug_print_llm_io,
             debug_print_max_chars=debug_print_max_chars,
+            dispatch_item_dir=item,
             **_llm_call_audit_kwargs(ctx),
         ) for promptFile in _root_txt_files(TodoSubDir)]
 
@@ -3168,7 +3171,8 @@ class PromptAPIPipeline:
                  audit_run_id: str = "",
                  audit_path: str = "",
                  queue_claim_event_id: str = "",
-                 
+                 dispatch_item_dir: str = "",
+
                  ):
         self.task = task
         #self.MainFileName = MainFileName
@@ -3188,6 +3192,7 @@ class PromptAPIPipeline:
         self.audit_run_id = audit_run_id
         self.audit_path = audit_path
         self.queue_claim_event_id = queue_claim_event_id
+        self.dispatch_item_dir = str(dispatch_item_dir or "")
         self.audit_prompt_tokens = read_prompt_token_metadata(self.promptFile)
         
         # 1) 拿到規格的「私有」副本
@@ -3240,6 +3245,28 @@ class PromptAPIPipeline:
         if "to json" in task_l:
             return json.dumps({"mock_result": (self.content or "")[:120]}, ensure_ascii=False)
         return f"mock_result: {(self.content or '')[:120]}"
+
+    def _record_dispatch_observation(self, worker_call_id: str, status: str) -> None:
+        # The Worker already selected its real model/endpoint. This metadata
+        # is best-effort observability only: never change the LLM, Queue, or
+        # sink execution result because a GUI sidecar cannot be written.
+        # Legacy and isolated Worker fixtures may construct objects without
+        # the new optional row association. This must remain a no-op, not an
+        # AttributeError that interrupts the original LLM/repair behavior.
+        item_dir = getattr(self, "dispatch_item_dir", "")
+        if not (self.audit_path and item_dir and self.promptFile):
+            return
+        try:
+            write_worker_dispatch_observation(
+                audit_path=self.audit_path,
+                item_dir=item_dir,
+                prompt_file=self.promptFile,
+                worker_call_id=worker_call_id,
+                model_spec=self.model_spec,
+                status=status,
+            )
+        except (OSError, ValueError, TypeError, RuntimeError):
+            pass
 
     def proc(self):
         print("="*50)
@@ -3312,6 +3339,7 @@ class PromptAPIPipeline:
             # 2) 呼叫 LLM
             worker_failure_code = "WORKER_LLM_CALL_EXCEPTION"
             worker_call_id = uuid.uuid4().hex
+            self._record_dispatch_observation(worker_call_id, "assigned")
             try:
                 split_source_verified = verified_queued_prompt_source(
                     self.promptFile, self.content,
@@ -3326,6 +3354,7 @@ class PromptAPIPipeline:
                 except Exception:
                     verified_queue_claim_id = ""
             llm_request_attempted = True
+            self._record_dispatch_observation(worker_call_id, "calling")
             response, cost = CallLLMAPI(
                 self.content,
                 max_tokens=self.max_tokens,
@@ -3460,7 +3489,10 @@ class PromptAPIPipeline:
                     "⚠️ llm_call_audit write failed after request finalization: "
                     f"{type(audit_ex).__name__}"
                 )
-    
+            self._record_dispatch_observation(
+                worker_call_id, "returned" if ok else "failed",
+            )
+
         # ====== 診斷：改成檢查 dict 可 pickle ======
         ret_dict = {
             "promptFile": self.promptFile,
@@ -3838,9 +3870,10 @@ class PromptAPIPipeline:
                     model_spec=self.model_spec,
                     audit_run_id=self.audit_run_id,
                     audit_path=self.audit_path,
+                    dispatch_item_dir=getattr(self, "dispatch_item_dir", ""),
                     )
                 )
-        
+
         return DTBJobs_Retry
     
     

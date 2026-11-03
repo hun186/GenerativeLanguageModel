@@ -1,6 +1,7 @@
 # Architecture Decisions
 
 ## Current Summary
+- **2026-11-02 Worker model/IP UX decision (pending):** do not infer an in-flight per-document endpoint from global model_spec or post-call Audit. At the actual selected Worker call boundary, write a separate best-effort atomically replaced, per-call local observation; keep separate from CSV and meter execution authority to avoid hot-path Queue/Success semantic changes. Store only model allowlist, literal IP, hashed item/slice and UUID4. No guessed join when item_dir absent; status is last observation, not authenticated provider receipt. GUI may show active last-observed snapshots and completed CSV evidence independently.
 
 - `combine_utils.py` remains the compatibility facade for Success discovery/output placement/final writes; Row Merger remains writeback coordination and Output Profile remains final strict schema validation.
 - Reduction is explicit opt-in and source-agnostic. Reduction rounds are not business Stages.

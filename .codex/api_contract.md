@@ -1,6 +1,7 @@
 # api contract
 
 ## Current Summary
+- **Worker dispatch UI evidence v1 (pending 2026-11-02 PR):** `PromptAPIPipeline.__init__(dispatch_item_dir="")` accepts an explicit authoritative item directory from the producer/consumer job builder; blank means no row-correlated observation. `write_worker_dispatch_observation(audit_path, item_dir, prompt_file, worker_call_id, model_spec, status)` writes one atomic, metadata-only v1 per-call snapshot with SHA256 item/slice identifiers and sanitized model/IP; statuses are `assigned`, `calling`, `returned`, `failed`. GUI `read_visible_dispatch_observations` consumes at most 100 visible rows, 256 calls per row, returning only bounded text/status/count. No schema mutation to current Run Meter or `llm_call_audit` CSV, no provider HTTP / sink success authority, no modeled retry-family identity.
 
 ### Root reduction configuration
 
