@@ -720,6 +720,51 @@ def _audit_reader_worker(path_queue, result_queue, stop_event, poll_interval: fl
         stop_event.wait(max(0.05, float(poll_interval)))
 
 
+# Document progress columns obey their measured viewport, rather than Tk's
+# opportunistic stretch weights that can push the last column off-screen.
+_DOCUMENT_COLUMN_WEIGHTS = (3, 1, 2, 4, 0, 0, 0)
+_DOCUMENT_COLUMN_GUTTER = 12
+
+
+def fit_document_column_widths(
+    available_width: int,
+    minimums: tuple[int, ...],
+    weights: tuple[int, ...] = _DOCUMENT_COLUMN_WEIGHTS,
+    *,
+    gutter: int = _DOCUMENT_COLUMN_GUTTER,
+) -> tuple[tuple[int, ...], bool]:
+    """Allocate Treeview widths exactly within the usable viewport.
+
+    Fixed small counters stay at their minima. When even the minima cannot
+    fit, return them unchanged and signal the existing horizontal scrollbar.
+    This pure helper is independent of Tk and Windows DPI.
+    """
+    if (not minimums or len(minimums) != len(weights)
+            or any(not isinstance(v, int) or v <= 0 for v in minimums)
+            or any(not isinstance(v, int) or v < 0 for v in weights)
+            or not isinstance(available_width, int) or not isinstance(gutter, int)):
+        raise ValueError("invalid document column layout")
+    target = max(0, available_width - max(0, gutter))
+    base = sum(minimums)
+    if target < base:
+        return tuple(minimums), True
+    remaining = target - base
+    total_weight = sum(weights)
+    if remaining == 0 or total_weight == 0:
+        return tuple(minimums), False
+    increments = [remaining * weight // total_weight for weight in weights]
+    extra = remaining - sum(increments)
+    # Largest remainders prevent one extra pixel being added beyond viewport.
+    if extra:
+        order = sorted(
+            (i for i, w in enumerate(weights) if w),
+            key=lambda i: (-(remaining * weights[i] % total_weight), i),
+        )
+        for idx in order[:extra]:
+            increments[idx] += 1
+    return tuple(v + inc for v, inc in zip(minimums, increments)), False
+
+
 def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     """子行程內執行：所有 Tk 操作都在這裡，避免跨緒/跨行程錯誤。"""
     _enable_windows_dpi_awareness()
@@ -1382,13 +1427,13 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     document_page_label = ttk.Label(document_controls, text="第 1/1 頁")
     document_page_label.pack(side="right", padx=(0, 10))
     document_columns = (
-        ("document", "列／文件 ID", 125),
-        ("stage", "目前階段", 185),
-        ("progress", "切片進度（非寫回進度）", 235),
-        ("model_endpoint", "模型／端點 IP（已記錄）", 250),
-        ("pending", "等待", 60),
-        ("running", "執行", 60),
-        ("updated", "最後更新", 78),
+        ("document", "列／文件 ID", 205),
+        ("stage", "目前階段", 115),
+        ("progress", "切片進度（非寫回進度）", 182),
+        ("model_endpoint", "模型／端點 IP（已記錄）", 270),
+        ("pending", "等待", 55),
+        ("running", "執行", 55),
+        ("updated", "最後更新", 91),
     )
     # ttk.Treeview default row height need not follow scaled Segoe UI font.
     # Font line metrics (after Tk DPI setup) preserve full glyph descent.
@@ -1411,12 +1456,24 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         show="headings", height=9, selectmode="browse",
         style="DocumentProgress.Treeview",
     )
-    for col, title_text, width in document_columns:
+    # Heading text is DPI-scaled, so minima must be measured *after* Tk's
+    # Windows DPI/font setup. The longest row content remains accessible via
+    # selection details or horizontal scroll at genuinely narrow widths.
+    try:
+        heading_font = tkfont.nametofont("TkHeadingFont")
+        document_mins = tuple(
+            max(base, int(heading_font.measure(title_text)) + 18)
+            for _col, title_text, base in document_columns
+        )
+    except (tk.TclError, ValueError, TypeError):
+        document_mins = tuple(base for _col, _title, base in document_columns)
+    for (col, title_text, _base), minimum in zip(document_columns, document_mins):
         document_grid.heading(col, text=title_text)
         document_grid.column(
-            col, width=width, anchor="w" if col in
+            col, width=minimum, minwidth=minimum,
+            anchor="w" if col in
             {"document", "stage", "progress", "model_endpoint"} else "center",
-            stretch=col in {"document", "stage", "progress", "model_endpoint"},
+            stretch=False,
         )
     document_grid.tag_configure("error", foreground="#b00020")
     document_grid.tag_configure("running", foreground="#175b99")
@@ -1426,7 +1483,27 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         document_frame, orient="horizontal", command=document_grid.xview,
     )
     document_grid.configure(xscrollcommand=document_xscroll.set)
-    document_xscroll.pack(fill="x")
+    # Never leave a needless horizontal scrollbar when the columns fit.
+    document_xscroll.pack_forget()
+    _document_widths = None
+
+    def _resize_document_columns(event=None):
+        nonlocal _document_widths
+        width = int(event.width) if event is not None else document_grid.winfo_width()
+        if width <= 1:
+            return
+        widths, overflow = fit_document_column_widths(width, document_mins)
+        if widths != _document_widths:
+            for (col, _title, _base), target in zip(document_columns, widths):
+                document_grid.column(col, width=target)
+            _document_widths = widths
+        if overflow:
+            if not document_xscroll.winfo_manager():
+                document_xscroll.pack(fill="x", after=document_grid)
+        elif document_xscroll.winfo_manager():
+            document_xscroll.pack_forget()
+
+    document_grid.bind("<Configure>", _resize_document_columns)
     document_detail = ttk.Label(
         document_frame, foreground="#555",
         text="切片完成不等於已合併或 SQL/ES 寫回成功。每次只顯示目前頁。",
