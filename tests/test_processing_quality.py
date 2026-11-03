@@ -617,3 +617,59 @@ def test_sdk_subcode_quality_schema_is_run_only_and_one_incident_per_event(tmp_p
     with pytest.raises(ValueError, match="unknown or mismatched"):
         emit_quality_event(audit, event="stage_orchestration_failure",
                            code=codes[0], scope="run", outcome="observed")
+
+
+def test_quality_gui_summary_shows_true_numerators_separate_denominators():
+    from czjLLM.job_manager.win_gui import (
+        format_json_repair_metric_help, format_quality_summary,
+    )
+    accumulator = QualityAccumulator()
+    for i in range(9):
+        assert accumulator.add({
+            "schema_version": 1, "event_id": f"v-{i}",
+            "event": "slice_json_validation",
+            "code": "JSON_SYNTAX_INVALID" if i < 3 else "JSON_VALID",
+        })
+    assert accumulator.add({
+        "schema_version": 1, "event_id": "r-1",
+        "event": "slice_json_repair", "code": "JSON_REPAIR_SUCCEEDED",
+    })
+    actual = accumulator.snapshot()
+    assert actual["slice_initial_invalid"] == 3
+    assert actual["slice_validation_attempts"] == 9
+    assert actual["repair_succeeded"] == 1
+    assert actual["repair_attempts"] == 1
+    displayed = format_quality_summary(actual)
+    assert "初次 JSON 不合法 3/9 次驗證（33.3%）" in displayed
+    assert "JSON 修復成功 1/1 次修復嘗試（100.0%）" in displayed
+    assert "9/9" not in displayed
+    assert "n=9" not in displayed
+    help_text = format_json_repair_metric_help()
+    assert "分母不同" in help_text
+    assert "不代表所有不合法 JSON 都已修復" in help_text
+    assert "不是不同文件數" in help_text
+
+
+def test_quality_gui_summary_unknown_is_not_zero_or_100_percent():
+    from czjLLM.job_manager.win_gui import format_quality_summary
+    empty = format_quality_summary(QualityAccumulator().snapshot())
+    assert "初次 JSON 不合法 —（樣本不足）" in empty
+    assert "JSON 修復成功 —（樣本不足）" in empty
+    assert "0/0" not in empty
+    unknown = QualityAccumulator().snapshot()
+    unknown["repair_success_pct"] = 100.0
+    unknown["repair_attempts"] = 4
+    unknown.pop("repair_succeeded")
+    assert "JSON 修復成功 —（樣本不足）" in format_quality_summary(unknown)
+    unknown["repair_succeeded"] = 5
+    assert "JSON 修復成功 —（樣本不足）" in format_quality_summary(unknown)
+
+
+def test_quality_gui_ratio_help_uses_existing_hover_tooltip():
+    import inspect
+    from czjLLM.job_manager import win_gui
+    src = inspect.getsource(win_gui._gui_proc_main)
+    assert 'format_json_repair_metric_help()' in src
+    assert 'for label in (quality_summary, *_quality_help_labels):' in src
+    assert 'label.bind("<Enter>", _quality_ratio_help)' in src
+    assert 'label.bind("<Leave>", _hide_audit_tooltip)' in src

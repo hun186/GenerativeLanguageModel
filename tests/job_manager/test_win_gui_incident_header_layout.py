@@ -95,3 +95,44 @@ def test_cancel_still_requests_cooperative_draining_not_forced_termination():
     assert 'cancel_status.configure(text="Cancelled / safely drained")' in src
     assert 'terminate(' not in src
     assert 'kill(' not in src
+
+
+
+def test_document_columns_fit_actual_viewport_without_pixel_overhang():
+    from czjLLM.job_manager.win_gui import fit_document_column_widths
+    minimums = (205, 115, 182, 270, 55, 55, 91)
+    for viewport in (985, 986, 1065, 1200, 1498, 1894, 2560):
+        widths, scroll = fit_document_column_widths(viewport, minimums)
+        assert not scroll
+        assert sum(widths) + 12 <= viewport
+        assert all(width >= minimum for width, minimum in zip(widths, minimums))
+        assert widths[4:] == minimums[4:]  # counters / timestamp stay stable
+        assert widths[3] >= widths[1]  # prioritize endpoint evidence
+    widths, scroll = fit_document_column_widths(985, minimums)
+    assert not scroll and sum(widths) + 12 == 985
+
+
+def test_document_columns_scroll_only_when_viewport_is_genuinely_too_narrow():
+    from czjLLM.job_manager.win_gui import fit_document_column_widths
+    minimums = (205, 115, 182, 270, 55, 55, 91)
+    for viewport in (400, 760, 920, 984):
+        widths, scroll = fit_document_column_widths(viewport, minimums)
+        assert scroll and widths == minimums
+    for invalid in ((), (0, 3, 4, 5, 6, 7, 8)):
+        import pytest
+        with pytest.raises(ValueError):
+            fit_document_column_widths(1300, invalid)
+
+
+def test_document_grid_reflows_on_configure_without_tk_auto_stretch():
+    src = inspect.getsource(win_gui._gui_proc_main)
+    assert 'document_grid.bind("<Configure>", _resize_document_columns)' in src
+    assert 'heading_font.measure(title_text)' in src
+    assert 'fit_document_column_widths(width, document_mins)' in src
+    assert 'width=minimum, minwidth=minimum' in src
+    assert 'stretch=False' in src
+    assert 'document_xscroll.pack_forget()' in src
+    assert 'document_xscroll.pack(fill="x", after=document_grid)' in src
+    assert 'document_grid.column(col, width=target)' in src
+    assert 'rowheight=max(28, document_line_height + 10)' in src
+    assert 'cancel_event.set()' in src
