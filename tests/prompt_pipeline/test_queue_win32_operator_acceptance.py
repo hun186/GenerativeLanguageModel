@@ -222,6 +222,7 @@ def test_junit_failure_is_only_numeric_ordinals(monkeypatch):
         "total_cases": 3, "skipped_cases": 1,
         "failure_ordinals": [2], "failure_codes": ["TEST_CASE_FAILED"],
         "runner_code": "PYTEST_NONZERO",
+        "acceptance_code": "UNEXPECTED_TEST_SKIP",
     }
     assert "SENSITIVE" not in json.dumps(detail)
     assert "SECRET" not in json.dumps(detail)
