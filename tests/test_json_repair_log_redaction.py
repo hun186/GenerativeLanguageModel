@@ -9,12 +9,12 @@ from czjLLM.utilities import json_combining
 
 
 def test_repair_failure_does_not_log_original_llm_text_or_exception(monkeypatch, capsys):
-    secret = "PRIVATE_SOURCE_NEVER_PRINT"
-    exception_secret = "PRIVATE_EXCEPTION_NEVER_PRINT"
-    malformed = '[{"source":"' + secret + '","score": }]'
+    source_marker = "PRIVATE_SOURCE_NEVER_PRINT"
+    failure_marker = "PRIVATE_EXCEPTION_NEVER_PRINT"
+    malformed = '[{"source":"' + source_marker + '","score": }]'
 
     def broken_repair(_text, **_kwargs):
-        raise RuntimeError(exception_secret)
+        raise RuntimeError(failure_marker)
 
     monkeypatch.setattr(json_combining, "repair_json", broken_repair)
     result = json_combining.robust_merge_json_lists(malformed)
@@ -23,7 +23,7 @@ def test_repair_failure_does_not_log_original_llm_text_or_exception(monkeypatch,
     assert json.loads(result) == []  # Legacy skip-on-repair-failure semantics.
     assert "[JSON-COMBINE] decode_failed; attempting_local_repair" in logs
     assert "[JSON-COMBINE] repair_failed_segment_skipped" in logs
-    assert secret not in logs and exception_secret not in logs
+    assert source_marker not in logs and failure_marker not in logs
     assert "source" not in logs
 
 
