@@ -14,7 +14,7 @@ def test_clean_output_strip_json_fence():
 def test_unterminated_json_array_is_not_accepted_as_empty_list():
     from czjLLM.prompt_pipeline.result_handler import parse_result
 
-    raw = '[{"text":"unfinished}]\\n[{"id":2}]'
+    raw = '[{"text":"unfinished}]\n[{"id":2}]'
     handler = PromptResultHandler(task="to json")
     ok, fixed = handler.validate_json(raw)
     assert (ok, fixed) == (False, "")
