@@ -113,6 +113,27 @@ def test_all_skipped_cannot_pass_even_if_pytest_exits_zero(monkeypatch):
     assert detail["acceptance_code"] == "UNEXPECTED_TEST_SKIP"
 
 
+def test_expected_platform_skip_alone_never_counts_as_executed(monkeypatch):
+    """Even an explicitly allowed skip cannot be the entire acceptance suite."""
+    def fake_run(args, **kwargs):
+        junit = Path(args[args.index("--junitxml") + 1])
+        junit.write_text(
+            '<testsuite><testcase '
+            'name="test_non_windows_probe_fails_closed_without_attempted_path_open">'
+            '<skipped message="native Windows acceptance tested separately"/>'
+            '</testcase></testsuite>',
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(args, 0)
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_run)
+    monkeypatch.setattr(probe, "_count_unexpected_skips", lambda *_: 0)
+    passed, detail = probe._run_suite(probe.SUITES[0][1])
+    assert not passed
+    assert detail["acceptance_code"] == "NO_EXECUTED_TESTS"
+    assert detail["runner_code"] == "OK"
+
+
 def test_only_exact_non_windows_platform_skip_is_allowed():
     from xml.etree import ElementTree as ET
 
