@@ -135,8 +135,10 @@ def robust_merge_json_lists(raw: str) -> str:
             arr = json.loads(p)
             if isinstance(arr, list):
                 all_items.extend(arr)
-        except json.JSONDecodeError as e:
-            print(f"⚠️ JSON decode error: {e}\n❗ 嘗試使用 repair_json 修復...")
+        except json.JSONDecodeError:
+            # The input and exception text may contain source material.
+            # Use fixed codes only; do not log raw LLM output.
+            print("[JSON-COMBINE] decode_failed; attempting_local_repair")
 
             try:
                 # 嘗試修復格式錯誤並重新解析
@@ -145,11 +147,12 @@ def robust_merge_json_lists(raw: str) -> str:
 
                 if isinstance(arr, list):
                     all_items.extend(arr)
-                    print("✅ 修復成功，已納入合併")
+                    print("[JSON-COMBINE] repaired_segment_accepted")
 
-            except Exception as e2:
-                # 若修復後還是無法解析，則略過該段並顯示錯誤
-                print(f"❌ 修復失敗：{e2}\n🔸原始段落略過：\n{p[:200]}...")
+            except Exception:
+                # Preserve legacy result behavior while avoiding raw source,
+                # exception messages and credentials in console output.
+                print("[JSON-COMBINE] repair_failed_segment_skipped")
 
     # 將所有成功合併的項目輸出成 JSON 字串，中文不轉碼並格式化縮排
     return json.dumps(all_items, ensure_ascii=False, indent=2)
@@ -229,9 +232,7 @@ def combine_json_return(json_content,NoNestedList=True,dictListForced=True):
     except Exception as ex:
         error_mes = ex
         try:
-            print("In combine_json_return, json_content_res is",json_content_res)
-            print(f"when loading json string, the following error occurs:\n{ex}\n")
-            print("Try to repair it with repair_json")
+            print("[JSON-COMBINE] combined_decode_failed; attempting_local_repair")
             #good_json_string = repair_json(json_content_res)
             #json_content_res = json.dumps(
                 #json.loads(good_json_string),ensure_ascii=False,indent=4)
@@ -253,15 +254,15 @@ def combine_json_return(json_content,NoNestedList=True,dictListForced=True):
                     elif isinstance(subterm,list):
                         tmp_dict_list.extend([x for x in subterm])
                     else:
-                        print(f"When making dict_list for {decoded_object}, error occurs.")
+                        print("[JSON-COMBINE] repaired_item_shape_invalid")
                         raise Exception
                 decoded_object = tmp_dict_list
             json_content_res = json.dumps(
                 decoded_object,ensure_ascii=False,indent=4)
 
-            print("Successfully repair it with repair_json")
+            print("[JSON-COMBINE] combined_repair_succeeded")
             error_mes = str(error_mes)+"\nBut it is repaired with repair_json."
-        except Exception as ex2:
-            print("In combine_json_return, the following error occurs:\n", ex2)
+        except Exception:
+            print("[JSON-COMBINE] combined_postprocess_failed")
             pass
     return json_content_res,error_mes
