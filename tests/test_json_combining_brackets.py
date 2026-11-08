@@ -57,8 +57,8 @@ def test_legacy_combine_json_return_preserves_quoted_bracket_text_without_repair
 
 
 @pytest.mark.parametrize("raw", [
-    '[{"text":"unfinished}]\\n[{"id":2}]',
-    '[{"id":1}]\\n[{"text":"unfinished',
+    '[{"text":"unfinished}]\n[{"id":2}]',
+    '[{"id":1}]\n[{"text":"unfinished',
 ], ids=["unterminated-string-before-valid-array", "valid-prefix-incomplete-tail"])
 def test_malformed_quoted_array_never_silently_discards_data(raw):
     with pytest.raises(ValueError, match="JSON_ARRAY_SEGMENT_INCOMPLETE"):
