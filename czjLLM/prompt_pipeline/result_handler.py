@@ -24,7 +24,13 @@ class PromptResultHandler:
             json.loads(text)
             return True, text
         except Exception:
-            repaired, _ = combine_json_return(text)
+            try:
+                repaired, _ = combine_json_return(text)
+            except ValueError:
+                # Incomplete JSON arrays must not be silently converted into
+                # a successful [] result. Preserve the original text through
+                # parse_result's existing non-JSON fallback.
+                return False, ""
             try:
                 json.loads(repaired)
                 return True, repaired
