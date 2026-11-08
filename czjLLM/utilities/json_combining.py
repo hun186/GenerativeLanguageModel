@@ -96,7 +96,7 @@ def robust_merge_json_lists(raw: str) -> str:
 
     處理流程：
     1. 移除程式碼區塊的 Markdown 格式標記（```json ... ```）。
-    2. 使用正規表達式分段抓取所有中括號包裹的 JSON 陣列（如 [ {...}, {...} ]）。
+    2. 使用已存在的 quote/escape-aware 括號掃描器分段抓取完整 JSON 陣列（如 [ {...}, {...} ]）。
     3. 依序嘗試解析每一段 JSON 陣列：
        - 若解析成功且為 list，則加入 all_items。
        - 若解析失敗，則使用 repair_json(p) 嘗試修復並再次解析。
@@ -114,7 +114,10 @@ def robust_merge_json_lists(raw: str) -> str:
 
     # 使用正則擷取所有類似 [ ... ] 的 JSON 陣列（允許跨多行）
     #parts = re.findall(r'\[.*?\]', raw, re.DOTALL) #re.findall(r'\[.*?\]', raw, re.DOTALL) 使用了非貪婪匹配 .*?，但遇到巢狀結構（例如 [ 裡還有 [）時，正則無法處理嵌套配對，因此會提前結束。
-    parts = split_json_arrays(raw)
+    # The legacy splitter counts brackets inside quoted JSON strings and can
+    # truncate valid output (e.g. {"text": "]"}). Reuse the existing
+    # quote/escape-aware scanner; preserve the downstream repair fallback.
+    parts = split_json_arrays_safe(raw)
     all_items = []
 
     for p in parts:
