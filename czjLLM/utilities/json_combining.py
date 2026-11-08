@@ -42,11 +42,15 @@ def split_json_arrays(raw: str) -> list[str]:
 
     return arrays
 
-def split_json_arrays_safe(raw: str) -> list[str]:
+def split_json_arrays_safe(
+    raw: str, *, reject_incomplete: bool = False,
+) -> list[str]:
     """
     將 raw 字串中的多個 JSON 陣列（支援跨行、巢狀物件）正確分割成獨立區塊。
 
-    避免使用正則處理嵌套結構，改用括號平衡方式切分。
+    避免使用正則處理嵌套結構，改用 quote/escape-aware 括號平衡方式切分。
+    Opt-in fail-closed mode prevents silently dropping an unfinished array.
+    The default preserves this public helper's historical tolerant behavior.
     """
     arrays = []
     buf = []
@@ -88,6 +92,11 @@ def split_json_arrays_safe(raw: str) -> list[str]:
                 buf = []
                 started = False
 
+    if started and reject_incomplete:
+        # An unfinished array (including a quoted string without a closing
+        # quote) cannot be safely combined: do not emit [] or a partial
+        # prefix as if the entire LLM output was successfully processed.
+        raise ValueError("JSON_ARRAY_SEGMENT_INCOMPLETE")
     return arrays
 
 def robust_merge_json_lists(raw: str) -> str:
@@ -117,7 +126,7 @@ def robust_merge_json_lists(raw: str) -> str:
     # The legacy splitter counts brackets inside quoted JSON strings and can
     # truncate valid output (e.g. {"text": "]"}). Reuse the existing
     # quote/escape-aware scanner; preserve the downstream repair fallback.
-    parts = split_json_arrays_safe(raw)
+    parts = split_json_arrays_safe(raw, reject_incomplete=True)
     all_items = []
 
     for p in parts:
