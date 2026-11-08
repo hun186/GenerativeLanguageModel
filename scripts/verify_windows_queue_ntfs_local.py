@@ -201,8 +201,10 @@ def _run_suite(relative_path: str) -> tuple[bool, dict]:
             }
             if unexpected_skips:
                 detail["acceptance_code"] = "UNEXPECTED_TEST_SKIP"
+            elif len(cases) == skipped:
+                detail["acceptance_code"] = "NO_EXECUTED_TESTS"
             return (
-                proc.returncode == 0 and len(cases) > 0
+                proc.returncode == 0 and len(cases) > skipped
                 and not failures and unexpected_skips == 0
             ), detail
     except (OSError, subprocess.TimeoutExpired):
