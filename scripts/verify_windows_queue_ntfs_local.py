@@ -67,6 +67,31 @@ def evaluate(platform: str, version: tuple[int, int], pytest_available: bool,
     }
 
 
+def _count_unexpected_skips(cases: list[ET.Element], relative_path: str,
+                            platform: str) -> int:
+    """Only the intentionally non-Windows-only test may skip on Windows.
+
+    A green pytest exit with skipped security acceptance checks cannot prove
+    the NTFS fixture. Match the checked-in test and exact skip reason; all
+    privilege, hardlink, junction and native capability skips require review.
+    """
+    count = 0
+    for case in cases:
+        skipped = case.find("skipped")
+        if skipped is None:
+            continue
+        expected_non_windows_only = (
+            platform == "nt"
+            and relative_path == SUITES[0][1]
+            and case.get("name")
+            == "test_non_windows_probe_fails_closed_without_attempted_path_open"
+            and skipped.get("message") == "native Windows acceptance tested separately"
+        )
+        if not expected_non_windows_only:
+            count += 1
+    return count
+
+
 def _run_suite(relative_path: str) -> tuple[bool, dict]:
     """Run a checked-in suite and parse only numeric JUnit totals/ordinals.
 
@@ -116,6 +141,9 @@ def _run_suite(relative_path: str) -> tuple[bool, dict]:
                     or case.find("error") is not None
                 ]
                 skipped = sum(case.find("skipped") is not None for case in cases)
+                unexpected_skips = _count_unexpected_skips(
+                    cases, relative_path, os.name
+                )
                 # Classify only explicitly known marker strings from test code;
                 # never copy arbitrary pytest/JUnit messages to report fields.
                 failure_codes = []
@@ -171,7 +199,12 @@ def _run_suite(relative_path: str) -> tuple[bool, dict]:
                 "runner_code": "OK" if proc.returncode == 0
                 else "PYTEST_NONZERO",
             }
-            return proc.returncode == 0 and len(cases) > 0 and not failures, detail
+            if unexpected_skips:
+                detail["acceptance_code"] = "UNEXPECTED_TEST_SKIP"
+            return (
+                proc.returncode == 0 and len(cases) > 0
+                and not failures and unexpected_skips == 0
+            ), detail
     except (OSError, subprocess.TimeoutExpired):
         return False, {"code": "RUNNER_UNAVAILABLE_OR_TIMEOUT"}
 
