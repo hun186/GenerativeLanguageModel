@@ -56,6 +56,18 @@ def test_legacy_combine_json_return_preserves_quoted_bracket_text_without_repair
     assert capsys.readouterr().out == ""
 
 
+@pytest.mark.parametrize("raw", [
+    '[{"text":"unfinished}]\\n[{"id":2}]',
+    '[{"id":1}]\\n[{"text":"unfinished',
+], ids=["unterminated-string-before-valid-array", "valid-prefix-incomplete-tail"])
+def test_malformed_quoted_array_never_silently_discards_data(raw):
+    with pytest.raises(ValueError, match="JSON_ARRAY_SEGMENT_INCOMPLETE"):
+        json_combining.robust_merge_json_lists(raw)
+    # Existing public helper retains its tolerant default behavior; only the
+    # trusted combined-result path requests fail-closed validation.
+    assert isinstance(json_combining.split_json_arrays_safe(raw), list)
+
+
 def test_existing_repair_fallback_still_handles_malformed_array():
     merged = json.loads(json_combining.robust_merge_json_lists('[{"id": 1,}]'))
     assert merged == [{"id": 1}]
