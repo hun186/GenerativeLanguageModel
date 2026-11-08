@@ -31,7 +31,7 @@ def test_valid_json_multi_arrays_preserved_without_repair(monkeypatch, capsys, c
 
 
 def test_valid_fenced_json_with_quoted_brackets_no_repair(monkeypatch):
-    expected = [{"label": "literal [ ] \\" ] inside text", "events": [1, [2, 3]]}]
+    expected = [{"label": 'literal [ ] " ] inside text', "events": [1, [2, 3]]}]
     fenced = "```json\n" + json.dumps(expected, ensure_ascii=False) + "\n```"
     monkeypatch.setattr(
         json_combining, "repair_json",
