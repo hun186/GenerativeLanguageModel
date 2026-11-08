@@ -65,8 +65,9 @@ Run `run_windows_queue_ntfs_acceptance.bat` only on an operator-owned Windows ma
 with a disposable fixture workspace. The offline launcher records JUnit test-case
 counts and fixed-code diagnostics, not names, paths, payloads or exception text.
 A pytest exit status of zero **is not sufficient** for `fixture_status=PASS`:
-a suite with no executed cases or an unexpected skipped case now produces
-`REVIEW_REQUIRED` and `UNEXPECTED_TEST_SKIP`. Only the explicitly known
+a suite with no executed cases produces `REVIEW_REQUIRED` with
+`NO_EXECUTED_TESTS`; an unexpected skipped case produces
+`REVIEW_REQUIRED` with `UNEXPECTED_TEST_SKIP`. Only the explicitly known
 non-Windows-only probe intentionally skipped on Windows in the handle suite is
 excluded from this failure rule. Hardlink, symlink, junction and native capability
 skips are never treated as verified. This does not alter the production inspector,
