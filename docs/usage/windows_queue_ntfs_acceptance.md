@@ -59,6 +59,20 @@ Do not use a live queue directory to run these tests. The tests generate and
 delete only their own temporary fixtures. Do not disable or bypass Windows
 experimental review gating after this PR automatically.
 
+## One-click fixture verdict and skipped-test policy (2026-11-08)
+
+Run `run_windows_queue_ntfs_acceptance.bat` only on an operator-owned Windows machine
+with a disposable fixture workspace. The offline launcher records JUnit test-case
+counts and fixed-code diagnostics, not names, paths, payloads or exception text.
+A pytest exit status of zero **is not sufficient** for `fixture_status=PASS`:
+a suite with no executed cases produces `REVIEW_REQUIRED` with
+`NO_EXECUTED_TESTS`; an unexpected skipped case produces
+`REVIEW_REQUIRED` with `UNEXPECTED_TEST_SKIP`. Only the explicitly known
+non-Windows-only probe intentionally skipped on Windows in the handle suite is
+excluded from this failure rule. Hardlink, symlink, junction and native capability
+skips are never treated as verified. This does not alter the production inspector,
+and fixture PASS still means `deployment_status=NOT_VERIFIED`.
+
 ## Acceptance boundaries
 
 GitHub-hosted Windows/NTFS test success would be evidence only for the

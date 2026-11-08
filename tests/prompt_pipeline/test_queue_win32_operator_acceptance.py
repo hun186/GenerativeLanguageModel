@@ -75,6 +75,83 @@ def test_runner_uses_disposable_tmp_and_sanitized_environment(monkeypatch):
     )
 
 
+def test_green_pytest_exit_with_unexpected_skip_fails_fixture(monkeypatch):
+    """A security test skipped for permissions is not a passing acceptance."""
+    def fake_run(args, **kwargs):
+        junit = Path(args[args.index("--junitxml") + 1])
+        junit.write_text(
+            '<testsuite><testcase name="passed"/>'
+            '<testcase name="native_capability"><skipped message="no privilege"/>'
+            '</testcase></testsuite>',
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(args, 0)
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_run)
+    passed, detail = probe._run_suite(probe.SUITES[2][1])
+    assert not passed
+    assert detail["runner_code"] == "OK"
+    assert detail["skipped_cases"] == 1
+    assert detail["acceptance_code"] == "UNEXPECTED_TEST_SKIP"
+    assert "native_capability" not in json.dumps(detail)
+
+
+def test_all_skipped_cannot_pass_even_if_pytest_exits_zero(monkeypatch):
+    def fake_run(args, **kwargs):
+        junit = Path(args[args.index("--junitxml") + 1])
+        junit.write_text(
+            '<testsuite><testcase name="capability">'
+            '<skipped message="unsupported"/></testcase></testsuite>',
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(args, 0)
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_run)
+    passed, detail = probe._run_suite(probe.SUITES[1][1])
+    assert not passed
+    assert detail["total_cases"] == detail["skipped_cases"] == 1
+    assert detail["acceptance_code"] == "UNEXPECTED_TEST_SKIP"
+
+
+def test_expected_platform_skip_alone_never_counts_as_executed(monkeypatch):
+    """Even an explicitly allowed skip cannot be the entire acceptance suite."""
+    def fake_run(args, **kwargs):
+        junit = Path(args[args.index("--junitxml") + 1])
+        junit.write_text(
+            '<testsuite><testcase '
+            'name="test_non_windows_probe_fails_closed_without_attempted_path_open">'
+            '<skipped message="native Windows acceptance tested separately"/>'
+            '</testcase></testsuite>',
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(args, 0)
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_run)
+    monkeypatch.setattr(probe, "_count_unexpected_skips", lambda *_: 0)
+    passed, detail = probe._run_suite(probe.SUITES[0][1])
+    assert not passed
+    assert detail["acceptance_code"] == "NO_EXECUTED_TESTS"
+    assert detail["runner_code"] == "OK"
+
+
+def test_only_exact_non_windows_platform_skip_is_allowed():
+    from xml.etree import ElementTree as ET
+
+    xml = ET.fromstring(
+        '<testsuite><testcase '
+        'name="test_non_windows_probe_fails_closed_without_attempted_path_open">'
+        '<skipped message="native Windows acceptance tested separately"/>'
+        '</testcase></testsuite>'
+    )
+    cases = list(xml.iter("testcase"))
+    handles = probe.SUITES[0][1]
+    assert probe._count_unexpected_skips(cases, handles, "nt") == 0
+    assert probe._count_unexpected_skips(cases, handles, "posix") == 1
+    assert probe._count_unexpected_skips(cases, probe.SUITES[1][1], "nt") == 1
+    cases[0].find("skipped").set("message", "unexpected failure")
+    assert probe._count_unexpected_skips(cases, handles, "nt") == 1
+
+
 def test_runner_timeout_fails_closed(monkeypatch):
     def timeout(args, **kwargs):
         raise subprocess.TimeoutExpired(args, 180)
@@ -145,6 +222,7 @@ def test_junit_failure_is_only_numeric_ordinals(monkeypatch):
         "total_cases": 3, "skipped_cases": 1,
         "failure_ordinals": [2], "failure_codes": ["TEST_CASE_FAILED"],
         "runner_code": "PYTEST_NONZERO",
+        "acceptance_code": "UNEXPECTED_TEST_SKIP",
     }
     assert "SENSITIVE" not in json.dumps(detail)
     assert "SECRET" not in json.dumps(detail)
