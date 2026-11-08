@@ -1,6 +1,7 @@
 # Architecture Decisions
 
 ## Current Summary
+- **2026-11-03 pending ES DEBUG aggregation decision:** Suppress duplicate console noise at the policy validation caller, not by changing required-output validators or relaxing ES pending queries. Preserve first failure and bounded milestones, print exact observed check-event totals on pending scan close, cap grouping to 32 rule signatures, and never log source IDs/raw outputs. No automatic identification of distinct documents from these events.
 - **2026-11-03 GUI overflow scrolling decision (pending):** Preserve all chart/detail content and current text sizes. Wrap the complete Tk page in a bounded, independently scrollable Canvas, size its child to the measured viewport, and show its vertical Scrollbar only when natural content height exceeds the viewport. Let Tk `<Configure>` and `after_idle` perform DPI/resizing/expand recalculation, avoid global wheel interception so Log Text/Treeview/Combobox keep native wheel handling; treat root-wheel handling as a UI-only event. No auto-resize to full desktop or truncation of diagnostics.
 - **2026-11-02 Worker model/IP UX decision (pending):** do not infer an in-flight per-document endpoint from global model_spec or post-call Audit. At the actual selected Worker call boundary, write a separate best-effort atomically replaced, per-call local observation; keep separate from CSV and meter execution authority to avoid hot-path Queue/Success semantic changes. Store only model allowlist, literal IP, hashed item/slice and UUID4. No guessed join when item_dir absent; status is last observation, not authenticated provider receipt. GUI may show active last-observed snapshots and completed CSV evidence independently.
 - `combine_utils.py` remains the compatibility facade for Success discovery/output placement/final writes; Row Merger remains writeback coordination and Output Profile remains final strict schema validation.
@@ -19,7 +20,6 @@
 - After deletion budget exhaustion, classification/reporting continues but deletion cannot resume later in the same sweep.
 - `cleanup_transient_on_success=true` is the default post-success fast path; retaining successful runtime workspaces for the transient TTL requires disabling that option.
 - Reduction Engine v1 A–L is complete. The L3 audit corrective merged at `91e39503c8e84d17752f9d26a23ff6b34db75b9e`, and PR #200 documentation/release closure merged at verified `main` `99d79676b16b7fed54f9cf6e701441db79846cea`.
-
 ## Current Processing Quality design decisions
 
 The following sections describe the accepted main implementation through PR #239. Historical review/merge placeholders were superseded; see exact archived snapshot for original chronology.
