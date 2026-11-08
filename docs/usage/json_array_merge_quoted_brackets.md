@@ -17,7 +17,14 @@ local processing and possible altered content.
 `robust_merge_json_lists` now calls the already existing
 `split_json_arrays_safe`, which tracks quoted strings and `\\` escapes while
 counting real nested arrays. The remainder of the combination flow,
-`json.loads` and its existing `repair_json` fallback, is unchanged.
+`json.loads` and its existing `repair_json` fallback for balanced but
+invalid syntax is unchanged. If the array scan ends mid-array or mid-string,
+the combined-result path now raises fixed `JSON_ARRAY_SEGMENT_INCOMPLETE`
+instead of quietly returning an empty/partial list. The public standalone
+scanner's original tolerant default remains available for compatibility.
+`PromptResultHandler.validate_json` treats that fixed failure as an invalid
+JSON result, allowing `parse_result` to preserve the original text rather
+than falsely accepting `[]`.
 The public legacy `split_json_arrays` helper is retained for compatibility,
 but is no longer used by this combination path.
 
@@ -28,8 +35,11 @@ but is no longer used by this combination path.
   arrays, Chinese strings, multiple arrays and fenced JSON retain the
   exact parsed data and **do not call repair_json when already valid**.
 - Verify the `combine_json_return` compatibility call, not just the
-  low-level splitter. A malformed array still uses the existing local
-  repair path; no guarantee that arbitrary invalid JSON can be repaired.
+  low-level splitter. Balanced malformed arrays still use the existing local
+  repair path; an **unterminated quoted array fails closed**, including after
+  an otherwise valid prefix or before a valid later array. Do not silently
+  accept a truncated/empty result as successful; arbitrary invalid JSON is
+  not guaranteed repairable.
 - Hosted Linux CI runs the focused suite plus the existing JSON slice-merge
   tests. Hosted Windows NTFS fixture jobs remain independent. Do not infer
   a real provider JSON validity percentage, token savings, or SQL/ES ACK
