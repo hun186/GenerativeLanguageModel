@@ -37,6 +37,8 @@ jobs:
         run: python -m pytest -q tests/test_processing_quality_recovery.py --maxfail=1 --disable-warnings
       - name: Verify RUNNING recovery and Worker Success no-clobber publication
         run: python -m pytest -q tests/prompt_pipeline/test_queue_recovery_success_no_clobber.py tests/job_manager/test_recovery_review.py tests/job_manager/test_document_progress.py --maxfail=1 --disable-warnings
+      - name: Verify Windows thread round completion and safe timeout draining (offline)
+        run: python -m pytest -q tests/prompt_pipeline/test_round_runner_smoke.py --maxfail=1 --disable-warnings
       - name: Verify endpoint owned leases and legacy fallback behavior
         run: python -m pytest -q tests/infrastructure/test_ollama_lb_lock_timeout.py tests/infrastructure/test_ollama_lb_heartbeat.py tests/prompt_pipeline/test_worker_phase_quality.py --maxfail=1 --disable-warnings
       - name: Verify read-only LLM dispatch idle diagnostic snapshots
@@ -156,6 +158,11 @@ jobs:
         run: |
           python -m pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py tests/prompt_pipeline/test_queue_win32_native_enumeration.py tests/prompt_pipeline/test_queue_win32_ntfs_acceptance.py --maxfail=1 --disable-warnings
 
+      - name: Verify Windows ThreadPool round completion order and timeout safety
+        shell: pwsh
+        env:
+          PYTHONNOUSERSITE: "1"
+        run: python -m pytest -q tests/prompt_pipeline/test_round_runner_smoke.py --maxfail=1 --disable-warnings
       - name: Verify LLM dispatch BAT help forwarding on real Windows
         shell: pwsh
         run: |
