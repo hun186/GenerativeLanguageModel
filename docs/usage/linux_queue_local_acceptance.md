@@ -23,7 +23,8 @@ The pytest child explicitly uses `--noconftest` as well as disabled plugin
 autoload: repository conftest files must not import local LLM credential
 settings. The source checkout must have no tracked or nonignored untracked
 changes; use an isolated clean checkout rather than modifying a production
-working directory if necessary.
+working directory if necessary. Standard generated `.pytest_cache/`
+is ignored by Git; other nonignored files still cause REVIEW_REQUIRED.
 
 It invokes only a fixed checked-in Linux acceptance fixture suite:
 `tests/prompt_pipeline/test_queue_linux_local_fixture.py`.
