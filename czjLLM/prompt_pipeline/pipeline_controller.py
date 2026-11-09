@@ -84,7 +84,9 @@ from czjLLM.prompt_pipeline.dispatch_parallelism import (
     resolve_slice_parallelism,
 )
 
-from czjLLM.infrastructure.ollama_lb import select_idle_ollama_url,release_url_load
+from czjLLM.infrastructure.ollama_lb import (
+    select_idle_ollama_url, release_url_load, maintain_url_load_lease,
+)
 
 #from czjLLM.sql_utils.common import quote_column
 #from czjLLM.sql_utils.writer import flatten_row_based_json_array_to_subtable
@@ -3278,6 +3280,7 @@ class PromptAPIPipeline:
         ok = False
         base_url = None
         lease_token = None
+        lease_keeper = None
         response = None
         llm_request_attempted = False
         worker_call_id = ""  # Filled only at the real CallLLMAPI boundary.
@@ -3365,11 +3368,16 @@ class PromptAPIPipeline:
                     verified_queue_claim_id = ""
             llm_request_attempted = True
             self._record_dispatch_observation(worker_call_id, "calling")
-            response, cost = CallLLMAPI(
-                self.content,
-                max_tokens=self.max_tokens,
-                model_spec=self.model_spec
-            )
+            # Keep only this already-recorded lease alive while the LLM
+            # invocation is actually in flight; stop before postprocessing.
+            with maintain_url_load_lease(
+                base_url, PGMSubDir=self.PGMSubDir, lease_token=lease_token,
+            ) as lease_keeper:
+                response, cost = CallLLMAPI(
+                    self.content,
+                    max_tokens=self.max_tokens,
+                    model_spec=self.model_spec
+                )
             call_llm_api_returned = True
             worker_failure_code = "WORKER_RESPONSE_EXCEPTION"
             # 3) token 警告
@@ -3454,7 +3462,8 @@ class PromptAPIPipeline:
                 if base_url:
                     release_url_load(
                         base_url, PGMSubDir=self.PGMSubDir,
-                        lease_token=lease_token,
+                        lease_token=(lease_keeper.lease_token
+                                     if lease_keeper is not None else lease_token),
                     )
             except Exception:
                 pass
@@ -3532,6 +3541,7 @@ class PromptAPIPipeline:
     def proc_0112(self, ):
         base_url = None
         lease_token = None
+        lease_keeper = None
         print("="*50)
         if self.promptFile == "":
             #print(f"Calling LLM API for promptFile: {self.promptFile}")
@@ -3560,10 +3570,13 @@ class PromptAPIPipeline:
             #print("self.model_spec in PromptAPIPipeline",self.model_spec)
             if "api_key" not in self.model_spec:
                 self.model_spec["api_key"]=("ThisIsFakeKey")
-            response,cost = CallLLMAPI(
-                self.content,max_tokens=self.max_tokens,
-                #On_Premises=self.On_Premises,
-                model_spec=self.model_spec)
+            with maintain_url_load_lease(
+                base_url, PGMSubDir=self.PGMSubDir, lease_token=lease_token,
+            ) as lease_keeper:
+                response,cost = CallLLMAPI(
+                    self.content,max_tokens=self.max_tokens,
+                    #On_Premises=self.On_Premises,
+                    model_spec=self.model_spec)
             #print("Finished CallLLMAPI in PromptAPIPipeline")
 
             
@@ -3655,7 +3668,8 @@ class PromptAPIPipeline:
                 if base_url:
                     release_url_load(
                         base_url, PGMSubDir=self.PGMSubDir,
-                        lease_token=lease_token,
+                        lease_token=(lease_keeper.lease_token
+                                     if lease_keeper is not None else lease_token),
                     )
             except Exception:
                 pass

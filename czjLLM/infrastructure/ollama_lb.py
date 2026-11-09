@@ -1,4 +1,5 @@
 import os, time, json, random, tempfile, math
+import threading
 from datetime import datetime, timezone
 from czjLLM.utilities.atomic_io import atomic_write_json
 
@@ -274,6 +275,125 @@ def release_url_load(base_url: str, PGMSubDir: str = "", *, lease_token=_LEGACY_
 
 
         
+
+def renew_url_load(base_url: str, PGMSubDir: str = "", *, lease_token):
+    """Extend only an exact, still-live persisted lease. Never create a claim.
+
+    Return renewed expiry on success, the old token for a transient lock
+    timeout (so a later heartbeat can retry), or None when claim ownership
+    cannot be established. Does not interact with the LLM/provider/Queue.
+    """
+    if type(lease_token) not in (int, float) or not math.isfinite(lease_token):
+        return None
+    load_file = os.path.join(PGMSubDir, "logs", "base_url_load.json")
+    lock_path = _lock_path(load_file)
+    try:
+        lock_fp = _acquire_file_lock(lock_path)
+    except TimeoutError:
+        return lease_token  # Unmodified: a later beat may retry before expiry.
+    except OSError:
+        return None
+
+    try:
+        # Fail closed. Unlike the selector, renewal must not replace a bad
+        # load file with empty data or restore a claim discarded by another
+        # process during expiry cleanup / global stale reset.
+        with open(load_file, "r", encoding="utf-8") as f:
+            state = json.load(f)
+        if not isinstance(state, dict):
+            return None
+        rec = state.get(base_url)
+        if not isinstance(rec, dict):
+            return None
+        leases = rec.get("leases")
+        if not isinstance(leases, list):
+            return None
+        now_ts = _now()
+        if lease_token <= now_ts:
+            return None
+        try:
+            index = leases.index(lease_token)
+        except ValueError:
+            return None
+        # Replacement expiry always advances, even if the clock resolution
+        # ties or the wall clock was adjusted backward.
+        next_exp = max(now_ts + LEASE_SECS, math.nextafter(lease_token, math.inf))
+        while next_exp in leases:
+            next_exp = math.nextafter(next_exp, math.inf)
+        updated = list(leases)
+        updated[index] = next_exp
+        rec["leases"] = updated
+        rec["last_update"] = now_ts
+        state[base_url] = rec
+        atomic_write_json(load_file, state)
+        return next_exp
+    except (OSError, ValueError, TypeError, OverflowError, json.JSONDecodeError):
+        # No recovery by recreating a missing/corrupt claim.
+        return None
+    finally:
+        _release_file_lock(lock_fp, lock_path)
+
+
+class _UrlLeaseKeeper:
+    """Foreground LLM-call-only lease maintenance, joined before release.
+
+    The short-lived daemon thread is only active while CallLLMAPI is blocked.
+    It never calls providers and never adds a missing lease to shared state.
+    """
+
+    def __init__(self, base_url, PGMSubDir, lease_token, interval_seconds=None):
+        self.base_url = base_url
+        self.PGMSubDir = PGMSubDir
+        self.lease_token = lease_token
+        self._interval = (
+            max(0.01, LEASE_SECS / 3)
+            if interval_seconds is None else max(0.01, float(interval_seconds))
+        )
+        self._stop = threading.Event()
+        self._thread = None
+
+    def _loop(self):
+        while not self._stop.wait(self._interval):
+            try:
+                new_token = renew_url_load(
+                    self.base_url, PGMSubDir=self.PGMSubDir,
+                    lease_token=self.lease_token,
+                )
+            except Exception:
+                return  # Observability/maintenance may not fail an LLM call.
+            if new_token is None:
+                return  # Ownership lost, expired, or unreadable: no resurrection.
+            self.lease_token = new_token
+
+    def __enter__(self):
+        if (type(self.lease_token) in (int, float)
+                and math.isfinite(self.lease_token)):
+            try:
+                self._thread = threading.Thread(
+                    target=self._loop, name="llm-lease-keeper", daemon=True,
+                )
+                self._thread.start()
+            except RuntimeError:
+                self._thread = None  # Unchanged worker outcome; TTL still bounds.
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self._stop.set()
+        # Join so the Worker can release the *last* token exactly once; no
+        # detached refresh can run after the main call has been released.
+        if self._thread is not None:
+            self._thread.join()
+        return False
+
+
+def maintain_url_load_lease(
+    base_url: str, PGMSubDir: str = "", *, lease_token=None,
+    interval_seconds=None,
+):
+    """Create a no-op keeper for an untracked lock-timeout URL fallback."""
+    return _UrlLeaseKeeper(base_url, PGMSubDir, lease_token, interval_seconds)
+
+
 def _fmt_ts(ts, tz='local', timespec='seconds'):
     if ts is None:
         return "-"
