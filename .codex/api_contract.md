@@ -1,6 +1,7 @@
 # api contract
 
 ## Current Summary
+- **2026-11-10 ThreadPool round (pending):** Collect completed Futures out of order, return input order. `BatchRunTimeout.finished` counts completed Futures at deadline, not sink ACK. Transient `CONSUMER_STATE.thread_round_{completed_count,drain_active,timeout_running,cancelled_before_start}` fields report process-local observations. Cancel only unstarted Futures; running Threads drain; Worker-raised TimeoutError is not batch timeout.
 - **2026-11-10 proposed in-flight lease renewal:** `renew_url_load(url, PGMSubDir, *, lease_token)` atomically replaces only a present, unexpired exact float token and returns its new expiry; `None` means loss/unverified, same token signals a lock-timeout no-write. `maintain_url_load_lease(..., lease_token=...)` is a context-managed Worker-only keeper for `CallLLMAPI`, joined before final token release, with 1200s max elapsed. No lease creation on failure, no schema/HTTP/Queue/sink change.
 - **2026-11-10 LB owned-lease API (pending PR):** `select_idle_ollama_url(base_urls, PGMSubDir="", *, return_lease_token=False)` retains historical URL string default, optional `True` returns `(url, unique_float_expiry_or_None)`. The token is one exact persisted expiry in existing `base_url_load.json[URL].leases`, `None` means lock-timeout fallback without a persisted claim. `release_url_load(url, PGMSubDir="", *, lease_token=...)`: explicit `None` no-op; explicit token removes only the matching expiry; omitted token uses historical oldest-live release. Both Worker methods opt in; no on-disk, Queue, HTTP provider or sink contract changes.
 - JSON list `require_complete=True` fails closed on missing/skipped/incomplete segments; default tolerant; `PromptResultHandler` opts in.
@@ -10,7 +11,6 @@
 - Controllers are `single_pass`, `fixed_rounds`, and `adaptive_hierarchical`. Hierarchical controllers require `profile: concat_text`, strict controller options and nonblank `runtime.round_task`.
 - Canonical reducer profiles are `concat_text`, `concat_json_list`, `legacy_json_deep_merge`, `dedup`, `group`, `entity_union`, `rank`, `top_k`, `composite`, `semantic_llm`, and `structured_relational`. Detailed aliases/examples live in `docs/usage/reduction_engine_v1.md`.
 - `execution_budget_capacity`, when configured, is a positive integer process-local hard ceiling for leaf work. Budget capacity is operational and excluded from semantic identity.
-
 ### Hierarchical checkpoints and execution identity
 
 - `reduce_hierarchical_text()` consumes prepared text, deterministic controller policy and a narrow next-round callback. Completed checkpoint JSON is the commit marker; corrupt/incompatible committed chains fail closed.
