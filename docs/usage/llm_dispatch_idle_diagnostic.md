@@ -48,7 +48,14 @@ are candidate explanations only. Compare multiple samples with operator
 nvidia-smi and Ollama measurements outside this tool before attributing
 idle GPUs to batch barriers, stale leases or HTTP timeouts.
 
-This tool never frees lease files, modifies cache, changes limits,
+This tool never frees lease files, modifies cache, changes limits,New Worker paths now hold an exact token for a successfully persisted endpoint
+lease. Lock-timeout fallback is untracked and no longer removes another
+Worker's recorded claim when it finishes. A late release after expiry also
+cannot pop a later claim. The 300-second TTL remains unchanged; a long
+inference call may outlive that estimate, and lease counts are not actual
+GPU utilization measurements.
+
+
 retries Queue work, restarts workers or writes to SQL/ES. Real operator
 acceptance, safe restart and independent sink readback remain Issue #266.
 Focused synthetic test suite:

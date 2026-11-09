@@ -1,4 +1,4 @@
-import os, time, json, random, tempfile
+import os, time, json, random, tempfile, math
 from datetime import datetime, timezone
 from czjLLM.utilities.atomic_io import atomic_write_json
 
@@ -10,6 +10,8 @@ JITTER = 0.05              # 破平手用的微小抖動，避免所有人都選
 LOCK_TIMEOUT = 5.0         # 取得檔案鎖的等候上限秒數
 LOCK_SLEEP = 0.05          # 等鎖時的 sleep 間隔
 LOCK_STALE_SECS = float(os.getenv("CZJ_LOCK_STALE_SECS", "600"))  # 預設 600 秒，長任務較不易誤判 stale
+
+_LEGACY_RELEASE = object()  # only pre-existing tokenless callers use oldest-live release
 
 
 def _lock_path(json_path: str) -> str:
@@ -131,7 +133,7 @@ def _reset_state_if_stale(state: dict, base_urls, now_ts: float) -> bool:
         state[url]["last_update"] = now_ts
     return True
 
-def select_idle_ollama_url(base_urls, PGMSubDir: str = ""):
+def select_idle_ollama_url(base_urls, PGMSubDir: str = "", *, return_lease_token=False):
     """
     選擇目前負載最輕的 base_url。
     強化點：
@@ -150,7 +152,9 @@ def select_idle_ollama_url(base_urls, PGMSubDir: str = ""):
         # 降級策略：避免因負載統計鎖競爭導致整個 LLM 呼叫失敗
         chosen = random.choice(base_urls)
         print(f"⚠️ base_url 負載鎖逾時，改用降級隨機選擇: {chosen} ({ex})")
-        return chosen
+        # Lock-timeout fallback had no on-disk lease; later release must not
+        # remove another Worker's lease.
+        return (chosen, None) if return_lease_token else chosen
     try:
         state = _load_state(load_file, base_urls)
         now_ts = _now()
@@ -178,6 +182,9 @@ def select_idle_ollama_url(base_urls, PGMSubDir: str = ""):
 
         # 指派租約：加入一個到期時間
         lease_exp = now_ts + LEASE_SECS
+        # Ensure exact ownership tokens are unique even at tied clock ticks.
+        while lease_exp in state[chosen]["leases"]:
+            lease_exp = math.nextafter(lease_exp, math.inf)
         state[chosen]["leases"].append(lease_exp)
         state[chosen]["last_update"] = now_ts
 
@@ -194,16 +201,23 @@ def select_idle_ollama_url(base_urls, PGMSubDir: str = ""):
             print(f"In select_idle_ollama_url, the following error occurs: {ex}")
             # 不影響主流程
             pass
-        return chosen
+        return (chosen, lease_exp) if return_lease_token else chosen
     finally:
         _release_file_lock(lock_fp, _lock_path(load_file))
 
 
-def release_url_load(base_url: str, PGMSubDir: str = ""):
+def release_url_load(base_url: str, PGMSubDir: str = "", *, lease_token=_LEGACY_RELEASE):
     """
     釋放該 base_url 的一個租約（若不存在就忽略）。
     即使忘了呼叫，租約也會在 LEASE_SECS 後自動失效，避免計數漂移。
     """
+    # None means this invocation never persisted a lease (lock fallback).
+    if lease_token is None:
+        return
+    if lease_token is not _LEGACY_RELEASE and (
+        type(lease_token) not in (int, float) or not math.isfinite(lease_token)
+    ):
+        return
     load_file = os.path.join(PGMSubDir, "logs", "base_url_load.json")
     lock_fp = None
     try:
@@ -229,10 +243,18 @@ def release_url_load(base_url: str, PGMSubDir: str = ""):
         now_ts = _now()
         # 先清除所有過期租約
         leases = [exp for exp in rec.get("leases", []) if exp > now_ts]
-        # 再移除一個最早到期的租約（有就移）
-        if leases:
-            leases.sort()
-            leases.pop(0)
+        # Legacy callers retain old behavior; new Worker owns one exact
+        # persisted expiry token. Expired/missing token cannot steal a newer
+        # Worker's claim after stale cleanup or a re-dispatch.
+        if lease_token is _LEGACY_RELEASE:
+            if leases:
+                leases.sort()
+                leases.pop(0)
+        else:
+            try:
+                leases.remove(lease_token)
+            except ValueError:
+                return
 
         rec["leases"] = leases
         rec["last_update"] = now_ts
