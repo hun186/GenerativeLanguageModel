@@ -24,7 +24,6 @@
 - Reduction Engine v1 A–L is complete. The L3 audit corrective merged at `91e39503c8e84d17752f9d26a23ff6b34db75b9e`, and PR #200 documentation/release closure merged at verified `main` `99d79676b16b7fed54f9cf6e701441db79846cea`.
 ## Current Processing Quality design decisions
 The following sections describe the accepted main implementation through PR #239. Historical review/merge placeholders were superseded; see exact archived snapshot for original chronology.
-
 ### Producer operational observability boundary (P2 PR proposal)
 - Instrument catch-site exceptions rather than parse console messages or infer failure from a schedule returning zero. Mark operational events run-scoped with fixed enums, no row/stage identity or source content. Do not change cancellation, pending-row skip, ordinary schedule-noop semantics or multistage Future behavior.
 - Existing per-run JSONL writer and reader remain the only event authority; GUI is a projection. No new persistent store or request/document failure-rate denominator. Stage Worker and lifecycle/retention remain separate so this PR's scope stays reviewable.
