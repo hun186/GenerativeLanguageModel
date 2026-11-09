@@ -728,7 +728,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             except ExecutionCancelled:
                 raise
             except Exception as e:
-                tlog_warn(f"ℹ️ 合併提示（pk={meta.get('pk')}）：{e}")
+                tlog_warn("ℹ️ 合併提示：ROW_MERGER_PREPARE_RETRY")
         return None
     def _resolve_combined_path(item_dir, meta, ctx, temp_txt):
         # 1) registry 內的 per-row 路徑（優先）
@@ -793,7 +793,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     _record_retry_incident(
                         item_dir, "ROW_MERGER_PREPARE_RETRY", e
                     )
-                tlog_warn(f"ℹ️ 合併提示（pk={meta.get('pk')}）：{e}")
+                tlog_warn("ℹ️ 合併提示：ROW_MERGER_PREPARE_RETRY")
     
         return None
 

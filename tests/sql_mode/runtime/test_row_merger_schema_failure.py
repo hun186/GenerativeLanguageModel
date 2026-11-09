@@ -969,7 +969,8 @@ def test_row_merger_combine_prepare_retry_is_audited_then_recovers(tmp_path, mon
             "CombBackFN": str(combined), "chunks": 1,
         },
     )
-    attempts, writes = [], []
+    attempts, writes, warnings = [], [], []
+    monkeypatch.setattr(merger_module, "tlog_warn", warnings.append)
 
     def combine_once_broken(_item, _ctx):
         attempts.append(_item)
@@ -1020,6 +1021,9 @@ def test_row_merger_combine_prepare_retry_is_audited_then_recovers(tmp_path, mon
     assert events[0]["scope"] == "run"
     assert events[0]["document_id"] == events[0]["slice_id"] == ""
     assert "private-prompt-must-not-leak" not in audit.read_text(encoding="utf-8")
+    assert any("ROW_MERGER_PREPARE_RETRY" in warning for warning in warnings)
+    assert not any("private-prompt-must-not-leak" in warning for warning in warnings)
+    assert not any("pk=doc" in warning for warning in warnings)
     stats = QualityTailReader(str(audit)).poll()[1]
     assert stats["row_merger_retryable_failure_events"] == 1
     assert stats["documents_decided"] == 0  # Sink has no confirmation contract.

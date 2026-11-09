@@ -33,3 +33,18 @@ and checks that neither original content nor exception text appears
 on standard output. Hosted Linux CI runs the new test.
 Existing older audit CSV/files may contain raw error text and are
 **not** retroactively redacted; restrict their file access.
+
+## Row Merger combine-preparation warning boundary (2026-11-09)
+
+The Row Merger's `combine_api_finished_item()` preparation retry can raise
+an exception whose message contains raw document content or private model
+output. Its current and legacy fallback warning branches now emit only the
+fixed `ROW_MERGER_PREPARE_RETRY` code; neither raw exception strings nor
+per-document PKs are included in those warnings. The underlying retry and
+run-scoped quality incident semantics are unchanged; no Queue, LLM,
+JSON validation or SQL/ES persistence operation changes.
+
+The offline `test_row_merger_combine_prepare_retry_is_audited_then_recovers`
+regression checks warning privacy and preserves retry-to-writeback behavior.
+This narrow fix does **not** assert unrelated Row Merger diagnostics or
+legacy artifacts are payload-free and does not clean historic logs.
