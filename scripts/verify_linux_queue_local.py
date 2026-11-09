@@ -90,6 +90,7 @@ def _run_suite(relative: str) -> tuple[bool, dict]:
                 sys.executable, "-m", "pytest", "-q", relative,
                 "--maxfail=1", "--disable-warnings",
                 "-p", "no:cacheprovider",
+                "--noconftest",  # Never import project conftest / local dotenv.
                 "--basetemp", str(Path(directory) / "pytest"),
                 "--junitxml", str(xml),
             ]
@@ -138,7 +139,12 @@ def _run_suite(relative: str) -> tuple[bool, dict]:
 
 
 def _git_identity() -> tuple[str, str]:
-    """Report source identity without copying git error text or local paths."""
+    """Report source identity, refusing tracked or untracked checkout changes.
+
+    Untracked executable additions could change imports or fixture behavior.
+    Treat any nonignored untracked file as DIRTY, not a trusted commit.
+    Never copy status file paths into reports.
+    """
     env = {key: value for key, value in os.environ.items()
            if key.upper() in ALLOWED_ENV}
     try:
@@ -148,7 +154,7 @@ def _git_identity() -> tuple[str, str]:
             stderr=subprocess.DEVNULL, check=False, timeout=5,
         )
         clean = subprocess.run(
-            ["git", "status", "--porcelain", "--untracked-files=no"],
+            ["git", "status", "--porcelain", "--untracked-files=normal"],
             cwd=REPO_ROOT, env=env, stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
             check=False, timeout=5,
