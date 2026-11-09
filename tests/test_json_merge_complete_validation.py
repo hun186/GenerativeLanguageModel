@@ -118,3 +118,20 @@ def test_existing_incomplete_array_exception_remains_distinct():
     assert PromptResultHandler(task="to json").validate_json(original) == (
         False, "",
     )
+
+
+def test_default_legacy_facade_does_not_pass_new_keyword_to_old_wrappers(
+    monkeypatch,
+):
+    seen = []
+
+    def one_arg_combiner(raw):
+        seen.append(raw)
+        return "[]"
+
+    monkeypatch.setattr(
+        json_combining, "robust_merge_json_lists", one_arg_combiner,
+    )
+    combined, error = json_combining.combine_json_return("ordinary")
+    assert (combined, error) == ("[]", "")
+    assert seen == ["ordinary"]
