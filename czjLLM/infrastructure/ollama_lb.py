@@ -13,6 +13,7 @@ LOCK_SLEEP = 0.05          # 等鎖時的 sleep 間隔
 LOCK_STALE_SECS = float(os.getenv("CZJ_LOCK_STALE_SECS", "600"))  # 預設 600 秒，長任務較不易誤判 stale
 
 _LEGACY_RELEASE = object()  # only pre-existing tokenless callers use oldest-live release
+MAX_HEARTBEAT_ELAPSED_SECS = 1200  # Bound hung HTTP/SDK calls; never renew forever
 
 
 def _lock_path(json_path: str) -> str:
@@ -341,7 +342,10 @@ class _UrlLeaseKeeper:
     It never calls providers and never adds a missing lease to shared state.
     """
 
-    def __init__(self, base_url, PGMSubDir, lease_token, interval_seconds=None):
+    def __init__(
+        self, base_url, PGMSubDir, lease_token,
+        interval_seconds=None, max_elapsed_seconds=MAX_HEARTBEAT_ELAPSED_SECS,
+    ):
         self.base_url = base_url
         self.PGMSubDir = PGMSubDir
         self.lease_token = lease_token
@@ -349,11 +353,18 @@ class _UrlLeaseKeeper:
             max(0.01, LEASE_SECS / 3)
             if interval_seconds is None else max(0.01, float(interval_seconds))
         )
+        self._max_elapsed = float(max_elapsed_seconds)
         self._stop = threading.Event()
         self._thread = None
 
     def _loop(self):
-        while not self._stop.wait(self._interval):
+        deadline = time.monotonic() + self._max_elapsed
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0 or self._stop.wait(min(self._interval, remaining)):
+                return
+            if self._stop.is_set() or time.monotonic() >= deadline:
+                return
             try:
                 new_token = renew_url_load(
                     self.base_url, PGMSubDir=self.PGMSubDir,
@@ -388,10 +399,12 @@ class _UrlLeaseKeeper:
 
 def maintain_url_load_lease(
     base_url: str, PGMSubDir: str = "", *, lease_token=None,
-    interval_seconds=None,
+    interval_seconds=None, max_elapsed_seconds=MAX_HEARTBEAT_ELAPSED_SECS,
 ):
     """Create a no-op keeper for an untracked lock-timeout URL fallback."""
-    return _UrlLeaseKeeper(base_url, PGMSubDir, lease_token, interval_seconds)
+    return _UrlLeaseKeeper(
+        base_url, PGMSubDir, lease_token, interval_seconds, max_elapsed_seconds,
+    )
 
 
 def _fmt_ts(ts, tz='local', timespec='seconds'):
