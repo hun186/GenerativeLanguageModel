@@ -23,7 +23,10 @@ modification times do not prove they belong to the same batch.
 Limits: 4 MiB per JSON, 16 MiB audit CSV, 512 directory entries,
 30000 audit rows, 64 endpoints, 4096 leases per endpoint; no symlinks /
 reparse-point files, and changed-during-read snapshots are rejected.
-Legacy timestamps without UTC offset are INCOMPLETE. Error paths use
+Legacy timestamps without UTC offset are INCOMPLETE. The CSV reader also
+requires a terminated physical record, strict CSV quoting and complete
+column shape; interrupted append rows return INCOMPLETE without silently
+counting a completed call. Error paths use
 fixed codes only; URLs, endpoint IPs, paths, PKs, prompts, private run IDs,
 raw provider errors and credentials never appear in stdout. Endpoint_01
 labels are transient and are NOT actual GPU IDs or proof of an active request.

@@ -180,7 +180,12 @@ def _audit(logs, labels, now, window):
     file = _latest(logs / "llm_call_audit", "llm_call_audit_", ".csv")
     try:
         text = _read(file, MAX_CSV).decode("utf-8-sig")
-        reader = csv.DictReader(io.StringIO(text, newline=""))
+        # An interrupted append may leave a stable, unterminated final row.
+        # Never count it as a completed Worker call merely because the file
+        # metadata stayed unchanged during this read.
+        if not text.endswith("\n"):
+            raise Unavailable("INCOMPLETE")
+        reader = csv.DictReader(io.StringIO(text, newline=""), strict=True)
         required = {"timestamp", "base_url", "ok", "call_llm_api_returned"}
         if not reader.fieldnames or not required.issubset(reader.fieldnames):
             raise Unavailable("SCHEMA_MISMATCH")
@@ -188,6 +193,10 @@ def _audit(logs, labels, now, window):
         latest = None
         per_endpoint = {v: {"audit_rows": 0, "ok_rows": 0} for v in labels.values()}
         for row in reader:
+            # DictReader otherwise fills missing columns with None and puts
+            # extra columns under a None key, silently accepting a torn row.
+            if None in row or any(value is None for value in row.values()):
+                raise Unavailable("INCOMPLETE")
             rows += 1
             if rows > MAX_ROWS:
                 raise Unavailable("ROW_LIMIT")
@@ -216,7 +225,9 @@ def _audit(logs, labels, now, window):
                 per_endpoint[label]["ok_rows"] += row.get("ok") == "YES"
     except Unavailable:
         raise
-    except (UnicodeError, csv.Error, TypeError, ValueError):
+    except csv.Error:
+        raise Unavailable("INCOMPLETE") from None
+    except (UnicodeError, TypeError, ValueError):
         raise Unavailable("MALFORMED") from None
     return {
         "status": "INCOMPLETE" if invalid else "OBSERVED",

@@ -4,6 +4,8 @@ from datetime import datetime, timezone
 import json
 import time
 
+import pytest
+
 from scripts.diagnose_llm_dispatch_idle import snapshot, main
 
 
@@ -110,3 +112,23 @@ def test_foreground_repeated_samples_redacted(tmp_path, capsys):
     assert [json.loads(x)["sample_number"] for x in lines] == [1, 2]
     assert "PRIVATE_ENDPOINT" not in "\n".join(lines)
     assert "PRIVATE_PK" not in "\n".join(lines)
+
+
+@pytest.mark.parametrize("case", ["truncated", "missing_columns", "unterminated_quote"])
+def test_csv_interrupted_append_fails_closed_instead_of_counting_completion(tmp_path, case):
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    file = logs / "llm_call_audit" / "llm_call_audit_20261109.csv"
+    timestamp = datetime.fromtimestamp(now - 2, timezone.utc).isoformat()
+    with file.open("a", encoding="utf-8") as output:
+        if case == "truncated":
+            output.write(f"{timestamp},http://PRIVATE_ENDPOINT_A:11434/v1,YES,YES")
+        elif case == "missing_columns":
+            output.write(f"{timestamp},http://PRIVATE_ENDPOINT_A:11434/v1,YES\n")
+        else:
+            output.write(f'{timestamp},http://PRIVATE_ENDPOINT_A:11434/v1,YES,YES,"torn\n')
+    report = snapshot(logs, now=now)
+    assert report["diagnosis_status"] == "UNVERIFIED"
+    assert report["sources"]["audit"]["status"] == "INCOMPLETE"
+    assert "recent_completed_audit_rows" not in report["sources"]["audit"]
+    assert "PRIVATE_ENDPOINT_A" not in json.dumps(report)
