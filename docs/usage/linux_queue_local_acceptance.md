@@ -19,6 +19,12 @@ from PATH. Python 3.10/3.11 and pytest plus the installed project dependencies
 are required. It **does not install dependencies, access the network,
 accept live paths, prompt for credentials or call an LLM / SQL / ES sink**.
 
+The pytest child explicitly uses `--noconftest` as well as disabled plugin
+autoload: repository conftest files must not import local LLM credential
+settings. The source checkout must have no tracked or nonignored untracked
+changes; use an isolated clean checkout rather than modifying a production
+working directory if necessary.
+
 It invokes only a fixed checked-in Linux acceptance fixture suite:
 `tests/prompt_pipeline/test_queue_linux_local_fixture.py`.
 That suite creates its own ephemeral files under Linux `/tmp` and checks
