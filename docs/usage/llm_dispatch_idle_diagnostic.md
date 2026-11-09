@@ -48,14 +48,18 @@ are candidate explanations only. Compare multiple samples with operator
 nvidia-smi and Ollama measurements outside this tool before attributing
 idle GPUs to batch barriers, stale leases or HTTP timeouts.
 
-This tool never frees lease files, modifies cache, changes limits,New Worker paths now hold an exact token for a successfully persisted endpoint
-lease. Lock-timeout fallback is untracked and no longer removes another
-Worker's recorded claim when it finishes. A late release after expiry also
-cannot pop a later claim. The 300-second TTL remains unchanged; a long
-inference call may outlive that estimate, and lease counts are not actual
-GPU utilization measurements.
+The endpoint load balancer tracks only requests assigned by its Worker.
+Lock-timeout random fallback carries no persisted lease and cannot release
+another Worker's claim. A late release never removes a replacement claim.
+During an actual blocking `CallLLMAPI` invocation, a short-lived per-Worker
+keeper now refreshes an existing, still-valid lease using the same lock.
+It stops before final release and never creates a missing lease. Refresh
+normally occurs every 100 seconds for the default 300-second lease, but
+stops after 1200 seconds to avoid renewing a permanently stuck request.
+Lock timeout/read failure or expiry may still leave inaccurate load counts.
+**An HTTP call in flight is not proof of GPU computation.**
 
-
+This diagnostic never frees lease files, modifies cache, changes limits,
 retries Queue work, restarts workers or writes to SQL/ES. Real operator
 acceptance, safe restart and independent sink readback remain Issue #266.
 Focused synthetic test suite:
