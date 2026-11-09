@@ -158,11 +158,11 @@ def test_git_revision_marks_untracked_executable_addition_dirty(monkeypatch):
         assert kwargs["stdout"] == subprocess.PIPE
         assert kwargs["stderr"] == subprocess.DEVNULL
         if args[1] == "rev-parse":
-            return subprocess.CompletedProcess(args, 0, stdout=(sha + "\\n").encode())
+            return subprocess.CompletedProcess(args, 0, stdout=(sha + "\n").encode())
         assert "--untracked-files=normal" in args
         return subprocess.CompletedProcess(
             args, 0,
-            stdout=b"?? tests/prompt_pipeline/conftest.py\\n",
+            stdout=b"?? tests/prompt_pipeline/conftest.py\n",
         )
 
     monkeypatch.setattr(probe.subprocess, "run", fake_git)
@@ -178,7 +178,7 @@ def test_git_revision_clean_only_when_no_tracked_or_untracked_files(monkeypatch)
     def fake_git(args, **_kwargs):
         return subprocess.CompletedProcess(
             args, 0,
-            stdout=(sha + "\\n").encode()
+            stdout=(sha + "\n").encode()
             if args[1] == "rev-parse" else b"",
         )
 
