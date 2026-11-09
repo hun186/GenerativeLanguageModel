@@ -35,7 +35,8 @@ including refusal of symlink traversal. It never touches a real Queue.
 - The output directory must be owned by the invoking user and private.
   Symlinks, permissive directories, missing files, zero executed tests,
   skips, failing cases, unsupported Python, missing pytest, unavailable
-  safe temporary storage or dirty/unknown Git revision are
+  safe temporary storage or dirty/unknown Git revision (including any
+  nonignored untracked file) are
   **REVIEW_REQUIRED**; no permissive fallback.
 - Exit 0 means **FIXTURE_PASS_ONLY**.
   Exit 2 means **REVIEW_REQUIRED**.
