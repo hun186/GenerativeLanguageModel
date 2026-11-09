@@ -31,7 +31,7 @@ LIMITATIONS = [
     "NO_REPLAY_AUTHORIZATION",
 ]
 ALLOWED_ENV = {"PATH", "HOME", "LANG", "LC_ALL", "LC_CTYPE"}
-_SHA = re.compile(r"[a-f0-9]{40}\\Z")
+_SHA = re.compile(r"[a-f0-9]{40}\Z")
 
 
 def evaluate(platform: str, version: tuple[int, int], pytest_available: bool,
@@ -181,9 +181,9 @@ def _write_report(report: dict, directory: Path) -> None:
             name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
             0o600, dir_fd=dir_fd,
         )
-        with os.fdopen(out_fd, "w", encoding="utf-8", newline="\\n") as stream:
+        with os.fdopen(out_fd, "w", encoding="utf-8", newline="\n") as stream:
             json.dump(report, stream, sort_keys=True, ensure_ascii=True)
-            stream.write("\\n")
+            stream.write("\n")
             stream.flush()
             os.fsync(stream.fileno())
     finally:
