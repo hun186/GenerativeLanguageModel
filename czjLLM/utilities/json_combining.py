@@ -99,7 +99,7 @@ def split_json_arrays_safe(
         raise ValueError("JSON_ARRAY_SEGMENT_INCOMPLETE")
     return arrays
 
-def robust_merge_json_lists(raw: str) -> str:
+def robust_merge_json_lists(raw: str, *, require_complete: bool = False) -> str:
     """
     清理並合併多個 JSON 陣列字串，並在解析失敗時自動嘗試修復格式錯誤的段落。
 
@@ -127,7 +127,11 @@ def robust_merge_json_lists(raw: str) -> str:
     # truncate valid output (e.g. {"text": "]"}). Reuse the existing
     # quote/escape-aware scanner; preserve the downstream repair fallback.
     parts = split_json_arrays_safe(raw, reject_incomplete=True)
+    if require_complete and not parts:
+        # A non-JSON response must not become a successful empty JSON array.
+        raise ValueError("JSON_ARRAY_SEGMENT_MISSING")
     all_items = []
+    skipped_segment = False
 
     for p in parts:
         try:
@@ -135,6 +139,8 @@ def robust_merge_json_lists(raw: str) -> str:
             arr = json.loads(p)
             if isinstance(arr, list):
                 all_items.extend(arr)
+            else:
+                skipped_segment = True
         except json.JSONDecodeError:
             # The input and exception text may contain source material.
             # Use fixed codes only; do not log raw LLM output.
@@ -148,11 +154,19 @@ def robust_merge_json_lists(raw: str) -> str:
                 if isinstance(arr, list):
                     all_items.extend(arr)
                     print("[JSON-COMBINE] repaired_segment_accepted")
+                else:
+                    skipped_segment = True
 
             except Exception:
                 # Preserve legacy result behavior while avoiding raw source,
                 # exception messages and credentials in console output.
                 print("[JSON-COMBINE] repair_failed_segment_skipped")
+                skipped_segment = True
+
+    if require_complete and skipped_segment:
+        # Opt-in validation callers must never accept a partial successful
+        # prefix after an invalid or unrepaired list segment.
+        raise ValueError("JSON_ARRAY_SEGMENT_SKIPPED")
 
     # 將所有成功合併的項目輸出成 JSON 字串，中文不轉碼並格式化縮排
     return json.dumps(all_items, ensure_ascii=False, indent=2)
@@ -192,7 +206,7 @@ def clean_and_merge_json_lists(raw: str) -> str:
 
 
 
-def combine_json_return(json_content,NoNestedList=True,dictListForced=True):
+def combine_json_return(json_content,NoNestedList=True,dictListForced=True, *, require_complete=False):
     # 假設你的 JSON 檔案內容如下
     #json_content = '''
     #[
@@ -223,7 +237,14 @@ def combine_json_return(json_content,NoNestedList=True,dictListForced=True):
     # 🧹 Step 1: 移除每段陣列中 `,]` 結尾，改為 `]`
     # 🔁 Step 2: 將多段 array 合併：例如 `][`、`] [`, `]\n[` 等轉為 `,`
     #json_content_res = clean_and_merge_json_lists(json_content_res)
-    json_content_res = robust_merge_json_lists(json_content_res)
+    # Preserve the legacy one-argument call contract for tolerant callers,
+    # including integrations that wrap this helper with a single-arg function.
+    if require_complete:
+        json_content_res = robust_merge_json_lists(
+            json_content_res, require_complete=True,
+        )
+    else:
+        json_content_res = robust_merge_json_lists(json_content_res)
     #print("json_content_res af",json_content_res)
 
     error_mes = ""

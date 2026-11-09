@@ -25,7 +25,7 @@ class PromptResultHandler:
             return True, text
         except Exception:
             try:
-                repaired, _ = combine_json_return(text)
+                repaired, _ = combine_json_return(text, require_complete=True)
             except ValueError:
                 # Incomplete JSON arrays must not be silently converted into
                 # a successful [] result. Preserve the original text through
