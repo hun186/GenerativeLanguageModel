@@ -71,6 +71,8 @@ def _read(p, limit):
         return data
     except Unavailable:
         raise
+    except FileNotFoundError:
+        raise Unavailable("MISSING") from None
     except (OSError, ValueError):
         raise Unavailable("READ_FAILED") from None
 
