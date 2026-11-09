@@ -43,6 +43,10 @@ jobs:
         run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py --maxfail=1 --disable-warnings
       - name: Verify Windows handle-relative enumeration and guarded CLI (portable synthetic)
         run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_native_enumeration.py --maxfail=1 --disable-warnings
+      - name: Verify Linux local one-command fixture acceptance and fail-closed report
+        run: |
+          python -m pytest -q tests/prompt_pipeline/test_queue_linux_local_operator.py tests/prompt_pipeline/test_queue_linux_local_fixture.py --maxfail=1 --disable-warnings
+          bash run_linux_queue_local_acceptance.sh
       - name: Verify Windows operator fixture launcher fail-closed and privacy
         run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_operator_acceptance.py --maxfail=1 --disable-warnings
       - name: Verify no-clobber TODO to RUNNING dispatch and collision fail-closed
