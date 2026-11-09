@@ -421,3 +421,20 @@ def test_20261103_pr276_acceptance_handoff_archives_are_exact_and_current():
     )
     attributes = (_ROOT / ".gitattributes").read_text(encoding="utf-8")
     assert ".codex/archive/*-20261103-134000.md -text" in attributes.splitlines()
+
+
+def test_20261110_owned_lease_contract_archive_first_compaction():
+    """Precompact API contract remains byte-for-byte recoverable on Windows."""
+    archived_name = "api_contract.md-20261110-013200.md"
+    expected = "2c14b81b42e23ef0a43e87a29469796a2c12a851"
+    archive = _ROOT / ".codex" / "archive" / archived_name
+    active = (_ROOT / ".codex" / "api_contract.md").read_text(encoding="utf-8")
+    assert archive.is_file()
+    assert _git_blob_sha(archive.read_bytes()) == expected
+    assert archived_name in active and expected in active
+    assert "return_lease_token" in active and "lease_token" in active
+    assert "accepted PR #241" in active
+    assert len(active.encode("utf-8")) < 40_000
+    assert len(active.splitlines()) <= 200
+    attributes = (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
+    assert f".codex/archive/{archived_name} -text" in attributes
