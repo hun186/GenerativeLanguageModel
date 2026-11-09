@@ -237,7 +237,14 @@ def combine_json_return(json_content,NoNestedList=True,dictListForced=True, *, r
     # 🧹 Step 1: 移除每段陣列中 `,]` 結尾，改為 `]`
     # 🔁 Step 2: 將多段 array 合併：例如 `][`、`] [`, `]\n[` 等轉為 `,`
     #json_content_res = clean_and_merge_json_lists(json_content_res)
-    json_content_res = robust_merge_json_lists(json_content_res, require_complete=require_complete)
+    # Preserve the legacy one-argument call contract for tolerant callers,
+    # including integrations that wrap this helper with a single-arg function.
+    if require_complete:
+        json_content_res = robust_merge_json_lists(
+            json_content_res, require_complete=True,
+        )
+    else:
+        json_content_res = robust_merge_json_lists(json_content_res)
     #print("json_content_res af",json_content_res)
 
     error_mes = ""
