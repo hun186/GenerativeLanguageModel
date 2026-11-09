@@ -109,14 +109,16 @@ def test_windows_spawn_overlap_thread_fallback_preserves_concurrency(monkeypatch
     assert time.monotonic() - t0 < 0.6
 
 
-def test_windows_spawn_overlap_join_clear_allows_pool(monkeypatch):
+def test_windows_spawn_overlap_join_clear_still_chooses_threadpool(monkeypatch):
     import czjLLM.prompt_pipeline.round_runner as rr
 
     monkeypatch.setattr(rr.sys, "platform", "win32")
     monkeypatch.setattr(rr, "_active_children_count", lambda: 1)
     monkeypatch.setattr(rr, "_join_existing_children_once", lambda timeout_sec: 0)
 
-    assert rr._should_use_thread_pool_to_avoid_windows_spawn_overlap() is False
+    # Current Windows strategy stays ThreadPool when any child was present
+    # before join, even when it has just exited; never respawn immediately.
+    assert rr._should_use_thread_pool_to_avoid_windows_spawn_overlap() is True
 
 
 def test_windows_thread_round_observes_out_of_order_completion_but_returns_input_order(monkeypatch):
