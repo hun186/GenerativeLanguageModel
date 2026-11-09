@@ -153,7 +153,7 @@ def select_idle_ollama_url(base_urls, PGMSubDir: str = "", *, return_lease_token
         chosen = random.choice(base_urls)
         print(f"⚠️ base_url 負載鎖逾時，改用降級隨機選擇: {chosen} ({ex})")
         # Lock-timeout fallback had no on-disk lease; later release must not
-        # remove another Worker\'s lease.
+        # remove another Worker's lease.
         return (chosen, None) if return_lease_token else chosen
     try:
         state = _load_state(load_file, base_urls)
@@ -245,7 +245,7 @@ def release_url_load(base_url: str, PGMSubDir: str = "", *, lease_token=_LEGACY_
         leases = [exp for exp in rec.get("leases", []) if exp > now_ts]
         # Legacy callers retain old behavior; new Worker owns one exact
         # persisted expiry token. Expired/missing token cannot steal a newer
-        # Worker\'s claim after stale cleanup or a re-dispatch.
+        # Worker's claim after stale cleanup or a re-dispatch.
         if lease_token is _LEGACY_RELEASE:
             if leases:
                 leases.sort()
