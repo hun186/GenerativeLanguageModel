@@ -104,7 +104,10 @@ def test_all_multidim_profile_validation_errors_are_terminal():
         assert merger_module._is_terminal_schema_writeback_error(exc)
 
 
-def test_schema_failure_releases_row_for_next_run(tmp_path: Path, monkeypatch):
+@pytest.mark.parametrize("failing_component", ["none", "release", "adjustment", "quality"])
+def test_schema_failure_releases_row_for_next_run(
+    tmp_path: Path, monkeypatch, failing_component,
+):
     item_dir = tmp_path / "prompt_item"
     item_dir.mkdir()
     source_txt = tmp_path / "source.txt"
@@ -116,20 +119,26 @@ def test_schema_failure_releases_row_for_next_run(tmp_path: Path, monkeypatch):
         str(item_dir),
         {"pk": "doc-1", "temp_txt": str(source_txt), "CombBackFN": str(combined)},
     )
-    releases = []
-    adjustments = []
-    monkeypatch.setattr(
-        merger_module,
-        "mark_not_running",
-        lambda ctx, pk, state: releases.append((pk, state)),
-    )
-    monkeypatch.setattr(
-        merger_module,
-        "record_adjustment",
-        lambda ctx, event, pk=None, **extra: (
-            adjustments.append((event, pk, extra)) or tmp_path / "schema-errors.jsonl"
-        ),
-    )
+    releases, adjustments, warnings = [], [], []
+    monkeypatch.setattr(merger_module, "tlog_warn", warnings.append)
+
+    def release_row(_ctx, pk, state):
+        releases.append((pk, state))
+        if failing_component == "release":
+            raise RuntimeError("PRIVATE_RELEASE_EXCEPTION_NEVER_PRINT")
+
+    def record_schema_adjustment(_ctx, event, pk=None, **extra):
+        adjustments.append((event, pk, extra))
+        if failing_component == "adjustment":
+            raise RuntimeError("PRIVATE_AUDIT_EXCEPTION_NEVER_PRINT")
+        return tmp_path / "schema-errors.jsonl"
+
+    monkeypatch.setattr(merger_module, "mark_not_running", release_row)
+    monkeypatch.setattr(merger_module, "record_adjustment", record_schema_adjustment)
+    if failing_component == "quality":
+        def quality_audit_fails(*_args, **_kwargs):
+            raise RuntimeError("PRIVATE_QUALITY_EXCEPTION_NEVER_PRINT")
+        monkeypatch.setattr(merger_module, "emit_quality_event", quality_audit_fails)
 
     done_q = queue.Queue()
     ctx = SimpleNamespace(
@@ -155,6 +164,24 @@ def test_schema_failure_releases_row_for_next_run(tmp_path: Path, monkeypatch):
     assert adjustments[0][2]["output_col"] == "multidim_event_json"
     assert done_q.get_nowait() == 1
     assert source_txt.exists(), "failed rows must remain pending rather than be backed up"
+    assert any("ROW_MERGER_SCHEMA_REJECTED_PENDING" in msg for msg in warnings)
+    expected_audit = (
+        "AUDIT_UNAVAILABLE" if failing_component == "adjustment"
+        else "AUDIT_RECORDED"
+    )
+    assert any("audit=" + expected_audit in msg for msg in warnings)
+    if failing_component == "release":
+        assert any("ROW_MERGER_SCHEMA_STATUS_RELEASE_FAILED" in msg for msg in warnings)
+    if failing_component == "adjustment":
+        assert any("ROW_MERGER_SCHEMA_AUDIT_WRITE_FAILED" in msg for msg in warnings)
+    if failing_component == "quality":
+        assert any("ROW_MERGER_SCHEMA_QUALITY_AUDIT_FAILED" in msg for msg in warnings)
+    for private in (
+        "doc-1", "constance", "schema-errors.jsonl", str(tmp_path),
+        "PRIVATE_RELEASE_EXCEPTION", "PRIVATE_AUDIT_EXCEPTION",
+        "PRIVATE_QUALITY_EXCEPTION",
+    ):
+        assert all(private not in message for message in warnings)
 
 
 @pytest.mark.parametrize("error_type", ["reference", "importance"])
