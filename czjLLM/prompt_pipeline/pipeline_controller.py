@@ -3277,6 +3277,7 @@ class PromptAPIPipeline:
         err = ""
         ok = False
         base_url = None
+        lease_token = None
         response = None
         llm_request_attempted = False
         worker_call_id = ""  # Filled only at the real CallLLMAPI boundary.
@@ -3330,7 +3331,16 @@ class PromptAPIPipeline:
                 return ret_dict
 
             # 1) 選 base_url
-            base_url = select_idle_ollama_url(self.model_spec["base_url"], PGMSubDir=self.PGMSubDir)
+            picked = select_idle_ollama_url(
+                self.model_spec["base_url"], PGMSubDir=self.PGMSubDir,
+                return_lease_token=True,
+            )
+            if isinstance(picked, tuple):
+                base_url, lease_token = picked
+            else:
+                # Older monkeypatched or external selectors have no lease
+                # ownership receipt; never release a lease on their behalf.
+                base_url = picked
             self.model_spec["base_url"] = base_url
     
             if "api_key" not in self.model_spec:
@@ -3442,7 +3452,10 @@ class PromptAPIPipeline:
         finally:
             try:
                 if base_url:
-                    release_url_load(base_url, PGMSubDir=self.PGMSubDir)
+                    release_url_load(
+                        base_url, PGMSubDir=self.PGMSubDir,
+                        lease_token=lease_token,
+                    )
             except Exception:
                 pass
 
@@ -3517,6 +3530,8 @@ class PromptAPIPipeline:
         return ret_dict
         
     def proc_0112(self, ):
+        base_url = None
+        lease_token = None
         print("="*50)
         if self.promptFile == "":
             #print(f"Calling LLM API for promptFile: {self.promptFile}")
@@ -3531,8 +3546,14 @@ class PromptAPIPipeline:
         try:
             # 在這裡選擇負載最輕的 base_url
             #print("inputing base url in pipeline_controller",self.model_spec["base_url"])
-            base_url = select_idle_ollama_url(self.model_spec["base_url"],PGMSubDir=self.PGMSubDir)
-            
+            picked = select_idle_ollama_url(
+                self.model_spec["base_url"], PGMSubDir=self.PGMSubDir,
+                return_lease_token=True,
+            )
+            if isinstance(picked, tuple):
+                base_url, lease_token = picked
+            else:
+                base_url = picked
             self.model_spec["base_url"] = base_url  # 更新 model_spec 的 base_url
             #print(f"已分配 base_url: {base_url} 進行處理")  # 顯示選擇的 base_url
             #print("Start to run CallLLMAPI in PromptAPIPipeline")
@@ -3631,8 +3652,11 @@ class PromptAPIPipeline:
             
         finally:
             try:
-                # 任務完成後釋放負載
-                release_url_load(base_url, PGMSubDir=self.PGMSubDir)
+                if base_url:
+                    release_url_load(
+                        base_url, PGMSubDir=self.PGMSubDir,
+                        lease_token=lease_token,
+                    )
             except Exception:
                 pass
         # ---- 返還前：診斷是否可被 pickl e（只做一次即可）----
