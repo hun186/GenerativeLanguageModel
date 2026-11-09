@@ -634,7 +634,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
         try:
             mark_not_running(ctx, pk, state="writeback_failed_schema")
         except Exception as ex:
-            tlog_warn(f"⚠️ schema 失敗狀態釋放異常（pk={pk}）：{ex}")
+            tlog_warn("⚠️ ROW_MERGER_SCHEMA_STATUS_RELEASE_FAILED")
         schema_log_path = None
         try:
             schema_log_path = record_adjustment(
@@ -645,7 +645,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 combined_result_path=combined_path,
             )
         except Exception as ex:
-            tlog_warn(f"⚠️ schema 失敗稽核紀錄寫入異常（pk={pk}）：{ex}")
+            tlog_warn("⚠️ ROW_MERGER_SCHEMA_AUDIT_WRITE_FAILED")
         # A completed invalid document is a document-level decision, not a
         # failed slice.  Do not let audit failures change pending semantics.
         try:
@@ -658,18 +658,13 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 document_id=str(pk),
             )
         except Exception as quality_error:
-            tlog_warn(
-                f"⚠️ processing_quality audit failed: {type(quality_error).__name__}"
-            )
-        log_hint = (
-            f"；錯誤紀錄已保存於 {schema_log_path}"
-            if schema_log_path is not None
-            else "；未啟用或未能寫入 schema 失敗稽核紀錄"
-        )
+            tlog_warn("⚠️ ROW_MERGER_SCHEMA_QUALITY_AUDIT_FAILED")
+        # Private adjustment records retain diagnosis, but do not disclose
+        # exception text, document PK or local paths in captured console logs.
+        audit_code = "AUDIT_RECORDED" if schema_log_path is not None else "AUDIT_UNAVAILABLE"
         tlog_warn(
-            f"Row Merger 略過本輪寫回 pk={pk}: {exc}；"
-            "已釋放執行狀態，資料保持 pending，下一次執行會重新拉取並分析"
-            f"{log_hint}。"
+            "⚠️ ROW_MERGER_SCHEMA_REJECTED_PENDING; "
+            f"audit={audit_code}; operator review required"
         )
         registry.remove(item_dir)
         merge_log_emitted_items.discard(item_dir)

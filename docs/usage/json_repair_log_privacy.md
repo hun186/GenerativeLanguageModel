@@ -48,3 +48,23 @@ The offline `test_row_merger_combine_prepare_retry_is_audited_then_recovers`
 regression checks warning privacy and preserves retry-to-writeback behavior.
 This narrow fix does **not** assert unrelated Row Merger diagnostics or
 legacy artifacts are payload-free and does not clean historic logs.
+
+## Row Merger terminal schema-rejection console diagnostics (2026-11-09)
+
+A completed document can fail Row Merger's terminal schema validation
+with an exception that contains model output, document identifiers or
+local filesystem paths. The terminal rejection branch now emits only
+fixed warning codes: `ROW_MERGER_SCHEMA_REJECTED_PENDING`, with
+`AUDIT_RECORDED` or `AUDIT_UNAVAILABLE`, plus distinct fixed codes for
+failed row-state release, adjustment logging and quality-event audit.
+These warning calls do not contain the exception class, message, PK or
+adjustment path.
+
+The private `record_adjustment` call still receives the original error,
+PK and combined path so the operator can investigate without losing
+evidence; these records must not be published as public logs. This is
+console redaction only, not changed schema classification, retry or
+SQL/ES writeback behavior. A parametrized offline regression exercises
+normal rejection and injected state/audit/quality helper failures and
+asserts privacy and original pending semantics. Other Row Merger
+warnings, old logs and persisted private audits remain out of scope.
