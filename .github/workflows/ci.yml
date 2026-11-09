@@ -154,6 +154,11 @@ jobs:
         run: |
           python -m pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py tests/prompt_pipeline/test_queue_win32_native_enumeration.py tests/prompt_pipeline/test_queue_win32_ntfs_acceptance.py --maxfail=1 --disable-warnings
 
+      - name: Verify LLM dispatch BAT help forwarding on real Windows
+        shell: pwsh
+        run: |
+          cmd /c run_llm_dispatch_diagnostic.bat --help
+          if ($LASTEXITCODE -ne 0) { throw "DISPATCH_BAT_HELP_FAILED" }
       - name: Exercise one-click operator fixture probe on real NTFS
         shell: pwsh
         run: |

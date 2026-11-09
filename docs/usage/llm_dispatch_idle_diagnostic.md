@@ -4,6 +4,16 @@ Use one of the repository-root launchers:
 - Windows: run_llm_dispatch_diagnostic.bat
 - Linux: bash run_llm_dispatch_diagnostic.sh
 
+Windows: **double-click** `run_llm_dispatch_diagnostic.bat` (no arguments) to show a
+Traditional Chinese, read-only summary of available evidence. The console
+stays open until a key is pressed; it does not claim GPU measurements or
+silently treat missing input as a passing result. To see options without an
+extra pause, run `run_llm_dispatch_diagnostic.bat --help` in a terminal.
+Arguments are still forwarded verbatim. Add `--human` with arguments to get
+the Chinese summary instead of default machine-readable JSON. The summary
+shows the source label (default `logs` / explicitly selected `--logs-dir`),
+not any private absolute path, raw endpoint, PK, run ID or error detail.
+
 Both use Python 3.10+ (stdlib only) and default to the repository's ./logs.
 If the actual PGMSubDir is elsewhere, supply its logs directory:
     python scripts/diagnose_llm_dispatch_idle.py --logs-dir <runtime_logs_directory>
@@ -11,7 +21,8 @@ If the actual PGMSubDir is elsewhere, supply its logs directory:
 For repeated **foreground** sampling while a batch runs:
     python scripts/diagnose_llm_dispatch_idle.py --logs-dir <runtime_logs_directory> --samples 12 --interval-seconds 30
 
-The tool prints one sanitized JSON object per sample. It does not run a
+The Python CLI prints one sanitized JSON object per sample by default;
+`--human` prints a Traditional Chinese metadata-only summary per sample. It does not run a
 background service, automatically save a file, edit job state or access
 LLM/ES/SQL/GPU APIs. Only bounded existing metadata is examined:
 latest loadmeter_*.json, base_url_load.json, latest

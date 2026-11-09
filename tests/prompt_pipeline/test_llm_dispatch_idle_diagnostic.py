@@ -2,6 +2,7 @@
 import csv
 from datetime import datetime, timezone
 import json
+from pathlib import Path
 import time
 
 import pytest
@@ -132,3 +133,47 @@ def test_csv_interrupted_append_fails_closed_instead_of_counting_completion(tmp_
     assert report["sources"]["audit"]["status"] == "INCOMPLETE"
     assert "recent_completed_audit_rows" not in report["sources"]["audit"]
     assert "PRIVATE_ENDPOINT_A" not in json.dumps(report)
+
+
+
+def test_human_no_args_style_summary_is_chinese_and_redacted(tmp_path, capsys):
+    logs = fixture(tmp_path / "logs", time.time())
+    assert main(["--logs-dir", str(logs), "--human"]) == 0
+    text = capsys.readouterr().out
+    assert "【Queue 工作狀態】" in text
+    assert "【資料讀取】" in text
+    assert "【端點負載估計】" in text
+    assert "仍有待處理項目" not in text
+    assert "GPU 正常／異常" in text
+    for marker in ("PRIVATE_ENDPOINT", "PRIVATE_PK", "PRIVATE_RUN", "PRIVATE_PROMPT",
+                   "PRIVATE_ERROR", str(logs)):
+        assert marker not in text
+
+
+def test_human_missing_logs_does_not_claim_success(tmp_path, capsys):
+    missing = tmp_path / "no_such_logs"
+    assert main(["--logs-dir", str(missing), "--human"]) == 2
+    output = capsys.readouterr().out
+    assert "找不到資料" in output
+    assert "資料不足或不完整" in output
+    assert str(missing) not in output
+
+
+def test_python_help_exposes_human_and_window_flags(capsys):
+    with pytest.raises(SystemExit) as stopped:
+        main(["--help"])
+    assert stopped.value.code == 0
+    output = capsys.readouterr().out
+    assert "--human" in output
+    assert "--samples" in output
+    assert "--logs-dir" in output
+
+
+def test_windows_bat_no_argument_entry_stays_open_and_help_forwards():
+    # Portable structural check; Hosted Windows runs the actual --help path.
+    launcher = (Path(__file__).resolve().parents[2] / "run_llm_dispatch_diagnostic.bat")
+    content = launcher.read_text(encoding="utf-8")
+    assert 'if not "%~1"=="" goto :ARGS' in content
+    assert '"scripts\\diagnose_llm_dispatch_idle.py" --human' in content
+    assert "pause >nul" in content
+    assert '"scripts\\diagnose_llm_dispatch_idle.py" %*' in content
