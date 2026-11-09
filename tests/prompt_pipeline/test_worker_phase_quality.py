@@ -206,3 +206,33 @@ def test_classifier_exception_never_masks_worker_failure(monkeypatch, tmp_path):
     assert "authoritative-private-error" in result["error"]
     assert len(csv) == 1 and csv[0]["ok"] is False
     _assert_single_phase_event(worker, "WORKER_LLM_CALL_EXCEPTION")
+
+
+
+def test_real_worker_keeps_its_own_lease_live_during_long_stubbed_call(monkeypatch, tmp_path):
+    """Exercise the production Worker boundary without contacting any provider."""
+    import time
+    from czjLLM.infrastructure import ollama_lb
+
+    worker, audit = _make_worker(monkeypatch, tmp_path)
+    monkeypatch.setattr(pc, "select_idle_ollama_url", ollama_lb.select_idle_ollama_url)
+    monkeypatch.setattr(pc, "release_url_load", ollama_lb.release_url_load)
+    monkeypatch.setattr(pc, "maintain_url_load_lease", ollama_lb.maintain_url_load_lease)
+    monkeypatch.setattr(ollama_lb, "LEASE_SECS", 0.18)
+
+    def slow_provider_stub(*args, **kwargs):
+        # A simulated call lasts longer than the original 0.18s lease TTL.
+        time.sleep(0.34)
+        lease_file = tmp_path / "logs" / "base_url_load.json"
+        record = json.loads(lease_file.read_text(encoding="utf-8"))
+        current = record["http://private-model.invalid"]["leases"]
+        assert len(current) == 1
+        assert current[0] > time.time()
+        return _response(), 0.0
+
+    monkeypatch.setattr(pc, "CallLLMAPI", slow_provider_stub)
+    result = worker.proc()
+    assert result["ok"] is True
+    assert len(audit) == 1 and audit[0]["ok"] is True
+    file = tmp_path / "logs" / "base_url_load.json"
+    assert json.loads(file.read_text(encoding="utf-8"))["http://private-model.invalid"]["leases"] == []
