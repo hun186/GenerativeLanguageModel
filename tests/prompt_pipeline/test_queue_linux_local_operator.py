@@ -66,6 +66,9 @@ def test_disposable_junit_runner_sanitizes_env_and_never_logs_tests(
     args, options = captured[0]
     assert args[:3] == [sys.executable, "-m", "pytest"]
     assert "--junitxml" in args and "--basetemp" in args
+    assert "--noconftest" in args
+    # Disabling plugin autoload alone does not disable tests/conftest.py,
+    # which can load local credential environment files.
     assert options["shell"] is False
     assert options["stdin"] == subprocess.DEVNULL
     assert options["stdout"] == subprocess.DEVNULL
@@ -144,3 +147,40 @@ def test_symlink_or_permissive_report_directory_refused(tmp_path):
     with pytest.raises(ValueError, match="OUTPUT_DIRECTORY_UNSAFE"):
         probe._write_report({"probe": "fixture"}, real)
     assert list(real.iterdir()) == []
+
+
+def test_git_revision_marks_untracked_executable_addition_dirty(monkeypatch):
+    sha = "b" * 40
+    seen = []
+
+    def fake_git(args, **kwargs):
+        seen.append(args)
+        assert kwargs["stdout"] == subprocess.PIPE
+        assert kwargs["stderr"] == subprocess.DEVNULL
+        if args[1] == "rev-parse":
+            return subprocess.CompletedProcess(args, 0, stdout=(sha + "\\n").encode())
+        assert "--untracked-files=normal" in args
+        return subprocess.CompletedProcess(
+            args, 0,
+            stdout=b"?? tests/prompt_pipeline/conftest.py\\n",
+        )
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_git)
+    observed, status = probe._git_identity()
+    assert observed == sha
+    assert status == "DIRTY"
+    assert len(seen) == 2
+
+
+def test_git_revision_clean_only_when_no_tracked_or_untracked_files(monkeypatch):
+    sha = "c" * 40
+
+    def fake_git(args, **_kwargs):
+        return subprocess.CompletedProcess(
+            args, 0,
+            stdout=(sha + "\\n").encode()
+            if args[1] == "rev-parse" else b"",
+        )
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_git)
+    assert probe._git_identity() == (sha, "CLEAN")
