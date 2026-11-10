@@ -816,6 +816,8 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
     sink.open()
     blocked_shutdown_scan_done = False
     consumer_receipt_terminal_reported = False
+    receipt_guard_enabled = isinstance(meter_fn, (str, os.PathLike))
+    next_receipt_read_at = 0.0
     try:
         while True:
             items_map = registry.list_items()
@@ -836,20 +838,10 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     break
                 blocked_shutdown_scan_done = True
 
-            # Read the authoritative per-run meter ONCE per scan, not once
-            # per item.  A real run with missing/unreadable/corrupt meter
-            # must not infer completion; standalone legacy test embedders
-            # passing a non-path meter_fn retain their old behavior.
-            receipt_guard_enabled = isinstance(meter_fn, (str, os.PathLike))
-            queue_receipt_rows = {}
-            if receipt_guard_enabled:
-                try:
-                    snapshot = meter_read(os.fspath(meter_fn))
-                    observed_rows = snapshot.get("rows", {}) if isinstance(snapshot, dict) else {}
-                    queue_receipt_rows = observed_rows if isinstance(observed_rows, dict) else {}
-                except Exception:
-                    queue_receipt_rows = {}
-
+            # The per-run Meter grows throughout long ES batches.  Read it
+            # only if a row actually has a merge-ready artifact, and at
+            # most once per second across the entire Row Merger scan.
+            queue_receipt_rows = None
             progressed = False
             for item_dir, meta in list(items_map.items()):
                 pk = meta["pk"]; temp_txt = meta["temp_txt"]
@@ -860,10 +852,33 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 if _recovery_item_blocked(item_dir, ctx):
                     continue
 
-                # Success exists BEFORE the Consumer necessarily posts its
-                # per-slice queue acknowledgment.  Never move source, write
-                # back or prune Success while pending/running receipts exist.
-                # Stage-managed rows have zero Consumer queue receipts.
+                if isinstance(meta, dict) and meta.get("status") == "scheduling_multistage":
+                    continue
+
+                # Do not parse a growing 35k-row Meter while nothing is
+                # merge-ready.  A combined file can bypass ordinary slice
+                # checks, so both candidate paths must reach the ACK guard.
+                candidate_combined = meta.get("CombBackFN") if isinstance(meta, dict) else None
+                if not (candidate_combined and os.path.isfile(candidate_combined)):
+                    if not _all_slices_done(item_dir, meta):
+                        continue
+
+                if receipt_guard_enabled:
+                    if queue_receipt_rows is None:
+                        now = time.monotonic()
+                        if now < next_receipt_read_at:
+                            continue
+                        next_receipt_read_at = now + 1.0
+                        try:
+                            snapshot = meter_read(os.fspath(meter_fn))
+                            observed = snapshot.get("rows", {}) if isinstance(snapshot, dict) else {}
+                            queue_receipt_rows = observed if isinstance(observed, dict) else {}
+                        except Exception:
+                            queue_receipt_rows = {}
+
+                # Success exists BEFORE its parent Consumer necessarily
+                # posts the ACK.  Preserve Success and Registry until both
+                # queue counters have settled, even on a combined-file path.
                 if (receipt_guard_enabled
                         and not _row_queue_receipt_settled(queue_receipt_rows, pk)):
                     # Only an actual, terminated Consumer is proof that it
@@ -910,9 +925,6 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                             "Consumer terminated before Queue ACK; "
                             "preserving evidence, run incomplete"
                         )
-                    continue
-
-                if isinstance(meta, dict) and meta.get("status") == "scheduling_multistage":
                     continue
 
                 #if not row_is_ready(item_dir):
