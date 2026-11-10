@@ -474,9 +474,9 @@ def test_explicit_wrapper_return_and_local_failure_are_separate(tmp_path):
     with path.open(encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
         rows = list(reader)
-        assert reader.fieldnames[-5:] == [
+        assert reader.fieldnames[-6:] == [
             "audit_record_id", "worker_call_id", "call_llm_api_returned",
-            "split_family_id", "queue_claim_event_id"]
+            "split_family_id", "queue_claim_event_id", "finish_reason"]
     assert [row["call_llm_api_returned"] for row in rows] == ["YES", "NO", "YES", ""]
     assert [row["ok"] for row in rows] == ["NO", "NO", "YES", "NO"]
     assert rows[0]["worker_call_id"] == "a" * 32
