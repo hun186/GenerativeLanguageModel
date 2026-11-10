@@ -78,6 +78,16 @@ def run_slot_refill(
         try:
             while True:
                 check_active()
+                # A previously running Worker can fail WHILE another Worker's
+                # acknowledgement is being processed. Never refill before
+                # examining all already completed active Futures.
+                for observed_future in tuple(active):
+                    if observed_future.done():
+                        if observed_future.cancelled():
+                            raise RuntimeError("refill Worker was cancelled")
+                        failure = observed_future.exception()
+                        if failure is not None:
+                            raise failure
                 no_claim = False
                 while len(active) < max_inflight:
                     check_active()
@@ -97,8 +107,28 @@ def run_slot_refill(
                     active[future] = next_work
                     peak = max(peak, len(active))
                 if not active:
-                    if producer_done is None or producer_done():
+                    if producer_done is None:
                         return snapshot()
+                    if producer_done():
+                        # Queue was empty at the earlier peek. Producer may
+                        # have published its last TODO just before marking
+                        # completion; do one authoritative final claim.
+                        check_active()
+                        final_claim = claim_one()
+                        if final_claim is None:
+                            return snapshot()
+                        if (not isinstance(final_claim, ClaimedWork)
+                                or not isinstance(final_claim.receipt, str)
+                                or not final_claim.receipt):
+                            raise ValueError("claim requires nonempty receipt")
+                        if final_claim.receipt in seen:
+                            raise ValueError("replayed claim receipt")
+                        seen.add(final_claim.receipt)
+                        claimed += 1
+                        future = executor.submit(run_worker, final_claim.item)
+                        active[future] = final_claim
+                        peak = max(peak, len(active))
+                        continue
                     check_active()
                     time.sleep(empty_poll_seconds)
                     continue
