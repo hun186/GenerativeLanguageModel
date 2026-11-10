@@ -65,7 +65,7 @@ from czjLLM.prompt_pipeline.slice_identity import (
     restore_full_restart_parent, valid_success,
 )
 from czjLLM.utilities.logging_utils import CostLog
-from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
+from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage, normalized_finish_reason
 from czjLLM.utilities.processing_quality import emit_quality_event
 from czjLLM.utilities.json_repair_analysis import analyze_json_repair
 from czjLLM.reduction.execution import ExecutionCancelled
@@ -3412,8 +3412,16 @@ class PromptAPIPipeline:
                 retMES = retMES.replace('```json', '').replace('```', '').strip()
     
             # 5) JSON 驗證與重試任務
+            finish_reason = normalized_finish_reason(response)
             if self.allow_to_retry and "to json" in self.task.lower():
-                DTBJobs_Retry, retMES = self.handle_json_output(retMES)
+                DTBJobs_Retry, retMES = self.handle_json_output(
+                    retMES, finish_reason=finish_reason,
+                )
+            elif finish_reason == "length" and (
+                self.task.strip().lower() == "json format repair"
+            ):
+                # Truncated repair response cannot certify reconstruction.
+                retMES = ""
     
             # 6) 落地 Success（只有沒有 retry 且有內容才寫）
             worker_failure_code = "WORKER_PERSIST_EXCEPTION"
@@ -3619,7 +3627,12 @@ class PromptAPIPipeline:
             
             if self.allow_to_retry == True:
                 if "to json" in self.task.lower():
-                    DTBJobs_Retry,retMES = self.handle_json_output(retMES)
+                    DTBJobs_Retry, retMES = self.handle_json_output(
+                        retMES, finish_reason=normalized_finish_reason(response),
+                    )
+            if (normalized_finish_reason(response) == "length"
+                    and self.task.strip().lower() == "json format repair"):
+                retMES = ""
 
             #如果有重試任務，則不儲存目前結果到Success
             '''
@@ -3743,12 +3756,28 @@ class PromptAPIPipeline:
             print("⚠️ json repair analysis unavailable:", type(error).__name__)
             return None
 
-    def handle_json_output(self, retMES):
+    def handle_json_output(self, retMES, *, finish_reason: str = ""):
         '''
         嘗試用json.loads驗證回傳訊息json正確性，
         回傳值為空清單或重跑任務物件清單跟修正後訊息。
         '''
         retMES_rep = None
+        if finish_reason == "length":
+            # Provider explicitly reports output-token termination. A valid
+            # JSON string is not proof all source events were emitted.
+            self._llm_json_failure_code = "JSON_OUTPUT_LIMIT_REACHED"
+            try:
+                main_name, original_input, keys = self.extract_MainFileName_and_input_text()
+                if original_input:
+                    self.split_and_generate_new_prompts(
+                        input_text=original_input,
+                        keyConsiderations=keys,
+                        MainFileName=main_name,
+                    )
+            except Exception as error:
+                print("⚠️ explicit JSON output limit; split unavailable:",
+                      type(error).__name__)
+            return [], ""
         try:
             #print("raise Exception to debug json output")
             #raise Exception
