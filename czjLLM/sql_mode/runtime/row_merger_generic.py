@@ -870,8 +870,26 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     # cannot complete this receipt later.  A live slow HTTP
                     # request must retain the Registry and Success unchanged.
                     consumer = getattr(ctx, "_consumer_thread", None)
+                    # Stage-managed rows may be registered BEFORE their
+                    # zero-queue receipt is published, and their Consumer
+                    # intentionally exits immediately.  Do not classify a
+                    # transient missing receipt as terminal while Producer
+                    # can still initialize it.  A positive running receipt
+                    # or completed/stopped Producer is stronger evidence.
+                    observed = queue_receipt_rows.get(str(pk))
+                    has_active_running_receipt = (
+                        isinstance(observed, dict)
+                        and type(observed.get("queue_running")) is int
+                        and observed["queue_running"] > 0
+                    )
+                    producer_done = getattr(ctx, "_producer_done_flag", None)
+                    no_more_publication = (
+                        stop_event.is_set()
+                        or (producer_done is not None and producer_done.is_set())
+                    )
                     if (consumer is not None
                             and not consumer.is_alive()
+                            and (has_active_running_receipt or no_more_publication)
                             and not consumer_receipt_terminal_reported):
                         consumer_receipt_terminal_reported = True
                         blocked = getattr(ctx, "_queue_claim_blocked_event", None)
