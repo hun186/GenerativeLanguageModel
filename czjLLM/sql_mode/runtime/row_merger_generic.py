@@ -906,6 +906,21 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                             and not consumer.is_alive()
                             and (has_active_running_receipt or no_more_publication)
                             and not consumer_receipt_terminal_reported):
+                        # A stage Producer may publish the zero-count receipt
+                        # after this scan's snapshot and immediately set DONE.
+                        # Refresh from the authoritative Meter before making
+                        # any irrevocable terminal decision.  A changed
+                        # receipt gets another ordinary scan, never a fake ACK.
+                        try:
+                            final_meter = meter_read(os.fspath(meter_fn))
+                            final_rows = final_meter.get("rows", {}) if isinstance(final_meter, dict) else {}
+                            if not isinstance(final_rows, dict):
+                                final_rows = {}
+                        except Exception:
+                            final_rows = {}
+                        if _row_queue_receipt_settled(final_rows, pk):
+                            queue_receipt_rows = final_rows
+                            continue
                         consumer_receipt_terminal_reported = True
                         blocked = getattr(ctx, "_queue_claim_blocked_event", None)
                         if blocked is not None:
