@@ -55,7 +55,11 @@ def test_explicit_length_split_error_fails_closed(capsys):
 def test_production_guards_both_worker_paths_and_repair_callers():
     from pathlib import Path
     source = Path("czjLLM/prompt_pipeline/pipeline_controller.py").read_text(encoding="utf-8")
-    assert source.count("finish_reason=normalized_finish_reason(response)") == 1
+    # Both Worker entry points normalize the provider response before gating.
+    # Behavioral assertions for length, stop and unknown are above, while the
+    # legacy one-argument Worker hook regression is covered by the split-family suite.
+    assert source.count("finish_reason = normalized_finish_reason(response)") >= 2
+    assert source.count("self.handle_json_output(retMES)") >= 2
     assert "finish_reason=finish_reason" in source
     assert source.count('self.task.strip().lower() == "json format repair"') == 2
     assert "JSON_OUTPUT_LIMIT_REACHED" in source
