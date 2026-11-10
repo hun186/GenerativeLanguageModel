@@ -56,7 +56,28 @@ _FIELDS = [
     "call_llm_api_returned",
     "split_family_id",
     "queue_claim_event_id",
+    "finish_reason",
 ]
+
+
+_KNOWN_FINISH_REASONS = frozenset({
+    "stop", "length", "content_filter", "tool_calls", "function_call",
+})
+
+
+def normalized_finish_reason(response: Any) -> str:
+    """Read explicit provider choice metadata; omit unknown or absent fields.
+
+    Never persist arbitrary response strings, message text or provider payload.
+    """
+    choices = getattr(response, "choices", None)
+    if not isinstance(choices, (tuple, list)) or not choices:
+        return ""
+    reason = getattr(choices[0], "finish_reason", None)
+    if not isinstance(reason, str):
+        return ""
+    token = reason.strip().lower()
+    return token if token in _KNOWN_FINISH_REASONS else "other"
 
 
 def create_llm_call_audit_run(PGMSubDir: str = "") -> dict[str, str]:
@@ -353,6 +374,7 @@ def log_llm_call(
         ),
         "split_family_id": split_family_id,
         "queue_claim_event_id": queue_claim_event_id,
+        "finish_reason": normalized_finish_reason(response),
     }
     path = Path(audit_path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -369,7 +391,7 @@ def log_llm_call(
         header = next(csv.reader([header_line]), [])
         # Current schema plus five complete predecessor header generations.
         if not any(header == _FIELDS[:len(_FIELDS) - delta]
-                   for delta in range(6)):
+                   for delta in range(7)):
             raise ValueError("incompatible existing LLM audit CSV header")
         with path.open("a", newline="", encoding="utf-8") as fp:
             writer = csv.DictWriter(fp, fieldnames=header, extrasaction="ignore")
