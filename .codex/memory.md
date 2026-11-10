@@ -83,3 +83,6 @@
 - Verified Hosted `main` at `ae4b75868fa9e031bfdb73bae17d7a3236328e40`; no open PRs at discovery, #278/#279/#280 already merged. Do not recycle their old Pending notes.
 - On `fix/ntfs-fixture-skip-verdict-20261108`, tighten `scripts/verify_windows_queue_ntfs_local.py`: a pytest exit 0 plus unexecuted/skipped native capability tests can no longer produce fixture PASS. Allow only exact checked-in non-Windows-only test skip on Windows; unexpected skips get fixed-code `UNEXPECTED_TEST_SKIP`. Added JUnit simulated green-but-skipped, all-skipped and allowlist regression tests; updated operator docs.
 - **Status: IN DEVELOPMENT.** GitHub Hosted Linux/real Windows NTFS, changed-line secret scan and latest-head formal Codex Review not yet verified; no Merge claim. Operator physical Windows/SMB/GUI/live LLM and SQL/ES sink acceptance is separately BLOCKED/NOT_VERIFIED (#266); no Queue or sink runtime changes.
+
+## 2026-11-10 / PR #301 slot refill offline trial
+- Added bounded callback-driven slot refill scheduler **not wired into live Consumer**; offline deterministic slow/fast tests, actual temporary filesystem Queue Claim + Success no-clobber fixtures, duplicate-receipt, stop/drain and ACK-failure cases. Latest formal review and Hosted Windows/Linux gates pending. Do not interpret as GPU throughput result.

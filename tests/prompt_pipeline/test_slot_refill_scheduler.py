@@ -180,3 +180,54 @@ def test_real_queue_claim_and_no_clobber_fixture(tmp_path):
     assert not list(todo.glob("*.txt"))
     assert not list((item / "RUNNING").glob("*.txt"))
     assert len(list(success.glob("*.txt"))) == 5
+
+
+def test_error_that_finishes_during_ack_blocks_new_claim():
+    ack_open = threading.Event()
+    failed = threading.Event()
+    seq = iter(range(3))
+    seen = []
+    def claim():
+        value = next(seq, None)
+        if value is None:
+            return None
+        seen.append(value)
+        return ClaimedWork(uuid4().hex, value)
+    def worker(value):
+        if value == 1:
+            assert ack_open.wait(3)
+            failed.set()
+            raise RuntimeError("worker failed")
+        return value
+    def acknowledge(rec, result):
+        if rec.item == 0:
+            ack_open.set()
+            assert failed.wait(3)
+    with pytest.raises(RuntimeError, match="worker failed"):
+        run_slot_refill(
+            claim_one=claim, run_worker=worker,
+            acknowledge=acknowledge, max_inflight=2, deadline_sec=4,
+        )
+    assert seen == [0, 1], "failed active Worker must be checked before refill"
+
+
+def test_producer_final_publication_between_empty_peek_and_done():
+    todo = []
+    calls = [0]
+    acknowledged = []
+    def claim():
+        calls[0] += 1
+        return todo.pop(0) if todo else None
+    def producer_done():
+        if not todo and calls[0] == 2:
+            todo.append(ClaimedWork(uuid4().hex, 17))
+        return True
+    result = run_slot_refill(
+        claim_one=claim, run_worker=lambda i: i * 2,
+        acknowledge=lambda rec, value: acknowledged.append((rec.item, value)),
+        producer_done=producer_done, max_inflight=1,
+        deadline_sec=4,
+    )
+    assert result.claimed == result.acknowledged == 1
+    assert acknowledged == [(17, 34)]
+    assert todo == []
