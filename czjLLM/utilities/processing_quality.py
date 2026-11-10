@@ -6,7 +6,7 @@ IDs.  A repaired JSON response is not counted as a failed document.
 """
 from __future__ import annotations
 
-from collections import Counter
+from collections import Counter, deque
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -14,6 +14,8 @@ import os
 from pathlib import Path
 import threading
 from uuid import uuid4
+
+from czjLLM.utilities.json_repair_analysis import validate_repair_detail
 
 _WRITE_LOCK = threading.Lock()
 _KNOWN_EVENTS = {
@@ -115,6 +117,7 @@ def _unlock_stream(lock_fp):
 def emit_quality_event(
     audit_path: str, *, run_id: str = "", event: str, code: str,
     scope: str, outcome: str, document_id: str = "", slice_id: str = "",
+    detail: dict | None = None,
 ) -> Path | None:
     """Append a bounded, privacy-minimal record. Never include raw LLM output."""
     path = quality_event_path(audit_path)
@@ -124,6 +127,11 @@ def emit_quality_event(
         raise ValueError("unknown or mismatched quality event/code")
     if scope != _EVENT_SCOPES[event]:
         raise ValueError("mismatched quality event scope")
+    if detail is not None and not (
+        event == "slice_json_repair" and code == "JSON_REPAIR_SUCCEEDED"
+        and validate_repair_detail(detail) and "repair_class" in detail
+    ):
+        raise ValueError("invalid JSON repair analysis scalar detail")
     if scope == "run" and (
             document_id != "" or slice_id != ""):
         raise ValueError("run-scoped quality events cannot carry document or slice identities")
@@ -145,6 +153,8 @@ def emit_quality_event(
         data["document_id"] = "sha256:" + hashlib.sha256(
             data["document_id"].encode("utf-8", errors="surrogatepass")
         ).hexdigest()
+    if detail is not None:
+        data["detail"] = dict(detail)  # strict allowlist, no prompt/output strings
     payload = (json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n").encode("utf-8")
     path.parent.mkdir(parents=True, exist_ok=True)
     lock_path = path.with_suffix(path.suffix + ".lock")
@@ -187,6 +197,8 @@ class QualityAccumulator:
         self._json_invalid = 0
         self._repair_success = 0
         self._repair_failure = 0
+        self._repair_analysis_counts = Counter()
+        self._repair_analysis_recent = deque(maxlen=12)
         self._consumer_failures = 0
         self._row_merger_retryable_failures = 0
         self._producer_operational_failures = 0
@@ -223,6 +235,12 @@ class QualityAccumulator:
                 record.get("document_id", "") != "" or
                 record.get("slice_id", "") != ""):
             # Defensive read boundary: reject preexisting/tampered JSONL identities.
+            return False
+        if "detail" in record and not (
+            event == "slice_json_repair" and code == "JSON_REPAIR_SUCCEEDED"
+            and validate_repair_detail(record["detail"])
+            and "repair_class" in record["detail"]
+        ):
             return False
         if event.startswith("document_") and not (
                 isinstance(record.get("document_id"), str) and record["document_id"].strip()):
@@ -264,6 +282,26 @@ class QualityAccumulator:
         elif event == "slice_json_repair":
             if code == "JSON_REPAIR_SUCCEEDED":
                 self._repair_success += 1
+                # Optional evidence on the existing success event: no extra
+                # event identity/memory-budget pressure on 35k+ slice runs.
+                if "detail" in record:
+                    analysis_code = record["detail"]["repair_class"]
+                    self._repair_analysis_counts[analysis_code] += 1
+                    raw_timestamp = record.get("ts", "")
+                    timestamp = (
+                        raw_timestamp[:19] if isinstance(raw_timestamp, str)
+                        and len(raw_timestamp) >= 19
+                        and raw_timestamp[4:5] == "-"
+                        and raw_timestamp[10:11] == "T"
+                        else ""
+                    )
+                    slice_id = record.get("slice_id", "")
+                    hint = (hashlib.sha256(slice_id.encode("utf-8")).hexdigest()[:8]
+                            if isinstance(slice_id, str) and slice_id else "")
+                    self._repair_analysis_recent.append({
+                        "code": analysis_code, "ts": timestamp, "slice_hint": hint,
+                        "detail": dict(record["detail"]),
+                    })
             elif code == "JSON_REPAIR_FAILED":
                 self._repair_failure += 1
                 self._codes[code] += 1
@@ -333,6 +371,9 @@ class QualityAccumulator:
             "stage_orchestration_failure_events": self._stage_orchestration_failures,
             "worker_phase_failure_events": self._worker_phase_failures,
             "repair_success_pct": round(100 * self._repair_success / repairs, 2) if repairs else None,
+            "repair_analysis_count": sum(self._repair_analysis_counts.values()),
+            "repair_analysis_categories": dict(self._repair_analysis_counts),
+            "repair_analysis_recent": list(reversed(self._repair_analysis_recent)),
             "documents_decided": len(decided),
             "documents_schema_pending": len(failed_docs),
             "documents_writeback_confirmed": len(self._writeback_confirmed),

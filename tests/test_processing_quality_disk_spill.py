@@ -218,3 +218,37 @@ def test_cleanup_failure_does_not_mask_original_sanitized_sqlite_error():
             accumulator._tmp.cleanup = failing_cleanup
             raise ValueError("temporary quality identity index unavailable")
     assert secret not in str(error.value)
+
+
+
+def test_disk_backed_actual_repair_analysis_event_has_exact_snapshot_parity(tmp_path):
+    import json
+
+    from czjLLM.utilities.json_repair_analysis import analyze_json_repair
+    from czjLLM.utilities.processing_quality import (
+        QualityAccumulator, emit_quality_event, quality_event_path,
+    )
+    from czjLLM.utilities.processing_quality_disk_spill import DiskBackedQualityAccumulator
+
+    bad = '{"private":"文字" "count":2}'
+    good = '{"private":"文字","count":2}'
+    try:
+        json.loads(bad)
+    except json.JSONDecodeError as parse_error:
+        code, detail = analyze_json_repair(bad, good, parse_error)
+    else:
+        raise AssertionError("fixture must be malformed JSON")
+    audit = tmp_path / "llm_call_audit_real-repair.csv"
+    emit_quality_event(
+        str(audit), event="slice_json_repair", code="JSON_REPAIR_SUCCEEDED",
+        scope="slice", outcome="recovered", slice_id="my-private-path.txt",
+        detail=dict(detail, repair_class=code),
+    )
+    record = json.loads(quality_event_path(str(audit)).read_text(encoding="utf-8"))
+    in_memory = QualityAccumulator()
+    assert in_memory.add(record)
+    with DiskBackedQualityAccumulator() as disk:
+        assert disk.add(record)
+        assert disk.snapshot() == in_memory.snapshot()
+        assert disk.snapshot()["repair_analysis_count"] == 1
+        assert "文字" not in json.dumps(disk.snapshot(), ensure_ascii=False)
