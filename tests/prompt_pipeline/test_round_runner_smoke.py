@@ -109,11 +109,186 @@ def test_windows_spawn_overlap_thread_fallback_preserves_concurrency(monkeypatch
     assert time.monotonic() - t0 < 0.6
 
 
-def test_windows_spawn_overlap_join_clear_allows_pool(monkeypatch):
+def test_windows_spawn_overlap_join_clear_still_chooses_threadpool(monkeypatch):
     import czjLLM.prompt_pipeline.round_runner as rr
 
     monkeypatch.setattr(rr.sys, "platform", "win32")
     monkeypatch.setattr(rr, "_active_children_count", lambda: 1)
     monkeypatch.setattr(rr, "_join_existing_children_once", lambda timeout_sec: 0)
 
-    assert rr._should_use_thread_pool_to_avoid_windows_spawn_overlap() is False
+    # Current Windows strategy stays ThreadPool when any child was present
+    # before join, even when it has just exited; never respawn immediately.
+    assert rr._should_use_thread_pool_to_avoid_windows_spawn_overlap() is True
+
+
+def test_windows_thread_round_observes_out_of_order_completion_but_returns_input_order(monkeypatch):
+    """A slow first Future must not conceal fast later completions."""
+    import threading
+    import czjLLM.prompt_pipeline.round_runner as rr
+
+    monkeypatch.setattr(rr.sys, "platform", "win32")
+    first_started = threading.Event()
+    unblock_first = threading.Event()
+    second_finished = threading.Event()
+    outcome = {}
+
+    def slow_first():
+        first_started.set()
+        if not unblock_first.wait(4.0):
+            raise RuntimeError("fixture release not observed")
+        return "first"
+
+    def fast_second():
+        assert first_started.wait(3.0)
+        second_finished.set()
+        return "second"
+
+    def run():
+        try:
+            outcome["results"] = rr.run_round(
+                [_Job(slow_first), _Job(fast_second)], n_proc=2,
+                timeout_sec=4.0,
+            )
+        except BaseException as exc:
+            outcome["error"] = exc
+
+    worker = threading.Thread(target=run, daemon=True)
+    worker.start()
+    try:
+        assert second_finished.wait(3.0)
+        deadline = time.monotonic() + 2.0
+        while rr.CONSUMER_STATE.get("thread_round_completed_count") != 1:
+            if time.monotonic() >= deadline:
+                pytest.fail("fast Future did not report completion behind slow first")
+            time.sleep(0.005)
+        assert worker.is_alive()  # first Future still blocked
+        assert rr.CONSUMER_STATE["thread_round_drain_active"] is False
+    finally:
+        unblock_first.set()
+        worker.join(timeout=4.0)
+    assert not worker.is_alive()
+    assert "error" not in outcome
+    assert [entry["raw"] for entry in outcome["results"]] == [
+        "first", "second",
+    ]
+    assert rr.CONSUMER_STATE["thread_round_completed_count"] == 2
+    assert rr.CONSUMER_STATE["last_round_timed_out"] is False
+
+
+def test_windows_thread_timeout_cancels_only_not_started_and_drains_running(monkeypatch):
+    """A timed-out round must never claim to have killed an active Thread."""
+    import threading
+    import czjLLM.prompt_pipeline.round_runner as rr
+
+    monkeypatch.setattr(rr.sys, "platform", "win32")
+    entered = [threading.Event(), threading.Event()]
+    unblock = threading.Event()
+    third_ran = threading.Event()
+    outcome = {}
+
+    def blocked(i):
+        entered[i].set()
+        if not unblock.wait(4.0):
+            raise RuntimeError("fixture release not observed")
+        return i
+
+    def queued():
+        third_ran.set()
+        return 3
+
+    def run():
+        try:
+            rr.run_round(
+                [_Job(lambda: blocked(0)), _Job(lambda: blocked(1)),
+                 _Job(queued)],
+                n_proc=2, timeout_sec=1.0,
+            )
+        except BaseException as exc:
+            outcome["error"] = exc
+
+    worker = threading.Thread(target=run, daemon=True)
+    worker.start()
+    try:
+        assert all(event.wait(2.0) for event in entered)
+        deadline = time.monotonic() + 3.0
+        while not rr.CONSUMER_STATE.get("thread_round_drain_active"):
+            if time.monotonic() >= deadline:
+                pytest.fail("ThreadPool deadline did not report active draining")
+            time.sleep(0.005)
+        assert worker.is_alive()  # BatchRunTimeout waits for both live calls
+        assert rr.CONSUMER_STATE["thread_round_timeout_running"] == 2
+        assert rr.CONSUMER_STATE["thread_round_cancelled_before_start"] == 1
+        assert not third_ran.is_set()
+    finally:
+        unblock.set()
+        worker.join(timeout=4.0)
+    assert not worker.is_alive()
+    err = outcome.get("error")
+    assert isinstance(err, BatchRunTimeout)
+    assert (err.finished, err.total) == (0, 3)
+    assert rr.CONSUMER_STATE["last_round_timed_out"] is True
+    assert rr.CONSUMER_STATE["thread_round_drain_active"] is False
+    assert not third_ran.is_set()  # No late duplicate dispatch
+
+
+def test_windows_batch_timeout_counts_fast_completed_futures_behind_slow_first(monkeypatch):
+    """finished=N is observed Future completion, not a prefix / sink ACK."""
+    import threading
+    import czjLLM.prompt_pipeline.round_runner as rr
+
+    monkeypatch.setattr(rr.sys, "platform", "win32")
+    first_started = threading.Event()
+    unblock_first = threading.Event()
+    fast_done = threading.Event()
+    outcome = {}
+
+    def slow():
+        first_started.set()
+        if not unblock_first.wait(4.0):
+            raise RuntimeError("fixture release not observed")
+        return 1
+
+    def fast():
+        assert first_started.wait(2.0)
+        fast_done.set()
+        return 2
+
+    def run():
+        try:
+            rr.run_round([_Job(slow), _Job(fast)], n_proc=2, timeout_sec=1.0)
+        except BaseException as exc:
+            outcome["error"] = exc
+
+    thread = threading.Thread(target=run, daemon=True)
+    thread.start()
+    try:
+        assert fast_done.wait(2.0)
+        deadline = time.monotonic() + 3.0
+        while not rr.CONSUMER_STATE.get("thread_round_drain_active"):
+            if time.monotonic() >= deadline:
+                pytest.fail("timeout was not observed")
+            time.sleep(0.005)
+        assert rr.CONSUMER_STATE["thread_round_completed_count"] == 1
+    finally:
+        unblock_first.set()
+        thread.join(timeout=4.0)
+    assert not thread.is_alive()
+    err = outcome.get("error")
+    assert isinstance(err, BatchRunTimeout)
+    assert (err.finished, err.total) == (1, 2)
+    assert rr.CONSUMER_STATE["thread_round_drain_active"] is False
+
+
+def test_windows_worker_raised_timeout_is_not_misclassified_as_batch_deadline(monkeypatch):
+    import czjLLM.prompt_pipeline.round_runner as rr
+
+    monkeypatch.setattr(rr.sys, "platform", "win32")
+
+    def worker_timeout():
+        raise TimeoutError("simulated LLM exception, not round deadline")
+
+    with pytest.raises(TimeoutError, match="simulated LLM exception"):
+        rr.run_round([_Job(worker_timeout), _Job(lambda: "done")],
+                     n_proc=2, timeout_sec=3.0)
+    assert rr.CONSUMER_STATE["last_round_timed_out"] is False
+    assert rr.CONSUMER_STATE["thread_round_drain_active"] is False

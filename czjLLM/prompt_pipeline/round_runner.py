@@ -210,27 +210,53 @@ def _should_use_thread_pool_to_avoid_windows_spawn_overlap() -> bool:
 
 
 def _run_round_threads(jobs, n_proc: int, timeout_sec: float):
-    results = []
+    """Collect whichever Worker finishes first, but return input-ordered results.
+
+    A timed-out running Thread cannot be safely killed. Cancel only futures
+    that have not started; the executor context drains running calls BEFORE
+    BatchRunTimeout escapes, preventing an implicit replay on top of live work.
+    """
+    results = [None] * len(jobs)
     max_workers = max(1, min(int(n_proc), len(jobs)))
     deadline = _time.monotonic() + timeout_sec
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(_run_prompt_job, job) for job in jobs]
-        for fut in futures:
-            remain = deadline - _time.monotonic()
-            if remain <= 0:
-                CONSUMER_STATE["last_round_timed_out"] = True
-                for pending in futures[len(results):]:
-                    pending.cancel()
-                raise BatchRunTimeout(timeout_sec, len(results), len(jobs))
-            try:
-                results.append(fut.result(timeout=remain))
-                CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
-            except concurrent.futures.TimeoutError as exc:
-                CONSUMER_STATE["last_round_timed_out"] = True
-                for pending in futures[len(results):]:
-                    pending.cancel()
-                raise BatchRunTimeout(timeout_sec, len(results), len(jobs)) from exc
-    return results
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [executor.submit(_run_prompt_job, job) for job in jobs]
+            indices = {future: i for i, future in enumerate(futures)}
+            pending = set(futures)
+            while pending:
+                remaining = max(0.0, deadline - _time.monotonic())
+                completed, pending = concurrent.futures.wait(
+                    pending, timeout=remaining,
+                    return_when=concurrent.futures.FIRST_COMPLETED,
+                )
+                if not completed:
+                    # No completed Future before the deadline. This snapshot
+                    # is *not* a count of durable Success/SQL/ES writes.
+                    finished = sum(
+                        future.done() and not future.cancelled()
+                        for future in futures
+                    )
+                    cancelled = sum(future.cancel() for future in pending)
+                    CONSUMER_STATE["last_round_timed_out"] = True
+                    CONSUMER_STATE["thread_round_timeout_running"] = sum(
+                        future.running() for future in pending
+                    )
+                    CONSUMER_STATE["thread_round_cancelled_before_start"] = cancelled
+                    CONSUMER_STATE["thread_round_drain_active"] = True
+                    # Raising inside the with-body intentionally waits for
+                    # running threads to finish; no unsafe background replay.
+                    raise BatchRunTimeout(timeout_sec, finished, len(jobs))
+                for future in completed:
+                    # Errors from an actual job, including TimeoutError, are
+                    # not misclassified as a batch-level deadline expiry.
+                    results[indices[future]] = future.result()
+                    CONSUMER_STATE["thread_round_completed_count"] += 1
+                    CONSUMER_STATE["last_dispatch_ts"] = _time.monotonic()
+        return results
+    finally:
+        # Includes a timeout path where the context waited for live Workers.
+        CONSUMER_STATE["thread_round_drain_active"] = False
 
 def _run_round_serial(jobs, timeout_sec: float):
     out = []
@@ -321,13 +347,18 @@ def run_round(
     timeout_sec: float | None = None,
     debug_enabled=None,
 ):
-    """Run one consumer batch with a hard wall-clock timeout."""
+    """Run one batch with a deadline; Windows running Threads drain safely."""
 
     use_parallel = (n_proc > 1) and (len(jobs) > 1)
     timeout_sec = _round_timeout_from_jobs(jobs, timeout_sec)
 
     CONSUMER_STATE["pool_alive"] = False
     CONSUMER_STATE["last_round_timed_out"] = False
+    # Latest round, process-local observations; not live GPU or sink authority.
+    CONSUMER_STATE["thread_round_completed_count"] = 0
+    CONSUMER_STATE["thread_round_drain_active"] = False
+    CONSUMER_STATE["thread_round_timeout_running"] = 0
+    CONSUMER_STATE["thread_round_cancelled_before_start"] = 0
 
     # 單一工作不需要建立 executor
     if not use_parallel:
