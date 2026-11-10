@@ -815,6 +815,7 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
 
     sink.open()
     blocked_shutdown_scan_done = False
+    consumer_receipt_terminal_reported = False
     try:
         while True:
             items_map = registry.list_items()
@@ -839,11 +840,13 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             # per item.  A real run with missing/unreadable/corrupt meter
             # must not infer completion; standalone legacy test embedders
             # passing a non-path meter_fn retain their old behavior.
-            queue_receipt_rows = None
-            if isinstance(meter_fn, (str, os.PathLike)):
+            receipt_guard_enabled = isinstance(meter_fn, (str, os.PathLike))
+            queue_receipt_rows = {}
+            if receipt_guard_enabled:
                 try:
                     snapshot = meter_read(os.fspath(meter_fn))
-                    queue_receipt_rows = snapshot.get("rows", {})
+                    observed_rows = snapshot.get("rows", {}) if isinstance(snapshot, dict) else {}
+                    queue_receipt_rows = observed_rows if isinstance(observed_rows, dict) else {}
                 except Exception:
                     queue_receipt_rows = {}
 
@@ -861,8 +864,34 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 # per-slice queue acknowledgment.  Never move source, write
                 # back or prune Success while pending/running receipts exist.
                 # Stage-managed rows have zero Consumer queue receipts.
-                if (queue_receipt_rows is not None
+                if (receipt_guard_enabled
                         and not _row_queue_receipt_settled(queue_receipt_rows, pk)):
+                    # Only an actual, terminated Consumer is proof that it
+                    # cannot complete this receipt later.  A live slow HTTP
+                    # request must retain the Registry and Success unchanged.
+                    consumer = getattr(ctx, "_consumer_thread", None)
+                    if (consumer is not None
+                            and not consumer.is_alive()
+                            and not consumer_receipt_terminal_reported):
+                        consumer_receipt_terminal_reported = True
+                        blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+                        if blocked is not None:
+                            blocked.set()  # Existing coordinator INCOMPLETE gate.
+                        try:
+                            def _receipt_incomplete(d):
+                                d.setdefault("queue_integrity", {}).update({
+                                    "status": "incomplete",
+                                    "reason_code": "UNVERIFIED_CONSUMER_RECEIPT",
+                                    "manual_review_required": True,
+                                })
+                            meter_update(meter_fn, _receipt_incomplete)
+                        except Exception:
+                            pass
+                        tlog_warn(
+                            "[row-merger] UNVERIFIED_CONSUMER_RECEIPT; "
+                            "Consumer terminated before Queue ACK; "
+                            "preserving evidence, run incomplete"
+                        )
                     continue
 
                 if isinstance(meta, dict) and meta.get("status") == "scheduling_multistage":
