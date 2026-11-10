@@ -89,3 +89,6 @@
 
 - [x] Formal Codex P2 (dd757864): detailed ChatGPT diagnostic clipboard must not use default-empty load_meter.meter_read. Now shares strict bounded reader, marks unavailable input and unknown counts explicitly, with actual-file corruption/restoration/missing/unsafe tests.
 - [ ] Exact-head full Hosted CI + clean formal Codex Review and explicit owner authorization before merge of high-risk #269.
+
+## 2026-11-10 / PR #301 slot refill rollout gates
+- [ ] Validate exact-head offline slot-refill tests and review, including Worker failure discovered during ACK and producer last-TODO race; then integrate only under a separate opt-in real Consumer/stage scheduler change with Queue Claim, Success/readback, resource limits, cancellation and physical Windows acceptance. No auto-deploy on running GPU tasks.

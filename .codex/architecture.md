@@ -128,3 +128,6 @@
 ## 2026-10-30 — phase 2f experimental Windows native scan boundary
 
 - The existing `scripts/queue_win32_handle_identity.py` pins drive roots and no-reparse single-component child handles and reads private 128-bit FILE_ID_INFO; new `scripts/queue_win32_native_enumeration.py` adds NtQueryDirectoryFile single-entry metadata streaming with checked `FILE_DIRECTORY_INFORMATION` layout, bounded budget/depth, per-entry no-follow handle identity and exhaustive release on error. New code returns the same private role-file tuple shape consumed by `scripts/inspect_queue_recovery_state.py`; its `--experimental-windows` switch is the only route into unvalidated native Windows enumeration, preserving default `UNSUPPORTED_SAFE_SCAN_PLATFORM` on Windows and success-independent `WINDOWS_EXPERIMENTAL_UNVERIFIED` / exit 2. POSIX production and Consumer/Producer/Worker queue semantics unchanged; UNC/SMB and all automatic repair out of scope.
+
+## 2026-11-10 / PR #301 offline slot-refill boundary
+- `prompt_pipeline/refill_scheduler.py` accepts caller-owned claim_one/run_worker/acknowledge. Receipt prevents duplicate handoff, ACK occurs before refill, max_inflight bounds active Futures, drain precedes failure escape. Real Consumer, stage orchestration, Queue meter/credits and Ollama are **not yet connected**; physical workstation rollout remains a separate gated step.
