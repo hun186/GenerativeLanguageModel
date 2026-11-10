@@ -76,10 +76,10 @@ def test_event_reader_gui_aggregates_and_rotates_without_payload(tmp_path):
     repaired = '{"secret":"此處是私人文字","v":2}'
     code, detail = _analyze(original, repaired)
     emit_quality_event(
-        str(audit), run_id="a", event="slice_json_repair_analysis",
-        code=code, scope="slice", outcome="observed",
+        str(audit), run_id="a", event="slice_json_repair",
+        code="JSON_REPAIR_SUCCEEDED", scope="slice", outcome="recovered",
         slice_id=str(tmp_path / "TODO" / "row-sensitive-42.txt"),
-        detail=detail,
+        detail=dict(detail, repair_class=code),
     )
     event_file = quality_event_path(str(audit))
     event_text = event_file.read_text(encoding="utf-8")
@@ -91,7 +91,7 @@ def test_event_reader_gui_aggregates_and_rotates_without_payload(tmp_path):
     assert changed
     assert stats["repair_analysis_count"] == 1
     assert stats["repair_analysis_categories"][code] == 1
-    assert stats["repair_success_pct"] is None  # not a repair-success event
+    assert stats["repair_success_pct"] == 100.0  # same event, no extra identity
     assert len(stats["repair_analysis_recent"]) == 1
     recent = stats["repair_analysis_recent"][0]
     assert "row-sensitive" not in json.dumps(recent, ensure_ascii=False)
@@ -110,16 +110,17 @@ def test_quality_rejects_payload_injected_via_detail_before_writing_or_counting(
     code, m = _analyze('{"a":1,}', '{"a":1}')
     with pytest.raises(ValueError, match="scalar detail"):
         emit_quality_event(
-            str(audit), event="slice_json_repair_analysis", code=code,
-            scope="slice", outcome="observed",
-            detail={**m, "raw_output": "secret"},
+            str(audit), event="slice_json_repair", code="JSON_REPAIR_SUCCEEDED",
+            scope="slice", outcome="recovered",
+            detail={**m, "repair_class": code, "raw_output": "secret"},
         )
     assert not quality_event_path(str(audit)).exists()
     acc = QualityAccumulator()
     assert acc.add({
         "schema_version": 1, "event_id": "spoof",
-        "event": "slice_json_repair_analysis", "scope": "slice",
-        "code": code, "detail": {**m, "raw_output": "secret"},
+        "event": "slice_json_repair", "scope": "slice",
+        "code": "JSON_REPAIR_SUCCEEDED",
+        "detail": {**m, "repair_class": code, "raw_output": "secret"},
     }) is False
     assert acc.snapshot()["events"] == 0
 
@@ -153,8 +154,10 @@ def test_real_worker_handler_emits_success_and_comparison_without_payload(
     ]
     assert [r["event"] for r in records] == [
         "slice_json_validation", "slice_json_repair",
-        "slice_json_repair_analysis",
     ]
+    assert records[-1]["detail"]["repair_class"] == (
+        "JSON_REPAIR_SYNTAX_CANDIDATE"
+    )
     acc = QualityAccumulator()
     for record in records:
         assert acc.add(record)

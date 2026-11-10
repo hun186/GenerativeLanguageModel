@@ -240,9 +240,9 @@ def test_disk_backed_actual_repair_analysis_event_has_exact_snapshot_parity(tmp_
         raise AssertionError("fixture must be malformed JSON")
     audit = tmp_path / "llm_call_audit_real-repair.csv"
     emit_quality_event(
-        str(audit), event="slice_json_repair_analysis", code=code,
-        scope="slice", outcome="observed", slice_id="my-private-path.txt",
-        detail=detail,
+        str(audit), event="slice_json_repair", code="JSON_REPAIR_SUCCEEDED",
+        scope="slice", outcome="recovered", slice_id="my-private-path.txt",
+        detail=dict(detail, repair_class=code),
     )
     record = json.loads(quality_event_path(str(audit)).read_text(encoding="utf-8"))
     in_memory = QualityAccumulator()
