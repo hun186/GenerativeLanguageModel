@@ -471,3 +471,43 @@ def test_parallel_cancel_only_adjustment_failure_is_still_cancelled(tmp_path, mo
     assert states == ["cancelled"]
     assert ctx._producer_cancelled is True
     assert not quality_event_path(ctx.llm_call_audit_path).exists()
+
+
+def test_producer_pre_and_post_backpressure_share_one_bounded_budget(monkeypatch):
+    """A stale outstanding receipt must not cost 2*hard_timeout per row."""
+    clock = [100.0]
+    warnings = []
+    scheduled = []
+
+    def pre_wait(**kwargs):
+        assert kwargs["hard_timeout"] == 2.0
+        clock[0] += 1.75  # Simulates a first backpressure phase near its cap.
+
+    def fake_sleep(seconds):
+        clock[0] += seconds
+
+    monkeypatch.setattr(producer, "producer_backpressure_wait", pre_wait)
+    monkeypatch.setattr(producer, "actionable_outstanding_now", lambda _: 19)
+    monkeypatch.setattr(producer, "outstanding_now", lambda _: 19)
+    monkeypatch.setattr(producer, "schedule_one_row",
+                        lambda _ctx, _registry, _meter, _idx, pk, _text, **_kw:
+                        scheduled.append(pk) or 1)
+    monkeypatch.setattr(producer, "tlog_warn", warnings.append)
+    monkeypatch.setattr(producer.time, "monotonic", lambda: clock[0])
+    monkeypatch.setattr(producer.time, "time", lambda: clock[0])
+    monkeypatch.setattr(producer.time, "sleep", fake_sleep)
+    ctx = SimpleNamespace(
+        mode="es", n_process=1, stages=[],
+        bp_hard_timeout=2.0, producer_drain_soft=0.01,
+        producer_drain_hard=0.05,
+    )
+    progress = SimpleNamespace(update=lambda *_args: None)
+    assert producer.produce_rows(
+        ctx, [("doc", "LLM input")], object(), "unused", 16,
+        threading.Event(), None, progress,
+    ) == 1
+    assert scheduled == ["doc"]
+    assert 2.0 <= clock[0] - 100.0 < 2.3, (
+        "Two separate 2s waits must not accumulate to ~3.75s"
+    )
+    assert any("shared backpressure wait cap hit" in w for w in warnings)
