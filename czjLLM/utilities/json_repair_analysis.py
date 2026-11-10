@@ -53,7 +53,7 @@ def validate_repair_detail(detail: object) -> bool:
     """Strict event boundary: no arbitrary keys, values or document strings."""
     if not isinstance(detail, dict) or set(detail) != _METRIC_KEYS | {"error_kind"}:
         return False
-    if detail.get("error_kind") not in _ERROR_KINDS:
+    if not isinstance(detail.get("error_kind"), str) or detail["error_kind"] not in _ERROR_KINDS:
         return False
     for key in _METRIC_KEYS:
         value = detail.get(key)

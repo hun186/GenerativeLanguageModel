@@ -19,7 +19,7 @@ from czjLLM.utilities.json_repair_analysis import _KINDS as _REPAIR_ANALYSIS_COD
 
 _WRITE_LOCK = threading.Lock()
 _KNOWN_EVENTS = {
-    "slice_json_validation", "slice_json_repair",
+    "slice_json_validation", "slice_json_repair", "slice_json_repair_analysis",
     "document_schema_rejected", "document_writeback_confirmed",
 }
 _EVENT_CODES = {
