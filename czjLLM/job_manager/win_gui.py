@@ -604,6 +604,69 @@ def incident_button_state(quality: dict, recheck: dict, reduction: dict):
     return "⚠", "#666666", detail + "\n未觀察到上述異常；不代表其他來源已驗證。"
 
 
+_REPAIR_ANALYSIS_LABELS = {
+    "JSON_REPAIR_SYNTAX_CANDIDATE": "疑似符號修補",
+    "JSON_REPAIR_TAIL_CANDIDATE": "疑似尾端補全",
+    "JSON_REPAIR_CONTENT_EDIT": "內容有變動",
+    "JSON_REPAIR_LARGE_CHANGE": "內容大幅變更",
+    "JSON_REPAIR_COMPARISON_UNAVAILABLE": "無法可靠比較",
+}
+_REPAIR_ERROR_LABELS = {
+    "UNTERMINATED_STRING": "字串未結束",
+    "EXPECTED_DELIMITER": "分隔符號／必要值",
+    "EXTRA_DATA": "額外內容",
+    "INVALID_ESCAPE": "跳脫／控制字元",
+    "OTHER": "其他語法錯誤",
+}
+
+
+def format_json_repair_analysis_summary(stats: dict) -> str:
+    """Real repair comparisons only; historical runs cannot be backfilled."""
+    status = stats.get("quality_stream_status")
+    if status in {"unverified", "capacity_exceeded"}:
+        return "JSON 修復差異：品質紀錄不可驗證（未提供分類）"
+    count = int(stats.get("repair_analysis_count", 0) or 0)
+    if count == 0:
+        return "JSON 修復差異：尚無可比較紀錄（舊版修復不回補）"
+    category = stats.get("repair_analysis_categories") or {}
+    counts = "｜".join(
+        f"{name} {int(category.get(code, 0) or 0)}"
+        for code, name in _REPAIR_ANALYSIS_LABELS.items()
+    )
+    return f"JSON 修復前後（已觀察 {count} 次）：{counts}"
+
+
+def format_json_repair_analysis_case(case: dict) -> tuple[str, ...]:
+    detail = case.get("detail") or {}
+    code = case.get("code") or ""
+    pct = (f"{detail.get('same_literal_pct', 0)}%" if code in {
+        "JSON_REPAIR_SYNTAX_CANDIDATE", "JSON_REPAIR_CONTENT_EDIT",
+        "JSON_REPAIR_LARGE_CHANGE",
+    } else "—")
+    return (
+        str(case.get("ts") or "—"),
+        str(case.get("slice_hint") or "—"),
+        _REPAIR_ANALYSIS_LABELS.get(code, "無法判定"),
+        f"{int(detail.get('original_chars', 0)):,} → {int(detail.get('repaired_chars', 0)):,}",
+        f"{int(detail.get('error_pos_pct', 0))}%",
+        pct,
+        f"{int(detail.get('before_key_patterns', 0))} → {int(detail.get('after_key_patterns', 0))}",
+    )
+
+
+def format_json_repair_analysis_case_detail(case: dict) -> str:
+    detail = case.get("detail") or {}
+    err = _REPAIR_ERROR_LABELS.get(detail.get("error_kind"), "未知")
+    prefix = int(detail.get("common_prefix_chars", 0))
+    suffix = int(detail.get("common_suffix_chars", 0))
+    return (
+        f"原始解析錯誤：{err}（約 {detail.get('error_pos_pct', 0)}% 位置）；"
+        f"共同前綴 {prefix:,} 字／共同後綴 {suffix:,} 字。"
+        " 字面值相同率為詞法估計，鍵名樣式數為近似值；"
+        " 無法據此證實事件、欄位或內容完整保留，亦不能推論原始輸出已截斷。"
+    )
+
+
 def format_json_repair_metric_help() -> str:
     """Explain the two different event denominators, without implying lineage."""
     return (
@@ -984,6 +1047,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     )
     _quality_reader_thread.start()
     _quality_expanded = False
+    _repair_analysis_expanded = False
     _recheck_expanded = False
     _reduction_expanded = False
     _audit_expanded = False
@@ -1151,6 +1215,40 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         anchor="w", justify="left", wraplength=720,
     )
     quality_summary.pack(fill="x", padx=8, pady=(2, 3))
+    # Keep a compact always-visible comparison summary. A collapsed table
+    # provides recent numeric before/after cases with no prompt/JSON payload.
+    repair_analysis_section = ttk.Frame(quality_section)
+    repair_analysis_section.pack(fill="x", padx=8, pady=(0, 3))
+    repair_analysis_toggle = ttk.Button(repair_analysis_section)
+    repair_analysis_toggle.pack(fill="x")
+    repair_analysis_summary = ttk.Label(
+        repair_analysis_section, anchor="w", justify="left", wraplength=720,
+    )
+    repair_analysis_summary.pack(fill="x", pady=(2, 2))
+    repair_analysis_frame = ttk.Frame(repair_analysis_section)
+    repair_analysis_columns = (
+        "ts", "slice", "kind", "chars", "error_pos", "literal", "keys",
+    )
+    repair_analysis_tree = ttk.Treeview(
+        repair_analysis_frame, columns=repair_analysis_columns,
+        show="headings", height=7, selectmode="browse",
+    )
+    for name, title, width in (
+        ("ts", "觀察時間", 150),
+        ("slice", "切片識別碼", 90),
+        ("kind", "修復類型（推測）", 150),
+        ("chars", "原始→修復字數", 150),
+        ("error_pos", "錯誤位置", 90),
+        ("literal", "字面值相同率", 115),
+        ("keys", "鍵名樣式數", 100),
+    ):
+        repair_analysis_tree.heading(name, text=title)
+        repair_analysis_tree.column(name, width=width, minwidth=65, stretch=True)
+    repair_analysis_tree.pack(fill="x", expand=True)
+    repair_analysis_detail = ttk.Label(
+        repair_analysis_frame, anchor="w", justify="left", wraplength=720,
+    )
+    repair_analysis_detail.pack(fill="x", pady=(4, 2))
     quality_frame = ttk.Frame(quality_section, padding=(8, 5))
     quality_metrics = {}
     _quality_help_labels = []
@@ -1174,9 +1272,69 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     def _resize_quality_wrap(event):
         width = max(280, int(event.width) - 16)
         quality_summary.configure(wraplength=width)
+        repair_analysis_summary.configure(wraplength=width)
+        repair_analysis_detail.configure(wraplength=width)
         quality_codes.configure(wraplength=width)
 
     quality_section.bind("<Configure>", _resize_quality_wrap)
+
+    _repair_analysis_cases = []
+
+    def _repair_analysis_selected(_event=None):
+        selection = repair_analysis_tree.selection()
+        if selection:
+            idx = int(selection[0])
+            if 0 <= idx < len(_repair_analysis_cases):
+                repair_analysis_detail.configure(
+                    text=format_json_repair_analysis_case_detail(
+                        _repair_analysis_cases[idx],
+                    )
+                )
+                return
+        repair_analysis_detail.configure(
+            text="僅展示詞法比較的統計資訊，不保存或顯示 JSON 原文；"
+                 "純語法修補也不等於資料完整。"
+        )
+
+    repair_analysis_tree.bind("<<TreeviewSelect>>", _repair_analysis_selected)
+
+    def _refresh_repair_analysis():
+        nonlocal _repair_analysis_cases
+        repair_analysis_toggle.configure(
+            text=f"{'▼' if _repair_analysis_expanded else '▶'} JSON 修復前後差異（最近案例）"
+        )
+        repair_analysis_summary.configure(
+            text=format_json_repair_analysis_summary(_quality_stats)
+        )
+        if not _repair_analysis_expanded:
+            return
+        _repair_analysis_cases = list(
+            (_quality_stats.get("repair_analysis_recent") or [])[:12]
+        ) if _quality_stats.get("quality_stream_status") not in {
+            "unverified", "capacity_exceeded",
+        } else []
+        rows = repair_analysis_tree.get_children()
+        if rows:
+            repair_analysis_tree.delete(*rows)
+        for i, case in enumerate(_repair_analysis_cases):
+            repair_analysis_tree.insert(
+                "", "end", iid=str(i),
+                values=format_json_repair_analysis_case(case),
+            )
+        _repair_analysis_selected()
+        _schedule_page_scroll_refresh()
+
+    def _toggle_repair_analysis():
+        nonlocal _repair_analysis_expanded
+        _repair_analysis_expanded = not _repair_analysis_expanded
+        if _repair_analysis_expanded:
+            repair_analysis_frame.pack(fill="x", pady=(3, 3))
+        else:
+            repair_analysis_frame.pack_forget()
+        _refresh_repair_analysis()
+        _schedule_page_scroll_refresh()
+
+    repair_analysis_toggle.configure(command=_toggle_repair_analysis)
 
     _incident_tooltip_text = ""
     def _refresh_incident_button():
@@ -1206,6 +1364,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                       if top else "尚無錯誤事件"))
         )
 
+        _refresh_repair_analysis()
         _refresh_incident_button()
 
     def _toggle_quality():
