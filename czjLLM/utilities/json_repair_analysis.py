@@ -8,15 +8,56 @@ from __future__ import annotations
 
 from difflib import SequenceMatcher
 import json
-import re
-
 MAX_ANALYSIS_CHARS = 160_000
 MAX_ANALYSIS_TOKENS = 3_000
-# For each string literal, preserve it as one lexical token; malformed
-# unterminated trailing strings remain distinct from valid repaired literals.
-_TOKEN = re.compile(r'"(?:\\.|[^"\\])*"?|[{}\[\],:]|[^\s{}\[\],:"]+', re.DOTALL)
-_KEY_PATTERN = re.compile(r'"(?:\\.|[^"\\])*"\s*:')
 _PUNCT = frozenset("{}[],:")
+
+
+def _lexical_scan(text: str) -> tuple[list[str], int] | None:
+    """Single forward pass, including malformed/unterminated quoted text.
+
+    No regex backtracking at every escaped quote; fail closed once the
+    configured token budget is reached. Key-like patterns are approximations.
+    """
+    n = len(text)
+    i = 0
+    items = []
+    key_patterns = 0
+    while i < n:
+        ch = text[i]
+        if ch.isspace():
+            i += 1
+            continue
+        start = i
+        if ch == '"':
+            i += 1
+            complete = False
+            while i < n:
+                char = text[i]
+                if char == '\\':
+                    i = min(n, i + 2)
+                elif char == '"':
+                    i += 1
+                    complete = True
+                    break
+                else:
+                    i += 1
+            if complete:
+                j = i
+                while j < n and text[j].isspace():
+                    j += 1
+                if j < n and text[j] == ':':
+                    key_patterns += 1
+        elif ch in _PUNCT:
+            i += 1
+        else:
+            while (i < n and not text[i].isspace()
+                   and text[i] not in _PUNCT and text[i] != '"'):
+                i += 1
+        items.append(text[start:i])
+        if len(items) > MAX_ANALYSIS_TOKENS:
+            return None
+    return items, key_patterns
 _KINDS = frozenset({
     "JSON_REPAIR_SYNTAX_CANDIDATE",
     "JSON_REPAIR_TAIL_CANDIDATE",
@@ -103,16 +144,12 @@ def analyze_json_repair(original: str, repaired: str,
     if original_size > MAX_ANALYSIS_CHARS or repaired_size > MAX_ANALYSIS_CHARS:
         return "JSON_REPAIR_COMPARISON_UNAVAILABLE", metrics
 
-    metrics["before_key_patterns"] = len(_KEY_PATTERN.findall(original))
-    metrics["after_key_patterns"] = len(_KEY_PATTERN.findall(repaired))
-    if (metrics["before_key_patterns"] > _MAX_METRIC or
-            metrics["after_key_patterns"] > _MAX_METRIC):
+    before = _lexical_scan(original)
+    after = _lexical_scan(repaired)
+    if before is None or after is None:
         return "JSON_REPAIR_COMPARISON_UNAVAILABLE", metrics
-    before_tokens = _TOKEN.findall(original)
-    after_tokens = _TOKEN.findall(repaired)
-    if (len(before_tokens) > MAX_ANALYSIS_TOKENS or
-            len(after_tokens) > MAX_ANALYSIS_TOKENS):
-        return "JSON_REPAIR_COMPARISON_UNAVAILABLE", metrics
+    before_tokens, metrics["before_key_patterns"] = before
+    after_tokens, metrics["after_key_patterns"] = after
     before_literals = [x for x in before_tokens if x not in _PUNCT]
     after_literals = [x for x in after_tokens if x not in _PUNCT]
     same = before_literals == after_literals

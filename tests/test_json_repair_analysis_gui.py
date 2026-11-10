@@ -173,3 +173,18 @@ def test_gui_wiring_has_live_toggle_and_bounded_case_list():
     assert 'repair_analysis_tree.bind("<<TreeviewSelect>>"' in gui
     assert "JSON 修復前後" in gui
     assert "字面值相同率" in gui
+
+
+
+def test_large_escaped_quote_malformed_string_scans_in_linear_time():
+    import time
+
+    # Previously key-pattern regex repeatedly rescanned every escaped quote.
+    original = '{"x":"' + '\\"' * 12_000
+    repaired = original + '"}'
+    start = time.monotonic()
+    code, m = _analyze(original, repaired)
+    elapsed = time.monotonic() - start
+    assert code == "JSON_REPAIR_TAIL_CANDIDATE"
+    assert m["before_key_patterns"] == m["after_key_patterns"] == 1
+    assert elapsed < 3.0
