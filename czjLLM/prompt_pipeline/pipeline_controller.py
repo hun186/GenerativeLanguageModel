@@ -3416,9 +3416,14 @@ class PromptAPIPipeline:
             if "to json" in self.task.lower() and (
                 self.allow_to_retry or finish_reason == "length"
             ):
-                DTBJobs_Retry, retMES = self.handle_json_output(
-                    retMES, finish_reason=finish_reason,
-                )
+                # Keep the pre-existing single-argument hook contract for
+                # callers without explicit provider truncation evidence.
+                if finish_reason == "length":
+                    DTBJobs_Retry, retMES = self.handle_json_output(
+                        retMES, finish_reason=finish_reason,
+                    )
+                else:
+                    DTBJobs_Retry, retMES = self.handle_json_output(retMES)
             elif finish_reason == "length" and (
                 self.task.strip().lower() == "json format repair"
             ):
@@ -3627,12 +3632,15 @@ class PromptAPIPipeline:
             # 如果預設輸出為json，進行輸出成功性驗證，如果不通過，則將輸入分割為兩段後，
             # 生成新的PromptFile，再試一次。
             
+            finish_reason = normalized_finish_reason(response)
             if "to json" in self.task.lower() and (
-                    self.allow_to_retry
-                    or normalized_finish_reason(response) == "length"):
-                DTBJobs_Retry, retMES = self.handle_json_output(
-                    retMES, finish_reason=normalized_finish_reason(response),
-                )
+                    self.allow_to_retry or finish_reason == "length"):
+                if finish_reason == "length":
+                    DTBJobs_Retry, retMES = self.handle_json_output(
+                        retMES, finish_reason=finish_reason,
+                    )
+                else:
+                    DTBJobs_Retry, retMES = self.handle_json_output(retMES)
             if (normalized_finish_reason(response) == "length"
                     and self.task.strip().lower() == "json format repair"):
                 retMES = ""
