@@ -513,3 +513,85 @@ def test_row_merger_releases_materialized_claim_for_unsupported_payload(
     assert registry.removed and len(sink.writes) == 1
     assert json.loads(sink.writes[0][1]["File_result"]) == [1, 2, 3]
     assert try_begin_legacy_merge_item(ctx, str(item_dir)) is True
+
+
+def test_consumer_receipt_validation_rejects_missing_or_uncertain_counts():
+    from czjLLM.sql_mode.runtime.row_merger_generic import _row_queue_receipt_settled
+
+    assert _row_queue_receipt_settled(
+        {"doc": {"queue_pending": 0, "queue_running": 0}}, "doc",
+    )
+    for rows in (
+        {}, {"doc": {}}, {"doc": {"queue_pending": 0, "queue_running": 1}},
+        {"doc": {"queue_pending": 1, "queue_running": 0}},
+        {"doc": {"queue_pending": 0, "queue_running": False}},
+        {"doc": {"queue_pending": 0, "queue_running": -1}},
+        {"doc": {"queue_pending": "0", "queue_running": 0}},
+        None,
+    ):
+        assert not _row_queue_receipt_settled(rows, "doc")
+
+
+def test_row_merger_preserves_success_until_consumer_receipt_is_closed(
+    tmp_path: Path, monkeypatch,
+):
+    """Success can be present before the parent Consumer ACKs a slow batch."""
+    import threading
+    import czjLLM.sql_mode.runtime.row_merger_generic as module
+
+    item_dir = tmp_path / "prompt_item"
+    success = item_dir / "Success"
+    success.mkdir(parents=True)
+    (success / "0.txt").write_text("finished LLM output", encoding="utf-8")
+    source = tmp_path / "src" / "cache" / "original.txt"
+    source.parent.mkdir(parents=True)
+    source.write_text("source document", encoding="utf-8")
+    combined = tmp_path / "out" / "combined.txt"
+    combined.parent.mkdir(parents=True)
+    combined.write_text('{"ok":true}', encoding="utf-8")
+    registry = _RegistryStub(
+        str(item_dir),
+        {"pk": "doc", "temp_txt": str(source), "CombBackFN": str(combined)},
+    )
+    sink = _SinkStub()
+    meter_file = tmp_path / "loadmeter.json"
+    meter_file.write_text(json.dumps({
+        "queue": {"pending": 0, "running": 1, "completed": 0},
+        "rows": {"doc": {"queue_pending": 0, "queue_running": 1}},
+    }), encoding="utf-8")
+    reads = [0]
+    observed = threading.Event()
+    released = threading.Event()
+
+    def current_meter(_path):
+        reads[0] += 1
+        if reads[0] >= 3:
+            observed.set()
+        return {"rows": {"doc": {"queue_pending": 0,
+                                   "queue_running": 0 if released.is_set() else 1}}}
+
+    monkeypatch.setattr(module, "meter_read", current_meter)
+    ctx = SimpleNamespace(
+        output_col="File_result", record_update_time=False,
+        flatten_json_output=False, cleanup_prompt_item_after_writeback=True,
+        llm_source_dir=str(tmp_path / "src"),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+    )
+    th = threading.Thread(
+        target=module.row_merger_watchdog_generic,
+        args=(ctx, registry, str(meter_file), _StopEventStub(True), sink),
+        kwargs={"scan_interval": 0.002},
+        daemon=True,
+    )
+    th.start()
+    try:
+        assert observed.wait(3), "Row Merger should recheck the queue snapshot"
+        assert not sink.writes, "never write back before Consumer receipt settles"
+        assert not registry.removed
+        assert (success / "0.txt").exists(), "Success is authoritative evidence"
+    finally:
+        released.set()
+    th.join(timeout=4)
+    assert not th.is_alive()
+    assert registry.removed
+    assert len(sink.writes) == 1
