@@ -134,9 +134,14 @@ def test_real_worker_handler_emits_success_and_comparison_without_payload(
     before = '{"confidential":"內部秘密" "count":2}'
     after = '{"confidential":"內部秘密","count":2}'
     monkeypatch.setattr(pc, "json_format_caller", lambda **kw: after)
+    # A real PromptAPIPipeline constructor reads an on-disk prompt when
+    # content="" and promptFile is set. Supply a synthetic local fixture.
+    prompt = tmp_path / "RUNNING" / "row.txt"
+    prompt.parent.mkdir(parents=True)
+    prompt.write_text("synthetic-json-repair-fixture", encoding="utf-8")
     worker = pc.PromptAPIPipeline(
         task="to json", content="",
-        promptFile=str(tmp_path / "RUNNING" / "row.txt"),
+        promptFile=str(prompt),
         model_spec={"model_name": "mock-model", "base_url": ["http://invalid.local"]},
         audit_run_id="this-run", audit_path=str(audit),
     )
