@@ -90,8 +90,9 @@ def test_result_ack_failure_drains_other_worker_and_never_replays():
         try:
             run_slot_refill(
                 claim_one=claim, run_worker=worker,
-                acknowledge=lambda rec, res: (_ for _ in ()).throw(
-                    RuntimeError("sink ACK not confirmed")
+                acknowledge=lambda rec, res: (
+                    release.set(),
+                    (_ for _ in ()).throw(RuntimeError("sink ACK not confirmed"))
                 ) if rec.item == 1 else None,
                 max_inflight=2, deadline_sec=4,
             )
@@ -100,6 +101,7 @@ def test_result_ack_failure_drains_other_worker_and_never_replays():
     t = threading.Thread(target=coordinator, daemon=True)
     t.start()
     assert started.wait(2)
+    t.join(1)
     release.set()
     t.join(4)
     assert not t.is_alive() and drained.is_set()
