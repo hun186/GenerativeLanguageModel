@@ -246,3 +246,43 @@ def test_registry_item_present_detects_removed_row():
     assert _registry_item_present(registry, "job/a") is True
     registry.items.pop("job/a")
     assert _registry_item_present(registry, "job/a") is False
+
+
+def test_unregistered_running_warning_requires_all_three_independent_signals():
+    from czjLLM.sql_mode.runtime.orchestrator import _unregistered_running_receipts
+
+    counts = {"pending": 0, "running": 19, "completed": 74}
+    empty_fs = {"TODO": 0, "RUNNING": 0, "Success": 0}
+    assert _unregistered_running_receipts(counts, {}, empty_fs)
+    assert not _unregistered_running_receipts(
+        counts, {"item": {"pk": "x"}}, empty_fs
+    )
+    assert not _unregistered_running_receipts(
+        counts, {}, {"TODO": 0, "RUNNING": 1, "Success": 0}
+    )
+    assert not _unregistered_running_receipts(
+        {"pending": 1, "running": 19}, {}, empty_fs
+    )
+    assert not _unregistered_running_receipts(
+        {"pending": 0, "running": 0}, {}, empty_fs
+    )
+    assert not _unregistered_running_receipts(
+        {"pending": 0, "running": True}, {}, empty_fs
+    )
+    assert not _unregistered_running_receipts(counts, None, empty_fs)
+    assert not _unregistered_running_receipts(counts, {}, {})
+
+
+def test_unregistered_running_alarm_is_delayed_rate_limited_and_resettable():
+    from czjLLM.sql_mode.runtime.orchestrator import _UnregisteredReceiptAlarm
+
+    alarm = _UnregisteredReceiptAlarm(grace_seconds=30, repeat_seconds=120)
+    assert not alarm.observe(True, 10)
+    assert not alarm.observe(True, 39)
+    assert alarm.observe(True, 40)
+    assert not alarm.observe(True, 100)
+    assert alarm.observe(True, 160)
+    assert not alarm.observe(False, 161)
+    assert not alarm.observe(True, 162)
+    assert not alarm.observe(True, 193)  # Still within global warning rate limit.
+    assert alarm.observe(True, 280)

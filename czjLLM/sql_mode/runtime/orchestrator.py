@@ -173,6 +173,43 @@ def _read_meter_counts(meter_fn: str) -> dict:
         return {"pending": 0, "running": 0, "completed": 0}
 
 
+def _unregistered_running_receipts(queue_counts, registered_items, scanned_counts) -> bool:
+    """Suspicion only: the scan does not prove absence of all HTTP work."""
+    if not all(isinstance(x, dict) for x in (queue_counts, registered_items, scanned_counts)):
+        return False
+    pending, running = queue_counts.get("pending"), queue_counts.get("running")
+    if type(pending) is not int or type(running) is not int:
+        return False
+    return (
+        pending == 0 and running > 0 and not registered_items
+        and all(type(scanned_counts.get(k)) is int and scanned_counts[k] == 0
+                for k in ("TODO", "RUNNING", "Success"))
+    )
+
+
+class _UnregisteredReceiptAlarm:
+    """Warn after a sustained symptom; rate-limit, never reset the Queue."""
+
+    def __init__(self, grace_seconds=30.0, repeat_seconds=120.0):
+        self.grace_seconds = float(grace_seconds)
+        self.repeat_seconds = float(repeat_seconds)
+        self.since = None
+        self.last_warning = None
+
+    def observe(self, suspicious: bool, now: float) -> bool:
+        if not suspicious:
+            self.since = None
+            return False
+        if self.since is None:
+            self.since = now
+        if now - self.since < self.grace_seconds:
+            return False
+        if self.last_warning is not None and now - self.last_warning < self.repeat_seconds:
+            return False
+        self.last_warning = now
+        return True
+
+
 def _fs_totals(job_dirs: Iterable[str]) -> dict:
     """彙總所有 job_dir 的 TODO/RUNNING/Success 檔案數。"""
     totals = {"TODO": 0, "RUNNING": 0, "Success": 0}
@@ -541,6 +578,7 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
     total_rows = len(rows_for_count)
     last_report = 0.0
     terminal_queue_claim_blocked = False
+    unregistered_running_alarm = _UnregisteredReceiptAlarm()
 
     def _registry_empty() -> bool:
         try:
@@ -691,11 +729,27 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
                 items_map = registry.list_items() or {}
                 job_dirs_now = set(items_map.keys()) | seen_job_dirs
             except Exception:
+                items_map = None  # No trustworthy Registry snapshot.
                 job_dirs_now = set(seen_job_dirs)
         
             # 計量檔（queue）與檔案系統（目錄檔數）雙軌度量
             q_counts = _read_meter_counts(meter_fn)                 # {'pending','running','completed'}
             fs_counts = _fs_totals(job_dirs_now)                    # {'TODO','RUNNING','Success'}
+
+            # Scope: known dirs only, not the entire filesystem or provider.
+            # Emit a fixed code; never reset Queue or replay old work.
+            suspected_gap = _unregistered_running_receipts(
+                q_counts, items_map, fs_counts,
+            )
+            if unregistered_running_alarm.observe(
+                suspected_gap, time.monotonic(),
+            ):
+                tlog_warn(
+                    "[watch] QUEUE_RUNNING_WITHOUT_REGISTERED_ITEMS "
+                    f"running={q_counts['running']} "
+                    f"scanned_item_dirs={len(job_dirs_now)} "
+                    "HTTP_GPU_UNVERIFIED; no automatic release/replay"
+                )
         
             # 主行：把重點塞在一行，直覺可視
             tlog(
