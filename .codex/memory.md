@@ -87,3 +87,9 @@
 
 ## 2026-11-10 / PR #301 slot refill offline trial
 - Added bounded callback-driven slot refill scheduler **not wired into live Consumer**; offline deterministic slow/fast tests, actual temporary filesystem Queue Claim + Success no-clobber fixtures, duplicate-receipt, stop/drain and ACK-failure cases. Latest formal review and Hosted Windows/Linux gates pending. Do not interpret as GPU throughput result.
+
+## 2026-11-10 / PR #303 — P0 Consumer receipt barrier + Producer backpressure (IN REVIEW)
+- Real ES/Windows workstation evidence: two new Runs accumulated terminal-status Queue running receipts (19 and 13) despite independently completed writeback marker releases; do not conflate these state machines.
+- Row Merger now holds writeback, registry removal and Success cleanup until per-row queue_pending=queue_running=0 in the actual run Meter. Missing/malformed receipt is UNKNOWN, not completion; a dead Consumer with positive outstanding or finished Producer signals coordinator INCOMPLETE and retains source artifacts.
+- Producer's pre/post per-row backpressure waits share one hard timeout budget, not two sequential 120-second delays. No stale-receipt auto-clear or replay. Added deterministic stage-registration, null-meter, dead-Consumer and backpressure tests.
+- Status: development branch #303, CI and exact-head Codex re-review pending; no live Ollama/GPU/ES acceptance; do not deploy onto an active Run.
