@@ -67,6 +67,7 @@ from czjLLM.prompt_pipeline.slice_identity import (
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage
 from czjLLM.utilities.processing_quality import emit_quality_event
+from czjLLM.utilities.json_repair_analysis import analyze_json_repair
 from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.utilities.env_overrides import env_bool, env_int, load_czjllm_env_files_once
 from czjLLM.tokenizer_utils import TokenizerWrapper
@@ -3728,6 +3729,21 @@ class PromptAPIPipeline:
         except Exception as audit_error:
             print(f"⚠️ processing_quality audit failed: {type(audit_error).__name__}")
 
+    def _emit_json_repair_change(self, before: str, after: str,
+                                 parse_error: json.JSONDecodeError) -> None:
+        # GUI metrics are derived from actual per-Worker strings, never from
+        # interleaved console output. Diagnostics must not alter persistence.
+        try:
+            code, detail = analyze_json_repair(before, after, parse_error)
+            emit_quality_event(
+                self.audit_path, run_id=self.audit_run_id,
+                event="slice_json_repair_analysis", code=code, scope="slice",
+                outcome="observed", slice_id=self.promptFile, detail=detail,
+            )
+        except Exception as audit_error:
+            print("⚠️ json repair analysis unavailable:",
+                  type(audit_error).__name__)
+
     def handle_json_output(self, retMES):
         '''
         嘗試用json.loads驗證回傳訊息json正確性，
@@ -3740,11 +3756,11 @@ class PromptAPIPipeline:
             json.loads(retMES)
             self._emit_json_quality("slice_json_validation", "JSON_VALID", "accepted")
             return [],retMES
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as parse_error:
             self._emit_json_quality("slice_json_validation", "JSON_SYNTAX_INVALID", "rejected")
             #如果json格式驗證失敗，那麼切割後再產生新的Job重試。
             print("json format verification failed.")
-            print("retMES:",retMES)
+            print("retMES: [JSON 原文省略；請看 GUI 修復差異分析]")
             
             
             try:
@@ -3763,16 +3779,17 @@ class PromptAPIPipeline:
                     )
                 json.loads(retMES_rep)
                 self._emit_json_quality("slice_json_repair", "JSON_REPAIR_SUCCEEDED", "recovered")
+                self._emit_json_repair_change(retMES, retMES_rep, parse_error)
                 print("Successfully repair with LLM.")
-                print("repaired retMES_rep",retMES_rep)
+                print("repaired retMES_rep: [JSON 原文省略；請看 GUI 修復差異分析]")
                 return [],retMES_rep
             except Exception as ex_json:
                 self._llm_json_failure_code = "JSON_POSTPROCESSING_FAILED"
                 self._emit_json_quality("slice_json_repair", "JSON_REPAIR_FAILED", "not_recovered")
-                print("ex_json",ex_json)
+                print("ex_json_type", type(ex_json).__name__)
                 print("Fail to repair with LLM.")
                 if retMES_rep is not None:
-                    print("retMES_rep", retMES_rep)
+                    print("retMES_rep: [無法成功解析；原文省略]")
                 MainFileName,input_text,keyConsiderations = self.extract_MainFileName_and_input_text()
                 if input_text:
                     # ✅ 改成：只產生新 TODO prompt 檔，不回傳 job 物件
