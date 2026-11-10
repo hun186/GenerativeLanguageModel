@@ -495,12 +495,19 @@ def produce_rows(
                     pass
                 continue
 
+            # Pre- and post-dispatch backpressure are ONE per-row budget.
+            # Previously each phase could wait 120s, throttling one row for
+            # ~240s even if the only backlog was an unreconciled Queue receipt.
+            row_wait_started = time.monotonic()
+            row_wait_cap = _get_positive_float(
+                ctx, "bp_hard_timeout", default=120.0,
+            )
             try:
                 producer_backpressure_wait(
                     ctx=ctx, low=low, meter_fn=meter_fn, stop_event=stop_event,
                     consumer_thread=consumer, registry=registry,
                     soft_timeout=getattr(ctx, "bp_soft_timeout", 30.0),
-                    hard_timeout=getattr(ctx, "bp_hard_timeout", 120.0),
+                    hard_timeout=row_wait_cap,
                     sleep_step=0.05,
                 )
             except Exception as e:
@@ -548,16 +555,12 @@ def produce_rows(
 
             # This loop was previously UNBOUNDED. Held quarantined slices
             # can never drain; use actionable counts and a finite wait.
-            queue_wait_started = time.monotonic()
-            queue_wait_cap = _get_positive_float(
-                ctx, "bp_hard_timeout", default=120.0,
-            )
             while (not stop_event.is_set() and not execution_cancel_requested(ctx)
                    and not _terminal_queue_claim_blocked(ctx)
                    and actionable_outstanding_now(meter_fn) > low):
                 _drain_completed(block=False)
-                if time.monotonic() - queue_wait_started >= queue_wait_cap:
-                    tlog_warn("[producer] actionable backpressure wait cap hit; "
+                if time.monotonic() - row_wait_started >= row_wait_cap:
+                    tlog_warn("[producer] shared backpressure wait cap hit; "
                               "later rows remain schedulable")
                     break
                 time.sleep(0.05)
