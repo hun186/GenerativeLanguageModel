@@ -3718,31 +3718,30 @@ class PromptAPIPipeline:
                 "error": ""                  # 失敗時放錯誤訊息
             }
 
-    def _emit_json_quality(self, event: str, code: str, outcome: str) -> None:
+    def _emit_json_quality(self, event: str, code: str, outcome: str,
+                           detail: dict | None = None) -> None:
         # A failed audit must not mutate outputs or requeue LLM work.
         try:
             emit_quality_event(
                 self.audit_path, run_id=self.audit_run_id,
                 event=event, code=code, scope="slice", outcome=outcome,
-                slice_id=self.promptFile,
+                slice_id=self.promptFile, detail=detail,
             )
         except Exception as audit_error:
             print(f"⚠️ processing_quality audit failed: {type(audit_error).__name__}")
 
-    def _emit_json_repair_change(self, before: str, after: str,
-                                 parse_error: json.JSONDecodeError) -> None:
-        # GUI metrics are derived from actual per-Worker strings, never from
-        # interleaved console output. Diagnostics must not alter persistence.
+    def _json_repair_comparison_detail(self, before: str, after: str,
+                                       parse_error: json.JSONDecodeError) -> dict | None:
+        # Actual per-Worker strings, never mixed stdout. A diagnostic failure
+        # must still permit recording the original JSON_REPAIR_SUCCEEDED event.
         try:
-            code, detail = analyze_json_repair(before, after, parse_error)
-            emit_quality_event(
-                self.audit_path, run_id=self.audit_run_id,
-                event="slice_json_repair_analysis", code=code, scope="slice",
-                outcome="observed", slice_id=self.promptFile, detail=detail,
+            analysis_code, detail = analyze_json_repair(
+                before, after, parse_error,
             )
-        except Exception as audit_error:
-            print("⚠️ json repair analysis unavailable:",
-                  type(audit_error).__name__)
+            return dict(detail, repair_class=analysis_code)
+        except Exception as error:
+            print("⚠️ json repair analysis unavailable:", type(error).__name__)
+            return None
 
     def handle_json_output(self, retMES):
         '''
@@ -3778,8 +3777,13 @@ class PromptAPIPipeline:
                     #no_think = should_disable_think(self.model_spec["model_name"])
                     )
                 json.loads(retMES_rep)
-                self._emit_json_quality("slice_json_repair", "JSON_REPAIR_SUCCEEDED", "recovered")
-                self._emit_json_repair_change(retMES, retMES_rep, parse_error)
+                repair_detail = self._json_repair_comparison_detail(
+                    retMES, retMES_rep, parse_error,
+                )
+                self._emit_json_quality(
+                    "slice_json_repair", "JSON_REPAIR_SUCCEEDED",
+                    "recovered", detail=repair_detail,
+                )
                 print("Successfully repair with LLM.")
                 print("repaired retMES_rep: [JSON 原文省略；請看 GUI 修復差異分析]")
                 return [],retMES_rep

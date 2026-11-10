@@ -15,16 +15,15 @@ from pathlib import Path
 import threading
 from uuid import uuid4
 
-from czjLLM.utilities.json_repair_analysis import _KINDS as _REPAIR_ANALYSIS_CODES, validate_repair_detail
+from czjLLM.utilities.json_repair_analysis import validate_repair_detail
 
 _WRITE_LOCK = threading.Lock()
 _KNOWN_EVENTS = {
-    "slice_json_validation", "slice_json_repair", "slice_json_repair_analysis",
+    "slice_json_validation", "slice_json_repair",
     "document_schema_rejected", "document_writeback_confirmed",
 }
 _EVENT_CODES = {
     "slice_json_validation": {"JSON_VALID", "JSON_SYNTAX_INVALID"},
-    "slice_json_repair_analysis": _REPAIR_ANALYSIS_CODES,
     "slice_json_repair": {"JSON_REPAIR_SUCCEEDED", "JSON_REPAIR_FAILED"},
     "document_schema_rejected": {
         "SCHEMA_MISSING_FIELD", "SCHEMA_TIME_PRECISION",
@@ -128,11 +127,11 @@ def emit_quality_event(
         raise ValueError("unknown or mismatched quality event/code")
     if scope != _EVENT_SCOPES[event]:
         raise ValueError("mismatched quality event scope")
-    if event == "slice_json_repair_analysis":
-        if not validate_repair_detail(detail):
-            raise ValueError("invalid JSON repair analysis scalar detail")
-    elif detail is not None:
-        raise ValueError("quality detail supported only for repair analysis")
+    if detail is not None and not (
+        event == "slice_json_repair" and code == "JSON_REPAIR_SUCCEEDED"
+        and validate_repair_detail(detail) and "repair_class" in detail
+    ):
+        raise ValueError("invalid JSON repair analysis scalar detail")
     if scope == "run" and (
             document_id != "" or slice_id != ""):
         raise ValueError("run-scoped quality events cannot carry document or slice identities")
@@ -237,9 +236,11 @@ class QualityAccumulator:
                 record.get("slice_id", "") != ""):
             # Defensive read boundary: reject preexisting/tampered JSONL identities.
             return False
-        if event == "slice_json_repair_analysis" and not validate_repair_detail(record.get("detail")):
-            return False
-        if event != "slice_json_repair_analysis" and "detail" in record:
+        if "detail" in record and not (
+            event == "slice_json_repair" and code == "JSON_REPAIR_SUCCEEDED"
+            and validate_repair_detail(record["detail"])
+            and "repair_class" in record["detail"]
+        ):
             return False
         if event.startswith("document_") and not (
                 isinstance(record.get("document_id"), str) and record["document_id"].strip()):
@@ -281,25 +282,29 @@ class QualityAccumulator:
         elif event == "slice_json_repair":
             if code == "JSON_REPAIR_SUCCEEDED":
                 self._repair_success += 1
+                # Optional evidence on the existing success event: no extra
+                # event identity/memory-budget pressure on 35k+ slice runs.
+                if "detail" in record:
+                    analysis_code = record["detail"]["repair_class"]
+                    self._repair_analysis_counts[analysis_code] += 1
+                    raw_timestamp = record.get("ts", "")
+                    timestamp = (
+                        raw_timestamp[:19] if isinstance(raw_timestamp, str)
+                        and len(raw_timestamp) >= 19
+                        and raw_timestamp[4:5] == "-"
+                        and raw_timestamp[10:11] == "T"
+                        else ""
+                    )
+                    slice_id = record.get("slice_id", "")
+                    hint = (hashlib.sha256(slice_id.encode("utf-8")).hexdigest()[:8]
+                            if isinstance(slice_id, str) and slice_id else "")
+                    self._repair_analysis_recent.append({
+                        "code": analysis_code, "ts": timestamp, "slice_hint": hint,
+                        "detail": dict(record["detail"]),
+                    })
             elif code == "JSON_REPAIR_FAILED":
                 self._repair_failure += 1
                 self._codes[code] += 1
-        elif event == "slice_json_repair_analysis":
-            self._repair_analysis_counts[code] += 1
-            raw_timestamp = record.get("ts", "")
-            timestamp = (
-                raw_timestamp[:19] if isinstance(raw_timestamp, str)
-                and len(raw_timestamp) >= 19
-                and raw_timestamp[4:5] == "-" and raw_timestamp[10:11] == "T"
-                else ""
-            )
-            slice_id = record.get("slice_id", "")
-            hint = (hashlib.sha256(slice_id.encode("utf-8")).hexdigest()[:8]
-                    if isinstance(slice_id, str) and slice_id else "")
-            self._repair_analysis_recent.append({
-                "code": code, "ts": timestamp, "slice_hint": hint,
-                "detail": dict(record["detail"]),
-            })
         elif event == "document_schema_rejected":
             doc = record.get("document_id")
             if isinstance(doc, str) and doc:

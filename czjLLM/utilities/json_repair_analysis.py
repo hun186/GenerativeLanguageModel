@@ -92,9 +92,16 @@ def _error_kind(error: json.JSONDecodeError) -> str:
 
 def validate_repair_detail(detail: object) -> bool:
     """Strict event boundary: no arbitrary keys, values or document strings."""
-    if not isinstance(detail, dict) or set(detail) != _METRIC_KEYS | {"error_kind"}:
+    if not isinstance(detail, dict) or set(detail) not in (
+        _METRIC_KEYS | {"error_kind"},
+        _METRIC_KEYS | {"error_kind", "repair_class"},
+    ):
         return False
     if not isinstance(detail.get("error_kind"), str) or detail["error_kind"] not in _ERROR_KINDS:
+        return False
+    if "repair_class" in detail and (
+        not isinstance(detail["repair_class"], str) or detail["repair_class"] not in _KINDS
+    ):
         return False
     for key in _METRIC_KEYS:
         value = detail.get(key)
