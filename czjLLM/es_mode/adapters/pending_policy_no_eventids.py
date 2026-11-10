@@ -378,7 +378,11 @@ class ElasticsearchPendingPolicyMixin:
 
         passed, failure = evaluate_required_output_checks(src, checks)
         if not passed and failure is not None:
-            record_required_output_failure(self, **failure)
+            record_required_output_failure(
+                self, path=failure["path"], validator=failure["validator"],
+                fmt=failure["format"], found_valid=failure["found_valid"],
+                min_valid_count=failure["min_valid_count"],
+            )
         return passed
 
     def _is_fresh_output(self, src: dict, output_col: str) -> bool:

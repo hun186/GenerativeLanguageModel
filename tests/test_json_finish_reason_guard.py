@@ -59,3 +59,11 @@ def test_production_guards_both_worker_paths_and_repair_callers():
     assert "finish_reason=finish_reason" in source
     assert source.count('self.task.strip().lower() == "json format repair"') == 2
     assert "JSON_OUTPUT_LIMIT_REACHED" in source
+
+
+def test_final_no_retry_child_cannot_publish_length_and_does_not_split():
+    worker, calls = _worker_with_spy()
+    worker.allow_to_retry = False
+    ret, result = worker.handle_json_output('{"Event":[]}', finish_reason="length")
+    assert ret == [] and result == ""
+    assert calls == []

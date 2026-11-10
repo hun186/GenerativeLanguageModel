@@ -3413,7 +3413,9 @@ class PromptAPIPipeline:
     
             # 5) JSON 驗證與重試任務
             finish_reason = normalized_finish_reason(response)
-            if self.allow_to_retry and "to json" in self.task.lower():
+            if "to json" in self.task.lower() and (
+                self.allow_to_retry or finish_reason == "length"
+            ):
                 DTBJobs_Retry, retMES = self.handle_json_output(
                     retMES, finish_reason=finish_reason,
                 )
@@ -3625,11 +3627,12 @@ class PromptAPIPipeline:
             # 如果預設輸出為json，進行輸出成功性驗證，如果不通過，則將輸入分割為兩段後，
             # 生成新的PromptFile，再試一次。
             
-            if self.allow_to_retry == True:
-                if "to json" in self.task.lower():
-                    DTBJobs_Retry, retMES = self.handle_json_output(
-                        retMES, finish_reason=normalized_finish_reason(response),
-                    )
+            if "to json" in self.task.lower() and (
+                    self.allow_to_retry
+                    or normalized_finish_reason(response) == "length"):
+                DTBJobs_Retry, retMES = self.handle_json_output(
+                    retMES, finish_reason=normalized_finish_reason(response),
+                )
             if (normalized_finish_reason(response) == "length"
                     and self.task.strip().lower() == "json format repair"):
                 retMES = ""
@@ -3768,7 +3771,7 @@ class PromptAPIPipeline:
             self._llm_json_failure_code = "JSON_OUTPUT_LIMIT_REACHED"
             try:
                 main_name, original_input, keys = self.extract_MainFileName_and_input_text()
-                if original_input:
+                if original_input and getattr(self, "allow_to_retry", True):
                     self.split_and_generate_new_prompts(
                         input_text=original_input,
                         keyConsiderations=keys,
