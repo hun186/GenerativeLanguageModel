@@ -725,3 +725,70 @@ def test_intentionally_exited_stage_consumer_does_not_block_new_row_registration
     assert not blocked.is_set()
     assert registry.removed
     assert len(sink.writes) == 1
+
+
+def test_dead_consumer_refreshes_receipt_after_producer_publish_race(
+    tmp_path: Path, monkeypatch,
+):
+    """An old missing-row snapshot must not quarantine a newly published 0/0."""
+    import threading
+    import czjLLM.sql_mode.runtime.row_merger_generic as module
+
+    item = tmp_path / "item"
+    item.mkdir()
+    source = tmp_path / "src" / "cache" / "doc.txt"
+    source.parent.mkdir(parents=True)
+    source.write_text("source")
+    combined = tmp_path / "out" / "combined.txt"
+    combined.parent.mkdir()
+    combined.write_text('{"ok":true}')
+    meter = tmp_path / "loadmeter.json"
+    meter.write_text(json.dumps({
+        "queue": {"pending": 0, "running": 0},
+        "rows": {"doc": {"queue_pending": 0, "queue_running": 0}},
+    }))
+    reads = [0]
+
+    def read_meter(_path):
+        reads[0] += 1
+        if reads[0] == 1:
+            return {"rows": {}}  # Scan-before-publish snapshot.
+        return {"rows": {"doc": {"queue_pending": 0, "queue_running": 0}}}
+
+    monkeypatch.setattr(module, "meter_read", read_meter)
+    registry = _RegistryStub(str(item), {
+        "pk": "doc", "temp_txt": str(source),
+        "CombBackFN": str(combined),
+    })
+    stopped = threading.Event()
+    blocked = threading.Event()
+    done_producer = threading.Event()
+    done_producer.set()
+
+    class Sink(_SinkStub):
+        def write_main(self, *args, **kwargs):
+            super().write_main(*args, **kwargs)
+            stopped.set()
+
+    ctx = SimpleNamespace(
+        output_col="File_result", record_update_time=False,
+        flatten_json_output=False, cleanup_prompt_item_after_writeback=False,
+        llm_source_dir=str(tmp_path / "src"),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        _consumer_thread=SimpleNamespace(is_alive=lambda: False),
+        _producer_done_flag=done_producer,
+        _queue_claim_blocked_event=blocked,
+    )
+    sink = Sink()
+    thread = threading.Thread(
+        target=module.row_merger_watchdog_generic,
+        args=(ctx, registry, str(meter), stopped, sink),
+        kwargs={"scan_interval": 0.002}, daemon=True,
+    )
+    thread.start()
+    thread.join(timeout=5)
+    assert not thread.is_alive()
+    assert reads[0] >= 3
+    assert not blocked.is_set(), "late zero receipt is not a terminal defect"
+    assert registry.removed
+    assert len(sink.writes) == 1
