@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 
 from czjLLM.common.pending_conditions import clean_output_cols
 from czjLLM.common.pending_decision import PendingDecision
+from czjLLM.common.required_output_guard import evaluate_required_output_checks
 from czjLLM.es_mode.model_metadata import safe_model_tag
 from .required_output_debug import record_required_output_failure
 from .value_helpers import (
@@ -375,38 +376,14 @@ class ElasticsearchPendingPolicyMixin:
         if not checks:
             return True
 
-        for ck in checks:
-            full_path = ck["full_path"]
-            validator = (ck.get("validator") or "non_empty").lower()
-            fmt = ck.get("format")
-            min_valid_count = int(ck.get("min_valid_count", 1))
-
-            raw_vals = _deep_collect_by_path(src, full_path)
-            vals = _flatten_list(raw_vals)
-
-            valid_count = 0
-            for v in vals:
-                if validator == "date":
-                    if _is_valid_date_string(v, fmt or "yyyy-MM-dd"):
-                        valid_count += 1
-                else:
-                    # 預設 non_empty
-                    if _is_non_empty_deep(v):
-                        valid_count += 1
-
-                if valid_count >= min_valid_count:
-                    break
-
-            if valid_count < min_valid_count:
-                # Keep the authoritative pending decision unchanged. Only
-                # reduce duplicate console output for the same rule/threshold.
-                record_required_output_failure(
-                    self, path=full_path, validator=validator, fmt=fmt,
-                    found_valid=valid_count, min_valid_count=min_valid_count,
-                )
-                return False
-
-        return True
+        passed, failure = evaluate_required_output_checks(src, checks)
+        if not passed and failure is not None:
+            record_required_output_failure(
+                self, path=failure["path"], validator=failure["validator"],
+                fmt=failure["format"], found_valid=failure["found_valid"],
+                min_valid_count=failure["min_valid_count"],
+            )
+        return passed
 
     def _is_fresh_output(self, src: dict, output_col: str) -> bool:
         return not self._output_stale_reasons(src, output_col)
