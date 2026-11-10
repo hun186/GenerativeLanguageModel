@@ -219,7 +219,7 @@ def test_producer_final_publication_between_empty_peek_and_done():
         calls[0] += 1
         return todo.pop(0) if todo else None
     def producer_done():
-        if not todo and calls[0] == 2:
+        if not todo and calls[0] == 1:
             todo.append(ClaimedWork(uuid4().hex, 17))
         return True
     result = run_slot_refill(
