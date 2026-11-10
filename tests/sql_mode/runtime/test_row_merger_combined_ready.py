@@ -595,3 +595,63 @@ def test_row_merger_preserves_success_until_consumer_receipt_is_closed(
     assert not th.is_alive()
     assert registry.removed
     assert len(sink.writes) == 1
+
+
+def test_row_merger_dead_consumer_marks_unknown_receipts_incomplete(
+    tmp_path: Path,
+):
+    """Malformed meter and a lost Worker ACK must not write or hang shutdown."""
+    import threading
+    from czjLLM.sql_mode.runtime.row_merger_generic import row_merger_watchdog_generic
+
+    for index, rows in enumerate((
+        None,  # Explicit JSON null must NOT disable receipt validation.
+        {"doc": {"queue_pending": 0, "queue_running": 1}},
+    )):
+        sub = tmp_path / str(index)
+        item = sub / "item"
+        success = item / "Success"
+        success.mkdir(parents=True)
+        (success / "0.txt").write_text("LLM already returned")
+        source = sub / "src" / "cache" / "document.txt"
+        source.parent.mkdir(parents=True)
+        source.write_text("original")
+        combined = sub / "out" / "combined.txt"
+        combined.parent.mkdir()
+        combined.write_text('{"ok":true}')
+        meter = sub / "loadmeter.json"
+        meter.write_text(json.dumps({
+            "queue": {"pending": 0, "running": 1, "completed": 0},
+            "rows": rows,
+        }), encoding="utf-8")
+        registry = _RegistryStub(
+            str(item),
+            {"pk": "doc", "temp_txt": str(source),
+             "CombBackFN": str(combined)},
+        )
+        blocked = threading.Event()
+        ctx = SimpleNamespace(
+            output_col="File_result", record_update_time=False,
+            flatten_json_output=False, cleanup_prompt_item_after_writeback=True,
+            llm_source_dir=str(sub / "src"),
+            llm_source_backup_dir=str(sub / "backup"),
+            _consumer_thread=SimpleNamespace(is_alive=lambda: False),
+            _queue_claim_blocked_event=blocked,
+        )
+        sink = _SinkStub()
+        # The merger should exit via its normal terminal blocked shutdown
+        # path, rather than relying on a test-only thread timeout.
+        row_merger_watchdog_generic(
+            ctx, registry, str(meter), _StopEventStub(True), sink,
+            scan_interval=0.001,
+        )
+        assert blocked.is_set()
+        assert not sink.writes
+        assert not registry.removed
+        assert (success / "0.txt").exists()
+        assert source.exists()
+        assert json.loads(meter.read_text())["queue_integrity"] == {
+            "status": "incomplete",
+            "reason_code": "UNVERIFIED_CONSUMER_RECEIPT",
+            "manual_review_required": True,
+        }
