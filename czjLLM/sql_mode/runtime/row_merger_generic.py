@@ -18,7 +18,7 @@ from utils.utilities_path import OSWALK, DirReplace, MKDIR, getPathFromFN
 from utils.utilities_path import safe_move
 
 from czjLLM.prompt_pipeline.pipeline_controller import (
-    combine_api_finished_item, row_is_ready, meter_update
+    combine_api_finished_item, row_is_ready, meter_update, meter_read
 )
 from czjLLM.utilities.path_utils import get_combined_result_path
 from czjLLM.reduction.execution import ExecutionCancelled
@@ -55,6 +55,27 @@ def _extract_json_list(result_text: str, allowed_fields: Optional[List[str]]) ->
     except Exception:
         return []
 '''
+
+
+def _row_queue_receipt_settled(rows, pk) -> bool:
+    """Do not retire a Consumer-owned item before its queue receipts settle.
+
+    A Worker may have published Success and unlinked RUNNING while its
+    parent Consumer is still waiting for the rest of the batch.  A Row
+    Merger that deletes Success/Registry in this window makes the Consumer
+    unable to prove completion after a failed/timeout round.  Missing or
+    malformed receipts are UNKNOWN, not evidence of zero active work.
+    """
+    if not isinstance(rows, dict):
+        return False
+    row = rows.get(str(pk))
+    if not isinstance(row, dict):
+        return False
+    pending, running = row.get("queue_pending"), row.get("queue_running")
+    return (
+        type(pending) is int and pending == 0
+        and type(running) is int and running == 0
+    )
 
 def _counts(item_dir):
     todo = os.path.join(item_dir, "TODO")
@@ -814,6 +835,18 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     break
                 blocked_shutdown_scan_done = True
 
+            # Read the authoritative per-run meter ONCE per scan, not once
+            # per item.  A real run with missing/unreadable/corrupt meter
+            # must not infer completion; standalone legacy test embedders
+            # passing a non-path meter_fn retain their old behavior.
+            queue_receipt_rows = None
+            if isinstance(meter_fn, (str, os.PathLike)):
+                try:
+                    snapshot = meter_read(os.fspath(meter_fn))
+                    queue_receipt_rows = snapshot.get("rows", {})
+                except Exception:
+                    queue_receipt_rows = {}
+
             progressed = False
             for item_dir, meta in list(items_map.items()):
                 pk = meta["pk"]; temp_txt = meta["temp_txt"]
@@ -822,6 +855,14 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                 # A stale preexisting combined file MUST NOT bypass blocked
                 # recovery and be written back as if the row were complete.
                 if _recovery_item_blocked(item_dir, ctx):
+                    continue
+
+                # Success exists BEFORE the Consumer necessarily posts its
+                # per-slice queue acknowledgment.  Never move source, write
+                # back or prune Success while pending/running receipts exist.
+                # Stage-managed rows have zero Consumer queue receipts.
+                if (queue_receipt_rows is not None
+                        and not _row_queue_receipt_settled(queue_receipt_rows, pk)):
                     continue
 
                 if isinstance(meta, dict) and meta.get("status") == "scheduling_multistage":
