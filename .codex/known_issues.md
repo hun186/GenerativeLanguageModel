@@ -65,3 +65,8 @@
 
 ## 2026-11-10 / PR #301 slot refill limitations
 - Offline refill scheduler is **not production dispatch**. It assumes caller obtains an authentic exclusive Queue receipt, checks real sink ACK and preserves RUNNING evidence. Provider throttling, workload-dependent GPU utilization, ES stages, and durable crash safety remain unproven until explicit integration and operator-run acceptance.
+
+## 2026-11-10 — Operator Queue ghost receipts / Ctrl+C caveats (#302/#303)
+- Operator's two ES runs show 19/13 per-row running receipts after terminal row statuses, while ES pending-running console completed releases are a distinct bookkeeping scope. Root cause is a supported Row-Merger/Consumer cleanup race hypothesis, not an independently established provider or ES issue. Ctrl+C may leave work in flight but alone does not explain new-run meter drift.
+- PR #303 guard is preventative and cannot repair old Run meters. When Consumer remains alive but HTTP work stalls, a pending receipt is still unresolved; cannot auto-subtract, replay or claim sink success from stale age, terminal row status, or empty endpoint lease. Physical H100/Windows and independent ES readback pending #266.
+- Hosted success and formal review are still required before merging. New `queue_integrity` status is diagnostic; no authoritative repair occurs.
