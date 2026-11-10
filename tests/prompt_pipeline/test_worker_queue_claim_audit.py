@@ -169,7 +169,9 @@ def test_direct_audit_claim_requires_worker_invocation(tmp_path):
 def test_previous_exact_audit_header_is_append_compatible(tmp_path):
     from czjLLM.utilities import llm_call_audit as mod
     path = tmp_path / "llm_call_audit_legacy.csv"
-    previous_fields = mod._FIELDS[:-1]
+    # Recreate the header before queue_claim_event_id and the later
+    # append-only finish_reason field were introduced.
+    previous_fields = mod._FIELDS[:-2]
     with path.open("w", newline="", encoding="utf-8") as stream:
         csv.DictWriter(stream, fieldnames=previous_fields).writeheader()
     log_llm_call(audit_path=str(path), run_id="x", worker_call_id=uuid4().hex,
