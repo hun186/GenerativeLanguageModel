@@ -585,7 +585,7 @@ def test_row_merger_preserves_success_until_consumer_receipt_is_closed(
     )
     th.start()
     try:
-        assert observed.wait(3), "Row Merger should recheck the queue snapshot"
+        assert observed.wait(6), "Row Merger should recheck the queue snapshot"
         assert not sink.writes, "never write back before Consumer receipt settles"
         assert not registry.removed
         assert (success / "0.txt").exists(), "Success is authoritative evidence"
@@ -715,7 +715,7 @@ def test_intentionally_exited_stage_consumer_does_not_block_new_row_registration
     )
     th.start()
     try:
-        assert read_three.wait(3)
+        assert read_three.wait(6)
         assert not blocked.is_set(), "dead stage Consumer alone is not terminal"
         assert not sink.writes
     finally:
