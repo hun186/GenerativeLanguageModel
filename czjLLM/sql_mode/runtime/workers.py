@@ -48,6 +48,9 @@ def start_workers(ctx, registry, meter_fn, is_sqlite, done_q, sink=None):
         name="consumer-thread",
     )
     consumer.start()
+    # The Row Merger must distinguish a slow (alive) Consumer from a
+    # terminated one before deciding how to fail closed on unknown receipts.
+    ctx._consumer_thread = consumer
 
     merger = threading.Thread(
         target=row_merger_watchdog_generic,
