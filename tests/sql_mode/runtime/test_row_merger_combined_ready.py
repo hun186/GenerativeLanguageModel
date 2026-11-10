@@ -655,3 +655,73 @@ def test_row_merger_dead_consumer_marks_unknown_receipts_incomplete(
             "reason_code": "UNVERIFIED_CONSUMER_RECEIPT",
             "manual_review_required": True,
         }
+
+
+def test_intentionally_exited_stage_consumer_does_not_block_new_row_registration(
+    tmp_path: Path, monkeypatch,
+):
+    """Registry.add precedes meter._on_add_row: empty receipt is transient."""
+    import threading
+    import czjLLM.sql_mode.runtime.row_merger_generic as module
+
+    item = tmp_path / "item"
+    item.mkdir()
+    source = tmp_path / "src" / "cache" / "doc.txt"
+    source.parent.mkdir(parents=True)
+    source.write_text("source")
+    combined = tmp_path / "out" / "combined.txt"
+    combined.parent.mkdir()
+    combined.write_text('{"ok":true}')
+    meter = tmp_path / "loadmeter.json"
+    meter.write_text(json.dumps({"queue": {"pending": 0, "running": 0},
+                                "rows": {}}))
+    registry = _RegistryStub(str(item), {
+        "pk": "doc", "temp_txt": str(source),
+        "CombBackFN": str(combined),
+    })
+    initialized = threading.Event()
+    read_three = threading.Event()
+    stopped = threading.Event()
+    blocked = threading.Event()
+    count = [0]
+
+    def read_meter(_path):
+        count[0] += 1
+        if count[0] >= 3:
+            read_three.set()
+        return {"rows": ({"doc": {"queue_pending": 0, "queue_running": 0}}
+                          if initialized.is_set() else {})}
+
+    class Sink(_SinkStub):
+        def write_main(self, *args, **kwargs):
+            super().write_main(*args, **kwargs)
+            stopped.set()
+
+    monkeypatch.setattr(module, "meter_read", read_meter)
+    ctx = SimpleNamespace(
+        output_col="File_result", record_update_time=False,
+        flatten_json_output=False, cleanup_prompt_item_after_writeback=False,
+        llm_source_dir=str(tmp_path / "src"),
+        llm_source_backup_dir=str(tmp_path / "backup"),
+        _consumer_thread=SimpleNamespace(is_alive=lambda: False),
+        _producer_done_flag=threading.Event(),  # Producer is still publishing.
+        _queue_claim_blocked_event=blocked,
+    )
+    sink = Sink()
+    th = threading.Thread(
+        target=module.row_merger_watchdog_generic,
+        args=(ctx, registry, str(meter), stopped, sink),
+        kwargs={"scan_interval": 0.002}, daemon=True,
+    )
+    th.start()
+    try:
+        assert read_three.wait(3)
+        assert not blocked.is_set(), "dead stage Consumer alone is not terminal"
+        assert not sink.writes
+    finally:
+        initialized.set()
+    th.join(timeout=4)
+    assert not th.is_alive()
+    assert not blocked.is_set()
+    assert registry.removed
+    assert len(sink.writes) == 1
