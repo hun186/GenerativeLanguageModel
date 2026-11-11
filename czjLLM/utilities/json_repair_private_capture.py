@@ -162,6 +162,10 @@ def _run_dir(root: Path, run_digest: str) -> Path:
     except FileExistsError:
         pass
     info = _is_regular_private(sub, directory=True)
+    # A remote filesystem may be mounted beneath a verified local root.
+    # Inspect the actual snapshot/lock destination, not just its parent.
+    if os.name != "nt" and not _posix_local_filesystem(sub):
+        raise ValueError("POSIX_LOCAL_FILESYSTEM_UNVERIFIED")
     if os.name != "nt" and (info.st_mode & 0o077):
         raise ValueError("PRIVATE_RUN_PERMISSIONS")
     return sub
@@ -170,6 +174,9 @@ def _run_dir(root: Path, run_digest: str) -> Path:
 def _existing_run_dir(root: Path, run_digest: str) -> Path:
     sub = root / ("run-" + run_digest[:24])
     _is_regular_private(sub, directory=True)
+    # Reads and manual deletion must obey the same nested-mount boundary.
+    if os.name != "nt" and not _posix_local_filesystem(sub):
+        raise ValueError("POSIX_LOCAL_FILESYSTEM_UNVERIFIED")
     return sub
 
 
