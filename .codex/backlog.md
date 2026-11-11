@@ -126,3 +126,7 @@
 - [ ] Exact-head Hosted Linux E2E, Windows native 3.10/3.11, Secret Scan and formal Codex Review for `fix/quality-slice-lineage-item-root-20261111`, then ordinary low-risk Squash Merge if full gates pass. Distinguish independent TODO/1.txt by work-item path context and preserve same slice through TODO/RUNNING/Success; no raw source paths or content in Quality JSONL.
 - [ ] Future separately gated **durable** item/slice provenance if moving/renaming item roots or replacing same-name prompt during rerun must be identified across machines: consider original source document PK or existing split-intent UUID at creation, never claim path fingerprints are authoritative.
 - [ ] #310 remains Draft, plaintext raw before/after capture must not be auto-merged or enabled without operator privacy/NTFS acceptance.
+
+## 2026-11-11 — Private JSON Draft rebased after quality lineage
+- [x] #311 work-item/slice trace diagnostic hints merged `efec20a07eca64f2ff6bc81b8523ef79f6d1b88b`, Hosted Linux/Windows/Secret Scan and formal review pass.
+- [ ] Reconcile privacy Draft #310 with new main using exact-run/event raw snapshot controls while preserving #311 hints and tests. Run fresh exact-head Hosted CI and formal security review; no auto merge or real raw data until NTFS ACL and operator privacy acceptance.
