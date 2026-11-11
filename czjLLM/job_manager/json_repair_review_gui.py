@@ -4,9 +4,14 @@ from __future__ import annotations
 
 from tkinter import ttk
 import tkinter as tk
+from tkinter import messagebox
 import tkinter.font as tkfont
 
 from czjLLM.utilities.json_repair_change_map import change_map_segments
+from czjLLM.utilities.json_repair_private_capture import (
+    clear_private_run, configured_private_root, read_private_repair,
+)
+from czjLLM.job_manager.json_repair_raw_diff_gui import show_private_json_diff
 
 
 _COLUMNS = (
@@ -99,6 +104,78 @@ def show_json_repair_review(
     ttk.Button(footer, text="關閉", command=win.destroy).pack(side="right")
     cases = []
 
+    def _chosen_case():
+        selected_rows = tree.selection()
+        if not selected_rows:
+            return None
+        index = int(selected_rows[0])
+        return cases[index] if 0 <= index < len(cases) else None
+
+    def _view_private_capture():
+        case = _chosen_case()
+        directory = configured_private_root()
+        if case is None or directory is None:
+            messagebox.showinfo(
+                "私有原文留存未啟用",
+                "沒有選取案例，或尚未設定本機私有快照目錄。"
+                "原有品質日誌不儲存 JSON 原文，舊紀錄無法回補。",
+                parent=win,
+            )
+            return
+        try:
+            pair = read_private_repair(
+                directory, case.get("run_id", ""), case.get("event_id", ""),
+            )
+        except (OSError, ValueError, TypeError, UnicodeError):
+            messagebox.showwarning(
+                "沒有可驗證的私有原文快照",
+                "這筆修復事件沒有可驗證的本機快照。"
+                "原文留存預設關閉，請勿用相同切片提示碼猜測來源。",
+                parent=win,
+            )
+            return
+        show_private_json_diff(win, pair["original"], pair["repaired"])
+
+    def _clear_private_capture():
+        case = _chosen_case()
+        directory = configured_private_root()
+        if case is None or directory is None:
+            messagebox.showinfo("無法清除", "未選取具有 Run ID 的私有快照案例。", parent=win)
+            return
+        run_id = case.get("run_id", "")
+        if not run_id:
+            return
+        if not messagebox.askyesno(
+            "確認清除本次 Run 的私有 JSON 原文",
+            "確定清除所選 run_id 對應的所有私有 JSON 修復原文快照？"
+            "此操作不可復原，但不會刪除品質日誌、Queue 或 ES 資料。",
+            parent=win,
+        ):
+            return
+        try:
+            deleted = clear_private_run(
+                directory, run_id, "DELETE_PRIVATE_JSON_REPAIRS",
+            )
+        except (OSError, ValueError, TypeError):
+            messagebox.showwarning(
+                "私有快照清除未完成", "檔案驗證或刪除失敗；請由本機管理員檢查。",
+                parent=win,
+            )
+            return
+        messagebox.showinfo(
+            "清除完成", f"已清除本次 Run 的 {deleted} 份私有快照。",
+            parent=win,
+        )
+
+    ttk.Button(
+        footer, text="檢視所選案例原始／修復全文",
+        command=_view_private_capture,
+    ).pack(side="left")
+    ttk.Button(
+        footer, text="清除所選 Run 的私有原文",
+        command=_clear_private_capture,
+    ).pack(side="left", padx=(8, 0))
+
     def draw_map(case):
         graph.delete("all")
         graph.update_idletasks()
@@ -126,7 +203,7 @@ def show_json_repair_review(
         selected_rows = tree.selection()
         if not selected_rows:
             detail_label.configure(
-                text="選取案例後可查看詞法統計及變動區段；未留存 JSON 原文。")
+                text="選取案例可查看詞法統計；原文僅能從另外明確啟用的本機私有快照讀取。")
             graph.delete("all")
             return
         index = int(selected_rows[0])
