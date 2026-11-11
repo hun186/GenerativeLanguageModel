@@ -14,6 +14,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from czjLLM.common.multidim_time_audit import summarize_stored_documents
+from czjLLM.common.multidim_time_policy_preview import summarize_hypothetical_time_rules
 
 MAX_BYTES = 16 * 1024 * 1024
 MAX_LINE_BYTES = 512 * 1024
@@ -58,10 +59,13 @@ def _read_sources(path):
     return docs
 
 
-def collect(path):
+def collect(path, *, compare_timeline_min_1=False):
     try:
         docs = _read_sources(path)
-        return summarize_stored_documents(docs)
+        result = summarize_stored_documents(docs)
+        if compare_timeline_min_1:
+            result["time_rule_comparison"] = summarize_hypothetical_time_rules(docs)
+        return result
     except (OSError, ValueError, UnicodeError, TypeError, KeyError, OverflowError):
         return {
             "schema_version": 1,
@@ -95,6 +99,14 @@ def human(report):
             lines.append(label + "：" + str(report["counts"][code]))
     else:
         lines.append("輸入不可驗證，不把缺失資料視為成功。")
+    comparison = report.get("time_rule_comparison")
+    if isinstance(comparison, dict):
+        cc = comparison["counts"]
+        lines.append("【假設舊規則 Timeline 至少 1 筆日期】")
+        lines.append("舊規則拒絕、但 Event／Timeline 已有合規日期：" + str(cc["legacy_fail_but_proposed_date_present"]))
+        lines.append("舊規則拒絕、但日期未知須核對原文：" + str(cc["legacy_fail_but_proposed_time_unknown"]))
+        lines.append("結構不完整／時間無效，不能直接比較：" + str(cc["legacy_time_rule_indeterminate"]))
+        lines.append("此為假設規則比較，未檢查實際有效設定及強制重跑條件。")
     lines.append("此報告未驗證原文日期忠實性，未修改實際重跑政策。")
     return "\n".join(lines)
 
@@ -106,8 +118,12 @@ def main(argv=None):
     parser.add_argument("--input-ndjson", required=True, type=Path,
                         help="Exact local NDJSON path; never printed.")
     parser.add_argument("--human", action="store_true")
+    parser.add_argument(
+        "--compare-timeline-min-1", action="store_true",
+        help="Hypothetical old Timeline.min_valid_count=1 vs time-only classification; never evaluate live settings.",
+    )
     args = parser.parse_args(argv)
-    result = collect(args.input_ndjson)
+    result = collect(args.input_ndjson, compare_timeline_min_1=args.compare_timeline_min_1)
     print(human(result) if args.human
           else json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 0 if result["status"] == "OBSERVED_NOT_PROVEN" else 2
