@@ -206,6 +206,7 @@ def test_standalone_python_script_works_without_pythonpath(tmp_path):
             env=env,
             capture_output=True,
             text=True,
+            encoding="utf-8",
             timeout=30,
         )
         assert result.returncode == expected_status, result.stderr
