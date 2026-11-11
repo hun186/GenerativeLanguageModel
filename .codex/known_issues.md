@@ -88,3 +88,10 @@
 
 ## 2026-11-11 — Legacy basename-only TODO slice hints are ambiguous
 - Existing Quality JSONL slice_id was reduced to Path(...).name; different item roots with TODO/1.txt all hashed identically, and longer SHA cannot fix information already lost. New optional item-root+basename fingerprints fix current-path diagnostic collisions only (not original document lineage): moves/renames, path aliases, same-name overwrites and dictionary guessing of predictable paths remain limitations. Historical records continue labeled `BASENAME_ONLY`; no false recovery. Review/Hosted CI and operator physical GUI pending.
+
+## 2026-11-11 — Raw-capture Draft #310 still operator gated
+- After #311 main, Draft raw JSON storage must retain new path-context Quality hints and must not reset GUI to basename-only. Local-only filesystem checks (including stacked mounts), Windows ACL/backup policy, fail-closed private file handling and explicit operator consent remain high-risk acceptance gates. No automatic merge or live enable.
+
+## 2026-11-11 — Draft #310 nested-mounted run directory (corrective pending)
+- Codex P2 identified that a verified local capture root can contain a separate NFS/CIFS mount at its `run-<digest>` child. Draft #310 now validates the child destination on create, read and clear before opening the lock/snapshot; synthetic existing/new mount rejection regressions added. Race against later mount changes and physical Windows ACL/remote block storage are NOT resolved. Await exact-head Hosted CI, formal security review, explicit operator risk decision; no Merge/activation.
+- **2026-11-11 second #310 Codex P2:** A hidden longer local mount under a remote overmount could fool longest-path selection. Matcher now rejects any remote/unknown ancestor and duplicate matching mountpoint; synthetic root/child order tests added. Complex local mount layouts may be refused. Live operator acceptance and security re-review still pending.
