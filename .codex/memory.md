@@ -1,6 +1,8 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- **2026-11-11 PR #312 CI corrective (PENDING):** Hosted Linux offline-e2e at `3d913a7` passed the date-focused test suite but failed the immutable-memory archive test: active `.codex/decisions.md` was 40,115 bytes (limit <40,000). Preserve both original active decisions and memory files in exact-byte immutable `.codex/archive/*-20261111-204500.md`; compact dated history out of active summaries while retaining current safety rules and prior archive references. The rerun change remains Draft, with production effective ES config/read-only audit and owner P0 decision outstanding. Latest-head Hosted CI and formal Codex Review required; no merge or live rerun.
+
 - **2026-11-10 JSON finish_reason and shared rerun rule PR pending:** New audit CSV records normalized provider reason; explicit `length` prevents JSON Success and tries existing split route; no change to unknown-provider semantics. ES pending variants use shared rule evaluator, no new slice-level schema rule. Offline/review pending.
 - **2026-11-10 JSON repair before/after GUI PR #299 PENDING:** Compare original malformed and repaired JSON inside the same Worker, not mixed stdout. Bounded lexical analysis records scalar lengths/parse-error position/literal-match/key-pattern counts with fixed categories; no raw payload; comparison is attached to existing repair success events. Run-scoped QualityAccumulator and GUI show categories and 12 recent hashed-slice samples; old repair denominators unchanged, historical data not backfilled, no semantic-fidelity claim. Raw JSON console dumps suppressed. Offline CI, formal review and physical acceptance pending.
 - **2026-11-10 Windows ThreadPool HOL PR PENDING:** Collect finished Futures by completion order, report process-local progress, preserve original ordered result list. Batch timeout `finished` snapshots completed Futures (not durable sink ACK); queued Futures cancel, running calls safely drain before the exception escapes. Event-based offline tests on Hosted Linux + Windows 3.10/3.11, review and merge gate pending. Does not solve actual GPU idle or replay work.
@@ -50,6 +52,8 @@
 - Issue #266 still requires real offline Windows NTFS/SMB and live LLM/SQL/ES acceptance. Production deployment/manual operator scheduling is distinct from GitHub Hosted test success.
 
 ## Archived History
+- 2026-11-11 pre-compaction decisions and memory source bytes archived as `.codex/archive/decisions.md-20261111-204500.md` (source Git blob `7ab71dafd5019ae7ec8959c2413cae8ef36f7ebe`) and `.codex/archive/memory.md-20261111-204500.md` (source Git blob `57469d445f702e61a154ce28a9b24c4c18025fc1`). These preserve late #293 and GUI identity history omitted from active summary; no live acceptance implied.
+
 - `.codex/archive/memory.md-20261103-134000.md` — exact pre-#276 acceptance active handoff Git blob `1676ac16c18ad268d68582b10b2ab2e20f6718e7`, including original pending stage evidence.
 - `.codex/archive/memory.md-20261102-152500.md` — exact pre-reconciliation `memory.md` Git blob `5725c26247056df7baf8f8814d2998865461f259`, preserved before marking #271–#274 merged; older dated Pending handoffs remain recoverable.
 - `.codex/archive/memory.md-20261101-234800.md` — exact pre-PR #270 active memory Git blob `53ef85bf9d6a616177e84b9f594b8ae28a1defea`, preserved without changes; #269 merge reconciliation replaces dated Current Focus/Handoff text only.
@@ -80,47 +84,3 @@
 - 2026-11-01 Hosted CI on #269 HEAD `c27cc0f037035c5723c203f40e190ef70df46d99`: Linux offline E2E and focused queue/GUI tests passed, Windows hosted NTFS Python 3.10/3.11 and changed-line secrets passed; Linux `offline-e2e` job later FAILED at Producer operational incident test **collection** because its isolated workers stub omitted newly imported `actionable_outstanding_now`. Test-only stub now returns zero (matching isolated `outstanding_now`) in `tests/sql_mode/runtime/test_producer_multistage_parallelism.py`; production queue logic untouched. New HEAD Hosted Linux remainder/CI and formal exact-head Codex Review are **PENDING**, not PASS. #269 stays OPEN without explicit high-risk merge authorization; self-hosted Windows/physical GUI/SMB/live sinks remain unverified (#266).
 
 
-## 2026-11-08 — Windows offline fixture JUnit skip-verdict hardening (in development)
-- Verified Hosted `main` at `ae4b75868fa9e031bfdb73bae17d7a3236328e40`; no open PRs at discovery, #278/#279/#280 already merged. Do not recycle their old Pending notes.
-- On `fix/ntfs-fixture-skip-verdict-20261108`, tighten `scripts/verify_windows_queue_ntfs_local.py`: a pytest exit 0 plus unexecuted/skipped native capability tests can no longer produce fixture PASS. Allow only exact checked-in non-Windows-only test skip on Windows; unexpected skips get fixed-code `UNEXPECTED_TEST_SKIP`. Added JUnit simulated green-but-skipped, all-skipped and allowlist regression tests; updated operator docs.
-- **Status: IN DEVELOPMENT.** GitHub Hosted Linux/real Windows NTFS, changed-line secret scan and latest-head formal Codex Review not yet verified; no Merge claim. Operator physical Windows/SMB/GUI/live LLM and SQL/ES sink acceptance is separately BLOCKED/NOT_VERIFIED (#266); no Queue or sink runtime changes.
-
-## 2026-11-10 / PR #301 slot refill offline trial
-- Added bounded callback-driven slot refill scheduler **not wired into live Consumer**; offline deterministic slow/fast tests, actual temporary filesystem Queue Claim + Success no-clobber fixtures, duplicate-receipt, stop/drain and ACK-failure cases. Latest formal review and Hosted Windows/Linux gates pending. Do not interpret as GPU throughput result.
-
-## 2026-11-10 / PR #303 — P0 Consumer receipt barrier + Producer backpressure (IN REVIEW)
-- Real ES/Windows workstation evidence: two new Runs accumulated terminal-status Queue running receipts (19 and 13) despite independently completed writeback marker releases; do not conflate these state machines.
-- Row Merger now holds writeback, registry removal and Success cleanup until per-row queue_pending=queue_running=0 in the actual run Meter. Missing/malformed receipt is UNKNOWN, not completion; a dead Consumer with positive outstanding or finished Producer signals coordinator INCOMPLETE and retains source artifacts.
-- Producer's pre/post per-row backpressure waits share one hard timeout budget, not two sequential 120-second delays. No stale-receipt auto-clear or replay. Added deterministic stage-registration, null-meter, dead-Consumer and backpressure tests.
-- Status: development branch #303, CI and exact-head Codex re-review pending; no live Ollama/GPU/ES acceptance; do not deploy onto an active Run.
-
-## 2026-11-11 / #303 merged and next read-only receipt inventory (IN DEVELOPMENT)
-- GitHub #303 Squash Merged `e86888f094a2fd56069575be8cf7378c6df45e46` from exact HEAD `ec03a2e78efd6fda50874a30ebf2eb4c57ba9834`, Codex receipt no major issues and 4/4 threads resolved; Hosted Linux offline E2E, actual Hosted Windows 3.10/3.11 and changed-line secrets passed. Windows self-hosted queued; no operator machine, GPU, LLM or SQL/ES acceptance.
-- #301 offline refill and #304 sustained Queue running warning were already independently merged; do not reimplement them.
-- New isolated explicit-meter inventory reads the existing bounded strict 12 MiB run Meter, counts terminal-status outstanding receipts/unknowns and global-vs-row running signal, redacts all row IDs and paths, never edits Queue/Registry/Success or connects to sinks. Synthetic and actual temporary-file tests added to Hosted Linux/Windows workflow. **Status: IN DEVELOPMENT, new CI and formal Codex Review pending**; stale old-run 19/13 cannot be automatically repaired.
-
-## 2026-11-11 / PR #305 verified Merge and Issue #293 phase A offline audit (IN DEVELOPMENT)
-- #305 Squash Merged `f5bcce83446d388bef64d68f59d4e1a54f03d17d`, exact-head Hosted Linux/Windows 3.10/3.11 and secrets SUCCESS, formal Codex clean and prior two P2 threads resolved. Physical H100/ES evidence remains operator-only #266.
-- New separate Issue #293 read-only local NDJSON audit classifies persisted Event and Timeline times using the existing output-profile field validator, identifies `Event.time_iso` valid with explicitly empty Timeline as **possible** old `Timeline.min_valid_count=1` false rerun. Emits counts and fixed status only, never original IDs/text/dates/paths, fails closed on malformed exports. It does **not** change ES pending/rerun/YAML, repair old outputs, prove article-source dates, or authorize replay. Synthetic/standalone tests and Hosted CI wiring added; new exact-head CI/Review PENDING.
-
-## 2026-11-11 — #306 merged; Issue #293 hypothetical time-only preview (IN DEVELOPMENT)
-- PR #306 Squash Merged `7b4a2cfc780909cf877950e29eb59f27842d0ef7` from exact reviewed HEAD `c0b534e7e3ab24786609d1b4998c005936944a4e`, Hosted Linux offline E2E/Windows 3.10+3.11/Secret Scan PASS and formal Codex Review 0 Findings/Threads. No live ES, LLM, workstation or sink readback performed.
-- Separate opt-in `--compare-timeline-min-1` proposed: reuse pure original `required_output_checks` evaluator on private local exported NDJSON, compare isolated hypothetical Timeline-min=1 date rule with existing output-profile-time classification, aggregate only counts of old-fails/validated-date, old-fails/date-unknown, and structurally indeterminate cases. Does not read effective private rerun configuration or alter ES policy/force settings. Standalone/redaction/invalid-input/offline CI tests added; **new Hosted CI and exact-head formal review PENDING**.
-
-## 2026-11-11 — JSON repair popup/identity layout (in development)
-- Existing quality event stores **only basename** from original slice path and GUI hashes this basename to 8 chars, so identical displayed IDs may be unrelated documents; longer hashes cannot restore dropped path identity. Existing `run_id` + event's `event_id` allow separately distinguishing observations without exposing source paths.
-- New popup-only GUI branch: no permanent JSON comparison table, contextual button next to Processing Quality summary when repairs observed; native Tk `Toplevel` uses DPI-derived Treeview row height, horizontal/vertical scrollbars, 16-char basename hash hint, 12-char event hint, bounded run_id, and non-payload prefix/change/suffix bars. Rename `鍵名樣式數` to `疑似鍵名片段數`. User requested raw before/after visual diff; still NOT IMPLEMENTED because existing audit forbids payloads. Planned as separate explicit opt-in local-private data-retention feature, not in default quality JSONL.
-- Hosted Linux/Windows tests and formal Codex review PENDING; real Windows GUI acceptance NOT_VERIFIED.
-
-## 2026-11-11 — Quality TODO/1.txt collision root cause and fix (PENDING)
-- `emit_quality_event` historically stored only `Path(slice_id).name`, so many independent TODO/1.txt produce identical SHA hints regardless of hash length. New optional `work_item_hint` + `slice_trace_hint` derive from normalized work-item-root + basename before redaction; stable TODO↔RUNNING↔Success within same location, different item roots distinguish. GUI clearly labels old basename-only cases. No prompt or absolute path in ordinary audit, no Queue behavior changes. These hints are not durable cross-move document IDs; no identity backfill. Synthetic cross-root, queue-state, forged-input and legacy tests; Hosted gates/formal review PENDING.
-
-## 2026-11-11 / Issue #293 Event-first rerun (pending PR)
-- Replaced 3 ES YAML Timeline minimum-date checks with grouped `multidim_event_time` validator; output-profile time validation reused via read-only classifier. Event date or valid unknown accepted; malformed date/missing Event rejected; date correctness versus source unverified.
-- Added offline contract tests for both ES adapters, date/unknown, malformed/empty Event, legacy validator, and preserved force pipeline hash. Exact-head hosted CI/review and production operator acceptance pending; zero ES/LLM writes.
-
-- 2026-11-11: aligned five Python ES .example date checks to Event-first rule; private effective configs remain unverified. Linux CI had non-date failure at decisions.md >200 line cap; corrected on branch; rerun pending.
-
-- 2026-11-11: PR #312 consolidated seven duplicate public ES .py.example files into existing canonical connection.py.example, documenting all seven original index/private basename mappings and intentional force_since/date-check differences. Legacy YAML/private resolver untouched; offline contract adjusted, Hosted exact-head results pending.
-
-- 2026-11-11 policy separation: public config_es/connection.py.example contains no rerun. Per-task YAML owns rerun. Legacy private Python+YAML shallow merge retained until deliberate operator migration; added same-connection/different-YAML offline contract tests and guide.
