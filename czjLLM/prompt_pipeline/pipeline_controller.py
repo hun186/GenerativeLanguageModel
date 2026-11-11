@@ -68,6 +68,9 @@ from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage, normalized_finish_reason
 from czjLLM.utilities.processing_quality import emit_quality_event
 from czjLLM.utilities.json_repair_analysis import analyze_json_repair
+from czjLLM.utilities.json_repair_private_capture import (
+    capture_enabled, configured_private_root, write_private_repair,
+)
 from czjLLM.reduction.execution import ExecutionCancelled
 from czjLLM.utilities.env_overrides import env_bool, env_int, load_czjllm_env_files_once
 from czjLLM.tokenizer_utils import TokenizerWrapper
@@ -3743,16 +3746,20 @@ class PromptAPIPipeline:
             }
 
     def _emit_json_quality(self, event: str, code: str, outcome: str,
-                           detail: dict | None = None) -> None:
+                           detail: dict | None = None,
+                           event_id: str | None = None) -> bool:
         # A failed audit must not mutate outputs or requeue LLM work.
         try:
-            emit_quality_event(
+            receipt = emit_quality_event(
                 self.audit_path, run_id=self.audit_run_id,
                 event=event, code=code, scope="slice", outcome=outcome,
                 slice_id=self.promptFile, detail=detail,
+                **({"event_id": event_id} if event_id is not None else {}),
             )
+            return receipt is not None
         except Exception as audit_error:
             print(f"⚠️ processing_quality audit failed: {type(audit_error).__name__}")
+            return False
 
     def _json_repair_comparison_detail(self, before: str, after: str,
                                        parse_error: json.JSONDecodeError) -> dict | None:
@@ -3820,10 +3827,31 @@ class PromptAPIPipeline:
                 repair_detail = self._json_repair_comparison_detail(
                     retMES, retMES_rep, parse_error,
                 )
-                self._emit_json_quality(
+                # Never write raw JSON into the ordinary Quality JSONL.
+                # Private content capture is fully opt-in and best-effort.
+                # Link only by a fresh event UUID (not basename slice_hint).
+                private_event_id = (
+                    uuid.uuid4().hex if capture_enabled() and
+                    bool(self.audit_path) and bool(self.audit_run_id)
+                    else None
+                )
+                audit_ok = self._emit_json_quality(
                     "slice_json_repair", "JSON_REPAIR_SUCCEEDED",
                     "recovered", detail=repair_detail,
+                    event_id=private_event_id,
                 )
+                if private_event_id is not None and audit_ok:
+                    try:
+                        write_private_repair(
+                            configured_private_root(),
+                            self.audit_run_id,
+                            private_event_id,
+                            retMES, retMES_rep,
+                        )
+                    except Exception:
+                        # Do not print content, paths or exception messages.
+                        # Missing private evidence must never fail LLM work.
+                        print("⚠️ PRIVATE_JSON_REPAIR_CAPTURE_UNAVAILABLE")
                 print("Successfully repair with LLM.")
                 print("repaired retMES_rep: [JSON 原文省略；請看 GUI 修復差異分析]")
                 return [],retMES_rep
