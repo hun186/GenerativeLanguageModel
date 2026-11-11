@@ -67,6 +67,13 @@ def log_rerun_config(rerun_cfg: Dict[str, Any], diagnostics: Dict[str, Any]) -> 
     elif diagnostics.get("base_has_rerun"):
         print("來源：es_config_file.rerun（主 YAML 未設定 rerun，將完整繼承）")
 
+    if diagnostics.get("base_has_rerun"):
+        # Backward-compatible: do not silently change private workstation
+        # rerun behavior. Make an accidental policy inheritance actionable.
+        print("⚠️  偵測到 ES 連線 Python 內的舊 rerun：可能被多份任務 YAML 共用。")
+        print("  - 建議：逐份確認任務 YAML 後，手動移除私人 .py 的 rerun。")
+        print("  - 相容模式仍會合併舊值；此警告不代表設定已停用。")
+
     overridden = diagnostics.get("overridden_keys") or []
     inherited = diagnostics.get("inherited_keys") or []
     yaml_only = diagnostics.get("yaml_only_keys") or []

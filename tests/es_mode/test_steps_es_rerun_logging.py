@@ -51,6 +51,8 @@ def test_log_rerun_config_warns_about_source_and_effective_settings(capsys):
     out = capsys.readouterr().out
     assert "ES rerun 設定會影響 pending / 重跑判斷" in out
     assert "來源：es_config_file.rerun + 主 YAML rerun" in out
+    assert "偵測到 ES 連線 Python 內的舊 rerun" in out
+    assert "相容模式仍會合併舊值" in out
     assert "覆寫 key：pipeline_hash" in out
     assert "繼承 key：enable, force_since, required_output_checks" in out
     assert "- required_output_checks: list[1]" in out
@@ -59,3 +61,17 @@ def test_log_rerun_config_warns_about_source_and_effective_settings(capsys):
     assert "寫回 ES meta.pipeline_hash" in out
     assert "若值與既有 output meta 不一致" in out
     assert "既有 output 重新進入 pending" in out
+
+
+def test_yaml_only_rerun_has_no_legacy_warning(capsys):
+    rerun = {"enable": True, "required_output_checks": []}
+    log_rerun_config(rerun, {
+        "base_has_rerun": False,
+        "yaml_has_rerun": True,
+        "overridden_keys": [],
+        "inherited_keys": [],
+        "yaml_only_keys": ["enable", "required_output_checks"],
+    })
+    stdout = capsys.readouterr().out
+    assert "來源：主 YAML rerun" in stdout
+    assert "偵測到 ES 連線 Python 內的舊 rerun" not in stdout
