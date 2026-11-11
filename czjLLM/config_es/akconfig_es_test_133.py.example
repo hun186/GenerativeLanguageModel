@@ -74,20 +74,15 @@ rerun = {
     "fallback_date_field": "update_time_ai",
 
     # ✅ 新增：必要欄位檢查（output存在但缺這些欄位/格式不對，也要重跑）
+    # SRAF: Event date or explicit unknown may pass; Timeline may be empty.
+    # This checks output structure, NOT source semantic date completeness.
+    # Hash/force/meta replay settings remain independent.
     "required_output_checks": [
         {
-            # 可寫相對 output_col 的路徑（預設 relative_to_output=True）
-            "path": "Event_Timeline.time_iso",
-    
-            # 驗證器：目前 time_iso 為 ISO 8601 datetime
-            "validator": "date",
-            "format": "iso8601",
-    
-            # 至少要找到幾個合法值（預設 1）
+            "path": "multidim_event_json",
+            "validator": "multidim_event_time",
             "min_valid_count": 1,
-    
-            # 預設 True：會自動補成 output_col.path
-            "relative_to_output": True
+            "relative_to_output": False,
         }
     ]
 }

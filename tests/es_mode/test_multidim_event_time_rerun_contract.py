@@ -91,3 +91,18 @@ def test_all_three_sraf_es_yaml_examples_use_event_time_not_timeline_minimum():
         assert "validator: multidim_event_time" in content
         assert "path: multidim_event_json" in content
         assert "path: Event_Timeline.time_iso" not in content
+
+def test_python_es_config_examples_use_event_time_rule():
+    root = Path(__file__).resolve().parents[2] / "czjLLM" / "config_es"
+    for name in (
+        "akconfig_es_fishing.py.example", "akconfig_es_test.py.example",
+        "akconfig_es_test_133.py.example",
+        "akconfig_es_test_satmeta_133.py.example",
+        "akconfig_es_test_srp_133.py.example",
+    ):
+        content = (root / name).read_text(encoding="utf-8")
+        compile(content, name, "exec")
+        assert '"validator": "multidim_event_time"' in content
+        assert '"path": "multidim_event_json"' in content
+        assert '"relative_to_output": False' in content
+        assert '"path": "Event_Timeline.time_iso"' not in content

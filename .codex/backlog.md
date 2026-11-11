@@ -128,3 +128,4 @@
 - [ ] #310 remains Draft, plaintext raw before/after capture must not be auto-merged or enabled without operator privacy/NTFS acceptance.
 
 - [ ] #293 Event-first rerun PR: independently review exact-head tests on Linux/Windows, compare effective operator-private YAML and existing stored-result audit, then explicitly authorize production policy activation; no large-scale ES reprocessing or writes performed here.
+- [ ] #293: design separate restart-safe quality repair budget (2 post-initial attempts suggested) with per-document durable ledger and operator reset. Avoid counting network retries or pending scans; no live replay authorized.

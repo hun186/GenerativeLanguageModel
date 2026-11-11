@@ -136,3 +136,19 @@ legacy `validator: date` remains unchanged for other tasks.
 
 Status: source-only change proposed; no private Elasticsearch query, rewrite,
 production replay or physical Windows acceptance was performed.
+
+### Python sample config parity and repair-attempt budget (future)
+
+Five `config_es/akconfig_es_*.py.example` files now use the Event-first
+`multidim_event_time` check instead of a hard Timeline date minimum. These
+are templates, not the operator's private effective `.py` configurations.
+Other examples without date checks were intentionally left unchanged. Existing
+`pipeline_hash`, `force_since`, and metadata policies remain unchanged.
+
+An automatic maximum (suggested: two quality repair runs after the initial
+extraction) is NOT implemented by this PR. A durable per-document/output-policy
+ledger is required, since failed validation can prevent ES output writeback.
+Increment only after a completed extraction with a quality rejection, never
+on discovery/recheck, network retries or incomplete execution. An idempotent
+concurrent claim/finalize, review state, and explicit operator reset require
+independent testing. Exhaustion must not mark an invalid output as fresh.

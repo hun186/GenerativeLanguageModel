@@ -1,6 +1,7 @@
 # Architecture Decisions
 
 ## Current Summary
+- **2026-11-11 #293:** Event-first rerun accepts explicit unknown/empty Timeline, preserves hash/force policies; operator confirmation pending.
 - **2026-11-10 JSON repair GUI #299:** Reuse quality JSONL, archive reader and GUI. Scalar-only comparison detail on existing JSON repair success event; fixed labels and up to 12 anonymized cases. No raw previews, semantic-fidelity claim, repair policy or sink changes. Suppress mixed stdout JSON payloads.
 - **2026-11-10 Windows ThreadPool choice (pending):** Observe FIRST_COMPLETED Futures, return ordered results, preserve Queue authority. On deadline cancel only queued work and safely drain running Threads, never detach/replay. Completion count is not sink ACK or GPU utilization.
 - **2026-11-10 pending heartbeat safety choice:** Renewal is an opt-in active Worker context, no change to default 300s TTL or on-disk float format. Only exact, still-live owned token can advance; stop and join before release, bound by 1200s monotonic wall time to avoid endless zombie occupancy. Lock timeout is a no-write retry candidate, lost ownership fails closed; no automatic reclaims or evidence that an in-flight HTTP call occupies a GPU.
@@ -87,7 +88,6 @@ The following sections describe the accepted main implementation through PR #239
 - Keep `article_date_iso` and `article_date_precision` as a single consistent publication-date evidence pair from one source slice, validated strictly for null/unknown and day/month/year alignment. Never assemble a plausible-looking date/precision from separate malformed slices or infer the article date from `Event_Timeline`/`time_raw`. This protects indexing semantics from plausible but false publication dates.
 - Preserve Event[] `event_id` uniqueness and linked `event_ids` referential integrity at the strict output profile; no schema-invalid result should be promoted to ES writeback.
 - For buffered ES bulk writes, a successful queue/dispatch is not Row Merger success. Require sink `confirm_writeback()` acknowledgement before releasing source and Success artifacts; on error retain replay evidence and discard only unacknowledged queued actions. Do not confuse acknowledgement with search refresh/readback visibility. Operator must separately prove stored ES results before production bulk replay.
-
 ## Current single-extract resume data-integrity decision
 
 - For one extract-stage `merge_slices: true` JSON stage writeback (Issue #211 / PR #213), **original complete raw source membership is the authority**, not the surviving TODO filenames after successes. Keep the hash-only manifest `_extract_slice_identity/source/original.json` independent of destructible stage snapshots; verify source SHA, ordered raw chunk hashes, saved filename map, effective stage-task hash and original dispatched prompt hashes across `resume` and `smart_reset`.
@@ -198,7 +198,3 @@ The following sections describe the accepted main implementation through PR #239
 
 - Use `NtQueryDirectoryFile` with `FILE_DIRECTORY_INFORMATION`, `ReturnSingleEntry=TRUE`, 64KiB bounded record buffer, strict 64-byte header/UTF-16 lengths, pinned parent HANDLE, and no-follow child `NtCreateFile` before querying private identity. Limit one shared item entry budget and recursion depth, reject reparse points, never reconstruct a path to recurse or read content. Reuse only the old count/code JSON; casefold Windows basenames to avoid missing case-insensitive collisions.
 - Since Windows hosted CI was queued, enable native Windows scanning **only** on explicit `--experimental-windows` and hardcode manual-review/exit 2 even on clean-looking results; keep default Windows unsupported. Do not infer safety/replay, run privileged deletion, or claim NTFS/SMB/live LLM/SQL/ES acceptance. Only after real Windows tests and separately reviewed operator approval may this safety guard be revisited.
-
-## 2026-11-11 / Issue #293 Event-first date completion (pending PR)
-- Do not require nonempty Timeline; preserve SRAF Event as core. Implement opt-in grouped `validator: multidim_event_time` on entire `multidim_event_json`, accepting structurally valid unknown date without an extra LLM. Reuse output profile validation rather than infer source semantics.
-- Keep independent model/pipeline freshness and operator-force gates unchanged; do not bulk refresh existing news.

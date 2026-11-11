@@ -118,3 +118,5 @@
 ## 2026-11-11 / Issue #293 Event-first rerun (pending PR)
 - Replaced 3 ES YAML Timeline minimum-date checks with grouped `multidim_event_time` validator; output-profile time validation reused via read-only classifier. Event date or valid unknown accepted; malformed date/missing Event rejected; date correctness versus source unverified.
 - Added offline contract tests for both ES adapters, date/unknown, malformed/empty Event, legacy validator, and preserved force pipeline hash. Exact-head hosted CI/review and production operator acceptance pending; zero ES/LLM writes.
+
+- 2026-11-11: aligned five Python ES .example date checks to Event-first rule; private effective configs remain unverified. Linux CI had non-date failure at decisions.md >200 line cap; corrected on branch; rerun pending.
