@@ -77,3 +77,40 @@ current model fingerprint/metadata.
 
 Hosted CI verifies synthetic/temporary NDJSON inputs and direct Python
 entrypoints on Linux and Windows 3.10/3.11. No live ES or LLM operation occurs.
+
+## Optional hypothetical policy preview (phase B, no runtime change)
+
+To compare only one **hypothetical** historical rule requiring a valid
+`Event_Timeline.time_iso` (`min_valid_count: 1`) against a proposed
+*date-only* triage, add `--compare-timeline-min-1`:
+
+```bat
+python scripts/audit_multidim_event_time.py --input-ndjson "D:\\private\\es_source_export.jsonl" --human --compare-timeline-min-1
+```
+
+The original seven category counts remain unchanged. Additional aggregate
+`time_rule_comparison` fields distinguish:
+
+- `legacy_fail_but_proposed_date_present`: the hypothetical strict Timeline
+  check rejects a structurally recognizable record although a validated
+  Event or Timeline date exists. **Potential** false rerun, not proof.
+- `legacy_fail_but_proposed_time_unknown`: the old check rejects a record
+  with no validated date; **original article date is unverified**, so a
+  future policy must not fabricate a date or keep retrying blindly.
+- `legacy_time_rule_indeterminate`: malformed time or uncertain structure;
+  neither historical nor proposed policy is labeled successful.
+- `legacy_timeline_min_1_pass/fail`: the single isolated Timeline check
+  only, never the entire active ES rerun or completion decision.
+
+No current or private `required_output_checks`, execution fingerprint,
+`pipeline_hash`, `force_since`, `stale_after_days`, source fidelity, or
+writeback state is read or evaluated. This is an offline scenario, **not an
+effective-config diff or authorization to skip**, and is only as reliable as
+the privately exported, stable source documents. Other rerun reasons may
+remain even if a time rule would pass. The CLI does not contact ES and writes
+nothing. This PR explicitly makes no change to rerun policy.
+
+Before any true rerun semantics change, separately verify the effective
+operator configuration and confirm a sample against original sources and
+sink readback. Preserve an explicit force-overwrite path and test both ES
+pending policy variants before deployment.
