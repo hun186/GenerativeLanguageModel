@@ -95,15 +95,18 @@ def test_event_reader_gui_aggregates_and_rotates_without_payload(tmp_path):
     assert len(stats["repair_analysis_recent"]) == 1
     recent = stats["repair_analysis_recent"][0]
     assert "row-sensitive" not in json.dumps(recent, ensure_ascii=False)
-    assert len(recent["slice_hint"]) == 16
+    assert len(recent["slice_hint"]) == 24
+    assert len(recent["work_item_hint"]) == 24
+    assert recent["lineage_status"] == "ITEM_PATH_DERIVED"
     assert recent["run_id"] == "a"
     assert len(recent["event_hint"]) == 12
     assert len(recent["event_id"]) == 32
     assert "疑似符號修補 1" in format_json_repair_analysis_summary(stats)
-    assert format_json_repair_analysis_case(recent)[5].startswith(str(len(original)))
+    assert format_json_repair_analysis_case(recent)[6].startswith(str(len(original)))
     assert format_json_repair_analysis_case(recent)[1] == "a"
-    assert format_json_repair_analysis_case(recent)[2] == recent["slice_hint"]
-    assert format_json_repair_analysis_case(recent)[3] == recent["event_hint"]
+    assert format_json_repair_analysis_case(recent)[2] == recent["work_item_hint"]
+    assert format_json_repair_analysis_case(recent)[3] == recent["slice_hint"]
+    assert format_json_repair_analysis_case(recent)[4] == recent["event_hint"]
     assert "原始解析錯誤" in format_json_repair_analysis_case_detail(recent)
     assert reader.poll()[0] is False
     rotate_quality_event_stream(audit)
@@ -199,7 +202,8 @@ def test_gui_wiring_uses_contextual_button_and_dedicated_popup_not_a_static_row(
     assert "show_json_repair_review(" in gui
     assert "refresh_repair_analysis()" in gui
     assert '("run", "run_id", 180)' in popup
-    assert '("slice", "切片提示碼", 160)' in popup
+    assert '("item", "工作項目提示碼", 205)' in popup
+    assert '("slice", "切片追蹤提示碼", 205)' in popup
     assert '("event", "單次修復事件", 130)' in popup
     assert "疑似鍵名片段數" in popup
     assert 'orient="horizontal"' in popup
@@ -235,14 +239,16 @@ def test_identical_slice_basename_keeps_distinct_event_ids_and_run_context(tmp_p
             str(audit), run_id="task-run-42",
             event="slice_json_repair", code="JSON_REPAIR_SUCCEEDED",
             scope="slice", outcome="recovered",
-            slice_id=str(tmp_path / ("different-folder-" + str(i)) / "same.txt"),
+            slice_id=str(tmp_path / ("different-folder-" + str(i)) / "TODO" / "1.txt"),
             detail=dict(detail, repair_class=code),
         )
     reader = QualityRunTailReader(str(quality_event_path(str(audit))))
     _changed, stats = reader.poll()
     cases = stats["repair_analysis_recent"]
     assert len(cases) == 2
-    assert cases[0]["slice_hint"] == cases[1]["slice_hint"]
+    assert cases[0]["slice_hint"] != cases[1]["slice_hint"]
+    assert cases[0]["work_item_hint"] != cases[1]["work_item_hint"]
+    assert all(x["lineage_status"] == "ITEM_PATH_DERIVED" for x in cases)
     assert cases[0]["event_id"] != cases[1]["event_id"]
     assert cases[0]["event_hint"] != cases[1]["event_hint"]
     assert all(x["run_id"] == "task-run-42" for x in cases)
