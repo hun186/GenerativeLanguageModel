@@ -209,6 +209,10 @@ def test_standalone_python_script_works_without_pythonpath(tmp_path):
             timeout=30,
         )
         assert result.returncode == expected_status, result.stderr
-        assert output_marker in (result.stdout or ""), (\n            f"standalone case={case_no}; returncode={result.returncode}; "\n            f"stderr={result.stderr!r}; stdout={result.stdout!r}"\n        )\n        assert "ModuleNotFoundError" not in result.stderr
+        assert output_marker in (result.stdout or ""), (
+            f"standalone case={case_no}; returncode={result.returncode}; "
+            f"stderr={result.stderr!r}; stdout={result.stdout!r}"
+        )
+        assert "ModuleNotFoundError" not in result.stderr
         assert "PRIVATE_" not in result.stdout
         assert meter_path.read_bytes() == untouched
