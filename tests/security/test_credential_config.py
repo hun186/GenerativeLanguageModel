@@ -12,6 +12,7 @@ from czjLLM.utilities.credential_config import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
+ES_CANONICAL_EXAMPLE = ROOT / "czjLLM/config_es/connection.py.example"
 ES_PROFILES = [
     "akconfig_es_fishing.py",
     "akconfig_es_test.py",
@@ -27,16 +28,20 @@ class CredentialConfigTests(unittest.TestCase):
     def test_es_profiles_never_embed_auth_or_production_endpoints(self):
         clear = {"CZJLLM_ENV": "dev", "CZJLLM_ES_HOST": "", "CZJLLM_ES_USERNAME": "", "CZJLLM_ES_PASSWORD": ""}
         with patch.dict(os.environ, clear):
-            for filename in ES_PROFILES:
-                with self.subTest(filename=filename):
-                    path = ROOT / "czjLLM" / "config_es" / (filename + ".example")
-                    source = path.read_text(encoding="utf-8")
-                    self.assertNotRegex(source, r"(?m)^es_pass\s*=\s*['\"]")
-                    self.assertIn("CZJLLM_ES_PASSWORD", source)
-                    cfg = runpy.run_path(str(path))
-                    self.assertEqual(cfg["es_pass"], "")
-                    self.assertEqual(cfg["es_user"], "")
-                    self.assertEqual(cfg["es_host"], "http://localhost:9200")
+
+            # Only one public template now exists; preserve credential/TLS
+            # safety assertions instead of weakening the gate.
+            path = ES_CANONICAL_EXAMPLE
+            source = path.read_text(encoding="utf-8")
+            self.assertNotRegex(source, r"(?m)^es_pass\s*=\s*['\"]")
+            self.assertIn("CZJLLM_ES_PASSWORD", source)
+            cfg = runpy.run_path(str(path))
+            self.assertEqual(cfg["es_pass"], "")
+            self.assertEqual(cfg["es_user"], "")
+            self.assertEqual(cfg["es_host"], "")
+            self.assertEqual(cfg["es_index"], "")
+            self.assertTrue(cfg["es_verify_certs"])
+            self.assertTrue(cfg["es_ssl_assert_hostname"])
         # A set of missing variables must not reuse old hardcoded connection values.
         for variable in clear:
             with patch.dict(os.environ, {variable: ""}, clear=False):
@@ -47,12 +52,12 @@ class CredentialConfigTests(unittest.TestCase):
                 "CZJLLM_ES_USERNAME": "service-user",
                 "CZJLLM_ES_PASSWORD": "synthetic"+"_for_test"}
         with patch.dict(os.environ, fake):
-            for name in ES_PROFILES:
-                cfg = runpy.run_path(str(ROOT / "czjLLM" / "config_es" / (name + ".example")))
-                self.assertEqual(cfg["es_host"], fake["CZJLLM_ES_HOST"])
-                self.assertEqual(cfg["es_user"], fake["CZJLLM_ES_USERNAME"])
-                self.assertEqual(cfg["es_pass"], fake["CZJLLM_ES_PASSWORD"])
-                self.assertIs(validate_es_config(cfg), cfg)
+
+            cfg = runpy.run_path(str(ES_CANONICAL_EXAMPLE))
+            self.assertEqual(cfg["es_host"], fake["CZJLLM_ES_HOST"])
+            self.assertEqual(cfg["es_user"], fake["CZJLLM_ES_USERNAME"])
+            self.assertEqual(cfg["es_pass"], fake["CZJLLM_ES_PASSWORD"])
+            self.assertIs(validate_es_config(cfg), cfg)
 
     def test_partial_es_auth_fails_without_disclosing_input(self):
         for bad in ({"es_user": "user", "es_pass": None},
@@ -95,12 +100,11 @@ class CredentialConfigTests(unittest.TestCase):
                 "CZJLLM_ES_PASSWORD": "".join(["synthetic", "_for_test"])}
         with patch.dict(os.environ, fake):
             os.environ.pop("CZJLLM_ES_HOST", None)
-            for filename in ES_PROFILES:
-                with self.subTest(filename=filename):
-                    cfg = runpy.run_path(str(ROOT / "czjLLM" / "config_es" / (filename + ".example")))
-                    self.assertEqual(cfg["es_host"], "")
-                    with self.assertRaisesRegex(ValueError, "ES production connection requires"):
-                        validate_es_config(cfg)
+
+            cfg = runpy.run_path(str(ES_CANONICAL_EXAMPLE))
+            self.assertEqual(cfg["es_host"], "")
+            with self.assertRaisesRegex(ValueError, "ES production connection requires"):
+                validate_es_config(cfg)
 
     def test_sql_production_is_fail_closed(self):
         with patch.dict(os.environ, {"CZJLLM_ENV": "production"}):
@@ -195,8 +199,11 @@ class CredentialConfigTests(unittest.TestCase):
             for name in names:
                 with self.subTest(kind=kind, profile=name):
                     original = root / "czjLLM" / kind / name
-                    example = original.with_name(name + ".example")
-                    self.assertTrue(example.is_file())
+                    if kind == "config_sql":
+                        self.assertTrue(original.with_name(name + ".example").is_file())
+                    else:
+                        self.assertTrue(ES_CANONICAL_EXAMPLE.is_file())
+                        self.assertFalse(original.with_name(name + ".example").exists())
                     self.assertFalse(original.exists())
                     tracked = subprocess.run(
                         ["git", "ls-files", "--error-unmatch", "--", str(original.relative_to(root))],
