@@ -88,3 +88,6 @@
 
 ## 2026-11-11 — Legacy basename-only TODO slice hints are ambiguous
 - Existing Quality JSONL slice_id was reduced to Path(...).name; different item roots with TODO/1.txt all hashed identically, and longer SHA cannot fix information already lost. New optional item-root+basename fingerprints fix current-path diagnostic collisions only (not original document lineage): moves/renames, path aliases, same-name overwrites and dictionary guessing of predictable paths remain limitations. Historical records continue labeled `BASENAME_ONLY`; no false recovery. Review/Hosted CI and operator physical GUI pending.
+
+## 2026-11-11 — Raw-capture Draft #310 still operator gated
+- After #311 main, Draft raw JSON storage must retain new path-context Quality hints and must not reset GUI to basename-only. Local-only filesystem checks (including stacked mounts), Windows ACL/backup policy, fail-closed private file handling and explicit operator consent remain high-risk acceptance gates. No automatic merge or live enable.
