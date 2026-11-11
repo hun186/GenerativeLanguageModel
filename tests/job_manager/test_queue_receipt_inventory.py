@@ -1,6 +1,9 @@
 """Real temporary Meter files; no LLM, Queue mutation, or production sink."""
 import json
+import os
 from pathlib import Path
+import subprocess
+import sys
 
 import pytest
 
@@ -175,3 +178,37 @@ def test_cli_help_requires_explicit_meter(capsys):
     output = capsys.readouterr().out
     assert "--meter-file" in output
     assert "--human" in output
+
+
+def test_standalone_python_script_works_without_pythonpath(tmp_path):
+    """Exercise the documented entrypoint, not a pytest-mediated import."""
+    repo = Path(__file__).resolve().parents[2]
+    script = repo / "scripts" / "inspect_queue_receipts.py"
+    meter_path = tmp_path / "PRIVATE_run_meter.json"
+    meter_path.write_text(json.dumps(_meter(queue_running=19, rows={
+        "PRIVATE_ROW": {"status": "merged", "queue_pending": 0,
+                        "queue_running": 19},
+    })), encoding="utf-8")
+    untouched = meter_path.read_bytes()
+    env = os.environ.copy()
+    env.pop("PYTHONPATH", None)
+    env.pop("PYTHONHOME", None)
+    # cwd is deliberately outside repo, proving imports are rooted to script.
+    for args, expected_status, output_marker in (
+        (["--help"], 0, "--meter-file"),
+        (["--meter-file", str(meter_path)], 2, "REVIEW_REQUIRED"),
+        (["--meter-file", str(meter_path), "--human"], 2, "Queue 收據唯讀盤點"),
+    ):
+        result = subprocess.run(
+            [sys.executable, str(script), *args],
+            cwd=str(tmp_path),
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        assert result.returncode == expected_status, result.stderr
+        assert output_marker in result.stdout
+        assert "ModuleNotFoundError" not in result.stderr
+        assert "PRIVATE_" not in result.stdout
+        assert meter_path.read_bytes() == untouched
