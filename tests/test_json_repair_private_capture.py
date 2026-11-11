@@ -353,12 +353,12 @@ def test_hidden_local_child_beneath_remote_ancestor_is_not_accepted():
     """Remote ancestor overmount can hide an older, longer local child path."""
     import czjLLM.utilities.json_repair_private_capture as cap
 
-    root = "19 0 8:1 / / rw,relatime - ext4 /dev/disk rw\\n"
+    root = "19 0 8:1 / / rw,relatime - ext4 /dev/disk rw\n"
     local_child = (
-        "20 19 8:2 / /vault/private rw,relatime - ext4 /dev/child rw\\n"
+        "20 19 8:2 / /vault/private rw,relatime - ext4 /dev/child rw\n"
     )
     remote_parent = (
-        "21 19 0:99 / /vault rw,relatime - nfs4 srv:/vault rw\\n"
+        "21 19 0:99 / /vault rw,relatime - nfs4 srv:/vault rw\n"
     )
     for mounts in (
         root + local_child + remote_parent,
