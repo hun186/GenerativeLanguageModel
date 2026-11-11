@@ -16,6 +16,7 @@ import threading
 from uuid import uuid4
 
 from czjLLM.utilities.json_repair_analysis import validate_repair_detail
+from czjLLM.utilities.quality_slice_lineage import quality_slice_location_hints
 
 _WRITE_LOCK = threading.Lock()
 _KNOWN_EVENTS = {
@@ -147,6 +148,13 @@ def emit_quality_event(
         "document_id": str(document_id or ""),
         "slice_id": Path(str(slice_id)).name[:160] if slice_id else "",
     }
+    if scope == "slice":
+        # Derive before the legacy basename-only privacy redaction below:
+        # the item root is needed to disambiguate TODO/1.txt in other items.
+        work_hint, slice_trace_hint = quality_slice_location_hints(slice_id)
+        if work_hint and slice_trace_hint:
+            data["work_item_hint"] = work_hint
+            data["slice_trace_hint"] = slice_trace_hint
     # Long SQL/ES keys must retain distinct identities even with shared prefixes.
     # Store a stable bounded fingerprint instead of silently merging documents.
     if len(data["document_id"]) > 160:
@@ -236,6 +244,20 @@ class QualityAccumulator:
                 record.get("slice_id", "") != ""):
             # Defensive read boundary: reject preexisting/tampered JSONL identities.
             return False
+        # Optional v1 diagnostic hints on new slice events only. Older
+        # basename-only archives remain valid but must never be represented
+        # as having verified item-level lineage.
+        has_item = "work_item_hint" in record
+        has_trace = "slice_trace_hint" in record
+        if has_item != has_trace:
+            return False
+        if has_item:
+            if _EVENT_SCOPES[event] != "slice":
+                return False
+            for hint in (record["work_item_hint"], record["slice_trace_hint"]):
+                if (not isinstance(hint, str) or len(hint) != 24 or
+                        any(c not in "0123456789abcdef" for c in hint)):
+                    return False
         if "detail" in record and not (
             event == "slice_json_repair" and code == "JSON_REPAIR_SUCCEEDED"
             and validate_repair_detail(record["detail"])
@@ -296,15 +318,25 @@ class QualityAccumulator:
                         else ""
                     )
                     slice_id = record.get("slice_id", "")
-                    # Only the basename was retained by the quality event.
-                    # This hash is a *hint*, not unique physical slice lineage.
-                    hint = (hashlib.sha256(slice_id.encode("utf-8")).hexdigest()[:16]
-                            if isinstance(slice_id, str) and slice_id else "")
+                    trace = record.get("slice_trace_hint") or ""
+                    work = record.get("work_item_hint") or ""
+                    # For old archives only, preserve the basename-only
+                    # short hash, but clearly flag that it can collide for
+                    # every independent TODO/1.txt.
+                    fallback = (
+                        hashlib.sha256(slice_id.encode("utf-8")).hexdigest()[:16]
+                        if isinstance(slice_id, str) and slice_id else ""
+                    )
                     event_id = str(record.get("event_id") or "")
                     run_id = record.get("run_id")
                     self._repair_analysis_recent.append({
                         "code": analysis_code, "ts": timestamp,
-                        "slice_hint": hint, "event_id": event_id,
+                        "work_item_hint": work,
+                        "slice_hint": trace or fallback,
+                        "lineage_status": (
+                            "ITEM_PATH_DERIVED" if trace else "BASENAME_ONLY"
+                        ),
+                        "event_id": event_id,
                         "event_hint": event_id[:12],
                         "run_id": run_id[:96] if isinstance(run_id, str) else "",
                         "detail": dict(record["detail"]),
