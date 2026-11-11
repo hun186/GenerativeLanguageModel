@@ -309,3 +309,40 @@ def test_stacked_mount_same_path_is_rejected_regardless_of_order():
     # A more specific unambiguous mount supersedes a less-specific ancestor.
     mounts = "19 0 8:1 / / rw - ext4 /dev/local rw\n" + remote
     assert not cap._posix_local_filesystem(Path("/vault/private"), mountinfo=mounts)
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Linux mountinfo safety contract")
+@pytest.mark.parametrize("preexisting", [True, False])
+def test_nested_run_mount_rejected_before_any_private_artifact(
+    monkeypatch, tmp_path, preexisting,
+):
+    """A local parent does not prove the child run directory is local."""
+    import czjLLM.utilities.json_repair_private_capture as cap
+
+    private = root(tmp_path)
+    run_id = "nested-run-mount"
+    event_id = uuid4().hex
+    target = private / ("run-" + cap._validate_run_id(run_id)[:24])
+    if preexisting:
+        target.mkdir(mode=0o700)
+    original_check = cap._posix_local_filesystem
+    visited = []
+
+    def verify_actual_destination(path, *, mountinfo=None):
+        visited.append(Path(path))
+        if Path(path) == target:
+            return False  # Simulated NFS/CIFS mount directly on this run dir.
+        return original_check(path, mountinfo=mountinfo)
+
+    monkeypatch.setattr(cap, "_posix_local_filesystem", verify_actual_destination)
+    with pytest.raises(ValueError, match="POSIX_LOCAL_FILESYSTEM_UNVERIFIED"):
+        write_private_repair(private, run_id, event_id, "PRIVATE", "REPAIRED")
+    assert target in visited
+    assert target.is_dir()
+    assert list(target.iterdir()) == []  # No lock file or plaintext snapshot.
+
+    with pytest.raises(ValueError, match="POSIX_LOCAL_FILESYSTEM_UNVERIFIED"):
+        read_private_repair(private, run_id, event_id)
+    with pytest.raises(ValueError, match="POSIX_LOCAL_FILESYSTEM_UNVERIFIED"):
+        clear_private_run(private, run_id, "DELETE_PRIVATE_JSON_REPAIRS")
+    assert list(target.iterdir()) == []
