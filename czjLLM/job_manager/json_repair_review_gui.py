@@ -12,7 +12,8 @@ from czjLLM.utilities.json_repair_change_map import change_map_segments
 _COLUMNS = (
     ("ts", "觀察時間", 168),
     ("run", "run_id", 180),
-    ("slice", "切片提示碼", 160),
+    ("item", "工作項目提示碼", 205),
+    ("slice", "切片追蹤提示碼", 205),
     ("event", "單次修復事件", 130),
     ("kind", "修復類型（推測）", 156),
     ("chars", "原始→修復字數", 160),
@@ -43,8 +44,9 @@ def show_json_repair_review(
     summary.pack(anchor="w", fill="x", pady=(5, 0))
     disclaimer = ttk.Label(
         heading, foreground="#9a5800", justify="left",
-        text=("切片提示碼是截短雜湊，非唯一鍵；單次修復事件 ID 用於分辨重複觀察。"
-              " 統計不保存 JSON 原文，亦不證明內容語意或資料完整。"),
+        text=("新紀錄以工作項目位置＋檔名產生切片追蹤提示碼，TODO／RUNNING 維持相同；"
+              "舊紀錄僅有檔名，跨文件可能重複。提示碼並非永久文件 UUID；"
+              "單次事件 ID 僅辨識修復次數。統計不保存 JSON 原文，也不證明內容完整。"),
     )
     disclaimer.pack(anchor="w", fill="x", pady=(3, 0))
 
@@ -68,7 +70,7 @@ def show_json_repair_review(
     for key, label, width in _COLUMNS:
         tree.heading(key, text=label)
         tree.column(key, width=width, minwidth=width, stretch=False,
-                    anchor="w" if key in {"ts", "run", "slice", "event", "kind"} else "center")
+                    anchor="w" if key in {"ts", "run", "item", "slice", "event", "kind"} else "center")
     vertical = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
     horizontal = ttk.Scrollbar(frame, orient="horizontal", command=tree.xview)
     tree.configure(yscrollcommand=vertical.set, xscrollcommand=horizontal.set)
