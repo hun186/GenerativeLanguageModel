@@ -117,3 +117,6 @@
 
 ## 2026-11-11 — Draft #310 after #311 (PENDING acceptance)
 - #311 item-root/slice path hints are already on main `efec20a07eca64f2ff6bc81b8523ef79f6d1b88b`; private capture Draft #310 must preserve this additive Quality schema and popup columns, not revert to basename-only. Staged optional raw text snapshots, event-id join and manual deletion remain plaintext/default-OFF, not operator-authorized. Security Review, Hosted CI and physical Windows NTFS ACL acceptance pending.
+
+## 2026-11-11 — Draft #310 nested run mount Codex P2 corrective (PENDING)
+- Review found remote nested `run-<digest>` mount could bypass root-only filesystem check. `_run_dir`/`_existing_run_dir` now fail closed for remote/unverified POSIX child before lock/snapshot, read, or clear; synthetic preexisting and newly created child tests added. This is not protection from post-check mount races, hostile local writers, Windows ACL/backup exposure, or permission to enable live raw capture. Latest-head Hosted Linux/Windows/secret and formal Codex security re-review PENDING; Draft, NOT merged.
