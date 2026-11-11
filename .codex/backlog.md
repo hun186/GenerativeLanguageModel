@@ -111,3 +111,8 @@
 - [ ] Phase A independent PR: validate local NDJSON audit on Hosted CI and formal review, then Merge only after all normal gates. Audit is a triage tool, not authoritative real-ES evidence.
 - [ ] Operator supplies separately verified **read-only** actual ES exported-source sample and current effective rerun config; check whether Timeline minimum=1, pipeline_hash/fingerprint, stale or force rules are responsible before changing skip/retry semantics. Do not gather credentials or commit private outputs.
 - [ ] Issue #293 phase B: implement grouped Event/Timeline dates + explicit unknown semantics with hard-fail/warning separation, test source/document/force-rerun compatibility, then independently gate deployment. No bulk rewrite.
+
+## 2026-11-11 / #293 hypothetical date rule comparison — pending verification
+- [x] #306 phase A historical Event/Timeline time audit Hosted Linux/Windows/Secret Scan and formal review PASS, Squash Merged `7b4a2cfc780909cf877950e29eb59f27842d0ef7`.
+- [ ] Phase B separate read-only `--compare-timeline-min-1` snapshot reports legacy Timeline-required hypothetical results alongside proposed validated-date/unknown distinctions; requires exact-head CI and formal Review before Merge. It never decides real rerun eligibility.
+- [ ] Before any actual ES rerun policy change: operator-verified effective config (`min_valid_count`, fingerprint, `pipeline_hash`, `force_since`, stale rules), representative private output/source validation, preservation of force-overwrite, and reliable sink readback. A runtime change must be a separately reviewed/authorized PR, not silently folded into the preview.
