@@ -53,7 +53,12 @@ def _pipeline_hash_source(diagnostics: Dict[str, Any]) -> str:
     return "未知來源"
 
 
-def log_rerun_config(rerun_cfg: Dict[str, Any], diagnostics: Dict[str, Any]) -> None:
+def log_rerun_config(
+    rerun_cfg: Dict[str, Any],
+    diagnostics: Dict[str, Any],
+    *,
+    es_config_file: str | None = None,
+) -> None:
     if not rerun_cfg and not diagnostics.get("base_has_rerun") and not diagnostics.get("yaml_has_rerun"):
         return
 
@@ -67,16 +72,51 @@ def log_rerun_config(rerun_cfg: Dict[str, Any], diagnostics: Dict[str, Any]) -> 
     elif diagnostics.get("base_has_rerun"):
         print("來源：es_config_file.rerun（主 YAML 未設定 rerun，將完整繼承）")
 
-    if diagnostics.get("base_has_rerun"):
-        # Backward-compatible: do not silently change private workstation
-        # rerun behavior. Make an accidental policy inheritance actionable.
-        print("⚠️  偵測到 ES 連線 Python 內的舊 rerun：可能被多份任務 YAML 共用。")
-        print("  - 建議：逐份確認任務 YAML 後，手動移除私人 .py 的 rerun。")
-        print("  - 相容模式仍會合併舊值；此警告不代表設定已停用。")
-
     overridden = diagnostics.get("overridden_keys") or []
     inherited = diagnostics.get("inherited_keys") or []
     yaml_only = diagnostics.get("yaml_only_keys") or []
+
+    if diagnostics.get("base_has_rerun"):
+        # Warn only. Never change how old private Python and task YAML merge.
+        # Do not print connection credentials or arbitrary setting values.
+        print("⚠️  [ES_RERUN_LEGACY_PY] 偵測到 ES 連線 Python 內的舊 rerun。")
+        if isinstance(es_config_file, str) and es_config_file.strip():
+            # File name is enough to locate the setting; avoid multiline
+            # injection and dumping a private path with user-specific parts.
+            from pathlib import PurePath
+            name = PurePath(es_config_file.replace("\\\\", "/")).name
+            if name:
+                print(f"  - YAML 的 es_config_file 指向：{name}")
+                print("  - 注意：實際載入可能是 config_es/private/ 下的同名檔。")
+        if not diagnostics.get("yaml_has_rerun"):
+            print("⚠️  [ES_RERUN_PY_ONLY] 任務 YAML 未設定 rerun，全部沿用連線 Python 的舊政策。")
+        elif inherited:
+            print("⚠️  [ES_RERUN_PY_INHERITED] YAML 只有部分覆寫，仍繼承 Python 的 rerun keys。")
+            print(f"  - 從 Python 繼承：{', '.join(inherited)}")
+        else:
+            print("  - [ES_RERUN_PY_SHADOWED] 此任務的 Python rerun keys 已全部被 YAML 覆寫。")
+            print("  - 目前沒有 Python key 被繼承，但共用檔仍應日後整理。")
+
+        effective_inherited = set(inherited)
+        if rerun_cfg.get("enable"):
+            risks = {
+                "force_since": "force_since：可能重新挑出較早處理的文件",
+                "pipeline_hash": "pipeline_hash：不同／缺少版本標記的文件可能重新處理",
+                "force_if_missing_meta": "force_if_missing_meta：缺 meta 的舊輸出可能重新處理",
+                "required_output_checks": "required_output_checks：可能仍使用舊 Timeline 必填條件",
+                "stale_after_days": "stale_after_days：較早輸出的文件可能重新處理",
+                "model_tag": "model_tag：模型標籤不符的文件可能重新處理",
+                "execution_fingerprint": "execution_fingerprint：執行身分不符可能重新處理",
+            }
+            for key, meaning in risks.items():
+                if key in effective_inherited and rerun_cfg.get(key):
+                    print(f"  - ⚠️  繼承的重跑風險：{meaning}")
+        if inherited:
+            print("  - 修正：先將需要的 rerun 規則完整移至該任務 YAML，")
+            print("          再從對應私人連線 .py 移除 rerun = {...}。")
+        else:
+            print("  - 修正：其他共用任務可能仍受影響，日後檢查私人連線 .py。")
+        print("  - 相容模式仍會合併舊值；此警告不代表設定已停用。")
     if overridden:
         print(f"覆寫 key：{', '.join(overridden)}")
     if inherited:

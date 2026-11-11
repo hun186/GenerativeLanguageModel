@@ -94,7 +94,10 @@ def resolve_es_connection(ctx, get_param, args):
     # 主 YAML 可覆寫 es_config_file 內的 rerun 設定，方便用 pipeline_hash
     # 做測試重跑；其餘未覆寫欄位仍沿用 ES config。
     rerun_cfg, rerun_diagnostics = resolve_rerun_config(es_cfg, get_param)
-    log_rerun_config(rerun_cfg, rerun_diagnostics)
+    log_rerun_config(
+        rerun_cfg, rerun_diagnostics,
+        es_config_file=get_param("es_config_file", None) or getattr(ctx, "es_config_file", None),
+    )
     ctx.expected_execution_fingerprint = rerun_cfg.get("execution_fingerprint")
 
     adapter_cfg = {

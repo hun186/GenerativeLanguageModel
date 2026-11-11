@@ -103,3 +103,28 @@ Python + YAML `rerun` 淺層合併。此次先把**公開範例改為 YAML-only*
 啟動時若程式偵測到私人連線 Python 仍含舊 `rerun`，會顯示明確警告。
 但為避免突然改掉舊排程，本 PR 不會自動忽略或停用這些值；它仍保留
 原來的合併語意，直到操作員完成私人設定遷移。
+
+## 內網舊連線 Python 的啟動診斷（唯讀提醒）
+
+部署新程式時，即使內網舊連線 `.py` 尚未整理，若其中有 `rerun`
+且與當前 YAML 合併，就會在**啟動的 rerun 摘要**顯示：
+
+- `[ES_RERUN_LEGACY_PY]`：連線 Python 含舊的 `rerun`；顯示 YAML
+  指定的 `es_config_file` 檔名（實際設定可能由 `private/` 同名檔載入）。
+- `[ES_RERUN_PY_ONLY]`：此 YAML 完全沒有 `rerun`，此次從 Python
+  沿用所有重跑設定。
+- `[ES_RERUN_PY_INHERITED]`：YAML 只設定部分 key，其他 key 仍從
+  Python 繼承；列出繼承的鍵名及可能引發重跑的項目。
+- `[ES_RERUN_PY_SHADOWED]`：此任務 YAML 已逐鍵覆寫 Python 舊
+  `rerun`（本次沒有繼承），但提醒日後整理共用檔。
+
+常見的意外重跑來源包含 `force_since`、`pipeline_hash`、
+`force_if_missing_meta`、`required_output_checks` 與 `stale_after_days`。
+警告不輸出私人連線帳密、不列印任意來源設定值，不呼叫 ES、也不修改
+任何 `rerun`、YAML、私人 `.py` 或已存資料。只在有舊 Python
+`rerun` 時顯示；只從 YAML 取得政策則不產生此類警告。
+
+**後續修正方式：**先把每份任務需要的 `rerun` 放到自己的 YAML，
+確認生效的來源／覆寫與繼承鍵，再從共用私人連線 `.py` 移除
+整個 `rerun = {...}`。在完成前，**舊設定仍照原本方式生效**，
+不要誤以為警告代表自動停用重跑。
