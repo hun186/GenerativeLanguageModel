@@ -195,11 +195,11 @@ def test_standalone_python_script_works_without_pythonpath(tmp_path):
     env.pop("PYTHONHOME", None)
     env["PYTHONIOENCODING"] = "utf-8"  # Portable redirected stdout on Windows hosts.
     # cwd is deliberately outside repo, proving imports are rooted to script.
-    for args, expected_status, output_marker in (
+    for case_no, (args, expected_status, output_marker) in enumerate((
         (["--help"], 0, "--meter-file"),
         (["--meter-file", str(meter_path)], 2, "REVIEW_REQUIRED"),
         (["--meter-file", str(meter_path), "--human"], 2, "Queue 收據唯讀盤點"),
-    ):
+    ), 1):
         result = subprocess.run(
             [sys.executable, str(script), *args],
             cwd=str(tmp_path),
@@ -209,7 +209,6 @@ def test_standalone_python_script_works_without_pythonpath(tmp_path):
             timeout=30,
         )
         assert result.returncode == expected_status, result.stderr
-        assert output_marker in result.stdout
-        assert "ModuleNotFoundError" not in result.stderr
+        assert output_marker in (result.stdout or ""), (\n            f"standalone case={case_no}; returncode={result.returncode}; "\n            f"stderr={result.stderr!r}; stdout={result.stdout!r}"\n        )\n        assert "ModuleNotFoundError" not in result.stderr
         assert "PRIVATE_" not in result.stdout
         assert meter_path.read_bytes() == untouched
