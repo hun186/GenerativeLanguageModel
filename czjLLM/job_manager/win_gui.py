@@ -902,6 +902,11 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                 pass
         return
 
+    # Import only inside the Windows GUI process, but OUTSIDE the Tk import
+    # exception handler. Import failures must be visible as implementation
+    # failures, not swallowed by an unrelated UI operation.
+    from czjLLM.job_manager.json_repair_review_gui import show_json_repair_review
+
     root = tk.Tk()
     root.title(title or "LLM 分析進度")
     root.geometry("760x500")  # 高度略增，容納 ETA 區塊
@@ -1215,6 +1220,8 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     # always-present table that consumes height for non-JSON tasks.
     quality_summary_row = ttk.Frame(quality_section)
     quality_summary_row.pack(fill="x", padx=8, pady=(2, 3))
+    quality_summary_row.columnconfigure(0, weight=1)
+    quality_summary_row.columnconfigure(1, weight=0)
     _repair_review_window = None
 
     def _open_json_repair_review():
@@ -1225,7 +1232,6 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                 _repair_review_window.lift()
                 _repair_review_window.focus_set()
                 return
-            from czjLLM.job_manager.json_repair_review_gui import show_json_repair_review
             _repair_review_window = show_json_repair_review(
                 root, lambda: _quality_stats,
                 format_json_repair_analysis_case,
@@ -1250,9 +1256,9 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
         quality_summary_row, text=format_quality_summary(_quality_stats),
         anchor="w", justify="left", wraplength=720,
     )
-    quality_summary.pack(side="left", fill="x", expand=True)
-    # Button is packed by _refresh_quality() only when this run has JSON
-    # repair attempts or genuine before/after observations.
+    quality_summary.grid(row=0, column=0, sticky="nsew")
+    # Button reserves a fixed right column; the text label receives the
+    # remainder even under the default 760px window and high DPI scaling.
     quality_frame = ttk.Frame(quality_section, padding=(8, 5))
     quality_metrics = {}
     _quality_help_labels = []
@@ -1275,9 +1281,16 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     # Use the full window width rather than a hard-coded 720px text column.
     def _resize_quality_wrap(event):
         width = max(280, int(event.width) - 16)
-        quality_summary.configure(wraplength=width)
         quality_codes.configure(wraplength=width)
+        _resize_quality_summary_row()
 
+    def _resize_quality_summary_row(_event=None):
+        row_width = max(200, int(quality_summary_row.winfo_width() or 200))
+        reserve = (int(repair_analysis_button.winfo_reqwidth() or 0) + 20
+                   if repair_analysis_button.winfo_manager() else 0)
+        quality_summary.configure(wraplength=max(120, row_width - reserve - 8))
+
+    quality_summary_row.bind("<Configure>", _resize_quality_summary_row)
     quality_section.bind("<Configure>", _resize_quality_wrap)
 
     _incident_tooltip_text = ""
@@ -1314,9 +1327,10 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
             int(_quality_stats.get("repair_analysis_count", 0) or 0) > 0
         )
         if observed and not repair_analysis_button.winfo_manager():
-            repair_analysis_button.pack(side="right", padx=(8, 0))
+            repair_analysis_button.grid(row=0, column=1, sticky="ne", padx=(8, 0))
         elif not observed and repair_analysis_button.winfo_manager():
-            repair_analysis_button.pack_forget()
+            repair_analysis_button.grid_remove()
+        _resize_quality_summary_row()
         repair_analysis_button.configure(
             text=f"🔎 JSON 差異 ({int(_quality_stats.get('repair_analysis_count', 0) or 0)})",
         )
