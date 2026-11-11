@@ -206,6 +206,10 @@ def test_gui_wiring_uses_contextual_button_and_dedicated_popup_not_a_static_row(
     assert 'orient="vertical"' in popup
     assert 'rowheight=max(27, int(font.metrics("linespace")) + 11)' in popup
     assert "change_map_segments(case)" in popup
+    assert 'heading.bind("<Configure>", resize_header)' in popup
+    assert 'summary.configure(wraplength=wrap)' in popup
+    assert 'disclaimer.configure(wraplength=wrap)' in popup
+    assert 'wraplength=max(180, int(event.width) - 24)' in popup
     assert "字面值相同率" in gui
 
 
