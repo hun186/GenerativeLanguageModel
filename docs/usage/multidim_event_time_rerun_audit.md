@@ -139,11 +139,13 @@ production replay or physical Windows acceptance was performed.
 
 ### Python sample config parity and repair-attempt budget (future)
 
-Five `config_es/akconfig_es_*.py.example` files now use the Event-first
-`multidim_event_time` check instead of a hard Timeline date minimum. These
-are templates, not the operator's private effective `.py` configurations.
-Other examples without date checks were intentionally left unchanged. Existing
-`pipeline_hash`, `force_since`, and metadata policies remain unchanged.
+The earlier phase updated five duplicated `akconfig_es_*.py.example`
+files, but the later consolidation removes all seven per-index ES examples.
+The only remaining ES Python example is `config_es/connection.py.example`.
+It documents the Event-first check with `rerun.enable=False` by default,
+avoiding automatic replay based on old copied `force_since` or hash settings.
+Operator-owned private `.py` files and every task YAML path remain unchanged.
+See `docs/usage/es_connection_profile_examples.md`.
 
 An automatic maximum (suggested: two quality repair runs after the initial
 extraction) is NOT implemented by this PR. A durable per-document/output-policy
