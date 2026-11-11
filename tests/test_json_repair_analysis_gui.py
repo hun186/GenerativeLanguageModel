@@ -185,7 +185,17 @@ def test_gui_wiring_uses_contextual_button_and_dedicated_popup_not_a_static_row(
     assert "repair_analysis_tree = ttk.Treeview" not in gui
     assert "repair_analysis_button = tk.Button(" in gui
     assert 'text="🔎 JSON 差異"' in gui
-    assert "repair_analysis_button.pack_forget()" in gui
+    assert "repair_analysis_button.grid_remove()" in gui
+    assert "quality_summary_row.columnconfigure(0, weight=1)" in gui
+    assert "repair_analysis_button.grid(row=0, column=1" in gui
+    assert "row_width - reserve - 8" in gui
+    assert "quality_summary.grid(row=0, column=0" in gui
+    assert "from czjLLM.job_manager.json_repair_review_gui import show_json_repair_review" in gui
+    # Import happens at Windows GUI process entry, not inside the popup
+    # exception guard (AGENTS.md); avoid obscured import failures.
+    opener = gui[gui.index("    def _open_json_repair_review():"):
+                 gui.index("    repair_analysis_button = tk.Button(")]
+    assert "from czjLLM.job_manager.json_repair_review_gui import" not in opener
     assert "show_json_repair_review(" in gui
     assert "refresh_repair_analysis()" in gui
     assert '("run", "run_id", 180)' in popup
