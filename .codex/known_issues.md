@@ -94,3 +94,4 @@
 
 ## 2026-11-11 — Draft #310 nested-mounted run directory (corrective pending)
 - Codex P2 identified that a verified local capture root can contain a separate NFS/CIFS mount at its `run-<digest>` child. Draft #310 now validates the child destination on create, read and clear before opening the lock/snapshot; synthetic existing/new mount rejection regressions added. Race against later mount changes and physical Windows ACL/remote block storage are NOT resolved. Await exact-head Hosted CI, formal security review, explicit operator risk decision; no Merge/activation.
+- **2026-11-11 second #310 Codex P2:** A hidden longer local mount under a remote overmount could fool longest-path selection. Matcher now rejects any remote/unknown ancestor and duplicate matching mountpoint; synthetic root/child order tests added. Complex local mount layouts may be refused. Live operator acceptance and security re-review still pending.
