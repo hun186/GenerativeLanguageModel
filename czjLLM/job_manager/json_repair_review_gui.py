@@ -48,6 +48,13 @@ def show_json_repair_review(
     )
     disclaimer.pack(anchor="w", fill="x", pady=(3, 0))
 
+    def resize_header(event):
+        wrap = max(180, int(event.width) - 24)
+        summary.configure(wraplength=wrap)
+        disclaimer.configure(wraplength=wrap)
+
+    heading.bind("<Configure>", resize_header)
+
     frame = ttk.Frame(win, padding=(12, 4))
     frame.pack(fill="both", expand=True)
     style_name = "JsonRepairReview.Treeview"
@@ -73,8 +80,14 @@ def show_json_repair_review(
 
     info = ttk.Frame(win, padding=(12, 4))
     info.pack(fill="x")
-    detail_label = ttk.Label(info, anchor="w", justify="left", wraplength=900)
+    detail_label = ttk.Label(info, anchor="w", justify="left", wraplength=600)
     detail_label.pack(fill="x")
+    info.bind(
+        "<Configure>",
+        lambda event: detail_label.configure(
+            wraplength=max(180, int(event.width) - 24)
+        ),
+    )
     graph = tk.Canvas(info, height=75, highlightthickness=0, borderwidth=0)
     graph.pack(fill="x", pady=(4, 2))
     ttk.Label(info, text="藍色＝相同的前／後綴字元　橘色＝中段不同或無法確認（非逐字語意比對）",
