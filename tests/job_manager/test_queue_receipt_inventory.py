@@ -193,6 +193,7 @@ def test_standalone_python_script_works_without_pythonpath(tmp_path):
     env = os.environ.copy()
     env.pop("PYTHONPATH", None)
     env.pop("PYTHONHOME", None)
+    env["PYTHONIOENCODING"] = "utf-8"  # Portable redirected stdout on Windows hosts.
     # cwd is deliberately outside repo, proving imports are rooted to script.
     for args, expected_status, output_marker in (
         (["--help"], 0, "--meter-file"),
