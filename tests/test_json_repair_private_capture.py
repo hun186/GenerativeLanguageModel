@@ -346,3 +346,29 @@ def test_nested_run_mount_rejected_before_any_private_artifact(
     with pytest.raises(ValueError, match="POSIX_LOCAL_FILESYSTEM_UNVERIFIED"):
         clear_private_run(private, run_id, "DELETE_PRIVATE_JSON_REPAIRS")
     assert list(target.iterdir()) == []
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Linux mountinfo topology contract")
+def test_hidden_local_child_beneath_remote_ancestor_is_not_accepted():
+    """Remote ancestor overmount can hide an older, longer local child path."""
+    import czjLLM.utilities.json_repair_private_capture as cap
+
+    root = "19 0 8:1 / / rw,relatime - ext4 /dev/disk rw\\n"
+    local_child = (
+        "20 19 8:2 / /vault/private rw,relatime - ext4 /dev/child rw\\n"
+    )
+    remote_parent = (
+        "21 19 0:99 / /vault rw,relatime - nfs4 srv:/vault rw\\n"
+    )
+    for mounts in (
+        root + local_child + remote_parent,
+        root + remote_parent + local_child,
+        root + local_child + remote_parent.replace("nfs4", "cifs"),
+    ):
+        assert not cap._posix_local_filesystem(
+            Path("/vault/private/run-abc"), mountinfo=mounts,
+        )
+        # A root outside the remote ancestor remains locally classifiable.
+        assert cap._posix_local_filesystem(
+            Path("/ordinary/local"), mountinfo=mounts,
+        )
