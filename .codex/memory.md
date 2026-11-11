@@ -93,3 +93,8 @@
 - Row Merger now holds writeback, registry removal and Success cleanup until per-row queue_pending=queue_running=0 in the actual run Meter. Missing/malformed receipt is UNKNOWN, not completion; a dead Consumer with positive outstanding or finished Producer signals coordinator INCOMPLETE and retains source artifacts.
 - Producer's pre/post per-row backpressure waits share one hard timeout budget, not two sequential 120-second delays. No stale-receipt auto-clear or replay. Added deterministic stage-registration, null-meter, dead-Consumer and backpressure tests.
 - Status: development branch #303, CI and exact-head Codex re-review pending; no live Ollama/GPU/ES acceptance; do not deploy onto an active Run.
+
+## 2026-11-11 / #303 merged and next read-only receipt inventory (IN DEVELOPMENT)
+- GitHub #303 Squash Merged `e86888f094a2fd56069575be8cf7378c6df45e46` from exact HEAD `ec03a2e78efd6fda50874a30ebf2eb4c57ba9834`, Codex receipt no major issues and 4/4 threads resolved; Hosted Linux offline E2E, actual Hosted Windows 3.10/3.11 and changed-line secrets passed. Windows self-hosted queued; no operator machine, GPU, LLM or SQL/ES acceptance.
+- #301 offline refill and #304 sustained Queue running warning were already independently merged; do not reimplement them.
+- New isolated explicit-meter inventory reads the existing bounded strict 12 MiB run Meter, counts terminal-status outstanding receipts/unknowns and global-vs-row running signal, redacts all row IDs and paths, never edits Queue/Registry/Success or connects to sinks. Synthetic and actual temporary-file tests added to Hosted Linux/Windows workflow. **Status: IN DEVELOPMENT, new CI and formal Codex Review pending**; stale old-run 19/13 cannot be automatically repaired.
