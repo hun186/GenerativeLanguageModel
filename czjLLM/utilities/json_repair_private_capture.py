@@ -103,7 +103,10 @@ def _posix_local_filesystem(path: Path, *, mountinfo: str | None = None) -> bool
         if len(mountinfo) > 1024 * 1024:
             return False
     target = os.path.normpath(str(path))
-    best = (-1, "")
+    # An apparently more-specific local child mount may actually be hidden
+    # by a later remote ancestor overmount. Treat *every* matching ancestor
+    # as relevant; no pathname-length heuristic can prove visibility.
+    matching_paths = set()
     for line in mountinfo.splitlines():
         left, separator, right = line.partition(" - ")
         if not separator:
@@ -124,16 +127,15 @@ def _posix_local_filesystem(path: Path, *, mountinfo: str | None = None) -> bool
                 continue
         except ValueError:
             return False
-        depth = len(mount_path)
-        if depth > best[0]:
-            best = (depth, tail[0].lower())
-        elif depth == best[0]:
-            # Multiple entries at the same longest matching mountpoint can
-            # represent stacked or bind mounts; their visible precedence
-            # cannot be safely inferred from this simplified parser.
-            # Fail closed regardless of filesystem type or listing order.
-            best = (depth, "AMBIGUOUS_STACKED_MOUNT")
-    return best[1] in _LOCAL_POSIX_FILESYSTEMS
+        # Duplicate matching mountpoints imply stacked/ambiguous mounts.
+        if mount_path in matching_paths:
+            return False
+        matching_paths.add(mount_path)
+        # A remote/unknown ancestor can obscure a local child in the visible
+        # namespace. Reject even if a longer local match exists in mountinfo.
+        if tail[0].lower() not in _LOCAL_POSIX_FILESYSTEMS:
+            return False
+    return bool(matching_paths)
 
 
 def _root(root: Path | str) -> Path:
