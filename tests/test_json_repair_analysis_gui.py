@@ -95,9 +95,15 @@ def test_event_reader_gui_aggregates_and_rotates_without_payload(tmp_path):
     assert len(stats["repair_analysis_recent"]) == 1
     recent = stats["repair_analysis_recent"][0]
     assert "row-sensitive" not in json.dumps(recent, ensure_ascii=False)
-    assert len(recent["slice_hint"]) == 8
+    assert len(recent["slice_hint"]) == 16
+    assert recent["run_id"] == "a"
+    assert len(recent["event_hint"]) == 12
+    assert len(recent["event_id"]) == 32
     assert "疑似符號修補 1" in format_json_repair_analysis_summary(stats)
-    assert format_json_repair_analysis_case(recent)[3].startswith(str(len(original)))
+    assert format_json_repair_analysis_case(recent)[5].startswith(str(len(original)))
+    assert format_json_repair_analysis_case(recent)[1] == "a"
+    assert format_json_repair_analysis_case(recent)[2] == recent["slice_hint"]
+    assert format_json_repair_analysis_case(recent)[3] == recent["event_hint"]
     assert "原始解析錯誤" in format_json_repair_analysis_case_detail(recent)
     assert reader.poll()[0] is False
     rotate_quality_event_stream(audit)
@@ -172,14 +178,38 @@ def test_real_worker_handler_emits_success_and_comparison_without_payload(
     assert snap["repair_analysis_count"] == 1
 
 
-def test_gui_wiring_has_live_toggle_and_bounded_case_list():
+def test_gui_wiring_uses_contextual_button_and_dedicated_popup_not_a_static_row():
     gui = Path("czjLLM/job_manager/win_gui.py").read_text(encoding="utf-8")
-    assert 'repair_analysis_section = ttk.Frame(quality_section)' in gui
-    assert 'repair_analysis_frame.pack_forget()' in gui
-    assert '_refresh_repair_analysis()' in gui
-    assert '(_quality_stats.get("repair_analysis_recent") or [])[:12]' in gui
-    assert 'repair_analysis_tree.bind("<<TreeviewSelect>>"' in gui
-    assert "JSON 修復前後" in gui
+    popup = Path("czjLLM/job_manager/json_repair_review_gui.py").read_text(encoding="utf-8")
+    assert "repair_analysis_section = ttk.Frame(quality_section)" not in gui
+    assert "repair_analysis_tree = ttk.Treeview" not in gui
+    assert "repair_analysis_button = tk.Button(" in gui
+    assert 'text="🔎 JSON 差異"' in gui
+    assert "repair_analysis_button.grid_remove()" in gui
+    assert "quality_summary_row.columnconfigure(0, weight=1)" in gui
+    assert "repair_analysis_button.grid(row=0, column=1" in gui
+    assert "row_width - reserve - 8" in gui
+    assert "quality_summary.grid(row=0, column=0" in gui
+    assert "from czjLLM.job_manager.json_repair_review_gui import show_json_repair_review" in gui
+    # Import happens at Windows GUI process entry, not inside the popup
+    # exception guard (AGENTS.md); avoid obscured import failures.
+    opener = gui[gui.index("    def _open_json_repair_review():"):
+                 gui.index("    repair_analysis_button = tk.Button(")]
+    assert "from czjLLM.job_manager.json_repair_review_gui import" not in opener
+    assert "show_json_repair_review(" in gui
+    assert "refresh_repair_analysis()" in gui
+    assert '("run", "run_id", 180)' in popup
+    assert '("slice", "切片提示碼", 160)' in popup
+    assert '("event", "單次修復事件", 130)' in popup
+    assert "疑似鍵名片段數" in popup
+    assert 'orient="horizontal"' in popup
+    assert 'orient="vertical"' in popup
+    assert 'rowheight=max(27, int(font.metrics("linespace")) + 11)' in popup
+    assert "change_map_segments(case)" in popup
+    assert 'heading.bind("<Configure>", resize_header)' in popup
+    assert 'summary.configure(wraplength=wrap)' in popup
+    assert 'disclaimer.configure(wraplength=wrap)' in popup
+    assert 'wraplength=max(180, int(event.width) - 24)' in popup
     assert "字面值相同率" in gui
 
 
@@ -196,3 +226,23 @@ def test_large_escaped_quote_malformed_string_scans_in_linear_time():
     assert code == "JSON_REPAIR_TAIL_CANDIDATE"
     assert m["before_key_patterns"] == m["after_key_patterns"] == 1
     assert elapsed < 3.0
+
+def test_identical_slice_basename_keeps_distinct_event_ids_and_run_context(tmp_path):
+    audit = tmp_path / "llm_call_audit_run-42.csv"
+    code, detail = _analyze('{"a":1,}', '{"a":1}')
+    for i in range(2):
+        emit_quality_event(
+            str(audit), run_id="task-run-42",
+            event="slice_json_repair", code="JSON_REPAIR_SUCCEEDED",
+            scope="slice", outcome="recovered",
+            slice_id=str(tmp_path / ("different-folder-" + str(i)) / "same.txt"),
+            detail=dict(detail, repair_class=code),
+        )
+    reader = QualityRunTailReader(str(quality_event_path(str(audit))))
+    _changed, stats = reader.poll()
+    cases = stats["repair_analysis_recent"]
+    assert len(cases) == 2
+    assert cases[0]["slice_hint"] == cases[1]["slice_hint"]
+    assert cases[0]["event_id"] != cases[1]["event_id"]
+    assert cases[0]["event_hint"] != cases[1]["event_hint"]
+    assert all(x["run_id"] == "task-run-42" for x in cases)

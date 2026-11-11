@@ -81,3 +81,7 @@
 
 ## 2026-11-11 — Hypothetical time-rule preview is not an ES rerun decision
 - New opt-in read-only preview compares **only** the isolated old Timeline-date minimum=1 check with an Event/Timeline date-validation triage; no private effective configuration, existing metadata identity, force flags, original source truth or other required checks are evaluated. `NO_RELIABLE_DATE` is *source-unverified*, not evidence the article lacked a date. Invalid/missing structure is explicitly indeterminate rather than misreported as passing or safely skippable. No automatic remediation, writeback or live reprocessing. CI/Review PENDING.
+
+## 2026-11-11 — JSON repair GUI identity and raw-content boundary
+- Existing `emit_quality_event` serializes only `Path(slice_id).name` and GUI hashed that name to 8 hex chars. Distinct source paths can therefore collide even without an SHA-prefix collision; enlarging hash alone does NOT provide unique slice lineage. The new popup pairs run_id with distinct event_id; neither is proof of per-document sink ACK or original source ID.
+- Existing quality JSONL intentionally excludes before/after raw JSON. New change bars rely on lexical prefix/suffix lengths only, NOT semantic diff or actual raw comparison. Any future full-content capture must be opt-in, local-private, bounded/secured and independently reviewed, with no default content logging and no false claim of backfilling historical jobs. Hosted/physical GUI pending.

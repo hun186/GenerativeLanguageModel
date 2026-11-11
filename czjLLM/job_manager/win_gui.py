@@ -645,7 +645,9 @@ def format_json_repair_analysis_case(case: dict) -> tuple[str, ...]:
     } else "—")
     return (
         str(case.get("ts") or "—"),
+        str(case.get("run_id") or "—"),
         str(case.get("slice_hint") or "—"),
+        str(case.get("event_hint") or "—"),
         _REPAIR_ANALYSIS_LABELS.get(code, "無法判定"),
         f"{int(detail.get('original_chars', 0)):,} → {int(detail.get('repaired_chars', 0)):,}",
         f"{int(detail.get('error_pos_pct', 0))}%",
@@ -662,7 +664,7 @@ def format_json_repair_analysis_case_detail(case: dict) -> str:
     return (
         f"原始解析錯誤：{err}（約 {detail.get('error_pos_pct', 0)}% 位置）；"
         f"共同前綴 {prefix:,} 字／共同後綴 {suffix:,} 字。"
-        " 字面值相同率為詞法估計，鍵名樣式數為近似值；"
+        " 字面值相同率為詞法估計，疑似鍵名片段數為近似掃描數（非唯一 dict key 數）；"
         " 無法據此證實事件、欄位或內容完整保留，亦不能推論原始輸出已截斷。"
     )
 
@@ -900,6 +902,11 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                 pass
         return
 
+    # Import only inside the Windows GUI process, but OUTSIDE the Tk import
+    # exception handler. Import failures must be visible as implementation
+    # failures, not swallowed by an unrelated UI operation.
+    from czjLLM.job_manager.json_repair_review_gui import show_json_repair_review
+
     root = tk.Tk()
     root.title(title or "LLM 分析進度")
     root.geometry("760x500")  # 高度略增，容納 ETA 區塊
@@ -1047,7 +1054,6 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     )
     _quality_reader_thread.start()
     _quality_expanded = False
-    _repair_analysis_expanded = False
     _recheck_expanded = False
     _reduction_expanded = False
     _audit_expanded = False
@@ -1210,45 +1216,49 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     recovery_button.pack(side="right", padx=(4, 0))
     quality_toggle = ttk.Button(quality_header)
     quality_toggle.pack(side="left", fill="x", expand=True)
+    # JSON-only diagnostic details live in an on-demand Toplevel, not an
+    # always-present table that consumes height for non-JSON tasks.
+    quality_summary_row = ttk.Frame(quality_section)
+    quality_summary_row.pack(fill="x", padx=8, pady=(2, 3))
+    quality_summary_row.columnconfigure(0, weight=1)
+    quality_summary_row.columnconfigure(1, weight=0)
+    _repair_review_window = None
+
+    def _open_json_repair_review():
+        nonlocal _repair_review_window
+        try:
+            if (_repair_review_window is not None
+                    and _repair_review_window.winfo_exists()):
+                _repair_review_window.lift()
+                _repair_review_window.focus_set()
+                return
+            _repair_review_window = show_json_repair_review(
+                root, lambda: _quality_stats,
+                format_json_repair_analysis_case,
+                format_json_repair_analysis_summary,
+                format_json_repair_analysis_case_detail,
+            )
+        except Exception as error:
+            from tkinter import messagebox
+            messagebox.showerror(
+                "JSON 修復差異視窗無法開啟", type(error).__name__, parent=root,
+            )
+
+    repair_analysis_button = tk.Button(
+        quality_summary_row, text="🔎 JSON 差異",
+        command=_open_json_repair_review,
+        font=("Segoe UI", 9, "bold"), relief="raised", borderwidth=1,
+        background="#ffe7a0", foreground="#4e3400",
+        activebackground="#ffd16b", padx=8, pady=3,
+        takefocus=True, cursor="hand2",
+    )
     quality_summary = ttk.Label(
-        quality_section, text=format_quality_summary(_quality_stats),
+        quality_summary_row, text=format_quality_summary(_quality_stats),
         anchor="w", justify="left", wraplength=720,
     )
-    quality_summary.pack(fill="x", padx=8, pady=(2, 3))
-    # Keep a compact always-visible comparison summary. A collapsed table
-    # provides recent numeric before/after cases with no prompt/JSON payload.
-    repair_analysis_section = ttk.Frame(quality_section)
-    repair_analysis_section.pack(fill="x", padx=8, pady=(0, 3))
-    repair_analysis_toggle = ttk.Button(repair_analysis_section)
-    repair_analysis_toggle.pack(fill="x")
-    repair_analysis_summary = ttk.Label(
-        repair_analysis_section, anchor="w", justify="left", wraplength=720,
-    )
-    repair_analysis_summary.pack(fill="x", pady=(2, 2))
-    repair_analysis_frame = ttk.Frame(repair_analysis_section)
-    repair_analysis_columns = (
-        "ts", "slice", "kind", "chars", "error_pos", "literal", "keys",
-    )
-    repair_analysis_tree = ttk.Treeview(
-        repair_analysis_frame, columns=repair_analysis_columns,
-        show="headings", height=7, selectmode="browse",
-    )
-    for name, title, width in (
-        ("ts", "觀察時間", 150),
-        ("slice", "切片識別碼", 90),
-        ("kind", "修復類型（推測）", 150),
-        ("chars", "原始→修復字數", 150),
-        ("error_pos", "錯誤位置", 90),
-        ("literal", "字面值相同率", 115),
-        ("keys", "鍵名樣式數", 100),
-    ):
-        repair_analysis_tree.heading(name, text=title)
-        repair_analysis_tree.column(name, width=width, minwidth=65, stretch=True)
-    repair_analysis_tree.pack(fill="x", expand=True)
-    repair_analysis_detail = ttk.Label(
-        repair_analysis_frame, anchor="w", justify="left", wraplength=720,
-    )
-    repair_analysis_detail.pack(fill="x", pady=(4, 2))
+    quality_summary.grid(row=0, column=0, sticky="nsew")
+    # Button reserves a fixed right column; the text label receives the
+    # remainder even under the default 760px window and high DPI scaling.
     quality_frame = ttk.Frame(quality_section, padding=(8, 5))
     quality_metrics = {}
     _quality_help_labels = []
@@ -1271,70 +1281,17 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     # Use the full window width rather than a hard-coded 720px text column.
     def _resize_quality_wrap(event):
         width = max(280, int(event.width) - 16)
-        quality_summary.configure(wraplength=width)
-        repair_analysis_summary.configure(wraplength=width)
-        repair_analysis_detail.configure(wraplength=width)
         quality_codes.configure(wraplength=width)
+        _resize_quality_summary_row()
 
+    def _resize_quality_summary_row(_event=None):
+        row_width = max(200, int(quality_summary_row.winfo_width() or 200))
+        reserve = (int(repair_analysis_button.winfo_reqwidth() or 0) + 20
+                   if repair_analysis_button.winfo_manager() else 0)
+        quality_summary.configure(wraplength=max(120, row_width - reserve - 8))
+
+    quality_summary_row.bind("<Configure>", _resize_quality_summary_row)
     quality_section.bind("<Configure>", _resize_quality_wrap)
-
-    _repair_analysis_cases = []
-
-    def _repair_analysis_selected(_event=None):
-        selection = repair_analysis_tree.selection()
-        if selection:
-            idx = int(selection[0])
-            if 0 <= idx < len(_repair_analysis_cases):
-                repair_analysis_detail.configure(
-                    text=format_json_repair_analysis_case_detail(
-                        _repair_analysis_cases[idx],
-                    )
-                )
-                return
-        repair_analysis_detail.configure(
-            text="僅展示詞法比較的統計資訊，不保存或顯示 JSON 原文；"
-                 "純語法修補也不等於資料完整。"
-        )
-
-    repair_analysis_tree.bind("<<TreeviewSelect>>", _repair_analysis_selected)
-
-    def _refresh_repair_analysis():
-        nonlocal _repair_analysis_cases
-        repair_analysis_toggle.configure(
-            text=f"{'▼' if _repair_analysis_expanded else '▶'} JSON 修復前後差異（最近案例）"
-        )
-        repair_analysis_summary.configure(
-            text=format_json_repair_analysis_summary(_quality_stats)
-        )
-        if not _repair_analysis_expanded:
-            return
-        _repair_analysis_cases = list(
-            (_quality_stats.get("repair_analysis_recent") or [])[:12]
-        ) if _quality_stats.get("quality_stream_status") not in {
-            "unverified", "capacity_exceeded",
-        } else []
-        rows = repair_analysis_tree.get_children()
-        if rows:
-            repair_analysis_tree.delete(*rows)
-        for i, case in enumerate(_repair_analysis_cases):
-            repair_analysis_tree.insert(
-                "", "end", iid=str(i),
-                values=format_json_repair_analysis_case(case),
-            )
-        _repair_analysis_selected()
-        _schedule_page_scroll_refresh()
-
-    def _toggle_repair_analysis():
-        nonlocal _repair_analysis_expanded
-        _repair_analysis_expanded = not _repair_analysis_expanded
-        if _repair_analysis_expanded:
-            repair_analysis_frame.pack(fill="x", pady=(3, 3))
-        else:
-            repair_analysis_frame.pack_forget()
-        _refresh_repair_analysis()
-        _schedule_page_scroll_refresh()
-
-    repair_analysis_toggle.configure(command=_toggle_repair_analysis)
 
     _incident_tooltip_text = ""
     def _refresh_incident_button():
@@ -1364,7 +1321,27 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                       if top else "尚無錯誤事件"))
         )
 
-        _refresh_repair_analysis()
+        nonlocal _repair_review_window
+        observed = (
+            int(_quality_stats.get("repair_attempts", 0) or 0) > 0 or
+            int(_quality_stats.get("repair_analysis_count", 0) or 0) > 0
+        )
+        if observed and not repair_analysis_button.winfo_manager():
+            repair_analysis_button.grid(row=0, column=1, sticky="ne", padx=(8, 0))
+        elif not observed and repair_analysis_button.winfo_manager():
+            repair_analysis_button.grid_remove()
+        _resize_quality_summary_row()
+        repair_analysis_button.configure(
+            text=f"🔎 JSON 差異 ({int(_quality_stats.get('repair_analysis_count', 0) or 0)})",
+        )
+        if _repair_review_window is not None:
+            try:
+                if _repair_review_window.winfo_exists():
+                    _repair_review_window.refresh_repair_analysis()
+                else:
+                    _repair_review_window = None
+            except (tk.TclError, AttributeError):
+                _repair_review_window = None
         _refresh_incident_button()
 
     def _toggle_quality():

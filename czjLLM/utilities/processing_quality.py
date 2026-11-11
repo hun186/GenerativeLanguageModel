@@ -296,10 +296,17 @@ class QualityAccumulator:
                         else ""
                     )
                     slice_id = record.get("slice_id", "")
-                    hint = (hashlib.sha256(slice_id.encode("utf-8")).hexdigest()[:8]
+                    # Only the basename was retained by the quality event.
+                    # This hash is a *hint*, not unique physical slice lineage.
+                    hint = (hashlib.sha256(slice_id.encode("utf-8")).hexdigest()[:16]
                             if isinstance(slice_id, str) and slice_id else "")
+                    event_id = str(record.get("event_id") or "")
+                    run_id = record.get("run_id")
                     self._repair_analysis_recent.append({
-                        "code": analysis_code, "ts": timestamp, "slice_hint": hint,
+                        "code": analysis_code, "ts": timestamp,
+                        "slice_hint": hint, "event_id": event_id,
+                        "event_hint": event_id[:12],
+                        "run_id": run_id[:96] if isinstance(run_id, str) else "",
                         "detail": dict(record["detail"]),
                     })
             elif code == "JSON_REPAIR_FAILED":

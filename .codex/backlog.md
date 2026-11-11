@@ -116,3 +116,8 @@
 - [x] #306 phase A historical Event/Timeline time audit Hosted Linux/Windows/Secret Scan and formal review PASS, Squash Merged `7b4a2cfc780909cf877950e29eb59f27842d0ef7`.
 - [ ] Phase B separate read-only `--compare-timeline-min-1` snapshot reports legacy Timeline-required hypothetical results alongside proposed validated-date/unknown distinctions; requires exact-head CI and formal Review before Merge. It never decides real rerun eligibility.
 - [ ] Before any actual ES rerun policy change: operator-verified effective config (`min_valid_count`, fingerprint, `pipeline_hash`, `force_since`, stale rules), representative private output/source validation, preservation of force-overwrite, and reliable sink readback. A runtime change must be a separately reviewed/authorized PR, not silently folded into the preview.
+
+## 2026-11-11 — JSON repair GUI and raw diff request
+- [x] #307 hypothetical time-only old-rule preview Hosted CI/Review PASS and Squash Merged `7694678675e98034429cbcb44ea7d812b26cd09c`. No effective rerun change.
+- [ ] PR for popup-only JSON repair comparison, longer slice **hint** (basename hash cannot identify original document), run/event IDs, DPI-safe rows/scrollbars, corrected key-pattern label and payload-free change map: latest-head Hosted CI, formal Review, native GUI operator acceptance.
+- [ ] Separate high-risk explicit-opt-in **raw original/repaired local private capture + side-by-side diff** with secure file limits, retention, opt-out, confirmed clear action and exact event-linked retrieval; no raw payload in routine audit JSONL, GUI/export/console, and no default saving. Needs privacy/security review and operator approval before any live enable/deploy.
