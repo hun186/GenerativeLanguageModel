@@ -121,3 +121,8 @@
 - [x] #307 hypothetical time-only old-rule preview Hosted CI/Review PASS and Squash Merged `7694678675e98034429cbcb44ea7d812b26cd09c`. No effective rerun change.
 - [ ] PR for popup-only JSON repair comparison, longer slice **hint** (basename hash cannot identify original document), run/event IDs, DPI-safe rows/scrollbars, corrected key-pattern label and payload-free change map: latest-head Hosted CI, formal Review, native GUI operator acceptance.
 - [ ] Separate high-risk explicit-opt-in **raw original/repaired local private capture + side-by-side diff** with secure file limits, retention, opt-out, confirmed clear action and exact event-linked retrieval; no raw payload in routine audit JSONL, GUI/export/console, and no default saving. Needs privacy/security review and operator approval before any live enable/deploy.
+
+## 2026-11-11 — Slice identity path-context diagnostics
+- [ ] Exact-head Hosted Linux E2E, Windows native 3.10/3.11, Secret Scan and formal Codex Review for `fix/quality-slice-lineage-item-root-20261111`, then ordinary low-risk Squash Merge if full gates pass. Distinguish independent TODO/1.txt by work-item path context and preserve same slice through TODO/RUNNING/Success; no raw source paths or content in Quality JSONL.
+- [ ] Future separately gated **durable** item/slice provenance if moving/renaming item roots or replacing same-name prompt during rerun must be identified across machines: consider original source document PK or existing split-intent UUID at creation, never claim path fingerprints are authoritative.
+- [ ] #310 remains Draft, plaintext raw before/after capture must not be auto-merged or enabled without operator privacy/NTFS acceptance.
