@@ -5,6 +5,14 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import sys
+
+# Direct `python scripts/inspect_queue_receipts.py` otherwise sets sys.path[0]
+# to scripts/ rather than the repo root. Anchor this diagnostic's imports to
+# its own checked-out repository, without relying on operator PYTHONPATH.
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
 
 from czjLLM.job_manager.document_progress import read_meter_strict
 from czjLLM.job_manager.queue_receipt_inventory import summarize_meter
