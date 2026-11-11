@@ -107,17 +107,70 @@ def test_legacy_timeline_only_rule_still_supported_when_explicitly_selected():
     assert evaluate_required_output_checks(document(), [old])[0] is False
 
 
-def test_all_three_sraf_es_yaml_examples_use_event_time_not_timeline_minimum():
+def test_all_ten_es_multidim_yamls_use_task_owned_sraf_event_first_rerun():
     root = Path(__file__).resolve().parents[2] / "czjLLM" / "yaml"
-    for name in (
+    names = (
+        "es_config.yaml",
         "es_config_fishing.yaml",
+        "es_config_mil.yaml",
+        "es_config_nav_intel_sentences.yaml",
+        "es_config_satmeta.yaml",
+        "es_config_single_stage_original.yaml",
+        "es_config_srp.yaml",
         "es_fishing_json__singlestage_in_multistage.yaml",
         "es_json_multistage_langroute_config.yaml",
-    ):
+        "es_merge_config.yaml",
+    )
+    assert len(names) == 10
+    for name in names:
         content = (root / name).read_text(encoding="utf-8")
-        assert "validator: multidim_event_time" in content
-        assert "path: multidim_event_json" in content
-        assert "path: Event_Timeline.time_iso" not in content
+        assert "mode: es" in content, name
+        assert "InfoExtraction-MultiDim-SQLFriendly-to json format" in content, name
+        assert content.count("\nrerun:\n") == 1, name
+        for expected in (
+            "  enable: true",
+            "  pipeline_hash: null",
+            "  force_since: null",
+            "  force_if_missing_meta: false",
+            "  fallback_date_field: update_time_ai",
+            "  required_output_checks:",
+            "    - path: multidim_event_json",
+            "      validator: multidim_event_time",
+            "      min_valid_count: 1",
+            "      relative_to_output: false",
+        ):
+            assert expected in content, (name, expected)
+        assert "pipeline_hash: v3.2.2-es-multistage-rerun-test" not in content, name
+        assert "path: Event_Timeline.time_iso" not in content, name
+
+
+def test_yaml_sraf_policy_explicitly_cancels_legacy_python_force_and_hash():
+    from czjLLM.es_mode.config.rerun_logging import resolve_rerun_config
+
+    connection = {"rerun": {
+        "enable": True,
+        "pipeline_hash": "v3.2.1",
+        "force_since": "2025-11-01T00:00:00Z",
+        "force_if_missing_meta": True,
+        "required_output_checks": [
+            {"path": "Event_Timeline.time_iso", "validator": "date"}
+        ],
+    }}
+    task = {
+        "enable": True, "pipeline_hash": None, "force_since": None,
+        "force_if_missing_meta": False,
+        "fallback_date_field": "update_time_ai",
+        "required_output_checks": [{
+            "path": "multidim_event_json",
+            "validator": "multidim_event_time",
+            "min_valid_count": 1, "relative_to_output": False,
+        }],
+    }
+    merged, origins = resolve_rerun_config(
+        connection, lambda key, default=None: task if key == "rerun" else default)
+    assert merged == task
+    assert origins["inherited_keys"] == []
+    assert set(origins["overridden_keys"]) == set(connection["rerun"])
 
 def test_one_canonical_python_es_config_example_has_no_rerun_policy():
     import ast

@@ -140,3 +140,40 @@ Python + YAML `rerun` 淺層合併。此次先把**公開範例改為 YAML-only*
 此為**提醒與遷移指引**，只在偵測到舊 Python `rerun` 時印出；
 不需要更新私人 `.py` 才能看到警告，但直到手動遷移前，
 舊重跑政策仍然生效。純 YAML 設定不額外顯示這個警告。
+
+## 對齊 SRAF Event-first 的 ES 任務 YAML（2026-11-11）
+
+這次專案內直接使用 `InfoExtraction-MultiDim-SQLFriendly-to json format`
+的 **10 份 ES mode YAML** 都在各自的頂層定義以下政策：
+
+```yaml
+rerun:
+  enable: true
+  pipeline_hash: null
+  force_since: null
+  force_if_missing_meta: false
+  fallback_date_field: update_time_ai
+  required_output_checks:
+    - path: multidim_event_json
+      validator: multidim_event_time
+      min_valid_count: 1
+      relative_to_output: false
+```
+
+包含一般 ES 模式（news、fishing、mil、nav intel、satmeta、srp、
+single-stage original、legacy es_merge）及兩份 ES multistage。
+`pipeline_hash: null`、`force_since: null` 是**刻意明寫**，
+用來覆寫內網私人連線 Python 尚未刪除的舊強制重跑值；省略這兩個
+key 會被原本 Python+YAML 的淺層合併重新繼承。原本三份 YAML 中
+的 `v3.2.2-es-multistage-rerun-test` 已取消啟用，以避免單純啟動
+就按版本強制重跑。
+
+若將來要重新處理舊資料，應在特定任務 YAML **刻意**把
+`pipeline_hash` 或 `force_since` 改為有效值；不需要在
+`private/*.py` 中設定。其他私人 Python `rerun` key 若未在 YAML
+指定，仍可能被繼承；啟動的 `ES_RERUN_LEGACY_PY` 提示能協助盤點。
+
+此設定只處理**日期結構品質**：既有輸出缺失、格式不合法時仍可能
+進入 pending；Event 明確 unknown 也可通過，不能據此斷言原始
+新聞沒有日期。跨重啟最多修復幾次仍由 Issue #313 追蹤，
+**不是**這次 YAML 變更的內容。本次沒有修改私人設定或接觸 ES 資料。
