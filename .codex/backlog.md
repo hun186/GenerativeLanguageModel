@@ -99,3 +99,9 @@
 - [ ] P1 PR #304 metadata-only warning for sustained running with no registered item; no running-counter clearing. Review and Hosted CI before merge.
 - [ ] Integrate #301 offline slot-refill primitive into actual Consumer only in a *separate*, opt-in and operator-gated PR with exclusive Queue receipt, ACK-before-refill, cancellation, retries, physical Windows GPU and ES readback tests.
 - [ ] Design operator-only read-only inventory of historical 19/13 receipts, verified recovery without double writeback or source loss; never edit running Meter by elapsed time.
+
+## 2026-11-11 current Hosted reconciliation / next operator-gated work
+- [x] #303 latest HEAD formal Codex receipt, 4/4 threads resolved, Hosted Linux/Windows/secret scan PASS; Squash Merge `e86888f094a2fd56069575be8cf7378c6df45e46`. Older pending entry above is superseded; real H100/ES production acceptance remains #266.
+- [x] #301 offline slot-refill prototype and #304 metadata-only stalled-Queue warning already merged, not to be repeated.
+- [ ] Finish new **explicit-run read-only Queue receipt inventory** Hosted Linux and real Hosted Windows 3.10/3.11 CI, latest-head formal review, and only then consider merge. Counts/candidate codes must not be interpreted as automatic cleanup or verified sink ACK.
+- [ ] Operator-owned stopped-run evidence for historical 19/13 anomalies: verify exact Meter path/Run ID locally, Worker state, per-file Queue lineage and independent SQL/ES readback; no unattended repair/replay. Production slot refill remains an independent opt-in, GPU/ES-validated future task.
