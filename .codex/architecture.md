@@ -132,3 +132,8 @@
 
 ## 2026-11-10 / PR #301 offline slot-refill boundary
 - `prompt_pipeline/refill_scheduler.py` accepts caller-owned claim_one/run_worker/acknowledge. Receipt prevents duplicate handoff, ACK occurs before refill, max_inflight bounds active Futures, drain precedes failure escape. Real Consumer, stage orchestration, Queue meter/credits and Ollama are **not yet connected**; physical workstation rollout remains a separate gated step.
+
+## 2026-11-10 — Queue ACK-before-Row-Merger retirement boundary (#303, in review)
+- Scheduler publishes per-row queue_pending/queue_running into the per-run Meter; a Worker may publish Success while the parent Consumer batch has not yet posted its acknowledged completion. Row Merger must not retire Success/Registry/source based only on filesystem readiness or an existing combined artifact.
+- Row Merger observes a bounded once-per-scan Meter snapshot and requires both counters zero before writeback. A real missing/null/corrupt row receipt remains unresolved. An actual terminated Consumer with unrecoverable receipt can publish a terminal incomplete coordinator event, never a synthetic ACK; stage-managed registration before receipt publication stays nonterminal while the Producer is active.
+- Producer's two wait phases consume one shared per-row backpressure time budget. No provider endpoint/lease behavior is changed. CI and Windows physical acceptance outstanding.

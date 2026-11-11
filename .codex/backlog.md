@@ -93,3 +93,9 @@
 
 ## 2026-11-10 / PR #301 slot refill rollout gates
 - [ ] Validate exact-head offline slot-refill tests and review, including Worker failure discovered during ACK and producer last-TODO race; then integrate only under a separate opt-in real Consumer/stage scheduler change with Queue Claim, Success/readback, resource limits, cancellation and physical Windows acceptance. No auto-deploy on running GPU tasks.
+
+## 2026-11-10 / #302 P0→P1 queue reliability and GPU utilization
+- [ ] Complete latest-head Hosted Linux/Windows CI and Codex Review for PR #303; verify no Row Merger deadlock, null/missing Meter fail-closed and no false terminal on stage-managed registration. Merge only after gates and operator-controlled later deployment.
+- [ ] P1 PR #304 metadata-only warning for sustained running with no registered item; no running-counter clearing. Review and Hosted CI before merge.
+- [ ] Integrate #301 offline slot-refill primitive into actual Consumer only in a *separate*, opt-in and operator-gated PR with exclusive Queue receipt, ACK-before-refill, cancellation, retries, physical Windows GPU and ES readback tests.
+- [ ] Design operator-only read-only inventory of historical 19/13 receipts, verified recovery without double writeback or source loss; never edit running Meter by elapsed time.

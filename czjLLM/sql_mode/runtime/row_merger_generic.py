@@ -18,7 +18,7 @@ from utils.utilities_path import OSWALK, DirReplace, MKDIR, getPathFromFN
 from utils.utilities_path import safe_move
 
 from czjLLM.prompt_pipeline.pipeline_controller import (
-    combine_api_finished_item, row_is_ready, meter_update
+    combine_api_finished_item, row_is_ready, meter_update, meter_read
 )
 from czjLLM.utilities.path_utils import get_combined_result_path
 from czjLLM.reduction.execution import ExecutionCancelled
@@ -55,6 +55,27 @@ def _extract_json_list(result_text: str, allowed_fields: Optional[List[str]]) ->
     except Exception:
         return []
 '''
+
+
+def _row_queue_receipt_settled(rows, pk) -> bool:
+    """Do not retire a Consumer-owned item before its queue receipts settle.
+
+    A Worker may have published Success and unlinked RUNNING while its
+    parent Consumer is still waiting for the rest of the batch.  A Row
+    Merger that deletes Success/Registry in this window makes the Consumer
+    unable to prove completion after a failed/timeout round.  Missing or
+    malformed receipts are UNKNOWN, not evidence of zero active work.
+    """
+    if not isinstance(rows, dict):
+        return False
+    row = rows.get(str(pk))
+    if not isinstance(row, dict):
+        return False
+    pending, running = row.get("queue_pending"), row.get("queue_running")
+    return (
+        type(pending) is int and pending == 0
+        and type(running) is int and running == 0
+    )
 
 def _counts(item_dir):
     todo = os.path.join(item_dir, "TODO")
@@ -794,6 +815,9 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
 
     sink.open()
     blocked_shutdown_scan_done = False
+    consumer_receipt_terminal_reported = False
+    receipt_guard_enabled = isinstance(meter_fn, (str, os.PathLike))
+    next_receipt_read_at = 0.0
     try:
         while True:
             items_map = registry.list_items()
@@ -814,6 +838,10 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     break
                 blocked_shutdown_scan_done = True
 
+            # The per-run Meter grows throughout long ES batches.  Read it
+            # only if a row actually has a merge-ready artifact, and at
+            # most once per second across the entire Row Merger scan.
+            queue_receipt_rows = None
             progressed = False
             for item_dir, meta in list(items_map.items()):
                 pk = meta["pk"]; temp_txt = meta["temp_txt"]
@@ -825,6 +853,93 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
                     continue
 
                 if isinstance(meta, dict) and meta.get("status") == "scheduling_multistage":
+                    continue
+
+                # Do not parse a growing 35k-row Meter while nothing is
+                # merge-ready.  A combined file can bypass ordinary slice
+                # checks, so both candidate paths must reach the ACK guard.
+                candidate_combined = meta.get("CombBackFN") if isinstance(meta, dict) else None
+                if not (candidate_combined and os.path.isfile(candidate_combined)):
+                    if not _all_slices_done(item_dir, meta):
+                        continue
+
+                if receipt_guard_enabled:
+                    if queue_receipt_rows is None:
+                        now = time.monotonic()
+                        if now < next_receipt_read_at:
+                            continue
+                        next_receipt_read_at = now + 1.0
+                        try:
+                            snapshot = meter_read(os.fspath(meter_fn))
+                            observed = snapshot.get("rows", {}) if isinstance(snapshot, dict) else {}
+                            queue_receipt_rows = observed if isinstance(observed, dict) else {}
+                        except Exception:
+                            queue_receipt_rows = {}
+
+                # Success exists BEFORE its parent Consumer necessarily
+                # posts the ACK.  Preserve Success and Registry until both
+                # queue counters have settled, even on a combined-file path.
+                if (receipt_guard_enabled
+                        and not _row_queue_receipt_settled(queue_receipt_rows, pk)):
+                    # Only an actual, terminated Consumer is proof that it
+                    # cannot complete this receipt later.  A live slow HTTP
+                    # request must retain the Registry and Success unchanged.
+                    consumer = getattr(ctx, "_consumer_thread", None)
+                    # Stage-managed rows may be registered BEFORE their
+                    # zero-queue receipt is published, and their Consumer
+                    # intentionally exits immediately.  Do not classify a
+                    # transient missing receipt as terminal while Producer
+                    # can still initialize it.  A positive running receipt
+                    # or completed/stopped Producer is stronger evidence.
+                    observed = queue_receipt_rows.get(str(pk))
+                    has_active_running_receipt = (
+                        isinstance(observed, dict)
+                        and type(observed.get("queue_running")) is int
+                        and observed["queue_running"] > 0
+                    )
+                    producer_done = getattr(ctx, "_producer_done_flag", None)
+                    no_more_publication = (
+                        stop_event.is_set()
+                        or (producer_done is not None and producer_done.is_set())
+                    )
+                    if (consumer is not None
+                            and not consumer.is_alive()
+                            and (has_active_running_receipt or no_more_publication)
+                            and not consumer_receipt_terminal_reported):
+                        # A stage Producer may publish the zero-count receipt
+                        # after this scan's snapshot and immediately set DONE.
+                        # Refresh from the authoritative Meter before making
+                        # any irrevocable terminal decision.  A changed
+                        # receipt gets another ordinary scan, never a fake ACK.
+                        try:
+                            final_meter = meter_read(os.fspath(meter_fn))
+                            final_rows = final_meter.get("rows", {}) if isinstance(final_meter, dict) else {}
+                            if not isinstance(final_rows, dict):
+                                final_rows = {}
+                        except Exception:
+                            final_rows = {}
+                        if _row_queue_receipt_settled(final_rows, pk):
+                            queue_receipt_rows = final_rows
+                            continue
+                        consumer_receipt_terminal_reported = True
+                        blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+                        if blocked is not None:
+                            blocked.set()  # Existing coordinator INCOMPLETE gate.
+                        try:
+                            def _receipt_incomplete(d):
+                                d.setdefault("queue_integrity", {}).update({
+                                    "status": "incomplete",
+                                    "reason_code": "UNVERIFIED_CONSUMER_RECEIPT",
+                                    "manual_review_required": True,
+                                })
+                            meter_update(meter_fn, _receipt_incomplete)
+                        except Exception:
+                            pass
+                        tlog_warn(
+                            "[row-merger] UNVERIFIED_CONSUMER_RECEIPT; "
+                            "Consumer terminated before Queue ACK; "
+                            "preserving evidence, run incomplete"
+                        )
                     continue
 
                 #if not row_is_ready(item_dir):
