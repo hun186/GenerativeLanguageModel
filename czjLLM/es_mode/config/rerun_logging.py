@@ -80,6 +80,10 @@ def log_rerun_config(
         # Warn only. Never change how old private Python and task YAML merge.
         # Do not print connection credentials or arbitrary setting values.
         print("⚠️  [ES_RERUN_LEGACY_PY] 偵測到 ES 連線 Python 內的舊 rerun。")
+        print("  - 建議分工：config_es 連線 Python 只管理 ES host/認證/TLS/index/基本 I/O；")
+        print("              每份任務 YAML 獨立管理 rerun、重跑時間窗、版本及輸出品質檢查。")
+        print("  - 原因：同一連線 .py 可能被多份 YAML 共用，舊 rerun 易造成跨任務意外重算。")
+        print("  - 遷移指南：docs/usage/es_connection_profile_examples.md")
         if isinstance(es_config_file, str) and es_config_file.strip():
             # File name is enough to locate the setting; avoid multiline
             # injection and dumping a private path with user-specific parts.

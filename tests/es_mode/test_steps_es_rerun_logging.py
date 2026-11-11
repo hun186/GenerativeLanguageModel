@@ -52,6 +52,10 @@ def test_log_rerun_config_warns_about_source_and_effective_settings(capsys):
     assert "ES rerun 設定會影響 pending / 重跑判斷" in out
     assert "來源：es_config_file.rerun + 主 YAML rerun" in out
     assert "偵測到 ES 連線 Python 內的舊 rerun" in out
+    assert "建議分工：config_es 連線 Python 只管理 ES" in out
+    assert "每份任務 YAML 獨立管理 rerun" in out
+    assert "跨任務意外重算" in out
+    assert "docs/usage/es_connection_profile_examples.md" in out
     assert "[ES_RERUN_PY_INHERITED]" in out
     assert "force_since：可能重新挑出" in out
     assert "相容模式仍會合併舊值" in out
@@ -77,6 +81,7 @@ def test_yaml_only_rerun_has_no_legacy_warning(capsys):
     stdout = capsys.readouterr().out
     assert "來源：主 YAML rerun" in stdout
     assert "偵測到 ES 連線 Python 內的舊 rerun" not in stdout
+    assert "建議分工：" not in stdout
 
 
 def test_warning_when_all_rerun_rules_come_from_legacy_python(capsys):
@@ -96,6 +101,8 @@ def test_warning_when_all_rerun_rules_come_from_legacy_python(capsys):
     out = capsys.readouterr().out
     assert "[ES_RERUN_LEGACY_PY]" in out
     assert "[ES_RERUN_PY_ONLY]" in out
+    assert "建議分工：config_es 連線 Python 只管理 ES" in out
+    assert "每份任務 YAML 獨立管理 rerun" in out
     assert "akconfig_es_test.py" in out
     assert "config_es/private/" in out
     assert "force_since：可能重新挑出" in out
