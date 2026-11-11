@@ -142,8 +142,8 @@ production replay or physical Windows acceptance was performed.
 The earlier phase updated five duplicated `akconfig_es_*.py.example`
 files, but the later consolidation removes all seven per-index ES examples.
 The only remaining ES Python example is `config_es/connection.py.example`.
-It documents the Event-first check with `rerun.enable=False` by default,
-avoiding automatic replay based on old copied `force_since` or hash settings.
+It contains no `rerun` block at all. The date check belongs to each task
+YAML, preventing future tasks sharing a connection from inheriting its policy.
 Operator-owned private `.py` files and every task YAML path remain unchanged.
 See `docs/usage/es_connection_profile_examples.md`.
 

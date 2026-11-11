@@ -119,7 +119,7 @@ def test_all_three_sraf_es_yaml_examples_use_event_time_not_timeline_minimum():
         assert "path: multidim_event_json" in content
         assert "path: Event_Timeline.time_iso" not in content
 
-def test_one_canonical_python_es_config_example_retains_event_first_contract():
+def test_one_canonical_python_es_config_example_has_no_rerun_policy():
     import ast
 
     config_dir = Path(__file__).resolve().parents[2] / "czjLLM" / "config_es"
@@ -127,10 +127,16 @@ def test_one_canonical_python_es_config_example_retains_event_first_contract():
     assert examples == ["connection.py.example"], examples
     template = (config_dir / "connection.py.example").read_text(encoding="utf-8")
     ast.parse(template, filename="connection.py.example")
-    assert '"validator": "multidim_event_time"' in template
-    assert '"path": "multidim_event_json"' in template
-    assert '"relative_to_output": False' in template
-    assert '"enable": False' in template  # no implicit rerun after copying
+    module = ast.parse(template, filename="connection.py.example")
+    assigned = {
+        node.targets[0].id
+        for node in module.body
+        if isinstance(node, ast.Assign)
+        and len(node.targets) == 1
+        and isinstance(node.targets[0], ast.Name)
+    }
+    assert "rerun" not in assigned
+    assert "rerun = {" not in template
     assert 'es_index = ""' in template  # user must deliberately choose index
     assert 'es_ssl_assert_hostname = True' in template
 
@@ -151,3 +157,23 @@ def test_one_canonical_python_es_config_example_retains_event_first_contract():
     for yaml_name, private_name in expected.items():
         text = (yaml_dir / yaml_name).read_text(encoding="utf-8")
         assert f"es_config_file: czjLLM/config_es/{private_name}" in text
+
+
+def test_two_yaml_jobs_sharing_connection_keep_independent_rerun_rules():
+    from czjLLM.es_mode.config.rerun_logging import resolve_rerun_config
+
+    connection = {"es_host": "https://example.invalid:9200", "es_index": "synthetic"}
+    task_a = {"enable": True, "required_output_checks": [{
+        "path": "multidim_event_json", "validator": "multidim_event_time",
+        "min_valid_count": 1, "relative_to_output": False,
+    }]}
+    task_b = {"enable": False}
+    merged_a, diagnostics_a = resolve_rerun_config(
+        connection, lambda key, default=None: task_a if key == "rerun" else default)
+    merged_b, diagnostics_b = resolve_rerun_config(
+        connection, lambda key, default=None: task_b if key == "rerun" else default)
+    assert merged_a == task_a
+    assert merged_b == task_b
+    assert "required_output_checks" not in merged_b
+    assert not diagnostics_a["base_has_rerun"]
+    assert not diagnostics_b["base_has_rerun"]

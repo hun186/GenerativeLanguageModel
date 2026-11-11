@@ -40,9 +40,10 @@
    使用者／密碼，並配置符合實際 HTTPS 位址的憑證。
 3. 核對 `id_col`、`input_col`、`output_col`、`mapping_file`
    與 `pending_filters`；新範例預設 `es_apply_mapping=False`。
-4. 核對主 YAML 與私有設定合併後的 **有效** `rerun`：
-   主 YAML 同名 key 會覆蓋私人 Python 設定值；未設定的 key 仍可繼承。
-   `rerun.enable=False` 是範例的安全預設，不是現行所有任務的關閉指令。
+4. 每份**任務 YAML 自己負責 `rerun`**。共用的連線 Python 不應設定 `rerun`。
+   舊程式仍允許私人 Python 與 YAML 的 `rerun` 逐 key 合併，
+   所以需要人工移除既有私人 `.py` 中的整段 `rerun = {...}`。
+   只在 YAML 寫 `enable: false` 並不等於已清除所有可能繼承的條件。
 5. 嚴格限制測試範圍並先做唯讀 pending／日期稽核，確認不會造成
    `news_test` 等歷史資料大量重新抽取後再啟用重跑。
 
@@ -52,19 +53,49 @@
 
 ### 舊工作站需要修改嗎？
 
-**不需要。** 本變更不會刪除或覆寫
-`config_es/private/*.py`；若現有任務可運作，原本的私人配置可維持。
-若工作站仍使用未納入 Git 的
-`czjLLM/config_es/akconfig_es_*.py` 原地設定，也不會因為移除
-`.py.example` 而被刪除。之後整理實際連線設定須獨立核實。
+本 PR **不會刪除或覆寫** `config_es/private/*.py` 或未追蹤的
+`config_es/akconfig_es_*.py`。為改採 YAML-only 重跑政策，操作員需
+手動刪除其私人連線 `.py` 中整段 `rerun = {...}`，並核對各任務 YAML。
+請注意：`es_config.yaml`、`es_config_mil.yaml`、`es_config_srp.yaml`
+等目前並未定義 `rerun`；舊執行結果可能仰賴私人 `.py` 的舊政策。
+遷移後要刻意確認是否仍需在相關 YAML 補上這些規則，避免靜默改變任務語意。
 
 ## 日期驗證政策與安全邊界
 
-新公開範例保留非強制啟用的 `multidim_event_time` 欄位檢查，
-核心 Event 有合法日期，或宣告合法的日期未知，都不必強迫產生
-`Event_Timeline` 日期。日期原文語意忠實性仍需另行稽核。
+新公開的 ES Python 連線範例**完全不包含 `rerun`**。
+多維度事件日期檢查需放入具體任務 YAML，使用
+`validator: multidim_event_time`：Event 合法日期或明示未知皆可通過，
+Timeline 可為空。日期原文語意忠實性仍需另外稽核。
 `pipeline_hash`、`force_since`、`force_if_missing_meta` 等
 重跑條件不因本次範例整併而自動解除。
 
 品質檢查失敗的跨重啟重試次數上限由 Issue #313 另行追蹤，
 本次沒有新增 retry 計數，也沒有寫入 ES／呼叫 LLM。
+
+## YAML-only 重跑政策（建議）
+
+以下只適合多維事件任務，且須先部署含 `multidim_event_time`
+驗證器的版本。不要直接把舊版測試用 hash 搬入正式排程：
+
+```yaml
+rerun:
+  enable: true
+  force_if_missing_meta: false
+  required_output_checks:
+    - path: multidim_event_json
+      validator: multidim_event_time
+      min_valid_count: 1
+      relative_to_output: false
+```
+
+`pipeline_hash`、`force_since`、`model_tag`、`stale_after_days`、
+`execution_fingerprint` 等須由**該任務 YAML 明確選擇**，不能由連線
+設定檔共享。如果 YAML 完全沒有 `rerun`，從 Python 移除後就不會有
+過去 Python 的自訂重跑政策；要先確認這是預期行為。
+
+### 向後相容注意事項
+
+現有 `czjLLM/es_mode/config/rerun_logging.py` 仍採舊式
+Python + YAML `rerun` 淺層合併。此次先把**公開範例改為 YAML-only**，
+不直接禁止舊私人設定，以免在尚未盤點生產設定前讓既有任務失效。
+操作員完成私人設定遷移後，所有新政策才真正由 YAML 決定。

@@ -29,21 +29,6 @@ pending_filters = []  # 可自行設置 term/range/ids 等原生 ES DSL filter
 es_prefetch_buffer = 0
 es_prefetch_first_timeout = 8
 
-# 範例只示範多維事件日期品質的非強制檢查；此處預設不啟用 rerun。
-# 若主 YAML 設 rerun.enable=true，會覆寫這個 enable，並繼承未覆寫的
-# required_output_checks。確切生效設定以啟動時合併後紀錄為準。
-# Event 有合法日期、或 Event 明確 unknown，Timeline 皆可為空。
-# 這是格式/結構檢查，不保證 LLM 沒有漏抽原文中的日期。
-rerun = {
-    "enable": False,
-    "required_output_checks": [
-        {
-            "path": "multidim_event_json",
-            "validator": "multidim_event_time",
-            "min_valid_count": 1,
-            "relative_to_output": False,
-        },
-    ],
-}
-# 需要增量重跑時，再於私人設定或任務 YAML 明確設定 pipeline_hash、
-# force_since、force_if_missing_meta 等；避免照抄舊範例造成大量重算。
+# 執行政策由每一份任務 YAML 自己管理：
+# 不要在共用 ES 連線 Python 中設定 rerun／force_since／pipeline_hash／required_output_checks。
+# 若私人 .py 曾保留舊 rerun，須另行人工移除並確認所有任務 YAML。
