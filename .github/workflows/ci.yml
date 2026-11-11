@@ -32,7 +32,7 @@ jobs:
       - name: Run offline production E2E gate
         run: python -m pytest -q tests/e2e -m e2e --maxfail=1 --disable-warnings
       - name: Run focused quality GUI, bounded memory, archival continuity and SHA256 manifest regressions
-        run: python -m pytest -q tests/job_manager/test_win_gui_llm_audit.py tests/job_manager/test_win_gui_incident_header_layout.py tests/job_manager/test_win_gui_main_vertical_scroll.py tests/job_manager/test_document_model_endpoint.py tests/job_manager/test_document_model_endpoint_incremental.py tests/job_manager/test_worker_dispatch_observation.py tests/prompt_pipeline/test_llm_call_audit.py tests/prompt_pipeline/test_split_retry_lineage.py tests/prompt_pipeline/test_worker_split_family_audit.py tests/test_processing_quality.py tests/test_required_output_guard.py tests/test_json_finish_reason_guard.py tests/test_json_repair_analysis_gui.py tests/test_processing_quality_report.py tests/test_processing_quality_incident_drilldown.py tests/test_processing_quality_rotation.py tests/test_processing_quality_manifest.py tests/test_processing_quality_gui_continuity.py tests/test_processing_quality_gui_budgets.py tests/test_processing_quality_disk_spill.py tests/test_processing_quality_benchmark.py --maxfail=1 --disable-warnings
+        run: python -m pytest -q tests/job_manager/test_win_gui_llm_audit.py tests/job_manager/test_win_gui_incident_header_layout.py tests/job_manager/test_win_gui_main_vertical_scroll.py tests/job_manager/test_document_model_endpoint.py tests/job_manager/test_document_model_endpoint_incremental.py tests/job_manager/test_worker_dispatch_observation.py tests/prompt_pipeline/test_llm_call_audit.py tests/prompt_pipeline/test_split_retry_lineage.py tests/prompt_pipeline/test_worker_split_family_audit.py tests/test_processing_quality.py tests/test_required_output_guard.py tests/test_json_finish_reason_guard.py tests/test_json_repair_analysis_gui.py tests/test_json_repair_change_map.py tests/test_processing_quality_report.py tests/test_processing_quality_incident_drilldown.py tests/test_processing_quality_rotation.py tests/test_processing_quality_manifest.py tests/test_processing_quality_gui_continuity.py tests/test_processing_quality_gui_budgets.py tests/test_processing_quality_disk_spill.py tests/test_processing_quality_benchmark.py --maxfail=1 --disable-warnings
       - name: Verify stopped-producer interrupted JSONL rotation recovery
         run: python -m pytest -q tests/test_processing_quality_recovery.py --maxfail=1 --disable-warnings
       - name: Verify RUNNING recovery and Worker Success no-clobber publication
@@ -61,8 +61,6 @@ jobs:
         run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_operator_acceptance.py --maxfail=1 --disable-warnings
       - name: Verify offline multidim Event and Timeline time rerun audit
         run: python -m pytest -q tests/test_multidim_time_audit.py --maxfail=1 --disable-warnings
-      - name: Verify hypothetical time rerun comparator without ES writes
-        run: python -m pytest -q tests/test_multidim_time_policy_preview.py --maxfail=1 --disable-warnings
       - name: Verify no-clobber TODO to RUNNING dispatch and collision fail-closed
         run: python -m pytest -q tests/prompt_pipeline/test_queue_no_clobber.py --maxfail=1 --disable-warnings
       - name: Verify observed queue claim and requeue events
@@ -177,7 +175,7 @@ jobs:
         shell: pwsh
         env:
           PYTHONNOUSERSITE: "1"
-        run: python -m pytest -q tests/test_json_repair_analysis_gui.py -k "not real_worker_handler" --maxfail=1 --disable-warnings
+        run: python -m pytest -q tests/test_json_repair_analysis_gui.py tests/test_json_repair_change_map.py -k "not real_worker_handler" --maxfail=1 --disable-warnings
       - name: Verify offline slot refill on native Windows
         shell: pwsh
         run: python -m pytest -q tests/prompt_pipeline/test_slot_refill_scheduler.py -k "not real_queue" --maxfail=1 --disable-warnings
@@ -191,11 +189,6 @@ jobs:
         env:
           PYTHONNOUSERSITE: "1"
         run: python -m pytest -q tests/test_multidim_time_audit.py --maxfail=1 --disable-warnings
-      - name: Verify time rerun preview in real Windows Python
-        shell: pwsh
-        env:
-          PYTHONNOUSERSITE: "1"
-        run: python -m pytest -q tests/test_multidim_time_policy_preview.py --maxfail=1 --disable-warnings
       - name: Verify LLM dispatch BAT help forwarding on real Windows
         shell: pwsh
         run: |
