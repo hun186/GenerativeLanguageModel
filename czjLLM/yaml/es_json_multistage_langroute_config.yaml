@@ -19,20 +19,21 @@ merge_dedup_lists: true
 merge_log_changes: true
 merge_max_log: 10
 
-# 測試重跑開關：覆寫 es_config_file 內的 rerun.pipeline_hash。
-# 若同一批 ES 文件已用舊 hash 寫過結果，改這個值即可讓 pending query 再挑出來重跑。
-# 測完若不想再強制重跑，可改回正式版本號或移除此段，改用 es_config_file 的 rerun 設定。
+# SRAF Event-first 日期品質重跑：此政策只屬於本任務 YAML，不應放在共用連線 .py。
+# Event 有合法日期或明示時間未知均可通過；不要求 Event_Timeline 一定有日期。
+# null / false 明確覆寫尚未遷移的私人 .py 強制重跑條件，避免意外重算歷史資料。
+# 若確實要依版本或處理時間強制重算，再於本 YAML 明確設定 pipeline_hash / force_since。
 rerun:
   enable: true
-  pipeline_hash: v3.2.2-es-multistage-rerun-test
-  force_if_missing_meta: true
+  pipeline_hash: null
+  force_since: null
+  force_if_missing_meta: false
   fallback_date_field: update_time_ai
   required_output_checks:
-    - path: Event_Timeline.time_iso
-      validator: date
-      format: iso8601
+    - path: multidim_event_json
+      validator: multidim_event_time
       min_valid_count: 1
-      relative_to_output: true
+      relative_to_output: false
 
 # 主要輸出欄位：多階段 ES 會由 es_writeback_rules 指定寫回 extract stage；
 # 若未設定 es_writeback_rules，row_merger 會退回 combined 輸出。

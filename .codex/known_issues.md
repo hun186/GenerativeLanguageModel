@@ -88,3 +88,6 @@
 
 ## 2026-11-11 — Legacy basename-only TODO slice hints are ambiguous
 - Existing Quality JSONL slice_id was reduced to Path(...).name; different item roots with TODO/1.txt all hashed identically, and longer SHA cannot fix information already lost. New optional item-root+basename fingerprints fix current-path diagnostic collisions only (not original document lineage): moves/renames, path aliases, same-name overwrites and dictionary guessing of predictable paths remain limitations. Historical records continue labeled `BASENAME_ONLY`; no false recovery. Review/Hosted CI and operator physical GUI pending.
+
+## 2026-11-11 / #293 Event-time rule operator limitation
+- The new grouped date validator cannot verify whether the original article contained an extractable date; a declared unknown is syntactic completion only, and existing pipeline_hash/force_if_missing_meta can still mark data pending. Private effective configuration and real-index impact remain unverified. Do not roll out as an automatic bulk replay.

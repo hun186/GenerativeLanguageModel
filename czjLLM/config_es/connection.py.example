@@ -1,17 +1,34 @@
-# Copy this entire file to config_es/private/<connection_name>.py .
-# Keep the host, login, index, mapping and other connection choices together.
-# Do not commit a populated copy; this file contains no real secrets.
-es_host = ""
-es_user = ""
-es_pass = ""
-es_index = ""
+# 唯一公開的 Elasticsearch Python 連線設定範例（不含帳密）。
+# 以此為範本，另存為 czjLLM/config_es/private/<YAML 指定的檔名>.py。
+# 只改 private/ 下的檔案；不要提交密碼，也不要覆寫既有私人設定。
+# 參見 docs/usage/es_connection_profile_examples.md（各任務索引對應表）。
+#
+# 下列預設採安全模式：不指定 ES 主機／索引，不套用 Mapping，
+# 不強制重跑舊結果。操作員必須明確填寫並驗證。
+import os
+
+es_host = os.environ.get("CZJLLM_ES_HOST", "")
+es_user = os.environ.get("CZJLLM_ES_USERNAME", "")
+es_pass = os.environ.get("CZJLLM_ES_PASSWORD", "")
+es_index = ""  # 按任務選擇 news_test / srp_test / fishing_test 等，不能留空
+
+# 私有 HTTPS：應使用符合服務位址的 CA 與 TLS 主機名／IP SAN 憑證。
+es_verify_certs = True
+es_ssl_assert_hostname = True
+# es_ca_certs = "path/to/your/trusted/http_ca.crt"
+
 id_col = "_id"
 input_col = "rawInfo.content"
 output_col = "multidim_event_json"
-es_verify_certs = True
-es_ssl_assert_hostname = True
-# For trusted private/internal HTTPS roots, adjust this path as needed.
-# es_ca_certs = "path/to/trusted/http_ca.crt"
+
 reset_output = False
-es_apply_mapping = False
-# mapping_file = "czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml"
+es_apply_mapping = False  # 確認索引、型別與 Mapping 後才手動開啟
+mapping_file = "czjLLM/config_es/schemas/InfoExtraction-MultiDim-mapping.yaml"
+only_selected = False
+pending_filters = []  # 可自行設置 term/range/ids 等原生 ES DSL filter
+es_prefetch_buffer = 0
+es_prefetch_first_timeout = 8
+
+# 執行政策由每一份任務 YAML 自己管理：
+# 不要在共用 ES 連線 Python 中設定 rerun／force_since／pipeline_hash／required_output_checks。
+# 若私人 .py 曾保留舊 rerun，須另行人工移除並確認所有任務 YAML。

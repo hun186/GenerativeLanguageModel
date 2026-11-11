@@ -126,3 +126,8 @@
 - [ ] Exact-head Hosted Linux E2E, Windows native 3.10/3.11, Secret Scan and formal Codex Review for `fix/quality-slice-lineage-item-root-20261111`, then ordinary low-risk Squash Merge if full gates pass. Distinguish independent TODO/1.txt by work-item path context and preserve same slice through TODO/RUNNING/Success; no raw source paths or content in Quality JSONL.
 - [ ] Future separately gated **durable** item/slice provenance if moving/renaming item roots or replacing same-name prompt during rerun must be identified across machines: consider original source document PK or existing split-intent UUID at creation, never claim path fingerprints are authoritative.
 - [ ] #310 remains Draft, plaintext raw before/after capture must not be auto-merged or enabled without operator privacy/NTFS acceptance.
+
+- [ ] #293 Event-first rerun PR: independently review exact-head tests on Linux/Windows, compare effective operator-private YAML and existing stored-result audit, then explicitly authorize production policy activation; no large-scale ES reprocessing or writes performed here.
+- [ ] #293: design separate restart-safe quality repair budget (2 post-initial attempts suggested) with per-document durable ledger and operator reset. Avoid counting network retries or pending scans; no live replay authorized.
+
+- [ ] After #312 merges, verify README/help references and operator-local private ES profiles; published template deduplicated to one, but existing private profile maintenance remains operator-controlled. Confirm effective YAML/private merged rerun before production use.
