@@ -120,3 +120,5 @@
 - Added offline contract tests for both ES adapters, date/unknown, malformed/empty Event, legacy validator, and preserved force pipeline hash. Exact-head hosted CI/review and production operator acceptance pending; zero ES/LLM writes.
 
 - 2026-11-11: aligned five Python ES .example date checks to Event-first rule; private effective configs remain unverified. Linux CI had non-date failure at decisions.md >200 line cap; corrected on branch; rerun pending.
+
+- 2026-11-11: PR #312 consolidated seven duplicate public ES .py.example files into existing canonical connection.py.example, documenting all seven original index/private basename mappings and intentional force_since/date-check differences. Legacy YAML/private resolver untouched; offline contract adjusted, Hosted exact-head results pending.

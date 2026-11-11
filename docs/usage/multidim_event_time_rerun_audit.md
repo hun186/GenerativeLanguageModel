@@ -159,3 +159,11 @@ The Event-first guard additionally requires nonblank, distinct
 a non-unknown precision can still represent a partial time if a nonempty
 `time_raw` is preserved. This is a conservative validation rule, not
 source-language inference.
+
+## Public ES Python template consolidation
+
+Seven duplicate `config_es/akconfig_es_*.py.example` files were consolidated
+into one canonical `config_es/connection.py.example`, with per-index legacy
+file mappings documented in `docs/usage/es_connection_profile_examples.md`.
+Legacy `es_config_file` YAML references and operator-owned private/root
+`.py` files were not changed. No implicit date-rule rerun or ES writes.

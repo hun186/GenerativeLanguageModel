@@ -119,17 +119,35 @@ def test_all_three_sraf_es_yaml_examples_use_event_time_not_timeline_minimum():
         assert "path: multidim_event_json" in content
         assert "path: Event_Timeline.time_iso" not in content
 
-def test_python_es_config_examples_use_event_time_rule():
-    root = Path(__file__).resolve().parents[2] / "czjLLM" / "config_es"
-    for name in (
-        "akconfig_es_fishing.py.example", "akconfig_es_test.py.example",
-        "akconfig_es_test_133.py.example",
-        "akconfig_es_test_satmeta_133.py.example",
-        "akconfig_es_test_srp_133.py.example",
-    ):
-        content = (root / name).read_text(encoding="utf-8")
-        compile(content, name, "exec")
-        assert '"validator": "multidim_event_time"' in content
-        assert '"path": "multidim_event_json"' in content
-        assert '"relative_to_output": False' in content
-        assert '"path": "Event_Timeline.time_iso"' not in content
+def test_one_canonical_python_es_config_example_retains_event_first_contract():
+    import ast
+
+    config_dir = Path(__file__).resolve().parents[2] / "czjLLM" / "config_es"
+    examples = sorted(p.name for p in config_dir.glob("*.py.example"))
+    assert examples == ["connection.py.example"], examples
+    template = (config_dir / "connection.py.example").read_text(encoding="utf-8")
+    ast.parse(template, filename="connection.py.example")
+    assert '"validator": "multidim_event_time"' in template
+    assert '"path": "multidim_event_json"' in template
+    assert '"relative_to_output": False' in template
+    assert '"enable": False' in template  # no implicit rerun after copying
+    assert 'es_index = ""' in template  # user must deliberately choose index
+    assert 'es_ssl_assert_hostname = True' in template
+
+    # Keep legacy YAML/runtime names. Private copies with the same basenames
+    # are resolved independently of whether a public .example file exists.
+    yaml_dir = config_dir.parent / "yaml"
+    expected = {
+        "es_config.yaml": "akconfig_es_test.py",
+        "es_config_fishing.yaml": "akconfig_es_fishing.py",
+        "es_config_mil.yaml": "akconfig_es_test_mil.py",
+        "es_config_nav_intel_sentences.yaml": "akconfig_es_test_nav_intel_sentences_133.py",
+        "es_config_satmeta.yaml": "akconfig_es_test_satmeta_133.py",
+        "es_config_srp.yaml": "akconfig_es_test_srp_133.py",
+        "es_config_single_stage_original.yaml": "akconfig_es_test_133.py",
+        "es_json_multistage_langroute_config.yaml": "akconfig_es_test_133.py",
+        "es_fishing_json__singlestage_in_multistage.yaml": "akconfig_es_fishing.py",
+    }
+    for yaml_name, private_name in expected.items():
+        text = (yaml_dir / yaml_name).read_text(encoding="utf-8")
+        assert f"es_config_file: czjLLM/config_es/{private_name}" in text
