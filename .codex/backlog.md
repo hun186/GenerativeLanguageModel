@@ -105,3 +105,9 @@
 - [x] #301 offline slot-refill prototype and #304 metadata-only stalled-Queue warning already merged, not to be repeated.
 - [ ] Finish new **explicit-run read-only Queue receipt inventory** Hosted Linux and real Hosted Windows 3.10/3.11 CI, latest-head formal review, and only then consider merge. Counts/candidate codes must not be interpreted as automatic cleanup or verified sink ACK.
 - [ ] Operator-owned stopped-run evidence for historical 19/13 anomalies: verify exact Meter path/Run ID locally, Worker state, per-file Queue lineage and independent SQL/ES readback; no unattended repair/replay. Production slot refill remains an independent opt-in, GPU/ES-validated future task.
+
+## 2026-11-11 / #293 first read-only phase
+- [x] #305 exact-HEAD Linux/Windows/Secret Scan PASS, clean Codex review and Squash Merge as `f5bcce83446d388bef64d68f59d4e1a54f03d17d`. Earlier #305 pending notes superseded.
+- [ ] Phase A independent PR: validate local NDJSON audit on Hosted CI and formal review, then Merge only after all normal gates. Audit is a triage tool, not authoritative real-ES evidence.
+- [ ] Operator supplies separately verified **read-only** actual ES exported-source sample and current effective rerun config; check whether Timeline minimum=1, pipeline_hash/fingerprint, stale or force rules are responsible before changing skip/retry semantics. Do not gather credentials or commit private outputs.
+- [ ] Issue #293 phase B: implement grouped Event/Timeline dates + explicit unknown semantics with hard-fail/warning separation, test source/document/force-rerun compatibility, then independently gate deployment. No bulk rewrite.

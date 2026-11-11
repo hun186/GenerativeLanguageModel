@@ -59,6 +59,8 @@ jobs:
           bash run_linux_queue_local_acceptance.sh
       - name: Verify Windows operator fixture launcher fail-closed and privacy
         run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_operator_acceptance.py --maxfail=1 --disable-warnings
+      - name: Verify offline multidim Event and Timeline time rerun audit
+        run: python -m pytest -q tests/test_multidim_time_audit.py --maxfail=1 --disable-warnings
       - name: Verify no-clobber TODO to RUNNING dispatch and collision fail-closed
         run: python -m pytest -q tests/prompt_pipeline/test_queue_no_clobber.py --maxfail=1 --disable-warnings
       - name: Verify observed queue claim and requeue events
@@ -182,6 +184,11 @@ jobs:
         env:
           PYTHONNOUSERSITE: "1"
         run: python -m pytest -q tests/job_manager/test_queue_receipt_inventory.py --maxfail=1 --disable-warnings
+      - name: Verify offline Event Timeline time audit on native Windows
+        shell: pwsh
+        env:
+          PYTHONNOUSERSITE: "1"
+        run: python -m pytest -q tests/test_multidim_time_audit.py --maxfail=1 --disable-warnings
       - name: Verify LLM dispatch BAT help forwarding on real Windows
         shell: pwsh
         run: |
