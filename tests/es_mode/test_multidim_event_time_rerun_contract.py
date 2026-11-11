@@ -34,7 +34,16 @@ def document(event_time="2023-08-24", precision="day", timeline=None):
 @pytest.mark.parametrize("source,expected", [
     (document(), True),  # Event-only: empty Timeline is legitimate
     (document(None, "unknown"), True),  # unknown, not an infinite rerun
-    (document(None, "day"), False),  # no time_raw and non-unknown precision
+    ({"multidim_event_json": [{
+        "Event": [{"event_id": "E1", "time_iso": None,
+                   "time_raw": None, "time_precision": "unknown"}],
+        "Event_Timeline": [],
+    }]}, True),  # exact user case: explicitly unknown, no raw time
+    ({"multidim_event_json": [{
+        "Event": [{"event_id": "E1", "time_iso": None,
+                   "time_raw": None, "time_precision": "day"}],
+        "Event_Timeline": [],
+    }]}, False),  # null date/raw cannot claim day precision
     ({"multidim_event_json": [{
         "Event": [{"event_id": "E1", "time_iso": None,
                    "time_raw": "05:04", "time_precision": "minute"}],
