@@ -78,7 +78,9 @@ def test_review_button_shares_quality_title_row_and_keeps_popup():
 def test_quality_summary_uses_full_available_width_and_document_rows_fit_font():
     src = inspect.getsource(win_gui._gui_proc_main)
     assert 'quality_section.bind("<Configure>", _resize_quality_wrap)' in src
-    assert 'quality_summary.configure(wraplength=width)' in src
+    assert 'quality_summary_row.columnconfigure(0, weight=1)' in src
+    assert 'quality_summary.configure(wraplength=max(120, row_width - reserve - 8))' in src
+    assert 'quality_summary_row.bind("<Configure>", _resize_quality_summary_row)' in src
     assert 'quality_codes.configure(wraplength=width)' in src
     assert 'tkfont.nametofont("TkDefaultFont").metrics("linespace")' in src
     assert 'rowheight=max(28, document_line_height + 10)' in src
