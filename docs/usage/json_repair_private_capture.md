@@ -97,3 +97,7 @@ formal security review and explicit operator authorization before
 enabling it in production. It is independent of the low-risk #308
 popup/layout PR and does not change actual JSON repair, retry, Queue
 claim/ACK, or ES/SQL sink success rules.
+
+### Nested per-run mount guard (2026-11-11)
+
+Verifying only the configured private root is insufficient: an existing `run-<digest>` child may be a separately mounted NFS/CIFS filesystem. On Linux the implementation now fails closed unless the **actual per-run directory** passes the same `/proc/self/mountinfo` local-filesystem allowlist, before creating the lock or snapshot; read and manual clear are guarded too. Synthetic regressions cover existing and freshly created child folders. Mount changes after validation, remote block devices, local adversaries, ACLs, backups and host-level access are not proven secure; operator review remains mandatory.
