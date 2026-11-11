@@ -91,3 +91,6 @@
 
 ## 2026-11-11 — Raw-capture Draft #310 still operator gated
 - After #311 main, Draft raw JSON storage must retain new path-context Quality hints and must not reset GUI to basename-only. Local-only filesystem checks (including stacked mounts), Windows ACL/backup policy, fail-closed private file handling and explicit operator consent remain high-risk acceptance gates. No automatic merge or live enable.
+
+## 2026-11-11 — Draft #310 nested-mounted run directory (corrective pending)
+- Codex P2 identified that a verified local capture root can contain a separate NFS/CIFS mount at its `run-<digest>` child. Draft #310 now validates the child destination on create, read and clear before opening the lock/snapshot; synthetic existing/new mount rejection regressions added. Race against later mount changes and physical Windows ACL/remote block storage are NOT resolved. Await exact-head Hosted CI, formal security review, explicit operator risk decision; no Merge/activation.
