@@ -646,6 +646,7 @@ def format_json_repair_analysis_case(case: dict) -> tuple[str, ...]:
     return (
         str(case.get("ts") or "—"),
         str(case.get("run_id") or "—"),
+        str(case.get("work_item_hint") or "舊紀錄：僅檔名"),
         str(case.get("slice_hint") or "—"),
         str(case.get("event_hint") or "—"),
         _REPAIR_ANALYSIS_LABELS.get(code, "無法判定"),
@@ -661,9 +662,16 @@ def format_json_repair_analysis_case_detail(case: dict) -> str:
     err = _REPAIR_ERROR_LABELS.get(detail.get("error_kind"), "未知")
     prefix = int(detail.get("common_prefix_chars", 0))
     suffix = int(detail.get("common_suffix_chars", 0))
+    lineage = (
+        "此切片僅有舊版檔名提示碼：不同工作項目的 1.txt 可能重複；"
+        if case.get("lineage_status") != "ITEM_PATH_DERIVED" else
+        "本次切片提示碼使用工作項目位置＋檔名建立（TODO/RUNNING 通用）；"
+        "搬移工作項目或重建同名內容後不能當作永久來源 UUID；"
+    )
     return (
         f"原始解析錯誤：{err}（約 {detail.get('error_pos_pct', 0)}% 位置）；"
         f"共同前綴 {prefix:,} 字／共同後綴 {suffix:,} 字。"
+        + lineage +
         " 字面值相同率為詞法估計，疑似鍵名片段數為近似掃描數（非唯一 dict key 數）；"
         " 無法據此證實事件、欄位或內容完整保留，亦不能推論原始輸出已截斷。"
     )
