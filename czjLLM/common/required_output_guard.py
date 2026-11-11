@@ -36,13 +36,34 @@ def evaluate_required_output_checks(source: dict, checks: list[dict]) -> tuple[b
                 isinstance(block, dict)
                 and isinstance(block.get("Event"), list)
                 and bool(block["Event"])
+                and all(
+                    isinstance(event, dict)
+                    and isinstance(event.get("event_id"), str)
+                    and bool(event["event_id"].strip())
+                    for event in block["Event"]
+                )
+                and len({event["event_id"].strip() for event in block["Event"]})
+                == len(block["Event"])
                 for block in values
             )
             if events_present:
                 state = classify_stored_document({"multidim_event_json": values})
-                if state not in {"INVALID_TIME_FIELDS", "UNVERIFIED_STRUCTURE"}:
-                    # Includes NO_RELIABLE_DATE: syntactically valid unknown
-                    # is complete, but not proof the source article is undated.
+                # For a null ISO date, the explicit unknown marker is valid.
+                # A known *partial* time can also have a null ISO date if it
+                # retains its original raw time. But a null date and null raw
+                # time with a supposedly known precision is inconsistent.
+                no_unmarked_missing = all(
+                    row.get("time_iso") is not None
+                    or row.get("time_precision") == "unknown"
+                    or (isinstance(row.get("time_raw"), str)
+                        and bool(row["time_raw"].strip()))
+                    for block in values
+                    for field in ("Event", "Event_Timeline")
+                    for row in block[field]
+                ) if state not in {"INVALID_TIME_FIELDS", "UNVERIFIED_STRUCTURE"} else False
+                if no_unmarked_missing:
+                    # NO_RELIABLE_DATE remains a structurally valid unknown;
+                    # this does not prove the source article lacks a date.
                     count = 1
         else:
             for value in values:

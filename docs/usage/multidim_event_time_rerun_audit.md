@@ -152,3 +152,10 @@ Increment only after a completed extraction with a quality rejection, never
 on discovery/recheck, network retries or incomplete execution. An idempotent
 concurrent claim/finalize, review state, and explicit operator reset require
 independent testing. Exhaustion must not mark an invalid output as fresh.
+
+The Event-first guard additionally requires nonblank, distinct
+`Event.event_id` values per block. Missing `time_iso` with missing
+`time_raw` is accepted only when precision explicitly says `unknown`;
+a non-unknown precision can still represent a partial time if a nonempty
+`time_raw` is preserved. This is a conservative validation rule, not
+source-language inference.
