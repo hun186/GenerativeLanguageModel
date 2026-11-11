@@ -198,3 +198,7 @@ The following sections describe the accepted main implementation through PR #239
 
 - Use `NtQueryDirectoryFile` with `FILE_DIRECTORY_INFORMATION`, `ReturnSingleEntry=TRUE`, 64KiB bounded record buffer, strict 64-byte header/UTF-16 lengths, pinned parent HANDLE, and no-follow child `NtCreateFile` before querying private identity. Limit one shared item entry budget and recursion depth, reject reparse points, never reconstruct a path to recurse or read content. Reuse only the old count/code JSON; casefold Windows basenames to avoid missing case-insensitive collisions.
 - Since Windows hosted CI was queued, enable native Windows scanning **only** on explicit `--experimental-windows` and hardcode manual-review/exit 2 even on clean-looking results; keep default Windows unsupported. Do not infer safety/replay, run privileged deletion, or claim NTFS/SMB/live LLM/SQL/ES acceptance. Only after real Windows tests and separately reviewed operator approval may this safety guard be revisited.
+
+## 2026-11-11 / Issue #293 Event-first date completion (pending PR)
+- Do not require nonempty Timeline; preserve SRAF Event as core. Implement opt-in grouped `validator: multidim_event_time` on entire `multidim_event_json`, accepting structurally valid unknown date without an extra LLM. Reuse output profile validation rather than infer source semantics.
+- Keep independent model/pipeline freshness and operator-force gates unchanged; do not bulk refresh existing news.

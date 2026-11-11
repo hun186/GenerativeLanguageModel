@@ -114,3 +114,7 @@
 
 ## 2026-11-11 — Quality TODO/1.txt collision root cause and fix (PENDING)
 - `emit_quality_event` historically stored only `Path(slice_id).name`, so many independent TODO/1.txt produce identical SHA hints regardless of hash length. New optional `work_item_hint` + `slice_trace_hint` derive from normalized work-item-root + basename before redaction; stable TODO↔RUNNING↔Success within same location, different item roots distinguish. GUI clearly labels old basename-only cases. No prompt or absolute path in ordinary audit, no Queue behavior changes. These hints are not durable cross-move document IDs; no identity backfill. Synthetic cross-root, queue-state, forged-input and legacy tests; Hosted gates/formal review PENDING.
+
+## 2026-11-11 / Issue #293 Event-first rerun (pending PR)
+- Replaced 3 ES YAML Timeline minimum-date checks with grouped `multidim_event_time` validator; output-profile time validation reused via read-only classifier. Event date or valid unknown accepted; malformed date/missing Event rejected; date correctness versus source unverified.
+- Added offline contract tests for both ES adapters, date/unknown, malformed/empty Event, legacy validator, and preserved force pipeline hash. Exact-head hosted CI/review and production operator acceptance pending; zero ES/LLM writes.

@@ -42,9 +42,12 @@ rerun:
   pipeline_hash: v3.2.2-es-multistage-rerun-test
   force_if_missing_meta: true
   fallback_date_field: update_time_ai
+  # SRAF uses Event as the core event and Timeline only for actual milestones.
+  # This check accepts a validated event date OR explicit unknown time; it
+  # rejects malformed event/timeline time fields without calling another LLM.
+  # Other rerun policies (pipeline_hash, meta, force) still apply independently.
   required_output_checks:
-    - path: Event_Timeline.time_iso
-      validator: date
-      format: iso8601
+    - path: multidim_event_json
+      validator: multidim_event_time
       min_valid_count: 1
-      relative_to_output: true
+      relative_to_output: false

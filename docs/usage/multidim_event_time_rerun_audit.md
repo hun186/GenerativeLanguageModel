@@ -114,3 +114,25 @@ Before any true rerun semantics change, separately verify the effective
 operator configuration and confirm a sample against original sources and
 sink readback. Preserve an explicit force-overwrite path and test both ES
 pending policy variants before deployment.
+
+## 2026-11-11 / Issue #293: Event-first temporal rerun rule (PR candidate)
+
+Three ES multidimensional-event YAML examples now use
+`path: multidim_event_json; validator: multidim_event_time` instead of
+requiring a nonempty `Event_Timeline.time_iso`. The new shared Python
+required-output validator reuses `classify_stored_document()` and the
+existing writeback Output Profile time validation: every article block must
+have a core Event, valid Event/Timeline time fields pass, and an explicit
+`time_iso: null` with `time_precision: unknown` may pass without fabricating
+a date or calling an LLM. An empty Timeline is valid. Missing Event, malformed
+time and unverified structure fail. **This is structural/format acceptance,
+not proof that the original article contains no recoverable date.**
+
+This time rule alone cannot prevent independent `pipeline_hash`,
+`force_if_missing_meta`, model/fingerprint or operator force reruns.
+The three existing YAML test-mode hashes were deliberately preserved; verify
+the *effective* private config before enabling against production data. Existing
+legacy `validator: date` remains unchanged for other tasks.
+
+Status: source-only change proposed; no private Elasticsearch query, rewrite,
+production replay or physical Windows acceptance was performed.
