@@ -84,7 +84,7 @@ def log_rerun_config(
             # File name is enough to locate the setting; avoid multiline
             # injection and dumping a private path with user-specific parts.
             from pathlib import PurePath
-            name = PurePath(es_config_file.replace("\\\\", "/")).name
+            name = PurePath(es_config_file.replace(chr(92), "/")).name
             if name:
                 print(f"  - YAML 的 es_config_file 指向：{name}")
                 print("  - 注意：實際載入可能是 config_es/private/ 下的同名檔。")

@@ -154,3 +154,17 @@ def test_yaml_only_does_not_emit_legacy_warning(capsys):
     assert "[ES_RERUN_PY_ONLY]" not in out
     assert "[ES_RERUN_PY_INHERITED]" not in out
     assert effective == yaml_policy
+
+
+def test_legacy_rerun_file_name_diagnostic_handles_windows_paths_safely(capsys):
+    effective, source = resolve_rerun_config(
+        {"rerun": {"enable": True}},
+        lambda key, default=None: default,
+    )
+    log_rerun_config(
+        effective, source,
+        es_config_file=r"D:\\work\\config_es\\akconfig_es_test.py",
+    )
+    out = capsys.readouterr().out
+    assert "YAML 的 es_config_file 指向：akconfig_es_test.py" in out
+    assert "D:\\work" not in out
