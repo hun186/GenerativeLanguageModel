@@ -47,6 +47,8 @@ jobs:
         run: python -m pytest -q tests/prompt_pipeline/test_llm_dispatch_idle_diagnostic.py --maxfail=1 --disable-warnings
       - name: Verify read-only queue recovery inventory and secret-free CLI output
         run: python -m pytest -q tests/prompt_pipeline/test_queue_recovery_readonly_diagnostics.py --maxfail=1 --disable-warnings
+      - name: Verify explicit-run Queue receipt inventory and redaction
+        run: python -m pytest -q tests/job_manager/test_queue_receipt_inventory.py --maxfail=1 --disable-warnings
       - name: Verify Windows native handle/128-bit file-ID groundwork (portable synthetic)
         run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py --maxfail=1 --disable-warnings
       - name: Verify Windows handle-relative enumeration and guarded CLI (portable synthetic)
@@ -175,6 +177,11 @@ jobs:
       - name: Verify offline slot refill on native Windows
         shell: pwsh
         run: python -m pytest -q tests/prompt_pipeline/test_slot_refill_scheduler.py -k "not real_queue" --maxfail=1 --disable-warnings
+      - name: Verify read-only receipt inventory on native Windows
+        shell: pwsh
+        env:
+          PYTHONNOUSERSITE: "1"
+        run: python -m pytest -q tests/job_manager/test_queue_receipt_inventory.py --maxfail=1 --disable-warnings
       - name: Verify LLM dispatch BAT help forwarding on real Windows
         shell: pwsh
         run: |
