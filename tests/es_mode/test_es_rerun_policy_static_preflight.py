@@ -10,15 +10,15 @@ import pytest
 from scripts.inspect_es_rerun_policy_offline import inspect, main
 
 
-def profiles(tmp_path, python_text="rerun = {}\\n", yaml_tail="rerun:\\n  enable: true\\n"):
+def profiles(tmp_path, python_text="rerun = {}\n", yaml_tail="rerun:\n  enable: true\n"):
     private = tmp_path / "private"
     private.mkdir()
     conn = private / "connection.py"
     task = tmp_path / "task.yaml"
-    conn.write_text(python_text.replace("\\\\n", "\\n"), encoding="utf-8")
+    conn.write_text(python_text.replace("\\\n", "\n"), encoding="utf-8")
     task.write_text(
-        ("mode: es\\nes_config_file: czjLLM/config_es/connection.py\\n"
-         + yaml_tail.replace("\\\\n", "\\n")), encoding="utf-8",
+        ("mode: es\nes_config_file: czjLLM/config_es/connection.py\n"
+         + yaml_tail.replace("\\\n", "\n")), encoding="utf-8",
     )
     return task, conn
 
@@ -54,12 +54,12 @@ def test_legacy_rerun_force_and_unknown_values_are_not_exposed(tmp_path, capsys)
 def test_task_yaml_explicitly_overrides_legacy_force_policy(tmp_path):
     task, conn = profiles(
         tmp_path, "rerun = {'enable': True, 'force_since': 'SECRET_VALUE',"
-        " 'pipeline_hash': 'old', 'force_if_missing_meta': True}\\n",
-        "rerun:\\n  enable: true\\n  force_since: null\\n"
-        "  pipeline_hash: null\\n  force_if_missing_meta: false\\n"
-        "  required_output_checks:\\n"
-        "    - path: multidim_event_json\\n"
-        "      validator: multidim_event_time\\n",
+        " 'pipeline_hash': 'old', 'force_if_missing_meta': True}\n",
+        "rerun:\n  enable: true\n  force_since: null\n"
+        "  pipeline_hash: null\n  force_if_missing_meta: false\n"
+        "  required_output_checks:\n"
+        "    - path: multidim_event_json\n"
+        "      validator: multidim_event_time\n",
     )
     result = inspect(task, conn)
     assert result["status"] == "STATIC_PREVIEW_REVIEW_REQUIRED"
@@ -73,13 +73,13 @@ def test_task_yaml_explicitly_overrides_legacy_force_policy(tmp_path):
 
 
 @pytest.mark.parametrize("python_text", [
-    "rerun = dict(enable=True)\\n",
-    "rerun = {'enable': True}\\nrerun.update({'force_since': 'SENSITIVE'})\\n",
-    "def f():\\n    rerun = {'enable': True}\\n",
-    "rerun = {}\\nrerun = {}\\n",
-    "from other_config import rerun\\n",
-    "exec('rerun = {}')\\n",
-    "rerun = {'enable': True}\\nprint(rerun)\\n",
+    "rerun = dict(enable=True)\n",
+    "rerun = {'enable': True}\nrerun.update({'force_since': 'SENSITIVE'})\n",
+    "def f():\n    rerun = {'enable': True}\n",
+    "rerun = {}\nrerun = {}\n",
+    "from other_config import rerun\n",
+    "exec('rerun = {}')\n",
+    "rerun = {'enable': True}\nprint(rerun)\n",
 ])
 def test_dynamic_python_cannot_be_previewed(tmp_path, python_text):
     task, conn = profiles(tmp_path, python_text)
@@ -87,13 +87,13 @@ def test_dynamic_python_cannot_be_previewed(tmp_path, python_text):
 
 
 @pytest.mark.parametrize("bad_yaml", [
-    "rerun:\\n  enable: true\\nrerun:\\n  enable: false\\n",
-    "rerun: [force_since]\\n",
-    "rerun:\\n  enable: true\\n  force_since: !marker PRIVATE\\n",
-    "rerun:\\n  enable: [broken\\n",
+    "rerun:\n  enable: true\nrerun:\n  enable: false\n",
+    "rerun: [force_since]\n",
+    "rerun:\n  enable: true\n  force_since: !marker PRIVATE\n",
+    "rerun:\n  enable: [broken\n",
 ])
 def test_bad_yaml_is_unavailable_without_exception_leak(tmp_path, bad_yaml):
-    task, conn = profiles(tmp_path, "rerun = {}\\n", bad_yaml)
+    task, conn = profiles(tmp_path, "rerun = {}\n", bad_yaml)
     assert inspect(task, conn)["status"] == "UNAVAILABLE"
 
 
@@ -111,7 +111,7 @@ def test_unmatched_python_and_symlink_are_unavailable(tmp_path):
 
 
 def test_missing_rerun_is_review_only_and_does_not_assume_runtime_safety(tmp_path):
-    task, conn = profiles(tmp_path, "es_index = 'SENSITIVE_INDEX'\\n", "")
+    task, conn = profiles(tmp_path, "es_index = 'SENSITIVE_INDEX'\n", "")
     result = inspect(task, conn)
     assert result["status"] == "STATIC_PREVIEW_REVIEW_REQUIRED"
     assert result["reason_codes"] == ["RERUN_NOT_EXPLICITLY_ENABLED"]
@@ -120,7 +120,7 @@ def test_missing_rerun_is_review_only_and_does_not_assume_runtime_safety(tmp_pat
 
 
 def test_standalone_cli_from_different_directory_never_imports_private_python(tmp_path):
-    task, conn = profiles(tmp_path, "raise AssertionError('DO_NOT_RUN')\\nrerun = {}\\n")
+    task, conn = profiles(tmp_path, "raise AssertionError('DO_NOT_RUN')\nrerun = {}\n")
     script = Path(__file__).resolve().parents[2] / "scripts" / "inspect_es_rerun_policy_offline.py"
     env = os.environ.copy()
     env.pop("PYTHONPATH", None)
