@@ -131,3 +131,4 @@
 - [ ] #293: design separate restart-safe quality repair budget (2 post-initial attempts suggested) with per-document durable ledger and operator reset. Avoid counting network retries or pending scans; no live replay authorized.
 
 - [ ] After #312 merges, verify README/help references and operator-local private ES profiles; published template deduplicated to one, but existing private profile maintenance remains operator-controlled. Confirm effective YAML/private merged rerun before production use.
+- [ ] **#312 static ES rerun preflight:** verify exact-head Hosted Linux/Windows 3.10/3.11 and changed-line secrets, formal Codex findings and fix; then operator runs static checker separately on each actual private .py/YAML pair and cross-checks representative read-only ES stored-output audit. Do not merge/activate P0 rerun policy without explicit owner risk decision; offline preview does not prove live ES pending count.
