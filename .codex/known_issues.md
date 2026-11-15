@@ -88,3 +88,6 @@
 
 ## 2026-11-11 — Legacy basename-only TODO slice hints are ambiguous
 - Existing Quality JSONL slice_id was reduced to Path(...).name; different item roots with TODO/1.txt all hashed identically, and longer SHA cannot fix information already lost. New optional item-root+basename fingerprints fix current-path diagnostic collisions only (not original document lineage): moves/renames, path aliases, same-name overwrites and dictionary guessing of predictable paths remain limitations. Historical records continue labeled `BASENAME_ONLY`; no false recovery. Review/Hosted CI and operator physical GUI pending.
+
+## 2026-11-15 — Issue #294 stored Output Profile diagnostic limitations (Phase A)
+- Existing date-only audit may classify a dated Event with empty Timeline while current Output Profile rejects broken linked `event_ids` or other schema fields; this is an observation gap, not evidence that real ES rerun is needed. New offline aggregate audit reuses current Profile against saved NDJSON; old documents may have been written under different Profile versions. Profile acceptance does not guarantee source accuracy, extract completeness, live ES sink ACK, SRAF retrievability, or effective private rerun policy. Hosted CI and exact-head Codex Review PENDING; no live source or ES data accessed.
