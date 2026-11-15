@@ -203,3 +203,15 @@ def test_os_environment_read_before_import_is_unavailable(tmp_path):
     )
     assert inspect(task, conn)["status"] == "UNAVAILABLE"
 
+@pytest.mark.parametrize("profile", [
+    "rerun: dict = {}\n",
+    "rerun = {}\nconfig: (lambda: None).__globals__.update("
+    "{'rerun': {'enable': True, 'force_if_missing_meta': True}}) = None\n",
+    "rerun = {}\nconfig: eval('1') = None\n",
+])
+def test_annotated_assignments_fail_closed_even_with_literal_rhs(tmp_path, profile):
+    task, conn = profiles(tmp_path, profile)
+    report = inspect(task, conn)
+    assert report["status"] == "UNAVAILABLE"
+    assert report["production_authorization"] == "NOT_GRANTED"
+
