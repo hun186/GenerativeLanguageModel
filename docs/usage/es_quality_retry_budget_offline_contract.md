@@ -11,6 +11,7 @@
 - `PROVEN_NO_RESULT` 必須有可信的外部事實能證明沒有完整結果。GPU 忙碌、ES 429、HTTP timeout、主程序崩潰、ES ACK 不明，都不是證明；這些屬於 `UNCERTAIN`，必須人工／可信外部證據釐清再恢復，而非無限派工。
 - 每一筆候選以完整 `source_document_id + output_col + verified_pipeline_sha256 + quality_rule_version` 辨別版本。SHA256 字串格式不能證明 Pipeline 真正已驗證，信任綁定必須由未來 adapter 提供；內部資料結構不在 repr 輸出原始來源 ID、fingerprint 或 attempt UUID。
 - Claim 與 Finalize 都要求 UUID4 attempt ID 與 `expected_revision`，以離線方式模擬重複觸發保護。**純函式 revision 不是跨程序 CAS 或持久帳本**；離線 ThreadPool test 也不是跨機器原子性證明。
+- 任何從持久層重建或直接構造的 `RetryState` 也必須符合**與選擇的 1／2 次政策無關的可達狀態不變條件**：失敗數不超過 2、達 2 只能 `NEEDS_REVIEW`、`NEEDS_REVIEW` 至少有 1 次失敗，未驗證初次狀態不得已有修復／Reset，修復／待檢查必須保留固定品質失敗碼、Reset 世代須具操作 ID。遇到不可能狀態要拒絕，不得把已耗盡狀態讀成成功或進行中。
 - 人工 reset 只能從 `NEEDS_REVIEW`，需要外部授權與唯一操作 UUID；純函式中的 `operator_authorized=True` 並不是身分驗證。真正部署需將權限、不可竄改稽核與 ledger Reset 合為原子操作。
 
 ## 狀態對照
