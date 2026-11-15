@@ -169,12 +169,14 @@ def next_action(state: RetryState, policy: RetryPolicy) -> NextAction:
     """Informational only: MUST NOT be used as an unguarded dispatch claim."""
     if state.phase == Phase.COMPLETE:
         return NextAction.COMPLETED_VALID
-    if state.phase == Phase.NEEDS_REVIEW or state.failed_repairs >= policy.max_failed_repairs:
-        return NextAction.QUALITY_RETRY_EXHAUSTED
+    # Even if the operator lowers the budget while a claim is in flight,
+    # uncertainty must be reconciled before any exhaustion/reset decision.
     if state.phase == Phase.UNCERTAIN:
         return NextAction.RECONCILIATION_REQUIRED
     if state.phase == Phase.IN_FLIGHT:
         return NextAction.IN_FLIGHT_UNVERIFIED
+    if state.phase == Phase.NEEDS_REVIEW or state.failed_repairs >= policy.max_failed_repairs:
+        return NextAction.QUALITY_RETRY_EXHAUSTED
     if not policy.enabled:
         return NextAction.DISABLED
     if state.phase == Phase.UNASSESSED:
@@ -287,6 +289,26 @@ def reconcile_uncertain(
             or verified_evidence is not True or result == QualityResult.UNCERTAIN):
         raise StateTransitionError("uncertain attempt needs verified reconciliation")
     return _settle(state, policy, result=result, failure_code=failure_code)
+
+
+
+def normalize_policy_exhaustion(
+    state: RetryState, policy: RetryPolicy, *, expected_revision: int,
+) -> RetryState:
+    """Propose review when a narrower policy exhausts a settled READY state.
+
+    This is a pure state transition, NOT a way to mutate durable state,
+    authorize an operator reset or silently re-dispatch a pending request.
+    Only a future source-verified, atomic CAS adapter may persist it.
+    """
+    _revision(state, expected_revision)
+    if (not policy.enabled
+            or state.phase != Phase.READY
+            or state.failed_repairs <= 0
+            or state.failed_repairs < policy.max_failed_repairs):
+        raise StateTransitionError("policy exhaustion normalization not applicable")
+    return replace(state, phase=Phase.NEEDS_REVIEW, revision=state.revision + 1)
+
 
 
 def authorized_manual_reset(
