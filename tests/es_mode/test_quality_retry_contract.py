@@ -275,6 +275,7 @@ def test_two_producer_proposals_require_external_atomic_cas_not_local_revision()
     # models the contract, and must not be sold as cross-machine safety.
     accepted = [initial]
     guard = threading.Lock()
+    both_proposed = threading.Barrier(2)
 
     def try_claim(token):
         with guard:
@@ -283,6 +284,9 @@ def test_two_producer_proposals_require_external_atomic_cas_not_local_revision()
             observed, ON, expected_revision=observed.revision,
             verified_attempt_id=token,
         )
+        # Both producers plan against the same stale snapshot. The lock below
+        # simulates a *durable* compare-and-swap, not a real ES/local ledger.
+        both_proposed.wait()
         with guard:
             if accepted[0].revision != observed.revision:
                 return False
