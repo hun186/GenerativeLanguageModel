@@ -101,7 +101,13 @@ def _literal_python_rerun(text: str) -> dict:
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
         and node.func.id in {"exec", "eval", "globals", "locals", "setattr"}
     ]
-    if imports or dynamic or len(stores) > 1:
+    references = [
+        node for node in ast.walk(tree)
+        if isinstance(node, ast.Name) and node.id == "rerun"
+    ]
+    # A .update(), subscript mutation or read outside the literal assignment
+    # means the eventual runtime value cannot be established by static AST.
+    if imports or dynamic or len(stores) > 1 or len(references) != len(stores):
         raise ValueError("UNVERIFIABLE_PYTHON")
     if not stores:
         return {}
@@ -183,8 +189,9 @@ def inspect(task_yaml: Path, connection_py: Path) -> dict:
             "execution": "READ_ONLY_NO_PY_EXEC_NO_ES_NO_LLM_NO_REPLAY",
             "production_authorization": "NOT_GRANTED",
         }
-    except (OSError, ValueError, TypeError, KeyError, SyntaxError, UnicodeError,
-            OverflowError, RecursionError):
+    except Exception:
+        # Including YAML parser errors: never emit raw exception text, input
+        # payloads, credentials, paths or partial/optimistic assessment.
         return {
             "schema_version": 1, "status": "UNAVAILABLE",
             "reason_codes": ["STATIC_INPUT_UNVERIFIED"],
