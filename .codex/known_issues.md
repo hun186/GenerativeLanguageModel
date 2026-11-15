@@ -91,3 +91,6 @@
 
 ## 2026-11-11 / #293 Event-time rule operator limitation
 - The new grouped date validator cannot verify whether the original article contained an extractable date; a declared unknown is syntactic completion only, and existing pipeline_hash/force_if_missing_meta can still mark data pending. Private effective configuration and real-index impact remain unverified. Do not roll out as an automatic bulk replay.
+
+## 2026-11-15 — Offline ES rerun policy static preflight limitation (#312 Draft)
+- Static AST + YAML two-file preview cannot prove the runtime selected these exact profiles, dynamic injected policy, concurrent malicious writer, actual stored ES data, output fidelity or effective server permissions. Nonliteral rerun assignments and unsafe/unknown inputs fail closed `UNAVAILABLE`. A result with no force/historical Timeline codes must NEVER authorize bulk replay. Hosted Linux/Windows CI, exact-head formal review, private workstation confirmation and explicit high-risk activation remain pending.
