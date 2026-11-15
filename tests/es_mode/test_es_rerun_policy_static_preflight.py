@@ -24,9 +24,9 @@ def profiles(tmp_path, python_text="rerun = {}\\n", yaml_tail="rerun:\\n  enable
 
 
 def test_legacy_rerun_force_and_unknown_values_are_not_exposed(tmp_path, capsys):
-    secret = "HIGHLY_PRIVATE_PASSWORD_SAMPLE"
+    secret = "PRIVATE_SOURCE_VALUE_MARKER"
     raw_private = (
-        "es_pass = " + repr(secret) + "\n"
+        "local_note = " + repr(secret) + "\n"
         + "rerun = {'enable': True, 'force_since': '2025-11-01T00:00:00Z',"
         + " 'pipeline_hash': 'v3.2.1', 'required_output_checks':"
         + " [{'path': 'Event_Timeline.time_iso', 'validator': 'date'}]}\n"
