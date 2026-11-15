@@ -82,8 +82,84 @@ def _load_yaml(text: str):
     return data
 
 
+def _nonpolicy_value_is_static(value: ast.AST, *, os_imported: bool) -> bool:
+    # The non-rerun connection fields may be literals or simple stdlib
+    # environment reads, never arbitrary Python expressions or calls.
+    try:
+        ast.literal_eval(value)
+        return True
+    except (ValueError, TypeError, SyntaxError, MemoryError, RecursionError):
+        pass
+    if not os_imported:
+        return False
+    if (isinstance(value, ast.Subscript)
+            and isinstance(value.value, ast.Attribute)
+            and isinstance(value.value.value, ast.Name)
+            and value.value.value.id == "os" and value.value.attr == "environ"
+            and isinstance(value.slice, ast.Constant)
+            and isinstance(value.slice.value, str)):
+        return True
+    if not isinstance(value, ast.Call) or value.keywords:
+        return False
+    f = value.func
+    simple_getenv = (isinstance(f, ast.Attribute)
+                     and f.attr == "getenv"
+                     and isinstance(f.value, ast.Name) and f.value.id == "os")
+    simple_env_get = (isinstance(f, ast.Attribute) and f.attr == "get"
+                      and isinstance(f.value, ast.Attribute)
+                      and f.value.attr == "environ"
+                      and isinstance(f.value.value, ast.Name)
+                      and f.value.value.id == "os")
+    return (simple_getenv or simple_env_get) and 1 <= len(value.args) <= 2 and all(
+        isinstance(a, ast.Constant) and isinstance(a.value, str)
+        for a in value.args
+    )
+
+
+def _validate_static_module(tree: ast.Module) -> None:
+    """Only allow isolated config declarations; never infer runtime effects.
+
+    A strict allowlist avoids aliases of exec/eval or helper imports that can
+    change rerun after a literal assignment. Complex private profiles must
+    return UNAVAILABLE, not optimistic "no old force policy" evidence.
+    """
+    os_imported = any(
+        isinstance(stmt, ast.Import)
+        and len(stmt.names) == 1
+        and stmt.names[0].name == "os" and not stmt.names[0].asname
+        for stmt in tree.body
+    )
+    for stmt in tree.body:
+        if isinstance(stmt, ast.Import):
+            if not (len(stmt.names) == 1 and stmt.names[0].name == "os"
+                    and stmt.names[0].asname is None):
+                raise ValueError("UNVERIFIABLE_MODULE")
+        elif isinstance(stmt, ast.Expr):
+            if not (isinstance(stmt.value, ast.Constant)
+                    and isinstance(stmt.value.value, str)):
+                raise ValueError("UNVERIFIABLE_MODULE")
+        elif isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+            if isinstance(stmt, ast.Assign):
+                if len(stmt.targets) != 1 or not isinstance(stmt.targets[0], ast.Name):
+                    raise ValueError("UNVERIFIABLE_MODULE")
+                name, value = stmt.targets[0].id, stmt.value
+            else:
+                if not isinstance(stmt.target, ast.Name) or stmt.value is None:
+                    raise ValueError("UNVERIFIABLE_MODULE")
+                name, value = stmt.target.id, stmt.value
+            if name == "os" or (name != "rerun" and not _nonpolicy_value_is_static(
+                value, os_imported=os_imported
+            )):
+                raise ValueError("UNVERIFIABLE_MODULE")
+        else:
+            # Disallow all from-imports, control flow, functions, runtime
+            # expression statements, with/try and reflective rebinding.
+            raise ValueError("UNVERIFIABLE_MODULE")
+
+
 def _literal_python_rerun(text: str) -> dict:
     tree = ast.parse(text)
+    _validate_static_module(tree)
     # Reject all non-top-level or multiple assignments, and imports of rerun.
     stores = [
         node for node in ast.walk(tree)
