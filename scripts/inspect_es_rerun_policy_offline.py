@@ -179,20 +179,23 @@ def inspect(task_yaml: Path, connection_py: Path) -> dict:
             ):
                 if effective.get(key):
                     codes.add(code)
-            checks = effective.get("required_output_checks")
-            if checks is not None:
-                if not isinstance(checks, list):
+        # Both adapters call the document-level required-output validator
+        # before their enable/fingerprint early-return, so highlight old
+        # Timeline-only checks even when rerun.enable is false.
+        checks = effective.get("required_output_checks")
+        if checks is not None:
+            if not isinstance(checks, list):
+                raise ValueError("UNVERIFIABLE_CHECKS")
+            for check in checks:
+                if not isinstance(check, dict):
                     raise ValueError("UNVERIFIABLE_CHECKS")
-                for check in checks:
-                    if not isinstance(check, dict):
-                        raise ValueError("UNVERIFIABLE_CHECKS")
-                    candidate = check.get("path")
-                    if not isinstance(candidate, str):
-                        raise ValueError("UNVERIFIABLE_CHECKS")
-                    if "Event_Timeline.time_iso" in candidate:
-                        codes.add("TIMELINE_DATE_MINIMUM_PRESENT")
-                    if check.get("validator") == "multidim_event_time":
-                        codes.add("EVENT_FIRST_VALIDATOR_CONFIGURED")
+                candidate = check.get("path")
+                if not isinstance(candidate, str):
+                    raise ValueError("UNVERIFIABLE_CHECKS")
+                if "Event_Timeline.time_iso" in candidate:
+                    codes.add("TIMELINE_DATE_MINIMUM_PRESENT")
+                if check.get("validator") == "multidim_event_time":
+                    codes.add("EVENT_FIRST_VALIDATOR_CONFIGURED")
         if any(k not in _KNOWN_KEYS for k in effective):
             codes.add("OTHER_POLICY_KEYS_REVIEW_REQUIRED")
         return {
