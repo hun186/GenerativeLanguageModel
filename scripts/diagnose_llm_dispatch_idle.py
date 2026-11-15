@@ -243,7 +243,9 @@ def _audit(logs, labels, now, window):
     }
 
 
-def snapshot(logs: Path, *, now=None, window=900):
+def snapshot(logs: Path, *, now=None, window=900,
+             meter_logs: Path | None = None, load_logs: Path | None = None,
+             audit_logs: Path | None = None):
     now = time.time() if now is None else float(now)
     result = {
         "schema_version": 1, "diagnosis_status": "UNVERIFIED",
@@ -251,19 +253,30 @@ def snapshot(logs: Path, *, now=None, window=900):
         "gpu_utilization_status": "NOT_OBSERVED",
         "http_inflight_status": "NOT_OBSERVED",
         "sources": {}, "signals": [],
+        # Different source folders may contain different runs. Do not infer
+        # run identity from filenames, endpoint URLs or modification times.
+        "cross_source_run_identity": "NOT_VERIFIED",
+        "source_directory_selection": {
+            "meter": "EXPLICIT" if meter_logs is not None else "SHARED",
+            "load": "EXPLICIT" if load_logs is not None else "SHARED",
+            "audit": "EXPLICIT" if audit_logs is not None else "SHARED",
+        },
     }
-    try:
-        _safe_dir(logs)
-    except Unavailable as e:
-        result["sources"] = {k: {"status": e.code} for k in ("meter", "load", "audit")}
-        return result
+    roots = {
+        "meter": logs if meter_logs is None else meter_logs,
+        "load": logs if load_logs is None else load_logs,
+        "audit": logs if audit_logs is None else audit_logs,
+    }
     labels = {}
     for name, reader in (
-        ("meter", lambda: _meter(logs, now)),
-        ("load", lambda: _load(logs, now)),
-        ("audit", lambda: _audit(logs, labels, now, window)),
+        ("meter", lambda: _meter(roots["meter"], now)),
+        ("load", lambda: _load(roots["load"], now)),
+        ("audit", lambda: _audit(roots["audit"], labels, now, window)),
     ):
         try:
+            # Check each selected root independently. An absent/default root
+            # must not conceal otherwise valid observations in other roots.
+            _safe_dir(roots[name])
             value = reader()
             if name == "load":
                 value, labels = value
@@ -329,10 +342,19 @@ def _human_number(value):
 
 def format_human_report(report: dict, *, default_logs: bool = True) -> str:
     """Readable, bounded and metadata-only Chinese operator summary."""
+    selection = report.get("source_directory_selection", {})
+    source_selection = {
+        "EXPLICIT": "獨立指定", "SHARED": "共用 logs 設定",
+    }
     lines = [
         "========== LLM／GPU 派工診斷（唯讀）==========",
         ("日誌來源：專案根目錄 logs（完整路徑隱藏）"
          if default_logs else "日誌來源：指定的 --logs-dir（完整路徑隱藏）"),
+        "來源映射：" + "、".join(
+            f"{_SOURCE_LABELS[key]}={source_selection.get(selection.get(key), '未確認')}"
+            for key in ("meter", "load", "audit")
+        ),
+        "跨來源 Run 身分：未驗證，不能認定三份紀錄屬於同一工作。",
         "注意：本工具不直接量測 GPU，也不驗證實際 HTTP 請求或 SQL／ES 寫回。",
         "",
         "【資料讀取】",
@@ -391,7 +413,13 @@ def format_human_report(report: dict, *, default_logs: bool = True) -> str:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Local read-only LLM dispatch evidence; not live GPU telemetry")
-    parser.add_argument("--logs-dir", type=Path, default=Path("logs"), help="LLM 執行時的 logs 目錄，預設為專案 logs")
+    parser.add_argument("--logs-dir", type=Path, default=Path("logs"), help="共用 logs 根目錄（未另外指定來源時使用）")
+    parser.add_argument("--meter-logs-dir", type=Path, default=None,
+                        help="Queue 的 loadmeter_*.json 所在目錄，例如 ctx.meter_dir/logs")
+    parser.add_argument("--load-logs-dir", type=Path, default=None,
+                        help="base_url_load.json 所在目錄，例如 ctx.PGMSubDir/logs")
+    parser.add_argument("--audit-logs-dir", type=Path, default=None,
+                        help="包含 llm_call_audit 子目錄的 logs 根目錄，例如 ctx.PGMSubDir/logs")
     parser.add_argument("--human", action="store_true", help="輸出繁體中文摘要（不顯示私有路徑或端點）")
     parser.add_argument("--samples", type=int, default=1)
     parser.add_argument("--interval-seconds", type=float, default=30.0)
@@ -404,7 +432,9 @@ def main(argv=None):
     for i in range(args.samples):
         if i:
             time.sleep(args.interval_seconds)
-        doc = snapshot(args.logs_dir, window=args.window_seconds)
+        doc = snapshot(args.logs_dir, window=args.window_seconds,
+                       meter_logs=args.meter_logs_dir, load_logs=args.load_logs_dir,
+                       audit_logs=args.audit_logs_dir)
         doc["sample_number"] = i + 1
         if args.human:
             print(format_human_report(doc, default_logs=args.logs_dir == Path("logs")), flush=True)
