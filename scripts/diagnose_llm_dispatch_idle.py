@@ -14,6 +14,15 @@ import stat
 import sys
 import time
 
+# The producer's existing v1 schema and event-ID deduplication are the
+# authority; importing them does not contact ES/SQL/LLM or write files.
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+from czjLLM.utilities.processing_quality import (
+    QualityAccumulator, QualityCapacityExceeded, RUN_INCIDENT_CODES,
+)
+
 REPARSE = 0x400
 MAX_JSON = 4 * 1024 * 1024
 MAX_CSV = 16 * 1024 * 1024
@@ -244,31 +253,12 @@ def _audit(logs, labels, now, window):
 
 
 
-# Run-scope codes only, matched to utilities.processing_quality.RUN_INCIDENT_CODES.
-# Keep this standalone diagnostic stdlib-only; tests assert exact parity with
-# the authoritative writer to avoid silently misclassifying future events.
+# Single source of truth: use the Writer's supported run-scope codes.
+# Queue recovery is operational context, not a failure/incident.
 _RUN_FAILURE_CODES = {
-    "consumer_orchestration_failure": (
-        "CONSUMER_ROUND_TIMEOUT", "CONSUMER_ROUND_EXCEPTION", "CONSUMER_TERMINATED",
-    ),
-    "row_merger_retryable_failure": (
-        "ROW_MERGER_PREPARE_RETRY", "ROW_MERGER_WRITEBACK_RETRY",
-    ),
-    "producer_operational_failure": (
-        "PRODUCER_SCHEDULE_EXCEPTION", "PRODUCER_BACKPRESSURE_EXCEPTION",
-        "PRODUCER_FUTURE_EXCEPTION",
-    ),
-    "stage_orchestration_failure": (
-        "STAGE_PREPARE_EXCEPTION", "STAGE_RUNNER_EXCEPTION",
-    ),
-    "worker_phase_failure": (
-        "WORKER_PRECALL_EXCEPTION", "WORKER_LLM_CALL_EXCEPTION",
-        "WORKER_RESPONSE_EXCEPTION", "WORKER_PERSIST_EXCEPTION",
-        "WORKER_LLM_TIMEOUT_EXCEPTION", "WORKER_LLM_CONNECTION_EXCEPTION",
-        "WORKER_LLM_RATE_LIMIT_EXCEPTION",
-        "WORKER_LLM_HTTP_SERVER_EXCEPTION", "WORKER_LLM_HTTP_CLIENT_EXCEPTION",
-        "WORKER_LLM_RESPONSE_VALIDATION_EXCEPTION",
-    ),
+    event: tuple(sorted(codes))
+    for event, codes in RUN_INCIDENT_CODES.items()
+    if event != "queue_recovery"
 }
 MAX_QUALITY = 16 * 1024 * 1024
 MAX_QUALITY_LINE = 64 * 1024
@@ -292,6 +282,7 @@ def _quality(logs, now, window):
     }
     latest = None
     total_lines = 0
+    accumulator = QualityAccumulator(max_events=MAX_ROWS, max_identity_chars=4_000_000)
     for line in raw.splitlines(keepends=True):
         total_lines += 1
         if total_lines > MAX_ROWS:
@@ -304,17 +295,10 @@ def _quality(logs, now, window):
             record = json.loads(line.decode("utf-8"), parse_constant=_reject_quality_constant)
         except (ValueError, TypeError, UnicodeError, RecursionError):
             raise Unavailable("MALFORMED") from None
-        if not isinstance(record, dict) or type(record.get("schema_version")) is not int or record["schema_version"] != 1:
-            raise Unavailable("SCHEMA_MISMATCH")
-        event = record.get("event")
-        if not isinstance(event, str):
-            raise Unavailable("SCHEMA_MISMATCH")
-        if event not in _RUN_FAILURE_CODES:
-            # Document and slice quality events are not run incident evidence.
-            continue
-        if record.get("scope") != "run" or record.get("code") not in _RUN_FAILURE_CODES[event]:
-            raise Unavailable("SCHEMA_MISMATCH")
-        if record.get("document_id") or record.get("slice_id"):
+        # Validate every v1 Quality record, not only events we plan to
+        # count. An invalid slice/document record must not lead to OBSERVED
+        # with deceptively complete run incident counts.
+        if not isinstance(record, dict):
             raise Unavailable("SCHEMA_MISMATCH")
         try:
             stamp = datetime.fromisoformat(record["ts"])
@@ -325,6 +309,22 @@ def _quality(logs, now, window):
                 raise ValueError("bad timestamp")
         except (TypeError, ValueError, KeyError, OverflowError):
             raise Unavailable("INCOMPLETE") from None
+        try:
+            accepted = accumulator.add(record)
+            if not accepted:
+                # Identical replay of a previously accepted event is counted
+                # once, like QualityRunTailReader; reused ID with altered
+                # content or unsupported schema fails the whole observation.
+                if accumulator.is_identical_accepted_event(record):
+                    continue
+                raise Unavailable("SCHEMA_MISMATCH")
+        except QualityCapacityExceeded:
+            raise Unavailable("SIZE_LIMIT") from None
+
+        event = record["event"]
+        if event not in _RUN_FAILURE_CODES:
+            # Fully validated nonincident, document or slice record.
+            continue
         if now - window <= ts <= now + 30:
             event_counts[event] += 1
             code_counts[record["code"]] += 1
