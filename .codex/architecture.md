@@ -137,3 +137,6 @@
 - Scheduler publishes per-row queue_pending/queue_running into the per-run Meter; a Worker may publish Success while the parent Consumer batch has not yet posted its acknowledged completion. Row Merger must not retire Success/Registry/source based only on filesystem readiness or an existing combined artifact.
 - Row Merger observes a bounded once-per-scan Meter snapshot and requires both counters zero before writeback. A real missing/null/corrupt row receipt remains unresolved. An actual terminated Consumer with unrecoverable receipt can publish a terminal incomplete coordinator event, never a synthetic ACK; stage-managed registration before receipt publication stays nonterminal while the Producer is active.
 - Producer's two wait phases consume one shared per-row backpressure time budget. No provider endpoint/lease behavior is changed. CI and Windows physical acceptance outstanding.
+
+## 2026-11-16 — #317 accepted offline Quality retry state model
+- `es_mode/quality_retry_contract.py` implements immutable opt-in-off policy transitions and explicit policy-downgrade manual-review proposal; it is not linked to Consumer, ES pending, real Output Profile, Queue, LLM, SQL or durable disk. Verified source identity, atomic CAS and crash recovery are separate gated work.

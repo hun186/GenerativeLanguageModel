@@ -104,3 +104,6 @@
 
 ## 2026-11-15 — #302 Phase 2 Quality incident diagnostic merged
 - #316 reads only active Quality JSONL paired with latest Audit filename, using production QualityAccumulator validation and event ID dedup; any invalid/torn record is UNAVAILABLE without partial counts. Identical source/run provenance, archived history and H100 GPU root cause remain UNVERIFIED; Hosted CI and Codex P2 fixes passed, no runtime Queue/ES changes.
+
+## 2026-11-16 — #317 offline Quality retry contract accepted
+- Pure `quality_retry_contract.py` models max two completed rejected quality repairs, valid unknown, unresolved sink ACK and policy-downgrade review. No cross-process durable ledger/ES integration, live Queue/LLM/SQL writes, authorized reset or operator machine acceptance; no blanket ES replay permitted.

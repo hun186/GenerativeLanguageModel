@@ -133,3 +133,4 @@
 - [x] **#314 Phase A merged** (`add3f079`): offline saved Output Profile aggregate audit, Hosted Linux/Windows/Secret PASS, Codex 0 Findings; no ES replay or plaintext capture. Remaining #294 schema acceptance is separate.
 - [x] **#315 Issue #302 Phase 1 merged** (`742e759b`): independent read-only Meter/lease/Audit log roots, source selection redacted and run identity UNVERIFIED. Hosted Linux/Windows/Secret + Codex clean. H100 root cause and live Consumer integration remain operator-gated.
 - [x] **#316 Issue #302 Phase 2 merged** (`aa4db08`): read-only current Quality incident counts with production event validation and dedup, 2 P2 review fixes, Hosted Linux/Windows/Secret PASS. Does not prove live GPU root cause or capture private JSON.
+- [x] **#317 main accepted** (`1cc24f9b`): offline Quality retry contract, Hosted Linux/Windows/Secret and exact-head Code Review zero findings. No durable ledger/ES rerun; #310 remains gated for raw JSON privacy.
