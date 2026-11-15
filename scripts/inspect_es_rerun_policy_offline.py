@@ -94,12 +94,22 @@ def _literal_python_rerun(text: str) -> dict:
         node for node in ast.walk(tree)
         if isinstance(node, (ast.Import, ast.ImportFrom))
         for alias in node.names
-        if (alias.asname or alias.name.split(".")[0]) == "rerun"
+        if alias.name == "*" or (alias.asname or alias.name.split(".")[0]) == "rerun"
     ]
     dynamic = [
         node for node in ast.walk(tree)
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
-        and node.func.id in {"exec", "eval", "globals", "locals", "setattr"}
+        if isinstance(node, ast.Call) and (
+            (isinstance(node.func, ast.Name)
+             and node.func.id in {
+                 "exec", "eval", "globals", "locals", "setattr", "getattr",
+                 "__import__", "compile",
+             })
+            or (isinstance(node.func, ast.Attribute)
+                and node.func.attr in {
+                    "exec", "eval", "globals", "locals", "setattr", "getattr",
+                    "__import__", "compile",
+                })
+        )
     ]
     references = [
         node for node in ast.walk(tree)
@@ -148,9 +158,17 @@ def inspect(task_yaml: Path, connection_py: Path) -> dict:
             codes.add("LEGACY_PY_RERUN_PRESENT")
         if diag["inherited_keys"]:
             codes.add("INHERITED_PY_RERUN_KEYS")
-        if effective.get("enable") is not True:
+        enabled = effective.get("enable", False)
+        if not isinstance(enabled, bool):
+            # Runtime uses truthiness; strings such as "false" are dangerous.
+            raise ValueError("UNVERIFIABLE_ENABLE")
+        fingerprint_active = bool(effective.get("execution_fingerprint"))
+        if not enabled:
             codes.add("RERUN_NOT_EXPLICITLY_ENABLED")
-        else:
+        # Both ES pending adapters enter rerun/stale evaluation when either
+        # enable is true OR a fingerprint is configured. Even enable=false
+        # does not disable the latter. Never imply no reprocessing risk.
+        if enabled or fingerprint_active:
             for key, code in (
                 ("force_since", "FORCE_SINCE_ACTIVE"),
                 ("pipeline_hash", "PIPELINE_HASH_ACTIVE"),
