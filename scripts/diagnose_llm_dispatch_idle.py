@@ -307,6 +307,8 @@ def _quality(logs, now, window):
         if not isinstance(record, dict) or type(record.get("schema_version")) is not int or record["schema_version"] != 1:
             raise Unavailable("SCHEMA_MISMATCH")
         event = record.get("event")
+        if not isinstance(event, str):
+            raise Unavailable("SCHEMA_MISMATCH")
         if event not in _RUN_FAILURE_CODES:
             # Document and slice quality events are not run incident evidence.
             continue
