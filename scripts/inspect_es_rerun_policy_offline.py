@@ -123,17 +123,13 @@ def _validate_static_module(tree: ast.Module) -> None:
     change rerun after a literal assignment. Complex private profiles must
     return UNAVAILABLE, not optimistic "no old force policy" evidence.
     """
-    os_imported = any(
-        isinstance(stmt, ast.Import)
-        and len(stmt.names) == 1
-        and stmt.names[0].name == "os" and not stmt.names[0].asname
-        for stmt in tree.body
-    )
+    os_imported = False
     for stmt in tree.body:
         if isinstance(stmt, ast.Import):
             if not (len(stmt.names) == 1 and stmt.names[0].name == "os"
                     and stmt.names[0].asname is None):
                 raise ValueError("UNVERIFIABLE_MODULE")
+            os_imported = True
         elif isinstance(stmt, ast.Expr):
             if not (isinstance(stmt.value, ast.Constant)
                     and isinstance(stmt.value.value, str)):
