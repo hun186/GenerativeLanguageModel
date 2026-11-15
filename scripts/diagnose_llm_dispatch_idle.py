@@ -243,6 +243,106 @@ def _audit(logs, labels, now, window):
     }
 
 
+
+# Run-scope codes only, matched to utilities.processing_quality.RUN_INCIDENT_CODES.
+# Keep this standalone diagnostic stdlib-only; tests assert exact parity with
+# the authoritative writer to avoid silently misclassifying future events.
+_RUN_FAILURE_CODES = {
+    "consumer_orchestration_failure": (
+        "CONSUMER_ROUND_TIMEOUT", "CONSUMER_ROUND_EXCEPTION", "CONSUMER_TERMINATED",
+    ),
+    "row_merger_retryable_failure": (
+        "ROW_MERGER_PREPARE_RETRY", "ROW_MERGER_WRITEBACK_RETRY",
+    ),
+    "producer_operational_failure": (
+        "PRODUCER_SCHEDULE_EXCEPTION", "PRODUCER_BACKPRESSURE_EXCEPTION",
+        "PRODUCER_FUTURE_EXCEPTION",
+    ),
+    "stage_orchestration_failure": (
+        "STAGE_PREPARE_EXCEPTION", "STAGE_RUNNER_EXCEPTION",
+    ),
+    "worker_phase_failure": (
+        "WORKER_PRECALL_EXCEPTION", "WORKER_LLM_CALL_EXCEPTION",
+        "WORKER_RESPONSE_EXCEPTION", "WORKER_PERSIST_EXCEPTION",
+        "WORKER_LLM_TIMEOUT_EXCEPTION", "WORKER_LLM_CONNECTION_EXCEPTION",
+        "WORKER_LLM_RATE_LIMIT_EXCEPTION",
+        "WORKER_LLM_HTTP_SERVER_EXCEPTION", "WORKER_LLM_HTTP_CLIENT_EXCEPTION",
+        "WORKER_LLM_RESPONSE_VALIDATION_EXCEPTION",
+    ),
+}
+MAX_QUALITY = 16 * 1024 * 1024
+MAX_QUALITY_LINE = 64 * 1024
+
+
+def _quality(logs, now, window):
+    """Inspect only the current, audit-filename-paired quality JSONL generation.
+
+    Never join by private run_id, infer shared provenance, or count archives as
+    current. If any line is incomplete/invalid, all quality counts are withheld.
+    """
+    audit = _latest(logs / "llm_call_audit", "llm_call_audit_", ".csv")
+    suffix = audit.stem[len("llm_call_audit_"):]
+    path = audit.with_name("processing_quality_events_" + suffix + ".jsonl")
+    raw = _read(path, MAX_QUALITY)
+    if not raw or not raw.endswith(b"\n"):
+        raise Unavailable("INCOMPLETE")
+    event_counts = {name: 0 for name in _RUN_FAILURE_CODES}
+    code_counts = {
+        code: 0 for codes in _RUN_FAILURE_CODES.values() for code in codes
+    }
+    latest = None
+    total_lines = 0
+    for line in raw.splitlines(keepends=True):
+        total_lines += 1
+        if total_lines > MAX_ROWS:
+            raise Unavailable("ROW_LIMIT")
+        if len(line) > MAX_QUALITY_LINE:
+            raise Unavailable("SIZE_LIMIT")
+        if not line.endswith(b"\n"):
+            raise Unavailable("INCOMPLETE")
+        try:
+            record = json.loads(line.decode("utf-8"), parse_constant=_reject_quality_constant)
+        except (ValueError, TypeError, UnicodeError, RecursionError):
+            raise Unavailable("MALFORMED") from None
+        if not isinstance(record, dict) or type(record.get("schema_version")) is not int or record["schema_version"] != 1:
+            raise Unavailable("SCHEMA_MISMATCH")
+        event = record.get("event")
+        if event not in _RUN_FAILURE_CODES:
+            # Document and slice quality events are not run incident evidence.
+            continue
+        if record.get("scope") != "run" or record.get("code") not in _RUN_FAILURE_CODES[event]:
+            raise Unavailable("SCHEMA_MISMATCH")
+        if record.get("document_id") or record.get("slice_id"):
+            raise Unavailable("SCHEMA_MISMATCH")
+        try:
+            stamp = datetime.fromisoformat(record["ts"])
+            if stamp.tzinfo is None:
+                raise ValueError("timezone missing")
+            ts = stamp.timestamp()
+            if not math.isfinite(ts):
+                raise ValueError("bad timestamp")
+        except (TypeError, ValueError, KeyError, OverflowError):
+            raise Unavailable("INCOMPLETE") from None
+        if now - window <= ts <= now + 30:
+            event_counts[event] += 1
+            code_counts[record["code"]] += 1
+            latest = max(latest, ts) if latest is not None else ts
+    return {
+        "status": "OBSERVED",
+        "window_seconds": window,
+        "recent_run_incident_events": sum(event_counts.values()),
+        "by_category": event_counts,
+        "by_code": code_counts,
+        "last_incident_age_seconds": _age(latest, now),
+        "archive_coverage": "ACTIVE_GENERATION_ONLY",
+        "run_identity": "NOT_VERIFIED",
+        "warning": "RUN_EVENT_COUNTS_NOT_ROOT_CAUSE_OR_SINK_ACK",
+    }
+
+
+def _reject_quality_constant(value):
+    raise ValueError("non-standard JSON numeric constant")
+
 def snapshot(logs: Path, *, now=None, window=900,
              meter_logs: Path | None = None, load_logs: Path | None = None,
              audit_logs: Path | None = None):
@@ -283,6 +383,13 @@ def snapshot(logs: Path, *, now=None, window=900,
             result["sources"][name] = value
         except Unavailable as e:
             result["sources"][name] = {"status": e.code}
+    try:
+        # Quality JSONL lives beside the matching Audit CSV basename.
+        # Failure is independent and never hides a successful Meter/Load/Audit.
+        _safe_dir(roots["audit"])
+        result["sources"]["quality"] = _quality(roots["audit"], now, window)
+    except Unavailable as e:
+        result["sources"]["quality"] = {"status": e.code}
     meter, load, audit = (result["sources"][k] for k in ("meter", "load", "audit"))
     if meter["status"] == "OBSERVED":
         if meter["pending"] and not meter["running"]:
@@ -309,7 +416,7 @@ def snapshot(logs: Path, *, now=None, window=900,
 
 # Only fields generated by snapshot() are rendered. Never echo raw file
 # contents, directory paths, URLs, run identity, PKs or exception details.
-_SOURCE_LABELS = {"meter": "Queue 計量", "load": "端點負載租約", "audit": "LLM 完成稽核"}
+_SOURCE_LABELS = {"meter": "Queue 計量", "load": "端點負載租約", "audit": "LLM 完成稽核", "quality": "Quality 調度異常"}
 _SOURCE_STATES = {
     "OBSERVED": "已讀取（非實機驗收）",
     "INCOMPLETE": "紀錄不完整",
@@ -397,6 +504,15 @@ def format_human_report(report: dict, *, default_logs: bool = True) -> str:
             f"  已記錄呼叫：{_human_number(audit.get('recent_completed_audit_rows'))}",
             f"  成功：{_human_number(audit.get('recent_ok_rows'))}",
             f"  失敗：{_human_number(audit.get('recent_failed_rows'))}",
+        ])
+    quality = sources.get("quality", {})
+    if quality.get("status") == "OBSERVED":
+        lines.extend([
+            "",
+            "【Quality Run 異常（僅目前檔案，非根因診斷）】",
+            f"  最近異常事件數：{_human_number(quality.get('recent_run_incident_events'))}",
+            f"  Consumer 異常：{_human_number(quality.get('by_category', {}).get('consumer_orchestration_failure'))}",
+            f"  Row Merger 重試異常：{_human_number(quality.get('by_category', {}).get('row_merger_retryable_failure'))}",
         ])
     signals = [label for key in report.get("signals", []) if (label := _SIGNAL_LABELS.get(key))]
     lines.extend(["", "【可能的停滯線索（不代表根因已確認）】"])
