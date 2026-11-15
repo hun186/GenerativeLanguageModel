@@ -101,3 +101,6 @@
 
 ## 2026-11-15 — #302 split-root diagnostic merged, real GPU evidence pending
 - Old single `--logs-dir` could misclassify valid remote run Meter/Audit as MISSING. #315 adds independently selected metadata directory roots without paths/ID output; `cross_source_run_identity=NOT_VERIFIED` and no GPU root-cause claims. Synthetic Hosted CI and Code Review pass, operator Windows/H100 data correlation still outstanding. No Queue/provider/sink change.
+
+## 2026-11-15 — #302 Phase 2 Quality incident diagnostic merged
+- #316 reads only active Quality JSONL paired with latest Audit filename, using production QualityAccumulator validation and event ID dedup; any invalid/torn record is UNAVAILABLE without partial counts. Identical source/run provenance, archived history and H100 GPU root cause remain UNVERIFIED; Hosted CI and Codex P2 fixes passed, no runtime Queue/ES changes.
