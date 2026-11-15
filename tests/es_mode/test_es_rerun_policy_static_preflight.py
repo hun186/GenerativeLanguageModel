@@ -194,3 +194,12 @@ def test_literal_profile_with_simple_os_environment_reads_is_previewable(tmp_pat
     assert report["status"] == "STATIC_PREVIEW_REVIEW_REQUIRED"
     assert "FINGERPRINT_POLICY_ACTIVE" in report["reason_codes"]
 
+def test_os_environment_read_before_import_is_unavailable(tmp_path):
+    task, conn = profiles(
+        tmp_path,
+        'es_host = os.environ.get("ES_HOST", "")\n'
+        'import os\n'
+        'rerun = {}\n',
+    )
+    assert inspect(task, conn)["status"] == "UNAVAILABLE"
+
