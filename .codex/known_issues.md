@@ -97,3 +97,7 @@
 
 ## 2026-11-15 — #302 Phase 2 active-run Quality evidence limitation
 - Diagnostic Quality reader exposes fixed run-scope incident counts from only the current JSONL file paired by latest Audit filename, not sealed historical archives. Filename pairing and matching timestamp window cannot authenticate run identity or attribute GPU idle to any one error. Missing, torn, malformed, unsafe or oversized files fail closed independently of Meter/Load/Audit; no partial counts or source text exposed. Hosted CI, Codex review and physical H100 acceptance pending.
+
+
+## 2026-11-15 — Issue #313 Quality repair budget not durable (Phase A)
+- Offline state transitions with revision/UUID4 only model desired behavior; they do NOT survive process restart, provide real atomic cross-process compare-and-swap, authenticate pipeline/source/output-profile versions, or authorize production ES replay. Valid unknown dates must be accepted by actual Profile; an HTTP timeout/429/ACK gap cannot prove no result. Pending claims remain blocked until verified, and a terminal exhausted state is not `fresh_completed`. Live sidecar ledger, operator reset audit, ES adapter and actual source/sink readback remain open; Hosted synthetic CI/Review pending.
