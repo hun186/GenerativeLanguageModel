@@ -104,3 +104,6 @@
 
 ## 2026-11-15 — #302 split-root diagnostic merged, real H100 root cause pending
 - One-folder log assumptions previously returned missing Meter/Audit for legitimate runs using separate roots. #315 safely reads three explicitly selected roots separately with no path/private values; `cross_source_run_identity=NOT_VERIFIED` and no causal inference. Hosted verification passed, but operator H100/LLM receipt correlation not established and runtime Queue/ES changes remain gated.
+
+## 2026-11-15 — #302 Phase 2 Quality incident diagnostic merged
+- #316 reports only active run-scope JSONL incidents paired by latest Audit basename, deduplicating IDs with the producer QualityAccumulator and refusing corrupt/non-v1 rows without partial counts. File pairing cannot verify same Run; older archive history and real H100/Ollama cause unverified. Hosted CI/Code Review clean after 2 P2 fixes; no Queue, LLM or ES runtime changes.
