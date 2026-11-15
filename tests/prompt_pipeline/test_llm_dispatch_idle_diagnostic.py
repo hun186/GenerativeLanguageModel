@@ -177,3 +177,107 @@ def test_windows_bat_no_argument_entry_stays_open_and_help_forwards():
     assert '"scripts\\diagnose_llm_dispatch_idle.py" --human' in content
     assert "pause >nul" in content
     assert '"scripts\\diagnose_llm_dispatch_idle.py" %*' in content
+
+
+def _split_source_roots(tmp_path, now):
+    """Move disposable logs to the three real-world separate source roots."""
+    shared = fixture(tmp_path / "original", now)
+    meter = tmp_path / "PRIVATE_meter_dir"
+    load = tmp_path / "PRIVATE_load_dir"
+    audit = tmp_path / "PRIVATE_audit_parent"
+    for folder in (meter, load, audit):
+        folder.mkdir()
+    (shared / "loadmeter_20261109_1.json").rename(meter / "loadmeter_20261109_1.json")
+    (shared / "base_url_load.json").rename(load / "base_url_load.json")
+    (shared / "llm_call_audit").rename(audit / "llm_call_audit")
+    return meter, load, audit
+
+
+def test_separate_source_roots_recover_missing_evidence_without_claiming_same_run(tmp_path):
+    now = 1800000000.0
+    meter, load, audit = _split_source_roots(tmp_path, now)
+    default = snapshot(tmp_path / "MISSING_SHARED", now=now)
+    assert all(default["sources"][k]["status"] == "MISSING"
+               for k in ("meter", "load", "audit"))
+    report = snapshot(tmp_path / "MISSING_SHARED", now=now,
+                      meter_logs=meter, load_logs=load, audit_logs=audit)
+    assert report["diagnosis_status"] == "OBSERVED_NOT_PROVEN"
+    assert all(report["sources"][k]["status"] == "OBSERVED"
+               for k in ("meter", "load", "audit"))
+    assert report["sources"]["meter"]["pending"] == 8
+    assert report["sources"]["load"]["active_leases_total"] == 1
+    assert report["sources"]["audit"]["recent_failed_rows"] == 1
+    assert report["cross_source_run_identity"] == "NOT_VERIFIED"
+    assert report["source_directory_selection"] == {
+        "meter": "EXPLICIT", "load": "EXPLICIT", "audit": "EXPLICIT",
+    }
+    output = json.dumps(report)
+    for hidden in ("PRIVATE_", "PRIVATE_ENDPOINT", "PRIVATE_PK",
+                   str(meter), str(load), str(audit), "11434"):
+        assert hidden not in output
+
+
+def test_one_invalid_override_does_not_mask_other_valid_sources(tmp_path):
+    now = 1800000000.0
+    shared = fixture(tmp_path / "logs", now)
+    result = snapshot(shared, now=now, meter_logs=tmp_path / "NONEXISTENT_METER")
+    assert result["diagnosis_status"] == "UNVERIFIED"
+    assert result["sources"]["meter"]["status"] == "MISSING"
+    assert result["sources"]["load"]["status"] == "OBSERVED"
+    assert result["sources"]["audit"]["status"] == "OBSERVED"
+    assert result["sources"]["audit"]["recent_failed_rows"] == 1
+    assert result["cross_source_run_identity"] == "NOT_VERIFIED"
+    assert result["root_cause_status"] == "NOT_DETERMINED"
+
+
+def test_symlinked_overridden_root_fails_closed_without_blocking_others(tmp_path):
+    now = 1800000000.0
+    meter, load, audit = _split_source_roots(tmp_path, now)
+    alias = tmp_path / "PRIVATE_symlink_alias"
+    try:
+        alias.symlink_to(meter, target_is_directory=True)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlink not available")
+    result = snapshot(tmp_path / "missing", now=now,
+                      meter_logs=alias, load_logs=load, audit_logs=audit)
+    assert result["sources"]["meter"]["status"] == "UNSAFE_PATH"
+    assert result["sources"]["load"]["status"] == "OBSERVED"
+    assert result["sources"]["audit"]["status"] == "OBSERVED"
+    assert result["diagnosis_status"] == "UNVERIFIED"
+    assert "PRIVATE_" not in json.dumps(result)
+
+
+def test_cli_split_roots_and_human_status_are_private(tmp_path, capsys):
+    now = time.time()
+    meter, load, audit = _split_source_roots(tmp_path, now)
+    args = [
+        "--logs-dir", str(tmp_path / "missing"),
+        "--meter-logs-dir", str(meter),
+        "--load-logs-dir", str(load),
+        "--audit-logs-dir", str(audit),
+    ]
+    assert main(args) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["source_directory_selection"]["meter"] == "EXPLICIT"
+    assert report["cross_source_run_identity"] == "NOT_VERIFIED"
+    assert main(args + ["--human"]) == 0
+    friendly = capsys.readouterr().out
+    assert "跨來源 Run 身分：未驗證" in friendly
+    assert "獨立指定" in friendly
+    assert "Queue 工作狀態" in friendly
+    assert "LLM 完成稽核" in friendly
+    for private in ("PRIVATE_", str(meter), str(load), str(audit), "11434"):
+        assert private not in friendly
+
+
+def test_default_shared_mode_remains_backward_compatible(tmp_path):
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    doc = snapshot(logs, now=now)
+    assert doc["source_directory_selection"] == {
+        "meter": "SHARED", "load": "SHARED", "audit": "SHARED",
+    }
+    assert doc["sources"]["meter"]["status"] == "OBSERVED"
+    assert doc["sources"]["load"]["status"] == "OBSERVED"
+    assert doc["sources"]["audit"]["status"] == "OBSERVED"
+    assert doc["cross_source_run_identity"] == "NOT_VERIFIED"
