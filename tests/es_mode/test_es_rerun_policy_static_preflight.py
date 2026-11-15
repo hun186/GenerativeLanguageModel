@@ -83,6 +83,10 @@ def test_task_yaml_explicitly_overrides_legacy_force_policy(tmp_path):
     "rerun = {}\nfrom shared_config import *\n",
     "import builtins\nrerun = {}\nbuiltins.exec('rerun = {}')\n",
     "rerun = {}\ngetattr(__import__('builtins'), 'exec')('rerun = {}')\n",
+    "from builtins import exec as apply_config\nrerun = {}\napply_config('rerun = {}')\n",
+    "import builtins\nrerun = {}\napply_config = builtins.exec\n",
+    "rerun = {}\nfrom builtins import *\n",
+    "import os\nrerun = {}\nos.path.join('a', 'b')\n",
 ])
 def test_dynamic_python_cannot_be_previewed(tmp_path, python_text):
     task, conn = profiles(tmp_path, python_text)
@@ -134,9 +138,9 @@ def test_standalone_cli_from_different_directory_never_imports_private_python(tm
          "--connection-py", str(conn)],
         cwd=tmp_path, env=env, capture_output=True, text=True, timeout=25,
     )
-    assert process.returncode == 0, process.stderr
+    assert process.returncode == 2, process.stderr
     report = json.loads(process.stdout)
-    assert report["status"] == "STATIC_PREVIEW_REVIEW_REQUIRED"
+    assert report["status"] == "UNAVAILABLE"
     assert report["production_authorization"] == "NOT_GRANTED"
     assert "DO_NOT_RUN" not in process.stdout
     assert process.stderr == ""
@@ -176,4 +180,17 @@ def test_disabled_without_fingerprint_still_reports_timeline_output_check(tmp_pa
     assert report["status"] == "STATIC_PREVIEW_REVIEW_REQUIRED"
     assert "TIMELINE_DATE_MINIMUM_PRESENT" in report["reason_codes"]
     assert "FINGERPRINT_POLICY_ACTIVE" not in report["reason_codes"]
+
+def test_literal_profile_with_simple_os_environment_reads_is_previewable(tmp_path):
+    task, conn = profiles(
+        tmp_path,
+        'import os\n'
+        'es_host = os.environ.get("ES_HOST", "")\n'
+        'es_user = os.getenv("ES_USER", "")\n'
+        'es_verify_certs = True\n'
+        'rerun = {"enable": False, "execution_fingerprint": "v2"}\n',
+    )
+    report = inspect(task, conn)
+    assert report["status"] == "STATIC_PREVIEW_REVIEW_REQUIRED"
+    assert "FINGERPRINT_POLICY_ACTIVE" in report["reason_codes"]
 
