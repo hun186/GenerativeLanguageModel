@@ -418,3 +418,54 @@ def test_quality_run_failures_exactly_match_current_writer_allowlist():
     expected = {key: set(value) for key, value in RUN_INCIDENT_CODES.items()
                 if key not in ("queue_recovery",)}
     assert {key: set(value) for key, value in _RUN_FAILURE_CODES.items()} == expected
+
+
+def test_duplicate_quality_event_id_is_not_double_counted(tmp_path):
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    file = _quality_file(logs, now)
+    first = file.read_text(encoding="utf-8").splitlines()[0]
+    with file.open("a", encoding="utf-8") as output:
+        output.write(first + "\n")
+    result = snapshot(logs, now=now)
+    assert result["sources"]["quality"]["status"] == "OBSERVED"
+    assert result["sources"]["quality"]["recent_run_incident_events"] == 3
+    assert result["sources"]["quality"]["by_code"]["CONSUMER_ROUND_TIMEOUT"] == 1
+
+
+def test_conflicting_duplicate_quality_event_id_fails_closed(tmp_path):
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    file = _quality_file(logs, now)
+    first = json.loads(file.read_text(encoding="utf-8").splitlines()[0])
+    first["code"] = "CONSUMER_TERMINATED"
+    with file.open("a", encoding="utf-8") as output:
+        output.write(json.dumps(first) + "\n")
+    result = snapshot(logs, now=now)
+    assert result["sources"]["quality"]["status"] == "SCHEMA_MISMATCH"
+    assert "by_code" not in result["sources"]["quality"]
+    assert result["diagnosis_status"] == "OBSERVED_NOT_PROVEN"
+
+
+@pytest.mark.parametrize("change", [
+    lambda row: row.update(event_id=[]),
+    lambda row: row.pop("event_id"),
+    lambda row: row.update(event="consumer_orchestration_typo"),
+    lambda row: row.update(code="MALFORMED_UNKNOWN_CODE"),
+    lambda row: row.update(scope="run"),
+    lambda row: row.update(ts=0),
+])
+def test_invalid_nonincident_quality_event_fails_all_quality_counts(tmp_path, change):
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    file = _quality_file(logs, now)
+    rows = [json.loads(line) for line in file.read_text(encoding="utf-8").splitlines()]
+    last = rows[-1]
+    assert last["event"] == "slice_json_repair"
+    change(last)
+    file.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+    result = snapshot(logs, now=now)
+    assert result["sources"]["quality"]["status"] in ("SCHEMA_MISMATCH", "INCOMPLETE")
+    assert "recent_run_incident_events" not in result["sources"]["quality"]
+    assert result["sources"]["meter"]["status"] == "OBSERVED"
+    assert result["root_cause_status"] == "NOT_DETERMINED"
