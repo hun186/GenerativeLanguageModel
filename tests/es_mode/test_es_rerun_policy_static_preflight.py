@@ -80,6 +80,9 @@ def test_task_yaml_explicitly_overrides_legacy_force_policy(tmp_path):
     "from other_config import rerun\n",
     "exec('rerun = {}')\n",
     "rerun = {'enable': True}\nprint(rerun)\n",
+    "rerun = {}\nfrom shared_config import *\n",
+    "import builtins\nrerun = {}\nbuiltins.exec('rerun = {}')\n",
+    "rerun = {}\ngetattr(__import__('builtins'), 'exec')('rerun = {}')\n",
 ])
 def test_dynamic_python_cannot_be_previewed(tmp_path, python_text):
     task, conn = profiles(tmp_path, python_text)
@@ -102,7 +105,9 @@ def test_unmatched_python_and_symlink_are_unavailable(tmp_path):
     other = conn.with_name("other.py")
     other.write_bytes(conn.read_bytes())
     assert inspect(task, other)["status"] == "UNAVAILABLE"
-    symlink = conn.with_name("alias.py")
+    alias_dir = tmp_path / "alternate"
+    alias_dir.mkdir()
+    symlink = alias_dir / "connection.py"
     try:
         symlink.symlink_to(conn)
     except (OSError, NotImplementedError):
@@ -135,3 +140,27 @@ def test_standalone_cli_from_different_directory_never_imports_private_python(tm
     assert report["production_authorization"] == "NOT_GRANTED"
     assert "DO_NOT_RUN" not in process.stdout
     assert process.stderr == ""
+
+
+def test_disabled_rerun_with_fingerprint_still_triggers_pending_policy(tmp_path):
+    task, conn = profiles(
+        tmp_path, "rerun = {}\n",
+        "rerun:\n  enable: false\n"
+        "  execution_fingerprint: changed_identity\n"
+        "  pipeline_hash: old_pipeline\n"
+        "  required_output_checks:\n"
+        "    - path: Event_Timeline.time_iso\n"
+        "      validator: date\n",
+    )
+    report = inspect(task, conn)
+    assert report["status"] == "STATIC_PREVIEW_REVIEW_REQUIRED"
+    assert "RERUN_NOT_EXPLICITLY_ENABLED" in report["reason_codes"]
+    assert "FINGERPRINT_POLICY_ACTIVE" in report["reason_codes"]
+    assert "PIPELINE_HASH_ACTIVE" in report["reason_codes"]
+    assert "TIMELINE_DATE_MINIMUM_PRESENT" in report["reason_codes"]
+
+
+def test_non_boolean_enable_fails_closed(tmp_path):
+    task, conn = profiles(tmp_path, "rerun = {}\n", 'rerun:\n  enable: "false"\n')
+    assert inspect(task, conn)["status"] == "UNAVAILABLE"
+
