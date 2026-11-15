@@ -18,6 +18,42 @@ Both use Python 3.10+ (stdlib only) and default to the repository's ./logs.
 If the actual PGMSubDir is elsewhere, supply its logs directory:
     python scripts/diagnose_llm_dispatch_idle.py --logs-dir <runtime_logs_directory>
 
+### Multiple run-specific metadata directories (Issue #302 read-only Phase 1)
+
+If Queue Meter, endpoint leases, and LLM Audit are stored in different logs
+roots, select **each actual run's existing directory independently**. The
+tool previously looked only in one `--logs-dir`, so both `meter` and `audit`
+could misleadingly show `MISSING` when they existed elsewhere:
+
+```bash
+python scripts/diagnose_llm_dispatch_idle.py \
+  --meter-logs-dir "<actual ctx.meter_dir/logs>" \
+  --load-logs-dir "<actual ctx.PGMSubDir/logs>" \
+  --audit-logs-dir "<actual ctx.PGMSubDir/logs>" --human
+```
+
+**Each override is a directory root:** meter contains `loadmeter_*.json`,
+load contains `base_url_load.json`, and audit contains a *subdirectory*
+`llm_call_audit` with `llm_call_audit_*.csv`. Do not pass the CSV folder
+directly to `--audit-logs-dir`. Any unspecified source continues using
+`--logs-dir` (default `./logs`). The three flags can be supplied to the
+Windows `.bat` launcher as well; it forwards all arguments.
+
+Machine JSON includes fixed `source_directory_selection` values
+(`SHARED` or `EXPLICIT`) for each source and
+`cross_source_run_identity: NOT_VERIFIED`. The human report prints the
+same selection and the warning that source files may come from different
+runs. **No paths, run IDs or endpoints are printed.** A missing, corrupt,
+unsafe, or unavailable override affects *only that source's* status;
+other readable sources remain visible. An observation is not authenticated
+run correlation; combining arbitrary directories cannot establish which
+Worker or GPU processed a particular queue item, nor prove root cause.
+
+All reads remain bounded, file/dir symlink checks remain in effect, and
+the tool performs no Queue/GPU/LLM/API actions or file writes. Review the
+operator-owned run's actual folder locations locally; the tool deliberately
+does **not** guess those locations or crawl the filesystem.
+
 For repeated **foreground** sampling while a batch runs:
     python scripts/diagnose_llm_dispatch_idle.py --logs-dir <runtime_logs_directory> --samples 12 --interval-seconds 30
 

@@ -101,3 +101,6 @@
 
 ## 2026-11-15 — Issue #294 stored Output Profile diagnostic limitations (Phase A)
 - Existing date-only audit may classify a dated Event with empty Timeline while current Output Profile rejects broken linked `event_ids` or other schema fields; this is an observation gap, not evidence that real ES rerun is needed. New offline aggregate audit reuses current Profile against saved NDJSON; old documents may have been written under different Profile versions. Profile acceptance does not guarantee source accuracy, extract completeness, live ES sink ACK, SRAF retrievability, or effective private rerun policy. Hosted Linux/Windows/Secret CI PASS and Codex 0 Findings on reviewed PR #314; no live source or ES data accessed.
+
+## 2026-11-15 — #302 split-root diagnostic merged, real H100 root cause pending
+- One-folder log assumptions previously returned missing Meter/Audit for legitimate runs using separate roots. #315 safely reads three explicitly selected roots separately with no path/private values; `cross_source_run_identity=NOT_VERIFIED` and no causal inference. Hosted verification passed, but operator H100/LLM receipt correlation not established and runtime Queue/ES changes remain gated.

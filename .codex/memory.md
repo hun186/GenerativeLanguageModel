@@ -1,6 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- **2026-11-15 main #315 merged** (`742e759b`): split-root read-only Meter/lease/Audit diagnostic with fixed provenance labels, Hosted CI and Code Review PASS; no authenticated run correlation, GPU root cause or Queue changes.
 - **2026-11-15 main #314 merged** (`add3f079`): offline saved Output Profile aggregate audit, Hosted Linux/Windows and Codex clean; no ES replay or private JSON capture.
 - **2026-11-15 #312 further Codex P2 (PENDING):** Indirect exec alias assignment/import could circumvent dynamic-call blacklist. Static preflight now permits only literal top-level configuration fields and simple stdlib os-env reads with prior import; all other control flow, helper imports and calls fail closed. Added explicit alias/no-exec and env-read regressions. This reduces coverage of complex private config by design; `UNAVAILABLE` means manual review. Latest-head Linux/Windows/secret and formal Codex re-review required; no live ES policy authorization.
 - **2026-11-15 #312 required-check caution:** ES pending adapters run document-level required-output validation before the ordinary enable/fingerprint early return. Static preflight now reports legacy Timeline-only checks regardless of enabled value (conservative; no claim a given ES scan necessarily selects all historical docs); dedicated no-fingerprint/disabled regression added. Latest-head CI and Codex Review pending.
