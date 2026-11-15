@@ -136,6 +136,34 @@ class RetryState:
         if self.last_manual_reset_id is not None:
             _uuid4(self.last_manual_reset_id)
 
+        # These rules are independent of a caller's selected 1-or-2 repair
+        # budget. Production would reconstruct snapshots from durable storage;
+        # accepting an impossible snapshot here could let a forged/stale
+        # IN_FLIGHT/COMPLETE claim bypass NEEDS_REVIEW, even when subsequent
+        # transitions use an expected revision.
+        if self.failed_repairs > 2:
+            raise StateTransitionError("quality repair budget state exceeded")
+        if self.failed_repairs == 2 and self.phase != Phase.NEEDS_REVIEW:
+            raise StateTransitionError("exhausted quality state must need review")
+        if self.phase == Phase.NEEDS_REVIEW and self.failed_repairs == 0:
+            raise StateTransitionError("review state requires a failed repair")
+        if self.phase == Phase.UNASSESSED:
+            if (self.revision != 0 or self.failed_repairs != 0
+                    or self.last_quality_failure_code is not None
+                    or self.manual_reset_generation != 0):
+                raise StateTransitionError("invalid unassessed quality state")
+        elif self.phase in (Phase.READY, Phase.IN_FLIGHT,
+                            Phase.UNCERTAIN, Phase.NEEDS_REVIEW):
+            if self.last_quality_failure_code is None:
+                raise StateTransitionError("quality review state needs failure code")
+        if self.phase != Phase.UNASSESSED and self.revision == 0:
+            raise StateTransitionError("quality transition revision missing")
+        # A reset always records the unique operation responsible for its
+        # generation. No reset ID is valid before any successful reset.
+        if (self.manual_reset_generation == 0) != (
+                self.last_manual_reset_id is None):
+            raise StateTransitionError("invalid manual reset generation")
+
 
 def next_action(state: RetryState, policy: RetryPolicy) -> NextAction:
     """Informational only: MUST NOT be used as an unguarded dispatch claim."""
