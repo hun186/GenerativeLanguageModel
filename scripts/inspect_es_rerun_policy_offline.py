@@ -134,15 +134,14 @@ def _validate_static_module(tree: ast.Module) -> None:
             if not (isinstance(stmt.value, ast.Constant)
                     and isinstance(stmt.value.value, str)):
                 raise ValueError("UNVERIFIABLE_MODULE")
-        elif isinstance(stmt, (ast.Assign, ast.AnnAssign)):
-            if isinstance(stmt, ast.Assign):
-                if len(stmt.targets) != 1 or not isinstance(stmt.targets[0], ast.Name):
-                    raise ValueError("UNVERIFIABLE_MODULE")
-                name, value = stmt.targets[0].id, stmt.value
-            else:
-                if not isinstance(stmt.target, ast.Name) or stmt.value is None:
-                    raise ValueError("UNVERIFIABLE_MODULE")
-                name, value = stmt.target.id, stmt.value
+        elif isinstance(stmt, ast.Assign):
+            # An AnnAssign annotation itself may execute dynamic Python
+            # (and mutate rerun) even when its value is a harmless literal.
+            # Reject annotations in the fallback below rather than trying
+            # to predict interpreter/version-specific evaluation rules.
+            if len(stmt.targets) != 1 or not isinstance(stmt.targets[0], ast.Name):
+                raise ValueError("UNVERIFIABLE_MODULE")
+            name, value = stmt.targets[0].id, stmt.value
             if name == "os" or (name != "rerun" and not _nonpolicy_value_is_static(
                 value, os_imported=os_imported
             )):
