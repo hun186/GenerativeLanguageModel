@@ -305,3 +305,102 @@ def test_opt_in_budget_cannot_exceed_two():
     with pytest.raises(StateTransitionError):
         RetryPolicy(enabled=True, max_failed_repairs=3)
     assert RetryPolicy().enabled is False
+
+
+@pytest.mark.parametrize("case", [
+    {"phase": Phase.IN_FLIGHT, "revision": 2,
+     "failed_repairs": 2, "active_attempt_id": ATTEMPT_A,
+     "last_quality_failure_code": "SCHEMA_OTHER"},
+    {"phase": Phase.UNCERTAIN, "revision": 3,
+     "failed_repairs": 2, "active_attempt_id": ATTEMPT_A,
+     "last_quality_failure_code": "SCHEMA_OTHER"},
+    {"phase": Phase.READY, "revision": 5,
+     "failed_repairs": 2, "last_quality_failure_code": "SCHEMA_OTHER"},
+    {"phase": Phase.COMPLETE, "revision": 5,
+     "failed_repairs": 2, "last_quality_failure_code": "SCHEMA_OTHER"},
+    {"phase": Phase.NEEDS_REVIEW, "revision": 3,
+     "failed_repairs": 999, "last_quality_failure_code": "SCHEMA_OTHER"},
+    {"phase": Phase.NEEDS_REVIEW, "revision": 3,
+     "failed_repairs": 0, "last_quality_failure_code": "SCHEMA_OTHER"},
+    {"phase": Phase.UNASSESSED, "revision": 0,
+     "failed_repairs": 1, "last_quality_failure_code": "SCHEMA_OTHER"},
+    {"phase": Phase.UNASSESSED, "revision": 1},
+    {"phase": Phase.READY, "revision": 1},
+    {"phase": Phase.IN_FLIGHT, "revision": 2,
+     "active_attempt_id": ATTEMPT_A},
+    {"phase": Phase.COMPLETE, "revision": 0},
+    {"phase": Phase.READY, "revision": 1,
+     "last_quality_failure_code": "SCHEMA_OTHER",
+     "manual_reset_generation": 1},
+    {"phase": Phase.READY, "revision": 1,
+     "last_quality_failure_code": "SCHEMA_OTHER",
+     "last_manual_reset_id": OPERATOR_A},
+])
+def test_constructed_unreachable_quality_snapshots_fail_closed(case):
+    with pytest.raises(StateTransitionError):
+        new_state(**case)
+
+
+def test_replacement_cannot_reconstruct_exhausted_claim_or_success():
+    exhausted = settle(
+        take(settle(take(rejected_initial(), ATTEMPT_A), ATTEMPT_A), ATTEMPT_B),
+        ATTEMPT_B,
+    )
+    assert exhausted.phase == Phase.NEEDS_REVIEW
+    assert exhausted.failed_repairs == 2
+    for phase, extras in (
+        (Phase.READY, {"active_attempt_id": None}),
+        (Phase.IN_FLIGHT, {"active_attempt_id": ATTEMPT_B}),
+        (Phase.UNCERTAIN, {"active_attempt_id": ATTEMPT_B}),
+        (Phase.COMPLETE, {"active_attempt_id": None}),
+    ):
+        with pytest.raises(StateTransitionError):
+            replace(exhausted, phase=phase, **extras)
+    assert next_action(exhausted, ON) == NextAction.QUALITY_RETRY_EXHAUSTED
+    assert exhausted.last_quality_failure_code == "SCHEMA_TIME_PRECISION"
+
+
+def test_one_repair_budget_reaches_review_after_one_failed_completion():
+    one = RetryPolicy(enabled=True, max_failed_repairs=1)
+    started = rejected_initial()
+    claimed = claim_quality_repair(
+        started, one, expected_revision=started.revision,
+        verified_attempt_id=ATTEMPT_A,
+    )
+    stopped = finalize_quality_repair(
+        claimed, one, expected_revision=claimed.revision,
+        verified_attempt_id=ATTEMPT_A,
+        result=QualityResult.REJECTED,
+        failure_code="SCHEMA_OTHER",
+    )
+    assert stopped.phase == Phase.NEEDS_REVIEW
+    assert stopped.failed_repairs == 1
+    assert next_action(stopped, one) == NextAction.QUALITY_RETRY_EXHAUSTED
+    with pytest.raises(StateTransitionError):
+        claim_quality_repair(
+            stopped, one, expected_revision=stopped.revision,
+            verified_attempt_id=ATTEMPT_B,
+        )
+
+
+def test_success_after_first_failure_is_a_valid_completed_state():
+    once = settle(take(rejected_initial(), ATTEMPT_A), ATTEMPT_A)
+    done = settle(take(once, ATTEMPT_B), ATTEMPT_B,
+                  result=QualityResult.ACCEPTED, reason=None)
+    assert done.phase == Phase.COMPLETE
+    assert done.failed_repairs == 1
+    assert next_action(done, ON) == NextAction.COMPLETED_VALID
+    assert replace(done).phase == Phase.COMPLETE
+
+
+def test_authorized_reset_generation_remains_a_valid_reconstructed_state():
+    exhausted = settle(
+        take(settle(take(rejected_initial(), ATTEMPT_A), ATTEMPT_A), ATTEMPT_B),
+        ATTEMPT_B,
+    )
+    reset = authorized_manual_reset(
+        exhausted, expected_revision=exhausted.revision,
+        operator_authorized=True, unique_operator_action_id=OPERATOR_A,
+    )
+    assert replace(reset).phase == Phase.READY
+    assert replace(reset).manual_reset_generation == 1
