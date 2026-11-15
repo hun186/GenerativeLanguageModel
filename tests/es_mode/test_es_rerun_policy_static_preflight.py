@@ -15,10 +15,10 @@ def profiles(tmp_path, python_text="rerun = {}\n", yaml_tail="rerun:\n  enable: 
     private.mkdir()
     conn = private / "connection.py"
     task = tmp_path / "task.yaml"
-    conn.write_text(python_text.replace("\\\n", "\n"), encoding="utf-8")
+    conn.write_text(python_text, encoding="utf-8")
     task.write_text(
         ("mode: es\nes_config_file: czjLLM/config_es/connection.py\n"
-         + yaml_tail.replace("\\\n", "\n")), encoding="utf-8",
+         + yaml_tail), encoding="utf-8",
     )
     return task, conn
 
