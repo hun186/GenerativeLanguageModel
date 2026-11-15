@@ -131,3 +131,4 @@
 - [x] #311 work-item/slice trace diagnostic hints merged `efec20a07eca64f2ff6bc81b8523ef79f6d1b88b`, Hosted Linux/Windows/Secret Scan and formal review pass.
 - [ ] Reconcile privacy Draft #310 with new main using exact-run/event raw snapshot controls while preserving #311 hints and tests. Run fresh exact-head Hosted CI and formal security review; no auto merge or real raw data until NTFS ACL and operator privacy acceptance.
 - [x] **#314 Phase A merged** (`add3f079`): offline saved Output Profile aggregate audit, Hosted Linux/Windows/Secret PASS, Codex 0 Findings; no ES replay or plaintext capture. Remaining #294 schema acceptance is separate.
+- [x] **#315 Issue #302 Phase 1 merged** (`742e759b`): independent read-only Meter/lease/Audit log roots, source selection redacted and run identity UNVERIFIED. Hosted Linux/Windows/Secret + Codex clean. H100 root cause and live Consumer integration remain operator-gated.

@@ -98,3 +98,6 @@
 
 ## 2026-11-15 — Issue #294 stored Output Profile diagnostic limitations (Phase A)
 - Existing date-only audit may classify an Event-date/empty-Timeline document whose full Profile rejects broken linked event_ids. The merged offline aggregate audit uses the current strict Profile against saved NDJSON. Old outputs may have different historical Profile semantics, and Profile acceptance does not prove original source fidelity, completeness, live ES ACK or effective rerun. #314 Hosted Linux/Windows/Secret PASS and Codex 0 Findings; no live data accessed.
+
+## 2026-11-15 — #302 split-root diagnostic merged, real GPU evidence pending
+- Old single `--logs-dir` could misclassify valid remote run Meter/Audit as MISSING. #315 adds independently selected metadata directory roots without paths/ID output; `cross_source_run_identity=NOT_VERIFIED` and no GPU root-cause claims. Synthetic Hosted CI and Code Review pass, operator Windows/H100 data correlation still outstanding. No Queue/provider/sink change.
