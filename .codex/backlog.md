@@ -132,3 +132,4 @@
 
 - [ ] After #312 merges, verify README/help references and operator-local private ES profiles; published template deduplicated to one, but existing private profile maintenance remains operator-controlled. Confirm effective YAML/private merged rerun before production use.
 - [ ] **#312 static ES rerun preflight:** verify exact-head Hosted Linux/Windows 3.10/3.11 and changed-line secrets, formal Codex findings and fix; then operator runs static checker separately on each actual private .py/YAML pair and cross-checks representative read-only ES stored-output audit. Do not merge/activate P0 rerun policy without explicit owner risk decision; offline preview does not prove live ES pending count.
+- [x] **#314 Phase A merged** (`add3f079`): read-only saved Output Profile aggregate; Hosted Linux/Windows/Secret PASS, Codex 0 Findings. #294 cross-field implementation remains open; this does NOT authorize ES replay.
