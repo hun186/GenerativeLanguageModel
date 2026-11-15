@@ -195,3 +195,5 @@ python scripts/inspect_es_rerun_policy_offline.py --task-yaml "/work/czjLLM/yaml
 - 唯讀輸出只包含固定風險碼、來源繼承鍵的**數量**與 `STATIC_PREVIEW_REVIEW_REQUIRED`，不回傳來源設定值、帳密、索引名、原文或檔案路徑。返回 exit 0 **不是啟用／重跑許可**。
 - `FORCE_SINCE_ACTIVE`、`PIPELINE_HASH_ACTIVE`、`MISSING_META_FORCES_RERUN`、`TIMELINE_DATE_MINIMUM_PRESENT` 與 `INHERITED_PY_RERUN_KEYS` 必須逐項核對。若顯示 `OTHER_POLICY_KEYS_REVIEW_REQUIRED`，代表靜態工具未完整涵蓋自訂政策。
 - 此工具只是兩檔內容的**靜態快照**，無法證明實際程式載入哪個路徑、額外層疊設定、修改中的私有檔、來源文章日期、ES 已寫回資料、等待重跑筆數、模型／Pipeline 語意，或生產環境安全。仍需實機唯讀抽樣與授權，並與 `scripts/audit_multidim_event_time.py` 的獨立資料品質統計交叉核對。不得因靜態檢查無風險碼就啟動 3 萬筆重算。
+
+**靜態預檢的防誤判補強（2026-11-15）：** 若私人 Python 含 `from module import *`、`builtins.exec` 或其他無法確定作用的動態賦值，預檢採 `UNAVAILABLE`，不聲稱空的 rerun 就代表沒有重跑。更重要的是，ES adapter 在 `enable: false` 但 `execution_fingerprint` 有效時，**仍會比較處理身分並可能要求重跑**。預檢會獨立提示 `FINGERPRINT_POLICY_ACTIVE`，並列出其他仍可能生效的版本與品質條件；非布林 `enable` 直接拒絕。此提醒仍不是實機完成驗證。
