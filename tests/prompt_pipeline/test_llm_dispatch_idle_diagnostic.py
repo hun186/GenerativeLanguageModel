@@ -281,3 +281,140 @@ def test_default_shared_mode_remains_backward_compatible(tmp_path):
     assert doc["sources"]["load"]["status"] == "OBSERVED"
     assert doc["sources"]["audit"]["status"] == "OBSERVED"
     assert doc["cross_source_run_identity"] == "NOT_VERIFIED"
+
+
+def _quality_file(logs, now, *, events=None):
+    """Synthetic current Audit generation; never source actual run content."""
+    file = logs / "llm_call_audit" / "processing_quality_events_20261109.jsonl"
+    if events is None:
+        events = [
+            ("consumer_orchestration_failure", "CONSUMER_ROUND_TIMEOUT", now - 30),
+            ("consumer_orchestration_failure", "CONSUMER_ROUND_EXCEPTION", now - 31),
+            ("row_merger_retryable_failure", "ROW_MERGER_WRITEBACK_RETRY", now - 32),
+            ("consumer_orchestration_failure", "CONSUMER_TERMINATED", now - 1000),
+        ]
+    records = []
+    for i, (event, code, ts) in enumerate(events):
+        records.append({
+            "schema_version": 1,
+            "event_id": "PRIVATE_EVENT_ID_" + str(i),
+            "ts": datetime.fromtimestamp(ts, timezone.utc).isoformat(),
+            "run_id": "PRIVATE_RUN_ID",
+            "event": event, "scope": "run", "code": code,
+            "outcome": "failure", "document_id": "", "slice_id": "",
+            "private_added_future_field": "PRIVATE_RAW_UNTRUSTED",
+        })
+    # Quality event stream also contains slice and document records, which
+    # must NOT be counted as run-level GPU dispatch incidents.
+    records.append({
+        "schema_version": 1,
+        "event_id": "PRIVATE_SLICE_ID",
+        "ts": datetime.fromtimestamp(now - 25, timezone.utc).isoformat(),
+        "run_id": "PRIVATE_RUN_ID",
+        "event": "slice_json_repair", "scope": "slice",
+        "code": "JSON_REPAIR_SUCCEEDED", "document_id": "PRIVATE_PK",
+    })
+    file.write_text("".join(json.dumps(row) + "\n" for row in records),
+                    encoding="utf-8")
+    return file
+
+
+def test_run_quality_active_generation_fixed_incident_counts_and_privacy(tmp_path):
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    _quality_file(logs, now)
+    report = snapshot(logs, now=now, window=900)
+    quality = report["sources"]["quality"]
+    assert quality["status"] == "OBSERVED"
+    assert quality["recent_run_incident_events"] == 3
+    assert quality["by_category"]["consumer_orchestration_failure"] == 2
+    assert quality["by_category"]["row_merger_retryable_failure"] == 1
+    assert quality["by_code"]["CONSUMER_ROUND_TIMEOUT"] == 1
+    assert quality["by_code"]["CONSUMER_TERMINATED"] == 0
+    assert quality["archive_coverage"] == "ACTIVE_GENERATION_ONLY"
+    assert quality["run_identity"] == "NOT_VERIFIED"
+    assert report["root_cause_status"] == "NOT_DETERMINED"
+    assert report["diagnosis_status"] == "OBSERVED_NOT_PROVEN"
+    for marker in ("PRIVATE_EVENT_ID", "PRIVATE_RUN_ID", "PRIVATE_RAW",
+                   "PRIVATE_PK", "PRIVATE_SLICE_ID"):
+        assert marker not in json.dumps(report)
+
+
+def test_missing_quality_does_not_invalidate_existing_three_source_observation(tmp_path):
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    result = snapshot(logs, now=now)
+    assert result["sources"]["quality"]["status"] == "MISSING"
+    assert result["diagnosis_status"] == "OBSERVED_NOT_PROVEN"
+    assert all(result["sources"][key]["status"] == "OBSERVED"
+               for key in ("meter", "load", "audit"))
+
+
+@pytest.mark.parametrize("mutation,code", [
+    (lambda rows: rows[:-1], "INCOMPLETE"),
+    (lambda rows: rows.replace(b"CONSUMER_ROUND_TIMEOUT",
+                               b"UNTRUSTED_INVALID_CODE"), "SCHEMA_MISMATCH"),
+    (lambda rows: rows.replace(b'"scope": "run"', b'"scope": "slice"', 1),
+     "SCHEMA_MISMATCH"),
+    (lambda rows: rows.replace(b'"event": "consumer_orchestration_failure"',
+                               b'"event": ["PRIVATE_LIST"]', 1), "SCHEMA_MISMATCH"),
+    (lambda rows: rows.replace(b"+00:00", b"", 1), "INCOMPLETE"),
+])
+def test_quality_incomplete_or_untrusted_incident_refuses_partial_counts(
+    tmp_path, mutation, code
+):
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    path = _quality_file(logs, now)
+    path.write_bytes(mutation(path.read_bytes()))
+    report = snapshot(logs, now=now)
+    assert report["sources"]["quality"]["status"] == code
+    assert "recent_run_incident_events" not in report["sources"]["quality"]
+    assert report["diagnosis_status"] == "OBSERVED_NOT_PROVEN"
+    assert "PRIVATE_" not in json.dumps(report)
+
+
+def test_quality_symlink_does_not_follow_private_target(tmp_path):
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    file = _quality_file(logs, now)
+    target = tmp_path / "PRIVATE_ORIGINAL"
+    file.rename(target)
+    try:
+        file.symlink_to(target)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlink unsupported")
+    report = snapshot(logs, now=now)
+    assert report["sources"]["quality"]["status"] == "UNSAFE_PATH"
+    assert report["diagnosis_status"] == "OBSERVED_NOT_PROVEN"
+    assert "PRIVATE_" not in json.dumps(report)
+
+
+def test_quality_human_summary_and_separate_audit_root(tmp_path, capsys):
+    now = time.time()
+    meter, load, audit = _split_source_roots(tmp_path, now)
+    _quality_file(audit, now)
+    args = ["--logs-dir", str(tmp_path / "missing"),
+            "--meter-logs-dir", str(meter),
+            "--load-logs-dir", str(load),
+            "--audit-logs-dir", str(audit), "--human"]
+    assert main(args) == 0
+    output = capsys.readouterr().out
+    assert "Quality Run 異常" in output
+    assert "Consumer 異常：2" in output
+    assert "Row Merger 重試異常：1" in output
+    assert "跨來源 Run 身分：未驗證" in output
+    for marker in ("PRIVATE_", str(meter), str(load), str(audit)):
+        assert marker not in output
+
+
+def test_quality_run_failures_exactly_match_current_writer_allowlist():
+    # The standalone CLI uses stdlib only; this regression fails whenever
+    # production code adds/renames an incident type, instead of silently
+    # dropping an important future quality event.
+    from czjLLM.utilities.processing_quality import RUN_INCIDENT_CODES
+    from scripts.diagnose_llm_dispatch_idle import _RUN_FAILURE_CODES
+
+    expected = {key: set(value) for key, value in RUN_INCIDENT_CODES.items()
+                if key not in ("queue_recovery",)}
+    assert {key: set(value) for key, value in _RUN_FAILURE_CODES.items()} == expected
