@@ -94,3 +94,6 @@
 
 ## 2026-11-15 — #302 LLM dispatch log-root mismatch, Phase 1 diagnostic
 - The one-folder `--logs-dir` assumption can report Meter and/or LLM Audit `MISSING` while those files exist in distinct operator run directories. The new read-only CLI source overrides select actual pre-existing roots independently and never echo paths, raw logs, run IDs, endpoint URLs or exceptions. Every read still uses bounded and link-safe readers, with per-source UNAVAILABLE when missing. `cross_source_run_identity=NOT_VERIFIED` is deliberate: newest Meter, leases and Audit cannot prove they belong to the same batch. Synthetic CI/Review pending; no GPU utilization or batch-tail root cause established and no runtime scheduling modified.
+
+## 2026-11-15 — #302 Phase 2 active-run Quality evidence limitation
+- Diagnostic Quality reader exposes fixed run-scope incident counts from only the current JSONL file paired by latest Audit filename, not sealed historical archives. Filename pairing and matching timestamp window cannot authenticate run identity or attribute GPU idle to any one error. Missing, torn, malformed, unsafe or oversized files fail closed independently of Meter/Load/Audit; no partial counts or source text exposed. Hosted CI, Codex review and physical H100 acceptance pending.
