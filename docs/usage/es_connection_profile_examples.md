@@ -201,3 +201,6 @@ python scripts/inspect_es_rerun_policy_offline.py --task-yaml "/work/czjLLM/yaml
 補充：現有 ES adapters 會在部分 pending 路徑先做 `required_output_checks` 的文件品質檢查，再看 `rerun.enable`。因此預檢對舊的 `Event_Timeline.time_iso` 必填規則一律提示，即使 `enable: false` 且沒有 fingerprint；它只指出潛在風險，並未斷言所有文件必然重算。
 
 **語法保守限制（進一步安全修正）：** 私人連線 `.py` 的靜態預檢只接受 `import os`、簡單常值賦值，以及已先 `import os` 的 `os.getenv`、`os.environ.get`／查詢。`rerun` 必須是最外層單次 literal dict。其他 import/from-import、函式、迴圈、分支、`exec` 別名或未知呼叫一律 `UNAVAILABLE`。這不會執行私人 `.py`，也不表示其正式執行會遵守相同限制；若工作站設定含複雜表達式，操作員必須人工檢查，不應放寬驗證或由此判定無重跑風險。
+
+
+**型別註記安全限制：** 以 `name: annotation = value` 寫成的 Python 連線設定也將回傳 `UNAVAILABLE`；annotation 本身可能執行程式碼，靜態預檢不能據其表面 literal 值判定沒有重跑。請用人工檢查複雜私人設定，不要為取得 PASS 而修改生產設定。
