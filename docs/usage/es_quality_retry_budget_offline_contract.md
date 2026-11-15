@@ -13,6 +13,7 @@
 - Claim 與 Finalize 都要求 UUID4 attempt ID 與 `expected_revision`，以離線方式模擬重複觸發保護。**純函式 revision 不是跨程序 CAS 或持久帳本**；離線 ThreadPool test 也不是跨機器原子性證明。
 - 任何從持久層重建或直接構造的 `RetryState` 也必須符合**與選擇的 1／2 次政策無關的可達狀態不變條件**：失敗數不超過 2、達 2 只能 `NEEDS_REVIEW`、`NEEDS_REVIEW` 至少有 1 次失敗，未驗證初次狀態不得已有修復／Reset，修復／待檢查必須保留固定品質失敗碼、Reset 世代須具操作 ID。遇到不可能狀態要拒絕，不得把已耗盡狀態讀成成功或進行中。
 - 人工 reset 只能從 `NEEDS_REVIEW`，需要外部授權與唯一操作 UUID；純函式中的 `operator_authorized=True` 並不是身分驗證。真正部署需將權限、不可竄改稽核與 ledger Reset 合為原子操作。
+- **政策縮緊時的額度轉換：**若原本 `max_failed_repairs=2` 已完成一次品質失敗（`READY`、失敗數 1），後來改為 `max_failed_repairs=1`，立即停止自動派工；必須呼叫唯讀邏輯的 `normalize_policy_exhaustion`，透過 revision 檢查明確轉到 `NEEDS_REVIEW`，此後才允許授權 Reset。不可直接重設 READY，更不可把執行中／結果不明的 claim 視為已完成或直接重設。若原本已 `COMPLETE`，則不能因縮緊政策而改判無效。此轉移在正式環境同樣需要獨立、持久的原子 CAS 與稽核。
 
 ## 狀態對照
 
