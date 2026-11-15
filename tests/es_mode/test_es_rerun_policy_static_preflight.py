@@ -164,3 +164,16 @@ def test_non_boolean_enable_fails_closed(tmp_path):
     task, conn = profiles(tmp_path, "rerun = {}\n", 'rerun:\n  enable: "false"\n')
     assert inspect(task, conn)["status"] == "UNAVAILABLE"
 
+def test_disabled_without_fingerprint_still_reports_timeline_output_check(tmp_path):
+    task, conn = profiles(
+        tmp_path, "rerun = {}\n",
+        "rerun:\n  enable: false\n"
+        "  required_output_checks:\n"
+        "    - path: Event_Timeline.time_iso\n"
+        "      validator: date\n",
+    )
+    report = inspect(task, conn)
+    assert report["status"] == "STATIC_PREVIEW_REVIEW_REQUIRED"
+    assert "TIMELINE_DATE_MINIMUM_PRESENT" in report["reason_codes"]
+    assert "FINGERPRINT_POLICY_ACTIVE" not in report["reason_codes"]
+
