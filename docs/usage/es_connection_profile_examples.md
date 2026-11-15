@@ -177,3 +177,21 @@ key 會被原本 Python+YAML 的淺層合併重新繼承。原本三份 YAML 中
 進入 pending；Event 明確 unknown 也可通過，不能據此斷言原始
 新聞沒有日期。跨重啟最多修復幾次仍由 Issue #313 追蹤，
 **不是**這次 YAML 變更的內容。本次沒有修改私人設定或接觸 ES 資料。
+
+## 離線檢查有效重跑設定的靜態風險（新工具）
+
+在內網 Windows / Linux 工作站上，對**每一份任務 YAML 與其真正對應的私人連線 .py** 分別檢查，且在啟動正式 ES 任務之前執行：
+
+\`\`\`bat
+python scripts/inspect_es_rerun_policy_offline.py --task-yaml "D:\work\czjLLM\yaml\es_config.yaml" --connection-py "D:\work\czjLLM\config_es\private\akconfig_es_test.py"
+\`\`\`
+
+\`\`\`bash
+python scripts/inspect_es_rerun_policy_offline.py --task-yaml "/work/czjLLM/yaml/es_config.yaml" --connection-py "/work/czjLLM/config_es/private/akconfig_es_test.py"
+\`\`\`
+
+- **不 import、不 exec** 指定的私人 Python；只使用 AST 讀取最外層單次賦值的字面值 \`rerun = {...}\`。動態建立／修改、重複賦值、函式內賦值或無法解析時輸出 \`UNAVAILABLE\`（exit 2），絕不能當作沒有重跑政策。
+- YAML 使用安全載入並拒絕重複 key；指定的私人 Python basename 必須與 YAML \`es_config_file\` 的 basename 一致。兩份檔案皆採有限大小、符號連結拒絕、前後檔案身分驗證；無法保證對抗惡意並行改檔。
+- 唯讀輸出只包含固定風險碼、來源繼承鍵的**數量**與 \`STATIC_PREVIEW_REVIEW_REQUIRED\`，不回傳來源設定值、帳密、索引名、原文或檔案路徑。返回 exit 0 **不是啟用／重跑許可**。
+- \`FORCE_SINCE_ACTIVE\`、\`PIPELINE_HASH_ACTIVE\`、\`MISSING_META_FORCES_RERUN\`、\`TIMELINE_DATE_MINIMUM_PRESENT\` 與 \`INHERITED_PY_RERUN_KEYS\` 必須逐項核對。若顯示 \`OTHER_POLICY_KEYS_REVIEW_REQUIRED\`，代表靜態工具未完整涵蓋自訂政策。
+- 此工具只是兩檔內容的**靜態快照**，無法證明實際程式載入哪個路徑、額外層疊設定、修改中的私有檔、來源文章日期、ES 已寫回資料、等待重跑筆數、模型／Pipeline 語意，或生產環境安全。仍需實機唯讀抽樣與授權，並與 \`scripts/audit_multidim_event_time.py\` 的獨立資料品質統計交叉核對。不得因靜態檢查無風險碼就啟動 3 萬筆重算。
