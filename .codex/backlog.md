@@ -130,3 +130,4 @@
 ## 2026-11-11 — Private JSON Draft rebased after quality lineage
 - [x] #311 work-item/slice trace diagnostic hints merged `efec20a07eca64f2ff6bc81b8523ef79f6d1b88b`, Hosted Linux/Windows/Secret Scan and formal review pass.
 - [ ] Reconcile privacy Draft #310 with new main using exact-run/event raw snapshot controls while preserving #311 hints and tests. Run fresh exact-head Hosted CI and formal security review; no auto merge or real raw data until NTFS ACL and operator privacy acceptance.
+- [x] **#314 Phase A merged** (`add3f079`): offline saved Output Profile aggregate audit, Hosted Linux/Windows/Secret PASS, Codex 0 Findings; no ES replay or plaintext capture. Remaining #294 schema acceptance is separate.
