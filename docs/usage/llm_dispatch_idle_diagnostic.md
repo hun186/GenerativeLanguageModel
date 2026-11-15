@@ -54,6 +54,35 @@ the tool performs no Queue/GPU/LLM/API actions or file writes. Review the
 operator-owned run's actual folder locations locally; the tool deliberately
 does **not** guess those locations or crawl the filesystem.
 
+### Consumer／Worker Quality 異常的唯讀摘要（Issue #302，Phase 2）
+
+在既有 `--audit-logs-dir`（或共用 `--logs-dir`）之下，診斷器會先定位最新的
+`llm_call_audit/llm_call_audit_*.csv`，再只讀取**同名後綴**的
+`llm_call_audit/processing_quality_events_*.jsonl`。
+這是現有 Writer 的命名慣例；檔名配對**不能證明**同一個真實 Run。
+
+額外 JSON 欄位 `sources.quality` 僅包含現有 Allowlist 中固定的 run-scope
+Consumer、Row Merger、Producer、Stage、Worker 異常事件數（含固定 code 計數）及
+有效時間區間，沒有 raw `run_id`、私有 document／slice ID、文字訊息或事件內文。
+`archive_coverage=ACTIVE_GENERATION_ONLY` 表示**只看目前活動檔**；
+歷史封存、已輪替檔案沒有計入，不能當成整次任務的總故障數、唯一文件數或真正根因。
+GUI 既有聚合的歷史計數可能因此不同，請勿直接比較或相加。
+
+任何 Quality 檔缺失、截斷、符號連結、非法 schema、時間或事件碼都獨立回報
+固定 `MISSING`／`INCOMPLETE`／`UNSAFE_PATH`／`SCHEMA_MISMATCH` 等狀態，
+不返回部分計數，也**不會掩蓋**另外三個 Meter／Load／Audit 來源已觀察到的證據。
+如果 `sources.quality.status=OBSERVED` 且統計為 0，只代表所選目前檔案及
+回溯窗口沒有看見列在 Allowlist 的事件，不代表執行健康或 GPU 忙碌。
+
+範例：
+
+```bash
+python scripts/diagnose_llm_dispatch_idle.py --audit-logs-dir "<actual ctx.PGMSubDir/logs>" --human
+```
+
+這個 Phase 2 一樣只讀既有受控本機檔案，不產生新的 Quality JSONL、
+不呼叫 LLM、沒有 GUI 或 Queue 寫入，也不嘗試猜測磁碟上的其他 Run 目錄。
+
 For repeated **foreground** sampling while a batch runs:
     python scripts/diagnose_llm_dispatch_idle.py --logs-dir <runtime_logs_directory> --samples 12 --interval-seconds 30
 
