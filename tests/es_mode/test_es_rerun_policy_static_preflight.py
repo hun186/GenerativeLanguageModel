@@ -24,9 +24,9 @@ def profiles(tmp_path, python_text="rerun = {}\\n", yaml_tail="rerun:\\n  enable
 
 
 def test_legacy_rerun_force_and_unknown_values_are_not_exposed(tmp_path, capsys):
-    secret = "PRIVATE_SOURCE_VALUE_MARKER"
+    marker = "PRIVATE_SOURCE_VALUE_MARKER"
     raw_private = (
-        "local_note = " + repr(secret) + "\n"
+        "local_note = " + repr(marker) + "\n"
         + "rerun = {'enable': True, 'force_since': '2025-11-01T00:00:00Z',"
         + " 'pipeline_hash': 'v3.2.1', 'required_output_checks':"
         + " [{'path': 'Event_Timeline.time_iso', 'validator': 'date'}]}\n"
@@ -46,7 +46,7 @@ def test_legacy_rerun_force_and_unknown_values_are_not_exposed(tmp_path, capsys)
     assert result["production_authorization"] == "NOT_GRANTED"
     assert main(["--task-yaml", str(task), "--connection-py", str(conn)]) == 0
     output = capsys.readouterr().out
-    assert secret not in output and "2025-11-01" not in output
+    assert marker not in output and "2025-11-01" not in output
     assert "connection.py" not in output and "task.yaml" not in output
     assert conn.read_bytes() == before
 
@@ -89,7 +89,7 @@ def test_dynamic_python_cannot_be_previewed(tmp_path, python_text):
 @pytest.mark.parametrize("bad_yaml", [
     "rerun:\\n  enable: true\\nrerun:\\n  enable: false\\n",
     "rerun: [force_since]\\n",
-    "rerun:\\n  enable: true\\n  force_since: !secret PRIVATE\\n",
+    "rerun:\\n  enable: true\\n  force_since: !marker PRIVATE\\n",
     "rerun:\\n  enable: [broken\\n",
 ])
 def test_bad_yaml_is_unavailable_without_exception_leak(tmp_path, bad_yaml):
