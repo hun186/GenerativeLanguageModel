@@ -9,7 +9,7 @@ from czjLLM.es_mode.quality_retry_contract import (
     NextAction, Phase, QualityResult, RetryIdentity, RetryPolicy, RetryState,
     StaleRevision, StateTransitionError, authorized_manual_reset,
     claim_quality_repair, finalize_quality_repair, next_action,
-    observe_initial, reconcile_uncertain,
+    observe_initial, reconcile_uncertain, normalize_policy_exhaustion,
 )
 
 ATTEMPT_A = "12345678-1234-4234-8234-1234567890a1"
@@ -404,3 +404,98 @@ def test_authorized_reset_generation_remains_a_valid_reconstructed_state():
     )
     assert replace(reset).phase == Phase.READY
     assert replace(reset).manual_reset_generation == 1
+
+
+def test_policy_downgrade_transitions_settled_exhaustion_to_review_and_reset():
+    # One failed repair under a two-repair policy remains READY.
+    state = settle(take(rejected_initial(), ATTEMPT_A), ATTEMPT_A)
+    assert state.phase == Phase.READY
+    assert state.failed_repairs == 1
+    assert next_action(state, ON) == NextAction.ELIGIBLE_QUALITY_REPAIR
+    one = RetryPolicy(enabled=True, max_failed_repairs=1)
+    assert next_action(state, one) == NextAction.QUALITY_RETRY_EXHAUSTED
+    # No direct reset of a READY snapshot, even if the new budget is consumed.
+    with pytest.raises(StateTransitionError):
+        authorized_manual_reset(
+            state, expected_revision=state.revision,
+            operator_authorized=True, unique_operator_action_id=OPERATOR_A,
+        )
+    reviewed = normalize_policy_exhaustion(
+        state, one, expected_revision=state.revision,
+    )
+    assert reviewed.phase == Phase.NEEDS_REVIEW
+    assert reviewed.failed_repairs == 1
+    assert reviewed.last_quality_failure_code == "SCHEMA_TIME_PRECISION"
+    assert reviewed.revision == state.revision + 1
+    assert next_action(reviewed, one) == NextAction.QUALITY_RETRY_EXHAUSTED
+    with pytest.raises(StaleRevision):
+        normalize_policy_exhaustion(
+            reviewed, one, expected_revision=state.revision,
+        )
+    with pytest.raises(StateTransitionError):
+        normalize_policy_exhaustion(
+            reviewed, one, expected_revision=reviewed.revision,
+        )
+    reset = authorized_manual_reset(
+        reviewed, expected_revision=reviewed.revision,
+        operator_authorized=True, unique_operator_action_id=OPERATOR_A,
+    )
+    assert reset.phase == Phase.READY
+    assert reset.failed_repairs == 0
+    assert reset.manual_reset_generation == 1
+    assert next_action(reset, one) == NextAction.ELIGIBLE_QUALITY_REPAIR
+
+
+def test_policy_exhaustion_normalization_rejects_inflight_uncertain_complete():
+    one = RetryPolicy(enabled=True, max_failed_repairs=1)
+    ready = settle(take(rejected_initial(), ATTEMPT_A), ATTEMPT_A)
+    flight = take(ready, ATTEMPT_B)  # permitted by the old max=2 policy
+    uncertain = settle(flight, ATTEMPT_B, QualityResult.UNCERTAIN, None)
+    completed = settle(flight, ATTEMPT_B, QualityResult.ACCEPTED, None)
+    assert next_action(flight, one) == NextAction.IN_FLIGHT_UNVERIFIED
+    assert next_action(uncertain, one) == NextAction.RECONCILIATION_REQUIRED
+    assert next_action(completed, one) == NextAction.COMPLETED_VALID
+    # A policy change must never revoke an already recorded valid completion.
+    assert completed.failed_repairs == 1
+    for state in (flight, uncertain, completed, rejected_initial(), new_state()):
+        with pytest.raises(StateTransitionError):
+            normalize_policy_exhaustion(
+                state, one, expected_revision=state.revision,
+            )
+    # Cannot create a review state without exhausting the *chosen* policy.
+    with pytest.raises(StateTransitionError):
+        normalize_policy_exhaustion(
+            ready, ON, expected_revision=ready.revision,
+        )
+    with pytest.raises(StateTransitionError):
+        normalize_policy_exhaustion(
+            ready, RetryPolicy(enabled=False, max_failed_repairs=1),
+            expected_revision=ready.revision,
+        )
+    with pytest.raises(StaleRevision):
+        normalize_policy_exhaustion(ready, one, expected_revision=0)
+
+
+def test_policy_downgrade_with_inflight_must_reconcile_before_any_reset():
+    one = RetryPolicy(enabled=True, max_failed_repairs=1)
+    ready = settle(take(rejected_initial(), ATTEMPT_A), ATTEMPT_A)
+    flight = take(ready, ATTEMPT_B)
+    uncertain = settle(flight, ATTEMPT_B, QualityResult.UNCERTAIN, None)
+    with pytest.raises(StateTransitionError):
+        authorized_manual_reset(
+            uncertain, expected_revision=uncertain.revision,
+            operator_authorized=True, unique_operator_action_id=OPERATOR_A,
+        )
+    no_result = reconcile_uncertain(
+        uncertain, one, expected_revision=uncertain.revision,
+        verified_attempt_id=ATTEMPT_B, verified_evidence=True,
+        result=QualityResult.PROVEN_NO_RESULT,
+    )
+    assert no_result.phase == Phase.READY
+    assert no_result.failed_repairs == 1
+    assert next_action(no_result, one) == NextAction.QUALITY_RETRY_EXHAUSTED
+    review = normalize_policy_exhaustion(
+        no_result, one, expected_revision=no_result.revision,
+    )
+    assert review.phase == Phase.NEEDS_REVIEW
+    assert review.failed_repairs == 1
