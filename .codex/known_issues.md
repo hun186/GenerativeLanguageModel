@@ -107,3 +107,6 @@
 
 ## 2026-11-15 — #302 Phase 2 Quality incident diagnostic merged
 - #316 reports only active run-scope JSONL incidents paired by latest Audit basename, deduplicating IDs with the producer QualityAccumulator and refusing corrupt/non-v1 rows without partial counts. File pairing cannot verify same Run; older archive history and real H100/Ollama cause unverified. Hosted CI/Code Review clean after 2 P2 fixes; no Queue, LLM or ES runtime changes.
+
+## 2026-11-16 — #317 offline Quality retry contract accepted, not ES runtime policy
+- Pure opt-in-off `quality_retry_contract.py` models max two completed rejected repairs, valid unknown and policy downgrades. It does NOT persist attempts, verify source/pipeline, provide cross-process CAS, alter private task YAML `.py`, or authorize production ES reindex/replay. Draft #312 remains P0 operator-gated.

@@ -438,3 +438,21 @@ def test_20261110_owned_lease_contract_archive_first_compaction():
     assert len(active.splitlines()) <= 200
     attributes = (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
     assert f".codex/archive/{archived_name} -text" in attributes
+
+
+def test_20261115_issue313_compaction_preserves_exact_prechange_memory():
+    """The pre-#313 handoff, including all historic CI states, is immutable."""
+    archived_name = "memory.md-20261115-214100.md"
+    expected_sha = "4470bd56dd3caaa54057f04a646e6c9fde40e4ad"
+    archived = _ROOT / ".codex" / "archive" / archived_name
+    active = (_ROOT / ".codex" / "memory.md").read_text(encoding="utf-8")
+    assert archived.is_file()
+    assert _git_blob_sha(archived.read_bytes()) == expected_sha
+    assert archived_name in active and expected_sha in active
+    assert len(active.splitlines()) <= 200
+    assert len(active.encode("utf-8")) < 40_000
+    assert "#313" in active and "no durable" in active.lower()
+    assert "#310" in active and "#312" in active and "#266" in active
+    assert "Issue #302" in active
+    attrs = (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
+    assert f".codex/archive/{archived_name} -text" in attrs
