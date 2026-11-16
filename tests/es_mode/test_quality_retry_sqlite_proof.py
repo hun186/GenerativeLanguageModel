@@ -136,11 +136,11 @@ def test_tamper_or_wrong_hmac_key_fails_closed(tmp_path):
         )
     with pytest.raises(LedgerUnavailable, match="ledger snapshot invalid"):
         store.read(ident())
-    other = DisposableQualityLedger(
-        tmp_path / "ledger.db", b"different-key-material-32bytes-more" * 2,
-        create=False,
-    )
-    assert other.read(ident()).phase == Phase.UNASSESSED
+    with pytest.raises(LedgerUnavailable, match="ledger secret mismatch"):
+        DisposableQualityLedger(
+            tmp_path / "ledger.db", b"different-key-material-32bytes-more" * 2,
+            create=False,
+        )
 
 
 def test_on_disk_does_not_include_plaintext_identifiers_or_secret(tmp_path):
