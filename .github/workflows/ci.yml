@@ -31,6 +31,8 @@ jobs:
         run: python -m pytest --collect-only -q tests/e2e -m e2e
       # Fail fast on synthetic ES/MultiDim contract checks; retain the full
       # offline production E2E and all later regressions as mandatory gates.
+      - name: Verify disposable quality retry SQLite CAS proof (Issue 313)
+        run: python -m pytest -q tests/es_mode/test_quality_retry_sqlite_proof.py --maxfail=1 --disable-warnings
       - name: Verify offline Quality retry budget contract (Issue 313)
         run: python -m pytest -q tests/es_mode/test_quality_retry_contract.py --maxfail=1 --disable-warnings
       - name: Verify offline multidim Event and Timeline time rerun audit
