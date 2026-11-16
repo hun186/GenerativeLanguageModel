@@ -64,7 +64,7 @@ def test_report_separates_profile_no_event_from_time_unverified_and_raw_document
 
 
 def test_structured_sample_keeps_mixed_event_blocks_separate():
-    sample = _hit("PRIVATE_MIXED", [_event_block(), _no_event_block()])
+    sample = _hit("PRIVATE_MIXED", _event_block())
     # The sample aggregation intentionally classifies whole documents; the
     # _source field may contain multiple independently valid article blocks.
     sample["_source"]["multidim_event_json"] = [
