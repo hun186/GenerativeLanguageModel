@@ -1,7 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
-- **P0 Draft #312 safety gate unchanged:** Event-first date with empty Timeline allowed, YAML-local rerun only; `news_test` private effective config/date-impact/source+sink read-only verification and explicit operator approval required before any live ES replay.
+- **2026-11-16 #312 source merged:** Event-first date with empty Timeline allowed, YAML-local rerun only. Prior operator read-only 150-document sample is exploratory; `news_test` effective runtime policy, complete source/sink evidence, and explicit operator approval remain required before any live ES replay.
 - **2026-11-15 main `aa4db08f9c958be4d879e9ffcc4e0d1c2c684ab4`:** PR #316 merged: read-only active Quality incident summary; fixed two Codex P2 validation/dedup findings, exact-head Hosted Linux/Windows 3.10/3.11, secret scan and Review PASS. PR #315 merged as `742e759b0723df79b17cd1e8abf7f4f56874f28e`: independent Meter/Load/Audit source roots. No live H100 root cause or Queue/ES change; Issue #302 OPEN.
 - **2026-11-15 accepted PR #314:** offline stored Output Profile audit merged `add3f079112fcf387c7061dcb5a9a80047985316`; current Profile validation over saved NDJSON is not ES live effect, historical extraction accuracy or permission to rerun. Issue #294 remains OPEN.
 - **2026-11-15 Draft PR #310:** raw before/after JSON opt-in privacy feature, HEAD `9acfdb2001c039eb5b74d45cb092aab31fac07e5`, latest hosted Linux/Windows/Secret/Codex zero findings, self-hosted queued. Remains DRAFT for independent security, physical NTFS ACL, consent/retention and operator acceptance. No raw JSON capture activated.
@@ -20,6 +20,8 @@
 - Active memory remains under 200 lines / 40,000 UTF-8 bytes; historical exact text is in the immutable archive below. Archive-first compaction performed in this Phase A to avoid loss of old investigation and testing outcomes.
 
 ## Recent Changes
+- 2026-11-16 GLM MultiDim #319/#320/#321 source merged (code-only): strict task YAML opt-in for Output Profile-valid no-Event results; versioned Mapping/search-consumer contract; HTTPS CA-verified GET-only live Mapping diagnostic. Hosted Linux E2E/Windows 3.10/3.11/secret scans and latest Codex reviews passed for each; self-hosted Windows jobs were queued, not passed. No production ES, LLM or Rerun.
+- 2026-11-16 PR #322 in review: new opt-in GET-only nested-candidate ES sampling, exact all-document vs nested-eligible denominators, Output Profile vs date-category aggregates, strict no-event guard comparison. Synthetic offline test suite and Hosted CI job added but final *current-head* CI outcome not yet verified; live `news_test` run **NOT PERFORMED**. Initial Codex P2 detected HTTP 200 partial-shard/timeout acceptance; amended to fail closed with regression tests. Initial Codex P1 requested this memory entry. Never estimate full-index pending counts from sample or assume source fidelity. This PR does not deploy, access ES or restart jobs.
 - 2026-11-15: #316 Quality diagnostic and #315 split-run-root diagnostic merged and Issue #302 remains operator-gated.
 - 2026-11-15: #314 offline stored Profile audit merged; #310/#312 remain Draft despite latest exact-head Hosted gate.
 - 2026-11-15: #313 new independent offline-only immutable retry budget and tests; actual ledger, CAS and ES rollout are future work.

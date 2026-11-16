@@ -12,7 +12,9 @@ From the GLM repository on the operator's trusted machine:
 python scripts/audit_multidim_es_mapping_readonly.py --url "https://es.example.invalid:9001" --ca-cert "czjLLM/config_es/certs/http_ca.crt"
 ```
 
-Replace the reserved example hostname with the actual HTTPS ES hostname or IP in your own local command; do not commit it to GitHub.\n\nThe operator is prompted for their Elasticsearch username and hidden
+Replace the reserved example hostname with the actual HTTPS ES hostname or IP in your own local command; do not commit it to GitHub.
+
+The operator is prompted for their Elasticsearch username and hidden
 password. No credential is accepted in command-line arguments. The CA file
 must exist. For the **previously confirmed, obsolete IP SAN** only,
 `--allow-ip-san-mismatch` is an explicit local diagnostic option. It
