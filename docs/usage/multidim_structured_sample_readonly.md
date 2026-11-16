@@ -64,6 +64,12 @@ any automatic retry or write. Use off-peak read-only access.
   structurally valid output contains *both* article blocks with Events and
   article blocks without Events; it is **not** an all-empty result and must
   not be interpreted as automatically eligible for no-event rerun skipping.
+- `profile_counts.PROFILE_ACCEPTED_DATE_SOURCES_SPLIT_ACROSS_BLOCKS`
+  means valid Event dates and valid Timeline dates exist in the same output,
+  but **only in different article blocks**. They must not be presented as
+  jointly dated within one block. Even when both arrays are dated in one
+  block, this audit does not prove an Event/Timeline `event_ids` match,
+  source fidelity, or SRAF citation validity.
 - `profile_accepted_no_events_and_task_guard_eligible` is an
   **isolated** task-owned `multidim_event_time` acceptance comparison
   with `allow_empty_events: true`, not actual effective runtime pending.
