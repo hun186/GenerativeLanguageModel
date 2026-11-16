@@ -93,6 +93,7 @@ def test_green_pytest_exit_with_unexpected_skip_fails_fixture(monkeypatch):
     assert detail["runner_code"] == "OK"
     assert detail["skipped_cases"] == 1
     assert detail["acceptance_code"] == "UNEXPECTED_TEST_SKIP"
+    assert detail["skip_reason_codes"] == ["UNCLASSIFIED_SKIP_REQUIRES_REVIEW"]
     assert "native_capability" not in json.dumps(detail)
 
 
@@ -223,6 +224,7 @@ def test_junit_failure_is_only_numeric_ordinals(monkeypatch):
         "failure_ordinals": [2], "failure_codes": ["TEST_CASE_FAILED"],
         "runner_code": "PYTEST_NONZERO",
         "acceptance_code": "UNEXPECTED_TEST_SKIP",
+        "skip_reason_codes": ["UNCLASSIFIED_SKIP_REQUIRES_REVIEW"],
     }
     assert "SENSITIVE" not in json.dumps(detail)
     assert "SECRET" not in json.dumps(detail)
@@ -299,3 +301,59 @@ def test_native_junction_fixed_error_marker_is_redacted(monkeypatch):
     assert detail["failure_codes"] == ["JUNCTION_NATIVE_SET_FAILED"]
     assert "private" not in json.dumps(detail)
     assert "secret" not in json.dumps(detail)
+
+
+def test_fixed_win32_skip_reasons_are_sanitized_without_approval():
+    from xml.etree import ElementTree as ET
+
+    cases = list(ET.fromstring(
+        '<testsuite>'
+        '<testcase name="first"><skipped message="hardlinks unavailable on operator filesystem at C:/PRIVATE"/></testcase>'
+        '<testcase name="second"><skipped message="native symlink creation not authorized D:/SECRET"/></testcase>'
+        '<testcase name="third"><skipped message="custom private credentials!"/></testcase>'
+        '</testsuite>'
+    ).iter("testcase"))
+    codes = probe._safe_unexpected_skip_codes(
+        cases, probe.SUITES[1][1], "nt",
+    )
+    assert codes == [
+        "HARDLINK_UNAVAILABLE", "SYMLINK_PRIVILEGE_UNAVAILABLE",
+        "UNCLASSIFIED_SKIP_REQUIRES_REVIEW",
+    ]
+    assert "PRIVATE" not in json.dumps(codes)
+    assert "SECRET" not in json.dumps(codes)
+    assert "credentials" not in json.dumps(codes)
+
+
+def test_skip_summary_excludes_exact_expected_cross_platform_case():
+    from xml.etree import ElementTree as ET
+
+    cases = list(ET.fromstring(
+        '<testsuite>'
+        '<testcase name="test_non_windows_probe_fails_closed_without_attempted_path_open">'
+        '<skipped message="native Windows acceptance tested separately"/></testcase>'
+        '<testcase name="real_symlink"><skipped message="privilege for directory symlink unavailable"/></testcase>'
+        '</testsuite>'
+    ).iter("testcase"))
+    assert probe._count_unexpected_skips(cases, probe.SUITES[0][1], "nt") == 1
+    assert probe._safe_unexpected_skip_codes(
+        cases, probe.SUITES[0][1], "nt",
+    ) == ["SYMLINK_PRIVILEGE_UNAVAILABLE"]
+
+
+def test_windows_ntfs_query_failure_gets_fixed_code_not_secret(monkeypatch):
+    def fake_run(args, **kwargs):
+        path = Path(args[args.index("--junitxml") + 1])
+        path.write_text(
+            '<testsuite><testcase name="PRIVATE_C_DRIVE">'
+            '<failure message="WINDOWS_NTFS_VOLUME_QUERY_FAILED">'
+            'C:/Users/private/failure</failure></testcase></testsuite>',
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(args, 1)
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_run)
+    passed, detail = probe._run_suite(probe.SUITES[2][1])
+    assert not passed
+    assert detail["failure_codes"] == ["NTFS_VOLUME_QUERY_FAILED"]
+    assert "private" not in json.dumps(detail).lower()

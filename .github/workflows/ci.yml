@@ -166,7 +166,7 @@ jobs:
         env:
           PYTHONNOUSERSITE: "1"
         run: |
-          python -m pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py tests/prompt_pipeline/test_queue_win32_native_enumeration.py tests/prompt_pipeline/test_queue_win32_ntfs_acceptance.py --maxfail=1 --disable-warnings
+          python -m pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py tests/prompt_pipeline/test_queue_win32_native_enumeration.py tests/prompt_pipeline/test_queue_win32_ntfs_acceptance.py tests/prompt_pipeline/test_queue_win32_operator_acceptance.py --maxfail=1 --disable-warnings
 
       - name: Verify Windows ThreadPool round completion order and timeout safety
         shell: pwsh
