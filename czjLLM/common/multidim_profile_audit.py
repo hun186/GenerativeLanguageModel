@@ -21,6 +21,7 @@ CATEGORIES = (
     "PROFILE_ACCEPTED_MIXED_EVENT_PRESENCE",
     "PROFILE_ACCEPTED_EVENT_DATE_EMPTY_TIMELINE",
     "PROFILE_ACCEPTED_EVENT_AND_TIMELINE_DATES",
+    "PROFILE_ACCEPTED_DATE_SOURCES_SPLIT_ACROSS_BLOCKS",
     "PROFILE_ACCEPTED_TIMELINE_DATE_ONLY",
     "PROFILE_ACCEPTED_EVENT_DATE_OTHER",
     "PROFILE_ACCEPTED_DATE_UNKNOWN",
@@ -56,15 +57,22 @@ def classify_stored_profile(source: Any) -> str:
     if any(not item["Event"] for item in normalized):
         return "PROFILE_ACCEPTED_MIXED_EVENT_PRESENCE"
 
-    event_dated = any(
-        event["time_iso"] is not None
-        for item in normalized for event in item["Event"]
-    )
-    timeline_dated = any(
-        row["time_iso"] is not None
-        for item in normalized for row in item["Event_Timeline"]
-    )
+    # Check dates within each article block. Separate valid blocks may each
+    # have dates in different arrays; aggregating globally would overstate
+    # same-block coverage. This does NOT assert Event/Timeline event_ids link.
+    per_block_dates = [
+        (
+            any(event["time_iso"] is not None for event in item["Event"]),
+            any(row["time_iso"] is not None for row in item["Event_Timeline"]),
+        )
+        for item in normalized
+    ]
+    event_dated = any(pair[0] for pair in per_block_dates)
+    timeline_dated = any(pair[1] for pair in per_block_dates)
     if event_dated and timeline_dated:
+        if not any(event_has_date and timeline_has_date
+                   for event_has_date, timeline_has_date in per_block_dates):
+            return "PROFILE_ACCEPTED_DATE_SOURCES_SPLIT_ACROSS_BLOCKS"
         return "PROFILE_ACCEPTED_EVENT_AND_TIMELINE_DATES"
     if timeline_dated:
         return "PROFILE_ACCEPTED_TIMELINE_DATE_ONLY"
