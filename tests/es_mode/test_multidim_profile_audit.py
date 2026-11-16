@@ -93,6 +93,55 @@ def test_mixed_event_and_no_event_blocks_have_distinct_profile_count(event_first
     assert doc == original
 
 
+@pytest.mark.parametrize("reverse", [False, True])
+def test_dates_in_separate_article_blocks_are_not_claimed_as_same_block(reverse):
+    with_event_date = row()
+    only_timeline_date = row(
+        events=[event(None, "unknown", event_id="E2")],
+        timeline=[{
+            "event_ids": ["E2"], "time_raw": None,
+            "time_iso": "2024-07-26", "time_precision": "day",
+        }],
+    )
+    only_timeline_date["evidence_snippets"] = []
+    blocks = [with_event_date, only_timeline_date]
+    if reverse:
+        blocks.reverse()
+    src = stored(blocks)
+    old = deepcopy(src)
+    assert classify_stored_profile(src) == "PROFILE_ACCEPTED_DATE_SOURCES_SPLIT_ACROSS_BLOCKS"
+    report = summarize_stored_profiles([src])
+    assert report["counts"]["PROFILE_ACCEPTED_DATE_SOURCES_SPLIT_ACROSS_BLOCKS"] == 1
+    assert report["counts"]["PROFILE_ACCEPTED_EVENT_AND_TIMELINE_DATES"] == 0
+    assert report["actual_rerun_policy"] == "NOT_EVALUATED"
+    assert src == old
+
+
+def test_at_least_one_block_with_both_date_fields_keeps_original_category():
+    together = row(timeline=[{
+        "event_ids": ["E1"], "time_raw": None,
+        "time_iso": "2024-07-26", "time_precision": "day",
+    }])
+    split = row(events=[event(None, "unknown", event_id="E2")])
+    split["evidence_snippets"] = []
+    assert classify_stored_profile(stored([split, together])) == (
+        "PROFILE_ACCEPTED_EVENT_AND_TIMELINE_DATES"
+    )
+
+
+def test_invalid_linking_is_still_rejected_before_cross_block_date_label():
+    one = row()
+    two = row(
+        events=[event(None, "unknown", event_id="E2")],
+        timeline=[{
+            "event_ids": ["E1"], "time_raw": None,
+            "time_iso": "2024-07-26", "time_precision": "day",
+        }],
+    )
+    two["evidence_snippets"] = []
+    assert classify_stored_profile(stored([one, two])) == "PROFILE_REJECTED"
+
+
 def test_missing_timeline_not_reported_as_explicitly_empty():
     doc = stored(wrapper=False)
     del doc["multidim_event_json"][0]["Event_Timeline"]

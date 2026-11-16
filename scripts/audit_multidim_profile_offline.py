@@ -41,6 +41,8 @@ def human(report: dict) -> str:
             "Profile 接受：Event 有日期、Timeline 明示為空",
         "PROFILE_ACCEPTED_EVENT_AND_TIMELINE_DATES":
             "Profile 接受：Event／Timeline 皆有日期",
+        "PROFILE_ACCEPTED_DATE_SOURCES_SPLIT_ACROSS_BLOCKS":
+            "Profile 接受：Event／Timeline 日期分散在不同文章區塊，不代表同區塊關聯",
         "PROFILE_ACCEPTED_TIMELINE_DATE_ONLY":
             "Profile 接受：僅 Timeline 有日期",
         "PROFILE_ACCEPTED_EVENT_DATE_OTHER":
