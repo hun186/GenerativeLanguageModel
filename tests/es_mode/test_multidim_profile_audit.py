@@ -76,6 +76,23 @@ def test_categories_are_exclusive_and_stable(record, category):
     assert record == before
 
 
+@pytest.mark.parametrize("event_first", [True, False])
+def test_mixed_event_and_no_event_blocks_have_distinct_profile_count(event_first):
+    # Both blocks pass the real Output Profile. Mixed must not be reported
+    # as a wholly irrelevant/no-Event article or as an effective rerun pass.
+    with_event = row()
+    no_event = {**row(events=[]), "evidence_snippets": []}
+    blocks = [with_event, no_event] if event_first else [no_event, with_event]
+    doc = stored(blocks)
+    original = deepcopy(doc)
+    assert classify_stored_profile(doc) == "PROFILE_ACCEPTED_MIXED_EVENT_PRESENCE"
+    result = summarize_stored_profiles([doc])
+    assert result["counts"]["PROFILE_ACCEPTED_MIXED_EVENT_PRESENCE"] == 1
+    assert result["counts"]["PROFILE_ACCEPTED_NO_EVENTS"] == 0
+    assert result["actual_rerun_policy"] == "NOT_EVALUATED"
+    assert doc == original
+
+
 def test_missing_timeline_not_reported_as_explicitly_empty():
     doc = stored(wrapper=False)
     del doc["multidim_event_json"][0]["Event_Timeline"]
@@ -116,6 +133,12 @@ def test_mixed_blocks_do_not_hide_a_rejected_article():
     assert classify_stored_profile(stored([valid, invalid])) == "PROFILE_REJECTED"
     assert classify_stored_profile(stored([valid, row(events=[event(None, "unknown")])])) \
         == "PROFILE_ACCEPTED_EVENT_DATE_EMPTY_TIMELINE"
+
+
+def test_all_no_event_blocks_remain_true_no_event_category():
+    empty = {**row(events=[]), "evidence_snippets": []}
+    document = stored([deepcopy(empty), deepcopy(empty)])
+    assert classify_stored_profile(document) == "PROFILE_ACCEPTED_NO_EVENTS"
 
 
 def test_fixed_categories_counts_only_and_no_record_leak():
