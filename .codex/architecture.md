@@ -138,6 +138,5 @@
 - Row Merger observes a bounded once-per-scan Meter snapshot and requires both counters zero before writeback. A real missing/null/corrupt row receipt remains unresolved. An actual terminated Consumer with unrecoverable receipt can publish a terminal incomplete coordinator event, never a synthetic ACK; stage-managed registration before receipt publication stays nonterminal while the Producer is active.
 - Producer's two wait phases consume one shared per-row backpressure time budget. No provider endpoint/lease behavior is changed. CI and Windows physical acceptance outstanding.
 
-
-## 2026-11-15 — Issue #313 pure Quality retry boundary (Phase A)
-- `es_mode/quality_retry_contract.py` contains immutable offline policy transitions for opt-in OFF, 2 explicitly failed completed repairs, validated unknown acceptance, outstanding attempt UUID/revision and manual-reset proposal. It has **no connection to live Consumer, ES pending, Output Profile adapter, Queue, LLM, SQL or disk ledger**. External trusted Profile/result verification and cross-machine durable atomic CAS/claim/finalize are prerequisites for future integration, not present behavior. The model is a deterministic contract for disposable-store/ES-adapter design, not a runtime feature. See `docs/usage/es_quality_retry_budget_offline_contract.md`.
+## 2026-11-16 — #317 accepted offline Quality retry state model
+- `es_mode/quality_retry_contract.py` contains immutable, opt-in-OFF state transitions and policy-downgrade manual-review proposal. It has no connection to live Consumer, ES pending, YAML rerun, Output Profile adapter, Queue, LLM, SQL or disk. Source-verified identity, atomic CAS and crash recovery remain separately gated.

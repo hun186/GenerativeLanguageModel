@@ -114,3 +114,58 @@ Before any true rerun semantics change, separately verify the effective
 operator configuration and confirm a sample against original sources and
 sink readback. Preserve an explicit force-overwrite path and test both ES
 pending policy variants before deployment.
+
+## 2026-11-11 / Issue #293: Event-first temporal rerun rule (PR candidate)
+
+Three ES multidimensional-event YAML examples now use
+`path: multidim_event_json; validator: multidim_event_time` instead of
+requiring a nonempty `Event_Timeline.time_iso`. The new shared Python
+required-output validator reuses `classify_stored_document()` and the
+existing writeback Output Profile time validation: every article block must
+have a core Event, valid Event/Timeline time fields pass, and an explicit
+`time_iso: null` with `time_precision: unknown` may pass without fabricating
+a date or calling an LLM. An empty Timeline is valid. Missing Event, malformed
+time and unverified structure fail. **This is structural/format acceptance,
+not proof that the original article contains no recoverable date.**
+
+This time rule alone cannot prevent independent `pipeline_hash`,
+`force_if_missing_meta`, model/fingerprint or operator force reruns.
+The three existing YAML test-mode hashes were deliberately preserved; verify
+the *effective* private config before enabling against production data. Existing
+legacy `validator: date` remains unchanged for other tasks.
+
+Status: source-only change proposed; no private Elasticsearch query, rewrite,
+production replay or physical Windows acceptance was performed.
+
+### Python sample config parity and repair-attempt budget (future)
+
+The earlier phase updated five duplicated `akconfig_es_*.py.example`
+files, but the later consolidation removes all seven per-index ES examples.
+The only remaining ES Python example is `config_es/connection.py.example`.
+It contains no `rerun` block at all. The date check belongs to each task
+YAML, preventing future tasks sharing a connection from inheriting its policy.
+Operator-owned private `.py` files and every task YAML path remain unchanged.
+See `docs/usage/es_connection_profile_examples.md`.
+
+An automatic maximum (suggested: two quality repair runs after the initial
+extraction) is NOT implemented by this PR. A durable per-document/output-policy
+ledger is required, since failed validation can prevent ES output writeback.
+Increment only after a completed extraction with a quality rejection, never
+on discovery/recheck, network retries or incomplete execution. An idempotent
+concurrent claim/finalize, review state, and explicit operator reset require
+independent testing. Exhaustion must not mark an invalid output as fresh.
+
+The Event-first guard additionally requires nonblank, distinct
+`Event.event_id` values per block. Missing `time_iso` with missing
+`time_raw` is accepted only when precision explicitly says `unknown`;
+a non-unknown precision can still represent a partial time if a nonempty
+`time_raw` is preserved. This is a conservative validation rule, not
+source-language inference.
+
+## Public ES Python template consolidation
+
+Seven duplicate `config_es/akconfig_es_*.py.example` files were consolidated
+into one canonical `config_es/connection.py.example`, with per-index legacy
+file mappings documented in `docs/usage/es_connection_profile_examples.md`.
+Legacy `es_config_file` YAML references and operator-owned private/root
+`.py` files were not changed. No implicit date-rule rerun or ES writes.

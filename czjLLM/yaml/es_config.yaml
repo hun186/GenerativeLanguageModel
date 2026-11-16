@@ -30,6 +30,23 @@ stage_cfg:
 primary_key: _id
 #task: News-FacetTop10-Map-to json format
 task: InfoExtraction-MultiDim-SQLFriendly-to json format
+
+# SRAF Event-first 日期品質重跑：此政策只屬於本任務 YAML，不應放在共用連線 .py。
+# Event 有合法日期或明示時間未知均可通過；不要求 Event_Timeline 一定有日期。
+# null / false 明確覆寫尚未遷移的私人 .py 強制重跑條件，避免意外重算歷史資料。
+# 若確實要依版本或處理時間強制重算，再於本 YAML 明確設定 pipeline_hash / force_since。
+rerun:
+  enable: true
+  pipeline_hash: null
+  force_since: null
+  force_if_missing_meta: false
+  fallback_date_field: update_time_ai
+  required_output_checks:
+    - path: multidim_event_json
+      validator: multidim_event_time
+      min_valid_count: 1
+      relative_to_output: false
+
 record_update_time: true
 # 自動套用 mapping（僅新增欄位，不會改既有型別）
 #es_apply_mapping: True
