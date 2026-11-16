@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = ROOT / "czjLLM/es_mode/contracts/multidim_search_v1.json"
 INDEX = "news_test"
 MAX_MISMATCHES = 30
