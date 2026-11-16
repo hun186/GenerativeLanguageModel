@@ -81,6 +81,21 @@ def _get_search(origin: str, opener, query: dict) -> dict:
         raise ValueError("SEARCH_RESPONSE_INVALID") from None
     if not isinstance(result, dict):
         raise ValueError("SEARCH_RESPONSE_INVALID")
+    # HTTP 200 and hits.total.relation=eq can coexist with failed shards or
+    # timeouts. Never report shard-biased / partial counts as a valid sample.
+    shards = result.get("_shards")
+    if result.get("timed_out") is not False or not isinstance(shards, dict):
+        raise ValueError("SEARCH_PARTIAL_OR_UNVERIFIED")
+    total = shards.get("total")
+    successful = shards.get("successful")
+    failed = shards.get("failed")
+    skipped = shards.get("skipped", 0)
+    if (any(type(v) is not int or v < 0
+            for v in (total, successful, failed, skipped))
+            or total == 0 or failed != 0
+            or successful + skipped < total
+            or result.get("terminated_early") is True):
+        raise ValueError("SEARCH_PARTIAL_OR_UNVERIFIED")
     return result
 
 
@@ -196,6 +211,7 @@ def main(argv: list[str] | None = None) -> int:
             "CONNECTION_OR_TLS_UNAVAILABLE", "SEARCH_RESPONSE_TOO_LARGE",
             "SEARCH_RESPONSE_INVALID", "INDEX_COUNTS_CHANGED",
             "COUNT_NOT_EXACT", "UNVERIFIED_SAMPLE",
+            "SEARCH_PARTIAL_OR_UNVERIFIED",
         }
         code = str(exc) if isinstance(exc, ValueError) else "INPUT_UNAVAILABLE"
         report = {**minimal, "status": "UNAVAILABLE",
