@@ -31,6 +31,85 @@ def document(event_time="2023-08-24", precision="day", timeline=None):
     }
 
 
+
+def no_event_document(**overrides):
+    block = {
+        "article_date_iso": None,
+        "article_date_precision": "unknown",
+        "Event": [],
+        "Event_Timeline": [],
+        "evidence_snippets": [],
+        "Person": [],
+        "Involved_Parties": [],
+        "Impact": [],
+    }
+    block.update(overrides)
+    return {"multidim_event_json": [block]}
+
+
+def test_no_event_only_passes_when_explicitly_opted_in_and_profile_accepted():
+    # Do not silently change the validator used by third-party/legacy tasks.
+    src = no_event_document()
+    assert evaluate_required_output_checks(src, [CHECK])[0] is False
+    opt_in = {**CHECK, "allow_empty_events": True}
+    assert evaluate_required_output_checks(src, [opt_in]) == (True, None)
+    assert evaluate_required_output_checks(
+        src, [{**CHECK, "allow_empty_events": "true"}])[0] is False
+    # Output Profile accepts this result; it does not certify original text.
+    from czjLLM.common.multidim_profile_audit import classify_stored_profile
+    assert classify_stored_profile(src) == "PROFILE_ACCEPTED_NO_EVENTS"
+
+
+@pytest.mark.parametrize("change", [
+    {"article_date_iso": "not-a-date"},
+    {"article_date_precision": "bad"},
+    {"article_date_iso": "2025-02-30", "article_date_precision": "day"},
+    {"Event_Timeline": [{"event_ids": [], "time_iso": None,
+                          "time_raw": None, "time_precision": "unknown"}]},
+    {"evidence_snippets": [{"event_ids": [], "text": "orphan text"}]},
+    {"Person": [{"event_ids": [], "name": "orphan"}]},
+    {"Involved_Parties": [{"event_ids": [], "party_name": "orphan"}]},
+    {"Impact": [{"event_ids": [], "impact_description": "orphan"}]},
+])
+def test_empty_event_optin_does_not_hide_invalid_or_orphan_claims(change):
+    src = no_event_document(**change)
+    assert evaluate_required_output_checks(
+        src, [{**CHECK, "allow_empty_events": True}])[0] is False
+
+
+def test_empty_event_optin_cannot_hide_missing_or_mixed_event_blocks():
+    opted = [{**CHECK, "allow_empty_events": True}]
+    for source in (
+        {"multidim_event_json": []},
+        {"multidim_event_json": [{"Event": []}]},
+        {"multidim_event_json": [{}]},
+        {"multidim_event_json": [no_event_document()["multidim_event_json"][0],
+                                  document()["multidim_event_json"][0]]},
+    ):
+        assert evaluate_required_output_checks(source, opted)[0] is False
+
+
+@pytest.mark.parametrize("mixin", [ElasticsearchPendingPolicyMixin, LegacyPolicyMixin])
+def test_no_event_optin_respects_independent_force_and_hash(mixin):
+    class Policy(mixin):
+        def __init__(self, rerun):
+            self.cfg = {"output_col": "multidim_event_json", "rerun": rerun}
+
+    rule = {key: value for key, value in CHECK.items() if key != "full_path"}
+    base = {"enable": True, "required_output_checks": [
+        {**rule, "allow_empty_events": True}]}
+    src = no_event_document()
+    assert Policy(base).check_source_pending(
+        src, ["multidim_event_json"]).reason == "fresh_completed"
+    assert Policy({"enable": True, "required_output_checks": [rule]}
+                  ).check_source_pending(
+        src, ["multidim_event_json"]).reason == "required_output_invalid"
+    forced = Policy({**base, "pipeline_hash": "new"})
+    src["multidim_event_json_meta"] = {"pipeline_hash": "old"}
+    assert forced.check_source_pending(
+        src, ["multidim_event_json"]).reason == "pipeline_hash_mismatch"
+
+
 @pytest.mark.parametrize("source,expected", [
     (document(), True),  # Event-only: empty Timeline is legitimate
     (document(None, "unknown"), True),  # unknown, not an infinite rerun
@@ -136,6 +215,7 @@ def test_all_ten_es_multidim_yamls_use_task_owned_sraf_event_first_rerun():
             "  required_output_checks:",
             "    - path: multidim_event_json",
             "      validator: multidim_event_time",
+            "      allow_empty_events: true",
             "      min_valid_count: 1",
             "      relative_to_output: false",
         ):
