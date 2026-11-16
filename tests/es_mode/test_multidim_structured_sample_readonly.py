@@ -63,12 +63,6 @@ def test_report_separates_profile_no_event_from_time_unverified_and_raw_document
         assert secret not in dumped
 
 
-@pytest.mark.parametrize("bad", [
-    [{"_index": "private_index", "_id": "one", "_source": {}}],
-    [{"_index": "news_test", "_id": "one", "_source": None}],
-    [{"_index": "news_test", "_id": "one", "_source": {}},
-     {"_index": "news_test", "_id": "one", "_source": {}}],
-])
 def test_structured_sample_keeps_mixed_event_blocks_separate():
     sample = _hit("PRIVATE_MIXED", [_event_block(), _no_event_block()])
     # The sample aggregation intentionally classifies whole documents; the
@@ -81,6 +75,12 @@ def test_structured_sample_keeps_mixed_event_blocks_separate():
     assert report["profile_accepted_no_events_and_task_guard_eligible"] == 0
 
 
+@pytest.mark.parametrize("bad", [
+    [{"_index": "private_index", "_id": "one", "_source": {}}],
+    [{"_index": "news_test", "_id": "one", "_source": None}],
+    [{"_index": "news_test", "_id": "one", "_source": {}},
+     {"_index": "news_test", "_id": "one", "_source": {}}],
+])
 def test_reject_unverifiable_sample_without_partial_counters(bad):
     with pytest.raises(ValueError, match="UNVERIFIED_SAMPLE"):
         summarize_structured_sample(20, 10, bad)
