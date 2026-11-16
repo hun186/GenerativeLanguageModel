@@ -75,6 +75,30 @@ def test_structured_sample_keeps_mixed_event_blocks_separate():
     assert report["profile_accepted_no_events_and_task_guard_eligible"] == 0
 
 
+def test_nested_sample_does_not_mix_different_blocks_date_coverage():
+    sample = _hit("PRIVATE_SPLIT", _event_block())
+    timeline_only = _event_block()
+    timeline_only["Event"][0].update(
+        time_iso=None, time_raw=None, time_precision="unknown")
+    timeline_only["Event_Timeline"] = [{
+        "event_ids": ["SENSITIVE_EVENT_KEY"],
+        "time_iso": "2023-08-25", "time_raw": None,
+        "time_precision": "day",
+    }]
+    sample["_source"]["multidim_event_json"] = [
+        _event_block(), timeline_only]
+    before = deepcopy(sample)
+    result = summarize_structured_sample(30, 1, [sample])
+    assert result["profile_counts"]["PROFILE_ACCEPTED_DATE_SOURCES_SPLIT_ACROSS_BLOCKS"] == 1
+    assert result["profile_counts"]["PROFILE_ACCEPTED_EVENT_AND_TIMELINE_DATES"] == 0
+    assert result["effective_runtime_rerun"] == "NOT_EVALUATED"
+    assert sample == before
+    report = json.dumps(result)
+    assert "PRIVATE_SPLIT" not in report
+    assert "SENSITIVE_EVENT_KEY" not in report
+    assert "2023-08-25" not in report
+
+
 @pytest.mark.parametrize("bad", [
     [{"_index": "private_index", "_id": "one", "_source": {}}],
     [{"_index": "news_test", "_id": "one", "_source": None}],
