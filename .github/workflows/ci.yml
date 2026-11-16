@@ -67,6 +67,8 @@ jobs:
         run: python -m pytest -q tests/es_mode/test_multidim_search_contract_v1.py --maxfail=1 --disable-warnings
       - name: Verify read-only MultiDim live-Mapping contract probe
         run: python -m pytest -q tests/es_mode/test_multidim_es_mapping_readonly.py --maxfail=1 --disable-warnings
+      - name: Verify privacy-safe nested-only MultiDim ES sample (offline)
+        run: python -m pytest -q tests/es_mode/test_multidim_structured_sample_readonly.py --maxfail=1 --disable-warnings
       - name: Verify no-clobber TODO to RUNNING dispatch and collision fail-closed
         run: python -m pytest -q tests/prompt_pipeline/test_queue_no_clobber.py --maxfail=1 --disable-warnings
       - name: Verify observed queue claim and requeue events
