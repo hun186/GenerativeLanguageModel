@@ -117,6 +117,11 @@ def test_sample_is_three_https_gets_only_and_ca_verified(monkeypatch, tmp_path):
         {"hits": {"total": {"relation": "eq", "value": 2}, "hits": []}},
         {"hits": {"total": {"relation": "eq", "value": 2}, "hits": sample_hits}},
     ]
+    responses = [
+        {**res, "timed_out": False,
+         "_shards": {"total": 1, "successful": 1, "skipped": 0, "failed": 0}}
+        for res in responses
+    ]
     class Response:
         def __init__(self, value): self.value = value
         def __enter__(self): return self
@@ -149,6 +154,34 @@ def test_sample_is_three_https_gets_only_and_ca_verified(monkeypatch, tmp_path):
             b"operator:SENSITIVE_PASSWORD").decode("ascii")
     assert "SENSITIVE_PASSWORD" not in json.dumps(result)
     assert "PRIVATE_A" not in json.dumps(result)
+
+
+@pytest.mark.parametrize("bad_metadata", [
+    {"timed_out": True},
+    {"_shards": {"total": 2, "successful": 1, "skipped": 0, "failed": 1}},
+    {"_shards": {"total": 2, "successful": 1, "skipped": 0, "failed": 0}},
+    {"terminated_early": True},
+])
+def test_http_200_with_partial_shards_or_timeout_fails_closed(bad_metadata):
+    response = {
+        "timed_out": False,
+        "_shards": {"total": 1, "successful": 1, "failed": 0},
+        "hits": {"total": {"relation": "eq", "value": 20}, "hits": []},
+    }
+    response.update(bad_metadata)
+
+    class FakeResponse:
+        def __enter__(self): return self
+        def __exit__(self, *_): return False
+        def getcode(self): return 200
+        def read(self, n): return json.dumps(response).encode("utf-8")
+
+    class FakeOpener:
+        def open(self, req, timeout): return FakeResponse()
+
+    with pytest.raises(ValueError, match="SEARCH_PARTIAL_OR_UNVERIFIED"):
+        _get_search("https://es.example.invalid:9200", FakeOpener(),
+                    {"size": 0, "query": {"match_all": {}}})
 
 
 def test_sample_size_does_not_allow_unbounded_es_load(capsys):
