@@ -66,7 +66,7 @@ def test_rejects_aliases_wrong_indices_or_invalid_response(mapping):
 
 
 @pytest.mark.parametrize("url", [
-    "http://192.168.0.134:9001",
+    "http://es.example.invalid:9001",
     "https://name.invalid:9200/_cat/indices",
     "https://name.invalid:9200/?x=1",
     "https://user:pass@name.invalid:9200",
@@ -79,7 +79,7 @@ def test_url_rejects_non_https_credentials_and_arbitrary_paths(url):
 
 
 def test_https_origin_only_accepts_fixed_mapping_path():
-    assert _endpoint("https://192.168.0.134:9001/") == "https://192.168.0.134:9001"
+    assert _endpoint("https://es.example.invalid:9001/") == "https://es.example.invalid:9001"
 
 
 def test_no_cert_means_no_network(tmp_path):
@@ -114,12 +114,12 @@ def test_tls_exception_preserves_ca_verification_and_get_only(monkeypatch, tmp_p
     monkeypatch.setattr(
         "scripts.audit_multidim_es_mapping_readonly.build_opener",
         lambda *args: FakeOpener())
-    result = _request_mapping("https://192.168.0.134:9001", str(cert),
+    result = _request_mapping("https://es.example.invalid:9001", str(cert),
                               "user", "secret", skip_hostname=True)
     assert result == _fixture()
     assert context.verify_mode == ssl.CERT_REQUIRED
     assert context.check_hostname is False
     assert captured["method"] == "GET"
-    assert captured["url"] == "https://192.168.0.134:9001/news_test/_mapping"
+    assert captured["url"] == "https://es.example.invalid:9001/news_test/_mapping"
     assert captured["timeout"] <= 12
     assert captured["authorization"] == "Basic " + base64.b64encode(b"user:secret").decode()
