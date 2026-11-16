@@ -41,7 +41,10 @@ and limited response sizes:
    candidates; response `_source` restricted to `multidim_event_json`.
 
 All three queries are GET URI-encoded JSON with a 3072-character request
-path bound, no redirects, no scroll/PIT, no ES writes/Mapping update,
+path bound. The probe refuses an HTTP 200 response with an Elasticsearch
+search timeout, failed/unfinished shards, or early termination: exact
+`hits.total` without complete search metadata is not trustworthy.
+There are no redirects, scroll/PIT, ES writes or Mapping updates,
 no bulk, no LLM, no rerun. The input can include private article text
 in **local process memory** for strict Output Profile validation,
 but it is never exported, written to disk or printed. Results contain
