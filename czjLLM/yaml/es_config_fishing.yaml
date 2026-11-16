@@ -47,5 +47,6 @@ rerun:
   required_output_checks:
     - path: multidim_event_json
       validator: multidim_event_time
+      allow_empty_events: true
       min_valid_count: 1
       relative_to_output: false

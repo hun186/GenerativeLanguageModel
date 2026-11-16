@@ -7,6 +7,7 @@ or writeback policy.
 from __future__ import annotations
 
 from czjLLM.common.multidim_time_audit import classify_stored_document
+from czjLLM.es_mode.output_profiles.multidim_event import normalize_multidim_event_payload
 from czjLLM.es_mode.adapters.value_helpers import (
     deep_collect_by_path, flatten_list, is_non_empty_deep,
     is_valid_date_string,
@@ -27,6 +28,31 @@ def evaluate_required_output_checks(source: dict, checks: list[dict]) -> tuple[b
         values = flatten_list(deep_collect_by_path(source, path))
         count = 0
         if validator == "multidim_event_time":
+            # A no-event result can be a legitimate completed extraction. It
+            # must be opted into by this TASK's YAML (never inferred from a
+            # private ES connection), and pass the full Output Profile before
+            # it is accepted. This is structural acceptance, not a claim that
+            # the source article is semantically devoid of events.
+            if (
+                check.get("allow_empty_events") is True
+                and values
+                and all(isinstance(block, dict) and block.get("Event") == []
+                        for block in values)
+            ):
+                try:
+                    normalized = normalize_multidim_event_payload(values)
+                except (TypeError, ValueError, RecursionError, OverflowError):
+                    normalized = []
+                if normalized and all(
+                    not any(block[field] for field in (
+                        "Person", "Involved_Parties", "Impact",
+                        "Event_Timeline", "evidence_snippets",
+                    ))
+                    for block in normalized
+                ):
+                    # No Events and no orphan claims. Empty Evidence is valid,
+                    # but it never becomes an attributable SRAF citation.
+                    count = 1
             # Entire multidim_event_json output is the validation unit, not
             # a single non-null date. Reuse the accepted output-profile time
             # checks via the existing read-only audit classifier. No LLM call.
@@ -46,7 +72,7 @@ def evaluate_required_output_checks(source: dict, checks: list[dict]) -> tuple[b
                 == len(block["Event"])
                 for block in values
             )
-            if events_present:
+            if events_present and not count:
                 state = classify_stored_document({"multidim_event_json": values})
                 # For a null ISO date, the explicit unknown marker is valid.
                 # A known *partial* time can also have a null ISO date if it
