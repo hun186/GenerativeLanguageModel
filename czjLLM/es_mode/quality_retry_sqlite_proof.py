@@ -60,6 +60,11 @@ def _snapshot_mac(key: str, raw: str, secret: bytes) -> str:
     ).hexdigest()
 
 
+def _key_check(secret: bytes) -> str:
+    return hmac.new(secret, b"glm-disposable-ledger-key-check-v1",
+                    hashlib.sha256).hexdigest()
+
+
 def _encode(state: RetryState) -> str:
     body = {name: (state.phase.value if name == "phase" else getattr(state, name))
             for name in _FIELDS}
@@ -111,26 +116,45 @@ class DisposableQualityLedger:
         self.path = Path(path)
         self.secret = _secret(secret)
         _private_file(self.path, create=create)
-        with self._connect() as connection:
-            # Only create the schema when the caller explicitly created a
-            # disposable file. Never silently repair or migrate a ledger.
+        connection = self._connect()
+        try:
+            # Explicit creation only: never silently repair or migrate.
             if create:
                 connection.execute(
                     "CREATE TABLE quality_states ("
                     "identity_key TEXT PRIMARY KEY, revision INTEGER NOT NULL,"
                     "snapshot TEXT NOT NULL, mac TEXT NOT NULL)"
                 )
+                connection.execute(
+                    "CREATE TABLE quality_seal (id INTEGER PRIMARY KEY,"
+                    " check_hmac TEXT NOT NULL)"
+                )
+                connection.execute(
+                    "INSERT INTO quality_seal(id,check_hmac) VALUES(1,?)",
+                    (_key_check(self.secret),),
+                )
                 connection.execute("PRAGMA user_version=1")
             else:
                 version = connection.execute("PRAGMA user_version").fetchone()[0]
                 if version != _SCHEMA_VERSION:
                     raise LedgerUnavailable("ledger schema unsupported")
-                has = connection.execute(
+                rows = connection.execute(
                     "SELECT name FROM sqlite_master WHERE type='table'"
-                    " AND name='quality_states'"
-                ).fetchone()
-                if has is None:
+                    " AND name IN ('quality_states','quality_seal')"
+                ).fetchall()
+                if {row[0] for row in rows} != {"quality_states", "quality_seal"}:
                     raise LedgerUnavailable("ledger schema unsupported")
+                seals = connection.execute(
+                    "SELECT id,check_hmac FROM quality_seal LIMIT 2"
+                ).fetchall()
+                if (len(seals) != 1 or seals[0][0] != 1
+                        or type(seals[0][1]) is not str
+                        or not hmac.compare_digest(seals[0][1], _key_check(self.secret))):
+                    raise LedgerUnavailable("ledger secret mismatch")
+        except sqlite3.Error:
+            raise LedgerUnavailable("ledger schema unavailable") from None
+        finally:
+            connection.close()
 
     def _connect(self):
         _private_file(self.path, create=False)
@@ -154,7 +178,8 @@ class DisposableQualityLedger:
         if row is None:
             return key, RetryState(identity)
         revision, raw, mac = row
-        if (type(revision) is not int or type(mac) is not str or
+        if (type(revision) is not int or type(raw) is not str
+                or type(mac) is not str or
                 not hmac.compare_digest(mac, _snapshot_mac(key, raw, self.secret))):
             raise LedgerUnavailable("ledger snapshot invalid")
         state = _decode(raw, identity)
