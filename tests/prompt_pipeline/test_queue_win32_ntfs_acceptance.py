@@ -127,11 +127,34 @@ def test_native_host_has_real_ntfs_filesystem_and_128bit_file_ids(tmp_path):
     # Hosted Windows uses an NTFS system/temporary drive. Require actual NTFS.
     drive = tmp_path.drive
     assert drive and len(drive) == 2 and drive[1] == ":"
-    fsutil = subprocess.run(
-        ["fsutil.exe", "fsinfo", "ntfsinfo", drive],
-        capture_output=True, text=True, timeout=15,
+    # fsutil fsinfo ntfsinfo requires elevation on many operator PCs,
+    # despite their drives being genuine NTFS. GetVolumeInformationW can
+    # verify the actual pytest fixture volume without admin privileges,
+    # a shell or trusting the drive label supplied by the operator.
+    get_volume_information = ctypes.WinDLL(
+        "kernel32", use_last_error=True
+    ).GetVolumeInformationW
+    get_volume_information.argtypes = (
+        wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD,
+        ctypes.POINTER(wintypes.DWORD),
+        ctypes.POINTER(wintypes.DWORD),
+        ctypes.POINTER(wintypes.DWORD),
+        wintypes.LPWSTR, wintypes.DWORD,
     )
-    assert fsutil.returncode == 0, "WINDOWS_NTFS_VOLUME_REQUIRED"
+    get_volume_information.restype = wintypes.BOOL
+    volume_serial = wintypes.DWORD()
+    max_component_length = wintypes.DWORD()
+    filesystem_flags = wintypes.DWORD()
+    filesystem_name = ctypes.create_unicode_buffer(32)
+    success = get_volume_information(
+        drive + "\\", None, 0,
+        ctypes.byref(volume_serial),
+        ctypes.byref(max_component_length),
+        ctypes.byref(filesystem_flags),
+        filesystem_name, len(filesystem_name),
+    )
+    assert success, "WINDOWS_NTFS_VOLUME_QUERY_FAILED"
+    assert filesystem_name.value.casefold() == "ntfs", "WINDOWS_NTFS_VOLUME_REQUIRED"
     file = tmp_path / "metadata.txt"
     file.write_bytes(b"PRIVATE_SAMPLE_BYTES")
     value = identity.probe_handle_identity(file)
