@@ -36,6 +36,7 @@ def human(report: dict) -> str:
         "OUTPUT_ABSENT": "目標輸出缺失或為空",
         "PROFILE_REJECTED": "現有 Output Profile 不接受",
         "PROFILE_ACCEPTED_NO_EVENTS": "Profile 接受但 Event 為空",
+        "PROFILE_ACCEPTED_MIXED_EVENT_PRESENCE": "Profile 接受：同一輸出同時有事件與空 Event 區塊（非全空）",
         "PROFILE_ACCEPTED_EVENT_DATE_EMPTY_TIMELINE":
             "Profile 接受：Event 有日期、Timeline 明示為空",
         "PROFILE_ACCEPTED_EVENT_AND_TIMELINE_DATES":

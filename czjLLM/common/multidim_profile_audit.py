@@ -18,6 +18,7 @@ CATEGORIES = (
     "OUTPUT_ABSENT",
     "PROFILE_REJECTED",
     "PROFILE_ACCEPTED_NO_EVENTS",
+    "PROFILE_ACCEPTED_MIXED_EVENT_PRESENCE",
     "PROFILE_ACCEPTED_EVENT_DATE_EMPTY_TIMELINE",
     "PROFILE_ACCEPTED_EVENT_AND_TIMELINE_DATES",
     "PROFILE_ACCEPTED_TIMELINE_DATE_ONLY",
@@ -47,10 +48,13 @@ def classify_stored_profile(source: Any) -> str:
         # never expose or group messages by their contents.
         return "PROFILE_REJECTED"
 
-    if not normalized or any(not item["Event"] for item in normalized):
-        # Current Profile accepts an empty Event list; that does not prove
-        # article coverage and must not be reported as an evidenced event.
+    # Distinguish every block having no Event from mixed blocks. The
+    # Output Profile may accept either structure, but a mixed document must
+    # not inflate the "no events" count or imply the task rerun guard passes.
+    if not normalized or all(not item["Event"] for item in normalized):
         return "PROFILE_ACCEPTED_NO_EVENTS"
+    if any(not item["Event"] for item in normalized):
+        return "PROFILE_ACCEPTED_MIXED_EVENT_PRESENCE"
 
     event_dated = any(
         event["time_iso"] is not None

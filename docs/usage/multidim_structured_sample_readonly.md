@@ -60,6 +60,10 @@ any automatic retry or write. Use off-peak read-only access.
 - `profile_counts.PROFILE_ACCEPTED_NO_EVENTS` means the current
   Output Profile accepts a structural no-Event result. It does **not**
   prove the original article is irrelevant.
+- `profile_counts.PROFILE_ACCEPTED_MIXED_EVENT_PRESENCE` means a
+  structurally valid output contains *both* article blocks with Events and
+  article blocks without Events; it is **not** an all-empty result and must
+  not be interpreted as automatically eligible for no-event rerun skipping.
 - `profile_accepted_no_events_and_task_guard_eligible` is an
   **isolated** task-owned `multidim_event_time` acceptance comparison
   with `allow_empty_events: true`, not actual effective runtime pending.
