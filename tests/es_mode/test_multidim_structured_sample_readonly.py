@@ -69,6 +69,18 @@ def test_report_separates_profile_no_event_from_time_unverified_and_raw_document
     [{"_index": "news_test", "_id": "one", "_source": {}},
      {"_index": "news_test", "_id": "one", "_source": {}}],
 ])
+def test_structured_sample_keeps_mixed_event_blocks_separate():
+    sample = _hit("PRIVATE_MIXED", [_event_block(), _no_event_block()])
+    # The sample aggregation intentionally classifies whole documents; the
+    # _source field may contain multiple independently valid article blocks.
+    sample["_source"]["multidim_event_json"] = [
+        _event_block(), _no_event_block()]
+    report = summarize_structured_sample(10, 1, [sample])
+    assert report["profile_counts"]["PROFILE_ACCEPTED_MIXED_EVENT_PRESENCE"] == 1
+    assert report["profile_counts"]["PROFILE_ACCEPTED_NO_EVENTS"] == 0
+    assert report["profile_accepted_no_events_and_task_guard_eligible"] == 0
+
+
 def test_reject_unverifiable_sample_without_partial_counters(bad):
     with pytest.raises(ValueError, match="UNVERIFIED_SAMPLE"):
         summarize_structured_sample(20, 10, bad)
