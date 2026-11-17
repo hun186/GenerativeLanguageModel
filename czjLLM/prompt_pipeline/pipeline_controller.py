@@ -3193,8 +3193,12 @@ def _run_windows_live_slot_refill(
             raise RuntimeError("Worker result does not match claimed prompt")
         success = _to_success(pf)
         todo = _to_todo(pf)
-        if os.path.isfile(success):
+        if os.path.isfile(success) and not os.path.exists(pf) and not os.path.exists(todo):
             count_done, count_requeued = 1, 0
+        elif os.path.isfile(success):
+            # Both Success and a live RUNNING/TODO generation is ambiguous.
+            # Row Merger cannot complete while RUNNING still exists.
+            raise RuntimeError("conflicting Queue files after Worker Success")
         elif os.path.isfile(todo) and not os.path.exists(pf):
             # A Worker may explicitly restore a retry or split child. Never
             # count that as finished, and never overwrite its new generation.
