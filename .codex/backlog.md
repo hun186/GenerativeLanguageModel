@@ -146,6 +146,6 @@
 
 
 ## 2026-11-17 — project-local auto JSON repair cache verification
-- [x] Added portable project-relative protected cache bootstrap, 72h snapshot TTL/lazy removal, total active-byte quota, GUI status, gitignore and disposable synthetic tests; CI and privacy review not yet confirmed.
+- [x] Added portable project-relative protected cache bootstrap, 72h snapshot TTL/launch-and-write-and-GUI removal, total active-byte quota, GUI status, gitignore and disposable synthetic tests; CI and privacy review not yet confirmed.
 - [ ] Verify exact-head Hosted Linux E2E, Windows 3.10/3.11, secret scan, Codex findings and no unresolved threads before any merge. Verify native Windows ACL creation and Linux scheduler user permissions; do not claim real operator acceptance from Hosted.
 - [ ] On real Windows and Linux deployments, confirm checkout is local/non-synced, running identity can access cache, and archive/backup/7z/Docker excludes .runtime-private; never auto-sync plaintext repair snapshots.
