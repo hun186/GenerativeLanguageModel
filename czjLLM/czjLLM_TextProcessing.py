@@ -117,6 +117,13 @@ if __name__ == '__main__':
             return first
         return None
 
+    # Startup housekeeping also runs for headless Linux schedulers with no
+    # GUI and no new JSON repair during this batch. Raw data is never logged.
+    from czjLLM.utilities.json_repair_private_capture import (
+        startup_private_capture_maintenance,
+    )
+    print("[json-repair-cache] " + startup_private_capture_maintenance())
+
     # 模式選擇
     mode = get_param("mode")
     if not mode:
