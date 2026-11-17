@@ -154,3 +154,8 @@ Queue 初始 Claim／安全檢查，改由 `_run_windows_live_slot_refill`
 更新 `rows[pk].queue_running`，Row Merger 保持 Queue ACK 歸零及 sink
 confirm_writeback 閘門。Linux process pool、多階段仍為原來路徑；
 沒有指定 Ollama 端點或 GPU 分派。此為源碼 PR，非已部署認定。
+
+- Live refill 的 JSON split-handoff 是獨立分支：`slice_identity.verified_new_split_todo_children`
+  只讀核對來源 SHA 與兩個子 TODO SHA；Consumer 在一筆 Meter 更新中
+  釋放父 RUNNING 並登錄兩個子 pending、增列 total 一，既不記 Success，
+  也不提前通過 Row Merger，避免正常長輸出拆分被誤判成永遠失聯。
