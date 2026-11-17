@@ -274,6 +274,17 @@ def prune_expired_private_captures(root: Path | str) -> int:
         return _prune_locked(folder, time.time())
 
 
+def startup_private_capture_maintenance() -> str:
+    """Safe once-per-launch housekeeping for Windows GUI and Linux schedulers."""
+    if not capture_enabled():
+        return "DISABLED"
+    try:
+        prune_expired_private_captures(configured_private_root())
+    except (OSError, ValueError, TypeError, UnicodeError):
+        return "UNAVAILABLE"
+    return "READY"
+
+
 @contextmanager
 def _lock_run(folder: Path):
     lockpath = folder / ".capture.lock"
