@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import base64
 import getpass
+import ipaddress
 import json
 import ssl
 import sys
@@ -47,8 +48,19 @@ def _endpoint(url: str) -> str:
         raise ValueError("HTTPS_ENDPOINT_REQUIRED") from None
 
 
+def _require_ip_literal_for_san_exception(origin: str) -> None:
+    """Never disable DNS hostname verification for a named HTTPS host."""
+    try:
+        host = urlsplit(_endpoint(origin)).hostname
+        ipaddress.ip_address(host)
+    except (TypeError, ValueError):
+        raise ValueError("TLS_SAN_EXCEPTION_IP_LITERAL_REQUIRED") from None
+
+
 def _request_mapping(url: str, cafile: str, username: str, password: str,
                      *, skip_hostname: bool = False) -> dict:
+    if skip_hostname:
+        _require_ip_literal_for_san_exception(url)
     ca = Path(cafile)
     if not ca.is_file():
         raise ValueError("CA_CERT_FILE_NOT_FOUND")
@@ -103,6 +115,8 @@ def main(argv: list[str] | None = None) -> int:
     base = {"index": INDEX, "read_only": True, "no_writeback_or_replay": True}
     try:
         url = _endpoint(args.url)
+        if args.allow_ip_san_mismatch:
+            _require_ip_literal_for_san_exception(url)
         username = input("ES user (not shown in report): ").strip()
         password = getpass.getpass("ES password (hidden): ")
         if not username or not password:
@@ -125,6 +139,7 @@ def main(argv: list[str] | None = None) -> int:
             "HTTP_MAPPING_REQUEST_FAILED", "TLS_CERTIFICATE_VERIFICATION_FAILED",
             "CONNECTION_OR_TLS_UNAVAILABLE", "MAPPING_RESPONSE_TOO_LARGE",
             "MAPPING_JSON_INVALID", "CREDENTIALS_REQUIRED",
+            "TLS_SAN_EXCEPTION_IP_LITERAL_REQUIRED",
         }
         code = str(exc)
         report = {**base, "status": "UNAVAILABLE",
