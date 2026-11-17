@@ -14,6 +14,12 @@ small fixed list of consumer-relevant fields with codes:
   token matches when a SRAF query searches these leaves.
 - `TEXT_INDEXED`: text-indexed in the **template**; this alone does not
   establish a useful Chinese analyzer or partial-word recall.
+- Explicit `index: false` on a primary `text`/`keyword` leaf
+  causes a fixed `PRIMARY_INDEX_DISABLED` review result, rather than
+  incorrectly reporting an available inverted index. A text subfield
+  with its own `index: false` does not qualify as indexed search.
+  Keyword doc-values queries may still be possible but can be slower;
+  this probe does not prove all Elasticsearch query capabilities.
 - `KEYWORD_PLUS_TEXT`: keyword leaf with at least one text subfield in
   the **template**. A consumer must explicitly query the appropriate
   subfield; existing ES documents may require reindexing to populate it.
