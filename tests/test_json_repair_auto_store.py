@@ -167,3 +167,27 @@ def test_folder_budget_rejects_extra_run_then_recovers_after_expiry(monkeypatch,
     second = uuid4().hex
     assert cap.write_private_repair(root, "run-b", second, "before-b", "after-b")
     assert cap.read_private_repair(root, "run-b", second)["repaired"] == "after-b"
+
+
+def test_launch_housekeeping_honors_optout_and_fail_closed_volume(monkeypatch, tmp_path):
+    project = _local_project(monkeypatch, tmp_path / "checkout")
+    project.mkdir()
+    monkeypatch.delenv(cap.ROOT_ENV, raising=False)
+    monkeypatch.setenv(cap.ENABLE_ENV, "0")
+    assert cap.startup_private_capture_maintenance() == "DISABLED"
+    assert not (project / ".runtime-private").exists()
+    monkeypatch.delenv(cap.ENABLE_ENV, raising=False)
+    if os.name == "nt":
+        monkeypatch.setattr(auto, "_win_volume_is_ntfs", lambda _p: False)
+    else:
+        monkeypatch.setattr(cap, "_posix_local_filesystem", lambda *_a, **_kw: False)
+    assert cap.startup_private_capture_maintenance() == "UNAVAILABLE"
+    assert not (project / ".runtime-private").exists()
+
+
+def test_main_batch_entry_invokes_cache_maintenance_before_mode_dispatch():
+    entry = (Path(__file__).resolve().parents[1] /
+             "czjLLM/czjLLM_TextProcessing.py").read_text(encoding="utf-8")
+    assert 'startup_private_capture_maintenance()' in entry
+    assert entry.index('startup_private_capture_maintenance()') < entry.index(
+        '    # 模式選擇')
