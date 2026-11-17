@@ -46,9 +46,14 @@ def build_debug_snapshot(
         succ = os.path.join(item_dir, "Success")
         todo_n = _count_dir(todo)
         succ_n = _count_dir(succ)
-        comb = f"{item_dir}_combined.txt"  # 你的 combine_api_finished_item 輸出名規則可能不同
-        comb_exists = os.path.exists(comb)
-        lines.append(f"- {os.path.basename(item_dir)}: TODO={todo_n}, Success={succ_n}, combined={'Y' if comb_exists else 'N'}")
+        # Never guess an output filename: an absent guessed basename is
+        # NOT evidence that the actual Row Merger has failed.
+        comb = meta.get("CombBackFN") if isinstance(meta, dict) else None
+        if isinstance(comb, (str, os.PathLike)) and os.fspath(comb):
+            combined_state = "Y" if os.path.isfile(comb) else "N"
+        else:
+            combined_state = "UNKNOWN"
+        lines.append(f"- {os.path.basename(item_dir)}: TODO={todo_n}, Success={succ_n}, combined={combined_state}")
         cnt += 1
     # 4) meter 鎖檔
     lck = meter_fn + ".lck"

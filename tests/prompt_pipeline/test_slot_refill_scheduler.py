@@ -231,3 +231,50 @@ def test_producer_final_publication_between_empty_peek_and_done():
     assert result.claimed == result.acknowledged == 1
     assert acknowledged == [(17, 34)]
     assert todo == []
+
+
+def test_drain_on_deadline_acks_existing_workers_before_aborting():
+    """The deadline closes dispatch, not durable ACKs for already running work."""
+    starts = [threading.Event(), threading.Event()]
+    release = threading.Event()
+    observed, acknowledged, outcome = [], [], []
+
+    def claim():
+        item = len(observed)
+        observed.append(item)
+        return ClaimedWork(uuid4().hex, item)
+
+    def worker(item):
+        assert item < 2, "deadline must not admit a third Worker"
+        starts[item].set()
+        assert release.wait(5)
+        return item
+
+    def coordinate():
+        try:
+            outcome.append(run_slot_refill(
+                claim_one=claim, run_worker=worker,
+                acknowledge=lambda record, _result: acknowledged.append(record.item),
+                max_inflight=2, deadline_sec=0.15,
+                drain_on_deadline=True, empty_poll_seconds=0.01,
+            ))
+        except BaseException as exc:
+            outcome.append(exc)
+
+    runner = threading.Thread(target=coordinate, daemon=True)
+    runner.start()
+    try:
+        assert all(event.wait(3) for event in starts)
+        # Prove the deadline elapsed before the active Workers can finish.
+        import time
+        time.sleep(0.2)
+    finally:
+        release.set()
+        runner.join(4)
+    assert not runner.is_alive()
+    assert observed == [0, 1]
+    assert sorted(acknowledged) == [0, 1]
+    assert len(outcome) == 1
+    assert isinstance(outcome[0], RefillAborted)
+    assert outcome[0].reason == "deadline_exceeded"
+    assert outcome[0].stats.claimed == outcome[0].stats.acknowledged == 2

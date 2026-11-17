@@ -143,3 +143,16 @@
 - [x] Integrate branch tree with latest accepted main, retaining all MultiDim/ES/Quality/Queue improvements and two private-capture test gates in Hosted Linux / Windows 3.10/3.11; archive exact four prior branch .codex handoff files before reconciliation. Never create a separate long-lived production GUI fork.
 - [ ] On merged HEAD, run exact SHA Hosted Linux/Windows/secret checks, Codex review, and separately verify any self-hosted Windows queue without treating queued as pass.
 - [ ] Independent security/privacy audit and operator Windows NTFS ACL, local nonsynced storage, backup/consent/retention policy and manual-clear acceptance required before merging or enabling this sensitive original/repaired plaintext feature. Default OFF; no production Queue, ES, SQL, LLM, or disk data changed by this integration branch.
+
+## 2026-11-17 — Windows Consumer live slot-refill rollout
+
+- [ ] 新 PR exact-head Hosted Linux CI、Windows Py3.10/3.11、Secret Scan、
+      Codex Review 與所有未解 review thread 驗收後再決定合併。
+- [ ] 在可暫停的新 Windows 工作站批次跑 2-GPU 不等速請求，確認
+      真實 Claim→Success→Meter 單筆 ACK→Row Merger→sink confirm，
+      比對 20k-row throughput、尾端補位及離線原檔恢復；
+      **現行執行中 Job 不會熱更新**。
+- [ ] 真實 H100 endpoint↔GPU mapping、模型常駐 VRAM 和長請求 timeout
+      的獨立觀測；不能以 nvidia-smi 快照宣稱第二 GPU 閒置根因已證明。
+- [ ] 若跨平台也需要流式調度，先另案 Linux multiprocessing
+      ownership／drain／deadline 一致性驗證；本 PR 不啟用。

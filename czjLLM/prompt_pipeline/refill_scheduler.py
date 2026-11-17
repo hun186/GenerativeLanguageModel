@@ -1,8 +1,9 @@
-"""Offline-proven slot refill primitive; NOT wired to live Consumer.
+"""Slot-refill primitive used by the Windows legacy Consumer.
 
 The caller retains authority over filesystem Queue Claim, Worker execution,
-Success no-clobber, resource limits and meter acknowledgements. No job is
-replayed, unclaimed, or implicitly marked as persisted by this module.
+Success no-clobber, resource limits and Meter queue-transition ACKs. This
+scheduler never implies that a SQL/ES sink writeback was confirmed, nor does
+it replay or unclaim failed work. Linux and stage-managed paths stay separate.
 """
 from __future__ import annotations
 
@@ -38,6 +39,7 @@ def run_slot_refill(
     acknowledge: Callable[[ClaimedWork, Any], None],
     max_inflight: int,
     deadline_sec: float | None = None,
+    drain_on_deadline: bool = False,
     stop_requested: Callable[[], bool] | None = None,
     producer_done: Callable[[], bool] | None = None,
     empty_poll_seconds: float = 0.05,
@@ -55,6 +57,8 @@ def run_slot_refill(
         type(deadline_sec) not in (int, float) or deadline_sec <= 0
     ):
         raise ValueError("invalid refill deadline")
+    if type(drain_on_deadline) is not bool:
+        raise ValueError("invalid deadline drain flag")
     if not 0.01 <= empty_poll_seconds <= 5:
         raise ValueError("invalid empty poll interval")
     until = time.monotonic() + deadline_sec if deadline_sec else None
@@ -69,7 +73,8 @@ def run_slot_refill(
     def check_active():
         if stop_requested is not None and stop_requested():
             raise RefillAborted("stop_requested", snapshot())
-        if until is not None and time.monotonic() >= until:
+        if (not drain_on_deadline and until is not None
+                and time.monotonic() >= until):
             raise RefillAborted("deadline_exceeded", snapshot())
 
     # ThreadPoolExecutor shutdown(wait=True) makes running tasks drain before
@@ -78,6 +83,11 @@ def run_slot_refill(
         try:
             while True:
                 check_active()
+                # In drain mode a deadline closes dispatch but existing Workers
+                # still finish and receive durable Queue ACKs before aborting.
+                if (drain_on_deadline and until is not None
+                        and time.monotonic() >= until and not active):
+                    raise RefillAborted("deadline_exceeded", snapshot())
                 # A previously running Worker can fail WHILE another Worker's
                 # acknowledgement is being processed. Never refill before
                 # examining all already completed active Futures.
@@ -91,6 +101,10 @@ def run_slot_refill(
                 no_claim = False
                 while len(active) < max_inflight:
                     check_active()
+                    if (drain_on_deadline and until is not None
+                            and time.monotonic() >= until):
+                        no_claim = True
+                        break
                     next_work = claim_one()
                     if next_work is None:
                         no_claim = True
@@ -107,6 +121,9 @@ def run_slot_refill(
                     active[future] = next_work
                     peak = max(peak, len(active))
                 if not active:
+                    if (drain_on_deadline and until is not None
+                            and time.monotonic() >= until):
+                        raise RefillAborted("deadline_exceeded", snapshot())
                     if producer_done is None:
                         return snapshot()
                     if producer_done():
@@ -114,6 +131,9 @@ def run_slot_refill(
                         # have published its last TODO just before marking
                         # completion; do one authoritative final claim.
                         check_active()
+                        if (drain_on_deadline and until is not None
+                                and time.monotonic() >= until):
+                            raise RefillAborted("deadline_exceeded", snapshot())
                         final_claim = claim_one()
                         if final_claim is None:
                             return snapshot()
@@ -133,7 +153,7 @@ def run_slot_refill(
                     time.sleep(empty_poll_seconds)
                     continue
 
-                timeout = (empty_poll_seconds if until is None
+                timeout = (empty_poll_seconds if until is None or drain_on_deadline
                            else max(0.0, min(empty_poll_seconds, until - time.monotonic())))
                 done, _ = concurrent.futures.wait(
                     active, timeout=timeout,

@@ -105,3 +105,17 @@ The following sections describe the accepted main implementation through PR #239
 - Active summary reconciled with GitHub `main` `46b7c7290417421a6dc09e114f82c1066ce0179d` after user-authorized PR #239 merge and Linux postmerge `offline-e2e` success; Windows runner jobs remain queued/operator-deferred.
 
 - 2026-11-11 archive-first compaction: exact pre-compaction decisions retained at `.codex/archive/decisions.md-20261111-204500.md` (original Git blob `7ab71dafd5019ae7ec8959c2413cae8ef36f7ebe`). Earlier dated decisions remain available there; active current safeguards and prior archive references retained. Hosted CI/review for #312 still pending.
+
+## 2026-11-17 — Consumer live-refill safety decision
+
+在 Windows legacy single-stage 分支沿用 #301 已有回填排程器，
+不以 Thread Future 回傳本身推論成功：先確認實際 Success 或安全退回的
+TODO，單筆 Queue ACK 先持久更新 Meter，再允許補位；Row Merger 照舊
+確認 per-row queue counters 與 SQL/ES sink writeback。對不完整 Claim
+receipt、失聯結果或 Meter 失敗 fail closed，保留 RUNNING/Success 證據。
+限制每個 Consumer refill 輪的 Claim 數量，沿用共享 execution-budget
+租約，不在這次變更 Linux 多進程和多階段流。實機 H100 尚未驗證。
+
+- 若 Worker 沒有 Success，不可一律算作錯誤，也不可憑子檔名假設成功：
+  允許唯一已記錄且來源/子 Prompt SHA 均驗證的 1→2 JSON split handoff，
+  原父 RUNNING 減一、兩個子 TODO pending 加二；其他消失檔案 fail-closed。
