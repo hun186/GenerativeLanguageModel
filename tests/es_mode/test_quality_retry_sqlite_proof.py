@@ -1,0 +1,152 @@
+"""Disposable local SQLite CAS proof: synthetic only; no ES, LLM or runtime."""
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+import sqlite3
+import threading
+
+import pytest
+
+from czjLLM.es_mode.quality_retry_contract import (
+    RetryIdentity, RetryPolicy, Phase, QualityResult, StaleRevision,
+)
+from czjLLM.es_mode.quality_retry_sqlite_proof import (
+    DisposableQualityLedger, LedgerUnavailable,
+)
+
+KEY = b"synthetic-disposable-unit-test-key-42b" * 2
+A = "12345678-1234-4234-8234-1234567890a1"
+B = "12345678-1234-4234-8234-1234567890a2"
+RESET = "12345678-1234-4234-8234-1234567890a3"
+ON = RetryPolicy(enabled=True)
+
+
+def ident():
+    return RetryIdentity(
+        "PRIVATE_SOURCE_DOCUMENT_123", "multidim_event_json",
+        "a" * 64, "multidim_event_profile_v1",
+    )
+
+
+def new_store(tmp_path, *, create=True):
+    return DisposableQualityLedger(tmp_path / "ledger.db", KEY, create=create)
+
+
+def reject_initial(store):
+    return store.transition(
+        ident(), expected_revision=0, operation="observe_initial",
+        result=QualityResult.REJECTED, failure_code="SCHEMA_TIME_PRECISION",
+    )
+
+
+def test_store_needs_explicit_create_and_private_dir(tmp_path):
+    with pytest.raises(LedgerUnavailable):
+        new_store(tmp_path, create=False)
+    created = new_store(tmp_path)
+    assert created.read(ident()).phase == Phase.UNASSESSED
+    with pytest.raises(LedgerUnavailable):
+        new_store(tmp_path, create=True)
+    with pytest.raises(LedgerUnavailable):
+        DisposableQualityLedger(tmp_path / "another.db", b"short", create=True)
+
+
+def test_two_connections_claim_once_then_resume_inflight_after_restart(tmp_path):
+    store = new_store(tmp_path)
+    state = reject_initial(store)
+    assert state.revision == 1
+    barrier = threading.Barrier(2)
+
+    def worker(token):
+        fixture = new_store(tmp_path, create=False)
+        seen = fixture.read(ident())
+        barrier.wait()
+        try:
+            return fixture.transition(
+                ident(), expected_revision=seen.revision, operation="claim",
+                policy=ON, verified_attempt_id=token,
+            )
+        except StaleRevision:
+            return None
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(worker, (A, B)))
+    assert sum(x is not None for x in results) == 1
+    opened = new_store(tmp_path, create=False).read(ident())
+    assert opened.phase == Phase.IN_FLIGHT
+    assert opened.revision == 2
+    assert opened.failed_repairs == 0
+    with pytest.raises((StaleRevision, ValueError)):
+        store.transition(
+            ident(), expected_revision=1, operation="claim",
+            policy=ON, verified_attempt_id=A,
+        )
+
+
+def test_repair_exhaustion_survives_restart_without_another_claim(tmp_path):
+    store = new_store(tmp_path)
+    state = reject_initial(store)
+    for token in (A, B):
+        state = store.transition(
+            ident(), expected_revision=state.revision, operation="claim",
+            policy=ON, verified_attempt_id=token,
+        )
+        state = new_store(tmp_path, create=False).transition(
+            ident(), expected_revision=state.revision, operation="finalize",
+            policy=ON, verified_attempt_id=token,
+            result=QualityResult.REJECTED,
+            failure_code="SCHEMA_EVENT_REFERENCE",
+        )
+    assert state.failed_repairs == 2 and state.phase == Phase.NEEDS_REVIEW
+    persisted = new_store(tmp_path, create=False).read(ident())
+    assert persisted == state
+    with pytest.raises(ValueError):
+        store.transition(
+            ident(), expected_revision=persisted.revision, operation="claim",
+            policy=ON, verified_attempt_id=A,
+        )
+    reset = store.transition(
+        ident(), expected_revision=persisted.revision,
+        operation="manual_reset", operator_authorized=True,
+        unique_operator_action_id=RESET,
+    )
+    assert reset.phase == Phase.READY and reset.failed_repairs == 0
+    assert new_store(tmp_path, create=False).read(ident()) == reset
+
+
+def test_unknown_date_completion_never_enters_repair_queue(tmp_path):
+    store = new_store(tmp_path)
+    state = store.transition(
+        ident(), expected_revision=0, operation="observe_initial",
+        result=QualityResult.ACCEPTED_UNKNOWN_DATE,
+    )
+    assert state.phase == Phase.COMPLETE
+    with pytest.raises(ValueError):
+        store.transition(
+            ident(), expected_revision=state.revision, operation="claim",
+            policy=ON, verified_attempt_id=A,
+        )
+
+
+def test_tamper_or_wrong_hmac_key_fails_closed(tmp_path):
+    store = new_store(tmp_path)
+    reject_initial(store)
+    with sqlite3.connect(tmp_path / "ledger.db") as con:
+        con.execute(
+            "UPDATE quality_states SET snapshot=?",
+            ('{"phase":"COMPLETE","revision":1}',),
+        )
+    with pytest.raises(LedgerUnavailable, match="ledger snapshot invalid"):
+        store.read(ident())
+    with pytest.raises(LedgerUnavailable, match="ledger secret mismatch"):
+        DisposableQualityLedger(
+            tmp_path / "ledger.db", b"different-key-material-32bytes-more" * 2,
+            create=False,
+        )
+
+
+def test_on_disk_does_not_include_plaintext_identifiers_or_secret(tmp_path):
+    store = new_store(tmp_path)
+    reject_initial(store)
+    raw = (tmp_path / "ledger.db").read_bytes()
+    for marker in (b"PRIVATE_SOURCE_DOCUMENT", b"multidim_event_json",
+                   b"multidim_event_profile_v1", b"aaaaaa", KEY):
+        assert marker not in raw
