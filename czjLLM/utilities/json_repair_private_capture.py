@@ -14,24 +14,33 @@ import os
 from pathlib import Path
 import re
 import stat
+import time
 from uuid import UUID
 
 MAX_TEXT_CHARS = 80_000
 MAX_FILE_BYTES = 512 * 1024
 MAX_CASES_PER_RUN = 48
 MAX_RUN_BYTES = 16 * 1024 * 1024
+MAX_TOTAL_BYTES = 128 * 1024 * 1024
+MAX_RUN_FOLDERS = 2048
+SNAPSHOT_TTL_SECONDS = 72 * 60 * 60
+_RUN_NAME = re.compile(r"^run-[0-9a-f]{24}$")
 ENABLE_ENV = "CZJLLM_JSON_REPAIR_CAPTURE"
 ROOT_ENV = "CZJLLM_JSON_REPAIR_PRIVATE_DIR"
 _CASE_NAME = re.compile(r"^r-([0-9a-f]{32})\.json$")
 
 
 def capture_enabled() -> bool:
-    return os.environ.get(ENABLE_ENV, "").strip().lower() in {"1", "true", "yes", "on"}
+    raw = os.environ.get(ENABLE_ENV)
+    return raw is None or raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def configured_private_root() -> Path | None:
     raw = os.environ.get(ROOT_ENV, "").strip()
-    return Path(raw) if raw else None
+    if raw:
+        return Path(raw)
+    from czjLLM.utilities.json_repair_auto_store import auto_private_root
+    return auto_private_root()
 
 
 def _validate_run_id(run_id: str) -> str:
@@ -170,6 +179,7 @@ def _run_dir(root: Path, run_digest: str) -> Path:
         raise ValueError("POSIX_LOCAL_FILESYSTEM_UNVERIFIED")
     if os.name != "nt" and (info.st_mode & 0o077):
         raise ValueError("PRIVATE_RUN_PERMISSIONS")
+    _check_auto_run_acl(root, sub)
     return sub
 
 
@@ -179,6 +189,7 @@ def _existing_run_dir(root: Path, run_digest: str) -> Path:
     # Reads and manual deletion must obey the same nested-mount boundary.
     if os.name != "nt" and not _posix_local_filesystem(sub):
         raise ValueError("POSIX_LOCAL_FILESYSTEM_UNVERIFIED")
+    _check_auto_run_acl(root, sub)
     return sub
 
 
@@ -301,6 +312,8 @@ def read_private_repair(root: Path | str, run_id: str, event_id: str) -> dict:
     before = _is_regular_private(path, directory=False)
     if before.st_size > MAX_FILE_BYTES or before.st_size < 2:
         raise ValueError("PRIVATE_READ_BUDGET")
+    if time.time() - before.st_mtime >= SNAPSHOT_TTL_SECONDS:
+        raise ValueError("PRIVATE_SNAPSHOT_EXPIRED")
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0)
     fd = os.open(path, flags)
     try:
