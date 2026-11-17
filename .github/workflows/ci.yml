@@ -173,7 +173,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install isolated native test requirements
         shell: pwsh
-        run: python -m pip install --upgrade pip pytest PyYAML==6.0
+        run: |
+          python -m pip install --upgrade pip pytest PyYAML==6.0
+          python -m pip install -r requirements-e2e.txt
       - name: Require actual NTFS filesystem on test drive
         shell: pwsh
         run: |
@@ -199,6 +201,11 @@ jobs:
       - name: Verify offline slot refill on native Windows
         shell: pwsh
         run: python -m pytest -q tests/prompt_pipeline/test_slot_refill_scheduler.py -k "not real_queue" --maxfail=1 --disable-warnings
+      - name: Verify real legacy Consumer live ACK, split child refill and snapshot on Windows
+        shell: pwsh
+        env:
+          PYTHONNOUSERSITE: "1"
+        run: python -m pytest -q tests/prompt_pipeline/test_consumer_live_slot_refill.py tests/prompt_pipeline/test_debug_snapshot_combined.py --maxfail=1 --disable-warnings
       - name: Verify read-only receipt inventory on native Windows
         shell: pwsh
         env:
