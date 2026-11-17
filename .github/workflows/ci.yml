@@ -61,6 +61,8 @@ jobs:
         run: python -m pytest -q tests/prompt_pipeline/test_round_runner_smoke.py --maxfail=1 --disable-warnings
       - name: Verify safe slot-refill scheduler with real filesystem Queue Claim
         run: python -m pytest -q tests/prompt_pipeline/test_slot_refill_scheduler.py --maxfail=1 --disable-warnings
+      - name: Verify real Windows Consumer per-worker ACK and refill (offline)
+        run: python -m pytest -q tests/prompt_pipeline/test_consumer_live_slot_refill.py --maxfail=1 --disable-warnings
       - name: Verify endpoint owned leases and legacy fallback behavior
         run: python -m pytest -q tests/infrastructure/test_ollama_lb_lock_timeout.py tests/infrastructure/test_ollama_lb_heartbeat.py tests/prompt_pipeline/test_worker_phase_quality.py --maxfail=1 --disable-warnings
       - name: Verify read-only LLM dispatch idle diagnostic snapshots
