@@ -144,3 +144,13 @@
 
 ## 2026-11-17 — Draft #310 native-GUI private JSON inspection (integration pending)
 - #310 implements disabled-by-default, opt-in original/repaired JSON snapshot capture and an on-demand native Tk side-by-side viewer within the existing GLM GUI. Raw records are strictly run/event keyed and never written into ordinary Quality JSONL. Local-fs/type, lock and no-follow defenses are synthetic-tested; these are NOT a verified Windows NTFS ACL/retention boundary. Source branch was synchronized with accepted main #318–#334 without permitting production enablement. Physical operator permissions, storage/sync policy and independent security acceptance remain pre-merge gates.
+
+## 2026-11-17 — Windows Legacy Consumer 即時空槽補位（本 PR）
+
+`llm_stream_consumer` 在 Windows legacy single-stage 分支保留原有
+Queue 初始 Claim／安全檢查，改由 `_run_windows_live_slot_refill`
+把實際 Claim、LLM Worker、Success 驗證、Queue Meter 單筆 ACK 和補位
+交給已離線驗證的 `refill_scheduler.run_slot_refill` 管理。按每筆完成
+更新 `rows[pk].queue_running`，Row Merger 保持 Queue ACK 歸零及 sink
+confirm_writeback 閘門。Linux process pool、多階段仍為原來路徑；
+沒有指定 Ollama 端點或 GPU 分派。此為源碼 PR，非已部署認定。
