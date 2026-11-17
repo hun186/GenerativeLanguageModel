@@ -123,3 +123,7 @@ Sink ACK 與正式 Producer 壓力測試。Python Thread 不能安全強制終�
 仍在跑的 HTTP Worker；失聯 Worker 將保留未結算證據並停止補位，
 不應將 GUI 的 Success 計數視為 sink 寫回。原始日誌 `combined=N`
 是 debug snapshot 猜測路徑，不能作為合併完成與否的權威訊號。
+
+- 本 PR 已修正背壓快照把猜測檔名不存在誤報為 `combined=N`；
+  無 Registry `CombBackFN` 時顯示 `UNKNOWN`。該值僅是檔案存在性，
+  不能推論 Row Merger 或 ES/SQL sink 是否已持久完成。等待 CI 與正式驗收。
