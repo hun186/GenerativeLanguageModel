@@ -105,3 +105,7 @@ The following sections describe the accepted main implementation through PR #239
 - Active summary reconciled with GitHub `main` `46b7c7290417421a6dc09e114f82c1066ce0179d` after user-authorized PR #239 merge and Linux postmerge `offline-e2e` success; Windows runner jobs remain queued/operator-deferred.
 
 - 2026-11-11 archive-first compaction: exact pre-compaction decisions retained at `.codex/archive/decisions.md-20261111-204500.md` (original Git blob `7ab71dafd5019ae7ec8959c2413cae8ef36f7ebe`). Earlier dated decisions remain available there; active current safeguards and prior archive references retained. Hosted CI/review for #312 still pending.
+
+
+## 2026-11-17 — prefer per-checkout secure transient capture over normal logs
+- Reuse #310 exact Run/event raw before/after viewer without polluting routine diagnostic JSONL or adding a second GUI. Default to project-local, separate .runtime-private/json_repair because Windows and Linux both run the same code. Auto-create only with strict local-fs and native owner ACL checks; reject unsafe checkout and preserve explicit opt-out/older manual override. Use 72h lazy expiry rather than a daemon that could accidentally delete active Queue/ES/other files. Preserve original writeback behavior on capture failure.
