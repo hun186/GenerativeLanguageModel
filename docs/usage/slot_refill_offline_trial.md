@@ -56,3 +56,10 @@ Legacy Worker 可能因長度上限把一個 RUNNING JSON 父切片替換成
 「原 RUNNING -1、pending +2、row.total +1」記帳。
 此動作不是成功、也不是 Sink ACK；不完整或矛盾狀態保持 INCOMPLETE。
 `test_consumer_live_slot_refill.py` 覆蓋此合法拆分路徑。
+
+### 背壓快照的合併狀態
+
+`debug_snapshot.build_debug_snapshot` 不再猜測 `<item>_combined.txt`。
+只有 Registry 明確提供 `CombBackFN` 時，才檢查此預期檔案
+並顯示 `combined=Y/N`；缺少權威路徑顯示 `combined=UNKNOWN`。
+這仍是路徑存在性診斷，不是 Sink confirmed-writeback。
