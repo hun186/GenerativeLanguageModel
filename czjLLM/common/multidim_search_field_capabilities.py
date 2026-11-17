@@ -45,6 +45,14 @@ def inspect_template_search_fields(contract: dict, mapping: dict) -> dict:
         if not isinstance(node, dict) or node.get("type") != expect:
             return {"status": "UNAVAILABLE", "reason_code": "CONTRACT_FIELD_DRIFT"}
         actual = node.get("type")
+        primary = node.get("index", True)
+        if type(primary) is not bool:
+            return {"status": "UNAVAILABLE", "reason_code": "INDEX_FLAG_UNVERIFIED"}
+        if primary is False:
+            # An explicit index:false must not be reported as having a
+            # normal inverted search index. Doc values may differ.
+            return {"status": "UNAVAILABLE", "reason_code": "PRIMARY_INDEX_DISABLED",
+                    "field": field}
         if actual == "text":
             capability = "TEXT_INDEXED"
         elif actual == "keyword":
@@ -53,8 +61,15 @@ def inspect_template_search_fields(contract: dict, mapping: dict) -> dict:
                 multi = {}
             if not isinstance(multi, dict):
                 return {"status": "UNAVAILABLE", "reason_code": "FIELDS_UNVERIFIED"}
-            text_fields = [name for name, desc in multi.items()
-                           if isinstance(desc, dict) and desc.get("type") == "text"]
+            text_fields = []
+            for name, desc in multi.items():
+                if not isinstance(desc, dict) or desc.get("type") != "text":
+                    continue
+                indexed = desc.get("index", True)
+                if type(indexed) is not bool:
+                    return {"status": "UNAVAILABLE", "reason_code": "INDEX_FLAG_UNVERIFIED"}
+                if indexed:
+                    text_fields.append(name)
             capability = "KEYWORD_PLUS_TEXT" if text_fields else "KEYWORD_ONLY"
         else:
             return {"status": "UNAVAILABLE", "reason_code": "UNSUPPORTED_SEARCH_FIELD_TYPE"}
