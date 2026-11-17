@@ -78,3 +78,7 @@
   產生兩個 TODO；新增 source-hash-bound split 驗證與 Queue Meter
   原子計數轉換，並補 `test_verified_split_parent_replaces_one_running_with_two_todo`。
   尚待 exact-head CI/Windows/H100/ES-Sink 實機驗證。
+
+- 追加修正 `debug_snapshot` 的錯誤合併路徑猜測：僅對 Registry
+  明確提供的 `CombBackFN` 顯示 Y/N，其他 UNKNOWN；加入單元驗證。
+  源碼 PR 仍是 Draft，CI/實機驗收未完成。
