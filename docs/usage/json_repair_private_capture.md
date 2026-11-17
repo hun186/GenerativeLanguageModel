@@ -1,8 +1,11 @@
-# Opt-in local-only private JSON repair before/after snapshots — Issue #309
+# Project-local JSON repair before/after snapshots (auto cache and manual override)
 
-**Security-sensitive / draft feature.** This is NOT enabled by default.
-Do not deploy or turn it on for private workstations merely because Hosted CI passes.
-Operator review of the local Windows NTFS permissions and storage location is required.
+**Sensitive plaintext feature.** New captures are enabled by default ONLY
+when GLM can create/verify a protected local project cache. Set
+`CZJLLM_JSON_REPAIR_CAPTURE=0` (or `off`) to stop new captures;
+**unset does NOT disable capture**. If local NTFS/POSIX permissions are
+unverified, recording fails closed without changing JSON repair.
+Hosted CI is not operator host/backup policy verification.
 
 ## Why it is separate from the Quality events
 
@@ -12,19 +15,20 @@ numeric repair metrics. It must never contain raw JSON. Prior historical
 repairs cannot be reconstructed from those metrics.
 
 During a successful, already-parseable LLM JSON repair, the Worker has
-exact `before` and `after` strings available **in memory**. Only when
-explicitly opted in, it writes the two strings into a private file named
+exact `before` and `after` strings available **in memory**. Only after the
+automatic cache checks pass (or the operator configures a private override),
+it writes the two strings into a protected file named
 by a newly-generated UUID4 `event_id`, exactly matching the success
 quality event. The GUI must look up both the **exact run ID and event ID**,
 never the 16-character basename-derived slice hint (which may repeat
 for unrelated documents). No failed or partial JSON repair is captured.
 
-## Explicit opt-in, requiring local private filesystem setup
+## Optional manual directory override
 
-Before starting a new Run, an authorized operator must create a
-**pre-existing, absolute, local-only private capture directory** on a
-protected local volume, with permissions that allow only the operator
-account. On Linux the directory must have mode `0700`; the implementation
+For ordinary Windows/Linux operation **no directory input is required**.
+If a custom directory is needed, an authorized operator must create an
+**absolute, local-only private capture directory** on a protected volume,
+with permissions that allow only the operator account. On Linux the directory must have mode `0700`; the implementation
 reads `/proc/self/mountinfo` and allows only recognized local filesystem
 types (ext2/3/4, xfs, btrfs, zfs, f2fs, tmpfs). A Linux NFS/CIFS,
 FUSE/SSHFS, overlay/container filesystem, unknown type or missing mount
@@ -37,22 +41,23 @@ verification (Python mode bits alone do not protect them). Do not use
 SMB/network shares, OneDrive/synced/cloud folders, user-shared storage,
 public repos or container image layers.
 
-Set both runtime configuration variables:
+For an **optional manual override only**, set both runtime variables:
 
 ```bat
 set CZJLLM_JSON_REPAIR_CAPTURE=1
 set CZJLLM_JSON_REPAIR_PRIVATE_DIR=<absolute-private-local-directory>
 ```
 
-Unset/disable `CZJLLM_JSON_REPAIR_CAPTURE` to stop **future**
-captures. Disabling recording does not destroy already saved sensitive
-plaintext; the on-demand GUI reader can still retrieve prior selected
+Set `CZJLLM_JSON_REPAIR_CAPTURE=0` or `off` **explicitly** to stop
+future captures. **Do not unset this variable to disable capture**:
+unset means automatic capture is enabled if safe. Disabling recording
+does not destroy already saved sensitive plaintext; the on-demand GUI reader can still retrieve prior selected
 Run/event pairs when the directory remains configured. Use the
 explicit confirm-and-clear button to remove the selected Run's files,
 or follow an approved local retention procedure. No automatic TTL,
 cross-run deletion or hidden purge is implemented.
 
-If enabled while the directory is absent, relative, a symlink/reparse
+If a manually overridden directory is absent, relative, a symlink/reparse
 point, or unsafe according to the local validator, capture fails with a
 fixed `PRIVATE_JSON_REPAIR_CAPTURE_UNAVAILABLE` warning and **does not
 change the LLM repair result**.
@@ -87,14 +92,15 @@ change the LLM repair result**.
 
 ## Review and acceptance
 
-Hosted synthetic Linux/Windows tests prove opt-out defaults, exact Run/event
+Hosted synthetic Linux/Windows tests prove auto-safe defaults, explicit opt-out, exact Run/event
 matching, bounded writes, fail-closed corrupted records, symlink/hardlink
 cases, explicit deletion and ordinary quality-event redaction. These
 **do not validate physical Windows NTFS ACLs or user workstation behavior**.
 
-Because this feature stores the original source/model output, require
-formal security review and explicit operator authorization before
-enabling it in production. It is independent of the low-risk #308
+Because this feature stores the original source/model output, treat
+physical host NTFS ACLs, filesystem placement, backup/sync and retention
+as separate operator acceptance boundaries. Automatic capture fails closed
+if local checks cannot be verified. It is independent of the low-risk #308
 popup/layout PR and does not change actual JSON repair, retry, Queue
 claim/ACK, or ES/SQL sink success rules.
 
@@ -107,7 +113,7 @@ An additional fail-closed rule rejects any remote/unknown **matching ancestor mo
 
 ## 2026-11-17: Automatic project-local cache (new default)
 
-The older manual opt-in workflow above remains available as an override. In the
+The optional manual directory override above remains available. In the
 new release, successfully repaired JSON is saved by default only after a
 strict local security check. On Windows and Linux the cache is located at:
 
