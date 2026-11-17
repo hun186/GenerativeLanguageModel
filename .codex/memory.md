@@ -60,3 +60,16 @@
 
 ## 2026-11-17 #310 Source Sync Handoff
 - Draft PR #310 carries original/repaired JSON plaintext capture into the existing GLM GUI only when explicitly opted in; all production capture remains OFF. Accepted main #318–#334 is included in the source branch without removing its ES/SQLite/TLS/Queue CI gates. Native Windows NTFS ACL, nonsynced private folder, retention/consent and independent privacy/security review remain blocking for Merge and live use. Exact prior branch .codex architecture/backlog/known_issues/memory were archived before the accepted-main reconciliation. No actual operator private content or live GPU/ES/SQL was touched.
+
+## 2026-11-17 — GLM Windows Consumer head-of-line blocking 修正 PR
+
+- 根據使用者日誌，6 個 Queue RUNNING 對應實際 2 個 RUNNING 檔及
+  4 個 Success，顯示 Legacy Thread round 統一 ACK 的延遲問題；
+  日誌的 `combined=N` 並非合併路徑權威證據。
+- Windows 單階段 Consumer 接入 #301 `run_slot_refill`；
+  成功 Worker 在確認 Success 後逐筆結算 Queue Meter，
+  才補入新 Claim。保留 Linux/多階段與 sink confirm 閘門。
+- 新增 `test_consumer_live_slot_refill.py` 真實臨時 Queue、
+  快慢 Worker 及缺少 Success 不得假 ACK regression；CI gate 已加入。
+- 本紀錄為源碼變更：Hosted CI、Windows 工作站、雙 H100、實際 ES/SQL
+  sink 寫回都 **尚未驗證**。不得聲稱對正在運行中的批次生效。
