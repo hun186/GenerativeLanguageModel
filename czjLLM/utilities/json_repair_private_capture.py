@@ -226,9 +226,11 @@ def _prune_locked(root: Path, now: float) -> int:
         if not _RUN_NAME.fullmatch(folder.name):
             raise ValueError("UNKNOWN_PRIVATE_ARTIFACT")
         info = _is_regular_private(folder, directory=True)
-        if os.name != "nt" and (
-                not _posix_local_filesystem(folder) or info.st_mode & 0o077):
-            raise ValueError("PRIVATE_RUN_PERMISSIONS")
+        if os.name != "nt":
+            if not _posix_local_filesystem(folder):
+                raise ValueError("POSIX_LOCAL_FILESYSTEM_UNVERIFIED")
+            if info.st_mode & 0o077:
+                raise ValueError("PRIVATE_RUN_PERMISSIONS")
         _check_auto_run_acl(root, folder)
         with _lock_run(folder):
             remaining = 0
