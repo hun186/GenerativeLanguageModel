@@ -115,3 +115,7 @@ TODO，單筆 Queue ACK 先持久更新 Meter，再允許補位；Row Merger 照
 receipt、失聯結果或 Meter 失敗 fail closed，保留 RUNNING/Success 證據。
 限制每個 Consumer refill 輪的 Claim 數量，沿用共享 execution-budget
 租約，不在這次變更 Linux 多進程和多階段流。實機 H100 尚未驗證。
+
+- 若 Worker 沒有 Success，不可一律算作錯誤，也不可憑子檔名假設成功：
+  允許唯一已記錄且來源/子 Prompt SHA 均驗證的 1→2 JSON split handoff，
+  原父 RUNNING 減一、兩個子 TODO pending 加二；其他消失檔案 fail-closed。
