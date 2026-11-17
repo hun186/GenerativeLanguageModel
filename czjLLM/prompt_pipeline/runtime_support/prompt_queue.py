@@ -139,7 +139,10 @@ def require_no_pending_todo_sources(item_dirs) -> None:
             raise RuntimeError("undispatched TODO sources remain after producer stopped")
 
 
-def pick_and_claim_next_prompts(item_dirs, per_round_limit=128, *, claim_ids_out=None):
+def pick_and_claim_next_prompts(
+    item_dirs, per_round_limit=128, *, claim_ids_out=None,
+    excluded_todo_sources=None,
+):
     """
     從各 item_dir 的 TODO 中挑選檔案，只領取不會覆寫 RUNNING 的檔案。
     同一 item 下名稱相同的巢狀 TODO 保留原狀，須先排除歧義。
@@ -165,6 +168,12 @@ def pick_and_claim_next_prompts(item_dirs, per_round_limit=128, *, claim_ids_out
                          key=lambda p: str(p))
         basename_counts = Counter(p.name for p in sources)
         for src_p in sources:
+            # A split Worker may publish child TODO files before its parent
+            # receipt has been audited and reconciled. The live Consumer
+            # temporarily shields just those child paths, without renaming or
+            # mutating them. All other TODO work remains eligible.
+            if excluded_todo_sources is not None and src_p in excluded_todo_sources:
+                continue
             if basename_counts[src_p.name] != 1:
                 continue
             dst_p = run / src_p.name
