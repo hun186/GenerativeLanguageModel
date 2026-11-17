@@ -5,6 +5,7 @@ import threading
 
 
 from czjLLM.prompt_pipeline import pipeline_controller as pc
+from czjLLM.prompt_pipeline.slice_identity import install_split_prompts
 from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
     publish_success_text_no_clobber,
 )
@@ -18,7 +19,7 @@ class _Registry:
         return dict(self.items)
 
 
-def _run_fixture(tmp_path, monkeypatch, *, fail_without_success=False):
+def _run_fixture(tmp_path, monkeypatch, *, fail_without_success=False, split_parent=False):
     slow_started = threading.Event()
     fast_refilled = threading.Event()
     release_slow = threading.Event()
@@ -48,6 +49,7 @@ def _run_fixture(tmp_path, monkeypatch, *, fail_without_success=False):
         def __init__(self, **kwargs):
             self.promptFile = kwargs["promptFile"]
             self.OutputSaveFN = kwargs["OutputSaveFN"]
+            self.content = Path(self.promptFile).read_text(encoding="utf-8")
 
         def proc(self):
             i = int(Path(self.promptFile).parents[1].name.split("_")[-1])
@@ -58,6 +60,13 @@ def _run_fixture(tmp_path, monkeypatch, *, fail_without_success=False):
                 fast_refilled.set()
             if fail_without_success and i == 1:
                 return {"ok": False, "error": "fixture"}
+            if split_parent and i == 1 and Path(self.promptFile).stem == "0":
+                install_split_prompts(
+                    self.promptFile, self.content,
+                    [("0-0.txt", "first-half"), ("0-1.txt", "second-half")],
+                )
+                Path(self.promptFile).unlink()
+                return {"ok": False, "error": "JSON_OUTPUT_LIMIT_REACHED"}
             publish_success_text_no_clobber(self.OutputSaveFN, f"done-{i}")
             Path(self.promptFile).unlink()
             return {"ok": True}
@@ -82,7 +91,8 @@ def _run_fixture(tmp_path, monkeypatch, *, fail_without_success=False):
             outcomes.append(pc._run_windows_live_slot_refill(
                 context, registry, str(tmp_path / "meter.json"),
                 stop, threading.Event(), first=first[0],
-                first_claim_ids=receipts, per_round_limit=3,
+                first_claim_ids=receipts,
+                per_round_limit=5 if split_parent else 3,
             ))
         except BaseException as exc:
             outcomes.append(exc)
@@ -142,3 +152,28 @@ def test_worker_without_durable_success_never_gets_false_ack(tmp_path, monkeypat
         assert fixture.meter["rows"]["1"]["done"] == 0
         assert fixture.meter["rows"]["1"]["queue_running"] == 1
     assert (tmp_path / "item_1" / "RUNNING" / "0.txt").is_file()
+
+
+def test_verified_split_parent_replaces_one_running_with_two_todo(tmp_path, monkeypatch):
+    fixture = _run_fixture(tmp_path, monkeypatch, split_parent=True)
+    try:
+        assert fixture.slow_started.wait(4)
+        assert fixture.fast_refilled.wait(5)
+    finally:
+        fixture.release_slow.set()
+        fixture.thread.join(10)
+    assert not fixture.thread.is_alive()
+    assert len(fixture.outcomes) == 1
+    stats = fixture.outcomes[0]
+    assert not isinstance(stats, BaseException), repr(stats)
+    assert (stats.claimed, stats.acknowledged) == (5, 5)
+    with fixture.meter_lock:
+        assert fixture.meter["queue"] == {
+            "pending": 0, "running": 0, "completed": 4,
+        }
+        row = fixture.meter["rows"]["1"]
+        assert (row["total"], row["done"], row["queue_pending"],
+                row["queue_running"]) == (2, 2, 0, 0)
+    assert not (tmp_path / "item_1" / "Success" / "0.txt").exists()
+    assert (tmp_path / "item_1" / "Success" / "0-0.txt").is_file()
+    assert (tmp_path / "item_1" / "Success" / "0-1.txt").is_file()
