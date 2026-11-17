@@ -3120,8 +3120,13 @@ def _run_windows_live_slot_refill(
 
     def claim_one():
         nonlocal claimed_count, first_pending
-        if claimed_count >= limit or stop_event.is_set() or (
-            restart_event is not None and restart_event.is_set()
+        # The initial Queue claim was already moved to RUNNING by the
+        # Consumer's normal empty-queue/terminal checks. Always account for
+        # that claim, even if teardown is signalled before entering here.
+        if not first_pending and (
+            claimed_count >= limit or stop_event.is_set() or (
+                restart_event is not None and restart_event.is_set()
+            )
         ):
             return None
         if blocked is not None and blocked.is_set():
