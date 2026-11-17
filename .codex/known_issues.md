@@ -114,3 +114,7 @@
 
 ## 2026-11-17 — #310 raw JSON remains privacy-gated after source reconciliation
 - Draft branch carries an on-demand GUI original/repair text comparison. The Linux mount allowlist and Windows fixed-volume classifier do not verify native workstation ACL, sync/backup, threat model, or true secure deletion. No automated TTL. The GUI selects by exact run/event; this does not validate source semantic fidelity or sink ACK. Latest CI/Code Review and independent privacy/security acceptance remain prerequisites; do not infer production availability from a merged branch tree.
+
+
+## 2026-11-17 — automatic JSON repair cache safety limitations
+- Source follow-up PR includes Win32 protected ACL validation and Linux local-fs 0700 check, but Hosted acceptance and actual physical workstation/scheduled-service ACL checks remain pending. Cache is plaintext, not secure erasure or at-rest encryption; other local administrator processes, remote block devices, backup/sync and hostile parent-directory modification are outside the guarantee. 72h expiry is lazily cleaned on later repair/GUI entry; idle deployment may retain expired disk bytes. No automatic Windows↔Linux sync, and no historical raw JSON backfill. Any unsafe path fails closed without affecting ordinary JSON repair or sink ACK.
