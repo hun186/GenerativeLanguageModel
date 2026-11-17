@@ -73,3 +73,8 @@
   快慢 Worker 及缺少 Success 不得假 ACK regression；CI gate 已加入。
 - 本紀錄為源碼變更：Hosted CI、Windows 工作站、雙 H100、實際 ES/SQL
   sink 寫回都 **尚未驗證**。不得聲稱對正在運行中的批次生效。
+
+- 同 PR 後續審核發現正常 JSON output-limit split 會刪除父 RUNNING、
+  產生兩個 TODO；新增 source-hash-bound split 驗證與 Queue Meter
+  原子計數轉換，並補 `test_verified_split_parent_replaces_one_running_with_two_todo`。
+  尚待 exact-head CI/Windows/H100/ES-Sink 實機驗證。
