@@ -1,6 +1,8 @@
 """Disposable local SQLite CAS proof: synthetic only; no ES, LLM or runtime."""
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+import multiprocessing
+import queue
 import sqlite3
 import threading
 
@@ -79,6 +81,66 @@ def test_two_connections_claim_once_then_resume_inflight_after_restart(tmp_path)
             ident(), expected_revision=1, operation="claim",
             policy=ON, verified_attempt_id=A,
         )
+
+
+def _spawn_quality_claim(path, attempt_id, ready, start, outcomes):
+    """Top-level spawn target: independent process; never touches ES/LLM."""
+    try:
+        store = DisposableQualityLedger(Path(path), KEY, create=False)
+        state = store.read(ident())
+        ready.put(state.revision)
+        if not start.wait(timeout=25):
+            outcomes.put("START_TIMEOUT")
+            return
+        try:
+            claimed = store.transition(
+                ident(), expected_revision=state.revision, operation="claim",
+                policy=ON, verified_attempt_id=attempt_id,
+            )
+        except (StaleRevision, LedgerUnavailable):
+            outcomes.put("BLOCKED")
+        else:
+            outcomes.put("WON" if claimed.phase == Phase.IN_FLIGHT else "BAD_PHASE")
+    except Exception:
+        # No raw paths, secrets, exception repr or identity exported.
+        outcomes.put("UNEXPECTED_ERROR")
+
+
+def test_independent_spawned_processes_can_never_claim_same_revision(tmp_path):
+    store = new_store(tmp_path)
+    assert reject_initial(store).revision == 1
+    ctx = multiprocessing.get_context("spawn")
+    start = ctx.Event()
+    ready = ctx.Queue()
+    outcomes = ctx.Queue()
+    workers = [
+        ctx.Process(target=_spawn_quality_claim, args=(
+            str(tmp_path / "ledger.db"), token, ready, start, outcomes,
+        ))
+        for token in (A, B)
+    ]
+    try:
+        for process in workers:
+            process.start()
+        assert [ready.get(timeout=25), ready.get(timeout=25)] == [1, 1]
+        start.set()
+        results = [outcomes.get(timeout=25), outcomes.get(timeout=25)]
+        assert sorted(results) == ["BLOCKED", "WON"]
+        for process in workers:
+            process.join(timeout=25)
+            assert process.exitcode == 0
+        persisted = new_store(tmp_path, create=False).read(ident())
+        assert persisted.phase == Phase.IN_FLIGHT
+        assert persisted.revision == 2
+        assert persisted.failed_repairs == 0
+    finally:
+        start.set()
+        for process in workers:
+            if process.is_alive():
+                process.terminate()
+            process.join(timeout=5)
+        ready.close()
+        outcomes.close()
 
 
 def test_repair_exhaustion_survives_restart_without_another_claim(tmp_path):
