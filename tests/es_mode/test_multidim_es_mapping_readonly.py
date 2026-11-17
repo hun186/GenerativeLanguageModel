@@ -114,12 +114,42 @@ def test_tls_exception_preserves_ca_verification_and_get_only(monkeypatch, tmp_p
     monkeypatch.setattr(
         "scripts.audit_multidim_es_mapping_readonly.build_opener",
         lambda *args: FakeOpener())
-    result = _request_mapping("https://es.example.invalid:9001", str(cert),
+    result = _request_mapping("https://192.0.2.10:9001", str(cert),
                               "user", "secret", skip_hostname=True)
     assert result == _fixture()
     assert context.verify_mode == ssl.CERT_REQUIRED
     assert context.check_hostname is False
     assert captured["method"] == "GET"
-    assert captured["url"] == "https://es.example.invalid:9001/news_test/_mapping"
+    assert captured["url"] == "https://192.0.2.10:9001/news_test/_mapping"
     assert captured["timeout"] <= 12
     assert captured["authorization"] == "Basic " + base64.b64encode(b"user:secret").decode()
+
+
+@pytest.mark.parametrize("url", [
+    "https://es.example.invalid:9001",
+    "https://localhost:9001",
+])
+def test_tls_hostname_exception_for_named_hosts_fails_before_ca_or_network(url):
+    from scripts.audit_multidim_es_mapping_readonly import _require_ip_literal_for_san_exception
+    with pytest.raises(ValueError, match="TLS_SAN_EXCEPTION_IP_LITERAL_REQUIRED"):
+        _require_ip_literal_for_san_exception(url)
+    with pytest.raises(ValueError, match="TLS_SAN_EXCEPTION_IP_LITERAL_REQUIRED"):
+        _request_mapping(url, "/nonexistent-ca.crt", "user", "password",
+                         skip_hostname=True)
+
+
+def test_literal_ipv4_and_ipv6_are_eligible_for_diagnostic_exception():
+    from scripts.audit_multidim_es_mapping_readonly import _require_ip_literal_for_san_exception
+    _require_ip_literal_for_san_exception("https://192.0.2.10:9001")
+    _require_ip_literal_for_san_exception("https://[2001:db8::10]:9001")
+
+
+def test_mapping_cli_rejects_dns_san_exception_before_credentials(monkeypatch, capsys):
+    from scripts.audit_multidim_es_mapping_readonly import main
+    monkeypatch.setattr("builtins.input", lambda *_: (_ for _ in ()).throw(
+        AssertionError("should not request credentials")))
+    assert main(["--url", "https://es.example.invalid:9001", "--ca-cert",
+                 "/nonexistent-ca.crt", "--allow-ip-san-mismatch"]) == 2
+    report = json.loads(capsys.readouterr().out)
+    assert report["reason_code"] == "TLS_SAN_EXCEPTION_IP_LITERAL_REQUIRED"
+    assert report["status"] == "UNAVAILABLE"
