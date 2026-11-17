@@ -64,6 +64,7 @@ from czjLLM.prompt_pipeline.slice_identity import (
     verified_queued_prompt_source, verified_split_family_id,
     record_success_identity, resolve_success_leaves,
     restore_full_restart_parent, valid_success,
+    verified_new_split_todo_children,
 )
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage, normalized_finish_reason
@@ -3193,6 +3194,7 @@ def _run_windows_live_slot_refill(
             raise RuntimeError("Worker result does not match claimed prompt")
         success = _to_success(pf)
         todo = _to_todo(pf)
+        split_children = ()
         if os.path.isfile(success) and not os.path.exists(pf) and not os.path.exists(todo):
             count_done, count_requeued = 1, 0
         elif os.path.isfile(success):
@@ -3200,21 +3202,47 @@ def _run_windows_live_slot_refill(
             # Row Merger cannot complete while RUNNING still exists.
             raise RuntimeError("conflicting Queue files after Worker Success")
         elif os.path.isfile(todo) and not os.path.exists(pf):
-            # A Worker may explicitly restore a retry or split child. Never
-            # count that as finished, and never overwrite its new generation.
+            # A Worker may explicitly restore a retry. Never count it done.
             count_done, count_requeued = 0, 1
-        else:
-            # Success may not be inferred from a returned Future: retain
-            # original RUNNING evidence and fail closed for operator review.
-            raise RuntimeError("Worker returned without verifiable Success or TODO")
-        def _acknowledge_receipt(d):
-            _meter_on_finish_batch_v2(
-                d, {item_dir: {"pk": pk}},
-                count_by_item_done=Counter({item_dir: 1}) if count_done else Counter(),
-                n_done=count_done,
-                count_by_item_requeued=Counter({item_dir: 1}) if count_requeued else Counter(),
-                n_requeued=count_requeued,
+        elif not os.path.exists(pf) and not os.path.exists(todo):
+            # Oversized JSON can atomically replace its parent with two child
+            # TODO prompts. Validate BOTH hashes against the source-bound
+            # split journal before replacing one running receipt with two
+            # pending receipts. No Success/row completion is implied.
+            split_children = verified_new_split_todo_children(
+                item_dir, Path(pf).name, getattr(_job, "content", ""),
             )
+            if not split_children:
+                raise RuntimeError("Worker returned without verifiable Success or TODO")
+            count_done, count_requeued = 0, 0
+        else:
+            raise RuntimeError("Worker returned with unacknowledged RUNNING")
+        def _acknowledge_receipt(d):
+            if split_children:
+                q = d.setdefault("queue", {})
+                row = d.setdefault("rows", {}).setdefault(pk, {})
+                if (type(q.get("running")) is not int or q["running"] < 1
+                        or type(row.get("queue_running")) is not int
+                        or row["queue_running"] < 1
+                        or type(row.get("queue_pending")) is not int
+                        or row["queue_pending"] < 0
+                        or type(row.get("total")) is not int
+                        or row["total"] < 1):
+                    raise RuntimeError("split Queue receipt cannot be reconciled")
+                q["running"] -= 1
+                q["pending"] = int(q.get("pending", 0)) + len(split_children)
+                row["queue_running"] -= 1
+                row["queue_pending"] += len(split_children)
+                row["total"] += len(split_children) - 1
+                row["last_state_at"] = time.time()
+            else:
+                _meter_on_finish_batch_v2(
+                    d, {item_dir: {"pk": pk}},
+                    count_by_item_done=Counter({item_dir: 1}) if count_done else Counter(),
+                    n_done=count_done,
+                    count_by_item_requeued=Counter({item_dir: 1}) if count_requeued else Counter(),
+                    n_requeued=count_requeued,
+                )
             d.setdefault("consumer", {}).update({
                 "alive": True,
                 "last_round_ts": time.time(),
