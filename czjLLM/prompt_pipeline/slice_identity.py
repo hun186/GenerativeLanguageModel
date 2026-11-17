@@ -310,6 +310,47 @@ def install_split_prompts(
         _write_child_prompt(todo_dir / name, text)
 
 
+
+def verified_new_split_todo_children(
+    item: str, parent_name: str, original_prompt: str,
+) -> tuple[str, str] | tuple[()]:
+    """Verify a completed parent -> two TODO children handoff without mutation.
+
+    A legacy Worker can split an oversized JSON request instead of writing
+    Success. This is not a successful slice and must replace one RUNNING
+    receipt with exactly two pending child receipts. Use the persisted,
+    source-hash-bound intent and both actual child files as authority.
+    """
+    root = Path(item)
+    if (not isinstance(parent_name, str) or Path(parent_name).name != parent_name
+            or not parent_name.endswith(".txt")
+            or not isinstance(original_prompt, str) or not original_prompt):
+        return ()
+    if any((root / role / parent_name).exists()
+           for role in ("TODO", "RUNNING", "Success")):
+        return ()
+    record = _verified_split_record(root, parent_name)
+    if not record or record.get("parent_prompt_sha256") != digest_text(original_prompt):
+        return ()
+    names = []
+    for entry in record["children"]:
+        name, digest = entry["name"], entry["prompt_sha256"]
+        child = root / "TODO" / name
+        if (child.is_symlink() or not child.is_file()
+                or (root / "RUNNING" / name).exists()
+                or (root / "Success" / name).exists()):
+            return ()
+        try:
+            if digest_text(child.read_text(encoding="utf-8")) != digest:
+                return ()
+        except (OSError, ValueError, UnicodeError):
+            return ()
+        names.append(name)
+    if len(names) != 2 or len(set(names)) != 2:
+        return ()
+    return tuple(sorted(names))
+
+
 def _split_child_complete(
     root: Path, name: str, prompt_hash: str, visited: frozenset[str] = frozenset(),
 ) -> bool:
