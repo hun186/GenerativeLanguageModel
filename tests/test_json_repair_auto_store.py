@@ -103,6 +103,7 @@ def test_expiry_and_read_refusal_preserve_regular_quality_logs(monkeypatch, tmp_
     preserved.write_text("synthetic metrics only\n", encoding="utf-8")
     assert cap.prune_expired_private_captures(root) == 0
     assert not target.exists()
+    assert not list(root.glob("run-*"))  # retire old empty Run metadata too
     assert preserved.read_text(encoding="utf-8") == "synthetic metrics only\n"
 
 
