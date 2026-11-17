@@ -9,7 +9,8 @@ import tkinter.font as tkfont
 
 from czjLLM.utilities.json_repair_change_map import change_map_segments
 from czjLLM.utilities.json_repair_private_capture import (
-    clear_private_run, configured_private_root, read_private_repair,
+    capture_enabled, clear_private_run, configured_private_root,
+    prune_expired_private_captures, read_private_repair,
 )
 from czjLLM.job_manager.json_repair_raw_diff_gui import show_private_json_diff
 
@@ -54,6 +55,15 @@ def show_json_repair_review(
               "單次事件 ID 僅辨識修復次數。統計不保存 JSON 原文，也不證明內容完整。"),
     )
     disclaimer.pack(anchor="w", fill="x", pady=(3, 0))
+    try:
+        cache_root = configured_private_root()
+        prune_expired_private_captures(cache_root)
+        cache_state = ("自動本機快照：開啟｜專案內 .runtime-private/json_repair｜保存 72 小時"
+                       if capture_enabled() else "已停用新快照；舊快照可在期限內檢視")
+    except (OSError, ValueError, TypeError, UnicodeError):
+        cache_state = "JSON 原文暫存不可用：本機儲存位置或權限未通過安全檢查"
+    ttk.Label(heading, text=cache_state, foreground="#825000").pack(
+        anchor="w", fill="x", pady=(3, 0))
 
     def resize_header(event):
         wrap = max(180, int(event.width) - 24)
@@ -113,24 +123,19 @@ def show_json_repair_review(
 
     def _view_private_capture():
         case = _chosen_case()
-        directory = configured_private_root()
-        if case is None or directory is None:
-            messagebox.showinfo(
-                "私有原文留存未啟用",
-                "沒有選取案例，或尚未設定本機私有快照目錄。"
-                "原有品質日誌不儲存 JSON 原文，舊紀錄無法回補。",
-                parent=win,
-            )
+        if case is None:
+            messagebox.showinfo("請選取案例", "請先從列表選取一筆修復案例。", parent=win)
             return
         try:
+            directory = configured_private_root()
             pair = read_private_repair(
                 directory, case.get("run_id", ""), case.get("event_id", ""),
             )
         except (OSError, ValueError, TypeError, UnicodeError):
             messagebox.showwarning(
-                "沒有可驗證的私有原文快照",
-                "這筆修復事件沒有可驗證的本機快照。"
-                "原文留存預設關閉，請勿用相同切片提示碼猜測來源。",
+                "無法檢視修復前後原文",
+                "這筆案例沒有可驗證且未過期的本機 JSON 快照，或儲存位置不安全。"
+                "快照僅保存 72 小時；較早紀錄無法從統計日誌補回原文。",
                 parent=win,
             )
             return
@@ -138,34 +143,27 @@ def show_json_repair_review(
 
     def _clear_private_capture():
         case = _chosen_case()
-        directory = configured_private_root()
-        if case is None or directory is None:
-            messagebox.showinfo("無法清除", "未選取具有 Run ID 的私有快照案例。", parent=win)
-            return
-        run_id = case.get("run_id", "")
-        if not run_id:
+        if case is None or not case.get("run_id"):
+            messagebox.showinfo("無法清除", "請先選取具有 Run ID 的案例。", parent=win)
             return
         if not messagebox.askyesno(
-            "確認清除本次 Run 的私有 JSON 原文",
-            "確定清除所選 run_id 對應的所有私有 JSON 修復原文快照？"
-            "此操作不可復原，但不會刪除品質日誌、Queue 或 ES 資料。",
+            "確認清除本次 Run 的 JSON 原文",
+            "確定清除所選批次的所有 JSON 修復前後快照？"
+            "不會刪除品質日誌、Queue 或 ES 資料。",
             parent=win,
         ):
             return
         try:
             deleted = clear_private_run(
-                directory, run_id, "DELETE_PRIVATE_JSON_REPAIRS",
+                configured_private_root(), case["run_id"],
+                "DELETE_PRIVATE_JSON_REPAIRS",
             )
-        except (OSError, ValueError, TypeError):
+        except (OSError, ValueError, TypeError, UnicodeError):
             messagebox.showwarning(
-                "私有快照清除未完成", "檔案驗證或刪除失敗；請由本機管理員檢查。",
-                parent=win,
+                "原文清除未完成", "暫存檔案驗證、權限或刪除失敗；請檢查本機。", parent=win,
             )
             return
-        messagebox.showinfo(
-            "清除完成", f"已清除本次 Run 的 {deleted} 份私有快照。",
-            parent=win,
-        )
+        messagebox.showinfo("清除完成", f"已清除本次 Run 的 {deleted} 份快照。", parent=win)
 
     ttk.Button(
         footer, text="檢視所選案例原始／修復全文",
