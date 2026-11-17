@@ -144,3 +144,7 @@
 
 ## 2026-11-17 — Draft #310 native-GUI private JSON inspection (integration pending)
 - #310 implements disabled-by-default, opt-in original/repaired JSON snapshot capture and an on-demand native Tk side-by-side viewer within the existing GLM GUI. Raw records are strictly run/event keyed and never written into ordinary Quality JSONL. Local-fs/type, lock and no-follow defenses are synthetic-tested; these are NOT a verified Windows NTFS ACL/retention boundary. Source branch was synchronized with accepted main #318–#334 without permitting production enablement. Physical operator permissions, storage/sync policy and independent security acceptance remain pre-merge gates.
+
+
+## 2026-11-17 — JSON repair snapshots private cache (follow-up source)
+- Utilities json_repair_auto_store.py computes project-local .runtime-private/json_repair from module source (not cwd) and creates strict owner-private directories. json_repair_private_capture.py retains the event-keyed snapshot contract and adds root-wide bounded expiration/quota maintenance. Existing repair GUI performs maintenance on open, and Worker captures only after successful quality event. No background deletion job, no SQL/ES/Queue mutation; checkout archives/sync must exclude the raw cache. Cross-machine Linux and Windows installs have separate local stores.
