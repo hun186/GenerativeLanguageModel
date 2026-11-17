@@ -85,6 +85,11 @@ any automatic retry or write. Use off-peak read-only access.
   no Events, Events but empty snippets, only un-attributable snippet rows,
   partial or complete per-block Event ID references to nonempty snippet
   text. The sums refer to event IDs in their **own** article blocks.
+- When the output has multiple independently valid article blocks,
+  `EVENTS_WITHOUT_EVIDENCE` counts empty snippet arrays **in blocks that
+  actually contain Events**. Text in an Event-free block must never
+  make Event-bearing blocks appear to have Evidence. This is a
+  document-level diagnostic classification, not a reason to rerun.
 - `EVENTS_ALL_REFERENCED` proves only that each Event ID has some
   nonempty text row referencing it, **not** that the quoted text matches
   the original source, correct date, paragraph offsets or SRAF citation

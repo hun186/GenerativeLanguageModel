@@ -42,12 +42,16 @@ def _evidence_coverage(source: dict, profile_code: str) -> tuple[str, int, int]:
         normalized = normalize_multidim_event_payload(payload)
     except (TypeError, ValueError, RecursionError, OverflowError):
         return "PROFILE_UNVERIFIED", 0, 0
-    all_ids = linked = rows = 0
+    all_ids = linked = any_rows = rows_in_event_blocks = 0
     for block in normalized:
         ids = {event["event_id"] for event in block["Event"]}
         all_ids += len(ids)
         evidence_rows = block["evidence_snippets"]
-        rows += len(evidence_rows)
+        any_rows += len(evidence_rows)
+        # Evidence in a different, Event-free block cannot make an
+        # Event-bearing block appear to have attributable snippet rows.
+        if ids:
+            rows_in_event_blocks += len(evidence_rows)
         covered = set()
         for item in evidence_rows:
             if (isinstance(item.get("text"), str) and item["text"].strip()
@@ -55,8 +59,8 @@ def _evidence_coverage(source: dict, profile_code: str) -> tuple[str, int, int]:
                 covered.update(x for x in item["event_ids"] if x in ids)
         linked += len(covered)
     if not all_ids:
-        return ("NO_EVENTS_WITH_EVIDENCE_ROWS" if rows else "NO_EVENTS_NO_EVIDENCE"), 0, 0
-    if not rows:
+        return ("NO_EVENTS_WITH_EVIDENCE_ROWS" if any_rows else "NO_EVENTS_NO_EVIDENCE"), 0, 0
+    if not rows_in_event_blocks:
         return "EVENTS_WITHOUT_EVIDENCE", all_ids, 0
     if not linked:
         return "EVENTS_WITH_ROWS_NO_ATTRIBUTABLE_TEXT", all_ids, 0
