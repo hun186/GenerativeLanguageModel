@@ -212,7 +212,9 @@ def _check_auto_run_acl(root: Path, child: Path) -> None:
 def _prune_locked(root: Path, now: float) -> int:
     """Root-wide lock held. Delete only validated expired snapshot file names."""
     entries = list(root.iterdir())
-    if len(entries) > MAX_RUN_FOLDERS + 1:
+    # A prior interrupted/older version may have left more than the active
+    # folder budget. Still allow bounded cleanup, then re-evaluate the cap.
+    if len(entries) > 2 * MAX_RUN_FOLDERS + 1:
         raise ValueError("PRIVATE_TOTAL_FOLDER_BUDGET")
     total_bytes = 0
     empty_folders = []
@@ -359,6 +361,12 @@ def write_private_repair(
         active_bytes = _prune_locked(private_root, time.time())
         if active_bytes + len(payload) > MAX_TOTAL_BYTES:
             raise ValueError("PRIVATE_TOTAL_BYTES_BUDGET")
+        proposed = private_root / ("run-" + digest[:24])
+        if not proposed.exists() and sum(
+            1 for item in private_root.iterdir()
+            if _RUN_NAME.fullmatch(item.name)
+        ) >= MAX_RUN_FOLDERS:
+            raise ValueError("PRIVATE_TOTAL_FOLDER_BUDGET")
         folder = _run_dir(private_root, digest)
         target = folder / ("r-" + event_id + ".json")
         with _lock_run(folder):
