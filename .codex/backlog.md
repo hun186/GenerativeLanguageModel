@@ -143,3 +143,9 @@
 - [x] Integrate branch tree with latest accepted main, retaining all MultiDim/ES/Quality/Queue improvements and two private-capture test gates in Hosted Linux / Windows 3.10/3.11; archive exact four prior branch .codex handoff files before reconciliation. Never create a separate long-lived production GUI fork.
 - [ ] On merged HEAD, run exact SHA Hosted Linux/Windows/secret checks, Codex review, and separately verify any self-hosted Windows queue without treating queued as pass.
 - [ ] Independent security/privacy audit and operator Windows NTFS ACL, local nonsynced storage, backup/consent/retention policy and manual-clear acceptance required before merging or enabling this sensitive original/repaired plaintext feature. Default OFF; no production Queue, ES, SQL, LLM, or disk data changed by this integration branch.
+
+
+## 2026-11-17 — project-local auto JSON repair cache verification
+- [x] Added portable project-relative protected cache bootstrap, 72h snapshot TTL/lazy removal, total active-byte quota, GUI status, gitignore and disposable synthetic tests; CI and privacy review not yet confirmed.
+- [ ] Verify exact-head Hosted Linux E2E, Windows 3.10/3.11, secret scan, Codex findings and no unresolved threads before any merge. Verify native Windows ACL creation and Linux scheduler user permissions; do not claim real operator acceptance from Hosted.
+- [ ] On real Windows and Linux deployments, confirm checkout is local/non-synced, running identity can access cache, and archive/backup/7z/Docker excludes .runtime-private; never auto-sync plaintext repair snapshots.
