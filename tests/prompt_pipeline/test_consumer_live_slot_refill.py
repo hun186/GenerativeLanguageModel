@@ -177,3 +177,110 @@ def test_verified_split_parent_replaces_one_running_with_two_todo(tmp_path, monk
     assert not (tmp_path / "item_1" / "Success" / "0.txt").exists()
     assert (tmp_path / "item_1" / "Success" / "0-0.txt").is_file()
     assert (tmp_path / "item_1" / "Success" / "0-1.txt").is_file()
+
+
+def test_split_publication_cannot_preempt_parent_meter_ack(tmp_path, monkeypatch):
+    """Reproduce Codex P1: another Worker refills while split proc is in audit."""
+    split_published = threading.Event()
+    release_parent = threading.Event()
+    independent_refilled = threading.Event()
+    child_started_early = threading.Event()
+    item_dirs = {}
+    for i in range(3):
+        root = tmp_path / f"item_{i}"
+        (root / "TODO").mkdir(parents=True)
+        (root / "Success").mkdir()
+        (root / "TODO" / "0.txt").write_text(f"source-{i}", encoding="utf-8")
+        item_dirs[str(root)] = {"pk": str(i)}
+    registry = _Registry(item_dirs)
+    meter_lock = threading.Lock()
+    meter = {
+        "queue": {"pending": 3, "running": 0, "completed": 0},
+        "rows": {
+            str(i): {"queue_pending": 1, "queue_running": 0, "done": 0, "total": 1}
+            for i in range(3)
+        },
+    }
+
+    def meter_update(_path, operation):
+        with meter_lock:
+            result = operation(meter)
+            return meter if result is None else result
+
+    class FakeJob:
+        def __init__(self, **kwargs):
+            self.promptFile = kwargs["promptFile"]
+            self.OutputSaveFN = kwargs["OutputSaveFN"]
+            self.content = Path(self.promptFile).read_text(encoding="utf-8")
+
+        def proc(self):
+            prompt = Path(self.promptFile)
+            item_index = int(prompt.parents[1].name.split("_")[-1])
+            if item_index == 0 and prompt.name == "0.txt":
+                install_split_prompts(
+                    self.promptFile, self.content,
+                    [("0-0.txt", "left"), ("0-1.txt", "right")],
+                )
+                prompt.unlink()
+                split_published.set()
+                assert release_parent.wait(8), "parent audit was not released"
+                return {"ok": False, "error": "JSON_OUTPUT_LIMIT_REACHED"}
+            if item_index == 1:
+                assert split_published.wait(4)
+            if item_index == 2:
+                independent_refilled.set()
+            if item_index == 0 and prompt.name in {"0-0.txt", "0-1.txt"}:
+                if not release_parent.is_set():
+                    child_started_early.set()
+            publish_success_text_no_clobber(self.OutputSaveFN, "done")
+            prompt.unlink()
+            return {"ok": True}
+
+    monkeypatch.setattr(pc, "PromptAPIPipeline", FakeJob)
+    monkeypatch.setattr(pc, "meter_update", meter_update)
+    monkeypatch.setattr(pc, "_llm_call_audit_kwargs", lambda _ctx: {})
+    ctx = SimpleNamespace(
+        n_process=2, task="fixture", model_spec={}, max_tokens=10,
+        PGMSubDir=str(tmp_path), removeFinPromptFile=True,
+    )
+    receipts = {}
+    first = pc.pick_and_claim_next_prompts(
+        list(item_dirs), per_round_limit=1, claim_ids_out=receipts,
+    )
+    assert len(first) == 1
+    outcomes = []
+
+    def coordinate():
+        try:
+            outcomes.append(pc._run_windows_live_slot_refill(
+                ctx, registry, str(tmp_path / "meter.json"),
+                threading.Event(), threading.Event(),
+                first=first[0], first_claim_ids=receipts, per_round_limit=5,
+            ))
+        except BaseException as exc:
+            outcomes.append(exc)
+
+    runner = threading.Thread(target=coordinate, daemon=True)
+    runner.start()
+    try:
+        assert split_published.wait(5)
+        assert independent_refilled.wait(5), "unrelated TODO must still refill"
+        assert not child_started_early.wait(0.2), (
+            "split children dispatched before parent Worker returned and ACKed"
+        )
+        with meter_lock:
+            assert meter["rows"]["0"]["queue_running"] == 1
+            assert meter["rows"]["0"]["queue_pending"] == 0
+    finally:
+        release_parent.set()
+        runner.join(10)
+    assert not runner.is_alive()
+    assert len(outcomes) == 1
+    assert not isinstance(outcomes[0], BaseException), repr(outcomes[0])
+    assert (outcomes[0].claimed, outcomes[0].acknowledged) == (5, 5)
+    assert not child_started_early.is_set()
+    with meter_lock:
+        assert meter["queue"] == {"pending": 0, "running": 0, "completed": 4}
+        assert meter["rows"]["0"]["total"] == meter["rows"]["0"]["done"] == 2
+    assert (tmp_path / "item_0" / "Success" / "0-0.txt").exists()
+    assert (tmp_path / "item_0" / "Success" / "0-1.txt").exists()
