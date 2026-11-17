@@ -43,6 +43,8 @@ jobs:
         run: python -m pytest -q tests/es_mode/test_multidim_search_contract_v1.py --maxfail=1 --disable-warnings
       - name: Verify read-only MultiDim live-Mapping contract probe
         run: python -m pytest -q tests/es_mode/test_multidim_es_mapping_readonly.py --maxfail=1 --disable-warnings
+      - name: Verify block-local Evidence reference counts (offline)
+        run: python -m pytest -q tests/es_mode/test_multidim_evidence_reference_coverage.py --maxfail=1 --disable-warnings
       - name: Verify privacy-safe nested-only MultiDim ES sample (offline)
         run: python -m pytest -q tests/es_mode/test_multidim_structured_sample_readonly.py --maxfail=1 --disable-warnings
       - name: Verify fast MultiDim gate ordering and no omitted checks
