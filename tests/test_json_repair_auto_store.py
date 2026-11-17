@@ -144,3 +144,26 @@ def test_gui_has_explicit_auto_cache_status_and_expiry_message():
     assert "72 小時" in gui
     assert "read_private_repair(" in gui
     assert "show_private_json_diff(win" in gui
+
+
+def test_folder_budget_rejects_extra_run_then_recovers_after_expiry(monkeypatch, tmp_path):
+    if os.name != "nt":
+        monkeypatch.setattr(cap, "_posix_local_filesystem", lambda *_a, **_kw: True)
+    root = tmp_path / "private"
+    root.mkdir(mode=0o700)
+    if os.name != "nt":
+        root.chmod(0o700)
+    monkeypatch.setattr(cap, "MAX_RUN_FOLDERS", 1)
+    first = uuid4().hex
+    cap.write_private_repair(root, "run-a", first, "before-a", "after-a")
+    with pytest.raises(ValueError, match="PRIVATE_TOTAL_FOLDER_BUDGET"):
+        cap.write_private_repair(root, "run-b", uuid4().hex, "before-b", "after-b")
+    old_file = next(root.rglob("r-*.json"))
+    before = time.time() - cap.SNAPSHOT_TTL_SECONDS - 15
+    os.utime(old_file, (before, before))
+    # Root-wide maintenance removes the old file AND empty run folder.
+    assert cap.prune_expired_private_captures(root) == 0
+    assert not list(root.glob("run-*"))
+    second = uuid4().hex
+    assert cap.write_private_repair(root, "run-b", second, "before-b", "after-b")
+    assert cap.read_private_repair(root, "run-b", second)["repaired"] == "after-b"
