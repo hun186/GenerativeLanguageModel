@@ -29,6 +29,26 @@ jobs:
         run: echo "PYTHONPATH=$PWD" >> "$GITHUB_ENV"
       - name: Prove offline E2E dependency completeness
         run: python -m pytest --collect-only -q tests/e2e -m e2e
+      # Fail fast on synthetic ES/MultiDim contract checks; retain the full
+      # offline production E2E and all later regressions as mandatory gates.
+      - name: Verify disposable quality retry SQLite CAS proof (Issue 313)
+        run: python -m pytest -q tests/es_mode/test_quality_retry_sqlite_proof.py --maxfail=1 --disable-warnings
+      - name: Verify offline Quality retry budget contract (Issue 313)
+        run: python -m pytest -q tests/es_mode/test_quality_retry_contract.py --maxfail=1 --disable-warnings
+      - name: Verify offline multidim Event and Timeline time rerun audit
+        run: python -m pytest -q tests/test_multidim_time_audit.py tests/es_mode/test_multidim_profile_audit.py tests/es_mode/test_multidim_event_time_rerun_contract.py tests/es_mode/test_es_rerun_policy_static_preflight.py --maxfail=1 --disable-warnings
+      - name: Audit MultiDim search-field capabilities without ES (offline)
+        run: python -m pytest -q tests/es_mode/test_multidim_search_field_capabilities.py --maxfail=1 --disable-warnings
+      - name: Verify offline GLM MultiDim search-consumer schema contract v1
+        run: python -m pytest -q tests/es_mode/test_multidim_search_contract_v1.py --maxfail=1 --disable-warnings
+      - name: Verify read-only MultiDim live-Mapping contract probe
+        run: python -m pytest -q tests/es_mode/test_multidim_es_mapping_readonly.py --maxfail=1 --disable-warnings
+      - name: Verify block-local Evidence reference counts (offline)
+        run: python -m pytest -q tests/es_mode/test_multidim_evidence_reference_coverage.py --maxfail=1 --disable-warnings
+      - name: Verify privacy-safe nested-only MultiDim ES sample (offline)
+        run: python -m pytest -q tests/es_mode/test_multidim_structured_sample_readonly.py --maxfail=1 --disable-warnings
+      - name: Verify fast MultiDim gate ordering and no omitted checks
+        run: python -m pytest -q tests/test_ci_multidim_fast_gate.py --maxfail=1 --disable-warnings
       - name: Run offline production E2E gate
         run: python -m pytest -q tests/e2e -m e2e --maxfail=1 --disable-warnings
       - name: Run focused quality GUI, bounded memory, archival continuity and SHA256 manifest regressions
@@ -59,10 +79,6 @@ jobs:
           bash run_linux_queue_local_acceptance.sh
       - name: Verify Windows operator fixture launcher fail-closed and privacy
         run: python -m pytest -q tests/prompt_pipeline/test_queue_win32_operator_acceptance.py --maxfail=1 --disable-warnings
-      - name: Verify offline Quality retry budget contract (Issue 313)
-        run: python -m pytest -q tests/es_mode/test_quality_retry_contract.py --maxfail=1 --disable-warnings
-      - name: Verify offline multidim Event and Timeline time rerun audit
-        run: python -m pytest -q tests/test_multidim_time_audit.py tests/es_mode/test_multidim_profile_audit.py --maxfail=1 --disable-warnings
       - name: Verify no-clobber TODO to RUNNING dispatch and collision fail-closed
         run: python -m pytest -q tests/prompt_pipeline/test_queue_no_clobber.py --maxfail=1 --disable-warnings
       - name: Verify observed queue claim and requeue events
@@ -155,7 +171,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install isolated native test requirements
         shell: pwsh
-        run: python -m pip install --upgrade pip pytest
+        run: python -m pip install --upgrade pip pytest PyYAML==6.0
       - name: Require actual NTFS filesystem on test drive
         shell: pwsh
         run: |
@@ -166,7 +182,7 @@ jobs:
         env:
           PYTHONNOUSERSITE: "1"
         run: |
-          python -m pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py tests/prompt_pipeline/test_queue_win32_native_enumeration.py tests/prompt_pipeline/test_queue_win32_ntfs_acceptance.py --maxfail=1 --disable-warnings
+          python -m pytest -q tests/prompt_pipeline/test_queue_win32_handle_identity.py tests/prompt_pipeline/test_queue_win32_native_enumeration.py tests/prompt_pipeline/test_queue_win32_ntfs_acceptance.py tests/prompt_pipeline/test_queue_win32_operator_acceptance.py --maxfail=1 --disable-warnings
 
       - name: Verify Windows ThreadPool round completion order and timeout safety
         shell: pwsh
@@ -195,7 +211,7 @@ jobs:
         shell: pwsh
         env:
           PYTHONNOUSERSITE: "1"
-        run: python -m pytest -q tests/test_multidim_time_audit.py tests/es_mode/test_multidim_profile_audit.py --maxfail=1 --disable-warnings
+        run: python -m pytest -q tests/test_multidim_time_audit.py tests/es_mode/test_multidim_profile_audit.py tests/es_mode/test_es_rerun_policy_static_preflight.py --maxfail=1 --disable-warnings
       - name: Verify split-root LLM dispatch diagnostic safety on native Windows
         shell: pwsh
         env:

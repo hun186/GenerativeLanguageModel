@@ -36,10 +36,13 @@ def human(report: dict) -> str:
         "OUTPUT_ABSENT": "目標輸出缺失或為空",
         "PROFILE_REJECTED": "現有 Output Profile 不接受",
         "PROFILE_ACCEPTED_NO_EVENTS": "Profile 接受但 Event 為空",
+        "PROFILE_ACCEPTED_MIXED_EVENT_PRESENCE": "Profile 接受：同一輸出同時有事件與空 Event 區塊（非全空）",
         "PROFILE_ACCEPTED_EVENT_DATE_EMPTY_TIMELINE":
             "Profile 接受：Event 有日期、Timeline 明示為空",
         "PROFILE_ACCEPTED_EVENT_AND_TIMELINE_DATES":
             "Profile 接受：Event／Timeline 皆有日期",
+        "PROFILE_ACCEPTED_DATE_SOURCES_SPLIT_ACROSS_BLOCKS":
+            "Profile 接受：Event／Timeline 日期分散在不同文章區塊，不代表同區塊關聯",
         "PROFILE_ACCEPTED_TIMELINE_DATE_ONLY":
             "Profile 接受：僅 Timeline 有日期",
         "PROFILE_ACCEPTED_EVENT_DATE_OTHER":

@@ -92,6 +92,37 @@ def _count_unexpected_skips(cases: list[ET.Element], relative_path: str,
     return count
 
 
+def _safe_unexpected_skip_codes(
+    cases: list[ET.Element], relative_path: str, platform: str,
+) -> list[str]:
+    """Classify operator capability skips with fixed, non-sensitive codes.
+
+    Never disclose raw JUnit messages, case names, paths or user account data.
+    The single intentional cross-platform skip is not counted as an error.
+    """
+    codes = set()
+    known = (
+        ("hardlinks are unsupported by operator filesystem", "HARDLINK_UNAVAILABLE"),
+        ("hardlinks unavailable on operator filesystem", "HARDLINK_UNAVAILABLE"),
+        ("privilege for directory symlink unavailable", "SYMLINK_PRIVILEGE_UNAVAILABLE"),
+        ("native symlink creation not authorized", "SYMLINK_PRIVILEGE_UNAVAILABLE"),
+    )
+    for case in cases:
+        skipped = case.find("skipped")
+        if skipped is None:
+            continue
+        message = skipped.get("message") or ""
+        if (platform == "nt"
+                and relative_path == SUITES[0][1]
+                and case.get("name")
+                == "test_non_windows_probe_fails_closed_without_attempted_path_open"
+                and message == "native Windows acceptance tested separately"):
+            continue
+        codes.add(next((code for text, code in known if text in message),
+                       "UNCLASSIFIED_SKIP_REQUIRES_REVIEW"))
+    return sorted(codes)
+
+
 def _run_suite(relative_path: str) -> tuple[bool, dict]:
     """Run a checked-in suite and parse only numeric JUnit totals/ordinals.
 
@@ -153,6 +184,8 @@ def _run_suite(relative_path: str) -> tuple[bool, dict]:
                             raw = (node.get("message") or "") + (node.text or "")
                             if "WINDOWS_JUNCTION_SETUP_FAILED" in raw:
                                 failure_codes.append("JUNCTION_SETUP_FAILED")
+                            elif "WINDOWS_NTFS_VOLUME_QUERY_FAILED" in raw:
+                                failure_codes.append("NTFS_VOLUME_QUERY_FAILED")
                             elif "WINDOWS_NTFS_VOLUME_REQUIRED" in raw:
                                 failure_codes.append("NTFS_VOLUME_REQUIRED")
                             elif "WINDOWS_NATIVE_RACE_TEST_NOT_EXERCISED" in raw:
@@ -201,6 +234,9 @@ def _run_suite(relative_path: str) -> tuple[bool, dict]:
             }
             if unexpected_skips:
                 detail["acceptance_code"] = "UNEXPECTED_TEST_SKIP"
+                detail["skip_reason_codes"] = _safe_unexpected_skip_codes(
+                    cases, relative_path, os.name,
+                )
             elif len(cases) == skipped:
                 detail["acceptance_code"] = "NO_EXECUTED_TESTS"
             return (

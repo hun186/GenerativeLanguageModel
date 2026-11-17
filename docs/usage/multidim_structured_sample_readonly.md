@@ -1,0 +1,107 @@
+# MultiDim structured-output-only random sample (operator GET-only)
+
+## Why this exists
+
+A random sample of *all* `news_test` documents mixes articles already
+containing `multidim_event_json` with ones that have not been extracted.
+That can overstate `UNVERIFIED_STRUCTURE` and incorrectly suggest a
+quality Rerun is required. This tool independently counts the full index
+and the documents matching a nested `multidim_event_json` query, then
+samples **only the latter**. The nested-query count is **not** a perfect
+inventory of all nonempty `_source` output representations; explain
+that denominator as "nested indexed candidates", not "all processed docs".
+
+## Operator command (Windows, within a trusted GLM checkout)
+
+```bat
+python scripts/audit_multidim_structured_sample_readonly.py --run --url "https://es.example.invalid:9200" --ca-cert "czjLLM/config_es/certs/http_ca.crt" --sample-size 150
+```
+
+Replace the reserved `es.example.invalid` name locally with the actual
+ES HTTPS origin, never commit the actual endpoint. The operator is
+prompted for username and a hidden password. Do not put credentials on
+the command line. If the previously verified CA is trusted but the
+locally confirmed **old IP SAN** is wrong, `--allow-ip-san-mismatch`
+permits **diagnostic-only** observation without disabling CA/expiry
+validation. Its status is `OBSERVED_WITH_TLS_EXCEPTION`, not PASS.
+Normal verification is required for production release acceptance.
+
+Without `--run` this command performs no network or credential input
+and returns `NOT_TESTED`.
+
+## Exact read scope
+
+The tool performs at most **three** HTTPS GET requests with fixed index
+and limited response sizes:
+
+1. `/news_test/_search`: size 0, exact count of all documents.
+2. `/news_test/_search`: size 0, exact count of **nested** MultiDim
+   candidate documents (nested `match_all`).
+3. `/news_test/_search`: seeded `random_score` sample of at most 300
+   candidates; response `_source` restricted to `multidim_event_json`.
+
+All three queries are GET URI-encoded JSON with a 3072-character request
+path bound. The probe refuses an HTTP 200 response with an Elasticsearch
+search timeout, failed/unfinished shards, or early termination: exact
+`hits.total` without complete search metadata is not trustworthy.
+There are no redirects, scroll/PIT, ES writes or Mapping updates,
+no bulk, no LLM, no rerun. The input can include private article text
+in **local process memory** for strict Output Profile validation,
+but it is never exported, written to disk or printed. Results contain
+only fixed status labels, counts and diagnostic codes: no endpoint,
+credentials, document IDs, event IDs, dates, text or raw query response.
+
+A sample remains non-atomic and exploratory: ES updates between the
+three requests can cause `INDEX_COUNTS_CHANGED`; this does not authorize
+any automatic retry or write. Use off-peak read-only access.
+
+## Interpret categories carefully
+
+- `profile_counts.PROFILE_ACCEPTED_NO_EVENTS` means the current
+  Output Profile accepts a structural no-Event result. It does **not**
+  prove the original article is irrelevant.
+- `profile_counts.PROFILE_ACCEPTED_MIXED_EVENT_PRESENCE` means a
+  structurally valid output contains *both* article blocks with Events and
+  article blocks without Events; it is **not** an all-empty result and must
+  not be interpreted as automatically eligible for no-event rerun skipping.
+- `profile_counts.PROFILE_ACCEPTED_DATE_SOURCES_SPLIT_ACROSS_BLOCKS`
+  means valid Event dates and valid Timeline dates exist in the same output,
+  but **only in different article blocks**. They must not be presented as
+  jointly dated within one block. Even when both arrays are dated in one
+  block, this audit does not prove an Event/Timeline `event_ids` match,
+  source fidelity, or SRAF citation validity.
+- `profile_accepted_no_events_and_task_guard_eligible` is an
+  **isolated** task-owned `multidim_event_time` acceptance comparison
+  with `allow_empty_events: true`, not actual effective runtime pending.
+- `time_counts.UNVERIFIED_STRUCTURE` can coexist with
+  `profile_counts.PROFILE_REJECTED`, but these counts have different
+  semantics; they cannot be summed as independent errors.
+- `profile_counts.OUTPUT_ABSENT` in the nested candidate sample is
+  an anomaly that should be examined before interpretation; absent
+  output outside this nested sample is **not included** in the
+  profile breakdown.
+- `evidence_reference_counts` is **not** an Output Profile failure
+  category or Rerun decision. It separately counts whole documents with
+  no Events, Events but empty snippets, only un-attributable snippet rows,
+  partial or complete per-block Event ID references to nonempty snippet
+  text. The sums refer to event IDs in their **own** article blocks.
+- When the output has multiple independently valid article blocks,
+  `EVENTS_WITHOUT_EVIDENCE` counts empty snippet arrays **in blocks that
+  actually contain Events**. Text in an Event-free block must never
+  make Event-bearing blocks appear to have Evidence. This is a
+  document-level diagnostic classification, not a reason to rerun.
+- `EVENTS_ALL_REFERENCED` proves only that each Event ID has some
+  nonempty text row referencing it, **not** that the quoted text matches
+  the original source, correct date, paragraph offsets or SRAF citation
+  policy. `EVENTS_WITHOUT_EVIDENCE` may be a legitimate low-value article
+  and must not automatically trigger Rerun.
+- A dated Event with empty Timeline remains acceptable, subject to
+  the full Output Profile and SRAF's evidence/date checks.
+- `effective_runtime_rerun=NOT_EVALUATED` means the tool has not
+  considered task-private YAML/Python policy, pipeline fingerprint,
+  force_since, model version, or any production launch conditions.
+
+This does not establish original-source fidelity, full-index rerun
+counts, actual SRAF recall, correct article coverage, Chinese analyzer
+quality or a safe deployment decision. Prefer actual source comparison
+and separately checked effective job policy before any operations.

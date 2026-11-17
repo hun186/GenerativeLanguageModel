@@ -218,16 +218,26 @@ def test_real_worker_keeps_its_own_lease_live_during_long_stubbed_call(monkeypat
     monkeypatch.setattr(pc, "select_idle_ollama_url", ollama_lb.select_idle_ollama_url)
     monkeypatch.setattr(pc, "release_url_load", ollama_lb.release_url_load)
     monkeypatch.setattr(pc, "maintain_url_load_lease", ollama_lb.maintain_url_load_lease)
-    monkeypatch.setattr(ollama_lb, "LEASE_SECS", 0.18)
+    # The former 0.18s TTL / 0.34s sleep was scheduler-sensitive on
+    # shared Hosted CI (heartbeat was 0.04s late). Use enough real-clock
+    # headroom while still requiring an observable renewal during a call
+    # that outlives its original lease expiry.
+    monkeypatch.setattr(ollama_lb, "LEASE_SECS", 1.5)
 
     def slow_provider_stub(*args, **kwargs):
-        # A simulated call lasts longer than the original 0.18s lease TTL.
-        time.sleep(0.34)
         lease_file = tmp_path / "logs" / "base_url_load.json"
+        before = json.loads(lease_file.read_text(encoding="utf-8"))
+        original_lease = before["http://private-model.invalid"]["leases"]
+        assert len(original_lease) == 1
+        initial_expiry = original_lease[0]
+        # Slow provider exceeds the initial 1.5s TTL and should still have
+        # one current, owner-linked lease after multiple renewal intervals.
+        time.sleep(2.25)
         record = json.loads(lease_file.read_text(encoding="utf-8"))
         current = record["http://private-model.invalid"]["leases"]
         assert len(current) == 1
-        assert current[0] > time.time()
+        assert current[0] > initial_expiry  # Prove renewal, not just existence.
+        assert current[0] > time.time()  # Prove the renewed lease is still live.
         return _response(), 0.0
 
     monkeypatch.setattr(pc, "CallLLMAPI", slow_provider_stub)
