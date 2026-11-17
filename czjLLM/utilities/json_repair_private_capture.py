@@ -333,33 +333,38 @@ def write_private_repair(
     }, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     if len(payload) > MAX_FILE_BYTES:
         raise ValueError("PRIVATE_BYTES_OVER_LIMIT")
-    folder = _run_dir(_root(root), digest)
-    target = folder / ("r-" + event_id + ".json")
-    with _lock_run(folder):
-        existing = _case_paths(folder)
-        if len(existing) >= MAX_CASES_PER_RUN or sum(
-            x.stat().st_size for x in existing
-        ) + len(payload) > MAX_RUN_BYTES:
-            raise ValueError("PRIVATE_RUN_BUDGET")
-        flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
-        fd = os.open(target, flags, 0o600)
-        try:
-            # closefd=True makes the handle close even when flush/fsync raises.
-            with os.fdopen(fd, "wb") as handle:
-                fd = None
-                handle.write(payload)
-                handle.flush()
-                os.fsync(handle.fileno())
-        except BaseException:
-            # Windows denies unlink of a still-open CRT descriptor. Close
-            # before deleting partial sensitive plaintext on failure.
-            if fd is not None:
-                os.close(fd)
+    private_root = _root(root)
+    # Serialized cross-run cleanup and global byte budget. Per-run locks
+    # still protect the chosen event against concurrent manual deletion.
+    with _lock_run(private_root):
+        active_bytes = _prune_locked(private_root, time.time())
+        if active_bytes + len(payload) > MAX_TOTAL_BYTES:
+            raise ValueError("PRIVATE_TOTAL_BYTES_BUDGET")
+        folder = _run_dir(private_root, digest)
+        target = folder / ("r-" + event_id + ".json")
+        with _lock_run(folder):
+            existing = _case_paths(folder)
+            if len(existing) >= MAX_CASES_PER_RUN or sum(
+                x.stat().st_size for x in existing
+            ) + len(payload) > MAX_RUN_BYTES:
+                raise ValueError("PRIVATE_RUN_BUDGET")
+            flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
+            fd = os.open(target, flags, 0o600)
             try:
-                target.unlink()
-            except OSError:
-                pass
-            raise
+                with os.fdopen(fd, "wb") as handle:
+                    fd = None
+                    handle.write(payload)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+            except BaseException:
+                # Windows denies unlink of a still-open CRT descriptor.
+                if fd is not None:
+                    os.close(fd)
+                try:
+                    target.unlink()
+                except OSError:
+                    pass
+                raise
     return True
 
 
