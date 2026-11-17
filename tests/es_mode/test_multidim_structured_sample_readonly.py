@@ -173,7 +173,7 @@ def test_sample_is_three_https_gets_only_and_ca_verified(monkeypatch, tmp_path):
         lambda *args: FakeOpener(),
     )
     result = _fetch_sample(
-        "https://es.example.invalid:9200", str(cert), "operator",
+        "https://192.0.2.10:9200", str(cert), "operator",
         "SENSITIVE_PASSWORD", sample_size=2, skip_hostname=True,
     )
     assert result["profile_counts"]["PROFILE_ACCEPTED_NO_EVENTS"] == 1
@@ -184,7 +184,7 @@ def test_sample_is_three_https_gets_only_and_ca_verified(monkeypatch, tmp_path):
     assert len(calls) == 3
     for url, method, authorization, timeout in calls:
         assert method == "GET"
-        assert url.startswith("https://es.example.invalid:9200/news_test/_search?")
+        assert url.startswith("https://192.0.2.10:9200/news_test/_search?")
         assert timeout <= 20
         assert authorization == "Basic " + base64.b64encode(
             b"operator:SENSITIVE_PASSWORD").decode("ascii")
@@ -233,3 +233,24 @@ def test_sample_query_rejects_broad_url(monkeypatch):
     with pytest.raises(ValueError, match="SEARCH_URI_TOO_LONG"):
         _get_search("https://es.example.invalid:9200", Blocked(),
                     {"query": {"terms": {"x": ["X" * 5000]}}})
+
+
+
+def test_sample_san_exception_rejects_dns_host_before_cert_or_network():
+    with pytest.raises(ValueError, match="TLS_SAN_EXCEPTION_IP_LITERAL_REQUIRED"):
+        _fetch_sample(
+            "https://es.example.invalid:9200", "/nonexistent-ca.crt",
+            "user", "password", sample_size=1, skip_hostname=True,
+        )
+
+
+def test_sample_cli_rejects_dns_san_exception_before_credentials(monkeypatch, capsys):
+    monkeypatch.setattr("builtins.input", lambda *_: (_ for _ in ()).throw(
+        AssertionError("should not request credentials")))
+    assert main(["--run", "--url", "https://es.example.invalid:9200",
+                 "--ca-cert", "/nonexistent-ca.crt",
+                 "--allow-ip-san-mismatch"]) == 2
+    report = json.loads(capsys.readouterr().out)
+    assert report["status"] == "UNAVAILABLE"
+    assert report["reason_code"] == "TLS_SAN_EXCEPTION_IP_LITERAL_REQUIRED"
+    assert report["raw_documents_exported"] is False

@@ -24,7 +24,7 @@ from czjLLM.common.multidim_index_sample_audit import (  # noqa: E402
     INDEX, MAX_SAMPLE, summarize_structured_sample,
 )
 from scripts.audit_multidim_es_mapping_readonly import (  # noqa: E402
-    _NoRedirect, _endpoint,
+    _NoRedirect, _endpoint, _require_ip_literal_for_san_exception,
 )
 
 MAX_RESPONSE_BYTES = 12 * 1024 * 1024
@@ -101,6 +101,8 @@ def _get_search(origin: str, opener, query: dict) -> dict:
 
 def _fetch_sample(origin: str, cafile: str, user: str, password: str,
                   *, sample_size: int, skip_hostname: bool) -> dict:
+    if skip_hostname:
+        _require_ip_literal_for_san_exception(origin)
     ca = Path(cafile)
     if not ca.is_file():
         raise ValueError("CA_CERT_FILE_NOT_FOUND")
@@ -187,6 +189,8 @@ def main(argv: list[str] | None = None) -> int:
         if not args.url or not args.ca_cert:
             raise ValueError("URL_AND_CA_REQUIRED")
         origin = _endpoint(args.url)
+        if args.allow_ip_san_mismatch:
+            _require_ip_literal_for_san_exception(origin)
         username = input("ES user (not shown in report): ").strip()
         password = getpass.getpass("ES password (hidden): ")
         if not username or not password:
@@ -212,6 +216,7 @@ def main(argv: list[str] | None = None) -> int:
             "SEARCH_RESPONSE_INVALID", "INDEX_COUNTS_CHANGED",
             "COUNT_NOT_EXACT", "UNVERIFIED_SAMPLE",
             "SEARCH_PARTIAL_OR_UNVERIFIED",
+            "TLS_SAN_EXCEPTION_IP_LITERAL_REQUIRED",
         }
         code = str(exc) if isinstance(exc, ValueError) else "INPUT_UNAVAILABLE"
         report = {**minimal, "status": "UNAVAILABLE",
