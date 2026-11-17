@@ -104,6 +104,7 @@ from czjLLM.prompt_pipeline.round_runner import (
     BatchRunTimeout,
     CONSUMER_STATE,
     _run_prompt_job,
+    _round_timeout_from_jobs,
     run_round,
 )
 from czjLLM.prompt_pipeline.refill_scheduler import ClaimedWork, run_slot_refill
@@ -3273,6 +3274,10 @@ def _run_windows_live_slot_refill(
             run_worker=lambda item: _run_prompt_job(item[3]),
             acknowledge=acknowledge,
             max_inflight=max(1, min(int(granted), 256)),
+            deadline_sec=_round_timeout_from_jobs(
+                (), getattr(ctx, "llm_round_timeout_sec", None),
+            ),
+            drain_on_deadline=True,
         )
     # This counter is a Queue Success receipt, not a sink writeback ACK.
     tlog(
