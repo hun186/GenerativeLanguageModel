@@ -3117,6 +3117,10 @@ def _run_windows_live_slot_refill(
     requested = max(1, min(int(ctx.n_process), 256))
     claimed_count = 0
     first_pending = True
+    # Only scheduler callbacks touch this set. Keep unacknowledged parents
+    # registered until their durable Meter transition completes, even if the
+    # Worker has already published its split children into TODO.
+    unacknowledged_parents = set()
     blocked = getattr(ctx, "_queue_claim_blocked_event", None)
 
     def claim_one():
@@ -3142,9 +3146,15 @@ def _run_windows_live_slot_refill(
                 item for item in current_items
                 if item not in _queue_recovery_blocked(ctx)
             ]
+            protected_children = {
+                Path(item) / "TODO" / f"{Path(name).stem}-{suffix}.txt"
+                for item, name in unacknowledged_parents
+                for suffix in (0, 1)
+            }
             claim_ids = {}
             next_batch = pick_and_claim_next_prompts(
                 eligible, per_round_limit=1, claim_ids_out=claim_ids,
+                excluded_todo_sources=protected_children,
             )
             if not next_batch:
                 return None
@@ -3183,6 +3193,7 @@ def _run_windows_live_slot_refill(
                 "last_dispatch_ts": time.time(),
             })
         meter_update(meter_fn, _dispatch_receipt)
+        unacknowledged_parents.add((item_dir, Path(pf).name))
         claimed_count += 1
         CONSUMER_STATE["last_dispatch_ts"] = time.monotonic()
         _bump(ctx)
@@ -3248,6 +3259,9 @@ def _run_windows_live_slot_refill(
                 "last_round_ts": time.time(),
             })
         meter_update(meter_fn, _acknowledge_receipt)
+        # Release child claims only AFTER split verification and the parent's
+        # queue-running -> pending receipts are durably recorded.
+        unacknowledged_parents.discard((item_dir, Path(pf).name))
         CONSUMER_STATE["thread_round_completed_count"] = (
             int(CONSUMER_STATE.get("thread_round_completed_count", 0)) + 1
         )
