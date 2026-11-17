@@ -215,6 +215,7 @@ def _prune_locked(root: Path, now: float) -> int:
     if len(entries) > MAX_RUN_FOLDERS + 1:
         raise ValueError("PRIVATE_TOTAL_FOLDER_BUDGET")
     total_bytes = 0
+    empty_folders = []
     for folder in entries:
         if folder.name == ".capture.lock":
             _is_regular_private(folder, directory=False)
@@ -227,6 +228,7 @@ def _prune_locked(root: Path, now: float) -> int:
             raise ValueError("PRIVATE_RUN_PERMISSIONS")
         _check_auto_run_acl(root, folder)
         with _lock_run(folder):
+            remaining = 0
             for file in _case_paths(folder):
                 before = _is_regular_private(file, directory=False)
                 if before.st_mtime > now + 300:
@@ -240,9 +242,26 @@ def _prune_locked(root: Path, now: float) -> int:
                         raise ValueError("PRIVATE_CHANGED")
                     file.unlink()
                 else:
+                    remaining += 1
                     total_bytes += before.st_size
                     if total_bytes > MAX_TOTAL_BYTES:
                         raise ValueError("PRIVATE_TOTAL_BYTES_BUDGET")
+            if remaining == 0:
+                empty_folders.append(folder)
+    # Root-wide lock is still held; all new writes also acquire it first.
+    # Remove empty run metadata, otherwise unattended Linux schedules would
+    # eventually exhaust MAX_RUN_FOLDERS despite the 72h file TTL.
+    for folder in empty_folders:
+        lockfile = folder / ".capture.lock"
+        try:
+            _is_regular_private(folder, directory=True)
+            _is_regular_private(lockfile, directory=False)
+            lockfile.unlink()
+            folder.rmdir()
+        except OSError:
+            # An in-flight legacy reader/process may still hold the handle.
+            # Leave it and retry on a later maintenance entry.
+            pass
     return total_bytes
 
 
@@ -413,10 +432,12 @@ def clear_private_run(root: Path | str, run_id: str, confirmation: str) -> int:
     """Manual confirmation; clears only this run's exact capture files."""
     if confirmation != "DELETE_PRIVATE_JSON_REPAIRS":
         raise ValueError("CONFIRMATION_REQUIRED")
-    folder = _existing_run_dir(_root(root), _validate_run_id(run_id))
-    with _lock_run(folder):
-        cases = _case_paths(folder)
-        for item in cases:
-            _is_regular_private(item, directory=False)
-            item.unlink()
-        return len(cases)
+    private_root = _root(root)
+    with _lock_run(private_root):
+        folder = _existing_run_dir(private_root, _validate_run_id(run_id))
+        with _lock_run(folder):
+            cases = _case_paths(folder)
+            for item in cases:
+                _is_regular_private(item, directory=False)
+                item.unlink()
+            return len(cases)
