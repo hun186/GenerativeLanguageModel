@@ -6,6 +6,14 @@ import yaml
 REPO = Path(__file__).resolve().parents[1]
 WORKFLOW = REPO / ".github" / "workflows" / "ci.yml"
 FAST = {
+    # Subsequent PRs added these early gates; protect them from silent removal,
+    # conditional skip, duplication, or accidental movement after full E2E.
+    "Verify disposable quality retry SQLite CAS proof (Issue 313)": (
+        "tests/es_mode/test_quality_retry_sqlite_proof.py",),
+    "Audit MultiDim search-field capabilities without ES (offline)": (
+        "tests/es_mode/test_multidim_search_field_capabilities.py",),
+    "Verify block-local Evidence reference counts (offline)": (
+        "tests/es_mode/test_multidim_evidence_reference_coverage.py",),
     "Verify offline Quality retry budget contract (Issue 313)": (
         "tests/es_mode/test_quality_retry_contract.py",),
     "Verify offline multidim Event and Timeline time rerun audit": (
@@ -40,6 +48,10 @@ def test_multidim_fast_gate_precedes_full_e2e_without_removing_it():
     assert max(labels.index(name) for name in FAST) < labels.index(ORDER_CHECK)
     assert labels.index(ORDER_CHECK) < labels.index(FULL_GATE)
 
+    # New regression groups must not be moved behind the original five:
+    # all eight fail-fast groups are mandatory before full E2E.
+    assert len(FAST) == 8
+    assert sum(labels.count(name) for name in FAST) == len(FAST)
     gate = steps[labels.index(FULL_GATE)]
     assert "tests/e2e -m e2e" in gate["run"]
     assert "--maxfail=1" in gate["run"]
