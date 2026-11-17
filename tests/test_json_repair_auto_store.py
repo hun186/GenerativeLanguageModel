@@ -191,3 +191,22 @@ def test_main_batch_entry_invokes_cache_maintenance_before_mode_dispatch():
     assert 'startup_private_capture_maintenance()' in entry
     assert entry.index('startup_private_capture_maintenance()') < entry.index(
         '    # 模式選擇')
+
+
+def test_disabled_capture_still_expires_old_plaintext_on_headless_launch(
+    monkeypatch, tmp_path,
+):
+    project = _local_project(monkeypatch, tmp_path / "checkout")
+    project.mkdir()
+    monkeypatch.delenv(cap.ROOT_ENV, raising=False)
+    monkeypatch.delenv(cap.ENABLE_ENV, raising=False)
+    root = cap.configured_private_root()
+    event = uuid4().hex
+    cap.write_private_repair(root, "run-before-optout", event, "SECRET", "REPAIRED")
+    stale = next(root.rglob("r-*.json"))
+    old = time.time() - cap.SNAPSHOT_TTL_SECONDS - 30
+    os.utime(stale, (old, old))
+    monkeypatch.setenv(cap.ENABLE_ENV, "0")
+    assert cap.startup_private_capture_maintenance() == "DISABLED"
+    assert not stale.exists()
+    assert not list(root.glob("run-*"))
