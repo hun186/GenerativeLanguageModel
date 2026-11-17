@@ -147,7 +147,7 @@ def test_worker_without_durable_success_never_gets_false_ack(tmp_path, monkeypat
     assert not fixture.thread.is_alive()
     assert len(fixture.outcomes) == 1
     assert isinstance(fixture.outcomes[0], RuntimeError)
-    assert "verifiable Success" in str(fixture.outcomes[0])
+    assert "unacknowledged RUNNING" in str(fixture.outcomes[0])
     with fixture.meter_lock:
         assert fixture.meter["rows"]["1"]["done"] == 0
         assert fixture.meter["rows"]["1"]["queue_running"] == 1
