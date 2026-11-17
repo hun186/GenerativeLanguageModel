@@ -1,11 +1,8 @@
 """Windows live slot-refill Consumer integration, no remote LLM or sink."""
-from collections import defaultdict
 from pathlib import Path
 from types import SimpleNamespace
 import threading
-import time
 
-import pytest
 
 from czjLLM.prompt_pipeline import pipeline_controller as pc
 from czjLLM.prompt_pipeline.runtime_support.prompt_queue import (
