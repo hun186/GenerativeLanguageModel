@@ -3173,11 +3173,15 @@ def _run_windows_live_slot_refill(
             dispatch_item_dir=item_dir,
             **_llm_call_audit_kwargs(ctx),
         )
-        meter_update(
-            meter_fn,
-            lambda d, _item=item_dir, _meta=item_meta:
-                _meter_on_dispatch(d, {_item: _meta}, Counter({_item: 1}), 1),
-        )
+        def _dispatch_receipt(d):
+            _meter_on_dispatch(
+                d, {item_dir: item_meta}, Counter({item_dir: 1}), 1,
+            )
+            d.setdefault("consumer", {}).update({
+                "alive": True,
+                "last_dispatch_ts": time.time(),
+            })
+        meter_update(meter_fn, _dispatch_receipt)
         claimed_count += 1
         CONSUMER_STATE["last_dispatch_ts"] = time.monotonic()
         _bump(ctx)
@@ -3199,17 +3203,19 @@ def _run_windows_live_slot_refill(
             # Success may not be inferred from a returned Future: retain
             # original RUNNING evidence and fail closed for operator review.
             raise RuntimeError("Worker returned without verifiable Success or TODO")
-        meter_update(
-            meter_fn,
-            lambda d, _item=item_dir, _pk=pk:
-                _meter_on_finish_batch_v2(
-                    d, {_item: {"pk": _pk}},
-                    count_by_item_done=Counter({_item: count_done}) if count_done else Counter(),
-                    n_done=count_done,
-                    count_by_item_requeued=Counter({_item: count_requeued}) if count_requeued else Counter(),
-                    n_requeued=count_requeued,
-                ),
-        )
+        def _acknowledge_receipt(d):
+            _meter_on_finish_batch_v2(
+                d, {item_dir: {"pk": pk}},
+                count_by_item_done=Counter({item_dir: 1}) if count_done else Counter(),
+                n_done=count_done,
+                count_by_item_requeued=Counter({item_dir: 1}) if count_requeued else Counter(),
+                n_requeued=count_requeued,
+            )
+            d.setdefault("consumer", {}).update({
+                "alive": True,
+                "last_round_ts": time.time(),
+            })
+        meter_update(meter_fn, _acknowledge_receipt)
         CONSUMER_STATE["thread_round_completed_count"] = (
             int(CONSUMER_STATE.get("thread_round_completed_count", 0)) + 1
         )
