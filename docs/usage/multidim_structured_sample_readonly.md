@@ -80,6 +80,16 @@ any automatic retry or write. Use off-peak read-only access.
   an anomaly that should be examined before interpretation; absent
   output outside this nested sample is **not included** in the
   profile breakdown.
+- `evidence_reference_counts` is **not** an Output Profile failure
+  category or Rerun decision. It separately counts whole documents with
+  no Events, Events but empty snippets, only un-attributable snippet rows,
+  partial or complete per-block Event ID references to nonempty snippet
+  text. The sums refer to event IDs in their **own** article blocks.
+- `EVENTS_ALL_REFERENCED` proves only that each Event ID has some
+  nonempty text row referencing it, **not** that the quoted text matches
+  the original source, correct date, paragraph offsets or SRAF citation
+  policy. `EVENTS_WITHOUT_EVIDENCE` may be a legitimate low-value article
+  and must not automatically trigger Rerun.
 - A dated Event with empty Timeline remains acceptable, subject to
   the full Output Profile and SRAF's evidence/date checks.
 - `effective_runtime_rerun=NOT_EVALUATED` means the tool has not

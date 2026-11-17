@@ -33,6 +33,10 @@
 - 2026-11-15: #314 offline stored Profile audit merged; #310/#312 remain Draft despite latest exact-head Hosted gate.
 - 2026-11-15: #313 new independent offline-only immutable retry budget and tests; actual ledger, CAS and ES rollout are future work.
 
+## Reviewed Work Awaiting CI
+- 2026-11-17 PR #328 resynced after #327 merge: counts-only per-block Event to Evidence reference coverage, source-fidelity explicitly NOT proven, zero-evidence accepted; prior exact HEAD Hosted gates passed, **new HEAD CI and Codex pending**. No live ES or LLM.
+
+
 ## Archived History
 - `.codex/archive/memory-pr312-pre317-20261116.md` — exact previous Draft #312 memory Git blob `5076db9fcaf7986b86104a72db7c875922df68d9`, original ES/YAML safety rationale and CI history preserved.
 - `.codex/archive/memory.md-20261115-214100.md` — exact immediately preceding active memory Git blob `4470bd56dd3caaa54057f04a646e6c9fde40e4ad`; old pending-stage stories, historical Review/CI evidence and superseded handoffs are preserved.
