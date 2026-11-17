@@ -1,6 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- 2026-11-17 PR #331 pending: expand early Linux CI ordering guard to cover new disposable SQLite, search-field, and Evidence-contract test steps introduced in #326/#327/#328; prevents future silent skip or omission. CI/Codex unverified on opened HEAD, no runtime changes.
 - 2026-11-17 PR #329 pending: stabilize synthetic Worker heartbeat test against Hosted Linux scheduler jitter (1.5s fixture TTL, 2.25s stubbed call, assert expiry advanced and still live). Exact-head CI/Codex and physical operator behavior not yet verified. No runtime lease parameter, ES/LLM, Queue or deployment changed.
 - **2026-11-16 #312 source merged:** Event-first date with empty Timeline allowed, YAML-local rerun only. Prior operator read-only 150-document sample is exploratory; `news_test` effective runtime policy, complete source/sink evidence, and explicit operator approval remain required before any live ES replay.
 - **2026-11-15 main `aa4db08f9c958be4d879e9ffcc4e0d1c2c684ab4`:** PR #316 merged: read-only active Quality incident summary; fixed two Codex P2 validation/dedup findings, exact-head Hosted Linux/Windows 3.10/3.11, secret scan and Review PASS. PR #315 merged as `742e759b0723df79b17cd1e8abf7f4f56874f28e`: independent Meter/Load/Audit source roots. No live H100 root cause or Queue/ES change; Issue #302 OPEN.
