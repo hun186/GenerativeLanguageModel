@@ -46,3 +46,13 @@ Queue Claim 檔案模擬驗證。沒有把它接入使用者的 Windows 生產�
 - 僅新增離線真實檔案 Queue 及 Meter 驗收；
   **Windows、Ollama H100、ES/SQL 寫回與長任務壓測均未實機驗證**。
   程式碼 PR/Hosted CI 不代表已在使用者的執行中 Job 熱替換。
+
+### JSON 長輸出拆分保護
+
+Legacy Worker 可能因長度上限把一個 RUNNING JSON 父切片替換成
+兩個 `TODO` 子切片，並不產生父切片 Success。Consumer 只有在
+原父切片已不在 Queue，且來源 Prompt SHA 與已保存的拆分意圖一致、
+兩個子切片 TODO 都存在且內容雜湊吻合時，才在同一 Meter 交易把
+「原 RUNNING -1、pending +2、row.total +1」記帳。
+此動作不是成功、也不是 Sink ACK；不完整或矛盾狀態保持 INCOMPLETE。
+`test_consumer_live_slot_refill.py` 覆蓋此合法拆分路徑。
