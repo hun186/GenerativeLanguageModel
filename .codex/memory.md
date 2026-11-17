@@ -47,3 +47,6 @@
 - `.codex/archive/memory.md-20261030-103500.md` — original Git blob `8af2694365bd5202a1533a36c8b7cd4c82f22408`.
 - `.codex/archive/memory.md-20261028-104900.md` — original Git blob `309b57f00fc85f0d03fd12fdb3b7bdfdaa4708d8`.
 - `.codex/archive/memory.md-20261027-213700.md` — original Git blob `72e0fe6912d3c19e46b2c11de4da532e24ed61fd`.
+
+## TLS Diagnostic Exception (2026-11-17)
+- PR #334 pending: read-only GLM MultiDim Mapping and nested-only sample probes now refuse `--allow-ip-san-mismatch` for DNS hostnames. Only literal IPv4/IPv6 HTTPS origins can use that operator-controlled diagnostic exception. CA chain and certificate validity remain mandatory, no secrets are exported; synthetic CI/Codex still pending. No production ES/LLM/rerun or TLS certificate replacement.
