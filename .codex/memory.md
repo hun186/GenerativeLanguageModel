@@ -21,6 +21,7 @@
 - Active memory remains under 200 lines / 40,000 UTF-8 bytes; historical exact text is in the immutable archive below. Archive-first compaction performed in this Phase A to avoid loss of old investigation and testing outcomes.
 
 ## Recent Changes
+- 2026-11-17 PR #330 in review: correct multi-block Evidence counts so snippet rows in Event-free blocks do not mask missing Evidence in Event-bearing blocks. Synthetic privacy regressions; read-only audit only, no Output Profile/ES/Rerun changes. Exact HEAD CI/Review pending.
 - 2026-11-17 PR #327 resynced onto #326: task-scoped, no-network GLM MultiDim search-field inventory for SRAF, distinguishing keyword-only vs text-template fields. Does not prove Chinese tokenization, actual news_test Mapping or reindex coverage; fresh HEAD Hosted CI and Codex Review required.
 - 2026-11-17 PR #326 pending: an isolated, synthetic SQLite CAS proof for Quality retry state across restart and local competing connections (#313); no production ledger integration, scheduler, sink, ES/LLM, or operator reset authorization. CI, Codex Review and host acceptance unverified at opening.
 - 2026-11-17 CI fast feedback PR (pending review): moved 5 existing synthetic MultiDim/quality checks to just after E2E dependency collection and before full production E2E; added ordering/coverage regression. All original full E2E and Windows Hosted gates retained, no live ES/LLM or production runtime change. Exact-head CI and Codex status NOT VERIFIED at PR creation.
