@@ -121,7 +121,14 @@ def _win_private_acl(path: Path, user_sid: str) -> bool:
     aces = re.findall(r"\(([^()]*)\)", sddl)
     if not aces or prefix + "".join("(" + ace + ")" for ace in aces) != sddl:
         return False
-    allowed = {"SY", "BA", "S-1-5-18", "S-1-5-32-544", user_sid}
+    # Windows converts the well-known local Administrator RID-500 SID to
+    # "LA" in canonical SDDL. Only accept that alias when it is OUR token SID.
+    aliases = {user_sid}
+    if user_sid.endswith("-500"):
+        aliases.add("LA")
+    elif user_sid.endswith("-501"):
+        aliases.add("LG")
+    allowed = {"SY", "BA", "S-1-5-18", "S-1-5-32-544", *aliases}
     owner_granted = False
     for ace in aces:
         parts = ace.split(";")
@@ -132,7 +139,7 @@ def _win_private_acl(path: Path, user_sid: str) -> bool:
         # Child directories and snapshot files must inherit the same restriction.
         if "OI" not in parts[1] or "CI" not in parts[1]:
             return False
-        if parts[5] == user_sid:
+        if parts[5] in aliases:
             owner_granted = True
     return owner_granted
 
