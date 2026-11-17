@@ -121,7 +121,7 @@ The program finds this from its installed source path, NOT the process cwd.
 - The source before and after repair is stored only in this dedicated
   operator-account private cache, never in routine Quality JSONL or LLM CSV.
 - Each snapshot is readable for up to 72 hours. Expired files are pruned
-  opportunistically during a new successful repair or on opening the repair
+  opportunistically at GLM batch startup, during a new successful repair or on opening the repair
   GUI. There is no background janitor on an otherwise idle host.
 - The pre-existing per-case and per-run limits still apply. There is also
   a 128 MiB active cross-run quota and bounded directory traversal.
