@@ -103,3 +103,44 @@ claim/ACK, or ES/SQL sink success rules.
 Verifying only the configured private root is insufficient: an existing `run-<digest>` child may be a separately mounted NFS/CIFS filesystem. On Linux the implementation now fails closed unless the **actual per-run directory** passes the same `/proc/self/mountinfo` local-filesystem allowlist, before creating the lock or snapshot; read and manual clear are guarded too. Synthetic regressions cover existing and freshly created child folders. Mount changes after validation, remote block devices, local adversaries, ACLs, backups and host-level access are not proven secure; operator review remains mandatory.
 
 An additional fail-closed rule rejects any remote/unknown **matching ancestor mount** (not merely the longest mountpoint). This addresses an older local child mount hidden by an NFS/CIFS overmount on its parent; it may conservatively refuse some valid complex local mount layouts. Never bypass the guard for convenience.
+
+
+## 2026-11-17: Automatic project-local cache (new default)
+
+The older manual opt-in workflow above remains available as an override. In the
+new release, successfully repaired JSON is saved by default only after a
+strict local security check. On Windows and Linux the cache is located at:
+
+    <GenerativeLanguageModel>/.runtime-private/json_repair/
+
+The program finds this from its installed source path, NOT the process cwd.
+
+- Windows fixed local NTFS/ReFS: secure protected owner/SYSTEM/Administrators
+  ACL created atomically via Win32; unsafe existing ACLs and reparse paths
+  are rejected. POSIX: local allowlisted filesystem and mode 0700.
+- The source before and after repair is stored only in this dedicated
+  operator-account private cache, never in routine Quality JSONL or LLM CSV.
+- Each snapshot is readable for up to 72 hours. Expired files are pruned
+  opportunistically during a new successful repair or on opening the repair
+  GUI. There is no background janitor on an otherwise idle host.
+- The pre-existing per-case and per-run limits still apply. There is also
+  a 128 MiB active cross-run quota and bounded directory traversal.
+- The original GLM GUI has the existing JSON differences command. It opens
+  only an exact, nonexpired Run/event-matched snapshot. Uncaptured historical
+  repairs cannot be recovered from the statistics-only audit.
+- Set CZJLLM_JSON_REPAIR_CAPTURE=0 to disable NEW automatic captures.
+  CZJLLM_JSON_REPAIR_PRIVATE_DIR remains available as a manual path override
+  subject to the existing filesystem restrictions and operator ACL review.
+- Cache files are plaintext and ordinary removal is NOT secure disk erasure.
+  A Git ignore rule prevents commits, but backup/sync/7z/Docker packaging
+  must also exclude .runtime-private explicitly. Do not use shared SMB/NFS
+  mounts or synced checkout folders for sensitive JSON.
+- Windows GUI and Linux scheduled jobs on different machines have independent
+  local caches. The Windows GUI cannot magically retrieve a Linux-only cache;
+  do not automatically synchronize plaintext repair records.
+- If the security check or quota fails, normal JSON repair and ES/SQL
+  processing continue; the console displays only a fixed failure code.
+
+This new default is best-effort operator-local storage, not encrypted at rest,
+a defense against malicious local users, or proof of physical host acceptance.
+Hosted CI and operator native NTFS/ACL verification remain distinct.
