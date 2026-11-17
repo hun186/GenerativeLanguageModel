@@ -1,8 +1,9 @@
-"""Offline-proven slot refill primitive; NOT wired to live Consumer.
+"""Slot-refill primitive used by the Windows legacy Consumer.
 
 The caller retains authority over filesystem Queue Claim, Worker execution,
-Success no-clobber, resource limits and meter acknowledgements. No job is
-replayed, unclaimed, or implicitly marked as persisted by this module.
+Success no-clobber, resource limits and Meter queue-transition ACKs. This
+scheduler never implies that a SQL/ES sink writeback was confirmed, nor does
+it replay or unclaim failed work. Linux and stage-managed paths stay separate.
 """
 from __future__ import annotations
 
