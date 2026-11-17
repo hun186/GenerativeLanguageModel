@@ -61,3 +61,45 @@ def test_contract_field_type_drift_fails_without_leaking_mapping_content():
     assert report["status"] == "UNAVAILABLE"
     assert report["reason_code"] == "CONTRACT_FIELD_DRIFT"
     assert "PRIVATE_MAPPING" not in json.dumps(report)
+
+
+def test_primary_index_disabled_fails_closed_instead_of_text_indexed():
+    import yaml
+    from czjLLM.common.multidim_search_field_capabilities import ROOT, CONTRACT
+    spec = json.loads(CONTRACT.read_text(encoding="utf-8"))
+    mapping = yaml.safe_load((ROOT / spec["mapping_source"]).read_text(encoding="utf-8"))
+    mapping["properties"]["multidim_event_json"]["properties"]["Impact"][
+        "properties"]["impact_description"]["index"] = False
+    assert inspect_template_search_fields(spec, mapping) == {
+        "status": "UNAVAILABLE", "reason_code": "PRIMARY_INDEX_DISABLED",
+        "field": "Impact.impact_description",
+    }
+
+
+def test_nonindexed_keyword_text_multifield_is_not_searchable_text():
+    import yaml
+    from czjLLM.common.multidim_search_field_capabilities import ROOT, CONTRACT
+    spec = json.loads(CONTRACT.read_text(encoding="utf-8"))
+    mapping = yaml.safe_load((ROOT / spec["mapping_source"]).read_text(encoding="utf-8"))
+    field = mapping["properties"]["multidim_event_json"]["properties"][
+        "Event"]["properties"]["subject"]
+    field["fields"] = {"search": {"type": "text", "index": False}}
+    data = inspect_template_search_fields(spec, mapping)
+    assert {x["field"]: x["capability"] for x in data["fields"]}[
+        "Event.subject"] == "KEYWORD_ONLY"
+    field["fields"]["search"]["index"] = True
+    indexed = inspect_template_search_fields(spec, mapping)
+    assert {x["field"]: x["capability"] for x in indexed["fields"]}[
+        "Event.subject"] == "KEYWORD_PLUS_TEXT"
+
+
+def test_string_index_flag_is_unverified_not_silently_true():
+    import yaml
+    from czjLLM.common.multidim_search_field_capabilities import ROOT, CONTRACT
+    spec = json.loads(CONTRACT.read_text(encoding="utf-8"))
+    mapping = yaml.safe_load((ROOT / spec["mapping_source"]).read_text(encoding="utf-8"))
+    mapping["properties"]["multidim_event_json"]["properties"]["Event"][
+        "properties"]["object"]["index"] = "false"
+    assert inspect_template_search_fields(spec, mapping) == {
+        "status": "UNAVAILABLE", "reason_code": "INDEX_FLAG_UNVERIFIED"
+    }
