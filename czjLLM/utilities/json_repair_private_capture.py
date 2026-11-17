@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Explicit opt-in, bounded local-private JSON repair snapshots (sensitive).
+"""Bounded locally protected JSON repair before/after snapshots (sensitive).
 
-Never log the raw strings to console, Quality JSONL, or the regular LLM audit.
-This is a cooperating local-filesystem best effort, not encryption/hostile-writer
-containment. Default capture OFF; Windows ACLs require operator verification.
+Automatic capture is enabled by default only when local security checks pass;
+CZJLLM_JSON_REPAIR_CAPTURE=0 explicitly disables new captures. Raw data never
+enters Quality JSONL or the LLM audit. Plaintext storage is not encryption or
+protection against hostile local administrators and external backups/sync.
 """
 from __future__ import annotations
 
@@ -275,14 +276,26 @@ def prune_expired_private_captures(root: Path | str) -> int:
 
 
 def startup_private_capture_maintenance() -> str:
-    """Safe once-per-launch housekeeping for Windows GUI and Linux schedulers."""
-    if not capture_enabled():
-        return "DISABLED"
+    """Once-per-launch expiry sweep, including runs with capture turned OFF."""
+    enabled = capture_enabled()
+    if not enabled:
+        # Opting out stops NEW plaintext only: any existing private cache
+        # must still be eligible for 72h cleanup on a headless scheduler.
+        raw = os.environ.get(ROOT_ENV, "").strip()
+        if raw:
+            existing = Path(raw)
+        else:
+            from czjLLM.utilities.json_repair_auto_store import (
+                CACHE_RELATIVE_PATH, PROJECT_ROOT,
+            )
+            existing = PROJECT_ROOT / CACHE_RELATIVE_PATH
+        if not existing.exists():
+            return "DISABLED"
     try:
         prune_expired_private_captures(configured_private_root())
     except (OSError, ValueError, TypeError, UnicodeError):
         return "UNAVAILABLE"
-    return "READY"
+    return "READY" if enabled else "DISABLED"
 
 
 @contextmanager
