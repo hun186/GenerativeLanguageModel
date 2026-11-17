@@ -73,3 +73,19 @@ JSON parse 的 schema 欄位數。首次錯誤位置為解析器相對原文的
 詞法比較與圖示不保證修復後語意、日期、Event／Event_Timeline、
 完整來源或 SQL／ES Sink 正確；模型輸出只通過 JSON parse
 不代表沒有截斷。此 GUI 改動不影響 Prompt、模型、Queue、重跑與寫回。
+
+## 依賴的私有原文擴充（Issue #309，尚未驗收）
+
+在獨立的 #309 安全敏感開發分支中，使用者可在浮動視窗選取
+`run_id + event_id` 後，按「檢視所選案例原始／修復全文」。
+若該事件具備**事先明確啟用且通過驗證**的本機私有快照，
+才會開啟雙欄原文視窗。原文變動色塊是字元級共同比對區間，
+不等於修復後的 JSON 語意可信度。
+
+「清除所選 Run 的私有原文」需再次確認，只刪除相同 Run
+的私有快照，不改品質日誌、Queue、模型與 ES／SQL 寫回。
+
+詳細啟用條件、安全警示、Windows ACL 與儲存上限見
+`docs/usage/json_repair_private_capture.md`。此高風險功能
+不隨單純 #308 GUI PR 預設啟用；未正式審查與實機驗收前
+不可視為 production release-ready。

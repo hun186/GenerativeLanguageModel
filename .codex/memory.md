@@ -56,3 +56,7 @@
 
 ## TLS Diagnostic Exception (2026-11-17)
 - PR #334 pending: read-only GLM MultiDim Mapping and nested-only sample probes now refuse `--allow-ip-san-mismatch` for DNS hostnames. Only literal IPv4/IPv6 HTTPS origins can use that operator-controlled diagnostic exception. CA chain and certificate validity remain mandatory, no secrets are exported; synthetic CI/Codex still pending. No production ES/LLM/rerun or TLS certificate replacement.
+
+
+## 2026-11-17 #310 Source Sync Handoff
+- Draft PR #310 carries original/repaired JSON plaintext capture into the existing GLM GUI only when explicitly opted in; all production capture remains OFF. Accepted main #318–#334 is included in the source branch without removing its ES/SQLite/TLS/Queue CI gates. Native Windows NTFS ACL, nonsynced private folder, retention/consent and independent privacy/security review remain blocking for Merge and live use. Exact prior branch .codex architecture/backlog/known_issues/memory were archived before the accepted-main reconciliation. No actual operator private content or live GPU/ES/SQL was touched.

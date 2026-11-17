@@ -110,3 +110,7 @@
 
 ## 2026-11-16 — #317 offline Quality retry contract accepted, not ES runtime policy
 - Pure opt-in-off `quality_retry_contract.py` models max two completed rejected repairs, valid unknown and policy downgrades. It does NOT persist attempts, verify source/pipeline, provide cross-process CAS, alter private task YAML `.py`, or authorize production ES reindex/replay. Draft #312 remains P0 operator-gated.
+
+
+## 2026-11-17 — #310 raw JSON remains privacy-gated after source reconciliation
+- Draft branch carries an on-demand GUI original/repair text comparison. The Linux mount allowlist and Windows fixed-volume classifier do not verify native workstation ACL, sync/backup, threat model, or true secure deletion. No automated TTL. The GUI selects by exact run/event; this does not validate source semantic fidelity or sink ACK. Latest CI/Code Review and independent privacy/security acceptance remain prerequisites; do not infer production availability from a merged branch tree.

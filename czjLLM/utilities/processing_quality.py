@@ -13,7 +13,7 @@ import json
 import os
 from pathlib import Path
 import threading
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from czjLLM.utilities.json_repair_analysis import validate_repair_detail
 from czjLLM.utilities.quality_slice_lineage import quality_slice_location_hints
@@ -118,7 +118,7 @@ def _unlock_stream(lock_fp):
 def emit_quality_event(
     audit_path: str, *, run_id: str = "", event: str, code: str,
     scope: str, outcome: str, document_id: str = "", slice_id: str = "",
-    detail: dict | None = None,
+    detail: dict | None = None, event_id: str | None = None,
 ) -> Path | None:
     """Append a bounded, privacy-minimal record. Never include raw LLM output."""
     path = quality_event_path(audit_path)
@@ -136,9 +136,14 @@ def emit_quality_event(
     if scope == "run" and (
             document_id != "" or slice_id != ""):
         raise ValueError("run-scoped quality events cannot carry document or slice identities")
+    if event_id is not None:
+        if (not isinstance(event_id, str) or len(event_id) != 32
+                or UUID(hex=event_id).version != 4
+                or UUID(hex=event_id).hex != event_id):
+            raise ValueError("invalid generated quality event id")
     data = {
         "schema_version": 1,
-        "event_id": uuid4().hex,
+        "event_id": event_id if event_id is not None else uuid4().hex,
         "ts": datetime.now(timezone.utc).isoformat(),
         "run_id": str(run_id or "")[:96],
         "event": event,

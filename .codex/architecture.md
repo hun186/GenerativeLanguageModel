@@ -140,3 +140,7 @@
 
 ## 2026-11-16 — #317 accepted offline Quality retry state model
 - `es_mode/quality_retry_contract.py` contains immutable, opt-in-OFF state transitions and policy-downgrade manual-review proposal. It has no connection to live Consumer, ES pending, YAML rerun, Output Profile adapter, Queue, LLM, SQL or disk. Source-verified identity, atomic CAS and crash recovery remain separately gated.
+
+
+## 2026-11-17 — Draft #310 native-GUI private JSON inspection (integration pending)
+- #310 implements disabled-by-default, opt-in original/repaired JSON snapshot capture and an on-demand native Tk side-by-side viewer within the existing GLM GUI. Raw records are strictly run/event keyed and never written into ordinary Quality JSONL. Local-fs/type, lock and no-follow defenses are synthetic-tested; these are NOT a verified Windows NTFS ACL/retention boundary. Source branch was synchronized with accepted main #318–#334 without permitting production enablement. Physical operator permissions, storage/sync policy and independent security acceptance remain pre-merge gates.
