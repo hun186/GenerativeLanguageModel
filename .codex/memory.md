@@ -15,6 +15,7 @@
 - **Earlier acceptance:** #239 `46b7c7290417421a6dc09e114f82c1066ce0179d`, hosted Linux `40513712390` SUCCESS; #240, #241, #242 accepted, #242 main `e010a5e07c45016f8f0ab4094c30bcd33825d3b5` and postmerge Linux `40623677955` SUCCESS. #231 merged.
 
 ## Active Safety and Workflow Constraints
+- 2026-11-17 PR #332 review pending: two independent spawn-processes contend for disposable Quality SQLite revision; assert one durable IN_FLIGHT claim and blocked rival. Local fixture only; multi-host, real sink and operator security remain unverified, CI/Codex pending.
 - ES Event date extraction may use core Event dates even when `Event_Timeline=[]`; do not manufacture Timeline entries or treat valid unknown as endless quality failure. Keep `rerun` policy in each task YAML, not connection `.py`. Private operator effective configuration is NOT readable from public CI.
 - Keep Queue TODO/RUNNING/Success exclusive no-clobber, case-sensitive identity and Windows safe-handle boundaries. Worker request logs, run Quality events and LB leases are *observations*, not an authenticated logical retry family, current GPU load or sink acknowledgement.
 - The existing standalone `scripts/diagnose_llm_dispatch_idle.py` only reads existing bounded private logs. `cross_source_run_identity=NOT_VERIFIED`; latest paired active Quality JSONL omits historical archives. Fixed incident counts are event counts, not distinct documents/root cause.
