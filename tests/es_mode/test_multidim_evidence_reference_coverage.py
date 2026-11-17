@@ -81,7 +81,8 @@ def test_matching_id_in_a_different_block_never_counts_as_a_link():
         "event_ids": [], "text": "SENSITIVE_ORPHAN"
     }])
     report = _report(_doc("private-cross-block", [b1, b2]))
-    assert report["evidence_reference_counts"]["EVENTS_WITH_ROWS_NO_ATTRIBUTABLE_TEXT"] == 1
+    assert report["evidence_reference_counts"]["EVENTS_WITHOUT_EVIDENCE"] == 1
+    assert report["evidence_reference_counts"]["EVENTS_WITH_ROWS_NO_ATTRIBUTABLE_TEXT"] == 0
     assert report["event_ids_with_nonempty_text_references"] == 0
     assert report["effective_runtime_rerun"] == "NOT_EVALUATED"
 
@@ -98,3 +99,31 @@ def test_unverified_profile_never_inflates_evidence_coverage():
     report = _report(d)
     assert report["evidence_reference_counts"]["PROFILE_UNVERIFIED"] == 1
     assert report["profile_accepted_event_ids_observed"] == 0
+
+
+def test_unrelated_no_event_block_with_text_does_not_downgrade_event_coverage():
+    with_event = _block(evidence=[{
+        "event_ids": ["SENSITIVE_ID"], "text": "private quote"
+    }])
+    without_event = _block(events=[], evidence=[{
+        "event_ids": [], "text": "unrelated text"
+    }])
+    original = _doc("PRIVATE_TWO_BLOCKS", [with_event, without_event])
+    snapshot = deepcopy(original)
+    result = _report(original)
+    assert result["evidence_reference_counts"]["EVENTS_ALL_REFERENCED"] == 1
+    assert result["event_ids_with_nonempty_text_references"] == 1
+    assert result["profile_accepted_event_ids_observed"] == 1
+    assert original == snapshot
+    assert "PRIVATE_TWO_BLOCKS" not in json.dumps(result)
+    assert "private quote" not in json.dumps(result)
+
+
+def test_no_event_blocks_with_text_are_reported_without_hallucinated_events():
+    data = _report(_doc("private-zero", [
+        _block(events=[], evidence=[]),
+        _block(events=[], evidence=[{"event_ids": [], "text": "private data"}]),
+    ]))
+    assert data["evidence_reference_counts"]["NO_EVENTS_WITH_EVIDENCE_ROWS"] == 1
+    assert data["profile_accepted_event_ids_observed"] == 0
+    assert data["event_ids_with_nonempty_text_references"] == 0
