@@ -169,7 +169,13 @@ def _root(root: Path | str) -> Path:
 def _run_dir(root: Path, run_digest: str) -> Path:
     sub = root / ("run-" + run_digest[:24])
     try:
-        sub.mkdir(mode=0o700)
+        if os.name == "nt" and root.name == "json_repair" and root.parent.name == ".runtime-private":
+            from czjLLM.utilities.json_repair_auto_store import (
+                _win_create_private, _win_current_user_sid,
+            )
+            _win_create_private(sub, _win_current_user_sid())
+        else:
+            sub.mkdir(mode=0o700)
     except FileExistsError:
         pass
     info = _is_regular_private(sub, directory=True)
@@ -191,6 +197,60 @@ def _existing_run_dir(root: Path, run_digest: str) -> Path:
         raise ValueError("POSIX_LOCAL_FILESYSTEM_UNVERIFIED")
     _check_auto_run_acl(root, sub)
     return sub
+
+
+def _check_auto_run_acl(root: Path, child: Path) -> None:
+    """Do not trust run-child ACLs merely because their parent is protected."""
+    if os.name == "nt" and root.name == "json_repair" and root.parent.name == ".runtime-private":
+        from czjLLM.utilities.json_repair_auto_store import (
+            _win_current_user_sid, _win_private_acl,
+        )
+        if not _win_private_acl(child, _win_current_user_sid()):
+            raise ValueError("WINDOWS_PRIVATE_RUN_ACL_UNVERIFIED")
+
+
+def _prune_locked(root: Path, now: float) -> int:
+    """Root-wide lock held. Delete only validated expired snapshot file names."""
+    entries = list(root.iterdir())
+    if len(entries) > MAX_RUN_FOLDERS + 1:
+        raise ValueError("PRIVATE_TOTAL_FOLDER_BUDGET")
+    total_bytes = 0
+    for folder in entries:
+        if folder.name == ".capture.lock":
+            _is_regular_private(folder, directory=False)
+            continue
+        if not _RUN_NAME.fullmatch(folder.name):
+            raise ValueError("UNKNOWN_PRIVATE_ARTIFACT")
+        info = _is_regular_private(folder, directory=True)
+        if os.name != "nt" and (
+                not _posix_local_filesystem(folder) or info.st_mode & 0o077):
+            raise ValueError("PRIVATE_RUN_PERMISSIONS")
+        _check_auto_run_acl(root, folder)
+        with _lock_run(folder):
+            for file in _case_paths(folder):
+                before = _is_regular_private(file, directory=False)
+                if before.st_mtime > now + 300:
+                    raise ValueError("PRIVATE_TIME_UNVERIFIED")
+                if now - before.st_mtime >= SNAPSHOT_TTL_SECONDS:
+                    current = _is_regular_private(file, directory=False)
+                    if (current.st_dev, current.st_ino, current.st_mtime_ns,
+                            current.st_size) != (
+                            before.st_dev, before.st_ino, before.st_mtime_ns,
+                            before.st_size):
+                        raise ValueError("PRIVATE_CHANGED")
+                    file.unlink()
+                else:
+                    total_bytes += before.st_size
+                    if total_bytes > MAX_TOTAL_BYTES:
+                        raise ValueError("PRIVATE_TOTAL_BYTES_BUDGET")
+    return total_bytes
+
+
+def prune_expired_private_captures(root: Path | str) -> int:
+    """Maintenance on new writes and GUI open; no background daemon."""
+    folder = _root(root)
+    with _lock_run(folder):
+        return _prune_locked(folder, time.time())
 
 
 @contextmanager
