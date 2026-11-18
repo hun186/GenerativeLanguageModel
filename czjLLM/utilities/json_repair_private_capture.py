@@ -280,20 +280,22 @@ def prune_expired_private_captures(root: Path | str) -> int:
 def startup_private_capture_maintenance() -> str:
     """Once-per-launch expiry sweep, including runs with capture turned OFF."""
     enabled = capture_enabled()
-    if not enabled:
-        # Opting out stops NEW plaintext only: any existing private cache
-        # must still be eligible for 72h cleanup on a headless scheduler.
-        raw = os.environ.get(ROOT_ENV, "").strip()
-        if raw:
-            existing = Path(raw)
-        else:
-            from czjLLM.utilities.json_repair_auto_store import (
-                CACHE_RELATIVE_PATH, PROJECT_ROOT,
-            )
-            existing = PROJECT_ROOT / CACHE_RELATIVE_PATH
-        if not existing.exists():
-            return "DISABLED"
     try:
+        if not enabled:
+            # Opting out stops NEW plaintext only: existing snapshots are
+            # still due for expiry. Access checks may raise PermissionError
+            # (Python 3.10/3.11), so treat them as an unavailable *optional*
+            # cache rather than aborting the batch.
+            raw = os.environ.get(ROOT_ENV, "").strip()
+            if raw:
+                existing = Path(raw)
+            else:
+                from czjLLM.utilities.json_repair_auto_store import (
+                    CACHE_RELATIVE_PATH, PROJECT_ROOT,
+                )
+                existing = PROJECT_ROOT / CACHE_RELATIVE_PATH
+            if not existing.exists():
+                return "DISABLED"
         prune_expired_private_captures(configured_private_root())
     except (OSError, ValueError, TypeError, UnicodeError):
         return "UNAVAILABLE"
