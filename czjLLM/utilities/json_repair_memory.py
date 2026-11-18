@@ -9,6 +9,7 @@ Linux/headless execution does not install a sink and keeps no raw history.
 from __future__ import annotations
 
 from collections import OrderedDict
+import queue
 import threading
 from typing import Callable
 from uuid import UUID
@@ -139,3 +140,18 @@ class RepairMemoryRing:
     def clear(self):
         self._items.clear()
         self._bytes = 0
+
+
+def drain_private_repair_queue(inbox, ring: RepairMemoryRing, *, limit=MAX_PENDING_IPC):
+    """GUI Tk-thread helper: receive a bounded number of private messages."""
+    received = 0
+    for _ in range(max(0, min(int(limit), MAX_PENDING_IPC))):
+        try:
+            pair = inbox.get_nowait()
+        except queue.Empty:
+            break
+        except (OSError, ValueError, EOFError):
+            break
+        if type(pair) is tuple and len(pair) == 4 and ring.add(*pair):
+            received += 1
+    return received
