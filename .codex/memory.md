@@ -64,3 +64,6 @@
 
 ## 2026-11-17 — project-local JSON repair cache follow-up
 - Source PR pending: default-on only when fail-closed Windows NTFS/ReFS protected ACL or Linux 0700/local-mount checks pass; checkout-relative .runtime-private/json_repair, 72h opportunistic expiration, 128 MiB active quota, exact Run/event GUI, explicit opt-out and ignored private data. It does not modify Queue, ES, SQL or LLM repair semantics. Hosted Linux/Windows CI, latest Codex, and owner workstation acceptance still unverified at opening. Existing #310 is merged; no historical raw snapshots can be recovered.
+
+## 2026-11-18 #335 CI memory-size corrective (source-only)
+- Archived the exact 40,510-byte pre-compaction API contract at `.codex/archive/api_contract.md-20261118-0918.md` and shortened repeated historical language, leaving 39,306 UTF-8 bytes / 200 nonempty lines with key active ES/LLM safety contracts retained. Prior Hosted Linux `offline-e2e` failed `tests/test_codex_memory_archive.py` on the 40,000-byte cap. **New HEAD CI and formal Codex rereview pending**; #335 is unmerged and still requires independent operator privacy/Windows/Linux real-host validation before plaintext default-on activation.
