@@ -10,6 +10,7 @@
 - **#269 completed owner merge gate:** latest-head Linux E2E, Windows Hosted 3.10/3.11, changed-line scan SUCCESS, formal Codex receipt no major issues, 22/22 threads resolved, explicit 2026-11-01 owner instruction to merge, GitHub confirmed Squash Merge. Two self-hosted jobs were queued and not treated as verified; physical operator tests remain separate.
 
 ## True Open Engineering Work
+- [x] **#313 before-COMMIT crash-proof PR #339 merged:** main `14761b71384cd5ec694c92e5527873328af5f6dc`, Hosted Linux E2E/Windows 3.10/3.11/Secret Scan and latest-head Codex 0 Findings; local SQLite only. [ ] **#313 after-COMMIT before-caller-ACK PENDING:** verify spawned-child exit(87) persisted Claim and Finalize once, stale replays fail, Hosted Linux/Windows CI, formal Codex and secret scan. Still NOT implemented: authenticated source+output identity, LLM/sink ACK uncertainty, cross-host transactional replay, ES read-only impact, operator authorization for any live rerun.
 - [ ] **2026-11-10 JSON completion PR:** Complete CI/review for shared rerun evaluator and provider-length fail-closed guard. Follow-up: assembled-document semantic retention, source-grounded event count, and real workstation checks.
 - [ ] **2026-11-10 JSON repair GUI PR #299:** Validate Worker lexical stats, categories, privacy, archival continuity, Linux/Windows Hosted CI and Codex Review. Separate later work: provider finish_reason, possible truncation and schema/semantic fidelity. Physical acceptance pending.
 - [ ] **2026-11-10 Windows ThreadPool HOL PR pending:** Avoid waiting on slow first Future to observe faster later completions; accurately report deadline counts, safely cancel queued tasks and drain live ones without replay. Hosted Linux/Windows synthetic tests and formal review required; true GPU utilization and stuck-provider handling still await operator Issue #266.
@@ -144,6 +145,18 @@
 - [ ] On merged HEAD, run exact SHA Hosted Linux/Windows/secret checks, Codex review, and separately verify any self-hosted Windows queue without treating queued as pass.
 - [ ] Independent security/privacy audit and operator Windows NTFS ACL, local nonsynced storage, backup/consent/retention policy and manual-clear acceptance required before merging or enabling this sensitive original/repaired plaintext feature. Default OFF; no production Queue, ES, SQL, LLM, or disk data changed by this integration branch.
 
+## 2026-11-17 — Windows Consumer live slot-refill rollout
+
+- [ ] 新 PR exact-head Hosted Linux CI、Windows Py3.10/3.11、Secret Scan、
+      Codex Review 與所有未解 review thread 驗收後再決定合併。
+- [ ] 在可暫停的新 Windows 工作站批次跑 2-GPU 不等速請求，確認
+      真實 Claim→Success→Meter 單筆 ACK→Row Merger→sink confirm，
+      比對 20k-row throughput、尾端補位及離線原檔恢復；
+      **現行執行中 Job 不會熱更新**。
+- [ ] 真實 H100 endpoint↔GPU mapping、模型常駐 VRAM 和長請求 timeout
+      的獨立觀測；不能以 nvidia-smi 快照宣稱第二 GPU 閒置根因已證明。
+- [ ] 若跨平台也需要流式調度，先另案 Linux multiprocessing
+      ownership／drain／deadline 一致性驗證；本 PR 不啟用。
 
 ## 2026-11-17 — project-local auto JSON repair cache verification
 - [x] Added portable project-relative protected cache bootstrap, 72h snapshot TTL/launch-and-write-and-GUI removal, total active-byte quota, GUI status, gitignore and disposable synthetic tests; CI and privacy review not yet confirmed.

@@ -1,6 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- **2026-11-18 PR #339 accepted main `14761b71384cd5ec694c92e5527873328af5f6dc` / #313:** Disposable child SQLite UPDATE-before-COMMIT exit(86) proves rollback preserves READY and zero repair count. Exact-head Hosted Linux offline E2E, Windows 3.10/3.11, changed-line secret scan and formal Codex 0 Findings PASS; queued self-hosted not counted. **Next separate PR (PENDING):** spawned child exit(87) after real COMMIT but before caller ACK checks durable claim/finalize and stale retry, same existing CI suites. Both are synthetic local proofs, NOT real ES/LLM/Queue replays, power-failure or cross-machine guarantees.
 - 2026-11-17 PR #331 pending: expand early Linux CI ordering guard to cover new disposable SQLite, search-field, and Evidence-contract test steps introduced in #326/#327/#328; prevents future silent skip or omission. CI/Codex unverified on opened HEAD, no runtime changes.
 - 2026-11-17 PR #329 pending: stabilize synthetic Worker heartbeat test against Hosted Linux scheduler jitter (1.5s fixture TTL, 2.25s stubbed call, assert expiry advanced and still live). Exact-head CI/Codex and physical operator behavior not yet verified. No runtime lease parameter, ES/LLM, Queue or deployment changed.
 - **2026-11-16 #312 source merged:** Event-first date with empty Timeline allowed, YAML-local rerun only. Prior operator read-only 150-document sample is exploratory; `news_test` effective runtime policy, complete source/sink evidence, and explicit operator approval remain required before any live ES replay.
@@ -61,6 +62,27 @@
 ## 2026-11-17 #310 Source Sync Handoff
 - Draft PR #310 carries original/repaired JSON plaintext capture into the existing GLM GUI only when explicitly opted in; all production capture remains OFF. Accepted main #318–#334 is included in the source branch without removing its ES/SQLite/TLS/Queue CI gates. Native Windows NTFS ACL, nonsynced private folder, retention/consent and independent privacy/security review remain blocking for Merge and live use. Exact prior branch .codex architecture/backlog/known_issues/memory were archived before the accepted-main reconciliation. No actual operator private content or live GPU/ES/SQL was touched.
 
+## 2026-11-17 — GLM Windows Consumer head-of-line blocking 修正 PR
+
+- 根據使用者日誌，6 個 Queue RUNNING 對應實際 2 個 RUNNING 檔及
+  4 個 Success，顯示 Legacy Thread round 統一 ACK 的延遲問題；
+  日誌的 `combined=N` 並非合併路徑權威證據。
+- Windows 單階段 Consumer 接入 #301 `run_slot_refill`；
+  成功 Worker 在確認 Success 後逐筆結算 Queue Meter，
+  才補入新 Claim。保留 Linux/多階段與 sink confirm 閘門。
+- 新增 `test_consumer_live_slot_refill.py` 真實臨時 Queue、
+  快慢 Worker 及缺少 Success 不得假 ACK regression；CI gate 已加入。
+- 本紀錄為源碼變更：Hosted CI、Windows 工作站、雙 H100、實際 ES/SQL
+  sink 寫回都 **尚未驗證**。不得聲稱對正在運行中的批次生效。
+
+- 同 PR 後續審核發現正常 JSON output-limit split 會刪除父 RUNNING、
+  產生兩個 TODO；新增 source-hash-bound split 驗證與 Queue Meter
+  原子計數轉換，並補 `test_verified_split_parent_replaces_one_running_with_two_todo`。
+  尚待 exact-head CI/Windows/H100/ES-Sink 實機驗證。
+
+- 追加修正 `debug_snapshot` 的錯誤合併路徑猜測：僅對 Registry
+  明確提供的 `CombBackFN` 顯示 Y/N，其他 UNKNOWN；加入單元驗證。
+  源碼 PR 仍是 Draft，CI/實機驗收未完成。
 
 ## 2026-11-17 — project-local JSON repair cache follow-up
 - Source PR pending: default-on only when fail-closed Windows NTFS/ReFS protected ACL or Linux 0700/local-mount checks pass; checkout-relative .runtime-private/json_repair, 72h opportunistic expiration, 128 MiB active quota, exact Run/event GUI, explicit opt-out and ignored private data. It does not modify Queue, ES, SQL or LLM repair semantics. Hosted Linux/Windows CI, latest Codex, and owner workstation acceptance still unverified at opening. Existing #310 is merged; no historical raw snapshots can be recovered.

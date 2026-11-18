@@ -1,5 +1,6 @@
 # pipeline_controller.py
 import os
+import sys
 import errno
 #from colorama import Fore, Style
 from tqdm import tqdm
@@ -63,6 +64,7 @@ from czjLLM.prompt_pipeline.slice_identity import (
     verified_queued_prompt_source, verified_split_family_id,
     record_success_identity, resolve_success_leaves,
     restore_full_restart_parent, valid_success,
+    verified_new_split_todo_children,
 )
 from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage, normalized_finish_reason
@@ -101,8 +103,11 @@ from czjLLM.job_manager.console_ui import  tlog_warn
 from czjLLM.prompt_pipeline.round_runner import (
     BatchRunTimeout,
     CONSUMER_STATE,
+    _run_prompt_job,
+    _round_timeout_from_jobs,
     run_round,
 )
+from czjLLM.prompt_pipeline.refill_scheduler import ClaimedWork, run_slot_refill
 from czjLLM.prompt_pipeline.runtime_support.load_meter import (
     ItemsRegistry,
     find_item_dir_for,
@@ -656,7 +661,8 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
             claimed_evidence = {}
             try:
                 batch = pick_and_claim_next_prompts(
-                    item_dirs, per_round_limit=per_round_limit,
+                    item_dirs,
+                    per_round_limit=(1 if sys.platform.startswith("win") else per_round_limit),
                     claim_ids_out=claimed_evidence,
                 )
             except QueueClaimRollbackError:
@@ -728,6 +734,17 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                         require_no_pending_todo_sources(item_dirs)
                         break
                 time.sleep(0.1)
+                continue
+
+            if sys.platform.startswith("win"):
+                # Windows remote LLM I/O uses Threads already. Retire each
+                # independently published Success before filling its slot;
+                # do not wait for the slowest peer in a fixed-size round.
+                _run_windows_live_slot_refill(
+                    ctx, registry, meter_fn, stop_event, restart_event,
+                    first=batch[0], first_claim_ids=claimed_evidence,
+                    per_round_limit=per_round_limit,
+                )
                 continue
 
             prompt_files = [pf for pf, _ in batch]
@@ -3083,6 +3100,191 @@ def _run_legacy_leaf_round(ctx, jobs):
             timeout_sec=getattr(ctx, "llm_round_timeout_sec", None),
             debug_enabled=getattr(ctx, "llm_round_debug", None),
         )
+
+
+
+def _run_windows_live_slot_refill(
+    ctx, registry, meter_fn, stop_event, restart_event, *,
+    first, first_claim_ids, per_round_limit,
+):
+    """Real Queue claims and per-Worker ACKs before another slot is dispatched.
+
+    Only the Windows legacy single-stage Consumer calls this routine. The
+    Linux process-pool path and stage-managed execution remain unchanged.
+    Every claimed RUNNING file is accounted for by the authoritative Meter;
+    Row Merger still requires the per-row zero-queue receipt and sink ACK.
+    """
+    limit = max(1, int(per_round_limit))
+    requested = max(1, min(int(ctx.n_process), 256))
+    claimed_count = 0
+    first_pending = True
+    # Only scheduler callbacks touch this set. Keep unacknowledged parents
+    # registered until their durable Meter transition completes, even if the
+    # Worker has already published its split children into TODO.
+    unacknowledged_parents = set()
+    blocked = getattr(ctx, "_queue_claim_blocked_event", None)
+
+    def claim_one():
+        nonlocal claimed_count, first_pending
+        # The initial Queue claim was already moved to RUNNING by the
+        # Consumer's normal empty-queue/terminal checks. Always account for
+        # that claim, even if teardown is signalled before entering here.
+        if not first_pending and (
+            claimed_count >= limit or stop_event.is_set() or (
+                restart_event is not None and restart_event.is_set()
+            )
+        ):
+            return None
+        if blocked is not None and blocked.is_set():
+            raise RuntimeError("queue recovery blocked during slot refill")
+        if first_pending:
+            pf, item_dir = first
+            claim_ids = first_claim_ids
+            first_pending = False
+        else:
+            current_items = registry.list_items()
+            eligible = [
+                item for item in current_items
+                if item not in _queue_recovery_blocked(ctx)
+            ]
+            protected_children = {
+                Path(item) / "TODO" / f"{Path(name).stem}-{suffix}.txt"
+                for item, name in unacknowledged_parents
+                for suffix in (0, 1)
+            }
+            claim_ids = {}
+            next_batch = pick_and_claim_next_prompts(
+                eligible, per_round_limit=1, claim_ids_out=claim_ids,
+                excluded_todo_sources=protected_children,
+            )
+            if not next_batch:
+                return None
+            pf, item_dir = next_batch[0]
+
+        receipt = claim_ids.get(pf)
+        if not isinstance(receipt, str) or not receipt:
+            # The file has already been claimed. Do not dispatch it without
+            # an identifiable receipt or invent a new claim generation.
+            raise RuntimeError("missing authoritative Queue claim receipt")
+        item_meta = registry.list_items().get(item_dir)
+        if not isinstance(item_meta, dict) or "pk" not in item_meta:
+            raise RuntimeError("claimed item disappeared from Registry")
+        job_spec = deepcopy(ctx.model_spec)
+        if bool(getattr(ctx, "mock_llm_mode", False)):
+            job_spec["mock_llm_mode"] = True
+        job = PromptAPIPipeline(
+            task=ctx.task,
+            promptFile=pf,
+            OutputSaveFN=_to_success(pf),
+            removeFinPromptFile=getattr(ctx, "removeFinPromptFile", True),
+            max_tokens=ctx.max_tokens,
+            allow_to_retry=True,
+            model_spec=job_spec,
+            PGMSubDir=ctx.PGMSubDir,
+            queue_claim_event_id=receipt,
+            dispatch_item_dir=item_dir,
+            **_llm_call_audit_kwargs(ctx),
+        )
+        def _dispatch_receipt(d):
+            _meter_on_dispatch(
+                d, {item_dir: item_meta}, Counter({item_dir: 1}), 1,
+            )
+            d.setdefault("consumer", {}).update({
+                "alive": True,
+                "last_dispatch_ts": time.time(),
+            })
+        meter_update(meter_fn, _dispatch_receipt)
+        unacknowledged_parents.add((item_dir, Path(pf).name))
+        claimed_count += 1
+        CONSUMER_STATE["last_dispatch_ts"] = time.monotonic()
+        _bump(ctx)
+        return ClaimedWork(receipt, (pf, item_dir, str(item_meta["pk"]), job))
+
+    def acknowledge(claim, result):
+        pf, item_dir, pk, _job = claim.item
+        if not isinstance(result, dict) or _canon_path(result.get("prompt_file", "")) != _canon_path(pf):
+            raise RuntimeError("Worker result does not match claimed prompt")
+        success = _to_success(pf)
+        todo = _to_todo(pf)
+        split_children = ()
+        if os.path.isfile(success) and not os.path.exists(pf) and not os.path.exists(todo):
+            count_done, count_requeued = 1, 0
+        elif os.path.isfile(success):
+            # Both Success and a live RUNNING/TODO generation is ambiguous.
+            # Row Merger cannot complete while RUNNING still exists.
+            raise RuntimeError("conflicting Queue files after Worker Success")
+        elif os.path.isfile(todo) and not os.path.exists(pf):
+            # A Worker may explicitly restore a retry. Never count it done.
+            count_done, count_requeued = 0, 1
+        elif not os.path.exists(pf) and not os.path.exists(todo):
+            # Oversized JSON can atomically replace its parent with two child
+            # TODO prompts. Validate BOTH hashes against the source-bound
+            # split journal before replacing one running receipt with two
+            # pending receipts. No Success/row completion is implied.
+            split_children = verified_new_split_todo_children(
+                item_dir, Path(pf).name, getattr(_job, "content", ""),
+            )
+            if not split_children:
+                raise RuntimeError("Worker returned without verifiable Success or TODO")
+            count_done, count_requeued = 0, 0
+        else:
+            raise RuntimeError("Worker returned with unacknowledged RUNNING")
+        def _acknowledge_receipt(d):
+            if split_children:
+                q = d.setdefault("queue", {})
+                row = d.setdefault("rows", {}).setdefault(pk, {})
+                if (type(q.get("running")) is not int or q["running"] < 1
+                        or type(row.get("queue_running")) is not int
+                        or row["queue_running"] < 1
+                        or type(row.get("queue_pending")) is not int
+                        or row["queue_pending"] < 0
+                        or type(row.get("total")) is not int
+                        or row["total"] < 1):
+                    raise RuntimeError("split Queue receipt cannot be reconciled")
+                q["running"] -= 1
+                q["pending"] = int(q.get("pending", 0)) + len(split_children)
+                row["queue_running"] -= 1
+                row["queue_pending"] += len(split_children)
+                row["total"] += len(split_children) - 1
+                row["last_state_at"] = time.time()
+            else:
+                _meter_on_finish_batch_v2(
+                    d, {item_dir: {"pk": pk}},
+                    count_by_item_done=Counter({item_dir: 1}) if count_done else Counter(),
+                    n_done=count_done,
+                    count_by_item_requeued=Counter({item_dir: 1}) if count_requeued else Counter(),
+                    n_requeued=count_requeued,
+                )
+            d.setdefault("consumer", {}).update({
+                "alive": True,
+                "last_round_ts": time.time(),
+            })
+        meter_update(meter_fn, _acknowledge_receipt)
+        # Release child claims only AFTER split verification and the parent's
+        # queue-running -> pending receipts are durably recorded.
+        unacknowledged_parents.discard((item_dir, Path(pf).name))
+        CONSUMER_STATE["thread_round_completed_count"] = (
+            int(CONSUMER_STATE.get("thread_round_completed_count", 0)) + 1
+        )
+        _bump(ctx)
+
+    with lease_execution_workers(ctx, requested) as granted:
+        stats = run_slot_refill(
+            claim_one=claim_one,
+            run_worker=lambda item: _run_prompt_job(item[3]),
+            acknowledge=acknowledge,
+            max_inflight=max(1, min(int(granted), 256)),
+            deadline_sec=_round_timeout_from_jobs(
+                (), getattr(ctx, "llm_round_timeout_sec", None),
+            ),
+            drain_on_deadline=True,
+        )
+    # This counter is a Queue Success receipt, not a sink writeback ACK.
+    tlog(
+        f"🧵 consumer live refill: claimed={stats.claimed}, "
+        f"acknowledged={stats.acknowledged}, peak={stats.max_inflight_observed}"
+    )
+    return stats
 
 
 def call_llm_api(

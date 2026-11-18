@@ -8,6 +8,7 @@
 - Remaining issues: Windows self-hosted 3.10/3.11 still queued/operator-deferred, historical #231 status now merged, no real Windows/Ollama/ES readback, no crash-safe authenticated checkpoint/online shard retirement. These accepted PRs do not prove absence of filesystem races or malicious-tamper resilience.
 
 ## Environment and External Dependencies
+- **2026-11-18 #313 crash proof limitations:** #339 accepted source verifies spawned child exit after SQLite UPDATE/before COMMIT rollback. A subsequent separate source PR tests process exit **after committed Claim and Finalize but before ACK**; until its CI/Review completes it is PENDING. Both exercise disposable local SQLite only; neither verifies uncertain external model calls/sink ACK, OS/storage power loss, cross-host ES consistency, authenticated identity, nor any production quality replay authorization.
 - **2026-11-10 JSON guard limits:** Unknown provider finish reason is not evidence of completeness. Explicit length on JSON output blocks Success; splitting may be unavailable and require recovery. Whole-document rerun rules must not be imposed on intermediate slices. Full semantic/Event fidelity and physical Windows remain unverified.
 - **2026-11-10 repair analysis limits PR #299:** Concurrent Worker stdout interleaves; apparent truncation is not proof. Worker lexical comparison does not prove semantic preservation or Event completeness; >160k chars or >3000 tokens reports unavailable. Failed repair lacks valid after text; old successful repairs cannot be backfilled. Physical Windows acceptance open.
 - **2026-11-10 Windows ThreadPool HOL completion visibility (PR pending):** Previously a slow first Future concealed later completions and timeout `finished` was prefix-only. Corrective observes completions promptly and preserves return order, but does not eliminate the batch barrier, prove GPU utilization, or forcibly cancel HTTP Threads. A truly hung call still keeps timeout drain open; do not automatically requeue RUNNING work. Physical GPU root cause and operator Issue #266 remain unverified.
@@ -115,6 +116,18 @@
 ## 2026-11-17 — #310 raw JSON remains privacy-gated after source reconciliation
 - Draft branch carries an on-demand GUI original/repair text comparison. The Linux mount allowlist and Windows fixed-volume classifier do not verify native workstation ACL, sync/backup, threat model, or true secure deletion. No automated TTL. The GUI selects by exact run/event; this does not validate source semantic fidelity or sink ACK. Latest CI/Code Review and independent privacy/security acceptance remain prerequisites; do not infer production availability from a merged branch tree.
 
+## 2026-11-17 — Windows Consumer live-refill 尚未實機驗收
+
+此次改動僅有程式碼及離線 Queue/ACK fixture；沒有 Windows 執行主機、
+兩張 H100 的長時負載、Ollama HTTP 超時／取消驗證，亦未驗證大量 ES/SQL
+Sink ACK 與正式 Producer 壓力測試。Python Thread 不能安全強制終止
+仍在跑的 HTTP Worker；失聯 Worker 將保留未結算證據並停止補位，
+不應將 GUI 的 Success 計數視為 sink 寫回。原始日誌 `combined=N`
+是 debug snapshot 猜測路徑，不能作為合併完成與否的權威訊號。
+
+- 本 PR 已修正背壓快照把猜測檔名不存在誤報為 `combined=N`；
+  無 Registry `CombBackFN` 時顯示 `UNKNOWN`。該值僅是檔案存在性，
+  不能推論 Row Merger 或 ES/SQL sink 是否已持久完成。等待 CI 與正式驗收。
 
 ## 2026-11-17 — automatic JSON repair cache safety limitations
 - Source follow-up PR includes Win32 protected ACL validation and Linux local-fs 0700 check, but Hosted acceptance and actual physical workstation/scheduled-service ACL checks remain pending. Cache is plaintext, not secure erasure or at-rest encryption; other local administrator processes, remote block devices, backup/sync and hostile parent-directory modification are outside the guarantee. 72h expiry is opportunistically cleaned on GLM launch/repair/GUI entry; idle deployment may retain expired disk bytes. No automatic Windows↔Linux sync, and no historical raw JSON backfill. Any unsafe path fails closed without affecting ordinary JSON repair or sink ACK.
