@@ -117,6 +117,13 @@ if __name__ == '__main__':
             return first
         return None
 
+    # Load the exact same private .env/.env.local settings that SQL/ES
+    # configuration uses *before* sweeping any raw JSON repair snapshots.
+    # Explicit OS env overrides retain precedence. No values are logged.
+    from pathlib import Path
+    from czjLLM.utilities.env_overrides import load_czjllm_env_files_once
+    load_czjllm_env_files_once(base_dir=str(Path(__file__).resolve().parents[1]))
+
     # Startup housekeeping also runs for headless Linux schedulers with no
     # GUI and no new JSON repair during this batch. Raw data is never logged.
     from czjLLM.utilities.json_repair_private_capture import (
