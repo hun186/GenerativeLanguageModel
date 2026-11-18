@@ -40,6 +40,8 @@ python scripts/audit_multidim_profile_offline.py --input-ndjson "/private/stored
 
 現有 `scripts/audit_multidim_event_time.py` 僅檢查 time fields；即使它顯示 `EVENT_DATE_EMPTY_TIMELINE`，仍可能有 Evidence 的 `event_ids` 指向不存在的 Event。新工具會以**目前完整 Profile** 拒絕此結構。兩份報表提供互補的數量，不是互相替代的真實性或 pending 判定。
 
+新增的嚴格 JSON 解析會拒絕任一層的重複物件欄位，以及 Python 預設容忍、但 JSON 不允許的 `NaN`／`Infinity`／`-Infinity`。這些輸入回報 `UNAVAILABLE`、不輸出部分統計；不得由重複 `Event`／`time_iso`／`multidim_event_json` 中任選最後一個值當作原始資料。唯一欄位的合法 JSON 維持原有行為。
+
 輸入與原日期稽核共用既有私有檔讀取器：上限 16 MiB、20,000 行、單行 512 KiB，拒絕符號連結、損壞 JSON、截斷末行或讀取時改變檔案身分；不可保證惡意並行修改者不可繞過檔案快照。請在受控、停止寫入後的私有匯出檔執行。
 
 **未驗證事項：** 來源文章日期忠實性、LLM 是否漏抽／幻覺、Output Profile 版本與歷史寫入當時版本是否一致、現行 ES rerun 及 fingerprint、索引 Mapping、實際 ES sink ACK 與 SQL/ES 端來源原子性。Profile 合規也不代表完成全部事件或通過 SRAF Evidence 檢索；反之，Profile 拒絕舊資料不能視為已授權覆寫或大規模重跑。
