@@ -2,6 +2,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import multiprocessing
+import os
 import queue
 import sqlite3
 import threading
@@ -141,6 +142,74 @@ def test_independent_spawned_processes_can_never_claim_same_revision(tmp_path):
             process.join(timeout=5)
         ready.close()
         outcomes.close()
+
+
+
+def _terminate_sqlite_claim_after_update_before_commit(db_path):
+    """Spawn-only fault injection in a disposable ledger, never a runtime hook."""
+    store = DisposableQualityLedger(Path(db_path), KEY, create=False)
+    original_connect = DisposableQualityLedger._connect
+
+    def _connection_with_temporary_abort_trigger(self):
+        con = original_connect(self)
+        # TEMP trigger and callback exist only in this child connection. The
+        # real transition performs its own BEGIN IMMEDIATE, signed UPDATE,
+        # then would COMMIT; exit at the UPDATE/COMMIT boundary.
+        con.create_function("abort_before_commit", 0, lambda: os._exit(86))
+        con.execute(
+            "CREATE TEMP TRIGGER fail_before_commit "
+            "AFTER UPDATE ON main.quality_states "
+            "BEGIN SELECT abort_before_commit(); END"
+        )
+        return con
+
+    DisposableQualityLedger._connect = _connection_with_temporary_abort_trigger
+    store.transition(
+        ident(), expected_revision=1, operation="claim", policy=ON,
+        verified_attempt_id=A,
+    )
+    # Must never be reached; distinct exit status makes false positives fail.
+    os._exit(99)
+
+
+def test_terminated_writer_before_commit_preserves_previous_claim_budget(tmp_path):
+    """Real child-process exit after SQLite UPDATE must roll back the CAS."""
+    store = new_store(tmp_path)
+    before = reject_initial(store)
+    assert before.phase == Phase.READY
+    assert before.revision == 1 and before.failed_repairs == 0
+
+    ctx = multiprocessing.get_context("spawn")
+    process = ctx.Process(
+        target=_terminate_sqlite_claim_after_update_before_commit,
+        args=(str(tmp_path / "ledger.db"),),
+    )
+    try:
+        process.start()
+        process.join(timeout=25)
+        assert process.exitcode == 86  # SQLite UPDATE trigger actually fired
+        # A new independent connection must recover the hot rollback journal
+        # and see the pre-crash signed state, not a phantom IN_FLIGHT claim.
+        after = new_store(tmp_path, create=False).read(ident())
+        assert after == before
+        assert after.phase == Phase.READY and after.failed_repairs == 0
+        assert after.active_attempt_id is None
+
+        # No automatic replay is attempted. This explicitly authorized test
+        # claim models a new dispatch decision after local state recovery.
+        claimed = new_store(tmp_path, create=False).transition(
+            ident(), expected_revision=after.revision, operation="claim",
+            policy=ON, verified_attempt_id=B,
+        )
+        assert claimed.phase == Phase.IN_FLIGHT
+        assert claimed.revision == 2 and claimed.failed_repairs == 0
+        assert new_store(tmp_path, create=False).read(ident()) == claimed
+    finally:
+        if process.is_alive():
+            process.terminate()
+        if process.pid is not None:
+            process.join(timeout=5)
+
 
 
 def test_repair_exhaustion_survives_restart_without_another_claim(tmp_path):
