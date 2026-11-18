@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Bounded locally protected JSON repair before/after snapshots (sensitive).
 
-Automatic capture is enabled by default only when local security checks pass;
-CZJLLM_JSON_REPAIR_CAPTURE=0 explicitly disables new captures. Raw data never
+Disk capture is explicit opt-in only (CZJLLM_JSON_REPAIR_CAPTURE=1).
+Session RAM capture is separate and GUI-only. Raw data never
 enters Quality JSONL or the LLM audit. Plaintext storage is not encryption or
 protection against hostile local administrators and external backups/sync.
 """
@@ -33,7 +33,7 @@ _CASE_NAME = re.compile(r"^r-([0-9a-f]{32})\.json$")
 
 def capture_enabled() -> bool:
     raw = os.environ.get(ENABLE_ENV)
-    return raw is None or raw.strip().lower() in {"1", "true", "yes", "on"}
+    return raw is not None and raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def configured_private_root() -> Path | None:
