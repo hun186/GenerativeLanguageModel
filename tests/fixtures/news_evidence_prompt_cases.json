@@ -1,0 +1,90 @@
+[
+  {
+    "case_id": "news_action_over_date",
+    "mode": "general_news",
+    "source": "2026年11月17日。\n甲市政府宣布啟動橋梁檢修，並封閉北側車道三天。",
+    "expected_quotes": [
+      {
+        "text": "甲市政府宣布啟動橋梁檢修，並封閉北側車道三天。",
+        "event_ids": [
+          "E1"
+        ]
+      }
+    ],
+    "expected_timeline": []
+  },
+  {
+    "case_id": "only_date_no_action",
+    "mode": "general_news",
+    "source": "2026年11月17日",
+    "expected_quotes": [
+      {
+        "text": "2026年11月17日",
+        "event_ids": []
+      }
+    ],
+    "expected_timeline": []
+  },
+  {
+    "case_id": "two_distinct_events",
+    "mode": "general_news",
+    "source": "乙縣衛生局公布流感疫苗配送計畫。丙縣醫院啟動急診分流措施。",
+    "expected_quotes": [
+      {
+        "text": "乙縣衛生局公布流感疫苗配送計畫。",
+        "event_ids": [
+          "E1"
+        ]
+      },
+      {
+        "text": "丙縣醫院啟動急診分流措施。",
+        "event_ids": [
+          "E2"
+        ]
+      }
+    ],
+    "expected_timeline": []
+  },
+  {
+    "case_id": "event_date_empty_timeline",
+    "mode": "general_news",
+    "source": "2026年11月16日，丁市消防局撲滅工廠火警，無人受傷。",
+    "expected_quotes": [
+      {
+        "text": "2026年11月16日，丁市消防局撲滅工廠火警，無人受傷。",
+        "event_ids": [
+          "E1"
+        ]
+      }
+    ],
+    "expected_timeline": []
+  },
+  {
+    "case_id": "structured_record_unchanged",
+    "mode": "structured_record",
+    "source": "日期=2026-11-16; 航次=A123; 海巡署查驗船舶並完成安全紀錄; 附註=原始系統欄位不得由一般新聞選句規則摘要。",
+    "expected_quotes": [
+      {
+        "text": "日期=2026-11-16; 航次=A123; 海巡署查驗船舶並完成安全紀錄; 附註=原始系統欄位不得由一般新聞選句規則摘要。",
+        "event_ids": [
+          "E1"
+        ]
+      }
+    ],
+    "expected_timeline": []
+  },
+  {
+    "case_id": "news_280_boundary",
+    "mode": "general_news",
+    "source": "某科技公司發布伺服器更新方案，並說明本次改版主要解決高負載時的排程延遲。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。參考背景文字。",
+    "expected_quotes": [
+      {
+        "text": "某科技公司發布伺服器更新方案，並說明本次改版主要解決高負載時的排程延遲。",
+        "event_ids": [
+          "E1"
+        ]
+      }
+    ],
+    "expected_timeline": []
+  }
+]
