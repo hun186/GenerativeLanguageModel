@@ -1,5 +1,6 @@
 """Disposable local SQLite CAS proof: synthetic only; no ES, LLM or runtime."""
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
 from pathlib import Path
 import multiprocessing
 import os
@@ -343,6 +344,83 @@ def test_repair_exhaustion_survives_restart_without_another_claim(tmp_path):
     )
     assert reset.phase == Phase.READY and reset.failed_repairs == 0
     assert new_store(tmp_path, create=False).read(ident()) == reset
+
+
+
+def test_durable_repair_budget_never_crosses_document_output_pipeline_rule(tmp_path):
+    """One exhausted identity must not poison another scope after restart."""
+    store = new_store(tmp_path)
+    original = ident()
+    variants = [
+        replace(original, source_document_id="PRIVATE_SOURCE_DOCUMENT_124"),
+        replace(original, output_col="multidim_event_json_secondary"),
+        replace(original, verified_pipeline_sha256="b" * 64),
+        replace(original, quality_rule_version="multidim_event_profile_v2"),
+    ]
+    assert len(set(variants + [original])) == 5
+
+    state = reject_initial(store)
+    for token in (A, B):
+        state = store.transition(
+            original, expected_revision=state.revision, operation="claim",
+            policy=ON, verified_attempt_id=token,
+        )
+        state = store.transition(
+            original, expected_revision=state.revision, operation="finalize",
+            policy=ON, verified_attempt_id=token,
+            result=QualityResult.REJECTED,
+            failure_code="SCHEMA_EVENT_REFERENCE",
+        )
+    assert state.phase == Phase.NEEDS_REVIEW
+    assert state.failed_repairs == 2 and state.revision == 5
+
+    # Every single identity dimension is part of the authenticated HMAC key.
+    # A new pipeline or rule must not be blocked by an old exhausted budget.
+    reopened = new_store(tmp_path, create=False)
+    for variant in variants:
+        fresh = reopened.read(variant)
+        assert fresh.phase == Phase.UNASSESSED
+        assert fresh.revision == 0 and fresh.failed_repairs == 0
+        observed = reopened.transition(
+            variant, expected_revision=0, operation="observe_initial",
+            result=QualityResult.REJECTED,
+            failure_code="SCHEMA_TIME_PRECISION",
+        )
+        assert observed.phase == Phase.READY
+        assert observed.revision == 1 and observed.failed_repairs == 0
+
+    # Claiming one revised identity must leave every other identity unchanged.
+    claimed = reopened.transition(
+        variants[2], expected_revision=1, operation="claim",
+        policy=ON, verified_attempt_id=A,
+    )
+    assert claimed.phase == Phase.IN_FLIGHT and claimed.revision == 2
+    assert claimed.failed_repairs == 0
+    restarted = new_store(tmp_path, create=False)
+    assert restarted.read(original) == state
+    assert restarted.read(variants[2]) == claimed
+    for variant in (variants[0], variants[1], variants[3]):
+        other = restarted.read(variant)
+        assert other.phase == Phase.READY
+        assert other.revision == 1 and other.failed_repairs == 0
+
+    with sqlite3.connect(tmp_path / "ledger.db") as con:
+        keys = [row[0] for row in con.execute(
+            "SELECT identity_key FROM quality_states ORDER BY identity_key"
+        )]
+    assert len(keys) == len(set(keys)) == 5
+    assert all(len(key) == 64 and all(c in "0123456789abcdef" for c in key)
+               for key in keys)
+    raw = (tmp_path / "ledger.db").read_bytes()
+    for value in (
+        b"PRIVATE_SOURCE_DOCUMENT_123",
+        b"PRIVATE_SOURCE_DOCUMENT_124",
+        b"multidim_event_json_secondary",
+        b"multidim_event_profile_v2",
+        KEY,
+    ):
+        assert value not in raw
+
 
 
 def test_unknown_date_completion_never_enters_repair_queue(tmp_path):
