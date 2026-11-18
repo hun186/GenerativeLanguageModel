@@ -216,6 +216,11 @@ jobs:
         env:
           PYTHONNOUSERSITE: "1"
         run: python -m pytest -q tests/es_mode/test_quality_retry_contract.py --maxfail=1 --disable-warnings
+      - name: Prove disposable SQLite Quality claim crash rollback on Windows
+        shell: pwsh
+        env:
+          PYTHONNOUSERSITE: "1"
+        run: python -m pytest -q tests/es_mode/test_quality_retry_sqlite_proof.py --maxfail=1 --disable-warnings
       - name: Verify offline Event Timeline time audit on native Windows
         shell: pwsh
         env:
