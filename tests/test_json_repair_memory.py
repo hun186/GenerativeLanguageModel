@@ -99,6 +99,40 @@ def test_gui_close_unregisters_bound_sink():
     assert controls.get_nowait() == (_GuiEvents.CLOSE, None)
 
 
+
+def test_private_ipc_close_abandons_undelivered_samples_and_does_not_hang(tmp_path):
+    """Real Python subprocess exits even if the GUI never consumes 160 KiB.
+
+    Without cancel_join_thread() a multiprocessing.Queue feeder can block at
+    interpreter teardown because the parent still holds its own pipe reader.
+    """
+    import subprocess
+    import sys
+
+    script = """
+import multiprocessing as mp
+import queue
+from types import SimpleNamespace
+from czjLLM.job_manager.win_gui import _GUIClient
+ctx = mp.get_context("spawn")
+private = ctx.Queue(maxsize=8)
+control = queue.Queue()
+dead_gui = SimpleNamespace(is_alive=lambda: False)
+client = _GUIClient(control, dead_gui, private_repair_q=private)
+private.put_nowait(("run", "event", "SENSITIVE_" * 18000, "SENSITIVE_" * 18000))
+client.close()
+print("EXITED_CLEANLY")
+"""
+    repo = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [sys.executable, "-c", script], cwd=repo, text=True,
+        capture_output=True, encoding="utf-8", timeout=20,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "EXITED_CLEANLY" in result.stdout
+    assert "SENSITIVE_" not in result.stdout + result.stderr
+
+
 def test_worker_memory_only_success_is_exact_quality_linked_and_not_written(
     tmp_path, monkeypatch, capsys,
 ):
@@ -177,6 +211,8 @@ def test_gui_wiring_uses_separate_spawn_queue_not_quality_payload():
     popup = (Path(__file__).resolve().parents[1] /
              "czjLLM/job_manager/json_repair_review_gui.py").read_text(encoding="utf-8")
     assert "ctx.Queue(maxsize=MAX_PENDING_IPC)" in source
+    assert "private_repair_q.cancel_join_thread()" in source
+    assert "self._private_repair_q.cancel_join_thread()" in source
     assert "set_gui_repair_sink(client.offer_repair)" in source
     assert "drain_private_repair_queue(private_repair_q, _repair_memory)" in source
     assert "memory_ring=_repair_memory" in source
