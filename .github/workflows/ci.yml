@@ -50,7 +50,7 @@ jobs:
       - name: Verify fast MultiDim gate ordering and no omitted checks
         run: python -m pytest -q tests/test_ci_multidim_fast_gate.py --maxfail=1 --disable-warnings
       - name: Guard active news Evidence prompt source fidelity (offline)
-        run: python -m pytest -q tests/test_multidim_news_evidence_prompt.py --maxfail=1 --disable-warnings
+        run: python -m pytest -q tests/test_multidim_news_evidence_prompt.py tests/test_multidim_news_evidence_ab_cli.py --maxfail=1 --disable-warnings
       - name: Run offline production E2E gate
         run: python -m pytest -q tests/e2e -m e2e --maxfail=1 --disable-warnings
       - name: Run focused quality GUI, bounded memory, archival continuity and SHA256 manifest regressions
@@ -222,7 +222,7 @@ jobs:
         shell: pwsh
         env:
           PYTHONNOUSERSITE: "1"
-        run: python -m pytest -q tests/test_multidim_news_evidence_prompt.py --maxfail=1 --disable-warnings
+        run: python -m pytest -q tests/test_multidim_news_evidence_prompt.py tests/test_multidim_news_evidence_ab_cli.py --maxfail=1 --disable-warnings
       - name: Verify offline Event Timeline time audit on native Windows
         shell: pwsh
         env:
