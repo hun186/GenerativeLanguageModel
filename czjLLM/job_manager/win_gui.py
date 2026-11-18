@@ -2189,6 +2189,16 @@ class _GUIClient:
 
     def close(self):
         clear_gui_repair_sink(self.offer_repair)
+        # Diagnostic raw samples are best-effort. If Tk has died while a
+        # sample exceeds the OS pipe buffer, the Queue feeder can block even
+        # though put_nowait returned. Never join that feeder at process exit.
+        # Do not drain it in the parent (the GUI owns all raw inspection).
+        if self._private_repair_q is not None:
+            try:
+                self._private_repair_q.cancel_join_thread()
+                self._private_repair_q.close()
+            except (OSError, ValueError, AttributeError):
+                pass
         try:
             self._q.put((_GuiEvents.CLOSE, None))
         except Exception:
@@ -2206,6 +2216,10 @@ def try_start_gui(total: int, title: str = "LLM 分析進度（Windows GUI）"):
         # Distinct IPC from the unbounded progress/control queue: this queue
         # carries only a few private, size-checked samples and never blocks.
         private_repair_q = ctx.Queue(maxsize=MAX_PENDING_IPC)
+        # The Queue feeder may still hold a large sample if the spawned GUI
+        # dies before consuming it. Never block interpreter teardown waiting
+        # for delivery of a disposable diagnostic sample.
+        private_repair_q.cancel_join_thread()
         cancel_event = ctx.Event()
         p = ctx.Process(
             target=_gui_proc_main,
