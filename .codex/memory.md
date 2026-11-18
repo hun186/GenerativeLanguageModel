@@ -87,7 +87,7 @@
   源碼 PR 仍是 Draft，CI/實機驗收未完成。
 
 ## 2026-11-17 — project-local JSON repair cache follow-up
-- Source PR pending: default-on only when fail-closed Windows NTFS/ReFS protected ACL or Linux 0700/local-mount checks pass; checkout-relative .runtime-private/json_repair, 72h opportunistic expiration, 128 MiB active quota, exact Run/event GUI, explicit opt-out and ignored private data. It does not modify Queue, ES, SQL or LLM repair semantics. Hosted Linux/Windows CI, latest Codex, and owner workstation acceptance still unverified at opening. Existing #310 is merged; no historical raw snapshots can be recovered.
+- Historical #335 source had default-on protected project-local 72h plaintext capture; **2026-11-18 owner superseded this design**. New HEAD uses GUI-only session RAM latest 50; disk now explicit opt-in only, and Linux headless doesn't capture raw. Original secure disk ACL/prune code remains optional, not default. Latest-head Hosted Linux/Windows/Codex and physical GUI remain separate gates.
 
 ## 2026-11-18 #335 CI memory-size corrective (source-only)
 - **2026-11-18 #335 Codex P2 corrections (PENDING latest-head verification):** Load existing private `.env`/`.env.local` overrides using the same `load_czjllm_env_files_once` project root before a headless startup sweep; move opted-out `Path.exists()` into fixed-code `OSError` exception boundary so inaccessible optional cache does not abort an LLM batch. Synthetic tests cover selected custom-root 72h cleanup and permission-denied opt-out. Prior HEAD `f357e29f...` Hosted Linux/Windows/secret/credential PASS but Codex found two P2; no unearned claims of rereview or physical privacy authorization.
