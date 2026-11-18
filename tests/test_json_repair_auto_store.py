@@ -29,6 +29,9 @@ def test_default_private_cache_follows_checkout_not_cwd(monkeypatch, tmp_path):
     monkeypatch.chdir(elsewhere)
     monkeypatch.delenv(cap.ROOT_ENV, raising=False)
     monkeypatch.delenv(cap.ENABLE_ENV, raising=False)
+    assert cap.capture_enabled() is False
+    # Older secure disk capture remains explicitly opt-in.
+    monkeypatch.setenv(cap.ENABLE_ENV, "1")
     assert cap.capture_enabled() is True
     directory = cap.configured_private_root()
     assert directory == project / ".runtime-private" / "json_repair"
@@ -55,6 +58,8 @@ def test_optout_never_enables_new_capture(monkeypatch):
     monkeypatch.setenv(cap.ENABLE_ENV, "off")
     assert cap.capture_enabled() is False
     monkeypatch.delenv(cap.ENABLE_ENV, raising=False)
+    assert cap.capture_enabled() is False
+    monkeypatch.setenv(cap.ENABLE_ENV, "1")
     assert cap.capture_enabled() is True
 
 
@@ -176,7 +181,7 @@ def test_launch_housekeeping_honors_optout_and_fail_closed_volume(monkeypatch, t
     monkeypatch.setenv(cap.ENABLE_ENV, "0")
     assert cap.startup_private_capture_maintenance() == "DISABLED"
     assert not (project / ".runtime-private").exists()
-    monkeypatch.delenv(cap.ENABLE_ENV, raising=False)
+    monkeypatch.setenv(cap.ENABLE_ENV, "1")
     if os.name == "nt":
         monkeypatch.setattr(auto, "_win_volume_is_ntfs", lambda _p: False)
     else:
@@ -203,7 +208,7 @@ def test_disabled_capture_still_expires_old_plaintext_on_headless_launch(
     project = _local_project(monkeypatch, tmp_path / "checkout")
     project.mkdir()
     monkeypatch.delenv(cap.ROOT_ENV, raising=False)
-    monkeypatch.delenv(cap.ENABLE_ENV, raising=False)
+    monkeypatch.setenv(cap.ENABLE_ENV, "1")
     root = cap.configured_private_root()
     event = uuid4().hex
     cap.write_private_repair(root, "run-before-optout", event, "SECRET", "REPAIRED")
