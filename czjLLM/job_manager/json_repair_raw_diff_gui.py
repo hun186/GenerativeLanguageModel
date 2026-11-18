@@ -25,7 +25,7 @@ def _common_segments(before: str, after: str) -> tuple[int, int]:
 def show_private_json_diff(owner, original: str, repaired: str):
     """Side-by-side exact character views, bounded by private reader limits."""
     win = tk.Toplevel(owner)
-    win.title("私有 JSON 修復前後原文｜僅供本機檢視")
+    win.title("JSON 修復前後全文比對｜本機暫存")
     sw = max(850, int(win.winfo_screenwidth()))
     sh = max(520, int(win.winfo_screenheight()))
     win.geometry(f"{min(1200, sw - 80)}x{min(720, sh - 110)}")

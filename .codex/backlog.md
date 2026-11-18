@@ -10,6 +10,8 @@
 - **#269 completed owner merge gate:** latest-head Linux E2E, Windows Hosted 3.10/3.11, changed-line scan SUCCESS, formal Codex receipt no major issues, 22/22 threads resolved, explicit 2026-11-01 owner instruction to merge, GitHub confirmed Squash Merge. Two self-hosted jobs were queued and not treated as verified; physical operator tests remain separate.
 
 ## True Open Engineering Work
+- [ ] **#335 latest-50 RAM-first qualitative repair comparison redesign:** Windows GUI-owned bounded FIFO (50 samples, 16 MiB, private max-8 IPC) with Worker run/event join; Linux Headless no raw retention. Explicit disk opt-in only. Verify GUI spawn/close, FIFO eviction, 50-case metadata match, OOM/backpressure/oversize, no disk/Quality plaintext; Hosted Linux/Windows/Secret + exact-head Codex 0 findings mandatory. Physical Tk/NTFS acceptance remains independent.
+- [ ] **#335 owner changed contract to RAM-first:** Previous Codex P2 on early env loading and denied optional-root errors corrected; reviewed on prior disk-default HEAD, NOT on new memory HEAD. New GUI-only FIFO 50 pairs, private bounded IPC max 8, Linux headless scalars only, explicit disk opt-in; require exact new Hosted Linux/Windows/Secret and formal Codex plus operator GUI acceptance. No default plaintext files.
 - [ ] **#313 independent identity-scoped durable CAS proof PR (PENDING):** check five synthetic scoped identities remain separate across restart and exhaust/reclaim, raw SQLite has only HMAC IDs. Require exact-head Hosted Linux E2E, Hosted Windows 3.10/3.11, Secret Scan, formal Codex Review and 0 unresolved findings; if review quota is exhausted, HOLD, not merge. Production requires separately authenticated identity, operator effective YAML, cross-host sink reconciliation and safe replay authorization.
 - [x] **#313 before-COMMIT crash-proof PR #339 merged:** main `14761b71384cd5ec694c92e5527873328af5f6dc`, Hosted Linux E2E/Windows 3.10/3.11/Secret Scan and latest-head Codex 0 Findings; local SQLite only. [ ] **#313 after-COMMIT before-caller-ACK PENDING:** verify spawned-child exit(87) persisted Claim and Finalize once, stale replays fail, Hosted Linux/Windows CI, formal Codex and secret scan. Still NOT implemented: authenticated source+output identity, LLM/sink ACK uncertainty, cross-host transactional replay, ES read-only impact, operator authorization for any live rerun.
 - [ ] **2026-11-10 JSON completion PR:** Complete CI/review for shared rerun evaluator and provider-length fail-closed guard. Follow-up: assembled-document semantic retention, source-grounded event count, and real workstation checks.
@@ -158,3 +160,8 @@
       的獨立觀測；不能以 nvidia-smi 快照宣稱第二 GPU 閒置根因已證明。
 - [ ] 若跨平台也需要流式調度，先另案 Linux multiprocessing
       ownership／drain／deadline 一致性驗證；本 PR 不啟用。
+
+## 2026-11-17 — project-local auto JSON repair cache verification
+- [x] Added portable project-relative protected cache bootstrap, 72h snapshot TTL/launch-and-write-and-GUI removal, total active-byte quota, GUI status, gitignore and disposable synthetic tests; CI and privacy review not yet confirmed.
+- [ ] Verify exact-head Hosted Linux E2E, Windows 3.10/3.11, secret scan, Codex findings and no unresolved threads before any merge. Verify native Windows ACL creation and Linux scheduler user permissions; do not claim real operator acceptance from Hosted.
+- [ ] On real Windows and Linux deployments, confirm checkout is local/non-synced, running identity can access cache, and archive/backup/7z/Docker excludes .runtime-private; never auto-sync plaintext repair snapshots.

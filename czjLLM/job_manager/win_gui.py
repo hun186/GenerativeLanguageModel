@@ -12,6 +12,10 @@ from czjLLM.utilities.processing_quality import (
     QualityAccumulator, QualityCapacityExceeded,
 )
 from czjLLM.utilities.processing_quality_run_reader import QualityRunTailReader
+from czjLLM.utilities.json_repair_memory import (
+    MAX_PENDING_IPC, RepairMemoryRing, _pair_key_and_size,
+    clear_gui_repair_sink, drain_private_repair_queue, set_gui_repair_sink,
+)
 
 # 僅 Windows 啟用 GUI；其他平台回傳 None
 IS_WIN = (sys.platform == "win32")
@@ -891,7 +895,8 @@ def main_page_mouse_wheel_units(delta: int) -> int:
     return -magnitude if delta > 0 else magnitude
 
 
-def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
+def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
+                   private_repair_q=None):
     """子行程內執行：所有 Tk 操作都在這裡，避免跨緒/跨行程錯誤。"""
     _enable_windows_dpi_awareness()
     try:
@@ -1052,6 +1057,9 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     )
     _audit_reader_thread.start()
     _quality_stats = QualityAccumulator().snapshot()
+    # Raw before/after JSON never enters the ordinary GUI control/log queue
+    # or Quality files. Only the GUI process owns this session ring.
+    _repair_memory = RepairMemoryRing()
     _quality_path_queue = pyqueue.Queue(maxsize=2)
     _quality_result_queue = pyqueue.Queue(maxsize=1)
     _quality_reader_stop = threading.Event()
@@ -1245,6 +1253,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
                 format_json_repair_analysis_case,
                 format_json_repair_analysis_summary,
                 format_json_repair_analysis_case_detail,
+                memory_ring=_repair_memory,
             )
         except Exception as error:
             from tkinter import messagebox
@@ -2030,6 +2039,8 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
     def poll():
         nonlocal _tot, _done_cnt, _sched_cnt, _recheck_stats, _recheck_error_visible, _reduction_stats
         nonlocal _audit_stats, _audit_path, _quality_stats, _recovery_meter_path
+        if private_repair_q is not None:
+            drain_private_repair_queue(private_repair_q, _repair_memory)
         try:
             updated = False
             while True:
@@ -2139,10 +2150,26 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str):
 # ---------- 主行程：薄客戶端（丟訊息而已） ----------
 
 class _GUIClient:
-    def __init__(self, q: "mp.Queue", proc: "mp.Process", cancel_event=None):
+    def __init__(self, q: "mp.Queue", proc: "mp.Process", cancel_event=None,
+                 private_repair_q=None):
         self._q = q
         self._proc = proc
         self._cancel_event = cancel_event
+        self._private_repair_q = private_repair_q
+
+    def offer_repair(self, run_id, event_id, original, repaired) -> bool:
+        """Nonblocking and strictly bounded; private payload never in GUI logs."""
+        if self._private_repair_q is None or not self._proc.is_alive():
+            return False
+        try:
+            _pair_key_and_size(run_id, event_id, original, repaired)
+            self._private_repair_q.put_nowait(
+                (run_id, event_id, original, repaired)
+            )
+            return True
+        except Exception:
+            # A saturated/closed IPC channel is diagnostic loss only.
+            return False
 
     def inc_sched(self, n: int = 1): self._q.put((_GuiEvents.INC_SCHED, n))
     def inc_done(self,  n: int = 1): self._q.put((_GuiEvents.INC_DONE,  n))
@@ -2161,6 +2188,17 @@ class _GUIClient:
         return bool(self._cancel_event is not None and self._cancel_event.is_set())
 
     def close(self):
+        clear_gui_repair_sink(self.offer_repair)
+        # Diagnostic raw samples are best-effort. If Tk has died while a
+        # sample exceeds the OS pipe buffer, the Queue feeder can block even
+        # though put_nowait returned. Never join that feeder at process exit.
+        # Do not drain it in the parent (the GUI owns all raw inspection).
+        if self._private_repair_q is not None:
+            try:
+                self._private_repair_q.cancel_join_thread()
+                self._private_repair_q.close()
+            except (OSError, ValueError, AttributeError):
+                pass
         try:
             self._q.put((_GuiEvents.CLOSE, None))
         except Exception:
@@ -2175,10 +2213,23 @@ def try_start_gui(total: int, title: str = "LLM 分析進度（Windows GUI）"):
     try:
         ctx = mp.get_context("spawn")  # Windows 安全模式
         q = ctx.Queue()
+        # Distinct IPC from the unbounded progress/control queue: this queue
+        # carries only a few private, size-checked samples and never blocks.
+        private_repair_q = ctx.Queue(maxsize=MAX_PENDING_IPC)
+        # The Queue feeder may still hold a large sample if the spawned GUI
+        # dies before consuming it. Never block interpreter teardown waiting
+        # for delivery of a disposable diagnostic sample.
+        private_repair_q.cancel_join_thread()
         cancel_event = ctx.Event()
-        p = ctx.Process(target=_gui_proc_main, args=(q, cancel_event, int(total), title), daemon=False)
+        p = ctx.Process(
+            target=_gui_proc_main,
+            args=(q, cancel_event, int(total), title, private_repair_q),
+            daemon=False,
+        )
         p.start()
-        return _GUIClient(q, p, cancel_event)
+        client = _GUIClient(q, p, cancel_event, private_repair_q)
+        set_gui_repair_sink(client.offer_repair)
+        return client
     except Exception as ex:
         #print(ex)
         return None
