@@ -18,6 +18,22 @@ Both use Python 3.10+ (stdlib only) and default to the repository's ./logs.
 If the actual PGMSubDir is elsewhere, supply its logs directory:
     python scripts/diagnose_llm_dispatch_idle.py --logs-dir <runtime_logs_directory>
 
+### Audit CSV fail-closed counters (Issue #302 read-only Phase 1 continuation)
+
+The reader accepts only the Writer's existing uppercase final `ok=YES/NO` and
+`call_llm_api_returned=YES/NO` (or the historical blank Worker-return field).
+Duplicate CSV columns or unfamiliar state tokens are `SCHEMA_MISMATCH`: they
+must not be interpreted as a call failure, an idle GPU, or a valid sample.
+
+If **any** Audit timestamp is invalid or lacks a timezone, status is
+`INCOMPLETE` and only the count of malformed timestamp rows is shown;
+success/failure/endpoint, latest-completion-age and Worker-return counters
+are **withheld**, including otherwise valid rows in that file. The UI's
+recent-Audit summary does not show a misleading partial success count.
+Meter, endpoint leases and Quality diagnostics remain independent and may
+still show their own observed values. The tool does not repair Audit files,
+infer a particular GPU's usage or claim complete sink acknowledgement.
+
 ### Multiple run-specific metadata directories (Issue #302 read-only Phase 1)
 
 If Queue Meter, endpoint leases, and LLM Audit are stored in different logs

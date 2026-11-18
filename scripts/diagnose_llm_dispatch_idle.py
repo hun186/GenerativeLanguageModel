@@ -198,7 +198,10 @@ def _audit(logs, labels, now, window):
             raise Unavailable("INCOMPLETE")
         reader = csv.DictReader(io.StringIO(text, newline=""), strict=True)
         required = {"timestamp", "base_url", "ok", "call_llm_api_returned"}
-        if not reader.fieldnames or not required.issubset(reader.fieldnames):
+        if (not reader.fieldnames or not required.issubset(reader.fieldnames)
+                or len(reader.fieldnames) != len(set(reader.fieldnames))):
+            # Duplicate CSV headers make DictReader silently discard columns;
+            # never publish success/failure counts from ambiguous data.
             raise Unavailable("SCHEMA_MISMATCH")
         rows = recent = passed = failed = returned = invalid = other = 0
         latest = None
@@ -211,6 +214,12 @@ def _audit(logs, labels, now, window):
             rows += 1
             if rows > MAX_ROWS:
                 raise Unavailable("ROW_LIMIT")
+            # The producer only emits YES/NO for final ok and YES/NO/blank
+            # for the optional Worker-return observation. A malformed value
+            # must not masquerade as a valid but unsuccessful call.
+            if (row.get("ok") not in {"YES", "NO"}
+                    or row.get("call_llm_api_returned") not in {"YES", "NO", ""}):
+                raise Unavailable("SCHEMA_MISMATCH")
             try:
                 stamp = datetime.fromisoformat(row.get("timestamp", ""))
                 if stamp.tzinfo is None:
@@ -240,8 +249,18 @@ def _audit(logs, labels, now, window):
         raise Unavailable("INCOMPLETE") from None
     except (UnicodeError, TypeError, ValueError):
         raise Unavailable("MALFORMED") from None
+    if invalid:
+        # A non-UTC/invalid timestamp may be a completed call within the
+        # requested window. None of the success/failure/endpoint counts are
+        # an authoritative complete sample in this situation.
+        return {
+            "status": "INCOMPLETE",
+            "window_seconds": window,
+            "invalid_timestamp_rows": invalid,
+            "warning": "PARTIAL_AUDIT_COUNTS_WITHHELD",
+        }
     return {
-        "status": "INCOMPLETE" if invalid else "OBSERVED",
+        "status": "OBSERVED",
         "window_seconds": window, "recent_completed_audit_rows": recent,
         "recent_ok_rows": passed, "recent_failed_rows": failed,
         "recent_wrapper_returned_rows": returned,
