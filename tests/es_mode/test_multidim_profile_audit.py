@@ -242,6 +242,42 @@ def test_invalid_or_torn_export_returns_no_partial_counts(tmp_path, raw):
     assert result["sink_writeback"] == "NOT_PERFORMED"
 
 
+
+@pytest.mark.parametrize("raw", [
+    b'{"multidim_event_json":[],"multidim_event_json":[]}\n',
+    b'{"_source":{"multidim_event_json":[],"multidim_event_json":[]}}\n',
+    b'{"multidim_event_json":[],"nested":{"PRIVATE_FIELD":"A","PRIVATE_FIELD":"B"}}\n',
+    b'{"multidim_event_json":[],"private_number":NaN}\n',
+    b'{"multidim_event_json":[],"private_number":Infinity}\n',
+    b'{"multidim_event_json":[],"private_number":-Infinity}\n',
+])
+def test_private_output_profile_audit_rejects_duplicate_json_keys_or_nan(
+    tmp_path, capsys, raw,
+):
+    private = tmp_path / "PRIVATE_source_export.jsonl"
+    private.write_bytes(raw)
+    original = private.read_bytes()
+    status = collect(private)
+    assert status["status"] == "UNAVAILABLE"
+    assert status["reason_code"] == "UNVERIFIED_INPUT"
+    assert "counts" not in status
+    assert main(["--input-ndjson", str(private), "--human"]) == 2
+    human = capsys.readouterr().out
+    assert "輸入不可驗證" in human
+    assert "PRIVATE_" not in human
+    assert str(private) not in human
+    assert private.read_bytes() == original
+
+
+def test_unique_json_object_fields_still_parse_for_stored_profile(tmp_path):
+    private = tmp_path / "fixture.jsonl"
+    private.write_text('{"multidim_event_json":[]}\n', encoding="utf-8")
+    report = collect(private)
+    assert report["status"] == "OBSERVED_NOT_PROVEN"
+    assert report["counts"]["OUTPUT_ABSENT"] == 1
+    assert report["total_documents"] == 1
+
+
 def test_reject_input_symlink_without_reading_content(tmp_path):
     real_file = tmp_path / "SENSITIVE_real.jsonl"
     real_file.write_text(json.dumps(stored()) + "\n", encoding="utf-8")
