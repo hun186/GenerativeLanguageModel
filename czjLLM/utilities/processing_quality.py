@@ -211,7 +211,9 @@ class QualityAccumulator:
         self._repair_success = 0
         self._repair_failure = 0
         self._repair_analysis_counts = Counter()
-        self._repair_analysis_recent = deque(maxlen=12)
+        # GUI displays the same bounded recent-50 metadata window as its
+        # separately stored, session-only raw repair memory ring.
+        self._repair_analysis_recent = deque(maxlen=50)
         self._consumer_failures = 0
         self._row_merger_retryable_failures = 0
         self._producer_operational_failures = 0
