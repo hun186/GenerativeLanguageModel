@@ -212,6 +212,108 @@ def test_terminated_writer_before_commit_preserves_previous_claim_budget(tmp_pat
 
 
 
+
+def _terminate_sqlite_after_durable_commit_before_ack(db_path, operation):
+    """Offline-only fault: exit the spawned child immediately after COMMIT."""
+    store = DisposableQualityLedger(Path(db_path), KEY, create=False)
+    native_connect = sqlite3.connect
+
+    class _CrashAfterCommitConnection(sqlite3.Connection):
+        def execute(self, statement, parameters=(), /):
+            cursor = super().execute(statement, parameters)
+            if statement == "COMMIT":
+                # sqlite3 has completed the actual durable transition.
+                # The caller must not report a successful ACK or retry blindly.
+                os._exit(87)
+            return cursor
+
+    def _child_only_connect(*args, **kwargs):
+        return native_connect(*args, factory=_CrashAfterCommitConnection, **kwargs)
+
+    sqlite3.connect = _child_only_connect  # spawn child only; never runtime code
+    if operation == "claim":
+        store.transition(
+            ident(), expected_revision=1, operation="claim", policy=ON,
+            verified_attempt_id=A,
+        )
+    elif operation == "finalize":
+        store.transition(
+            ident(), expected_revision=2, operation="finalize", policy=ON,
+            verified_attempt_id=A, result=QualityResult.REJECTED,
+            failure_code="SCHEMA_EVENT_REFERENCE",
+        )
+    else:
+        os._exit(98)
+    os._exit(99)  # cannot report success; fail if COMMIT hook did not run
+
+
+@pytest.mark.parametrize("operation", ["claim", "finalize"])
+def test_process_death_after_commit_before_ack_preserves_single_cas(operation, tmp_path):
+    """Unacknowledged COMMIT remains durable; stale retry cannot publish twice."""
+    store = new_store(tmp_path)
+    initial = reject_initial(store)
+    assert initial.revision == 1 and initial.failed_repairs == 0
+    if operation == "finalize":
+        inflight = store.transition(
+            ident(), expected_revision=1, operation="claim",
+            policy=ON, verified_attempt_id=A,
+        )
+        assert inflight.phase == Phase.IN_FLIGHT and inflight.revision == 2
+
+    ctx = multiprocessing.get_context("spawn")
+    process = ctx.Process(
+        target=_terminate_sqlite_after_durable_commit_before_ack,
+        args=(str(tmp_path / "ledger.db"), operation),
+    )
+    try:
+        process.start()
+        process.join(timeout=25)
+        assert process.exitcode == 87  # confirmed COMMIT, not a setup failure
+        reopened = new_store(tmp_path, create=False)
+        persisted = reopened.read(ident())
+        if operation == "claim":
+            assert persisted.phase == Phase.IN_FLIGHT
+            assert persisted.revision == 2 and persisted.failed_repairs == 0
+            assert persisted.active_attempt_id == A
+            stale_revision = initial.revision
+            stale_op = "claim"
+            stale_kwargs = {"verified_attempt_id": B}
+            # The caller did not observe its ACK. A restart must not silently
+            # issue another repair until verified sink reconciliation.
+            with pytest.raises(ValueError):
+                reopened.transition(
+                    ident(), expected_revision=persisted.revision,
+                    operation="claim", policy=ON, verified_attempt_id=B,
+                )
+        else:
+            assert persisted.phase == Phase.READY
+            assert persisted.revision == 3 and persisted.failed_repairs == 1
+            assert persisted.active_attempt_id is None
+            assert persisted.last_quality_failure_code == "SCHEMA_EVENT_REFERENCE"
+            stale_revision = 2
+            stale_op = "finalize"
+            stale_kwargs = {
+                "verified_attempt_id": A,
+                "result": QualityResult.REJECTED,
+                "failure_code": "SCHEMA_EVENT_REFERENCE",
+            }
+            # Exactly one completed rejected quality repair is charged.
+            assert reopened.read(ident()).failed_repairs == 1
+
+        with pytest.raises(StaleRevision):
+            reopened.transition(
+                ident(), expected_revision=stale_revision,
+                operation=stale_op, policy=ON, **stale_kwargs,
+            )
+        assert new_store(tmp_path, create=False).read(ident()) == persisted
+    finally:
+        if process.is_alive():
+            process.terminate()
+        if process.pid is not None:
+            process.join(timeout=5)
+
+
+
 def test_repair_exhaustion_survives_restart_without_another_claim(tmp_path):
     store = new_store(tmp_path)
     state = reject_initial(store)
