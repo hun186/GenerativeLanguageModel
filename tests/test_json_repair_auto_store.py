@@ -189,6 +189,10 @@ def test_main_batch_entry_invokes_cache_maintenance_before_mode_dispatch():
     entry = (Path(__file__).resolve().parents[1] /
              "czjLLM/czjLLM_TextProcessing.py").read_text(encoding="utf-8")
     assert 'startup_private_capture_maintenance()' in entry
+    assert 'load_czjllm_env_files_once(base_dir=' in entry
+    assert 'Path(__file__).resolve().parents[1]' in entry
+    assert entry.index('load_czjllm_env_files_once(base_dir=') < entry.index(
+        'startup_private_capture_maintenance()')
     assert entry.index('startup_private_capture_maintenance()') < entry.index(
         '    # 模式選擇')
 
@@ -210,3 +214,57 @@ def test_disabled_capture_still_expires_old_plaintext_on_headless_launch(
     assert cap.startup_private_capture_maintenance() == "DISABLED"
     assert not stale.exists()
     assert not list(root.glob("run-*"))
+
+
+
+def test_headless_startup_env_loader_respects_configured_expired_private_root(
+    monkeypatch, tmp_path,
+):
+    """The real private env loader must select the same cache as the writer."""
+    import czjLLM.utilities.env_overrides as env_loader
+
+    if os.name != "nt":
+        monkeypatch.setattr(cap, "_posix_local_filesystem", lambda *_a, **_k: True)
+    root = tmp_path / "fixture-private"
+    root.mkdir(mode=0o700)
+    event = uuid4().hex
+    assert cap.write_private_repair(root, "expired-custom-root", event, "BEFORE", "AFTER")
+    stale = next(root.rglob("r-*.json"))
+    expired = time.time() - cap.SNAPSHOT_TTL_SECONDS - 30
+    os.utime(stale, (expired, expired))
+    (tmp_path / ".env.local").write_text(
+        "CZJLLM_JSON_REPAIR_CAPTURE=0\n"
+        + "CZJLLM_JSON_REPAIR_PRIVATE_DIR='" + root.as_posix() + "'\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(env_loader, "_ENV_FILE_LOADED", False)
+    # The loader writes to os.environ directly. Register local restorations
+    # even for keys that were originally absent in this test process.
+    with monkeypatch.context() as env:
+        for name in (cap.ROOT_ENV, cap.ENABLE_ENV):
+            env.setenv(name, "TEST_TEMPORARY_MARKER")
+            env.delenv(name)
+        env_loader.load_czjllm_env_files_once(base_dir=str(tmp_path))
+        assert Path(os.environ[cap.ROOT_ENV]) == root
+        assert cap.capture_enabled() is False
+        assert cap.startup_private_capture_maintenance() == "DISABLED"
+    assert not stale.exists()
+    assert not list(root.glob("run-*"))
+
+
+def test_opted_out_inaccessible_private_cache_does_not_abort_batch(
+    monkeypatch, tmp_path,
+):
+    """PermissionError from Path.exists is caught without printing paths."""
+    private = tmp_path / "inaccessible-parent" / "json_repair"
+    monkeypatch.setenv(cap.ENABLE_ENV, "0")
+    monkeypatch.setenv(cap.ROOT_ENV, str(private))
+    original_exists = Path.exists
+
+    def denied(path):
+        if path == private:
+            raise PermissionError("SENSITIVE_LOCAL_PRIVATE_PATH")
+        return original_exists(path)
+
+    monkeypatch.setattr(Path, "exists", denied)
+    assert cap.startup_private_capture_maintenance() == "UNAVAILABLE"
