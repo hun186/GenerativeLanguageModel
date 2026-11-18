@@ -1,6 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- **2026-11-18 #337 source PR pending:** Active MultiDim shared general-news prompt now prefers literal subject/action-bearing original sentences over isolated dates/headings when both exist; never splice Events, guess or discard authentic short sources. Six synthetic source-quote A/B fixtures, source-only tests, Linux/Hosted Windows 3.10/3.11 gates and operator A/B instructions added. **Not merged, latest-head CI/Codex and real LLM A/B NOT VERIFIED.** No ES/SQL/replay or model calls.
 - 2026-11-17 PR #331 pending: expand early Linux CI ordering guard to cover new disposable SQLite, search-field, and Evidence-contract test steps introduced in #326/#327/#328; prevents future silent skip or omission. CI/Codex unverified on opened HEAD, no runtime changes.
 - 2026-11-17 PR #329 pending: stabilize synthetic Worker heartbeat test against Hosted Linux scheduler jitter (1.5s fixture TTL, 2.25s stubbed call, assert expiry advanced and still live). Exact-head CI/Codex and physical operator behavior not yet verified. No runtime lease parameter, ES/LLM, Queue or deployment changed.
 - **2026-11-16 #312 source merged:** Event-first date with empty Timeline allowed, YAML-local rerun only. Prior operator read-only 150-document sample is exploratory; `news_test` effective runtime policy, complete source/sink evidence, and explicit operator approval remain required before any live ES replay.
