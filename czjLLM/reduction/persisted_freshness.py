@@ -60,8 +60,26 @@ def effective_persisted_executable(ctx: Any) -> Executable:
     })
 
 
+def observed_computed_execution_fingerprint(ctx: Any) -> str | None:
+    """Return a matching auto-computed binding, never a literal freshness override.
+
+    Process-local observation only: not authenticated identity, source proof,
+    a fresh rehash of mutable execution state, or permission to charge a retry.
+    """
+    computed = getattr(ctx, "_computed_persisted_execution_fingerprint", None)
+    expected = getattr(ctx, "expected_execution_fingerprint", None)
+    if (type(computed) is str and len(computed) == 64
+            and all(c in "0123456789abcdef" for c in computed)
+            and type(expected) is str and computed == expected):
+        return computed
+    return None
+
+
 def bind_persisted_execution_fingerprint(ctx: Any, adapter: Any) -> str | None:
     """Resolve ``auto`` exactly once and bind context, adapter freshness and sink input."""
+    # Clear a previous observation even if this bind is disabled or fails.
+    # The legacy expected fingerprint and adapter behavior are unchanged.
+    ctx._computed_persisted_execution_fingerprint = None
     cfg = getattr(adapter, "cfg", None) or {}
     if getattr(ctx, "mode", "").lower() == "es":
         namespace = cfg.get("rerun") or {}
@@ -70,7 +88,8 @@ def bind_persisted_execution_fingerprint(ctx: Any, adapter: Any) -> str | None:
     configured = namespace.get("execution_fingerprint")
     if not configured:
         return None
-    if str(configured).strip().lower() == "auto":
+    auto = str(configured).strip().lower() == "auto"
+    if auto:
         from .production_control import build_production_execution_context
         context = build_production_execution_context(ctx)
         expected = executable_semantic_fingerprint(effective_persisted_executable(ctx), context)
@@ -81,4 +100,6 @@ def bind_persisted_execution_fingerprint(ctx: Any, adapter: Any) -> str | None:
         cfg.setdefault("rerun", {})["execution_fingerprint"] = expected
     else:
         cfg.setdefault("semantic_freshness", {})["execution_fingerprint"] = expected
+    if auto:
+        ctx._computed_persisted_execution_fingerprint = expected
     return expected
