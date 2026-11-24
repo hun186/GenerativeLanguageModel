@@ -225,3 +225,82 @@ def test_es_ack_429_is_retryable_and_failed_batch_can_be_discarded(monkeypatch):
     assert len(sink._buffer) == 1
     sink.discard_unacknowledged_writeback()
     assert sink._buffer == [] and sink._buffer_bytes == 0
+
+
+
+def _quality_profile_fixture():
+    return [{
+        "article_date_iso": None,
+        "article_date_precision": "unknown",
+        "Event": [{
+            "event_id": "E1",
+            "time_raw": "2026-09-19",
+            "time_iso": "2026-09-19",
+            "time_precision": "day",
+            "consequence": None,
+        }],
+        "Person": [{"event_ids": ["E1"], "name": "Example"}],
+    }]
+
+
+def test_quality_profile_observes_actual_builtin_without_writeback(monkeypatch):
+    import json
+    from copy import deepcopy
+    from czjLLM.es_mode.quality_output_profile_observation import ProfileOutcome
+    mod = _load_es_sink_module(monkeypatch)
+    sink = mod.ESSink(SimpleNamespace(output_profile="auto"), DummyES(),
+                      index="docs", output_col="multidim_event_json", flush_every=999)
+    def fail_bulk(*args, **kwargs):
+        pytest.fail("read-only profile observation must not call bulk")
+    monkeypatch.setattr(mod.helpers, "bulk", fail_bulk)
+    payload = {"multidim_event_json": json.dumps(_quality_profile_fixture())}
+    before = deepcopy(payload)
+    accepted = sink.observe_quality_output_profile(payload, "multidim_event_json")
+    assert accepted.outcome is ProfileOutcome.STRUCTURALLY_ACCEPTED
+    assert payload == before and sink._buffer == []
+    invalid = _quality_profile_fixture()
+    invalid[0]["Person"][0]["event_ids"] = ["PRIVATE_MISSING"]
+    rejected = sink.observe_quality_output_profile(invalid, "multidim_event_json")
+    assert rejected.outcome is ProfileOutcome.STRUCTURALLY_REJECTED
+    assert accepted.profile_version == rejected.profile_version
+    assert "PRIVATE_MISSING" not in repr(rejected) and sink._buffer == []
+    assert invalid[0]["Person"][0]["event_ids"] == ["PRIVATE_MISSING"]
+    with pytest.raises(mod.OutputProfileValidationError):
+        sink.write_main("doc-1", invalid)
+    assert sink._buffer == []
+
+
+@pytest.mark.parametrize("unsupported", [
+    "passthrough", "plugins", "routes", "flatten", "disabled", "other_column",
+    "registry_override", "empty",
+])
+def test_quality_profile_observation_rejects_unsupported_boundary(monkeypatch, unsupported):
+    from czjLLM.es_mode.quality_output_profile_observation import (
+        OutputProfileObservationUnavailable,
+    )
+    mod = _load_es_sink_module(monkeypatch)
+    ctx = SimpleNamespace(output_profile="multidim_event")
+    sink = mod.ESSink(ctx, DummyES(), index="docs", output_col="multidim_event_json")
+    col = sink.output_col
+    payload = _quality_profile_fixture()
+    if unsupported == "passthrough":
+        sink.output_profile = "json"
+    elif unsupported == "plugins":
+        ctx.output_profile_plugins = ["untrusted-plugin"]
+    elif unsupported == "routes":
+        ctx.es_writeback_rules = [{"output_col": col, "index": "other"}]
+    elif unsupported == "flatten":
+        sink.flatten_json = True
+    elif unsupported == "disabled":
+        sink.write_output = False
+    elif unsupported == "other_column":
+        col = "other"
+    elif unsupported == "registry_override":
+        monkeypatch.setitem(mod.get_default_registry()._transformers,
+                            "multidim_event", lambda data, **kwargs: data)
+    elif unsupported == "empty":
+        payload = []
+    with pytest.raises(OutputProfileObservationUnavailable,
+                       match="^output profile observation unavailable$"):
+        sink.observe_quality_output_profile(payload, col)
+    assert sink._buffer == []

@@ -8,6 +8,7 @@
 - Remaining issues: Windows self-hosted 3.10/3.11 still queued/operator-deferred, historical #231 status now merged, no real Windows/Ollama/ES readback, no crash-safe authenticated checkpoint/online shard retirement. These accepted PRs do not prove absence of filesystem races or malicious-tamper resilience.
 
 ## Environment and External Dependencies
+- **2026-11-24 #313:** built-in profile structural verdict is not semantic truth or authenticated repair completion. Contract version must change when profile/sink preparation semantics change; unsupported routes/plugins remain unavailable.
 - **2026-11-24 #313:** observed ES cluster/index UUID and _id are read-time facts only; source changes, routing, TLS identity and sink reconciliation are not guaranteed. Unsupported or ambiguous lookups must not authorize retry.
 - **2026-11-24 #313:** auto fingerprint origin is an in-process bind observation only; arbitrary literal SHA, mutable execution state, caller-controlled metadata and real ES source still require independent verification. No quality budget may be charged from this marker alone.
 - **2026-11-24 #313:** A permanent ES bulk 400 is a sink/request rejection, not proof of a completed failed LLM repair. The active ESSink exposes a distinct subclass while legacy terminal handling remains unchanged. Do not charge any quality budget solely from the base exception or sink response; authenticated attempt, local validation and reconciliation still required.
