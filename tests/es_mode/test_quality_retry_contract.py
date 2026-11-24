@@ -626,3 +626,67 @@ def test_required_output_observation_disabled_and_allow_empty_rule_change():
     second = p.observe_quality_required_output({}, "result")
     assert not first.passed and not second.passed
     assert first.rule_version != second.rule_version
+
+
+def _rehash_fixture(configured="auto"):
+    from czjLLM.reduction.persisted_freshness import bind_persisted_execution_fingerprint
+    ctx, adapter, ns = _fingerprint_binding_fixture("es", configured)
+    ctx._es_adapter = adapter
+    adapter.cfg[ns]["enable"] = True
+    digest = bind_persisted_execution_fingerprint(ctx, adapter)
+    return ctx, adapter, digest
+
+
+def test_quality_execution_rehash_matches_real_auto_binder_without_rebinding():
+    from czjLLM.reduction.persisted_freshness import (
+        observed_computed_execution_fingerprint, reobserve_computed_es_execution_fingerprint,
+    )
+    ctx, adapter, digest = _rehash_fixture()
+    assert reobserve_computed_es_execution_fingerprint(ctx, adapter) == digest
+    ctx.worker_parallelism = 8
+    ctx.model_spec["base_url"] = "https://private.example"
+    assert reobserve_computed_es_execution_fingerprint(ctx, adapter) == digest
+    ctx.taskSetting["summary"]["task"] = "PROMPT-B"
+    assert reobserve_computed_es_execution_fingerprint(ctx, adapter) is None
+    assert observed_computed_execution_fingerprint(ctx) == digest
+    assert adapter.cfg["rerun"]["execution_fingerprint"] == digest
+
+
+@pytest.mark.parametrize("case", ["literal", "model", "reduction", "adapter", "disabled",
+                                   "cfg_fingerprint", "explicit", "mock", "invalid_semantics"])
+def test_quality_execution_rehash_rejects_drift_and_unsupported_binding(case):
+    from czjLLM.reduction.persisted_freshness import reobserve_computed_es_execution_fingerprint
+    ctx, adapter, digest = _rehash_fixture()
+    if case == "literal":
+        ctx, adapter, _ = _rehash_fixture(digest)
+    elif case == "model":
+        ctx.model_spec["temperature"] = 0.9
+    elif case == "reduction":
+        ctx.reduction = {"enabled": True, "profile": "concat_text"}
+    elif case == "adapter":
+        ctx._es_adapter = object()
+    elif case == "disabled":
+        adapter.cfg["rerun"]["enable"] = False
+    elif case == "cfg_fingerprint":
+        adapter.cfg["rerun"]["execution_fingerprint"] = "b" * 64 if digest != "b" * 64 else "c" * 64
+    elif case == "explicit":
+        ctx.semantic_freshness_executable = object()
+    elif case == "mock":
+        ctx.mock_llm_mode = True
+    elif case == "invalid_semantics":
+        ctx.reduction = object()
+    assert reobserve_computed_es_execution_fingerprint(ctx, adapter) is None
+
+
+def test_quality_execution_rehash_detects_stage_drift():
+    from czjLLM.reduction.persisted_freshness import (
+        bind_persisted_execution_fingerprint, reobserve_computed_es_execution_fingerprint,
+    )
+    ctx, adapter, ns = _fingerprint_binding_fixture("es", "auto")
+    ctx._es_adapter = adapter
+    ctx.stages = [{"name": "one", "task": "summary"}]
+    adapter.cfg[ns]["enable"] = True
+    digest = bind_persisted_execution_fingerprint(ctx, adapter)
+    assert reobserve_computed_es_execution_fingerprint(ctx, adapter) == digest
+    ctx.stages[0]["task"] = "other"
+    assert reobserve_computed_es_execution_fingerprint(ctx, adapter) is None

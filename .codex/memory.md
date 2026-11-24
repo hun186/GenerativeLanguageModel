@@ -1,6 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- **2026-11-25 #313 execution rehash (PENDING):** explicit ES current semantic re-observation checks auto origin, actual adapter binding and current built-in execution hash; no rebinding or provider calls. Drift/mock/custom executable unavailable. No immutable execution attestation.
 - **2026-11-24 #313 output-profile observation (PENDING):** active ESSink exposes explicit single-primary-field local built-in multidim normalization observation; no buffer/write, raw output or retry activation. Unsupported plugin, routing and passthrough unavailable. Hosted CI/Review pending.
 - **2026-11-24 #313 required-output rule observation (PENDING):** real pending adapters resolve effective checks and use shared evaluator on canonical versioned configuration; unsupported/disabled checks fail closed. No profile attestation, dispatch or ledger activation.
 - **2026-11-24 #313 concrete ES source observation (PENDING):** opt-in read-only adapter lookup checks stable cluster/index UUIDs, exact one complete search hit and real _id for a same-concrete-index source; rejects ambiguous keys, aliases and incomplete reads. No dispatch/ledger integration or authentication claim; Hosted CI/Review pending.
