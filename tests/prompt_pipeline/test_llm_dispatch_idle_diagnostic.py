@@ -106,6 +106,104 @@ def test_naive_timestamp_is_not_assumed_utc(tmp_path):
     assert report["sources"]["audit"]["invalid_timestamp_rows"] == 1
 
 
+
+@pytest.mark.parametrize("bad_timestamp", ["not-a-timestamp", "2030-11-18T10:01:02"])
+def test_invalid_audit_timestamp_withholds_all_partial_counts(
+    tmp_path, bad_timestamp,
+):
+    """One unplaceable row means even previously valid window counts are partial."""
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    file = logs / "llm_call_audit" / "llm_call_audit_20261109.csv"
+    with file.open("a", encoding="utf-8", newline="") as handle:
+        handle.write(
+            f"{bad_timestamp},http://PRIVATE_ENDPOINT_A:11434/v1,YES,YES,"
+            "PRIVATE_ERROR,PRIVATE_PROMPT\n"
+        )
+    report = snapshot(logs, now=now)
+    audit = report["sources"]["audit"]
+    assert audit["status"] == "INCOMPLETE"
+    assert audit["invalid_timestamp_rows"] == 1
+    assert audit["warning"] == "PARTIAL_AUDIT_COUNTS_WITHHELD"
+    for key in (
+        "recent_completed_audit_rows", "recent_ok_rows", "recent_failed_rows",
+        "recent_wrapper_returned_rows", "unknown_endpoint_rows",
+        "last_audit_completion_age_seconds", "by_endpoint",
+    ):
+        assert key not in audit
+    assert report["diagnosis_status"] == "UNVERIFIED"
+    assert report["root_cause_status"] == "NOT_DETERMINED"
+    assert report["sources"]["meter"]["status"] == "OBSERVED"
+    assert report["sources"]["load"]["status"] == "OBSERVED"
+    assert "PENDING_WITH_NO_RECENT_COMPLETION_AUDIT" not in report["signals"]
+    from scripts.diagnose_llm_dispatch_idle import format_human_report
+    assert "【最近完成 Audit】" not in format_human_report(report)
+    for marker in ("PRIVATE_ENDPOINT", "PRIVATE_PROMPT", str(logs)):
+        assert marker not in json.dumps(report)
+
+
+@pytest.mark.parametrize("column,bad_value", [
+    ("ok", "MAYBE"),
+    ("call_llm_api_returned", "MAYBE"),
+])
+def test_invalid_audit_call_status_fails_closed(tmp_path, column, bad_value):
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    path = logs / "llm_call_audit" / "llm_call_audit_20261109.csv"
+    with path.open(newline="", encoding="utf-8") as source:
+        rows = list(csv.DictReader(source))
+    rows[0][column] = bad_value
+    with path.open("w", newline="", encoding="utf-8") as target:
+        writer = csv.DictWriter(target, fieldnames=[
+            "timestamp", "base_url", "ok", "call_llm_api_returned",
+            "error", "prompt_file",
+        ])
+        writer.writeheader()
+        writer.writerows(rows)
+    report = snapshot(logs, now=now)
+    assert report["sources"]["audit"] == {"status": "SCHEMA_MISMATCH"}
+    assert report["diagnosis_status"] == "UNVERIFIED"
+    assert report["sources"]["meter"]["status"] == "OBSERVED"
+    assert report["sources"]["load"]["status"] == "OBSERVED"
+    assert "PRIVATE_" not in json.dumps(report)
+
+
+def test_duplicate_audit_csv_header_fails_closed(tmp_path):
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    path = logs / "llm_call_audit" / "llm_call_audit_20261109.csv"
+    lines = path.read_text(encoding="utf-8").splitlines()
+    lines[0] += ",ok"
+    lines[1] += ",YES"
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    report = snapshot(logs, now=now)
+    assert report["sources"]["audit"] == {"status": "SCHEMA_MISMATCH"}
+    assert report["sources"]["meter"]["status"] == "OBSERVED"
+    assert report["sources"]["load"]["status"] == "OBSERVED"
+    assert report["root_cause_status"] == "NOT_DETERMINED"
+
+
+def test_legacy_blank_worker_return_observation_remains_accepted(tmp_path):
+    now = 1800000000.0
+    logs = fixture(tmp_path / "logs", now)
+    path = logs / "llm_call_audit" / "llm_call_audit_20261109.csv"
+    with path.open(newline="", encoding="utf-8") as source:
+        rows = list(csv.DictReader(source))
+    rows[0]["call_llm_api_returned"] = ""
+    with path.open("w", newline="", encoding="utf-8") as target:
+        writer = csv.DictWriter(target, fieldnames=[
+            "timestamp", "base_url", "ok", "call_llm_api_returned",
+            "error", "prompt_file",
+        ])
+        writer.writeheader()
+        writer.writerows(rows)
+    report = snapshot(logs, now=now)
+    assert report["sources"]["audit"]["status"] == "OBSERVED"
+    assert report["sources"]["audit"]["recent_failed_rows"] == 1
+    assert report["sources"]["audit"]["recent_wrapper_returned_rows"] == 0
+    assert report["diagnosis_status"] == "OBSERVED_NOT_PROVEN"
+
+
 def test_foreground_repeated_samples_redacted(tmp_path, capsys):
     logs = fixture(tmp_path / "logs", time.time())
     assert main(["--logs-dir", str(logs), "--samples", "2", "--interval-seconds", "0"]) == 0
