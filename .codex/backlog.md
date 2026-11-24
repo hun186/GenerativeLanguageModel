@@ -11,6 +11,7 @@
 
 ## True Open Engineering Work
 - [ ] **#313 combined candidate (PENDING):** single normalized local verdict and combined rule version; no verified completion, dispatch or ledger mutation.
+- [ ] **#313 input revision observation (PENDING):** compare exact projected inputs, reject ambiguity/overlap; bind observed revision only after actual dispatch provenance and sink reconciliation. No retry activation.
 - [ ] **#313 Output Profile observation (PENDING):** narrow built-in local validation, versioned contract; no provider/repair/sink ACK or retry activation. Hosted gates pending.
 - [ ] **#313 required-output rule version (PENDING):** observe canonical enabled checks and evaluator outcome without retry activation; full profile/execution identity and authenticated receipts remain separate.
 - [ ] **#313 concrete ES source lookup (PENDING):** strict read-only namespace and single-hit observation; no automatic replay/debit. Actual source/target, routing, TLS and immutable execution binding remain operator-gated.

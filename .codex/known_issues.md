@@ -9,6 +9,7 @@
 
 ## Environment and External Dependencies
 - **2026-11-25 #313:** combined local candidate is structural only; source/execution/attempt and ACK verification still separate. Unsupported routing/timestamp mutation unavailable.
+- **2026-11-24 #313:** input digest is a private read-time observation, not a snapshot transaction or proof of queued/consumed input. Unsupported non-string, absent or overlapping paths fail closed.
 - **2026-11-24 #313:** built-in profile structural verdict is not semantic truth or authenticated repair completion. Contract version must change when profile/sink preparation semantics change; unsupported routes/plugins remain unavailable.
 - **2026-11-24 #313:** Required-output digest is a versioned configuration component, not full quality/profile identity; bump contract for evaluator semantic changes. No standalone retry authorization.
 - **2026-11-24 #313:** observed ES cluster/index UUID and _id are read-time facts only; source changes, routing, TLS identity and sink reconciliation are not guaranteed. Unsupported or ambiguous lookups must not authorize retry.
