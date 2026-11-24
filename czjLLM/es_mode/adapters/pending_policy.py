@@ -363,6 +363,11 @@ class ElasticsearchPendingPolicyMixin:
 
         return out
 
+    def observe_quality_required_output(self, src: dict, output_col: str):
+        """Explicit read-only observation of the effective required-output rule."""
+        from czjLLM.es_mode.quality_required_output_observation import observe_required_output
+        return observe_required_output(self, src, output_col)
+
     def _validate_required_output_checks(self, src: dict, output_col: str) -> bool:
         """
         檢查 output_col 內是否滿足必要 key 條件。
