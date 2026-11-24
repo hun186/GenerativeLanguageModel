@@ -461,3 +461,43 @@ def test_on_disk_does_not_include_plaintext_identifiers_or_secret(tmp_path):
     for marker in (b"PRIVATE_SOURCE_DOCUMENT", b"multidim_event_json",
                    b"multidim_event_profile_v1", b"aaaaaa", KEY):
         assert marker not in raw
+
+
+
+@pytest.mark.parametrize("damage", ["wrong_seal", "missing_seal", "wrong_schema"])
+def test_already_opened_ledger_rechecks_seal_on_each_read_and_cas(tmp_path, damage):
+    from contextlib import closing
+    store = new_store(tmp_path)
+    reject_initial(store)
+    with closing(sqlite3.connect(tmp_path / "ledger.db")) as con, con:
+        if damage == "wrong_seal":
+            con.execute("UPDATE quality_seal SET check_hmac=?", ("0" * 64,))
+        elif damage == "missing_seal":
+            con.execute("DELETE FROM quality_seal")
+        else:
+            con.execute("PRAGMA user_version=99")
+    # Existing object cannot treat an unknown key as a new budget, nor
+    # update an existing state after the seal/schema no longer matches.
+    with pytest.raises(LedgerUnavailable):
+        store.read(replace(ident(), source_document_id="other"))
+    with pytest.raises(LedgerUnavailable):
+        store.transition(ident(), expected_revision=1, operation="claim",
+                         policy=ON, verified_attempt_id=A)
+    with pytest.raises(LedgerUnavailable):
+        store.transition(replace(ident(), source_document_id="other"),
+                         expected_revision=0, operation="observe_initial",
+                         result=QualityResult.REJECTED, failure_code="SCHEMA_TIME_PRECISION")
+    with closing(sqlite3.connect(tmp_path / "ledger.db")) as con:
+        assert con.execute("SELECT revision FROM quality_states").fetchall() == [(1,)]
+
+
+def test_already_opened_ledger_rejects_replacement_with_wrong_key(tmp_path):
+    store = new_store(tmp_path)
+    reject_initial(store)
+    replacement = tmp_path / "replacement.db"
+    DisposableQualityLedger(replacement, b"x" * 32, create=True)
+    os.replace(replacement, tmp_path / "ledger.db")
+    with pytest.raises(LedgerUnavailable, match="ledger secret mismatch"):
+        store.read(ident())
+    with pytest.raises(LedgerUnavailable, match="ledger secret mismatch"):
+        reject_initial(store)

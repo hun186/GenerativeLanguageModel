@@ -323,6 +323,15 @@ class ElasticsearchAdapter(ElasticsearchPendingPolicyMixin):
             
     # --- ES 版本的 pending 擷取 --------------------------------------------
 
+    def observe_quality_retry_inputs(self, logical_id: str, *, expected_input: str,
+                                     expected_stage_inputs: dict):
+        """Explicit read-only source input comparison, never normal dispatch."""
+        from czjLLM.es_mode.quality_retry_source_observation import observe_source_inputs
+        return observe_source_inputs(
+            self.es, self.cfg, logical_id, expected_input=expected_input,
+            expected_stage_inputs=expected_stage_inputs,
+        )
+
     def observe_quality_retry_source(self, logical_id: str):
         """Explicit read-only source observation; not a dispatch/ledger gate."""
         from czjLLM.es_mode.quality_retry_source_observation import observe_source
