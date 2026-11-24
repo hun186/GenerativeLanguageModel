@@ -42,3 +42,7 @@
 `python -m pytest -q tests/es_mode/test_quality_retry_contract.py`
 
 測試僅使用合成身份、固定 UUID、離線狀態；Hosted Linux 和 Windows Python 3.10／3.11 皆需通過 CI。此階段是可用於未來持久 adapter 的純邏輯契約，不是完整 Issue #313 的完成宣告。
+
+## Phase B preparation — distinguish validation from sink rejection
+
+The active `ESSink._flush()` raises `ESBulkRequestRejected` for a permanent HTTP 400 bulk response (including a mixed response containing 400). It remains an `OutputProfileValidationError` subclass solely for legacy terminal Row Merger compatibility; unchanged buffer cleanup and error text are preserved. A local Output Profile exception and a permanent sink rejection are not interchangeable evidence. Neither exception alone proves a completed repair or its verified identity. Never debit the quality budget on an ES bulk 400, 429, transport or uncertain ACK solely from this type; reconcile with authenticated completion, the effective rule, and sink state first. Existing legacy/no-eventids sink behavior is unchanged. No ledger, dispatch policy, ES schema or YAML changes are activated by this preparation.
