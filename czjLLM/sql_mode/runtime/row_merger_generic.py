@@ -5,7 +5,7 @@ from typing import Iterable, Tuple, Any, Optional, List, Dict
 
 from czjLLM.prompt_pipeline.pending_central import mark_not_running, record_adjustment
 from czjLLM.utilities.processing_quality import classify_schema_error, emit_quality_event
-from czjLLM.es_mode.output_profiles import OutputProfileValidationError
+from czjLLM.es_mode.output_profiles import ESBulkRequestRejected, OutputProfileValidationError
 from czjLLM.job_manager.console_ui import tlog, tlog_warn
 from czjLLM.utilities.combine_utils import merge_dict_slices
 from czjLLM.utilities.combine_utils import merge_dict_slices_audited
@@ -667,26 +667,31 @@ def row_merger_watchdog_generic(ctx, registry, meter_fn, stop_event, sink,
             )
         except Exception as ex:
             tlog_warn("⚠️ ROW_MERGER_SCHEMA_AUDIT_WRITE_FAILED")
-        # A completed invalid document is a document-level decision, not a
-        # failed slice.  Do not let audit failures change pending semantics.
-        try:
-            emit_quality_event(
-                getattr(ctx, "llm_call_audit_path", ""),
-                run_id=getattr(ctx, "llm_call_audit_run_id", ""),
-                event="document_schema_rejected",
-                code=classify_schema_error(msg),
-                scope="document", outcome="pending",
-                document_id=str(pk),
-            )
-        except Exception as quality_error:
-            tlog_warn("⚠️ ROW_MERGER_SCHEMA_QUALITY_AUDIT_FAILED")
+        # Preserve legacy terminal release/adjustment behavior for both
+        # kinds. A typed remote bulk rejection does NOT prove that the LLM
+        # candidate failed local schema validation (even on mixed 400/429).
+        # Never add it to the document-schema quality numerator.
+        if not isinstance(exc, ESBulkRequestRejected):
+            try:
+                emit_quality_event(
+                    getattr(ctx, "llm_call_audit_path", ""),
+                    run_id=getattr(ctx, "llm_call_audit_run_id", ""),
+                    event="document_schema_rejected",
+                    code=classify_schema_error(msg),
+                    scope="document", outcome="pending",
+                    document_id=str(pk),
+                )
+            except Exception:
+                tlog_warn("⚠️ ROW_MERGER_SCHEMA_QUALITY_AUDIT_FAILED")
         # Private adjustment records retain diagnosis, but do not disclose
         # exception text, document PK or local paths in captured console logs.
         audit_code = "AUDIT_RECORDED" if schema_log_path is not None else "AUDIT_UNAVAILABLE"
-        tlog_warn(
-            "⚠️ ROW_MERGER_SCHEMA_REJECTED_PENDING; "
-            f"audit={audit_code}; operator review required"
+        terminal_code = (
+            "ROW_MERGER_ES_BULK_REJECTED_PENDING"
+            if isinstance(exc, ESBulkRequestRejected)
+            else "ROW_MERGER_SCHEMA_REJECTED_PENDING"
         )
+        tlog_warn(f"⚠️ {terminal_code}; audit={audit_code}; operator review required")
         registry.remove(item_dir)
         merge_log_emitted_items.discard(item_dir)
         if done_q is not None:

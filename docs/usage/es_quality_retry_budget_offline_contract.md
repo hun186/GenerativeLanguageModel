@@ -46,3 +46,7 @@
 ## Phase B preparation — distinguish validation from sink rejection
 
 The active `ESSink._flush()` raises `ESBulkRequestRejected` for a permanent HTTP 400 bulk response (including a mixed response containing 400). It remains an `OutputProfileValidationError` subclass solely for legacy terminal Row Merger compatibility; unchanged buffer cleanup and error text are preserved. A local Output Profile exception and a permanent sink rejection are not interchangeable evidence. Neither exception alone proves a completed repair or its verified identity. Never debit the quality budget on an ES bulk 400, 429, transport or uncertain ACK solely from this type; reconcile with authenticated completion, the effective rule, and sink state first. Existing legacy/no-eventids sink behavior is unchanged. No ledger, dispatch policy, ES schema or YAML changes are activated by this preparation.
+
+## Row Merger accounting boundary
+
+Typed ESBulkRequestRejected remains a terminal pending release (same legacy status and private adjustment, source/Success retained), but the active Row Merger must not emit document_schema_rejected for it. A fixed ROW_MERGER_ES_BULK_REJECTED_PENDING console marker distinguishes the remote rejection without payload/identifier. No new JSONL schema or historical report rewrite; the structured local-schema numerator excludes new typed remote rejections only. Legacy untyped exceptions retain their previous accounting. This is telemetry separation, not a verified completed repair or budget debit.
