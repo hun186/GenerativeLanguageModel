@@ -10,6 +10,7 @@
 - **#269 completed owner merge gate:** latest-head Linux E2E, Windows Hosted 3.10/3.11, changed-line scan SUCCESS, formal Codex receipt no major issues, 22/22 threads resolved, explicit 2026-11-01 owner instruction to merge, GitHub confirmed Squash Merge. Two self-hosted jobs were queued and not treated as verified; physical operator tests remain separate.
 
 ## True Open Engineering Work
+- [ ] **#313 Output Profile observation (PENDING):** narrow built-in local validation, versioned contract; no provider/repair/sink ACK or retry activation. Hosted gates pending.
 - [ ] **#313 required-output rule version (PENDING):** observe canonical enabled checks and evaluator outcome without retry activation; full profile/execution identity and authenticated receipts remain separate.
 - [ ] **#313 concrete ES source lookup (PENDING):** strict read-only namespace and single-hit observation; no automatic replay/debit. Actual source/target, routing, TLS and immutable execution binding remain operator-gated.
 - [ ] **#313 auto fingerprint origin (PENDING):** distinguish successful computed binding from literal freshness override in real binder. Mandatory Hosted tests/Review; authenticated source, immutable execution, rule identity and sink evidence still required.
