@@ -499,3 +499,63 @@ def test_policy_downgrade_with_inflight_must_reconcile_before_any_reset():
     )
     assert review.phase == Phase.NEEDS_REVIEW
     assert review.failed_repairs == 1
+
+
+
+def _fingerprint_binding_fixture(mode, configured):
+    from types import SimpleNamespace
+    ctx = SimpleNamespace(
+        mode=mode, task="summary",
+        taskSetting={"summary": {"task": "PROMPT-A", "InputCutLen": 100}},
+        model_spec_name="fixture", model_spec={"model_name": "m", "temperature": 0.1},
+        max_tokens=1000, think_mode=True, reduction={"enabled": False},
+        worker_parallelism=2, _execution_budget=SimpleNamespace(capacity=2),
+    )
+    ns = "rerun" if mode == "es" else "semantic_freshness"
+    adapter = SimpleNamespace(cfg={ns: {"execution_fingerprint": configured}})
+    return ctx, adapter, ns
+
+
+@pytest.mark.parametrize("mode", ["es", "sql"])
+def test_quality_identity_observation_distinguishes_auto_from_literal(mode):
+    from czjLLM.reduction.persisted_freshness import (
+        bind_persisted_execution_fingerprint, observed_computed_execution_fingerprint,
+    )
+    ctx, adapter, ns = _fingerprint_binding_fixture(mode, "auto")
+    digest = bind_persisted_execution_fingerprint(ctx, adapter)
+    assert observed_computed_execution_fingerprint(ctx) == digest
+    assert len(digest) == 64 and adapter.cfg[ns]["execution_fingerprint"] == digest
+    literal, literal_adapter, _ = _fingerprint_binding_fixture(mode, digest)
+    assert bind_persisted_execution_fingerprint(literal, literal_adapter) == digest
+    assert observed_computed_execution_fingerprint(literal) is None
+    # Rebinding the now-resolved config must not promote its literal to auto.
+    assert bind_persisted_execution_fingerprint(ctx, adapter) == digest
+    assert observed_computed_execution_fingerprint(ctx) is None
+
+
+def test_quality_identity_observation_rejects_changed_expected_and_disabled_bind():
+    from czjLLM.reduction.persisted_freshness import (
+        bind_persisted_execution_fingerprint, observed_computed_execution_fingerprint,
+    )
+    ctx, adapter, ns = _fingerprint_binding_fixture("es", "auto")
+    digest = bind_persisted_execution_fingerprint(ctx, adapter)
+    ctx.expected_execution_fingerprint = "b" * 64 if digest != "b" * 64 else "c" * 64
+    assert observed_computed_execution_fingerprint(ctx) is None
+    ctx.expected_execution_fingerprint = digest
+    adapter.cfg[ns]["execution_fingerprint"] = None
+    assert bind_persisted_execution_fingerprint(ctx, adapter) is None
+    assert observed_computed_execution_fingerprint(ctx) is None
+
+
+def test_quality_identity_observation_cleared_on_failed_auto_rebind():
+    from czjLLM.reduction.persisted_freshness import (
+        bind_persisted_execution_fingerprint, observed_computed_execution_fingerprint,
+    )
+    ctx, adapter, ns = _fingerprint_binding_fixture("es", "auto")
+    bind_persisted_execution_fingerprint(ctx, adapter)
+    assert observed_computed_execution_fingerprint(ctx) is not None
+    adapter.cfg[ns]["execution_fingerprint"] = "auto"
+    ctx.semantic_freshness_executable = object()
+    with pytest.raises(TypeError, match="must implement Executable"):
+        bind_persisted_execution_fingerprint(ctx, adapter)
+    assert observed_computed_execution_fingerprint(ctx) is None
