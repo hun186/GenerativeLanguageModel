@@ -16,6 +16,7 @@ except Exception:
 
 from ...output_profiles import (
     OutputProfileValidationError,
+    ESBulkRequestRejected,
     get_default_registry,
     load_output_profile_plugins,
 )
@@ -670,7 +671,7 @@ class ESSink:
                     # Row Merger sends only one row's actions per confirmation.
                     # Any permanent failure makes the whole row terminal,
                     # including a mixed 400 + 429 multi-index response.
-                    raise OutputProfileValidationError(
+                    raise ESBulkRequestRejected(
                         getattr(self, "output_profile", "es_mapping"),
                         f"ES mapping rejected {len(permanent)} update(s): {summaries}",
                     )

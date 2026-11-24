@@ -216,6 +216,11 @@ jobs:
         env:
           PYTHONNOUSERSITE: "1"
         run: python -m pytest -q tests/es_mode/test_quality_retry_contract.py --maxfail=1 --disable-warnings
+      - name: Verify local profile and ES bulk rejection distinction on native Windows
+        shell: pwsh
+        env:
+          PYTHONNOUSERSITE: "1"
+        run: python -m pytest -q tests/test_es_sink_multifield_writeback.py --maxfail=1 --disable-warnings
       - name: Prove disposable SQLite Quality claim crash rollback on Windows
         shell: pwsh
         env:
