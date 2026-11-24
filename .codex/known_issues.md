@@ -8,6 +8,7 @@
 - Remaining issues: Windows self-hosted 3.10/3.11 still queued/operator-deferred, historical #231 status now merged, no real Windows/Ollama/ES readback, no crash-safe authenticated checkpoint/online shard retirement. These accepted PRs do not prove absence of filesystem races or malicious-tamper resilience.
 
 ## Environment and External Dependencies
+- **2026-11-24 #313:** per-transaction schema/seal check detects wrong-key replacement and seal damage, not same-key rollback or hostile filesystem races; production storage acceptance still required.
 - **2026-11-24 #313:** Required-output digest is a versioned configuration component, not full quality/profile identity; bump contract for evaluator semantic changes. No standalone retry authorization.
 - **2026-11-24 #313:** observed ES cluster/index UUID and _id are read-time facts only; source changes, routing, TLS identity and sink reconciliation are not guaranteed. Unsupported or ambiguous lookups must not authorize retry.
 - **2026-11-24 #313:** auto fingerprint origin is an in-process bind observation only; arbitrary literal SHA, mutable execution state, caller-controlled metadata and real ES source still require independent verification. No quality budget may be charged from this marker alone.

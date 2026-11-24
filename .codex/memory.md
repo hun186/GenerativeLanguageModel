@@ -1,6 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- **2026-11-24 #313 ledger seal recheck (PENDING):** disposable SQLite proof validates schema/key seal inside each read/CAS transaction, uses mode=rw and closes connections; wrong-key replacement/modified seal cannot silently create fresh budget. No production storage or hostile rollback guarantee. Hosted gates pending.
 - **2026-11-24 #313 required-output rule observation (PENDING):** real pending adapters resolve effective checks and use shared evaluator on canonical versioned configuration; unsupported/disabled checks fail closed. No profile attestation, dispatch or ledger activation.
 - **2026-11-24 #313 concrete ES source observation (PENDING):** opt-in read-only adapter lookup checks stable cluster/index UUIDs, exact one complete search hit and real _id for a same-concrete-index source; rejects ambiguous keys, aliases and incomplete reads. No dispatch/ledger integration or authentication claim; Hosted CI/Review pending.
 - **2026-11-24 #313 auto fingerprint observation (PENDING):** actual persisted-freshness binder records process-local computed origin only after a successful auto bind; literal overrides (even SHA-shaped), disabled/failed rebind and expected mismatch provide no observation. Existing freshness output unchanged; no authenticated identity or retry-budget activation. Mandatory Hosted tests/Review pending.
