@@ -25,11 +25,12 @@ def root(tmp_path):
     return private
 
 
-def test_disabled_by_default_and_explicit_configuration(monkeypatch, tmp_path):
+def test_disk_capture_requires_explicit_optin(monkeypatch, tmp_path):
     monkeypatch.delenv("CZJLLM_JSON_REPAIR_CAPTURE", raising=False)
     monkeypatch.delenv("CZJLLM_JSON_REPAIR_PRIVATE_DIR", raising=False)
     assert capture_enabled() is False
-    assert configured_private_root() is None
+    monkeypatch.setenv("CZJLLM_JSON_REPAIR_CAPTURE", "1")
+    assert capture_enabled() is True
     monkeypatch.setenv("CZJLLM_JSON_REPAIR_CAPTURE", "0")
     monkeypatch.setenv("CZJLLM_JSON_REPAIR_PRIVATE_DIR", str(tmp_path))
     assert capture_enabled() is False

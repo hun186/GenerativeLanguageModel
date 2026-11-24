@@ -9,7 +9,8 @@ import tkinter.font as tkfont
 
 from czjLLM.utilities.json_repair_change_map import change_map_segments
 from czjLLM.utilities.json_repair_private_capture import (
-    clear_private_run, configured_private_root, read_private_repair,
+    capture_enabled, clear_private_run, configured_private_root,
+    prune_expired_private_captures, read_private_repair,
 )
 from czjLLM.job_manager.json_repair_raw_diff_gui import show_private_json_diff
 
@@ -30,6 +31,7 @@ _COLUMNS = (
 
 def show_json_repair_review(
     parent, stats_provider, case_formatter, summary_formatter, detail_formatter,
+    *, memory_ring=None,
 ):
     """Create one Tk top-level, refreshed only by the owning GUI Tk thread."""
     win = tk.Toplevel(parent)
@@ -42,7 +44,7 @@ def show_json_repair_review(
 
     heading = ttk.Frame(win, padding=(12, 8))
     heading.pack(fill="x")
-    title = ttk.Label(heading, text="JSON 修復前後差異｜最近 12 次觀察",
+    title = ttk.Label(heading, text="JSON 修復前後差異｜最近 50 次觀察",
                       font=("Segoe UI", 12, "bold"))
     title.pack(anchor="w")
     summary = ttk.Label(heading, justify="left", anchor="w")
@@ -54,6 +56,17 @@ def show_json_repair_review(
               "單次事件 ID 僅辨識修復次數。統計不保存 JSON 原文，也不證明內容完整。"),
     )
     disclaimer.pack(anchor="w", fill="x", pady=(3, 0))
+    # The GUI process alone retains raw pairs; no project-local disk by default.
+    cache_state = "記憶體最新 50 筆｜容量上限 16 MiB｜程式結束即清除；磁碟保存預設關閉"
+    if capture_enabled():
+        try:
+            cache_root = configured_private_root()
+            prune_expired_private_captures(cache_root)
+            cache_state += "｜另行啟用私有磁碟快照（72 小時）"
+        except (OSError, ValueError, TypeError, UnicodeError):
+            cache_state += "｜選用磁碟快照不可用（安全檢查未通過）"
+    ttk.Label(heading, text=cache_state, foreground="#825000").pack(
+        anchor="w", fill="x", pady=(3, 0))
 
     def resize_header(event):
         wrap = max(180, int(event.width) - 24)
@@ -113,24 +126,32 @@ def show_json_repair_review(
 
     def _view_private_capture():
         case = _chosen_case()
-        directory = configured_private_root()
-        if case is None or directory is None:
-            messagebox.showinfo(
-                "私有原文留存未啟用",
-                "沒有選取案例，或尚未設定本機私有快照目錄。"
-                "原有品質日誌不儲存 JSON 原文，舊紀錄無法回補。",
-                parent=win,
-            )
+        if case is None:
+            messagebox.showinfo("請選取案例", "請先從列表選取一筆修復案例。", parent=win)
             return
+        pair = None
         try:
-            pair = read_private_repair(
-                directory, case.get("run_id", ""), case.get("event_id", ""),
-            )
+            if memory_ring is not None:
+                pair = memory_ring.read(
+                    case.get("run_id", ""), case.get("event_id", ""),
+                )
         except (OSError, ValueError, TypeError, UnicodeError):
+            pass
+        if pair is None and capture_enabled():
+            # Historical files are accessible ONLY with explicit disk opt-in.
+            try:
+                pair = read_private_repair(
+                    configured_private_root(),
+                    case.get("run_id", ""), case.get("event_id", ""),
+                )
+            except (OSError, ValueError, TypeError, UnicodeError):
+                pass
+        if pair is None:
             messagebox.showwarning(
-                "沒有可驗證的私有原文快照",
-                "這筆修復事件沒有可驗證的本機快照。"
-                "原文留存預設關閉，請勿用相同切片提示碼猜測來源。",
+                "無法檢視修復前後原文",
+                "這筆完整 JSON 不在目前的記憶體樣本中：可能已被較新的案例淘汰、"
+                "當時未啟用 GUI、IPC 過載，或程式已重新啟動。"
+                "統計日誌不保存原文，不能回復完整對照。",
                 parent=win,
             )
             return
@@ -138,41 +159,40 @@ def show_json_repair_review(
 
     def _clear_private_capture():
         case = _chosen_case()
-        directory = configured_private_root()
-        if case is None or directory is None:
-            messagebox.showinfo("無法清除", "未選取具有 Run ID 的私有快照案例。", parent=win)
+        if case is None or not case.get("run_id"):
+            messagebox.showinfo("無法清除", "請先選取具有 Run ID 的案例。", parent=win)
             return
-        run_id = case.get("run_id", "")
-        if not run_id:
-            return
+        disk_enabled = capture_enabled()
         if not messagebox.askyesno(
-            "確認清除本次 Run 的私有 JSON 原文",
-            "確定清除所選 run_id 對應的所有私有 JSON 修復原文快照？"
-            "此操作不可復原，但不會刪除品質日誌、Queue 或 ES 資料。",
+            "清除選取 Run 的修復暫存",
+            "確定清除所選 Run 的記憶體 JSON 樣本？"
+            + ("也會清除另外啟用的磁碟快照。" if disk_enabled else "")
+            + "不會更動 Quality 日誌、Queue 或 ES。",
             parent=win,
         ):
             return
-        try:
-            deleted = clear_private_run(
-                directory, run_id, "DELETE_PRIVATE_JSON_REPAIRS",
-            )
-        except (OSError, ValueError, TypeError):
-            messagebox.showwarning(
-                "私有快照清除未完成", "檔案驗證或刪除失敗；請由本機管理員檢查。",
-                parent=win,
-            )
-            return
-        messagebox.showinfo(
-            "清除完成", f"已清除本次 Run 的 {deleted} 份私有快照。",
-            parent=win,
-        )
+        removed = memory_ring.clear_run(case["run_id"]) if memory_ring is not None else 0
+        if disk_enabled:
+            try:
+                removed += clear_private_run(
+                    configured_private_root(), case["run_id"],
+                    "DELETE_PRIVATE_JSON_REPAIRS",
+                )
+            except (OSError, ValueError, TypeError, UnicodeError):
+                messagebox.showwarning(
+                    "磁碟快照清除未完成",
+                    "記憶體樣本已清除；選用磁碟快照的清理未成功，請檢查本機。",
+                    parent=win,
+                )
+                return
+        messagebox.showinfo("清除完成", f"已清除 {removed} 筆修復原文暫存。", parent=win)
 
     ttk.Button(
         footer, text="檢視所選案例原始／修復全文",
         command=_view_private_capture,
     ).pack(side="left")
     ttk.Button(
-        footer, text="清除所選 Run 的私有原文",
+        footer, text="清除所選 Run 暫存",
         command=_clear_private_capture,
     ).pack(side="left", padx=(8, 0))
 
@@ -203,7 +223,7 @@ def show_json_repair_review(
         selected_rows = tree.selection()
         if not selected_rows:
             detail_label.configure(
-                text="選取案例可查看詞法統計；原文僅能從另外明確啟用的本機私有快照讀取。")
+                text="選取案例可查看統計；完整 JSON 只保留在目前 GUI 的記憶體樣本中。")
             graph.delete("all")
             return
         index = int(selected_rows[0])
@@ -222,7 +242,7 @@ def show_json_repair_review(
         unavailable = stats.get("quality_stream_status") in {
             "unverified", "capacity_exceeded",
         }
-        next_cases = list((stats.get("repair_analysis_recent") or [])[:12]) if not unavailable else []
+        next_cases = list((stats.get("repair_analysis_recent") or [])[:50]) if not unavailable else []
         if next_cases == cases:
             return
         prior = tree.selection()

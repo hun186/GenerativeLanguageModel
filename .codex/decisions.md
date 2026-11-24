@@ -119,3 +119,6 @@ receipt、失聯結果或 Meter 失敗 fail closed，保留 RUNNING/Success 證�
 - 若 Worker 沒有 Success，不可一律算作錯誤，也不可憑子檔名假設成功：
   允許唯一已記錄且來源/子 Prompt SHA 均驗證的 1→2 JSON split handoff，
   原父 RUNNING 減一、兩個子 TODO pending 加二；其他消失檔案 fail-closed。
+
+## 2026-11-17 — prefer per-checkout secure transient capture over normal logs
+- **Superseded by 2026-11-18 owner direction:** raw repair evidence is qualitative sample only, not a 72h history. Windows GUI owns an exact Run/event bounded 50-pair RAM ring accessed through a private bounded IPC queue; Linux/headless keeps only scalar metadata. Plaintext file captures require CZJLLM_JSON_REPAIR_CAPTURE=1 (no default disk writes); preserve original 72h/ACL/quota guards for optional storage, and never block LLM/Queue/ES on sampling failure.

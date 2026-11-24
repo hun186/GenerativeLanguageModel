@@ -456,3 +456,17 @@ def test_20261115_issue313_compaction_preserves_exact_prechange_memory():
     assert "Issue #302" in active
     attrs = (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
     assert f".codex/archive/{archived_name} -text" in attrs
+
+def test_20261118_pr335_contract_archive_preserves_pretrim_git_blob():
+    """Archive-first #335 memory trim is byte-stable across Windows autocrlf."""
+    archived_name = "api_contract.md-20261118-0918.md"
+    expected_sha = "c9ad2666df327abf3e3a285d1ff5f83bca1e32c8"
+    archive = _ROOT / ".codex" / "archive" / archived_name
+    assert archive.is_file()
+    assert _git_blob_sha(archive.read_bytes()) == expected_sha
+    active = (_ROOT / ".codex" / "api_contract.md").read_text(encoding="utf-8")
+    assert archived_name in active
+    assert len(active.encode("utf-8")) < 40_000
+    assert len(active.splitlines()) <= 200
+    attributes = (_ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
+    assert f".codex/archive/{archived_name} -text" in attributes
