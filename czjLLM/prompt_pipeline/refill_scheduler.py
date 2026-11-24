@@ -24,6 +24,7 @@ class RefillStats:
     claimed: int
     acknowledged: int
     max_inflight_observed: int
+    deadline_reached: bool = False
 
 
 class RefillAborted(RuntimeError):
@@ -40,6 +41,7 @@ def run_slot_refill(
     max_inflight: int,
     deadline_sec: float | None = None,
     drain_on_deadline: bool = False,
+    return_on_drained_deadline: bool = False,
     stop_requested: Callable[[], bool] | None = None,
     producer_done: Callable[[], bool] | None = None,
     empty_poll_seconds: float = 0.05,
@@ -50,6 +52,8 @@ def run_slot_refill(
     its actual receipt. The acknowledgement callback MUST confirm persistence
     (or explicitly mark a failed/incomplete item). If either fails, abort
     dispatch and drain all in-flight Workers; do not auto-replay any claims.
+    A caller that explicitly opts in may roll over a deadline only after
+    all claims have been acknowledged and no active Future remains.
     """
     if type(max_inflight) is not int or not 1 <= max_inflight <= 256:
         raise ValueError("invalid refill worker limit")
@@ -59,6 +63,10 @@ def run_slot_refill(
         raise ValueError("invalid refill deadline")
     if type(drain_on_deadline) is not bool:
         raise ValueError("invalid deadline drain flag")
+    if type(return_on_drained_deadline) is not bool or (
+        return_on_drained_deadline and not drain_on_deadline
+    ):
+        raise ValueError("invalid deadline rollover flag")
     if not 0.01 <= empty_poll_seconds <= 5:
         raise ValueError("invalid empty poll interval")
     until = time.monotonic() + deadline_sec if deadline_sec else None
@@ -66,9 +74,15 @@ def run_slot_refill(
     seen = set()
     active = {}
 
-    def snapshot():
+    def snapshot(*, deadline_reached=False):
         return RefillStats(claimed=claimed, acknowledged=acknowledged,
-                           max_inflight_observed=peak)
+                           max_inflight_observed=peak,
+                           deadline_reached=deadline_reached)
+
+    def finish_drained_deadline():
+        if return_on_drained_deadline and not active and claimed == acknowledged:
+            return snapshot(deadline_reached=True)
+        raise RefillAborted("deadline_exceeded", snapshot())
 
     def check_active():
         if stop_requested is not None and stop_requested():
@@ -87,7 +101,7 @@ def run_slot_refill(
                 # still finish and receive durable Queue ACKs before aborting.
                 if (drain_on_deadline and until is not None
                         and time.monotonic() >= until and not active):
-                    raise RefillAborted("deadline_exceeded", snapshot())
+                    return finish_drained_deadline()
                 # A previously running Worker can fail WHILE another Worker's
                 # acknowledgement is being processed. Never refill before
                 # examining all already completed active Futures.
@@ -123,7 +137,7 @@ def run_slot_refill(
                 if not active:
                     if (drain_on_deadline and until is not None
                             and time.monotonic() >= until):
-                        raise RefillAborted("deadline_exceeded", snapshot())
+                        return finish_drained_deadline()
                     if producer_done is None:
                         return snapshot()
                     if producer_done():
@@ -133,7 +147,7 @@ def run_slot_refill(
                         check_active()
                         if (drain_on_deadline and until is not None
                                 and time.monotonic() >= until):
-                            raise RefillAborted("deadline_exceeded", snapshot())
+                            return finish_drained_deadline()
                         final_claim = claim_one()
                         if final_claim is None:
                             return snapshot()
