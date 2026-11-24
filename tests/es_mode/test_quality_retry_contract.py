@@ -559,3 +559,70 @@ def test_quality_identity_observation_cleared_on_failed_auto_rebind():
     with pytest.raises(TypeError, match="must implement Executable"):
         bind_persisted_execution_fingerprint(ctx, adapter)
     assert observed_computed_execution_fingerprint(ctx) is None
+
+
+
+@pytest.mark.parametrize("legacy", [False, True])
+def test_required_output_observation_binds_effective_check_and_shared_evaluator(legacy):
+    from czjLLM.es_mode.adapters.pending_policy import ElasticsearchPendingPolicyMixin
+    from czjLLM.es_mode.adapters.pending_policy_no_eventids import (
+        ElasticsearchPendingPolicyMixin as LegacyPolicy,
+    )
+    base = LegacyPolicy if legacy else ElasticsearchPendingPolicyMixin
+    class Policy(base):
+        pass
+    p = Policy()
+    p.cfg = {"rerun": {"enable": True, "required_output_checks": [
+        {"path": "date", "validator": "date"}]}}
+    good = {"result": {"date": "2026-01-01"}}
+    bad = {"result": {"date": "invalid"}}
+    first = p.observe_quality_required_output(good, "result")
+    rejected = p.observe_quality_required_output(bad, "result")
+    assert first.passed and not rejected.passed
+    assert first.rule_version == rejected.rule_version
+    assert p._validate_required_output_checks(good, "result") == first.passed
+    p.cfg["rerun"]["required_output_checks"] = [
+        {"path": "result.date", "relative_to_output": False,
+         "validator": "DATE", "format": "yyyy-MM-dd", "min_valid_count": 1}]
+    assert p.observe_quality_required_output(good, "result") == first
+    p.cfg["rerun"]["required_output_checks"][0]["min_valid_count"] = 2
+    changed = p.observe_quality_required_output(good, "result")
+    assert not changed.passed and changed.rule_version != first.rule_version
+    # The generated component fits the existing retry identity contract.
+    RetryIdentity("source", "result", "a" * 64, changed.rule_version)
+
+
+@pytest.mark.parametrize("checks", [
+    [], [{"path": "date", "validator": "unknown"}],
+    [{"path": "date", "min_valid_count": True}],
+    [{"path": "date", "validator": "date", "format": "unsupported"}],
+    [{"path": "other.date", "relative_to_output": False}],
+    [{"path": "date", "unexpected": "private"}], [None],
+])
+def test_required_output_observation_rejects_ambiguous_config(checks):
+    from czjLLM.es_mode.adapters.pending_policy import ElasticsearchPendingPolicyMixin
+    from czjLLM.es_mode.quality_required_output_observation import (
+        RequiredOutputObservationUnavailable,
+    )
+    p = ElasticsearchPendingPolicyMixin()
+    p.cfg = {"rerun": {"enable": True, "required_output_checks": checks}}
+    with pytest.raises(RequiredOutputObservationUnavailable, match="^required output observation unavailable$"):
+        p.observe_quality_required_output({"result": {"date": "private"}}, "result")
+
+
+def test_required_output_observation_disabled_and_allow_empty_rule_change():
+    from czjLLM.es_mode.adapters.pending_policy import ElasticsearchPendingPolicyMixin
+    from czjLLM.es_mode.quality_required_output_observation import (
+        RequiredOutputObservationUnavailable,
+    )
+    p = ElasticsearchPendingPolicyMixin()
+    check = {"path": "result", "validator": "multidim_event_time"}
+    p.cfg = {"rerun": {"enable": False, "required_output_checks": [check]}}
+    with pytest.raises(RequiredOutputObservationUnavailable):
+        p.observe_quality_required_output({}, "result")
+    p.cfg["rerun"]["enable"] = True
+    first = p.observe_quality_required_output({}, "result")
+    check["allow_empty_events"] = True
+    second = p.observe_quality_required_output({}, "result")
+    assert not first.passed and not second.passed
+    assert first.rule_version != second.rule_version

@@ -8,6 +8,7 @@
 - Remaining issues: Windows self-hosted 3.10/3.11 still queued/operator-deferred, historical #231 status now merged, no real Windows/Ollama/ES readback, no crash-safe authenticated checkpoint/online shard retirement. These accepted PRs do not prove absence of filesystem races or malicious-tamper resilience.
 
 ## Environment and External Dependencies
+- **2026-11-24 #313:** Required-output digest is a versioned configuration component, not full quality/profile identity; bump contract for evaluator semantic changes. No standalone retry authorization.
 - **2026-11-24 #313:** auto fingerprint origin is an in-process bind observation only; arbitrary literal SHA, mutable execution state, caller-controlled metadata and real ES source still require independent verification. No quality budget may be charged from this marker alone.
 - **2026-11-24 #313:** A permanent ES bulk 400 is a sink/request rejection, not proof of a completed failed LLM repair. The active ESSink exposes a distinct subclass while legacy terminal handling remains unchanged. Do not charge any quality budget solely from the base exception or sink response; authenticated attempt, local validation and reconciliation still required.
 - **2026-11-24 Windows live refill deadline incident:** Whole-round 480s timeout could terminate a healthy long batch after successful Worker ACK. Source fix allows only fully acknowledged rollover; actual model timeout, long-task GPU utilization and operator verification are separate. Never delete pending Queue evidence to resolve this incident.
