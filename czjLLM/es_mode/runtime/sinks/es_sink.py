@@ -426,6 +426,11 @@ class ESSink:
             return self._resolve_output_profile(getattr(self, "output_profile", "auto"), output_col)
         return self._resolve_output_profile("auto", output_col)
 
+    def observe_quality_output_profile(self, payload: Any, output_col: str):
+        """Explicit local observation; no buffering, writes or retry decisions."""
+        from ...quality_output_profile_observation import observe_output_profile
+        return observe_output_profile(self, payload, output_col)
+
     def _normalize_payload_with_profile(self, payload: Any, profile: str, output_col: str) -> Any:
         profile = self._resolve_output_profile(profile, output_col)
         registry = get_default_registry()
