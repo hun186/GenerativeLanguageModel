@@ -200,3 +200,30 @@ def test_input_revision_can_be_bound_to_existing_private_retry_identity():
     identity = RetryIdentity(observed.scoped_document_revision(),
                              "result", "a" * 64, "quality-v1")
     assert "original source" not in repr(identity)
+
+
+@pytest.mark.parametrize("explicit", [
+    ["result", "title"], ["title"], "title", [], ["result", None],
+    ["result", "result"], [" result "], {"result": True},
+])
+def test_input_revision_rejects_conflicting_or_multiple_effective_outputs(explicit):
+    adapter, _, seen = _input_fixture()
+    adapter.cfg["output_cols"] = explicit
+    with pytest.raises(SourceObservationUnavailable):
+        adapter.observe_quality_retry_inputs(
+            "business-key", expected_input="original source",
+            expected_stage_inputs={"title": "original title"})
+    assert seen == []
+
+
+@pytest.mark.parametrize("explicit", ["result", ["result"], ("result",)])
+def test_input_revision_accepts_matching_single_effective_output(explicit):
+    adapter, _, _ = _input_fixture()
+    kwargs = dict(expected_input="original source",
+                  expected_stage_inputs={"title": "original title"})
+    first = adapter.observe_quality_retry_inputs("business-key", **kwargs)
+    adapter.cfg["output_cols"] = explicit
+    assert adapter._resolve_output_cols() == ["result"]
+    assert adapter.observe_quality_retry_inputs("business-key", **kwargs) == first
+    adapter.cfg.pop("output_col")
+    assert adapter.observe_quality_retry_inputs("business-key", **kwargs) == first

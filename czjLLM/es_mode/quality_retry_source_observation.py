@@ -64,12 +64,22 @@ def _input_snapshot(cfg, expected_input, expected_stage_inputs):
     # Start with a deliberately narrow same-index, single-output contract.
     # Do not silently hash generated outputs, their metadata or time fields.
     primary = cfg.get("input_col")
-    output = cfg.get("output_col")
-    if type(output) is list:
-        _require(len(output) == 1)
-        output = output[0]
+    # Match the pending adapter's output_cols precedence, but refuse
+    # malformed values or disagreement with the legacy primary sink field.
+    # A narrow observer must not assume the second configured output is input.
+    def single_output(raw):
+        if type(raw) in (list, tuple):
+            _require(len(raw) == 1)
+            raw = raw[0]
+        _require(type(raw) is str and _FIELD.fullmatch(raw))
+        return raw
+
+    legacy = cfg.get("output_col")
+    explicit = cfg.get("output_cols")
+    output = single_output(explicit if explicit is not None else legacy)
+    if legacy is not None:
+        _require(single_output(legacy) == output)
     _require(type(primary) is str and _FIELD.fullmatch(primary))
-    _require(type(output) is str and _FIELD.fullmatch(output))
     _require(not cfg.get("es_writeback_rules") and not cfg.get("stage_output_cols"))
     raw_stages = cfg.get("stage_source_input_cols") or []
     _require(type(raw_stages) is list and len(raw_stages) <= 64)
