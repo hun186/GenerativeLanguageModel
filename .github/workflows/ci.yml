@@ -34,7 +34,7 @@ jobs:
       - name: Verify disposable quality retry SQLite CAS proof (Issue 313)
         run: python -m pytest -q tests/es_mode/test_quality_retry_sqlite_proof.py --maxfail=1 --disable-warnings
       - name: Verify offline Quality retry budget contract (Issue 313)
-        run: python -m pytest -q tests/es_mode/test_quality_retry_contract.py --maxfail=1 --disable-warnings
+        run: python -m pytest -q tests/es_mode/test_quality_retry_contract.py tests/es_mode/test_quality_retry_source_observation.py --maxfail=1 --disable-warnings
       - name: Verify offline multidim Event and Timeline time rerun audit
         run: python -m pytest -q tests/test_multidim_time_audit.py tests/es_mode/test_multidim_profile_audit.py tests/es_mode/test_multidim_event_time_rerun_contract.py tests/es_mode/test_es_rerun_policy_static_preflight.py --maxfail=1 --disable-warnings
       - name: Audit MultiDim search-field capabilities without ES (offline)
@@ -215,7 +215,7 @@ jobs:
         shell: pwsh
         env:
           PYTHONNOUSERSITE: "1"
-        run: python -m pytest -q tests/es_mode/test_quality_retry_contract.py --maxfail=1 --disable-warnings
+        run: python -m pytest -q tests/es_mode/test_quality_retry_contract.py tests/es_mode/test_quality_retry_source_observation.py --maxfail=1 --disable-warnings
       - name: Verify local profile and ES bulk rejection distinction on native Windows
         shell: pwsh
         env:
