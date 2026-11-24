@@ -119,3 +119,84 @@ def test_exact_id_query_never_falls_back_to_business_key():
     result["hits"]["hits"][0]["_id"] = "other"
     with pytest.raises(SourceObservationUnavailable):
         adapter.observe_quality_retry_source("real-doc")
+
+
+def _input_fixture():
+    adapter, result, seen = fixture()
+    adapter.cfg.update(input_col="body", output_col="result",
+                       stage_source_input_cols=["title"])
+    result["hits"]["hits"][0]["_source"].update(
+        body="original source", title="original title", result="old output")
+    return adapter, result, seen
+
+
+def test_input_revision_ignores_output_writeback_but_changes_on_source_edit():
+    adapter, result, seen = _input_fixture()
+    def observe(body="original source", title="original title"):
+        return adapter.observe_quality_retry_inputs(
+            "business-key", expected_input=body, expected_stage_inputs={"title": title})
+    first = observe()
+    assert "original source" not in repr(first)
+    assert "business-key" not in repr(first)
+    assert set(seen[2][1]["body"]["_source"]) == {"sha1", "body", "title"}
+    src = result["hits"]["hits"][0]["_source"]
+    src.update(result="changed output", result_meta={"x": 1}, update_time_ai="new")
+    assert observe() == first
+    src["body"] = "changed source"
+    with pytest.raises(SourceObservationUnavailable):
+        observe()
+    second = observe(body="changed source")
+    assert first.source == second.source
+    assert first.scoped_document_revision() != second.scoped_document_revision()
+    src["title"] = "changed title"
+    with pytest.raises(SourceObservationUnavailable):
+        observe(body="changed source")
+    assert observe(body="changed source", title="changed title") != second
+
+
+@pytest.mark.parametrize("case", [
+    "missing_stage", "extra_stage", "output_overlap", "meta_overlap",
+    "time_overlap", "array_source", "absent_source", "multi_output",
+    "overlapping_inputs", "empty_input", "bad_stage_config",
+])
+def test_input_revision_rejects_unsupported_or_unmatched_inputs(case):
+    adapter, result, seen = _input_fixture()
+    kwargs = {"expected_input": "original source",
+              "expected_stage_inputs": {"title": "original title"}}
+    src = result["hits"]["hits"][0]["_source"]
+    if case == "missing_stage":
+        kwargs["expected_stage_inputs"] = {}
+    elif case == "extra_stage":
+        kwargs["expected_stage_inputs"]["other"] = "extra"
+    elif case == "output_overlap":
+        adapter.cfg["output_col"] = "body"
+    elif case == "meta_overlap":
+        adapter.cfg["rerun"] = {"meta_field": "title"}
+    elif case == "time_overlap":
+        adapter.cfg["input_col"] = "update_time_ai"
+    elif case == "array_source":
+        src["body"] = ["original source"]
+    elif case == "absent_source":
+        src.pop("title")
+    elif case == "multi_output":
+        adapter.cfg["output_col"] = ["result", "other"]
+    elif case == "overlapping_inputs":
+        adapter.cfg["stage_source_input_cols"] = ["body.title"]
+        kwargs["expected_stage_inputs"] = {"body.title": "original title"}
+    elif case == "empty_input":
+        kwargs["expected_input"] = " "
+    elif case == "bad_stage_config":
+        adapter.cfg["stage_source_input_cols"] = "title"
+    with pytest.raises(SourceObservationUnavailable, match="^source observation unavailable$"):
+        adapter.observe_quality_retry_inputs("business-key", **kwargs)
+
+
+def test_input_revision_can_be_bound_to_existing_private_retry_identity():
+    from czjLLM.es_mode.quality_retry_contract import RetryIdentity
+    adapter, _, _ = _input_fixture()
+    observed = adapter.observe_quality_retry_inputs(
+        "business-key", expected_input="original source",
+        expected_stage_inputs={"title": "original title"})
+    identity = RetryIdentity(observed.scoped_document_revision(),
+                             "result", "a" * 64, "quality-v1")
+    assert "original source" not in repr(identity)

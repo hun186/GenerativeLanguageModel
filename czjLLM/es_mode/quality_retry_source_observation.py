@@ -6,6 +6,7 @@ Only same-concrete-index, scalar string keys are supported for now.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import hashlib
 import json
 import re
 from collections.abc import Mapping
@@ -40,6 +41,70 @@ class SourceObservation:
         return value
 
 
+@dataclass(frozen=True)
+class SourceInputObservation:
+    source: SourceObservation = field(repr=False)
+    input_sha256: str = field(repr=False)
+
+    def scoped_document_revision(self) -> str:
+        """Private revision identity, to be HMACed by the future ledger."""
+        value = json.dumps(
+            ["es-source-input-v1", self.source.scoped_document_id(), self.input_sha256],
+            ensure_ascii=True, separators=(",", ":"),
+        )
+        _require(len(value) <= 4096)
+        return value
+
+
+def _overlaps(a, b):
+    return a == b or a.startswith(b + ".") or b.startswith(a + ".")
+
+
+def _input_snapshot(cfg, expected_input, expected_stage_inputs):
+    # Start with a deliberately narrow same-index, single-output contract.
+    # Do not silently hash generated outputs, their metadata or time fields.
+    primary = cfg.get("input_col")
+    output = cfg.get("output_col")
+    if type(output) is list:
+        _require(len(output) == 1)
+        output = output[0]
+    _require(type(primary) is str and _FIELD.fullmatch(primary))
+    _require(type(output) is str and _FIELD.fullmatch(output))
+    _require(not cfg.get("es_writeback_rules") and not cfg.get("stage_output_cols"))
+    raw_stages = cfg.get("stage_source_input_cols") or []
+    _require(type(raw_stages) is list and len(raw_stages) <= 64)
+    _require(all(type(p) is str and _FIELD.fullmatch(p) for p in raw_stages))
+    stages = sorted(set(p for p in raw_stages if p != primary))
+    _require(type(expected_stage_inputs) is dict
+             and set(expected_stage_inputs) == set(stages))
+    rr = cfg.get("rerun") or {}
+    meta = rr.get("meta_field") or output + "_meta"
+    _require(type(meta) is str and _FIELD.fullmatch(meta))
+    excluded = (output, meta, "update_time_ai", "_id")
+    fields = [primary] + stages
+    _require(not any(_overlaps(p, q) for p in fields for q in excluded))
+    _require(not any(_overlaps(p, q) for i, p in enumerate(fields) for q in fields[i+1:]))
+    pairs = [(primary, expected_input)] + [(p, expected_stage_inputs[p]) for p in stages]
+    _require(all(type(v) is str and bool(v.strip()) for _, v in pairs))
+    _require(sum(len(v) for _, v in pairs) <= 4_000_000)
+    return tuple(pairs)
+
+
+def observe_source_inputs(es, cfg, logical_id, *, expected_input, expected_stage_inputs):
+    """Compare exact caller-supplied input snapshot with a unique ES hit.
+
+    The caller still must establish actual queued/consumed input provenance.
+    This is not an atomic source revision, provider receipt or authorization.
+    """
+    try:
+        pairs = _input_snapshot(cfg, expected_input, expected_stage_inputs)
+        return observe_source(es, cfg, logical_id, _input_pairs=pairs)
+    except SourceObservationUnavailable:
+        raise
+    except Exception:
+        raise SourceObservationUnavailable("source observation unavailable") from None
+
+
 def _require(ok):
     if not ok:
         raise SourceObservationUnavailable("source observation unavailable")
@@ -62,7 +127,7 @@ def _namespace(es, index, timeout):
     return cluster_uuid, index_uuid
 
 
-def observe_source(es, cfg, logical_id: str) -> SourceObservation:
+def observe_source(es, cfg, logical_id: str, *, _input_pairs=None):
     """Read current unique source hit using the configured exact key.
 
     This deliberately does not use the legacy writeback fallback to a business
@@ -88,6 +153,8 @@ def observe_source(es, cfg, logical_id: str) -> SourceObservation:
             _require(type(suffix) is str and suffix in ("", ".keyword"))
             query = {"term": {pk + suffix: logical_id}}
             source_fields = [pk]
+        if _input_pairs is not None:
+            source_fields = list(dict.fromkeys((source_fields or []) + [p for p, _ in _input_pairs]))
         response = es.search(
             index=index, request_timeout=timeout,
             body={"query": query, "_source": source_fields,
@@ -116,7 +183,16 @@ def observe_source(es, cfg, logical_id: str) -> SourceObservation:
         _require(_namespace(es, index, timeout) == before)
         result = SourceObservation(*before, index, doc_id)
         result.scoped_document_id()  # Enforce bound before exposing observation.
-        return result
+        if _input_pairs is None:
+            return result
+        for path, expected in _input_pairs:
+            actual = extract_by_path(hit.get("_source"), path)
+            _require(type(actual) is str and actual == expected)
+        encoded = json.dumps(["es-input-v1", _input_pairs], ensure_ascii=True,
+                             separators=(",", ":")).encode("ascii")
+        observation = SourceInputObservation(result, hashlib.sha256(encoded).hexdigest())
+        observation.scoped_document_revision()
+        return observation
     except SourceObservationUnavailable:
         raise
     except Exception:
