@@ -3281,7 +3281,14 @@ def _run_windows_live_slot_refill(
                 (), getattr(ctx, "llm_round_timeout_sec", None),
             ),
             drain_on_deadline=True,
+            return_on_drained_deadline=True,
         )
+    # The initial claim existed before the scheduler. Never treat a deadline
+    # before its dispatch, or any unacknowledged claim, as a safe rollover.
+    if first_pending or unacknowledged_parents or stats.claimed != stats.acknowledged:
+        raise RuntimeError("slot refill ended with unsettled Queue claims")
+    if stats.deadline_reached:
+        tlog_warn("[consumer] live refill deadline drained; continuing next round")
     # This counter is a Queue Success receipt, not a sink writeback ACK.
     tlog(
         f"🧵 consumer live refill: claimed={stats.claimed}, "

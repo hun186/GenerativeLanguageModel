@@ -19,7 +19,8 @@ class _Registry:
         return dict(self.items)
 
 
-def _run_fixture(tmp_path, monkeypatch, *, fail_without_success=False, split_parent=False):
+def _run_fixture(tmp_path, monkeypatch, *, fail_without_success=False, split_parent=False,
+                 deadline_clock=None):
     slow_started = threading.Event()
     fast_refilled = threading.Event()
     release_slow = threading.Event()
@@ -78,6 +79,11 @@ def _run_fixture(tmp_path, monkeypatch, *, fail_without_success=False, split_par
         n_process=2, task="fixture", model_spec={}, max_tokens=10,
         PGMSubDir=str(tmp_path), removeFinPromptFile=True,
     )
+    if deadline_clock is not None:
+        context.n_process = 1
+        context.llm_round_timeout_sec = 1
+        from czjLLM.prompt_pipeline import refill_scheduler as scheduler
+        monkeypatch.setattr(scheduler, "time", SimpleNamespace(monotonic=lambda: deadline_clock[0]))
     stop = threading.Event()
     receipts = {}
     first = pc.pick_and_claim_next_prompts(
@@ -102,7 +108,7 @@ def _run_fixture(tmp_path, monkeypatch, *, fail_without_success=False, split_par
     return SimpleNamespace(
         slow_started=slow_started, fast_refilled=fast_refilled,
         release_slow=release_slow, meter=meter, meter_lock=meter_lock,
-        registry=registry, thread=thread, outcomes=outcomes,
+        registry=registry, thread=thread, outcomes=outcomes, context=context,
     )
 
 
@@ -284,3 +290,36 @@ def test_split_publication_cannot_preempt_parent_meter_ack(tmp_path, monkeypatch
         assert meter["rows"]["0"]["total"] == meter["rows"]["0"]["done"] == 2
     assert (tmp_path / "item_0" / "Success" / "0-0.txt").exists()
     assert (tmp_path / "item_0" / "Success" / "0-1.txt").exists()
+
+
+def test_live_deadline_drains_slow_worker_and_next_round_finishes_pending(tmp_path, monkeypatch):
+    # Controlled clock: represent a >480-second LLM call without sleeping.
+    clock = [0.0]
+    fixture = _run_fixture(tmp_path, monkeypatch, deadline_clock=clock)
+    try:
+        assert fixture.slow_started.wait(4)
+        clock[0] = 2.0
+    finally:
+        fixture.release_slow.set()
+        fixture.thread.join(10)
+    assert not fixture.thread.is_alive()
+    assert len(fixture.outcomes) == 1
+    stats = fixture.outcomes[0]
+    assert not isinstance(stats, BaseException), repr(stats)
+    assert stats.deadline_reached and stats.claimed == stats.acknowledged == 1
+    assert fixture.meter["queue"] == {"pending": 2, "running": 0, "completed": 1}
+    receipts = {}
+    first = pc.pick_and_claim_next_prompts(list(fixture.registry.items),
+                                         per_round_limit=1, claim_ids_out=receipts)
+    assert len(first) == 1
+    following = pc._run_windows_live_slot_refill(
+        fixture.context, fixture.registry, str(tmp_path / "meter.json"),
+        threading.Event(), threading.Event(), first=first[0],
+        first_claim_ids=receipts, per_round_limit=2,
+    )
+    assert following.claimed == following.acknowledged == 2
+    assert fixture.meter["queue"] == {"pending": 0, "running": 0, "completed": 3}
+    for item in fixture.registry.items:
+        assert (Path(item) / "Success" / "0.txt").is_file()
+        assert not list((Path(item) / "RUNNING").glob("*.txt"))
+        assert not list((Path(item) / "TODO").glob("*.txt"))
