@@ -16,6 +16,15 @@ class OutputProfileValidationError(ValueError):
         super().__init__(message)
 
 
+class ESBulkRequestRejected(OutputProfileValidationError):
+    """Permanent ES bulk rejection, not proof of a model quality failure.
+
+    The superclass preserves the existing terminal Row Merger contract.
+    Future quality-budget accounting must distinguish this sink rejection
+    from local profile validation; neither type alone proves attempt identity.
+    """
+
+
 class OutputProfileRegistry:
     """Small registry that decouples profile names from transformer code."""
 

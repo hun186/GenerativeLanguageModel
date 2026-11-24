@@ -179,9 +179,26 @@ def test_es_ack_treats_all_bulk_400_as_terminal(monkeypatch, error_type):
     )
     sink = mod.ESSink(ctx, DummyES(), index="docs", flush_every=1000)
     sink.write_main("doc-400", '{"ok": true}')
-    with pytest.raises(mod.OutputProfileValidationError, match="ES mapping rejected"):
+    with pytest.raises(mod.ESBulkRequestRejected, match="ES mapping rejected") as error:
         sink.confirm_writeback()
+    assert isinstance(error.value, mod.OutputProfileValidationError)
     assert sink._buffer == [], "terminal 400 actions must not be retained"
+
+
+def test_local_profile_rejection_is_not_es_bulk_rejection(monkeypatch):
+    mod = _load_es_sink_module(monkeypatch)
+    calls = []
+    def unexpected_bulk(*args, **kwargs):
+        calls.append(True)
+        raise AssertionError("invalid local payload must not reach ES")
+    monkeypatch.setattr(mod.helpers, "bulk", unexpected_bulk)
+    ctx = SimpleNamespace(output_profile="multidim_event", es_refresh_after_flush=False)
+    sink = mod.ESSink(ctx, DummyES(), index="docs",
+                      output_col="multidim_event_json", flush_every=1000)
+    with pytest.raises(mod.OutputProfileValidationError) as error:
+        sink.write_main("doc-local", '[{"Event": [{"event_id": "e1", "unexpected_field": "x"}]}]')
+    assert not isinstance(error.value, mod.ESBulkRequestRejected)
+    assert not calls and not sink._buffer
 
 
 def test_es_ack_429_is_retryable_and_failed_batch_can_be_discarded(monkeypatch):
@@ -202,8 +219,9 @@ def test_es_ack_429_is_retryable_and_failed_batch_can_be_discarded(monkeypatch):
     )
     sink = mod.ESSink(ctx, DummyES(), index="docs", flush_every=1000)
     sink.write_main("doc-429", '{"ok": true}')
-    with pytest.raises(RuntimeError, match="bulk update failed"):
+    with pytest.raises(RuntimeError, match="bulk update failed") as error:
         sink.confirm_writeback()
+    assert not isinstance(error.value, mod.OutputProfileValidationError)
     assert len(sink._buffer) == 1
     sink.discard_unacknowledged_writeback()
     assert sink._buffer == [] and sink._buffer_bytes == 0

@@ -2,6 +2,7 @@
 
 from .registry import (
     OutputProfileValidationError,
+    ESBulkRequestRejected,
     OutputProfileRegistry,
     get_default_registry,
     load_output_profile_plugins,
@@ -10,6 +11,7 @@ from .registry import (
 
 __all__ = [
     "OutputProfileValidationError",
+    "ESBulkRequestRejected",
     "OutputProfileRegistry",
     "get_default_registry",
     "load_output_profile_plugins",
