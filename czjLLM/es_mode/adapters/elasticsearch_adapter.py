@@ -323,6 +323,11 @@ class ElasticsearchAdapter(ElasticsearchPendingPolicyMixin):
             
     # --- ES 版本的 pending 擷取 --------------------------------------------
 
+    def observe_quality_retry_source(self, logical_id: str):
+        """Explicit read-only source observation; not a dispatch/ledger gate."""
+        from czjLLM.es_mode.quality_retry_source_observation import observe_source
+        return observe_source(self.es, self.cfg, logical_id)
+
     def is_row_pending(self, *, tgt_table: str, pk: str, pk_value: Any, output_cols: List[str]) -> bool:
         return self.check_row_pending(tgt_table=tgt_table, pk=pk, pk_value=pk_value, output_cols=output_cols).pending
 
