@@ -426,6 +426,11 @@ class ESSink:
             return self._resolve_output_profile(getattr(self, "output_profile", "auto"), output_col)
         return self._resolve_output_profile("auto", output_col)
 
+    def observe_quality_candidate(self, adapter, payload: Any, output_col: str):
+        """Local combined candidate observation, never a retry authorization."""
+        from ...quality_candidate_observation import observe_candidate
+        return observe_candidate(self, adapter, payload, output_col)
+
     def observe_quality_output_profile(self, payload: Any, output_col: str):
         """Explicit local observation; no buffering, writes or retry decisions."""
         from ...quality_output_profile_observation import observe_output_profile

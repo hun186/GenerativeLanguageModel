@@ -8,6 +8,7 @@
 - Remaining issues: Windows self-hosted 3.10/3.11 still queued/operator-deferred, historical #231 status now merged, no real Windows/Ollama/ES readback, no crash-safe authenticated checkpoint/online shard retirement. These accepted PRs do not prove absence of filesystem races or malicious-tamper resilience.
 
 ## Environment and External Dependencies
+- **2026-11-25 #313:** combined local candidate is structural only; source/execution/attempt and ACK verification still separate. Unsupported routing/timestamp mutation unavailable.
 - **2026-11-24 #313:** built-in profile structural verdict is not semantic truth or authenticated repair completion. Contract version must change when profile/sink preparation semantics change; unsupported routes/plugins remain unavailable.
 - **2026-11-24 #313:** Required-output digest is a versioned configuration component, not full quality/profile identity; bump contract for evaluator semantic changes. No standalone retry authorization.
 - **2026-11-24 #313:** observed ES cluster/index UUID and _id are read-time facts only; source changes, routing, TLS identity and sink reconciliation are not guaranteed. Unsupported or ambiguous lookups must not authorize retry.

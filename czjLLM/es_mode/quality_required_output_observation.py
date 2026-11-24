@@ -37,18 +37,12 @@ def _require(ok):
         raise RequiredOutputObservationUnavailable("required output observation unavailable")
 
 
-def observe_required_output(policy, source, output_col):
-    """Observe only explicitly enabled, supported, output-local checks.
-
-    Resolve paths through the actual adapter. Reject malformed/unsupported
-    settings rather than treating the permissive legacy fallback as evidence.
-    The same canonical snapshot drives both the digest and evaluation.
-    """
+def _resolve_required_output_rule(policy, output_col):
+    """Capture effective rule version and canonical checks once."""
     try:
         cfg = policy.cfg
         rr = cfg.get("rerun") or {}
-        _require(type(source) is dict and type(output_col) is str
-                 and _PATH.fullmatch(output_col))
+        _require(type(output_col) is str and _PATH.fullmatch(output_col))
         _require(rr.get("enable") is True
                  or cfg.get("required_output_checks_apply_without_rerun") is True)
         raw = rr.get("required_output_checks") or cfg.get("required_output_checks") or []
@@ -85,6 +79,18 @@ def observe_required_output(policy, source, output_col):
         canonical = json.dumps([_CONTRACT, output_col, checks], ensure_ascii=True,
                                sort_keys=True, separators=(",", ":"), allow_nan=False)
         version = _CONTRACT + "-" + hashlib.sha256(canonical.encode("ascii")).hexdigest()
+        return version, checks
+    except RequiredOutputObservationUnavailable:
+        raise
+    except Exception:
+        raise RequiredOutputObservationUnavailable("required output observation unavailable") from None
+
+
+def observe_required_output(policy, source, output_col):
+    """Observe explicitly enabled, supported, output-local checks."""
+    try:
+        _require(type(source) is dict)
+        version, checks = _resolve_required_output_rule(policy, output_col)
         passed, _ = evaluate_required_output_checks(source, checks)
         _require(type(passed) is bool)
         return RequiredOutputObservation(version, passed)
