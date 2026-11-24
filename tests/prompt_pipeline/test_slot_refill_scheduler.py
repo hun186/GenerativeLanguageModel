@@ -233,7 +233,8 @@ def test_producer_final_publication_between_empty_peek_and_done():
     assert todo == []
 
 
-def test_drain_on_deadline_acks_existing_workers_before_aborting():
+@pytest.mark.parametrize("rollover", [False, True])
+def test_drain_on_deadline_acks_existing_workers_before_aborting(rollover):
     """The deadline closes dispatch, not durable ACKs for already running work."""
     starts = [threading.Event(), threading.Event()]
     release = threading.Event()
@@ -256,7 +257,8 @@ def test_drain_on_deadline_acks_existing_workers_before_aborting():
                 claim_one=claim, run_worker=worker,
                 acknowledge=lambda record, _result: acknowledged.append(record.item),
                 max_inflight=2, deadline_sec=0.15,
-                drain_on_deadline=True, empty_poll_seconds=0.01,
+                drain_on_deadline=True, return_on_drained_deadline=rollover,
+                empty_poll_seconds=0.01,
             ))
         except BaseException as exc:
             outcome.append(exc)
@@ -275,6 +277,28 @@ def test_drain_on_deadline_acks_existing_workers_before_aborting():
     assert observed == [0, 1]
     assert sorted(acknowledged) == [0, 1]
     assert len(outcome) == 1
-    assert isinstance(outcome[0], RefillAborted)
-    assert outcome[0].reason == "deadline_exceeded"
-    assert outcome[0].stats.claimed == outcome[0].stats.acknowledged == 2
+    if rollover:
+        assert not isinstance(outcome[0], BaseException)
+        assert outcome[0].deadline_reached
+        assert outcome[0].claimed == outcome[0].acknowledged == 2
+    else:
+        assert isinstance(outcome[0], RefillAborted)
+        assert outcome[0].reason == "deadline_exceeded"
+        assert outcome[0].stats.claimed == outcome[0].stats.acknowledged == 2
+
+
+def test_rollover_does_not_swallow_ack_failure_after_deadline(monkeypatch):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline import refill_scheduler as scheduler
+    clock = [0.0]
+    monkeypatch.setattr(scheduler, "time", SimpleNamespace(monotonic=lambda: clock[0]))
+    def work(value):
+        clock[0] = 2.0
+        return value
+    def bad_ack(*_):
+        raise RuntimeError("ACK failed")
+    with pytest.raises(RuntimeError, match="ACK failed"):
+        run_slot_refill(claim_one=lambda: ClaimedWork("receipt", 1),
+                        run_worker=work, acknowledge=bad_ack, max_inflight=1,
+                        deadline_sec=1, drain_on_deadline=True,
+                        return_on_drained_deadline=True)

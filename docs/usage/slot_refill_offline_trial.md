@@ -63,3 +63,7 @@ Legacy Worker 可能因長度上限把一個 RUNNING JSON 父切片替換成
 只有 Registry 明確提供 `CombBackFN` 時，才檢查此預期檔案
 並顯示 `combined=Y/N`；缺少權威路徑顯示 `combined=UNKNOWN`。
 這仍是路徑存在性診斷，不是 Sink confirmed-writeback。
+
+## 2026-11-24 — 安全期限切換修正（待驗收）
+
+Windows legacy Consumer 的 refill deadline 是整輪派工期限（預設 480 秒），不是單筆模型呼叫的硬性中止。期限到達後停止新 Claim，等待已開始的 Worker 結束並逐筆確認 Queue ACK。當所有已領取工作已結清且沒有活躍 Future，正常返回 deadline_reached，Consumer 進入下一輪；不再把安全收尾誤當作整批失敗。未結清的初始 Claim、Worker/ACK 例外、檔案矛盾仍 fail-closed。不延長模型 HTTP timeout、不修改 Linux/stage-managed、SQL/ES sink 或自動重派。
