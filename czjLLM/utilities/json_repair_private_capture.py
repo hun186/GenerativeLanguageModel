@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Explicit opt-in, bounded local-private JSON repair snapshots (sensitive).
+"""Bounded locally protected JSON repair before/after snapshots (sensitive).
 
-Never log the raw strings to console, Quality JSONL, or the regular LLM audit.
-This is a cooperating local-filesystem best effort, not encryption/hostile-writer
-containment. Default capture OFF; Windows ACLs require operator verification.
+Disk capture is explicit opt-in only (CZJLLM_JSON_REPAIR_CAPTURE=1).
+Session RAM capture is separate and GUI-only. Raw data never
+enters Quality JSONL or the LLM audit. Plaintext storage is not encryption or
+protection against hostile local administrators and external backups/sync.
 """
 from __future__ import annotations
 
@@ -14,24 +15,33 @@ import os
 from pathlib import Path
 import re
 import stat
+import time
 from uuid import UUID
 
 MAX_TEXT_CHARS = 80_000
 MAX_FILE_BYTES = 512 * 1024
 MAX_CASES_PER_RUN = 48
 MAX_RUN_BYTES = 16 * 1024 * 1024
+MAX_TOTAL_BYTES = 128 * 1024 * 1024
+MAX_RUN_FOLDERS = 2048
+SNAPSHOT_TTL_SECONDS = 72 * 60 * 60
+_RUN_NAME = re.compile(r"^run-[0-9a-f]{24}$")
 ENABLE_ENV = "CZJLLM_JSON_REPAIR_CAPTURE"
 ROOT_ENV = "CZJLLM_JSON_REPAIR_PRIVATE_DIR"
 _CASE_NAME = re.compile(r"^r-([0-9a-f]{32})\.json$")
 
 
 def capture_enabled() -> bool:
-    return os.environ.get(ENABLE_ENV, "").strip().lower() in {"1", "true", "yes", "on"}
+    raw = os.environ.get(ENABLE_ENV)
+    return raw is not None and raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def configured_private_root() -> Path | None:
     raw = os.environ.get(ROOT_ENV, "").strip()
-    return Path(raw) if raw else None
+    if raw:
+        return Path(raw)
+    from czjLLM.utilities.json_repair_auto_store import auto_private_root
+    return auto_private_root()
 
 
 def _validate_run_id(run_id: str) -> str:
@@ -160,7 +170,13 @@ def _root(root: Path | str) -> Path:
 def _run_dir(root: Path, run_digest: str) -> Path:
     sub = root / ("run-" + run_digest[:24])
     try:
-        sub.mkdir(mode=0o700)
+        if os.name == "nt" and root.name == "json_repair" and root.parent.name == ".runtime-private":
+            from czjLLM.utilities.json_repair_auto_store import (
+                _win_create_private, _win_current_user_sid,
+            )
+            _win_create_private(sub, _win_current_user_sid())
+        else:
+            sub.mkdir(mode=0o700)
     except FileExistsError:
         pass
     info = _is_regular_private(sub, directory=True)
@@ -170,6 +186,7 @@ def _run_dir(root: Path, run_digest: str) -> Path:
         raise ValueError("POSIX_LOCAL_FILESYSTEM_UNVERIFIED")
     if os.name != "nt" and (info.st_mode & 0o077):
         raise ValueError("PRIVATE_RUN_PERMISSIONS")
+    _check_auto_run_acl(root, sub)
     return sub
 
 
@@ -179,7 +196,110 @@ def _existing_run_dir(root: Path, run_digest: str) -> Path:
     # Reads and manual deletion must obey the same nested-mount boundary.
     if os.name != "nt" and not _posix_local_filesystem(sub):
         raise ValueError("POSIX_LOCAL_FILESYSTEM_UNVERIFIED")
+    _check_auto_run_acl(root, sub)
     return sub
+
+
+def _check_auto_run_acl(root: Path, child: Path) -> None:
+    """Do not trust run-child ACLs merely because their parent is protected."""
+    if os.name == "nt" and root.name == "json_repair" and root.parent.name == ".runtime-private":
+        from czjLLM.utilities.json_repair_auto_store import (
+            _win_current_user_sid, _win_private_acl,
+        )
+        if not _win_private_acl(child, _win_current_user_sid()):
+            raise ValueError("WINDOWS_PRIVATE_RUN_ACL_UNVERIFIED")
+
+
+def _prune_locked(root: Path, now: float) -> int:
+    """Root-wide lock held. Delete only validated expired snapshot file names."""
+    entries = list(root.iterdir())
+    # A prior interrupted/older version may have left more than the active
+    # folder budget. Still allow bounded cleanup, then re-evaluate the cap.
+    if len(entries) > 2 * MAX_RUN_FOLDERS + 1:
+        raise ValueError("PRIVATE_TOTAL_FOLDER_BUDGET")
+    total_bytes = 0
+    empty_folders = []
+    for folder in entries:
+        if folder.name == ".capture.lock":
+            _is_regular_private(folder, directory=False)
+            continue
+        if not _RUN_NAME.fullmatch(folder.name):
+            raise ValueError("UNKNOWN_PRIVATE_ARTIFACT")
+        info = _is_regular_private(folder, directory=True)
+        if os.name != "nt":
+            if not _posix_local_filesystem(folder):
+                raise ValueError("POSIX_LOCAL_FILESYSTEM_UNVERIFIED")
+            if info.st_mode & 0o077:
+                raise ValueError("PRIVATE_RUN_PERMISSIONS")
+        _check_auto_run_acl(root, folder)
+        with _lock_run(folder):
+            remaining = 0
+            for file in _case_paths(folder):
+                before = _is_regular_private(file, directory=False)
+                if before.st_mtime > now + 300:
+                    raise ValueError("PRIVATE_TIME_UNVERIFIED")
+                if now - before.st_mtime >= SNAPSHOT_TTL_SECONDS:
+                    current = _is_regular_private(file, directory=False)
+                    if (current.st_dev, current.st_ino, current.st_mtime_ns,
+                            current.st_size) != (
+                            before.st_dev, before.st_ino, before.st_mtime_ns,
+                            before.st_size):
+                        raise ValueError("PRIVATE_CHANGED")
+                    file.unlink()
+                else:
+                    remaining += 1
+                    total_bytes += before.st_size
+                    if total_bytes > MAX_TOTAL_BYTES:
+                        raise ValueError("PRIVATE_TOTAL_BYTES_BUDGET")
+            if remaining == 0:
+                empty_folders.append(folder)
+    # Root-wide lock is still held; all new writes also acquire it first.
+    # Remove empty run metadata, otherwise unattended Linux schedules would
+    # eventually exhaust MAX_RUN_FOLDERS despite the 72h file TTL.
+    for folder in empty_folders:
+        lockfile = folder / ".capture.lock"
+        try:
+            _is_regular_private(folder, directory=True)
+            _is_regular_private(lockfile, directory=False)
+            lockfile.unlink()
+            folder.rmdir()
+        except OSError:
+            # An in-flight legacy reader/process may still hold the handle.
+            # Leave it and retry on a later maintenance entry.
+            pass
+    return total_bytes
+
+
+def prune_expired_private_captures(root: Path | str) -> int:
+    """Maintenance on new writes and GUI open; no background daemon."""
+    folder = _root(root)
+    with _lock_run(folder):
+        return _prune_locked(folder, time.time())
+
+
+def startup_private_capture_maintenance() -> str:
+    """Once-per-launch expiry sweep, including runs with capture turned OFF."""
+    enabled = capture_enabled()
+    try:
+        if not enabled:
+            # Opting out stops NEW plaintext only: existing snapshots are
+            # still due for expiry. Access checks may raise PermissionError
+            # (Python 3.10/3.11), so treat them as an unavailable *optional*
+            # cache rather than aborting the batch.
+            raw = os.environ.get(ROOT_ENV, "").strip()
+            if raw:
+                existing = Path(raw)
+            else:
+                from czjLLM.utilities.json_repair_auto_store import (
+                    CACHE_RELATIVE_PATH, PROJECT_ROOT,
+                )
+                existing = PROJECT_ROOT / CACHE_RELATIVE_PATH
+            if not existing.exists():
+                return "DISABLED"
+        prune_expired_private_captures(configured_private_root())
+    except (OSError, ValueError, TypeError, UnicodeError):
+        return "UNAVAILABLE"
+    return "READY" if enabled else "DISABLED"
 
 
 @contextmanager
@@ -262,33 +382,44 @@ def write_private_repair(
     }, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     if len(payload) > MAX_FILE_BYTES:
         raise ValueError("PRIVATE_BYTES_OVER_LIMIT")
-    folder = _run_dir(_root(root), digest)
-    target = folder / ("r-" + event_id + ".json")
-    with _lock_run(folder):
-        existing = _case_paths(folder)
-        if len(existing) >= MAX_CASES_PER_RUN or sum(
-            x.stat().st_size for x in existing
-        ) + len(payload) > MAX_RUN_BYTES:
-            raise ValueError("PRIVATE_RUN_BUDGET")
-        flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
-        fd = os.open(target, flags, 0o600)
-        try:
-            # closefd=True makes the handle close even when flush/fsync raises.
-            with os.fdopen(fd, "wb") as handle:
-                fd = None
-                handle.write(payload)
-                handle.flush()
-                os.fsync(handle.fileno())
-        except BaseException:
-            # Windows denies unlink of a still-open CRT descriptor. Close
-            # before deleting partial sensitive plaintext on failure.
-            if fd is not None:
-                os.close(fd)
+    private_root = _root(root)
+    # Serialized cross-run cleanup and global byte budget. Per-run locks
+    # still protect the chosen event against concurrent manual deletion.
+    with _lock_run(private_root):
+        active_bytes = _prune_locked(private_root, time.time())
+        if active_bytes + len(payload) > MAX_TOTAL_BYTES:
+            raise ValueError("PRIVATE_TOTAL_BYTES_BUDGET")
+        proposed = private_root / ("run-" + digest[:24])
+        if not proposed.exists() and sum(
+            1 for item in private_root.iterdir()
+            if _RUN_NAME.fullmatch(item.name)
+        ) >= MAX_RUN_FOLDERS:
+            raise ValueError("PRIVATE_TOTAL_FOLDER_BUDGET")
+        folder = _run_dir(private_root, digest)
+        target = folder / ("r-" + event_id + ".json")
+        with _lock_run(folder):
+            existing = _case_paths(folder)
+            if len(existing) >= MAX_CASES_PER_RUN or sum(
+                x.stat().st_size for x in existing
+            ) + len(payload) > MAX_RUN_BYTES:
+                raise ValueError("PRIVATE_RUN_BUDGET")
+            flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
+            fd = os.open(target, flags, 0o600)
             try:
-                target.unlink()
-            except OSError:
-                pass
-            raise
+                with os.fdopen(fd, "wb") as handle:
+                    fd = None
+                    handle.write(payload)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+            except BaseException:
+                # Windows denies unlink of a still-open CRT descriptor.
+                if fd is not None:
+                    os.close(fd)
+                try:
+                    target.unlink()
+                except OSError:
+                    pass
+                raise
     return True
 
 
@@ -301,6 +432,8 @@ def read_private_repair(root: Path | str, run_id: str, event_id: str) -> dict:
     before = _is_regular_private(path, directory=False)
     if before.st_size > MAX_FILE_BYTES or before.st_size < 2:
         raise ValueError("PRIVATE_READ_BUDGET")
+    if time.time() - before.st_mtime >= SNAPSHOT_TTL_SECONDS:
+        raise ValueError("PRIVATE_SNAPSHOT_EXPIRED")
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0)
     fd = os.open(path, flags)
     try:
@@ -335,10 +468,12 @@ def clear_private_run(root: Path | str, run_id: str, confirmation: str) -> int:
     """Manual confirmation; clears only this run's exact capture files."""
     if confirmation != "DELETE_PRIVATE_JSON_REPAIRS":
         raise ValueError("CONFIRMATION_REQUIRED")
-    folder = _existing_run_dir(_root(root), _validate_run_id(run_id))
-    with _lock_run(folder):
-        cases = _case_paths(folder)
-        for item in cases:
-            _is_regular_private(item, directory=False)
-            item.unlink()
-        return len(cases)
+    private_root = _root(root)
+    with _lock_run(private_root):
+        folder = _existing_run_dir(private_root, _validate_run_id(run_id))
+        with _lock_run(folder):
+            cases = _case_paths(folder)
+            for item in cases:
+                _is_regular_private(item, directory=False)
+                item.unlink()
+            return len(cases)

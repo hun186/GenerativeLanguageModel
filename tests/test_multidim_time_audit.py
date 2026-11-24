@@ -125,6 +125,43 @@ def test_malformed_or_torn_lines_are_unavailable(tmp_path, raw):
     assert result["status"] == expected
 
 
+
+@pytest.mark.parametrize("raw", [
+    b'{"multidim_event_json":[],"multidim_event_json":[]}\n',
+    b'{"_source":{"multidim_event_json":[],"multidim_event_json":[]}}\n',
+    b'{"multidim_event_json":[],"nested":{"PRIVATE_FIELD":1,"PRIVATE_FIELD":2}}\n',
+    b'{"multidim_event_json":[],"extra":NaN}\n',
+    b'{"multidim_event_json":[],"extra":Infinity}\n',
+    b'{"multidim_event_json":[],"extra":-Infinity}\n',
+])
+def test_private_time_audit_rejects_duplicate_fields_and_nonstandard_json(
+    tmp_path, capsys, raw,
+):
+    input_file = tmp_path / "PRIVATE_export.jsonl"
+    input_file.write_bytes(raw)
+    before = input_file.read_bytes()
+    doc = collect(input_file)
+    assert doc["status"] == "UNAVAILABLE"
+    assert "counts" not in doc
+    assert doc["source_date_fidelity"] == "NOT_VERIFIED"
+    assert main(["--input-ndjson", str(input_file)]) == 2
+    out = capsys.readouterr().out
+    report = json.loads(out)
+    assert report["status"] == "UNAVAILABLE"
+    assert "counts" not in report
+    assert "PRIVATE_" not in out
+    assert str(input_file) not in out
+    assert input_file.read_bytes() == before
+
+
+def test_single_unique_json_keys_remain_accepted_by_time_audit(tmp_path):
+    input_file = tmp_path / "private-synthetic.jsonl"
+    input_file.write_text('{"multidim_event_json":[]}\n', encoding="utf-8")
+    report = collect(input_file)
+    assert report["status"] == "OBSERVED_NOT_PROVEN"
+    assert report["total_documents"] == 1
+
+
 def test_oversize_and_symlink_input_rejected(tmp_path):
     path = tmp_path / "source.jsonl"
     path.write_bytes(b"x" * (16 * 1024 * 1024 + 1))

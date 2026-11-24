@@ -112,3 +112,7 @@ czjLLM/config_es/private/
 *.p12
 *.pfx
 *.jks
+
+# Per-checkout raw JSON repair cache: never commit or package
+.runtime-private/
+**/.runtime-private/

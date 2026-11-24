@@ -159,3 +159,7 @@ confirm_writeback 閘門。Linux process pool、多階段仍為原來路徑；
   只讀核對來源 SHA 與兩個子 TODO SHA；Consumer 在一筆 Meter 更新中
   釋放父 RUNNING 並登錄兩個子 pending、增列 total 一，既不記 Success，
   也不提前通過 Row Merger，避免正常長輸出拆分被誤判成永遠失聯。
+
+## 2026-11-17 — JSON repair snapshots private cache (follow-up source)
+- **2026-11-18 #335 RAM-first redesign (source PENDING):** Default Windows GUI uses separate private multiprocessing.spawn Queue(maxsize=8) and GUI-process RepairMemoryRing (latest 50 event-linked raw pairs, 16 MiB total, 512 KiB per pair), avoiding raw text in GUI console or Quality JSONL; Linux/headless has no registered receiver. Existing 72h project-local disk snapshot remains opt-in only. Separate physical GUI/operator acceptance; do not treat memory snapshots as durable history or guaranteed complete sample.
+- Utilities json_repair_auto_store.py computes project-local .runtime-private/json_repair from module source (not cwd) and creates strict owner-private directories. json_repair_private_capture.py retains the event-keyed snapshot contract and adds root-wide bounded expiration/quota maintenance. Existing repair GUI performs maintenance on open, and Worker captures only after successful quality event. No background deletion job, no SQL/ES/Queue mutation; checkout archives/sync must exclude the raw cache. Cross-machine Linux and Windows installs have separate local stores.
