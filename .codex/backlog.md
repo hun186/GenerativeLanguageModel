@@ -10,6 +10,7 @@
 - **#269 completed owner merge gate:** latest-head Linux E2E, Windows Hosted 3.10/3.11, changed-line scan SUCCESS, formal Codex receipt no major issues, 22/22 threads resolved, explicit 2026-11-01 owner instruction to merge, GitHub confirmed Squash Merge. Two self-hosted jobs were queued and not treated as verified; physical operator tests remain separate.
 
 ## True Open Engineering Work
+- [ ] **#313 pre-dispatch inspection (DRAFT):** read same budget without candidate payload; no LLM or atomic claim authorization.
 - [x] **#313 accepted preparation #344/#346/#347/#348/#349:** sink/quality distinction, computed origin, concrete source identity, required-output and profile observations merged; no dispatch authorization. Live identity/TLS/routing, immutable execution, provider/sink evidence, cross-host durability and operator gates remain open.
 - [ ] **#313 integrated disposable inspection (DRAFT):** combine source/input, execution and rule observation with ledger read; depends on #350–#353; no claim/finalize or production authorization.
 - [ ] **#313 input revision observation (PENDING):** compare exact projected inputs, reject ambiguity/overlap; bind observed revision only after actual dispatch provenance and sink reconciliation. No retry activation.

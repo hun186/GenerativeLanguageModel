@@ -47,6 +47,7 @@ def _supported(sink, output_col):
     profile = sink._profile_for_output_col(output_col)
     _require(profile == "multidim_event")
     _require(get_default_registry().get(profile) is normalize_multidim_event_payload)
+    return _VERSION
 
 
 def observe_output_profile(sink, payload, output_col):

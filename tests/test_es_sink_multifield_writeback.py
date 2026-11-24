@@ -391,6 +391,7 @@ def test_integrated_disposable_candidate_budget_observes_actual_components(monke
     from czjLLM.es_mode.quality_candidate_observation import CandidateOutcome
     from czjLLM.es_mode.quality_retry_budget_inspection import (
         BudgetInspectionUnavailable, inspect_disposable_candidate_budget,
+        inspect_disposable_pre_dispatch_budget,
     )
     from czjLLM.es_mode.quality_retry_contract import (
         NextAction, Phase, QualityResult, RetryIdentity, RetryPolicy,
@@ -430,7 +431,16 @@ def test_integrated_disposable_candidate_budget_observes_actual_components(monke
         return inspect_disposable_candidate_budget(
             sink, adapter, ledger, policy, logical_id="doc-1", expected_input=body,
             expected_stage_inputs={"title": "private title"}, payload=invalid, output_col=col)
+    def pre(body="private original"):
+        return inspect_disposable_pre_dispatch_budget(
+            sink, adapter, ledger, policy, logical_id="doc-1", expected_input=body,
+            expected_stage_inputs={"title": "private title"}, output_col=col)
     first = inspect()
+    first_pre = pre()
+    assert first_pre.quality_rule_version == first.candidate.quality_rule_version
+    assert (first_pre.phase, first_pre.failed_repairs, first_pre.revision,
+            first_pre.offline_next_action) == (
+                first.phase, first.failed_repairs, first.revision, first.offline_next_action)
     assert first.phase is Phase.UNASSESSED
     assert first.candidate.outcome is CandidateOutcome.PROFILE_REJECTED
     assert "private original" not in repr(first) and "doc-1" not in repr(first)
@@ -453,18 +463,35 @@ def test_integrated_disposable_candidate_budget_observes_actual_components(monke
     exhausted = inspect()
     assert exhausted.phase is Phase.NEEDS_REVIEW and exhausted.failed_repairs == 2
     assert exhausted.offline_next_action is NextAction.QUALITY_RETRY_EXHAUSTED
+    exhausted_pre = pre()
+    assert (exhausted_pre.phase, exhausted_pre.failed_repairs, exhausted_pre.revision,
+            exhausted_pre.offline_next_action) == (
+                exhausted.phase, exhausted.failed_repairs, exhausted.revision,
+                exhausted.offline_next_action)
+    # The pre-candidate read must not invoke candidate normalization at all.
+    with monkeypatch.context() as patch:
+        patch.setattr(sink, "_maybe_parse_json",
+                      lambda *a, **kw: pytest.fail("pre-dispatch parsed a payload"))
+        assert pre() == exhausted_pre
     doc.update({col: "new output", col + "_meta": {"x": 1}, "update_time_ai": "new"})
-    assert inspect() == exhausted and ledger.read(identity) == state
+    assert inspect() == exhausted and pre() == exhausted_pre and ledger.read(identity) == state
     doc["body"] = "edited source"
     with pytest.raises(BudgetInspectionUnavailable):
         inspect()
+    with pytest.raises(BudgetInspectionUnavailable):
+        pre()
     assert inspect("edited source").phase is Phase.UNASSESSED
+    assert pre("edited source").phase is Phase.UNASSESSED
     doc["body"] = "private original"
     adapter.cfg["rerun"]["required_output_checks"][0]["min_valid_count"] = 2
     assert inspect().phase is Phase.UNASSESSED
+    assert pre().phase is Phase.UNASSESSED
+    assert pre().quality_rule_version == inspect().candidate.quality_rule_version
     ctx.taskSetting["summary"]["task"] = "PROMPT-B"
     with pytest.raises(BudgetInspectionUnavailable):
         inspect()
+    with pytest.raises(BudgetInspectionUnavailable):
+        pre()
     assert ledger.read(identity) == state
     with closing(sqlite3.connect(tmp_path / "ledger.db")) as con:
         assert con.execute("SELECT revision FROM quality_states").fetchall() == [(state.revision,)]

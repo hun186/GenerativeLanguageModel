@@ -13,7 +13,7 @@ import re
 
 from czjLLM.common.required_output_guard import evaluate_required_output_checks
 from .quality_output_profile_observation import (
-    ProfileOutcome, _observe_normalized_profile,
+    ProfileOutcome, _observe_normalized_profile, _supported,
 )
 from .quality_required_output_observation import _resolve_required_output_rule
 
@@ -60,6 +60,35 @@ def _scope(sink, adapter, output_col):
     _require(not getattr(sink.ctx, "update_time_inside_output", False))
 
 
+def _capture_rule(sink, adapter, output_col):
+    _scope(sink, adapter, output_col)
+    profile_version = _supported(sink, output_col)
+    required_version, checks = _resolve_required_output_rule(adapter, output_col)
+    return profile_version, required_version, checks
+
+
+def _combined_rule_version(profile_version, required_version):
+    canonical = json.dumps(["quality-candidate-v1", profile_version,
+                            required_version], ensure_ascii=True,
+                           separators=(",", ":"))
+    return "quality-v1-" + hashlib.sha256(canonical.encode("ascii")).hexdigest()
+
+
+def observe_candidate_rule_version(sink, adapter, output_col):
+    """Observe the same effective rule identity without any candidate payload.
+
+    Read-time identity only; no quality verdict or dispatch permission.
+    """
+    try:
+        snapshot = _capture_rule(sink, adapter, output_col)
+        _require(_capture_rule(sink, adapter, output_col) == snapshot)
+        return _combined_rule_version(*snapshot[:2])
+    except CandidateObservationUnavailable:
+        raise
+    except Exception:
+        raise CandidateObservationUnavailable("quality candidate observation unavailable") from None
+
+
 def observe_candidate(sink, adapter, payload, output_col):
     """Use one normalized candidate, one effective rule snapshot, no ES I/O.
 
@@ -68,9 +97,10 @@ def observe_candidate(sink, adapter, payload, output_col):
     Both rule components participate even when the profile rejects.
     """
     try:
-        _scope(sink, adapter, output_col)
-        required_version, checks = _resolve_required_output_rule(adapter, output_col)
+        snapshot = _capture_rule(sink, adapter, output_col)
+        profile_version, required_version, checks = snapshot
         profile, normalized = _observe_normalized_profile(sink, payload, output_col)
+        _require(profile.profile_version == profile_version)
         if profile.outcome is ProfileOutcome.STRUCTURALLY_REJECTED:
             outcome = CandidateOutcome.PROFILE_REJECTED
         else:
@@ -78,15 +108,10 @@ def observe_candidate(sink, adapter, payload, output_col):
             _require(type(passed) is bool)
             outcome = (CandidateOutcome.STRUCTURALLY_ACCEPTED if passed else
                        CandidateOutcome.REQUIRED_OUTPUT_REJECTED)
-        _scope(sink, adapter, output_col)
-        # A changed effective rule during local validation is unavailable.
-        _require(_resolve_required_output_rule(adapter, output_col) ==
-                 (required_version, checks))
-        canonical = json.dumps(["quality-candidate-v1", profile.profile_version,
-                                required_version], ensure_ascii=True,
-                               separators=(",", ":"))
-        version = "quality-v1-" + hashlib.sha256(canonical.encode("ascii")).hexdigest()
-        return CandidateObservation(version, outcome)
+        # A changed effective rule or profile during validation is unavailable.
+        _require(_capture_rule(sink, adapter, output_col) == snapshot)
+        return CandidateObservation(
+            _combined_rule_version(profile_version, required_version), outcome)
     except CandidateObservationUnavailable:
         raise
     except Exception:
