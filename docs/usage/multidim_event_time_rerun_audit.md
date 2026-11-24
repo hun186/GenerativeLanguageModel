@@ -41,6 +41,18 @@ or changed file metadata fail closed with `UNAVAILABLE`, without partial
 counts. This is a non-atomic and unauthenticated file snapshot, not a
 malicious-writer-safe audit. Use a stopped, stable exported file.
 
+### Strict NDJSON parsing (shared with Output Profile audit)
+
+An exported object must not contain duplicate keys at any nesting level.
+Python's default JSON decoder otherwise keeps only the last value, silently
+discarding a duplicate Event, `time_iso`, or `multidim_event_json` field.
+The read-only date and Output Profile auditors now reject duplicates and the
+non-standard numeric constants `NaN`, `Infinity`, and `-Infinity` as
+`UNAVAILABLE`, with no partial counts or raw key/value disclosure.
+Ordinary uniquely keyed JSON remains compatible. This change does not
+rewrite documents, evaluate effective private rerun configuration, or infer
+whether production ES data contains duplicate keys.
+
 ## Interpretation
 
 `EVENT_DATE_EMPTY_TIMELINE` marks a **candidate false rerun** for the

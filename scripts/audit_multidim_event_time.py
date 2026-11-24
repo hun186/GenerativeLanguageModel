@@ -24,6 +24,21 @@ def _identity(info):
     return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns)
 
 
+def _unique_json_object(pairs):
+    """Reject ambiguous duplicate JSON keys without echoing private names."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("DUPLICATE_JSON_FIELD")
+        result[key] = value
+    return result
+
+
+def _reject_nonstandard_json_constant(_token):
+    """NaN/Infinity are accepted by Python but not valid JSON exports."""
+    raise ValueError("NONSTANDARD_JSON_CONSTANT")
+
+
 def _read_sources(path):
     if any(p.is_symlink() for p in (path, *path.parents)):
         raise ValueError("UNSAFE_PATH")
@@ -52,7 +67,14 @@ def _read_sources(path):
     for line in lines:
         if not line or len(line) > MAX_LINE_BYTES:
             raise ValueError("MALFORMED_NDJSON")
-        doc = json.loads(line.decode("utf-8"))
+        # A duplicate _source/Output/Profile field must never be accepted
+        # on a last-write-wins basis. The same strict reader is used by both
+        # read-only date and Output Profile audits; neither mutates ES data.
+        doc = json.loads(
+            line.decode("utf-8"),
+            object_pairs_hook=_unique_json_object,
+            parse_constant=_reject_nonstandard_json_constant,
+        )
         if not isinstance(doc, dict):
             raise ValueError("MALFORMED_NDJSON")
         docs.append(doc)
