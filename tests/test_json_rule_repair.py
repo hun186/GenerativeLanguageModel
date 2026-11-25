@@ -203,3 +203,67 @@ def test_profile_gate_requires_exact_verified_source_not_instruction_text():
     assert select_rule_candidate(raw, **dict(args, source_receipt=None)) is None
     assert select_rule_candidate(raw, **dict(args, dispatched_prompt=prompt + "!")) is None
     assert select_rule_candidate(raw, **dict(args, policy=JsonRepairPolicy(generic=True))) is None
+
+
+from czjLLM.utilities.json_rule_policy import (
+    receipt_for_trusted_appended_source, rebind_source_span_after_no_think,
+)
+
+
+@pytest.mark.parametrize("task_name", [
+    "InfoExtraction-MultiDim-SQLFriendly-to json format",
+    "InfoExtraction-MultiDim-Compact-SQLFriendly-to json format",
+])
+@pytest.mark.parametrize("with_hint", [False, True])
+def test_real_multidim_templates_append_exact_original_source(task_name, with_hint, monkeypatch):
+    from czjLLM.task_configs import taskSetting_Enrichment as enrichment
+    monkeypatch.setattr(enrichment, "USE_MAINFILE_HINT", with_hint)
+    source = ' \n☆下列為輸入任務文本：\n他说"甲"。\n '
+    prompt = enrichment.taskSetting_Enrichment[task_name]["template"](
+        content=source, MainFileName="sample_tika",
+    )
+    receipt = receipt_for_trusted_appended_source(prompt, source)
+    assert verified_source_span(prompt, receipt) == source
+    assert receipt.end == len(prompt)
+    assert receipt.start == len(prompt) - len(source)
+    # The template already contains the marker; the source contains it too.
+    # Neither occurrence can move the trusted renderer-supplied boundary.
+    assert prompt[:receipt.start].endswith("☆下列為輸入任務文本：\n")
+    assert ("主檔名為「sample」" in prompt[:receipt.start]) == with_hint
+
+
+def test_appended_source_receipt_declines_modified_or_non_appended_input():
+    for prompt in ("prefixabc suffix", "prefixABC", "prefixab"):
+        with pytest.raises(ValueError):
+            receipt_for_trusted_appended_source(prompt, "abc")
+
+
+@pytest.mark.parametrize("source", ['他说"甲"。', '他说"甲"。 \n'])
+def test_dispatch_suffix_binding_preserves_source_or_refuses(source):
+    from czjLLM.prompt_pipeline.prompt_generator import finalize_llm_user_content
+    prompt = "instruction\n" + source
+    receipt = receipt_for_trusted_appended_source(prompt, source)
+    unchanged = rebind_source_span_after_no_think(prompt, receipt, prompt)
+    assert verified_source_span(prompt, unchanged) == source
+    appended = prompt + "\n/no_think"
+    rebound = rebind_source_span_after_no_think(prompt, receipt, appended)
+    assert verified_source_span(appended, rebound) == source
+
+    # Use the production finalizer, not an approximation of its rstrip().
+    finalized = finalize_llm_user_content(prompt, model_name="qwen3")
+    rebound = rebind_source_span_after_no_think(prompt, receipt, finalized)
+    if source != source.rstrip():
+        assert rebound is None
+    else:
+        assert verified_source_span(finalized, rebound) == source
+    assert rebind_source_span_after_no_think(prompt, receipt, prompt + " other") is None
+    assert rebind_source_span_after_no_think(prompt + "!", receipt, appended) is None
+
+
+def test_dispatch_suffix_can_strip_only_whitespace_outside_source():
+    source = '他说"甲"。'
+    prompt = "prefix" + source + " \n "
+    receipt = create_source_span_receipt(prompt, source, 6)
+    finalized = prompt.rstrip() + "\n/no_think"
+    rebound = rebind_source_span_after_no_think(prompt, receipt, finalized)
+    assert verified_source_span(finalized, rebound) == source
