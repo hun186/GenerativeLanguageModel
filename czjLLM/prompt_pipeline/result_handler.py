@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any, Dict
 import re
+from czjLLM.utilities.json_transport import clean_json_transport, is_json_output_task
 from czjLLM.utilities.combine_utils import combine_json_return
 
 class PromptResultHandler:
@@ -11,12 +12,12 @@ class PromptResultHandler:
         self.include_think = include_think
 
     def clean_output(self, raw_text: str) -> str:
+        if is_json_output_task(self.task):
+            return clean_json_transport(raw_text, include_think=self.include_think)
         if raw_text.replace(" ", "").replace("\n", "") == "<EMPTY>":
             return ""
         if not self.include_think:
             raw_text = re.sub(r"<think>.*?</think>", "", raw_text, flags=re.DOTALL)
-        if "to json" in self.task.lower():
-            raw_text = raw_text.replace("```json", "").replace("```", "").strip()
         return raw_text
 
     def validate_json(self, text: str) -> tuple[bool, str]:
