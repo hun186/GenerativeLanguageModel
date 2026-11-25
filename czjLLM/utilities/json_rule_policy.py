@@ -79,6 +79,52 @@ def verified_source_span(prompt: str, receipt: SourceSpanReceipt | None) -> str 
         return None
 
 
+def receipt_for_trusted_appended_source(
+    rendered_prompt: str, source: str,
+) -> SourceSpanReceipt:
+    """Only for a trusted renderer whose contract appends the input verbatim.
+
+    Call immediately after rendering with the actual input argument. Never
+    use this with an arbitrary queued prompt, regex-extracted text, or a
+    template that has not established its append-only source contract.
+    """
+    if not isinstance(rendered_prompt, str) or not isinstance(source, str):
+        raise ValueError("invalid renderer output")
+    return create_source_span_receipt(
+        rendered_prompt, source, len(rendered_prompt) - len(source),
+    )
+
+
+def rebind_source_span_after_no_think(
+    rendered_prompt: str, receipt: SourceSpanReceipt,
+    finalized_prompt: str,
+) -> SourceSpanReceipt | None:
+    """Rebind through only the known /no_think finalization transformations.
+
+    The original source must survive byte-for-byte; if rstrip() would eat
+    even one character of it, decline rather than infer a shorter source.
+    The final dispatch must still be checked against this rebound receipt.
+    """
+    source = verified_source_span(rendered_prompt, receipt)
+    if source is None or not isinstance(finalized_prompt, str):
+        return None
+    if finalized_prompt not in (
+        rendered_prompt,
+        rendered_prompt + "\n/no_think",
+        rendered_prompt.rstrip() + "\n/no_think",
+    ):
+        return None
+    # Comparing the entire prefix also prevents the suffix from being
+    # mistaken for surviving source bytes (e.g. a source ending in newline).
+    if finalized_prompt != rendered_prompt and finalized_prompt != rendered_prompt + "\n/no_think":
+        if receipt.end > len(rendered_prompt.rstrip()):
+            return None
+    try:
+        return create_source_span_receipt(finalized_prompt, source, receipt.start)
+    except (ValueError, UnicodeError):
+        return None
+
+
 def select_rule_candidate(
     raw: str, *, policy: JsonRepairPolicy, finish_reason: str,
     validate_candidate: Callable[[str], bool],
