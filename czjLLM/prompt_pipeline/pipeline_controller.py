@@ -4095,6 +4095,9 @@ class PromptAPIPipeline:
                     model_spec=self.model_spec,
                     audit_run_id=self.audit_run_id,
                     audit_path=self.audit_path,
+                    **({"PGMSubDir": self.PGMSubDir}
+                       if configured_endpoint_concurrency_limit(self.model_spec) is not None
+                       else {}),
                     #no_think = should_disable_think(self.model_spec["model_name"])
                     )
                 json.loads(retMES_rep)
@@ -4279,6 +4282,9 @@ class PromptAPIPipeline:
                     audit_run_id=self.audit_run_id,
                     audit_path=self.audit_path,
                     dispatch_item_dir=getattr(self, "dispatch_item_dir", ""),
+                    **({"PGMSubDir": self.PGMSubDir}
+                       if configured_endpoint_concurrency_limit(self.model_spec) is not None
+                       else {}),
                     )
                 )
 
@@ -4297,6 +4303,7 @@ def json_format_caller(content,
                        max_tokens=8*1024, #切片結果合併後的json可能會很長，
                        audit_run_id: str = "",
                        audit_path: str = "",
+                       PGMSubDir: str = "",
                        #nothink = True
                        ):
     #content = preprocess(content)  # 可選擇加入你的前處理函式
@@ -4331,6 +4338,7 @@ def json_format_caller(content,
         model_spec=model_spec,
         audit_run_id=audit_run_id,
         audit_path=audit_path,
+        **({"PGMSubDir": PGMSubDir} if PGMSubDir else {}),
     ).proc()
     
     if not ret or not ret.get("ok"):

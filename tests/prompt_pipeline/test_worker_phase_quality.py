@@ -331,3 +331,50 @@ def test_capped_worker_releases_endpoint_before_nested_json_repair(monkeypatch, 
     assert calls == [url, url]
     assert json.loads(path.read_text())[url]["leases"] == []
     assert len(audit) == 2
+
+
+
+def test_real_json_repair_uses_parent_nonempty_admission_scope(monkeypatch, tmp_path):
+    """Actual repair helper and nested pipeline share the parent's lease file."""
+    from czjLLM.infrastructure import ollama_lb
+
+    monkeypatch.chdir(tmp_path)
+    scope = tmp_path / "job"
+    scope.mkdir()
+    url = "http://private-model.invalid"
+    worker = pc.PromptAPIPipeline(
+        task="to json", content="synthetic input", promptFile="",
+        model_spec={"model_name": "test-model", "base_url": [url],
+                    "max_concurrent_per_endpoint": 1},
+        PGMSubDir=str(scope), audit_run_id="repair-scope",
+        audit_path=str(scope / "audit.csv"),
+    )
+    monkeypatch.setattr(worker, "extract_MainFileName_and_input_text",
+                        lambda: ("", "", ""))
+    monkeypatch.setattr(pc, "generate_prompt", lambda **kwargs: "repair")
+    monkeypatch.setattr(pc, "log_llm_call", lambda **kwargs: None)
+    calls = []
+    path = scope / "logs" / "base_url_load.json"
+
+    def select_now(*args, **kwargs):
+        return ollama_lb.select_idle_ollama_url(
+            *args, **kwargs, admission_timeout_sec=0,
+        )
+
+    def provider(*args, **kwargs):
+        assert len(json.loads(path.read_text())[url]["leases"]) == 1
+        assert not (tmp_path / "logs" / "base_url_load.json").exists()
+        if calls:
+            with pytest.raises(ollama_lb.EndpointCapacityUnavailable):
+                select_now([url], PGMSubDir=str(scope), return_lease_token=True,
+                           max_concurrent_per_endpoint=1)
+        calls.append(1)
+        return _response('{"a":1,}' if len(calls) == 1 else '{"a":1}'), 0.0
+
+    monkeypatch.setattr(pc, "select_idle_ollama_url", select_now)
+    monkeypatch.setattr(pc, "CallLLMAPI", provider)
+    result = worker.proc()
+    assert result["ok"]
+    assert json.loads(result["output"]) == {"a": 1}
+    assert len(calls) == 2
+    assert json.loads(path.read_text())[url]["leases"] == []
