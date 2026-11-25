@@ -91,6 +91,7 @@ from utils.MP_utils import multicoreJob
 from czjLLM.prompt_pipeline.dispatch_parallelism import (
     lease_execution_workers,
     resolve_slice_parallelism,
+    configured_endpoint_concurrency_limit,
 )
 
 from czjLLM.infrastructure.ollama_lb import (
@@ -3578,9 +3579,12 @@ class PromptAPIPipeline:
                 return ret_dict
 
             # 1) 選 base_url
+            endpoint_cap = configured_endpoint_concurrency_limit(self.model_spec)
+            admission_options = ({"max_concurrent_per_endpoint": endpoint_cap}
+                                 if endpoint_cap is not None else {})
             picked = select_idle_ollama_url(
                 self.model_spec["base_url"], PGMSubDir=self.PGMSubDir,
-                return_lease_token=True,
+                return_lease_token=True, **admission_options,
             )
             if isinstance(picked, tuple):
                 base_url, lease_token = picked
@@ -3824,9 +3828,12 @@ class PromptAPIPipeline:
         try:
             # 在這裡選擇負載最輕的 base_url
             #print("inputing base url in pipeline_controller",self.model_spec["base_url"])
+            endpoint_cap = configured_endpoint_concurrency_limit(self.model_spec)
+            admission_options = ({"max_concurrent_per_endpoint": endpoint_cap}
+                                 if endpoint_cap is not None else {})
             picked = select_idle_ollama_url(
                 self.model_spec["base_url"], PGMSubDir=self.PGMSubDir,
-                return_lease_token=True,
+                return_lease_token=True, **admission_options,
             )
             if isinstance(picked, tuple):
                 base_url, lease_token = picked

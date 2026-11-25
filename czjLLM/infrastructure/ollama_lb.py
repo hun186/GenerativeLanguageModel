@@ -73,19 +73,29 @@ def _release_file_lock(lock_fp, lock_path: str):
 def _now() -> float:
     return time.time()
 
-def _load_state(path: str, base_urls):
+def _load_state(path: str, base_urls, *, strict=False):
     """讀檔（若毀損就重建），並確保每個 url 都有基本結構。"""
     state = {}
     if os.path.exists(path):
         try:
             with open(path, "r", encoding="utf-8") as f:
-                state = json.load(f) or {}
+                state = json.load(f)
+                if strict and not isinstance(state, dict):
+                    raise ValueError("Invalid endpoint lease state")
+                state = state or {}
         except Exception:
+            if strict:
+                raise
             state = {}
     # 規範化結構：每個 url => {"leases":[ts,...], "last_update": ts}
     now = _now()
     for url in base_urls:
         rec = state.get(url)
+        if strict and url in state:
+            if (not isinstance(rec, dict) or not isinstance(rec.get("leases"), list)
+                    or any(type(exp) not in (int, float) or not math.isfinite(exp)
+                           for exp in rec["leases"])):
+                raise ValueError("Invalid endpoint lease record")
         if not isinstance(rec, dict):
             rec = {}
         if not isinstance(rec.get("leases"), list):
@@ -135,7 +145,49 @@ def _reset_state_if_stale(state: dict, base_urls, now_ts: float) -> bool:
         state[url]["last_update"] = now_ts
     return True
 
-def select_idle_ollama_url(base_urls, PGMSubDir: str = "", *, return_lease_token=False):
+class EndpointCapacityUnavailable(TimeoutError):
+    """No tracked lease slot became available before the admission deadline."""
+
+
+def select_idle_ollama_url(base_urls, PGMSubDir: str = "", *, return_lease_token=False,
+                           max_concurrent_per_endpoint=None, admission_timeout_sec=120.0):
+    """Acquire a tracked endpoint slot before starting HTTP when a cap is set.
+
+    The limit covers cooperating GLM leases sharing this load file, not
+    server-side work surviving a disconnected request or other clients.
+    """
+    cap = max_concurrent_per_endpoint
+    if cap is None:
+        return _select_idle_ollama_url_once(
+            base_urls, PGMSubDir, return_lease_token=return_lease_token,
+        )
+    if type(cap) is not int or cap <= 0:
+        raise ValueError("max_concurrent_per_endpoint must be a positive integer")
+    if not return_lease_token:
+        raise ValueError("Capped endpoint admission requires owned lease tokens")
+    if (type(admission_timeout_sec) not in (int, float)
+            or not math.isfinite(admission_timeout_sec) or admission_timeout_sec < 0):
+        raise ValueError("admission_timeout_sec must be finite and nonnegative")
+    urls = [base_urls] if isinstance(base_urls, str) else list(base_urls)
+    if not urls:
+        raise ValueError("Capped endpoint admission requires endpoints")
+    deadline = time.monotonic() + admission_timeout_sec
+    while True:
+        try:
+            return _select_idle_ollama_url_once(
+                urls, PGMSubDir, return_lease_token=True, cap=cap,
+            )
+        except TimeoutError:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise EndpointCapacityUnavailable(
+                    "ENDPOINT_CAPACITY_UNAVAILABLE: no tracked endpoint slot before admission deadline"
+                ) from None
+            time.sleep(min(0.25, remaining))
+
+
+def _select_idle_ollama_url_once(base_urls, PGMSubDir: str = "", *,
+                                 return_lease_token=False, cap=None):
     """
     選擇目前負載最輕的 base_url。
     強化點：
@@ -151,6 +203,8 @@ def select_idle_ollama_url(base_urls, PGMSubDir: str = "", *, return_lease_token
     try:
         lock_fp = _acquire_file_lock(_lock_path(load_file))
     except TimeoutError as ex:
+        if cap is not None:
+            raise  # Capped calls must not bypass the tracked lease lock.
         # 降級策略：避免因負載統計鎖競爭導致整個 LLM 呼叫失敗
         chosen = random.choice(base_urls)
         print(f"⚠️ base_url 負載鎖逾時，改用降級隨機選擇: {chosen} ({ex})")
@@ -158,11 +212,12 @@ def select_idle_ollama_url(base_urls, PGMSubDir: str = "", *, return_lease_token
         # remove another Worker's lease.
         return (chosen, None) if return_lease_token else chosen
     try:
-        state = _load_state(load_file, base_urls)
+        state = (_load_state(load_file, base_urls, strict=True) if cap is not None
+                 else _load_state(load_file, base_urls))
         now_ts = _now()
 
         # 先做整體 stale 檢查，再清理各節點過期租約
-        if _reset_state_if_stale(state, base_urls, now_ts):
+        if cap is None and _reset_state_if_stale(state, base_urls, now_ts):
             print(
                 f"⚠️ base_url 負載資訊整體超過 {int(STALE_RESET_SECS)} 秒未更新，"
                 "已釋放未完成租約以解除可能卡死"
@@ -172,12 +227,16 @@ def select_idle_ollama_url(base_urls, PGMSubDir: str = "", *, return_lease_token
         for url in base_urls:
             loads[url] = _cleanup_and_count(state, url, now_ts)
 
-        # ε-greedy：一定機率隨機探索，避免某節點永遠得不到新任務
+        eligible = (base_urls if cap is None
+                    else [url for url in base_urls if loads[url] < cap])
+        if not eligible:
+            raise EndpointCapacityUnavailable("All endpoint lease slots occupied")
+        # ε-greedy：僅在仍有容量的端點內探索。
         if random.random() < EPSILON_EXPLORE:
-            chosen = random.choice(base_urls)
+            chosen = random.choice(eligible)
         else:
             # metric = 負載 + 微抖動，避免大量 tie 全撞同一台
-            metrics = {u: (loads[u] + random.random() * JITTER) for u in base_urls}
+            metrics = {u: (loads[u] + random.random() * JITTER) for u in eligible}
             min_metric = min(metrics.values())
             candidates = [u for u, v in metrics.items() if abs(v - min_metric) < 1e-9 or v == min_metric]
             chosen = random.choice(candidates)
