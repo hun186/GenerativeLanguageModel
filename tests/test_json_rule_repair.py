@@ -267,3 +267,103 @@ def test_dispatch_suffix_can_strip_only_whitespace_outside_source():
     finalized = prompt.rstrip() + "\n/no_think"
     rebound = rebind_source_span_after_no_think(prompt, receipt, finalized)
     assert verified_source_span(finalized, rebound) == source
+
+
+from czjLLM.utilities.json_rule_handoff import (
+    MAX_HANDOFF_CHARS, bind_dispatched_source_handoff,
+    decode_source_handoff, encode_source_handoff,
+)
+
+
+def _source_handoff_fixture():
+    source = '原文：他说"甲"。'
+    prompt = 'Instruction contains unrelated examples.\n' + source
+    receipt = receipt_for_trusted_appended_source(prompt, source)
+    generation = "a" * 32
+    task = "b" * 64
+    wire = encode_source_handoff(prompt, receipt, generation_id=generation, task_sha256=task)
+    assert wire is not None
+    return source, prompt, receipt, generation, task, wire
+
+
+def test_source_handoff_round_trip_has_no_raw_content():
+    source, prompt, receipt, generation, task, wire = _source_handoff_fixture()
+    assert len(wire) <= MAX_HANDOFF_CHARS
+    assert source not in wire and "Instruction" not in wire
+    assert set(json.loads(wire)) == {
+        "version", "generation_id", "task_sha256", "prompt_sha256",
+        "source_sha256", "start", "end",
+    }
+    assert decode_source_handoff(
+        wire, prompt, expected_generation_id=generation, expected_task_sha256=task,
+    ) == receipt
+    dispatched = prompt + "\n/no_think"
+    final = bind_dispatched_source_handoff(
+        wire, prompt, dispatched,
+        expected_generation_id=generation, expected_task_sha256=task,
+    )
+    assert verified_source_span(dispatched, final) == source
+
+
+def test_source_handoff_refuses_stale_generation_or_task_even_with_same_prompt():
+    source, prompt, receipt, generation, task, wire = _source_handoff_fixture()
+    assert decode_source_handoff(
+        wire, prompt, expected_generation_id="c" * 32, expected_task_sha256=task,
+    ) is None
+    assert decode_source_handoff(
+        wire, prompt, expected_generation_id=generation, expected_task_sha256="d" * 64,
+    ) is None
+    assert decode_source_handoff(
+        wire, prompt.replace("\n", "\r\n"), expected_generation_id=generation,
+        expected_task_sha256=task,
+    ) is None
+    assert encode_source_handoff(
+        prompt + "!", receipt, generation_id=generation, task_sha256=task,
+    ) is None
+    assert encode_source_handoff(
+        prompt, receipt, generation_id="", task_sha256=task,
+    ) is None
+
+
+@pytest.mark.parametrize("key,value", [
+    ("version", True), ("version", 2), ("start", True), ("end", 3.5),
+    ("start", -1), ("end", MAX_CHARS + 1),
+    ("prompt_sha256", "not a digest"), ("source_sha256", "0" * 64),
+    ("generation_id", "c" * 32), ("task_sha256", "d" * 64),
+    ("generic", True), ("source", "raw text"),
+])
+def test_source_handoff_refuses_modified_or_unknown_fields(key, value):
+    source, prompt, receipt, generation, task, wire = _source_handoff_fixture()
+    data = json.loads(wire)
+    data[key] = value
+    assert decode_source_handoff(
+        json.dumps(data), prompt, expected_generation_id=generation, expected_task_sha256=task,
+    ) is None
+
+
+def test_source_handoff_refuses_duplicate_fields_and_unbounded_payloads():
+    source, prompt, receipt, generation, task, wire = _source_handoff_fixture()
+    for invalid in ("", "{}", "[]", "null", wire[:-1],
+                    wire[:-1] + ',"version":1}',
+                    wire[:-1] + ',"start":0}',
+                    " " * MAX_HANDOFF_CHARS + wire):
+        assert decode_source_handoff(
+            invalid, prompt, expected_generation_id=generation, expected_task_sha256=task,
+        ) is None
+
+
+def test_source_handoff_declines_unapproved_finalizer_changes():
+    source, prompt, receipt, generation, task, wire = _source_handoff_fixture()
+    for dispatched in (prompt.replace("甲", "乙"), prompt + " extra", prompt[:-1]):
+        assert bind_dispatched_source_handoff(
+            wire, prompt, dispatched, expected_generation_id=generation,
+            expected_task_sha256=task,
+        ) is None
+    source = source + " \n"
+    prompt = "prefix" + source
+    receipt = receipt_for_trusted_appended_source(prompt, source)
+    wire = encode_source_handoff(prompt, receipt, generation_id=generation, task_sha256=task)
+    assert bind_dispatched_source_handoff(
+        wire, prompt, prompt.rstrip() + "\n/no_think",
+        expected_generation_id=generation, expected_task_sha256=task,
+    ) is None
