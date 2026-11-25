@@ -131,3 +131,75 @@ def test_generic_preserves_fence_inside_payload():
     result = repair_generic_json(raw)
     assert result is not None
     assert result.text == '{"text":"literal \x60\x60\x60json marker"}'
+
+
+from dataclasses import replace
+
+from czjLLM.utilities.json_rule_policy import (
+    JsonRepairPolicy, create_source_span_receipt, parse_json_repair_policy,
+    select_rule_candidate, verified_source_span,
+)
+
+
+@pytest.mark.parametrize("spec", [None, {}, {"task": "MultiDim to JSON"}])
+def test_rule_policy_default_off(spec):
+    assert parse_json_repair_policy(spec) == JsonRepairPolicy()
+
+
+@pytest.mark.parametrize("value", [None, True, "generic", {"generic": "false"},
+                                  {"generic": 1}, {"unknown": True}])
+def test_rule_policy_rejects_malformed_flags(value):
+    with pytest.raises(ValueError):
+        parse_json_repair_policy({"json_rule_repair": value})
+
+
+def test_explicit_independent_flags():
+    assert parse_json_repair_policy({"json_rule_repair": {"generic": True}}) == JsonRepairPolicy(True, False)
+    assert parse_json_repair_policy({"json_rule_repair": {"multidim_evidence_quotes": True}}) == JsonRepairPolicy(False, True)
+
+
+def test_source_receipt_preserves_exact_slice_and_rejects_changed_prompt():
+    source = '  他说"甲"。 \n'
+    prompt = 'prefix' + source + 'suffix'
+    receipt = create_source_span_receipt(prompt, source, 6)
+    assert verified_source_span(prompt, receipt) == source
+    assert verified_source_span(prompt + "!", receipt) is None
+    assert verified_source_span(prompt, replace(receipt, start=7)) is None
+    with pytest.raises(ValueError):
+        create_source_span_receipt(prompt, source, 0)
+
+
+def test_generic_gate_requires_opt_in_completed_response_and_contract():
+    raw = '{"a":1,}'
+    args = dict(policy=JsonRepairPolicy(generic=True), finish_reason="stop",
+                validate_candidate=lambda s: json.loads(s) == {"a": 1})
+    assert select_rule_candidate(raw, **args).text == '{"a":1}'
+    assert select_rule_candidate(raw, **dict(args, policy=JsonRepairPolicy())) is None
+    for reason in ("length", "", "content_filter", "tool_calls"):
+        assert select_rule_candidate(raw, **dict(args, finish_reason=reason)) is None
+    assert select_rule_candidate(raw, **dict(args, validate_candidate=lambda s: False)) is None
+    assert select_rule_candidate(raw, **dict(args, validate_candidate=lambda s: 1)) is None
+
+    def unavailable(s):
+        raise RuntimeError("contract unavailable")
+
+    assert select_rule_candidate(raw, **dict(args, validate_candidate=unavailable)) is None
+    assert raw == '{"a":1,}'
+
+
+def test_profile_gate_requires_exact_verified_source_not_instruction_text():
+    source = '他说"乙"。'
+    instruction = 'example: 他说"甲"。'
+    prompt = instruction + source
+    receipt = create_source_span_receipt(prompt, source, len(instruction))
+    args = dict(policy=JsonRepairPolicy(multidim_evidence_quotes=True),
+                finish_reason="stop", validate_candidate=lambda s: True,
+                dispatched_prompt=prompt, source_receipt=receipt)
+    raw = _make_output('"他说"乙"。"')
+    result = select_rule_candidate(raw, **args)
+    assert result is not None
+    assert json.loads(result.text)[0]["evidence_snippets"][0]["text"] == source
+    assert select_rule_candidate(_make_output('"他说"甲"。"'), **args) is None
+    assert select_rule_candidate(raw, **dict(args, source_receipt=None)) is None
+    assert select_rule_candidate(raw, **dict(args, dispatched_prompt=prompt + "!")) is None
+    assert select_rule_candidate(raw, **dict(args, policy=JsonRepairPolicy(generic=True))) is None
