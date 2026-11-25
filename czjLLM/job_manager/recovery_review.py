@@ -262,7 +262,7 @@ def set_review_action(item_dir, action, *, row_status=None):
 # Never copy full meter rows, filesystem paths, tracebacks or prompt data.
 _DEBUG_CODES = frozenset((
     "TODO_CONFLICT", "UNSAFE_QUEUE_ENTRY", "RECOVERY_RETRIES_EXHAUSTED",
-    "RECOVERY_SCAN_INCOMPLETE", "VERIFIED_EXISTING_TODO",
+    "RECOVERY_SCAN_INCOMPLETE", "WORKER_TRANSPORT_UNCERTAIN", "VERIFIED_EXISTING_TODO",
     "REVIEW_EVIDENCE_UNREADABLE", "blocked_recovery",
     "writeback_failed_schema", "writeback_failed", "recovery_incomplete",
 ))

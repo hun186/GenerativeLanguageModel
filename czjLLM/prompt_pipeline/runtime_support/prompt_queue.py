@@ -408,7 +408,7 @@ def read_recovery_record(item_dir):
     if (not isinstance(record, dict) or record.get("version") != 1
             or record.get("code") not in {
                 "TODO_CONFLICT", "UNSAFE_QUEUE_ENTRY", "RECOVERY_RETRIES_EXHAUSTED",
-                "RECOVERY_SCAN_INCOMPLETE",
+                "RECOVERY_SCAN_INCOMPLETE", "WORKER_TRANSPORT_UNCERTAIN",
             }):
         raise QueueClaimRollbackError("invalid recovery status marker")
     if (record.get("state"), record.get("integrity")) == ("recovered", "pending"):
@@ -430,7 +430,7 @@ def mark_recovery_blocked(item_dir, code, attempts):
     """Persist non-sensitive, item-scoped logical quarantine, not a file move."""
     if code not in {
         "TODO_CONFLICT", "UNSAFE_QUEUE_ENTRY", "RECOVERY_RETRIES_EXHAUSTED",
-        "RECOVERY_SCAN_INCOMPLETE",
+        "RECOVERY_SCAN_INCOMPLETE", "WORKER_TRANSPORT_UNCERTAIN",
     }:
         raise ValueError("invalid recovery status code")
     path = recovery_status_path(item_dir)
@@ -452,7 +452,9 @@ def mark_recovery_blocked(item_dir, code, attempts):
         "first_seen_ts": time.time(),
         "next_check_ts": time.time() + RECOVERY_RECHECK_INTERVAL_SEC,
         "recheck_count": 0,
-        "recheck_state": "scheduled",
+        "recheck_state": (
+            "operator_required" if code == "WORKER_TRANSPORT_UNCERTAIN" else "scheduled"
+        ),
         "source_fingerprint": (
             _recovery_fingerprint(item_dir, "RUNNING")
             if code == "RECOVERY_RETRIES_EXHAUSTED" else None

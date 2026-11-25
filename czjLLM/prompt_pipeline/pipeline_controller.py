@@ -378,10 +378,13 @@ def _recheck_blocked_items(ctx, items_map, meter_fn):
     _update_recovery_integrity_meter(ctx, meter_fn, items_map)
 
 
-def _mark_item_recovery_blocked(ctx, item, items_map, meter_fn, error):
+def _mark_item_recovery_blocked(ctx, item, items_map, meter_fn, error, *, transport_uncertain=False):
     """Logical quarantine: preserve all queue files; no silent clearance."""
     message = str(error)
-    if "collision" in message:
+    if transport_uncertain:
+        code = "WORKER_TRANSPORT_UNCERTAIN"
+        attempts = 1
+    elif "collision" in message:
         code = "TODO_CONFLICT"
         attempts = 1
     elif "enumeration" in message:
@@ -3231,7 +3234,28 @@ def _run_windows_live_slot_refill(
                 raise RuntimeError("Worker returned without verifiable Success or TODO")
             count_done, count_requeued = 0, 0
         else:
-            raise RuntimeError("Worker returned with unacknowledged RUNNING")
+            # A local timeout does not prove remote inference stopped.
+            # Preserve the exact RUNNING generation; isolate this document
+            # instead of aborting unrelated work or replaying the call.
+            raw = result.get("raw")
+            if (type(raw) is not dict or result.get("ok") is not False
+                    or raw.get("ok") is not False or raw.get("output") != ""
+                    or raw.get("transport_uncertain_claim_id") != claim.receipt
+                    or not os.path.isfile(pf)
+                    or os.path.lexists(todo) or os.path.lexists(success)
+                    or verified_claim_observation(pf, claim.receipt) != claim.receipt
+                    or not verified_queued_prompt_source(pf, getattr(_job, "content", ""))):
+                raise RuntimeError("Worker returned with unacknowledged RUNNING")
+            _mark_item_recovery_blocked(
+                ctx, item_dir, registry.list_items(), meter_fn,
+                QueueClaimRollbackError("verified Worker transport uncertainty"),
+                transport_uncertain=True,
+            )
+            # Scheduler acknowledgment of a durable HOLD, not completion.
+            # Meter RUNNING stays held; no Success is invented.
+            unacknowledged_parents.discard((item_dir, Path(pf).name))
+            _bump(ctx)
+            return
         def _acknowledge_receipt(d):
             if split_children:
                 q = d.setdefault("queue", {})
@@ -3263,6 +3287,9 @@ def _run_windows_live_slot_refill(
                 "last_round_ts": time.time(),
             })
         meter_update(meter_fn, _acknowledge_receipt)
+        if item_dir in _queue_recovery_blocked(ctx):
+            # Other already in-flight siblings can settle after the hold.
+            _update_recovery_integrity_meter(ctx, meter_fn, registry.list_items())
         # Release child claims only AFTER split verification and the parent's
         # queue-running -> pending receipts are durably recorded.
         unacknowledged_parents.discard((item_dir, Path(pf).name))
@@ -3502,6 +3529,7 @@ class PromptAPIPipeline:
         worker_call_id = ""  # Filled only at the real CallLLMAPI boundary.
         split_source_verified = False
         verified_queue_claim_id = ""
+        transport_uncertain_claim_id = ""
         call_llm_api_returned = False  # Actual wrapper return, not provider HTTP proof.
         # Explicit execution site, never inferred from exception text.
         worker_failure_code = "WORKER_PRECALL_EXCEPTION"
@@ -3677,6 +3705,12 @@ class PromptAPIPipeline:
                     except Exception:
                         # Telemetry may never replace the original caught error.
                         quality_code = worker_failure_code
+                if (worker_failure_code == "WORKER_LLM_CALL_EXCEPTION"
+                        and quality_code in {"WORKER_LLM_TIMEOUT_EXCEPTION",
+                                             "WORKER_LLM_CONNECTION_EXCEPTION"}
+                        and llm_request_attempted and not call_llm_api_returned
+                        and response is None and verified_queue_claim_id):
+                    transport_uncertain_claim_id = verified_queue_claim_id
                 _audit_leaf_worker_phase_failure(
                     self.audit_path, self.audit_run_id, quality_code,
                 )
@@ -3756,6 +3790,9 @@ class PromptAPIPipeline:
             "error": err,
         }
     
+        if transport_uncertain_claim_id:
+            ret_dict["transport_uncertain_claim_id"] = transport_uncertain_claim_id
+
         try:
             import pickle
             data = pickle.dumps(ret_dict, protocol=pickle.HIGHEST_PROTOCOL)

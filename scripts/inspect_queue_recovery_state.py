@@ -285,7 +285,7 @@ def inspect_item(item_dir: Path, *, max_entries: int = DEFAULT_MAX_ENTRIES,
                         code if code in {
                             "TODO_CONFLICT", "UNSAFE_QUEUE_ENTRY",
                             "RECOVERY_RETRIES_EXHAUSTED",
-                            "RECOVERY_SCAN_INCOMPLETE",
+                            "RECOVERY_SCAN_INCOMPLETE", "WORKER_TRANSPORT_UNCERTAIN",
                         } else "UNKNOWN_RECOVERY_CODE"
                     )
                     if recovery_record["state"] == "blocked":

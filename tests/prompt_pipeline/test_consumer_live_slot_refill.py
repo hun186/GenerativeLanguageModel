@@ -20,7 +20,7 @@ class _Registry:
 
 
 def _run_fixture(tmp_path, monkeypatch, *, fail_without_success=False, split_parent=False,
-                 deadline_clock=None):
+                 deadline_clock=None, transport_uncertain=False, changed_source=False):
     slow_started = threading.Event()
     fast_refilled = threading.Event()
     release_slow = threading.Event()
@@ -51,6 +51,7 @@ def _run_fixture(tmp_path, monkeypatch, *, fail_without_success=False, split_par
             self.promptFile = kwargs["promptFile"]
             self.OutputSaveFN = kwargs["OutputSaveFN"]
             self.content = Path(self.promptFile).read_text(encoding="utf-8")
+            self.receipt = kwargs["queue_claim_event_id"]
 
         def proc(self):
             i = int(Path(self.promptFile).parents[1].name.split("_")[-1])
@@ -59,6 +60,11 @@ def _run_fixture(tmp_path, monkeypatch, *, fail_without_success=False, split_par
                 assert release_slow.wait(8), "slow Worker was not released"
             if i == 2:
                 fast_refilled.set()
+            if transport_uncertain and i == 1:
+                if changed_source:
+                    Path(self.promptFile).write_text("changed", encoding="utf-8")
+                return {"ok": False, "output": "", "error": "fixture timeout",
+                        "transport_uncertain_claim_id": self.receipt}
             if fail_without_success and i == 1:
                 return {"ok": False, "error": "fixture"}
             if split_parent and i == 1 and Path(self.promptFile).stem == "0":
@@ -323,3 +329,46 @@ def test_live_deadline_drains_slow_worker_and_next_round_finishes_pending(tmp_pa
         assert (Path(item) / "Success" / "0.txt").is_file()
         assert not list((Path(item) / "RUNNING").glob("*.txt"))
         assert not list((Path(item) / "TODO").glob("*.txt"))
+
+
+def test_verified_transport_uncertainty_holds_only_failed_row(tmp_path, monkeypatch):
+    fixture = _run_fixture(tmp_path, monkeypatch, transport_uncertain=True)
+    try:
+        assert fixture.slow_started.wait(4)
+        assert fixture.fast_refilled.wait(5), "healthy work must continue despite timeout"
+    finally:
+        fixture.release_slow.set()
+        fixture.thread.join(10)
+    assert not fixture.thread.is_alive()
+    assert len(fixture.outcomes) == 1
+    stats = fixture.outcomes[0]
+    assert not isinstance(stats, BaseException), repr(stats)
+    assert (stats.claimed, stats.acknowledged) == (3, 3)
+    assert fixture.meter["queue"] == {"pending": 0, "running": 1, "completed": 2}
+    assert fixture.meter["queue_integrity"]["held_running"] == 1
+    assert fixture.meter["queue_integrity"]["status"] == "incomplete"
+    assert fixture.meter["rows"]["1"]["done"] == 0
+    assert fixture.meter["rows"]["1"]["queue_running"] == 1
+    item = tmp_path / "item_1"
+    assert (item / "RUNNING" / "0.txt").read_text(encoding="utf-8") == "input-1"
+    assert not (item / "TODO" / "0.txt").exists()
+    assert not (item / "Success" / "0.txt").exists()
+    assert str(item) in pc._queue_recovery_blocked(fixture.context)
+    marker = pc.read_recovery_status(str(item))
+    assert marker["code"] == "WORKER_TRANSPORT_UNCERTAIN"
+    assert marker["recheck_state"] == "operator_required"
+    assert (tmp_path / "item_2" / "Success" / "0.txt").exists()
+
+
+def test_transport_uncertainty_changed_claim_stays_fail_closed(tmp_path, monkeypatch):
+    fixture = _run_fixture(tmp_path, monkeypatch, transport_uncertain=True, changed_source=True)
+    try:
+        assert fixture.slow_started.wait(4)
+    finally:
+        fixture.release_slow.set()
+        fixture.thread.join(10)
+    assert not fixture.thread.is_alive()
+    assert isinstance(fixture.outcomes[0], RuntimeError)
+    assert "unacknowledged RUNNING" in str(fixture.outcomes[0])
+    assert fixture.meter["rows"]["1"]["done"] == 0
+    assert pc.read_recovery_status(str(tmp_path / "item_1")) is None
