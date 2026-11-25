@@ -367,3 +367,114 @@ def test_source_handoff_declines_unapproved_finalizer_changes():
         wire, prompt, prompt.rstrip() + "\n/no_think",
         expected_generation_id=generation, expected_task_sha256=task,
     ) is None
+
+
+def _real_rule_worker(monkeypatch, *, policy=None, validator=None):
+    from czjLLM.prompt_pipeline import pipeline_controller as pc
+    from czjLLM.utilities.json_repair_analysis import validate_repair_detail
+    worker = pc.PromptAPIPipeline.__new__(pc.PromptAPIPipeline)
+    worker.json_rule_policy = policy
+    worker.json_rule_slice_validator = validator
+    worker.model_spec = {"model_name": "offline-test"}
+    worker.max_tokens = 512
+    worker.audit_path = ""
+    worker.audit_run_id = ""
+    worker.allow_to_retry = True
+    calls, events, splits = [], [], []
+
+    def repair(**kwargs):
+        calls.append(kwargs["content"])
+        return '{"fallback":true}'
+
+    def emit(event, code, outcome, **kwargs):
+        detail = kwargs.get("detail")
+        if detail is not None:
+            assert validate_repair_detail(detail)
+        events.append((event, code, outcome, detail))
+        return True
+
+    monkeypatch.setattr(pc, "json_format_caller", repair)
+    monkeypatch.setattr(pc, "capture_enabled", lambda: False)
+    monkeypatch.setattr(pc, "gui_capture_active", lambda: False)
+    worker.extract_MainFileName_and_input_text = lambda: ("test", "source", "")
+    worker.split_and_generate_new_prompts = lambda **kwargs: splits.append(kwargs)
+    worker._emit_json_quality = emit
+    return worker, calls, events, splits
+
+
+def test_worker_rule_success_skips_llm_and_records_method(monkeypatch):
+    worker, calls, events, splits = _real_rule_worker(
+        monkeypatch, policy=JsonRepairPolicy(generic=True),
+        validator=lambda candidate: json.loads(candidate) == {"a": 1},
+    )
+    raw = '{"a":1,}'
+    assert worker.handle_json_output(raw, finish_reason="stop") == ([], '{"a":1}')
+    assert not calls and not splits
+    assert events[0][:3] == ("slice_json_validation", "JSON_SYNTAX_INVALID", "rejected")
+    assert events[1][:3] == ("slice_json_repair", "JSON_REPAIR_SUCCEEDED", "recovered")
+    assert events[1][3]["repair_method"] == "RULE_BASED"
+
+
+@pytest.mark.parametrize("reason,policy,validator", [
+    ("stop", None, lambda s: True),
+    ("stop", JsonRepairPolicy(), lambda s: True),
+    ("stop", JsonRepairPolicy(generic=True), None),
+    ("stop", JsonRepairPolicy(generic=True), lambda s: False),
+    ("stop", JsonRepairPolicy(generic=True), lambda s: 1),
+    ("stop", JsonRepairPolicy(generic=True, multidim_evidence_quotes=True), lambda s: True),
+    ("stop", JsonRepairPolicy(multidim_evidence_quotes=True), lambda s: True),
+    ("", JsonRepairPolicy(generic=True), lambda s: True),
+    ("content_filter", JsonRepairPolicy(generic=True), lambda s: True),
+])
+def test_worker_rule_refusal_passes_unchanged_raw_to_llm(monkeypatch, reason, policy, validator):
+    worker, calls, events, splits = _real_rule_worker(
+        monkeypatch, policy=policy, validator=validator,
+    )
+    raw = ' \n{"a":1,}\n '
+    assert worker.handle_json_output(raw, finish_reason=reason) == ([], '{"fallback":true}')
+    assert calls == [raw] and not splits
+    assert "repair_method" not in events[-1][3]
+
+
+def test_worker_rule_cannot_override_length_or_valid_json(monkeypatch):
+    validator_calls = []
+    worker, calls, events, splits = _real_rule_worker(
+        monkeypatch, policy=JsonRepairPolicy(generic=True),
+        validator=lambda s: validator_calls.append(s) or True,
+    )
+    valid = '{"a":1}'
+    assert worker.handle_json_output(valid, finish_reason="stop") == ([], valid)
+    assert worker.handle_json_output('{"a":1,}', finish_reason="length") == ([], "")
+    assert not calls and not validator_calls and len(splits) == 1
+
+
+def test_worker_rule_validator_failure_preserves_llm_fallback(monkeypatch):
+    def validator(s):
+        raise ValueError("contract failed")
+    worker, calls, events, splits = _real_rule_worker(
+        monkeypatch, policy=JsonRepairPolicy(generic=True), validator=validator,
+    )
+    raw = '{"a":1,}'
+    assert worker.handle_json_output(raw, finish_reason="stop") == ([], '{"fallback":true}')
+    assert calls == [raw] and not splits
+
+
+def test_rule_method_audit_accepts_only_fixed_enum():
+    from czjLLM.utilities.json_repair_analysis import analyze_json_repair, validate_repair_detail
+    raw = '{"a":1,}'
+    try:
+        json.loads(raw)
+    except json.JSONDecodeError as exc:
+        code, metrics = analyze_json_repair(raw, '{"a":1}', exc)
+    detail = dict(metrics, repair_class=code)
+    assert validate_repair_detail(detail)
+    assert validate_repair_detail(dict(detail, repair_method="RULE_BASED"))
+    for invalid in ("raw payload", "LLM", None, True, []):
+        assert not validate_repair_detail(dict(detail, repair_method=invalid))
+
+
+def test_worker_both_paths_forward_finish_reason_for_explicit_rule_policy():
+    from pathlib import Path
+    source = Path("czjLLM/prompt_pipeline/pipeline_controller.py").read_text(encoding="utf-8")
+    assert source.count('if finish_reason == "length" or self._generic_rule_repair_enabled():') == 2
+    assert source.count("self.handle_json_output(retMES)") >= 2
