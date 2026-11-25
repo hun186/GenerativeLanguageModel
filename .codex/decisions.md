@@ -1,6 +1,7 @@
 # Architecture Decisions
 
 ## Current Summary
+- **2026-11-25 conservative JSON repair:** generic engine never guesses quote boundaries; task-specific evidence profile requires exact source and unique candidate; reject incomplete/ambiguous/duplicate/non-finite structures. Do not enable runtime merely because candidate parses.
 - **2026-11-11 #293:** Event-first rerun accepts explicit unknown/empty Timeline, preserves hash/force policies; operator confirmation pending.
 - **2026-11-10 JSON repair GUI #299:** Reuse quality JSONL, archive reader and GUI. Scalar-only comparison detail on existing JSON repair success event; fixed labels and up to 12 anonymized cases. No raw previews, semantic-fidelity claim, repair policy or sink changes. Suppress mixed stdout JSON payloads.
 - **2026-11-10 Windows ThreadPool choice (pending):** Observe FIRST_COMPLETED Futures, return ordered results, preserve Queue authority. On deadline cancel only queued work and safely drain running Threads, never detach/replay. Completion count is not sink ACK or GPU utilization.

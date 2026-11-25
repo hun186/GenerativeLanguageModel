@@ -1,6 +1,7 @@
 # architecture
 
 ## Current Summary
+- **2026-11-25 JSON repair candidates (PENDING):** utilities/json_rule_repair.py is pure bounded candidate selection, no Worker/Sink/Queue calls. Generic edits outside strings; MultiDim evidence path requires exact consumed source and unique boundary. Activation, source provenance and fallback remain separate.
 - **2026-11-10 JSON completeness PR pending:** common.required_output_guard delegates to current ES value helpers, called by both ES pending variants at document-level. Worker rejects explicit provider length before JSON Success; audit CSV adds finish_reason while retaining old header width.
 - **2026-11-10 JSON repair GUI PR #299:** utilities/json_repair_analysis.py compares original/repaired in-memory Worker strings; PromptAPIPipeline.handle_json_output attaches a bounded scalar detail to the existing JSON_REPAIR_SUCCEEDED event without extra event IDs. Existing processing_quality_events JSONL/archival reader/GUI show categories and 12 recent sanitized cases, not raw output. No new IPC, provider calls, Queue or SQL/ES alterations.
 - **2026-11-10 Windows ThreadPool completion observation PR pending:** `round_runner._run_round_threads` uses `concurrent.futures.wait(FIRST_COMPLETED)` and index map: process-local completion updates independent of submission order; final results still ordered by input. Timed-out queued Futures cancel, active Threads drain. No changes to Queue state or GPU/provider concurrency; Issue #266 live acceptance open.
