@@ -31,3 +31,7 @@ Windows NTFS ACL and real fsync acceptance, access-controlled operator
 reset audit, migrations, rollback, support for multi-host producers and
 independent security review. Do not apply this proof to `news_test`,
 restart real jobs, requeue any document or claim Issue #313 closed.
+
+## Connection-level integrity boundary
+
+Each read and CAS now rechecks the schema version, required tables and HMAC key seal inside the same SQLite transaction before interpreting a missing state as a fresh budget. The existing file is opened with SQLite mode=rw, and read/error paths close their connections. This detects wrong-key replacements or modified seals/schema, not same-key rollback, hostile filesystem races or authenticated production storage. The disposable-only restrictions remain unchanged.
