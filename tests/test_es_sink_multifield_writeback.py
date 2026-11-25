@@ -446,20 +446,67 @@ def test_integrated_disposable_candidate_budget_observes_actual_components(monke
     assert "private original" not in repr(first) and "doc-1" not in repr(first)
     with closing(sqlite3.connect(tmp_path / "ledger.db")) as con:
         assert con.execute("SELECT count(*) FROM quality_states").fetchone() == (0,)
-    # Fixture-only transitions establish a historical exhausted budget.
+    from czjLLM.es_mode.quality_retry_disposable_claim import (
+        DisposableClaimUnavailable, claim_disposable_quality_repair,
+    )
+    def claim(revision, attempt_id, selected_policy=policy, body="private original"):
+        return claim_disposable_quality_repair(
+            sink, adapter, ledger, selected_policy, logical_id="doc-1",
+            expected_input=body, expected_stage_inputs={"title": "private title"},
+            output_col=col, expected_revision=revision, attempt_id=attempt_id)
+    first_token = "12345678-1234-4234-8234-1234567890a1"
+    second_token = "12345678-1234-4234-8234-1234567890a2"
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(0, first_token)
+    # Fixture-only initial observation/finalization; real scoped CAS for claim.
     source = adapter.observe_quality_retry_inputs(
         "doc-1", expected_input="private original", expected_stage_inputs={"title": "private title"})
     identity = RetryIdentity(source.scoped_document_revision(), col, digest,
                              first.candidate.quality_rule_version)
     state = ledger.transition(identity, expected_revision=0, operation="observe_initial",
                               result=QualityResult.REJECTED, failure_code="SCHEMA")
-    for token in ("12345678-1234-4234-8234-1234567890a1",
-                  "12345678-1234-4234-8234-1234567890a2"):
-        state = ledger.transition(identity, expected_revision=state.revision, operation="claim",
-                                  policy=policy, verified_attempt_id=token)
-        state = ledger.transition(identity, expected_revision=state.revision, operation="finalize",
-                                  policy=policy, verified_attempt_id=token,
-                                  result=QualityResult.REJECTED, failure_code="SCHEMA")
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(state.revision, first_token, RetryPolicy(enabled=False))
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(state.revision, first_token, body="wrong source")
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(state.revision, "invalid-attempt-id")
+    assert ledger.read(identity) == state
+    # Competing claims use the same scoped identity and expected revision.
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    barrier = Barrier(2)
+    revision = state.revision
+    def compete(token):
+        barrier.wait(timeout=10)
+        try:
+            return claim(revision, token)
+        except DisposableClaimUnavailable:
+            return None
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        receipts = list(pool.map(compete, (first_token, second_token)))
+    winners = [receipt for receipt in receipts if receipt is not None]
+    assert len(winners) == 1
+    winner = winners[0]
+    assert winner.identity == identity and winner.revision == revision + 1
+    assert winner.failed_repairs == 0
+    assert winner.attempt_id not in repr(winner) and "private original" not in repr(winner)
+    assert pre().phase is Phase.IN_FLIGHT and pre().failed_repairs == 0
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(revision, winner.attempt_id)
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(winner.revision, winner.attempt_id)
+    state = ledger.transition(identity, expected_revision=winner.revision, operation="finalize",
+                              policy=policy, verified_attempt_id=winner.attempt_id,
+                              result=QualityResult.REJECTED, failure_code="SCHEMA")
+    token = second_token if winner.attempt_id == first_token else first_token
+    second = claim(state.revision, token)
+    assert second.failed_repairs == 1
+    state = ledger.transition(identity, expected_revision=second.revision, operation="finalize",
+                              policy=policy, verified_attempt_id=token,
+                              result=QualityResult.REJECTED, failure_code="SCHEMA")
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(state.revision, first_token)
     exhausted = inspect()
     assert exhausted.phase is Phase.NEEDS_REVIEW and exhausted.failed_repairs == 2
     assert exhausted.offline_next_action is NextAction.QUALITY_RETRY_EXHAUSTED

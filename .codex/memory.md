@@ -1,6 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- **2026-11-25 #313 integration draft:** added explicit disposable scoped claim CAS with matching READY revision and policy, competing callers regression; no runtime/provider/finalize authorization. Accepted #351 integrated. #352/#353 pending.
 - **2026-11-25 #313 integration draft:** added pre-candidate read of same scoped disposable budget using shared rule identity; no payload normalization or claim. Integrated #350 accepted main; dependencies #351–#353 still pending.
 - **2026-11-25 #313 integrated inspection (DRAFT):** actual input comparison, current fingerprint, combined candidate and disposable SQLite budget read composed. No production activation; #350–#353 must merge independently. Full pre-compaction backlog archived at `.codex/archive/backlog-integrated-pre-compaction-20261125.md`; only five accepted preparation notes consolidated.
 - **2026-11-24 #313 input revision observation (PENDING):** explicit ES adapter comparison of exact queued primary/stage string inputs to unique hit; private content digest distinguishes input edits but not output-only writes. No automatic ledger/dispatch use, source provenance still unverified. Hosted CI/Review pending.
