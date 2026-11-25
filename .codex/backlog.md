@@ -11,6 +11,7 @@
 
 ## True Open Engineering Work
 - [ ] **#313 typed ES rejection accounting (PENDING):** exclude typed bulk rejection from schema quality events; preserve pending status and evidence. No budget debit.
+- [ ] **#313 ledger seal recheck (PENDING):** transaction-local key/schema check and no implicit DB creation; no same-key rollback/multi-host proof or runtime activation.
 - [ ] **#313 input revision observation (PENDING):** compare exact projected inputs, reject ambiguity/overlap; bind observed revision only after actual dispatch provenance and sink reconciliation. No retry activation.
 - [ ] **#313 Output Profile observation (PENDING):** narrow built-in local validation, versioned contract; no provider/repair/sink ACK or retry activation. Hosted gates pending.
 - [ ] **#313 required-output rule version (PENDING):** observe canonical enabled checks and evaluator outcome without retry activation; full profile/execution identity and authenticated receipts remain separate.
