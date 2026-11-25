@@ -70,6 +70,7 @@ from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage, normalized_finish_reason
 from czjLLM.utilities.processing_quality import emit_quality_event
 from czjLLM.utilities.json_repair_analysis import analyze_json_repair
+from czjLLM.utilities.json_transport import clean_json_transport, is_json_output_task
 from czjLLM.utilities.json_repair_private_capture import (
     capture_enabled, configured_private_root, write_private_repair,
 )
@@ -3645,14 +3646,14 @@ class PromptAPIPipeline:
                     f"{_preview_text_for_debug(retMES, self.debug_print_max_chars)}"
                 )
     
-            if self.include_think == False:
+            if is_json_output_task(self.task):
+                retMES = clean_json_transport(retMES, include_think=self.include_think)
+            elif self.include_think == False:
                 retMES = re.sub(r'<think>.*?</think>', '', retMES, flags=re.DOTALL)
     
             if retMES.replace(" ", "").replace("\n", "") == "<EMPTY>":
                 retMES = ""
     
-            if "to json" in self.task.lower():
-                retMES = retMES.replace('```json', '').replace('```', '').strip()
     
             # 5) JSON 驗證與重試任務
             finish_reason = normalized_finish_reason(response)
@@ -3864,7 +3865,9 @@ class PromptAPIPipeline:
             #清除前面<think>的思考內容
             #retMES = re.sub(r"<think>.*?</think>\s*", "", retMES, flags=re.DOTALL)
             #print("retMES b4",retMES)
-            if self.include_think == False:
+            if is_json_output_task(self.task):
+                retMES = clean_json_transport(retMES, include_think=self.include_think)
+            elif self.include_think == False:
                 retMES = re.sub(r'<think>.*?</think>', '', retMES, flags=re.DOTALL)
             if retMES.replace(" ","").replace("\n","") == "<EMPTY>":
                 retMES = ""  # 替換為空字串
@@ -3872,8 +3875,6 @@ class PromptAPIPipeline:
             #print("retMES af1",retMES)
             #print("retMES in pipeline af",retMES)
             #print("retMES bf",retMES)
-            if "to json" in self.task.lower():
-                retMES = retMES.replace('```json', '').replace('```', '').strip()
             #print("retMES af",retMES)
             # 移除成功呼叫結束之Todo Prompt檔案。
             #print("retMES af2",retMES)
