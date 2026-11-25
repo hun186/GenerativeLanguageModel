@@ -95,6 +95,7 @@ def validate_repair_detail(detail: object) -> bool:
     if not isinstance(detail, dict) or set(detail) not in (
         _METRIC_KEYS | {"error_kind"},
         _METRIC_KEYS | {"error_kind", "repair_class"},
+        _METRIC_KEYS | {"error_kind", "repair_class", "repair_method"},
     ):
         return False
     if not isinstance(detail.get("error_kind"), str) or detail["error_kind"] not in _ERROR_KINDS:
@@ -102,6 +103,8 @@ def validate_repair_detail(detail: object) -> bool:
     if "repair_class" in detail and (
         not isinstance(detail["repair_class"], str) or detail["repair_class"] not in _KINDS
     ):
+        return False
+    if "repair_method" in detail and detail["repair_method"] != "RULE_BASED":
         return False
     for key in _METRIC_KEYS:
         value = detail.get(key)
