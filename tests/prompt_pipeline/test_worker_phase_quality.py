@@ -276,3 +276,58 @@ def test_transport_uncertainty_receipt_requires_real_verified_claim(monkeypatch,
     monkeypatch.setattr(pc, "CallLLMAPI", lambda *a, **kw:
                         (_ for _ in ()).throw(RuntimeError("Request timed out.")))
     assert "transport_uncertain_claim_id" not in worker.proc()
+
+
+def test_capped_worker_releases_endpoint_before_nested_json_repair(monkeypatch, tmp_path):
+    """A synchronous repair can reacquire the same endpoint at cap=1."""
+    from czjLLM.infrastructure import ollama_lb
+
+    worker, audit = _make_worker(monkeypatch, tmp_path, task="to json")
+    url = worker.model_spec["base_url"][0]
+    worker.model_spec["max_concurrent_per_endpoint"] = 1
+    # Use the real default load-file scope shared by json_format_caller.
+    monkeypatch.chdir(tmp_path)
+    worker.PGMSubDir = ""
+    path = tmp_path / "logs" / "base_url_load.json"
+
+    def select_now(*args, **kwargs):
+        return ollama_lb.select_idle_ollama_url(
+            *args, **kwargs, admission_timeout_sec=0,
+        )
+
+    monkeypatch.setattr(pc, "select_idle_ollama_url", select_now)
+    monkeypatch.setattr(pc, "release_url_load", ollama_lb.release_url_load)
+    calls = []
+
+    def provider(*args, **kwargs):
+        assert len(json.loads(path.read_text())[url]["leases"]) == 1
+        calls.append(kwargs["model_spec"]["base_url"])
+        return _response('{"a":1,}' if len(calls) == 1 else '{"a":1}'), 0.0
+
+    def nested_repair(raw):
+        assert raw == '{"a":1,}'
+        assert json.loads(path.read_text())[url]["leases"] == []
+        # A real nested PromptAPIPipeline.proc on the same endpoint, using
+        # the default PGMSubDir and no provider/network access.
+        child, _ = _make_worker_for_nested_repair(worker)
+        result = child.proc()
+        assert result["ok"]
+        return [], result["output"]
+
+    def _make_worker_for_nested_repair(parent):
+        child = pc.PromptAPIPipeline.__new__(pc.PromptAPIPipeline)
+        child.__dict__.update(parent.__dict__)
+        child.model_spec = dict(parent.model_spec)
+        child.task = "json format repair"
+        child.promptFile = ""
+        child.content = "synthetic repair prompt"
+        child.allow_to_retry = False
+        return child, None
+
+    monkeypatch.setattr(pc, "CallLLMAPI", provider)
+    monkeypatch.setattr(worker, "handle_json_output", nested_repair)
+    result = worker.proc()
+    assert result["ok"] and result["output"] == '{"a":1}'
+    assert calls == [url, url]
+    assert json.loads(path.read_text())[url]["leases"] == []
+    assert len(audit) == 2

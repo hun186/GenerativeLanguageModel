@@ -3628,6 +3628,15 @@ class PromptAPIPipeline:
                 )
             call_llm_api_returned = True
             worker_failure_code = "WORKER_RESPONSE_EXCEPTION"
+            # The provider call has finished. A nested JSON repair may need
+            # the same endpoint, so capped callers must return their slot
+            # before postprocessing. The keeper is already stopped; release
+            # its latest exact token, never a peer's lease.
+            if endpoint_cap is not None:
+                release_url_load(base_url, PGMSubDir=self.PGMSubDir,
+                                 lease_token=lease_keeper.lease_token)
+                lease_token = None
+                lease_keeper = None
             # 3) token 警告
             if response.usage.completion_tokens >= self.max_tokens:
                 log_dir = "logs"
@@ -3852,6 +3861,15 @@ class PromptAPIPipeline:
                     self.content,max_tokens=self.max_tokens,
                     #On_Premises=self.On_Premises,
                     model_spec=self.model_spec)
+            # The provider call has finished. A nested JSON repair may need
+            # the same endpoint, so capped callers must return their slot
+            # before postprocessing. The keeper is already stopped; release
+            # its latest exact token, never a peer's lease.
+            if endpoint_cap is not None:
+                release_url_load(base_url, PGMSubDir=self.PGMSubDir,
+                                 lease_token=lease_keeper.lease_token)
+                lease_token = None
+                lease_keeper = None
             #print("Finished CallLLMAPI in PromptAPIPipeline")
 
             
