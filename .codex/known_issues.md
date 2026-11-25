@@ -8,6 +8,7 @@
 - Remaining issues: Windows self-hosted 3.10/3.11 still queued/operator-deferred, historical #231 status now merged, no real Windows/Ollama/ES readback, no crash-safe authenticated checkpoint/online shard retirement. These accepted PRs do not prove absence of filesystem races or malicious-tamper resilience.
 
 ## Environment and External Dependencies
+- **2026-11-25 JSON repair viewers:** native maximize/restore uses Win32 Tk normal window rather than transient tool frame. Hosted tests cover wiring and real Tk if display available; physical title-bar controls and restore size still require Windows desktop acceptance.
 - **2026-11-25 #302:** local timeout does not prove remote inference stopped; verified transport uncertainty is held, not replayed/marked complete. Real operator run still required.
 - **2026-11-24 #313:** per-transaction schema/seal check detects wrong-key replacement and seal damage, not same-key rollback or hostile filesystem races; production storage acceptance still required.
 - **2026-11-24 #313:** input digest is a private read-time observation, not a snapshot transaction or proof of queued/consumed input. Unsupported non-string, absent or overlapping paths fail closed.

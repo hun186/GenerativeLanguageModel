@@ -40,7 +40,13 @@ def show_json_repair_review(
     screen_h = max(460, int(win.winfo_screenheight()))
     win.geometry(f"{min(1160, screen_w - 80)}x{min(600, screen_h - 100)}")
     win.minsize(720, 390)
-    win.transient(parent)
+    # Win32 transient/tool windows can hide the native maximize/restore
+    # control. Keep Tk parent ownership, but use a normal resizable frame.
+    native_maximize = win.tk.call("tk", "windowingsystem") == "win32"
+    if native_maximize:
+        win.resizable(True, True)
+    else:
+        win.transient(parent)
 
     heading = ttk.Frame(win, padding=(12, 8))
     heading.pack(fill="x")
@@ -267,5 +273,9 @@ def show_json_repair_review(
 
     win.refresh_repair_analysis = refresh
     refresh()
+    if native_maximize:
+        # The original geometry remains the normal/restore size. Native
+        # zoomed state retains the title bar and the Windows taskbar.
+        win.state("zoomed")
     win.focus_set()
     return win

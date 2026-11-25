@@ -30,7 +30,13 @@ def show_private_json_diff(owner, original: str, repaired: str):
     sh = max(520, int(win.winfo_screenheight()))
     win.geometry(f"{min(1200, sw - 80)}x{min(720, sh - 110)}")
     win.minsize(760, 430)
-    win.transient(owner)
+    # Win32 transient/tool windows can hide the native maximize/restore
+    # control. Keep Tk parent ownership, but use a normal resizable frame.
+    native_maximize = win.tk.call("tk", "windowingsystem") == "win32"
+    if native_maximize:
+        win.resizable(True, True)
+    else:
+        win.transient(owner)
 
     prefix, suffix = _common_segments(original, repaired)
     ttk.Label(
@@ -95,5 +101,9 @@ def show_private_json_diff(owner, original: str, repaired: str):
                command=jump_to_change).pack(side="right", padx=(8, 0))
     ttk.Button(footer, text="關閉", command=win.destroy).pack(side="right")
     jump_to_change()
+    if native_maximize:
+        # The original geometry remains the normal/restore size. Native
+        # zoomed state retains the title bar and the Windows taskbar.
+        win.state("zoomed")
     win.focus_set()
     return win
