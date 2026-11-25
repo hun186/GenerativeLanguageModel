@@ -919,6 +919,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
     # exception handler. Import failures must be visible as implementation
     # failures, not swallowed by an unrelated UI operation.
     from czjLLM.job_manager.json_repair_review_gui import show_json_repair_review
+    from czjLLM.job_manager.json_repair_window import main_window_has_focus
 
     root = tk.Tk()
     root.title(title or "LLM 分析進度")
@@ -1242,6 +1243,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
 
     def _open_json_repair_review():
         nonlocal _repair_review_window
+        _hide_audit_tooltip()
         try:
             if (_repair_review_window is not None
                     and _repair_review_window.winfo_exists()):
@@ -1410,8 +1412,20 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
         _audit_tooltip = None
         _audit_tooltip_key = None
 
+    def _hide_tooltip_if_main_inactive():
+        if not main_window_has_focus(root):
+            _hide_audit_tooltip()
+
+    # FocusOut also fires while tabbing within the main window; defer the
+    # check until Tk has settled the next focused widget.
+    root.bind("<FocusOut>", lambda _event: root.after_idle(
+        _hide_tooltip_if_main_inactive), add="+")
+
     def _show_audit_tooltip(text: str, x_root: int, y_root: int, key: str):
         nonlocal _audit_tooltip, _audit_tooltip_key
+        if not main_window_has_focus(root):
+            _hide_audit_tooltip()
+            return
         if _audit_tooltip is None:
             _audit_tooltip = tk.Toplevel(root)
             _audit_tooltip.overrideredirect(True)

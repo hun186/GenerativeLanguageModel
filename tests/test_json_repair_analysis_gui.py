@@ -288,10 +288,31 @@ def test_windows_repair_viewer_native_maximize_and_restore(viewer, normal_limit)
         assert win.state() == "zoomed"
         assert not win.transient()
         assert all(int(value) for value in win.resizable())
+        from czjLLM.job_manager.json_repair_window import _win32_frame_handles
+        import ctypes
+        from ctypes import wintypes
+
+        def assert_native_owner():
+            user32, frame, owner_frame = _win32_frame_handles(win, root)
+            get_window = user32.GetWindow
+            get_window.argtypes = (wintypes.HWND, wintypes.UINT)
+            get_window.restype = wintypes.HWND
+            assert get_window(frame, 4) == owner_frame
+            get_style = user32.GetWindowLongW
+            get_style.argtypes = (wintypes.HWND, ctypes.c_int)
+            get_style.restype = ctypes.c_long
+            assert get_style(frame, -16) & 0x00010000  # WS_MAXIMIZEBOX
+            assert not get_style(frame, -20) & 0x00000008  # WS_EX_TOPMOST
+
+        assert_native_owner()
+        root.lift()
+        root.update()
+        assert_native_owner()
         assert not win.overrideredirect()
         assert not int(win.attributes("-fullscreen"))
         win.state("normal")
         root.update()
+        assert_native_owner()
         # Existing minimum sizes still constrain tiny displays.
         min_w, min_h = win.minsize()
         assert (win.winfo_width(), win.winfo_height()) == (
@@ -299,6 +320,7 @@ def test_windows_repair_viewer_native_maximize_and_restore(viewer, normal_limit)
         win.state("zoomed")
         root.update()
         assert win.state() == "zoomed"
+        assert_native_owner()
         win.destroy()
         root.update()
         assert not win.winfo_exists()
@@ -318,6 +340,7 @@ def test_repair_viewer_window_management_wiring(path, owner):
     assert f"    else:\n        win.transient({owner})" in source
     assert 'if native_maximize:\n        win.resizable(True, True)' in source
     assert 'win.state("zoomed")' in source
+    assert f"retain_win32_viewer_owner(win, {owner})" in source
     assert source.index("win.geometry(") < source.index('win.state("zoomed")')
     assert "overrideredirect(" not in source
     assert 'attributes("-fullscreen"' not in source
@@ -411,3 +434,52 @@ def test_raw_diff_wrap_control_is_wired_to_actual_panes():
     assert 'command=lambda: _set_wrap_mode(panes, wrap_enabled.get())' in source
     assert 'panes.append((txt, scroll_x))' in source
     assert '    _set_wrap_mode(panes, wrap_enabled.get())\n    footer' in source
+
+
+def test_json_viewer_focus_guard_only_allows_main_widgets():
+    from unittest.mock import Mock
+    import tkinter as tk
+    from czjLLM.job_manager.json_repair_window import main_window_has_focus
+
+    root = Mock()
+    focused = Mock()
+    root.focus_displayof.return_value = focused
+    focused.winfo_toplevel.return_value = root
+    assert main_window_has_focus(root)
+    focused.winfo_toplevel.return_value = Mock()
+    assert not main_window_has_focus(root)
+    root.focus_displayof.return_value = None
+    assert not main_window_has_focus(root)
+    root.focus_displayof.side_effect = tk.TclError("window closed")
+    assert not main_window_has_focus(root)
+
+
+def test_json_viewer_owner_failure_restores_safe_transient(monkeypatch):
+    from unittest.mock import Mock
+    from czjLLM.job_manager import json_repair_window as windows
+
+    win, parent = Mock(), Mock()
+    win.winfo_exists.return_value = True
+    attach = Mock(side_effect=OSError("native wrapper unavailable"))
+    monkeypatch.setattr(windows, "_attach_win32_owner", attach)
+    assert not windows.retain_win32_viewer_owner(win, parent)
+    win.state.assert_called_once_with("normal")
+    win.transient.assert_called_once_with(parent)
+    attach.assert_called_once_with(win, parent)
+    attach.side_effect = None
+    win.reset_mock()
+    assert windows.retain_win32_viewer_owner(win, parent)
+    win.state.assert_not_called()
+    win.transient.assert_not_called()
+
+
+def test_main_tooltip_guard_runs_before_creating_window():
+    source = Path("czjLLM/job_manager/win_gui.py").read_text(encoding="utf-8")
+    opener = source.split("    def _open_json_repair_review():", 1)[1].split(
+        "    repair_analysis_button = ", 1)[0]
+    assert "_hide_audit_tooltip()" in opener
+    tooltip = source.split("    def _show_audit_tooltip(", 1)[1].split(
+        "    def _audit_canvas_layout_width", 1)[0]
+    assert tooltip.index("if not main_window_has_focus(root):") < tooltip.index(
+        "tk.Toplevel(root)")
+    assert 'root.bind("<FocusOut>"' in source
