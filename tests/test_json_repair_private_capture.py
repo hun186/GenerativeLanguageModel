@@ -267,9 +267,24 @@ def test_fsync_failure_closes_file_before_removing_partial_snapshot(tmp_path, mo
 
 
 def test_raw_json_text_viewer_disables_clipboard_primary_auto_export():
+    import ast
+
     gui = Path("czjLLM/job_manager/json_repair_raw_diff_gui.py").read_text(encoding="utf-8")
-    assert "exportselection=False" in gui
-    assert 'tk.Text(frame, wrap="none"' in gui
+    calls = [
+        node for node in ast.walk(ast.parse(gui))
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "tk" and node.func.attr == "Text"
+    ]
+    assert calls, "raw viewer must retain its explicit Text constructor"
+    for node in calls:
+        options = {keyword.arg: keyword.value for keyword in node.keywords}
+        assert isinstance(options.get("exportselection"), ast.Constant)
+        assert options["exportselection"].value is False
+    # Wrap is presentation, not clipboard security. Its default, both
+    # toggle states and exact text/tag/privacy preservation are separately
+    # verified in test_json_repair_analysis_gui.py.
 
 
 def test_posix_mountinfo_detects_nested_remote_mounts_and_unverified_roots():

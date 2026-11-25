@@ -22,6 +22,17 @@ def _common_segments(before: str, after: str) -> tuple[int, int]:
     return prefix, suffix
 
 
+def _set_wrap_mode(panes, enabled: bool):
+    """Switch display wrapping only; never rewrite the private text or tags."""
+    for text, horizontal in panes:
+        text.configure(wrap="char" if enabled else "none")
+        if enabled:
+            text.xview_moveto(0)
+            horizontal.grid_remove()
+        else:
+            horizontal.grid()
+
+
 def show_private_json_diff(owner, original: str, repaired: str):
     """Side-by-side exact character views, bounded by private reader limits."""
     win = tk.Toplevel(owner)
@@ -44,6 +55,19 @@ def show_private_json_diff(owner, original: str, repaired: str):
                    " 這不是語意或來源完整性驗證。"),
         padding=(10, 8),
     ).pack(fill="x")
+    # Character wrapping also handles compact JSON and long CJK strings
+    # without whitespace. Each newly opened diff defaults to readable wrap.
+    wrap_enabled = tk.BooleanVar(master=win, value=True)
+    panes = []
+    options = ttk.Frame(win, padding=(10, 0, 10, 5))
+    options.pack(fill="x")
+    ttk.Checkbutton(
+        options, text="長行自動換行（Wrap）", variable=wrap_enabled,
+        command=lambda: _set_wrap_mode(panes, wrap_enabled.get()),
+    ).pack(side="left")
+    ttk.Label(options, text="僅調整顯示，不修改 JSON 原文",
+              foreground="#555").pack(side="left", padx=(10, 0))
+
     panel = ttk.Frame(win, padding=(10, 0))
     panel.pack(fill="both", expand=True)
     panel.columnconfigure(0, weight=1, uniform="raw")
@@ -63,7 +87,7 @@ def show_private_json_diff(owner, original: str, repaired: str):
         frame.columnconfigure(0, weight=1)
         # Never publish a highlighted confidential selection through X11
         # PRIMARY merely because the user dragged across the raw text.
-        txt = tk.Text(frame, wrap="none", font=("Consolas", 10),
+        txt = tk.Text(frame, wrap="char", font=("Consolas", 10),
                       undo=False, exportselection=False,
                       relief="sunken", borderwidth=1)
         scroll_y = ttk.Scrollbar(frame, orient="vertical", command=txt.yview)
@@ -82,7 +106,9 @@ def show_private_json_diff(owner, original: str, repaired: str):
             txt.tag_add("same", f"1.0+{b}c", f"1.0+{a}c")
         txt.configure(state="disabled")
         widgets.append(txt)
+        panes.append((txt, scroll_x))
 
+    _set_wrap_mode(panes, wrap_enabled.get())
     footer = ttk.Frame(win, padding=10)
     footer.pack(fill="x")
 

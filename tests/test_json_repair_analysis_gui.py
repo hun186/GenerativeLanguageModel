@@ -321,3 +321,93 @@ def test_repair_viewer_window_management_wiring(path, owner):
     assert source.index("win.geometry(") < source.index('win.state("zoomed")')
     assert "overrideredirect(" not in source
     assert 'attributes("-fullscreen"' not in source
+
+
+def test_raw_diff_wrap_switch_controls_both_panes_without_editing():
+    """Exercise the real switching helper without requiring a desktop."""
+    from unittest.mock import Mock, call
+    from czjLLM.job_manager.json_repair_raw_diff_gui import _set_wrap_mode
+
+    panes = [(Mock(), Mock()), (Mock(), Mock())]
+    _set_wrap_mode(panes, True)
+    _set_wrap_mode(panes, False)
+    _set_wrap_mode(panes, True)
+    for text, bar in panes:
+        assert text.mock_calls == [
+            call.configure(wrap="char"), call.xview_moveto(0),
+            call.configure(wrap="none"),
+            call.configure(wrap="char"), call.xview_moveto(0),
+        ]
+        assert bar.mock_calls == [
+            call.grid_remove(), call.grid(), call.grid_remove(),
+        ]
+
+
+def test_raw_diff_wrap_checkbox_preserves_exact_json_and_tags():
+    """Actual Tk integration when a desktop is available; no private data."""
+    import tkinter as tk
+    from tkinter import ttk
+    from czjLLM.job_manager.json_repair_raw_diff_gui import show_private_json_diff
+
+    try:
+        root = tk.Tk()
+    except tk.TclError:
+        pytest.skip("Tk display unavailable")
+    original = '{"value":"' + ("中文ABC" * 300) + '",}'
+    repaired = original.replace('",}', '"}')
+    try:
+        root.update()
+        win = show_private_json_diff(root, original, repaired)
+        root.update()
+
+        def descendants(widget):
+            for child in widget.winfo_children():
+                yield child
+                yield from descendants(child)
+
+        children = list(descendants(win))
+        texts = [w for w in children if isinstance(w, tk.Text)]
+        bars = [w for w in children if isinstance(w, ttk.Scrollbar)
+                and str(w.cget("orient")) == "horizontal"]
+        toggles = [w for w in children if isinstance(w, ttk.Checkbutton)
+                   and "Wrap" in str(w.cget("text"))]
+        assert len(texts) == len(bars) == 2
+        assert len(toggles) == 1
+        before_tags = [(w.tag_ranges("same"), w.tag_ranges("changed")) for w in texts]
+
+        def assert_mode(mode, manager):
+            for w, exact in zip(texts, (original, repaired)):
+                assert str(w.cget("wrap")) == mode
+                assert w.get("1.0", "end-1c") == exact
+                assert str(w.cget("state")) == "disabled"
+                assert not int(w.cget("exportselection"))
+            assert [(w.tag_ranges("same"), w.tag_ranges("changed"))
+                    for w in texts] == before_tags
+            assert all(bar.winfo_manager() == manager for bar in bars)
+
+        assert_mode("char", "")
+        toggles[0].invoke()
+        root.update()
+        assert_mode("none", "grid")
+        toggles[0].invoke()
+        root.update()
+        assert_mode("char", "")
+        # A new view has its own independent default, not shared global state.
+        toggles[0].invoke()
+        other = show_private_json_diff(root, original, repaired)
+        root.update()
+        assert all(str(w.cget("wrap")) == "char" for w in descendants(other)
+                   if isinstance(w, tk.Text))
+        assert_mode("none", "grid")
+        other.destroy()
+        win.destroy()
+    finally:
+        root.destroy()
+
+
+def test_raw_diff_wrap_control_is_wired_to_actual_panes():
+    source = Path("czjLLM/job_manager/json_repair_raw_diff_gui.py").read_text(encoding="utf-8")
+    assert 'tk.BooleanVar(master=win, value=True)' in source
+    assert 'command=lambda: _set_wrap_mode(panes, wrap_enabled.get())' in source
+    assert 'panes.append((txt, scroll_x))' in source
+    assert '    _set_wrap_mode(panes, wrap_enabled.get())\n    footer' in source
