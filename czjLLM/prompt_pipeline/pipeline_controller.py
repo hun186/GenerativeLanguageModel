@@ -71,6 +71,7 @@ from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_meta
 from czjLLM.utilities.processing_quality import emit_quality_event
 from czjLLM.utilities.json_repair_analysis import analyze_json_repair
 from czjLLM.utilities.json_transport import clean_json_transport, is_json_output_task
+from czjLLM.utilities.json_rule_policy import JsonRepairPolicy, select_rule_candidate
 from czjLLM.utilities.json_repair_private_capture import (
     capture_enabled, configured_private_root, write_private_repair,
 )
@@ -3418,9 +3419,15 @@ class PromptAPIPipeline:
                  audit_path: str = "",
                  queue_claim_event_id: str = "",
                  dispatch_item_dir: str = "",
+                 json_rule_policy: JsonRepairPolicy | None = None,
+                 json_rule_slice_validator=None,
 
                  ):
         self.task = task
+        # Explicit per-job trusted contract; never infer from a task name,
+        # a model response, or ES document-level required-output checks.
+        self.json_rule_policy = json_rule_policy
+        self.json_rule_slice_validator = json_rule_slice_validator
         #self.MainFileName = MainFileName
         self.include_think = include_think
         self.content = content
@@ -3662,7 +3669,7 @@ class PromptAPIPipeline:
             ):
                 # Keep the pre-existing single-argument hook contract for
                 # callers without explicit provider truncation evidence.
-                if finish_reason == "length":
+                if finish_reason == "length" or self._generic_rule_repair_enabled():
                     DTBJobs_Retry, retMES = self.handle_json_output(
                         retMES, finish_reason=finish_reason,
                     )
@@ -3888,7 +3895,7 @@ class PromptAPIPipeline:
             finish_reason = normalized_finish_reason(response)
             if "to json" in self.task.lower() and (
                     self.allow_to_retry or finish_reason == "length"):
-                if finish_reason == "length":
+                if finish_reason == "length" or self._generic_rule_repair_enabled():
                     DTBJobs_Retry, retMES = self.handle_json_output(
                         retMES, finish_reason=finish_reason,
                     )
@@ -4024,6 +4031,25 @@ class PromptAPIPipeline:
             print("⚠️ json repair analysis unavailable:", type(error).__name__)
             return None
 
+    def _generic_rule_repair_enabled(self) -> bool:
+        policy = getattr(self, "json_rule_policy", None)
+        return (
+            isinstance(policy, JsonRepairPolicy)
+            and policy.generic is True
+            and policy.multidim_evidence_quotes is False
+            and callable(getattr(self, "json_rule_slice_validator", None))
+        )
+
+    def _try_generic_rule_repair(self, raw: str, finish_reason: str):
+        # Source-dependent repair is deliberately not enabled on this route:
+        # no verified renderer/queue receipt is available yet.
+        if not self._generic_rule_repair_enabled():
+            return None
+        return select_rule_candidate(
+            raw, policy=self.json_rule_policy, finish_reason=finish_reason,
+            validate_candidate=self.json_rule_slice_validator,
+        )
+
     def handle_json_output(self, retMES, *, finish_reason: str = ""):
         '''
         嘗試用json.loads驗證回傳訊息json正確性，
@@ -4060,23 +4086,29 @@ class PromptAPIPipeline:
             
             
             try:
-                print(f'Try using LLM {self.model_spec["model_name"]} to repair.')
-                #print("disable think status",should_disable_think(self.model_spec["model_name"]))
-                MainFileName,input_text,keyConsiderations = self.extract_MainFileName_and_input_text()
-                retMES_rep = json_format_caller(
-                    task="json format Repair",
-                    content=retMES,
-                    MainFileName=MainFileName,
-                    max_tokens=self.max_tokens,
-                    model_spec=self.model_spec,
-                    audit_run_id=self.audit_run_id,
-                    audit_path=self.audit_path,
-                    #no_think = should_disable_think(self.model_spec["model_name"])
-                    )
+                candidate = self._try_generic_rule_repair(retMES, finish_reason)
+                if candidate is not None:
+                    retMES_rep = candidate.text
+                else:
+                    print(f'Try using LLM {self.model_spec["model_name"]} to repair.')
+                    #print("disable think status",should_disable_think(self.model_spec["model_name"]))
+                    MainFileName,input_text,keyConsiderations = self.extract_MainFileName_and_input_text()
+                    retMES_rep = json_format_caller(
+                        task="json format Repair",
+                        content=retMES,
+                        MainFileName=MainFileName,
+                        max_tokens=self.max_tokens,
+                        model_spec=self.model_spec,
+                        audit_run_id=self.audit_run_id,
+                        audit_path=self.audit_path,
+                        #no_think = should_disable_think(self.model_spec["model_name"])
+                        )
                 json.loads(retMES_rep)
                 repair_detail = self._json_repair_comparison_detail(
                     retMES, retMES_rep, parse_error,
                 )
+                if candidate is not None and isinstance(repair_detail, dict):
+                    repair_detail = dict(repair_detail, repair_method="RULE_BASED")
                 # One exact Quality event UUID joins only this Worker pair.
                 # Default Windows diagnostic: bounded private IPC to a
                 # GUI-owned in-memory ring. Linux/headless: no GUI sink, no
@@ -4109,7 +4141,8 @@ class PromptAPIPipeline:
                         except Exception:
                             # Never print content, paths or error messages.
                             print("⚠️ PRIVATE_JSON_REPAIR_CAPTURE_UNAVAILABLE")
-                print("Successfully repair with LLM.")
+                print("Successfully repair with rule-based method." if candidate is not None
+                      else "Successfully repair with LLM.")
                 print("repaired retMES_rep: [JSON 原文省略；請看 GUI 修復差異分析]")
                 return [],retMES_rep
             except Exception as ex_json:
