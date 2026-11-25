@@ -1,6 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- **2026-11-25 #358 corrective (PENDING):** previous exact head formal Codex zero findings but all three Hosted lanes failed the legacy static privacy test requiring wrap=none. Replace that unrelated fixed-wrap assertion with AST inspection of every raw Tk Text constructor's explicit exportselection=False; retain actual wrap toggle, read-only text/tag/privacy checks. No production code changes; fresh CI and review required.
 - **2026-11-25 raw JSON Wrap (#309, PENDING):** both raw diff panes default to character display wrapping; shared checkbox restores horizontal scroll without editing exact strings, tags or privacy settings. Headless helper and actual Tk tests added; Hosted gates and physical UAT pending. #357 native maximize source merged at 1d9cd410; physical GUI acceptance separate.
 - **2026-11-25 JSON repair viewers (#309, PENDING):** both Windows Tk viewers open in native zoomed state with title-bar maximize/restore, existing restore geometry; non-Windows transient unchanged. Existing opened viewer retains operator size. No data or privacy change; Hosted tests/Review and physical GUI acceptance pending.
 - **2026-11-25 #302 transport timeout isolation (PENDING):** verified local Worker timeout/connection receipt preserves RUNNING in durable per-item hold, permits healthy refill, no replay or false completion. Actual operator batch 29 scheduled/12 completed; typed transport failure caused unacknowledged RUNNING. Hosted gates pending.
