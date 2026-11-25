@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 
 import czjLLM.sql_mode.runtime.row_merger_generic as merger_module
-from czjLLM.es_mode.output_profiles import OutputProfileValidationError
+from czjLLM.es_mode.output_profiles import ESBulkRequestRejected, OutputProfileValidationError
 from czjLLM.es_mode.output_profiles.multidim_event import normalize_multidim_event_payload
 
 
@@ -731,8 +731,9 @@ def test_deferred_es_ack_must_precede_row_release_and_source_cleanup(
     assert (tmp_path / "backup" / "original.txt").read_text(encoding="utf-8") == "original source"
 
 
+@pytest.mark.parametrize("error_type", [OutputProfileValidationError, ESBulkRequestRejected])
 def test_es_ack_schema_failure_preserves_pending_source_and_success(
-    tmp_path: Path, monkeypatch,
+    tmp_path: Path, monkeypatch, error_type,
 ):
     item_dir = tmp_path / "item"
     success = item_dir / "Success"
@@ -749,6 +750,12 @@ def test_es_ack_schema_failure_preserves_pending_source_and_success(
     )
     releases = []
     events = []
+    quality = []
+    warnings = []
+    monkeypatch.setattr(merger_module, "emit_quality_event",
+                        lambda *a, **kw: quality.append(kw))
+    monkeypatch.setattr(merger_module, "tlog_warn",
+                        lambda message: warnings.append(str(message)))
 
     class RejectedESSink:
         calls = 0
@@ -763,8 +770,8 @@ def test_es_ack_schema_failure_preserves_pending_source_and_success(
             self.calls += 1
 
         def confirm_writeback(self):
-            raise OutputProfileValidationError(
-                "multidim_event", "ES mapping rejected 1 update(s)",
+            raise error_type(
+                "multidim_event", "ES mapping rejected 1 update(s): private-doc",
             )
 
     sink = RejectedESSink()
@@ -799,6 +806,14 @@ def test_es_ack_schema_failure_preserves_pending_source_and_success(
     assert (success / "0.txt").exists()
     assert combined.exists()
     assert not (tmp_path / "backup" / "original.txt").exists()
+    if error_type is ESBulkRequestRejected:
+        assert not quality
+        assert any("ROW_MERGER_ES_BULK_REJECTED_PENDING" in s for s in warnings)
+        assert not any("ROW_MERGER_SCHEMA_REJECTED_PENDING" in s for s in warnings)
+    else:
+        assert [event["event"] for event in quality] == ["document_schema_rejected"]
+        assert any("ROW_MERGER_SCHEMA_REJECTED_PENDING" in s for s in warnings)
+    assert not any("private-doc" in s for s in warnings)
 
 def test_failed_es_row_buffer_never_contaminates_later_row(
     tmp_path: Path, monkeypatch,

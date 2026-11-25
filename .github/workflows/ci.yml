@@ -220,7 +220,7 @@ jobs:
         shell: pwsh
         env:
           PYTHONNOUSERSITE: "1"
-        run: python -m pytest -q tests/test_es_sink_multifield_writeback.py --maxfail=1 --disable-warnings
+        run: python -m pytest -q tests/test_es_sink_multifield_writeback.py tests/sql_mode/runtime/test_row_merger_schema_failure.py --maxfail=1 --disable-warnings
       - name: Prove disposable SQLite Quality claim crash rollback on Windows
         shell: pwsh
         env:

@@ -1,6 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- **2026-11-25 #313 typed sink accounting (PENDING):** Row Merger excludes typed ES bulk rejection from document-schema quality numerator while preserving terminal pending release, source/Success and private adjustment. Fixed remote diagnostic only, legacy event semantics unchanged. Hosted gates pending.
 - **2026-11-24 #313 ledger seal recheck (PENDING):** disposable SQLite proof validates schema/key seal inside each read/CAS transaction, uses mode=rw and closes connections; wrong-key replacement/modified seal cannot silently create fresh budget. No production storage or hostile rollback guarantee. Hosted gates pending.
 - **2026-11-24 #313 input revision observation (PENDING):** explicit ES adapter comparison of exact queued primary/stage string inputs to unique hit; private content digest distinguishes input edits but not output-only writes. No automatic ledger/dispatch use, source provenance still unverified. Hosted CI/Review pending.
 - **2026-11-24 #313 output-profile observation (PENDING):** active ESSink exposes explicit single-primary-field local built-in multidim normalization observation; no buffer/write, raw output or retry activation. Unsupported plugin, routing and passthrough unavailable. Hosted CI/Review pending.
