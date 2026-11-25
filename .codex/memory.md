@@ -1,6 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- **2026-11-25 #302 transport timeout isolation (PENDING):** verified local Worker timeout/connection receipt preserves RUNNING in durable per-item hold, permits healthy refill, no replay or false completion. Actual operator batch 29 scheduled/12 completed; typed transport failure caused unacknowledged RUNNING. Hosted gates pending.
 - **2026-11-24 #313 ledger seal recheck (PENDING):** disposable SQLite proof validates schema/key seal inside each read/CAS transaction, uses mode=rw and closes connections; wrong-key replacement/modified seal cannot silently create fresh budget. No production storage or hostile rollback guarantee. Hosted gates pending.
 - **2026-11-24 #313 input revision observation (PENDING):** explicit ES adapter comparison of exact queued primary/stage string inputs to unique hit; private content digest distinguishes input edits but not output-only writes. No automatic ledger/dispatch use, source provenance still unverified. Hosted CI/Review pending.
 - **2026-11-24 #313 output-profile observation (PENDING):** active ESSink exposes explicit single-primary-field local built-in multidim normalization observation; no buffer/write, raw output or retry activation. Unsupported plugin, routing and passthrough unavailable. Hosted CI/Review pending.

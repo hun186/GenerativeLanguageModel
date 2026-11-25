@@ -145,3 +145,7 @@ retries Queue work, restarts workers or writes to SQL/ES. Real operator
 acceptance, safe restart and independent sink readback remain Issue #266.
 Focused synthetic test suite:
 tests/prompt_pipeline/test_llm_dispatch_idle_diagnostic.py.
+
+### Windows transport uncertainty isolation (Issue #302)
+
+A completed local Worker with a typed SDK timeout/connection error, no returned model result, and exact verified queue claim can now durably hold that document as WORKER_TRANSPORT_UNCERTAIN, retaining RUNNING and excluding its held receipts from healthy backpressure. Other items keep dispatching. A hold is not success, a remote cancellation receipt, or authorization to replay. No automatic timeout replay; operator must independently reconcile before retry. Unknown/mismatched claim, source changes, conflicts, and marker/meter failures still fail closed. A run with unresolved holds is incomplete. This scope is Windows legacy Consumer only; real host validation remains required.

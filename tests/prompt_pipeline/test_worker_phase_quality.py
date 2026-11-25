@@ -246,3 +246,33 @@ def test_real_worker_keeps_its_own_lease_live_during_long_stubbed_call(monkeypat
     assert len(audit) == 1 and audit[0]["ok"] is True
     file = tmp_path / "logs" / "base_url_load.json"
     assert json.loads(file.read_text(encoding="utf-8"))["http://private-model.invalid"]["leases"] == []
+
+
+def test_transport_uncertainty_receipt_requires_real_verified_claim(monkeypatch, tmp_path):
+    import httpx
+    from openai import APITimeoutError
+
+    worker, csv = _make_worker(monkeypatch, tmp_path)
+    item = tmp_path / "item"
+    (item / "TODO").mkdir(parents=True)
+    (item / "TODO" / "0.txt").write_text(worker.content, encoding="utf-8")
+    receipts = {}
+    claims = pc.pick_and_claim_next_prompts([str(item)], per_round_limit=1,
+                                            claim_ids_out=receipts)
+    worker.promptFile = claims[0][0]
+    worker.queue_claim_event_id = receipts[worker.promptFile]
+    def timeout(*a, **kw):
+        try:
+            raise APITimeoutError(request=httpx.Request("POST", "https://private.invalid"))
+        except APITimeoutError as exc:
+            raise RuntimeError("LLM_CALL_TIMEOUT_OR_CONN: Request timed out.") from exc
+    monkeypatch.setattr(pc, "CallLLMAPI", timeout)
+    result = worker.proc()
+    assert result["ok"] is False
+    assert result["transport_uncertain_claim_id"] == worker.queue_claim_event_id
+    assert Path(worker.promptFile).is_file()
+    assert len(csv) == 1 and csv[0]["ok"] is False
+    _assert_single_phase_event(worker, "WORKER_LLM_TIMEOUT_EXCEPTION")
+    monkeypatch.setattr(pc, "CallLLMAPI", lambda *a, **kw:
+                        (_ for _ in ()).throw(RuntimeError("Request timed out.")))
+    assert "transport_uncertain_claim_id" not in worker.proc()
