@@ -95,10 +95,30 @@ def test_multiple_independent_evidence_items():
     (_make_output('"他说"甲"。"'), ' ' * MAX_CHARS + '他说"甲"。'),
     (_make_output('"他说"甲"。"'), ''),
     (_make_output('"他说"甲"。\n"'), '他说"甲"。\n'),
-    (_make_output('"a"b"'), 'a"b' + ' ' + 'a"b","char_start":null,"char_end":null,"confidence":94}'),
 ])
 def test_profile_refuses_unverified_or_structurally_invalid(raw, source):
     assert repair_multidim_evidence_quotes(raw, source) is None
+
+
+def test_profile_accepts_one_eligible_boundary_even_with_longer_source():
+    raw = _make_output('"a"b"')
+    source = 'a"b' + ' ' + 'a"b","char_start":null,"char_end":null,"confidence":94}'
+    result = repair_multidim_evidence_quotes(raw, source)
+    assert result is not None
+    assert result.text == _make_output(json.dumps('a"b'))
+
+
+def test_profile_refuses_two_source_supported_complete_interpretations():
+    raw = '[{"evidence_snippets":[{"text":"a"b","other":"c"}]}]'
+    short = 'a"b'
+    long = 'a"b","other":"c'
+    # Both alternatives parse completely and match the same supplied source.
+    short_candidate = '[{"evidence_snippets":[{"text":' + json.dumps(short) + ',"other":"c"}]}]'
+    long_candidate = '[{"evidence_snippets":[{"text":' + json.dumps(long) + '}]}]'
+    assert json.loads(short_candidate)[0]["evidence_snippets"][0] == {"text": short, "other": "c"}
+    assert json.loads(long_candidate)[0]["evidence_snippets"][0] == {"text": long}
+    assert repair_multidim_evidence_quotes(raw, short) is not None
+    assert repair_multidim_evidence_quotes(raw, long) is None
 
 
 def test_profile_never_reinterprets_a_legal_string_boundary():
