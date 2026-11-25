@@ -30,6 +30,10 @@ models = [
         16: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
         32: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
     }),
+    ("inkling-2-mini:latest", [16, 32, 64, 128], {
+        16: {"recommend_task": ["CLASS EXT"], "nProcess": 2},
+        32: {"recommend_task": ["CLASS EXT"], "nProcess": 2},
+    }),
     ("gpt-oss:latest", [4, 8, 16, 32, 64, 128], {
         32: {"nProcess": 4},
     }),
