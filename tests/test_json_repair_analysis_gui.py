@@ -252,3 +252,72 @@ def test_identical_slice_basename_keeps_distinct_event_ids_and_run_context(tmp_p
     assert cases[0]["event_id"] != cases[1]["event_id"]
     assert cases[0]["event_hint"] != cases[1]["event_hint"]
     assert all(x["run_id"] == "task-run-42" for x in cases)
+
+
+@pytest.mark.parametrize("viewer, normal_limit", [
+    ("review", (1160, 600)),
+    ("raw", (1200, 720)),
+])
+def test_windows_repair_viewer_native_maximize_and_restore(viewer, normal_limit):
+    """Exercise the actual Tk windows on a Windows desktop when available."""
+    import sys
+    import tkinter as tk
+    if sys.platform != "win32":
+        pytest.skip("native Windows title-bar contract")
+    from czjLLM.job_manager.json_repair_review_gui import show_json_repair_review
+    from czjLLM.job_manager.json_repair_raw_diff_gui import show_private_json_diff
+    try:
+        root = tk.Tk()
+    except tk.TclError:
+        pytest.skip("Tk display unavailable")
+    try:
+        root.geometry("400x300")
+        root.update()
+        if viewer == "review":
+            win = show_json_repair_review(
+                root, lambda: {}, lambda case: (), lambda stats: "",
+                lambda case: "",
+            )
+            expected = (min(normal_limit[0], max(760, win.winfo_screenwidth()) - 80),
+                        min(normal_limit[1], max(460, win.winfo_screenheight()) - 100))
+        else:
+            win = show_private_json_diff(root, '{"a":1,}', '{"a":1}')
+            expected = (min(normal_limit[0], max(850, win.winfo_screenwidth()) - 80),
+                        min(normal_limit[1], max(520, win.winfo_screenheight()) - 110))
+        root.update()
+        assert win.state() == "zoomed"
+        assert not win.transient()
+        assert all(int(value) for value in win.resizable())
+        assert not win.overrideredirect()
+        assert not int(win.attributes("-fullscreen"))
+        win.state("normal")
+        root.update()
+        # Existing minimum sizes still constrain tiny displays.
+        min_w, min_h = win.minsize()
+        assert (win.winfo_width(), win.winfo_height()) == (
+            max(expected[0], min_w), max(expected[1], min_h))
+        win.state("zoomed")
+        root.update()
+        assert win.state() == "zoomed"
+        win.destroy()
+        root.update()
+        assert not win.winfo_exists()
+        assert root.winfo_exists()
+    finally:
+        root.destroy()
+
+
+@pytest.mark.parametrize("path, owner", [
+    ("json_repair_review_gui.py", "parent"),
+    ("json_repair_raw_diff_gui.py", "owner"),
+])
+def test_repair_viewer_window_management_wiring(path, owner):
+    """Headless regression; no Tk display or raw source access required."""
+    source = (Path("czjLLM/job_manager") / path).read_text(encoding="utf-8")
+    assert 'native_maximize = win.tk.call("tk", "windowingsystem") == "win32"' in source
+    assert f"    else:\n        win.transient({owner})" in source
+    assert 'if native_maximize:\n        win.resizable(True, True)' in source
+    assert 'win.state("zoomed")' in source
+    assert source.index("win.geometry(") < source.index('win.state("zoomed")')
+    assert "overrideredirect(" not in source
+    assert 'attributes("-fullscreen"' not in source

@@ -1,6 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- **2026-11-25 JSON repair viewers (#309, PENDING):** both Windows Tk viewers open in native zoomed state with title-bar maximize/restore, existing restore geometry; non-Windows transient unchanged. Existing opened viewer retains operator size. No data or privacy change; Hosted tests/Review and physical GUI acceptance pending.
 - **2026-11-25 #302 transport timeout isolation (PENDING):** verified local Worker timeout/connection receipt preserves RUNNING in durable per-item hold, permits healthy refill, no replay or false completion. Actual operator batch 29 scheduled/12 completed; typed transport failure caused unacknowledged RUNNING. Hosted gates pending.
 - **2026-11-24 #313 ledger seal recheck (PENDING):** disposable SQLite proof validates schema/key seal inside each read/CAS transaction, uses mode=rw and closes connections; wrong-key replacement/modified seal cannot silently create fresh budget. No production storage or hostile rollback guarantee. Hosted gates pending.
 - **2026-11-24 #313 input revision observation (PENDING):** explicit ES adapter comparison of exact queued primary/stage string inputs to unique hit; private content digest distinguishes input edits but not output-only writes. No automatic ledger/dispatch use, source provenance still unverified. Hosted CI/Review pending.
