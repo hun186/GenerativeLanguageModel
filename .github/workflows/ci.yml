@@ -247,6 +247,9 @@ jobs:
           python scripts/verify_windows_queue_ntfs_local.py --output-dir "$env:RUNNER_TEMP\queue-ntfs-acceptance-results"
 
   windows-selfhosted:
+    # Operator paused: no Windows self-hosted runner is currently available.
+    # Restore this job condition when the runner is available again.
+    if: ${{ false }}
     runs-on: [self-hosted, Windows, X64]
     strategy:
       fail-fast: false
