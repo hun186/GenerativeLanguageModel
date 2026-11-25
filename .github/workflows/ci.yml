@@ -247,6 +247,9 @@ jobs:
           python scripts/verify_windows_queue_ntfs_local.py --output-dir "$env:RUNNER_TEMP\queue-ntfs-acceptance-results"
 
   windows-selfhosted:
+    # The operator currently has no registered Windows self-hosted runner.
+    # Restore the full job with the repository variable once a runner is ready.
+    if: ${{ vars.CZJLLM_ENABLE_WINDOWS_SELFHOSTED == '1' }}
     runs-on: [self-hosted, Windows, X64]
     strategy:
       fail-fast: false
