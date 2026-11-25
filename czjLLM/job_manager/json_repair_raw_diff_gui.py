@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import tkinter as tk
 from tkinter import ttk
+from czjLLM.job_manager.json_repair_window import retain_win32_viewer_owner
 
 
 def _common_segments(before: str, after: str) -> tuple[int, int]:
@@ -131,5 +132,6 @@ def show_private_json_diff(owner, original: str, repaired: str):
         # The original geometry remains the normal/restore size. Native
         # zoomed state retains the title bar and the Windows taskbar.
         win.state("zoomed")
+        retain_win32_viewer_owner(win, owner)
     win.focus_set()
     return win
