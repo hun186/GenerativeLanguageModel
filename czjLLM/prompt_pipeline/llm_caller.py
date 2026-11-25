@@ -67,6 +67,7 @@ def classify_llm_call_exception(error: BaseException) -> str:
 # 經由 prompt_generator 暴露的統一介面，不再硬寫 "qwen"
 from czjLLM.prompt_pipeline.prompt_generator import finalize_llm_user_content
 from czjLLM.utilities.llm_call_audit import resolve_context_limit
+from czjLLM.prompt_pipeline.request_policy import request_policy
 
 
 # ===== httpx 客戶端工廠 =====
@@ -183,6 +184,7 @@ def CallLLMAPI(
     - cost_twd：估算新臺幣成本（僅 DeepSeek chat/coder 會計價，其他為 0）
     """
     model_spec = model_spec or {}
+    read_timeout, max_retries, effort = request_policy(model_spec)
 
     # 以 model_spec 覆蓋顯式參數
     model = model_spec.get("model_name", model) or model
@@ -204,7 +206,19 @@ def CallLLMAPI(
         api_key=api_key or "EMPTY",
         base_url=(base_url or "").rstrip("/"),
         http_client=http_client,
+        **({"max_retries": max_retries} if max_retries is not None else {}),
     )
+    request_options = {}
+    if read_timeout is not None:
+        original = http_client.timeout
+        request_options["timeout"] = httpx.Timeout(
+            connect=original.connect, read=read_timeout,
+            write=original.write, pool=original.pool,
+        )
+    if effort is not None:
+        # Use extra_body so named efforts also work with older OpenAI SDKs.
+        # The configured provider must support reasoning_effort.
+        request_options["extra_body"] = {"reasoning_effort": effort}
 
     start_ts = time.time()
 
@@ -217,6 +231,7 @@ def CallLLMAPI(
             ],
             max_tokens=max_tokens,
             temperature=temperature,
+            **request_options,
         )
     except (APITimeoutError, APIConnectionError) as e:
         # 讓上游重試機制處理；保留明確錯誤訊息

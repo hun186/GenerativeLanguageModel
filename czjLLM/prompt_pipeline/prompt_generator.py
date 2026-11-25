@@ -97,6 +97,10 @@ def finalize_llm_user_content(
     spec = dict(model_spec or {})
     effective_model = str(spec.get("model_name", model_name) or model_name or "")
     override_suffix = spec.get("no_think_suffix", None)
+    # Explicit provider reasoning controls replace the legacy automatic
+    # suffix. A user-specified suffix remains authoritative.
+    if "thinking_level" in spec and "no_think_suffix" not in spec:
+        override_suffix = ""
     return append_no_think_if_applicable(
         content=content,
         model_name=effective_model.lower(),

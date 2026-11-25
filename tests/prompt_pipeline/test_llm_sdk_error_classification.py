@@ -82,3 +82,59 @@ def test_actual_call_llm_api_preserves_typed_cause_from_mock_transport(monkeypat
     assert count[0] >= 1
     assert isinstance(caught.value.__cause__, APITimeoutError)
     assert llm_caller.classify_llm_call_exception(caught.value) == "WORKER_LLM_TIMEOUT_EXCEPTION"
+
+
+
+def test_model_request_policy_on_actual_sdk_transport(monkeypatch):
+    import json
+
+    monkeypatch.setattr(llm_caller, "finalize_llm_user_content",
+                        lambda content, **kwargs: content)
+    seen = []
+
+    def transport(request):
+        seen.append((json.loads(request.content), request.extensions["timeout"]))
+        raise httpx.ReadTimeout("test", request=request)
+
+    with httpx.Client(transport=httpx.MockTransport(transport),
+                      timeout=httpx.Timeout(10.0, read=240.0)) as client:
+        with pytest.raises(RuntimeError):
+            llm_caller.CallLLMAPI(
+                "synthetic prompt",
+                model_spec={"api_key": "test", "model_name": "test",
+                            "base_url": "https://model.invalid/v1",
+                            "llm_read_timeout_sec": 900,
+                            "llm_max_retries": 0, "thinking_level": False},
+                http_client=client,
+            )
+    assert len(seen) == 1
+    body, timeout = seen[0]
+    assert body["reasoning_effort"] == "none"
+    assert timeout["read"] == 900
+    assert timeout["connect"] == 10
+
+
+@pytest.mark.parametrize("key,value", [
+    ("llm_read_timeout_sec", True), ("llm_read_timeout_sec", float("inf")),
+    ("llm_round_timeout_sec", 0), ("llm_max_retries", -1),
+    ("llm_max_retries", False), ("thinking_level", "unsupported"),
+])
+def test_invalid_model_request_policy_rejected(key, value):
+    from czjLLM.prompt_pipeline.request_policy import request_policy
+    with pytest.raises(ValueError, match=key):
+        request_policy({key: value})
+
+
+def test_request_policy_absent_keeps_legacy_defaults():
+    from czjLLM.prompt_pipeline.request_policy import request_policy
+    assert request_policy({}) == (None, None, None)
+    assert request_policy({"thinking_level": "low"}) == (None, None, "low")
+
+
+def test_explicit_thinking_replaces_automatic_suffix():
+    from czjLLM.prompt_pipeline.prompt_generator import finalize_llm_user_content
+    spec = {"model_name": "qwen3:8b", "thinking_level": "high"}
+    assert finalize_llm_user_content("synthetic", model_spec=spec) == "synthetic"
+    assert finalize_llm_user_content(
+        "synthetic", model_spec=dict(spec, no_think_suffix="/no_think"),
+    ).endswith("/no_think")

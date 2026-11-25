@@ -111,6 +111,7 @@ from czjLLM.prompt_pipeline.round_runner import (
     run_round,
 )
 from czjLLM.prompt_pipeline.refill_scheduler import ClaimedWork, run_slot_refill
+from czjLLM.prompt_pipeline.request_policy import context_round_timeout
 from czjLLM.prompt_pipeline.runtime_support.load_meter import (
     ItemsRegistry,
     find_item_dir_for,
@@ -3103,7 +3104,7 @@ def _run_legacy_leaf_round(ctx, jobs):
         return run_round(
             jobs,
             granted_workers,
-            timeout_sec=getattr(ctx, "llm_round_timeout_sec", None),
+            timeout_sec=context_round_timeout(ctx),
             debug_enabled=getattr(ctx, "llm_round_debug", None),
         )
 
@@ -3305,7 +3306,7 @@ def _run_windows_live_slot_refill(
             acknowledge=acknowledge,
             max_inflight=max(1, min(int(granted), 256)),
             deadline_sec=_round_timeout_from_jobs(
-                (), getattr(ctx, "llm_round_timeout_sec", None),
+                (), context_round_timeout(ctx),
             ),
             drain_on_deadline=True,
             return_on_drained_deadline=True,
