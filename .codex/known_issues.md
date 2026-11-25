@@ -8,8 +8,13 @@
 - Remaining issues: Windows self-hosted 3.10/3.11 still queued/operator-deferred, historical #231 status now merged, no real Windows/Ollama/ES readback, no crash-safe authenticated checkpoint/online shard retirement. These accepted PRs do not prove absence of filesystem races or malicious-tamper resilience.
 
 ## Environment and External Dependencies
-- **2026-11-24 #313:** per-transaction schema/seal check detects wrong-key replacement and seal damage, not same-key rollback or hostile filesystem races; production storage acceptance still required.
+- **2026-11-25 #313:** disposable claim ACK failure may hide a commit; inspect retained ledger state. No provider or runtime authorization.
+- **2026-11-25 #313:** pre-candidate inspection is a read-only projection, not a race-safe claim or authenticated queued input proof.
+- **2026-11-25 #313:** combined budget inspection is disposable-only and read-only; repeated source/rule/semantic observations do not prove immutable execution or sink ACK, and dependencies #350–#353 require independent acceptance.
 - **2026-11-24 #313:** input digest is a private read-time observation, not a snapshot transaction or proof of queued/consumed input. Unsupported non-string, absent or overlapping paths fail closed.
+- **2026-11-24 #313:** per-transaction schema/seal check detects wrong-key replacement and seal damage, not same-key rollback or hostile filesystem races; production storage acceptance still required.
+- **2026-11-25 #313:** combined local candidate is structural only; source/execution/attempt and ACK verification still separate. Unsupported routing/timestamp mutation unavailable.
+- **2026-11-25 #313:** repeated matching execution hashes do not attest execution across mutable context or authenticate a provider receipt; unsupported binding fails closed.
 - **2026-11-24 #313:** built-in profile structural verdict is not semantic truth or authenticated repair completion. Contract version must change when profile/sink preparation semantics change; unsupported routes/plugins remain unavailable.
 - **2026-11-24 #313:** Required-output digest is a versioned configuration component, not full quality/profile identity; bump contract for evaluator semantic changes. No standalone retry authorization.
 - **2026-11-24 #313:** observed ES cluster/index UUID and _id are read-time facts only; source changes, routing, TLS identity and sink reconciliation are not guaranteed. Unsupported or ambiguous lookups must not authorize retry.

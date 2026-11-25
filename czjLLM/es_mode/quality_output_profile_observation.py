@@ -47,9 +47,15 @@ def _supported(sink, output_col):
     profile = sink._profile_for_output_col(output_col)
     _require(profile == "multidim_event")
     _require(get_default_registry().get(profile) is normalize_multidim_event_payload)
+    return _VERSION
 
 
 def observe_output_profile(sink, payload, output_col):
+    """Return only the structural observation, never normalized contents."""
+    return _observe_normalized_profile(sink, payload, output_col)[0]
+
+
+def _observe_normalized_profile(sink, payload, output_col):
     """Reuse single-field sink parsing and the exact known built-in validator.
 
     Unsupported routes and passthrough profiles have no structural verdict.
@@ -66,11 +72,12 @@ def observe_output_profile(sink, payload, output_col):
                 raw, ctx=sink.ctx, output_col=output_col, sink=sink)
         except (TypeError, ValueError):
             outcome = ProfileOutcome.STRUCTURALLY_REJECTED
+            normalized = None
         else:
             _require(sink._normalize_payload_for_es(normalized) is not None)
             outcome = ProfileOutcome.STRUCTURALLY_ACCEPTED
         _supported(sink, output_col)
-        return OutputProfileObservation(_VERSION, outcome)
+        return OutputProfileObservation(_VERSION, outcome), normalized
     except OutputProfileObservationUnavailable:
         raise
     except Exception:

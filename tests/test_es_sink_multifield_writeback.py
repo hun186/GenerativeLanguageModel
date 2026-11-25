@@ -304,3 +304,242 @@ def test_quality_profile_observation_rejects_unsupported_boundary(monkeypatch, u
                        match="^output profile observation unavailable$"):
         sink.observe_quality_output_profile(payload, col)
     assert sink._buffer == []
+
+
+def _combined_candidate_fixture(monkeypatch):
+    from czjLLM.es_mode.adapters.elasticsearch_adapter import ElasticsearchAdapter
+    mod = _load_es_sink_module(monkeypatch)
+    col = "multidim_event_json"
+    adapter = ElasticsearchAdapter({
+        "src_index": "docs", "tgt_index": "docs", "output_col": col,
+        "rerun": {"enable": True, "required_output_checks": [
+            {"path": col, "validator": "multidim_event_time"}]},
+    })
+    adapter.es = DummyES()
+    ctx = SimpleNamespace(output_profile="auto", _es_adapter=adapter)
+    sink = mod.ESSink(ctx, adapter.es, index="docs", output_col=col, flush_every=999)
+    monkeypatch.setattr(mod.helpers, "bulk", lambda *a, **k: pytest.fail("no bulk"))
+    return sink, adapter, col
+
+
+def test_combined_candidate_binds_both_rules_and_one_normalized_payload(monkeypatch):
+    import json
+    from copy import deepcopy
+    from czjLLM.es_mode.quality_candidate_observation import CandidateOutcome
+    from czjLLM.es_mode.quality_retry_contract import RetryIdentity
+    sink, adapter, col = _combined_candidate_fixture(monkeypatch)
+    payload = {col: json.dumps(_quality_profile_fixture())}
+    original = deepcopy(payload)
+    accepted = sink.observe_quality_candidate(adapter, payload, col)
+    assert accepted.outcome is CandidateOutcome.STRUCTURALLY_ACCEPTED
+    assert payload == original and sink._buffer == []
+    invalid = _quality_profile_fixture()
+    invalid[0]["Person"][0]["event_ids"] = ["PRIVATE_INVALID"]
+    rejected = sink.observe_quality_candidate(adapter, invalid, col)
+    assert rejected.outcome is CandidateOutcome.PROFILE_REJECTED
+    assert rejected.quality_rule_version == accepted.quality_rule_version
+    assert "PRIVATE_INVALID" not in repr(rejected)
+    adapter.cfg["rerun"]["required_output_checks"][0]["min_valid_count"] = 2
+    required = sink.observe_quality_candidate(adapter, payload, col)
+    assert required.outcome is CandidateOutcome.REQUIRED_OUTPUT_REJECTED
+    assert required.quality_rule_version != accepted.quality_rule_version
+    rejected_new_rule = sink.observe_quality_candidate(adapter, invalid, col)
+    assert rejected_new_rule.quality_rule_version == required.quality_rule_version
+    assert rejected_new_rule.outcome is CandidateOutcome.PROFILE_REJECTED
+    RetryIdentity("private", col, "a" * 64, required.quality_rule_version)
+    assert sink._buffer == []
+
+
+@pytest.mark.parametrize("case", ["other_adapter", "other_index", "other_client",
+                                   "multi_output", "conflicting_output", "timestamp",
+                                   "disabled_rules", "outside_path", "empty_payload"])
+def test_combined_candidate_unsupported_scope_is_unavailable(monkeypatch, case):
+    from czjLLM.es_mode.quality_candidate_observation import CandidateObservationUnavailable
+    sink, adapter, col = _combined_candidate_fixture(monkeypatch)
+    payload = _quality_profile_fixture()
+    if case == "other_adapter":
+        sink.ctx._es_adapter = None
+    elif case == "other_index":
+        adapter.cfg["tgt_index"] = "other"
+    elif case == "other_client":
+        adapter.es = DummyES()
+    elif case == "multi_output":
+        adapter.cfg["output_cols"] = [col, "secondary"]
+    elif case == "conflicting_output":
+        adapter.cfg["output_col"] = "other"
+        adapter.cfg["output_cols"] = [col]
+    elif case == "timestamp":
+        sink.ctx.update_time_inside_output = True
+    elif case == "disabled_rules":
+        adapter.cfg["rerun"]["enable"] = False
+    elif case == "outside_path":
+        adapter.cfg["rerun"]["required_output_checks"] = [
+            {"path": "outside", "relative_to_output": False}]
+    elif case == "empty_payload":
+        payload = []
+    with pytest.raises(CandidateObservationUnavailable,
+                       match="^quality candidate observation unavailable$"):
+        sink.observe_quality_candidate(adapter, payload, col)
+    assert sink._buffer == []
+
+
+def test_integrated_disposable_candidate_budget_observes_actual_components(monkeypatch, tmp_path):
+    from contextlib import closing
+    from copy import deepcopy
+    import sqlite3
+    from czjLLM.reduction.persisted_freshness import bind_persisted_execution_fingerprint
+    from czjLLM.es_mode.quality_candidate_observation import CandidateOutcome
+    from czjLLM.es_mode.quality_retry_budget_inspection import (
+        BudgetInspectionUnavailable, inspect_disposable_candidate_budget,
+        inspect_disposable_pre_dispatch_budget,
+    )
+    from czjLLM.es_mode.quality_retry_contract import (
+        NextAction, Phase, QualityResult, RetryIdentity, RetryPolicy,
+    )
+    from czjLLM.es_mode.quality_retry_sqlite_proof import DisposableQualityLedger
+    sink, adapter, col = _combined_candidate_fixture(monkeypatch)
+    adapter.cfg.update(input_col="body", id_col="_id", stage_source_input_cols=["title"])
+    adapter.cfg["rerun"]["execution_fingerprint"] = "auto"
+    ctx = sink.ctx
+    ctx.mode = "es"
+    ctx.task = "summary"
+    ctx.taskSetting = {"summary": {"task": "PROMPT-A", "InputCutLen": 100}}
+    ctx.model_spec_name = "fixture"
+    ctx.model_spec = {"model_name": "m", "temperature": 0.1}
+    ctx.max_tokens = 1000
+    ctx.think_mode = True
+    ctx.reduction = {"enabled": False}
+    ctx.worker_parallelism = 2
+    ctx._execution_budget = SimpleNamespace(capacity=2)
+    digest = bind_persisted_execution_fingerprint(ctx, adapter)
+    doc = {"body": "private original", "title": "private title", col: "previous output"}
+    adapter.es.info = lambda **_: {"cluster_uuid": "cluster-a"}
+    adapter.es.indices = SimpleNamespace(get_settings=lambda **_: {
+        "docs": {"settings": {"index": {"uuid": "index-a"}}}})
+    def search(**kw):
+        assert kw["body"]["query"] == {"ids": {"values": ["doc-1"]}}
+        assert set(kw["body"]["_source"]) == {"body", "title"}
+        return {"timed_out": False, "_shards": {"total": 1, "successful": 1, "failed": 0},
+                "hits": {"total": {"value": 1, "relation": "eq"}, "hits": [
+                    {"_index": "docs", "_id": "doc-1", "_source": deepcopy(doc)}]}}
+    adapter.es.search = search
+    ledger = DisposableQualityLedger(tmp_path / "ledger.db", b"fixture-only-key" * 3, create=True)
+    policy = RetryPolicy(enabled=True)
+    invalid = _quality_profile_fixture()
+    invalid[0]["Person"][0]["event_ids"] = ["private-invalid"]
+    def inspect(body="private original"):
+        return inspect_disposable_candidate_budget(
+            sink, adapter, ledger, policy, logical_id="doc-1", expected_input=body,
+            expected_stage_inputs={"title": "private title"}, payload=invalid, output_col=col)
+    def pre(body="private original"):
+        return inspect_disposable_pre_dispatch_budget(
+            sink, adapter, ledger, policy, logical_id="doc-1", expected_input=body,
+            expected_stage_inputs={"title": "private title"}, output_col=col)
+    first = inspect()
+    first_pre = pre()
+    assert first_pre.quality_rule_version == first.candidate.quality_rule_version
+    assert (first_pre.phase, first_pre.failed_repairs, first_pre.revision,
+            first_pre.offline_next_action) == (
+                first.phase, first.failed_repairs, first.revision, first.offline_next_action)
+    assert first.phase is Phase.UNASSESSED
+    assert first.candidate.outcome is CandidateOutcome.PROFILE_REJECTED
+    assert "private original" not in repr(first) and "doc-1" not in repr(first)
+    with closing(sqlite3.connect(tmp_path / "ledger.db")) as con:
+        assert con.execute("SELECT count(*) FROM quality_states").fetchone() == (0,)
+    from czjLLM.es_mode.quality_retry_disposable_claim import (
+        DisposableClaimUnavailable, claim_disposable_quality_repair,
+    )
+    def claim(revision, attempt_id, selected_policy=policy, body="private original"):
+        return claim_disposable_quality_repair(
+            sink, adapter, ledger, selected_policy, logical_id="doc-1",
+            expected_input=body, expected_stage_inputs={"title": "private title"},
+            output_col=col, expected_revision=revision, attempt_id=attempt_id)
+    first_token = "12345678-1234-4234-8234-1234567890a1"
+    second_token = "12345678-1234-4234-8234-1234567890a2"
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(0, first_token)
+    # Fixture-only initial observation/finalization; real scoped CAS for claim.
+    source = adapter.observe_quality_retry_inputs(
+        "doc-1", expected_input="private original", expected_stage_inputs={"title": "private title"})
+    identity = RetryIdentity(source.scoped_document_revision(), col, digest,
+                             first.candidate.quality_rule_version)
+    state = ledger.transition(identity, expected_revision=0, operation="observe_initial",
+                              result=QualityResult.REJECTED, failure_code="SCHEMA")
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(state.revision, first_token, RetryPolicy(enabled=False))
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(state.revision, first_token, body="wrong source")
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(state.revision, "invalid-attempt-id")
+    assert ledger.read(identity) == state
+    # Competing claims use the same scoped identity and expected revision.
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    barrier = Barrier(2)
+    revision = state.revision
+    def compete(token):
+        barrier.wait(timeout=10)
+        try:
+            return claim(revision, token)
+        except DisposableClaimUnavailable:
+            return None
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        receipts = list(pool.map(compete, (first_token, second_token)))
+    winners = [receipt for receipt in receipts if receipt is not None]
+    assert len(winners) == 1
+    winner = winners[0]
+    assert winner.identity == identity and winner.revision == revision + 1
+    assert winner.failed_repairs == 0
+    assert winner.attempt_id not in repr(winner) and "private original" not in repr(winner)
+    assert pre().phase is Phase.IN_FLIGHT and pre().failed_repairs == 0
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(revision, winner.attempt_id)
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(winner.revision, winner.attempt_id)
+    state = ledger.transition(identity, expected_revision=winner.revision, operation="finalize",
+                              policy=policy, verified_attempt_id=winner.attempt_id,
+                              result=QualityResult.REJECTED, failure_code="SCHEMA")
+    token = second_token if winner.attempt_id == first_token else first_token
+    second = claim(state.revision, token)
+    assert second.failed_repairs == 1
+    state = ledger.transition(identity, expected_revision=second.revision, operation="finalize",
+                              policy=policy, verified_attempt_id=token,
+                              result=QualityResult.REJECTED, failure_code="SCHEMA")
+    with pytest.raises(DisposableClaimUnavailable):
+        claim(state.revision, first_token)
+    exhausted = inspect()
+    assert exhausted.phase is Phase.NEEDS_REVIEW and exhausted.failed_repairs == 2
+    assert exhausted.offline_next_action is NextAction.QUALITY_RETRY_EXHAUSTED
+    exhausted_pre = pre()
+    assert (exhausted_pre.phase, exhausted_pre.failed_repairs, exhausted_pre.revision,
+            exhausted_pre.offline_next_action) == (
+                exhausted.phase, exhausted.failed_repairs, exhausted.revision,
+                exhausted.offline_next_action)
+    # The pre-candidate read must not invoke candidate normalization at all.
+    with monkeypatch.context() as patch:
+        patch.setattr(sink, "_maybe_parse_json",
+                      lambda *a, **kw: pytest.fail("pre-dispatch parsed a payload"))
+        assert pre() == exhausted_pre
+    doc.update({col: "new output", col + "_meta": {"x": 1}, "update_time_ai": "new"})
+    assert inspect() == exhausted and pre() == exhausted_pre and ledger.read(identity) == state
+    doc["body"] = "edited source"
+    with pytest.raises(BudgetInspectionUnavailable):
+        inspect()
+    with pytest.raises(BudgetInspectionUnavailable):
+        pre()
+    assert inspect("edited source").phase is Phase.UNASSESSED
+    assert pre("edited source").phase is Phase.UNASSESSED
+    doc["body"] = "private original"
+    adapter.cfg["rerun"]["required_output_checks"][0]["min_valid_count"] = 2
+    assert inspect().phase is Phase.UNASSESSED
+    assert pre().phase is Phase.UNASSESSED
+    assert pre().quality_rule_version == inspect().candidate.quality_rule_version
+    ctx.taskSetting["summary"]["task"] = "PROMPT-B"
+    with pytest.raises(BudgetInspectionUnavailable):
+        inspect()
+    with pytest.raises(BudgetInspectionUnavailable):
+        pre()
+    assert ledger.read(identity) == state
+    with closing(sqlite3.connect(tmp_path / "ledger.db")) as con:
+        assert con.execute("SELECT revision FROM quality_states").fetchall() == [(state.revision,)]
+    assert sink._buffer == []
