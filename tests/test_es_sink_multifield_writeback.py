@@ -304,3 +304,80 @@ def test_quality_profile_observation_rejects_unsupported_boundary(monkeypatch, u
                        match="^output profile observation unavailable$"):
         sink.observe_quality_output_profile(payload, col)
     assert sink._buffer == []
+
+
+def _combined_candidate_fixture(monkeypatch):
+    from czjLLM.es_mode.adapters.elasticsearch_adapter import ElasticsearchAdapter
+    mod = _load_es_sink_module(monkeypatch)
+    col = "multidim_event_json"
+    adapter = ElasticsearchAdapter({
+        "src_index": "docs", "tgt_index": "docs", "output_col": col,
+        "rerun": {"enable": True, "required_output_checks": [
+            {"path": col, "validator": "multidim_event_time"}]},
+    })
+    adapter.es = DummyES()
+    ctx = SimpleNamespace(output_profile="auto", _es_adapter=adapter)
+    sink = mod.ESSink(ctx, adapter.es, index="docs", output_col=col, flush_every=999)
+    monkeypatch.setattr(mod.helpers, "bulk", lambda *a, **k: pytest.fail("no bulk"))
+    return sink, adapter, col
+
+
+def test_combined_candidate_binds_both_rules_and_one_normalized_payload(monkeypatch):
+    import json
+    from copy import deepcopy
+    from czjLLM.es_mode.quality_candidate_observation import CandidateOutcome
+    from czjLLM.es_mode.quality_retry_contract import RetryIdentity
+    sink, adapter, col = _combined_candidate_fixture(monkeypatch)
+    payload = {col: json.dumps(_quality_profile_fixture())}
+    original = deepcopy(payload)
+    accepted = sink.observe_quality_candidate(adapter, payload, col)
+    assert accepted.outcome is CandidateOutcome.STRUCTURALLY_ACCEPTED
+    assert payload == original and sink._buffer == []
+    invalid = _quality_profile_fixture()
+    invalid[0]["Person"][0]["event_ids"] = ["PRIVATE_INVALID"]
+    rejected = sink.observe_quality_candidate(adapter, invalid, col)
+    assert rejected.outcome is CandidateOutcome.PROFILE_REJECTED
+    assert rejected.quality_rule_version == accepted.quality_rule_version
+    assert "PRIVATE_INVALID" not in repr(rejected)
+    adapter.cfg["rerun"]["required_output_checks"][0]["min_valid_count"] = 2
+    required = sink.observe_quality_candidate(adapter, payload, col)
+    assert required.outcome is CandidateOutcome.REQUIRED_OUTPUT_REJECTED
+    assert required.quality_rule_version != accepted.quality_rule_version
+    rejected_new_rule = sink.observe_quality_candidate(adapter, invalid, col)
+    assert rejected_new_rule.quality_rule_version == required.quality_rule_version
+    assert rejected_new_rule.outcome is CandidateOutcome.PROFILE_REJECTED
+    RetryIdentity("private", col, "a" * 64, required.quality_rule_version)
+    assert sink._buffer == []
+
+
+@pytest.mark.parametrize("case", ["other_adapter", "other_index", "other_client",
+                                   "multi_output", "conflicting_output", "timestamp",
+                                   "disabled_rules", "outside_path", "empty_payload"])
+def test_combined_candidate_unsupported_scope_is_unavailable(monkeypatch, case):
+    from czjLLM.es_mode.quality_candidate_observation import CandidateObservationUnavailable
+    sink, adapter, col = _combined_candidate_fixture(monkeypatch)
+    payload = _quality_profile_fixture()
+    if case == "other_adapter":
+        sink.ctx._es_adapter = None
+    elif case == "other_index":
+        adapter.cfg["tgt_index"] = "other"
+    elif case == "other_client":
+        adapter.es = DummyES()
+    elif case == "multi_output":
+        adapter.cfg["output_cols"] = [col, "secondary"]
+    elif case == "conflicting_output":
+        adapter.cfg["output_col"] = "other"
+        adapter.cfg["output_cols"] = [col]
+    elif case == "timestamp":
+        sink.ctx.update_time_inside_output = True
+    elif case == "disabled_rules":
+        adapter.cfg["rerun"]["enable"] = False
+    elif case == "outside_path":
+        adapter.cfg["rerun"]["required_output_checks"] = [
+            {"path": "outside", "relative_to_output": False}]
+    elif case == "empty_payload":
+        payload = []
+    with pytest.raises(CandidateObservationUnavailable,
+                       match="^quality candidate observation unavailable$"):
+        sink.observe_quality_candidate(adapter, payload, col)
+    assert sink._buffer == []

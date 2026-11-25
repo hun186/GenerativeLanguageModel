@@ -10,6 +10,7 @@
 - **#269 completed owner merge gate:** latest-head Linux E2E, Windows Hosted 3.10/3.11, changed-line scan SUCCESS, formal Codex receipt no major issues, 22/22 threads resolved, explicit 2026-11-01 owner instruction to merge, GitHub confirmed Squash Merge. Two self-hosted jobs were queued and not treated as verified; physical operator tests remain separate.
 
 ## True Open Engineering Work
+- [ ] **#313 combined candidate (PENDING):** single normalized local verdict and combined rule version; no verified completion, dispatch or ledger mutation.
 - [ ] **#313 ledger seal recheck (PENDING):** transaction-local key/schema check and no implicit DB creation; no same-key rollback/multi-host proof or runtime activation.
 - [ ] **#313 input revision observation (PENDING):** compare exact projected inputs, reject ambiguity/overlap; bind observed revision only after actual dispatch provenance and sink reconciliation. No retry activation.
 - [ ] **#313 Output Profile observation (PENDING):** narrow built-in local validation, versioned contract; no provider/repair/sink ACK or retry activation. Hosted gates pending.

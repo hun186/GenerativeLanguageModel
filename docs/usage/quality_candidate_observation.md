@@ -1,0 +1,5 @@
+# Combined quality candidate observation (#313)
+
+The explicit active ESSink.observe_quality_candidate(adapter, payload, output_col) combines the existing built-in profile with the existing Required Output evaluator on the same normalized candidate. The effective required-rule snapshot and profile contract version form a combined quality-v1 SHA256 version (including when the profile rejects). The result distinguishes profile rejection, required-output rejection and structural acceptance. No raw payload or exception text leaves the observer.
+
+Initial scope is the same connected adapter/client, same source/target/sink index and one top-level primary output; unsupported routing, plugins, flattening, disabled rules, outside paths and timestamp mutation are unavailable. No ES I/O, buffer mutation, ledger changes or automatic calls. This does not establish semantic truth, source/attempt provenance, authenticated execution or writeback ACK. Actual queue and sink reconciliation remain mandatory. Existing standalone observations retain their public return shapes; mandatory Linux/Windows sink tests cover the integrated local verdict.
