@@ -75,6 +75,50 @@ def observed_computed_execution_fingerprint(ctx: Any) -> str | None:
     return None
 
 
+def reobserve_computed_es_execution_fingerprint(ctx: Any, adapter: Any) -> str | None:
+    """Explicit current semantic rehash for a narrow ES observation.
+
+    No new binding, provider call, observer initialization or dispatch.
+    An exact match is not an immutable execution receipt or authentication.
+    Explicit executables may supply arbitrary metadata and remain unsupported.
+    """
+    try:
+        if getattr(ctx, "mode", "").lower() != "es":
+            return None
+        if getattr(ctx, "_es_adapter", None) is not adapter:
+            return None
+        if getattr(ctx, "semantic_freshness_executable", None) is not None:
+            return None
+        cfg = adapter.cfg
+        rr = cfg.get("rerun") or {}
+        bound = observed_computed_execution_fingerprint(ctx)
+        if bound is None or rr.get("enable") is not True or rr.get("execution_fingerprint") != bound:
+            return None
+        spec = getattr(ctx, "model_spec", {}) or {}
+        if getattr(ctx, "mock_llm_mode", False) or spec.get("mock_llm_mode", False):
+            return None
+        # Use the same semantic runtime as the binder, without constructing
+        # operational cancellation/observer state.
+        context = ExecutionContext(
+            runtime_ctx=ctx, task_runtime=ProductionTaskRuntime(ctx),
+            executable_registry=getattr(ctx, "executable_registry", None),
+        )
+        current = executable_semantic_fingerprint(effective_persisted_executable(ctx), context)
+        if (current == bound
+                and observed_computed_execution_fingerprint(ctx) == bound
+                and adapter.cfg is cfg and cfg.get("rerun") is rr
+                and rr.get("enable") is True and rr.get("execution_fingerprint") == bound
+                and getattr(ctx, "_es_adapter", None) is adapter
+                and getattr(ctx, "semantic_freshness_executable", None) is None
+                and not getattr(ctx, "mock_llm_mode", False)
+                and not (getattr(ctx, "model_spec", {}) or {}).get("mock_llm_mode", False)):
+            return current
+    except Exception:
+        # No raw task/prompt/model errors escape this optional observation.
+        return None
+    return None
+
+
 def bind_persisted_execution_fingerprint(ctx: Any, adapter: Any) -> str | None:
     """Resolve ``auto`` exactly once and bind context, adapter freshness and sink input."""
     # Clear a previous observation even if this bind is disabled or fails.

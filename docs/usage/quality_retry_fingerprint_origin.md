@@ -17,3 +17,7 @@ sink reconciliation still require separate integration. No new retry, ES,
 YAML, or Queue behavior is enabled. The legacy binder return and adapter
 freshness value are unchanged. Mandatory Linux/Hosted Windows contract tests
 cover actual binder auto/literal/failed/disabled and mismatch behavior.
+
+## Current semantic re-observation
+
+The ES-only explicit reobserve_computed_es_execution_fingerprint checks the actual context/adapter binding, enabled rerun fingerprint, original computed marker and a fresh hash of the built-in effective executable using the existing semantic runtime. Literal, drifted, mock or caller-supplied explicit executables are unavailable. No rebinding, configuration mutation, observer setup, LLM or retry accounting. Equal hashes describe the read-time semantics only; they do not establish immutable execution, consumed input or authenticated completion.

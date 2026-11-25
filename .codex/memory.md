@@ -1,6 +1,7 @@
 # GenerativeLanguageModel — Active Project Memory
 
 ## Current Summary
+- **2026-11-25 #313 execution rehash (PENDING):** explicit ES current semantic re-observation checks auto origin, actual adapter binding and current built-in execution hash; no rebinding or provider calls. Drift/mock/custom executable unavailable. No immutable execution attestation.
 - **2026-11-24 #313 ledger seal recheck (PENDING):** disposable SQLite proof validates schema/key seal inside each read/CAS transaction, uses mode=rw and closes connections; wrong-key replacement/modified seal cannot silently create fresh budget. No production storage or hostile rollback guarantee. Hosted gates pending.
 - **2026-11-24 #313 input revision observation (PENDING):** explicit ES adapter comparison of exact queued primary/stage string inputs to unique hit; private content digest distinguishes input edits but not output-only writes. No automatic ledger/dispatch use, source provenance still unverified. Hosted CI/Review pending.
 - **2026-11-24 #313 output-profile observation (PENDING):** active ESSink exposes explicit single-primary-field local built-in multidim normalization observation; no buffer/write, raw output or retry activation. Unsupported plugin, routing and passthrough unavailable. Hosted CI/Review pending.
