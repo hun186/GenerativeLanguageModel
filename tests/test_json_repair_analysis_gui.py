@@ -483,3 +483,63 @@ def test_main_tooltip_guard_runs_before_creating_window():
     assert tooltip.index("if not main_window_has_focus(root):") < tooltip.index(
         "tk.Toplevel(root)")
     assert 'root.bind("<FocusOut>"' in source
+
+
+def test_windows_nested_json_viewers_stay_above_both_owners():
+    """Check real native Z order after simulated owner raises, not just links."""
+    import sys
+    import tkinter as tk
+    from ctypes import wintypes
+    if sys.platform != "win32":
+        pytest.skip("native Windows Z-order contract")
+    from czjLLM.job_manager.json_repair_review_gui import show_json_repair_review
+    from czjLLM.job_manager.json_repair_raw_diff_gui import show_private_json_diff
+    from czjLLM.job_manager.json_repair_window import _win32_frame_handles
+
+    try:
+        root = tk.Tk()
+    except tk.TclError:
+        pytest.skip("Tk display unavailable")
+    try:
+        root.update()
+        review = show_json_repair_review(
+            root, lambda: {}, lambda case: (), lambda stats: "", lambda case: "",
+        )
+        raw = show_private_json_diff(review, '{"a":1,}', '{"a":1}')
+        root.update()
+
+        def assert_above(child, owner):
+            user32, frame, owner_frame = _win32_frame_handles(child, owner)
+            get_window = user32.GetWindow
+            get_window.argtypes = (wintypes.HWND, wintypes.UINT)
+            get_window.restype = wintypes.HWND
+            assert get_window(frame, 4) == owner_frame  # GW_OWNER
+            # GW_HWNDPREV walks toward higher windows. Bound the walk even
+            # if an unrelated window is destroyed during enumeration.
+            cursor = owner_frame
+            seen = set()
+            while cursor and cursor not in seen and len(seen) < 2048:
+                seen.add(cursor)
+                cursor = get_window(cursor, 3)
+                if cursor == frame:
+                    break
+            assert cursor == frame, "owned viewer must stay above its owner"
+
+        def assert_chain():
+            assert_above(review, root)
+            assert_above(raw, review)
+            assert raw.state() == "zoomed"
+
+        assert_chain()
+        root.lift()
+        root.update()
+        assert_chain()
+        review.lift()
+        root.update()
+        assert_chain()
+        raw.destroy()
+        root.update()
+        assert review.winfo_exists() and root.winfo_exists()
+        assert_above(review, root)
+    finally:
+        root.destroy()
