@@ -135,38 +135,54 @@ class DisposableQualityLedger:
                 )
                 connection.execute("PRAGMA user_version=1")
             else:
-                version = connection.execute("PRAGMA user_version").fetchone()[0]
-                if version != _SCHEMA_VERSION:
-                    raise LedgerUnavailable("ledger schema unsupported")
-                rows = connection.execute(
-                    "SELECT name FROM sqlite_master WHERE type='table'"
-                    " AND name IN ('quality_states','quality_seal')"
-                ).fetchall()
-                if {row[0] for row in rows} != {"quality_states", "quality_seal"}:
-                    raise LedgerUnavailable("ledger schema unsupported")
-                seals = connection.execute(
-                    "SELECT id,check_hmac FROM quality_seal LIMIT 2"
-                ).fetchall()
-                if (len(seals) != 1 or seals[0][0] != 1
-                        or type(seals[0][1]) is not str
-                        or not hmac.compare_digest(seals[0][1], _key_check(self.secret))):
-                    raise LedgerUnavailable("ledger secret mismatch")
+                connection.execute("BEGIN")
+                self._validate_seal(connection)
+                connection.commit()
         except sqlite3.Error:
             raise LedgerUnavailable("ledger schema unavailable") from None
         finally:
             connection.close()
 
+    def _validate_seal(self, con):
+        """Verify the current connection within the caller's transaction."""
+        version = con.execute("PRAGMA user_version").fetchone()[0]
+        if version != _SCHEMA_VERSION:
+            raise LedgerUnavailable("ledger schema unsupported")
+        rows = con.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+            " AND name IN ('quality_states','quality_seal')"
+        ).fetchall()
+        if {row[0] for row in rows} != {"quality_states", "quality_seal"}:
+            raise LedgerUnavailable("ledger schema unsupported")
+        seals = con.execute(
+            "SELECT id,check_hmac FROM quality_seal LIMIT 2"
+        ).fetchall()
+        if (len(seals) != 1 or seals[0][0] != 1
+                or type(seals[0][1]) is not str
+                or not hmac.compare_digest(seals[0][1], _key_check(self.secret))):
+            raise LedgerUnavailable("ledger secret mismatch")
+
     def _connect(self):
         _private_file(self.path, create=False)
+        con = None
         try:
-            con = sqlite3.connect(self.path, timeout=3.0, isolation_level=None)
+            # The file is explicitly created before opening, even in create=True
+            # mode. Never let sqlite silently create a replacement database.
+            con = sqlite3.connect(self.path.absolute().as_uri() + "?mode=rw",
+                                  uri=True, timeout=3.0, isolation_level=None)
             con.execute("PRAGMA busy_timeout=3000")
             con.execute("PRAGMA synchronous=FULL")
             mode = con.execute("PRAGMA journal_mode=DELETE").fetchone()[0]
             if str(mode).lower() != "delete":
                 raise LedgerUnavailable("durable journal unavailable")
             return con
-        except (sqlite3.Error, OSError):
+        except LedgerUnavailable:
+            if con is not None:
+                con.close()
+            raise
+        except (sqlite3.Error, OSError, ValueError):
+            if con is not None:
+                con.close()
             raise LedgerUnavailable("ledger access unavailable") from None
 
     def _read(self, con, identity: RetryIdentity):
@@ -188,13 +204,21 @@ class DisposableQualityLedger:
         return key, state
 
     def read(self, identity: RetryIdentity) -> RetryState:
+        con = self._connect()
         try:
-            with self._connect() as con:
-                return self._read(con, identity)[1]
+            con.execute("BEGIN")
+            self._validate_seal(con)
+            state = self._read(con, identity)[1]
+            con.commit()
+            return state
         except LedgerUnavailable:
+            con.rollback()
             raise
         except (sqlite3.Error, TypeError, ValueError):
+            con.rollback()
             raise LedgerUnavailable("ledger read unavailable") from None
+        finally:
+            con.close()
 
     def transition(self, identity: RetryIdentity, *, expected_revision: int,
                    operation: str, policy: RetryPolicy | None = None, **kwargs) -> RetryState:
@@ -216,6 +240,7 @@ class DisposableQualityLedger:
         con = self._connect()
         try:
             con.execute("BEGIN IMMEDIATE")
+            self._validate_seal(con)
             key, current = self._read(con, identity)
             if current.revision != expected_revision:
                 raise StaleRevision("stale offline ledger revision")
