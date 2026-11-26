@@ -10,6 +10,7 @@
 - **#269 completed owner merge gate:** latest-head Linux E2E, Windows Hosted 3.10/3.11, changed-line scan SUCCESS, formal Codex receipt no major issues, 22/22 threads resolved, explicit 2026-11-01 owner instruction to merge, GitHub confirmed Squash Merge. Two self-hosted jobs were queued and not treated as verified; physical operator tests remain separate.
 
 ## True Open Engineering Work
+- [ ] **Conservative JSON repair:** pure generic and exact-source MultiDim quote candidates staged; runtime opt-in, consumed-source provenance, provider completeness/legacy preprocessing, repair-method quality/GUI, live A/B separate. No automatic activation.
 - [ ] **#302 transport uncertainty (PENDING):** isolate verified failed Worker claim, preserve RUNNING, healthy refill; no automatic replay. Physical acceptance pending.
 - [ ] **#313 ledger seal recheck (PENDING):** transaction-local key/schema check and no implicit DB creation; no same-key rollback/multi-host proof or runtime activation.
 - [ ] **#313 input revision observation (PENDING):** compare exact projected inputs, reject ambiguity/overlap; bind observed revision only after actual dispatch provenance and sink reconciliation. No retry activation.
@@ -81,30 +82,7 @@
 - `.codex/archive/backlog.md-20261027-213700.md` — original Git blob `0a40f0a9b26d7bebb7125a790995db6b84181a4f`; earliest handoffs preserved.
 
 
-- [x] PR #269 GUI UX: selected/visible clipboard copy for ChatGPT debugging, sanitized fixed-code/counts, unknown values redacted, <=100 item cap; tests and usage docs updated.
-- [x] P2 remediation: normalize integer PK to JSON meter string row keys (including scheduler), test actual meter-file locking; active writeback errors override recovered marker and re-open old resolved review.
-- [ ] Final exact-HEAD Hosted Linux/Windows, secret scan, formal Codex Review; operator Windows acceptance and explicit high-risk owner merge authorization required.
-
-
-- [x] PR #269 detailed debugging export: opt-in full diagnostic packet with sourced UTC event chronology, mode/run identity, queue/role receipts, per-item correlated LLM timings/tokens + separate run-only events, optional identifying paths/Run ID/row ID, bounded readonly readers and sensitive-data exclusion; headless tests/docs.
-- [x] Correct Row Merger and orchestrator integer-PK writeback-failure meter mutation to str(_pk), preserving item_dir for GUI inventory; register queue-recovery quality events.
-- [ ] Exact HEAD Hosted E2E/Windows tests, changed-line secret scan, formal Codex review CLEAN; physical GUI acceptance #266 and explicit high-risk owner merge authorization. No automatic merge.
-
-
-- [x] PR #269 Windows shared GUI: paged collapsible per-row/document progress, 10-unit visual bars, selected native progress bar, priority statuses/filters/search, low-duty expanded-only background meter worker, no false writeback success. Scheduler/Consumer/Row Merger status+timestamp evidence and headless tests/docs included.
-- [x] Prior P2s: >500 review rows now paginated with known failures prioritized; old timezone-naive LLM audit lines explicitly marked unknown local timezone and not sorted into UTC chronology, future writer offset-aware. Regression tests included.
-- [ ] Latest-head CI and formal Codex review; Windows DPI and live LLM/SQL/ES/NTFS operator acceptance Issue #266. High-risk PR #269 must remain unmerged without owner permission.
-
-- [x] Formal Codex P2 remedies: per-row Unix epoch validator independent of slice counters; strict bounded 5-attempt run-meter read that raises on corrupt/permission failures and preserves previous GUI data, never falsely showing zero work. Added regression cases for 2026 epoch, invalid JSON, transient recovery, last-good display.
-- [ ] Latest-head Hosted CI and exact-head Codex Review must PASS/CLEAN; Issue #266 Windows live GUI acceptance; require explicit high-risk owner Merge authorization.
-
-
-- [x] Codex P2 on incident review: use shared strict Meter reader rather than default-empty meter_read; invalid existing JSON propagates, UI retains last valid incident list, explicit old item directory works only for missing meter. Real-file corruption/recovery and UI regression tests added.
-- [ ] Exact-head Hosted CI, no P1/P2 formal Codex findings and owner-approved high-risk Merge remain required.
-
-
-- [x] Formal Codex P2 (dd757864): detailed ChatGPT diagnostic clipboard must not use default-empty load_meter.meter_read. Now shares strict bounded reader, marks unavailable input and unknown counts explicitly, with actual-file corruption/restoration/missing/unsafe tests.
-- [ ] Exact-head full Hosted CI + clean formal Codex Review and explicit owner authorization before merge of high-risk #269.
+- `.codex/archive/backlog-rule-repair-pre-compaction-20261125.md` — exact prior active backlog; redundant historical #269 review blocks archived; #266 physical gate retained.
 
 ## 2026-11-10 / PR #301 slot refill rollout gates
 - [ ] Validate exact-head offline slot-refill tests and review, including Worker failure discovered during ACK and producer last-TODO race; then integrate only under a separate opt-in real Consumer/stage scheduler change with Queue Claim, Success/readback, resource limits, cancellation and physical Windows acceptance. No auto-deploy on running GPU tasks.

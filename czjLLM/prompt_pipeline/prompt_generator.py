@@ -3,12 +3,21 @@ import os
 from colorama import Fore#, Back, Style
 from typing import Optional
 from ..taskConfig import taskSetting
+from ..task_configs.taskSetting_Enrichment import TRUSTED_MULTIDIM_SOURCE_RENDERERS
+from ..utilities.json_rule_policy import (
+    SourceSpanReceipt, receipt_for_trusted_appended_source,
+    rebind_source_span_after_no_think,
+)
 #from czjLLM_utils import generate_prompt
 
 import inspect
 
 from ..tokenizer_utils import TokenizerWrapper
 from ..utilities.llm_call_audit import clear_prompt_token_metadata, write_prompt_token_metadata
+from .json_source_queue import (
+    MAX_SOURCE_RECEIPTS_PER_ITEM, generated_source_handoff, source_task_fingerprint,
+    finalize_generated_source_handoff,
+)
 from ..job_manager.job_config import LLMJobConfig
 from ..job_manager.job_config import getTextClass
 from ..job_manager.job_config import getKeyConsiderations
@@ -220,6 +229,18 @@ class PromptGenerator:
         self.ctx = ctx
 
     def build(self, content: str) -> str:
+        return self._build(content, capture_source=False)[0]
+
+    def build_with_source_receipt(self, content: str) -> tuple[str, SourceSpanReceipt | None]:
+        """Capture provenance only from the actual trusted append-only renderer.
+
+        Returns the same prompt as build(). This is a renderer receipt, not
+        queue or dispatch authority. The caller must bind its current task
+        generation separately. Never reconstruct a receipt from a queued file.
+        """
+        return self._build(content, capture_source=True)
+
+    def _build(self, content: str, *, capture_source: bool) -> tuple[str, SourceSpanReceipt | None]:
         if not content.strip():
             print("⚠️ generate_prompt: content 為空，請確認是否為預期行為。")
 
@@ -230,7 +251,7 @@ class PromptGenerator:
                 prompt,
                 getattr(self.ctx, "model_spec_name", "") or "",
                 enabled=(not self.ctx.think_mode),
-            )
+            ), None
 
         template_function = taskSetting[task]["template"]
         source_code = inspect.getsource(template_function)
@@ -264,11 +285,20 @@ class PromptGenerator:
 
         # 新行為：依模型與 think_mode 決定是否附加 /no_think
         # enabled = not think_mode（希望禁思考才啟用附加邏輯）
-        return append_no_think_if_applicable(
+        finalized = append_no_think_if_applicable(
             prompt,
             getattr(self.ctx, "model_spec_name", "") or "",
             enabled=(not self.ctx.think_mode),
         )
+        receipt = None
+        if capture_source and any(template_function is known for known in TRUSTED_MULTIDIM_SOURCE_RENDERERS):
+            try:
+                original_receipt = receipt_for_trusted_appended_source(prompt, content)
+                receipt = rebind_source_span_after_no_think(prompt, original_receipt, finalized)
+            except (ValueError, UnicodeError):
+                # A provenance miss cannot change the generated prompt.
+                pass
+        return finalized, receipt
 
 
 def process_file_to_prompt(file_path, ctx, adjust=True):
@@ -297,7 +327,13 @@ def process_chunk_to_generate_prompt(idx: int, ctx_piece: str, ctx: LLMJobConfig
         return
     #print("ctx in process_chunk_to_generate_prompt",ctx)
     generator = PromptGenerator(ctx)
-    prompt = generator.build(content=ctx_piece)
+    records = getattr(ctx, "_json_source_handoffs", None)
+    task_sha = source_task_fingerprint(ctx.task, taskSetting) if isinstance(records, dict) else ""
+    receipt = None
+    if task_sha and len(records) < MAX_SOURCE_RECEIPTS_PER_ITEM:
+        prompt, receipt = generator.build_with_source_receipt(ctx_piece)
+    else:
+        prompt = generator.build(content=ctx_piece)
     tokenizer = tokenizer or TokenizerWrapper(
         model_name=ctx.model_spec_name, task=ctx.task
     )
@@ -316,10 +352,25 @@ def process_chunk_to_generate_prompt(idx: int, ctx_piece: str, ctx: LLMJobConfig
     os.makedirs(os.path.dirname(todo_fn), exist_ok=True)
     #print("todo_fn",todo_fn)
     try:
-        with open(todo_fn, 'wt', encoding='utf-8') as fp:
-            #print(f"Writting prompt: {prompt} to {todo_fn}")
-            #print("todo_fn",{todo_fn})
+        if isinstance(records, dict):
+            records.pop(os.path.basename(todo_fn), None)
+        if receipt is not None:
+            try:
+                stream = open(todo_fn, 'xt', encoding='utf-8')
+            except FileExistsError:
+                # Legacy overwrite is not an independently created generation.
+                receipt = None
+                stream = open(todo_fn, 'wt', encoding='utf-8')
+        else:
+            stream = open(todo_fn, 'wt', encoding='utf-8')
+        handoff = None
+        with stream as fp:
             fp.write(prompt)
+            if receipt is not None:
+                handoff = generated_source_handoff(todo_fn, fp, prompt, receipt, task_sha)
+        handoff = finalize_generated_source_handoff(handoff, todo_fn)
+        if handoff is not None:
+            records[os.path.basename(todo_fn)] = handoff
         write_prompt_component_metrics(
             todo_fn,
             ctx_piece,

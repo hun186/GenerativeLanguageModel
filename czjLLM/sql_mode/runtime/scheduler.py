@@ -138,6 +138,8 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
     mode = str(getattr(ctx, "mode", "") or "").strip().lower()
     explicit_stages = _explicit_stage_flow(ctx)
     has_stage_flow = bool(explicit_stages)
+    # Row-local, bounded receipt collection; never put source text in Registry.
+    row_ctx._json_source_handoffs = {} if not has_stage_flow and mode in {"sql", "table", "es"} else None
     # `mode: table`（Excel/CSV sink）與 `mode: sql` 都共用此排程器；
     # 若限定 sql 才走 multistage，table 會只執行單階段流程，
     # 導致 stage writeback 找不到 _stage_merges/manifest.json。
@@ -237,7 +239,11 @@ def schedule_one_row(ctx, registry, meter_fn, idx: int, pk: Any, text: str, sour
     # registry 會呈現 empty，watchdog / orchestrator 可能誤判沒有可寫回工作；
     # 同時若 combine 途中刪除 prompt item 目錄，row_merger 仍可用後續更新的
     # CombBackFN 寫回 SQL。
-    registry.add(item_dir, pk, temp_txt_path, comb_back_fn)
+    handoffs = row_ctx._json_source_handoffs
+    if handoffs and hasattr(registry, "take_source_handoff"):
+        registry.add(item_dir, pk, temp_txt_path, comb_back_fn, source_handoffs=handoffs)
+    else:
+        registry.add(item_dir, pk, temp_txt_path, comb_back_fn)
     if run_stream_multistage and hasattr(registry, "update"):
         registry.update(item_dir, status="scheduling_multistage")
     meter_update(meter_fn, _on_add_row)

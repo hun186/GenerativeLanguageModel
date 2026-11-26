@@ -31,8 +31,15 @@ models = [
         32: {"recommend_task": ["CLASS EXT"], "nProcess": 4},
     }),
     ("inkling-2-mini:latest", [16, 32, 64, 128], {
-        16: {"recommend_task": ["CLASS EXT"], "nProcess": 2},
-        32: {"recommend_task": ["CLASS EXT"], "nProcess": 2},
+        64: {
+            "nProcess": 2,
+            "workers_per_endpoint": 1,
+            "max_concurrent_per_endpoint": 1,
+        },
+        128: {
+            "workers_per_endpoint": 1,
+            "max_concurrent_per_endpoint": 1,
+        },
     }),
     ("gpt-oss:latest", [4, 8, 16, 32, 64, 128], {
         32: {"nProcess": 4},
