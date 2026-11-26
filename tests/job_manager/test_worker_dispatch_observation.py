@@ -230,9 +230,19 @@ def test_spawned_worker_stream_snapshot_reaches_visible_document_page(tmp_path):
     item, prompt, audit, meter = _setup(tmp_path)
     call_id = uuid4().hex
     activity = _activity_event(untrusted_extra="private payload must never persist")
+    # Spawn imports the target's defining module from scratch. Use the
+    # actual lightweight writer, not this test module (which imports the
+    # heavyweight pipeline controller and model dependencies).
     child = mp.get_context("spawn").Process(
-        target=_emit, args=(item, prompt, audit, call_id, "calling"),
-        kwargs={"stream_activity": activity},
+        target=dispatch.write_worker_dispatch_observation,
+        kwargs={
+            "audit_path": str(audit), "item_dir": str(item),
+            "prompt_file": str(prompt), "worker_call_id": call_id,
+            "model_spec": {"model_name": "qwen3.6:128k",
+                           "base_url": "http://10.20.30.40:11434/v1?key=PRIVATE",
+                           "api_key": "PRIVATE_API_KEY"},
+            "status": "calling", "stream_activity": activity,
+        },
     )
     child.start()
     try:
