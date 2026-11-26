@@ -478,3 +478,95 @@ def test_worker_both_paths_forward_finish_reason_for_explicit_rule_policy():
     source = Path("czjLLM/prompt_pipeline/pipeline_controller.py").read_text(encoding="utf-8")
     assert source.count('if finish_reason == "length" or self._generic_rule_repair_enabled():') == 2
     assert source.count("self.handle_json_output(retMES)") >= 2
+
+
+from czjLLM.prompt_pipeline.json_rule_dispatch import (
+    legacy_rule_worker_kwargs, validate_multidim_event_slice,
+)
+
+
+def _test_task_template(content):
+    return "JSON: " + content
+
+
+def _test_other_task_template(content):
+    return "Different JSON: " + content
+
+
+def _test_task_contract(text):
+    return json.loads(text) == {"a": 1}
+
+
+def _legacy_rule_spec():
+    return {
+        "template": _test_task_template,
+        "json_rule_repair": {"generic": True},
+        "json_rule_slice_contract": _test_task_contract,
+    }
+
+
+def test_legacy_dispatch_explicit_named_task_contract_is_picklable():
+    import pickle
+    name = "example-to json"
+    spec = _legacy_rule_spec()
+    pool = {name: spec}
+    kwargs = legacy_rule_worker_kwargs(name, task_pool=pool, renderer_pool=pool)
+    assert kwargs["json_rule_policy"] == JsonRepairPolicy(generic=True)
+    assert kwargs["json_rule_slice_validator"] is _test_task_contract
+    assert pickle.loads(pickle.dumps(kwargs)) == kwargs
+    assert legacy_rule_worker_kwargs(name, task_pool={name: dict(spec)}, renderer_pool=pool) == kwargs
+
+
+@pytest.mark.parametrize("change", [
+    {"json_rule_repair": {"generic": False}},
+    {"json_rule_repair": {"generic": "true"}},
+    {"json_rule_repair": {"generic": True, "multidim_evidence_quotes": True}},
+    {"json_rule_slice_contract": None},
+    {"json_rule_slice_contract": "untrusted.module.validator"},
+    {"json_rule_slice_contract": lambda text: True},
+    {"template": "alias"},
+])
+def test_legacy_dispatch_refuses_invalid_or_unsupported_contract(change):
+    name = "example-to json"
+    spec = dict(_legacy_rule_spec(), **change)
+    pool = {name: spec}
+    assert legacy_rule_worker_kwargs(name, task_pool=pool, renderer_pool=pool) == {}
+
+
+def test_legacy_dispatch_refuses_context_shadow_or_missing_task():
+    name = "example-to json"
+    spec = _legacy_rule_spec()
+    pool = {name: spec}
+    for shadow in ({}, {name: dict(spec, template=_test_other_task_template)},
+                   {name: dict(spec, json_rule_repair={})}, {name: "alias"}):
+        assert legacy_rule_worker_kwargs(name, task_pool=shadow, renderer_pool=pool) == {}
+    assert legacy_rule_worker_kwargs("display-to json", task_pool=pool, renderer_pool=pool) == {}
+
+
+def test_registered_multidim_contract_reuses_profile_without_document_requirements():
+    name = "example-to json"
+    spec = dict(_legacy_rule_spec(), json_rule_slice_contract="multidim_event_slice_v1")
+    pool = {name: spec}
+    kwargs = legacy_rule_worker_kwargs(name, task_pool=pool, renderer_pool=pool)
+    assert kwargs["json_rule_slice_validator"] is validate_multidim_event_slice
+    # A slice with no events may be structurally valid even when a later
+    # document-wide required-output guard would reject the assembled output.
+    assert validate_multidim_event_slice('[{"Event":[]}]') is True
+    assert validate_multidim_event_slice('[]') is False
+    with pytest.raises(ValueError):
+        validate_multidim_event_slice('[{"Event":[],"unknown_field":1}]')
+
+
+def test_real_named_multidim_tasks_stay_off_by_default():
+    from czjLLM.taskConfig import taskSetting
+    for name in ("InfoExtraction-MultiDim-SQLFriendly-to json format",
+                 "InfoExtraction-MultiDim-Compact-SQLFriendly-to json format"):
+        assert legacy_rule_worker_kwargs(name, task_pool=taskSetting, renderer_pool=taskSetting) == {}
+
+
+def test_only_legacy_queue_dispatch_routes_supply_rule_contract():
+    from pathlib import Path
+    source = Path("czjLLM/prompt_pipeline/pipeline_controller.py").read_text(encoding="utf-8")
+    assert source.count("**legacy_rule_worker_kwargs(ctx.task,") == 2
+    stage_route = source[source.index("def call_llm_api("):source.index("class PromptAPIPipeline:")]
+    assert "legacy_rule_worker_kwargs" not in stage_route
