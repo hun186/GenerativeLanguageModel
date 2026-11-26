@@ -13,6 +13,7 @@ from czjLLM.utilities.json_repair_private_capture import (
     prune_expired_private_captures, read_private_repair,
 )
 from czjLLM.job_manager.json_repair_raw_diff_gui import show_private_json_diff
+from czjLLM.job_manager.json_repair_window import retain_win32_viewer_owner
 
 
 _COLUMNS = (
@@ -277,5 +278,6 @@ def show_json_repair_review(
         # The original geometry remains the normal/restore size. Native
         # zoomed state retains the title bar and the Windows taskbar.
         win.state("zoomed")
+        retain_win32_viewer_owner(win, parent)
     win.focus_set()
     return win

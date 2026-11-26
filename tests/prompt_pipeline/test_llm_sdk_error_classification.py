@@ -138,3 +138,38 @@ def test_explicit_thinking_replaces_automatic_suffix():
     assert finalize_llm_user_content(
         "synthetic", model_spec=dict(spec, no_think_suffix="/no_think"),
     ).endswith("/no_think")
+
+
+def test_extract_resume_fingerprint_tracks_effective_reasoning_policy_only():
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline.pipeline_controller import _extract_stage_provenance_fingerprint
+    ctx = SimpleNamespace(taskSetting={}, task="extract", think_mode=True,
+                          model_spec={"model_name": "qwen3:8b"})
+    def fingerprint(**settings):
+        ctx.model_spec = {"model_name": "qwen3:8b", **settings}
+        return _extract_stage_provenance_fingerprint("synthetic extract", ctx)
+    baseline = fingerprint()
+    assert fingerprint(api_key="other-secret", llm_read_timeout_sec=900) == baseline
+    low = fingerprint(thinking_level="low")
+    assert low != baseline and low != fingerprint(thinking_level="high")
+    assert low == fingerprint(thinking_level="low", api_key="different")
+    assert low != fingerprint(thinking_level="low", no_think_suffix=None)
+    assert low != fingerprint(thinking_level="low", no_think_suffix="/no_think")
+    assert fingerprint(thinking_level=False) == fingerprint(thinking_level="none")
+    with pytest.raises(ValueError, match="thinking_level"):
+        fingerprint(thinking_level="invalid")
+
+
+def test_legacy_prompt_generation_does_not_preappend_automatic_suffix_for_explicit_effort():
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline.prompt_generator import PromptGenerator, finalize_llm_user_content
+    ctx = SimpleNamespace(task="raw synthetic instruction", think_mode=False,
+                          model_spec_name="qwen3:8b", model_spec={"model_name": "qwen3:8b"})
+    legacy = PromptGenerator(ctx).build("source")
+    assert legacy.endswith("/no_think")
+    ctx.model_spec["thinking_level"] = "low"
+    prompt = PromptGenerator(ctx).build("source")
+    assert not prompt.endswith("/no_think")
+    assert finalize_llm_user_content(prompt, model_spec=ctx.model_spec) == prompt
+    ctx.model_spec["no_think_suffix"] = "/no_think"
+    assert PromptGenerator(ctx).build("source").endswith("/no_think")

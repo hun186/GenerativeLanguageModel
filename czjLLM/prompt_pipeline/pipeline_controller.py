@@ -70,6 +70,10 @@ from czjLLM.utilities.logging_utils import CostLog
 from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_metadata, relabel_prompt_token_stage, normalized_finish_reason
 from czjLLM.utilities.processing_quality import emit_quality_event
 from czjLLM.utilities.json_repair_analysis import analyze_json_repair
+from czjLLM.utilities.json_transport import clean_json_transport, is_json_output_task
+from czjLLM.utilities.json_rule_policy import JsonRepairPolicy, select_rule_candidate, verified_source_span
+from czjLLM.prompt_pipeline.json_rule_dispatch import legacy_rule_worker_kwargs
+from czjLLM.prompt_pipeline.json_source_queue import take_claimed_source_receipt
 from czjLLM.utilities.json_repair_private_capture import (
     capture_enabled, configured_private_root, write_private_repair,
 )
@@ -111,7 +115,7 @@ from czjLLM.prompt_pipeline.round_runner import (
     run_round,
 )
 from czjLLM.prompt_pipeline.refill_scheduler import ClaimedWork, run_slot_refill
-from czjLLM.prompt_pipeline.request_policy import context_round_timeout
+from czjLLM.prompt_pipeline.request_policy import context_round_timeout, request_policy
 from czjLLM.prompt_pipeline.runtime_support.load_meter import (
     ItemsRegistry,
     find_item_dir_for,
@@ -671,6 +675,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     item_dirs,
                     per_round_limit=(1 if sys.platform.startswith("win") else per_round_limit),
                     claim_ids_out=claimed_evidence,
+                    source_receipt_registry=registry,
                 )
             except QueueClaimRollbackError:
                 # Rollback itself failed after a real claim; preserve all
@@ -733,7 +738,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                 # 若無可派發任務：teardown 已設定 stop_event 時才收尾
                 if stop_event.is_set():
                     #if not pick_next_prompts(item_dirs, per_round_limit=1):
-                    if not pick_and_claim_next_prompts(item_dirs, per_round_limit=1):
+                    if not pick_and_claim_next_prompts(item_dirs, per_round_limit=1, source_receipt_registry=registry):
                         # A safe claim can be blocked by a basename collision,
                         # an in-flight RUNNING target, filesystem restrictions,
                         # or an interrupted prior operation. Never report the
@@ -791,8 +796,13 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     #model_spec=ctx.model_spec,
                     model_spec=job_spec,           # ★ 用副本，不要用 ctx.model_spec 本體
                     PGMSubDir=ctx.PGMSubDir,
+                    json_rule_source_receipt=take_claimed_source_receipt(
+                        registry, item_dir, pf, claimed_evidence.get(pf, ""), ctx.task, taskSetting,
+                    ),
                     queue_claim_event_id=claimed_evidence.get(pf, ""),
                     dispatch_item_dir=item_dir,
+                    **legacy_rule_worker_kwargs(ctx.task, task_pool=getattr(ctx, "taskSetting", None),
+                                                renderer_pool=taskSetting),
                     **_llm_call_audit_kwargs(ctx),
                 ))
 
@@ -1240,7 +1250,8 @@ def _render_task_mapping_prompt(task_spec: Mapping, content: str, ctx) -> str:
                 keyConsiderations=getattr(ctx, "keyConsiderations", ""),
                 MainFileName=getattr(ctx, "main_file_name", ""),
                 task=mapped_name,
-                think_mode=getattr(ctx, "think_mode", True),
+                think_mode=(True if "thinking_level" in (getattr(ctx, "model_spec", None) or {})
+                            else getattr(ctx, "think_mode", True)),
             )
         return _render_raw_task_prompt(mapped_name, content)
     return content
@@ -1266,7 +1277,8 @@ def render_stage_task_prompt(stage_task, content: str, ctx) -> str:
             keyConsiderations=getattr(ctx, "keyConsiderations", ""),
             MainFileName=getattr(ctx, "main_file_name", ""),
             task=task_name,
-            think_mode=getattr(ctx, "think_mode", True),
+            think_mode=(True if "thinking_level" in (getattr(ctx, "model_spec", None) or {})
+                            else getattr(ctx, "think_mode", True)),
         )
     # 支援 multi-stage 直接填入 prompt 字串（非 taskSetting key）
     return _render_raw_task_prompt(task_name, content)
@@ -1406,6 +1418,10 @@ def _extract_stage_provenance_fingerprint(stage_task, ctx) -> str:
         "dispatch_finalization": {
             "model_name": str(model_spec.get("model_name", "") or ""),
             "no_think_suffix": model_spec.get("no_think_suffix"),
+            # Preserve the historical digest for absent thinking policy.
+            **({"reasoning_effort": request_policy(model_spec)[2],
+                "explicit_suffix": "no_think_suffix" in model_spec}
+               if "thinking_level" in model_spec else {}),
         },
         "render_context": {
             "keyConsiderations": getattr(ctx, "keyConsiderations", ""),
@@ -3163,6 +3179,7 @@ def _run_windows_live_slot_refill(
             next_batch = pick_and_claim_next_prompts(
                 eligible, per_round_limit=1, claim_ids_out=claim_ids,
                 excluded_todo_sources=protected_children,
+                source_receipt_registry=registry,
             )
             if not next_batch:
                 return None
@@ -3188,8 +3205,13 @@ def _run_windows_live_slot_refill(
             allow_to_retry=True,
             model_spec=job_spec,
             PGMSubDir=ctx.PGMSubDir,
+            json_rule_source_receipt=take_claimed_source_receipt(
+                registry, item_dir, pf, receipt, ctx.task, taskSetting,
+            ),
             queue_claim_event_id=receipt,
             dispatch_item_dir=item_dir,
+            **legacy_rule_worker_kwargs(ctx.task, task_pool=getattr(ctx, "taskSetting", None),
+                                        renderer_pool=taskSetting),
             **_llm_call_audit_kwargs(ctx),
         )
         def _dispatch_receipt(d):
@@ -3418,9 +3440,16 @@ class PromptAPIPipeline:
                  audit_path: str = "",
                  queue_claim_event_id: str = "",
                  dispatch_item_dir: str = "",
+                 json_rule_policy: JsonRepairPolicy | None = None,
+                 json_rule_slice_validator=None,
+                 json_rule_source_receipt=None,
 
                  ):
         self.task = task
+        # Explicit per-job trusted contract; never infer from a task name,
+        # a model response, or ES document-level required-output checks.
+        self.json_rule_policy = json_rule_policy
+        self.json_rule_slice_validator = json_rule_slice_validator
         #self.MainFileName = MainFileName
         self.include_think = include_think
         self.content = content
@@ -3428,6 +3457,12 @@ class PromptAPIPipeline:
         if self.content == "" and self.promptFile != "":
             with open(self.promptFile,mode='rt',encoding='utf-8') as fp:
                 self.content = fp.read()
+        # This receipt is provenance only; source-dependent repair remains off.
+        self.json_rule_source_receipt = (
+            json_rule_source_receipt
+            if verified_source_span(self.content, json_rule_source_receipt) is not None
+            else None
+        )
         self.OutputSaveFN = OutputSaveFN   
         self.removeFinPromptFile = removeFinPromptFile
         self.max_tokens = max_tokens
@@ -3646,14 +3681,14 @@ class PromptAPIPipeline:
                     f"{_preview_text_for_debug(retMES, self.debug_print_max_chars)}"
                 )
     
-            if self.include_think == False:
+            if is_json_output_task(self.task):
+                retMES = clean_json_transport(retMES, include_think=self.include_think)
+            elif self.include_think == False:
                 retMES = re.sub(r'<think>.*?</think>', '', retMES, flags=re.DOTALL)
     
             if retMES.replace(" ", "").replace("\n", "") == "<EMPTY>":
                 retMES = ""
     
-            if "to json" in self.task.lower():
-                retMES = retMES.replace('```json', '').replace('```', '').strip()
     
             # 5) JSON 驗證與重試任務
             finish_reason = normalized_finish_reason(response)
@@ -3662,7 +3697,7 @@ class PromptAPIPipeline:
             ):
                 # Keep the pre-existing single-argument hook contract for
                 # callers without explicit provider truncation evidence.
-                if finish_reason == "length":
+                if finish_reason == "length" or self._generic_rule_repair_enabled():
                     DTBJobs_Retry, retMES = self.handle_json_output(
                         retMES, finish_reason=finish_reason,
                     )
@@ -3865,7 +3900,9 @@ class PromptAPIPipeline:
             #清除前面<think>的思考內容
             #retMES = re.sub(r"<think>.*?</think>\s*", "", retMES, flags=re.DOTALL)
             #print("retMES b4",retMES)
-            if self.include_think == False:
+            if is_json_output_task(self.task):
+                retMES = clean_json_transport(retMES, include_think=self.include_think)
+            elif self.include_think == False:
                 retMES = re.sub(r'<think>.*?</think>', '', retMES, flags=re.DOTALL)
             if retMES.replace(" ","").replace("\n","") == "<EMPTY>":
                 retMES = ""  # 替換為空字串
@@ -3873,8 +3910,6 @@ class PromptAPIPipeline:
             #print("retMES af1",retMES)
             #print("retMES in pipeline af",retMES)
             #print("retMES bf",retMES)
-            if "to json" in self.task.lower():
-                retMES = retMES.replace('```json', '').replace('```', '').strip()
             #print("retMES af",retMES)
             # 移除成功呼叫結束之Todo Prompt檔案。
             #print("retMES af2",retMES)
@@ -3888,7 +3923,7 @@ class PromptAPIPipeline:
             finish_reason = normalized_finish_reason(response)
             if "to json" in self.task.lower() and (
                     self.allow_to_retry or finish_reason == "length"):
-                if finish_reason == "length":
+                if finish_reason == "length" or self._generic_rule_repair_enabled():
                     DTBJobs_Retry, retMES = self.handle_json_output(
                         retMES, finish_reason=finish_reason,
                     )
@@ -4024,6 +4059,25 @@ class PromptAPIPipeline:
             print("⚠️ json repair analysis unavailable:", type(error).__name__)
             return None
 
+    def _generic_rule_repair_enabled(self) -> bool:
+        policy = getattr(self, "json_rule_policy", None)
+        return (
+            isinstance(policy, JsonRepairPolicy)
+            and policy.generic is True
+            and policy.multidim_evidence_quotes is False
+            and callable(getattr(self, "json_rule_slice_validator", None))
+        )
+
+    def _try_generic_rule_repair(self, raw: str, finish_reason: str):
+        # Source-dependent repair is deliberately not enabled on this route:
+        # no verified renderer/queue receipt is available yet.
+        if not self._generic_rule_repair_enabled():
+            return None
+        return select_rule_candidate(
+            raw, policy=self.json_rule_policy, finish_reason=finish_reason,
+            validate_candidate=self.json_rule_slice_validator,
+        )
+
     def handle_json_output(self, retMES, *, finish_reason: str = ""):
         '''
         嘗試用json.loads驗證回傳訊息json正確性，
@@ -4060,23 +4114,29 @@ class PromptAPIPipeline:
             
             
             try:
-                print(f'Try using LLM {self.model_spec["model_name"]} to repair.')
-                #print("disable think status",should_disable_think(self.model_spec["model_name"]))
-                MainFileName,input_text,keyConsiderations = self.extract_MainFileName_and_input_text()
-                retMES_rep = json_format_caller(
-                    task="json format Repair",
-                    content=retMES,
-                    MainFileName=MainFileName,
-                    max_tokens=self.max_tokens,
-                    model_spec=self.model_spec,
-                    audit_run_id=self.audit_run_id,
-                    audit_path=self.audit_path,
-                    #no_think = should_disable_think(self.model_spec["model_name"])
-                    )
+                candidate = self._try_generic_rule_repair(retMES, finish_reason)
+                if candidate is not None:
+                    retMES_rep = candidate.text
+                else:
+                    print(f'Try using LLM {self.model_spec["model_name"]} to repair.')
+                    #print("disable think status",should_disable_think(self.model_spec["model_name"]))
+                    MainFileName,input_text,keyConsiderations = self.extract_MainFileName_and_input_text()
+                    retMES_rep = json_format_caller(
+                        task="json format Repair",
+                        content=retMES,
+                        MainFileName=MainFileName,
+                        max_tokens=self.max_tokens,
+                        model_spec=self.model_spec,
+                        audit_run_id=self.audit_run_id,
+                        audit_path=self.audit_path,
+                        #no_think = should_disable_think(self.model_spec["model_name"])
+                        )
                 json.loads(retMES_rep)
                 repair_detail = self._json_repair_comparison_detail(
                     retMES, retMES_rep, parse_error,
                 )
+                if candidate is not None and isinstance(repair_detail, dict):
+                    repair_detail = dict(repair_detail, repair_method="RULE_BASED")
                 # One exact Quality event UUID joins only this Worker pair.
                 # Default Windows diagnostic: bounded private IPC to a
                 # GUI-owned in-memory ring. Linux/headless: no GUI sink, no
@@ -4109,7 +4169,8 @@ class PromptAPIPipeline:
                         except Exception:
                             # Never print content, paths or error messages.
                             print("⚠️ PRIVATE_JSON_REPAIR_CAPTURE_UNAVAILABLE")
-                print("Successfully repair with LLM.")
+                print("Successfully repair with rule-based method." if candidate is not None
+                      else "Successfully repair with LLM.")
                 print("repaired retMES_rep: [JSON 原文省略；請看 GUI 修復差異分析]")
                 return [],retMES_rep
             except Exception as ex_json:

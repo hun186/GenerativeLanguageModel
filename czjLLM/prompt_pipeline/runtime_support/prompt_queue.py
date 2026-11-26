@@ -141,7 +141,7 @@ def require_no_pending_todo_sources(item_dirs) -> None:
 
 def pick_and_claim_next_prompts(
     item_dirs, per_round_limit=128, *, claim_ids_out=None,
-    excluded_todo_sources=None,
+    excluded_todo_sources=None, source_receipt_registry=None,
 ):
     """
     從各 item_dir 的 TODO 中挑選檔案，只領取不會覆寫 RUNNING 的檔案。
@@ -183,6 +183,17 @@ def pick_and_claim_next_prompts(
             # file to be mistaken for this new Worker's output.
             if prior_success.exists() or prior_success.is_symlink():
                 continue
+            # Retire any prior bound claim and remove fresh provenance BEFORE
+            # the move. A failed claim attempt deliberately forfeits the receipt.
+            # This path never authorizes or changes queue scheduling.
+            fresh_source_receipt = None
+            if source_receipt_registry is not None:
+                try:
+                    fresh_source_receipt = source_receipt_registry.take_source_handoff(
+                        str(item_dir), src_p.name,
+                    )
+                except Exception:
+                    pass
             if not _claim_regular_source_no_clobber(src_p, dst_p):
                 continue
             # Another Worker may publish Success and release its former
@@ -216,6 +227,10 @@ def pick_and_claim_next_prompts(
                         dst_key not in ambiguous_destinations and
                         isinstance(claim_id, str)):
                     claim_ids_out[dst_key] = claim_id
+                    if fresh_source_receipt is not None and src_p.parent == todo:
+                        source_receipt_registry.bind_source_claim(
+                            str(item_dir), dst_p.name, claim_id, fresh_source_receipt,
+                        )
             except Exception:
                 pass
             claimed.append((str(dst_p), str(item_dir)))

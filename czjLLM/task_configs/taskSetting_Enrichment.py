@@ -18,6 +18,9 @@ MULTIDIM_EXTRACTION_Rule = """
 14. 每個 `Event` 必須具有結構性識別碼 `event_id`，依原文首次出現的核心事件順序編為 `"E1"`, `"E2"`, `"E3"`...；此 ID 只是同一頂層物件內的關聯鍵，不屬於文本事實，因此不得省略。  
 15. `Person`、`Involved_Parties`、`Impact`、`Event_Timeline`、`evidence_snippets` 每筆都必須具有 `event_ids` 陣列，只能引用同一頂層物件中實際存在的 `Event.event_id`；可同時引用多個事件。若無法可靠歸屬任何事件，填 `[]`，不得猜測。  
 
+16. 所有 JSON 字串值均須遵守 JSON 跳脫規則。字串內容中的半形雙引號 " 必須寫成 \\"，原文反斜線 \\ 必須寫成 \\\\；實際換行、回車、Tab 等控制字元須分別寫成 \\n、\\r、\\t 等合法 JSON 跳脫形式。只對字串內容跳脫，不得跳脫 JSON 結構的引號；已正確跳脫的內容不得重複跳脫。解析後的 evidence_snippets.text 必須與原文逐字一致，不得刪除、替換引號、轉換全形／半形或改寫文字。
+    例如原文：他见证了中国"蓝盔"部队。→ 合法 JSON：{"text":"他见证了中国\\"蓝盔\\"部队。"}。解析後 text 仍為：他见证了中国"蓝盔"部队。
+
 【規則衝突優先序（請先執行）】
 A. 若不同章節規則衝突，優先順序為：
    1) 整體原則
@@ -1796,12 +1799,12 @@ Step 5：
 ================================================================================
 【輸出結構】
 
-最終輸出必須是一個 JSON 陣列，通常只有一個頂層物件，例如：
+最終輸出必須是一個 JSON 陣列，通常只有一個頂層物件。article_date_precision 僅允許 day、month、year、unknown；time_precision 依【日期與時間判讀】的唯一允許值填寫。以下為結構示例（日期精度 day 僅為示例，不是預設值）：
 
 [{
   "article_title": "文章標題",
   "article_date_iso": "代表整篇文章的日期，格式 YYYY-MM-DD；無法判斷時為 null",
-  "article_date_precision": "文章日期精度，必為 \"day\" | \"month\" | \"year\" | \"unknown\"",
+  "article_date_precision": "day",
 
   "facet": ["economy", "politics"],
   "core_entities": ["United States", "China"],
@@ -1820,7 +1823,7 @@ Step 5：
 
       "time_raw": "文本中的原始日期/時刻字面；必須逐字保留原文，不得因 time_precision 較低而刪除原文明確存在的時、分、秒或改寫格式，例如：2025年2月、8月18日上午8時42分、0504、去年、今年9月20日；必須保留原始表述",
       "time_iso": "標準化事件時間。可為 YYYY-MM-DD、YYYY-MM-DDTHH:00:00、YYYY-MM-DDTHH:mm:00、YYYY-MM-DDTHH:mm:ss；原文明示時區時可附 offset/Z；若只有時刻但缺少可安全依附日期則為 null",
-      "time_precision": "\"second\" | \"minute\" | \"hour\" | \"day\" | \"month\" | \"year\" | \"unknown\"",
+      "time_precision": "day",
 
       "location": "此子事件發生或主要影響的地點描述（可較口語；若原文僅提供機構場域，也可保守填機構名稱）",
       "consequence": "可直接歸因於此子事件的後果/影響；可摘要但不得改變原文中的數字、條件、時態與因果方向",
@@ -1861,7 +1864,7 @@ Step 5：
       "event_ids": ["E1"],
       "time_raw": "原始日期/時刻字面；必須逐字保留原文，不得因 time_precision 較低而刪除原文明確存在的時、分、秒或改寫格式",
       "time_iso": "標準化時間；可為 YYYY-MM-DD 或含時分秒的 ISO datetime；若只有時刻但缺少可安全依附日期則為 null",
-      "time_precision": "\"second\" | \"minute\" | \"hour\" | \"day\" | \"month\" | \"year\" | \"unknown\"",
+      "time_precision": "day",
       "description": "該時間點或期間的事件內容描述"
     }
   ],
@@ -1892,7 +1895,7 @@ Step 5：
 1. 只允許輸出 JSON 陣列本體：`[ {...} ]`。  
 2. 不得輸出任何外層包裝物件（例如 `{ "result": ... }`、`{ "data": ... }`）。  
 3. 不得輸出字串化 JSON：  
-   - 錯誤：`[{ "payload": "{\"article_title\":\"...\"}" }]`  
+   - 錯誤：`[{ "payload": "{\\"article_title\\":\\"...\\"}" }]`  
    - 正確：`[{ "article_title":"..." }]`  
 4. `Event` 必須保持原生 JSON array；`Person`、`Involved_Parties`、`Impact`、`Event_Timeline`、`evidence_snippets` 也必須是 array；`importance` 必須是 object，不得轉成字串。  
 5. 即使只有一個事件，`Event` 也必須是陣列，例如 `"Event":[{"event_id":"E1", ...}]`，不得輸出 `"Event": {...}`。  
@@ -1901,6 +1904,7 @@ Step 5：
 8. 若原文明確同時存在工具 / 手段與作用對象，輸出前必須檢查 `medium` 與 `object` 是否正確分工；不得因欄位補齊而無理由填成相同內容。  
 9. 輸出前必須檢查資料品質 / 測試 / 重複紀錄 / debug 註記是否被錯誤提升為現實世界 Event、Impact、Event.consequence 或 Event_Summary；若是，必須修正，完整原文仍保留於 evidence_snippets。  
 10. 輸出前必須檢查同一頂層物件內的實體字串一致性。若 `Event.subject`、`Event.object`、`Person.name`、`Involved_Parties.party_name`、`core_entities` 等欄位實際指涉同一實體，且原文只有一種明確寫法，則所有欄位必須使用完全相同的原文字串；不得自行進行簡繁轉換、異體字轉換、日文漢字轉換、拼音化、翻譯、縮寫或其他字形正規化。例如原文為「進億37號」，不得在其他欄位輸出「進億37号」。
+11. 最終輸出前，逐一檢查所有字串值（尤其 evidence_snippets.text、Person.quote、article_title、Event_Summary、Event_Timeline.description）中的內嵌雙引號、反斜線與控制字元是否正確跳脫；確認整個輸出可直接由標準 JSON 解析器解析，且解析後原文證據逐字不變。只輸出最終 JSON，不輸出檢查過程。
   
 """
 
@@ -1936,3 +1940,11 @@ taskSetting_Enrichment = {
         )
     },
 }
+
+
+# Freeze the actual built-in callable identities, not names in a mutable task
+# registry. Only these append-only renderers have a source boundary contract.
+TRUSTED_MULTIDIM_SOURCE_RENDERERS = (
+    taskSetting_Enrichment["InfoExtraction-MultiDim-SQLFriendly-to json format"]["template"],
+    taskSetting_Enrichment["InfoExtraction-MultiDim-Compact-SQLFriendly-to json format"]["template"],
+)
