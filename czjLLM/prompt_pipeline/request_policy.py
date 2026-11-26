@@ -62,3 +62,14 @@ def reasoning_fingerprint_metadata(spec):
     else:
         suffix_policy = "automatic"
     return {"reasoning_effort": effort, "reasoning_suffix_policy": suffix_policy}
+
+
+def stream_response_enabled(spec):
+    """Explicit opt-in only; never silently replay a partially received stream."""
+    enabled = spec.get("llm_stream_response", False)
+    if type(enabled) is not bool:
+        raise ValueError("llm_stream_response must be a boolean")
+    if enabled and (type(spec.get("llm_max_retries")) is not int
+                    or spec["llm_max_retries"] != 0):
+        raise ValueError("llm_stream_response requires explicit llm_max_retries=0")
+    return enabled
