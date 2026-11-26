@@ -264,7 +264,8 @@ def test_hidden_refresh_does_not_bind_reordered_snapshot_to_old_grid():
         _document_filter=SimpleNamespace(get=lambda: "目前處理"),
         _document_query=SimpleNamespace(get=lambda: ""),
         _document_header=MagicMock(), _request_document_snapshot=request,
-        pyqueue=queue,
+        pyqueue=queue, _activity_text=None, _activity_rendered=None,
+        _close_activity_window=MagicMock(),
     )
     module = ast.fix_missing_locations(ast.Module(body=funcs, type_ignores=[]))
     exec(compile(module, "<document callbacks>", "exec"), ns)

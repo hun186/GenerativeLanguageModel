@@ -1884,9 +1884,41 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
     document_activity_label = ttk.Label(document_frame, foreground="#555", wraplength=720,
                                         text="點選一列查看呼叫等待時間（本機估計）")
     document_activity_label.pack(fill="x", pady=(0, 3))
+    _activity_window = None
+    _activity_text = None
+    _activity_rendered = None
+
+    def _close_activity_window():
+        nonlocal _activity_window, _activity_text, _activity_rendered
+        if _activity_window is not None:
+            _activity_window.destroy()
+        _activity_window = _activity_text = _activity_rendered = None
+
+    def _open_activity_window():
+        nonlocal _activity_window, _activity_text
+        if _activity_window is not None:
+            _activity_window.lift()
+            return
+        _activity_window = tk.Toplevel(root)
+        _activity_window.title("目前頁 Worker 呼叫活動（最後觀測）")
+        _activity_window.geometry("900x430")
+        _activity_window.protocol("WM_DELETE_WINDOW", _close_activity_window)
+        frame = ttk.Frame(_activity_window, padding=8)
+        frame.pack(fill="both", expand=True)
+        scroll = ttk.Scrollbar(frame, orient="vertical")
+        _activity_text = tk.Text(frame, wrap="word", state="disabled",
+                                 yscrollcommand=scroll.set)
+        scroll.configure(command=_activity_text.yview)
+        scroll.pack(side="right", fill="y")
+        _activity_text.pack(side="left", fill="both", expand=True)
+        _document_activity_tick()
+
+    ttk.Button(document_frame, text="目前頁 Worker 呼叫活動",
+               command=_open_activity_window).pack(anchor="w", pady=(0, 3))
 
     def _document_activity_tick():
-        from czjLLM.job_manager.document_progress import format_activity_clock
+        nonlocal _activity_rendered
+        from czjLLM.job_manager.document_progress import format_activity_clock, format_page_activity
         current_args = (_recovery_meter_path, _document_filter.get(),
                         _document_query.get().strip()[:100], _document_page, _audit_path)
         label = "點選一列查看呼叫等待時間（本機估計）"
@@ -1902,6 +1934,17 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
             label = "呼叫觀測待重新核對"
         if document_activity_label.cget("text") != label:
             document_activity_label.configure(text=label)
+        if _activity_text is not None:
+            snap = _document_snapshot if _document_display_args == current_args else None
+            rendered = format_page_activity(snap, monotonic_s=time.monotonic())
+            if rendered != _activity_rendered:
+                top = _activity_text.yview()[0]
+                _activity_text.configure(state="normal")
+                _activity_text.delete("1.0", "end")
+                _activity_text.insert("1.0", rendered)
+                _activity_text.configure(state="disabled")
+                _activity_text.yview_moveto(top)
+                _activity_rendered = rendered
 
     def _document_selected(_event=None):
         sel = document_grid.selection()
@@ -2070,6 +2113,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
             _document_last_refresh = 0
             _request_document_snapshot(force=True)
         else:
+            _close_activity_window()
             document_frame.pack_forget()
             txt.configure(height=15)
         _document_header()
