@@ -474,12 +474,30 @@ def test_rule_method_audit_accepts_only_fixed_enum():
 
 
 def test_worker_both_paths_forward_finish_reason_for_explicit_rule_policy():
-    from pathlib import Path
-    source = Path("czjLLM/prompt_pipeline/pipeline_controller.py").read_text(encoding="utf-8")
-    assert source.count('if (finish_reason == "length" or self._generic_rule_repair_enabled()') == 2
-    assert source.count("or self._source_rule_repair_enabled()):") == 2
-    assert source.count("**self._prepare_source_rule_dispatch(),") == 2
-    assert source.count("self.handle_json_output(retMES)") >= 2
+    import ast
+    import inspect
+    import textwrap
+    from czjLLM.prompt_pipeline.pipeline_controller import PromptAPIPipeline
+    for method in (PromptAPIPipeline.proc, PromptAPIPipeline.proc_0112):
+        tree = ast.parse(textwrap.dedent(inspect.getsource(method)))
+        conditions = [node for node in ast.walk(tree) if isinstance(node, ast.If)
+                      and "self._source_rule_repair_enabled()" in ast.unparse(node.test)
+                      and "self._generic_rule_repair_enabled()" in ast.unparse(node.test)
+                      and "finish_reason == 'length'" in ast.unparse(node.test)]
+        assert len(conditions) == 1
+        guarded_calls = [node for statement in conditions[0].body for node in ast.walk(statement)
+                         if isinstance(node, ast.Call)
+                         and ast.unparse(node.func) == "self.handle_json_output"]
+        assert any(any(kw.arg == "finish_reason" and ast.unparse(kw.value) == "finish_reason"
+                       for kw in call.keywords) for call in guarded_calls)
+        api_calls = [node for node in ast.walk(tree) if isinstance(node, ast.Call)
+                     and ast.unparse(node.func) == "CallLLMAPI"]
+        assert len(api_calls) == 1
+        assert any(kw.arg is None and ast.unparse(kw.value) == "self._prepare_source_rule_dispatch()"
+                   for kw in api_calls[0].keywords)
+        assert any(isinstance(node, ast.Call) and ast.unparse(node.func) == "self.handle_json_output"
+                   and not node.keywords for statement in conditions[0].orelse
+                   for node in ast.walk(statement))
 
 
 @pytest.mark.parametrize("name", [
