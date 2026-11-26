@@ -32,3 +32,24 @@ or a real GPU performance result. Run separately on each reserved endpoint
 with identical controls before testing simultaneous GLM dispatch.
 
 Reference: https://docs.ollama.com/api/chat
+
+
+## Optional streaming diagnostic
+
+Add `--stream` to the same command to receive native NDJSON frames.
+For each sample, `ttft_s` is elapsed client wall time until the first
+complete decoded frame with nonempty thinking or content text, not an exact
+server token timestamp. `first_thinking_chunk_s` and `first_content_chunk_s`
+separate initial reasoning from visible answer latency. Empty frames do not
+count; an absent text channel remains null. The top-level legacy ttft_s
+field remains null; timings are per sample.
+
+Only a valid terminal done frame yields final provider metrics. A timeout,
+malformed frame, provider error, missing done or exceeded byte budget stops
+the series without retry. Partial first-text timing may be shown on a failed
+sample, never as a completed inference or validated JSON output. The stream
+decoder bounds aggregate decoded bytes to 16 MiB and each NDJSON record to
+1 MiB. It does not concatenate or return thought or answer text. HTTP read
+timeout is inactivity, not a total deadline. This probe neither acquires
+GLM leases nor cancels server execution; reserve an idle endpoint. No
+production streaming, writeback, or physical benchmark claims.

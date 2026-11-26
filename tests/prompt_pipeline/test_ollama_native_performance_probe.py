@@ -82,3 +82,84 @@ def test_cli_requires_idle_confirmation():
     with pytest.raises(SystemExit) as exc:
         main(["--endpoint", "http://private.invalid", "--model", "model"])
     assert exc.value.code == 2
+
+
+def test_stream_observes_thinking_and_answer_separately_without_retaining_text(monkeypatch):
+    from types import SimpleNamespace
+    from czjLLM.cli_tools import ollama_native_performance_probe as mod
+    clock = [10.0]
+    monkeypatch.setattr(mod, "time", SimpleNamespace(monotonic=lambda: clock[0]))
+    def line(payload):
+        return (json.dumps(payload) + "\n").encode()
+
+    class Chunks(httpx.SyncByteStream):
+        def __iter__(self):
+            clock[0] = 11.0
+            yield line({"done": False, "message": {"content": ""}})
+            clock[0] = 12.0
+            raw = line({"done": False, "message": {"thinking": "private thought"}})
+            yield raw[:10]
+            clock[0] = 13.0
+            yield raw[10:]
+            clock[0] = 15.0
+            yield line({"done": False, "message": {"content": "private answer"}})
+            clock[0] = 17.0
+            yield line(_payload())
+    def handler(request):
+        assert json.loads(request.content)["stream"] is True
+        return httpx.Response(200, stream=Chunks())
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        report = probe(client, "http://private.invalid/v1", "model", "private prompt",
+                       repeats=1, stream=True)
+    sample = report["samples"][0]
+    assert sample["status"] == "ok"
+    assert sample["ttft_s"] == sample["first_thinking_chunk_s"] == 3.0
+    assert sample["first_content_chunk_s"] == 5.0
+    assert sample["client_elapsed_s"] == 7.0
+    assert sample["cache_hit_pct"] == 80
+    assert "private" not in json.dumps(report)
+    assert report["ttft_basis"] == "client_first_nonempty_thinking_or_content_chunk_per_sample"
+
+
+@pytest.mark.parametrize("failure", ["timeout", "truncated", "error", "bad_shape", "oversized"])
+def test_stream_failure_preserves_observed_timing_but_never_replays(monkeypatch, failure):
+    from czjLLM.cli_tools import ollama_native_performance_probe as mod
+    calls = []
+    class Chunks(httpx.SyncByteStream):
+        def __iter__(self):
+            yield b'{"done":false,"message":{"content":"private partial"}}\n'
+            if failure == "timeout":
+                raise httpx.ReadTimeout("private error")
+            if failure == "error":
+                yield b'{"error":"private provider error"}\n'
+            elif failure == "bad_shape":
+                yield b'{"done":"false","message":{}}\n'
+            elif failure == "oversized":
+                yield b"x" * 129
+    if failure == "oversized":
+        monkeypatch.setattr(mod, "MAX_STREAM_LINE_BYTES", 128)
+    def handler(request):
+        calls.append(1)
+        return httpx.Response(200, stream=Chunks())
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        report = probe(client, "http://private.invalid", "model", "prompt",
+                       repeats=5, stream=True)
+    assert len(calls) == 1
+    sample = report["samples"][0]
+    assert sample["status"] == ("timeout" if failure == "timeout" else "invalid_or_incomplete_response")
+    assert sample["first_content_chunk_s"] is not None
+    assert sample["first_thinking_chunk_s"] is None
+    assert "generated_tokens" not in sample
+    assert "private" not in json.dumps(report)
+
+
+def test_stream_requires_actual_text_for_ttft():
+    def handler(request):
+        return httpx.Response(200, content=json.dumps(_payload()).encode())
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        sample = probe(client, "http://private.invalid", "model", "prompt",
+                       repeats=1, stream=True)["samples"][0]
+    assert sample["status"] == "ok"
+    assert sample["ttft_s"] is None
+    assert sample["first_thinking_chunk_s"] is None
+    assert sample["first_content_chunk_s"] is None
