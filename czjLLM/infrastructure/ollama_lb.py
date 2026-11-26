@@ -412,17 +412,19 @@ class _UrlLeaseKeeper:
             max(0.01, LEASE_SECS / 3)
             if interval_seconds is None else max(0.01, float(interval_seconds))
         )
-        self._max_elapsed = float(max_elapsed_seconds)
+        # Explicit capped admission retains the slot while its client is alive.
+        self._max_elapsed = None if max_elapsed_seconds is None else float(max_elapsed_seconds)
         self._stop = threading.Event()
         self._thread = None
 
     def _loop(self):
-        deadline = time.monotonic() + self._max_elapsed
+        deadline = (None if self._max_elapsed is None
+                    else time.monotonic() + self._max_elapsed)
         while True:
-            remaining = deadline - time.monotonic()
+            remaining = self._interval if deadline is None else deadline - time.monotonic()
             if remaining <= 0 or self._stop.wait(min(self._interval, remaining)):
                 return
-            if self._stop.is_set() or time.monotonic() >= deadline:
+            if self._stop.is_set() or (deadline is not None and time.monotonic() >= deadline):
                 return
             try:
                 new_token = renew_url_load(
@@ -444,7 +446,11 @@ class _UrlLeaseKeeper:
                 )
                 self._thread.start()
             except RuntimeError:
-                self._thread = None  # Unchanged worker outcome; TTL still bounds.
+                self._thread = None
+                if self._max_elapsed is None:
+                    # Do not start a capped call without its keeper.
+                    raise
+                # Legacy behavior: TTL still bounds.
         return self
 
     def __exit__(self, exc_type, exc, tb):
@@ -460,7 +466,11 @@ def maintain_url_load_lease(
     base_url: str, PGMSubDir: str = "", *, lease_token=None,
     interval_seconds=None, max_elapsed_seconds=MAX_HEARTBEAT_ELAPSED_SECS,
 ):
-    """Create a no-op keeper for an untracked lock-timeout URL fallback."""
+    """Maintain an owned lease; explicit None renews for the foreground call.
+
+    A process crash stops heartbeats; TTL still bounds orphaned claims.
+    A live blocked capped call deliberately retains its slot.
+    """
     return _UrlLeaseKeeper(
         base_url, PGMSubDir, lease_token, interval_seconds, max_elapsed_seconds,
     )

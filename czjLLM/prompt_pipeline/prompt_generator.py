@@ -106,6 +106,9 @@ def finalize_llm_user_content(
     spec = dict(model_spec or {})
     effective_model = str(spec.get("model_name", model_name) or model_name or "")
     override_suffix = spec.get("no_think_suffix", None)
+    # Explicit provider reasoning replaces automatic suffix; explicit override wins.
+    if "thinking_level" in spec and "no_think_suffix" not in spec:
+        override_suffix = ""
     return append_no_think_if_applicable(
         content=content,
         model_name=effective_model.lower(),
@@ -240,6 +243,18 @@ class PromptGenerator:
         """
         return self._build(content, capture_source=True)
 
+    def _finalize_rendered_prompt(self, prompt: str) -> str:
+        spec = getattr(self.ctx, "model_spec", None) or {}
+        model_name = getattr(self.ctx, "model_spec_name", "") or ""
+        if "thinking_level" in spec:
+            return finalize_llm_user_content(
+                prompt, model_spec=spec, model_name=model_name,
+                no_think_process=not self.ctx.think_mode,
+            )
+        return append_no_think_if_applicable(
+            prompt, model_name, enabled=not self.ctx.think_mode,
+        )
+
     def _build(self, content: str, *, capture_source: bool) -> tuple[str, SourceSpanReceipt | None]:
         if not content.strip():
             print("⚠️ generate_prompt: content 為空，請確認是否為預期行為。")
@@ -247,11 +262,7 @@ class PromptGenerator:
         task = self.ctx.task
         if task not in taskSetting:
             prompt = _render_raw_task_prompt(str(task or ""), content)
-            return append_no_think_if_applicable(
-                prompt,
-                getattr(self.ctx, "model_spec_name", "") or "",
-                enabled=(not self.ctx.think_mode),
-            ), None
+            return self._finalize_rendered_prompt(prompt), None
 
         template_function = taskSetting[task]["template"]
         source_code = inspect.getsource(template_function)
@@ -285,11 +296,7 @@ class PromptGenerator:
 
         # 新行為：依模型與 think_mode 決定是否附加 /no_think
         # enabled = not think_mode（希望禁思考才啟用附加邏輯）
-        finalized = append_no_think_if_applicable(
-            prompt,
-            getattr(self.ctx, "model_spec_name", "") or "",
-            enabled=(not self.ctx.think_mode),
-        )
+        finalized = self._finalize_rendered_prompt(prompt)
         receipt = None
         if capture_source and any(template_function is known for known in TRUSTED_MULTIDIM_SOURCE_RENDERERS):
             try:

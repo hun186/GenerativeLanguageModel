@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Mapping
 
 from czjLLM.reduction.execution import TaskCallResult, _stable_semantics
+from czjLLM.prompt_pipeline.request_policy import reasoning_fingerprint_metadata
 
 
 PROMPT_RENDERER_CONTRACT_VERSION = "stage-task-renderer-v1"
@@ -213,6 +214,8 @@ class ProductionTaskRuntime:
         spec = getattr(self.ctx, "model_spec", {})
         safe_model = ({key: _stable_semantics(spec[key]) for key in sorted(spec)
                        if key in _MODEL_SEMANTIC_KEYS} if isinstance(spec, Mapping) else {})
+        if isinstance(spec, Mapping):
+            safe_model.update(reasoning_fingerprint_metadata(spec))
         return {"runtime_contract_version": TASK_RUNTIME_CONTRACT_VERSION,
                 "prompt_renderer_contract_version": PROMPT_RENDERER_CONTRACT_VERSION,
                 "tokenizer_contract_version": TOKENIZER_CONTRACT_VERSION,

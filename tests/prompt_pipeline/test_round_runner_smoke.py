@@ -292,3 +292,20 @@ def test_windows_worker_raised_timeout_is_not_misclassified_as_batch_deadline(mo
                      n_proc=2, timeout_sec=3.0)
     assert rr.CONSUMER_STATE["last_round_timed_out"] is False
     assert rr.CONSUMER_STATE["thread_round_drain_active"] is False
+
+
+
+def test_model_round_timeout_precedence(monkeypatch):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline import round_runner as rr
+    from czjLLM.prompt_pipeline.request_policy import context_round_timeout
+
+    monkeypatch.setenv("CZJLLM_LLM_ROUND_TIMEOUT_SEC", "600")
+    job = SimpleNamespace(model_spec={"llm_round_timeout_sec": 1200})
+    ctx = SimpleNamespace(model_spec=job.model_spec)
+    assert rr._round_timeout_from_jobs([job]) == 1200
+    assert rr._round_timeout_from_jobs([job], 300) == 300
+    assert rr._round_timeout_from_jobs([]) == 600
+    assert rr._round_timeout_from_jobs([], context_round_timeout(ctx)) == 1200
+    assert context_round_timeout(SimpleNamespace(
+        model_spec=job.model_spec, llm_round_timeout_sec=400)) == 400
