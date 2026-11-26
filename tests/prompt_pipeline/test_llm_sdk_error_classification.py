@@ -204,3 +204,59 @@ def test_reduction_runtime_fingerprints_bind_opt_in_reasoning_and_suffix(tmp_pat
     assert metadata(thinking_level="low", **{"api_key": bytes([4, 5, 6]).hex()}) == low
     with pytest.raises(ValueError, match="thinking_level"):
         metadata(thinking_level="unsupported")
+
+
+def test_effective_model_startup_policy_reports_real_context_and_explicit_controls():
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline.effective_model_policy import (
+        effective_model_startup_policy, format_effective_model_startup_policy,
+    )
+    spec = {
+        "base_url": ["http://private-a.invalid/v1", "http://private-b.invalid/v1"],
+        "workers_per_endpoint": 1, "max_concurrent_per_endpoint": 1,
+        "llm_read_timeout_sec": 900, "llm_round_timeout_sec": 1200,
+        "llm_max_retries": 0, "thinking_level": "low",
+        "api_key": bytes([1, 2, 3, 4]).hex(),
+    }
+    ctx = SimpleNamespace(model_spec=spec, n_process=2)
+    assert effective_model_startup_policy(ctx) == {
+        "available_endpoint_count": 2, "configured_worker_budget": 2,
+        "context_worker_budget": 2, "worker_budget_matches_profile": True,
+        "endpoint_lease_limit": 1, "http_read_inactivity_seconds": 900.0,
+        "round_deadline_seconds": 1200.0, "sdk_retry_count": 0,
+        "reasoning_effort": "low", "reasoning_suffix_policy": "disabled",
+    }
+    line = format_effective_model_startup_policy(ctx)
+    assert "SDK_retries=0" in line and "provider_support=unverified" in line
+    assert "private-a" not in line and spec["api_key"] not in line
+    ctx.n_process = 4
+    assert "worker_budget_match=NO" in format_effective_model_startup_policy(ctx)
+    spec["n_process"] = 4
+    assert effective_model_startup_policy(ctx)["worker_budget_matches_profile"] is True
+    ctx.llm_round_timeout_sec = 300
+    assert effective_model_startup_policy(ctx)["round_deadline_seconds"] == 300
+    assert spec["llm_round_timeout_sec"] == 1200
+
+
+def test_effective_startup_policy_absent_and_invalid_are_not_guessed(monkeypatch):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline.effective_model_policy import format_effective_model_startup_policy
+    monkeypatch.setenv("CZJLLM_LLM_ROUND_TIMEOUT_SEC", "600")
+    ctx = SimpleNamespace(model_spec={"base_url": "http://private.invalid"}, n_process=2)
+    line = format_effective_model_startup_policy(ctx)
+    for part in ("profile_workers=auto", "endpoint_lease_cap=legacy uncapped",
+                 "HTTP_read_inactivity_s=client default", "SDK_retries=SDK default",
+                 "round_deadline_s=600.0", "reasoning_effort=provider default"):
+        assert part in line
+    ctx.model_spec["thinking_level"] = "sensitive-invalid-value"
+    assert format_effective_model_startup_policy(ctx) == (
+        "[Effective Model Configuration] unavailable (invalid or unresolved policy)"
+    )
+    assert "unavailable" in format_effective_model_startup_policy(SimpleNamespace())
+
+
+def test_effective_policy_is_logged_before_legacy_worker_launch():
+    import inspect
+    from czjLLM.sql_mode.runtime.orchestrator import run_pipeline
+    source = inspect.getsource(run_pipeline)
+    assert source.index("tlog(format_effective_model_startup_policy(ctx))") < source.index("start_workers(")
