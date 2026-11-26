@@ -71,7 +71,8 @@ from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_meta
 from czjLLM.utilities.processing_quality import emit_quality_event
 from czjLLM.utilities.json_repair_analysis import analyze_json_repair
 from czjLLM.utilities.json_transport import clean_json_transport, is_json_output_task
-from czjLLM.utilities.json_rule_policy import JsonRepairPolicy, select_rule_candidate
+from czjLLM.utilities.json_rule_policy import JsonRepairPolicy, select_rule_candidate, verified_source_span
+from czjLLM.prompt_pipeline.json_source_queue import take_claimed_source_receipt
 from czjLLM.utilities.json_repair_private_capture import (
     capture_enabled, configured_private_root, write_private_repair,
 )
@@ -792,6 +793,9 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     #model_spec=ctx.model_spec,
                     model_spec=job_spec,           # ★ 用副本，不要用 ctx.model_spec 本體
                     PGMSubDir=ctx.PGMSubDir,
+                    json_rule_source_receipt=take_claimed_source_receipt(
+                        registry, item_dir, pf, claimed_evidence.get(pf, ""), ctx.task, taskSetting,
+                    ),
                     queue_claim_event_id=claimed_evidence.get(pf, ""),
                     dispatch_item_dir=item_dir,
                     **_llm_call_audit_kwargs(ctx),
@@ -3189,6 +3193,9 @@ def _run_windows_live_slot_refill(
             allow_to_retry=True,
             model_spec=job_spec,
             PGMSubDir=ctx.PGMSubDir,
+            json_rule_source_receipt=take_claimed_source_receipt(
+                registry, item_dir, pf, receipt, ctx.task, taskSetting,
+            ),
             queue_claim_event_id=receipt,
             dispatch_item_dir=item_dir,
             **_llm_call_audit_kwargs(ctx),
@@ -3421,6 +3428,7 @@ class PromptAPIPipeline:
                  dispatch_item_dir: str = "",
                  json_rule_policy: JsonRepairPolicy | None = None,
                  json_rule_slice_validator=None,
+                 json_rule_source_receipt=None,
 
                  ):
         self.task = task
@@ -3435,6 +3443,12 @@ class PromptAPIPipeline:
         if self.content == "" and self.promptFile != "":
             with open(self.promptFile,mode='rt',encoding='utf-8') as fp:
                 self.content = fp.read()
+        # This receipt is provenance only; source-dependent repair remains off.
+        self.json_rule_source_receipt = (
+            json_rule_source_receipt
+            if verified_source_span(self.content, json_rule_source_receipt) is not None
+            else None
+        )
         self.OutputSaveFN = OutputSaveFN   
         self.removeFinPromptFile = removeFinPromptFile
         self.max_tokens = max_tokens
