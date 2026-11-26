@@ -125,10 +125,10 @@ def take_claimed_source_receipt(registry, item_dir, prompt_file, claim_id, task,
         path = Path(prompt_file)
         if path.parent.parent != Path(item_dir) or path.parent.name != "RUNNING":
             return None
-        take = getattr(registry, "take_source_handoff", None)
+        take = getattr(registry, "take_claimed_source_handoff", None)
         if not callable(take):
             return None
-        record = take(item_dir, path.name)
+        record = take(item_dir, path.name, claim_id)
         if record is None:
             return None
         return claimed_source_receipt(
