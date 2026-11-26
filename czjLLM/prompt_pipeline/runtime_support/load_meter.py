@@ -28,15 +28,55 @@ class ItemsRegistry:
 
     def __init__(self):
         self.lock = threading.Lock()
+        self._source_handoffs = {}
+        self._claimed_source_handoffs = {}
         self._items = {}  # item_dir -> {"pk":..., "temp_txt":...}
 
-    def add(self, item_dir, pk, temp_txt, comb_back_fn):
+    def add(self, item_dir, pk, temp_txt, comb_back_fn, *, source_handoffs=None):
         with self.lock:
             self._items[item_dir] = {
                 "pk": pk,
                 "temp_txt": temp_txt,
                 "CombBackFN": comb_back_fn,
             }
+            self._source_handoffs.pop(item_dir, None)
+            self._claimed_source_handoffs.pop(item_dir, None)
+            if source_handoffs:
+                self._source_handoffs[item_dir] = dict(source_handoffs)
+
+    def take_source_handoff(self, item_dir, basename):
+        """Retire any previous claim and consume the pending fresh receipt."""
+        with self.lock:
+            claimed = self._claimed_source_handoffs.get(item_dir)
+            if claimed is not None:
+                claimed.pop(basename, None)
+                if not claimed:
+                    self._claimed_source_handoffs.pop(item_dir, None)
+            records = self._source_handoffs.get(item_dir)
+            if records is None:
+                return None
+            record = records.pop(basename, None)
+            if not records:
+                self._source_handoffs.pop(item_dir, None)
+            return record
+
+    def bind_source_claim(self, item_dir, basename, claim_id, record):
+        """Bind only the receipt consumed at the actual first claim attempt."""
+        with self.lock:
+            if item_dir not in self._items or not claim_id or record is None:
+                return
+            self._claimed_source_handoffs.setdefault(item_dir, {})[basename] = (claim_id, record)
+
+    def take_claimed_source_handoff(self, item_dir, basename, claim_id):
+        """Consume once and only for the exact current claim."""
+        with self.lock:
+            records = self._claimed_source_handoffs.get(item_dir)
+            if records is None:
+                return None
+            bound = records.pop(basename, None)
+            if not records:
+                self._claimed_source_handoffs.pop(item_dir, None)
+            return bound[1] if bound is not None and bound[0] == claim_id else None
 
     def list_items(self):
         with self.lock:
@@ -54,6 +94,8 @@ class ItemsRegistry:
     def remove(self, item_dir):
         with self.lock:
             self._items.pop(item_dir, None)
+            self._source_handoffs.pop(item_dir, None)
+            self._claimed_source_handoffs.pop(item_dir, None)
 
 
 def meter_path_init(ctx):

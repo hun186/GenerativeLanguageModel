@@ -214,3 +214,122 @@ def test_duplicate_names_remain_intact_even_if_observer_is_broken(tmp_path, monk
     assert received == {}
     assert (item / "TODO" / "a" / "root.txt").read_text() == "a"
     assert (item / "TODO" / "b" / "root.txt").read_text() == "b"
+
+
+from czjLLM.prompt_pipeline.json_source_queue import (
+    generated_source_handoff, finalize_generated_source_handoff,
+    take_claimed_source_receipt, source_task_fingerprint,
+)
+from czjLLM.prompt_pipeline.runtime_support.load_meter import ItemsRegistry
+from czjLLM.utilities.json_rule_policy import (
+    receipt_for_trusted_appended_source, verified_source_span,
+)
+
+
+def _fresh_source_row(tmp_path, monkeypatch):
+    from czjLLM.prompt_pipeline.prompt_generator import PromptGenerator, taskSetting
+    name = "InfoExtraction-MultiDim-SQLFriendly-to json format"
+    spec = dict(taskSetting[name], json_rule_repair={"multidim_evidence_quotes": True},
+                json_rule_slice_contract="multidim_event_slice_v1")
+    monkeypatch.setitem(taskSetting, name, spec)
+    task_sha = source_task_fingerprint(name, taskSetting)
+    assert len(task_sha) == 64
+    source = 'original\n☆下列為輸入任務文本：\n他说"甲"。'
+    prompt, span = PromptGenerator(SimpleNamespace(
+        task=name, main_file_name="sample", think_mode=True,
+        model_spec_name="qwen3.8",
+    )).build_with_source_receipt(source)
+    item = tmp_path / "row"
+    todo = item / "TODO"
+    todo.mkdir(parents=True)
+    path = todo / "root.txt"
+    with path.open("x", encoding="utf-8") as stream:
+        stream.write(prompt)
+        pending = generated_source_handoff(path, stream, prompt, span, task_sha)
+    record = finalize_generated_source_handoff(pending, path)
+    assert record is not None and source not in record.wire
+    registry = ItemsRegistry()
+    registry.add(str(item), 1, "source.txt", "combined.txt",
+                 source_handoffs={path.name: record})
+    return item, path, source, prompt, registry, name, taskSetting
+
+
+def test_source_handoff_actual_queue_claim_is_one_shot(tmp_path, monkeypatch):
+    item, path, source, prompt, registry, task, pool = _fresh_source_row(tmp_path, monkeypatch)
+    assert "source_handoffs" not in registry.list_items()[str(item)]
+    claims = {}
+    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims, source_receipt_registry=registry)
+    running = pairs[0][0]
+    receipt = take_claimed_source_receipt(registry, str(item), running, claims[running], task, pool)
+    assert verified_source_span(prompt, receipt) == source
+    assert take_claimed_source_receipt(registry, str(item), running, claims[running], task, pool) is None
+    assert recover_running_to_todo([str(item)]) == 1
+    claims = {}
+    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims, source_receipt_registry=registry)
+    running = pairs[0][0]
+    assert take_claimed_source_receipt(registry, str(item), running, claims[running], task, pool) is None
+
+
+@pytest.mark.parametrize("change", ["wrong_claim", "different_task", "same_text_new_inode", "changed_text"])
+def test_source_handoff_refuses_mismatch_and_consumes_record(tmp_path, monkeypatch, change):
+    item, path, source, prompt, registry, task, pool = _fresh_source_row(tmp_path, monkeypatch)
+    if change == "same_text_new_inode":
+        # Retain the old inode so identical replacement cannot reuse it.
+        path.rename(item / "old.txt")
+        path.write_text(prompt, encoding="utf-8")
+    elif change == "changed_text":
+        path.write_text(prompt + "changed", encoding="utf-8")
+    claims = {}
+    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims, source_receipt_registry=registry)
+    running = pairs[0][0]
+    expected = claims[running]
+    supplied = uuid4().hex if change == "wrong_claim" else expected
+    supplied_task = "other task" if change == "different_task" else task
+    assert take_claimed_source_receipt(registry, str(item), running, supplied, supplied_task, pool) is None
+    assert take_claimed_source_receipt(registry, str(item), running, expected, task, pool) is None
+
+
+def test_registry_replacement_or_removal_discards_source_handoff(tmp_path, monkeypatch):
+    item, path, source, prompt, registry, task, pool = _fresh_source_row(tmp_path, monkeypatch)
+    registry.add(str(item), 2, "new.txt", "new-result.txt")
+    assert registry.take_source_handoff(str(item), path.name) is None
+    registry.add(str(item), 2, "new.txt", "new-result.txt", source_handoffs={"root.txt": object()})
+    registry.remove(str(item))
+    assert registry.take_source_handoff(str(item), path.name) is None
+
+
+def test_source_handoff_wired_only_to_actual_legacy_consumer_paths():
+    source = Path("czjLLM/prompt_pipeline/pipeline_controller.py").read_text(encoding="utf-8")
+    assert source.count("json_rule_source_receipt=take_claimed_source_receipt(") == 2
+    assert "json_rule_source_receipt=take_claimed_source_receipt(" not in source[
+        source.index("def call_llm_api("):source.index("class PromptAPIPipeline:")
+    ]
+
+
+@pytest.mark.parametrize("use_stale_claim", [True, False])
+def test_recovery_before_worker_handoff_cannot_inherit_first_claim(tmp_path, monkeypatch, use_stale_claim):
+    item, path, source, prompt, registry, task, pool = _fresh_source_row(tmp_path, monkeypatch)
+    first = {}
+    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=first, source_receipt_registry=registry)
+    running = pairs[0][0]
+    assert recover_running_to_todo([str(item)]) == 1
+    second = {}
+    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=second, source_receipt_registry=registry)
+    assert pairs[0][0] == running and first[running] != second[running]
+    supplied = first[running] if use_stale_claim else second[running]
+    assert take_claimed_source_receipt(registry, str(item), running, supplied, task, pool) is None
+
+
+def test_source_receipt_discarded_when_claim_observation_fails(tmp_path, monkeypatch):
+    from czjLLM.prompt_pipeline.runtime_support import prompt_queue as queue
+    item, path, source, prompt, registry, task, pool = _fresh_source_row(tmp_path, monkeypatch)
+    with monkeypatch.context() as patch:
+        patch.setattr(queue, "record_queue_transition", lambda *a, **kw: False)
+        claims = {}
+        pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims, source_receipt_registry=registry)
+        assert len(pairs) == 1 and claims == {}
+    assert recover_running_to_todo([str(item)]) == 1
+    claims = {}
+    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims, source_receipt_registry=registry)
+    running = pairs[0][0]
+    assert take_claimed_source_receipt(registry, str(item), running, claims[running], task, pool) is None
