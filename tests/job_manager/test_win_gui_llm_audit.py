@@ -524,3 +524,51 @@ def test_throughput_gui_layout_and_tooltips_are_explicit():
     assert "不是純 GPU" in total_help
     assert "heuristic / estimated" in effective_help
     assert "provider" in effective_help and "prefix" in effective_help
+
+
+def test_provider_cache_is_token_weighted_and_reports_coverage(tmp_path):
+    p = tmp_path / "cache.csv"
+    fields = ["ok", "prompt_file", "token_usage_source", "input_tokens",
+              "output_tokens", "elapsed_seconds", "cached_input_tokens",
+              "cached_input_token_source"]
+    base = dict(ok="YES", prompt_file="slice.txt", token_usage_source="llm_api_usage",
+                input_tokens="100", cached_input_tokens="0",
+                cached_input_token_source="provider_usage")
+    rows = [
+        dict(base),  # explicit zero, no elapsed/output: still valid cache usage
+        dict(base, input_tokens="900", cached_input_tokens="450"),
+        dict(base, input_tokens="200", cached_input_tokens=""),  # missing
+        dict(base, cached_input_tokens="100.0"),  # malformed
+        dict(base, cached_input_tokens="101"),  # impossible
+        dict(base, cached_input_tokens="80", cached_input_token_source="heuristic"),
+        dict(base, prompt_file="", cached_input_tokens="80"),  # direct call
+        dict(base, token_usage_source="unavailable"),
+        dict(base, input_tokens="0"),
+        dict(base, input_tokens="100.5"),
+    ]
+    with p.open("w", newline="", encoding="utf-8") as fp:
+        writer = csv.DictWriter(fp, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+    stats = load_llm_audit_distribution(str(p))
+    assert stats["provider_cache"] == {
+        "eligible_rows": 6, "observed_rows": 2,
+        "observed_input_tokens": 1000, "observed_cached_tokens": 450,
+        "hit_pct": 45.0,
+    }
+    assert stats["effective_provider_rows"] == 0
+    assert "Provider cache 45.0% (reported 2/6 eligible slices)" in format_llm_audit_summary(stats)
+
+
+def test_provider_cache_unknown_is_not_zero(tmp_path):
+    p = tmp_path / "cache.csv"
+    _write_audit(p)
+    stats = load_llm_audit_distribution(str(p))
+    assert stats["provider_cache"]["eligible_rows"] == 3
+    assert stats["provider_cache"]["observed_rows"] == 0
+    assert stats["provider_cache"]["hit_pct"] is None
+    assert "Provider cache unknown (reported 0/3 eligible slices)" in format_llm_audit_summary(stats)
+    stats["provider_cache"].update(observed_rows=1, hit_pct=0.0)
+    assert "Provider cache 0.0% (reported 1/3 eligible slices)" in format_llm_audit_summary(stats)
+    help_text = format_audit_distribution_help("template_tokens")
+    assert "Provider cache" in help_text and "reported" in help_text and "unknown" in help_text
