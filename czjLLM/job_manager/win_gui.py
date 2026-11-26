@@ -7,7 +7,6 @@ import sys
 import multiprocessing as mp
 import queue as pyqueue
 import threading
-from dataclasses import dataclass
 from czjLLM.utilities.processing_quality import (
     QualityAccumulator, QualityCapacityExceeded,
 )
@@ -20,18 +19,7 @@ from czjLLM.utilities.json_repair_memory import (
 # 僅 Windows 啟用 GUI；其他平台回傳 None
 IS_WIN = (sys.platform == "win32")
 
-@dataclass
-class _GuiEvents:
-    INC_SCHED: str = "inc_sched"
-    INC_DONE:  str = "inc_done"
-    LOG:       str = "log"
-    CLOSE:     str = "close"
-    SET_TOTAL: str = "set_total"
-    RECHECK:   str = "recheck"
-    REDUCTION: str = "reduction"
-    AUDIT_PATH: str = "audit_path"
-    QUALITY_PATH: str = "quality_path"
-    RECOVERY_METER: str = "recovery_meter"
+from czjLLM.job_manager.monitoring_core import MonitorEvents as _GuiEvents
 
 
 
