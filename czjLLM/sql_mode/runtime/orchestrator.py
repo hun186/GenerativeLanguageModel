@@ -8,6 +8,7 @@ import os, time, faulthandler, sys
 
 import multiprocessing as mp
 from czjLLM.job_manager.console_ui import tlog, tlog_ok, tlog_warn
+from czjLLM.prompt_pipeline.effective_model_policy import format_effective_model_startup_policy
 from czjLLM.prompt_pipeline.pipeline_controller import meter_read  # 讀進度計量檔
 from czjLLM.prompt_pipeline.pipeline_controller import meter_update
 from czjLLM.prompt_pipeline.pipeline_controller import CONSUMER_STATE  # [ADD] 觀察 last_dispatch_ts
@@ -385,6 +386,8 @@ def run_pipeline(ctx, pending_iter: Iterable[Tuple[Any, str]], is_sqlite: bool, 
 
     # 2) UI 準備
     gui, gui_sink, p_sched, p_done, restore_console = prepare_ui(ctx, processable)
+    # Observe the final legacy client context, before the worker threads start.
+    tlog(format_effective_model_startup_policy(ctx))
     # The observer is created before the GUI. Publish once now so the fixed
     # status section immediately shows the actual activity mode instead of 0/0.
     observer.publish_snapshot(force=True)
