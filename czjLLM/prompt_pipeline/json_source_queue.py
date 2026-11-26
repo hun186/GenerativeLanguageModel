@@ -97,3 +97,22 @@ def claimed_source_receipt(record, path, claim_id, task_sha256):
         )
     except (OSError, ValueError, TypeError, UnicodeError):
         return None
+
+
+def take_claimed_source_receipt(registry, item_dir, prompt_file, claim_id, task, renderer_pool):
+    """Take only from this run's registered row, not a path/hash search."""
+    try:
+        path = Path(prompt_file)
+        if path.parent.parent != Path(item_dir) or path.parent.name != "RUNNING":
+            return None
+        take = getattr(registry, "take_source_handoff", None)
+        if not callable(take):
+            return None
+        record = take(item_dir, path.name)
+        if record is None:
+            return None
+        return claimed_source_receipt(
+            record, path, claim_id, source_task_fingerprint(task, renderer_pool),
+        )
+    except Exception:
+        return None
