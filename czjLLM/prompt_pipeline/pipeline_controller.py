@@ -673,6 +673,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     item_dirs,
                     per_round_limit=(1 if sys.platform.startswith("win") else per_round_limit),
                     claim_ids_out=claimed_evidence,
+                    source_receipt_registry=registry,
                 )
             except QueueClaimRollbackError:
                 # Rollback itself failed after a real claim; preserve all
@@ -735,7 +736,7 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                 # 若無可派發任務：teardown 已設定 stop_event 時才收尾
                 if stop_event.is_set():
                     #if not pick_next_prompts(item_dirs, per_round_limit=1):
-                    if not pick_and_claim_next_prompts(item_dirs, per_round_limit=1):
+                    if not pick_and_claim_next_prompts(item_dirs, per_round_limit=1, source_receipt_registry=registry):
                         # A safe claim can be blocked by a basename collision,
                         # an in-flight RUNNING target, filesystem restrictions,
                         # or an interrupted prior operation. Never report the
@@ -3168,6 +3169,7 @@ def _run_windows_live_slot_refill(
             next_batch = pick_and_claim_next_prompts(
                 eligible, per_round_limit=1, claim_ids_out=claim_ids,
                 excluded_todo_sources=protected_children,
+                source_receipt_registry=registry,
             )
             if not next_batch:
                 return None
