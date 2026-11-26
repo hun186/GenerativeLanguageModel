@@ -3655,6 +3655,7 @@ class PromptAPIPipeline:
             # invocation is actually in flight; stop before postprocessing.
             with maintain_url_load_lease(
                 base_url, PGMSubDir=self.PGMSubDir, lease_token=lease_token,
+                **({"max_elapsed_seconds": None} if endpoint_cap is not None else {}),
             ) as lease_keeper:
                 response, cost = CallLLMAPI(
                     self.content,
@@ -3889,6 +3890,7 @@ class PromptAPIPipeline:
                 self.model_spec["api_key"]=("ThisIsFakeKey")
             with maintain_url_load_lease(
                 base_url, PGMSubDir=self.PGMSubDir, lease_token=lease_token,
+                **({"max_elapsed_seconds": None} if endpoint_cap is not None else {}),
             ) as lease_keeper:
                 response,cost = CallLLMAPI(
                     self.content,max_tokens=self.max_tokens,
