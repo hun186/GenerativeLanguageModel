@@ -99,7 +99,10 @@ def format_audit_distribution_help(metric_key: str = "") -> str:
         "每張小圖的高度都以自己的峰值正規化，所以不能拿不同小圖的線高互相比大小。\n"
         "n = 有效樣本數；P50 = 中位數；P95 = 95% 樣本不超過此值；max = 最大值。"
         "Template 通常在同一 YAML stage 內固定或近固定，因此只在標題摘要顯示 P50/P95，不另外畫曲線。"
-        "樣本很少時曲線形狀容易跳動，應優先看 P50 / P95 / max。"
+        "樣本很少時曲線形狀容易跳動，應優先看 P50 / P95 / max。\n"
+        "Provider cache：僅對 API 明確回報 cache count 的正數輸入切片，"
+        "以快取 token 總數 ÷ 該批已回報切片的 input token 總數計算；"
+        "reported 為已回報切片數 / 符合條件切片數。缺值為 unknown，不含 heuristic。"
     )
     detail = _AUDIT_DISTRIBUTION_HELP.get(str(metric_key or ""), "")
     return f"{detail}\n\n{general}" if detail else general
@@ -235,6 +238,17 @@ def _audit_float(value):
         return None
 
 
+def _audit_token_count(value):
+    """Parse exact nonnegative integer CSV counts; do not round floats."""
+    if not isinstance(value, str):
+        return None
+    value = value.strip()
+    if not (1 <= len(value) <= 19 and value.isascii() and value.isdigit()):
+        return None
+    count = int(value)
+    return count if count <= 2**63 - 1 else None
+
+
 def _audit_percentile(values, q: float) -> float:
     ordered = sorted(float(v) for v in values)
     if not ordered:
@@ -309,6 +323,8 @@ def load_llm_audit_distribution(audit_path: str) -> dict:
     values = {name: [] for name, _, _ in _AUDIT_SERIES}
     calls = failures = component_rows = 0
     provider_rows = heuristic_rows = 0
+    cache_eligible_rows = cache_observed_rows = 0
+    cache_observed_input = cache_observed_cached = 0
     prior_templates = {}
     if audit_path:
         try:
@@ -343,6 +359,17 @@ def load_llm_audit_distribution(audit_path: str) -> dict:
                     # uses API total_tokens and has a different zero-time fallback.
                     if not is_slice or usage_source != "llm_api_usage":
                         continue
+                    # Cache coverage has its own denominator: no dependence
+                    # on elapsed/output availability or heuristic estimates.
+                    cache_input = _audit_token_count(row.get("input_tokens"))
+                    cache_count = _audit_token_count(row.get("cached_input_tokens"))
+                    if cache_input is not None and cache_input > 0:
+                        cache_eligible_rows += 1
+                        if (row.get("cached_input_token_source") == "provider_usage"
+                                and cache_count is not None and cache_count <= cache_input):
+                            cache_observed_rows += 1
+                            cache_observed_input += cache_input
+                            cache_observed_cached += cache_count
                     elapsed = _audit_float(row.get("elapsed_seconds"))
                     inp = _audit_float(row.get("input_tokens"))
                     out = _audit_float(row.get("output_tokens"))
@@ -388,6 +415,14 @@ def load_llm_audit_distribution(audit_path: str) -> dict:
         "calls": calls, "failures": failures, "component_rows": component_rows,
         "effective_provider_rows": provider_rows,
         "effective_heuristic_rows": heuristic_rows,
+        "provider_cache": {
+            "eligible_rows": cache_eligible_rows,
+            "observed_rows": cache_observed_rows,
+            "observed_input_tokens": cache_observed_input,
+            "observed_cached_tokens": cache_observed_cached,
+            "hit_pct": (100 * cache_observed_cached / cache_observed_input
+                        if cache_observed_input else None),
+        },
         "metrics": {name: _audit_metric_snapshot(values[name]) for name, _, _ in _AUDIT_SERIES},
     }
 
@@ -400,6 +435,16 @@ def _fmt_audit_number(value: float) -> str:
         return "unknown"
     decimal_value = Decimal(format(number, ".15g"))
     return f"{decimal_value.quantize(Decimal('0.1'), rounding=ROUND_HALF_UP):,.1f}"
+
+
+def format_provider_cache_summary(stats: dict) -> str:
+    cache = stats.get("provider_cache", {}) or {}
+    eligible = int(cache.get("eligible_rows", 0) or 0)
+    observed = int(cache.get("observed_rows", 0) or 0)
+    pct = cache.get("hit_pct")
+    hit = (f"{_fmt_audit_number(pct)}%" if observed > 0 and pct is not None
+           else "unknown")
+    return f"Provider cache {hit} (reported {observed:,}/{eligible:,} eligible slices)"
 
 
 def format_llm_audit_summary(stats: dict) -> str:
@@ -439,7 +484,8 @@ def format_llm_audit_summary(stats: dict) -> str:
     return (
         f"Calls {calls:,} · {context_text} · "
         f"{input_text} · {output_text} · {template_text} · "
-        f"{latency_text} · Components {component_rows:,}/{calls:,}"
+        f"{latency_text} · Components {component_rows:,}/{calls:,} · "
+        f"{format_provider_cache_summary(stats)}"
     )
 
 def _reduction_mode(stats: dict) -> str:
