@@ -67,7 +67,8 @@ def classify_llm_call_exception(error: BaseException) -> str:
 # 經由 prompt_generator 暴露的統一介面，不再硬寫 "qwen"
 from czjLLM.prompt_pipeline.prompt_generator import finalize_llm_user_content
 from czjLLM.utilities.llm_call_audit import resolve_context_limit
-from czjLLM.prompt_pipeline.request_policy import request_policy
+from czjLLM.prompt_pipeline.request_policy import request_policy, stream_response_enabled
+from czjLLM.prompt_pipeline.stream_completion import collect_text_completion
 
 
 # ===== httpx 客戶端工廠 =====
@@ -185,6 +186,7 @@ def CallLLMAPI(
     """
     model_spec = model_spec or {}
     read_timeout, max_retries, effort = request_policy(model_spec)
+    stream_enabled = stream_response_enabled(model_spec)
 
     # 以 model_spec 覆蓋顯式參數
     model = model_spec.get("model_name", model) or model
@@ -220,7 +222,10 @@ def CallLLMAPI(
         # The configured provider must support reasoning_effort.
         request_options["extra_body"] = {"reasoning_effort": effort}
 
+    if stream_enabled:
+        request_options.update(stream=True, stream_options={"include_usage": True})
     start_ts = time.time()
+    started_at = time.monotonic() if stream_enabled else None
 
     try:
         response = client.chat.completions.create(
@@ -233,6 +238,17 @@ def CallLLMAPI(
             temperature=temperature,
             **request_options,
         )
+        if stream_enabled:
+            # The SDK wraps transport errors while opening the request, but
+            # reading the SSE body can raise raw httpx transport exceptions.
+            # Preserve the existing typed uncertainty contract for both paths.
+            stream_request = response.response.request
+            try:
+                response = collect_text_completion(response, started_at=started_at)
+            except httpx.TimeoutException as exc:
+                raise APITimeoutError(request=stream_request) from exc
+            except httpx.TransportError as exc:
+                raise APIConnectionError(request=stream_request) from exc
     except (APITimeoutError, APIConnectionError) as e:
         # 讓上游重試機制處理；保留明確錯誤訊息
         raise RuntimeError(f"LLM_CALL_TIMEOUT_OR_CONN: {e}") from e
@@ -250,6 +266,14 @@ def CallLLMAPI(
     except Exception:
         pass
 
+    if stream_enabled:
+        def observed(value):
+            return "unknown" if value is None else f"{value:.2f}s"
+        tlog("[LLM stream completion] "
+             f"first_text={observed(response._czjllm_ttft_seconds)} | "
+             f"first_thinking={observed(response._czjllm_first_thinking_seconds)} | "
+             f"first_content={observed(response._czjllm_first_content_seconds)} | "
+             f"chunks={response._czjllm_stream_chunks}")
     cost_twd = _estimate_cost_twd(response, model=model)
     context_limit, context_source = resolve_context_limit(model_spec, response=response)
     if context_limit > 0:

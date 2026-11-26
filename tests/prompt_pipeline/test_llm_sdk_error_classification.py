@@ -260,3 +260,106 @@ def test_effective_policy_is_logged_before_legacy_worker_launch():
     from czjLLM.sql_mode.runtime.orchestrator import run_pipeline
     source = inspect.getsource(run_pipeline)
     assert source.index("tlog(format_effective_model_startup_policy(ctx))") < source.index("start_workers(")
+
+
+def _stream_sse_frame(choices, usage=None):
+    import json
+    return ("data: " + json.dumps({
+        "id": "synthetic-stream", "model": "model", "created": 1,
+        "object": "chat.completion.chunk", "choices": choices, "usage": usage,
+    }) + "\n\n").encode()
+
+
+@pytest.mark.parametrize("finish", ["stop", "length"])
+@pytest.mark.parametrize("usage_on_finish", [True, False])
+def test_actual_sdk_stream_assembles_exact_answer_and_preserves_usage(monkeypatch, finish, usage_on_finish):
+    import json
+    monkeypatch.setattr(llm_caller, "resolve_context_limit", lambda *a, **kw: (0, ""))
+    logs = []
+    monkeypatch.setattr(llm_caller, "tlog", logs.append)
+    usage = {"prompt_tokens": 100, "completion_tokens": 20, "total_tokens": 120,
+             "prompt_tokens_details": {"cached_tokens": 80}}
+    frames = [
+        _stream_sse_frame([{"index": 0, "delta": {"role": "assistant"}}]),
+        _stream_sse_frame([{"index": 0, "delta": {"reasoning_content": "private thought"}}]),
+        _stream_sse_frame([{"index": 0, "delta": {"content": '[{"a":'}}]),
+        _stream_sse_frame([{"index": 0, "delta": {"content": '1}]'}}]),
+        _stream_sse_frame([{"index": 0, "delta": {}, "finish_reason": finish}],
+                          usage if usage_on_finish else None),
+    ]
+    if not usage_on_finish:
+        frames.append(_stream_sse_frame([], usage))
+    frames.append(b"data: [DONE]\n\n")
+    calls = []
+    class Stream(httpx.SyncByteStream):
+        def __iter__(self):
+            yield from frames
+    def handler(request):
+        calls.append(json.loads(request.content))
+        return httpx.Response(200, headers={"Content-Type": "text/event-stream"}, stream=Stream())
+    spec = {"base_url": "http://model.invalid/v1", "model_name": "model",
+            "llm_stream_response": True, "llm_max_retries": 0}
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        response, _ = llm_caller.CallLLMAPI("private input", model_spec=spec, http_client=client)
+    assert len(calls) == 1
+    assert calls[0]["stream"] is True and calls[0]["stream_options"] == {"include_usage": True}
+    assert response.choices[0].message.content == '[{"a":1}]'
+    assert response.choices[0].finish_reason == finish
+    assert response.usage.prompt_tokens_details.cached_tokens == 80
+    assert response._czjllm_ttft_seconds is not None
+    assert response._czjllm_first_thinking_seconds <= response._czjllm_first_content_seconds
+    assert "private thought" not in str(response)
+    assert "private" not in "\n".join(logs)
+
+
+@pytest.mark.parametrize("case", ["missing_finish", "missing_usage", "duplicate_choice", "tool_call", "oversized", "timeout", "read_error", "protocol_error"])
+def test_actual_sdk_stream_failure_does_not_return_partial_or_replay(monkeypatch, case):
+    from czjLLM.prompt_pipeline import stream_completion as mod
+    calls = []
+    closed = []
+    class Stream(httpx.SyncByteStream):
+        def __iter__(self):
+            yield _stream_sse_frame([{"index": 0, "delta": {"content": "private partial"}}])
+            if case == "timeout":
+                raise httpx.ReadTimeout("synthetic timeout")
+            if case == "read_error":
+                raise httpx.ReadError("synthetic read error")
+            if case == "protocol_error":
+                raise httpx.RemoteProtocolError("synthetic protocol error")
+            if case == "missing_usage":
+                yield _stream_sse_frame([{"index": 0, "delta": {}, "finish_reason": "stop"}])
+            elif case == "duplicate_choice":
+                yield _stream_sse_frame([{"index": 1, "delta": {"content": "x"}}])
+            elif case == "tool_call":
+                yield _stream_sse_frame([{"index": 0, "delta": {"function_call": {"name": "tool", "arguments": "{}"}}}])
+            yield b"data: [DONE]\n\n"
+        def close(self):
+            closed.append(True)
+    if case == "oversized":
+        monkeypatch.setattr(mod, "MAX_STREAM_TEXT_BYTES", 4)
+    def handler(request):
+        calls.append(1)
+        return httpx.Response(200, headers={"Content-Type": "text/event-stream"}, stream=Stream())
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        expected = RuntimeError if case in {"timeout", "read_error", "protocol_error"} else mod.IncompleteTextStream
+        with pytest.raises(expected) as caught:
+            llm_caller.CallLLMAPI("input", model_spec={"base_url": "http://model.invalid/v1",
+                                  "llm_stream_response": True, "llm_max_retries": 0},
+                                  http_client=client)
+    assert calls == [1] and closed
+    if case in {"timeout", "read_error", "protocol_error"}:
+        expected_code = ("WORKER_LLM_TIMEOUT_EXCEPTION" if case == "timeout"
+                         else "WORKER_LLM_CONNECTION_EXCEPTION")
+        assert llm_caller.classify_llm_call_exception(caught.value) == expected_code
+        assert isinstance(caught.value.__cause__, APITimeoutError if case == "timeout" else APIConnectionError)
+
+
+def test_stream_policy_requires_explicit_opt_in_and_zero_retries():
+    from czjLLM.prompt_pipeline.request_policy import stream_response_enabled
+    assert stream_response_enabled({}) is False
+    assert stream_response_enabled({"llm_stream_response": False}) is False
+    assert stream_response_enabled({"llm_stream_response": True, "llm_max_retries": 0}) is True
+    for spec in ({"llm_stream_response": True}, {"llm_stream_response": True, "llm_max_retries": 1},
+                 {"llm_stream_response": True, "llm_max_retries": False}, {"llm_stream_response": "true"}):
+        with pytest.raises(ValueError):
+            stream_response_enabled(spec)
