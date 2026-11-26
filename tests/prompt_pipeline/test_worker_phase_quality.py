@@ -369,12 +369,12 @@ def test_real_json_repair_uses_parent_nonempty_admission_scope(monkeypatch, tmp_
                 select_now([url], PGMSubDir=str(scope), return_lease_token=True,
                            max_concurrent_per_endpoint=1)
         calls.append(1)
-        return _response('{"a":1,}' if len(calls) == 1 else '{"a":1}'), 0.0
+        return _response('[{"a":1,}]' if len(calls) == 1 else '[{"a":1}]'), 0.0
 
     monkeypatch.setattr(pc, "select_idle_ollama_url", select_now)
     monkeypatch.setattr(pc, "CallLLMAPI", provider)
     result = worker.proc()
     assert result["ok"]
-    assert json.loads(result["output"]) == {"a": 1}
+    assert json.loads(result["output"]) == [{"a": 1}]
     assert len(calls) == 2
     assert json.loads(path.read_text())[url]["leases"] == []
