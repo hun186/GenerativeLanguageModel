@@ -22,7 +22,8 @@ from utils.utilities import countdown_pause
 from utils.utilities_path import MKDIR
 from utils.utilities_path import getSubdirectory
 
-from GenerativeLanguageModel.czjLLM.taskConfig import taskSetting
+# Share the exact registry used by PromptGenerator and Queue dispatch.
+from czjLLM.taskConfig import taskSetting
 from GenerativeLanguageModel.czjLLM.modelConfig import modelSetting
 from czjLLM.prompt_pipeline.dispatch_parallelism import configured_model_process_parallelism
 

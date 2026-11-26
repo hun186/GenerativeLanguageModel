@@ -72,6 +72,7 @@ from czjLLM.utilities.processing_quality import emit_quality_event
 from czjLLM.utilities.json_repair_analysis import analyze_json_repair
 from czjLLM.utilities.json_transport import clean_json_transport, is_json_output_task
 from czjLLM.utilities.json_rule_policy import JsonRepairPolicy, select_rule_candidate, verified_source_span
+from czjLLM.prompt_pipeline.json_rule_dispatch import legacy_rule_worker_kwargs
 from czjLLM.prompt_pipeline.json_source_queue import take_claimed_source_receipt
 from czjLLM.utilities.json_repair_private_capture import (
     capture_enabled, configured_private_root, write_private_repair,
@@ -799,6 +800,8 @@ def llm_stream_consumer(ctx, registry: ItemsRegistry, meter_fn: str,
                     ),
                     queue_claim_event_id=claimed_evidence.get(pf, ""),
                     dispatch_item_dir=item_dir,
+                    **legacy_rule_worker_kwargs(ctx.task, task_pool=getattr(ctx, "taskSetting", None),
+                                                renderer_pool=taskSetting),
                     **_llm_call_audit_kwargs(ctx),
                 ))
 
@@ -3200,6 +3203,8 @@ def _run_windows_live_slot_refill(
             ),
             queue_claim_event_id=receipt,
             dispatch_item_dir=item_dir,
+            **legacy_rule_worker_kwargs(ctx.task, task_pool=getattr(ctx, "taskSetting", None),
+                                        renderer_pool=taskSetting),
             **_llm_call_audit_kwargs(ctx),
         )
         def _dispatch_receipt(d):
