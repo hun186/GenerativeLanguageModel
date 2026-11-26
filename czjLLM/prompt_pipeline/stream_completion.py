@@ -20,7 +20,7 @@ def _count(value):
     return type(value) is int and 0 <= value <= 2**63 - 1
 
 
-def collect_text_completion(stream, *, started_at):
+def collect_text_completion(stream, *, started_at, activity=None):
     content = []
     text_bytes = 0
     chunks = 0
@@ -57,8 +57,12 @@ def collect_text_completion(stream, *, started_at):
                     if finish is None:
                         raise IncompleteTextStream("usage before stream finish")
                     usage = reported
+                    if activity is not None:
+                        activity.received()
                     continue
             if not choices:
+                if activity is not None:
+                    activity.received()
                 continue
             if finish is not None or usage is not None:
                 raise IncompleteTextStream("choice after stream finish")
@@ -93,6 +97,8 @@ def collect_text_completion(stream, *, started_at):
                 if first is None:
                     first = elapsed
                 content.append(answer)
+            if activity is not None:
+                activity.received(thinking=bool(reasoning or thinking), content=bool(answer))
             reason = getattr(choice, "finish_reason", None)
             if reason is not None:
                 if reason not in ("stop", "length"):
