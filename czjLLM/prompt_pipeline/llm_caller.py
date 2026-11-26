@@ -69,6 +69,7 @@ from czjLLM.prompt_pipeline.prompt_generator import finalize_llm_user_content
 from czjLLM.utilities.llm_call_audit import resolve_context_limit
 from czjLLM.prompt_pipeline.request_policy import request_policy, stream_response_enabled
 from czjLLM.prompt_pipeline.stream_completion import collect_text_completion
+from czjLLM.prompt_pipeline.stream_activity import StreamActivity, format_stream_activity
 
 
 # ===== httpx 客戶端工廠 =====
@@ -226,6 +227,9 @@ def CallLLMAPI(
         request_options.update(stream=True, stream_options={"include_usage": True})
     start_ts = time.time()
     started_at = time.monotonic() if stream_enabled else None
+    activity = (StreamActivity(lambda event: tlog(format_stream_activity(event)), started_at=started_at)
+                if stream_enabled else None)
+    assembled = False
 
     try:
         response = client.chat.completions.create(
@@ -244,7 +248,8 @@ def CallLLMAPI(
             # Preserve the existing typed uncertainty contract for both paths.
             stream_request = response.response.request
             try:
-                response = collect_text_completion(response, started_at=started_at)
+                response = collect_text_completion(response, started_at=started_at, activity=activity)
+                assembled = True
             except httpx.TimeoutException as exc:
                 raise APITimeoutError(request=stream_request) from exc
             except httpx.TransportError as exc:
@@ -255,6 +260,9 @@ def CallLLMAPI(
     except (RateLimitError, APIError):
         # 速率或服務端錯誤交給外層策略重試
         raise
+    finally:
+        if activity is not None:
+            activity.close(completed=assembled)
 
     elapsed = max(time.time() - start_ts, 0.0)
     p_tks, c_tks, total_tks = _calc_token_stats(response)
