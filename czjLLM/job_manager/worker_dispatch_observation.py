@@ -265,4 +265,8 @@ def read_visible_dispatch_observations(audit_path, item_dirs):
             "text": f"{label}｜{stage}" + (f" · {count} 呼叫" if count > 1 else "") + activity_label,
             "status": selected["status"], "count": len(observations),
         }
+        if selected["status"] == "calling":
+            results[key]["observed_ns"] = selected["observed_ns"]
+            if detail is not None:
+                results[key]["stream_activity"] = detail
     return results
