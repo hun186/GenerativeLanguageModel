@@ -276,3 +276,105 @@ def test_transport_uncertainty_receipt_requires_real_verified_claim(monkeypatch,
     monkeypatch.setattr(pc, "CallLLMAPI", lambda *a, **kw:
                         (_ for _ in ()).throw(RuntimeError("Request timed out.")))
     assert "transport_uncertain_claim_id" not in worker.proc()
+
+
+def test_capped_worker_releases_endpoint_before_nested_json_repair(monkeypatch, tmp_path):
+    """A synchronous repair can reacquire the same endpoint at cap=1."""
+    from czjLLM.infrastructure import ollama_lb
+
+    worker, audit = _make_worker(monkeypatch, tmp_path, task="to json")
+    url = worker.model_spec["base_url"][0]
+    worker.model_spec["max_concurrent_per_endpoint"] = 1
+    # Use the real default load-file scope shared by json_format_caller.
+    monkeypatch.chdir(tmp_path)
+    worker.PGMSubDir = ""
+    path = tmp_path / "logs" / "base_url_load.json"
+
+    def select_now(*args, **kwargs):
+        return ollama_lb.select_idle_ollama_url(
+            *args, **kwargs, admission_timeout_sec=0,
+        )
+
+    monkeypatch.setattr(pc, "select_idle_ollama_url", select_now)
+    monkeypatch.setattr(pc, "release_url_load", ollama_lb.release_url_load)
+    calls = []
+
+    def provider(*args, **kwargs):
+        assert len(json.loads(path.read_text())[url]["leases"]) == 1
+        calls.append(kwargs["model_spec"]["base_url"])
+        return _response('{"a":1,}' if len(calls) == 1 else '{"a":1}'), 0.0
+
+    def nested_repair(raw):
+        assert raw == '{"a":1,}'
+        assert json.loads(path.read_text())[url]["leases"] == []
+        # A real nested PromptAPIPipeline.proc on the same endpoint, using
+        # the default PGMSubDir and no provider/network access.
+        child, _ = _make_worker_for_nested_repair(worker)
+        result = child.proc()
+        assert result["ok"]
+        return [], result["output"]
+
+    def _make_worker_for_nested_repair(parent):
+        child = pc.PromptAPIPipeline.__new__(pc.PromptAPIPipeline)
+        child.__dict__.update(parent.__dict__)
+        child.model_spec = dict(parent.model_spec)
+        child.task = "json format repair"
+        child.promptFile = ""
+        child.content = "synthetic repair prompt"
+        child.allow_to_retry = False
+        return child, None
+
+    monkeypatch.setattr(pc, "CallLLMAPI", provider)
+    monkeypatch.setattr(worker, "handle_json_output", nested_repair)
+    result = worker.proc()
+    assert result["ok"] and result["output"] == '{"a":1}'
+    assert calls == [url, url]
+    assert json.loads(path.read_text())[url]["leases"] == []
+    assert len(audit) == 2
+
+
+
+def test_real_json_repair_uses_parent_nonempty_admission_scope(monkeypatch, tmp_path):
+    """Actual repair helper and nested pipeline share the parent's lease file."""
+    from czjLLM.infrastructure import ollama_lb
+
+    monkeypatch.chdir(tmp_path)
+    scope = tmp_path / "job"
+    scope.mkdir()
+    url = "http://private-model.invalid"
+    worker = pc.PromptAPIPipeline(
+        task="to json", content="synthetic input", promptFile="",
+        model_spec={"model_name": "test-model", "base_url": [url],
+                    "max_concurrent_per_endpoint": 1},
+        PGMSubDir=str(scope), audit_run_id="repair-scope",
+        audit_path=str(scope / "audit.csv"),
+    )
+    monkeypatch.setattr(worker, "extract_MainFileName_and_input_text",
+                        lambda: ("", "", ""))
+    monkeypatch.setattr(pc, "generate_prompt", lambda **kwargs: "repair")
+    monkeypatch.setattr(pc, "log_llm_call", lambda **kwargs: None)
+    calls = []
+    path = scope / "logs" / "base_url_load.json"
+
+    def select_now(*args, **kwargs):
+        return ollama_lb.select_idle_ollama_url(
+            *args, **kwargs, admission_timeout_sec=0,
+        )
+
+    def provider(*args, **kwargs):
+        assert len(json.loads(path.read_text())[url]["leases"]) == 1
+        assert not (tmp_path / "logs" / "base_url_load.json").exists()
+        if calls:
+            with pytest.raises(ollama_lb.EndpointCapacityUnavailable):
+                select_now([url], PGMSubDir=str(scope), return_lease_token=True,
+                           max_concurrent_per_endpoint=1)
+        calls.append(1)
+        return _response('[{"a":1,}]' if len(calls) == 1 else '[{"a":1}]'), 0.0
+
+    monkeypatch.setattr(pc, "select_idle_ollama_url", select_now)
+    monkeypatch.setattr(pc, "CallLLMAPI", provider)
+    result = worker.proc()
+    assert result["ok"]
+    assert json.loads(result["output"]) == [{"a": 1}]
+    assert len(calls) == 2
+    assert json.loads(path.read_text())[url]["leases"] == []

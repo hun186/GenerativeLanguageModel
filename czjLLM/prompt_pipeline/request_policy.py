@@ -42,3 +42,23 @@ def context_round_timeout(ctx):
     if explicit is not None:
         return explicit
     return model_round_timeout(getattr(ctx, "model_spec", None))
+
+
+def reasoning_fingerprint_metadata(spec):
+    """Only opt-in reasoning semantics, never transport options or credentials.
+
+    Absent thinking_level retains the pre-policy persisted identity. Suffix
+    presence matters: omission suppresses the automatic suffix for explicit
+    effort, while an explicit None retains the normal automatic policy.
+    """
+    if "thinking_level" not in spec:
+        return {}
+    effort = request_policy(spec)[2]
+    suffix = spec.get("no_think_suffix")
+    if "no_think_suffix" not in spec or suffix == "":
+        suffix_policy = "disabled"
+    elif suffix == "/no_think":
+        suffix_policy = "forced"
+    else:
+        suffix_policy = "automatic"
+    return {"reasoning_effort": effort, "reasoning_suffix_policy": suffix_policy}

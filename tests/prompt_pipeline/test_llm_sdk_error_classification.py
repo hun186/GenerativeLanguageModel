@@ -173,3 +173,34 @@ def test_legacy_prompt_generation_does_not_preappend_automatic_suffix_for_explic
     assert finalize_llm_user_content(prompt, model_spec=ctx.model_spec) == prompt
     ctx.model_spec["no_think_suffix"] = "/no_think"
     assert PromptGenerator(ctx).build("source").endswith("/no_think")
+
+
+def test_reduction_runtime_fingerprints_bind_opt_in_reasoning_and_suffix(tmp_path):
+    from types import SimpleNamespace
+    from czjLLM.reduction.runtime_task import ProductionTaskRuntime
+    from czjLLM.reduction.runtime_text import TextRoundRuntimeAdapter
+
+    def metadata(**settings):
+        ctx = SimpleNamespace(task="synthetic", taskSetting={}, think_mode=False,
+                              model_spec_name="test-model", max_tokens=4096,
+                              model_spec={"model_name": "qwen3:8b", **settings})
+        task = ProductionTaskRuntime(ctx)
+        text = TextRoundRuntimeAdapter(ctx=ctx, item_workspace=tmp_path,
+                                       round_task="synthetic")
+        return task.fingerprint_metadata(), text.fingerprint_metadata(), text.execution_fingerprint()
+
+    baseline = metadata()
+    assert metadata(llm_read_timeout_sec=900, llm_round_timeout_sec=1200,
+                    llm_max_retries=0, **{"api_key": bytes([1, 2, 3]).hex()}) == baseline
+    low = metadata(thinking_level="low")
+    high = metadata(thinking_level="high")
+    explicit_auto = metadata(thinking_level="low", no_think_suffix=None)
+    explicit_force = metadata(thinking_level="low", no_think_suffix="/no_think")
+    for index in range(3):
+        assert low[index] != baseline[index] and low[index] != high[index]
+        assert low[index] != explicit_auto[index] and low[index] != explicit_force[index]
+    assert metadata(thinking_level="low", no_think_suffix="") == low
+    assert metadata(thinking_level=False) == metadata(thinking_level="none")
+    assert metadata(thinking_level="low", **{"api_key": bytes([4, 5, 6]).hex()}) == low
+    with pytest.raises(ValueError, match="thinking_level"):
+        metadata(thinking_level="unsupported")

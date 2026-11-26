@@ -10,6 +10,7 @@ from typing import Any, Callable, Mapping, Optional
 
 from czjLLM.utilities.fs_safe import safe_atomic_write_text, safe_read_text, safe_rmtree
 from czjLLM.reduction.execution import ExecutionCancelled
+from czjLLM.prompt_pipeline.request_policy import reasoning_fingerprint_metadata
 from czjLLM.reduction.production_control import raise_if_execution_cancelled
 from czjLLM.reduction.retention import (
     ArtifactLease,
@@ -120,6 +121,8 @@ class TextRoundRuntimeAdapter:
             if isinstance(model_spec, Mapping)
             else {}
         )
+        if isinstance(model_spec, Mapping):
+            safe_model_spec.update(reasoning_fingerprint_metadata(model_spec))
         input_cut = (
             task_spec.get("InputCutLen", 3000)
             if isinstance(task_spec, Mapping)
