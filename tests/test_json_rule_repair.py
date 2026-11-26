@@ -478,3 +478,65 @@ def test_worker_both_paths_forward_finish_reason_for_explicit_rule_policy():
     source = Path("czjLLM/prompt_pipeline/pipeline_controller.py").read_text(encoding="utf-8")
     assert source.count('if finish_reason == "length" or self._generic_rule_repair_enabled():') == 2
     assert source.count("self.handle_json_output(retMES)") >= 2
+
+
+@pytest.mark.parametrize("name", [
+    "InfoExtraction-MultiDim-SQLFriendly-to json format",
+    "InfoExtraction-MultiDim-Compact-SQLFriendly-to json format",
+])
+@pytest.mark.parametrize("think_mode", [True, False])
+@pytest.mark.parametrize("hint", [True, False])
+def test_actual_prompt_generator_capture_exact_source(name, think_mode, hint, monkeypatch):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline.prompt_generator import PromptGenerator
+    from czjLLM.task_configs import taskSetting_Enrichment as enrichment
+
+    monkeypatch.setattr(enrichment, "USE_MAINFILE_HINT", hint)
+    generator = PromptGenerator(SimpleNamespace(
+        task=name, main_file_name="sample_tika", think_mode=think_mode,
+        model_spec_name="qwen3.8",
+    ))
+    source = '原文\n☆下列為輸入任務文本：\n他说"甲"。'
+    plain = generator.build(source)
+    prompt, receipt = generator.build_with_source_receipt(source)
+    assert prompt == plain
+    assert receipt is not None
+    assert verified_source_span(prompt, receipt) == source
+    assert prompt[:receipt.start].endswith("☆下列為輸入任務文本：\n")
+    assert prompt.endswith("/no_think") is (not think_mode)
+
+
+def _untrusted_append_template(content):
+    return "☆下列為輸入任務文本：\n" + content
+
+
+def test_source_capture_refuses_replaced_template_even_if_suffix_matches(monkeypatch):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline.prompt_generator import PromptGenerator, taskSetting
+    name = "InfoExtraction-MultiDim-SQLFriendly-to json format"
+    monkeypatch.setitem(taskSetting, name, {"template": _untrusted_append_template})
+    generator = PromptGenerator(SimpleNamespace(
+        task=name, think_mode=True, model_spec_name="qwen3.8",
+    ))
+    source = '他说"甲"。'
+    prompt, receipt = generator.build_with_source_receipt(source)
+    assert prompt == generator.build(source)
+    assert receipt is None
+
+
+def test_source_capture_refuses_raw_task_and_truncated_source_suffix():
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline.prompt_generator import PromptGenerator
+    raw_generator = PromptGenerator(SimpleNamespace(
+        task="custom prompt", think_mode=True, model_spec_name="qwen3.8",
+    ))
+    assert raw_generator.build_with_source_receipt("source")[1] is None
+    generator = PromptGenerator(SimpleNamespace(
+        task="InfoExtraction-MultiDim-SQLFriendly-to json format",
+        main_file_name="sample", think_mode=False, model_spec_name="qwen3.8",
+    ))
+    source = '他说"甲"。 \n'
+    prompt, receipt = generator.build_with_source_receipt(source)
+    assert prompt == generator.build(source)
+    assert prompt.endswith("/no_think")
+    assert receipt is None
