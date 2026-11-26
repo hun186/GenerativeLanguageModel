@@ -28,15 +28,30 @@ class ItemsRegistry:
 
     def __init__(self):
         self.lock = threading.Lock()
+        self._source_handoffs = {}
         self._items = {}  # item_dir -> {"pk":..., "temp_txt":...}
 
-    def add(self, item_dir, pk, temp_txt, comb_back_fn):
+    def add(self, item_dir, pk, temp_txt, comb_back_fn, *, source_handoffs=None):
         with self.lock:
             self._items[item_dir] = {
                 "pk": pk,
                 "temp_txt": temp_txt,
                 "CombBackFN": comb_back_fn,
             }
+            self._source_handoffs.pop(item_dir, None)
+            if source_handoffs:
+                self._source_handoffs[item_dir] = dict(source_handoffs)
+
+    def take_source_handoff(self, item_dir, basename):
+        """Consume provenance once; requeue/restart cannot reuse an old receipt."""
+        with self.lock:
+            records = self._source_handoffs.get(item_dir)
+            if records is None:
+                return None
+            record = records.pop(basename, None)
+            if not records:
+                self._source_handoffs.pop(item_dir, None)
+            return record
 
     def list_items(self):
         with self.lock:
@@ -54,6 +69,7 @@ class ItemsRegistry:
     def remove(self, item_dir):
         with self.lock:
             self._items.pop(item_dir, None)
+            self._source_handoffs.pop(item_dir, None)
 
 
 def meter_path_init(ctx):
