@@ -258,14 +258,14 @@ def test_source_handoff_actual_queue_claim_is_one_shot(tmp_path, monkeypatch):
     item, path, source, prompt, registry, task, pool = _fresh_source_row(tmp_path, monkeypatch)
     assert "source_handoffs" not in registry.list_items()[str(item)]
     claims = {}
-    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims)
+    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims, source_receipt_registry=registry)
     running = pairs[0][0]
     receipt = take_claimed_source_receipt(registry, str(item), running, claims[running], task, pool)
     assert verified_source_span(prompt, receipt) == source
     assert take_claimed_source_receipt(registry, str(item), running, claims[running], task, pool) is None
     assert recover_running_to_todo([str(item)]) == 1
     claims = {}
-    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims)
+    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims, source_receipt_registry=registry)
     running = pairs[0][0]
     assert take_claimed_source_receipt(registry, str(item), running, claims[running], task, pool) is None
 
@@ -280,7 +280,7 @@ def test_source_handoff_refuses_mismatch_and_consumes_record(tmp_path, monkeypat
     elif change == "changed_text":
         path.write_text(prompt + "changed", encoding="utf-8")
     claims = {}
-    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims)
+    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims, source_receipt_registry=registry)
     running = pairs[0][0]
     expected = claims[running]
     supplied = uuid4().hex if change == "wrong_claim" else expected
@@ -304,3 +304,32 @@ def test_source_handoff_wired_only_to_actual_legacy_consumer_paths():
     assert "json_rule_source_receipt=take_claimed_source_receipt(" not in source[
         source.index("def call_llm_api("):source.index("class PromptAPIPipeline:")
     ]
+
+
+@pytest.mark.parametrize("use_stale_claim", [True, False])
+def test_recovery_before_worker_handoff_cannot_inherit_first_claim(tmp_path, monkeypatch, use_stale_claim):
+    item, path, source, prompt, registry, task, pool = _fresh_source_row(tmp_path, monkeypatch)
+    first = {}
+    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=first, source_receipt_registry=registry)
+    running = pairs[0][0]
+    assert recover_running_to_todo([str(item)]) == 1
+    second = {}
+    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=second, source_receipt_registry=registry)
+    assert pairs[0][0] == running and first[running] != second[running]
+    supplied = first[running] if use_stale_claim else second[running]
+    assert take_claimed_source_receipt(registry, str(item), running, supplied, task, pool) is None
+
+
+def test_source_receipt_discarded_when_claim_observation_fails(tmp_path, monkeypatch):
+    from czjLLM.prompt_pipeline.runtime_support import prompt_queue as queue
+    item, path, source, prompt, registry, task, pool = _fresh_source_row(tmp_path, monkeypatch)
+    with monkeypatch.context() as patch:
+        patch.setattr(queue, "record_queue_transition", lambda *a, **kw: False)
+        claims = {}
+        pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims, source_receipt_registry=registry)
+        assert len(pairs) == 1 and claims == {}
+    assert recover_running_to_todo([str(item)]) == 1
+    claims = {}
+    pairs = pick_and_claim_next_prompts([str(item)], claim_ids_out=claims, source_receipt_registry=registry)
+    running = pairs[0][0]
+    assert take_claimed_source_receipt(registry, str(item), running, claims[running], task, pool) is None
