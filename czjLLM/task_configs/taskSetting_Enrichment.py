@@ -1944,6 +1944,7 @@ taskSetting_Enrichment = {
 
 # Freeze the actual built-in callable identities, not names in a mutable task
 # registry. Only these append-only renderers have a source boundary contract.
-TRUSTED_MULTIDIM_SOURCE_RENDERERS = tuple(
-    spec["template"] for spec in taskSetting_Enrichment.values()
+TRUSTED_MULTIDIM_SOURCE_RENDERERS = (
+    taskSetting_Enrichment["InfoExtraction-MultiDim-SQLFriendly-to json format"]["template"],
+    taskSetting_Enrichment["InfoExtraction-MultiDim-Compact-SQLFriendly-to json format"]["template"],
 )
