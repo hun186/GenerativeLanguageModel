@@ -70,6 +70,26 @@ def generated_source_handoff(path, stream, prompt, receipt, task_sha256):
         return None
 
 
+def finalize_generated_source_handoff(record, path):
+    """NTFS may finalize mtime only after the writer closes.
+
+    Accept the post-close identity only for the same exclusive inode and
+    byte length. Consumer still verifies the exact decoded prompt and claim.
+    """
+    if not isinstance(record, GeneratedSourceHandoff):
+        return None
+    try:
+        path = Path(path)
+        if not _safe_path(path):
+            return None
+        current = _identity(path.lstat())
+        if current is None or current[:3] != record.file_identity[:3]:
+            return None
+        return GeneratedSourceHandoff(record.generation_id, current, record.wire)
+    except (OSError, ValueError, TypeError):
+        return None
+
+
 def claimed_source_receipt(record, path, claim_id, task_sha256):
     """One-shot Consumer verification; no persistence and no search by digest."""
     if not isinstance(record, GeneratedSourceHandoff) or not task_sha256:
