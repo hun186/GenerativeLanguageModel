@@ -48,12 +48,16 @@ def collect_text_completion(stream, *, started_at):
                 raise IncompleteTextStream("unsupported stream choices")
             reported = getattr(chunk, "usage", None)
             if reported is not None:
-                if usage is not None or finish is None or choices:
-                    raise IncompleteTextStream("unexpected stream usage frame")
+                if usage is not None:
+                    raise IncompleteTextStream("duplicate stream usage frame")
                 if not all(_count(getattr(reported, key, None)) for key in
                            ("prompt_tokens", "completion_tokens", "total_tokens")):
                     raise IncompleteTextStream("invalid stream usage")
-                usage = reported
+                if not choices:
+                    if finish is None:
+                        raise IncompleteTextStream("usage before stream finish")
+                    usage = reported
+                    continue
             if not choices:
                 continue
             if finish is not None or usage is not None:
@@ -94,6 +98,10 @@ def collect_text_completion(stream, *, started_at):
                 if reason not in ("stop", "length"):
                     raise IncompleteTextStream("unsupported stream finish reason")
                 finish = reason
+            if reported is not None:
+                if finish is None:
+                    raise IncompleteTextStream("usage before stream finish")
+                usage = reported
     if identity is None or finish is None or usage is None:
         raise IncompleteTextStream("missing stream finish or provider usage")
     # A length finish is deliberately not converted to stop; existing worker
