@@ -82,3 +82,125 @@ def test_actual_call_llm_api_preserves_typed_cause_from_mock_transport(monkeypat
     assert count[0] >= 1
     assert isinstance(caught.value.__cause__, APITimeoutError)
     assert llm_caller.classify_llm_call_exception(caught.value) == "WORKER_LLM_TIMEOUT_EXCEPTION"
+
+
+
+def test_model_request_policy_on_actual_sdk_transport(monkeypatch):
+    import json
+
+    monkeypatch.setattr(llm_caller, "finalize_llm_user_content",
+                        lambda content, **kwargs: content)
+    seen = []
+
+    def transport(request):
+        seen.append((json.loads(request.content), request.extensions["timeout"]))
+        raise httpx.ReadTimeout("test", request=request)
+
+    with httpx.Client(transport=httpx.MockTransport(transport),
+                      timeout=httpx.Timeout(10.0, read=240.0)) as client:
+        with pytest.raises(RuntimeError):
+            llm_caller.CallLLMAPI(
+                "synthetic prompt",
+                model_spec={"api_key": "test", "model_name": "test",
+                            "base_url": "https://model.invalid/v1",
+                            "llm_read_timeout_sec": 900,
+                            "llm_max_retries": 0, "thinking_level": False},
+                http_client=client,
+            )
+    assert len(seen) == 1
+    body, timeout = seen[0]
+    assert body["reasoning_effort"] == "none"
+    assert timeout["read"] == 900
+    assert timeout["connect"] == 10
+
+
+@pytest.mark.parametrize("key,value", [
+    ("llm_read_timeout_sec", True), ("llm_read_timeout_sec", float("inf")),
+    ("llm_round_timeout_sec", 0), ("llm_max_retries", -1),
+    ("llm_max_retries", False), ("thinking_level", "unsupported"),
+])
+def test_invalid_model_request_policy_rejected(key, value):
+    from czjLLM.prompt_pipeline.request_policy import request_policy
+    with pytest.raises(ValueError, match=key):
+        request_policy({key: value})
+
+
+def test_request_policy_absent_keeps_legacy_defaults():
+    from czjLLM.prompt_pipeline.request_policy import request_policy
+    assert request_policy({}) == (None, None, None)
+    assert request_policy({"thinking_level": "low"}) == (None, None, "low")
+
+
+def test_explicit_thinking_replaces_automatic_suffix():
+    from czjLLM.prompt_pipeline.prompt_generator import finalize_llm_user_content
+    spec = {"model_name": "qwen3:8b", "thinking_level": "high"}
+    assert finalize_llm_user_content("synthetic", model_spec=spec) == "synthetic"
+    assert finalize_llm_user_content(
+        "synthetic", model_spec=dict(spec, no_think_suffix="/no_think"),
+    ).endswith("/no_think")
+
+
+def test_extract_resume_fingerprint_tracks_effective_reasoning_policy_only():
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline.pipeline_controller import _extract_stage_provenance_fingerprint
+    ctx = SimpleNamespace(taskSetting={}, task="extract", think_mode=True,
+                          model_spec={"model_name": "qwen3:8b"})
+    def fingerprint(**settings):
+        ctx.model_spec = {"model_name": "qwen3:8b", **settings}
+        return _extract_stage_provenance_fingerprint("synthetic extract", ctx)
+    baseline = fingerprint()
+    assert fingerprint(**{"api_key": bytes([1, 2, 3]).hex(), "llm_read_timeout_sec": 900}) == baseline
+    low = fingerprint(thinking_level="low")
+    assert low != baseline and low != fingerprint(thinking_level="high")
+    assert low == fingerprint(thinking_level="low", **{"api_key": bytes([4, 5, 6]).hex()})
+    assert low != fingerprint(thinking_level="low", no_think_suffix=None)
+    assert low != fingerprint(thinking_level="low", no_think_suffix="/no_think")
+    assert fingerprint(thinking_level=False) == fingerprint(thinking_level="none")
+    with pytest.raises(ValueError, match="thinking_level"):
+        fingerprint(thinking_level="invalid")
+
+
+def test_legacy_prompt_generation_does_not_preappend_automatic_suffix_for_explicit_effort():
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline.prompt_generator import PromptGenerator, finalize_llm_user_content
+    ctx = SimpleNamespace(task="raw synthetic instruction", think_mode=False,
+                          model_spec_name="qwen3:8b", model_spec={"model_name": "qwen3:8b"})
+    legacy = PromptGenerator(ctx).build("source")
+    assert legacy.endswith("/no_think")
+    ctx.model_spec["thinking_level"] = "low"
+    prompt = PromptGenerator(ctx).build("source")
+    assert not prompt.endswith("/no_think")
+    assert finalize_llm_user_content(prompt, model_spec=ctx.model_spec) == prompt
+    ctx.model_spec["no_think_suffix"] = "/no_think"
+    assert PromptGenerator(ctx).build("source").endswith("/no_think")
+
+
+def test_reduction_runtime_fingerprints_bind_opt_in_reasoning_and_suffix(tmp_path):
+    from types import SimpleNamespace
+    from czjLLM.reduction.runtime_task import ProductionTaskRuntime
+    from czjLLM.reduction.runtime_text import TextRoundRuntimeAdapter
+
+    def metadata(**settings):
+        ctx = SimpleNamespace(task="synthetic", taskSetting={}, think_mode=False,
+                              model_spec_name="test-model", max_tokens=4096,
+                              model_spec={"model_name": "qwen3:8b", **settings})
+        task = ProductionTaskRuntime(ctx)
+        text = TextRoundRuntimeAdapter(ctx=ctx, item_workspace=tmp_path,
+                                       round_task="synthetic")
+        return task.fingerprint_metadata(), text.fingerprint_metadata(), text.execution_fingerprint()
+
+    baseline = metadata()
+    assert metadata(llm_read_timeout_sec=900, llm_round_timeout_sec=1200,
+                    llm_max_retries=0, **{"api_key": bytes([1, 2, 3]).hex()}) == baseline
+    low = metadata(thinking_level="low")
+    high = metadata(thinking_level="high")
+    explicit_auto = metadata(thinking_level="low", no_think_suffix=None)
+    explicit_force = metadata(thinking_level="low", no_think_suffix="/no_think")
+    for index in range(3):
+        assert low[index] != baseline[index] and low[index] != high[index]
+        assert low[index] != explicit_auto[index] and low[index] != explicit_force[index]
+    assert metadata(thinking_level="low", no_think_suffix="") == low
+    assert metadata(thinking_level=False) == metadata(thinking_level="none")
+    assert metadata(thinking_level="low", **{"api_key": bytes([4, 5, 6]).hex()}) == low
+    with pytest.raises(ValueError, match="thinking_level"):
+        metadata(thinking_level="unsupported")

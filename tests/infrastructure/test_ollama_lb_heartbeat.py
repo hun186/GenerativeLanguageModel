@@ -139,3 +139,43 @@ def test_keeper_heartbeat_has_hard_elapsed_cap(monkeypatch):
         assert len(counts) == frozen
     assert 1 <= frozen <= 7
     assert not keeper._thread.is_alive()
+
+
+def test_capped_keeper_renews_beyond_legacy_elapsed_limit_until_exit(monkeypatch):
+    """Simulate a 2400-second call without sleeping."""
+    from types import SimpleNamespace
+    clock = [0.0]
+    renewed = []
+    monkeypatch.setattr(ollama_lb, "time", SimpleNamespace(monotonic=lambda: clock[0]))
+    def renew(*args, **kwargs):
+        renewed.append(clock[0])
+        return kwargs["lease_token"] + 100.0
+    monkeypatch.setattr(ollama_lb, "renew_url_load", renew)
+
+    class SimulatedStop:
+        def wait(self, seconds):
+            clock[0] += seconds
+            return clock[0] > 2400
+        def is_set(self):
+            return False
+
+    keeper = ollama_lb.maintain_url_load_lease(
+        "http://worker.invalid", lease_token=1000.0,
+        interval_seconds=100, max_elapsed_seconds=None,
+    )
+    keeper._stop = SimulatedStop()
+    keeper._loop()
+    assert renewed[0] == 100 and renewed[-1] == 2400
+    assert keeper.lease_token == 3400.0
+
+
+def test_capped_keeper_refuses_call_when_thread_cannot_start(monkeypatch):
+    import pytest
+    def fail_start(self):
+        raise RuntimeError("synthetic thread failure")
+    monkeypatch.setattr(ollama_lb.threading.Thread, "start", fail_start)
+    with pytest.raises(RuntimeError, match="synthetic thread failure"):
+        with ollama_lb.maintain_url_load_lease(
+            "http://worker.invalid", lease_token=1000.0, max_elapsed_seconds=None,
+        ):
+            pytest.fail("provider must not be called")

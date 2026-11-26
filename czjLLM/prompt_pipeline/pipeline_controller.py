@@ -116,6 +116,7 @@ from czjLLM.prompt_pipeline.round_runner import (
     run_round,
 )
 from czjLLM.prompt_pipeline.refill_scheduler import ClaimedWork, run_slot_refill
+from czjLLM.prompt_pipeline.request_policy import context_round_timeout, request_policy
 from czjLLM.prompt_pipeline.runtime_support.load_meter import (
     ItemsRegistry,
     find_item_dir_for,
@@ -1250,7 +1251,8 @@ def _render_task_mapping_prompt(task_spec: Mapping, content: str, ctx) -> str:
                 keyConsiderations=getattr(ctx, "keyConsiderations", ""),
                 MainFileName=getattr(ctx, "main_file_name", ""),
                 task=mapped_name,
-                think_mode=getattr(ctx, "think_mode", True),
+                think_mode=(True if "thinking_level" in (getattr(ctx, "model_spec", None) or {})
+                            else getattr(ctx, "think_mode", True)),
             )
         return _render_raw_task_prompt(mapped_name, content)
     return content
@@ -1276,7 +1278,8 @@ def render_stage_task_prompt(stage_task, content: str, ctx) -> str:
             keyConsiderations=getattr(ctx, "keyConsiderations", ""),
             MainFileName=getattr(ctx, "main_file_name", ""),
             task=task_name,
-            think_mode=getattr(ctx, "think_mode", True),
+            think_mode=(True if "thinking_level" in (getattr(ctx, "model_spec", None) or {})
+                            else getattr(ctx, "think_mode", True)),
         )
     # 支援 multi-stage 直接填入 prompt 字串（非 taskSetting key）
     return _render_raw_task_prompt(task_name, content)
@@ -1416,6 +1419,9 @@ def _extract_stage_provenance_fingerprint(stage_task, ctx) -> str:
         "dispatch_finalization": {
             "model_name": str(model_spec.get("model_name", "") or ""),
             "no_think_suffix": model_spec.get("no_think_suffix"),
+            **({"reasoning_effort": request_policy(model_spec)[2],
+                "explicit_suffix": "no_think_suffix" in model_spec}
+               if "thinking_level" in model_spec else {}),
         },
         "render_context": {
             "keyConsiderations": getattr(ctx, "keyConsiderations", ""),
@@ -3114,7 +3120,7 @@ def _run_legacy_leaf_round(ctx, jobs):
         return run_round(
             jobs,
             granted_workers,
-            timeout_sec=getattr(ctx, "llm_round_timeout_sec", None),
+            timeout_sec=context_round_timeout(ctx),
             debug_enabled=getattr(ctx, "llm_round_debug", None),
         )
 
@@ -3322,7 +3328,7 @@ def _run_windows_live_slot_refill(
             acknowledge=acknowledge,
             max_inflight=max(1, min(int(granted), 256)),
             deadline_sec=_round_timeout_from_jobs(
-                (), getattr(ctx, "llm_round_timeout_sec", None),
+                (), context_round_timeout(ctx),
             ),
             drain_on_deadline=True,
             return_on_drained_deadline=True,
@@ -3649,6 +3655,7 @@ class PromptAPIPipeline:
             # invocation is actually in flight; stop before postprocessing.
             with maintain_url_load_lease(
                 base_url, PGMSubDir=self.PGMSubDir, lease_token=lease_token,
+                **({"max_elapsed_seconds": None} if endpoint_cap is not None else {}),
             ) as lease_keeper:
                 response, cost = CallLLMAPI(
                     self.content,
@@ -3883,6 +3890,7 @@ class PromptAPIPipeline:
                 self.model_spec["api_key"]=("ThisIsFakeKey")
             with maintain_url_load_lease(
                 base_url, PGMSubDir=self.PGMSubDir, lease_token=lease_token,
+                **({"max_elapsed_seconds": None} if endpoint_cap is not None else {}),
             ) as lease_keeper:
                 response,cost = CallLLMAPI(
                     self.content,max_tokens=self.max_tokens,

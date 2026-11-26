@@ -58,6 +58,9 @@ def _run_prompt_job(job):
     return _normalize_job_result(job, raw)
 
 
+from czjLLM.prompt_pipeline.request_policy import model_round_timeout
+
+
 def _round_timeout_from_jobs(jobs, explicit_timeout=None) -> float:
     if explicit_timeout is not None:
         try:
@@ -65,14 +68,18 @@ def _round_timeout_from_jobs(jobs, explicit_timeout=None) -> float:
         except Exception:
             pass
 
+    # For mixed batches allow the longest configured worker budget.
+    # Unconfigured jobs retain the environment/default floor below.
+    configured = [model_round_timeout(getattr(job, "model_spec", None)) for job in jobs]
+    fallback = 480.0
     try:
         env_timeout = os.getenv("CZJLLM_LLM_ROUND_TIMEOUT_SEC")
         if env_timeout:
-            return max(1.0, float(env_timeout))
+            fallback = max(1.0, float(env_timeout))
     except Exception:
         pass
-
-    return 480.0
+    return max((value if value is not None else fallback for value in configured),
+               default=fallback)
 
 
 def _truthy_debug_flag(value) -> bool:
