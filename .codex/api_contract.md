@@ -1,6 +1,7 @@
 # api contract
 
 ## Current Summary
+- **#359 endpoint admission (PENDING):** optional positive integer `workers_per_endpoint` after fixed `n_process`/`nProcess`, distinct available local URLs; optional `max_concurrent_per_endpoint` requires owned tracked lease, no untracked fallback; nested JSON repair uses parent admission scope and releases completed parent lease first. Existing absent-field behavior unchanged; no provider cancellation guarantee.
 - **2026-11-10 JSON repair event #299:** Existing slice_json_repair / JSON_REPAIR_SUCCEEDED event may include strict scalar detail and repair_class from fixed JSON_REPAIR_{SYNTAX_CANDIDATE,TAIL_CANDIDATE,CONTENT_EDIT,LARGE_CHANGE,COMPARISON_UNAVAILABLE} categories; no extra event ID. No raw JSON, prompt or endpoint. Existing quality v1 counters and validation/repair denominators unchanged. UI cannot prove semantic correctness.
 - **ThreadPool round:** Observe completed Futures out of order while returning results in input order. `BatchRunTimeout.finished` counts finished Futures, not sink ACK; `CONSUMER_STATE.thread_round_{completed_count,drain_active,timeout_running,cancelled_before_start}` are local observations. Cancel only unstarted Futures; active Threads drain. A Worker `TimeoutError` is distinct from batch timeout.
 - **In-flight lease keeper:** `renew_url_load(url, PGMSubDir, *, lease_token)` extends only an unexpired exact token; `None` means lost, unchanged token means lock-timeout/no write. `maintain_url_load_lease(..., lease_token=...)` wraps Worker `CallLLMAPI`, joins before token release, caps at 1200s; no new claim on failure or HTTP/Queue/sink change.
@@ -18,7 +19,6 @@
 - Fixed/adaptive hierarchical production execution uses the prompt-aware tokenizer/render/LLM boundary and never recursively calls business-stage/combine orchestration.
 
 ### ReductionStage and bounded nesting
-
 - `ReductionStage` defaults to `failure_policy.mode=require_all`. `allow_partial` additionally accepts strict `min_success_count` and `min_success_ratio`; failed members never enter reducers and only `ExecutionError` is recoverable.
 - `ExecutionCancelled` is never a recoverable member failure. Programmer/system faults such as `TypeError`, `AssertionError`, and `MemoryError` remain outside the partial-success channel.
 - `ExecutionNestingState` hard-limits v1 to one nested ReductionStage boundary and at most four active PipelineRef names. Cycles/depth overflow fail closed.
@@ -26,21 +26,18 @@
 - One checkpointed `ReductionStageExecutable` instance serializes complete child-stage executions conservatively; the lock is operational and excluded from semantic identity.
 
 ### Collection and aggregate APIs
-
 - Python collection APIs expose immutable `LogicalWorkUnit`, `CollectionManifest`, SQL/ES collection adapters, manifest persistence, `AggregateOutput`, and idempotent aggregate sinks. There is no general collection YAML surface.
 - Caller-supplied member ordering is authoritative and fingerprinted. Aggregate sinks reject conflicting lineage; existing ES documents require complete matching aggregate lineage before replacement.
 - Complete `AggregateOutput` mapping preserves lineage for aggregate-of-aggregates use.
 - **Reduction lineage reads:** `AggregateOutput.lineage_mapping()`, `extract_aggregate_lineage(...)`, `same_aggregate_lineage(...)` verify version, aggregate/collection IDs, manifest fingerprint, output key and deterministic ID, rejecting malformed mappings. Match ≠ payload equality/authenticity/freshness. Canonical `to_mapping()` and SQL/ES sink authority unchanged.
 
 ### Persisted reuse and semantic freshness
-
 - SQL/ES persisted destination results are the v1 cross-run reuse authority; runtime workspaces are not a reusable result cache.
 - Persisted semantic processing identity is opt-in. SQL uses `semantic_freshness.execution_fingerprint` plus a required nonconflicting `processing_identity_column`; ES uses `rerun.execution_fingerprint`.
 - `execution_fingerprint: auto` derives identity from effective Executable semantics. Omitting the option leaves no expected identity bound and legacy completeness/rerun rules continue to govern reuse.
 - Discovery and pre-dispatch/completion recheck share destination-specific freshness semantics. Recheck diagnostics are bounded and payload-free.
 
 ### Task-specific final quality/coverage hook
-
 - `ReductionStage` accepts an optional Python-only `quality_hook`; root YAML and the strict ReductionStage config parser do not expose a generic quality schema.
 - A hook implements `evaluate(payload, context, metrics, provenance) -> QualityAssessment` plus `fingerprint_metadata(context)` and a nonblank `contract_version`.
 - `QualityAssessment` contains only `accepted: bool`, safe lowercase metric keys with finite bool/int/float values, and safe lowercase warning codes. It does not persist source/prompt/output payloads.
@@ -49,7 +46,6 @@
 - The hook runs once against the final stage result after single-pass or hierarchical reduction. It is an application extension point, not a scorer registry or generic evaluation platform.
 
 ### Per-run LLM token/context audit
-
 - API-reported `input_tokens`, `output_tokens`, `total_tokens` and derived `context_usage_ratio` remain the authoritative runtime usage metrics when `token_usage_source=llm_api_usage`; failed/unreported calls must not be treated as synthetic zero-token usage.
 - Each actual LLM request emits at most one audit row. The row is written only after request post-processing/persistence settles; if a successful API response is followed by a local failure, the single row is `ok=NO` while retaining that response's API usage/latency instead of emitting a success+failure pair.
 - Prompt generation may additionally record `task_text_tokens`, `template_tokens`, `rendered_prompt_tokens`, and `prompt_component_token_source`. These are local tokenizer observability estimates, not billing/runtime usage authority.
@@ -58,7 +54,6 @@
 - Windows GUI distribution statistics read the current run's append-only audit CSV. `elapsed_seconds` is exposed as Slice latency only for filesystem-backed rows with a nonblank `prompt_file`; direct repair calls remain in overall audit totals but are excluded from the slice-latency distribution. GUI state does not participate in execution semantics or fingerprints.
 
 ### Cancellation and observability
-
 - Production cancellation is cooperative. It stops new scheduling and semantic continuation but does not hard-kill an already-running external request; already-running deterministic safe-drain work may complete.
 - Canonical production Reduction events/counters are payload-free. Observer, tags and cancellation state are operational and excluded from semantic fingerprints.
 
@@ -75,7 +70,7 @@
 
 ## Current Processing Quality contracts
 
-The following sections describe the accepted main implementation through PR #239. Historical review/merge placeholders were superseded; see exact archived snapshot for original chronology.
+Accepted through #239; historical chronology is archived.
 
 ### run-scoped processing-quality JSONL v1 (PR #218)
 - Per-run sibling of `llm_call_audit_<run_id>.csv`: `processing_quality_events_<run_id>.jsonl`.
@@ -85,19 +80,12 @@ The following sections describe the accepted main implementation through PR #239
 ### offline CLI quality report contract (separate PR)
 - `python -m czjLLM.cli_tools.processing_quality_report --audit-path <llm_call_audit_run.csv>` reads the matching JSONL, or `--audit-dir <directory> [--limit 1..100]` reads bounded sorted run history; optional `--output <report.json>` is atomic and refuses JSONL as a destination.
 - Report `report_version=1` contains observed `QualityAccumulator` aggregate metrics only, with `state`, `sample_advisories`, `incomplete_or_concurrent_append`; never exports raw event/document IDs or silently converts missing denominators to 0%. Recovered schema does not remain failed. No cross-run aggregate percentage, and explicit acknowledgment only (currently ES) does not imply ES readback.
-
 - Report `skipped_corrupt_complete_lines` and `state=degraded_corrupt_lines` explicitly warn whenever newline-terminated UTF-8/JSON decoding fails; partial last lines remain excluded until complete. Counters do not count corrupt records as valid attempts.
-
 - Existing `QualityTailReader` now exposes `skipped_corrupt_lines` counting both undecodable complete JSONL and valid-JSON records rejected by the quality accumulator (except valid duplicate IDs). Incremental input generation detection uses inode plus bounded consumed head/tail consistency, not size alone. Existing GUI `poll() -> (changed, stats)` remains unchanged.
-
 - Quality event contracts are per-event code allowlists. JSON validation only accepts JSON_VALID / JSON_SYNTAX_INVALID; JSON repair only repair succeeded/failed; document schema rejection only SCHEMA_*; document writeback confirmation only WRITEBACK_CONFIRMED. Emitters reject mismatched scope/code; readers degrade on unsupported event/code combinations, wrong supplied scope, missing document identity, or non-integer schema_version. Missing scope in earlier synthetic fixtures remains accepted for compatibility.
-
 - Duplicate `event_id` is accepted as a harmless idempotent replay only when the canonical JSON record is identical; conflicting reuse counts as a degraded complete line. Reader reset publishes `changed=True` even when the new file is empty/invalid, preserving GUI update contract. Nonstring event/code values are rejected rather than raising TypeError.
-
 - Quality JSONL reader rejects nonstandard NaN/±Infinity JSON tokens; accumulator requires non-whitespace event IDs and document IDs for document events. Canonical event signatures reject non-finite Python float extras by allow_nan=False. Malformed full lines increase skipped_corrupt_complete_lines and do not contribute to quality metrics.
-
 - The optional legacy `scope` field is compatible ONLY when genuinely omitted. If supplied, `scope` must be the exact `slice` or `document` value derived from the event. Explicit JSON null, blank string, or mismatched scope degrades the report and never enters its denominator.
-
 - A recursion-depth failure while decoding a complete JSONL line counts as a rejected corrupt complete line; the reader continues with subsequent lines instead of aborting a whole report or keeping a stale GUI snapshot. GUI document error label is now 'LLM 文件結構異常（待處理）', describing observed post-merge output validation failures, not Elasticsearch mapping errors.
 
 ### quality JSONL Consumer incident schema
@@ -189,9 +177,9 @@ The following sections describe the accepted main implementation through PR #239
 - GUI `effective_tok_per_s_est` uses `(input_tokens - cached_input_tokens + output_tokens) / elapsed_seconds` **only** for valid `provider_usage` cache values (including explicit 0). Otherwise, an explicitly labeled `heuristic` estimate is permitted only after **at least two prior near-stable template-size samples from the same model/endpoint/task/stage/source**, with a conservative maximum 50% discount of that stable template floor. Missing stage identity, component source, token counts or stable history means *no effective-throughput sample*, not zero cache reuse or an inferred provider hit. Provider and heuristic sample counts are kept separate.
 - `total_tok_per_s` and `effective_tok_per_s_est` are **request-level observed elapsed-throughput proxies** including network/queue/time-to-first-token overhead, not pure GPU/kernel generation rates or a true billed-token cache saving guarantee. A heuristic remains an estimate even when plotted in the same default-collapsed GUI distribution.
 ## Archived History
+- Exact pre-policy main contract: `.codex/archive/api_contract.md-20261126-100300.md` (Git blob `cb07616d8500d44c10c6386ce69d36ec6ee86657`); previous archives unchanged.
 - `.codex/archive/api_contract.md-20261027-213700.md` — **exact pre-compaction** snapshot (Git blob `b1ef36b488496a83059bf82123c391b719cd3aab`) preserving dated decisions, prior review statuses, PR SHA/CI evidence and older archival references; consult only when tracing history.
-- Earlier archives referenced inside this snapshot remain unchanged; no history was deleted.
-- Active summary reconciled with GitHub `main` `46b7c7290417421a6dc09e114f82c1066ce0179d` after user-authorized PR #239 merge and Linux postmerge `offline-e2e` success; Windows runner jobs remain queued/operator-deferred.
+- #239 accepted on `46b7c7290417421a6dc09e114f82c1066ce0179d`; Linux passed; Windows operator-deferred.
 ## 2026-10-28 protected report and split-lineage contract (accepted PR #241 and #242)
 - `processing_quality_report` and `llm_failure_report` refuse symlink/non-`.json` outputs, reserved `processing_quality_events_*.jsonl.manifest.json` integrity ledgers (including cross-directory targets), same-source overwrite and partial writes; legitimate JSON output remains atomic. `--since` inclusive / `--before` exclusive use strict producer-local `YYYY-MM-DDTHH:MM:SS` with unknown zones rejected; unfiltered v1 stays unchanged.
 - Per-Worker CSV/XLSX audit keeps `audit_record_id` and verified `worker_call_id`, `call_llm_api_returned`, `split_family_id` UUID4 with legacy header compatibility; never infer HTTP attempts, all children completed, unique documents or SQL/ES sink acknowledgements. Verified SHA256 split intent/claim is not completion authority; `pick_and_claim_next_prompts` must not overwrite TODO/RUNNING/Success or silently discard blocked work.

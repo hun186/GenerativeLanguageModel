@@ -95,6 +95,7 @@ from utils.MP_utils import multicoreJob
 from czjLLM.prompt_pipeline.dispatch_parallelism import (
     lease_execution_workers,
     resolve_slice_parallelism,
+    configured_endpoint_concurrency_limit,
 )
 
 from czjLLM.infrastructure.ollama_lb import (
@@ -3607,9 +3608,12 @@ class PromptAPIPipeline:
                 return ret_dict
 
             # 1) 選 base_url
+            endpoint_cap = configured_endpoint_concurrency_limit(self.model_spec)
+            admission_options = ({"max_concurrent_per_endpoint": endpoint_cap}
+                                 if endpoint_cap is not None else {})
             picked = select_idle_ollama_url(
                 self.model_spec["base_url"], PGMSubDir=self.PGMSubDir,
-                return_lease_token=True,
+                return_lease_token=True, **admission_options,
             )
             if isinstance(picked, tuple):
                 base_url, lease_token = picked
@@ -3653,6 +3657,13 @@ class PromptAPIPipeline:
                 )
             call_llm_api_returned = True
             worker_failure_code = "WORKER_RESPONSE_EXCEPTION"
+            # Release the completed provider call before nested repair.
+            # Use only the keeper's exact owned lease token.
+            if endpoint_cap is not None:
+                release_url_load(base_url, PGMSubDir=self.PGMSubDir,
+                                 lease_token=lease_keeper.lease_token)
+                lease_token = None
+                lease_keeper = None
             # 3) token 警告
             if response.usage.completion_tokens >= self.max_tokens:
                 log_dir = "logs"
@@ -3853,9 +3864,12 @@ class PromptAPIPipeline:
         try:
             # 在這裡選擇負載最輕的 base_url
             #print("inputing base url in pipeline_controller",self.model_spec["base_url"])
+            endpoint_cap = configured_endpoint_concurrency_limit(self.model_spec)
+            admission_options = ({"max_concurrent_per_endpoint": endpoint_cap}
+                                 if endpoint_cap is not None else {})
             picked = select_idle_ollama_url(
                 self.model_spec["base_url"], PGMSubDir=self.PGMSubDir,
-                return_lease_token=True,
+                return_lease_token=True, **admission_options,
             )
             if isinstance(picked, tuple):
                 base_url, lease_token = picked
@@ -3874,6 +3888,13 @@ class PromptAPIPipeline:
                     self.content,max_tokens=self.max_tokens,
                     #On_Premises=self.On_Premises,
                     model_spec=self.model_spec)
+            # Release the completed provider call before nested repair.
+            # Use only the keeper's exact owned lease token.
+            if endpoint_cap is not None:
+                release_url_load(base_url, PGMSubDir=self.PGMSubDir,
+                                 lease_token=lease_keeper.lease_token)
+                lease_token = None
+                lease_keeper = None
             #print("Finished CallLLMAPI in PromptAPIPipeline")
 
             
@@ -4122,6 +4143,9 @@ class PromptAPIPipeline:
                         model_spec=self.model_spec,
                         audit_run_id=self.audit_run_id,
                         audit_path=self.audit_path,
+                        **({"PGMSubDir": self.PGMSubDir}
+                           if configured_endpoint_concurrency_limit(self.model_spec) is not None
+                           else {}),
                         #no_think = should_disable_think(self.model_spec["model_name"])
                         )
                 json.loads(retMES_rep)
@@ -4309,6 +4333,9 @@ class PromptAPIPipeline:
                     audit_run_id=self.audit_run_id,
                     audit_path=self.audit_path,
                     dispatch_item_dir=getattr(self, "dispatch_item_dir", ""),
+                    **({"PGMSubDir": self.PGMSubDir}
+                       if configured_endpoint_concurrency_limit(self.model_spec) is not None
+                       else {}),
                     )
                 )
 
@@ -4327,6 +4354,7 @@ def json_format_caller(content,
                        max_tokens=8*1024, #切片結果合併後的json可能會很長，
                        audit_run_id: str = "",
                        audit_path: str = "",
+                       PGMSubDir: str = "",
                        #nothink = True
                        ):
     #content = preprocess(content)  # 可選擇加入你的前處理函式
@@ -4361,6 +4389,7 @@ def json_format_caller(content,
         model_spec=model_spec,
         audit_run_id=audit_run_id,
         audit_path=audit_path,
+        **({"PGMSubDir": PGMSubDir} if PGMSubDir else {}),
     ).proc()
     
     if not ret or not ret.get("ok"):

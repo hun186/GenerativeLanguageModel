@@ -32,7 +32,7 @@ def _positive_int(value) -> int:
 
 
 def configured_model_process_parallelism(model_spec) -> int:
-    """Return an explicit model-profile process budget, or zero for auto mode."""
+    """Resolve a fixed budget, then a per-available-endpoint worker multiplier."""
 
     if not isinstance(model_spec, dict):
         return 0
@@ -40,7 +40,32 @@ def configured_model_process_parallelism(model_spec) -> int:
         value = _positive_int(model_spec.get(key))
         if value > 0:
             return value
-    return 0
+    if "workers_per_endpoint" not in model_spec:
+        return 0
+    multiplier = _strict_positive_model_int(model_spec, "workers_per_endpoint")
+    if not model_spec.get("on_premises", True):
+        raise ValueError("workers_per_endpoint requires an on-premises model")
+    urls = model_spec.get("base_url")
+    if isinstance(urls, str):
+        urls = [urls]
+    if (not isinstance(urls, list) or not urls
+            or any(not isinstance(url, str) or not url.strip() for url in urls)):
+        raise ValueError("workers_per_endpoint requires nonempty base_url endpoints")
+    return len(set(urls)) * multiplier
+
+
+def _strict_positive_model_int(model_spec, key):
+    value = model_spec[key]
+    if type(value) is not int or value <= 0:
+        raise ValueError(f"{key} must be a positive integer")
+    return value
+
+
+def configured_endpoint_concurrency_limit(model_spec):
+    """Return an opt-in per-endpoint lease admission limit (None = legacy)."""
+    if not isinstance(model_spec, dict) or "max_concurrent_per_endpoint" not in model_spec:
+        return None
+    return _strict_positive_model_int(model_spec, "max_concurrent_per_endpoint")
 
 
 def resolve_slice_parallelism(ctx, job_count: int) -> int:
