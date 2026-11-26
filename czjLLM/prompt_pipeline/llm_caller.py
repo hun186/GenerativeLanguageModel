@@ -239,7 +239,16 @@ def CallLLMAPI(
             **request_options,
         )
         if stream_enabled:
-            response = collect_text_completion(response, started_at=started_at)
+            # The SDK wraps transport errors while opening the request, but
+            # reading the SSE body can raise raw httpx transport exceptions.
+            # Preserve the existing typed uncertainty contract for both paths.
+            stream_request = response.response.request
+            try:
+                response = collect_text_completion(response, started_at=started_at)
+            except httpx.TimeoutException as exc:
+                raise APITimeoutError(request=stream_request) from exc
+            except httpx.TransportError as exc:
+                raise APIConnectionError(request=stream_request) from exc
     except (APITimeoutError, APIConnectionError) as e:
         # 讓上游重試機制處理；保留明確錯誤訊息
         raise RuntimeError(f"LLM_CALL_TIMEOUT_OR_CONN: {e}") from e
