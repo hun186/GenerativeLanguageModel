@@ -66,6 +66,7 @@ def classify_llm_call_exception(error: BaseException) -> str:
 # ===== Qwen /no_think 能力整合 =====
 # 經由 prompt_generator 暴露的統一介面，不再硬寫 "qwen"
 from czjLLM.prompt_pipeline.prompt_generator import finalize_llm_user_content
+from czjLLM.utilities.json_rule_policy import rebind_source_span_after_no_think
 from czjLLM.utilities.llm_call_audit import resolve_context_limit
 
 
@@ -167,6 +168,8 @@ def CallLLMAPI(
     temperature: float = 1.0,
     NoThinkProcess: bool = True,  # 是否啟用 /no_think 自動附加
     http_client: Optional[httpx.Client] = None,
+    source_span_receipt=None,
+    source_receipt_out: Optional[dict] = None,
 ) -> Tuple[Any, float]:
     """
     呼叫 OpenAI 相容端點的簡化函式。
@@ -182,6 +185,12 @@ def CallLLMAPI(
     - response：openai.ChatCompletion 物件
     - cost_twd：估算新臺幣成本（僅 DeepSeek chat/coder 會計價，其他為 0）
     """
+    # The optional per-call sink contains only a receipt, never raw content.
+    # Clear stale receipts even if the request subsequently fails.
+    receipt_sink = source_receipt_out if type(source_receipt_out) is dict else None
+    if receipt_sink is not None:
+        receipt_sink.clear()
+    original_content = content if receipt_sink is not None else None
     model_spec = model_spec or {}
 
     # 以 model_spec 覆蓋顯式參數
@@ -197,6 +206,16 @@ def CallLLMAPI(
         model_name=model,
         no_think_process=NoThinkProcess,
     )
+
+    dispatched_receipt = None
+    if receipt_sink is not None and source_span_receipt is not None:
+        try:
+            dispatched_receipt = rebind_source_span_after_no_think(
+                original_content, source_span_receipt, content,
+            )
+        except Exception:
+            # Provenance is optional and never changes provider request behavior.
+            pass
 
     # 建立（或重用）http_client 與 OpenAI 客戶端
     http_client = http_client or _create_http_client()
@@ -262,6 +281,8 @@ def CallLLMAPI(
         )
     )
 
+    if receipt_sink is not None and dispatched_receipt is not None:
+        receipt_sink["receipt"] = dispatched_receipt
     return response, cost_twd
 
 
