@@ -476,7 +476,9 @@ def test_rule_method_audit_accepts_only_fixed_enum():
 def test_worker_both_paths_forward_finish_reason_for_explicit_rule_policy():
     from pathlib import Path
     source = Path("czjLLM/prompt_pipeline/pipeline_controller.py").read_text(encoding="utf-8")
-    assert source.count('if finish_reason == "length" or self._generic_rule_repair_enabled():') == 2
+    assert source.count('if (finish_reason == "length" or self._generic_rule_repair_enabled()') == 2
+    assert source.count("or self._source_rule_repair_enabled()):") == 2
+    assert source.count("**self._prepare_source_rule_dispatch(),") == 2
     assert source.count("self.handle_json_output(retMES)") >= 2
 
 
@@ -726,3 +728,88 @@ def test_api_failed_call_and_mismatched_prompt_never_leave_stale_receipt(monkeyp
     assert result is response and sink == {}
     # Ordinary calls retain their existing two-value return contract.
     assert api.CallLLMAPI(raw, http_client=object())[0] is response
+
+
+def _source_quote_output(source):
+    payload = [{
+        "article_date_iso": None, "article_date_precision": "unknown",
+        "Event": [{"event_id": "E1", "time_raw": None, "time_iso": None,
+                   "time_precision": "unknown"}],
+        "evidence_snippets": [{"event_ids": ["E1"], "text": source}],
+    }]
+    expected = json.dumps(payload, ensure_ascii=False)
+    raw = expected.replace(json.dumps(source, ensure_ascii=False), '"' + source + '"')
+    return raw, expected
+
+
+def test_source_enabled_dispatch_requires_pinned_renderer_and_profile(monkeypatch):
+    from czjLLM.taskConfig import taskSetting
+    name = "InfoExtraction-MultiDim-SQLFriendly-to json format"
+    spec = dict(taskSetting[name], json_rule_repair={"generic": True, "multidim_evidence_quotes": True},
+                json_rule_slice_contract="multidim_event_slice_v1")
+    monkeypatch.setitem(taskSetting, name, spec)
+    assert legacy_rule_worker_kwargs(name, task_pool=taskSetting, renderer_pool=taskSetting) == {
+        "json_rule_policy": JsonRepairPolicy(generic=True, multidim_evidence_quotes=True),
+        "json_rule_slice_validator": validate_multidim_event_slice,
+    }
+    for changed in (dict(spec, template=_test_other_task_template),
+                    dict(spec, json_rule_slice_contract=_test_task_contract)):
+        pool = {name: changed}
+        assert legacy_rule_worker_kwargs(name, task_pool=pool, renderer_pool=pool) == {}
+
+
+@pytest.mark.parametrize("case", ["success", "no_receipt", "trimmed", "wrong_source", "bad_schema", "length", "unknown_finish"])
+def test_source_quote_worker_uses_actual_api_receipt_or_exact_fallback(monkeypatch, case):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline import llm_caller as api
+    worker, calls, events, splits = _real_rule_worker(
+        monkeypatch, policy=JsonRepairPolicy(multidim_evidence_quotes=True),
+        validator=validate_multidim_event_slice,
+    )
+    source = '他說"甲"。'
+    raw, expected = _source_quote_output(source)
+    original = source if case != "wrong_source" else '他說"乙"。'
+    if case == "trimmed":
+        original += " \n"
+    if case == "bad_schema":
+        raw = raw.replace('"event_ids": ["E1"]', '"event_ids": ["missing"]')
+    worker.content = "instruction\n" + original
+    worker.json_rule_source_receipt = (
+        None if case == "no_receipt" else receipt_for_trusted_appended_source(worker.content, original)
+    )
+    sent = []
+    def create(**kwargs):
+        sent.append(kwargs["messages"][-1]["content"])
+        return SimpleNamespace(usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5))
+    monkeypatch.setattr(api, "OpenAI", lambda **kw: SimpleNamespace(
+        chat=SimpleNamespace(completions=SimpleNamespace(create=create))))
+    kwargs = worker._prepare_source_rule_dispatch()
+    api.CallLLMAPI(worker.content, model_spec={"model_name": "qwen3.8"},
+                   http_client=object(), **kwargs)
+    assert len(sent) == 1
+    reason = "length" if case == "length" else "" if case == "unknown_finish" else "stop"
+    result = worker.handle_json_output(raw, finish_reason=reason)
+    if case == "success":
+        assert json.loads(result[1]) == json.loads(expected)
+        assert result[0] == [] and not calls and not splits
+        assert events[-1][3]["repair_method"] == "RULE_BASED"
+        # Receipt consumed: a second output cannot use the earlier call.
+        worker.handle_json_output(raw, finish_reason="stop")
+        assert calls == [raw]
+    elif case == "length":
+        assert result == ([], "") and not calls and len(splits) == 1
+    else:
+        assert result == ([], '{"fallback":true}') and calls == [raw] and not splits
+    assert worker._source_rule_dispatch_state is None
+    assert worker._prepare_source_rule_dispatch() == {}
+
+
+def test_source_policy_with_generic_enabled_can_use_generic_rule_without_source_receipt(monkeypatch):
+    worker, calls, events, splits = _real_rule_worker(
+        monkeypatch, policy=JsonRepairPolicy(generic=True, multidim_evidence_quotes=True),
+        validator=validate_multidim_event_slice,
+    )
+    raw = '[{"article_date_iso":null,"article_date_precision":"unknown","Event":[],}]'
+    result = worker.handle_json_output(raw, finish_reason="stop")
+    assert result == ([], raw.replace(",}", "}")) and not calls and not splits
+    assert events[-1][3]["repair_method"] == "RULE_BASED"
