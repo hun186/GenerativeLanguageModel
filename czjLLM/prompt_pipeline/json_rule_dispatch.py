@@ -50,6 +50,30 @@ def _resolve_validator(value):
     return value
 
 
+def _same_direct_spec_references(left, right) -> bool:
+    """Recognize an exact shallow copy without introspecting shared callables.
+
+    All keys and values must match by identity (or exact immutable scalar
+    equality). Other copies still need the full conservative fingerprint.
+    Never invoke user-defined equality on templates or config objects.
+    """
+    if type(left) is not dict or type(right) is not dict:
+        return False
+    if any(type(key) is not str for key in left) or any(type(key) is not str for key in right):
+        return False
+    if left.keys() != right.keys():
+        return False
+    for key, value in left.items():
+        other = right[key]
+        if value is other:
+            continue
+        if type(value) is type(other) and type(value) in (str, bool, int, type(None)):
+            if value == other:
+                continue
+        return False
+    return True
+
+
 def legacy_rule_worker_kwargs(task, *, task_pool, renderer_pool) -> dict:
     """Resolve a direct named task from the actual legacy renderer registry.
 
@@ -74,7 +98,8 @@ def legacy_rule_worker_kwargs(task, *, task_pool, renderer_pool) -> dict:
             if context_spec is not spec:
                 if not isinstance(context_spec, Mapping):
                     return {}
-                if fingerprint_task(context_spec) != fingerprint_task(spec):
+                if (not _same_direct_spec_references(context_spec, spec)
+                        and fingerprint_task(context_spec) != fingerprint_task(spec)):
                     return {}
         validator = _resolve_validator(spec.get("json_rule_slice_contract"))
         if validator is None:
