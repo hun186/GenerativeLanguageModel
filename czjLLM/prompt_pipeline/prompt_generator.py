@@ -16,6 +16,7 @@ from ..tokenizer_utils import TokenizerWrapper
 from ..utilities.llm_call_audit import clear_prompt_token_metadata, write_prompt_token_metadata
 from .json_source_queue import (
     MAX_SOURCE_RECEIPTS_PER_ITEM, generated_source_handoff, source_task_fingerprint,
+    finalize_generated_source_handoff,
 )
 from ..job_manager.job_config import LLMJobConfig
 from ..job_manager.job_config import getTextClass
@@ -367,6 +368,7 @@ def process_chunk_to_generate_prompt(idx: int, ctx_piece: str, ctx: LLMJobConfig
             fp.write(prompt)
             if receipt is not None:
                 handoff = generated_source_handoff(todo_fn, fp, prompt, receipt, task_sha)
+        handoff = finalize_generated_source_handoff(handoff, todo_fn)
         if handoff is not None:
             records[os.path.basename(todo_fn)] = handoff
         write_prompt_component_metrics(
