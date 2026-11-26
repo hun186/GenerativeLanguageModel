@@ -540,3 +540,58 @@ def test_source_capture_refuses_raw_task_and_truncated_source_suffix():
     assert prompt == generator.build(source)
     assert prompt.endswith("/no_think")
     assert receipt is None
+
+
+@pytest.mark.parametrize("source,override,expected", [
+    ('原文"甲"。', None, True),
+    ('原文"甲"。 \n', None, False),
+    ('原文"甲"。 \n', "", True),
+])
+def test_api_source_receipt_matches_actual_outgoing_user_message(monkeypatch, source, override, expected):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline import llm_caller as api
+    raw = "instruction\n" + source
+    receipt = receipt_for_trusted_appended_source(raw, source)
+    sent = []
+    response = SimpleNamespace(usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5))
+    def create(**kwargs):
+        sent.append(kwargs["messages"][-1]["content"])
+        return response
+    monkeypatch.setattr(api, "OpenAI", lambda **kw: SimpleNamespace(
+        chat=SimpleNamespace(completions=SimpleNamespace(create=create))))
+    sink = {"receipt": receipt}
+    result, cost = api.CallLLMAPI(
+        raw, model_spec={"model_name": "qwen3.8", "no_think_suffix": override},
+        http_client=object(), source_span_receipt=receipt, source_receipt_out=sink,
+    )
+    assert result is response and len(sent) == 1
+    if expected:
+        assert verified_source_span(sent[0], sink["receipt"]) == source
+        assert set(sink) == {"receipt"}
+    else:
+        assert sink == {}
+
+
+def test_api_failed_call_and_mismatched_prompt_never_leave_stale_receipt(monkeypatch):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline import llm_caller as api
+    raw = "instruction\nsource"
+    receipt = receipt_for_trusted_appended_source(raw, "source")
+    sink = {"receipt": receipt}
+    def fail(**kwargs):
+        raise RuntimeError("offline test")
+    monkeypatch.setattr(api, "OpenAI", lambda **kw: SimpleNamespace(
+        chat=SimpleNamespace(completions=SimpleNamespace(create=fail))))
+    with pytest.raises(RuntimeError):
+        api.CallLLMAPI(raw, http_client=object(), source_span_receipt=receipt,
+                       source_receipt_out=sink)
+    assert sink == {}
+    response = SimpleNamespace(usage=SimpleNamespace(prompt_tokens=1, completion_tokens=1))
+    monkeypatch.setattr(api, "OpenAI", lambda **kw: SimpleNamespace(
+        chat=SimpleNamespace(completions=SimpleNamespace(create=lambda **kw: response))))
+    sink["receipt"] = receipt
+    result, _ = api.CallLLMAPI(raw + " changed", http_client=object(),
+                               source_span_receipt=receipt, source_receipt_out=sink)
+    assert result is response and sink == {}
+    # Ordinary calls retain their existing two-value return contract.
+    assert api.CallLLMAPI(raw, http_client=object())[0] is response
