@@ -652,3 +652,22 @@ def test_shallow_copy_fast_path_does_not_ignore_other_task_fields():
                     dict(spec, additional_setting=True),
                     dict(spec, InputCutLen=True)):
         assert legacy_rule_worker_kwargs(name, task_pool={name: changed}, renderer_pool=pool) == {}
+
+
+def test_actual_job_context_shares_renderer_registry_and_allows_explicit_opt_in(monkeypatch):
+    from czjLLM.job_manager.job_config import LLMJobConfig
+    from czjLLM.prompt_pipeline import pipeline_controller, prompt_generator
+    name = "InfoExtraction-MultiDim-SQLFriendly-to json format"
+    pool = prompt_generator.taskSetting
+    ctx = LLMJobConfig()
+    assert ctx.taskSetting is pool is pipeline_controller.taskSetting
+    assert legacy_rule_worker_kwargs(name, task_pool=ctx.taskSetting, renderer_pool=pool) == {}
+    spec = dict(pool[name], json_rule_repair={"generic": True},
+                json_rule_slice_contract="multidim_event_slice_v1")
+    monkeypatch.setitem(pool, name, spec)
+    assert legacy_rule_worker_kwargs(name, task_pool=ctx.taskSetting, renderer_pool=pool) == {
+        "json_rule_policy": JsonRepairPolicy(generic=True),
+        "json_rule_slice_validator": validate_multidim_event_slice,
+    }
+    ctx.taskSetting = {name: dict(spec, template=_test_other_task_template)}
+    assert legacy_rule_worker_kwargs(name, task_pool=ctx.taskSetting, renderer_pool=pool) == {}
