@@ -312,7 +312,7 @@ def test_actual_sdk_stream_assembles_exact_answer_and_preserves_usage(monkeypatc
     assert "private" not in "\n".join(logs)
 
 
-@pytest.mark.parametrize("case", ["missing_finish", "missing_usage", "duplicate_choice", "tool_call", "oversized", "timeout"])
+@pytest.mark.parametrize("case", ["missing_finish", "missing_usage", "duplicate_choice", "tool_call", "oversized", "timeout", "read_error", "protocol_error"])
 def test_actual_sdk_stream_failure_does_not_return_partial_or_replay(monkeypatch, case):
     from czjLLM.prompt_pipeline import stream_completion as mod
     calls = []
@@ -322,6 +322,10 @@ def test_actual_sdk_stream_failure_does_not_return_partial_or_replay(monkeypatch
             yield _stream_sse_frame([{"index": 0, "delta": {"content": "private partial"}}])
             if case == "timeout":
                 raise httpx.ReadTimeout("synthetic timeout")
+            if case == "read_error":
+                raise httpx.ReadError("synthetic read error")
+            if case == "protocol_error":
+                raise httpx.RemoteProtocolError("synthetic protocol error")
             if case == "missing_usage":
                 yield _stream_sse_frame([{"index": 0, "delta": {}, "finish_reason": "stop"}])
             elif case == "duplicate_choice":
@@ -337,11 +341,17 @@ def test_actual_sdk_stream_failure_does_not_return_partial_or_replay(monkeypatch
         calls.append(1)
         return httpx.Response(200, headers={"Content-Type": "text/event-stream"}, stream=Stream())
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
-        with pytest.raises((mod.IncompleteTextStream, httpx.TimeoutException, RuntimeError, APITimeoutError)):
+        expected = RuntimeError if case in {"timeout", "read_error", "protocol_error"} else mod.IncompleteTextStream
+        with pytest.raises(expected) as caught:
             llm_caller.CallLLMAPI("input", model_spec={"base_url": "http://model.invalid/v1",
                                   "llm_stream_response": True, "llm_max_retries": 0},
                                   http_client=client)
     assert calls == [1] and closed
+    if case in {"timeout", "read_error", "protocol_error"}:
+        expected_code = ("WORKER_LLM_TIMEOUT_EXCEPTION" if case == "timeout"
+                         else "WORKER_LLM_CONNECTION_EXCEPTION")
+        assert llm_caller.classify_llm_call_exception(caught.value) == expected_code
+        assert isinstance(caught.value.__cause__, APITimeoutError if case == "timeout" else APIConnectionError)
 
 
 def test_stream_policy_requires_explicit_opt_in_and_zero_retries():
