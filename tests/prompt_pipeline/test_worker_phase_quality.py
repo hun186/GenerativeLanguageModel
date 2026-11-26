@@ -378,3 +378,23 @@ def test_real_json_repair_uses_parent_nonempty_admission_scope(monkeypatch, tmp_
     assert json.loads(result["output"]) == [{"a": 1}]
     assert len(calls) == 2
     assert json.loads(path.read_text())[url]["leases"] == []
+
+
+@pytest.mark.parametrize("capped", [True, False])
+def test_both_worker_paths_choose_live_call_lease_for_explicit_cap(capped):
+    import ast
+    import inspect
+    import textwrap
+    for method in (pc.PromptAPIPipeline.proc, pc.PromptAPIPipeline.proc_0112):
+        tree = ast.parse(textwrap.dedent(inspect.getsource(method)))
+        calls = [node for node in ast.walk(tree) if isinstance(node, ast.Call)
+                 and ast.unparse(node.func) == "maintain_url_load_lease"]
+        assert len(calls) == 1
+        spread = [kw.value for kw in calls[0].keywords if kw.arg is None]
+        assert len(spread) == 1
+        node = spread[0]
+        assert isinstance(node, ast.IfExp)
+        assert ast.unparse(node.test) == "endpoint_cap is not None"
+        assert ast.literal_eval(node.body if capped else node.orelse) == (
+            {"max_elapsed_seconds": None} if capped else {}
+        )

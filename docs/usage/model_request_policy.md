@@ -32,3 +32,5 @@ if appropriate. Existing models without these fields retain current behavior.
 This change does not make requests streaming, add provider cancellation or
 a circuit breaker, or change the production model profiles. Verify actual
 response quality, latency and token usage on a small controlled sample.
+
+When explicit `max_concurrent_per_endpoint` is enabled, the foreground API call renews its owned lease until it returns, including beyond the legacy 1200-second keeper cap or scheduler deadline. A crashed/exited client stops heartbeats and the existing TTL permits recovery. A live hung client may retain the slot; stop it rather than admitting another competing call. This is cooperating-client admission, not provider cancellation or a guarantee under heartbeat/filesystem failure. Uncapped callers retain the original finite heartbeat cap.
