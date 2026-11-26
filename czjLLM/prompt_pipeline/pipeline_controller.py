@@ -3527,7 +3527,7 @@ class PromptAPIPipeline:
             return json.dumps({"mock_result": (self.content or "")[:120]}, ensure_ascii=False)
         return f"mock_result: {(self.content or '')[:120]}"
 
-    def _record_dispatch_observation(self, worker_call_id: str, status: str) -> None:
+    def _record_dispatch_observation(self, worker_call_id: str, status: str, *, stream_activity=None) -> None:
         # The Worker already selected its real model/endpoint. This metadata
         # is best-effort observability only: never change the LLM, Queue, or
         # sink execution result because a GUI sidecar cannot be written.
@@ -3545,6 +3545,7 @@ class PromptAPIPipeline:
                 worker_call_id=worker_call_id,
                 model_spec=self.model_spec,
                 status=status,
+                **({"stream_activity": stream_activity} if stream_activity is not None else {}),
             )
         except (OSError, ValueError, TypeError, RuntimeError):
             pass
@@ -3660,7 +3661,10 @@ class PromptAPIPipeline:
                 response, cost = CallLLMAPI(
                     self.content,
                     max_tokens=self.max_tokens,
-                    model_spec=self.model_spec
+                    model_spec=self.model_spec,
+                    **({"stream_activity_sink": lambda event: self._record_dispatch_observation(
+                        worker_call_id, "calling", stream_activity=event,
+                    )} if self.model_spec.get("llm_stream_response") is True else {}),
                 )
             call_llm_api_returned = True
             worker_failure_code = "WORKER_RESPONSE_EXCEPTION"
