@@ -149,10 +149,10 @@ def test_extract_resume_fingerprint_tracks_effective_reasoning_policy_only():
         ctx.model_spec = {"model_name": "qwen3:8b", **settings}
         return _extract_stage_provenance_fingerprint("synthetic extract", ctx)
     baseline = fingerprint()
-    assert fingerprint(api_key="other-secret", llm_read_timeout_sec=900) == baseline
+    assert fingerprint(**{"api_key": bytes([1, 2, 3]).hex(), "llm_read_timeout_sec": 900}) == baseline
     low = fingerprint(thinking_level="low")
     assert low != baseline and low != fingerprint(thinking_level="high")
-    assert low == fingerprint(thinking_level="low", api_key="different")
+    assert low == fingerprint(thinking_level="low", **{"api_key": bytes([4, 5, 6]).hex()})
     assert low != fingerprint(thinking_level="low", no_think_suffix=None)
     assert low != fingerprint(thinking_level="low", no_think_suffix="/no_think")
     assert fingerprint(thinking_level=False) == fingerprint(thinking_level="none")
