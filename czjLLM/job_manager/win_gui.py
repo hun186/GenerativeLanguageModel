@@ -1986,23 +1986,26 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
             pass
         else:
             _document_busy = False
-            if ok:
-                _document_snapshot = result
-                _document_page = result["page"]
-                _document_display_args = (*_document_snapshot_args[:3], result["page"], _document_snapshot_args[4])
+            current_args = (_recovery_meter_path, _document_filter.get(),
+                            _document_query.get().strip()[:100], _document_page, _audit_path)
+            if not _document_expanded or _document_snapshot_args != current_args:
+                # Never pair an unrendered result with the old grid selection.
+                _document_display_args = None
+            elif ok:
                 if _document_expanded:
                     previous_selection = document_grid.selection()
-                    old_key = ""
-                    if previous_selection:
-                        vals = document_grid.item(previous_selection[0], "values")
-                        if vals:
-                            old_key = str(vals[0])
+                    old_key = None
+                    if previous_selection and _document_display_args == current_args:
+                        try:
+                            old_key = _document_snapshot["shown"][int(previous_selection[0])]["key"]
+                        except (ValueError, TypeError, KeyError, IndexError):
+                            pass
                     children = document_grid.get_children()
                     if children:
                         document_grid.delete(*children)
                     restored_iid = None
                     for idx, item in enumerate(result["shown"]):
-                        if item["label"] == old_key:
+                        if item["key"] == old_key:
                             restored_iid = str(idx)
                         tag = ("error",) if item["error"] else (
                             ("running",) if (item["running"] or 0) else ()
@@ -2016,6 +2019,10 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
                                 item["updated_text"],
                             ),
                         )
+                    # Commit the snapshot and scope only after rendering the grid.
+                    _document_snapshot = result
+                    _document_page = result["page"]
+                    _document_display_args = (*current_args[:3], result["page"], current_args[4])
                     if restored_iid is not None:
                         document_grid.selection_set(restored_iid)
                     _document_selected()
@@ -2047,8 +2054,10 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
         root.after(250, _document_results_poll)
 
     def _toggle_document():
-        nonlocal _document_expanded, _document_last_refresh
+        nonlocal _document_expanded, _document_last_refresh, _document_display_args
         _document_expanded = not _document_expanded
+        _document_display_args = None
+        document_activity_label.configure(text="呼叫觀測待重新核對")
         if _document_expanded:
             document_frame.pack(fill="x")
             # Reclaim log request-height rather than creating two overflowing
