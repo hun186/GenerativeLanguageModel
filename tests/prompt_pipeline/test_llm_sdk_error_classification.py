@@ -310,6 +310,11 @@ def test_actual_sdk_stream_assembles_exact_answer_and_preserves_usage(monkeypatc
     assert response._czjllm_first_thinking_seconds <= response._czjllm_first_content_seconds
     assert "private thought" not in str(response)
     assert "private" not in "\n".join(logs)
+    activity = [line for line in logs if line.startswith("[LLM stream activity]")]
+    assert "event=started" in activity[0]
+    assert "event=assembled" in activity[-1]
+    assert "thinking_seen=1 content_seen=1" in activity[-1]
+    assert len({line.split("call=")[1].split()[0] for line in activity}) == 1
 
 
 @pytest.mark.parametrize("case", ["missing_finish", "missing_usage", "duplicate_choice", "tool_call", "oversized", "timeout", "read_error", "protocol_error"])
@@ -363,3 +368,48 @@ def test_stream_policy_requires_explicit_opt_in_and_zero_retries():
                  {"llm_stream_response": True, "llm_max_retries": False}, {"llm_stream_response": "true"}):
         with pytest.raises(ValueError):
             stream_response_enabled(spec)
+
+
+def test_stream_activity_rate_limit_transitions_and_idempotent_close(monkeypatch):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline import stream_activity as mod
+    clock = [100.0]
+    monkeypatch.setattr(mod, "time", SimpleNamespace(monotonic=lambda: clock[0]))
+    events = []
+    activity = mod.StreamActivity(events.append, started_at=100.0)
+    clock[0] = 101.0
+    activity.received()
+    clock[0] = 102.0
+    activity.received(thinking=True)
+    clock[0] = 103.0
+    activity.received(thinking=True)
+    clock[0] = 104.0
+    activity.received(content=True)
+    clock[0] = 105.0
+    activity.received(content=True)
+    clock[0] = 114.0
+    activity.received(content=True)
+    clock[0] = 150.0
+    activity.close(completed=False)
+    activity.close(completed=True)
+    activity.received()
+    assert [e["event"] for e in events] == [
+        "started", "received", "received", "received", "received", "failed",
+    ]
+    assert [e["chunks"] for e in events] == [0, 1, 2, 4, 6, 6]
+    assert events[-1]["elapsed_s"] == 50.0
+    assert events[-1]["last_chunk_elapsed_s"] == 14.0
+    assert events[-1]["thinking_seen"] and events[-1]["content_seen"]
+    assert len({e["call_id"] for e in events}) == 1
+    assert set(events[-1]) == {"call_id", "event", "elapsed_s", "last_chunk_elapsed_s",
+                              "chunks", "thinking_seen", "content_seen"}
+
+
+def test_stream_activity_sink_failure_is_nonfatal(monkeypatch):
+    from czjLLM.prompt_pipeline.stream_activity import StreamActivity
+    def broken(_event):
+        raise OSError("synthetic sink failure")
+    activity = StreamActivity(broken, started_at=0)
+    activity.received(thinking=True)
+    activity.received(content=True)
+    activity.close(completed=True)
