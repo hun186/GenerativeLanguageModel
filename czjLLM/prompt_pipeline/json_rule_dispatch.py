@@ -13,6 +13,7 @@ import pickle
 
 from czjLLM.prompt_pipeline.task_fingerprint import fingerprint_task
 from czjLLM.utilities.json_rule_policy import parse_json_repair_policy
+from czjLLM.task_configs.taskSetting_Enrichment import TRUSTED_MULTIDIM_SOURCE_RENDERERS
 
 
 def validate_multidim_event_slice(text: str) -> bool:
@@ -89,7 +90,12 @@ def legacy_rule_worker_kwargs(task, *, task_pool, renderer_pool) -> dict:
         if not isinstance(spec, Mapping) or not callable(spec.get("template")):
             return {}
         policy = parse_json_repair_policy(spec)
-        if not policy.generic or policy.multidim_evidence_quotes:
+        if not (policy.generic or policy.multidim_evidence_quotes):
+            return {}
+        if policy.multidim_evidence_quotes and (
+            not any(spec.get("template") is known for known in TRUSTED_MULTIDIM_SOURCE_RENDERERS)
+            or spec.get("json_rule_slice_contract") != "multidim_event_slice_v1"
+        ):
             return {}
         if task_pool is not None:
             if not isinstance(task_pool, Mapping):

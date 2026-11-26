@@ -71,8 +71,11 @@ from czjLLM.utilities.llm_call_audit import log_llm_call, read_prompt_token_meta
 from czjLLM.utilities.processing_quality import emit_quality_event
 from czjLLM.utilities.json_repair_analysis import analyze_json_repair
 from czjLLM.utilities.json_transport import clean_json_transport, is_json_output_task
-from czjLLM.utilities.json_rule_policy import JsonRepairPolicy, select_rule_candidate, verified_source_span
-from czjLLM.prompt_pipeline.json_rule_dispatch import legacy_rule_worker_kwargs
+from czjLLM.utilities.json_rule_policy import (
+    JsonRepairPolicy, select_rule_candidate, verified_source_span,
+    rebind_source_span_after_no_think,
+)
+from czjLLM.prompt_pipeline.json_rule_dispatch import legacy_rule_worker_kwargs, validate_multidim_event_slice
 from czjLLM.prompt_pipeline.json_source_queue import take_claimed_source_receipt
 from czjLLM.utilities.json_repair_private_capture import (
     capture_enabled, configured_private_root, write_private_repair,
@@ -3649,7 +3652,8 @@ class PromptAPIPipeline:
                 response, cost = CallLLMAPI(
                     self.content,
                     max_tokens=self.max_tokens,
-                    model_spec=self.model_spec
+                    model_spec=self.model_spec,
+                    **self._prepare_source_rule_dispatch(),
                 )
             call_llm_api_returned = True
             worker_failure_code = "WORKER_RESPONSE_EXCEPTION"
@@ -3690,7 +3694,8 @@ class PromptAPIPipeline:
             ):
                 # Keep the pre-existing single-argument hook contract for
                 # callers without explicit provider truncation evidence.
-                if finish_reason == "length" or self._generic_rule_repair_enabled():
+                if (finish_reason == "length" or self._generic_rule_repair_enabled()
+                        or self._source_rule_repair_enabled()):
                     DTBJobs_Retry, retMES = self.handle_json_output(
                         retMES, finish_reason=finish_reason,
                     )
@@ -3873,7 +3878,9 @@ class PromptAPIPipeline:
                 response,cost = CallLLMAPI(
                     self.content,max_tokens=self.max_tokens,
                     #On_Premises=self.On_Premises,
-                    model_spec=self.model_spec)
+                    model_spec=self.model_spec,
+                    **self._prepare_source_rule_dispatch(),
+                )
             #print("Finished CallLLMAPI in PromptAPIPipeline")
 
             
@@ -3916,7 +3923,8 @@ class PromptAPIPipeline:
             finish_reason = normalized_finish_reason(response)
             if "to json" in self.task.lower() and (
                     self.allow_to_retry or finish_reason == "length"):
-                if finish_reason == "length" or self._generic_rule_repair_enabled():
+                if (finish_reason == "length" or self._generic_rule_repair_enabled()
+                        or self._source_rule_repair_enabled()):
                     DTBJobs_Retry, retMES = self.handle_json_output(
                         retMES, finish_reason=finish_reason,
                     )
@@ -4061,14 +4069,54 @@ class PromptAPIPipeline:
             and callable(getattr(self, "json_rule_slice_validator", None))
         )
 
-    def _try_generic_rule_repair(self, raw: str, finish_reason: str):
-        # Source-dependent repair is deliberately not enabled on this route:
-        # no verified renderer/queue receipt is available yet.
-        if not self._generic_rule_repair_enabled():
+    def _source_rule_repair_enabled(self) -> bool:
+        policy = getattr(self, "json_rule_policy", None)
+        return (
+            isinstance(policy, JsonRepairPolicy)
+            and policy.multidim_evidence_quotes is True
+            and getattr(self, "json_rule_slice_validator", None) is validate_multidim_event_slice
+        )
+
+    def _prepare_source_rule_dispatch(self) -> dict:
+        # One per actual API invocation. Never reuse a previous response's
+        # receipt or supply source-dependent provenance for another attempt.
+        self._source_rule_dispatch_state = None
+        receipt = getattr(self, "json_rule_source_receipt", None)
+        self.json_rule_source_receipt = None
+        if not self._source_rule_repair_enabled():
+            return {}
+        if verified_source_span(self.content, receipt) is None:
+            return {}
+        sink = {}
+        self._source_rule_dispatch_state = (receipt, sink)
+        return {"source_span_receipt": receipt, "source_receipt_out": sink}
+
+    def _take_dispatched_source_context(self):
+        state = getattr(self, "_source_rule_dispatch_state", None)
+        self._source_rule_dispatch_state = None
+        if state is None or not self._source_rule_repair_enabled():
             return None
+        original, sink = state
+        actual = sink.get("receipt")
+        if actual is None:
+            return None
+        # Reconstruct only the allowed finalization forms. The receipt from
+        # the successful API invocation must match the exact final content.
+        raw = self.content
+        for final in (raw, raw + "\n/no_think", raw.rstrip() + "\n/no_think"):
+            if (rebind_source_span_after_no_think(raw, original, final) == actual
+                    and verified_source_span(final, actual) is not None):
+                return final, actual
+        return None
+
+    def _try_generic_rule_repair(self, raw: str, finish_reason: str, source_context=None):
+        if not (self._generic_rule_repair_enabled() or self._source_rule_repair_enabled()):
+            return None
+        prompt, receipt = source_context or ("", None)
         return select_rule_candidate(
             raw, policy=self.json_rule_policy, finish_reason=finish_reason,
             validate_candidate=self.json_rule_slice_validator,
+            dispatched_prompt=prompt, source_receipt=receipt,
         )
 
     def handle_json_output(self, retMES, *, finish_reason: str = ""):
@@ -4076,6 +4124,7 @@ class PromptAPIPipeline:
         嘗試用json.loads驗證回傳訊息json正確性，
         回傳值為空清單或重跑任務物件清單跟修正後訊息。
         '''
+        source_context = self._take_dispatched_source_context()
         retMES_rep = None
         if finish_reason == "length":
             # Provider explicitly reports output-token termination. A valid
@@ -4107,7 +4156,7 @@ class PromptAPIPipeline:
             
             
             try:
-                candidate = self._try_generic_rule_repair(retMES, finish_reason)
+                candidate = self._try_generic_rule_repair(retMES, finish_reason, source_context)
                 if candidate is not None:
                     retMES_rep = candidate.text
                 else:

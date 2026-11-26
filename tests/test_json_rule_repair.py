@@ -474,10 +474,30 @@ def test_rule_method_audit_accepts_only_fixed_enum():
 
 
 def test_worker_both_paths_forward_finish_reason_for_explicit_rule_policy():
-    from pathlib import Path
-    source = Path("czjLLM/prompt_pipeline/pipeline_controller.py").read_text(encoding="utf-8")
-    assert source.count('if finish_reason == "length" or self._generic_rule_repair_enabled():') == 2
-    assert source.count("self.handle_json_output(retMES)") >= 2
+    import ast
+    import inspect
+    import textwrap
+    from czjLLM.prompt_pipeline.pipeline_controller import PromptAPIPipeline
+    for method in (PromptAPIPipeline.proc, PromptAPIPipeline.proc_0112):
+        tree = ast.parse(textwrap.dedent(inspect.getsource(method)))
+        conditions = [node for node in ast.walk(tree) if isinstance(node, ast.If)
+                      and "self._source_rule_repair_enabled()" in ast.unparse(node.test)
+                      and "self._generic_rule_repair_enabled()" in ast.unparse(node.test)
+                      and "finish_reason == 'length'" in ast.unparse(node.test)]
+        assert len(conditions) == 1
+        guarded_calls = [node for statement in conditions[0].body for node in ast.walk(statement)
+                         if isinstance(node, ast.Call)
+                         and ast.unparse(node.func) == "self.handle_json_output"]
+        assert any(any(kw.arg == "finish_reason" and ast.unparse(kw.value) == "finish_reason"
+                       for kw in call.keywords) for call in guarded_calls)
+        api_calls = [node for node in ast.walk(tree) if isinstance(node, ast.Call)
+                     and ast.unparse(node.func) == "CallLLMAPI"]
+        assert len(api_calls) == 1
+        assert any(kw.arg is None and ast.unparse(kw.value) == "self._prepare_source_rule_dispatch()"
+                   for kw in api_calls[0].keywords)
+        assert any(isinstance(node, ast.Call) and ast.unparse(node.func) == "self.handle_json_output"
+                   and not node.keywords for statement in conditions[0].orelse
+                   for node in ast.walk(statement))
 
 
 @pytest.mark.parametrize("name", [
@@ -671,3 +691,143 @@ def test_actual_job_context_shares_renderer_registry_and_allows_explicit_opt_in(
     }
     ctx.taskSetting = {name: dict(spec, template=_test_other_task_template)}
     assert legacy_rule_worker_kwargs(name, task_pool=ctx.taskSetting, renderer_pool=pool) == {}
+
+
+@pytest.mark.parametrize("source,override,expected", [
+    ('原文"甲"。', None, True),
+    ('原文"甲"。 \n', None, False),
+    ('原文"甲"。 \n', "", True),
+])
+def test_api_source_receipt_matches_actual_outgoing_user_message(monkeypatch, source, override, expected):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline import llm_caller as api
+    raw = "instruction\n" + source
+    receipt = receipt_for_trusted_appended_source(raw, source)
+    sent = []
+    response = SimpleNamespace(usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5))
+    def create(**kwargs):
+        sent.append(kwargs["messages"][-1]["content"])
+        return response
+    monkeypatch.setattr(api, "OpenAI", lambda **kw: SimpleNamespace(
+        chat=SimpleNamespace(completions=SimpleNamespace(create=create))))
+    sink = {"receipt": receipt}
+    result, cost = api.CallLLMAPI(
+        raw, model_spec={"model_name": "qwen3.8", "no_think_suffix": override},
+        http_client=object(), source_span_receipt=receipt, source_receipt_out=sink,
+    )
+    assert result is response and len(sent) == 1
+    if expected:
+        assert verified_source_span(sent[0], sink["receipt"]) == source
+        assert set(sink) == {"receipt"}
+    else:
+        assert sink == {}
+
+
+def test_api_failed_call_and_mismatched_prompt_never_leave_stale_receipt(monkeypatch):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline import llm_caller as api
+    raw = "instruction\nsource"
+    receipt = receipt_for_trusted_appended_source(raw, "source")
+    sink = {"receipt": receipt}
+    def fail(**kwargs):
+        raise RuntimeError("offline test")
+    monkeypatch.setattr(api, "OpenAI", lambda **kw: SimpleNamespace(
+        chat=SimpleNamespace(completions=SimpleNamespace(create=fail))))
+    with pytest.raises(RuntimeError):
+        api.CallLLMAPI(raw, http_client=object(), source_span_receipt=receipt,
+                       source_receipt_out=sink)
+    assert sink == {}
+    response = SimpleNamespace(usage=SimpleNamespace(prompt_tokens=1, completion_tokens=1))
+    monkeypatch.setattr(api, "OpenAI", lambda **kw: SimpleNamespace(
+        chat=SimpleNamespace(completions=SimpleNamespace(create=lambda **kw: response))))
+    sink["receipt"] = receipt
+    result, _ = api.CallLLMAPI(raw + " changed", http_client=object(),
+                               source_span_receipt=receipt, source_receipt_out=sink)
+    assert result is response and sink == {}
+    # Ordinary calls retain their existing two-value return contract.
+    assert api.CallLLMAPI(raw, http_client=object())[0] is response
+
+
+def _source_quote_output(source):
+    payload = [{
+        "article_date_iso": None, "article_date_precision": "unknown",
+        "Event": [{"event_id": "E1", "time_raw": None, "time_iso": None,
+                   "time_precision": "unknown"}],
+        "evidence_snippets": [{"event_ids": ["E1"], "text": source}],
+    }]
+    expected = json.dumps(payload, ensure_ascii=False)
+    raw = expected.replace(json.dumps(source, ensure_ascii=False), '"' + source + '"')
+    return raw, expected
+
+
+def test_source_enabled_dispatch_requires_pinned_renderer_and_profile(monkeypatch):
+    from czjLLM.taskConfig import taskSetting
+    name = "InfoExtraction-MultiDim-SQLFriendly-to json format"
+    spec = dict(taskSetting[name], json_rule_repair={"generic": True, "multidim_evidence_quotes": True},
+                json_rule_slice_contract="multidim_event_slice_v1")
+    monkeypatch.setitem(taskSetting, name, spec)
+    assert legacy_rule_worker_kwargs(name, task_pool=taskSetting, renderer_pool=taskSetting) == {
+        "json_rule_policy": JsonRepairPolicy(generic=True, multidim_evidence_quotes=True),
+        "json_rule_slice_validator": validate_multidim_event_slice,
+    }
+    for changed in (dict(spec, template=_test_other_task_template),
+                    dict(spec, json_rule_slice_contract=_test_task_contract)):
+        pool = {name: changed}
+        assert legacy_rule_worker_kwargs(name, task_pool=pool, renderer_pool=pool) == {}
+
+
+@pytest.mark.parametrize("case", ["success", "no_receipt", "trimmed", "wrong_source", "bad_schema", "length", "unknown_finish"])
+def test_source_quote_worker_uses_actual_api_receipt_or_exact_fallback(monkeypatch, case):
+    from types import SimpleNamespace
+    from czjLLM.prompt_pipeline import llm_caller as api
+    worker, calls, events, splits = _real_rule_worker(
+        monkeypatch, policy=JsonRepairPolicy(multidim_evidence_quotes=True),
+        validator=validate_multidim_event_slice,
+    )
+    source = '他說"甲"。'
+    raw, expected = _source_quote_output(source)
+    original = source if case != "wrong_source" else '他說"乙"。'
+    if case == "trimmed":
+        original += " \n"
+    if case == "bad_schema":
+        raw = raw.replace('"event_ids": ["E1"]', '"event_ids": ["missing"]')
+    worker.content = "instruction\n" + original
+    worker.json_rule_source_receipt = (
+        None if case == "no_receipt" else receipt_for_trusted_appended_source(worker.content, original)
+    )
+    sent = []
+    def create(**kwargs):
+        sent.append(kwargs["messages"][-1]["content"])
+        return SimpleNamespace(usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5))
+    monkeypatch.setattr(api, "OpenAI", lambda **kw: SimpleNamespace(
+        chat=SimpleNamespace(completions=SimpleNamespace(create=create))))
+    kwargs = worker._prepare_source_rule_dispatch()
+    api.CallLLMAPI(worker.content, model_spec={"model_name": "qwen3.8"},
+                   http_client=object(), **kwargs)
+    assert len(sent) == 1
+    reason = "length" if case == "length" else "" if case == "unknown_finish" else "stop"
+    result = worker.handle_json_output(raw, finish_reason=reason)
+    if case == "success":
+        assert json.loads(result[1]) == json.loads(expected)
+        assert result[0] == [] and not calls and not splits
+        assert events[-1][3]["repair_method"] == "RULE_BASED"
+        # Receipt consumed: a second output cannot use the earlier call.
+        worker.handle_json_output(raw, finish_reason="stop")
+        assert calls == [raw]
+    elif case == "length":
+        assert result == ([], "") and not calls and len(splits) == 1
+    else:
+        assert result == ([], '{"fallback":true}') and calls == [raw] and not splits
+    assert worker._source_rule_dispatch_state is None
+    assert worker._prepare_source_rule_dispatch() == {}
+
+
+def test_source_policy_with_generic_enabled_can_use_generic_rule_without_source_receipt(monkeypatch):
+    worker, calls, events, splits = _real_rule_worker(
+        monkeypatch, policy=JsonRepairPolicy(generic=True, multidim_evidence_quotes=True),
+        validator=validate_multidim_event_slice,
+    )
+    raw = '[{"article_date_iso":null,"article_date_precision":"unknown","Event":[],}]'
+    result = worker.handle_json_output(raw, finish_reason="stop")
+    assert result == ([], raw.replace(",}", "}")) and not calls and not splits
+    assert events[-1][3]["repair_method"] == "RULE_BASED"
