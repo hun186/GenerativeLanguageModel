@@ -232,3 +232,13 @@ def test_audit_http_available_without_meter_and_no_private_metadata(tmp_path):
         assert data["documents"]["status"] == "waiting_for_meter"
     finally:
         client.close()
+
+
+@pytest.mark.parametrize("outcome", ["", "MAYBE", "yes", "UNKNOWN"])
+def test_strict_audit_rejects_unknown_outcome_but_preserves_desktop_legacy(tmp_path, outcome):
+    from czjLLM.job_manager import audit_distribution as core
+    audit = tmp_path / "audit.csv"
+    audit.write_text("ok,prompt_file,token_usage_source,input_tokens,output_tokens,elapsed_seconds\n"
+                     + f"{outcome},x,llm_api_usage,100,20,2\n", encoding="utf-8")
+    assert core.load_public_audit(audit) == {"status": "unavailable_or_over_budget"}
+    assert core.load_llm_audit_distribution(audit)["calls"] == 1

@@ -106,6 +106,8 @@ def load_llm_audit_distribution(audit_path: str, *, strict=False) -> dict:
                         raise ValueError("audit rows incomplete or over budget")
                     if not isinstance(row, dict):
                         continue
+                    if strict and row.get("ok") not in {"YES", "NO"}:
+                        raise ValueError("unknown audit outcome")
                     calls += 1
                     if str(row.get("ok", "")).strip().upper() == "NO":
                         failures += 1
