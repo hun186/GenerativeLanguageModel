@@ -21,6 +21,42 @@ _AUDIT_SERIES = (
 )
 
 
+_STREAM_SOURCE = "client_monotonic_completed_sse"
+_STREAM_KEYS = (
+    "stream_ttft_seconds", "stream_first_thinking_seconds",
+    "stream_first_content_seconds", "stream_chunks",
+)
+_STREAM_FIELDS = ("stream_timing_source",) + _STREAM_KEYS
+
+
+def _stream_row(row):
+    """Optional, atomic, source-tagged client observation; never infer phases."""
+    if not any(row.get(key) not in ("", None) for key in _STREAM_FIELDS):
+        return "missing", {}
+    if row.get("stream_timing_source") != _STREAM_SOURCE:
+        return "invalid", {}
+    if any(key not in row or row[key] is None for key in _STREAM_FIELDS):
+        return "invalid", {}
+    chunks = _audit_token_count(row["stream_chunks"])
+    if chunks is None or not 1 <= chunks <= 65536:
+        return "invalid", {}
+    values = {}
+    for key in _STREAM_KEYS[:-1]:
+        raw = row[key]
+        value = _audit_float(raw)
+        if raw == "":
+            values[key] = None
+        elif value is None or not 0 <= value <= 1e9:
+            return "invalid", {}
+        else:
+            values[key] = value
+    seen = [values[key] for key in _STREAM_KEYS[1:3] if values[key] is not None]
+    if values[_STREAM_KEYS[0]] != (min(seen) if seen else None):
+        return "invalid", {}
+    values["stream_chunks"] = chunks
+    return "observed", values
+
+
 def _audit_float(value):
     try:
         if value is None or str(value).strip() == "":
@@ -89,6 +125,8 @@ def load_llm_audit_distribution(audit_path: str, *, strict=False) -> dict:
     """Read the append-only numeric audit metadata; never read prompt/output payloads."""
     values = {name: [] for name, _, _ in _AUDIT_SERIES}
     calls = failures = component_rows = 0
+    stream_values = {key: [] for key in _STREAM_KEYS}
+    stream_observed = stream_invalid = stream_no_text = 0
     provider_rows = heuristic_rows = 0
     cache_eligible_rows = cache_observed_rows = 0
     cache_observed_input = cache_observed_cached = 0
@@ -109,6 +147,16 @@ def load_llm_audit_distribution(audit_path: str, *, strict=False) -> dict:
                     if strict and row.get("ok") not in {"YES", "NO"}:
                         raise ValueError("unknown audit outcome")
                     calls += 1
+                    timing_status, timing = _stream_row(row)
+                    if timing_status == "observed":
+                        stream_observed += 1
+                        if timing["stream_ttft_seconds"] is None:
+                            stream_no_text += 1
+                        for key in _STREAM_KEYS:
+                            if timing[key] is not None:
+                                stream_values[key].append(timing[key])
+                    elif timing_status == "invalid":
+                        stream_invalid += 1
                     if str(row.get("ok", "")).strip().upper() == "NO":
                         failures += 1
                     usage_source = str(row.get("token_usage_source", "") or "").strip().lower()
@@ -202,6 +250,12 @@ def load_llm_audit_distribution(audit_path: str, *, strict=False) -> dict:
                         if cache_observed_input else None),
         },
         "metrics": {name: _audit_metric_snapshot(values[name]) for name, _, _ in _AUDIT_SERIES},
+        "stream_timing": {"source": _STREAM_SOURCE, "scope": "all_audit_call_rows",
+                          "observed_rows": stream_observed, "invalid_rows": stream_invalid,
+                          "missing_rows": calls - stream_observed - stream_invalid,
+                          "no_text_rows": stream_no_text,
+                          "metrics": {key: _audit_metric_snapshot(stream_values[key])
+                                      for key in _STREAM_KEYS}},
     }
 
 
@@ -249,12 +303,24 @@ def load_public_audit(audit_path):
                             "p50": safe_number(value["p50"]) if value["count"] else None,
                             "p95": safe_number(value["p95"]) if value["count"] else None,
                             "max": safe_number(value["max"]) if value["count"] else None}
+        stream = stats["stream_timing"]
+        stream_metrics = {}
+        for key in _STREAM_KEYS:
+            metric = stream["metrics"][key]
+            stream_metrics[key] = {"count": metric["count"],
+                **{k: safe_number(metric[k]) if metric["count"] else None
+                   for k in ("p50", "p95", "max")}}
+        stream_public = {**{k: v for k, v in stream.items() if k != "metrics"},
+                         "metrics": stream_metrics}
         return {"status": "observed", "calls": stats["calls"],
                 "failures": stats["failures"], "metrics": metrics,
                 "provider_cache": stats["provider_cache"],
                 "effective_provider_rows": stats["effective_provider_rows"],
                 "effective_heuristic_rows": stats["effective_heuristic_rows"],
-                "phase_metrics": {"ttft": None, "prefill": None, "decode": None},
+                "stream_timing": stream_public,
+                "phase_metrics": {"ttft": (stream_metrics["stream_ttft_seconds"]
+                                           if stream_metrics["stream_ttft_seconds"]["count"] else None),
+                                  "prefill": None, "decode": None},
                 "scope": "bounded_current_audit_snapshot"}
     except FileNotFoundError:
         return {"status": "waiting_for_audit"}
