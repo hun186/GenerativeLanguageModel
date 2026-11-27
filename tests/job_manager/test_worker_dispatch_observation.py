@@ -35,13 +35,13 @@ def _setup(tmp_path):
     return item, prompt, audit, meter
 
 
-def _emit(item, prompt, audit, call_id, status, endpoint="http://10.20.30.40:11434/v1?key=PRIVATE"):
+def _emit(item, prompt, audit, call_id, status, endpoint="http://10.20.30.40:11434/v1?key=PRIVATE", stream_activity=None):
     dispatch.write_worker_dispatch_observation(
         audit_path=str(audit), item_dir=str(item), prompt_file=str(prompt),
         worker_call_id=call_id, model_spec={
             "model_name": "qwen3.6:128k",
             "base_url": endpoint, "api_key": "PRIVATE_API_KEY",
-        }, status=status,
+        }, status=status, stream_activity=stream_activity,
     )
 
 
@@ -215,3 +215,110 @@ def test_legacy_retry_child_constructor_has_safe_optional_row_fallback():
     import inspect
     source = inspect.getsource(pc.PromptAPIPipeline.split_and_generate_new_prompts_0112)
     assert 'dispatch_item_dir=getattr(self, "dispatch_item_dir", "")' in source
+
+
+def _activity_event(**overrides):
+    return dict({
+        "call_id": uuid4().hex, "event": "received", "elapsed_s": 22.0,
+        "last_chunk_elapsed_s": 20.0, "chunks": 12,
+        "thinking_seen": True, "content_seen": False,
+    }, **overrides)
+
+
+def test_spawned_worker_stream_snapshot_reaches_visible_document_page(tmp_path):
+    import multiprocessing as mp
+    item, prompt, audit, meter = _setup(tmp_path)
+    call_id = uuid4().hex
+    activity = _activity_event(untrusted_extra="private payload must never persist")
+    # Spawn imports the target's defining module from scratch. Use the
+    # actual lightweight writer, not this test module (which imports the
+    # heavyweight pipeline controller and model dependencies).
+    child = mp.get_context("spawn").Process(
+        target=dispatch.write_worker_dispatch_observation,
+        kwargs={
+            "audit_path": str(audit), "item_dir": str(item),
+            "prompt_file": str(prompt), "worker_call_id": call_id,
+            "model_spec": {"model_name": "qwen3.6:128k",
+                           "base_url": "http://10.20.30.40:11434/v1?key=PRIVATE",
+                           "api_key": "PRIVATE_API_KEY"},
+            "status": "calling", "stream_activity": activity,
+        },
+    )
+    child.start()
+    try:
+        child.join(timeout=60)
+        assert child.exitcode == 0
+    finally:
+        if child.is_alive():
+            child.terminate()
+            child.join(timeout=10)
+    view = document_progress.read_document_progress(meter, audit_path=str(audit))
+    label = view["shown"][0]["model_endpoint"]
+    assert "串流收到資料" in label and "22.0s" in label and "2.0s" in label
+    assert "12 chunks" in label and "思考有／回答未觀測" in label
+    assert "最後觀測" in label and "完成" not in view["shown"][0]["stage"]
+    raw = next(audit.with_suffix(".dispatch").rglob("*.json")).read_text(encoding="utf-8")
+    assert "private payload" not in raw and activity["call_id"] not in raw
+    _emit(item, prompt, audit, call_id, "returned")
+    label = document_progress.read_document_progress(meter, audit_path=str(audit))["shown"][0]["model_endpoint"]
+    assert "已回傳" in label and "串流收到資料" not in label
+
+
+@pytest.mark.parametrize("bad", [
+    {"elapsed_s": float("nan")}, {"elapsed_s": -1}, {"last_chunk_elapsed_s": 23},
+    {"chunks": True}, {"chunks": 0}, {"thinking_seen": "true"},
+    {"event": "unknown private text"},
+])
+def test_invalid_stream_projection_refused(tmp_path, bad):
+    item, prompt, audit, _ = _setup(tmp_path)
+    with pytest.raises(ValueError, match="invalid stream"):
+        _emit(item, prompt, audit, uuid4().hex, "calling",
+              stream_activity=_activity_event(**bad))
+
+
+def test_stream_sidecar_rejects_injected_unknown_fields_on_read(tmp_path):
+    item, prompt, audit, _ = _setup(tmp_path)
+    _emit(item, prompt, audit, uuid4().hex, "calling", stream_activity=_activity_event())
+    target = next(audit.with_suffix(".dispatch").rglob("*.json"))
+    value = json.loads(target.read_text(encoding="utf-8"))
+    value["stream_activity"]["injected"] = "not part of allowed data"
+    target.write_text(json.dumps(value), encoding="utf-8")
+    with pytest.raises(ValueError, match="invalid stored stream"):
+        dispatch.read_visible_dispatch_observations(str(audit), {"row": str(item)})
+
+
+def test_worker_stream_observer_updates_existing_sidecar_before_return(tmp_path, monkeypatch):
+    item, prompt, audit, meter = _setup(tmp_path)
+    entered, release = Event(), Event()
+    monkeypatch.setattr(pc, "select_idle_ollama_url", lambda *a, **kw: "http://10.99.0.3:11434")
+    monkeypatch.setattr(pc, "release_url_load", lambda *a, **kw: None)
+    monkeypatch.setattr(pc, "verified_queued_prompt_source", lambda *a, **kw: False)
+    monkeypatch.setattr(pc, "log_llm_call", lambda **kw: None)
+
+    def call_api(*args, **kwargs):
+        kwargs["stream_activity_sink"](_activity_event())
+        entered.set()
+        assert release.wait(10)
+        return SimpleNamespace(usage=SimpleNamespace(completion_tokens=4),
+                               choices=[SimpleNamespace(message=SimpleNamespace(content="OK"))]), 0.0
+    monkeypatch.setattr(pc, "CallLLMAPI", call_api)
+    job = pc.PromptAPIPipeline(
+        promptFile=str(prompt), OutputSaveFN="", removeFinPromptFile=False,
+        task="summarize", max_tokens=128, allow_to_retry=False,
+        model_spec={"model_name": "qwen3.6:128k", "base_url": ["http://10.99.0.3:11434"],
+                    "llm_stream_response": True, "llm_max_retries": 0},
+        audit_run_id="20261102-1", audit_path=str(audit), dispatch_item_dir=str(item),
+    )
+    out = []
+    worker = Thread(target=lambda: out.append(job.proc()), daemon=True)
+    worker.start()
+    try:
+        assert entered.wait(10)
+        label = document_progress.read_document_progress(meter, audit_path=str(audit))["shown"][0]["model_endpoint"]
+        assert "串流收到資料" in label and "12 chunks" in label
+    finally:
+        release.set()
+        worker.join(timeout=10)
+    assert not worker.is_alive() and out and out[0]["ok"]
+    label = document_progress.read_document_progress(meter, audit_path=str(audit))["shown"][0]["model_endpoint"]
+    assert "已回傳" in label and "串流收到資料" not in label

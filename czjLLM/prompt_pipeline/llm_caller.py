@@ -170,6 +170,7 @@ def CallLLMAPI(
     temperature: float = 1.0,
     NoThinkProcess: bool = True,  # 是否啟用 /no_think 自動附加
     http_client: Optional[httpx.Client] = None,
+    stream_activity_sink=None,
 ) -> Tuple[Any, float]:
     """
     呼叫 OpenAI 相容端點的簡化函式。
@@ -227,7 +228,15 @@ def CallLLMAPI(
         request_options.update(stream=True, stream_options={"include_usage": True})
     start_ts = time.time()
     started_at = time.monotonic() if stream_enabled else None
-    activity = (StreamActivity(lambda event: tlog(format_stream_activity(event)), started_at=started_at)
+    def observe_stream(event):
+        if stream_activity_sink is not None:
+            try:
+                stream_activity_sink(dict(event))
+            except Exception:
+                pass
+        tlog(format_stream_activity(event))
+
+    activity = (StreamActivity(observe_stream, started_at=started_at)
                 if stream_enabled else None)
     assembled = False
 
