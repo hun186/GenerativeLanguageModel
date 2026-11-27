@@ -242,3 +242,70 @@ def test_strict_audit_rejects_unknown_outcome_but_preserves_desktop_legacy(tmp_p
                      + f"{outcome},x,llm_api_usage,100,20,2\n", encoding="utf-8")
     assert core.load_public_audit(audit) == {"status": "unavailable_or_over_budget"}
     assert core.load_llm_audit_distribution(audit)["calls"] == 1
+
+
+def test_stream_distribution_valid_zero_missing_and_invalid_diagnostics(tmp_path):
+    import csv
+    from czjLLM.job_manager import audit_distribution as core, win_gui
+    audit = tmp_path / "audit.csv"
+    fields = ["ok", "prompt_file", "token_usage_source", "stream_timing_source",
+              "stream_ttft_seconds", "stream_first_thinking_seconds",
+              "stream_first_content_seconds", "stream_chunks"]
+    source = "client_monotonic_completed_sse"
+    rows = [
+        ["YES", "PRIVATE", "llm_api_usage", source, "0", "", "0", "3"],
+        ["NO", "PRIVATE", "llm_api_usage", source, "2", "2", "5", "7"],
+        ["YES", "", "llm_api_usage", source, "", "", "", "2"],
+        ["YES", "", "llm_api_usage", "", "", "", "", ""],
+        ["YES", "", "llm_api_usage", source, "4", "2", "5", "7"],
+        ["YES", "", "llm_api_usage", "native_guess", "1", "1", "", "2"],
+        ["YES", "", "llm_api_usage", source, "nan", "", "nan", "2"],
+        ["YES", "", "llm_api_usage", "", "1", "", "", ""],
+    ]
+    with audit.open("w", newline="", encoding="utf-8") as fp:
+        writer = csv.writer(fp)
+        writer.writerow(fields)
+        writer.writerows(rows)
+    view = core.load_public_audit(audit)
+    timing = view["stream_timing"]
+    assert view["status"] == "observed" and view["calls"] == 8 and view["failures"] == 1
+    assert timing["observed_rows"] == 3 and timing["unreported_rows"] == 1
+    assert timing["invalid_rows"] == 4 and timing["no_text_rows"] == 1
+    assert timing["metrics"]["stream_ttft_seconds"]["count"] == 2
+    assert timing["metrics"]["stream_ttft_seconds"]["p50"] == 1
+    assert timing["metrics"]["stream_first_thinking_seconds"]["count"] == 1
+    assert timing["metrics"]["stream_first_content_seconds"]["p50"] == 2.5
+    assert timing["metrics"]["stream_chunks"]["count"] == 3
+    assert view["phase_metrics"] == {"ttft": 1, "prefill": None, "decode": None}
+    assert "PRIVATE" not in json.dumps(view)
+    desktop = core.load_llm_audit_distribution(audit)
+    assert desktop["stream_timing"]["metrics"]["stream_ttft_seconds"]["p50"] == 1
+    summary = win_gui.format_llm_audit_summary(desktop)
+    assert "TTFT P50/P95 1.0/1.9s (n=2)" in summary and "3/8" in summary
+
+
+def test_stream_timing_http_coverage_and_no_inferred_native_phase(tmp_path):
+    audit = tmp_path / "llm_call_audit_20261102-1.csv"
+    audit.write_text("ok,prompt_file,token_usage_source,stream_timing_source,"
+                     "stream_ttft_seconds,stream_first_thinking_seconds,"
+                     "stream_first_content_seconds,stream_chunks\n"
+                     "YES,PRIVATE,llm_api_usage,client_monotonic_completed_sse,0,,0,2\n",
+                     encoding="utf-8")
+    client = start_web_monitor(1, 0)
+    assert client is not None
+    try:
+        client.set_audit_path(audit)
+        deadline = time.monotonic() + 12
+        while True:
+            _, raw, _ = _request(client.port, "/api/v1/status")
+            view = json.loads(raw)["audit"]
+            if view["status"] == "observed":
+                break
+            assert time.monotonic() < deadline
+            time.sleep(.1)
+        assert view["stream_timing"]["observed_rows"] == 1
+        assert view["stream_timing"]["metrics"]["stream_ttft_seconds"]["p50"] == 0
+        assert view["phase_metrics"]["prefill"] is None and view["phase_metrics"]["decode"] is None
+        assert b"PRIVATE" not in raw
+    finally:
+        client.close()

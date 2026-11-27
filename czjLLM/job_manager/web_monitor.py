@@ -38,7 +38,11 @@ _HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <p id="audit-cache"></p>
 <table><thead><tr><th>指標</th><th>樣本數</th><th>P50</th><th>P95</th><th>Max</th></tr></thead>
 <tbody id="audit-rows"></tbody></table>
-<p>TTFT／Prefill／Decode 尚無正式 Audit 欄位；不以總耗時推估。</p>
+<h3>串流時間（用戶端量測；所有 Audit 呼叫）</h3>
+<p id="stream-coverage"></p>
+<table><thead><tr><th>指標</th><th>樣本數</th><th>P50</th><th>P95</th><th>Max</th></tr></thead>
+<tbody id="stream-rows"></tbody></table>
+<p>TTFT 是首段非空思考或回答文字，不等於 Prefill；原生 Prefill／Decode 未知。</p>
 <script src="/app.js" defer></script></body></html>""".encode("utf-8")
 _JS = """'use strict';
 function showDocuments(doc) {
@@ -101,6 +105,10 @@ function showAudit(audit) {
   const status = document.getElementById('audit-status');
   const cache = document.getElementById('audit-cache');
   cache.textContent = '';
+  const coverage = document.getElementById('stream-coverage');
+  const streamBody = document.getElementById('stream-rows');
+  coverage.textContent = '';
+  streamBody.replaceChildren();
   if (audit?.status !== 'observed') {
     status.textContent = 'Audit 尚未取得、逾時、交接不完整或超過讀取預算';
     return;
@@ -124,6 +132,25 @@ function showAudit(audit) {
       tr.appendChild(td);
     }
     tbody.appendChild(tr);
+  }
+  const stream = audit.stream_timing;
+  if (!stream) return;
+  coverage.textContent = '已量測 ' + stream.observed_rows + '/' + stream.audit_rows +
+    '；未回報 ' + stream.unreported_rows + '；無文字 ' + stream.no_text_rows +
+    '；不合法 ' + stream.invalid_rows + '。覆蓋率不代表串流成功率。';
+  const streamLabels = {stream_ttft_seconds:'TTFT (s)',
+    stream_first_thinking_seconds:'First thinking (s)',
+    stream_first_content_seconds:'First content (s)',stream_chunks:'Chunks'};
+  for (const [key,label] of Object.entries(streamLabels)) {
+    const v = stream.metrics[key];
+    const tr = document.createElement('tr');
+    for (const value of [label, v.count, v.p50, v.p95, v.max]) {
+      const td = document.createElement('td');
+      td.textContent = value === null ? '未知' :
+        typeof value === 'number' ? Number(value.toFixed(3)).toLocaleString() : value;
+      tr.appendChild(td);
+    }
+    streamBody.appendChild(tr);
   }
 }
 async function refresh() {
