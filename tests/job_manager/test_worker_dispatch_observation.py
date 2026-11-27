@@ -365,3 +365,36 @@ def test_visible_activity_clock_distinguishes_nonstream_and_first_chunk(tmp_path
     _emit(item, prompt, audit, call_id, "returned")
     row = document_progress.read_document_progress(meter, audit_path=str(audit))["shown"][0]
     assert "activity_clock" not in row
+
+
+def test_page_activity_keeps_distinct_parallel_calls_and_excludes_terminal(tmp_path):
+    item, prompt, audit, meter = _setup(tmp_path)
+    a, b, c = uuid4().hex, uuid4().hex, uuid4().hex
+    _emit(item, prompt, audit, a, "calling", "http://10.1.1.1:11434",
+          _activity_event())
+    _emit(item, prompt, audit, b, "calling", "http://10.1.1.2:11434")
+    _emit(item, prompt, audit, c, "returned", "http://10.1.1.3:11434")
+    view = document_progress.read_document_progress(meter, audit_path=str(audit))
+    assert view["activity_call_count"] == 2
+    assert len(view["activity_calls"]) == 2
+    assert {v["endpoint_ip"] for v in view["activity_calls"]} == {
+        "10.1.1.1:11434", "10.1.1.2:11434"}
+    assert all("worker_call_id" not in v and "slice_hash" not in v
+               for v in view["activity_calls"])
+    clock = view["activity_calls"][0]["clock"]
+    label = document_progress.format_page_activity(view, monotonic_s=clock["anchor_s"] + 20)
+    assert "12 chunks" in label and "GPU 狀態未知" in label
+    assert "10.1.1.3" not in label
+    assert "非全 Run" in label
+    assert "待重新核對" in document_progress.format_page_activity(None, monotonic_s=0)
+
+
+def test_page_activity_display_is_bounded_with_explicit_omissions(tmp_path):
+    item, prompt, audit, meter = _setup(tmp_path)
+    for _ in range(26):
+        _emit(item, prompt, audit, uuid4().hex, "calling")
+    view = document_progress.read_document_progress(meter, audit_path=str(audit))
+    assert view["activity_call_count"] == 26
+    assert len(view["activity_calls"]) == 24
+    label = document_progress.format_page_activity(view, monotonic_s=0)
+    assert "另有 2 個呼叫未顯示" in label

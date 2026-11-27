@@ -25,6 +25,7 @@ from czjLLM.utilities.llm_failure_summary import (
 
 MAX_CALLS_PER_ROW = 256
 MAX_RECORD_BYTES = 2048
+MAX_VISIBLE_CALLS_PER_ROW = 24
 _ALLOWED_STATES = {"assigned", "calling", "returned", "failed"}
 
 
@@ -265,6 +266,12 @@ def read_visible_dispatch_observations(audit_path, item_dirs):
             "text": f"{label}｜{stage}" + (f" · {count} 呼叫" if count > 1 else "") + activity_label,
             "status": selected["status"], "count": len(observations),
         }
+        # Keep distinct simultaneous call observations; no IDs, paths or raw payload.
+        results[key]["active_count"] = count
+        results[key]["active_calls"] = [
+            {k: v[k] for k in ("model", "endpoint_ip", "status", "observed_ns", "stream_activity") if k in v}
+            for v in sorted(active, key=lambda x: (-x["observed_ns"], x["worker_call_id"]))[:MAX_VISIBLE_CALLS_PER_ROW]
+        ]
         if selected["status"] == "calling":
             results[key]["observed_ns"] = selected["observed_ns"]
             if detail is not None:
