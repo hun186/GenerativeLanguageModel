@@ -334,7 +334,7 @@ def test_new_audit_records_have_distinct_opaque_row_ids_and_xlsx_column(tmp_path
     with path.open(encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
         rows = list(reader)
-        assert reader.fieldnames[-6:] == [
+        assert reader.fieldnames[:len(_AUDIT._PRE_STREAM_FIELDS)][-6:] == [
             "audit_record_id", "worker_call_id", "call_llm_api_returned",
             "split_family_id", "queue_claim_event_id", "finish_reason"]
     assert len(rows) == 2
@@ -359,7 +359,7 @@ def test_append_to_preupgrade_audit_preserves_legacy_csv_width(tmp_path):
     """An in-flight old run is not silently upgraded mid-file."""
     legacy = tmp_path / "llm_call_audit_20261028-legacy.csv"
     with legacy.open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=_AUDIT._FIELDS[:-1])
+        writer = csv.DictWriter(stream, fieldnames=_AUDIT._PRE_STREAM_FIELDS[:-1])
         writer.writeheader()
     original_header = legacy.read_bytes().splitlines()[0]
     log_llm_call(
@@ -371,7 +371,7 @@ def test_append_to_preupgrade_audit_preserves_legacy_csv_width(tmp_path):
     with legacy.open(encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
         records = list(reader)
-        assert reader.fieldnames == _AUDIT._FIELDS[:-1]
+        assert reader.fieldnames == _AUDIT._PRE_STREAM_FIELDS[:-1]
     assert len(records) == 1
     assert records[0]["ok"] == "YES"
     assert None not in records[0]
@@ -433,9 +433,9 @@ def test_worker_call_id_rejects_untrusted_values_without_csv_side_effect(tmp_pat
 def test_two_supported_legacy_audit_headers_keep_exact_width(tmp_path):
     """Pre-#245, #245 and #246 headers cannot be silently upgraded."""
     from czjLLM.utilities.llm_failure_summary import summarize_llm_failure_audit
-    for past_fields in (_AUDIT._FIELDS[:-5], _AUDIT._FIELDS[:-4],
-                        _AUDIT._FIELDS[:-3], _AUDIT._FIELDS[:-2],
-                        _AUDIT._FIELDS[:-1]):
+    for past_fields in (_AUDIT._PRE_STREAM_FIELDS[:-5], _AUDIT._PRE_STREAM_FIELDS[:-4],
+                        _AUDIT._PRE_STREAM_FIELDS[:-3], _AUDIT._PRE_STREAM_FIELDS[:-2],
+                        _AUDIT._PRE_STREAM_FIELDS[:-1]):
         path = tmp_path / f"llm_call_audit_{len(past_fields)}-old.csv"
         with path.open("w", newline="", encoding="utf-8") as stream:
             writer = csv.DictWriter(stream, fieldnames=past_fields)
@@ -474,7 +474,7 @@ def test_explicit_wrapper_return_and_local_failure_are_separate(tmp_path):
     with path.open(encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
         rows = list(reader)
-        assert reader.fieldnames[-6:] == [
+        assert reader.fieldnames[:len(_AUDIT._PRE_STREAM_FIELDS)][-6:] == [
             "audit_record_id", "worker_call_id", "call_llm_api_returned",
             "split_family_id", "queue_claim_event_id", "finish_reason"]
     assert [row["call_llm_api_returned"] for row in rows] == ["YES", "NO", "YES", ""]
@@ -514,7 +514,7 @@ def test_return_outcome_requires_source_worker_id_and_bool_without_file_write(tm
 def test_legacy_worker_id_header_does_not_gain_return_field(tmp_path):
     """Existing #246 files remain byte-width compatible on append."""
     path = tmp_path / "llm_call_audit_20261028-previous.csv"
-    fields = _AUDIT._FIELDS[:-2]
+    fields = _AUDIT._PRE_STREAM_FIELDS[:-2]
     with path.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
@@ -529,3 +529,91 @@ def test_legacy_worker_id_header_does_not_gain_return_field(tmp_path):
     assert reader.fieldnames == fields
     assert len(rows) == 1 and rows[0]["worker_call_id"] == "a" * 32
     assert None not in rows[0]
+
+
+def test_completed_sse_timing_is_persisted_to_csv_and_xlsx(tmp_path):
+    import zipfile
+    from czjLLM.prompt_pipeline.stream_completion import collect_text_completion
+    from unittest.mock import patch
+
+    def chunk(delta=None, *, finish=None, usage=None):
+        choices = [] if delta is None else [SimpleNamespace(
+            index=0, delta=SimpleNamespace(**delta), finish_reason=finish)]
+        return SimpleNamespace(id="test", model="model", created=1,
+                               choices=choices, usage=usage)
+
+    from openai.types import CompletionUsage
+    class Stream:
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def __iter__(self):
+            return iter([
+                chunk({"reasoning_content": "PRIVATE_THINKING"}),
+                chunk({"content": "PRIVATE_CONTENT"}, finish="stop"),
+                chunk(usage=CompletionUsage(prompt_tokens=10, completion_tokens=2, total_tokens=12)),
+            ])
+    with patch("czjLLM.prompt_pipeline.stream_completion.time.monotonic",
+               side_effect=[11.25, 12.5]):
+        response = collect_text_completion(Stream(), started_at=10.0)
+    path = tmp_path / "llm_call_audit_test.csv"
+    log_llm_call(audit_path=str(path), run_id="run", response=response,
+                 model_spec={"num_ctx": 1024}, ok=True)
+    with path.open(newline="", encoding="utf-8") as fp:
+        row = next(csv.DictReader(fp))
+    assert row["stream_timing_source"] == "client_monotonic_completed_sse"
+    assert float(row["stream_ttft_seconds"]) == 1.25
+    assert float(row["stream_first_thinking_seconds"]) == 1.25
+    assert float(row["stream_first_content_seconds"]) == 2.5
+    assert row["stream_chunks"] == "3"
+    assert "PRIVATE" not in path.read_text(encoding="utf-8")
+    with zipfile.ZipFile(path.with_suffix(".xlsx")) as zf:
+        sheet = zf.read("xl/worksheets/sheet1.xml").decode("utf-8")
+    assert "stream_ttft_seconds" in sheet and "1.250000" in sheet
+    assert "PRIVATE" not in sheet
+
+
+def test_stream_timing_missing_invalid_and_explicit_zero():
+    good = dict(_czjllm_stream_timing_source="client_monotonic_completed_sse",
+                _czjllm_stream_chunks=2, _czjllm_ttft_seconds=0.0,
+                _czjllm_first_thinking_seconds=None, _czjllm_first_content_seconds=0.0)
+    fields = _AUDIT._stream_timing_fields(SimpleNamespace(**good))
+    assert fields["stream_ttft_seconds"] == "0.000000"
+    assert fields["stream_first_thinking_seconds"] == ""
+    for changes in (
+        {"_czjllm_stream_timing_source": "provider_guess"},
+        {"_czjllm_ttft_seconds": float("nan")},
+        {"_czjllm_first_content_seconds": -1},
+        {"_czjllm_stream_chunks": True},
+        {"_czjllm_stream_chunks": 65537},
+        {"_czjllm_ttft_seconds": 2.0},
+        {"_czjllm_first_content_seconds": "0"},
+    ):
+        result = _AUDIT._stream_timing_fields(SimpleNamespace(**{**good, **changes}))
+        assert set(result.values()) == {""}
+    assert set(_AUDIT._stream_timing_fields(None).values()) == {""}
+    no_text = _AUDIT._stream_timing_fields(SimpleNamespace(**{
+        **good, "_czjllm_ttft_seconds": None, "_czjllm_first_content_seconds": None}))
+    assert no_text["stream_timing_source"] == "client_monotonic_completed_sse"
+    assert no_text["stream_ttft_seconds"] == ""
+
+
+def test_stream_schema_preserves_every_legacy_header_and_rejects_partial_suffix(tmp_path):
+    import pytest
+    for delta in range(7):
+        fields = _AUDIT._PRE_STREAM_FIELDS[:len(_AUDIT._PRE_STREAM_FIELDS) - delta]
+        path = tmp_path / f"legacy-{delta}.csv"
+        with path.open("w", newline="", encoding="utf-8") as fp:
+            csv.DictWriter(fp, fieldnames=fields).writeheader()
+        before = path.read_bytes().splitlines()[0]
+        log_llm_call(audit_path=str(path), run_id="old", model_spec={"num_ctx": 1024})
+        assert path.read_bytes().splitlines()[0] == before
+        with path.open(newline="", encoding="utf-8") as fp:
+            row = next(csv.DictReader(fp))
+            assert None not in row and "stream_timing_source" not in row
+    bad = tmp_path / "partial.csv"
+    with bad.open("w", newline="", encoding="utf-8") as fp:
+        csv.DictWriter(fp, fieldnames=_AUDIT._FIELDS[:-1]).writeheader()
+    before = bad.read_bytes()
+    with pytest.raises(ValueError, match="incompatible existing LLM audit CSV header"):
+        log_llm_call(audit_path=str(bad), run_id="old", model_spec={"num_ctx": 1024})
+    assert bad.read_bytes() == before
