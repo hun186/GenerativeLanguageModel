@@ -9,6 +9,7 @@ import os
 from copy import deepcopy
 
 from czjLLM.job_manager.audit_distribution import AuditAccumulator, project_public_audit
+from czjLLM.job_manager.audit_comparison import AuditComparison
 from czjLLM.job_manager.document_model_endpoint_incremental import (
     _open_checked, _read_at, _checkpoint, _complete_csv_records,
 )
@@ -34,6 +35,7 @@ class IncrementalAuditReader:
         self.previous_size = self.previous_mtime = None
         self.checkpoint = b""
         self.acc = AuditAccumulator(max_rows=MAX_ROWS, max_groups=MAX_GROUPS)
+        self.comparison = AuditComparison(max_rows=MAX_ROWS)
         self.cached = None
 
     def _rows(self, chunk):
@@ -63,6 +65,11 @@ class IncrementalAuditReader:
         if not advanced and len(chunk) >= MAX_SCAN_BYTES:
             raise ValueError("logical record exceeds scan budget")
 
+    def _comparison_rows(self, chunk):
+        for row in self._rows(chunk):
+            self.comparison.consume(row)
+            yield row
+
     def read(self, path):
         if not path:
             self.path = None
@@ -86,7 +93,7 @@ class IncrementalAuditReader:
             previous = self.offset
             available = before.st_size - self.offset
             chunk = _read_at(fd, self.offset, min(MAX_SCAN_BYTES, available))
-            self.acc.consume(self._rows(chunk), strict=True)
+            self.acc.consume(self._comparison_rows(chunk), strict=True)
             self.checkpoint = _checkpoint(fd, self.offset)
             after = os.fstat(fd)
             _verify_path_snapshot(components)
@@ -103,6 +110,7 @@ class IncrementalAuditReader:
             if self.cached is None or self.offset != previous:
                 self.cached = project_public_audit(self.acc.snapshot())
                 self.cached["scope"] = "bounded_incremental_current_audit"
+                self.cached["comparison"] = self.comparison.snapshot()
             return deepcopy(self.cached)
         except FileNotFoundError:
             self._reset()

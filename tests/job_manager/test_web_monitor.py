@@ -372,3 +372,62 @@ def test_incremental_audit_incomplete_tail_replacement_and_budget(tmp_path, monk
     other = tmp_path / "llm_call_audit_20261102-2.csv"
     other.write_text(header + "YES,x,llm_api_usage,1\nYES,x,llm_api_usage,2\n", encoding="utf-8")
     assert reader.read(str(other)) == {"status": "unavailable_or_over_budget"}
+
+
+def test_audit_comparison_partitions_context_source_endpoint_and_cache(tmp_path):
+    import csv
+    from czjLLM.job_manager.audit_distribution_incremental import IncrementalAuditReader
+    path = tmp_path / "llm_call_audit_20261102-1.csv"
+    fields = ["ok", "prompt_file", "token_usage_source", "model", "base_url",
+              "context_limit_tokens", "context_limit_source", "input_tokens", "output_tokens",
+              "cached_input_tokens", "cached_input_token_source", "elapsed_seconds",
+              "stream_timing_source", "stream_ttft_seconds", "stream_first_thinking_seconds",
+              "stream_first_content_seconds", "stream_chunks"]
+    def row(model, endpoint, ctx, source, ok, cache, elapsed):
+        return [ok, "PRIVATE_PROMPT", "llm_api_usage", model, endpoint, ctx, source,
+                100, 20, cache, "provider_usage", elapsed,
+                "client_monotonic_completed_sse", "0", "", "0", "3"]
+    rows = [
+        row("PRIVATE_MODEL", "PRIVATE_ENDPOINT_A", 65536, "response", "YES", 0, 1),
+        row("PRIVATE_MODEL", "PRIVATE_ENDPOINT_A", 65536, "response", "NO", 100, 3),
+        row("PRIVATE_MODEL", "PRIVATE_ENDPOINT_A", 65536, "model_spec", "YES", 50, 4),
+        row("PRIVATE_MODEL", "PRIVATE_ENDPOINT_B", 65536, "response", "YES", 50, 5),
+        row("PRIVATE_MODEL", "PRIVATE_ENDPOINT_A", 131072, "response", "YES", 50, 6),
+        row("PRIVATE_MODEL", "PRIVATE_ENDPOINT_A", 0, "unknown", "YES", 50, 7),
+        row("", "PRIVATE_ENDPOINT_A", 65536, "response", "YES", 50, 8),
+    ]
+    with path.open("w", newline="", encoding="utf-8") as fp:
+        writer = csv.writer(fp)
+        writer.writerow(fields)
+        writer.writerows(rows)
+    reader = IncrementalAuditReader()
+    view = reader.read(str(path))
+    comp = view["comparison"]
+    assert comp["grouped_rows"] == 6 and comp["unidentified_rows"] == 1
+    assert len(comp["groups"]) == 5
+    g = comp["groups"][0]
+    assert g["calls"] == 2 and g["failure_pct"] == 50
+    assert g["provider_cache"]["hit_pct"] == 50
+    assert g["ttft"]["p50"] == 0 and g["ttft"]["count"] == 2
+    assert g["slice_time"]["p50"] == 2
+    assert len({x["model_alias"] for x in comp["groups"]}) == 1
+    assert len({x["endpoint_alias"] for x in comp["groups"]}) == 2
+    assert sum(x["context_limit_tokens"] is None for x in comp["groups"]) == 1
+    assert "PRIVATE" not in json.dumps(view)
+    assert reader.read(str(path)) == view
+
+
+def test_group_budget_does_not_combine_distinct_or_unidentified_calls():
+    from czjLLM.job_manager.audit_comparison import AuditComparison
+    c = AuditComparison(max_rows=20, max_groups=1)
+    base = {"ok": "YES", "model": "m", "base_url": "a",
+            "prompt_file": "x", "token_usage_source": "llm_api_usage"}
+    c.consume(base)
+    c.consume({**base, "base_url": "b"})
+    c.consume({**base, "model": ""})
+    c.consume(base)
+    result = c.snapshot()
+    assert result["status"] == "limited"
+    assert result["total_rows"] == 4 and result["grouped_rows"] == 2
+    assert result["omitted_rows"] == result["unidentified_rows"] == 1
+    assert len(result["groups"]) == 1
