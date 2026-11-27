@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 import os
 import re
 import threading
@@ -20,7 +21,7 @@ from xml.sax.saxutils import escape
 
 _LOCK = threading.Lock()
 _CONTEXT_CACHE: dict[tuple[str, str], tuple[int, str]] = {}
-_FIELDS = [
+_PRE_STREAM_FIELDS = [
     "timestamp",
     "run_id",
     "task",
@@ -58,11 +59,48 @@ _FIELDS = [
     "queue_claim_event_id",
     "finish_reason",
 ]
+_STREAM_TIMING_FIELDS = [
+    "stream_timing_source", "stream_ttft_seconds",
+    "stream_first_thinking_seconds", "stream_first_content_seconds",
+    "stream_chunks",
+]
+_FIELDS = _PRE_STREAM_FIELDS + _STREAM_TIMING_FIELDS
+_STREAM_TIMING_SOURCE = "client_monotonic_completed_sse"
 
 
 _KNOWN_FINISH_REASONS = frozenset({
     "stop", "length", "content_filter", "tool_calls", "function_call",
 })
+
+
+def _stream_timing_fields(response: Any) -> dict:
+    """Persist only complete SSE client observations; no provider/GPU inference."""
+    empty = dict.fromkeys(_STREAM_TIMING_FIELDS, "")
+    try:
+        if getattr(response, "_czjllm_stream_timing_source", None) != _STREAM_TIMING_SOURCE:
+            return empty
+        chunks = getattr(response, "_czjllm_stream_chunks", None)
+        if type(chunks) is not int or not 1 <= chunks <= 65536:
+            return empty
+        timings = [getattr(response, key, None) for key in (
+            "_czjllm_ttft_seconds", "_czjllm_first_thinking_seconds",
+            "_czjllm_first_content_seconds")]
+        for value in timings:
+            if value is not None and (type(value) not in (int, float)
+                    or not 0 <= value <= 1e9 or not math.isfinite(value)):
+                return empty
+        first, thinking, content = timings
+        observed = [v for v in (thinking, content) if v is not None]
+        if first != (min(observed) if observed else None):
+            return empty
+        return dict(zip(_STREAM_TIMING_FIELDS, [
+            _STREAM_TIMING_SOURCE,
+            *("" if value is None else f"{value:.6f}" for value in timings),
+            chunks,
+        ]))
+    except Exception:
+        # Diagnostic extensions must not break the existing audit/writeback path.
+        return empty
 
 
 def normalized_finish_reason(response: Any) -> str:
@@ -375,6 +413,7 @@ def log_llm_call(
         "split_family_id": split_family_id,
         "queue_claim_event_id": queue_claim_event_id,
         "finish_reason": normalized_finish_reason(response),
+        **_stream_timing_fields(response),
     }
     path = Path(audit_path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -389,9 +428,11 @@ def log_llm_call(
         if not header_line.endswith("\n"):
             raise ValueError("invalid existing LLM audit CSV header")
         header = next(csv.reader([header_line]), [])
-        # Current schema plus five complete predecessor header generations.
-        if not any(header == _FIELDS[:len(_FIELDS) - delta]
-                   for delta in range(7)):
+        # The new suffix is atomic: accept the full new schema or any
+        # previously supported complete historical header, never partial suffixes.
+        if header != _FIELDS and not any(
+                header == _PRE_STREAM_FIELDS[:len(_PRE_STREAM_FIELDS) - delta]
+                for delta in range(7)):
             raise ValueError("incompatible existing LLM audit CSV header")
         with path.open("a", newline="", encoding="utf-8") as fp:
             writer = csv.DictWriter(fp, fieldnames=header, extrasaction="ignore")
