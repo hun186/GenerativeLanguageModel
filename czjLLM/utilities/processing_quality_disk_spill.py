@@ -175,6 +175,7 @@ class DiskBackedQualityAccumulator(QualityAccumulator):
             "slice_initial_invalid_pct": round(100 * self._json_invalid / validations, 2) if validations else None,
             "repair_attempts": repairs,
             "repair_succeeded": self._repair_success,
+            "repair_success_methods": dict(self._repair_method_counts),
             "consumer_orchestration_failure_events": self._consumer_failures,
             "row_merger_retryable_failure_events": self._row_merger_retryable_failures,
             "producer_operational_failure_events": self._producer_operational_failures,

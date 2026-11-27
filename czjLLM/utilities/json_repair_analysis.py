@@ -104,7 +104,10 @@ def validate_repair_detail(detail: object) -> bool:
         not isinstance(detail["repair_class"], str) or detail["repair_class"] not in _KINDS
     ):
         return False
-    if "repair_method" in detail and detail["repair_method"] != "RULE_BASED":
+    if "repair_method" in detail and (
+        type(detail["repair_method"]) is not str
+        or detail["repair_method"] not in {"RULE_BASED", "LLM_BASED"}
+    ):
         return False
     for key in _METRIC_KEYS:
         value = detail.get(key)

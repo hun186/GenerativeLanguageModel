@@ -211,6 +211,7 @@ class QualityAccumulator:
         self._repair_success = 0
         self._repair_failure = 0
         self._repair_analysis_counts = Counter()
+        self._repair_method_counts = Counter()
         # GUI displays the same bounded recent-50 metadata window as its
         # separately stored, session-only raw repair memory ring.
         self._repair_analysis_recent = deque(maxlen=50)
@@ -311,6 +312,9 @@ class QualityAccumulator:
         elif event == "slice_json_repair":
             if code == "JSON_REPAIR_SUCCEEDED":
                 self._repair_success += 1
+                # Older or detail-less success events cannot be attributed.
+                method = record.get("detail", {}).get("repair_method", "UNMARKED")
+                self._repair_method_counts[method] += 1
                 # Optional evidence on the existing success event: no extra
                 # event identity/memory-budget pressure on 35k+ slice runs.
                 if "detail" in record:
@@ -411,6 +415,7 @@ class QualityAccumulator:
             "slice_initial_invalid_pct": round(100 * self._json_invalid / validations, 2) if validations else None,
             "repair_attempts": repairs,
             "repair_succeeded": self._repair_success,
+            "repair_success_methods": dict(self._repair_method_counts),
             "consumer_orchestration_failure_events": self._consumer_failures,
             "row_merger_retryable_failure_events": self._row_merger_retryable_failures,
             "producer_operational_failure_events": self._producer_operational_failures,

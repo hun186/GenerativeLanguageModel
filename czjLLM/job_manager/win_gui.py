@@ -658,20 +658,30 @@ _REPAIR_ERROR_LABELS = {
 }
 
 
+_REPAIR_METHOD_LABELS = {"RULE_BASED": "規則式", "LLM_BASED": "LLM", "UNMARKED": "未標記"}
+
+
 def format_json_repair_analysis_summary(stats: dict) -> str:
     """Real repair comparisons only; historical runs cannot be backfilled."""
     status = stats.get("quality_stream_status")
     if status in {"unverified", "capacity_exceeded"}:
         return "JSON 修復差異：品質紀錄不可驗證（未提供分類）"
     count = int(stats.get("repair_analysis_count", 0) or 0)
+    methods = stats.get("repair_success_methods")
+    method_summary = ""
+    if isinstance(methods, dict) and methods:
+        method_summary = "\n修復成功方式：" + "｜".join(
+            f"{label} {int(methods.get(code, 0) or 0)}"
+            for code, label in _REPAIR_METHOD_LABELS.items()
+        ) + "（成功事件數，非各方法成功率）"
     if count == 0:
-        return "JSON 修復差異：尚無可比較紀錄（舊版修復不回補）"
+        return "JSON 修復差異：尚無可比較紀錄（舊版修復不回補）" + method_summary
     category = stats.get("repair_analysis_categories") or {}
     counts = "｜".join(
         f"{name} {int(category.get(code, 0) or 0)}"
         for code, name in _REPAIR_ANALYSIS_LABELS.items()
     )
-    return f"JSON 修復前後（已觀察 {count} 次）：{counts}"
+    return f"JSON 修復前後（已觀察 {count} 次）：{counts}" + method_summary
 
 
 def format_json_repair_analysis_case(case: dict) -> tuple[str, ...]:
@@ -707,6 +717,7 @@ def format_json_repair_analysis_case_detail(case: dict) -> str:
         "搬移工作項目或重建同名內容後不能當作永久來源 UUID；"
     )
     return (
+        f"修復方式：{_REPAIR_METHOD_LABELS.get(detail.get('repair_method'), '未標記')}；"
         f"原始解析錯誤：{err}（約 {detail.get('error_pos_pct', 0)}% 位置）；"
         f"共同前綴 {prefix:,} 字／共同後綴 {suffix:,} 字。"
         + lineage +

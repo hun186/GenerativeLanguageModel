@@ -543,3 +543,44 @@ def test_windows_nested_json_viewers_stay_above_both_owners():
         assert_above(review, root)
     finally:
         root.destroy()
+
+
+def test_explicit_success_methods_keep_unmarked_history_distinct(tmp_path):
+    from czjLLM.utilities.processing_quality_disk_spill import DiskBackedQualityAccumulator
+    audit = tmp_path / "llm_call_audit_methods.csv"
+    code, detail = _analyze('{"a":1,}', '{"a":1}')
+    for method in ("RULE_BASED", "LLM_BASED", None):
+        fields = dict(detail, repair_class=code)
+        if method is not None:
+            fields["repair_method"] = method
+        emit_quality_event(str(audit), run_id="method-test", event="slice_json_repair",
+                           code="JSON_REPAIR_SUCCEEDED", scope="slice", outcome="recovered",
+                           detail=fields)
+    emit_quality_event(str(audit), run_id="method-test", event="slice_json_repair",
+                       code="JSON_REPAIR_SUCCEEDED", scope="slice", outcome="recovered")
+    emit_quality_event(str(audit), run_id="method-test", event="slice_json_repair",
+                       code="JSON_REPAIR_FAILED", scope="slice", outcome="not_recovered")
+    records = [json.loads(line) for line in quality_event_path(str(audit)).read_text(encoding="utf-8").splitlines()]
+    expected = {"RULE_BASED": 1, "LLM_BASED": 1, "UNMARKED": 2}
+    acc = QualityAccumulator()
+    with DiskBackedQualityAccumulator() as disk:
+        for record in records + records:
+            acc.add(record)
+            disk.add(record)
+        assert acc.snapshot() == disk.snapshot()
+    snapshot = acc.snapshot()
+    assert snapshot["repair_success_methods"] == expected
+    assert sum(expected.values()) == snapshot["repair_succeeded"] == 4
+    assert snapshot["repair_attempts"] == 5
+    assert snapshot["repair_analysis_count"] == 3
+    summary = format_json_repair_analysis_summary(snapshot)
+    assert "規則式 1｜LLM 1｜未標記 2" in summary
+    assert "非各方法成功率" in summary
+    cases = {case["detail"].get("repair_method"): case for case in snapshot["repair_analysis_recent"]}
+    assert "修復方式：規則式" in format_json_repair_analysis_case_detail(cases["RULE_BASED"])
+    assert "修復方式：LLM" in format_json_repair_analysis_case_detail(cases["LLM_BASED"])
+    assert "修復方式：未標記" in format_json_repair_analysis_case_detail(cases[None])
+    assert "規則式 1" not in format_json_repair_analysis_summary(dict(snapshot, quality_stream_status="unverified"))
+    assert validate_repair_detail(dict(detail, repair_class=code, repair_method="LLM_BASED"))
+    for invalid in ("LLM", "UNMARKED", [], True, "raw secret"):
+        assert not validate_repair_detail(dict(detail, repair_class=code, repair_method=invalid))
