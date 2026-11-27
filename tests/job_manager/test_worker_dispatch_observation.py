@@ -322,3 +322,46 @@ def test_worker_stream_observer_updates_existing_sidecar_before_return(tmp_path,
     assert not worker.is_alive() and out and out[0]["ok"]
     label = document_progress.read_document_progress(meter, audit_path=str(audit))["shown"][0]["model_endpoint"]
     assert "已回傳" in label and "串流收到資料" not in label
+
+
+def test_selected_activity_clock_ticks_without_new_events_and_stops_on_terminal():
+    observe = {"status": "calling", "observed_ns": 100_000_000_000,
+               "stream_activity": _activity_event()}
+    clock = document_progress.capture_activity_clock(
+        observe, wall_ns=103_000_000_000, monotonic_s=50.0)
+    label = document_progress.format_activity_clock(clock, monotonic_s=50.0)
+    assert "串流開始後約 25s" in label and "距最後資料約 5s" in label
+    label = document_progress.format_activity_clock(clock, monotonic_s=65.0)
+    assert "串流開始後約 40s" in label and "距最後觀測 18s" in label
+    assert "距最後資料約 20s" in label and "GPU 狀態未知" in label
+    for phase in ("assembled", "failed"):
+        assert document_progress.capture_activity_clock(
+            dict(observe, stream_activity=_activity_event(event=phase)),
+            wall_ns=103_000_000_000, monotonic_s=50.0) is None
+    for status in ("returned", "failed", "assigned"):
+        assert document_progress.capture_activity_clock(
+            dict(observe, status=status), wall_ns=103_000_000_000,
+            monotonic_s=50.0) is None
+    assert document_progress.capture_activity_clock(
+        observe, wall_ns=99_000_000_000, monotonic_s=50.0) is None
+    assert "暫無法核對" in document_progress.format_activity_clock(clock, monotonic_s=49.0)
+
+
+def test_visible_activity_clock_distinguishes_nonstream_and_first_chunk(tmp_path):
+    item, prompt, audit, meter = _setup(tmp_path)
+    call_id = uuid4().hex
+    _emit(item, prompt, audit, call_id, "calling")
+    row = document_progress.read_document_progress(meter, audit_path=str(audit))["shown"][0]
+    clock = row["activity_clock"]
+    label = document_progress.format_activity_clock(clock, monotonic_s=clock["anchor_s"] + 10)
+    assert "距呼叫狀態最後觀測" in label and "GPU 狀態未知" in label
+    _emit(item, prompt, audit, call_id, "calling", stream_activity=_activity_event(
+        event="started", elapsed_s=0, last_chunk_elapsed_s=None, chunks=0,
+        thinking_seen=False))
+    row = document_progress.read_document_progress(meter, audit_path=str(audit))["shown"][0]
+    clock = row["activity_clock"]
+    assert "首段資料尚未觀測" in document_progress.format_activity_clock(
+        clock, monotonic_s=clock["anchor_s"] + 20)
+    _emit(item, prompt, audit, call_id, "returned")
+    row = document_progress.read_document_progress(meter, audit_path=str(audit))["shown"][0]
+    assert "activity_clock" not in row

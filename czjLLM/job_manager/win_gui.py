@@ -1748,6 +1748,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
     _document_snapshot = {}
     _document_page = 0
     _document_snapshot_args = None
+    _document_display_args = None
     _document_results = pyqueue.Queue(maxsize=1)
     _document_filter = tk.StringVar(value="目前處理")
     _document_query = tk.StringVar(value="")
@@ -1868,6 +1869,27 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
         document_frame, maximum=100, value=0,
     )
     document_selected_bar.pack(fill="x", pady=(0, 3))
+    document_activity_label = ttk.Label(document_frame, foreground="#555", wraplength=720,
+                                        text="點選一列查看呼叫等待時間（本機估計）")
+    document_activity_label.pack(fill="x", pady=(0, 3))
+
+    def _document_activity_tick():
+        from czjLLM.job_manager.document_progress import format_activity_clock
+        current_args = (_recovery_meter_path, _document_filter.get(),
+                        _document_query.get().strip()[:100], _document_page, _audit_path)
+        label = "點選一列查看呼叫等待時間（本機估計）"
+        sel = document_grid.selection()
+        if sel and _document_display_args == current_args:
+            try:
+                row = _document_snapshot["shown"][int(sel[0])]
+            except (ValueError, TypeError, KeyError, IndexError):
+                pass
+            else:
+                label = format_activity_clock(row.get("activity_clock"), monotonic_s=time.monotonic())
+        elif sel:
+            label = "呼叫觀測待重新核對"
+        if document_activity_label.cget("text") != label:
+            document_activity_label.configure(text=label)
 
     def _document_selected(_event=None):
         sel = document_grid.selection()
@@ -1943,7 +1965,7 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
         ).start()
 
     def _document_results_poll():
-        nonlocal _document_busy, _document_snapshot, _document_page
+        nonlocal _document_busy, _document_snapshot, _document_page, _document_display_args
         if not root.winfo_exists():
             return
         try:
@@ -1952,22 +1974,26 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
             pass
         else:
             _document_busy = False
-            if ok:
-                _document_snapshot = result
-                _document_page = result["page"]
+            current_args = (_recovery_meter_path, _document_filter.get(),
+                            _document_query.get().strip()[:100], _document_page, _audit_path)
+            if not _document_expanded or _document_snapshot_args != current_args:
+                # Never pair an unrendered result with the old grid selection.
+                _document_display_args = None
+            elif ok:
                 if _document_expanded:
                     previous_selection = document_grid.selection()
-                    old_key = ""
-                    if previous_selection:
-                        vals = document_grid.item(previous_selection[0], "values")
-                        if vals:
-                            old_key = str(vals[0])
+                    old_key = None
+                    if previous_selection and _document_display_args == current_args:
+                        try:
+                            old_key = _document_snapshot["shown"][int(previous_selection[0])]["key"]
+                        except (ValueError, TypeError, KeyError, IndexError):
+                            pass
                     children = document_grid.get_children()
                     if children:
                         document_grid.delete(*children)
                     restored_iid = None
                     for idx, item in enumerate(result["shown"]):
-                        if item["label"] == old_key:
+                        if item["key"] == old_key:
                             restored_iid = str(idx)
                         tag = ("error",) if item["error"] else (
                             ("running",) if (item["running"] or 0) else ()
@@ -1981,6 +2007,10 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
                                 item["updated_text"],
                             ),
                         )
+                    # Commit the snapshot and scope only after rendering the grid.
+                    _document_snapshot = result
+                    _document_page = result["page"]
+                    _document_display_args = (*current_args[:3], result["page"], current_args[4])
                     if restored_iid is not None:
                         document_grid.selection_set(restored_iid)
                     _document_selected()
@@ -1997,21 +2027,25 @@ def _gui_proc_main(q: "mp.Queue", cancel_event, total: int, title: str,
                     document_detail.configure(
                         text=(result.get("notice") or "")
                         + f"；顯示 {len(result['shown'])}/{result['matching']} 筆。"
-                        + "切片100%≠寫回完成；模型／IP 僅顯示已記錄的 LLM Audit，"
-                        + "並非未完成呼叫的即時端點；merged 非獨立 sink readback。"
+                        + "切片100%≠寫回完成；模型／IP 為 Audit 或 Worker 最後觀測，"
+                        + "計時為本機估計，不代表 GPU 活動；merged 非獨立 sink readback。"
                     )
                 _document_header()
             else:
+                _document_display_args = None
                 document_detail.configure(
                     text=f"列進度暫無法讀取（{result}）。原始任務不受影響。"
                 )
         if _document_expanded:
+            _document_activity_tick()
             _request_document_snapshot()
         root.after(250, _document_results_poll)
 
     def _toggle_document():
-        nonlocal _document_expanded, _document_last_refresh
+        nonlocal _document_expanded, _document_last_refresh, _document_display_args
         _document_expanded = not _document_expanded
+        _document_display_args = None
+        document_activity_label.configure(text="呼叫觀測待重新核對")
         if _document_expanded:
             document_frame.pack(fill="x")
             # Reclaim log request-height rather than creating two overflowing
