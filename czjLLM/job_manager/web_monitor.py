@@ -1,6 +1,6 @@
 """Opt-in, loopback-only read-only HTTP monitor for one GLM run.
 
-Separate spawned process; no model calls, file reads, raw log or cancellation
+Separate spawned process; no model calls, arbitrary file reads, raw log or cancellation
 authority. Local operators may use SSH forwarding. Remote bind/auth is not
 implemented in this initial slice.
 """
@@ -8,10 +8,12 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import multiprocessing as mp
 import os
+import threading
 from queue import Empty, Full
 import warnings
 
 from czjLLM.job_manager.monitoring_core import MonitorEvents, MonitorProjection, MAX_COUNT
+from czjLLM.job_manager.web_document_monitor import DocumentMonitor
 
 _MAX_EVENTS = 256
 _HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
@@ -23,8 +25,35 @@ _HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <dt>完成事件累計（非獨立寫回驗證）</dt><dd id="completed">—</dd>
 <dt>監控耗時（秒）</dt><dd id="elapsed_s">—</dd></dl>
 <p>僅本次 Run；不代表 GPU 使用率或 SQL/ES 獨立驗證。</p>
+<h2>目前處理文件（匿名識別碼）</h2><p id="doc-status">等待 Run Meter</p>
+<table><thead><tr><th>文件</th><th>階段</th><th>切片</th><th>等待</th><th>執行</th></tr></thead>
+<tbody id="doc-rows"></tbody></table>
+<p>僅第一頁，切片完成不等於寫回完成。</p>
 <script src="/app.js" defer></script></body></html>""".encode("utf-8")
 _JS = """'use strict';
+function showDocuments(doc) {
+  const tbody = document.getElementById('doc-rows');
+  tbody.replaceChildren();
+  const status = document.getElementById('doc-status');
+  if (doc.status !== 'observed') {
+    const labels = {waiting_for_meter:'等待 Run Meter', unavailable:'文件快照暫不可讀',
+      stale:'文件快照逾時', delivery_incomplete:'監控交接不完整'};
+    status.textContent = labels[doc.status] || '文件觀測不可用';
+    return;
+  }
+  status.textContent = '目前處理 ' + doc.matching + ' 列；顯示 ' + doc.rows.length +
+    ' 列；未顯示 ' + doc.omitted + ' 列；異常 ' + doc.errors + ' 列';
+  for (const row of doc.rows) {
+    const tr = document.createElement('tr');
+    for (const value of [row.alias, row.stage,
+      (row.done ?? '—') + '/' + (row.total ?? '—'), row.pending, row.running]) {
+      const td = document.createElement('td');
+      td.textContent = value ?? '—';
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+}
 async function refresh() {
   const health = document.getElementById('health');
   try {
@@ -33,6 +62,7 @@ async function refresh() {
     const data = await response.json();
     health.textContent = data.delivery_incomplete || data.rejected_events ?
       '監控事件不完整；計數不可當作完整結果' : '已取得監控快照';
+    showDocuments(data.documents);
     for (const key of ['total','scheduled','completed','elapsed_s']) {
       const value = data[key];
       document.getElementById(key).textContent =
@@ -40,6 +70,7 @@ async function refresh() {
     }
   } catch (_) {
     health.textContent = '監控連線中斷；以下資料非即時';
+    showDocuments({status:'unavailable', rows:[]});
   } finally { setTimeout(refresh, 2000); }
 }
 refresh();""".encode("utf-8")
@@ -89,6 +120,8 @@ class _Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/v1/status":
             snapshot = self.server.projection.snapshot()
             snapshot["delivery_incomplete"] = self.server.dropped.is_set()
+            snapshot["documents"] = ({"status": "delivery_incomplete", "rows": []}
+                if snapshot["delivery_incomplete"] else self.server.documents.snapshot())
             self._send(200, "application/json",
                        json.dumps(snapshot, allow_nan=False).encode("utf-8"))
         else:
@@ -108,6 +141,10 @@ def _serve(port, total, events, dropped, stop, ready):
     try:
         server.projection = MonitorProjection(total)
         server.dropped = dropped
+        server.documents = DocumentMonitor()
+        reader = threading.Thread(target=server.documents.run, args=(stop,),
+                                  daemon=True, name='web-meter-reader')
+        reader.start()
         ready.send(server.server_port)
     finally:
         ready.close()
@@ -118,14 +155,17 @@ def _serve(port, total, events, dropped, stop, ready):
                     kind, payload = events.get_nowait()
                 except Empty:
                     break
-                server.projection.apply(kind, payload)
+                if kind == MonitorEvents.RECOVERY_METER:
+                    server.documents.set_path(payload)
+                else:
+                    server.projection.apply(kind, payload)
             server.handle_request()
     finally:
         server.server_close()
 
 
 class WebMonitorClient:
-    """Parent-side nonblocking numeric-event adapter; no private payload IPC."""
+    """Bounded event adapter; meter locator travels only in trusted internal IPC."""
 
     def __init__(self, process, events, dropped, stop, port):
         self._process, self._events = process, events
@@ -147,11 +187,20 @@ class WebMonitorClient:
     def inc_sched(self, n=1): self._emit(MonitorEvents.INC_SCHED, n)
     def inc_done(self, n=1): self._emit(MonitorEvents.INC_DONE, n)
     def set_total(self, total): self._emit(MonitorEvents.SET_TOTAL, total)
-    # Interface-compatible private/unsupported events: never send them.
+    # Private diagnostic payloads remain excluded; only the meter locator is accepted.
     def log(self, text): pass
     def set_audit_path(self, path): pass
     def set_quality_event_path(self, path): pass
-    def set_recovery_meter_path(self, path): pass
+    def set_recovery_meter_path(self, path):
+        if self._closed:
+            return
+        try:
+            path = str(path or "")
+            if len(path) > 4096 or "\x00" in path:
+                raise ValueError("invalid meter path")
+            self._events.put_nowait((MonitorEvents.RECOVERY_METER, path))
+        except (Full, OSError, ValueError):
+            self._dropped.set()
     def update_recheck_stats(self, stats): pass
     def update_reduction_stats(self, stats, final=False): pass
     def cancellation_requested(self): return False

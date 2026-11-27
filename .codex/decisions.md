@@ -123,3 +123,4 @@ receipt、失聯結果或 Meter 失敗 fail closed，保留 RUNNING/Success 證�
 
 ## 2026-11-17 — prefer per-checkout secure transient capture over normal logs
 - **Superseded by 2026-11-18 owner direction:** raw repair evidence is qualitative sample only, not a 72h history. Windows GUI owns an exact Run/event bounded 50-pair RAM ring accessed through a private bounded IPC queue; Linux/headless keeps only scalar metadata. Plaintext file captures require CZJLLM_JSON_REPAIR_CAPTURE=1 (no default disk writes); preserve original 72h/ACL/quota guards for optional storage, and never block LLM/Queue/ES on sampling failure.
+- WEB-04A: reuse strict desktop Meter projection; publish anonymous first-page observations from a single background reader, fail closed on stale/dropped events, not a new queue/sink authority.
