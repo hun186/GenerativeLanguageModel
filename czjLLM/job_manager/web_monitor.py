@@ -43,6 +43,11 @@ _HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <table><thead><tr><th>指標</th><th>樣本數</th><th>P50</th><th>P95</th><th>Max</th></tr></thead>
 <tbody id="stream-rows"></tbody></table>
 <p>TTFT 是首段非空思考或回答文字，不等於 Prefill；原生 Prefill／Decode 未知。</p>
+<h3>模型／Context／端點比較（匿名）</h3>
+<p id="comparison-coverage"></p>
+<table><thead><tr><th>Model</th><th>Endpoint</th><th>Context / source</th><th>Calls</th><th>Failure %</th><th>TTFT P50/P95 (n)</th><th>Slice P50/P95 (n)</th><th>Total tok/s P50 (n)</th><th>Cache % (reported/eligible)</th></tr></thead>
+<tbody id="comparison-rows"></tbody></table>
+<p>依原始 Audit 的模型、端點、Context 上限及來源分組。未識別與超額組別另計；不代表 GPU 利用率或已設定的 num_ctx。</p>
 <script src="/app.js" defer></script></body></html>""".encode("utf-8")
 _JS = """'use strict';
 function showDocuments(doc) {
@@ -109,6 +114,10 @@ function showAudit(audit) {
   const streamBody = document.getElementById('stream-rows');
   coverage.textContent = '';
   streamBody.replaceChildren();
+  const compBody = document.getElementById('comparison-rows');
+  const compCoverage = document.getElementById('comparison-coverage');
+  compBody.replaceChildren();
+  compCoverage.textContent = '';
   if (audit?.status !== 'observed') {
     status.textContent = audit?.status === 'catching_up' ?
       'Audit 增量讀取中：' + audit.scanned_bytes + '/' + audit.total_bytes + ' bytes；尚非完整統計' :
@@ -153,6 +162,27 @@ function showAudit(audit) {
       tr.appendChild(td);
     }
     streamBody.appendChild(tr);
+  }
+  const comp = audit.comparison;
+  if (!comp) return;
+  compCoverage.textContent = '已分組 ' + comp.grouped_rows + '/' + comp.total_rows +
+    '；未識別 ' + comp.unidentified_rows + '；超額省略 ' + comp.omitted_rows +
+    '；最多 ' + comp.group_limit + ' 組。';
+  const fmt = v => v === null ? '未知' : Number(v.toFixed(2)).toLocaleString();
+  const pair = v => fmt(v.p50) + '/' + fmt(v.p95) + ' (' + v.count + ')';
+  for (const g of comp.groups) {
+    const tr = document.createElement('tr');
+    const c = g.provider_cache;
+    for (const value of ['M-' + g.model_alias, 'E-' + g.endpoint_alias,
+      (g.context_limit_tokens === null ? '未知' : g.context_limit_tokens) + ' / ' + g.context_limit_source,
+      g.calls, fmt(g.failure_pct), pair(g.ttft), pair(g.slice_time),
+      fmt(g.total_tok_per_s.p50) + ' (' + g.total_tok_per_s.count + ')',
+      fmt(c.hit_pct) + ' (' + c.observed_rows + '/' + c.eligible_rows + ')']) {
+      const td = document.createElement('td');
+      td.textContent = value;
+      tr.appendChild(td);
+    }
+    compBody.appendChild(tr);
   }
 }
 async function refresh() {
