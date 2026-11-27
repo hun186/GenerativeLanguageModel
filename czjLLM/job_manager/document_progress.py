@@ -6,6 +6,7 @@ The GUI receives this snapshot via a background thread only when expanded.
 from __future__ import annotations
 
 import time
+import math
 import os
 import json
 from pathlib import Path
@@ -240,6 +241,72 @@ def read_meter_strict(meter_path):
     return data
 
 
+def capture_activity_clock(observation, *, wall_ns, monotonic_s):
+    """Anchor validated, same-host last-observed evidence to GUI monotonic time."""
+    if observation.get("status") != "calling":
+        return None
+    observed_ns = observation.get("observed_ns")
+    if type(observed_ns) is not int or not 0 < observed_ns <= wall_ns:
+        return None
+    age = (wall_ns - observed_ns) / 1e9
+    if age > 1e9 or not math.isfinite(monotonic_s):
+        return None
+    activity = observation.get("stream_activity")
+    if activity is not None and activity["event"] not in ("started", "received"):
+        return None  # stream terminal: do not extrapolate
+    return {"age_s": age, "anchor_s": monotonic_s, "stream_activity": activity}
+
+
+def format_activity_clock(clock, *, monotonic_s):
+    """Local elapsed estimates only; never infer a provider or GPU phase."""
+    if clock is None:
+        return "目前沒有可計時的呼叫觀測"
+    delta = monotonic_s - clock["anchor_s"]
+    if not math.isfinite(delta) or not 0 <= delta <= 1e9:
+        return "本機計時暫無法核對"
+    age = clock["age_s"] + delta
+    detail = clock["stream_activity"]
+    if detail is None:
+        return f"距呼叫狀態最後觀測 {int(age)}s｜GPU 狀態未知"
+    elapsed = detail["elapsed_s"] + age
+    last = detail["last_chunk_elapsed_s"]
+    gap = "首段資料尚未觀測" if last is None else (
+        f"距最後資料約 {int(elapsed - last)}s"
+    )
+    return (f"串流開始後約 {int(elapsed)}s｜距最後觀測 {int(age)}s｜"
+            f"{gap}｜GPU 狀態未知")
+
+
+MAX_PAGE_ACTIVITY_CALLS = 24
+
+
+def format_page_activity(snapshot, *, monotonic_s):
+    """Format the bounded rendered-page projection without I/O."""
+    if snapshot is None:
+        return "目前頁呼叫觀測待重新核對"
+    calls = snapshot.get("activity_calls", [])
+    count = snapshot.get("activity_call_count", 0)
+    if not calls:
+        return "目前頁無可顯示的分派／呼叫觀測（不代表 GPU 閒置）"
+    lines = [f"目前頁最後觀測 {count} 個呼叫｜顯示 {len(calls)} 個；非全 Run 或 GPU 使用率"]
+    for call in calls:
+        status = "已分派" if call["status"] == "assigned" else "呼叫中"
+        detail = call.get("stream_activity")
+        if detail is not None:
+            status += (f"｜{detail['chunks']} chunks｜思考"
+                       f"{'有' if detail['thinking_seen'] else '未觀測'}／回答"
+                       f"{'有' if detail['content_seen'] else '未觀測'}")
+            if detail["event"] in ("assembled", "failed"):
+                status += "｜串流已組裝" if detail["event"] == "assembled" else "｜串流失敗"
+        lines.append(f"{call['row_label']}｜{call['model']} · "
+                     f"{call['endpoint_ip'] or 'IP 未記錄'}｜{status}（最後觀測）")
+        if call.get("clock") is not None:
+            lines.append("    " + format_activity_clock(call["clock"], monotonic_s=monotonic_s))
+    if count > len(calls):
+        lines.append(f"另有 {count-len(calls)} 個呼叫未顯示（頁面顯示上限）")
+    return "\n".join(lines)
+
+
 def read_document_progress(meter_path, *, mode="目前處理", search="",
                            page=0, page_size=PAGE_SIZE, audit_path=""):
     """Bounded read: no queue directory scan, no prompt content inspection."""
@@ -306,8 +373,24 @@ def read_document_progress(meter_path, *, mode="目前處理", search="",
         except (OSError, ValueError, UnicodeError):
             result["notice"] += "；Worker 分派狀態暫無法核對"
         else:
+            result["activity_calls"] = []
+            result["activity_call_count"] = 0
+            wall_ns, monotonic_s = time.time_ns(), time.monotonic()
             for item in result["shown"]:
                 latest = dispatched.get(item["key"], {})
                 if latest.get("text"):
                     item["model_endpoint"] = latest["text"]
+                    if item["state"] == "in_progress" and (item["running"] or 0) > 0:
+                        clock = capture_activity_clock(latest, wall_ns=time.time_ns(),
+                                                       monotonic_s=time.monotonic())
+                        if clock is not None:
+                            item["activity_clock"] = clock
+                if item["state"] == "in_progress" and (item["running"] or 0) > 0:
+                    result["activity_call_count"] += latest.get("active_count", 0)
+                    for call in latest.get("active_calls", []):
+                        if len(result["activity_calls"]) >= MAX_PAGE_ACTIVITY_CALLS:
+                            break
+                        result["activity_calls"].append({**call, "row_label": item["label"],
+                            "clock": capture_activity_clock(call, wall_ns=wall_ns,
+                                                            monotonic_s=monotonic_s)})
     return result
