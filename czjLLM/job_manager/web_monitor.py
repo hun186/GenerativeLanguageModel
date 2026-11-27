@@ -34,6 +34,11 @@ _HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <table><thead><tr><th>文件</th><th>端點</th><th>最後狀態</th><th>計時</th><th>資料觀測</th></tr></thead>
 <tbody id="worker-rows"></tbody></table>
 <p>非全 Run 統計；GPU 使用率未知。</p>
+<h2>Audit 效能統計（目前 Run）</h2><p id="audit-status">等待 Audit</p>
+<p id="audit-cache"></p>
+<table><thead><tr><th>指標</th><th>樣本數</th><th>P50</th><th>P95</th><th>Max</th></tr></thead>
+<tbody id="audit-rows"></tbody></table>
+<p>TTFT／Prefill／Decode 尚無正式 Audit 欄位；不以總耗時推估。</p>
 <script src="/app.js" defer></script></body></html>""".encode("utf-8")
 _JS = """'use strict';
 function showDocuments(doc) {
@@ -90,6 +95,37 @@ function showWorkers(doc) {
     tbody.appendChild(tr);
   }
 }
+function showAudit(audit) {
+  const tbody = document.getElementById('audit-rows');
+  tbody.replaceChildren();
+  const status = document.getElementById('audit-status');
+  const cache = document.getElementById('audit-cache');
+  cache.textContent = '';
+  if (audit?.status !== 'observed') {
+    status.textContent = 'Audit 尚未取得、逾時、交接不完整或超過讀取預算';
+    return;
+  }
+  status.textContent = '呼叫 ' + audit.calls + ' 次；失敗 ' + audit.failures +
+    ' 次；分布不是時間序列';
+  const c = audit.provider_cache;
+  cache.textContent = 'Provider cache ' + (c.hit_pct === null ? '未知' : c.hit_pct.toFixed(1) + '%') +
+    '；回報覆蓋 ' + c.observed_rows + '/' + c.eligible_rows;
+  const labels = {input_tokens:'Input tokens',output_tokens:'Output tokens',
+    template_tokens:'Template tokens',task_text_tokens:'Task text tokens',
+    context_usage_ratio:'Context %',elapsed_seconds:'Slice time (s)',
+    total_tok_per_s:'Total tok/s',effective_tok_per_s_est:'Effective tok/s (est.)'};
+  for (const [key,label] of Object.entries(labels)) {
+    const v = audit.metrics[key];
+    const tr = document.createElement('tr');
+    for (const value of [label, v.count, v.p50, v.p95, v.max]) {
+      const td = document.createElement('td');
+      td.textContent = value === null ? '未知' :
+        typeof value === 'number' ? Number(value.toFixed(2)).toLocaleString() : value;
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+}
 async function refresh() {
   const health = document.getElementById('health');
   try {
@@ -100,6 +136,7 @@ async function refresh() {
       '監控事件不完整；計數不可當作完整結果' : '已取得監控快照';
     showDocuments(data.documents);
     showWorkers(data.documents);
+    showAudit(data.audit);
     for (const key of ['total','scheduled','completed','elapsed_s']) {
       const value = data[key];
       document.getElementById(key).textContent =
@@ -109,6 +146,7 @@ async function refresh() {
     health.textContent = '監控連線中斷；以下資料非即時';
     showDocuments({status:'unavailable', rows:[]});
     showWorkers({status:'unavailable'});
+    showAudit({status:'unavailable'});
   } finally { setTimeout(refresh, 2000); }
 }
 refresh();""".encode("utf-8")
@@ -160,6 +198,8 @@ class _Handler(BaseHTTPRequestHandler):
             snapshot["delivery_incomplete"] = self.server.dropped.is_set()
             snapshot["documents"] = ({"status": "delivery_incomplete", "rows": []}
                 if snapshot["delivery_incomplete"] else self.server.documents.snapshot())
+            snapshot["audit"] = ({"status": "delivery_incomplete"} if snapshot["delivery_incomplete"]
+                                 else self.server.documents.audit_snapshot())
             self._send(200, "application/json",
                        json.dumps(snapshot, allow_nan=False).encode("utf-8"))
         else:
