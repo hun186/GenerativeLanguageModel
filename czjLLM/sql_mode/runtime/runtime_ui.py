@@ -1,4 +1,4 @@
-import threading, time
+import threading, time, os, warnings
 from czjLLM.job_manager.win_gui import try_start_gui, make_gui_sink
 from czjLLM.utilities.processing_quality import quality_event_path
 from czjLLM.job_manager.console_ui import setup_console_ui, add_log_sink
@@ -6,7 +6,17 @@ from ..utils.term_lock import TQDM_LOCK
 
 def prepare_ui(ctx, total_rows: int):
     """建立 Win GUI（如可）+ Console 進度條，並回傳 GUI 句柄與還原函式。"""
-    gui = try_start_gui(total=total_rows, title="LLM 分析進度（Windows GUI）")
+    mode = os.environ.get("GLM_UI_MODE", "auto").strip().lower()
+    if mode == "web":
+        from czjLLM.job_manager.web_monitor import try_start_web_monitor
+        gui = try_start_web_monitor(total_rows)
+    elif mode in ("auto", "desktop"):
+        gui = try_start_gui(total=total_rows, title="LLM 分析進度（Windows GUI）")
+    else:
+        gui = None
+        if mode != "off":
+            warnings.warn("Unsupported GLM_UI_MODE; processing continues without GUI",
+                          RuntimeWarning)
     gui_sink = None
     if gui:
         gui_sink = make_gui_sink(gui)
