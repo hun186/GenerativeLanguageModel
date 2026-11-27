@@ -220,3 +220,69 @@ def test_gui_does_not_wipe_previous_valid_rows_on_read_error():
     error_branch = fn.split("            else:", 1)[-1]
     assert "列進度暫無法讀取" in fn
     assert "document_grid.delete(*children)" in fn
+
+
+def test_hidden_refresh_does_not_bind_reordered_snapshot_to_old_grid():
+    """Run the actual poll/toggle/tick callbacks without a Tk display."""
+    import ast
+    import queue
+    import textwrap
+    from unittest.mock import MagicMock
+
+    source = ast.parse(textwrap.dedent(inspect.getsource(win_gui._gui_proc_main)))
+    wanted = {"_document_results_poll", "_toggle_document", "_document_activity_tick"}
+    funcs = [node for node in ast.walk(source)
+             if isinstance(node, ast.FunctionDef) and node.name in wanted]
+    assert len(funcs) == len(wanted)
+    # Execute the same callback bodies with their enclosing mutable state
+    # represented by a test namespace rather than a running Tk mainloop.
+    for fn in funcs:
+        fn.body = [ast.copy_location(ast.Global(names=node.names), node)
+                   if isinstance(node, ast.Nonlocal) else node for node in fn.body]
+    root = MagicMock()
+    root.winfo_exists.return_value = True
+    root.winfo_width.return_value = 900
+    root.winfo_height.return_value = 700
+    root.winfo_screenheight.return_value = 1080
+    grid = MagicMock()
+    grid.selection.return_value = ("0",)
+    grid.get_children.return_value = ("0", "1")
+    scope = ("meter", "目前處理", "", 0, "audit")
+    old = {"shown": [{"key": "A"}, {"key": "B"}], "page": 0}
+    new = {"shown": [{"key": "B"}, {"key": "A"}], "page": 0}
+    results = queue.Queue()
+    label = MagicMock()
+    label.cget.return_value = ""
+    request = MagicMock()
+    ns = dict(
+        root=root, document_grid=grid, document_activity_label=label,
+        document_frame=MagicMock(), txt=MagicMock(), time=dp.time,
+        _document_expanded=True, _document_busy=True, _document_last_refresh=1,
+        _document_snapshot=old, _document_page=0, _document_display_args=scope,
+        _document_snapshot_args=scope, _document_results=results,
+        _recovery_meter_path="meter", _audit_path="audit",
+        _document_filter=SimpleNamespace(get=lambda: "目前處理"),
+        _document_query=SimpleNamespace(get=lambda: ""),
+        _document_header=MagicMock(), _request_document_snapshot=request,
+        pyqueue=queue, _activity_text=None, _activity_rendered=None,
+        _close_activity_window=MagicMock(),
+    )
+    module = ast.fix_missing_locations(ast.Module(body=funcs, type_ignores=[]))
+    exec(compile(module, "<document callbacks>", "exec"), ns)
+    ns["_toggle_document"]()  # collapse during refresh
+    results.put((True, new))
+    ns["_document_results_poll"]()
+    assert ns["_document_snapshot"] is old
+    assert ns["_document_display_args"] is None
+    grid.delete.assert_not_called()
+    ns["_toggle_document"]()  # reopen with old grid selection
+    ns["_document_activity_tick"]()
+    label.configure.assert_called_with(text="呼叫觀測待重新核對")
+    assert ns["_document_snapshot"] is old
+    # A result from a changed run/filter must likewise not render or tick.
+    ns["_audit_path"] = "different"
+    results.put((True, new))
+    ns["_document_results_poll"]()
+    assert ns["_document_snapshot"] is old
+    assert ns["_document_display_args"] is None
+    grid.delete.assert_not_called()

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import stat
@@ -24,6 +25,7 @@ from czjLLM.utilities.llm_failure_summary import (
 
 MAX_CALLS_PER_ROW = 256
 MAX_RECORD_BYTES = 2048
+MAX_VISIBLE_CALLS_PER_ROW = 24
 _ALLOWED_STATES = {"assigned", "calling", "returned", "failed"}
 
 
@@ -63,9 +65,47 @@ def _ensure_dir(path):
     _check_dir(path)
 
 
+def _numeric_stream_activity(event):
+    """Strict projection of the known event fields; never copy arbitrary text."""
+    if not isinstance(event, dict):
+        raise ValueError("invalid stream observation")
+    phase = event.get("event")
+    elapsed = event.get("elapsed_s")
+    last = event.get("last_chunk_elapsed_s")
+    chunks = event.get("chunks")
+    thinking = event.get("thinking_seen")
+    content = event.get("content_seen")
+    if (phase not in ("started", "received", "assembled", "failed")
+            or type(elapsed) not in (int, float) or not 0 <= elapsed <= 1e9
+            or not math.isfinite(elapsed)
+            or type(chunks) is not int or not 0 <= chunks <= 65536
+            or type(thinking) is not bool or type(content) is not bool
+            or (last is not None and (type(last) not in (int, float)
+                                     or not 0 <= last <= elapsed))
+            or (chunks == 0) != (last is None)
+            or (chunks == 0 and (thinking or content))
+            or (phase == "started" and chunks != 0)
+            or (phase == "received" and chunks == 0)):
+        raise ValueError("invalid stream observation values")
+    return {"event": phase, "elapsed_s": round(elapsed, 3),
+            "last_chunk_elapsed_s": None if last is None else round(last, 3),
+            "chunks": chunks, "thinking_seen": thinking, "content_seen": content}
+
+
+def _format_stream_observation(event):
+    state = {"started": "等待首段資料", "received": "收到資料",
+             "assembled": "回應已組裝", "failed": "串流失敗"}[event["event"]]
+    last = event["last_chunk_elapsed_s"]
+    gap = "未知" if last is None else f"{event['elapsed_s'] - last:.1f}s"
+    return (f"串流{state}｜耗時 {event['elapsed_s']:.1f}s｜"
+            f"上次資料間隔 {gap}｜{event['chunks']} chunks｜"
+            f"思考{'有' if event['thinking_seen'] else '未觀測'}／"
+            f"回答{'有' if event['content_seen'] else '未觀測'}（最後觀測）")
+
+
 def write_worker_dispatch_observation(
     *, audit_path, item_dir, prompt_file, worker_call_id,
-    model_spec, status,
+    model_spec, status, stream_activity=None,
 ):
     """Atomic lifecycle snapshot. Caller MUST contain telemetry exceptions.
 
@@ -98,6 +138,10 @@ def write_worker_dispatch_observation(
         "endpoint_ip": endpoint,
         "observed_ns": time.time_ns(),
     }
+    if stream_activity is not None:
+        if status != "calling":
+            raise ValueError("stream activity requires calling status")
+        doc["stream_activity"] = _numeric_stream_activity(stream_activity)
     payload = json.dumps(doc, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     if len(payload) > MAX_RECORD_BYTES:
         raise ValueError("dispatch observation too large")
@@ -164,6 +208,10 @@ def _read_one(path, expected_item_hash):
         ip = data["endpoint_ip"]
         if _endpoint_ip("http://" + ip) != ip:
             raise ValueError("dispatch IP not literal")
+    if "stream_activity" in data:
+        activity = data["stream_activity"]
+        if data["status"] != "calling" or _numeric_stream_activity(activity) != activity:
+            raise ValueError("invalid stored stream activity")
     return data
 
 
@@ -212,8 +260,20 @@ def read_visible_dispatch_observations(audit_path, item_dirs):
             "failed": "失敗（最後觀測）",
         }[selected["status"]]
         count = len(active)
+        detail = selected.get("stream_activity")
+        activity_label = ("｜" + _format_stream_observation(detail)) if detail is not None else ""
         results[key] = {
-            "text": f"{label}｜{stage}" + (f" · {count} 呼叫" if count > 1 else ""),
+            "text": f"{label}｜{stage}" + (f" · {count} 呼叫" if count > 1 else "") + activity_label,
             "status": selected["status"], "count": len(observations),
         }
+        # Keep distinct simultaneous call observations; no IDs, paths or raw payload.
+        results[key]["active_count"] = count
+        results[key]["active_calls"] = [
+            {k: v[k] for k in ("model", "endpoint_ip", "status", "observed_ns", "stream_activity") if k in v}
+            for v in sorted(active, key=lambda x: (-x["observed_ns"], x["worker_call_id"]))[:MAX_VISIBLE_CALLS_PER_ROW]
+        ]
+        if selected["status"] == "calling":
+            results[key]["observed_ns"] = selected["observed_ns"]
+            if detail is not None:
+                results[key]["stream_activity"] = detail
     return results
