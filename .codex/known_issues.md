@@ -149,3 +149,6 @@ Sink ACK 與正式 Producer 壓力測試。Python Thread 不能安全強制終�
 
 ## 2026-11-17 — automatic JSON repair cache safety limitations
 - Source follow-up PR includes Win32 protected ACL validation and Linux local-fs 0700 check, but Hosted acceptance and actual physical workstation/scheduled-service ACL checks remain pending. Cache is plaintext, not secure erasure or at-rest encryption; other local administrator processes, remote block devices, backup/sync and hostile parent-directory modification are outside the guarantee. 72h expiry is opportunistically cleaned on GLM launch/repair/GUI entry; idle deployment may retain expired disk bytes. No automatic Windows↔Linux sync, and no historical raw JSON backfill. Any unsafe path fails closed without affecting ordinary JSON repair or sink ACK.
+- WEB-04A: Hosted synthetic HTTP/Meter tests are not live Linux/GPU or sink readback; use a fresh operator test run with Web mode and compare document stages with local Meter, no production replay. Remote auth/TLS and ES entrypoint acceptance remain open.
+
+- WEB-04B: sidecars are last-observed Worker evidence, not proof of GPU phase/occupancy or sink writes; remote and physical Linux/GPU acceptance remain pending.
