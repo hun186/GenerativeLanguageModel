@@ -168,3 +168,5 @@ confirm_writeback 閘門。Linux process pool、多階段仍為原來路徑；
 - Producer-owned Meter locator travels via bounded trusted IPC to the separate local Web subprocess. One background reader uses the desktop strict Meter reader and current-page projection; generation change invalidates the prior result, per-run HMAC aliases replace row identities. HTTP reads cached snapshots; browser disconnect cannot stop GLM. No raw paths/labels, model/IP or sink confirmation; no remote binding.
 
 - WEB-04B: DocumentMonitor reads trusted audit locator via IPC and joins current-page running rows to validated dispatch sidecars in its background refresh. Per-run HMAC row/endpoint aliases; no raw model/IP/call ID/path; HTTP renders cached clock text without extrapolating terminal stream state.
+
+- WEB-05A: audit_distribution.py shared numeric aggregation; desktop permissive legacy reader retained, Web background DocumentMonitor publishes separate bounded Audit snapshot from trusted IPC locator. Strict reader validates CSV width/outcomes; only allowlisted numeric metrics, no raw identities. Audit can be observed without a document Meter.

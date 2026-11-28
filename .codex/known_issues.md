@@ -152,3 +152,5 @@ Sink ACK 與正式 Producer 壓力測試。Python Thread 不能安全強制終�
 - WEB-04A: Hosted synthetic HTTP/Meter tests are not live Linux/GPU or sink readback; use a fresh operator test run with Web mode and compare document stages with local Meter, no production replay. Remote auth/TLS and ES entrypoint acceptance remain open.
 
 - WEB-04B: sidecars are last-observed Worker evidence, not proof of GPU phase/occupancy or sink writes; remote and physical Linux/GPU acceptance remain pending.
+
+- WEB-05A: 8 MiB/20k bound and full snapshot reparse limit; large Audit incremental #391 pending. Actual Linux/GPU/ES/SQL acceptance not established.

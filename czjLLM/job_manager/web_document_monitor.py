@@ -15,6 +15,7 @@ from czjLLM.job_manager.document_progress import (
     capture_activity_clock, format_activity_clock,
 )
 from czjLLM.job_manager.worker_dispatch_observation import read_visible_dispatch_observations
+from czjLLM.job_manager.audit_distribution import load_public_audit
 
 REFRESH_SECONDS = 2.0
 MAX_AGE_SECONDS = 8.0
@@ -112,6 +113,8 @@ class DocumentMonitor:
         self._clock = clock
         self._observed_at = None
         self._view = {"status": "waiting_for_meter", "rows": []}
+        self._audit = {"status": "waiting_for_audit"}
+        self._audit_observed_at = None
 
     def set_path(self, path):
         if not isinstance(path, str) or len(path) > 4096 or "\x00" in path:
@@ -132,25 +135,30 @@ class DocumentMonitor:
                 self._generation += 1
                 self._observed_at = None
                 self._view = {"status": "waiting_for_meter", "rows": []}
+                self._audit = {"status": "waiting_for_audit"}
+                self._audit_observed_at = None
 
     def refresh_once(self):
         with self._lock:
             path, audit_path, generation = self._path, self._audit_path, self._generation
-        if not path:
-            return
         started = self._clock()
         try:
-            view = project_public_documents(read_meter_strict(path), self._salt,
-                                            audit_path=audit_path)
+            view = (project_public_documents(read_meter_strict(path), self._salt,
+                                             audit_path=audit_path) if path else
+                    {"status": "waiting_for_meter", "rows": []})
         except FileNotFoundError:
             view = {"status": "waiting_for_meter", "rows": []}
         except Exception:
             # No exception details, stale rows, or synthetic successful empty run.
             view = {"status": "unavailable", "rows": []}
+        audit_started = self._clock()
+        audit = load_public_audit(audit_path)
         with self._lock:
             if self._generation == generation:
                 self._view = view
                 self._observed_at = started
+                self._audit = audit
+                self._audit_observed_at = audit_started
 
     def run(self, stop):
         while not stop.is_set():
@@ -167,3 +175,12 @@ class DocumentMonitor:
             if "workers" in view:
                 view["workers"] = _render_workers(view["workers"], time.monotonic())
             return view
+
+
+    def audit_snapshot(self):
+        with self._lock:
+            if self._audit_observed_at is not None:
+                age = self._clock() - self._audit_observed_at
+                if not 0 <= age <= MAX_AGE_SECONDS:
+                    return {"status": "stale"}
+            return dict(self._audit)

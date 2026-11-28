@@ -126,3 +126,5 @@ receipt、失聯結果或 Meter 失敗 fail closed，保留 RUNNING/Success 證�
 - WEB-04A: reuse strict desktop Meter projection; publish anonymous first-page observations from a single background reader, fail closed on stale/dropped events, not a new queue/sink authority.
 
 - WEB-04B: publish only anonymous current-page Worker observations and clocks, never infer GPU state or expose private locators.
+
+- WEB-05A: one shared aggregation formula, permissive desktop legacy mode and strict privacy-safe Web projection; no fabricated native phase or cache measurements.

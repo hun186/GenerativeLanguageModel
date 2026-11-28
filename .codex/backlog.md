@@ -157,3 +157,5 @@
 - [ ] WEB monitor: land #385 then #386/#387 and one SSE distribution consumer; verify Linux/ES and authenticated remote operation separately, implement large Audit incremental aggregation.
 
 - [ ] WEB-04B #386: fresh main CI/review, then #387/#390/#391; operator Linux/ES/SQL validation remains separate.
+
+- [ ] WEB-05A #387 fresh integration gates; then #390 SSE distributions, #391 incremental, #392 grouped comparisons, WEB-06 quality.
