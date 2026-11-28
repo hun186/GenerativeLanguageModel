@@ -1,8 +1,7 @@
 """Opt-in, loopback-only read-only HTTP monitor for one GLM run.
 
 Separate spawned process; no model calls, arbitrary file reads, raw log or cancellation
-authority. Local operators may use SSH forwarding. Remote bind/auth is not
-implemented in this initial slice.
+authority. Loopback HTTP by default; explicit private-interface mTLS is optional.
 """
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
@@ -15,6 +14,7 @@ import warnings
 from czjLLM.job_manager.monitoring_core import MonitorEvents, MonitorProjection, MAX_COUNT
 from czjLLM.job_manager.web_document_monitor import DocumentMonitor
 from czjLLM.job_manager.web_quality_monitor import WebQualityMonitor
+from czjLLM.job_manager.web_monitor_tls import MonitorTLS, tls_from_environ
 
 _MAX_EVENTS = 256
 _HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
@@ -322,10 +322,19 @@ class _LocalHTTPServer(HTTPServer):
     allow_reuse_address = False
     timeout = 0.2
 
+    tls_context = None
+
     def get_request(self):
         sock, address = super().get_request()
-        sock.settimeout(1.0)
-        return sock, address
+        try:
+            sock.settimeout(1.0)
+            if self.tls_context is not None:
+                # Handshake completes before any HTTP handler is created.
+                sock = self.tls_context.wrap_socket(sock, server_side=True)
+            return sock, address
+        except BaseException:
+            sock.close()
+            raise
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -349,11 +358,17 @@ class _Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         port = self.server.server_port
-        if (self.headers.get_all("Host") not in
-                ([f"127.0.0.1:{port}"], [f"localhost:{port}"])
-                or self.headers.get("Sec-Fetch-Site") == "cross-site"
-                or self.headers.get("Origin") not in
-                (None, f"http://127.0.0.1:{port}", f"http://localhost:{port}")):
+        tls = self.server.tls_context is not None
+        hosts = ([f"{self.server.server_address[0]}:{port}"] if tls else
+                 [f"127.0.0.1:{port}", f"localhost:{port}"])
+        scheme = "https" if tls else "http"
+        origins = [f"{scheme}://{host}" for host in hosts]
+        # Duplicate security headers are rejected, not interpreted ambiguously.
+        origin = self.headers.get_all("Origin")
+        fetch_site = self.headers.get_all("Sec-Fetch-Site")
+        if (self.headers.get_all("Host") not in [[host] for host in hosts]
+                or (fetch_site is not None and (len(fetch_site) != 1 or fetch_site[0] == "cross-site"))
+                or (origin is not None and origin not in [[o] for o in origins])):
             self._send(403, "text/plain", b"Forbidden")
         elif self.path == "/":
             self._send(200, "text/html; charset=utf-8", _HTML)
@@ -377,10 +392,12 @@ class _Handler(BaseHTTPRequestHandler):
         self._send(405, "text/plain", b"Read only")
 
 
-def _serve(port, total, events, dropped, stop, ready):
+def _serve(port, total, events, dropped, stop, ready, tls=None):
     try:
-        server = _LocalHTTPServer(("127.0.0.1", port), _Handler)
-    except OSError:
+        context = tls.context() if tls is not None else None
+        server = _LocalHTTPServer((tls.host if tls is not None else "127.0.0.1", port), _Handler)
+        server.tls_context = context
+    except (OSError, ValueError):
         ready.send(None)
         ready.close()
         return
@@ -480,17 +497,19 @@ class WebMonitorClient:
             self._events.close()
 
 
-def start_web_monitor(total, port):
+def start_web_monitor(total, port, *, tls=None):
     """Start a disposable service; return None on port/startup failure."""
     MonitorProjection(total)  # validate before spawning
     if type(port) is not int or not 0 <= port <= 65535:
         raise ValueError("invalid monitor port")
+    if tls is not None and not isinstance(tls, MonitorTLS):
+        raise ValueError("invalid monitor TLS config")
     ctx = mp.get_context("spawn")
     events = ctx.Queue(maxsize=_MAX_EVENTS)
     events.cancel_join_thread()
     dropped, stop = ctx.Event(), ctx.Event()
     recv, send = ctx.Pipe(duplex=False)
-    process = ctx.Process(target=_serve, args=(port, total, events, dropped, stop, send),
+    process = ctx.Process(target=_serve, args=(port, total, events, dropped, stop, send, tls),
                           daemon=True, name="glm-web-monitor")
     client = None
     started = False
@@ -521,12 +540,11 @@ def start_web_monitor(total, port):
 def try_start_web_monitor(total, environ=None):
     env = os.environ if environ is None else environ
     try:
-        if env.get("GLM_WEB_HOST", "127.0.0.1") != "127.0.0.1":
-            raise ValueError("only loopback is supported")
+        tls = tls_from_environ(env)
         port = int(env.get("GLM_WEB_PORT", "9010"))
         if not 1 <= port <= 65535:
             raise ValueError("invalid port")
-        client = start_web_monitor(total, port)
+        client = start_web_monitor(total, port, tls=tls)
         if client is not None:
             return client
     except Exception:

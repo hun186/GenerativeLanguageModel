@@ -594,3 +594,84 @@ def test_web_repair_analysis_missing_comparison_and_real_http(tmp_path):
         assert b"PRIVATE" not in raw and b"event_hint" not in raw
     finally:
         client.close()
+
+
+def test_remote_mtls_config_is_explicit_and_private(tmp_path):
+    from czjLLM.job_manager.web_monitor_tls import tls_from_environ
+    assert tls_from_environ({}) is None
+    for host in ("0.0.0.0", "8.8.8.8", "::", "localhost"):
+        with pytest.raises(ValueError):
+            tls_from_environ({"GLM_WEB_REMOTE": "mtls", "GLM_WEB_HOST": host})
+    with pytest.raises(ValueError):
+        tls_from_environ({"GLM_WEB_HOST": "192.168.1.10"})
+    with pytest.raises(ValueError):
+        tls_from_environ({"GLM_WEB_REMOTE": "mtls"})
+    cfg = {"GLM_WEB_REMOTE": "mtls", "GLM_WEB_HOST": "192.168.1.10",
+           "GLM_WEB_TLS_CERT": str(tmp_path / "cert.pem"),
+           "GLM_WEB_TLS_KEY": str(tmp_path / "key.pem"),
+           "GLM_WEB_CLIENT_CA": str(tmp_path / "ca.pem")}
+    assert tls_from_environ(cfg).host == "192.168.1.10"
+    cfg["GLM_WEB_TLS_KEY"] = "relative.pem"
+    with pytest.raises(ValueError):
+        tls_from_environ(cfg)
+
+
+def test_real_mutual_tls_requires_operator_certificate(tmp_path):
+    import os
+    import shutil
+    import ssl
+    import subprocess
+    from czjLLM.job_manager.web_monitor_tls import MonitorTLS
+    if os.name != "posix":
+        pytest.skip("POSIX key ownership gate; Windows remote mode intentionally disabled")
+    openssl = shutil.which("openssl")
+    if not openssl:
+        pytest.skip("openssl CLI required for disposable test PKI")
+
+    def run(*args):
+        subprocess.run([openssl, *args], cwd=tmp_path, check=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)
+
+    run("req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
+        "-subj", "/CN=Test Operator CA", "-keyout", "ca.key", "-out", "ca.pem",
+        "-addext", "basicConstraints=critical,CA:TRUE")
+    for name, extension in (("server", "subjectAltName=IP:127.0.0.1\\nextendedKeyUsage=serverAuth"),
+                            ("client", "extendedKeyUsage=clientAuth")):
+        run("req", "-newkey", "rsa:2048", "-nodes", "-subj", "/CN=" + name,
+            "-keyout", name + ".key", "-out", name + ".csr")
+        (tmp_path / (name + ".ext")).write_text(extension + "\\n", encoding="ascii")
+        run("x509", "-req", "-in", name + ".csr", "-CA", "ca.pem", "-CAkey", "ca.key",
+            "-CAcreateserial", "-days", "2", "-out", name + ".pem", "-extfile", name + ".ext")
+    key = tmp_path / "server.key"
+    key.chmod(0o644)
+    config = MonitorTLS("127.0.0.1", str(tmp_path / "server.pem"), str(key),
+                        str(tmp_path / "ca.pem"))
+    assert start_web_monitor(1, 0, tls=config) is None
+    key.chmod(0o600)
+    client = start_web_monitor(1, 0, tls=config)
+    assert client is not None
+    def request(context, path="/api/v1/status", method="GET", headers=None):
+        conn = http.client.HTTPSConnection("127.0.0.1", client.port, context=context, timeout=3)
+        try:
+            conn.request(method, path, headers=headers or {})
+            response = conn.getresponse()
+            return response.status, response.read()
+        finally:
+            conn.close()
+    try:
+        context = ssl.create_default_context(cafile=str(tmp_path / "ca.pem"))
+        with pytest.raises((OSError, http.client.HTTPException)):
+            request(context)
+        context.load_cert_chain(str(tmp_path / "client.pem"), str(tmp_path / "client.key"))
+        status, body = request(context)
+        assert status == 200 and json.loads(body)["total"] == 1
+        assert request(context, "/")[0] == 200
+        assert request(context, "/app.js")[0] == 200
+        assert request(context, method="POST")[0] == 405
+        assert request(context, headers={"Host": "other.example"})[0] == 403
+        assert request(context, headers={"Origin": "https://other.example"})[0] == 403
+        with pytest.raises((OSError, http.client.HTTPException)):
+            _request(client.port, "/api/v1/status")
+        assert request(context)[0] == 200
+    finally:
+        client.close()
