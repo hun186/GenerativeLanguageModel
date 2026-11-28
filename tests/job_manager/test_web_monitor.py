@@ -431,3 +431,79 @@ def test_group_budget_does_not_combine_distinct_or_unidentified_calls():
     assert result["total_rows"] == 4 and result["grouped_rows"] == 2
     assert result["omitted_rows"] == result["unidentified_rows"] == 1
     assert len(result["groups"]) == 1
+
+
+def test_quality_real_http_counts_recovery_and_no_private_identity(tmp_path):
+    from czjLLM.utilities.processing_quality import emit_quality_event
+    audit = str(tmp_path / "llm_call_audit_20261128-1.csv")
+    def emit(event, code, scope, outcome, **extra):
+        return emit_quality_event(audit, run_id="PRIVATE_RUN", event=event,
+                                  code=code, scope=scope, outcome=outcome, **extra)
+    path = emit("slice_json_validation", "JSON_SYNTAX_INVALID", "slice", "invalid",
+                document_id="PRIVATE_DOC", slice_id="PRIVATE_SLICE")
+    emit("slice_json_validation", "JSON_VALID", "slice", "valid",
+         document_id="PRIVATE_DOC", slice_id="PRIVATE_OTHER")
+    emit("slice_json_repair", "JSON_REPAIR_SUCCEEDED", "slice", "succeeded",
+         document_id="PRIVATE_DOC", slice_id="PRIVATE_SLICE")
+    emit("document_schema_rejected", "SCHEMA_OTHER", "document", "rejected",
+         document_id="PRIVATE_DOC")
+    emit("document_writeback_confirmed", "WRITEBACK_CONFIRMED", "document", "confirmed",
+         document_id="PRIVATE_DOC")
+    emit("worker_phase_failure", "WORKER_LLM_TIMEOUT_EXCEPTION", "run", "observed")
+    client = start_web_monitor(1, 0)
+    assert client is not None
+    try:
+        client.set_quality_event_path(path)
+        deadline = time.monotonic() + 12
+        while True:
+            _, raw, _ = _request(client.port, "/api/v1/status")
+            q = json.loads(raw)["quality"]
+            if q["status"] == "observed":
+                break
+            assert time.monotonic() < deadline
+            time.sleep(.1)
+        assert q["events"] == 6
+        assert q["slice_initial_invalid_pct"] == 50
+        assert q["repair_success_pct"] == 100
+        assert q["documents_schema_pending"] == 0
+        assert q["documents_writeback_confirmed"] == 1
+        assert q["document_schema_reject_pct"] == 0
+        assert q["incident_codes"] == {"WORKER_LLM_TIMEOUT_EXCEPTION": 1}
+        assert q["sink_readback_verified"] is False
+        assert b"PRIVATE" not in raw and b"event_id" not in raw
+        with path.open("ab") as fp:
+            fp.write(b'{"incomplete":')
+        deadline = time.monotonic() + 12
+        while True:
+            _, raw, _ = _request(client.port, "/api/v1/status")
+            q = json.loads(raw)["quality"]
+            if q["status"] == "incomplete_tail":
+                break
+            assert time.monotonic() < deadline
+            time.sleep(.1)
+        assert "events" not in q
+    finally:
+        client.close()
+
+
+def test_quality_generation_staleness_capacity_and_missing_denominator(tmp_path, monkeypatch):
+    from czjLLM.job_manager import web_quality_monitor as qm
+    from czjLLM.utilities.processing_quality import QualityAccumulator
+    stats = QualityAccumulator().snapshot()
+    stats["quality_stream_status"] = "observed"
+    view = qm.public_quality(stats)
+    assert view["slice_initial_invalid_pct"] is None and view["repair_success_pct"] is None
+    stats["error_codes"] = {"PRIVATE_RAW": 1}
+    assert qm.public_quality(stats)["incident_codes"] == {}
+    tick = [0]
+    monitor = qm.WebQualityMonitor(clock=lambda: tick[0])
+    path = tmp_path / "processing_quality_events_1.jsonl"
+    path.write_bytes(b"{}\n")
+    monitor.set_path(str(path))
+    monkeypatch.setattr(qm, "MAX_SOURCE_BYTES", 1)
+    monitor.refresh_once()
+    assert monitor.snapshot() == {"status": "capacity_exceeded"}
+    tick[0] = 9
+    assert monitor.snapshot() == {"status": "stale"}
+    monitor.set_path(str(tmp_path / "processing_quality_events_2.jsonl"))
+    assert monitor.snapshot() == {"status": "waiting_for_quality"}

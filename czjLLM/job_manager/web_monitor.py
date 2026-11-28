@@ -14,6 +14,7 @@ import warnings
 
 from czjLLM.job_manager.monitoring_core import MonitorEvents, MonitorProjection, MAX_COUNT
 from czjLLM.job_manager.web_document_monitor import DocumentMonitor
+from czjLLM.job_manager.web_quality_monitor import WebQualityMonitor
 
 _MAX_EVENTS = 256
 _HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
@@ -48,6 +49,12 @@ _HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <table><thead><tr><th>Model</th><th>Endpoint</th><th>Context / source</th><th>Calls</th><th>Failure %</th><th>TTFT P50/P95 (n)</th><th>Slice P50/P95 (n)</th><th>Total tok/s P50 (n)</th><th>Cache % (reported/eligible)</th></tr></thead>
 <tbody id="comparison-rows"></tbody></table>
 <p>依原始 Audit 的模型、端點、Context 上限及來源分組。未識別與超額組別另計；不代表 GPU 利用率或已設定的 num_ctx。</p>
+<h2>品質與異常事件（本次 Run）</h2>
+<p id="quality-status">等待品質事件</p>
+<table><thead><tr><th>品質指標</th><th>觀測值</th></tr></thead><tbody id="quality-rows"></tbody></table>
+<h3>執行異常（事件數，非失敗文件數）</h3>
+<table><thead><tr><th>異常類別</th><th>次數</th></tr></thead><tbody id="quality-incidents"></tbody></table>
+<p>JSON 修復成功不代表語意正確；Sink 確認不等於獨立讀回驗證。原始 JSON 不提供。</p>
 <script src="/app.js" defer></script></body></html>""".encode("utf-8")
 _JS = """'use strict';
 function showDocuments(doc) {
@@ -185,6 +192,44 @@ function showAudit(audit) {
     compBody.appendChild(tr);
   }
 }
+function showQuality(q) {
+  const status = document.getElementById('quality-status');
+  const rows = document.getElementById('quality-rows');
+  const incidents = document.getElementById('quality-incidents');
+  rows.replaceChildren();
+  incidents.replaceChildren();
+  if (q?.status !== 'observed') {
+    const labels = {waiting_for_quality:'等待品質事件',not_initialized:'尚未取得品質事件',
+      stale:'品質快照逾時', delivery_incomplete:'監控交接不完整',
+      incomplete_tail:'末行寫入中，暫不提供完整統計',degraded_corrupt_lines:'品質事件損毀，請檢查離線報告',
+      unsealed_legacy:'歷史封存未驗證，請檢查離線報告',
+      capacity_exceeded:'超過安全累計上限，請使用離線報告',unverified:'品質事件驗證異常'};
+    status.textContent = labels[q?.status] || '品質觀測不可用';
+    return;
+  }
+  status.textContent = '已觀測 ' + q.events + ' 筆去重品質事件';
+  const ratio = (n,d,p) => p === null ? '樣本不足' : n + '/' + d + ' (' + p.toFixed(2) + '%)';
+  const append = (body, label, value) => {
+    const tr = document.createElement('tr');
+    for (const v of [label, value]) {
+      const td = document.createElement('td');
+      td.textContent = v;
+      tr.appendChild(td);
+    }
+    body.appendChild(tr);
+  };
+  append(rows,'初次 JSON 不合法',ratio(q.slice_initial_invalid,q.slice_validation_attempts,q.slice_initial_invalid_pct));
+  append(rows,'JSON 修復成功',ratio(q.repair_succeeded,q.repair_attempts,q.repair_success_pct));
+  append(rows,'文件結構異常（待處理）',ratio(q.documents_schema_pending,q.documents_decided,q.document_schema_reject_pct));
+  append(rows,'確認式 Sink 寫回',q.documents_writeback_confirmed);
+  for (const [key,label] of Object.entries({
+    consumer_orchestration_failure_events:'Consumer 調度',
+    row_merger_retryable_failure_events:'Row Merger 暫時異常',
+    producer_operational_failure_events:'Producer 執行',
+    stage_orchestration_failure_events:'Stage 調度',
+    worker_phase_failure_events:'Worker 階段'})) append(incidents,label,q[key]);
+  for (const [key,value] of Object.entries(q.incident_codes)) append(incidents,key,value);
+}
 async function refresh() {
   const health = document.getElementById('health');
   try {
@@ -196,6 +241,7 @@ async function refresh() {
     showDocuments(data.documents);
     showWorkers(data.documents);
     showAudit(data.audit);
+    showQuality(data.quality);
     for (const key of ['total','scheduled','completed','elapsed_s']) {
       const value = data[key];
       document.getElementById(key).textContent =
@@ -206,6 +252,7 @@ async function refresh() {
     showDocuments({status:'unavailable', rows:[]});
     showWorkers({status:'unavailable'});
     showAudit({status:'unavailable'});
+    showQuality({status:'unavailable'});
   } finally { setTimeout(refresh, 2000); }
 }
 refresh();""".encode("utf-8")
@@ -259,6 +306,8 @@ class _Handler(BaseHTTPRequestHandler):
                 if snapshot["delivery_incomplete"] else self.server.documents.snapshot())
             snapshot["audit"] = ({"status": "delivery_incomplete"} if snapshot["delivery_incomplete"]
                                  else self.server.documents.audit_snapshot())
+            snapshot["quality"] = ({"status": "delivery_incomplete"} if snapshot["delivery_incomplete"]
+                                   else self.server.quality.snapshot())
             self._send(200, "application/json",
                        json.dumps(snapshot, allow_nan=False).encode("utf-8"))
         else:
@@ -282,6 +331,10 @@ def _serve(port, total, events, dropped, stop, ready):
         reader = threading.Thread(target=server.documents.run, args=(stop,),
                                   daemon=True, name='web-meter-reader')
         reader.start()
+        server.quality = WebQualityMonitor()
+        quality_reader = threading.Thread(target=server.quality.run, args=(stop,),
+                                          daemon=True, name='web-quality-reader')
+        quality_reader.start()
         ready.send(server.server_port)
     finally:
         ready.close()
@@ -296,6 +349,8 @@ def _serve(port, total, events, dropped, stop, ready):
                     server.documents.set_path(payload)
                 elif kind == MonitorEvents.AUDIT_PATH:
                     server.documents.set_audit_path(payload)
+                elif kind == MonitorEvents.QUALITY_PATH:
+                    server.quality.set_path(payload)
                 else:
                     server.projection.apply(kind, payload)
             server.handle_request()
@@ -330,7 +385,8 @@ class WebMonitorClient:
     def log(self, text): pass
     def set_audit_path(self, path):
         self._set_locator(MonitorEvents.AUDIT_PATH, path)
-    def set_quality_event_path(self, path): pass
+    def set_quality_event_path(self, path):
+        self._set_locator(MonitorEvents.QUALITY_PATH, path)
     def set_recovery_meter_path(self, path):
         self._set_locator(MonitorEvents.RECOVERY_METER, path)
 
