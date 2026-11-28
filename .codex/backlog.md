@@ -154,3 +154,12 @@
 - [x] Added portable project-relative protected cache bootstrap, 72h snapshot TTL/launch-and-write-and-GUI removal, total active-byte quota, GUI status, gitignore and disposable synthetic tests; CI and privacy review not yet confirmed.
 - [ ] Verify exact-head Hosted Linux E2E, Windows 3.10/3.11, secret scan, Codex findings and no unresolved threads before any merge. Verify native Windows ACL creation and Linux scheduler user permissions; do not claim real operator acceptance from Hosted.
 - [ ] On real Windows and Linux deployments, confirm checkout is local/non-synced, running identity can access cache, and archive/backup/7z/Docker excludes .runtime-private; never auto-sync plaintext repair snapshots.
+- [ ] WEB monitor: land #385 then #386/#387 and one SSE distribution consumer; verify Linux/ES and authenticated remote operation separately, implement large Audit incremental aggregation.
+
+- [ ] WEB-04B #386: fresh main CI/review, then #387/#390/#391; operator Linux/ES/SQL validation remains separate.
+
+- [ ] WEB-05A #387 fresh integration gates; then #390 SSE distributions, #391 incremental, #392 grouped comparisons, WEB-06 quality.
+
+- [ ] #390 fresh integration gates; then #391 incremental and #392/#393. Do not merge duplicate #389; native phases and live acceptance pending.
+
+- [ ] #391 fresh gates; then #392 groups/#393 quality/#394 repair. Larger exact/approximate aggregate and physical pressure tests pending.
