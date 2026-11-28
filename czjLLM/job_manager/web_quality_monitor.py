@@ -7,6 +7,7 @@ import threading
 import time
 
 from czjLLM.utilities.processing_quality import QualityCapacityExceeded, RUN_INCIDENT_CODES
+from czjLLM.job_manager.web_repair_analysis import project_repair_analysis
 from czjLLM.utilities.processing_quality_run_reader import QualityRunTailReader
 from czjLLM.utilities.processing_quality_manifest import manifest_path
 from czjLLM.utilities.processing_quality_rotation import quality_stream_segments
@@ -54,6 +55,7 @@ def public_quality(stats):
     if not isinstance(codes, dict):
         raise ValueError("invalid quality code map")
     result["incident_codes"] = {key: _count(codes[key]) for key in sorted(_RUN_CODES) if key in codes}
+    result["repair_analysis"] = project_repair_analysis(stats)
     result["status"] = "observed"
     result["scope"] = "observed_quality_events_current_run"
     result["sink_readback_verified"] = False

@@ -507,3 +507,90 @@ def test_quality_generation_staleness_capacity_and_missing_denominator(tmp_path,
     assert monitor.snapshot() == {"status": "stale"}
     monitor.set_path(str(tmp_path / "processing_quality_events_2.jsonl"))
     assert monitor.snapshot() == {"status": "waiting_for_quality"}
+
+
+def test_web_repair_analysis_run_coverage_and_recent_sample_scope():
+    from czjLLM.job_manager.web_repair_analysis import project_repair_analysis
+    from czjLLM.utilities.processing_quality import QualityAccumulator
+    from uuid import uuid4
+
+    acc = QualityAccumulator()
+    syntax = "JSON_REPAIR_SYNTAX_CANDIDATE"
+    large = "JSON_REPAIR_LARGE_CHANGE"
+    tail = "JSON_REPAIR_TAIL_CANDIDATE"
+    unknown = "JSON_REPAIR_COMPARISON_UNAVAILABLE"
+    def record(code=None, similarity=0):
+        event = {"schema_version": 1, "event_id": uuid4().hex,
+                 "event": "slice_json_repair", "code": "JSON_REPAIR_SUCCEEDED",
+                 "scope": "slice", "outcome": "succeeded",
+                 "document_id": "PRIVATE_DOCUMENT", "slice_id": "PRIVATE_SLICE",
+                 "run_id": "PRIVATE_RUN"}
+        if code:
+            event["detail"] = {"repair_class": code, "error_kind": "EXPECTED_DELIMITER",
+                "original_chars": 100, "repaired_chars": 90, "common_prefix_chars": 10,
+                "common_suffix_chars": 10, "same_literal_pct": similarity,
+                "before_key_patterns": 4, "after_key_patterns": 3, "error_pos_pct": 80}
+        assert acc.add(event)
+    record()
+    for _ in range(51):
+        record(syntax, 100)
+    record(large, 0)
+    record(tail)
+    record(unknown)
+    result = project_repair_analysis(acc.snapshot())
+    assert result["successful_repairs"] == 55
+    assert result["classified_rows"] == 54 and result["unreported_rows"] == 1
+    assert result["comparable_rows"] == 53
+    assert result["categories"][syntax] == 51
+    assert result["recent"]["count"] == 50
+    assert result["recent"]["categories"][syntax] == 47
+    assert result["recent"]["metrics"]["same_literal_pct"]["count"] == 48
+    assert result["recent"]["metrics"]["same_literal_pct"]["min"] == 0
+    assert result["recent"]["metrics"]["length_delta_chars"]["count"] == 49
+    assert result["recent"]["metrics"]["length_delta_chars"]["p50"] == -10
+    assert result["recent"]["metrics"]["key_pattern_delta"]["p50"] == -1
+    assert result["semantic_preservation_verified"] is False
+    assert "PRIVATE" not in json.dumps(result)
+    bad = acc.snapshot()
+    bad["repair_analysis_categories"][syntax] = 999
+    assert project_repair_analysis(bad) == {"status": "unverified"}
+
+
+def test_web_repair_analysis_missing_comparison_and_real_http(tmp_path):
+    from czjLLM.utilities.processing_quality import emit_quality_event
+    from czjLLM.utilities.json_repair_analysis import analyze_json_repair
+    from czjLLM.job_manager.web_repair_analysis import project_repair_analysis
+    from czjLLM.utilities.processing_quality import QualityAccumulator
+    stats = QualityAccumulator().snapshot()
+    empty = project_repair_analysis(stats)
+    assert empty["status"] == "no_comparison"
+    assert empty["classification_coverage_pct"] is None
+    original, repaired = '{"a":1 "b":2}', '{"a":1,"b":2}'
+    try:
+        json.loads(original)
+    except json.JSONDecodeError as error:
+        code, detail = analyze_json_repair(original, repaired, error)
+    detail["repair_class"] = code
+    path = emit_quality_event(str(tmp_path / "llm_call_audit_20261128-2.csv"),
+        run_id="PRIVATE_RUN", event="slice_json_repair", scope="slice",
+        code="JSON_REPAIR_SUCCEEDED", outcome="succeeded", detail=detail,
+        document_id="PRIVATE_DOCUMENT", slice_id="PRIVATE_SLICE")
+    client = start_web_monitor(1, 0)
+    assert client is not None
+    try:
+        client.set_quality_event_path(path)
+        deadline = time.monotonic() + 12
+        while True:
+            _, raw, _ = _request(client.port, "/api/v1/status")
+            q = json.loads(raw)["quality"]
+            if q["status"] == "observed":
+                break
+            assert time.monotonic() < deadline
+            time.sleep(.1)
+        a = q["repair_analysis"]
+        assert a["classified_rows"] == 1 and a["classification_coverage_pct"] == 100
+        assert a["categories"][code] == 1
+        assert a["recent"]["metrics"]["same_literal_pct"]["p50"] == 100
+        assert b"PRIVATE" not in raw and b"event_hint" not in raw
+    finally:
+        client.close()

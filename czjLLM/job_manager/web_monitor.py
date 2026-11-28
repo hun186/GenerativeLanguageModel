@@ -55,6 +55,14 @@ _HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <h3>執行異常（事件數，非失敗文件數）</h3>
 <table><thead><tr><th>異常類別</th><th>次數</th></tr></thead><tbody id="quality-incidents"></tbody></table>
 <p>JSON 修復成功不代表語意正確；Sink 確認不等於獨立讀回驗證。原始 JSON 不提供。</p>
+<h3>JSON 修復分類（全 Run 成功修復事件）</h3>
+<p id="repair-coverage"></p>
+<table><thead><tr><th>分類</th><th>次數</th></tr></thead><tbody id="repair-classes"></tbody></table>
+<h4>最近分類樣本（最多 50 筆，非全 Run）</h4>
+<p id="repair-recent-status"></p>
+<table><thead><tr><th>指標</th><th>n</th><th>P50</th><th>P95</th><th>Min / Max</th></tr></thead><tbody id="repair-metrics"></tbody></table>
+<table><thead><tr><th>原始語法錯誤分類（近期）</th><th>次數</th></tr></thead><tbody id="repair-errors"></tbody></table>
+<p>詞法候選分類及鍵名片段數不等於語意或欄位完整性驗證；尾端候選不代表已證明截斷。</p>
 <script src="/app.js" defer></script></body></html>""".encode("utf-8")
 _JS = """'use strict';
 function showDocuments(doc) {
@@ -192,6 +200,56 @@ function showAudit(audit) {
     compBody.appendChild(tr);
   }
 }
+function showRepair(q) {
+  const coverage = document.getElementById('repair-coverage');
+  const recentStatus = document.getElementById('repair-recent-status');
+  const classes = document.getElementById('repair-classes');
+  const metrics = document.getElementById('repair-metrics');
+  const errors = document.getElementById('repair-errors');
+  for (const body of [classes,metrics,errors]) body.replaceChildren();
+  coverage.textContent = '';
+  recentStatus.textContent = '';
+  const a = q?.status === 'observed' ? q.repair_analysis : null;
+  if (!a || !['observed','no_comparison'].includes(a.status)) {
+    coverage.textContent = '修復分類暫不可用';
+    return;
+  }
+  const pct = x => x === null ? '樣本不足' : x.toFixed(2) + '%';
+  const fmt = x => x === null ? '—' : String(x);
+  const append = (body, values) => {
+    const tr = document.createElement('tr');
+    for (const value of values) {
+      const td = document.createElement('td');
+      td.textContent = value;
+      tr.appendChild(td);
+    }
+    body.appendChild(tr);
+  };
+  coverage.textContent = '有分類 ' + a.classified_rows + '/' + a.successful_repairs +
+    ' (' + pct(a.classification_coverage_pct) + ')；可比較 ' + a.comparable_rows +
+    ' (' + pct(a.comparable_coverage_pct) + ')；未回報 ' + a.unreported_rows +
+    '；舊版不回補。';
+  if (a.status === 'no_comparison') return;
+  for (const [key,label] of Object.entries({
+    JSON_REPAIR_SYNTAX_CANDIDATE:'疑似語法修復',
+    JSON_REPAIR_TAIL_CANDIDATE:'疑似尾端修復',
+    JSON_REPAIR_CONTENT_EDIT:'內容修改',
+    JSON_REPAIR_LARGE_CHANGE:'大幅修改',
+    JSON_REPAIR_COMPARISON_UNAVAILABLE:'無法比較'})) append(classes,[label,a.categories[key]]);
+  recentStatus.textContent = '最近 ' + a.recent.count + ' 筆有分類的成功修復；各指標獨立樣本數。';
+  for (const [key,label] of Object.entries({
+    same_literal_pct:'字面值相同率（%）',
+    length_delta_chars:'字數差（修復後－前）',
+    key_pattern_delta:'疑似鍵名片段數差',
+    error_pos_pct:'原始解析錯誤位置（%）'})) {
+    const m = a.recent.metrics[key];
+    append(metrics,[label,m.count,fmt(m.p50),fmt(m.p95),fmt(m.min)+' / '+fmt(m.max)]);
+  }
+  for (const [key,label] of Object.entries({
+    UNTERMINATED_STRING:'字串未結束',EXPECTED_DELIMITER:'分隔符號／必要值',
+    EXTRA_DATA:'額外內容',INVALID_ESCAPE:'跳脫／控制字元',OTHER:'其他語法錯誤'}))
+    append(errors,[label,a.recent.error_kinds[key]]);
+}
 function showQuality(q) {
   const status = document.getElementById('quality-status');
   const rows = document.getElementById('quality-rows');
@@ -242,6 +300,7 @@ async function refresh() {
     showWorkers(data.documents);
     showAudit(data.audit);
     showQuality(data.quality);
+    showRepair(data.quality);
     for (const key of ['total','scheduled','completed','elapsed_s']) {
       const value = data[key];
       document.getElementById(key).textContent =
@@ -253,6 +312,7 @@ async function refresh() {
     showWorkers({status:'unavailable'});
     showAudit({status:'unavailable'});
     showQuality({status:'unavailable'});
+    showRepair({status:'unavailable'});
   } finally { setTimeout(refresh, 2000); }
 }
 refresh();""".encode("utf-8")
