@@ -242,3 +242,72 @@ def test_strict_audit_rejects_unknown_outcome_but_preserves_desktop_legacy(tmp_p
                      + f"{outcome},x,llm_api_usage,100,20,2\n", encoding="utf-8")
     assert core.load_public_audit(audit) == {"status": "unavailable_or_over_budget"}
     assert core.load_llm_audit_distribution(audit)["calls"] == 1
+
+
+def test_shared_stream_timing_observed_zero_missing_and_invalid(tmp_path):
+    import csv
+    from czjLLM.job_manager import audit_distribution as core
+    from czjLLM.job_manager.win_gui import format_llm_audit_summary
+    path = tmp_path / "audit.csv"
+    fields = ["ok", "prompt_file", "token_usage_source", *core._STREAM_FIELDS]
+    source = "client_monotonic_completed_sse"
+    rows = [
+        ["YES", "PRIVATE_FILE", "llm_api_usage", source, "0", "", "0", "2"],
+        ["NO", "PRIVATE_FILE", "llm_api_usage", source, "10", "10", "30", "10"],
+        ["YES", "", "llm_api_usage", source, "", "", "", "1"],
+        ["NO", "PRIVATE_FILE", "unavailable", "", "", "", "", ""],
+        ["YES", "PRIVATE_FILE", "llm_api_usage", "PRIVATE_BAD_SOURCE", "2", "", "2", "3"],
+        ["YES", "PRIVATE_FILE", "llm_api_usage", source, "20", "10", "30", "2"],
+        ["YES", "PRIVATE_FILE", "llm_api_usage", source, "NaN", "", "0", "2"],
+        ["YES", "PRIVATE_FILE", "llm_api_usage", source, "1", "", "1", "0"],
+    ]
+    with path.open("w", newline="", encoding="utf-8") as fp:
+        writer = csv.writer(fp)
+        writer.writerow(fields)
+        writer.writerows(rows)
+    public = core.load_public_audit(path)
+    assert public["status"] == "observed"
+    stream = public["stream_timing"]
+    assert (stream["observed_rows"], stream["missing_rows"], stream["invalid_rows"], stream["no_text_rows"]) == (3, 1, 4, 1)
+    assert stream["metrics"]["stream_ttft_seconds"] == {
+        "count": 2, "p50": 5.0, "p95": 9.5, "max": 10.0}
+    assert stream["metrics"]["stream_first_thinking_seconds"]["count"] == 1
+    assert stream["metrics"]["stream_first_content_seconds"]["p50"] == 15
+    assert stream["metrics"]["stream_chunks"]["count"] == 3
+    assert public["phase_metrics"]["prefill"] is None
+    assert public["phase_metrics"]["ttft"]["count"] == 2
+    assert "PRIVATE" not in json.dumps(public)
+    desktop = core.load_llm_audit_distribution(path)
+    summary = format_llm_audit_summary(desktop)
+    assert "TTFT P50/P95 5.0/9.5s (n=2)" in summary
+    assert "SSE observed 3/8" in summary
+    assert "Native prefill/decode unknown" in summary
+
+
+def test_stream_timing_http_and_legacy_unknown(tmp_path):
+    from czjLLM.job_manager import audit_distribution as core
+    audit = tmp_path / "llm_call_audit_20261102-1.csv"
+    audit.write_text("ok,prompt_file,token_usage_source\nYES,x,llm_api_usage\n", encoding="utf-8")
+    legacy = core.load_public_audit(audit)["stream_timing"]
+    assert legacy["missing_rows"] == 1
+    assert legacy["metrics"]["stream_ttft_seconds"]["p50"] is None
+    audit.write_text("ok,prompt_file,token_usage_source," + ",".join(core._STREAM_FIELDS) +
+                     "\nYES,PRIVATE_FILE,llm_api_usage,client_monotonic_completed_sse,0,,0,2\n",
+                     encoding="utf-8")
+    client = start_web_monitor(1, 0)
+    assert client is not None
+    try:
+        client.set_audit_path(audit)
+        deadline = time.monotonic() + 12
+        while True:
+            _, raw, _ = _request(client.port, "/api/v1/status")
+            snapshot = json.loads(raw)["audit"]
+            if snapshot["status"] == "observed":
+                break
+            assert time.monotonic() < deadline
+            time.sleep(.1)
+        assert snapshot["phase_metrics"]["ttft"]["p50"] == 0
+        assert snapshot["stream_timing"]["metrics"]["stream_first_thinking_seconds"]["p50"] is None
+        assert b"PRIVATE" not in raw
+    finally:
+        client.close()

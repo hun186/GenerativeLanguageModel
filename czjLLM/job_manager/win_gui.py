@@ -254,6 +254,30 @@ def format_provider_cache_summary(stats: dict) -> str:
     return f"Provider cache {hit} (reported {observed:,}/{eligible:,} eligible slices)"
 
 
+def format_stream_timing_summary(stats: dict) -> str:
+    stream = stats.get("stream_timing", {}) or {}
+    metrics = stream.get("metrics", {}) or {}
+    labels = (("stream_ttft_seconds", "TTFT"),
+              ("stream_first_thinking_seconds", "First thinking"),
+              ("stream_first_content_seconds", "First content"),
+              ("stream_chunks", "Chunks"))
+    values = []
+    for key, label in labels:
+        metric = metrics.get(key, {}) or {}
+        count = int(metric.get("count", 0) or 0)
+        if count:
+            unit = "" if key == "stream_chunks" else "s"
+            values.append(f"{label} P50/P95 {_fmt_audit_number(metric['p50'])}/"
+                          f"{_fmt_audit_number(metric['p95'])}{unit} (n={count})")
+        else:
+            values.append(f"{label} unknown")
+    return ("SSE observed " + str(stream.get("observed_rows", 0)) + "/" +
+            str(stats.get("calls", 0)) + " all audit rows"
+            + f" · invalid {stream.get('invalid_rows', 0)}"
+            + f" · no text {stream.get('no_text_rows', 0)} · " + " · ".join(values)
+            + " · Native prefill/decode unknown")
+
+
 def format_llm_audit_summary(stats: dict) -> str:
     calls = int(stats.get("calls", 0) or 0)
     if calls <= 0:
@@ -292,7 +316,8 @@ def format_llm_audit_summary(stats: dict) -> str:
         f"Calls {calls:,} · {context_text} · "
         f"{input_text} · {output_text} · {template_text} · "
         f"{latency_text} · Components {component_rows:,}/{calls:,} · "
-        f"{format_provider_cache_summary(stats)}"
+        f"{format_provider_cache_summary(stats)}\n"
+        f"{format_stream_timing_summary(stats)}"
     )
 
 def _reduction_mode(stats: dict) -> str:
