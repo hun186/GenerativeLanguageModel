@@ -123,4 +123,5 @@ def collect_text_completion(stream, *, started_at, activity=None):
     response._czjllm_first_thinking_seconds = first_thinking
     response._czjllm_first_content_seconds = first_content
     response._czjllm_stream_chunks = chunks
+    response._czjllm_stream_timing_source = "client_monotonic_completed_sse"
     return response
