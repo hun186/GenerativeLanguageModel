@@ -29,6 +29,11 @@ _HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <table><thead><tr><th>文件</th><th>階段</th><th>切片</th><th>等待</th><th>執行</th></tr></thead>
 <tbody id="doc-rows"></tbody></table>
 <p>僅第一頁，切片完成不等於寫回完成。</p>
+<h2>Worker 呼叫活動（目前頁，匿名端點）</h2>
+<p id="worker-status">等待觀測</p>
+<table><thead><tr><th>文件</th><th>端點</th><th>最後狀態</th><th>計時</th><th>資料觀測</th></tr></thead>
+<tbody id="worker-rows"></tbody></table>
+<p>非全 Run 統計；GPU 使用率未知。</p>
 <script src="/app.js" defer></script></body></html>""".encode("utf-8")
 _JS = """'use strict';
 function showDocuments(doc) {
@@ -54,6 +59,37 @@ function showDocuments(doc) {
     tbody.appendChild(tr);
   }
 }
+function showWorkers(doc) {
+  const tbody = document.getElementById('worker-rows');
+  tbody.replaceChildren();
+  const status = document.getElementById('worker-status');
+  const workers = doc.status === 'observed' ? doc.workers : null;
+  if (!workers || workers.status !== 'observed') {
+    status.textContent = workers?.status === 'waiting_for_audit' ?
+      '尚未收到 Audit 路徑' : 'Worker 觀測暫不可用';
+    return;
+  }
+  status.textContent = '最後觀測 ' + workers.count + ' 個呼叫；顯示 ' +
+    workers.calls.length + ' 個；省略 ' + workers.omitted + ' 個；' +
+    workers.running_rows_without_observations + ' 個執行中文件無活動觀測';
+  const phases = {started:'等待首段資料', received:'已收到資料',
+    assembled:'串流已組裝', failed:'串流失敗'};
+  for (const call of workers.calls) {
+    const tr = document.createElement('tr');
+    const stage = (call.status === 'assigned' ? '已分派' : '呼叫中') +
+      (call.stream_event ? '／' + phases[call.stream_event] : '');
+    const detail = call.chunks === null ? '未提供串流觀測' :
+      call.chunks + ' chunks；思考' + (call.thinking_seen ? '有' : '未觀測') +
+      '；回答' + (call.content_seen ? '有' : '未觀測');
+    for (const value of [call.row_alias, call.endpoint_alias ?? '未知',
+      stage, call.clock_text, detail]) {
+      const td = document.createElement('td');
+      td.textContent = value;
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+}
 async function refresh() {
   const health = document.getElementById('health');
   try {
@@ -63,6 +99,7 @@ async function refresh() {
     health.textContent = data.delivery_incomplete || data.rejected_events ?
       '監控事件不完整；計數不可當作完整結果' : '已取得監控快照';
     showDocuments(data.documents);
+    showWorkers(data.documents);
     for (const key of ['total','scheduled','completed','elapsed_s']) {
       const value = data[key];
       document.getElementById(key).textContent =
@@ -71,6 +108,7 @@ async function refresh() {
   } catch (_) {
     health.textContent = '監控連線中斷；以下資料非即時';
     showDocuments({status:'unavailable', rows:[]});
+    showWorkers({status:'unavailable'});
   } finally { setTimeout(refresh, 2000); }
 }
 refresh();""".encode("utf-8")
@@ -157,6 +195,8 @@ def _serve(port, total, events, dropped, stop, ready):
                     break
                 if kind == MonitorEvents.RECOVERY_METER:
                     server.documents.set_path(payload)
+                elif kind == MonitorEvents.AUDIT_PATH:
+                    server.documents.set_audit_path(payload)
                 else:
                     server.projection.apply(kind, payload)
             server.handle_request()
@@ -189,16 +229,20 @@ class WebMonitorClient:
     def set_total(self, total): self._emit(MonitorEvents.SET_TOTAL, total)
     # Private diagnostic payloads remain excluded; only the meter locator is accepted.
     def log(self, text): pass
-    def set_audit_path(self, path): pass
+    def set_audit_path(self, path):
+        self._set_locator(MonitorEvents.AUDIT_PATH, path)
     def set_quality_event_path(self, path): pass
     def set_recovery_meter_path(self, path):
+        self._set_locator(MonitorEvents.RECOVERY_METER, path)
+
+    def _set_locator(self, event, path):
         if self._closed:
             return
         try:
             path = str(path or "")
             if len(path) > 4096 or "\x00" in path:
                 raise ValueError("invalid meter path")
-            self._events.put_nowait((MonitorEvents.RECOVERY_METER, path))
+            self._events.put_nowait((event, path))
         except (Full, OSError, ValueError):
             self._dropped.set()
     def update_recheck_stats(self, stats): pass

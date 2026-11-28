@@ -155,3 +155,5 @@
 - [ ] Verify exact-head Hosted Linux E2E, Windows 3.10/3.11, secret scan, Codex findings and no unresolved threads before any merge. Verify native Windows ACL creation and Linux scheduler user permissions; do not claim real operator acceptance from Hosted.
 - [ ] On real Windows and Linux deployments, confirm checkout is local/non-synced, running identity can access cache, and archive/backup/7z/Docker excludes .runtime-private; never auto-sync plaintext repair snapshots.
 - [ ] WEB monitor: land #385 then #386/#387 and one SSE distribution consumer; verify Linux/ES and authenticated remote operation separately, implement large Audit incremental aggregation.
+
+- [ ] WEB-04B #386: fresh main CI/review, then #387/#390/#391; operator Linux/ES/SQL validation remains separate.

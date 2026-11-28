@@ -127,3 +127,57 @@ def test_real_http_document_snapshot(tmp_path):
         assert _request(client.port, "/api/v1/status?path=/private")[0] == 404
     finally:
         client.close()
+
+
+def test_worker_activity_real_files_and_redacted_http(tmp_path):
+    from uuid import uuid4
+    from czjLLM.job_manager.worker_dispatch_observation import write_worker_dispatch_observation
+
+    item = tmp_path / "PRIVATE_ITEM"
+    item.mkdir()
+    audit = tmp_path / "llm_call_audit_20261102-1.csv"
+    audit.write_text("prompt_file,model,base_url,ok,error\n", encoding="utf-8")
+    meter = tmp_path / "meter.json"
+    meter.write_text(json.dumps({"rows": {"PRIVATE_ROW": {
+        "status": "in_progress", "total": 3, "done": 0, "queue_running": 2,
+        "item_dir": str(item), "temp_txt": "PRIVATE_NAME"}}}), encoding="utf-8")
+    a, b, c = uuid4().hex, uuid4().hex, uuid4().hex
+    def emit(call, endpoint, status, detail=None):
+        write_worker_dispatch_observation(
+            audit_path=str(audit), item_dir=str(item), prompt_file=str(item / "chunk.txt"),
+            worker_call_id=call, model_spec={"model_name": "PRIVATE_MODEL",
+                "base_url": "http://" + endpoint, "api_key": "PRIVATE_SECRET"},
+            status=status, stream_activity=detail)
+    emit(a, "10.20.30.40:11434", "calling", {
+        "event": "received", "elapsed_s": 5, "last_chunk_elapsed_s": 3,
+        "chunks": 2, "thinking_seen": True, "content_seen": False})
+    emit(b, "10.20.30.41:11434", "calling")
+    emit(c, "10.20.30.42:11434", "returned")
+    client = start_web_monitor(1, 0)
+    assert client is not None
+    try:
+        client.set_recovery_meter_path(meter)
+        client.set_audit_path(audit)
+        def wait_count(expected):
+            deadline = time.monotonic() + 15
+            while True:
+                _, raw, _ = _request(client.port, "/api/v1/status")
+                docs = json.loads(raw)["documents"]
+                workers = docs.get("workers", {})
+                if workers.get("status") == "observed" and workers["count"] == expected:
+                    return docs, workers, raw
+                assert time.monotonic() < deadline
+                time.sleep(.1)
+        docs, workers, raw = wait_count(2)
+        assert len(workers["calls"]) == 2
+        assert len({v["endpoint_alias"] for v in workers["calls"]}) == 2
+        assert {v["row_alias"] for v in workers["calls"]} == {docs["rows"][0]["alias"]}
+        assert any(v["chunks"] == 2 and v["thinking_seen"] for v in workers["calls"])
+        assert workers["gpu_utilization_known"] is False
+        for private in (b"PRIVATE", b"10.20.30.", b"anchor_s", a.encode(), b.encode(), c.encode()):
+            assert private not in raw
+        emit(a, "10.20.30.40:11434", "returned")
+        _, remaining, _ = wait_count(1)
+        assert remaining["calls"][0]["chunks"] is None
+    finally:
+        client.close()
