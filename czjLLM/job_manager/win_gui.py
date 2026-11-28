@@ -80,6 +80,9 @@ def format_audit_distribution_help(metric_key: str = "") -> str:
         "n = 有效樣本數；P50 = 中位數；P95 = 95% 樣本不超過此值；max = 最大值。"
         "Template 通常在同一 YAML stage 內固定或近固定，因此只在標題摘要顯示 P50/P95，不另外畫曲線。"
         "樣本很少時曲線形狀容易跳動，應優先看 P50 / P95 / max。\n"
+        "SSE timing 是完整串流的用戶端單調時鐘量測；TTFT 指首段非空思考或回答文字。"
+        "樣本覆蓋以所有 Audit 呼叫為分母，不代表串流成功率；缺值不補零。"
+        "TTFT 不等於 GPU prefill，原生 Prefill／Decode 仍未知。\n"
         "Provider cache：僅對 API 明確回報 cache count 的正數輸入切片，"
         "以快取 token 總數 ÷ 該批已回報切片的 input token 總數計算；"
         "reported 為已回報切片數 / 符合條件切片數。缺值為 unknown，不含 heuristic。"
@@ -254,6 +257,30 @@ def format_provider_cache_summary(stats: dict) -> str:
     return f"Provider cache {hit} (reported {observed:,}/{eligible:,} eligible slices)"
 
 
+def format_stream_timing_summary(stats: dict) -> str:
+    timing = stats.get("stream_timing") or {}
+    if not timing:
+        return ""
+    labels = (("stream_ttft_seconds", "TTFT", "s"),
+              ("stream_first_thinking_seconds", "First thinking", "s"),
+              ("stream_first_content_seconds", "First content", "s"),
+              ("stream_chunks", "Chunks", ""))
+    metrics = timing.get("metrics", {})
+    parts = []
+    for key, label, unit in labels:
+        value = metrics.get(key, {})
+        count = int(value.get("count", 0))
+        if count:
+            parts.append(f"{label} P50/P95 {_fmt_audit_number(value['p50'])}/"
+                         f"{_fmt_audit_number(value['p95'])}{unit} (n={count:,})")
+        else:
+            parts.append(f"{label} unknown")
+    return (" · SSE timing (client; all audit calls) "
+            f"{timing['observed_rows']:,}/{timing['audit_rows']:,} · "
+            + " · ".join(parts)
+            + f" · No text {timing['no_text_rows']:,} · Invalid {timing['invalid_rows']:,}")
+
+
 def format_llm_audit_summary(stats: dict) -> str:
     calls = int(stats.get("calls", 0) or 0)
     if calls <= 0:
@@ -293,6 +320,7 @@ def format_llm_audit_summary(stats: dict) -> str:
         f"{input_text} · {output_text} · {template_text} · "
         f"{latency_text} · Components {component_rows:,}/{calls:,} · "
         f"{format_provider_cache_summary(stats)}"
+        f"{format_stream_timing_summary(stats)}"
     )
 
 def _reduction_mode(stats: dict) -> str:

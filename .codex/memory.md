@@ -128,3 +128,5 @@
 - WEB-04B #386: #385 merged `5588aa7` after CI 45980392916, scan 45980392941 and P1 re-review. #386 reuses Worker sidecars and clocks for current-page anonymous HTTP activity; old exact head `3d5e65d` CI 45934455363/scan 45934455416 and review passed; fresh main-integrated verification pending. API prior blob archived; no physical GPU/remote acceptance.
 
 - WEB-05A #387: #386 merged `96c03ae` after CI 45993004041, scan 45993004027 and clean review. Shared desktop/Web Audit distributions; strict Web bounded snapshot rejects malformed outcome, incomplete CSV or unsafe file. Previous #387 CI 45955087540/scan 45955087542 and exact-head review passed. New main integration pending fresh gates; no physical performance validation.
+
+- WEB-05B2 #390: #387 merged `ee29524` after CI 46114030025, scan 46114030027 and clean exact-head review. #390 reads accepted #388 SSE metadata into shared distributions, prior CI 45974649806/scan 45974649835 and review passed. Selected #390 over overlapping #389 because subsequent incremental/quality stack is based on #390. Fresh gates pending; physical timing unverified.

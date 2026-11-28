@@ -128,3 +128,5 @@ receipt、失聯結果或 Meter 失敗 fail closed，保留 RUNNING/Success 證�
 - WEB-04B: publish only anonymous current-page Worker observations and clocks, never infer GPU state or expose private locators.
 
 - WEB-05A: one shared aggregation formula, permissive desktop legacy mode and strict privacy-safe Web projection; no fabricated native phase or cache measurements.
+
+- WEB-05B2: use fixed producer SSE suffix; do not impute zeros or mix native and client timings. #390 is canonical candidate, #389 alternative remains unmerged.

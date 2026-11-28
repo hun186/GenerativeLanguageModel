@@ -159,3 +159,5 @@
 - [ ] WEB-04B #386: fresh main CI/review, then #387/#390/#391; operator Linux/ES/SQL validation remains separate.
 
 - [ ] WEB-05A #387 fresh integration gates; then #390 SSE distributions, #391 incremental, #392 grouped comparisons, WEB-06 quality.
+
+- [ ] #390 fresh integration gates; then #391 incremental and #392/#393. Do not merge duplicate #389; native phases and live acceptance pending.

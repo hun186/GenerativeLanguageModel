@@ -154,3 +154,5 @@ Sink ACK 與正式 Producer 壓力測試。Python Thread 不能安全強制終�
 - WEB-04B: sidecars are last-observed Worker evidence, not proof of GPU phase/occupancy or sink writes; remote and physical Linux/GPU acceptance remain pending.
 
 - WEB-05A: 8 MiB/20k bound and full snapshot reparse limit; large Audit incremental #391 pending. Actual Linux/GPU/ES/SQL acceptance not established.
+
+- WEB-05B2: no provider-native prefill/decode, no GPU inference, no physical long-context timing acceptance; coverage of all calls is not SSE success rate.

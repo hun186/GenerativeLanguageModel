@@ -170,3 +170,5 @@ confirm_writeback 閘門。Linux process pool、多階段仍為原來路徑；
 - WEB-04B: DocumentMonitor reads trusted audit locator via IPC and joins current-page running rows to validated dispatch sidecars in its background refresh. Per-run HMAC row/endpoint aliases; no raw model/IP/call ID/path; HTTP renders cached clock text without extrapolating terminal stream state.
 
 - WEB-05A: audit_distribution.py shared numeric aggregation; desktop permissive legacy reader retained, Web background DocumentMonitor publishes separate bounded Audit snapshot from trusted IPC locator. Strict reader validates CSV width/outcomes; only allowlisted numeric metrics, no raw identities. Audit can be observed without a document Meter.
+
+- WEB-05B2: shared Audit distributions validate completed SSE timing source and tuple consistency, track observed/unreported/invalid/no-text separately; desktop summary and Web numeric table use same percentile logic. Historical rows remain compatible; no provider native phase inference.
